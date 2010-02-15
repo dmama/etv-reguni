@@ -18,7 +18,7 @@ public enum TiersPart {
 	 */
 	ADRESSES,
 	/**
-	 * Renseigne les adresses d'envoi (= six lignes pour l'adressage).
+	 * Renseigne les adresses courrier, poursuite, représentation et domicile formattées pour l'envoi (= six lignes pour l'adressage).
 	 */
 	ADRESSES_ENVOI,
 	/**

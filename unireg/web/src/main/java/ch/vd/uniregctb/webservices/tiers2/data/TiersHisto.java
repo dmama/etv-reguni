@@ -27,10 +27,10 @@ import ch.vd.uniregctb.webservices.tiers2.impl.ForFiscalComparator;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "TiersHisto", propOrder = {
-		"numero", "complementNom", "dateDebutActivite", "dateFinActivite", "dateAnnulation", "personneContact", "numeroTelPrive",
-		"numeroTelProf", "numeroTelPortable", "numeroTelecopie", "adresseCourrierElectronique", "blocageRemboursementAutomatique",
-		"isDebiteurInactif", "adressesCourrier", "adressesPoursuite", "adressesRepresentation", "adressesDomicile", "adresseEnvoi",
-		"rapportsEntreTiers", "forsFiscauxPrincipaux", "autresForsFiscaux", "forsGestions", "declarations", "comptesBancaires"
+		"numero", "complementNom", "dateDebutActivite", "dateFinActivite", "dateAnnulation", "personneContact", "numeroTelPrive", "numeroTelProf", "numeroTelPortable", "numeroTelecopie",
+		"adresseCourrierElectronique", "blocageRemboursementAutomatique", "isDebiteurInactif", "adressesCourrier", "adressesPoursuite", "adressesRepresentation", "adressesDomicile", "adresseEnvoi",
+		"adressePoursuiteFormattee", "adresseRepresentationFormattee", "adresseDomicileFormattee", "rapportsEntreTiers", "forsFiscauxPrincipaux", "autresForsFiscaux", "forsGestions", "declarations",
+		"comptesBancaires"
 })
 public abstract class TiersHisto {
 
@@ -101,12 +101,36 @@ public abstract class TiersHisto {
 	public List<Adresse> adressesDomicile = null;
 
 	/**
-	 * L'adresse d'envoi de courrier complète (six lignes) du tiers.
+	 * Adresse <b>courrier</b> formattée pour l'envoi (six lignes)
 	 * <p>
 	 * <b>Attention !</b> Il s'agit de l'adresse d'envoi la plus récente connue, indépendemment de la période historique demandée.
 	 */
 	@XmlElement(required = false)
 	public AdresseEnvoi adresseEnvoi = null;
+
+	/**
+	 * Adresse de poursuite formattée pour l'envoi (six lignes)
+	 * <p>
+	 * <b>Attention !</b> Il s'agit de l'adresse d'envoi la plus récente connue, indépendemment de la période historique demandée.
+	 */
+	@XmlElement(required = false)
+	public AdresseEnvoi adressePoursuiteFormattee;
+
+	/**
+	 * Adresse de représentation formattée pour l'envoi (six lignes)
+	 * <p>
+	 * <b>Attention !</b> Il s'agit de l'adresse d'envoi la plus récente connue, indépendemment de la période historique demandée.
+	 */
+	@XmlElement(required = false)
+	public AdresseEnvoi adresseRepresentationFormattee;
+
+	/**
+	 * Adresse de domicile formattée pour l'envoi (six lignes)
+	 * <p>
+	 * <b>Attention !</b> Il s'agit de l'adresse d'envoi la plus récente connue, indépendemment de la période historique demandée.
+	 */
+	@XmlElement(required = false)
+	public AdresseEnvoi adresseDomicileFormattee;
 
 	/** Historique des rapports entre tiers pour ce tiers (du plus ancien au plus récent). */
 	@XmlElement(required = false)

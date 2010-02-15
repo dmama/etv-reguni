@@ -24,10 +24,10 @@ import ch.vd.uniregctb.webservices.tiers2.impl.DataHelper;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "Tiers", propOrder = {
-		"numero", "complementNom", "dateDebutActivite", "dateFinActivite", "dateAnnulation", "personneContact", "numeroTelPrive",
-		"numeroTelProf", "numeroTelPortable", "numeroTelecopie", "adresseCourrierElectronique", "blocageRemboursementAutomatique",
-		"isDebiteurInactif", "adresseCourrier", "adressePoursuite", "adresseRepresentation", "adresseDomicile", "adresseEnvoi",
-		"rapportsEntreTiers", "forFiscalPrincipal", "autresForsFiscaux", "forGestion", "declaration", "comptesBancaires"
+		"numero", "complementNom", "dateDebutActivite", "dateFinActivite", "dateAnnulation", "personneContact", "numeroTelPrive", "numeroTelProf", "numeroTelPortable", "numeroTelecopie",
+		"adresseCourrierElectronique", "blocageRemboursementAutomatique", "isDebiteurInactif", "adresseCourrier", "adressePoursuite", "adresseRepresentation", "adresseDomicile", "adresseEnvoi",
+		"adressePoursuiteFormattee", "adresseRepresentationFormattee", "adresseDomicileFormattee", "rapportsEntreTiers", "forFiscalPrincipal", "autresForsFiscaux", "forGestion", "declaration",
+		"comptesBancaires"
 })
 public abstract class Tiers {
 
@@ -113,9 +113,21 @@ public abstract class Tiers {
 	@XmlElement(required = false)
 	public Adresse adresseDomicile;
 
-	/** Adresse d'envoi du courrier complète (six lignes) du tiers */
+	/** Adresse <b>courrier</b> formattée pour l'envoi (six lignes) */
 	@XmlElement(required = false)
 	public AdresseEnvoi adresseEnvoi;
+
+	/** Adresse de poursuite formattée pour l'envoi (six lignes) */
+	@XmlElement(required = false)
+	public AdresseEnvoi adressePoursuiteFormattee;
+
+	/** Adresse de représentation formattée pour l'envoi (six lignes) */
+	@XmlElement(required = false)
+	public AdresseEnvoi adresseRepresentationFormattee;
+
+	/** Adresse de domicile formattée pour l'envoi (six lignes) */
+	@XmlElement(required = false)
+	public AdresseEnvoi adresseDomicileFormattee;
 
 	/** Rapports entre tiers ouverts pour le tiers. */
 	@XmlElement(required = false)
