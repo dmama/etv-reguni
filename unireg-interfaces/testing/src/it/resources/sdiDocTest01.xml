@@ -1,0 +1,575 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<DossierElectronique noContribuable="10024519" noSequenceDI="01" periode="2007"
+  retourPiece="false" versionSchema="2.1.1"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="SDI.xsd">
+  <Operation>
+    <DateReception>2007-09-11</DateReception>
+    <OperateurScan>Ras5</OperateurScan>
+    <DateScan>2007-09-11</DateScan>
+    <LieuScan>CEDI</LieuScan>
+  </Operation>
+  <DeclarationImpot identifiant="" noContribuable="10024519" noSequenceDI="01"
+    periode="2007" typeDocument="109" versionDocument="2.1.1">
+    <Identification>
+      <CoordonneesMandataire>
+        <AdresseLigne1>Abraxas Informatique SA</AdresseLigne1>
+        <AdresseLigne3>Av. des Boveresses 42</AdresseLigne3>
+        <AdresseLigne5>1010</AdresseLigne5>
+        <AdresseLigne6>Lausanne</AdresseLigne6>
+        <TelephoneContact>021 654 05 15</TelephoneContact>
+      </CoordonneesMandataire>
+      <CoordonneesContribuable>
+        <TelephoneContact>0217654321</TelephoneContact>
+        <NoTelPortable>0791334555</NoTelPortable>
+        <AdresseMail>georges.dupont@abraxas.ch</AdresseMail>
+        <CodeIBAN>NO IBAN</CodeIBAN>
+        <TitulaireCompte>Cas 3 Dupont Georges</TitulaireCompte>
+      </CoordonneesContribuable>
+      <Contribuable>
+        <TauxActivite>100</TauxActivite>
+        <SituationProfessionnelle>
+          <Salarie>true</Salarie>
+        </SituationProfessionnelle>
+        <Profession>Comptable</Profession>
+        <LieuActivite>Lieu de l'activité contrib 1</LieuActivite>
+        <NoAVS part1="911" part2="81" part3="404" part4="111"/>
+      </Contribuable>
+      <Epouse>
+        <TauxActivite>100</TauxActivite>
+        <SituationProfessionnelle>
+          <Salarie>true</Salarie>
+        </SituationProfessionnelle>
+        <Profession>Développeuse software</Profession>
+        <LieuActivite>Lieu de l'activité contrib 2</LieuActivite>
+        <NoAVS part1="850" part2="81" part3="460" part4="112"/>
+      </Epouse>
+      <PersonnesACharge>
+        <Enfants>
+          <Enfant>
+            <MenageCommun>true</MenageCommun>
+            <Prenom>Prénom enfant 1</Prenom>
+            <Nom>Nom enfant 1</Nom>
+            <DateNaissance annee="2000" jour="01" mois="01"/>
+            <Activite>
+              <Ecolier>true</Ecolier>
+            </Activite>
+          </Enfant>
+          <Enfant>
+            <PasMenageCommun>true</PasMenageCommun>
+            <Prenom>Prénom enfant 2</Prenom>
+            <Nom>Nom enfant 2</Nom>
+            <DateNaissance annee="1978" jour="02" mois="02"/>
+            <Activite>
+              <Employe>true</Employe>
+            </Activite>
+            <GainMensuel>1500</GainMensuel>
+          </Enfant>
+          <Enfant>
+            <Prenom>Prénom enfant 3</Prenom>
+            <Nom>Nom enfant 3</Nom>
+            <DateNaissance annee="2001" jour="01" mois="01"/>
+            <Activite>
+              <Autre>true</Autre>
+            </Activite>
+          </Enfant>
+        </Enfants>
+        <AutrePersonnes>
+          <AutrePersonne>
+            <PasMenageCommun>true</PasMenageCommun>
+            <Prenom>Prénom p à charges 1</Prenom>
+            <Nom>Nom p. à charges 1</Nom>
+            <AnneeNaissance>1916</AnneeNaissance>
+            <LienParente>
+              <ParentEnfant>true</ParentEnfant>
+            </LienParente>
+            <Domicile>
+              <VD>true</VD>
+            </Domicile>
+            <PrestationAnnuelle>12000</PrestationAnnuelle>
+          </AutrePersonne>
+          <AutrePersonne>
+            <PasMenageCommun>true</PasMenageCommun>
+            <Prenom>Prénom p à charges 2</Prenom>
+            <Nom>Nom p. à charges 2</Nom>
+            <AnneeNaissance>1930</AnneeNaissance>
+            <LienParente>
+              <AutreLien>true</AutreLien>
+            </LienParente>
+            <Domicile>
+              <CH>true</CH>
+            </Domicile>
+            <PrestationAnnuelle>15000</PrestationAnnuelle>
+          </AutrePersonne>
+          <AutrePersonne>
+            <PasMenageCommun>true</PasMenageCommun>
+            <Prenom>Prénom p à charges 3</Prenom>
+            <Nom>Nom p. à charges 3</Nom>
+            <AnneeNaissance>1940</AnneeNaissance>
+            <LienParente>
+              <AucunLien>true</AucunLien>
+            </LienParente>
+            <Domicile>
+              <Etranger>true</Etranger>
+            </Domicile>
+            <PrestationAnnuelle>16000</PrestationAnnuelle>
+          </AutrePersonne>
+        </AutrePersonnes>
+      </PersonnesACharge>
+    </Identification>
+    <ActiviteIndependante>
+      <Principale>
+        <Contribuable>21900</Contribuable>
+        <Epouse>100200</Epouse>
+        <CA>116000</CA>
+      </Principale>
+      <Accessoire>
+        <Contribuable>500</Contribuable>
+        <Epouse>1000</Epouse>
+        <CA>4000</CA>
+      </Accessoire>
+      <PerteCommerciale>
+        <Contribuable>550</Contribuable>
+        <Epouse>1050</Epouse>
+      </PerteCommerciale>
+      <SNC_Commandite>
+        <RaisonSociale>SNC</RaisonSociale>
+        <Contribuable>10000</Contribuable>
+        <Epouse>10500</Epouse>
+      </SNC_Commandite>
+      <CotisationsAVS>
+        <Contribuable>4000</Contribuable>
+        <Epouse>5000</Epouse>
+      </CotisationsAVS>
+    </ActiviteIndependante>
+    <AutreRevenu>
+      <Contribuable>2500</Contribuable>
+      <Epouse>3000</Epouse>
+    </AutreRevenu>
+    <IndemnitePG>
+      <TotalRevenusActivite>
+        <Contribuable>103328</Contribuable>
+        <Epouse>168263</Epouse>
+      </TotalRevenusActivite>
+      <DeductionDoubleActivite>
+        <Epouse>1600</Epouse>
+      </DeductionDoubleActivite>
+    </IndemnitePG>
+    <Assurances>
+      <Maladie_Accident_Vie>
+        <Contribuable>9000</Contribuable>
+      </Maladie_Accident_Vie>
+    </Assurances>
+    <TotalRevenus>
+      <ContribuableConjoint>
+        <Contribuable>64328</Contribuable>
+        <Epouse>147473</Epouse>
+      </ContribuableConjoint>
+      <Cumul>
+        <Contribuable>211801</Contribuable>
+      </Cumul>
+    </TotalRevenus>
+    <TitresFortune>
+      <Loterie>
+        <Revenu>1000</Revenu>
+        <Fortune>30000</Fortune>
+      </Loterie>
+      <Monnaie_Metaux>
+        <Fortune>2000</Fortune>
+      </Monnaie_Metaux>
+      <Successions>
+        <Revenu>3000</Revenu>
+        <Fortune>4000</Fortune>
+      </Successions>
+      <Valeurs_Collections>
+        <Fortune>5000</Fortune>
+      </Valeurs_Collections>
+      <Assurances>
+        <Fortune>130000</Fortune>
+      </Assurances>
+      <Mobilier>
+        <DemiValeurAssurance>100</DemiValeurAssurance>
+      </Mobilier>
+      <Autres>
+        <Revenu>6000</Revenu>
+        <Fortune>7000</Fortune>
+      </Autres>
+      <ExploitantsSol>
+        <Animaux>200</Animaux>
+        <MaterielExploitation>300</MaterielExploitation>
+        <Fortune>500</Fortune>
+      </ExploitantsSol>
+      <SNC_Commandite>
+        <Fortune>8000</Fortune>
+      </SNC_Commandite>
+      <ActifsExploitation>
+        <Fortune>9000</Fortune>
+      </ActifsExploitation>
+      <InteretEpargne>
+        <Revenu>1000</Revenu>
+      </InteretEpargne>
+      <FraisAdministration>
+        <Revenu>150</Revenu>
+      </FraisAdministration>
+      <MiseLoterie>
+        <Revenu>10000</Revenu>
+      </MiseLoterie>
+    </TitresFortune>
+    <ImmeublesTerrains>
+      <ImmeublesPrives>
+        <Revenu>30972</Revenu>
+        <Fortune>460000</Fortune>
+      </ImmeublesPrives>
+      <SousLocation>
+        <Revenu>1000</Revenu>
+      </SousLocation>
+      <Entretien>
+        <Revenu>6194</Revenu>
+      </Entretien>
+    </ImmeublesTerrains>
+    <DettesInterets>
+      <Prives>
+        <Revenu>600</Revenu>
+        <Fortune>6000</Fortune>
+      </Prives>
+      <Commerciaux>
+        <Fortune>28000</Fortune>
+      </Commerciaux>
+    </DettesInterets>
+    <DeductionSpeciales>
+      <RentesCharges>
+        <Revenu>5500</Revenu>
+      </RentesCharges>
+      <Pensionalimentaire>
+        <Revenu>7000</Revenu>
+      </Pensionalimentaire>
+      <Net>
+        <Revenu>223329</Revenu>
+      </Net>
+      <PersonneACharge>
+        <Revenu>9300</Revenu>
+      </PersonneACharge>
+      <Difference>
+        <Revenu>214029</Revenu>
+      </Difference>
+    </DeductionSpeciales>
+    <TotalNet>
+      <RevenuFortune>
+        <Revenu>214029</Revenu>
+        <Fortune>621500</Fortune>
+      </RevenuFortune>
+      <SousTotal>
+        <Revenu>214029</Revenu>
+      </SousTotal>
+    </TotalNet>
+    <TotalImposable>
+      <RevenuFortune>
+        <Revenu>214000</Revenu>
+        <Fortune>621000</Fortune>
+      </RevenuFortune>
+      <NombreParts>2.3</NombreParts>
+      <Determinant>
+        <Revenu>95900</Revenu>
+      </Determinant>
+    </TotalImposable>
+    <PensionsAlimentaires>
+      <Recues>
+        <Recue>
+          <Beneficiaire>
+            <Monsieur>true</Monsieur>
+          </Beneficiaire>
+          <RecueDe>
+            <Nom>Nom 1</Nom>
+            <Prenom>Prénom 1</Prenom>
+            <Adresse>Adresse 1</Adresse>
+            <Domicile>Domicile 1</Domicile>
+            <Montant>1000</Montant>
+          </RecueDe>
+        </Recue>
+        <Recue>
+          <Beneficiaire>
+            <Monsieur>true</Monsieur>
+          </Beneficiaire>
+          <RecueDe>
+            <Nom>Nom 2</Nom>
+            <Prenom>Prénom 2</Prenom>
+            <Adresse>Adresse 2</Adresse>
+            <Domicile>Domicile 2</Domicile>
+            <Montant>2000</Montant>
+          </RecueDe>
+        </Recue>
+      </Recues>
+      <Versees>
+        <VerseeA>
+          <Nom>Nom 3</Nom>
+          <Prenom>Prénom 3</Prenom>
+          <Adresse>Adresse 3</Adresse>
+          <Domicile>Domicile 3</Domicile>
+          <Montant>3000</Montant>
+        </VerseeA>
+        <VerseeA>
+          <Nom>Nom 4</Nom>
+          <Prenom>Prénom 4</Prenom>
+          <Adresse>Adresse 4</Adresse>
+          <Domicile>Domicile 4</Domicile>
+          <Montant>4000</Montant>
+        </VerseeA>
+      </Versees>
+    </PensionsAlimentaires>
+    <PrestationsCapitalCaisse>
+      <Montant>1234567890</Montant>
+      <Pilier1>true</Pilier1>
+      <LPP>true</LPP>
+      <Pilier3A>true</Pilier3A>
+      <Pilier3B>true</Pilier3B>
+      <Autre>true</Autre>
+    </PrestationsCapitalCaisse>
+    <PrestationsCapitalRemplacement>
+      <Prestation>
+        <Genre>Genre Question 3</Genre>
+        <Montant>1023456</Montant>
+      </Prestation>
+    </PrestationsCapitalRemplacement>
+    <AutresRevenus>
+      <AutreRevenu>
+        <Genre>Genre Question 4</Genre>
+        <Montant>12034</Montant>
+      </AutreRevenu>
+    </AutresRevenus>
+    <RevenusImposablesAutreEtat>
+      <Revenu>
+        <Montant>123045</Montant>
+      </Revenu>
+    </RevenusImposablesAutreEtat>
+    <Donations>
+      <Donation>
+        <Oui>true</Oui>
+      </Donation>
+      <AvanceHoirie>
+        <Oui>true</Oui>
+      </AvanceHoirie>
+      <SuccessionNonPartagee>
+        <Oui>true</Oui>
+      </SuccessionNonPartagee>
+      <BiensHerites>
+        <Oui>true</Oui>
+      </BiensHerites>
+    </Donations>
+    <JustificationEcarts>Texte libre 1 Texte libre 2 Texte libre 3</JustificationEcarts>
+    <RentesLPP>
+      <Monsieur>
+        <Apres_31_12_86>
+          <Oui>true</Oui>
+        </Apres_31_12_86>
+        <DatePremiereRente annee="2007" jour="01" mois="01"/>
+      </Monsieur>
+      <Madame>
+        <Apres_31_12_86>
+          <Oui>true</Oui>
+        </Apres_31_12_86>
+        <DatePremiereRente annee="2007" jour="02" mois="02"/>
+      </Madame>
+    </RentesLPP>
+    <CotisationsLPP>
+      <Monsieur>
+        <Oui>true</Oui>
+      </Monsieur>
+      <Madame>
+        <Oui>true</Oui>
+      </Madame>
+    </CotisationsLPP>
+  </DeclarationImpot>
+  <EtatDesTitres identifiant="" noContribuable="10024519" noSequenceDI="01"
+    periode="2007" typeDocument="109" versionDocument="2.1.1">
+    <ComptesLivrets>
+      <Titre>
+        <NumeroOuNombre>No de compte</NumeroOuNombre>
+        <Designation>Banque Raiffeisen</Designation>
+        <RendementIA>1000</RendementIA>
+        <TotalImposable>20000</TotalImposable>
+      </Titre>
+    </ComptesLivrets>
+    <TitresSoumisIA>
+      <Titre>
+        <Type>
+          <Action>true</Action>
+        </Type>
+        <Numero>74919</Numero>
+        <Designation>Montreux-Palace SA (Société)</Designation>
+        <NombreOuValeurNominale>100</NombreOuValeurNominale>
+        <CoursFiscal>100</CoursFiscal>
+        <TotalImposable>10000</TotalImposable>
+      </Titre>
+    </TitresSoumisIA>
+  </EtatDesTitres>
+  <EtatDesDettes identifiant="" noContribuable="10024519" noSequenceDI="01"
+    periode="2007" typeDocument="109" versionDocument="2.1.1">
+    <DettesPrivees>
+      <DettesGaranties>
+        <DetteGarantie>
+          <Creancier>Dettes 1 Adre1</Creancier>
+          <NoCompte>123456</NoCompte>
+          <Interets>100</Interets>
+          <MontantDette>1000</MontantDette>
+        </DetteGarantie>
+        <DetteGarantie>
+          <Creancier>Dettes 2 Adre2</Creancier>
+          <NoCompte>789456</NoCompte>
+          <Interets>200</Interets>
+          <MontantDette>2000</MontantDette>
+        </DetteGarantie>
+        <DetteGarantie>
+          <Creancier>Dettes 3 Adre3</Creancier>
+          <NoCompte>654321</NoCompte>
+          <Interets>300</Interets>
+          <MontantDette>3000</MontantDette>
+        </DetteGarantie>
+      </DettesGaranties>
+    </DettesPrivees>
+    <DettesExploitation>
+      <DettesGaranties>
+        <DetteGarantie>
+          <Creancier>Exploitation 1 a1</Creancier>
+          <NoCompte>123</NoCompte>
+          <Interets>500</Interets>
+          <MontantDette>5500</MontantDette>
+        </DetteGarantie>
+        <DetteGarantie>
+          <Creancier>Exploitation 2 a2</Creancier>
+          <NoCompte>321</NoCompte>
+          <Interets>600</Interets>
+          <MontantDette>6500</MontantDette>
+        </DetteGarantie>
+        <DetteGarantie>
+          <Creancier>Exploitation 3 a3</Creancier>
+          <NoCompte>456</NoCompte>
+          <Interets>700</Interets>
+          <MontantDette>7500</MontantDette>
+        </DetteGarantie>
+        <DetteGarantie>
+          <Creancier>Exploitation 4 a4</Creancier>
+          <NoCompte>654</NoCompte>
+          <Interets>800</Interets>
+          <MontantDette>8500</MontantDette>
+        </DetteGarantie>
+      </DettesGaranties>
+    </DettesExploitation>
+    <Assurances>
+      <AssuranceVie>
+        <Societe>Assurances-vie</Societe>
+        <AnneeConclusion>2000</AnneeConclusion>
+        <AnneeEcheance>2020</AnneeEcheance>
+        <Somme_Capital>120000</Somme_Capital>
+        <ValeurRachat>130000</ValeurRachat>
+      </AssuranceVie>
+    </Assurances>
+  </EtatDesDettes>
+  <AnnexeImmeubles identifiant="" noContribuable="10024519" noSequenceDI="01"
+    periode="2007" typeDocument="109" versionDocument="2.1.1">
+    <RenseignementGeneraux>
+      <PartPropriete denominateur="1" numerateur="1"/>
+      <AnneeConstruction>2000</AnneeConstruction>
+      <NoRegistreFoncier>123.12.45</NoRegistreFoncier>
+      <LieuSituation>Lausanne</LieuSituation>
+      <Canton>VD</Canton>
+      <NatureDestination>nature et destination</NatureDestination>
+      <ValeurImposable>460000</ValeurImposable>
+      <Preponderance>
+        <Privee>true</Privee>
+      </Preponderance>
+      <TypeLogement>
+        <Principal>true</Principal>
+      </TypeLogement>
+    </RenseignementGeneraux>
+    <ValeurLocative>
+      <Surface>180</Surface>
+      <AnneeConstruct_Transformation>2000</AnneeConstruct_Transformation>
+      <TypeHabitation>1</TypeHabitation>
+      <ReductionEnvironnement>2975</ReductionEnvironnement>
+      <ValeurLocativeIFD>26269</ValeurLocativeIFD>
+      <ValeurLocativeICC>18972</ValeurLocativeICC>
+      <ValeurLocativeICCEffective>18972</ValeurLocativeICCEffective>
+    </ValeurLocative>
+    <RevenusImmobiliers>
+      <Loyers>12000</Loyers>
+    </RevenusImmobiliers>
+    <Passifs>
+      <Interets>3000</Interets>
+      <Dette>450000</Dette>
+    </Passifs>
+    <FraisEntretien>
+      <ForfaitSimplifie>6194</ForfaitSimplifie>
+    </FraisEntretien>
+  </AnnexeImmeubles>
+  <AnnexeImmeubles identifiant="" noContribuable="10024519" noSequenceDI="01"
+    periode="2007" typeDocument="109" versionDocument="2.1.1">
+    <RenseignementGeneraux>
+      <PartPropriete denominateur="1" numerateur="1"/>
+      <AnneeConstruction>2001</AnneeConstruction>
+      <NoRegistreFoncier>123456</NoRegistreFoncier>
+      <LieuSituation>Aigle</LieuSituation>
+      <Canton>VD</Canton>
+      <ValeurImposable>110000</ValeurImposable>
+      <Preponderance>
+        <Commerciale>true</Commerciale>
+      </Preponderance>
+    </RenseignementGeneraux>
+    <ValeurLocative>
+      <Surface>75</Surface>
+      <AnneeConstruct_Transformation>2001</AnneeConstruct_Transformation>
+      <TypeHabitation>0.9</TypeHabitation>
+      <ValeurLocativeIFD>9747</ValeurLocativeIFD>
+      <ValeurLocativeICC>7039</ValeurLocativeICC>
+      <ValeurLocativeICCEffective>7039</ValeurLocativeICCEffective>
+    </ValeurLocative>
+    <RevenusImmobiliers>
+      <ValeurLocativeLocauxComm>11000</ValeurLocativeLocauxComm>
+    </RevenusImmobiliers>
+    <Passifs>
+      <Interets>1500</Interets>
+      <Dette>100000</Dette>
+    </Passifs>
+  </AnnexeImmeubles>
+  <FraisAcquisitionRevenu identifiant="" noContribuable="10024519"
+    noSequenceDI="01" periode="2007" typeDocument="109" versionDocument="2.1.1">
+    <Principal>
+      <DeductionsTransportRepas>
+        <Deduction>
+          <Du jour="01" mois="01"/>
+          <Au jour="31" mois="12"/>
+          <NombreJours>240</NombreJours>
+          <Domicile>Lausanne</Domicile>
+          <LieuTravail>Lausanne</LieuTravail>
+          <KmTransport>12</KmTransport>
+          <MoyenTransport>
+            <Voiture>true</Voiture>
+          </MoyenTransport>
+          <DeductionTransport>3744</DeductionTransport>
+          <DeductionRepas>3200</DeductionRepas>
+        </Deduction>
+      </DeductionsTransportRepas>
+      <AutresFrais>
+        <DeductionForfaitaire>2338</DeductionForfaitaire>
+      </AutresFrais>
+    </Principal>
+    <Epouse>
+      <DeductionsTransportRepas>
+        <Deduction>
+          <Du jour="01" mois="01"/>
+          <Au jour="31" mois="12"/>
+          <NombreJours>240</NombreJours>
+          <Domicile>Aigle</Domicile>
+          <LieuTravail>Lausanne</LieuTravail>
+          <KmTransport>4</KmTransport>
+          <MoyenTransport>
+            <TP>true</TP>
+          </MoyenTransport>
+          <DeductionTransport>1587</DeductionTransport>
+          <DeductionRepas>3200</DeductionRepas>
+        </Deduction>
+      </DeductionsTransportRepas>
+      <AutresFrais>
+        <DeductionForfaitaire>1900</DeductionForfaitaire>
+      </AutresFrais>
+    </Epouse>
+  </FraisAcquisitionRevenu>
+</DossierElectronique>

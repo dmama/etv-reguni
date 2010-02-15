@@ -1,0 +1,27 @@
+<assembly>
+	<id>release</id>
+	<formats>
+		<format>zip</format>
+	</formats>
+	<includeBaseDirectory>false</includeBaseDirectory>
+	<dependencySets>
+		<dependencySet>
+			<outputDirectory>lib</outputDirectory>
+			<scope>runtime</scope>
+		</dependencySet>
+	</dependencySets>
+	<files>
+		<file>
+			<source>src/main/scripts/dbuniteditor.sh</source>
+			<destName>dbuniteditor.sh</destName>
+		</file>
+		<file>
+			<!-- BEGIN_LVERSION -->
+			<source>target/uniregctb-tools-3.5.2.jar</source>
+			<!-- END_LVERSION -->
+			<outputDirectory>lib</outputDirectory>
+			<destName>uniregctb-tools.jar</destName>
+		</file>
+	</files>
+
+</assembly>

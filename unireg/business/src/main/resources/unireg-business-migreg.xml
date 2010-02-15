@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns:util="http://www.springframework.org/schema/util"
+		xsi:schemaLocation="http://www.springframework.org/schema/beans
+							http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+							http://www.springframework.org/schema/util
+							http://www.springframework.org/schema/util/spring-util-2.0.xsd">
+
+	<bean id="migregNbrInsertBeforeCommit" class="java.lang.String">
+		<constructor-arg value ="${migreg.nbrInsertBeforeCommit}" />
+	</bean>
+	<bean id="migregNbrThread" class="java.lang.String">
+		<constructor-arg value ="${migreg.nbrThread}" />
+	</bean>
+	<bean id="migregErrorsProcessing" class="java.lang.Boolean">
+		<constructor-arg value ="${migreg.errorsProcessing}" />
+	</bean>
+	<bean id="migregForceIndexationAtEnd" class="java.lang.Boolean">
+		<constructor-arg value ="${migreg.forceIndexationAtEnd}" />
+	</bean>
+	<bean id="migregForceTruncateDatabase" class="java.lang.Boolean">
+		<constructor-arg value ="${migreg.forceTruncateDatabase}" />
+	</bean>
+	<bean id="migregDateLimiteRepriseDataSourcier" class="java.lang.String">
+		<constructor-arg value ="${migreg.dateLimiteRepriseDataSourcier}" />
+	</bean>
+	<bean id="migregModeEssai" class="java.lang.Boolean">
+		<constructor-arg value ="${migreg.modeEssai}" />
+	</bean>
+	
+	<bean id="nomFichierRapprochement" class="java.lang.String">
+		<constructor-arg value ="${migreg.fichierRapprochementPmEmployeur}" />
+	</bean>
+
+	<bean id="hostMigrationManager" class="ch.vd.uniregctb.migreg.HostMigrationManager">
+		
+		<property name="dataSource" ref="dataSource"/>
+		<property name="tiersDAO" ref="tiersDAO"/>
+		<property name="migrationErrorDAO" ref="migrationErrorDAO" />
+		<property name="periodeFiscaleDAO" ref="periodeFiscaleDAO" />
+		<property name="modeleDocumentDAO" ref="modeleDocumentDAO" />
+		<property name="modeleFeuilleDocumentDAO" ref="modeleFeuilleDocumentDAO" />
+		<property name="adresseTiersDAO" ref="adresseTiersDAO" />
+		<property name="rapportEntreTiersDAO" ref="rapportEntreTiersDAO" />
+		<property name="droitAccesDAO" ref="droitAccesDAO" />
+		<property name="validationInterceptor" ref="validationInterceptor" />
+		
+		<property name="serviceCivilService" ref="serviceCivilService" />
+		<property name="serviceInfrastructureService" ref="serviceInfrastructureService" />
+		<property name="modificationLogInterceptor" ref="modificationLogInterceptor" />
+		
+		<property name="transactionManager" ref="transactionManager" />
+		<property name="sessionFactory" ref="sessionFactory" />
+		<property name="hibernateTemplate" ref="hibernateTemplate" />
+		
+		<property name="nbrInsertBeforeCommit" ref="migregNbrInsertBeforeCommit" />
+		<property name="nbrThread" ref="migregNbrThread" />
+		<property name="errorsProcessing" ref="migregErrorsProcessing" />
+		<property name="forceIndexationAtEnd" ref="migregForceIndexationAtEnd" />
+		<property name="dateLimiteRepriseDataSourcier" ref="migregDateLimiteRepriseDataSourcier" />
+		<property name="forceTruncateDatabase" ref="migregForceTruncateDatabase" />
+		<property name="modeEssai" ref="migregModeEssai" />
+		<property name="fichierRapprochement" ref="nomFichierRapprochement" />
+		
+		<property name="db2DataSource" ref="hostDataSourceDB2"/>
+		<property name="db2Schema" ref="db2Schema" />
+		
+		<property name="empDataSource" ref="empaciDataSource"/>
+
+		<property name="globalTiersIndexer" ref="globalTiersIndexer" />
+		<property name="oidInterceptor" ref="officeImpotHibernateInterceptor" />
+		<property name="tiersService" ref="tiersService" />
+
+		<!-- En attendat que SIPF ait une base stable, on utilise le host -->
+		<property name="isDbType" value="DB2"/>
+		<property name="isDataSource" ref="hostDataSourceDB2" />
+		<property name="isSchema" ref="db2Schema" />
+		<property name="isTablePrefix" value=""/>
+		
+		<property name="adresseService" ref="adresseService"/>
+
+		<!-- Propriétés pour le reprise IS -->
+		<!--
+		<property name="isDbType" value="ORACLE"/>
+		<property name="isDataSource" ref="isDataSource"/>
+		<property name="isSchema" value="REPRISE_IS"/>
+		<property name="isTablePrefix" value="DB2_"/>
+		-->
+		<!-- Propriétés pour la reprise IS - Scope des sourciers -->
+		<property name="isScopeDbType" value="ORACLE"/>
+		<property name="isScopeDataSource" ref="dataSource"/>
+		<property name="isScopeSchema" value="REPRISE_IS"/>
+		<property name="isScopeTablePrefix" value="UG_"/>
+	</bean>
+
+</beans>

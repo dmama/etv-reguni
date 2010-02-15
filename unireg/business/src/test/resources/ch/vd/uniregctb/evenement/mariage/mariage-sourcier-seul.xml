@@ -1,0 +1,80 @@
+<dataset>
+	<table name="TIERS">
+		<column>LOG_MDATE</column>
+		<column>NUMERO</column>
+		<column>TIERS_TYPE</column>
+		<column>NUMERO_INDIVIDU</column>
+		<column>DEBITEUR_INACTIF</column>
+		<row>
+			<value>2008-01-01</value>
+			<value>6791</value>
+			<value>Habitant</value>
+			<value>12345</value>
+			<value>0</value>
+		</row>
+	</table>
+	<table name="ADRESSE_TIERS">
+		<column>LOG_MDATE</column>
+		<column>ID</column>
+		<column>ADR_TYPE</column>
+		<column>TIERS_ID</column>
+		<column>DATE_DEBUT</column>
+		<column>NUMERO_MAISON</column>
+		<column>PERMANENTE</column>
+		<row>
+			<value>2008-01-01</value>
+			<value>5</value>
+			<value>AdresseSuisse</value>
+			<value>6791</value>
+			<value>20070112</value>
+			<value>8</value>
+			<value>0</value>
+		</row>
+	</table>
+
+
+	<table name="FOR_FISCAL">
+		<column>LOG_MDATE</column>
+		<column>ID</column>
+		<column>TIERS_ID</column>
+		<column>DATE_OUVERTURE</column>
+		<column>DATE_FERMETURE</column>
+		<column>MOTIF_RATTACHEMENT</column>
+		<column>TYPE_AUT_FISC</column>
+		<column>NUMERO_OFS</column>
+		<column>GENRE_IMPOT</column>
+		<column>FOR_TYPE</column>
+		<row>
+			<value>2008-01-01</value>
+			<value>100005</value>
+			<value>6791</value>
+			<value>20070101</value>
+			<null />
+			<null />
+			<value>COMMUNE_HC</value>
+			<value>261</value>
+			<value>REVENU_FORTUNE</value>
+			<value>ForFiscalPrincipal</value>
+		</row>
+	</table>
+	<table name="EVENEMENT_CIVIL_UNITAIRE">
+		<column>LOG_MDATE</column>
+		<column>ID</column>
+		<column>TYPE</column>
+		<column>DATE_EVENEMENT</column>
+		<column>NUMERO_INDIVIDU</column>
+		<column>NUMERO_OFS_ANNONCE</column>
+		<column>ETAT</column>
+		<row>
+			<value>2008-01-01</value>
+			<value>9001</value>
+			<value>MARIAGE</value>
+			<value>19791025</value>
+			<value>123456789</value>
+			<value>1010</value>
+			<value>TRAITE</value>
+		</row>
+	</table>
+</dataset>
+
+

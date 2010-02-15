@@ -1,0 +1,348 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd">
+
+	<!-- Multipart Resolver, necessaire pour l'upload de fichier -->
+	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<property name="maxUploadSize" value="20485760" />
+	</bean>
+
+	<!-- Message source: Le .properties utilisé pour les messages dans les JSP et servlet -->
+	<bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+		<property name="basenames">
+			<list>
+				<value>classpath:UniregLabelResources</value>
+				<value>classpath:UniregOptionResources</value>
+				<value>classpath:UniregButtonResources</value>
+				<value>classpath:UniregErrorResources</value>
+			</list>
+		</property>
+		<property name="defaultEncoding" value="UTF-8" />
+		<property name="useCodeAsDefaultMessage" value="true" />
+	</bean>
+
+
+	<bean id="URLListController" class="ch.vd.uniregctb.common.URLListController">
+		<property name="commandClass" value="java.lang.Object" />
+		<property name="commandName" value="command" />
+		<property name="formView" value="index" />
+		<property name="successView" value="index" />
+	</bean>
+
+	<!--  xt-Spring configuration -->
+	
+	<bean id="ajaxAutoCompleteHandler" class="ch.vd.uniregctb.web.xt.handler.AutoCompleteHandler">
+		<property name="serviceInfrastructureService" ref="serviceInfrastructureService" />
+		<property name="serviceSecuriteService" ref="serviceSecuriteService" />
+    </bean>
+    
+    <bean id="ajaxToolTipHandler" class="ch.vd.uniregctb.web.xt.handler.ToolTipHandler" />
+    
+    <bean id="ajaxTabulationHandler" class="ch.vd.uniregctb.web.xt.handler.TabulationHandler" />
+    
+    <bean id="ajaxMotifsForHandler" class="ch.vd.uniregctb.web.xt.handler.MotifsForHandler">
+    	<property name="tiersDAO" ref="tiersDAO" />
+    </bean>
+    
+    <bean id="ajaxPostItHandler" class="ch.vd.uniregctb.web.xt.handler.PostItHandler" >
+		<property name="tacheService" ref="tacheService" />
+    </bean>
+    
+    <bean id="ajaxCivilDataHandler" class="ch.vd.uniregctb.web.xt.handler.CivilDataHandler" >
+		<property name="civilDataManager" ref="civilDataManager" />
+    </bean>
+    <bean id="ajaxAdresseDataHandler" class="ch.vd.uniregctb.web.xt.handler.AdresseDataHandler" >
+		<property name="adresseDataManager" ref="adresseDataManager" />
+		<property name="serviceInfra" ref="serviceInfrastructureService" />
+    </bean>
+    
+    <bean id="dataAccessor" class="ch.vd.uniregctb.web.xt.handler.DataAccessor" />
+    
+	<bean id="ajaxInterceptor" class="org.springmodules.xt.ajax.AjaxInterceptor">
+        <property name="handlerMappings">
+            <props>
+                <prop key="/**/*.do">ajaxAutoCompleteHandler,ajaxToolTipHandler,ajaxTabulationHandler,ajaxMotifsForHandler,ajaxPostItHandler,ajaxCivilDataHandler,ajaxAdresseDataHandler</prop>
+                <prop key="/admin/evenementExterne/main.do">evenementExterneController</prop>
+                <prop key="/admin/evenementExterne/quittancement.do">quittancementController</prop>                              
+                <prop key="/admin/evenementExterne/rapporttravail.do">rapportTravailController</prop>
+                <prop key="/admin/evenementExterne/evolution.do">evolutionController</prop>
+                <prop key="/admin/evenementExterne/civilunitaire.do">civilUnitaireController</prop>
+                <prop key="/admin/batch.do">gestionBatchController</prop>
+                <prop key="/admin/status.do">infoController</prop>
+                <prop key="/admin/norentes.do">norentesController</prop>
+            </props>
+        </property>
+        <property name="formDataAccessor" ref="dataAccessor" />
+    </bean>
+    
+	<bean id="openSessionInViewInterceptor" class="org.springframework.orm.hibernate3.support.OpenSessionInViewInterceptor">
+		<property name="sessionFactory">
+			<ref bean="sessionFactory" />
+		</property>
+	</bean>
+
+	<!-- default view -->
+	<bean id="urlMapping" class="org.springframework.web.servlet.mvc.support.ControllerClassNameHandlerMapping" />
+	
+	<bean id="simpleUrlMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+		<property name="interceptors">
+            <list>
+            	<ref bean="ajaxInterceptor"/>
+                <ref bean="openSessionInViewInterceptor"/>
+            </list>
+        </property>
+		<property name="urlMap">
+			<map>
+				<!-- Base -->
+				<entry key="/index.do" value-ref="indexController" />
+				<entry key="/logoutIAM.do" value-ref="logoutController" />
+				<entry key="/chooseOID.do" value-ref="oidController" />
+				<entry key="/authenticationFailed.do" value-ref="authenticationController" />
+				<entry key="/404.do" value-ref="notFoundController" />
+				<entry key="/403.do" value-ref="page403Controller" />
+				<entry key="/error.do" value-ref="errorController" />
+				<!-- Admin -->
+				<entry key="/admin/status.do" value-ref="infoController" />
+				<entry key="/admin/ifosec.do" value-ref="infoIFOSecController" />
+				<entry key="/admin/batch.do" value-ref="gestionBatchController" />
+				<entry key="/admin/audit.do" value-ref="auditLogController" />
+				<entry key="/admin/performance.do" value-ref="servicePerformanceController" />
+				<!--
+				<entry key="/admin/tracing.do" value-ref="gestionTracingController" />
+				-->			
+				<!-- Testing -->
+				<entry key="/admin/tiersImport.do" value-ref="tiersImportController" />
+				<entry key="/admin/indexation.do" value-ref="gestionIndexationController" />
+				<entry key="/admin/dbdump.do" value-ref="databaseDumpController" />
+				<entry key="/admin/evenementExterne/main.do" value-ref="evenementExterneController" />
+				<entry key="/admin/evenementExterne/quittancement.do" value-ref="quittancementController" />
+				<entry key="/admin/evenementExterne/rapporttravail.do" value-ref="rapportTravailController" />
+				<entry key="/admin/evenementExterne/evolution.do" value-ref="evolutionController" />
+				<entry key="/admin/evenementExterne/civilunitaire.do" value-ref="civilUnitaireController" />
+				<entry key="/admin/norentes.do" value-ref="norentesController" />
+				
+				<!-- Paramétrage -->
+				<entry key="/param/application.do" value-ref="paramApplicationController" />
+				<entry key="/param/periode.do" value-ref="paramPeriodeController" />
+				<entry key="/param/init-periode.do" value-ref="initPeriodeController" />
+				<entry key="/param/parametres-pf-edit.do" value-ref="paramParametrePeriodeFiscaleEditController" />
+				<entry key="/param/modele-add.do" value-ref="paramModeleDocumentAddController" />
+				<entry key="/param/modele-suppr.do" value-ref="paramModeleDocumentSupprController" />
+				<entry key="/param/feuille-add.do" value-ref="paramModeleFeuilleDocumentAddController" />
+				<entry key="/param/feuille-suppr.do" value-ref="paramModeleFeuilleDocumentSupprController" />
+				<entry key="/param/feuille-edit.do" value-ref="paramModeleFeuilleDocumentEditController" />
+				
+				<!-- Tiers - display -->
+				<entry key="/tiers/list.do" value-ref="tiersListController" />
+				<entry key="/tiers/launchcat.do" value-ref="tiersLaunchCatController" />
+				<entry key="/tiers/visu.do" value-ref="tiersVisuController" />
+				<entry key="/tiers/timeline.do" value-ref="tiersTimelineController" />
+				<entry key="/tiers/lr.do" value-ref="lrVisuController" />
+				<entry key="/tiers/di.do" value-ref="diVisuController" />
+				<entry key="/fiscal/for.do" value-ref="tiersForController" />
+				<entry key="/adresses/adresse.do" value-ref="tiersAdresseController" />
+				<entry key="/tiers/rapport.do" value-ref="tiersRapportController" />
+				<entry key="/fiscal/situation-famille.do" value-ref="tiersSituationFamilleController" />
+				<entry key="/tiers/mouvement.do" value-ref="mouvementVisuController" />
+				
+				<entry key="/fiscal/edit.do" value-ref="fiscalEditController" />
+				<entry key="/fiscal/edit-for-debiteur.do" value-ref="fiscalEditForDebiteurController" />
+				<entry key="/adresses/edit.do" value-ref="adressesEditController" />
+				<entry key="/complement/edit.do" value-ref="complementEditController" />
+				<entry key="/civil/edit.do" value-ref="civilEditController" />
+				<entry key="/dossiers-apparentes/edit.do" value-ref="dossiersApparentesEditController" />
+				<entry key="/rapports-prestation/edit.do" value-ref="rapportsPrestationEditController" />
+				<entry key="/debiteurs/edit.do" value-ref="debiteursEditController" />
+				<entry key="/contribuable-associe/list.do" value-ref="contribuableAssocieListController" />
+				<entry key="/contribuable-associe/edit.do" value-ref="contribuableAssocieEditController" />
+				<!-- Tiers - edit -->
+				<entry key="/tiers/edit.do" value-ref="tiersEditController" />
+				<!-- Evenements -->
+				<entry key="/evenement/list.do" value-ref="evenementListController" />	
+				<entry key="/evenement/visu.do" value-ref="evenementVisuController" />
+				<!-- LR -->
+				<entry key="/lr/list.do" value-ref="lrListController" />
+				<entry key="/lr/edit.do" value-ref="lrEditController" />
+				<entry key="/lr/edit-debiteur.do" value-ref="lrEditDebiteurController" />
+				<entry key="/lr/delai.do" value-ref="lrEditDelaiController" />
+				<!-- Rapport Prestation -->
+				<entry key="/rt/list-debiteur.do" value-ref="debiteurListController" />
+				<entry key="/rt/list-sourcier.do" value-ref="sourcierListController" />
+				<entry key="/rt/edit.do" value-ref="rapportPrestationEditController" />
+				<!-- Rapport entre tiers -->
+				<entry key="/rapport/list.do" value-ref="rapportListController" />
+				<entry key="/rapport/edit.do" value-ref="rapportEditController" />
+				<!-- Fusion -->
+				<!-- La fusion est désactivée -->
+				<!-- 
+				<entry key="/fusion/list-non-habitant.do" value-ref="nonHabitantListController" />
+				<entry key="/fusion/list-habitant.do" value-ref="habitantListController" />
+				<entry key="/fusion/recap.do" value-ref="fusionRecapController" />
+				-->
+				<!-- Couple -->
+				<entry key="/couple/list-pp.do" value-ref="personnePhysiqueListController" />
+				<entry key="/couple/recap.do" value-ref="coupleRecapController" />
+				<entry key="/couple/list-ctb.do" value-ref="contribuableListController"/>
+				<!-- Annulation Couple -->
+				<entry key="/annulation/couple/list.do" value-ref="annulationCoupleListController" />
+				<entry key="/annulation/couple/recap.do" value-ref="annulationCoupleRecapController" />
+				<!-- Separation -->
+				<entry key="/separation/list.do" value-ref="separationListController" />
+				<entry key="/separation/recap.do" value-ref="separationRecapController" />
+				<!-- Annulation Separation -->
+				<entry key="/annulation/separation/list.do" value-ref="annulationSeparationListController" />
+				<entry key="/annulation/separation/recap.do" value-ref="annulationSeparationRecapController" />
+				<!-- Deces -->
+				<entry key="/deces/list.do" value-ref="decesListController" />
+				<entry key="/deces/recap.do" value-ref="decesRecapController" />
+				<!-- Annulation deces -->
+				<entry key="/annulation/deces/list.do" value-ref="annulationDecesListController" />
+				<entry key="/annulation/deces/recap.do" value-ref="annulationDecesRecapController" />
+				<!-- DI -->
+				<entry key="/di/edit.do" value-ref="diEditController" />
+				<entry key="/di/delai.do" value-ref="diEditDelaiController" />
+				<entry key="/di/impression.do" value-ref="diImpressionController" />
+				<!-- Mouvements de dossier -->
+				<entry key="/mouvement/edit-contribuable.do" value-ref="mouvementEditContribuableController" />
+				<entry key="/mouvement/edit.do" value-ref="mouvementEditController" />
+				<!-- Mouvements de dossier de masse -->
+				<entry key="/mouvement/consulter.do" value-ref="mouvementMasseConsultationController"/>
+				<entry key="/mouvement/traiter.do" value-ref="mouvementMasseTraitementController"/>
+				<entry key="/mouvement/imprimer-bordereaux.do" value-ref="mouvementMasseImpressionBordereauxController"/>
+				<entry key="/mouvement/detail-bordereau.do" value-ref="mouvementMasseDetailBordereauController"/>
+				<entry key="/mouvement/receptionner-bordereaux.do" value-ref="mouvementMasseReceptionBordereauxController"/>
+				<entry key="/mouvement/detail-reception-bordereau.do" value-ref="mouvementMasseDetailReceptionBordereauController"/>
+				<!-- Tâches en instance / Nouveaux dossiers -->
+				<entry key="/tache/list.do" value-ref="tacheListController" />
+				<entry key="/tache/list-nouveau-dossier.do" value-ref="nouveauDossierListController" />
+				<!-- Accès -->
+				<entry key="/acces/list-pp.do" value-ref="dossierListController" />
+				<entry key="/acces/restrictions-pp.do" value-ref="dossierEditRestrictionController" />
+				<entry key="/acces/edit-acces-pp.do" value-ref="droitAccesEditController" />
+				<entry key="/acces/select-utilisateur.do" value-ref="selectUtilisateurController" />
+				<entry key="/acces/restrictions-utilisateur.do" value-ref="utilisateurEditRestrictionController" />
+				<entry key="/acces/list-pp-utilisateur.do" value-ref="utilisateurListPersonneController" />
+				<entry key="/acces/recap-pp-utilisateur.do" value-ref="recapPersonneUtilisateurController" />
+				<entry key="/acces/select-utilisateurs.do" value-ref="selectUtilisateursController" />
+				<entry key="/acces/confirm-copie.do" value-ref="confirmCopieController" />
+				<!-- Consult log -->
+				<entry key="/common/consult-log.do" value-ref="consultLogController" />
+				<!-- Documents -->
+				<entry key="/common/docs.do" value-ref="documentController" />
+				<!-- Annulation / Réactivation -->
+				<entry key="/activation/list.do" value-ref="tiersActivationListController" />
+				<entry key="/activation/remplacement/list.do" value-ref="tiersRemplacementListController" />
+				<entry key="/activation/annulation/recap.do" value-ref="tiersAnnulationRecapController" />
+				<entry key="/activation/reactivation/recap.do" value-ref="tiersReactivationRecapController" />
+				<!-- Identification CTB -->
+				<entry key="/identification/gestion-messages/listEnCours.do" value-ref="identificationMessagesListEnCoursController" />
+				<entry key="/identification/gestion-messages/list.do" value-ref="identificationMessagesListController" />
+				<entry key="/identification/gestion-messages/edit.do" value-ref="identificationMessagesEditController" />
+				<entry key="/identification/tableau-bord/stats.do" value-ref="identificationMessagesStatsController" />
+				<entry key="/identification/gestion-messages/listTraite.do" value-ref="identificationMessagesListTraiteController" />
+				<entry key="/identification/gestion-messages/nonIdentifie.do" value-ref="identificationMessagesNonIdentifieController" />
+				</map>
+		</property>
+	</bean>
+	
+	<bean id="notFoundController" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+		<property name="viewName" value="errors/404" />
+	</bean>
+	
+	
+	<bean id="page403Controller" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+		<property name="viewName" value="errors/403" />
+	</bean>
+	
+	<bean id="errorController" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+		<property name="viewName" value="errors/error" />
+	</bean>
+	
+	<bean id="indexController" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+		<property name="viewName" value="redirect:/tiers/list.do" />
+	</bean>
+	<bean id="oidController" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+		<property name="viewName" value="security/chooseOID" />
+	</bean>
+	<bean id="authenticationController" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
+		<property name="viewName" value="security/authenticationFailed" />
+	</bean>
+	<bean id="logoutController" class="ch.vd.uniregctb.common.LogoutController">
+		<property name="uniregProperties" ref="uniregExternalProperties" />
+	</bean>
+
+	<!-- View Resolver -->
+	<bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="viewClass" value="org.springframework.web.servlet.view.JstlView" />
+		<property name="prefix" value="/WEB-INF/jsp/" />
+		<property name="suffix" value=".jsp" />
+	</bean>
+	
+	<!-- Exception Resolver -->
+	<bean id="exceptionResolver" class="ch.vd.uniregctb.common.NotifyingExceptionResolver">
+		<property name="exceptionMappings">
+			<map>
+				<!-- En cas de problème de connexion, on renvoie vers la JSP jdbcConnection.jsp -->
+				<entry key="weblogic.common.resourcepool.ResourceLimitException" value="errors/jdbcConnection" />
+				<entry key="org.springframework.jdbc.UncategorizedSQLException" value="errors/jdbcConnection" />
+				<!-- Erreurs spécifique au service civil -->
+				<entry key="ch.vd.uniregctb.interfaces.service" value="errors/errorServiceCivil" />
+				<entry key="ch.vd.uniregctb.interfaces.InterfaceDataException" value="errors/errorDataInterface" />
+				<!-- En cas d'exception inattendue, on renvoie vers la JSP error.jsp -->
+				<entry key="java.lang.Exception" value="errors/error" />
+				<entry key="ch.vd.uniregctb.security.AccessDeniedException" value="errors/accessDeniedIHM" />
+				<entry key="ch.vd.uniregctb.common.NotImplementedException" value="errors/notImplemented" />
+				<entry key="ch.vd.uniregctb.common.EditiqueCommunicationException" value="errors/editique" />
+				<entry key="ch.vd.uniregctb.common.ObjectNotFoundException" value="errors/objectNotFound" />
+				<entry key="ch.vd.uniregctb.adresse.AdressesResolutionException" value="errors/adressesResolution" />
+				<entry key="ch.vd.uniregctb.common.DonneesCivilesException" value="errors/donneesCiviles" />
+				<entry key="ch.vd.uniregctb.webservice.sipf.BVRPlusClientException" value="errors/bvrplus" />
+				<entry key="ch.vd.uniregctb.editique.print.PrintPCLException" value="errors/errorPrintPCL" />
+				<entry key="org.springframework.orm.hibernate3.HibernateOptimisticLockingFailureException" value="errors/optimisticLockingFailure" />
+			</map>
+		</property>
+		<property name="notificationService" ref="emailNotificationService" />
+	    <property name="applicationName" value="Unireg ${pom.version}" />
+		
+	</bean>
+
+  	<bean id="hostCivilService" class="ch.vd.uniregctb.individu.HostCivilServiceImpl">
+		<property name="serviceCivilService" ref="serviceCivilService" />
+	</bean>
+	
+  	<bean id="hostPersonneMoraleService" class="ch.vd.uniregctb.entreprise.HostPersonneMoraleServiceImpl">
+		<property name="servicePersonneMoraleService" ref="servicePersonneMoraleService" />
+	</bean>
+
+	<bean id="abstractSimpleFormController" abstract="true" class="ch.vd.uniregctb.common.AbstractSimpleFormController">
+	</bean>
+
+    <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+    	<property name="host" value="smtp.vd.ch"/>
+    </bean>
+
+    <!-- this is a template message that we can pre-load with default state -->
+    <bean id="templateMessage" class="org.springframework.mail.SimpleMailMessage">
+	    <property name="to" value="${extprop.exception.notification.email}"/>
+	    <property name="from" value="unireg-application@vd.ch"/>
+	    <property name="subject" value="Une exception est survenue sur Unireg ${pom.version}"/>
+    </bean>
+
+    <bean id="emailNotificationService" class="ch.vd.uniregctb.common.EmailNotificationService">
+	    <constructor-arg><ref bean="mailSender"/></constructor-arg>
+	    <constructor-arg><ref bean="templateMessage"/></constructor-arg>
+    </bean>
+    
+    <bean id="jspTagInfra" class="ch.vd.uniregctb.taglibs.JspTagInfra" >
+		<property name="service" ref="serviceInfrastructureService" />
+    </bean>
+    
+    <bean id="jspTagRaccourci" class="ch.vd.uniregctb.taglibs.JspTagRaccourci">
+    </bean>
+    
+    <bean id="printPCLManager" class="ch.vd.uniregctb.print.PrintPCLManagerImpl" >
+     	<property name="localApp" value="${extprop.editique.localapp}" />
+    </bean>
+    
+</beans>

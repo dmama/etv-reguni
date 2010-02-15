@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd">
+	
+	<!-- Fichiers de config des proprietes extprop.xxx -->
+	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PreferencesPlaceholderConfigurer">
+		<property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE" />
+		<property name="ignoreResourceNotFound" value="false" />
+		<property name="ignoreUnresolvablePlaceholders" value="false" />
+		<property name="location" value="file:${ch.vd.appDir}/${unireg.appname}/config/unireg-interfaces.properties" />
+	</bean>
+	
+	<bean id="evenementFiscalFacade" class="ch.vd.uniregctb.evenement.fiscal.jms.mock.MockEvenementFiscalFacade" >
+	</bean>
+	
+	<bean id="docService" class="ch.vd.uniregctb.document.DocumentServiceImpl" lazy-init="true">
+		<property name="hibernateTemplate" ref="hibernateTemplate" />
+			<property name="repository" value=""/>
+	</bean>
+	
+	<bean id="identCtbMessageHandler" class="ch.vd.uniregctb.evenement.identification.contribuable.MockIdentificationContribuableMessageHandler">
+	</bean>
+	
+		<!-- Bean client editiqueService MOCK -->
+	<bean id="editiqueService" class="ch.vd.uniregctb.editique.mock.MockEditiqueService">
+	</bean>
+	<bean id="bvrPlusClient" class="ch.vd.uniregctb.webservice.sipf.MockBVRPlusClient" />
+	<bean id="globalTiersIndexer" class="ch.vd.uniregctb.indexer.tiers.ZeroTiersIndexerImpl"/>
+	
+	<!-- File based -->
+	<bean id="fileGlobalIndexDirectory" class="ch.vd.uniregctb.indexer.jdbc.FSDirectoryProvider" lazy-init="true">
+		<constructor-arg value="" />
+	</bean>	
+	<bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+    	<property name="host" value="smtp.vd.ch"/>
+    </bean>
+   
+   <bean id="ehCacheManager" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">
+	  <property name="configLocation" value="file:${extprop.ehcache.file}" />
+	</bean>
+	
+	<bean id="ignoreI107UserIds" class="java.lang.String">
+		<constructor-arg value="${ignore.i107.userIds}" />
+	</bean>
+	
+	<bean id="log4jInitialization"	class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+		<property name="targetClass" value="org.springframework.util.Log4jConfigurer"/>
+		<property name="targetMethod" value="initLogging" />
+		<property name="arguments">
+					<list>
+				<value>${unireg.log4j.location}</value>
+			</list>
+		</property>
+	</bean>
+	
+</beans>

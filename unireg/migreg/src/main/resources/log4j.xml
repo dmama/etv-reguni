@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+
+	<appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
+		<param name="Threshold" value="INFO" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="[migreg] %-5p [%d{yyyy-MM-dd HH:mm:ss.SSS}] [%8.8t] %c{1}.%M(%L) | %m%n" />
+		</layout>
+	</appender>
+	
+	<appender name="LOGFILE"
+		class="org.apache.log4j.RollingFileAppender">
+		<param name="Threshold" value="DEBUG" />
+		<param name="Append" value="false" />
+		<param name="File" value="migreg.log" />
+		<!--  1Gb de logs -->
+		<param name="MaxFileSize" value="20000KB" />
+		<param name="MaxBackupIndex" value="50" />
+		<!--  1Gb de logs -->
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern"
+				value="[migreg] %-5p [%d{yyyy-MM-dd HH:mm:ss.SSS}] [%8.8t] %c{1}.%M(%L) | %m%n" />
+		</layout>
+	</appender>
+	
+	<appender name="RAPPORTFILE" class="org.apache.log4j.FileAppender">		
+		<param name="Append" value="false" />
+		<param name="File" value="RapportMigrationEmployeur.csv" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%m%n" />
+		</layout>
+		<filter class="org.apache.log4j.varia.LevelMatchFilter">
+			<param name="levelToMatch" value="INFO" />
+		</filter>
+		<filter class="org.apache.log4j.varia.DenyAllFilter" />		
+	</appender>
+	<appender name="RAPPORTLRFILE" class="org.apache.log4j.FileAppender">		
+		<param name="Append" value="false" />
+		<param name="File" value="RapportMigrationLR.csv" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%m%n" />
+		</layout>
+		<filter class="org.apache.log4j.varia.LevelMatchFilter">
+			<param name="levelToMatch" value="INFO" />
+		</filter>
+		<filter class="org.apache.log4j.varia.DenyAllFilter" />		
+	</appender>
+	<appender name="RAPPORTDROITACCESFILE" class="org.apache.log4j.FileAppender">		
+		<param name="Append" value="false" />
+		<param name="File" value="RapportMigrationDroitAcces.csv" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%m%n" />
+		</layout>
+		<filter class="org.apache.log4j.varia.LevelMatchFilter">
+			<param name="levelToMatch" value="INFO" />
+		</filter>
+		<filter class="org.apache.log4j.varia.DenyAllFilter" />		
+	</appender>
+	
+	<appender name="REJETDROITACCESFILE" class="org.apache.log4j.FileAppender">		
+		<param name="Append" value="false" />
+		<param name="File" value="RejetMigrationDroitAcces.csv" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%m%n" />
+		</layout>
+		<filter class="org.apache.log4j.varia.LevelMatchFilter">
+			<param name="levelToMatch" value="INFO" />
+		</filter>
+		<filter class="org.apache.log4j.varia.DenyAllFilter" />		
+	</appender>
+	<appender name="RAPPORTESSAIFILE" class="org.apache.log4j.FileAppender">		
+		<param name="Append" value="false" />
+		<param name="File" value="RapportEmployeurAControler.csv" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%m%n" />
+		</layout>
+		<filter class="org.apache.log4j.varia.LevelMatchFilter">
+			<param name="levelToMatch" value="INFO" />
+		</filter>
+		<filter class="org.apache.log4j.varia.DenyAllFilter" />		
+	</appender>
+	
+	<appender name="REJETFILE" class="org.apache.log4j.FileAppender">		
+		<param name="Append" value="false" />
+		<param name="File" value="RejetMigrationEmployeur.csv" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%m%n" />
+		</layout>
+		<filter class="org.apache.log4j.varia.LevelMatchFilter">
+			<param name="levelToMatch" value="INFO" />
+		</filter>
+		<filter class="org.apache.log4j.varia.DenyAllFilter" />		
+	</appender>
+	
+	<appender name="HBADAVSFILE" class="org.apache.log4j.FileAppender">		
+		<param name="Append" value="false" />
+		<param name="File" value="sourcierHabitantAVSIncorrect.csv" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%m%n" />
+		</layout>
+		<filter class="org.apache.log4j.varia.LevelMatchFilter">
+			<param name="levelToMatch" value="INFO" />
+		</filter>
+		<filter class="org.apache.log4j.varia.DenyAllFilter" />		
+	</appender>
+	<appender name="NHBADAVSFILE" class="org.apache.log4j.FileAppender">		
+		<param name="Append" value="false" />
+		<param name="File" value="sourcierNonHabitantAVSIncorrect.csv" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%m%n" />
+		</layout>
+		<filter class="org.apache.log4j.varia.LevelMatchFilter">
+			<param name="levelToMatch" value="INFO" />
+		</filter>
+		<filter class="org.apache.log4j.varia.DenyAllFilter" />		
+	</appender>
+	
+	<appender name="RAPPORTSOURCIERFILE" class="org.apache.log4j.FileAppender">		
+		<param name="Append" value="false" />
+		<param name="File" value="RapportMigrationSourcier.csv" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%m%n" />
+		</layout>
+		<filter class="org.apache.log4j.varia.LevelMatchFilter">
+			<param name="levelToMatch" value="INFO" />
+		</filter>
+		<filter class="org.apache.log4j.varia.DenyAllFilter" />		
+	</appender>
+	<appender name="ALERTESOURCIERFILE" class="org.apache.log4j.FileAppender">		
+		<param name="Append" value="false" />
+		<param name="File" value="AlerteMigrationSourcier.csv" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%m%n" />
+		</layout>
+		<filter class="org.apache.log4j.varia.LevelMatchFilter">
+			<param name="levelToMatch" value="INFO" />
+		</filter>
+		<filter class="org.apache.log4j.varia.DenyAllFilter" />		
+	</appender>
+	
+	<appender name="DOUBLONFILE" class="org.apache.log4j.FileAppender">		
+		<param name="Append" value="false" />
+		<param name="File" value="SourcierEnDoublon.csv" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%m%n" />
+		</layout>
+		<filter class="org.apache.log4j.varia.LevelMatchFilter">
+			<param name="levelToMatch" value="ERROR" />
+		</filter>
+		<filter class="org.apache.log4j.varia.DenyAllFilter" />		
+	</appender>
+	
+
+	<logger name="ch.vd.uniregctb">
+		<level value="INFO" />
+	</logger>
+	<logger name="ch.vd.uniregctb.migreg">
+		<level value="DEBUG" />
+	</logger>
+	<logger name="ch.vd.uniregctb.migreg.sqllog">
+		<level value="DEBUG" />
+	</logger>
+	<logger name="ch.vd.uniregctb.migreg.HostEmployeurMigrator.Rapport" additivity="false">
+		<level value="INFO" />
+		<appender-ref ref="RAPPORTFILE"/>		
+	</logger>
+	<logger name="ch.vd.uniregctb.migreg.HostEmployeurMigrator.RapportLR" additivity="false">
+		<level value="INFO" />
+		<appender-ref ref="RAPPORTLRFILE"/>		
+	</logger>
+	<logger name="ch.vd.uniregctb.migreg.HostSourcierMigrator.Rapport" additivity="false">
+		<level value="INFO" />
+		<appender-ref ref="RAPPORTSOURCIERFILE"/>		
+	</logger>
+	<logger name="ch.vd.uniregctb.migreg.HostSourcierAvs.HBadAvs" additivity="false">
+		<level value="INFO" />
+		<appender-ref ref="HBADAVSFILE"/>		
+	</logger>
+	<logger name="ch.vd.uniregctb.migreg.HostSourcierAvs.NHBadAvs" additivity="false">
+		<level value="INFO" />
+		<appender-ref ref="NHBADAVSFILE"/>		
+	</logger>
+	
+	<logger name="ch.vd.uniregctb.migreg.HostDroitAccesMigrator.Rapport" additivity="false">
+		<level value="INFO" />
+		<appender-ref ref="RAPPORTDROITACCESFILE"/>		
+	</logger>
+	<logger name="ch.vd.uniregctb.migreg.HostDroitAccesMigrator.Rejet" additivity="false">
+		<level value="INFO" />
+		<appender-ref ref="REJETDROITACCESFILE"/>		
+	</logger>
+	<logger name="ch.vd.uniregctb.migreg.HostEmployeurMigrator.Rejet" additivity="false">
+		<level value="INFO" />
+		<appender-ref ref="REJETFILE"/>		
+	</logger>	
+	<logger name="ch.vd.uniregctb.migreg.HostSourcierMigrator.Rejet" additivity="false">
+		<level value="INFO" />
+		<appender-ref ref="ALERTESOURCIERFILE"/>		
+	</logger>
+	<logger name="ch.vd.uniregctb.migreg.HostEmployeurMigrator.Essai" additivity="false">
+		<level value="INFO" />
+		<appender-ref ref="RAPPORTESSAIFILE"/>		
+	</logger>
+	
+	<logger name="ch.vd.uniregctb.migreg.HostSourcierMigrator.Doublon" additivity="false">
+		<level value="ERROR" />
+		<appender-ref ref="DOUBLONFILE"/>		
+	</logger>
+
+	<logger name="net.sf.ehcache">
+		<level value="ERROR" />
+	</logger>
+
+	<logger name="org.dbunit">
+		<level value="INFO" />
+	</logger>
+
+	<!-- Suppress success logging from InteractiveAuthenticationSuccessEvent -->
+	<logger name="org.acegisecurity">
+		<level value="ERROR" />
+	</logger>
+
+	<logger name="org.apache">
+		<level value="WARN" />
+	</logger>
+
+	<logger name="org.hibernate">
+		<level value="WARN" />
+	</logger>
+
+	<logger name="org.hibernate.SQL">
+		<level value="WARN" />
+	</logger>
+
+	<logger name="org.springframework">
+		<level value="INFO" />
+	</logger>
+
+
+	<root>
+		<level value="INFO" />
+		<appender-ref ref="CONSOLE" />
+		<appender-ref ref="LOGFILE" />
+	</root>
+
+</log4j:configuration>

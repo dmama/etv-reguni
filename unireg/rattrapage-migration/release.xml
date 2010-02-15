@@ -1,0 +1,43 @@
+<assembly>
+	<id>release</id>
+	<formats>
+		<format>zip</format>
+	</formats>
+	<includeBaseDirectory>false</includeBaseDirectory>
+	<dependencySets>
+		<dependencySet>
+			<outputDirectory>lib</outputDirectory>
+			<scope>runtime</scope>
+		</dependencySet>
+	</dependencySets>
+	<files>
+		<file>
+			<source>src/main/scripts/rattrapage.sh</source>
+			<destName>rattrapage.sh</destName>
+		</file>		
+		<file>
+			<source>src/main/scripts/build.xml</source>
+			<destName>build.xml</destName>
+		</file>
+		<file>
+			<source>src/main/resources/log4j.xml</source>
+			<destName>log4j.xml</destName>
+		</file>
+		<file>
+			<source>src/main/resources/ehcache.xml</source>
+			<destName>ehcache.xml</destName>
+		</file>
+		<file>
+			<source>target/classes/rattrapage.properties</source>
+			<destName>rattrapage.properties</destName>
+		</file>
+		<file>
+			<!-- BEGIN_LVERSION -->
+			<source>target/uniregctb-rattrapage-migration-3.5.2.jar</source>
+			<!-- END_LVERSION -->
+			<outputDirectory>lib</outputDirectory>
+			<destName>uniregctb-rattrapage-migration.jar</destName>
+		</file>
+	</files>
+
+</assembly>

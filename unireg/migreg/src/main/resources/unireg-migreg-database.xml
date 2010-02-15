@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd">
+
+	<!-- Audit -->
+	<bean id="auditManager" class="ch.vd.uniregctb.audit.AuditManager">
+		<property name="auditLineDAO" ref="auditLineDAO" />
+		<!-- BEGIN_LVERSION -->
+		<property name="appName" value="Migreg (version 3.5.2)" />
+		<!-- END_LVERSION -->
+	</bean>
+
+	<!-- Transaction manager -->
+
+	<bean id="transactionManager" class="org.jencks.factory.TransactionManagerFactoryBean">
+		<property name="transactionLogDir" value="target/txlog"/>
+		<property name="defaultTransactionTimeoutSeconds" value="86400"/>
+	</bean>
+
+	<!-- Datasource Oracle UniregCTB -->
+	<bean id="dataSource" class="org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy">
+		<property name="targetDataSource" ref="rawDataSource" />
+	</bean>
+
+	<!-- Datasource Oracle UniregCTB -->
+	<bean id="rawDataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+		<property name="driverClassName" value="${jdbc.driverClassName}" />
+		<property name="url" value="${extmigreg.jdbc.url}" />
+		<property name="username" value="${extmigreg.jdbc.username}" />
+		<property name="password" value="${extmigreg.jdbc.password}" />
+
+		<property name="initialSize" value="4" />
+		<!-- 50 Connection max c'est la meme chose que dans Weblogic -->
+		<property name="maxActive" value="50" />
+		<!-- Si maxWait estt mis, quand il n'y a plus de Connection dispo, on recoit une Exception -->
+		<!-- Sinon, on attend indéfiniment -->
+		<!--
+		<property name="maxWait" value="10" />
+		-->
+		
+		<!-- Debugging leaks -->
+		<!-- Aucune idée ou va le log... -->
+		<!--
+		<property name="removeAbandoned" value="true" />
+		<property name="logAbandoned" value="true" />
+		<property name="removeAbandonedTimeout" value="30" />
+		-->
+	</bean>
+
+	<!-- Datasource DB2 -->
+	<!--
+	<bean id="hostDataSourceDB2" class="org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy">
+		<property name="targetDataSource" ref="rawHostDataSourceDB2" />
+	</bean>
+	-->
+	<bean id="hostDataSourceDB2"
+		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="driverClassName" value="${extmigreg.db2.driverClassName}"/>
+		<property name="url" value="${extmigreg.db2.proxy}"/>
+		<property name="username" value="${extmigreg.db2.username}"/>
+		<property name="password" value="${extmigreg.db2.password}"/>
+	</bean>
+	<bean id="db2Schema" class="java.lang.String">
+		<constructor-arg value="${extmigreg.db2.schema}" />
+	</bean>
+
+	<!-- Datasource Oracle IS -->
+	<!--
+	<bean id="isDataSource" class="org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy">
+		<property name="targetDataSource" ref="rawIsDataSource" />
+	</bean>
+	-->
+	<bean id ="isDataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="${jdbc.driverClassName}" />
+		<property name="url" value="jdbc:oracle:thin:@sv1001va.etat-de-vaud.ch:1525:FSID" />
+		<property name="username" value="unireg" />
+		<property name="password" value="unireg2008" />
+	</bean>
+	<bean id ="empaciDataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+		<property name="driverClassName" value="${jdbc.driverClassName}" />
+		<property name="url" value="${extmigreg.empaci.jdbc.url}" />
+		<property name="username" value="${extmigreg.empaci.jdbc.username}" />
+		<property name="password" value="${extmigreg.empaci.jdbc.password}" />
+	</bean>
+
+	<!-- hibernateProperties specifiques à cette datasource. -->
+	<util:map id="hibernateProperties">
+		<entry key="hibernate.connection.autocommit" value="false" />
+		<entry key="hibernate.query.factory_class" value="org.hibernate.hql.classic.ClassicQueryTranslatorFactory" />
+		<entry key="hibernate.dialect" value="${hibernate.dialect}" />
+		<entry key="hibernate.query.substitutions" value="${hibernate.query.substitutions}" />
+		<entry key="hibernate.show_sql" value="false" />
+		<entry key="hibernate.jdbc.batch_size" value="0" />
+		<entry key="hibernate.jdbc.use_streams_for_binary" value="true" />
+		<entry key="hibernate.hbm2ddl.auto" value="update" />
+	</util:map>
+
+</beans>

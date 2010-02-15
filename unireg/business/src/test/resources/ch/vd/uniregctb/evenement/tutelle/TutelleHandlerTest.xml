@@ -1,0 +1,35 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+  <table name="TIERS">
+    <column>LOG_MDATE</column>
+    <column>NUMERO</column>
+    <column>TIERS_TYPE</column>
+    <column>NUMERO_INDIVIDU</column>
+    <column>DEBITEUR_INACTIF</column>
+    <column>PP_HABITANT</column>
+    <row>
+      <value>2008-01-01</value>
+      <value>7000</value>
+      <value>PersonnePhysique</value>
+      <value>12345</value>
+      <value>0</value>
+      <value>1</value>
+    </row>
+    <row>
+      <value>2008-01-01</value>
+      <value>7001</value>
+      <value>PersonnePhysique</value>
+      <value>54321</value>
+      <value>0</value>
+      <value>1</value>
+    </row>
+    <row>
+      <value>2008-01-01</value>
+      <value>7002</value>
+      <value>PersonnePhysique</value>
+      <value>45678</value>
+      <value>0</value>
+      <value>1</value>
+    </row>
+  </table>
+</dataset>

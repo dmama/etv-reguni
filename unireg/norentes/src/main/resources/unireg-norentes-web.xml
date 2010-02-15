@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans default-lazy-init="true" xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:jee="http://www.springframework.org/schema/jee" xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+							http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+							http://www.springframework.org/schema/jee
+							http://www.springframework.org/schema/jee/spring-jee.xsd
+							http://www.springframework.org/schema/util
+							http://www.springframework.org/schema/util/spring-util-2.0.xsd">
+
+	<bean id="evenementFiscalFacade" class="ch.vd.uniregctb.evenement.fiscal.MockEvenementFiscalFacade" />
+
+	<bean id="editiqueService" class="ch.vd.uniregctb.editique.mock.MockEditiqueService" lazy-init="true" />
+
+	<bean id="evenementExterneFacade" class="ch.vd.uniregctb.mock.jms.MockEvenementExterneFacadeEmpty" />
+	
+	<bean id="jmsEvenementCivilTemplateOutput" class="ch.vd.uniregctb.light.MockEvenementCivilTemplateOutput" />
+
+	<!-- Bean client interfacesService MOCK -->
+	<bean id="serviceInfrastructureServiceRaw" class="ch.vd.uniregctb.interfaces.service.mock.ProxyServiceInfrastructureService"/>
+	<alias alias="serviceInfrastructureService" name="serviceInfrastructureServiceRaw"/>
+
+	<!-- Bean client ServiceCivil MOCK -->
+	<bean id="serviceCivilServiceRaw" class="ch.vd.uniregctb.interfaces.service.mock.ProxyServiceCivil" />
+	<alias alias="serviceCivilService" name="serviceCivilServiceRaw"/>
+	<alias alias="serviceCivilApireg" name="serviceCivilServiceRaw"/>
+
+	<!-- Bean client ServicePM MOCK -->
+	<bean id="servicePersonneMoraleService" class="ch.vd.uniregctb.interfaces.service.mock.ProxyServicePM"  />
+
+	<bean id="serviceSecuriteServiceRaw" class="ch.vd.uniregctb.interfaces.service.mock.ProxyServiceSecuriteService"  />
+	<alias alias="serviceSecuriteService" name="serviceSecuriteServiceRaw"/>
+
+
+</beans>

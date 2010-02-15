@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd">
+
+	<bean id="noOfsTranslator" class="ch.vd.uniregctb.webservices.common.NoOfsTranslatorImpl">
+		<property name="exposeNosTechniques" value="false" />        
+	</bean>
+
+	<!-- Beans du web-service Tiers v1 mais sans le end-point jaxws -->
+
+	<bean id="tiersServiceEndPoint" class="ch.vd.uniregctb.webservices.tiers.impl.TiersWebServiceEndPoint">
+		<property name="service" ref="tiersServiceCache" />
+	</bean>
+
+	<bean id="tiersServiceBean" class="ch.vd.uniregctb.webservices.tiers.impl.TiersWebServiceImpl">
+		<property name="adresseService" ref="adresseService" />
+		<property name="tiersService" ref="tiersService" />
+		<property name="tiersSearcher" ref="globalTiersSearcher" />
+		<property name="infraService" ref="serviceInfrastructureService" />
+		<property name="situationService" ref="situationFamilleService" />
+		<property name="parametreService" ref="parametreAppService" />
+		<property name="noOfsTranslator" ref="noOfsTranslator" />
+	</bean>
+
+	<bean id="tiersServiceCache" class="ch.vd.uniregctb.webservices.tiers.cache.TiersWebServiceCache">
+		<property name="target" ref="tiersServiceBean" />
+		<property name="cacheManager" ref="ehCacheManager" />
+		<property name="cacheName" value="webServiceTiers" />
+		<property name="uniregCacheManager" ref="uniregCacheManager" />
+	</bean>
+
+	<!-- Beans du web-service Tiers v2 mais sans le end-point jaxws -->
+
+	<bean id="tiersService2EndPoint" class="ch.vd.uniregctb.webservices.tiers2.impl.TiersWebServiceEndPoint">
+		<property name="service" ref="tiersService2Cache" />
+	</bean>
+
+	<bean id="tiersService2Bean" class="ch.vd.uniregctb.webservices.tiers2.impl.TiersWebServiceImpl">
+		<property name="adresseService" ref="adresseService" />
+		<property name="tiersDAO" ref="tiersDAO" />
+		<property name="tiersService" ref="tiersService" />
+		<property name="tiersSearcher" ref="globalTiersSearcher" />
+		<property name="infraService" ref="serviceInfrastructureService" />
+		<property name="situationService" ref="situationFamilleService" />
+		<property name="ibanValidator" ref="ibanValidator" />
+		<property name="parametreService" ref="parametreAppService" />
+		<property name="hibernateTemplate" ref="hibernateTemplate" />
+		<property name="transactionManager" ref="transactionManager" />
+		<property name="noOfsTranslator" ref="noOfsTranslator" />
+	</bean>
+
+	<bean id="tiersService2Cache" class="ch.vd.uniregctb.webservices.tiers2.cache.TiersWebServiceCache">
+		<property name="target" ref="tiersService2Bean" />
+		<property name="cacheManager" ref="ehCacheManager" />
+		<property name="cacheName" value="webServiceTiers2" />
+		<property name="uniregCacheManager" ref="uniregCacheManager" />
+	</bean>
+
+</beans>

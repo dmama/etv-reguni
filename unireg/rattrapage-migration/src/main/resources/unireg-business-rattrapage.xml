@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns:util="http://www.springframework.org/schema/util"
+		xsi:schemaLocation="http://www.springframework.org/schema/beans
+							http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+							http://www.springframework.org/schema/util
+							http://www.springframework.org/schema/util/spring-util-2.0.xsd">
+
+	
+	
+
+	<bean id="forManager" class="ch.vd.uniregctb.rattrapage.ForManager">		
+		<property name="transactionManager" ref="transactionManager" />		
+		<property name="hibernateTemplate" ref="hibernateTemplate" />
+		<property name="tiersDAO" ref="tiersDAO" />	
+		<property name="adresseService" ref="adresseService" />	
+		<property name="serviceInfra" ref="serviceInfrastructureService" />	
+		<property name="tiersService" ref="tiersService" />
+		<property name="globalTiersIndexer" ref="globalTiersIndexer" />					
+	</bean>
+	<bean id="contribuableManager" class="ch.vd.uniregctb.rattrapage.ContribuableManager">		
+		<property name="transactionManager" ref="transactionManager" />		
+		<property name="hibernateTemplate" ref="hibernateTemplate" />
+		<property name="tiersDAO" ref="tiersDAO" />	
+		<property name="adresseService" ref="adresseService" />	
+		<property name="serviceInfra" ref="serviceInfrastructureService" />	
+		<property name="tiersService" ref="tiersService" />
+		<property name="globalTiersIndexer" ref="globalTiersIndexer" />		
+	</bean>
+
+</beans>

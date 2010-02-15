@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+
+	<appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
+		<param name="Threshold" value="INFO" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="[rattrapageMigration] %-5p [%d{yyyy-MM-dd HH:mm:ss.SSS}] [%8.8t] %c{1}.%M(%L) | %m%n" />
+		</layout>
+	</appender>
+	
+	<appender name="LOGFILE"
+		class="org.apache.log4j.RollingFileAppender">
+		<param name="Threshold" value="DEBUG" />
+		<param name="Append" value="false" />
+		<param name="File" value="rattrapage.log" />
+		<!--  1Gb de logs -->
+		<param name="MaxFileSize" value="20000KB" />
+		<param name="MaxBackupIndex" value="50" />
+		<!--  1Gb de logs -->
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern"
+				value="[rattrapageMigration] %-5p [%d{yyyy-MM-dd HH:mm:ss.SSS}] [%8.8t] %c{1}.%M(%L) | %m%n" />
+		</layout>
+	</appender>	
+	<appender name="RAPPORTCREATIONFORFILE" class="org.apache.log4j.FileAppender">		
+		<param name="Append" value="false" />
+		<param name="File" value="RapportCreationFor.csv" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%m%n" />
+		</layout>
+		<filter class="org.apache.log4j.varia.LevelMatchFilter">
+			<param name="levelToMatch" value="INFO" />
+		</filter>
+		<filter class="org.apache.log4j.varia.DenyAllFilter" />		
+	</appender>
+	<appender name="RAPPORTERREURFORFILE" class="org.apache.log4j.FileAppender">		
+		<param name="Append" value="false" />
+		<param name="File" value="RapportErreurFor.csv" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%m%n" />
+		</layout>
+		<filter class="org.apache.log4j.varia.LevelMatchFilter">
+			<param name="levelToMatch" value="ERROR" />
+		</filter>
+		<filter class="org.apache.log4j.varia.DenyAllFilter" />		
+	</appender>
+	<appender name="RAPPORTHSFILE" class="org.apache.log4j.FileAppender">		
+		<param name="Append" value="false" />
+		<param name="File" value="RapportHorsSuisse.csv" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%m%n" />
+		</layout>
+		<filter class="org.apache.log4j.varia.LevelMatchFilter">
+			<param name="levelToMatch" value="INFO" />
+		</filter>
+		<filter class="org.apache.log4j.varia.DenyAllFilter" />		
+	</appender>
+	<appender name="RAPPORTSANSADRESSE" class="org.apache.log4j.FileAppender">		
+		<param name="Append" value="false" />
+		<param name="File" value="RapportSansAdresse.csv" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%m%n" />
+		</layout>
+		<filter class="org.apache.log4j.varia.LevelMatchFilter">
+			<param name="levelToMatch" value="INFO" />
+		</filter>
+		<filter class="org.apache.log4j.varia.DenyAllFilter" />		
+	</appender>	
+	<appender name="RAPPORTSUISSEPERMISC" class="org.apache.log4j.FileAppender">		
+		<param name="Append" value="false" />
+		<param name="File" value="RapportSuissePermisC.csv" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%m%n" />
+		</layout>
+		<filter class="org.apache.log4j.varia.LevelMatchFilter">
+			<param name="levelToMatch" value="INFO" />
+		</filter>
+		<filter class="org.apache.log4j.varia.DenyAllFilter" />		
+	</appender>
+	<appender name="RAPPORTDCD" class="org.apache.log4j.FileAppender">		
+		<param name="Append" value="false" />
+		<param name="File" value="RapportDecede.csv" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%m%n" />
+		</layout>
+		<filter class="org.apache.log4j.varia.LevelMatchFilter">
+			<param name="levelToMatch" value="INFO" />
+		</filter>
+		<filter class="org.apache.log4j.varia.DenyAllFilter" />		
+	</appender>
+	<appender name="RAPPORTFORDOUBLON" class="org.apache.log4j.FileAppender">		
+		<param name="Append" value="false" />
+		<param name="File" value="RapportForDoublon.csv" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%m%n" />
+		</layout>
+		<filter class="org.apache.log4j.varia.LevelMatchFilter">
+			<param name="levelToMatch" value="INFO" />
+		</filter>
+		<filter class="org.apache.log4j.varia.DenyAllFilter" />		
+	</appender>
+	<appender name="RAPPORTDOUBLONFILE" class="org.apache.log4j.FileAppender">		
+		<param name="Append" value="false" />
+		<param name="File" value="RapportTraitementDoublon.csv" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%m%n" />
+		</layout>
+		<filter class="org.apache.log4j.varia.LevelMatchFilter">
+			<param name="levelToMatch" value="INFO" />
+		</filter>
+		<filter class="org.apache.log4j.varia.DenyAllFilter" />		
+	</appender>
+	<appender name="RAPPORTDOUBLONHORSMIGRATION" class="org.apache.log4j.FileAppender">		
+		<param name="Append" value="false" />
+		<param name="File" value="RapportDoublonHorsMigrationIS.csv" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%m%n" />
+		</layout>
+		<filter class="org.apache.log4j.varia.LevelMatchFilter">
+			<param name="levelToMatch" value="INFO" />
+		</filter>
+		<filter class="org.apache.log4j.varia.DenyAllFilter" />		
+	</appender>
+	<appender name="RAPPORTERREURDOUBLONFILE" class="org.apache.log4j.FileAppender">		
+		<param name="Append" value="false" />
+		<param name="File" value="RapportErreurDoublon.csv" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%m%n" />
+		</layout>
+		<filter class="org.apache.log4j.varia.LevelMatchFilter">
+			<param name="levelToMatch" value="ERROR" />
+		</filter>
+		<filter class="org.apache.log4j.varia.DenyAllFilter" />		
+	</appender>
+	<appender name="RAPPORTCONJOINTDOUBLONFILE" class="org.apache.log4j.FileAppender">		
+		<param name="Append" value="false" />
+		<param name="File" value="RapportConjointDoublon.csv" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%m%n" />
+		</layout>
+		<filter class="org.apache.log4j.varia.LevelMatchFilter">
+			<param name="levelToMatch" value="INFO" />
+		</filter>
+		<filter class="org.apache.log4j.varia.DenyAllFilter" />		
+	</appender>
+	<logger name="ch.vd.uniregctb">
+		<level value="INFO" />
+	</logger>
+	<logger name="ch.vd.uniregctb.rattrapage">
+		<level value="DEBUG" />
+	</logger>
+	<logger name="ch.vd.uniregctb.rattrapage.sqllog">
+		<level value="DEBUG" />
+	</logger>
+	<logger name="ch.vd.uniregctb.rattrapage.ForManager.Rapport" additivity="false">
+		<level value="INFO" />
+		<appender-ref ref="RAPPORTCREATIONFORFILE"/>		
+	</logger>
+	<logger name="ch.vd.uniregctb.rattrapage.ForManager.Error" additivity="false">
+		<level value="ERROR" />
+		<appender-ref ref="RAPPORTERREURFORFILE"/>		
+	</logger>
+	<logger name="ch.vd.uniregctb.rattrapage.ForManager.HorsSuisse" additivity="false">
+		<level value="INFO" />
+		<appender-ref ref="RAPPORTHSFILE"/>		
+	</logger>
+	<logger name="ch.vd.uniregctb.rattrapage.ForManager.SansAdresse" additivity="false">
+		<level value="INFO" />
+		<appender-ref ref="RAPPORTSANSADRESSE"/>		
+	</logger>
+	
+	<logger name="ch.vd.uniregctb.rattrapage.ForManager.estSuisse" additivity="false">
+		<level value="INFO" />
+		<appender-ref ref="RAPPORTSUISSEPERMISC"/>		
+	</logger>
+	<logger name="ch.vd.uniregctb.rattrapage.ForManager.Decede" additivity="false">
+		<level value="INFO" />
+		<appender-ref ref="RAPPORTDCD"/>		
+	</logger>
+	<logger name="ch.vd.uniregctb.rattrapage.ContribuableManager.For" additivity="false">
+		<level value="INFO" />
+		<appender-ref ref="RAPPORTFORDOUBLON"/>				
+	</logger>
+	<logger name="ch.vd.uniregctb.rattrapage.ContribuableManager.Rapport" additivity="false">
+		<level value="INFO" />
+		<appender-ref ref="RAPPORTDOUBLONFILE"/>		
+	</logger>
+	<logger name="ch.vd.uniregctb.rattrapage.ContribuableManager.HorsMigration" additivity="false">
+		<level value="INFO" />
+		<appender-ref ref="RAPPORTDOUBLONHORSMIGRATION"/>				
+	</logger>
+	<logger name="ch.vd.uniregctb.rattrapage.ContribuableManager.Error" additivity="false">
+		<level value="ERROR" />
+		<appender-ref ref="RAPPORTERREURDOUBLONFILE"/>		
+	</logger>
+	<logger name="ch.vd.uniregctb.rattrapage.ContribuableManager.Conjoint" additivity="false">
+		<level value="INFO" />
+		<appender-ref ref="RAPPORTCONJOINTDOUBLONFILE"/>		
+	</logger>
+	<logger name="net.sf.ehcache">
+		<level value="ERROR" />
+	</logger>
+
+	<logger name="org.dbunit">
+		<level value="INFO" />
+	</logger>
+
+	<!-- Suppress success logging from InteractiveAuthenticationSuccessEvent -->
+	<logger name="org.acegisecurity">
+		<level value="ERROR" />
+	</logger>
+
+	<logger name="org.apache">
+		<level value="WARN" />
+	</logger>
+
+	<logger name="org.hibernate">
+		<level value="WARN" />
+	</logger>
+
+	<logger name="org.hibernate.SQL">
+		<level value="WARN" />
+	</logger>
+
+	<logger name="org.springframework">
+		<level value="INFO" />
+	</logger>
+
+
+	<root>
+		<level value="INFO" />
+		<appender-ref ref="CONSOLE" />
+		<appender-ref ref="LOGFILE" />
+	</root>
+
+</log4j:configuration>

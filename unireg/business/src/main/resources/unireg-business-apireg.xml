@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans default-lazy-init="true" xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+	<import resource="classpath:apireg-dao.xml"/>
+	
+	<alias alias="hostDataSource" name="hostDataSourceDB2"/>
+	<alias alias="hostSchema" name="db2Schema" />
+
+	<bean id="serviceCivilApireg" class="ch.vd.uniregctb.interfaces.service.ServiceCivilApireg">
+		<property name="dao" ref="regppIndividuDAO" />
+		<property name="infraService" ref="serviceInfrastructureService" />
+	</bean>
+
+</beans>

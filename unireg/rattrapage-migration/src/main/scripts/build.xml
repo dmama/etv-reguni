@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Rattrapage" default="rattrape" basedir=".">
+
+	<target name="init">
+		<path id="rattrapage-cp">
+			<fileset dir="lib">
+				<include name="**/*.jar" />
+			</fileset>
+		</path>
+	</target>
+
+	<target name="rattrape" depends="init">
+
+		<echo message="Job: Rattrapage de la migration : ${objet}" />
+
+		<java maxmemory="1024m" classname="ch.vd.uniregctb.rattrapage.RattrapageMigrationMain" fork="true" failonerror="true" classpathref="rattrapage-cp">			
+			<arg value="${objet}" />			
+		</java>
+	</target>
+
+</project>

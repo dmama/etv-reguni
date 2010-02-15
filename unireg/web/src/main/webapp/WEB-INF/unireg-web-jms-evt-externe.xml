@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans default-lazy-init="true" xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:jee="http://www.springframework.org/schema/jee" xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+							http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+							http://www.springframework.org/schema/jee
+							http://www.springframework.org/schema/jee/spring-jee-2.0.xsd
+							http://www.springframework.org/schema/util
+							http://www.springframework.org/schema/util/spring-util-2.0.xsd">
+
+	<bean id="jmsEvenementExterneTemplateOutput" class="org.springframework.jms.core.JmsTemplate">
+		<property name="connectionFactory" ref="jmsConnectionFactory" />
+		<property name="defaultDestinationName" value="${extprop.jms.queue.evtExterne}" />
+	</bean>
+	
+	<bean id="evenementExterneMessageListener" class="ch.vd.uniregctb.evenement.externe.jms.MessageListener" lazy-init="true" />
+
+	<bean id="evenementExternelistenerContainer" class="org.springframework.jms.listener.DefaultMessageListenerContainer" lazy-init="true">
+		<property name="connectionFactory" ref="jmsConnectionFactory" />
+		<property name="destinationName" value="${extprop.jms.queue.evtExterne}" />
+		<property name="messageListener" ref="evenementExterneMessageListener" />
+		<!-- Workaround pour le bug qui fait qu'un message JMS rejeté (exception) est renvoyé indéfiniment et provoque une boucle infinie -->
+		<property name="sessionTransacted" value="true" />
+		<!-- <property name="transactionManager" ref="transactionManager" />  -->
+		<property name="autoStartup" value="${extprop.jms.queue.evtExterne.enabled}" />
+	</bean>
+
+	<bean id="evenementExterneFacade" class="ch.vd.uniregctb.evenement.externe.jms.EvenementExterneFacadeImpl">
+		<property name="listenerContainer" ref="evenementExternelistenerContainer" />
+		<property name="messageListener" ref="evenementExterneMessageListener" />
+		<property name="jmsTemplateOutput" ref="jmsEvenementExterneTemplateOutput" />
+	</bean>
+
+</beans>

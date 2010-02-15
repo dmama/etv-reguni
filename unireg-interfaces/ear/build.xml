@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="unireg-interfaces-ear" default="deploy.AdminServer" basedir=".">	
+	<!-- BEGIN_LVERSION -->
+	<property name="versionApp" value="2.2.4" />	
+	<!-- END_LVERSION -->
+	<property name="app.longName" value="unireg-interfaces-ear-${versionApp}.ear" />
+	<target name="deploy.AdminServer">
+		<antcall target="_deploy" />
+	</target>
+	<target name="deploy.int">
+		<property name="app.src" value="/solve61v/data1/bea1001/wls_sdUniRegI_61v/ch_vd_appDir/unireg-interfaces/deployment/${app.longName}" />
+		<property name="app.name" value="unireg-interfaces-ear" />
+		<property name="app.target" value="ss_uniregi_61v" />
+		<property name="admin.url" value="t3://solve61v:64910" />
+		<property name="admin.username" value="system" />
+		<property name="admin.password" value="be@un1reg1" />
+		<property name="weblogic.jar" value="${user.home}/.m2/repository/weblogic/weblogic/9.2mp2/weblogic-9.2mp2.jar" />
+		<property name="weblogic.extra.arguments" value="-remote" />
+		<antcall target="_deploy" />
+	</target>
+	<target name="deploy.manu">		
+		<property name="admin.url" value="t3://10.240.4.157:7001" />		
+		<antcall target="_deploy" />
+		
+	</target>
+
+	<target name="_deploy">
+		<property name="app.src" value="target/${app.longName}" />
+		<property name="app.name" value="unireg-interfaces-ear" />
+		<property name="app.target" value="AdminServer" />
+		<property name="admin.url" value="t3://localhost:7001" />
+		<property name="admin.username" value="weblogic" />
+		<property name="admin.password" value="weblogic" />
+		<property name="weblogic.jar" value="${user.home}/.m2/repository/weblogic/weblogic/9.2mp2/weblogic-9.2mp2.jar" />
+		<property name="weblogic.extra.arguments" value="" />
+
+		<java classname="weblogic.Deployer" fork="true" failonerror="true" classpath="${weblogic.jar}">
+			<jvmarg value="-Xmx256M" />
+			<arg value="-adminurl" />
+			<arg value="${admin.url}" />
+			<arg value="-username" />
+			<arg value="${admin.username}" />
+			<arg value="-password" />
+			<arg value="${admin.password}" />
+			<arg value="-name" />
+			<arg value="${app.name}" />
+			<arg value="-source" />
+			<arg value="${app.src}" />
+			<arg value="-targets" />
+			<arg value="${app.target}" />
+			<arg value="-deploy" />
+			<arg value="${weblogic.extra.arguments}" />
+		</java>
+	</target>
+	<target name="_undeploy">
+		<property name="app.name" value="unireg-interfaces-ear" />
+		<property name="app.target" value="AdminServer" />
+		<property name="admin.url" value="t3://localhost:7001" />
+		<property name="admin.username" value="weblogic" />
+		<property name="admin.password" value="weblogic" />
+		<property name="weblogic.jar" value="../../extlibs/weblogic/weblogic/9.2mp2/weblogic-9.2mp2.jar" />
+		<property name="weblogic.extra.arguments" value="" />
+
+		<java classname="weblogic.Deployer" fork="true" failonerror="true" classpath="${weblogic.jar}">
+			<jvmarg value="-Xmx512m" />
+			<arg value="-adminurl" />
+			<arg value="${admin.url}" />
+			<arg value="-username" />
+			<arg value="${admin.username}" />
+			<arg value="-password" />
+			<arg value="${admin.password}" />
+			<arg value="-name" />
+			<arg value="${app.name}" />
+			<arg value="-targets" />
+			<arg value="${app.target}" />
+			<arg value="-undeploy" />
+			<arg value="${weblogic.extra.arguments}" />
+		</java>
+	</target>
+
+</project>
+

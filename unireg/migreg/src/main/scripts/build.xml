@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="MigReg" default="migrate" basedir=".">
+
+	<target name="init">
+		<path id="migreg-cp">
+			<fileset dir="lib">
+				<include name="**/*.jar" />
+			</fileset>
+		</path>
+	</target>
+
+	<target name="migrate" depends="init">
+
+		<echo message="Job: limit=${limit} errorsProcessing=${errorsProcessing} indexationAtEnd=${indexationAtEnd} validationDisabled=${validationDisabled}" />
+
+		<java maxmemory="1024m" classname="ch.vd.uniregctb.migreg.HostMigrationMain" fork="true" failonerror="true" classpathref="migreg-cp">			
+			<arg value="${limit}" />
+			<arg value="${errorsProcessing}"/>
+			<arg value="${indexationAtEnd}"/>
+			<arg value="${validationDisabled}"/>
+		</java>
+	</target>
+
+</project>

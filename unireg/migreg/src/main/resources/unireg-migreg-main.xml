@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns:util="http://www.springframework.org/schema/util"
+		xsi:schemaLocation="http://www.springframework.org/schema/beans
+							http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+							http://www.springframework.org/schema/util
+							http://www.springframework.org/schema/util/spring-util-2.0.xsd">
+
+	<bean id="develPropertyConfigurer" class="org.springframework.beans.factory.config.PreferencesPlaceholderConfigurer">
+		<property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE" />
+		<property name="ignoreResourceNotFound" value="true" />
+		<property name="ignoreUnresolvablePlaceholders" value="false" />
+		<property name="locations">
+			<list>
+				<value>file:migreg.properties</value>
+			 	<value>file:target/classes/migreg.properties</value>
+			</list>
+		 </property>
+	</bean>
+
+	<bean id="editiqueService" class="ch.vd.uniregctb.editique.mock.MockEditiqueService" lazy-init="true">
+	</bean>
+
+	<bean id="migregNbrInsertBeforeCommit" class="java.lang.String">
+		<constructor-arg value ="${extmigreg.nbrInsertBeforeCommit}" />
+	</bean>
+	<bean id="migregNbrThread" class="java.lang.String">
+		<constructor-arg value ="${extmigreg.nbrThread}" />
+	</bean>
+	<bean id="migregDateLimiteRepriseDataSourcier" class="java.lang.String">
+		<constructor-arg value ="${extmigreg.dateLimiteRepriseDataSourcier}" />
+	</bean>
+	<bean id="migregForceTruncateDatabase" class="java.lang.Boolean">
+		<constructor-arg value ="${extmigreg.forceTruncateDatabase}" />
+	</bean>
+	<bean id="migregErrorsProcessing" class="java.lang.Boolean">
+		<constructor-arg value ="${extmigreg.errorsProcessing}" />
+	</bean>
+	<bean id="migregForceIndexationAtEnd" class="java.lang.Boolean">
+		<constructor-arg value ="${extmigreg.forceIndexationAtEnd}" />
+	</bean>
+	<bean id="migregModeEssai" class="java.lang.Boolean">
+		<constructor-arg value ="${extmigreg.modeEssai}" />
+	</bean>
+	<bean id="nomFichierRapprochement" class="java.lang.String">
+		<constructor-arg value ="${extmigreg.fichierRapprochementPmEmployeur}" />
+	</bean>
+
+	<bean id="propertiesLogger" class="ch.vd.uniregctb.common.SpringPropertiesLogger">
+		<constructor-arg value="Business - Properties provenant de la config Maven" />
+		<property name="properties"
+			value="
+                | JDBC driver             : ${jdbc.driverClassName}
+                | Hibernate dialect       : ${hibernate.dialect}
+                | JDBC url                : ${extmigreg.jdbc.url}
+                | UniregCTB DB user       : ${extmigreg.jdbc.username}
+                | DB2 driver              : ${extmigreg.db2.driverClassName}
+                | DB2 proxy               : ${extmigreg.db2.proxy}
+                | DB2 user                : ${extmigreg.db2.username}
+                | DB2 schema              : ${extmigreg.db2.schema}
+                | Host Interfaces URL     : ${extmigreg.host-interfaces.serverurl}
+                | Host Interfaces user    : '${extmigreg.host-interfaces.username}'
+                | Orcl commit             : ${extmigreg.nbrInsertBeforeCommit}
+                | Nbr Thread              : ${extmigreg.nbrThread}
+                | Force truncate database : ${extmigreg.forceTruncateDatabase}
+                | Errors processing       : ${extmigreg.errorsProcessing}
+                | Force indexation at end : ${extmigreg.forceIndexationAtEnd}
+                | Index path UT           : ${extmigreg.globalIndexPath}
+                | Docs repository UT      : ${extmigreg.documents.repository}
+                | Host interface          : ${extmigreg.host-interfaces.serverurl}
+                | Date lim migr sourcier  : ${extmigreg.dateLimiteRepriseDataSourcier}
+                | ModeEssai               : ${extmigreg.modeEssai}
+                | nomFichierRapprochement : ${extmigreg.fichierRapprochementPmEmployeur}
+                " />
+	</bean>
+
+</beans>
