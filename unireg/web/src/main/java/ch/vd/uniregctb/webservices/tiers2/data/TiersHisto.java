@@ -10,6 +10,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
+import ch.vd.uniregctb.type.TypeAdresseTiers;
 import org.apache.log4j.Logger;
 
 import ch.vd.registre.base.date.DateRangeHelper;
@@ -267,7 +268,7 @@ public abstract class TiersHisto {
 	private void initAdresseEnvoi(ch.vd.uniregctb.tiers.Tiers tiers, Context context) throws BusinessException {
 		ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee adresse;
 		try {
-			adresse = context.adresseService.getAdresseEnvoi(tiers, null, false);
+			adresse = context.adresseService.getAdresseEnvoi(tiers, null, TypeAdresseTiers.COURRIER, false);
 		}
 		catch (ch.vd.uniregctb.adresse.AdresseException e) {
 			LOGGER.error(e, e);

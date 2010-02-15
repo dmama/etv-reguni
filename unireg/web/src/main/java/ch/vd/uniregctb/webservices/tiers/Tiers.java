@@ -11,6 +11,7 @@ import javax.xml.bind.annotation.XmlEnum;
 import javax.xml.bind.annotation.XmlType;
 
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.webservices.tiers.impl.Context;
 import ch.vd.uniregctb.webservices.tiers.impl.DataHelper;
 
@@ -186,7 +187,7 @@ public abstract class Tiers {
 
 			ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee adresse;
 			try {
-				adresse = context.adresseService.getAdresseEnvoi(tiers, date, false);
+				adresse = context.adresseService.getAdresseEnvoi(tiers, date, TypeAdresseTiers.COURRIER, false);
 			}
 			catch (ch.vd.uniregctb.adresse.AdresseException e) {
 				// impossible d'exposer quoi que ce soit

@@ -93,19 +93,17 @@ public interface AdresseService {
 			throws AdresseException;
 
 	/**
-	 * Crée et retourne l'adresse d'envoi pour un tiers donné.
+	 * Crée et retourne l'adresse d'envoi formattée (six lignes) pour un tiers donné.
 	 *
-	 * @param tiers
-	 *            le tiers dont on recherche l'adresse.
-	 * @param date
-	 *            la date de référence, ou null pour obtenir les adresses existantes jusqu'à ce jour.
-	 *
-	 * @param strict	 si <i>vrai</i>, la cohérence des données est vérifiée de manière stricte et en cas d'incohérence, une exception est levée. Si <i>faux</i>, la méthode essaie de corriger les données (dans la mesure du possible) pour ne pas lever d'exception.
+	 * @param tiers  le tiers dont on recherche l'adresse.
+	 * @param date   la date de référence, ou null pour obtenir les adresses existantes jusqu'à ce jour.
+	 * @param type   le type d'adresse voulu
+	 * @param strict si <i>vrai</i>, la cohérence des données est vérifiée de manière stricte et en cas d'incohérence, une exception est levée. Si <i>faux</i>, la méthode essaie de corriger les données
+	 *               (dans la mesure du possible) pour ne pas lever d'exception.
 	 * @return l'adresse d'envoi déjà formattée.
-	 * @throws AdresseException
-	 *             en cas d'erreur dans les adresses (plages se recoupant, cycle infini détecté, ...).
+	 * @throws AdresseException en cas d'erreur dans les adresses (plages se recoupant, cycle infini détecté, ...).
 	 */
-	public abstract AdresseEnvoiDetaillee getAdresseEnvoi(Tiers tiers, RegDate date, boolean strict) throws AdresseException;
+	public abstract AdresseEnvoiDetaillee getAdresseEnvoi(Tiers tiers, RegDate date, TypeAdresseTiers type, boolean strict) throws AdresseException;
 
 	/**
 	 * Crée et retourne l'adresse d'envoi pour un individu donné.

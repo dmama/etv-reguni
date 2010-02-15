@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import ch.vd.uniregctb.type.TypeAdresseTiers;
 import org.apache.log4j.Logger;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -143,7 +144,7 @@ public class RapprocherCtbProcessor {
 
 			if (ctb != null) {
 
-				AdresseEnvoiDetaillee adresseEnvoi = adresseService.getAdresseEnvoi(ctb, null,false);
+				AdresseEnvoiDetaillee adresseEnvoi = adresseService.getAdresseEnvoi(ctb, null, TypeAdresseTiers.COURRIER, false);
 
 				String salutations = adresseEnvoi.getSalutations();
 

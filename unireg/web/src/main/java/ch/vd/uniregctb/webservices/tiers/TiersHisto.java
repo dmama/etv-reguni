@@ -13,6 +13,7 @@ import javax.xml.bind.annotation.XmlType;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.DateRangeHelper.Range;
+import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.webservices.tiers.impl.Context;
 import ch.vd.uniregctb.webservices.tiers.impl.DataHelper;
 
@@ -233,7 +234,7 @@ public abstract class TiersHisto {
 	private void initAdresseEnvoi(ch.vd.uniregctb.tiers.Tiers tiers, Context context) {
 		ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee adresse;
 		try {
-			adresse = context.adresseService.getAdresseEnvoi(tiers, null, false);
+			adresse = context.adresseService.getAdresseEnvoi(tiers, null, TypeAdresseTiers.COURRIER, false);
 		}
 		catch (ch.vd.uniregctb.adresse.AdresseException e) {
 			// impossible d'exposer quoi que ce soit

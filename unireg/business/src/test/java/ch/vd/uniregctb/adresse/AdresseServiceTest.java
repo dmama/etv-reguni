@@ -3763,7 +3763,7 @@ public class AdresseServiceTest extends BusinessTest {
 		final List<String> nomCourrier = adresseService.getNomCourrier(menage, date(2005,1,1), false);
 		assertEmpty(nomCourrier);
 
-		final AdresseEnvoiDetaillee adresseEnvoi = adresseService.getAdresseEnvoi(menage, date(2007,3,3), false);
+		final AdresseEnvoiDetaillee adresseEnvoi = adresseService.getAdresseEnvoi(menage, date(2007,3,3), TypeAdresseTiers.COURRIER, false);
 		assertNotNull(adresseEnvoi);
 		assertNull(adresseEnvoi.getLigne1());
 		assertNull(adresseEnvoi.getLigne2());
@@ -4152,7 +4152,7 @@ public class AdresseServiceTest extends BusinessTest {
 		madame.addRapportSujet(curatelle);
 		curateurMadame.addRapportObjet(curatelle);
 
-		final AdresseEnvoiDetaillee adresseEnvoi = adresseService.getAdresseEnvoi(mc, null, true);
+		final AdresseEnvoiDetaillee adresseEnvoi = adresseService.getAdresseEnvoi(mc, null, TypeAdresseTiers.COURRIER, true);
 		Assert.assertNotNull(adresseEnvoi);
 		Assert.assertEquals("Pierre Dupont est le curateur de Madame, seule habitante du couple", "p.a. Pierre Dupont", adresseEnvoi.getPourAdresse());
 	}

@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.GregorianCalendar;
 import java.util.Iterator;
 
+import ch.vd.uniregctb.type.TypeAdresseTiers;
 import org.apache.log4j.Logger;
 
 import ch.vd.infrastructure.service.InfrastructureException;
@@ -95,7 +96,7 @@ public class TiersGeneralManagerImpl implements TiersGeneralManager{
 		setTypeTiers(tiers, tiersGeneralView);
 
 		try {
-			final AdresseEnvoiDetaillee adresseEnvoi = adresseService.getAdresseEnvoi(tiers, null, false);
+			final AdresseEnvoiDetaillee adresseEnvoi = adresseService.getAdresseEnvoi(tiers, null, TypeAdresseTiers.COURRIER, false);
 			tiersGeneralView.setAdresseEnvoi(adresseEnvoi);
 		} catch (Exception e) {
 			tiersGeneralView.setAdresseEnvoi(null);

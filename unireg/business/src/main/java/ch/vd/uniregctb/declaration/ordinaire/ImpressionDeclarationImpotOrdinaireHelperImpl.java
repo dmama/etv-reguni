@@ -20,6 +20,7 @@ import ch.vd.uniregctb.situationfamille.SituationFamilleService;
 import ch.vd.uniregctb.tiers.*;
 import ch.vd.uniregctb.type.EtatCivil;
 import ch.vd.uniregctb.type.Qualification;
+import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeDocument;
 import noNamespace.CleRgpDocument.CleRgp;
 import noNamespace.*;
@@ -142,7 +143,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 		// cleRgp.setNumeroTaxation(numeroTaxation);
 		// cleRgp.setNumeroVersion(numeroVersion);
 		try {
-			AdresseEnvoiDetaillee adresseEnvoiDetaillee = adresseService.getAdresseEnvoi(declaration.getTiers(), null, false);
+			AdresseEnvoiDetaillee adresseEnvoiDetaillee = adresseService.getAdresseEnvoi(declaration.getTiers(), null, TypeAdresseTiers.COURRIER, false);
 			String idEnvoi = "";
 			if (declaration instanceof DeclarationImpotOrdinaire) {
 				if (adresseEnvoiDetaillee.isSuisse()) {
@@ -211,7 +212,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 		final CollectiviteAdministrative oid = tiersService.getOrCreateCollectiviteAdministrative(numOid);
 		Assert.notNull(oid);
 
-		final AdresseEnvoiDetaillee adresse = adresseService.getAdresseEnvoi(oid, null, false);
+		final AdresseEnvoiDetaillee adresse = adresseService.getAdresseEnvoi(oid, null, TypeAdresseTiers.COURRIER, false);
 		final Expediteur expediteur = infoEnteteDocument.addNewExpediteur();
 		final TypAdresse.Adresse adresseExpediteur = expediteur.addNewAdresse();
 		remplitAdresse(adresseExpediteur, adresse);
@@ -363,7 +364,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 
 			final AdresseEnvoiDetaillee adresse;
 			try {
-				adresse = adresseService.getAdresseEnvoi(col, null, false);
+				adresse = adresseService.getAdresseEnvoi(col, null, TypeAdresseTiers.COURRIER, false);
 			}
 			catch (AdresseException e) {
 				throw new EditiqueException(e);
@@ -469,7 +470,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 		final Tiers tiers = declaration.getTiers();
 		AdresseEnvoiDetaillee adresseEnvoi;
 		try {
-			adresseEnvoi = adresseService.getAdresseEnvoi(tiers, null, false);
+			adresseEnvoi = adresseService.getAdresseEnvoi(tiers, null, TypeAdresseTiers.COURRIER, false);
 		}
 		catch (AdresseException e) {
 			throw new EditiqueException(e);

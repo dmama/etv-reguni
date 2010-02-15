@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ch.vd.uniregctb.adresse.AdresseException;
+import ch.vd.uniregctb.type.TypeAdresseTiers;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
@@ -72,7 +73,7 @@ public class CopieDroitAccesManagerImpl implements CopieDroitAccesManager {
 			droitAccesView.setType(droitAcces.getType());
 			droitAccesView.setNumeroCTB(droitAcces.getTiers().getNumero());
 			PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(droitAcces.getTiers().getNumero());
-			AdresseEnvoiDetaillee adresseEnvoiDetaillee = adresseService.getAdresseEnvoi(pp, null, false);
+			AdresseEnvoiDetaillee adresseEnvoiDetaillee = adresseService.getAdresseEnvoi(pp, null, TypeAdresseTiers.COURRIER, false);
 			if (adresseEnvoiDetaillee != null) {
 				List<String> noms = adresseEnvoiDetaillee.getNomPrenom();
 				if ((noms != null) & (noms.get(0) != null)) {

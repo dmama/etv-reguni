@@ -2,6 +2,7 @@ package ch.vd.uniregctb.editique.impl;
 
 import java.rmi.RemoteException;
 
+import ch.vd.uniregctb.type.TypeAdresseTiers;
 import noNamespace.TypAdresse;
 import noNamespace.InfoEnteteDocumentDocument1.InfoEnteteDocument;
 import noNamespace.InfoEnteteDocumentDocument1.InfoEnteteDocument.Destinataire;
@@ -52,7 +53,7 @@ public class EditiqueHelperImpl implements EditiqueHelper {
 	}
 
 	private Destinataire remplitAdresseEnvoiDestinataire(Tiers tiers, InfoEnteteDocument infoEnteteDocument) throws AdresseException {
-		final AdresseEnvoi adresseEnvoi = adresseService.getAdresseEnvoi(tiers, null, false);
+		final AdresseEnvoi adresseEnvoi = adresseService.getAdresseEnvoi(tiers, null, TypeAdresseTiers.COURRIER, false);
 		final Destinataire destinataire = infoEnteteDocument.addNewDestinataire();
 		final TypAdresse.Adresse adresseDestinataire = destinataire.addNewAdresse();
 		final TypAdresse.Adresse adresseDestinataireImpression = remplitAdresse(adresseEnvoi, adresseDestinataire);
@@ -83,7 +84,7 @@ public class EditiqueHelperImpl implements EditiqueHelper {
 		//
 		// Porte adresse
 		//
-		AdresseEnvoi adresseEnvoi = adresseService.getAdresseEnvoi(tiers, null, false);
+		AdresseEnvoi adresseEnvoi = adresseService.getAdresseEnvoi(tiers, null, TypeAdresseTiers.COURRIER, false);
 		TypAdresse porteAdresse = infoEnteteDocument.addNewPorteAdresse();
 		TypAdresse.Adresse adressePorteAdresse = porteAdresse.addNewAdresse();
 		TypAdresse.Adresse adressePorteAdresseImpression = remplitAdresse(adresseEnvoi, adressePorteAdresse);

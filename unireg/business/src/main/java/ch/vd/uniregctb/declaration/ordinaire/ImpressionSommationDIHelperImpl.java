@@ -2,6 +2,7 @@ package ch.vd.uniregctb.declaration.ordinaire;
 
 import java.text.SimpleDateFormat;
 
+import ch.vd.uniregctb.type.TypeAdresseTiers;
 import noNamespace.FichierImpressionDocument;
 import noNamespace.InfoArchivageDocument;
 import noNamespace.InfoDocumentDocument1;
@@ -193,7 +194,7 @@ public class ImpressionSommationDIHelperImpl implements ImpressionSommationDIHel
 		infoDocument.setLogo("CANT");
 		infoDocument.setPopulations("PP");
 		try {
-			AdresseEnvoiDetaillee adresseEnvoiDetaillee = adresseService.getAdresseEnvoi(params.getDi().getTiers(), null, false);
+			AdresseEnvoiDetaillee adresseEnvoiDetaillee = adresseService.getAdresseEnvoi(params.getDi().getTiers(), null, TypeAdresseTiers.COURRIER, false);
 			String idEnvoi = "";
 			if (adresseEnvoiDetaillee.isSuisse() && !params.isMiseSousPliImpossible()) {
 				idEnvoi = "";

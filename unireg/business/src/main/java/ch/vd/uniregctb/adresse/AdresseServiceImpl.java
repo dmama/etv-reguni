@@ -118,7 +118,7 @@ public class AdresseServiceImpl implements AdresseService {
 	/**
 	 * {@inheritDoc}
 	 */
-	public AdresseEnvoiDetaillee getAdresseEnvoi(Tiers tiers, RegDate date, boolean strict) throws AdresseException {
+	public AdresseEnvoiDetaillee getAdresseEnvoi(Tiers tiers, RegDate date, TypeAdresseTiers type, boolean strict) throws AdresseException {
 		Assert.notNull(tiers);
 
 		final AdresseEnvoiDetaillee adresseEnvoi = new AdresseEnvoiDetaillee();
@@ -129,10 +129,10 @@ public class AdresseServiceImpl implements AdresseService {
 		if (autreTiers != null) {
 			// Cas spécial d'un tiers ayant son adresse pointant sur celle d'un autre tiers
 			adresseEnvoi.addPourAdresse(getPourAdresse(autreTiers));
-			fillDestination(adresseEnvoi, autreTiers, date, strict);
+			fillDestination(adresseEnvoi, autreTiers, date, type, strict);
 		}
 		else {
-			fillDestination(adresseEnvoi, tiers, date, strict);
+			fillDestination(adresseEnvoi, tiers, date, type, strict);
 		}
 
 		return adresseEnvoi;
@@ -271,26 +271,33 @@ public class AdresseServiceImpl implements AdresseService {
 
 	/**
 	 * Remplis les lignes correspondant à la destination géographique d'une adresse d'envoi.
+	 *
+	 * @param adresse l'adresse d'envoi détaillée à remplir
+	 * @param tiers   un tiers
+	 * @param date    la date de validité de l'adresse
+	 * @param type    le type d'adresse considéré
+	 * @param strict  si <b>faux</b> essaie de résoudre silencieusement les problèmes détectés durant le traitement; autrement lève une exception.
+	 * @throws AdresseException en cas de problème dans le traitement
 	 */
-	private void fillDestination(AdresseEnvoiDetaillee adresse, Tiers tiers, RegDate date, boolean strict) throws AdresseException {
+	private void fillDestination(AdresseEnvoiDetaillee adresse, Tiers tiers, RegDate date, TypeAdresseTiers type, boolean strict) throws AdresseException {
 
 		if (tiers instanceof PersonnePhysique) {
-			fillDestination(adresse, (PersonnePhysique) tiers, date, strict);
+			fillDestination(adresse, (PersonnePhysique) tiers, date, type, strict);
 		}
 		else if (tiers instanceof MenageCommun) {
-			fillDestination(adresse, (MenageCommun) tiers, date, strict);
+			fillDestination(adresse, (MenageCommun) tiers, date, type, strict);
 		}
 		else if (tiers instanceof DebiteurPrestationImposable) {
-			fillDestination(adresse, (DebiteurPrestationImposable) tiers, date, strict);
+			fillDestination(adresse, (DebiteurPrestationImposable) tiers, date, type, strict);
 		}
 		else if (tiers instanceof CollectiviteAdministrative) {
 			fillDestination(adresse, (CollectiviteAdministrative) tiers);
 		}
 		else if (tiers instanceof AutreCommunaute) {
-			fillDestination(adresse, (AutreCommunaute) tiers, date, strict);
+			fillDestination(adresse, (AutreCommunaute) tiers, date, type, strict);
 		}
 		else if (tiers instanceof Entreprise) {
-			fillDestination(adresse, (Entreprise) tiers, date, strict);
+			fillDestination(adresse, (Entreprise) tiers, date, type, strict);
 		}
 		else {
 			throw new NotImplementedException("Type de tiers [" + tiers.getNatureTiers() + "] inconnu");
@@ -299,52 +306,36 @@ public class AdresseServiceImpl implements AdresseService {
 
 	/**
 	 * Rempli l'adresse de destination associée à une personne physique.
+	 *
+	 * @param adresse  l'adresse d'envoi détaillée à remplir
+	 * @param personne une personne physique
+	 * @param date     la date de validité de l'adresse
+	 * @param type     le type d'adresse considéré
+	 * @param strict   si <b>faux</b> essaie de résoudre silencieusement les problèmes détectés durant le traitement; autrement lève une exception.
+	 * @throws AdresseException en cas de problème dans le traitement
 	 */
-	private void fillDestination(AdresseEnvoiDetaillee adresse, PersonnePhysique personne, RegDate date, boolean strict) throws AdresseException {
+	private void fillDestination(AdresseEnvoiDetaillee adresse, PersonnePhysique personne, RegDate date, TypeAdresseTiers type, boolean strict) throws AdresseException {
 
-		AdresseGenerique adresseCourrier = getAdresseFiscale(personne, TypeAdresseTiers.COURRIER, date, strict);
-		if (adresseCourrier != null) {
-
-			switch (adresseCourrier.getSource()) {
-			case REPRESENTATION:
-				final Tiers representant = getRepresentant(personne, TypeAdresseRepresentant.REPRESENTATION, date);
-				if (representant != null) {
-					/* la personne possède un representant : on envoie le courrier chez son conseiller */
-					adresse.addPourAdresse(getPourAdresse(representant));
-				}
-				break;
-			case CONSEIL_LEGAL:
-				final Tiers conseil = getRepresentant(personne, TypeAdresseRepresentant.CONSEIL_LEGAL, date);
-				if (conseil != null) {
-					/* la personne possède un conseil légal : on envoie le courrier chez son conseiller */
-					adresse.addPourAdresse(getPourAdresse(conseil));
-				}
-				break;
-			case TUTELLE:
-				final Tiers tuteur = getRepresentant(personne, TypeAdresseRepresentant.TUTELLE, date);
-				if (tuteur != null) {
-					/* la personne est sous tutelle : on envoie le courrier chez son tuteur */
-					adresse.addPourAdresse(getPourAdresse(tuteur));
-				}
-				break;
-			case CURATELLE:
-				final Tiers curateur = getRepresentant(personne, TypeAdresseRepresentant.CURATELLE, date);
-				if (curateur != null) {
-					/* la personne est sous curatelle : on envoie le courrier chez son curateur */
-					adresse.addPourAdresse(getPourAdresse(curateur));
-				}
-				break;
-			}
-			fillAdresseEnvoi(adresse, adresseCourrier);
+		AdresseGenerique adresseFiscale = getAdresseFiscale(personne, type, date, strict);
+		if (adresseFiscale != null) {
+			fillRepresentantPourAdresse(adresse, date, adresseFiscale, personne);
+			fillAdresseEnvoi(adresse, adresseFiscale);
 		}
 	}
 
 	/**
 	 * Rempli l'adresse de destination associée à une autre communauté
+	 *
+	 * @param adresse l'adresse d'envoi détaillée à remplir
+	 * @param autre   une 'autre communauté'
+	 * @param date    la date de validité de l'adresse
+	 * @param type    le type d'adresse considéré
+	 * @param strict  si <b>faux</b> essaie de résoudre silencieusement les problèmes détectés durant le traitement; autrement lève une exception.
+	 * @throws AdresseException en cas de problème dans le traitement
 	 */
-	private void fillDestination(AdresseEnvoiDetaillee adresse, AutreCommunaute autre, RegDate date, boolean strict) throws AdresseException {
+	private void fillDestination(AdresseEnvoiDetaillee adresse, AutreCommunaute autre, RegDate date, TypeAdresseTiers type, boolean strict) throws AdresseException {
 
-		final AdresseGenerique adresseCourrier = getAdresseFiscale(autre, TypeAdresseTiers.COURRIER, date, strict);
+		final AdresseGenerique adresseCourrier = getAdresseFiscale(autre, type, date, strict);
 		if (adresseCourrier != null) {
 			fillAdresseEnvoi(adresse, adresseCourrier);
 		}
@@ -352,10 +343,17 @@ public class AdresseServiceImpl implements AdresseService {
 
 	/**
 	 * Rempli l'adresse de destination associée à une entreprise
+	 *
+	 * @param adresse    l'adresse d'envoi détaillée à remplir
+	 * @param entreprise une entreprise
+	 * @param date       la date de validité de l'adresse
+	 * @param type       le type d'adresse considéré
+	 * @param strict     si <b>faux</b> essaie de résoudre silencieusement les problèmes détectés durant le traitement; autrement lève une exception.
+	 * @throws AdresseException en cas de problème dans le traitement
 	 */
-	private void fillDestination(AdresseEnvoiDetaillee adresse, Entreprise entreprise, RegDate date, boolean strict) throws AdresseException {
+	private void fillDestination(AdresseEnvoiDetaillee adresse, Entreprise entreprise, RegDate date, TypeAdresseTiers type, boolean strict) throws AdresseException {
 
-		final AdresseGenerique adresseCourrier = getAdresseFiscale(entreprise, TypeAdresseTiers.COURRIER, date, strict);
+		final AdresseGenerique adresseCourrier = getAdresseFiscale(entreprise, type, date, strict);
 		if (adresseCourrier != null) {
 			fillAdresseEnvoi(adresse, adresseCourrier);
 		}
@@ -369,7 +367,7 @@ public class AdresseServiceImpl implements AdresseService {
 	 * @param strict   si <i>vrai</i>, la cohérence des données est vérifiée de manière stricte et en cas d'incohérence, une exception est levée. Si <i>faux</i>, la méthode essaie de corriger les données
 	 *                 (dans la mesure du possible) pour ne pas lever d'exception.
 	 * @return une adresse d'envoi détaillée
-	 * @throws ch.vd.uniregctb.common.DonneesCivilesException en cas d'incohérence des données civiles
+	 * @throws AdresseException en cas de problème dans le traitement
 	 */
 	private AdresseEnvoiDetaillee createAdresseEnvoi(Individu individu, RegDate date, boolean strict) throws AdresseException {
 
@@ -395,37 +393,60 @@ public class AdresseServiceImpl implements AdresseService {
 
 	/**
 	 * Rempli l'adresse de destination associée à un ménage commun.
+	 *
+	 * @param adresse      l'adresse d'envoi détaillée à remplir
+	 * @param menageCommun un ménage commun
+	 * @param date         la date de validité de l'adresse
+	 * @param type         le type d'adresse considéré
+	 * @param strict       si <b>faux</b> essaie de résoudre silencieusement les problèmes détectés durant le traitement; autrement lève une exception.
+	 * @throws AdresseException en cas de problème dans le traitement
 	 */
-	private void fillDestination(AdresseEnvoiDetaillee adresse, MenageCommun menageCommun, RegDate date, boolean strict) throws AdresseException {
+	private void fillDestination(AdresseEnvoiDetaillee adresse, MenageCommun menageCommun, RegDate date, TypeAdresseTiers type, boolean strict) throws AdresseException {
 
-		final AdresseGenerique adresseCourrier = getAdresseFiscale(menageCommun, TypeAdresseTiers.COURRIER, date, strict);
+		final AdresseGenerique adresseFiscale = getAdresseFiscale(menageCommun, type, date, strict);
 
 		// Une adresse courrier n'existe pas forcément (exemple: couple en cours de création)
-		if (adresseCourrier != null) {
+		if (adresseFiscale != null) {
 
 			/* Récupère la vue historique complète du ménage (date = null) */
 			final PersonnePhysique principal = getPrincipalPourAdresse(menageCommun, null);
-
-			if (principal != null) { //cas des couple annulé
-				// Cas de la tutelle, curatelle et du conseil légal
-				final Source typeSource = adresseCourrier.getSource();
-				final TypeAdresseRepresentant typeAdresseRepresentant = TypeAdresseRepresentant.getTypeAdresseRepresentantFromSource(typeSource);
-				if (typeAdresseRepresentant != null) {
-					final Tiers representant = getRepresentant(principal, typeAdresseRepresentant, date);
-					Assert.notNull(representant);
-					adresse.addPourAdresse(getPourAdresse(representant));
-				}
+			if (principal != null) { // cas des couple annulé
+				fillRepresentantPourAdresse(adresse, date, adresseFiscale, principal);
 			}
 
 			// Rue, numéro et ville
-			fillAdresseEnvoi(adresse, adresseCourrier);
+			fillAdresseEnvoi(adresse, adresseFiscale);
+		}
+	}
+
+	/**
+	 * Remplit la champs 'pour adresse' si l'adresse fiscale spécifiée découle d'une représentation (tutelle, curatelle, ...)
+	 *
+	 * @param adresse          l'adresse d'envoi détaillée à compléter
+	 * @param date             la date de validité
+	 * @param adresseFiscale   l'adresse fiscale considéré
+	 * @param personnePhysique la personne physique associée à l'adresse
+	 */
+	private void fillRepresentantPourAdresse(AdresseEnvoiDetaillee adresse, RegDate date, AdresseGenerique adresseFiscale, PersonnePhysique personnePhysique) {
+		final TypeAdresseRepresentant type = TypeAdresseRepresentant.getTypeAdresseRepresentantFromSource(adresseFiscale.getSource());
+		if (type != null) {
+			final Tiers representant = getRepresentant(personnePhysique, type, date);
+			Assert.notNull(representant);
+			adresse.addPourAdresse(getPourAdresse(representant));
 		}
 	}
 
 	/**
 	 * Rempli l'adresse de destination associée à un debiteur
+	 *
+	 * @param adresse  l'adresse d'envoi détaillée à remplir
+	 * @param debiteur un débiteur de prestations imposables
+	 * @param date     la date de validité de l'adresse
+	 * @param type     le type d'adresse considéré
+	 * @param strict   si <b>faux</b> essaie de résoudre silencieusement les problèmes détectés durant le traitement; autrement lève une exception.
+	 * @throws AdresseException en cas de problème dans le traitement
 	 */
-	private void fillDestination(AdresseEnvoiDetaillee adresse, DebiteurPrestationImposable debiteur, RegDate date, boolean strict)
+	private void fillDestination(AdresseEnvoiDetaillee adresse, DebiteurPrestationImposable debiteur, RegDate date, TypeAdresseTiers type, boolean strict)
 			throws AdresseException {
 
 		// Dans le cas normal d'un débiteur, le destinataire est le contribuable associé
@@ -442,24 +463,27 @@ public class AdresseServiceImpl implements AdresseService {
 		 * courrier
 		 */
 
-		AdresseGenerique adresseCourrier = getAdresseFiscale(debiteur, TypeAdresseTiers.COURRIER, date, strict);
-		if (adresseCourrier == null) {
-			adresseCourrier = getAdresseFiscale(destinataire, TypeAdresseTiers.COURRIER, date, strict);
+		AdresseGenerique adresseFiscale = getAdresseFiscale(debiteur, type, date, strict);
+		if (adresseFiscale == null) {
+			adresseFiscale = getAdresseFiscale(destinataire, type, date, strict);
 		}
 
 		// Une adresse courrier n'existe pas forcément (exemple: débiteur en cours de création)
-		if (adresseCourrier != null) {
-			fillAdresseEnvoi(adresse, adresseCourrier);
+		if (adresseFiscale != null) {
+			fillAdresseEnvoi(adresse, adresseFiscale);
 		}
 	}
 
 	/**
 	 * Rempli l'adresse de destination associée à une collectivité administrative
+	 *
+	 * @param adresse      l'adresse d'envoi détaillée à remplir
+	 * @param collectivite une collectivité administrative
 	 */
 	private void fillDestination(AdresseEnvoiDetaillee adresse, CollectiviteAdministrative collectivite) {
 
 		// récupère la collectivité
-		final int noColAdm = collectivite.getNumeroCollectiviteAdministrative().intValue();
+		final int noColAdm = collectivite.getNumeroCollectiviteAdministrative();
 		final ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative collectiviteCivil;
 		try {
 			collectiviteCivil = serviceInfra.getCollectivite(noColAdm);
@@ -2154,7 +2178,7 @@ public class AdresseServiceImpl implements AdresseService {
 	 */
 	public List<String> getNomCourrier(Tiers tiers, RegDate date, boolean strict) throws AdresseException {
 
-		final AdresseEnvoiDetaillee adresse = getAdresseEnvoi(tiers, date, strict);
+		final AdresseEnvoiDetaillee adresse = getAdresseEnvoi(tiers, date, TypeAdresseTiers.COURRIER, strict);
 
 		List<String> list = adresse.getNomPrenom();
 

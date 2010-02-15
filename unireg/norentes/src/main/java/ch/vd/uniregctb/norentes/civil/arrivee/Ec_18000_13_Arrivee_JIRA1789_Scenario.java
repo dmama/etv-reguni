@@ -24,6 +24,7 @@ import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 public class Ec_18000_13_Arrivee_JIRA1789_Scenario extends EvenementCivilScenario {
@@ -171,11 +172,11 @@ public class Ec_18000_13_Arrivee_JIRA1789_Scenario extends EvenementCivilScenari
 
 	private void assertAdresses(final MenageCommun menage, final String nomCommune) throws AdresseException {
 		final EnsembleTiersCouple ensemble = tiersService.getEnsembleTiersCouple(menage, null);
-		final AdresseEnvoiDetaillee adresseMenage = adresseService.getAdresseEnvoi(menage, null, true);
+		final AdresseEnvoiDetaillee adresseMenage = adresseService.getAdresseEnvoi(menage, null, TypeAdresseTiers.COURRIER, true);
 		assertTrue(adresseMenage.getNpaEtLocalite().contains(nomCommune), "L'adresse d'envoi du ménage devrait être à Lausanne");
-		final AdresseEnvoiDetaillee adresseAntoine = adresseService.getAdresseEnvoi(ensemble.getPrincipal(), null, true);
+		final AdresseEnvoiDetaillee adresseAntoine = adresseService.getAdresseEnvoi(ensemble.getPrincipal(), null, TypeAdresseTiers.COURRIER, true);
 		assertTrue(adresseAntoine.getNpaEtLocalite().contains(nomCommune), "L'adresse d'envoi du principal devrait être à Lausanne");
-		final AdresseEnvoiDetaillee adresseCleo = adresseService.getAdresseEnvoi(menage, null, true);
+		final AdresseEnvoiDetaillee adresseCleo = adresseService.getAdresseEnvoi(menage, null, TypeAdresseTiers.COURRIER, true);
 		assertTrue(adresseCleo.getNpaEtLocalite().contains(nomCommune), "L'adresse d'envoi du conjoint devrait être à Lausanne");
 	}
 }
