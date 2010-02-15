@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+
+	<!-- POM for Host interfaces Tests d'integration -->
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>${pom.parent.groupId}</groupId>
+	<artifactId>unireg-interfaces-tests</artifactId>
+	<version>${pom.parent.version}</version>
+	<name>Unireg interfaces - TESTS</name>
+	<description>
+		unireg interfaces - interfaces sur uniregCTB
+	</description>
+	<url>http://www.vd.ch</url>
+
+	<parent>
+		<groupId>ch.vd.uniregctb</groupId>
+		<artifactId>unireg-interfaces</artifactId>
+		<version>1.0-SNAPSHOT</version>
+		<relativePath>../base/pom.xml</relativePath>
+	</parent>
+
+	<dependencies>
+		<dependency>
+			<groupId>${pom.parent.groupId}</groupId>
+			<artifactId>unireg-interfaces-ejb</artifactId>
+			<version>${pom.parent.version}</version>
+			<type>jar</type>
+		</dependency>		
+		<dependency>
+			<groupId>weblogic</groupId>
+			<artifactId>weblogic</artifactId>
+			<version>10.0</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.4</version>
+		</dependency>
+	</dependencies>
+
+	<build>
+        <testSourceDirectory>src/it/java</testSourceDirectory>
+		<testResources>
+			<testResource>
+				<directory>src/it/resources</directory>
+				<filtering>true</filtering>
+			</testResource>
+		</testResources>
+	</build>
+
+</project>

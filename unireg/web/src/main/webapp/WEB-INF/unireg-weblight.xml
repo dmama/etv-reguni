@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans default-lazy-init="true" xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:jee="http://www.springframework.org/schema/jee" xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+							http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+							http://www.springframework.org/schema/jee
+							http://www.springframework.org/schema/jee/spring-jee.xsd
+							http://www.springframework.org/schema/util
+							http://www.springframework.org/schema/util/spring-util-2.0.xsd">
+
+	<bean id="evenementFiscalSender" class="ch.vd.uniregctb.evenement.fiscal.MockEvenementFiscalSender"/>
+
+	<bean id="editiqueService" class="ch.vd.uniregctb.editique.mock.MockEditiqueService" lazy-init="true"/>
+
+	<bean id="evtCivilSender" class="ch.vd.uniregctb.evenement.jms.MockEvenementCivilUnitaireSender"/>
+
+</beans>

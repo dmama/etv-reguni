@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+							http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+							http://www.springframework.org/schema/util
+							http://www.springframework.org/schema/util/spring-util-2.0.xsd">
+
+	<bean id="editiqueJndiTemplate" class="org.springframework.jndi.JndiTemplate">
+		<property name="environment">
+			<map>
+				<entry key="java.naming.factory.initial" value="${host-interfaces.factory}" />
+				<entry key="java.naming.provider.url" value="${extprop.editique.url}" />
+			</map>
+		</property>
+	</bean>
+
+	<bean id="externeFoldersService" class="${host-interfaces.ejb-proxy-class}" lazy-init="true">
+		<property name="lookupHomeOnStartup" value="false" />
+		<property name="refreshHomeOnConnectFailure" value="true"/>
+		<property name="cacheHome"  value="true" />
+		<property name="jndiTemplate" ref="editiqueJndiTemplate" />
+		<property name="jndiName" value="ejb/ch.vd.editique.service.ejb.EditiqueEjb" />
+		<property name="businessInterface" value="ch.vd.uniregctb.editique.impl.FoldersService" />
+	</bean>
+
+	<bean id="editiqueService" class="ch.vd.uniregctb.editique.impl.EditiqueServiceImpl" lazy-init="true">
+		<property name="editiqueOutput" ref="editiqueJMSTemplateOutput" />
+		<property name="editiqueInput" ref="editiqueJMSTemplateInput" />
+		<property name="impressionDIHelper" ref="impressionDIHelper" />
+		<property name="impressionLRHelper" ref="impressionLRHelper" />
+		<property name="impressionSommationDIHelper" ref="impressionSommationDIHelper" />
+		<property name="impressionSommationLRHelper" ref="impressionSommationLRHelper" />
+		<property name="impressionNouveauxDossiersHelper" ref="impressionNouveauxDossiersHelper" />
+		<property name="impressionConfirmationDelaiHelper" ref="impressionConfirmationDelaiHelper" />
+		<property name="impressionTaxationOfficeHelper" ref="impressionTaxationOfficeHelper" />
+		<property name="impressionBordereauMouvementDossierHelper" ref="impressionBordereauMouvementDossierHelper" />
+		<property name="foldersService" ref="externeFoldersService" />
+		<property name="receiveTimeout" value="${editique.locale.attente.timeout}" />
+		<property name="serviceSecurite" ref="serviceSecuriteService" />
+	</bean>
+
+</beans>

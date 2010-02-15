@@ -1,0 +1,41 @@
+
+
+
+
+.formInfo a, .formInfo a:active, formInfo a:visited{
+	background-color:#E3F2E9;
+	font-size: 1.3em;
+	font-weight:bold;
+	padding:1px 2px;
+	margin-left:5px;
+	color:#000000;
+	text-decoration: none;
+}
+
+.formInfo a:hover{
+	color:#660000;
+	text-decoration: none;
+}
+
+
+#tooltip-main {
+	border: 2px solid #CCCCCC;
+	background-color:#E3F2E9;
+	padding: 2px;
+	z-index:2;
+}
+
+
+#tooltip-mainp {line-height:1.4em;margin:10px 0;}
+#tooltip-main hr{margin:10px 0;color:#999999;}
+
+#tooltip-main ul{
+	list-style: none;
+}
+
+#tooltip-main ul li{
+padding-top:3px;
+}
+
+
+

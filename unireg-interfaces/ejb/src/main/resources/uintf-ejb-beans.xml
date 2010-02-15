@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xmlns:jaxws="http://cxf.apache.org/jaxws"
+ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd">
+	
+	<bean id="serviceFiscalImpl" class="ch.vd.uniregctb.fiscal.service.impl.ServiceFiscalImpl">		
+		<property name="tiersDAO" ref="tiersDAO" />
+		<property name="serviceInfrastructure" ref="_serviceInfrastructure" />
+		<property name="serviceCivil" ref="_serviceCivil" />
+		<property name="adresseService" ref="adresseService" />
+		<property name="tiersService" ref="tiersService" />
+		<property name="situationFamilleService" ref="situationFamilleService" />
+		<property name="hibernateTemplate" ref="hibernateTemplate" />
+		<property name="ibanValidator" ref="ibanValidator" />
+		<property name="serviceTiersPort" ref="serviceTiersPort" />
+		<property name="diService" ref="diService" />	
+		<property name="login" ref="login" />
+		<property name="periodeFiscaleDAO" ref="periodeFiscaleDAO" />
+		<property name="modeleDocumentDAO" ref="modeleDocumentDAO" />					
+	</bean>
+
+	 <jaxws:client id="serviceTiersPort"  serviceClass="ch.vd.uniregctb.webservices.tiers.TiersPort" 
+	 		address="${extprop.unireg.webservices.url}"
+	 		username="${extprop.unireg.webservices.username}"
+	 		password="${extprop.unireg.webservices.password}"/>	
+	
+	<bean id="login" class="ch.vd.uniregctb.webservices.tiers.UserLogin">
+		<property name="userId" value="${extprop.unireg.webservices.user.login}" />
+		<property name="oid" value="${extprop.unireg.webservices.user.oid}" />
+	</bean>
+</beans>

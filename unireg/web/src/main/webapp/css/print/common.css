@@ -1,0 +1,78 @@
+ /* Change text colour to black (useful for light text on a dark background) */
+* {
+	color: #000;
+	float: none !important;
+}
+
+/* Improve colour contrast of links */
+a:link, a:visited {
+color: #781351
+}
+
+#sommaire,
+#footer,
+#canton,
+#departement,
+#tabnav,
+#header,
+#content .outils,
+div #tabs,
+form#command,
+table.display_table div,
+#timeline,
+fieldset.information table.display_table form input,
+a.modif {
+	display:none;
+}
+
+
+#noprint {
+	display:none;
+}
+
+.display table {
+	border: 1px solid #666;
+	width: 80%;
+	margin: 20px 0 20px 0;
+}
+
+.display  th, .displayTable  td {
+	padding: 2px 4px 2px 4px !important;
+	text-align: left;
+	vertical-align: top;
+}
+
+.display  thead tr {
+	background-color: #fc0;
+}
+
+
+.display td a, .display td a:visited, .display td a:link,
+.display th a,.displayTable th a:visited {
+	color: black;
+}
+
+.display th a, .displayTable th a:visited {
+	color: black;
+}
+
+.display th a:hover {
+	text-decoration: underline;
+	color: black;
+}
+
+.display th.sorted a,.displayTable  th.sortable a {
+	background-position: right;
+	display: block;
+	width: 100%;
+}
+
+
+
+.display tr.odd {
+	background-color: #fff
+}
+
+fieldset, fieldset.information {
+	page-break-inside: avoid;
+}

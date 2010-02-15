@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+	<bean 	id="abstractTiersController"
+			parent="abstractSimpleFormController"
+			abstract="true"
+			class="ch.vd.uniregctb.tiers.AbstractTiersController">
+		<property name="tiersMapHelper" ref="tiersMapHelper" />
+		<property name="tiersDAO" ref="tiersDAO" />
+		<property name="service" ref="tiersService" />
+		<property name="paramApplicationManager" ref="paramApplicationManager" />
+	</bean>
+
+	<bean 	id="abstractTiersListController"
+			parent="abstractTiersController"
+			abstract="true"
+			class="ch.vd.uniregctb.tiers.AbstractTiersListController" >
+			<property name="uniregProperties" ref="uniregExternalProperties" />
+			<property name="tiersService" ref="tiersService" />
+	</bean>
+
+	<bean id="tiersMapHelper" class="ch.vd.uniregctb.tiers.TiersMapHelper" />
+
+	<bean id="tiersCriteriaValidator" class="ch.vd.uniregctb.tiers.validator.TiersCriteriaValidator" />
+
+	<bean 	id="tiersLaunchCatController" class="ch.vd.uniregctb.tiers.TiersLaunchCatController" />
+
+	<bean 	id="tiersListController"
+			class="ch.vd.uniregctb.tiers.TiersListController"
+			parent="abstractTiersListController">
+		<property name="sessionForm" value="true" />
+		<property name="commandClass" value="ch.vd.uniregctb.tiers.view.TiersCriteriaView" />
+		<property name="tiersListManager" ref="tiersListManager" />
+		<property name="commandName" value="command" />
+		<property name="service" ref="tiersService" />
+		<property name="formView" value="tiers/recherche/list" />
+		<property name="successView" value="list.do" />
+		<property name="validator" ref="tiersCriteriaValidator" />
+	</bean>
+
+	<bean id="tiersVisuController" class="ch.vd.uniregctb.tiers.TiersVisuController" parent="abstractTiersController">
+		<property name="sessionForm" value="true" />
+		<property name="commandClass" value="ch.vd.uniregctb.tiers.view.TiersVisuView" />
+		<property name="tiersVisuManager" ref="tiersVisuManager" />
+		<property name="tacheListManager" ref="tacheListManager" />
+		<property name="formView" value="tiers/visualisation/visu" />
+		<property name="successView" value="redirect:/tiers/list.do" />
+		<property name="uniregProperties" ref="uniregExternalProperties" />
+	</bean>
+
+	<bean id="tiersTimelineController" class="ch.vd.uniregctb.tiers.TiersTimelineController" parent="abstractTiersController">
+		<property name="sessionForm" value="true" />
+		<property name="commandClass" value="ch.vd.uniregctb.tiers.view.TiersTimelineView" />
+		<property name="formView" value="tiers/visualisation/timeline" />
+		<property name="successView" value="tiers/visualisation/timeline" />
+		<property name="tiersDao" ref="tiersDAO" />
+		<property name="tiersService" ref="tiersService" />
+		<property name="adresseService" ref="adresseService" />
+	</bean>
+
+	<bean id="tiersEditController" class="ch.vd.uniregctb.tiers.TiersEditController" parent="abstractTiersController">
+		<property name="sessionForm" value="true" />
+		<property name="commandClass" value="ch.vd.uniregctb.tiers.view.TiersEditView" />
+		<property name="service" ref="tiersService" />
+		<property name="formView" value="tiers/edition/edit" />
+		<property name="tiersEditManager" ref="tiersEditManager" />
+		<property name="forFiscalManager" ref="forFiscalManager" />
+		<property name="rapportEditManager" ref="rapportEditManager" />
+		<property name="adresseManager" ref="adresseManager" />
+		<property name="situationFamilleManager" ref="situationFamilleManager" />
+		<property name="validator" ref="tiersEditValidator" />
+	</bean>
+	
+	<bean id="tiersEditValidator" class="ch.vd.uniregctb.tiers.validator.TiersEditValidator" >
+		<property name="ibanValidator" ref="ibanValidator" />
+	</bean>
+	
+	<bean id="tiersManager" class="ch.vd.uniregctb.tiers.manager.TiersManager">
+		<property name="tiersDAO" ref="tiersDAO" />
+		<property name="adresseTiersDAO" ref="adresseTiersDAO" />
+		<property name="hostCivilService" ref="hostCivilService" />
+		<property name="serviceCivilService" ref="serviceCivilService" />
+		<property name="hostPersonneMoraleService" ref="hostPersonneMoraleService" />
+		<property name="adresseService" ref="adresseService" />
+		<property name="tiersService" ref="tiersService" />
+		<property name="serviceInfrastructureService" ref="serviceInfrastructureService" />
+		<property name="tiersGeneralManager" ref="tiersGeneralManager" />
+		<property name="situationFamilleService" ref="situationFamilleService" />
+		<property name="rapportEntreTiersDAO" ref="rapportEntreTiersDAO" />
+	</bean>
+	<bean id="civilDataManager" class="ch.vd.uniregctb.tiers.manager.CivilDataManagerImpl" parent="tiersManager">
+	</bean>
+	
+	<bean id="adresseDataManager" class="ch.vd.uniregctb.tiers.manager.AdresseDataManagerImpl" parent="tiersManager">
+		
+	</bean>  
+
+	<bean id="tiersEditManager" class="ch.vd.uniregctb.tiers.manager.TiersEditManagerImpl"  parent="tiersManager">
+	</bean>
+
+	<bean id="tiersVisuManager" class="ch.vd.uniregctb.tiers.manager.TiersVisuManagerImpl" parent="tiersManager">
+		<property name="mouvementVisuManager" ref="mouvementVisuManager"/>
+	</bean>
+	
+	<bean id="tiersListManager" class="ch.vd.uniregctb.tiers.manager.TiersListManagerImpl">
+		<property name="serviceInfrastructureService" ref="serviceInfrastructureService" />
+	</bean>
+
+	<bean id="lrVisuController" class="ch.vd.uniregctb.tiers.ListeRecapVisuController" parent="abstractTiersController">
+		<property name="sessionForm" value="true" />
+		<property name="commandClass" value="ch.vd.uniregctb.lr.view.ListeRecapDetailView" />
+		<property name="commandName" value="command" />
+		<property name="lrVisuManager" ref="lrVisuManager" />
+		<property name="formView" value="tiers/visualisation/lr/lr" />
+		<property name="successView" value="redirect:/tiers/lr.do" />
+	</bean>
+	
+	<bean id="lrVisuManager" class="ch.vd.uniregctb.tiers.manager.ListeRecapVisuManagerImpl">
+		<property name="tiersDAO" ref="tiersDAO" />
+		<property name="tiersGeneralManager" ref="tiersGeneralManager" />
+		<property name="lrDAO" ref="lrDAO" />
+		<property name="hostCivilService" ref="hostCivilService" />
+	</bean>
+
+	<bean id="diVisuController" class="ch.vd.uniregctb.tiers.DeclarationImpotVisuController" parent="abstractTiersController">
+		<property name="sessionForm" value="true" />
+		<property name="commandClass" value="ch.vd.uniregctb.di.view.DeclarationImpotDetailView" />
+		<property name="commandName" value="command" />
+		<property name="diVisuManager" ref="diVisuManager" />
+		<property name="formView" value="tiers/visualisation/di/di" />
+		<property name="successView" value="redirect:/tiers/lr.do" />
+	</bean>
+	
+	<bean id="diVisuManager" class="ch.vd.uniregctb.tiers.manager.DeclarationImpotVisuManagerImpl">
+		<property name="tiersDAO" ref="tiersDAO" />
+		<property name="diDAO" ref="diDAO" />
+		<property name="hostCivilService" ref="hostCivilService" />
+		<property name="tiersGeneralManager" ref="tiersGeneralManager" />
+	</bean>
+	
+	<bean id="consultLogController" class="ch.vd.uniregctb.common.ConsultLogController" parent="abstractSimpleFormController">
+		<property name="sessionForm" value="true" />
+		<property name="commandClass" value="ch.vd.uniregctb.common.ConsultLogView" />
+		<property name="commandName" value="command" />
+		<property name="forFiscalDAO" ref="forFiscalDAO" />
+		<property name="situationFamilleDAO" ref="situationFamilleDAO" />
+		<property name="adresseTiersDAO" ref="adresseTiersDAO" />
+		<property name="rapportEntreTiersDAO" ref="rapportEntreTiersDAO" />
+		<property name="diDAO" ref="diDAO" />
+		<property name="lrDAO" ref="lrDAO" />
+		<property name="tiersDAO" ref="tiersDAO" />
+		<property name="tacheDAO" ref="tacheDAO" />
+		<property name="droitAccesDAO" ref="droitAccesDAO" />
+		<property name="mouvementDossierDAO" ref="mouvementDossierDAO" />
+		<property name="formView" value="common/consult-log" />
+		<property name="successView" value="common/refresh-parent" />
+	</bean>
+
+	<bean id="mouvementVisuController" class="ch.vd.uniregctb.tiers.MouvementVisuController" parent="abstractTiersController">
+		<property name="sessionForm" value="true" />
+		<property name="commandClass" value="ch.vd.uniregctb.mouvement.view.MouvementDetailView" />
+		<property name="commandName" value="command" />
+		<property name="mouvementVisuManager" ref="mouvementVisuManager" />
+		<property name="formView" value="tiers/visualisation/mouvement/mouvement" />
+		<property name="successView" value="redirect:/tiers/mouvement.do" />
+	</bean>
+
+	<bean id="abstractMouvementManager" abstract="true" class="ch.vd.uniregctb.mouvement.manager.AbstractMouvementManagerImpl">
+		<property name="tiersGeneralManager" ref="tiersGeneralManager" />
+		<property name="tiersService" ref="tiersService" />
+		<property name="hostCivilService" ref="hostCivilService" />
+		<property name="serviceInfra" ref="serviceInfrastructureService" />
+		<property name="serviceSecuriteService" ref="serviceSecuriteService" />
+		<property name="mouvementDossierDAO" ref="mouvementDossierDAO" />
+	</bean>
+
+	<bean id="mouvementVisuManager" class="ch.vd.uniregctb.tiers.manager.MouvementVisuManagerImpl" parent="abstractMouvementManager"/>
+
+	<bean id="tiersGeneralManager" class="ch.vd.uniregctb.general.manager.TiersGeneralManagerImpl">
+		<property name="adresseService" ref="adresseService" />
+		<property name="serviceCivilService" ref="serviceCivilService" />
+		<property name="tiersService" ref="tiersService" />
+		<property name="tiersDAO" ref="tiersDAO" />
+		<property name="infraService" ref="serviceInfrastructureService"/>
+	</bean>
+
+	<bean id="utilisateurManager" class="ch.vd.uniregctb.general.manager.UtilisateurManagerImpl">
+		<property name="serviceSecuriteService" ref="serviceSecuriteService" />
+	</bean>
+
+	<bean id="debiteursEditController" class="ch.vd.uniregctb.tiers.DebiteursEditController" parent="abstractTiersController">
+		<property name="sessionForm" value="true" />
+		<property name="commandClass" value="ch.vd.uniregctb.tiers.view.TiersEditView" />
+		<property name="service" ref="tiersService" />
+		<property name="formView" value="tiers/edition/debiteur/edit" />
+		<property name="tiersEditManager" ref="tiersEditManager" />
+	</bean>
+
+
+</beans>

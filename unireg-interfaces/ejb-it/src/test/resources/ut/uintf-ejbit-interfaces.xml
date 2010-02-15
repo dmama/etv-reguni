@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+	<!-- Bean remoteJndiConnection connexion base de données -->
+	<bean id="ejbJndiTemplateUnireg" class="ch.vd.uniregctb.utils.UniregJndiTemplate">
+		<property name="environment">
+			<map>
+				<entry key="java.naming.factory.initial" value="${unireg-interfaces.factory}" />
+				<entry key="java.naming.provider.url" value="${unireg-interfaces.serverurl}"/>		
+				<entry key="java.naming.security.principal" value="${unireg-interfaces.username}" />
+				<entry key="java.naming.security.credentials" value="${unireg-interfaces.password}" />
+			</map>
+		</property>
+	</bean>
+	
+	<!-- Bean remoteJndiConnection for Host-Interfaces EJBs -->
+	<bean id="ejbJndiTemplateHost" class="ch.vd.uniregctb.utils.UniregJndiTemplate">
+		<property name="environment">
+			<map>
+				<entry key="java.naming.factory.initial" value="${host-interfaces.factory}" />
+				<entry key="java.naming.provider.url" value="${host-interfaces.serverurl}"/>
+				<entry key="java.naming.security.principal" value="${host-interfaces.username}" />
+				<entry key="java.naming.security.credentials" value="${host-interfaces.password}" />
+			</map>
+		</property>
+	</bean>
+
+	<!-- Bean client serviceIFiscal -->
+	<!--
+	class="${host-interfaces.ejb-proxy-class}">
+	-->
+	<bean name="serviceFiscalUnireg" class="weblogic.workaround.WeblogicCustomSimpleRemoteStatelessSessionProxyFactoryBean">
+		<property name="jndiName" value="ejb/ch.vd.uniregctb.fiscal.service.ServiceFiscal"/>
+		<property name="resourceRef" value="false"/>
+		<property name="lookupHomeOnStartup" value="false"/>
+		<property name="businessInterface" value="ch.vd.uniregctb.fiscal.service.ServiceFiscal"/>
+		<property name="jndiTemplate" ref="ejbJndiTemplateUnireg"/>
+	</bean>
+	
+	<bean name="serviceFiscalHost" class="${host-interfaces.ejb-proxy-class}">
+		<property name="jndiName" value="ejb/ch.vd.registre.fiscal.service.ServiceFiscal-${host-interfaces.version-short}"/>
+		<property name="resourceRef" value="false"/>
+		<property name="lookupHomeOnStartup" value="false"/>
+		<property name="businessInterface" value="ch.vd.registre.fiscal.service.ServiceFiscal"/>
+		<property name="jndiTemplate" ref="ejbJndiTemplateHost"/>
+	</bean>
+	<!-- Bean client serviceInfrastructure -->
+	<bean name="_serviceInfrastructure" class="${host-interfaces.ejb-proxy-class}">
+		<property name="jndiName" value="ejb/ch.vd.infrastructure.service.ServiceInfrastructure-${host-interfaces.version-short}"/>
+		<property name="resourceRef" value="false"/>
+		<property name="lookupHomeOnStartup" value="false"/>
+		<property name="businessInterface" value="ch.vd.infrastructure.service.ServiceInfrastructure"/>
+		<property name="jndiTemplate" ref="ejbJndiTemplateHost"/>
+	</bean>
+
+	<!-- Bean client serviceCivil -->
+	<bean name="_serviceCivil" class="${host-interfaces.ejb-proxy-class}">
+		<property name="jndiName" value="ejb/ch.vd.registre.civil.service.ServiceCivil-${host-interfaces.version-short}"/>
+		<property name="resourceRef" value="false"/>
+		<property name="lookupHomeOnStartup" value="false"/>
+		<property name="businessInterface" value="ch.vd.registre.civil.service.ServiceCivil"/>
+		<property name="jndiTemplate" ref="ejbJndiTemplateHost"/>
+	</bean>
+
+	<!-- Bean client serviceSecurite -->
+	<bean name="_serviceSecurite" class="${host-interfaces.ejb-proxy-class}">
+		<property name="jndiName" value="ejb/ch.vd.securite.service.ServiceSecurite-${host-interfaces.version-short}"/>
+		<property name="resourceRef" value="false"/>
+		<property name="lookupHomeOnStartup" value="false"/>
+		<property name="businessInterface" value="ch.vd.securite.service.ServiceSecurite"/>
+		<property name="jndiTemplate" ref="ejbJndiTemplateHost"/>
+	</bean>
+
+	<!-- Bean client servicePM -->
+	<bean name="_servicePersonneMorale" class="${host-interfaces.ejb-proxy-class}">
+		<property name="jndiName" value="ejb/ch.vd.registre.pm.service.ServicePersonneMorale-${host-interfaces.version-short}"/>
+		<property name="resourceRef" value="false"/>
+		<property name="lookupHomeOnStartup" value="false"/>
+		<property name="businessInterface" value="ch.vd.registre.pm.service.ServicePersonneMorale"/>
+		<property name="jndiTemplate" ref="ejbJndiTemplateHost"/>
+	</bean>
+<bean id="evenementFiscalFacade" class="ch.vd.uniregctb.evenement.fiscal.jms.mock.MockEvenementFiscalFacade"></bean>
+</beans>

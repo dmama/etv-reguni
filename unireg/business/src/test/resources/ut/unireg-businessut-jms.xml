@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd">
+
+	<bean id="jmsBroker" class="org.apache.activemq.xbean.BrokerFactoryBean">
+		<property name="config" value="classpath:ch/vd/uniregctb/jms/activemq-broker.xml" />
+		<property name="start" value="true" />
+	</bean>
+
+	<bean id="jmsConnectionManager" class="org.apache.activemq.spring.ActiveMQConnectionFactory">
+		<property name="brokerURL" value="vm://localhost" />
+		<property name="userName" value="smx"/>
+		<property name="password" value="smx"/>
+	</bean>
+
+	<bean id="jmsConnectionFactory" class="org.jencks.amqpool.JcaPooledConnectionFactory" destroy-method="stop">
+		<property name="connectionFactory" ref="jmsConnectionManager" />
+		<property name="maxConnections" value="8" />
+		<property name="transactionManager" ref="transactionManager" />
+		<property name="name" value="Unireg-ActiveMQ" />
+	</bean>
+
+	<bean id="identCtbMessageHandler" class="ch.vd.uniregctb.evenement.identification.contribuable.MockIdentificationContribuableMessageHandler"/>
+
+	<bean id="evenementExterneSender" class="ch.vd.uniregctb.evenement.externe.MockEvenementExterneSender"/>
+
+	<bean id="evenementFiscalSender" class="ch.vd.uniregctb.evenement.fiscal.MockEvenementFiscalSender"/>
+
+</beans>

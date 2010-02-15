@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2005 rel. 3 U (http://www.altova.com) by Etat de Vaud (Etat de Vaud) -->
+<!--Version  0.0.1  - 28.04.09 : JVO - Première version de spec Bordereau d' envoi de dossier-->
+<!--Version  0.0.2  - 11.01.10 : JVO - Modification de SPEC-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:include schemaLocation="DonneesTechniques_0.0.2.xsd"/>
+	<xs:element name="BordereauEnvoi">
+		<xs:annotation>
+			<xs:documentation>RGPB0801</xs:documentation>
+		</xs:annotation>
+		<!-- Description du schema pour l'impression du document BVR-->
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="Periode" type="typPeriode"/>
+				<xs:element name="Dossier" maxOccurs="unbounded">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="NumCTB" type="xs:string">
+								<xs:annotation>
+									<xs:documentation>Numéro CTB</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Nom1" type="typCdata">
+								<xs:annotation>
+									<xs:documentation>Nom CTB1</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Prenom1" type="typCdata">
+								<xs:annotation>
+									<xs:documentation>Prenom CTB1</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Nom2" type="typCdata">
+								<xs:annotation>
+									<xs:documentation>Nom CTB2</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Prenom2" type="typCdata">
+								<xs:annotation>
+									<xs:documentation>Prenom CTB2</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="NumOFS" type="xs:string">
+								<xs:annotation>
+									<xs:documentation>Numéro de l'office</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="OFS" type="typCdata">
+								<xs:annotation>
+									<xs:documentation>Office</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="signature">
+					<xs:annotation>
+						<xs:documentation>SIGNA</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="officeImpot" type="xs:string">
+								<xs:annotation>
+									<xs:documentation>Nom de l'office ou du service</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>
