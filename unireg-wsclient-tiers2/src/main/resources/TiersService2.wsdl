@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<!-- version 2.2 -->
+<!-- version 2.3 -->
 <wsdl:definitions name="TiersService" targetNamespace="http://www.vd.ch/uniregctb/webservices/tiers2" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
 				  xmlns:tns="http://www.vd.ch/uniregctb/webservices/tiers2" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
 	<wsdl:types>
@@ -72,6 +72,9 @@
 					<xs:element minOccurs="0" name="adresseRepresentation" type="tns:Adresse" />
 					<xs:element minOccurs="0" name="adresseDomicile" type="tns:Adresse" />
 					<xs:element minOccurs="0" name="adresseEnvoi" type="tns:AdresseEnvoi" />
+					<xs:element minOccurs="0" name="adressePoursuiteFormattee" type="tns:AdresseEnvoi" />
+					<xs:element minOccurs="0" name="adresseRepresentationFormattee" type="tns:AdresseEnvoi" />
+					<xs:element minOccurs="0" name="adresseDomicileFormattee" type="tns:AdresseEnvoi" />
 					<xs:element maxOccurs="unbounded" minOccurs="0" name="rapportsEntreTiers" type="tns:RapportEntreTiers" />
 					<xs:element minOccurs="0" name="forFiscalPrincipal" type="tns:ForFiscal" />
 					<xs:element maxOccurs="unbounded" minOccurs="0" name="autresForsFiscaux" type="tns:ForFiscal" />
@@ -237,6 +240,9 @@
 					<xs:element maxOccurs="unbounded" minOccurs="0" name="adressesRepresentation" type="tns:Adresse" />
 					<xs:element maxOccurs="unbounded" minOccurs="0" name="adressesDomicile" type="tns:Adresse" />
 					<xs:element minOccurs="0" name="adresseEnvoi" type="tns:AdresseEnvoi" />
+					<xs:element minOccurs="0" name="adressePoursuiteFormattee" type="tns:AdresseEnvoi" />
+					<xs:element minOccurs="0" name="adresseRepresentationFormattee" type="tns:AdresseEnvoi" />
+					<xs:element minOccurs="0" name="adresseDomicileFormattee" type="tns:AdresseEnvoi" />
 					<xs:element maxOccurs="unbounded" minOccurs="0" name="rapportsEntreTiers" type="tns:RapportEntreTiers" />
 					<xs:element maxOccurs="unbounded" minOccurs="0" name="forsFiscauxPrincipaux" type="tns:ForFiscal" />
 					<xs:element maxOccurs="unbounded" minOccurs="0" name="autresForsFiscaux" type="tns:ForFiscal" />
