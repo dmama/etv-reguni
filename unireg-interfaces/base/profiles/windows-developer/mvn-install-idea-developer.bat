@@ -1,2 +1,0 @@
-
-mvn -Pidea-developer install
