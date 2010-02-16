@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
@@ -35,6 +36,7 @@ import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.tiers.TiersException;
 import ch.vd.uniregctb.tiers.TiersCriteria.TypeRecherche;
 import ch.vd.uniregctb.tiers.TiersCriteria.TypeTiers;
+import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
@@ -64,20 +66,59 @@ public class ArriveeHandler extends EvenementCivilHandlerBase {
 
 		final Arrivee arrivee = (Arrivee) evenement;
 
+		final ServiceInfrastructureService serviceInfra = getService().getServiceInfra();
 		ArriveeType type = null;
 		try {
-			type = getArriveeType(arrivee);
+			type = getArriveeType(serviceInfra, arrivee);
 		}
 		catch (EvenementCivilHandlerException e) {
 			erreurs.add(new EvenementCivilErreur(e));
 		}
 		if (type == ArriveeType.ARRIVEE_ADRESSE_PRINCIPALE) {
 			// Verification de la commune d'arrivée
-			if (arrivee.getNouvelleCommunePrincipale() == null) {
-				erreurs.add(new EvenementCivilErreur("La nouvelle commune principale n'a pas été trouvée (adresse hors-Suisse ?)"));
+			try {
+				final Commune communeArrivee = getCommuneArrivee(serviceInfra, arrivee, type);
+				if (communeArrivee == null) {
+					erreurs.add(new EvenementCivilErreur("La nouvelle commune principale n'a pas été trouvée (adresse hors-Suisse ?)"));
+				}
+			}
+			catch (InfrastructureException e) {
+				erreurs.add(new EvenementCivilErreur("La nouvelle commune principale n'a pas été trouvée (" + e.getMessage() + ")", e));
 			}
 
 			verifierMouvementIndividu(arrivee, false, erreurs, warnings);
+		}
+	}
+
+	private static Commune getCommuneArrivee(ServiceInfrastructureService serviceInfra, Arrivee arrivee, ArriveeType type) throws InfrastructureException {
+
+		// [UNIREG-1995] si la commune d'annonce est renseignée dans l'événement, la prendre en compte
+		// (ou si bien-sûr on tombe sur une commune fractionnée) sinon on prend la commune de l'adresse
+
+		if (arrivee.getNumeroOfsCommuneAnnonce() != null && arrivee.getNumeroOfsCommuneAnnonce() > 0) {
+			final Commune commune = serviceInfra.getCommuneByNumeroOfsEtendu(arrivee.getNumeroOfsCommuneAnnonce());
+			if (commune == null || commune.isPrincipale()) {
+				return getCommuneArriveeDepuisAdresse(arrivee, type);
+			}
+			else {
+				return commune;
+			}
+		}
+		else {
+			return getCommuneArriveeDepuisAdresse(arrivee, type);
+		}
+	}
+
+	private static Commune getCommuneArriveeDepuisAdresse(Arrivee arrivee, ArriveeType type) {
+		switch (type) {
+			case ARRIVEE_ADRESSE_PRINCIPALE:
+				return arrivee.getNouvelleCommunePrincipale();
+
+			case ARRIVEE_RESIDENCE_SECONDAIRE:
+				return arrivee.getNouvelleCommuneSecondaire();
+
+			default:
+				throw new RuntimeException("Type d'arrivée inconnu : " + type);
 		}
 	}
 
@@ -89,14 +130,15 @@ public class ArriveeHandler extends EvenementCivilHandlerBase {
 		 * Validation des adresses
 		 */
 		try {
-			final ArriveeType type = getArriveeType(arrivee);
+			final ServiceInfrastructureService serviceInfra = getService().getServiceInfra();
+			final ArriveeType type = getArriveeType(serviceInfra, arrivee);
 			switch (type) {
 			case ARRIVEE_ADRESSE_PRINCIPALE:
 				validateArriveeAdressePrincipale(arrivee, erreurs, warnings);
 				validateForPrincipal(arrivee, erreurs);
 				break;
 			case ARRIVEE_RESIDENCE_SECONDAIRE:
-				validateArriveeAdresseSecondaire(arrivee, erreurs);
+				validateArriveeAdresseSecondaire(serviceInfra, arrivee, erreurs);
 				break;
 			default:
 				Assert.fail();
@@ -159,8 +201,7 @@ public class ArriveeHandler extends EvenementCivilHandlerBase {
 		}
 	}
 
-	protected final void validateArriveeAdressePrincipale(Arrivee arrivee, List<EvenementCivilErreur> erreurs,
-			List<EvenementCivilErreur> warnings) {
+	protected final void validateArriveeAdressePrincipale(Arrivee arrivee, List<EvenementCivilErreur> erreurs, List<EvenementCivilErreur> warnings) {
 		/*
 		 * La date de début de la nouvelle adresse principale de l’individu est antérieure ou identique à la date de l'ancienne.
 		 */
@@ -172,33 +213,38 @@ public class ArriveeHandler extends EvenementCivilHandlerBase {
 			erreurs.add(new EvenementCivilErreur("La date d'arrivée principale est antérieure à la date de fin de l'ancienne adresse"));
 		}
 
-		/*
-		 * La nouvelle adresse principale n’est pas dans le canton (il n’est pas obligatoire que l’adresse courrier soit dans le canton).
-		 */
-		final Commune nouvelleCommune = arrivee.getNouvelleCommunePrincipale();
-		Assert.notNull(nouvelleCommune);
-		if (!nouvelleCommune.isVaudoise()) {
-			erreurs.add(new EvenementCivilErreur("La nouvelle commune principale est en dehors du canton"));
+		try {
+			/*
+			 * La nouvelle adresse principale n’est pas dans le canton (il n’est pas obligatoire que l’adresse courrier soit dans le canton).
+			 */
+			final Commune nouvelleCommune = getCommuneArrivee(getService().getServiceInfra(), arrivee, ArriveeType.ARRIVEE_ADRESSE_PRINCIPALE);
+			Assert.notNull(nouvelleCommune);
+			if (!nouvelleCommune.isVaudoise()) {
+				erreurs.add(new EvenementCivilErreur("La nouvelle commune principale est en dehors du canton"));
+			}
+
+			/*
+			 * La commune d'annonce est différente de la commune d'arrivée cas possible avec les fractions if
+			 * (arrivee.getNumeroOfsCommuneAnnonce().intValue() != nouvelleCommune.getNoTechnique()) { erreurs.add(new EvenementCivilErreur("La
+			 * nouvelle commune principale ("+nouvelleCommune.getNomMinuscule()+ ","+nouvelleCommune.getNoTechnique()+") ne correspond pas à la
+			 * commune d'annonce ("+arrivee.getNumeroOfsCommuneAnnonce()+")")); }
+			 */
+
+			/*
+			 * Pour les communes du Sentier, il n'est pas possible de déterminer automatiquement le for principal. Un traitement manuel est
+			 * nécessaire.
+			 */
+			if (nouvelleCommune.getNoOFSEtendu() == NO_OFS_FRACTION_SENTIER) {
+				warnings.add(new EvenementCivilErreur("arrivée dans la fraction de commune du Sentier: "
+						+ "veuillez vérifier la fraction de commune du for principal", TypeEvenementErreur.WARNING));
+			}
 		}
-
-		/*
-		 * La commune d'annonce est différente de la commune d'arrivée cas possible avec les fractions if
-		 * (arrivee.getNumeroOfsCommuneAnnonce().intValue() != nouvelleCommune.getNoTechnique()) { erreurs.add(new EvenementCivilErreur("La
-		 * nouvelle commune principale ("+nouvelleCommune.getNomMinuscule()+ ","+nouvelleCommune.getNoTechnique()+") ne correspond pas à la
-		 * commune d'annonce ("+arrivee.getNumeroOfsCommuneAnnonce()+")")); }
-		 */
-
-		/*
-		 * Pour les communes du Sentier, il n'est pas possible de déterminer automatiquement le for principal. Un traitement manuel est
-		 * nécessaire.
-		 */
-		if (nouvelleCommune.getNoOFSEtendu() == NO_OFS_FRACTION_SENTIER) {
-			warnings.add(new EvenementCivilErreur("arrivée dans la fraction de commune du Sentier: "
-					+ "veuillez vérifier la fraction de commune du for principal", TypeEvenementErreur.WARNING));
+		catch (InfrastructureException e) {
+			erreurs.add(new EvenementCivilErreur("La nouvelle commune principale est introuvable (" + e.getMessage() + ")", e));
 		}
 	}
 
-	protected static final void validateArriveeAdresseSecondaire(Arrivee arrivee, List<EvenementCivilErreur> erreurs) {
+	protected static void validateArriveeAdresseSecondaire(ServiceInfrastructureService infraService, Arrivee arrivee, List<EvenementCivilErreur> erreurs) {
 		/*
 		 * La date de début de la nouvelle adresse secondaire de l’individu est antérieure ou identique à la date de l'ancienne.
 		 */
@@ -207,20 +253,24 @@ public class ArriveeHandler extends EvenementCivilHandlerBase {
 			erreurs.add(new EvenementCivilErreur("La date d'arrivée secondaire est antérieure à la date de fin de l'ancienne adresse"));
 		}
 
-		/*
-		 * La nouvelle adresse secondaire n’est pas dans le canton (il n’est pas obligatoire que l’adresse courrier soit dans le canton).
-		 */
-		final Commune nouvelleCommune = arrivee.getNouvelleCommuneSecondaire();
-		if (nouvelleCommune == null || !nouvelleCommune.isVaudoise()) {
-			erreurs.add(new EvenementCivilErreur("La nouvelle commune secondaire est en dehors du canton"));
+		try {
+			/*
+			 * La nouvelle adresse secondaire n’est pas dans le canton (il n’est pas obligatoire que l’adresse courrier soit dans le canton).
+			 */
+			final Commune nouvelleCommune = getCommuneArrivee(infraService, arrivee, ArriveeType.ARRIVEE_RESIDENCE_SECONDAIRE);
+			if (nouvelleCommune == null || !nouvelleCommune.isVaudoise()) {
+				erreurs.add(new EvenementCivilErreur("La nouvelle commune secondaire est en dehors du canton"));
+			}
+
+			/*
+			 * La commune d'annonce est différente de la commune d'arrivée cas possible avec les fractions if
+			 * (arrivee.getNumeroOfsCommuneAnnonce().intValue() != nouvelleCommune.getNoTechnique()) { erreurs.add(new EvenementCivilErreur("La
+			 * nouvelle commune secondaire ne correspond pas à la commune d'annonce")); }
+			 */
 		}
-
-		/*
-		 * La commune d'annonce est différente de la commune d'arrivée cas possible avec les fractions if
-		 * (arrivee.getNumeroOfsCommuneAnnonce().intValue() != nouvelleCommune.getNoTechnique()) { erreurs.add(new EvenementCivilErreur("La
-		 * nouvelle commune secondaire ne correspond pas à la commune d'annonce")); }
-		 */
-
+		catch (InfrastructureException e) {
+			erreurs.add(new EvenementCivilErreur("La nouvelle commune secondaire est introuvable (" + e.getMessage() + ")", e));
+		}
 	}
 
 	@Override
@@ -274,7 +324,7 @@ public class ArriveeHandler extends EvenementCivilHandlerBase {
 			/*
 			 * Mise-à-jour des fors fiscaux principaux du contribuable
 			 */
-			final ArriveeType type = getArriveeType(arrivee);
+			final ArriveeType type = getArriveeType(getService().getServiceInfra(), arrivee);
 
 			RegDate dateEvenement = dateArrivee;
 			if (TypeEvenementCivil.ARRIVEE_PRINCIPALE_VAUDOISE == arrivee.getType()) {
@@ -283,6 +333,7 @@ public class ArriveeHandler extends EvenementCivilHandlerBase {
 			}
 
 			final boolean individuMajeur = FiscalDateHelper.isMajeurAt(individu, dateEvenement);
+			final Commune communeArrivee = getCommuneArrivee(getService().getServiceInfra(), arrivee, type);
 
 			/*
 			 * Le for fiscal principal reste inchangé en cas d'arrivée en résidence secondaire, ou en cas d'arrivée en résidence principale
@@ -297,7 +348,7 @@ public class ArriveeHandler extends EvenementCivilHandlerBase {
 					// s'il est suisse, titulaire d'un permis C ou a obtenu le statut de réfugié => ordinaire
 					if (!getService().isEtrangerSansPermisC(habitant, dateEvenement) || getService().isHabitantRefugie(habitant, dateEvenement)) {
 						Audit.info(numeroEvenement, "Création d'un for fiscal ordinaire");
-						int numeroOfsNouveau = arrivee.getNouvelleCommunePrincipale().getNoOFSEtendu();
+						final int numeroOfsNouveau = communeArrivee.getNoOFSEtendu();
 						if(motifOuverture == null){
 							motifOuverture = MotifFor.ARRIVEE_HS;
 							warnings.add(new EvenementCivilErreur("ancienne adresse avant l'arrivée inconnue : "
@@ -307,20 +358,20 @@ public class ArriveeHandler extends EvenementCivilHandlerBase {
 					}
 					else if (motifOuverture == MotifFor.ARRIVEE_HC || motifOuverture == MotifFor.ARRIVEE_HS || motifOuverture == null) {
 						Audit.info(arrivee.getNumeroEvenement(), "Création d'un for fiscal source");
-						int numeroOfsNouveau = arrivee.getNouvelleCommunePrincipale().getNoOFSEtendu();
+						final int numeroOfsNouveau = communeArrivee.getNoOFSEtendu();
 						if(motifOuverture == null){
 							motifOuverture = MotifFor.ARRIVEE_HS;
 							warnings.add(new EvenementCivilErreur("ancienne adresse avant l'arrivée inconnue : "
 									+ "veuillez indiquer le motif d'ouverture du for principal", TypeEvenementErreur.WARNING));
 						}
-						RegDate dateOuverture = findDateOuvertureSourcier(dateEvenement, arrivee.getType(), arrivee.getAncienneCommunePrincipale());
+						final RegDate dateOuverture = findDateOuvertureSourcier(dateEvenement, arrivee.getType(), arrivee.getAncienneCommunePrincipale());
 						openForFiscalPrincipal(habitant, dateOuverture, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, numeroOfsNouveau,
 								MotifRattachement.DOMICILE, motifOuverture, ModeImposition.SOURCE, false);
 					}
 				}
 				else {
 					Audit.info(numeroEvenement, "Mise a jour des fors fiscaux avec conservation du mode d'imposition");
-					int numeroOfsNouveau = arrivee.getNouvelleCommunePrincipale().getNoOFSEtendu();
+					final int numeroOfsNouveau = communeArrivee.getNoOFSEtendu();
 					if(motifOuverture == null){
 						motifOuverture = MotifFor.ARRIVEE_HS;
 						warnings.add(new EvenementCivilErreur("ancienne adresse avant l'arrivée inconnue : "
@@ -329,7 +380,7 @@ public class ArriveeHandler extends EvenementCivilHandlerBase {
 
 					RegDate dateOuvertureNouveauFor = dateEvenement;
 					if (isSourcier(forFiscal.getModeImposition())) {
-						dateOuvertureNouveauFor = findDateOuvertureSourcier(dateEvenement, arrivee.getType(), arrivee.getNouvelleCommunePrincipale());
+						dateOuvertureNouveauFor = findDateOuvertureSourcier(dateEvenement, arrivee.getType(), communeArrivee);
 					}
 
 					updateForFiscalPrincipal(habitant, dateOuvertureNouveauFor, numeroOfsNouveau, motifOuverture, motifOuverture, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, false);
@@ -337,6 +388,9 @@ public class ArriveeHandler extends EvenementCivilHandlerBase {
 			}
 		}
 		catch (TiersException e) {
+			throw new EvenementCivilHandlerException(e.getMessage(), e);
+		}
+		catch (InfrastructureException e) {
 			throw new EvenementCivilHandlerException(e.getMessage(), e);
 		}
 	}
@@ -477,7 +531,7 @@ public class ArriveeHandler extends EvenementCivilHandlerBase {
 		/*
 		 * Mise-à-jour des fors fiscaux principaux du contribuable
 		 */
-		final ArriveeType type = getArriveeType(arrivee);
+		final ArriveeType type = getArriveeType(getService().getServiceInfra(), arrivee);
 		if (type == ArriveeType.ARRIVEE_ADRESSE_PRINCIPALE) {
 			/*
 			 * Le for fiscal principal reste inchangé en cas d'arrivée en résidence secondaire.
@@ -558,12 +612,14 @@ public class ArriveeHandler extends EvenementCivilHandlerBase {
 			dateEvenement = FiscalDateHelper.getDateEvenementFiscal(dateEvenement);
 		}
 
-		final ForFiscalPrincipal ffpHabitantPrincipal = habitantPrincipal.getForFiscalPrincipalAt(null);
-		final ForFiscalPrincipal ffpHabitantConjoint = (habitantConjoint == null ? null : habitantConjoint.getForFiscalPrincipalAt(null));
-		final ForFiscalPrincipal ffpMenage = menageCommun.getForFiscalPrincipalAt(null);
-		int numeroOfsNouveau = arrivee.getNouvelleCommunePrincipale().getNoOFSEtendu();
-
 		try {
+
+			final ForFiscalPrincipal ffpHabitantPrincipal = habitantPrincipal.getForFiscalPrincipalAt(null);
+			final ForFiscalPrincipal ffpHabitantConjoint = (habitantConjoint == null ? null : habitantConjoint.getForFiscalPrincipalAt(null));
+			final ForFiscalPrincipal ffpMenage = menageCommun.getForFiscalPrincipalAt(null);
+			final Commune communeArrivee = getCommuneArrivee(getService().getServiceInfra(), arrivee, ArriveeType.ARRIVEE_ADRESSE_PRINCIPALE);
+			final int numeroOfsNouveau = communeArrivee.getNoOFSEtendu();
+
 			// pour un couple, le for principal est toujours sur le ménage commun
 			if (ffpHabitantPrincipal != null) {
 				throw new EvenementCivilHandlerException("Le contribuable principal du ménage [" + menageCommun
@@ -589,7 +645,7 @@ public class ArriveeHandler extends EvenementCivilHandlerBase {
 					Audit.info(arrivee.getNumeroEvenement(), "Création d'un for fiscal principal ordinaire sur le ménage commun");
 				}
 				else if (motifOuverture == MotifFor.ARRIVEE_HC || motifOuverture == MotifFor.ARRIVEE_HS) {
-					RegDate dateOuverture = findDateOuvertureSourcier(dateEvenement, arrivee.getType(), arrivee.getNouvelleCommunePrincipale());
+					final RegDate dateOuverture = findDateOuvertureSourcier(dateEvenement, arrivee.getType(), communeArrivee);
 					openForFiscalPrincipal(menageCommun, dateOuverture, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, numeroOfsNouveau,
 						MotifRattachement.DOMICILE, motifOuverture, ModeImposition.SOURCE, false);
 					Audit.info(arrivee.getNumeroEvenement(), "Création d'un for fiscal principal sourcier sur le ménage commun");
@@ -599,7 +655,7 @@ public class ArriveeHandler extends EvenementCivilHandlerBase {
 
 				RegDate dateOuvertureNouveauFor = dateEvenement;
 				if (isSourcier(ffpMenage.getModeImposition())) {
-					dateOuvertureNouveauFor = findDateOuvertureSourcier(dateEvenement, arrivee.getType(), arrivee.getNouvelleCommunePrincipale());
+					dateOuvertureNouveauFor = findDateOuvertureSourcier(dateEvenement, arrivee.getType(), communeArrivee);
 				}
 
 				updateForFiscalPrincipal(menageCommun, dateOuvertureNouveauFor, numeroOfsNouveau, motifOuverture, motifOuverture, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, false);
@@ -607,6 +663,9 @@ public class ArriveeHandler extends EvenementCivilHandlerBase {
 			}
 		}
 		catch (TiersException e) {
+			throw new EvenementCivilHandlerException(e.getMessage(), e);
+		}
+		catch (InfrastructureException e) {
 			throw new EvenementCivilHandlerException(e.getMessage(), e);
 		}
 	}
@@ -910,8 +969,8 @@ public class ArriveeHandler extends EvenementCivilHandlerBase {
 	 *             si aucune des deux communes d'arrivée n'est dans le canton
 	 *
 	 */
-	protected static final ArriveeType getArriveeType(Arrivee arrivee) throws EvenementCivilHandlerException {
-		TypeEvenementCivil type = arrivee.getType();
+	protected static ArriveeType getArriveeType(ServiceInfrastructureService serviceInfra, Arrivee arrivee) throws EvenementCivilHandlerException {
+		final TypeEvenementCivil type = arrivee.getType();
 		if (type == TypeEvenementCivil.ARRIVEE_PRINCIPALE_HC || type == TypeEvenementCivil.ARRIVEE_PRINCIPALE_HS
 				|| type == TypeEvenementCivil.ARRIVEE_PRINCIPALE_VAUDOISE) {
 			return ArriveeType.ARRIVEE_ADRESSE_PRINCIPALE;
@@ -919,21 +978,24 @@ public class ArriveeHandler extends EvenementCivilHandlerBase {
 		else if (type == TypeEvenementCivil.ARRIVEE_SECONDAIRE) {
 			return ArriveeType.ARRIVEE_RESIDENCE_SECONDAIRE;
 		}
-		// else
-		final Commune nouvelleCommunePrincipale = arrivee.getNouvelleCommunePrincipale();
-		final Commune ancienneCommunePrincipale = arrivee.getAncienneCommunePrincipale();
 
-		if ((ancienneCommunePrincipale == null && nouvelleCommunePrincipale != null)
-				|| (nouvelleCommunePrincipale != null && nouvelleCommunePrincipale.getNoOFSEtendu() != ancienneCommunePrincipale
-						.getNoOFSEtendu())) {
-			return ArriveeType.ARRIVEE_ADRESSE_PRINCIPALE;
+		try {
+			final Commune nouvelleCommunePrincipale = getCommuneArrivee(serviceInfra, arrivee, ArriveeType.ARRIVEE_ADRESSE_PRINCIPALE);
+			final Commune ancienneCommunePrincipale = arrivee.getAncienneCommunePrincipale();
+
+			if ((ancienneCommunePrincipale == null && nouvelleCommunePrincipale != null)
+					|| (nouvelleCommunePrincipale != null && nouvelleCommunePrincipale.getNoOFSEtendu() != ancienneCommunePrincipale.getNoOFSEtendu())) {
+				return ArriveeType.ARRIVEE_ADRESSE_PRINCIPALE;
+			}
+			final Commune nouvelleCommuneSecondaire = getCommuneArrivee(serviceInfra, arrivee, ArriveeType.ARRIVEE_RESIDENCE_SECONDAIRE);
+			final Commune ancienneCommuneSecondaire = arrivee.getAncienneCommuneSecondaire();
+			if ((ancienneCommuneSecondaire == null && nouvelleCommuneSecondaire != null)
+					|| (nouvelleCommuneSecondaire != null && nouvelleCommuneSecondaire.getNoOFSEtendu() != ancienneCommuneSecondaire.getNoOFSEtendu())) {
+				return ArriveeType.ARRIVEE_RESIDENCE_SECONDAIRE;
+			}
 		}
-		final Commune nouvelleCommuneSecondaire = arrivee.getNouvelleCommuneSecondaire();
-		final Commune ancienneCommuneSecondaire = arrivee.getAncienneCommuneSecondaire();
-		if ((ancienneCommuneSecondaire == null && nouvelleCommuneSecondaire != null)
-				|| (nouvelleCommuneSecondaire != null && nouvelleCommuneSecondaire.getNoOFSEtendu() != ancienneCommuneSecondaire
-						.getNoOFSEtendu())) {
-			return ArriveeType.ARRIVEE_RESIDENCE_SECONDAIRE;
+		catch (InfrastructureException e) {
+			throw new EvenementCivilHandlerException(e.getMessage(), e);
 		}
 
 		throw new EvenementCivilHandlerException("Aucune des adresses (principale ou secondaire) n'a changé");

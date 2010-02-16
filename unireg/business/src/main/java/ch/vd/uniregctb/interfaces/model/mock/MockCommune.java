@@ -36,9 +36,21 @@ public class MockCommune extends MockEntityOFS implements Commune, CommuneSimple
 	public static final MockCommune Vallorbe = new MockCommune(5764, "Vallorbe", VAUD, MockOfficeImpot.OID_ORBE);
 
 	// commune avec fractions de commmunes
-	public static final MockCommune LAbbaye = new MockCommune(5871, "L'Abbaye", VAUD, MockOfficeImpot.OID_LA_VALLEE);
-	public static final MockCommune LeChenit = new MockCommune(5872, "Le Chenit", VAUD, MockOfficeImpot.OID_LA_VALLEE);
-	public static final MockCommune LeLieu = new MockCommune(5873, "Le Lieu", VAUD, MockOfficeImpot.OID_LA_VALLEE);
+	public static final MockCommune LAbbaye = new CommuneFractionnee(5871, "L'Abbaye", VAUD, MockOfficeImpot.OID_LA_VALLEE);
+	public static final MockCommune LeChenit = new CommuneFractionnee(5872, "Le Chenit", VAUD, MockOfficeImpot.OID_LA_VALLEE);
+	public static final MockCommune LeLieu = new CommuneFractionnee(5873, "Le Lieu", VAUD, MockOfficeImpot.OID_LA_VALLEE);
+
+	public static class CommuneFractionnee extends MockCommune {
+
+		private CommuneFractionnee(int noOfs, String nomMinuscule, String sigleCanton, OfficeImpot oid) {
+			super(noOfs, nomMinuscule, sigleCanton, oid);
+		}
+
+		@Override
+		public boolean isPrincipale() {
+			return true;
+		}
+	}
 
 	public static class Fraction extends MockCommune {
 		// commune de l'Abbaye
@@ -73,7 +85,7 @@ public class MockCommune extends MockEntityOFS implements Commune, CommuneSimple
 		public int getNoOFSEtendu() {
 			return noOFSetendu;
 		}
-	};
+	}
 
 	// Quelques communes hors-canton
 	public static final MockCommune Zurich = new MockCommune(261, "Zurich", ZURICH, null);
@@ -141,7 +153,6 @@ public class MockCommune extends MockEntityOFS implements Commune, CommuneSimple
 	private String nomAbrege;
 	private int numTechMere;
 	private String sigleCanton;
-	private boolean principale;
 	private boolean valide;
 	private OfficeImpot officeImpot;
 
@@ -218,7 +229,7 @@ public class MockCommune extends MockEntityOFS implements Commune, CommuneSimple
 	}
 
 	public boolean isPrincipale() {
-		return principale;
+		return false;
 	}
 
 	public boolean isValide() {

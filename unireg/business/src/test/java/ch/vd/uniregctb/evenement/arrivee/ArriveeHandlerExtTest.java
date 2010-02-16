@@ -68,7 +68,6 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 	 */
 	@Override
 	public void onSetUp() throws Exception {
-
 		super.onSetUp();
 		arriveeHandler = evenementCivilHandler;
 	}
@@ -148,6 +147,7 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 
 		MockArrivee sansNouvelleCommunePrincipal = (MockArrivee) arrivee.clone();
 		sansNouvelleCommunePrincipal.setNouvelleCommunePrincipale(null);
+		sansNouvelleCommunePrincipal.setNumeroOfsCommuneAnnonce(0);
 		arriveeHandler.checkCompleteness(sansNouvelleCommunePrincipal, erreurs, warnings);
 		assertFalse(erreurs.isEmpty());
 		assertTrue(warnings.isEmpty());
@@ -231,6 +231,7 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 
 		MockArrivee sansNouvelleCommunePrincipal = (MockArrivee) arrivee.clone();
 		sansNouvelleCommunePrincipal.setNouvelleCommunePrincipale(null);
+		sansNouvelleCommunePrincipal.setNumeroOfsCommuneAnnonce(0);
 		arriveeHandler.checkCompleteness(sansNouvelleCommunePrincipal, erreurs, warnings);
 		assertFalse(erreurs.isEmpty());
 		assertTrue(warnings.isEmpty());
@@ -343,6 +344,7 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 
 		MockArrivee sansNouvelleCommunePrincipal = (MockArrivee) arrivee.clone();
 		sansNouvelleCommunePrincipal.setNouvelleCommunePrincipale(null);
+		sansNouvelleCommunePrincipal.setNumeroOfsCommuneAnnonce(0);
 		arriveeHandler.checkCompleteness(sansNouvelleCommunePrincipal, erreurs, warnings);
 		assertFalse(erreurs.isEmpty());
 		assertTrue(warnings.isEmpty());
@@ -469,12 +471,12 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 
 		// La nouvelle commune principale doit être renseignée
 		{
-			MockArrivee arrivee = new MockArrivee();
+			final MockArrivee arrivee = new MockArrivee();
 			arrivee.setType(TypeEvenementCivil.ARRIVEE_DANS_COMMUNE);
 			arrivee.setNouvelleCommunePrincipale(null);
 
 			try {
-				ArriveeHandler.getArriveeType(arrivee);
+				ArriveeHandler.getArriveeType(serviceInfra, arrivee);
 				fail();
 			}
 			catch (Exception ignored) {
@@ -490,7 +492,7 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 			arrivee.setNouvelleCommunePrincipale(MockCommune.Neuchatel);
 			arrivee.setAncienneCommuneSecondaire(null);
 			arrivee.setNouvelleCommuneSecondaire(MockCommune.Bex);
-			assertEquals(ArriveeType.ARRIVEE_RESIDENCE_SECONDAIRE, ArriveeHandler.getArriveeType(arrivee));
+			assertEquals(ArriveeType.ARRIVEE_RESIDENCE_SECONDAIRE, ArriveeHandler.getArriveeType(serviceInfra, arrivee));
 		}
 
 		// Arrivée en résidence principale
@@ -501,12 +503,12 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 			arrivee.setNouvelleCommunePrincipale(MockCommune.RomainmotierEnvy);
 			arrivee.setAncienneCommuneSecondaire(null);
 			arrivee.setNouvelleCommuneSecondaire(null);
-			assertEquals(ArriveeType.ARRIVEE_ADRESSE_PRINCIPALE, ArriveeHandler.getArriveeType(arrivee));
+			assertEquals(ArriveeType.ARRIVEE_ADRESSE_PRINCIPALE, ArriveeHandler.getArriveeType(serviceInfra, arrivee));
 
 			// la commune secondaire est ignorée si la commune principale est dans le canton
 			arrivee.setAncienneCommuneSecondaire(MockCommune.Neuchatel);
 			arrivee.setNouvelleCommuneSecondaire(MockCommune.RomainmotierEnvy);
-			assertEquals(ArriveeType.ARRIVEE_ADRESSE_PRINCIPALE, ArriveeHandler.getArriveeType(arrivee));
+			assertEquals(ArriveeType.ARRIVEE_ADRESSE_PRINCIPALE, ArriveeHandler.getArriveeType(serviceInfra, arrivee));
 		}
 
 		// Arrivée hors canton
@@ -515,7 +517,7 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 /*			arrivee.setAncienneCommunePrincipale(null);
 			arrivee.setNouvelleCommunePrincipale(MockCommune.Neuchatel);*/
 			try {
-				ArriveeHandler.getArriveeType(arrivee);
+				ArriveeHandler.getArriveeType(serviceInfra, arrivee);
 				fail();
 			}
 			catch (Exception ignored) {
@@ -820,7 +822,7 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 		arrivee.setNumeroOfsCommuneAnnonce(MockCommune.Lausanne.getNoOFS());
 
 		List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
-		ArriveeHandler.validateArriveeAdresseSecondaire(arrivee, erreurs);
+		ArriveeHandler.validateArriveeAdresseSecondaire(serviceInfra, arrivee, erreurs);
 		assertTrue(erreurs.isEmpty());
 		erreurs.clear();
 
@@ -836,7 +838,7 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 		arriveeRetroActive.setNouvelleCommuneSecondaire(MockCommune.Lausanne);
 		arriveeRetroActive.setNumeroOfsCommuneAnnonce(MockCommune.Lausanne.getNoOFS());
 
-		ArriveeHandler.validateArriveeAdresseSecondaire(arriveeRetroActive, erreurs);
+		ArriveeHandler.validateArriveeAdresseSecondaire(serviceInfra, arriveeRetroActive, erreurs);
 		assertFalse(erreurs.isEmpty());
 		erreurs.clear();
 
@@ -855,7 +857,7 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 		arriveeHorsCanton.setNouvelleCommuneSecondaire(MockCommune.Neuchatel);
 		arriveeHorsCanton.setNumeroOfsCommuneAnnonce(MockCommune.Neuchatel.getNoOFS());
 
-		ArriveeHandler.validateArriveeAdresseSecondaire(arriveeHorsCanton, erreurs);
+		ArriveeHandler.validateArriveeAdresseSecondaire(serviceInfra, arriveeHorsCanton, erreurs);
 		assertFalse(erreurs.isEmpty());
 		erreurs.clear();
 	}
