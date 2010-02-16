@@ -400,6 +400,9 @@ public class TiersWebServiceCacheTest extends WebTest {
 		assertNullOrNotNull(checkAdresses, tiers.adressePoursuite, "adressePoursuite");
 		assertNullOrNotNull(checkAdresses, tiers.adresseRepresentation, "adresseRepresentation");
 		assertNullOrNotNull(checkAdressesEnvoi, tiers.adresseEnvoi, "adresseEnvoi");
+		assertNullOrNotNull(checkAdressesEnvoi, tiers.adresseDomicileFormattee, "adresseDomicileFormattee");
+		assertNullOrNotNull(checkAdressesEnvoi, tiers.adresseRepresentationFormattee, "adresseRepresentationFormattee");
+		assertNullOrNotNull(checkAdressesEnvoi, tiers.adressePoursuiteFormattee, "adressePoursuiteFormattee");
 		assertNullOrNotNull(checkComptesBancaires, tiers.comptesBancaires, "comptesBancaires");
 		assertNullOrNotNull(checkForsFiscaux || checkForsFiscauxVirtuels, tiers.forFiscalPrincipal, "forFiscalPrincipal");
 		assertNullOrNotNull(checkForsFiscaux || checkForsFiscauxVirtuels, tiers.autresForsFiscaux, "autresForsFiscaux");
@@ -465,6 +468,9 @@ public class TiersWebServiceCacheTest extends WebTest {
 		assertNullOrNotNull(checkAdresses, tiers.adressesPoursuite, "adressesPoursuite");
 		assertNullOrNotNull(checkAdresses, tiers.adressesRepresentation, "adressesRepresentation");
 		assertNullOrNotNull(checkAdressesEnvoi, tiers.adresseEnvoi, "adresseEnvoi");
+		assertNullOrNotNull(checkAdressesEnvoi, tiers.adresseDomicileFormattee, "adresseDomicileFormattee");
+		assertNullOrNotNull(checkAdressesEnvoi, tiers.adresseRepresentationFormattee, "adresseRepresentationFormattee");
+		assertNullOrNotNull(checkAdressesEnvoi, tiers.adressePoursuiteFormattee, "adressePoursuiteFormattee");
 		assertNullOrNotNull(checkComptesBancaires, tiers.comptesBancaires, "comptesBancaires");
 		assertNullOrNotNull(checkForsFiscaux || checkForsFiscauxVirtuels, tiers.forsFiscauxPrincipaux, "forsFiscauxPrincipaux");
 		assertNullOrNotNull(checkForsFiscaux || checkForsFiscauxVirtuels, tiers.autresForsFiscaux, "autresForsFiscaux");

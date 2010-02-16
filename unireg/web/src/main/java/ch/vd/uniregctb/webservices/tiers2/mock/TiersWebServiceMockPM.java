@@ -413,7 +413,10 @@ public class TiersWebServiceMockPM implements TiersWebService, InitializingBean 
 			pm.adressesCourrier = adressesCourrier.get(pm.numero);
 			pm.adressesDomicile = adressesDomicile.get(pm.numero);
 			pm.adressesPoursuite = adressesPoursuite.get(pm.numero);
-			pm.adresseEnvoi = calculateAdresseEnvoi(pm);
+			pm.adresseEnvoi = calculateAdresseEnvoi(pm, pm.adressesCourrier);
+			pm.adresseDomicileFormattee = calculateAdresseEnvoi(pm, pm.adressesDomicile);
+			pm.adresseRepresentationFormattee = calculateAdresseEnvoi(pm, pm.adressesRepresentation);
+			pm.adressePoursuiteFormattee = calculateAdresseEnvoi(pm, pm.adressesPoursuite);
 			pm.assujettissementsLIC = assujettissementsLIC.get(pm.numero);
 			pm.assujettissementsLIFD = assujettissementsLIFD.get(pm.numero);
 			pm.capitaux = capitaux.get(pm.numero);
@@ -434,7 +437,7 @@ public class TiersWebServiceMockPM implements TiersWebService, InitializingBean 
 		LOGGER.info("Terminé.");
 	}
 
-	private AdresseEnvoi calculateAdresseEnvoi(PersonneMoraleHisto pm) {
+	private AdresseEnvoi calculateAdresseEnvoi(PersonneMoraleHisto pm, List<Adresse> adresses) {
 		AdresseEnvoiDetaillee adresse = new AdresseEnvoiDetaillee();
 
 		if (pm.designationAbregee != null) {
@@ -449,35 +452,35 @@ public class TiersWebServiceMockPM implements TiersWebService, InitializingBean 
 			adresse.addComplement(pm.complementNom);
 		}
 
-		final Adresse adresseCourrier = getAt(pm.adressesCourrier, null);
-		if (adresseCourrier != null) {
+		final Adresse adresseFiscale = getAt(adresses, null);
+		if (adresseFiscale != null) {
 
-			if (adresseCourrier.titre != null) {
-				adresse.addPourAdresse(adresseCourrier.titre);
+			if (adresseFiscale.titre != null) {
+				adresse.addPourAdresse(adresseFiscale.titre);
 			}
 
-			if (adresseCourrier.rue != null) {
+			if (adresseFiscale.rue != null) {
 				final String rueNumero;
-				if (adresseCourrier.numeroRue != null) {
-					rueNumero = adresseCourrier.rue + " " + adresseCourrier.numeroRue;
+				if (adresseFiscale.numeroRue != null) {
+					rueNumero = adresseFiscale.rue + " " + adresseFiscale.numeroRue;
 				}
 				else {
-					rueNumero = adresseCourrier.rue;
+					rueNumero = adresseFiscale.rue;
 				}
 				adresse.addRueEtNumero(rueNumero);
 			}
 
 			final String npaLocalite;
-			if (adresseCourrier.numeroPostal != null) {
-				npaLocalite = adresseCourrier.numeroPostal + " " + adresseCourrier.localite;
+			if (adresseFiscale.numeroPostal != null) {
+				npaLocalite = adresseFiscale.numeroPostal + " " + adresseFiscale.localite;
 			}
 			else {
-				npaLocalite = adresseCourrier.localite;
+				npaLocalite = adresseFiscale.localite;
 			}
 			adresse.addNpaEtLocalite(npaLocalite);
 
-			if (adresseCourrier.pays != null) {
-				adresse.addPays(adresseCourrier.pays);
+			if (adresseFiscale.pays != null) {
+				adresse.addPays(adresseFiscale.pays);
 			}
 		}
 
@@ -1117,6 +1120,9 @@ public class TiersWebServiceMockPM implements TiersWebService, InitializingBean 
 		pm.numero = pmHisto.numero;
 		pm.adresseCourrierElectronique = pmHisto.adresseCourrierElectronique;
 		pm.adresseEnvoi = pmHisto.adresseEnvoi;
+		pm.adresseDomicileFormattee = pmHisto.adresseDomicileFormattee;
+		pm.adresseRepresentationFormattee = pmHisto.adresseRepresentationFormattee;
+		pm.adressePoursuiteFormattee = pmHisto.adressePoursuiteFormattee;
 		pm.blocageRemboursementAutomatique = pmHisto.blocageRemboursementAutomatique;
 		pm.complementNom = pmHisto.complementNom;
 		pm.comptesBancaires = pmHisto.comptesBancaires;
