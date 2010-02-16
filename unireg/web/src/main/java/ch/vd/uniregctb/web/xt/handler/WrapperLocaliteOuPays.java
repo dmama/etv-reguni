@@ -3,7 +3,7 @@ package ch.vd.uniregctb.web.xt.handler;
 
 import ch.vd.uniregctb.interfaces.model.Localite;
 import ch.vd.uniregctb.interfaces.model.Pays;
-
+import org.apache.commons.lang.StringEscapeUtils;
 
 
 public class WrapperLocaliteOuPays {
@@ -12,12 +12,14 @@ public class WrapperLocaliteOuPays {
 
 	public WrapperLocaliteOuPays( Object row) {
 		if (row instanceof Localite) {
-			nomComplet = ((Localite)row).getNomAbregeMinuscule();
-			numero = String.valueOf(((Localite)row).getNoOrdre());
+			final Localite localite = (Localite) row;
+			nomComplet = StringEscapeUtils.escapeXml(localite.getNomAbregeMinuscule());
+			numero = String.valueOf(localite.getNoOrdre());
 		}
 		if (row instanceof Pays) {
-			nomComplet = ((Pays) row).getNomMinuscule();
-			numero = String.valueOf(((Pays)row).getNoOFS());
+			final Pays pays = (Pays) row;
+			nomComplet = StringEscapeUtils.escapeXml(pays.getNomMinuscule());
+			numero = String.valueOf(pays.getNoOFS());
 		}
 	}
 

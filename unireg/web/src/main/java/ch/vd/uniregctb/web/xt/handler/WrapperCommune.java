@@ -4,6 +4,7 @@
 package ch.vd.uniregctb.web.xt.handler;
 
 import ch.vd.uniregctb.interfaces.model.Commune;
+import org.apache.commons.lang.StringEscapeUtils;
 
 
 /**
@@ -16,7 +17,7 @@ public class WrapperCommune {
 	private String noOFS = "???";
 
 	public WrapperCommune( Commune commune) {
-			this.nomMinuscule = commune.getNomMinuscule();
+			this.nomMinuscule = StringEscapeUtils.escapeXml(commune.getNomMinuscule());
 			this.noTechnique = String.valueOf(commune.getNoOFSEtendu());
 			this.noOFS = String.valueOf(commune.getNoOFS());
 	}

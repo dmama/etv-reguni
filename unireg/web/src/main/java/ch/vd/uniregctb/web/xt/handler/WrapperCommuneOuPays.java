@@ -2,7 +2,7 @@ package ch.vd.uniregctb.web.xt.handler;
 
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.Pays;
-
+import org.apache.commons.lang.StringEscapeUtils;
 
 
 public class WrapperCommuneOuPays {
@@ -12,14 +12,15 @@ public class WrapperCommuneOuPays {
 
 	public WrapperCommuneOuPays( Object row) {
 		if (row instanceof Commune) {
-			nomComplet = ((Commune)row).getNomMinuscule();
-			numero = String.valueOf(((Commune)row).getNoOFS());
+			final Commune commune = (Commune) row;
+			nomComplet = StringEscapeUtils.escapeXml(commune.getNomMinuscule());
+			numero = String.valueOf(commune.getNoOFS());
 		}
 		if (row instanceof Pays) {
-			nomComplet = ((Pays) row).getNomMinuscule();
-			numero = String.valueOf(((Pays)row).getNoOFS());
+			final Pays pays = (Pays) row;
+			nomComplet = StringEscapeUtils.escapeXml(pays.getNomMinuscule());
+			numero = String.valueOf(pays.getNoOFS());
 		}
-
 	}
 
 	/**
