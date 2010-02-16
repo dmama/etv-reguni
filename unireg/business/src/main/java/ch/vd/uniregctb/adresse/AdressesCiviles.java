@@ -28,9 +28,13 @@ public class AdressesCiviles {
 			courrier = adresse;
 		}
 		else if (adresse.getTypeAdresse().equals(EnumTypeAdresse.SECONDAIRE)) {
-			if (secondaire != null) {
+			/*if (secondaire != null) {
 				throw new DonneesCivilesException("Plus d'une adresse 'secondaire' détectée");
-			}
+			}*/
+			//TODO [UNIREG-2033] RegPP permet actuellement d'ouvrir plusieurs adresses secondaires pour un individu dans le civil
+			//UNIREG ne gère pas encore la liste des adresses secondaires(besoin de spécifications). Afin d'éviter un crash web
+			//on supprime la lever de l'exception et on ne prend en compte que la dernière adresse secondaire renseignée.
+
 			secondaire = adresse;
 		}
 		else if (adresse.getTypeAdresse().equals(EnumTypeAdresse.TUTELLE)) {
