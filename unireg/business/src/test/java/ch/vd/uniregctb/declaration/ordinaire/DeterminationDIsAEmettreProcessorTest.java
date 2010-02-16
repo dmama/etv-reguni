@@ -1,11 +1,28 @@
 package ch.vd.uniregctb.declaration.ordinaire;
 
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
+import static org.junit.Assert.assertFalse;
+
+import java.util.List;
+
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.junit.Test;
+import org.springframework.orm.hibernate3.HibernateTemplate;
+import org.springframework.transaction.TransactionStatus;
+
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.DateRange;
-import ch.vd.registre.base.date.DateRangeHelper.Range;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.DateRangeHelper.Range;
 import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.declaration.*;
+import ch.vd.uniregctb.declaration.DeclarationException;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
+import ch.vd.uniregctb.declaration.ModeleDocument;
+import ch.vd.uniregctb.declaration.PeriodeFiscale;
+import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
 import ch.vd.uniregctb.declaration.ordinaire.DeterminationDIsAEmettreProcessor.ExistenceResults;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockOfficeImpot;
@@ -15,24 +32,34 @@ import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
 import ch.vd.uniregctb.metier.assujettissement.TypeContribuableDI;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
-import ch.vd.uniregctb.tiers.*;
-import ch.vd.uniregctb.type.*;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.junit.Test;
-import org.springframework.orm.hibernate3.HibernateTemplate;
-import org.springframework.transaction.TransactionStatus;
-
-import java.util.List;
-
-import static junit.framework.Assert.*;
-import static org.junit.Assert.assertFalse;
+import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
+import ch.vd.uniregctb.tiers.Tache;
+import ch.vd.uniregctb.tiers.TacheCriteria;
+import ch.vd.uniregctb.tiers.TacheDAO;
+import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpot;
+import ch.vd.uniregctb.type.GenreImpot;
+import ch.vd.uniregctb.type.ModeImposition;
+import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.MotifRattachement;
+import ch.vd.uniregctb.type.Qualification;
+import ch.vd.uniregctb.type.Sexe;
+import ch.vd.uniregctb.type.TypeAdresseRetour;
+import ch.vd.uniregctb.type.TypeAdresseTiers;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.uniregctb.type.TypeContribuable;
+import ch.vd.uniregctb.type.TypeDocument;
+import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.TypeEtatTache;
+import ch.vd.uniregctb.type.TypeTache;
 
 @SuppressWarnings({"JavaDoc"})
 public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 
 	private HibernateTemplate hibernateTemplate;
 	private DeterminationDIsAEmettreProcessor service;
+	private TacheDAO tacheDAO;
 
 	@Override
 	public void onSetUp() throws Exception {
@@ -40,7 +67,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		super.onSetUp();
 		hibernateTemplate = getBean(HibernateTemplate.class, "hibernateTemplate");
 		final PeriodeFiscaleDAO periodeDAO = getBean(PeriodeFiscaleDAO.class, "periodeFiscaleDAO");
-		final TacheDAO tacheDAO = getBean(TacheDAO.class, "tacheDAO");
+		tacheDAO = getBean(TacheDAO.class, "tacheDAO");
 		final ParametreAppService parametres = getBean(ParametreAppService.class, "parametreAppService");
 
 		// création du processeur à la main de manière à pouvoir appeler les méthodes protégées
@@ -403,6 +430,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 				declarationVaudTax);
 		assertDetails(TypeContribuableDI.VAUDOIS_ORDINAIRE_VAUD_TAX, date(2007, 1, 1), date(2007, 12, 31), service
 				.determineDetailsEnvoi(guillaume, 2007));
+
 	}
 
 	/**
@@ -456,6 +484,34 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 				MotifRattachement.IMMEUBLE_PRIVE);
 		addAdresseEtrangere(jacky, TypeAdresseTiers.DOMICILE, date(1968, 11, 3), null, MockPays.Danemark);
 		assertZeroDeclaration(service.determineDetailsEnvoi(jacky, 2007));
+	}
+
+	/**
+	 * Teste des cas standards pour les contribuables avec fors principaux
+	 */
+	@Test
+	public void testDetermineDetailsEnvoiPourTiersDepartHorsCantonFinPeriode() throws Exception {
+
+		PeriodeFiscale periode2006 = addPeriodeFiscale(2006);
+
+
+		ModeleDocument declarationComplete = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2006);
+		addModeleFeuilleDocument("Déclaration", "210", declarationComplete);
+		addModeleFeuilleDocument("Annexe 1", "220", declarationComplete);
+		addModeleFeuilleDocument("Annexe 2-3", "230", declarationComplete);
+		addModeleFeuilleDocument("Annexe 4-5", "240", declarationComplete);
+		ModeleDocument declarationVaudTax = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode2006);
+		addModeleFeuilleDocument("Déclaration vaud tax", "250", declarationVaudTax);
+
+
+		// Un tiers qui part hors canton le 31.12
+		Contribuable laurent = addNonHabitant("Laurent", "Maillard", date(1965, 4, 13), Sexe.MASCULIN);
+		addForPrincipal(laurent, date(1983, 4, 13), MotifFor.MAJORITE,date(2006,12,31),MotifFor.DEPART_HC, MockCommune.Lausanne);
+		addDeclarationImpot(laurent, periode2006, date(2006, 1, 1), date(2006, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
+				declarationComplete);
+
+		assertZeroDeclaration(service.determineDetailsEnvoi(laurent, 2007));
+		assertAbsenceTachesAnnulationDI(laurent,2006);
 	}
 
 	@Test
@@ -553,7 +609,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		final Range activite1 = new Range(date(2007, 1, 18), date(2007, 3, 31));
 		final Range activite2 = new Range(date(2007, 8, 1), date(2007, 11, 15));
 		final Contribuable armand = createHorsSuisseAvecPlusieursDebutsEtFinsActivitesIndependantes(activite1, activite2);
-		
+
 		final List<PeriodeImposition> details = service.determineDetailsEnvoi(armand, 2007);
 		assertNotNull(details);
 		assertEquals(2, details.size());
@@ -1025,7 +1081,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 
 		final PeriodeFiscale periode2008 = (PeriodeFiscale) hibernateTemplate.get(PeriodeFiscale.class, ids.periodeId);
 		assertNotNull(periode2008);
-		
+
 		assertTraitementContribuable(0, 0, 1, ids.arnoldId, periode2008); // une DI déjà existante (ignorée)
 		assertTraitementContribuable(0, 1, 0, ids.malkoId, periode2008); // une DI libre en erreur
 		assertTraitementContribuable(0, 1, 0, ids.ericId, periode2008); // une DI libre en erreur
@@ -1068,11 +1124,11 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 	}
 
 	/**
-	 * [UNIREG-1981] vérifie qu'on ne génère pas une tâche d'annulation de déclaration d'impôt s'il en existe déjà une non-traitée. 
+	 * [UNIREG-1981] vérifie qu'on ne génère pas une tâche d'annulation de déclaration d'impôt s'il en existe déjà une non-traitée.
 	 */
 	@Test
 	public void testAnnulationDeclarationSansPeriodeMaisAvecTacheAnnulationPreexistante() throws Exception {
-		
+
 		final PeriodeFiscale periode2007 = addPeriodeFiscale(2007);
 		final ModeleDocument model2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2007);
 		addModeleFeuilleDocument("Déclaration", "210", model2007);
@@ -1098,7 +1154,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		assertEquals(DeterminationDIsResults.IgnoreType.PAS_ASSUJETTI, rapport.ignores.get(0).raison);
 		assertEquals(DeterminationDIsResults.IgnoreType.TACHE_ANNULATION_DEJA_EXISTANTE, rapport.ignores.get(1).raison);
 	}
-	
+
 	@Test
 	public void testAnnulationTacheSansPeriodeCorrespondante() throws Exception {
 
@@ -1161,7 +1217,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		service.traiterContribuable(arnold.getNumero(), periode2007);
 
 		assertEmpty(rapport.erreurs);
-		
+
 		// la tâche existante valide est ignorée
 		assertEquals(1, rapport.ignores.size());
 		final DeterminationDIsResults.Ignore ignore = rapport.ignores.get(0);
@@ -1238,7 +1294,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		assertEmpty(rapport.erreurs);
 		assertEmpty(rapport.ignores);
 
-		// une nouvelle tâche créée + une tâche annulée 
+		// une nouvelle tâche créée + une tâche annulée
 		assertEquals(2, rapport.traites.size());
 		assertEquals(DeterminationDIsResults.TraiteType.TACHE_ENVOI_CREEE, rapport.traites.get(0).raison);
 		assertEquals(DeterminationDIsResults.TraiteType.TACHE_ENVOI_ANNULEE, rapport.traites.get(1).raison);
@@ -1336,5 +1392,17 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 				assertFalse(service.needsDeclaration(p));
 			}
 		}
+	}
+
+	private void assertAbsenceTachesAnnulationDI(Contribuable contribuable,int annee) {
+
+		TacheCriteria criterion = new TacheCriteria();
+		List<Tache> taches;
+		criterion.setTypeTache(TypeTache.TacheAnnulationDeclarationImpot);
+		criterion.setAnnee(annee);
+		criterion.setContribuable(contribuable);
+		taches = tacheDAO.find(criterion);
+		assertEmpty(taches);
+
 	}
 }
