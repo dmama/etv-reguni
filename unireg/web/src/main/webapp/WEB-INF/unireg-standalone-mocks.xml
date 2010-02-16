@@ -14,6 +14,8 @@
 
 	<bean id="evtCivilSender" class="ch.vd.uniregctb.evenement.jms.MockEvenementCivilUnitaireSender" />
 
+	<bean id="evenementExterneSender" class="ch.vd.uniregctb.evenement.externe.MockEvenementExterneSender"/>
+
 	<!-- Bean client interfacesService MOCK -->
 	<bean id="serviceInfrastructureServiceRaw" class="ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceInfrastructureService"/>
 	<alias alias="serviceInfrastructureService" name="serviceInfrastructureServiceRaw"/>
