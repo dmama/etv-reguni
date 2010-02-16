@@ -10,6 +10,10 @@ import java.util.Map;
 import java.util.Set;
 
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
+import ch.vd.uniregctb.adresse.AdresseException;
+import ch.vd.uniregctb.type.TypeAdresseTiers;
+import ch.vd.uniregctb.webservices.tiers2.data.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.StringUtils;
@@ -31,11 +35,6 @@ import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.TiersDAO.Parts;
 import ch.vd.uniregctb.webservices.batch.Param;
-import ch.vd.uniregctb.webservices.tiers2.data.Adresse;
-import ch.vd.uniregctb.webservices.tiers2.data.Date;
-import ch.vd.uniregctb.webservices.tiers2.data.Tiers;
-import ch.vd.uniregctb.webservices.tiers2.data.TiersInfo;
-import ch.vd.uniregctb.webservices.tiers2.data.TiersPart;
 import ch.vd.uniregctb.webservices.tiers2.data.Tiers.Type;
 import ch.vd.uniregctb.webservices.tiers2.exception.BusinessException;
 import ch.vd.uniregctb.webservices.tiers2.params.SearchTiers;
@@ -374,5 +373,13 @@ public class DataHelper {
 
 	public static Date coreToWeb(String s) {
 		return coreToWeb(RegDateHelper.dashStringToDate(s));
+	}
+
+	public static AdresseEnvoi createAdresseFormattee(ch.vd.uniregctb.tiers.Tiers tiers, RegDate date, Context context, TypeAdresseTiers type) throws AdresseException {
+		final AdresseEnvoiDetaillee adressePoursuite = context.adresseService.getAdresseEnvoi(tiers, date, type, false);
+		if (adressePoursuite == null) {
+			return null;
+		}
+		return new AdresseEnvoi(adressePoursuite);
 	}
 }

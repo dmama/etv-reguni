@@ -10,6 +10,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
+import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 import org.apache.log4j.Logger;
 
@@ -237,7 +238,7 @@ public abstract class TiersHisto {
 		}
 
 		if (parts != null && parts.contains(TiersPart.ADRESSES_ENVOI)) {
-			initAdresseEnvoi(tiers, context);
+			initAdressesEnvoi(tiers, context);
 		}
 
 		if (parts != null && parts.contains(TiersPart.RAPPORTS_ENTRE_TIERS)) {
@@ -265,18 +266,16 @@ public abstract class TiersHisto {
 		}
 	}
 
-	private void initAdresseEnvoi(ch.vd.uniregctb.tiers.Tiers tiers, Context context) throws BusinessException {
-		ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee adresse;
+	private void initAdressesEnvoi(ch.vd.uniregctb.tiers.Tiers tiers, Context context) throws BusinessException {
 		try {
-			adresse = context.adresseService.getAdresseEnvoi(tiers, null, TypeAdresseTiers.COURRIER, false);
+			this.adresseEnvoi = DataHelper.createAdresseFormattee(tiers, null, context, TypeAdresseTiers.COURRIER);
+			this.adresseDomicileFormattee = DataHelper.createAdresseFormattee(tiers, null, context, TypeAdresseTiers.DOMICILE);
+			this.adresseRepresentationFormattee = DataHelper.createAdresseFormattee(tiers, null, context, TypeAdresseTiers.REPRESENTATION);
+			this.adressePoursuiteFormattee = DataHelper.createAdresseFormattee(tiers, null, context, TypeAdresseTiers.POURSUITE);
 		}
-		catch (ch.vd.uniregctb.adresse.AdresseException e) {
+		catch (AdresseException e) {
 			LOGGER.error(e, e);
 			throw new BusinessException(e);
-		}
-
-		if (adresse != null) {
-			this.adresseEnvoi = new AdresseEnvoi(adresse);
 		}
 	}
 
@@ -402,6 +401,9 @@ public abstract class TiersHisto {
 
 		if (parts != null && parts.contains(TiersPart.ADRESSES_ENVOI)) {
 			this.adresseEnvoi = tiers.adresseEnvoi;
+			this.adresseDomicileFormattee = tiers.adresseDomicileFormattee;
+			this.adresseRepresentationFormattee = tiers.adresseRepresentationFormattee;
+			this.adressePoursuiteFormattee = tiers.adressePoursuiteFormattee;
 		}
 
 		if (parts != null && parts.contains(TiersPart.RAPPORTS_ENTRE_TIERS)) {

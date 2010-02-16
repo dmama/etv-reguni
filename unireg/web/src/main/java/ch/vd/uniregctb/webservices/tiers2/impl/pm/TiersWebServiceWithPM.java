@@ -325,7 +325,10 @@ public class TiersWebServiceWithPM implements TiersWebService {
 		}
 
 		if (parts.contains(TiersPart.ADRESSES_ENVOI)) {
-			pmHisto.adresseEnvoi = calculateAdresseEnvoi(pmHisto);
+			pmHisto.adresseEnvoi = calculateAdresseEnvoi(pmHisto, pmHisto.adressesCourrier);
+			pmHisto.adresseDomicileFormattee = calculateAdresseEnvoi(pmHisto, pmHisto.adressesDomicile);
+			pmHisto.adresseRepresentationFormattee = calculateAdresseEnvoi(pmHisto, pmHisto.adressesRepresentation);
+			pmHisto.adressePoursuiteFormattee = calculateAdresseEnvoi(pmHisto, pmHisto.adressesPoursuite);
 		}
 
 		if (parts.contains(TiersPart.ASSUJETTISSEMENTS)) {
@@ -651,7 +654,7 @@ public class TiersWebServiceWithPM implements TiersWebService {
 		return set.toArray(new PartPM[set.size()]);
 	}
 
-	private AdresseEnvoi calculateAdresseEnvoi(PersonneMoraleHisto pm) {
+	private AdresseEnvoi calculateAdresseEnvoi(PersonneMoraleHisto pm, List<Adresse> adresses) {
 		AdresseEnvoiDetaillee adresse = new AdresseEnvoiDetaillee();
 
 		if (pm.designationAbregee != null) {
@@ -666,35 +669,35 @@ public class TiersWebServiceWithPM implements TiersWebService {
 			adresse.addComplement(pm.complementNom);
 		}
 
-		final Adresse adresseCourrier = getAt(pm.adressesCourrier, null);
-		if (adresseCourrier != null) {
+		final Adresse adresseFiscale = getAt(adresses, null);
+		if (adresseFiscale != null) {
 
-			if (adresseCourrier.titre != null) {
-				adresse.addPourAdresse(adresseCourrier.titre);
+			if (adresseFiscale.titre != null) {
+				adresse.addPourAdresse(adresseFiscale.titre);
 			}
 
-			if (adresseCourrier.rue != null) {
+			if (adresseFiscale.rue != null) {
 				final String rueNumero;
-				if (adresseCourrier.numeroRue != null) {
-					rueNumero = adresseCourrier.rue + " " + adresseCourrier.numeroRue;
+				if (adresseFiscale.numeroRue != null) {
+					rueNumero = adresseFiscale.rue + " " + adresseFiscale.numeroRue;
 				}
 				else {
-					rueNumero = adresseCourrier.rue;
+					rueNumero = adresseFiscale.rue;
 				}
 				adresse.addRueEtNumero(rueNumero);
 			}
 
 			final String npaLocalite;
-			if (adresseCourrier.numeroPostal != null) {
-				npaLocalite = adresseCourrier.numeroPostal + " " + adresseCourrier.localite;
+			if (adresseFiscale.numeroPostal != null) {
+				npaLocalite = adresseFiscale.numeroPostal + " " + adresseFiscale.localite;
 			}
 			else {
-				npaLocalite = adresseCourrier.localite;
+				npaLocalite = adresseFiscale.localite;
 			}
 			adresse.addNpaEtLocalite(npaLocalite);
 
-			if (adresseCourrier.pays != null) {
-				adresse.addPays(adresseCourrier.pays);
+			if (adresseFiscale.pays != null) {
+				adresse.addPays(adresseFiscale.pays);
 			}
 		}
 
@@ -714,6 +717,9 @@ public class TiersWebServiceWithPM implements TiersWebService {
 		pm.numero = pmHisto.numero;
 		pm.adresseCourrierElectronique = pmHisto.adresseCourrierElectronique;
 		pm.adresseEnvoi = pmHisto.adresseEnvoi;
+		pm.adresseDomicileFormattee = pmHisto.adresseDomicileFormattee;
+		pm.adresseRepresentationFormattee = pmHisto.adresseRepresentationFormattee;
+		pm.adressePoursuiteFormattee = pmHisto.adressePoursuiteFormattee;
 		pm.blocageRemboursementAutomatique = pmHisto.blocageRemboursementAutomatique;
 		pm.complementNom = pmHisto.complementNom;
 		pm.comptesBancaires = pmHisto.comptesBancaires;
@@ -765,6 +771,9 @@ public class TiersWebServiceWithPM implements TiersWebService {
 		pm.numero = pmHisto.numero;
 		pm.adresseCourrierElectronique = pmHisto.adresseCourrierElectronique;
 		pm.adresseEnvoi = pmHisto.adresseEnvoi;
+		pm.adresseDomicileFormattee = pmHisto.adresseDomicileFormattee;
+		pm.adresseRepresentationFormattee = pmHisto.adresseRepresentationFormattee;
+		pm.adressePoursuiteFormattee = pmHisto.adressePoursuiteFormattee;
 		pm.blocageRemboursementAutomatique = pmHisto.blocageRemboursementAutomatique;
 		pm.complementNom = pmHisto.complementNom;
 		pm.comptesBancaires = pmHisto.comptesBancaires;

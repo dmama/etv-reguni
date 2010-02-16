@@ -10,6 +10,8 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlEnum;
 import javax.xml.bind.annotation.XmlType;
 
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 import org.apache.log4j.Logger;
 
@@ -204,18 +206,15 @@ public abstract class Tiers {
 		}
 
 		if (parts != null && parts.contains(TiersPart.ADRESSES_ENVOI)) {
-
-			final ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee adresse;
 			try {
-				adresse = context.adresseService.getAdresseEnvoi(tiers, date, TypeAdresseTiers.COURRIER, false);
+				this.adresseEnvoi = DataHelper.createAdresseFormattee(tiers, date, context, TypeAdresseTiers.COURRIER);
+				this.adresseDomicileFormattee = DataHelper.createAdresseFormattee(tiers, date, context, TypeAdresseTiers.DOMICILE);
+				this.adresseRepresentationFormattee = DataHelper.createAdresseFormattee(tiers, date, context, TypeAdresseTiers.REPRESENTATION);
+				this.adressePoursuiteFormattee = DataHelper.createAdresseFormattee(tiers, date, context, TypeAdresseTiers.POURSUITE);
 			}
-			catch (ch.vd.uniregctb.adresse.AdresseException e) {
+			catch (AdresseException e) {
 				LOGGER.error(e, e);
 				throw new BusinessException(e);
-			}
-
-			if (adresse != null) {
-				this.adresseEnvoi = new AdresseEnvoi(adresse);
 			}
 		}
 
@@ -333,6 +332,9 @@ public abstract class Tiers {
 
 		if (parts != null && parts.contains(TiersPart.ADRESSES_ENVOI)) {
 			this.adresseEnvoi = tiers.adresseEnvoi;
+			this.adresseDomicileFormattee = tiers.adresseDomicileFormattee;
+			this.adresseRepresentationFormattee = tiers.adresseRepresentationFormattee;
+			this.adressePoursuiteFormattee = tiers.adressePoursuiteFormattee;
 		}
 
 		if (parts != null && parts.contains(TiersPart.RAPPORTS_ENTRE_TIERS)) {

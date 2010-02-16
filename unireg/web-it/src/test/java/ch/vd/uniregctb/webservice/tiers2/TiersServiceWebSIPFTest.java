@@ -80,7 +80,7 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 		assertEquals(MotifRattachement.DOMICILE, ffp0.getMotifRattachement());
 
 		final List<ForFiscal> forSecondaires = pm.getAutresForsFiscaux();
-		// TODO (msi) réactiver ce test : assertEmpty(forSecondaires);
+		assertEmpty(forSecondaires);
 		// etc...
 
 		// Récupération des informations des régimes fiscaux
@@ -399,6 +399,7 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 		params.setTiersNumber(222);
 		params.setDate(newDate(2009, 10, 14));
 		params.getParts().add(TiersPart.ADRESSES);
+		params.getParts().add(TiersPart.ADRESSES_ENVOI);
 
 		final PersonneMorale pm = (PersonneMorale) service.getTiers(params);
 		assertNotNull(pm);
@@ -409,7 +410,7 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 		assertEquals("", trimValiPattern(pm.getRaisonSociale2()));
 		assertEquals("en liquidation", trimValiPattern(pm.getRaisonSociale3()));
 
-		// Récupération des adresses de domicile (pour le contentieux) et de poursuite
+		// Récupération des adresses de domicile (pour le contentieux)
 
 		final Adresse adresseDomicile = pm.getAdresseDomicile();
 		assertNotNull(adresseDomicile);
@@ -426,6 +427,18 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 		assertEquals(1094, adresseDomicile.getNoOrdrePostal());
 		assertNull(adresseDomicile.getNoRue());
 
+		final AdresseEnvoi adresseDomicileFormattee = pm.getAdresseDomicileFormattee();
+		assertNotNull(adresseDomicileFormattee);
+		assertEquals("KALESA", trimValiPattern(adresseDomicileFormattee.getLigne1()));
+		assertEquals("Fiduciaire Turrian SA", trimValiPattern(adresseDomicileFormattee.getLigne2()));
+		assertEquals("La Coche", trimValiPattern(adresseDomicileFormattee.getLigne3()));
+		assertEquals("1852 Roche VD", trimValiPattern(adresseDomicileFormattee.getLigne4()));
+		assertNull(adresseDomicileFormattee.getLigne5());
+		assertNull(adresseDomicileFormattee.getLigne6());
+		assertTrue(adresseDomicileFormattee.isIsSuisse());
+
+		// Récupération des adresses de poursuite
+
 		final Adresse adressePoursuite = pm.getAdressePoursuite();
 		assertNotNull(adressePoursuite);
 		assertSameDay(newDate(2003,4,3), adressePoursuite.getDateDebut());
@@ -441,6 +454,15 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 		assertEquals(1100, adressePoursuite.getNoOrdrePostal());
 		assertNull(adressePoursuite.getNoRue());
 
+		final AdresseEnvoi adressePoursuiteFormattee = pm.getAdressePoursuiteFormattee();
+		assertNotNull(adressePoursuiteFormattee);
+		assertEquals("KALESA", trimValiPattern(adressePoursuiteFormattee.getLigne1()));
+		assertEquals("Fiduciaire Turrian SA", trimValiPattern(adressePoursuiteFormattee.getLigne2()));
+		assertEquals("p.a. Office des faillites", trimValiPattern(adressePoursuiteFormattee.getLigne3()));
+		assertEquals("1860 Aigle", trimValiPattern(adressePoursuiteFormattee.getLigne4()));
+		assertNull(adressePoursuiteFormattee.getLigne5());
+		assertNull(adressePoursuiteFormattee.getLigne6());
+		assertTrue(adressePoursuiteFormattee.isIsSuisse());
 
 		// Unireg n'est pas en mesure de déterminer l'adresse de l'OP. Ce travail est de la responsabilité du service infastructure.
 
