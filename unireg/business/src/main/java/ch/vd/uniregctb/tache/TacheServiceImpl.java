@@ -3,7 +3,6 @@ package ch.vd.uniregctb.tache;
 import java.util.ArrayList;
 import java.util.List;
 
-import ch.vd.uniregctb.type.*;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,6 +44,17 @@ import ch.vd.uniregctb.tiers.TacheTransmissionDossier;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.tiers.Tiers.ForsParType;
 import ch.vd.uniregctb.tiers.Tiers.ForsParTypeAt;
+import ch.vd.uniregctb.type.ModeImposition;
+import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.MotifRattachement;
+import ch.vd.uniregctb.type.Qualification;
+import ch.vd.uniregctb.type.TypeAdresseRetour;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.uniregctb.type.TypeContribuable;
+import ch.vd.uniregctb.type.TypeDocument;
+import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.TypeEtatTache;
+import ch.vd.uniregctb.type.TypeTache;
 
 /**
  * Service permettant la génération de tâches à la suite
@@ -102,6 +112,7 @@ public class TacheServiceImpl implements TacheService {
 	public void genereTacheDepuisFermetureForPrincipal(Contribuable contribuable, ForFiscalPrincipal forPrincipal) {
 
 		final RegDate dateFermeture = forPrincipal.getDateFin();
+		final RegDate dateFinAnnee = RegDate.get(dateFermeture.year(),12,31);
 		final MotifFor motifFermeture = forPrincipal.getMotifFermeture();
 
 		if (motifFermeture == null) { // les for HC et HS peuvent ne pas avoir de motif de fermeture
@@ -145,8 +156,14 @@ public class TacheServiceImpl implements TacheService {
 			if (dateFermeture.year() == RegDate.get().year()) {
 				genereTacheControleDossier(contribuable);
 			}
-			// [UNIREG-1262] la génération de tâches d'annulation de DI doit se faire aussi sur l'année du départ
-			genereTachesAnnulationDIDepartHC(contribuable, dateFermeture.year());
+			// [UNIREG-1262] La génération de tâches d'annulation de DI doit se faire aussi sur l'année du départ
+			// [UNIREG-2031] La génération de tâches d'annulation de DI n'est valable quepour un départ avant le
+			//31.12 de la période fiscale courante.
+			if (dateFermeture.isBefore(dateFinAnnee)) {
+				genereTachesAnnulationDIDepartHC(contribuable, dateFermeture.year());
+			}
+
+
 			break;
 		case VEUVAGE_DECES:
 			generateTacheTransmissionDossier(contribuable);

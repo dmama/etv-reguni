@@ -1,7 +1,5 @@
 package ch.vd.uniregctb.tache;
 
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.type.*;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static org.junit.Assert.assertFalse;
@@ -24,7 +22,9 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.declaration.Declaration;
+import ch.vd.uniregctb.declaration.DeclarationImpotCriteria;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.evenement.common.EnsembleTiersCouple;
@@ -34,6 +34,7 @@ import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
 import ch.vd.uniregctb.metier.MetierService;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -52,6 +53,17 @@ import ch.vd.uniregctb.tiers.TacheNouveauDossier;
 import ch.vd.uniregctb.tiers.TacheTransmissionDossier;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.type.EtatCivil;
+import ch.vd.uniregctb.type.ModeImposition;
+import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.MotifRattachement;
+import ch.vd.uniregctb.type.Sexe;
+import ch.vd.uniregctb.type.TypeAdresseRetour;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.uniregctb.type.TypeContribuable;
+import ch.vd.uniregctb.type.TypeDocument;
+import ch.vd.uniregctb.type.TypeEtatTache;
+import ch.vd.uniregctb.type.TypeTache;
 
 /**
  * Classe de tests pour TacheService
@@ -90,6 +102,7 @@ public class TacheServiceTest extends BusinessTest {
 	private TiersService tiersService;
 	private MetierService metierService;
 	private TacheDAO tacheDAO;
+	private DeclarationImpotOrdinaireDAO  diDAO;
 
 	@Override
 	public void onSetUp() throws Exception {
@@ -99,6 +112,7 @@ public class TacheServiceTest extends BusinessTest {
 		tacheService = getBean(TacheService.class, "tacheService");
 		metierService = getBean(MetierService.class, "metierService");
 		tacheDAO = getBean(TacheDAO.class, "tacheDAO");
+		diDAO = getBean(DeclarationImpotOrdinaireDAO.class, "diDAO");
 
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
@@ -694,6 +708,33 @@ public class TacheServiceTest extends BusinessTest {
 		verifieControleDossier(criterion, 0);
 
 		verifieTachesAnnulation(criterion, 0, false);
+
+	}
+
+	@Test
+	public void testGenereTacheDepartHCDepuisFermetureForPrincipaleFinPeriode() throws Exception {
+
+		loadDatabase(DB_UNIT_DATA_FILE);
+
+		doInNewTransaction(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+		PersonnePhysique hab = (PersonnePhysique) tiersService.getTiers(12300001);
+
+		ForFiscalPrincipal forFiscalPrincipal = new ForFiscalPrincipal(RegDate.get(2007, 6, 12), RegDate.get(2007, 12, 31),
+				new Integer(5652), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
+		forFiscalPrincipal.setMotifFermeture(MotifFor.DEPART_HC);
+
+		tacheService.genereTacheDepuisFermetureForPrincipal(hab, forFiscalPrincipal);
+		return null;
+			}
+		});
+
+
+		TacheCriteria criterion = new TacheCriteria();
+		verifieControleDossier(criterion, 0);
+
+		verifieAbsenceDIAnnulee(new Long("12300001"), 2007);
 
 	}
 
@@ -2011,6 +2052,21 @@ public class TacheServiceTest extends BusinessTest {
 			tacheAnnulation = (TacheAnnulationDeclarationImpot) taches.get(i);
 			assertNotNull(tacheAnnulation);
 		}
+	}
+
+
+	private void verifieAbsenceDIAnnulee(long noContribuable,int annee) {
+		List<DeclarationImpotOrdinaire> declarations;
+
+		DeclarationImpotCriteria criterion = new DeclarationImpotCriteria();
+		criterion.setAnnee(annee);
+		criterion.setContribuable(noContribuable);
+		declarations = diDAO.find(criterion);
+		for (DeclarationImpotOrdinaire declarationImpotOrdinaire : declarations) {
+			Assert.isNull(declarationImpotOrdinaire.getAnnulationDate());
+		}
+
+
 	}
 
 	@Test
