@@ -7,7 +7,7 @@
 	<bean id="auditManager" class="ch.vd.uniregctb.audit.AuditManager">
 		<property name="auditLineDAO" ref="auditLineDAO" />
 		<!-- BEGIN_LVERSION -->
-		<property name="appName" value="Migreg (version 3.5.2)" />
+		<property name="appName" value="Migreg (version 3.5.3-SNAPSHOT)" />
 		<!-- END_LVERSION -->
 	</bean>
 

@@ -25,7 +25,7 @@
 		</file>
 		<file>
 			<!-- BEGIN_LVERSION -->
-			<source>target/uniregctb-web-it-3.5.2.jar</source>
+			<source>target/uniregctb-web-it-3.5.3-SNAPSHOT.jar</source>
 			<!-- END_LVERSION -->
 			<outputDirectory>lib</outputDirectory>
 			<destName>uniregctb-web-it.jar</destName>
