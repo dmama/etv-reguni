@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.web.xt.handler;
 
 import ch.vd.securite.model.Operateur;
+import org.apache.commons.lang.StringEscapeUtils;
 
 public class WrapperUtilisateur {
 
@@ -11,8 +12,8 @@ public class WrapperUtilisateur {
 
 	public WrapperUtilisateur(Operateur utlisateur) {
 		this.visaOperateur = utlisateur.getCode();
-		this.nom = utlisateur.getNom();
-		this.prenom = utlisateur.getPrenom();
+		this.nom = StringEscapeUtils.escapeXml(utlisateur.getNom());
+		this.prenom = StringEscapeUtils.escapeXml(utlisateur.getPrenom());
 		this.individuNoTechnique = utlisateur.getIndividuNoTechnique();
 	}
 

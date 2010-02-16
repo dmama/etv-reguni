@@ -5,7 +5,7 @@ package ch.vd.uniregctb.web.xt.handler;
 
 import ch.vd.uniregctb.interfaces.model.Localite;
 import ch.vd.uniregctb.interfaces.model.Rue;
-
+import org.apache.commons.lang.StringEscapeUtils;
 
 
 /**
@@ -16,13 +16,13 @@ public class WrapperRue {
 	final private String designationCourrier;
 	final private String noRue;
 	final private String noLocalite;
-	final private Localite localite;
+	final private String nomLocalite;
 
 	public WrapperRue( Rue rue, Localite localite) {
-			this.designationCourrier = rue.getDesignationCourrier();
+			this.designationCourrier = StringEscapeUtils.escapeXml(rue.getDesignationCourrier());
 			this.noRue = String.valueOf(rue.getNoRue());
 			this.noLocalite = rue.getNoLocalite().toString();
-			this.localite = localite;
+			this.nomLocalite = StringEscapeUtils.escapeXml(localite.getNomAbregeMinuscule());
 	}
 
 	/**
@@ -47,7 +47,7 @@ public class WrapperRue {
 	}
 
 	public String getNomLocalite()  {
-		 return localite.getNomAbregeMinuscule();
+		 return nomLocalite;
 	}
 
 }

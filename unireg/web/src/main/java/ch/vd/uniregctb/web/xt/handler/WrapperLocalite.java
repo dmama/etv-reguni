@@ -4,6 +4,7 @@
 package ch.vd.uniregctb.web.xt.handler;
 
 import ch.vd.uniregctb.interfaces.model.Localite;
+import org.apache.commons.lang.StringEscapeUtils;
 
 /**
  * @author xcicfh
@@ -18,10 +19,10 @@ public class WrapperLocalite {
 	private final String numCommune;
 
 	public WrapperLocalite(Localite localite) {
-		this.nomCompletMinuscule = localite.getNomAbregeMinuscule();
+		this.nomCompletMinuscule = StringEscapeUtils.escapeXml(localite.getNomAbregeMinuscule());
 		this.noOrdre = String.valueOf(localite.getNoOrdre());
 		this.npa = localite.getNPA().toString();
-		this.nomCommune = localite.getNomAbregeMinuscule();
+		this.nomCommune = StringEscapeUtils.escapeXml(localite.getNomAbregeMinuscule());
 		this.numCommune = localite.getNoCommune().toString();
 	}
 
