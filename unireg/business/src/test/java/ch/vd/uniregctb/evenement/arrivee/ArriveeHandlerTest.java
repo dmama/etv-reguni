@@ -53,11 +53,6 @@ public class ArriveeHandlerTest extends AbstractEvenementHandlerTest {
 	private static final RegDate DATE_ANCIENNE_ADRESSE = RegDate.get(1970, 11, 19);
 	private static final RegDate DATE_ANTERIEURE_ANCIENNE_ADRESSE = RegDate.get(1940, 11, 19);
 
-	private static final String CANTON_GENEVE = "GE";
-
-	private static final Integer NO_OFS_CHENIT = 5872;
-	//private static final Integer NO_OFS_SENTIER = 8000;
-
 	@Override
 	public void onSetUp() throws Exception {
 
@@ -134,6 +129,7 @@ public class ArriveeHandlerTest extends AbstractEvenementHandlerTest {
 		warnings.clear();
 		arrivee = createValidArrivee((MockIndividu) serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, 2000));
 		arrivee.setNouvelleCommunePrincipale(MockCommune.Neuchatel);
+		arrivee.setNumeroOfsCommuneAnnonce(MockCommune.Neuchatel.getNoOFSEtendu());
 		evenementCivilHandler.validate(arrivee, erreurs, warnings);
 		Assert.notEmpty(erreurs, "L'arrivée est hors canton, une erreur aurait du être déclenchée");
 		LOGGER.debug("Test arrivée hors canton : OK");
@@ -144,7 +140,7 @@ public class ArriveeHandlerTest extends AbstractEvenementHandlerTest {
 		warnings.clear();
 		arrivee = createValidArrivee((MockIndividu) serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, 2000));
 		arrivee.setNouvelleCommunePrincipale(MockCommune.Fraction.LeSentier);
-		arrivee.setNumeroOfsCommuneAnnonce(NO_OFS_CHENIT);
+		arrivee.setNumeroOfsCommuneAnnonce(MockCommune.LeChenit.getNoOFSEtendu());
 		evenementCivilHandler.validate(arrivee, erreurs, warnings);
 		Assert.isTrue(warnings.size() == 1, "L'arrivée est dans la commune du sentier, un warning aurait du être déclenchée");
 		LOGGER.debug("Test arrivée commune du sentier : OK");
