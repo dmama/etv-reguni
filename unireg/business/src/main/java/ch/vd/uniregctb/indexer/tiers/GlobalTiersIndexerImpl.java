@@ -247,134 +247,176 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer {
         }
 
         statusManager.setMessage("Récupération des tiers à indexer...");
-        final List<Long> list;
+        final DeltaIds deltaIds;
         switch (mode) {
             case FULL:
-                list = tiersDAO.getAllIds();
+	            deltaIds = new DeltaIds(tiersDAO.getAllIds());
                 break;
 
             case DIRTY_ONLY:
-                list = tiersDAO.getDirtyIds();
+                deltaIds = new DeltaIds(tiersDAO.getDirtyIds());
                 break;
 
             case INCREMENTAL:
-                list = getIncrementalIds();
+	            deltaIds = getIncrementalIds();
                 break;
 
             default:
                 throw new ProgrammingException("Mode d'indexation inconnu = " + mode);
         }
 
-        int nbIndexed = 0;
-        try {
-            LOGGER.info("ASYNC indexation de " + list.size() + " tiers par " + nbThreads + " threads en mode " + mode
-                    + (prefetchIndividus ? " avec" : " sans") + " préchargement des individus");
-
-            TimeLog timeLog = new TimeLog();
-            timeLog.start();
-
-            final int queueSizeByThread = CIVIL_BATCH_SIZE / nbThreads;
-            AsyncTiersIndexer asyncIndexer = new AsyncTiersIndexer(this, transactionManager, sessionFactory, nbThreads, queueSizeByThread, mode);
-            asyncIndexer.initialize();
-
-            int size = list.size();
-
-            // variables pour le log
-            int i = 0;
-
-            BatchIterator<Long> iter = new BatchIterator<Long>(list, CIVIL_BATCH_SIZE);
-            while (iter.hasNext() && !statusManager.interrupted()) {
-
-                Iterator<Long> batch = iter.next();
-
-                final Set<Long> ids = new HashSet<Long>();
-                while (batch.hasNext()) {
-                    Long id = batch.next();
-                    ids.add(id);
-                }
-
-                statusManager.setMessage("Indexation du tiers " + i + " sur " + size, (100 * i) / size);
-
-                if (prefetchIndividus && serviceCivilService.isWarmable()) {
-                    /*
-                          * Si le service est chauffable, on précharge les individus en vrac pour améliorer les performances. Sans préchargement,
-                          * chaque individu est obtenu séparemment à travers host-interface (= au minimum une requête par individu); et avec le
-                          * préchargement on peut charger 500 individus en faisant une requête à apireg.
-                          */
-                    long start = System.nanoTime();
-
-					final List<Long> numerosIndividus = tiersDAO.getNumerosIndividu(ids);
-					if (!numerosIndividus.isEmpty()) { // on peut tomber sur une plage de tiers ne contenant pas d'habitant
-						try {
-							final List<Individu> individus = serviceCivilApireg.getIndividus(numerosIndividus, null, EnumAttributeIndividu.ADRESSES);
-							serviceCivilService.warmCache(individus, null, EnumAttributeIndividu.ADRESSES);
-
-                            long nanosecondes = System.nanoTime() - start;
-                            LOGGER.info("=> Récupéré 500 individus en " + (nanosecondes / 1000000000L) + "s.");
-                        }
-                        catch (Exception e) {
-                            LOGGER.error("Impossible de précharger le lot d'individus [" + numerosIndividus
-                                    + "]. On continue avec host-interface pour ce lot.", e);
-                        }
-                    }
-                }
-
-                // Dispatching des tiers à indexer
-                for (Long id : ids) {
-                    if (statusManager.interrupted()) {
-                        asyncIndexer.clearQueue();
-                        break;
-                    }
-
-                    /*
-                          * insère l'id dans la queue à indexer, mais de manière à pouvoir interrompre le processus si plus personne ne prélève
-                          * de tiers dans la queue (p.a. si tous les threads d'indexations sont morts).
-                          */
-                    while (!asyncIndexer.offerTiersForIndexation(id, 10, TimeUnit.SECONDS) && !statusManager.interrupted()) {
-                        if (LOGGER.isDebugEnabled()) {
-                            LOGGER.debug("La queue d'indexation est pleine, attente de 10 secondes...");
-                        }
-                    }
-                    ++i;
-                }
-            }
-
-            asyncIndexer.terminate();
-
-            timeLog.end(asyncIndexer);
-            timeLog.logStats();
-
-            if (statusManager.interrupted()) {
-                Audit.warn("L'indexation a été interrompue. Nombre de tiers réindexés = " + size);
-            } else {
-                Audit.success("L'indexation s'est terminée avec succès. Nombre de tiers réindexés = " + size);
-            }
-
-            nbIndexed = size;
-        }
-        catch (Exception e) {
-            Audit.error("Erreur lors de l'indexation: " + e.getMessage());
-            throw new IndexerException(e);
-        }
-        return nbIndexed;
+	    try {
+		    int nbIndexed = indexMultithreads(deltaIds.toAdd, nbThreads, mode, prefetchIndividus, statusManager);
+		    remove(deltaIds.toRemove, statusManager);
+		    return nbIndexed;
+	    }
+	    catch (Exception e) {
+		    Audit.error("Erreur lors de l'indexation: " + e.getMessage());
+		    throw new IndexerException(e);
+	    }
     }
 
-    /**
-     * @return la liste des ids non-indexés
-     */
-    private List<Long> getIncrementalIds() {
+	/**
+	 * [UNIREG-1988] Supprime les tiers spécifiés de l'indexeur.
+	 *
+	 * @param ids           les ids des tiers à supprimer
+	 * @param statusManager un status manager
+	 */
+	private void remove(List<Long> ids, StatusManager statusManager) {
 
-        final List<Long> idsDb = tiersDAO.getAllIds();
+		LOGGER.info("Suppression de l'indexeur de " + ids.size() + " tiers");
+
+		final int size = ids.size();
+		int i = 0;
+		
+		for (Long id : ids) {
+			statusManager.setMessage("Suppression du tiers " + id + " sur " + size, (100 * i) / size);
+			removeEntity(id, TiersIndexable.TYPE);
+			i++;
+		}
+	}
+
+	private int indexMultithreads(List<Long> list, int nbThreads, Mode mode, boolean prefetchIndividus, StatusManager statusManager) throws Exception {
+
+		LOGGER.info("ASYNC indexation de " + list.size() + " tiers par " + nbThreads + " threads en mode " + mode
+				+ (prefetchIndividus ? " avec" : " sans") + " préchargement des individus");
+
+		TimeLog timeLog = new TimeLog();
+		timeLog.start();
+
+		final int queueSizeByThread = CIVIL_BATCH_SIZE / nbThreads;
+		AsyncTiersIndexer asyncIndexer = new AsyncTiersIndexer(this, transactionManager, sessionFactory, nbThreads, queueSizeByThread, mode);
+		asyncIndexer.initialize();
+
+		int size = list.size();
+
+		// variables pour le log
+		int i = 0;
+
+		BatchIterator<Long> iter = new BatchIterator<Long>(list, CIVIL_BATCH_SIZE);
+		while (iter.hasNext() && !statusManager.interrupted()) {
+
+			Iterator<Long> batch = iter.next();
+
+			final Set<Long> ids = new HashSet<Long>();
+			while (batch.hasNext()) {
+				Long id = batch.next();
+				ids.add(id);
+			}
+
+			statusManager.setMessage("Indexation du tiers " + i + " sur " + size, (100 * i) / size);
+
+			if (prefetchIndividus && serviceCivilService.isWarmable()) {
+				// Si le service est chauffable, on précharge les individus en vrac pour améliorer les performances.
+				// Sans préchargement, chaque individu est obtenu séparemment à travers host-interface (= au minimum
+				// une requête par individu); et avec le préchargement on peut charger 500 individus en faisant une requête à apireg.
+				long start = System.nanoTime();
+
+				final List<Long> numerosIndividus = tiersDAO.getNumerosIndividu(ids);
+				if (!numerosIndividus.isEmpty()) { // on peut tomber sur une plage de tiers ne contenant pas d'habitant
+					try {
+						final List<Individu> individus = serviceCivilApireg.getIndividus(numerosIndividus, null, EnumAttributeIndividu.ADRESSES);
+						serviceCivilService.warmCache(individus, null, EnumAttributeIndividu.ADRESSES);
+
+						long nanosecondes = System.nanoTime() - start;
+						LOGGER.info("=> Récupéré 500 individus en " + (nanosecondes / 1000000000L) + "s.");
+					}
+					catch (Exception e) {
+						LOGGER.error("Impossible de précharger le lot d'individus [" + numerosIndividus + "]. On continue avec host-interface pour ce lot.", e);
+					}
+				}
+			}
+
+			// Dispatching des tiers à indexer
+			for (Long id : ids) {
+				if (statusManager.interrupted()) {
+					asyncIndexer.clearQueue();
+					break;
+				}
+
+				// insère l'id dans la queue à indexer, mais de manière à pouvoir interrompre le processus si
+				// plus personne ne prélève de tiers dans la queue (p.a. si tous les threads d'indexations sont morts).
+				while (!asyncIndexer.offerTiersForIndexation(id, 10, TimeUnit.SECONDS) && !statusManager.interrupted()) {
+					if (LOGGER.isDebugEnabled()) {
+						LOGGER.debug("La queue d'indexation est pleine, attente de 10 secondes...");
+					}
+				}
+				++i;
+			}
+		}
+
+		asyncIndexer.terminate();
+
+		timeLog.end(asyncIndexer);
+		timeLog.logStats();
+
+		if (statusManager.interrupted()) {
+			Audit.warn("L'indexation a été interrompue. Nombre de tiers réindexés = " + size);
+		}
+		else {
+			Audit.success("L'indexation s'est terminée avec succès. Nombre de tiers réindexés = " + size);
+		}
+
+		return size;
+	}
+
+	private static class DeltaIds {
+		public final List<Long> toAdd;
+		public final List<Long> toRemove ;
+
+		private DeltaIds() {
+			this.toAdd = new ArrayList<Long>();
+			this.toRemove = new ArrayList<Long>();
+		}
+
+		private DeltaIds(List<Long> toAdd) {
+			this.toAdd = toAdd;
+			this.toRemove = Collections.emptyList();
+		}
+	}
+
+    /**
+     * @return la liste des ids non-indexés, ainsi que ceux indexés à tord
+     */
+    private DeltaIds getIncrementalIds() {
+
+        final Set<Long> idsDb = new HashSet<Long>(tiersDAO.getAllIds());
         final Set<Long> idsIndex = tiersSearcher.getAllIds();
 
-        List<Long> list = new ArrayList<Long>();
+	    DeltaIds ids = new DeltaIds();
+
         for (Long id : idsDb) {
             if (!idsIndex.contains(id)) {
-                list.add(id);
+                ids.toAdd.add(id);
             }
         }
+	    for (Long id : idsIndex) {
+		    if (!idsDb.contains(id)) {
+			    ids.toRemove.add(id);
+		    }
+	    }
 
-        return list;
+        return ids;
     }
 
     /**
@@ -665,6 +707,7 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer {
         this.tiersService = tiersService;
     }
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setServiceCivilApireg(ServiceCivilService serviceCivilApireg) {
 		this.serviceCivilApireg = serviceCivilApireg;
 	}
