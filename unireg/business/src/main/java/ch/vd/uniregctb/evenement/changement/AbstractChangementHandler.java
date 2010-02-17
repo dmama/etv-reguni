@@ -37,7 +37,6 @@ public abstract class AbstractChangementHandler extends EvenementCivilHandlerBas
 		// effectivement pas !) et l'intercepteur d'indexation n'est pas déclenché. Il veut mieux simplement indexer le tiers sur-le-champs.
 
 		// on réindexe le tiers
-		Assert.isTrue(indexer.isOnTheFlyIndexation());
 		indexer.indexTiers(pp);
 		if (pp.isDirty()) {
 			// on peut maintenant resetter le flag dirty s'il existait

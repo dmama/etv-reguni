@@ -29,23 +29,28 @@ public class IcGlobalIndexTest extends InContainerTest {
 	@NotTransactional
 	public void testBase() throws Exception {
 
-		String nom = "Bolomey";
-		String prenom1 = "Claude";
-		String prenom2 = "Alain";
+		final String nom = "Bolomey";
+		final String prenom1 = "Claude";
+		final String prenom2 = "Alain";
 
-		{
-			PersonnePhysique nh = new PersonnePhysique(false);
-			nh.setNom(nom);
-			nh.setPrenom(prenom1);
-			getTiersDAO().save(nh);
-		}
+		executeInTransaction(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				{
+					PersonnePhysique nh = new PersonnePhysique(false);
+					nh.setNom(nom);
+					nh.setPrenom(prenom1);
+					getTiersDAO().save(nh);
+				}
 
-		{
-			PersonnePhysique nh = new PersonnePhysique(false);
-			nh.setNom(nom);
-			nh.setPrenom(prenom2);
-			getTiersDAO().save(nh);
-		}
+				{
+					PersonnePhysique nh = new PersonnePhysique(false);
+					nh.setNom(nom);
+					nh.setPrenom(prenom2);
+					getTiersDAO().save(nh);
+				}
+				return null;
+			}
+		});
 
 		{
 			TiersCriteria criteria = new TiersCriteria();
@@ -65,7 +70,6 @@ public class IcGlobalIndexTest extends InContainerTest {
 			List<TiersIndexedData> list = globalTiersSearcher.search(criteria);
 			Assert.isEqual(1, list.size());
 		}
-
 	}
 
 	@Test

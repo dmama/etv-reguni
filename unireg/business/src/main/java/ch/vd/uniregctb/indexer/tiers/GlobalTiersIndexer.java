@@ -97,9 +97,6 @@ public interface GlobalTiersIndexer {
 	 */
 	public void setOnTheFlyIndexation(boolean onTheFlyIndexation);
 
-	public boolean isThrowOnTheFlyException();
-	public void setThrowOnTheFlyException(boolean want);
-
 	/**
 	 * @param globalIndex
 	 *            the globalIndex to set
