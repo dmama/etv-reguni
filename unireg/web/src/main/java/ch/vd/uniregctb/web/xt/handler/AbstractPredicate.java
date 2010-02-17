@@ -23,23 +23,44 @@ public abstract class AbstractPredicate implements Predicate {
     private static final char[] map = initMap();
     
 	protected String toLowerCaseWithoutAccent(String str) {
-		if (str == null)
+
+		if (str == null) {
 			return "";
-		
-		char[] result = str.toCharArray();
-    	for(int bcl = 0 ; bcl < result.length ; bcl++) {
-    		char c = result[bcl];
-    		if(  c >= MIN && c <= MAX && c != 198 && c != 230 && c != 216 && c != 222 && c != 223 && c != 248 && c != 254) { //Æ æ Ø Þ ß ø þ
-    			c = map[(int)c - MIN ];
-    		}
-    		result[bcl] = c;
-    	}
-		
-    	String res = new String(result);
+		}
+
+		final int length = str.length();
+
+		boolean hasAccent = false;
+		for(int i = 0 ; i < length; i++) {
+			if (isAccent(str.charAt(i))) {
+				hasAccent = true;
+			}
+		}
+
+		// on évite de faire des copies de strings pour rien
+		if (!hasAccent) {
+			return str.toLowerCase();
+		}
+
+		// autrement, on fait une copie et on supprime les accents
+		char[] buffer = str.toCharArray();
+		for (int bcl = 0; bcl < length; bcl++) {
+			char c = buffer[bcl];
+			if (isAccent(c)) {
+				c = map[(int) c - MIN];
+			}
+			buffer[bcl] = c;
+		}
+
+		String res = new String(buffer);
 		return res.toLowerCase();
 	}
-	
-    /** Initialisation du tableau de correspondance entre les caractéres accentués
+
+	private static boolean isAccent(char c) {
+		return c >= MIN && c <= MAX && c != 198 && c != 230 && c != 216 && c != 222 && c != 223 && c != 248 && c != 254; //Æ æ Ø Þ ß ø þ
+	}
+
+	/** Initialisation du tableau de correspondance entre les caractéres accentués
        * et leur homologues non accentués 
        */
     private static char[] initMap() {  
