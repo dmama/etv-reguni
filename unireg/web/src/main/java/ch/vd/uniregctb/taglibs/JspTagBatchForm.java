@@ -37,9 +37,9 @@ public class JspTagBatchForm extends BodyTagSupport {
 	@Override
 	public int doStartTag() throws JspException {
 		try {
-			HttpServletRequest request = (HttpServletRequest) this.pageContext.getRequest();
-			JspWriter out = pageContext.getOut();
-			out.print(buidHtlm(request, job));
+			final HttpServletRequest request = (HttpServletRequest) this.pageContext.getRequest();
+			final JspWriter out = pageContext.getOut();
+			out.print(buildHtlm(request, job));
 			return SKIP_BODY;
 		}
 		catch (Exception ex) {
@@ -47,7 +47,7 @@ public class JspTagBatchForm extends BodyTagSupport {
 		}
 	}
 
-	public static String buidHtlm(HttpServletRequest request, GestionJob job) {
+	public static String buildHtlm(HttpServletRequest request, GestionJob job) {
 
 		if (job == null) {
 			return "";
@@ -125,9 +125,15 @@ public class JspTagBatchForm extends BodyTagSupport {
 		}
 	}
 
-	private static String getParamName(JobParam param) {
-		StringBuilder b = new StringBuilder();
+	private static String getBatchParamNameInForm(JobParam param) {
+		final StringBuilder b = new StringBuilder();
 		b.append("startParams[").append(param.getName()).append(']');
+		return b.toString();
+	}
+
+	private static String getBatchParamId(GestionJob job, JobParam param) {
+		final StringBuilder b = new StringBuilder();
+		b.append(job.getName()).append("_").append(param.getName());
 		return b.toString();
 	}
 
@@ -135,8 +141,8 @@ public class JspTagBatchForm extends BodyTagSupport {
 
 		final Object defaultBalue = job.getJobDefinition().getDefaultValue(param.getName());
 
-		StringBuilder b = new StringBuilder();
-		b.append("<input name=\"").append(getParamName(param)).append("\" type=\"text\" size=\"12\"");
+		final StringBuilder b = new StringBuilder();
+		b.append("<input name=\"").append(getBatchParamNameInForm(param)).append("\" type=\"text\" size=\"12\"");
 		if (defaultBalue != null) {
 			b.append(" value=\"").append(defaultBalue).append("\"");
 		}
@@ -148,8 +154,8 @@ public class JspTagBatchForm extends BodyTagSupport {
 
 		final Boolean defaultValue = (Boolean) job.getJobDefinition().getDefaultValue(param.getName());
 
-		StringBuilder b = new StringBuilder();
-		b.append("<select name=\"").append(getParamName(param)).append("\">\n");
+		final StringBuilder b = new StringBuilder();
+		b.append("<select name=\"").append(getBatchParamNameInForm(param)).append("\">\n");
 		b.append("<option value=\"true\"");
 		if (defaultValue == Boolean.TRUE) {
 			b.append(" selected=\"selected\"");
@@ -168,8 +174,8 @@ public class JspTagBatchForm extends BodyTagSupport {
 
 		final Enum<?> defaultValue = (Enum<?>) job.getJobDefinition().getDefaultValue(param.getName());
 
-		StringBuilder b = new StringBuilder();
-		b.append("<select name=\"").append(getParamName(param)).append("\">\n");
+		final StringBuilder b = new StringBuilder();
+		b.append("<select name=\"").append(getBatchParamNameInForm(param)).append("\">\n");
 
 		final JobParamEnum type = (JobParamEnum) param.getType();
 		final Enum<?>[] enums = (Enum<?>[]) type.getConcreteClass().getEnumConstants();
@@ -191,15 +197,16 @@ public class JspTagBatchForm extends BodyTagSupport {
 
 		final RegDate defaultValue = (RegDate) job.getJobDefinition().getDefaultValue(param.getName());
 
-		StringBuilder b = new StringBuilder();
-		final String name = getParamName(param);
+		final StringBuilder b = new StringBuilder();
+		final String name = getBatchParamNameInForm(param);
+		final String id = getBatchParamId(job, param);
 
 		// input
 		b.append("<input  type=\"text\" name=\"").append(name).append("\"");
 		if (defaultValue != null) {
 			b.append(" value=\"").append(RegDateHelper.dateToDisplayString(defaultValue)).append("\"");
 		}
-		b.append(" id=\"").append(name).append("\" size=\"10\" maxlength =\"10\" class=\"date\" />");
+		b.append(" id=\"").append(id).append("\" size=\"10\" maxlength =\"10\" class=\"date\" />");
 
 		// calendar
 		b.append("<a href=\"#\" name=\"").append(name).append("_Anchor\" id=\"").append(name).append(
@@ -213,8 +220,8 @@ public class JspTagBatchForm extends BodyTagSupport {
 
 		final Object defaultBalue = job.getJobDefinition().getDefaultValue(param.getName());
 
-		StringBuilder b = new StringBuilder();
-		b.append("<input name=\"").append(getParamName(param)).append("\" type=\"file\" size=\"20\"");
+		final StringBuilder b = new StringBuilder();
+		b.append("<input name=\"").append(getBatchParamNameInForm(param)).append("\" type=\"file\" size=\"20\"");
 		if (defaultBalue != null) {
 			b.append(" value=\"").append(defaultBalue).append("\"");
 		}
@@ -230,24 +237,24 @@ public class JspTagBatchForm extends BodyTagSupport {
 		final String defaultNoOfsCommune = (defaultCommune == null ? "" : String.valueOf(defaultCommune.getNoOFSEtendu()));
 
 		final String idInputNomCommune = jobName + "NomCommune";
-		final String idInputNoOfs = getParamName(param);
+		final String nameInputNoOfs = getBatchParamNameInForm(param);
+		final String idInputNoOfs = getBatchParamId(job, param);
 		final String idDivAutoComplete = idInputNomCommune + "_autoComplete";
 		final String nameMethodOnChange = jobName + "Commune_onChange";
 
-		StringBuilder b = new StringBuilder();
+		final StringBuilder b = new StringBuilder();
 
 		// champ de saisie visible à l'utilisateur
 		b.append("<input id=\"").append(idInputNomCommune).append("\" name=\"").append(idInputNomCommune).append(
 				"\" type=\"text\" value=\"").append(defaultNomCommune).append("\" size=\"25\" />\n");
 
 		// champ contenant le numéro Ofs invisible à l'utilisateur
-		b.append("<input id=\"").append(idInputNoOfs).append("\" name=\"").append(idInputNoOfs).append("\" type=\"hidden\" value=\"")
-				.append(defaultNoOfsCommune).append("\"/>\n");
+		b.append("<input id=\"").append(idInputNoOfs).append("\" name=\"").append(nameInputNoOfs).append("\" type=\"hidden\" value=\"").append(defaultNoOfsCommune).append("\"/>\n");
 
 		// code javascript permettant la mise-à-jour du numéro Ofs à partir recherche de la commune
 		b.append("<script type=\"text/javascript\">\n");
 		b.append("function ").append(nameMethodOnChange).append("(row) {\n");
-		b.append("    document.getElementById(\"").append(idInputNoOfs).append("\").value = (row ? row.noTechnique : \"\");\n");
+		b.append("    document.getElementById('").append(idInputNoOfs).append("').value = (row ? row.noTechnique : \"\");\n");
 		b.append("}\n");
 		b.append("</script>\n");
 
@@ -274,22 +281,23 @@ public class JspTagBatchForm extends BodyTagSupport {
 		final String defaultNoColAdm = (defaultOID == null ? "" : String.valueOf(defaultOID.getNoColAdm()));
 
 		final String idInputNomOID = jobName + "NomOID";
-		final String idInputNoColAdm = getParamName(param);
+		final String nameInputNoColAdm = getBatchParamId(job, param);
+		final String idInputNoColAdm = getBatchParamNameInForm(param);
 		final String idDivAutoComplete = idInputNomOID + "_autoComplete";
 		final String nameMethodOnChange = idInputNomOID + "_onChange";
 
-		StringBuilder b = new StringBuilder();
+		final StringBuilder b = new StringBuilder();
 
 		// champ de saisie visible à l'utilisateur
 		b.append("<input id=\"").append(idInputNomOID).append("\" name=\"").append(idInputNomOID).append("\" type=\"text\" value=\"").append(defaultNomOID).append("\" size=\"25\" />\n");
 
 		// champ contenant le numéro invisible à l'utilisateur
-		b.append("<input id=\"").append(idInputNoColAdm).append("\" name=\"").append(idInputNoColAdm).append("\" type=\"hidden\" value=\"").append(defaultNoColAdm).append("\" />\n");
+		b.append("<input id=\"").append(idInputNoColAdm).append("\" name=\"").append(nameInputNoColAdm).append("\" type=\"hidden\" value=\"").append(defaultNoColAdm).append("\" />\n");
 
 		// code javascript permettant la mise-à-jour du numéro à partir recherche de l'OID
 		b.append("<script type=\"text/javascript\">\n");
 		b.append("function ").append(nameMethodOnChange).append("(row) {\n");
-		b.append("    document.getElementById(\"").append(idInputNoColAdm).append("\").value = (row ? row.noColAdm : \"\");\n");
+		b.append("    document.getElementById('").append(idInputNoColAdm).append("').value = (row ? row.noColAdm : \"\");\n");
 		b.append("}\n");
 		b.append("</script>\n");
 
