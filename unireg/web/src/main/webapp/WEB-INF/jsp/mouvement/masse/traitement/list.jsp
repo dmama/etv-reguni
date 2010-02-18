@@ -134,13 +134,28 @@
                 <tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
                     <td width="25%">&nbsp;</td>
                     <td width="50%">
-                        <div class="navigation-action">
+                        <div id="boutonInclusion" class="navigation-action">
                             <input type="submit" value="<fmt:message key='label.bouton.inclure.dans.bordereau'/>" name="inclure" onclick="return confirmeInclusionBordereau();"/>
                         </div>
+                        &nbsp;
                     </td>
                     <td width="25%">&nbsp;</td>
                 </tr>
             </table>
+
+            <script type="text/javascript">
+                var lignesMvts = document.getElementById('mvt').getElementsByTagName('tr');
+                var taille = lignesMvts.length;
+                var nbSelectionnables = 0;
+                for(var i=1; i < taille; i++) {
+                    if (E$('tabIdsMvts_' + i) != null && !E$('tabIdsMvts_' + i).disabled) {
+                        ++ nbSelectionnables;
+                    }
+                }
+                if (nbSelectionnables == 0) {
+                    document.getElementById('boutonInclusion').style.display = "none";
+                }
+            </script>
 
 		</form:form>
 		<script type="text/javascript">
