@@ -115,7 +115,7 @@ public class ImpressionChemisesTOProcessor {
 					final Long id = batch.get(i);
 					final DeclarationImpotOrdinaire di = diDAO.get(id);
 					final EtatDeclaration etat = di.getDernierEtat();
-					if (etat != null && etat.getEtat() == TypeEtatDeclaration.ECHUE) {
+					if (etat != null && etat.getEtat() == TypeEtatDeclaration.ECHUE && !di.getTiers().isAnnule()) {
 
 						if (noColOid == null || nosOfsCommunes.contains(di.getNumeroOfsForGestion())) {
 							editiqueService.imprimeTaxationOfficeBatch(di);
