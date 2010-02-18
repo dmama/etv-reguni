@@ -75,8 +75,8 @@
                 function termineImpressionBordereau() {
                     var closeButton = document.getElementById('closeButton');
 
-                    // Annuler est la valeur par défaut quand on arrive sur la page, avant impression
-                    if (closeButton.value == 'Annuler') {
+                    // Retour est la valeur par défaut quand on arrive sur la page, avant impression
+                    if (closeButton.value == 'Retour') {
                         // pas besoin de rafraîchissement de la page en dessous
                         self.parent.tb_remove();
                     }
@@ -121,7 +121,7 @@
                     </td>
                     <td width="25%">
                         <div class="navigation-action">
-                            <input type="button" id="closeButton" value="Annuler" onclick="return termineImpressionBordereau();"/>
+                            <input type="button" id="closeButton" value="Retour" onclick="return termineImpressionBordereau();"/>
                         </div>
                     </td>
                     <td width="25%">&nbsp;</td>
