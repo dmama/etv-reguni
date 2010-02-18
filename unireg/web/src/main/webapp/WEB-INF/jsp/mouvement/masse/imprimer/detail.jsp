@@ -54,10 +54,10 @@
                     else {
                         var txtMvt;
                         if (nbSelectionnes == 1) {
-                            txtMvt = 'le mouvement sélectionné';
+                            txtMvt = 'le mouvement sélectionné, qui sera alors créé définitivement';
                         }
                         else {
-                            txtMvt = 'les ' + nbSelectionnes + ' mouvements sélectionnés';
+                            txtMvt = 'les ' + nbSelectionnes + ' mouvements sélectionnés, qui seront alors créés définitivement';
                         }
                         if (confirm('Voulez-vous imprimer le bordereau avec ' + txtMvt + ' ?')) {
                             var printButton = document.getElementById('printButton');
