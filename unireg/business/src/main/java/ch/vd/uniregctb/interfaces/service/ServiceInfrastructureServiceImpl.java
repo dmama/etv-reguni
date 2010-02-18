@@ -56,6 +56,8 @@ public class ServiceInfrastructureServiceImpl extends AbstractServiceInfrastruct
 	private CollectiviteAdministrative cedi;
 	private CollectiviteAdministrative cat;
 
+	private Map<Integer,Localite> localitesByNPA;
+
 	/**
 	 * @return Returns the serviceInfrastructure.
 	 */
@@ -190,6 +192,26 @@ public class ServiceInfrastructureServiceImpl extends AbstractServiceInfrastruct
 		return suisse;
 	}
 
+
+	public Localite getLocaliteByNPA(int npa) throws InfrastructureException{
+		if (localitesByNPA==null) {
+			initLocaliteByNPA();
+		}
+		return localitesByNPA.get(npa);
+	}
+
+
+	private void initLocaliteByNPA() throws InfrastructureException {
+		List<Localite> localites = getLocalites();
+		localitesByNPA = new HashMap<Integer, Localite>();
+		for (Localite localite : localites) {
+			if (localite.getNPA()!=null) {
+				localitesByNPA.put(localite.getNPA(), localite);
+			}
+
+		}
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -231,7 +253,7 @@ public class ServiceInfrastructureServiceImpl extends AbstractServiceInfrastruct
 		if (numeroOFS <= 0) {
 			return null;
 		}
-		
+
 		try {
 			switch (numeroOFS) {
 			case 8000:

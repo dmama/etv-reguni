@@ -715,5 +715,18 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 	public Map<String, ? extends ServiceTracingInterface> getDetailedData() {
 		return null;
 	}
+
+	public Localite getLocaliteByNPA(int npa) throws InfrastructureException {
+		Localite result;
+		long time = tracing.start();
+		try {
+			result = target.getLocaliteByNPA(npa);
+		}
+		finally {
+			tracing.end(time);
+		}
+
+		return result;
+	}
 }
 

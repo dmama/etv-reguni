@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import ch.vd.infrastructure.service.InfrastructureException;
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.adresse.AdresseService;
@@ -35,6 +36,7 @@ import ch.vd.uniregctb.evenement.identification.contribuable.Erreur.TypeErreur;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable.Etat;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
+import ch.vd.uniregctb.interfaces.model.Localite;
 import ch.vd.uniregctb.interfaces.model.Pays;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
@@ -60,7 +62,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	private AdresseService adresseService;
 	private ServiceInfrastructureService infraService;
 	private IdentificationContribuableMessageHandler messageHandler;
-
+	private static String REPARTITION_INTERCANTONALE="ssk-3001-000101";
 	public void setSearcher(GlobalTiersSearcher searcher) {
 		this.searcher = searcher;
 	}
@@ -141,13 +143,14 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 
 		// Restriction selon les autres critères
 
-		if (criteres.getNAVS11() == null && criteres.getNAVS13() == null) {
-			list = filterSexe(list, criteres);
-			list = filterAdresse(list, criteres);
-		}
+		list = filterSexe(list, criteres);
+		list = filterAdresse(list, criteres);
+		list = filterDateNaissance(list, criteres);
 
 		return list;
 	}
+
+
 
 	/**
 	 * Sauve la demande en base, identifie le ou les contribuables et retourne une réponse immédiatement si un seul contribuable est trouvé.
@@ -184,6 +187,11 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		if (ensemble != null) {
 			mcId = ensemble.getMenage().getNumero();
 		}
+		//[UNIREG-1940] On met à jour le contribuable si
+		//-	le contribuable trouvé est « non habitant »
+		//-	le message sur lequel a porté l’identification est une « répartition intercantonale »
+		//-	le NPA de l’adresse contenue dans le message est un NPA du canton d’où provient le message
+		verifierEtMettreAjourContribuable(message,personne);
 
 		Reponse reponse = new Reponse();
 		reponse.setDate(new Date());
@@ -207,6 +215,76 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		}
 
 		messageHandler.sendReponse(messageReponse);
+	}
+
+	/**
+	 * Verifie et met a jour le contribuable avec les données contenus dans le message
+	 * @param message
+	 * @param personne
+	 * @throws InfrastructureException
+	 */
+
+	private void verifierEtMettreAjourContribuable(IdentificationContribuable message, PersonnePhysique personne) throws InfrastructureException {
+	if (!personne.isHabitant() &&
+			REPARTITION_INTERCANTONALE.equals(message.getDemande().getTypeMessage()) &&
+			messageFromCanton(message)) {
+		CriteresPersonne criteres = message.getDemande().getPersonne();
+
+		if (criteres.getNAVS13()!=null) {
+			personne.setNumeroAssureSocial(criteres.getNAVS13());
+		}
+
+		if(criteres.getDateNaissance()!=null){
+			personne.setDateNaissance(criteres.getDateNaissance());
+		}
+		if(criteres.getDateNaissance()!=null){
+			personne.setDateNaissance(criteres.getDateNaissance());
+		}
+		if(criteres.getNom()!=null){
+			personne.setNom(criteres.getNom());
+		}
+		if(criteres.getPrenoms()!=null){
+			personne.setPrenom(criteres.getPrenoms());
+		}
+		if(criteres.getSexe()!=null){
+			personne.setSexe(criteres.getSexe());
+		}
+
+
+	}
+
+
+	}
+/**
+ * Permet de savoir si le NPA de l’adresse contenue dans le message est un NPA du canton d’où provient le message
+ * @param message
+ * @return
+ * @throws InfrastructureException
+ */
+	private boolean messageFromCanton(IdentificationContribuable message) throws InfrastructureException {
+		String emetteur = message.getDemande().getEmetteurId();
+		Integer npa =null;
+		if( message.getDemande().getPersonne().getAdresse()!=null){
+			npa =  message.getDemande().getPersonne().getAdresse().getNpaSuisse();
+		}
+		String sigle = StringUtils.substring(emetteur,2,4);
+
+
+		if (npa!=null) {
+			Localite localite = infraService.getLocaliteByNPA(npa);
+			if (sigle.equals(localite.getCommuneLocalite().getSigleCanton())) {
+				return true;
+			}
+			else{
+				return false;
+			}
+
+		}
+		else{
+			return false;
+		}
+
+
 	}
 
 	/**
@@ -357,10 +435,12 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		final TiersCriteria criteria = new TiersCriteria();
 
 		final String navs13 = criteres.getNAVS13();
+
 		if (Phase.AVEC_NO_AVS_13.equals(phase)) {
 			if (navs13 != null) {
 				criteria.setNumeroAVS(navs13);
 			}
+
 			else {
 				updateCriteriaComplet(criteres, criteria);
 			}
@@ -412,7 +492,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 				public boolean evaluate(Object object) {
 					final PersonnePhysique pp = (PersonnePhysique) object;
 					final Sexe sexe = tiersService.getSexe(pp);
-					return sexe == sexeCritere;
+					return (sexe == sexeCritere || sexe==null);
 				}
 			});
 		}
@@ -440,6 +520,45 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 			});
 		}
 		return list;
+	}
+	/**Supprime toutes les personnes dont la date de naissances ne correspond pas avec celle spécifié dans le message
+	 *
+	* @param list
+	 *            la liste des personnes à fitrer
+	 * @param criteres
+	 *            les critères de filtre
+	 * @return la liste d'entrée filtrée
+	 */
+	private List<PersonnePhysique> filterDateNaissance(List<PersonnePhysique> list, CriteresPersonne criteres) {
+		final RegDate critereDateNaissance = criteres.getDateNaissance();
+		if (critereDateNaissance!=null) {
+			CollectionUtils.filter(list, new Predicate() {
+				public boolean evaluate(Object object) {
+					return matchDateNaissance((PersonnePhysique) object, critereDateNaissance);
+				}
+
+			});
+		}
+		return list;
+	}
+
+	/** verifie si la date de naissance du message et celui de la pp match
+	 *
+	 * @param pp
+	 * 			  la personne physique dont on veut vérifier la date de naissance.
+	 * @param critereDateNaissance
+	 * @return
+	 */
+	private boolean matchDateNaissance(PersonnePhysique pp, RegDate critereDateNaissance) {
+		RegDate dateNaissance = tiersService.getDateNaissance(pp);
+		RegDate dateLimite = RegDate.get(1901,1,1);
+		if (dateNaissance !=null && critereDateNaissance.isAfterOrEqual(dateLimite)) {
+			return dateNaissance.equals(critereDateNaissance);
+		}
+		else{
+			return true;
+		}
+
 	}
 
 	/**

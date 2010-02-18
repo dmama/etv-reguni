@@ -357,4 +357,12 @@ public interface ServiceInfrastructureService {
 	 * @return 0, 1 ou plusieurs institutions financières.
 	 */
     public List<InstitutionFinanciere> getInstitutionsFinancieres(String noClearing) throws InfrastructureException;
+
+    /** Permet de retourner une localite a partir d'un npa
+     *
+     * @param le npa
+     * @return la localite
+     * @throws InfrastructureException
+     */
+	public Localite getLocaliteByNPA(int npa) throws InfrastructureException;
 }

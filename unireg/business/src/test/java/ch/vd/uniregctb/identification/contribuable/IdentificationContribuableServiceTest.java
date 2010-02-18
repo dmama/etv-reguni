@@ -49,7 +49,9 @@ import ch.vd.uniregctb.type.TypeAdresseTiers;
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
-@SuppressWarnings({"FieldCanBeLocal", "JavaDoc"})
+@SuppressWarnings( {
+		"FieldCanBeLocal", "JavaDoc"
+})
 public class IdentificationContribuableServiceTest extends BusinessTest {
 
 	/**
@@ -254,6 +256,73 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			final PersonnePhysique pp = list.get(0);
 			assertEquals(albertId, pp.getNumero());
 		}
+	}
+
+	@Test
+	public void testContribuableMisAJourSuiteIdentification() throws Exception {
+		final long noIndividuAlbert = 1234;
+		final long noIndividuAnne = 2345;
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				addIndividu(noIndividuAlbert, date(1953, 4, 3), "Zweisteinen", "Albert", true);
+				addIndividu(noIndividuAnne, date(1965, 8, 13), "Zweisteinen", "Anne", false);
+			}
+		});
+
+		class Ids {
+			Long albert;
+			Long anne;
+			Long alberto;
+			Long greg;
+		}
+		final Ids ids = new Ids();
+
+		doInNewTransaction(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+
+				final PersonnePhysique alberto = addNonHabitant("Alberto", "Fujimorouille", null, null);
+				ids.alberto = alberto.getNumero();
+				return null;
+			}
+		});
+
+		// Albert
+		{
+			doInNewTransaction(new TxCallback() {
+				@Override
+				public Object execute(TransactionStatus status) throws Exception {
+					CriteresAdresse adresse = new CriteresAdresse();
+					adresse.setNpaSuisse(3018);
+					adresse.setLieu("Bümpliz");
+					CriteresPersonne criteres = new CriteresPersonne();
+					criteres.setPrenoms("Alberto");
+					criteres.setNom("Fujimori");
+					criteres.setNAVS13("123654798123");
+					criteres.setDateNaissance(date(1953, 12, 3));
+					criteres.setAdresse(adresse);
+					criteres.setSexe(Sexe.MASCULIN);
+					IdentificationContribuable message = createDemandeFromCanton(criteres, "2-BE-5");
+					final PersonnePhysique alberto = (PersonnePhysique) tiersService.getTiers(ids.alberto);
+					service.forceIdentification(message, alberto, Etat.TRAITE_MANUELLEMENT);
+					return null;
+				}
+			});
+
+		}
+
+
+		{
+			final PersonnePhysique alberto = (PersonnePhysique) tiersService.getTiers(ids.alberto);
+			assertEquals(alberto.getNumeroAssureSocial(),"123654798123");
+			assertEquals(alberto.getNom(),"Fujimori");
+			assertEquals(alberto.getDateNaissance(),date(1953, 12, 3));
+			assertEquals(alberto.getSexe(),Sexe.MASCULIN);
+
+		}
+
 	}
 
 	@Test
@@ -611,7 +680,6 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		assertEquals(ic.getId(), sent.getId());
 	}
 
-
 	@NotTransactional
 	@Test
 	public void testHandleDemandePlusieursContribuablesTrouves() throws Exception {
@@ -707,9 +775,11 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	}
 
 	/**
-	 * [UNIREG-1636] Vérifie qu'une demande d'identification qui contient un numéro AVS effectue quand même une recherche avec les autres critères si le numéro AVS n'est pas connu dans le registre.
+	 * [UNIREG-1636] Vérifie qu'une demande d'identification qui contient un numéro AVS effectue quand même une recherche avec les autres
+	 * critères si le numéro AVS n'est pas connu dans le registre.
 	 *
-	 * @throws Exception en cas d'erreur
+	 * @throws Exception
+	 *             en cas d'erreur
 	 */
 	@NotTransactional
 	@Test
@@ -736,7 +806,8 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			}
 		});
 
-		// Le numéro AVS n'est pas connu, mais le contribuable doit néansmoins avoir été trouvé, et le message doit être passé en mode automatique
+		// Le numéro AVS n'est pas connu, mais le contribuable doit néansmoins avoir été trouvé, et le message doit être passé en mode
+		// automatique
 		final List<IdentificationContribuable> list = identCtbDAO.getAll();
 		assertEquals(1, list.size());
 
@@ -753,9 +824,11 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	}
 
 	/**
-	 * [UNIREG-1630] Vérifie qu'une demande d'identification qui contient un numéro AVS effectue quand même une recherche avec les autres critères pour vérifier que tous les critères correspondent.
+	 * [UNIREG-1630] Vérifie qu'une demande d'identification qui contient un numéro AVS effectue quand même une recherche avec les autres
+	 * critères pour vérifier que tous les critères correspondent.
 	 *
-	 * @throws Exception en cas d'erreur
+	 * @throws Exception
+	 *             en cas d'erreur
 	 */
 	@NotTransactional
 	@Test
@@ -783,8 +856,8 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			}
 		});
 
-		// Le numéro AVS est connu, mais les critères nom/prénom ne correspondnet pas -> on  doit quand même trouver le contribuable
-		//car la priorité du navs13 est la plus forte
+		// Le numéro AVS est connu, mais les critères nom/prénom ne correspondnet pas -> on doit quand même trouver le contribuable
+		// car la priorité du navs13 est la plus forte
 		final List<IdentificationContribuable> list = identCtbDAO.getAll();
 		assertEquals(1, list.size());
 
@@ -821,7 +894,8 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(bruno, zora, date(1980, 4, 21));
 				final MenageCommun menage = ensemble.getMenage();
 
-				addForPrincipal(menage, RegDate.get(2009, 5, 1), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Aubonne);
+				addForPrincipal(menage, RegDate.get(2009, 5, 1), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION,
+						MockCommune.Aubonne);
 
 				ids.bruno = bruno.getNumero();
 				ids.zora = zora.getNumero();
@@ -879,6 +953,28 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		personne.setNAVS13(noAVS13);
 
 		return createDemande(personne);
+	}
+
+	private static IdentificationContribuable createDemandeFromCanton(CriteresPersonne personne, String emetteurId) {
+		final EsbHeader header = new EsbHeader();
+		header.setBusinessId("123456");
+		header.setBusinessUser("Test");
+		header.setReplyTo("Test");
+
+		final Demande demande = new Demande();
+		demande.setEmetteurId(emetteurId);
+		demande.setMessageId("1111");
+		demande.setPrioriteEmetteur(PrioriteEmetteur.NON_PRIORITAIRE);
+		demande.setTypeMessage("ssk-3001-000101");
+		demande.setDate(new Date());
+		demande.setPeriodeFiscale(2009);
+		demande.setPersonne(personne);
+
+		final IdentificationContribuable message = new IdentificationContribuable();
+		message.setHeader(header);
+		message.setDemande(demande);
+
+		return message;
 	}
 
 	private static IdentificationContribuable createDemande(CriteresPersonne personne) {
