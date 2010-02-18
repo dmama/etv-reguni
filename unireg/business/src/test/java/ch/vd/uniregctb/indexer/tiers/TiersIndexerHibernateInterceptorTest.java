@@ -1,32 +1,21 @@
 package ch.vd.uniregctb.indexer.tiers;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
-import static junit.framework.Assert.fail;
-
-import java.util.List;
-
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.common.BusinessTest;
+import ch.vd.uniregctb.indexer.GlobalIndexInterface;
+import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
+import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
+import ch.vd.uniregctb.tiers.*;
+import ch.vd.uniregctb.type.*;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 
-import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.indexer.GlobalIndexInterface;
-import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TiersCriteria;
-import ch.vd.uniregctb.tiers.TiersDAO;
-import ch.vd.uniregctb.type.GenreImpot;
-import ch.vd.uniregctb.type.ModeImposition;
-import ch.vd.uniregctb.type.MotifFor;
-import ch.vd.uniregctb.type.MotifRattachement;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import java.util.List;
 
+import static junit.framework.Assert.*;
+
+@SuppressWarnings({"JavaDoc"})
 public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
 
 	private static final Logger LOGGER = Logger.getLogger(TiersIndexerHibernateInterceptorTest.class);
@@ -36,7 +25,6 @@ public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
 	private GlobalTiersSearcher searcher;
 	private GlobalTiersIndexer indexer;
 	private TiersDAO tiersDAO;
-	private boolean savedIndexerValue;
 
 	private final RegDate dateNaissance1 = RegDate.get(2003, 2, 22);
 	private final RegDate dateNaissance2 = RegDate.get(2002, 11, 29);
@@ -56,15 +44,6 @@ public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
 
 		serviceCivil.setUp(new DefaultMockServiceCivil());
 
-		savedIndexerValue = indexer.isThrowOnTheFlyException();
-	}
-
-	@Override
-	public void onTearDown() throws Exception {
-
-		indexer.setThrowOnTheFlyException(savedIndexerValue);
-
-		super.onTearDown();
 	}
 
 	private ForFiscalPrincipal createForPrincipal(int ofs, RegDate date) {
@@ -144,8 +123,7 @@ public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				PersonnePhysique nh = createAndSaveNonHabitant();
-				Long id = nh.getId();
-				return id;
+				return nh.getId();
 			}
 		});
 
@@ -215,9 +193,7 @@ public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
 	 *  => Résultat, on doit pouvoir chercher le NH mais pas l'Habitant
 	 */
 	@Test
-	public void testPartialIndexationDontSendOnTheFlyException() throws Exception {
-
-		indexer.setThrowOnTheFlyException(false);
+	public void testPartialIndexation() throws Exception {
 
 		final class Numeros {
 			Long nhid;
@@ -266,34 +242,6 @@ public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
 		{
 			PersonnePhysique nhab = (PersonnePhysique)tiersDAO.get(numeros.nhid);
 			assertFalse(nhab.isDirty());
-		}
-	}
-
-	/**
-	 * On créée 2 tiers:
-	 *   - 1 Habitant dont le NO_INDIVIDU n'existe pas => ca pète l'indexation
-	 *   - 1 NonHabitant qui va ne va pas etre indexé correctement non plus
-	 *  => Résultat, on doit pouvoir chercher ni le NH ni l'Habitant
-	 */
-	@Test
-	public void testPartialIndexationSendOnTheFlyException() throws Exception {
-
-		indexer.setThrowOnTheFlyException(true);
-
-		// Ce commit() devrait faire peter une exception pour 1 des 2 tiers indexé
-		try {
-			doInNewTransaction(new TxCallback() {
-				@Override
-				public Object execute(TransactionStatus status) throws Exception {
-					createAndSaveNonHabitant(); // NH OK
-					createAndSaveHabitant(1235643453L); // NO_IND inexistant
-					return null;
-				}
-			});
-			fail();
-		}
-		catch (Exception e) {
-			// C'est tout bon
 		}
 	}
 
@@ -434,8 +382,7 @@ public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
 			public Object execute(TransactionStatus status) throws Exception {
 				PersonnePhysique nh = createAndSaveNonHabitant();
 				assertNotNull(nh);
-				long id = nh.getNumero();
-				return id;
+				return nh.getNumero();
 			}
 		});
 
@@ -534,5 +481,48 @@ public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
 			final PersonnePhysique hab = (PersonnePhysique) tiersDAO.get(id);
 			assertFalse(hab.isDirty());
 		}
+	}
+
+	/**
+	 * [UNIREG-1988] Vérifie qu'un tiers nouvellement créé n'est pas indexé si la transaction est rollée-back
+	 */
+	@Test
+	public void testIndexOnRollback() throws Exception {
+
+		// l'indexeur doit être vide
+		assertEmpty(searcher.getAllIds());
+
+		class Ids {
+			long pp;
+		}
+		final Ids ids = new Ids();
+		
+		// crée un tiers qui ne valide pas
+		try {
+			doInNewTransactionAndSession(new TxCallback() {
+				@Override
+				public Object execute(TransactionStatus status) throws Exception {
+
+					final PersonnePhysique pp = addNonHabitant("Arnold", "Fellow", date(1960, 1, 1), Sexe.MASCULIN);
+					ids.pp = pp.getNumero();
+
+					hibernateTemplate.flush(); // pour être sûr que le tiers est bien inséré en base (mais attention, la transaction est toujours ouverte)
+
+					// on ajoute deux fors principaux actifs en même temps, de manière à provoquer une erreur de validation à la sauvegarde finale
+					addForPrincipal(pp, date(1990, 1, 1), MotifFor.MAJORITE, MockCommune.Aubonne);
+					addForPrincipal(pp, date(1990, 1, 1), MotifFor.MAJORITE, MockCommune.Aubonne);
+					return null;
+				}
+			});
+			fail("Le tiers qui ne valide pas aurait dû lever une exception");
+		}
+		catch (Exception e) {
+			assertEquals("ch.vd.registre.base.validation.ValidationException: PersonnePhysique #" + ids.pp + " - 1 erreur(s) - 0 warning(s):\n" +
+					" [E] Le for principal qui commence le 1990.01.01 chevauche le for précédent\n", e.getMessage());
+		}
+
+		// le tiers ne doit pas exister dans la base, ni dans l'indexeur
+		assertEmpty(tiersDAO.getAllIds());
+		assertEmpty(searcher.getAllIds());
 	}
 }

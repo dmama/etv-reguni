@@ -50,7 +50,6 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer {
 
     private static class Behavior {
         public boolean onTheFlyIndexation = true;
-        public boolean throwOnTheFlyException = true;
     }
 
     private final ThreadLocal<Behavior> byThreadBehavior = new ThreadLocal<Behavior>();
@@ -688,14 +687,6 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer {
 
     public void setAdresseService(AdresseService adresseService) {
         this.adresseService = adresseService;
-    }
-
-    public boolean isThrowOnTheFlyException() {
-        return getByThreadBehavior().throwOnTheFlyException;
-    }
-
-    public void setThrowOnTheFlyException(boolean want) {
-        getByThreadBehavior().throwOnTheFlyException = want;
     }
 
     public void setTransactionManager(PlatformTransactionManager transactionManager) {
