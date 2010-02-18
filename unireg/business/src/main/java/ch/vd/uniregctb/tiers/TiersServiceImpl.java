@@ -339,7 +339,7 @@ public class TiersServiceImpl implements TiersService {
 		List<VueSituationFamille> histoSF = situationFamilleService.getVueHisto((Contribuable) tiersDAO.get(numeroTiers));
 
 		// changement du type de tiers
-		tiersDAO.getHibernateTemplate().execute(new HibernateCallback() {
+		hibernateTemplate.execute(new HibernateCallback() {
 
 			public Object doInHibernate(Session session) throws HibernateException, SQLException {
 
@@ -377,7 +377,7 @@ public class TiersServiceImpl implements TiersService {
 			}
 
 			// changement du type de la situation famille en SituationFamilleMenageCommun
-			tiersDAO.getHibernateTemplate().execute(new HibernateCallback() {
+			hibernateTemplate.execute(new HibernateCallback() {
 
 				public Object doInHibernate(Session session) throws HibernateException, SQLException {
 
