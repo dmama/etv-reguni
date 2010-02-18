@@ -106,9 +106,7 @@ public class PdfImpressionChemisesTORapport extends PdfRapport{
 	            final ImpressionChemisesTOResults.Erreur ligne = iter.next();
 
 	            b.append(ligne.getIdDeclaration()).append(COMMA);
-	            if (ligne.getDetails() != null) {
-	                b.append(ligne.getDetails().replaceAll("[;\"]", ""));
-	            }
+		        b.append(escapeChars(ligne.getDetails()));
 
 	            if (!iter.isLast()) {
 	                b.append("\n");
@@ -144,10 +142,7 @@ public class PdfImpressionChemisesTORapport extends PdfRapport{
 
 	            b.append(ligne.officeImpotID).append(COMMA);
 	            b.append(ligne.noCtb).append(COMMA);
-	            if (ligne.nomCtb != null) {
-	                b.append(ligne.nomCtb.replaceAll("[;\"]", ""));
-	            }
-	            b.append(COMMA);
+		        b.append(escapeChars(ligne.nomCtb)).append(COMMA);
 	            b.append(ligne.getDateDebutDi()).append(COMMA);
 	            b.append(ligne.getDateFinDi()).append(COMMA);
 	            b.append(ligne.getDateSommationDi()).append(COMMA);

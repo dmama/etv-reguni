@@ -85,13 +85,6 @@ public class PdfListesNominativesRapport extends PdfRapport{
 	    status.setMessage("Génération du rapport terminée.");
 	}
 	
-	private static StringBuilder addNullableString(StringBuilder b, String string) {
-		if (string != null) {
-			b.append(string.trim().replaceAll("[;\"]", ""));
-		}
-		return b;
-	}
-
     private String genererListesNominatives(ListesNominativesResults results, String filename, StatusManager status) {
 
         String contenu = null;
@@ -122,8 +115,8 @@ public class PdfListesNominativesRapport extends PdfRapport{
 
 	            final ListesNominativesResults.InfoTiers ligne = iter.next();
 	            b.append(ligne.numeroTiers).append(COMMA);
-		        addNullableString(b, ligne.nomPrenom1).append(COMMA);
-		        addNullableString(b, ligne.nomPrenom2);
+		        b.append(escapeChars(ligne.nomPrenom1)).append(COMMA);
+		        b.append(escapeChars(ligne.nomPrenom2));
 
 	            if (results.getTypeAdressesIncluses() == TypeAdresse.FORMATTEE) {
 	                Assert.isTrue(ligne instanceof ListesNominativesResults.InfoTiersAvecAdresseFormattee);
@@ -131,17 +124,17 @@ public class PdfListesNominativesRapport extends PdfRapport{
 	                final String[] adresse = ligneAvecAdresse.adresse;
 	                for (int indexLigne = 0; indexLigne < adresse.length; ++indexLigne) {
 	                    b.append(COMMA);
-		                addNullableString(b, adresse[indexLigne]);
+		                b.append(escapeChars(adresse[indexLigne]));
 	                }
 	            }
 		        else if (results.getTypeAdressesIncluses() == TypeAdresse.STRUCTUREE_RF) {
 		            Assert.isTrue(ligne instanceof ListesNominativesResults.InfoTiersAvecAdresseStructureeRF);
 		            final ListesNominativesResults.InfoTiersAvecAdresseStructureeRF ligneAvecAdresse = (ListesNominativesResults.InfoTiersAvecAdresseStructureeRF) ligne;
 		            b.append(COMMA);
-		            addNullableString(b, ligneAvecAdresse.rue).append(COMMA);
-		            addNullableString(b, ligneAvecAdresse.npa).append(COMMA);
-		            addNullableString(b, ligneAvecAdresse.localite).append(COMMA);
-		            addNullableString(b, ligneAvecAdresse.pays);
+		            b.append(escapeChars(ligneAvecAdresse.rue)).append(COMMA);
+		            b.append(escapeChars(ligneAvecAdresse.npa)).append(COMMA);
+		            b.append(escapeChars(ligneAvecAdresse.localite)).append(COMMA);
+		            b.append(escapeChars(ligneAvecAdresse.pays));
 	            }
 
 	            if (!iter.isLast()) {
@@ -174,10 +167,8 @@ public class PdfListesNominativesRapport extends PdfRapport{
 
 	            final ListesNominativesResults.Erreur ligne = iter.next();
 	            b.append(ligne.noCtb).append(COMMA);
-	            b.append(ligne.getDescriptionRaison().replaceAll("[;\"]", "")).append(COMMA);
-	            if (ligne.details != null) {
-	                b.append(ligne.details.replaceAll("[;\"]", ""));
-	            }
+	            b.append(escapeChars(ligne.getDescriptionRaison())).append(COMMA);
+		        b.append(escapeChars(ligne.details));
 	            if (!iter.isLast()) {
 	                b.append("\n");
 	            }

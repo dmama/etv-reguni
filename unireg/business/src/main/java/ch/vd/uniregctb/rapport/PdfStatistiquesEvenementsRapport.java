@@ -25,8 +25,6 @@ import java.util.Map;
  */
 public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 
-	private static final String EMPTY = "";
-
 	public void write(final StatsEvenementsCivilsResults civils, final StatsEvenementsExternesResults externes,
 	                  final RegDate dateReference, String nom, String description, final Date dateGeneration, OutputStream os,
 	                  StatusManager status) throws Exception{
@@ -159,7 +157,7 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 			if (i > 0) {
 				b.append(COMMA);
 			}
-			final String string = elements[i] != null ? elements[i].replaceAll("[;\"]", "") : EMPTY;
+			final String string = escapeChars(elements[i]);
 			final boolean needsQuote = string.contains("\n");
 			if (needsQuote) {
 				b.append('\"');

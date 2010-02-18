@@ -123,7 +123,7 @@ public class PdfListeContribuablesResidentsSansForVaudoisRapport extends PdfRapp
 
 				final ListeContribuablesResidentsSansForVaudoisResults.InfoContribuableIgnore info = iterator.next();
 				b.append(info.ctbId).append(COMMA);
-				b.append(info.cause.getDescription().replaceAll("[;\"]", ""));
+				b.append(escapeChars(info.cause.getDescription()));
 				if (!iterator.isLast()) {
 					b.append("\n");
 				}
@@ -150,10 +150,8 @@ public class PdfListeContribuablesResidentsSansForVaudoisRapport extends PdfRapp
 
 				final ListesResults.Erreur ligne = iterator.next();
 				b.append(ligne.noCtb).append(COMMA);
-				b.append(ligne.getDescriptionRaison().replaceAll("[;\"]", "")).append(COMMA);
-				if (ligne.details != null) {
-					b.append(ligne.details.replaceAll("[;\"]", ""));
-				}
+				b.append(escapeChars(ligne.getDescriptionRaison())).append(COMMA);
+				b.append(escapeChars(ligne.details));
 				if (!iterator.isLast()) {
 					b.append("\n");
 				}

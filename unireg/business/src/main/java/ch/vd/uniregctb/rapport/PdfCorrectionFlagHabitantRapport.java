@@ -132,7 +132,7 @@ public class PdfCorrectionFlagHabitantRapport extends PdfRapport {
 				builder.append(erreur.getMessage().getLibelle()).append(COMMA);
 				if (!StringUtils.isEmpty(erreur.getComplementInfo())) {
 					builder.append("\"");
-					builder.append(erreur.getComplementInfo().replaceAll("[;\"]", ""));
+					builder.append(escapeChars(erreur.getComplementInfo()));
 					builder.append("\"");
 				}
 				if (!iterator.isLast()) {

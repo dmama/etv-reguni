@@ -156,10 +156,8 @@ public class PdfAcomptesRapport extends PdfRapport {
 
 				final AcomptesResults.Erreur ligne = iter.next();
 				b.append(ligne.noCtb).append(COMMA);
-				b.append(ligne.getDescriptionRaison().replaceAll("[;\"]", "")).append(COMMA);
-				if (ligne.details != null) {
-					b.append(ligne.details.replaceAll("[;\"]", ""));
-				}
+				b.append(escapeChars(ligne.getDescriptionRaison())).append(COMMA);
+				b.append(escapeChars(ligne.details));
 				if (!iter.isLast()) {
 					b.append("\n");
 				}
@@ -204,14 +202,8 @@ public class PdfAcomptesRapport extends PdfRapport {
 	private void fillLigneBuffer(StringBuilder b, long numeroCtb, String nom, String prenom, AcomptesResults.InfoAssujettissementContribuable assujettissement, String typeImpot) {
 		b.append(numeroCtb).append(COMMA);
 
-		if (nom != null) {
-			b.append(nom.replaceAll("[;\"]", ""));
-		}
-		b.append(COMMA);
-		if (prenom != null) {
-			b.append(prenom.replaceAll("[;\"]", ""));
-		}
-		b.append(COMMA);
+		b.append(escapeChars(nom)).append(COMMA);
+		b.append(escapeChars(prenom)).append(COMMA);
 
 		if (assujettissement.noOfsForPrincipal != null) {
 			b.append(assujettissement.noOfsForPrincipal);

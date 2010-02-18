@@ -37,6 +37,7 @@ public abstract class PdfRapport extends Document {
 	private static final SimpleDateFormat TIMESTAMP_FORMAT = new SimpleDateFormat("dd.MM.yyyy kk:mm:ss");
 	public static final int AVG_LINE_LEN = 384; // longueur moyenne d'une ligne d'un fichier CVS (d'après relevé sur le batch d'ouverture des fors)
 	public static final char COMMA = ';';
+	public static final String EMPTY = "";
 
 	private final Logger LOGGER = Logger.getLogger(PdfRapport.class);
 
@@ -247,7 +248,7 @@ public abstract class PdfRapport extends Document {
 				StringBuilder bb = new StringBuilder(AVG_LINE_LEN);
 				bb.append(info.officeImpotID).append(COMMA);
 				bb.append(info.noCtb).append(COMMA);
-				bb.append(info.nomCtb).append(COMMA);
+				bb.append(escapeChars(info.nomCtb)).append(COMMA);
 				bb.append(info.getDescriptionRaison());
 				if (info.details != null) {
 					bb.append(COMMA).append(asCsvField(info.details));
@@ -272,6 +273,15 @@ public abstract class PdfRapport extends Document {
 	}
 
 	/**
+	 * Supression des caractères " et ;
+	 * @param ligne
+	 * @return
+	 */
+	protected static String escapeChars(String ligne) {
+		return StringUtils.isBlank(ligne) ? EMPTY : ligne.trim().replaceAll("[\";]", EMPTY);
+	}
+
+	/**
 	 * Transforme les lignes spécifiées en une chaîne de caractère capable de tenir dans un champ d'un fichier CSV. Les retours de lignes sont préservés, mais les éventuels caractères interdits (" et ;)
 	 * sont supprimés.
 	 */
@@ -292,7 +302,7 @@ public abstract class PdfRapport extends Document {
 		for (int i = 0; i < length; ++i) {
 			final String ligne = lignes[i];
 			if (!StringUtils.isBlank(ligne)) {
-				b.append(ligne.replaceAll("[;\"]", "")); // on supprime les éventuels " et ;
+				b.append(escapeChars(ligne));
 				-- nbLignesNonVides;
 				if (nbLignesNonVides > 0) {
 					b.append("\n");

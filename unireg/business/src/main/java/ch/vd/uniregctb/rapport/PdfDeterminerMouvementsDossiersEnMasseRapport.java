@@ -113,10 +113,8 @@ public class PdfDeterminerMouvementsDossiersEnMasseRapport extends PdfRapport {
 
 				final DeterminerMouvementsDossiersEnMasseResults.NonTraite nonTraite = iterator.next();
 				b.append(nonTraite.noCtb).append(COMMA);
-				b.append(nonTraite.getTypeInformation().replaceAll("[;\"]", "")).append(COMMA);
-				if (nonTraite.complement != null) {
-					b.append(nonTraite.complement.replaceAll("[;\"]", ""));
-				}
+				b.append(escapeChars(nonTraite.getTypeInformation())).append(COMMA);
+				b.append(escapeChars(nonTraite.complement));
 
 				if (!iterator.isLast()) {
 					b.append("\n");
@@ -149,7 +147,7 @@ public class PdfDeterminerMouvementsDossiersEnMasseRapport extends PdfRapport {
 
 				final DeterminerMouvementsDossiersEnMasseResults.Mouvement mvt = iterator.next();
 				b.append(mvt.noCtb).append(COMMA);
-				b.append(mvt.getTypeInformation().replaceAll("[;\"]", "")).append(COMMA);
+				b.append(escapeChars(mvt.getTypeInformation())).append(COMMA);
 				b.append(mvt.oidActuel).append(COMMA);
 				if (mvt instanceof DeterminerMouvementsDossiersEnMasseResults.MouvementOid) {
 					b.append(((DeterminerMouvementsDossiersEnMasseResults.MouvementOid) mvt).oidDestination);
