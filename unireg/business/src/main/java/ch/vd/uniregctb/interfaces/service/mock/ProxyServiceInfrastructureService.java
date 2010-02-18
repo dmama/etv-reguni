@@ -244,4 +244,8 @@ public class ProxyServiceInfrastructureService implements ServiceInfrastructureS
 		return target.getCommunes();
 	}
 
+	public Localite getLocaliteByNPA(int npa) throws InfrastructureException {
+		return target.getLocaliteByNPA(npa);
+	}
+
 }

@@ -12,7 +12,13 @@ import ch.vd.uniregctb.interfaces.model.Localite;
 import ch.vd.uniregctb.interfaces.model.OfficeImpot;
 import ch.vd.uniregctb.interfaces.model.Pays;
 import ch.vd.uniregctb.interfaces.model.Rue;
-import ch.vd.uniregctb.interfaces.model.mock.*;
+import ch.vd.uniregctb.interfaces.model.mock.MockCanton;
+import ch.vd.uniregctb.interfaces.model.mock.MockCollectiviteAdministrative;
+import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
+import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
+import ch.vd.uniregctb.interfaces.model.mock.MockOfficeImpot;
+import ch.vd.uniregctb.interfaces.model.mock.MockPays;
+import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 
 public class DefaultMockServiceInfrastructureService extends MockServiceInfrastructureService {
 
@@ -142,4 +148,6 @@ public class DefaultMockServiceInfrastructureService extends MockServiceInfrastr
 	public OfficeImpot getOfficeImpot(int noColAdm) throws InfrastructureException {
 		return oidByNoColAdm.get(noColAdm);
 	}
+
+
 }

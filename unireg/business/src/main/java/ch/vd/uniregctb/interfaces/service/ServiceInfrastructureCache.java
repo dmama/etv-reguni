@@ -1502,5 +1502,11 @@ public class ServiceInfrastructureCache extends AbstractServiceInfrastructureSer
 	public void reset() {
 		cache.removeAll();
 	}
+	/**
+	 *  {@inheritDoc}
+	 */
+	public Localite getLocaliteByNPA(int npa) throws InfrastructureException {
+		return target.getLocaliteByNPA(npa);
+	}
 
 }

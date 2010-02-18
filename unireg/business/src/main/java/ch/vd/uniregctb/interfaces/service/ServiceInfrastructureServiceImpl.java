@@ -3,8 +3,10 @@ package ch.vd.uniregctb.interfaces.service;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.springframework.util.Assert;
@@ -58,6 +60,8 @@ public class ServiceInfrastructureServiceImpl extends AbstractServiceInfrastruct
 	private CollectiviteAdministrative aci;
 	private CollectiviteAdministrative cedi;
 	private CollectiviteAdministrative cat;
+
+	private Map<Integer,Localite> localitesByNPA;
 
 	/**
 	 * @return Returns the serviceInfrastructure.
@@ -193,6 +197,26 @@ public class ServiceInfrastructureServiceImpl extends AbstractServiceInfrastruct
 		return suisse;
 	}
 
+
+	public Localite getLocaliteByNPA(int npa) throws InfrastructureException{
+		if (localitesByNPA==null) {
+			initLocaliteByNPA();
+		}
+		return localitesByNPA.get(npa);
+	}
+
+
+	private void initLocaliteByNPA() throws InfrastructureException {
+		List<Localite> localites = getLocalites();
+		localitesByNPA = new HashMap<Integer, Localite>();
+		for (Localite localite : localites) {
+			if (localite.getNPA()!=null) {
+				localitesByNPA.put(localite.getNPA(), localite);
+			}
+
+		}
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -234,7 +258,7 @@ public class ServiceInfrastructureServiceImpl extends AbstractServiceInfrastruct
 		if (numeroOFS <= 0) {
 			return null;
 		}
-		
+
 		try {
 			switch (numeroOFS) {
 			case 8000:

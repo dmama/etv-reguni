@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.interfaces.model.mock;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.CommuneSimple;
 import ch.vd.uniregctb.interfaces.model.Localite;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceInfrastructureService;
@@ -15,6 +14,7 @@ public class MockLocalite implements Localite {
 	public static final MockLocalite Romainmotier = new MockLocalite(564, 1323, null, "Romainmôtier", MockCommune.RomainmotierEnvy);
 	public static final MockLocalite LesClees = new MockLocalite(578, 1356, null, "Clées, Les", MockCommune.LesClees);
 	public static final MockLocalite Bex = new MockLocalite(1124, 1880, null, "Bex", MockCommune.Bex);
+	public static final MockLocalite Bumpliz = new MockLocalite(3333, 3018, null, "Bumpliz", MockCommune.Bern);
 	public static final MockLocalite VillarsSousYens = new MockLocalite(283, 1168, null, "Villars-sous-Yens", MockCommune.VillarsSousYens);
 	public static final MockLocalite Orbe = new MockLocalite(571, 1350, null, "Orbe", MockCommune.Orbe);
 	public static final MockLocalite Vevey = new MockLocalite(1043, 1800, null, "Vevey", MockCommune.Vevey);
@@ -84,6 +84,8 @@ public class MockLocalite implements Localite {
 		// Le Séchey est une fraction de commune, mais pas une localité...
 		// l = LeSechey = new MockLocalite("Le Séchey");
 		l = LesCharbonnieres;
+
+		l = Bumpliz;
 	}
 
 

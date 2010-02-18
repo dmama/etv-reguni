@@ -152,6 +152,21 @@ public abstract class MockServiceInfrastructureService extends AbstractServiceIn
 		}
 		return localite;
 	}
+	/*(non-Javadoc)
+	 *
+	 * @see ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService#getLocaliteByNPA(java.lang.Integer)
+	 */
+
+	public Localite getLocaliteByNPA(int npa) throws InfrastructureException {
+		Localite localite = null;
+		for (Localite loc : getLocalites()) {
+			if (loc.getNPA().intValue() == npa) {
+				localite = loc;
+				break;
+			}
+		}
+		return localite;
+	}
 
 	/*
 	 * (non-Javadoc)
