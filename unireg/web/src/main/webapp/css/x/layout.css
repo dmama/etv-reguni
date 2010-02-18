@@ -415,8 +415,10 @@ INPUT.readonly {
 .callstack {
 	margin-left: 2em;
 	background-color: #CCCCCC;
+	color: black;
 	font-family: monospace;
 	font-size: 10px;
+	font-weight: normal;
 }
 
 table.postit {

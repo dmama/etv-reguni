@@ -30,7 +30,6 @@ public class LengthConstants {
 	public final static int SITUATIONFAMILLE_TARIF = 11;
 	public final static int SITUATIONFAMILLE_ETATCIVIL = 34;
 
-	public final static int RAPPORT_TYPE = 20;
 	public final static int RAPPORT_TYPEACTIVITE = 14;
 
 	public final static int DPI_NOM1 = 250;
@@ -78,4 +77,5 @@ public class LengthConstants {
 	public final static int DOCINDEX_NOM = 100;
 	public final static int DOCINDEX_DESC = 255;
 
+	public final static int MAXLEN = 2000;
 }

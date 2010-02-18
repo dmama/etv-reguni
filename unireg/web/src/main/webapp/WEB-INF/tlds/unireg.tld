@@ -514,9 +514,15 @@
 		</attribute>
 		<attribute>
 			<name>exception</name>
-			<required>true</required>
+			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>l'exception dont on veut afficher la callstack</description>
+		</attribute>
+		<attribute>
+			<name>callstack</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>la callstack déjà résolue de l'exception</description>
 		</attribute>
 	</tag>
 

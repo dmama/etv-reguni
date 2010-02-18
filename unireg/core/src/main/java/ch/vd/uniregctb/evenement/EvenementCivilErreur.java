@@ -11,6 +11,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import ch.vd.uniregctb.common.ExceptionUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.annotations.Type;
 
@@ -31,12 +32,9 @@ import ch.vd.uniregctb.type.TypeEvenementErreur;
 @Table(name = "EVENEMENT_CIVIL_ERREUR")
 public class EvenementCivilErreur extends HibernateEntity {
 
-	private static final Logger LOGGER = Logger.getLogger(EvenementCivilErreur.class);
-
-	/**
-	 *
-	 */
 	private static final long serialVersionUID = -1077312693852919409L;
+
+	private static final Logger LOGGER = Logger.getLogger(EvenementCivilErreur.class);
 
 	public EvenementCivilErreur() {
 	}
@@ -48,9 +46,11 @@ public class EvenementCivilErreur extends HibernateEntity {
 	public EvenementCivilErreur(String m, Exception e) {
 		if (e.getMessage() != null) {
 			message = m + e.getMessage();
-		} else {
+		}
+		else {
 			message = m + e.getClass().getSimpleName();
 		}
+		setCallstack(ExceptionUtils.extractCallStack(e));
 		type = TypeEvenementErreur.ERROR;
 		validateMessage();
 	}
@@ -82,6 +82,8 @@ public class EvenementCivilErreur extends HibernateEntity {
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_xTqRYGzmEdy3RbcXGfSeBw"
 	 */
 	private String message;
+
+	private String callstack;
 
 	private TypeEvenementErreur type;
 
@@ -141,6 +143,20 @@ public class EvenementCivilErreur extends HibernateEntity {
 		message = theMessage;
 		validateMessage();
 		// end-user-code
+	}
+
+	@Column(name = "CALLSTACK", length = LengthConstants.MAXLEN)
+	public String getCallstack() {
+		return callstack;
+	}
+
+	public void setCallstack(String callstack) {
+		if (callstack != null && callstack.length() > LengthConstants.MAXLEN) {
+			this.callstack = callstack.substring(0, LengthConstants.MAXLEN);
+		}
+		else {
+			this.callstack = callstack;
+		}
 	}
 
 	@Column(name = "TYPE", nullable = false, length = LengthConstants.EVTCIVILERREUR_TYPE)

@@ -41,8 +41,15 @@
 			</table>
 			
 			<c:if test="${not empty command.evenement.erreurs}">
-				<display:table 	name="command.evenement.erreurs" id="row" class="error" >
-					<display:column property="message" titleKey="label.erreur" class="error"/>
+				<display:table name="command.evenement.erreurs" id="row" class="error" >
+        			<c:if test="${empty row.callstack}">
+    					<display:column property="message" titleKey="label.erreur"/>
+        			</c:if>
+        			<c:if test="${not empty row.callstack}">
+                        <display:column titleKey="label.erreur">
+                            <unireg:callstack headerMessage="${row.message} " callstack="${row.callstack}" />
+                        </display:column>
+        			</c:if>
 				</display:table>
 			</c:if>			
 			

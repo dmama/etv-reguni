@@ -21,6 +21,7 @@ public class JspTagCallstack extends BodyTagSupport {
 
 	private String headerMessage;
 	private Exception exception;
+	private String callstack;
 
 	@Override
 	public int doStartTag() throws JspTagException {
@@ -31,10 +32,10 @@ public class JspTagCallstack extends BodyTagSupport {
 			out.print("<table cellspacing=\"0\" cellpadding=\"0\" border=\"0\">");
 			out.print("<tr><td>");
 			out.print(HtmlUtils.htmlEscape(headerMessage));
-			out.print("<span id=\"details_link\">(<a href=\"#\" onclick=\"javascript:showDetails()\">détails</a>)</span>:</td></tr>");
+			out.print("<span id=\"details_link\">(<a href=\"#\" onclick=\"javascript:showDetails()\">détails</a>)</span></td></tr>");
 			out.print("<tr id=\"exception_callstack\"><td class=\"callstack\">");
-			final String callstack = ExceptionUtils.extractCallStack(exception);
-			out.print(HtmlHelper.renderMultilines(callstack));
+			final String cs = (exception != null ? ExceptionUtils.extractCallStack(exception) : callstack);
+			out.print(HtmlHelper.renderMultilines(cs));
 			out.print("</td></tr>");
 			out.print("</table>");
 
@@ -66,4 +67,7 @@ public class JspTagCallstack extends BodyTagSupport {
 		this.exception = exception;
 	}
 
+	public void setCallstack(String callstack) {
+		this.callstack = callstack;
+	}
 }
