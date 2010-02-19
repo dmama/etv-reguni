@@ -62,7 +62,7 @@ public class DeclarationImpotCriteria {
 	 *         autrement.
 	 */
 	public boolean isEmpty() {
-		return (annee == null || TOUS.equals(annee)) && (officeImpot == null || TOUS.equals(officeImpot)) && (contribuable == null)
+		return annee == null && (officeImpot == null || TOUS.equals(officeImpot)) && (contribuable == null)
 				&& (anneeRange == null);
 	}
 

@@ -1,17 +1,16 @@
 package ch.vd.uniregctb.adresse;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-
-import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.pm.model.EnumTypeAdresseEntreprise;
 import ch.vd.uniregctb.interfaces.model.AdresseEntreprise;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 /**
  * Contient l'historique des adresses PM d'une entreprise.
@@ -37,7 +36,7 @@ public class AdressesPMHisto {
 		}
 	}
 
-	public List<AdresseEntreprise> ofType(EnumTypeAdresse type) {
+	public List<AdresseEntreprise> ofType(EnumTypeAdresseEntreprise type) {
 		if (EnumTypeAdresseEntreprise.SIEGE.equals(type)) {
 			return sieges;
 		}
