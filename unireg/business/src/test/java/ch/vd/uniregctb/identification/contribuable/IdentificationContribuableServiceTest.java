@@ -16,6 +16,7 @@ import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseService;
+import ch.vd.uniregctb.adresse.AdresseSuisse;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.evenement.common.EnsembleTiersCouple;
 import ch.vd.uniregctb.evenement.identification.contribuable.CriteresAdresse;
@@ -28,6 +29,7 @@ import ch.vd.uniregctb.evenement.identification.contribuable.IdentCtbDAO;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuableMessageHandler;
 import ch.vd.uniregctb.evenement.identification.contribuable.Reponse;
+import ch.vd.uniregctb.evenement.identification.contribuable.CriteresAdresse.TypeAdresse;
 import ch.vd.uniregctb.evenement.identification.contribuable.Demande.PrioriteEmetteur;
 import ch.vd.uniregctb.evenement.identification.contribuable.Erreur.TypeErreur;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable.Etat;
@@ -295,8 +297,15 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 				@Override
 				public Object execute(TransactionStatus status) throws Exception {
 					CriteresAdresse adresse = new CriteresAdresse();
+
 					adresse.setNpaSuisse(3018);
 					adresse.setLieu("Bümpliz");
+					adresse.setLigneAdresse1("Alberto el tiburon");
+					adresse.setLigneAdresse2("et son épouse");
+					adresse.setNoAppartement("12");
+					adresse.setNoPolice("36B");
+					adresse.setRue("Chemin de la strasse verte");
+					adresse.setTypeAdresse(TypeAdresse.SUISSE);
 					CriteresPersonne criteres = new CriteresPersonne();
 					criteres.setPrenoms("Alberto");
 					criteres.setNom("Fujimori");
@@ -305,6 +314,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 					criteres.setAdresse(adresse);
 					criteres.setSexe(Sexe.MASCULIN);
 					IdentificationContribuable message = createDemandeFromCanton(criteres, "2-BE-5");
+					message.setLogCreationDate(RegDate.get().asJavaDate());
 					final PersonnePhysique alberto = (PersonnePhysique) tiersService.getTiers(ids.alberto);
 					service.forceIdentification(message, alberto, Etat.TRAITE_MANUELLEMENT);
 					return null;
@@ -320,6 +330,11 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			assertEquals(alberto.getNom(),"Fujimori");
 			assertEquals(alberto.getDateNaissance(),date(1953, 12, 3));
 			assertEquals(alberto.getSexe(),Sexe.MASCULIN);
+			AdresseSuisse adresse = (AdresseSuisse) alberto.getAdresseActive(TypeAdresseTiers.COURRIER,null);
+			assertEquals(adresse.getNumeroAppartement(),"12");
+			assertEquals(adresse.getRue(),"Chemin de la strasse verte");
+			assertEquals(adresse.getComplement(),"Alberto el tiburon"+" "+"et son épouse");
+			assertEquals(adresse.getNumeroMaison(),"36B");
 
 		}
 

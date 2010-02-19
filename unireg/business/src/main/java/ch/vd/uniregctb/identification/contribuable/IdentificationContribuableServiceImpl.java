@@ -19,6 +19,7 @@ import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.adresse.AdresseService;
+import ch.vd.uniregctb.adresse.AdresseSuisse;
 import ch.vd.uniregctb.adresse.AdressesFiscales;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.common.ParamPagination;
@@ -51,6 +52,7 @@ import ch.vd.uniregctb.tiers.TiersCriteria.TypeRechercheLocalitePays;
 import ch.vd.uniregctb.tiers.TiersCriteria.TypeTiers;
 import ch.vd.uniregctb.tiers.TiersCriteria.TypeVisualisation;
 import ch.vd.uniregctb.type.Sexe;
+import ch.vd.uniregctb.type.TypeAdresseTiers;
 
 public class IdentificationContribuableServiceImpl implements IdentificationContribuableService, DemandeHandler {
 
@@ -63,7 +65,8 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	private AdresseService adresseService;
 	private ServiceInfrastructureService infraService;
 	private IdentificationContribuableMessageHandler messageHandler;
-	private static String REPARTITION_INTERCANTONALE="ssk-3001-000101";
+	private static String REPARTITION_INTERCANTONALE = "ssk-3001-000101";
+
 	public void setSearcher(GlobalTiersSearcher searcher) {
 		this.searcher = searcher;
 	}
@@ -151,8 +154,6 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		return list;
 	}
 
-
-
 	/**
 	 * Sauve la demande en base, identifie le ou les contribuables et retourne une réponse immédiatement si un seul contribuable est trouvé.
 	 * Dans tous les autres cas (0, >1 ou en cas d'erreur), la demande est stockée pour traitement manuel.
@@ -188,11 +189,11 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		if (ensemble != null) {
 			mcId = ensemble.getMenage().getNumero();
 		}
-		//[UNIREG-1940] On met à jour le contribuable si
-		//-	le contribuable trouvé est « non habitant »
-		//-	le message sur lequel a porté l’identification est une « répartition intercantonale »
-		//-	le NPA de l’adresse contenue dans le message est un NPA du canton d’où provient le message
-		verifierEtMettreAjourContribuable(message,personne);
+		// [UNIREG-1940] On met à jour le contribuable si
+		// - le contribuable trouvé est « non habitant »
+		// - le message sur lequel a porté l’identification est une « répartition intercantonale »
+		// - le NPA de l’adresse contenue dans le message est un NPA du canton d’où provient le message
+		verifierEtMettreAJourContribuable(message, personne);
 
 		Reponse reponse = new Reponse();
 		reponse.setDate(new Date());
@@ -220,74 +221,134 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 
 	/**
 	 * Verifie et met a jour le contribuable avec les données contenus dans le message
+	 *
 	 * @param message
 	 * @param personne
 	 * @throws InfrastructureException
 	 */
 
-	private void verifierEtMettreAjourContribuable(IdentificationContribuable message, PersonnePhysique personne) throws InfrastructureException {
-	if (!personne.isHabitant() &&
-			REPARTITION_INTERCANTONALE.equals(message.getDemande().getTypeMessage()) &&
-			messageFromCanton(message)) {
-		CriteresPersonne criteres = message.getDemande().getPersonne();
+	private void verifierEtMettreAJourContribuable(IdentificationContribuable message, PersonnePhysique personne)
+			throws InfrastructureException {
+		if (!personne.isHabitant() && REPARTITION_INTERCANTONALE.equals(message.getDemande().getTypeMessage())
+				&& messageFromCanton(message)) {
+			CriteresPersonne criteres = message.getDemande().getPersonne();
 
-		if (criteres.getNAVS13()!=null) {
-			personne.setNumeroAssureSocial(criteres.getNAVS13());
-		}
+			if (criteres.getNAVS13() != null) {
+				personne.setNumeroAssureSocial(criteres.getNAVS13());
+			}
 
-		if(criteres.getDateNaissance()!=null){
-			personne.setDateNaissance(criteres.getDateNaissance());
-		}
-		if(criteres.getDateNaissance()!=null){
-			personne.setDateNaissance(criteres.getDateNaissance());
-		}
-		if(criteres.getNom()!=null){
-			personne.setNom(criteres.getNom());
-		}
-		if(criteres.getPrenoms()!=null){
-			personne.setPrenom(criteres.getPrenoms());
-		}
-		if(criteres.getSexe()!=null){
-			personne.setSexe(criteres.getSexe());
-		}
+			if (criteres.getDateNaissance() != null) {
+				personne.setDateNaissance(criteres.getDateNaissance());
+			}
+			if (criteres.getDateNaissance() != null) {
+				personne.setDateNaissance(criteres.getDateNaissance());
+			}
+			if (criteres.getNom() != null) {
+				personne.setNom(criteres.getNom());
+			}
+			if (criteres.getPrenoms() != null) {
+				personne.setPrenom(criteres.getPrenoms());
+			}
+			if (criteres.getSexe() != null) {
+				personne.setSexe(criteres.getSexe());
+			}
 
+			mettreAJourAdresseNonHabitant(message, personne);
+
+		}
 
 	}
 
+	/**
+	 * Permet de mettre a jour si besoin les adresses du non non habitant avec le contenu de l'adresse inclu dans le message
+	 *
+	 * @param message
+	 * @param personne
+	 * @throws InfrastructureException
+	 */
+	private void mettreAJourAdresseNonHabitant(IdentificationContribuable message, PersonnePhysique personne)
+			throws InfrastructureException {
+		CriteresAdresse criteresAdresse = message.getDemande().getPersonne().getAdresse();
+		if (criteresAdresse != null) {
+			// Calcul de l'ONRP
+			Integer onrp = criteresAdresse.getNoOrdrePosteSuisse();
+			if (onrp == null) {
+				Localite localite = infraService.getLocaliteByNPA(criteresAdresse.getNpaSuisse());
+				if (localite != null) {
+					onrp = localite.getNoOrdre();
+				}
+			}
+			//On a trouvé l'onrp, Oh Joie !!!! on peut tenter de mettre à jour l'adresse
+			if (onrp != null) {
+				// on verifie les adresses du non Habitant
+				AdresseSuisse adresseCourrier = (AdresseSuisse) personne.getAdresseActive(TypeAdresseTiers.COURRIER, null);
+				if (adresseCourrier == null) {
+					adresseCourrier = new AdresseSuisse();
+					setUpAdresse(message, criteresAdresse, onrp, adresseCourrier);
+					personne.addAdresseTiers(adresseCourrier);
+				}
+				else {
+					//l'adresse est juste mis a jour
+					setUpAdresse(message, criteresAdresse, onrp, adresseCourrier);
+				}
+
+			}
+
+		}
 
 	}
-/**
- * Permet de savoir si le NPA de l’adresse contenue dans le message est un NPA du canton d’où provient le message
- * @param message
- * @return
- * @throws InfrastructureException
- */
+
+	private void setUpAdresse(IdentificationContribuable message, CriteresAdresse criteresAdresse, Integer onrp,
+			AdresseSuisse adresseCourrier) {
+		adresseCourrier.setUsage(TypeAdresseTiers.COURRIER);
+		adresseCourrier.setDateDebut(RegDate.get(message.getLogCreationDate()));
+		String complement =null;
+		if (criteresAdresse.getLigneAdresse1()!=null) {
+			complement = criteresAdresse.getLigneAdresse1();
+
+		}
+		if (criteresAdresse.getLigneAdresse2()!=null) {
+			complement =complement+" "+criteresAdresse.getLigneAdresse2();
+
+		}
+		adresseCourrier.setComplement(complement);
+		adresseCourrier.setRue(criteresAdresse.getRue());
+		adresseCourrier.setNumeroAppartement(criteresAdresse.getNoAppartement());
+		adresseCourrier.setNumeroMaison(criteresAdresse.getNoPolice());
+		adresseCourrier.setNumeroOrdrePoste(onrp);
+		adresseCourrier.setNumeroCasePostale(criteresAdresse.getNumeroCasePostale());
+	}
+
+	/**
+	 * Permet de savoir si le NPA de l’adresse contenue dans le message est un NPA du canton d’où provient le message
+	 *
+	 * @param message
+	 * @return
+	 * @throws InfrastructureException
+	 */
 	private boolean messageFromCanton(IdentificationContribuable message) throws InfrastructureException {
 		String emetteur = message.getDemande().getEmetteurId();
-		Integer npa =null;
-		if( message.getDemande().getPersonne().getAdresse()!=null){
-			npa =  message.getDemande().getPersonne().getAdresse().getNpaSuisse();
+		Integer npa = null;
+		if (message.getDemande().getPersonne().getAdresse() != null) {
+			npa = message.getDemande().getPersonne().getAdresse().getNpaSuisse();
 		}
-		String sigle = StringUtils.substring(emetteur,2,4);
+		String sigle = StringUtils.substring(emetteur, 2, 4);
 
-
-		if (npa!=null) {
+		if (npa != null) {
 			Localite localite = infraService.getLocaliteByNPA(npa);
 			if (sigle.equals(localite.getCommuneLocalite().getSigleCanton())) {
 				return true;
 			}
-			else{
+			else {
 				return false;
 			}
 
 		}
-		else{
+		else {
 			return false;
 		}
 
-
 	}
-
 
 	/**
 	 * Envoie une réponse <b>lorsqu'un contribuable n'a définitivement pas été identifié</b>.
@@ -494,7 +555,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 				public boolean evaluate(Object object) {
 					final PersonnePhysique pp = (PersonnePhysique) object;
 					final Sexe sexe = tiersService.getSexe(pp);
-					return (sexe == sexeCritere || sexe==null);
+					return (sexe == sexeCritere || sexe == null);
 				}
 			});
 		}
@@ -523,9 +584,11 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		}
 		return list;
 	}
-	/**Supprime toutes les personnes dont la date de naissances ne correspond pas avec celle spécifié dans le message
+
+	/**
+	 * Supprime toutes les personnes dont la date de naissances ne correspond pas avec celle spécifié dans le message
 	 *
-	* @param list
+	 * @param list
 	 *            la liste des personnes à fitrer
 	 * @param criteres
 	 *            les critères de filtre
@@ -533,7 +596,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	 */
 	private List<PersonnePhysique> filterDateNaissance(List<PersonnePhysique> list, CriteresPersonne criteres) {
 		final RegDate critereDateNaissance = criteres.getDateNaissance();
-		if (critereDateNaissance!=null) {
+		if (critereDateNaissance != null) {
 			CollectionUtils.filter(list, new Predicate() {
 				public boolean evaluate(Object object) {
 					return matchDateNaissance((PersonnePhysique) object, critereDateNaissance);
@@ -544,20 +607,21 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		return list;
 	}
 
-	/** verifie si la date de naissance du message et celui de la pp match
+	/**
+	 * verifie si la date de naissance du message et celui de la pp match
 	 *
 	 * @param pp
-	 * 			  la personne physique dont on veut vérifier la date de naissance.
+	 *            la personne physique dont on veut vérifier la date de naissance.
 	 * @param critereDateNaissance
 	 * @return
 	 */
 	private boolean matchDateNaissance(PersonnePhysique pp, RegDate critereDateNaissance) {
 		RegDate dateNaissance = tiersService.getDateNaissance(pp);
-		RegDate dateLimite = RegDate.get(1901,1,1);
-		if (dateNaissance !=null && critereDateNaissance.isAfterOrEqual(dateLimite)) {
+		RegDate dateLimite = RegDate.get(1901, 1, 1);
+		if (dateNaissance != null && critereDateNaissance.isAfterOrEqual(dateLimite)) {
 			return dateNaissance.equals(critereDateNaissance);
 		}
-		else{
+		else {
 			return true;
 		}
 
@@ -819,13 +883,13 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 
 	public String getNomCantonFromMessage(IdentificationContribuable identification) throws InfrastructureException {
 		String emetteurId = identification.getDemande().getEmetteurId();
-		String sigle = StringUtils.substring(emetteurId,2,4);
+		String sigle = StringUtils.substring(emetteurId, 2, 4);
 		Canton canton = infraService.getCantonBySigle(sigle);
 
-		if (canton !=null && canton.getNomMinuscule()!=null) {
+		if (canton != null && canton.getNomMinuscule() != null) {
 			return canton.getNomMinuscule();
 		}
-		else{
+		else {
 			return emetteurId;
 		}
 
