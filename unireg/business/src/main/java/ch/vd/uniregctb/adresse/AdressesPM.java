@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.adresse;
 
-import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.pm.model.EnumTypeAdresseEntreprise;
 import ch.vd.uniregctb.interfaces.model.AdresseEntreprise;
@@ -32,7 +31,7 @@ public class AdressesPM {
 		}
 	}
 
-	public AdresseEntreprise ofType(EnumTypeAdresse type) {
+	public AdresseEntreprise ofType(EnumTypeAdresseEntreprise type) {
 		if (EnumTypeAdresseEntreprise.SIEGE.equals(type)) {
 			return siege;
 		}
