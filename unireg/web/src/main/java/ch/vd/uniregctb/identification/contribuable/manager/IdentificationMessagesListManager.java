@@ -23,9 +23,10 @@ public interface IdentificationMessagesListManager {
 	 * @param nonTraiterAndSuspendu TODO
 	 * @return
 	 * @throws AdressesResolutionException
+	 * @throws InfrastructureException
 	 */
 	public List<IdentificationMessagesResultView> find(IdentificationContribuableCriteria bean, WebParamPagination pagination, boolean nonTraiteOnly, boolean archiveOnly,boolean nonTraiterAndSuspendu)
-	throws AdressesResolutionException ;
+	throws AdressesResolutionException, InfrastructureException ;
 
 	/**
 	 * Cherche et compte les identifications correspondant aux criteres
@@ -73,9 +74,10 @@ public interface IdentificationMessagesListManager {
 	 * @param pagination
 	 * @return
 	 * @throws AdressesResolutionException
+	 * @throws InfrastructureException
 	 */
 	public List<IdentificationMessagesResultView> findEncoursSeul(IdentificationContribuableCriteria bean, WebParamPagination pagination)
-			throws AdressesResolutionException;
+			throws AdressesResolutionException, InfrastructureException;
 
 
 

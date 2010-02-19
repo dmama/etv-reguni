@@ -4,7 +4,9 @@
 	<table border="0">
 		<tr>
 			<td>
-				<unireg:raccourciModifier link="../civil/edit.do?id=${command.tiers.numero}" tooltip="Modifier la partie fiscale" display="label.bouton.modifier"/>
+				<c:if test="${empty param['message'] && empty param['retour']}">
+					<unireg:raccourciModifier link="../civil/edit.do?id=${command.tiers.numero}" tooltip="Modifier la partie fiscale" display="label.bouton.modifier"/>
+				</c:if>	
 			</td>
 		</tr>
 	</table>

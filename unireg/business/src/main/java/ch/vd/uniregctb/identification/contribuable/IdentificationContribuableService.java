@@ -3,6 +3,7 @@ package ch.vd.uniregctb.identification.contribuable;
 import java.util.List;
 import java.util.Map;
 
+import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.uniregctb.common.ParamPagination;
 import ch.vd.uniregctb.evenement.identification.contribuable.CriteresPersonne;
 import ch.vd.uniregctb.evenement.identification.contribuable.Erreur;
@@ -80,4 +81,12 @@ public interface IdentificationContribuableService {
 	 * @param identificationContribuableCriteria
 	 */
 	public Map<IdentificationContribuable.Etat,Integer> calculerStats(IdentificationContribuableCriteria identificationContribuableCriteria);
+
+	/**Retourn le nom complet du canton emetteur du message
+	 *
+	 * @param identification
+	 * @return
+	 * @throws InfrastructureException
+	 */
+	public String getNomCantonFromMessage(IdentificationContribuable identification) throws InfrastructureException;
 }

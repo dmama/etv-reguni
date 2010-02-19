@@ -8,7 +8,9 @@
 	<table border="0">
 		<tr>
 			<td>
+				<c:if test="${empty param['message'] && empty param['retour']}">
 				<unireg:raccourciModifier link="../fiscal/edit.do?id=${command.tiers.numero}" tooltip="Modifier la partie fiscale" display="label.bouton.modifier"/>
+				</c:if>
 			</td>
 
 			<td id="timeline" style="display:none" align="right">

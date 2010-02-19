@@ -5,7 +5,9 @@
 <table border="0">
 	<tr>
 		<td>
+		<c:if test="${empty param['message'] && empty param['retour']}">
 			<unireg:raccourciModifier link="../adresses/edit.do?id=${command.tiers.numero}" tooltip="Modifier les adresses" display="label.bouton.modifier"/>
+		</c:if>	
 		</td>
 	</tr>
 </table>
