@@ -47,6 +47,8 @@ public abstract class Assujettissement implements CollatableDateRange {
 
 	/**
 	 * Permet de construire un assujettissement unique composé de deux assujettissement de même types qui se touchent
+	 * @param courant l'assujettissement courant
+	 * @param suivant l'assujettissement suivant
 	 */
 	protected Assujettissement(Assujettissement courant, Assujettissement suivant) {
 		Assert.isTrue(courant.isCollatable(suivant));
@@ -131,6 +133,7 @@ public abstract class Assujettissement implements CollatableDateRange {
 	 * @param contribuable le contribuable dont on veut déterminer l'assujettissement
 	 * @param annee        l'année correspondant à la période fiscale considérée (du 1er janvier au 31 décembre)
 	 * @return une liste d'assujettissement contenant 1 ou plusieurs entrées, ou <b>null</b> si le contribuable n'est pas assujetti.
+	 * @throws AssujettissementException en cas d'impossibilité de calculer l'assujettissement
 	 */
 	public static List<Assujettissement> determine(Contribuable contribuable, int annee) throws AssujettissementException {
 		return determine(new DecompositionForsAnneeComplete(contribuable, annee));
@@ -146,9 +149,9 @@ public abstract class Assujettissement implements CollatableDateRange {
 	 * @param range        la période considérée
 	 * @param collate      indique si on souhaite concaténer les assujettissement identique qui se suivent
 	 * @return une liste d'assujettissement contenant 1 ou plusieurs entrées, ou <b>null</b> si le contribuable n'est pas assujetti.
+	 * @throws AssujettissementException en cas d'impossibilité de calculer l'assujettissement
 	 */
-	public static List<Assujettissement> determine(Contribuable contribuable, DateRange range, boolean collate)
-			throws AssujettissementException {
+	public static List<Assujettissement> determine(Contribuable contribuable, DateRange range, boolean collate) throws AssujettissementException {
 		if (range != null && isFullYear(range)) {
 			return determine(new DecompositionForsAnneeComplete(contribuable, range.getDateDebut().year()));
 		}
@@ -217,9 +220,9 @@ public abstract class Assujettissement implements CollatableDateRange {
 	 * Analyse les fors du contribuable et construit la liste des périodes d'assujettissement durant l'année spécifiée. Dans la grande majorité des cas, il n'y a qu'une seule période d'assujettissement
 	 * et elle coïncide avec l'année civile. Dans certains cas rares, il peut y avoir deux - voire même plus que de deux - périodes d'assujettissement distinctes.
 	 *
-	 * @param contribuable le contribuable dont on veut déterminer l'assujettissement
-	 * @param annee        l'année correspondant à la période fiscale considérée (du 1er janvier au 31 décembre)
+	 * @param fors la décomposition des fors pour la période fiscale considérée (du 1er janvier au 31 décembre)
 	 * @return une liste d'assujettissement contenant 1 ou plusieurs entrées, ou <b>null</b> si le contribuable n'est pas assujetti.
+	 * @throws AssujettissementException en cas d'impossibilité de calculer l'assujettissement
 	 */
 	public static List<Assujettissement> determine(DecompositionForsAnneeComplete fors) throws AssujettissementException {
 
@@ -231,12 +234,12 @@ public abstract class Assujettissement implements CollatableDateRange {
 
 		// Détermine les éventuelles sous-périodes d'imposition dues à des départs/arrivées hors-Suisse (et autres cas exotiques)
 		final List<SousPeriode> sousPeriodes = extractSousPeriodes(fors);
-		if (sousPeriodes.size() > 1) {
+		if (!sousPeriodes.isEmpty()) {
 
 			// le fractionnement des périodes d'imposition est nécessaire
 			for (SousPeriode p : sousPeriodes) {
 				DecompositionForsPeriode f = new DecompositionForsPeriode(fors.contribuable, p);
-				if (f.isEmpty()) {
+				if (f.isFullyEmpty()) {
 					continue;
 				}
 				Assujettissement a = determinePeriode(f, p.getMotifFractDebut(), p.getMotifFractFin());
@@ -277,6 +280,8 @@ public abstract class Assujettissement implements CollatableDateRange {
 	 * </ul>
 	 * <p/>
 	 * En gros, à chaque passage source pure à ordinaire et vice-versa les dates de début et fin sont adaptées.
+	 * 
+	 * @param assujettissements une liste des assujettissement
 	 */
 	private static void adapteDatesDebutEtFin(List<Assujettissement> assujettissements) {
 		final int size = assujettissements.size();
@@ -445,34 +450,135 @@ public abstract class Assujettissement implements CollatableDateRange {
 		final EvenementForsIterator iter = new EvenementForsIterator(fors);
 		while (iter.hasNext()) {
 			final EvenementFors event = iter.next();
+
+			// détecte un fractionnement nécessaire à l'ouverture de l'événement
 			final MotifFor motifOuverture = fractionnementOuverture(event);
 			if (motifOuverture != null) {
 				final RegDate debut = event.dateEvenement;
-				if (debut != null && debut.isAfter(pivot)) {
-					// fractionne le range précédent
-					ranges.add(new SousPeriode(pivot, debut.getOneDayBefore(), motifPivot, motifOuverture));
-					pivot = debut;
+				if (debut != null) {
+					if (debut.isAfter(pivot)) {
+						// fractionne le range précédent
+						ranges.add(newSousPeriode(fors, pivot, debut.getOneDayBefore(), motifPivot, motifOuverture));
+						pivot = debut;
+					}
 					motifPivot = motifOuverture;
 				}
 			}
+			
+			// détecte un fractionnement nécessaire à la fermeture de l'événement
 			final MotifFor motifFermeture = fractionnementFermeture(event);
 			if (motifFermeture != null) {
 				final RegDate fin = event.dateEvenement;
-				if (fin != null && fin.isBefore(dateFinAnnee)) {
-					// fractionne le range courant
-					ranges.add(new SousPeriode(pivot, fin, motifPivot, motifFermeture));
-					pivot = fin.getOneDayAfter();
-					motifPivot = motifFermeture;
+				if (fin != null) {
+					if (fin.isBeforeOrEqual(dateFinAnnee)) {
+						// fractionne le range courant
+						ranges.add(newSousPeriode(fors, pivot, fin, motifPivot, motifFermeture));
+						pivot = fin.getOneDayAfter();
+						motifPivot = motifFermeture;
+					}
 				}
 			}
 		}
 
-		if (pivot != dateDebutAnnee && pivot.isBeforeOrEqual(dateFinAnnee)) {
-			// ajoute le dernier range
-			ranges.add(new SousPeriode(pivot, dateFinAnnee, motifPivot, null));
+		final MotifFor motifFinAnnee = detectMotifFinAnnee(fors);
+		if (is1erJanvier(pivot) && motifPivot == null) {
+			motifPivot = detectMotifDebutAnnee(fors, pivot, dateFinAnnee);
+		}
+
+		// ajoute le dernier range si nécessaire
+		if ((pivot != dateDebutAnnee || motifPivot != null || motifFinAnnee != null) && pivot.isBeforeOrEqual(dateFinAnnee)) {
+			ranges.add(new SousPeriode(pivot, dateFinAnnee, motifPivot, motifFinAnnee));
 		}
 
 		return ranges;
+	}
+
+	/**
+	 * Crée une nouvelle sous-période en calculant automatiquement le motif de début en cas de début d'assujettissement exceptionnel.
+	 *
+	 * @param fors       la décomposition des fors de l'année courante
+	 * @param debut      la date de début de la sous-période
+	 * @param fin        la date de fin de la sous-période
+	 * @param motifDebut le motif de début de la sous-période
+	 * @param motifFin   le motif de fin de la sous-période
+	 * @return une nouvelle sous-période
+	 */
+	private static SousPeriode newSousPeriode(DecompositionForsAnneeComplete fors, RegDate debut, RegDate fin, MotifFor motifDebut, MotifFor motifFin) {
+		if (is1erJanvier(debut) && motifDebut == null) {
+			motifDebut = detectMotifDebutAnnee(fors, debut, fin);
+		}
+		return new SousPeriode(debut, fin, motifDebut, motifFin);
+	}
+
+	/**
+	 * Détecte s'il y a début d'assujettissement au 1er janvier en raison d'un événement exceptionnel (arrivée de hors-Canton ou mariage en cours d'année).
+	 *
+	 * @param fors         la décomposition des fors de l'année complète
+	 * @param debutPeriode la date de début de la période considérée
+	 * @param finPeriode   la date de fin de la période considérée
+	 * @return le motif du début d'assujettissement exceptionnel; ou <b>null</b> s'il n'y en a pas.
+	 */
+	private static MotifFor detectMotifDebutAnnee(DecompositionForsAnneeComplete fors, RegDate debutPeriode, RegDate finPeriode) {
+
+		final DateRange periode = new DateRangeHelper.Range(debutPeriode, finPeriode);
+
+		for (ForFiscalPrincipal ffp : fors.principauxDansLaPeriode) {
+			if (periode.isValidAt(ffp.getDateDebut())) { // on ne s'intéresse qu'aux fors réellement ouverts dans la période spécifiée
+
+				final MotifFor motif = ffp.getMotifOuverture();
+				final TypeAutoriteFiscale typeAutorite = ffp.getTypeAutoriteFiscale();
+				final ModeImposition mode = ffp.getModeImposition();
+
+				if (motif == MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION || motif == MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT) {
+					return motif;
+				}
+				else if (motif == MotifFor.ARRIVEE_HC && typeAutorite == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD &&
+						mode != ModeImposition.SOURCE && mode != ModeImposition.MIXTE_137_2) { // un départ ou une arrivée HC ne change rien pour un sourcier pure ou sourcier mixte 137_2
+					return motif;
+				}
+				else if (motif == MotifFor.DEPART_HC && typeAutorite == TypeAutoriteFiscale.COMMUNE_HC &&
+						mode != ModeImposition.SOURCE && mode != ModeImposition.MIXTE_137_2) {
+					return motif;
+				}
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * Détecte s'il y a fin d'assujettissement au 31 décembre en raison d'un événement exceptionnel (départ hors-Canton ou mariage en cours d'année suivante).
+	 *
+	 * @param fors      la décomposition des fors de l'année complète
+	 * @return le motif du début d'assujettissement exceptionnel; ou <b>null</b> s'il n'y en a pas.
+	 */
+	private static MotifFor detectMotifFinAnnee(DecompositionForsAnneeComplete fors) {
+
+		// détecte les fins d'assujettissement exceptionnelles en raison des fermeture de fors principaux
+		for (ForFiscalPrincipal ffp : fors.principauxDansPeriodeSuivante) {
+			final RegDate fin = ffp.getDateFin();
+
+			if (fin != null && fin.year() == fors.annee + 1) { // on ne s'intéresse qu'aux fors réellement fermés l'année suivante
+
+				final MotifFor motif = ffp.getMotifFermeture();
+				final ModeImposition mode = ffp.getModeImposition();
+				final TypeAutoriteFiscale typeAutorite = ffp.getTypeAutoriteFiscale();
+
+				if (motif == MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION || motif == MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT) {
+					return motif;
+				}
+				else if (motif == MotifFor.DEPART_HC && typeAutorite == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD &&
+						mode != ModeImposition.SOURCE && mode != ModeImposition.MIXTE_137_2) { // un départ ou une arrivée HC ne change rien pour un sourcier pure ou sourcier mixte 137_2
+					return motif;
+				}
+				else if (motif == MotifFor.ARRIVEE_HC && typeAutorite == TypeAutoriteFiscale.COMMUNE_HC &&
+						mode != ModeImposition.SOURCE && mode != ModeImposition.MIXTE_137_2) {
+					return motif;
+				}
+			}
+		}
+
+		return null;
 	}
 
 	/**
@@ -507,6 +613,11 @@ public abstract class Assujettissement implements CollatableDateRange {
 			// [UNIREG-1742] Le départ ou l'arrivée hors-Canton d'un sourcier pur ou mixte 137 al. 2 (donc sans for secondaire) doit provoquer un fractionnement
 			final ModeImposition modeImposition = event.ouverts.principal.getModeImposition();
 			if ((modeImposition == ModeImposition.SOURCE || modeImposition == ModeImposition.MIXTE_137_2) && (motif == MotifFor.DEPART_HC || motif == MotifFor.ARRIVEE_HC)) {
+				return motif;
+			}
+
+			// Cas limite de l'ouverture du for principal au 1er janvier -> on retourne un fractionnement car il y a bien un début d'assujettissement au début de l'année.
+			if (is1erJanvier(event.dateEvenement)) {
 				return motif;
 			}
 		}
@@ -560,6 +671,11 @@ public abstract class Assujettissement implements CollatableDateRange {
 			if ((modeImposition == ModeImposition.SOURCE || modeImposition == ModeImposition.MIXTE_137_2) && (motif == MotifFor.DEPART_HC || motif == MotifFor.ARRIVEE_HC)) {
 				return motif;
 			}
+
+			// Cas limite de la fermeture du for principal au 31 décembre -> on retourne un fractionnement car il y a bien une fin d'assujettissement à la fin de l'année.
+			if (is31Decembre(event.dateEvenement)) {
+				return motif;
+			}
 		}
 
 		if (event.fermes.secondaires != null) { // événement de fermeture d'un for secondaire
@@ -579,6 +695,15 @@ public abstract class Assujettissement implements CollatableDateRange {
 		}
 
 		return null;
+	}
+
+	private static boolean is1erJanvier(RegDate date) {
+		return date.month() == 1 && date.day() == 1;
+	}
+
+
+	private static boolean is31Decembre(RegDate date) {
+		return date.month() == 12 && date.day() == 31;
 	}
 
 	private static boolean roleSourcierPur(ForFiscalPrincipal forPrecedent) {
@@ -605,6 +730,10 @@ public abstract class Assujettissement implements CollatableDateRange {
 	 * <li><b>qu'il habite hors-Suisse et que son for principal soit fermé sans motif</b> : s'il y a des fors secondaires, on continue le
 	 * traitement. Autrement, on peut ignorer le contribuable [UNIREG-1390].</li>
 	 * </ul>
+	 * 
+	 * @param fors la décomposition des fors fiscaux pour la période considérée
+	 * @return le type d'autorité fiscale déterminé; ou <b>null</b> si le contribuable n'est pas assujetti sur la période.
+	 * @throws AssujettissementException en cas d'impossibilité de calculer l'assujettissement
 	 */
 	@SuppressWarnings("deprecation")
 	private static TypeAutoriteFiscale determineTypeAutoriteFiscale(final DecompositionFors fors) throws AssujettissementException {
@@ -667,8 +796,11 @@ public abstract class Assujettissement implements CollatableDateRange {
 	/**
 	 * Détermine l'assujettissement pour une période où il est sûr de ne pas avoir de fractionnement.
 	 *
+	 * @param fors            la décomposition des fors pour la période considérée
 	 * @param motifFractDebut le motif de début de fractionnement de l'assujettissement si existant
 	 * @param motifFractFin   le motif de fin de fractionnement de l'assujettissement si existant
+	 * @return l'assujettissement calculé; ou <b>null</b> si le contribuable n'est pas assujetti pour la période considérée.
+	 * @throws AssujettissementException en cas d'impossibilité de calculer l'assujettissement
 	 */
 	private static Assujettissement determinePeriode(final DecompositionFors fors, final MotifFor motifFractDebut,
 	                                                 final MotifFor motifFractFin) throws AssujettissementException {
@@ -843,11 +975,13 @@ public abstract class Assujettissement implements CollatableDateRange {
 	/**
 	 * Détecte si le contribuable est sourcier (dans les cas hors-canton/hors-Suisse) et retourne son assujettissement si c'est le cas.
 	 *
-	 * @param fors la décomposition des fors du contribuable
+	 * @param motifFractDebut le motif de début d'assujettissement à utiliser
+	 * @param motifFractFin   le motif de fin d'assujettissement à utiliser
+	 * @param fors            la décomposition des fors du contribuable
 	 * @return l'assujettissement de type source ou <b>null</b> si le contribuable n'est pas sourcier.
+	 * @throws AssujettissementException en cas d'impossibilité de calculer l'assujettissement
 	 */
-	private static Sourcier detecteSourcier(final MotifFor motifFractDebut, final MotifFor motifFractFin, final DecompositionFors fors)
-			throws AssujettissementException {
+	private static Sourcier detecteSourcier(final MotifFor motifFractDebut, final MotifFor motifFractFin, final DecompositionFors fors) throws AssujettissementException {
 		if (fors.principal != null) {
 			final ModeImposition modeImposition = fors.principal.getModeImposition();
 			if (modeImposition == null) {
@@ -871,9 +1005,14 @@ public abstract class Assujettissement implements CollatableDateRange {
 
 	/**
 	 * Crée un assujettissement de type sourcier pure.
+	 *
+	 * @param motifFractDebut le motif de début d'assujettissement à utiliser
+	 * @param motifFractFin   le motif de fin d'assujettissement à utiliser
+	 * @param fors            la décomposition des fors du contribuable
+	 * @return l'assujettissement de type source pur
+	 * @throws AssujettissementException en cas d'impossibilité de calculer l'assujettissement
 	 */
-	private static Sourcier newSourcierPur(final MotifFor motifFractDebut, final MotifFor motifFractFin, final DecompositionFors fors)
-			throws AssujettissementException {
+	private static Sourcier newSourcierPur(final MotifFor motifFractDebut, final MotifFor motifFractFin, final DecompositionFors fors) throws AssujettissementException {
 
 		if (!fors.secondairesDansLaPeriode.isEmpty()) {
 			throw new AssujettissementException("Incohérence des données. Le contribuable = " + fors.contribuable.getNumero()
@@ -887,6 +1026,12 @@ public abstract class Assujettissement implements CollatableDateRange {
 	/**
 	 * Crée un assujettissement de type sourcier mixte art. 137 al. 1, c'est-à-dire pour les contribuables qui possèdent un for hors-canton ou hors-Suisse et (obligatoirement) un for secondaire dans le
 	 * canton.
+	 *
+	 * @param motifFractDebut le motif de début d'assujettissement à utiliser
+	 * @param motifFractFin   le motif de fin d'assujettissement à utiliser
+	 * @param fors            la décomposition des fors du contribuable
+	 * @return l'assujettissement de type source mixte
+	 * @throws AssujettissementException en cas d'impossibilité de calculer l'assujettissement
 	 */
 	private static Sourcier newSourcierMixte137Al1(final MotifFor motifFractDebut, final MotifFor motifFractFin,
 	                                               final DecompositionFors fors) throws AssujettissementException {

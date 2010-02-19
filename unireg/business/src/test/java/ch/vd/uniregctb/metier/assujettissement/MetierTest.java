@@ -68,18 +68,38 @@ public abstract class MetierTest extends BusinessTest {
 		return paul;
 	}
 
-	protected EnsembleTiersCouple createMenageCommunMarieDansLAnnee() {
+	protected EnsembleTiersCouple createMenageCommunMarie(RegDate dateMariage) {
+		
 		PersonnePhysique paul = addNonHabitant("Paul", "Duchêne", date(1965, 4, 13), Sexe.MASCULIN);
-		addForPrincipal(paul, date(1981, 4, 13), MotifFor.MAJORITE, date(2008, 6, 30),
+		addForPrincipal(paul, date(1981, 4, 13), MotifFor.MAJORITE, dateMariage.getOneDayBefore(),
 				MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
 
 		PersonnePhysique marie = addNonHabitant("Marie", "Duchêne", date(1970, 6, 3), Sexe.FEMININ);
-		addForPrincipal(marie, date(1988, 6, 3), MotifFor.MAJORITE, date(2008, 6, 30),
+		addForPrincipal(marie, date(1988, 6, 3), MotifFor.MAJORITE, dateMariage.getOneDayBefore(),
 				MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Vevey);
 
-		EnsembleTiersCouple ensemble = createEnsembleTiersCouple(paul, marie, date(2008, 7, 1));
-		addForPrincipal(ensemble.getMenage(), date(2008, 7, 1), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION,
+		EnsembleTiersCouple ensemble = createEnsembleTiersCouple(paul, marie, dateMariage);
+		addForPrincipal(ensemble.getMenage(), dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION,
 				MockCommune.Lausanne);
+
+		return ensemble;
+	}
+
+	protected EnsembleTiersCouple createMenageCommunDivorce(RegDate dateMariage, RegDate dateDivorce) {
+
+		PersonnePhysique paul = addNonHabitant("Paul", "Duchêne", date(1965, 4, 13), Sexe.MASCULIN);
+		addForPrincipal(paul, date(1981, 4, 13), MotifFor.MAJORITE, dateMariage.getOneDayBefore(),
+				MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
+		addForPrincipal(paul, dateDivorce, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Lausanne);
+
+		PersonnePhysique marie = addNonHabitant("Marie", "Duchêne", date(1970, 6, 3), Sexe.FEMININ);
+		addForPrincipal(marie, date(1988, 6, 3), MotifFor.MAJORITE, dateMariage.getOneDayBefore(),
+				MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Vevey);
+		addForPrincipal(marie, dateDivorce, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Vevey);
+
+		EnsembleTiersCouple ensemble = createEnsembleTiersCouple(paul, marie, dateMariage);
+		addForPrincipal(ensemble.getMenage(), dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION,
+				dateDivorce.getOneDayBefore(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Lausanne);
 
 		return ensemble;
 	}
@@ -274,6 +294,13 @@ public abstract class MetierTest extends BusinessTest {
 		return paul;
 	}
 
+	protected Contribuable createArriveeHorsCanton(RegDate dateArrivee) throws Exception {
+		Contribuable paul = createContribuableSansFor();
+		addForPrincipal(paul, date(2002, 7, 1), MotifFor.ACHAT_IMMOBILIER, dateArrivee.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Neuchatel);
+		addForPrincipal(paul, dateArrivee, MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
+		return paul;
+	}
+
 	protected Contribuable createArriveeHorsCantonSourcierMixte137Al1(RegDate dateArrivee) throws Exception {
 		Contribuable paul = createContribuableSansFor();
 		ForFiscalPrincipal ffp = addForPrincipal(paul, date(2002, 7, 1), MotifFor.ACHAT_IMMOBILIER, dateArrivee.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Neuchatel);
@@ -362,12 +389,12 @@ public abstract class MetierTest extends BusinessTest {
 	/**
 	 * Contribuable sourcier dans le canton avec un mode d'imposition mixte (gagnant plus de 120'000 francs) => sourcier mixte art. 137 al. 2
 	 */
-	protected Contribuable createSourcierMixte137Al2() throws Exception {
+	protected Contribuable createSourcierPassageMixte137Al2(RegDate datePassage) throws Exception {
 		Contribuable paul = createContribuableSansFor();
-		ForFiscalPrincipal fp = addForPrincipal(paul, date(1983, 4, 13), MotifFor.ARRIVEE_HC, date(2004, 12, 31),
+		ForFiscalPrincipal fp = addForPrincipal(paul, date(1983, 4, 13), MotifFor.ARRIVEE_HC, datePassage.getOneDayBefore(),
 				MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Lausanne);
 		fp.setModeImposition(ModeImposition.SOURCE);
-		fp = addForPrincipal(paul, date(2005, 1, 1), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Lausanne);
+		fp = addForPrincipal(paul, datePassage, MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Lausanne);
 		fp.setModeImposition(ModeImposition.MIXTE_137_2);
 		return paul;
 	}
