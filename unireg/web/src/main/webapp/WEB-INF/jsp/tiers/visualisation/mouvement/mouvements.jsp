@@ -6,7 +6,9 @@
 		<table border="0">
 			<tr>
 				<td>
-					<unireg:raccourciModifier link="../mouvement/edit-contribuable.do?numero=${command.tiers.numero}" tooltip="Modifier les mouvements" display="label.bouton.modifier"/>
+					<c:if test="${empty param['message'] && empty param['retour']}">
+						<unireg:raccourciModifier link="../mouvement/edit-contribuable.do?numero=${command.tiers.numero}" tooltip="Modifier les mouvements" display="label.bouton.modifier"/>
+					</c:if>	
 				</td>
 			</tr>
 		</table>

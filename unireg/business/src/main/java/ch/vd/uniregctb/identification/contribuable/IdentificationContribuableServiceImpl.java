@@ -36,6 +36,7 @@ import ch.vd.uniregctb.evenement.identification.contribuable.Erreur.TypeErreur;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable.Etat;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
+import ch.vd.uniregctb.interfaces.model.Canton;
 import ch.vd.uniregctb.interfaces.model.Localite;
 import ch.vd.uniregctb.interfaces.model.Pays;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -286,6 +287,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 
 
 	}
+
 
 	/**
 	 * Envoie une réponse <b>lorsqu'un contribuable n'a définitivement pas été identifié</b>.
@@ -812,6 +814,20 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 
 		}
 		return resultatStats;
+
+	}
+
+	public String getNomCantonFromMessage(IdentificationContribuable identification) throws InfrastructureException {
+		String emetteurId = identification.getDemande().getEmetteurId();
+		String sigle = StringUtils.substring(emetteurId,2,4);
+		Canton canton = infraService.getCantonBySigle(sigle);
+
+		if (canton !=null && canton.getNomMinuscule()!=null) {
+			return canton.getNomMinuscule();
+		}
+		else{
+			return emetteurId;
+		}
 
 	}
 }

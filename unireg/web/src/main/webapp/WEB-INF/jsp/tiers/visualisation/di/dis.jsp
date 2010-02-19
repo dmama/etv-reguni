@@ -4,7 +4,9 @@
 <c:if test="${!command.tiers.annule && command.allowedOnglet.DI}">
 	<table border="0">
 		<tr><td>
-			<unireg:raccourciModifier link="../di/edit.do?action=listdis&numero=${command.tiers.numero}" tooltip="Modifier les DI" display="label.bouton.modifier"/>
+			<c:if test="${empty param['message'] && empty param['retour']}">
+				<unireg:raccourciModifier link="../di/edit.do?action=listdis&numero=${command.tiers.numero}" tooltip="Modifier les DI" display="label.bouton.modifier"/>
+			</c:if>	
 		</td></tr>
 	</table>
 </c:if>

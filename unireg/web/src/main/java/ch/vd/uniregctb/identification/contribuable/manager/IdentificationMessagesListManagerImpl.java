@@ -79,9 +79,10 @@ public class IdentificationMessagesListManagerImpl implements IdentificationMess
 	 * @param pagination
 	 * @return
 	 * @throws AdressesResolutionException
+	 * @throws InfrastructureException
 	 */
 	public List<IdentificationMessagesResultView> find(IdentificationContribuableCriteria bean, WebParamPagination pagination, boolean nonTraiteOnly, boolean archiveOnly, boolean nonTraiterAndSuspendu)
-			throws AdressesResolutionException {
+			throws AdressesResolutionException, InfrastructureException {
 		List<IdentificationMessagesResultView> identificationsView = new ArrayList<IdentificationMessagesResultView>();
 		List<IdentificationContribuable> identifications = identCtbService.find(bean, pagination, nonTraiteOnly, archiveOnly, nonTraiterAndSuspendu);
 		for (IdentificationContribuable identification : identifications) {
@@ -98,9 +99,10 @@ public class IdentificationMessagesListManagerImpl implements IdentificationMess
 	 * @param pagination
 	 * @return
 	 * @throws AdressesResolutionException
+	 * @throws InfrastructureException
 	 */
 	public List<IdentificationMessagesResultView> findEncoursSeul(IdentificationContribuableCriteria bean, WebParamPagination pagination)
-			throws AdressesResolutionException {
+			throws AdressesResolutionException, InfrastructureException {
 
 		bean.setEtatMessage(Etat.A_TRAITER_MANUELLEMENT.name());
 		return find(bean, pagination, false, false,false);
@@ -197,8 +199,9 @@ public class IdentificationMessagesListManagerImpl implements IdentificationMess
 	 *
 	 * @param identification
 	 * @return
+	 * @throws InfrastructureException
 	 */
-	private IdentificationMessagesResultView buildView(IdentificationContribuable identification) {
+	private IdentificationMessagesResultView buildView(IdentificationContribuable identification) throws InfrastructureException {
 		IdentificationMessagesResultView identificationMessagesResultView = new IdentificationMessagesResultView();
 		identificationMessagesResultView.setId(identification.getId());
 		if (identification.getAnnulationDate() == null) {
@@ -213,7 +216,7 @@ public class IdentificationMessagesListManagerImpl implements IdentificationMess
 		identificationMessagesResultView.setEtatMessage(identification.getEtat());
 		if (identification.getDemande() != null) {
 			identificationMessagesResultView.setDateMessage(identification.getDemande().getDate());
-			identificationMessagesResultView.setEmetteurId(identification.getDemande().getEmetteurId());
+			identificationMessagesResultView.setEmetteurId(identCtbService.getNomCantonFromMessage(identification));
 			identificationMessagesResultView.setPeriodeFiscale(Integer.valueOf(identification.getDemande().getPeriodeFiscale()));
 			identificationMessagesResultView.setTypeMessage(identification.getDemande().getTypeMessage());
 			if (identification.getDemande().getPersonne() != null) {
