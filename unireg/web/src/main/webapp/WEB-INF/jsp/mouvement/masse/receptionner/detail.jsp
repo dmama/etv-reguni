@@ -106,7 +106,7 @@
                                 <input type="button" id="closeButton" value="Fermer" onclick="top.location.reload(true);"/>
                             </c:if>
                             <c:if test="${!command.apresReception}">
-                                <unireg:closeOverlayButton text="Annuler"/>
+                                <unireg:closeOverlayButton text="Retour"/>
                             </c:if>
                         </div>
                     </td>
