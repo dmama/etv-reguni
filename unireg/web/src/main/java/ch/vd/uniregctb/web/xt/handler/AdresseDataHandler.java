@@ -129,7 +129,7 @@ public class AdresseDataHandler extends AbstractAjaxHandler implements Applicati
 
 			this.paysOFS = null;
 
-			this.addComponent(new SimpleText(messageSourceAccessor.getMessage("label.nonHabitant")));
+			this.addComponent(new SimpleText(messageSourceAccessor.getMessage("label.nonHabitant.adresse.vaudoise.inconnue")));
 
 		}
 
