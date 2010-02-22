@@ -263,28 +263,30 @@ function ouvrirAide(url) {
 					<div class="empty" style="height: 10px;">&nbsp;</div>
 					<br>
 					<h1><tiles:getAsString name='title' ignore='true'/></h1>
-					<spring:hasBindErrors name="command">
-						<c:set var="globalErrorCount" value="0"/>
-						<c:if test="${errors.globalErrorCount > 0}">
-							<c:forEach var="error" items="${errors.globalErrors}">
-								<c:if test="${unireg:startsWith(error.code, 'global.error')}">
-									<c:set var="globalErrorCount" value="${globalErrorCount+1}"/>
-								</c:if>
-							</c:forEach>
-						</c:if>
-						<c:if test="${globalErrorCount > 0}">
-							<table class="action_error" cellspacing="0" cellpadding="0" border="0">
-								<tr><td class="heading"><fmt:message key="label.action.problemes.detectes"/></td></tr>
-								<tr id="val_errors"><td class="details"><ul>
+					<div id="globalErrors">
+						<spring:hasBindErrors name="command">
+							<c:set var="globalErrorCount" value="0"/>
+							<c:if test="${errors.globalErrorCount > 0}">
 								<c:forEach var="error" items="${errors.globalErrors}">
 									<c:if test="${unireg:startsWith(error.code, 'global.error')}">
-										<li class="err"><spring:message message="${error}" /></li>
+										<c:set var="globalErrorCount" value="${globalErrorCount+1}"/>
 									</c:if>
 								</c:forEach>
-								</ul></td></tr>
-							</table>
-						</c:if>
-					</spring:hasBindErrors>
+							</c:if>
+							<c:if test="${globalErrorCount > 0}">
+								<table class="action_error" cellspacing="0" cellpadding="0" border="0">
+									<tr><td class="heading"><fmt:message key="label.action.problemes.detectes"/></td></tr>
+									<tr id="val_errors"><td class="details"><ul>
+									<c:forEach var="error" items="${errors.globalErrors}">
+										<c:if test="${unireg:startsWith(error.code, 'global.error')}">
+											<li class="err"><spring:message message="${error}" /></li>
+										</c:if>
+									</c:forEach>
+									</ul></td></tr>
+								</table>
+							</c:if>
+						</spring:hasBindErrors>
+					</div>
 					<div class="workaround_IE6_bug">
 						<tiles:getAsString name='body' />
 					</div>

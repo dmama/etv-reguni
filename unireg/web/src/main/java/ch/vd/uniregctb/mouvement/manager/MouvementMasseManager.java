@@ -59,10 +59,21 @@ public interface MouvementMasseManager extends AbstractMouvementManager {
 	List<BordereauListElementView> getProtoBordereaux(Integer noCollAdmInitiatrice);
 
 	/**
-	 * Imprime un bordereau de mouvements de dossier avec les mouvements donnés par ID, et renvoie
-	 * le flux binaire de données (PCL) du document à imprimer
+	 * Effectue la demande d'impression d'un bordereau de mouvements de dossier avec les mouvements donnés par ID, et renvoie
+	 * l'identifiant à utiliser dans la méthode {@link #recevoirImpressionBordereau} pour récupérer le flux PCL
 	 */
-	byte[] imprimerBordereau(long[] idsMouvement) throws EditiqueException;
+	String imprimerBordereau(long[] idsMouvement) throws EditiqueException;
+
+	/**
+	 * Réceptionne le flux éditique concernant l'impression du bordereau d'envoi de dossiers
+	 */
+	byte[] recevoirImpressionBordereau(String docId) throws EditiqueException;
+
+	/**
+	 * Annule le bordereau composé des mouvements dont les ID sont donnés ici
+	 * @param idsMouvement ID techniques des mouvements considérés
+	 */
+	void annulerBordereau(long[] idsMouvement);
 
 	/**
 	 * Renvoie les bordereaux de mouvements d'envois restant à réceptionner

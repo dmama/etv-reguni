@@ -64,6 +64,8 @@
                             printButton.style.display = "none";
                             var closeButton = document.getElementById('closeButton');
                             closeButton.value = "Fermer";
+                            var globalErrorDiv = document.getElementById('globalErrors');
+                            globalErrorDiv.style.display = "none";
                             return true;
                         }
                         else {
