@@ -131,9 +131,20 @@ public class MouvementMasseManagerImpl extends AbstractMouvementManagerImpl impl
 	}
 
 	@Transactional(rollbackFor = Throwable.class)
-	public byte[] imprimerBordereau(long[] idsMouvement) throws EditiqueException {
+	public String imprimerBordereau(long[] idsMouvement) throws EditiqueException {
 		final List<MouvementDossier> mvts = getMouvementDossierDAO().get(idsMouvement);
-		return mouvementService.creerEtImprimerBordereau(mvts);
+		return mouvementService.envoyerImpressionBordereau(mvts);
+	}
+
+	@Transactional(rollbackFor = Throwable.class)
+	public byte[] recevoirImpressionBordereau(String docId) throws EditiqueException {
+		return mouvementService.recevoirImpressionBordereau(docId);
+	}
+
+	@Transactional(rollbackFor = Throwable.class)
+	public void annulerBordereau(long[] idsMouvement) {
+		final List<MouvementDossier> mvts = getMouvementDossierDAO().get(idsMouvement);
+		mouvementService.viderEtDetruireBordereau(mvts);
 	}
 
 	public List<BordereauEnvoiView> findBordereauxAReceptionner(Integer noCollAdmReceptrice) {

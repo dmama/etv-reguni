@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import org.apache.log4j.Logger;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -25,6 +26,8 @@ import ch.vd.uniregctb.type.TypeMouvement;
  * de certains d'entre eux et l'impression du bordereau correspondant
  */
 public class MouvementMasseDetailBordereauController extends AbstractMouvementMasseController {
+
+	public static final Logger LOGGER = Logger.getLogger(MouvementMasseDetailBordereauController.class);
 
 	private static final String TYPE = "type";      // type de mouvement du bordereau : EnvoiDossier ou ReceptionDossier
 	private static final String SRC = "src";        // ID technique de l'OID initiateur des mouvements
@@ -56,17 +59,25 @@ public class MouvementMasseDetailBordereauController extends AbstractMouvementMa
 		// validation de l'impression ?
 		if (imprimer != null) {
 			final MouvementMasseDetailBordereauView view = (MouvementMasseDetailBordereauView) command;
+			boolean bordereauCree = false;
 			try {
-				final byte[] pcl = getMouvementManager().imprimerBordereau(view.getSelection());
-				if (pcl == null) {
-					errors.reject("global.error.msg", "Le service éditique ne répond pas à la demande d'impression.");
+				final String docId = getMouvementManager().imprimerBordereau(view.getSelection());
+				if (LOGGER.isDebugEnabled()) {
+					LOGGER.debug("Document envoyé : ID = " + docId);
 				}
-				else {
-					printPCLManager.openPclStream(request, response, pcl);
-				}
+				bordereauCree = true;
+
+				final byte[] pcl = getMouvementManager().recevoirImpressionBordereau(docId);
+				printPCLManager.openPclStream(request, response, pcl);
 			}
 			catch (EditiqueException e) {
 				errors.reject("global.error.msg", e.getMessage());
+				if (bordereauCree) {
+					// comme on est obligé d'avoir deux transactions (une pour l'envoi de la demande,
+					// l'autre pour la réception du flux), et que la notion de duplicata de bordereau
+					// n'existe pas, il faut maintenant détruire le bordereau créé
+					getMouvementManager().annulerBordereau(view.getSelection());
+				}
 			}
 		}
 		return showForm(request, response, errors);
