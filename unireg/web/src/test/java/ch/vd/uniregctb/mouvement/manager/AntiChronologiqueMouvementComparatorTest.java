@@ -121,4 +121,21 @@ public class AntiChronologiqueMouvementComparatorTest {
 		Assert.assertTrue(nonAnnule == liste.get(0));
 		Assert.assertTrue(annule == liste.get(1));
 	}
+
+	@Test
+	public void testTriMouvementsSansDateModification() throws Exception {
+		final MouvementDossier debut = createMouvement(false, aujourdhui, getTimestamp(aujourdhui, 0, 0, 0));
+		final MouvementDossier milieu = createMouvement(false, aujourdhui, getTimestamp(aujourdhui, 0, 0, 0));
+		final MouvementDossier fin = createMouvement(false, aujourdhui, null);      // mouvement tout neuf qui n'a pas encore reçu sa date de modification
+
+		final List<MouvementDossier> liste = new ArrayList<MouvementDossier>(3);
+		liste.add(milieu);
+		liste.add(fin);
+		liste.add(debut);
+		Collections.sort(liste, comparator);
+		Assert.assertEquals(3, liste.size());
+		Assert.assertTrue(fin == liste.get(0));
+		Assert.assertTrue(milieu == liste.get(1));
+		Assert.assertTrue(debut == liste.get(2));
+	}
 }

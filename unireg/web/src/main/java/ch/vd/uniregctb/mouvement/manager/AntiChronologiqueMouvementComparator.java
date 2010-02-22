@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.mouvement.manager;
 
+import java.sql.Timestamp;
 import java.util.Comparator;
 
 import ch.vd.registre.base.date.NullDateBehavior;
@@ -39,7 +40,20 @@ public class AntiChronologiqueMouvementComparator implements Comparator<Mouvemen
 		final RegDate dateMvt1 = mvt1.getDateMouvement();
 		final RegDate dateMvt2 = mvt2.getDateMouvement();
 		if (RegDateHelper.equals(dateMvt1, dateMvt2)) {
-			return - mvt1.getLogModifDate().compareTo(mvt2.getLogModifDate());
+			final Timestamp ts1 = mvt1.getLogModifDate();
+			final Timestamp ts2 = mvt2.getLogModifDate();
+			if (ts1 == ts2) {
+				return 0;
+			}
+			else if (ts1 == null) {
+				return -1;
+			}
+			else if (ts2 == null) {
+				return 1;
+			}
+			else {
+				return - ts1.compareTo(ts2);
+			}
 		}
 		else if (RegDateHelper.isAfterOrEqual(dateMvt1, dateMvt2, NullDateBehavior.LATEST)) {
 			return -1;
