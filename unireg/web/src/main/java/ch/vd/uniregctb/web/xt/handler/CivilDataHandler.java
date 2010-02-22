@@ -15,6 +15,7 @@ import org.springmodules.xt.ajax.AjaxResponseImpl;
 import org.springmodules.xt.ajax.action.RemoveContentAction;
 import org.springmodules.xt.ajax.action.ReplaceContentAction;
 import org.springmodules.xt.ajax.component.Component;
+import org.springmodules.xt.ajax.component.Container;
 import org.springmodules.xt.ajax.component.Table;
 import org.springmodules.xt.ajax.component.TableData;
 import org.springmodules.xt.ajax.component.TableRow;
@@ -34,7 +35,7 @@ import ch.vd.uniregctb.web.xt.component.SimpleText;
  *
  * @author Baba Issa Ngom <babab-issa.ngom@vd.ch>
  */
-public class CivilDataHandler extends AbstractAjaxHandler implements ApplicationContextAware{
+public class CivilDataHandler extends AbstractAjaxHandler implements ApplicationContextAware {
 
 	private CivilDataManager civilDataManager;
 
@@ -54,16 +55,17 @@ public class CivilDataHandler extends AbstractAjaxHandler implements Application
 		IndividuView individuView = civilDataManager.getIndividuView(tiersId);
 		// on récupère les infos concernant le tiers
 
-
 		AjaxResponse response = new AjaxResponseImpl();
 		List<Component> components = new ArrayList<Component>();
 
 		// on affiche un post-it que si c'est nécessaire
-		if (individuView!=null) {
-			components.add(new FicheCivil(individuView));
+
+		if (individuView != null) {
+
+			components.add((new FicheCivile(individuView)));
 		}
-		else{
-			components.add(new FicheCivil());
+		else {
+			components.add(new FicheCivile());
 		}
 
 		final String elementId = event.getParameters().get("elementId");
@@ -73,9 +75,15 @@ public class CivilDataHandler extends AbstractAjaxHandler implements Application
 		return response;
 	}
 
-	private class FicheCivil extends Table {
+	
+
+
+	private class FicheCivile extends Container {
 
 		private static final long serialVersionUID = 4554836788791187830L;
+
+
+
 		/**
 		 * Numero individu
 		 */
@@ -146,8 +154,9 @@ public class CivilDataHandler extends AbstractAjaxHandler implements Application
 		 */
 		private final String nationalite;
 
-		public FicheCivil(IndividuView individuView ) {
+		public FicheCivile(IndividuView individuView) {
 
+			super(Type.DIV);
 			Assert.isTrue(individuView != null);
 			this.numeroIndividu = individuView.getNumeroIndividu();
 			this.nom = individuView.getNom();
@@ -161,64 +170,57 @@ public class CivilDataHandler extends AbstractAjaxHandler implements Application
 			this.numeroAssureSocial = individuView.getNumeroAssureSocial();
 			this.ancienNumeroAVS = individuView.getAncienNumeroAVS();
 
-			TableRow topRow = new TableRow();
-			{
-				topRow.addAttribute("class", "top");
-				TableData data = new TableData(new SimpleText(""));
-				topRow.addTableData(data);
-			}
-			addTableRow(topRow);
-
-			TableRow numeroIndividuRow = createCivilTableRow(messageSourceAccessor.getMessage("label.numero.individu")+":     ",String.valueOf(numeroIndividu));
-			addTableRow(numeroIndividuRow);
-			TableRow nomRow = createCivilTableRow(messageSourceAccessor.getMessage("label.nom")+":     ",nom);
-			addTableRow(nomRow);
-			TableRow nonNaissanceRow = createCivilTableRow(messageSourceAccessor.getMessage("label.nom.naissance")+":     ",nomNaissance);
-			addTableRow(nonNaissanceRow);
-			TableRow prenomRow = createCivilTableRow(messageSourceAccessor.getMessage("label.prenom")+":     ",prenom);
-			addTableRow(prenomRow);
-			TableRow autresPrenomsRow = createCivilTableRow(messageSourceAccessor.getMessage("label.autres.prenoms")+":     ",autresPrenoms);
-			addTableRow(autresPrenomsRow);
-			TableRow sexeRow = createCivilTableRow(messageSourceAccessor.getMessage("label.sexe")+":     ",sexe.name());
-			addTableRow(sexeRow);
-			TableRow dateNaisssanceRow = createCivilTableRow(messageSourceAccessor.getMessage("label.date.naissance")+":     ",RegDateHelper.dateToDisplayString(RegDate.get(dateNaissance)));
-			addTableRow(dateNaisssanceRow);
-			TableRow etatCivilRow = createCivilTableRow(messageSourceAccessor.getMessage("label.etat.civil")+":     ",etatCivil);
-			addTableRow(etatCivilRow);
-			TableRow navs13Row = createCivilTableRow(messageSourceAccessor.getMessage("label.nouveau.numero.avs")+":     ",numeroAssureSocial);
-			addTableRow(navs13Row);
-			TableRow ancienAvsRow = createCivilTableRow(messageSourceAccessor.getMessage("label.ancien.numero.avs")+":     ",ancienNumeroAVS);
-			addTableRow(ancienAvsRow);
-			TableRow nationaliteRow = createCivilTableRow(messageSourceAccessor.getMessage("label.nationalite")+":     ",nationalite);
-			addTableRow(nationaliteRow);
 
 
-			TableRow bottomRow = new TableRow();
-			{
-				bottomRow.addAttribute("class", "bottom");
-				TableData data = new TableData(new SimpleText(""));
-				bottomRow.addTableData(data);
-			}
-			addTableRow(bottomRow);
+			createline(messageSourceAccessor.getMessage("label.numero.individu"), String
+					.valueOf(numeroIndividu));
+
+
+			createline(messageSourceAccessor.getMessage("label.nom"), nom);
+
+
+			createline(messageSourceAccessor.getMessage("label.nom.naissance"), nomNaissance);
+
+
+			createline(messageSourceAccessor.getMessage("label.prenom"), prenom);
+
+
+			createline(messageSourceAccessor.getMessage("label.autres.prenoms"),autresPrenoms);
+
+
+			createline(messageSourceAccessor.getMessage("label.sexe"), sexe.name());
+
+
+			createline(messageSourceAccessor.getMessage("label.date.naissance"),
+					RegDateHelper.dateToDisplayString(RegDate.get(dateNaissance)));
+
+
+			createline(messageSourceAccessor.getMessage("label.etat.civil"), etatCivil);
+
+
+			createline(messageSourceAccessor.getMessage("label.nouveau.numero.avs") ,	numeroAssureSocial);
+
+
+			createline(messageSourceAccessor.getMessage("label.ancien.numero.avs"),ancienNumeroAVS);
+
+
+			createline(messageSourceAccessor.getMessage("label.nationalite") , nationalite);
+
+
 		}
 
-		private TableRow createCivilTableRow(String name,String value) {
-			TableRow civilRow = new TableRow();
-			{
-				civilRow.addAttribute("class", "middle");
-				TableData civilName = new TableData(new SimpleText(name));
-				civilName.addAttribute("nowrap", "nowrap");
-				TableData civilValue = new TableData(new SimpleText(value));
-				civilValue.addAttribute("nowrap", "nowrap");
-				civilValue.addAttribute("class", "right");
-				civilRow.addTableData(civilName);
-				civilRow.addTableData(civilValue);
-			}
-			return civilRow;
+		private void createline(String name, String value) {
+
+			this.addComponent(new SimpleText(name+" : "));
+			this.addComponent(new BoldComponent(value));
+			this.addComponent(new BreakLineComponent());
+
+
 		}
 
-		public FicheCivil() {
-
+		public FicheCivile() {
+			super(Type.DIV);
+			addAttribute("width", "auto");
 			this.numeroIndividu = null;
 			this.nom = null;
 			this.nomNaissance = null;
@@ -231,32 +233,16 @@ public class CivilDataHandler extends AbstractAjaxHandler implements Application
 			this.ancienNumeroAVS = null;
 
 
-			TableRow topRow = new TableRow();
-			{
-				topRow.addAttribute("class", "top");
-				TableData data = new TableData(new SimpleText(""));
-				topRow.addTableData(data);
-			}
-			addTableRow(topRow);
 
-			TableRow middleRow = new TableRow();
-			{
-				middleRow.addAttribute("class", "middle");
-				TableData data = new TableData(new SimpleText(messageSourceAccessor.getMessage("label.nonHabitant")));
-				middleRow.addTableData(data);
-			}
-			addTableRow(middleRow);
 
-			TableRow bottomRow = new TableRow();
-			{
-				bottomRow.addAttribute("class", "bottom");
-				TableData data = new TableData(new SimpleText(""));
-				bottomRow.addTableData(data);
-			}
-			addTableRow(bottomRow);
+			this.addComponent(new SimpleText(messageSourceAccessor.getMessage("label.nonHabitant")));
+
+
 		}
 
+
+
+
+
 	}
-
-
 }

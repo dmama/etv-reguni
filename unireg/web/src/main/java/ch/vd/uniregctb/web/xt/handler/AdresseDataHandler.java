@@ -14,9 +14,7 @@ import org.springmodules.xt.ajax.AjaxResponseImpl;
 import org.springmodules.xt.ajax.action.RemoveContentAction;
 import org.springmodules.xt.ajax.action.ReplaceContentAction;
 import org.springmodules.xt.ajax.component.Component;
-import org.springmodules.xt.ajax.component.Table;
-import org.springmodules.xt.ajax.component.TableData;
-import org.springmodules.xt.ajax.component.TableRow;
+import org.springmodules.xt.ajax.component.Container;
 
 import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.utils.Assert;
@@ -32,7 +30,7 @@ import ch.vd.uniregctb.web.xt.component.SimpleText;
  *
  * @author Baba Issa Ngom <babab-issa.ngom@vd.ch>
  */
-public class AdresseDataHandler extends AbstractAjaxHandler implements ApplicationContextAware{
+public class AdresseDataHandler extends AbstractAjaxHandler implements ApplicationContextAware {
 
 	private AdresseDataManager adresseDataManager;
 
@@ -63,10 +61,10 @@ public class AdresseDataHandler extends AbstractAjaxHandler implements Applicati
 		List<Component> components = new ArrayList<Component>();
 
 		// on affiche un post-it que si c'est nécessaire
-		if (adresseView!=null) {
+		if (adresseView != null) {
 			components.add(new FicheAdresse(adresseView));
 		}
-		else{
+		else {
 			components.add(new FicheAdresse());
 		}
 
@@ -77,10 +75,7 @@ public class AdresseDataHandler extends AbstractAjaxHandler implements Applicati
 		return response;
 	}
 
-	private class FicheAdresse extends Table {
-
-
-
+	private class FicheAdresse extends Container {
 
 		private final String rue;
 
@@ -95,97 +90,49 @@ public class AdresseDataHandler extends AbstractAjaxHandler implements Applicati
 		 */
 		private AdresseGenerique.Source source;
 
-		public FicheAdresse(AdresseView adresseView ) throws InfrastructureException {
+		public FicheAdresse(AdresseView adresseView) throws InfrastructureException {
 
+			super(Type.DIV);
 			Assert.isTrue(adresseView != null);
-			 this.complements = adresseView.getComplements();
-			 this.rue = adresseView.getRue();
-			 this.localite = adresseView.getLocalite();
-			 this.paysOFS = adresseView.getPaysOFS();
-			 this.source = adresseView.getSource();
+			this.complements = adresseView.getComplements();
+			this.rue = adresseView.getRue();
+			this.localite = adresseView.getLocalite();
+			this.paysOFS = adresseView.getPaysOFS();
+			this.source = adresseView.getSource();
 
+			this.addComponent(new BoldComponent("Dernière adresse Vaudoise"));
+			this.addComponent(new BreakLineComponent());
+			this.addComponent(new SimpleText("Source : "));
+			this.addComponent(new BoldComponent((source.name())));
 
-			TableRow topRow = new TableRow();
-			{
-				topRow.addAttribute("class", "top");
-				TableData data = new TableData(new SimpleText("Dernière adresse Vaudoise"));
-				topRow.addTableData(data);
-			}
-			addTableRow(topRow);
-
-
-			TableRow complementRow = createAdresseTableRow(complements);
-			addTableRow(complementRow);
-			TableRow rueRow = createAdresseTableRow(rue);
-			addTableRow(rueRow);
-			TableRow localiteRow = createAdresseTableRow(localite);
-			addTableRow(localiteRow);
+			this.addComponent(new SimpleText(complements));
+			this.addComponent(new BreakLineComponent());
+			this.addComponent(new SimpleText(rue));
+			this.addComponent(new BreakLineComponent());
+			this.addComponent(new SimpleText(localite));
+			this.addComponent(new BreakLineComponent());
 			String pays = serviceInfra.getPays(paysOFS).getNomMinuscule();
+			this.addComponent(new SimpleText(pays));
 
-			TableRow paysRow = createAdresseTableRow(pays);
-			addTableRow(paysRow);
-			TableRow sourceRow = createAdresseTableRow(source.name());
-			addTableRow(sourceRow);
 
-			TableRow bottomRow = new TableRow();
-			{
-				bottomRow.addAttribute("class", "bottom");
-				TableData data = new TableData(new SimpleText(""));
-				bottomRow.addTableData(data);
-			}
-			addTableRow(bottomRow);
-		}
-
-		private TableRow createAdresseTableRow(String value) {
-			TableRow adresseRow = new TableRow();
-			{
-				adresseRow.addAttribute("class", "middle");
-				TableData AdresseValue = new TableData(new SimpleText(value));
-				AdresseValue.addAttribute("nowrap", "nowrap");
-				AdresseValue.addAttribute("class", "middle");
-				adresseRow.addTableData(AdresseValue);
-			}
-			return adresseRow;
 		}
 
 		public FicheAdresse() {
 
-			 this.rue=null;
+			super(Type.DIV);
 
-			  this.complements=null;
+			this.rue = null;
 
-			  this.localite=null;
+			this.complements = null;
 
-			  this.paysOFS=null;
+			this.localite = null;
 
+			this.paysOFS = null;
 
+			this.addComponent(new SimpleText(messageSourceAccessor.getMessage("label.nonHabitant")));
 
-			TableRow topRow = new TableRow();
-			{
-				topRow.addAttribute("class", "top");
-				TableData data = new TableData(new SimpleText(""));
-				topRow.addTableData(data);
-			}
-			addTableRow(topRow);
-
-			TableRow middleRow = new TableRow();
-			{
-				middleRow.addAttribute("class", "middle");
-				TableData data = new TableData(new SimpleText(messageSourceAccessor.getMessage("label.nonHabitant")));
-				middleRow.addTableData(data);
-			}
-			addTableRow(middleRow);
-
-			TableRow bottomRow = new TableRow();
-			{
-				bottomRow.addAttribute("class", "bottom");
-				TableData data = new TableData(new SimpleText(""));
-				bottomRow.addTableData(data);
-			}
-			addTableRow(bottomRow);
 		}
 
 	}
-
 
 }

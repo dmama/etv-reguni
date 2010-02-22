@@ -58,7 +58,8 @@ public class AdresseServiceImpl implements AdresseService {
 	private static final String SUFFIXE_DEFUNT_NEUTRE = ", défunt(e)";
 
 	public static final String POUR_ADRESSE = "p.a.";
-	private static final Pattern POUR_ADRESSE_PATTERN = Pattern.compile("^(pa|p/a|pa\\.|p\\.a|p\\.a\\.|chez|c/|c/\\.|co|c/o|co\\.|c/ems)[ :\t]", Pattern.CASE_INSENSITIVE);
+	private static final Pattern POUR_ADRESSE_PATTERN = Pattern.compile(
+			"^(pa|p/a|pa\\.|p\\.a|p\\.a\\.|chez|c/|c/\\.|co|c/o|co\\.|c/ems)[ :\t]", Pattern.CASE_INSENSITIVE);
 
 	/**
 	 * Profondeur maximale d'appel récursive dans la résolution des adresses (pour détecter les boucles de résolutions d'adresses)
@@ -372,7 +373,7 @@ public class AdresseServiceImpl implements AdresseService {
 		final Adresse adresseCourrier = adressesCourantes.courrier;
 
 		if (adresseCourrier != null) {
-			fillAdresseEnvoi(adresse, new AdresseCivileAdapter(adresseCourrier, false,serviceInfra));
+			fillAdresseEnvoi(adresse, new AdresseCivileAdapter(adresseCourrier, false, serviceInfra));
 		}
 
 		return adresse;
@@ -391,10 +392,11 @@ public class AdresseServiceImpl implements AdresseService {
 			/* Récupère la vue historique complète du ménage (date = null) */
 			final PersonnePhysique principal = getPrincipalPourAdresse(menageCommun, null);
 
-			if (principal != null) { //cas des couple annulé
+			if (principal != null) { // cas des couple annulé
 				// Cas de la tutelle, curatelle et du conseil légal
 				final Source typeSource = adresseCourrier.getSource();
-				final TypeAdresseRepresentant typeAdresseRepresentant = TypeAdresseRepresentant.getTypeAdresseRepresentantFromSource(typeSource);
+				final TypeAdresseRepresentant typeAdresseRepresentant = TypeAdresseRepresentant
+						.getTypeAdresseRepresentantFromSource(typeSource);
 				if (typeAdresseRepresentant != null) {
 					final Tiers representant = getRepresentant(principal, typeAdresseRepresentant, date);
 					Assert.notNull(representant);
@@ -688,7 +690,7 @@ public class AdresseServiceImpl implements AdresseService {
 		}
 		else if (tiers instanceof Entreprise) {
 			final Entreprise entreprise = (Entreprise) tiers;
-			line = POUR_ADRESSE + " " +getRaisonSociale(entreprise);
+			line = POUR_ADRESSE + " " + getRaisonSociale(entreprise);
 		}
 		else {
 			throw new NotImplementedException("Type de tiers [" + tiers.getNatureTiers() + "] non-implémenté");
@@ -780,7 +782,7 @@ public class AdresseServiceImpl implements AdresseService {
 			return nomPays;
 		}
 		catch (InfrastructureException e) {
-			throw new RuntimeException("Impossible de trouver le pays avec le numéro Ofs = "+noOfsPays);
+			throw new RuntimeException("Impossible de trouver le pays avec le numéro Ofs = " + noOfsPays);
 		}
 	}
 
@@ -823,7 +825,8 @@ public class AdresseServiceImpl implements AdresseService {
 	}
 
 	/**
-	 * @return <b>vrai</b> si le complément d'adresse spécifiée commence avec un "p.a.", un "chez", un "c/o", ou tout autre variantes reconnues.
+	 * @return <b>vrai</b> si le complément d'adresse spécifiée commence avec un "p.a.", un "chez", un "c/o", ou tout autre variantes
+	 *         reconnues.
 	 */
 	public static boolean isPrefixedByPourAdresse(final String complement) {
 		return POUR_ADRESSE_PATTERN.matcher(complement).find();
@@ -947,21 +950,24 @@ public class AdresseServiceImpl implements AdresseService {
 		/*
 		 * Si le tiers concerné est sous tutelle, on surchage les adresses courrier avec les adresses représentation du tuteur
 		 */
-		final List<AdresseGenerique> adressesTuteur = getAdressesTuteurOuCurateurHisto(tiers, TypeAdresseRepresentant.TUTELLE, callDepth + 1);
+		final List<AdresseGenerique> adressesTuteur = getAdressesTuteurOuCurateurHisto(tiers, TypeAdresseRepresentant.TUTELLE,
+				callDepth + 1);
 		adresses.courrier = AdresseMixer.override(adresses.courrier, adressesTuteur, null, null);
 
 		/*
 		 * Si le tiers concerné est sous curatelle, on surchage les adresses courrier avec les adresses représentation du curateur
 		 */
 
-		final List<AdresseGenerique> adressesCuratelle = getAdressesTuteurOuCurateurHisto(tiers, TypeAdresseRepresentant.CURATELLE, callDepth + 1);
+		final List<AdresseGenerique> adressesCuratelle = getAdressesTuteurOuCurateurHisto(tiers, TypeAdresseRepresentant.CURATELLE,
+				callDepth + 1);
 		adresses.courrier = AdresseMixer.override(adresses.courrier, adressesCuratelle, null, null);
 
 		/*
 		 * Si le tiers concerné est représenté, on surchage les adresses courrier avec les adresses du representant
 		 */
 
-		final List<AdresseGenerique> adressesRepresentation = getAdressesTuteurOuCurateurHisto(tiers, TypeAdresseRepresentant.CURATELLE, callDepth + 1);
+		final List<AdresseGenerique> adressesRepresentation = getAdressesTuteurOuCurateurHisto(tiers, TypeAdresseRepresentant.CURATELLE,
+				callDepth + 1);
 		adresses.courrier = AdresseMixer.override(adresses.courrier, adressesCuratelle, null, null);
 
 		return adresses;
@@ -1127,7 +1133,8 @@ public class AdresseServiceImpl implements AdresseService {
 	 *
 	 * @return l'adresse demandée, ou <b>null</b> si le tiers n'est pas sous tutelle.
 	 */
-	private AdresseGenerique getAdresseRepresentant(Tiers tiers, RegDate date, TypeAdresseRepresentant typeAdresseRepresentant, int callDepth) throws AdressesResolutionException {
+	private AdresseGenerique getAdresseRepresentant(Tiers tiers, RegDate date, TypeAdresseRepresentant typeAdresseRepresentant,
+			int callDepth) throws AdressesResolutionException {
 		final AdresseGenerique adresseTuteur;
 
 		if (tiers instanceof MenageCommun) {
@@ -1147,7 +1154,8 @@ public class AdresseServiceImpl implements AdresseService {
 	 *
 	 * @return l'adresse demandée, ou <b>null</b> si le principal du ménage n'est pas sous tutelle.
 	 */
-	private AdresseGenerique getAdresseRepresentantPourMenage(MenageCommun menage, RegDate date, TypeAdresseRepresentant typeAdresseRepresentant, int callDepth) throws AdressesResolutionException {
+	private AdresseGenerique getAdresseRepresentantPourMenage(MenageCommun menage, RegDate date,
+			TypeAdresseRepresentant typeAdresseRepresentant, int callDepth) throws AdressesResolutionException {
 
 		final EnsembleTiersCouple ensemble = tiersService.getEnsembleTiersCouple(menage, date);
 		final PersonnePhysique principal = getPrincipalPourAdresse(menage, date);
@@ -1181,7 +1189,7 @@ public class AdresseServiceImpl implements AdresseService {
 		final AdresseGenerique courrierConjoint = getAdresseFiscale(conjoint, TypeAdresseTiers.COURRIER, date, true, callDepth + 1);
 
 		// On ignore le conjoint s'il est lui-même sous tutelle
-		if (!Source.TUTELLE.equals(courrierConjoint.getSource()) && !Source.CURATELLE.equals(courrierConjoint.getSource()) ) {
+		if (!Source.TUTELLE.equals(courrierConjoint.getSource()) && !Source.CURATELLE.equals(courrierConjoint.getSource())) {
 			adresse = new AdresseGeneriqueAdapter(courrierConjoint, Source.CONJOINT, false);
 		}
 
@@ -1231,14 +1239,16 @@ public class AdresseServiceImpl implements AdresseService {
 	 *            le tiers potentiellement sous mis sous tutelle.
 	 * @return les adresses demandées, ou une liste vide si le tiers n'a jamais été sous tutelle.
 	 */
-	private List<AdresseGenerique> getAdressesTuteurOuCurateurHisto(Tiers tiers, TypeAdresseRepresentant typeAdresseRepresentant, int callDepth) throws AdressesResolutionException {
+	private List<AdresseGenerique> getAdressesTuteurOuCurateurHisto(Tiers tiers, TypeAdresseRepresentant typeAdresseRepresentant,
+			int callDepth) throws AdressesResolutionException {
 
-		Assert.isTrue(TypeAdresseRepresentant.TUTELLE.equals(typeAdresseRepresentant) || TypeAdresseRepresentant.CURATELLE.equals(typeAdresseRepresentant));
+		Assert.isTrue(TypeAdresseRepresentant.TUTELLE.equals(typeAdresseRepresentant)
+				|| TypeAdresseRepresentant.CURATELLE.equals(typeAdresseRepresentant));
 
 		final List<AdresseGenerique> adressesTuteur;
 
 		if (tiers instanceof MenageCommun) {
-			adressesTuteur = getAdressesTuteurOuCurateurHisto((MenageCommun) tiers, typeAdresseRepresentant,  callDepth + 1);
+			adressesTuteur = getAdressesTuteurOuCurateurHisto((MenageCommun) tiers, typeAdresseRepresentant, callDepth + 1);
 		}
 		else {
 			adressesTuteur = getAdressesRepresentantHisto(tiers, typeAdresseRepresentant, callDepth + 1);
@@ -1254,9 +1264,11 @@ public class AdresseServiceImpl implements AdresseService {
 	 *
 	 * @return les adresses demandées, ou une liste vide si le principal du ménage n'a jamais été sous tutelle.
 	 */
-	private List<AdresseGenerique> getAdressesTuteurOuCurateurHisto(final MenageCommun menage, TypeAdresseRepresentant typeAdresseRepresentant, int callDepth) throws AdressesResolutionException {
+	private List<AdresseGenerique> getAdressesTuteurOuCurateurHisto(final MenageCommun menage,
+			TypeAdresseRepresentant typeAdresseRepresentant, int callDepth) throws AdressesResolutionException {
 
-		Assert.isTrue(TypeAdresseRepresentant.TUTELLE.equals(typeAdresseRepresentant) || TypeAdresseRepresentant.CURATELLE.equals(typeAdresseRepresentant));
+		Assert.isTrue(TypeAdresseRepresentant.TUTELLE.equals(typeAdresseRepresentant)
+				|| TypeAdresseRepresentant.CURATELLE.equals(typeAdresseRepresentant));
 
 		/* Récupère la vue historique complète du ménage (date = null) */
 		final EnsembleTiersCouple ensemble = tiersService.getEnsembleTiersCouple(menage, null);
@@ -1270,8 +1282,7 @@ public class AdresseServiceImpl implements AdresseService {
 		/*
 		 * On récupère l'historique des adresses 'tutelle' du principal
 		 */
-		final List<AdresseGenerique> adressesTuteur = getAdressesRepresentantHisto(principal, typeAdresseRepresentant,
-				callDepth + 1);
+		final List<AdresseGenerique> adressesTuteur = getAdressesRepresentantHisto(principal, typeAdresseRepresentant, callDepth + 1);
 		if (adressesTuteur.isEmpty()) {
 			// pas de tutelle
 			return adressesTuteur;
@@ -1293,7 +1304,8 @@ public class AdresseServiceImpl implements AdresseService {
 		final AdressesFiscalesHisto adressesConjoint = getAdressesFiscalHisto(conjoint, callDepth + 1);
 		try {
 			verifieCoherenceAdresses(adressesConjoint.courrier, "Adresse de courrier", conjoint);
-		} catch (DonneesCivilesException e) {
+		}
+		catch (DonneesCivilesException e) {
 			LOGGER.warn(e.getMessage(), e);
 		}
 
@@ -1341,7 +1353,8 @@ public class AdresseServiceImpl implements AdresseService {
 				final AdressesFiscalesHisto adressesRepresentant = getAdressesFiscalHisto(representant, callDepth + 1);
 				try {
 					verifieCoherenceAdresses(adressesRepresentant.representation, "Adresses de représentation", representant);
-				} catch (DonneesCivilesException e) {
+				}
+				catch (DonneesCivilesException e) {
 					LOGGER.warn(e.getMessage(), e);
 				}
 				final List<AdresseGenerique> adressesRepresentation = AdresseMixer.extract(adressesRepresentant.representation,
@@ -1415,7 +1428,7 @@ public class AdresseServiceImpl implements AdresseService {
 		// 1ère priorité : l'adresse du tuteur
 		if (adresse == null && TypeAdresseTiers.COURRIER.equals(type)) {
 			// Note : seule la tutelle provoque une substitution de l'adresse, la curatelle n'est pas concernée.
-			// TODO (fnr) note ci-dessus en contradiction avec le cas JIRA  UNIREG-1329
+			// TODO (fnr) note ci-dessus en contradiction avec le cas JIRA UNIREG-1329
 			final AdresseGenerique adresseTuteur = getAdresseRepresentant(tiers, date, TypeAdresseRepresentant.TUTELLE, callDepth + 1);
 			if (adresseTuteur != null) {
 				adresse = adresseTuteur;
@@ -1432,7 +1445,8 @@ public class AdresseServiceImpl implements AdresseService {
 
 		// [UNIREG-1329] 1.6 eme priorité : l'adresse du curateur
 		if (adresse == null && TypeAdresseTiers.REPRESENTATION.equals(type)) {
-			final AdresseGenerique adresseRepresentant = getAdresseRepresentant(tiers, date, TypeAdresseRepresentant.REPRESENTATION, callDepth + 1);
+			final AdresseGenerique adresseRepresentant = getAdresseRepresentant(tiers, date, TypeAdresseRepresentant.REPRESENTATION,
+					callDepth + 1);
 			if (adresseRepresentant != null) {
 				adresse = adresseRepresentant;
 			}
@@ -1462,7 +1476,8 @@ public class AdresseServiceImpl implements AdresseService {
 			if (tiers instanceof MenageCommun) {
 				// Pour le cas du ménage commun, les adresses du principal sont utilisées comme premier défaut
 				final MenageCommun menage = (MenageCommun) tiers;
-				final PersonnePhysique principal = getPrincipalPourAdresse(menage, null); // date nulle -> on s'intéresse à la vue historique du couple
+				final PersonnePhysique principal = getPrincipalPourAdresse(menage, null); // date nulle -> on s'intéresse à la vue
+																							// historique du couple
 				AdresseTiers adressePrincipal = TiersHelper.getAdresseTiers(principal, type, date);
 				adresse = surchargeAdresseTiers(tiers, adresse, adressePrincipal, callDepth + 1);
 			}
@@ -1495,11 +1510,11 @@ public class AdresseServiceImpl implements AdresseService {
 	}
 
 	/**
-	 * Détermine le tiers principal pour le calcul des adresses du ménage commun.
-	 * Selon [UNIREG-771] et comme intégré plus tard dans la spécification, le principal du
-	 * couple ne sera pas toujours considéré comme principal pour le calcul des adresses.
+	 * Détermine le tiers principal pour le calcul des adresses du ménage commun. Selon [UNIREG-771] et comme intégré plus tard dans la
+	 * spécification, le principal du couple ne sera pas toujours considéré comme principal pour le calcul des adresses.
 	 *
-	 * @param menageCommun le ménage commun
+	 * @param menageCommun
+	 *            le ménage commun
 	 * @param date
 	 * @return
 	 */
@@ -1508,12 +1523,13 @@ public class AdresseServiceImpl implements AdresseService {
 		final PersonnePhysique principal = ensemble.getPrincipal();
 		PersonnePhysique principalOuVaudois = principal;
 		/*
-		 *  [UNIREG-771] : dans le cas d’un contribuable couple, l’adresse de domicile et l’adresse de courrier sont celles de l’individu principal
-		 *  sauf si le contribuable principal quitte le canton ou la Suisse alors que le contribuable secondaire reste dans le canton.
+		 * [UNIREG-771] : dans le cas d’un contribuable couple, l’adresse de domicile et l’adresse de courrier sont celles de l’individu
+		 * principal sauf si le contribuable principal quitte le canton ou la Suisse alors que le contribuable secondaire reste dans le
+		 * canton.
 		 */
 		if (principal != null && !principal.isHabitant()) {
 			final PersonnePhysique conjoint = ensemble.getConjoint(principal);
-			if (conjoint != null  && conjoint.isHabitant()) {
+			if (conjoint != null && conjoint.isHabitant()) {
 				principalOuVaudois = conjoint;
 			}
 		}
@@ -1639,7 +1655,9 @@ public class AdresseServiceImpl implements AdresseService {
 			final MenageCommun menage = (MenageCommun) tiers;
 			final PersonnePhysique principal = getPrincipalPourAdresse(menage, date);
 
-			if (principal != null && principal.getNumeroIndividu() != null && principal.getNumeroIndividu() != 0) { //le principal peut être null dans le cas d'un mariage annulé
+			if (principal != null && principal.getNumeroIndividu() != null && principal.getNumeroIndividu() != 0) { // le principal peut
+																													// être null dans le cas
+																													// d'un mariage annulé
 				adressesCiviles = getAdressesCiviles(principal, date);
 			}
 			else {
@@ -1697,7 +1715,9 @@ public class AdresseServiceImpl implements AdresseService {
 			/* Récupère la vue historique complète du ménage (date = null) */
 			final PersonnePhysique principal = getPrincipalPourAdresse(menage, null);
 
-			if (principal != null && principal.getNumeroIndividu() != null && principal.getNumeroIndividu() != 0) { //le principal peut être null dans le cas d'un couple annulé
+			if (principal != null && principal.getNumeroIndividu() != null && principal.getNumeroIndividu() != 0) { // le principal peut
+																													// être null dans le cas
+																													// d'un couple annulé
 				adressesCiviles = getAdressesCivilesHisto(principal);
 			}
 			else {
@@ -1802,7 +1822,7 @@ public class AdresseServiceImpl implements AdresseService {
 			Assert.notNull(adressesCiviles);
 
 			final Adresse adresseCivile = adressesCiviles.ofType(type);
-			surcharge = new AdresseCivileAdapter(adresseCivile, debut, fin, AdresseGenerique.Source.FISCALE, false,serviceInfra);
+			surcharge = new AdresseCivileAdapter(adresseCivile, debut, fin, AdresseGenerique.Source.FISCALE, false, serviceInfra);
 		}
 		else if (adresseSurchargee instanceof AdresseAutreTiers) {
 
@@ -1837,7 +1857,8 @@ public class AdresseServiceImpl implements AdresseService {
 	/**
 	 * Ajoute toutes les adresses civiles existantes entre la date de début et de celle de fin à la liste des adresses par défaut.
 	 */
-	private boolean fillAdressesCivilesSlice(List<AdresseGenerique> adressesDefault, RegDate debut, RegDate fin, List<Adresse> adresseCiviles) {
+	private boolean fillAdressesCivilesSlice(List<AdresseGenerique> adressesDefault, RegDate debut, RegDate fin,
+			List<Adresse> adresseCiviles) {
 		boolean donneesCivilesExceptionCaught = false;
 		for (Adresse adresse : adresseCiviles) {
 			final RegDate adresseDebut = adresse.getDateDebutValidite();
@@ -1848,8 +1869,9 @@ public class AdresseServiceImpl implements AdresseService {
 				RegDate debutValidite = RegDateHelper.maximum(adresseDebut, debut, NullDateBehavior.EARLIEST);
 				RegDate finValidite = RegDateHelper.minimum(adresseFin, fin, NullDateBehavior.LATEST);
 				try {
-					adressesDefault.add(new AdresseCivileAdapter(adresse, debutValidite, finValidite, true,serviceInfra));
-				} catch (DonneesCivilesException e) {
+					adressesDefault.add(new AdresseCivileAdapter(adresse, debutValidite, finValidite, true, serviceInfra));
+				}
+				catch (DonneesCivilesException e) {
 					// [UNIREG-1120] renvoyer que la dernière adresse valide
 					LOGGER.warn(e.getMessage(), e);
 					donneesCivilesExceptionCaught = true;
@@ -1904,13 +1926,13 @@ public class AdresseServiceImpl implements AdresseService {
 		for (Adresse adresse : adressesCiviles) {
 			try {
 				adresses.add(new AdresseCivileAdapter(adresse, false, serviceInfra));
-			} catch (DonneesCivilesException e) {
+			}
+			catch (DonneesCivilesException e) {
 				// [UNIREG-1120] renvoyer que la dernière adresse valide
 				LOGGER.warn(e.getMessage(), e);
 				donneesCivilesExceptionCaught = true;
 			}
 		}
-
 
 		/*
 		 * Bouche tous les éventuels trous avec les adresses par défaut
@@ -1947,7 +1969,7 @@ public class AdresseServiceImpl implements AdresseService {
 
 		// [UNIREG-1120] renvoyer que la dernière adresse valide
 		if (donneesCivilesExceptionCaught) {
-			adresses = adresses.subList(adresses.size() -1 , adresses.size());
+			adresses = adresses.subList(adresses.size() - 1, adresses.size());
 		}
 
 		return adresses;
@@ -2108,7 +2130,6 @@ public class AdresseServiceImpl implements AdresseService {
 		return list;
 	}
 
-
 	/**
 	 * Calcul le nom courrier
 	 *
@@ -2129,25 +2150,28 @@ public class AdresseServiceImpl implements AdresseService {
 		}
 		String nom = individu.getDernierHistoriqueIndividu().getNom();
 		if (prenom != null) {
-			prenomNom = prenomNom + " "  + nom;
+			prenomNom = prenomNom + " " + nom;
 		}
 
 		return prenomNom;
 	}
 
-
-	public AdresseGenerique getDerniereAdresseVaudoise(Tiers tiers, TypeAdresseTiers type) throws AdressesResolutionException, InfrastructureException {
+	public AdresseGenerique getDerniereAdresseVaudoise(Tiers tiers, TypeAdresseTiers type) throws AdressesResolutionException,
+			InfrastructureException {
 		AdressesFiscalesHisto adressesHistoriques = getAdressesFiscalHisto(tiers);
 		List<AdresseGenerique> listeAdresse = adressesHistoriques.ofType(type);
-		for (AdresseGenerique adresseGenerique : listeAdresse) {
-			Commune commune = serviceInfra.getCommuneByAdresse(adresseGenerique);
-			if (commune.isVaudoise()) {
-				return adresseGenerique;
+		if (listeAdresse != null) {
+
+			// Tri des adresses
+			Collections.sort(listeAdresse, new DateRangeComparator<AdresseGenerique>());
+			for (AdresseGenerique adresseGenerique : listeAdresse) {
+				Commune commune = serviceInfra.getCommuneByAdresse(adresseGenerique);
+				if (commune.isVaudoise()) {
+					return adresseGenerique;
+				}
 			}
 		}
 		return null;
 	}
-
-
 
 }
