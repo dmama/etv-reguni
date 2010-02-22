@@ -2224,10 +2224,15 @@ public class AdresseServiceImpl implements AdresseService {
 	public AdresseGenerique getDerniereAdresseVaudoise(Tiers tiers, TypeAdresseTiers type) throws InfrastructureException, AdresseException {
 		AdressesFiscalesHisto adressesHistoriques = getAdressesFiscalHisto(tiers,false);
 		List<AdresseGenerique> listeAdresse = adressesHistoriques.ofType(type);
-		for (AdresseGenerique adresseGenerique : listeAdresse) {
-			Commune commune = serviceInfra.getCommuneByAdresse(adresseGenerique);
-			if (commune.isVaudoise()) {
-				return adresseGenerique;
+		if (listeAdresse != null) {
+
+			// Tri des adresses
+			Collections.sort(listeAdresse, new DateRangeComparator<AdresseGenerique>());
+			for (AdresseGenerique adresseGenerique : listeAdresse) {
+				Commune commune = serviceInfra.getCommuneByAdresse(adresseGenerique);
+				if (commune.isVaudoise()) {
+					return adresseGenerique;
+				}
 			}
 		}
 		return null;
