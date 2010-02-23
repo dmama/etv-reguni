@@ -3,6 +3,7 @@ package ch.vd.uniregctb.role;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -16,9 +17,7 @@ import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import ch.vd.infrastructure.service.InfrastructureException;
-import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.civil.model.EnumAttributeIndividu;
 import ch.vd.uniregctb.adresse.AdresseService;
@@ -46,7 +45,9 @@ import ch.vd.uniregctb.role.ProduireRolesResults.InfoCommune;
 import ch.vd.uniregctb.role.ProduireRolesResults.InfoContribuable;
 import ch.vd.uniregctb.role.ProduireRolesResults.InfoFor;
 import ch.vd.uniregctb.role.ProduireRolesResults.InfoContribuable.TypeContribuable;
+import ch.vd.uniregctb.role.ProduireRolesResults.InfoContribuable.TypeAssujettissement;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalRevenuFortune;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -327,9 +328,12 @@ public class ProduireRolesCommuneProcessor {
 	 */
 	private void processContribuable(int anneePeriode, ProduireRolesResults rapport, Contribuable ctb) {
 
-		rapport.ctbsTraites++;
+		++ rapport.ctbsTraites;
 
-		if (ctb.validate().hasErrors()) {
+		if (tiersService.isSourcierGris(ctb, RegDate.get(anneePeriode, 12, 31))) {
+			rapport.addCtbIgnoreSourcierGris(ctb);
+		}
+		else if (ctb.validate().hasErrors()) {
 			rapport.addErrorCtbInvalide(ctb);
 		}
 		else {
@@ -337,11 +341,6 @@ public class ProduireRolesCommuneProcessor {
 			// ajoute les assujettissements du contribuable de l'année spécifiée dans le rapprot
 			try {
 				processAssujettissements(anneePeriode, ctb, rapport);
-
-				// ajoute les deltas d'assujettissements entre l'année précédente et courante
-				final ProduireRolesResults rapportAnneePrecedente = new ProduireRolesResults(anneePeriode - 1, RegDate.get());
-				processAssujettissements(anneePeriode - 1, ctb, rapportAnneePrecedente);
-				processDeltaAssujettissements(anneePeriode, ctb, rapportAnneePrecedente, rapport);
 			}
 			catch (TraitementException e) {
 				// ok, rien à faire, l'erreur a déjà été renseignée dans le rapport
@@ -360,54 +359,43 @@ public class ProduireRolesCommuneProcessor {
 	/**
 	 * Ajoute les détails du ou des assujettissements du contribuable spécifié durant la période fiscale spécifiée au rapport.
 	 *
-	 * @param anneePeriode
-	 *            la période fiscale dont on veut déterminer l'assujettissement
-	 * @param contribuable
-	 *            le contribuable en question
-	 * @param rapport
-	 *            le rapport à compléter
-	 * @throws TraitementException
-	 *             en cas ayant conduit à interrompre le traitement (automatiqement renseigné dans le rapport)
+	 * @param anneePeriode la période fiscale dont on veut déterminer l'assujettissement
+	 * @param contribuable le contribuable en question
+	 * @param rapport le rapport à compléter
+	 * @throws TraitementException en cas ayant conduit à interrompre le traitement (automatiqement renseigné dans le rapport)
 	 */
 	private void processAssujettissements(int anneePeriode, Contribuable contribuable, ProduireRolesResults rapport) throws TraitementException {
 
-		final DecompositionForsAnneeComplete fors = new DecompositionForsAnneeComplete(contribuable, anneePeriode);
+		final AssujettissementContainer assujettissementContainer = new AssujettissementContainer(contribuable, anneePeriode, rapport);
 
-		// détermine les assujettissements du contribuable
-		try {
-			final List<Assujettissement> assujettissements = Assujettissement.determine(fors);
-
-			// traite les assujettissements
-			if (assujettissements != null) {
-				for (Assujettissement a : assujettissements) {
-					processAssujettissement(a, contribuable, rapport, anneePeriode);
-				}
-			}
-			else if (!fors.isFullyEmpty()) {
-				processNonAssujettissement(fors, rapport, anneePeriode);
+		// traite les assujettissements
+		final List<Assujettissement> assujettissements = assujettissementContainer.getAssujettissementAnneePeriode();
+		if (assujettissements != null) {
+			for (Assujettissement a : assujettissements) {
+				processAssujettissement(a, assujettissementContainer);
 			}
 		}
-		catch (AssujettissementException e) {
-			rapport.addErrorErreurAssujettissement(contribuable, e.getMessage());
-			throw new TraitementException();
+		else {
+
+			final DecompositionForsAnneeComplete fors = assujettissementContainer.getForsAnneePeriode();
+			if (!fors.isFullyEmpty()) {
+				// pas d'assujettissement, mais des fors quand-même... A priori ils se terminent dans la période...
+				processNonAssujettissement(fors, assujettissementContainer);
+			}
 		}
 	}
 
 	/**
 	 * Ajoute les détails de l'assujettissements du contribuable spécifié au rapport.
 	 *
-	 * @param assujet
-	 *            l'assujettissement à traiter
-	 * @param contribuable
-	 *            le contribuable en question
-	 * @param rapport
-	 *            le rapport à compléter
-	 * @param annee
-	 * @throws TraitementException
-	 *             en cas ayant conduit à interrompre le traitement (automatiqement renseigné dans le rapport)
+	 * @param assujet l'assujettissement à traiter
+	 * @param assujettissementContainer cache pour les assujettissements calculés sur la période courante et la précédente
+	 * @throws TraitementException en cas ayant conduit à interrompre le traitement (automatiqement renseigné dans le rapport)
 	 */
-	protected void processAssujettissement(Assujettissement assujet, Contribuable contribuable, ProduireRolesResults rapport, int annee) throws TraitementException {
+	protected void processAssujettissement(Assujettissement assujet, AssujettissementContainer assujettissementContainer) throws TraitementException {
 
+		final Contribuable contribuable = assujettissementContainer.ctb;
+		final ProduireRolesResults rapport = assujettissementContainer.rapport;
 		final TypeContribuable typeCtb = getTypeContribuable(assujet);
 		if (typeCtb == null) {
 			rapport.addCtbIgnoreDiplomateSuisse(contribuable);
@@ -422,11 +410,11 @@ public class ProduireRolesCommuneProcessor {
 		 */
 		for (ForFiscalRevenuFortune f : fors.principauxDansLaPeriode) {
 			if (TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD.equals(f.getTypeAutoriteFiscale())) {
-				processForFiscal(assujet, f, contribuable, typeCtb, rapport, annee);
+				processForFiscal(assujet, f, typeCtb, assujettissementContainer);
 			}
 		}
 		for (ForFiscalRevenuFortune f : fors.secondairesDansLaPeriode) {
-			processForFiscal(assujet, f, contribuable, typeCtb, rapport, annee);
+			processForFiscal(assujet, f, typeCtb, assujettissementContainer);
 		}
 	}
 
@@ -434,25 +422,78 @@ public class ProduireRolesCommuneProcessor {
 	 * Ajoute les détails du non-assujettissement au rapport (= cas du contribuable ayant au moins un for dans le canton mais pas du tout
 	 * assujetti dans l'année)
 	 *
-	 * @param fors
-	 *            la décomposition des fors du contribuable pour l'année voulue
-	 * @param rapport
-	 * @param annee
+	 * @param fors la décomposition des fors du contribuable pour l'année de la période courante
+	 * @param assujettissementContainer cache pour les assujettissements calculés sur la période courante et la précédente
+	 * @throws TraitementException en cas ayant conduit à interrompre le traitement (automatiqement renseigné dans le rapport)
 	 */
-	private void processNonAssujettissement(DecompositionForsAnneeComplete fors, ProduireRolesResults rapport, int annee) throws TraitementException {
+	private void processNonAssujettissement(DecompositionForsAnneeComplete fors, AssujettissementContainer assujettissementContainer) throws TraitementException {
 
-		/*
-		 * Malgré le fait que le contribuable soit non-assujetti, il est nécessaire de traiter ses fors pour être en mesure de remplir
-		 * correctement le rapport. On traite donc tous les fors actifs durant la période d'assujettissement (à l'exception des fors
-		 * principaux hors canton, évidemment).
-		 */
-		for (ForFiscalRevenuFortune f : fors.principauxDansLaPeriode) {
-			if (TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD.equals(f.getTypeAutoriteFiscale())) {
-				processForFiscal(null, f, fors.contribuable, TypeContribuable.NON_ASSUJETTI, rapport, annee);
+		// calcul de l'assujettissement dans la période précédente
+		final List<Assujettissement> assujettissementsAnneePrecedente = assujettissementContainer.getAssujettissementPeriodePrecedente();
+
+		// prenons ensuite les communes des fors de la décomposition
+		final Set<Integer> ofsCommunes = new HashSet<Integer>(fors.principauxDansLaPeriode.size() + fors.secondairesDansLaPeriode.size());
+		for (ForFiscalRevenuFortune ff : fors.principauxDansLaPeriode) {
+			if (ff.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
+				ofsCommunes.add(ff.getNumeroOfsAutoriteFiscale());
 			}
 		}
-		for (ForFiscalRevenuFortune f : fors.secondairesDansLaPeriode) {
-			processForFiscal(null, f, fors.contribuable, TypeContribuable.NON_ASSUJETTI, rapport, annee);
+		for (ForFiscalRevenuFortune ff : fors.secondairesDansLaPeriode) {
+			ofsCommunes.add(ff.getNumeroOfsAutoriteFiscale());
+		}
+
+		// sur chacune de ces communes, il faut ensuite indiquer que le contribuable n'est pas assujetti
+		for (Integer noOfsCommune : ofsCommunes) {
+			traiteNonAssujettiAvecPrecedentAssujettissement(assujettissementContainer, noOfsCommune);
+		}
+	}
+
+	private static final class AssujettissementContainer {
+
+		private final int anneePeriode;
+		private final Contribuable ctb;
+		private final ProduireRolesResults rapport;
+
+		private final DecompositionForsAnneeComplete forsAnneePeriode;
+		private final List<Assujettissement> assujettissementAnneePeriode;
+		private List<Assujettissement> assujettissementAnneePrecedente;
+
+		private AssujettissementContainer(Contribuable ctb, int anneePeriode, ProduireRolesResults rapport) throws TraitementException {
+			this.anneePeriode = anneePeriode;
+			this.ctb = ctb;
+			this.rapport = rapport;
+			this.forsAnneePeriode = new DecompositionForsAnneeComplete(ctb, anneePeriode);
+			this.assujettissementAnneePeriode = determineAssujettissement(forsAnneePeriode, ctb, rapport);
+		}
+
+		public List<Assujettissement> getAssujettissementPeriodePrecedente() throws TraitementException {
+			if (assujettissementAnneePrecedente == null) {
+				final DecompositionForsAnneeComplete fors = new DecompositionForsAnneeComplete(ctb, anneePeriode - 1);
+				assujettissementAnneePrecedente = determineAssujettissement(fors, ctb, rapport);
+				if (assujettissementAnneePrecedente == null) {
+					// histoire qu'on ne le fasse pas plusieurs fois...
+					assujettissementAnneePrecedente = Collections.emptyList();
+				}
+			}
+			return assujettissementAnneePrecedente.size() == 0 ? null : assujettissementAnneePrecedente;
+		}
+
+		public List<Assujettissement> getAssujettissementAnneePeriode() {
+			return assujettissementAnneePeriode;
+		}
+
+		public DecompositionForsAnneeComplete getForsAnneePeriode() {
+			return forsAnneePeriode;
+		}
+
+		private static List<Assujettissement> determineAssujettissement(DecompositionForsAnneeComplete fors, Contribuable ctb, ProduireRolesResults rapport) throws TraitementException {
+			try {
+				return Assujettissement.determine(fors);
+			}
+			catch (AssujettissementException e) {
+				rapport.addErrorErreurAssujettissement(ctb, e.getMessage());
+				throw new TraitementException();
+			}
 		}
 	}
 
@@ -460,95 +501,181 @@ public class ProduireRolesCommuneProcessor {
 	 * Ajoute au rapport les détails de l'assujettissement pour le for fiscal spécifié.
 	 *
 	 * @param assujettissement
-	 *@param forFiscal
-	 *            le for fiscal déterminant de l'assujettissement
-	 * @param contribuable
- *            le contribuable en question
-	 * @param typeCtb
-*            le type de contribuable, ou <b>null</b> si le contribuable n'est pas assujetti
-	 * @param rapport
-*            le rapport à compléter
-	 * @param annee      @throws TraitementException
-	 *             en cas ayant conduit à interrompre le traitement (automatiqement renseigné dans le rapport)
+	 * @param forFiscal le for fiscal déterminant de l'assujettissement
+	 * @param contribuable le contribuable en question
+	 * @param typeCtb le type de contribuable, ou <b>null</b> si le contribuable n'est pas assujetti
+	 * @param rapport le rapport à compléter
+	 * @param anneePeriode période fiscale du rapport
+	 * @throws TraitementException en cas ayant conduit à interrompre le traitement (automatiqement renseigné dans le rapport)
 	 */
-	protected void processForFiscal(Assujettissement assujettissement, ForFiscalRevenuFortune forFiscal, Contribuable contribuable, TypeContribuable typeCtb, ProduireRolesResults rapport, int annee) throws TraitementException {
+	protected void processForFiscal(Assujettissement assujettissement, ForFiscalRevenuFortune forFiscal, TypeContribuable typeCtb, AssujettissementContainer assujettissementContainer) throws TraitementException {
 
-		if (!TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD.equals(forFiscal.getTypeAutoriteFiscale())) {
-			final String details = "L'autorité fiscale du for [" + forFiscal + "] n'est pas dans le canton.";
+		final ProduireRolesResults rapport = assujettissementContainer.rapport;
+		final Contribuable contribuable = assujettissementContainer.ctb;
+		final int anneePeriode = assujettissementContainer.anneePeriode;
+
+		if (TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD != forFiscal.getTypeAutoriteFiscale()) {
+			final String details = String.format("L'autorité fiscale du for [%s] n'est pas dans le canton.", forFiscal);
 			rapport.addCtbIgnoreDonneesIncoherentes(contribuable, details);
 			throw new TraitementException();
 		}
 
+		final Integer ofsCommune = forFiscal.getNumeroOfsAutoriteFiscale();
+		final TypeAssujettissement typeAssujettissement = getTypeAssujettissementPourCommune(ofsCommune, assujettissement);
+		if (typeAssujettissement == TypeAssujettissement.NON_ASSUJETTI) {
+
+			// pas d'assujettissement sur cette commune dans l'annee de période
+			// -> s'il y en avait un avant, il faut l'indiquer dans le rapport
+			// (sauf si le contribuable était alors sourcier gris, auquel cas il ne doit pas apparaître)
+			if (!tiersService.isSourcierGris(contribuable, RegDate.get(anneePeriode - 1, 12, 31))) {
+				traiteNonAssujettiAvecPrecedentAssujettissement(assujettissementContainer, ofsCommune);
+			}
+		}
+		else {
+			final DebutFinFor debutFin = getInformationDebutFin(forFiscal, anneePeriode);
+			final InfoCommune infoCommune = rapport.getOrCreateInfoPourCommune(ofsCommune);
+			final InfoContribuable infoCtb = infoCommune.getOrCreateInfoPourContribuable(contribuable, anneePeriode, adresseService, tiersService);
+			final InfoFor infoFor = new InfoFor(typeCtb, debutFin.dateOuverture, debutFin.motifOuverture, debutFin.dateFermeture, debutFin.motifFermeture, typeAssujettissement, forFiscal.isPrincipal(), forFiscal.getMotifRattachement());
+			infoCtb.addFor(infoFor);
+		}
+	}
+
+	private void traiteNonAssujettiAvecPrecedentAssujettissement(AssujettissementContainer assujettissementContainer, Integer ofsCommune) throws TraitementException {
+
+		final List<Assujettissement> assujettissementsAnneePrecedente = assujettissementContainer.getAssujettissementPeriodePrecedente();
+		if (assujettissementsAnneePrecedente != null) {
+
+			final ProduireRolesResults rapport = assujettissementContainer.rapport;
+			final Contribuable contribuable = assujettissementContainer.ctb;
+			final int anneePeriode = assujettissementContainer.anneePeriode;
+
+			for (Assujettissement assAnneePrecedente : assujettissementsAnneePrecedente) {
+				final TypeContribuable typeCtbAnneePrecedente = getTypeContribuable(assAnneePrecedente);
+				final DecompositionFors forsAnneePrecedente = assAnneePrecedente.getFors();
+				for (ForFiscalRevenuFortune ff : forsAnneePrecedente.principauxDansLaPeriode) {
+					if (ff.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD && ff.getNumeroOfsAutoriteFiscale() == ofsCommune.intValue()) {
+						traiteNonAssujettiAvecPrecedentAssujettissement(rapport, contribuable, anneePeriode, ofsCommune, typeCtbAnneePrecedente, ff);
+					}
+				}
+				for (ForFiscalRevenuFortune ff : forsAnneePrecedente.secondairesDansLaPeriode) {
+					if (ff.getNumeroOfsAutoriteFiscale() == ofsCommune.intValue()) {
+						traiteNonAssujettiAvecPrecedentAssujettissement(rapport, contribuable, anneePeriode, ofsCommune, typeCtbAnneePrecedente, ff);
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * Traitement, pour une commune particulière, d'un contribuable qui n'est pas assujetti sur la période courante mais qui l'était
+	 * sur la période précédente
+	 * @param rapport rapport à compléter
+	 * @param contribuable contribuable en cours de traitement
+	 * @param anneePeriode année de la période courante
+	 * @param ofsCommune numéro OFS étendu de la commune considérée
+	 * @param typeCtbAnneePrecedente type de contribuable sur la commune à l'époque de la période précédente
+	 * @param ff for fiscal sur la commune qui était ouvert dans la période précédente
+	 */
+	private void traiteNonAssujettiAvecPrecedentAssujettissement(ProduireRolesResults rapport, Contribuable contribuable, int anneePeriode, Integer ofsCommune,
+	                                                             TypeContribuable typeCtbAnneePrecedente, ForFiscalRevenuFortune ff) {
+		final DebutFinFor debutFin = getInformationDebutFin(ff, anneePeriode);
+		final InfoCommune infoCommune = rapport.getOrCreateInfoPourCommune(ofsCommune);
+		final InfoContribuable infoCtb = infoCommune.getOrCreateInfoPourContribuable(contribuable, anneePeriode, adresseService, tiersService);
+		final InfoFor infoFor = new InfoFor(debutFin.dateOuverture, debutFin.motifOuverture, debutFin.dateFermeture, debutFin.motifFermeture, typeCtbAnneePrecedente, ff.isPrincipal(), ff.getMotifRattachement());
+		infoCtb.addFor(infoFor);
+	}
+
+	private static class DebutFinFor {
+		public final RegDate dateOuverture;
+		public final MotifFor motifOuverture;
+		public final RegDate dateFermeture;
+		public final MotifFor motifFermeture;
+
+		private DebutFinFor(RegDate dateOuverture, MotifFor motifOuverture, RegDate dateFermeture, MotifFor motifFermeture) {
+			this.dateOuverture = dateOuverture;
+			this.motifOuverture = motifOuverture;
+			this.dateFermeture = dateFermeture;
+			this.motifFermeture = motifFermeture;
+		}
+	}
+
+	private static DebutFinFor getInformationDebutFin(ForFiscalRevenuFortune forFiscal, int anneePeriode) {
+
+		final ForFiscalRevenuFortune forFiscalPourOuverture;
+		if (forFiscal.getDateDebut().getOneDayBefore().year() != forFiscal.getDateDebut().year()) {
+			// debut au premier janvier...
+			final Tiers tiers = forFiscal.getTiers();
+			final List<ForFiscal> fors = tiers.getForsFiscauxValidAt(forFiscal.getDateDebut().getOneDayBefore());
+			ForFiscalRevenuFortune candidatRetenu = null;
+			for (ForFiscal candidat : fors) {
+				if (candidat instanceof ForFiscalRevenuFortune &&
+						candidat.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD &&
+						candidat.getNumeroOfsAutoriteFiscale().equals(forFiscal.getNumeroOfsAutoriteFiscale()) &&
+						((ForFiscalRevenuFortune) candidat).getMotifRattachement() == forFiscal.getMotifRattachement()) {
+					if (candidatRetenu == null || candidatRetenu.getDateDebut().isAfter(candidat.getDateDebut())) {
+						candidatRetenu = (ForFiscalRevenuFortune) candidat;
+					}
+				}
+			}
+			forFiscalPourOuverture = candidatRetenu != null ? candidatRetenu : forFiscal;
+		}
+		else {
+			forFiscalPourOuverture = forFiscal;
+		}
+
+		final ForFiscalRevenuFortune forFiscalPourFermeture;
+		if (forFiscal.getDateFin() != null && forFiscal.getDateFin().getOneDayAfter().year() != forFiscal.getDateFin().year()) {
+			// fin au 31 décembre...
+			final Tiers tiers = forFiscal.getTiers();
+			final List<ForFiscal> fors = tiers.getForsFiscauxValidAt(forFiscal.getDateFin().getOneDayAfter());
+			ForFiscalRevenuFortune candidatRetenu = null;
+			for (ForFiscal candidat : fors) {
+				if (candidat instanceof ForFiscalRevenuFortune &&
+						candidat.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD &&
+						candidat.getNumeroOfsAutoriteFiscale().equals(forFiscal.getNumeroOfsAutoriteFiscale()) &&
+						((ForFiscalRevenuFortune) candidat).getMotifRattachement() == forFiscal.getMotifRattachement()) {
+					if (candidatRetenu == null || candidatRetenu.getDateFin().isBefore(candidat.getDateFin())) {
+						candidatRetenu = (ForFiscalRevenuFortune) candidat;
+					}
+				}
+			}
+			forFiscalPourFermeture = candidatRetenu != null ? candidatRetenu : forFiscal;
+		}
+		else {
+			forFiscalPourFermeture = forFiscal;
+		}
+
 		final RegDate dateFermeture;
 		final MotifFor motifFermeture;
-		if (forFiscal.getDateFin() != null && forFiscal.getDateFin().year() <= annee) {
-			dateFermeture = forFiscal.getDateFin();
-			motifFermeture = forFiscal.getMotifFermeture();
+		if (forFiscalPourFermeture.getDateFin() != null && forFiscalPourFermeture.getDateFin().year() <= anneePeriode) {
+			dateFermeture = forFiscalPourFermeture.getDateFin();
+			motifFermeture = forFiscalPourFermeture.getMotifFermeture();
 		}
 		else {
 			dateFermeture = null;
 			motifFermeture = null;
 		}
 
-		final MotifFor motifOuverture = forFiscal.getMotifOuverture();
-		final RegDate dateOuverture = forFiscal.getDateDebut();
-
-		// Ajoute l'information
-		final Integer ofsCommune = forFiscal.getNumeroOfsAutoriteFiscale();
-		final boolean communeActive = assujettissement != null && assujettissement.isActifSurCommune(ofsCommune);
-		final TypeContribuable typeCtbPourCommune = communeActive ? typeCtb : TypeContribuable.NON_ASSUJETTI;
-		final InfoCommune infoCommune = rapport.getOrCreateInfoPourCommune(ofsCommune);
-		final InfoContribuable infoCtb = infoCommune.getOrCreateInfoPourContribuable(contribuable, annee, adresseService, tiersService);
-		final ProduireRolesResults.InfoFor infoFor = new ProduireRolesResults.InfoFor(typeCtbPourCommune, dateOuverture, dateFermeture, motifOuverture, motifFermeture, communeActive);
-		infoCtb.addFor(infoFor);
+		final MotifFor motifOuverture = forFiscalPourOuverture.getMotifOuverture();
+		final RegDate dateOuverture = forFiscalPourOuverture.getDateDebut();
+		return new DebutFinFor(dateOuverture, motifOuverture, dateFermeture, motifFermeture);
 	}
 
-	/**
-	 * Ajoute une ligne dans le rapport au niveau de chaque commune concernée si le contribuable spécifié était assujetti l'année précédente
-	 * mais ne l'est plus cette année.
-	 *
-	 * @param anneePeriode
-	 * @param contribuable
-	 *            le contribuable concerné
-	 * @param rapportAnneePrecedente
- *            le rapport d'assujettissement de l'année précédente (valable
-	 * @param rapport
-	 */
-	private void processDeltaAssujettissements(int anneePeriode, Contribuable contribuable, ProduireRolesResults rapportAnneePrecedente, ProduireRolesResults rapport) {
-
-		final long noCtb = contribuable.getNumero();
-
-		for (Integer noOfsCommune : rapportAnneePrecedente.infosCommunes.keySet()) {
-
-			final InfoCommune infoCommuneAnneePrecedente = rapportAnneePrecedente.getInfoPourCommune(noOfsCommune);
-			Assert.notNull(infoCommuneAnneePrecedente);
-
-			final InfoContribuable infoCtbAnneePrecedente = infoCommuneAnneePrecedente.getInfoPourContribuable(noCtb);
-			if (infoCtbAnneePrecedente == null) {
-				// le rapport de l'année précédente ne contient aucune donnée sur le contribuable spécifié: rien à faire
-				continue;
+	private static TypeAssujettissement getTypeAssujettissementPourCommune(int noOfsCommune, Assujettissement assujettissement) {
+		final boolean communeActive = assujettissement != null && assujettissement.isActifSurCommune(noOfsCommune);
+		final TypeAssujettissement typeAssujettissement;
+		if (communeActive) {
+			if (assujettissement.getMotifFractFin() != null) {
+				typeAssujettissement = TypeAssujettissement.TERMINE_DANS_PF;
 			}
-
-			InfoCommune infoCommune = rapport.getInfoPourCommune(noOfsCommune);
-			if (infoCommune != null && infoCommune.getInfoPourContribuable(noCtb) != null) {
-				// le rapport de l'année courante contient déjà des données sur le contribuable spécifié: rien à faire
-				continue;
+			else {
+				typeAssujettissement = TypeAssujettissement.POURSUIVI_APRES_PF;
 			}
-
-			/*
-			 * le contribuable existait dans la commune l'année précédente et n'est plus assujetti: on l'ajoute comme tel
-			 */
-			Assert.notNull(infoCtbAnneePrecedente);
-			if (infoCommune == null) {
-				infoCommune = rapport.getOrCreateInfoPourCommune(noOfsCommune);
-			}
-
-			final InfoContribuable infoCtb = infoCommune.getOrCreateInfoPourContribuable(contribuable, anneePeriode, adresseService, tiersService);
-
-			// dates nulles -> contribuable plus assujetti
-			final InfoFor infoFor = new InfoFor(TypeContribuable.NON_ASSUJETTI, null, null, null, null, false);
-			infoCtb.addFor(infoFor);
 		}
+		else {
+			typeAssujettissement = TypeAssujettissement.NON_ASSUJETTI;
+		}
+		return typeAssujettissement;
 	}
 
 	/**
@@ -601,7 +728,7 @@ public class ProduireRolesCommuneProcessor {
 		return (List<Long>) hibernateTemplate.executeWithNativeSession(new HibernateCallback() {
 			public List<Long> doInHibernate(Session session) throws HibernateException, SQLException {
 
-				final RegDate debutPeriode = RegDate.get(annee - 1, 1, 1);
+				final RegDate debutPeriode = RegDate.get(annee, 1, 1);
 				final RegDate finPeriode = RegDate.get(annee, 12, 31);
 
 				final Query query = session.createQuery(hql);
@@ -633,7 +760,7 @@ public class ProduireRolesCommuneProcessor {
 		return (List<Long>) hibernateTemplate.executeWithNativeSession(new HibernateCallback() {
 			public List<Long> doInHibernate(Session session) throws HibernateException, SQLException {
 
-				final RegDate debutPeriode = RegDate.get(annee - 1, 1, 1);
+				final RegDate debutPeriode = RegDate.get(annee, 1, 1);
 				final RegDate finPeriode = RegDate.get(annee, 12, 31);
 
 				final Query query = session.createQuery(hql);

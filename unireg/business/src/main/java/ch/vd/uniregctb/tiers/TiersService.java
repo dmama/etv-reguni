@@ -955,5 +955,13 @@ public interface TiersService {
 	 * @param oid   le nouveau numéro technique de l'office d'impôt.
 	 */
 	void updateOfficeID(Tiers tiers, Integer oid);
+
+	/**
+	 * Renvoie <code>true</code> si la personne physique est un sourcier gris à la date donnée
+	 * @param pp personne physique
+	 * @param date date de référence
+	 * @return <code>true</code> si la personne physique est un sourcier gris
+	 */
+	boolean isSourcierGris(Contribuable pp, RegDate date);
 }
 

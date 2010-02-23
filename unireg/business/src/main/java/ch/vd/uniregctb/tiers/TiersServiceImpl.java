@@ -2332,11 +2332,19 @@ public class TiersServiceImpl implements TiersService {
 			}
 		}
 		else {
-			if (StringUtils.isNotBlank(personne.getPrenom())) {
-				nomPrenom = personne.getPrenom() + " " + personne.getNom();
+			final String nom = StringUtils.isBlank(personne.getNom()) ? null : personne.getNom().trim();
+			final String prenom = StringUtils.isBlank(personne.getPrenom()) ? null : personne.getPrenom().trim();
+			if (nom != null && prenom != null) {
+				nomPrenom = String.format("%s %s", prenom, nom);
+			}
+			else if (nom != null) {
+				nomPrenom = nom;
+			}
+			else if (prenom != null) {
+				nomPrenom = prenom;
 			}
 			else {
-				nomPrenom = personne.getNom();
+				nomPrenom = null;
 			}
 		}
 		return nomPrenom != null ? nomPrenom.trim() : null;
@@ -3074,5 +3082,87 @@ public class TiersServiceImpl implements TiersService {
 			tacheDAO.updateCollAdmAssignee(tiers.getNumero(), oid);
 		}
 	}
+
+	public boolean isSourcierGris(Contribuable ctb, RegDate date) {
+
+		if (date == null) {
+			date = RegDate.get();
+		}
+
+		if (ctb instanceof PersonnePhysique) {
+			final PersonnePhysique pp = (PersonnePhysique) ctb;
+			return isPersonnePhysiqueSourcierGris(pp, date);
+		}
+		else if (ctb instanceof MenageCommun) {
+			final MenageCommun mc = (MenageCommun) ctb;
+			return isMenageCommunSourcierGris(mc, date);
+		}
+		else {
+			return false;
+		}
+	}
+
+	private static boolean isForVaudoisSource(ForFiscalPrincipal ffp) {
+		return ffp.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD && ffp.getModeImposition() == ModeImposition.SOURCE;
+	}
+
+	private boolean isPersonnePhysiqueSourcierGris(PersonnePhysique pp, RegDate date) {
+		final boolean gris;
+		if (pp.getNumeroIndividu() == null) {
+			final ForFiscalPrincipal ffp = pp.getForFiscalPrincipalAt(date);
+			if (ffp != null) {
+				// for spécifique sur la personne physique
+				gris = isForVaudoisSource(ffp);
+			}
+			else {
+				// un sourcier gris peut être marié, et n'est effectivement sourcier
+				// gris que si l'autre membre du couple n'a pas de numéro individu non-plus
+				final EnsembleTiersCouple ensemble = getEnsembleTiersCouple(pp, date);
+				if (ensemble != null) {
+					final MenageCommun mc = ensemble.getMenage();
+					final PersonnePhysique autreMembre = ensemble.getConjoint(pp);
+					if (autreMembre != null && autreMembre.getNumeroIndividu() != null) {
+						gris = false;
+					}
+					else {
+						final ForFiscalPrincipal ffpMc = mc.getForFiscalPrincipalAt(date);
+						gris = ffpMc != null && isForVaudoisSource(ffpMc);
+					}
+				}
+				else {
+					// pas marié, sans for...
+					gris = false;
+				}
+			}
+		}
+		else {
+			// personne physique connue dans le registre civil
+			gris = false;
+		}
+		return gris;
+	}
+
+	private boolean isMenageCommunSourcierGris(MenageCommun mc, RegDate date) {
+		final EnsembleTiersCouple ensemble = getEnsembleTiersCouple(mc, date);
+		final PersonnePhysique principal = ensemble.getPrincipal();
+		final PersonnePhysique conjoint = ensemble.getConjoint();
+		final boolean gris;
+		if (principal != null || conjoint != null) {
+			final boolean tousInconnusAuCivil = (principal == null || principal.getNumeroIndividu() == null) && (conjoint == null || conjoint.getNumeroIndividu() == null);
+			if (tousInconnusAuCivil) {
+				final ForFiscalPrincipal ffp = mc.getForFiscalPrincipalAt(date);
+				gris = isForVaudoisSource(ffp);
+			}
+			else {
+				gris = false;
+			}
+		}
+		else {
+			// cas du ménage commun déconnecté de toute personne physique...
+			gris = false;
+		}
+		return gris;
+	}
+
 }
 

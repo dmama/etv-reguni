@@ -1354,24 +1354,42 @@ public class RapportServiceImpl implements RapportService {
 
         final StringBuilder b = new StringBuilder("Numéro OFS de la commune" + COMMA + // --------------------------
                 "Nom de la commune" + COMMA + // -------------------------------------------------------------
+		        "Type de contribuable" + COMMA + // ----------------------------------------------------------
+		        "Complément type contribuable" + COMMA + // --------------------------------------------------
                 "Numéro de contribuable" + COMMA + // --------------------------------------------------------
-                "Nom du contribuable" + COMMA + // -----------------------------------------------------------
-                "Nom du contribuable secondaire" + COMMA + // ------------------------------------------------
+                "Nom du contribuable 1" + COMMA + // -----------------------------------------------------------
+                "Nom du contribuable 2" + COMMA + // ------------------------------------------------
                 "Adresse courrier" + COMMA + // --------------------------------------------------------------
-                "Type de contribuable" + COMMA + // ----------------------------------------------------------
-                "Complément type contribuable" + COMMA + // --------------------------------------------------
                 "Date d'ouverture" + COMMA + // --------------------------------------------------------
 		        "Motif d'ouverture" + COMMA + // ------------------------------------------------------------
 		        "Date de fermeture" + COMMA + // ----------------------------------------------------------
                 "Motif de fermeture" + COMMA + // --------------------------------------------------------------
-                "Assujetti" + COMMA + // ----------------------------------------------------
-                "Numéro AVS contribuable" + COMMA + // -------------------------------------------------------
-                "Numéro AVS contribuable secondaire\n");
+                "Numéro AVS contribuable 1" + COMMA + // -------------------------------------------------------
+                "Numéro AVS contribuable 2" + COMMA + // -------------------------------------------------------
+			    "Assujettissement\n");
 
 		status.setMessage("Génération du rapport pour la commune de " + nomCommune + "...");
         b.append(traiteCommune(infos, noOfsCommune, nomCommune, finAnnee));
         return b.toString();
     }
+
+	private static String getDescriptionMotif(MotifFor motif, boolean ouverture) {
+		return motif.getDescription(ouverture);
+	}
+
+	private static String getComplementTypeContribuable(InfoContribuable info) {
+		final String complement;
+		if (info.getTypeCtb() == TypeContribuable.MIXTE) {
+			complement = String.format("(%s)", TypeContribuable.MIXTE.description());
+		}
+		else if (info.getTypeCtb() == TypeContribuable.NON_ASSUJETTI && info.getAncienTypeContribuable() != null) {
+			complement = String.format("(%s)", info.getAncienTypeContribuable().description());
+		}
+		else {
+			complement = "";
+		}
+		return complement;
+	}
 
     private String traiteCommune(final List<InfoContribuable> infos, final int noOfsCommune, String nomCommune, final RegDate finAnnee) {
 
@@ -1392,14 +1410,14 @@ public class RapportServiceImpl implements RapportService {
             final String nom2 = sizeNoms > 1 ? noms.get(1) : "";
             final String adresseCourrier = asCsvField(adresse);
             final String typeCtb = asCvsField(info.getTypeCtb());
-            final String complTypeCtb = (TypeContribuable.MIXTE.equals(info.getTypeCtb()) ? "(sourcier mixte)" : "");
+            final String complTypeCtb = getComplementTypeContribuable(info);
 
 		    final Pair<RegDate, MotifFor> infosOuverture = info.getInfosOuverture();
 		    final String debut;
 		    final String motifOuverture;
 		    if (infosOuverture != null) {
 			    debut = infosOuverture.getFirst().toString();
-			    motifOuverture = infosOuverture.getSecond() != null ? infosOuverture.getSecond().getDescription() : "";
+			    motifOuverture = infosOuverture.getSecond() != null ? getDescriptionMotif(infosOuverture.getSecond(), true) : "";
 		    }
 		    else {
 			    debut = "";
@@ -1411,32 +1429,32 @@ public class RapportServiceImpl implements RapportService {
 		    final String motifFermeture;
 		    if (infosFermeture != null) {
 			    fin = infosFermeture.getFirst().toString();
-			    motifFermeture = infosFermeture.getSecond() != null ? infosFermeture.getSecond().getDescription() : "";
+			    motifFermeture = infosFermeture.getSecond() != null ? getDescriptionMotif(infosFermeture.getSecond(), false) : "";
 		    }
 		    else {
 			    fin = "";
 			    motifFermeture = "";
 		    }
 
-		    final String assujetti = info.isAssujettiDansCommmune() ? "Oui" : "Non";
+		    final String assujettissement = info.getTypeAssujettissementDansCommune().description();
             final String numeroAvs1 = sizeNoms > 0 ? FormatNumeroHelper.formatNumAVS(nosAvs.get(0)) : "";
             final String numeroAvs2 = sizeNoms > 1 ? FormatNumeroHelper.formatNumAVS(nosAvs.get(1)) : "";
 
             b.append(noOfsCommune).append(COMMA);
             b.append(nomCommune).append(COMMA);
+		    b.append(typeCtb).append(COMMA);
+		    b.append(complTypeCtb).append(COMMA);
             b.append(noCtb).append(COMMA);
             b.append(nom1).append(COMMA);
             b.append(nom2).append(COMMA);
             b.append(adresseCourrier).append(COMMA);
-            b.append(typeCtb).append(COMMA);
-            b.append(complTypeCtb).append(COMMA);
             b.append(debut).append(COMMA);
 		    b.append(motifOuverture).append(COMMA);
 		    b.append(fin).append(COMMA);
             b.append(motifFermeture).append(COMMA);
-            b.append(assujetti).append(COMMA);
             b.append(numeroAvs1).append(COMMA);
-            b.append(numeroAvs2);
+            b.append(numeroAvs2).append(COMMA);
+		    b.append(assujettissement);
 
             b.append("\n");
         }

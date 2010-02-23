@@ -32,6 +32,7 @@ public class DefaultMockServiceCivil extends MockServiceCivil {
 		MockIndividu julien = addIndividu(56789, RegDate.get(1966, 11, 2), "Martin", "Julien", true);
 		MockIndividu leon = addIndividu(78912, RegDate.get(1953, 11, 2), "Dupont", "Léon", true);
 		MockIndividu helene = addIndividu(89123, RegDate.get(1963, 8, 20), "Duval", "Hélène", false);
+		MockIndividu victor = addIndividu(263343, RegDate.get(1956, 5, 12), "Duplat", "Victor", true);
 		addIndividu(123456, RegDate.get(2006, 12, 25), "Petit", "Jésus", true);
 		addIndividu(983254, RegDate.get(2005, 3, 30), "Petit", "Enfant", true);
 		addIndividu(611836, RegDate.get(1953, 10, 14), "Perroset", "Francis", true); // pour que l'InfoController retourne OK en mode Norentes
@@ -43,6 +44,7 @@ public class DefaultMockServiceCivil extends MockServiceCivil {
 		addDefaultAdressesTo(sophie);
 		addDefaultAdressesTo(david);
 		addDefaultAdressesTo(julien);
+		addDefaultAdressesTo(victor);
 
 		marieIndividus(momo, bea, RegDate.get(1986, 4, 8));
 		marieIndividus(david, julien, RegDate.get(1986, 4, 8));
@@ -72,6 +74,9 @@ public class DefaultMockServiceCivil extends MockServiceCivil {
 
 		addOrigine(david, MockPays.Suisse, null, RegDate.get(1964, 1, 23));
 		addNationalite(david, MockPays.Suisse, RegDate.get(1964, 1, 23), null, 0);
+
+		addOrigine(victor, MockPays.Espagne, null, RegDate.get(1956, 5, 12));
+		addNationalite(victor, MockPays.Espagne, RegDate.get(1956, 5, 12), null, 0);
 	}
 
 	protected void addDefaultAdressesTo(Individu individu) {

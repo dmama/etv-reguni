@@ -20,6 +20,7 @@ import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.type.*;
 
 import junit.framework.Assert;
+import org.apache.commons.lang.mutable.MutableLong;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
@@ -2285,5 +2286,288 @@ public class TiersServiceTest extends BusinessTest {
 				return null;
 			}
 		});
+	}
+
+	@Test
+	public void testSourcierGrisHabitant() throws Exception {
+
+		// un habitant ne peut pas être sourcier gris!
+
+		final long noIndAchille = 123456L;
+		final long noIndHuguette = 32421L;
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				addIndividu(noIndAchille, date(1950, 3, 24), "Achille", "Talon", true);
+			}
+		});
+
+		final MutableLong idCtbHabitant = new MutableLong();
+		final MutableLong idCtbNonHabitantAvecNumeroInd = new MutableLong();
+
+		doInNewTransaction(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique achille = addHabitant(noIndAchille);
+				final ForFiscalPrincipal ffpAchille = addForPrincipal(achille, date(2008, 1, 1), MotifFor.ARRIVEE_HS, null, null, MockCommune.Lausanne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE);
+				ffpAchille.setModeImposition(ModeImposition.SOURCE);
+				idCtbHabitant.setValue(achille.getNumero());
+
+
+				final PersonnePhysique huguette = addNonHabitant("Huguette", "Marcot", date(1950, 4, 12), Sexe.FEMININ);
+				huguette.setNumeroIndividu(noIndHuguette);
+				final ForFiscalPrincipal ffpHuguette = addForPrincipal(huguette, date(2008, 1, 1), MotifFor.ARRIVEE_HS, null, null, MockCommune.Lausanne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE);
+				ffpHuguette.setModeImposition(ModeImposition.SOURCE);
+				idCtbNonHabitantAvecNumeroInd.setValue(huguette.getNumero());
+				return null;
+			}
+		});
+
+		final PersonnePhysique achille = (PersonnePhysique) tiersDAO.get(idCtbHabitant.longValue());
+		Assert.assertFalse("Achille est habitant, il ne devrait pas être 'sourcier gris'", tiersService.isSourcierGris(achille, null));
+
+		final PersonnePhysique huguette = (PersonnePhysique) tiersDAO.get(idCtbNonHabitantAvecNumeroInd.longValue());
+		Assert.assertFalse("Huguette a un numéro d'habitant, elle ne devrait pas être 'sourcier gris'", tiersService.isSourcierGris(huguette, null));
+	}
+
+	@Test
+	public void testSourcierGris() throws Exception {
+
+		final long noCtb = (Long) doInNewTransaction(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique nh = addNonHabitant("Achille", "Talon", date(1950, 3, 24), Sexe.MASCULIN);
+				final ForFiscalPrincipal ffp = addForPrincipal(nh, date(2008, 1, 1), MotifFor.ARRIVEE_HS, null, null, MockCommune.Lausanne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE);
+				ffp.setModeImposition(ModeImposition.SOURCE);
+				return nh.getNumero();
+			}
+		});
+
+		final PersonnePhysique achille = (PersonnePhysique) tiersDAO.get(noCtb);
+		Assert.assertTrue("Sourcier sur for vaudois sans numéro d'individu, pourquoi pas 'gris' ?", tiersService.isSourcierGris(achille, null));
+	}
+
+	@Test
+	public void testSourcierGrisHorsCanton() throws Exception {
+
+		final long noCtb = (Long) doInNewTransaction(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique nh = addNonHabitant("Achille", "Talon", date(1950, 3, 24), Sexe.MASCULIN);
+				final ForFiscalPrincipal ffp = addForPrincipal(nh, date(2008, 1, 1), MotifFor.ARRIVEE_HS, null, null, MockCommune.Neuchatel.getNoOFS(), TypeAutoriteFiscale.COMMUNE_HC, MotifRattachement.DOMICILE);
+				ffp.setModeImposition(ModeImposition.SOURCE);
+				return nh.getNumero();
+			}
+		});
+
+		final PersonnePhysique achille = (PersonnePhysique) tiersDAO.get(noCtb);
+		Assert.assertFalse("Sourcier sur for HC, pourquoi 'gris' ?", tiersService.isSourcierGris(achille, null));
+	}
+
+	@Test
+	public void testSourcierGrisHorsSuisse() throws Exception {
+
+		final long noCtb = (Long) doInNewTransaction(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique nh = addNonHabitant("Achille", "Talon", date(1950, 3, 24), Sexe.MASCULIN);
+				final ForFiscalPrincipal ffp = addForPrincipal(nh, date(2008, 1, 1), MotifFor.MAJORITE, null, null, MockPays.Espagne.getNoOFS(), TypeAutoriteFiscale.PAYS_HS, MotifRattachement.DOMICILE);
+				ffp.setModeImposition(ModeImposition.SOURCE);
+				return nh.getNumero();
+			}
+		});
+
+		final PersonnePhysique achille = (PersonnePhysique) tiersDAO.get(noCtb);
+		Assert.assertFalse("Sourcier sur for HS, pourquoi 'gris' ?", tiersService.isSourcierGris(achille, null));
+	}
+
+	@Test
+	public void testSourcierGrisMixte() throws Exception {
+
+		final MutableLong idCtbMixte1 = new MutableLong();
+		final MutableLong idCtbMixte2 = new MutableLong();
+
+		doInNewTransaction(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+
+				final PersonnePhysique nh1 = addNonHabitant("Achille", "Talon", date(1950, 3, 24), Sexe.MASCULIN);
+				final ForFiscalPrincipal ffp1 = addForPrincipal(nh1, date(2008, 1, 1), MotifFor.ARRIVEE_HS, null, null, MockCommune.Lausanne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE);
+				ffp1.setModeImposition(ModeImposition.MIXTE_137_1);
+				idCtbMixte1.setValue(nh1.getNumero());
+
+				final PersonnePhysique nh2 = addNonHabitant("Achille", "Talon-2", date(1950, 3, 24), Sexe.MASCULIN);
+				final ForFiscalPrincipal ffp2 = addForPrincipal(nh2, date(2008, 1, 1), MotifFor.ARRIVEE_HS, null, null, MockCommune.Lausanne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE);
+				ffp2.setModeImposition(ModeImposition.MIXTE_137_2);
+				idCtbMixte2.setValue(nh2.getNumero());
+
+				return null;
+			}
+		});
+
+		final PersonnePhysique mixte1 = (PersonnePhysique) tiersDAO.get(idCtbMixte1.longValue());
+		Assert.assertFalse("Sourcier mixte 1, pourquoi 'gris' ?", tiersService.isSourcierGris(mixte1, null));
+
+		final PersonnePhysique mixte2 = (PersonnePhysique) tiersDAO.get(idCtbMixte2.longValue());
+		Assert.assertFalse("Sourcier mixte 2, pourquoi 'gris' ?", tiersService.isSourcierGris(mixte2, null));
+	}
+
+	@Test
+	public void testSourcierGrisMenage() throws Exception {
+
+		final MutableLong idCtbPrincipal = new MutableLong();
+		final MutableLong idCtbConjoint = new MutableLong();
+		final MutableLong idCtbCouple = new MutableLong();
+
+		doInNewTransaction(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+
+				final PersonnePhysique prn = addNonHabitant("Achille", "Talon", date(1950, 3, 24), Sexe.MASCULIN);
+				idCtbPrincipal.setValue(prn.getNumero());
+
+				final PersonnePhysique sec = addNonHabitant("Huguette", "Marcot", date(1950, 4, 12), Sexe.FEMININ);
+				idCtbConjoint.setValue(sec.getNumero());
+
+				final EnsembleTiersCouple ensemble = createEnsembleTiersCouple(prn, sec, date(1975, 1, 5));
+				final MenageCommun mc = ensemble.getMenage();
+				idCtbCouple.setValue(mc.getNumero());
+
+				final ForFiscalPrincipal ffp = addForPrincipal(mc, date(1975, 1, 5), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null, null, MockCommune.Lausanne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE);
+				ffp.setModeImposition(ModeImposition.SOURCE);
+
+				return null;
+			}
+		});
+
+		final PersonnePhysique principal = (PersonnePhysique) tiersDAO.get(idCtbPrincipal.longValue());
+		Assert.assertTrue("Couple avec for source vaudois sans habitant, pourquoi pas 'gris' ?", tiersService.isSourcierGris(principal, null));
+
+		final PersonnePhysique conjoint = (PersonnePhysique) tiersDAO.get(idCtbConjoint.longValue());
+		Assert.assertTrue("Couple avec for source vaudois sans habitant, pourquoi pas 'gris' ?", tiersService.isSourcierGris(conjoint, null));
+
+		final MenageCommun menage = (MenageCommun) tiersDAO.get(idCtbCouple.longValue());
+		Assert.assertTrue("Couple avec for source vaudois sans habitant, pourquoi pas 'gris' ?", tiersService.isSourcierGris(menage, null));
+	}
+
+	@Test
+	public void testSourcierGrisMenageMarieSeul() throws Exception {
+
+		final MutableLong idCtbPrincipal = new MutableLong();
+		final MutableLong idCtbCouple = new MutableLong();
+
+		doInNewTransaction(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+
+				final PersonnePhysique prn = addNonHabitant("Achille", "Talon", date(1950, 3, 24), Sexe.MASCULIN);
+				idCtbPrincipal.setValue(prn.getNumero());
+
+				final EnsembleTiersCouple ensemble = createEnsembleTiersCouple(prn, null, date(1975, 1, 5));
+				final MenageCommun mc = ensemble.getMenage();
+				idCtbCouple.setValue(mc.getNumero());
+
+				final ForFiscalPrincipal ffp = addForPrincipal(mc, date(1975, 1, 5), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null, null, MockCommune.Lausanne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE);
+				ffp.setModeImposition(ModeImposition.SOURCE);
+
+				return null;
+			}
+		});
+
+		final PersonnePhysique principal = (PersonnePhysique) tiersDAO.get(idCtbPrincipal.longValue());
+		Assert.assertTrue("Couple avec for source vaudois sans habitant, pourquoi pas 'gris' ?", tiersService.isSourcierGris(principal, null));
+
+		final MenageCommun menage = (MenageCommun) tiersDAO.get(idCtbCouple.longValue());
+		Assert.assertTrue("Couple avec for source vaudois sans habitant, pourquoi pas 'gris' ?", tiersService.isSourcierGris(menage, null));
+	}
+
+	@Test
+	public void testSourcierGrisMenageAvecUnMembreConnuAuCivil() throws Exception {
+
+		final long noIndAchille = 12345L;
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				addIndividu(noIndAchille, date(1950, 3, 24), "Achille", "Talon", true);
+			}
+		});
+
+		final MutableLong idCtbPrincipal = new MutableLong();
+		final MutableLong idCtbConjoint = new MutableLong();
+		final MutableLong idCtbCouple = new MutableLong();
+
+		doInNewTransaction(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+
+				final PersonnePhysique prn = addNonHabitant("Achille", "Talon", date(1950, 3, 24), Sexe.MASCULIN);
+				prn.setNumeroIndividu(noIndAchille);
+				idCtbPrincipal.setValue(prn.getNumero());
+
+				final PersonnePhysique sec = addNonHabitant("Huguette", "Marcot", date(1950, 4, 12), Sexe.FEMININ);
+				idCtbConjoint.setValue(sec.getNumero());
+
+				final EnsembleTiersCouple ensemble = createEnsembleTiersCouple(prn, sec, date(1975, 1, 5));
+				final MenageCommun mc = ensemble.getMenage();
+				idCtbCouple.setValue(mc.getNumero());
+
+				final ForFiscalPrincipal ffp = addForPrincipal(mc, date(1975, 1, 5), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null, null, MockCommune.Lausanne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE);
+				ffp.setModeImposition(ModeImposition.SOURCE);
+
+				return null;
+			}
+		});
+
+		final PersonnePhysique principal = (PersonnePhysique) tiersDAO.get(idCtbPrincipal.longValue());
+		Assert.assertFalse("Couple avec for source vaudois et un membre habitant, pourquoi 'gris' ?", tiersService.isSourcierGris(principal, null));
+
+		final PersonnePhysique conjoint = (PersonnePhysique) tiersDAO.get(idCtbConjoint.longValue());
+		Assert.assertFalse("Couple avec for source vaudois et un membre habitant, pourquoi 'gris' ?", tiersService.isSourcierGris(conjoint, null));
+
+		final MenageCommun menage = (MenageCommun) tiersDAO.get(idCtbCouple.longValue());
+		Assert.assertFalse("Couple avec for source vaudois et un membre habitant, pourquoi 'gris' ?", tiersService.isSourcierGris(menage, null));
+	}
+
+	@Test
+	public void testSourcierGrisMenageMarieSeulConnuAuCivil() throws Exception {
+
+		final long noIndAchille = 12345L;
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				addIndividu(noIndAchille, date(1950, 3, 24), "Achille", "Talon", true);
+			}
+		});
+
+		final MutableLong idCtbPrincipal = new MutableLong();
+		final MutableLong idCtbCouple = new MutableLong();
+
+		doInNewTransaction(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+
+				final PersonnePhysique prn = addNonHabitant("Achille", "Talon", date(1950, 3, 24), Sexe.MASCULIN);
+				prn.setNumeroIndividu(noIndAchille);
+				idCtbPrincipal.setValue(prn.getNumero());
+
+				final EnsembleTiersCouple ensemble = createEnsembleTiersCouple(prn, null, date(1975, 1, 5));
+				final MenageCommun mc = ensemble.getMenage();
+				idCtbCouple.setValue(mc.getNumero());
+
+				final ForFiscalPrincipal ffp = addForPrincipal(mc, date(1975, 1, 5), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null, null, MockCommune.Lausanne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE);
+				ffp.setModeImposition(ModeImposition.SOURCE);
+
+				return null;
+			}
+		});
+
+		final PersonnePhysique principal = (PersonnePhysique) tiersDAO.get(idCtbPrincipal.longValue());
+		Assert.assertFalse("Couple avec for source vaudois et un membre habitant, pourquoi 'gris' ?", tiersService.isSourcierGris(principal, null));
+
+		final MenageCommun menage = (MenageCommun) tiersDAO.get(idCtbCouple.longValue());
+		Assert.assertFalse("Couple avec for source vaudois et un membre habitant, pourquoi 'gris' ?", tiersService.isSourcierGris(menage, null));
 	}
 }

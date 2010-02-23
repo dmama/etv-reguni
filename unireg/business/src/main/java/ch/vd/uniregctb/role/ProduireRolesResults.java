@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.role;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -26,6 +27,7 @@ import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.MotifRattachement;
 
 /**
  * Contient les données brutes permettant de générer le rapport "rôles pour les communes".
@@ -54,6 +56,7 @@ public class ProduireRolesResults extends JobResults {
 
 	public enum IgnoreType {
 		DONNEES_INCOHERENTES("les données sont incohérente"), // -----------------------------------------------
+		SOURCIER_GRIS("le contribuable est un sourcier gris"), // ----------------------------------------------
 		DIPLOMATE_SUISSE("le contribuable est un diplomate Suisse basé à l'étranger"); // ----------------------
 
 		private final String description;
@@ -153,14 +156,35 @@ public class ProduireRolesResults extends JobResults {
 			ORDINAIRE("vaudois ordinaire"), // --------------------------------------------------------------------------------
 			HORS_CANTON("hors canton"), // ----------------------------------------------------------------------------
 			HORS_SUISSE("hors Suisse"), // ----------------------------------------------------------------------------
-			SOURCE("à la source"), // ---------------------------------------------------------------------------------
-			DEPENSE("à la dépense"), // -------------------------------------------------------------------------------
-			MIXTE("mixte"), // ----------------------------------------------------------------------------------------
+			SOURCE("source"), // ---------------------------------------------------------------------------------
+			DEPENSE("dépense"), // -------------------------------------------------------------------------------
+			MIXTE("sourcier mixte"), // ----------------------------------------------------------------------------------------
 			NON_ASSUJETTI("non-assujetti");
 
 			private final String description;
 
 			private TypeContribuable(String description) {
+				this.description = description;
+			}
+
+			public String description() {
+				return description;
+			}
+		}
+
+		/**
+		 * Type d'assujettissement : notons que les modalités sont données
+		 * dans un ordre de priorité croissante (POURSUIVI_PF est prioritaire sur TERMINE_DANS_PF,
+		 * qui est prioritaire sur NON_ASSUJETTI)
+		 */
+		public enum TypeAssujettissement {
+			NON_ASSUJETTI("Non assujetti"),         // l'assujettissement s'est terminé avant le début de la période fiscale
+			TERMINE_DANS_PF("Termniné"),            // l'assujettissement s'est terminé dans la période fiscale
+			POURSUIVI_APRES_PF("Poursuivi");        // l'assujetissement existe et se poursuit dans la période fiscale suivante
+
+			private final String description;
+
+			private TypeAssujettissement(String description) {
 				this.description = description;
 			}
 
@@ -227,6 +251,57 @@ public class ProduireRolesResults extends JobResults {
 		}
 
 		/**
+		 * Comparateur de motifs de rattachement : DOMICILE, ACTIVITE_INDEPENDANTE, IMMEUBLE_PRIVE puis tous les autres de manière indiférenciée
+		 */
+		private static final Comparator<MotifRattachement> COMPARATOR_MOTIF_RATTACHEMENT = new Comparator<MotifRattachement>() {
+
+			private final List<MotifRattachement> ORDRE_MOTIFS_RATTACHEMENT = Arrays.asList(MotifRattachement.DOMICILE, MotifRattachement.ACTIVITE_INDEPENDANTE, MotifRattachement.IMMEUBLE_PRIVE);
+
+			public int compare(MotifRattachement o1, MotifRattachement o2) {
+				final int indexMotif1 = ORDRE_MOTIFS_RATTACHEMENT.indexOf(o1);
+				final int indexMotif2 = ORDRE_MOTIFS_RATTACHEMENT.indexOf(o2);
+				if (indexMotif1 == indexMotif2) {
+					return 0;
+				}
+				else if (indexMotif1 == -1) {
+					return 1;
+				}
+				else if (indexMotif2 == -1) {
+					return -1;
+				}
+				else {
+					return indexMotif1 - indexMotif2;
+				}
+			}
+		};
+
+		private static final Comparator<InfoFor> COMPARATOR_OUVERTURE = new Comparator<InfoFor>() {
+			public int compare(InfoFor o1, InfoFor o2) {
+				int compare = NullDateBehavior.EARLIEST.compare(o1.dateOuverture, o2.dateOuverture);
+				if (compare == 0) {
+					compare = - Boolean.valueOf(o1.forPrincipal).compareTo(o2.forPrincipal);        // principal avant non-principal
+					if (compare == 0) {
+						compare = COMPARATOR_MOTIF_RATTACHEMENT.compare(o1.motifRattachement, o2.motifRattachement);
+					}
+				}
+				return compare;
+			}
+		};
+
+		private static final Comparator<InfoFor> COMPARATOR_FERMETURE = new Comparator<InfoFor>() {
+			public int compare(InfoFor o1, InfoFor o2) {
+				int compare = - NullDateBehavior.LATEST.compare(o1.dateFermeture, o2.dateFermeture);
+				if (compare == 0) {
+					compare = - Boolean.valueOf(o1.forPrincipal).compareTo(o2.forPrincipal);        // principal avant non-principal
+					if (compare == 0) {
+						compare = COMPARATOR_MOTIF_RATTACHEMENT.compare(o1.motifRattachement, o2.motifRattachement);
+					}
+				}
+				return compare;
+			}
+		};
+
+		/**
 		 * Prends le tout premier for et renvoie sa date d'ouverture et son motif d'ouverture
 		 */
 		public Pair<RegDate, MotifFor> getInfosOuverture() {
@@ -238,11 +313,7 @@ public class ProduireRolesResults extends JobResults {
 			}
 			else {
 				final List<InfoFor> aTrier = new ArrayList<InfoFor>(fors);
-				Collections.sort(aTrier, new Comparator<InfoFor>() {
-					public int compare(InfoFor o1, InfoFor o2) {
-						return NullDateBehavior.EARLIEST.compare(o1.dateOuverture, o2.dateOuverture);
-					}
-				});
+				Collections.sort(aTrier, COMPARATOR_OUVERTURE);
 				return extractInfosOuverture(aTrier.get(0));
 			}
 		}
@@ -256,6 +327,9 @@ public class ProduireRolesResults extends JobResults {
 			}
 		}
 
+		/**
+		 * Prend le dernier for et extrait son motif et sa date de fermeture
+		 */
 		public Pair<RegDate, MotifFor> getInfosFermeture() {
 			if (fors.isEmpty()) {
 				return null;
@@ -265,11 +339,7 @@ public class ProduireRolesResults extends JobResults {
 			}
 			else {
 				final List<InfoFor> aTrier = new ArrayList<InfoFor>(fors);
-				Collections.sort(aTrier, new Comparator<InfoFor>() {
-					public int compare(InfoFor o1, InfoFor o2) {
-						return - NullDateBehavior.LATEST.compare(o1.dateFermeture, o2.dateFermeture);
-					}
-				});
+				Collections.sort(aTrier, COMPARATOR_FERMETURE);
 				return extractInfosFermeture(aTrier.get(0));
 			}
 		}
@@ -283,23 +353,29 @@ public class ProduireRolesResults extends JobResults {
 			}
 		}
 
-		public boolean isAssujettiDansCommmune() {
-			boolean assujetti = false;
-			if (!fors.isEmpty()) {
-				for (InfoFor info : fors) {
-					if (info.causeAssujettissement) {
-						assujetti = true;
-						break;
-					}
+		public TypeAssujettissement getTypeAssujettissementDansCommune() {
+			TypeAssujettissement type = TypeAssujettissement.NON_ASSUJETTI;
+			for (InfoFor infoFor : fors) {
+				final TypeAssujettissement candidat = infoFor.typeAssujettissement;
+				if (candidat.ordinal() > type.ordinal()) {
+					type = candidat;
 				}
 			}
-			return assujetti;
+			return type;
 		}
 
 		public TypeContribuable getTypeCtb() {
 			TypeContribuable typeCtb = null;
 			if (fors.size() > 0) {
 				typeCtb = fors.get(fors.size() - 1).typeCtb;
+			}
+			return typeCtb;
+		}
+
+		public TypeContribuable getAncienTypeContribuable() {
+			TypeContribuable typeCtb = null;
+			if (fors.size() > 0) {
+				typeCtb = fors.get(fors.size() - 1).ancienTypeCtb;
 			}
 			return typeCtb;
 		}
@@ -324,27 +400,51 @@ public class ProduireRolesResults extends JobResults {
 		public final RegDate dateFermeture;
 		public final MotifFor motifOuverture;
 		public final MotifFor motifFermeture;
-		public final boolean causeAssujettissement;
+		public final InfoContribuable.TypeAssujettissement typeAssujettissement;
+		public final TypeContribuable ancienTypeCtb;
+		public final boolean forPrincipal;
+		public final MotifRattachement motifRattachement;
 
-		public InfoFor(TypeContribuable typeCtb, RegDate dateOuverture, MotifFor motifOuverture) {
-			this(typeCtb, dateOuverture, null, motifOuverture, null, true);
+		/**
+		 * Constructeur pour les assujettissements sur la période
+		 */
+		public InfoFor(TypeContribuable typeCtb, RegDate dateOuverture, MotifFor motifOuverture, RegDate dateFermeture, MotifFor motifFermeture, InfoContribuable.TypeAssujettissement typeAssujettissement, boolean forPrincipal, MotifRattachement motifRattachement) {
+			this(typeCtb, dateOuverture, motifOuverture, dateFermeture, motifFermeture, typeAssujettissement, null, forPrincipal, motifRattachement);
+			Assert.isTrue(typeAssujettissement == InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF || typeAssujettissement == InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF);
 		}
 
-		public InfoFor(TypeContribuable typeCtb, RegDate dateOuverture, RegDate dateFermeture, MotifFor motifOuverture, MotifFor motifFermeture, boolean causeAssujettissement) {
-			if (typeCtb != TypeContribuable.NON_ASSUJETTI) {
-				Assert.notNull(dateOuverture);
-				Assert.notNull(motifOuverture);
-			}
-			else {
-				Assert.isFalse(causeAssujettissement);
-			}
+		/**
+		 * Constructeur pour les fors fermés dans la période fiscale, et qui ont donné lieu à une fin d'assujettissement
+		 * à la fin de la période fiscale précédente
+		 * @param dateOuverture date d'ouverture du for déterminant pour l'assujettissement maintenant terminé
+		 * @param motifOuverture motif d'ouverture de ce même for
+		 * @param dateFermeture date de fermeture du for déterminant (ne devrait pas être nulle)
+		 * @param motifFermeture motif de fermeture du for déterminant (ne devrait pas être nul)
+		 * @param ancienTypeCtb type du contribuable dans la période fiscale précédente (il est maintenant non-assujetti)
+		 */
+		public InfoFor(RegDate dateOuverture, MotifFor motifOuverture, RegDate dateFermeture, MotifFor motifFermeture, TypeContribuable ancienTypeCtb, boolean forPrincipal, MotifRattachement motifRattachement) {
+			this(TypeContribuable.NON_ASSUJETTI, dateOuverture, motifOuverture, dateFermeture, motifFermeture, InfoContribuable.TypeAssujettissement.NON_ASSUJETTI, ancienTypeCtb, forPrincipal, motifRattachement);
+		}
+
+		/**
+		 * Constructeur interne factorisé
+		 */
+		private InfoFor(TypeContribuable typeCtb, RegDate dateOuverture, MotifFor motifOuverture, RegDate dateFermeture, MotifFor motifFermeture,
+		               InfoContribuable.TypeAssujettissement typeAssujettissement, TypeContribuable ancienTypeCtb, boolean forPrincipal,
+		               MotifRattachement motifRattachement) {
+
+			Assert.notNull(dateOuverture);
+			Assert.notNull(motifOuverture);
 
 			this.typeCtb = typeCtb;
 			this.dateOuverture = dateOuverture;
 			this.dateFermeture = dateFermeture;
 			this.motifOuverture = motifOuverture;
 			this.motifFermeture = motifFermeture;
-			this.causeAssujettissement = causeAssujettissement;
+			this.typeAssujettissement = typeAssujettissement;
+			this.ancienTypeCtb = ancienTypeCtb;
+			this.forPrincipal = forPrincipal;
+			this.motifRattachement = motifRattachement;
 		}
 
 		public RegDate getDateDebut() {
@@ -423,6 +523,10 @@ public class ProduireRolesResults extends JobResults {
 
 	public void addCtbIgnoreDiplomateSuisse(Contribuable ctb) {
 		ctbsIgnores.add(new Ignore(ctb.getNumero(), ctb.getOfficeImpotId(), IgnoreType.DIPLOMATE_SUISSE, null));
+	}
+
+	public void addCtbIgnoreSourcierGris(Contribuable ctb) {
+		ctbsIgnores.add(new Ignore(ctb.getNumero(), ctb.getOfficeImpotId(), IgnoreType.SOURCIER_GRIS, null));
 	}
 
 	public void addAll(ProduireRolesResults rapport) {

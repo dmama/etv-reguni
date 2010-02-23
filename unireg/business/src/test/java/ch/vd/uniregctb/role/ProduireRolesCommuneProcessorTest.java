@@ -22,6 +22,7 @@ import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
 import ch.vd.uniregctb.metier.assujettissement.DecompositionForsAnneeComplete;
 import ch.vd.uniregctb.metier.assujettissement.DiplomateSuisse;
 import ch.vd.uniregctb.metier.assujettissement.HorsCanton;
@@ -38,6 +39,7 @@ import ch.vd.uniregctb.role.ProduireRolesResults.InfoContribuable.TypeContribuab
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
@@ -79,7 +81,6 @@ public class ProduireRolesCommuneProcessorTest extends BusinessTest {
 		final Contribuable paul = newCtbVaudoisOrdinaire(MockCommune.Lausanne);
 		final Contribuable incognito = newCtbVaudoisOrdinaireDepuis2007(MockCommune.Lausanne);
 		final Contribuable raoul = newCtbVaudoisOrdinairePartiHorsCantonEn2007(MockCommune.Lausanne);
-		final Contribuable didier = newCtbVaudoisOrdinairePartiHorsCantonEn2006(MockCommune.Lausanne);
 		final Contribuable arnold = newCtbVaudoisSourcierMixte(MockCommune.Lausanne);
 		final Contribuable victor = newCtbVaudoisSourcier(MockCommune.Lausanne);
 		final Contribuable geo = newCtbHorsCantonEtImmeuble(MockCommune.Lausanne);
@@ -88,17 +89,20 @@ public class ProduireRolesCommuneProcessorTest extends BusinessTest {
 		final Contribuable tyler = newCtbHorsCantonEtActiviteIndStoppeeEn2007(MockCommune.Lausanne);
 		final Contribuable marc = newCtbDiplomateSuisse(MockCommune.Lausanne);
 		final Contribuable louis = newCtbVaudoisOrdinairePartiHorsCantonEtImmeuble(MockCommune.Lausanne, MockCommune.Lausanne);
+		final Contribuable albertine = newCtbVaudoisSourcierGris(MockCommune.Lausanne);
 		final Contribuable rodolf = getCtbVaudoisOrdinaireEtImmeubleInvalide();
 
 		/*
 		 * Contribuable devant être ignorés
 		 */
 
+		final Contribuable didier = newCtbVaudoisOrdinairePartiHorsCantonEn2006(MockCommune.Lausanne);
 		final Contribuable pierre = newCtbVaudoisOrdinairePartiHorsCantonEn1983(MockCommune.Lausanne);
 		final Contribuable jean = newCtbVaudoisOrdinaireAnnule(MockCommune.Lausanne);
 		final Contribuable jeans = newCtbHorsCantonSansForSecondaire();
 		final Contribuable popol = newCtbHorsCantonEtImmeubleVenduEn2005(MockCommune.Lausanne);
 		final Contribuable rama = newCtbHorsCantonEtForImmeubleAnnule(MockCommune.Lausanne);
+		assertNotNull(didier);
 		assertNotNull(pierre);
 		assertNotNull(jean);
 		assertNotNull(jeans);
@@ -111,7 +115,6 @@ public class ProduireRolesCommuneProcessorTest extends BusinessTest {
 		assertNextIs(iter, paul.getNumero());
 		assertNextIs(iter, incognito.getNumero());
 		assertNextIs(iter, raoul.getNumero());
-		assertNextIs(iter, didier.getNumero());
 		assertNextIs(iter, arnold.getNumero());
 		assertNextIs(iter, victor.getNumero());
 		assertNextIs(iter, geo.getNumero());
@@ -120,12 +123,15 @@ public class ProduireRolesCommuneProcessorTest extends BusinessTest {
 		assertNextIs(iter, tyler.getNumero());
 		assertNextIs(iter, marc.getNumero());
 		assertNextIs(iter, louis.getNumero());
+		assertNextIs(iter, albertine.getNumero());
 		assertNextIs(iter, rodolf.getNumero());
 		assertFalse(iter.hasNext());
 	}
 
 	@Test
 	public void testRun() throws Exception {
+
+		serviceCivil.setUp(new DefaultMockServiceCivil());
 
 		class Ids {
 			public Long paul;
@@ -134,6 +140,7 @@ public class ProduireRolesCommuneProcessorTest extends BusinessTest {
 			public Long didier;
 			public Long arnold;
 			public Long victor;
+			public Long albertine;
 			public Long geo;
 			public Long donald;
 			public Long johnny;
@@ -142,6 +149,10 @@ public class ProduireRolesCommuneProcessorTest extends BusinessTest {
 			public Long marc;
 			public Long louis;
 			public Long albert;
+			public Long georges;
+			public Long marie;
+			public Long jean;
+			public Long tom;
 		}
 		final Ids ids = new Ids();
 
@@ -154,6 +165,7 @@ public class ProduireRolesCommuneProcessorTest extends BusinessTest {
 				ids.didier = newCtbVaudoisOrdinairePartiHorsCantonEn2006(MockCommune.Lausanne).getNumero();
 				ids.arnold = newCtbVaudoisSourcierMixte(MockCommune.Lausanne).getNumero();
 				ids.victor = newCtbVaudoisSourcier(MockCommune.Lausanne).getNumero();
+				ids.albertine = newCtbVaudoisSourcierGris(MockCommune.Lausanne).getNumero();
 				ids.geo = newCtbHorsCantonEtImmeuble(MockCommune.Lausanne).getNumero();
 				ids.donald = newCtbHorsCantonEtDeuxImmeubles(MockCommune.Lausanne, MockCommune.Lausanne).getNumero();
 				ids.johnny = newCtbHorsCantonEtImmeubleVenduEn2007(MockCommune.Lausanne).getNumero();
@@ -162,15 +174,19 @@ public class ProduireRolesCommuneProcessorTest extends BusinessTest {
 				ids.marc = newCtbDiplomateSuisse(MockCommune.Lausanne).getNumero();
 				ids.louis = newCtbVaudoisOrdinairePartiHorsCantonEtImmeuble(MockCommune.Lausanne, MockCommune.Cossonay).getNumero();
 				ids.albert = newCtbVaudoisOrdinairePartiHorsSuisseEtImmeuble(MockCommune.Lausanne, MockCommune.Cossonay).getNumero();
+				ids.georges = newCtbHorsCantonDeuxImmeublesNonChevauchant(MockCommune.Lausanne, MockCommune.Lausanne).getNumero();
+				ids.marie = newCtbVaudoisPartiHorsCantonTrenteEtUnDecembre(MockCommune.Lausanne).getNumero();
+				ids.jean = newCtbVaudoisPartiHorsSuisseTrenteEtUnDecembre(MockCommune.Lausanne).getNumero();
+				ids.tom = newCtbHorsSuisseImmeubleVenduTrenteEtUnDecembre(MockCommune.Lausanne).getNumero();
 				return null;
 			}
 		});
 
 		final ProduireRolesResults results = processor.runPourToutesCommunes(2007, null);
 		assertNotNull(results);
-		assertEquals(14, results.ctbsTraites);
+		assertEquals(18, results.ctbsTraites);
 		assertEquals(0, results.ctbsEnErrors.size());
-		assertEquals(1, results.ctbsIgnores.size()); // le diplomate
+		assertEquals(2, results.ctbsIgnores.size()); // le diplomate et le sourcier gris
 		assertEquals(2, results.infosCommunes.size());
 
 		{
@@ -183,6 +199,7 @@ public class ProduireRolesCommuneProcessorTest extends BusinessTest {
 			final InfoContribuable infoDidier = infoLausanne.getInfoPourContribuable(ids.didier);
 			final InfoContribuable infoArnold = infoLausanne.getInfoPourContribuable(ids.arnold);
 			final InfoContribuable infoVictor = infoLausanne.getInfoPourContribuable(ids.victor);
+			final InfoContribuable infoAlbertine = infoLausanne.getInfoPourContribuable(ids.albertine);
 			final InfoContribuable infoGeo = infoLausanne.getInfoPourContribuable(ids.geo);
 			final InfoContribuable infoDonald = infoLausanne.getInfoPourContribuable(ids.donald);
 			final InfoContribuable infoJohnny = infoLausanne.getInfoPourContribuable(ids.johnny);
@@ -191,23 +208,32 @@ public class ProduireRolesCommuneProcessorTest extends BusinessTest {
 			final InfoContribuable infoMarc = infoLausanne.getInfoPourContribuable(ids.marc);
 			final InfoContribuable infoLouis = infoLausanne.getInfoPourContribuable(ids.louis);
 			final InfoContribuable infoAlbert = infoLausanne.getInfoPourContribuable(ids.albert);
+			final InfoContribuable infoGeorges = infoLausanne.getInfoPourContribuable(ids.georges);
+			final InfoContribuable infoMarie = infoLausanne.getInfoPourContribuable(ids.marie);
+			final InfoContribuable infoJean = infoLausanne.getInfoPourContribuable(ids.jean);
+			final InfoContribuable infoTom = infoLausanne.getInfoPourContribuable(ids.tom);
 
-			assertInfo(ids.paul, TypeContribuable.ORDINAIRE, date(1983, 4, 13), null, MotifFor.MAJORITE, null, true, infoPaul);
-			assertInfo(ids.incognito, TypeContribuable.ORDINAIRE, date(2007, 4, 13), null, MotifFor.ARRIVEE_HC, null, true, infoIncognito);
-			assertInfo(ids.raoul, TypeContribuable.NON_ASSUJETTI, date(1983, 4, 13), date(2007, 9, 30), MotifFor.ARRIVEE_HC, MotifFor.DEPART_HC, false, infoRaoul);
-			assertInfo(ids.didier, TypeContribuable.NON_ASSUJETTI, null, null, null, null, false, infoDidier);
-			assertInfo(ids.arnold, TypeContribuable.MIXTE, date(1983, 4, 13), null, MotifFor.ARRIVEE_HC, null, true, infoArnold);
-			assertInfo(ids.victor, TypeContribuable.SOURCE, date(1983, 4, 13), null, MotifFor.ARRIVEE_HC, null, true, infoVictor);
-			assertInfo(ids.geo, TypeContribuable.HORS_CANTON, date(2003, 3, 1), null, MotifFor.ACHAT_IMMOBILIER, null, true, infoGeo);
-			assertInfo(ids.donald, TypeContribuable.HORS_CANTON, date(1990, 1, 15), null, MotifFor.ACHAT_IMMOBILIER, null, true, infoDonald);
-			assertInfo(ids.johnny, TypeContribuable.HORS_CANTON, date(2005, 11, 3), date(2007, 8, 30), MotifFor.ACHAT_IMMOBILIER, MotifFor.VENTE_IMMOBILIER, true, infoJohnny);
-			assertInfo(ids.tyler, TypeContribuable.HORS_CANTON, date(2005, 11, 3), date(2007, 8, 30), MotifFor.DEBUT_EXPLOITATION, MotifFor.FIN_EXPLOITATION, true, infoTyler);
-			assertInfo(ids.pascal, TypeContribuable.ORDINAIRE, date(1983, 4, 13), null, MotifFor.MAJORITE, null, true, infoPascal);
+			assertInfo(ids.paul, TypeContribuable.ORDINAIRE, date(1983, 4, 13), null, MotifFor.MAJORITE, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoPaul);
+			assertInfo(ids.incognito, TypeContribuable.ORDINAIRE, date(2007, 4, 13), null, MotifFor.ARRIVEE_HC, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoIncognito);
+			assertInfo(ids.raoul, TypeContribuable.NON_ASSUJETTI, date(1983, 4, 13), date(2007, 9, 30), MotifFor.ARRIVEE_HC, MotifFor.DEPART_HC, InfoContribuable.TypeAssujettissement.NON_ASSUJETTI, TypeContribuable.ORDINAIRE, infoRaoul);
+			assertNull(infoDidier);
+			assertInfo(ids.arnold, TypeContribuable.MIXTE, date(1983, 4, 13), null, MotifFor.ARRIVEE_HC, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoArnold);
+			assertInfo(ids.victor, TypeContribuable.SOURCE, date(1983, 4, 13), null, MotifFor.ARRIVEE_HC, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoVictor);
+			assertNull(infoAlbertine);
+			assertInfo(ids.geo, TypeContribuable.HORS_CANTON, date(2003, 3, 1), null, MotifFor.ACHAT_IMMOBILIER, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoGeo);
+			assertInfo(ids.donald, TypeContribuable.HORS_CANTON, date(1990, 1, 15), null, MotifFor.ACHAT_IMMOBILIER, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoDonald);
+			assertInfo(ids.johnny, TypeContribuable.HORS_CANTON, date(2005, 11, 3), date(2007, 8, 30), MotifFor.ACHAT_IMMOBILIER, MotifFor.VENTE_IMMOBILIER, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, infoJohnny);
+			assertInfo(ids.tyler, TypeContribuable.HORS_CANTON, date(2005, 11, 3), date(2007, 8, 30), MotifFor.DEBUT_EXPLOITATION, MotifFor.FIN_EXPLOITATION, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, infoTyler);
+			assertInfo(ids.pascal, TypeContribuable.ORDINAIRE, date(1983, 4, 13), null, MotifFor.MAJORITE, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoPascal);
 			assertNull(infoMarc);
-			assertInfo(ids.louis, TypeContribuable.NON_ASSUJETTI, date(1983, 4, 13), date(2007, 9, 30), MotifFor.ARRIVEE_HC, MotifFor.DEPART_HC, false, infoLouis);
-			assertInfo(ids.albert, TypeContribuable.ORDINAIRE, date(1983, 4, 13), date(2007, 9, 30), MotifFor.ARRIVEE_HC, MotifFor.DEPART_HS, true, infoAlbert);
+			assertInfo(ids.louis, TypeContribuable.NON_ASSUJETTI, date(1983, 4, 13), date(2007, 9, 30), MotifFor.ARRIVEE_HC, MotifFor.DEPART_HC, InfoContribuable.TypeAssujettissement.NON_ASSUJETTI, TypeContribuable.ORDINAIRE, infoLouis);
+			assertInfo(ids.albert, TypeContribuable.ORDINAIRE, date(1983, 4, 13), date(2007, 9, 30), MotifFor.ARRIVEE_HC, MotifFor.DEPART_HS, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, infoAlbert);
+			assertInfo(ids.georges, TypeContribuable.HORS_CANTON, date(1980, 3, 1), null, MotifFor.ACHAT_IMMOBILIER, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoGeorges);
+			assertInfo(ids.marie, TypeContribuable.ORDINAIRE, date(1983, 4, 13), date(2007, 12, 31), MotifFor.ARRIVEE_HC, MotifFor.DEPART_HC, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, infoMarie);
+			assertInfo(ids.jean, TypeContribuable.ORDINAIRE, date(1983, 4, 13), date(2007, 12, 31), MotifFor.ARRIVEE_HC, MotifFor.DEPART_HS, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, infoJean);
+			assertInfo(ids.tom, TypeContribuable.HORS_SUISSE, date(2005, 11, 3), date(2007, 12, 31), MotifFor.ACHAT_IMMOBILIER, MotifFor.VENTE_IMMOBILIER, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, infoTom);
 
-			assertEquals(13, infoLausanne.getInfosContribuables().size());
+			assertEquals(16, infoLausanne.getInfosContribuables().size());
 		}
 
 		{
@@ -219,10 +245,10 @@ public class ProduireRolesCommuneProcessorTest extends BusinessTest {
 			final InfoContribuable infoLouis = infoCossonay.getInfoPourContribuable(ids.louis);
 			final InfoContribuable infoAlbert = infoCossonay.getInfoPourContribuable(ids.albert);
 
-			assertInfo(ids.pascal, TypeContribuable.ORDINAIRE, date(2000, 1, 1), null, MotifFor.ACHAT_IMMOBILIER, null, true, infoPascal);
+			assertInfo(ids.pascal, TypeContribuable.ORDINAIRE, date(2000, 1, 1), null, MotifFor.ACHAT_IMMOBILIER, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoPascal);
 			assertNull(infoMarc);
-			assertInfo(ids.louis, TypeContribuable.HORS_CANTON, date(2001, 3, 2), null, MotifFor.ACHAT_IMMOBILIER, null, true, infoLouis);
-			assertInfo(ids.albert, TypeContribuable.HORS_SUISSE, date(2001, 3, 2), null, MotifFor.ACHAT_IMMOBILIER, null, true, infoAlbert);
+			assertInfo(ids.louis, TypeContribuable.HORS_CANTON, date(2001, 3, 2), null, MotifFor.ACHAT_IMMOBILIER, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoLouis);
+			assertInfo(ids.albert, TypeContribuable.HORS_SUISSE, date(2001, 3, 2), null, MotifFor.ACHAT_IMMOBILIER, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoAlbert);
 
 			assertEquals(3, infoCossonay.getInfosContribuables().size());
 		}
@@ -275,7 +301,7 @@ public class ProduireRolesCommuneProcessorTest extends BusinessTest {
 
 			final InfoContribuable infoBenjamin = infoLausanne.getInfoPourContribuable(ids.benjamin);
 
-			assertInfo(ids.benjamin, TypeContribuable.ORDINAIRE, date(1983, 4, 13), null, MotifFor.MAJORITE, null, true, infoBenjamin);
+			assertInfo(ids.benjamin, TypeContribuable.ORDINAIRE, date(1983, 4, 13), null, MotifFor.MAJORITE, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoBenjamin);
 
 			assertEquals(1, infoLausanne.getInfosContribuables().size());
 		}
@@ -310,7 +336,7 @@ public class ProduireRolesCommuneProcessorTest extends BusinessTest {
 			assertNotNull(infoLausanne);
 
 			final InfoContribuable infoGeneview = infoLausanne.getInfoPourContribuable(ids.genevieve);
-			assertInfo(ids.genevieve, TypeContribuable.ORDINAIRE, date(2003, 10, 1), null, MotifFor.DEMENAGEMENT_VD, null, true, infoGeneview);
+			assertInfo(ids.genevieve, TypeContribuable.ORDINAIRE, date(2003, 10, 1), null, MotifFor.DEMENAGEMENT_VD, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoGeneview);
 
 			assertEquals(1, infoLausanne.getInfosContribuables().size());
 		}
@@ -333,15 +359,72 @@ public class ProduireRolesCommuneProcessorTest extends BusinessTest {
 		assertNull(ProduireRolesCommuneProcessor.getTypeContribuable(new DiplomateSuisse(toto, null, null, null, null, fors)));
 	}
 
+	@Test
+	public void testMotifs() throws Exception {
+
+		final RegDate dateDebut = date(1980, 3, 5);
+		final RegDate dateFin = date(2007, 9, 12);
+
+		final Long ppId = (Long) doInNewTransaction(new TxCallback() {
+
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = addNonHabitant("Achille", "Talon", date(1954, 3, 15), Sexe.MASCULIN);
+
+				// sur Lausanne : domicile, activité indépendante et immeuble aux mêmes dates
+				addForPrincipal(pp, dateDebut, MotifFor.ARRIVEE_HS, dateFin, MotifFor.DEPART_HS, MockCommune.Lausanne);
+				addForSecondaire(pp, dateDebut, MotifFor.ACHAT_IMMOBILIER, dateFin, MotifFor.VENTE_IMMOBILIER, MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, dateDebut, MotifFor.DEBUT_EXPLOITATION, dateFin, MotifFor.FIN_EXPLOITATION, MockCommune.Lausanne.getNoOFS(), MotifRattachement.ACTIVITE_INDEPENDANTE);
+
+				// sur Cossonay : activité indépendante et immeuble aux mêmes dates
+				addForSecondaire(pp, dateDebut, MotifFor.ACHAT_IMMOBILIER, dateFin, MotifFor.VENTE_IMMOBILIER, MockCommune.Cossonay.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, dateDebut, MotifFor.DEBUT_EXPLOITATION, dateFin, MotifFor.FIN_EXPLOITATION, MockCommune.Cossonay.getNoOFS(), MotifRattachement.ACTIVITE_INDEPENDANTE);
+
+				return pp.getNumero();
+			}
+		});
+
+		final ProduireRolesResults results = processor.runPourToutesCommunes(2007, null);
+		assertNotNull(results);
+		assertEquals(1, results.ctbsTraites);
+		assertEquals(0, results.ctbsEnErrors.size());
+		assertEquals(0, results.ctbsIgnores.size());
+		assertEquals(2, results.infosCommunes.size());
+
+		// Lausanne
+		{
+			final InfoCommune infos = results.getInfoPourCommune(MockCommune.Lausanne.getNoOFS());
+			assertNotNull(infos);
+			assertEquals(1, infos.getInfosContribuables().size());
+
+			final InfoContribuable infosCtb = infos.getInfoPourContribuable(ppId);
+			assertNotNull(infosCtb);
+			assertInfo(ppId, TypeContribuable.ORDINAIRE, dateDebut, dateFin, MotifFor.ARRIVEE_HS, MotifFor.DEPART_HS, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, infosCtb);
+		}
+
+		// Cossonay
+		{
+			final InfoCommune infos = results.getInfoPourCommune(MockCommune.Cossonay.getNoOFS());
+			assertNotNull(infos);
+			assertEquals(1, infos.getInfosContribuables().size());
+
+			final InfoContribuable infosCtb = infos.getInfoPourContribuable(ppId);
+			assertNotNull(infosCtb);
+			assertInfo(ppId, TypeContribuable.ORDINAIRE, dateDebut, dateFin, MotifFor.DEBUT_EXPLOITATION, MotifFor.FIN_EXPLOITATION, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, infosCtb);
+		}
+	}
+
 	private static void assertInfo(long id, TypeContribuable type, RegDate ouvertureFor, RegDate fermetureFor,
-			MotifFor motifOuverture, MotifFor motifFermeture, boolean assujetti, InfoContribuable info) {
+	                               MotifFor motifOuverture, MotifFor motifFermeture, InfoContribuable.TypeAssujettissement typeAssujettissement,
+	                               TypeContribuable ancienTypeContribuable, InfoContribuable info) {
 		assertNotNull(info);
 		assertEquals(id, info.noCtb);
 		assertEquals(type, info.getTypeCtb());
 
 		assertInfoExtremite(ouvertureFor, motifOuverture, info.getInfosOuverture());
 		assertInfoExtremite(fermetureFor, motifFermeture, info.getInfosFermeture());
-		assertEquals(assujetti, info.isAssujettiDansCommmune());
+		assertEquals(ancienTypeContribuable, info.getAncienTypeContribuable());
+		assertEquals(typeAssujettissement, info.getTypeAssujettissementDansCommune());
 	}
 
 	private static void assertInfoExtremite(RegDate date, MotifFor motif, Pair<RegDate, MotifFor> infosExtremite) {
@@ -381,6 +464,26 @@ public class ProduireRolesCommuneProcessorTest extends BusinessTest {
 		addForPrincipal(raoul, date(1983, 4, 13), MotifFor.ARRIVEE_HC, date(2007, 9, 30), MotifFor.DEPART_HC, commune);
 		addForPrincipal(raoul, date(2007, 10, 1), MotifFor.DEPART_HC, MockCommune.Bern);
 		return raoul;
+	}
+
+	/**
+	 * @return un contribuable vaudois parti hors-canton au 31.12.2007
+	 */
+	private Contribuable newCtbVaudoisPartiHorsCantonTrenteEtUnDecembre(MockCommune commune) {
+		final Contribuable raoul = addNonHabitant("Marie", "Coller", date(1965, 4, 13), Sexe.FEMININ);
+		addForPrincipal(raoul, date(1983, 4, 13), MotifFor.ARRIVEE_HC, date(2007, 12, 31), MotifFor.DEPART_HC, commune);
+		addForPrincipal(raoul, date(2008, 1, 1), MotifFor.DEPART_HC, MockCommune.Bern);
+		return raoul;
+	}
+
+	/**
+	 * @return un contribuable vaudois parti hors-Suisse au 31.12.2007
+	 */
+	private Contribuable newCtbVaudoisPartiHorsSuisseTrenteEtUnDecembre(MockCommune commune) {
+		final Contribuable marie = addNonHabitant("Marie", "Coller", date(1965, 4, 13), Sexe.FEMININ);
+		addForPrincipal(marie, date(1983, 4, 13), MotifFor.ARRIVEE_HC, date(2007, 12, 31), MotifFor.DEPART_HS, commune);
+		addForPrincipal(marie, date(2008, 1, 1), MotifFor.DEPART_HS, MockPays.PaysInconnu);
+		return marie;
 	}
 
 	/**
@@ -457,19 +560,30 @@ public class ProduireRolesCommuneProcessorTest extends BusinessTest {
 	 */
 	private Contribuable newCtbVaudoisSourcierMixte(MockCommune commune) {
 		final Contribuable arnold = addNonHabitant("Arnold", "Duplat", date(1965, 4, 13), Sexe.MASCULIN);
-		ForFiscalPrincipal fors = addForPrincipal(arnold, date(1983, 4, 13), MotifFor.ARRIVEE_HC, commune);
+		final ForFiscalPrincipal fors = addForPrincipal(arnold, date(1983, 4, 13), MotifFor.ARRIVEE_HC, commune);
 		fors.setModeImposition(ModeImposition.MIXTE_137_2);
 		return arnold;
 	}
 
 	/**
-	 * @return un contribuable vaudois dans le canton depuis des années avec un mode d'imposition sourcier pur
+	 * @return un contribuable vaudois dans le canton depuis des années avec un mode d'imposition sourcier pur (non gris!)
 	 */
 	private Contribuable newCtbVaudoisSourcier(MockCommune commune) {
-		final Contribuable victor = addNonHabitant("Victor", "Duplat", date(1965, 4, 13), Sexe.MASCULIN);
-		ForFiscalPrincipal fors = addForPrincipal(victor, date(1983, 4, 13), MotifFor.ARRIVEE_HC, commune);
+		final PersonnePhysique victor = addNonHabitant("Victor", "Duplat", date(1965, 4, 13), Sexe.MASCULIN);
+		victor.setNumeroIndividu(263343L);
+		final ForFiscalPrincipal fors = addForPrincipal(victor, date(1983, 4, 13), MotifFor.ARRIVEE_HC, commune);
 		fors.setModeImposition(ModeImposition.SOURCE);
 		return victor;
+	}
+
+	/**
+	 * @return un contribuable vaudois dans le canton depuis des années avec un mode d'imposition sourcier pur (gris)
+	 */
+	private Contribuable newCtbVaudoisSourcierGris(MockCommune commune) {
+		final Contribuable albertine = addNonHabitant("Albertine", "Duplat", date(1969, 4, 13), Sexe.FEMININ);
+		final ForFiscalPrincipal fors = addForPrincipal(albertine, date(1983, 4, 13), MotifFor.ARRIVEE_HC, commune);
+		fors.setModeImposition(ModeImposition.SOURCE);
+		return albertine;
 	}
 
 	/**
@@ -494,6 +608,17 @@ public class ProduireRolesCommuneProcessorTest extends BusinessTest {
 	}
 
 	/**
+	 * @return un contribuable avec un for principal hors canton, et avec deux immeubles dans le canton, l'un vendu en 2007, l'autre acheté en 2007, sans chevauchement
+	 */
+	private Contribuable newCtbHorsCantonDeuxImmeublesNonChevauchant(MockCommune communeImmeuble1, MockCommune communeImmeuble2) {
+		final Contribuable georges = addNonHabitant("Georges", "Trouverien", date(1948, 11, 3), Sexe.MASCULIN);
+		addForPrincipal(georges, date(1968, 11, 3), null, null, null, MockCommune.Neuchatel.getNoOFS(), TypeAutoriteFiscale.COMMUNE_HC, MotifRattachement.DOMICILE);
+		addImmeuble(georges, communeImmeuble1, date(1980, 3, 1), date(2007, 6, 30));
+		addImmeuble(georges, communeImmeuble2, date(2007, 11, 15), null);
+		return georges;
+	}
+
+	/**
 	 * @return un contribuable avec un for principal hors canton, et avec un immeuble dans le canton qui a été vendu en 2007
 	 */
 	private Contribuable newCtbHorsCantonEtImmeubleVenduEn2007(MockCommune commune) {
@@ -501,6 +626,16 @@ public class ProduireRolesCommuneProcessorTest extends BusinessTest {
 		addForPrincipal(johnny, date(2005, 11, 3), null, null, null, MockCommune.Bern.getNoOFS(), TypeAutoriteFiscale.COMMUNE_HC, MotifRattachement.DOMICILE);
 		addImmeuble(johnny, commune, date(2005, 11, 3), date(2007, 8, 30));
 		return johnny;
+	}
+
+	/**
+	 * @return un contribuable avec un for principal hors Suisse, et avec un immeuble dans le canton qui a été vendu le 31.12.2007
+	 */
+	private Contribuable newCtbHorsSuisseImmeubleVenduTrenteEtUnDecembre(MockCommune commune) {
+		final Contribuable tom = addNonHabitant("Tom", "Cruise", date(1948, 11, 3), Sexe.MASCULIN);
+		addForPrincipal(tom, date(2005, 11, 3), null, null, null, MockPays.Albanie.getNoOFS(), TypeAutoriteFiscale.PAYS_HS, MotifRattachement.DOMICILE);
+		addImmeuble(tom, commune, date(2005, 11, 3), date(2007, 12, 31));
+		return tom;
 	}
 
 	/**

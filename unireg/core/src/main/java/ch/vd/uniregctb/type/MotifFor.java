@@ -8,14 +8,14 @@ public enum MotifFor {
 	 *
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_7pc54PY1Edyw0I40oDFBsg"
 	 */
-	DEMENAGEMENT_VD("Déménagement VD"), /**
+	DEMENAGEMENT_VD("Déménagement"), /**
 	 * <!-- begin-user-doc -->
 	 * correspond a VEUVAGE_DISSOLUTION_PARTENARIAT_DECES
 	 * <!-- end-user-doc -->
 	 *
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_PtEZMPY2Edyw0I40oDFBsg"
 	 */
-	VEUVAGE_DECES("Veuvage / décès"), /**
+	VEUVAGE_DECES("Veuvage", "Décès"), /**
 	 * <!-- begin-user-doc -->
 	 * correspond a MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION
 	 * <!-- end-user-doc -->
@@ -109,7 +109,7 @@ public enum MotifFor {
 	 *
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_T53JwPY2Edyw0I40oDFBsg"
 	 */
-	SEJOUR_SAISONNIER("séjour saisonnier"),
+	SEJOUR_SAISONNIER("Début de séjour saisonnier", "Fin de séjour saisonnier"),
 	/**
 	 * Utilisé lors du changement du mode d'imposition,
 	 */
@@ -125,14 +125,20 @@ public enum MotifFor {
 	 */
 	REACTIVATION("Réactivation");
 
+	private final String descriptionOuverture;
 
-	private final String description;
+	private final String descriptionFermeture;
 
-	MotifFor(String description) {
-		this.description = description;
+	private MotifFor(String descriptionOuverture, String descriptionFermeture) {
+		this.descriptionOuverture = descriptionOuverture;
+		this.descriptionFermeture = descriptionFermeture;
 	}
 
-	public String getDescription() {
-		return description;
+	private MotifFor(String description) {
+		this(description, description);
+	}
+
+	public String getDescription(boolean ouverture) {
+		return ouverture ? descriptionOuverture : descriptionFermeture;
 	}
 }
