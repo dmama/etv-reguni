@@ -464,6 +464,40 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	}
 
 	@Test
+	public void testGetNomCantonFromMessage() throws Exception{
+
+				CriteresAdresse adresse = new CriteresAdresse();
+
+				adresse.setNpaSuisse(3018);
+				adresse.setLieu("Bümpliz");
+				adresse.setLigneAdresse1("Alberto el tiburon");
+				adresse.setLigneAdresse2("et son épouse");
+				adresse.setNoAppartement("12");
+				adresse.setNoPolice("36B");
+				adresse.setRue("Chemin de la strasse verte");
+				adresse.setTypeAdresse(TypeAdresse.SUISSE);
+				CriteresPersonne criteres = new CriteresPersonne();
+				criteres.setPrenoms("Alberto");
+				criteres.setNom("Fujimori");
+				criteres.setNAVS13("123654798123");
+				criteres.setDateNaissance(date(1953, 12, 3));
+				criteres.setAdresse(adresse);
+				criteres.setSexe(Sexe.MASCULIN);
+				IdentificationContribuable message = createDemandeFromCanton(criteres, "2-BE-5");
+				message.setLogCreationDate(RegDate.get().asJavaDate());
+
+				String nomCanton =service.getNomCantonFromEmetteurId(message.getDemande().getEmetteurId());
+				assertEquals("Berne",nomCanton);
+
+				message = createDemandeFromCanton(criteres, "2-SS-5");
+				nomCanton =service.getNomCantonFromEmetteurId(message.getDemande().getEmetteurId());
+				assertEquals("2-SS-5",nomCanton);
+
+
+	}
+
+
+	@Test
 	public void testIdentifieParAdresse() throws Exception {
 
 		class Ids {

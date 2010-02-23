@@ -881,10 +881,19 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 
 	}
 
-	public String getNomCantonFromMessage(IdentificationContribuable identification) throws InfrastructureException {
-		String emetteurId = identification.getDemande().getEmetteurId();
+	public String getNomCantonFromEmetteurId(String emetteurId) {
+
 		String sigle = StringUtils.substring(emetteurId, 2, 4);
-		Canton canton = infraService.getCantonBySigle(sigle);
+		Canton canton = null;
+
+			try {
+				canton = infraService.getCantonBySigle(sigle);
+			}
+			catch (InfrastructureException e) {
+				// On a pas réussi a resoudre le canton,
+				//on renvoie l'emetteur id telquel
+				canton = null;
+			}
 
 		if (canton != null && canton.getNomMinuscule() != null) {
 			return canton.getNomMinuscule();

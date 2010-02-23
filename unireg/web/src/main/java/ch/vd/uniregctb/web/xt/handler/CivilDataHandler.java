@@ -16,9 +16,6 @@ import org.springmodules.xt.ajax.action.RemoveContentAction;
 import org.springmodules.xt.ajax.action.ReplaceContentAction;
 import org.springmodules.xt.ajax.component.Component;
 import org.springmodules.xt.ajax.component.Container;
-import org.springmodules.xt.ajax.component.Table;
-import org.springmodules.xt.ajax.component.TableData;
-import org.springmodules.xt.ajax.component.TableRow;
 
 import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.RegDate;
@@ -75,7 +72,7 @@ public class CivilDataHandler extends AbstractAjaxHandler implements Application
 		return response;
 	}
 
-	
+
 
 
 	private class FicheCivile extends Container {
@@ -159,16 +156,16 @@ public class CivilDataHandler extends AbstractAjaxHandler implements Application
 			super(Type.DIV);
 			Assert.isTrue(individuView != null);
 			this.numeroIndividu = individuView.getNumeroIndividu();
-			this.nom = individuView.getNom();
-			this.nomNaissance = individuView.getNomNaissance();
+			this.nom = individuView.getNom() == null ? "":individuView.getNom();
+			this.nomNaissance =individuView.getNomNaissance() == null ? "": individuView.getNomNaissance();
 			this.prenom = individuView.getPrenom();
-			this.autresPrenoms = individuView.getAutresPrenoms();
+			this.autresPrenoms = individuView.getAutresPrenoms() == null ? "": individuView.getAutresPrenoms();
 			this.dateNaissance = individuView.getDateNaissance();
 			this.nationalite = individuView.getNationalite();
 			this.etatCivil = individuView.getEtatCivil();
 			this.sexe = individuView.getSexe();
-			this.numeroAssureSocial = individuView.getNumeroAssureSocial();
-			this.ancienNumeroAVS = individuView.getAncienNumeroAVS();
+			this.numeroAssureSocial = individuView.getNumeroAssureSocial() == null ? "":  individuView.getNumeroAssureSocial();
+			this.ancienNumeroAVS =  individuView.getAncienNumeroAVS() == null ? "": individuView.getAncienNumeroAVS();
 
 
 

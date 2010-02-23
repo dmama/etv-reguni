@@ -83,6 +83,7 @@
 	</bean>
 	
 	<bean id="identificationMapHelper" class="ch.vd.uniregctb.identification.contribuable.IdentificationMapHelper" >
+		<property name="identCtbService" ref="identCtbService" />
 		<property name="identCtbDAO" ref="identCtbDAO" />
 	</bean>
 	

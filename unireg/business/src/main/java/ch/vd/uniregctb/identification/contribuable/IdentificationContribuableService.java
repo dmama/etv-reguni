@@ -83,10 +83,10 @@ public interface IdentificationContribuableService {
 	public Map<IdentificationContribuable.Etat,Integer> calculerStats(IdentificationContribuableCriteria identificationContribuableCriteria);
 
 	/**Retourn le nom complet du canton emetteur du message
+	 * @param emetteurId TODO
 	 *
-	 * @param identification
 	 * @return
 	 * @throws InfrastructureException
 	 */
-	public String getNomCantonFromMessage(IdentificationContribuable identification) throws InfrastructureException;
+	public String getNomCantonFromEmetteurId(String emetteurId) throws InfrastructureException;
 }

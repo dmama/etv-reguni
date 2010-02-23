@@ -2166,7 +2166,7 @@ public class AdresseServiceImpl implements AdresseService {
 			Collections.sort(listeAdresse, new DateRangeComparator<AdresseGenerique>());
 			for (AdresseGenerique adresseGenerique : listeAdresse) {
 				Commune commune = serviceInfra.getCommuneByAdresse(adresseGenerique);
-				if (commune.isVaudoise()) {
+				if (commune !=null && commune.isVaudoise()) {
 					return adresseGenerique;
 				}
 			}

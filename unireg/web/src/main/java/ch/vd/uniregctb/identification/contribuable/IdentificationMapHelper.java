@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.uniregctb.common.ApplicationConfig;
 import ch.vd.uniregctb.common.CommonMapHelper;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentCtbDAO;
@@ -15,6 +16,8 @@ import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContr
 public class IdentificationMapHelper extends CommonMapHelper {
 
 	private IdentCtbDAO identCtbDAO;
+
+	private IdentificationContribuableService identCtbService;
 
 	private Map<PrioriteEmetteur, String> mapPrioriteEmetteur;
 
@@ -30,14 +33,20 @@ public class IdentificationMapHelper extends CommonMapHelper {
 		this.identCtbDAO = identCtbDAO;
 	}
 
+	public void setIdentCtbService(IdentificationContribuableService identCtbService) {
+		this.identCtbService = identCtbService;
+	}
+
+
+
 	/**
 	 * Initialise la map des priorités émetteurs
 	 * @return une map
 	 */
 	public Map<PrioriteEmetteur, String> initMapPrioriteEmetteur() {
-		if (mapPrioriteEmetteur == null) {
+
 			mapPrioriteEmetteur = initMapEnum(ApplicationConfig.masterKeyPrioriteEmetteur, PrioriteEmetteur.class);
-		}
+
 		return mapPrioriteEmetteur;
 	}
 
@@ -114,7 +123,7 @@ public class IdentificationMapHelper extends CommonMapHelper {
 	 * @return une map
 	 */
 	public Map<String, String> initMapTypeMessage() {
-		if (mapTypeMessage == null) {
+
 			mapTypeMessage = new HashMap<String, String>();
 			List<String> typesMessage = identCtbDAO.getTypesMessage();
 			Iterator<String> itMessages = typesMessage.iterator();
@@ -123,7 +132,7 @@ public class IdentificationMapHelper extends CommonMapHelper {
 				String typeMessageValeur = this.getMessageSourceAccessor().getMessage(ApplicationConfig.masterKeyTypeMessage + typeMessage);
 				mapTypeMessage.put(typeMessage, typeMessageValeur);
 			}
-		}
+
 		return mapTypeMessage;
 	}
 
@@ -132,23 +141,32 @@ public class IdentificationMapHelper extends CommonMapHelper {
 	 * @return une map
 	 */
 	public Map<String, String> initMapEmetteurId() {
-		if (mapEmetteur == null) {
+
 			mapEmetteur = new HashMap<String, String>();
 			List<String> emetteurs = identCtbDAO.getEmetteursId();
 			Iterator<String> itEmetteurs = emetteurs.iterator();
 			while (itEmetteurs.hasNext()) {
 				String emetteur = itEmetteurs.next();
-				mapEmetteur.put(emetteur, emetteur);
+
+				String nomCantonFromEmetteurId = emetteur;
+				try {
+					nomCantonFromEmetteurId=identCtbService.getNomCantonFromEmetteurId(emetteur);
+				}
+				catch (InfrastructureException e) {
+					//on revoie l'emetteurId Tel Quel
+					 nomCantonFromEmetteurId = emetteur;
+				}
+				mapEmetteur.put(emetteur, nomCantonFromEmetteurId);
 			}
-		}
+
 		return mapEmetteur;
 	}
 
 	public Map<ErreurMessage, String>  initErreurMessage() {
-		if (mapErreurMessage == null) {
+
 			mapErreurMessage = initMapEnum(ApplicationConfig.masterKeyErreurMessage,ErreurMessage.class);
 
-		}
+
 
 		return mapErreurMessage;
 	}
