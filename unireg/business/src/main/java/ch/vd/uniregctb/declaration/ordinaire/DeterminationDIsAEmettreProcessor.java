@@ -545,13 +545,17 @@ public class DeterminationDIsAEmettreProcessor {
 		final Set<Declaration> declarations = contribuable.getDeclarations();
 		if (declarations != null) {
 			for (Declaration d : declarations) {
-				final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) d;
-				if (DateRangeHelper.equals(d, periode)) {
-					status = new ExistenceResults<DeclarationImpotOrdinaire>(TacheStatus.EXISTE_DEJA, di);
-				}
-				else if (DateRangeHelper.intersect(d, periode)) {
-					status = new ExistenceResults<DeclarationImpotOrdinaire>(TacheStatus.INTERSECTE, di);
-					break; // inutile de continuer
+
+				// [UNIREG-1417] : ne pas tenir compte des DI annulées...
+				if (!d.isAnnule()) {
+					final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) d;
+					if (DateRangeHelper.equals(d, periode)) {
+						status = new ExistenceResults<DeclarationImpotOrdinaire>(TacheStatus.EXISTE_DEJA, di);
+					}
+					else if (DateRangeHelper.intersect(d, periode)) {
+						status = new ExistenceResults<DeclarationImpotOrdinaire>(TacheStatus.INTERSECTE, di);
+						break; // inutile de continuer
+					}
 				}
 			}
 		}
