@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.securite.model.Operateur;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.general.view.TiersGeneralView;
@@ -47,7 +48,7 @@ public class MouvementEditManagerImpl extends AbstractMouvementManagerImpl imple
 		final MouvementListView mvtListView = new MouvementListView();
 		mvtListView.setContribuable(creerCtb(numero));
 		final List<MouvementDetailView> mvtsView = new ArrayList<MouvementDetailView>();
-		final List<MouvementDossier> mvts = getMouvementDossierDAO().findByNumeroDossier(numero, seulementTraites);
+		final List<MouvementDossier> mvts = getMouvementDossierDAO().findByNumeroDossier(numero, seulementTraites, true);
 		for (MouvementDossier mvt : mvts) {
 			final MouvementDetailView mvtView = getView(mvt);
 			mvtsView.add(mvtView);
@@ -70,6 +71,13 @@ public class MouvementEditManagerImpl extends AbstractMouvementManagerImpl imple
 		mvtDetailView.setTypeMouvement(TypeMouvement.EnvoiDossier);
 		mvtDetailView.setDestinationEnvoi(UTILISATEUR_ENVOI);
 		mvtDetailView.setLocalisation(Localisation.PERSONNE);
+
+		final String visaOperateur = AuthenticationHelper.getCurrentPrincipal();
+		final Operateur operateur = getServiceSecuriteService().getOperateur(visaOperateur);
+		if (operateur != null) {
+			mvtDetailView.setUtilisateurEnvoi(visaOperateur);
+			mvtDetailView.setNumeroUtilisateurEnvoi(operateur.getIndividuNoTechnique());
+		}
 		return mvtDetailView;
 	}
 

@@ -203,12 +203,12 @@ public class DeterminerMouvementsDossiersEnMasseProcessor {
 			else if (DateRangeHelper.intersect(rangesUtiles.rangeAnneeNMoinsDeux, assujettissements)) {
 				// pas d'assujettisement ni n-1 ni n, mais n-2 -> mouvement vers les archives si n'existe pas déjà
 
-				final List<MouvementDossier> mvts = mouvementDossierDAO.findByNumeroDossier(ctb.getNumero(), false);
+				final List<MouvementDossier> mvts = mouvementDossierDAO.findByNumeroDossier(ctb.getNumero(), false, false);
 
 				// trouvons le dernier mouvement
 				MouvementDossier dernierMouvement = null;
 				for (MouvementDossier mvt : mvts) {
-					if (!mvt.isAnnule() && mvt.getEtat() != EtatMouvementDossier.RETIRE) {
+					if (mvt.getEtat() != EtatMouvementDossier.RETIRE) {
 						if (dernierMouvement == null || mvt.getLogCreationDate().after(dernierMouvement.getLogCreationDate())) {
 							dernierMouvement = mvt;
 						}

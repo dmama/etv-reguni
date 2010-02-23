@@ -31,12 +31,14 @@ public class MouvementDossierDAOImpl extends GenericDAOImpl<MouvementDossier, Lo
 	 *
 	 * @param numero
 	 * @param seulementTraites
+	 * @param inclureMouvementsAnnules
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public List<MouvementDossier> findByNumeroDossier(long numero, boolean seulementTraites) {
+	public List<MouvementDossier> findByNumeroDossier(long numero, boolean seulementTraites, boolean inclureMouvementsAnnules) {
 		final MouvementDossierCriteria criteria = new MouvementDossierCriteria();
 		criteria.setNoCtb(numero);
+		criteria.setInclureMouvementsAnnules(inclureMouvementsAnnules);
 		if (seulementTraites) {
 			criteria.setEtatsMouvement(EtatMouvementDossier.getEtatsTraites());
 		}
