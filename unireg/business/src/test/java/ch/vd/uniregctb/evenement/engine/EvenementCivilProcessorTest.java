@@ -206,18 +206,21 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 	@Test
 	public void testEvenementsWarnDansCheckCompleteness() throws Exception {
 
-		long noInd1 = 78912L;
-		{
-			PersonnePhysique hab1 = new PersonnePhysique(true);
-			hab1.setNumeroIndividu(noInd1);
-			hab1 = (PersonnePhysique) tiersDAO.save(hab1);
-		}
-		long noInd2 = 89123L;
-		{
-			PersonnePhysique hab2 = new PersonnePhysique(true);
-			hab2.setNumeroIndividu(noInd2);
-			hab2 = (PersonnePhysique) tiersDAO.save(hab2);
-		}
+		final long noInd2 = 89123L;
+		final long noInd1 = 78912L;
+		doInNewTransaction(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique hab1 = new PersonnePhysique(true);
+				hab1.setNumeroIndividu(noInd1);
+				tiersDAO.save(hab1);
+
+				final PersonnePhysique hab2 = new PersonnePhysique(true);
+				hab2.setNumeroIndividu(noInd2);
+				tiersDAO.save(hab2);
+				return null;
+			}
+		});
 
 		saveEvenement(125L, TypeEvenementCivil.EVENEMENT_TESTING, RegDate.get(2007, 10, 25), noInd1, noInd2, 5402);
 
@@ -235,18 +238,21 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 	@Test
 	public void testEvenementsIndividuConjointDifferentQueDansEvenement() throws Exception {
 
-		long noInd1 = 78912L;
-		{
-			PersonnePhysique hab1 = new PersonnePhysique(true);
-			hab1.setNumeroIndividu(noInd1);
-			hab1 = (PersonnePhysique) tiersDAO.save(hab1);
-		}
-		long noInd2 = 34567L;
-		{
-			PersonnePhysique hab2 = new PersonnePhysique(true);
-			hab2.setNumeroIndividu(noInd2);
-			hab2 = (PersonnePhysique) tiersDAO.save(hab2);
-		}
+		final long noInd2 = 34567L;
+		final long noInd1 = 78912L;
+		doInNewTransaction(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique hab1 = new PersonnePhysique(true);
+				hab1.setNumeroIndividu(noInd1);
+				tiersDAO.save(hab1);
+
+				final PersonnePhysique hab2 = new PersonnePhysique(true);
+				hab2.setNumeroIndividu(noInd2);
+				tiersDAO.save(hab2);
+				return null;
+			}
+		});
 
 		saveEvenement(120L, TypeEvenementCivil.EVENEMENT_TESTING, RegDate.get(2007, 10, 25), noInd1, noInd2, 5402);
 
@@ -281,13 +287,17 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 	@Test
 	public void testEvenementsPasDeTiersConjoint() throws Exception {
 
-		long noInd1 = 78912L;
-		{
-			PersonnePhysique hab = new PersonnePhysique(true);
-			hab.setNumeroIndividu(noInd1);
-			hab = (PersonnePhysique) tiersDAO.save(hab);
-		}
-		long noInd2 = 89123L;
+		final long noInd1 = 78912L;
+		final long noInd2 = 89123L;
+		doInNewTransaction(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique hab = new PersonnePhysique(true);
+				hab.setNumeroIndividu(noInd1);
+				tiersDAO.save(hab);
+				return null;
+			}
+		});
 
 		saveEvenement(120L, TypeEvenementCivil.EVENEMENT_TESTING, RegDate.get(2007, 10, 25), noInd1, noInd2, 5402);
 
@@ -480,16 +490,22 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 		evenementCivilProcessor.traiteEvenementsCivilsRegroupes(null);
 	}
 
-	private void setUpHabitant() {
+	private void setUpHabitant() throws Exception {
 		final long noIndividu = 34567; // Sophie Dupuis
 
 		// Crée un habitant
-		PersonnePhysique habitant = new PersonnePhysique(true);
-		habitant.setNumeroIndividu(noIndividu);
-		habitant.setNumero(new Long(67919191));
-		addForPrincipal(habitant, RegDate.get(1980, 11, 2), null, MockCommune.Cossonay.getNoOFS());
+		doInNewTransaction(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique habitant = new PersonnePhysique(true);
+				habitant.setNumeroIndividu(noIndividu);
+				habitant.setNumero(67919191L);
+				addForPrincipal(habitant, RegDate.get(1980, 11, 2), null, MockCommune.Cossonay.getNoOFS());
 
-		habitant = (PersonnePhysique) tiersDAO.save(habitant);
+				tiersDAO.save(habitant);
+				return null;
+			}
+		});
 	}
 
 	private ForFiscalPrincipal addForPrincipal(Tiers tiers, RegDate ouverture, RegDate fermeture, Integer noOFS) {

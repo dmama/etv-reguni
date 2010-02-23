@@ -6,6 +6,7 @@ import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.BusinessTest;
@@ -24,8 +25,12 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 	private static final long noIndMarieParlotte = 1235125L;
 	private static final RegDate dateNaissance = RegDate.get(1970, 3, 12);
 	private static final RegDate dateMajorite = dateNaissance.addYears(18);
-	private CollectiviteAdministrative oidRolleAubonne;
-	private CollectiviteAdministrative oidLausanne;
+
+	private static final int noCaOidRolleAubonne = 2;
+	private static final int noCaOidLausanne = 7;
+
+	private long noOidRolleAubonne;
+	private long noOidLausanne;
 
 	@Override
 	public void onSetUp() throws Exception {
@@ -41,8 +46,14 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 			}
 		});
 
-		oidRolleAubonne = tiersService.getOrCreateCollectiviteAdministrative(2);    // OID Rolle-Aubonne
-		oidLausanne = tiersService.getOrCreateCollectiviteAdministrative(7);        // OID Lausanne
+		doInNewTransaction(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				noOidRolleAubonne = tiersService.getOrCreateCollectiviteAdministrative(noCaOidRolleAubonne).getNumero();    // OID Rolle-Aubonne
+				noOidLausanne = tiersService.getOrCreateCollectiviteAdministrative(noCaOidLausanne).getNumero();            // OID Lausanne
+				return null;
+			}
+		});
 	}
 
 	private DeterminerMouvementsDossiersEnMasseProcessor createProcessor() {
@@ -165,7 +176,7 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 		Assert.assertNotNull(mvtResult);
 		Assert.assertEquals((long) ctb.getNumero(), mvtResult.noCtb);
 		Assert.assertTrue(mvtResult.getClass().getName(), mvtResult instanceof DeterminerMouvementsDossiersEnMasseResults.MouvementArchives);
-		Assert.assertEquals(oidRolleAubonne.getNumeroCollectiviteAdministrative(), caCache.keySet().iterator().next());
+		Assert.assertEquals(noCaOidRolleAubonne, (int) caCache.keySet().iterator().next());
 
 		// dans la base ?
 		final Set<MouvementDossier> mvts = ctb.getMouvementsDossier();
@@ -180,7 +191,7 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 
 		final ReceptionDossierArchives reception = (ReceptionDossierArchives) mvt;
 		Assert.assertNotNull(reception.getCollectiviteAdministrativeReceptrice());
-		Assert.assertEquals(oidRolleAubonne.getNumero(), reception.getCollectiviteAdministrativeReceptrice().getNumero());
+		Assert.assertEquals(noOidRolleAubonne, (long) reception.getCollectiviteAdministrativeReceptrice().getNumero());
 	}
 
 	@Test
@@ -199,13 +210,13 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 		proc.traiterContribuable(ctb, ranges, caCache, results);
 
 		// mouvement d'envoi de Aubonne à Lausanne
-		assertMouvementEnvoiEntreOid(results, ctb, oidRolleAubonne, oidLausanne);
+		assertMouvementEnvoiEntreOid(results, ctb, noOidRolleAubonne, noOidLausanne);
 		Assert.assertEquals(2, caCache.size());
-		Assert.assertTrue(caCache.containsKey(oidRolleAubonne.getNumeroCollectiviteAdministrative()));
-		Assert.assertTrue(caCache.containsKey(oidLausanne.getNumeroCollectiviteAdministrative()));
+		Assert.assertTrue(caCache.containsKey(noCaOidRolleAubonne));
+		Assert.assertTrue(caCache.containsKey(noCaOidLausanne));
 	}
 
-	private void assertMouvementEnvoiEntreOid(DeterminerMouvementsDossiersEnMasseResults results, Contribuable ctb, CollectiviteAdministrative oidSource, CollectiviteAdministrative oidDestinataire) {
+	private void assertMouvementEnvoiEntreOid(DeterminerMouvementsDossiersEnMasseResults results, Contribuable ctb, long oidSource, long oidDestinataire) {
 		Assert.assertEquals(1, results.getNbContribuablesInspectes());
 		Assert.assertEquals(1, results.mouvements.size());
 
@@ -228,8 +239,8 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 		final EnvoiDossierVersCollectiviteAdministrative envoi = (EnvoiDossierVersCollectiviteAdministrative) mvt;
 		Assert.assertNotNull(envoi.getCollectiviteAdministrativeDestinataire());
 		Assert.assertNotNull(envoi.getCollectiviteAdministrativeEmettrice());
-		Assert.assertEquals(oidDestinataire.getNumero(), envoi.getCollectiviteAdministrativeDestinataire().getNumero());
-		Assert.assertEquals(oidSource.getNumero(), envoi.getCollectiviteAdministrativeEmettrice().getNumero());
+		Assert.assertEquals(oidDestinataire, (long) envoi.getCollectiviteAdministrativeDestinataire().getNumero());
+		Assert.assertEquals(oidSource, (long) envoi.getCollectiviteAdministrativeEmettrice().getNumero());
 	}
 
 	@Test
@@ -249,10 +260,10 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 		proc.traiterContribuable(ctb, ranges, caCache, results);
 
 		// mouvement d'envoi de Aubonne à Lausanne
-		assertMouvementEnvoiEntreOid(results, ctb, oidRolleAubonne, oidLausanne);
+		assertMouvementEnvoiEntreOid(results, ctb, noOidRolleAubonne, noOidLausanne);
 		Assert.assertEquals(2, caCache.size());
-		Assert.assertTrue(caCache.containsKey(oidRolleAubonne.getNumeroCollectiviteAdministrative()));
-		Assert.assertTrue(caCache.containsKey(oidLausanne.getNumeroCollectiviteAdministrative()));
+		Assert.assertTrue(caCache.containsKey(noCaOidRolleAubonne));
+		Assert.assertTrue(caCache.containsKey(noCaOidLausanne));
 	}
 
 	private void assertPasDeMouvement(Contribuable ctb, DeterminerMouvementsDossiersEnMasseResults results) {
