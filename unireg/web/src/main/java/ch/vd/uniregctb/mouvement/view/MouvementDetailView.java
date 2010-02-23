@@ -14,8 +14,8 @@ import ch.vd.uniregctb.type.TypeMouvement;
 public class MouvementDetailView implements Comparable<MouvementDetailView> {
 
 	private static final BaseComparator<MouvementDetailView> comparator = new BaseComparator<MouvementDetailView>(
-			new String[]{"annule", "dateMouvement"},
-			new Boolean[]{true, false});
+			new String[]{"annule", "dateMouvement", "dateExecution"},
+			new Boolean[]{true, false, false});
 
 	private TiersGeneralView contribuable;
 

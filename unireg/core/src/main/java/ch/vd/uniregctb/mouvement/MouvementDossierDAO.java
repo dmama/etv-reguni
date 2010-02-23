@@ -12,9 +12,10 @@ public interface MouvementDossierDAO extends GenericDAO<MouvementDossier, Long> 
 	 *
 	 * @param numero
 	 * @param seulementTraites si levé, signifie que seuls les mouvements traités seront remontés
+	 * @param inclureMouvementsAnnules
 	 * @return
 	 */
-	List<MouvementDossier> findByNumeroDossier(long numero, boolean seulementTraites);
+	List<MouvementDossier> findByNumeroDossier(long numero, boolean seulementTraites, boolean inclureMouvementsAnnules);
 
 	/**
 	 * Recherche tous les mouvements de dossiers qui correspondent aux critères donnés (potentiellement avec pagination)

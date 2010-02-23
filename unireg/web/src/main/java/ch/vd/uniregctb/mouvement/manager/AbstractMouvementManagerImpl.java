@@ -101,6 +101,10 @@ public class AbstractMouvementManagerImpl implements AbstractMouvementManager, M
 		this.serviceSecuriteService = serviceSecuriteService;
 	}
 
+	protected ServiceSecuriteService getServiceSecuriteService() {
+		return serviceSecuriteService;
+	}
+
 	/**
 	 * Point d'entrée principal pour bâtir la view détaillée pour un mouvement de dossier donné
 	 * @param mvt le mouvement depuis lequel bâtir la vue
