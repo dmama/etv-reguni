@@ -360,7 +360,7 @@ public class ProduireRolesCommuneProcessorTest extends BusinessTest {
 	}
 
 	@Test
-	public void testMotifs() throws Exception {
+	public void testPrioriteDesMotifs() throws Exception {
 
 		final RegDate dateDebut = date(1980, 3, 5);
 		final RegDate dateFin = date(2007, 9, 12);
@@ -414,6 +414,52 @@ public class ProduireRolesCommuneProcessorTest extends BusinessTest {
 		}
 	}
 
+	@Test
+	public void testSuccessionDeForsSurLaCommune() throws Exception {
+
+		// Arrivée à Lausanne en 2005, DEPENSE
+		// En 2006, changement MIXTE
+		// Au 1er janvier 2007, passage à l'ORDINAIRE
+		final RegDate arrivee = date(2005, 5, 12);
+		final RegDate passageMixte = date(2006, 7, 1);
+		final RegDate passageRole = date(2007, 1, 1);
+
+		final long noCtb = (Long) doInNewTransaction(new TxCallback() {
+
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+
+				final PersonnePhysique toto = addNonHabitant("Toto", "Tartempion", date(1950, 9, 3), Sexe.MASCULIN);
+
+				final ForFiscalPrincipal fficcd = addForPrincipal(toto, arrivee, MotifFor.ARRIVEE_HS, passageMixte.getOneDayBefore(), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Lausanne);
+				fficcd.setModeImposition(ModeImposition.DEPENSE);
+
+				final ForFiscalPrincipal ffmixte = addForPrincipal(toto, passageMixte, MotifFor.CHGT_MODE_IMPOSITION, passageRole.getOneDayBefore(), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Lausanne);
+				ffmixte.setModeImposition(ModeImposition.MIXTE_137_2);
+
+				final ForFiscalPrincipal fford = addForPrincipal(toto, passageRole, MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Lausanne);
+				fford.setModeImposition(ModeImposition.ORDINAIRE);
+
+				return toto.getNumero();
+			}
+		});
+
+		final ProduireRolesResults results = processor.runPourToutesCommunes(2007, null);
+		assertNotNull(results);
+		assertEquals(1, results.ctbsTraites);
+		assertEquals(0, results.ctbsEnErrors.size());
+		assertEquals(0, results.ctbsIgnores.size());
+		assertEquals(1, results.infosCommunes.size());
+
+		final InfoCommune infos = results.getInfoPourCommune(MockCommune.Lausanne.getNoOFS());
+		assertNotNull(infos);
+		assertEquals(1, infos.getInfosContribuables().size());
+
+		final InfoContribuable infosCtb = infos.getInfoPourContribuable(noCtb);
+		assertNotNull(infosCtb);
+		assertInfo(noCtb, TypeContribuable.ORDINAIRE, arrivee, null, MotifFor.ARRIVEE_HS, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infosCtb);
+	}
+	
 	private static void assertInfo(long id, TypeContribuable type, RegDate ouvertureFor, RegDate fermetureFor,
 	                               MotifFor motifOuverture, MotifFor motifFermeture, InfoContribuable.TypeAssujettissement typeAssujettissement,
 	                               TypeContribuable ancienTypeContribuable, InfoContribuable info) {

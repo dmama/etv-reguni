@@ -574,19 +574,28 @@ public class ProduireRolesCommuneProcessor {
 		if (forFiscal.getDateDebut().getOneDayBefore().year() != forFiscal.getDateDebut().year()) {
 			// debut au premier janvier...
 			final Tiers tiers = forFiscal.getTiers();
-			final List<ForFiscal> fors = tiers.getForsFiscauxValidAt(forFiscal.getDateDebut().getOneDayBefore());
-			ForFiscalRevenuFortune candidatRetenu = null;
-			for (ForFiscal candidat : fors) {
-				if (candidat instanceof ForFiscalRevenuFortune &&
-						candidat.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD &&
-						candidat.getNumeroOfsAutoriteFiscale().equals(forFiscal.getNumeroOfsAutoriteFiscale()) &&
-						((ForFiscalRevenuFortune) candidat).getMotifRattachement() == forFiscal.getMotifRattachement()) {
-					if (candidatRetenu == null || candidatRetenu.getDateDebut().isAfter(candidat.getDateDebut())) {
-						candidatRetenu = (ForFiscalRevenuFortune) candidat;
+			ForFiscalRevenuFortune candidatRetenu = forFiscal;
+			while (true) {
+				final List<ForFiscal> fors = tiers.getForsFiscauxValidAt(candidatRetenu.getDateDebut().getOneDayBefore());
+				ForFiscalRevenuFortune nouveauCandidat = null;
+				for (ForFiscal candidat : fors) {
+					if (candidat instanceof ForFiscalRevenuFortune &&
+							candidat.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD &&
+							candidat.getNumeroOfsAutoriteFiscale().equals(forFiscal.getNumeroOfsAutoriteFiscale()) &&
+							((ForFiscalRevenuFortune) candidat).getMotifRattachement() == forFiscal.getMotifRattachement()) {
+						if (nouveauCandidat == null || nouveauCandidat.getDateDebut().isAfter(candidat.getDateDebut())) {
+							nouveauCandidat = (ForFiscalRevenuFortune) candidat;
+						}
 					}
 				}
+				if (nouveauCandidat == null) {
+					break;
+				}
+				else {
+					candidatRetenu = nouveauCandidat;
+				}
 			}
-			forFiscalPourOuverture = candidatRetenu != null ? candidatRetenu : forFiscal;
+			forFiscalPourOuverture = candidatRetenu;
 		}
 		else {
 			forFiscalPourOuverture = forFiscal;
@@ -596,19 +605,28 @@ public class ProduireRolesCommuneProcessor {
 		if (forFiscal.getDateFin() != null && forFiscal.getDateFin().getOneDayAfter().year() != forFiscal.getDateFin().year()) {
 			// fin au 31 décembre...
 			final Tiers tiers = forFiscal.getTiers();
-			final List<ForFiscal> fors = tiers.getForsFiscauxValidAt(forFiscal.getDateFin().getOneDayAfter());
-			ForFiscalRevenuFortune candidatRetenu = null;
-			for (ForFiscal candidat : fors) {
-				if (candidat instanceof ForFiscalRevenuFortune &&
-						candidat.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD &&
-						candidat.getNumeroOfsAutoriteFiscale().equals(forFiscal.getNumeroOfsAutoriteFiscale()) &&
-						((ForFiscalRevenuFortune) candidat).getMotifRattachement() == forFiscal.getMotifRattachement()) {
-					if (candidatRetenu == null || candidatRetenu.getDateFin().isBefore(candidat.getDateFin())) {
-						candidatRetenu = (ForFiscalRevenuFortune) candidat;
+			ForFiscalRevenuFortune candidatRetenu = forFiscal;
+			while (true) {
+				final List<ForFiscal> fors = tiers.getForsFiscauxValidAt(candidatRetenu.getDateFin().getOneDayAfter());
+				ForFiscalRevenuFortune nouveauCandidat = null;
+				for (ForFiscal candidat : fors) {
+					if (candidat instanceof ForFiscalRevenuFortune &&
+							candidat.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD &&
+							candidat.getNumeroOfsAutoriteFiscale().equals(forFiscal.getNumeroOfsAutoriteFiscale()) &&
+							((ForFiscalRevenuFortune) candidat).getMotifRattachement() == forFiscal.getMotifRattachement()) {
+						if (nouveauCandidat == null || nouveauCandidat.getDateFin().isBefore(candidat.getDateFin())) {
+							nouveauCandidat = (ForFiscalRevenuFortune) candidat;
+						}
 					}
 				}
+				if (nouveauCandidat == null) {
+					break;
+				}
+				else {
+					candidatRetenu = nouveauCandidat;
+				}
 			}
-			forFiscalPourFermeture = candidatRetenu != null ? candidatRetenu : forFiscal;
+			forFiscalPourFermeture = candidatRetenu;
 		}
 		else {
 			forFiscalPourFermeture = forFiscal;
