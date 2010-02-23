@@ -1371,6 +1371,38 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 	}
 
 	/**
+	 * [UNIREG-1417] Test qu'une déclaration annulée est bien ignorée
+	 */
+	@Test
+	public void testIgnoreDeclarationAnnulee() throws Exception {
+
+		final PeriodeFiscale periode2007 = addPeriodeFiscale(2007);
+		final ModeleDocument model2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2007);
+		addModeleFeuilleDocument("Déclaration", "210", model2007);
+		addModeleFeuilleDocument("Annexe 1", "220", model2007);
+		addModeleFeuilleDocument("Annexe 2-3", "230", model2007);
+		addModeleFeuilleDocument("Annexe 4-5", "240", model2007);
+
+		// Un contribuable vaudois ordinaire, avec une tâche (valide) d'envoi de déclaration d'impôt déjà traitée
+		final Contribuable eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+		addForPrincipal(eric, date(2002, 4,28), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+		final DeclarationImpotOrdinaire di = addDeclarationImpot(eric, periode2007, date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, model2007);
+		di.setAnnule(true);
+		hibernateTemplate.flush();
+
+		final DeterminationDIsResults rapport = new DeterminationDIsResults(2007, date(2008,1,15));
+		service.setRapport(rapport);
+		service.traiterContribuable(eric, periode2007);
+
+		assertEmpty(rapport.erreurs);
+		assertEmpty(rapport.ignores);
+
+		// une nouvelle tâche d'envoi de DI doit avoir été créée (la DI pré-existante a été annulée).
+		assertEquals(1, rapport.traites.size());
+		assertEquals(DeterminationDIsResults.TraiteType.TACHE_ENVOI_CREEE, rapport.traites.get(0).raison);
+	}
+
+	/**
 	 * [UNIREG-1980] Teste que le type de document pour un indigent qui a reçu des Vaudtax reste Vaudtax.
 	 */
 	@SuppressWarnings({"unchecked"})
