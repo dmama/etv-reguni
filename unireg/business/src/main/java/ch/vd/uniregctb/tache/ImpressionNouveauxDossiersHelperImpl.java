@@ -118,9 +118,9 @@ public class ImpressionNouveauxDossiersHelperImpl implements ImpressionNouveauxD
 			throw new EditiqueException(message);
 		}
 
-		MotifFor motifFor = forFiscalGestion.getMotifOuverture();
+		final MotifFor motifFor = forFiscalGestion.getMotifOuverture();
 		if (motifFor != null) {
-			dossier.setMotif(motifFor.getDescription());
+			dossier.setMotif(motifFor.getDescription(true));
 		}
 
 		RegDate dateDebutFor = forFiscalGestion.getDateDebut();
