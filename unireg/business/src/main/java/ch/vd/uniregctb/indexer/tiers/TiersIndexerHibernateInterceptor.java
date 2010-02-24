@@ -218,13 +218,15 @@ public class TiersIndexerHibernateInterceptor implements ModificationSubIntercep
 
 	private void registerTxInterceptor() {
 		try {
-			Transaction transaction = transactionManager.getTransaction();
+			final Transaction transaction = transactionManager.getTransaction();
 			if (!getRegisteredTransactionsSet().contains(transaction)) {
 				transaction.registerSynchronization(new TxInterceptor(transaction));
 			}
 		}
 		catch (Exception e) {
-			LOGGER.error("Impossible d'enregistrer l'intercepteur de transaction, les tiers modifiés ne seront pas réindéxés.", e);
+			final String message = "Impossible d'enregistrer l'intercepteur de transaction, les tiers modifiés ne seront pas réindéxés.";
+			LOGGER.error(message, e);
+			throw new RuntimeException(message, e);
 		}
 	}
 
