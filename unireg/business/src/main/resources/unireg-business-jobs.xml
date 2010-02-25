@@ -35,6 +35,13 @@
         <property name="globalTiersIndexer" ref="globalTiersIndexer"/>
     </bean>
 
+	<bean id="dumpAssujettissementsJob" parent="schedulerJob" class="ch.vd.uniregctb.metier.assujettissement.DumpAssujettissementsJob">
+		<constructor-arg value="90"/>
+		<constructor-arg value="Dump les assujettissements dans un fichier sur le disque du serveur"/>
+		<property name="transactionManager" ref="transactionManager" />
+		<property name="hibernateTemplate" ref="hibernateTemplate" />
+	</bean>
+
     <bean id="optimizeIndexJob" parent="schedulerJob" class="ch.vd.uniregctb.indexer.OptimizeIndexJob">
         <constructor-arg value="101"/>
         <constructor-arg value="Optimiser l'index 'Lucene' sur le disque"/>
