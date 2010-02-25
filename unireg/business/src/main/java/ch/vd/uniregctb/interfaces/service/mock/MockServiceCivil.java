@@ -180,6 +180,29 @@ public abstract class MockServiceCivil implements ServiceCivilService {
 	}
 
 	/**
+	 * Ajoute une adresse étrangère pour l'individu spécifié
+	 */
+	protected Adresse addAdresse(Individu individu, EnumTypeAdresse type, String rue, String numeroMaison, String numeroPostal, String casePostale, String localite, Pays pays, RegDate debutValidite, RegDate finValidite) {
+
+		Assert.isFalse(pays.isSuisse());
+
+		final MockAdresse adresse = new MockAdresse();
+		adresse.setTypeAdresse(type);
+		adresse.setLocalite(localite);
+		adresse.setRue(rue);
+		adresse.setNumero(numeroMaison);
+		adresse.setCasePostale(casePostale);
+		adresse.setNumeroPostal(numeroPostal);
+		adresse.setPays(pays);
+
+		adresse.setDateDebutValidite(debutValidite);
+		adresse.setDateFinValidite(finValidite);
+		add(individu, adresse);
+
+		return adresse;
+	}
+
+	/**
 	 * Ajoute une adresse pour l'individu spécifié.
 	 * @param rue
 	 * @param casePostale
