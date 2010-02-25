@@ -114,7 +114,7 @@ public class DumpAssujettissementsJob extends JobDefinition {
 			return;
 		}
 
-		if (list == null) {
+		if (list == null || list.isEmpty()) {
 			file.write("non-assujetti\n");
 			return;
 		}
