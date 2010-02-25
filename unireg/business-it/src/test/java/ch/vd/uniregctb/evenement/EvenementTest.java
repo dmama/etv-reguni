@@ -1,7 +1,8 @@
 package ch.vd.uniregctb.evenement;
 
 import ch.vd.technical.esb.EsbMessage;
-import ch.vd.technical.esb.spring.EsbTemplate;
+import ch.vd.technical.esb.EsbMessageFactory;
+import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import org.apache.activemq.command.ActiveMQTextMessage;
 import org.springframework.jms.core.BrowserCallback;
 
@@ -20,43 +21,28 @@ import static org.junit.Assert.*;
  */
 public abstract class EvenementTest {
 
-	protected EsbTemplate esbTemplate;
+	protected EsbJmsTemplate esbTemplate;
 
-	protected void clearQueue(String queueName) {
-		while (esbTemplate.receive(queueName) != null) {
-		}
+	protected EsbMessageFactory esbMessageFactory;
+
+	protected void clearQueue(String queueName) throws Exception {
+		while (esbTemplate.receive(queueName) != null) {}
 	}
 
 	protected void assertTextMessage(String queueName, final String texte) throws Exception {
 
-		esbTemplate.browse(queueName, new BrowserCallback() {
-			public Object doInJms(Session session, QueueBrowser browser) throws JMSException {
-				final Enumeration<?> enumeration = browser.getEnumeration();
+		esbTemplate.setReceiveTimeout(3000);        // On attend le message jusqu'à 3 secondes
+		final EsbMessage msg = esbTemplate.receive(queueName);
+		assertNotNull(msg);
+		assertEquals(texte, msg.getBodyAsString());
 
-				// On attend le message jusqu'à 3 secondes
-				for (int i = 0; !enumeration.hasMoreElements() && i < 30; i++) {
-					try {
-						Thread.sleep(100); // nécessaire pour laisser à l'ESB le temps de publier le message
-					}
-					catch (InterruptedException e) {
-						// ignored
-					}
-				}
-				assertTrue(enumeration.hasMoreElements());
-
-				final Message msg = (Message) enumeration.nextElement();
-				final ActiveMQTextMessage txtMsg = (ActiveMQTextMessage) msg;
-				assertNotNull(txtMsg);
-				assertEquals(texte, txtMsg.getText());
-				assertFalse(enumeration.hasMoreElements());
-				return null;
-			}
-		});
+		final EsbMessage noMsg = esbTemplate.receive(queueName);
+		assertNull(noMsg);
 	}
 
 	protected void sendTexteMessage(String queueName, String texte) throws Exception {
 
-		EsbMessage m = new EsbMessage();
+		final EsbMessage m = esbMessageFactory.createMessage();
 		m.setBusinessUser("EvenementTest");
 		m.setBusinessId(String.valueOf(m.hashCode()));
 		m.setDomain("fiscalite");
@@ -65,7 +51,7 @@ public abstract class EvenementTest {
 		m.setServiceDestination(queueName);
 		m.setBody(texte);
 
-		esbTemplate.sendEsbMessage(queueName, m);
+		esbTemplate.send(m);
 	}
 
 	/**

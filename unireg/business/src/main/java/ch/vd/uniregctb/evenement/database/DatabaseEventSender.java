@@ -10,7 +10,8 @@ import ch.vd.fiscalite.registre.databaseEvent.DataChangeEventDocument;
 import ch.vd.fiscalite.registre.databaseEvent.DataType;
 import ch.vd.fiscalite.registre.databaseEvent.DataChangeEventDocument.DataChangeEvent;
 import ch.vd.technical.esb.EsbMessage;
-import ch.vd.technical.esb.spring.EsbTemplate;
+import ch.vd.technical.esb.EsbMessageFactory;
+import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.uniregctb.database.DatabaseListener;
 import ch.vd.uniregctb.database.DatabaseService;
 
@@ -24,7 +25,8 @@ public class DatabaseEventSender implements DatabaseListener, InitializingBean {
 	private static Logger LOGGER = Logger.getLogger(DatabaseEventSender.class);
 
 	private String outputQueue;
-	private EsbTemplate esbTemplate;
+	private EsbJmsTemplate esbTemplate;
+	private EsbMessageFactory esbMessageFactory;
 	private DatabaseService databaseService;
 	private String serviceDestination;
 	private String businessUser;
@@ -44,8 +46,12 @@ public class DatabaseEventSender implements DatabaseListener, InitializingBean {
 		this.businessUser = businessUser;
 	}
 
-	public void setEsbTemplate(EsbTemplate esbTemplate) {
+	public void setEsbTemplate(EsbJmsTemplate esbTemplate) {
 		this.esbTemplate = esbTemplate;
+	}
+
+	public void setEsbMessageFactory(EsbMessageFactory esbMessageFactory) {
+		this.esbMessageFactory = esbMessageFactory;
 	}
 
 	public void setDatabaseService(DatabaseService databaseService) {
@@ -105,23 +111,21 @@ public class DatabaseEventSender implements DatabaseListener, InitializingBean {
 			throw new IllegalArgumentException("Type de tiers inconnu = [" + type + "]");
 		}
 
-		EsbMessage m = new EsbMessage();
+		final EsbMessage m = esbMessageFactory.createMessage();
 		m.setBusinessId(String.valueOf(id));
 		m.setBusinessUser(businessUser);
 		m.setBusinessCorrelationId(String.valueOf(id));
 		m.setServiceDestination(serviceDestination);
 		m.setDomain("fiscalite");
-		m.setContext("registreFiscal");
+		m.setContext("databaseEvent");
 		m.setApplication("unireg");
 		final Node node = doc.newDomNode();
 		m.setBody((Document) node);
 
 		if (outputQueue != null) {
-			esbTemplate.sendEsbMessage(outputQueue, m); // for testing only
+			m.setServiceDestination(outputQueue); // for testing only
 		}
-		else {
-			esbTemplate.sendEsbMessage(m);
-		}
+		esbTemplate.send(m);
 	}
 
 }

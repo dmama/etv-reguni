@@ -1,8 +1,12 @@
 package ch.vd.uniregctb.evenement.fiscal;
 
+import java.util.Arrays;
+
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.technical.esb.spring.EsbTemplate;
+import ch.vd.technical.esb.EsbMessageFactory;
+import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.technical.esb.store.raft.RaftEsbStore;
+import ch.vd.technical.esb.util.ESBXMLValidator;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.evenement.EvenementFiscalFor;
 import ch.vd.uniregctb.evenement.EvenementFiscalSituationFamille;
@@ -46,19 +50,27 @@ public class EvenementFiscalSenderTest extends EvenementTest {
 		final RaftEsbStore esbStore = new RaftEsbStore();
 		esbStore.setEndpoint("TestRaftStore");
 
-		esbTemplate = new EsbTemplate();
+		esbTemplate = new EsbJmsTemplate();
 		esbTemplate.setConnectionFactory(jmsConnectionManager);
 		esbTemplate.setEsbStore(esbStore);
 		esbTemplate.setReceiveTimeout(200);
-		esbTemplate.afterPropertiesSet();
+//		esbTemplate.afterPropertiesSet();       // la méthode n'existe plus en 2.1
 
 		clearQueue(OUTPUT_QUEUE);
 		clearQueue(INPUT_QUEUE);
+
+		final ESBXMLValidator esbValidator = new ESBXMLValidator();
+		esbValidator.setXsdFolders(Arrays.asList("xsd/fiscal"));
+
+		esbMessageFactory = new EsbMessageFactory();
+//		avec la version 2.1 de l'esbClient, la validation ne fonctionne pas encore si les xsd s'incluent parmi
+//		esbMessageFactory.setValidator(esbValidator);
 
 		sender = new EvenementFiscalSenderImpl();
 		sender.setServiceDestination("test");
 		sender.setOutputQueue(OUTPUT_QUEUE);
 		sender.setEsbTemplate(esbTemplate);
+		sender.setEsbMessageFactory(esbMessageFactory);
 
 		AuthenticationHelper.pushPrincipal("EvenementFiscalSenderTest");
 	}

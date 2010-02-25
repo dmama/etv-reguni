@@ -4,7 +4,8 @@ import ch.vd.fiscalite.registre.evenementFiscalV1.*;
 import ch.vd.infrastructure.model.impl.DateUtils;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.technical.esb.EsbMessage;
-import ch.vd.technical.esb.spring.EsbTemplate;
+import ch.vd.technical.esb.EsbMessageFactory;
+import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.uniregctb.common.AuthenticationHelper;import ch.vd.uniregctb.evenement.*;
 import org.apache.log4j.Logger;
 import org.apache.xmlbeans.XmlError;
@@ -28,7 +29,8 @@ public final class EvenementFiscalSenderImpl implements EvenementFiscalSender {
 	private static final Logger LOGGER = Logger.getLogger(EvenementFiscalSenderImpl.class);
 
 	private String outputQueue;
-	private EsbTemplate esbTemplate;
+	private EsbJmsTemplate esbTemplate;
+	private EsbMessageFactory esbMessageFactory;
 	private String serviceDestination;
 
 	/**
@@ -61,27 +63,25 @@ public final class EvenementFiscalSenderImpl implements EvenementFiscalSender {
 		validateXml(document);
 
 		// Envoi l'événement sous forme de message JMS à travers l'ESB
-		EsbMessage m = new EsbMessage();
-		m.setBusinessId(String.valueOf(evenement.getId()));
-		m.setBusinessUser(principal);
-		m.setBusinessCorrelationId(String.valueOf(evenement.getId()));
-		m.setServiceDestination(serviceDestination);
-		m.setDomain("fiscalite");
-		m.setContext("registreFiscal");
-		m.setApplication("unireg");
-		final Node node = document.newDomNode();
-		m.setBody((Document) node);
-
 		try {
+			final EsbMessage m = esbMessageFactory.createMessage();
+			m.setBusinessId(String.valueOf(evenement.getId()));
+			m.setBusinessUser(principal);
+			m.setBusinessCorrelationId(String.valueOf(evenement.getId()));
+			m.setServiceDestination(serviceDestination);
+			m.setDomain("fiscalite");
+			m.setContext("evenementFiscal");
+			m.setApplication("unireg");
+			final Node node = document.newDomNode();
+			m.setBody((Document) node);
+
 			if (outputQueue != null) {
-				esbTemplate.sendEsbMessage(outputQueue, m); // for testing only
+				m.setServiceDestination(outputQueue); // for testing only
 			}
-			else {
-				esbTemplate.sendEsbMessage(m);
-			}
+			esbTemplate.send(m);
 		}
 		catch (Exception e) {
-			String message = "Exception lors du processus d'envoi d'un événement fiscal.";
+			final String message = "Exception lors du processus d'envoi d'un événement fiscal.";
 			LOGGER.fatal(message, e);
 
 			throw new EvenementFiscalException(message, e);
@@ -201,8 +201,12 @@ public final class EvenementFiscalSenderImpl implements EvenementFiscalSender {
 		this.outputQueue = outputQueue;
 	}
 
-	public void setEsbTemplate(EsbTemplate esbTemplate) {
+	public void setEsbTemplate(EsbJmsTemplate esbTemplate) {
 		this.esbTemplate = esbTemplate;
+	}
+
+	public void setEsbMessageFactory(EsbMessageFactory esbMessageFactory) {
+		this.esbMessageFactory = esbMessageFactory;
 	}
 
 	public void setServiceDestination(String serviceDestination) {

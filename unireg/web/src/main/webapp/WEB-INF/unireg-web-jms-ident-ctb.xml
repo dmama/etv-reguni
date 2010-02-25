@@ -12,9 +12,8 @@
 							http://www.springframework.org/schema/jms/spring-jms.xsd">
 
 
-	<bean id="identCtbMessageHandler" class="ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuableMessageHandlerImpl" lazy-init="true">
-		<property name="esbStore" ref="raftEsbStore" />
-		<property name="esbTemplate" ref="esbTemplate" />
+	<bean id="identCtbMessageHandler" class="ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuableMessageHandlerImpl" parent="esbMessageListener" lazy-init="true">
+		<property name="esbMessageFactory" ref="esbMessageFactory"/>
 		<property name="hibernateTemplate" ref="hibernateTemplate" />
 		<property name="demandeHandler" ref="identCtbService" />
 	</bean>

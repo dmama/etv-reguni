@@ -12,7 +12,8 @@
 							http://www.springframework.org/schema/jms/spring-jms.xsd">
 
 	<bean id="evtCivilSender" class="ch.vd.uniregctb.evenement.jms.EvenementCivilUnitaireSenderImpl">
-		<property name="esbTemplate" ref="esbTemplate" />
+		<property name="esbTemplate" ref="esbJmsTemplate" />
+		<property name="esbMessageFactory" ref="esbMessageFactory"/>
 		<property name="serviceDestination" value="${extprop.jms.queue.evtCivil}" />
 	</bean>
 
@@ -28,8 +29,7 @@
 		<property name="autoStartup" value="${extprop.jms.queue.evtCivil.enabled}" />
 	</bean>
 
-	<bean id="evtCivilListener" class="ch.vd.uniregctb.evenement.jms.EvenementCivilUnitaireListener">
-		<property name="esbStore" ref="raftEsbStore" />
+	<bean id="evtCivilListener" class="ch.vd.uniregctb.evenement.jms.EvenementCivilUnitaireListener" parent="esbMessageListener">
 		<property name="evenementCivilUnitaireDAO" ref="evenementCivilUnitaireDAO" />
 		<property name="evenementCivilRegrouper" ref="evenementCivilRegrouper" />
 		<property name="evenementCivilProcessor" ref="evenementCivilProcessor" />

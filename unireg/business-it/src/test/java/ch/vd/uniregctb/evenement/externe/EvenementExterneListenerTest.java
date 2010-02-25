@@ -1,8 +1,8 @@
 package ch.vd.uniregctb.evenement.externe;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.technical.esb.EsbMessage;
-import ch.vd.technical.esb.spring.EsbTemplate;
+import ch.vd.technical.esb.EsbMessageFactory;
+import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.technical.esb.store.raft.RaftEsbStore;
 import ch.vd.uniregctb.evenement.EvenementTest;
 import org.apache.activemq.ActiveMQConnectionFactory;
@@ -48,17 +48,20 @@ public class EvenementExterneListenerTest extends EvenementTest {
 		final RaftEsbStore esbStore = new RaftEsbStore();
 		esbStore.setEndpoint("TestRaftStore");
 
-		esbTemplate = new EsbTemplate();
+		esbTemplate = new EsbJmsTemplate();
 		esbTemplate.setConnectionFactory(jmsConnectionManager);
 		esbTemplate.setEsbStore(esbStore);
 		esbTemplate.setReceiveTimeout(200);
-		esbTemplate.afterPropertiesSet();
+//		esbTemplate.afterPropertiesSet();       // la méthode n'existe plus en 2.1
 
 		clearQueue(OUTPUT_QUEUE);
 		clearQueue(INPUT_QUEUE);
 
 		listener = new EvenementExterneListenerImpl();
-		listener.setEsbStore(esbStore);
+		listener.setEsbTemplate(esbTemplate);
+
+		esbMessageFactory = new EsbMessageFactory();
+		esbMessageFactory.setValidator(null);
 
 		final DefaultMessageListenerContainer container = new DefaultMessageListenerContainer();
 		container.setConnectionFactory(jmsConnectionManager);

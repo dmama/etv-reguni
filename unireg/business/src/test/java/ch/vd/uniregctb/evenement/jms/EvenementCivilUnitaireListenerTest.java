@@ -1,5 +1,9 @@
 package ch.vd.uniregctb.evenement.jms;
 
+import java.util.List;
+
+import org.junit.Test;
+
 import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
@@ -16,11 +20,11 @@ import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
-import org.junit.Test;
 
-import java.util.List;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertTrue;
 
 /**
  * @author xsilbn
@@ -142,6 +146,30 @@ public class EvenementCivilUnitaireListenerTest extends BusinessTest {
 		assertEquals("Le type d'événement n'a pas été récupéré correctement", TypeEvenementCivil.NAISSANCE, evenement.getType());
 		assertEquals("Le numéro d'individu n'a pas été récupéré correctement", new Long(9876543L), evenement.getNumeroIndividu());
 		assertEquals("Le numéro OFS n'a pas été récupéré correctement", new Integer(111), evenement.getNumeroOfsCommuneAnnonce());
+	}
+
+	@Test
+	public void testMessageDeTypeInconnu() throws Exception {
+		final String xmlContent = createMessage(42, 1542313, 9876543, RegDate.get(2007, 9, 18), 111);
+
+		final StringBuffer msg = new StringBuffer();
+		final boolean traite = evenementCivilUnitaireMDP.insertRegroupeAndTraite(xmlContent, msg);
+		assertFalse(traite);
+		assertEquals("Message ignoré", msg.toString());
+	}
+
+	@Test
+	public void testMessageDeTypeConnuMaisIgnore() throws Exception {
+		final int typeConnuMaisIgnore = 0;
+		final TypeEvenementCivil typeIgnore = TypeEvenementCivil.valueOf(typeConnuMaisIgnore);
+		assertNotNull(typeIgnore);
+		assertTrue(typeIgnore.isIgnore());
+
+		final String xmlContent = createMessage(42, typeConnuMaisIgnore, 9876543, RegDate.get(2007, 9, 18), 111);
+		final StringBuffer msg = new StringBuffer();
+		final boolean traite = evenementCivilUnitaireMDP.insertRegroupeAndTraite(xmlContent, msg);
+		assertFalse(traite);
+		assertEquals("Message ignoré", msg.toString());
 	}
 
 	@Test

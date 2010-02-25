@@ -9,7 +9,8 @@
 							http://www.springframework.org/schema/util/spring-util-2.0.xsd">
 
 	<bean id="evenementExterneSender" class="ch.vd.uniregctb.evenement.externe.EvenementExterneSenderImpl">
-		<property name="esbTemplate" ref="esbTemplate" />
+		<property name="esbTemplate" ref="esbJmsTemplate" />
+		<property name="esbMessageFactory" ref="esbMessageFactory"/>
 		<property name="businessUser" value="unireg-norentes"/>
 		<property name="serviceDestination" value="${extprop.jms.queue.evtExterne}" />
 	</bean>

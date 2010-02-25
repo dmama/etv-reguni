@@ -1,7 +1,8 @@
 package ch.vd.uniregctb.jms;
 
+import ch.vd.technical.esb.ErrorType;
 import ch.vd.technical.esb.EsbMessage;
-import ch.vd.technical.esb.spring.EsbTemplate;
+import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.uniregctb.interfaces.service.ServiceTracing;
 import ch.vd.uniregctb.stats.StatsService;
 import org.springframework.beans.factory.DisposableBean;
@@ -15,7 +16,7 @@ import java.util.Map;
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
-public class EsbTemplateTracing extends EsbTemplate implements DisposableBean {
+public class EsbTemplateTracing extends EsbJmsTemplate implements DisposableBean {
 
 	private StatsService statsService;
 
@@ -56,11 +57,11 @@ public class EsbTemplateTracing extends EsbTemplate implements DisposableBean {
 	}
 
 	@Override
-	public void sendEsbMessage(String destinationName, EsbMessage esbMessage) throws Exception {
+	public void send(EsbMessage esbMessage) throws Exception {
 		final ServiceTracing tracing = get(esbMessage);
 		long time = tracing.start();
 		try {
-			super.sendEsbMessage(destinationName, esbMessage);
+			super.send(esbMessage);
 		}
 		finally {
 			tracing.end(time);
@@ -68,11 +69,11 @@ public class EsbTemplateTracing extends EsbTemplate implements DisposableBean {
 	}
 
 	@Override
-	public void sendEsbMessage(Destination destination, EsbMessage esbMessage) throws Exception {
+	public void sendInternal(EsbMessage esbMessage) throws Exception {
 		final ServiceTracing tracing = get(esbMessage);
 		long time = tracing.start();
 		try {
-			super.sendEsbMessage(destination, esbMessage);
+			super.sendInternal(esbMessage);
 		}
 		finally {
 			tracing.end(time);
@@ -80,11 +81,11 @@ public class EsbTemplateTracing extends EsbTemplate implements DisposableBean {
 	}
 
 	@Override
-	public void sendEsbMessage(EsbMessage esbMessage) throws Exception {
+	public void sendError(EsbMessage esbMessage, String errorMessage, Exception exception, ErrorType errorType, String errorCode) throws Exception {
 		final ServiceTracing tracing = get(esbMessage);
 		long time = tracing.start();
 		try {
-			super.sendEsbMessage(esbMessage);
+			super.sendError(esbMessage, errorMessage, exception, errorType, errorCode);
 		}
 		finally {
 			tracing.end(time);
@@ -92,23 +93,11 @@ public class EsbTemplateTracing extends EsbTemplate implements DisposableBean {
 	}
 
 	@Override
-	public EsbMessage receiveEsbMessage() throws Exception {
-		final ServiceTracing tracing = get(getDefaultDestinationName());
-		long time = System.nanoTime();
-		try {
-			return super.receiveEsbMessage();
-		}
-		finally {
-			tracing.end(time);
-		}
-	}
-
-	@Override
-	public EsbMessage receiveEsbMessage(String destinationName) throws Exception {
+	public EsbMessage receive(String destinationName) throws Exception {
 		final ServiceTracing tracing = get(destinationName);
 		long time = tracing.start();
 		try {
-			return super.receiveEsbMessage(destinationName);
+			return super.receive(destinationName);
 		}
 		finally {
 			tracing.end(time);
@@ -116,11 +105,35 @@ public class EsbTemplateTracing extends EsbTemplate implements DisposableBean {
 	}
 
 	@Override
-	public EsbMessage receiveEsbMessage(Destination destination) throws Exception {
-		final ServiceTracing tracing = get(destination.toString());
+	public EsbMessage receiveSelected(String destinationName, String messageSelector) throws Exception {
+		final ServiceTracing tracing = get(destinationName);
 		long time = tracing.start();
 		try {
-			return super.receiveEsbMessage(destination);
+			return super.receiveSelected(destinationName, messageSelector);
+		}
+		finally {
+			tracing.end(time);
+		}
+	}
+
+	@Override
+	public EsbMessage receiveInternal(String destinationName) throws Exception {
+		final ServiceTracing tracing = get(destinationName);
+		long time = tracing.start();
+		try {
+			return super.receiveInternal(destinationName);
+		}
+		finally {
+			tracing.end(time);
+		}
+	}
+
+	@Override
+	public EsbMessage receiveSelectedInternal(String destinationName, String messageSelector) throws Exception {
+		final ServiceTracing tracing = get(destinationName);
+		long time = tracing.start();
+		try {
+			return super.receiveSelectedInternal(destinationName, messageSelector);
 		}
 		finally {
 			tracing.end(time);

@@ -2,7 +2,8 @@ package ch.vd.uniregctb.evenement.externe;
 
 import ch.vd.fiscalite.registre.evenementImpotSourceV1.EvenementImpotSourceQuittanceDocument;
 import ch.vd.technical.esb.EsbMessage;
-import ch.vd.technical.esb.spring.EsbTemplate;
+import ch.vd.technical.esb.EsbMessageFactory;
+import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -16,7 +17,8 @@ public class EvenementExterneSenderImpl implements EvenementExterneSender {
 	//private static Logger LOGGER = Logger.getLogger(EvenementExterneSenderImpl.class);
 
 	private String outputQueue;
-	private EsbTemplate esbTemplate;
+	private EsbJmsTemplate esbTemplate;
+	private EsbMessageFactory esbMessageFactory;
 	private String serviceDestination;
 	private String businessUser;
 
@@ -39,8 +41,13 @@ public class EvenementExterneSenderImpl implements EvenementExterneSender {
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
-	public void setEsbTemplate(EsbTemplate esbTemplate) {
+	public void setEsbTemplate(EsbJmsTemplate esbTemplate) {
 		this.esbTemplate = esbTemplate;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setEsbMessageFactory(EsbMessageFactory esbMessageFactory) {
+		this.esbMessageFactory = esbMessageFactory;
 	}
 
 	/**
@@ -52,22 +59,20 @@ public class EvenementExterneSenderImpl implements EvenementExterneSender {
 	 */
 	public void sendEvent(String businessId, EvenementImpotSourceQuittanceDocument document) throws Exception {
 
-		EsbMessage m = new EsbMessage();
+		final EsbMessage m = esbMessageFactory.createMessage();
 		m.setBusinessId(String.valueOf(businessId));
 		m.setBusinessUser(businessUser);
 		m.setBusinessCorrelationId(String.valueOf(businessId));
 		m.setServiceDestination(serviceDestination);
 		m.setDomain("fiscalite");
-		m.setContext("registreFiscal");
+		m.setContext("evenementExterne");
 		m.setApplication("unireg");
 		final Node node = document.newDomNode();
 		m.setBody((Document) node);
 
 		if (outputQueue != null) {
-			esbTemplate.sendEsbMessage(outputQueue, m); // for testing only
+			m.setServiceDestination(outputQueue); // for testing only
 		}
-		else {
-			esbTemplate.sendEsbMessage(m);
-		}
+		esbTemplate.send(m);
 	}
 }

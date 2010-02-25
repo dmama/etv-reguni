@@ -8,7 +8,7 @@
 							http://www.springframework.org/schema/util
 							http://www.springframework.org/schema/util/spring-util-2.0.xsd">
 
-	<bean id="evenementExterneListener" class="ch.vd.uniregctb.evenement.externe.EvenementExterneListenerImpl" lazy-init="true">
+	<bean id="evenementExterneListener" class="ch.vd.uniregctb.evenement.externe.EvenementExterneListenerImpl" parent="esbMessageListener" lazy-init="true">
 		<property name="service" ref="evenementExterneService" />
 	</bean>
 

@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.evenement.jms;
 
+import ch.vd.technical.esb.ErrorType;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.jms.EsbMessageListener;
 import org.apache.log4j.Logger;
@@ -46,6 +47,13 @@ public class EvenementCivilUnitaireListener extends EsbMessageListener {
 			final String message = esbMessage.getBodyAsString();
 			onMessage(message);
 		}
+		catch (EvenementUnitaireException e) {
+			// on a un truc qui a sauté au moment de l'insertion de l'événement
+			// non seulement il faut committer la transaction de réception du message entrant,
+			// mais aussi envoyer l'erreur dans une queue spécifique
+			LOGGER.error(e.getMessage(), e);
+			getEsbTemplate().sendError(esbMessage, e.getMessage(), e, ErrorType.UNKNOWN, "");
+		}
 		catch (RuntimeException e) {
 			LOGGER.error(e, e);
 			throw e;
@@ -57,34 +65,21 @@ public class EvenementCivilUnitaireListener extends EsbMessageListener {
 
 	/**
 	 * Traite le message XML reçu pour en extraire les informations de l'événement civil et les persister en base.
-	 * La methode onMessage() ne doit être appelée explicitement
-	 * Seul le mechanisme JMS doit l'appeler
+	 * La methode onMessage() ne doit pas être appelée explicitement.
+	 * Seul le mécanisme JMS doit l'appeler
 	 *
-	 * @param message
-	 *            message XML décrivant l'évènement civil unitaire
+	 * @param message message XML décrivant l'évènement civil unitaire
 	 */
-	private void onMessage(String message) {
+	private void onMessage(String message) throws EvenementUnitaireException {
 		
-		// D'abord on insére l'evenement
-		final long id = insertEvenementUnitaire(message);
+		// D'abord on insére l'événement
+		final Long id = insertEvenementUnitaire(message);
 
-		// Ensuite on regroupe
-		long ret = -1L;
-		try {
-			ret = evenementCivilRegrouper.regroupeUnEvenementById(id, null);
-		}
-		catch (Exception e) {
-			/*
-			 * On catche l'exception et on ne FAIT RIEN!
-			 * Le regroupement peut failer mais la consommation du message JMS ne doit pas être impactée.
-			 * L'Etat de l'événement civil REGROUPE est mis à ERREUR.
-			 */
-			LOGGER.error(e, e);
-		}
-
-		if (ret > 0) {
+		if (id != null) {
+			// Ensuite on regroupe
+			long ret = -1L;
 			try {
-				evenementCivilProcessor.traiteEvenementCivilRegroupe(ret);
+				ret = evenementCivilRegrouper.regroupeUnEvenementById(id, null);
 			}
 			catch (Exception e) {
 				/*
@@ -94,27 +89,61 @@ public class EvenementCivilUnitaireListener extends EsbMessageListener {
 				 */
 				LOGGER.error(e, e);
 			}
+
+			if (ret > 0) {
+				try {
+					evenementCivilProcessor.traiteEvenementCivilRegroupe(ret);
+				}
+				catch (Exception e) {
+					/*
+					 * On catche l'exception et on ne FAIT RIEN!
+					 * Le regroupement peut failer mais la consommation du message JMS ne doit pas être impactée.
+					 * L'Etat de l'événement civil REGROUPE est mis à ERREUR.
+					 */
+					LOGGER.error(e, e);
+				}
+			}
 		}
+
 	}
 
-	private long insertEvenementUnitaire(final String message) {
+	private class InsertionEvenementUnitaireTransactionCallback implements TransactionCallback  {
 
-		TransactionCallback callback = new TransactionCallback() {
+		final String xmlMessage;
 
-			public Object doInTransaction(TransactionStatus status) {
+		private InsertionEvenementUnitaireTransactionCallback(String xmlMessage) {
+			this.xmlMessage = xmlMessage;
+		}
 
-				/* On parse le message XML */
-				EvtRegCivilDocument doc;
-				try {
-					doc = EvtRegCivilDocument.Factory.parse(message);
-				}
-				catch (XmlException e) {
-					LOGGER.warn("Le message suivant n'est pas un document XML valide:\n" + message, e);
-					throw new RuntimeException(e);
-				}
-				EvtRegCivil bean = doc.getEvtRegCivil();
+		/**
+		 * Renvoie l'identifiant technique de l'événement unitaire inséré
+		 * @param status
+		 * @return
+		 */
+		public Long doInTransaction(TransactionStatus status) {
 
-				Audit.info(bean.getNoTechnique(), "Arrivée du message JMS avec l'id " + bean.getNoTechnique());
+			/* On parse le message XML */
+			EvtRegCivilDocument doc;
+			try {
+				doc = EvtRegCivilDocument.Factory.parse(xmlMessage);
+			}
+			catch (XmlException e) {
+				LOGGER.warn("Le message suivant n'est pas un document XML valide:\n" + xmlMessage, e);
+				throw new RuntimeException("Message invalide", e);
+			}
+			final EvtRegCivil bean = doc.getEvtRegCivil();
+
+			// filtrage des événements que l'on ne connait pas ou que l'on connait
+			// mais que l'on ne traite pas...
+			final long id = bean.getNoTechnique();
+			final TypeEvenementCivil type = TypeEvenementCivil.valueOf(bean.getCode());
+			if (type == null || type.isIgnore()) {
+				Audit.info(id, String.format("Arrivée d'un message JMS ignoré (id %d, code %d)", id, bean.getCode()));
+				return null;
+			}
+			else {
+
+				Audit.info(id, "Arrivée du message JMS avec l'id " + id);
 
 				/*
 				 * Si l'événement se trouve déja dans la base, on log la duplication est on ne fait rien.
@@ -124,44 +153,52 @@ public class EvenementCivilUnitaireListener extends EsbMessageListener {
 				 * d'exception). Car dans la pratique il est possible que ce cas de figure se produise lorsque le gateway des événements est
 				 * rebooté.
 				 */
-				long id = bean.getNoTechnique();
 				if (!evenementCivilUnitaireDAO.exists(id)) {
 
-					/* Sauvegarde du nouvel événement en base de donnée */
-					EvenementCivilUnitaire evt = new EvenementCivilUnitaire();
+					// Sauvegarde du nouvel événement en base de donnée
+					final EvenementCivilUnitaire evt = new EvenementCivilUnitaire();
 					evt.setId(id);
-					evt.setType( TypeEvenementCivil.valueOf(bean.getCode()) );
+					evt.setType(type);
 					evt.setEtat(EtatEvenementCivil.A_TRAITER);
 					evt.setNumeroIndividu((long) bean.getNoIndividu());
 					evt.setDateEvenement(RegDate.get(bean.getDateEvenement().getTime()));
 					evt.setNumeroOfsCommuneAnnonce(bean.getNumeroOFS());
 
 					// Checks
-					checkNotNull(evt.getId(), "L'ID de l'événement ne peut pas être null");
-					checkNotNull(evt.getType(), "Le type de l'événement ("+bean.getCode()+") ne peut pas être null");
-					checkNotNull(evt.getDateEvenement(), "La date de l'événement ne peut pas être null");
-					checkNotNull(evt.getNumeroIndividu(), "Le numéro d'individu de l'événement ne peut pas être null");
+					checkNotNull(id, evt.getId(), "L'ID de l'événement ne peut pas être nul");
+					checkNotNull(id, evt.getDateEvenement(), "La date de l'événement ne peut pas être nulle");
+					checkNotNull(id, evt.getNumeroIndividu(), "Le numéro d'individu de l'événement ne peut pas être nul");
 
 					evenementCivilUnitaireDAO.save(evt);
 
-					String msg = "L'Evenement unitaire " + id + " est inséré en base de données.";
-					msg += " Id=" + evt.getId();
-					msg += " Type=" + evt.getType();
-					msg += " Date=" + RegDateHelper.dateToDashString(evt.getDateEvenement());
-					msg += " No individu=" + evt.getNumeroIndividu();
-					msg += " OFS commune=" + evt.getNumeroOfsCommuneAnnonce();
-					Audit.info(id, msg);
+					final StringBuilder b = new StringBuilder();
+					b.append("L'événement unitaire ").append(id).append(" est inséré en base de données.");
+					b.append(" ID=").append(evt.getId());
+					b.append(" Type=").append(evt.getType());
+					b.append(" Date=").append(RegDateHelper.dateToDashString(evt.getDateEvenement()));
+					b.append(" No individu=").append(evt.getNumeroIndividu());
+					b.append(" OFS commune=").append(evt.getNumeroOfsCommuneAnnonce());
+					Audit.info(id, b.toString());
 				}
 				else { // L'Evt existe deja
-					Audit.warn(id, "L'Evenement unitaire "+id+" existe DEJA en DB");
+					Audit.warn(id, String.format("L'événement unitaire %d existe DEJA en DB", id));
 				}
 				return id;
 			}
-		};
+		}
+	}
 
-		TransactionTemplate template = new TransactionTemplate(transactionManager);
+	private Long insertEvenementUnitaire(final String message) throws EvenementUnitaireException {
+
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setPropagationBehavior(TransactionTemplate.PROPAGATION_REQUIRES_NEW);
-		return (Long)template.execute(callback);
+
+		try {
+			return (Long) template.execute(new InsertionEvenementUnitaireTransactionCallback(message));
+		}
+		catch (Exception e) {
+			throw new EvenementUnitaireException(e);
+		}
 	}
 
 	/**
@@ -169,17 +206,17 @@ public class EvenementCivilUnitaireListener extends EsbMessageListener {
 	 *
 	 * @param message le contenu XML du message
 	 * @param errorMsg message renseigné en cas d'erreur (out)
-	 * @return <i>vrai</i> si le traitement s'est bien passé; <i>faux</i> autrement.
+	 * @return <i>vrai</i> si le traitement s'est bien passé; <i>faux</i> si le message a été ignoré ou est parti en erreur.
 	 */
 	protected boolean insertRegroupeAndTraite(String message, StringBuffer errorMsg) {
 
 		// D'abord on insére l'evenement
 		boolean ok = true;
-		long idU = -1L;
+		Long idU = null;
 		try {
 			idU = insertEvenementUnitaire(message);
-			if (idU < 0) {
-				errorMsg.append("Probleme lors de l'insertion du message unitaire ").append(idU);
+			if (idU == null) {
+				errorMsg.append("Message ignoré");
 				ok = false;
 			}
 		}
@@ -219,9 +256,9 @@ public class EvenementCivilUnitaireListener extends EsbMessageListener {
 		return ok;
 	}
 
-	private void checkNotNull(Object o, String message) {
+	private void checkNotNull(long id, Object o, String message) {
 		if (o == null) {
-			Audit.error(message);
+			Audit.error(id, message);
 			Assert.notNull(o, message);
 		}
 	}

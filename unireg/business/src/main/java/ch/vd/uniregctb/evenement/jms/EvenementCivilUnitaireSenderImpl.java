@@ -5,7 +5,8 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.schema.registreCivil.x20070914.evtRegCivil.EvtRegCivilDocument;
 import ch.vd.technical.esb.EsbMessage;
-import ch.vd.technical.esb.spring.EsbTemplate;
+import ch.vd.technical.esb.EsbMessageFactory;
+import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.uniregctb.evenement.EvenementCivilUnitaire;
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
@@ -20,12 +21,13 @@ public class EvenementCivilUnitaireSenderImpl implements EvenementCivilUnitaireS
 
 	private static Logger LOGGER = Logger.getLogger(EvenementCivilUnitaireSenderImpl.class);
 
-	private EsbTemplate esbTemplate;
+	private EsbJmsTemplate esbTemplate;
+	private EsbMessageFactory esbMessageFactory;
 	private String outputQueue;
 	private String serviceDestination;
 
 	@SuppressWarnings({"UnusedDeclaration"})
-	public void setEsbTemplate(EsbTemplate esbTemplate) {
+	public void setEsbTemplate(EsbJmsTemplate esbTemplate) {
 		this.esbTemplate = esbTemplate;
 	}
 
@@ -39,6 +41,11 @@ public class EvenementCivilUnitaireSenderImpl implements EvenementCivilUnitaireS
 		this.serviceDestination = serviceDestination;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setEsbMessageFactory(EsbMessageFactory esbMessageFactory) {
+		this.esbMessageFactory = esbMessageFactory;
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -46,23 +53,21 @@ public class EvenementCivilUnitaireSenderImpl implements EvenementCivilUnitaireS
 		Assert.notNull(evenement);
 		final EvtRegCivilDocument document = createDocument(evenement);
 
-		EsbMessage m = new EsbMessage();
+		final EsbMessage m = esbMessageFactory.createMessage();
 		m.setBusinessId(String.valueOf(evenement.getId()));
 		m.setBusinessUser(businessUser);
 		m.setBusinessCorrelationId(evenement.getId().toString());
 		m.setServiceDestination(serviceDestination);
 		m.setDomain("fiscalite"); // selon mail de Giorgio du 08.09.2009
-		m.setContext("registreFiscal");
+		m.setContext("evenementCivil");
 		m.setApplication("unireg");
 		final Node node = document.newDomNode();
 		m.setBody((Document) node);
 
 		if (outputQueue != null) {
-			esbTemplate.sendEsbMessage(outputQueue, m); // for testing only
+			m.setServiceDestination(outputQueue); // for testing only
 		}
-		else {
-			esbTemplate.sendEsbMessage(m);
-		}
+		esbTemplate.send(m);
 	}
 
 	public EvtRegCivilDocument createDocument(EvenementCivilUnitaire evenement) {

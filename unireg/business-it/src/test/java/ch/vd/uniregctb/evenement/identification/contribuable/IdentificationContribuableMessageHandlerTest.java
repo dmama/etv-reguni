@@ -1,7 +1,8 @@
 package ch.vd.uniregctb.evenement.identification.contribuable;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.technical.esb.spring.EsbTemplate;
+import ch.vd.technical.esb.EsbMessageFactory;
+import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.technical.esb.store.raft.RaftEsbStore;
 import ch.vd.uniregctb.evenement.EvenementTest;
 import ch.vd.uniregctb.evenement.identification.contribuable.Demande.PrioriteEmetteur;
@@ -14,7 +15,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.internal.runners.JUnit4ClassRunner;
 import org.junit.runner.RunWith;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
+import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.util.Log4jConfigurer;
 import org.springframework.util.ResourceUtils;
 
@@ -51,19 +54,30 @@ public class IdentificationContribuableMessageHandlerTest extends EvenementTest 
 		final RaftEsbStore esbStore = new RaftEsbStore();
 		esbStore.setEndpoint("TestRaftStore");
 
-		esbTemplate = new EsbTemplate();
+		esbTemplate = new EsbJmsTemplate();
 		esbTemplate.setConnectionFactory(jmsConnectionManager);
 		esbTemplate.setEsbStore(esbStore);
 		esbTemplate.setReceiveTimeout(200);
-		esbTemplate.afterPropertiesSet();
+//		esbTemplate.afterPropertiesSet();       // la méthode n'existe plus en 2.1
 
 		clearQueue(OUTPUT_QUEUE);
 		clearQueue(INPUT_QUEUE);
 
+		esbMessageFactory = new EsbMessageFactory();
+		esbMessageFactory.setValidator(null);
+
+		// flush est vraiment la seule méthode appelée...
+		final HibernateTemplate hibernateTemplate = new HibernateTemplate() {
+			@Override
+			public void flush() throws DataAccessException {
+			}
+		};
+
 		handler = new IdentificationContribuableMessageHandlerImpl();
-		handler.setEsbStore(esbStore);
 		handler.setOutputQueue(OUTPUT_QUEUE);
 		handler.setEsbTemplate(esbTemplate);
+		handler.setEsbMessageFactory(esbMessageFactory);
+		handler.setHibernateTemplate(hibernateTemplate);
 
 		container = new DefaultMessageListenerContainer();
 		container.setConnectionFactory(jmsConnectionManager);

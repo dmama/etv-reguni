@@ -9,7 +9,8 @@
 							http://www.springframework.org/schema/util/spring-util-2.0.xsd">
 
 	<bean id="evenementFiscalSender" class="ch.vd.uniregctb.evenement.fiscal.EvenementFiscalSenderImpl">
-		<property name="esbTemplate" ref="esbTemplate" />
+		<property name="esbTemplate" ref="esbJmsTemplate" />
+		<property name="esbMessageFactory" ref="esbMessageFactory"/>
 		<property name="serviceDestination" value="${extprop.jms.queue.evtFiscal}" />
 		<property name="enabled" value="${extprop.jms.queue.evtFiscal.enabled}" />
 	</bean>

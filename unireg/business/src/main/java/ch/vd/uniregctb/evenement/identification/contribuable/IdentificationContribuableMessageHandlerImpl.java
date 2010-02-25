@@ -13,8 +13,8 @@ import org.w3c.dom.Node;
 
 import ch.vd.fiscalite.registre.identificationContribuable.IdentificationCTBDocument;
 import ch.vd.technical.esb.EsbMessage;
+import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbMessageListener;
-import ch.vd.technical.esb.spring.EsbTemplate;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 
 /**
@@ -30,7 +30,7 @@ public class IdentificationContribuableMessageHandlerImpl extends EsbMessageList
 	private static Logger LOGGER = Logger.getLogger(IdentificationContribuableMessageHandlerImpl.class);
 
 	private String outputQueue;
-	private EsbTemplate esbTemplate;
+	private EsbMessageFactory esbMessageFactory;
 	private HibernateTemplate hibernateTemplate;
 	private DemandeHandler demandeHandler;
 
@@ -41,8 +41,8 @@ public class IdentificationContribuableMessageHandlerImpl extends EsbMessageList
 		this.outputQueue = outputQueue;
 	}
 
-	public void setEsbTemplate(EsbTemplate esbTemplate) {
-		this.esbTemplate = esbTemplate;
+	public void setEsbMessageFactory(EsbMessageFactory esbMessageFactory) {
+		this.esbMessageFactory = esbMessageFactory;
 	}
 
 	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
@@ -116,23 +116,21 @@ public class IdentificationContribuableMessageHandlerImpl extends EsbMessageList
 
 		final IdentificationCTBDocument identificationCtb = XmlEntityAdapter.entity2xml(message);
 
-		EsbMessage m = new EsbMessage();
+		final EsbMessage m = esbMessageFactory.createMessage();
 		m.setBusinessId(String.valueOf(message.getId()));
 		m.setBusinessUser(businessUser);
 		m.setBusinessCorrelationId(businessId);
 		m.setServiceDestination(replyTo);
 		m.setDomain("fiscalite"); // selon mail de Giorgio du 08.09.2009
-		m.setContext("registreFiscal");
+		m.setContext("identificationContribuable");
 		m.setApplication("unireg");
 		final Node node = identificationCtb.newDomNode();
 		m.setBody((Document) node);
 
 		if (outputQueue != null) {
-			esbTemplate.sendEsbMessage(outputQueue, m); // for testing only
+			m.setServiceDestination(outputQueue); // for testing only
 		}
-		else {
-			esbTemplate.sendEsbMessage(m);
-		}
+		getEsbTemplate().send(m);
 	}
 
 }
