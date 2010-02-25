@@ -12,7 +12,6 @@
 	</tr>
 </table>
 </c:if>
-<c:if test="${not empty command.historiqueAdresses}">
 <fieldset>
 	<legend><span><fmt:message key="label.adresse" /></span></legend>
 
@@ -23,5 +22,4 @@
 		<jsp:param name="page" value="visu"/>
 	</jsp:include>
 </fieldset>
-</c:if>
 <!-- Fin Adresse -->
