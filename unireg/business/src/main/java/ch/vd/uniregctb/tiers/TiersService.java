@@ -108,6 +108,22 @@ public interface TiersService {
 	public PersonnePhysique changeHabitantenNH(PersonnePhysique habitant);
 
 	/**
+	 * Change un habitant en non-habitant s'il est actuellement domicilié hors du canton de Vaud
+	 * @param pp la personne physique
+	 * @return <code>true</code> si un changement de flag habitant a eu lieu
+	 */
+	public boolean changeHabitantEnNHSiDomicilieHorsDuCanton(PersonnePhysique pp);
+
+	/**
+	 * Change un non-habitant en habitant s'il est actuellement domicilié sur le canton de Vaud
+	 * (et qu'il a déjà un numéro d'individu)
+	 * @param pp la personne physique
+	 * @param dateArrivee
+	 * @return <code>true</code> si un changement de flag habitant a eu lieu
+	 */
+	public boolean changeNHEnHabitantSiDomicilieDansLeCanton(PersonnePhysique pp, RegDate dateArrivee);
+
+	/**
 	 * Renvoie la collectivité administrative rattachée au numero de collectivité donné.
 	 *
 	 * @param noTechnique

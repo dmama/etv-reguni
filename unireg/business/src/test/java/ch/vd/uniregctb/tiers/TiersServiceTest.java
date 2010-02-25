@@ -1,9 +1,11 @@
 package ch.vd.uniregctb.tiers;
 
+import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.interfaces.model.Nationalite;
+import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
 import ch.vd.uniregctb.interfaces.model.mock.MockNationalite;
 
 import static junit.framework.Assert.assertEquals;
@@ -2215,7 +2217,7 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 	@Test
-	public void testFlagHabitantApresOuvertureDeFor() throws Exception {
+	public void testFlagHabitantApresOuvertureDeForSurCouple() throws Exception {
 
 		// voilà le topo :
 		// - un couple
@@ -2230,7 +2232,7 @@ public class TiersServiceTest extends BusinessTest {
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
-				addIndividu(noIndMonsieur, date(1950, 3, 24), "Achille", "Talon", false);
+				addIndividu(noIndMonsieur, date(1950, 3, 24), "Achille", "Talon", true);
 				addIndividu(noIndMadame, date(1950, 5, 12), "Huguette", "Marcot", false);
 			}
 		});
@@ -2263,6 +2265,81 @@ public class TiersServiceTest extends BusinessTest {
 				final MenageCommun mc = (MenageCommun) tiersDAO.get(idMenage);
 				tiersService.closeForFiscalPrincipal(mc, date(2001, 12, 31), MotifFor.DEMENAGEMENT_VD);
 				tiersService.openForFiscalPrincipal(mc, date(2002, 1, 1), MotifRattachement.DOMICILE, MockCommune.Aubonne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ModeImposition.ORDINAIRE, MotifFor.DEMENAGEMENT_VD, true);
+				return null;
+			}
+		});
+
+		doInNewTransaction(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+
+				final MenageCommun mc = (MenageCommun) tiersDAO.get(idMenage);
+				final EnsembleTiersCouple ensemble = tiersService.getEnsembleTiersCouple(mc, null);
+				Assert.assertNotNull(ensemble);
+
+				final PersonnePhysique monsieur = ensemble.getPrincipal();
+				final PersonnePhysique madame = ensemble.getConjoint();
+				Assert.assertNotNull(monsieur);
+				Assert.assertNotNull(madame);
+				Assert.assertEquals(noIndMonsieur, (long) monsieur.getNumeroIndividu());
+				Assert.assertEquals(noIndMadame, (long) madame.getNumeroIndividu());
+				Assert.assertTrue(madame.isHabitant());
+				Assert.assertFalse(monsieur.isHabitant());
+				return null;
+			}
+		});
+	}
+
+	@Test
+	public void testFlagHabitantSuiteAAnnulationDeForSurCouple() throws Exception {
+		// cas tiré du cas jira UNIREG-2021 :
+		// - couple, Monsieur est en Italie, Madame à Lausanne depuis le 24.02.2010, étranger avant (donc Madame est maintenant habitante)
+		// - annulation du for Lausannois, ré-ouverture du for italien
+		// - -> Monsieur doit rester non-habitant
+		// - -> Madame doit rester habitante, car son adresse de domicile n'a pas changé...
+
+		final long noIndMadame = 123254L;
+		final long noIndMonsieur = 424566L;
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu mr = addIndividu(noIndMonsieur, date(1950, 3, 24), "Achille", "Talon", true);
+				addAdresse(mr, EnumTypeAdresse.PRINCIPALE, "Parca Guell", "12", "1000", null, "Barcelona", MockPays.Espagne, date(1990, 5, 1), null);
+
+				final MockIndividu mme = addIndividu(noIndMadame, date(1950, 5, 12), "Huguette", "Marcot", false);
+				addAdresse(mme, EnumTypeAdresse.PRINCIPALE, "Parca Guell", "12", "1000", null, "Barcelona", MockPays.Espagne, date(1990, 5, 1), date(2010, 2, 23));
+				addAdresse(mme, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, date(2010, 2, 24), null);
+			}
+		});
+
+		final long idMenage = (Long) doInNewTransaction(new TxCallback() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+
+				// ancien habitant...
+				final PersonnePhysique monsieur = addNonHabitant("Achille", "Talon", date(1950, 3, 24), Sexe.MASCULIN);
+				monsieur.setNumeroIndividu(noIndMonsieur);
+
+				final PersonnePhysique madame = addHabitant(noIndMadame);
+
+				final EnsembleTiersCouple ensemble = createEnsembleTiersCouple(monsieur, madame, date(1998, 1, 1));
+				final MenageCommun mc = ensemble.getMenage();
+				addForPrincipal(mc, date(2000, 1, 1), MotifFor.DEPART_HS, date(2010, 2, 23), MotifFor.ARRIVEE_HS, MockPays.Espagne);
+				addForPrincipal(mc, date(2010, 2, 24), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);  
+
+				return mc.getNumero();
+			}
+		});
+
+
+		doInNewTransaction(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+
+				final MenageCommun mc = (MenageCommun) tiersDAO.get(idMenage);
+				final ForFiscalPrincipal ffp = mc.getForFiscalPrincipalAt(date(2010, 2, 24));
+				tiersService.annuleForFiscal(ffp, true);
 				return null;
 			}
 		});

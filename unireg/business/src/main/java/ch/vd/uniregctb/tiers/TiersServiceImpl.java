@@ -1491,11 +1491,11 @@ public class TiersServiceImpl implements TiersService {
 				EnsembleTiersCouple ensemble = getEnsembleTiersCouple(menage, null);
 				PersonnePhysique principal = (ensemble == null) ? null : ensemble.getPrincipal();
 				if (principal != null && principal.isHabitant()) {
-					changeHabitantenNH(principal);
+					changeHabitantEnNHSiDomicilieHorsDuCanton(principal);
 				}
 				PersonnePhysique second = (ensemble == null) ? null : ensemble.getConjoint();
 				if (second != null && second.isHabitant()) {
-					changeHabitantenNH(second);
+					changeHabitantEnNHSiDomicilieHorsDuCanton(second);
 				}
 			}
 		}
@@ -1503,31 +1503,36 @@ public class TiersServiceImpl implements TiersService {
 		if (forFP.getTypeAutoriteFiscale().equals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD)) {
 			if (forFP.getTiers() instanceof PersonnePhysique) {
 				final PersonnePhysique pp = (PersonnePhysique) forFP.getTiers();
-				changeNHEnHabitantSiDomicilieDansLeCanton(forFP, pp);
+				if (!pp.isHabitant() && pp.getNumeroIndividu() != null && pp.getNumeroIndividu() != 0) {
+					changeNHenHabitant(pp, pp.getNumeroIndividu(), forFP.getDateDebut());
+				}
 			}
 			else if (forFP.getTiers() instanceof MenageCommun) {
 				final MenageCommun menage = (MenageCommun) forFP.getTiers();
 				final EnsembleTiersCouple ensemble = getEnsembleTiersCouple(menage, null);
 				final PersonnePhysique principal = (ensemble == null) ? null : ensemble.getPrincipal();
-				changeNHEnHabitantSiDomicilieDansLeCanton(forFP, principal);
+				changeNHEnHabitantSiDomicilieDansLeCanton(principal, forFP.getDateDebut());
 				final PersonnePhysique conjoint = (ensemble == null) ? null : ensemble.getConjoint();
-				changeNHEnHabitantSiDomicilieDansLeCanton(forFP, conjoint);
+				changeNHEnHabitantSiDomicilieDansLeCanton(conjoint, forFP.getDateDebut());
 			}
 		}
 
 		return forFP;
 	}
 
-	private void changeNHEnHabitantSiDomicilieDansLeCanton(ForFiscalPrincipal forFP, PersonnePhysique pp) {
-		if (pp != null && !pp.isHabitant() && !pp.isDecede() && pp.getNumeroIndividu() != null && pp.getNumeroIndividu() != 0) {
+	public boolean changeHabitantEnNHSiDomicilieHorsDuCanton(PersonnePhysique pp) {
+		boolean change = false;
+		if (pp != null && pp.isHabitant() && !isDecede(pp)) {
 			// on doit vérifier l'adresse de domicile du contribuable,
-			// et ne le passer en habitant que si cette adresse est vaudoise...
+			// et ne le passer en non-habitant que si cette adresse n'est pas vaudoise...
 			try {
 				final AdresseGenerique adresseDomicile = adresseService.getAdresseFiscale(pp, TypeAdresseTiers.DOMICILE, null);
 				if (adresseDomicile != null) {
+					final boolean hs = adresseDomicile.getNoOfsPays() != null && adresseDomicile.getNoOfsPays() != ServiceInfrastructureService.noOfsSuisse;
 					final Commune commune = serviceInfra.getCommuneByAdresse(adresseDomicile);
-					if (commune != null && commune.isVaudoise()) {
-						changeNHenHabitant(pp, pp.getNumeroIndividu(), forFP.getDateDebut());
+					if (hs || (commune != null && !commune.isVaudoise())) {
+						changeHabitantenNH(pp);
+						change = true;
 					}
 				}
 			}
@@ -1540,6 +1545,34 @@ public class TiersServiceImpl implements TiersService {
 				LOGGER.warn("Impossible de déterminer la commune de l'adresse de domicile du tiers " + pp.getNumero(), e);
 			}
 		}
+		return change;
+	}
+
+	public boolean changeNHEnHabitantSiDomicilieDansLeCanton(PersonnePhysique pp, RegDate dateArrivee) {
+		boolean change = false;
+		if (pp != null && !pp.isHabitant() && !isDecede(pp) && pp.getNumeroIndividu() != null && pp.getNumeroIndividu() != 0) {
+			// on doit vérifier l'adresse de domicile du contribuable,
+			// et ne le passer en habitant que si cette adresse est vaudoise...
+			try {
+				final AdresseGenerique adresseDomicile = adresseService.getAdresseFiscale(pp, TypeAdresseTiers.DOMICILE, null);
+				if (adresseDomicile != null) {
+					final Commune commune = serviceInfra.getCommuneByAdresse(adresseDomicile);
+					if (commune != null && commune.isVaudoise()) {
+						changeNHenHabitant(pp, pp.getNumeroIndividu(), dateArrivee);
+						change = true;
+					}
+				}
+			}
+			catch (AdressesResolutionException e) {
+				// rien à faire...
+				LOGGER.warn("Impossible de déterminer l'adresse de domicile du tiers " + pp.getNumero(), e);
+			}
+			catch (InfrastructureException e) {
+				// rien à faire...
+				LOGGER.warn("Impossible de déterminer la commune de l'adresse de domicile du tiers " + pp.getNumero(), e);
+			}
+		}
+		return change;
 	}
 
 	private void afterForFiscalPrincipalAdded(Contribuable contribuable, ForFiscalPrincipal forFiscalPrincipal) {
