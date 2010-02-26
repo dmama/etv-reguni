@@ -4,20 +4,13 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.evenement.common.EnsembleTiersCouple;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
+import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.type.ModeImposition;
-import ch.vd.uniregctb.type.MotifFor;
-import ch.vd.uniregctb.type.MotifRattachement;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
-import org.junit.Ignore;
+import ch.vd.uniregctb.type.*;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static ch.vd.registre.base.date.DateRangeHelper.Range;
 import static junit.framework.Assert.assertNotNull;
@@ -27,22 +20,10 @@ import static org.junit.Assert.assertEquals;
 public class AssujettissementTest extends MetierTest {
 
 	@Test
-	public void testExtractSousPeriodesAucunFor() throws Exception {
-		final Contribuable paul = createContribuableSansFor();
-		assertEmpty(Assujettissement.extractSousPeriodes(new DecompositionForsAnneeComplete(paul, 2008)));
-	}
-
-	@Test
 	public void testDetermineAucunFor() throws Exception {
 		final Contribuable paul = createContribuableSansFor();
 		assertEmpty(Assujettissement.determine(paul, 2008));
 		assertEmpty(Assujettissement.determine(paul, RANGE_2002_2010, true));
-	}
-
-	@Test
-	public void testExtractSousPeriodesUnForSimple() throws Exception {
-		final Contribuable paul = createUnForSimple();
-		assertEmpty(Assujettissement.extractSousPeriodes(new DecompositionForsAnneeComplete(paul, 2008)));
 	}
 
 	@Test
@@ -58,34 +39,6 @@ public class AssujettissementTest extends MetierTest {
 		assertNotNull(list);
 		assertEquals(1, list.size());
 		assertOrdinaire(date(2002, 1, 1), date(2010, 12, 31), null, null, list.get(0));
-	}
-
-	@Test
-	public void testExtractSousPeriodesMenageCommunMarieDansLAnnee() throws Exception {
-		
-		final EnsembleTiersCouple ensemble = createMenageCommunMarie(date(2008, 7, 1));
-
-		// 2007
-		final List<SousPeriode> plist = Assujettissement.extractSousPeriodes(new DecompositionForsAnneeComplete(ensemble.getPrincipal(), 2007));
-		assertNotNull(plist);
-		assertEquals(1, plist.size());
-		assertSousPeriode(date(2007, 1, 1), date(2007, 12, 31), null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, plist.get(0));
-
-		final List<SousPeriode> clist = Assujettissement.extractSousPeriodes(new DecompositionForsAnneeComplete(ensemble.getConjoint(), 2007));
-		assertNotNull(clist);
-		assertEquals(1, clist.size());
-		assertSousPeriode(date(2007, 1, 1), date(2007, 12, 31), null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, clist.get(0));
-
-		assertEmpty(Assujettissement.extractSousPeriodes(new DecompositionForsAnneeComplete(ensemble.getMenage(), 2007)));
-
-		// 2008
-		assertEmpty(Assujettissement.extractSousPeriodes(new DecompositionForsAnneeComplete(ensemble.getPrincipal(), 2008)));
-		assertEmpty(Assujettissement.extractSousPeriodes(new DecompositionForsAnneeComplete(ensemble.getConjoint(), 2008)));
-
-		final List<SousPeriode> mlist = Assujettissement.extractSousPeriodes(new DecompositionForsAnneeComplete(ensemble.getMenage(), 2008));
-		assertNotNull(mlist);
-		assertEquals(1, mlist.size());
-		assertSousPeriode(date(2008, 1, 1), date(2008, 12, 31), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null, mlist.get(0));
 	}
 
 	@Test
@@ -139,34 +92,6 @@ public class AssujettissementTest extends MetierTest {
 	}
 
 	@Test
-	public void testExtractSousPeriodesMenageCommunMarieAu1erJanvier() throws Exception {
-		
-		final EnsembleTiersCouple ensemble = createMenageCommunMarie(date(2009, 1, 1));
-
-		// 2008
-		final List<SousPeriode> plist = Assujettissement.extractSousPeriodes(new DecompositionForsAnneeComplete(ensemble.getPrincipal(), 2008));
-		assertNotNull(plist);
-		assertEquals(1, plist.size());
-		assertSousPeriode(date(2008, 1, 1), date(2008, 12, 31), null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, plist.get(0));
-
-		final List<SousPeriode> clist = Assujettissement.extractSousPeriodes(new DecompositionForsAnneeComplete(ensemble.getConjoint(), 2008));
-		assertNotNull(clist);
-		assertEquals(1, clist.size());
-		assertSousPeriode(date(2008, 1, 1), date(2008, 12, 31), null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, clist.get(0));
-
-		assertEmpty(Assujettissement.extractSousPeriodes(new DecompositionForsAnneeComplete(ensemble.getMenage(), 2008)));
-
-		// 2009
-		assertEmpty(Assujettissement.extractSousPeriodes(new DecompositionForsAnneeComplete(ensemble.getPrincipal(), 2009)));
-		assertEmpty(Assujettissement.extractSousPeriodes(new DecompositionForsAnneeComplete(ensemble.getConjoint(), 2009)));
-
-		final List<SousPeriode> mlist = Assujettissement.extractSousPeriodes(new DecompositionForsAnneeComplete(ensemble.getMenage(), 2009));
-		assertNotNull(mlist);
-		assertEquals(1, mlist.size());
-		assertSousPeriode(date(2009, 1, 1), date(2009, 12, 31), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null, mlist.get(0));
-	}
-
-	@Test
 	public void testDetermineMenageCommunMarieAu1erJanvier() throws Exception {
 
 		final EnsembleTiersCouple ensemble = createMenageCommunMarie(date(2009, 1, 1));
@@ -214,36 +139,6 @@ public class AssujettissementTest extends MetierTest {
 			assertEquals(1, assujetMenage.size());
 			assertOrdinaire(date(2009, 1, 1), date(2010, 12, 31), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null, assujetMenage.get(0));
 		}
-	}
-
-	@Test
-	public void testExtractSousPeriodesMenageCommunDivorceDansLAnnee() throws Exception {
-
-		final RegDate dateMariage = date(2000, 1, 1);
-		final RegDate dateDivorce = date(2008, 7, 1);
-		final EnsembleTiersCouple ensemble = createMenageCommunDivorce(dateMariage, dateDivorce);
-
-		// 2007
-		assertEmpty(Assujettissement.extractSousPeriodes(new DecompositionForsAnneeComplete(ensemble.getPrincipal(), 2007)));
-		assertEmpty(Assujettissement.extractSousPeriodes(new DecompositionForsAnneeComplete(ensemble.getConjoint(), 2007)));
-
-		final List<SousPeriode> mlist = Assujettissement.extractSousPeriodes(new DecompositionForsAnneeComplete(ensemble.getMenage(), 2007));
-		assertNotNull(mlist);
-		assertEquals(1, mlist.size());
-		assertSousPeriode(date(2007, 1, 1), date(2007, 12, 31), null, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, mlist.get(0));
-
-		// 2008
-		final List<SousPeriode> plist = Assujettissement.extractSousPeriodes(new DecompositionForsAnneeComplete(ensemble.getPrincipal(), 2008));
-		assertNotNull(plist);
-		assertEquals(1, plist.size());
-		assertSousPeriode(date(2008, 1, 1), date(2008, 12, 31), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, null, plist.get(0));
-
-		final List<SousPeriode> clist = Assujettissement.extractSousPeriodes(new DecompositionForsAnneeComplete(ensemble.getConjoint(), 2008));
-		assertNotNull(clist);
-		assertEquals(1, clist.size());
-		assertSousPeriode(date(2008, 1, 1), date(2008, 12, 31), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, null, clist.get(0));
-
-		assertEmpty(Assujettissement.extractSousPeriodes(new DecompositionForsAnneeComplete(ensemble.getMenage(), 2008)));
 	}
 
 	@Test
@@ -299,36 +194,6 @@ public class AssujettissementTest extends MetierTest {
 	}
 	
 	@Test
-	public void testExtractSousPeriodesMenageCommunDivorceAu1erJanvier() throws Exception {
-
-		final RegDate dateMariage = date(2000, 1, 1);
-		final RegDate dateDivorce = date(2008, 1, 1);
-		final EnsembleTiersCouple ensemble = createMenageCommunDivorce(dateMariage, dateDivorce);
-
-		// 2007
-		assertEmpty(Assujettissement.extractSousPeriodes(new DecompositionForsAnneeComplete(ensemble.getPrincipal(), 2007)));
-		assertEmpty(Assujettissement.extractSousPeriodes(new DecompositionForsAnneeComplete(ensemble.getConjoint(), 2007)));
-
-		final List<SousPeriode> mlist = Assujettissement.extractSousPeriodes(new DecompositionForsAnneeComplete(ensemble.getMenage(), 2007));
-		assertNotNull(mlist);
-		assertEquals(1, mlist.size());
-		assertSousPeriode(date(2007, 1, 1), date(2007, 12, 31), null, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, mlist.get(0));
-
-		// 2008
-		final List<SousPeriode> plist = Assujettissement.extractSousPeriodes(new DecompositionForsAnneeComplete(ensemble.getPrincipal(), 2008));
-		assertNotNull(plist);
-		assertEquals(1, plist.size());
-		assertSousPeriode(date(2008, 1, 1), date(2008, 12, 31), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, null, plist.get(0));
-
-		final List<SousPeriode> clist = Assujettissement.extractSousPeriodes(new DecompositionForsAnneeComplete(ensemble.getConjoint(), 2008));
-		assertNotNull(clist);
-		assertEquals(1, clist.size());
-		assertSousPeriode(date(2008, 1, 1), date(2008, 12, 31), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, null, clist.get(0));
-
-		assertEmpty(Assujettissement.extractSousPeriodes(new DecompositionForsAnneeComplete(ensemble.getMenage(), 2008)));
-	}
-
-	@Test
 	public void testDetermineMenageCommunDivorceAu1erJanvier() throws Exception {
 
 		final RegDate dateMariage = date(2000, 1, 1);
@@ -380,30 +245,6 @@ public class AssujettissementTest extends MetierTest {
 		}
 	}
 
-	// TODO (msi) à corriger
-	@Ignore
-	@Test
-	public void testExtractSousPeriodesMenageCommunMarieEtDivorceDansLAnnee() throws Exception {
-
-		final RegDate dateMariage = date(2008, 3, 1);
-		final RegDate dateDivorce = date(2008, 11, 15);
-		final EnsembleTiersCouple ensemble = createMenageCommunDivorce(dateMariage, dateDivorce);
-
-		// mariage et divorce dans la même année -> aucun effet
-		
-		// 2007
-		assertEmpty(Assujettissement.extractSousPeriodes(new DecompositionForsAnneeComplete(ensemble.getPrincipal(), 2007)));
-		assertEmpty(Assujettissement.extractSousPeriodes(new DecompositionForsAnneeComplete(ensemble.getConjoint(), 2007)));
-		assertEmpty(Assujettissement.extractSousPeriodes(new DecompositionForsAnneeComplete(ensemble.getMenage(), 2007)));
-
-		// 2008
-		assertEmpty(Assujettissement.extractSousPeriodes(new DecompositionForsAnneeComplete(ensemble.getPrincipal(), 2008)));
-		assertEmpty(Assujettissement.extractSousPeriodes(new DecompositionForsAnneeComplete(ensemble.getConjoint(), 2008)));
-		assertEmpty(Assujettissement.extractSousPeriodes(new DecompositionForsAnneeComplete(ensemble.getMenage(), 2008)));
-	}
-
-	// TODO (msi) à corriger
-	@Ignore
 	@Test
 	public void testDetermineMenageCommunMarieEtDivorceDansLAnnee() throws Exception {
 
@@ -460,21 +301,6 @@ public class AssujettissementTest extends MetierTest {
 	}
 
 	@Test
-	public void testExtractSousPeriodesDepartHorsCantonDansLAnnee() throws Exception {
-
-		final Contribuable paul = createDepartHorsCanton(date(2008, 6, 30));
-
-		// 2007
-		final List<SousPeriode> list = Assujettissement.extractSousPeriodes(new DecompositionForsAnneeComplete(paul, 2007));
-		assertNotNull(list);
-		assertEquals(1, list.size());
-		assertSousPeriode(date(2007, 1, 1), date(2007, 12, 31), null, MotifFor.DEPART_HC, list.get(0));
-
-		// 2008
-		assertEmpty(Assujettissement.extractSousPeriodes(new DecompositionForsAnneeComplete(paul, 2008)));
-	}
-
-	@Test
 	public void testDetermineDepartHorsCantonDansLAnnee() throws Exception {
 
 		final Contribuable paul = createDepartHorsCanton(date(2008, 6, 30));
@@ -502,15 +328,6 @@ public class AssujettissementTest extends MetierTest {
 	}
 
 	@Test
-	public void testExtractSousPeriodesDepartHorsCantonAu31Decembre() throws Exception {
-		final Contribuable paul = createDepartHorsCanton(date(2008, 12, 31));
-		final List<SousPeriode> list = Assujettissement.extractSousPeriodes(new DecompositionForsAnneeComplete(paul, 2008));
-		assertNotNull(list);
-		assertEquals(1, list.size()); // un départ-hc au 31 décembre correspond bien à une fin d'assujettissement (cas limite, il est vrai)
-		assertSousPeriode(date(2008, 1, 1), date(2008, 12, 31), null, MotifFor.DEPART_HC, list.get(0));
-	}
-
-	@Test
 	public void testDetermineDepartHorsCantonAu31Decembre() throws Exception {
 
 		final Contribuable paul = createDepartHorsCanton(date(2008, 12, 31));
@@ -529,28 +346,6 @@ public class AssujettissementTest extends MetierTest {
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			assertOrdinaire(date(2002, 1, 1), date(2008, 12, 31), null, MotifFor.DEPART_HC, list.get(0));
-		}
-	}
-
-	@Test
-	public void testExtractSousPeriodesDepartHorsCantonDansLAnneeAvecImmeuble() throws Exception {
-
-		final Contribuable paul = createDepartHorsCantonAvecImmeuble(date(2008, 6, 30));
-
-		// 2007
-		{
-			final List<SousPeriode> list = Assujettissement.extractSousPeriodes(new DecompositionForsAnneeComplete(paul, 2007));
-			assertNotNull(list);
-			assertEquals(1, list.size());
-			assertSousPeriode(date(2007, 1, 1), date(2007, 12, 31), null, MotifFor.DEPART_HC, list.get(0));
-		}
-
-		// 2008
-		{
-			final List<SousPeriode> list = Assujettissement.extractSousPeriodes(new DecompositionForsAnneeComplete(paul, 2008));
-			assertNotNull(list);
-			assertEquals(1, list.size());
-			assertSousPeriode(date(2008, 1, 1), date(2008, 12, 31), MotifFor.DEPART_HC, null, list.get(0));
 		}
 	}
 
@@ -586,15 +381,6 @@ public class AssujettissementTest extends MetierTest {
 	}
 
 	@Test
-	public void testExtractSousPeriodesDepartHorsCantonAu31DecembreAvecImmeuble() throws Exception {
-		final Contribuable paul = createDepartHorsCantonAvecImmeuble(date(2008, 12, 31));
-		final List<SousPeriode> list = Assujettissement.extractSousPeriodes(new DecompositionForsAnneeComplete(paul, 2008));
-		assertNotNull(list);
-		assertEquals(1, list.size()); // un départ-hc au 31 décembre correspond bien à une fin d'assujettissement (cas limite, il est vrai)
-		assertSousPeriode(date(2008, 1, 1), date(2008, 12, 31), null, MotifFor.DEPART_HC, list.get(0));
-	}
-
-	@Test
 	public void testDetermineDepartHorsCantonAu31DecembreAvecImmeuble() throws Exception {
 
 		final Contribuable paul = createDepartHorsCantonAvecImmeuble(date(2008, 12, 31));
@@ -622,28 +408,6 @@ public class AssujettissementTest extends MetierTest {
 			assertEquals(2, list.size());
 			assertOrdinaire(date(2002, 1, 1), date(2008, 12, 31), null, MotifFor.DEPART_HC, list.get(0));
 			assertHorsCanton(date(2009, 1, 1), date(2010, 12, 31), MotifFor.DEPART_HC, null, list.get(1));
-		}
-	}
-
-	@Test
-	public void testExtractSousPeriodesDepartHorsCantonEtVenteImmeubleDansLAnnee() throws Exception {
-
-		final Contribuable paul = createDepartHorsCantonEtVenteImmeuble(date(2008, 6, 30), date(2008, 9, 30));
-
-		// 2007
-		{
-			final List<SousPeriode> list = Assujettissement.extractSousPeriodes(new DecompositionForsAnneeComplete(paul, 2007));
-			assertNotNull(list);
-			assertEquals(1, list.size());
-			assertSousPeriode(date(2007, 1, 1), date(2007, 12, 31), null, MotifFor.DEPART_HC, list.get(0));
-		}
-
-		// 2008
-		{
-			final List<SousPeriode> list = Assujettissement.extractSousPeriodes(new DecompositionForsAnneeComplete(paul, 2008));
-			assertNotNull(list);
-			assertEquals(1, list.size());
-			assertSousPeriode(date(2008, 1, 1), date(2008, 12, 31), MotifFor.DEPART_HC, null, list.get(0));
 		}
 	}
 
@@ -677,17 +441,6 @@ public class AssujettissementTest extends MetierTest {
 			assertOrdinaire(date(2002, 1, 1), date(2007, 12, 31), null, MotifFor.DEPART_HC, list.get(0));
 			assertHorsCanton(date(2008, 1, 1), date(2008, 12, 31), MotifFor.DEPART_HC, MotifFor.VENTE_IMMOBILIER, list.get(1));
 		}
-	}
-
-		@Test
-	public void testExtractSousPeriodesDepartHorsCantonSourcierPur() throws Exception {
-		final Contribuable paul = createDepartHorsCantonSourcierPur(date(2008, 9, 25));
-		final List<SousPeriode> sousPeriodes = Assujettissement.extractSousPeriodes(new DecompositionForsAnneeComplete(paul, 2008));
-		assertNotNull(sousPeriodes);
-		assertEquals(2, sousPeriodes.size());
-		// fractionnement de l'assujettissement
-		assertSousPeriode(date(2008, 1, 1), date(2008, 9, 25), null, MotifFor.DEPART_HC, sousPeriodes.get(0));
-		assertSousPeriode(date(2008, 9, 26), date(2008, 12, 31), MotifFor.DEPART_HC, null, sousPeriodes.get(1));
 	}
 
 	@Test
@@ -732,29 +485,6 @@ public class AssujettissementTest extends MetierTest {
 	}
 
 	@Test
-	public void testExtractSousPeriodesDepartHorsCantonSourcierMixte137Al1() throws Exception {
-
-		// [UNIREG-1742] pas de fractionnement à la date de départ dans ce cas-là car le contribuable reste assujetti toute l'année à raison de son for secondaire (immeuble ou activité indépendante).
-		final Contribuable paul = createDepartHorsCantonSourcierMixte137Al1(date(2008, 9, 25));
-
-		// 2007
-		{
-			final List<SousPeriode> list = Assujettissement.extractSousPeriodes(new DecompositionForsAnneeComplete(paul, 2007));
-			assertNotNull(list);
-			assertEquals(1, list.size());
-			assertSousPeriode(date(2007, 1, 1), date(2007, 12, 31), null, MotifFor.DEPART_HC, list.get(0));
-		}
-
-		// 2008
-		{
-			final List<SousPeriode> list = Assujettissement.extractSousPeriodes(new DecompositionForsAnneeComplete(paul, 2008));
-			assertNotNull(list);
-			assertEquals(1, list.size());
-			assertSousPeriode(date(2008, 1, 1), date(2008, 12, 31), MotifFor.DEPART_HC, null, list.get(0));
-		}
-	}
-
-	@Test
 	public void testDetermineDepartHorsCantonSourcierMixte137Al1() throws Exception {
 
 		final Contribuable paul = createDepartHorsCantonSourcierMixte137Al1(date(2008, 9, 25));
@@ -792,17 +522,6 @@ public class AssujettissementTest extends MetierTest {
 			assertSourcierMixte(date(2002, 1, 1), date(2007, 12, 31), null, MotifFor.DEPART_HC, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
 			assertSourcierMixte(date(2008, 1, 1), date(2010, 12, 31), MotifFor.DEPART_HC, null, TypeAutoriteFiscale.COMMUNE_HC, list.get(1));
 		}
-	}
-
-	@Test
-	public void testExtractSousPeriodesDepartHorsCantonSourcierMixte137Al2() throws Exception {
-		final Contribuable paul = createDepartHorsCantonSourcierMixte137Al2(date(2008, 9, 25));
-		final List<SousPeriode> sousPeriodes = Assujettissement.extractSousPeriodes(new DecompositionForsAnneeComplete(paul, 2008));
-		assertNotNull(sousPeriodes);
-		assertEquals(2, sousPeriodes.size());
-		// [UNIREG-1742] fractionnement de l'assujettissement (mais pas d'arrondi à la fin de mois)
-		assertSousPeriode(date(2008, 1, 1), date(2008, 9, 25), null, MotifFor.DEPART_HC, sousPeriodes.get(0));
-		assertSousPeriode(date(2008, 9, 26), date(2008, 12, 31), MotifFor.DEPART_HC, null, sousPeriodes.get(1));
 	}
 
 	@Test
@@ -847,17 +566,6 @@ public class AssujettissementTest extends MetierTest {
 	}
 
 	@Test
-	public void testExtractSousPeriodesArriveeHorsCantonSourcierPur() throws Exception {
-		final Contribuable paul = createArriveeHorsCantonSourcierPur(date(2008, 9, 25));
-		final List<SousPeriode> sousPeriodes = Assujettissement.extractSousPeriodes(new DecompositionForsAnneeComplete(paul, 2008));
-		assertNotNull(sousPeriodes);
-		assertEquals(2, sousPeriodes.size());
-		// fractionnement de l'assujettissement
-		assertSousPeriode(date(2008, 1, 1), date(2008, 9, 24), null, MotifFor.ARRIVEE_HC, sousPeriodes.get(0));
-		assertSousPeriode(date(2008, 9, 25), date(2008, 12, 31), MotifFor.ARRIVEE_HC, null, sousPeriodes.get(1));
-	}
-
-	@Test
 	public void testDetermineArriveeHorsCantonSourcierPur() throws Exception {
 
 		final Contribuable paul = createArriveeHorsCantonSourcierPur(date(2008, 9, 25));
@@ -899,15 +607,6 @@ public class AssujettissementTest extends MetierTest {
 	}
 
 	@Test
-	public void testExtractSousPeriodesArriveeHorsCantonDansLAnnee() throws Exception {
-		final Contribuable paul = createArriveeHorsCanton(date(2008, 9, 25));
-		final List<SousPeriode> list = Assujettissement.extractSousPeriodes(new DecompositionForsAnneeComplete(paul, 2008));
-		assertNotNull(list);
-		assertEquals(1, list.size());
-		assertSousPeriode(date(2008, 1, 1), date(2008, 12, 31), MotifFor.ARRIVEE_HC, null, list.get(0));
-	}
-
-	@Test
 	public void testDetermineArriveeHorsCantonDansLAnnee() throws Exception {
 
 		final Contribuable paul = createArriveeHorsCanton(date(2008, 9, 25));
@@ -943,12 +642,42 @@ public class AssujettissementTest extends MetierTest {
 	}
 
 	@Test
-	public void testExtractSousPeriodesArriveeHorsCantonAu1erJanvier() throws Exception {
-		final Contribuable paul = createArriveeHorsCanton(date(2008, 1, 1));
-		final List<SousPeriode> list = Assujettissement.extractSousPeriodes(new DecompositionForsAnneeComplete(paul, 2008));
-		assertNotNull(list);
-		assertEquals(1, list.size());
-		assertSousPeriode(date(2008, 1, 1), date(2008, 12, 31), MotifFor.ARRIVEE_HC, null, list.get(0));
+	public void testDetermineArriveeHorsCantonAvecImmeubleDansLAnnee() throws Exception {
+
+		final Contribuable paul = createArriveeHorsCantonAvecImmeuble(date(2008, 9, 25));
+
+		// 2007
+		{
+			final List<Assujettissement> list = Assujettissement.determine(paul, 2007);
+			assertNotNull(list);
+			assertEquals(1, list.size());
+			assertHorsCanton(date(2007, 1, 1), date(2007, 12, 31), null, MotifFor.ARRIVEE_HC, list.get(0));
+		}
+
+		// 2008
+		{
+			final List<Assujettissement> list = Assujettissement.determine(paul, 2008);
+			assertNotNull(list);
+			assertEquals(1, list.size());
+			assertOrdinaire(date(2008, 1, 1), date(2008, 12, 31), MotifFor.ARRIVEE_HC, null, list.get(0));
+		}
+
+		// 2009
+		{
+			final List<Assujettissement> list = Assujettissement.determine(paul, 2009);
+			assertNotNull(list);
+			assertEquals(1, list.size());
+			assertOrdinaire(date(2009, 1, 1), date(2009, 12, 31), null, null, list.get(0));
+		}
+
+		// 2002-2010
+		{
+			List<Assujettissement> list = Assujettissement.determine(paul, RANGE_2002_2010, true);
+			assertNotNull(list);
+			assertEquals(2, list.size());
+			assertHorsCanton(date(2002, 1, 1), date(2007, 12, 31), null, MotifFor.ARRIVEE_HC, list.get(0));
+			assertOrdinaire(date(2008, 1, 1), date(2010, 12, 31), MotifFor.ARRIVEE_HC, null, list.get(1));
+		}
 	}
 
 	@Test
@@ -987,18 +716,6 @@ public class AssujettissementTest extends MetierTest {
 	}
 
 	@Test
-	public void testExtractSousPeriodesArriveeHorsCantonSourcierMixte137Al1() throws Exception {
-
-		// [UNIREG-1742] pas de fractionnement à la date d'arrivée dans ce cas-là (mais au 1er janvier) car le contribuable reste assujetti toute l'année à raison de son for secondaire (immeuble ou activité indépendante).
-		final Contribuable paul = createArriveeHorsCantonSourcierMixte137Al1(date(2008, 9, 25));
-
-		final List<SousPeriode> list = Assujettissement.extractSousPeriodes(new DecompositionForsAnneeComplete(paul, 2008));
-		assertNotNull(list);
-		assertEquals(1, list.size());
-		assertSousPeriode(date(2008, 1, 1), date(2008, 12, 31), MotifFor.ARRIVEE_HC, null, list.get(0));
-	}
-
-	@Test
 	public void testDetermineArriveeHorsCantonSourcierMixte137Al1() throws Exception {
 
 		final Contribuable paul = createArriveeHorsCantonSourcierMixte137Al1(date(2008, 9, 25));
@@ -1033,20 +750,9 @@ public class AssujettissementTest extends MetierTest {
 			List<Assujettissement> list = Assujettissement.determine(paul, RANGE_2002_2010, true);
 			assertNotNull(list);
 			assertEquals(2, list.size());
-			assertSourcierMixte(date(2002, 1, 1), date(2007, 12, 31), null, MotifFor.ARRIVEE_HC, TypeAutoriteFiscale.COMMUNE_HC, list.get(0));
+			assertSourcierMixte(date(2002, 1, 1), date(2007, 12, 31), MotifFor.ACHAT_IMMOBILIER, MotifFor.ARRIVEE_HC, TypeAutoriteFiscale.COMMUNE_HC, list.get(0));
 			assertSourcierMixte(date(2008, 1, 1), date(2010, 12, 31), MotifFor.ARRIVEE_HC, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(1));
 		}
-	}
-
-	@Test
-	public void testExtractSousPeriodesArriveeHorsCantonSourcierMixte137Al2() throws Exception {
-		final Contribuable paul = createArriveeHorsCantonSourcierMixte137Al2(date(2008, 9, 25));
-		final List<SousPeriode> sousPeriodes = Assujettissement.extractSousPeriodes(new DecompositionForsAnneeComplete(paul, 2008));
-		assertNotNull(sousPeriodes);
-		assertEquals(2, sousPeriodes.size());
-		// [UNIREG-1742] fractionnement de l'assujettissement (mais pas d'arrondi à la fin de mois)
-		assertSousPeriode(date(2008, 1, 1), date(2008, 9, 24), null, MotifFor.ARRIVEE_HC, sousPeriodes.get(0));
-		assertSousPeriode(date(2008, 9, 25), date(2008, 12, 31), MotifFor.ARRIVEE_HC, null, sousPeriodes.get(1));
 	}
 
 	@Test
@@ -1091,17 +797,6 @@ public class AssujettissementTest extends MetierTest {
 	}
 
 	@Test
-	public void testExtractSousPeriodesDepartHorsSuisseDansLAnnee() throws Exception {
-
-		final Contribuable paul = createDepartHorsSuisse(date(2008, 6, 30));
-		final List<SousPeriode> sousPeriodes = Assujettissement.extractSousPeriodes(new DecompositionForsAnneeComplete(paul, 2008));
-		assertNotNull(sousPeriodes);
-		assertEquals(2, sousPeriodes.size()); // il y a fractionnement
-		assertSousPeriode(date(2008, 1, 1), date(2008, 6, 30), null, MotifFor.DEPART_HS, sousPeriodes.get(0));
-		assertSousPeriode(date(2008, 7, 1), date(2008, 12, 31), MotifFor.DEPART_HS, null, sousPeriodes.get(1));
-	}
-
-	@Test
 	public void testDetermineDepartHorsSuisseDansLAnnee() throws Exception {
 
 		final Contribuable paul = createDepartHorsSuisse(date(2008, 6, 30));
@@ -1122,16 +817,6 @@ public class AssujettissementTest extends MetierTest {
 			assertEquals(1, list.size());
 			assertOrdinaire(date(2002, 1, 1), date(2008, 6, 30), null, MotifFor.DEPART_HS, list.get(0));
 		}
-	}
-
-	@Test
-	public void testExtractSousPeriodesDepartHorsSuisseAu31Decembre() throws Exception {
-
-		final Contribuable paul = createDepartHorsSuisse(date(2008, 12, 31));
-		final List<SousPeriode> sousPeriodes = Assujettissement.extractSousPeriodes(new DecompositionForsAnneeComplete(paul, 2008));
-		assertNotNull(sousPeriodes);
-		assertEquals(1, sousPeriodes.size()); // il y a fractionnement
-		assertSousPeriode(date(2008, 1, 1), date(2008, 12, 31), null, MotifFor.DEPART_HS, sousPeriodes.get(0));
 	}
 
 	@Test
@@ -1158,17 +843,6 @@ public class AssujettissementTest extends MetierTest {
 	}
 
 	@Test
-	public void testExtractSousPeriodesDepartHorsSuisseDansLAnneeAvecImmeuble() throws Exception {
-
-		final Contribuable paul = createDepartHorsSuisseAvecImmeuble(date(2008, 6, 30));
-		final List<SousPeriode> sousPeriodes = Assujettissement.extractSousPeriodes(new DecompositionForsAnneeComplete(paul, 2008));
-		assertNotNull(sousPeriodes);
-		assertEquals(2, sousPeriodes.size());
-		assertSousPeriode(date(2008, 1, 1), date(2008, 6, 30), null, MotifFor.DEPART_HS, sousPeriodes.get(0));
-		assertSousPeriode(date(2008, 7, 1), date(2008, 12, 31), MotifFor.DEPART_HS, null, sousPeriodes.get(1));
-	}
-
-	@Test
 	public void testDetermineDepartHorsSuisseDansLAnneeAvecImmeuble() throws Exception {
 
 		final Contribuable paul = createDepartHorsSuisseAvecImmeuble(date(2008, 6, 30));
@@ -1192,16 +866,6 @@ public class AssujettissementTest extends MetierTest {
 			assertOrdinaire(date(2002, 1, 1), date(2008, 6, 30), null, MotifFor.DEPART_HS, list.get(0));
 			assertHorsSuisse(date(2008, 7, 1), date(2010, 12, 31), MotifFor.DEPART_HS, null, list.get(1));
 		}
-	}
-
-	@Test
-	public void testExtractSousPeriodesDepartHorsSuisseAu31DecembreAvecImmeuble() throws Exception {
-
-		final Contribuable paul = createDepartHorsSuisseAvecImmeuble(date(2008, 12, 31));
-		final List<SousPeriode> sousPeriodes = Assujettissement.extractSousPeriodes(new DecompositionForsAnneeComplete(paul, 2008));
-		assertNotNull(sousPeriodes);
-		assertEquals(1, sousPeriodes.size());
-		assertSousPeriode(date(2008, 1, 1), date(2008, 12, 31), null, MotifFor.DEPART_HS, sousPeriodes.get(0));
 	}
 
 	@Test
@@ -1236,14 +900,6 @@ public class AssujettissementTest extends MetierTest {
 	}
 	
 	@Test
-	public void testExtractSousPeriodesDepartHorsSuisseDepuisHorsCantonAvecImmeuble() throws Exception {
-
-		final Contribuable ctb = createDepartHorsSuisseDepuisHorsCantonAvecImmeuble(date(2008, 6, 30));
-		// [UNIREG-1742] le départ hors-Suisse depuis hors-canton ne doit pas fractionner la période d'assujettissement (car le rattachement économique n'est pas interrompu)
-		assertEmpty(Assujettissement.extractSousPeriodes(new DecompositionForsAnneeComplete(ctb, 2008)));
-	}
-
-	@Test
 	public void testDetermineDepartHorsSuisseDepuisHorsCantonAvecImmeuble() throws Exception {
 
 		final Contribuable ctb = createDepartHorsSuisseDepuisHorsCantonAvecImmeuble(date(2008, 6, 30));
@@ -1253,7 +909,7 @@ public class AssujettissementTest extends MetierTest {
 			final List<Assujettissement> list = Assujettissement.determine(ctb, 2007);
 			assertNotNull(list);
 			assertEquals(1, list.size());
-			assertHorsCanton(date(2007, 1, 1), date(2007, 12, 31), null, null, list.get(0));
+			assertHorsCanton(date(2007, 1, 1), date(2007, 12, 31), null, MotifFor.DEPART_HS, list.get(0));
 		}
 
 		// 2008 (hors-canton -> hors-Suisse)
@@ -1261,8 +917,8 @@ public class AssujettissementTest extends MetierTest {
 			final List<Assujettissement> list = Assujettissement.determine(ctb, 2008);
 			assertNotNull(list);
 			assertEquals(1, list.size());
-			// [UNIREG-1742] le départ hors-Suisse depuis hors-canton ne doit pas fractionner la période d'assujettissement (car le rattachement économique n'est pas interrompu)
-			assertHorsSuisse(date(2008, 1, 1), date(2008, 12, 31), null, null, list.get(0));
+			// [UNIREG-1742] le départ hors-Suisse depuis hors-canton ne doit pas fractionner l'assujettissement en cours de période (car le rattachement économique n'est pas interrompu)
+			assertHorsSuisse(date(2008, 1, 1), date(2008, 12, 31), MotifFor.DEPART_HS, null, list.get(0));
 		}
 
 		// 2009 (hors-Suisse)
@@ -1278,17 +934,42 @@ public class AssujettissementTest extends MetierTest {
 			List<Assujettissement> list = Assujettissement.determine(ctb, RANGE_2002_2010, true);
 			assertNotNull(list);
 			assertEquals(2, list.size());
-			assertHorsCanton(date(2002, 1, 1), date(2007, 12, 31), null, null, list.get(0));
-			assertHorsSuisse(date(2008, 1, 1), date(2010, 12, 31), null, null, list.get(1));
+			assertHorsCanton(date(2002, 1, 1), date(2007, 12, 31), null, MotifFor.DEPART_HS, list.get(0));
+			assertHorsSuisse(date(2008, 1, 1), date(2010, 12, 31), MotifFor.DEPART_HS, null, list.get(1));
 		}
 	}
 
 	@Test
-	public void testExtractSousPeriodesDepartHorsSuisseDepuisHorsCantonAvecActiviteIndependante() throws Exception {
+	public void testDetermineDepartHorsSuisseEtArriveeDeHorsCantonDansLAnnee() throws Exception {
 
-		final Contribuable ctb = createDepartHorsSuisseDepuisHorsCantonAvecActiviteIndependante(date(2008, 6, 30));
-		// [UNIREG-1742] le départ hors-Suisse depuis hors-canton ne doit pas fractionner la période d'assujettissement (car le rattachement économique n'est pas interrompu)
-		assertEmpty(Assujettissement.extractSousPeriodes(new DecompositionForsAnneeComplete(ctb, 2008)));
+		final RegDate dateDepart = RegDate.get(2007, 3, 15);
+		final RegDate dateArrivee = RegDate.get(2007, 10, 1);
+		final Contribuable ctb = createDepartHorsSuisseEtArriveeDeHorsCanton(dateDepart, dateArrivee);
+
+		// 2006
+		{
+			final List<Assujettissement> list = Assujettissement.determine(ctb, 2006);
+			assertNotNull(list);
+			assertEquals(1, list.size());
+			assertOrdinaire(date(2006, 1, 1), date(2006, 12, 31), null, null, list.get(0));
+		}
+
+		// 2007 (départ HS et arrivée HC dans l'année -> pas moyen de connaître la date d'arrivée de HS dans l'autre canton, on prend toute la période restante par défaut)
+		{
+			final List<Assujettissement> list = Assujettissement.determine(ctb, 2007);
+			assertNotNull(list);
+			assertEquals(2, list.size());
+			assertOrdinaire(date(2007, 1, 1), dateDepart, null, MotifFor.DEPART_HS, list.get(0));
+			assertOrdinaire(dateDepart.getOneDayAfter(), date(2007, 12, 31), MotifFor.ARRIVEE_HC, null, list.get(1));
+		}
+
+		// 2008
+		{
+			final List<Assujettissement> list = Assujettissement.determine(ctb, 2008);
+			assertNotNull(list);
+			assertEquals(1, list.size());
+			assertOrdinaire(date(2008, 1, 1), date(2008, 12, 31), null, null, list.get(0));
+		}
 	}
 
 	@Test
@@ -1301,7 +982,7 @@ public class AssujettissementTest extends MetierTest {
 			final List<Assujettissement> list = Assujettissement.determine(ctb, 2007);
 			assertNotNull(list);
 			assertEquals(1, list.size());
-			assertHorsCanton(date(2007, 1, 1), date(2007, 12, 31), null, null, list.get(0));
+			assertHorsCanton(date(2007, 1, 1), date(2007, 12, 31), null, MotifFor.DEPART_HS, list.get(0));
 		}
 
 		// 2008 (hors-canton -> hors-Suisse)
@@ -1309,8 +990,8 @@ public class AssujettissementTest extends MetierTest {
 			final List<Assujettissement> list = Assujettissement.determine(ctb, 2008);
 			assertNotNull(list);
 			assertEquals(1, list.size());
-			// [UNIREG-1742] le départ hors-Suisse depuis hors-canton ne doit pas fractionner la période d'assujettissement (car le rattachement économique n'est pas interrompu)
-			assertHorsSuisse(date(2008, 1, 1), date(2008, 12, 31), null, null, list.get(0));
+			// [UNIREG-1742] le départ hors-Suisse depuis hors-canton ne doit pas fractionner l'assujettissement en cours de période (car le rattachement économique n'est pas interrompu)
+			assertHorsSuisse(date(2008, 1, 1), date(2008, 12, 31), MotifFor.DEPART_HS, null, list.get(0));
 		}
 
 		// 2009 (hors-Suisse)
@@ -1326,8 +1007,8 @@ public class AssujettissementTest extends MetierTest {
 			List<Assujettissement> list = Assujettissement.determine(ctb, RANGE_2002_2010, true);
 			assertNotNull(list);
 			assertEquals(2, list.size());
-			assertHorsCanton(date(2002, 1, 1), date(2007, 12, 31), null, null, list.get(0));
-			assertHorsSuisse(date(2008, 1, 1), date(2010, 12, 31), null, null, list.get(1));
+			assertHorsCanton(date(2002, 1, 1), date(2007, 12, 31), null, MotifFor.DEPART_HS, list.get(0));
+			assertHorsSuisse(date(2008, 1, 1), date(2010, 12, 31), MotifFor.DEPART_HS, null, list.get(1));
 		}
 	}
 
@@ -1411,6 +1092,49 @@ public class AssujettissementTest extends MetierTest {
 	}
 
 	/**
+	 * Version spéciale avec motif de fermeture du fors HS nul.
+	 */
+	@Test
+	public void testDetermineArriveeHorsSuisseAvecImmeubleEtMotifFermetureNul() throws Exception {
+
+		final RegDate dateArrivee = date(2007, 3, 1);
+		final Contribuable ctb = createArriveeHorsSuisseAvecImmeuble(dateArrivee);
+		
+		final ForFiscalPrincipal ffp0 = (ForFiscalPrincipal) ctb.getForsFiscauxSorted().get(0);
+		ffp0.setMotifFermeture(null);
+
+		// 2006
+		{
+			final List<Assujettissement> list = Assujettissement.determine(ctb, 2006);
+			assertNotNull(list);
+			assertEquals(1, list.size());
+			// hors-Suisse toute l'année
+			assertHorsSuisse(date(2006, 1, 1), date(2006, 12, 31), null, null, list.get(0));
+		}
+
+		// 2007
+		{
+			final List<Assujettissement> list = Assujettissement.determine(ctb, 2007);
+			assertNotNull(list);
+			assertEquals(2, list.size());
+			// hors-Suisse jusqu'à la date d'arrivée
+			// TODO (msi) le motif de fermeture devrait être MotifFor.ARRIVEE_HS
+			assertHorsSuisse(date(2007, 1, 1), dateArrivee.getOneDayBefore(), null, null, list.get(0));
+			// ordinaire depuis l'arrivée
+			assertOrdinaire(dateArrivee, date(2007, 12, 31), MotifFor.ARRIVEE_HS, null, list.get(1));
+		}
+
+		// 2008
+		{
+			final List<Assujettissement> list = Assujettissement.determine(ctb, 2008);
+			assertNotNull(list);
+			assertEquals(1, list.size());
+			// ordinaire toute l'année
+			assertOrdinaire(date(2008, 1, 1), date(2008, 12, 31), null, null, list.get(0));
+		}
+	}
+
+	/**
 	 * [UNIREG-1327] Vérifie que l'assujettissement d'un contribuable HS qui possède un immeuble, arrive de HS et vend son immeuble dans la
 	 * même année est bien fractionné à la date d'arrivée HS.
 	 */
@@ -1457,6 +1181,38 @@ public class AssujettissementTest extends MetierTest {
 			assertEquals(2, list.size());
 			assertHorsSuisse(date(2000, 1, 1), dateArrivee.getOneDayBefore(), MotifFor.ACHAT_IMMOBILIER, MotifFor.ARRIVEE_HS, list.get(0));
 			assertOrdinaire(dateArrivee, date(2008, 12, 31), MotifFor.ARRIVEE_HS, null, list.get(1));
+		}
+	}
+
+	@Test
+	public void testDetermineArriveHorsSuisseEtDemenagementVaudoisDansLAnnee() throws Exception {
+
+		final RegDate dateArrivee = date(2007, 3, 1);
+		final RegDate dateDemenagement = date(2007, 7, 1);
+
+		Contribuable ctb = addNonHabitant("Werner", "Karey", date(1963, 1, 1), Sexe.MASCULIN);
+		addForPrincipal(ctb, dateArrivee, MotifFor.ARRIVEE_HS, dateDemenagement.getOneDayBefore(), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
+		addForPrincipal(ctb, dateDemenagement, MotifFor.DEMENAGEMENT_VD, MockCommune.Bex);
+
+		// 2006
+		{
+			assertEmpty(Assujettissement.determine(ctb, 2006));
+		}
+
+		// 2007
+		{
+			final List<Assujettissement> list = Assujettissement.determine(ctb, 2007);
+			assertNotNull(list);
+			assertEquals(1, list.size());
+			assertOrdinaire(dateArrivee, date(2007, 12, 31), MotifFor.ARRIVEE_HS, null, list.get(0));
+		}
+
+		// 2008
+		{
+			final List<Assujettissement> list = Assujettissement.determine(ctb, 2008);
+			assertNotNull(list);
+			assertEquals(1, list.size());
+			assertOrdinaire(date(2008, 1, 1), date(2008, 12, 31), null, null, list.get(0));
 		}
 	}
 
@@ -1556,17 +1312,6 @@ public class AssujettissementTest extends MetierTest {
 	}
 
 	@Test
-	public void testExtractSousPeriodesPassageRoleSourceAOrdinaire() throws Exception {
-
-		final Contribuable paul = createPassageRoleSourceAOrdinaire(date(2008, 2, 12));
-		final List<SousPeriode> sousPeriodes = Assujettissement.extractSousPeriodes(new DecompositionForsAnneeComplete(paul, 2008));
-		assertNotNull(sousPeriodes);
-		assertEquals(2, sousPeriodes.size());
-		assertSousPeriode(date(2008, 1, 1), date(2008, 2, 11), null, MotifFor.CHGT_MODE_IMPOSITION, sousPeriodes.get(0));
-		assertSousPeriode(date(2008, 2, 12), date(2008, 12, 31), MotifFor.CHGT_MODE_IMPOSITION, null, sousPeriodes.get(1));
-	}
-
-	@Test
 	public void testDeterminePassageRoleSourceAOrdinaire() throws Exception {
 
 		final Contribuable paul = createPassageRoleSourceAOrdinaire(date(2008, 2, 12));
@@ -1590,30 +1335,6 @@ public class AssujettissementTest extends MetierTest {
 			assertSourcierPur(date(2002, 1, 1), date(2008, 2, 29), null, MotifFor.CHGT_MODE_IMPOSITION, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
 			assertOrdinaire(date(2008, 3, 1), date(2010, 12, 31), MotifFor.CHGT_MODE_IMPOSITION, null, list.get(1));
 		}
-	}
-
-	@Test
-	public void testExtractSousPeriodesArriveeEtDepartHorsSuisseDansLAnnee() throws Exception {
-
-		final Contribuable paul = createArriveeEtDepartHorsSuisse(date(2008, 2, 1), date(2008, 9, 30));
-		final List<SousPeriode> sousPeriodes = Assujettissement.extractSousPeriodes(new DecompositionForsAnneeComplete(paul, 2008));
-		assertNotNull(sousPeriodes);
-		assertEquals(3, sousPeriodes.size());
-		assertSousPeriode(date(2008, 1, 1), date(2008, 1, 31), null, MotifFor.ARRIVEE_HS, sousPeriodes.get(0));
-		assertSousPeriode(date(2008, 2, 1), date(2008, 9, 30), MotifFor.ARRIVEE_HS, MotifFor.DEPART_HS, sousPeriodes.get(1));
-		assertSousPeriode(date(2008, 10, 1), date(2008, 12, 31), MotifFor.DEPART_HS, null, sousPeriodes.get(2));
-	}
-
-	@Test
-	public void testExtractSousPeriodesDepartEtArriveeHorsSuisseDansLAnnee() throws Exception {
-
-		final Contribuable paul = createDepartEtArriveeHorsSuisseDansLAnnee(date(2008, 1, 31), date(2008, 11, 1));
-		final List<SousPeriode> sousPeriodes = Assujettissement.extractSousPeriodes(new DecompositionForsAnneeComplete(paul, 2008));
-		assertNotNull(sousPeriodes);
-		assertEquals(3, sousPeriodes.size());
-		assertSousPeriode(date(2008, 1, 1), date(2008, 1, 31), null, MotifFor.DEPART_HS, sousPeriodes.get(0));
-		assertSousPeriode(date(2008, 2, 1), date(2008, 10, 31), MotifFor.DEPART_HS, MotifFor.ARRIVEE_HS, sousPeriodes.get(1));
-		assertSousPeriode(date(2008, 11, 1), date(2008, 12, 31), MotifFor.ARRIVEE_HS, null, sousPeriodes.get(2));
 	}
 
 	@Test
@@ -1663,7 +1384,24 @@ public class AssujettissementTest extends MetierTest {
 	@Test
 	public void testDetermineSourcierMixte137Al1HorsCanton() throws Exception {
 
-		final Contribuable paul = createSourcierMixte137Al1HorsCanton();
+		final RegDate achatImmeuble = date(2007, 7, 1);
+		final Contribuable paul = createSourcierMixte137Al1HorsCanton(achatImmeuble);
+
+		// 2006
+		{
+			final List<Assujettissement> list = Assujettissement.determine(paul, 2006);
+			assertNotNull(list);
+			assertEquals(1, list.size());
+			assertSourcierPur(date(2006, 1, 1), date(2006, 12, 31), null, MotifFor.CHGT_MODE_IMPOSITION, TypeAutoriteFiscale.COMMUNE_HC, list.get(0));
+		}
+
+		// 2007
+		{
+			final List<Assujettissement> list = Assujettissement.determine(paul, 2007);
+			assertNotNull(list);
+			assertEquals(1, list.size());
+			assertSourcierMixte(date(2007, 1, 1), date(2007, 12, 31), MotifFor.CHGT_MODE_IMPOSITION, null, TypeAutoriteFiscale.COMMUNE_HC, list.get(0));
+		}
 
 		// 2008
 		{
@@ -1678,12 +1416,12 @@ public class AssujettissementTest extends MetierTest {
 			List<Assujettissement> list = Assujettissement.determine(paul, RANGE_2002_2010, true);
 			assertNotNull(list);
 			assertEquals(2, list.size());
-			assertSourcierPur(date(2002, 1, 1), date(2006, 12, 31), null, null, TypeAutoriteFiscale.COMMUNE_HC, list.get(0));
+			assertSourcierPur(date(2002, 1, 1), date(2006, 12, 31), null, MotifFor.CHGT_MODE_IMPOSITION, TypeAutoriteFiscale.COMMUNE_HC, list.get(0));
 			/*
 			 * Note: le passage de sourcier pure à sourcier mixte ne provoque pas de fractionnement de l'assujettissement, la validité de
 			 * l'assujettissement sourcier mixte débute simplement le 1er janvier
 			 */
-			assertSourcierMixte(date(2007, 1, 1), date(2010, 12, 31), null, null, TypeAutoriteFiscale.COMMUNE_HC, list.get(1));
+			assertSourcierMixte(date(2007, 1, 1), date(2010, 12, 31), MotifFor.CHGT_MODE_IMPOSITION, null, TypeAutoriteFiscale.COMMUNE_HC, list.get(1));
 		}
 	}
 
@@ -1707,8 +1445,9 @@ public class AssujettissementTest extends MetierTest {
 			final List<Assujettissement> list = Assujettissement.determine(paul, 2007);
 			assertNotNull(list);
 			assertEquals(2, list.size());
-			assertSourcierPur(date(2007, 1, 1), dateChangement.getOneDayBefore(), null, MotifFor.ACHAT_IMMOBILIER, TypeAutoriteFiscale.PAYS_HS, list.get(0));
-			assertSourcierMixte(dateChangement, date(2007, 12, 31), MotifFor.ACHAT_IMMOBILIER, null, TypeAutoriteFiscale.PAYS_HS, list.get(1));
+			// TODO (msi) voir s'il est possible d'exposer le motif d'ouverture du for secondaire (qui est plus précis que celui du for principal)
+			assertSourcierPur(date(2007, 1, 1), dateChangement.getOneDayBefore(), null, MotifFor.CHGT_MODE_IMPOSITION, TypeAutoriteFiscale.PAYS_HS, list.get(0));
+			assertSourcierMixte(dateChangement, date(2007, 12, 31), MotifFor.CHGT_MODE_IMPOSITION, null, TypeAutoriteFiscale.PAYS_HS, list.get(1));
 		}
 
 		// 2008
@@ -1724,8 +1463,8 @@ public class AssujettissementTest extends MetierTest {
 			List<Assujettissement> list = Assujettissement.determine(paul, RANGE_2002_2010, true);
 			assertNotNull(list);
 			assertEquals(2, list.size());
-			assertSourcierPur(date(2002, 1, 1), dateChangement.getOneDayBefore(), null, MotifFor.ACHAT_IMMOBILIER, TypeAutoriteFiscale.PAYS_HS, list.get(0));
-			assertSourcierMixte(dateChangement, date(2010, 12, 31), MotifFor.ACHAT_IMMOBILIER, null, TypeAutoriteFiscale.PAYS_HS, list.get(1));
+			assertSourcierPur(date(2002, 1, 1), dateChangement.getOneDayBefore(), null, MotifFor.CHGT_MODE_IMPOSITION, TypeAutoriteFiscale.PAYS_HS, list.get(0));
+			assertSourcierMixte(dateChangement, date(2010, 12, 31), MotifFor.CHGT_MODE_IMPOSITION, null, TypeAutoriteFiscale.PAYS_HS, list.get(1));
 		}
 	}
 
@@ -1773,7 +1512,7 @@ public class AssujettissementTest extends MetierTest {
 			final List<Assujettissement> list = Assujettissement.determine(paul, 2005);
 			assertNotNull(list);
 			assertEquals(1, list.size());
-			assertOrdinaire(date(2005, 1, 1), date(2005, 12, 31), null, null, list.get(0));
+			assertOrdinaire(date(2005, 1, 1), date(2005, 12, 31), null, MotifFor.CHGT_MODE_IMPOSITION, list.get(0));
 		}
 
 		// 2006 (passage à la source pure le 16 janvier)
@@ -1830,43 +1569,10 @@ public class AssujettissementTest extends MetierTest {
 			final List<Assujettissement> list = Assujettissement.determine(paul, 2007);
 			assertNotNull(list);
 			assertEquals(1, list.size());
-			assertOrdinaire(date(2007, 1, 1), date(2007, 12, 31), null, null, list.get(0));
+			assertOrdinaire(date(2007, 1, 1), date(2007, 12, 31), MotifFor.CHGT_MODE_IMPOSITION, null, list.get(0));
 		}
 	}
 
-	@Test
-	public void testExtractSousPeriodesDiplomateAvecImmeuble() throws Exception {
-
-		final Contribuable paul = createDiplomateAvecImmeuble(date(2000, 1, 1), date(2001, 6, 13));
-
-		// 1999
-		{
-			final List<SousPeriode> sousPeriodes = Assujettissement.extractSousPeriodes(new DecompositionForsAnneeComplete(paul, 1999));
-			assertNotNull(sousPeriodes);
-			assertEquals(1, sousPeriodes.size());
-			assertSousPeriode(date(1999, 1, 1), date(1999, 12, 31), null, MotifFor.DEPART_HS, sousPeriodes.get(0));
-		}
-
-		// 2000
-		{
-			final List<SousPeriode> sousPeriodes = Assujettissement.extractSousPeriodes(new DecompositionForsAnneeComplete(paul, 2000));
-			assertNotNull(sousPeriodes);
-			assertEquals(1, sousPeriodes.size());
-			assertSousPeriode(date(2000, 1, 1), date(2000, 12, 31), MotifFor.DEPART_HS, null, sousPeriodes.get(0));
-			// TODO (msi) devrait être ça : assertSousPeriode(date(2000, 1, 1), date(2000, 12, 31), MotifFor.DEPART_HS, MotifFor.ACHAT_IMMOBILIER, sousPeriodes.get(0));
-		}
-
-		// 2001
-		{
-			assertEmpty(Assujettissement.extractSousPeriodes(new DecompositionForsAnneeComplete(paul, 2001)));
-			// TODO (msi) devrait être ça
-			//final List<SousPeriode> sousPeriodes = Assujettissement.extractSousPeriodes(new DecompositionForsAnneeComplete(paul, 2001));
-			//assertNotNull(sousPeriodes);
-			//assertEquals(1, sousPeriodes.size());
-			//assertSousPeriode(date(2001, 1, 1), date(2001, 12, 31), MotifFor.ACHAT_IMMOBILIER, null, sousPeriodes.get(0));
-		}
-	}
-	
 	@Test
 	public void testDetermineDiplomateAvecImmeuble() throws Exception {
 
@@ -1885,8 +1591,7 @@ public class AssujettissementTest extends MetierTest {
 			final List<Assujettissement> list = Assujettissement.determine(paul, 2000);
 			assertNotNull(list);
 			assertEquals(1, list.size());
-			assertDiplomateSuisse(date(2000, 1, 1), date(2000, 12, 31), MotifFor.DEPART_HS, null, list.get(0));
-			// TODO (msi) devrait être ça : assertDiplomateSuisse(date(2000, 1, 1), date(2000, 12, 31), MotifFor.DEPART_HS, MotifFor.ACHAT_IMMOBILIER, list.get(0));
+			assertDiplomateSuisse(date(2000, 1, 1), date(2000, 12, 31), MotifFor.DEPART_HS, MotifFor.ACHAT_IMMOBILIER, list.get(0));
 		}
 
 		// 2001
@@ -1895,8 +1600,7 @@ public class AssujettissementTest extends MetierTest {
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			// le fait de posséder un immeuble en suisse fait basculer le diplomate dans la catégorie hors-Suisse
-			assertHorsSuisse(date(2001, 1, 1), date(2001, 12, 31), null, null, list.get(0));
-			// TODO (msi) devrait être ça : assertHorsSuisse(date(2001, 1, 1), date(2001, 12, 31), MotifFor.ACHAT_IMMOBILIER, null, list.get(0));
+			assertHorsSuisse(date(2001, 1, 1), date(2001, 12, 31), MotifFor.ACHAT_IMMOBILIER, null, list.get(0));
 		}
 
 		// 1999-2010
@@ -1905,8 +1609,8 @@ public class AssujettissementTest extends MetierTest {
 			assertNotNull(list);
 			assertEquals(3, list.size());
 			assertOrdinaire(date(1999, 1, 1), date(1999, 12, 31), null, MotifFor.DEPART_HS, list.get(0));
-			assertDiplomateSuisse(date(2000, 1, 1), date(2000, 12, 31), MotifFor.DEPART_HS, null, list.get(1));
-			assertHorsSuisse(date(2001, 1, 1), date(2010, 12, 31), null, null, list.get(2));
+			assertDiplomateSuisse(date(2000, 1, 1), date(2000, 12, 31), MotifFor.DEPART_HS, MotifFor.ACHAT_IMMOBILIER, list.get(1));
+			assertHorsSuisse(date(2001, 1, 1), date(2010, 12, 31), MotifFor.ACHAT_IMMOBILIER, null, list.get(2));
 		}
 	}
 
@@ -1915,7 +1619,7 @@ public class AssujettissementTest extends MetierTest {
 	 * principal est fermé sans motif (cas du ctb n°807.110.03).
 	 */
 	@Test
-	public void testDetermineHorsForPrincipalFermeSansMotif() throws Exception {
+	public void testDetermineHorsSuisseForPrincipalFermeSansMotif() throws Exception {
 
 		final RegDate dateVente = date(2009, 3, 24);
 		final Contribuable ctb = createHorsSuisseVenteImmeubleEtFermetureFFPSansMotif(dateVente);
@@ -1924,14 +1628,6 @@ public class AssujettissementTest extends MetierTest {
 		assertNotNull(list);
 		assertEquals(1, list.size());
 		assertHorsSuisse(date(2009, 1, 1), dateVente, null, MotifFor.VENTE_IMMOBILIER, list.get(0));
-	}
-
-	protected static void assertSousPeriode(RegDate debut, RegDate fin, MotifFor motifFractDebut, MotifFor motifFractFin, SousPeriode range) {
-		assertNotNull(range);
-		assertEquals(debut, range.getDateDebut());
-		assertEquals(fin, range.getDateFin());
-		assertEquals(motifFractDebut, range.getMotifFractDebut());
-		assertEquals(motifFractFin, range.getMotifFractFin());
 	}
 
 	@Test
@@ -1991,22 +1687,6 @@ public class AssujettissementTest extends MetierTest {
 	 * (sans chevauchement) dans le même année, les périodes sont donc fractionnées.
 	 */
 	@Test
-	public void testExtractSousPeriodesAchatsEtVentesMultipleHorsSuisse() throws Exception {
-
-		final Range immeuble1 = new Range(date(2008, 1, 15), date(2008, 3, 30));
-		final Range immeuble2 = new Range(date(2008, 6, 2), date(2008, 11, 26));
-		final Contribuable ctb = createHorsSuisseAvecAchatsEtVentesImmeubles(immeuble1, immeuble2);
-		final List<SousPeriode> sousPeriodes = Assujettissement.extractSousPeriodes(new DecompositionForsAnneeComplete(ctb, 2008));
-		assertNotNull(sousPeriodes);
-		assertEquals(5, sousPeriodes.size());
-		assertSousPeriode(date(2008, 1, 1), immeuble1.getDateDebut().getOneDayBefore(), null, MotifFor.ACHAT_IMMOBILIER, sousPeriodes.get(0));
-		assertSousPeriode(immeuble1.getDateDebut(), immeuble1.getDateFin(), MotifFor.ACHAT_IMMOBILIER, MotifFor.VENTE_IMMOBILIER, sousPeriodes.get(1));
-		assertSousPeriode(immeuble1.getDateFin().getOneDayAfter(), immeuble2.getDateDebut().getOneDayBefore(), MotifFor.VENTE_IMMOBILIER, MotifFor.ACHAT_IMMOBILIER, sousPeriodes.get(2));
-		assertSousPeriode(immeuble2.getDateDebut(), immeuble2.getDateFin(), MotifFor.ACHAT_IMMOBILIER, MotifFor.VENTE_IMMOBILIER, sousPeriodes.get(3));
-		assertSousPeriode(immeuble2.getDateFin().getOneDayAfter(), date(2008, 12, 31), MotifFor.VENTE_IMMOBILIER, null, sousPeriodes.get(4));
-	}
-
-	@Test
 	public void testDetermineAchatsEtVentesMultipleHorsSuisse() throws Exception {
 
 		final Range immeuble1 = new Range(date(2008, 1, 15), date(2008, 3, 30));
@@ -2036,20 +1716,6 @@ public class AssujettissementTest extends MetierTest {
 	/**
 	 * [UNIREG-1742] Vérifie que les périodes d'un contribuable hors-Suisse sourcier sont bien fractionnées en cas d'achat d'un immeuble (passage pur -> mixte, et vice-versa).
 	 */
-	@Test
-	public void testExtractSousPeriodesAchatEtVenteImmeubleHorsSuisseSourcier() throws Exception {
-
-		final RegDate dateAchat = date(2008, 1, 15);
-		final RegDate dateVente = date(2008, 3, 30);
-		final Contribuable ctb = createHorsSuisseSourcierAvecAchatEtVenteImmeuble(dateAchat, dateVente);
-		final List<SousPeriode> sousPeriodes = Assujettissement.extractSousPeriodes(new DecompositionForsAnneeComplete(ctb, 2008));
-		assertNotNull(sousPeriodes);
-		assertEquals(3, sousPeriodes.size());
-		assertSousPeriode(date(2008, 1, 1), dateAchat.getOneDayBefore(), null, MotifFor.ACHAT_IMMOBILIER, sousPeriodes.get(0));
-		assertSousPeriode(dateAchat, dateVente, MotifFor.ACHAT_IMMOBILIER, MotifFor.VENTE_IMMOBILIER, sousPeriodes.get(1));
-		assertSousPeriode(dateVente.getOneDayAfter(), date(2008, 12, 31), MotifFor.VENTE_IMMOBILIER, null, sousPeriodes.get(2));
-	}
-
 	@Test
 	public void testDetermineAchatEtVenteImmeubleHorsSuisseSourcier() throws Exception {
 
@@ -2085,14 +1751,6 @@ public class AssujettissementTest extends MetierTest {
 	}
 
 	@Test
-	public void testExtractSousPeriodesVenteImmeubleHorsCanton() throws Exception {
-
-		final RegDate dateVente = date(2008, 9, 30);
-		final Contribuable ctb = createVenteImmeubleHorsCanton(dateVente);
-		assertEmpty(Assujettissement.extractSousPeriodes(new DecompositionForsAnneeComplete(ctb, 2008))); // pas de fractionnement
-	}
-
-	@Test
 	public void testDetermineVenteImmeubleHorsCanton() throws Exception {
 
 		final RegDate dateVente = date(2008, 9, 30);
@@ -2119,14 +1777,6 @@ public class AssujettissementTest extends MetierTest {
 			// plus assujetti
 			assertEmpty(Assujettissement.determine(ctb, 2009));
 		}
-	}
-
-	@Test
-	public void testExtractSousPeriodesFinActiviteHorsCanton() throws Exception {
-
-		final RegDate dateFin = date(2008, 9, 30);
-		final Contribuable ctb = createFinActiviteHorsCanton(dateFin);
-		assertEmpty(Assujettissement.extractSousPeriodes(new DecompositionForsAnneeComplete(ctb, 2008))); // pas de fractionnement
 	}
 
 	@Test
@@ -2159,19 +1809,6 @@ public class AssujettissementTest extends MetierTest {
 	}
 
 	@Test
-	public void testExtractSousPeriodesDecesHorsCantonAvecImmeuble() throws Exception {
-
-		final RegDate dateDeces = date(2008, 10, 26);
-		final Contribuable ctb = createDecesHorsCantonAvecImmeuble(date(2006, 8, 5), dateDeces);
-
-		final List<SousPeriode> sousPeriodes = Assujettissement.extractSousPeriodes(new DecompositionForsAnneeComplete(ctb, 2008));
-		assertNotNull(sousPeriodes);
-		assertEquals(2, sousPeriodes.size());
-		assertSousPeriode(date(2008, 1, 1), dateDeces, null, MotifFor.VEUVAGE_DECES, sousPeriodes.get(0));
-		assertSousPeriode(dateDeces.getOneDayAfter(), date(2008, 12, 31), MotifFor.VEUVAGE_DECES, null, sousPeriodes.get(1));
-	}
-
-	@Test
 	public void testDetermineDecesHorsCantonAvecImmeuble() throws Exception {
 
 		final RegDate dateDeces = date(2008, 10, 26);
@@ -2201,19 +1838,6 @@ public class AssujettissementTest extends MetierTest {
 	}
 
 	@Test
-	public void testExtractSousPeriodesDecesHorsCantonActiviteIndependante() throws Exception {
-
-		final RegDate dateDeces = date(2008, 2, 23);
-		final Contribuable ctb = createDecesHorsCantonActiviteIndependante(date(1990, 4, 13), dateDeces);
-
-		final List<SousPeriode> sousPeriodes = Assujettissement.extractSousPeriodes(new DecompositionForsAnneeComplete(ctb, 2008));
-		assertNotNull(sousPeriodes);
-		assertEquals(2, sousPeriodes.size());
-		assertSousPeriode(date(2008, 1, 1), dateDeces, null, MotifFor.VEUVAGE_DECES, sousPeriodes.get(0));
-		assertSousPeriode(dateDeces.getOneDayAfter(), date(2008, 12, 31), MotifFor.VEUVAGE_DECES, null, sousPeriodes.get(1));
-	}
-
-	@Test
 	public void testDetermineDecesHorsCantonActiviteIndependante() throws Exception {
 
 		final RegDate dateDeces = date(2008, 2, 23);
@@ -2239,33 +1863,6 @@ public class AssujettissementTest extends MetierTest {
 		{
 			// plus assujetti
 			assertEmpty(Assujettissement.determine(ctb, 2009));
-		}
-	}
-
-	/**
-	 * Cas du contribuable n°16109718
-	 */
-	@Test
-	public void testExtractSousPeriodesArriveeHorsSuisseAvecImmeubleEtMotifDemanagement() throws Exception {
-
-		final RegDate dateAchat = date(1998, 10, 17);
-		final RegDate dateArrivee = date(2003, 1, 1);
-		final Contribuable ctb = createArriveeHorsSuisseAvecImmeubleEtMotifDemanagement(dateAchat, dateArrivee);
-
-		// 2002
-		{
-			final List<SousPeriode> list = Assujettissement.extractSousPeriodes(new DecompositionForsAnneeComplete(ctb, 2002));
-			assertNotNull(list);
-			assertEquals(1, list.size());
-			assertSousPeriode(date(2002, 1, 1), date(2002, 12, 31), null, MotifFor.DEMENAGEMENT_VD, list.get(0));
-		}
-
-		// 2003
-		{
-			final List<SousPeriode> list = Assujettissement.extractSousPeriodes(new DecompositionForsAnneeComplete(ctb, 2003));
-			assertNotNull(list);
-			assertEquals(1, list.size());
-			assertSousPeriode(date(2003, 1, 1), date(2003, 12, 31), MotifFor.ARRIVEE_HS, null, list.get(0));
 		}
 	}
 
@@ -2302,6 +1899,385 @@ public class AssujettissementTest extends MetierTest {
 			assertEquals(1, list.size());
 			assertOrdinaire(date(2004, 1, 1), date(2004, 12, 31), null, null, list.get(0));
 		}
+	}
+
+	/**
+	 * Cas du contribuable n°10000171
+	 */
+	@Test
+	public void testDetermineCasCompletementTordu() throws Exception {
+
+		final Contribuable paul = createContribuableSansFor();
+
+		ForFiscalPrincipal fp = addForPrincipal(paul, date(2003, 4, 1), MotifFor.INDETERMINE, date(2005, 12, 18), MotifFor.DEPART_HS, MockCommune.Lausanne);
+		fp.setModeImposition(ModeImposition.MIXTE_137_2);
+
+		addForPrincipal(paul, date(2005, 12, 19), MotifFor.DEMENAGEMENT_VD, date(2008, 5, 28), MotifFor.DEMENAGEMENT_VD, MockPays.France);
+
+		fp = addForPrincipal(paul, date(2008, 7, 7), MotifFor.ARRIVEE_HS, date(2008, 7, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
+		fp.setModeImposition(ModeImposition.MIXTE_137_2);
+
+		fp = addForPrincipal(paul, date(2008, 8, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Vevey);
+		fp.setModeImposition(ModeImposition.MIXTE_137_2);
+
+		addForSecondaire(paul, date(2008, 7, 7), MotifFor.ACHAT_IMMOBILIER, MockCommune.Aubonne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+
+		// 2002
+		{
+			assertEmpty(Assujettissement.determine(paul, 2002));
+		}
+
+		// 2003 (arrivée indéterminée)
+		{
+			final List<Assujettissement> list = Assujettissement.determine(paul, 2003);
+			assertNotNull(list);
+			assertEquals(1, list.size());
+			assertSourcierMixte(date(2003, 1, 1), date(2003, 12, 31), MotifFor.INDETERMINE, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
+		}
+
+		// 2004
+		{
+			final List<Assujettissement> list = Assujettissement.determine(paul, 2004);
+			assertNotNull(list);
+			assertEquals(1, list.size());
+			assertSourcierMixte(date(2004, 1, 1), date(2004, 12, 31), null, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
+		}
+
+		// 2005 (départ hors-Suisse)
+		{
+			final List<Assujettissement> list = Assujettissement.determine(paul, 2005);
+			assertNotNull(list);
+			assertEquals(1, list.size());
+			assertSourcierMixte(date(2005, 1, 1), date(2005, 12, 18), null, MotifFor.DEPART_HS, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
+		}
+
+		// 2006
+		{
+			assertEmpty(Assujettissement.determine(paul, 2006));
+		}
+
+		// 2007
+		{
+			assertEmpty(Assujettissement.determine(paul, 2007));
+		}
+
+		// 2008 (arrivée de hors-Suisse + achat immobilier)
+		{
+			final List<Assujettissement> list = Assujettissement.determine(paul, 2008);
+			assertNotNull(list);
+			assertEquals(1, list.size());
+			assertSourcierMixte(date(2008, 7, 7), date(2008, 12, 31), MotifFor.ARRIVEE_HS, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
+		}
+
+		// 2009
+		{
+			final List<Assujettissement> list = Assujettissement.determine(paul, 2009);
+			assertNotNull(list);
+			assertEquals(1, list.size());
+			assertSourcierMixte(date(2009, 1, 1), date(2009, 12, 31), null, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
+		}
+	}
+
+	/**
+	 * Cas du contribuable n°10002045
+	 */
+	@Test
+	public void testDetermineFausseArriveeHorsSuisse() throws Exception {
+
+		final Contribuable paul = createContribuableSansFor();
+
+		ForFiscalPrincipal fp = addForPrincipal(paul, date(2001, 1, 1), MotifFor.ARRIVEE_HS, date(2003, 10, 9), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Aubonne);
+		fp.setModeImposition(ModeImposition.SOURCE);
+
+		// le motif d'ouverture du second for principal est incorrect que le for immédiatement précédent n'est pas hors-Suisse.
+		// Dans ce cas-là, il ne doit pas y avoir de fractionnement de l'assujettissement.
+		fp = addForPrincipal(paul, date(2003, 10, 10), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+		fp.setModeImposition(ModeImposition.MIXTE_137_2);
+
+		// 2000
+		{
+			assertEmpty(Assujettissement.determine(paul, 2000));
+		}
+
+		// 2001 (arrivée HS)
+		{
+			final List<Assujettissement> list = Assujettissement.determine(paul, 2001);
+			assertNotNull(list);
+			assertEquals(1, list.size());
+			assertSourcierPur(date(2001, 1, 1), date(2001, 12, 31), MotifFor.ARRIVEE_HS, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
+		}
+
+		// 2002
+		{
+			final List<Assujettissement> list = Assujettissement.determine(paul, 2002);
+			assertNotNull(list);
+			assertEquals(1, list.size());
+			assertSourcierPur(date(2002, 1, 1), date(2002, 12, 31), null, MotifFor.CHGT_MODE_IMPOSITION, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
+		}
+
+		// 2003 (fausse arrivée HS + changement mode d'imposition)
+		{
+			final List<Assujettissement> list = Assujettissement.determine(paul, 2003);
+			assertNotNull(list);
+			assertEquals(1, list.size());
+			assertSourcierMixte(date(2003, 1, 1), date(2003, 12, 31), MotifFor.ARRIVEE_HS, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
+		}
+	}
+
+	/**
+	 * Cas du contribuable n°10003318
+	 */
+	@Test
+	public void testDetermineFausseArriveeHorsSuisse2() throws Exception {
+
+		final Contribuable paul = createContribuableSansFor();
+
+		addForPrincipal(paul, date(2002, 5, 31), MotifFor.INDETERMINE, date(2002, 6, 4), MotifFor.DEMENAGEMENT_VD, MockCommune.Neuchatel);
+		// le motif d'ouverture du second for principal est incorrect que le for immédiatement précédent n'est pas hors-Suisse.
+		// Dans ce cas-là, il ne doit pas y avoir de fractionnement de l'assujettissement.
+		addForPrincipal(paul, date(2002, 6, 5), MotifFor.ARRIVEE_HS, date(2007, 6, 30), MotifFor.DEPART_HS, MockCommune.Lausanne);
+		addForPrincipal(paul, date(2007, 7, 1), MotifFor.DEMENAGEMENT_VD, MockPays.Albanie);
+
+		addForSecondaire(paul, date(2002, 6, 5), MotifFor.ACHAT_IMMOBILIER, date(2002, 12, 31), MotifFor.VENTE_IMMOBILIER, MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+
+		// 2001
+		{
+			assertEmpty(Assujettissement.determine(paul, 2001));
+		}
+
+		// 2002 (achat immeuble puis arrivée HC)
+		{
+			final List<Assujettissement> list = Assujettissement.determine(paul, 2002);
+			assertNotNull(list);
+			assertEquals(1, list.size());
+			assertOrdinaire(date(2002, 1, 1), date(2002, 12, 31), MotifFor.ARRIVEE_HS, null, list.get(0));
+		}
+
+		// 2003
+		{
+			final List<Assujettissement> list = Assujettissement.determine(paul, 2003);
+			assertNotNull(list);
+			assertEquals(1, list.size());
+			assertOrdinaire(date(2003, 1, 1), date(2003, 12, 31), null, null, list.get(0));
+		}
+
+		// 2007 (départ HS)
+		{
+			final List<Assujettissement> list = Assujettissement.determine(paul, 2007);
+			assertNotNull(list);
+			assertEquals(1, list.size());
+			assertOrdinaire(date(2007, 1, 1), date(2007, 6, 30), null, MotifFor.DEPART_HS, list.get(0));
+		}
+
+		// 2008
+		{
+			assertEmpty(Assujettissement.determine(paul, 2008));
+		}
+	}
+
+	/**
+	 * Cas du contribuable n°10003348
+	 */
+	@Test
+	public void testDetermineSourcierPurePuisMixteSurDepartHSPuisArriveeHSDansLAnneeAvecImmeubleEtMotifsGrandguignolesques() throws Exception {
+
+		final Contribuable paul = createContribuableSansFor();
+
+		ForFiscalPrincipal fp = addForPrincipal(paul, date(2003, 1, 1), MotifFor.ARRIVEE_HS, date(2003, 5, 27), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Lausanne);
+		fp.setModeImposition(ModeImposition.SOURCE);
+
+		fp = addForPrincipal(paul, date(2003, 5, 28), MotifFor.INDETERMINE, date(2003, 8, 30), MotifFor.DEMENAGEMENT_VD, MockPays.France);
+		fp.setModeImposition(ModeImposition.MIXTE_137_1);
+
+		fp = addForPrincipal(paul, date(2003, 8, 31), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+		fp.setModeImposition(ModeImposition.MIXTE_137_2);
+
+		addForSecondaire(paul, date(2003, 5, 28), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+
+		// 2002
+		{
+			assertEmpty(Assujettissement.determine(paul, 2002));
+		}
+
+		// 2003 (arrivée HS sourcier pure + départ HS sourcier mixte 137 al. 1 + arrivée HS sourcier mixte 137 al. 2)
+		{
+			final List<Assujettissement> list = Assujettissement.determine(paul, 2003);
+			assertNotNull(list);
+			assertEquals(3, list.size());
+			assertSourcierPur(date(2003, 1, 1), date(2003, 5, 27), MotifFor.ARRIVEE_HS, MotifFor.CHGT_MODE_IMPOSITION, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
+			assertSourcierMixte(date(2003, 5, 28), date(2003, 8, 30), MotifFor.INDETERMINE, MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.PAYS_HS, list.get(1));
+			assertSourcierMixte(date(2003, 8, 31), date(2003, 12, 31), MotifFor.ARRIVEE_HS, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(2));
+		}
+
+		// 2004
+		{
+			final List<Assujettissement> list = Assujettissement.determine(paul, 2004);
+			assertNotNull(list);
+			assertEquals(1, list.size());
+			assertSourcierMixte(date(2004, 1, 1), date(2004, 12, 31), null, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
+		}
+	}
+
+	/**
+	 * Cas du contribuable n°10002080
+	 */
+	@Test
+	public void testDetermineFauxDemenagementVD() throws Exception {
+
+		final Contribuable paul = createContribuableSansFor();
+
+		// le motif de fermeture est incorrect, il devrait être ARRIVEE_HC
+		ForFiscalPrincipal fp = addForPrincipal(paul, date(2003, 9, 9), MotifFor.INDETERMINE, date(2004, 7, 26), MotifFor.DEMENAGEMENT_VD, MockCommune.Neuchatel);
+		fp.setModeImposition(ModeImposition.MIXTE_137_1);
+		fp = addForPrincipal(paul, date(2004, 7, 27), MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
+		fp.setModeImposition(ModeImposition.MIXTE_137_2);
+
+		addForSecondaire(paul, date(2003, 9, 9), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+
+		// 2002
+		{
+			assertEmpty(Assujettissement.determine(paul, 2002));
+		}
+
+		// 2003 (achat immeuble)
+		{
+			final List<Assujettissement> list = Assujettissement.determine(paul, 2003);
+			assertNotNull(list);
+			assertEquals(1, list.size());
+			assertSourcierMixte(date(2003, 1, 1), date(2003, 12, 31), MotifFor.INDETERMINE, null, TypeAutoriteFiscale.COMMUNE_HC, list.get(0));
+		}
+
+		// 2004 (arrivée hors-canton)
+		{
+			final List<Assujettissement> list = Assujettissement.determine(paul, 2004);
+			assertNotNull(list);
+			assertEquals(2, list.size());
+			assertSourcierMixte(date(2004, 1, 1), date(2004, 7, 26), null, MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_HC, list.get(0));
+			assertSourcierMixte(date(2004, 7, 27), date(2004, 12, 31), MotifFor.ARRIVEE_HC, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(1));
+		}
+
+		// 2005
+		{
+			final List<Assujettissement> list = Assujettissement.determine(paul, 2005);
+			assertNotNull(list);
+			assertEquals(1, list.size());
+			assertSourcierMixte(date(2005, 1, 1), date(2005, 12, 31), null, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
+		}
+	}
+
+	/**
+	 * Cas du contribuable n°10004709
+	 */
+	@Test
+	public void testDetermineFauxDepartHS() throws Exception {
+
+		final Contribuable paul = createContribuableSansFor();
+
+		// Dans le cas d'un contribuable avec deux fors principaux vaudois se touchant avec changement
+		// au 31 décembre pour motif DEPART_HS, on vérifie que le motiff DEPART_HS est bien ignoré
+		addForPrincipal(paul, date(2005,10, 1), MotifFor.ARRIVEE_HC, date(2005, 12, 31), MotifFor.DEPART_HS, MockCommune.Lausanne);
+		addForPrincipal(paul, date(2006,1, 1), MotifFor.INDETERMINE, date(2006, 12, 31), MotifFor.DEPART_HC, MockCommune.Cossonay);
+
+		// 2004
+		{
+			assertEmpty(Assujettissement.determine(paul, 2004));
+		}
+
+		// 2005
+		{
+			final List<Assujettissement> list = Assujettissement.determine(paul, 2005);
+			assertNotNull(list);
+			assertEquals(1, list.size());
+			assertOrdinaire(date(2005, 1, 1), date(2005, 12, 31), MotifFor.ARRIVEE_HC, null, list.get(0));
+		}
+
+		// 2006
+		{
+			final List<Assujettissement> list = Assujettissement.determine(paul, 2006);
+			assertNotNull(list);
+			assertEquals(1, list.size());
+			assertOrdinaire(date(2006, 1, 1), date(2006, 12, 31), null, MotifFor.DEPART_HC, list.get(0));
+		}
+
+		// 2007
+		{
+			assertEmpty(Assujettissement.determine(paul, 2004));
+		}
+
+		// 2004-2007
+		{
+			final List<Assujettissement> list = Assujettissement.determine(paul);
+			assertNotNull(list);
+			assertEquals(1, list.size());
+			assertOrdinaire(date(2005, 1, 1), date(2006, 12, 31), MotifFor.ARRIVEE_HC, MotifFor.DEPART_HC, list.get(0));
+		}
+	}
+
+	/**
+	 * Cas du contribuable n°10008508
+	 */
+	@Test
+	public void testDetermineDepartHSAchatImmeubleEtArriveeHC() throws Exception {
+
+		final Contribuable paul = createContribuableSansFor();
+
+		addForPrincipal(paul, date(1995, 11, 2), MotifFor.ARRIVEE_HS, date(1997, 3, 1), MotifFor.DEPART_HS, MockCommune.Lausanne);
+		addForPrincipal(paul, date(1997, 3, 3), MotifFor.DEMENAGEMENT_VD, date(2004, 12, 31), MotifFor.DEPART_HC, MockPays.Albanie);
+		addForPrincipal(paul, date(2005, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Neuchatel);
+		addForSecondaire(paul, date(2004, 3, 2), MotifFor.ACHAT_IMMOBILIER, MockCommune.Aubonne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+
+		final List<Assujettissement> list = Assujettissement.determine(paul);
+		assertNotNull(list);
+		assertEquals(3, list.size());
+		assertOrdinaire(date(1995, 11, 2), date(1997, 3, 1), MotifFor.ARRIVEE_HS, MotifFor.DEPART_HS, list.get(0));
+		assertHorsSuisse(date(2004, 3, 2), date(2004, 12, 31), MotifFor.ACHAT_IMMOBILIER, MotifFor.DEPART_HC, list.get(1));
+		assertHorsCanton(date(2005, 1, 1), null, MotifFor.ARRIVEE_HS, null, list.get(2));
+	}
+
+	/**
+	 * Cas du contribuable n°10015452
+	 */
+	@Test
+	public void testDetermineSourcierMixteHorsSuisseAvecImmeuble() throws Exception {
+
+		final Contribuable paul = createContribuableSansFor();
+
+		ForFiscalPrincipal fp = addForPrincipal(paul, date(2004, 5, 6), MotifFor.INDETERMINE, date(2006, 7, 31), MotifFor.DEMENAGEMENT_VD, MockPays.Espagne);
+		fp.setModeImposition(ModeImposition.MIXTE_137_1);
+		fp = addForPrincipal(paul, date(2006, 8, 1), MotifFor.ARRIVEE_HS, MockCommune.Aubonne);
+		fp.setModeImposition(ModeImposition.MIXTE_137_2);
+		addForSecondaire(paul, date(2004, 5, 6), MotifFor.ACHAT_IMMOBILIER, MockCommune.Aubonne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+
+		final List<Assujettissement> list = Assujettissement.determine(paul);
+		assertNotNull(list);
+		assertEquals(2, list.size());
+		assertSourcierMixte(date(2004, 5, 6), date(2006, 7, 31), MotifFor.INDETERMINE, MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.PAYS_HS, list.get(0));
+		assertSourcierMixte(date(2006, 8, 1), null, MotifFor.ARRIVEE_HS, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(1));
+	}
+
+	/**
+	 * Cas du contribuable n°10019036
+	 */
+	@Test
+	public void testDetermineSourcierHCDepartHSEtAchatImmeuble() throws Exception {
+
+		final Contribuable paul = createContribuableSansFor();
+
+		ForFiscalPrincipal fp = addForPrincipal(paul, date(2004, 1, 1), MotifFor.ARRIVEE_HS, date(2004, 6, 14), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Neuchatel);
+		fp.setModeImposition(ModeImposition.SOURCE);
+		addForPrincipal(paul, date(2004, 6, 15), MotifFor.DEPART_HC, date(2004, 7, 10), MotifFor.DEPART_HC, MockPays.Danemark);
+		addForPrincipal(paul, date(2004, 7, 11), MotifFor.ARRIVEE_HS, date(2004, 7, 11), MotifFor.DEMENAGEMENT_VD, MockCommune.Neuchatel);
+		addForPrincipal(paul, date(2004, 7, 12), MotifFor.ARRIVEE_HC, date(2006, 11, 15), MotifFor.DEPART_HS, MockCommune.Lausanne);
+		addForPrincipal(paul, date(2006, 11, 16), MotifFor.DEMENAGEMENT_VD, MockPays.Albanie);
+
+		addForSecondaire(paul, date(2004, 6, 15), MotifFor.ACHAT_IMMOBILIER, MockCommune.Aubonne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+
+		final List<Assujettissement> list = Assujettissement.determine(paul);
+		assertNotNull(list);
+		assertEquals(3, list.size());
+		assertSourcierPur(date(2004, 1, 1), date(2004, 6, 30), MotifFor.ARRIVEE_HS, MotifFor.CHGT_MODE_IMPOSITION, TypeAutoriteFiscale.COMMUNE_HC, list.get(0));
+		assertOrdinaire(date(2004, 7, 1), date(2006, 11, 15), MotifFor.DEPART_HC, MotifFor.DEPART_HS, list.get(1));
+		assertHorsSuisse(date(2006, 11, 16), null, MotifFor.DEMENAGEMENT_VD, null, list.get(2));
 	}
 
 	@Test

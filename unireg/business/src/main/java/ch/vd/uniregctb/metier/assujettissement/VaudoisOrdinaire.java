@@ -13,9 +13,8 @@ import ch.vd.uniregctb.type.MotifFor;
  */
 public class VaudoisOrdinaire extends Assujettissement {
 
-	public VaudoisOrdinaire(Contribuable contribuable, RegDate dateDebut, RegDate dateFin, MotifFor motifFractDebut,
-			MotifFor motifFractFin, DecompositionFors fors) {
-		super(contribuable, dateDebut, dateFin, motifFractDebut, motifFractFin, fors);
+	public VaudoisOrdinaire(Contribuable contribuable, RegDate dateDebut, RegDate dateFin, MotifFor motifFractDebut, MotifFor motifFractFin) {
+		super(contribuable, dateDebut, dateFin, motifFractDebut, motifFractFin);
 	}
 
 	private VaudoisOrdinaire(VaudoisOrdinaire courant, VaudoisOrdinaire suivant) {
@@ -29,5 +28,10 @@ public class VaudoisOrdinaire extends Assujettissement {
 
 	public DateRange collate(DateRange next) {
 		return new VaudoisOrdinaire(this, (VaudoisOrdinaire) next);
+	}
+
+	@Override
+	public String toString() {
+		return "VaudoisOrdinaire(" + getDateDebut() + " - " + getDateFin() + ")";
 	}
 }

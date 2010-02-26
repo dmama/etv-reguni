@@ -488,7 +488,7 @@ public class ProduireRolesCommuneProcessor {
 
 		private static List<Assujettissement> determineAssujettissement(DecompositionForsAnneeComplete fors, Contribuable ctb, ProduireRolesResults rapport) throws TraitementException {
 			try {
-				return Assujettissement.determine(fors);
+				return Assujettissement.determine(fors.contribuable, fors, true);
 			}
 			catch (AssujettissementException e) {
 				rapport.addErrorErreurAssujettissement(ctb, e.getMessage());

@@ -13,9 +13,8 @@ import ch.vd.uniregctb.type.MotifFor;
  */
 public class VaudoisDepense extends Assujettissement {
 
-	public VaudoisDepense(Contribuable contribuable, RegDate dateDebut, RegDate dateFin, MotifFor motifFractDebut, MotifFor motifFractFin,
-			DecompositionFors fors) {
-		super(contribuable, dateDebut, dateFin, motifFractDebut, motifFractFin, fors);
+	public VaudoisDepense(Contribuable contribuable, RegDate dateDebut, RegDate dateFin, MotifFor motifFractDebut, MotifFor motifFractFin) {
+		super(contribuable, dateDebut, dateFin, motifFractDebut, motifFractFin);
 	}
 
 	private VaudoisDepense(VaudoisDepense courant, VaudoisDepense suivant) {
@@ -29,5 +28,10 @@ public class VaudoisDepense extends Assujettissement {
 
 	public DateRange collate(DateRange next) {
 		return new VaudoisDepense(this, (VaudoisDepense) next);
+	}
+
+	@Override
+	public String toString() {
+		return "VaudoisDepense(" + getDateDebut() + " - " + getDateFin() + ")";
 	}
 }

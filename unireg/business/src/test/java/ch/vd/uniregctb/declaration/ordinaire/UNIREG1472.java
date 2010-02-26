@@ -32,7 +32,7 @@ public class UNIREG1472 {
 		
 		List<Assujettissement> assujettissements = new ArrayList<Assujettissement> ( Arrays.asList(
 				new Assujettissement[] {
-						new Indigent(null,RegDate.get(2008,1,1), RegDate.get(2008,12,31), null, null, null)
+						new Indigent(null,RegDate.get(2008,1,1), RegDate.get(2008,12,31), null, null)
 				}
 		));
 
@@ -40,7 +40,7 @@ public class UNIREG1472 {
 		
 		assujettissements = new ArrayList<Assujettissement> ( Arrays.asList(
 				new Assujettissement[] {
-						new VaudoisOrdinaire(null,RegDate.get(2008,1,1), RegDate.get(2008,12,31), null, null, null)
+						new VaudoisOrdinaire(null,RegDate.get(2008,1,1), RegDate.get(2008,12,31), null, null)
 				}
 		));
 		
@@ -48,8 +48,8 @@ public class UNIREG1472 {
 
 		assujettissements = new ArrayList<Assujettissement> ( Arrays.asList(
 				new Assujettissement[] {
-						new Indigent(null,RegDate.get(2008,1,1), RegDate.get(2008,1,31), null, null, null),
-						new VaudoisOrdinaire(null,RegDate.get(2008,2,1), RegDate.get(2008,12,31), null, null, null)
+						new Indigent(null,RegDate.get(2008,1,1), RegDate.get(2008,1,31), null, null),
+						new VaudoisOrdinaire(null,RegDate.get(2008,2,1), RegDate.get(2008,12,31), null, null)
 				}
 		));
 		

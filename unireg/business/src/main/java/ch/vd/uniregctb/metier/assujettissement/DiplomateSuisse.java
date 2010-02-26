@@ -13,9 +13,8 @@ import ch.vd.uniregctb.type.MotifFor;
  */
 public class DiplomateSuisse extends Assujettissement {
 
-	public DiplomateSuisse(Contribuable contribuable, RegDate dateDebut, RegDate dateFin, MotifFor motifFractDebut, MotifFor motifFractFin,
-			DecompositionFors fors) {
-		super(contribuable, dateDebut, dateFin, motifFractDebut, motifFractFin, fors);
+	public DiplomateSuisse(Contribuable contribuable, RegDate dateDebut, RegDate dateFin, MotifFor motifFractDebut, MotifFor motifFractFin) {
+		super(contribuable, dateDebut, dateFin, motifFractDebut, motifFractFin);
 	}
 
 	private DiplomateSuisse(DiplomateSuisse courant, DiplomateSuisse suivant) {
@@ -29,5 +28,10 @@ public class DiplomateSuisse extends Assujettissement {
 
 	public DateRange collate(DateRange next) {
 		return new DiplomateSuisse(this, (DiplomateSuisse) next);
+	}
+
+	@Override
+	public String toString() {
+		return "DiplomateSuisse(" + getDateDebut() + " - " + getDateFin() + ")";
 	}
 }

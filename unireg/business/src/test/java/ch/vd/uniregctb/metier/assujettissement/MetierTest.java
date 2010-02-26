@@ -178,6 +178,14 @@ public abstract class MetierTest extends BusinessTest {
 		return paul;
 	}
 
+	protected Contribuable createDepartHorsSuisseEtArriveeDeHorsCanton(RegDate dateDepart, RegDate dateArrivee) throws Exception {
+		Contribuable paul = createContribuableSansFor();
+		addForPrincipal(paul, date(1968, 4, 13), MotifFor.MAJORITE, dateDepart, MotifFor.DEPART_HS, MockCommune.Lausanne);
+		addForPrincipal(paul, dateDepart.getOneDayAfter(), MotifFor.DEPART_HS, dateArrivee.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockPays.PaysInconnu);
+		addForPrincipal(paul, dateArrivee, MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
+		return paul;
+	}
+
 	protected Contribuable createDepartHorsSuisseDepuisHorsCantonAvecActiviteIndependante(RegDate dateDepart) throws Exception {
 		Contribuable paul = createContribuableSansFor();
 		addForPrincipal(paul, date(1983, 4, 13), null, dateDepart, MotifFor.DEPART_HS, MockCommune.Neuchatel);
@@ -301,6 +309,14 @@ public abstract class MetierTest extends BusinessTest {
 		return paul;
 	}
 
+	protected Contribuable createArriveeHorsCantonAvecImmeuble(RegDate dateArrivee) throws Exception {
+		Contribuable paul = createContribuableSansFor();
+		addForPrincipal(paul, date(2000, 7, 1), MotifFor.ACHAT_IMMOBILIER, dateArrivee.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Neuchatel);
+		addForPrincipal(paul, dateArrivee, MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
+		addForSecondaire(paul, date(2000, 7, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		return paul;
+	}
+
 	protected Contribuable createArriveeHorsCantonSourcierMixte137Al1(RegDate dateArrivee) throws Exception {
 		Contribuable paul = createContribuableSansFor();
 		ForFiscalPrincipal ffp = addForPrincipal(paul, date(2002, 7, 1), MotifFor.ACHAT_IMMOBILIER, dateArrivee.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Neuchatel);
@@ -360,14 +376,15 @@ public abstract class MetierTest extends BusinessTest {
 	/**
 	 * Contribuable sourcier hors-canton avec un immeuble dans le canton => sourcier mixte art. 137 al. 1
 	 */
-	protected Contribuable createSourcierMixte137Al1HorsCanton() throws Exception {
+	protected Contribuable createSourcierMixte137Al1HorsCanton(RegDate achatImmeuble) throws Exception {
 		Contribuable paul = createContribuableSansFor();
-		ForFiscalPrincipal fp = addForPrincipal(paul, date(1993, 5, 1), null, date(2007, 6, 30), MotifFor.CHGT_MODE_IMPOSITION,
-				MockCommune.Neuchatel);
+		ForFiscalPrincipal fp = addForPrincipal(paul, date(1993, 5, 1), null, achatImmeuble.getOneDayBefore(),
+				MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Neuchatel);
 		fp.setModeImposition(ModeImposition.SOURCE);
-		fp = addForPrincipal(paul, date(2007, 7, 1), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Neuchatel);
+		
+		fp = addForPrincipal(paul, achatImmeuble, MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Neuchatel);
 		fp.setModeImposition(ModeImposition.MIXTE_137_1);
-		addForSecondaire(paul, date(2007, 7, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(),
+		addForSecondaire(paul, achatImmeuble, MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(),
 				MotifRattachement.IMMEUBLE_PRIVE);
 		return paul;
 	}

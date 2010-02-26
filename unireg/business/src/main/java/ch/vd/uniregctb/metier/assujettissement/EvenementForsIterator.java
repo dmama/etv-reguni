@@ -86,12 +86,21 @@ public class EvenementForsIterator implements Iterator<EvenementFors> {
 		List<ForFiscal> fors = new ArrayList<ForFiscal>(forsDansLaPeriode.size());
 
 		for (ForFiscal f : forsDansLaPeriode) {
-			if (f.getDateFin() != null && f.getDateFin().isBeforeOrEqual(finPeriode)) {
+			if (RegDateHelper.isBeforeOrEqual(f.getDateFin(), finPeriode, NullDateBehavior.LATEST)) {
 				fors.add(f);
 			}
 		}
 		Collections.sort(fors, new Comparator<ForFiscal>() {
 			public int compare(ForFiscal o1, ForFiscal o2) {
+				if (o1.getDateFin() == null && o2.getDateFin() == null) {
+					return 0;
+				}
+				if (o1.getDateFin() == null && o2.getDateFin() != null) {
+					return 1;
+				}
+				if (o1.getDateFin() != null && o2.getDateFin() == null) {
+					return -1;
+				}
 				return o1.getDateFin().compareTo(o2.getDateFin());
 			}
 		});

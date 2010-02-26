@@ -292,12 +292,10 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	 */
 	private List<PeriodeImposition> calculateRangesDIsPourAnnee(final Contribuable contribuable, int annee) throws ValidationException {
 
-		final DecompositionForsAnneeComplete fors = new DecompositionForsAnneeComplete(contribuable, annee);
-
 		// on calcul les périodes d'imposition du contribuable
 		final List<PeriodeImposition> periodes;
 		try {
-			periodes = PeriodeImposition.determine(fors);
+			periodes = PeriodeImposition.determine(contribuable, annee);
 		}
 		catch (AssujettissementException e) {
 			throw new ValidationException(contribuable, "Impossible de calculer l'assujettissement pour la raison suivante : " + e.getMessage());
