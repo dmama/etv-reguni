@@ -99,7 +99,7 @@
 										    Ouverture : <b><unireg:date date="${fp.dateDebut}"/></b> - <b>${fp.motifOuverture}</b><br/>
 										    Fermeture : <b><unireg:date date="${fp.dateFin}"/></b> - <b>${fp.motifFermeture}</b><br/>
 										    Motif de rattachement : <b>${fp.motifRattachement}</b><br/>
-										    Mode d'imposition : $<b>{fp.modeImposition}</b>
+										    Mode d'imposition : <b>${fp.modeImposition}</b>
 										</div>
 									</td>
 								</c:when>
