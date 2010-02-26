@@ -87,7 +87,7 @@ public class PeriodeImposition implements CollatableDateRange {
 	 */
 	public static List<PeriodeImposition> determine(Contribuable contribuable, DateRange range) throws AssujettissementException {
 		if (range != null && isFullYear(range)) {
-			return determine(new DecompositionForsAnneeComplete(contribuable, range.getDateDebut().year()));
+			return determine(contribuable, range.getDateDebut().year());
 		}
 		else {
 			int anneeDebut;
@@ -159,7 +159,7 @@ public class PeriodeImposition implements CollatableDateRange {
 	public static List<PeriodeImposition> determine(DecompositionForsAnneeComplete fors) throws AssujettissementException {
 
 		// on calcul l'assujettissement complet du contribuable
-		final List<Assujettissement> assujettissements = Assujettissement.determine(fors);
+		final List<Assujettissement> assujettissements = Assujettissement.determine(fors.contribuable, fors.annee);
 
 		// le contribuable n'est pas assujetti cette année-là
 		if (assujettissements == null || assujettissements.isEmpty()) {
@@ -193,7 +193,7 @@ public class PeriodeImposition implements CollatableDateRange {
 		if (a instanceof VaudoisDepense) {
 			return TypeAdresseRetour.OID;
 		}
-		if (a instanceof HorsCanton && !a.fors.secondairesDansLaPeriode.contains(MotifRattachement.ACTIVITE_INDEPENDANTE)) {
+		if (a instanceof HorsCanton && !a.getFors().secondairesDansLaPeriode.contains(MotifRattachement.ACTIVITE_INDEPENDANTE)) {
 			return TypeAdresseRetour.OID;
 		}
 		return TypeAdresseRetour.CEDI;
@@ -307,7 +307,8 @@ public class PeriodeImposition implements CollatableDateRange {
 
 			boolean remplaceeParNote = false;
 
-			if (assujettissement.getMotifFractFin() != null) {
+			if (assujettissement.getMotifFractFin() == MotifFor.VENTE_IMMOBILIER || assujettissement.getMotifFractFin() == MotifFor.FIN_EXPLOITATION ||
+					assujettissement.getMotifFractFin() == MotifFor.VEUVAGE_DECES) {
 				// [UNIREG-1742] dans le cas des contribuables domiciliés dans un autre canton dont le rattachement économique (activité indépendante ou immeuble)
 				// s’est terminé au cours de la période fiscale, la déclaration est remplacée par une note à l'administration fiscale de l'autre canton.
 				remplaceeParNote = true;
@@ -340,7 +341,7 @@ public class PeriodeImposition implements CollatableDateRange {
 			final RegDate dateDebut = assujettissement.getDateDebut();
 			final RegDate dateFin = assujettissement.getDateFin();
 
-			if (assujettissement.fors.secondairesDansLaPeriode.contains(MotifRattachement.ACTIVITE_INDEPENDANTE)) {
+			if (assujettissement.getFors().secondairesDansLaPeriode.contains(MotifRattachement.ACTIVITE_INDEPENDANTE)) {
 				// Activité indépendante dans le canton -> (plus d')imposition ordinaires dans tous les cas
 				
 				// [UNIREG-1824] les contribuables hors-suisse avec une activité independante ne seront plus vaudois ordinaires par défaut, 
@@ -360,7 +361,7 @@ public class PeriodeImposition implements CollatableDateRange {
 				return new PeriodeImposition(dateDebut, dateFin, type, assujettissement.getContribuable(), qualification, adresseRetour);
 			}
 
-			if (assujettissement.fors.secondairesDansLaPeriode.contains(MotifRattachement.IMMEUBLE_PRIVE)) {
+			if (assujettissement.getFors().secondairesDansLaPeriode.contains(MotifRattachement.IMMEUBLE_PRIVE)) {
 				// [UNIREG-1742] Les contribuables domiciliées à l'étranger assujettis à raison d'une propriété d'immeuble [...] sont imposés
 				// selon un mode forfaitaire et *peuvent* recevoir une déclaration d'impôt à leur demande (dès l’année d’acquisition du 1er immeuble),
 				// mais n’en bénéficient *plus* l’année de la vente du dernier immeuble ou du décès.

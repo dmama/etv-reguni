@@ -1,24 +1,20 @@
 package ch.vd.uniregctb.metier.assujettissement;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import ch.vd.registre.base.date.CollatableDateRange;
-import ch.vd.registre.base.date.DateRange;
-import ch.vd.registre.base.date.DateRangeHelper;
-import ch.vd.registre.base.date.NullDateBehavior;
-import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.registre.base.date.*;
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.uniregctb.common.ProgrammingException;
 import ch.vd.uniregctb.common.Triplet;
 import ch.vd.uniregctb.common.TripletIterator;
-import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
+import ch.vd.uniregctb.tiers.*;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Classe de base abstraite représentant une période d'assujettissement.
@@ -27,26 +23,28 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
  */
 public abstract class Assujettissement implements CollatableDateRange {
 
+	private static final Adapter adapter = new Adapter();
+
 	private final Contribuable contribuable;
 	private RegDate dateDebut;
 	private RegDate dateFin;
-	private final MotifFor motifFractDebut;
-	private final MotifFor motifFractFin;
-	protected final DecompositionFors fors;
+	private MotifFor motifDebut;
+	private MotifFor motifFin;
+	private DecompositionFors fors;
 
-	public Assujettissement(Contribuable contribuable, RegDate dateDebut, RegDate dateFin, MotifFor motifFractDebut,
-	                        MotifFor motifFractFin, DecompositionFors fors) {
+	public Assujettissement(Contribuable contribuable, RegDate dateDebut, RegDate dateFin, MotifFor motifDebut, MotifFor motifFin) {
 		DateRangeHelper.assertValidRange(dateDebut, dateFin);
 		this.contribuable = contribuable;
 		this.dateDebut = dateDebut;
 		this.dateFin = dateFin;
-		this.motifFractDebut = motifFractDebut;
-		this.motifFractFin = motifFractFin;
-		this.fors = fors;
+		this.motifDebut = motifDebut;
+		this.motifFin = motifFin;
+		this.fors = null;
 	}
 
 	/**
 	 * Permet de construire un assujettissement unique composé de deux assujettissement de même types qui se touchent
+	 *
 	 * @param courant l'assujettissement courant
 	 * @param suivant l'assujettissement suivant
 	 */
@@ -55,10 +53,10 @@ public abstract class Assujettissement implements CollatableDateRange {
 		this.contribuable = courant.contribuable;
 		this.dateDebut = courant.dateDebut;
 		this.dateFin = suivant.dateFin;
-		this.motifFractDebut = courant.motifFractDebut;
-		this.motifFractFin = suivant.motifFractFin;
+		this.motifDebut = courant.motifDebut;
+		this.motifFin = suivant.motifFin;
 		DateRangeHelper.assertValidRange(dateDebut, dateFin);
-		this.fors = null; // ça n'a plus trop de sens
+		this.fors = null;
 	}
 
 	public Contribuable getContribuable() {
@@ -69,51 +67,44 @@ public abstract class Assujettissement implements CollatableDateRange {
 		return dateDebut;
 	}
 
+	private void setDateDebut(RegDate date) {
+		this.dateDebut = date;
+		DateRangeHelper.assertValidRange(dateDebut, dateFin);
+	}
+
 	public RegDate getDateFin() {
 		return dateFin;
 	}
 
-	/**
-	 * Expose le motif de début de l'assujettissement si celui-ci est fractionné, c'est-à-dire s'il ne débute pas le 1er janvier à cause :
-	 * <ul>
-	 * <li>d'un décès ou d'un veuvage,</li>
-	 * <li>d'une arrivée ou d'un départ hors-Suisse, ou</li>
-	 * <li>d'un passage sourcier/ordinaire ou vice-versa.</li>
-	 * </ul>
-	 * Dans tous les autres cas, la méthode retourne <b>null</b>.
-	 * <p>
-	 * <b>Note:</b> dans le cas limite où il y a bien un fractionnement de l'assujettissement, mais que celui-ci se trouve ajusté au début
-	 * de mois (cas du passage source-ordinaire) et que le mois en question est janvier; on peut donc avoir un fractionnement de la période
-	 * qui - après ajustement - tombe sur le 1er janvier. Dans ce cas-là, la méthode retourne malgré tout le motif de fractionnement
-	 * initial.
-	 *
-	 * @return un motif de début de fractionnement ou <b>null</b> selon les règles exposées ci-dessus.
-	 */
-	public MotifFor getMotifFractDebut() {
-		return motifFractDebut;
+	private void setDateFin(RegDate date) {
+		this.dateFin = date;
+		DateRangeHelper.assertValidRange(dateDebut, dateFin);
+	}
+
+	public boolean isCollatable(DateRange next) {
+		// dans le cas d'un départ HS et d'une arrivée HC, on ne veut pas collater les deux assujettissements
+		final boolean departHSEtArriveeHC = (this.getMotifFractFin() == MotifFor.DEPART_HS && ((Assujettissement) next).getMotifFractDebut() == MotifFor.ARRIVEE_HC);
+		return getClass() == next.getClass() && DateRangeHelper.isCollatable(this, next) && !departHSEtArriveeHC;
 	}
 
 	/**
-	 * Expose le motif de fin de l'assujettissement si celui-ci est fractionné, c'est-à-dire s'il ne se termine pas le 31 décembre à cause :
-	 * <ul>
-	 * <li>d'un décès ou d'un veuvage,</li>
-	 * <li>d'une arrivée ou d'un départ hors-Suisse, ou</li>
-	 * <li>d'un passage sourcier/ordinaire ou vice-versa.</li>
-	 * </ul>
-	 * Dans tous les autres cas, la méthode retourne <b>null</b>.
-	 * <p>
-	 * <b>Note:</b> dans le cas limite où il y a bien un fractionnement de l'assujettissement, mais que celui-ci se trouve ajusté à la fin
-	 * de mois (cas du passage source-ordinaire) et que le mois en question est décembre; on peut donc avoir un fractionnement de la période
-	 * qui - après ajustement - tombe sur le 31 décembre. Dans ce cas-là, la méthode retourne malgré tout le motif de fractionnement
-	 * initial.
-	 *
-	 * @return un motif de fin de fractionnement ou <b>null</b> selon les règles exposées ci-dessus.
+	 * @return le motif de début de l'assujettissement
+	 */
+	public MotifFor getMotifFractDebut() {
+		return motifDebut;
+	}
+
+	/**
+	 * @return le motif de fin de l'assujettissement
 	 */
 	public MotifFor getMotifFractFin() {
-		return motifFractFin;
+		return motifFin;
 	}
 
 	public DecompositionFors getFors() {
+		if (fors == null) { // lazy init
+			fors = new DecompositionForsPeriode(contribuable, dateDebut, dateFin);
+		}
 		return fors;
 	}
 
@@ -127,6 +118,36 @@ public abstract class Assujettissement implements CollatableDateRange {
 	public abstract String getDescription();
 
 	/**
+	 * Analyse les fors du contribuable et construit la liste des périodes d'assujettissement complète.
+	 *
+	 * @param ctb le contribuable dont on veut déterminer l'assujettissement
+	 * @return une liste d'assujettissement contenant 1 ou plusieurs entrées, ou <b>null</b> si le contribuable n'est pas assujetti.
+	 * @throws AssujettissementException en cas d'impossibilité de calculer l'assujettissement
+	 */
+	public static List<Assujettissement> determine(Contribuable ctb) throws AssujettissementException {
+
+		final Set<ForFiscal> set = ctb.getForsFiscaux();
+		if (set == null || set.isEmpty()) {
+			return null;
+		}
+
+		// Détermination des données d'assujettissement brutes
+		final Tiers.ForsParType fpt = ctb.getForsParType(true);
+		final List<Fraction> fractionnements = new ArrayList<Fraction>();
+		final List<Data> domicile = determineAssujettissementDomicile(fpt.principaux, fractionnements);
+		final List<Data> economique = determineAssujettissementEconomique(fpt.secondaires, fractionnements);
+		fusionne(domicile, economique);
+
+		// Création des assujettissements finaux
+		List<Assujettissement> assujettissements = instanciate(ctb, domicile);
+		assujettissements = DateRangeHelper.collate(assujettissements);
+		adapteDatesDebutEtFin(assujettissements);
+
+		assertCoherenceRanges(assujettissements);
+		return assujettissements;
+	}
+
+	/**
 	 * Analyse les fors du contribuable et construit la liste des périodes d'assujettissement durant l'année spécifiée. Dans la grande majorité des cas, il n'y a qu'une seule période d'assujettissement
 	 * et elle coïncide avec l'année civile. Dans certains cas rares, il peut y avoir deux - voire même plus que de deux - périodes d'assujettissement distinctes.
 	 *
@@ -136,7 +157,18 @@ public abstract class Assujettissement implements CollatableDateRange {
 	 * @throws AssujettissementException en cas d'impossibilité de calculer l'assujettissement
 	 */
 	public static List<Assujettissement> determine(Contribuable contribuable, int annee) throws AssujettissementException {
-		return determine(new DecompositionForsAnneeComplete(contribuable, annee));
+
+		List<Assujettissement> list = determine(contribuable);
+		if (list == null) {
+			return null;
+		}
+
+		list = DateRangeHelper.extract(list, RegDate.get(annee, 1, 1), RegDate.get(annee, 12, 31), adapter);
+		if (list.isEmpty()) {
+			list = null;
+		}
+
+		return list;
 	}
 
 	/**
@@ -151,115 +183,158 @@ public abstract class Assujettissement implements CollatableDateRange {
 	 * @return une liste d'assujettissement contenant 1 ou plusieurs entrées, ou <b>null</b> si le contribuable n'est pas assujetti.
 	 * @throws AssujettissementException en cas d'impossibilité de calculer l'assujettissement
 	 */
-	public static List<Assujettissement> determine(Contribuable contribuable, DateRange range, boolean collate) throws AssujettissementException {
-		if (range != null && isFullYear(range)) {
-			return determine(new DecompositionForsAnneeComplete(contribuable, range.getDateDebut().year()));
-		}
-		else {
-			int anneeDebut;
-			int anneeFin;
+	public static List<Assujettissement> determine(Contribuable contribuable, final DateRange range, boolean collate) throws AssujettissementException {
 
-			if (range == null) {
-				RegDate debut = contribuable.getDateDebutActivite();
-				if (debut == null) {
-					// aucun date de début d'activité, le contribuable ne possède pas de for et ne peut donc pas être assujetti
-					return null;
-				}
-				anneeDebut = debut.year();
-
-				RegDate fin = contribuable.getDateFinActivite();
-				if (fin == null) {
-					anneeFin = RegDate.get().year(); // annee courante
-				}
-				else {
-					anneeFin = fin.year();
-				}
-
-			}
-			else {
-				anneeDebut = range.getDateDebut().year();
-				anneeFin = range.getDateFin().year();
-			}
-
-			// Détermination des assujettissements sur toutes les années considérées
-			List<Assujettissement> list = new ArrayList<Assujettissement>();
-			for (int annee = anneeDebut; annee <= anneeFin; annee++) {
-				List<Assujettissement> l = determine(contribuable, annee);
-				if (l != null) {
-					list.addAll(l);
-				}
-			}
-
-			// Réduction des assujettissements de même type qui se touchent
-			if (collate) {
-				list = DateRangeHelper.collate(list);
-			}
-
-			// Réduction au range spécifié
-			if (range != null) {
-				List<Assujettissement> results = new ArrayList<Assujettissement>();
-				for (Assujettissement a : list) {
-					if (DateRangeHelper.intersect(a, range)) {
-						results.add(a);
-					}
-				}
-				list = results;
-			}
-
-			return list;
-		}
-	}
-
-	private static boolean isFullYear(DateRange range) {
-		final RegDate debut = range.getDateDebut();
-		final RegDate fin = range.getDateFin();
-		return debut.year() == fin.year() && debut.month() == 1 && debut.day() == 1 && fin.month() == 12 && fin.day() == 31;
-	}
-
-	/**
-	 * Analyse les fors du contribuable et construit la liste des périodes d'assujettissement durant l'année spécifiée. Dans la grande majorité des cas, il n'y a qu'une seule période d'assujettissement
-	 * et elle coïncide avec l'année civile. Dans certains cas rares, il peut y avoir deux - voire même plus que de deux - périodes d'assujettissement distinctes.
-	 *
-	 * @param fors la décomposition des fors pour la période fiscale considérée (du 1er janvier au 31 décembre)
-	 * @return une liste d'assujettissement contenant 1 ou plusieurs entrées, ou <b>null</b> si le contribuable n'est pas assujetti.
-	 * @throws AssujettissementException en cas d'impossibilité de calculer l'assujettissement
-	 */
-	public static List<Assujettissement> determine(DecompositionForsAnneeComplete fors) throws AssujettissementException {
-
-		if (fors.isFullyEmpty()) {
+		List<Assujettissement> list = determine(contribuable);
+		if (list == null) {
 			return null;
 		}
 
-		List<Assujettissement> assujettissements = new ArrayList<Assujettissement>();
+		if (!collate) {
+			Assert.notNull(range);
+			list = split(list, range.getDateDebut().year(), range.getDateFin().year());
+		}
 
-		// Détermine les éventuelles sous-périodes d'imposition dues à des départs/arrivées hors-Suisse (et autres cas exotiques)
-		final List<SousPeriode> sousPeriodes = extractSousPeriodes(fors);
-		if (!sousPeriodes.isEmpty()) {
+		if (range != null) {
+			// Limitation des assujettissements au range demandé
+			list = DateRangeHelper.extract(list, range.getDateDebut(), range.getDateFin(), adapter);
+		}
 
-			// le fractionnement des périodes d'imposition est nécessaire
-			for (SousPeriode p : sousPeriodes) {
-				DecompositionForsPeriode f = new DecompositionForsPeriode(fors.contribuable, p);
-				if (f.isFullyEmpty()) {
-					continue;
-				}
-				Assujettissement a = determinePeriode(f, p.getMotifFractDebut(), p.getMotifFractFin());
-				if (a != null) {
-					assujettissements.add(a);
+		if (list.isEmpty()) {
+			list = null;
+		}
+		return list;
+	}
+
+	/**
+	 * Asserte que les ranges ne se chevauchent pas.
+	 *
+	 * @param ranges les ranges à tester
+	 */
+	private static void assertCoherenceRanges(List<? extends DateRange> ranges) {
+		DateRange previous = null;
+		for (DateRange current : ranges) {
+			if (previous != null) {
+				if (DateRangeHelper.intersect(previous, current)) {
+					throw new ProgrammingException("L'assujettissement [" + previous + "] entre en collision avec le suivant [" + current + "]");
 				}
 			}
+			previous = current;
 		}
-		else {
+	}
 
-			// pas de fractionnement
-			Assujettissement a = determinePeriode(fors, null, null);
+	private static class Fraction {
+		public final RegDate date;
+		public final MotifFor motif;
+
+		private Fraction(RegDate date, MotifFor motif) {
+			Assert.notNull(date);
+			this.date = date;
+			this.motif = motif;
+		}
+	}
+
+	/**
+	 * Détermine les données d'assujettissements brutes pour les rattachements de type domicile.
+	 *
+	 * @param principaux      les fors principaux d'un contribuable
+	 * @param fractionnements une liste vide qui contiendra les fractionnements calculés après l'exécution de la méthode
+	 * @return la liste des assujettissements brutes calculés
+	 * @throws AssujettissementException en cas d'impossibilité de calculer l'assujettissement
+	 */
+	private static List<Data> determineAssujettissementDomicile(List<ForFiscalPrincipal> principaux, List<Fraction> fractionnements) throws AssujettissementException {
+
+		final List<Data> domicile = new ArrayList<Data>();
+
+		RegDate fraction = null; // la dernière date connue de fractionnement de l'assujettissement
+		MotifFor motifFraction = null;
+
+		// Détermine les assujettissements pour le rattachement de type domicile
+		TripletIterator<ForFiscalPrincipal> iter = new TripletIterator<ForFiscalPrincipal>(principaux.iterator());
+		while (iter.hasNext()) {
+			final Triplet<ForFiscalPrincipal> triplet = iter.next();
+
+			// on détermine les fors principaux qui précédent et suivent immédiatement
+			final ForFiscalPrincipal current = triplet.current;
+			final ForFiscalPrincipal previous = (triplet.previous != null && DateRangeHelper.isCollatable(triplet.previous, current) ? triplet.previous : null);
+			final ForFiscalPrincipal next = (triplet.next != null && DateRangeHelper.isCollatable(current, triplet.next) ? triplet.next : null);
+
+			// on détecte une éventuelle date de fractionnement à l'ouverture
+			if (isFractionOuverture(current, previous)) {
+				fraction = current.getDateDebut();
+				motifFraction = current.getMotifOuverture();
+
+				if (next != null && isArriveeHCApresDepartHSMemeAnnee(current)) {
+					// dans ce cas précis, on veut utiliser le motif d'ouverture du for suivant comme motif de fractionnement
+					motifFraction = next.getMotifOuverture();
+				}
+
+				fractionnements.add(new Fraction(fraction, motifFraction));
+			}
+
+			// on détermine l'assujettissement pour le for principal courant
+			final Data a = determine(current, previous, next);
 			if (a != null) {
-				assujettissements.add(a);
+
+				if (fraction != null && fraction.isAfterOrEqual(a.debut)) {
+					a.debut = fraction;
+					a.motifDebut = motifFraction;
+				}
+
+				domicile.add(a);
+			}
+
+			// on détecte une éventuelle date de fractionnement à la fermeture
+			if (isFractionFermeture(current, next)) {
+				fraction = (current.getDateFin() == null ? null : current.getDateFin().getOneDayAfter());
+				motifFraction = current.getMotifFermeture();
+
+				fractionnements.add(new Fraction(fraction, motifFraction));
 			}
 		}
 
-		adapteDatesDebutEtFin(assujettissements);
+		return domicile;
+	}
 
-		return assujettissements.isEmpty() ? null : assujettissements;
+	/**
+	 * Détermine les données d'assujettissements brutes pour les rattachements de type économique.
+	 *
+	 * @param secondaires     les fors secondaires d'un contribuable
+	 * @param fractionnements la liste des fractionnements d'assujettissement calculés lors de l'analyse des fors principaux
+	 * @return la liste des assujettissements brutes calculés
+	 * @throws AssujettissementException en cas d'impossibilité de calculer l'assujettissement
+	 */
+	private static List<Data> determineAssujettissementEconomique(List<ForFiscalSecondaire> secondaires, List<Fraction> fractionnements) throws AssujettissementException {
+		List<Data> economique = new ArrayList<Data>();
+		// Détermine les assujettissements pour le rattachement de type économique
+		for (ForFiscalSecondaire f : secondaires) {
+			final Data a = determine(f, fractionnements);
+			if (a != null) {
+				economique.add(a);
+			}
+		}
+		return economique;
+	}
+
+	/**
+	 * Découpe les assujettissements spécifié année par année pour les années spécifiées
+	 *
+	 * @param list      les assujettissements à découper
+	 * @param startYear l'année de départ (comprise)
+	 * @param endYear   l'année de fin (comprise
+	 * @return une liste d'assujettissements découpés année par année
+	 */
+	private static List<Assujettissement> split(List<Assujettissement> list, int startYear, int endYear) {
+
+		List<Assujettissement> splitted = new ArrayList<Assujettissement>();
+
+		// split des assujettissement par années
+		for (int year = startYear; year <= endYear; ++year) {
+			List<Assujettissement> extracted = DateRangeHelper.extract(list, RegDate.get(year, 1, 1), RegDate.get(year, 12, 31), adapter);
+			splitted.addAll(extracted);
+		}
+
+		return splitted;
 	}
 
 	/**
@@ -273,14 +348,11 @@ public abstract class Assujettissement implements CollatableDateRange {
 	/**
 	 * Cette méthode adapte les dates de début et de fin de validité des assujettissements pour qu'elles tombent exactement sur des débuts et fins de mois; et ceci dans certains cas précis.
 	 * <p/>
-	 * Les dates de début/fin d'un assujettissement sont adaptées si les conditions suivantes sont respectées:
-	 * <ul>
-	 * <li>l'assujettissement est de type source pure</li>
-	 * <li>l'assujettissement précédent/suivant est de type ordinaire non-mixte (ordinaire, dépense, ... mais pas sourcier mixte)</li>
-	 * </ul>
+	 * Les dates de début/fin d'un assujettissement sont adaptées si les conditions suivantes sont respectées: <ul> <li>l'assujettissement est de type source pure</li> <li>l'assujettissement
+	 * précédent/suivant est de type ordinaire non-mixte (ordinaire, dépense, ... mais pas sourcier mixte)</li> </ul>
 	 * <p/>
 	 * En gros, à chaque passage source pure à ordinaire et vice-versa les dates de début et fin sont adaptées.
-	 * 
+	 *
 	 * @param assujettissements une liste des assujettissement
 	 */
 	private static void adapteDatesDebutEtFin(List<Assujettissement> assujettissements) {
@@ -338,18 +410,20 @@ public abstract class Assujettissement implements CollatableDateRange {
 			}
 
 			// faut-il adapter la date de fin ?
-			final Assujettissement suivant = triplet.next;
-			if (suivant == null || !(suivant instanceof Sourcier)) {
-				// on doit arrondir à la fin du mois
-				final RegDate newFin = RegDate.get(fin.year(), fin.month(), 1).addMonths(1).getOneDayBefore();
-				if (newFin != fin) {
-					if (suivant != null && suivant.getDateDebut().getOneDayBefore() == fin) {
-						final AdaptionResult r = adapteDateDebut(suivant, newFin.getOneDayAfter(), assujettissements);
-						if (r == AdaptionResult.LISTE_MODIFIEE) {
-							res = AdaptionResult.LISTE_MODIFIEE;
+			if (fin != null) {
+				final Assujettissement suivant = triplet.next;
+				if (suivant == null || !(suivant instanceof Sourcier)) {
+					// on doit arrondir à la fin du mois
+					final RegDate newFin = RegDate.get(fin.year(), fin.month(), 1).addMonths(1).getOneDayBefore();
+					if (newFin != fin) {
+						if (suivant != null && suivant.getDateDebut().getOneDayBefore() == fin) {
+							final AdaptionResult r = adapteDateDebut(suivant, newFin.getOneDayAfter(), assujettissements);
+							if (r == AdaptionResult.LISTE_MODIFIEE) {
+								res = AdaptionResult.LISTE_MODIFIEE;
+							}
 						}
+						courant.setDateFin(newFin);
 					}
-					courant.setDateFin(newFin);
 				}
 			}
 		}
@@ -402,7 +476,7 @@ public abstract class Assujettissement implements CollatableDateRange {
 	 *         liste et que cette dernière a donc été modifiée.
 	 */
 	private static AdaptionResult adapteDateDebut(Assujettissement suivant, RegDate newDateDebut, List<Assujettissement> assujettissements) {
-		if (newDateDebut.isBeforeOrEqual(suivant.getDateFin())) {
+		if (suivant.getDateFin() == null || newDateDebut.isBeforeOrEqual(suivant.getDateFin())) {
 			suivant.setDateDebut(newDateDebut);
 			return AdaptionResult.LISTE_NON_MODIFIEE;
 		}
@@ -421,293 +495,16 @@ public abstract class Assujettissement implements CollatableDateRange {
 		}
 	}
 
-	private void setDateDebut(RegDate date) {
-		this.dateDebut = date;
-		DateRangeHelper.assertValidRange(dateDebut, dateFin);
-	}
-
-	private void setDateFin(RegDate date) {
-		this.dateFin = date;
-		DateRangeHelper.assertValidRange(dateDebut, dateFin);
-	}
-
-	/**
-	 * Détecte le <b>potentiel</b> fractionnement d'une période fiscal complète (= une année) en sous-périodes d'assujettissement. Le fractionnement d'une période fiscale complète peut être nécessaire en
-	 * présence de certains motifs d'ouvertures/fermetures de fors principaux (départ/arrivée hors-Suisse, par exemple).
-	 *
-	 * @param fors la décomposition des fors pour la période fiscale complète considérée
-	 * @return une liste des sous-périodes <b>potentielles</b>, ou une liste vide si aucun fractionnement n'est nécessaire
-	 */
-	protected static List<SousPeriode> extractSousPeriodes(DecompositionForsAnneeComplete fors) {
-
-		final RegDate dateDebutAnnee = fors.getDateDebut();
-		final RegDate dateFinAnnee = fors.getDateFin();
-
-		List<SousPeriode> ranges = new ArrayList<SousPeriode>();
-		RegDate pivot = dateDebutAnnee;
-		MotifFor motifPivot = null;
-
-		final EvenementForsIterator iter = new EvenementForsIterator(fors);
-		while (iter.hasNext()) {
-			final EvenementFors event = iter.next();
-
-			// détecte un fractionnement nécessaire à l'ouverture de l'événement
-			final MotifFor motifOuverture = fractionnementOuverture(event);
-			if (motifOuverture != null) {
-				final RegDate debut = event.dateEvenement;
-				if (debut != null) {
-					if (debut.isAfter(pivot)) {
-						// fractionne le range précédent
-						ranges.add(newSousPeriode(fors, pivot, debut.getOneDayBefore(), motifPivot, motifOuverture));
-						pivot = debut;
-					}
-					motifPivot = motifOuverture;
-				}
-			}
-			
-			// détecte un fractionnement nécessaire à la fermeture de l'événement
-			final MotifFor motifFermeture = fractionnementFermeture(event);
-			if (motifFermeture != null) {
-				final RegDate fin = event.dateEvenement;
-				if (fin != null) {
-					if (fin.isBeforeOrEqual(dateFinAnnee)) {
-						// fractionne le range courant
-						ranges.add(newSousPeriode(fors, pivot, fin, motifPivot, motifFermeture));
-						pivot = fin.getOneDayAfter();
-						motifPivot = motifFermeture;
-					}
-				}
-			}
-		}
-
-		final MotifFor motifFinAnnee = detectMotifFinAnnee(fors);
-		if (is1erJanvier(pivot) && motifPivot == null) {
-			motifPivot = detectMotifDebutAnnee(fors, pivot, dateFinAnnee);
-		}
-
-		// ajoute le dernier range si nécessaire
-		if ((pivot != dateDebutAnnee || motifPivot != null || motifFinAnnee != null) && pivot.isBeforeOrEqual(dateFinAnnee)) {
-			ranges.add(new SousPeriode(pivot, dateFinAnnee, motifPivot, motifFinAnnee));
-		}
-
-		return ranges;
-	}
-
-	/**
-	 * Crée une nouvelle sous-période en calculant automatiquement le motif de début en cas de début d'assujettissement exceptionnel.
-	 *
-	 * @param fors       la décomposition des fors de l'année courante
-	 * @param debut      la date de début de la sous-période
-	 * @param fin        la date de fin de la sous-période
-	 * @param motifDebut le motif de début de la sous-période
-	 * @param motifFin   le motif de fin de la sous-période
-	 * @return une nouvelle sous-période
-	 */
-	private static SousPeriode newSousPeriode(DecompositionForsAnneeComplete fors, RegDate debut, RegDate fin, MotifFor motifDebut, MotifFor motifFin) {
-		if (is1erJanvier(debut) && motifDebut == null) {
-			motifDebut = detectMotifDebutAnnee(fors, debut, fin);
-		}
-		return new SousPeriode(debut, fin, motifDebut, motifFin);
-	}
-
-	/**
-	 * Détecte s'il y a début d'assujettissement au 1er janvier en raison d'un événement exceptionnel (arrivée de hors-Canton ou mariage en cours d'année).
-	 *
-	 * @param fors         la décomposition des fors de l'année complète
-	 * @param debutPeriode la date de début de la période considérée
-	 * @param finPeriode   la date de fin de la période considérée
-	 * @return le motif du début d'assujettissement exceptionnel; ou <b>null</b> s'il n'y en a pas.
-	 */
-	private static MotifFor detectMotifDebutAnnee(DecompositionForsAnneeComplete fors, RegDate debutPeriode, RegDate finPeriode) {
-
-		final DateRange periode = new DateRangeHelper.Range(debutPeriode, finPeriode);
-
-		for (ForFiscalPrincipal ffp : fors.principauxDansLaPeriode) {
-			if (periode.isValidAt(ffp.getDateDebut())) { // on ne s'intéresse qu'aux fors réellement ouverts dans la période spécifiée
-
-				final MotifFor motif = ffp.getMotifOuverture();
-				final TypeAutoriteFiscale typeAutorite = ffp.getTypeAutoriteFiscale();
-				final ModeImposition mode = ffp.getModeImposition();
-
-				if (motif == MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION || motif == MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT) {
-					return motif;
-				}
-				else if (motif == MotifFor.ARRIVEE_HC && typeAutorite == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD &&
-						mode != ModeImposition.SOURCE && mode != ModeImposition.MIXTE_137_2) { // un départ ou une arrivée HC ne change rien pour un sourcier pure ou sourcier mixte 137_2
-					return motif;
-				}
-				else if (motif == MotifFor.DEPART_HC && typeAutorite == TypeAutoriteFiscale.COMMUNE_HC &&
-						mode != ModeImposition.SOURCE && mode != ModeImposition.MIXTE_137_2) {
-					return motif;
-				}
-			}
-		}
-
-		return null;
-	}
-
-	/**
-	 * Détecte s'il y a fin d'assujettissement au 31 décembre en raison d'un événement exceptionnel (départ hors-Canton ou mariage en cours d'année suivante).
-	 *
-	 * @param fors      la décomposition des fors de l'année complète
-	 * @return le motif du début d'assujettissement exceptionnel; ou <b>null</b> s'il n'y en a pas.
-	 */
-	private static MotifFor detectMotifFinAnnee(DecompositionForsAnneeComplete fors) {
-
-		// détecte les fins d'assujettissement exceptionnelles en raison des fermeture de fors principaux
-		for (ForFiscalPrincipal ffp : fors.principauxDansPeriodeSuivante) {
-			final RegDate fin = ffp.getDateFin();
-
-			if (fin != null && fin.year() == fors.annee + 1) { // on ne s'intéresse qu'aux fors réellement fermés l'année suivante
-
-				final MotifFor motif = ffp.getMotifFermeture();
-				final ModeImposition mode = ffp.getModeImposition();
-				final TypeAutoriteFiscale typeAutorite = ffp.getTypeAutoriteFiscale();
-
-				if (motif == MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION || motif == MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT) {
-					return motif;
-				}
-				else if (motif == MotifFor.DEPART_HC && typeAutorite == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD &&
-						mode != ModeImposition.SOURCE && mode != ModeImposition.MIXTE_137_2) { // un départ ou une arrivée HC ne change rien pour un sourcier pure ou sourcier mixte 137_2
-					return motif;
-				}
-				else if (motif == MotifFor.ARRIVEE_HC && typeAutorite == TypeAutoriteFiscale.COMMUNE_HC &&
-						mode != ModeImposition.SOURCE && mode != ModeImposition.MIXTE_137_2) {
-					return motif;
-				}
-			}
-		}
-
-		return null;
-	}
-
-	/**
-	 * @param event   l'événement courant sur lequel il faut travailler
-	 * @return <b>vrai</b> si le motif d'ouverture du for principal spécifié peut provoquer une fractionnement de l'assujettissement
-	 */
-	private static MotifFor fractionnementOuverture(EvenementFors event) {
-		// voir la spécification "Envoyer automatiquement les DI-PP", §3.1.2 "Enregistrement des déclarations d'impôt"
-
-		if (event.ouverts.principal != null) { // événement d'ouverture de for principal
-
-			final MotifFor motif = event.ouverts.principal.getMotifOuverture();
-
-			// Décès -> fractionnement dans tous les cas
-			if (motif == MotifFor.VEUVAGE_DECES) {
-				return motif;
-			}
-
-			// Arrivée hors-Suisse -> fractionnement pour autant que le contribuable arrive dans le canton de Vaud
-			if (motif == MotifFor.ARRIVEE_HS && event.ouverts.principal.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
-				return motif;
-			}
-
-			// Le passage du rôle source pur au rôle ordinaire non-mixte (et vice versa) doit provoquer un fractionnement.
-			if (event.actifsVeille.principal != null) {
-				if ((roleSourcierPur(event.actifsVeille.principal) && roleOrdinaireNonMixte(event.ouverts.principal))
-						|| (roleOrdinaireNonMixte(event.actifsVeille.principal) && roleSourcierPur(event.ouverts.principal))) {
-					return MotifFor.CHGT_MODE_IMPOSITION;
-				}
-			}
-
-			// [UNIREG-1742] Le départ ou l'arrivée hors-Canton d'un sourcier pur ou mixte 137 al. 2 (donc sans for secondaire) doit provoquer un fractionnement
-			final ModeImposition modeImposition = event.ouverts.principal.getModeImposition();
-			if ((modeImposition == ModeImposition.SOURCE || modeImposition == ModeImposition.MIXTE_137_2) && (motif == MotifFor.DEPART_HC || motif == MotifFor.ARRIVEE_HC)) {
-				return motif;
-			}
-
-			// Cas limite de l'ouverture du for principal au 1er janvier -> on retourne un fractionnement car il y a bien un début d'assujettissement au début de l'année.
-			if (is1erJanvier(event.dateEvenement)) {
-				return motif;
-			}
-		}
-
-		if (event.ouverts.secondaires != null) { // événement d'ouverture d'un for secondaire
-
-			// [UNIREG-1742] ouverture d'un (ou plusieurs en même temps) for secondaire d'un contribuable hors-Suisse alors qu'il n'en existait pas avant -> début de rattachement économique
-			if (event.actifs.principal.getTypeAutoriteFiscale() == TypeAutoriteFiscale.PAYS_HS && (event.actifsVeille.principal == null || event.actifsVeille.secondaires == null)) {
-				// détermine le motif le plus fort
-				MotifFor motif = null;
-				for (ForFiscalSecondaire fs : event.ouverts.secondaires) {
-					if (motif == null || motif == MotifFor.ACHAT_IMMOBILIER) {
-						Assert.notNull(fs.getMotifOuverture());
-						motif = fs.getMotifOuverture();
-					}
-				}
-				return motif;
-			}
-		}
-
-		return null;
-	}
-
-	/**
-	 * @param event l'événement courant sur lequel il faut travailler
-	 * @return <b>vrai</b> si le motif d'ouverture du for principal spécifié peut provoquer une fractionnement de l'assujettissement
-	 */
-	private static MotifFor fractionnementFermeture(EvenementFors event) {
-
-		if (event.fermes.principal != null) { // événement de fermeture du for principal
-			final MotifFor motif = event.fermes.principal.getMotifFermeture();
-
-			// Décès -> fractionnement dans tous les cas
-			if (motif == MotifFor.VEUVAGE_DECES) {
-				return motif;
-			}
-
-			// Départ hors-Suisse -> fractionnement pour autant que le contribuable parte du canton de Vaud
-			if (motif == MotifFor.DEPART_HS && event.fermes.principal.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
-				return motif;
-			}
-			
-			/*
-			 * Note: on ne teste pas le passage source <-> ordinaire ici parce qu'il faudrait connaître le for principal suivant. Or ce for
-			 * principal suivant sera testé à son tour dans la méthode #fractionnementOuverture(). Donc, d'un point de vue algorithmique le test
-			 * n'est pas nécessaire ici.
-			 */
-
-			// [UNIREG-1742]  Le départ ou l'arrivée hors-Canton d'un sourcier pur ou mixte 137 al. 2 (donc sans for secondaire) doit provoquer un fractionnement
-			final ModeImposition modeImposition = event.fermes.principal.getModeImposition();
-			if ((modeImposition == ModeImposition.SOURCE || modeImposition == ModeImposition.MIXTE_137_2) && (motif == MotifFor.DEPART_HC || motif == MotifFor.ARRIVEE_HC)) {
-				return motif;
-			}
-
-			// Cas limite de la fermeture du for principal au 31 décembre -> on retourne un fractionnement car il y a bien une fin d'assujettissement à la fin de l'année.
-			if (is31Decembre(event.dateEvenement)) {
-				return motif;
-			}
-		}
-
-		if (event.fermes.secondaires != null) { // événement de fermeture d'un for secondaire
-
-			// [UNIREG-1742] fermeture du dernier (ou des derniers en même temps) for secondaire d'un contribuable hors-Suisse -> fin de rattachement économique
-			if (event.actifs.principal.getTypeAutoriteFiscale() == TypeAutoriteFiscale.PAYS_HS && (event.actifsLendemain.principal == null || event.actifsLendemain.secondaires == null)) {
-				// détermine le motif le plus fort
-				MotifFor motif = null;
-				for (ForFiscalSecondaire fs : event.fermes.secondaires) {
-					if (motif == null || motif == MotifFor.ACHAT_IMMOBILIER) {
-						Assert.notNull(fs.getMotifFermeture());
-						motif = fs.getMotifFermeture();
-					}
-				}
-				return motif;
-			}
-		}
-
-		return null;
-	}
-
-	private static boolean is1erJanvier(RegDate date) {
-		return date.month() == 1 && date.day() == 1;
-	}
-
-
 	private static boolean is31Decembre(RegDate date) {
 		return date.month() == 12 && date.day() == 31;
 	}
 
 	private static boolean roleSourcierPur(ForFiscalPrincipal forPrecedent) {
-		return ModeImposition.SOURCE.equals(forPrecedent.getModeImposition());
+		return forPrecedent.getModeImposition() == ModeImposition.SOURCE;
+	}
+
+	private static boolean roleSourcierMixte(ForFiscalPrincipal forPrecedent) {
+		return forPrecedent.getModeImposition() == ModeImposition.MIXTE_137_1 || forPrecedent.getModeImposition() == ModeImposition.MIXTE_137_2;
 	}
 
 	private static boolean roleOrdinaireNonMixte(ForFiscalPrincipal forCourant) {
@@ -716,355 +513,315 @@ public abstract class Assujettissement implements CollatableDateRange {
 	}
 
 	/**
-	 * Retourne le type d'autorité fiscale du dernier for principal valide, ou <b>null</b> si aucune assujettissement n'est nécessaire.
-	 *
-	 * Il y a plusieurs cas valides pour qu'un contribuable ne possède pas de for principal en fin d'année :
-	 * <ul>
-	 * <li><b>qu'il soit décédé dans l'année</b> : la période d'imposition doit avoir été fractionnée et on ne devrait pas arriver ici.</li>
-	 * <li><b>qu'il ait déménagé hors-Suisse dans l'année</b> : la période d'imposition doit avoir été fractionnée et on ne devrait pas
-	 * arriver ici.</li>
-	 * <li><b>qu'il se soit marié dans l'année</b> : le contribuable déterminant est le ménage commun et on peut ignorer la personne
-	 * physique. Et vice-versa pour la séparation.</li>
-	 * <li><b>qu'il ait déménagé hors-canton</b> : s'il y a des fors secondaires, on continue le traitement. Autrement, on peut ignorer le
-	 * contribuable.</li>
-	 * <li><b>qu'il habite hors-Suisse et que son for principal soit fermé sans motif</b> : s'il y a des fors secondaires, on continue le
-	 * traitement. Autrement, on peut ignorer le contribuable [UNIREG-1390].</li>
-	 * </ul>
-	 * 
-	 * @param fors la décomposition des fors fiscaux pour la période considérée
-	 * @return le type d'autorité fiscale déterminé; ou <b>null</b> si le contribuable n'est pas assujetti sur la période.
-	 * @throws AssujettissementException en cas d'impossibilité de calculer l'assujettissement
-	 */
-	@SuppressWarnings("deprecation")
-	private static TypeAutoriteFiscale determineTypeAutoriteFiscale(final DecompositionFors fors) throws AssujettissementException {
-
-		final TypeAutoriteFiscale typeAutoriteFiscale;
-
-		if (fors.principal == null) {
-			final ForFiscalPrincipal dernier = fors.principauxDansLaPeriode.last();
-			if (dernier == null) {
-				final String message = String.format("Le contribuable n°%d ne possède aucun for principal dans la période %s.",
-						fors.contribuable.getNumero(), DateRangeHelper.toString(fors));
-				throw new AssujettissementException(message);
-			}
-
-			final MotifFor dernierMotif = dernier.getMotifFermeture();
-			if (MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION.equals(dernierMotif)
-					|| MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT.equals(dernierMotif)) {
-				typeAutoriteFiscale = null;
-			}
-			else {
-				/*
-				 * La migration génère beaucoup de contribuables avec des fors fiscaux fermés avec un motif indéterminé. Ce qui pose un réel
-				 * problème, puisque l'assujettissement du contribuable peut varier du tout-au-tout en fonction d'un départ HC (= pas
-				 * d'assujettissement) ou d'un départ HS (= assujettissement partiel). La politique actuelle est de considérer le motif de
-				 * départ INDETERMINE comme égale au motif DEPART_HC.
-				 */
-				final boolean departHC = MotifFor.DEPART_HC.equals(dernierMotif) || MotifFor.INDETERMINE.equals(dernierMotif); // départ hors canton
-				final boolean forHC = TypeAutoriteFiscale.COMMUNE_HC.equals(dernier.getTypeAutoriteFiscale()); // for hors canton après départ
-				final boolean forHS = TypeAutoriteFiscale.PAYS_HS.equals(dernier.getTypeAutoriteFiscale()); // for hors Suisse
-				if (!departHC && !forHC && !forHS) {
-					// motifs valides : voir javadoc de la méthode
-					final String message = String.format("Le contribuable n°%d ne possède pas de for principal à la fin de la période %s"
-							+ " et le motif de fermeture %s n'est pas valide dans ce cas-là.", fors.contribuable.getNumero(),
-							DateRangeHelper.toString(fors), dernierMotif);
-					throw new AssujettissementException(message);
-				}
-
-				if (fors.secondairesDansLaPeriode.isEmpty()) {
-					typeAutoriteFiscale = null;
-				}
-				else {
-					if (forHS) {
-						// [UNIREG-1390]
-						typeAutoriteFiscale = TypeAutoriteFiscale.PAYS_HS;
-					}
-					else {
-						Assert.isTrue(departHC || forHC);
-						typeAutoriteFiscale = TypeAutoriteFiscale.COMMUNE_HC;
-					}
-				}
-			}
-		}
-		else {
-			typeAutoriteFiscale = fors.principal.getTypeAutoriteFiscale();
-		}
-
-		return typeAutoriteFiscale;
-	}
-
-	/**
-	 * Détermine l'assujettissement pour une période où il est sûr de ne pas avoir de fractionnement.
-	 *
-	 * @param fors            la décomposition des fors pour la période considérée
-	 * @param motifFractDebut le motif de début de fractionnement de l'assujettissement si existant
-	 * @param motifFractFin   le motif de fin de fractionnement de l'assujettissement si existant
-	 * @return l'assujettissement calculé; ou <b>null</b> si le contribuable n'est pas assujetti pour la période considérée.
-	 * @throws AssujettissementException en cas d'impossibilité de calculer l'assujettissement
-	 */
-	private static Assujettissement determinePeriode(final DecompositionFors fors, final MotifFor motifFractDebut,
-	                                                 final MotifFor motifFractFin) throws AssujettissementException {
-
-		RegDate debut = fors.getDateDebut(); // date de début de l'assujettissement (peut changer)
-		RegDate fin = fors.getDateFin(); // date de fin de l'assujettissement (peut changer)
-
-		final TypeAutoriteFiscale typeAutoriteFiscale = determineTypeAutoriteFiscale(fors);
-		if (typeAutoriteFiscale == null) {
-			return null;
-		}
-
-		switch (typeAutoriteFiscale) {
-		case COMMUNE_OU_FRACTION_VD: {
-
-			Assert.notNull(fors.principal); // purement technique
-			final MotifRattachement rattachement = fors.principal.getMotifRattachement();
-			final ModeImposition modeImposition = fors.principal.getModeImposition();
-
-			if (MotifRattachement.DIPLOMATE_SUISSE.equals(rattachement)) {
-				if (fors.secondairesDansLaPeriode.isEmpty()) {
-					// cas standard => diplomate suisse (impôt fédéral direct uniquement)
-					return new DiplomateSuisse(fors.contribuable, debut, fin, motifFractDebut, motifFractFin, fors);
-				}
-				else {
-					// présence de fors secondaires => passage en hors-Suisse (imposé cantonal + fédéral)
-					return new HorsSuisse(fors.contribuable, debut, fin, motifFractDebut, motifFractFin, fors);
-				}
-			}
-			else {
-				if (!MotifRattachement.DOMICILE.equals(rattachement)) {
-					throw new AssujettissementException("Incohérence des données. Le contribuable = " + fors.contribuable.getNumero()
-							+ " à la date = " + fors.getDateFin() + " possède un rattachement de type " + rattachement
-							+ " sur un for principal alors que seul le rattachement DOMICILE (éventuellement DIPLOMATE) est accepté.");
-				}
-
-				switch (modeImposition) {
-				case ORDINAIRE:
-					return new VaudoisOrdinaire(fors.contribuable, debut, fin, motifFractDebut, motifFractFin, fors);
-				case MIXTE_137_1:
-				case MIXTE_137_2:
-					return new SourcierMixte(fors.contribuable, debut, fin, motifFractDebut, motifFractFin, fors);
-				case INDIGENT:
-					return new Indigent(fors.contribuable, debut, fin, motifFractDebut, motifFractFin, fors);
-				case DEPENSE:
-					return new VaudoisDepense(fors.contribuable, debut, fin, motifFractDebut, motifFractFin, fors);
-				case SOURCE:
-					return new SourcierPur(fors.contribuable, debut, fin, motifFractDebut, motifFractFin, fors);
-				default:
-					throw new AssujettissementException("Mode d'imposition inconnu : " + modeImposition);
-				}
-			}
-		}
-
-		case COMMUNE_HC: {
-
-			final Sourcier source = detecteSourcier(motifFractDebut, motifFractFin, fors);
-			if (source != null) {
-				return source;
-			}
-
-			if (fors.secondairesDansLaPeriode.isEmpty()) {
-				return null; // le for principal est hors canton + aucun for secondaire -> pas d'assujettissement
-			}
-
-			final MotifFor motifDebut = (motifFractDebut != null ? motifFractDebut : determineMotifDebutForsSecondaires(fors));
-			final MotifFor motifFin = (motifFractFin != null ? motifFractFin : determineMotifFinForsSecondaires(fors));
-
-			// La période d'assujettissement en raison d'un rattachement économique s'étend à toute l'année pour tous les types de
-			// rattachement (art. 8 al. 6 LI). Sauf en cas de décès, veuvage, départ ou arrivée hors-Suisse, où la durée
-			// d'assujettissement est réduite en conséquence.
-			// [UNIREG-1360] Ce point a été confirmé par Thierry Declercq le 31 août 2009.
-			return new HorsCanton(fors.contribuable, debut, fin, motifDebut, motifFin, fors);
-		}
-
-		case PAYS_HS:
-
-			final Sourcier source = detecteSourcier(motifFractDebut, motifFractFin, fors);
-			if (source != null) {
-				return source;
-			}
-
-			if (fors.secondairesDansLaPeriode.isEmpty()) {
-				return null; // le for principal est hors Suisse + aucun for secondaire -> pas d'assujettissement
-			}
-
-			// La période d'assujettissement est limitée à la période couverte par les fors secondaires
-			debut = RegDateHelper.maximum(fors.secondairesDansLaPeriode.getMinDateDebut(), debut, NullDateBehavior.EARLIEST);
-			fin = RegDateHelper.minimum(fors.secondairesDansLaPeriode.getMaxDateFin(), fin, NullDateBehavior.LATEST);
-
-			return new HorsSuisse(fors.contribuable, debut, fin, motifFractDebut, motifFractFin, fors);
-
-		default:
-			throw new AssujettissementException("Type d'autorité fiscale inconnnue :" + typeAutoriteFiscale);
-		}
-	}
-
-	/**
-	 * Analyse les fors secondaires et retourne un motif d'ouverture si le premier for secondaire a été ouvert dans la période.
-	 *
-	 * @param fors la décomposition des fors pour la période considérée.
-	 * @return un motif d'ouverture ou <i>null</i> si un fors secondaire était déjà ouvert avant la période.
-	 */
-	private static MotifFor determineMotifDebutForsSecondaires(DecompositionFors fors) {
-
-		final RegDate debut = fors.getDateDebut();
-
-		MotifFor motifDebut = null;
-		boolean ouverturePremier = true;
-
-		// détermine le motif d'ouverture le plus fort de tous les fors secondaires ouverts dans la période
-		for (ForFiscalSecondaire fs : fors.secondairesDansLaPeriode) {
-			if (fs.getDateDebut() != null && fs.getDateDebut().isAfterOrEqual(debut)) {
-				final MotifFor motif = fs.getMotifOuverture();
-				if (motif != null && (motifDebut == null || motifDebut == MotifFor.VENTE_IMMOBILIER)) {
-					motifDebut = motif;
-				}
-			}
-			else {
-				ouverturePremier = false;
-				break;
-			}
-		}
-
-		if (ouverturePremier) {
-			// le premier fors secondaire a été ouvert dans la période, on retourne le motif d'ouverture
-			return motifDebut;
-		}
-		else {
-			// au moins un fors secondaire était ouvert au début de la période -> pas de motif d'ouverture
-			return null;
-		}
-	}
-
-	/**
-	 * Analyse les fors secondaires et retourne un motif de fermeture si le dernier for secondaire a été fermé dans la période.
-	 *
-	 * @param fors la décomposition des fors pour la période considérée.
-	 * @return un motif de fermeture ou <i>null</i> s'il reste un for secondaire ouvert à la fin de la période.
-	 */
-	private static MotifFor determineMotifFinForsSecondaires(DecompositionFors fors) {
-
-		final RegDate fin = fors.getDateFin();
-
-		MotifFor motifFin = null;
-		boolean fermetureDernier = true;
-
-		// détermine le motif de fermeture le plus fort de tous les fors secondaires fermés dans la période
-		for (ForFiscalSecondaire fs : fors.secondairesDansLaPeriode) {
-			if (fs.getDateFin() != null && fs.getDateFin().isBeforeOrEqual(fin)) {
-				final MotifFor motif = fs.getMotifFermeture();
-				if (motif != null && (motifFin == null || motifFin == MotifFor.VENTE_IMMOBILIER)) {
-					motifFin = motif;
-				}
-			}
-			else {
-				fermetureDernier = false;
-				break;
-			}
-		}
-
-		if (fermetureDernier) {
-			// le dernier fors secondaire a été fermé dans la période, on retourne le motif de fermeture
-			return motifFin;
-		}
-		else {
-			// au moins un fors secondaire reste ouvert -> pas de motif de fermeture
-			return null;
-		}
-	}
-
-	/**
-	 * Détecte si le contribuable est sourcier (dans les cas hors-canton/hors-Suisse) et retourne son assujettissement si c'est le cas.
-	 *
-	 * @param motifFractDebut le motif de début d'assujettissement à utiliser
-	 * @param motifFractFin   le motif de fin d'assujettissement à utiliser
-	 * @param fors            la décomposition des fors du contribuable
-	 * @return l'assujettissement de type source ou <b>null</b> si le contribuable n'est pas sourcier.
-	 * @throws AssujettissementException en cas d'impossibilité de calculer l'assujettissement
-	 */
-	private static Sourcier detecteSourcier(final MotifFor motifFractDebut, final MotifFor motifFractFin, final DecompositionFors fors) throws AssujettissementException {
-		if (fors.principal != null) {
-			final ModeImposition modeImposition = fors.principal.getModeImposition();
-			if (modeImposition == null) {
-				String message = "Le mode d'imposition du for principal n°" + fors.principal.getId() + " du contribuable n°"
-						+ fors.contribuable.getNumero() + " est nul";
-				throw new IllegalArgumentException(message);
-			}
-			switch (modeImposition) {
-			case SOURCE:
-				return newSourcierPur(motifFractDebut, motifFractFin, fors);
-			case MIXTE_137_1:
-				return newSourcierMixte137Al1(motifFractDebut, motifFractFin, fors);
-			case MIXTE_137_2:
-				throw new AssujettissementException("Incohérence des données. Le contribuable = " + fors.contribuable.getNumero()
-						+ " à la date = " + fors.getDateFin() + " possède un mode d'imposition de type "
-						+ modeImposition + " mais il est hors-Canton.");
-			}
-		}
-		return null;
-	}
-
-	/**
-	 * Crée un assujettissement de type sourcier pure.
-	 *
-	 * @param motifFractDebut le motif de début d'assujettissement à utiliser
-	 * @param motifFractFin   le motif de fin d'assujettissement à utiliser
-	 * @param fors            la décomposition des fors du contribuable
-	 * @return l'assujettissement de type source pur
-	 * @throws AssujettissementException en cas d'impossibilité de calculer l'assujettissement
-	 */
-	private static Sourcier newSourcierPur(final MotifFor motifFractDebut, final MotifFor motifFractFin, final DecompositionFors fors) throws AssujettissementException {
-
-		if (!fors.secondairesDansLaPeriode.isEmpty()) {
-			throw new AssujettissementException("Incohérence des données. Le contribuable = " + fors.contribuable.getNumero()
-					+ " à la date = " + fors.getDateFin() + " possède un mode d'imposition de type " + fors.principal.getModeImposition()
-					+ " et il possède des fors secondaires (sourcier mixte ?).");
-		}
-
-		return new SourcierPur(fors.contribuable, fors.getDateDebut(), fors.getDateFin(), motifFractDebut, motifFractFin, fors);
-	}
-
-	/**
-	 * Crée un assujettissement de type sourcier mixte art. 137 al. 1, c'est-à-dire pour les contribuables qui possèdent un for hors-canton ou hors-Suisse et (obligatoirement) un for secondaire dans le
-	 * canton.
-	 *
-	 * @param motifFractDebut le motif de début d'assujettissement à utiliser
-	 * @param motifFractFin   le motif de fin d'assujettissement à utiliser
-	 * @param fors            la décomposition des fors du contribuable
-	 * @return l'assujettissement de type source mixte
-	 * @throws AssujettissementException en cas d'impossibilité de calculer l'assujettissement
-	 */
-	private static Sourcier newSourcierMixte137Al1(final MotifFor motifFractDebut, final MotifFor motifFractFin,
-	                                               final DecompositionFors fors) throws AssujettissementException {
-
-		if (fors.secondaires.isEmpty()) {
-			throw new AssujettissementException("Incohérence des données. Le contribuable = " + fors.contribuable.getNumero()
-					+ " à la date = " + fors.getDateFin() + " possède un mode d'imposition de type " + fors.principal.getModeImposition()
-					+ " mais il ne possède aucun for secondaire (sourcier pur ?).");
-		}
-
-		return new SourcierMixte(fors.contribuable, fors.getDateDebut(), fors.getDateFin(), motifFractDebut, motifFractFin, fors);
-	}
-
-	public boolean isCollatable(DateRange next) {
-		return getClass() == next.getClass() && DateRangeHelper.isCollatable(this, next);
-	}
-
-	/**
-	 * Un assujettissement est dit "actif" sur une commune donnée si cette commune doit recevoir des sous
-	 * par la répartition inter-communale concernant ce contribuable, donc dans le cas d'un contribuable
-	 * résident vaudois qui possède un for secondaire sur une autre commune vaudoise, les deux communes
-	 * concernées seront considéreées comme "actives".
+	 * Détermine s'il y a un départ ou une arrivée hors-Suisse entre le deux fors fiscaux spécifiés. Cette méthode s'assure que les types d'autorité fiscales sont cohérentes de manière à détecter les
+	 * faux départs/arrivées hors-Suisse dûs à des motifs d'ouverture/fermetures incohérents.
 	 * <p/>
-	 * Cette méthode <b>n'est pas appelable</b> sur un assujettissement résultat d'une "collation" car alors les fors sous-jacents
-	 * ne sont pas conservés.
+	 * <b>Note:</b> si les deux fors sont renseignés, ils doivent se toucher.
+	 *
+	 * @param left  le for fiscal de gauche (peut être nul)
+	 * @param right le for fiscal de droite (peut être nul)
+	 * @return <b>true</b> si un départ ou une arrivée hors-Suisse est détecté.
+	 */
+	private static boolean isDepartOuArriveeHorsSuisse(ForFiscalPrincipal left, ForFiscalPrincipal right) {
+		Assert.isFalse(left == null && right == null);
+
+		final boolean fraction;
+
+		if (left != null && right != null && left.getMotifRattachement() != MotifRattachement.DIPLOMATE_SUISSE && right.getMotifRattachement() != MotifRattachement.DIPLOMATE_SUISSE) {
+			Assert.isTrue(left.getDateFin().getOneDayAfter() == right.getDateDebut());
+
+			//noinspection SimplifiableIfStatement
+			if (isArriveeHCApresDepartHSMemeAnnee(left)) {
+				// dans le cas d'un départ HS et d'arrivée HC dans le même année (donc avec un seul for fiscal HS avec
+				// ces deux motifs), il ne faut pas que l'arrivée HC fractionne l'assujettissement.
+				fraction = false;
+			}
+			else {
+				// dans tous les autres cas, on ignore les motifs d'ouverture/fermeture (qui sont souvent faux) et
+				// on se base uniquement sur les autorités fiscales (qui sont des valeurs sûres)
+				fraction = (left.getTypeAutoriteFiscale() == TypeAutoriteFiscale.PAYS_HS || right.getTypeAutoriteFiscale() == TypeAutoriteFiscale.PAYS_HS) &&
+						(left.getTypeAutoriteFiscale() != right.getTypeAutoriteFiscale());
+			}
+		}
+		else {
+			// Autrement, on se base sur les motifs d'ouverture et de fermeture
+			boolean motifDetecte = (left != null && (left.getMotifFermeture() == MotifFor.ARRIVEE_HS || left.getMotifFermeture() == MotifFor.DEPART_HS));
+			motifDetecte = motifDetecte || (right != null && (right.getMotifOuverture() == MotifFor.ARRIVEE_HS || right.getMotifOuverture() == MotifFor.DEPART_HS));
+
+			fraction = motifDetecte;
+		}
+
+		return fraction;
+	}
+
+	private static boolean isArriveeHCApresDepartHSMemeAnnee(ForFiscalPrincipal left) {
+		return left.getDateDebut().year() == left.getDateFin().year() && left.getMotifOuverture() == MotifFor.DEPART_HS && left.getMotifFermeture() == MotifFor.ARRIVEE_HC;
+	}
+
+	/**
+	 * @param left  le for fiscal de gauche (peut être nul)
+	 * @param right le for fiscal de droite (peut être null)
+	 * @return <b>true</b> si un départ ou une arrivée hors-canton est détectée entre les forts fiscaux spécifiés. Cette méthode s'assure que les types d'autorité fiscales sont cohérentes de manière à
+	 *         détecter les faux départs/arrivées hors-canton.
+	 */
+	private static boolean isDepartOuArriveeHorsCanton(ForFiscalPrincipal left, ForFiscalPrincipal right) {
+		Assert.isFalse(left == null && right == null);
+
+		boolean motifDetecte = (left != null && (left.getMotifFermeture() == MotifFor.ARRIVEE_HC || left.getMotifFermeture() == MotifFor.DEPART_HC));
+		motifDetecte = motifDetecte || (right != null && (right.getMotifOuverture() == MotifFor.ARRIVEE_HC || right.getMotifOuverture() == MotifFor.DEPART_HC));
+
+		boolean typeAutoriteOk = (left == null || left.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_HC);
+		typeAutoriteOk = typeAutoriteOk || (right == null || right.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_HC);
+
+		return motifDetecte && typeAutoriteOk;
+	}
+
+	private static boolean isFractionOuverture(ForFiscalPrincipal current, ForFiscalPrincipal previous) {
+
+		final MotifFor motifOuverture = current.getMotifOuverture();
+		final ModeImposition modeImposition = current.getModeImposition();
+
+		final ModeImposition previousModeImposition = (previous == null ? null : previous.getModeImposition());
+
+		boolean fraction = false;
+
+		if (motifOuverture == MotifFor.VEUVAGE_DECES) {
+			// fractionnement systématique à la date d'ouverture pour ce motif
+			fraction = true;
+		}
+		else if (isDepartOuArriveeHorsSuisse(previous, current) && isDepartDepuisOuArriveeVersVaud(current, previous)) {
+			// [UNIREG-1742] le départ hors-Suisse depuis hors-canton ne doit pas fractionner la période d'assujettissement (car le rattachement économique n'est pas interrompu)
+			fraction = true;
+		}
+		else if (isDepartOuArriveeHorsCanton(previous, current) &&
+				(modeImposition == ModeImposition.SOURCE || modeImposition == ModeImposition.MIXTE_137_2 ||
+						previousModeImposition == ModeImposition.SOURCE || previousModeImposition == ModeImposition.MIXTE_137_2)) {
+			// [UNIREG-1742] Le départ ou l'arrivée hors-Canton d'un sourcier pur ou mixte 137 al. 2 (donc sans for secondaire) doit provoquer un fractionnement
+			fraction = true;
+		}
+		else if (previous != null && ((roleSourcierPur(previous) && roleOrdinaireNonMixte(current)) || (roleOrdinaireNonMixte(previous) && roleSourcierPur(current)))) {
+			// le passage du rôle source pur au rôle ordinaire non-mixte (et vice versa) doit provoquer un fractionnement.
+			fraction = true;
+		}
+		else if (previous != null && current.getTypeAutoriteFiscale() == TypeAutoriteFiscale.PAYS_HS &&
+				((roleSourcierPur(previous) && roleSourcierMixte(current)) || (roleSourcierMixte(previous) && roleSourcierPur(current)))) {
+			// le passage du rôle source pur au rôle source-mixte (et vice versa) doit provoquer un fractionnement (hors-Suisse uniquement).
+			fraction = true;
+		}
+
+		return fraction;
+	}
+
+	private static boolean isFractionFermeture(ForFiscalPrincipal current, ForFiscalPrincipal next) {
+
+		final MotifFor motifFermeture = current.getMotifFermeture();
+		final ModeImposition modeImposition = current.getModeImposition();
+
+		final ModeImposition nextModeImposition = (next == null ? null : next.getModeImposition());
+
+		boolean fraction = false;
+
+		if (motifFermeture == MotifFor.VEUVAGE_DECES) {
+			// fractionnement systématique à la date de fermeture pour ce motif
+			fraction = true;
+		}
+		else if (isDepartOuArriveeHorsSuisse(current, next) && isDepartDepuisOuArriveeVersVaud(current, next)) {
+			// [UNIREG-1742] le départ hors-Suisse depuis hors-canton ne doit pas fractionner la période d'assujettissement (car le rattachement économique n'est pas interrompu)
+			fraction = true;
+		}
+		else if (isDepartOuArriveeHorsCanton(current, next) &&
+				(modeImposition == ModeImposition.SOURCE || modeImposition == ModeImposition.MIXTE_137_2 ||
+						nextModeImposition == ModeImposition.SOURCE || nextModeImposition == ModeImposition.MIXTE_137_2)) {
+			// [UNIREG-1742] Le départ ou l'arrivée hors-Canton d'un sourcier pur ou mixte 137 al. 2 (donc sans for secondaire) doit provoquer un fractionnement
+			fraction = true;
+		}
+		else if (next != null && ((roleSourcierPur(next) && roleOrdinaireNonMixte(current)) || (roleOrdinaireNonMixte(next) && roleSourcierPur(current)))) {
+			// le passage du rôle source pur au rôle ordinaire non-mixte (et vice versa) doit provoquer un fractionnement.
+			fraction = true;
+		}
+		else if (next != null && current.getTypeAutoriteFiscale() == TypeAutoriteFiscale.PAYS_HS &&
+				((roleSourcierPur(next) && roleSourcierMixte(current)) || (roleSourcierMixte(next) && roleSourcierPur(current)))) {
+			// le passage du rôle source pur au rôle source-mixte (et vice versa) doit provoquer un fractionnement (hors-Suisse uniquement).
+			fraction = true;
+		}
+
+		return fraction;
+	}
+
+	/**
+	 * Détermine la date de début d'un assujettissement induit par un for fiscal principal.
+	 *
+	 * @param current  le for fiscal principal à la source de l'assujettissement
+	 * @param previous le for fiscal principal immédiatement précédant le for courant; ou <b>null</b> s'il n'y en a pas
+	 * @return la date de début de l'assujettissement
+	 */
+	private static RegDate determineDateDebutAssujettissement(ForFiscalPrincipal current, ForFiscalPrincipal previous) {
+
+		final RegDate debut;
+		if (isFractionOuverture(current, previous) || current.getTypeAutoriteFiscale() == TypeAutoriteFiscale.PAYS_HS) {
+			debut = current.getDateDebut();
+		}
+		else {
+			// dans tous les autres cas, l'assujettissement débute au 1er janvier de l'année courante
+			debut = RegDate.get(current.getDateDebut().year(), 1, 1);
+		}
+
+		return debut;
+	}
+
+	/**
+	 * Détermine la date de fin d'un assujettissement induit par un for fiscal principal.
+	 *
+	 * @param current le for fiscal principal à la source de l'assujettissement
+	 * @param next    le for fiscal principal immédiatement suivant le for courant; ou <b>null</b> s'il n'y en a pas
+	 * @return la date de fin de l'assujettissement
+	 */
+	private static RegDate determineDateFinAssujettissement(ForFiscalPrincipal current, ForFiscalPrincipal next) {
+
+		final RegDate fin = current.getDateFin();
+
+		final RegDate afin;
+		if (fin == null || isFractionFermeture(current, next) || current.getTypeAutoriteFiscale() == TypeAutoriteFiscale.PAYS_HS) {
+			afin = fin;
+		}
+		else {
+			// dans tous les autres cas, l'assujettissement finit à la fin de l'année précédente
+			afin = getDernier31Decembre(fin);
+		}
+
+		return afin;
+	}
+
+	/**
+	 * Détermine la date de début de la période de non-assujettissement correspondant à un for fiscal principal (période durant laquelle un for secondaire pourrait provoquer un assujettissement).
+	 *
+	 * @param current  le for fiscal principal courant
+	 * @param previous le for fiscal principal immédiatement précédant le for courant; ou <b>null</b> s'il n'y en a pas
+	 * @return la date de fin de la période de non-assujettissement
+	 */
+	private static RegDate determineDateDebutNonAssujettissement(ForFiscalPrincipal current, ForFiscalPrincipal previous) {
+
+		final RegDate debut = current.getDateDebut();
+
+		final RegDate adebut;
+		if (isDepartOuArriveeHorsSuisse(previous, current)) {
+			if (isDepartDepuisOuArriveeVersVaud(current, previous)) {
+				// fin de l'assujettissement en cours de période fiscale (fractionnement)
+				adebut = debut;
+			}
+			else {
+				// [UNIREG-1742] le départ hors-Suisse depuis hors-canton ne doit pas fractionner la période d'assujettissement (car le rattachement économique n'est pas interrompu)
+				adebut = RegDate.get(debut.year(), 1, 1);
+			}
+		}
+		else if (previous != null && ((roleSourcierPur(previous) && roleSourcierMixte(current)) || (roleSourcierMixte(previous) && roleSourcierPur(current)))) {
+			// le passage du rôle source pur au rôle source-mixte (et vice versa) doit provoquer un fractionnement.
+			adebut = debut;
+		}
+		else if (current.getTypeAutoriteFiscale() == TypeAutoriteFiscale.PAYS_HS && current.getMotifOuverture() == MotifFor.DEPART_HC) {
+			// cas limite du ctb qui part HC et arrive de HS dans la même année -> la durée précise de la période hors-Suisse n'est pas connue et on prend la solution
+			// la plus avantageuse pour l'ACI : arrivée de HS au 1er janvier de l'année suivante
+			adebut = RegDate.get(debut.year() + 1, 1, 1);
+		}
+		else {
+			// dans tous les autres cas, l'assujettissement débute au 1er janvier de l'année courante
+			adebut = RegDate.get(debut.year(), 1, 1);
+		}
+
+		return adebut;
+	}
+
+	/**
+	 * Détermine la date de fin de la période de non-assujettissement correspondant à un for fiscal principal (période durant laquelle un for secondaire pourrait provoquer un assujettissement).
+	 *
+	 * @param current le for fiscal principal courant
+	 * @param next    le for fiscal principal immédiatement suivant le for courant; ou <b>null</b> s'il n'y en a pas
+	 * @return la date de fin de la période de non-assujettissement
+	 */
+	private static RegDate determineDateFinNonAssujettissement(ForFiscalPrincipal current, ForFiscalPrincipal next) {
+
+		final RegDate fin = current.getDateFin();
+		final MotifFor motifFermeture = current.getMotifFermeture();
+
+		final RegDate afin;
+		if (fin == null) {
+			afin = null;
+		}
+		else if (motifFermeture == MotifFor.VEUVAGE_DECES) {
+			afin = fin;
+		}
+		else if (isDepartOuArriveeHorsSuisse(current, next)) {
+			if (isDepartDepuisOuArriveeVersVaud(current, next)) {
+				// fin de l'assujettissement en cours de période fiscale (fractionnement)
+				afin = fin;
+			}
+			else {
+				// [UNIREG-1742] le départ hors-Suisse depuis hors-canton ne doit pas fractionner la période d'assujettissement (car le rattachement économique n'est pas interrompu)
+				afin = getDernier31Decembre(fin);
+			}
+		}
+		else if (next != null && ((roleSourcierPur(next) && roleSourcierMixte(current)) || (roleSourcierMixte(next) && roleSourcierPur(current)))) {
+			// le passage du rôle source pur au rôle source-mixte (et vice versa) doit provoquer un fractionnement.
+			afin = fin;
+		}
+		else if (isArriveeHCApresDepartHSMemeAnnee(current)) {
+			// cas limite du ctb qui part HS et arrive de HC dans la même année -> la durée précise de la période hors-Suisse n'est pas connue et on prend la solution
+			// la plus avantageuse pour l'ACI : arrivée de HS au 31 décembre de l'année précédente.
+			afin = getDernier31Decembre(fin);
+		}
+		else if (next == null) {
+			// si le for secondaire se ferme mais qu'il n'y a pas de for immédiatement suivant (par exemple: cas du contribuable hors-canton avec immeuble, qui vend son immeuble et
+			// dont le for principal hors-canton est fermé à la date de vente), alors il s'agit d'une "fausse" fermeture du for et on le considère valide jusqu'à la fin de l'année.
+			if (current.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_HC) {
+				afin = getProchain31Decembre(fin); // le rattachement économique s'étend à toute l'année pour le HC
+			}
+			else {
+				afin = fin; // le rattachement économmique est limité à la période de validité du for pour les HS
+			}
+		}
+		else {
+			// dans tous les autres cas, l'assujettissement finit à la fin de l'année précédente
+			afin = getDernier31Decembre(fin);
+		}
+
+		return afin;
+	}
+
+	/**
+	 * @param date une date
+	 * @return le 31 décembre le plus proche de la date spécifiée et qui ne soit pas dans le futur.
+	 */
+	private static RegDate getDernier31Decembre(RegDate date) {
+		final RegDate afin;
+		if (is31Decembre(date)) {
+			afin = date;
+		}
+		else {
+			afin = RegDate.get(date.year() - 1, 12, 31);
+		}
+		return afin;
+	}
+
+	/**
+	 * @param date une date
+	 * @return le 31 décembre le plus proche de la date spécifiée et qui ne soit pas dans le passé.
+	 */
+	private static RegDate getProchain31Decembre(RegDate date) {
+		return RegDate.get(date.year(), 12, 31);
+	}
+
+	/**
+	 * Un assujettissement est dit "actif" sur une commune donnée si cette commune doit recevoir des sous par la répartition inter-communale concernant ce contribuable, donc dans le cas d'un contribuable
+	 * résident vaudois qui possède un for secondaire sur une autre commune vaudoise, les deux communes concernées seront considéreées comme "actives".
+	 * <p/>
+	 * Cette méthode <b>n'est pas appelable</b> sur un assujettissement résultat d'une "collation" car alors les fors sous-jacents ne sont pas conservés.
 	 *
 	 * @param noOfsCommune numéro OFS de la commune vaudoise pour laquelle la question est posée
 	 * @return vrai si l'assujettissement est actif sur la commune considérée, faux sinon
 	 */
 	public boolean isActifSurCommune(int noOfsCommune) {
 
-		// très probablement un assujjetissement "collationné"
-		Assert.notNull(fors);
+		final DecompositionFors fors = getFors();
 
 		boolean actif = false;
 		final ForFiscalPrincipal ffp = (fors.principal != null ? fors.principal : fors.principauxDansLaPeriode.last());
@@ -1081,4 +838,397 @@ public abstract class Assujettissement implements CollatableDateRange {
 		}
 		return actif;
 	}
+
+	private enum Type {
+		VaudoisOrdinaire,
+		VaudoisDepense,
+		SourcierMixte,
+		SourcierPur,
+		Indigent,
+		HorsSuisse,
+		HorsCanton,
+		DiplomateSuisse,
+		NonAssujetti
+	}
+
+	/**
+	 * Représente les données brutes d'une période d'assujettissement
+	 */
+	private static class Data implements DateRange {
+
+		RegDate debut;
+		RegDate fin;
+		MotifFor motifDebut;
+		MotifFor motifFin;
+		Type type;
+		TypeAutoriteFiscale typeAut;
+
+		private Data(RegDate debut, RegDate fin, MotifFor motifDebut, MotifFor motifFin, Type type, TypeAutoriteFiscale typeAut) {
+			this.debut = debut;
+			this.fin = fin;
+			this.motifDebut = motifDebut;
+			this.motifFin = motifFin;
+			this.type = type;
+			this.typeAut = typeAut;
+		}
+
+		private Data(Data right) {
+			this.debut = right.debut;
+			this.fin = right.fin;
+			this.motifDebut = right.motifDebut;
+			this.motifFin = right.motifFin;
+			this.type = right.type;
+			this.typeAut = right.typeAut;
+		}
+
+		public boolean isValidAt(RegDate date) {
+			return RegDateHelper.isBetween(date, debut, fin, NullDateBehavior.LATEST);
+		}
+
+		public RegDate getDateDebut() {
+			return debut;
+		}
+
+		public RegDate getDateFin() {
+			return fin;
+		}
+
+		public List<Data> merge(Data eco) {
+
+			switch (type) {
+			case VaudoisOrdinaire:
+			case VaudoisDepense:
+			case Indigent:
+			case HorsSuisse:
+			case HorsCanton:
+			case SourcierPur:
+			case SourcierMixte:
+				// rien à faire
+				return null;
+			case DiplomateSuisse:
+			case NonAssujetti:
+			}
+
+			if (!DateRangeHelper.intersect(this, eco)) {
+				// pas d'intersection -> rien à faire
+				return null;
+			}
+
+			final List<Data> list;
+			if (eco.debut.isBeforeOrEqual(this.debut) && RegDateHelper.isAfterOrEqual(eco.fin, this.fin, NullDateBehavior.LATEST)) {
+				// eco dépasse des deux côtés de this -> pas besoin de découper quoique ce soit
+				list = null;
+				if (eco.debut == this.debut && this.motifDebut == null) {
+					this.motifDebut = eco.motifDebut;
+				}
+				if (eco.fin == this.fin && this.motifFin == null) {
+					this.motifFin = eco.motifFin;
+				}
+			}
+			else {
+				list = new ArrayList<Data>(3);
+				list.add(this);
+				if (eco.debut.isAfter(this.debut)) {
+					// on découpe à gauche
+					Data left = new Data(this);
+					left.fin = eco.debut.getOneDayBefore();
+					left.motifFin = eco.motifDebut;
+					list.add(0, left);
+
+					// on décale la date de début
+					this.debut = eco.debut;
+					this.motifDebut = eco.motifDebut;
+				}
+
+				if (!RegDateHelper.isAfterOrEqual(eco.fin, this.fin, NullDateBehavior.LATEST)) {
+					// on découpe à droite
+					Data right = new Data(this);
+					right.debut = eco.fin.getOneDayAfter();
+					right.motifDebut = eco.motifFin;
+					list.add(right);
+
+					// on décale la date de fin
+					this.fin = eco.fin;
+					this.motifFin = eco.motifFin;
+				}
+
+				if (this.debut == eco.debut && this.motifDebut == null) {
+					// si le motif de début manque, on profite de celui du for économique pour le renseigner
+					this.motifDebut = eco.motifDebut;
+				}
+
+				if (this.fin == eco.fin && this.motifFin == null) {
+					// si le motif de fin manque, on profite de celui du for économique pour le renseigner
+					this.motifFin = eco.motifFin;
+				}
+			}
+
+			// détermine le type d'assujettissement de la période courante
+			if (this.type == Type.DiplomateSuisse) {
+				// diplomate suisse basé à l'étrange + immeuble = hors-Suisse
+				this.type = Type.HorsSuisse;
+			}
+			else {
+				// pas assujetti + immeuble/activité indépendante = hors-canton ou hors-Suisse
+				this.type = getAType(this.typeAut);
+			}
+
+			return list;
+		}
+	}
+
+	/**
+	 * Détermine les données d'assujettissement pour un for fiscal principal.
+	 *
+	 * @param current  le for fiscal dont on veut calculer l'assujettissement
+	 * @param previous le for fiscal qui précède immédiatement
+	 * @param next     le for fiscal qui suit immédiatement
+	 * @return les données d'assujettissement, ou <b>null</b> si le for principal n'induit aucun assujettissement
+	 * @throws AssujettissementException en cas d'impossibilité de calculer l'assujettissement
+	 */
+	private static Data determine(ForFiscalPrincipal current, ForFiscalPrincipal previous, ForFiscalPrincipal next) throws AssujettissementException {
+
+		final Data data;
+
+		switch (current.getTypeAutoriteFiscale()) {
+		case COMMUNE_OU_FRACTION_VD: {
+
+			final RegDate adebut = determineDateDebutAssujettissement(current, previous);
+			final RegDate afin = determineDateFinAssujettissement(current, next);
+
+			if (RegDateHelper.isBeforeOrEqual(adebut, afin, NullDateBehavior.LATEST)) {
+				final MotifRattachement motifRattachement = current.getMotifRattachement();
+				if (motifRattachement == MotifRattachement.DIPLOMATE_SUISSE) {
+					// cas particulier du diplomate suisse basé à l'étranger
+					data = new Data(adebut, afin, current.getMotifOuverture(), current.getMotifFermeture(), Type.DiplomateSuisse, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
+				}
+				else { // cas général
+					if (motifRattachement != MotifRattachement.DOMICILE) {
+						throw new AssujettissementException("Le contribuable n°" + current.getTiers().getNumero() + " possède un for fiscal principal avec un motif de rattachement [" +
+								motifRattachement + "] ce qui est interdit.");
+					}
+					data = new Data(adebut, afin, current.getMotifOuverture(), current.getMotifFermeture(), getAType(current.getModeImposition()), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
+				}
+			}
+			else {
+				// pas d'assujettissement
+				data = null;
+			}
+
+			break;
+		}
+		case COMMUNE_HC:
+		case PAYS_HS: {
+
+			if (isSource(current.getModeImposition())) {
+
+				final Type type = getAType(current.getModeImposition());
+				final RegDate adebut = determineDateDebutAssujettissement(current, previous);
+				final RegDate afin = determineDateFinAssujettissement(current, next);
+
+				if (RegDateHelper.isBeforeOrEqual(adebut, afin, NullDateBehavior.LATEST)) {
+					data = new Data(adebut, afin, current.getMotifOuverture(), current.getMotifFermeture(), type, current.getTypeAutoriteFiscale());
+				}
+				else {
+					// pas d'assujettissement
+					data = null;
+				}
+			}
+			else {
+				final RegDate adebut = determineDateDebutNonAssujettissement(current, previous);
+				final RegDate afin = determineDateFinNonAssujettissement(current, next);
+
+				if (RegDateHelper.isBeforeOrEqual(adebut, afin, NullDateBehavior.LATEST)) {
+					data = new Data(adebut, afin, current.getMotifOuverture(), current.getMotifFermeture(), Type.NonAssujetti, current.getTypeAutoriteFiscale());
+				}
+				else {
+					// pas d'assujettissement
+					data = null;
+				}
+			}
+			break;
+		}
+
+		default:
+			throw new IllegalArgumentException("Type d'autorité fiscale inconnu = [" + current.getTypeAutoriteFiscale() + "]");
+		}
+
+		return data;
+	}
+
+	private static boolean isSource(ModeImposition modeImposition) {
+		return modeImposition == ModeImposition.SOURCE || modeImposition == ModeImposition.MIXTE_137_1 || modeImposition == ModeImposition.MIXTE_137_2;
+	}
+
+	private static Data determine(ForFiscalSecondaire ffs, List<Fraction> fractionnements) throws AssujettissementException {
+
+		final RegDate debut = ffs.getDateDebut();
+		final RegDate fin = ffs.getDateFin();
+
+		// La période d'assujettissement en raison d'un rattachement économique s'étend à toute l'année pour tous les types de
+		// rattachement (art. 8 al. 6 LI). Sauf en cas de décès, veuvage, départ ou arrivée hors-Suisse, où la durée
+		// d'assujettissement est réduite en conséquence.
+		// [UNIREG-1360] Ce point a été confirmé par Thierry Declercq le 31 août 2009.
+
+		RegDate adebut;
+		if (isHorsSuisse(ffs.getTiers(), debut)) {
+			adebut = debut;
+		}
+		else {
+			adebut = RegDate.get(debut.year(), 1, 1);
+		}
+
+		RegDate afin;
+		if (fin == null) {
+			afin = fin;
+		}
+		else if (isHorsSuisse(ffs.getTiers(), fin)) {
+			afin = fin;
+		}
+		else {
+			afin = getProchain31Decembre(fin);
+		}
+
+		// Dans tous les cas, si on trouve une date de fractionnement entre la date réelle du début du for et la date de début de l'assujettissement,
+		// on adapte cette dernière en conséquence. Même chose pour les dates de fin d'assujettissement.
+		for (Fraction f : fractionnements) {
+			if (RegDateHelper.isBetween(f.date, adebut, debut, NullDateBehavior.LATEST)) {
+				adebut = f.date;
+			}
+
+			if (fin != null && RegDateHelper.isBetween(f.date.getOneDayBefore(), fin, afin, NullDateBehavior.LATEST)) {
+				afin = f.date.getOneDayBefore();
+			}
+		}
+
+		return new Data(adebut, afin, ffs.getMotifOuverture(), ffs.getMotifFermeture(), null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
+	}
+
+	private static boolean isHorsSuisse(Tiers tiers, RegDate date) {
+		Set<ForFiscal> fors = tiers.getForsFiscaux();
+		for (ForFiscal f : fors) {
+			if (f.isPrincipal() && f.isValidAt(date)) {
+				return f.getTypeAutoriteFiscale() == TypeAutoriteFiscale.PAYS_HS;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Fusionne les assujettissements économiques aux assujettissement domicile en appliquant les régles métier. Le résultat est stocké dans la liste des assujettissements domicile.
+	 *
+	 * @param domicile   les assujettissements pour motif de rattachement domicile
+	 * @param economique les assujettissements pour motif de rattachement économique
+	 */
+	private static void fusionne(List<Data> domicile, List<Data> economique) {
+
+		for (int i = 0; i < domicile.size(); i++) {
+			for (Data e : economique) {
+				final Data d = domicile.get(i);
+				final List<Data> sub = d.merge(e);
+				if (sub != null) {
+					domicile.set(i, sub.get(0));
+					for (int j = 1; j < sub.size(); ++j) {
+						domicile.add(i + j, sub.get(j));
+					}
+				}
+			}
+		}
+
+		Collections.sort(domicile, new DateRangeComparator<DateRange>());
+	}
+
+	private static List<Assujettissement> instanciate(Contribuable ctb, List<Data> all) {
+		final List<Assujettissement> assujettissements = new ArrayList<Assujettissement>(all.size());
+		for (Data a : all) {
+			final Assujettissement assujettissement;
+			switch (a.type) {
+			case VaudoisOrdinaire:
+				assujettissement = new VaudoisOrdinaire(ctb, a.debut, a.fin, a.motifDebut, a.motifFin);
+				break;
+			case VaudoisDepense:
+				assujettissement = new VaudoisDepense(ctb, a.debut, a.fin, a.motifDebut, a.motifFin);
+				break;
+			case Indigent:
+				assujettissement = new Indigent(ctb, a.debut, a.fin, a.motifDebut, a.motifFin);
+				break;
+			case HorsCanton:
+				assujettissement = new HorsCanton(ctb, a.debut, a.fin, a.motifDebut, a.motifFin);
+				break;
+			case HorsSuisse:
+				assujettissement = new HorsSuisse(ctb, a.debut, a.fin, a.motifDebut, a.motifFin);
+				break;
+			case SourcierPur:
+				assujettissement = new SourcierPur(ctb, a.debut, a.fin, a.motifDebut, a.motifFin, a.typeAut);
+				break;
+			case SourcierMixte:
+				assujettissement = new SourcierMixte(ctb, a.debut, a.fin, a.motifDebut, a.motifFin, a.typeAut);
+				break;
+			case DiplomateSuisse:
+				assujettissement = new DiplomateSuisse(ctb, a.debut, a.fin, a.motifDebut, a.motifFin);
+				break;
+			case NonAssujetti:
+				assujettissement = null;
+				break;
+			default:
+				throw new IllegalArgumentException("Type inconnu = [" + a.type + "]");
+			}
+			if (assujettissement != null) {
+				assujettissements.add(assujettissement);
+			}
+		}
+		return assujettissements;
+	}
+
+	private static Type getAType(TypeAutoriteFiscale typeAutoriteFiscale) {
+		return (typeAutoriteFiscale == TypeAutoriteFiscale.PAYS_HS ? Type.HorsSuisse : Type.HorsCanton);
+	}
+
+	private static boolean isDepartDepuisOuArriveeVersVaud(ForFiscalPrincipal left, ForFiscalPrincipal right) {
+		// un des deux fors fiscaux doit être dans le canton de Vaud
+		return (left != null && left.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) ||
+				(right != null && right.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
+	}
+
+	private static Type getAType(ModeImposition modeImposition) throws AssujettissementException {
+		final Type type;
+		switch (modeImposition) {
+		case ORDINAIRE:
+			type = Type.VaudoisOrdinaire;
+			break;
+		case MIXTE_137_1:
+		case MIXTE_137_2:
+			type = Type.SourcierMixte;
+			break;
+		case INDIGENT:
+			type = Type.Indigent;
+			break;
+		case DEPENSE:
+			type = Type.VaudoisDepense;
+			break;
+		case SOURCE:
+			type = Type.SourcierPur;
+			break;
+		default:
+			throw new AssujettissementException("Mode d'imposition inconnu : " + modeImposition);
+		}
+		return type;
+	}
+
+	private static class Adapter implements DateRangeHelper.AdapterCallback<Assujettissement> {
+		public Assujettissement adapt(Assujettissement assujettissement, RegDate debut, RegDate fin) {
+			if (debut != null && assujettissement.dateDebut != debut) {
+				assujettissement.dateDebut = debut;
+				assujettissement.motifDebut = null;
+			}
+			if (fin != null && assujettissement.dateFin != fin) {
+				assujettissement.dateFin = fin;
+				assujettissement.motifFin = null;
+			}
+			return assujettissement;
+		}
+	}
+
+	@Override
+	public abstract String toString();
 }

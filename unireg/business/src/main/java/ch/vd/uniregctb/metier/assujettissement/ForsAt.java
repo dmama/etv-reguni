@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.metier.assujettissement;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.declaration.ordinaire.ForsList;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 
@@ -16,7 +17,7 @@ import java.util.List;
 public class ForsAt {
 
 	public final ForFiscalPrincipal principal;
-	public final List<ForFiscalSecondaire> secondaires;
+	public final ForsList<ForFiscalSecondaire> secondaires;
 
 	/**
 	 * Le nombre total de fors valides.
@@ -29,7 +30,7 @@ public class ForsAt {
 			this.secondaires = null;
 		}
 		else {
-			this.secondaires = secondaires;
+			this.secondaires = new ForsList<ForFiscalSecondaire>(secondaires);
 		}
 		this.count = (principal == null ? 0 : 1) + (this.secondaires == null ? 0 : this.secondaires.size());
 	}
@@ -40,7 +41,7 @@ public class ForsAt {
 			this.secondaires = null;
 		}
 		else {
-			this.secondaires = Arrays.asList(secondaires);
+			this.secondaires = new ForsList<ForFiscalSecondaire>(Arrays.asList(secondaires));
 		}
 		this.count = (principal == null ? 0 : 1) + (this.secondaires == null ? 0 : this.secondaires.size());
 	}

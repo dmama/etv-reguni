@@ -13,9 +13,8 @@ import ch.vd.uniregctb.type.MotifFor;
  */
 public class HorsSuisse extends Assujettissement {
 
-	public HorsSuisse(Contribuable contribuable, RegDate dateDebut, RegDate dateFin, MotifFor motifFractDebut, MotifFor motifFractFin,
-			DecompositionFors fors) {
-		super(contribuable, dateDebut, dateFin, motifFractDebut, motifFractFin, fors);
+	public HorsSuisse(Contribuable contribuable, RegDate dateDebut, RegDate dateFin, MotifFor motifFractDebut, MotifFor motifFractFin) {
+		super(contribuable, dateDebut, dateFin, motifFractDebut, motifFractFin);
 	}
 
 	private HorsSuisse(HorsSuisse courant, HorsSuisse suivant) {
@@ -29,5 +28,10 @@ public class HorsSuisse extends Assujettissement {
 
 	public DateRange collate(DateRange next) {
 		return new HorsSuisse(this, (HorsSuisse) next);
+	}
+
+	@Override
+	public String toString() {
+		return "HorsSuisse(" + getDateDebut() + " - " + getDateFin() + ")";
 	}
 }

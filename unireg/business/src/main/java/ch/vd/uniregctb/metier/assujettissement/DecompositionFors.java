@@ -107,7 +107,7 @@ public abstract class DecompositionFors implements DateRange {
 					}
 				}
 
-				if (f.isValidAt(fin.getOneDayAfter())) {
+				if (fin != null && f.isValidAt(fin.getOneDayAfter())) {
 					// le for est valide juste après la période
 					if (f instanceof ForFiscalPrincipal) {
 						Assert.isNull(forPrincipalApres);

@@ -13,9 +13,8 @@ import ch.vd.uniregctb.type.MotifFor;
  */
 public class HorsCanton extends Assujettissement {
 
-	public HorsCanton(Contribuable contribuable, RegDate dateDebut, RegDate dateFin, MotifFor motifFractDebut, MotifFor motifFractFin,
-			DecompositionFors fors) {
-		super(contribuable, dateDebut, dateFin, motifFractDebut, motifFractFin, fors);
+	public HorsCanton(Contribuable contribuable, RegDate dateDebut, RegDate dateFin, MotifFor motifFractDebut, MotifFor motifFractFin) {
+		super(contribuable, dateDebut, dateFin, motifFractDebut, motifFractFin);
 	}
 
 	private HorsCanton(HorsCanton courant, HorsCanton suivant) {
@@ -29,5 +28,10 @@ public class HorsCanton extends Assujettissement {
 
 	public DateRange collate(DateRange next) {
 		return new HorsCanton(this, (HorsCanton) next);
+	}
+
+	@Override
+	public String toString() {
+		return "HorsCanton(" + getDateDebut() + " - " + getDateFin() + ")";
 	}
 }

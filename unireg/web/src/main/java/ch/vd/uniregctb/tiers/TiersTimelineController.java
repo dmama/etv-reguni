@@ -93,10 +93,8 @@ public class TiersTimelineController extends AbstractTiersController {
 			final Contribuable contribuable = (Contribuable) tiers;
 			final RegDate debutActivite = contribuable.getDateDebutActivite();
 			if (debutActivite != null) {
-				final int anneeCourante = RegDate.get().year();
-				final Range range = new Range(debutActivite, RegDate.get(anneeCourante, 12, 31));
 				try {
-					assujettissements = Assujettissement.determine(contribuable, range, true);
+					assujettissements = Assujettissement.determine(contribuable);
 				}
 				catch (AssujettissementException e) {
 					bean.addException(e);

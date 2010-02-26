@@ -31,18 +31,18 @@ public class UNIREG1472 {
 		di.setDateFin(RegDate.get(2008,12,31));
 		
 		List<Assujettissement> assujettissements = new ArrayList<Assujettissement> ( Arrays.asList(
-				new Indigent(null,RegDate.get(2008,1,1), RegDate.get(2008,12,31), null, null, null)));
+				new Indigent(null,RegDate.get(2008,1,1), RegDate.get(2008,12,31), null, null)));
 
 		Assert.isTrue(processor.isIndigent(di,assujettissements));
 		
 		assujettissements = new ArrayList<Assujettissement> ( Arrays.asList(
-				new VaudoisOrdinaire(null,RegDate.get(2008,1,1), RegDate.get(2008,12,31), null, null, null)));
+				new VaudoisOrdinaire(null,RegDate.get(2008,1,1), RegDate.get(2008,12,31), null, null)));
 		
 		Assert.isFalse(processor.isIndigent(di,assujettissements));
 
 		assujettissements = new ArrayList<Assujettissement> ( Arrays.asList(
-				new Indigent(null,RegDate.get(2008,1,1), RegDate.get(2008,1,31), null, null, null),
-				new VaudoisOrdinaire(null,RegDate.get(2008,2,1), RegDate.get(2008,12,31), null, null, null)));
+				new Indigent(null,RegDate.get(2008,1,1), RegDate.get(2008,1,31), null, null),
+				new VaudoisOrdinaire(null,RegDate.get(2008,2,1), RegDate.get(2008,12,31), null, null)));
 		
 		Assert.isFalse(processor.isIndigent(di,assujettissements));
 	}

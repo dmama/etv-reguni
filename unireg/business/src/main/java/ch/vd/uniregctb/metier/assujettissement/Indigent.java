@@ -13,9 +13,8 @@ import ch.vd.uniregctb.type.MotifFor;
  */
 public class Indigent extends Assujettissement {
 
-	public Indigent(Contribuable contribuable, RegDate dateDebut, RegDate dateFin, MotifFor motifFractDebut, MotifFor motifFractFin,
-			DecompositionFors fors) {
-		super(contribuable, dateDebut, dateFin, motifFractDebut, motifFractFin, fors);
+	public Indigent(Contribuable contribuable, RegDate dateDebut, RegDate dateFin, MotifFor motifFractDebut, MotifFor motifFractFin) {
+		super(contribuable, dateDebut, dateFin, motifFractDebut, motifFractFin);
 	}
 
 	private Indigent(Indigent courant, Indigent suivant) {
@@ -29,5 +28,10 @@ public class Indigent extends Assujettissement {
 
 	public DateRange collate(DateRange next) {
 		return new Indigent(this, (Indigent) next);
+	}
+
+	@Override
+	public String toString() {
+		return "Indigent(" + getDateDebut() + " - " + getDateFin() + ")";
 	}
 }

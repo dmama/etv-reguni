@@ -16,10 +16,10 @@ public abstract class Sourcier extends Assujettissement {
 
 	private final TypeAutoriteFiscale typeAutoriteFiscale;
 
-	public Sourcier(Contribuable contribuable, RegDate dateDebut, RegDate dateFin, MotifFor motifFractDebut, MotifFor motifFractFin,
-			DecompositionFors fors) {
-		super(contribuable, dateDebut, dateFin, motifFractDebut, motifFractFin, fors);
-		this.typeAutoriteFiscale = fors.principal.getTypeAutoriteFiscale();
+	protected Sourcier(Contribuable contribuable, RegDate dateDebut, RegDate dateFin, MotifFor motifFractDebut, MotifFor motifFractFin,
+	                   TypeAutoriteFiscale typeAutoriteFiscale) {
+		super(contribuable, dateDebut, dateFin, motifFractDebut, motifFractFin);
+		this.typeAutoriteFiscale = typeAutoriteFiscale;
 	}
 
 	protected Sourcier(Sourcier courant, Sourcier suivant) {

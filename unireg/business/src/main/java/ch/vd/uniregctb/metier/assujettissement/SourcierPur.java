@@ -4,6 +4,7 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 /**
  * Assujettissement de type sourcier pur; c'est-à-dire pour un contribuable imposé à la source, et qui ne remplit donc pas de déclaration
@@ -13,9 +14,8 @@ import ch.vd.uniregctb.type.MotifFor;
  */
 public class SourcierPur extends Sourcier {
 
-	public SourcierPur(Contribuable contribuable, RegDate dateDebut, RegDate dateFin, MotifFor motifFractDebut, MotifFor motifFractFin,
-			DecompositionFors fors) {
-		super(contribuable, dateDebut, dateFin, motifFractDebut, motifFractFin, fors);
+	public SourcierPur(Contribuable contribuable, RegDate dateDebut, RegDate dateFin, MotifFor motifFractDebut, MotifFor motifFractFin, TypeAutoriteFiscale typeAutoriteFiscale) {
+		super(contribuable, dateDebut, dateFin, motifFractDebut, motifFractFin, typeAutoriteFiscale);
 	}
 
 	public SourcierPur(SourcierPur courant, SourcierPur suivant) {
@@ -29,5 +29,10 @@ public class SourcierPur extends Sourcier {
 
 	public DateRange collate(DateRange next) {
 		return new SourcierPur(this, (SourcierPur) next);
+	}
+
+	@Override
+	public String toString() {
+		return "SourcierPur(" + getDateDebut() + " - " + getDateFin() + ")";
 	}
 }

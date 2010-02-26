@@ -2909,7 +2909,7 @@ public class TiersServiceImpl implements TiersService {
 					str = "Non assujetti";
 				}
 			}
-			catch (AssujettissementException e) {
+			catch (Exception e) {
 				LOGGER.warn("Impossible de calculer l'assujettissement du tiers " + tiers.getNumero(), e);
 			}
 		}
