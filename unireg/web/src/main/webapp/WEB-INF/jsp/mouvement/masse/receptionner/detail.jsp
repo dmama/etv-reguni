@@ -41,16 +41,16 @@
                         }
                     }
                     if (nbSelectionnes == 0) {
-                        alert('Veuillez selectionner au moins un mouvement à réceptionner');
+                        alert('Veuillez selectionner au moins un dossier à réceptionner');
                         return false;
                     }
                     else {
                         var txtMvt;
                         if (nbSelectionnes == 1) {
-                            txtMvt = 'le mouvement sélectionné';
+                            txtMvt = 'le dossier sélectionné';
                         }
                         else {
-                            txtMvt = 'les ' + nbSelectionnes + ' mouvements sélectionnés';
+                            txtMvt = 'les ' + nbSelectionnes + ' dossiers sélectionnés';
                         }
                         return confirm('Voulez-vous réceptionner ' + txtMvt + ' ?');
                     }
