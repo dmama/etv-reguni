@@ -4,6 +4,9 @@
 <tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
 
   	<tiles:put name="title"><fmt:message key="title.mouvements.dossiers.masse.receptionner.full"/></tiles:put>
+  	<tiles:put name="fichierAide">
+		<a href="#" onClick="javascript:ouvrirAide('<c:url value='/docs/reception-dossierenvoye.pdf'/>');" title="AccessKey: a" accesskey="e">Aide</a>
+	</tiles:put>
   	<tiles:put name="body">
 		<c:set var="ligneTableau" value="${1}" scope="request" />
 	    <c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
