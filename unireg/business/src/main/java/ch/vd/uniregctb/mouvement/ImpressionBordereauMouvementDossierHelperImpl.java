@@ -121,7 +121,7 @@ public class ImpressionBordereauMouvementDossierHelperImpl implements Impression
 				}
 			}
 			else {
-				throw new RuntimeException("Type de tiers non supporté dans un bordereau de mouvements de dossier : " + ctb.getClass().getName());
+				throw new RuntimeException("Type de tiers non supporté dans un bordereau de mouvements de dossiers : " + ctb.getClass().getName());
 			}
 
 			final ForGestion forGestion = tiersService.getDernierForGestionConnu(ctb, null);

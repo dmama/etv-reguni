@@ -46,7 +46,7 @@ public class MouvementDossierDAOImpl extends GenericDAOImpl<MouvementDossier, Lo
 	}
 
 	/**
-	 * Construit une requête HQL qui récupère les mouvements de dossier correspondant aux critères donnés
+	 * Construit une requête HQL qui récupère les mouvements de dossiers correspondant aux critères donnés
 	 * @param criteria
 	 * @param paramPagination
 	 * @param params Paramètres à remplir

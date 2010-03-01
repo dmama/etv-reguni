@@ -12,7 +12,7 @@ update TACHE set CA_ID = (select ca.NUMERO from TIERS ctb, TIERS ca where ctb.OI
 -- Récupération d'une erreur passée (valeur oubliée dans le script 3.3.3_3.4_upgrade)
 ALTER TABLE DOC_INDEX MODIFY (DOC_TYPE NVARCHAR2(50));
 
--- Eclatement des types de mouvements de dossier
+-- Eclatement des types de mouvements de dossiers
 UPDATE MOUVEMENT_DOSSIER SET MVT_TYPE='EnvoiVersCollAdm' WHERE MVT_TYPE='EnvoiDossier' AND COLL_ADMIN_ID IS NOT NULL;
 UPDATE MOUVEMENT_DOSSIER SET MVT_TYPE='EnvoiVersCollaborateur' WHERE MVT_TYPE='EnvoiDossier';
 

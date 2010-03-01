@@ -15,7 +15,7 @@ import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.type.Localisation;
 
 /**
- * Classe de base des mouvements de dossier de type "réception"
+ * Classe de base des mouvements de dossiers de type "réception"
  */
 @Entity
 public abstract class ReceptionDossier extends MouvementDossier {

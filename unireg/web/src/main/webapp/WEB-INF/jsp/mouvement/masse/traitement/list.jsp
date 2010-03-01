@@ -50,16 +50,16 @@
                         }
                     }
                     if (nbSelectionnes == 0) {
-                        alert('Veuillez sélectionner au moins un mouvement à inclure');
+                        alert('Veuillez sélectionner au moins un dossier à inclure');
                         return false;
                     }
                     else {
                         var txtMvt;
                         if (nbSelectionnes == 1) {
-                            txtMvt = 'le mouvement sélectionné';
+                            txtMvt = 'le dossier sélectionné';
                         }
                         else {
-                            txtMvt = 'les ' + nbSelectionnes + ' mouvements sélectionnés';
+                            txtMvt = 'les ' + nbSelectionnes + ' dossiers sélectionnés';
                         }
                         return confirm('Voulez-vous inclure ' + txtMvt + ' dans un bordereau ?');
                     }
