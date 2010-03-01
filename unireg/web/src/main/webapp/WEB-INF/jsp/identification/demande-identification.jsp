@@ -67,6 +67,60 @@
 				</c:if>
 			</td>
 		</tr>
+		<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
+		<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+			<td></td>
+			<td></td>
+			<td></td>
+			<td></td>
+		</tr>
+		<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
+		<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+			<td></td>
+			<td></td>
+			<td><fmt:message key="label.adresse" />&nbsp;:</td>
+			<td>
+				<c:if test="${message.rue != null }">
+					${message.rue}
+				</c:if>
+			</td>
+		</tr>
+		<c:if test="${message.npa != null }">
+			<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
+			<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+				<td></td>
+				<td></td>
+				<td></td>
+				<td>${message.npa}</td>
+			</tr>
+		</c:if>
+		<c:if test="${message.npaEtranger != null }">
+			<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
+			<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+				<td></td>
+				<td></td>
+				<td></td>
+				<td>${message.npaEtranger}</td>
+			</tr>
+		</c:if>
+		<c:if test="${message.lieu != null }">
+			<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
+			<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+				<td></td>
+				<td></td>
+				<td></td>
+				<td>${message.lieu}</td>
+			</tr>
+		</c:if>
+		<c:if test="${message.pays != null }">
+			<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
+			<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+				<td></td>
+				<td></td>
+				<td></td>
+				<td>${message.pays}</td>
+			</tr>
+		</c:if>
 	</table>
 	
 </fieldset>

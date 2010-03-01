@@ -14,6 +14,7 @@ import org.junit.Test;
 import org.springframework.test.annotation.NotTransactional;
 import org.springframework.transaction.TransactionStatus;
 
+import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.AdresseSuisse;
@@ -35,6 +36,7 @@ import ch.vd.uniregctb.evenement.identification.contribuable.Erreur.TypeErreur;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable.Etat;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
+import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
@@ -239,10 +241,8 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			criteres.setDateNaissance(date(1953, 4, 3));
 			final List<PersonnePhysique> list = service.identifie(criteres);
 			assertNotNull(list);
-			assertEquals(1, list.size());
+			assertEquals(0, list.size());
 
-			final PersonnePhysique pp = list.get(0);
-			assertEquals(albertId, pp.getNumero());
 		}
 
 		{
@@ -262,6 +262,171 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 	@Test
 	public void testContribuableMisAJourSuiteIdentification() throws Exception {
+		final long noIndividuAlbert = 1234;
+		final long noIndividuAnne = 2345;
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				addIndividu(noIndividuAlbert, date(1953, 4, 3), "Zweisteinen", "Albert", true);
+				addIndividu(noIndividuAnne, date(1965, 8, 13), "Zweisteinen", "Anne", false);
+			}
+		});
+
+		class Ids {
+			Long albert;
+			Long anne;
+			Long alberto;
+			Long greg;
+		}
+		final Ids ids = new Ids();
+
+		doInNewTransaction(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+
+				final PersonnePhysique alberto = addNonHabitant("Alberto", "Fujimorouille", null, null);
+				ids.alberto = alberto.getNumero();
+				return null;
+			}
+		});
+
+		// Albert
+		{
+			doInNewTransaction(new TxCallback() {
+				@Override
+				public Object execute(TransactionStatus status) throws Exception {
+					CriteresAdresse adresse = new CriteresAdresse();
+
+					adresse.setNpaSuisse(3018);
+					adresse.setLieu("Bümpliz");
+					adresse.setLigneAdresse1("Alberto el tiburon");
+					adresse.setLigneAdresse2("et son épouse");
+					adresse.setNoAppartement("12");
+					adresse.setNoPolice("36B");
+					adresse.setRue("Chemin de la strasse verte");
+					adresse.setTypeAdresse(TypeAdresse.SUISSE);
+					CriteresPersonne criteres = new CriteresPersonne();
+					criteres.setPrenoms("Alberto");
+					criteres.setNom("Fujimori");
+					criteres.setNAVS13("123654798123");
+					criteres.setDateNaissance(date(1953, 12, 3));
+					criteres.setAdresse(adresse);
+					criteres.setSexe(Sexe.MASCULIN);
+					IdentificationContribuable message = createDemandeFromCanton(criteres, "2-BE-5");
+					message.setLogCreationDate(RegDate.get().asJavaDate());
+					final PersonnePhysique alberto = (PersonnePhysique) tiersService.getTiers(ids.alberto);
+					service.forceIdentification(message, alberto, Etat.TRAITE_MANUELLEMENT);
+					return null;
+				}
+			});
+
+		}
+
+
+		{
+			final PersonnePhysique alberto = (PersonnePhysique) tiersService.getTiers(ids.alberto);
+			assertEquals(alberto.getNumeroAssureSocial(),"123654798123");
+			assertEquals(alberto.getNom(),"Fujimori");
+			assertEquals(alberto.getDateNaissance(),date(1953, 12, 3));
+			assertEquals(alberto.getSexe(),Sexe.MASCULIN);
+			AdresseSuisse adresse = (AdresseSuisse) alberto.getAdresseActive(TypeAdresseTiers.COURRIER,null);
+			assertEquals(adresse.getNumeroAppartement(),"12");
+			assertEquals(adresse.getRue(),"Chemin de la strasse verte");
+			assertEquals(adresse.getComplement(),"Alberto el tiburon"+" "+"et son épouse");
+			assertEquals(adresse.getNumeroMaison(),"36B");
+
+		}
+
+	}
+
+
+
+	@Test
+	public void testContribuableSurNPA() throws Exception {
+		final long noIndividuClaude = 151658 ;
+		final long noIndividuAnne = 2345;
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+		MockIndividu indClaude = addIndividu(noIndividuClaude, date(1900, 1, 1), "Rosat", "Claude", true);
+
+				addAdresse(indClaude, EnumTypeAdresse.COURRIER, "rue du moulin","12","1148","Lisle", null,RegDate.get(2000, 12, 1),null);
+
+			}
+		});
+
+		class Ids {
+			Long claude;
+
+		}
+		final Ids ids = new Ids();
+
+		doInNewTransaction(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+
+				final PersonnePhysique habClaude = addHabitant(noIndividuClaude);
+				ids.claude = habClaude.getNumero();
+				return null;
+			}
+		});
+
+
+
+		assertEquals(0, identCtbDAO.getCount(IdentificationContribuable.class));
+
+		// création et traitement du message d'identification
+		CriteresAdresse adresse = new CriteresAdresse();
+		adresse.setNpaSuisse(1148);
+		adresse.setLieu("L'Isle");
+		adresse.setLigneAdresse1("");
+		adresse.setLigneAdresse2("et son épouse");
+		adresse.setNoAppartement("12");
+		adresse.setNoPolice("36B");
+		adresse.setRue("Chemin de la strasse verte");
+		adresse.setTypeAdresse(TypeAdresse.SUISSE);
+		CriteresPersonne criteres = new CriteresPersonne();
+		criteres.setPrenoms("Claude");
+		criteres.setNom("Rosat");
+
+		criteres.setDateNaissance(date(1900, 1, 1));
+		criteres.setAdresse(adresse);
+
+		final IdentificationContribuable message = createDemandeFromCanton(criteres, "3-CH-30");
+		message.setLogCreationDate(RegDate.get().asJavaDate());
+		doInTransaction(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				service.handleDemande(message);
+				return null;
+			}
+		});
+
+		// claude doit avoir été trouvée, et traitée automatiquement
+		final List<IdentificationContribuable> list = identCtbDAO.getAll();
+		assertEquals(1, list.size());
+
+		final IdentificationContribuable ic = list.get(0);
+		assertNotNull(ic);
+		assertEquals(Etat.TRAITE_AUTOMATIQUEMENT, ic.getEtat());
+		assertEquals(Integer.valueOf(1), ic.getNbContribuablesTrouves());
+
+		final Reponse reponse = ic.getReponse();
+		assertNotNull(reponse);
+		assertNull(reponse.getErreur());
+		assertEquals(ids.claude, reponse.getNoContribuable());
+
+		// La demande doit avoir reçu une réponse automatiquement
+		assertEquals(1, messageHandler.getSentMessages().size());
+		final IdentificationContribuable sent = messageHandler.getSentMessages().get(0);
+		assertEquals(ic.getId(), sent.getId());
+
+	}
+
+	@Test
+	public void testIdentificationAvecDate1900() throws Exception {
 		final long noIndividuAlbert = 1234;
 		final long noIndividuAnne = 2345;
 
@@ -427,40 +592,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			assertEquals(ids.anne, pp1.getNumero());
 		}
 
-		// Albert et Grégoire
-		{
-			CriteresPersonne criteres = new CriteresPersonne();
-			criteres.setDateNaissance(date(1953, 4, 3));
-			final List<PersonnePhysique> list = service.identifie(criteres);
-			assertNotNull(list);
-			assertEquals(2, list.size());
-			Collections.sort(list, new PPComparator());
 
-			final PersonnePhysique pp0 = list.get(0);
-			assertEquals(ids.albert, pp0.getNumero());
-
-			final PersonnePhysique pp1 = list.get(1);
-			assertEquals(ids.greg, pp1.getNumero());
-		}
-
-		// Albert, Alberto et Grégoire (tous nés en 1953)
-		{
-			CriteresPersonne criteres = new CriteresPersonne();
-			criteres.setDateNaissance(RegDate.get(1953));
-			final List<PersonnePhysique> list = service.identifie(criteres);
-			assertNotNull(list);
-			assertEquals(3, list.size());
-			Collections.sort(list, new PPComparator());
-
-			final PersonnePhysique pp0 = list.get(0);
-			assertEquals(ids.albert, pp0.getNumero());
-
-			final PersonnePhysique pp1 = list.get(1);
-			assertEquals(ids.alberto, pp1.getNumero());
-
-			final PersonnePhysique pp2 = list.get(2);
-			assertEquals(ids.greg, pp2.getNumero());
-		}
 	}
 
 	@Test
@@ -535,7 +667,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			CriteresPersonne criteres = new CriteresPersonne();
 			criteres.setNom("Nicoud");
 			CriteresAdresse adresse = new CriteresAdresse();
-			adresse.setLocalite("Lausanne");
+			adresse.setNpaSuisse(1000);
 			criteres.setAdresse(adresse);
 
 			final List<PersonnePhysique> list = service.identifie(criteres);
@@ -555,23 +687,23 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			CriteresPersonne criteres = new CriteresPersonne();
 			criteres.setNom("Nicoud");
 			CriteresAdresse adresse = new CriteresAdresse();
-			adresse.setRue("Av de Beaulieu");
+			adresse.setNpaSuisse(1000);
 			criteres.setAdresse(adresse);
 
 			final List<PersonnePhysique> list = service.identifie(criteres);
 			assertNotNull(list);
-			assertEquals(1, list.size());
+			assertEquals(2, list.size());
 
-			final PersonnePhysique pp0 = list.get(0);
-			assertEquals(ids.robert, pp0.getNumero());
+
 		}
 
 		// Jeanne
 		{
 			CriteresPersonne criteres = new CriteresPersonne();
+			criteres.setPrenoms("Jeanne");
 			criteres.setNom("Nicoud");
 			CriteresAdresse adresse = new CriteresAdresse();
-			adresse.setRue("Av de Marcelin");
+			adresse.setNpaSuisse(1000);
 			criteres.setAdresse(adresse);
 
 			final List<PersonnePhysique> list = service.identifie(criteres);
@@ -599,50 +731,33 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			assertEquals(ids.michel, pp1.getNumero());
 		}
 
-		// Luc et Michel, encore
+		// Luc et Michel, encore mais c'est luc qui gagne
 		{
 			CriteresPersonne criteres = new CriteresPersonne();
 			criteres.setNom("Haddoque");
 			CriteresAdresse adresse = new CriteresAdresse();
-			adresse.setRue("Grand-Rue");
-			criteres.setAdresse(adresse);
-
-			final List<PersonnePhysique> list = service.identifie(criteres);
-			assertNotNull(list);
-			assertEquals(2, list.size());
-			Collections.sort(list, new PPComparator());
-
-			final PersonnePhysique pp0 = list.get(0);
-			assertEquals(ids.luc, pp0.getNumero());
-
-			final PersonnePhysique pp1 = list.get(1);
-			assertEquals(ids.michel, pp1.getNumero());
-		}
-
-		// Luc
-		{
-			CriteresPersonne criteres = new CriteresPersonne();
-			criteres.setNom("Haddoque");
-			CriteresAdresse adresse = new CriteresAdresse();
-			adresse.setLocalite("Orbe");
-			adresse.setRue("Grand-Rue");
+			adresse.setNpaSuisse(1350);
 			criteres.setAdresse(adresse);
 
 			final List<PersonnePhysique> list = service.identifie(criteres);
 			assertNotNull(list);
 			assertEquals(1, list.size());
+			Collections.sort(list, new PPComparator());
 
 			final PersonnePhysique pp0 = list.get(0);
 			assertEquals(ids.luc, pp0.getNumero());
+
+
 		}
+
+
 
 		// Michel
 		{
 			CriteresPersonne criteres = new CriteresPersonne();
 			criteres.setNom("Haddoque");
 			CriteresAdresse adresse = new CriteresAdresse();
-			adresse.setLocalite("Vallorbe");
-			adresse.setRue("Grand-Rue");
+			adresse.setNpaSuisse(1337);
 			criteres.setAdresse(adresse);
 
 			final List<PersonnePhysique> list = service.identifie(criteres);

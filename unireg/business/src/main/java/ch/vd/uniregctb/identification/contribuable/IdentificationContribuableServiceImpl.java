@@ -48,7 +48,6 @@ import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.tiers.TiersCriteria.TypeRecherche;
-import ch.vd.uniregctb.tiers.TiersCriteria.TypeRechercheLocalitePays;
 import ch.vd.uniregctb.tiers.TiersCriteria.TypeTiers;
 import ch.vd.uniregctb.tiers.TiersCriteria.TypeVisualisation;
 import ch.vd.uniregctb.type.Sexe;
@@ -120,12 +119,17 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		// Recherche dans l'indexeur
 
 		List<TiersIndexedData> indexedData = null;
+		Phase phaseSucces=null;
 
 		// [UNIREG-1636] effectue la recherche en plusieurs phases
 		for (Phase phase : Phase.values()) {
 			final TiersCriteria criteria = asTiersCriteria(criteres, phase);
-			indexedData = searcher.search(criteria);
+			if (!criteria.isEmpty()){
+				indexedData = searcher.search(criteria);
+			}
+
 			if (indexedData != null && !indexedData.isEmpty()) {
+				phaseSucces = phase;
 				break;
 			}
 		}
@@ -148,8 +152,14 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		// Restriction selon les autres critères
 
 		list = filterSexe(list, criteres);
-		list = filterAdresse(list, criteres);
 		list = filterDateNaissance(list, criteres);
+		if (Phase.COMPLET.equals(phaseSucces)) {
+			list = filterAdresse(list, criteres);
+		}
+
+
+
+
 
 		return list;
 	}
@@ -503,11 +513,6 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 			if (navs13 != null) {
 				criteria.setNumeroAVS(navs13);
 			}
-
-			else {
-				updateCriteriaComplet(criteres, criteria);
-			}
-
 		}
 		else {
 			updateCriteriaComplet(criteres, criteria);
@@ -522,14 +527,9 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 			criteria.setNumeroAVS(navs11);
 		}
 		// [UNIREG-1630] dans tous les cas, on doit tenir compte des autres critères (autres que le numéro AVS, donc)
-		criteria.setDateNaissance(criteres.getDateNaissance());
-		final CriteresAdresse adresse = criteres.getAdresse();
-		if (adresse != null) {
-			criteria.setLocaliteOuPays(adresse.getLocalite());
-		}
 		criteria.setNomRaison(concatCriteres(criteres.getPrenoms(), criteres.getNom()));
 		criteria.setTypeRechercheDuNom(TypeRecherche.EST_EXACTEMENT);
-		criteria.setTypeRechercheDuPaysLocalite(TypeRechercheLocalitePays.LOCALITE);
+
 
 		// critères statiques
 		criteria.setInclureI107(false);
@@ -662,20 +662,10 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	 */
 	private boolean matchAdresseGenerique(AdresseGenerique adresse, CriteresAdresse adresseCritere) {
 
-		if (!StringUtils.isEmpty(adresseCritere.getChiffreComplementaire())) {
-			LOGGER.warn("La comparaison sur le chiffre complémentaire n'est pas possible; le critère est ignoré.");
-		}
+		//On ne matche plus que sur le NPA
 
 		// test des différents critères en commençant par les plus déterminants
-		return matchPays(adresse, adresseCritere) && // ------------------------------------------------------
-				matchNumeroOrdrePostal(adresse, adresseCritere) && // ----------------------------------------
-				matchNpa(adresse, adresseCritere) && // ------------------------------------------------------
-				matchLocalite(adresse, adresseCritere) && // -------------------------------------------------
-				matchRue(adresse, adresseCritere) && // ------------------------------------------------------
-				matchCasePostale(adresse, adresseCritere) && // ----------------------------------------------
-				matchNumeroPolice(adresse, adresseCritere) && // ---------------------------------------------
-				matchComplement(adresse, adresseCritere) && // -----------------------------------------------
-				matchNumeroAppartement(adresse, adresseCritere);
+		return 	matchNpa(adresse, adresseCritere);
 	}
 
 	private boolean matchCasePostale(AdresseGenerique adresse, CriteresAdresse adresseCritere) {
@@ -723,7 +713,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 
 		final String npa = adresse.getNumeroPostal();
 		if (StringUtils.isEmpty(npa)) {
-			return false; // critère non respecté
+			return true; // critère non respecté
 		}
 
 		final String critereNpa = (npaSuisse == null ? npaEtranger : String.valueOf(npaSuisse));

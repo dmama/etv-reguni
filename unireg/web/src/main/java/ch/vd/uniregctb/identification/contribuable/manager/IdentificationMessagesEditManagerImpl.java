@@ -4,6 +4,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
+import ch.vd.uniregctb.evenement.identification.contribuable.CriteresAdresse;
 import ch.vd.uniregctb.evenement.identification.contribuable.Erreur;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentCtbDAO;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable;
@@ -92,6 +93,16 @@ public class IdentificationMessagesEditManagerImpl implements IdentificationMess
 				demandeIdentificationView.setNavs13(FormatNumeroHelper.formatNumAVS(identificationContribuable.getDemande().getPersonne().getNAVS13()));
 				demandeIdentificationView.setDateNaissance(identificationContribuable.getDemande().getPersonne().getDateNaissance());
 				demandeIdentificationView.setSexe(identificationContribuable.getDemande().getPersonne().getSexe());
+				if (identificationContribuable.getDemande().getPersonne().getAdresse()!=null) {
+					CriteresAdresse adresse = identificationContribuable.getDemande().getPersonne().getAdresse();
+					demandeIdentificationView.setRue(adresse.getRue());
+					demandeIdentificationView.setNpa(adresse.getNpaSuisse());
+					demandeIdentificationView.setLieu(adresse.getLieu());
+					demandeIdentificationView.setPays(adresse.getCodePays());
+					demandeIdentificationView.setNpaEtranger(adresse.getNpaEtranger());
+					demandeIdentificationView.setNoPolice(adresse.getNoPolice());
+				}
+
 			}
 		}
 		return demandeIdentificationView;
