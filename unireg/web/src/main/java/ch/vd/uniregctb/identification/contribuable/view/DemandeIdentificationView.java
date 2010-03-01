@@ -19,6 +19,12 @@ public class DemandeIdentificationView {
 	private String prenoms;
 	private RegDate dateNaissance;
 	private Sexe sexe;
+	private String rue;
+	private Integer npa;
+	private String lieu;
+	private String pays;
+	private String npaEtranger;
+	private String noPolice;
 
 	public Long getId() {
 		return id;
@@ -85,6 +91,42 @@ public class DemandeIdentificationView {
 	}
 	public void setSexe(Sexe sexe) {
 		this.sexe = sexe;
+	}
+	public void setRue(String rue) {
+		this.rue = rue;
+	}
+	public String getRue() {
+		return rue;
+	}
+	public void setNpa(Integer npa) {
+		this.npa = npa;
+	}
+	public Integer getNpa() {
+		return npa;
+	}
+	public void setLieu(String lieu) {
+		this.lieu = lieu;
+	}
+	public String getLieu() {
+		return lieu;
+	}
+	public void setPays(String pays) {
+		this.pays = pays;
+	}
+	public String getPays() {
+		return pays;
+	}
+	public void setNpaEtranger(String npaEtranger) {
+		this.npaEtranger = npaEtranger;
+	}
+	public String getNpaEtranger() {
+		return npaEtranger;
+	}
+	public void setNoPolice(String noPolice) {
+		this.noPolice = noPolice;
+	}
+	public String getNoPolice() {
+		return noPolice;
 	}
 
 }
