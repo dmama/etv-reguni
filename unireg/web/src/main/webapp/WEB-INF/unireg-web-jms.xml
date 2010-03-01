@@ -53,14 +53,18 @@
 	</bean>
 
 	<bean id="esbMessageFactory" class="ch.vd.technical.esb.EsbMessageFactory" lazy-init="true">
-		<!-- pour le moment, la validation ne fonctionne pas bien quand les xsd s'incluent parmi (esb 2.1) -->
-		<!--property name="validator" ref="esbMessageFactoryValidator"/-->
+		<property name="validator" ref="esbMessageFactoryValidator"/>
 	</bean>
 
 	<bean id="esbMessageFactoryValidator" class="ch.vd.technical.esb.util.ESBXMLValidator" lazy-init="true">
-		<property name="xsdFolders">
+		<property name="sources">
 			<list>
-				<value>xsd</value>
+				<value>classpath:xsd/civil/*.xsd</value>
+				<value>classpath:xsd/database/*.xsd</value>
+				<value>classpath:xsd/editique/*.xsd</value>
+				<value>classpath:xsd/fiscal/evenementFiscalMaster-v1.xsd</value>
+				<value>classpath:xsd/fiscal/evenementImpotSource-v1.xsd</value>
+				<value>classpath:xsd/identification/*.xsd</value>
 			</list>
 		</property>
 	</bean>

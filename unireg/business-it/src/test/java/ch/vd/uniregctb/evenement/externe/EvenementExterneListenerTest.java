@@ -4,6 +4,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.technical.esb.store.raft.RaftEsbStore;
+import ch.vd.technical.esb.util.ESBXMLValidator;
 import ch.vd.uniregctb.evenement.EvenementTest;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.commons.io.FileUtils;
@@ -12,6 +13,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.internal.runners.JUnit4ClassRunner;
 import org.junit.runner.RunWith;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
 import org.springframework.util.Log4jConfigurer;
 import org.springframework.util.ResourceUtils;
@@ -60,8 +63,11 @@ public class EvenementExterneListenerTest extends EvenementTest {
 		listener = new EvenementExterneListenerImpl();
 		listener.setEsbTemplate(esbTemplate);
 
+		final ESBXMLValidator esbValidator = new ESBXMLValidator();
+		esbValidator.setSources(new Resource[] {new ClassPathResource("xsd/fiscal/evenementImpotSource-v1.xsd")});
+
 		esbMessageFactory = new EsbMessageFactory();
-		esbMessageFactory.setValidator(null);
+		esbMessageFactory.setValidator(esbValidator);
 
 		final DefaultMessageListenerContainer container = new DefaultMessageListenerContainer();
 		container.setConnectionFactory(jmsConnectionManager);

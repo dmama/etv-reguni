@@ -4,6 +4,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.technical.esb.store.raft.RaftEsbStore;
+import ch.vd.technical.esb.util.ESBXMLValidator;
 import ch.vd.uniregctb.evenement.EvenementTest;
 import ch.vd.uniregctb.evenement.identification.contribuable.Demande.PrioriteEmetteur;
 import ch.vd.uniregctb.evenement.identification.contribuable.Erreur.TypeErreur;
@@ -15,6 +16,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.internal.runners.JUnit4ClassRunner;
 import org.junit.runner.RunWith;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
 import org.springframework.orm.hibernate3.HibernateTemplate;
@@ -63,8 +66,11 @@ public class IdentificationContribuableMessageHandlerTest extends EvenementTest 
 		clearQueue(OUTPUT_QUEUE);
 		clearQueue(INPUT_QUEUE);
 
+		final ESBXMLValidator esbValidator = new ESBXMLValidator();
+		esbValidator.setSources(new Resource[] {new ClassPathResource("xsd/identification/serviceIdentificationCTBAsynchrone_1-6.xsd")});
+
 		esbMessageFactory = new EsbMessageFactory();
-		esbMessageFactory.setValidator(null);
+		esbMessageFactory.setValidator(esbValidator);
 
 		// flush est vraiment la seule méthode appelée...
 		final HibernateTemplate hibernateTemplate = new HibernateTemplate() {
@@ -132,6 +138,7 @@ public class IdentificationContribuableMessageHandlerTest extends EvenementTest 
         message.setDemande(demande);
         // réponse
 		final Reponse reponse = new Reponse();
+		reponse.setErreur(new Erreur(TypeErreur.METIER, "01", "Aucun contribuable ne correspond au message"));
 		reponse.setDate(newUtilDate(2008, 3, 23));
 		reponse.setNoContribuable(null);
 		message.setReponse(reponse);
@@ -140,7 +147,7 @@ public class IdentificationContribuableMessageHandlerTest extends EvenementTest 
 		handler.sendReponse(message);
 
 		// On vérifie que l'on a bien envoyé le message et qu'il ne contient pas la demande
-		final String texte = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><iden:identificationCTB xmlns:iden=\"http://www.vd.ch/fiscalite/registre/identificationContribuable-v1.6\"><iden:reponse><iden:date>2008-03-23T00:00:00.000+01:00</iden:date></iden:reponse></iden:identificationCTB>";
+		final String texte = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><iden:identificationCTB xmlns:iden=\"http://www.vd.ch/fiscalite/registre/identificationContribuable-v1.6\"><iden:reponse><iden:date>2008-03-23T00:00:00.000+01:00</iden:date><iden:erreur><iden:type>M</iden:type><iden:code>01</iden:code><iden:message>Aucun contribuable ne correspond au message</iden:message></iden:erreur></iden:reponse></iden:identificationCTB>";
 		assertTextMessage(OUTPUT_QUEUE, texte);
 	}
 

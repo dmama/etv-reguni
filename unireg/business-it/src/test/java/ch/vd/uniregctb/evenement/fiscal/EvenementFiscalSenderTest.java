@@ -1,7 +1,5 @@
 package ch.vd.uniregctb.evenement.fiscal;
 
-import java.util.Arrays;
-
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
@@ -22,6 +20,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.internal.runners.JUnit4ClassRunner;
 import org.junit.runner.RunWith;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.util.Log4jConfigurer;
 
 import static org.junit.Assert.assertEquals;
@@ -60,11 +60,10 @@ public class EvenementFiscalSenderTest extends EvenementTest {
 		clearQueue(INPUT_QUEUE);
 
 		final ESBXMLValidator esbValidator = new ESBXMLValidator();
-		esbValidator.setXsdFolders(Arrays.asList("xsd/fiscal"));
+		esbValidator.setSources(new Resource[] {new ClassPathResource("xsd/fiscal/evenementFiscalMaster-v1.xsd")});
 
 		esbMessageFactory = new EsbMessageFactory();
-//		avec la version 2.1 de l'esbClient, la validation ne fonctionne pas encore si les xsd s'incluent parmi
-//		esbMessageFactory.setValidator(esbValidator);
+		esbMessageFactory.setValidator(esbValidator);
 
 		sender = new EvenementFiscalSenderImpl();
 		sender.setServiceDestination("test");
