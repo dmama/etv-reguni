@@ -15,7 +15,9 @@
 	</bean>
 
 	<bean id="transactionManager" class="org.jencks.factory.TransactionManagerFactoryBean">
+		<!-- [UNIREG-2060] désactivé le log des transactions, parce que de toutes façons les bases ne sont pas configurées pour la reprise automatique des transactions.
 		<property name="transactionLogDir" value="target/txlog"/>
+		-->
 		<property name="defaultTransactionTimeoutSeconds" value="86400"/>
 	</bean>
 
