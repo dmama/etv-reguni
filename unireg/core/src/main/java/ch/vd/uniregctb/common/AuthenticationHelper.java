@@ -2,6 +2,7 @@ package ch.vd.uniregctb.common;
 
 import java.util.Stack;
 
+import ch.vd.registre.base.utils.Assert;
 import org.acegisecurity.Authentication;
 import org.acegisecurity.GrantedAuthority;
 import org.acegisecurity.GrantedAuthorityImpl;
@@ -16,14 +17,14 @@ import ch.vd.uniregctb.security.UniregSecurityDetails;
 public class AuthenticationHelper {
 
 	public static final String SYSTEM_USER = "[system]";
-	private static final String NULL_AUTH = "__null__";
+	private static final Authentication NULL_AUTH = createAuthentication("__null__");
 
-	private static final ThreadLocal<Stack<String>> stackByThread = new ThreadLocal<Stack<String>>();
+	private static final ThreadLocal<Stack<Authentication>> stackByThread = new ThreadLocal<Stack<Authentication>>();
 
-	private static Stack<String> stack() {
-		Stack<String> stack = stackByThread.get();
+	private static Stack<Authentication> stack() {
+		Stack<Authentication> stack = stackByThread.get();
 		if (stack == null) {
-			stack = new Stack<String>();
+			stack = new Stack<Authentication>();
 			stackByThread.set(stack);
 		}
 		return stack;
@@ -31,16 +32,26 @@ public class AuthenticationHelper {
 
 	public static void setPrincipal(String username) {
 
-		/* crée un objet Authentication */
-		GrantedAuthority auth = new GrantedAuthorityImpl(username);
-		GrantedAuthority[] authorities = new GrantedAuthority[] {
-			auth
-		};
-		User user = new User(username, "noPwd", true, true, true, true, authorities);
-		UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(user, "noPwd");
+		UsernamePasswordAuthenticationToken authentication = createAuthentication(username);
 
 		/* Enregistre le context dans Acegi */
 		setAuthentication(authentication);
+	}
+
+	/**
+	 * crée un objet Authentication
+	 *
+	 * @param username un nom de l'utilisateur
+	 * @return un objet Authentication
+	 */
+	private static UsernamePasswordAuthenticationToken createAuthentication(String username) {
+
+		GrantedAuthority auth = new GrantedAuthorityImpl(username);
+		GrantedAuthority[] authorities = new GrantedAuthority[]{
+				auth
+		};
+		User user = new User(username, "noPwd", true, true, true, true, authorities);
+		return new UsernamePasswordAuthenticationToken(user, "noPwd");
 	}
 
 	/**
@@ -50,16 +61,19 @@ public class AuthenticationHelper {
 	 *            le nom de l'utilsateur principal
 	 */
 	public static void pushPrincipal(String username) {
-		final String current;
+		final Authentication current;
 		if (getAuthentication() == null) {
 			// pas autentifier -> on stock une authentification nulle de manière à retrouver la fin de la pile.
 			current = NULL_AUTH;
 		}
 		else {
-			current = getCurrentPrincipal();
+			current = getAuthentication();
+			Assert.notNull(current);
 		}
 		stack().push(current);
-		setPrincipal(username);
+
+		// crée et enregistre le nouveau context dans Acegi */
+		setAuthentication(createAuthentication(username));
 	}
 
 	/**
@@ -68,12 +82,12 @@ public class AuthenticationHelper {
 	 * <b>Note:</b> un utilisateur doit avoir été mémorisé précédemment avec {@link #pushPrincipal(String)}.
 	 */
 	public static void popPrincipal() {
-		final String previous = stack().pop();
-		if (previous.equals(NULL_AUTH)) {
+		final Authentication previous = stack().pop();
+		if (previous == NULL_AUTH){
 			resetAuthentication();
 		}
 		else {
-			setPrincipal(previous);
+			setAuthentication(previous);
 		}
 	}
 

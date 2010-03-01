@@ -90,6 +90,8 @@ public class IFOSecAuthenticationProcessingFilter  extends AuthenticationProcess
 
     	/*
     	 * on recherche l'OID dans la requete (si on vient du formulaire de selection d'OID)
+    	 *
+    	 * Note (msi,bnm) : on arrive ici que si la méthode requiresAuthentication() à retourné true, c'est-à-dire que si le profile utilisateur courant est nul.  
     	 */
     	String oidStr = request.getParameter(IFOSEC_OID_REQUEST_KEY);
 
