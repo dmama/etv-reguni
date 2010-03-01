@@ -115,12 +115,12 @@
 		<repository>
 			<id>nexus.releases</id>
 			<name>Nexus releases</name>
-			<url>http://calimero:8081/nexus/content/repositories/releases</url>
+			<url>${nexus.url.releases}</url>
 		</repository>
 		<snapshotRepository>
 			<id>nexus.snapshots</id>
 			<name>Nexus snaphots</name>
-			<url>http://calimero:8081/nexus/content/repositories/snapshots</url>
+			<url>${nexus.url.snapshots}</url>
 			<!-- évite d'ajouter un timestamp à chaque déploiement : nécessaire pour avoir les sources synchrones avec un jar snapshot -->
 			<uniqueVersion>false</uniqueVersion>
 		</snapshotRepository>
