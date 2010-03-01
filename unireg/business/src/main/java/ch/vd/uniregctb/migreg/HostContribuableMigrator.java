@@ -1221,7 +1221,7 @@ public class HostContribuableMigrator extends HostMigrator {
 		}
 
 		if (errors.size() == 0) {
-			setRunningMessage("Chargement des mouvements de dossier...");
+			setRunningMessage("Chargement des mouvements de dossiers...");
 			errors = mouvementDossierLoader.loadMvtDossier(getTiersList(), errors);
 		}
 

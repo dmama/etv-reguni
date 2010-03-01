@@ -15,7 +15,7 @@ import ch.vd.uniregctb.mouvement.view.MouvementDetailView;
 import ch.vd.uniregctb.mouvement.view.MouvementMasseCriteriaView;
 
 /**
- * Classe de base pour les controlleurs des mouvements de dossier en masse qui
+ * Classe de base pour les controlleurs des mouvements de dossiers en masse qui
  * comportent une partie de recherche paramétrable
  */
 public abstract class AbstractMouvementMasseRechercheController extends AbstractMouvementMasseController {

@@ -4,7 +4,7 @@ INSERT INTO VERSION_DB (VERSION_NB, SCRIPT_ID) VALUES ('3.5.2', '3.5.1_3.5.2_upg
 -- Récupération d'une erreur passée (valeur oubliée dans le script 3.3.3_3.4_upgrade)
 ALTER TABLE DOC_INDEX MODIFY (DOC_TYPE NVARCHAR2(50));
 
--- Eclatement des types de mouvements de dossier
+-- Eclatement des types de mouvements de dossiers
 UPDATE MOUVEMENT_DOSSIER SET MVT_TYPE='EnvoiVersCollAdm' WHERE MVT_TYPE='EnvoiDossier' AND COLL_ADMIN_ID IS NOT NULL;
 UPDATE MOUVEMENT_DOSSIER SET MVT_TYPE='EnvoiVersCollaborateur' WHERE MVT_TYPE='EnvoiDossier';
 

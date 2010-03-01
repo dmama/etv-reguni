@@ -22,7 +22,7 @@ import ch.vd.uniregctb.mouvement.view.MouvementMasseCriteriaView;
 public interface MouvementMasseManager extends AbstractMouvementManager {
 
 	/**
-	 * Trouve les mouvements de dossier qui satisfont aux critères donnés (avec pagination)
+	 * Trouve les mouvements de dossiers qui satisfont aux critères donnés (avec pagination)
 	 * @param view la vue où les critères de recherche sont remplis
 	 * @param noCollAdmInitiatrice si non vide, la recherche ne s'effectue que sur les mouvements initiés par cette collectivité administrative
 	 * @param paramPagination pagination à utiliser
@@ -31,7 +31,7 @@ public interface MouvementMasseManager extends AbstractMouvementManager {
 	List<MouvementDetailView> find(MouvementMasseCriteriaView view, Integer noCollAdmInitiatrice, ParamPagination paramPagination, MutableLong total) throws InfrastructureException;
 
 	/**
-	 * Trouve tous les mouvements de dossier qui satisfont aux critères donnés
+	 * Trouve tous les mouvements de dossiers qui satisfont aux critères donnés
 	 * @param criteria critères de recherche
 	 * @return liste des mouvements trouvés, ou null si rien trouvé
 	 */
@@ -47,7 +47,7 @@ public interface MouvementMasseManager extends AbstractMouvementManager {
 	/**
 	 * Met les mouvement donnés par leur ID dans l'état donné
 	 * @param nouvelEtat nouvel état à associer aux mouvements
-	 * @param ids ID des mouvements de dossier dont l'état doit être modifié
+	 * @param ids ID des mouvements de dossiers dont l'état doit être modifié
 	 */
 	void changeEtat(EtatMouvementDossier nouvelEtat, long[] ids);
 
@@ -59,7 +59,7 @@ public interface MouvementMasseManager extends AbstractMouvementManager {
 	List<BordereauListElementView> getProtoBordereaux(Integer noCollAdmInitiatrice);
 
 	/**
-	 * Effectue la demande d'impression d'un bordereau de mouvements de dossier avec les mouvements donnés par ID, et renvoie
+	 * Effectue la demande d'impression d'un bordereau de mouvements de dossiers avec les mouvements donnés par ID, et renvoie
 	 * l'identifiant à utiliser dans la méthode {@link #recevoirImpressionBordereau} pour récupérer le flux PCL
 	 */
 	String imprimerBordereau(long[] idsMouvement) throws EditiqueException;

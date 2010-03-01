@@ -253,7 +253,7 @@ public interface EditiqueService {
 	public void imprimeTaxationOfficeBatch(DeclarationImpotOrdinaire declaration) throws EditiqueException;
 
 	/**
-	 * Envoie à l'éditique le bordereau de mouvements de dossier
+	 * Envoie à l'éditique le bordereau de mouvements de dossiers
 	 * correspondant aux mouvement donnés
 	 * @param bordereauMouvementDossier les mouvements qui doivent apparaître sur le bordereau
 	 * @return l'identifiant du document (pour le récupérer ensuite)

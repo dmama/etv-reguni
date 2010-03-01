@@ -241,7 +241,7 @@ public abstract class MouvementMasseCriteriaView {
 	}
 
 	/**
-	 * Retourne une collection contenant le ou les états de mouvements de dossier à rechercher, ou <code>null</code>
+	 * Retourne une collection contenant le ou les états de mouvements de dossiers à rechercher, ou <code>null</code>
 	 * si aucun critère ne doit se faire sur l'état des mouvements
 	 * @return les états concernés
 	 */

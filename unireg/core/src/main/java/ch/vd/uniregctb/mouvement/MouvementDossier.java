@@ -26,7 +26,7 @@ import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.tiers.Contribuable;
 
 /**
- * Classe de base des mouvements de dossier
+ * Classe de base des mouvements de dossiers
  */
 @Entity
 @Table(name = "MOUVEMENT_DOSSIER")

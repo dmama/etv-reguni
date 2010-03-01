@@ -48,18 +48,18 @@
                         }
                     }
                     if (nbSelectionnes == 0) {
-                        alert('Veuillez selectionner au moins un mouvement à inclure');
+                        alert('Veuillez selectionner au moins un dossier à inclure');
                         return false;
                     }
                     else {
                         var txtMvt;
                         if (nbSelectionnes == 1) {
-                            txtMvt = 'le mouvement sélectionné, qui sera alors créé définitivement';
+                            txtMvt = 'le dossier sélectionné, pour lequel';
                         }
                         else {
-                            txtMvt = 'les ' + nbSelectionnes + ' mouvements sélectionnés, qui seront alors créés définitivement';
+                            txtMvt = 'les ' + nbSelectionnes + ' dossiers sélectionnés, pour lesquels';
                         }
-                        if (confirm('Voulez-vous imprimer le bordereau avec ' + txtMvt + ' ?')) {
+                        if (confirm('Voulez-vous imprimer le bordereau avec ' + txtMvt + ' un mouvement sera alors définitivement créé ?')) {
                             var printButton = document.getElementById('printButton');
                             printButton.style.display = "none";
                             var closeButton = document.getElementById('closeButton');

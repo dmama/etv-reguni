@@ -13,7 +13,7 @@ import org.hibernate.annotations.ForeignKey;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 
 /**
- * Classe de base pour les mouvements de dossier de type envoi
+ * Classe de base pour les mouvements de dossiers de type envoi
  */
 @Entity
 public abstract class EnvoiDossier extends MouvementDossier {

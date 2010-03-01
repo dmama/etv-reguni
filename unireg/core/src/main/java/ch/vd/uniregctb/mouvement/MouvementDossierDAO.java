@@ -40,7 +40,7 @@ public interface MouvementDossierDAO extends GenericDAO<MouvementDossier, Long> 
 	List<MouvementDossier> get(long[] ids);
 
 	/**
-	 * Retourne une liste de proto-bordereaux (= groupements de mouvements de dossier qui pourraient
+	 * Retourne une liste de proto-bordereaux (= groupements de mouvements de dossiers qui pourraient
 	 * aller ensemble sur un bordereau de dossier)
 	 * @param noCollAdmInitiatrice si non-null, ne renvoie que les mouvements initiés par la collectivité administrative donnée
 	 * @return liste des combinaisons trouvées, ou null si aucune
