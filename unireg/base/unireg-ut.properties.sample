@@ -41,8 +41,8 @@ testprop.db2.proxy=jdbc:db2://solve60v:50000/DB2A
 testprop.host-interfaces.url=t3://solve61v:65032
 testprop.host-interfaces.username=
 testprop.host-interfaces.password=
-testprop.db2.username=W#ASILD1
-testprop.db2.password=ehp6r3a
+testprop.db2.username=W#ASIUD1
+testprop.db2.password=ze7m8deu
 testprop.db2.schema=CIIA1
 
 # CJVZ/CIIV1 (Validation)
