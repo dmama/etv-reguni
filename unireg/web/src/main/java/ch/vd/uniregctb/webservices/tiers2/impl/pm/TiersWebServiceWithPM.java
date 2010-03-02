@@ -6,7 +6,7 @@ import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.interfaces.model.*;
 import ch.vd.uniregctb.interfaces.service.PartPM;
 import ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleService;
-import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.*;
 import ch.vd.uniregctb.webservices.common.NoOfsTranslator;
 import ch.vd.uniregctb.webservices.tiers2.TiersWebService;
 import ch.vd.uniregctb.webservices.tiers2.data.*;
@@ -16,10 +16,12 @@ import ch.vd.uniregctb.webservices.tiers2.data.CompteBancaire;
 import ch.vd.uniregctb.webservices.tiers2.data.Date;
 import ch.vd.uniregctb.webservices.tiers2.data.EtatPM;
 import ch.vd.uniregctb.webservices.tiers2.data.EvenementPM;
+import ch.vd.uniregctb.webservices.tiers2.data.ForFiscal;
 import ch.vd.uniregctb.webservices.tiers2.data.FormeJuridique;
 import ch.vd.uniregctb.webservices.tiers2.data.PersonneMorale;
 import ch.vd.uniregctb.webservices.tiers2.data.RegimeFiscal;
 import ch.vd.uniregctb.webservices.tiers2.data.Siege;
+import ch.vd.uniregctb.webservices.tiers2.data.Tiers;
 import ch.vd.uniregctb.webservices.tiers2.exception.AccessDeniedException;
 import ch.vd.uniregctb.webservices.tiers2.exception.BusinessException;
 import ch.vd.uniregctb.webservices.tiers2.exception.TechnicalException;
@@ -41,6 +43,7 @@ public class TiersWebServiceWithPM implements TiersWebService {
 
 	private TiersWebService target;
 	private ServicePersonneMoraleService servicePM;
+	private TiersDAO tiersDAO;
 	private NoOfsTranslator noOfsTranslator;
 
 	public void setTarget(TiersWebService target) {
@@ -49,6 +52,10 @@ public class TiersWebServiceWithPM implements TiersWebService {
 
 	public void setServicePM(ServicePersonneMoraleService servicePM) {
 		this.servicePM = servicePM;
+	}
+
+	public void setTiersDAO(TiersDAO tiersDAO) {
+		this.tiersDAO = tiersDAO;
 	}
 
 	public void setNoOfsTranslator(NoOfsTranslator translator) {
@@ -232,6 +239,15 @@ public class TiersWebServiceWithPM implements TiersWebService {
 
 	public void setTiersBlocRembAuto(@WebParam(targetNamespace = "http://www.vd.ch/uniregctb/webservices/tiers2",
 			partName = "params", name = "SetTiersBlocRembAuto") SetTiersBlocRembAuto params) throws BusinessException, AccessDeniedException, TechnicalException {
+		
+		if (isEntreprise(params.tiersNumber) && !tiersDAO.exists(params.tiersNumber)) {
+			// [UNIREG-2040] on crée l'entreprise à la volée
+			Entreprise e = new Entreprise();
+			e.setNumero(params.tiersNumber);
+			e.setNumeroEntreprise(params.tiersNumber);
+			tiersDAO.save(e);
+		}
+
 		target.setTiersBlocRembAuto(params);
 	}
 
@@ -279,6 +295,10 @@ public class TiersWebServiceWithPM implements TiersWebService {
 			return null;
 		}
 
+		if (parts == null) {
+			parts = Collections.emptySet();
+		}
+
 		final PersonneMoraleHisto pmHisto = new PersonneMoraleHisto();
 		pmHisto.numero = pmHost.getNumeroEntreprise();
 		pmHisto.numeroTelProf = pmHost.getTelephoneContact();
@@ -292,6 +312,12 @@ public class TiersWebServiceWithPM implements TiersWebService {
 		pmHisto.raisonSociale3 = pmHost.getRaisonSociale3();
 		pmHisto.dateBouclementFutur = DataHelper.coreToWeb(pmHost.getDateBouclementFuture());
 		pmHisto.numeroIPMRO = pmHost.getNumeroIPMRO();
+
+		// [UNIREG-2040] on va chercher l'information de blocage dans notre base si elle existe
+		final ch.vd.uniregctb.tiers.Tiers tiers = tiersDAO.get(tiersNumber);
+		if (tiers != null) {
+			pmHisto.blocageRemboursementAutomatique = tiers.getBlocageRemboursementAutomatique();
+		}
 
 		if (parts.contains(TiersPart.ADRESSES) || parts.contains(TiersPart.ADRESSES_ENVOI)) {
 			final Collection<ch.vd.uniregctb.interfaces.model.AdresseEntreprise> adresses = pmHost.getAdresses();

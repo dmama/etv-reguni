@@ -15,6 +15,7 @@
 	<bean id="tiersService2PM" class="ch.vd.uniregctb.webservices.tiers2.impl.pm.TiersWebServiceWithPM">
 		<property name="target" ref="tiersService2Bean" />
 		<property name="servicePM" ref="servicePersonneMoraleService" />
+		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="noOfsTranslator" ref="noOfsTranslator" />
 	</bean>
 

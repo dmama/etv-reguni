@@ -80,7 +80,7 @@ public abstract class TiersHisto {
 	public String adresseCourrierElectronique;
 
 	@XmlElement(required = false)
-	public boolean blocageRemboursementAutomatique;
+	public boolean blocageRemboursementAutomatique = true; // [UNIREG-1266] Blocage des remboursements automatiques sur tous les nouveaux tiers
 
 	/** true si débiteur non fiscal - I107 */
 	@XmlElement(required = true)
