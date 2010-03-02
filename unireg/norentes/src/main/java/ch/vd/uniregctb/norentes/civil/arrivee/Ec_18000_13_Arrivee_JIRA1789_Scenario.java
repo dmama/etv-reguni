@@ -8,8 +8,8 @@ import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.civil.model.EnumTypePermis;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
-import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
 import ch.vd.uniregctb.evenement.common.EnsembleTiersCouple;
 import ch.vd.uniregctb.interfaces.model.Adresse;
@@ -20,10 +20,13 @@ import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
 import ch.vd.uniregctb.norentes.common.EvenementCivilScenario;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.TypeAdresseTiers;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 public class Ec_18000_13_Arrivee_JIRA1789_Scenario extends EvenementCivilScenario {
@@ -89,16 +92,15 @@ public class Ec_18000_13_Arrivee_JIRA1789_Scenario extends EvenementCivilScenari
 		final PersonnePhysique antonio = addHabitant(noIndAntonio);
 		noHabAntonio = antonio.getNumero();
 
-		final PersonnePhysique cleo = addHabitant(noIndAnneLaure);
-		noHabAnneLaure = cleo.getNumero();
+		final PersonnePhysique anneLaure = addHabitant(noIndAnneLaure);
+		noHabAnneLaure = anneLaure.getNumero();
 
 		// ménage
 		{
-			MenageCommun menage = new MenageCommun();
-			menage = (MenageCommun)tiersDAO.save(menage);
+			final MenageCommun menage = (MenageCommun) tiersDAO.save(new MenageCommun());
 			noMenage = menage.getNumero();
 			tiersService.addTiersToCouple(menage, antonio, dateMariage, null);
-			tiersService.addTiersToCouple(menage, cleo, dateMariage, null);
+			tiersService.addTiersToCouple(menage, anneLaure, dateMariage, null);
 
 			addForFiscalPrincipal(menage, MockCommune.Bex.getNoOFS(), dateArriveeBex, null, MotifFor.DEMENAGEMENT_VD, null);
 		}
@@ -154,8 +156,9 @@ public class Ec_18000_13_Arrivee_JIRA1789_Scenario extends EvenementCivilScenari
 		adrs.add(adresse);
 	}
 
-	@Check(id = 2, descr = "Vérifions maintenant que le couple est bien passés sur Lausanne (à cause d'Antonio)")
+	@Check(id = 2, descr = "Vérifions maintenant que le couple est bien resté à Bex (un seul des deux conjoints a déménagé pour le moment)")
 	public void check2() throws Exception {
+
 		final EvenementCivilRegroupe evenement = getEvenementCivilRegoupeForHabitant(noHabAntonio);
 		assertEquals(EtatEvenementCivil.TRAITE, evenement.getEtat(), "L'événement civil devrait être en traité.");
 
@@ -166,16 +169,53 @@ public class Ec_18000_13_Arrivee_JIRA1789_Scenario extends EvenementCivilScenari
 		assertNotNull(ensemble.getPrincipal(), "Pas de membre principal sur le couple!");
 		assertNotNull(ensemble.getConjoint(), "Pas de conjoint sur le couple!");
 
+		final ForFiscalPrincipal ffp = menage.getDernierForFiscalPrincipal();
+		assertNotNull(ffp, "Plus de for principal sur le ménage ?");
+		assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale(), "Mauvais type d'autorité fiscale");
+		assertEquals(MockCommune.Bex.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale(), "Le for du couple aurait dû rester à Bex");
+
+		// l'adresse du couple suit le principal s'il est vaudois
+		assertAdresses(menage, "Lausanne");
+	}
+
+	@Etape(id = 3, descr = "Déménagement d'Anne-Laure aussi à Lausanne")
+	public void etape3() throws Exception {
+
+		addNouvelleAdresse(indAnneLaure);
+
+		final long id = addEvenementCivil(TypeEvenementCivil.ARRIVEE_PRINCIPALE_VAUDOISE, noIndAnneLaure, dateArriveeLausanne, MockCommune.Lausanne.getNoOFS());
+		commitAndStartTransaction();
+		regroupeEtTraiteEvenements(id);
+	}
+
+	@Check(id = 3, descr = "Vérifions maintenant que le couple est bien passés sur Lausanne (les deux membres ont déménagé)")
+	public void check3() throws Exception {
+		final EvenementCivilRegroupe evenement = getEvenementCivilRegoupeForHabitant(noHabAnneLaure);
+		assertNotNull(evenement, "Pas d'événement pour Anne-Laure?");
+		assertEquals(EtatEvenementCivil.TRAITE, evenement.getEtat(), "L'événement civil devrait être en traité.");
+
+		final MenageCommun menage = (MenageCommun) tiersDAO.get(noMenage);
+		assertNotNull(menage, "On ne retrouve plus le ménage commun!");
+		final EnsembleTiersCouple ensemble = tiersService.getEnsembleTiersCouple(menage, null);
+		assertNotNull(ensemble, "On ne retrouve plus l'ensemble couple!");
+		assertNotNull(ensemble.getPrincipal(), "Pas de membre principal sur le couple!");
+		assertNotNull(ensemble.getConjoint(), "Pas de conjoint sur le couple!");
+
+		final ForFiscalPrincipal ffp = menage.getDernierForFiscalPrincipal();
+		assertNotNull(ffp, "Plus de for principal sur le ménage ?");
+		assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale(), "Mauvais type d'autorité fiscale");
+		assertEquals(MockCommune.Lausanne.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale(), "Le for du couple aurait dû venir à Lausanne");
+
 		assertAdresses(menage, "Lausanne");
 	}
 
 	private void assertAdresses(final MenageCommun menage, final String nomCommune) throws AdressesResolutionException {
 		final EnsembleTiersCouple ensemble = tiersService.getEnsembleTiersCouple(menage, null);
 		final AdresseEnvoiDetaillee adresseMenage = adresseService.getAdresseEnvoi(menage, null);
-		assertTrue(adresseMenage.getNpaEtLocalite().contains(nomCommune), "L'adresse d'envoi du ménage devrait être à Lausanne");
+		assertTrue(adresseMenage.getNpaEtLocalite().contains(nomCommune), String.format("L'adresse d'envoi du ménage devrait être à %s", nomCommune));
 		final AdresseEnvoiDetaillee adresseAntoine = adresseService.getAdresseEnvoi(ensemble.getPrincipal(), null);
-		assertTrue(adresseAntoine.getNpaEtLocalite().contains(nomCommune), "L'adresse d'envoi du principal devrait être à Lausanne");
+		assertTrue(adresseAntoine.getNpaEtLocalite().contains(nomCommune), String.format("L'adresse d'envoi du principal devrait être à %s", nomCommune));
 		final AdresseEnvoiDetaillee adresseCleo = adresseService.getAdresseEnvoi(menage, null);
-		assertTrue(adresseCleo.getNpaEtLocalite().contains(nomCommune), "L'adresse d'envoi du conjoint devrait être à Lausanne");
+		assertTrue(adresseCleo.getNpaEtLocalite().contains(nomCommune), String.format("L'adresse d'envoi du conjoint devrait être à %s", nomCommune));
 	}
 }
