@@ -547,7 +547,7 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 		assertEquals("01880", pm.getNumeroIPMRO());
 
 		// Code blocage remboursement automatique
-		assertFalse(pm.isBlocageRemboursementAutomatique());
+		assertTrue(pm.isBlocageRemboursementAutomatique());
 
 		// Date de validite et code de l'état de la PM
 		final EtatPM etat = pm.getEtat();
