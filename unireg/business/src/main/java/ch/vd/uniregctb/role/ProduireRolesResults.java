@@ -19,6 +19,7 @@ import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
+import ch.vd.uniregctb.common.GentilComparator;
 import ch.vd.uniregctb.common.JobResults;
 import ch.vd.uniregctb.evenement.common.EnsembleTiersCouple;
 import ch.vd.uniregctb.role.ProduireRolesResults.InfoContribuable.TypeContribuable;
@@ -253,27 +254,9 @@ public class ProduireRolesResults extends JobResults {
 		/**
 		 * Comparateur de motifs de rattachement : DOMICILE, ACTIVITE_INDEPENDANTE, IMMEUBLE_PRIVE puis tous les autres de manière indiférenciée
 		 */
-		private static final Comparator<MotifRattachement> COMPARATOR_MOTIF_RATTACHEMENT = new Comparator<MotifRattachement>() {
-
-			private final List<MotifRattachement> ORDRE_MOTIFS_RATTACHEMENT = Arrays.asList(MotifRattachement.DOMICILE, MotifRattachement.ACTIVITE_INDEPENDANTE, MotifRattachement.IMMEUBLE_PRIVE);
-
-			public int compare(MotifRattachement o1, MotifRattachement o2) {
-				final int indexMotif1 = ORDRE_MOTIFS_RATTACHEMENT.indexOf(o1);
-				final int indexMotif2 = ORDRE_MOTIFS_RATTACHEMENT.indexOf(o2);
-				if (indexMotif1 == indexMotif2) {
-					return 0;
-				}
-				else if (indexMotif1 == -1) {
-					return 1;
-				}
-				else if (indexMotif2 == -1) {
-					return -1;
-				}
-				else {
-					return indexMotif1 - indexMotif2;
-				}
-			}
-		};
+		private static final Comparator<MotifRattachement> COMPARATOR_MOTIF_RATTACHEMENT = new GentilComparator<MotifRattachement>(Arrays.asList(MotifRattachement.DOMICILE,
+																																				 MotifRattachement.ACTIVITE_INDEPENDANTE,
+																																				 MotifRattachement.IMMEUBLE_PRIVE));
 
 		private static final Comparator<InfoFor> COMPARATOR_OUVERTURE = new Comparator<InfoFor>() {
 			public int compare(InfoFor o1, InfoFor o2) {
