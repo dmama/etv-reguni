@@ -769,6 +769,47 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		}
 	}
 
+	@Test
+	public void testIdentifieSansAdresse() throws Exception {
+
+		class Ids {
+			Long robert;
+
+		}
+		final Ids ids = new Ids();
+
+		doInNewTransaction(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique robert = addNonHabitant("Robert", "Nicoud", date(1953, 4, 3), Sexe.MASCULIN);
+				ids.robert = robert.getNumero();
+
+				return null;
+			}
+		});
+
+		// Robert
+		{
+			CriteresPersonne criteres = new CriteresPersonne();
+			criteres.setNom("Nicoud");
+			CriteresAdresse adresse = new CriteresAdresse();
+			adresse.setNpaSuisse(1000);
+			criteres.setAdresse(adresse);
+
+			final List<PersonnePhysique> list = service.identifie(criteres);
+			assertNotNull(list);
+			assertEquals(1, list.size());
+			Collections.sort(list, new PPComparator());
+
+			final PersonnePhysique pp0 = list.get(0);
+			assertEquals(ids.robert, pp0.getNumero());
+
+
+		}
+
+
+	}
+
 	@NotTransactional
 	@Test
 	public void testHandleDemandeZeroContribuableTrouve() throws Exception {
