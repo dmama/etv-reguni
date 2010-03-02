@@ -130,7 +130,7 @@ public class ImpressionNouveauxDossiersHelperImpl implements ImpressionNouveauxD
 		dossier.setNumOffice(numeroOfsAutoriteFiscale.toString());
 		Commune commune;
 		try {
-			commune = serviceInfrastructureService.getCommuneByNumeroOfsEtendu(numeroOfsAutoriteFiscale);
+			commune = serviceInfrastructureService.getCommuneByNumeroOfsEtendu(numeroOfsAutoriteFiscale, forFiscalGestion.getDateFin());
 		}
 		catch (InfrastructureException e) {
 			commune = null;

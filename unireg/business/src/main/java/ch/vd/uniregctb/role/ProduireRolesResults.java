@@ -452,6 +452,7 @@ public class ProduireRolesResults extends JobResults<Long, ProduireRolesResults>
 	// paramètres d'entrée
 	public final int annee;
 	public final RegDate dateTraitement;
+	public final int nbThreads;
 	/** renseigné en cas de sélection d'une seule commune */
 	public final Integer noOfsCommune;
 	/** renseigné en cas de sélection d'un office d'impôt */
@@ -465,15 +466,16 @@ public class ProduireRolesResults extends JobResults<Long, ProduireRolesResults>
 	public boolean interrompu;
 
 	/** résultats pour toutes les communes vaudoises */
-	public ProduireRolesResults(int anneePeriode, RegDate dateTraitement) {
-		this(anneePeriode, null, null, dateTraitement);
+	public ProduireRolesResults(int anneePeriode, int nbThreads, RegDate dateTraitement) {
+		this(anneePeriode, null, null, nbThreads, dateTraitement);
 	}
 
 	/** résultats pour une seule commune vaudoise ou un seul office d'impôt */
-	public ProduireRolesResults(int anneePeriode, Integer noOfsCommune, Integer noColOID, RegDate dateTraitement) {
+	public ProduireRolesResults(int anneePeriode, Integer noOfsCommune, Integer noColOID, int nbThreads, RegDate dateTraitement) {
 		this.annee = anneePeriode;
 		this.noOfsCommune = noOfsCommune;
 		this.noColOID = noColOID;
+		this.nbThreads = nbThreads;
 		this.dateTraitement = dateTraitement;
 	}
 
@@ -529,5 +531,14 @@ public class ProduireRolesResults extends JobResults<Long, ProduireRolesResults>
 				thisInfo.addAll(e.getValue());
 			}
 		}
+	}
+
+	@Override
+	public void end() {
+		super.end();
+
+		// tri des erreurs et des contribuables ignorés
+		Collections.sort(ctbsEnErrors, new CtbComparator<Erreur>());
+		Collections.sort(ctbsIgnores, new CtbComparator<Ignore>());
 	}
 }

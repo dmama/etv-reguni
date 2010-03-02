@@ -8,6 +8,9 @@ import java.util.List;
 import java.util.Map;
 
 import ch.vd.infrastructure.service.InfrastructureException;
+import ch.vd.registre.base.date.DateRange;
+import ch.vd.registre.base.date.DateRangeHelper;
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.interfaces.model.Adresse;
@@ -126,6 +129,34 @@ public abstract class AbstractServiceInfrastructureService implements ServiceInf
 	}
 
 	/**
+	 * Si la collection de candidats ne contient aucun élément, renvoie <code>null</code>, si elle contient 1 élément, renvoie celui-là,
+	 * et si elle contient plus d'un élément, renvoie le premier élément trouvé valide à la date donnée (<code>null</code>
+	 * si aucun n'est valide à la date donnée).
+	 * @param candidats liste des communes potentielles
+	 * @param dateValidite date déterminante en cas de possibilités multiples
+	 * @return une commune
+	 */
+	protected static Commune choisirCommune(List<Commune> candidats, RegDate dateValidite) {
+		Commune resultat = null;
+		if (candidats != null && candidats.size() > 0) {
+			if (candidats.size() == 1) {
+				resultat = candidats.get(0);
+			}
+			else {
+				// date de validité de chacune des communes...
+				for (Commune commune : candidats) {
+					final DateRange range = new DateRangeHelper.Range(commune.getDateDebutValidite(), commune.getDateFinValidite());
+					if (range.isValidAt(dateValidite)) {
+						resultat = commune;
+						break;
+					}
+				}
+			}
+		}
+		return resultat;
+	}
+
+	/**
 	 * {@inheritDoc}
 	 */
 	public List<Localite> getLocaliteByCommune(int commune) throws InfrastructureException {
@@ -241,7 +272,7 @@ public abstract class AbstractServiceInfrastructureService implements ServiceInf
 	 * {@inheritDoc}
 	 */
 	public Canton getCantonByCommune(int noOfsCommune) throws InfrastructureException {
-		Commune commune = getCommuneByNumeroOfsEtendu(noOfsCommune);
+		final Commune commune = getCommuneByNumeroOfsEtendu(noOfsCommune, null);
 		if (commune == null) {
 			throw new InfrastructureException("La commune avec le numéro Ofs " + noOfsCommune + " n'existe pas");
 		}

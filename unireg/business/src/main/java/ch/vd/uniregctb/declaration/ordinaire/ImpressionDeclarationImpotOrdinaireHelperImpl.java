@@ -507,7 +507,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 		final Commune commune;
 		try {
 			int noOfsCommune = declaration.getNumeroOfsForGestion();
-			commune = infraService.getCommuneByNumeroOfsEtendu(noOfsCommune);
+			commune = infraService.getCommuneByNumeroOfsEtendu(noOfsCommune, declaration.getDateFin());
 		}
 		catch (InfrastructureException e) {
 			throw new EditiqueException(e);

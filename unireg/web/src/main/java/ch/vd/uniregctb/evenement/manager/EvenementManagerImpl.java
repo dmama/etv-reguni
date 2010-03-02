@@ -113,8 +113,8 @@ public class EvenementManagerImpl implements EvenementManager, MessageSourceAwar
 	 */
 	public EvenementView get(Long id) throws AdresseException, InfrastructureException {
 
-		EvenementView evtView = new EvenementView();
-		EvenementCivilRegroupe evt = evenementCivilRegroupeDAO.get(id);
+		final EvenementView evtView = new EvenementView();
+		final EvenementCivilRegroupe evt = evenementCivilRegroupeDAO.get(id);
 		if (evt == null) {
 			throw new ObjectNotFoundException(this.getMessageSource().getMessage("error.evenement.inexistant" , null,  WebContextUtils.getDefaultLocale()));
 		}
@@ -122,28 +122,28 @@ public class EvenementManagerImpl implements EvenementManager, MessageSourceAwar
 
 		evtView.setIndividuPrincipal(hostCivilService.getIndividu(evtView.getEvenement().getNumeroIndividuPrincipal()));
 
-		Individu individu = serviceCivilService.getIndividu(evtView.getEvenement().getNumeroIndividuPrincipal(), DateHelper.getYear(new Date()));
-		AdresseEnvoi adressePrincipal = adresseService.getAdresseEnvoi(individu, RegDate.get(), false);
+		final Individu individu = serviceCivilService.getIndividu(evtView.getEvenement().getNumeroIndividuPrincipal(), DateHelper.getYear(new Date()));
+		final AdresseEnvoi adressePrincipal = adresseService.getAdresseEnvoi(individu, RegDate.get(), false);
 		evtView.setAdressePrincipal(adressePrincipal);
 
-		Long conjoint = evtView.getEvenement().getNumeroIndividuConjoint();
+		final Long conjoint = evtView.getEvenement().getNumeroIndividuConjoint();
 		if (conjoint != null) {
 			evtView.setIndividuConjoint(hostCivilService.getIndividu(conjoint));
-			Individu conjointInd = serviceCivilService.getIndividu(evtView.getEvenement().getNumeroIndividuPrincipal(), DateHelper.getYear(new Date()));
+			final Individu conjointInd = serviceCivilService.getIndividu(evtView.getEvenement().getNumeroIndividuPrincipal(), DateHelper.getYear(new Date()));
 			AdresseEnvoi adresseConjoint = adresseService.getAdresseEnvoi(conjointInd, RegDate.get(), false);
 			evtView.setAdresseConjoint(adresseConjoint);
 		}
 
-		List<TiersAssocieView> tiersAssocies = new ArrayList<TiersAssocieView>();
+		final List<TiersAssocieView> tiersAssocies = new ArrayList<TiersAssocieView>();
 
-		PersonnePhysique habitantPrincipal = tiersDAO.getPPByNumeroIndividu(evtView.getEvenement().getNumeroIndividuPrincipal());
+		final PersonnePhysique habitantPrincipal = tiersDAO.getPPByNumeroIndividu(evtView.getEvenement().getNumeroIndividuPrincipal());
 		if (habitantPrincipal != null) {
-			TiersAssocieView tiersAssocie = setTiersAssocieView (habitantPrincipal);
+			final TiersAssocieView tiersAssocie = setTiersAssocieView (habitantPrincipal);
 			tiersAssocie.setLocaliteOuPays(getLocaliteOuPays(habitantPrincipal));
-			ForFiscalPrincipal forFiscalPrincipal = habitantPrincipal.getDernierForFiscalPrincipal();
+			final ForFiscalPrincipal forFiscalPrincipal = habitantPrincipal.getDernierForFiscalPrincipal();
 			if (forFiscalPrincipal != null) {
-				Integer numeroOfsAutoriteFiscale = forFiscalPrincipal.getNumeroOfsAutoriteFiscale();
-				Commune commune = serviceInfrastructureService.getCommuneByNumeroOfsEtendu(numeroOfsAutoriteFiscale.intValue());
+				final Integer numeroOfsAutoriteFiscale = forFiscalPrincipal.getNumeroOfsAutoriteFiscale();
+				final Commune commune = serviceInfrastructureService.getCommuneByNumeroOfsEtendu(numeroOfsAutoriteFiscale, forFiscalPrincipal.getDateFin());
 				if (commune != null) {
 					tiersAssocie.setForPrincipal(commune.getNomMinuscule());
 				}
@@ -155,18 +155,18 @@ public class EvenementManagerImpl implements EvenementManager, MessageSourceAwar
 
 
 		if (evtView.getEvenement().getNumeroIndividuConjoint() != null) {
-			PersonnePhysique habitantConjoint = tiersDAO.getPPByNumeroIndividu(evtView.getEvenement().getNumeroIndividuConjoint());
+			final PersonnePhysique habitantConjoint = tiersDAO.getPPByNumeroIndividu(evtView.getEvenement().getNumeroIndividuConjoint());
 			if (habitantConjoint != null) {
 				TiersAssocieView tiersAssocie = setTiersAssocieView(habitantConjoint);
 				tiersAssocies.add(tiersAssocie);
 			}
 		}
 
-		EnsembleTiersCouple ensembleTiersCouple = tiersService.getEnsembleTiersCouple(habitantPrincipal, RegDate.get());
+		final EnsembleTiersCouple ensembleTiersCouple = tiersService.getEnsembleTiersCouple(habitantPrincipal, RegDate.get());
 		if (ensembleTiersCouple != null) {
-			MenageCommun menageCommun = ensembleTiersCouple.getMenage();
+			final MenageCommun menageCommun = ensembleTiersCouple.getMenage();
 			if (menageCommun != null) {
-				TiersAssocieView tiersAssocie = setTiersAssocieView(menageCommun);
+				final TiersAssocieView tiersAssocie = setTiersAssocieView(menageCommun);
 				tiersAssocies.add(tiersAssocie);
 			}
 		}
@@ -227,7 +227,7 @@ public class EvenementManagerImpl implements EvenementManager, MessageSourceAwar
 		final ForFiscalPrincipal forFiscalPrincipal = tiers.getDernierForFiscalPrincipal();
 		if (forFiscalPrincipal != null) {
 			final Integer numeroOfsAutoriteFiscale = forFiscalPrincipal.getNumeroOfsAutoriteFiscale();
-			final Commune commune = serviceInfrastructureService.getCommuneByNumeroOfsEtendu(numeroOfsAutoriteFiscale);
+			final Commune commune = serviceInfrastructureService.getCommuneByNumeroOfsEtendu(numeroOfsAutoriteFiscale, forFiscalPrincipal.getDateFin());
 			if (commune != null) {
 				tiersAssocie.setForPrincipal(commune.getNomMinuscule());
 			}

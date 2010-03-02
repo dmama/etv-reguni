@@ -172,7 +172,7 @@ public class ImpressionTaxationOfficeHelperImpl implements ImpressionTaxationOff
 
 		final int noOfsCommune = forGestion.getNoOfsCommune();
 		try {
-			final Commune commune = serviceInfrastructureService.getCommuneByNumeroOfsEtendu(noOfsCommune);
+			final Commune commune = serviceInfrastructureService.getCommuneByNumeroOfsEtendu(noOfsCommune, forGestion.getDateFin());
 			if (commune == null) {
 				final String message = String.format("La commune correspondant au numéro %d n'a pas pu être déterminée", noOfsCommune);
 				throw new EditiqueException(message);

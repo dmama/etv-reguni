@@ -49,12 +49,11 @@ public class TiersListManagerImpl implements TiersListManager {
 		tiersCriteriaView.setLocaliteOuPays(localiteOuPays);
 		if ((noOfsFor != null) && (!"".equals(noOfsFor))) {
 			tiersCriteriaView.setNoOfsFor(noOfsFor);
-			Commune commune = serviceInfrastructureService.getCommuneByNumeroOfsEtendu(Integer.valueOf(noOfsFor).intValue());
+			final Commune commune = serviceInfrastructureService.getCommuneByNumeroOfsEtendu(Integer.valueOf(noOfsFor), null);
 			tiersCriteriaView.setForAll(commune.getNomMinuscule());
 		}
 		tiersCriteriaView.setDateNaissance(dateNaissance);
 		tiersCriteriaView.setNumeroAVS(numeroAssureSocial);
-
 	}
 
 	public ServiceInfrastructureService getServiceInfrastructureService() {

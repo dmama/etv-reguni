@@ -1,9 +1,12 @@
 package ch.vd.uniregctb.interfaces.service;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.stats.StatsService;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Ehcache;
@@ -475,10 +478,10 @@ public class ServiceInfrastructureCache extends AbstractServiceInfrastructureSer
 		return resultat;
 	}
 
-	private static class KeyGetCommuneByNumeroOfsEtendu {
+	private static class KeyGetCommunesByNumeroOfsEtendu {
 		int noCommune;
 
-		private KeyGetCommuneByNumeroOfsEtendu(int noCommune) {
+		private KeyGetCommunesByNumeroOfsEtendu(int noCommune) {
 			this.noCommune = noCommune;
 		}
 
@@ -498,26 +501,50 @@ public class ServiceInfrastructureCache extends AbstractServiceInfrastructureSer
 				return false;
 			if (getClass() != obj.getClass())
 				return false;
-			KeyGetCommuneByNumeroOfsEtendu other = (KeyGetCommuneByNumeroOfsEtendu) obj;
+			final KeyGetCommunesByNumeroOfsEtendu other = (KeyGetCommunesByNumeroOfsEtendu) obj;
 			return noCommune == other.noCommune;
 		}
 
 	}
 
-	public Commune getCommuneByNumeroOfsEtendu(int noCommune) throws InfrastructureException {
-		final Commune resultat;
+	@SuppressWarnings({"unchecked"})
+	public Commune getCommuneByNumeroOfsEtendu(int noCommune, RegDate date) throws InfrastructureException {
 
-		final KeyGetCommuneByNumeroOfsEtendu key = new KeyGetCommuneByNumeroOfsEtendu(noCommune);
+		final KeyGetCommunesByNumeroOfsEtendu key = new KeyGetCommunesByNumeroOfsEtendu(noCommune);
 		final Element element = cache.get(key);
+
+		final List<Commune> candidats;
 		if (element == null) {
-			resultat = target.getCommuneByNumeroOfsEtendu(noCommune);
-			cache.put(new Element(key, resultat));
+			candidats = buildListOfCommunesByNumeroOfsEtendu(key);
 		}
 		else {
-			resultat = (Commune) element.getObjectValue();
+			candidats = (List<Commune>) element.getObjectValue();
 		}
 
-		return resultat;
+		return choisirCommune(candidats, date);
+	}
+
+	@SuppressWarnings({"unchecked"})
+	private synchronized List<Commune> buildListOfCommunesByNumeroOfsEtendu(KeyGetCommunesByNumeroOfsEtendu key) throws InfrastructureException {
+		Element elt = cache.get(key);
+		if (elt == null) {
+
+			List<Commune> results = new ArrayList<Commune>(2);
+			final int noCommune = key.noCommune;
+			final List<Commune> communes = getCommunes();
+			for (Commune commune : communes) {
+				if (commune.getNoOFSEtendu() == noCommune) {
+					results.add(commune);
+				}
+			}
+			results = results.size() > 0 ? results : Collections.<Commune>emptyList();
+			cache.put(new Element(key, results));
+
+			return results;
+		}
+		else {
+			return (List<Commune>) elt.getObjectValue();
+		}
 	}
 
 	private static class KeyGetCommunesDeVaud {

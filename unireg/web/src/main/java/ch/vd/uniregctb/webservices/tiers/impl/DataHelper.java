@@ -20,6 +20,7 @@ import ch.vd.uniregctb.indexer.tiers.HabitantIndexable;
 import ch.vd.uniregctb.indexer.tiers.MenageCommunIndexable;
 import ch.vd.uniregctb.indexer.tiers.NonHabitantIndexable;
 import ch.vd.uniregctb.interfaces.model.Commune;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.webservices.batch.Param;
 import ch.vd.uniregctb.webservices.tiers.Adresse;
@@ -172,13 +173,13 @@ public class DataHelper {
 	/**
 	 * @return le nom minuscule de la commune; ou <b>null</b> si la commune n'existe pas ou en cas d'erreur d'accès à l'infrastructure.
 	 */
-	public static String getNomCommune(int numeroOfsCommune, ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService serviceInfra) {
+	public static String getNomCommune(int numeroOfsCommune, RegDate date, ServiceInfrastructureService serviceInfra) {
 
 		String nomCommune = null;
 
 		try {
 			Assert.notNull(serviceInfra);
-			final Commune commune = serviceInfra.getCommuneByNumeroOfsEtendu(numeroOfsCommune);
+			final Commune commune = serviceInfra.getCommuneByNumeroOfsEtendu(numeroOfsCommune, date);
 			if (commune != null) {
 				nomCommune = commune.getNomMinuscule();
 			}

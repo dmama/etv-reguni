@@ -340,10 +340,9 @@ public class ValidationJobThread extends Thread {
 			// Vérification de la cohérence du type d'autorité fiscale par rapport au numéro Ofs
 			try {
 				if (TypeAutoriteFiscale.PAYS_HS.equals(type)) {
-					final Pays pays = serviceInfra.getPays(noOfs.intValue());
+					final Pays pays = serviceInfra.getPays(noOfs);
 					if (pays == null) {
-						results.addErrorAutoriteForFiscal(contribuable, f, "le pays avec le numéro Ofs " + noOfs.intValue()
-								+ " n'existe pas.");
+						results.addErrorAutoriteForFiscal(contribuable, f, "le pays avec le numéro Ofs " + noOfs + " n'existe pas.");
 						continue;
 					}
 					if (pays.getSigleOFS().equals(ServiceInfrastructureService.SIGLE_SUISSE)) {
@@ -353,10 +352,9 @@ public class ValidationJobThread extends Thread {
 					}
 				}
 				else {
-					final Commune commune = serviceInfra.getCommuneByNumeroOfsEtendu(noOfs.intValue());
+					final Commune commune = serviceInfra.getCommuneByNumeroOfsEtendu(noOfs, f.getDateFin());
 					if (commune == null) {
-						results.addErrorAutoriteForFiscal(contribuable, f, "la commune avec le numéro Ofs " + noOfs.intValue()
-								+ " n'existe pas.");
+						results.addErrorAutoriteForFiscal(contribuable, f, "la commune avec le numéro Ofs " + noOfs + " n'existe pas.");
 						continue;
 					}
 					if (TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD.equals(type) && !serviceInfra.estDansLeCanton(commune)) {

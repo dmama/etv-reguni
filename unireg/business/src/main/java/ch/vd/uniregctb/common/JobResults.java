@@ -2,6 +2,7 @@ package ch.vd.uniregctb.common;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.springframework.orm.hibernate3.HibernateTemplate;
@@ -35,6 +36,16 @@ public abstract class JobResults<E, R extends JobResults> implements BatchResult
 		}
 
 		public abstract String getDescriptionRaison();
+	}
+
+	/**
+	 * Comparator utilisable pour trier les "info" dans l'ordre croissant du numéro de contribuable
+	 * @param <T>
+	 */
+	public static class CtbComparator<T extends Info> implements Comparator<T> {
+		public int compare(T o1, T o2) {
+			return (int) (o1.noCtb - o2.noCtb);
+		}
 	}
 
 	private static AdresseService adresseService;

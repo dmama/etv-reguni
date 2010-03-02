@@ -121,7 +121,7 @@ public class TiersGeneralManagerImpl implements TiersGeneralManager{
 		if (forGestion != null) {
 			final int ofsCommune = forGestion.getNoOfsCommune();
 			try {
-				final Commune commune = infraService.getCommuneByNumeroOfsEtendu(ofsCommune);
+				final Commune commune = infraService.getCommuneByNumeroOfsEtendu(ofsCommune, forGestion.getDateFin());
 				view.setNomCommuneGestion(commune.getNomMinuscule());
 			}
 			catch (InfrastructureException e) {

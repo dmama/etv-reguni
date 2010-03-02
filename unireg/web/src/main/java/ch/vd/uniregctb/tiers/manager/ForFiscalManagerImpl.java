@@ -175,13 +175,13 @@ public class ForFiscalManagerImpl extends TiersManager implements ForFiscalManag
 		case COMMUNE_OU_FRACTION_VD:
 			forFiscalView.setNumeroForFiscalCommune(forFiscal.getNumeroOfsAutoriteFiscale());
 			if (forFiscal.getNumeroOfsAutoriteFiscale() != null) {
-				forFiscalView.setLibFractionCommune(serviceInfra.getCommuneByNumeroOfsEtendu(forFiscal.getNumeroOfsAutoriteFiscale()).getNomMinuscule());
+				forFiscalView.setLibFractionCommune(serviceInfra.getCommuneByNumeroOfsEtendu(forFiscal.getNumeroOfsAutoriteFiscale(), forFiscal.getDateFin()).getNomMinuscule());
 			}
 			break;
 		case COMMUNE_HC:
 			forFiscalView.setNumeroForFiscalCommuneHorsCanton(forFiscal.getNumeroOfsAutoriteFiscale());
 			if (forFiscal.getNumeroOfsAutoriteFiscale() != null) {
-				forFiscalView.setLibCommuneHorsCanton(serviceInfra.getCommuneByNumeroOfsEtendu(forFiscal.getNumeroOfsAutoriteFiscale()).getNomMinuscule());
+				forFiscalView.setLibCommuneHorsCanton(serviceInfra.getCommuneByNumeroOfsEtendu(forFiscal.getNumeroOfsAutoriteFiscale(), forFiscal.getDateFin()).getNomMinuscule());
 			}
 			break;
 		case PAYS_HS:

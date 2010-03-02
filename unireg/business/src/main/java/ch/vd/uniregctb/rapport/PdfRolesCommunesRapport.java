@@ -16,7 +16,6 @@ import ch.vd.uniregctb.type.MotifFor;
 
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.PdfWriter;
-import org.apache.log4j.Logger;
 
 import java.io.OutputStream;
 import java.util.*;
@@ -25,8 +24,6 @@ import java.util.*;
  * Rapport PDF contenant les résultats de l'exécution du job de production des rôles pour les communes
  */
 public class PdfRolesCommunesRapport extends PdfRapport {
-
-	private static final Logger LOGGER = Logger.getLogger(PdfRolesCommunesRapport.class);
 
 	private ServiceInfrastructureService infraService;
 
@@ -52,7 +49,7 @@ public class PdfRolesCommunesRapport extends PdfRapport {
 
 	    // Titre
 	    if (results.noOfsCommune != null) {
-	        final Commune commune = getCommune(results.noOfsCommune);
+	        final Commune commune = getCommune(results.noOfsCommune, RegDate.get(results.annee, 12, 31));
 	        addTitrePrincipal("Rapport des rôles pour la commune de " + commune.getNomMinuscule());
 	    } else if (results.noColOID != null) {
 	        final OfficeImpot office = getOfficeImpot(results.noColOID);
@@ -66,8 +63,9 @@ public class PdfRolesCommunesRapport extends PdfRapport {
 	    {
 	        addTableSimple(2, new PdfRapport.TableSimpleCallback() {
 	            public void fillTable(PdfTableSimple table) throws DocumentException {
-	                table.addLigne("Année fiscale:", String.valueOf(results.annee));
-	                table.addLigne("Date de traitement:", RegDateHelper.dateToDisplayString(results.dateTraitement));
+	                table.addLigne("Année fiscale :", String.valueOf(results.annee));
+	                table.addLigne("Nombre de threads :", String.valueOf(results.nbThreads));
+	                table.addLigne("Date de traitement :", RegDateHelper.dateToDisplayString(results.dateTraitement));
 	            }
 	        });
 	    }
@@ -211,9 +209,9 @@ public class PdfRolesCommunesRapport extends PdfRapport {
 		}
 	}
 
-	private Commune getCommune(int noOfsCommune) {
+	private Commune getCommune(int noOfsCommune, RegDate date) {
 		try {
-			return infraService.getCommuneByNumeroOfsEtendu(noOfsCommune);
+			return infraService.getCommuneByNumeroOfsEtendu(noOfsCommune, date);
 		}
 		catch (InfrastructureException e) {
 			return null;
@@ -238,7 +236,7 @@ public class PdfRolesCommunesRapport extends PdfRapport {
 		final List<Commune> listCommunes = new ArrayList<Commune>(results.infosCommunes.size());
 		for (ProduireRolesResults.InfoCommune infoCommune : results.infosCommunes.values()) {
 			final int noOfs = infoCommune.getNoOfs();
-			final Commune commune = getCommune(noOfs);
+			final Commune commune = getCommune(noOfs, RegDate.get(results.annee, 12, 31));
 
 			if (commune == null) {
 				Audit.error("Rôles des communes: impossible de déterminer la commune avec le numéro Ofs = " + noOfs);

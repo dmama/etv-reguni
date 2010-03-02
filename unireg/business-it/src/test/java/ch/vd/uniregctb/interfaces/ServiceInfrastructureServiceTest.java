@@ -10,6 +10,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.BusinessItTest;
 import ch.vd.uniregctb.interfaces.model.Canton;
 import ch.vd.uniregctb.interfaces.model.Commune;
@@ -132,11 +133,11 @@ public class ServiceInfrastructureServiceTest extends BusinessItTest {
 	@Test
 	public void testCommuneEstDansLeCanton() throws Exception {
 
-		Canton vaud = service.getVaud();
+		final Canton vaud = service.getVaud();
 		assertNotNull(vaud);
 		assertEquals(22, vaud.getNoOFS());
 
-		Commune lausanne = service.getCommuneByNumeroOfsEtendu(5586);
+		final Commune lausanne = service.getCommuneByNumeroOfsEtendu(5586, null);
 		assertNotNull(lausanne);
 		assertEquals("Lausanne", lausanne.getNomMinuscule());
 
@@ -146,10 +147,58 @@ public class ServiceInfrastructureServiceTest extends BusinessItTest {
 	@Test
 	public void testGetPaysByCode() throws Exception {
 
-		Pays ch = service.getPays("CH");
+		final Pays ch = service.getPays("CH");
 		assertEquals("CH", ch.getSigleOFS());
+		assertEquals("Suisse", ch.getNomMinuscule());
 
-		Pays be = service.getPays("BE");
+		final Pays fr = service.getPays("FR");
+		assertEquals("FR", fr.getSigleOFS());
+		assertEquals("France", fr.getNomMinuscule());
+
+		final Pays be = service.getPays("BE");
 		assertEquals("BE", be.getSigleOFS());
+		assertEquals("Belgique", be.getNomMinuscule());
+	}
+
+	@Test
+	public void testDateValiditeCommuneLusseryVillars() throws Exception {
+
+		final int noOfsLussery = 5487;
+		{
+			final Commune lussery = service.getCommuneByNumeroOfsEtendu(noOfsLussery, RegDate.get(1998, 12, 1));    // fusion au 31.12.1998
+			assertNotNull(lussery);
+			assertEquals("Lussery", lussery.getNomMinuscule());
+		}
+		{
+			final Commune lusseryVillars = service.getCommuneByNumeroOfsEtendu(noOfsLussery, RegDate.get(1999, 1, 1));  // fusion au 31.12.1998
+			assertNotNull(lusseryVillars);
+			assertEquals("Lussery-Villars", lusseryVillars.getNomMinuscule());
+		}
+		{
+			final Commune lusseryVillars = service.getCommuneByNumeroOfsEtendu(noOfsLussery, null);          // commune toujours ouverte
+			assertNotNull(lusseryVillars);
+			assertEquals("Lussery-Villars", lusseryVillars.getNomMinuscule());
+		}
+	}
+
+	@Test
+	public void testDateValiditeCommuneCloturee() throws Exception {
+
+		final int noOfsHerlisberg = 1029;       // commune clôturée le 31.12.2004
+		{
+			final Commune herlisberg = service.getCommuneByNumeroOfsEtendu(noOfsHerlisberg, RegDate.get(2000, 1, 1));
+			assertNotNull(herlisberg);      // la date ne devrait pas être prise en compte puisqu'il n'y a qu'une seule commune
+			assertEquals(RegDate.get(2004, 12, 31), herlisberg.getDateFinValidite());
+		}
+		{
+			final Commune herlisberg = service.getCommuneByNumeroOfsEtendu(noOfsHerlisberg, RegDate.get(2005, 1, 1));
+			assertNotNull(herlisberg);      // la date ne devrait pas être prise en compte puisqu'il n'y a qu'une seule commune
+			assertEquals(RegDate.get(2004, 12, 31), herlisberg.getDateFinValidite());
+		}
+		{
+			final Commune herlisberg = service.getCommuneByNumeroOfsEtendu(noOfsHerlisberg, null);
+			assertNotNull(herlisberg);      // la date ne devrait pas être prise en compte puisqu'il n'y a qu'une seule commune
+			assertEquals(RegDate.get(2004, 12, 31), herlisberg.getDateFinValidite());
+		}
 	}
 }

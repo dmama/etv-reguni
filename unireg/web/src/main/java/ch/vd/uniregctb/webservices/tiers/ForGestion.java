@@ -47,13 +47,13 @@ public class ForGestion{
 		this.dateDebut = null;
 		this.dateFin = null;
 		this.noOfsCommune = context.noOfsTranslator.translateCommune(noOfsCommune);
-		this.nomCommune = DataHelper.getNomCommune(this.noOfsCommune, context.infraService);
+		this.nomCommune = DataHelper.getNomCommune(this.noOfsCommune, null, context.infraService);
 	}
 
 	public ForGestion(ch.vd.uniregctb.tiers.ForGestion forGestion, Context context) {
 		this.dateDebut = DataHelper.coreToWeb(forGestion.getDateDebut());
 		this.dateFin = DataHelper.coreToWeb(forGestion.getDateFin());
 		this.noOfsCommune = context.noOfsTranslator.translateCommune(forGestion.getNoOfsCommune());
-		this.nomCommune = DataHelper.getNomCommune(this.noOfsCommune, context.infraService);
+		this.nomCommune = DataHelper.getNomCommune(this.noOfsCommune, forGestion.getDateFin(), context.infraService);
 	}
 }

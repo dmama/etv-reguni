@@ -33,6 +33,7 @@ public class ProduireRolesCommunesJob extends JobDefinition {
 	private static final String CATEGORIE = "Stats";
 
 	public static final String PERIODE_FISCALE = "PERIODE";
+	public static final String NB_THREADS = "NB_THREADS";
 	public static final String NO_OFS_COMMUNE = "NO_OFS_COMMUNE";
 	public static final String NO_COL_OFFICE_IMPOT = "NO_COL_OFFICE_IMPOT";
 
@@ -43,21 +44,28 @@ public class ProduireRolesCommunesJob extends JobDefinition {
 	static {
 		params = new ArrayList<JobParam>();
 		{
-			JobParam param = new JobParam();
+			final JobParam param = new JobParam();
 			param.setDescription("Période fiscale");
 			param.setName(PERIODE_FISCALE);
 			param.setMandatory(true);
 			param.setType(new JobParamInteger());
 			params.add(param);
 
-			JobParam param3 = new JobParam();
+			final JobParam param2 = new JobParam();
+			param2.setDescription("Nombre de threads");
+			param2.setName(NB_THREADS);
+			param2.setMandatory(true);
+			param2.setType(new JobParamInteger());
+			params.add(param2);
+
+			final JobParam param3 = new JobParam();
 			param3.setDescription("Nom d'une commune (optionnel)");
 			param3.setName(NO_OFS_COMMUNE);
 			param3.setMandatory(false);
 			param3.setType(new JobParamCommune());
 			params.add(param3);
 
-			JobParam param4 = new JobParam();
+			final JobParam param4 = new JobParam();
 			param4.setDescription("Nom d'un office d'impôt (optionnel)");
 			param4.setName(NO_COL_OFFICE_IMPOT);
 			param4.setMandatory(false);
@@ -69,6 +77,7 @@ public class ProduireRolesCommunesJob extends JobDefinition {
 		{
 			RegDate today = RegDate.get();
 			defaultParams.put(PERIODE_FISCALE, today.year() - 1);
+			defaultParams.put(NB_THREADS, 4);
 		}
 	}
 
@@ -107,19 +116,23 @@ public class ProduireRolesCommunesJob extends JobDefinition {
 		if (annee == null) {
 			throw new RuntimeException("La période fiscale doit être spécifiée.");
 		}
+		final Integer nbThreads = (Integer) params.get(NB_THREADS);
+		if (nbThreads == null) {
+			throw new RuntimeException("Le nombre de threads doit être spécifié.");
+		}
 
 		final Integer noOfsCommune = (Integer) params.get(NO_OFS_COMMUNE);
 		final Integer noColOID = (Integer) params.get(NO_COL_OFFICE_IMPOT);
 
 		final ProduireRolesResults results;
 		if (noOfsCommune != null) {
-			results = service.produireRolesPourUneCommune(annee, noOfsCommune, statusManager);
+			results = service.produireRolesPourUneCommune(annee, noOfsCommune, nbThreads, statusManager);
 		}
 		else if (noColOID != null) {
-			results = service.produireRolesPourUnOfficeImpot(annee, noColOID, statusManager);
+			results = service.produireRolesPourUnOfficeImpot(annee, noColOID, nbThreads, statusManager);
 		}
 		else {
-			results = service.produireRolesPourToutesCommunes(annee, statusManager);
+			results = service.produireRolesPourToutesCommunes(annee, nbThreads, statusManager);
 		}
 
 		// Produit le rapport dans une transaction read-write.

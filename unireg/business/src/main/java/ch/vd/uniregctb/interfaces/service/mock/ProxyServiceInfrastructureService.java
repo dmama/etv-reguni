@@ -5,6 +5,7 @@ import java.util.List;
 
 import ch.vd.infrastructure.model.EnumTypeCollectivite;
 import ch.vd.infrastructure.service.InfrastructureException;
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.Canton;
@@ -65,8 +66,8 @@ public class ProxyServiceInfrastructureService implements ServiceInfrastructureS
 		return target.getCantonByCommune(noOfsCommune);
 	}
 
-	public Commune getCommuneByNumeroOfsEtendu(int noCommune) throws InfrastructureException {
-		return target.getCommuneByNumeroOfsEtendu(noCommune);
+	public Commune getCommuneByNumeroOfsEtendu(int noCommune, RegDate date) throws InfrastructureException {
+		return target.getCommuneByNumeroOfsEtendu(noCommune, date);
 	}
 
 	public Commune getCommuneVaudByNumACI(Integer numeroACI) throws InfrastructureException {

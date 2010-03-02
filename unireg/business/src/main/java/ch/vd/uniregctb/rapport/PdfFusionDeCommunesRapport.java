@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.rapport;
 
 import ch.vd.infrastructure.service.InfrastructureException;
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.StatusManager;
@@ -46,8 +47,8 @@ public class PdfFusionDeCommunesRapport extends PdfRapport {
 				public void fillTable(PdfTableSimple table) throws DocumentException {
 					table.addLigne("Date de traitement:", RegDateHelper.dateToDisplayString(results.dateTraitement));
 					table.addLigne("Date de fusion:", RegDateHelper.dateToDisplayString(results.dateFusion));
-					table.addLigne("Anciennes Communes:", displayCommunes(results.anciensNoOfs, infraService));
-					table.addLigne("Commune résultante:", displayCommune(results.nouveauNoOfs, infraService));
+					table.addLigne("Anciennes Communes:", displayCommunes(results.anciensNoOfs, results.dateFusion.getOneDayBefore(), infraService));
+					table.addLigne("Commune résultante:", displayCommune(results.nouveauNoOfs, results.dateFusion, infraService));
 				}
 			});
 		}
@@ -104,13 +105,13 @@ public class PdfFusionDeCommunesRapport extends PdfRapport {
 		status.setMessage("Génération du rapport terminée.");
 	}
 
-	private String displayCommune(int noOfs, ServiceInfrastructureService infraService) {
+	private String displayCommune(int noOfs, RegDate dateReference, ServiceInfrastructureService infraService) {
 
-		StringBuilder s = new StringBuilder();
+		final StringBuilder s = new StringBuilder();
 
 		Commune commune;
 		try {
-			commune = infraService.getCommuneByNumeroOfsEtendu(noOfs);
+			commune = infraService.getCommuneByNumeroOfsEtendu(noOfs, dateReference);
 		}
 		catch (InfrastructureException e) {
 			commune = null;
@@ -127,11 +128,11 @@ public class PdfFusionDeCommunesRapport extends PdfRapport {
 		return s.toString();
 	}
 
-	private String displayCommunes(Set<Integer> noOfs, ServiceInfrastructureService infraService) {
+	private String displayCommunes(Set<Integer> noOfs, RegDate dateReference, ServiceInfrastructureService infraService) {
 
 		StringBuilder s = new StringBuilder();
 		for (Integer no : noOfs) {
-			s.append(displayCommune(no, infraService)).append(", ");
+			s.append(displayCommune(no, dateReference, infraService)).append(", ");
 		}
 
 		final String string = s.toString();

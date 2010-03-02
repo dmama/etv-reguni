@@ -170,7 +170,7 @@ public class ProduireStatsCtbsProcessor {
 		final ForGestion forGestion = tiersService.getDernierForGestionConnu(ctb, null);
 		Commune commune = null;
 		if (forGestion != null) {
-			commune = infraService.getCommuneByNumeroOfsEtendu(forGestion.getNoOfsCommune());
+			commune = infraService.getCommuneByNumeroOfsEtendu(forGestion.getNoOfsCommune(), forGestion.getDateFin());
 		}
 		return commune;
 	}

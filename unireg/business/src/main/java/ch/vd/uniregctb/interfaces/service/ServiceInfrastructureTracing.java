@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.stats.StatsService;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -315,11 +316,11 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 		return result;
 	}
 
-	public Commune getCommuneByNumeroOfsEtendu(int noCommune) throws InfrastructureException {
+	public Commune getCommuneByNumeroOfsEtendu(int noCommune, RegDate date) throws InfrastructureException {
 		Commune result;
 		long time = tracing.start();
 		try {
-			result = target.getCommuneByNumeroOfsEtendu(noCommune);
+			result = target.getCommuneByNumeroOfsEtendu(noCommune, date);
 		}
 		finally {
 			tracing.end(time);

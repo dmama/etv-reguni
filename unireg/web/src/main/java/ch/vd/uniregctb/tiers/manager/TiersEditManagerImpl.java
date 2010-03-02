@@ -286,7 +286,7 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 		}
 		final Integer numeroOfsCommuneOrigine = nonHabitant.getNumeroOfsCommuneOrigine();
 		if (numeroOfsCommuneOrigine != null) {
-			tiersEditView.setLibelleOfsCommuneOrigine(getServiceInfrastructureService().getCommuneByNumeroOfsEtendu(numeroOfsCommuneOrigine).getNomMinuscule());
+			tiersEditView.setLibelleOfsCommuneOrigine(getServiceInfrastructureService().getCommuneByNumeroOfsEtendu(numeroOfsCommuneOrigine, null).getNomMinuscule());
 		}
 
 		tiersEditView.setIdentificationPersonne(idPersonneView);

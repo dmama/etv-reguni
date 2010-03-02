@@ -44,7 +44,7 @@ public class ServiceInfrastructureServiceImpl extends AbstractServiceInfrastruct
 	/**
 	 * Type de collectivite administrative OID
 	 */
-	public static final Integer TYPE_COLLECTIVITE_OID = new Integer(2);
+	public static final Integer TYPE_COLLECTIVITE_OID = 2;
 
 	/*
 	 * Note: on se permet de cacher l'ACI, la Suisse et le canton de Vaud à ce niveau, car il n'y a aucune chance que ces deux objets changent sans
@@ -228,6 +228,17 @@ public class ServiceInfrastructureServiceImpl extends AbstractServiceInfrastruct
 		return vaud;
 	}
 
+	public Commune getCommuneByNumeroOfsEtendu(int noCommune, RegDate date) throws InfrastructureException {
+		List<Commune> candidates = new ArrayList<Commune>(2);
+		final List<Commune> communes = getCommunes();
+		for (Commune commune : communes) {
+			if (commune.getNoOFSEtendu() == noCommune) {
+				candidates.add(commune);
+			}
+		}
+		return choisirCommune(candidates, date);
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -244,39 +255,6 @@ public class ServiceInfrastructureServiceImpl extends AbstractServiceInfrastruct
 			throw new InfrastructureException("Acces a la liste des pays", e);
 		}
 		return Collections.unmodifiableList(pays);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public Commune getCommuneByNumeroOfsEtendu(int numeroOFS) throws InfrastructureException {
-		if (numeroOFS <= 0) {
-			return null;
-		}
-
-		try {
-			switch (numeroOFS) {
-			case 8000:
-			case 8001:
-			case 8002:
-			case 8003:
-			case 8010:
-			case 8011:
-			case 8012:
-			case 8020:
-			case 8021:
-			case 8022:
-				// ce sont les fractions de communes vaudoises, accès par numéro technique
-				return CommuneWrapper.get(serviceInfrastructure.getCommuneById(Integer.toString(numeroOFS)));
-
-			default:
-				// sinon accès par numéro OFS
-				return CommuneWrapper.get(serviceInfrastructure.getCommune(numeroOFS));
-			}
-		}
-		catch (RemoteException e) {
-			throw new InfrastructureException("Accès a la commune " + numeroOFS, e);
-		}
 	}
 
 	/**

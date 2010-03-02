@@ -14,9 +14,10 @@ public interface RoleService {
 	 *
 	 * @param anneePeriode
 	 *            l'année de la période fiscale considérée.
+	 * @param nbThreads
 	 * @return un rapport (technique) sur les rôles par commune et contribuables.
 	 */
-	ProduireRolesResults produireRolesPourToutesCommunes(int anneePeriode, StatusManager status)
+	ProduireRolesResults produireRolesPourToutesCommunes(int anneePeriode, int nbThreads, StatusManager status)
 			throws ServiceException;
 
 	/**
@@ -29,9 +30,10 @@ public interface RoleService {
 	 *            l'année de la période fiscale considérée.
 	 * @param noOfsCommune
 	 *            le numéro Ofs étendu de la commune à traiter
+	 * @param nbThreads
 	 * @return un rapport (technique) sur les rôles des contribuables de la commune spécifiée.
 	 */
-	ProduireRolesResults produireRolesPourUneCommune(int anneePeriode, int noOfsCommune, StatusManager status)
+	ProduireRolesResults produireRolesPourUneCommune(int anneePeriode, int noOfsCommune, int nbThreads, StatusManager status)
 			throws ServiceException;
 
 	/**
@@ -44,8 +46,9 @@ public interface RoleService {
 	 *            l'année de la période fiscale considérée.
 	 * @param oid
 	 *            l'id de l'office d'impôt concerné
+	 * @param nbThreads
 	 * @return un rapport (technique) sur les rôles des contribuables de la commune spécifiée.
 	 */
-	ProduireRolesResults produireRolesPourUnOfficeImpot(int anneePeriode, int oid, StatusManager status)
+	ProduireRolesResults produireRolesPourUnOfficeImpot(int anneePeriode, int oid, int nbThreads, StatusManager status)
 			throws ServiceException;
 }

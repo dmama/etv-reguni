@@ -5,6 +5,7 @@ import java.util.List;
 
 import ch.vd.infrastructure.model.EnumTypeCollectivite;
 import ch.vd.infrastructure.service.InfrastructureException;
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.Canton;
@@ -227,11 +228,14 @@ public interface ServiceInfrastructureService {
 	public Commune getCommuneVaudByNumACI(Integer numeroACI) throws InfrastructureException;
 
 	/**
-	 *
-	 * @param noCommune
-	 * @return
+	 * Retrouve la commune avec le numéro OFS étendu donné ; si plusieurs communes correspondent,
+	 * renvoie celle qui est valide à la date donnée
+	 * @param noCommune numéro OFS de la commune (ou technique de la fraction de commune vaudoise)
+	 * @param date date de référence (<code>null</code> pour la date du jour)
+	 * @return Commune
+	 * @throws InfrastructureException
 	 */
-	public Commune getCommuneByNumeroOfsEtendu(int noCommune) throws InfrastructureException;
+	public Commune getCommuneByNumeroOfsEtendu(int noCommune, RegDate date) throws InfrastructureException;
 
 	/**
 	 *

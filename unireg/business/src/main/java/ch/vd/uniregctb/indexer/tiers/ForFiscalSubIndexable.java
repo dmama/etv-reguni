@@ -110,7 +110,7 @@ public class ForFiscalSubIndexable extends AbstractSubIndexable {
 
 			// Commune vaudoise
 			if (typeForFiscal == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
-					Commune com = infraService.getCommuneByNumeroOfsEtendu(forF.getNumeroOfsAutoriteFiscale());
+					Commune com = infraService.getCommuneByNumeroOfsEtendu(forF.getNumeroOfsAutoriteFiscale(), forF.getDateFin());
 					if (com == null) {
 						throw new IndexerException("Commune pas trouvée: noOfsEtendu=" + forF.getNumeroOfsAutoriteFiscale());
 					}
@@ -118,7 +118,7 @@ public class ForFiscalSubIndexable extends AbstractSubIndexable {
 			}
 			// Commune suisse
 			else if (typeForFiscal == TypeAutoriteFiscale.COMMUNE_HC) {
-					Commune com = infraService.getCommuneByNumeroOfsEtendu(forF.getNumeroOfsAutoriteFiscale());
+					Commune com = infraService.getCommuneByNumeroOfsEtendu(forF.getNumeroOfsAutoriteFiscale(), forF.getDateFin());
 					if (com == null) {
 						throw new IndexerException("Commune pas trouvée: noOfs=" + forF.getNumeroOfsAutoriteFiscale());
 					}

@@ -95,7 +95,7 @@ public class ArriveeHandler extends EvenementCivilHandlerBase {
 		// (ou si bien-sûr on tombe sur une commune fractionnée) sinon on prend la commune de l'adresse
 
 		if (arrivee.getNumeroOfsCommuneAnnonce() != null && arrivee.getNumeroOfsCommuneAnnonce() > 0) {
-			final Commune commune = serviceInfra.getCommuneByNumeroOfsEtendu(arrivee.getNumeroOfsCommuneAnnonce());
+			final Commune commune = serviceInfra.getCommuneByNumeroOfsEtendu(arrivee.getNumeroOfsCommuneAnnonce(), arrivee.getDate());
 			if (commune == null || commune.isPrincipale()) {
 				return getCommuneArriveeDepuisAdresse(arrivee, type);
 			}

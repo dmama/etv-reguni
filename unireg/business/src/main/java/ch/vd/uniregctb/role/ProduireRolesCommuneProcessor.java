@@ -24,8 +24,10 @@ import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BatchTransactionTemplate;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.LoggingStatusManager;
+import ch.vd.uniregctb.common.ParallelBatchTransactionTemplate;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.interfaces.model.Commune;
+import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
@@ -106,7 +108,7 @@ public class ProduireRolesCommuneProcessor {
 		/**
 		 * Instancie un nouveau rapport (intermédiaire et final)
 		 */
-		ProduireRolesResults creerRapport(int anneePeriode, RegDate today, boolean isRapportFinal);
+		ProduireRolesResults creerRapport(int anneePeriode, int nbThreads, RegDate today, boolean isRapportFinal);
 	}
 
 	/**
@@ -116,19 +118,20 @@ public class ProduireRolesCommuneProcessor {
 	 * @param variante
 	 * @return
 	 */
-	private ProduireRolesResults doRun(final int anneePeriode, final StatusManager status, final VarianteProductionRole variante) {
+	private ProduireRolesResults doRun(final int anneePeriode, final int nbThreads, final StatusManager status, final VarianteProductionRole variante) {
 
 		final RegDate today = RegDate.get();
-		final ProduireRolesResults rapportFinal = variante.creerRapport(anneePeriode, today, true);
+		final ProduireRolesResults rapportFinal = variante.creerRapport(anneePeriode, nbThreads, today, true);
 
 		// parties à aller chercher en bloc par groupe de tiers
 		final Set<TiersDAO.Parts> parts = new HashSet<TiersDAO.Parts>();
 		parts.add(TiersDAO.Parts.FORS_FISCAUX);
 		parts.add(TiersDAO.Parts.RAPPORTS_ENTRE_TIERS);
 		parts.add(TiersDAO.Parts.ADRESSES);
+		parts.add(TiersDAO.Parts.DECLARATIONS);
 
 		final List<Long> list = variante.getIdsContribuablesConcernes(anneePeriode);
-		final BatchTransactionTemplate<Long, ProduireRolesResults> template = new BatchTransactionTemplate<Long, ProduireRolesResults>(list, BATCH_SIZE, BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE, transactionManager, status, hibernateTemplate);
+		final ParallelBatchTransactionTemplate<Long, ProduireRolesResults> template = new ParallelBatchTransactionTemplate<Long, ProduireRolesResults>(list, BATCH_SIZE, nbThreads, BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE, transactionManager, status, hibernateTemplate);
 		template.setReadonly(true);
 		template.execute(rapportFinal, new BatchTransactionTemplate.BatchCallback<Long, ProduireRolesResults>() {
 
@@ -136,6 +139,9 @@ public class ProduireRolesCommuneProcessor {
 			public boolean doInTransaction(List<Long> batch, ProduireRolesResults rapport) throws Exception {
 
 				final List<Tiers> tierz = tiersDAO.getBatch(batch, parts);
+
+				final String msg = String.format("Traitement des contribuables (%d traité(s))", rapportFinal.ctbsTraites);
+				status.setMessage(msg, rapportFinal.ctbsTraites * 100 / list.size());
 
 				// première boucle sur les tiers pour aller chercher en un bloc les individus du civil
 				// pour les habitants (nom, adresse, no-avs...)
@@ -146,9 +152,6 @@ public class ProduireRolesCommuneProcessor {
 
 					final long ctbId = tiers.getNumero();
 					final Contribuable ctb = (Contribuable) tiers;
-
-					final String msg = String.format("Traitement du contribuable %s", FormatNumeroHelper.numeroCTBToDisplay(ctbId));
-					status.setMessage(msg, rapportFinal.ctbsTraites * 100 / list.size());
 
 					try {
 						processContribuable(anneePeriode, rapport, ctb);
@@ -168,7 +171,7 @@ public class ProduireRolesCommuneProcessor {
 
 			@Override
 			public ProduireRolesResults createSubRapport() {
-				return variante.creerRapport(anneePeriode, today, false);
+				return variante.creerRapport(anneePeriode, nbThreads, today, false);
 			}
 		});
 
@@ -201,7 +204,9 @@ public class ProduireRolesCommuneProcessor {
 		}
 		if (nosIndividus.size() > 0) {
 			// remplit le cache des individus...
-			serviceCivilService.getIndividus(nosIndividus, RegDate.get(anneePeriode, 12, 31), EnumAttributeIndividu.ADRESSES);
+			final RegDate date = RegDate.get(anneePeriode, 12, 31);
+			final List<Individu> individus = serviceCivilService.getIndividus(nosIndividus, date, EnumAttributeIndividu.ADRESSES);
+			serviceCivilService.warmCache(individus, date, EnumAttributeIndividu.ADRESSES);
 		}
 	}
 
@@ -211,17 +216,17 @@ public class ProduireRolesCommuneProcessor {
 	 * @param anneePeriode l'année de la période fiscale considérée.
 	 * @return un rapport (technique) sur les rôles par commune et contribuables.
 	 */
-	public ProduireRolesResults runPourToutesCommunes(final int anneePeriode, final StatusManager s) throws ServiceException {
+	public ProduireRolesResults runPourToutesCommunes(final int anneePeriode, final int nbThreads, final StatusManager s) throws ServiceException {
 
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 
-		return doRun(anneePeriode, status, new VarianteProductionRole() {
+		return doRun(anneePeriode, nbThreads, status, new VarianteProductionRole() {
 			public List<Long> getIdsContribuablesConcernes(int anneePeriode) {
 				return getIdsOfAllContribuables(anneePeriode);
 			}
 
-			public ProduireRolesResults creerRapport(int anneePeriode, RegDate today, boolean isRapportFinal) {
-				return new ProduireRolesResults(anneePeriode, today);
+			public ProduireRolesResults creerRapport(int anneePeriode, int nbThreads, RegDate today, boolean isRapportFinal) {
+				return new ProduireRolesResults(anneePeriode, nbThreads, today);
 			}
 		});
 	}
@@ -238,17 +243,17 @@ public class ProduireRolesCommuneProcessor {
 	 *            le numéro Ofs étendu de la commune à traiter
 	 * @return un rapport (technique) sur les rôles des contribuables de la commune spécifiée.
 	 */
-	public ProduireRolesResults runPourUneCommune(final int anneePeriode, final int noOfsCommune, final StatusManager s) throws ServiceException {
+	public ProduireRolesResults runPourUneCommune(final int anneePeriode, final int noOfsCommune, final int nbThreads, final StatusManager s) throws ServiceException {
 
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 
-		return doRun(anneePeriode, status, new VarianteProductionRole() {
+		return doRun(anneePeriode, nbThreads, status, new VarianteProductionRole() {
 			public List<Long> getIdsContribuablesConcernes(int anneePeriode) {
 				return getIdsOfAllContribuablesSurCommunes(anneePeriode, Arrays.asList(noOfsCommune));
 			}
 
-			public ProduireRolesResults creerRapport(int anneePeriode, RegDate today, boolean isRapportFinal) {
-				return new ProduireRolesResults(anneePeriode, noOfsCommune, null, today);
+			public ProduireRolesResults creerRapport(int anneePeriode, int nbThreads, RegDate today, boolean isRapportFinal) {
+				return new ProduireRolesResults(anneePeriode, noOfsCommune, null, nbThreads, today);
 			}
 		});
 	}
@@ -259,15 +264,13 @@ public class ProduireRolesCommuneProcessor {
 	 * Note: le rapport peut contenir quelques résultats pour des communes autres que celles gérées par l'office d'impôt, en fonction des
 	 * déménagement des contribuables.
 	 *
-	 * @param anneePeriode
-	 *            l'année de la période fiscale considérée.
-	 * @param oid
-	 *            l'id de l'office d'impôt concerné
-	 * @param dateTraitement
-	 *            la date de traitement officielle du job (= aujourd'hui, sauf pour les tests)
+	 * @param anneePeriode l'année de la période fiscale considérée.
+	 * @param oid l'id de l'office d'impôt concerné
+	 * @param nbThreads le nombre de threads de processing souhaité
+	 * @param s status manager
 	 * @return un rapport (technique) sur les rôles des contribuables de la commune spécifiée.
 	 */
-	public ProduireRolesResults runPourUnOfficeImpot(final int anneePeriode, final int oid, final StatusManager s) throws ServiceException {
+	public ProduireRolesResults runPourUnOfficeImpot(final int anneePeriode, final int oid, final int nbThreads, final StatusManager s) throws ServiceException {
 
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 
@@ -283,13 +286,13 @@ public class ProduireRolesCommuneProcessor {
 			throw new RuntimeException(e);
 		}
 
-		return doRun(anneePeriode, status, new VarianteProductionRole() {
+		return doRun(anneePeriode, nbThreads, status, new VarianteProductionRole() {
 			public List<Long> getIdsContribuablesConcernes(int anneePeriode) {
 				return getIdsOfAllContribuablesSurCommunes(anneePeriode, nosOfsCommunes);
 			}
 
-			public ProduireRolesResults creerRapport(int anneePeriode, RegDate today, boolean isRapportFinal) {
-				return new ProduireRolesResults(anneePeriode, null, oid, today);
+			public ProduireRolesResults creerRapport(int anneePeriode, int nbThreads, RegDate today, boolean isRapportFinal) {
+				return new ProduireRolesResults(anneePeriode, null, oid, nbThreads, today);
 			}
 		});
 	}

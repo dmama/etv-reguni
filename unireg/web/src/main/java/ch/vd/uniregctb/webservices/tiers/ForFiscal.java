@@ -197,11 +197,12 @@ public class ForFiscal{
 		this.typeAutoriteFiscale = EnumHelper.coreToWeb(forFiscal.getTypeAutoriteFiscale());
 		if (this.typeAutoriteFiscale != TypeAutoriteFiscale.PAYS_HS) {
 			this.noOfsAutoriteFiscale = context.noOfsTranslator.translateCommune(forFiscal.getNumeroOfsAutoriteFiscale());
+			this.nomCommune = DataHelper.getNomCommune(this.noOfsAutoriteFiscale, forFiscal.getDateFin(), context.infraService);
 		}
 		else {
 			this.noOfsAutoriteFiscale = forFiscal.getNumeroOfsAutoriteFiscale();
+			this.nomCommune = null;
 		}
-		this.nomCommune = DataHelper.getNomCommune(this.noOfsAutoriteFiscale, context.infraService);
 		if (forFiscal instanceof ch.vd.uniregctb.tiers.ForFiscalRevenuFortune) {
 			final ch.vd.uniregctb.tiers.ForFiscalRevenuFortune forRevenu = (ch.vd.uniregctb.tiers.ForFiscalRevenuFortune) forFiscal;
 

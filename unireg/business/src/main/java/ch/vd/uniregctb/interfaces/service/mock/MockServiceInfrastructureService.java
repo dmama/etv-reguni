@@ -5,6 +5,7 @@ import java.util.List;
 
 import ch.vd.infrastructure.model.EnumTypeCollectivite;
 import ch.vd.infrastructure.service.InfrastructureException;
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.interfaces.model.Canton;
 import ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative;
@@ -270,30 +271,20 @@ public abstract class MockServiceInfrastructureService extends AbstractServiceIn
 		return MockCollectiviteAdministrative.CAT;
 	}
 
-
-
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService#getCommuneByNoTechnique(int)
-	 */
-	public Commune getCommuneByNumeroOfsEtendu(int noCommune) throws InfrastructureException {
-		Commune commune = null;
+	public Commune getCommuneByNumeroOfsEtendu(int noCommune, RegDate date) throws InfrastructureException {
+		final List<Commune> candidates = new ArrayList<Commune>(2);
 		for (Commune c : communesVaud) {
 			int no = c.getNoOFSEtendu();
 			if (no == noCommune) {
-				commune = c;
-				break;
+				candidates.add(c);
 			}
 		}
-		if (commune == null) {
-			for (Commune c : communesHorsCanton) {
-				if (c.getNoOFSEtendu() == noCommune) {
-					commune = c;
-				}
+		for (Commune c : communesHorsCanton) {
+			if (c.getNoOFSEtendu() == noCommune) {
+				candidates.add(c);
 			}
 		}
-		return commune;
+		return choisirCommune(candidates, date);
 	}
 
 	/*

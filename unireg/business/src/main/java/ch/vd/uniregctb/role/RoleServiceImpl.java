@@ -61,24 +61,24 @@ public class RoleServiceImpl implements RoleService {
 	/**
 	 * {@inheritDoc}
 	 */
-	public ProduireRolesResults produireRolesPourToutesCommunes(int anneePeriode, StatusManager status) throws ServiceException {
+	public ProduireRolesResults produireRolesPourToutesCommunes(int anneePeriode, int nbThreads, StatusManager status) throws ServiceException {
 		final ProduireRolesCommuneProcessor processor = createProcessor();
-		return processor.runPourToutesCommunes(anneePeriode, status);
+		return processor.runPourToutesCommunes(anneePeriode, nbThreads, status);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public ProduireRolesResults produireRolesPourUneCommune(int anneePeriode, int noOfsCommune, StatusManager status) throws ServiceException {
+	public ProduireRolesResults produireRolesPourUneCommune(int anneePeriode, int noOfsCommune, int nbThreads, StatusManager status) throws ServiceException {
 		final ProduireRolesCommuneProcessor processor = createProcessor();
-		return processor.runPourUneCommune(anneePeriode, noOfsCommune, status);
+		return processor.runPourUneCommune(anneePeriode, noOfsCommune, nbThreads, status);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public ProduireRolesResults produireRolesPourUnOfficeImpot(int anneePeriode, int oid, StatusManager status) throws ServiceException {
+	public ProduireRolesResults produireRolesPourUnOfficeImpot(int anneePeriode, int oid, int nbThreads, StatusManager status) throws ServiceException {
 		final ProduireRolesCommuneProcessor processor = createProcessor();
-		return processor.runPourUnOfficeImpot(anneePeriode, oid, status);
+		return processor.runPourUnOfficeImpot(anneePeriode, oid, nbThreads, status);
 	}
 }

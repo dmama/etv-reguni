@@ -128,7 +128,7 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor, Eve
 					int numeroOFS = evenementCivilRegroupe.getNumeroOfsCommuneAnnonce();
 					if(numeroOFS != 0){
 						// Commune introuvable => Exception
-						Commune c = serviceInfrastructureService.getCommuneByNumeroOfsEtendu(numeroOFS);
+						Commune c = serviceInfrastructureService.getCommuneByNumeroOfsEtendu(numeroOFS, evenementCivilRegroupe.getDateEvenement());
 						Assert.notNull(c, "La commune avec le numéro OFS "+numeroOFS+" n'existe pas");
 					}
 

@@ -188,7 +188,7 @@ public class EditiqueHelperImpl implements EditiqueHelper {
 		Integer numeroOfsAutoriteFiscale = forGestion.getNoOfsCommune();
 		Commune commune;
 		try {
-			commune = infraService.getCommuneByNumeroOfsEtendu(numeroOfsAutoriteFiscale);
+			commune = infraService.getCommuneByNumeroOfsEtendu(numeroOfsAutoriteFiscale, forGestion.getDateFin());
 		}
 		catch (InfrastructureException e) {
 			commune = null;

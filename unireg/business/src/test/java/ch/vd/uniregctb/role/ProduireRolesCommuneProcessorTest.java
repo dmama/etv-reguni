@@ -182,7 +182,7 @@ public class ProduireRolesCommuneProcessorTest extends BusinessTest {
 			}
 		});
 
-		final ProduireRolesResults results = processor.runPourToutesCommunes(2007, null);
+		final ProduireRolesResults results = processor.runPourToutesCommunes(2007, 1, null);
 		assertNotNull(results);
 		assertEquals(18, results.ctbsTraites);
 		assertEquals(0, results.ctbsEnErrors.size());
@@ -260,7 +260,7 @@ public class ProduireRolesCommuneProcessorTest extends BusinessTest {
 		loadDatabase(DB_UNIT_CTB_INVALIDE); // rodolf
 		Contribuable rodolf = getCtbVaudoisOrdinaireEtImmeubleInvalide();
 
-		final ProduireRolesResults results = processor.runPourToutesCommunes(2007, null);
+		final ProduireRolesResults results = processor.runPourToutesCommunes(2007, 1, null);
 		assertNotNull(results);
 		assertEquals(1, results.ctbsTraites);
 		assertEquals(1, results.ctbsEnErrors.size());
@@ -288,7 +288,7 @@ public class ProduireRolesCommuneProcessorTest extends BusinessTest {
 			}
 		});
 
-		final ProduireRolesResults results = processor.runPourToutesCommunes(2007, null);
+		final ProduireRolesResults results = processor.runPourToutesCommunes(2007, 1, null);
 		assertNotNull(results);
 		assertEquals(1, results.ctbsTraites);
 		assertEquals(0, results.ctbsEnErrors.size());
@@ -324,7 +324,7 @@ public class ProduireRolesCommuneProcessorTest extends BusinessTest {
 			}
 		});
 
-		final ProduireRolesResults results = processor.runPourToutesCommunes(2008, null);
+		final ProduireRolesResults results = processor.runPourToutesCommunes(2008, 1, null);
 		assertNotNull(results);
 		assertEquals(1, results.ctbsTraites);
 		assertEquals(0, results.ctbsEnErrors.size());
@@ -384,7 +384,7 @@ public class ProduireRolesCommuneProcessorTest extends BusinessTest {
 			}
 		});
 
-		final ProduireRolesResults results = processor.runPourToutesCommunes(2007, null);
+		final ProduireRolesResults results = processor.runPourToutesCommunes(2007, 1, null);
 		assertNotNull(results);
 		assertEquals(1, results.ctbsTraites);
 		assertEquals(0, results.ctbsEnErrors.size());
@@ -444,7 +444,7 @@ public class ProduireRolesCommuneProcessorTest extends BusinessTest {
 			}
 		});
 
-		final ProduireRolesResults results = processor.runPourToutesCommunes(2007, null);
+		final ProduireRolesResults results = processor.runPourToutesCommunes(2007, 1, null);
 		assertNotNull(results);
 		assertEquals(1, results.ctbsTraites);
 		assertEquals(0, results.ctbsEnErrors.size());

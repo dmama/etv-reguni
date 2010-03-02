@@ -2778,8 +2778,8 @@ public class TiersServiceImpl implements TiersService {
 							final Integer ofs1 = o1.getNumeroOfsAutoriteFiscale();
 							final Integer ofs2 = o2.getNumeroOfsAutoriteFiscale();
 							try {
-								Commune c1 = serviceInfra.getCommuneByNumeroOfsEtendu(ofs1);
-								Commune c2 = serviceInfra.getCommuneByNumeroOfsEtendu(ofs2);
+								Commune c1 = serviceInfra.getCommuneByNumeroOfsEtendu(ofs1, o1.getDateFin());
+								Commune c2 = serviceInfra.getCommuneByNumeroOfsEtendu(ofs2, o2.getDateFin());
 								return c1.getNomMinuscule().compareTo(c2.getNomMinuscule());
 							}
 							catch (InfrastructureException e) {

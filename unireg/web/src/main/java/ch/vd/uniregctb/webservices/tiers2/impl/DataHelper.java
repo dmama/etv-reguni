@@ -12,6 +12,7 @@ import java.util.Set;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.AdresseException;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.webservices.tiers2.data.*;
 import org.apache.commons.collections.CollectionUtils;
@@ -178,13 +179,13 @@ public class DataHelper {
 	/**
 	 * @return le nom minuscule de la commune; ou <b>null</b> si la commune n'existe pas ou en cas d'erreur d'accès à l'infrastructure.
 	 */
-	public static String getNomCommune(int numeroOfsCommune, ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService serviceInfra) {
+	public static String getNomCommune(int numeroOfsCommune, RegDate date, ServiceInfrastructureService serviceInfra) {
 
 		String nomCommune = null;
 
 		try {
 			Assert.notNull(serviceInfra);
-			final Commune commune = serviceInfra.getCommuneByNumeroOfsEtendu(numeroOfsCommune);
+			final Commune commune = serviceInfra.getCommuneByNumeroOfsEtendu(numeroOfsCommune, date);
 			if (commune != null) {
 				nomCommune = commune.getNomMinuscule();
 			}
