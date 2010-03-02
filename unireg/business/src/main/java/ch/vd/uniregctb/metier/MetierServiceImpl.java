@@ -1145,7 +1145,7 @@ public class MetierServiceImpl implements MetierService {
 	 * {@inheritDoc}
 	 */
 	public FusionDeCommunesResults fusionDeCommunes(Set<Integer> anciensNoOfs, int nouveauNoOfs, RegDate dateFusion, RegDate dateTraitement, StatusManager status) {
-		FusionDeCommunesProcessor processor = new FusionDeCommunesProcessor(transactionManager, hibernateTemplate, tiersService);
+		FusionDeCommunesProcessor processor = new FusionDeCommunesProcessor(transactionManager, hibernateTemplate, tiersService, serviceInfra);
 		return processor.run(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement, status);
 	}
 

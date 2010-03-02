@@ -32,7 +32,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 		final TiersService tiersService = getBean(TiersService.class, "tiersService");
 
 		// création du processeur à la main de manière à pouvoir appeler les méthodes protégées
-		processor = new FusionDeCommunesProcessor(transactionManager, hibernateTemplate, tiersService);
+		processor = new FusionDeCommunesProcessor(transactionManager, hibernateTemplate, tiersService, serviceInfra);
 
 		// Annexion de Croy et Vaulion par Romainmôtier (scénario prophétique et stimulant)
 		anciensNoOfs = new HashSet<Integer>();

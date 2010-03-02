@@ -1,11 +1,13 @@
 package ch.vd.uniregctb.metier;
 
+import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.common.BatchTransactionTemplate;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.StatusManager;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.*;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
@@ -36,15 +38,17 @@ public class FusionDeCommunesProcessor {
 	private final PlatformTransactionManager transactionManager;
 	private final HibernateTemplate hibernateTemplate;
 	private final TiersService tiersService;
+	private final ServiceInfrastructureService serviceInfra;
 
 	private final Map<Class<? extends ForFiscal>, Strategy> strategies = new HashMap<Class<? extends ForFiscal>, Strategy>();
 
 	protected FusionDeCommunesResults rapport;
 
-	public FusionDeCommunesProcessor(PlatformTransactionManager transactionManager, HibernateTemplate hibernateTemplate, TiersService tiersService) {
+	public FusionDeCommunesProcessor(PlatformTransactionManager transactionManager, HibernateTemplate hibernateTemplate, TiersService tiersService, ServiceInfrastructureService serviceInfra) {
 		this.transactionManager = transactionManager;
 		this.hibernateTemplate = hibernateTemplate;
 		this.tiersService = tiersService;
+		this.serviceInfra = serviceInfra;
 
 		this.strategies.put(ForFiscalPrincipal.class, new ForPrincipalStrategy());
 		this.strategies.put(ForFiscalSecondaire.class, new ForSecondaireStrategy());
@@ -69,7 +73,7 @@ public class FusionDeCommunesProcessor {
 	 * @param nouveauNoOfs   le numéro Ofs de la commune résultant de la fusion
 	 * @param dateFusion     la date de fusion des communes
 	 * @param dateTraitement la date de traitement
-	 * @param status         un status manager  @return les résultats détaillés du traitement
+	 * @param status         un status manager
 	 * @return les résultats détaillés du traitement
 	 */
 	public FusionDeCommunesResults run(final Set<Integer> anciensNoOfs, final int nouveauNoOfs, final RegDate dateFusion, final RegDate dateTraitement, StatusManager status) {
@@ -78,6 +82,9 @@ public class FusionDeCommunesProcessor {
 			status = new LoggingStatusManager(LOGGER);
 		}
 		final StatusManager s = status;
+
+		// Vérification de l'existence des commnues
+		checkNoOfs(anciensNoOfs, nouveauNoOfs, dateFusion);
 
 		final FusionDeCommunesResults rapportFinal = new FusionDeCommunesResults(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement);
 
@@ -271,6 +278,29 @@ public class FusionDeCommunesProcessor {
 		}
 	}
 
+	/**
+	 * Vérifie que les numéros Ofs spécifiés existent dans le host et qu'Unireg les voit bien ([UNIREG-2056]).
+	 *
+	 * @param anciensNoOfs les numéros Ofs des anciennes communes
+	 * @param nouveauNoOfs le numméro Ofs de la nouvelle commune
+	 * @param dateFusion   la date de fusion
+	 */
+	private void checkNoOfs(Set<Integer> anciensNoOfs, int nouveauNoOfs, RegDate dateFusion) {
+		try {
+			if (serviceInfra.getCommuneByNumeroOfsEtendu(nouveauNoOfs, dateFusion) == null) {
+				throw new RuntimeException("La commune avec le numéro Ofs [" + nouveauNoOfs + "] n'existe pas.");
+			}
+			for (Integer noOfs : anciensNoOfs) {
+				if (serviceInfra.getCommuneByNumeroOfsEtendu(noOfs, dateFusion.getOneDayBefore()) == null) {
+					throw new RuntimeException("La commune avec le numéro Ofs [" + noOfs + "] n'existe pas.");
+				}
+			}
+		}
+		catch (InfrastructureException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
 	final private static String queryTiers = // --------------------------------
 			"SELECT f.tiers.id                                                  "
 					+ "FROM                                                     "
