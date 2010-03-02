@@ -53,6 +53,8 @@ public class Ec_18000_09_Arrivee_Mariee_Seule_Deja_Mariee_Scenario extends Evene
 	private final long noIndJean = 312580L;
 
 	private long noCtbMenageCommun;
+	private long noCtbJean;
+	private long noCtbGeorgette;
 
 	private long evenementId;
 
@@ -104,6 +106,8 @@ public class Ec_18000_09_Arrivee_Mariee_Seule_Deja_Mariee_Scenario extends Evene
 				MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null);
 
 		noCtbMenageCommun = menage.getNumero();
+		noCtbJean = jean.getNumero();
+		noCtbGeorgette = georgette.getNumero();
 	}
 
 	@Check(id = 1, descr = "Vérification que le ménage commun est bien ouvert")
@@ -138,9 +142,8 @@ public class Ec_18000_09_Arrivee_Mariee_Seule_Deja_Mariee_Scenario extends Evene
 		assertEquals(1, erreurs.size(), "Il devrait y avoir exactement 1 erreur");
 
 		final EvenementCivilErreur erreur = erreurs.iterator().next();
-		assertEquals(
-				"L'individu principal [10000002] est en ménage commun avec une personne [10000001] dans le fiscal alors qu'il est marié seul dans le civil",
-				erreur.getMessage(), "L'exception levée n'est pas la bonne.");
+		final String messageAttendu = String.format("L'individu principal [%d] est en ménage commun avec une personne [%d] dans le fiscal alors qu'il est marié seul dans le civil", noCtbGeorgette, noCtbJean);
+		assertEquals(messageAttendu, erreur.getMessage(), "L'exception levée n'est pas la bonne.");
 
 		check1();
 	}

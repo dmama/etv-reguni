@@ -9,6 +9,9 @@ import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.uniregctb.adresse.AdresseException;
+import ch.vd.uniregctb.adresse.AdresseGenerique;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.EtatCivilHelper;
 import ch.vd.uniregctb.common.FiscalDateHelper;
@@ -35,10 +38,10 @@ import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.tiers.TiersException;
 import ch.vd.uniregctb.tiers.TiersCriteria.TypeRecherche;
 import ch.vd.uniregctb.tiers.TiersCriteria.TypeTiers;
-import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
+import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 import ch.vd.uniregctb.type.TypeEvenementErreur;
@@ -58,6 +61,12 @@ public class ArriveeHandler extends EvenementCivilHandlerBase {
 
 	public enum ArriveeType {
 		ARRIVEE_ADRESSE_PRINCIPALE, ARRIVEE_RESIDENCE_SECONDAIRE
+	}
+
+	private AdresseService adresseService;
+
+	public void setAdresseService(AdresseService adresseService) {
+		this.adresseService = adresseService;
 	}
 
 	@Override
@@ -475,8 +484,8 @@ public class ArriveeHandler extends EvenementCivilHandlerBase {
 		return habitant;
 	}
 
-	private boolean isSourcier(ModeImposition modeImposition) {
-		return ModeImposition.SOURCE == (modeImposition ) || ModeImposition.MIXTE_137_1.equals(modeImposition) || ModeImposition.MIXTE_137_2.equals(modeImposition);
+	private static boolean isSourcier(ModeImposition modeImposition) {
+		return ModeImposition.SOURCE == modeImposition || ModeImposition.MIXTE_137_1 == modeImposition || ModeImposition.MIXTE_137_2 == modeImposition;
 	}
 
 	/**
@@ -533,7 +542,7 @@ public class ArriveeHandler extends EvenementCivilHandlerBase {
 			/*
 			 * Le for fiscal principal reste inchangé en cas d'arrivée en résidence secondaire.
 			 */
-			createOrUpdateForFiscalPrincipal(arrivee, habitantPrincipal, habitantConjoint, menageCommun, warnings);
+			createOrUpdateForFiscalPrincipalOnCouple(arrivee, habitantPrincipal, habitantConjoint, menageCommun, warnings);
 		}
 	}
 
@@ -584,24 +593,127 @@ public class ArriveeHandler extends EvenementCivilHandlerBase {
 	}
 
 	/**
+	 * Retourne la commune de domicile de la personne physique concernée
+	 * @param date date de référence
+	 * @param pp personne physique concernée
+	 * @return commune de l'adresse de domicile, à la date donnée, de la personne physique donnée
+	 * @throws AdresseException
+	 * @throws InfrastructureException
+	 */
+	private Commune getCommuneDomicile(RegDate date, PersonnePhysique pp) throws AdresseException, InfrastructureException {
+		final Commune commune;
+		if (pp != null) {
+			final AdresseGenerique adresseDomicile = adresseService.getAdresseFiscale(pp, TypeAdresseTiers.DOMICILE, date, false);
+			if (adresseDomicile != null) {
+				commune = getService().getServiceInfra().getCommuneByAdresse(adresseDomicile);
+			}
+			else {
+				commune = null;
+			}
+		}
+		else {
+			commune = null;
+		}
+		return commune;
+	}
+
+	/**
+	 * On regarde les adresses de domicile des membres du couple (à la date d'arrivée) :
+	 * <ul>
+	 * <li>s'il n'y en a qu'une vaudoise -> on prend cette commune</li>
+	 * <li>s'il y en a deux vaudoises, et qu'elles sont dans la même commune, alors on prend cette commune</li>
+	 * <li>s'il y en a deux vaudoises, et qu'elles sont dans deux communes différentes, on ne touche à rien s'il y a déjà un for vaudois ouvert sur le couple, et on prend la commune du principal du couple sinon</li>
+	 * <li>si on a pu déterminer une commune avec les conditions ci-dessus, on ouvre un for dessus à la date d'arrivée</li>
+	 * </ul>
+	 * @param arrivee
+	 * @param principal
+	 * @param conjoint
+	 * @param menage
+	 * @return
+	 */
+	private Commune getCommuneForSuiteArriveeCouple(Arrivee arrivee, PersonnePhysique principal, PersonnePhysique conjoint, MenageCommun menage) {
+
+		final RegDate dateArrivee = arrivee.getDate();
+		try {
+			final Commune residencePrincipal = getCommuneDomicile(dateArrivee, principal);
+			final Commune residenceConjoint = getCommuneDomicile(dateArrivee, conjoint);
+			final boolean principalVaudois = residencePrincipal != null && residencePrincipal.isVaudoise();
+			final boolean conjointVaudois = residenceConjoint != null && residenceConjoint.isVaudoise();
+
+			final Commune commune;
+
+			// aucun vaudois -> erreur !!
+			if (!principalVaudois && !conjointVaudois) {
+				throw new EvenementCivilHandlerException(String.format("Aucun membre du ménage %d n'a une adresse de domicile vaudoise", menage.getNumero()));
+			}
+			else if (!conjointVaudois) {
+				commune = residencePrincipal;
+			}
+			else if (!principalVaudois) {
+				commune = residenceConjoint;
+			}
+			else if (residencePrincipal.getNoOFSEtendu() == residenceConjoint.getNoOFSEtendu()) {
+				commune = residencePrincipal;      // même commune pour les deux conjoints -> ils sont tous les deux arrivés
+			}
+			else {
+				// deux adresses vaudoises, mais sur des communes différentes
+				// y a-t-il déjà un for vaudois ouvert sur le couple (cette méthode est appelée avant la fermeture des fors...)
+				final ForFiscalPrincipal ffp = menage.getForFiscalPrincipalAt(dateArrivee);
+				if (ffp != null && ffp.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
+					// si le for principal vaudois sur le couple correspond à l'une des communes du principal ou du conjoint, on ne touche à rien
+					if (ffp.getNumeroOfsAutoriteFiscale() == residencePrincipal.getNoOFSEtendu() || ffp.getNumeroOfsAutoriteFiscale() == residenceConjoint.getNoOFSEtendu()) {
+						commune = null;
+					}
+					else {
+						// sinon, les deux ont déménagé, et le for passe sur la commune de domicile du membre principal
+						commune = residencePrincipal;
+					}
+				}
+				else {
+					// pas de for antérieur à l'arrivée, donc on doit en créer un
+					commune = residencePrincipal;
+				}
+			}
+
+			return commune;
+		}
+		catch (InfrastructureException e) {
+			throw new EvenementCivilHandlerException(e.getMessage(), e);
+		}
+		catch (AdresseException e) {
+			throw new EvenementCivilHandlerException(e.getMessage(), e);
+		}
+	}
+
+	/**
 	 * Crée ou met-à-jour le for fiscal principal pour le contribuable principal, son conjoint et le ménage - en fonction de leur état civil
 	 * et fiscal.
-	 *
-	 * @param arrivee
-	 *            l'événement d'arrivée
-	 * @param habitantPrincipal
-	 *            le contribuable principal
-	 * @param habitantConjoint
-	 *            le conjoint (peut être null)
-	 * @param menageCommun
-	 *            le ménage commun
+	 * <p/>
+	 * On regarde les adresses de domicile des membres du couple :
+	 * <ul>
+	 * <li>s'il n'y en a qu'une vaudoise -> on prend cette commune</li>
+	 * <li>s'il y en a deux vaudoises, et qu'elles sont dans la même commune, alors on prend cette commune</li>
+	 * <li>s'il y en a deux vaudoises, et qu'elles sont dans deux communes différentes, on ne touche à rien s'il y a déjà un for vaudois ouvert sur le couple, et on prend la commune du principal du couple sinon</li>
+	 * <li>si on a pu déterminer une commune avec les conditions ci-dessus, on ouvre un for dessus à la date d'arrivée</li>
+	 * </ul>
+	 * @param arrivee l'événement d'arrivée
+	 * @param habitantPrincipal le contribuable principal
+	 * @param habitantConjoint le conjoint (peut être null)
+	 * @param menageCommun le ménage commun
+	 * @param warnings liste des erreurs à peupler en cas de problème
 	 */
-	private void createOrUpdateForFiscalPrincipal(final Arrivee arrivee, final PersonnePhysique habitantPrincipal, PersonnePhysique habitantConjoint,
+	private void createOrUpdateForFiscalPrincipalOnCouple(final Arrivee arrivee, final PersonnePhysique habitantPrincipal, PersonnePhysique habitantConjoint,
 			final MenageCommun menageCommun, List<EvenementCivilErreur> warnings) {
 
 		Assert.notNull(arrivee);
 		Assert.notNull(habitantPrincipal);
 		Assert.notNull(menageCommun);
+
+		final Commune communePourFor = getCommuneForSuiteArriveeCouple(arrivee, habitantPrincipal, habitantConjoint, menageCommun);
+		if (communePourFor == null) {
+			// pas de for à créer...
+			return;
+		}
 
 		RegDate dateEvenement = arrivee.getDate();
 		if (TypeEvenementCivil.ARRIVEE_PRINCIPALE_VAUDOISE == arrivee.getType()) {
@@ -619,12 +731,10 @@ public class ArriveeHandler extends EvenementCivilHandlerBase {
 
 			// pour un couple, le for principal est toujours sur le ménage commun
 			if (ffpHabitantPrincipal != null) {
-				throw new EvenementCivilHandlerException("Le contribuable principal du ménage [" + menageCommun
-						+ "] possède un for fiscal principal individuel");
+				throw new EvenementCivilHandlerException("Le contribuable principal du ménage [" + menageCommun + "] possède un for fiscal principal individuel");
 			}
 			if (ffpHabitantConjoint != null) {
-				throw new EvenementCivilHandlerException("Le conjoint du ménage [" + menageCommun
-						+ "] possède un for fiscal principal individuel");
+				throw new EvenementCivilHandlerException("Le conjoint du ménage [" + menageCommun + "] possède un for fiscal principal individuel");
 			}
 			MotifFor motifOuverture = getMotifOuverture(arrivee);
 			if(motifOuverture == null){
