@@ -663,9 +663,11 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	private boolean matchAdresseGenerique(AdresseGenerique adresse, CriteresAdresse adresseCritere) {
 
 		//On ne matche plus que sur le NPA
-
 		// test des différents critères en commençant par les plus déterminants
-		return 	matchNpa(adresse, adresseCritere);
+		if (adresse!=null) {
+			return 	matchNpa(adresse, adresseCritere);
+		}
+		return true;
 	}
 
 	private boolean matchCasePostale(AdresseGenerique adresse, CriteresAdresse adresseCritere) {
