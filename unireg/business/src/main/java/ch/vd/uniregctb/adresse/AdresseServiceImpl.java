@@ -73,32 +73,17 @@ public class AdresseServiceImpl implements AdresseService {
 	private ServicePersonneMoraleService servicePM;
 	private ServiceCivilService serviceCivilService;
 
-	public TiersService getTiersService() {
-		return tiersService;
-	}
-
 	public void setTiersService(TiersService tiersService) {
 		this.tiersService = tiersService;
-	}
-
-	public ServiceInfrastructureService getServiceInfra() {
-		return serviceInfra;
 	}
 
 	public void setServiceInfra(ServiceInfrastructureService serviceInfra) {
 		this.serviceInfra = serviceInfra;
 	}
 
-	public ServicePersonneMoraleService getServicePM() {
-		return servicePM;
-	}
-
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setServicePM(ServicePersonneMoraleService servicePM) {
 		this.servicePM = servicePM;
-	}
-
-	public ServiceCivilService getServiceCivilService() {
-		return serviceCivilService;
 	}
 
 	public void setServiceCivilService(ServiceCivilService serviceCivilService) {
@@ -2203,7 +2188,7 @@ public class AdresseServiceImpl implements AdresseService {
 	 * @throws AdresseException
 	 */
 	public String getNomCourrier(long numeroIndividu) {
-		final Individu individu = getServiceCivilService().getIndividu(numeroIndividu, DateHelper.getCurrentYear());
+		final Individu individu = serviceCivilService.getIndividu(numeroIndividu, DateHelper.getCurrentYear());
 		if (individu == null) {
 			throw new IndividuNotFoundException(numeroIndividu);
 		}

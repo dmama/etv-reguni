@@ -2,6 +2,7 @@ package ch.vd.uniregctb.indexer.tiers;
 
 import java.util.HashMap;
 
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import org.springframework.util.Assert;
 
 import ch.vd.uniregctb.adresse.AdresseService;
@@ -29,13 +30,11 @@ public class HabitantIndexable extends PersonnePhysiqueIndexable {
 
 
 	/**
-	 * @param serviceInfrastructure
-	 * @param contribuable
-	 * @param individu
-	 * @throws IndexerException
+	 * @param serviceInfra
+	 *@param individu  @throws IndexerException
 	 */
-	public HabitantIndexable(AdresseService adresseService, TiersService tiersService, PersonnePhysique hab, Individu individu) throws IndexerException {
-		super(adresseService, tiersService, hab, new HabitantSubIndexable(tiersService, hab));
+	public HabitantIndexable(AdresseService adresseService, TiersService tiersService, ServiceInfrastructureService serviceInfra, PersonnePhysique hab, Individu individu) throws IndexerException {
+		super(adresseService, tiersService, serviceInfra, hab, new HabitantSubIndexable(tiersService, hab));
 		Assert.notNull(individu);
 
 		individuSubIndexable = new IndividuSubIndexable(individu);

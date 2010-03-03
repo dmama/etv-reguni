@@ -4,6 +4,7 @@ import java.util.HashMap;
 
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.indexer.IndexerException;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersService;
 
@@ -13,8 +14,8 @@ public class NonHabitantIndexable extends PersonnePhysiqueIndexable {
 
 	public static final String SUB_TYPE = "nonhabitant";
 
-	public NonHabitantIndexable(AdresseService adresseService, TiersService tiersService, PersonnePhysique nonHabitant) throws IndexerException {
-		super(adresseService, tiersService, nonHabitant, new NonHabitantSubIndexable(tiersService, nonHabitant));
+	public NonHabitantIndexable(AdresseService adresseService, TiersService tiersService, ServiceInfrastructureService serviceInfra, PersonnePhysique nonHabitant) throws IndexerException {
+		super(adresseService, tiersService, serviceInfra, nonHabitant, new NonHabitantSubIndexable(tiersService, nonHabitant));
 	}
 
 	public String getSubType() {

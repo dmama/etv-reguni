@@ -3,6 +3,8 @@ package ch.vd.uniregctb.indexer.tiers;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.adresse.AdresseService;
+import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.interfaces.model.Individu;
@@ -24,13 +26,13 @@ public class MenageCommunIndexable extends ContribuableIndexable {
 
 	public static final String SUB_TYPE = "menagecommun";
 
-	public MenageCommunIndexable(AdresseService adresseService, TiersService tiersService, MenageCommun menage) throws IndexerException {
-		super(adresseService, tiersService, menage, new MenageCommunSubIndexable(tiersService, menage));
+	public MenageCommunIndexable(AdresseService adresseService, TiersService tiersService, ServiceCivilService serviceCivil, ServiceInfrastructureService serviceInfra, MenageCommun menage) throws IndexerException {
+		super(adresseService, tiersService, serviceInfra, menage, new MenageCommunSubIndexable(tiersService, menage));
 
 		final EnsembleTiersCouple ensemble = extractEnsembleForIndexation(tiersService, menage);
-		ppIndexable1 = getPPIndexable(adresseService, tiersService, ensemble.getPrincipal());
+		ppIndexable1 = getPPIndexable(adresseService, tiersService, serviceCivil, serviceInfra, ensemble.getPrincipal());
 		if (ensemble.getConjoint() != null) {
-			ppIndexable2 = getPPIndexable(adresseService, tiersService, ensemble.getConjoint());
+			ppIndexable2 = getPPIndexable(adresseService, tiersService, serviceCivil, serviceInfra, ensemble.getConjoint());
 		}
 		else ppIndexable2 = null;//marié seul => pas d'indexation du conjoint
 	}
@@ -129,14 +131,15 @@ public class MenageCommunIndexable extends ContribuableIndexable {
 		}
 	}
 
-	private static PersonnePhysiqueIndexable getPPIndexable(AdresseService adresseService, TiersService tiersService, PersonnePhysique pp) {
+	private static PersonnePhysiqueIndexable getPPIndexable(AdresseService adresseService, TiersService tiersService, ServiceCivilService serviceCivil, ServiceInfrastructureService serviceInfra,
+	                                                        PersonnePhysique pp) {
 		PersonnePhysiqueIndexable ppIndexable = null;
 		if (pp != null && !pp.isHabitant()) {
-			ppIndexable = new NonHabitantIndexable(adresseService, tiersService, pp);
+			ppIndexable = new NonHabitantIndexable(adresseService, tiersService, serviceInfra, pp);
 		}
 		else if (pp != null) {
-			Individu ind = adresseService.getServiceCivilService().getIndividu(pp.getNumeroIndividu(), DateHelper.getCurrentYear());
-			ppIndexable = new HabitantIndexable(adresseService, tiersService, pp, ind);
+			Individu ind = serviceCivil.getIndividu(pp.getNumeroIndividu(), DateHelper.getCurrentYear());
+			ppIndexable = new HabitantIndexable(adresseService, tiersService, serviceInfra, pp, ind);
 		}
 		return ppIndexable;
 	}

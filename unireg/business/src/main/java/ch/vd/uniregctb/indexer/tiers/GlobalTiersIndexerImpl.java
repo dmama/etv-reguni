@@ -534,7 +534,7 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer {
 
         if (tiers instanceof DebiteurPrestationImposable) {
             DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiers;
-            indexable = new DebiteurPrestationImposableIndexable(adresseService, tiersService, dpi);
+            indexable = new DebiteurPrestationImposableIndexable(adresseService, tiersService, serviceCivilService, serviceInfra, dpi);
         } else if (tiers instanceof PersonnePhysique) {
             PersonnePhysique pp = (PersonnePhysique) tiers;
             // Habitant
@@ -544,24 +544,24 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer {
                 // Recuperation de l'individu
                 Individu individu = serviceCivilService.getIndividu(numeroIndividu, 2400, EnumAttributeIndividu.ADRESSES);
                 Assert.notNull(individu, "Individu introuvable. Numero=" + numeroIndividu);
-                indexable = new HabitantIndexable(adresseService, tiersService, pp, individu);
+                indexable = new HabitantIndexable(adresseService, tiersService, serviceInfra, pp, individu);
             }
             // NonHabitant
             else {
-                indexable = new NonHabitantIndexable(adresseService, tiersService, pp);
+                indexable = new NonHabitantIndexable(adresseService, tiersService, serviceInfra, pp);
             }
         } else if (tiers instanceof MenageCommun) {
             final MenageCommun cmc = (MenageCommun) tiers;
-            indexable = new MenageCommunIndexable(adresseService, tiersService, cmc);
+            indexable = new MenageCommunIndexable(adresseService, tiersService, serviceCivilService, serviceInfra, cmc);
         } else if (tiers instanceof Entreprise) {
             Entreprise entreprise = (Entreprise) tiers;
-            indexable = new EntrepriseIndexable(adresseService, tiersService, entreprise);
+            indexable = new EntrepriseIndexable(adresseService, tiersService, serviceInfra, entreprise);
         } else if (tiers instanceof AutreCommunaute) {
             AutreCommunaute autreCommunaute = (AutreCommunaute) tiers;
-            indexable = new AutreCommunauteIndexable(adresseService, tiersService, autreCommunaute);
+            indexable = new AutreCommunauteIndexable(adresseService, tiersService, serviceInfra, autreCommunaute);
         } else if (tiers instanceof CollectiviteAdministrative) {
             CollectiviteAdministrative collectivite = (CollectiviteAdministrative) tiers;
-            indexable = new CollectiviteAdministrativeIndexable(adresseService, tiersService, collectivite);
+            indexable = new CollectiviteAdministrativeIndexable(adresseService, tiersService, serviceInfra, collectivite);
         } else {
             String message = "Le Tiers " + tiers.getNatureTiers() + " n'est pas connu de l'indexation!!!";
             LOGGER.error(message);

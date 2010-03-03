@@ -32,11 +32,11 @@ public class AdressesTiersSubIndexable extends AbstractSubIndexable {
 	private final ServiceInfrastructureService infraService;
 	private final Tiers tiers;
 
-	public AdressesTiersSubIndexable(AdresseService adresseService, Tiers tiers) {
+	public AdressesTiersSubIndexable(AdresseService adresseService, ServiceInfrastructureService serviceInfra, Tiers tiers) {
 
 		Assert.notNull(adresseService);
 		this.adresseService = adresseService;
-		this.infraService = adresseService.getServiceInfra();
+		this.infraService = serviceInfra;
 
 		Assert.notNull(tiers);
 		this.tiers = tiers;
@@ -61,7 +61,7 @@ public class AdressesTiersSubIndexable extends AbstractSubIndexable {
 				localite = courrier.getLocalite();
 
 				final Integer noOfsPays = courrier.getNoOfsPays();
-				final Pays p = (noOfsPays == null ? null : adresseService.getServiceInfra().getPays(noOfsPays));
+				final Pays p = (noOfsPays == null ? null : infraService.getPays(noOfsPays));
 				if (p == null) {
 					pays = "";
 					localitePays = localite;

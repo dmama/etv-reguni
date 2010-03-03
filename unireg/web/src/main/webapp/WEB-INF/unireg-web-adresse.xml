@@ -14,6 +14,7 @@
 	<bean id="tiersAdresseValidator" class="ch.vd.uniregctb.tiers.validator.TiersAdresseValidator" >
 		<property name="adresseService" ref="adresseService" />
 		<property name="tiersService" ref="tiersService" />
+		<property name="serviceInfra" ref="serviceInfrastructureService" />
 	</bean>
 	
 	<bean id="tiersAdresseController" class="ch.vd.uniregctb.tiers.TiersAdresseController" parent="abstractTiersController">

@@ -2,6 +2,7 @@ package ch.vd.uniregctb.indexer.tiers;
 
 import java.util.HashMap;
 
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import org.apache.log4j.Logger;
 
 import ch.vd.uniregctb.adresse.AdresseService;
@@ -21,13 +22,11 @@ public class CollectiviteAdministrativeIndexable extends ContribuableIndexable {
 	public static final String SUB_TYPE = "collectiviteadministrative";
 
 	/**
-	 * @param serviceInfrastructure
-	 * @param contribuable
-	 * @param individu
+	 * @param serviceInfra
 	 * @throws IndexerException
 	 */
-	public CollectiviteAdministrativeIndexable(AdresseService adresseService, TiersService tiersService, CollectiviteAdministrative collectivite) throws IndexerException {
-		super(adresseService, tiersService, collectivite, new CollectiviteAdministrativeSubIndexable(adresseService, tiersService, collectivite));
+	public CollectiviteAdministrativeIndexable(AdresseService adresseService, TiersService tiersService, ServiceInfrastructureService serviceInfra, CollectiviteAdministrative collectivite) throws IndexerException {
+		super(adresseService, tiersService, serviceInfra, collectivite, new CollectiviteAdministrativeSubIndexable(adresseService, tiersService, serviceInfra, collectivite));
 	}
 
 	public String getSubType() {

@@ -4,6 +4,7 @@ import java.util.HashMap;
 
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.indexer.IndexerException;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.AutreCommunaute;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.NatureJuridique;
@@ -19,13 +20,11 @@ public class AutreCommunauteIndexable extends ContribuableIndexable {
 	public static final String SUB_TYPE = "autreCommunaute";
 
 	/**
-	 * @param serviceInfrastructure
-	 * @param contribuable
-	 * @param individu
+	 * @param serviceInfra
 	 * @throws IndexerException
 	 */
-	public AutreCommunauteIndexable(AdresseService adresseService, TiersService tiersService, AutreCommunaute autreCommunaute) throws IndexerException {
-		super(adresseService, tiersService, autreCommunaute, new AutreCommunauteSubIndexable(tiersService, autreCommunaute));
+	public AutreCommunauteIndexable(AdresseService adresseService, TiersService tiersService, ServiceInfrastructureService serviceInfra, AutreCommunaute autreCommunaute) throws IndexerException {
+		super(adresseService, tiersService, serviceInfra, autreCommunaute, new AutreCommunauteSubIndexable(tiersService, autreCommunaute));
 	}
 
 	public String getSubType() {

@@ -2,6 +2,7 @@ package ch.vd.uniregctb.indexer.tiers;
 
 import java.util.HashMap;
 
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import org.springframework.util.Assert;
 
 import ch.vd.uniregctb.adresse.AdresseService;
@@ -23,14 +24,14 @@ public abstract class TiersIndexable extends AbstractIndexable {
 	private final AdressesTiersSubIndexable adressesSubIndexable;
 	private final ForFiscalSubIndexable forsIndexable;
 
-	public TiersIndexable(AdresseService adresseService, TiersService tiersService, Tiers tiers, TiersSubIndexable tiersSubIndexable) throws IndexerException {
+	public TiersIndexable(AdresseService adresseService, TiersService tiersService, ServiceInfrastructureService serviceInfra, Tiers tiers, TiersSubIndexable tiersSubIndexable) throws IndexerException {
 		Assert.notNull(tiers);
 		Assert.notNull(adresseService);
 
 		this.tiers = tiers;
 		this.tiersSubIndexable = tiersSubIndexable;
-		this.forsIndexable = new ForFiscalSubIndexable(adresseService.getServiceInfra(), tiers);
-		this.adressesSubIndexable = new AdressesTiersSubIndexable(adresseService, tiers);
+		this.forsIndexable = new ForFiscalSubIndexable(serviceInfra, tiers);
+		this.adressesSubIndexable = new AdressesTiersSubIndexable(adresseService, serviceInfra, tiers);
 	}
 
 	public String getType() {

@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.tiers.validator;
 
 import ch.vd.uniregctb.adresse.*;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.validation.Errors;
@@ -26,6 +27,7 @@ public class TiersAdresseValidator implements Validator {
 
 	private AdresseService adresseService;
 	private TiersService tiersService;
+	private ServiceInfrastructureService serviceInfra;
 
 	public AdresseService getAdresseService() {
 		return adresseService;
@@ -33,6 +35,10 @@ public class TiersAdresseValidator implements Validator {
 
 	public void setAdresseService(AdresseService adresseService) {
 		this.adresseService = adresseService;
+	}
+
+	public void setServiceInfra(ServiceInfrastructureService serviceInfra) {
+		this.serviceInfra = serviceInfra;
 	}
 
 	public TiersService getTiersService() {
@@ -74,7 +80,7 @@ public class TiersAdresseValidator implements Validator {
 				else {
 					try {
 						Integer noOrdre = Integer.parseInt(adresseView.getNumeroOrdrePoste());
-						Localite loc = adresseService.getServiceInfra().getLocaliteByONRP(noOrdre);
+						Localite loc = serviceInfra.getLocaliteByONRP(noOrdre);
 						if (loc == null) {
 							errors.rejectValue("localiteSuisse", "error.invalid.localite_suisse");
 						}

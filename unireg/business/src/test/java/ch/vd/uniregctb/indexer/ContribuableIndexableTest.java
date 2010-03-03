@@ -1,34 +1,14 @@
 package ch.vd.uniregctb.indexer;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNull;
-
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
-
-import org.junit.Test;
-
 import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.adresse.AdresseCivile;
-import ch.vd.uniregctb.adresse.AdresseEtrangere;
-import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.adresse.AdresseServiceImpl;
-import ch.vd.uniregctb.adresse.AdresseSuisse;
-import ch.vd.uniregctb.adresse.AdresseTiers;
+import ch.vd.uniregctb.adresse.*;
 import ch.vd.uniregctb.common.Constants;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.WithoutSpringTest;
-import ch.vd.uniregctb.indexer.tiers.DebiteurPrestationImposableIndexable;
-import ch.vd.uniregctb.indexer.tiers.HabitantIndexable;
-import ch.vd.uniregctb.indexer.tiers.MenageCommunIndexable;
-import ch.vd.uniregctb.indexer.tiers.NonHabitantIndexable;
-import ch.vd.uniregctb.indexer.tiers.TiersIndexable;
-import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
-import ch.vd.uniregctb.indexer.tiers.TiersSearchFields;
+import ch.vd.uniregctb.indexer.tiers.*;
 import ch.vd.uniregctb.interfaces.model.HistoriqueIndividu;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.mock.MockHistoriqueIndividu;
@@ -36,27 +16,19 @@ import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
-import ch.vd.uniregctb.tiers.AppartenanceMenage;
-import ch.vd.uniregctb.tiers.AutreCommunaute;
-import ch.vd.uniregctb.tiers.ContactImpotSource;
-import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
-import ch.vd.uniregctb.tiers.MenageCommun;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.RapportEntreTiers;
-import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.tiers.TiersServiceImpl;
-import ch.vd.uniregctb.type.CategorieImpotSource;
-import ch.vd.uniregctb.type.GenreImpot;
-import ch.vd.uniregctb.type.ModeImposition;
-import ch.vd.uniregctb.type.MotifRattachement;
-import ch.vd.uniregctb.type.Sexe;
-import ch.vd.uniregctb.type.TexteCasePostale;
-import ch.vd.uniregctb.type.TypeAdresseTiers;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.uniregctb.tiers.*;
+import ch.vd.uniregctb.type.*;
+import org.junit.Test;
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
+
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNull;
 
 public class ContribuableIndexableTest extends WithoutSpringTest {
 
@@ -65,9 +37,10 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 	private static final long noIndPhilippeMaillard = 3333L;
 	private static final long noIndGladysMaillard = 3334L;
 
-	private AdresseService adresseService;
+	private AdresseServiceImpl adresseService;
 	private TiersService tiersService;
 	private ServiceCivilService serviceCivil;
+	private ServiceInfrastructureService serviceInfra;
 
 	@Override
 	public void onSetUp() {
@@ -102,7 +75,8 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		};
 
 		tiersService = new TiersServiceImpl();
-		tiersService.setServiceInfra(new DefaultMockServiceInfrastructureService());
+		serviceInfra = new DefaultMockServiceInfrastructureService();
+		tiersService.setServiceInfra(serviceInfra);
 		tiersService.setServiceCivilService(serviceCivil);
 
 		adresseService = new AdresseServiceImpl();
@@ -123,7 +97,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		mc.setNumero(2345L);
 		addTiers(mc, hab1, RegDate.get(2001, 2, 23));
 
-		MenageCommunIndexable indexable = new MenageCommunIndexable(adresseService, tiersService, mc);
+		MenageCommunIndexable indexable = new MenageCommunIndexable(adresseService, tiersService, serviceCivil, serviceInfra, mc);
 
 		HashMap<String, String> values = indexable.getKeyValues();
 
@@ -157,7 +131,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		adresses.add(a);
 		nonHab.setAdressesTiers(adresses);
 
-		NonHabitantIndexable indexable = new NonHabitantIndexable(adresseService, tiersService, nonHab);
+		NonHabitantIndexable indexable = new NonHabitantIndexable(adresseService, tiersService, serviceInfra, nonHab);
 
 		assertEquals(TiersIndexable.TYPE, indexable.getType());
 		assertEquals(NonHabitantIndexable.SUB_TYPE, indexable.getSubType());
@@ -179,7 +153,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		hab.setNumero(12348L);
 		hab.setNumeroIndividu(individu.getNoTechnique());
 
-		HabitantIndexable indexable = new HabitantIndexable(adresseService, tiersService, hab, individu);
+		HabitantIndexable indexable = new HabitantIndexable(adresseService, tiersService, serviceInfra, hab, individu);
 
 		assertEquals(TiersIndexable.TYPE, indexable.getType());
 		assertEquals(HabitantIndexable.SUB_TYPE, indexable.getSubType());
@@ -212,7 +186,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		ff.setNumeroOfsAutoriteFiscale(5586);
 		hab.addForFiscal(ff);
 
-		HabitantIndexable indexable = new HabitantIndexable(adresseService, tiersService, hab, individu);
+		HabitantIndexable indexable = new HabitantIndexable(adresseService, tiersService, serviceInfra, hab, individu);
 
 		assertEquals(TiersIndexable.TYPE, indexable.getType());
 		assertEquals(HabitantIndexable.SUB_TYPE, indexable.getSubType());
@@ -249,7 +223,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		hab.addRapportSujet(contact);
 		dpi.addRapportObjet(contact);
 
-		DebiteurPrestationImposableIndexable indexable = new DebiteurPrestationImposableIndexable(adresseService, tiersService, dpi);
+		DebiteurPrestationImposableIndexable indexable = new DebiteurPrestationImposableIndexable(adresseService, tiersService, serviceCivil, serviceInfra, dpi);
 
 		assertEquals(TiersIndexable.TYPE, indexable.getType());
 		assertEquals(DebiteurPrestationImposableIndexable.SUB_TYPE, indexable.getSubType());
@@ -288,7 +262,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		nhab.addRapportSujet(contact);
 		dpi.addRapportObjet(contact);
 
-		DebiteurPrestationImposableIndexable indexable = new DebiteurPrestationImposableIndexable(adresseService, tiersService, dpi);
+		DebiteurPrestationImposableIndexable indexable = new DebiteurPrestationImposableIndexable(adresseService, tiersService, serviceCivil, serviceInfra, dpi);
 
 		assertEquals(TiersIndexable.TYPE, indexable.getType());
 		assertEquals(DebiteurPrestationImposableIndexable.SUB_TYPE, indexable.getSubType());
@@ -325,7 +299,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		ac.addRapportSujet(contact);
 		dpi.addRapportObjet(contact);
 
-		DebiteurPrestationImposableIndexable indexable = new DebiteurPrestationImposableIndexable(adresseService, tiersService, dpi);
+		DebiteurPrestationImposableIndexable indexable = new DebiteurPrestationImposableIndexable(adresseService, tiersService, serviceCivil, serviceInfra, dpi);
 
 		assertEquals(TiersIndexable.TYPE, indexable.getType());
 		assertEquals(DebiteurPrestationImposableIndexable.SUB_TYPE, indexable.getSubType());
@@ -400,7 +374,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 			nonHab.addForFiscal(forF);
 		}
 
-		NonHabitantIndexable indexable = new NonHabitantIndexable(adresseService, tiersService, nonHab);
+		NonHabitantIndexable indexable = new NonHabitantIndexable(adresseService, tiersService, serviceInfra, nonHab);
 
 		HashMap<String, String> values = indexable.getKeyValues();
 
@@ -442,7 +416,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 			nonHab.addForFiscal(forF);
 		}
 
-		NonHabitantIndexable indexable = new NonHabitantIndexable(adresseService, tiersService, nonHab);
+		NonHabitantIndexable indexable = new NonHabitantIndexable(adresseService, tiersService, serviceInfra, nonHab);
 
 		HashMap<String, String> values = indexable.getKeyValues();
 
@@ -516,7 +490,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 
 		nonHab.setAdressesTiers(adrs);
 
-		NonHabitantIndexable indexable = new NonHabitantIndexable(adresseService, tiersService, nonHab);
+		NonHabitantIndexable indexable = new NonHabitantIndexable(adresseService, tiersService, serviceInfra, nonHab);
 
 		HashMap<String, String> values = indexable.getKeyValues();
 
@@ -580,7 +554,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 
 		nonHab.setAdressesTiers(adrs);
 
-		NonHabitantIndexable indexable = new NonHabitantIndexable(adresseService, tiersService, nonHab);
+		NonHabitantIndexable indexable = new NonHabitantIndexable(adresseService, tiersService, serviceInfra, nonHab);
 
 		HashMap<String, String> values = indexable.getKeyValues();
 
@@ -629,7 +603,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		}
 		nonHab.setAdressesTiers(adrs);
 
-		NonHabitantIndexable indexable = new NonHabitantIndexable(adresseService, tiersService, nonHab);
+		NonHabitantIndexable indexable = new NonHabitantIndexable(adresseService, tiersService, serviceInfra, nonHab);
 
 		HashMap<String, String> values = indexable.getKeyValues();
 
@@ -668,7 +642,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		}
 		hab.setAdressesTiers(adrs);
 
-		HabitantIndexable indexable = new HabitantIndexable(adresseService, tiersService, hab, individu);
+		HabitantIndexable indexable = new HabitantIndexable(adresseService, tiersService, serviceInfra, hab, individu);
 
 		HashMap<String, String> values = indexable.getKeyValues();
 
@@ -696,7 +670,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		addTiers(mc, hab1,RegDate.get(2001, 2, 23));
 		addTiers(mc, hab2,RegDate.get(2001, 2, 23));
 
-		MenageCommunIndexable indexable = new MenageCommunIndexable(adresseService, tiersService, mc);
+		MenageCommunIndexable indexable = new MenageCommunIndexable(adresseService, tiersService, serviceCivil, serviceInfra, mc);
 
 		HashMap<String, String> values = indexable.getKeyValues();
 
@@ -748,7 +722,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		addTiers(mc, nhab1, RegDate.get(2001, 2, 23));
 		addTiers(mc, nhab2, RegDate.get(2001, 2, 23));
 
-		MenageCommunIndexable indexable = new MenageCommunIndexable(adresseService, tiersService, mc);
+		MenageCommunIndexable indexable = new MenageCommunIndexable(adresseService, tiersService, serviceCivil, serviceInfra, mc);
 
 		HashMap<String, String> values = indexable.getKeyValues();
 

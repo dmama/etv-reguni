@@ -2,6 +2,8 @@ package ch.vd.uniregctb.indexer.tiers;
 
 import java.util.HashMap;
 
+import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import org.apache.commons.lang.StringUtils;
 
 import ch.vd.registre.base.date.DateHelper;
@@ -28,39 +30,33 @@ public class DebiteurPrestationImposableIndexable extends TiersIndexable {
 
 	private ContribuableIndexable ctbIndexable;
 
-	/**
-	 * Permet l'indexation d'un Debiteur Impot Source
-	 *
-	 * @param debiteurImpotSources
-	 * @param entreprise
-	 * @throws IndexerException
-	 */
-	public DebiteurPrestationImposableIndexable(AdresseService adresseService, TiersService tiersService, DebiteurPrestationImposable dpi) throws IndexerException {
-		super(adresseService, tiersService, dpi, new DebiteurPrestationImposableSubIndexable(tiersService, dpi));
+	public DebiteurPrestationImposableIndexable(AdresseService adresseService, TiersService tiersService, ServiceCivilService serviceCivil, ServiceInfrastructureService serviceInfra,
+	                                            DebiteurPrestationImposable dpi) throws IndexerException {
+		super(adresseService, tiersService, serviceInfra, dpi, new DebiteurPrestationImposableSubIndexable(tiersService, dpi));
 
 		Contribuable ctb = dpi.getContribuable();
 		if (ctb != null) {
 			if (ctb instanceof PersonnePhysique) {
 				PersonnePhysique pp = (PersonnePhysique) ctb;
 				if (pp.isHabitant()) {
-					Individu ind = adresseService.getServiceCivilService().getIndividu(pp.getNumeroIndividu(), DateHelper.getCurrentYear());
-					ctbIndexable = new HabitantIndexable(adresseService, tiersService, pp, ind);
+					Individu ind = serviceCivil.getIndividu(pp.getNumeroIndividu(), DateHelper.getCurrentYear());
+					ctbIndexable = new HabitantIndexable(adresseService, tiersService, serviceInfra, pp, ind);
 				}
 				else {
-					ctbIndexable = new NonHabitantIndexable(adresseService, tiersService, pp);
+					ctbIndexable = new NonHabitantIndexable(adresseService, tiersService, serviceInfra, pp);
 				}
 			}
 			else if (ctb instanceof Entreprise) {
-				ctbIndexable = new EntrepriseIndexable(adresseService, tiersService, (Entreprise)ctb);
+				ctbIndexable = new EntrepriseIndexable(adresseService, tiersService, serviceInfra, (Entreprise)ctb);
 			}
 			else if (ctb instanceof AutreCommunaute) {
-				ctbIndexable = new AutreCommunauteIndexable(adresseService, tiersService, (AutreCommunaute)ctb);
+				ctbIndexable = new AutreCommunauteIndexable(adresseService, tiersService, serviceInfra, (AutreCommunaute)ctb);
 			}
 			else if (ctb instanceof CollectiviteAdministrative) {
-				ctbIndexable = new CollectiviteAdministrativeIndexable(adresseService, tiersService, (CollectiviteAdministrative)ctb);
+				ctbIndexable = new CollectiviteAdministrativeIndexable(adresseService, tiersService, serviceInfra, (CollectiviteAdministrative)ctb);
 			}
 			else if (ctb instanceof MenageCommun) {
-				ctbIndexable = new MenageCommunIndexable(adresseService, tiersService, ((MenageCommun)ctb));
+				ctbIndexable = new MenageCommunIndexable(adresseService, tiersService, serviceCivil, serviceInfra, ((MenageCommun)ctb));
 			}
 			else {
 				Assert.fail("Type de contribuable inconnu = " + ctb.getNatureTiers());

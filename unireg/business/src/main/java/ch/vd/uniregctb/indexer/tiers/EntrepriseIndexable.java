@@ -4,6 +4,7 @@ import java.util.HashMap;
 
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.indexer.IndexerException;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.NatureJuridique;
@@ -22,13 +23,11 @@ public class EntrepriseIndexable extends ContribuableIndexable {
 	//private ForFiscalSubIndexable forsIndexable = null;
 
 	/**
-	 * @param serviceInfrastructure
-	 * @param contribuable
-	 * @param individu
+	 * @param serviceInfra
 	 * @throws IndexerException
 	 */
-	public EntrepriseIndexable(AdresseService adresseService, TiersService tiersService, Entreprise entreprise) throws IndexerException {
-		super(adresseService, tiersService, entreprise, new EntrepriseSubIndexable(tiersService, entreprise));
+	public EntrepriseIndexable(AdresseService adresseService, TiersService tiersService, ServiceInfrastructureService serviceInfra, Entreprise entreprise) throws IndexerException {
+		super(adresseService, tiersService, serviceInfra, entreprise, new EntrepriseSubIndexable(tiersService, entreprise));
 
 		// TODO(MSI) : A corriger quand les Entreprise seront liées par HI
 		//forsIndexable = new ForFiscalSubIndexable(serviceInfrastructure, entreprise);

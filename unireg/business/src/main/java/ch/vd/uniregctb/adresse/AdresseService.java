@@ -15,18 +15,6 @@ import ch.vd.uniregctb.type.TypeAdresseTiers;
 
 public interface AdresseService {
 
-	public TiersService getTiersService();
-
-	public void setTiersService(TiersService tiersService);
-
-	public ServiceInfrastructureService getServiceInfra();
-
-	public void setServiceInfra(ServiceInfrastructureService serviceInfra);
-
-	public ServiceCivilService getServiceCivilService();
-
-	public void setServiceCivilService(ServiceCivilService serviceCivil);
-
 	/**
 	 * Extrait les adresses civiles définies pour une date donnée.
 	 * <p>

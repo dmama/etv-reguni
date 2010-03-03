@@ -193,7 +193,7 @@ public class EvenementManagerImpl implements EvenementManager, MessageSourceAwar
 			Integer noOfsPays = adresseCourrier.getNoOfsPays();
 			Pays pays;
 			try {
-				pays = (noOfsPays == null ? null : adresseService.getServiceInfra().getPays(noOfsPays));
+				pays = (noOfsPays == null ? null : serviceInfrastructureService.getPays(noOfsPays));
 			}
 			catch (InfrastructureException e) {
 				throw new RuntimeException(e);
