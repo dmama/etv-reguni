@@ -25,7 +25,7 @@ public interface EditiqueHelper {
 	public TypAdresse remplitPorteAdresse(Tiers tiers, InfoEnteteDocument infoEnteteDocument) throws AdressesResolutionException ;
 
 	/**
-	 * Alimente la partie expéditeur du document
+	 * Alimente la partie expéditeur ACI du document
 	 *
 	 * @param infoEnteteDocument
 	 * @return
@@ -46,6 +46,20 @@ public interface EditiqueHelper {
 
 	/**
 	 * Alimente la partie Destinataire (contribuable/débiteur) du document
+	 * Alimente la partie expéditeur CAT du document
+	 *
+	 * @param infoEnteteDocument
+	 * @return
+	 * @throws InfrastructureException
+	 * @throws RemoteException
+	 * @throws InfrastructureException
+	 * @throws InfrastructureException
+	 */
+	public Expediteur remplitExpediteurCAT(InfoEnteteDocument infoEnteteDocument) throws InfrastructureException ;
+
+
+	/**
+	 * Alimente la partie Destinataire du document
 	 *
 	 * @param tiers
 	 * @param infoEnteteDocument
@@ -87,7 +101,7 @@ public interface EditiqueHelper {
 	 * et de confirmation de délai.
 	 *
 	 * @param di - la di concernée par la sommation ou la demande de délai
-	 * 
+	 *
 	 * @return le nom de la commune
 	 */
 	public String getCommune(Declaration di) throws EditiqueException;

@@ -154,6 +154,21 @@ public class EditiqueHelperImpl implements EditiqueHelper {
 		return remplitExpediteur(ca, infoEnteteDocument);
 	}
 
+	/**
+	 * Alimente la partie expéditeur CAT du document
+	 *
+	 * @param infoEnteteDocument
+	 * @return
+	 * @throws InfrastructureException
+	 * @throws RemoteException
+	 * @throws InfrastructureException
+	 * @throws InfrastructureException
+	 */
+	public Expediteur remplitExpediteurCAT(InfoEnteteDocument infoEnteteDocument) throws InfrastructureException {
+		final ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative cat = infraService.getCAT();
+		return remplitExpediteur(cat, infoEnteteDocument);
+	}
+
 	public String getCommune(Declaration di) throws EditiqueException {
 		ForGestion forGestion = tiersService.getForGestionActif(di.getTiers(), di.getDateDebut());
 		if (forGestion == null) {

@@ -97,7 +97,7 @@ public class ImpressionConfirmationDelaiHelperImpl implements
 			infoEnteteDocument.setPrefixe(calculPrefixe() + "HAUT1");
 			TypAdresse porteAdresse = editiqueHelper.remplitPorteAdresse(params.getDi().getTiers(), infoEnteteDocument);
 			infoEnteteDocument.setPorteAdresse(porteAdresse);
-			Expediteur expediteur = editiqueHelper.remplitExpediteurACI(infoEnteteDocument);
+			Expediteur expediteur = editiqueHelper.remplitExpediteurCAT(infoEnteteDocument);
 			expediteur.setDateExpedition(RegDateHelper.toIndexString(RegDate.get()));
 			expediteur.setTraitePar(params.getTraitePar());
 			if (!StringUtils.isEmpty(params.getNoTelephone())) {
