@@ -6,6 +6,7 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.uniregctb.interfaces.model.CommuneSimple;
 
 final class MockAdresseGeneric implements AdresseGenerique {
 
@@ -174,6 +175,10 @@ final class MockAdresseGeneric implements AdresseGenerique {
 	}
 
 	public Long getId() {
+		return null;
+	}
+
+	public CommuneSimple getCommuneAdresse() {
 		return null;
 	}
 }

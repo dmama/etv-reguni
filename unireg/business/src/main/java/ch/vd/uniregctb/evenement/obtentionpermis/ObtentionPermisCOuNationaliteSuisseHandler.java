@@ -15,7 +15,7 @@ import ch.vd.uniregctb.evenement.EvenementCivilErreur;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.evenement.common.EvenementCivilHandlerBase;
 import ch.vd.uniregctb.evenement.common.EvenementCivilHandlerException;
-import ch.vd.uniregctb.interfaces.model.Commune;
+import ch.vd.uniregctb.interfaces.model.CommuneSimple;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.tiers.*;
@@ -181,13 +181,12 @@ public abstract class ObtentionPermisCOuNationaliteSuisseHandler extends Eveneme
 				try {
 					final AdresseGenerique adresse = adresseService.getAdresseFiscale(habitant, TypeAdresseTiers.DOMICILE, dateEvenement, false);
 					if (adresse != null) {
-						Commune commune = getService().getServiceInfra().getCommuneByAdresse(adresse);
+						final CommuneSimple commune = getService().getServiceInfra().getCommuneByAdresse(adresse);
 						// uniquement si la commune de domicile est vaudoise
 						if (commune != null && commune.isVaudoise()) {
 							noOfsEtendu = commune.getNoOFS();
 						}
 					}
-
 				}
 				catch (AdresseException e) {
 					throw new EvenementCivilHandlerException("Impossible de récupérer l'adresse", e);

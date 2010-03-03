@@ -2,7 +2,7 @@ package ch.vd.uniregctb.evenement.demenagement;
 
 import ch.vd.uniregctb.evenement.EvenementCivil;
 import ch.vd.uniregctb.interfaces.model.Adresse;
-import ch.vd.uniregctb.interfaces.model.Commune;
+import ch.vd.uniregctb.interfaces.model.CommuneSimple;
 
 /**
  * Modèlise le déménagement intra communal d'un individu
@@ -20,7 +20,7 @@ public interface Demenagement extends EvenementCivil {
 	/**
 	 * Renvoie la commune de la nouvelle adresse principale de l'individu après le départ.
 	 */
-	Commune getNouvelleCommunePrincipale();
+	CommuneSimple getNouvelleCommunePrincipale();
 	
 	/**
 	 * Renvoie l'ancienne adresse principale de l'individu avant le déaprt

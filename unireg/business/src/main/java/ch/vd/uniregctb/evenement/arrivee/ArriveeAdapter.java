@@ -11,7 +11,7 @@ import ch.vd.uniregctb.evenement.EvenementAdapterException;
 import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
 import ch.vd.uniregctb.evenement.GenericEvenementAdapter;
 import ch.vd.uniregctb.interfaces.model.Adresse;
-import ch.vd.uniregctb.interfaces.model.Commune;
+import ch.vd.uniregctb.interfaces.model.CommuneSimple;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
@@ -29,13 +29,13 @@ public class ArriveeAdapter extends GenericEvenementAdapter implements Arrivee {
 
 	private Adresse ancienneAdresseSecondaire;
 
-	private Commune ancienneCommunePrincipale;
+	private CommuneSimple ancienneCommunePrincipale;
 
-	private Commune ancienneCommuneSecondaire;
+	private CommuneSimple ancienneCommuneSecondaire;
 
-	private Commune nouvelleCommunePrincipale;
+	private CommuneSimple nouvelleCommunePrincipale;
 
-	private Commune nouvelleCommuneSecondaire;
+	private CommuneSimple nouvelleCommuneSecondaire;
 
 	public final Adresse getAncienneAdressePrincipale() {
 		return ancienneAdressePrincipale;
@@ -45,11 +45,11 @@ public class ArriveeAdapter extends GenericEvenementAdapter implements Arrivee {
 		return ancienneAdresseSecondaire;
 	}
 
-	public Commune getAncienneCommunePrincipale() {
+	public CommuneSimple getAncienneCommunePrincipale() {
 		return ancienneCommunePrincipale;
 	}
 
-	public Commune getAncienneCommuneSecondaire() {
+	public CommuneSimple getAncienneCommuneSecondaire() {
 		return ancienneCommuneSecondaire;
 	}
 
@@ -61,11 +61,11 @@ public class ArriveeAdapter extends GenericEvenementAdapter implements Arrivee {
 		return getAdresseSecondaire(); // par définition
 	}
 
-	public final Commune getNouvelleCommunePrincipale() {
+	public final CommuneSimple getNouvelleCommunePrincipale() {
 		return nouvelleCommunePrincipale;
 	}
 
-	public final Commune getNouvelleCommuneSecondaire() {
+	public final CommuneSimple getNouvelleCommuneSecondaire() {
 		return nouvelleCommuneSecondaire;
 	}
 
@@ -101,7 +101,6 @@ public class ArriveeAdapter extends GenericEvenementAdapter implements Arrivee {
 		catch (InfrastructureException e) {
 			throw new EvenementAdapterException(e);
 		}
-
 	}
 
 	@Override
@@ -114,9 +113,11 @@ public class ArriveeAdapter extends GenericEvenementAdapter implements Arrivee {
 
 	private boolean isEvenementArrivee(TypeEvenementCivil type) {
 		boolean isPresent = false;
-		if (type.equals(TypeEvenementCivil.ARRIVEE_DANS_COMMUNE) || type.equals(TypeEvenementCivil.ARRIVEE_PRINCIPALE_HC)
-				|| type.equals(TypeEvenementCivil.ARRIVEE_PRINCIPALE_HS)
-				|| type.equals(TypeEvenementCivil.ARRIVEE_PRINCIPALE_VAUDOISE) || type.equals(TypeEvenementCivil.ARRIVEE_SECONDAIRE)) {
+		if (type == TypeEvenementCivil.ARRIVEE_DANS_COMMUNE
+				|| type == TypeEvenementCivil.ARRIVEE_PRINCIPALE_HC
+				|| type == TypeEvenementCivil.ARRIVEE_PRINCIPALE_HS
+				|| type == TypeEvenementCivil.ARRIVEE_PRINCIPALE_VAUDOISE
+				|| type == TypeEvenementCivil.ARRIVEE_SECONDAIRE) {
 			isPresent = true;
 
 		}

@@ -22,6 +22,7 @@ public class MockLocalite implements Localite {
 	public static final MockLocalite CheseauzSurLausanne = new MockLocalite(180, 1033, null, "Cheseaux-sur-Lausanne", MockCommune.CheseauxSurLausanne);
 	public static final MockLocalite VufflensLaVille = new MockLocalite(526, 1302, null, "Vufflens-la-Ville", MockCommune.VufflensLaVille);
 	public static final MockLocalite Vallorbe = new MockLocalite(535, 1337, null, "Vallorbe", MockCommune.Vallorbe);
+	public static final MockLocalite LIsle = new MockLocalite(293, 1148, null, "Lisle", MockCommune.LIsle);
 
 	public static final MockLocalite Neuchatel = new MockLocalite(1254, 2000, null, "Neuchâtel", MockCommune.Neuchatel);
 	public static final MockLocalite Neuchatel1Cases = new MockLocalite(1269, 2001, 1, "Neuchâtel 1 Cases", MockCommune.Neuchatel);
@@ -62,7 +63,10 @@ public class MockLocalite implements Localite {
 		l = Orbe;
 		l = Vevey;
 		l = Renens;
+		l = CheseauzSurLausanne;
+		l = VufflensLaVille;
 		l = Vallorbe;
+		l = LIsle;
 
 		l = Neuchatel;
 		l = Neuchatel1Cases;

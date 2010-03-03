@@ -597,6 +597,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 				adresse.setLocalite("Lausanne");
 				adresse.setDateDebutValidite(null);
 				adresse.setTypeAdresse(EnumTypeAdresse.COURRIER);
+				adresse.setCommuneAdresse(MockCommune.Lausanne);
 				tribunalCantonal.setAdresse(adresse);
 				collectivitesAdministrative.add(tribunalCantonal);
 			}
@@ -846,6 +847,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 				adresse.setLocalite("Lausanne");
 				adresse.setDateDebutValidite(RegDate.get(2000, 1, 1));
 				adresse.setTypeAdresse(EnumTypeAdresse.COURRIER);
+				adresse.setCommuneAdresse(MockCommune.Lausanne);
 				adresse.setNumeroRue(MockRue.Lausanne.AvenueDeBeaulieu.getNoRue());
 				adresse.setNumeroOrdrePostal(MockLocalite.Lausanne.getNoOrdre());
 				collectivite.setAdresse(adresse);

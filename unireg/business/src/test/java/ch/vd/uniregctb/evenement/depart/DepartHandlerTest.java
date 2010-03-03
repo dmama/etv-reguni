@@ -14,7 +14,6 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.util.Assert;
 
 import ch.vd.common.model.EnumTypeAdresse;
-import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdressesCiviles;
 import ch.vd.uniregctb.evenement.AbstractEvenementHandlerTest;
@@ -114,6 +113,7 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 				adresse.setNumeroOrdrePostal(MockLocalite.CossonayVille.getNoOrdre());
 				adresse.setNpa("1304");
 				adresse.setPays(MockPays.Suisse);
+				adresse.setCommuneAdresse(MockCommune.Cossonay);
 				add(individu, adresse);
 				// adresse courrier
 				adresse = new MockAdresse();
@@ -127,6 +127,7 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 				adresse.setNumeroOrdrePostal(MockLocalite.CossonayVille.getNoOrdre());
 				adresse.setNpa("1304");
 				adresse.setPays(MockPays.Suisse);
+				adresse.setCommuneAdresse(MockCommune.Cossonay);
 				add(individu, adresse);
 
 				adresse = new MockAdresse();
@@ -139,6 +140,7 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 				adresse.setNumeroOrdrePostal(MockLocalite.Zurich.getNoOrdre());
 				adresse.setNpa("8001");
 				adresse.setPays(MockPays.Suisse);
+				adresse.setCommuneAdresse(MockCommune.Zurich);
 				add(individu, adresse);
 			}
 
@@ -155,6 +157,7 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 				adresse.setNumeroOrdrePostal(MockLocalite.CossonayVille.getNoOrdre());
 				adresse.setNpa("1304");
 				adresse.setPays(MockPays.Suisse);
+				adresse.setCommuneAdresse(MockCommune.Cossonay);
 				add(individu, adresse);
 				// adresse courrier
 				adresse = new MockAdresse();
@@ -168,6 +171,7 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 				adresse.setNumeroOrdrePostal(MockLocalite.CossonayVille.getNoOrdre());
 				adresse.setNpa("1304");
 				adresse.setPays(MockPays.Suisse);
+				adresse.setCommuneAdresse(MockCommune.Cossonay);
 				add(individu, adresse);
 			}
 
@@ -186,6 +190,7 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 				adresse.setNumeroOrdrePostal(MockLocalite.CossonayVille.getNoOrdre());
 				adresse.setNpa("1304");
 				adresse.setPays(MockPays.Suisse);
+				adresse.setCommuneAdresse(MockCommune.Cossonay);
 				add(individu, adresse);
 
 				// adresse secondaire
@@ -200,6 +205,7 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 				adresse.setNumeroOrdrePostal(MockLocalite.Lausanne.getNoOrdre());
 				adresse.setNpa("1004");
 				adresse.setPays(MockPays.Suisse);
+				adresse.setCommuneAdresse(MockCommune.Lausanne);
 				add(individu, adresse);
 
 				adresse = new MockAdresse();
@@ -240,6 +246,7 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 				adresse.setNumeroOrdrePostal(MockLocalite.CossonayVille.getNoOrdre());
 				adresse.setNpa("1304");
 				adresse.setPays(MockPays.Suisse);
+				adresse.setCommuneAdresse(MockCommune.Cossonay);
 				add(individu, adresse);
 
 				adresse = new MockAdresse();
@@ -354,13 +361,7 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 		depart.setAncienneAdresseCourrier(adresseVaud.courrier);
 
 		// Commune dans vd
-		MockCommune communeVd = null;
-		try {
-			communeVd = (MockCommune) serviceInfra.getCommuneByAdresse(adressePrincipale);
-		}
-		catch (InfrastructureException e) {
-			LOGGER.error(e.getMessage());
-		}
+		MockCommune communeVd = (MockCommune) serviceInfra.getCommuneByAdresse(adressePrincipale);
 
 		depart.setAncienneCommunePrincipale(communeVd);
 
@@ -371,14 +372,7 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 		depart.setAdressePrincipale(nouvelleAdresse);
 
 		// Commune hors vd
-		MockCommune communeHorsVd = null;
-		try {
-			communeHorsVd = (MockCommune) serviceInfra.getCommuneByAdresse(nouvelleAdresse);
-		}
-		catch (InfrastructureException e) {
-			throw new InfrastructureException(e.getMessage());
-
-		}
+		MockCommune communeHorsVd = (MockCommune) serviceInfra.getCommuneByAdresse(nouvelleAdresse);
 
 		depart.setNouvelleCommunePrincipale(communeHorsVd);
 		depart.setNumeroOfsCommuneAnnonce(communeVd.getNoOFS());
@@ -388,14 +382,7 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 		if (!principale) {
 			MockAdresse adresseSecondaire = (MockAdresse) adresseVaud.secondaire;
 			depart.setAncienneAdresseSecondaire(adresseSecondaire);
-			MockCommune communeSecondaire = null;
-			try {
-				communeSecondaire = (MockCommune) serviceInfra.getCommuneByAdresse(adresseSecondaire);
-			}
-			catch (InfrastructureException e) {
-				throw new InfrastructureException(e.getMessage());
-
-			}
+			MockCommune communeSecondaire = (MockCommune) serviceInfra.getCommuneByAdresse(adresseSecondaire);
 			depart.setAncienneCommuneSecondaire(communeSecondaire);
 			depart.setNumeroOfsCommuneAnnonce(communeSecondaire.getNoOFS());
 		}

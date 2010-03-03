@@ -2304,10 +2304,10 @@ public class TiersServiceTest extends BusinessTest {
 			@Override
 			protected void init() {
 				final MockIndividu mr = addIndividu(noIndMonsieur, date(1950, 3, 24), "Achille", "Talon", true);
-				addAdresse(mr, EnumTypeAdresse.PRINCIPALE, "Parca Guell", "12", "1000", null, "Barcelona", MockPays.Espagne, date(1990, 5, 1), null);
+				addAdresse(mr, EnumTypeAdresse.PRINCIPALE, "Parca Guell", "12", 1000, null, "Barcelona", MockPays.Espagne, date(1990, 5, 1), null);
 
 				final MockIndividu mme = addIndividu(noIndMadame, date(1950, 5, 12), "Huguette", "Marcot", false);
-				addAdresse(mme, EnumTypeAdresse.PRINCIPALE, "Parca Guell", "12", "1000", null, "Barcelona", MockPays.Espagne, date(1990, 5, 1), date(2010, 2, 23));
+				addAdresse(mme, EnumTypeAdresse.PRINCIPALE, "Parca Guell", "12", 1000, null, "Barcelona", MockPays.Espagne, date(1990, 5, 1), date(2010, 2, 23));
 				addAdresse(mme, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, date(2010, 2, 24), null);
 			}
 		});

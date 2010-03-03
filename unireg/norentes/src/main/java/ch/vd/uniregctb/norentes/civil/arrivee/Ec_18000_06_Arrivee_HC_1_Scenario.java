@@ -52,15 +52,10 @@ public class Ec_18000_06_Arrivee_HC_1_Scenario extends EvenementCivilScenario {
 		serviceCivilService.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
-
 				indAntoine = addIndividu(noIndAntoine,dateNaissance , "Lenormand", "Antoine", true);
 				setNationalite(indAntoine, dateNaissance, null, MockPays.Suisse);
-				addAdresse(indAntoine, EnumTypeAdresse.PRINCIPALE, MockRue.Zurich.GloriaStrasse, null,
-						MockLocalite.Zurich, dateArriveeZurich, dateArriveeLeSentier.getOneDayBefore());
-				addAdresse(indAntoine, EnumTypeAdresse.PRINCIPALE, MockRue.LeSentier.GrandRue, null,
-						MockLocalite.LeSentier, dateArriveeLeSentier, null);
-
-
+				addAdresse(indAntoine, EnumTypeAdresse.PRINCIPALE, MockRue.Zurich.GloriaStrasse, null, MockLocalite.Zurich, dateArriveeZurich, dateArriveeLeSentier.getOneDayBefore());
+				addAdresse(indAntoine, EnumTypeAdresse.PRINCIPALE, MockRue.LeSentier.GrandRue, null, MockLocalite.LeSentier, dateArriveeLeSentier, null);
 			}
 		});
 	}

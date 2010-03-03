@@ -134,29 +134,8 @@ public abstract class MockServiceCivil implements ServiceCivilService {
 
 	/**
 	 * Ajoute une adresse pour l'individu spécifié.
-	 * @deprecated utiliser plutôt la méthod {@link #addAdresse(Individu, EnumTypeAdresse, Rue, String, Localite, RegDate, RegDate)}
 	 */
-	@Deprecated
-	protected Adresse addAdresse(Individu individu, EnumTypeAdresse type, String rue, String numeroMaison, String numeroPostal, String localite, String casePostale,
-			RegDate debutValidite, RegDate finValidite) {
-		MockAdresse adresse = new MockAdresse();
-		adresse.setTypeAdresse(type);
-		adresse.setLocalite(localite);
-		adresse.setRue(rue);
-		adresse.setNumero(numeroMaison);
-		adresse.setCasePostale(casePostale);
-		adresse.setNumeroPostal(numeroPostal);
-		adresse.setDateDebutValidite(debutValidite);
-		adresse.setDateFinValidite(finValidite);
-		add(individu, adresse);
-
-		return adresse;
-	}
-
-	/**
-	 * Ajoute une adresse pour l'individu spécifié.
-	 */
-	protected Adresse addAdresse(Individu individu, EnumTypeAdresse type, String rue, String numeroMaison, String numeroPostal, Localite localite, String casePostale,
+	protected Adresse addAdresse(Individu individu, EnumTypeAdresse type, String rue, String numeroMaison, Integer numeroPostal, Localite localite, String casePostale,
 			RegDate debutValidite, RegDate finValidite) {
 
 		final MockAdresse adresse = new MockAdresse();
@@ -165,7 +144,8 @@ public abstract class MockServiceCivil implements ServiceCivilService {
 		adresse.setRue(rue);
 		adresse.setNumero(numeroMaison);
 		adresse.setCasePostale(casePostale);
-		adresse.setNumeroPostal(numeroPostal);
+		adresse.setNumeroPostal(numeroPostal == null ? null : String.valueOf(numeroPostal));
+		adresse.setCommuneAdresse(localite.getCommuneLocalite());
 
 		adresse.setPays(MockPays.Suisse);
 		final Integer complementNPA = localite.getComplementNPA();
@@ -182,7 +162,7 @@ public abstract class MockServiceCivil implements ServiceCivilService {
 	/**
 	 * Ajoute une adresse étrangère pour l'individu spécifié
 	 */
-	protected Adresse addAdresse(Individu individu, EnumTypeAdresse type, String rue, String numeroMaison, String numeroPostal, String casePostale, String localite, Pays pays, RegDate debutValidite, RegDate finValidite) {
+	protected Adresse addAdresse(Individu individu, EnumTypeAdresse type, String rue, String numeroMaison, Integer numeroPostal, String casePostale, String localite, Pays pays, RegDate debutValidite, RegDate finValidite) {
 
 		Assert.isFalse(pays.isSuisse());
 
@@ -192,7 +172,8 @@ public abstract class MockServiceCivil implements ServiceCivilService {
 		adresse.setRue(rue);
 		adresse.setNumero(numeroMaison);
 		adresse.setCasePostale(casePostale);
-		adresse.setNumeroPostal(numeroPostal);
+		adresse.setNumeroPostal(numeroPostal == null ? null : String.valueOf(numeroPostal));
+		adresse.setCommuneAdresse(null);
 		adresse.setPays(pays);
 
 		adresse.setDateDebutValidite(debutValidite);
@@ -235,6 +216,7 @@ public abstract class MockServiceCivil implements ServiceCivilService {
 		adresse.setCasePostale(casePostale);
 		adresse.setLocalite(localite.getNomAbregeMinuscule());
 		adresse.setNumeroPostal(localite.getNPA().toString());
+		adresse.setCommuneAdresse(localite.getCommuneLocalite());
 		adresse.setPays(MockPays.Suisse);
 		final Integer complementNPA = localite.getComplementNPA();
 		adresse.setNumeroPostalComplementaire(complementNPA == null ? null : complementNPA.toString());

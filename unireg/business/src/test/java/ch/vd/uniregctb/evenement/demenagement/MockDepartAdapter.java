@@ -3,14 +3,14 @@ package ch.vd.uniregctb.evenement.demenagement;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.evenement.depart.DepartAdapter;
 import ch.vd.uniregctb.interfaces.model.Adresse;
-import ch.vd.uniregctb.interfaces.model.Commune;
+import ch.vd.uniregctb.interfaces.model.CommuneSimple;
 import ch.vd.uniregctb.interfaces.model.Individu;
 
 public class MockDepartAdapter extends DepartAdapter {
 
 	private Adresse ancienneAdressePrincipale;
-	private Commune nouvelleCommunePrincipale;
-	private Commune ancienneCommunePrincipale;
+	private CommuneSimple nouvelleCommunePrincipale;
+	private CommuneSimple ancienneCommunePrincipale;
 	private Adresse ancienneAdresseCourrier;
 	private Individu individu;
 	private RegDate date;
@@ -39,7 +39,7 @@ public class MockDepartAdapter extends DepartAdapter {
 	}
 
 	@Override
-	public Commune getNouvelleCommunePrincipale() {
+	public CommuneSimple getNouvelleCommunePrincipale() {
 		return nouvelleCommunePrincipale;
 	}
 
@@ -53,7 +53,7 @@ public class MockDepartAdapter extends DepartAdapter {
 		return ancienneAdressePrincipale;
 	}
 
-	public Commune getAncienneCommunePrincipale() {
+	public CommuneSimple getAncienneCommunePrincipale() {
 		return ancienneCommunePrincipale;
 	}
 	
@@ -61,11 +61,11 @@ public class MockDepartAdapter extends DepartAdapter {
 		return ancienneAdresseCourrier;
 	}
 	
-	public void setAncienneCommunePrincipale(Commune amcienneCommunePrincipale) {
+	public void setAncienneCommunePrincipale(CommuneSimple amcienneCommunePrincipale) {
 		this.ancienneCommunePrincipale = amcienneCommunePrincipale;
 	}
 
-	public void setNouvelleCommunePrincipale(Commune nouvelleCommunePrincipale) {
+	public void setNouvelleCommunePrincipale(CommuneSimple nouvelleCommunePrincipale) {
 		this.nouvelleCommunePrincipale = nouvelleCommunePrincipale;
 	}
 

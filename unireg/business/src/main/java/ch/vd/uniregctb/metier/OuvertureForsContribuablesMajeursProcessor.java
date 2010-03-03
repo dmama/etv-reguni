@@ -28,7 +28,7 @@ import ch.vd.uniregctb.common.BatchTransactionTemplate.BatchCallback;
 import ch.vd.uniregctb.common.BatchTransactionTemplate.Behavior;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
-import ch.vd.uniregctb.interfaces.model.Commune;
+import ch.vd.uniregctb.interfaces.model.CommuneSimple;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilException;
@@ -420,7 +420,7 @@ public class OuvertureForsContribuablesMajeursProcessor {
 		}
 
 		boolean estDomicilieDansLeCanton;
-		Commune commune;
+		final CommuneSimple commune;
 		try {
 			estDomicilieDansLeCanton = serviceInfra.estDansLeCanton(adresseDomicile);
 			if (estDomicilieDansLeCanton) {

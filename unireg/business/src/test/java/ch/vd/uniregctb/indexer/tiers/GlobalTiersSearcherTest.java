@@ -16,6 +16,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
+import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServicePM;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
 import ch.vd.uniregctb.parametrage.ParametreEnum;
@@ -78,8 +79,8 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 
 			@SuppressWarnings("deprecation")
 			private void addDefaultAdressesTo(MockIndividu individu) {
-				addAdresse(individu, EnumTypeAdresse.PRINCIPALE, null, null, "1234", "Mock Localite " + new Date(), "4848", RegDate.get(1980, 11, 2), null);
-				addAdresse(individu, EnumTypeAdresse.COURRIER, null, null, "4567", "Mock Localite " + new Date(), "5252", RegDate.get(1980, 11, 2), null);
+				addAdresse(individu, EnumTypeAdresse.PRINCIPALE, null, null, MockLocalite.Bex.getNPA(), MockLocalite.Bex, "4848", RegDate.get(1980, 11, 2), null);
+				addAdresse(individu, EnumTypeAdresse.COURRIER, null, null, MockLocalite.Renens.getNPA(), MockLocalite.Renens, "5252", RegDate.get(1980, 11, 2), null);
 			}
 		});
 
@@ -276,7 +277,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 	public void testRechercheParNpa() throws Exception {
 
 		TiersCriteria criteria = new TiersCriteria();
-		criteria.setNpa("4567");
+		criteria.setNpa(String.valueOf(MockLocalite.Renens.getNPA()));
 		List<TiersIndexedData> list = globalTiersSearcher.search(criteria);
 
 		assertEquals(3, list.size());

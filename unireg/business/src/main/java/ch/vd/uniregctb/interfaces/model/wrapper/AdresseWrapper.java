@@ -9,6 +9,7 @@ import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.interfaces.model.Adresse;
+import ch.vd.uniregctb.interfaces.model.CommuneSimple;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 
 public class AdresseWrapper implements Adresse {
@@ -98,6 +99,10 @@ public class AdresseWrapper implements Adresse {
 
 	public EnumTypeAdresse getTypeAdresse() {
 		return target.getTypeAdresse();
+	}
+
+	public CommuneSimple getCommuneAdresse() {
+		return CommuneSimpleWrapper.get(target.getCommuneAdresse());
 	}
 
 	/**

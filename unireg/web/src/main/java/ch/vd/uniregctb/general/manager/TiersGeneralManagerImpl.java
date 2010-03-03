@@ -226,8 +226,7 @@ public class TiersGeneralManagerImpl implements TiersGeneralManager{
 					PersonnePhysique habFils  = tiersDAO.getPPByNumeroIndividu(individu.getNoTechnique());
 					if (habFils == null) {
 						validationResults.addError("Le contribuable enfant correspondant à l'individu '"
-													+ individu.getDernierHistoriqueIndividu().getPrenom() + " " + individu.getDernierHistoriqueIndividu().getNom()
-													+ "' n'existe pas.");
+													+ tiersService.getNomPrenom(individu) + "' n'existe pas.");
 					}
 				}
 				Individu mere = ind.getMere();
@@ -235,8 +234,7 @@ public class TiersGeneralManagerImpl implements TiersGeneralManager{
 					PersonnePhysique habMere  = tiersDAO.getPPByNumeroIndividu(mere.getNoTechnique());
 					if (habMere == null) {
 						validationResults.addError("Le contribuable mère correspondant à l'individu '"
-													+ mere.getDernierHistoriqueIndividu().getPrenom() + " " + mere.getDernierHistoriqueIndividu().getNom()
-													+ "' n'existe pas.");
+													+ tiersService.getNomPrenom(mere) + "' n'existe pas.");
 					}
 				}
 				Individu pere = ind.getPere();
@@ -244,8 +242,7 @@ public class TiersGeneralManagerImpl implements TiersGeneralManager{
 					PersonnePhysique habPere  = tiersDAO.getPPByNumeroIndividu(pere.getNoTechnique());
 					if (habPere == null) {
 						validationResults.addError("Le contribuable père correspondant à l'individu '"
-													+ pere.getDernierHistoriqueIndividu().getPrenom() + " " + pere.getDernierHistoriqueIndividu().getNom()
-													+ "' n'existe pas.");
+													+ tiersService.getNomPrenom(pere) + "' n'existe pas.");
 					}
 				}
 				for (EtatCivil etatCivil : ind.getEtatsCivils()) {

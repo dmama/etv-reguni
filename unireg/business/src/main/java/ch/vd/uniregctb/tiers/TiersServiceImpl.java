@@ -38,12 +38,12 @@ import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.evenement.EvenementCivilRegroupeDAO;
-import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
 import ch.vd.uniregctb.interfaces.model.Commune;
+import ch.vd.uniregctb.interfaces.model.CommuneSimple;
 import ch.vd.uniregctb.interfaces.model.HistoriqueIndividu;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.Nationalite;
@@ -51,7 +51,6 @@ import ch.vd.uniregctb.interfaces.model.Permis;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
-import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
 import ch.vd.uniregctb.situationfamille.SituationFamilleService;
 import ch.vd.uniregctb.situationfamille.VueSituationFamille;
 import ch.vd.uniregctb.tache.TacheService;
@@ -1528,7 +1527,7 @@ public class TiersServiceImpl implements TiersService {
 				final AdresseGenerique adresseDomicile = adresseService.getAdresseFiscale(pp, TypeAdresseTiers.DOMICILE, null, false);
 				if (adresseDomicile != null) {
 					final boolean hs = adresseDomicile.getNoOfsPays() != null && adresseDomicile.getNoOfsPays() != ServiceInfrastructureService.noOfsSuisse;
-					final Commune commune = serviceInfra.getCommuneByAdresse(adresseDomicile);
+					final CommuneSimple commune = serviceInfra.getCommuneByAdresse(adresseDomicile);
 					if (hs || (commune != null && !commune.isVaudoise())) {
 						changeHabitantenNH(pp);
 						change = true;
@@ -1555,7 +1554,7 @@ public class TiersServiceImpl implements TiersService {
 			try {
 				final AdresseGenerique adresseDomicile = adresseService.getAdresseFiscale(pp, TypeAdresseTiers.DOMICILE, null, false);
 				if (adresseDomicile != null) {
-					final Commune commune = serviceInfra.getCommuneByAdresse(adresseDomicile);
+					final CommuneSimple commune = serviceInfra.getCommuneByAdresse(adresseDomicile);
 					if (commune != null && commune.isVaudoise()) {
 						changeNHenHabitant(pp, pp.getNumeroIndividu(), dateArrivee);
 						change = true;

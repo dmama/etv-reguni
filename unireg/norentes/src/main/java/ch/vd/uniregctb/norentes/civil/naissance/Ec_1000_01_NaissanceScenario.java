@@ -7,6 +7,7 @@ import annotation.Etape;
 import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
+import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
 import ch.vd.uniregctb.norentes.common.EvenementCivilScenario;
@@ -53,7 +54,7 @@ public class Ec_1000_01_NaissanceScenario extends EvenementCivilScenario {
 			public void init() {
 				MockIndividu pierre = addIndividu(123, dateNaissance, "Durand", "Pierre", true);
 				setNationalite(pierre, RegDate.get(2008, 4, 12), null, MockPays.Suisse);
-				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, "Av de Recordon", "1", "1012", "Lausanne", null, RegDate.get(2008, 4, 12), null);
+				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, "Av de Recordon", "1", 1012, MockLocalite.Lausanne, null, RegDate.get(2008, 4, 12), null);
 			}
 		});
 	}

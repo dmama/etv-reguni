@@ -57,9 +57,9 @@ public class Ec_43000_01_CorrectionAdresse_MemeCommune_Scenario extends Evenemen
 
 				addPermis(indConceicao, EnumTypePermis.ETABLLISSEMENT, RegDate.get(2008, 5, 21), null, 1, false);
 
-				addAdresse(indConceicao, EnumTypeAdresse.COURRIER, "Avenue de Marcelin", "39", "1000",
+				addAdresse(indConceicao, EnumTypeAdresse.COURRIER, "Avenue de Marcelin", "39", 1000,
 						MockLocalite.Lausanne, null, RegDate.get(2008, 4, 1), dateCorrection.getOneDayBefore());
-				addAdresse(indConceicao, EnumTypeAdresse.PRINCIPALE, "Avenue de Marcelin", "39", "1000",
+				addAdresse(indConceicao, EnumTypeAdresse.PRINCIPALE, "Avenue de Marcelin", "39", 1000,
 						MockLocalite.Lausanne, null, RegDate.get(2008, 4, 1), dateCorrection.getOneDayBefore());
 
 				addAdresse(indConceicao, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeMarcelin, null,

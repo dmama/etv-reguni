@@ -89,7 +89,8 @@ public class Ec_19000_03_Depart_HS_Scenario extends DepartScenario {
 			marieIndividus(indCedric, indSandra, RegDate.get(2003, 7, 11));
 		}
 
-		private Adresse createAdresse(Individu individu, EnumTypeAdresse type, Rue rue, String casePostale, Localite localite, Pays pays, RegDate debutValidite, RegDate finValidite) {
+		private Adresse createAdresse(Individu individu, EnumTypeAdresse type, Rue rue, String casePostale, Localite localite, MockCommune commune, Pays pays, RegDate debutValidite,
+		                              RegDate finValidite) {
 			MockAdresse adresse = new MockAdresse();
 			adresse.setTypeAdresse(type);
 
@@ -99,6 +100,7 @@ public class Ec_19000_03_Depart_HS_Scenario extends DepartScenario {
 				adresse.setNumeroRue(rue.getNoRue());
 			}
 			adresse.setCasePostale(casePostale);
+			adresse.setCommuneAdresse(commune);
 			if (localite != null) {
 				adresse.setLocalite(localite.getNomAbregeMinuscule());
 				adresse.setNumeroPostal(localite.getNPA().toString());
@@ -115,9 +117,9 @@ public class Ec_19000_03_Depart_HS_Scenario extends DepartScenario {
 			return adresse;
 		}
 
-		public Adresse addAdresse(Individu individu, EnumTypeAdresse type, Rue rue, String casePostale, Localite localite, Pays pays, RegDate debutValidite, RegDate finValidite) {
+		public Adresse addAdresse(Individu individu, EnumTypeAdresse type, Rue rue, String casePostale, Localite localite, MockCommune commune, Pays pays, RegDate debutValidite, RegDate finValidite) {
 
-			Adresse adresse = createAdresse(individu, type, rue, casePostale, localite, pays, debutValidite, finValidite);
+			final Adresse adresse = createAdresse(individu, type, rue, casePostale, localite, commune, pays, debutValidite, finValidite);
 			add(individu, adresse);
 			return adresse;
 		}
@@ -271,7 +273,7 @@ public class Ec_19000_03_Depart_HS_Scenario extends DepartScenario {
 	}
 
 	private void ouvrirAdresses(MockIndividu individu) {
-		internalServiceCivil.addAdresse(individu, EnumTypeAdresse.PRINCIPALE, null, null, null, paysDepart, dateDepartBex.getOneDayAfter(), null);
+		internalServiceCivil.addAdresse(individu, EnumTypeAdresse.PRINCIPALE, null, null, null, null, paysDepart, dateDepartBex.getOneDayAfter(), null);
 	}
 
 	private void assertBlocageRemboursementAutomatique(boolean blocageAttenduCedric, boolean blocageAttenduSandra, boolean blocageAttenduMenage) {

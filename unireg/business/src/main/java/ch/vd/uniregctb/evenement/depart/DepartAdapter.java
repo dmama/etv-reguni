@@ -9,7 +9,7 @@ import ch.vd.uniregctb.evenement.EvenementAdapterException;
 import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
 import ch.vd.uniregctb.evenement.GenericEvenementAdapter;
 import ch.vd.uniregctb.interfaces.model.Adresse;
-import ch.vd.uniregctb.interfaces.model.Commune;
+import ch.vd.uniregctb.interfaces.model.CommuneSimple;
 import ch.vd.uniregctb.interfaces.model.Pays;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -33,12 +33,12 @@ public class DepartAdapter extends GenericEvenementAdapter implements Depart {
 	/**
 	 * La commune de la nouvelle adresse principale.
 	 */
-	private Commune nouvelleCommunePrincipale;
+	private CommuneSimple nouvelleCommunePrincipale;
 
 	/**
 	 * La commune de l'adresse principale avant départ
 	 */
-	private Commune ancienneCommunePrincipale;
+	private CommuneSimple ancienneCommunePrincipale;
 
 	/**
 	 * l'adresse secondaire avant départ
@@ -47,16 +47,14 @@ public class DepartAdapter extends GenericEvenementAdapter implements Depart {
 	/**
 	 * La commune de l'adresse secondaire avant départ
 	 */
-	private Commune ancienneCommuneSecondaire;
+	private CommuneSimple ancienneCommuneSecondaire;
 
 	/**
 	 * adresse courrier avant départ
 	 */
 	private Adresse ancienneAdresseCourrier;
 
-	private Pays paysInconnue;
-
-
+	private Pays paysInconnu;
 
 
 	/**
@@ -93,13 +91,11 @@ public class DepartAdapter extends GenericEvenementAdapter implements Depart {
 			// on récupère la commune de la nouvelle adresse principal
 			this.nouvelleCommunePrincipale = infrastructureService.getCommuneByAdresse(getNouvelleAdressePrincipale());
 
-			this.paysInconnue= infrastructureService.getPaysInconnu();
+			this.paysInconnu = infrastructureService.getPaysInconnu();
 		}
 		catch (InfrastructureException e) {
 			throw new EvenementAdapterException(e);
 		}
-
-
 	}
 
 	/**
@@ -116,7 +112,7 @@ public class DepartAdapter extends GenericEvenementAdapter implements Depart {
 		return getAdressePrincipale();
 	}
 
-	public Commune getNouvelleCommunePrincipale() {
+	public CommuneSimple getNouvelleCommunePrincipale() {
 		return this.nouvelleCommunePrincipale;
 	}
 
@@ -124,7 +120,7 @@ public class DepartAdapter extends GenericEvenementAdapter implements Depart {
 		return ancienneAdressePrincipale;
 	}
 
-	public Commune getAncienneCommunePrincipale() {
+	public CommuneSimple getAncienneCommunePrincipale() {
 		return ancienneCommunePrincipale;
 	}
 
@@ -133,17 +129,14 @@ public class DepartAdapter extends GenericEvenementAdapter implements Depart {
 	}
 
 	public Adresse getAncienneAdresseSecondaire() {
-
 		return ancienneAdresseSecondaire;
 	}
 
-	public Commune getAncienneCommuneSecondaire() {
-
+	public CommuneSimple getAncienneCommuneSecondaire() {
 		return ancienneCommuneSecondaire;
 	}
 
 	public Pays getPaysInconnu() {
-		return paysInconnue;
+		return paysInconnu;
 	}
-
 }

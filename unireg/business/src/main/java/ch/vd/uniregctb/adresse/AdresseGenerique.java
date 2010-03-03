@@ -3,6 +3,7 @@ package ch.vd.uniregctb.adresse;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.Loggable;
+import ch.vd.uniregctb.interfaces.model.AdresseAvecCommune;
 
 /**
  * Interface générique permettant de représenter aussi bien une adresses civile et qu'une adresse fiscale.
@@ -10,7 +11,7 @@ import ch.vd.uniregctb.common.Loggable;
  * @see AdresseCivileAdapter
  * @see AdresseSupplementaireAdapter
  */
-public interface AdresseGenerique extends DateRange, Loggable {
+public interface AdresseGenerique extends DateRange, Loggable, AdresseAvecCommune {
 
 	public static enum Source {
 		CIVILE,

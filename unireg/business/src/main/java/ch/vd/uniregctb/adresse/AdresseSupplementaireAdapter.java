@@ -8,6 +8,7 @@ import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.uniregctb.interfaces.model.CommuneSimple;
 import ch.vd.uniregctb.interfaces.model.Localite;
 import ch.vd.uniregctb.interfaces.model.Rue;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -268,6 +269,12 @@ public class AdresseSupplementaireAdapter extends AdresseAdapter {
 
 	public Long getId() {
 		return adresse.getId();
+	}
+
+	public CommuneSimple getCommuneAdresse() {
+		// les adresses purement fiscales ne sont pas attachées à des communes directement
+		// -> il faut donc passer par la localité postale
+		return null;
 	}
 
 	@Override

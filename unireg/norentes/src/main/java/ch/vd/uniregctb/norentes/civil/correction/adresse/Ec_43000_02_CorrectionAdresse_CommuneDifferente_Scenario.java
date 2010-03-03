@@ -58,9 +58,9 @@ public class Ec_43000_02_CorrectionAdresse_CommuneDifferente_Scenario extends Ev
 
 				addPermis(indConceicao, EnumTypePermis.ETABLLISSEMENT, RegDate.get(2008, 5, 21), null, 1, false);
 
-				addAdresse(indConceicao, EnumTypeAdresse.COURRIER, "Rue de la poste", "39", "1020",
+				addAdresse(indConceicao, EnumTypeAdresse.COURRIER, "Rue de la poste", "39", 1020,
 						MockLocalite.Renens, null, RegDate.get(2008, 4, 1), dateCorrection.getOneDayBefore());
-				addAdresse(indConceicao, EnumTypeAdresse.PRINCIPALE, "Rue de la poste", "39", "1020",
+				addAdresse(indConceicao, EnumTypeAdresse.PRINCIPALE, "Rue de la poste", "39", 1020,
 						MockLocalite.Renens, null, RegDate.get(2008, 4, 1), dateCorrection.getOneDayBefore());
 
 				addAdresse(indConceicao, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeMarcelin, null,

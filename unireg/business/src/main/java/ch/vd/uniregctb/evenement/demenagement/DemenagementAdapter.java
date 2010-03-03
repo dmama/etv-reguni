@@ -9,7 +9,7 @@ import ch.vd.uniregctb.evenement.EvenementAdapterException;
 import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
 import ch.vd.uniregctb.evenement.GenericEvenementAdapter;
 import ch.vd.uniregctb.interfaces.model.Adresse;
-import ch.vd.uniregctb.interfaces.model.Commune;
+import ch.vd.uniregctb.interfaces.model.CommuneSimple;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 
@@ -31,7 +31,7 @@ public class DemenagementAdapter extends GenericEvenementAdapter implements Deme
 	/**
 	 * La commune de la nouvelle adresse principale.
 	 */
-	private Commune nouvelleCommunePrincipale;
+	private CommuneSimple nouvelleCommunePrincipale;
 	
 	/**
 	 * @throws EvenementAdapterException
@@ -68,7 +68,7 @@ public class DemenagementAdapter extends GenericEvenementAdapter implements Deme
 	/**
 	 * @see ch.vd.uniregctb.evenement.demenagement.Demenagement#getNouvelleCommuneAdressePrincipale()
 	 */
-	public Commune getNouvelleCommunePrincipale() {
+	public CommuneSimple getNouvelleCommunePrincipale() {
 		return nouvelleCommunePrincipale;
 	}
 

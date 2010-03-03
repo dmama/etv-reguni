@@ -8,6 +8,7 @@ import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
+import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
 import ch.vd.uniregctb.norentes.common.EvenementCivilScenario;
@@ -64,8 +65,8 @@ public class Ec_48000_02_CorrectionIdentificationNonHabitant_Scenario extends Ev
 
 			@SuppressWarnings("deprecation")
 			protected void addDefaultAdressesTo(Individu individu) {
-				addAdresse(individu, EnumTypeAdresse.PRINCIPALE, null, null, "1234", "Mock Localite " + new Date(), "4848", RegDate.get(1980, 11, 2), null);
-				addAdresse(individu, EnumTypeAdresse.COURRIER, null, null, "4567", "Mock Localite " + new Date(), "5252", RegDate.get(1980, 11, 2), null);
+				addAdresse(individu, EnumTypeAdresse.PRINCIPALE, null, null, MockLocalite.Bex.getNPA(), MockLocalite.Bex, "4848", RegDate.get(1980, 11, 2), null);
+				addAdresse(individu, EnumTypeAdresse.COURRIER, null, null, MockLocalite.Renens.getNPA(), MockLocalite.Renens, "5252", RegDate.get(1980, 11, 2), null);
 			}
 		});
 	}

@@ -10,7 +10,7 @@ import ch.vd.uniregctb.evenement.EvenementAdapterException;
 import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
 import ch.vd.uniregctb.evenement.GenericEvenementAdapter;
 import ch.vd.uniregctb.interfaces.model.Adresse;
-import ch.vd.uniregctb.interfaces.model.Commune;
+import ch.vd.uniregctb.interfaces.model.CommuneSimple;
 import ch.vd.uniregctb.interfaces.model.Permis;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -68,7 +68,7 @@ public class ObtentionPermisAdapter extends GenericEvenementAdapter implements O
 			// à utiliser pour déterminer le numeroOFS si besoin d'ouvrir un nouveau for vaudois
 			final Adresse adressePrincipale = getAdressePrincipale();
 			if (infrastructureService.estDansLeCanton(adressePrincipale)) {
-				final Commune communePrincipale = infrastructureService.getCommuneByAdresse(adressePrincipale);
+				final CommuneSimple communePrincipale = infrastructureService.getCommuneByAdresse(adressePrincipale);
 				if (communePrincipale == null) {
 					throw new EvenementAdapterException("Incohérence dans l'adresse principale");
 				}

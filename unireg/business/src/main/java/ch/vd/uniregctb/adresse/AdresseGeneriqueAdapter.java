@@ -7,6 +7,7 @@ import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.uniregctb.interfaces.model.CommuneSimple;
 
 /*
  * Cette classe permet d'adapter une adresse générique en surchargeant ses dates de début/fin de validité ou sa source.
@@ -247,5 +248,9 @@ public class AdresseGeneriqueAdapter implements AdresseGenerique {
 
 	public Long getId() {
 		return null;
+	}
+
+	public CommuneSimple getCommuneAdresse() {
+		return target.getCommuneAdresse();
 	}
 }

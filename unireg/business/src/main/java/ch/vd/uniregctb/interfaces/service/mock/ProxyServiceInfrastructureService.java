@@ -154,11 +154,11 @@ public class ProxyServiceInfrastructureService implements ServiceInfrastructureS
 		return target.getCAT();
 	}
 
-	public Commune getCommuneByAdresse(Adresse adresse) throws InfrastructureException {
+	public CommuneSimple getCommuneByAdresse(Adresse adresse) throws InfrastructureException {
 		return target.getCommuneByAdresse(adresse);
 	}
 
-	public Commune getCommuneByAdresse(AdresseGenerique adresse) throws InfrastructureException {
+	public CommuneSimple getCommuneByAdresse(AdresseGenerique adresse) throws InfrastructureException {
 		return target.getCommuneByAdresse(adresse);
 	}
 

@@ -11,6 +11,7 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.interfaces.model.Adresse;
+import ch.vd.uniregctb.interfaces.model.CommuneSimple;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 
 /*
@@ -316,6 +317,10 @@ public class AdresseCivileAdapter extends AdresseAdapter {
 
 	public boolean isAnnule() {
 		return false;
+	}
+
+	public CommuneSimple getCommuneAdresse() {
+		return adresse.getCommuneAdresse();
 	}
 
 	public Long getId() {

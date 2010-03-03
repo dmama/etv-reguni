@@ -20,7 +20,7 @@ import ch.vd.uniregctb.evenement.EvenementCivilErreur;
 import ch.vd.uniregctb.evenement.GenericEvenementAdapter;
 import ch.vd.uniregctb.evenement.changement.AbstractChangementHandler;
 import ch.vd.uniregctb.evenement.common.EvenementCivilHandlerException;
-import ch.vd.uniregctb.interfaces.model.Commune;
+import ch.vd.uniregctb.interfaces.model.CommuneSimple;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
@@ -51,7 +51,7 @@ public class ModificationAdresseNotificationHandler extends AbstractChangementHa
 	protected void validateSpecific(EvenementCivil target, List<EvenementCivilErreur> erreurs, List<EvenementCivilErreur> warnings) {
 	}
 
-	private Commune getCommuneAtDate(PersonnePhysique pp, RegDate date) throws EvenementCivilHandlerException {
+	private CommuneSimple getCommuneAtDate(PersonnePhysique pp, RegDate date) throws EvenementCivilHandlerException {
 		try {
 			final AdressesCiviles adresses = adresseService.getAdressesCiviles(pp, date, false);
 			return infraService.getCommuneByAdresse(adresses.principale);
@@ -116,7 +116,7 @@ public class ModificationAdresseNotificationHandler extends AbstractChangementHa
 			else {
 				// la commune d'annonce de l'événement n'est pas forcément la commune de domicile
 				// de l'individu, donc il faut aller chercher la commune de domicile...
-				final Commune commune = getCommuneAtDate(pp, dateTraitement);
+				final CommuneSimple commune = getCommuneAtDate(pp, dateTraitement);
 				if (commune == null || commune.getNoOFSEtendu() != ofsCommune) {
 					throw new EvenementCivilHandlerException("Evénement de correction d'adresse avec changement de commune");
 				}

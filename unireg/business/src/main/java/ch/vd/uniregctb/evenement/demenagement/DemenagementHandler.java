@@ -15,7 +15,7 @@ import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.evenement.common.EvenementCivilCoupleHandler;
 import ch.vd.uniregctb.evenement.common.EvenementCivilHandlerException;
 import ch.vd.uniregctb.interfaces.model.Adresse;
-import ch.vd.uniregctb.interfaces.model.Commune;
+import ch.vd.uniregctb.interfaces.model.CommuneSimple;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
@@ -60,7 +60,7 @@ public class DemenagementHandler extends EvenementCivilCoupleHandler {
 		 * La nouvelle adresse principale n’est pas dans le canton (il n’est pas
 		 * obligatoire que l’adresse courrier soit dans le canton).
 		 */
-		final Commune nouvelleCommune = demenagement.getNouvelleCommunePrincipale();
+		final CommuneSimple nouvelleCommune = demenagement.getNouvelleCommunePrincipale();
 		if (nouvelleCommune == null || !nouvelleCommune.isVaudoise()) {
 			errors.add(new EvenementCivilErreur("La nouvelle adresse est en dehors du canton"));
 		}

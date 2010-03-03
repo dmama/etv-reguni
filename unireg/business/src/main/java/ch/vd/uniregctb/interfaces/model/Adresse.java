@@ -4,7 +4,7 @@ import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
 
-public interface Adresse extends DateRange {
+public interface Adresse extends DateRange, AdresseAvecCommune {
 
     /**
      * Retourne la case postale de l'adresse.

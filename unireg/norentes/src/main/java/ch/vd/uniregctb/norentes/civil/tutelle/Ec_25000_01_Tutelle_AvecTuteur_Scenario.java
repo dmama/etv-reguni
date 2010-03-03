@@ -11,6 +11,7 @@ import ch.vd.registre.civil.model.EnumTypeTutelle;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
+import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
 import ch.vd.uniregctb.norentes.common.EvenementCivilScenario;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -62,11 +63,11 @@ public class Ec_25000_01_Tutelle_AvecTuteur_Scenario extends EvenementCivilScena
 				indBea = addIndividu(noIndBea, RegDate.get(1963, 8, 20), "Duval", "Béatrice", false);
 				indJulie = addIndividu(noIndJulie, RegDate.get(1977, 4, 19), "Goux", "Julie", false);
 
-				addAdresse(indBea, EnumTypeAdresse.PRINCIPALE, "rue de Béa", "1Bis", "1234", "Mock Localite 1 " + new Date(), "4848", RegDate.get(1980, 11, 2), null);
-				addAdresse(indBea, EnumTypeAdresse.COURRIER, "rue de Béa", "1Bis", "1234", "Mock Localite 1 " + new Date(), "4848", RegDate.get(1980, 11, 2), null);
+				addAdresse(indBea, EnumTypeAdresse.PRINCIPALE, "rue de Béa", "1Bis", MockLocalite.Bex.getNPA(), MockLocalite.Bex, "4848", RegDate.get(1980, 11, 2), null);
+				addAdresse(indBea, EnumTypeAdresse.COURRIER, "rue de Béa", "1Bis", MockLocalite.Bex.getNPA(), MockLocalite.Bex, "4848", RegDate.get(1980, 11, 2), null);
 
-				addAdresse(indJulie, EnumTypeAdresse.PRINCIPALE, "rue de Julie", "28", "4567", "Mock Localite 2 " + new Date(), "5252", RegDate.get(1980, 11, 2), null);
-				addAdresse(indJulie, EnumTypeAdresse.COURRIER, "rue de Julie", "28", "4567", "Mock Localite 2 " + new Date(), "5252", RegDate.get(1980, 11, 2), null);
+				addAdresse(indJulie, EnumTypeAdresse.PRINCIPALE, "rue de Julie", "28", MockLocalite.Renens.getNPA(), MockLocalite.Renens, "5252", RegDate.get(1980, 11, 2), null);
+				addAdresse(indJulie, EnumTypeAdresse.COURRIER, "rue de Julie", "28", MockLocalite.Renens.getNPA(), MockLocalite.Renens, "5252", RegDate.get(1980, 11, 2), null);
 
 				//addDefaultAdressesTo(indBea);
 				//addDefaultAdressesTo(indJulie);

@@ -2,7 +2,6 @@ package ch.vd.uniregctb.editique.impl;
 
 import java.rmi.RemoteException;
 
-import ch.vd.uniregctb.type.TypeAdresseTiers;
 import noNamespace.TypAdresse;
 import noNamespace.InfoEnteteDocumentDocument1.InfoEnteteDocument;
 import noNamespace.InfoEnteteDocumentDocument1.InfoEnteteDocument.Destinataire;
@@ -21,11 +20,13 @@ import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueHelper;
 import ch.vd.uniregctb.interfaces.model.Commune;
+import ch.vd.uniregctb.interfaces.model.CommuneSimple;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.ForGestion;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.type.TypeAdresseTiers;
 import org.apache.log4j.Logger;
 
 public class EditiqueHelperImpl implements EditiqueHelper {
@@ -127,7 +128,7 @@ public class EditiqueHelperImpl implements EditiqueHelper {
 
 	private Expediteur remplitExpediteur(ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative ca, InfoEnteteDocument infoEnteteDocument) throws InfrastructureException {
 		final ch.vd.uniregctb.interfaces.model.Adresse adresse = ca.getAdresse();
-		final Commune commune = infraService.getCommuneByAdresse(adresse);
+		final CommuneSimple commune = infraService.getCommuneByAdresse(adresse);
 
 		final Expediteur expediteur = infoEnteteDocument.addNewExpediteur();
 		final TypAdresse.Adresse adresseExpediteur = expediteur.addNewAdresse();

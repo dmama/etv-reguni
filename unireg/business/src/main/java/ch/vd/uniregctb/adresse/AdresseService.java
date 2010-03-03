@@ -172,7 +172,7 @@ public interface AdresseService {
 	 * @return
 	 * @throws AdresseException
 	 */
-	public String getNomCourrier(Long numeroIndividu) throws AdresseException ;
+	public String getNomCourrier(long numeroIndividu);
 
 	/**
 	 * Calcule et retourne la formule de politesse pour le tiers spécifié.
@@ -183,11 +183,10 @@ public interface AdresseService {
 	 */
 	public FormulePolitesse getFormulePolitesse(Tiers tiers);
 
-	/**Recherche la dernière adressevaudoise d'un tiers
-	 *
+	/**
+	 * Recherche la dernière adressevaudoise d'un tiers
 	 * @param tiers
 	 * @return
 	 */
-
 	public AdresseGenerique getDerniereAdresseVaudoise(Tiers tiers, TypeAdresseTiers type) throws AdressesResolutionException, InfrastructureException,AdresseException ;
 }

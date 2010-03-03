@@ -34,6 +34,7 @@ public class MockCommune extends MockEntityOFS implements Commune, CommuneSimple
 	public static final MockCommune CheseauxSurLausanne = new MockCommune(5582, "Cheseaux-sur-Lausanne", VAUD, MockOfficeImpot.OID_LAUSANNE_OUEST);
 	public static final MockCommune VufflensLaVille = new MockCommune(5503, "Vufflens-la-Ville", VAUD, MockOfficeImpot.OID_LAUSANNE_OUEST);
 	public static final MockCommune Vallorbe = new MockCommune(5764, "Vallorbe", VAUD, MockOfficeImpot.OID_ORBE);
+	public static final MockCommune LIsle = new MockCommune(5486, "L'Isle", VAUD, MockOfficeImpot.OID_MORGES);
 
 	// commune avec fractions de commmunes
 	public static final MockCommune LAbbaye = new CommuneFractionnee(5871, "L'Abbaye", VAUD, MockOfficeImpot.OID_LA_VALLEE);
@@ -113,6 +114,7 @@ public class MockCommune extends MockEntityOFS implements Commune, CommuneSimple
 		c = Leysin;
 		c = Renens;
 		c = Vallorbe;
+		c = LIsle;
 
 		// commune avec fractions de commmunes
 		c = LAbbaye;
@@ -138,6 +140,7 @@ public class MockCommune extends MockEntityOFS implements Commune, CommuneSimple
 		c = Zurich;
 		c = Bern;
 		c = Neuchatel;
+		c = Peseux;
 	}
 
 

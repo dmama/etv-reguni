@@ -3,6 +3,7 @@ package ch.vd.uniregctb.adresse;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
@@ -24,7 +25,7 @@ import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.AdresseEntreprise;
-import ch.vd.uniregctb.interfaces.model.Commune;
+import ch.vd.uniregctb.interfaces.model.CommuneSimple;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.Pays;
 import ch.vd.uniregctb.interfaces.model.PersonneMorale;
@@ -2201,36 +2202,28 @@ public class AdresseServiceImpl implements AdresseService {
 	 * @return
 	 * @throws AdresseException
 	 */
-	public String getNomCourrier(Long numeroIndividu) throws AdresseException {
-
-		String prenomNom = null;
-		Individu individu = getServiceCivilService().getIndividu(numeroIndividu.longValue(), DateHelper.getCurrentYear());
+	public String getNomCourrier(long numeroIndividu) {
+		final Individu individu = getServiceCivilService().getIndividu(numeroIndividu, DateHelper.getCurrentYear());
 		if (individu == null) {
 			throw new IndividuNotFoundException(numeroIndividu);
 		}
-		String prenom = individu.getDernierHistoriqueIndividu().getPrenom();
-		if (prenom != null) {
-			prenomNom = prenom;
-		}
-		String nom = individu.getDernierHistoriqueIndividu().getNom();
-		if (prenom != null) {
-			prenomNom = prenomNom + " "  + nom;
-		}
-
-		return prenomNom;
+		return tiersService.getNomPrenom(individu);
 	}
 
 
 	public AdresseGenerique getDerniereAdresseVaudoise(Tiers tiers, TypeAdresseTiers type) throws InfrastructureException, AdresseException {
-		AdressesFiscalesHisto adressesHistoriques = getAdressesFiscalHisto(tiers,false);
-		List<AdresseGenerique> listeAdresse = adressesHistoriques.ofType(type);
+		final AdressesFiscalesHisto adressesHistoriques = getAdressesFiscalHisto(tiers,false);
+		final List<AdresseGenerique> listeAdresse = adressesHistoriques.ofType(type);
 		if (listeAdresse != null) {
 
 			// Tri des adresses
 			Collections.sort(listeAdresse, new DateRangeComparator<AdresseGenerique>());
-			for (AdresseGenerique adresseGenerique : listeAdresse) {
-				Commune commune = serviceInfra.getCommuneByAdresse(adresseGenerique);
-				if (commune !=null && commune.isVaudoise()) {
+
+			final ListIterator<AdresseGenerique> iter = listeAdresse.listIterator(listeAdresse.size());
+			while (iter.hasPrevious()) {
+				final AdresseGenerique adresseGenerique = iter.previous();
+				final CommuneSimple commune = serviceInfra.getCommuneByAdresse(adresseGenerique);
+				if (commune != null && commune.isVaudoise()) {
 					return adresseGenerique;
 				}
 			}

@@ -246,14 +246,22 @@ public interface ServiceInfrastructureService {
 	public Commune getCommuneByLocalite(Localite localite) throws InfrastructureException;
 
 	/**
-	 * @return la commune correspondant à l'adresse civile, ou <b>null</b> si l'adresse n'est pas en Suisse.
+	 * Résoud la commune d'une adresse civile (s'il existe une commune directement attachée, on la prend, sinon
+	 * on prend la commune correspondant à la localité de l'adresse - en Suisse)
+	 * @param adresse adresse civile dont on cherche la commune
+	 * @return une commune, ou <code>null</code> si l'adresse est hors-Suisse
+	 * @throws InfrastructureException en cas de problème
 	 */
-	public Commune getCommuneByAdresse(Adresse adresse) throws InfrastructureException;
+	public CommuneSimple getCommuneByAdresse(Adresse adresse) throws InfrastructureException;
 
 	/**
-	 * @return la commune correspondant à l'adresse spécifiée, ou <b>null</b> si l'adresse est hors-Suisse.
+	 * Résoud la commune d'une adresse générique (s'il existe une commune directement attachée, on la prend, sinon
+	 * on prend la commune correspondant à la localité de l'adresse - en Suisse)
+	 * @param adresse adresse générique (civile, fiscale, transférée d'un autre tiers...) dont on cherche la commune
+	 * @return une commune, ou <code>null</code> si l'adresse est hors-Suisse
+	 * @throws InfrastructureException en cas de problème
 	 */
-	public Commune getCommuneByAdresse(AdresseGenerique adresse) throws InfrastructureException;
+	public CommuneSimple getCommuneByAdresse(AdresseGenerique adresse) throws InfrastructureException;
 
 	/**
 	 * @return l'office d'impôt à partir de son numéro de collectivité.

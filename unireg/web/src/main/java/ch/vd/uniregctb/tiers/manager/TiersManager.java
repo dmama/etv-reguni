@@ -183,7 +183,7 @@ public class TiersManager implements MessageSourceAware {
 				rapportView.setSensRapportEntreTiers(SensRapportEntreTiers.OBJET);
 				rapportView.setTypeRapportEntreTiers(TypeRapportEntreTiersWeb.FILIATION);
 				rapportView.setNumero(habFils.getNumero());
-				rapportView.setNomCourrier1(individu.getDernierHistoriqueIndividu().getPrenom() + " " + individu.getDernierHistoriqueIndividu().getNom());
+				rapportView.setNomCourrier1(tiersService.getNomPrenom(individu));
 				rapportView.setDateDebut(RegDate.asJavaDate(individu.getDateNaissance()));
 				rapportsView.add(rapportView);
 			}
@@ -198,7 +198,7 @@ public class TiersManager implements MessageSourceAware {
 				rapportMereView.setSensRapportEntreTiers(SensRapportEntreTiers.SUJET);
 				rapportMereView.setTypeRapportEntreTiers(TypeRapportEntreTiersWeb.FILIATION);
 				rapportMereView.setNumero(habMere.getNumero());
-				rapportMereView.setNomCourrier1(mere.getDernierHistoriqueIndividu().getPrenom() + " " + mere.getDernierHistoriqueIndividu().getNom());
+				rapportMereView.setNomCourrier1(tiersService.getNomPrenom(mere));
 				rapportMereView.setDateDebut(RegDate.asJavaDate(ind.getDateNaissance()));
 				rapportsView.add(rapportMereView);
 			}
@@ -212,7 +212,7 @@ public class TiersManager implements MessageSourceAware {
 				rapportPereView.setSensRapportEntreTiers(SensRapportEntreTiers.SUJET);
 				rapportPereView.setTypeRapportEntreTiers(TypeRapportEntreTiersWeb.FILIATION);
 				rapportPereView.setNumero(habPere.getNumero());
-				rapportPereView.setNomCourrier1(pere.getDernierHistoriqueIndividu().getPrenom() + " " + pere.getDernierHistoriqueIndividu().getNom());
+				rapportPereView.setNomCourrier1(tiersService.getNomPrenom(pere));
 				rapportPereView.setDateDebut(RegDate.asJavaDate(ind.getDateNaissance()));
 				rapportsView.add(rapportPereView);
 			}

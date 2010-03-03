@@ -14,6 +14,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.interfaces.model.Adresse;
+import ch.vd.uniregctb.interfaces.model.AdresseAvecCommune;
 import ch.vd.uniregctb.interfaces.model.Canton;
 import ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.model.Commune;
@@ -177,17 +178,9 @@ public abstract class AbstractServiceInfrastructureService implements ServiceInf
 		return list;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public Commune getCommuneByAdresse(Adresse adresse) throws InfrastructureException {
-		if (adresse == null)
-			return null;
+	private Commune getCommuneByLocaliteAdresse(Integer numeroRue, int numeroOrdrePostal) throws InfrastructureException {
 
 		final int numeroLocalite;
-
-		// Recherche de la localité
-		final Integer numeroRue = adresse.getNumeroRue();
 		if (numeroRue != null && numeroRue > 0) {
 			final Rue rue = getRueByNumero(numeroRue);
 			final Integer noLocalite = rue.getNoLocalite();
@@ -195,7 +188,7 @@ public abstract class AbstractServiceInfrastructureService implements ServiceInf
 			numeroLocalite = noLocalite;
 		}
 		else {
-			numeroLocalite = adresse.getNumeroOrdrePostal();
+			numeroLocalite = numeroOrdrePostal;
 		}
 
 		// Recherche de la commune
@@ -218,43 +211,73 @@ public abstract class AbstractServiceInfrastructureService implements ServiceInf
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Récupère la commune attachée à une adresse
+	 * @param adresse l'adresse
+	 * @return la commune
 	 */
-	public Commune getCommuneByAdresse(AdresseGenerique adresse) throws InfrastructureException {
-		if (adresse == null)
-			return null;
-
-		// Recherche de la localité
-		final int numeroLocalite;
-
-		final Integer numeroRue = adresse.getNumeroRue();
-		if (numeroRue != null && numeroRue > 0) {
-			final Rue rue = getRueByNumero(numeroRue);
-			final Integer noLocalite = rue.getNoLocalite();
-			Assert.notNull(noLocalite);
-			numeroLocalite = noLocalite;
+	private static CommuneSimple getCommuneAttachee(AdresseAvecCommune adresse) {
+		final CommuneSimple commune;
+		if (adresse != null) {
+			commune = adresse.getCommuneAdresse();
 		}
 		else {
-			numeroLocalite = adresse.getNumeroOrdrePostal();
-		}
-
-		// Recherche de la commune
-		final Commune commune;
-
-		if (numeroLocalite == 0) {
-			// adresse hors-Suisse
 			commune = null;
 		}
-		else {
-			final Localite localite = getLocaliteByONRP(numeroLocalite);
-			if (localite == null) {
-				throw new InfrastructureException("La localité avec le numéro " + numeroLocalite + " n'existe pas");
-			}
-
-			commune = getCommuneByLocalite(localite);
-		}
-
 		return commune;
+	}
+
+	/**
+	 * Récupère la commune attachée à une adresse, et si aucune n'est présente, ou si la commune
+	 * attachée est fractionnée, déduit la commune de la localité déterminée par un numéro de rue
+	 * (si disponible) ou un numéro d'ordre poste
+	 * @param adresse
+	 * @param numeroRue
+	 * @param numeroOrdrePostal
+	 * @return
+	 * @throws InfrastructureException
+	 */
+	private CommuneSimple getCommuneByAdresse(AdresseAvecCommune adresse, Integer numeroRue, int numeroOrdrePostal) throws InfrastructureException {
+		final CommuneSimple commune;
+		if (adresse != null) {
+			final CommuneSimple communeAttachee = getCommuneAttachee(adresse);
+
+			// si la commune est attachée et que ce n'est pas une commune fractionnée, on la prend
+			// sinon, on prend l'adresse depuis la localité
+			if (communeAttachee != null && !communeAttachee.isPrincipale()) {
+				commune = communeAttachee;
+			}
+			else {
+				commune = getCommuneByLocaliteAdresse(numeroRue, numeroOrdrePostal);
+			}
+		}
+		else {
+			commune = null;
+		}
+		return commune;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public CommuneSimple getCommuneByAdresse(Adresse adresse) throws InfrastructureException {
+		if (adresse != null) {
+			return getCommuneByAdresse(adresse, adresse.getNumeroRue(), adresse.getNumeroOrdrePostal());
+		}
+		else {
+			return null;
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public CommuneSimple getCommuneByAdresse(AdresseGenerique adresse) throws InfrastructureException {
+		if (adresse != null) {
+			return getCommuneByAdresse(adresse, adresse.getNumeroRue(), adresse.getNumeroOrdrePostal());
+		}
+		else {
+			return null;
+		}
 	}
 
 	/**
@@ -369,14 +392,8 @@ public abstract class AbstractServiceInfrastructureService implements ServiceInf
 
 		final Integer numero = adresse.getNumeroRue();
 		if (numero == null || numero == 0) {
-			int onrp = adresse.getNumeroOrdrePostal();
-			if (onrp == 0) {
-				// la valeur 0 veut dire 'hors suisse' dans le host
-				return false;
-			}
-			final Localite localite = getLocaliteByONRP(onrp);
-			Assert.notNull(localite, "La localité avec onrp = " + onrp + " est introuvable.");
-			return estDansLeCanton(localite.getCommuneLocalite());
+			final CommuneSimple commune = adresse.getCommuneAdresse();
+			return commune != null && estDansLeCanton(commune);
 		}
 		else {
 			final Rue rue = getRueByNumero(numero);

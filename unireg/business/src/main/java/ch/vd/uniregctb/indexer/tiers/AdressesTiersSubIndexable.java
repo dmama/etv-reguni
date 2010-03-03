@@ -8,7 +8,7 @@ import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.indexer.AbstractSubIndexable;
 import ch.vd.uniregctb.indexer.IndexerException;
-import ch.vd.uniregctb.interfaces.model.Commune;
+import ch.vd.uniregctb.interfaces.model.CommuneSimple;
 import ch.vd.uniregctb.interfaces.model.Pays;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -82,13 +82,13 @@ public class AdressesTiersSubIndexable extends AbstractSubIndexable {
 		}
 
 		try {
-			AdresseGenerique domicile = adresseService.getAdresseFiscale(tiers, TypeAdresseTiers.DOMICILE, null, false);
+			final AdresseGenerique domicile = adresseService.getAdresseFiscale(tiers, TypeAdresseTiers.DOMICILE, null, false);
 			// msi/tdq 3.6.09 : on ne doit pas tenir compte des adresses de domicile par défaut car elles n'ont pas de valeur pour
 			// déterminer si un contribuable est dans le canton
 			if (domicile != null && !domicile.isDefault()) {
 				estDansLeCanton = infraService.estDansLeCanton(domicile);
 				if (estDansLeCanton) {
-					Commune c = infraService.getCommuneByAdresse(domicile);
+					final CommuneSimple c = infraService.getCommuneByAdresse(domicile);
 					if (c != null) {
 						noOfsCommuneVD = c.getNoOFSEtendu();
 					}

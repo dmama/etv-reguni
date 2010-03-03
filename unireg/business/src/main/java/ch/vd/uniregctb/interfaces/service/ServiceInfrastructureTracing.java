@@ -277,8 +277,8 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 		return result;
 	}
 
-	public Commune getCommuneByAdresse(Adresse adresse) throws InfrastructureException {
-		Commune result;
+	public CommuneSimple getCommuneByAdresse(Adresse adresse) throws InfrastructureException {
+		CommuneSimple result;
 		long time = tracing.start();
 		try {
 			result = target.getCommuneByAdresse(adresse);
@@ -290,8 +290,8 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 		return result;
 	}
 
-	public Commune getCommuneByAdresse(AdresseGenerique adresse) throws InfrastructureException {
-		Commune result;
+	public CommuneSimple getCommuneByAdresse(AdresseGenerique adresse) throws InfrastructureException {
+		CommuneSimple result;
 		long time = tracing.start();
 		try {
 			result = target.getCommuneByAdresse(adresse);

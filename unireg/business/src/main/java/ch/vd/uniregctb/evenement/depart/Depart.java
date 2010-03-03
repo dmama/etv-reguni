@@ -3,7 +3,7 @@ package ch.vd.uniregctb.evenement.depart;
 
 import ch.vd.uniregctb.evenement.Mouvement;
 import ch.vd.uniregctb.interfaces.model.Adresse;
-import ch.vd.uniregctb.interfaces.model.Commune;
+import ch.vd.uniregctb.interfaces.model.CommuneSimple;
 import ch.vd.uniregctb.interfaces.model.Pays;
 
 /**
@@ -31,12 +31,12 @@ public interface Depart extends Mouvement {
 	/**
 	 * Renvoie la commune de l'individu après le départ.
 	 */
-	public abstract Commune getNouvelleCommunePrincipale();
+	public abstract CommuneSimple getNouvelleCommunePrincipale();
 
 	/**
 	 * Renvoie la commune de l'individu avant le départ.
 	 */
-	public abstract Commune getAncienneCommunePrincipale();
+	public abstract CommuneSimple getAncienneCommunePrincipale();
 
 	public abstract Adresse getAncienneAdresseCourrier();
 
@@ -48,7 +48,7 @@ public interface Depart extends Mouvement {
 	/**
 	 * Renvoie la commune de l'adresse secondaire de l'individu avant le départ si elle existe.
 	 */
-	public abstract Commune getAncienneCommuneSecondaire();
+	public abstract CommuneSimple getAncienneCommuneSecondaire();
 
 	/**
 	 * retourne le pays inconnue

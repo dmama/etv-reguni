@@ -16,7 +16,7 @@ import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.evenement.common.EvenementCivilHandlerBase;
 import ch.vd.uniregctb.evenement.common.EvenementCivilHandlerException;
 import ch.vd.uniregctb.interfaces.model.Adresse;
-import ch.vd.uniregctb.interfaces.model.Commune;
+import ch.vd.uniregctb.interfaces.model.CommuneSimple;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.*;
@@ -208,7 +208,7 @@ public class DepartHandler extends EvenementCivilHandlerBase {
 				dateFermeture = dateEvenement.getLastDayOfTheMonth();
 			}
 			// Depart Vers le canton de Neuchatel
-			Commune commune = depart.getNouvelleCommunePrincipale();
+			final CommuneSimple commune = depart.getNouvelleCommunePrincipale();
 			if (commune != null && commune.getSigleCanton().equals("NE")) {
 				// la date de départ est comprise entre le 1er et le 15 du mois courant
 				if (dateEvenement.isBeforeOrEqual(RegDate.get(dateEvenement.year(), dateEvenement.month(), 15))) {
@@ -315,25 +315,23 @@ public class DepartHandler extends EvenementCivilHandlerBase {
 
 	protected final void validateDepartAdressePrincipale(Depart depart, List<EvenementCivilErreur> erreurs) {
 		final Adresse adressePrincipal = depart.getAncienneAdressePrincipale();
-		Commune commune = depart.getAncienneCommunePrincipale();
+		final CommuneSimple commune = depart.getAncienneCommunePrincipale();
 
 		validateCoherenceAdresse(adressePrincipal, commune, depart, erreurs);
 
 		// la nouvelle commune est toujours dans le canton de vaud
-		Commune nouvelleCommune = depart.getNouvelleCommunePrincipale();
+		final CommuneSimple nouvelleCommune = depart.getNouvelleCommunePrincipale();
 
 		if (nouvelleCommune != null && nouvelleCommune.isVaudoise()) {
 			erreurs.add(new EvenementCivilErreur("La nouvelle commune est toujours dans le canton de Vaud"));
 		}
-
 	}
 
 	protected final void validateDepartAdresseSecondaire(Depart depart, List<EvenementCivilErreur> erreurs) {
 		final Adresse adresseSecondaire = depart.getAncienneAdresseSecondaire();
-		final Commune communeSecondaire = depart.getAncienneCommuneSecondaire();
+		final CommuneSimple communeSecondaire = depart.getAncienneCommuneSecondaire();
 
 		validateCoherenceAdresse(adresseSecondaire, communeSecondaire, depart, erreurs);
-
 	}
 
 	/**
@@ -344,7 +342,7 @@ public class DepartHandler extends EvenementCivilHandlerBase {
 	 * @param depart
 	 * @param erreurs
 	 */
-	public void validateCoherenceAdresse(Adresse adresse, Commune commune, Depart depart, List<EvenementCivilErreur> erreurs) {
+	public void validateCoherenceAdresse(Adresse adresse, CommuneSimple commune, Depart depart, List<EvenementCivilErreur> erreurs) {
 
 		if (adresse.getDateFin() == null) {
 			erreurs.add(new EvenementCivilErreur("La date de fin de validité de la résidence est inconnue"));
@@ -494,7 +492,7 @@ public class DepartHandler extends EvenementCivilHandlerBase {
 			final Adresse adressePrincipale = depart.getNouvelleAdressePrincipale();
 
 			boolean estEnSuisse = false;
-			Commune commune = null;
+			CommuneSimple commune = null;
 			try {
 				estEnSuisse = serviceInfra.estEnSuisse(adressePrincipale);
 				if (estEnSuisse) {

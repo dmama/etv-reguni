@@ -3,7 +3,7 @@ package ch.vd.uniregctb.evenement.arrivee;
 
 import ch.vd.uniregctb.evenement.Mouvement;
 import ch.vd.uniregctb.interfaces.model.Adresse;
-import ch.vd.uniregctb.interfaces.model.Commune;
+import ch.vd.uniregctb.interfaces.model.CommuneSimple;
 
 public interface Arrivee extends Mouvement {
 
@@ -20,12 +20,12 @@ public interface Arrivee extends Mouvement {
 	/**
 	 * @return la commune d'arrivée.
 	 */
-	public abstract Commune getAncienneCommunePrincipale();
+	public abstract CommuneSimple getAncienneCommunePrincipale();
 
 	/**
 	 * @return la commune d'arrivée.
 	 */
-	public abstract Commune getAncienneCommuneSecondaire();
+	public abstract CommuneSimple getAncienneCommuneSecondaire();
 
 	/**
 	 * @return l'adresse principale de l'individu après le déménagement.
@@ -40,10 +40,10 @@ public interface Arrivee extends Mouvement {
 	/**
 	 * @return la commune d'arrivée.
 	 */
-	public abstract Commune getNouvelleCommunePrincipale();
+	public abstract CommuneSimple getNouvelleCommunePrincipale();
 
 	/**
 	 * @return la commune d'arrivée.
 	 */
-	public abstract Commune getNouvelleCommuneSecondaire();
+	public abstract CommuneSimple getNouvelleCommuneSecondaire();
 }

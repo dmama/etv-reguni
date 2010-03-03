@@ -6,7 +6,7 @@ import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.uniregctb.evenement.EvenementAdapterException;
 import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
 import ch.vd.uniregctb.evenement.GenericEvenementAdapter;
-import ch.vd.uniregctb.interfaces.model.Commune;
+import ch.vd.uniregctb.interfaces.model.CommuneSimple;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 
@@ -34,11 +34,11 @@ public class ObtentionNationaliteAdapter extends GenericEvenementAdapter impleme
 	@Override
 	public void init(EvenementCivilRegroupe evenementCivilRegroupe, ServiceCivilService serviceCivil, ServiceInfrastructureService infrastructureService) throws EvenementAdapterException {
 		super.init(evenementCivilRegroupe, serviceCivil, infrastructureService);
-		
+
 		try {
-			// on récupère la commune de l'adresse principale en gérant les fractions 
+			// on récupère la commune de l'adresse principale en gérant les fractions
 			//à utiliser pour déterminer le numeroOFS si besoin d'ouvrir un nouveau for
-			Commune communePrincipale = infrastructureService.getCommuneByAdresse(getAdressePrincipale());
+			final CommuneSimple communePrincipale = infrastructureService.getCommuneByAdresse(getAdressePrincipale());
 			this.numeroOfsEtenduCommunePrincipale = communePrincipale == null ? 0 : communePrincipale.getNoOFSEtendu();
 		}
 		catch (InfrastructureException e) {
