@@ -65,11 +65,7 @@ public class DeclarationImpotSelectView {
 	public void setRangesFromDateRanges(List<PeriodeImposition> ranges) {
 		this.ranges = new ArrayList<ViewRange>(ranges.size());
 		for (PeriodeImposition r : ranges) {
-			// [UNIREG-1742] dans certain cas, les déclarations sont remplacées par une note à l'administration fiscale de l'autre canton
-			// [UNIREG-1742] les diplomates suisses ne reçoivent pas de déclaration 
-			if (!r.isRemplaceeParNote() && !r.isDiplomateSuisse()) {
-				this.ranges.add(new ViewRange(r, r.isOptionnelle()));
-			}
+			this.ranges.add(new ViewRange(r, r.isOptionnelle()));
 		}
 	}
 

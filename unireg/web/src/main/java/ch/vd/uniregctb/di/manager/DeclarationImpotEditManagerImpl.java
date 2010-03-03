@@ -9,6 +9,8 @@ import java.util.Set;
 
 import javax.jms.JMSException;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Predicate;
 import org.apache.log4j.Logger;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
@@ -272,6 +274,15 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 			}
 		}
 
+		// [UNIREG-1742][UNIREG-2051] dans certain cas, les déclarations sont remplacées par une note à l'administration fiscale de l'autre canton
+		// [UNIREG-1742] les diplomates suisses ne reçoivent pas de déclaration
+		CollectionUtils.filter(ranges, new Predicate() {
+			public boolean evaluate(Object object) {
+				final PeriodeImposition periode = (PeriodeImposition) object;
+				return !periode.isRemplaceeParNote() && !periode.isDiplomateSuisse();
+			}
+		});
+		
 		if (ranges.isEmpty()) {
 			return null;
 		}
