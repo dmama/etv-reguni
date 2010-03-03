@@ -59,12 +59,12 @@
 	<bean id="esbMessageFactoryValidator" class="ch.vd.technical.esb.util.ESBXMLValidator" lazy-init="true">
 		<property name="sources">
 			<list>
-				<value>classpath:xsd/civil/*.xsd</value>
-				<value>classpath:xsd/database/*.xsd</value>
-				<value>classpath:xsd/editique/*.xsd</value>
+				<value>classpath:xsd/civil/**/*.xsd</value>
+				<value>classpath:xsd/database/**/*.xsd</value>
+				<value>classpath:xsd/editique/**/*.xsd</value>
 				<value>classpath:xsd/fiscal/evenementFiscalMaster-v1.xsd</value>
 				<value>classpath:xsd/fiscal/evenementImpotSource-v1.xsd</value>
-				<value>classpath:xsd/identification/*.xsd</value>
+				<value>classpath:xsd/identification/**/*.xsd</value>
 			</list>
 		</property>
 	</bean>
