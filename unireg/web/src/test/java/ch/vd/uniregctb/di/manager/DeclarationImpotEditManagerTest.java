@@ -276,6 +276,36 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 	}
 
 	/**
+	 * [UNIREG-2051] Cas du contribuable hors-Canton qui vend son immeuble dans l'année : la dernière déclaration est remplacée par une note à l'administration fiscale de
+	 * l'autre canton et il ne doit pas être possible d'envoyer une déclaration d'impôt.
+	 */
+	@Test
+	public void testCalculateRangeProchaineDIContribuableHCVenteImmeuble() {
+
+		final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);
+		addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2008);
+
+		// le contribuable part hors-Suisse au début de l'année, et garde un immeuble dans le canton
+		PersonnePhysique paul = addNonHabitant("Paul", "Duruz", date(1977, 3, 15), Sexe.MASCULIN);
+		addForPrincipal(paul, date(2007, 10, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Neuchatel);
+		addForSecondaire(paul, date(2007, 10, 1), MotifFor.ACHAT_IMMOBILIER, date(2009, 1, 15), MotifFor.VENTE_IMMOBILIER, MockCommune.Lausanne.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+
+		final List<PeriodeImposition> ranges = manager.calculateRangesProchainesDIs(paul);
+		assertNotNull(ranges);
+		assertEquals(2, ranges.size());
+
+		final PeriodeImposition r2007 = ranges.get(0);
+		assertNotNull(r2007);
+		assertPeriodeImposition(date(2007, 1, 1), date(2007, 12, 31), false, r2007);
+
+		final PeriodeImposition r2008 = ranges.get(1);
+		assertNotNull(r2008);
+		assertPeriodeImposition(date(2008, 1, 1), date(2008, 12, 31), false, r2008);
+
+		// pas de déclaration pour 2009
+	}
+
+	/**
 	 * Vérifie que la liste spécifiée contient tous les ranges complets (= année complète) pour la période <i>startYear..année courante</i>,
 	 * <b>et uniquement ceux-ci</b>.
 	 */
