@@ -1,10 +1,10 @@
 package ch.vd.uniregctb.evenement.depart;
 
-import ch.vd.uniregctb.common.DonneesCivilesException;
 import org.apache.log4j.Logger;
 
 import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.uniregctb.adresse.AdressesCiviles;
+import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.evenement.EvenementAdapterException;
 import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
 import ch.vd.uniregctb.evenement.GenericEvenementAdapter;
@@ -56,6 +56,12 @@ public class DepartAdapter extends GenericEvenementAdapter implements Depart {
 
 	private Pays paysInconnu;
 
+	/**
+	 * Indique si l'evenement est un ancien type de départ
+	 */
+	private boolean isAncienTypeDepart = false;
+
+
 
 	/**
 	 * @throws EvenementAdapterException
@@ -65,6 +71,10 @@ public class DepartAdapter extends GenericEvenementAdapter implements Depart {
 	@Override
 	public void init(EvenementCivilRegroupe evenementCivilRegroupe, ServiceCivilService serviceCivil,
 			ServiceInfrastructureService infrastructureService) throws EvenementAdapterException {
+
+		if (evenementCivilRegroupe.getNumeroIndividuConjoint()!=null) {
+			isAncienTypeDepart = true;
+		}
 
 		super.init(evenementCivilRegroupe, serviceCivil, infrastructureService);
 
@@ -138,5 +148,9 @@ public class DepartAdapter extends GenericEvenementAdapter implements Depart {
 
 	public Pays getPaysInconnu() {
 		return paysInconnu;
+	}
+	public boolean isAncienTypeDepart() {
+
+		return isAncienTypeDepart;
 	}
 }

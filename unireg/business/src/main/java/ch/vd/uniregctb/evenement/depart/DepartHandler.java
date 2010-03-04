@@ -12,14 +12,19 @@ import ch.vd.uniregctb.common.FiscalDateHelper;
 import ch.vd.uniregctb.evenement.EvenementCivil;
 import ch.vd.uniregctb.evenement.EvenementCivilErreur;
 import ch.vd.uniregctb.evenement.GenericEvenementAdapter;
-import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.evenement.common.EvenementCivilHandlerBase;
 import ch.vd.uniregctb.evenement.common.EvenementCivilHandlerException;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.CommuneSimple;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.tiers.*;
+import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
+import ch.vd.uniregctb.tiers.ForFiscal;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
+import ch.vd.uniregctb.tiers.MenageCommun;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
@@ -72,36 +77,44 @@ public class DepartHandler extends EvenementCivilHandlerBase {
 		final Depart depart = (Depart) evenement;
 
 		final PersonnePhysique habitant = getTiersDAO().getHabitantByNumeroIndividu(depart.getIndividu().getNoTechnique());
-		
+
 		if (habitant == null) {
 			// dans certains cas le tiers est marqué non-habitant dans unireg
 			throw new EvenementCivilHandlerException("Aucun habitant trouvé avec numéro d'individu " + depart.getIndividu().getNoTechnique());
 		}
 
-		/*
-		 * [UNIREG-771] : L'événement de départ du premier doit passer l'individu de habitant à non habitant.  
-		 */
-		if (!isDepartComplet(depart)) {
-			getService().changeHabitantenNH(habitant);
-			return;
+		//[UNIREG-1996] on traite les deux habitants ensemble conformement à l'ancien fonctionement
+		if (depart.isAncienTypeDepart()) {
+
+			traiteHabitantOfAncienDepart(depart, habitant);
 		}
-		
-		// le deuxième doit aussi passer à non habitant
-		getService().changeHabitantenNH(habitant);
-		
-		/*
-		 * [UNIREG-771] : L'événement de départ du second doit effectuer le traitement.
-		 */
+		else {
+
+			/*
+			 * [UNIREG-771] : L'événement de départ du premier doit passer l'individu de habitant à non habitant.
+			 */
+			if (!isDepartComplet(depart)) {
+				getService().changeHabitantenNH(habitant);
+				return;
+			}
+
+			// le deuxième doit aussi passer à non habitant
+			getService().changeHabitantenNH(habitant);
+
+			/*
+			 * [UNIREG-771] : L'événement de départ du second doit effectuer le traitement.
+			 */
+		}
 		final MotifFor motifFermeture = findMotifFermeture(depart);
 		final RegDate dateFermeture = findDateFermeture(depart, habitant, motifFermeture == MotifFor.DEMENAGEMENT_VD);
 		final Contribuable contribuable = findContribuable(depart, habitant, motifFermeture == MotifFor.DEMENAGEMENT_VD);
 		Audit.info(depart.getNumeroEvenement(), "Traitement du départ");
-		
+
 		/*
-		 * Fermetures des adresses temporaires du fiscal 
+		 * Fermetures des adresses temporaires du fiscal
 		 */
 		fermeAdresseTiersTemporaire(contribuable, evenement.getDate().getOneDayBefore());
-		
+
 		if (depart.getType() == TypeEvenementCivil.DEPART_COMMUNE) {
 
 			int numeroOfsAutoriteFiscale = 0;
@@ -131,13 +144,31 @@ public class DepartHandler extends EvenementCivilHandlerBase {
 		}
 	}
 
+
+	/**Permet de transformer un habitant et son conjoint en non habitant dans le cas d'un ancien Type de départ
+	 *
+	 * @param depart
+	 * @param habitant
+	 */
+		private void traiteHabitantOfAncienDepart(final Depart depart, final PersonnePhysique habitant) {
+			final EnsembleTiersCouple couple = getService().getEnsembleTiersCouple(habitant, depart.getDate());
+			final PersonnePhysique conjoint;
+			if (couple != null) {
+				conjoint = couple.getConjoint(habitant);
+				if (conjoint!=null) {
+					getService().changeHabitantenNH(conjoint);
+				}
+			}
+			getService().changeHabitantenNH(habitant);
+		}
+
 	/**
 	 * Renvoi true si l'habitant est celibataire, marié seul, ou marié et son conjoint est aussi parti
 	 * @param depart
 	 * @return
 	 */
 	private boolean isDepartComplet(Depart depart) {
-		
+
 		final Individu individuPrincipal = depart.getIndividu();
 		final PersonnePhysique habitant = getService().getPersonnePhysiqueByNumeroIndividu(individuPrincipal.getNoTechnique());
 		final EnsembleTiersCouple couple = getService().getEnsembleTiersCouple(habitant, depart.getDate());
@@ -161,9 +192,9 @@ public class DepartHandler extends EvenementCivilHandlerBase {
 	 * @return
 	 */
 	private Contribuable findContribuable(Depart depart, PersonnePhysique habitant, boolean demenagementVD) {
-		
+
 		final RegDate dateEvenement = demenagementVD ? FiscalDateHelper.getDateEvenementFiscal(depart.getDate()) : depart.getDate();
-		
+
 		final EnsembleTiersCouple couple = getService().getEnsembleTiersCouple(habitant, dateEvenement);
 		if (couple != null) {
 			final MenageCommun menage = couple.getMenage();
@@ -405,7 +436,7 @@ public class DepartHandler extends EvenementCivilHandlerBase {
 
 		Audit.info(depart.getNumeroEvenement(), "Fermeture du for principal d'un contribuable au " + dateFermeture.toString()
 				+ " pour motif suivant: " + motifFermeture);
-		
+
 		ForFiscalPrincipal ffp = getService().closeForFiscalPrincipal(contribuable, dateFermeture, motifFermeture);
 
 		Audit.info(depart.getNumeroEvenement(), "ouverture du for principal d'un contribuable au "
@@ -428,11 +459,11 @@ public class DepartHandler extends EvenementCivilHandlerBase {
 	private static ModeImposition determineModeImpositionDepartHCHS(Contribuable contribuable, RegDate dateFermeture, ForFiscalPrincipal ffp) {
 
 		Assert.notNull(ffp);
-		
+
 		final ModeImposition modeImpositionAncien = ffp.getModeImposition();
 		final ModeImposition modeImposition;
 		if (isSourcierPur(modeImpositionAncien)) {
-			// Un sourcier pur reste à la source. 
+			// Un sourcier pur reste à la source.
 			modeImposition = ModeImposition.SOURCE;
 		}
 		else if (isSourcierMixte(modeImpositionAncien)) {
@@ -487,7 +518,7 @@ public class DepartHandler extends EvenementCivilHandlerBase {
 
 		if (forPrincipal != null && forPrincipal.getNumeroOfsAutoriteFiscale().intValue() == depart.getNumeroOfsCommuneAnnonce().intValue()) {
 			final ServiceInfrastructureService serviceInfra = getService().getServiceInfra();
-			
+
 			ForFiscalPrincipal ffp = getService().closeForFiscalPrincipal(contribuable, dateFermeture, motifFermeture);
 			final Adresse adressePrincipale = depart.getNouvelleAdressePrincipale();
 

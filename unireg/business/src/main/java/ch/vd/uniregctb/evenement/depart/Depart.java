@@ -55,6 +55,13 @@ public interface Depart extends Mouvement {
 	 * */
 	public abstract Pays getPaysInconnu();
 
+	/**
+	 *  Indique si l'evenement est un ancien type de départ, c'est à dire qu'on ne reçoit
+	 *  qu'un evenement civil regroupé pour un couple
+	 */
+
+	public abstract boolean isAncienTypeDepart();
+
 
 
 }

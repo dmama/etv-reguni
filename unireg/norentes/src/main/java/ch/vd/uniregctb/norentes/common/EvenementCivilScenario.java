@@ -71,6 +71,25 @@ public abstract class EvenementCivilScenario extends EvenementScenario {
 		return evt.getId();
 	}
 
+
+	protected long addEvenementCivilRegroupe(TypeEvenementCivil type, long numeroIndividuPrincipal,long numeroIndividuConjoint, RegDate date, int ofs) {
+		EvenementCivilRegroupe evt = new EvenementCivilRegroupe();
+		evt.setId(nextEvtId);
+		evt.setDateEvenement(date);
+		evt.setEtat(EtatEvenementCivil.A_TRAITER);
+		evt.setNumeroIndividuPrincipal(numeroIndividuPrincipal);
+		evt.setNumeroIndividuConjoint(numeroIndividuConjoint);
+		evt.setType(type);
+		evt.setNumeroOfsCommuneAnnonce(ofs);
+
+
+		evtRegroupeDAO.save(evt);
+
+		nextEvtId++;
+
+		return evt.getId();
+	}
+
 	protected EvenementCivilRegroupe getEvenementCivilRegoupeForHabitant(long id) {
 		List<EvenementCivilRegroupe> list = evtRegroupeDAO.getAll();
 
@@ -163,6 +182,10 @@ public abstract class EvenementCivilScenario extends EvenementScenario {
 		assertEquals(dateFin, sf.getDateFin(), message);
 		assertEquals(Integer.valueOf(nbEnfants), sf.getNombreEnfants(), message);
 		assertEquals(etatCivil, sf.getEtatCivil(), message);
+	}
+
+	protected void traiteEvenementsAnciens(long id) throws Exception {
+		evenementCivilProcessor.traiteEvenementCivilRegroupe(id);
 	}
 
 }

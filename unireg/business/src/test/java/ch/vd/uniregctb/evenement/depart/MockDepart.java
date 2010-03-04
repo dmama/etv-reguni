@@ -32,6 +32,7 @@ public class MockDepart implements Depart, Cloneable {
 	private Long numeroEvenement = 0L;
 	private Integer numeroOfsCommuneAnnonce;
 	private TypeEvenementCivil type;
+	private final boolean isAncienTypeDepart = false;
 
 	public void setAncienneAdresseCourrier(Adresse adresseCourrier) {
 		this.ancienneAdresseCourrier = adresseCourrier;
@@ -199,5 +200,10 @@ public class MockDepart implements Depart, Cloneable {
 	public Pays getPaysInconnu() {
 
 		return MockPays.PaysInconnu;
+	}
+
+	public boolean isAncienTypeDepart() {
+		// TODO Auto-generated method stub
+		return isAncienTypeDepart;
 	}
 }

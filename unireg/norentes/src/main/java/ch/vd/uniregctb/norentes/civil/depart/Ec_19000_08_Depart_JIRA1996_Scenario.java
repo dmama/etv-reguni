@@ -203,15 +203,23 @@ public class Ec_19000_08_Depart_JIRA1996_Scenario extends DepartScenario {
 	public void etape3() throws Exception {
 		final long idCharles = addEvenementCivil(TypeEvenementCivil.DEPART_COMMUNE, noIndCharles, dateDepart, communeDepart.getNoOFS());
 		final long idGeorgette = addEvenementCivil(TypeEvenementCivil.DEPART_COMMUNE, noIndGeorgette, dateDepart, communeDepart.getNoOFS());
+
+		final long idEvenementAncien = addEvenementCivilRegroupe(TypeEvenementCivil.DEPART_COMMUNE, noIndCharles, noIndGeorgette, dateDepart, communeDepart.getNoOFS());
 		commitAndStartTransaction();
-		regroupeEtTraiteEvenements(idCharles);
-		regroupeEtTraiteEvenements(idGeorgette);
+		traiteEvenementsAnciens(idEvenementAncien);
+
+
 	}
 
 	@Check(id=3, descr="Vérifie les fors et adresse d'envoi du couple")
 	public void check3() throws Exception {
 
 
+		final PersonnePhysique charles = (PersonnePhysique)tiersDAO.get(noHabCharles);
+		final PersonnePhysique georgette = (PersonnePhysique)tiersDAO.get(noHabGeorgette);
+
+		assertFalse(charles.isHabitant(),"Charles aurait du passé non Habitant");
+		assertFalse(georgette.isHabitant(),"georgette aurait du passé non Habitant");
 
 		final MenageCommun menageCommun = (MenageCommun) tiersDAO.get(noMenage);
 		final ForFiscalPrincipal ffp = menageCommun.getForFiscalPrincipalAt(null);
