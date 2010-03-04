@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.regex.Pattern;
 
+import ch.vd.uniregctb.interfaces.service.PartPM;
 import org.apache.commons.lang.StringUtils;
 
 import ch.vd.common.model.EnumTypeAdresse;
@@ -127,6 +128,8 @@ public class AdresseServiceImpl implements AdresseService {
 	/**
 	 * Recherche l'autre tiers dans le cas d'un tiers ayant son adresse qui pointe sur celle d'un autre tiers.
 	 *
+	 * @param tiers le tiers de base
+	 * @param date  la date à laquelle l'adresse pointant vers l'autre tiers est valide.
 	 * @return l'autre tiers
 	 */
 	private Tiers getAutreTiers(Tiers tiers, RegDate date) {
@@ -194,6 +197,9 @@ public class AdresseServiceImpl implements AdresseService {
 
 	/**
 	 * Remplis les lignes correspondant à l'identification de la personne destinataire.
+	 *
+	 * @param adresse l'adresse d'envoi détaillée à remplir
+	 * @param tiers   le tiers destinataire
 	 */
 	private void fillDestinataire(AdresseEnvoiDetaillee adresse, Tiers tiers) {
 
@@ -538,6 +544,7 @@ public class AdresseServiceImpl implements AdresseService {
 	}
 
 	/**
+	 * @param personne une personne physique
 	 * @return la formule de politesse pour l'adressage d'une personne physique
 	 */
 	private FormulePolitesse getFormulePolitesse(PersonnePhysique personne) {
@@ -576,7 +583,8 @@ public class AdresseServiceImpl implements AdresseService {
 	}
 
 	/**
-	 * Retourne la formule de politesse pour l'adressage d'un individu
+	 * @param individu un individu
+	 * @return la formule de politesse pour l'adressage d'un individu
 	 */
 	private FormulePolitesse getFormulePolitesse(Individu individu) {
 		FormulePolitesse salutations;
@@ -593,9 +601,9 @@ public class AdresseServiceImpl implements AdresseService {
 	}
 
 	/**
-	 * Retourne la formule de politesse pour l'adressage des parties d'un ménage commun
-	 * <p>
 	 * Voir le document 'ModeleDonnees.doc' v0.1, §4.2 Formats d'adresses
+	 * @param ensemble un ensemble tiers-couple
+	 * @return la formule de politesse pour l'adressage des parties d'un ménage commun
 	 */
 	protected FormulePolitesse getFormulePolitesse(EnsembleTiersCouple ensemble) {
 
@@ -640,7 +648,7 @@ public class AdresseServiceImpl implements AdresseService {
 				else if (principalMasculin && !conjointMasculin) {
 					return FormulePolitesse.MONSIEUR_ET_MADAME;
 				}
-				else if (!principalMasculin && !conjointMasculin) {
+				else if (!conjointMasculin) {
 					return FormulePolitesse.MESDAMES;
 				}
 				else {
@@ -652,6 +660,7 @@ public class AdresseServiceImpl implements AdresseService {
 	}
 
 	/**
+	 * @param personne une personne physique
 	 * @return la ligne du prénom et du nom pour la personne physique spécifiée.
 	 */
 	private String getNomPrenom(PersonnePhysique personne) {
@@ -681,7 +690,8 @@ public class AdresseServiceImpl implements AdresseService {
 	}
 
 	/**
-	 * Retourne la ligne "pour adresse" dans le cas d'un tiers
+	 * @param tiers un tiers
+	 * @return la ligne "pour adresse" correspondant au tiers spécifié
 	 */
 	private String getPourAdresse(final Tiers tiers) {
 
@@ -723,12 +733,12 @@ public class AdresseServiceImpl implements AdresseService {
 	}
 
 	/**
-	 * Retourne la raison sociale pour l'adressage de la collectivité administrative spécifiée.
+	 * @param collectivite une collectivité administrative
+	 * @return la raison sociale pour l'adressage de la collectivité administrative spécifiée.
 	 */
 	private String getRaisonSociale(CollectiviteAdministrative collectivite) {
 		try {
-			ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative c = serviceInfra.getCollectivite(collectivite
-					.getNumeroCollectiviteAdministrative().intValue());
+			ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative c = serviceInfra.getCollectivite(collectivite.getNumeroCollectiviteAdministrative());
 			return c.getNomCourt();
 		}
 		catch (InfrastructureException e) {
@@ -738,7 +748,8 @@ public class AdresseServiceImpl implements AdresseService {
 	}
 
 	/**
-	 * Retourne la raison sociale pour l'adressage de la collectivité administrative spécifiée.
+	 * @param collectivite une collectivité administrative
+	 * @return la raison sociale pour l'adressage de la collectivité administrative spécifiée.
 	 */
 	private List<String> getRaisonSocialeLongue(CollectiviteAdministrative collectivite) {
 		try {
@@ -772,7 +783,7 @@ public class AdresseServiceImpl implements AdresseService {
 	private String getRaisonSociale(Entreprise entreprise) {
 		final Long numeroEntreprise = entreprise.getNumeroEntreprise();
 		Assert.notNull(numeroEntreprise);
-		final PersonneMorale pm = servicePM.getPersonneMorale(numeroEntreprise);
+		final PersonneMorale pm = servicePM.getPersonneMorale(numeroEntreprise, (PartPM[])null);
 		return pm.getRaisonSociale();
 	}
 
@@ -786,7 +797,7 @@ public class AdresseServiceImpl implements AdresseService {
 
 		final Long numeroEntreprise = entreprise.getNumeroEntreprise();
 		Assert.notNull(numeroEntreprise);
-		final PersonneMorale pm = servicePM.getPersonneMorale(numeroEntreprise);
+		final PersonneMorale pm = servicePM.getPersonneMorale(numeroEntreprise, (PartPM[])null);
 
 		final List<String> nomsComplets = new ArrayList<String>(3);
 		if (!StringUtils.isEmpty(pm.getRaisonSociale1())) {
@@ -840,6 +851,9 @@ public class AdresseServiceImpl implements AdresseService {
 
 	/**
 	 * Rempli l'adresse d'envoi en fonction de l'adresse civile/fiscale spécifiée.
+	 *
+	 * @param adresseEnvoi l'adresse d'envoi détaillée à remplir
+	 * @param adresse      une adresse générique à partir de laquelle l'adresse d'envoi sera remplie
 	 */
 	private void fillAdresseEnvoi(AdresseEnvoiDetaillee adresseEnvoi, final AdresseGenerique adresse) {
 		Assert.notNull(adresse, "Une adresse doit être spécifiée.");
@@ -877,7 +891,8 @@ public class AdresseServiceImpl implements AdresseService {
 	}
 
 	/**
-	 * @return <b>vrai</b> si le complément d'adresse spécifiée commence avec un "p.a.", un "chez", un "c/o", ou tout autre variantes reconnues.
+	 * @param complement un complément d'adresse
+	 * @return <b>vrai</b> si le complément d'adresse spécifié commence avec un "p.a.", un "chez", un "c/o", ou tout autre variantes reconnues.
 	 */
 	public static boolean isPrefixedByPourAdresse(final String complement) {
 		return POUR_ADRESSE_PATTERN.matcher(complement).find();
@@ -965,11 +980,11 @@ public class AdresseServiceImpl implements AdresseService {
 			if (contribuable != null) {
 				final AdressesFiscalesHisto adressesContribuable = getAdressesFiscalHisto(contribuable, callDepth + 1, strict);
 
-				adresses.courrier = surchargeAdressesHisto(adresses.courrier, adressesContribuable.courrier, Source.CONTRIBUABLE, true, strict);
+				adresses.courrier = surchargeAdressesHisto(adresses.courrier, adressesContribuable.courrier, Source.CONTRIBUABLE, true);
 				adresses.representation = surchargeAdressesHisto(adresses.representation, adressesContribuable.representation,
-						Source.CONTRIBUABLE, true, strict);
-				adresses.poursuite = surchargeAdressesHisto(adresses.poursuite, adressesContribuable.poursuite, Source.CONTRIBUABLE, true, strict);
-				adresses.domicile = surchargeAdressesHisto(adresses.domicile, adressesContribuable.domicile, Source.CONTRIBUABLE, true, strict);
+						Source.CONTRIBUABLE, true);
+				adresses.poursuite = surchargeAdressesHisto(adresses.poursuite, adressesContribuable.poursuite, Source.CONTRIBUABLE, true);
+				adresses.domicile = surchargeAdressesHisto(adresses.domicile, adressesContribuable.domicile, Source.CONTRIBUABLE, true);
 			}
 		}
 
@@ -1065,8 +1080,14 @@ public class AdresseServiceImpl implements AdresseService {
 	 * <li>Les adresses 'domicile' ont pour défauts les adresses 'poursuite'</li>
 	 * </ul>
 	 *
-	 * @param adresse
-	 * @param strict
+	 * @param tiers     le tiers à qui appartiennent les adresses
+	 * @param adresse   une adresse générique (nulle ou pas)
+	 * @param type      le type de l'adresse générique
+	 * @param date      la date à laquelle l'adresse doit être calculée
+	 * @param callDepth paramètre technique pour éviter les récursions infinies
+	 * @param strict    si <b>faux</b> essaie de résoudre silencieusement les problèmes détectés durant le traitement; autrement lève une exception.
+	 * @return l'adresse générique du type spécifié, valide à la date spécifiée pour le tiers spécifié.
+	 * @throws AdresseException en cas de problème dans le traitement
 	 */
 	private AdresseGenerique appliqueDefautsAdressesFiscales(Tiers tiers, AdresseGenerique adresse, TypeAdresseTiers type, RegDate date,
 	                                                         int callDepth, boolean strict) throws AdresseException {
@@ -1148,10 +1169,9 @@ public class AdresseServiceImpl implements AdresseService {
 	/**
 	 * Retourne le représentant à la date donnée du tiers spécifié.
 	 *
-	 * @param tiers
-	 *            le tiers potentiellement mis sous tutelle ou possèdant un conseil légal.
-	 * @param date
-	 *            la date de référence, ou null pour obtenir le représentant courant.
+	 * @param tiers le tiers potentiellement mis sous tutelle ou possèdant un conseil légal.
+	 * @param type  le type de représentant
+	 * @param date  la date de référence, ou null pour obtenir le représentant courant.
 	 * @return le représentant, ou null si le tiers ne possède pas de représentant à la date spécifiée.
 	 */
 	private Tiers getRepresentant(Tiers tiers, TypeAdresseRepresentant type, RegDate date) {
@@ -1169,9 +1189,15 @@ public class AdresseServiceImpl implements AdresseService {
 	}
 
 	/**
-	 * Retourne l'adresse du representant pour le tiers spécifié.
+	 * Retourne l'adresse du représentant pour le tiers spécifié.
 	 *
+	 * @param tiers                   un tiers
+	 * @param date                    la date à laquelle l'adresse retournée est valide
+	 * @param typeAdresseRepresentant le type de représentant
+	 * @param callDepth               paramètre technique pour éviter les récursions infinies
+	 * @param strict                  si <b>faux</b> essaie de résoudre silencieusement les problèmes détectés durant le traitement; autrement lève une exception.
 	 * @return l'adresse demandée, ou <b>null</b> si le tiers n'est pas sous tutelle.
+	 * @throws AdresseException en cas de problème dans le traitement
 	 */
 	private AdresseGenerique getAdresseRepresentant(Tiers tiers, RegDate date, TypeAdresseRepresentant typeAdresseRepresentant, int callDepth, boolean strict) throws AdresseException {
 		final AdresseGenerique adresseTuteur;
@@ -1187,13 +1213,19 @@ public class AdresseServiceImpl implements AdresseService {
 
 	/**
 	 * Retourne l'adresse du representant pour le ménage commun spécifié.
-	 * <p>
-	 * Dans le cas d'un ménage commun, l'adresse courrier du conjoint prime sur celle du tuteur (pour autant que le conjoint ne soit pas
-	 * lui-même sous tutelle).
+	 * <p/>
+	 * Dans le cas d'un ménage commun, l'adresse courrier du conjoint prime sur celle du tuteur (pour autant que le conjoint ne soit pas lui-même sous tutelle).
 	 *
+	 * @param menage                  un ménage commun
+	 * @param date                    la date à laquelle l'adresse retournée est valide
+	 * @param typeAdresseRepresentant le type de représentant
+	 * @param callDepth               paramètre technique pour éviter les récursions infinies
+	 * @param strict                  si <b>faux</b> essaie de résoudre silencieusement les problèmes détectés durant le traitement; autrement lève une exception.
 	 * @return l'adresse demandée, ou <b>null</b> si le principal du ménage n'est pas sous tutelle.
+	 * @throws AdresseException en cas de problème dans le traitement
 	 */
-	private AdresseGenerique getAdresseRepresentantPourMenage(MenageCommun menage, RegDate date, TypeAdresseRepresentant typeAdresseRepresentant, int callDepth, boolean strict) throws AdresseException {
+	private AdresseGenerique getAdresseRepresentantPourMenage(MenageCommun menage, RegDate date, TypeAdresseRepresentant typeAdresseRepresentant, int callDepth, boolean strict) throws
+			AdresseException {
 
 		final EnsembleTiersCouple ensemble = tiersService.getEnsembleTiersCouple(menage, date);
 		final PersonnePhysique principal = getPrincipalPourAdresse(menage, date);
@@ -1227,7 +1259,7 @@ public class AdresseServiceImpl implements AdresseService {
 		final AdresseGenerique courrierConjoint = getAdresseFiscale(conjoint, TypeAdresseTiers.COURRIER, date, true, callDepth + 1, strict);
 
 		// On ignore le conjoint s'il est lui-même sous tutelle
-		if (!Source.TUTELLE.equals(courrierConjoint.getSource()) && !Source.CURATELLE.equals(courrierConjoint.getSource()) ) {
+		if (!Source.TUTELLE.equals(courrierConjoint.getSource()) && !Source.CURATELLE.equals(courrierConjoint.getSource())) {
 			adresse = new AdresseGeneriqueAdapter(courrierConjoint, Source.CONJOINT, false);
 		}
 
@@ -1266,17 +1298,18 @@ public class AdresseServiceImpl implements AdresseService {
 			return null;
 		}
 
-		final AdresseGeneriqueAdapter adresse = new AdresseGeneriqueAdapter(adressesRepresentant, debut, fin, type.getTypeSource(), false);
-		return adresse;
+		return new AdresseGeneriqueAdapter(adressesRepresentant, debut, fin, type.getTypeSource(), false);
 	}
 
 	/**
 	 * Retourne l'historique des adresses du representant pour le tiers spécifié.
 	 *
-	 * @param tiers
-	 *            le tiers potentiellement sous mis sous tutelle.
-	 * @param strict
+	 * @param tiers                   le tiers potentiellement sous mis sous tutelle.
+	 * @param typeAdresseRepresentant le type de représentant
+	 * @param callDepth               paramètre technique pour éviter les récursions infinies
+	 * @param strict                  si <b>faux</b> essaie de résoudre silencieusement les problèmes détectés durant le traitement; autrement lève une exception.
 	 * @return les adresses demandées, ou une liste vide si le tiers n'a jamais été sous tutelle.
+	 * @throws AdresseException en cas de problème dans le traitement
 	 */
 	private List<AdresseGenerique> getAdressesTuteurOuCurateurHisto(Tiers tiers, TypeAdresseRepresentant typeAdresseRepresentant, int callDepth, boolean strict) throws AdresseException {
 
@@ -1285,7 +1318,7 @@ public class AdresseServiceImpl implements AdresseService {
 		final List<AdresseGenerique> adressesTuteur;
 
 		if (tiers instanceof MenageCommun) {
-			adressesTuteur = getAdressesTuteurOuCurateurOuRepresentantHisto((MenageCommun) tiers, typeAdresseRepresentant,  callDepth + 1, strict);
+			adressesTuteur = getAdressesTuteurOuCurateurOuRepresentantHisto((MenageCommun) tiers, typeAdresseRepresentant, callDepth + 1, strict);
 		}
 		else {
 			adressesTuteur = getAdressesRepresentantHisto(tiers, typeAdresseRepresentant, callDepth + 1, strict);
@@ -1295,13 +1328,18 @@ public class AdresseServiceImpl implements AdresseService {
 
 	/**
 	 * Retourne l'historique des adresses du representant pour le ménage commun spécifié.
-	 * <p>
-	 * Dans le cas d'un ménage commun, les adresses courrier du conjoint priment sur celles du tuteur (pour autant que le conjoint ne soit
-	 * pas lui-même sous tutelle).
+	 * <p/>
+	 * Dans le cas d'un ménage commun, les adresses courrier du conjoint priment sur celles du tuteur (pour autant que le conjoint ne soit pas lui-même sous tutelle).
 	 *
+	 * @param menage                  le ménage commun potentiellement sous mis sous tutelle.
+	 * @param typeAdresseRepresentant le type de représentant
+	 * @param callDepth               paramètre technique pour éviter les récursions infinies
+	 * @param strict                  si <b>faux</b> essaie de résoudre silencieusement les problèmes détectés durant le traitement; autrement lève une exception.
 	 * @return les adresses demandées, ou une liste vide si le principal du ménage n'a jamais été sous tutelle.
+	 * @throws AdresseException en cas de problème dans le traitement
 	 */
-	private List<AdresseGenerique> getAdressesTuteurOuCurateurOuRepresentantHisto(final MenageCommun menage, TypeAdresseRepresentant typeAdresseRepresentant, int callDepth, boolean strict) throws AdresseException {
+	private List<AdresseGenerique> getAdressesTuteurOuCurateurOuRepresentantHisto(final MenageCommun menage, TypeAdresseRepresentant typeAdresseRepresentant, int callDepth, boolean strict) throws
+			AdresseException {
 
 		Assert.isTrue(TypeAdresseRepresentant.TUTELLE.equals(typeAdresseRepresentant) || TypeAdresseRepresentant.CURATELLE.equals(typeAdresseRepresentant));
 
@@ -1361,10 +1399,12 @@ public class AdresseServiceImpl implements AdresseService {
 	/**
 	 * Retourne l'historique des adresses 'représentation' (ajusté à la durée des mises-sous-tutelle) du représentant du tiers spécifié.
 	 *
-	 * @param tiers
-	 *            le tiers potentiellement sous mis sous tutelle ou avec un conseil légal.
-	 * @param strict
+	 * @param tiers     le tiers potentiellement sous mis sous tutelle ou avec un conseil légal.
+	 * @param type      le type de représentant
+	 * @param callDepth paramètre technique pour éviter les récursions infinies
+	 * @param strict    si <b>faux</b> essaie de résoudre silencieusement les problèmes détectés durant le traitement; autrement lève une exception.
 	 * @return les adresses demandées, ou une liste vide si le tiers n'a jamais été sous tutelle.
+	 * @throws AdresseException en cas de problème dans le traitement
 	 */
 	private List<AdresseGenerique> getAdressesRepresentantHisto(Tiers tiers, TypeAdresseRepresentant type, int callDepth, boolean strict)
 			throws AdresseException {
@@ -1398,14 +1438,13 @@ public class AdresseServiceImpl implements AdresseService {
 	}
 
 	/**
-	 * Vérifie que toutes les adresses données ont au moins une date de début de validité (à l'exception de la première qui peut être
-	 * nulle), et que les dates de validités (si début et fin sont présentes) sont dans le bon ordre
+	 * Vérifie que toutes les adresses données ont au moins une date de début de validité (à l'exception de la première qui peut être nulle), et que les dates de validités (si début et fin sont
+	 * présentes) sont dans le bon ordre
 	 *
-	 * @param adresses
-	 *            les adresses à tester
+	 * @param adresses            les adresses à tester
 	 * @param descriptionContexte le context des données
-	 * @param tiers le tiers auquel les adresses appartiennent
-	 * @throws DonneesCivilesException en cas d'incohérence détectée des données
+	 * @param tiers               le tiers auquel les adresses appartiennent
+	 * @throws AdresseException en cas de problème dans le traitement
 	 */
 	private static void verifieCoherenceAdresses(List<AdresseGenerique> adresses, String descriptionContexte, Tiers tiers) throws AdresseException {
 		final int size = adresses.size();
@@ -1414,7 +1453,7 @@ public class AdresseServiceImpl implements AdresseService {
 			// [UNIREG-1097] la première adresse peut avoir une date de début nulle, et la dernière peut avoir une date de fin nulle.
 			final ValidationResults validationResult = DateRangeHelper.validate(adresse, (i == 0), (i == size - 1));
 			if (validationResult.hasErrors()) {
-				throw new AdresseDataException(validationResult);
+				throw new AdresseDataException(descriptionContexte + " du tiers n°" + tiers.getNumero(), validationResult);
 			}
 		}
 	}
@@ -1458,9 +1497,7 @@ public class AdresseServiceImpl implements AdresseService {
 		AdresseGenerique adresse = null;
 
 		// 1ère priorité : l'adresse du tuteur
-		if (adresse == null && TypeAdresseTiers.COURRIER.equals(type)) {
-			// Note : seule la tutelle provoque une substitution de l'adresse, la curatelle n'est pas concernée.
-			// TODO (fnr) note ci-dessus en contradiction avec le cas JIRA  UNIREG-1329
+		if (TypeAdresseTiers.COURRIER.equals(type)) {
 			final AdresseGenerique adresseTuteur = getAdresseRepresentant(tiers, date, TypeAdresseRepresentant.TUTELLE, callDepth + 1, strict);
 			if (adresseTuteur != null) {
 				adresse = adresseTuteur;
@@ -1540,13 +1577,12 @@ public class AdresseServiceImpl implements AdresseService {
 	}
 
 	/**
-	 * Détermine le tiers principal pour le calcul des adresses du ménage commun.
-	 * Selon [UNIREG-771] et comme intégré plus tard dans la spécification, le principal du
-	 * couple ne sera pas toujours considéré comme principal pour le calcul des adresses.
+	 * Détermine le tiers principal pour le calcul des adresses du ménage commun. Selon [UNIREG-771] et comme intégré plus tard dans la spécification, le principal du couple ne sera pas toujours
+	 * considéré comme principal pour le calcul des adresses.
 	 *
 	 * @param menageCommun le ménage commun
-	 * @param date
-	 * @return
+	 * @param date         la date de validité du principal
+	 * @return le principal trouvé, ou <b>null</b> si le ménage ne possède aucun membre à la date spécifiée
 	 */
 	private PersonnePhysique getPrincipalPourAdresse(final MenageCommun menageCommun, RegDate date) {
 		final EnsembleTiersCouple ensemble = tiersService.getEnsembleTiersCouple(menageCommun, date);
@@ -1558,7 +1594,7 @@ public class AdresseServiceImpl implements AdresseService {
 		 */
 		if (principal != null && !principal.isHabitant()) {
 			final PersonnePhysique conjoint = ensemble.getConjoint(principal);
-			if (conjoint != null  && conjoint.isHabitant()) {
+			if (conjoint != null && conjoint.isHabitant()) {
 				principalOuVaudois = conjoint;
 			}
 		}
@@ -1567,6 +1603,14 @@ public class AdresseServiceImpl implements AdresseService {
 
 	/**
 	 * Surcharge l'adresse spécifiée avec une adresse tiers.
+	 *
+	 * @param tiers             un tiers auxquel les adresses appartiennent.
+	 * @param adresse           une adresse générique de base (qui peut être nulle).
+	 * @param adresseSurchargee une adresse tiers qui, si elle est non-nulle, sera appliquée comme surcharge de l'adresse base.
+	 * @param callDepth         paramètre technique pour éviter les récursions infinies
+	 * @param strict            si <b>faux</b> essaie de résoudre silencieusement les problèmes détectés durant le traitement; autrement lève une exception.
+	 * @return une adresse générique ayant pour valeur le résultat de la surchage de l'adresse de base avec l'adresse de surchage.
+	 * @throws AdresseException en cas de problème dans le traitement
 	 */
 	private AdresseGenerique surchargeAdresseTiers(Tiers tiers, AdresseGenerique adresse, AdresseTiers adresseSurchargee, int callDepth, boolean strict)
 			throws AdresseException {
@@ -1581,9 +1625,14 @@ public class AdresseServiceImpl implements AdresseService {
 
 	/**
 	 * Surcharge les adresses spécifiées avec d'autres adresses.
+	 *
+	 * @param adresse           une adresse générique de base (qui peut être nulle).
+	 * @param adresseSurchargee une adresse tiers qui, si elle est non-nulle, sera appliquée comme surcharge de l'adresse base.
+	 * @param source            la source de l'adresse de surcharge
+	 * @param isDefault         <b>vrai</b> si l'adresse de surcharge est une adresse par défaut, <b>faux</b> si ce n'est pas le cas et <b>null</b> si cette information est inconnue.
+	 * @return une adresse générique ayant pour valeur le résultat de la surchage de l'adresse de base avec l'adresse de surchage.
 	 */
-	private AdresseGenerique surchargeAdresses(AdresseGenerique adresse, AdresseGenerique adresseSurchargee, Source source,
-			Boolean isDefault) {
+	private AdresseGenerique surchargeAdresses(AdresseGenerique adresse, AdresseGenerique adresseSurchargee, Source source, Boolean isDefault) {
 		if (adresseSurchargee != null) {
 			return new AdresseGeneriqueAdapter(adresseSurchargee, source, isDefault);
 		}
@@ -1594,9 +1643,9 @@ public class AdresseServiceImpl implements AdresseService {
 
 	/**
 	 * Converti les adresses civiles spécifiées en adresses fiscales.
-	 * <p>
+	 * <p/>
 	 * La régle de mapping entre les adresses civiles et fiscales est :
-	 *
+	 * <p/>
 	 * <pre>
 	 * Civil Fiscal
 	 * ----- ------
@@ -1607,6 +1656,10 @@ public class AdresseServiceImpl implements AdresseService {
 	 * Secondaire      (non-mappée)
 	 * Tutelle         (non-mappée)
 	 * </pre>
+	 *
+	 * @param adressesCiviles un groupe d'adresses civiles à convertir.
+	 * @return la représentation fiscale des adresses civiles spécifiées.
+	 * @throws AdresseException en cas de problème dans le traitement.
 	 */
 	private AdressesFiscales initAdressesCiviles(AdressesCiviles adressesCiviles) throws AdresseException {
 
@@ -1636,9 +1689,9 @@ public class AdresseServiceImpl implements AdresseService {
 
 	/**
 	 * Converti les adresses PM spécifiées en adresses fiscales.
-	 * <p>
+	 * <p/>
 	 * La régle de mapping entre les adresses PM et fiscales est :
-	 *
+	 * <p/>
 	 * <pre>
 	 * PM              Fiscal
 	 * -----           ------
@@ -1648,8 +1701,11 @@ public class AdresseServiceImpl implements AdresseService {
 	 *             `-- Domicile
 	 * Facturation     (non-mappée)
 	 * </pre>
-	 *
+	 * <p/>
 	 * TODO (msi) Demandez à Thierry la confirmation du mapping ci-dessous !
+	 *
+	 * @param adressePM un groupe d'adresses PM à convertir.
+	 * @return la représentation fiscale des adresses PM spécifiées.
 	 */
 	private AdressesFiscales initAdressesPM(AdressesPM adressePM) {
 		AdressesFiscales adresses = new AdressesFiscales();
@@ -1715,13 +1771,12 @@ public class AdresseServiceImpl implements AdresseService {
 	/**
 	 * Retourne les adresses civiles valide à la date donnée.
 	 *
-	 * @param habitant
-	 *            l'habitant dont on recherche les adresses.
-	 *
-	 * @param date
-	 *            la date de référence (attention, la précision est l'année !), ou null pour obtenir toutes les adresses existantes.
-	 * @param strict	 si <i>vrai</i>, la cohérence des données est vérifiée de manière stricte et en cas d'incohérence, une exception est levée. Si <i>faux</i>, la méthode essaie de corriger les données (dans la mesure du possible) pour ne pas lever d'exception.
+	 * @param habitant l'habitant dont on recherche les adresses.
+	 * @param date     la date de référence (attention, la précision est l'année !), ou null pour obtenir toutes les adresses existantes.
+	 * @param strict   si <i>vrai</i>, la cohérence des données est vérifiée de manière stricte et en cas d'incohérence, une exception est levée. Si <i>faux</i>, la méthode essaie de corriger les données
+	 *                 (dans la mesure du possible) pour ne pas lever d'exception.
 	 * @return les adresses civiles de l'habitant spécifié.
+	 * @throws AdresseException en cas de problème dans le traitement
 	 */
 	private AdressesCiviles getAdressesCiviles(PersonnePhysique habitant, RegDate date, boolean strict) throws AdresseException {
 		try {
@@ -1734,6 +1789,11 @@ public class AdresseServiceImpl implements AdresseService {
 
 	/**
 	 * Retourne l'historique des adresses civiles du tiers spécifié. Ou <b>null</b> si le tiers n'en possède pas.
+	 *
+	 * @param tiers  un tiers dont on veut extraite l'historique des adresses civiles.
+	 * @param strict si <b>faux</b> essaie de résoudre silencieusement les problèmes détectés durant le traitement; autrement lève une exception.
+	 * @return l'historique des adresses civiles du tiers spécifié.
+	 * @throws AdresseException en cas de problème dans le traitement
 	 */
 	private AdressesCivilesHisto getAdressesCivilesHisto(Tiers tiers, boolean strict) throws AdresseException {
 
@@ -1794,7 +1854,7 @@ public class AdresseServiceImpl implements AdresseService {
 		if (numero != null) {
 			ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative collectiviteCivil;
 			try {
-				collectiviteCivil = serviceInfra.getCollectivite(numero.intValue());
+				collectiviteCivil = serviceInfra.getCollectivite(numero);
 				Assert.notNull(collectiviteCivil);
 
 				adresses.principale = collectiviteCivil.getAdresse();
@@ -1813,8 +1873,7 @@ public class AdresseServiceImpl implements AdresseService {
 		AdressesCivilesHisto adresses = new AdressesCivilesHisto();
 
 		try {
-			ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative collectiviteCivil = serviceInfra.getCollectivite(collectivite
-					.getNumeroCollectiviteAdministrative().intValue());
+			ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative collectiviteCivil = serviceInfra.getCollectivite(collectivite.getNumeroCollectiviteAdministrative());
 			Assert.notNull(collectiviteCivil);
 
 			adresses.principales.add(collectiviteCivil.getAdresse());
@@ -1830,13 +1889,13 @@ public class AdresseServiceImpl implements AdresseService {
 	public AdressesPM getAdressesPM(Entreprise entreprise, RegDate date) {
 		final Long numeroEntreprise = entreprise.getNumeroEntreprise();
 		Assert.notNull(numeroEntreprise);
-		return servicePM.getAdresses(numeroEntreprise.longValue(), date);
+		return servicePM.getAdresses(numeroEntreprise, date);
 	}
 
 	public AdressesPMHisto getAdressesPMHisto(Entreprise entreprise) {
 		final Long numeroEntreprise = entreprise.getNumeroEntreprise();
 		Assert.notNull(numeroEntreprise);
-		return servicePM.getAdressesHisto(numeroEntreprise.longValue());
+		return servicePM.getAdressesHisto(numeroEntreprise);
 	}
 
 	/**
@@ -1909,9 +1968,17 @@ public class AdresseServiceImpl implements AdresseService {
 	}
 
 	/**
-	 * Ajoute toutes les adresses civiles existantes entre la date de début et de celle de fin à la liste des adresses par défaut.
+	 * Complète les adresses de base avec les adresses civiles spécifiées entre la date de début et de celle de fin. Cette méthode part du principe qu'il n'existe aucune adresse de base dans la plage
+	 * [debut; fin].
+	 *
+	 * @param adressesBase   les adresses de base sur lesquelles seront ajoutées les adresses civiles
+	 * @param debut          la date de début de la plage à compléter
+	 * @param fin            la date de fin (comprise) de la plage à compléter
+	 * @param adresseCiviles les adresses civiles utilisées pour compléter les adresses de base
+	 * @param strict         si <b>faux</b> essaie de résoudre silencieusement les problèmes détectés durant le traitement; autrement lève une exception.
+	 * @throws AdresseException en cas de problème dans le traitement
 	 */
-	private void fillAdressesCivilesSlice(List<AdresseGenerique> adressesDefault, RegDate debut, RegDate fin, List<Adresse> adresseCiviles, boolean strict) throws AdresseException {
+	private void fillAdressesCivilesSlice(List<AdresseGenerique> adressesBase, RegDate debut, RegDate fin, List<Adresse> adresseCiviles, boolean strict) throws AdresseException {
 		for (Adresse adresse : adresseCiviles) {
 			final RegDate adresseDebut = adresse.getDateDebut();
 			final RegDate adresseFin = adresse.getDateFin();
@@ -1922,7 +1989,7 @@ public class AdresseServiceImpl implements AdresseService {
 				RegDate finValidite = RegDateHelper.minimum(adresseFin, fin, NullDateBehavior.LATEST);
 				try {
 					final AdresseCivileAdapter a = new AdresseCivileAdapter(adresse, debutValidite, finValidite, true, serviceInfra);
-					adressesDefault.add(a);
+					adressesBase.add(a);
 				}
 				catch (DonneesCivilesException e) {
 					if (strict) {
@@ -1935,9 +2002,15 @@ public class AdresseServiceImpl implements AdresseService {
 	}
 
 	/**
-	 * Ajoute toutes les adresses PM existantes entre la date de début et de celle de fin à la liste des adresses par défaut.
+	 * Complète les adresses de base avec les adresses PM spécifiées entre la date de début et de celle de fin. Cette méthode part du principe qu'il n'existe aucune adresse de base dans la plage [debut;
+	 * fin].
+	 *
+	 * @param adressesBase les adresses de base sur lesquelles seront ajoutées les adresses PM
+	 * @param debut        la date de début de la plage à compléter
+	 * @param fin          la date de fin (comprise) de la plage à compléter
+	 * @param adressePM    les adresses PM utilisées pour compléter les adresses de base
 	 */
-	private void fillAdressesPMSlice(List<AdresseGenerique> adressesDefault, RegDate debut, RegDate fin, List<AdresseEntreprise> adressePM) {
+	private void fillAdressesPMSlice(List<AdresseGenerique> adressesBase, RegDate debut, RegDate fin, List<AdresseEntreprise> adressePM) {
 		for (AdresseEntreprise adresse : adressePM) {
 			final RegDate adresseDebut = adresse.getDateDebutValidite();
 			final RegDate adresseFin = adresse.getDateFinValidite();
@@ -1946,16 +2019,16 @@ public class AdresseServiceImpl implements AdresseService {
 					&& (adresseFin == null || debut == null || adresseFin.isAfterOrEqual(debut))) {
 				RegDate debutValidite = RegDateHelper.maximum(adresseDebut, debut, NullDateBehavior.EARLIEST);
 				RegDate finValidite = RegDateHelper.minimum(adresseFin, fin, NullDateBehavior.LATEST);
-				adressesDefault.add(new AdressePMAdapter(adresse, debutValidite, finValidite, Source.PM, true));
+				adressesBase.add(new AdressePMAdapter(adresse, debutValidite, finValidite, Source.PM, true));
 			}
 		}
 	}
 
 	/**
 	 * Converti les adresses civiles spécifiées en adresses fiscales.
-	 * <p>
+	 * <p/>
 	 * La régle de mapping entre les adresses civiles et fiscales est :
-	 *
+	 * <p/>
 	 * <pre>
 	 * Civil Fiscal
 	 * ----- ------
@@ -1966,6 +2039,14 @@ public class AdresseServiceImpl implements AdresseService {
 	 * Secondaire      (non-mappée)
 	 * Tutelle         (non-mappée)
 	 * </pre>
+	 *
+	 * @param adressesCiviles        les adresses civiles de base
+	 * @param dateDebutHisto         la date de début de la plage à convertir
+	 * @param dateFinHisto           la date de fin (comprise) de la plage à convertir
+	 * @param adressesCivilesDefault les adresses civiles par défaut utilisées pour boucher les trous dans les adresses civiles de base
+	 * @param strict                 si <b>faux</b> essaie de résoudre silencieusement les problèmes détectés durant le traitement; autrement lève une exception.
+	 * @return les adresses génériques qui représentent les adresses civiles.
+	 * @throws AdresseException en cas de problème dans le traitement
 	 */
 	private List<AdresseGenerique> initAdressesCivilesHisto(List<Adresse> adressesCiviles, RegDate dateDebutHisto, RegDate dateFinHisto,
 	                                                        List<Adresse> adressesCivilesDefault, boolean strict) throws AdresseException {
@@ -2026,9 +2107,9 @@ public class AdresseServiceImpl implements AdresseService {
 
 	/**
 	 * Converti les adresses PM spécifiées en adresses fiscales.
-	 * <p>
+	 * <p/>
 	 * La régle de mapping entre les adresses PM et fiscales est :
-	 *
+	 * <p/>
 	 * <pre>
 	 * PM              Fiscal
 	 * -----           ------
@@ -2038,9 +2119,15 @@ public class AdresseServiceImpl implements AdresseService {
 	 *             `-- Domicile
 	 * Facturation     (non-mappée)
 	 * </pre>
+	 *
+	 * @param adressesPM        les adresses PM de base
+	 * @param dateDebutHisto    la date de début de la plage à convertir
+	 * @param dateFinHisto      la date de fin (comprise) de la plage à convertir
+	 * @param adressesPMDefault les adresses PM par défaut utilisées pour boucher les trous dans les adresses PM de base
+	 * @return les adresses génériques qui représentent les adresses PM.
 	 */
 	private List<AdresseGenerique> initAdressesPMHisto(List<AdresseEntreprise> adressesPM, RegDate dateDebutHisto, RegDate dateFinHisto,
-			List<AdresseEntreprise> adressesPMDefault) {
+	                                                   List<AdresseEntreprise> adressesPMDefault) {
 
 		/*
 		 * Adapte la liste des adresses civiles
@@ -2088,6 +2175,14 @@ public class AdresseServiceImpl implements AdresseService {
 
 	/**
 	 * Surcharge la liste d'adresses spécifiées avec une liste d'adresse de tiers.
+	 *
+	 * @param tiers               un tiers dont on veut calculer les adresses
+	 * @param adresses            les adresses génériques de base
+	 * @param adressesSurchargees une liste d'adresses tiers à utiliser comme surcharge sur les adresses de base
+	 * @param callDepth           paramètre technique pour éviter les récursions infinies
+	 * @param strict              si <b>faux</b> essaie de résoudre silencieusement les problèmes détectés durant le traitement; autrement lève une exception.
+	 * @return les adresses génériques résultant de la surcharge des adresses de base avec les adresses de surcharge.
+	 * @throws AdresseException en cas de problème dans le traitement
 	 */
 	private List<AdresseGenerique> surchargeAdressesTiersHisto(Tiers tiers, List<AdresseGenerique> adresses,
 	                                                           List<AdresseTiers> adressesSurchargees, int callDepth, boolean strict) throws AdresseException {
@@ -2106,9 +2201,15 @@ public class AdresseServiceImpl implements AdresseService {
 
 	/**
 	 * Surcharge la liste d'adresses spécifiées avec une autre liste d'adresse.
+	 *
+	 * @param adresses            les adresses génériques de base
+	 * @param adressesSurchargees une liste d'adresses génériques à utiliser comme surcharge sur les adresses de base
+	 * @param source              la source des adresses de surcharge
+	 * @param isDefault           <b>vrai</b> si les adresses de surcharge sont des adresses par défaut, <b>faux</b> si ce n'est pas le cas et <b>null</b> si cette information est inconnue.
+	 * @return les adresses génériques résultant de la surcharge des adresses de base avec les adresses de surcharge.
 	 */
 	private List<AdresseGenerique> surchargeAdressesHisto(List<AdresseGenerique> adresses, List<AdresseGenerique> adressesSurchargees,
-	                                                      Source source, Boolean isDefault, boolean strict) {
+	                                                      Source source, Boolean isDefault) {
 		return AdresseMixer.override(adresses, adressesSurchargees, source, isDefault);
 	}
 
@@ -2179,13 +2280,11 @@ public class AdresseServiceImpl implements AdresseService {
 		return list;
 	}
 
-
 	/**
 	 * Calcul le nom courrier
 	 *
-	 * @param numeroIndividu
-	 * @return
-	 * @throws AdresseException
+	 * @param numeroIndividu le numéro de l'individu dont on veut connaître le nom de courrier
+	 * @return le nom courrier de l'individu spécifié
 	 */
 	public String getNomCourrier(long numeroIndividu) {
 		final Individu individu = serviceCivilService.getIndividu(numeroIndividu, DateHelper.getCurrentYear());
@@ -2194,7 +2293,6 @@ public class AdresseServiceImpl implements AdresseService {
 		}
 		return tiersService.getNomPrenom(individu);
 	}
-
 
 	public AdresseGenerique getDerniereAdresseVaudoise(Tiers tiers, TypeAdresseTiers type) throws InfrastructureException, AdresseException {
 		final AdressesFiscalesHisto adressesHistoriques = getAdressesFiscalHisto(tiers,false);

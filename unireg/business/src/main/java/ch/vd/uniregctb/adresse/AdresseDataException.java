@@ -21,6 +21,10 @@ public class AdresseDataException extends AdresseException {
 		super(buildErrorsMessage(results));
 	}
 
+	public AdresseDataException(String message, ValidationResults results) {
+		super(message + " : " + buildErrorsMessage(results));
+	}
+
 	private static String buildErrorsMessage(ValidationResults results) {
 		final StringBuilder b = new StringBuilder();
 		boolean first = true;
