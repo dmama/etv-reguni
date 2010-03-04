@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.interfaces.service.mock;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -40,15 +41,36 @@ public class DefaultMockServiceInfrastructureService extends MockServiceInfrastr
 
 	protected static Map<Integer, OfficeImpot> oidByNoColAdm = new HashMap<Integer, OfficeImpot>();
 
+	/**
+	 * Force le chargement par le classloader de toutes les membres statiques de la classe spécifiée (autrement, les membres statiques sont initialisés à la demande).
+	 *
+	 * @param clazz la classe dont on veut provoquer le chargement
+	 */
+	private static void forceLoad(Class clazz) {
+		// charge tous les membres statiques de la classe
+		for (Field f : clazz.getFields()) {
+			try {
+				f.get(null);
+			}
+			catch (IllegalAccessException e) {
+				// tant pis, on ignore
+			}
+		}
+		// charge toutes les inner classes statiques
+		for (Class c : clazz.getDeclaredClasses()) {
+			forceLoad(c);
+		}
+	}
+
 	@Override
 	protected void init() {
 
-		MockPays.forceLoad();
-		MockCanton.forceLoad();
-		MockCommune.forceLoad();
-		MockLocalite.forceLoad();
-		MockRue.forceLoad();
-		MockCollectiviteAdministrative.forceLoad();
+		forceLoad(MockPays.class);
+		forceLoad(MockCanton.class);
+		forceLoad(MockCommune.class);
+		forceLoad(MockLocalite.class);
+		forceLoad(MockRue.class);
+		forceLoad(MockCollectiviteAdministrative.class);
 
 		pays = PAYS;
 

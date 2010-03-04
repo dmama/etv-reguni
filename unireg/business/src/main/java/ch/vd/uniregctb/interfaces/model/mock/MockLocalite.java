@@ -14,7 +14,6 @@ public class MockLocalite implements Localite {
 	public static final MockLocalite Romainmotier = new MockLocalite(564, 1323, null, "Romainmôtier", MockCommune.RomainmotierEnvy);
 	public static final MockLocalite LesClees = new MockLocalite(578, 1356, null, "Clées, Les", MockCommune.LesClees);
 	public static final MockLocalite Bex = new MockLocalite(1124, 1880, null, "Bex", MockCommune.Bex);
-	public static final MockLocalite Bumpliz = new MockLocalite(3333, 3018, null, "Bumpliz", MockCommune.Bern);
 	public static final MockLocalite VillarsSousYens = new MockLocalite(283, 1168, null, "Villars-sous-Yens", MockCommune.VillarsSousYens);
 	public static final MockLocalite Orbe = new MockLocalite(571, 1350, null, "Orbe", MockCommune.Orbe);
 	public static final MockLocalite Vevey = new MockLocalite(1043, 1800, null, "Vevey", MockCommune.Vevey);
@@ -24,10 +23,6 @@ public class MockLocalite implements Localite {
 	public static final MockLocalite Vallorbe = new MockLocalite(535, 1337, null, "Vallorbe", MockCommune.Vallorbe);
 	public static final MockLocalite LIsle = new MockLocalite(293, 1148, null, "Lisle", MockCommune.LIsle);
 	public static final MockLocalite Chamblon = new MockLocalite(5876, 1436, null, "Chamblon", MockCommune.Chamblon);
-	
-	public static final MockLocalite Neuchatel = new MockLocalite(1254, 2000, null, "Neuchâtel", MockCommune.Neuchatel);
-	public static final MockLocalite Neuchatel1Cases = new MockLocalite(1269, 2001, 1, "Neuchâtel 1 Cases", MockCommune.Neuchatel);
-	public static final MockLocalite Neuchatel3Serrieres = new MockLocalite(1286, 2003, null, "Neuchâtel 3 Serrières", MockCommune.Neuchatel);
 
 	// fractions de communes - L'Abbaye
 	public static final MockLocalite LePont = new MockLocalite(543, 1342, null, "Pont, Le", MockCommune.LAbbaye);
@@ -46,57 +41,18 @@ public class MockLocalite implements Localite {
 	// public static final MockLocalite LeSechey = new MockLocalite("Le Séchey");
 	public static final MockLocalite LesCharbonnieres = new MockLocalite(545, 1343, null, "Les Charbonnières", MockCommune.LeLieu);
 
+	//
+	// communes hors-canton
+	//
+
+	public static final MockLocalite Neuchatel = new MockLocalite(1254, 2000, null, "Neuchâtel", MockCommune.Neuchatel);
+	public static final MockLocalite Neuchatel1Cases = new MockLocalite(1269, 2001, 1, "Neuchâtel 1 Cases", MockCommune.Neuchatel);
+	public static final MockLocalite Neuchatel3Serrieres = new MockLocalite(1286, 2003, null, "Neuchâtel 3 Serrières", MockCommune.Neuchatel);
+	public static final MockLocalite Bumpliz = new MockLocalite(3333, 3018, null, "Bumpliz", MockCommune.Bern);
+	public static final MockLocalite Enney = new MockLocalite(839, 1667, null, "Enney", MockCommune.Enney);
 	public static final MockLocalite Zurich = new MockLocalite(8120, 8001, null, "Zurich", MockCommune.Zurich);
 
-	public static final MockLocalite Enney = new MockLocalite(839, 1667, null, "Enney", MockCommune.Enney);
-
-	/**
-	 * Permet de forcer le chargement des Mock dans le DefaultMockService
-	 * Il faut ajouter les nouveaux Mock dans cette methode
-	 */
-	@SuppressWarnings("unused")
-	public static void forceLoad() {
-		MockLocalite l;
-		l = Lausanne;
-		l = CossonayVille;
-		l = Romainmotier;
-		l = LesClees;
-		l = Bex;
-		l = VillarsSousYens;
-		l = Orbe;
-		l = Vevey;
-		l = Renens;
-		l = CheseauzSurLausanne;
-		l = VufflensLaVille;
-		l = Vallorbe;
-		l = LIsle;
-
-		l = Neuchatel;
-		l = Neuchatel1Cases;
-		l = Neuchatel3Serrieres;
-
-		// fractions de communes - L'Abbaye
-		l = LePont;
-		l = LAbbaye;
-		l = LesBioux;
-
-		// fractions de communes - Le Chenit
-		l = Orient;
-		l = LeSentier;
-		l = LeBrassus;
-		l = LeSolliat;
-
-		// fractions de communes - Le Lieu
-		l = LeLieu;
-		// Le Séchey est une fraction de commune, mais pas une localité...
-		// l = LeSechey = new MockLocalite("Le Séchey");
-		l = LesCharbonnieres;
-
-		l = Bumpliz;
-		l = Chamblon;
-	}
-
-
+	
 	private Integer chiffreComplementaire;
 	private Integer complementNPA;
 	private RegDate dateFinValidite;

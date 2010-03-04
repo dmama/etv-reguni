@@ -18,20 +18,6 @@ public class MockPays extends MockEntityOFS implements Pays {
 
 	private String nomMinusculeOFS;
 
-	/**
-	 * Permet de forcer le chargement des Mock dans le DefaultMockService
-	 * Il faut ajouter les nouveaux Mock dans cette methode
-	 */
-	@SuppressWarnings("unused")
-	public static void forceLoad() {
-		MockPays p;
-		p = Suisse;
-		p = France;
-		p = Danemark;
-		p = Espagne;
-		p = PaysInconnu;
-	}
-
 	public MockPays() {
 		DefaultMockServiceInfrastructureService.addPays(this);
 	}

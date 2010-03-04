@@ -21,15 +21,6 @@ public class MockCollectiviteAdministrative implements CollectiviteAdministrativ
 	public static MockCollectiviteAdministrative CAT = new MockCollectiviteAdministrative(ServiceInfrastructureService.noCAT, null, "Administration cantonale des impôts", null, null, "CAT");
 	public static MockCollectiviteAdministrative ACI = new MockCollectiviteAdministrative(ServiceInfrastructureService.noACI, new MockAdresse("Route de Berne", "46", "1014", "Lausanne Adm cant"), "Administration cantonale des impôts", null, null, "ACI");
 
-	/**
-	 * Permet de forcer le chargement des Mock dans le DefaultMockService
-	 * Il faut ajouter les nouveaux Mock dans cette methode
-	 */
-	@SuppressWarnings("unused")
-	public static void forceLoad() {
-		 MockCollectiviteAdministrative ca = OTG;
-	}
-
 	private Adresse adresse = null;
 	private String adresseEmail = null;
 	private List<Commune> communes = null;

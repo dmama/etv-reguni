@@ -36,7 +36,7 @@ public class MockCommune extends MockEntityOFS implements Commune, CommuneSimple
 	public static final MockCommune VufflensLaVille = new MockCommune(5503, "Vufflens-la-Ville", VAUD, MockOfficeImpot.OID_LAUSANNE_OUEST);
 	public static final MockCommune Vallorbe = new MockCommune(5764, "Vallorbe", VAUD, MockOfficeImpot.OID_ORBE);
 	public static final MockCommune LIsle = new MockCommune(5486, "L'Isle", VAUD, MockOfficeImpot.OID_MORGES);
-public static final MockCommune Chamblon = new MockCommune(5904, "Chamblon", VAUD, MockOfficeImpot.OID_YVERDON);
+	public static final MockCommune Chamblon = new MockCommune(5904, "Chamblon", VAUD, MockOfficeImpot.OID_YVERDON);
 	// commune avec fractions de commmunes
 	public static final MockCommune LAbbaye = new CommuneFractionnee(5871, "L'Abbaye", VAUD, MockOfficeImpot.OID_LA_VALLEE);
 	public static final MockCommune LeChenit = new CommuneFractionnee(5872, "Le Chenit", VAUD, MockOfficeImpot.OID_LA_VALLEE);
@@ -96,57 +96,7 @@ public static final MockCommune Chamblon = new MockCommune(5904, "Chamblon", VAU
 	public static final MockCommune Peseux = new MockCommune(6412, "Peseux", NEUCHATEL, null);
 	public static final MockCommune Enney = new MockCommune(2132, "ENNEY", FRIBOURG, null);
 
-	/**
-	 * Permet de forcer le chargement des Mock dans le DefaultMockService
-	 * Il faut ajouter les nouveaux Mock dans cette methode
-	 */
-	@SuppressWarnings("unused")
-	public static void forceLoad() {
-		MockCommune c;
-		c = Bex;
-		c = Lausanne;
-		c = Cossonay;
-		c = RomainmotierEnvy;
-		c = Croy;
-		c = Vaulion;
-		c = LesClees;
-		c = VillarsSousYens;
-		c = Orbe;
-		c = Vevey;
-		c = Leysin;
-		c = Renens;
-		c = Vallorbe;
-		c = LIsle;
-
-		// commune avec fractions de commmunes
-		c = LAbbaye;
-		c = LeChenit;
-		c = LeLieu;
-
-		// commune de l'Abbaye
-		c = Fraction.LePont;
-		c = Fraction.LAbbaye;
-		c = Fraction.LesBioux;
-
-		// commune du Chenit
-		c = Fraction.LeSentier;
-		c = Fraction.LeBrassus;
-		c = Fraction.LOrient;
-		c = Fraction.LeSolliat;
-
-		// commune du Lieu
-		c = Fraction.LeLieu;
-		c = Fraction.LeSechey;
-		c = Fraction.LesCharbonnieres;
-
-		c = Zurich;
-		c = Bern;
-		c = Neuchatel;
-		c = Peseux;
-		c= Enney;
-	}
-
-
+	
 	private String nomMinusculeOFS;
 	private CollectiviteAdministrative adminstreePar;
 	private String cantonID;
