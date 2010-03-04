@@ -15,6 +15,7 @@ public class MockCommune extends MockEntityOFS implements Commune, CommuneSimple
 	private static final String BERN = "BE";
 	private static final String ZURICH = "ZH";
 	private static final String NEUCHATEL = "NE";
+	private static final String FRIBOURG = "FR";
 
 	// Quelques communes vaudoises
 	//                                                        OFS   NOM    CANTON
@@ -35,7 +36,7 @@ public class MockCommune extends MockEntityOFS implements Commune, CommuneSimple
 	public static final MockCommune VufflensLaVille = new MockCommune(5503, "Vufflens-la-Ville", VAUD, MockOfficeImpot.OID_LAUSANNE_OUEST);
 	public static final MockCommune Vallorbe = new MockCommune(5764, "Vallorbe", VAUD, MockOfficeImpot.OID_ORBE);
 	public static final MockCommune LIsle = new MockCommune(5486, "L'Isle", VAUD, MockOfficeImpot.OID_MORGES);
-
+public static final MockCommune Chamblon = new MockCommune(5904, "Chamblon", VAUD, MockOfficeImpot.OID_YVERDON);
 	// commune avec fractions de commmunes
 	public static final MockCommune LAbbaye = new CommuneFractionnee(5871, "L'Abbaye", VAUD, MockOfficeImpot.OID_LA_VALLEE);
 	public static final MockCommune LeChenit = new CommuneFractionnee(5872, "Le Chenit", VAUD, MockOfficeImpot.OID_LA_VALLEE);
@@ -93,6 +94,7 @@ public class MockCommune extends MockEntityOFS implements Commune, CommuneSimple
 	public static final MockCommune Bern = new MockCommune(351, "Bern", BERN, null);
 	public static final MockCommune Neuchatel = new MockCommune(6458, "Neuchâtel", NEUCHATEL, null);
 	public static final MockCommune Peseux = new MockCommune(6412, "Peseux", NEUCHATEL, null);
+	public static final MockCommune Enney = new MockCommune(2132, "ENNEY", FRIBOURG, null);
 
 	/**
 	 * Permet de forcer le chargement des Mock dans le DefaultMockService
@@ -141,6 +143,7 @@ public class MockCommune extends MockEntityOFS implements Commune, CommuneSimple
 		c = Bern;
 		c = Neuchatel;
 		c = Peseux;
+		c= Enney;
 	}
 
 
@@ -155,9 +158,9 @@ public class MockCommune extends MockEntityOFS implements Commune, CommuneSimple
 	private String noCantonal;
 	private String nomAbrege;
 	private int numTechMere;
-	private String sigleCanton;
+	private final String sigleCanton;
 	private boolean valide;
-	private OfficeImpot officeImpot;
+	private final OfficeImpot officeImpot;
 
 	private MockCommune(int noOFS, String nomMinuscule, String sigleCanton, OfficeImpot oid) {
 		super(noOFS, null, nomMinuscule);

@@ -26,7 +26,7 @@ public abstract class DepartScenario extends EvenementCivilScenario {
 			last = (MockAdresse) a;
 		}
 		last.setDateFinValidite(dateFermeture);
-	
+
 	}
 
 	protected void fermerAdresses(MockIndividu ind, RegDate dateFermeture) {
@@ -37,21 +37,29 @@ public abstract class DepartScenario extends EvenementCivilScenario {
 			}
 		}
 	}
-	
+
 	protected void ouvrirAdresseZurich(MockIndividu individu, RegDate dateOuverture) {
 		final Collection<Adresse> adrs = individu.getAdresses();
 		final Adresse aa = MockServiceCivil.newAdresse(EnumTypeAdresse.PRINCIPALE, MockRue.Zurich.GloriaStrasse, null, MockLocalite.Zurich, dateOuverture, null);
 		adrs.add(aa);
 	}
-	
+
+
+
+	protected void ouvrirAdresseEnney(MockIndividu individu, RegDate dateOuverture) {
+		final Collection<Adresse> adrs = individu.getAdresses();
+		final Adresse aa = MockServiceCivil.newAdresse(EnumTypeAdresse.PRINCIPALE, MockRue.Enney.chemin, null, MockLocalite.Enney, dateOuverture, null);
+		adrs.add(aa);
+	}
+
 	protected void ouvrirAdresseEtranger(MockIndividu individu, RegDate dateOuverture, Pays paysDepart) {
 		final Collection<Adresse> adrs = individu.getAdresses();
-		
+
 		final MockAdresse adresse = new MockAdresse();
 		adresse.setTypeAdresse(EnumTypeAdresse.PRINCIPALE);
 		adresse.setPays(paysDepart);
 		adresse.setDateDebutValidite(dateOuverture);
-		
+
 		adrs.add(adresse);
 	}
 

@@ -81,8 +81,8 @@
 		class="ch.vd.uniregctb.norentes.civil.mariage.Ec_4000_05_Mariage_EvtCoupleMarie_Scenario" />
 	<bean id="ec_4000_06_Mariage_FusionMenages_Test" parent="evenementCivilScenario"
 		class="ch.vd.uniregctb.norentes.civil.mariage.Ec_4000_06_Mariage_FusionMenages_Scenario" >
-		<property name="metierService" ref="metierService" />
-	</bean>
+		<property name="metierService" ref="metierService" />	
+	</bean>	
 	<bean id="ec_4000_07_Mariage_HabitantAvecNonHabitant_Test" parent="evenementCivilScenario"
 		class="ch.vd.uniregctb.norentes.civil.mariage.Ec_4000_07_Mariage_HabitantAvecNonHabitant_Scenario" >
 		<property name="metierService" ref="metierService" />
@@ -95,6 +95,9 @@
 		class="ch.vd.uniregctb.norentes.civil.mariage.Ec_4000_09_Mariage_JIRA1481_Scenario" />
 	<bean id="ec_4000_10_Mariage_SuisseAvecPermisB_Test" parent="evenementCivilScenario"
 		class="ch.vd.uniregctb.norentes.civil.mariage.Ec_4000_10_Mariage_SuisseAvecPermisB_Scenario" />
+
+	<bean id="ec_4000_10_Mariage_JIRA2055_Test" parent="evenementCivilScenario"	
+	class="ch.vd.uniregctb.norentes.civil.mariage.Ec_4000_10_Mariage_JIRA2055_Scenario" />
 
 	<!-- Scénarios d'annulation de mariage -->
 	<bean id="ec_4001_01_AnnulationMariage_Celibataire_Test" parent="evenementCivilScenario"
@@ -227,6 +230,11 @@
 
 	<bean id="ec_19000_07_Depart_JIRA1703_Test" parent="evenementCivilScenario"
 		class="ch.vd.uniregctb.norentes.civil.depart.Ec_19000_07_Depart_JIRA1703_Scenario" >
+		<property name="adresseService" ref="adresseService" />
+	</bean>
+	
+	<bean id="ec_19000_08_Depart_JIRA1996_Test" parent="evenementCivilScenario"
+		class="ch.vd.uniregctb.norentes.civil.depart.Ec_19000_08_Depart_JIRA1996_Scenario" >
 		<property name="adresseService" ref="adresseService" />
 	</bean>
 

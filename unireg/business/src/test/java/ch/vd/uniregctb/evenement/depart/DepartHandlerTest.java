@@ -26,11 +26,13 @@ import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
+import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
@@ -56,6 +58,28 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 
 	private EvenementFiscalService evenementFiscalService;
 
+	//JIRA 1996
+	private final int noIndCharles = 782551;
+	private final int noIndGeorgette = 782552;
+
+	private MockIndividu indCharles;
+	private MockIndividu indGorgette;
+
+	private long noHabCharles;
+	private long noHabGeorgette;
+	private long noMenage;
+	private final RegDate dateMariage = RegDate.get(1977, 1, 6);
+	private final RegDate dateDebutForChamblon = RegDate.get(1981,2, 1);
+	private final RegDate dateDepart = RegDate.get(2009, 8, 31);
+	private final RegDate dateArrivee = dateDepart.getOneDayAfter();
+	private final MockCommune communeDepart = MockCommune.Chamblon;
+	private final MockCommune communeArrivee = MockCommune.Enney;
+
+	/**
+	 * Le fichier de données de test.
+	 */
+	private static final String DB_UNIT_DATA_FILE = "deparHC26012004.xml";
+
 	//private EvenementCivilRegroupeDAO evenementCivilDAO;
 
 	@Override
@@ -65,6 +89,7 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 
 		//evenementCivilDAO = getBean(EvenementCivilRegroupeDAO.class, "evenementCivilRegroupeDAO");
 		serviceInfra.setUp(new DefaultMockServiceInfrastructureService());
+		loadDatabase(DB_UNIT_DATA_FILE);
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
@@ -97,6 +122,7 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 				setUpIndividuAdresseSecondaire(ramona, RegDate.get(1980, 11, 2), DATE_EVENEMENT, false);
 
 				setUpIndividuNouvelleAdresseInconnue(paul, RegDate.get(1980, 11, 2), DATE_EVENEMENT);
+				setUpJira1996();
 
 			}
 
@@ -261,6 +287,30 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 				adresse.setPays(MockPays.France);
 				add(individu, adresse);
 			}
+
+			protected void setUpJira1996() {
+
+				final RegDate dateAmenagement = RegDate.get(1977, 1, 6);
+
+
+				final RegDate dateNaissanceCharles = RegDate.get(1944, 8, 2);
+				indCharles = addIndividu(noIndCharles, dateNaissanceCharles, "CHABOUDEZ", "Charles", true);
+				addOrigine(indCharles, MockPays.Suisse, MockCommune.Neuchatel, dateNaissanceCharles);
+				addNationalite(indCharles, MockPays.Suisse, dateNaissanceCharles, null, 1);
+				addAdresse(indCharles, EnumTypeAdresse.PRINCIPALE, MockRue.Chamblon.GrandRue, null, MockLocalite.Chamblon, dateAmenagement, dateDepart);
+				addAdresse(indCharles, EnumTypeAdresse.COURRIER,  MockRue.Chamblon.GrandRue, null, MockLocalite.Chamblon, dateAmenagement, dateDepart);
+				addAdresse(indCharles, EnumTypeAdresse.PRINCIPALE, MockRue.Enney.chemin, null, MockLocalite.Enney, dateArrivee, null);
+
+				final RegDate dateNaissanceGeorgette = RegDate.get(1946, 5, 14);
+				indGorgette = addIndividu(noIndGeorgette, dateNaissanceGeorgette, "CHABOUDEZ", "Georgette", false);
+				addOrigine(indGorgette, MockPays.Suisse, MockCommune.Neuchatel, dateNaissanceGeorgette);
+				addNationalite(indGorgette, MockPays.Suisse, dateNaissanceGeorgette, null, 1);
+				addAdresse(indGorgette, EnumTypeAdresse.PRINCIPALE,  MockRue.Chamblon.GrandRue, null, MockLocalite.Chamblon, dateAmenagement, null);
+				addAdresse(indGorgette, EnumTypeAdresse.COURRIER,  MockRue.Chamblon.GrandRue, null, MockLocalite.Chamblon, dateAmenagement, null);
+				addAdresse(indGorgette, EnumTypeAdresse.PRINCIPALE, MockRue.Enney.chemin, null, MockLocalite.Enney, dateArrivee, null);
+				marieIndividus(indCharles, indGorgette, dateMariage);
+			}
+
 		});
 		evenementFiscalService = getBean(EvenementFiscalService.class, "evenementFiscalService");
 
@@ -278,6 +328,34 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 				return null;
 			}
 		});
+	}
+
+	/**
+	 * Permet de tester le JIRA 1996
+	 *
+	 */
+	@Test
+	public void testHandleJira1996() throws Exception {
+
+		LOGGER.debug("Test de traitement d'un événement de départ vaudois.");
+
+		MockDepart departCharles = createValidDepart(noIndCharles, dateDepart, true);
+		MockDepart departGeorgette = createValidDepart(noIndGeorgette, dateDepart, true);
+
+		handleDepartSimple(departCharles);
+		handleDepartSimple(departGeorgette);
+		Tiers tiers = tiersDAO.get(26012004L);
+		ForFiscalPrincipal forFiscalPrincipalOuvert = tiers.getForFiscalPrincipalAt(dateArrivee);
+
+		assertEquals(TypeAutoriteFiscale.COMMUNE_HC, forFiscalPrincipalOuvert.getTypeAutoriteFiscale());
+		Assert.isTrue(communeArrivee.getNoOFS() == forFiscalPrincipalOuvert.getNumeroOfsAutoriteFiscale());
+
+
+
+		Collection<EvenementFiscal> lesEvenements = evenementFiscalService.getEvenementFiscals(tiers);
+		assertNotNull("Pas d'évènement fiscales engendrés", lesEvenements);
+		Assert.isTrue(MockDepart.findEvenementFermetureFor(lesEvenements, departCharles), "Absence d'evenement de type femeture de for");
+
 	}
 
 	/**
@@ -706,5 +784,24 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 		return forFiscalPrincipal;
 	}
 
+	/**
+	 * vérifie et traite un depart
+	 *
+	 * @param depart
+	 * @return le fort fiscal après le traitement du départ
+	 */
+	private void handleDepartSimple(Depart depart) {
+		LOGGER.debug("Test de traitement d'un événement de départ vaudois.");
 
+		List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
+		List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
+
+		evenementCivilHandler.checkCompleteness(depart, erreurs, warnings);
+		evenementCivilHandler.validate(depart, erreurs, warnings);
+		evenementCivilHandler.handle(depart, warnings);
+
+		Assert.isTrue(erreurs.isEmpty(), "Une erreur est survenue lors du traitement du départ");
+
+
+	}
 }
