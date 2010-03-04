@@ -15,7 +15,6 @@ import ch.vd.uniregctb.evenement.EvenementCivilUnitaireDAO;
 import ch.vd.uniregctb.evenement.engine.EvenementCivilProcessor;
 import ch.vd.uniregctb.evenement.engine.EvenementCivilRegrouper;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
-import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
@@ -52,9 +51,9 @@ public class EvenementCivilUnitaireListenerTest extends BusinessTest {
 				MockIndividu julienne = addIndividu(124, RegDate.get(1973, 11, 13), "Malorme", "Julienne", false);
 				MockIndividu bebe = addIndividu(125, RegDate.get(2008, 2, 2), "Malorme", "Alain", true);
 
-				addAdresse(bastien, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, RegDate.get(1980, 1, 1), null);
-				addAdresse(julienne, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, RegDate.get(1980, 1, 1), null);
-				addAdresse(bebe, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, RegDate.get(1980, 1, 1), null);
+				addAdresse(bastien, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate.get(1980, 1, 1), null);
+				addAdresse(julienne, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate.get(1980, 1, 1), null);
+				addAdresse(bebe, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate.get(1980, 1, 1), null);
 
 				marieIndividus(bastien, julienne, RegDate.get(2007, 2, 3));
 			}

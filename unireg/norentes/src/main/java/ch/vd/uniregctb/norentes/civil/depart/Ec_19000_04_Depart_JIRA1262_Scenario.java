@@ -17,7 +17,6 @@ import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
-import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
@@ -85,7 +84,7 @@ public class Ec_19000_04_Depart_JIRA1262_Scenario extends DepartScenario {
 				indSebastien = addIndividu(noIndSebastien, dateNaissanceSebastien, "Fournier", "Sebastien", true);
 				addOrigine(indSebastien, MockPays.Suisse, MockCommune.Neuchatel, dateNaissanceSebastien);
 				addNationalite(indSebastien, MockPays.Suisse, dateNaissanceSebastien, null, 1);
-				addAdresse(indSebastien, EnumTypeAdresse.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, MockLocalite.Bex, null, null);
+				addAdresse(indSebastien, EnumTypeAdresse.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, null, null);
 
 				separeIndividu(indSebastien, dateSeparation);
 			}

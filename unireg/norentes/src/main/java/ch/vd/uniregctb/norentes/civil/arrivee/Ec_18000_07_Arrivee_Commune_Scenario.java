@@ -11,7 +11,6 @@ import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.mock.MockAdresse;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
-import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
@@ -65,7 +64,7 @@ public class Ec_18000_07_Arrivee_Commune_Scenario extends EvenementCivilScenario
 				indAdrienne = addIndividu(noIndAdrienne, dateNaissance , "Pittet", "Adrienne", false);
 				setNationalite(indAdrienne, dateNaissance, null, MockPays.Suisse);
 				addAdresse(indAdrienne, EnumTypeAdresse.PRINCIPALE, MockRue.Orbe.RueDuMoulinet, null,
-						MockLocalite.Orbe, null, null);
+						null, null);
 			}
 		});
 	}
@@ -99,7 +98,7 @@ public class Ec_18000_07_Arrivee_Commune_Scenario extends EvenementCivilScenario
 		lastAdr.setDateFinValidite(dateDemenagement);
 
 		Adresse adresse = MockServiceCivil.newAdresse(EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null,
-				MockLocalite.Lausanne, dateArriveeLausanne, null);
+				dateArriveeLausanne, null);
 		adrs.add(adresse);
 	}
 

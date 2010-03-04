@@ -8,7 +8,6 @@ import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.evenement.common.EvenementCivilHandlerException;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
-import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
@@ -59,15 +58,15 @@ public class Ec_4001_07_AnnulationMariage_JIRA1086_Scenario extends EvenementCiv
 			addOrigine(deborah, MockPays.Suisse, null, dateNaissanceDeborah);
 			addNationalite(deborah, MockPays.Suisse, dateNaissanceDeborah, null, 0);
 
-			addAdresse(deborah, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, dateArriveeDeborah, null);
-			addAdresse(deborah, EnumTypeAdresse.COURRIER, MockRue.Lausanne.RouteMaisonNeuve, null, MockLocalite.Lausanne, dateArriveeDeborah, null);
+			addAdresse(deborah, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateArriveeDeborah, null);
+			addAdresse(deborah, EnumTypeAdresse.COURRIER, MockRue.Lausanne.RouteMaisonNeuve, null, dateArriveeDeborah, null);
 
 			MockIndividu jaime = addIndividu(noIndJaime, dateNaissanceJaime, "Lopez", "Jaime", true);
 			addOrigine(jaime, MockPays.Suisse, null, dateNaissanceJaime);
 			addNationalite(jaime, MockPays.Suisse, dateNaissanceJaime, null, 0);
 
-			addAdresse(jaime, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, dateArriveeJaime, null);
-			addAdresse(jaime, EnumTypeAdresse.COURRIER, MockRue.Lausanne.RouteMaisonNeuve, null, MockLocalite.Lausanne, dateArriveeJaime, null);
+			addAdresse(jaime, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateArriveeJaime, null);
+			addAdresse(jaime, EnumTypeAdresse.COURRIER, MockRue.Lausanne.RouteMaisonNeuve, null, dateArriveeJaime, null);
 
 			marieIndividus(jaime, deborah, dateMariage);
 		}

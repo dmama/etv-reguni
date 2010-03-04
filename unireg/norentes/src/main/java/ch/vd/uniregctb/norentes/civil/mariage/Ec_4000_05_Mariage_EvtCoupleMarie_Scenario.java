@@ -9,7 +9,6 @@ import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
-import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
@@ -84,13 +83,13 @@ public class Ec_4000_05_Mariage_EvtCoupleMarie_Scenario extends EvenementCivilSc
 				addNationalite(indJeanBruno, MockPays.France, dateNaissanceJeanBruno, null, 0);
 				addPermis(indJeanBruno, EnumTypePermis.ANNUEL, RegDate.get(2004, 11, 10), null, 0, false);
 				addPermis(indJeanBruno, EnumTypePermis.ETABLLISSEMENT, dateEtablissement, null, 0, false);
-				addAdresse(indJeanBruno, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, dateEtablissement, null);
-				addAdresse(indJeanBruno, EnumTypeAdresse.COURRIER, MockRue.CossonayVille.AvenueDuFuniculaire, null, MockLocalite.CossonayVille, dateEtablissement, null);
+				addAdresse(indJeanBruno, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateEtablissement, null);
+				addAdresse(indJeanBruno, EnumTypeAdresse.COURRIER, MockRue.CossonayVille.AvenueDuFuniculaire, null, dateEtablissement, null);
 
 				addOrigine(indChristelle, MockPays.Suisse, null, dateNaissanceChristelle);
 				addNationalite(indChristelle, MockPays.Suisse, dateNaissanceChristelle, null, 0);
-				addAdresse(indChristelle, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, dateEtablissement, null);
-				addAdresse(indChristelle, EnumTypeAdresse.COURRIER, MockRue.CossonayVille.AvenueDuFuniculaire, null, MockLocalite.CossonayVille, dateEtablissement, null);
+				addAdresse(indChristelle, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateEtablissement, null);
+				addAdresse(indChristelle, EnumTypeAdresse.COURRIER, MockRue.CossonayVille.AvenueDuFuniculaire, null, dateEtablissement, null);
 			}
 
 		});

@@ -66,11 +66,11 @@ public class Ec_4000_10_Mariage_SuisseAvecPermisB_Scenario extends EvenementCivi
 				indRafa = addIndividu(noIndRafa, dateNaissanceRafa, "Marbo", "Raphaël", true);
 
 				addNationalite(indMaria, MockPays.Suisse, dateNaissanceMaria, null, 0);
-				addAdresse(indMaria, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.RouteMaisonNeuve, null, MockLocalite.Lausanne, dateNaissanceMaria, null);
+				addAdresse(indMaria, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.RouteMaisonNeuve, null, dateNaissanceMaria, null);
 
 				addNationalite(indRafa, MockPays.France, dateNaissanceRafa, null, 0);
 				addPermis(indRafa, EnumTypePermis.ANNUEL, RegDate.get(2006, 5, 3), null, 1, false);
-				addAdresse(indRafa, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, dateNaissanceRafa, null);
+				addAdresse(indRafa, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateNaissanceRafa, null);
 
 				marieIndividus(indRafa, indMaria, dateMariage);
 			}

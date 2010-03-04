@@ -9,7 +9,6 @@ import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
-import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
@@ -54,8 +53,8 @@ public class Ec_4001_06_AnnulationMariage_JIRA1157_Scenario extends EvenementCiv
 			addOrigine(sylvie, MockPays.Suisse, null, dateNaissanceSylvie);
 			addNationalite(sylvie, MockPays.Suisse, dateNaissanceSylvie, null, 0);
 
-			addAdresse(sylvie, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, dateArriveeSylvie, null);
-			addAdresse(sylvie, EnumTypeAdresse.COURRIER, MockRue.Lausanne.RouteMaisonNeuve, null, MockLocalite.Lausanne, dateArriveeSylvie, null);
+			addAdresse(sylvie, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateArriveeSylvie, null);
+			addAdresse(sylvie, EnumTypeAdresse.COURRIER, MockRue.Lausanne.RouteMaisonNeuve, null, dateArriveeSylvie, null);
 		}
 
 		public void arriveeMonsieur() {
@@ -63,8 +62,8 @@ public class Ec_4001_06_AnnulationMariage_JIRA1157_Scenario extends EvenementCiv
 			addOrigine(alexandre, MockPays.Suisse, null, dateNaissanceAlexandre);
 			addNationalite(alexandre, MockPays.Suisse, dateNaissanceAlexandre, null, 0);
 
-			addAdresse(alexandre, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, dateArriveeAlexandre, null);
-			addAdresse(alexandre, EnumTypeAdresse.COURRIER, MockRue.Lausanne.RouteMaisonNeuve, null, MockLocalite.Lausanne, dateArriveeAlexandre, null);
+			addAdresse(alexandre, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateArriveeAlexandre, null);
+			addAdresse(alexandre, EnumTypeAdresse.COURRIER, MockRue.Lausanne.RouteMaisonNeuve, null, dateArriveeAlexandre, null);
 		}
 
 		public void marionsLes() {

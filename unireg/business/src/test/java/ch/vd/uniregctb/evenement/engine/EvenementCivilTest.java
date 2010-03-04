@@ -25,7 +25,6 @@ import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockHistoriqueIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
-import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilCache;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
@@ -84,7 +83,7 @@ public class EvenementCivilTest extends BusinessTest {
 			@Override
 			protected void init() {
 				MockIndividu jean = addIndividu(jeanNoInd, date(1975, 3, 2), "Jacquouille", "Jean", true);
-				addAdresse(jean, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne,
+				addAdresse(jean, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null,
 						date(1975, 3, 2), null);
 			}
 		});
@@ -117,7 +116,7 @@ public class EvenementCivilTest extends BusinessTest {
 				MockIndividu jean = addIndividu(jeanNoInd, date(1975, 3, 2), "Jacquouille", "Jean", true);
 				HistoriqueIndividu h = new MockHistoriqueIndividu(RegDate.get(2009, 1, 1), "Jacquard", "Jean");
 				jean.addHistoriqueIndividu(h);
-				addAdresse(jean, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne,
+				addAdresse(jean, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null,
 						date(1975, 3, 2), null);
 			}
 		});

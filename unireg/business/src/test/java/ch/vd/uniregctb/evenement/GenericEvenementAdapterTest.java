@@ -13,7 +13,6 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.WithoutSpringTest;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
-import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -44,10 +43,10 @@ public class GenericEvenementAdapterTest extends WithoutSpringTest {
 				map.put("julie", julie);
 
 				final RegDate dateArrivee = RegDate.get(1980, 1, 1);	// sans importance
-				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, dateArrivee, null);
-				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, dateArrivee, null);
-				addAdresse(julie, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, dateArrivee, null);
-				addAdresse(julie, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, dateArrivee, null);
+				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateArrivee, null);
+				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, dateArrivee, null);
+				addAdresse(julie, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateArrivee, null);
+				addAdresse(julie, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, dateArrivee, null);
 
 				// marie les individus
 				marieIndividus(pierre, julie, RegDate.get(1985, 07, 11));

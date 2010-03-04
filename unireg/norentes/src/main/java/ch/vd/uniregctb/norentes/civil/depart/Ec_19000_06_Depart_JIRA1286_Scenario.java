@@ -9,7 +9,6 @@ import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
-import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
@@ -62,8 +61,8 @@ public class Ec_19000_06_Depart_JIRA1286_Scenario extends DepartScenario {
 				addPermis(indIan, EnumTypePermis.ANNUEL, RegDate.get(2006, 7, 9), null, 1, false);
 				
 				RegDate dateAmenagement = RegDate.get(2006, 7, 9);
-				addAdresse(indIan, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, dateAmenagement, null);
-				addAdresse(indIan, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeMarcelin, null, MockLocalite.Lausanne, dateAmenagement, null);
+				addAdresse(indIan, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateAmenagement, null);
+				addAdresse(indIan, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeMarcelin, null, dateAmenagement, null);
 				
 			}
 		});

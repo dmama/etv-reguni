@@ -5,7 +5,6 @@ import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.interfaces.model.Nationalite;
-import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
 import ch.vd.uniregctb.interfaces.model.mock.MockNationalite;
 import ch.vd.uniregctb.type.*;
 import static junit.framework.Assert.assertEquals;
@@ -2308,7 +2307,7 @@ public class TiersServiceTest extends BusinessTest {
 
 				final MockIndividu mme = addIndividu(noIndMadame, date(1950, 5, 12), "Huguette", "Marcot", false);
 				addAdresse(mme, EnumTypeAdresse.PRINCIPALE, "Parca Guell", "12", 1000, null, "Barcelona", MockPays.Espagne, date(1990, 5, 1), date(2010, 2, 23));
-				addAdresse(mme, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, date(2010, 2, 24), null);
+				addAdresse(mme, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, date(2010, 2, 24), null);
 			}
 		});
 

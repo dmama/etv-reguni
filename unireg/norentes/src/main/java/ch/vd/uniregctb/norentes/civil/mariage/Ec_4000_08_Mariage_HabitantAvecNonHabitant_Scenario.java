@@ -13,7 +13,6 @@ import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
-import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
@@ -87,7 +86,7 @@ public class Ec_4000_08_Mariage_HabitantAvecNonHabitant_Scenario extends Eveneme
 				addOrigine(indMaria, MockPays.Espagne, null, dateNaissanceMaria);
 				addNationalite(indMaria, MockPays.Espagne, dateNaissanceMaria, null, 0);
 				addPermis(indMaria, EnumTypePermis.ETABLLISSEMENT, RegDate.get(2006, 5, 3), null, 1, false);
-				addAdresse(indMaria, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.RouteMaisonNeuve, null, MockLocalite.Lausanne, dateArriveeMaria, null);
+				addAdresse(indMaria, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.RouteMaisonNeuve, null, dateArriveeMaria, null);
 			}
 		});
 	}

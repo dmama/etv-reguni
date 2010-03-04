@@ -68,8 +68,8 @@ public class Ec_18000_12_Arrivee_Couple_AdresseFiscale_PP_Scenario extends Evene
 
 				marieIndividus(indAntoine, indCleo, date(1972, 11, 9));
 
-				addAdresse(indAntoine, EnumTypeAdresse.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, MockLocalite.Bex, dateArriveeBex, null);
-				addAdresse(indCleo, EnumTypeAdresse.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, MockLocalite.Bex, dateArriveeBex, null);
+				addAdresse(indAntoine, EnumTypeAdresse.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, dateArriveeBex, null);
+				addAdresse(indCleo, EnumTypeAdresse.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, dateArriveeBex, null);
 			}
 		});
 	}
@@ -149,7 +149,7 @@ public class Ec_18000_12_Arrivee_Couple_AdresseFiscale_PP_Scenario extends Evene
 		lastAdr.setDateFinValidite(dateArriveeLausanne.getOneDayBefore());
 
 		final Adresse adresse = MockServiceCivil.newAdresse(EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null,
-				MockLocalite.Lausanne, dateArriveeLausanne, null);
+				dateArriveeLausanne, null);
 		adrs.add(adresse);
 	}
 

@@ -7,7 +7,6 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
-import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
@@ -90,16 +89,16 @@ public class Ec_4000_10_Mariage_JIRA2055_Scenario extends EvenementCivilScenario
 				indJoseph = addIndividu(noIndJoseph, dateNaissanceJoseph, "Lucas", "Joseph", true);
 
 				addNationalite(indJeanMarc, MockPays.Suisse, dateNaissanceJeanMarc, null, 0);
-				addAdresse(indJeanMarc, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.RouteMaisonNeuve, null, MockLocalite.Lausanne, dateNaissanceJeanMarc, null);
+				addAdresse(indJeanMarc, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.RouteMaisonNeuve, null, dateNaissanceJeanMarc, null);
 
 				addNationalite(indAmelie, MockPays.Suisse, dateNaissanceAmelie, null, 0);
-				addAdresse(indAmelie, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, MockLocalite.Lausanne, dateNaissanceAmelie, null);
+				addAdresse(indAmelie, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, dateNaissanceAmelie, null);
 
 				addNationalite(indJoseph, MockPays.France, dateNaissanceJoseph, null, 0);
-				addAdresse(indJoseph, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, MockLocalite.Lausanne, dateNaissanceJoseph, null);
+				addAdresse(indJoseph, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, dateNaissanceJoseph, null);
 
 				addNationalite(indStephanie, MockPays.Suisse, dateNaissanceStephanie, null, 0);
-				addAdresse(indStephanie, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.RouteMaisonNeuve, null, MockLocalite.Lausanne, dateNaissanceStephanie, null);
+				addAdresse(indStephanie, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.RouteMaisonNeuve, null, dateNaissanceStephanie, null);
 
 
 				marieIndividus(indJeanMarc, indAmelie, dateMariageAvecAmelie);

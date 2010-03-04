@@ -297,17 +297,17 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 				indCharles = addIndividu(noIndCharles, dateNaissanceCharles, "CHABOUDEZ", "Charles", true);
 				addOrigine(indCharles, MockPays.Suisse, MockCommune.Neuchatel, dateNaissanceCharles);
 				addNationalite(indCharles, MockPays.Suisse, dateNaissanceCharles, null, 1);
-				addAdresse(indCharles, EnumTypeAdresse.PRINCIPALE, MockRue.Chamblon.GrandRue, null, MockLocalite.Chamblon, dateAmenagement, dateDepart);
-				addAdresse(indCharles, EnumTypeAdresse.COURRIER,  MockRue.Chamblon.GrandRue, null, MockLocalite.Chamblon, dateAmenagement, dateDepart);
-				addAdresse(indCharles, EnumTypeAdresse.PRINCIPALE, MockRue.Enney.chemin, null, MockLocalite.Enney, dateArrivee, null);
+				addAdresse(indCharles, EnumTypeAdresse.PRINCIPALE, MockRue.Chamblon.GrandRue, null, dateAmenagement, dateDepart);
+				addAdresse(indCharles, EnumTypeAdresse.COURRIER,  MockRue.Chamblon.GrandRue, null, dateAmenagement, dateDepart);
+				addAdresse(indCharles, EnumTypeAdresse.PRINCIPALE, MockRue.Enney.chemin, null, dateArrivee, null);
 
 				final RegDate dateNaissanceGeorgette = RegDate.get(1946, 5, 14);
 				indGorgette = addIndividu(noIndGeorgette, dateNaissanceGeorgette, "CHABOUDEZ", "Georgette", false);
 				addOrigine(indGorgette, MockPays.Suisse, MockCommune.Neuchatel, dateNaissanceGeorgette);
 				addNationalite(indGorgette, MockPays.Suisse, dateNaissanceGeorgette, null, 1);
-				addAdresse(indGorgette, EnumTypeAdresse.PRINCIPALE,  MockRue.Chamblon.GrandRue, null, MockLocalite.Chamblon, dateAmenagement, null);
-				addAdresse(indGorgette, EnumTypeAdresse.COURRIER,  MockRue.Chamblon.GrandRue, null, MockLocalite.Chamblon, dateAmenagement, null);
-				addAdresse(indGorgette, EnumTypeAdresse.PRINCIPALE, MockRue.Enney.chemin, null, MockLocalite.Enney, dateArrivee, null);
+				addAdresse(indGorgette, EnumTypeAdresse.PRINCIPALE,  MockRue.Chamblon.GrandRue, null, dateAmenagement, null);
+				addAdresse(indGorgette, EnumTypeAdresse.COURRIER,  MockRue.Chamblon.GrandRue, null, dateAmenagement, null);
+				addAdresse(indGorgette, EnumTypeAdresse.PRINCIPALE, MockRue.Enney.chemin, null, dateArrivee, null);
 				marieIndividus(indCharles, indGorgette, dateMariage);
 			}
 

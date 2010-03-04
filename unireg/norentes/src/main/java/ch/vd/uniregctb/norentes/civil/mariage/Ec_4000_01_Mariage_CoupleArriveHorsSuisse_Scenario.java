@@ -13,7 +13,6 @@ import ch.vd.uniregctb.evenement.EvenementCivilErreur;
 import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
-import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
@@ -79,12 +78,12 @@ public class Ec_4000_01_Mariage_CoupleArriveHorsSuisse_Scenario extends Evenemen
 				addOrigine(indRafa, MockPays.Espagne, null, dateNaissanceRafa);
 				addNationalite(indRafa, MockPays.Espagne, dateNaissanceRafa, null, 0);
 				addPermis(indRafa, EnumTypePermis.ETABLLISSEMENT, RegDate.get(2008, 10, 1), null, 0, false);
-				addAdresse(indRafa, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.RouteMaisonNeuve, null, MockLocalite.Lausanne, dateArrivee, null);
+				addAdresse(indRafa, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.RouteMaisonNeuve, null, dateArrivee, null);
 
 				addOrigine(indMaria, MockPays.Espagne, null, dateNaissanceMaria);
 				addNationalite(indMaria, MockPays.Espagne, dateNaissanceMaria, null, 0);
 				addPermis(indMaria, EnumTypePermis.ETABLLISSEMENT, RegDate.get(2008, 10, 1), null, 0, false);
-				addAdresse(indMaria, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.RouteMaisonNeuve, null, MockLocalite.Lausanne, dateArrivee, null);
+				addAdresse(indMaria, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.RouteMaisonNeuve, null, dateArrivee, null);
 			}
 		});
 	}

@@ -17,7 +17,6 @@ import ch.vd.uniregctb.common.AbstractSimpleFormController;
 import ch.vd.uniregctb.common.EditiqueCommunicationException;
 import ch.vd.uniregctb.di.view.DeclarationImpotDetailView;
 import ch.vd.uniregctb.interfaces.model.Individu;
-import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -43,7 +42,7 @@ public class DeclarationImpotEditControllerTest extends AbstractDiControllerTest
 			@Override
 			protected void init() {
 				Individu individu1 = addIndividu(320073L, RegDate.get(1960, 1, 1), "Totor", "Marcel", true);
-				addAdresse(individu1, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, RegDate.get(1980, 1, 1), null);
+				addAdresse(individu1, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate.get(1980, 1, 1), null);
 
 			}
 		});

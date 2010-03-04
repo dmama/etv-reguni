@@ -12,7 +12,6 @@ import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.mock.MockAdresse;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
-import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
 import ch.vd.uniregctb.norentes.common.EvenementCivilScenario;
@@ -75,7 +74,7 @@ public class Ec_19000_01_Depart_1_Scenario extends EvenementCivilScenario {
 
 				indAlain = addIndividu(noIndAlain, RegDate.get(1952, 2, 21), "Gregoire", "Alain", true);
 
-				addAdresse(indAlain, EnumTypeAdresse.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, MockLocalite.Bex, dateArriveeBex, null);
+				addAdresse(indAlain, EnumTypeAdresse.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, dateArriveeBex, null);
 
 
 			}
@@ -181,7 +180,7 @@ public class Ec_19000_01_Depart_1_Scenario extends EvenementCivilScenario {
 			last = (MockAdresse)a;
 		}
 		last.setDateFinValidite(dateDepartBex);
-		Adresse aa = MockServiceCivil.newAdresse(EnumTypeAdresse.PRINCIPALE, MockRue.Zurich.GloriaStrasse, null, MockLocalite.Zurich, dateArriveeZurich, null);
+		Adresse aa = MockServiceCivil.newAdresse(EnumTypeAdresse.PRINCIPALE, MockRue.Zurich.GloriaStrasse, null, dateArriveeZurich, null);
 		adrs.add(aa);
 	}
 

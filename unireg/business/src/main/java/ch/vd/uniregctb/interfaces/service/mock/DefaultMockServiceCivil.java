@@ -80,8 +80,8 @@ public class DefaultMockServiceCivil extends MockServiceCivil {
 	}
 
 	protected void addDefaultAdressesTo(Individu individu) {
-		addAdresse(individu, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, RegDate.get(1980, 11, 2), null);
-		addAdresse(individu, EnumTypeAdresse.COURRIER, MockRue.CossonayVille.AvenueDuFuniculaire, null, MockLocalite.CossonayVille, RegDate.get(1980, 11, 2), null);
+		addAdresse(individu, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate.get(1980, 11, 2), null);
+		addAdresse(individu, EnumTypeAdresse.COURRIER, MockRue.CossonayVille.AvenueDuFuniculaire, null, RegDate.get(1980, 11, 2), null);
 	}
 
 	/*

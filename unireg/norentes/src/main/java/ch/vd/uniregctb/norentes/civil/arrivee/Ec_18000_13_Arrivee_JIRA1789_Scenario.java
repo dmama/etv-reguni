@@ -16,7 +16,6 @@ import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.mock.MockAdresse;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
-import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
 import ch.vd.uniregctb.norentes.common.EvenementCivilScenario;
@@ -80,8 +79,8 @@ public class Ec_18000_13_Arrivee_JIRA1789_Scenario extends EvenementCivilScenari
 				
 				marieIndividus(indAntonio, indAnneLaure, dateMariage);
 
-				addAdresse(indAntonio, EnumTypeAdresse.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, MockLocalite.Bex, dateArriveeBex, null);
-				addAdresse(indAnneLaure, EnumTypeAdresse.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, MockLocalite.Bex, dateArriveeBex, null);
+				addAdresse(indAntonio, EnumTypeAdresse.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, dateArriveeBex, null);
+				addAdresse(indAnneLaure, EnumTypeAdresse.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, dateArriveeBex, null);
 			}
 		});
 	}
@@ -152,7 +151,7 @@ public class Ec_18000_13_Arrivee_JIRA1789_Scenario extends EvenementCivilScenari
 		lastAdr.setDateFinValidite(dateArriveeLausanne.getOneDayBefore());
 
 		final Adresse adresse = MockServiceCivil.newAdresse(EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null,
-				MockLocalite.Lausanne, dateArriveeLausanne, null);
+				dateArriveeLausanne, null);
 		adrs.add(adresse);
 	}
 

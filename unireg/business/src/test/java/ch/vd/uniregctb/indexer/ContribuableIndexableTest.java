@@ -13,7 +13,6 @@ import ch.vd.uniregctb.interfaces.model.HistoriqueIndividu;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.mock.MockHistoriqueIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
-import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -54,8 +53,8 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 				addFieldsIndividu(charlesPoncet, "01234567", "123.43.765.543", "");
 
 				Individu marcelMeignier = addIndividu(1234L, RegDate.get(1972, 1, 27), "Marcel", "MEIGNIER", true);
-				addAdresse(marcelMeignier, EnumTypeAdresse.COURRIER, MockRue.Bex.RouteDuBoet, null, MockLocalite.Bex, RegDate.get(1964, 12, 2), null);
-				addAdresse(marcelMeignier, EnumTypeAdresse.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, MockLocalite.Bex, RegDate.get(1964, 12, 2), null);
+				addAdresse(marcelMeignier, EnumTypeAdresse.COURRIER, MockRue.Bex.RouteDuBoet, null, RegDate.get(1964, 12, 2), null);
+				addAdresse(marcelMeignier, EnumTypeAdresse.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, RegDate.get(1964, 12, 2), null);
 
 				MockIndividu philippeMaillard = addIndividu(noIndPhilippeMaillard, RegDate.get(1956, 1, 21), "Maillard", "Philippe", true);
 				{

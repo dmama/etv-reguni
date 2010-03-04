@@ -16,7 +16,6 @@ import ch.vd.uniregctb.interfaces.model.Rue;
 import ch.vd.uniregctb.interfaces.model.mock.MockAdresse;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
-import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
@@ -78,13 +77,13 @@ public class Ec_19000_03_Depart_HS_Scenario extends DepartScenario {
 			indCedric = addIndividu(noIndCedric, dateNaissanceCedric, "Donzé", "Cédric", true);
 			addOrigine(indCedric, MockPays.Suisse, MockCommune.Neuchatel, dateNaissanceCedric);
 			addNationalite(indCedric, MockPays.Suisse, dateNaissanceCedric, null, 1);
-			addAdresse(indCedric, EnumTypeAdresse.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, MockLocalite.Bex, dateArriveeBex, null);
+			addAdresse(indCedric, EnumTypeAdresse.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, dateArriveeBex, null);
 
 			final RegDate dateNaissanceSandra = RegDate.get(1975, 2, 26);
 			indSandra = addIndividu(noIndSandra, dateNaissanceSandra, "Donzé", "Sandra", false);
 			addOrigine(indSandra, MockPays.Suisse, MockCommune.Peseux, dateNaissanceSandra);
 			addNationalite(indSandra, MockPays.Suisse, dateNaissanceSandra, null, 1);
-			addAdresse(indSandra, EnumTypeAdresse.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, MockLocalite.Bex, dateArriveeBex, null);
+			addAdresse(indSandra, EnumTypeAdresse.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, dateArriveeBex, null);
 
 			marieIndividus(indCedric, indSandra, RegDate.get(2003, 7, 11));
 		}

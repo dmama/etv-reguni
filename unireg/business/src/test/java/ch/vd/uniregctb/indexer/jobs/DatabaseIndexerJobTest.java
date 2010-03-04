@@ -15,7 +15,6 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer.Mode;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
-import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServicePM;
@@ -72,8 +71,8 @@ public class DatabaseIndexerJobTest extends BusinessTest {
 			}
 
 			private void addDefaultAdressesTo(MockIndividu individu) {
-				addAdresse(individu, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, RegDate.get(1980, 11, 2), null);
-				addAdresse(individu, EnumTypeAdresse.COURRIER, MockRue.Bex.RouteDuBoet, null, MockLocalite.Bex, RegDate.get(1980, 11, 2), null);
+				addAdresse(individu, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate.get(1980, 11, 2), null);
+				addAdresse(individu, EnumTypeAdresse.COURRIER, MockRue.Bex.RouteDuBoet, null, RegDate.get(1980, 11, 2), null);
 			}
 		});
 

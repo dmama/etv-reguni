@@ -9,7 +9,6 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
-import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
 import ch.vd.uniregctb.norentes.common.EvenementCivilScenario;
@@ -59,7 +58,7 @@ public class Ec_2000_01_Deces_Celibataire_Scenario extends EvenementCivilScenari
 			protected void init() {
 				indGuillaume = addIndividu(noIndGuillaume, dateNaissanceGuillaume, "Tell", "Guillaume", true);
 				addAdresse(indGuillaume, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null,
-						MockLocalite.Lausanne, dateArriveeVD, null);
+						dateArriveeVD, null);
 			}
 		});
 	}

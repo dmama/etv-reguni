@@ -13,7 +13,6 @@ import ch.vd.uniregctb.adresse.AdresseCivileAdapter;
 import ch.vd.uniregctb.adresse.AdresseGenerique.Source;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.mock.MockAdresse;
-import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -33,7 +32,7 @@ public class AdresseCivileAdapterTest {
 		 */
 
 		Adresse lausanne = MockServiceCivil.newAdresse(EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null,
-				MockLocalite.Lausanne, RegDate.get(1980, 1, 1), RegDate.get(1987, 12, 11));
+				RegDate.get(1980, 1, 1), RegDate.get(1987, 12, 11));
 		{
 			final AdresseCivileAdapter adapter = new AdresseCivileAdapter(lausanne, false,serviceInfra);
 			assertEquals("Lausanne", adapter.getLocalite());
@@ -74,7 +73,7 @@ public class AdresseCivileAdapterTest {
 	public void testConstructors() throws Exception {
 
 		final Adresse lausanne = MockServiceCivil.newAdresse(EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null,
-				MockLocalite.Lausanne, RegDate.get(1980, 1, 1), RegDate.get(1987, 12, 11));
+				RegDate.get(1980, 1, 1), RegDate.get(1987, 12, 11));
 
 		// Constructor n°1
 		{
@@ -114,7 +113,7 @@ public class AdresseCivileAdapterTest {
 	public void testEquals() throws Exception {
 
 		final Adresse lausanne = MockServiceCivil.newAdresse(EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null,
-				MockLocalite.Lausanne, RegDate.get(1980, 1, 1), RegDate.get(1987, 12, 11));
+				RegDate.get(1980, 1, 1), RegDate.get(1987, 12, 11));
 
 		// Cas standards
 		final AdresseCivileAdapter adapter1 = new AdresseCivileAdapter(lausanne, false,serviceInfra);

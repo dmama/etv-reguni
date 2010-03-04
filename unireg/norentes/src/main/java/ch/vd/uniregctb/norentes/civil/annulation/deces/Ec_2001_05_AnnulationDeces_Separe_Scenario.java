@@ -13,7 +13,6 @@ import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
-import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
@@ -75,7 +74,7 @@ public class Ec_2001_05_AnnulationDeces_Separe_Scenario extends EvenementCivilSc
 			protected void init() {
 				MockIndividu jean = addIndividu(noIndJean, date(1941, 6, 6), "Nzikou", "Jean", true);
 				addPermis(jean, EnumTypePermis.ETABLLISSEMENT, date(2001, 7, 11), null, 0, false);
-				addAdresse(jean, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, date(2004, 1,
+				addAdresse(jean, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, date(2004, 1,
 						15), null);
 				addEtatCivil(jean, date(2004, 1, 15), EnumTypeEtatCivil.CELIBATAIRE);
 				addEtatCivil(jean, DATE_MARIAGE, EnumTypeEtatCivil.MARIE);
@@ -86,7 +85,7 @@ public class Ec_2001_05_AnnulationDeces_Separe_Scenario extends EvenementCivilSc
 				addPermis(georgette, EnumTypePermis.ANNUEL, date(2008, 9, 8), date(2009, 6, 12), 0, false);
 				addPermis(georgette, EnumTypePermis.ANNUEL, date(2009, 6, 13), null, 1, false);
 				addNationalite(georgette, MockPays.France, date(1951, 11, 3), null, 0);
-				addAdresse(georgette, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, date(
+				addAdresse(georgette, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, date(
 						2008, 8, 11), null);
 				addEtatCivil(georgette, date(1951, 11, 3), EnumTypeEtatCivil.CELIBATAIRE);
 				addEtatCivil(georgette, DATE_MARIAGE, EnumTypeEtatCivil.MARIE);

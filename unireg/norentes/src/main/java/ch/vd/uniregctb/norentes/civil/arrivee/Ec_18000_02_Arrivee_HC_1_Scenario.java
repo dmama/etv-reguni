@@ -9,7 +9,6 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
-import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
@@ -57,9 +56,9 @@ public class Ec_18000_02_Arrivee_HC_1_Scenario extends EvenementCivilScenario {
 				indAntoine = addIndividu(noIndAntoine,dateNaissance , "Lenormand", "Antoine", true);
 				setNationalite(indAntoine, dateNaissance, null, MockPays.Suisse);
 				addAdresse(indAntoine, EnumTypeAdresse.PRINCIPALE, MockRue.Zurich.GloriaStrasse, null,
-						MockLocalite.Zurich, dateArriveeZurich, dateArriveeBex.getOneDayBefore());
+						dateArriveeZurich, dateArriveeBex.getOneDayBefore());
 				addAdresse(indAntoine, EnumTypeAdresse.PRINCIPALE, MockRue.Bex.RouteDuBoet, null,
-						MockLocalite.Bex, dateArriveeBex, null);
+						dateArriveeBex, null);
 
 
 			}

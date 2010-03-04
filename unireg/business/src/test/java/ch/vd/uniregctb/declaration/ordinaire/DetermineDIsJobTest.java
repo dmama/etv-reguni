@@ -13,7 +13,6 @@ import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.declaration.DeterminerDIsJob;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
-import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
 import ch.vd.uniregctb.scheduler.BatchScheduler;
@@ -42,19 +41,19 @@ public class DetermineDIsJobTest extends BusinessTest {
 			protected void init() {
 
 				MockIndividu lyah = addIndividu(327706, date(1953, 11, 2), "Emery", "Lyah", true);
-				addAdresse(lyah, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne,
+				addAdresse(lyah, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null,
 						date(1980, 1, 1), null);
 
 				MockIndividu pascaline = addIndividu(674417, date(1953, 11, 2), "Decloux", "Pascaline", true);
 				addAdresse(pascaline, EnumTypeAdresse.COURRIER, MockRue.CossonayVille.CheminDeRiondmorcel, null,
-						MockLocalite.CossonayVille, date(1987, 12, 12), null);
+						date(1987, 12, 12), null);
 
 				MockIndividu christine = addIndividu(333905, date(1953, 11, 2), "Schmidt", "Christine", true);
-				addAdresse(christine, EnumTypeAdresse.COURRIER, MockRue.LesClees.ChampDuRaffour, null, MockLocalite.LesClees, date(2001, 6,
+				addAdresse(christine, EnumTypeAdresse.COURRIER, MockRue.LesClees.ChampDuRaffour, null, date(2001, 6,
 						4), null);
 
 				MockIndividu laurent = addIndividu(333908, date(1953, 11, 2), "Schmidt", "Laurent", true);
-				addAdresse(laurent, EnumTypeAdresse.COURRIER, MockRue.LesClees.ChampDuRaffour, null, MockLocalite.LesClees,
+				addAdresse(laurent, EnumTypeAdresse.COURRIER, MockRue.LesClees.ChampDuRaffour, null,
 						date(2001, 6, 4), null);
 			}
 		});

@@ -12,7 +12,6 @@ import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
-import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
@@ -80,14 +79,14 @@ public class Ec_4000_09_Mariage_JIRA1481_Scenario extends EvenementCivilScenario
 				addOrigine(indAdrian, MockPays.Albanie, null, dateNaissanceAdrian);
 				addNationalite(indAdrian, MockPays.Albanie, dateNaissanceAdrian, null, 1);
 				addPermis(indAdrian, EnumTypePermis.ETABLLISSEMENT, date(2000, 6, 1), null, 1, false);
-				addAdresse(indAdrian, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.RouteMaisonNeuve, null, MockLocalite.Lausanne, dateArriveeAngela, null);
+				addAdresse(indAdrian, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.RouteMaisonNeuve, null, dateArriveeAngela, null);
 				
 				indAngela = addIndividu(noIndAngela, dateNaissanceAngela, "Fratila", "Angela", false);
 
 				addOrigine(indAngela, MockPays.Albanie, null, dateNaissanceAngela);
 				addNationalite(indAngela, MockPays.Albanie, dateNaissanceAngela, null, 1);
 				addPermis(indAngela, EnumTypePermis.ETABLLISSEMENT, date(2000, 9, 15), null, 1, false);
-				addAdresse(indAngela, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.RouteMaisonNeuve, null, MockLocalite.Lausanne, dateArriveeAngela, null);
+				addAdresse(indAngela, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.RouteMaisonNeuve, null, dateArriveeAngela, null);
 				
 				marieIndividus(indAdrian, indAngela, dateMariage);
 			}

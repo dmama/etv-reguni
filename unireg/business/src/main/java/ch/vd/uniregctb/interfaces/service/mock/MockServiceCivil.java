@@ -28,7 +28,6 @@ import ch.vd.uniregctb.interfaces.model.Nationalite;
 import ch.vd.uniregctb.interfaces.model.Origine;
 import ch.vd.uniregctb.interfaces.model.Pays;
 import ch.vd.uniregctb.interfaces.model.Permis;
-import ch.vd.uniregctb.interfaces.model.Rue;
 import ch.vd.uniregctb.interfaces.model.Tutelle;
 import ch.vd.uniregctb.interfaces.model.mock.*;
 import ch.vd.uniregctb.interfaces.service.CivilListener;
@@ -53,6 +52,7 @@ import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
  *  };
  * </pre>
  */
+@SuppressWarnings({"JavaDoc"})
 public abstract class MockServiceCivil implements ServiceCivilService {
 
 	/**
@@ -184,35 +184,50 @@ public abstract class MockServiceCivil implements ServiceCivilService {
 	}
 
 	/**
-	 * Ajoute une adresse pour l'individu spécifié.
-	 * @param rue
-	 * @param casePostale
+	 * Ajoute une adresse pour l'individu spécifié (à partir d'une rue).
 	 */
-	protected Adresse addAdresse(Individu individu, EnumTypeAdresse type, Rue rue, String casePostale, Localite localite, RegDate debutValidite, RegDate finValidite) {
+	protected Adresse addAdresse(Individu individu, EnumTypeAdresse type, MockRue rue, String casePostale, RegDate debutValidite, RegDate finValidite) {
 
-		Adresse adresse = newAdresse(type, rue, casePostale, localite, debutValidite, finValidite);
+		Adresse adresse = newAdresse(type, rue, casePostale, debutValidite, finValidite);
 		add(individu, adresse);
 		return adresse;
 	}
 
 	/**
-	 * Crée une nouvelle adresse.
-	 * @param rue
-	 * @param casePostale
+	 * Ajoute une adresse pour l'individu spécifié (à partir d'une localité).
 	 */
-	public static Adresse newAdresse(EnumTypeAdresse type, Rue rue, String casePostale, Localite localite, RegDate debutValidite, RegDate finValidite) {
+	protected Adresse addAdresse(Individu individu, EnumTypeAdresse type, String casePostale, MockLocalite localite, RegDate debutValidite, RegDate finValidite) {
 
+		Adresse adresse = newAdresse(type, casePostale, localite, debutValidite, finValidite);
+		add(individu, adresse);
+		return adresse;
+	}
+
+	/**
+	 * Crée une nouvelle adresse à partie d'une rue.
+	 */
+	public static Adresse newAdresse(EnumTypeAdresse type, MockRue rue, String casePostale, RegDate debutValidite, RegDate finValidite) {
+		Assert.notNull(rue);
+
+		final MockLocalite localite = rue.getLocalite();
 		Assert.notNull(localite);
-		Assert.isTrue(rue == null || rue.getNoLocalite().equals(localite.getNoOrdre()), "La rue et la localité ne correspondent pas");
+
+		final MockAdresse adresse = (MockAdresse) newAdresse(type, casePostale, localite, debutValidite, finValidite);
+		adresse.setRue(rue.getDesignationCourrier());
+		adresse.setNumeroRue(rue.getNoRue());
+		return adresse;
+	}
+
+	/**
+	 * Crée une nouvelle adresse à partie d'une localité.
+	 */
+	public static Adresse newAdresse(EnumTypeAdresse type, String casePostale, MockLocalite localite, RegDate debutValidite, RegDate finValidite) {
+		Assert.notNull(localite);
 
 		MockAdresse adresse = new MockAdresse();
 		adresse.setTypeAdresse(type);
 
 		// localité
-		if (rue != null) {
-			adresse.setRue(rue.getDesignationCourrier());
-			adresse.setNumeroRue(rue.getNoRue());
-		}
 		adresse.setCasePostale(casePostale);
 		adresse.setLocalite(localite.getNomAbregeMinuscule());
 		adresse.setNumeroPostal(localite.getNPA().toString());
@@ -403,9 +418,6 @@ public abstract class MockServiceCivil implements ServiceCivilService {
 		list.add(adresse);
 	}
 
-	/**
-	 * @see ch.vd.uniregctb.individu.HostCivilService#getIndividu(java.lang.Long)
-	 */
 	public Individu getIndividu(Long numeroIndividu) {
 		return individusMap.get(numeroIndividu);
 	}

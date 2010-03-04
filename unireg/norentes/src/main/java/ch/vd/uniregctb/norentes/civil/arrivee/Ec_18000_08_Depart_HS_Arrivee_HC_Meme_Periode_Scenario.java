@@ -9,7 +9,6 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
-import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
@@ -70,8 +69,8 @@ public class Ec_18000_08_Depart_HS_Arrivee_HC_Meme_Periode_Scenario extends Even
 			protected void init() {
 				indAlain = addIndividu(noIndAlain, dateNaissanceAlain, "Martin", "Alain", true);
 				addNationalite(indAlain, MockPays.Suisse, dateNaissanceAlain, null, 0);
-				addAdresse(indAlain, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, dateNaissanceAlain, dateDepartHS.getOneDayBefore());
-				addAdresse(indAlain, EnumTypeAdresse.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, MockLocalite.Bex, dateRetourHC, null);
+				addAdresse(indAlain, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateNaissanceAlain, dateDepartHS.getOneDayBefore());
+				addAdresse(indAlain, EnumTypeAdresse.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, dateRetourHC, null);
 			}
 
 		});

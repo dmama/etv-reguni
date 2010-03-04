@@ -10,7 +10,6 @@ import ch.vd.uniregctb.adresse.AdressesFiscales;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
-import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
@@ -77,15 +76,15 @@ public class Ec_19000_06_Depart_JIRA771_Scenario extends DepartScenario {
 				indSebastien = addIndividu(noIndSebastien, dateNaissanceSebastien, "Fournier", "Sebastien", true);
 				addOrigine(indSebastien, MockPays.Suisse, MockCommune.Neuchatel, dateNaissanceSebastien);
 				addNationalite(indSebastien, MockPays.Suisse, dateNaissanceSebastien, null, 1);
-				addAdresse(indSebastien, EnumTypeAdresse.PRINCIPALE, MockRue.VillarsSousYens.RouteDeStPrex, null, MockLocalite.VillarsSousYens, dateAmenagement, null);
-				addAdresse(indSebastien, EnumTypeAdresse.COURRIER, MockRue.VillarsSousYens.CheminDuCollege, null, MockLocalite.VillarsSousYens, dateAmenagement, null);
+				addAdresse(indSebastien, EnumTypeAdresse.PRINCIPALE, MockRue.VillarsSousYens.RouteDeStPrex, null, dateAmenagement, null);
+				addAdresse(indSebastien, EnumTypeAdresse.COURRIER, MockRue.VillarsSousYens.CheminDuCollege, null, dateAmenagement, null);
 
 				final RegDate dateNaissanceGloria = RegDate.get(1973, 3, 7);
 				indGloria = addIndividu(noIndGloria, dateNaissanceGloria, "Fournier", "Gloria", false);
 				addOrigine(indGloria, MockPays.Suisse, MockCommune.Neuchatel, dateNaissanceGloria);
 				addNationalite(indGloria, MockPays.Suisse, dateNaissanceGloria, null, 1);
-				addAdresse(indGloria, EnumTypeAdresse.PRINCIPALE, MockRue.VillarsSousYens.RouteDeStPrex, null, MockLocalite.VillarsSousYens, dateAmenagement, null);
-				addAdresse(indGloria, EnumTypeAdresse.COURRIER, MockRue.VillarsSousYens.CheminDuCollege, null, MockLocalite.VillarsSousYens, dateAmenagement, null);
+				addAdresse(indGloria, EnumTypeAdresse.PRINCIPALE, MockRue.VillarsSousYens.RouteDeStPrex, null, dateAmenagement, null);
+				addAdresse(indGloria, EnumTypeAdresse.COURRIER, MockRue.VillarsSousYens.CheminDuCollege, null, dateAmenagement, null);
 				
 				marieIndividus(indSebastien, indGloria, dateMariage);
 			}

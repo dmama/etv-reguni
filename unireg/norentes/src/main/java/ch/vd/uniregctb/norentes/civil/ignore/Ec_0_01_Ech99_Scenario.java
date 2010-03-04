@@ -8,7 +8,6 @@ import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
 import ch.vd.uniregctb.evenement.EvenementCivilRegroupeDAO;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
-import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
 import ch.vd.uniregctb.norentes.common.EvenementCivilScenario;
@@ -51,7 +50,7 @@ public class Ec_0_01_Ech99_Scenario extends EvenementCivilScenario {
 			@Override
 			protected void init() {
 				indAlain = addIndividu(noIndAlain, RegDate.get(1952, 2, 21), "Baschung", "Alain", true);
-				addAdresse(indAlain, EnumTypeAdresse.PRINCIPALE, MockRue.VillarsSousYens.CheminDuCollege, null, MockLocalite.VillarsSousYens, RegDate.get(1990,1,1), null);
+				addAdresse(indAlain, EnumTypeAdresse.PRINCIPALE, MockRue.VillarsSousYens.CheminDuCollege, null, RegDate.get(1990,1,1), null);
 			}
 		});
 	}

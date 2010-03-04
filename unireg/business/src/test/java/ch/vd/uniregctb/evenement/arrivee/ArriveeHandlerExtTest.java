@@ -81,15 +81,15 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 				MockIndividu pierre = addIndividu(noIndividu, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
 
 				// adresses avant l'arrivée
-				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, RegDate.get(
+				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate.get(
 						1980, 1, 1), veilleArrivee);
-				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, RegDate.get(
+				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate.get(
 						1980, 1, 1), veilleArrivee);
 
 				// adresses après l'arrivée
-				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, MockRue.CossonayVille.CheminDeRiondmorcel, null, MockLocalite.CossonayVille,
+				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, MockRue.CossonayVille.CheminDeRiondmorcel, null,
 						dateArrivee, null);
-				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.CossonayVille.CheminDeRiondmorcel, null, MockLocalite.CossonayVille,
+				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.CossonayVille.CheminDeRiondmorcel, null,
 						dateArrivee, null);
 			}
 		});
@@ -164,15 +164,15 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 				MockIndividu pierre = addIndividu(noIndividu, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
 
 				// adresses avant l'arrivée
-				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, RegDate.get(
+				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate.get(
 						1980, 1, 1), veilleArrivee);
-				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, RegDate.get(
+				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate.get(
 						1980, 1, 1), veilleArrivee);
 
 				// adresses après l'arrivée
-				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, MockRue.CossonayVille.CheminDeRiondmorcel, null, MockLocalite.CossonayVille,
+				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, MockRue.CossonayVille.CheminDeRiondmorcel, null,
 						dateArrivee, null);
-				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.CossonayVille.CheminDeRiondmorcel, null, MockLocalite.CossonayVille,
+				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.CossonayVille.CheminDeRiondmorcel, null,
 						dateArrivee, null);
 
 				// marie l'individu, mais seul
@@ -251,23 +251,23 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 				MockIndividu julie = addIndividu(noIndividuConjoint, RegDate.get(1977, 4, 19), "Goux", "Julie", false);
 
 				// adresses avant l'arrivée
-				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, MockRue.LesClees.ChampDuRaffour, null, MockLocalite.LesClees, RegDate.get(
+				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, MockRue.LesClees.ChampDuRaffour, null, RegDate.get(
 						1980, 1, 1), veilleArrivee);
-				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.LesClees.ChampDuRaffour, null, MockLocalite.LesClees, RegDate.get(
+				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.LesClees.ChampDuRaffour, null, RegDate.get(
 						1980, 1, 1), veilleArrivee);
-				addAdresse(julie, EnumTypeAdresse.PRINCIPALE, MockRue.LesClees.ChampDuRaffour, null, MockLocalite.LesClees, RegDate.get(
+				addAdresse(julie, EnumTypeAdresse.PRINCIPALE, MockRue.LesClees.ChampDuRaffour, null, RegDate.get(
 						1980, 1, 1), veilleArrivee);
-				addAdresse(julie, EnumTypeAdresse.COURRIER, MockRue.LesClees.ChampDuRaffour, null, MockLocalite.LesClees, RegDate.get(1980,
+				addAdresse(julie, EnumTypeAdresse.COURRIER, MockRue.LesClees.ChampDuRaffour, null, RegDate.get(1980,
 						1, 1), veilleArrivee);
 
 				// adresses après l'arrivée
-				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, dateArrivee,
+				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateArrivee,
 						null);
-				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, dateArrivee,
+				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, dateArrivee,
 						null);
-				addAdresse(julie, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, dateArrivee,
+				addAdresse(julie, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateArrivee,
 						null);
-				addAdresse(julie, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, dateArrivee,
+				addAdresse(julie, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, dateArrivee,
 						null);
 
 				// marie les individus
@@ -275,9 +275,9 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 
 				// individu hors-couple
 				MockIndividu sophie = addIndividu(noIndividuHorsCouple, RegDate.get(1964, 4, 8), "Dupuis", "Sophie", false);
-				addAdresse(sophie, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, RegDate.get(
+				addAdresse(sophie, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate.get(
 						1982, 3, 2), null);
-				addAdresse(sophie, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, RegDate.get(
+				addAdresse(sophie, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate.get(
 						1982, 3, 2), null);
 			}
 		});
@@ -369,15 +369,15 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 				MockIndividu pierre = addIndividu(noIndividu, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
 
 				// adresses avant l'arrivée
-				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, RegDate.get(
+				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate.get(
 						1980, 1, 1), veilleArrivee);
-				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, RegDate.get(
+				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate.get(
 						1980, 1, 1), veilleArrivee);
 
 				// adresses après l'arrivée
-				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, MockRue.CossonayVille.CheminDeRiondmorcel, null, MockLocalite.CossonayVille,
+				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, MockRue.CossonayVille.CheminDeRiondmorcel, null,
 						dateArrivee, null);
-				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.CossonayVille.CheminDeRiondmorcel, null, MockLocalite.CossonayVille,
+				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.CossonayVille.CheminDeRiondmorcel, null,
 						dateArrivee, null);
 			}
 		});
@@ -538,14 +538,14 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 				MockIndividu pierre = addIndividu(noIndividu, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
 
 				// adresses avant l'arrivée
-				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, RegDate.get(
+				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate.get(
 						1980, 1, 1), veilleArrivee);
-				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, RegDate.get(
+				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate.get(
 						1980, 1, 1), veilleArrivee);
 
 				// adresses après l'arrivée
-				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, null, null, MockLocalite.Neuchatel, dateArrivee, null);
-				addAdresse(pierre, EnumTypeAdresse.COURRIER, null, null, MockLocalite.Neuchatel, dateArrivee, null);
+				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, null, MockLocalite.Neuchatel, dateArrivee, null);
+				addAdresse(pierre, EnumTypeAdresse.COURRIER, null, MockLocalite.Neuchatel, dateArrivee, null);
 			}
 		});
 
@@ -598,34 +598,34 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 				MockIndividu pierre = addIndividu(noIndividuLAbbaye, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
 
 				// adresses avant l'arrivée
-				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, RegDate.get(
+				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate.get(
 						1980, 1, 1), veilleArrivee);
-				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, RegDate.get(
+				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate.get(
 						1980, 1, 1), veilleArrivee);
 
 				// adresses après l'arrivée
-				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, null, null, MockLocalite.LePont, dateArrivee, null);
-				addAdresse(pierre, EnumTypeAdresse.COURRIER, null, null, MockLocalite.LePont, dateArrivee, null);
+				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, null, MockLocalite.LePont, dateArrivee, null);
+				addAdresse(pierre, EnumTypeAdresse.COURRIER, null, MockLocalite.LePont, dateArrivee, null);
 
 				MockIndividu jacques = addIndividu(noIndividuLeChenit, RegDate.get(1970, 4, 20), "Magnenat", "Jacques", true);
 
 				// adresses avant l'arrivée
-				addAdresse(jacques, EnumTypeAdresse.PRINCIPALE, null, null, MockLocalite.LePont, RegDate.get(1988, 3, 7), veilleArrivee);
-				addAdresse(jacques, EnumTypeAdresse.COURRIER, null, null, MockLocalite.LePont, RegDate.get(1988, 3, 7), veilleArrivee);
+				addAdresse(jacques, EnumTypeAdresse.PRINCIPALE, null, MockLocalite.LePont, RegDate.get(1988, 3, 7), veilleArrivee);
+				addAdresse(jacques, EnumTypeAdresse.COURRIER, null, MockLocalite.LePont, RegDate.get(1988, 3, 7), veilleArrivee);
 
 				// adresses après l'arrivée
-				addAdresse(jacques, EnumTypeAdresse.PRINCIPALE, null, null, MockLocalite.LeSentier, dateArrivee, null);
-				addAdresse(jacques, EnumTypeAdresse.COURRIER, null, null, MockLocalite.LeSentier, dateArrivee, null);
+				addAdresse(jacques, EnumTypeAdresse.PRINCIPALE, null, MockLocalite.LeSentier, dateArrivee, null);
+				addAdresse(jacques, EnumTypeAdresse.COURRIER, null, MockLocalite.LeSentier, dateArrivee, null);
 
 				MockIndividu jean = addIndividu(noIndividuLeLieu, RegDate.get(1952, 1, 23), "Meylan", "Jean", true);
 
 				// adresses avant l'arrivée
-				addAdresse(jean, EnumTypeAdresse.PRINCIPALE, null, null, MockLocalite.LeSentier, RegDate.get(1952, 1, 23), veilleArrivee);
-				addAdresse(jean, EnumTypeAdresse.COURRIER, null, null, MockLocalite.LeSentier, RegDate.get(1952, 1, 23), veilleArrivee);
+				addAdresse(jean, EnumTypeAdresse.PRINCIPALE, null, MockLocalite.LeSentier, RegDate.get(1952, 1, 23), veilleArrivee);
+				addAdresse(jean, EnumTypeAdresse.COURRIER, null, MockLocalite.LeSentier, RegDate.get(1952, 1, 23), veilleArrivee);
 
 				// adresses après l'arrivée
-				addAdresse(jean, EnumTypeAdresse.PRINCIPALE, null, null, MockLocalite.LesCharbonnieres, dateArrivee, null);
-				addAdresse(jean, EnumTypeAdresse.COURRIER, null, null, MockLocalite.LesCharbonnieres, dateArrivee, null);
+				addAdresse(jean, EnumTypeAdresse.PRINCIPALE, null, MockLocalite.LesCharbonnieres, dateArrivee, null);
+				addAdresse(jean, EnumTypeAdresse.COURRIER, null, MockLocalite.LesCharbonnieres, dateArrivee, null);
 			}
 		});
 
@@ -715,24 +715,24 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 				MockIndividu pierre = addIndividu(noIndividuLeSentier, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
 
 				// adresses avant l'arrivée
-				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, RegDate.get(
+				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate.get(
 						1980, 1, 1), veilleArrivee);
-				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, RegDate.get(
+				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate.get(
 						1980, 1, 1), veilleArrivee);
 
 				// adresses après l'arrivée
-				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, null, null, MockLocalite.LeSentier, dateArrivee, null);
-				addAdresse(pierre, EnumTypeAdresse.COURRIER, null, null, MockLocalite.LeSentier, dateArrivee, null);
+				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, null, MockLocalite.LeSentier, dateArrivee, null);
+				addAdresse(pierre, EnumTypeAdresse.COURRIER, null, MockLocalite.LeSentier, dateArrivee, null);
 
 				MockIndividu jean = addIndividu(noIndividuLeLieu, RegDate.get(1952, 1, 23), "Meylan", "Jean", true);
 
 				// adresses avant l'arrivée
-				addAdresse(jean, EnumTypeAdresse.PRINCIPALE, null, null, MockLocalite.LePont, RegDate.get(1952, 1, 23), veilleArrivee);
-				addAdresse(jean, EnumTypeAdresse.COURRIER, null, null, MockLocalite.LePont, RegDate.get(1952, 1, 23), veilleArrivee);
+				addAdresse(jean, EnumTypeAdresse.PRINCIPALE, null, MockLocalite.LePont, RegDate.get(1952, 1, 23), veilleArrivee);
+				addAdresse(jean, EnumTypeAdresse.COURRIER, null, MockLocalite.LePont, RegDate.get(1952, 1, 23), veilleArrivee);
 
 				// adresses après l'arrivée
-				addAdresse(jean, EnumTypeAdresse.PRINCIPALE, null, null, MockLocalite.LeLieu, dateArrivee, null);
-				addAdresse(jean, EnumTypeAdresse.COURRIER, null, null, MockLocalite.LeLieu, dateArrivee, null);
+				addAdresse(jean, EnumTypeAdresse.PRINCIPALE, null, MockLocalite.LeLieu, dateArrivee, null);
+				addAdresse(jean, EnumTypeAdresse.COURRIER, null, MockLocalite.LeLieu, dateArrivee, null);
 			}
 		});
 
@@ -800,10 +800,10 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 		/*
 		 * Ok: arrivée en adresse secondaire
 		 */
-		Adresse ancienne = MockServiceCivil.newAdresse(EnumTypeAdresse.SECONDAIRE, null, null, MockLocalite.Neuchatel, toutDebut,
+		Adresse ancienne = MockServiceCivil.newAdresse(EnumTypeAdresse.SECONDAIRE, null, MockLocalite.Neuchatel, toutDebut,
 				veille);
 		Adresse nouvelle = MockServiceCivil.newAdresse(EnumTypeAdresse.SECONDAIRE, MockRue.Lausanne.AvenueDeBeaulieu, null,
-				MockLocalite.Lausanne, dateArrivee, null);
+				dateArrivee, null);
 
 		MockArrivee arrivee = new MockArrivee();
 		arrivee.setType(TypeEvenementCivil.ARRIVEE_DANS_COMMUNE);
@@ -838,8 +838,7 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 		/*
 		 * Erreur: arrivée en adresse secondaire hors canton
 		 */
-		Adresse nouvelleHorsCanton = MockServiceCivil.newAdresse(EnumTypeAdresse.SECONDAIRE, null, null,
-				MockLocalite.Neuchatel3Serrieres, dateArrivee, null);
+		Adresse nouvelleHorsCanton = MockServiceCivil.newAdresse(EnumTypeAdresse.SECONDAIRE, null, MockLocalite.Neuchatel3Serrieres, dateArrivee, null);
 
 		MockArrivee arriveeHorsCanton = new MockArrivee();
 		arrivee.setType(TypeEvenementCivil.ARRIVEE_DANS_COMMUNE);
@@ -871,15 +870,15 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 				MockIndividu pierre = addIndividu(noIndividu, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
 
 				// adresses avant l'arrivée
-				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, RegDate.get(
+				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate.get(
 						1980, 1, 1), veilleArrivee);
-				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, RegDate.get(
+				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate.get(
 						1980, 1, 1), veilleArrivee);
 
 				// adresses après l'arrivée
-				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, MockRue.CossonayVille.CheminDeRiondmorcel, null, MockLocalite.CossonayVille,
+				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, MockRue.CossonayVille.CheminDeRiondmorcel, null,
 						dateArrivee, null);
-				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.CossonayVille.CheminDeRiondmorcel, null, MockLocalite.CossonayVille,
+				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.CossonayVille.CheminDeRiondmorcel, null,
 						dateArrivee, null);
 			}
 		});
@@ -940,15 +939,15 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 				MockIndividu pierre = addIndividu(noIndividu, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
 
 				// adresses avant l'arrivée
-				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, null, null, MockLocalite.Neuchatel1Cases, RegDate.get(1980, 1, 1),
+				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, null, MockLocalite.Neuchatel1Cases, RegDate.get(1980, 1, 1),
 						veilleArrivee);
-				addAdresse(pierre, EnumTypeAdresse.COURRIER, null, null, MockLocalite.Neuchatel1Cases, RegDate.get(1980, 1, 1),
+				addAdresse(pierre, EnumTypeAdresse.COURRIER, null, MockLocalite.Neuchatel1Cases, RegDate.get(1980, 1, 1),
 						veilleArrivee);
 
 				// adresses après l'arrivée
-				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, MockRue.CossonayVille.CheminDeRiondmorcel, null, MockLocalite.CossonayVille,
+				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, MockRue.CossonayVille.CheminDeRiondmorcel, null,
 						dateArrivee, null);
-				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.CossonayVille.CheminDeRiondmorcel, null, MockLocalite.CossonayVille,
+				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.CossonayVille.CheminDeRiondmorcel, null,
 						dateArrivee, null);
 
 				addNationalite(pierre, MockPays.Suisse, RegDate.get(1953, 11, 2), null, 0);
@@ -1030,15 +1029,15 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 				MockIndividu pierre = addIndividu(noIndividu, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
 
 				// adresses avant l'arrivée
-				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, RegDate.get(
+				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate.get(
 						1980, 1, 1), veilleArrivee);
-				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, RegDate.get(
+				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate.get(
 						1980, 1, 1), veilleArrivee);
 
 				// adresses après l'arrivée
-				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, MockRue.CossonayVille.CheminDeRiondmorcel, null, MockLocalite.CossonayVille,
+				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, MockRue.CossonayVille.CheminDeRiondmorcel, null,
 						dateArrivee, null);
-				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.CossonayVille.CheminDeRiondmorcel, null, MockLocalite.CossonayVille,
+				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.CossonayVille.CheminDeRiondmorcel, null,
 						dateArrivee, null);
 
 				addOrigine(pierre, MockPays.Suisse, MockCommune.Lausanne, RegDate.get(1963, 8, 20));
@@ -1137,15 +1136,15 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 				MockIndividu pierre = addIndividu(noIndividu, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
 
 				// adresses avant l'arrivée
-				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, null, null, MockLocalite.Neuchatel1Cases, RegDate.get(1980, 1, 1),
+				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, null, MockLocalite.Neuchatel1Cases, RegDate.get(1980, 1, 1),
 						veilleArrivee);
-				addAdresse(pierre, EnumTypeAdresse.COURRIER, null, null, MockLocalite.Neuchatel1Cases, RegDate.get(1980, 1, 1),
+				addAdresse(pierre, EnumTypeAdresse.COURRIER, null, MockLocalite.Neuchatel1Cases, RegDate.get(1980, 1, 1),
 						veilleArrivee);
 
 				// adresses après l'arrivée
-				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, MockRue.CossonayVille.CheminDeRiondmorcel, null, MockLocalite.CossonayVille,
+				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, MockRue.CossonayVille.CheminDeRiondmorcel, null,
 						dateArrivee, null);
-				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.CossonayVille.CheminDeRiondmorcel, null, MockLocalite.CossonayVille,
+				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.CossonayVille.CheminDeRiondmorcel, null,
 						dateArrivee, null);
 
 				addOrigine(pierre, MockPays.France, MockCommune.Lausanne, RegDate.get(1963, 8, 20));
@@ -1227,15 +1226,15 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 				MockIndividu pierre = addIndividu(noIndividu, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
 
 				// adresses avant l'arrivée
-				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, null, null, MockLocalite.Neuchatel1Cases, RegDate.get(1980, 1, 1),
+				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, null, MockLocalite.Neuchatel1Cases, RegDate.get(1980, 1, 1),
 						veilleArrivee);
-				addAdresse(pierre, EnumTypeAdresse.COURRIER, null, null, MockLocalite.Neuchatel1Cases, RegDate.get(1980, 1, 1),
+				addAdresse(pierre, EnumTypeAdresse.COURRIER, null, MockLocalite.Neuchatel1Cases, RegDate.get(1980, 1, 1),
 						veilleArrivee);
 
 				// adresses après l'arrivée
-				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, MockRue.CossonayVille.CheminDeRiondmorcel, null, MockLocalite.CossonayVille,
+				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, MockRue.CossonayVille.CheminDeRiondmorcel, null,
 						dateArrivee, null);
-				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.CossonayVille.CheminDeRiondmorcel, null, MockLocalite.CossonayVille,
+				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.CossonayVille.CheminDeRiondmorcel, null,
 						dateArrivee, null);
 
 				addOrigine(pierre, MockPays.France, MockCommune.Lausanne, RegDate.get(1963, 8, 20));
@@ -1319,15 +1318,15 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 				MockIndividu pierre = addIndividu(noIndividu, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
 
 				// adresses avant l'arrivée
-				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, RegDate.get(
+				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate.get(
 						1980, 1, 1), veilleArrivee);
-				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, RegDate.get(
+				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate.get(
 						1980, 1, 1), veilleArrivee);
 
 				// adresses après l'arrivée
-				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, MockRue.CossonayVille.CheminDeRiondmorcel, null, MockLocalite.CossonayVille,
+				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, MockRue.CossonayVille.CheminDeRiondmorcel, null,
 						dateArrivee, null);
-				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.CossonayVille.CheminDeRiondmorcel, null, MockLocalite.CossonayVille,
+				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.CossonayVille.CheminDeRiondmorcel, null,
 						dateArrivee, null);
 
 				addOrigine(pierre, MockPays.France, MockCommune.Lausanne, RegDate.get(1963, 8, 20));
@@ -1431,23 +1430,23 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 				MockIndividu julie = addIndividu(noIndividuConjoint, RegDate.get(1957, 4, 19), "Goux", "Julie", false);
 
 				// adresses avant l'arrivée
-				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, null, null, MockLocalite.Neuchatel1Cases, RegDate.get(1980, 1, 1),
+				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, null, MockLocalite.Neuchatel1Cases, RegDate.get(1980, 1, 1),
 						veilleArrivee);
-				addAdresse(pierre, EnumTypeAdresse.COURRIER, null, null, MockLocalite.Neuchatel1Cases, RegDate.get(1980, 1, 1),
+				addAdresse(pierre, EnumTypeAdresse.COURRIER, null, MockLocalite.Neuchatel1Cases, RegDate.get(1980, 1, 1),
 						veilleArrivee);
-				addAdresse(julie, EnumTypeAdresse.PRINCIPALE, null, null, MockLocalite.Neuchatel1Cases, RegDate.get(1980, 1, 1),
+				addAdresse(julie, EnumTypeAdresse.PRINCIPALE, null, MockLocalite.Neuchatel1Cases, RegDate.get(1980, 1, 1),
 						veilleArrivee);
-				addAdresse(julie, EnumTypeAdresse.COURRIER, null, null, MockLocalite.Neuchatel1Cases, RegDate.get(1980, 1, 1),
+				addAdresse(julie, EnumTypeAdresse.COURRIER, null, MockLocalite.Neuchatel1Cases, RegDate.get(1980, 1, 1),
 						veilleArrivee);
 
 				// adresses après l'arrivée
-				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, dateArrivee,
+				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateArrivee,
 						null);
-				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, dateArrivee,
+				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, dateArrivee,
 						null);
-				addAdresse(julie, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, dateArrivee,
+				addAdresse(julie, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateArrivee,
 						null);
-				addAdresse(julie, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, dateArrivee,
+				addAdresse(julie, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, dateArrivee,
 						null);
 
 				// nationalité
@@ -1565,23 +1564,23 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 				MockIndividu julie = addIndividu(noIndividuConjoint, RegDate.get(1957, 4, 19), "Goux", "Julie", false);
 
 				// adresses avant l'arrivée
-				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne,
+				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null,
 						dateArriveInitiale, veilleArrivee);
-				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne,
+				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null,
 						dateArriveInitiale, veilleArrivee);
-				addAdresse(julie, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne,
+				addAdresse(julie, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null,
 						dateArriveInitiale, veilleArrivee);
-				addAdresse(julie, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne,
+				addAdresse(julie, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null,
 						dateArriveInitiale, veilleArrivee);
 
 				// adresses après l'arrivée
-				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, MockRue.CossonayVille.CheminDeRiondmorcel, null, MockLocalite.CossonayVille,
+				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, MockRue.CossonayVille.CheminDeRiondmorcel, null,
 						dateArrivee, null);
-				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.CossonayVille.CheminDeRiondmorcel, null, MockLocalite.CossonayVille,
+				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.CossonayVille.CheminDeRiondmorcel, null,
 						dateArrivee, null);
-				addAdresse(julie, EnumTypeAdresse.PRINCIPALE, MockRue.CossonayVille.CheminDeRiondmorcel, null, MockLocalite.CossonayVille,
+				addAdresse(julie, EnumTypeAdresse.PRINCIPALE, MockRue.CossonayVille.CheminDeRiondmorcel, null,
 						dateArrivee, null);
-				addAdresse(julie, EnumTypeAdresse.COURRIER, MockRue.CossonayVille.CheminDeRiondmorcel, null, MockLocalite.CossonayVille,
+				addAdresse(julie, EnumTypeAdresse.COURRIER, MockRue.CossonayVille.CheminDeRiondmorcel, null,
 						dateArrivee, null);
 
 				// nationalité
@@ -1718,23 +1717,23 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 				MockIndividu julie = addIndividu(noIndividuConjoint, RegDate.get(1957, 4, 19), "Goux", "Julie", false);
 
 				// adresses avant l'arrivée
-				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne,
+				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null,
 						dateArriveInitiale, veilleArrivee);
-				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne,
+				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null,
 						dateArriveInitiale, veilleArrivee);
-				addAdresse(julie, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne,
+				addAdresse(julie, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null,
 						dateArriveInitiale, veilleArrivee);
-				addAdresse(julie, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne,
+				addAdresse(julie, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null,
 						dateArriveInitiale, veilleArrivee);
 
 				// adresses après l'arrivée
-				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, MockRue.CossonayVille.CheminDeRiondmorcel, null, MockLocalite.CossonayVille,
+				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, MockRue.CossonayVille.CheminDeRiondmorcel, null,
 						dateArrivee, null);
-				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.CossonayVille.CheminDeRiondmorcel, null, MockLocalite.CossonayVille,
+				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.CossonayVille.CheminDeRiondmorcel, null,
 						dateArrivee, null);
-				addAdresse(julie, EnumTypeAdresse.PRINCIPALE, MockRue.CossonayVille.CheminDeRiondmorcel, null, MockLocalite.CossonayVille,
+				addAdresse(julie, EnumTypeAdresse.PRINCIPALE, MockRue.CossonayVille.CheminDeRiondmorcel, null,
 						dateArrivee, null);
-				addAdresse(julie, EnumTypeAdresse.COURRIER, MockRue.CossonayVille.CheminDeRiondmorcel, null, MockLocalite.CossonayVille,
+				addAdresse(julie, EnumTypeAdresse.COURRIER, MockRue.CossonayVille.CheminDeRiondmorcel, null,
 						dateArrivee, null);
 
 				// nationalité
@@ -1862,15 +1861,15 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 				MockIndividu pierre = addIndividu(noIndividu, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
 
 				// adresses avant l'arrivée
-				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, RegDate.get(
+				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate.get(
 						1980, 1, 1), veilleArrivee);
-				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, RegDate.get(
+				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate.get(
 						1980, 1, 1), veilleArrivee);
 
 				// adresses après l'arrivée
-				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, MockRue.CossonayVille.CheminDeRiondmorcel, null, MockLocalite.CossonayVille,
+				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, MockRue.CossonayVille.CheminDeRiondmorcel, null,
 						dateArrivee, null);
-				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.CossonayVille.CheminDeRiondmorcel, null, MockLocalite.CossonayVille,
+				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.CossonayVille.CheminDeRiondmorcel, null,
 						dateArrivee, null);
 
 				// nationalité
@@ -1974,23 +1973,23 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 				MockIndividu julie = addIndividu(noIndividuConjoint, RegDate.get(1957, 4, 19), "Goux", "Julie", false);
 
 				// adresses avant l'arrivée
-				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne,
+				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null,
 						dateArriveInitiale, veilleArrivee);
-				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne,
+				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null,
 						dateArriveInitiale, veilleArrivee);
-				addAdresse(julie, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne,
+				addAdresse(julie, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null,
 						dateArriveInitiale, veilleArrivee);
-				addAdresse(julie, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne,
+				addAdresse(julie, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null,
 						dateArriveInitiale, veilleArrivee);
 
 				// adresses après l'arrivée
-				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, MockRue.CossonayVille.CheminDeRiondmorcel, null, MockLocalite.CossonayVille,
+				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, MockRue.CossonayVille.CheminDeRiondmorcel, null,
 						dateArrivee, null);
-				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.CossonayVille.CheminDeRiondmorcel, null, MockLocalite.CossonayVille,
+				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.CossonayVille.CheminDeRiondmorcel, null,
 						dateArrivee, null);
-				addAdresse(julie, EnumTypeAdresse.PRINCIPALE, MockRue.CossonayVille.CheminDeRiondmorcel, null, MockLocalite.CossonayVille,
+				addAdresse(julie, EnumTypeAdresse.PRINCIPALE, MockRue.CossonayVille.CheminDeRiondmorcel, null,
 						dateArrivee, null);
-				addAdresse(julie, EnumTypeAdresse.COURRIER, MockRue.CossonayVille.CheminDeRiondmorcel, null, MockLocalite.CossonayVille,
+				addAdresse(julie, EnumTypeAdresse.COURRIER, MockRue.CossonayVille.CheminDeRiondmorcel, null,
 						dateArrivee, null);
 
 				// nationalité
@@ -2153,15 +2152,15 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 				MockIndividu bea = addIndividu(numeroIndividu, dateNaissance, "Duval", "Béatrice", false);
 				
 				// adresses avant l'arrivée
-				addAdresse(bea, EnumTypeAdresse.PRINCIPALE, null, null, MockLocalite.Neuchatel1Cases, RegDate.get(1980, 1, 1),
+				addAdresse(bea, EnumTypeAdresse.PRINCIPALE, null, MockLocalite.Neuchatel1Cases, RegDate.get(1980, 1, 1),
 						veilleArrivee);
-				addAdresse(bea, EnumTypeAdresse.COURRIER, null, null, MockLocalite.Neuchatel1Cases, RegDate.get(1980, 1, 1),
+				addAdresse(bea, EnumTypeAdresse.COURRIER, null, MockLocalite.Neuchatel1Cases, RegDate.get(1980, 1, 1),
 						veilleArrivee);
 
 				// adresses après l'arrivée
-				addAdresse(bea, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, dateArrivee,
+				addAdresse(bea, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateArrivee,
 						null);
-				addAdresse(bea, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, dateArrivee,
+				addAdresse(bea, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, dateArrivee,
 						null);
 				
 				addOrigine(bea, MockPays.Suisse, MockCommune.Lausanne, dateNaissance);
@@ -2300,23 +2299,23 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 				MockIndividu julie = addIndividu(noIndividuConjoint, dateNaissanceJulie, "Goux", "Julie", false);
 
 				// adresses avant l'arrivée
-				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, null, null, MockLocalite.Neuchatel1Cases, RegDate.get(1980, 1, 1),
+				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, null, MockLocalite.Neuchatel1Cases, RegDate.get(1980, 1, 1),
 						veilleArrivee);
-				addAdresse(pierre, EnumTypeAdresse.COURRIER, null, null, MockLocalite.Neuchatel1Cases, RegDate.get(1980, 1, 1),
+				addAdresse(pierre, EnumTypeAdresse.COURRIER, null, MockLocalite.Neuchatel1Cases, RegDate.get(1980, 1, 1),
 						veilleArrivee);
-				addAdresse(julie, EnumTypeAdresse.PRINCIPALE, null, null, MockLocalite.Neuchatel1Cases, RegDate.get(1980, 1, 1),
+				addAdresse(julie, EnumTypeAdresse.PRINCIPALE, null, MockLocalite.Neuchatel1Cases, RegDate.get(1980, 1, 1),
 						veilleArrivee);
-				addAdresse(julie, EnumTypeAdresse.COURRIER, null, null, MockLocalite.Neuchatel1Cases, RegDate.get(1980, 1, 1),
+				addAdresse(julie, EnumTypeAdresse.COURRIER, null, MockLocalite.Neuchatel1Cases, RegDate.get(1980, 1, 1),
 						veilleArrivee);
 
 				// adresses après l'arrivée
-				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, dateArrivee,
+				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateArrivee,
 						null);
-				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, dateArrivee,
+				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, dateArrivee,
 						null);
-				addAdresse(julie, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, dateArrivee,
+				addAdresse(julie, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateArrivee,
 						null);
-				addAdresse(julie, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, dateArrivee,
+				addAdresse(julie, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, dateArrivee,
 						null);
 
 				// nationalité

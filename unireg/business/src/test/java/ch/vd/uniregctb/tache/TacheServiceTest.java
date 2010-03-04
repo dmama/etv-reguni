@@ -33,10 +33,8 @@ import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
-import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
 import ch.vd.uniregctb.metier.MetierService;
 
@@ -94,11 +92,11 @@ public class TacheServiceTest extends BusinessTest {
 			protected void init() {
 
 				Individu individu1 = addIndividu(333908, RegDate.get(1974, 3, 22), "Cuendet", "Adrienne", true);
-				addAdresse(individu1, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, RegDate
+				addAdresse(individu1, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate
 						.get(1980, 1, 1), null);
 
 				Individu individu2 = addIndividu(282316, RegDate.get(1974, 3, 22), "Richard", "Marcel", true);
-				addAdresse(individu2, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, RegDate
+				addAdresse(individu2, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate
 						.get(1980, 1, 1), null);
 
 			}
@@ -927,12 +925,12 @@ public class TacheServiceTest extends BusinessTest {
 			protected void init() {
 
 				MockIndividu monsieur = addIndividu(idIndividuMonsieur, RegDate.get(1963, 1, 1), "Lavanchy", "Raoul", true);
-				addAdresse(monsieur, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, RegDate.get(
+				addAdresse(monsieur, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate.get(
 						1963, 1, 1), null);
 				addNationalite(monsieur, MockPays.Suisse, date(1963, 1, 1), null, 0);
 
 				MockIndividu madame = addIndividu(idIndividuMadame, RegDate.get(1968, 3, 27), "Lavanchy", "Laurence", false);
-				addAdresse(madame, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, RegDate.get(
+				addAdresse(madame, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate.get(
 						1968, 3, 27), null);
 				addNationalite(madame, MockPays.Suisse, date(1963, 1, 1), null, 0);
 			}
@@ -1055,12 +1053,12 @@ public class TacheServiceTest extends BusinessTest {
 			protected void init() {
 
 				MockIndividu monsieur = addIndividu(idIndividuMonsieur, RegDate.get(1963, 1, 1), "Lavanchy", "Raoul", true);
-				addAdresse(monsieur, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, RegDate
+				addAdresse(monsieur, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate
 						.get(1963, 1, 1), null);
 				addNationalite(monsieur, MockPays.Suisse, date(1963, 1, 1), null, 0);
 
 				MockIndividu madame = addIndividu(idIndividuMadame, RegDate.get(1968, 3, 27), "Lavanchy", "Laurence", false);
-				addAdresse(madame, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, RegDate.get(
+				addAdresse(madame, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate.get(
 						1968, 3, 27), null);
 				addNationalite(madame, MockPays.Suisse, date(1963, 1, 1), null, 0);
 			}
@@ -1232,12 +1230,12 @@ public class TacheServiceTest extends BusinessTest {
 			protected void init() {
 
 				MockIndividu monsieur = addIndividu(idIndividuMonsieur, RegDate.get(1963, 1, 1), "Lavanchy", "Raoul", true);
-				addAdresse(monsieur, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, RegDate
+				addAdresse(monsieur, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate
 						.get(1963, 1, 1), null);
 				addNationalite(monsieur, MockPays.Suisse, date(1963, 1, 1), null, 0);
 
 				MockIndividu madame = addIndividu(idIndividuMadame, RegDate.get(1968, 3, 27), "Lavanchy", "Laurence", false);
-				addAdresse(madame, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, RegDate.get(
+				addAdresse(madame, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate.get(
 						1968, 3, 27), null);
 				addNationalite(madame, MockPays.Suisse, date(1963, 1, 1), null, 0);
 			}
@@ -1420,12 +1418,12 @@ public class TacheServiceTest extends BusinessTest {
 			protected void init() {
 
 				MockIndividu monsieur = addIndividu(idIndividuMonsieur, RegDate.get(1963, 1, 1), "Lavanchy", "Raoul", true);
-				addAdresse(monsieur, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, RegDate
+				addAdresse(monsieur, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate
 						.get(1963, 1, 1), null);
 				addNationalite(monsieur, MockPays.Suisse, date(1963, 1, 1), null, 0);
 
 				MockIndividu madame = addIndividu(idIndividuMadame, RegDate.get(1968, 3, 27), "Lavanchy", "Laurence", false);
-				addAdresse(madame, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, RegDate.get(
+				addAdresse(madame, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate.get(
 						1968, 3, 27), null);
 				addNationalite(madame, MockPays.Suisse, date(1963, 1, 1), null, 0);
 			}
@@ -1562,7 +1560,7 @@ public class TacheServiceTest extends BusinessTest {
 			@Override
 			protected void init() {
 				MockIndividu monsieur = addIndividu(100000, RegDate.get(1963, 1, 1), "Duplot", "Simon", true);
-				addAdresse(monsieur, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, RegDate.get(
+				addAdresse(monsieur, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate.get(
 						1963, 1, 1), null);
 				addNationalite(monsieur, MockPays.Suisse, date(1963, 1, 1), null, 0);
 			}
@@ -1632,7 +1630,7 @@ public class TacheServiceTest extends BusinessTest {
 					protected void init() {
 
 						MockIndividu monsieur = addIndividu(100000, RegDate.get(1963, 1, 1), "Lavanchy", "Raoul", true);
-						addAdresse(monsieur, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, RegDate
+						addAdresse(monsieur, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate
 								.get(1963, 1, 1), null);
 						addNationalite(monsieur, MockPays.Suisse, date(1963, 1, 1), null, 0);
 					}
@@ -1678,7 +1676,7 @@ public class TacheServiceTest extends BusinessTest {
 					protected void init() {
 
 						MockIndividu monsieur = addIndividu(100000, RegDate.get(1963, 1, 1), "Lavanchy", "Raoul", true);
-						addAdresse(monsieur, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, RegDate
+						addAdresse(monsieur, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate
 								.get(1963, 1, 1), null);
 						addNationalite(monsieur, MockPays.Suisse, date(1963, 1, 1), null, 0);
 					}
@@ -1724,7 +1722,7 @@ public class TacheServiceTest extends BusinessTest {
 					protected void init() {
 
 						MockIndividu monsieur = addIndividu(100000, date(1963, 1, 1), "Lavanchy", "Raoul", true);
-						addAdresse(monsieur, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, RegDate
+						addAdresse(monsieur, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate
 								.get(1963, 1, 1), null);
 						addNationalite(monsieur, MockPays.Suisse, date(1963, 1, 1), null, 0);
 					}
@@ -1759,7 +1757,7 @@ public class TacheServiceTest extends BusinessTest {
 			@Override
 			protected void init() {
 				MockIndividu raoul = addIndividu(100000, RegDate.get(1963, 1, 1), "Lavanchy", "Raoul", true);
-				addAdresse(raoul, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, RegDate.get(
+				addAdresse(raoul, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate.get(
 						1963, 1, 1), null);
 				addNationalite(raoul, MockPays.Suisse, date(1963, 1, 1), null, 0);
 			}
@@ -1804,7 +1802,7 @@ public class TacheServiceTest extends BusinessTest {
 			@Override
 			protected void init() {
 				MockIndividu raoul = addIndividu(100000, date(1963, 1, 1), "Lavanchy", "Raoul", true);
-				addAdresse(raoul, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, RegDate.get(
+				addAdresse(raoul, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate.get(
 						1963, 1, 1), null);
 				addNationalite(raoul, MockPays.Suisse, date(1963, 1, 1), null, 0);
 			}

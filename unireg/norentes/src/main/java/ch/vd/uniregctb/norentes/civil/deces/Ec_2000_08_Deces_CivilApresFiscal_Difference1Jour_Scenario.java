@@ -9,7 +9,6 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
-import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
 import ch.vd.uniregctb.metier.MetierService;
@@ -72,7 +71,7 @@ public class Ec_2000_08_Deces_CivilApresFiscal_Difference1Jour_Scenario extends 
 			protected void init() {
 				indGuillaume = addIndividu(noIndGuillaume, dateNaissanceGuillaume, "Tell", "Guillaume", true);
 				addAdresse(indGuillaume, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null,
-						MockLocalite.Lausanne, dateArriveeVD, null);
+						dateArriveeVD, null);
 			}
 		});
 	}

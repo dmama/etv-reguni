@@ -53,7 +53,7 @@ public class Ec_16000_03_ObtentionPermis_NonResident_Scenario extends EvenementC
 				addPermis(indMomo, EnumTypePermis.ANNUEL, dateObtentionPermisB, dateObtentionPermisC.getOneDayBefore(), 0, false);
 				addPermis(indMomo, EnumTypePermis.ETABLLISSEMENT, dateObtentionPermisC, null, 1, false);
 				addNationalite(indMomo, MockPays.France, dateNaissanceMomo, null, 0);
-				addAdresse(indMomo, EnumTypeAdresse.PRINCIPALE, MockRue.Neuchatel.RueDesBeauxArts, null, MockLocalite.Neuchatel, dateObtentionPermisB, null);
+				addAdresse(indMomo, EnumTypeAdresse.PRINCIPALE, MockRue.Neuchatel.RueDesBeauxArts, null, dateObtentionPermisB, null);
 			}
 		});
 	}

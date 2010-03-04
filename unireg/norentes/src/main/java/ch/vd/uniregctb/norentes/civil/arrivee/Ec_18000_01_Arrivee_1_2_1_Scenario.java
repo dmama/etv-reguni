@@ -12,7 +12,6 @@ import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.mock.MockAdresse;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
-import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
 import ch.vd.uniregctb.norentes.common.EvenementCivilScenario;
@@ -83,18 +82,18 @@ public class Ec_18000_01_Arrivee_1_2_1_Scenario extends EvenementCivilScenario {
 			protected void init() {
 
 				indAlain = addIndividu(noIndAlain, RegDate.get(1952, 2, 21), "Baschung", "Alain", true);
-				addAdresse(indAlain, EnumTypeAdresse.PRINCIPALE, MockRue.VillarsSousYens.CheminDuCollege, null, MockLocalite.VillarsSousYens, dateArriveeVillars, avantDateMariage);
-				addAdresse(indAlain, EnumTypeAdresse.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, MockLocalite.Bex, dateArriveeBex, null);
+				addAdresse(indAlain, EnumTypeAdresse.PRINCIPALE, MockRue.VillarsSousYens.CheminDuCollege, null, dateArriveeVillars, avantDateMariage);
+				addAdresse(indAlain, EnumTypeAdresse.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, dateArriveeBex, null);
 
 				indJanine = addIndividu(noIndJanine, RegDate.get(1957, 4, 12), "Baschung-Maurer", "Janine", false);
-				addAdresse(indJanine, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, MockLocalite.Lausanne, dateArriveeLausanne, avantDateMariage);
-				addAdresse(indJanine, EnumTypeAdresse.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, MockLocalite.Bex, dateArriveeBex, null);
+				addAdresse(indJanine, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, dateArriveeLausanne, avantDateMariage);
+				addAdresse(indJanine, EnumTypeAdresse.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, dateArriveeBex, null);
 
 				indJulien = addIndividu(noIndJulien, dateNaissanceJulien, "Baschung", "Julien", true);
-				addAdresse(indJulien, EnumTypeAdresse.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, MockLocalite.Bex, dateNaissanceJulien, null);
+				addAdresse(indJulien, EnumTypeAdresse.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, dateNaissanceJulien, null);
 
 				indFanny = addIndividu(noIndFanny, dateNaissanceFanny, "Baschung", "Fanny", false);
-				addAdresse(indFanny, EnumTypeAdresse.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, MockLocalite.Bex, dateNaissanceFanny, null);
+				addAdresse(indFanny, EnumTypeAdresse.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, dateNaissanceFanny, null);
 
 				marieIndividus(indAlain, indJanine, dateMariage);
 			}
@@ -193,7 +192,7 @@ public class Ec_18000_01_Arrivee_1_2_1_Scenario extends EvenementCivilScenario {
 			last = (MockAdresse)a;
 		}
 		last.setDateFinValidite(dateDepartBex);
-		Adresse aa = MockServiceCivil.newAdresse(EnumTypeAdresse.PRINCIPALE, MockRue.Orbe.RueDavall, null, MockLocalite.Orbe, dateArriveeOrbe, null);
+		Adresse aa = MockServiceCivil.newAdresse(EnumTypeAdresse.PRINCIPALE, MockRue.Orbe.RueDavall, null, dateArriveeOrbe, null);
 		adrs.add(aa);
 	}
 

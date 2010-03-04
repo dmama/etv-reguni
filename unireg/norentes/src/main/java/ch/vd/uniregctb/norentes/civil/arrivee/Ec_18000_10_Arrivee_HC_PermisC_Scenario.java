@@ -10,7 +10,6 @@ import ch.vd.registre.civil.model.EnumTypePermis;
 import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
-import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.model.mock.MockPermis;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
@@ -59,9 +58,9 @@ public class Ec_18000_10_Arrivee_HC_PermisC_Scenario extends EvenementCivilScena
 				indAntoine = addIndividu(noIndAntoine,dateNaissance , "Lenormand", "Antoine", true);
 				setNationalite(indAntoine, dateNaissance, null, MockPays.France);
 				addAdresse(indAntoine, EnumTypeAdresse.PRINCIPALE, MockRue.Zurich.GloriaStrasse, null,
-						MockLocalite.Zurich, dateArriveeZurich, dateArriveeBex.getOneDayBefore());
+						dateArriveeZurich, dateArriveeBex.getOneDayBefore());
 				addAdresse(indAntoine, EnumTypeAdresse.PRINCIPALE, MockRue.Bex.RouteDuBoet, null,
-						MockLocalite.Bex, dateArriveeBex, null);
+						dateArriveeBex, null);
 
 
 			}

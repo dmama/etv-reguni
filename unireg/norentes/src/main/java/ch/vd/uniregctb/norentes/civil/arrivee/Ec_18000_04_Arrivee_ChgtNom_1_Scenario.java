@@ -9,7 +9,6 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
-import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
@@ -55,9 +54,9 @@ public class Ec_18000_04_Arrivee_ChgtNom_1_Scenario extends EvenementCivilScenar
 				indAlain = addIndividu(noIndAlain, RegDate.get(1952, 2, 21), "Gregoire", "Alain", true);
 				setNationalite(indAlain, dateNaissance, null, MockPays.Suisse);
 				addAdresse(indAlain, EnumTypeAdresse.PRINCIPALE, MockRue.Zurich.GloriaStrasse, null,
-						MockLocalite.Zurich, dateArriveeZurich, dateArriveeBex.getOneDayBefore());
+						dateArriveeZurich, dateArriveeBex.getOneDayBefore());
 				addAdresse(indAlain, EnumTypeAdresse.PRINCIPALE, MockRue.Bex.RouteDuBoet, null,
-						MockLocalite.Bex, dateArriveeBex, null);
+						dateArriveeBex, null);
 
 			}
 		});

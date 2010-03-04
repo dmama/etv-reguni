@@ -161,17 +161,17 @@ public class AdresseServiceTest extends BusinessTest {
 				MockIndividu pierre = addIndividu(noIndividu, date(1953, 11, 2), "Dupont", "Pierre", true);
 
 				// adresses courriers
-				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, date(1980, 1,
+				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, date(1980, 1,
 						1), date(1987, 12, 11));
-				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.CossonayVille.CheminDeRiondmorcel, null, MockLocalite.CossonayVille,
+				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.CossonayVille.CheminDeRiondmorcel, null,
 						date(1987, 12, 12), date(2001, 6, 3));
-				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.LesClees.ChampDuRaffour, null, MockLocalite.LesClees,
+				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.LesClees.ChampDuRaffour, null,
 						date(2001, 6, 4), null);
 
 				// adresses principales/poursuite
-				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, date(1980,
+				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, date(1980,
 						1, 1), date(1987, 12, 11));
-				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, MockRue.CossonayVille.CheminDeRiondmorcel, null, MockLocalite.CossonayVille,
+				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, MockRue.CossonayVille.CheminDeRiondmorcel, null,
 						date(1987, 12, 12), null);
 			}
 		});
@@ -500,17 +500,17 @@ public class AdresseServiceTest extends BusinessTest {
 				MockIndividu pierre = addIndividu(noIndividu, date(1953, 11, 2), "Dupont", "Pierre", true);
 
 				// adresses courriers
-				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, date(2000, 1,
+				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, date(2000, 1,
 						1), date(2000, 9, 19));
-				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.CossonayVille.AvenueDuFuniculaire, null, MockLocalite.CossonayVille,
+				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.CossonayVille.AvenueDuFuniculaire, null,
 						date(2000, 9, 20), date(2002, 2, 27));
-				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.LesClees.ChampDuRaffour, null, MockLocalite.LesClees,
+				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.LesClees.ChampDuRaffour, null,
 						date(2002, 2, 28), date(2002, 3, 14));
-				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, date(2002, 3,
+				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, date(2002, 3,
 						15), null);
 
 				// adresses principales/poursuite
-				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, date(2000,
+				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, date(2000,
 						1, 1), null);
 			}
 		});
@@ -677,11 +677,11 @@ public class AdresseServiceTest extends BusinessTest {
 				MockIndividu paul = addIndividu(noIndividu, date(1953, 11, 2), "Dupont", "Paul", true);
 
 				// adresses courriers
-				addAdresse(paul, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne,
+				addAdresse(paul, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null,
 						date(2000, 1, 1), null);
 
 				// adresses principales/poursuite
-				addAdresse(paul, EnumTypeAdresse.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, MockLocalite.Bex, date(2000, 1, 1), null);
+				addAdresse(paul, EnumTypeAdresse.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, date(2000, 1, 1), null);
 			}
 		});
 
@@ -782,20 +782,20 @@ public class AdresseServiceTest extends BusinessTest {
 				MockIndividu paul = addIndividu(noIndividu, date(1953, 11, 2), "Dupont", "Paul", true);
 
 				// adresses courriers
-				addAdresse(paul, EnumTypeAdresse.COURRIER, MockRue.Lausanne.RouteMaisonNeuve, null, MockLocalite.Lausanne,
+				addAdresse(paul, EnumTypeAdresse.COURRIER, MockRue.Lausanne.RouteMaisonNeuve, null,
 						date(2000, 1, 1), null);
 
 				// adresses principales/poursuite
-				addAdresse(paul, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.RouteMaisonNeuve, null, MockLocalite.Lausanne, date(2000, 1,
+				addAdresse(paul, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.RouteMaisonNeuve, null, date(2000, 1,
 						1), null);
 
 				MockIndividu pierre = addIndividu(noAutreIndividu, date(1953, 11, 2), "Dubois", "Pierre", true);
 
 				// adresses courriers
-				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.Bex.RouteDuBoet, null, MockLocalite.Bex, date(2000, 1, 1), null);
+				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.Bex.RouteDuBoet, null, date(2000, 1, 1), null);
 
 				// adresses principales/poursuite
-				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, MockLocalite.Bex, date(2000, 1, 1), null);
+				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, date(2000, 1, 1), null);
 			}
 		});
 
@@ -896,11 +896,11 @@ public class AdresseServiceTest extends BusinessTest {
 				MockIndividu paul = addIndividu(noIndividu, date(1953, 11, 2), "Dupont", "Paul", true);
 
 				// adresses courriers
-				addAdresse(paul, EnumTypeAdresse.COURRIER, MockRue.Lausanne.RouteMaisonNeuve, null, MockLocalite.Lausanne,
+				addAdresse(paul, EnumTypeAdresse.COURRIER, MockRue.Lausanne.RouteMaisonNeuve, null,
 						date(2000, 1, 1), null);
 
 				// adresses principales/poursuite
-				addAdresse(paul, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.RouteMaisonNeuve, null, MockLocalite.Lausanne, date(2000, 1,
+				addAdresse(paul, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.RouteMaisonNeuve, null, date(2000, 1,
 						1), null);
 			}
 		});
@@ -1022,11 +1022,11 @@ public class AdresseServiceTest extends BusinessTest {
 				MockIndividu paul = addIndividu(noIndividu, date(1953, 11, 2), "Dupont", "Paul", true);
 
 				// adresses courriers
-				addAdresse(paul, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne,
+				addAdresse(paul, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null,
 						date(2000, 1, 1), null);
 
 				// adresses principales/poursuite
-				addAdresse(paul, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, date(2000, 1,
+				addAdresse(paul, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, date(2000, 1,
 						1), null);
 			}
 		});
@@ -1117,13 +1117,13 @@ public class AdresseServiceTest extends BusinessTest {
 				MockIndividu paul = addIndividu(noIndividu, date(1953, 11, 2), "Dupont", "Paul", true);
 
 				// adresses courriers
-				addAdresse(paul, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne,
+				addAdresse(paul, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null,
 						date(2000, 1, 1), date(2000, 7, 12));
-				addAdresse(paul, EnumTypeAdresse.COURRIER, MockRue.CossonayVille.AvenueDuFuniculaire, null, MockLocalite.CossonayVille,
+				addAdresse(paul, EnumTypeAdresse.COURRIER, MockRue.CossonayVille.AvenueDuFuniculaire, null,
 						date(2000, 7, 13), null);
 
 				// adresses principales/poursuite
-				addAdresse(paul, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, date(2000, 1,
+				addAdresse(paul, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, date(2000, 1,
 						1), null);
 			}
 		});
@@ -1221,9 +1221,9 @@ public class AdresseServiceTest extends BusinessTest {
 				MockIndividu paul = addIndividu(noIndividu, date(1953, 11, 2), "Dupont", "Paul", true);
 
 				// adresses courriers
-				addAdresse(paul, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne,
+				addAdresse(paul, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null,
 						date(2000, 1, 1), date(2000, 7, 12));
-				addAdresse(paul, EnumTypeAdresse.COURRIER, MockRue.Bex.RouteDuBoet, null, MockLocalite.Bex,
+				addAdresse(paul, EnumTypeAdresse.COURRIER, MockRue.Bex.RouteDuBoet, null,
 						date(2000, 3, 20), null);
 			}
 		});
@@ -1299,9 +1299,9 @@ public class AdresseServiceTest extends BusinessTest {
 				MockIndividu paul = addIndividu(noIndividu, date(1953, 11, 2), "Dupont", "Paul", true);
 
 				// adresses courriers
-				addAdresse(paul, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne,
+				addAdresse(paul, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null,
 						date(2020, 1, 1), date(2000, 3, 19));
-				addAdresse(paul, EnumTypeAdresse.COURRIER, MockRue.Bex.RouteDuBoet, null, MockLocalite.Bex,
+				addAdresse(paul, EnumTypeAdresse.COURRIER, MockRue.Bex.RouteDuBoet, null,
 						date(2000, 3, 20), null);
 			}
 		});
@@ -1376,11 +1376,11 @@ public class AdresseServiceTest extends BusinessTest {
 				MockIndividu paul = addIndividu(noIndividu, date(1953, 11, 2), "Dupont", "Paul", true);
 
 				// adresses courriers
-				addAdresse(paul, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne,
+				addAdresse(paul, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null,
 						date(2000, 1, 1), null);
 
 				// adresses principales/poursuite
-				addAdresse(paul, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, date(2000, 1,
+				addAdresse(paul, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, date(2000, 1,
 						1), null);
 			}
 		});
@@ -1523,21 +1523,21 @@ public class AdresseServiceTest extends BusinessTest {
 				MockIndividu paul = addIndividu(noIndividuPrincipal, date(1953, 11, 2), "Dupont", "Paul", true);
 
 				// adresses courriers
-				addAdresse(paul, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne,
+				addAdresse(paul, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null,
 						date(2000, 1, 1), null);
 
 				// adresses principales/poursuite
-				addAdresse(paul, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, date(2000, 1,
+				addAdresse(paul, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, date(2000, 1,
 						1), null);
 
 				MockIndividu virginie = addIndividu(noIndividuConjoint, date(1957, 1, 23), "Dupont", "Virginie", false);
 
 				// adresses courriers
-				addAdresse(virginie, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeMarcelin, null, MockLocalite.Lausanne, date(2002,
+				addAdresse(virginie, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeMarcelin, null, date(2002,
 						2, 2), null);
 
 				// adresses principales/poursuite
-				addAdresse(virginie, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, MockLocalite.Lausanne, date(2002,
+				addAdresse(virginie, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, date(2002,
 						2, 2), null);
 
 				marieIndividus(paul, virginie, date(2004, 7, 14));
@@ -1723,21 +1723,21 @@ public class AdresseServiceTest extends BusinessTest {
 				MockIndividu paul = addIndividu(noPupille, date(1953, 11, 2), "Dupont", "Paul", true);
 
 				// adresses courriers
-				addAdresse(paul, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne,
+				addAdresse(paul, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null,
 						date(2000, 1, 1), null);
 
 				// adresses principales/poursuite
-				addAdresse(paul, EnumTypeAdresse.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, MockLocalite.Bex, date(2000, 1, 1), null);
+				addAdresse(paul, EnumTypeAdresse.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, date(2000, 1, 1), null);
 
 				// le tuteur
 				MockIndividu jean = addIndividu(noTuteur, date(1966, 4, 2), "Dupneu", "Jean", true);
 
 				// adresses courriers
-				addAdresse(jean, EnumTypeAdresse.COURRIER, MockRue.CossonayVille.AvenueDuFuniculaire, null, MockLocalite.CossonayVille,
+				addAdresse(jean, EnumTypeAdresse.COURRIER, MockRue.CossonayVille.AvenueDuFuniculaire, null,
 						date(1985, 4, 1), null);
 
 				// adresses principales/poursuite
-				addAdresse(jean, EnumTypeAdresse.PRINCIPALE, MockRue.CossonayVille.AvenueDuFuniculaire, null, MockLocalite.CossonayVille,
+				addAdresse(jean, EnumTypeAdresse.PRINCIPALE, MockRue.CossonayVille.AvenueDuFuniculaire, null,
 						date(1985, 4, 1), null);
 			}
 		});
@@ -1844,17 +1844,17 @@ public class AdresseServiceTest extends BusinessTest {
 			protected void init() {
 				// la pupille
 				MockIndividu paul = addIndividu(noPrincipal, date(1953, 11, 2), "Dupont", "Paul", true);
-				addAdresse(paul, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, date(2000, 1,
+				addAdresse(paul, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, date(2000, 1,
 						1), null);
 
 				// le conjoint
 				MockIndividu jeanne = addIndividu(noConjoint, date(1954, 11, 2), "Dupont", "Jeanne", false);
-				addAdresse(jeanne, EnumTypeAdresse.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, MockLocalite.Bex, date(2000, 1, 1), null);
+				addAdresse(jeanne, EnumTypeAdresse.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, date(2000, 1, 1), null);
 				marieIndividus(paul, jeanne, date(2000, 1, 1));
 
 				// le tuteur
 				MockIndividu jean = addIndividu(noTuteur, date(1966, 4, 2), "Dupneu", "Jean", true);
-				addAdresse(jean, EnumTypeAdresse.PRINCIPALE, MockRue.CossonayVille.AvenueDuFuniculaire, null, MockLocalite.CossonayVille,
+				addAdresse(jean, EnumTypeAdresse.PRINCIPALE, MockRue.CossonayVille.AvenueDuFuniculaire, null,
 						date(1985, 4, 1), null);
 			}
 		});
@@ -2020,17 +2020,17 @@ public class AdresseServiceTest extends BusinessTest {
 			protected void init() {
 				// le principal
 				MockIndividu paul = addIndividu(noPrincipal, date(1953, 11, 2), "Dupont", "Paul", true);
-				addAdresse(paul, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, date(2000, 1,
+				addAdresse(paul, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, date(2000, 1,
 						1), null);
 
 				// le conjoint
 				MockIndividu jeanne = addIndividu(noConjoint, date(1954, 11, 2), "Dupont", "Jeanne", false);
-				addAdresse(jeanne, EnumTypeAdresse.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, MockLocalite.Bex, date(2000, 1, 1), null);
+				addAdresse(jeanne, EnumTypeAdresse.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, date(2000, 1, 1), null);
 				marieIndividus(paul, jeanne, date(2000, 1, 1));
 
 				// le tuteur
 				MockIndividu jean = addIndividu(noTuteur, date(1966, 4, 2), "Dupneu", "Jean", true);
-				addAdresse(jean, EnumTypeAdresse.PRINCIPALE, MockRue.CossonayVille.AvenueDuFuniculaire, null, MockLocalite.CossonayVille,
+				addAdresse(jean, EnumTypeAdresse.PRINCIPALE, MockRue.CossonayVille.AvenueDuFuniculaire, null,
 						date(1985, 4, 1), null);
 			}
 		});
@@ -2203,22 +2203,22 @@ public class AdresseServiceTest extends BusinessTest {
 			protected void init() {
 				// le principal
 				MockIndividu paul = addIndividu(noPrincipal, date(1953, 11, 2), "Dupont", "Paul", true);
-				addAdresse(paul, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, date(2000, 1,
+				addAdresse(paul, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, date(2000, 1,
 						1), null);
 
 				// le conjoint
 				MockIndividu jeanne = addIndividu(noConjoint, date(1954, 11, 2), "Dupont", "Jeanne", false);
-				addAdresse(jeanne, EnumTypeAdresse.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, MockLocalite.Bex, date(2000, 1, 1), null);
+				addAdresse(jeanne, EnumTypeAdresse.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, date(2000, 1, 1), null);
 				marieIndividus(paul, jeanne, date(2000, 1, 1));
 
 				// le tuteur du principal
 				MockIndividu jean = addIndividu(noTuteurPrincipal, date(1966, 4, 2), "Dupneu", "Jean", true);
-				addAdresse(jean, EnumTypeAdresse.PRINCIPALE, MockRue.CossonayVille.AvenueDuFuniculaire, null, MockLocalite.CossonayVille,
+				addAdresse(jean, EnumTypeAdresse.PRINCIPALE, MockRue.CossonayVille.AvenueDuFuniculaire, null,
 						date(1985, 4, 1), null);
 
 				// le tuteur du conjoint
 				MockIndividu jacky = addIndividu(noTuteurConjoint, date(1967, 4, 2), "Dutronc", "Jacky", true);
-				addAdresse(jacky, EnumTypeAdresse.PRINCIPALE, MockRue.LesClees.ChampDuRaffour, null, MockLocalite.LesClees,
+				addAdresse(jacky, EnumTypeAdresse.PRINCIPALE, MockRue.LesClees.ChampDuRaffour, null,
 						date(1985, 4, 1), null);
 			}
 		});
@@ -2362,21 +2362,21 @@ public class AdresseServiceTest extends BusinessTest {
 				MockIndividu paul = addIndividu(noPupille, date(1953, 11, 2), "Dupont", "Paul", true);
 
 				// adresses courriers
-				addAdresse(paul, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne,
+				addAdresse(paul, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null,
 						date(2000, 1, 1), null);
 
 				// adresses principales/poursuite
-				addAdresse(paul, EnumTypeAdresse.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, MockLocalite.Bex, date(2000, 1, 1), null);
+				addAdresse(paul, EnumTypeAdresse.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, date(2000, 1, 1), null);
 
 				// le tuteur
 				MockIndividu jean = addIndividu(noTuteur, date(1966, 4, 2), "Dupneu", "Jean", true);
 
 				// adresses courriers
-				addAdresse(jean, EnumTypeAdresse.COURRIER, MockRue.CossonayVille.AvenueDuFuniculaire, null, MockLocalite.CossonayVille,
+				addAdresse(jean, EnumTypeAdresse.COURRIER, MockRue.CossonayVille.AvenueDuFuniculaire, null,
 						date(1985, 4, 1), null);
 
 				// adresses principales/poursuite
-				addAdresse(jean, EnumTypeAdresse.PRINCIPALE, MockRue.CossonayVille.AvenueDuFuniculaire, null, MockLocalite.CossonayVille,
+				addAdresse(jean, EnumTypeAdresse.PRINCIPALE, MockRue.CossonayVille.AvenueDuFuniculaire, null,
 						date(1985, 4, 1), null);
 			}
 		});
@@ -2488,11 +2488,11 @@ public class AdresseServiceTest extends BusinessTest {
 				MockIndividu paul = addIndividu(noIndividu, date(1953, 11, 2), "Dupont", "Paul", true);
 
 				// adresses courriers
-				addAdresse(paul, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne,
+				addAdresse(paul, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null,
 						date(2000, 1, 1), null);
 
 				// adresses principales/poursuite
-				addAdresse(paul, EnumTypeAdresse.PRINCIPALE, MockRue.CossonayVille.AvenueDuFuniculaire, null, MockLocalite.CossonayVille,
+				addAdresse(paul, EnumTypeAdresse.PRINCIPALE, MockRue.CossonayVille.AvenueDuFuniculaire, null,
 						date(2000, 1, 1), null);
 			}
 		});
@@ -2571,11 +2571,11 @@ public class AdresseServiceTest extends BusinessTest {
 				MockIndividu pierre = addIndividu(noIndividu, date(1953, 11, 2), "Dupont", "Pierre", true);
 
 				// adresses courriers
-				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, date(1980, 1,
+				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, date(1980, 1,
 						1), date(1987, 12, 11));
-				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.CossonayVille.CheminDeRiondmorcel, null, MockLocalite.CossonayVille,
+				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.CossonayVille.CheminDeRiondmorcel, null,
 						date(1987, 12, 12), date(2001, 6, 3));
-				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.LesClees.ChampDuRaffour, null, MockLocalite.LesClees,
+				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.LesClees.ChampDuRaffour, null,
 						date(2001, 6, 4), null);
 			}
 		});
@@ -2694,11 +2694,11 @@ public class AdresseServiceTest extends BusinessTest {
 				MockIndividu pierre = addIndividu(noIndividu, date(1953, 11, 2), "Dupont", "Pierre", true);
 
 				// adresses principales
-				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, date(1980,
+				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, date(1980,
 						1, 1), date(1987, 12, 11));
-				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, MockRue.CossonayVille.CheminDeRiondmorcel, null, MockLocalite.CossonayVille,
+				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, MockRue.CossonayVille.CheminDeRiondmorcel, null,
 						date(1987, 12, 12), date(2001, 6, 3));
-				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, MockRue.LesClees.ChampDuRaffour, null, MockLocalite.LesClees, date(2001, 6,
+				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, MockRue.LesClees.ChampDuRaffour, null, date(2001, 6,
 						4), null);
 			}
 		});
@@ -3020,7 +3020,7 @@ public class AdresseServiceTest extends BusinessTest {
 
 				// adresses courriers
 				MockAdresse adresse = (MockAdresse) addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null,
-						MockLocalite.Lausanne, date(1980, 1, 1), null);
+						date(1980, 1, 1), null);
 				adresse.setNumero("3bis");
 			}
 		});
@@ -3103,7 +3103,7 @@ public class AdresseServiceTest extends BusinessTest {
 
 				// adresses courriers
 				MockAdresse adresse = (MockAdresse) addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null,
-						MockLocalite.Lausanne, date(1980, 1, 1), null);
+						date(1980, 1, 1), null);
 				adresse.setNumero("3bis");
 			}
 		});
@@ -3341,11 +3341,11 @@ public class AdresseServiceTest extends BusinessTest {
 				MockIndividu pierre = addIndividu(noIndividu, date(1953, 11, 2), "Dupont", "Pierre", true);
 
 				// adresses courriers
-				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, date(1980, 1,
+				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, date(1980, 1,
 						1), null);
 
 				// adresses principales/poursuite
-				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, date(1980,
+				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, date(1980,
 						1, 1), null);
 			}
 		});
@@ -3385,11 +3385,11 @@ public class AdresseServiceTest extends BusinessTest {
 				MockIndividu pierre = addIndividu(noIndividu, date(1953, 11, 2), "Dupont", "Pierre", true);
 
 				// adresses courriers
-				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, date(1980, 1,
+				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, date(1980, 1,
 						1), null);
 
 				// adresses principales/poursuite
-				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, date(1980,
+				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, date(1980,
 						1, 1), null);
 			}
 		});
@@ -3575,11 +3575,11 @@ public class AdresseServiceTest extends BusinessTest {
 				MockIndividu pierre = addIndividu(noIndividu, date(1953, 11, 2), "Dupont", "Pierre", true);
 
 				// adresses courriers
-				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, date(1980, 1,
+				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, date(1980, 1,
 						1), null);
 
 				// adresses principales/poursuite
-				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, date(1980,
+				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, date(1980,
 						1, 1), null);
 			}
 		});
@@ -3633,11 +3633,11 @@ public class AdresseServiceTest extends BusinessTest {
 				MockIndividu pierre = addIndividu(noIndividu, date(1953, 11, 2), "Dupont", "Pierre", true);
 
 				// adresses courriers
-				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, date(1980, 1,
+				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, date(1980, 1,
 						1), null);
 
 				// adresses principales/poursuite
-				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, date(1980,
+				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, date(1980,
 						1, 1), null);
 			}
 		});
@@ -3702,21 +3702,21 @@ public class AdresseServiceTest extends BusinessTest {
 				MockIndividu paul = addIndividu(noIndividuPrincipal, date(1953, 11, 2), "Dupont", "Paul", true);
 
 				// adresses courriers
-				addAdresse(paul, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne,
+				addAdresse(paul, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null,
 						date(2000, 1, 1), null);
 
 				// adresses principales/poursuite
-				addAdresse(paul, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, date(2000, 1,
+				addAdresse(paul, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, date(2000, 1,
 						1), null);
 
 				MockIndividu virginie = addIndividu(noIndividuConjoint, date(1957, 1, 23), "Dupont", "Virginie", false);
 
 				// adresses courriers
-				addAdresse(virginie, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeMarcelin, null, MockLocalite.Lausanne, date(2002,
+				addAdresse(virginie, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeMarcelin, null, date(2002,
 						2, 2), null);
 
 				// adresses principales/poursuite
-				addAdresse(virginie, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, MockLocalite.Lausanne, date(2002,
+				addAdresse(virginie, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, date(2002,
 						2, 2), null);
 
 				marieIndividus(paul, virginie, date(2004, 7, 14));
@@ -4122,18 +4122,18 @@ public class AdresseServiceTest extends BusinessTest {
 			protected void init() {
 				// voilà madame
 				final MockIndividu albertine = addIndividu(noIndividuMadame, date(1954, 5, 2), "Pittet", "Albertine", false);
-				addAdresse(albertine, EnumTypeAdresse.COURRIER, MockRue.Lausanne.RouteMaisonNeuve, null, MockLocalite.Lausanne, date(1980, 1, 1), null);
-				addAdresse(albertine, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.RouteMaisonNeuve, null, MockLocalite.Lausanne, date(1980, 1, 1), null);
+				addAdresse(albertine, EnumTypeAdresse.COURRIER, MockRue.Lausanne.RouteMaisonNeuve, null, date(1980, 1, 1), null);
+				addAdresse(albertine, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.RouteMaisonNeuve, null, date(1980, 1, 1), null);
 
 				// c'est le curateur (de madame)
 				final MockIndividu pierre = addIndividu(noIndividuCurateurMadame, date(1953, 11, 2), "Dupont", "Pierre", true);
-				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, date(1980, 1, 1), null);
-				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, MockLocalite.Lausanne, date(1980, 1, 1), null);
+				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, date(1980, 1, 1), null);
+				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, date(1980, 1, 1), null);
 
 				// et le tuteur (de monsieur)
 				final MockIndividu nicolas = addIndividu(noIndividuTuteurMonsieur, date(1940, 1, 15), "Ricola", "Nicolas", true);
-				addAdresse(nicolas, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeMarcelin, null, MockLocalite.Lausanne, date(1980, 1, 1), null);
-				addAdresse(nicolas, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, MockLocalite.Lausanne, date(1980, 1, 1), null);
+				addAdresse(nicolas, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeMarcelin, null, date(1980, 1, 1), null);
+				addAdresse(nicolas, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, date(1980, 1, 1), null);
 			}
 		});
 
