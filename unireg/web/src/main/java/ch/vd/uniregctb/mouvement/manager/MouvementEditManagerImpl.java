@@ -75,8 +75,8 @@ public class MouvementEditManagerImpl extends AbstractMouvementManagerImpl imple
 		final String visaOperateur = AuthenticationHelper.getCurrentPrincipal();
 		final Operateur operateur = getServiceSecuriteService().getOperateur(visaOperateur);
 		if (operateur != null) {
-			mvtDetailView.setUtilisateurEnvoi(visaOperateur);
-			mvtDetailView.setNumeroUtilisateurEnvoi(operateur.getIndividuNoTechnique());
+			mvtDetailView.setUtilisateurReception(visaOperateur);
+			mvtDetailView.setNumeroUtilisateurReception(operateur.getIndividuNoTechnique());
 		}
 		return mvtDetailView;
 	}
