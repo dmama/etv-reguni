@@ -22,6 +22,7 @@ public class MockLocalite implements Localite {
 	public static final MockLocalite CheseauzSurLausanne = new MockLocalite(180, 1033, null, "Cheseaux-sur-Lausanne", MockCommune.CheseauxSurLausanne);
 	public static final MockLocalite VufflensLaVille = new MockLocalite(526, 1302, null, "Vufflens-la-Ville", MockCommune.VufflensLaVille);
 	public static final MockLocalite Vallorbe = new MockLocalite(535, 1337, null, "Vallorbe", MockCommune.Vallorbe);
+	public static final MockLocalite Chamblon = new MockLocalite(5876, 1436, null, "Chamblon", MockCommune.Chamblon);
 
 	public static final MockLocalite Neuchatel = new MockLocalite(1254, 2000, null, "Neuchâtel", MockCommune.Neuchatel);
 	public static final MockLocalite Neuchatel1Cases = new MockLocalite(1269, 2001, 1, "Neuchâtel 1 Cases", MockCommune.Neuchatel);
@@ -45,6 +46,8 @@ public class MockLocalite implements Localite {
 	public static final MockLocalite LesCharbonnieres = new MockLocalite(545, 1343, null, "Les Charbonnières", MockCommune.LeLieu);
 
 	public static final MockLocalite Zurich = new MockLocalite(8120, 8001, null, "Zurich", MockCommune.Zurich);
+
+	public static final MockLocalite Enney = new MockLocalite(839, 1667, null, "Enney", MockCommune.Enney);
 
 	/**
 	 * Permet de forcer le chargement des Mock dans le DefaultMockService
@@ -86,6 +89,7 @@ public class MockLocalite implements Localite {
 		l = LesCharbonnieres;
 
 		l = Bumpliz;
+		l = Chamblon;
 	}
 
 

@@ -58,7 +58,21 @@ public class MockRue implements Rue {
 
 	}
 
+	public static class Enney {
+		public static final MockRue chemin = new MockRue(MockLocalite.Enney, "Chemin d'Afflon", MockLocalite.Enney.getNoOrdre(),11);
 
+	}
+
+	public static class Chamblon {
+		public static final MockRue GrandRue = new MockRue(MockLocalite.Chamblon, "Rue des Uttins", MockLocalite.Chamblon.getNoOrdre(), 23);
+
+	}
+
+
+	public static class Lisles {
+		public static final MockRue rueMoulin = new MockRue(MockLocalite.Chamblon, "Rue du moulin 10", MockLocalite.Chamblon.getNoOrdre(), 23);
+
+	}
 	/**
 	 * Permet de forcer le chargement des Mock dans le DefaultMockService
 	 * Il faut ajouter les nouveaux Mock dans cette methode

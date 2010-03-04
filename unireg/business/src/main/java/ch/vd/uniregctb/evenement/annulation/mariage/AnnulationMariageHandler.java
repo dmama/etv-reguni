@@ -61,7 +61,7 @@ public class AnnulationMariageHandler extends EvenementCivilHandlerBase {
 		if (menageComplet == null) {
 			throw new EvenementCivilHandlerException("Le tiers ménage commun n'a pu être trouvé");
 		}
-		else if (!menageComplet.estComposeDe(principal, null)) {
+		else if (!menageComplet.contient(principal)) {
 			throw new EvenementCivilHandlerException("Le tiers ménage commun n'a pu être trouvé");
 		}
 		else {
@@ -74,12 +74,12 @@ public class AnnulationMariageHandler extends EvenementCivilHandlerBase {
 		}
 
 		final PersonnePhysique conjoint = menageComplet.getConjoint(principal);
-		
+
 		checkForsAnnulesApres(principal, annulation.getDate(), warnings);
 		if (conjoint != null) {
 			checkForsAnnulesApres(conjoint, annulation.getDate(), warnings);
 		}
-			
+
 		// Traitement de l'annulation de mariage
 		getMetier().annuleMariage(principal, conjoint, annulation.getDate(), annulation.getNumeroEvenement());
 
@@ -99,16 +99,16 @@ public class AnnulationMariageHandler extends EvenementCivilHandlerBase {
 		final List<ForFiscalPrincipal> forsFiscaux = pp.getForsFiscauxPrincipauxApres(date);
 		final int nombreFors = forsFiscaux.size();
 		if (nombreFors > 1 || (nombreFors == 1 && !isAnnuleEtOuvert(forsFiscaux.get(0)))) {
-			String message = MessageFormat.format("Le tiers n° {0} possède au moins un for fiscal principal après la date de mariage ({1})", 
+			String message = MessageFormat.format("Le tiers n° {0} possède au moins un for fiscal principal après la date de mariage ({1})",
 					new Object[] {FormatNumeroHelper.numeroCTBToDisplay(pp.getNumero()), RegDateHelper.dateToDisplayString(date)});
 			warnings.add(new EvenementCivilErreur(message, TypeEvenementErreur.WARNING));
 		}
 	}
-	
+
 	public boolean isAnnuleEtOuvert(ForFiscalPrincipal ffp) {
 		return ffp.isAnnule() && ffp.getDateFin() == null;
 	}
-	
+
 	@Override
 	public GenericEvenementAdapter createAdapter() {
 		return new AnnulationMariageAdapter();

@@ -96,6 +96,9 @@ public class EnsembleTiersCouple {
 
 	/**
 	 * Test que le tiers menage soit rattaché au deux tiers donnés.
+	 * Si un seul des tiers est renseigné en entré et que l'ensembleTiersCouple est composé de deux,
+	 *on doit retourner faux.
+	 *Pour tester la presence d'un tiers dans un ensemble tiers couple, utiliser la méthode {@link #contient(PersonnePhysique)}
 	 *
 	 * @param tiers
 	 *            le premier tiers composant le menage
@@ -104,20 +107,26 @@ public class EnsembleTiersCouple {
 	 * @return true si le test est concluant.
 	 */
 	public boolean estComposeDe(PersonnePhysique tiers, PersonnePhysique autreTiers) {
-		
+
 		if (tiers == null) {
 			tiers = autreTiers;
 			autreTiers = null;
 		}
 		Assert.notNull(tiers);
-		
+
 		boolean tiersPresent = ((principal != null) && (principal.getId().equals(tiers.getId())))
 				|| ((conjoint != null) && (conjoint.getId().equals(tiers.getId())));
 
 		boolean autreTiersPresent = true;
+
 		if (autreTiers != null) {
 			autreTiersPresent = ((principal != null) && (principal.getId().equals(autreTiers.getId())))
 			|| ((conjoint != null) && (conjoint.getId().equals(autreTiers.getId())));
+		}
+		//UNIREG-2055
+
+		else{
+			autreTiersPresent = ((principal == null) || (conjoint == null));
 		}
 
 		return tiersPresent && autreTiersPresent;
@@ -139,6 +148,16 @@ public class EnsembleTiersCouple {
 
 		else
 			return null;
+	}
+
+/**Determine si un tiers appartiens à un ensemble tiers couple
+ *
+ * @param tiers recherché
+ * @return true si le tiers a été trouvé
+ *
+ */
+	public boolean contient(PersonnePhysique tiers){
+		return ((principal == tiers)||(conjoint == tiers));
 	}
 
 }

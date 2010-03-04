@@ -3,12 +3,14 @@ package ch.vd.uniregctb.evenement.mariage;
 import org.apache.log4j.Logger;
 
 import ch.vd.registre.civil.model.EnumAttributeIndividu;
+import ch.vd.registre.civil.model.EnumTypeEtatCivil;
 import ch.vd.uniregctb.evenement.EvenementAdapterException;
 import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
 import ch.vd.uniregctb.evenement.GenericEvenementAdapter;
+import ch.vd.uniregctb.interfaces.model.EtatCivil;
 import ch.vd.uniregctb.interfaces.model.Individu;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 
 /**
  * Modélise un événement conjugal (mariage, pacs)
@@ -44,15 +46,48 @@ public class MariageAdapter extends GenericEvenementAdapter implements Mariage {
 		EnumAttributeIndividu[] attributs = { EnumAttributeIndividu.CONJOINT };
 		final long noIndividu = getIndividu().getNoTechnique();
 		Individu individuPrincipal = serviceCivil.getIndividu(noIndividu, anneeEvenement, attributs);
-		this.nouveauConjoint = individuPrincipal.getConjoint();
+		this.nouveauConjoint = getConjointValide(individuPrincipal,serviceCivil);
+		//this.nouveauConjoint = individuPrincipal.getConjoint();
 	}
 
-	/*
+	/*l
 	 * (non-Javadoc)
 	 * @see ch.vd.uniregctb.evenement.mariage.Mariage#getNouveauConjoint()
 	 */
 	public Individu getNouveauConjoint() {
 		return nouveauConjoint;
+	}
+
+	/**UNIREG-2055
+	 * Cette méthode permet de vérifier que le conjoint trouvé pour l'individu principal a bien
+	 * un état civil cohérent avec l'évènement de mariage traité
+	 *
+	 * @param individuPrincipal
+	 * @return le conjoint correct ou null si le conjoint trouvé n'a pas le bon état civil
+	 */
+	private Individu getConjointValide(Individu individuPrincipal,ServiceCivilService serviceCivil) {
+		Individu conjointTrouve = individuPrincipal.getConjoint();
+		if (conjointTrouve!=null && isBonConjoint(individuPrincipal, conjointTrouve)) {
+			final EtatCivil etatCivilConjoint = serviceCivil.getEtatCivilActif(conjointTrouve.getNoTechnique(), getDate());
+			//Si le conjoint n'a pas d'état civil ou son état civil est différent de marié, on renvoie null
+			if (etatCivilConjoint!=null ) {
+				if (EnumTypeEtatCivil.MARIE.equals(etatCivilConjoint.getTypeEtatCivil()) || EnumTypeEtatCivil.PACS.equals(etatCivilConjoint.getTypeEtatCivil())) {
+					return conjointTrouve ;
+				}
+
+			}
+
+		}
+		return null;
+	}
+
+
+	private boolean isBonConjoint(Individu principal,Individu conjoint){
+		Individu principalAttendu = conjoint.getConjoint();
+		if (principalAttendu!=null && principal.getNoTechnique()== principalAttendu.getNoTechnique()) {
+			return true;
+		}
+		return false;
 	}
 
 }

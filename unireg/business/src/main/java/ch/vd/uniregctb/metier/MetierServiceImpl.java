@@ -197,7 +197,7 @@ public class MetierServiceImpl implements MetierService {
 	private boolean isArrivee(MotifFor motif) {
 		return (MotifFor.ARRIVEE_HC == motif || MotifFor.ARRIVEE_HS == motif);
 	}
-	
+
 	private boolean isDepart(MotifFor motif) {
 		return (MotifFor.DEPART_HC == motif || MotifFor.DEPART_HS == motif);
 	}
@@ -301,9 +301,9 @@ public class MetierServiceImpl implements MetierService {
 
 					final boolean conjointInconnuAuFiscal = conjoint == null || conjoint.getForsFiscauxNonAnnules(false).size() == 0;
 					final boolean tousLesConjointsConnusSontEnFaitArrivesMaries = donneesPrincipal != null && (conjointInconnuAuFiscal || donneesConjoint != null);
-					
+
 					final boolean unDesConjointEstPartiAvantMariage = (getDernierForFermePourDepart(principal) != null || (conjoint != null && getDernierForFermePourDepart(conjoint) != null));
-					
+
 					if (tousLesConjointsConnusSontEnFaitArrivesMaries || unDesConjointEstPartiAvantMariage) {
 
 						// le motif d'ouverture doit être le mariage dès qu'au moins un des futurs
@@ -374,7 +374,7 @@ public class MetierServiceImpl implements MetierService {
 				// il n'est apparemment pas possible que les deux fors soient nuls, sinon on n'aurait pas pu trouver de
 				// mode d'imposition
 				ForFiscalPrincipal forPourMenage = null;
-				
+
 				if ((forPrincipal != null && forConjoint == null) || (forPrincipal == null && forConjoint != null)) {
 					// si un seul for existe, on utilise ses données
 					if (forPrincipal == null) {
@@ -397,7 +397,7 @@ public class MetierServiceImpl implements MetierService {
 						forPourMenage = forConjoint;
 					}
 				}
-				
+
 				noOfsCommune = forPourMenage.getNumeroOfsAutoriteFiscale();
 				typeAutoriteCommune = forPourMenage.getTypeAutoriteFiscale();
 			}
@@ -1178,9 +1178,9 @@ public class MetierServiceImpl implements MetierService {
 			results.addError("Le ménage doit déjà être séparé à cette date");
 		}
 		else {
-			// [UNIREG-1057] y aura plus de génération de warnings 
+			// [UNIREG-1057] y aura plus de génération de warnings
 			// en cas de divorce/séparation avec des fors secondaires
-			
+
 			if (menage.getDernierForFiscalPrincipal() != null && menage.getDernierForFiscalPrincipal().getDateDebut().isAfter(date)) {
 				results.addError("Il y a des fors ouverts après la date de séparation");
 			}
@@ -1459,7 +1459,7 @@ public class MetierServiceImpl implements MetierService {
 	 *            le type d'autorité fiscale du for à ouvrir
 	 * @param motifOuverture
 	 *            le motif d'ouverture.
-	 * @param changeHabitantFlag 
+	 * @param changeHabitantFlag
 	 * @return le for créé.
 	 */
 	private ForFiscalPrincipal createForFiscalPrincipal(RegDate date, PersonnePhysique contribuable, ModeImposition modeImpotCouple,
@@ -2059,7 +2059,7 @@ public class MetierServiceImpl implements MetierService {
 		Assert.isEqual(dernierRapportMenage.getDateFin(), date, "La date du dernier rapport entre tiers n'est pas la même que celle de l'événement");
 		MenageCommun menageCommun = (MenageCommun) dernierRapportMenage.getObjet();
 		EnsembleTiersCouple ensembleTiersCouple = getTiersService().getEnsembleTiersCouple(menageCommun, dernierRapportMenage.getDateDebut());
-		if (!ensembleTiersCouple.estComposeDe(tiers, null)) {
+		if (!ensembleTiersCouple.contient(tiers)) {
 			 throw new EvenementCivilHandlerException("Le dernier ménage n'est pas composé du tiers n° " + FormatNumeroHelper.numeroCTBToDisplay(tiers.getNumero()));
 		}
 
@@ -2094,5 +2094,5 @@ public class MetierServiceImpl implements MetierService {
 		cancelSituationFamillePP(lendemain, tiers);
 		reopenSituationFamille(date, menageCommun);
 	}
-	
+
 }
