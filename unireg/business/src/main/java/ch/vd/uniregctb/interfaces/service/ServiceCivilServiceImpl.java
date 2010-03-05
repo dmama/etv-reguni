@@ -11,6 +11,7 @@ import ch.vd.uniregctb.interfaces.model.wrapper.*;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.log4j.Logger;
 
+import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -61,13 +62,17 @@ public class ServiceCivilServiceImpl extends ServiceCivilServiceBase {
 	@SuppressWarnings({"unchecked"})
 	public List<Individu> getIndividus(Collection<Long> nosIndividus, RegDate date, EnumAttributeIndividu... parties) {
 		try {
-			final List<Individu> list = new ArrayList<Individu>(nosIndividus.size());
-
 			final int annee = (date == null ? 2400 : date.year());
+
+			// l'appel à l'EJB a besoin d'une collection sérialisable
+			if (!(nosIndividus instanceof Serializable)) {
+				nosIndividus = new ArrayList<Long>(nosIndividus);
+			}
 			final Collection<ch.vd.registre.civil.model.Individu> individus = serviceCivil.getIndividus(nosIndividus, annee, parties);
 
+			final List<Individu> list = new ArrayList<Individu>(individus.size());
 			for (ch.vd.registre.civil.model.Individu ind : individus) {
-				Individu individu = IndividuWrapper.get(ind);
+				final Individu individu = IndividuWrapper.get(ind);
 				if (individu != null) {
 					list.add(individu);
 				}

@@ -1,11 +1,13 @@
 package ch.vd.uniregctb.common;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.HibernateTemplate;
@@ -256,7 +258,7 @@ public class BatchTransactionTemplate<E, R extends BatchResults> {
 	 * @return <code>true</code> si le processus s'est bien déroulé et que la transaction est committée; <code>false</code> si la transaction a été rollée-back.
 	 */
 	@SuppressWarnings({"unchecked"})
-	private ExecuteInTransactionResult executeInTransaction(final BatchCallback<E, R> action, final List<E> batch, boolean willRetry, R rapportFinal) {
+	private ExecuteInTransactionResult executeInTransaction(final BatchCallback<E, R> action, final List<E> batch, boolean willRetry, final R rapportFinal) {
 
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug("Execution en transaction du batch = " + batch);
@@ -270,21 +272,34 @@ public class BatchTransactionTemplate<E, R extends BatchResults> {
 		r.committed = true;
 		r.processNextBatch = true;
 
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
+		template.setReadOnly(readonly);
+
 		try {
-			final TransactionTemplate template = new TransactionTemplate(transactionManager);
-			template.setReadOnly(readonly);
 			r.processNextBatch = (Boolean) template.execute(new TransactionCallback() {
 				public Boolean doInTransaction(TransactionStatus status) {
 					return executeWithNewSession(batch, action, rapport);
 				}
 			});
 		}
-		catch (Exception e) {
+		catch (final Exception e) {
 			r.committed = false;
 
 			if (rapportFinal != null && !willRetry) {
 				// le batch ne va pas être rejoué -> on ajoute l'exception
-				rapportFinal.addErrorException(batch.get(0), e);
+				// on re-crée une transaction ici au cas où on veut étoffer un peu le message d'erreur
+				try {
+					template.execute(new TransactionCallback() {
+						public Object doInTransaction(TransactionStatus status) {
+							addErrorExceptionInNewSession(rapportFinal, batch.get(0), e);
+							return null;
+						}
+					});
+				}
+				catch (Exception ex) {
+					LOGGER.error("Impossible de logger l'erreur suivante dans le rapport final...", e);
+					LOGGER.error("... car réception d'une autre erreur au moment de la tentative de log :", ex);
+				}
 			}
 			
 			action.afterTransactionRollback(e, willRetry);
@@ -309,6 +324,16 @@ public class BatchTransactionTemplate<E, R extends BatchResults> {
 		}
 
 		return r;
+	}
+
+	private void addErrorExceptionInNewSession(final R rapportFinal, final E elt, final Exception e) {
+		hibernateTemplate.executeWithNewSession(new HibernateCallback() {
+			@SuppressWarnings({"unchecked"})
+			public Object doInHibernate(Session session) throws HibernateException, SQLException {
+				rapportFinal.addErrorException(elt, e);
+				return null;
+			}
+		});
 	}
 
 	/**

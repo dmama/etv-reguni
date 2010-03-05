@@ -4,8 +4,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -182,12 +184,13 @@ public class ProduireRolesCommuneProcessor {
 	}
 
 	private void preloadIndividus(List<Tiers> tierz, int anneePeriode) {
-		final Set<Long> nosIndividus = new HashSet<Long>(tierz.size() * 2);
+		final Map<Long, PersonnePhysique> ppByNoIndividu = new HashMap<Long, PersonnePhysique>(tierz.size() * 2);
 		for (Tiers tiers : tierz) {
 			if (tiers instanceof PersonnePhysique) {
 				final PersonnePhysique pp = (PersonnePhysique) tiers;
 				if (pp.isHabitant()) {
-					nosIndividus.add(pp.getNumeroIndividu());
+					final Long noIndividu = pp.getNumeroIndividu();
+					ppByNoIndividu.put(noIndividu, pp);
 				}
 			}
 			else if (tiers instanceof MenageCommun) {
@@ -195,18 +198,27 @@ public class ProduireRolesCommuneProcessor {
 				final PersonnePhysique principal = ensemble.getPrincipal();
 				final PersonnePhysique conjoint = ensemble.getConjoint();
 				if (principal != null && principal.isHabitant()) {
-					nosIndividus.add(principal.getNumeroIndividu());
+					final Long noIndividvu = principal.getNumeroIndividu();
+					ppByNoIndividu.put(noIndividvu, principal);
 				}
 				if (conjoint != null && conjoint.isHabitant()) {
-					nosIndividus.add(conjoint.getNumeroIndividu());
+					final Long noIndividu = conjoint.getNumeroIndividu();
+					ppByNoIndividu.put(noIndividu, conjoint);
 				}
 			}
 		}
-		if (nosIndividus.size() > 0) {
+
+		if (ppByNoIndividu.size() > 0) {
 			// remplit le cache des individus...
 			final RegDate date = RegDate.get(anneePeriode, 12, 31);
-			final List<Individu> individus = serviceCivilService.getIndividus(nosIndividus, date, EnumAttributeIndividu.ADRESSES);
+			final List<Individu> individus = serviceCivilService.getIndividus(ppByNoIndividu.keySet(), date, EnumAttributeIndividu.ADRESSES);
 			serviceCivilService.warmCache(individus, date, EnumAttributeIndividu.ADRESSES);
+
+			// et on remplit aussi le cache individu sur les personnes physiques... (utilisé pour l'accès à la date de décès)
+			for (Individu individu : individus) {
+				final PersonnePhysique pp = ppByNoIndividu.get(individu.getNoTechnique());
+				pp.setIndividuCache(individu);
+			}
 		}
 	}
 
