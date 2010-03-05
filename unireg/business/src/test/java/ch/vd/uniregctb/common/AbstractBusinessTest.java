@@ -261,11 +261,12 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 		return adresse;
 	}
 
-	protected AdresseEtrangere addAdresseEtrangere(Tiers tiers, TypeAdresseTiers usage, RegDate debut, RegDate fin, Pays pays) {
+	protected AdresseEtrangere addAdresseEtrangere(Tiers tiers, TypeAdresseTiers usage, RegDate debut, RegDate fin, String numeroPostalEtLocalite, Pays pays) {
 		AdresseEtrangere adresse = new AdresseEtrangere();
 		adresse.setDateDebut(debut);
 		adresse.setDateFin(fin);
 		adresse.setUsage(usage);
+		adresse.setNumeroPostalLocalite(numeroPostalEtLocalite);
 		adresse.setNumeroOfsPays(pays.getNoOFS());
 		adresse = (AdresseEtrangere) tiersService.addAndSave(tiers, adresse);
 		return adresse;

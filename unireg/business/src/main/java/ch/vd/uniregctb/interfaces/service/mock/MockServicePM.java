@@ -82,14 +82,19 @@ public abstract class MockServicePM implements ServicePersonneMoraleService {
 
 	public AdressesPM getAdresses(long noEntreprise, RegDate date) {
 
+		final PersonneMorale entreprise = getPersonneMorale(noEntreprise);
+		if (entreprise == null) {
+			return null;
+		}
+
 		AdressesPM adresses = new AdressesPM();
 
-		final PersonneMorale entreprise = getPersonneMorale(noEntreprise);
 		final Collection<AdresseEntreprise> adressesPM = entreprise.getAdresses();
-
-		for (AdresseEntreprise a : adressesPM) {
-			if (isActive(a, date)) {
-				adresses.set(a);
+		if (adressesPM != null) {
+			for (AdresseEntreprise a : adressesPM) {
+				if (isActive(a, date)) {
+					adresses.set(a);
+				}
 			}
 		}
 

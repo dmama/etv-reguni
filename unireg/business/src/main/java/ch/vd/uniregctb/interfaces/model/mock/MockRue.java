@@ -9,6 +9,9 @@ public class MockRue implements Rue {
 		public static final MockRue RouteMaisonNeuve = new MockRue(MockLocalite.Lausanne, "Route de la Maison Neuve", 141554);
 		public static final MockRue AvenueDeMarcelin = new MockRue(MockLocalite.Lausanne, "Av de Marcelin", 9832);
 		public static final MockRue AvenueDeBeaulieu = new MockRue(MockLocalite.Lausanne, "Av de Beaulieu", 76437);
+		public static final MockRue BoulevardGrancy = new MockRue(MockLocalite.Lausanne, "Boulevard de Grancy", 30581);
+		public static final MockRue CheminDeMornex = new MockRue(MockLocalite.Lausanne, "Chemin de Mornex", 30350);
+		public static final MockRue CheminPrazBerthoud = new MockRue(MockLocalite.Lausanne, "Chemin de Praz-Berthoud", 30933);
 	}
 
 	public static class CossonayVille {
@@ -67,6 +70,27 @@ public class MockRue implements Rue {
 
 	public static class LIsle {
 		public static final MockRue rueMoulin = new MockRue(MockLocalite.LIsle, "Rue du moulin", 338528);
+	}
+
+	public static class GrangesMarnand {
+		public static final MockRue SousLeBois = new MockRue(MockLocalite.GrangesMarnand, "Chemin Sous le Bois", 127968);
+		public static final MockRue RueDeVerdairuz = new MockRue(MockLocalite.GrangesMarnand, "Rue de Verdairuz", 127970);
+	}
+
+	public static class Bussigny {
+		public static final MockRue RueDeLIndustrie = new MockRue(MockLocalite.Bussigny, "Rue de l'Industrie", 31444);
+	}
+
+	public static class Vevey {
+		public static final MockRue RueDesMoulins = new MockRue(MockLocalite.Vevey, "Rue des Moulins", 34262);
+	}
+
+	public static class Echallens {
+		public static final MockRue GrandRue = new MockRue(MockLocalite.Echallens, "Grand Rue", 31560);
+	}
+
+	public static class Lonay {
+		public static final MockRue CheminDuRechoz = new MockRue(MockLocalite.Lonay, "Chemin de Réchoz", 99548);
 	}
 
 	private final MockLocalite localite;

@@ -616,35 +616,12 @@ public class AdresseManagerImpl extends TiersManager implements AdresseManager {
 			TypeAdresseRepresentant type) {
 		AdresseDisponibleView addDispoView = new AdresseDisponibleView();
 
-		if (type.equals(TypeAdresseRepresentant.CONSEIL_LEGAL)) {
-
-			addDispoView.setSource(Source.CONSEIL_LEGAL);
-
-			final RapportEntreTiers rapportConseilLegal = TiersHelper.getRapportSujetOfType(tiers, TypeRapportEntreTiers.CONSEIL_LEGAL,
-					null);
-			final Tiers conseilLegal = rapportConseilLegal.getObjet();
-
-			addDispoView.setRepresentantLegal(getNomCourrier(conseilLegal));
-
-		} else if (type.equals(TypeAdresseRepresentant.TUTELLE)) {
-
-			addDispoView.setSource(Source.TUTELLE);
-			final RapportEntreTiers rapportTutelle = TiersHelper.getRapportSujetOfType(tiers, TypeRapportEntreTiers.TUTELLE, null);
-			final Tiers tuteur = rapportTutelle.getObjet();
-
-			addDispoView.setRepresentantLegal(getNomCourrier(tuteur));
-
-		} else if (type.equals(TypeAdresseRepresentant.CURATELLE)) {
-
-			addDispoView.setSource(Source.CURATELLE);
-			final RapportEntreTiers rapportCuratelle = TiersHelper.getRapportSujetOfType(tiers, TypeRapportEntreTiers.CURATELLE, null);
-			final Tiers curateur = rapportCuratelle.getObjet();
-
-			addDispoView.setRepresentantLegal(getNomCourrier(curateur));
-
-		}
-		else {
-
+		if (type == TypeAdresseRepresentant.CONSEIL_LEGAL || type == TypeAdresseRepresentant.TUTELLE || type == TypeAdresseRepresentant.CURATELLE) {
+			final RapportEntreTiers rapport = TiersHelper.getRapportSujetOfType(tiers, type.getTypeRapport(), null);
+			final Tiers conseiller = rapport.getObjet();
+			
+			addDispoView.setSource(type.getTypeSource());
+			addDispoView.setRepresentantLegal(getNomCourrier(conseiller));
 		}
 
 		addDispoView.setLocalite(addIndividu.getLocalite());

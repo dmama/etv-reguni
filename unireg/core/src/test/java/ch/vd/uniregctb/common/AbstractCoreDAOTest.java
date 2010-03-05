@@ -780,7 +780,42 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 
 		return ensemble;
 	}
-	
+
+	protected Tutelle addTutelle(PersonnePhysique pupille, Tiers tuteur, Tiers autoriteTutelaire, RegDate dateDebut) {
+		Tutelle rapport = new Tutelle();
+		rapport.setDateDebut(dateDebut);
+		rapport.setObjet(tuteur);
+		rapport.setSujet(pupille);
+		rapport.setAutoriteTutelaire(autoriteTutelaire);
+		rapport = (Tutelle) hibernateTemplate.merge(rapport);
+		tuteur.addRapportObjet(rapport);
+		pupille.addRapportSujet(rapport);
+		return rapport;
+	}
+
+	protected Curatelle addCuratelle(PersonnePhysique pupille, Tiers curateur, RegDate dateDebut) {
+		Curatelle rapport = new Curatelle();
+		rapport.setDateDebut(dateDebut);
+		rapport.setObjet(curateur);
+		rapport.setSujet(pupille);
+		rapport = (Curatelle) hibernateTemplate.merge(rapport);
+		curateur.addRapportObjet(rapport);
+		pupille.addRapportSujet(rapport);
+		return rapport;
+	}
+
+	protected RepresentationConventionnelle addRepresentationConventionnelle(PersonnePhysique pupille, Tiers representant, RegDate dateDebut, boolean extensionExecutionForcee) {
+		RepresentationConventionnelle rapport = new RepresentationConventionnelle();
+		rapport.setDateDebut(dateDebut);
+		rapport.setObjet(representant);
+		rapport.setSujet(pupille);
+		rapport.setExtensionExecutionForcee(extensionExecutionForcee);
+		rapport = (RepresentationConventionnelle) hibernateTemplate.merge(rapport);
+		representant.addRapportObjet(rapport);
+		pupille.addRapportSujet(rapport);
+		return rapport;
+	}
+
 	protected DebiteurPrestationImposable addDebiteur() {
 		DebiteurPrestationImposable dpi = new DebiteurPrestationImposable();
 		dpi = (DebiteurPrestationImposable) hibernateTemplate.merge(dpi);

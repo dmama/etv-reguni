@@ -593,9 +593,9 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 
 		final TiersInfoArray list = service.searchTiers(params);
 		assertNotNull(list);
-		assertEquals(4, list.getItem().size());
+		assertEquals(5, list.getItem().size());
 
-		// on retrouve les schmidt (couple + 2 tiers) et un débiteur associé
+		// on retrouve les schmidt (couple + 2 tiers), un débiteur associé et une pupille sous conseil légal
 		int nbFound = 0;
 		for (int i = 0; i < list.getItem().size(); i++) {
 			TiersInfo info = list.getItem().get(i);
@@ -611,12 +611,16 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 				assertEquals(TypeTiers.PERSONNE_PHYSIQUE, info.getType());
 				nbFound++;
 			}
+			if (86116202L == info.getNumero()) {
+				assertEquals(TypeTiers.MENAGE_COMMUN, info.getType());
+				nbFound++;
+			}
 			if (12500001L == info.getNumero()) {
 				assertEquals(TypeTiers.DEBITEUR, info.getType());
 				nbFound++;
 			}
 		}
-		assertEquals(4, nbFound);
+		assertEquals(5, nbFound);
 	}
 
 	@Test

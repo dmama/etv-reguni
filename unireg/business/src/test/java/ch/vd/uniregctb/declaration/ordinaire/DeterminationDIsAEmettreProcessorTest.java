@@ -464,7 +464,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		addForPrincipal(mitt, date(1968, 11, 3), null, null, null, MockPays.Danemark);
 		addForSecondaire(mitt, date(1968, 11, 3), MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne.getNoOFS(),
 				MotifRattachement.ACTIVITE_INDEPENDANTE);
-		addAdresseEtrangere(mitt, TypeAdresseTiers.DOMICILE, date(1968, 11, 3), null, MockPays.Danemark);
+		addAdresseEtrangere(mitt, TypeAdresseTiers.DOMICILE, date(1968, 11, 3), null, null, MockPays.Danemark);
 		assertDetails(TypeContribuableDI.VAUDOIS_ORDINAIRE, date(2007, 1, 1), date(2007, 12, 31), service.determineDetailsEnvoi(mitt,
 				2007));
 
@@ -482,7 +482,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		addForPrincipal(jacky, date(1968, 11, 3), null, null, null, MockPays.Danemark);
 		addForSecondaire(jacky, date(1968, 11, 3), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(),
 				MotifRattachement.IMMEUBLE_PRIVE);
-		addAdresseEtrangere(jacky, TypeAdresseTiers.DOMICILE, date(1968, 11, 3), null, MockPays.Danemark);
+		addAdresseEtrangere(jacky, TypeAdresseTiers.DOMICILE, date(1968, 11, 3), null, null, MockPays.Danemark);
 		assertZeroDeclaration(service.determineDetailsEnvoi(jacky, 2007));
 	}
 

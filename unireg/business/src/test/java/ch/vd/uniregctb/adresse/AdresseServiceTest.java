@@ -1,38 +1,29 @@
 package ch.vd.uniregctb.adresse;
 
-import static ch.vd.uniregctb.adresse.AdresseTestCase.assertAdresse;
-import static ch.vd.uniregctb.adresse.AdresseTestCase.assertAdressesEquals;
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
-import static junit.framework.Assert.fail;
-import static org.junit.Assert.assertTrue;
-
-import java.util.List;
-
-import ch.vd.uniregctb.tiers.*;
-import junit.framework.Assert;
-import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
-
 import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.pm.model.EnumTypeAdresseEntreprise;
 import ch.vd.uniregctb.adresse.AdresseGenerique.Source;
 import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
-import ch.vd.uniregctb.interfaces.model.mock.MockAdresse;
-import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
-import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
-import ch.vd.uniregctb.interfaces.model.mock.MockPersonneMorale;
-import ch.vd.uniregctb.interfaces.model.mock.MockRue;
+import ch.vd.uniregctb.interfaces.model.mock.*;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServicePM;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
 import ch.vd.uniregctb.interfaces.service.mock.MockServicePM;
+import ch.vd.uniregctb.tiers.*;
 import ch.vd.uniregctb.type.FormulePolitesse;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
+import org.junit.Test;
+import org.springframework.transaction.TransactionStatus;
 
+import java.util.List;
+
+import static ch.vd.uniregctb.adresse.AdresseTestCase.assertAdresse;
+import static ch.vd.uniregctb.adresse.AdresseTestCase.assertAdressesEquals;
+import static org.junit.Assert.*;
+
+@SuppressWarnings({"JavaDoc"})
 public class AdresseServiceTest extends BusinessTest {
 
 	private AdresseService adresseService;
@@ -61,7 +52,7 @@ public class AdresseServiceTest extends BusinessTest {
 	}
 
 	@Test
-	public void testGetAdressesFiscalNonHabitantAvecDomicileSeulement() throws Exception {
+	public void testGetAdressesFiscalesNonHabitantAvecDomicileSeulement() throws Exception {
 
 		PersonnePhysique nonhabitant = new PersonnePhysique(false);
 		nonhabitant.setNom("Khan");
@@ -90,7 +81,7 @@ public class AdresseServiceTest extends BusinessTest {
 	}
 
 	@Test
-	public void testGetAdressesFiscalHistoNonHabitantAvecDomicileSeulement() throws Exception {
+	public void testGetAdressesFiscalesHistoNonHabitantAvecDomicileSeulement() throws Exception {
 
 		final RegDate dateDebut1 = date(2003, 1, 3);
 		final RegDate dateFin1 = date(2006, 5, 5);
@@ -139,7 +130,7 @@ public class AdresseServiceTest extends BusinessTest {
 	}
 
 	@Test
-	public void testGetAdressesFiscalHistoSansTiers() throws Exception {
+	public void testGetAdressesFiscalesHistoSansTiers() throws Exception {
 		assertNull(adresseService.getAdressesFiscales(null, date(2000, 1, 1), false));
 		assertNull(adresseService.getAdresseFiscale(null, TypeAdresseTiers.COURRIER, date(2000, 1, 1), false));
 		assertNull(adresseService.getAdresseFiscale(null, TypeAdresseTiers.DOMICILE, date(2000, 1, 1), false));
@@ -148,7 +139,7 @@ public class AdresseServiceTest extends BusinessTest {
 	}
 
 	@Test
-	public void testGetAdressesFiscalHistoSansAdresseFiscale() throws Exception {
+	public void testGetAdressesFiscalesHistoSansAdresseFiscale() throws Exception {
 
 		final long noIndividu = 1;
 
@@ -487,7 +478,7 @@ public class AdresseServiceTest extends BusinessTest {
 	 * </pre>
 	 */
 	@Test
-	public void testGetAdressesFiscalHistoCasGeneral() throws Exception {
+	public void testGetAdressesFiscalesHistoCasGeneral() throws Exception {
 
 		final long noIndividu = 1;
 
@@ -665,7 +656,7 @@ public class AdresseServiceTest extends BusinessTest {
 	 * </pre>
 	 */
 	@Test
-	public void testGetAdressesFiscalHistoSurchargeCivil() throws Exception {
+	public void testGetAdressesFiscalesHistoSurchargeCivil() throws Exception {
 		final long noIndividu = 2;
 
 		/*
@@ -769,7 +760,7 @@ public class AdresseServiceTest extends BusinessTest {
 	 * </pre>
 	 */
 	@Test
-	public void testGetAdressesFiscalHistoSurchargeAutreTiers() throws Exception {
+	public void testGetAdressesFiscalesHistoSurchargeAutreTiers() throws Exception {
 		final long noIndividu = 1;
 		final long noAutreIndividu = 2;
 
@@ -884,7 +875,7 @@ public class AdresseServiceTest extends BusinessTest {
 	 * </pre>
 	 */
 	@Test
-	public void testGetAdressesFiscalHistoCasParticulier1() throws Exception {
+	public void testGetAdressesFiscalesHistoCasParticulier1() throws Exception {
 		final long noIndividu = 2;
 
 		/*
@@ -1010,7 +1001,7 @@ public class AdresseServiceTest extends BusinessTest {
 	 * </pre>
 	 */
 	@Test
-	public void testGetAdressesFiscalHistoCasParticulier2() throws Exception {
+	public void testGetAdressesFiscalesHistoCasParticulier2() throws Exception {
 		final long noIndividu = 2;
 
 		/*
@@ -1105,7 +1096,7 @@ public class AdresseServiceTest extends BusinessTest {
 	 * </pre>
 	 */
 	@Test
-	public void testGetAdressesFiscalHistoCasParticulier3() throws Exception {
+	public void testGetAdressesFiscalesHistoCasParticulier3() throws Exception {
 		final long noIndividu = 2;
 
 		/*
@@ -1209,7 +1200,7 @@ public class AdresseServiceTest extends BusinessTest {
 	 * </pre>
 	 */
 	@Test
-	public void testGetAdressesFiscalHistoDonneesIncoherentesPlusieursPrincipales() throws Exception {
+	public void testGetAdressesFiscalesHistoDonneesIncoherentesPlusieursPrincipales() throws Exception {
 		final long noIndividu = 2;
 
 		/*
@@ -1257,7 +1248,7 @@ public class AdresseServiceTest extends BusinessTest {
 		// Vérification des adresses - strict
 		{
 			try {
-				final AdressesFiscalesHisto adresses = adresseService.getAdressesFiscalHisto(habitant, true);
+				adresseService.getAdressesFiscalHisto(habitant, true);
 				fail();
 			}
 			catch (AdresseException e) {
@@ -1274,7 +1265,7 @@ public class AdresseServiceTest extends BusinessTest {
 	 * Adresses civiles:     | Lausanne                          |
 	 *                       +-----------------------------------+
 	 *                       ¦- 2020.01.01          2000.03.19 - ¦
-	 *                        
+	 *
 	 *                                                    +--------------------------
 	 *                                                    | Bex
 	 *                                                    +--------------------------
@@ -1287,7 +1278,7 @@ public class AdresseServiceTest extends BusinessTest {
 	 * </pre>
 	 */
 	@Test
-	public void testGetAdressesFiscalHistoDonneesIncoherentesDatesDebutEtFinInversees() throws Exception {
+	public void testGetAdressesFiscalesHistoDonneesIncoherentesDatesDebutEtFinInversees() throws Exception {
 		final long noIndividu = 2;
 
 		/*
@@ -1328,7 +1319,7 @@ public class AdresseServiceTest extends BusinessTest {
 		// Vérification des adresses - strict
 		{
 			try {
-				final AdressesFiscalesHisto adresses = adresseService.getAdressesFiscalHisto(habitant, true);
+				adresseService.getAdressesFiscalHisto(habitant, true);
 				fail();
 			}
 			catch (AdresseException e) {
@@ -1364,7 +1355,7 @@ public class AdresseServiceTest extends BusinessTest {
 	 * </pre>
 	 */
 	@Test
-	public void testGetAdressesFiscalAvecAdresseAnnulee() throws Exception {
+	public void testGetAdressesFiscalesAvecAdresseAnnulee() throws Exception {
 		final long noIndividu = 2;
 
 		/*
@@ -1510,7 +1501,7 @@ public class AdresseServiceTest extends BusinessTest {
 	 * Cas particulier du ménage.
 	 */
 	@Test
-	public void testGetAdressesFiscalHistoMenageCommun() throws Exception {
+	public void testGetAdressesFiscalesHistoMenageCommun() throws Exception {
 		final long noIndividuPrincipal = 2;
 		final long noIndividuConjoint = 4;
 
@@ -1557,8 +1548,7 @@ public class AdresseServiceTest extends BusinessTest {
 				menage = (MenageCommun) rapport.getObjet();
 				rapport = tiersService.addTiersToCouple(menage, conjoint, date(2004, 7, 14), null);
 				menage = (MenageCommun) rapport.getObjet();
-				long noMenageCommun = menage.getNumero();
-				return noMenageCommun;
+				return menage.getNumero();
 			}
 		});
 
@@ -1592,7 +1582,7 @@ public class AdresseServiceTest extends BusinessTest {
 	 * définie au niveau fiscal.
 	 */
 	@Test
-	public void testGetAdressesFiscalHistoMenageCommunNonHabitants() throws Exception {
+	public void testGetAdressesFiscalesHistoMenageCommunNonHabitants() throws Exception {
 
 		// Crée un ménage composé de deux non-habitants et un principal avec une adresse fiscale courrier
 
@@ -1623,8 +1613,7 @@ public class AdresseServiceTest extends BusinessTest {
 				menage = (MenageCommun) rapport.getObjet();
 				rapport = tiersService.addTiersToCouple(menage, conjoint, date(2004, 7, 14), null);
 				menage = (MenageCommun) rapport.getObjet();
-				long noMenageCommun = menage.getNumero();
-				return noMenageCommun;
+				return menage.getNumero();
 			}
 		});
 
@@ -1709,7 +1698,7 @@ public class AdresseServiceTest extends BusinessTest {
 	 * </pre>
 	 */
 	@Test
-	public void testGetAdressesFiscalHistoTutelle() throws Exception {
+	public void testGetAdressesFiscalesHistoTutelle() throws Exception {
 		final long noPupille = 2;
 		final long noTuteur = 5;
 
@@ -1756,14 +1745,13 @@ public class AdresseServiceTest extends BusinessTest {
 
 				// Crée la tutelle proprement dites
 				RapportEntreTiers rapport = new Tutelle();
-				rapport.setDateDebut(date(2004, 01, 01));
+				rapport.setDateDebut(date(2004, 1, 1));
 				rapport.setDateFin(date(2007, 12, 31));
 				rapport.setObjet(tuteur);
 				rapport.setSujet(pupille);
 				tiersDAO.save(rapport);
 
-				long numeroContribuablePupille = pupille.getNumero();
-				return numeroContribuablePupille;
+				return pupille.getNumero();
 			}
 		});
 
@@ -1831,7 +1819,7 @@ public class AdresseServiceTest extends BusinessTest {
 	 * </pre>
 	 */
 	@Test
-	public void testGetAdressesFiscalHistoCoupleTutellePrincipal() throws Exception {
+	public void testGetAdressesFiscalesHistoCoupleTutellePrincipal() throws Exception {
 		final long noPrincipal = 2;
 		final long noConjoint = 3;
 		final long noTuteur = 5;
@@ -1892,7 +1880,7 @@ public class AdresseServiceTest extends BusinessTest {
 
 				// Crée la tutelle proprement dites
 				rapport = new Tutelle();
-				rapport.setDateDebut(date(2004, 01, 01));
+				rapport.setDateDebut(date(2004, 1, 1));
 				rapport.setDateFin(date(2007, 12, 31));
 				rapport.setObjet(tuteur);
 				rapport.setSujet(principal);
@@ -2007,7 +1995,7 @@ public class AdresseServiceTest extends BusinessTest {
 	 * </pre>
 	 */
 	@Test
-	public void testGetAdressesFiscalHistoCoupleTutelleConjoint() throws Exception {
+	public void testGetAdressesFiscalesHistoCoupleTutelleConjoint() throws Exception {
 		final long noPrincipal = 2;
 		final long noConjoint = 3;
 		final long noTuteur = 5;
@@ -2068,7 +2056,7 @@ public class AdresseServiceTest extends BusinessTest {
 
 				// Crée la tutelle proprement dites
 				rapport = new Tutelle();
-				rapport.setDateDebut(date(2004, 01, 01));
+				rapport.setDateDebut(date(2004, 1, 1));
 				rapport.setDateFin(date(2007, 12, 31));
 				rapport.setObjet(tuteur);
 				rapport.setSujet(conjoint);
@@ -2189,7 +2177,7 @@ public class AdresseServiceTest extends BusinessTest {
 	 * </pre>
 	 */
 	@Test
-	public void testGetAdressesFiscalHistoCoupleTutellePrincipalEtConjoint() throws Exception {
+	public void testGetAdressesFiscalesHistoCoupleTutellePrincipalEtConjoint() throws Exception {
 		final long noPrincipal = 2;
 		final long noConjoint = 3;
 		final long noTuteurPrincipal = 5;
@@ -2255,7 +2243,7 @@ public class AdresseServiceTest extends BusinessTest {
 				tuteurPrincipal = (PersonnePhysique) tiersDAO.save(tuteurPrincipal);
 
 				rapport = new Tutelle();
-				rapport.setDateDebut(date(2004, 01, 01));
+				rapport.setDateDebut(date(2004, 1, 1));
 				rapport.setDateFin(date(2007, 12, 31));
 				rapport.setObjet(tuteurPrincipal);
 				rapport.setSujet(principal);
@@ -2267,7 +2255,7 @@ public class AdresseServiceTest extends BusinessTest {
 				tuteurConjoint = (PersonnePhysique) tiersDAO.save(tuteurConjoint);
 
 				rapport = new Tutelle();
-				rapport.setDateDebut(date(2005, 07, 01));
+				rapport.setDateDebut(date(2005, 7, 1));
 				rapport.setDateFin(date(2009, 12, 31));
 				rapport.setObjet(tuteurConjoint);
 				rapport.setSujet(conjoint);
@@ -2307,8 +2295,8 @@ public class AdresseServiceTest extends BusinessTest {
 			assertNotNull(adresses);
 
 			assertEquals(3, adresses.courrier.size());
-			assertAdresse(date(2000, 1, 1), date(2005, 06, 30), "Bex", Source.CIVILE, true, adresses.courrier.get(0));
-			assertAdresse(date(2005, 07, 01), date(2009, 12, 31), "Clées, Les", Source.TUTELLE, false, adresses.courrier.get(1));
+			assertAdresse(date(2000, 1, 1), date(2005, 6, 30), "Bex", Source.CIVILE, true, adresses.courrier.get(0));
+			assertAdresse(date(2005, 7, 1), date(2009, 12, 31), "Clées, Les", Source.TUTELLE, false, adresses.courrier.get(1));
 			assertAdresse(date(2010, 1, 1), null, "Bex", Source.CIVILE, true, adresses.courrier.get(2));
 
 			assertEquals(1, adresses.representation.size());
@@ -2348,7 +2336,7 @@ public class AdresseServiceTest extends BusinessTest {
 	 * Cas d'une adresse "autre tiers" pointant du tuteur vers la pupille et générant ainsi une récursion infinie.
 	 */
 	@Test
-	public void testGetAdressesFiscalDetectionRecursionInfinie() throws Exception {
+	public void testGetAdressesFiscalesDetectionRecursionInfinie() throws Exception {
 		final long noPupille = 2;
 		final long noTuteur = 5;
 
@@ -2410,8 +2398,7 @@ public class AdresseServiceTest extends BusinessTest {
 				rapport.setSujet(pupille);
 				tiersDAO.save(rapport);
 
-				long numeroContribuablePupille = pupille.getNumero();
-				return numeroContribuablePupille;
+				return pupille.getNumero();
 			}
 		});
 
@@ -2475,7 +2462,7 @@ public class AdresseServiceTest extends BusinessTest {
 	 * </pre>
 	 */
 	@Test
-	public void testGetAdressesFiscalHistoAvecAdresseCivile() throws Exception {
+	public void testGetAdressesFiscalesHistoAvecAdresseCivile() throws Exception {
 
 		final long noIndividu = 2;
 
@@ -2558,7 +2545,7 @@ public class AdresseServiceTest extends BusinessTest {
 	 * </pre>
 	 */
 	@Test
-	public void testGetAdressesFiscalHistoDefaultAdressesPrincipalCivil() throws Exception {
+	public void testGetAdressesFiscalesHistoDefaultAdressesPrincipalCivil() throws Exception {
 
 		final long noIndividu = 1;
 
@@ -2681,7 +2668,7 @@ public class AdresseServiceTest extends BusinessTest {
 	 * </pre>
 	 */
 	@Test
-	public void testGetAdressesFiscalHistoDefaultAdressesCourrierCivil() throws Exception {
+	public void testGetAdressesFiscalesHistoDefaultAdressesCourrierCivil() throws Exception {
 
 		final long noIndividu = 1;
 
@@ -2777,7 +2764,7 @@ public class AdresseServiceTest extends BusinessTest {
 	}
 
 	@Test
-	public void testGetAdressesFiscalHistoEntrepriseSansAdresseFiscale() throws Exception {
+	public void testGetAdressesFiscalesHistoEntrepriseSansAdresseFiscale() throws Exception {
 
 		final long noEntreprise = 1;
 
@@ -2811,7 +2798,7 @@ public class AdresseServiceTest extends BusinessTest {
 			Entreprise entreprise = new Entreprise();
 			entreprise.setNumero(noCtbEntreprise);
 			entreprise.setNumeroEntreprise(noEntreprise);
-			entreprise = (Entreprise) tiersDAO.save(entreprise);
+			tiersDAO.save(entreprise);
 		}
 
 		{
@@ -2944,7 +2931,7 @@ public class AdresseServiceTest extends BusinessTest {
 	 * Teste qu'il est possible de récupérer les adresses d'un débiteur sans contribuable associé.
 	 */
 	@Test
-	public void testGetAdresseFiscalDebiteurPrestationImposableSansContribuableAssocie() throws Exception {
+	public void testGetAdressesFiscalesDebiteurPrestationImposableSansContribuableAssocie() throws Exception {
 
 		// Crée un habitant et un débiteur associé
 		final long noDebiteur = (Long) doInNewTransaction(new TxCallback() {
@@ -3006,7 +2993,7 @@ public class AdresseServiceTest extends BusinessTest {
 	 * Teste qu'un débiteur hérite bien des adresses du contribuable associé.
 	 */
 	@Test
-	public void testGetAdresseFiscalDebiteurPrestationImposableSansAdresseSurPersonnePhysique() throws Exception {
+	public void testGetAdressesFiscalesDebiteurPrestationImposableSansAdresseSurPersonnePhysique() throws Exception {
 
 		final long noIndividu = 1;
 
@@ -3089,7 +3076,7 @@ public class AdresseServiceTest extends BusinessTest {
 	}
 
 	@Test
-	public void testGetAdresseEnvoiDebiteurPrestationImposableAvecAdresseCourrierSurPersonnePhysique() throws Exception {
+	public void testGetAdressesFiscalesDebiteurPrestationImposableAvecAdresseCourrierSurPersonnePhysique() throws Exception {
 
 		final long noIndividu = 1;
 
@@ -3688,7 +3675,7 @@ public class AdresseServiceTest extends BusinessTest {
 	}
 
 	@Test
-	public void testGetAdressesMenageCommunAvecRapportsAnnules() throws Exception {
+	public void testGetAdressesFiscalesMenageCommunAvecRapportsAnnules() throws Exception {
 
 		final long noIndividuPrincipal = 2;
 		final long noIndividuConjoint = 4;
@@ -3738,8 +3725,7 @@ public class AdresseServiceTest extends BusinessTest {
 				rapport = tiersService.addTiersToCouple(menage, conjoint, date(2004, 7, 14), null);
 				rapport.setAnnule(true);
 				menage = (MenageCommun) rapport.getObjet();
-				long noMenageCommun = menage.getNumero();
-				return noMenageCommun;
+				return menage.getNumero();
 			}
 		});
 
@@ -3771,6 +3757,360 @@ public class AdresseServiceTest extends BusinessTest {
 		assertNull(adresseEnvoi.getLigne4());
 		assertNull(adresseEnvoi.getLigne5());
 		assertNull(adresseEnvoi.getLigne6());
+	}
+
+	/**
+	 * Voir la spécification "BesoinsContentieux.doc"
+	 */
+	@Test
+	public void testGetAdressesPoursuiteContribuableCelibataire() throws Exception {
+
+		final long noIndividu = 1;
+
+		// un individu célibataire avec une adresse de domicile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				MockIndividu individu = addIndividu(noIndividu, date(1953, 11, 2), "Galley", "Philippe", true);
+				addAdresse(individu, EnumTypeAdresse.PRINCIPALE, MockRue.GrangesMarnand.SousLeBois, null, date(2000, 1, 1), null);
+			}
+		});
+		final PersonnePhysique ctb = addHabitant(noIndividu);
+
+		// les adresses fiscales
+		final AdressesFiscales adresses = adresseService.getAdressesFiscales(ctb, null, false);
+		assertAdresse(date(2000, 1, 1), null, "Granges-près-Marnand", Source.CIVILE, false, adresses.domicile);
+		assertAdresse(date(2000, 1, 1), null, "Granges-près-Marnand", Source.CIVILE, true, adresses.courrier);
+		assertAdressesEquals(adresses.domicile, adresses.poursuite);
+		assertAdressesEquals(adresses.courrier, adresses.representation);
+
+		// les adresses d'envoi
+		final AdresseEnvoi domicile = adresseService.getAdresseEnvoi(ctb, null, TypeAdresseTiers.DOMICILE, false);
+		assertEquals("Monsieur", domicile.getLigne1());
+		assertEquals("Philippe Galley", domicile.getLigne2());
+		assertEquals("Chemin Sous le Bois", domicile.getLigne3());
+		assertEquals("1523 Granges-près-Marnand", domicile.getLigne4());
+		assertNull(domicile.getLigne5());
+
+		assertEquals(domicile, adresseService.getAdresseEnvoi(ctb, null, TypeAdresseTiers.COURRIER, false));
+		assertEquals(domicile, adresseService.getAdresseEnvoi(ctb, null, TypeAdresseTiers.POURSUITE, false));
+		assertEquals(domicile, adresseService.getAdresseEnvoi(ctb, null, TypeAdresseTiers.REPRESENTATION, false));
+	}
+
+	/**
+	 * Voir la spécification "BesoinsContentieux.doc"
+	 */
+	@Test
+	public void testGetAdressesPoursuiteContribuableCouple() throws Exception {
+
+		final long noIndividuPrincipal = 1;
+		final long noIndividuConjoint = 2;
+
+		// un individu célibataire avec une adresse de domicile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				MockIndividu principal = addIndividu(noIndividuPrincipal, date(1953, 11, 2), "Duc", "Jean-Jacques", true);
+				addAdresse(principal, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.BoulevardGrancy, null, date(2000, 1, 1), null);
+
+				MockIndividu conjoint = addIndividu(noIndividuConjoint, date(1953, 11, 2), "Duc", "Regina", false);
+				addAdresse(conjoint, EnumTypeAdresse.PRINCIPALE, MockRue.GrangesMarnand.RueDeVerdairuz, null, date(2000, 1, 1), null);
+			}
+		});
+		final PersonnePhysique principal = addHabitant(noIndividuPrincipal);
+		final PersonnePhysique conjoint = addHabitant(noIndividuConjoint);
+		final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(principal, conjoint, date(2000, 1, 1));
+		assertNotNull(ensemble);
+
+		// les adresses fiscales
+		final AdressesFiscales adressesPrincipal = adresseService.getAdressesFiscales(principal, null, false);
+		assertAdresse(date(2000, 1, 1), null, "Lausanne", Source.CIVILE, false, adressesPrincipal.domicile);
+		assertAdresse(date(2000, 1, 1), null, "Lausanne", Source.CIVILE, true, adressesPrincipal.courrier);
+		assertAdressesEquals(adressesPrincipal.domicile, adressesPrincipal.poursuite);
+		assertAdressesEquals(adressesPrincipal.courrier, adressesPrincipal.representation);
+
+		final AdressesFiscales adressesConjoint = adresseService.getAdressesFiscales(conjoint, null, false);
+		assertAdresse(date(2000, 1, 1), null, "Granges-près-Marnand", Source.CIVILE, false, adressesConjoint.domicile);
+		assertAdresse(date(2000, 1, 1), null, "Granges-près-Marnand", Source.CIVILE, true, adressesConjoint.courrier);
+		assertAdressesEquals(adressesConjoint.domicile, adressesConjoint.poursuite);
+		assertAdressesEquals(adressesConjoint.courrier, adressesConjoint.representation);
+
+		// les adresses d'envoi
+		final AdresseEnvoi domicilePrincipal = adresseService.getAdresseEnvoi(principal, null, TypeAdresseTiers.DOMICILE, false);
+		assertEquals("Monsieur", domicilePrincipal.getLigne1());
+		assertEquals("Jean-Jacques Duc", domicilePrincipal.getLigne2());
+		assertEquals("Boulevard de Grancy", domicilePrincipal.getLigne3());
+		assertEquals("1000 Lausanne", domicilePrincipal.getLigne4());
+		assertNull(domicilePrincipal.getLigne5());
+
+		assertEquals(domicilePrincipal, adresseService.getAdresseEnvoi(principal, null, TypeAdresseTiers.COURRIER, false));
+		assertEquals(domicilePrincipal, adresseService.getAdresseEnvoi(principal, null, TypeAdresseTiers.POURSUITE, false));
+		assertEquals(domicilePrincipal, adresseService.getAdresseEnvoi(principal, null, TypeAdresseTiers.REPRESENTATION, false));
+
+		final AdresseEnvoi domicileConjoint = adresseService.getAdresseEnvoi(conjoint, null, TypeAdresseTiers.DOMICILE, false);
+		assertEquals("Madame", domicileConjoint.getLigne1());
+		assertEquals("Regina Duc", domicileConjoint.getLigne2());
+		assertEquals("Rue de Verdairuz", domicileConjoint.getLigne3());
+		assertEquals("1523 Granges-près-Marnand", domicileConjoint.getLigne4());
+		assertNull(domicileConjoint.getLigne5());
+
+		assertEquals(domicileConjoint, adresseService.getAdresseEnvoi(conjoint, null, TypeAdresseTiers.COURRIER, false));
+		assertEquals(domicileConjoint, adresseService.getAdresseEnvoi(conjoint, null, TypeAdresseTiers.POURSUITE, false));
+		assertEquals(domicileConjoint, adresseService.getAdresseEnvoi(conjoint, null, TypeAdresseTiers.REPRESENTATION, false));
+	}
+
+	/**
+	 * Voir la spécification "BesoinsContentieux.doc"
+	 */
+	@Test
+	public void testGetAdressesPoursuiteContribuableSousCuratelle() throws Exception {
+
+		final long noIndividu = 1;
+		final long noCurateur = 2;
+
+		// un contribuable sous curatelle
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				MockIndividu individu = addIndividu(noIndividu, date(1953, 11, 2), "Staheli", "Marc", true);
+				addAdresse(individu, EnumTypeAdresse.PRINCIPALE, MockRue.Bussigny.RueDeLIndustrie, null, date(2000, 1, 1), null);
+
+				MockIndividu curateur = addIndividu(noCurateur, date(1953, 11, 2), "Bally", "Alain", false);
+				addAdresse(curateur, EnumTypeAdresse.PRINCIPALE, MockRue.Vevey.RueDesMoulins, null, date(2000, 1, 1), null);
+			}
+		});
+		final PersonnePhysique ctb = addHabitant(noIndividu);
+		final PersonnePhysique curateur = addHabitant(noCurateur);
+		addCuratelle(ctb, curateur, date(2000, 1, 1));
+
+		// les adresses fiscales
+		final AdressesFiscales adresses = adresseService.getAdressesFiscales(ctb, null, false);
+		assertAdresse(date(2000, 1, 1), null, "Bussigny-près-Lausanne", Source.CIVILE, false, adresses.domicile);
+		assertAdresse(date(2000, 1, 1), null, "Vevey", Source.CURATELLE, false, adresses.courrier);
+		assertAdressesEquals(adresses.domicile, adresses.poursuite);
+		assertAdresse(date(2000, 1, 1), null, "Bussigny-près-Lausanne", Source.CIVILE, true, adresses.representation);
+
+		// les adresses d'envoi
+		final AdresseEnvoi domicile = adresseService.getAdresseEnvoi(ctb, null, TypeAdresseTiers.DOMICILE, false);
+		assertEquals("Monsieur", domicile.getLigne1());
+		assertEquals("Marc Staheli", domicile.getLigne2());
+		assertEquals("Rue de l'Industrie", domicile.getLigne3());
+		assertEquals("1030 Bussigny-près-Lausanne", domicile.getLigne4());
+		assertNull(domicile.getLigne5());
+
+		final AdresseEnvoi courrier = adresseService.getAdresseEnvoi(ctb, null, TypeAdresseTiers.COURRIER, false);
+		assertEquals("Monsieur", courrier.getLigne1());
+		assertEquals("Marc Staheli", domicile.getLigne2());
+		assertEquals("p.a. Alain Bally", courrier.getLigne3());
+		assertEquals("Rue des Moulins", courrier.getLigne4());
+		assertEquals("1800 Vevey", courrier.getLigne5());
+		assertNull(courrier.getLigne6());
+
+		assertEquals(domicile, adresseService.getAdresseEnvoi(ctb, null, TypeAdresseTiers.POURSUITE, false));
+		assertEquals(domicile, adresseService.getAdresseEnvoi(ctb, null, TypeAdresseTiers.REPRESENTATION, false));
+	}
+
+	/**
+	 * Voir la spécification "BesoinsContentieux.doc"
+	 *
+	 * TODO (msi) faire un test sans autorité tutelaire
+	 */
+	@Test
+	public void testGetAdressesPoursuiteContribuableSousTutelle() throws Exception {
+
+		final long noIndividu = 1;
+
+		// un contribuable sous tutelle avec l'OTG (Lausanne) comme tuteur et l'autorité tutelaire de Yverdon et environs
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				MockIndividu individu = addIndividu(noIndividu, date(1953, 11, 2), "Lopes", "Anabela", false);
+				addAdresse(individu, EnumTypeAdresse.PRINCIPALE, MockRue.Echallens.GrandRue, null, date(2000, 1, 1), null);
+			}
+		});
+
+		final PersonnePhysique ctb = addHabitant(noIndividu);
+		final CollectiviteAdministrative tuteur = addCollAdm(ServiceInfrastructureService.noTuteurGeneral);
+		final CollectiviteAdministrative autoriteTutelaire = addCollAdm(MockCollectiviteAdministrative.JusticePaix.DistrictsJuraNordVaudoisEtGrosDeVaud.getNoColAdm());
+		addTutelle(ctb, tuteur, autoriteTutelaire, date(2000, 1, 1));
+
+		// les adresses fiscales
+		final AdressesFiscales adresses = adresseService.getAdressesFiscales(ctb, null, false);
+		assertAdresse(date(2000, 1, 1), null, "Echallens", Source.CIVILE, false, adresses.domicile);
+		assertAdresse(date(2000, 1, 1), null, "Lausanne", Source.TUTELLE, false, adresses.courrier); // adresse du tuteur
+		assertAdresse(date(2000, 1, 1), null, "Yverdon-les-Bains", Source.TUTELLE, false, adresses.poursuite); // adresse de l'autorité tutelaire
+		assertAdresse(date(2000, 1, 1), null, "Echallens", Source.CIVILE, true, adresses.representation);
+
+		// les adresses d'envoi
+		final AdresseEnvoi domicile = adresseService.getAdresseEnvoi(ctb, null, TypeAdresseTiers.DOMICILE, false);
+		assertEquals("Madame", domicile.getLigne1());
+		assertEquals("Anabela Lopes", domicile.getLigne2());
+		assertEquals("Grand Rue", domicile.getLigne3());
+		assertEquals("1040 Echallens", domicile.getLigne4());
+		assertNull(domicile.getLigne5());
+
+		final AdresseEnvoi courrier = adresseService.getAdresseEnvoi(ctb, null, TypeAdresseTiers.COURRIER, false);
+		assertEquals("Madame", courrier.getLigne1());
+		assertEquals("Anabela Lopes", courrier.getLigne2());
+		assertEquals("p.a. OTG", courrier.getLigne3());
+		assertEquals("Chemin de Mornex 32", courrier.getLigne4());
+		assertEquals("1014 Lausanne", courrier.getLigne5());
+		assertNull(courrier.getLigne6());
+
+		final AdresseEnvoi poursuite = adresseService.getAdresseEnvoi(ctb, null, TypeAdresseTiers.POURSUITE, false);
+		assertEquals("Justice de Paix des districts du", poursuite.getLigne1());
+		assertEquals("Jura-Nord Vaudois et du Gros-de-Vaud", poursuite.getLigne2());
+		assertEquals("Rue du Pré 2", poursuite.getLigne3());
+		assertEquals("Case Postale 693", poursuite.getLigne4());
+		assertEquals("1400 Yverdon-les-Bains", poursuite.getLigne5());
+		assertNull(poursuite.getLigne6());
+
+		assertEquals(domicile, adresseService.getAdresseEnvoi(ctb, null, TypeAdresseTiers.REPRESENTATION, false));
+	}
+
+	/**
+	 * Voir la spécification "BesoinsContentieux.doc"
+	 */
+	@Test
+	public void testGetAdressesPoursuiteContribuableHSAvecRepresentantConventionel() throws Exception {
+
+		servicePM.setUp(new DefaultMockServicePM());
+
+		// un contribuable hors-Suisse avec un représentant conventionnel en Suisse (avec extension de l'exécution forcée)
+		final PersonnePhysique ctb = addNonHabitant("Claude-Alain", "Proz", date(1953, 11, 2), Sexe.MASCULIN);
+		addAdresseEtrangere(ctb, TypeAdresseTiers.DOMICILE, date(2000, 1, 1), null, "Izmir", MockPays.Turquie);
+		final Entreprise representant = addEntreprise(MockPersonneMorale.KPMG.getNumeroEntreprise());
+		addRepresentationConventionnelle(ctb, representant, date(2000, 1, 1), true);
+
+		// les adresses fiscales
+		final AdressesFiscales adresses = adresseService.getAdressesFiscales(ctb, null, false);
+		assertAdresse(date(2000, 1, 1), null, "Izmir", Source.FISCALE, false, adresses.domicile);
+		assertAdresse(date(2000, 1, 1), null, "Lausanne", Source.REPRESENTATION, false, adresses.courrier); // adresse du représentant
+		assertAdresse(date(2000, 1, 1), null, "Lausanne", Source.REPRESENTATION, false, adresses.poursuite); // adresse du représentant
+		assertAdresse(date(2000, 1, 1), null, "Lausanne", Source.REPRESENTATION, true, adresses.representation);
+
+		// les adresses d'envoi
+		final AdresseEnvoi domicile = adresseService.getAdresseEnvoi(ctb, null, TypeAdresseTiers.DOMICILE, false);
+		assertEquals("Monsieur", domicile.getLigne1());
+		assertEquals("Claude-Alain Proz", domicile.getLigne2());
+		assertEquals("Izmir", domicile.getLigne3());
+		assertEquals("Turquie", domicile.getLigne4());
+		assertNull(domicile.getLigne5());
+
+		final AdresseEnvoi courrier = adresseService.getAdresseEnvoi(ctb, null, TypeAdresseTiers.COURRIER, false);
+		assertEquals("Monsieur", courrier.getLigne1());
+		assertEquals("Claude-Alain Proz", domicile.getLigne2());
+		assertEquals("p.a. KPMG SA", courrier.getLigne3());
+		assertEquals("Avenue de Rumine 37", courrier.getLigne4());
+		assertEquals("1005 Lausanne", courrier.getLigne5());
+		assertNull(courrier.getLigne6());
+
+		final AdresseEnvoi poursuite = adresseService.getAdresseEnvoi(ctb, null, TypeAdresseTiers.POURSUITE, false);
+		assertEquals("KPMG SA", poursuite.getLigne1());
+		assertEquals("Avenue de Rumine 37", poursuite.getLigne2());
+		assertEquals("1005 Lausanne", poursuite.getLigne3());
+		assertNull(poursuite.getLigne4());
+
+		assertEquals(courrier, adresseService.getAdresseEnvoi(ctb, null, TypeAdresseTiers.REPRESENTATION, false));
+	}
+
+	/**
+	 * Voir la spécification "BesoinsContentieux.doc"
+	 */
+	@Test
+	public void testGetAdressesPoursuiteContribuableVDAvecRepresentantConventionel() throws Exception {
+
+		final long noIndividu = 1;
+
+		servicePM.setUp(new DefaultMockServicePM());
+
+		// un contribuable vaudois avec un représentant conventionnel en Suisse (sans extension de l'exécution forcée qui n'est pas autorisée dans ce cas-là)
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				MockIndividu individu = addIndividu(noIndividu, date(1953, 11, 2), "Pesci-Mouttet", "Marcello", true);
+				addAdresse(individu, EnumTypeAdresse.PRINCIPALE, MockRue.Lonay.CheminDuRechoz, null, date(2000, 1, 1), null);
+			}
+		});
+
+		final PersonnePhysique ctb = addHabitant(noIndividu);
+		final Entreprise representant = addEntreprise(MockPersonneMorale.CuriaTreuhand.getNumeroEntreprise());
+		addRepresentationConventionnelle(ctb, representant, date(2000, 1, 1), false);
+
+		// les adresses fiscales
+		final AdressesFiscales adresses = adresseService.getAdressesFiscales(ctb, null, false);
+		assertAdresse(date(2000, 1, 1), null, "Lonay", Source.CIVILE, false, adresses.domicile);
+		assertAdresse(date(2000, 1, 1), null, "Chur", Source.REPRESENTATION, false, adresses.courrier); // adresse du représentant
+		assertAdresse(date(2000, 1, 1), null, "Lonay", Source.CIVILE, false, adresses.poursuite); // adresse du contribuable parce que pas d'exécution forcée
+		assertAdresse(date(2000, 1, 1), null, "Lonay", Source.CIVILE, true, adresses.representation);
+
+		// les adresses d'envoi
+		final AdresseEnvoi domicile = adresseService.getAdresseEnvoi(ctb, null, TypeAdresseTiers.DOMICILE, false);
+		assertEquals("Monsieur", domicile.getLigne1());
+		assertEquals("Marcello Pesci-Mouttet", domicile.getLigne2());
+		assertEquals("Chemin de Réchoz", domicile.getLigne3());
+		assertEquals("1027 Lonay", domicile.getLigne4());
+		assertNull(domicile.getLigne5());
+
+		final AdresseEnvoi courrier = adresseService.getAdresseEnvoi(ctb, null, TypeAdresseTiers.COURRIER, false);
+		assertEquals("Monsieur", courrier.getLigne1());
+		assertEquals("Marcello Pesci-Mouttet", courrier.getLigne2());
+		assertEquals("p.a. Curia Treuhand AG", courrier.getLigne3());
+		assertEquals("Grabenstrasse 15", courrier.getLigne4());
+		assertEquals("7000 Chur", courrier.getLigne5());
+		assertNull(courrier.getLigne6());
+
+		assertEquals(domicile, adresseService.getAdresseEnvoi(ctb, null, TypeAdresseTiers.POURSUITE, false));
+		assertEquals(domicile, adresseService.getAdresseEnvoi(ctb, null, TypeAdresseTiers.REPRESENTATION, false));
+	}
+
+	/**
+	 * Voir la spécification "BesoinsContentieux.doc"
+	 */
+	@Test
+	public void testGetAdressesPoursuiteContribuableAvecAdresseSpecifiquePoursuite() throws Exception {
+
+		final long noIndividu = 1;
+
+		servicePM.setUp(new DefaultMockServicePM());
+
+		// un contribuable vaudois avec un représentant conventionnel en Suisse (sans extension de l'exécution forcée qui n'est pas autorisée dans ce cas-là)
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				MockIndividu individu = addIndividu(noIndividu, date(1953, 11, 2), "Galley", "Philippe", true);
+				addAdresse(individu, EnumTypeAdresse.PRINCIPALE, MockRue.GrangesMarnand.SousLeBois, null, date(2000, 1, 1), null);
+			}
+		});
+
+		final PersonnePhysique ctb = addHabitant(noIndividu);
+		addAdresseSuisse(ctb, TypeAdresseTiers.POURSUITE, date(2000,1,1), null, MockRue.Lausanne.CheminPrazBerthoud);
+
+		// les adresses fiscales
+		final AdressesFiscales adresses = adresseService.getAdressesFiscales(ctb, null, false);
+		assertAdresse(date(2000, 1, 1), null, "Granges-près-Marnand", Source.CIVILE, false, adresses.domicile);
+		assertAdresse(date(2000, 1, 1), null, "Granges-près-Marnand", Source.CIVILE, true, adresses.courrier);
+		assertAdresse(date(2000, 1, 1), null, "Lausanne", Source.FISCALE, false, adresses.poursuite);
+		assertAdresse(date(2000, 1, 1), null, "Granges-près-Marnand", Source.CIVILE, true, adresses.representation);
+
+		// les adresses d'envoi
+		final AdresseEnvoi domicile = adresseService.getAdresseEnvoi(ctb, null, TypeAdresseTiers.DOMICILE, false);
+		assertEquals("Monsieur", domicile.getLigne1());
+		assertEquals("Philippe Galley", domicile.getLigne2());
+		assertEquals("Chemin Sous le Bois", domicile.getLigne3());
+		assertEquals("1523 Granges-près-Marnand", domicile.getLigne4());
+		assertNull(domicile.getLigne5());
+		
+		assertEquals(domicile, adresseService.getAdresseEnvoi(ctb, null, TypeAdresseTiers.COURRIER, false));
+
+		final AdresseEnvoi poursuite = adresseService.getAdresseEnvoi(ctb, null, TypeAdresseTiers.POURSUITE, false);
+		assertEquals("Monsieur", poursuite.getLigne1());
+		assertEquals("Philippe Galley", poursuite.getLigne2());
+		assertEquals("Chemin de Praz-Berthoud", poursuite.getLigne3());
+		assertEquals("1000 Lausanne", poursuite.getLigne4());
+		assertNull(poursuite.getLigne5());
+
+		assertEquals(domicile, adresseService.getAdresseEnvoi(ctb, null, TypeAdresseTiers.REPRESENTATION, false));
 	}
 
 	@Test
@@ -4106,54 +4446,5 @@ public class AdresseServiceTest extends BusinessTest {
 		assertAdressesEquals(adresses.representation, adresseService.getAdresseFiscale(tiers, TypeAdresseTiers.REPRESENTATION, date, false));
 		assertAdressesEquals(adresses.poursuite, adresseService.getAdresseFiscale(tiers, TypeAdresseTiers.POURSUITE, date, false));
 		assertAdressesEquals(adresses.domicile, adresseService.getAdresseFiscale(tiers, TypeAdresseTiers.DOMICILE, date, false));
-	}
-
-	@Test
-	public void testAdresseCurateurDeMadameHabitanteAvecMonsieurNonHabitant() throws Exception {
-
-		// test créé pour le cas jira UNIREG-1954
-
-		final long noIndividuMadame = 12345L;
-		final long noIndividuCurateurMadame = 12346L;
-		final long noIndividuTuteurMonsieur = 3245L;
-
-		serviceCivil.setUp(new MockServiceCivil() {
-			@Override
-			protected void init() {
-				// voilà madame
-				final MockIndividu albertine = addIndividu(noIndividuMadame, date(1954, 5, 2), "Pittet", "Albertine", false);
-				addAdresse(albertine, EnumTypeAdresse.COURRIER, MockRue.Lausanne.RouteMaisonNeuve, null, date(1980, 1, 1), null);
-				addAdresse(albertine, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.RouteMaisonNeuve, null, date(1980, 1, 1), null);
-
-				// c'est le curateur (de madame)
-				final MockIndividu pierre = addIndividu(noIndividuCurateurMadame, date(1953, 11, 2), "Dupont", "Pierre", true);
-				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, date(1980, 1, 1), null);
-				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, date(1980, 1, 1), null);
-
-				// et le tuteur (de monsieur)
-				final MockIndividu nicolas = addIndividu(noIndividuTuteurMonsieur, date(1940, 1, 15), "Ricola", "Nicolas", true);
-				addAdresse(nicolas, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeMarcelin, null, date(1980, 1, 1), null);
-				addAdresse(nicolas, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, date(1980, 1, 1), null);
-			}
-		});
-
-		final PersonnePhysique monsieur = addNonHabitant("Achille", "Talon", date(1963,11,7), Sexe.MASCULIN);
-		final PersonnePhysique madame = addHabitant(noIndividuMadame);
-		final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(monsieur, madame, date(2000, 1, 1));
-		final MenageCommun mc = ensemble.getMenage();
-
-		final PersonnePhysique tuteurMonsieur = addHabitant(noIndividuTuteurMonsieur);
-		final Tutelle tutelle = new Tutelle(date(2000,1,1), null, monsieur, tuteurMonsieur);
-		monsieur.addRapportSujet(tutelle);
-		tuteurMonsieur.addRapportObjet(tutelle);
-
-		final PersonnePhysique curateurMadame = addHabitant(noIndividuCurateurMadame);
-		final Curatelle curatelle = new Curatelle(date(2000,1,1), null, madame, curateurMadame);
-		madame.addRapportSujet(curatelle);
-		curateurMadame.addRapportObjet(curatelle);
-
-		final AdresseEnvoiDetaillee adresseEnvoi = adresseService.getAdresseEnvoi(mc, null, TypeAdresseTiers.COURRIER, true);
-		Assert.assertNotNull(adresseEnvoi);
-		Assert.assertEquals("Pierre Dupont est le curateur de Madame, seule habitante du couple", "p.a. Pierre Dupont", adresseEnvoi.getPourAdresse());
 	}
 }

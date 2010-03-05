@@ -8,6 +8,8 @@ public class DefaultMockServicePM extends MockServicePM {
 	protected void init() {
 		addPM(MockPersonneMorale.NestleSuisse);
 		addPM(MockPersonneMorale.BCV);
+		addPM(MockPersonneMorale.KPMG);
+		addPM(MockPersonneMorale.CuriaTreuhand);
 	}
 
 }

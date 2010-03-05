@@ -1,44 +1,21 @@
 package ch.vd.uniregctb.adresse;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-import java.util.List;
-
-import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
-
 import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.interfaces.model.mock.MockAdresse;
-import ch.vd.uniregctb.interfaces.model.mock.MockCanton;
-import ch.vd.uniregctb.interfaces.model.mock.MockCollectiviteAdministrative;
-import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
-import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
-import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
-import ch.vd.uniregctb.interfaces.model.mock.MockPays;
-import ch.vd.uniregctb.interfaces.model.mock.MockPersonneMorale;
-import ch.vd.uniregctb.interfaces.model.mock.MockRue;
+import ch.vd.uniregctb.interfaces.model.mock.*;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.mock.MockServicePM;
-import ch.vd.uniregctb.tiers.AppartenanceMenage;
-import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
-import ch.vd.uniregctb.tiers.ContactImpotSource;
-import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
-import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.MenageCommun;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.RapportEntreTiers;
-import ch.vd.uniregctb.tiers.TiersDAO;
-import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.tiers.Tutelle;
+import ch.vd.uniregctb.tiers.*;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
+import org.junit.Test;
+import org.springframework.transaction.TransactionStatus;
+
+import java.util.List;
+
+import static org.junit.Assert.*;
 
 public class AdresseServiceEnvoiTest extends BusinessTest {
 
@@ -1463,6 +1440,55 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 		assertAdressesEquals(adresse, adresseService.getAdresseEnvoi(paul, null, TypeAdresseTiers.DOMICILE, false));
 		assertAdressesEquals(adresse, adresseService.getAdresseEnvoi(paul, null, TypeAdresseTiers.REPRESENTATION, false));
 		assertAdressesEquals(adresse, adresseService.getAdresseEnvoi(paul, null, TypeAdresseTiers.POURSUITE, false));
+	}
+
+	@Test
+	public void testAdresseEnvoiCurateurDeMadameHabitanteAvecMonsieurNonHabitant() throws Exception {
+
+		// test créé pour le cas jira UNIREG-1954
+
+		final long noIndividuMadame = 12345L;
+		final long noIndividuCurateurMadame = 12346L;
+		final long noIndividuTuteurMonsieur = 3245L;
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				// voilà madame
+				final MockIndividu albertine = addIndividu(noIndividuMadame, date(1954, 5, 2), "Pittet", "Albertine", false);
+				addAdresse(albertine, EnumTypeAdresse.COURRIER, MockRue.Lausanne.RouteMaisonNeuve, null, date(1980, 1, 1), null);
+				addAdresse(albertine, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.RouteMaisonNeuve, null, date(1980, 1, 1), null);
+
+				// c'est le curateur (de madame)
+				final MockIndividu pierre = addIndividu(noIndividuCurateurMadame, date(1953, 11, 2), "Dupont", "Pierre", true);
+				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, date(1980, 1, 1), null);
+				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, date(1980, 1, 1), null);
+
+				// et le tuteur (de monsieur)
+				final MockIndividu nicolas = addIndividu(noIndividuTuteurMonsieur, date(1940, 1, 15), "Ricola", "Nicolas", true);
+				addAdresse(nicolas, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeMarcelin, null, date(1980, 1, 1), null);
+				addAdresse(nicolas, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, date(1980, 1, 1), null);
+			}
+		});
+
+		final PersonnePhysique monsieur = addNonHabitant("Achille", "Talon", date(1963,11,7), Sexe.MASCULIN);
+		final PersonnePhysique madame = addHabitant(noIndividuMadame);
+		final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(monsieur, madame, date(2000, 1, 1));
+		final MenageCommun mc = ensemble.getMenage();
+
+		final PersonnePhysique tuteurMonsieur = addHabitant(noIndividuTuteurMonsieur);
+		final Tutelle tutelle = new Tutelle(date(2000,1,1), null, monsieur, tuteurMonsieur);
+		monsieur.addRapportSujet(tutelle);
+		tuteurMonsieur.addRapportObjet(tutelle);
+
+		final PersonnePhysique curateurMadame = addHabitant(noIndividuCurateurMadame);
+		final Curatelle curatelle = new Curatelle(date(2000,1,1), null, madame, curateurMadame);
+		madame.addRapportSujet(curatelle);
+		curateurMadame.addRapportObjet(curatelle);
+
+		final AdresseEnvoiDetaillee adresseEnvoi = adresseService.getAdresseEnvoi(mc, null, TypeAdresseTiers.COURRIER, true);
+		assertNotNull(adresseEnvoi);
+		assertEquals("Pierre Dupont est le curateur de Madame, seule habitante du couple", "p.a. Pierre Dupont", adresseEnvoi.getPourAdresse());
 	}
 
 	private static void assertAdressesEquals(AdresseEnvoiDetaillee expected, AdresseEnvoiDetaillee actual) {

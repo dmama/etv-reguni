@@ -202,6 +202,25 @@ public class TiersHelper {
 	}
 
 	/**
+	 * @param tiers un tiers dont on veut tester la mise sous tutelle, ou non.
+	 * @param date  la date à laquelle on veut faire le test
+	 * @return <b>vrai</b> si le tiers est sous tutelle à la date donnée; <b>faux</b> autrement.
+	 */
+	public static boolean estSousTutelle(Tiers tiers, RegDate date) {
+		return getRapportSujetOfType(tiers, TypeRapportEntreTiers.TUTELLE, date) != null;
+	}
+
+	/**
+	 * @param tiers un tiers dont on veut tester l'existence d'un représentant avec exécution forcée
+	 * @param date  la date à laquelle on veut faire le test
+	 * @return <b>vrai</b> si le tiers possède un représentant avec exécution forcée à la date donnée; <b>faux</b> autrement.
+	 */
+	public static boolean possedeRepresentantAvecExecutionForcee(Tiers tiers, RegDate date) {
+		final RepresentationConventionnelle representation = (RepresentationConventionnelle) getRapportSujetOfType(tiers, TypeRapportEntreTiers.REPRESENTATION, date);
+		return representation != null && representation.getExtensionExecutionForcee() == Boolean.TRUE;
+	}
+
+	/**
 	 * Retourne l'historique de tous les rapport-entre-tiers du type spécifiés, et dont le tiers est le sujet.
 	 *
 	 * @param tiers

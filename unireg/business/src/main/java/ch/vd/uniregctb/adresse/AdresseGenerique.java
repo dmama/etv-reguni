@@ -27,22 +27,6 @@ public interface AdresseGenerique extends DateRange, Loggable, AdresseAvecCommun
 		 * Cas du contribuable associé à un débiteur
 		 */
 		CONTRIBUABLE;
-		
-		static public Source getSourceFormTypeAdresseRepresentant(TypeAdresseRepresentant type) {
-			if (type.equals(TypeAdresseRepresentant.REPRESENTATION)) {
-				return REPRESENTATION;
-			} 
-			else if (type.equals(TypeAdresseRepresentant.CONSEIL_LEGAL)) {
-				return CONSEIL_LEGAL;
-			} else if (type.equals(TypeAdresseRepresentant.TUTELLE)) {
-				return TUTELLE;
-			} else if (type.equals(TypeAdresseRepresentant.CURATELLE)) {
-				return CURATELLE;
-			} else {
-				return null;
-			}
-			
-		}
 	}
 
 	/**

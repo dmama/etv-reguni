@@ -21,8 +21,12 @@ public class MockLocalite implements Localite {
 	public static final MockLocalite CheseauzSurLausanne = new MockLocalite(180, 1033, null, "Cheseaux-sur-Lausanne", MockCommune.CheseauxSurLausanne);
 	public static final MockLocalite VufflensLaVille = new MockLocalite(526, 1302, null, "Vufflens-la-Ville", MockCommune.VufflensLaVille);
 	public static final MockLocalite Vallorbe = new MockLocalite(535, 1337, null, "Vallorbe", MockCommune.Vallorbe);
-	public static final MockLocalite LIsle = new MockLocalite(293, 1148, null, "Lisle", MockCommune.LIsle);
+	public static final MockLocalite LIsle = new MockLocalite(293, 1148, null, "L'Isle", MockCommune.LIsle);
+	public static final MockLocalite GrangesMarnand = new MockLocalite(715, 1523, null, "Granges-près-Marnand", MockCommune.GrangesMarnand);
 	public static final MockLocalite Chamblon = new MockLocalite(5876, 1436, null, "Chamblon", MockCommune.Chamblon);
+	public static final MockLocalite Bussigny = new MockLocalite(178, 1030, null, "Bussigny-près-Lausanne", MockCommune.Bussigny);
+	public static final MockLocalite Echallens = new MockLocalite(185, 1040, null, "Echallens", MockCommune.Echallens);
+	public static final MockLocalite Lonay = new MockLocalite(174, 1027, null, "Lonay", MockCommune.Lonay);
 
 	// fractions de communes - L'Abbaye
 	public static final MockLocalite LePont = new MockLocalite(543, 1342, null, "Pont, Le", MockCommune.LAbbaye);

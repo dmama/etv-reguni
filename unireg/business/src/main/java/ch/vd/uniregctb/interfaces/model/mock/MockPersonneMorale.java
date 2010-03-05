@@ -41,6 +41,8 @@ public class MockPersonneMorale implements PersonneMorale {
 
 	public static MockPersonneMorale NestleSuisse = new MockPersonneMorale(27769, "Nestlé Suisse S.A.", "S.A.", "Myriam Steiner", RegDate.get(1996, 12, 18), null);
 	public static MockPersonneMorale BCV = new MockPersonneMorale(20222, "Banque Cantonale Vaudoise", "S.A.", "Daniel Kuffer", RegDate.get(1901, 1, 1), null);
+	public static MockPersonneMorale KPMG = new MockPersonneMorale(2058, "KPMG SA", "S.A.", null, RegDate.get(1901, 1, 1), null);
+	public static MockPersonneMorale CuriaTreuhand = new MockPersonneMorale(21038, "Curia Treuhand AG", "S.A.", null, RegDate.get(1901, 1, 1), null);
 
 	static {
 		{
@@ -111,6 +113,45 @@ public class MockPersonneMorale implements PersonneMorale {
 			courrier.setNumeroOrdrePostal(150);
 			BCV.addAdresse(facturation);
 		}
+		{
+			MockAdresseEntreprise siege = new MockAdresseEntreprise();
+			siege.setRue("Badenerstrasse 172");
+			siege.setNumeroMaison("14");
+			siege.setNumeroPostal("8004");
+			siege.setLocalite("Zürich");
+			siege.setType(EnumTypeAdresseEntreprise.SIEGE);
+			siege.setDateDebutValidite(null);
+			siege.setDateFinValidite(null);
+			siege.setNumeroTechniqueRue(64718);
+			siege.setNumeroOrdrePostal(4388);
+			KPMG.addAdresse(siege);
+
+			MockAdresseEntreprise courrier = new MockAdresseEntreprise();
+			courrier.setRue("Avenue de Rumine");
+			courrier.setNumeroMaison("37");
+			courrier.setNumeroPostal("1005");
+			courrier.setLocalite("Lausanne");
+			courrier.setType(EnumTypeAdresseEntreprise.COURRIER);
+			courrier.setDateDebutValidite(null);
+			courrier.setDateFinValidite(null);
+			courrier.setNumeroTechniqueRue(30525);
+			courrier.setNumeroOrdrePostal(152);
+			KPMG.addAdresse(courrier);
+		}
+
+		{
+			MockAdresseEntreprise siege = new MockAdresseEntreprise();
+			siege.setRue("Grabenstrasse");
+			siege.setNumeroMaison("15");
+			siege.setNumeroPostal("7000");
+			siege.setLocalite("Chur");
+			siege.setType(EnumTypeAdresseEntreprise.SIEGE);
+			siege.setDateDebutValidite(null);
+			siege.setDateFinValidite(null);
+			siege.setNumeroTechniqueRue(39838);
+			siege.setNumeroOrdrePostal(3970);
+			CuriaTreuhand.addAdresse(siege);
+		}
 	}
 
 	public MockPersonneMorale() {
@@ -119,6 +160,7 @@ public class MockPersonneMorale implements PersonneMorale {
 	public MockPersonneMorale(long numeroEntreprise, String raisonSociale, String codeFormeJuridique, String nomContact, RegDate debut, RegDate fin) {
 		this.numeroEntreprise = numeroEntreprise;
 		this.raisonSociale = raisonSociale;
+		this.raisonSociale1 = raisonSociale;
 		this.formesJuridiques.add(new MockFormeJuridique(null, null, codeFormeJuridique));
 		this.nomContact = nomContact;
 		this.debut = debut;

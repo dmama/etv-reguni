@@ -71,7 +71,7 @@ public class AdressePMAdapter implements AdresseGenerique {
 	}
 
 	public String getNumero() {
-		return null;
+		return adresse.getNumeroMaison();
 	}
 
 	public String getNumeroAppartement() {
@@ -87,7 +87,7 @@ public class AdressePMAdapter implements AdresseGenerique {
 	}
 
 	public String getNumeroPostal() {
-		return null;
+		return adresse.getNumeroPostal();
 	}
 
 	public String getNumeroPostalComplementaire() {

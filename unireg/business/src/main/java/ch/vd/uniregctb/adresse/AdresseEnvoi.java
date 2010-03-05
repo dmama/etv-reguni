@@ -2,6 +2,7 @@ package ch.vd.uniregctb.adresse;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import ch.vd.registre.base.utils.Assert;
@@ -144,5 +145,20 @@ public class AdresseEnvoi implements Serializable {
 
 	public String getLigne6() {
 		return lignes[5];
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof AdresseEnvoi)) return false;
+
+		final AdresseEnvoi that = (AdresseEnvoi) o;
+
+		return Arrays.equals(lignes, that.lignes);
+	}
+
+	@Override
+	public int hashCode() {
+		return Arrays.hashCode(lignes);
 	}
 }

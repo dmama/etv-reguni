@@ -510,7 +510,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 				addForPrincipal(mitt, date(1968, 11, 3), null, MockPays.France);
 				addForSecondaire(mitt, date(1968, 11, 3), MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne.getNoOFS(),
 						MotifRattachement.ACTIVITE_INDEPENDANTE);
-				addAdresseEtrangere(mitt, TypeAdresseTiers.DOMICILE, date(1968, 11, 3), null, MockPays.Danemark);
+				addAdresseEtrangere(mitt, TypeAdresseTiers.DOMICILE, date(1968, 11, 3), null, null, MockPays.Danemark);
 
 				// contribuable propriétaire d'immeubles privés sis dans le canton et domiciliée hors canton
 				Contribuable georges = addNonHabitant("Georges", "Delatchaux", date(1948, 11, 3), Sexe.MASCULIN);
@@ -526,7 +526,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 				addForPrincipal(jacky, date(1968, 11, 3), null, MockPays.France);
 				addForSecondaire(jacky, date(1968, 11, 3), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(),
 						MotifRattachement.IMMEUBLE_PRIVE);
-				addAdresseEtrangere(jacky, TypeAdresseTiers.DOMICILE, date(1968, 11, 3), null, MockPays.France);
+				addAdresseEtrangere(jacky, TypeAdresseTiers.DOMICILE, date(1968, 11, 3), null, null, MockPays.France);
 
 				// [UNIREG-1349] contribuable propriétaire d'un immeubles depuis 2007 et domiciliée hors Suisse depuis toujours
 				Contribuable lionel = addNonHabitant("Lionel", "Posjin", date(1948, 11, 3), Sexe.MASCULIN);
@@ -534,7 +534,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 				addForPrincipal(lionel, date(1968, 11, 3), null, MockPays.France);
 				addForSecondaire(lionel, date(2007, 4, 25), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(),
 						MotifRattachement.IMMEUBLE_PRIVE);
-				addAdresseEtrangere(lionel, TypeAdresseTiers.DOMICILE, date(1968, 11, 3), null, MockPays.France);
+				addAdresseEtrangere(lionel, TypeAdresseTiers.DOMICILE, date(1968, 11, 3), null, null, MockPays.France);
 
 				// contribuable propriétaire d'immeubles privés sis dans le canton et domiciliée hors Suisse depuis mi-2007
 				Contribuable bruno = addNonHabitant("Bruno", "Plisenski", date(1948, 11, 3), Sexe.MASCULIN);
@@ -543,7 +543,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 				addForPrincipal(bruno, date(2007, 7, 1), null, MockPays.France);
 				addForSecondaire(bruno, date(1968, 11, 3), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(),
 						MotifRattachement.IMMEUBLE_PRIVE);
-				addAdresseEtrangere(bruno, TypeAdresseTiers.DOMICILE, date(1968, 11, 3), null, MockPays.France);
+				addAdresseEtrangere(bruno, TypeAdresseTiers.DOMICILE, date(1968, 11, 3), null, null, MockPays.France);
 
 				// Un diplomate suisse en mission hors suisse
 				Contribuable marc = addNonHabitant("Marc", "Ramatruelle", date(1948, 11, 3), Sexe.MASCULIN);

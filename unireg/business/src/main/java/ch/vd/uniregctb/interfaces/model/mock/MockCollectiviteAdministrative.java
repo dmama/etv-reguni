@@ -11,15 +11,22 @@ import ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.Region;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceInfrastructureService;
 
 public class MockCollectiviteAdministrative implements CollectiviteAdministrative {
 
 	private static final long serialVersionUID = 4272590042497410216L;
 
-	public static MockCollectiviteAdministrative OTG = new MockCollectiviteAdministrative(ServiceInfrastructureService.noTuteurGeneral, null, "Office Tuteur général", null, null, "OTG");
+	public static MockCollectiviteAdministrative OTG = new MockCollectiviteAdministrative(ServiceInfrastructureService.noTuteurGeneral, new MockAdresse("Chemin de Mornex", "32", "1014", "Lausanne"), "Office Tuteur général", null, null, "OTG");
 	public static MockCollectiviteAdministrative CEDI = new MockCollectiviteAdministrative(ServiceInfrastructureService.noCEDI, new MockAdresse("", "", "1014", "Lausanne Adm cant"), "Centre d'enregistrement", "des déclarations d'impôt", null, "CEDI");
 	public static MockCollectiviteAdministrative CAT = new MockCollectiviteAdministrative(ServiceInfrastructureService.noCAT, null, "Administration cantonale des impôts", null, null, "CAT");
 	public static MockCollectiviteAdministrative ACI = new MockCollectiviteAdministrative(ServiceInfrastructureService.noACI, new MockAdresse("Route de Berne", "46", "1014", "Lausanne Adm cant"), "Administration cantonale des impôts", null, null, "ACI");
+
+	public static final class JusticePaix {
+		public static MockCollectiviteAdministrative DistrictsJuraNordVaudoisEtGrosDeVaud = 
+				new MockCollectiviteAdministrative(970, new MockAdresse("Rue du Pré", "2", "Case Postale 693", "1400", "Yverdon-les-Bains"), "Justice de Paix des districts du",
+						"Jura-Nord Vaudois et du Gros-de-Vaud", null, "JUSPX");
+	}
 
 	private Adresse adresse = null;
 	private String adresseEmail = null;
@@ -54,6 +61,8 @@ public class MockCollectiviteAdministrative implements CollectiviteAdministrativ
 		this.nomComplet2 = nomComplet2;
 		this.nomComplet3 = nomComplet3;
 		this.nomCourt = nomCourt;
+
+		DefaultMockServiceInfrastructureService.addColAdm(this);
 	}
 
 	/**

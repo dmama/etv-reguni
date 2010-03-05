@@ -8,6 +8,7 @@ import java.util.Map;
 
 import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.uniregctb.interfaces.model.Canton;
+import ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.Localite;
 import ch.vd.uniregctb.interfaces.model.OfficeImpot;
@@ -36,6 +37,8 @@ public class DefaultMockServiceInfrastructureService extends MockServiceInfrastr
 	protected static List<Commune> COMMUNES = new ArrayList<Commune>();
 
 	protected static List<Rue> RUES = new ArrayList<Rue>();
+
+	protected static List<CollectiviteAdministrative> COL_ADMS = new ArrayList<CollectiviteAdministrative>();
 
 	protected static Map<Integer, OfficeImpot> oidByNoOfsCommune = new HashMap<Integer, OfficeImpot>();
 
@@ -73,53 +76,13 @@ public class DefaultMockServiceInfrastructureService extends MockServiceInfrastr
 		forceLoad(MockCollectiviteAdministrative.class);
 
 		pays = PAYS;
-
-		// Cantons
 		cantons = CANTONS;
-
-		// Communes VD
 		communesVaud = COMMUNES_VAUD;
-
-		// Communes hors canton
 		communesHorsCanton = COMMUNES_HC;
-
-		// Communes
 		communes = COMMUNES;
-
-		// Localites
 		localites = LOCALITES;
-
-		// Rues
 		rues = RUES;
-
-		// Collectivites : ajout du tuteur general
-		collectivitesAdministrative.add(MockCollectiviteAdministrative.OTG);
-		collectivitesAdministrative.add(MockCollectiviteAdministrative.CAT);
-		collectivitesAdministrative.add(MockCollectiviteAdministrative.CEDI);
-		collectivitesAdministrative.add(MockCollectiviteAdministrative.ACI);
-
-		collectivitesAdministrative.add(MockOfficeImpot.OID_AIGLE);
-		collectivitesAdministrative.add(MockOfficeImpot.OID_ROLLE);
-		collectivitesAdministrative.add(MockOfficeImpot.OID_AVENCHE);
-		collectivitesAdministrative.add(MockOfficeImpot.OID_COSSONAY);
-		collectivitesAdministrative.add(MockOfficeImpot.OID_ECHALLENS);
-		collectivitesAdministrative.add(MockOfficeImpot.OID_GRANDSON);
-		collectivitesAdministrative.add(MockOfficeImpot.OID_LAUSANNE_OUEST);
-		collectivitesAdministrative.add(MockOfficeImpot.OID_LA_VALLEE);
-		collectivitesAdministrative.add(MockOfficeImpot.OID_LAVAUX);
-		collectivitesAdministrative.add(MockOfficeImpot.OID_MORGES);
-		collectivitesAdministrative.add(MockOfficeImpot.OID_MOUDON);
-		collectivitesAdministrative.add(MockOfficeImpot.OID_NYON);
-		collectivitesAdministrative.add(MockOfficeImpot.OID_ORBE);
-		collectivitesAdministrative.add(MockOfficeImpot.OID_ORON);
-		collectivitesAdministrative.add(MockOfficeImpot.OID_PAYERNE);
-		collectivitesAdministrative.add(MockOfficeImpot.OID_PAYS_D_ENHAUT);
-		collectivitesAdministrative.add(MockOfficeImpot.OID_ROLLE_AUBONNE);
-		collectivitesAdministrative.add(MockOfficeImpot.OID_VEVEY);
-		collectivitesAdministrative.add(MockOfficeImpot.OID_YVERDON);
-		collectivitesAdministrative.add(MockOfficeImpot.OID_LAUSANNE_VILLE);
-		collectivitesAdministrative.add(MockOfficeImpot.OID_PM);
-		collectivitesAdministrative.add(MockOfficeImpot.OID_ST_CROIX);
+		collectivitesAdministrative = COL_ADMS;
 	}
 
 	public static void addLocalite(MockLocalite loc) {
@@ -150,6 +113,10 @@ public class DefaultMockServiceInfrastructureService extends MockServiceInfrastr
 		}
 	}
 
+	public static void addColAdm(MockCollectiviteAdministrative collectiviteAdministrative) {
+		COL_ADMS.add(collectiviteAdministrative);
+	}
+
 	@Override
 	public Pays getPaysInconnu() throws InfrastructureException {
 		return MockPays.PaysInconnu;
@@ -170,6 +137,4 @@ public class DefaultMockServiceInfrastructureService extends MockServiceInfrastr
 	public OfficeImpot getOfficeImpot(int noColAdm) throws InfrastructureException {
 		return oidByNoColAdm.get(noColAdm);
 	}
-
-
 }
