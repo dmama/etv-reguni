@@ -281,8 +281,8 @@ public class JspTagBatchForm extends BodyTagSupport {
 		final String defaultNoColAdm = (defaultOID == null ? "" : String.valueOf(defaultOID.getNoColAdm()));
 
 		final String idInputNomOID = jobName + "NomOID";
-		final String nameInputNoColAdm = getBatchParamId(job, param);
-		final String idInputNoColAdm = getBatchParamNameInForm(param);
+		final String nameInputNoColAdm = getBatchParamNameInForm(param); 
+		final String idInputNoColAdm = getBatchParamId(job, param);
 		final String idDivAutoComplete = idInputNomOID + "_autoComplete";
 		final String nameMethodOnChange = idInputNomOID + "_onChange";
 
