@@ -6,8 +6,10 @@ import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertNull;
 
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Test;
 import org.springframework.orm.hibernate3.HibernateTemplate;
@@ -19,6 +21,7 @@ import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
+import ch.vd.uniregctb.interfaces.model.mock.MockOfficeImpot;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -190,7 +193,8 @@ public class ProduireRolesCommuneProcessorTest extends BusinessTest {
 		assertEquals(2, results.infosCommunes.size());
 
 		{
-			final InfoCommune infoLausanne = results.getInfoPourCommune(MockCommune.Lausanne.getNoOFS());
+			final int ofsCommune = MockCommune.Lausanne.getNoOFS();
+			final InfoCommune infoLausanne = results.getInfoPourCommune(ofsCommune);
 			assertNotNull(infoLausanne);
 
 			final InfoContribuable infoPaul = infoLausanne.getInfoPourContribuable(ids.paul);
@@ -213,31 +217,32 @@ public class ProduireRolesCommuneProcessorTest extends BusinessTest {
 			final InfoContribuable infoJean = infoLausanne.getInfoPourContribuable(ids.jean);
 			final InfoContribuable infoTom = infoLausanne.getInfoPourContribuable(ids.tom);
 
-			assertInfo(ids.paul, TypeContribuable.ORDINAIRE, date(1983, 4, 13), null, MotifFor.MAJORITE, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoPaul);
-			assertInfo(ids.incognito, TypeContribuable.ORDINAIRE, date(2007, 4, 13), null, MotifFor.ARRIVEE_HC, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoIncognito);
-			assertInfo(ids.raoul, TypeContribuable.NON_ASSUJETTI, date(1983, 4, 13), date(2007, 9, 30), MotifFor.ARRIVEE_HC, MotifFor.DEPART_HC, InfoContribuable.TypeAssujettissement.NON_ASSUJETTI, TypeContribuable.ORDINAIRE, infoRaoul);
+			assertInfo(ids.paul, TypeContribuable.ORDINAIRE, ofsCommune, date(1983, 4, 13), null, MotifFor.MAJORITE, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoPaul);
+			assertInfo(ids.incognito, TypeContribuable.ORDINAIRE, ofsCommune, date(2007, 4, 13), null, MotifFor.ARRIVEE_HC, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoIncognito);
+			assertInfo(ids.raoul, TypeContribuable.NON_ASSUJETTI, ofsCommune, date(1983, 4, 13), date(2007, 9, 30), MotifFor.ARRIVEE_HC, MotifFor.DEPART_HC, InfoContribuable.TypeAssujettissement.NON_ASSUJETTI, TypeContribuable.ORDINAIRE, infoRaoul);
 			assertNull(infoDidier);
-			assertInfo(ids.arnold, TypeContribuable.MIXTE, date(1983, 4, 13), null, MotifFor.ARRIVEE_HC, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoArnold);
-			assertInfo(ids.victor, TypeContribuable.SOURCE, date(1983, 4, 13), null, MotifFor.ARRIVEE_HC, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoVictor);
+			assertInfo(ids.arnold, TypeContribuable.MIXTE, ofsCommune, date(1983, 4, 13), null, MotifFor.ARRIVEE_HC, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoArnold);
+			assertInfo(ids.victor, TypeContribuable.SOURCE, ofsCommune, date(1983, 4, 13), null, MotifFor.ARRIVEE_HC, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoVictor);
 			assertNull(infoAlbertine);
-			assertInfo(ids.geo, TypeContribuable.HORS_CANTON, date(2003, 3, 1), null, MotifFor.ACHAT_IMMOBILIER, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoGeo);
-			assertInfo(ids.donald, TypeContribuable.HORS_CANTON, date(1990, 1, 15), null, MotifFor.ACHAT_IMMOBILIER, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoDonald);
-			assertInfo(ids.johnny, TypeContribuable.HORS_CANTON, date(2005, 11, 3), date(2007, 8, 30), MotifFor.ACHAT_IMMOBILIER, MotifFor.VENTE_IMMOBILIER, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, infoJohnny);
-			assertInfo(ids.tyler, TypeContribuable.HORS_CANTON, date(2005, 11, 3), date(2007, 8, 30), MotifFor.DEBUT_EXPLOITATION, MotifFor.FIN_EXPLOITATION, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, infoTyler);
-			assertInfo(ids.pascal, TypeContribuable.ORDINAIRE, date(1983, 4, 13), null, MotifFor.MAJORITE, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoPascal);
+			assertInfo(ids.geo, TypeContribuable.HORS_CANTON, ofsCommune, date(2003, 3, 1), null, MotifFor.ACHAT_IMMOBILIER, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoGeo);
+			assertInfo(ids.donald, TypeContribuable.HORS_CANTON, ofsCommune, date(1990, 1, 15), null, MotifFor.ACHAT_IMMOBILIER, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoDonald);
+			assertInfo(ids.johnny, TypeContribuable.HORS_CANTON, ofsCommune, date(2005, 11, 3), date(2007, 8, 30), MotifFor.ACHAT_IMMOBILIER, MotifFor.VENTE_IMMOBILIER, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, infoJohnny);
+			assertInfo(ids.tyler, TypeContribuable.HORS_CANTON, ofsCommune, date(2005, 11, 3), date(2007, 8, 30), MotifFor.DEBUT_EXPLOITATION, MotifFor.FIN_EXPLOITATION, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, infoTyler);
+			assertInfo(ids.pascal, TypeContribuable.ORDINAIRE, ofsCommune, date(1983, 4, 13), null, MotifFor.MAJORITE, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoPascal);
 			assertNull(infoMarc);
-			assertInfo(ids.louis, TypeContribuable.NON_ASSUJETTI, date(1983, 4, 13), date(2007, 9, 30), MotifFor.ARRIVEE_HC, MotifFor.DEPART_HC, InfoContribuable.TypeAssujettissement.NON_ASSUJETTI, TypeContribuable.ORDINAIRE, infoLouis);
-			assertInfo(ids.albert, TypeContribuable.ORDINAIRE, date(1983, 4, 13), date(2007, 9, 30), MotifFor.ARRIVEE_HC, MotifFor.DEPART_HS, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, infoAlbert);
-			assertInfo(ids.georges, TypeContribuable.HORS_CANTON, date(1980, 3, 1), null, MotifFor.ACHAT_IMMOBILIER, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoGeorges);
-			assertInfo(ids.marie, TypeContribuable.ORDINAIRE, date(1983, 4, 13), date(2007, 12, 31), MotifFor.ARRIVEE_HC, MotifFor.DEPART_HC, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, infoMarie);
-			assertInfo(ids.jean, TypeContribuable.ORDINAIRE, date(1983, 4, 13), date(2007, 12, 31), MotifFor.ARRIVEE_HC, MotifFor.DEPART_HS, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, infoJean);
-			assertInfo(ids.tom, TypeContribuable.HORS_SUISSE, date(2005, 11, 3), date(2007, 12, 31), MotifFor.ACHAT_IMMOBILIER, MotifFor.VENTE_IMMOBILIER, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, infoTom);
+			assertInfo(ids.louis, TypeContribuable.NON_ASSUJETTI, ofsCommune, date(1983, 4, 13), date(2007, 9, 30), MotifFor.ARRIVEE_HC, MotifFor.DEPART_HC, InfoContribuable.TypeAssujettissement.NON_ASSUJETTI, TypeContribuable.ORDINAIRE, infoLouis);
+			assertInfo(ids.albert, TypeContribuable.ORDINAIRE, ofsCommune, date(1983, 4, 13), date(2007, 9, 30), MotifFor.ARRIVEE_HC, MotifFor.DEPART_HS, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, infoAlbert);
+			assertInfo(ids.georges, TypeContribuable.HORS_CANTON, ofsCommune, date(1980, 3, 1), null, MotifFor.ACHAT_IMMOBILIER, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoGeorges);
+			assertInfo(ids.marie, TypeContribuable.ORDINAIRE, ofsCommune, date(1983, 4, 13), date(2007, 12, 31), MotifFor.ARRIVEE_HC, MotifFor.DEPART_HC, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, infoMarie);
+			assertInfo(ids.jean, TypeContribuable.ORDINAIRE, ofsCommune, date(1983, 4, 13), date(2007, 12, 31), MotifFor.ARRIVEE_HC, MotifFor.DEPART_HS, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, infoJean);
+			assertInfo(ids.tom, TypeContribuable.HORS_SUISSE, ofsCommune, date(2005, 11, 3), date(2007, 12, 31), MotifFor.ACHAT_IMMOBILIER, MotifFor.VENTE_IMMOBILIER, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, infoTom);
 
 			assertEquals(16, infoLausanne.getInfosContribuables().size());
 		}
 
 		{
-			final InfoCommune infoCossonay = results.getInfoPourCommune(MockCommune.Cossonay.getNoOFS());
+			final int ofsCommune = MockCommune.Cossonay.getNoOFS();
+			final InfoCommune infoCossonay = results.getInfoPourCommune(ofsCommune);
 			assertNotNull(infoCossonay);
 
 			final InfoContribuable infoPascal = infoCossonay.getInfoPourContribuable(ids.pascal);
@@ -245,10 +250,10 @@ public class ProduireRolesCommuneProcessorTest extends BusinessTest {
 			final InfoContribuable infoLouis = infoCossonay.getInfoPourContribuable(ids.louis);
 			final InfoContribuable infoAlbert = infoCossonay.getInfoPourContribuable(ids.albert);
 
-			assertInfo(ids.pascal, TypeContribuable.ORDINAIRE, date(2000, 1, 1), null, MotifFor.ACHAT_IMMOBILIER, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoPascal);
+			assertInfo(ids.pascal, TypeContribuable.ORDINAIRE, ofsCommune, date(2000, 1, 1), null, MotifFor.ACHAT_IMMOBILIER, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoPascal);
 			assertNull(infoMarc);
-			assertInfo(ids.louis, TypeContribuable.HORS_CANTON, date(2001, 3, 2), null, MotifFor.ACHAT_IMMOBILIER, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoLouis);
-			assertInfo(ids.albert, TypeContribuable.HORS_SUISSE, date(2001, 3, 2), null, MotifFor.ACHAT_IMMOBILIER, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoAlbert);
+			assertInfo(ids.louis, TypeContribuable.HORS_CANTON, ofsCommune, date(2001, 3, 2), null, MotifFor.ACHAT_IMMOBILIER, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoLouis);
+			assertInfo(ids.albert, TypeContribuable.HORS_SUISSE, ofsCommune, date(2001, 3, 2), null, MotifFor.ACHAT_IMMOBILIER, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoAlbert);
 
 			assertEquals(3, infoCossonay.getInfosContribuables().size());
 		}
@@ -301,7 +306,7 @@ public class ProduireRolesCommuneProcessorTest extends BusinessTest {
 
 			final InfoContribuable infoBenjamin = infoLausanne.getInfoPourContribuable(ids.benjamin);
 
-			assertInfo(ids.benjamin, TypeContribuable.ORDINAIRE, date(1983, 4, 13), null, MotifFor.MAJORITE, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoBenjamin);
+			assertInfo(ids.benjamin, TypeContribuable.ORDINAIRE, MockCommune.Lausanne.getNoOFS(), date(1983, 4, 13), null, MotifFor.MAJORITE, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoBenjamin);
 
 			assertEquals(1, infoLausanne.getInfosContribuables().size());
 		}
@@ -336,7 +341,7 @@ public class ProduireRolesCommuneProcessorTest extends BusinessTest {
 			assertNotNull(infoLausanne);
 
 			final InfoContribuable infoGeneview = infoLausanne.getInfoPourContribuable(ids.genevieve);
-			assertInfo(ids.genevieve, TypeContribuable.ORDINAIRE, date(2003, 10, 1), null, MotifFor.DEMENAGEMENT_VD, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoGeneview);
+			assertInfo(ids.genevieve, TypeContribuable.ORDINAIRE, MockCommune.Lausanne.getNoOFS(), date(2003, 10, 1), null, MotifFor.DEMENAGEMENT_VD, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoGeneview);
 
 			assertEquals(1, infoLausanne.getInfosContribuables().size());
 		}
@@ -399,7 +404,7 @@ public class ProduireRolesCommuneProcessorTest extends BusinessTest {
 
 			final InfoContribuable infosCtb = infos.getInfoPourContribuable(ppId);
 			assertNotNull(infosCtb);
-			assertInfo(ppId, TypeContribuable.ORDINAIRE, dateDebut, dateFin, MotifFor.ARRIVEE_HS, MotifFor.DEPART_HS, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, infosCtb);
+			assertInfo(ppId, TypeContribuable.ORDINAIRE, MockCommune.Lausanne.getNoOFS(), dateDebut, dateFin, MotifFor.ARRIVEE_HS, MotifFor.DEPART_HS, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, infosCtb);
 		}
 
 		// Cossonay
@@ -410,7 +415,7 @@ public class ProduireRolesCommuneProcessorTest extends BusinessTest {
 
 			final InfoContribuable infosCtb = infos.getInfoPourContribuable(ppId);
 			assertNotNull(infosCtb);
-			assertInfo(ppId, TypeContribuable.ORDINAIRE, dateDebut, dateFin, MotifFor.DEBUT_EXPLOITATION, MotifFor.FIN_EXPLOITATION, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, infosCtb);
+			assertInfo(ppId, TypeContribuable.ORDINAIRE, MockCommune.Cossonay.getNoOFS(), dateDebut, dateFin, MotifFor.DEBUT_EXPLOITATION, MotifFor.FIN_EXPLOITATION, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, infosCtb);
 		}
 	}
 
@@ -457,20 +462,77 @@ public class ProduireRolesCommuneProcessorTest extends BusinessTest {
 
 		final InfoContribuable infosCtb = infos.getInfoPourContribuable(noCtb);
 		assertNotNull(infosCtb);
-		assertInfo(noCtb, TypeContribuable.ORDINAIRE, arrivee, null, MotifFor.ARRIVEE_HS, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infosCtb);
+		assertInfo(noCtb, TypeContribuable.ORDINAIRE, MockCommune.Lausanne.getNoOFS(), arrivee, null, MotifFor.ARRIVEE_HS, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infosCtb);
 	}
-	
-	private static void assertInfo(long id, TypeContribuable type, RegDate ouvertureFor, RegDate fermetureFor,
+
+	@Test
+	public void testRunOID() throws Exception {
+		
+		serviceCivil.setUp(new DefaultMockServiceCivil());
+
+		class Ids {
+			public Long paul;
+			public Long raoul;
+			public Long didier;
+			public Long arnold;
+			public Long victor;
+			public Long balthazar;
+		}
+		final Ids ids = new Ids();
+
+		doInNewTransaction(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				ids.paul = newCtbOrdinaireVaudoisEtImmeuble(MockCommune.Lausanne, MockCommune.Aubonne).getNumero();
+				ids.raoul = newCtbOrdinaireVaudoisEtImmeuble(MockCommune.Renens, MockCommune.Lausanne).getNumero();
+				ids.didier = newCtbOrdinaireAvecDemenagement(MockCommune.Lausanne, MockCommune.Aubonne).getNumero();
+				ids.arnold = newCtbOrdinaireAvecDemenagement(MockCommune.Renens, MockCommune.Lausanne).getNumero();
+				ids.victor = newCtbOrdinaireAvecDemenagementEnGardantImmeuble(MockCommune.Lausanne, MockCommune.Croy, MockCommune.Renens).getNumero();
+				ids.balthazar = newCtbOrdinaireAvecDemenagementAnterieur(MockCommune.Renens, MockCommune.Lausanne).getNumero();
+				return null;
+			}
+		});
+
+		final ProduireRolesResults results = processor.runPourUnOfficeImpot(2007, MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm(), 1, null);
+		assertNotNull(results);
+		assertEquals(6, results.ctbsTraites);
+		assertEquals(0, results.ctbsEnErrors.size());
+		assertEquals(0, results.ctbsIgnores.size());
+		assertEquals(4, results.infosCommunes.size());      // toutes les communes sont là pour l'instant (le regroupement enlèvera celle qui sont en trop)
+
+		{
+			final Map<Long, InfoContribuable> infosRegroupees = results.buildInfosPourRegroupementCommunes(Arrays.asList(MockCommune.Lausanne.getNoOFSEtendu(), MockCommune.Renens.getNoOFSEtendu()));
+			assertNotNull(infosRegroupees);
+			assertEquals(6, infosRegroupees.size());
+
+			final InfoContribuable infoPaul = infosRegroupees.get(ids.paul);
+			final InfoContribuable infoRaoul = infosRegroupees.get(ids.raoul);
+			final InfoContribuable infoDidier = infosRegroupees.get(ids.didier);
+			final InfoContribuable infoArnold = infosRegroupees.get(ids.arnold);
+			final InfoContribuable infoVictor = infosRegroupees.get(ids.victor);
+			final InfoContribuable infoBalthazar = infosRegroupees.get(ids.balthazar);
+
+			assertInfo(ids.paul, TypeContribuable.ORDINAIRE, MockCommune.Lausanne.getNoOFS(), date(1983, 4, 13), null, MotifFor.MAJORITE, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoPaul);
+			assertInfo(ids.raoul, TypeContribuable.ORDINAIRE, MockCommune.Renens.getNoOFS(), date(1983, 4, 13), null, MotifFor.MAJORITE, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoRaoul);
+			assertInfo(ids.didier, TypeContribuable.NON_ASSUJETTI, MockCommune.Lausanne.getNoOFS(), date(1990, 2, 1), date(2007, 5, 31), MotifFor.ARRIVEE_HS, MotifFor.DEMENAGEMENT_VD, InfoContribuable.TypeAssujettissement.NON_ASSUJETTI, TypeContribuable.ORDINAIRE, infoDidier);
+			assertInfo(ids.arnold, TypeContribuable.ORDINAIRE, MockCommune.Lausanne.getNoOFS(), date(1990, 2, 1), null, MotifFor.ARRIVEE_HS, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoArnold);
+			assertInfo(ids.victor, TypeContribuable.ORDINAIRE, MockCommune.Renens.getNoOFS(), date(1990, 2, 1), null, MotifFor.ARRIVEE_HS, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoVictor);
+			assertInfo(ids.balthazar, TypeContribuable.ORDINAIRE, MockCommune.Lausanne.getNoOFS(), date(1990, 2, 1), null, MotifFor.ARRIVEE_HS, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, infoBalthazar);
+		}
+	}
+
+	private static void assertInfo(long id, TypeContribuable type, int ofsCommune, RegDate ouvertureFor, RegDate fermetureFor,
 	                               MotifFor motifOuverture, MotifFor motifFermeture, InfoContribuable.TypeAssujettissement typeAssujettissement,
 	                               TypeContribuable ancienTypeContribuable, InfoContribuable info) {
 		assertNotNull(info);
 		assertEquals(id, info.noCtb);
 		assertEquals(type, info.getTypeCtb());
+		assertEquals(ofsCommune, info.getNoOfsDerniereCommune());
 
 		assertInfoExtremite(ouvertureFor, motifOuverture, info.getInfosOuverture());
 		assertInfoExtremite(fermetureFor, motifFermeture, info.getInfosFermeture());
 		assertEquals(ancienTypeContribuable, info.getAncienTypeContribuable());
-		assertEquals(typeAssujettissement, info.getTypeAssujettissementDansCommune());
+		assertEquals(typeAssujettissement, info.getTypeAssujettissementAgrege());
 	}
 
 	private static void assertInfoExtremite(RegDate date, MotifFor motif, Pair<RegDate, MotifFor> infosExtremite) {
@@ -742,6 +804,37 @@ public class ProduireRolesCommuneProcessorTest extends BusinessTest {
 		ForFiscalSecondaire fs = addImmeuble(rama, commune, date(2003, 3, 1), null);
 		fs.setAnnule(true);
 		return rama;
+	}
+
+	/**
+	 * @return un contribuable avec un déménagement vaudois d'une commune à l'autre
+	 */
+	private Contribuable newCtbOrdinaireAvecDemenagement(MockCommune avant, MockCommune apres) {
+		final RegDate demenagement = date(2007, 6, 1);
+		final Contribuable ctb = addNonHabitant("Turlu", "Tutu", date(1947, 3, 25), Sexe.MASCULIN);
+		addForPrincipal(ctb, date(1990, 2, 1), MotifFor.ARRIVEE_HS, demenagement.getOneDayBefore(), MotifFor.DEMENAGEMENT_VD, avant);
+		addForPrincipal(ctb, demenagement, MotifFor.DEMENAGEMENT_VD, apres);
+		return ctb;
+	}
+
+	/**
+	 * @return un contribuable avec un déménagement vaudois qui garde un immeuble de part et d'autre du déménagement
+	 */
+	private Contribuable newCtbOrdinaireAvecDemenagementEnGardantImmeuble(MockCommune avant, MockCommune apres, MockCommune communeImmeuble) {
+		final Contribuable ctb = newCtbOrdinaireAvecDemenagement(avant, apres);
+		addForSecondaire(ctb, date(2005, 6, 12), MotifFor.ACHAT_IMMOBILIER, communeImmeuble.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+		return ctb;
+	}
+
+	/**
+	 * @return un contribuable avec un déménagement vaudois d'une commune à l'autre (avant 2007)
+	 */
+	private Contribuable newCtbOrdinaireAvecDemenagementAnterieur(MockCommune avant, MockCommune apres) {
+		final RegDate demenagement = date(2005, 6, 1);
+		final Contribuable ctb = addNonHabitant("Turlu", "Tutu", date(1947, 3, 25), Sexe.MASCULIN);
+		addForPrincipal(ctb, date(1990, 2, 1), MotifFor.ARRIVEE_HS, demenagement.getOneDayBefore(), MotifFor.DEMENAGEMENT_VD, avant);
+		addForPrincipal(ctb, demenagement, MotifFor.DEMENAGEMENT_VD, apres);
+		return ctb;
 	}
 
 	/**

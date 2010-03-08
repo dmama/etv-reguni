@@ -1,8 +1,8 @@
 package ch.vd.uniregctb.role;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -98,6 +98,28 @@ public class ProduireRolesCommuneProcessor {
 		this.serviceCivilService = serviceCivilService;
 	}
 
+	private static interface GroupementCommunes {
+		boolean isDansGroupementDeCommunes(Integer ofsCandidat, Integer ofsReference);
+	}
+
+	private static class CommuneParCommune implements GroupementCommunes {
+		public boolean isDansGroupementDeCommunes(Integer ofsCandidat, Integer ofsReference) {
+			return ofsCandidat != null && ofsCandidat.equals(ofsReference);
+		}
+	}
+
+	private static class GroupementCommunesPourOID implements GroupementCommunes {
+		private final Set<Integer> ofsCommunes;
+
+		private GroupementCommunesPourOID(Set<Integer> ofsCommunes) {
+			this.ofsCommunes = ofsCommunes;
+		}
+
+		public boolean isDansGroupementDeCommunes(Integer ofsCandidat, Integer ofsReference) {
+			return ofsCommunes.contains(ofsCandidat);
+		}
+	}
+
 	/**
 	 * Interface implémentée par les variantes de la production des rôles (tous, pour un OID, pour une commune)
 	 */
@@ -111,6 +133,11 @@ public class ProduireRolesCommuneProcessor {
 		 * Instancie un nouveau rapport (intermédiaire et final)
 		 */
 		ProduireRolesResults creerRapport(int anneePeriode, int nbThreads, RegDate today, boolean isRapportFinal);
+
+		/**
+		 * Retourne le groupement de commune a utilisé pour la recherche de fors historiques
+		 */
+		GroupementCommunes getGroupementCommunes();
 	}
 
 	/**
@@ -131,6 +158,9 @@ public class ProduireRolesCommuneProcessor {
 		parts.add(TiersDAO.Parts.RAPPORTS_ENTRE_TIERS);
 		parts.add(TiersDAO.Parts.ADRESSES);
 		parts.add(TiersDAO.Parts.DECLARATIONS);
+
+		// groupement de communes (utilisé pour calculer la date du premier for, et la date du dernier)
+		final GroupementCommunes groupement = variante.getGroupementCommunes();
 
 		final List<Long> list = variante.getIdsContribuablesConcernes(anneePeriode);
 		final ParallelBatchTransactionTemplate<Long, ProduireRolesResults> template = new ParallelBatchTransactionTemplate<Long, ProduireRolesResults>(list, BATCH_SIZE, nbThreads, BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE, transactionManager, status, hibernateTemplate);
@@ -156,7 +186,7 @@ public class ProduireRolesCommuneProcessor {
 					final Contribuable ctb = (Contribuable) tiers;
 
 					try {
-						processContribuable(anneePeriode, rapport, ctb);
+						processContribuable(anneePeriode, rapport, groupement, ctb);
 					}
 					catch (Exception e) {
 						final String msgException = String.format("Exception levée lors du traitement du contribuable %s", FormatNumeroHelper.numeroCTBToDisplay(ctbId));
@@ -231,6 +261,7 @@ public class ProduireRolesCommuneProcessor {
 	public ProduireRolesResults runPourToutesCommunes(final int anneePeriode, final int nbThreads, final StatusManager s) throws ServiceException {
 
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
+		final GroupementCommunes communeParCommune = new CommuneParCommune();
 
 		return doRun(anneePeriode, nbThreads, status, new VarianteProductionRole() {
 			public List<Long> getIdsContribuablesConcernes(int anneePeriode) {
@@ -239,6 +270,10 @@ public class ProduireRolesCommuneProcessor {
 
 			public ProduireRolesResults creerRapport(int anneePeriode, int nbThreads, RegDate today, boolean isRapportFinal) {
 				return new ProduireRolesResults(anneePeriode, nbThreads, today);
+			}
+
+			public GroupementCommunes getGroupementCommunes() {
+				return communeParCommune;
 			}
 		});
 	}
@@ -258,6 +293,7 @@ public class ProduireRolesCommuneProcessor {
 	public ProduireRolesResults runPourUneCommune(final int anneePeriode, final int noOfsCommune, final int nbThreads, final StatusManager s) throws ServiceException {
 
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
+		final GroupementCommunes communeParCommune = new CommuneParCommune();
 
 		return doRun(anneePeriode, nbThreads, status, new VarianteProductionRole() {
 			public List<Long> getIdsContribuablesConcernes(int anneePeriode) {
@@ -266,6 +302,10 @@ public class ProduireRolesCommuneProcessor {
 
 			public ProduireRolesResults creerRapport(int anneePeriode, int nbThreads, RegDate today, boolean isRapportFinal) {
 				return new ProduireRolesResults(anneePeriode, noOfsCommune, null, nbThreads, today);
+			}
+
+			public GroupementCommunes getGroupementCommunes() {
+				return communeParCommune;
 			}
 		});
 	}
@@ -287,7 +327,7 @@ public class ProduireRolesCommuneProcessor {
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 
 		// récupère les numéros Ofs des communes gérées par l'office d'impôt spécifié
-		final List<Integer> nosOfsCommunes = new ArrayList<Integer>();
+		final Set<Integer> nosOfsCommunes = new HashSet<Integer>();
 		try {
 			final List<Commune> communes = infraService.getListeCommunesByOID(oid);
 			for (Commune c : communes) {
@@ -298,7 +338,9 @@ public class ProduireRolesCommuneProcessor {
 			throw new RuntimeException(e);
 		}
 
+		final GroupementCommunes groupement = new  GroupementCommunesPourOID(nosOfsCommunes);
 		return doRun(anneePeriode, nbThreads, status, new VarianteProductionRole() {
+
 			public List<Long> getIdsContribuablesConcernes(int anneePeriode) {
 				return getIdsOfAllContribuablesSurCommunes(anneePeriode, nosOfsCommunes);
 			}
@@ -306,13 +348,17 @@ public class ProduireRolesCommuneProcessor {
 			public ProduireRolesResults creerRapport(int anneePeriode, int nbThreads, RegDate today, boolean isRapportFinal) {
 				return new ProduireRolesResults(anneePeriode, null, oid, nbThreads, today);
 			}
+
+			public GroupementCommunes getGroupementCommunes() {
+				return groupement;
+			}
 		});
 	}
 
 	/**
 	 * Traite le contribuable spécifié et ajoute toutes les informations nécessaires au rapport
 	 */
-	private void processContribuable(int anneePeriode, ProduireRolesResults rapport, Contribuable ctb) {
+	private void processContribuable(int anneePeriode, ProduireRolesResults rapport, GroupementCommunes groupement, Contribuable ctb) {
 
 		++ rapport.ctbsTraites;
 
@@ -326,7 +372,7 @@ public class ProduireRolesCommuneProcessor {
 
 			// ajoute les assujettissements du contribuable de l'année spécifiée dans le rapprot
 			try {
-				processAssujettissements(anneePeriode, ctb, rapport);
+				processAssujettissements(anneePeriode, ctb, rapport, groupement);
 			}
 			catch (TraitementException e) {
 				// ok, rien à faire, l'erreur a déjà été renseignée dans le rapport
@@ -348,9 +394,10 @@ public class ProduireRolesCommuneProcessor {
 	 * @param anneePeriode la période fiscale dont on veut déterminer l'assujettissement
 	 * @param contribuable le contribuable en question
 	 * @param rapport le rapport à compléter
+	 * @param groupement
 	 * @throws TraitementException en cas ayant conduit à interrompre le traitement (automatiqement renseigné dans le rapport)
 	 */
-	private void processAssujettissements(int anneePeriode, Contribuable contribuable, ProduireRolesResults rapport) throws TraitementException {
+	private void processAssujettissements(int anneePeriode, Contribuable contribuable, ProduireRolesResults rapport, GroupementCommunes groupement) throws TraitementException {
 
 		final AssujettissementContainer assujettissementContainer = new AssujettissementContainer(contribuable, anneePeriode, rapport);
 
@@ -358,7 +405,7 @@ public class ProduireRolesCommuneProcessor {
 		final List<Assujettissement> assujettissements = assujettissementContainer.getAssujettissementAnneePeriode();
 		if (assujettissements != null) {
 			for (Assujettissement a : assujettissements) {
-				processAssujettissement(a, assujettissementContainer);
+				processAssujettissement(a, assujettissementContainer, groupement);
 			}
 		}
 		else {
@@ -366,7 +413,7 @@ public class ProduireRolesCommuneProcessor {
 			final DecompositionForsAnneeComplete fors = assujettissementContainer.getForsAnneePeriode();
 			if (!fors.isFullyEmpty()) {
 				// pas d'assujettissement, mais des fors quand-même... A priori ils se terminent dans la période...
-				processNonAssujettissement(fors, assujettissementContainer);
+				processNonAssujettissement(fors, assujettissementContainer, groupement);
 			}
 		}
 	}
@@ -376,9 +423,10 @@ public class ProduireRolesCommuneProcessor {
 	 *
 	 * @param assujet l'assujettissement à traiter
 	 * @param assujettissementContainer cache pour les assujettissements calculés sur la période courante et la précédente
+	 * @param groupement
 	 * @throws TraitementException en cas ayant conduit à interrompre le traitement (automatiqement renseigné dans le rapport)
 	 */
-	protected void processAssujettissement(Assujettissement assujet, AssujettissementContainer assujettissementContainer) throws TraitementException {
+	protected void processAssujettissement(Assujettissement assujet, AssujettissementContainer assujettissementContainer, GroupementCommunes groupement) throws TraitementException {
 
 		final Contribuable contribuable = assujettissementContainer.ctb;
 		final ProduireRolesResults rapport = assujettissementContainer.rapport;
@@ -396,11 +444,11 @@ public class ProduireRolesCommuneProcessor {
 		 */
 		for (ForFiscalRevenuFortune f : fors.principauxDansLaPeriode) {
 			if (TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD.equals(f.getTypeAutoriteFiscale())) {
-				processForFiscal(assujet, f, typeCtb, assujettissementContainer);
+				processForFiscal(assujet, f, typeCtb, assujettissementContainer, groupement);
 			}
 		}
 		for (ForFiscalRevenuFortune f : fors.secondairesDansLaPeriode) {
-			processForFiscal(assujet, f, typeCtb, assujettissementContainer);
+			processForFiscal(assujet, f, typeCtb, assujettissementContainer, groupement);
 		}
 	}
 
@@ -410,9 +458,10 @@ public class ProduireRolesCommuneProcessor {
 	 *
 	 * @param fors la décomposition des fors du contribuable pour l'année de la période courante
 	 * @param assujettissementContainer cache pour les assujettissements calculés sur la période courante et la précédente
+	 * @param groupement
 	 * @throws TraitementException en cas ayant conduit à interrompre le traitement (automatiqement renseigné dans le rapport)
 	 */
-	private void processNonAssujettissement(DecompositionForsAnneeComplete fors, AssujettissementContainer assujettissementContainer) throws TraitementException {
+	private void processNonAssujettissement(DecompositionForsAnneeComplete fors, AssujettissementContainer assujettissementContainer, GroupementCommunes groupement) throws TraitementException {
 
 		// calcul de l'assujettissement dans la période précédente
 		final List<Assujettissement> assujettissementsAnneePrecedente = assujettissementContainer.getAssujettissementPeriodePrecedente();
@@ -430,7 +479,7 @@ public class ProduireRolesCommuneProcessor {
 
 		// sur chacune de ces communes, il faut ensuite indiquer que le contribuable n'est pas assujetti
 		for (Integer noOfsCommune : ofsCommunes) {
-			traiteNonAssujettiAvecPrecedentAssujettissement(assujettissementContainer, noOfsCommune);
+			traiteNonAssujettiAvecPrecedentAssujettissement(assujettissementContainer, noOfsCommune, groupement);
 		}
 	}
 
@@ -489,9 +538,11 @@ public class ProduireRolesCommuneProcessor {
 	 * @param assujettissement
 	 * @param forFiscal le for fiscal déterminant de l'assujettissement
 	 * @param typeCtb le type de contribuable, ou <b>null</b> si le contribuable n'est pas assujetti
-	 * @throws TraitementException en cas ayant conduit à interrompre le traitement (automatiqement renseigné dans le rapport)
+	 * @param groupement
+     * @throws TraitementException en cas ayant conduit à interrompre le traitement (automatiqement renseigné dans le rapport)
 	 */
-	protected void processForFiscal(Assujettissement assujettissement, ForFiscalRevenuFortune forFiscal, TypeContribuable typeCtb, AssujettissementContainer assujettissementContainer) throws TraitementException {
+	protected void processForFiscal(Assujettissement assujettissement, ForFiscalRevenuFortune forFiscal, TypeContribuable typeCtb, AssujettissementContainer assujettissementContainer,
+	                                GroupementCommunes groupement) throws TraitementException {
 
 		final ProduireRolesResults rapport = assujettissementContainer.rapport;
 		final Contribuable contribuable = assujettissementContainer.ctb;
@@ -511,19 +562,19 @@ public class ProduireRolesCommuneProcessor {
 			// -> s'il y en avait un avant, il faut l'indiquer dans le rapport
 			// (sauf si le contribuable était alors sourcier gris, auquel cas il ne doit pas apparaître)
 			if (!tiersService.isSourcierGris(contribuable, RegDate.get(anneePeriode - 1, 12, 31))) {
-				traiteNonAssujettiAvecPrecedentAssujettissement(assujettissementContainer, ofsCommune);
+				traiteNonAssujettiAvecPrecedentAssujettissement(assujettissementContainer, ofsCommune, groupement);
 			}
 		}
 		else {
-			final DebutFinFor debutFin = getInformationDebutFin(forFiscal, anneePeriode);
+			final DebutFinFor debutFin = getInformationDebutFin(forFiscal, groupement, anneePeriode);
 			final InfoCommune infoCommune = rapport.getOrCreateInfoPourCommune(ofsCommune);
 			final InfoContribuable infoCtb = infoCommune.getOrCreateInfoPourContribuable(contribuable, anneePeriode, adresseService, tiersService);
-			final InfoFor infoFor = new InfoFor(typeCtb, debutFin.dateOuverture, debutFin.motifOuverture, debutFin.dateFermeture, debutFin.motifFermeture, typeAssujettissement, forFiscal.isPrincipal(), forFiscal.getMotifRattachement());
+			final InfoFor infoFor = new InfoFor(typeCtb, debutFin.dateOuverture, debutFin.motifOuverture, debutFin.dateFermeture, debutFin.motifFermeture, typeAssujettissement, forFiscal.isPrincipal(), forFiscal.getMotifRattachement(), ofsCommune);
 			infoCtb.addFor(infoFor);
 		}
 	}
 
-	private void traiteNonAssujettiAvecPrecedentAssujettissement(AssujettissementContainer assujettissementContainer, Integer ofsCommune) throws TraitementException {
+	private void traiteNonAssujettiAvecPrecedentAssujettissement(AssujettissementContainer assujettissementContainer, Integer ofsCommune, GroupementCommunes groupement) throws TraitementException {
 
 		final List<Assujettissement> assujettissementsAnneePrecedente = assujettissementContainer.getAssujettissementPeriodePrecedente();
 		if (assujettissementsAnneePrecedente != null) {
@@ -537,12 +588,12 @@ public class ProduireRolesCommuneProcessor {
 				final DecompositionFors forsAnneePrecedente = assAnneePrecedente.getFors();
 				for (ForFiscalRevenuFortune ff : forsAnneePrecedente.principauxDansLaPeriode) {
 					if (ff.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD && ff.getNumeroOfsAutoriteFiscale() == ofsCommune.intValue()) {
-						traiteNonAssujettiAvecPrecedentAssujettissement(rapport, contribuable, anneePeriode, ofsCommune, typeCtbAnneePrecedente, ff);
+						traiteNonAssujettiAvecPrecedentAssujettissement(rapport, contribuable, anneePeriode, ofsCommune, groupement, typeCtbAnneePrecedente, ff);
 					}
 				}
 				for (ForFiscalRevenuFortune ff : forsAnneePrecedente.secondairesDansLaPeriode) {
 					if (ff.getNumeroOfsAutoriteFiscale() == ofsCommune.intValue()) {
-						traiteNonAssujettiAvecPrecedentAssujettissement(rapport, contribuable, anneePeriode, ofsCommune, typeCtbAnneePrecedente, ff);
+						traiteNonAssujettiAvecPrecedentAssujettissement(rapport, contribuable, anneePeriode, ofsCommune, groupement, typeCtbAnneePrecedente, ff);
 					}
 				}
 			}
@@ -556,16 +607,16 @@ public class ProduireRolesCommuneProcessor {
 	 * @param contribuable contribuable en cours de traitement
 	 * @param anneePeriode année de la période courante
 	 * @param ofsCommune numéro OFS étendu de la commune considérée
+	 * @param groupement
 	 * @param typeCtbAnneePrecedente type de contribuable sur la commune à l'époque de la période précédente
 	 * @param ff for fiscal sur la commune qui était ouvert dans la période précédente
-	 *            le rapport auquel on veut ajouter les deltas d'assujettissements
 	 */
 	private void traiteNonAssujettiAvecPrecedentAssujettissement(ProduireRolesResults rapport, Contribuable contribuable, int anneePeriode, Integer ofsCommune,
-	                                                             TypeContribuable typeCtbAnneePrecedente, ForFiscalRevenuFortune ff) {
-		final DebutFinFor debutFin = getInformationDebutFin(ff, anneePeriode);
+	                                                             GroupementCommunes groupement, TypeContribuable typeCtbAnneePrecedente, ForFiscalRevenuFortune ff) {
+		final DebutFinFor debutFin = getInformationDebutFin(ff, groupement, anneePeriode);
 		final InfoCommune infoCommune = rapport.getOrCreateInfoPourCommune(ofsCommune);
 		final InfoContribuable infoCtb = infoCommune.getOrCreateInfoPourContribuable(contribuable, anneePeriode, adresseService, tiersService);
-		final InfoFor infoFor = new InfoFor(debutFin.dateOuverture, debutFin.motifOuverture, debutFin.dateFermeture, debutFin.motifFermeture, typeCtbAnneePrecedente, ff.isPrincipal(), ff.getMotifRattachement());
+		final InfoFor infoFor = new InfoFor(debutFin.dateOuverture, debutFin.motifOuverture, debutFin.dateFermeture, debutFin.motifFermeture, typeCtbAnneePrecedente, ff.isPrincipal(), ff.getMotifRattachement(), ofsCommune);
 		infoCtb.addFor(infoFor);
 	}
 
@@ -583,69 +634,57 @@ public class ProduireRolesCommuneProcessor {
 		}
 	}
 
-	private static DebutFinFor getInformationDebutFin(ForFiscalRevenuFortune forFiscal, int anneePeriode) {
+	private static DebutFinFor getInformationDebutFin(ForFiscalRevenuFortune forFiscal, GroupementCommunes groupement, int anneePeriode) {
 
-		final ForFiscalRevenuFortune forFiscalPourOuverture;
-		if (forFiscal.getDateDebut().getOneDayBefore().year() != forFiscal.getDateDebut().year()) {
-			// debut au premier janvier...
-			final Tiers tiers = forFiscal.getTiers();
-			ForFiscalRevenuFortune candidatRetenu = forFiscal;
-			while (true) {
-				final List<ForFiscal> fors = tiers.getForsFiscauxValidAt(candidatRetenu.getDateDebut().getOneDayBefore());
-				ForFiscalRevenuFortune nouveauCandidat = null;
-				for (ForFiscal candidat : fors) {
-					if (candidat instanceof ForFiscalRevenuFortune &&
-							candidat.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD &&
-							candidat.getNumeroOfsAutoriteFiscale().equals(forFiscal.getNumeroOfsAutoriteFiscale()) &&
-							((ForFiscalRevenuFortune) candidat).getMotifRattachement() == forFiscal.getMotifRattachement()) {
-						if (nouveauCandidat == null || nouveauCandidat.getDateDebut().isAfter(candidat.getDateDebut())) {
-							nouveauCandidat = (ForFiscalRevenuFortune) candidat;
-						}
+		final Tiers tiers = forFiscal.getTiers();
+
+		// on pousse vers le passé autant qu'on peut tant qu'on reste sur la même commune
+		ForFiscalRevenuFortune candidatRetenu = forFiscal;
+		while (true) {
+			final List<ForFiscal> fors = tiers.getForsFiscauxValidAt(candidatRetenu.getDateDebut().getOneDayBefore());
+			ForFiscalRevenuFortune nouveauCandidat = null;
+			for (ForFiscal candidat : fors) {
+				if (candidat instanceof ForFiscalRevenuFortune &&
+						candidat.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD &&
+						groupement.isDansGroupementDeCommunes(candidat.getNumeroOfsAutoriteFiscale(), forFiscal.getNumeroOfsAutoriteFiscale()) &&
+						((ForFiscalRevenuFortune) candidat).getMotifRattachement() == forFiscal.getMotifRattachement()) {
+					if (nouveauCandidat == null || nouveauCandidat.getDateDebut().isAfter(candidat.getDateDebut())) {
+						nouveauCandidat = (ForFiscalRevenuFortune) candidat;
 					}
 				}
-				if (nouveauCandidat == null) {
-					break;
-				}
-				else {
-					candidatRetenu = nouveauCandidat;
-				}
 			}
-			forFiscalPourOuverture = candidatRetenu;
+			if (nouveauCandidat == null) {
+				break;
+			}
+			else {
+				candidatRetenu = nouveauCandidat;
+			}
 		}
-		else {
-			forFiscalPourOuverture = forFiscal;
-		}
+		final ForFiscalRevenuFortune forFiscalPourOuverture = candidatRetenu;
 
-		final ForFiscalRevenuFortune forFiscalPourFermeture;
-		if (forFiscal.getDateFin() != null && forFiscal.getDateFin().getOneDayAfter().year() != forFiscal.getDateFin().year()) {
-			// fin au 31 décembre...
-			final Tiers tiers = forFiscal.getTiers();
-			ForFiscalRevenuFortune candidatRetenu = forFiscal;
-			while (true) {
-				final List<ForFiscal> fors = tiers.getForsFiscauxValidAt(candidatRetenu.getDateFin().getOneDayAfter());
-				ForFiscalRevenuFortune nouveauCandidat = null;
-				for (ForFiscal candidat : fors) {
-					if (candidat instanceof ForFiscalRevenuFortune &&
-							candidat.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD &&
-							candidat.getNumeroOfsAutoriteFiscale().equals(forFiscal.getNumeroOfsAutoriteFiscale()) &&
-							((ForFiscalRevenuFortune) candidat).getMotifRattachement() == forFiscal.getMotifRattachement()) {
-						if (nouveauCandidat == null || nouveauCandidat.getDateFin().isBefore(candidat.getDateFin())) {
-							nouveauCandidat = (ForFiscalRevenuFortune) candidat;
-						}
+		// on pousse vers le futur tant qu'on peut et qu'on reste sur la même commune
+		candidatRetenu = forFiscal;
+		while (candidatRetenu.getDateFin() != null) {
+			final List<ForFiscal> fors = tiers.getForsFiscauxValidAt(candidatRetenu.getDateFin().getOneDayAfter());
+			ForFiscalRevenuFortune nouveauCandidat = null;
+			for (ForFiscal candidat : fors) {
+				if (candidat instanceof ForFiscalRevenuFortune &&
+						candidat.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD &&
+						groupement.isDansGroupementDeCommunes(candidat.getNumeroOfsAutoriteFiscale(), forFiscal.getNumeroOfsAutoriteFiscale()) &&
+						((ForFiscalRevenuFortune) candidat).getMotifRattachement() == forFiscal.getMotifRattachement()) {
+					if (nouveauCandidat == null || nouveauCandidat.getDateFin().isBefore(candidat.getDateFin())) {
+						nouveauCandidat = (ForFiscalRevenuFortune) candidat;
 					}
 				}
-				if (nouveauCandidat == null) {
-					break;
-				}
-				else {
-					candidatRetenu = nouveauCandidat;
-				}
 			}
-			forFiscalPourFermeture = candidatRetenu;
+			if (nouveauCandidat == null) {
+				break;
+			}
+			else {
+				candidatRetenu = nouveauCandidat;
+			}
 		}
-		else {
-			forFiscalPourFermeture = forFiscal;
-		}
+		final ForFiscalRevenuFortune forFiscalPourFermeture = candidatRetenu;
 
 		final RegDate dateFermeture;
 		final MotifFor motifFermeture;
@@ -746,7 +785,7 @@ public class ProduireRolesCommuneProcessor {
 	 *         spécifiée <b>ou</b> dans l'année précédente (de manière à détecter les fin d'assujettissement).
 	 */
 	@SuppressWarnings({"unchecked"})
-	protected List<Long> getIdsOfAllContribuablesSurCommunes(final int annee, final List<Integer> noOfsCommunes) {
+	protected List<Long> getIdsOfAllContribuablesSurCommunes(final int annee, final Collection<Integer> noOfsCommunes) {
 		Assert.isTrue(noOfsCommunes != null && noOfsCommunes.size() > 0);
 
 		final StringBuilder b = new StringBuilder();

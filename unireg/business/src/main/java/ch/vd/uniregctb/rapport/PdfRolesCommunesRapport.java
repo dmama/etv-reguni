@@ -53,7 +53,7 @@ public class PdfRolesCommunesRapport extends PdfRapport {
 	        addTitrePrincipal("Rapport des rôles pour la commune de " + commune.getNomMinuscule());
 	    } else if (results.noColOID != null) {
 	        final OfficeImpot office = getOfficeImpot(results.noColOID);
-	        addTitrePrincipal("Rapport des rôles pour l'office d'impôt de " + office.getNomCourt());
+	        addTitrePrincipal("Rapport des rôles pour l'" + office.getNomCourt());
 	    } else {
 	        addTitrePrincipal("Rapport des rôles pour toutes les communes vaudoises");
 	    }
@@ -118,86 +118,144 @@ public class PdfRolesCommunesRapport extends PdfRapport {
 	        addListeDetaillee(writer, results.ctbsIgnores.size(), titre, listVide, filename, contenu);
 	    }
 
-	    final List<Commune> communes = getListCommunes(results);
-
-	    // Détail commune par commune
-	    for (final Commune commune : communes) {
-
-	        if (results.noOfsCommune != null) {
-	            if (commune.getNoOFSEtendu() != results.noOfsCommune) {
-	                /*
-	                 * On ignore toutes les autres communes lorsqu'un rapport a été demandé spécifiquement pour une commune (il est possible
-	                 * et normal d'avoir des informations pour d'autres communes en raison des contribuables qui ont déménagé durant
-	                 * l'année, et donc qui produisent des informations sur deux communes).
-	                 */
-	                continue;
-	            }
-	        } else if (results.noColOID != null) {
-	            final OfficeImpot office = infraService.getOfficeImpotDeCommune(commune.getNoOFSEtendu());
-	            if (office == null || office.getNoColAdm() != results.noColOID) {
-	                /*
-	                 * On ignore toutes les communes non gérées par l'office d'impôt lorsqu'un rapport a été demandé spécifiquement pour ce
-	                 * dernier.
-	                 */
-	                continue;
-	            }
-	        }
-
-	        final ProduireRolesResults.InfoCommune infoCommune = results.infosCommunes.get(commune.getNoOFSEtendu());
-	        if (infoCommune == null) {
-	            Audit.error("Rôle des communes: Impossible de trouver les informations pour la commune " + commune.getNomMinuscule()
-	                    + "(n°ofs " + commune.getNoOFSEtendu() + ")");
-	            continue;
-	        }
-
-		    newPage();
-
-	        // Entête de la commune
-	        final String nomCommune = commune.getNomMinuscule();
-	        final int totalContribuables = infoCommune.getInfosContribuables().size();
-	        addTitrePrincipal("Liste des rôles " + results.annee + " pour la commune de\n" + nomCommune);
-
-	        if (results.interrompu) {
-	            addWarning("Attention ! Le job a été interrompu par l'utilisateur,\n"
-	                    + "les valeurs ci-dessous sont donc incomplètes.");
-	        }
-
-	        // Résumé de la commune
-	        addEntete1("Résumé");
-	        {
-	            final Map<ProduireRolesResults.InfoContribuable.TypeContribuable, Integer> nombreParType = extractNombreParType(infoCommune);
-	            addTableSimple(2, new PdfRapport.TableSimpleCallback() {
-	                public void fillTable(PdfTableSimple table) throws DocumentException {
-	                    table.setWidths(new float[]{
-	                            2.0f, 1.0f
-	                    });
-	                    table.addLigne("Nombre total de contribuables traités:", String.valueOf(totalContribuables));
-	                    table.addLigne("Contribuables ordinaires:", nombreAsString(nombreParType.get(ProduireRolesResults.InfoContribuable.TypeContribuable.ORDINAIRE), nombreParType.get(ProduireRolesResults.InfoContribuable.TypeContribuable.MIXTE)));
-	                    table.addLigne("Contribuables hors canton:", nombreAsString(nombreParType.get(ProduireRolesResults.InfoContribuable.TypeContribuable.HORS_CANTON)));
-	                    table.addLigne("Contribuables hors Suisse:", nombreAsString(nombreParType.get(ProduireRolesResults.InfoContribuable.TypeContribuable.HORS_SUISSE)));
-	                    table.addLigne("Contribuables à la source:", nombreAsString(nombreParType.get(ProduireRolesResults.InfoContribuable.TypeContribuable.SOURCE)));
-	                    table.addLigne("Contribuables à la dépense:", nombreAsString(nombreParType.get(ProduireRolesResults.InfoContribuable.TypeContribuable.DEPENSE)));
-	                    table.addLigne("Contribuables plus assujettis:", nombreAsString(nombreParType.get(ProduireRolesResults.InfoContribuable.TypeContribuable.NON_ASSUJETTI)));
-		                table.addLigne("Durée d'exécution du job:", formatDureeExecution(results));
-	                    table.addLigne("Date de génération du rapport:", formatTimestamp(dateGeneration));
-	                }
-
-	            });
-	        }
-
-	        // Fichier CVS détaillé
-	        {
-	            String filename = "" + results.annee + "_roles_" + human2file(nomCommune) + ".csv";
-	            String contenu = asCsvFile(nomCommune, infoCommune, results.annee, status);
-	            String titre = "Liste détaillée";
-	            String listVide = "(aucun rôle trouvé)";
-	            addListeDetaillee(writer, totalContribuables, titre, listVide, filename, contenu);
-	        }
-	    }
+		if (results.noColOID != null) {
+			writePourOid(results, dateGeneration, status, writer);
+		}
+		else {
+			writeCommuneParCommune(results, dateGeneration, status, writer);
+		}
 
 	    close();
 
 	    status.setMessage("Génération du rapport terminée.");
+	}
+
+	private void writePourOid(ProduireRolesResults results, Date dateGeneration, StatusManager status, PdfWriter writer) throws InfrastructureException, DocumentException {
+
+		final List<Commune> communes = getListeCommunes(results, false);
+		final Map<Integer, String> nomsCommunes = buildNomsCommunes(communes);
+
+		// filtrage des seules communes qui sont effectivement dans l'OID
+		final List<Integer> ofsCommunesDansOID = new ArrayList<Integer>(communes.size());
+		for (Commune commune : communes) {
+			final OfficeImpot office = infraService.getOfficeImpotDeCommune(commune.getNoOFSEtendu());
+			if (office != null && office.getNoColAdm() == results.noColOID) {
+				ofsCommunesDansOID.add(commune.getNoOFSEtendu());
+			}
+		}
+
+		final Map<Long, ProduireRolesResults.InfoContribuable> infoOid = results.buildInfosPourRegroupementCommunes(ofsCommunesDansOID);
+
+		// Résumé des types de contribuables
+		addEntete1("Résumé des types de contribuables trouvés");
+		{
+		    final Map<ProduireRolesResults.InfoContribuable.TypeContribuable, Integer> nombreParType = extractNombreParType(infoOid.values());
+		    addTableSimple(2, new TableSimpleCallback() {
+		        public void fillTable(PdfTableSimple table) throws DocumentException {
+		            table.setWidths(new float[]{2.0f, 1.0f});
+			        addLignesStatsParTypeCtb(table, nombreParType);
+		        }
+		    });
+		}
+
+		// Fichier CVS détaillé
+		{
+			final OfficeImpot office = getOfficeImpot(results.noColOID);
+			final String filename = String.format("%d_roles_%s.csv", results.annee, human2file(office.getNomCourt()));
+			final String contenu = asCsvFile(nomsCommunes, infoOid, status);
+			final String titre = "Liste détaillée";
+			final String listVide = "(aucun rôle trouvé)";
+		    addListeDetaillee(writer, infoOid.size(), titre, listVide, filename, contenu);
+		}
+
+	}
+
+	private void writeCommuneParCommune(final ProduireRolesResults results, final Date dateGeneration, StatusManager status, PdfWriter writer) throws InfrastructureException, DocumentException {
+		final List<Commune> communes = getListeCommunes(results, true);
+		final Map<Integer, String> nomsCommunes = buildNomsCommunes(communes);
+
+		// Détail commune par commune
+		for (final Commune commune : communes) {
+
+		    if (results.noOfsCommune != null) {
+		        if (commune.getNoOFSEtendu() != results.noOfsCommune) {
+		            /*
+		             * On ignore toutes les autres communes lorsqu'un rapport a été demandé spécifiquement pour une commune (il est possible
+		             * et normal d'avoir des informations pour d'autres communes en raison des contribuables qui ont déménagé durant
+		             * l'année, et donc qui produisent des informations sur deux communes).
+		             */
+		            continue;
+		        }
+		    } else if (results.noColOID != null) {
+			    throw new RuntimeException("On n'est pas sensé se trouver là si on génère le rapport d'un OID !!");
+		    }
+
+		    final ProduireRolesResults.InfoCommune infoCommune = results.infosCommunes.get(commune.getNoOFSEtendu());
+		    if (infoCommune == null) {
+		        Audit.error("Rôle des communes: Impossible de trouver les informations pour la commune " + commune.getNomMinuscule()
+		                + "(n°ofs " + commune.getNoOFSEtendu() + ")");
+		        continue;
+		    }
+
+			newPage();
+
+		    // Entête de la commune
+		    final String nomCommune = commune.getNomMinuscule();
+		    final int totalContribuables = infoCommune.getInfosContribuables().size();
+		    addTitrePrincipal("Liste des rôles " + results.annee + " pour la commune de\n" + nomCommune);
+
+		    if (results.interrompu) {
+		        addWarning("Attention ! Le job a été interrompu par l'utilisateur,\n"
+		                + "les valeurs ci-dessous sont donc incomplètes.");
+		    }
+
+		    // Résumé de la commune
+		    addEntete1("Résumé");
+		    {
+		        final Map<ProduireRolesResults.InfoContribuable.TypeContribuable, Integer> nombreParType = extractNombreParType(infoCommune.getInfosContribuables().values());
+		        addTableSimple(2, new TableSimpleCallback() {
+		            public void fillTable(PdfTableSimple table) throws DocumentException {
+		                table.setWidths(new float[]{2.0f, 1.0f});
+		                table.addLigne("Nombre total de contribuables traités:", String.valueOf(totalContribuables));
+			            addLignesStatsParTypeCtb(table, nombreParType);
+			            table.addLigne("Durée d'exécution du job:", formatDureeExecution(results));
+		                table.addLigne("Date de génération du rapport:", formatTimestamp(dateGeneration));
+		            }
+
+		        });
+		    }
+
+		    // Fichier CVS détaillé
+		    {
+		        final String filename = String.format("%d_roles_%s.csv", results.annee, human2file(nomCommune));
+		        final String contenu = asCsvFile(nomsCommunes, infoCommune, status);
+		        final String titre = "Liste détaillée";
+		        final String listVide = "(aucun rôle trouvé)";
+		        addListeDetaillee(writer, totalContribuables, titre, listVide, filename, contenu);
+		    }
+		}
+	}
+
+	/**
+	 * Construit une map qui donne le nom des communes par numéro OFS étendu
+	 * @param communes communes à indexer
+	 * @return map d'indexation par numéro OFS étendu
+	 */
+	private static Map<Integer, String> buildNomsCommunes(List<Commune> communes) {
+		final Map<Integer, String> map = new HashMap<Integer, String>(communes.size());
+		for (Commune commune : communes) {
+			map.put(commune.getNoOFSEtendu(), commune.getNomMinuscule());
+		}
+		return map;
+	}
+
+	private static void addLignesStatsParTypeCtb(PdfTableSimple table, Map<ProduireRolesResults.InfoContribuable.TypeContribuable, Integer> nombreParType) {
+		table.addLigne("Contribuables ordinaires:", nombreAsString(nombreParType.get(ProduireRolesResults.InfoContribuable.TypeContribuable.ORDINAIRE), nombreParType.get(ProduireRolesResults.InfoContribuable.TypeContribuable.MIXTE)));
+		table.addLigne("Contribuables hors canton:", nombreAsString(nombreParType.get(ProduireRolesResults.InfoContribuable.TypeContribuable.HORS_CANTON)));
+		table.addLigne("Contribuables hors Suisse:", nombreAsString(nombreParType.get(ProduireRolesResults.InfoContribuable.TypeContribuable.HORS_SUISSE)));
+		table.addLigne("Contribuables à la source:", nombreAsString(nombreParType.get(ProduireRolesResults.InfoContribuable.TypeContribuable.SOURCE)));
+		table.addLigne("Contribuables à la dépense:", nombreAsString(nombreParType.get(ProduireRolesResults.InfoContribuable.TypeContribuable.DEPENSE)));
+		table.addLigne("Contribuables plus assujettis:", nombreAsString(nombreParType.get(ProduireRolesResults.InfoContribuable.TypeContribuable.NON_ASSUJETTI)));
 	}
 
 	private OfficeImpot getOfficeImpot(Integer noColOID) {
@@ -229,9 +287,10 @@ public class PdfRolesCommunesRapport extends PdfRapport {
 
 	/**
 	 * @param results le résultat du job
-	 * @return la liste des communes triées par ordre alphabétique
+	 * @param triAlphabetique <code>false</code> si les commune ne doivent pas être spécialement triées, <code>true</code> si le tri doit être fait alphabétiquement
+	 * @return la liste des communes triées (ou non) par ordre alphabétique
 	 */
-	private List<Commune> getListCommunes(final ProduireRolesResults results) {
+	private List<Commune> getListeCommunes(final ProduireRolesResults results, boolean triAlphabetique) {
 
 		final List<Commune> listCommunes = new ArrayList<Commune>(results.infosCommunes.size());
 		for (ProduireRolesResults.InfoCommune infoCommune : results.infosCommunes.values()) {
@@ -246,34 +305,68 @@ public class PdfRolesCommunesRapport extends PdfRapport {
 			listCommunes.add(commune);
 		}
 
-		Collections.sort(listCommunes, new Comparator<Commune>() {
-			public int compare(Commune o1, Commune o2) {
-				return o1.getNomMinuscule().compareTo(o2.getNomMinuscule());
-			}
-		});
+		if (triAlphabetique) {
+			Collections.sort(listCommunes, new Comparator<Commune>() {
+				public int compare(Commune o1, Commune o2) {
+					return o1.getNomMinuscule().compareTo(o2.getNomMinuscule());
+				}
+			});
+		}
 
 		return listCommunes;
 	}
 
-	private String asCsvFile(final String nomCommune, ProduireRolesResults.InfoCommune infoCommune, int annee, StatusManager status) {
+	/**
+	 * Tri une collection (renvoie <code>null</code> si la collection est nulle ou vide) par numéro de contribuable
+	 * @param col la collection en entrée (son contenu sera recopié dans la liste triée)
+	 * @return une nouvelle instance de liste, triée par numéro de contribuable
+	 */
+	private static List<ProduireRolesResults.InfoContribuable> getListeTriee(Collection<ProduireRolesResults.InfoContribuable> col) {
 
-	    final RegDate finAnnee = RegDate.get(annee, 12, 31);
-	    final List<ProduireRolesResults.InfoContribuable> infos = new ArrayList<ProduireRolesResults.InfoContribuable>(infoCommune.getInfosContribuables().values());
+		if (col == null || col.size() == 0) {
+			return null;
+		}
 
-	    final int size = infos.size();
-	    if (size == 0) {
-	        return null;
-	    }
+		final List<ProduireRolesResults.InfoContribuable> triee = new ArrayList<ProduireRolesResults.InfoContribuable>(col);
 
-	    Collections.sort(infos, new Comparator<ProduireRolesResults.InfoContribuable>() {
-	        public int compare(ProduireRolesResults.InfoContribuable o1, ProduireRolesResults.InfoContribuable o2) {
-	            return (int) (o1.noCtb - o2.noCtb);
-	        }
-	    });
+		Collections.sort(triee, new Comparator<ProduireRolesResults.InfoContribuable>() {
+		    public int compare(ProduireRolesResults.InfoContribuable o1, ProduireRolesResults.InfoContribuable o2) {
+		        return (int) (o1.noCtb - o2.noCtb);
+		    }
+		});
 
-	    final int noOfsCommune = infoCommune.getNoOfs();
+		return triee;
+	}
 
-		final StringBuilder b = new StringBuilder("Numéro OFS de la commune" + COMMA + // --------------------------
+	/**
+	 * Utilisé par le traitement d'un OID complet
+	 */
+	private String asCsvFile(Map<Integer, String> nomsCommunes, Map<Long, ProduireRolesResults.InfoContribuable> infoOid, StatusManager status) {
+		final List<ProduireRolesResults.InfoContribuable> infos = getListeTriee(infoOid.values());
+		final StringBuilder b = getBuilderWithHeader();
+		status.setMessage("Génération du rapport");
+		b.append(traiteOid(infos, nomsCommunes));
+		return b.toString();
+	}
+
+	/**
+	 * Utilisé par le traitement commune par commune
+	 */
+	private String asCsvFile(final Map<Integer, String> nomsCommunes, ProduireRolesResults.InfoCommune infoCommune, StatusManager status) {
+
+		final int noOfsCommune = infoCommune.getNoOfs();
+		final List<ProduireRolesResults.InfoContribuable> infos = getListeTriee(infoCommune.getInfosContribuables().values());
+
+		final String nomCommune = nomsCommunes.get(noOfsCommune);
+		status.setMessage(String.format("Génération du rapport pour la commune de %s...", nomCommune));
+
+		final StringBuilder b = getBuilderWithHeader();
+		b.append(traiteCommune(infos, noOfsCommune, nomsCommunes));
+	    return b.toString();
+	}
+
+	private static StringBuilder getBuilderWithHeader() {
+		return new StringBuilder("Numéro OFS de la commune" + COMMA + // --------------------------
 		        "Nom de la commune" + COMMA + // -------------------------------------------------------------
 				"Type de contribuable" + COMMA + // ----------------------------------------------------------
 				"Complément type contribuable" + COMMA + // --------------------------------------------------
@@ -288,10 +381,6 @@ public class PdfRolesCommunesRapport extends PdfRapport {
 		        "Numéro AVS contribuable 1" + COMMA + // -------------------------------------------------------
 		        "Numéro AVS contribuable 2" + COMMA + // -------------------------------------------------------
 				"Assujettissement\n");
-
-		status.setMessage("Génération du rapport pour la commune de " + nomCommune + "...");
-	    b.append(traiteCommune(infos, noOfsCommune, nomCommune, finAnnee));
-	    return b.toString();
 	}
 
 	private static String getDescriptionMotif(MotifFor motif, boolean ouverture) {
@@ -312,7 +401,30 @@ public class PdfRolesCommunesRapport extends PdfRapport {
 		return complement;
 	}
 
-	private String traiteCommune(final List<ProduireRolesResults.InfoContribuable> infos, final int noOfsCommune, String nomCommune, final RegDate finAnnee) {
+	/**
+	 * Interface interne pour factoriser la production de CSV d'après une liste d'information
+	 */
+	private static interface AccesCommune {
+		int getNoOfsCommune(ProduireRolesResults.InfoContribuable infoContribuable);
+	}
+
+	private String traiteOid(final List<ProduireRolesResults.InfoContribuable> infos, final Map<Integer, String> nomsCommunes) {
+		return traiteListeContribuable(infos, nomsCommunes, new AccesCommune() {
+			public int getNoOfsCommune(ProduireRolesResults.InfoContribuable infoContribuable) {
+				return infoContribuable.getNoOfsDerniereCommune();
+			}
+		});
+	}
+
+	private String traiteCommune(final List<ProduireRolesResults.InfoContribuable> infos, final int noOfsCommune, final Map<Integer, String> nomsCommunes) {
+		return traiteListeContribuable(infos, nomsCommunes, new AccesCommune() {
+			public int getNoOfsCommune(ProduireRolesResults.InfoContribuable infoContribuable) {
+				return noOfsCommune;
+			}
+		});
+	}
+
+	private String traiteListeContribuable(final List<ProduireRolesResults.InfoContribuable> infos, Map<Integer, String> nomsCommunes, final AccesCommune accesCommune) {
 
 	    final StringBuilder b = new StringBuilder();
 
@@ -357,9 +469,12 @@ public class PdfRolesCommunesRapport extends PdfRapport {
 				motifFermeture = "";
 			}
 
-			final String assujettissement = info.getTypeAssujettissementDansCommune().description();
+			final String assujettissement = info.getTypeAssujettissementAgrege().description();
 	        final String numeroAvs1 = sizeNoms > 0 ? FormatNumeroHelper.formatNumAVS(nosAvs.get(0)) : "";
 	        final String numeroAvs2 = sizeNoms > 1 ? FormatNumeroHelper.formatNumAVS(nosAvs.get(1)) : "";
+
+			final int noOfsCommune = accesCommune.getNoOfsCommune(info);
+			final String nomCommune = nomsCommunes.get(noOfsCommune);
 
 			b.append(noOfsCommune).append(COMMA);
 			b.append(nomCommune).append(COMMA);
@@ -392,20 +507,29 @@ public class PdfRolesCommunesRapport extends PdfRapport {
 	    }
 	}
 
-	private Map<ProduireRolesResults.InfoContribuable.TypeContribuable, Integer> extractNombreParType(final ProduireRolesResults.InfoCommune infoCommune) {
-		Map<ProduireRolesResults.InfoContribuable.TypeContribuable, Integer> nombreParType = new HashMap<ProduireRolesResults.InfoContribuable.TypeContribuable, Integer>();
-		for (ProduireRolesResults.InfoContribuable info : infoCommune.getInfosContribuables().values()) {
-			Integer nombre = nombreParType.get(info.getTypeCtb());
-			if (nombre == null) {
-				nombre = 1;
-				nombreParType.put(info.getTypeCtb(), nombre);
-			}
-			else {
-				nombre = nombre + 1;
-				nombreParType.put(info.getTypeCtb(), nombre);
+	private Map<ProduireRolesResults.InfoContribuable.TypeContribuable, Integer> extractNombreParType(Collection<ProduireRolesResults.InfoContribuable> infosCtbs) {
+
+		final int nbTypesContribuables = ProduireRolesResults.InfoContribuable.TypeContribuable.values().length;
+		final int[] nombreParType = new int[nbTypesContribuables];
+		for (int i = 0 ; i < nbTypesContribuables ; ++ i) {
+			nombreParType[i] = 0;
+		}
+
+		for (ProduireRolesResults.InfoContribuable info : infosCtbs) {
+			final ProduireRolesResults.InfoContribuable.TypeContribuable typeCtb = info.getTypeCtb();
+			if (typeCtb != null) {
+				final int index = typeCtb.ordinal();
+				++ nombreParType[index];
 			}
 		}
-		return nombreParType;
+
+		final Map<ProduireRolesResults.InfoContribuable.TypeContribuable, Integer> map = new HashMap<ProduireRolesResults.InfoContribuable.TypeContribuable, Integer>(nbTypesContribuables);
+		for (int i = 0 ; i < nbTypesContribuables ; ++ i) {
+			if (nombreParType[i] > 0) {
+				map.put(ProduireRolesResults.InfoContribuable.TypeContribuable.values()[i], nombreParType[i]);
+			}
+		}
+		return map;
 	}
 
 	private static String nombreAsString(Integer nombre) {
