@@ -6,6 +6,7 @@ import org.springframework.util.Assert;
 
 import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.adresse.AdresseService;
+import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.indexer.AbstractSubIndexable;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.interfaces.model.CommuneSimple;
@@ -54,7 +55,7 @@ public class AdressesTiersSubIndexable extends AbstractSubIndexable {
 
 		try {
 			// Défaut => adresse courrier
-			AdresseGenerique courrier = adresseService.getAdresseFiscale(tiers, TypeAdresseTiers.COURRIER, null, false);
+			AdresseGenerique courrier = adresseService.getAdresseFiscale(tiers, TypeAdresseFiscale.COURRIER, null, false);
 			if (courrier != null) {
 				rue = courrier.getRue();
 				npa = courrier.getNumeroPostal();
@@ -82,7 +83,7 @@ public class AdressesTiersSubIndexable extends AbstractSubIndexable {
 		}
 
 		try {
-			final AdresseGenerique domicile = adresseService.getAdresseFiscale(tiers, TypeAdresseTiers.DOMICILE, null, false);
+			final AdresseGenerique domicile = adresseService.getAdresseFiscale(tiers, TypeAdresseFiscale.DOMICILE, null, false);
 			// msi/tdq 3.6.09 : on ne doit pas tenir compte des adresses de domicile par défaut car elles n'ont pas de valeur pour
 			// déterminer si un contribuable est dans le canton
 			if (domicile != null && !domicile.isDefault()) {

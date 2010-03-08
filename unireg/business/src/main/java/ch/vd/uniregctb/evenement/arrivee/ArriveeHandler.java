@@ -12,6 +12,7 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.adresse.AdresseService;
+import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.EtatCivilHelper;
 import ch.vd.uniregctb.common.FiscalDateHelper;
@@ -602,7 +603,7 @@ public class ArriveeHandler extends EvenementCivilHandlerBase {
 	private CommuneSimple getCommuneDomicile(RegDate date, PersonnePhysique pp) throws AdresseException, InfrastructureException {
 		final CommuneSimple commune;
 		if (pp != null) {
-			final AdresseGenerique adresseDomicile = adresseService.getAdresseFiscale(pp, TypeAdresseTiers.DOMICILE, date, false);
+			final AdresseGenerique adresseDomicile = adresseService.getAdresseFiscale(pp, TypeAdresseFiscale.DOMICILE, date, false);
 			if (adresseDomicile != null) {
 				commune = getService().getServiceInfra().getCommuneByAdresse(adresseDomicile);
 			}

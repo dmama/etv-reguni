@@ -105,17 +105,17 @@ public class AdresseServiceImpl implements AdresseService {
 	/**
 	 * {@inheritDoc}
 	 */
-	public AdresseEnvoiDetaillee getAdresseEnvoi(Tiers tiers, RegDate date, TypeAdresseTiers type, boolean strict) throws AdresseException {
+	public AdresseEnvoiDetaillee getAdresseEnvoi(Tiers tiers, RegDate date, TypeAdresseFiscale type, boolean strict) throws AdresseException {
 		Assert.notNull(tiers);
 
 		final AdresseEnvoiDetaillee adresseEnvoi = new AdresseEnvoiDetaillee();
 
 		// [UNIREG-1808] dans le cas de l'adresse de poursuite d'un contribuable sous tutelle, le destinaire de l'adresse de poursuite est l'autorité tutelaire.
-		if (type == TypeAdresseTiers.POURSUITE && TiersHelper.estSousTutelle(tiers, date)) {
+		if (type == TypeAdresseFiscale.POURSUITE && TiersHelper.estSousTutelle(tiers, date)) {
 			final Tiers autoriteTutelaire = getRepresentant(tiers, TypeAdresseRepresentant.AUTORITE_TUTELAIRE, date);
 			if (autoriteTutelaire != null) {
 				fillDestinataire(adresseEnvoi, autoriteTutelaire);
-				fillDestination(adresseEnvoi, autoriteTutelaire, date, TypeAdresseTiers.REPRESENTATION, strict);
+				fillDestination(adresseEnvoi, autoriteTutelaire, date, TypeAdresseFiscale.REPRESENTATION, strict);
 				return adresseEnvoi;
 			}
 			else {
@@ -124,11 +124,11 @@ public class AdresseServiceImpl implements AdresseService {
 		}
 
 		// [UNIREG-1808] dans le cas de l'adresse de poursuite d'un contribuable qui possède un représentant avec exécution forcée, le destinaire de l'adresse de poursuite est le représentant.
-		if (type == TypeAdresseTiers.POURSUITE && TiersHelper.possedeRepresentantAvecExecutionForcee(tiers, date)) {
+		if (type == TypeAdresseFiscale.POURSUITE && TiersHelper.possedeRepresentantAvecExecutionForcee(tiers, date)) {
 			final Tiers representant = getRepresentant(tiers, TypeAdresseRepresentant.REPRESENTATION_AVEC_EXECUTION_FORCEE, date);
 			if (representant != null) {
 				fillDestinataire(adresseEnvoi, representant);
-				fillDestination(adresseEnvoi, representant, date, TypeAdresseTiers.REPRESENTATION, strict);
+				fillDestination(adresseEnvoi, representant, date, TypeAdresseFiscale.REPRESENTATION, strict);
 				return adresseEnvoi;
 			}
 		}
@@ -156,12 +156,12 @@ public class AdresseServiceImpl implements AdresseService {
 	 * @param type  le type d'adresse considéré
 	 * @return l'autre tiers
 	 */
-	private Tiers getAutreTiers(Tiers tiers, RegDate date, TypeAdresseTiers type) {
+	private Tiers getAutreTiers(Tiers tiers, RegDate date, TypeAdresseFiscale type) {
 
 		Tiers autreTiers = null;
 
 		// Cas spécial d'un tiers ayant son adresse pointant sur celle d'un autre tiers
-		final AdresseTiers adresseCourrier = tiers.getAdresseActive(type, date);
+		final AdresseTiers adresseCourrier = tiers.getAdresseActive(type.asCoreType(), date);
 		if (adresseCourrier != null && adresseCourrier instanceof AdresseAutreTiers) {
 
 			final AdresseAutreTiers adresseAutreTiers = (AdresseAutreTiers) adresseCourrier;
@@ -210,7 +210,7 @@ public class AdresseServiceImpl implements AdresseService {
 			Assert.fail("Le registre foncier ne s'intéresse qu'aux personnes physiques et ménages communs!");
 		}
 
-		final AdresseGenerique adresse = getAdresseFiscale(ctb, TypeAdresseTiers.COURRIER, date, false);
+		final AdresseGenerique adresse = getAdresseFiscale(ctb, TypeAdresseFiscale.COURRIER, date, false);
 		final String rueEtNumero = adresse != null ? buildRueEtNumero(adresse) : null;
 		final String npa = adresse != null ? adresse.getNumeroPostal() : null;
 		final String localite = adresse != null ? adresse.getLocalite() : null;
@@ -295,7 +295,7 @@ public class AdresseServiceImpl implements AdresseService {
 	 * @param strict  si <b>faux</b> essaie de résoudre silencieusement les problèmes détectés durant le traitement; autrement lève une exception.
 	 * @throws AdresseException en cas de problème dans le traitement
 	 */
-	private void fillDestination(AdresseEnvoiDetaillee adresse, Tiers tiers, RegDate date, TypeAdresseTiers type, boolean strict) throws AdresseException {
+	private void fillDestination(AdresseEnvoiDetaillee adresse, Tiers tiers, RegDate date, TypeAdresseFiscale type, boolean strict) throws AdresseException {
 
 		if (tiers instanceof PersonnePhysique) {
 			fillDestination(adresse, (PersonnePhysique) tiers, date, type, strict);
@@ -330,7 +330,7 @@ public class AdresseServiceImpl implements AdresseService {
 	 * @param strict   si <b>faux</b> essaie de résoudre silencieusement les problèmes détectés durant le traitement; autrement lève une exception.
 	 * @throws AdresseException en cas de problème dans le traitement
 	 */
-	private void fillDestination(AdresseEnvoiDetaillee adresse, PersonnePhysique personne, RegDate date, TypeAdresseTiers type, boolean strict) throws AdresseException {
+	private void fillDestination(AdresseEnvoiDetaillee adresse, PersonnePhysique personne, RegDate date, TypeAdresseFiscale type, boolean strict) throws AdresseException {
 
 		AdresseGenerique adresseFiscale = getAdresseFiscale(personne, type, date, strict);
 		if (adresseFiscale != null) {
@@ -349,7 +349,7 @@ public class AdresseServiceImpl implements AdresseService {
 	 * @param strict  si <b>faux</b> essaie de résoudre silencieusement les problèmes détectés durant le traitement; autrement lève une exception.
 	 * @throws AdresseException en cas de problème dans le traitement
 	 */
-	private void fillDestination(AdresseEnvoiDetaillee adresse, AutreCommunaute autre, RegDate date, TypeAdresseTiers type, boolean strict) throws AdresseException {
+	private void fillDestination(AdresseEnvoiDetaillee adresse, AutreCommunaute autre, RegDate date, TypeAdresseFiscale type, boolean strict) throws AdresseException {
 
 		final AdresseGenerique adresseCourrier = getAdresseFiscale(autre, type, date, strict);
 		if (adresseCourrier != null) {
@@ -367,7 +367,7 @@ public class AdresseServiceImpl implements AdresseService {
 	 * @param strict     si <b>faux</b> essaie de résoudre silencieusement les problèmes détectés durant le traitement; autrement lève une exception.
 	 * @throws AdresseException en cas de problème dans le traitement
 	 */
-	private void fillDestination(AdresseEnvoiDetaillee adresse, Entreprise entreprise, RegDate date, TypeAdresseTiers type, boolean strict) throws AdresseException {
+	private void fillDestination(AdresseEnvoiDetaillee adresse, Entreprise entreprise, RegDate date, TypeAdresseFiscale type, boolean strict) throws AdresseException {
 
 		final AdresseGenerique adresseCourrier = getAdresseFiscale(entreprise, type, date, strict);
 		if (adresseCourrier != null) {
@@ -417,7 +417,7 @@ public class AdresseServiceImpl implements AdresseService {
 	 * @param strict       si <b>faux</b> essaie de résoudre silencieusement les problèmes détectés durant le traitement; autrement lève une exception.
 	 * @throws AdresseException en cas de problème dans le traitement
 	 */
-	private void fillDestination(AdresseEnvoiDetaillee adresse, MenageCommun menageCommun, RegDate date, TypeAdresseTiers type, boolean strict) throws AdresseException {
+	private void fillDestination(AdresseEnvoiDetaillee adresse, MenageCommun menageCommun, RegDate date, TypeAdresseFiscale type, boolean strict) throws AdresseException {
 
 		final AdresseGenerique adresseFiscale = getAdresseFiscale(menageCommun, type, date, strict);
 
@@ -462,7 +462,7 @@ public class AdresseServiceImpl implements AdresseService {
 	 * @param strict   si <b>faux</b> essaie de résoudre silencieusement les problèmes détectés durant le traitement; autrement lève une exception.
 	 * @throws AdresseException en cas de problème dans le traitement
 	 */
-	private void fillDestination(AdresseEnvoiDetaillee adresse, DebiteurPrestationImposable debiteur, RegDate date, TypeAdresseTiers type, boolean strict)
+	private void fillDestination(AdresseEnvoiDetaillee adresse, DebiteurPrestationImposable debiteur, RegDate date, TypeAdresseFiscale type, boolean strict)
 			throws AdresseException {
 
 		// Dans le cas normal d'un débiteur, le destinataire est le contribuable associé
@@ -1166,30 +1166,30 @@ public class AdresseServiceImpl implements AdresseService {
 	 * @return l'adresse générique du type spécifié, valide à la date spécifiée pour le tiers spécifié.
 	 * @throws AdresseException en cas de problème dans le traitement
 	 */
-	private AdresseGenerique appliqueDefautsAdressesFiscales(Tiers tiers, AdresseGenerique adresse, TypeAdresseTiers type, RegDate date,
+	private AdresseGenerique appliqueDefautsAdressesFiscales(Tiers tiers, AdresseGenerique adresse, TypeAdresseFiscale type, RegDate date,
 	                                                         int callDepth, boolean strict) throws AdresseException {
 
 		if (adresse == null) {
 			switch (type) {
 			case COURRIER:
-				adresse = (adresse == null ? getDefault(tiers, TypeAdresseTiers.DOMICILE, date, callDepth + 1, strict) : adresse);
-				adresse = (adresse == null ? getDefault(tiers, TypeAdresseTiers.REPRESENTATION, date, callDepth + 1, strict) : adresse);
-				adresse = (adresse == null ? getDefault(tiers, TypeAdresseTiers.POURSUITE, date, callDepth + 1, strict) : adresse);
+				adresse = (adresse == null ? getDefault(tiers, TypeAdresseFiscale.DOMICILE, date, callDepth + 1, strict) : adresse);
+				adresse = (adresse == null ? getDefault(tiers, TypeAdresseFiscale.REPRESENTATION, date, callDepth + 1, strict) : adresse);
+				adresse = (adresse == null ? getDefault(tiers, TypeAdresseFiscale.POURSUITE, date, callDepth + 1, strict) : adresse);
 				break;
 			case DOMICILE:
-				adresse = (adresse == null ? getDefault(tiers, TypeAdresseTiers.POURSUITE, date, callDepth + 1, strict) : adresse);
-				adresse = (adresse == null ? getDefault(tiers, TypeAdresseTiers.COURRIER, date, callDepth + 1, strict) : adresse);
-				adresse = (adresse == null ? getDefault(tiers, TypeAdresseTiers.REPRESENTATION, date, callDepth + 1, strict) : adresse);
+				adresse = (adresse == null ? getDefault(tiers, TypeAdresseFiscale.POURSUITE, date, callDepth + 1, strict) : adresse);
+				adresse = (adresse == null ? getDefault(tiers, TypeAdresseFiscale.COURRIER, date, callDepth + 1, strict) : adresse);
+				adresse = (adresse == null ? getDefault(tiers, TypeAdresseFiscale.REPRESENTATION, date, callDepth + 1, strict) : adresse);
 				break;
 			case REPRESENTATION:
-				adresse = (adresse == null ? getDefault(tiers, TypeAdresseTiers.COURRIER, date, callDepth + 1, strict) : adresse);
-				adresse = (adresse == null ? getDefault(tiers, TypeAdresseTiers.DOMICILE, date, callDepth + 1, strict) : adresse);
-				adresse = (adresse == null ? getDefault(tiers, TypeAdresseTiers.POURSUITE, date, callDepth + 1, strict) : adresse);
+				adresse = (adresse == null ? getDefault(tiers, TypeAdresseFiscale.COURRIER, date, callDepth + 1, strict) : adresse);
+				adresse = (adresse == null ? getDefault(tiers, TypeAdresseFiscale.DOMICILE, date, callDepth + 1, strict) : adresse);
+				adresse = (adresse == null ? getDefault(tiers, TypeAdresseFiscale.POURSUITE, date, callDepth + 1, strict) : adresse);
 				break;
 			case POURSUITE:
-				adresse = (adresse == null ? getDefault(tiers, TypeAdresseTiers.DOMICILE, date, callDepth + 1, strict) : adresse);
-				adresse = (adresse == null ? getDefault(tiers, TypeAdresseTiers.COURRIER, date, callDepth + 1, strict) : adresse);
-				adresse = (adresse == null ? getDefault(tiers, TypeAdresseTiers.REPRESENTATION, date, callDepth + 1, strict) : adresse);
+				adresse = (adresse == null ? getDefault(tiers, TypeAdresseFiscale.DOMICILE, date, callDepth + 1, strict) : adresse);
+				adresse = (adresse == null ? getDefault(tiers, TypeAdresseFiscale.COURRIER, date, callDepth + 1, strict) : adresse);
+				adresse = (adresse == null ? getDefault(tiers, TypeAdresseFiscale.REPRESENTATION, date, callDepth + 1, strict) : adresse);
 				break;
 			default:
 				throw new IllegalArgumentException("Type d'adresse tiers inconnu = [" + type + "]");
@@ -1199,7 +1199,7 @@ public class AdresseServiceImpl implements AdresseService {
 		return adresse;
 	}
 
-	private AdresseGenerique getDefault(Tiers tiers, TypeAdresseTiers type, RegDate date, int callDepth, boolean strict) throws AdresseException {
+	private AdresseGenerique getDefault(Tiers tiers, TypeAdresseFiscale type, RegDate date, int callDepth, boolean strict) throws AdresseException {
 		AdresseGenerique a = getAdresseFiscale(tiers, type, date, false, callDepth + 1, strict);
 		return a == null ? null : new AdresseGeneriqueAdapter(a, null, true);
 	}
@@ -1290,7 +1290,7 @@ public class AdresseServiceImpl implements AdresseService {
 		AdresseGenerique adresse = adressesTuteur;
 
 		// Si le conjoit n'est pas sous tutelle, on utilise son adresse courrier comme adresse de représentation du ménage
-		final AdresseGenerique courrierConjoint = getAdresseFiscale(conjoint, TypeAdresseTiers.COURRIER, date, true, callDepth + 1, strict);
+		final AdresseGenerique courrierConjoint = getAdresseFiscale(conjoint, TypeAdresseFiscale.COURRIER, date, true, callDepth + 1, strict);
 		if (courrierConjoint.getSource() != Source.TUTELLE && courrierConjoint.getSource() != Source.CURATELLE) {
 			adresse = new AdresseGeneriqueAdapter(courrierConjoint, Source.CONJOINT, false);
 		}
@@ -1326,8 +1326,7 @@ public class AdresseServiceImpl implements AdresseService {
 		final RegDate fin = rapport.getDateFin();
 
 		// ajustement de la validité de l'adresse à la durée de la représentation
-		final AdresseGenerique adressesRepresentant = getAdresseFiscale(representant, TypeAdresseTiers.REPRESENTATION, date, true,
-				callDepth + 1, strict);
+		final AdresseGenerique adressesRepresentant = getAdresseFiscale(representant, TypeAdresseFiscale.REPRESENTATION, date, true, callDepth + 1, strict);
 		if (adressesRepresentant == null) {
 			Audit.warn("Le tiers " + representant + " est le représentant du tiers n°" + tiers.getNumero() + ", mais il ne possède aucune adresse !");
 			return null;
@@ -1498,17 +1497,17 @@ public class AdresseServiceImpl implements AdresseService {
 		}
 
 		AdressesFiscales adresses = new AdressesFiscales();
-		adresses.courrier = getAdresseFiscale(tiers, TypeAdresseTiers.COURRIER, date, true, 0, strict);
-		adresses.representation = getAdresseFiscale(tiers, TypeAdresseTiers.REPRESENTATION, date, true, 0, strict);
-		adresses.poursuite = getAdresseFiscale(tiers, TypeAdresseTiers.POURSUITE, date, true, 0, strict);
-		adresses.domicile = getAdresseFiscale(tiers, TypeAdresseTiers.DOMICILE, date, true, 0, strict);
+		adresses.courrier = getAdresseFiscale(tiers, TypeAdresseFiscale.COURRIER, date, true, 0, strict);
+		adresses.representation = getAdresseFiscale(tiers, TypeAdresseFiscale.REPRESENTATION, date, true, 0, strict);
+		adresses.poursuite = getAdresseFiscale(tiers, TypeAdresseFiscale.POURSUITE, date, true, 0, strict);
+		adresses.domicile = getAdresseFiscale(tiers, TypeAdresseFiscale.DOMICILE, date, true, 0, strict);
 		return adresses;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public AdresseGenerique getAdresseFiscale(Tiers tiers, TypeAdresseTiers type, RegDate date, boolean strict) throws AdresseException {
+	public AdresseGenerique getAdresseFiscale(Tiers tiers, TypeAdresseFiscale type, RegDate date, boolean strict) throws AdresseException {
 
 		if (tiers == null) {
 			return null;
@@ -1517,7 +1516,7 @@ public class AdresseServiceImpl implements AdresseService {
 		return getAdresseFiscale(tiers, type, date, true, 0, strict);
 	}
 
-	private AdresseGenerique getAdresseFiscale(Tiers tiers, TypeAdresseTiers type, RegDate date, boolean appliqueDefauts, int callDepth, boolean strict)
+	private AdresseGenerique getAdresseFiscale(Tiers tiers, TypeAdresseFiscale type, RegDate date, boolean appliqueDefauts, int callDepth, boolean strict)
 			throws AdresseException {
 
 		if (tiers == null) {
@@ -1527,7 +1526,7 @@ public class AdresseServiceImpl implements AdresseService {
 		AdresseGenerique adresse = null;
 
 		// Cas spéciaux pour l'adresse courrier
-		if (type == TypeAdresseTiers.COURRIER) {
+		if (type == TypeAdresseFiscale.COURRIER) {
 
 			// 1er choix, l'adresse du tuteur
 			final AdresseGenerique adresseTuteur = getAdresseRepresentant(tiers, date, TypeAdresseRepresentant.TUTELLE, callDepth + 1, strict);
@@ -1562,7 +1561,7 @@ public class AdresseServiceImpl implements AdresseService {
 
 
 		// Cas spéciaux pour l'adresse de poursuite
-		if (type == TypeAdresseTiers.POURSUITE) {
+		if (type == TypeAdresseFiscale.POURSUITE) {
 
 			// [UNIREG-1808] 1er choix : l'adresse de l'autorité tutelaire (en cas de tutelle)
 			final AdresseGenerique adresseAutoriteTutelaire = getAdresseRepresentant(tiers, date, TypeAdresseRepresentant.AUTORITE_TUTELAIRE, callDepth + 1, strict);
@@ -1584,7 +1583,7 @@ public class AdresseServiceImpl implements AdresseService {
 		// 1er choix : l'adresse définie au niveau fiscal sur le tiers lui-même
 		if (adresse == null) {
 			// Récupère l'adresse directement définie sur le tiers au niveau fiscal.
-			final AdresseTiers adresseSurchargee = TiersHelper.getAdresseTiers(tiers, type, date);
+			final AdresseTiers adresseSurchargee = TiersHelper.getAdresseTiers(tiers, type.asCoreType(), date);
 			adresse = surchargeAdresseTiers(tiers, adresse, adresseSurchargee, callDepth + 1, strict);
 		}
 
@@ -1594,7 +1593,7 @@ public class AdresseServiceImpl implements AdresseService {
 				// Pour le cas du ménage commun, les adresses du principal sont utilisées comme premier défaut
 				final MenageCommun menage = (MenageCommun) tiers;
 				final PersonnePhysique principal = getPrincipalPourAdresse(menage, null); // date nulle -> on s'intéresse à la vue historique du couple
-				AdresseTiers adressePrincipal = TiersHelper.getAdresseTiers(principal, type, date);
+				AdresseTiers adressePrincipal = TiersHelper.getAdresseTiers(principal, type.asCoreType(), date);
 				adresse = surchargeAdresseTiers(tiers, adresse, adressePrincipal, callDepth + 1, strict);
 			}
 			else if (tiers instanceof DebiteurPrestationImposable) {
@@ -1992,7 +1991,7 @@ public class AdresseServiceImpl implements AdresseService {
 			final RegDate debut = a.getDateDebut();
 			final RegDate fin = a.getDateFin();
 			final Tiers autreTiers = a.getAutreTiers();
-			final TypeAdresseTiers type = a.getType();
+			final TypeAdresseFiscale type = TypeAdresseFiscale.fromCore(a.getType());
 			Assert.notNull(autreTiers);
 
 			if (callDepth >= MAX_CALL_DEPTH) {
@@ -2314,7 +2313,7 @@ public class AdresseServiceImpl implements AdresseService {
 	 */
 	public List<String> getNomCourrier(Tiers tiers, RegDate date, boolean strict) throws AdresseException {
 
-		final AdresseEnvoiDetaillee adresse = getAdresseEnvoi(tiers, date, TypeAdresseTiers.COURRIER, strict);
+		final AdresseEnvoiDetaillee adresse = getAdresseEnvoi(tiers, date, TypeAdresseFiscale.COURRIER, strict);
 
 		List<String> list = adresse.getNomPrenom();
 
@@ -2343,7 +2342,7 @@ public class AdresseServiceImpl implements AdresseService {
 		return tiersService.getNomPrenom(individu);
 	}
 
-	public AdresseGenerique getDerniereAdresseVaudoise(Tiers tiers, TypeAdresseTiers type) throws InfrastructureException, AdresseException {
+	public AdresseGenerique getDerniereAdresseVaudoise(Tiers tiers, TypeAdresseFiscale type) throws InfrastructureException, AdresseException {
 		final AdressesFiscalesHisto adressesHistoriques = getAdressesFiscalHisto(tiers,false);
 		final List<AdresseGenerique> listeAdresse = adressesHistoriques.ofType(type);
 		if (listeAdresse != null) {

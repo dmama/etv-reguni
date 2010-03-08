@@ -7,6 +7,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.AdresseSuisse;
+import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.interfaces.model.Adresse;
@@ -115,11 +116,11 @@ public class Ec_18000_12_Arrivee_Couple_AdresseFiscale_PP_Scenario extends Evene
 		final PersonnePhysique cleo = (PersonnePhysique) tiersDAO.get(noHabCleo);
 		assertNotNull(cleo, "On ne retrouve plus Cléo!");
 
-		final AdresseEnvoiDetaillee adresseMenage = adresseService.getAdresseEnvoi(menage, null, TypeAdresseTiers.COURRIER, true);
+		final AdresseEnvoiDetaillee adresseMenage = adresseService.getAdresseEnvoi(menage, null, TypeAdresseFiscale.COURRIER, true);
 		assertTrue(adresseMenage.getNpaEtLocalite().contains("Vallorbe"), "L'adresse d'envoi du ménage devrait être à Vallorbe");
-		final AdresseEnvoiDetaillee adresseAntoine = adresseService.getAdresseEnvoi(antoine, null, TypeAdresseTiers.COURRIER, true);
+		final AdresseEnvoiDetaillee adresseAntoine = adresseService.getAdresseEnvoi(antoine, null, TypeAdresseFiscale.COURRIER, true);
 		assertTrue(adresseAntoine.getNpaEtLocalite().contains("Vallorbe"), "L'adresse d'envoi d'Antoine devrait être à Vallorbe");
-		final AdresseEnvoiDetaillee adresseCleo = adresseService.getAdresseEnvoi(cleo, null, TypeAdresseTiers.COURRIER, true);
+		final AdresseEnvoiDetaillee adresseCleo = adresseService.getAdresseEnvoi(cleo, null, TypeAdresseFiscale.COURRIER, true);
 		assertTrue(adresseCleo.getNpaEtLocalite().contains("Bex"), "L'adresse d'envoi de Cléo devrait être à Bex");
 	}
 
@@ -165,11 +166,11 @@ public class Ec_18000_12_Arrivee_Couple_AdresseFiscale_PP_Scenario extends Evene
 		assertNotNull(ensemble.getPrincipal(), "Pas de membre principal sur le couple!");
 		assertNotNull(ensemble.getConjoint(), "Pas de conjoint sur le couple!");
 
-		final AdresseEnvoiDetaillee adresseMenage = adresseService.getAdresseEnvoi(menage, null, TypeAdresseTiers.COURRIER, true);
+		final AdresseEnvoiDetaillee adresseMenage = adresseService.getAdresseEnvoi(menage, null, TypeAdresseFiscale.COURRIER, true);
 		assertTrue(adresseMenage.getNpaEtLocalite().contains("Lausanne"), "L'adresse d'envoi du ménage devrait être à Lausanne");
-		final AdresseEnvoiDetaillee adresseAntoine = adresseService.getAdresseEnvoi(ensemble.getPrincipal(), null, TypeAdresseTiers.COURRIER, true);
+		final AdresseEnvoiDetaillee adresseAntoine = adresseService.getAdresseEnvoi(ensemble.getPrincipal(), null, TypeAdresseFiscale.COURRIER, true);
 		assertTrue(adresseAntoine.getNpaEtLocalite().contains("Lausanne"), "L'adresse d'envoi du principal devrait être à Lausanne");
-		final AdresseEnvoiDetaillee adresseCleo = adresseService.getAdresseEnvoi(menage, null, TypeAdresseTiers.COURRIER, true);
+		final AdresseEnvoiDetaillee adresseCleo = adresseService.getAdresseEnvoi(menage, null, TypeAdresseFiscale.COURRIER, true);
 		assertTrue(adresseCleo.getNpaEtLocalite().contains("Lausanne"), "L'adresse d'envoi du conjoint devrait être à Lausanne");
 	}
 }

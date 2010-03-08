@@ -11,6 +11,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
 import ch.vd.uniregctb.adresse.AdresseException;
+import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 import org.apache.log4j.Logger;
 
@@ -268,10 +269,10 @@ public abstract class TiersHisto {
 
 	private void initAdressesEnvoi(ch.vd.uniregctb.tiers.Tiers tiers, Context context) throws BusinessException {
 		try {
-			this.adresseEnvoi = DataHelper.createAdresseFormattee(tiers, null, context, TypeAdresseTiers.COURRIER);
-			this.adresseDomicileFormattee = DataHelper.createAdresseFormattee(tiers, null, context, TypeAdresseTiers.DOMICILE);
-			this.adresseRepresentationFormattee = DataHelper.createAdresseFormattee(tiers, null, context, TypeAdresseTiers.REPRESENTATION);
-			this.adressePoursuiteFormattee = DataHelper.createAdresseFormattee(tiers, null, context, TypeAdresseTiers.POURSUITE);
+			this.adresseEnvoi = DataHelper.createAdresseFormattee(tiers, null, context, TypeAdresseFiscale.COURRIER);
+			this.adresseDomicileFormattee = DataHelper.createAdresseFormattee(tiers, null, context, TypeAdresseFiscale.DOMICILE);
+			this.adresseRepresentationFormattee = DataHelper.createAdresseFormattee(tiers, null, context, TypeAdresseFiscale.REPRESENTATION);
+			this.adressePoursuiteFormattee = DataHelper.createAdresseFormattee(tiers, null, context, TypeAdresseFiscale.POURSUITE);
 		}
 		catch (AdresseException e) {
 			LOGGER.error(e, e);

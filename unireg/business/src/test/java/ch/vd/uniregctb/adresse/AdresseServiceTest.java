@@ -74,10 +74,10 @@ public class AdresseServiceTest extends BusinessTest {
 		assertNotNull(adrs.poursuite);
 		assertNotNull(adrs.representation);
 
-		assertNotNull(adresseService.getAdresseFiscale(nonhabitant, TypeAdresseTiers.COURRIER, null, false));
-		assertNotNull(adresseService.getAdresseFiscale(nonhabitant, TypeAdresseTiers.DOMICILE, null, false));
-		assertNotNull(adresseService.getAdresseFiscale(nonhabitant, TypeAdresseTiers.POURSUITE, null, false));
-		assertNotNull(adresseService.getAdresseFiscale(nonhabitant, TypeAdresseTiers.REPRESENTATION, null, false));
+		assertNotNull(adresseService.getAdresseFiscale(nonhabitant, TypeAdresseFiscale.COURRIER, null, false));
+		assertNotNull(adresseService.getAdresseFiscale(nonhabitant, TypeAdresseFiscale.DOMICILE, null, false));
+		assertNotNull(adresseService.getAdresseFiscale(nonhabitant, TypeAdresseFiscale.POURSUITE, null, false));
+		assertNotNull(adresseService.getAdresseFiscale(nonhabitant, TypeAdresseFiscale.REPRESENTATION, null, false));
 	}
 
 	@Test
@@ -132,10 +132,10 @@ public class AdresseServiceTest extends BusinessTest {
 	@Test
 	public void testGetAdressesFiscalesHistoSansTiers() throws Exception {
 		assertNull(adresseService.getAdressesFiscales(null, date(2000, 1, 1), false));
-		assertNull(adresseService.getAdresseFiscale(null, TypeAdresseTiers.COURRIER, date(2000, 1, 1), false));
-		assertNull(adresseService.getAdresseFiscale(null, TypeAdresseTiers.DOMICILE, date(2000, 1, 1), false));
-		assertNull(adresseService.getAdresseFiscale(null, TypeAdresseTiers.POURSUITE, date(2000, 1, 1), false));
-		assertNull(adresseService.getAdresseFiscale(null, TypeAdresseTiers.REPRESENTATION, date(2000, 1, 1), false));
+		assertNull(adresseService.getAdresseFiscale(null, TypeAdresseFiscale.COURRIER, date(2000, 1, 1), false));
+		assertNull(adresseService.getAdresseFiscale(null, TypeAdresseFiscale.DOMICILE, date(2000, 1, 1), false));
+		assertNull(adresseService.getAdresseFiscale(null, TypeAdresseFiscale.POURSUITE, date(2000, 1, 1), false));
+		assertNull(adresseService.getAdresseFiscale(null, TypeAdresseFiscale.REPRESENTATION, date(2000, 1, 1), false));
 	}
 
 	@Test
@@ -2416,15 +2416,15 @@ public class AdresseServiceTest extends BusinessTest {
 			}
 
 			try {
-				adresseService.getAdresseFiscale(pupille, TypeAdresseTiers.COURRIER, date(2000, 1, 1), false);
+				adresseService.getAdresseFiscale(pupille, TypeAdresseFiscale.COURRIER, date(2000, 1, 1), false);
 				fail();
 			}
 			catch (AdressesResolutionException ok) {
 				// ok
 			}
-			adresseService.getAdresseFiscale(pupille, TypeAdresseTiers.REPRESENTATION, date(2000, 1, 1), false);
-			adresseService.getAdresseFiscale(pupille, TypeAdresseTiers.POURSUITE, date(2000, 1, 1), false);
-			adresseService.getAdresseFiscale(pupille, TypeAdresseTiers.DOMICILE, date(2000, 1, 1), false);
+			adresseService.getAdresseFiscale(pupille, TypeAdresseFiscale.REPRESENTATION, date(2000, 1, 1), false);
+			adresseService.getAdresseFiscale(pupille, TypeAdresseFiscale.POURSUITE, date(2000, 1, 1), false);
+			adresseService.getAdresseFiscale(pupille, TypeAdresseFiscale.DOMICILE, date(2000, 1, 1), false);
 
 			try {
 				adresseService.getAdressesFiscalHisto(pupille, false);
@@ -3749,7 +3749,7 @@ public class AdresseServiceTest extends BusinessTest {
 		final List<String> nomCourrier = adresseService.getNomCourrier(menage, date(2005,1,1), false);
 		assertEmpty(nomCourrier);
 
-		final AdresseEnvoiDetaillee adresseEnvoi = adresseService.getAdresseEnvoi(menage, date(2007,3,3), TypeAdresseTiers.COURRIER, false);
+		final AdresseEnvoiDetaillee adresseEnvoi = adresseService.getAdresseEnvoi(menage, date(2007,3,3), TypeAdresseFiscale.COURRIER, false);
 		assertNotNull(adresseEnvoi);
 		assertNull(adresseEnvoi.getLigne1());
 		assertNull(adresseEnvoi.getLigne2());
@@ -3785,16 +3785,16 @@ public class AdresseServiceTest extends BusinessTest {
 		assertAdressesEquals(adresses.courrier, adresses.representation);
 
 		// les adresses d'envoi
-		final AdresseEnvoi domicile = adresseService.getAdresseEnvoi(ctb, null, TypeAdresseTiers.DOMICILE, false);
+		final AdresseEnvoi domicile = adresseService.getAdresseEnvoi(ctb, null, TypeAdresseFiscale.DOMICILE, false);
 		assertEquals("Monsieur", domicile.getLigne1());
 		assertEquals("Philippe Galley", domicile.getLigne2());
 		assertEquals("Chemin Sous le Bois", domicile.getLigne3());
 		assertEquals("1523 Granges-près-Marnand", domicile.getLigne4());
 		assertNull(domicile.getLigne5());
 
-		assertEquals(domicile, adresseService.getAdresseEnvoi(ctb, null, TypeAdresseTiers.COURRIER, false));
-		assertEquals(domicile, adresseService.getAdresseEnvoi(ctb, null, TypeAdresseTiers.POURSUITE, false));
-		assertEquals(domicile, adresseService.getAdresseEnvoi(ctb, null, TypeAdresseTiers.REPRESENTATION, false));
+		assertEquals(domicile, adresseService.getAdresseEnvoi(ctb, null, TypeAdresseFiscale.COURRIER, false));
+		assertEquals(domicile, adresseService.getAdresseEnvoi(ctb, null, TypeAdresseFiscale.POURSUITE, false));
+		assertEquals(domicile, adresseService.getAdresseEnvoi(ctb, null, TypeAdresseFiscale.REPRESENTATION, false));
 	}
 
 	/**
@@ -3836,27 +3836,27 @@ public class AdresseServiceTest extends BusinessTest {
 		assertAdressesEquals(adressesConjoint.courrier, adressesConjoint.representation);
 
 		// les adresses d'envoi
-		final AdresseEnvoi domicilePrincipal = adresseService.getAdresseEnvoi(principal, null, TypeAdresseTiers.DOMICILE, false);
+		final AdresseEnvoi domicilePrincipal = adresseService.getAdresseEnvoi(principal, null, TypeAdresseFiscale.DOMICILE, false);
 		assertEquals("Monsieur", domicilePrincipal.getLigne1());
 		assertEquals("Jean-Jacques Duc", domicilePrincipal.getLigne2());
 		assertEquals("Boulevard de Grancy", domicilePrincipal.getLigne3());
 		assertEquals("1000 Lausanne", domicilePrincipal.getLigne4());
 		assertNull(domicilePrincipal.getLigne5());
 
-		assertEquals(domicilePrincipal, adresseService.getAdresseEnvoi(principal, null, TypeAdresseTiers.COURRIER, false));
-		assertEquals(domicilePrincipal, adresseService.getAdresseEnvoi(principal, null, TypeAdresseTiers.POURSUITE, false));
-		assertEquals(domicilePrincipal, adresseService.getAdresseEnvoi(principal, null, TypeAdresseTiers.REPRESENTATION, false));
+		assertEquals(domicilePrincipal, adresseService.getAdresseEnvoi(principal, null, TypeAdresseFiscale.COURRIER, false));
+		assertEquals(domicilePrincipal, adresseService.getAdresseEnvoi(principal, null, TypeAdresseFiscale.POURSUITE, false));
+		assertEquals(domicilePrincipal, adresseService.getAdresseEnvoi(principal, null, TypeAdresseFiscale.REPRESENTATION, false));
 
-		final AdresseEnvoi domicileConjoint = adresseService.getAdresseEnvoi(conjoint, null, TypeAdresseTiers.DOMICILE, false);
+		final AdresseEnvoi domicileConjoint = adresseService.getAdresseEnvoi(conjoint, null, TypeAdresseFiscale.DOMICILE, false);
 		assertEquals("Madame", domicileConjoint.getLigne1());
 		assertEquals("Regina Duc", domicileConjoint.getLigne2());
 		assertEquals("Rue de Verdairuz", domicileConjoint.getLigne3());
 		assertEquals("1523 Granges-près-Marnand", domicileConjoint.getLigne4());
 		assertNull(domicileConjoint.getLigne5());
 
-		assertEquals(domicileConjoint, adresseService.getAdresseEnvoi(conjoint, null, TypeAdresseTiers.COURRIER, false));
-		assertEquals(domicileConjoint, adresseService.getAdresseEnvoi(conjoint, null, TypeAdresseTiers.POURSUITE, false));
-		assertEquals(domicileConjoint, adresseService.getAdresseEnvoi(conjoint, null, TypeAdresseTiers.REPRESENTATION, false));
+		assertEquals(domicileConjoint, adresseService.getAdresseEnvoi(conjoint, null, TypeAdresseFiscale.COURRIER, false));
+		assertEquals(domicileConjoint, adresseService.getAdresseEnvoi(conjoint, null, TypeAdresseFiscale.POURSUITE, false));
+		assertEquals(domicileConjoint, adresseService.getAdresseEnvoi(conjoint, null, TypeAdresseFiscale.REPRESENTATION, false));
 	}
 
 	/**
@@ -3891,14 +3891,14 @@ public class AdresseServiceTest extends BusinessTest {
 		assertAdresse(date(2000, 1, 1), null, "Bussigny-près-Lausanne", Source.CIVILE, true, adresses.representation);
 
 		// les adresses d'envoi
-		final AdresseEnvoi domicile = adresseService.getAdresseEnvoi(ctb, null, TypeAdresseTiers.DOMICILE, false);
+		final AdresseEnvoi domicile = adresseService.getAdresseEnvoi(ctb, null, TypeAdresseFiscale.DOMICILE, false);
 		assertEquals("Monsieur", domicile.getLigne1());
 		assertEquals("Marc Staheli", domicile.getLigne2());
 		assertEquals("Rue de l'Industrie", domicile.getLigne3());
 		assertEquals("1030 Bussigny-près-Lausanne", domicile.getLigne4());
 		assertNull(domicile.getLigne5());
 
-		final AdresseEnvoi courrier = adresseService.getAdresseEnvoi(ctb, null, TypeAdresseTiers.COURRIER, false);
+		final AdresseEnvoi courrier = adresseService.getAdresseEnvoi(ctb, null, TypeAdresseFiscale.COURRIER, false);
 		assertEquals("Monsieur", courrier.getLigne1());
 		assertEquals("Marc Staheli", domicile.getLigne2());
 		assertEquals("p.a. Alain Bally", courrier.getLigne3());
@@ -3906,8 +3906,8 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("1800 Vevey", courrier.getLigne5());
 		assertNull(courrier.getLigne6());
 
-		assertEquals(domicile, adresseService.getAdresseEnvoi(ctb, null, TypeAdresseTiers.POURSUITE, false));
-		assertEquals(domicile, adresseService.getAdresseEnvoi(ctb, null, TypeAdresseTiers.REPRESENTATION, false));
+		assertEquals(domicile, adresseService.getAdresseEnvoi(ctb, null, TypeAdresseFiscale.POURSUITE, false));
+		assertEquals(domicile, adresseService.getAdresseEnvoi(ctb, null, TypeAdresseFiscale.REPRESENTATION, false));
 	}
 
 	/**
@@ -3942,14 +3942,14 @@ public class AdresseServiceTest extends BusinessTest {
 		assertAdresse(date(2000, 1, 1), null, "Echallens", Source.CIVILE, true, adresses.representation);
 
 		// les adresses d'envoi
-		final AdresseEnvoi domicile = adresseService.getAdresseEnvoi(ctb, null, TypeAdresseTiers.DOMICILE, false);
+		final AdresseEnvoi domicile = adresseService.getAdresseEnvoi(ctb, null, TypeAdresseFiscale.DOMICILE, false);
 		assertEquals("Madame", domicile.getLigne1());
 		assertEquals("Anabela Lopes", domicile.getLigne2());
 		assertEquals("Grand Rue", domicile.getLigne3());
 		assertEquals("1040 Echallens", domicile.getLigne4());
 		assertNull(domicile.getLigne5());
 
-		final AdresseEnvoi courrier = adresseService.getAdresseEnvoi(ctb, null, TypeAdresseTiers.COURRIER, false);
+		final AdresseEnvoi courrier = adresseService.getAdresseEnvoi(ctb, null, TypeAdresseFiscale.COURRIER, false);
 		assertEquals("Madame", courrier.getLigne1());
 		assertEquals("Anabela Lopes", courrier.getLigne2());
 		assertEquals("p.a. OTG", courrier.getLigne3());
@@ -3957,7 +3957,7 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("1014 Lausanne", courrier.getLigne5());
 		assertNull(courrier.getLigne6());
 
-		final AdresseEnvoi poursuite = adresseService.getAdresseEnvoi(ctb, null, TypeAdresseTiers.POURSUITE, false);
+		final AdresseEnvoi poursuite = adresseService.getAdresseEnvoi(ctb, null, TypeAdresseFiscale.POURSUITE, false);
 		assertEquals("Justice de Paix des districts du", poursuite.getLigne1());
 		assertEquals("Jura-Nord Vaudois et du Gros-de-Vaud", poursuite.getLigne2());
 		assertEquals("Rue du Pré 2", poursuite.getLigne3());
@@ -3965,7 +3965,7 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("1400 Yverdon-les-Bains", poursuite.getLigne5());
 		assertNull(poursuite.getLigne6());
 
-		assertEquals(domicile, adresseService.getAdresseEnvoi(ctb, null, TypeAdresseTiers.REPRESENTATION, false));
+		assertEquals(domicile, adresseService.getAdresseEnvoi(ctb, null, TypeAdresseFiscale.REPRESENTATION, false));
 	}
 
 	/**
@@ -3990,14 +3990,14 @@ public class AdresseServiceTest extends BusinessTest {
 		assertAdresse(date(2000, 1, 1), null, "Lausanne", Source.REPRESENTATION, true, adresses.representation);
 
 		// les adresses d'envoi
-		final AdresseEnvoi domicile = adresseService.getAdresseEnvoi(ctb, null, TypeAdresseTiers.DOMICILE, false);
+		final AdresseEnvoi domicile = adresseService.getAdresseEnvoi(ctb, null, TypeAdresseFiscale.DOMICILE, false);
 		assertEquals("Monsieur", domicile.getLigne1());
 		assertEquals("Claude-Alain Proz", domicile.getLigne2());
 		assertEquals("Izmir", domicile.getLigne3());
 		assertEquals("Turquie", domicile.getLigne4());
 		assertNull(domicile.getLigne5());
 
-		final AdresseEnvoi courrier = adresseService.getAdresseEnvoi(ctb, null, TypeAdresseTiers.COURRIER, false);
+		final AdresseEnvoi courrier = adresseService.getAdresseEnvoi(ctb, null, TypeAdresseFiscale.COURRIER, false);
 		assertEquals("Monsieur", courrier.getLigne1());
 		assertEquals("Claude-Alain Proz", domicile.getLigne2());
 		assertEquals("p.a. KPMG SA", courrier.getLigne3());
@@ -4005,13 +4005,13 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("1005 Lausanne", courrier.getLigne5());
 		assertNull(courrier.getLigne6());
 
-		final AdresseEnvoi poursuite = adresseService.getAdresseEnvoi(ctb, null, TypeAdresseTiers.POURSUITE, false);
+		final AdresseEnvoi poursuite = adresseService.getAdresseEnvoi(ctb, null, TypeAdresseFiscale.POURSUITE, false);
 		assertEquals("KPMG SA", poursuite.getLigne1());
 		assertEquals("Avenue de Rumine 37", poursuite.getLigne2());
 		assertEquals("1005 Lausanne", poursuite.getLigne3());
 		assertNull(poursuite.getLigne4());
 
-		assertEquals(courrier, adresseService.getAdresseEnvoi(ctb, null, TypeAdresseTiers.REPRESENTATION, false));
+		assertEquals(courrier, adresseService.getAdresseEnvoi(ctb, null, TypeAdresseFiscale.REPRESENTATION, false));
 	}
 
 	/**
@@ -4045,14 +4045,14 @@ public class AdresseServiceTest extends BusinessTest {
 		assertAdresse(date(2000, 1, 1), null, "Lonay", Source.CIVILE, true, adresses.representation);
 
 		// les adresses d'envoi
-		final AdresseEnvoi domicile = adresseService.getAdresseEnvoi(ctb, null, TypeAdresseTiers.DOMICILE, false);
+		final AdresseEnvoi domicile = adresseService.getAdresseEnvoi(ctb, null, TypeAdresseFiscale.DOMICILE, false);
 		assertEquals("Monsieur", domicile.getLigne1());
 		assertEquals("Marcello Pesci-Mouttet", domicile.getLigne2());
 		assertEquals("Chemin de Réchoz", domicile.getLigne3());
 		assertEquals("1027 Lonay", domicile.getLigne4());
 		assertNull(domicile.getLigne5());
 
-		final AdresseEnvoi courrier = adresseService.getAdresseEnvoi(ctb, null, TypeAdresseTiers.COURRIER, false);
+		final AdresseEnvoi courrier = adresseService.getAdresseEnvoi(ctb, null, TypeAdresseFiscale.COURRIER, false);
 		assertEquals("Monsieur", courrier.getLigne1());
 		assertEquals("Marcello Pesci-Mouttet", courrier.getLigne2());
 		assertEquals("p.a. Curia Treuhand AG", courrier.getLigne3());
@@ -4060,8 +4060,8 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("7000 Chur", courrier.getLigne5());
 		assertNull(courrier.getLigne6());
 
-		assertEquals(domicile, adresseService.getAdresseEnvoi(ctb, null, TypeAdresseTiers.POURSUITE, false));
-		assertEquals(domicile, adresseService.getAdresseEnvoi(ctb, null, TypeAdresseTiers.REPRESENTATION, false));
+		assertEquals(domicile, adresseService.getAdresseEnvoi(ctb, null, TypeAdresseFiscale.POURSUITE, false));
+		assertEquals(domicile, adresseService.getAdresseEnvoi(ctb, null, TypeAdresseFiscale.REPRESENTATION, false));
 	}
 
 	/**
@@ -4094,23 +4094,23 @@ public class AdresseServiceTest extends BusinessTest {
 		assertAdresse(date(2000, 1, 1), null, "Granges-près-Marnand", Source.CIVILE, true, adresses.representation);
 
 		// les adresses d'envoi
-		final AdresseEnvoi domicile = adresseService.getAdresseEnvoi(ctb, null, TypeAdresseTiers.DOMICILE, false);
+		final AdresseEnvoi domicile = adresseService.getAdresseEnvoi(ctb, null, TypeAdresseFiscale.DOMICILE, false);
 		assertEquals("Monsieur", domicile.getLigne1());
 		assertEquals("Philippe Galley", domicile.getLigne2());
 		assertEquals("Chemin Sous le Bois", domicile.getLigne3());
 		assertEquals("1523 Granges-près-Marnand", domicile.getLigne4());
 		assertNull(domicile.getLigne5());
 		
-		assertEquals(domicile, adresseService.getAdresseEnvoi(ctb, null, TypeAdresseTiers.COURRIER, false));
+		assertEquals(domicile, adresseService.getAdresseEnvoi(ctb, null, TypeAdresseFiscale.COURRIER, false));
 
-		final AdresseEnvoi poursuite = adresseService.getAdresseEnvoi(ctb, null, TypeAdresseTiers.POURSUITE, false);
+		final AdresseEnvoi poursuite = adresseService.getAdresseEnvoi(ctb, null, TypeAdresseFiscale.POURSUITE, false);
 		assertEquals("Monsieur", poursuite.getLigne1());
 		assertEquals("Philippe Galley", poursuite.getLigne2());
 		assertEquals("Chemin de Praz-Berthoud", poursuite.getLigne3());
 		assertEquals("1000 Lausanne", poursuite.getLigne4());
 		assertNull(poursuite.getLigne5());
 
-		assertEquals(domicile, adresseService.getAdresseEnvoi(ctb, null, TypeAdresseTiers.REPRESENTATION, false));
+		assertEquals(domicile, adresseService.getAdresseEnvoi(ctb, null, TypeAdresseFiscale.REPRESENTATION, false));
 	}
 
 	@Test
@@ -4442,9 +4442,9 @@ public class AdresseServiceTest extends BusinessTest {
 	}
 
 	private void assertAdressesByTypeEquals(final AdressesFiscales adresses, Tiers tiers, RegDate date) throws AdresseException {
-		assertAdressesEquals(adresses.courrier, adresseService.getAdresseFiscale(tiers, TypeAdresseTiers.COURRIER, date, false));
-		assertAdressesEquals(adresses.representation, adresseService.getAdresseFiscale(tiers, TypeAdresseTiers.REPRESENTATION, date, false));
-		assertAdressesEquals(adresses.poursuite, adresseService.getAdresseFiscale(tiers, TypeAdresseTiers.POURSUITE, date, false));
-		assertAdressesEquals(adresses.domicile, adresseService.getAdresseFiscale(tiers, TypeAdresseTiers.DOMICILE, date, false));
+		assertAdressesEquals(adresses.courrier, adresseService.getAdresseFiscale(tiers, TypeAdresseFiscale.COURRIER, date, false));
+		assertAdressesEquals(adresses.representation, adresseService.getAdresseFiscale(tiers, TypeAdresseFiscale.REPRESENTATION, date, false));
+		assertAdressesEquals(adresses.poursuite, adresseService.getAdresseFiscale(tiers, TypeAdresseFiscale.POURSUITE, date, false));
+		assertAdressesEquals(adresses.domicile, adresseService.getAdresseFiscale(tiers, TypeAdresseFiscale.DOMICILE, date, false));
 	}
 }

@@ -29,7 +29,22 @@ public class AdressesFiscalesHisto {
 		}
 	}
 
-	public void add(TypeAdresseTiers type, AdresseGenerique adresse) {
+	public List<AdresseGenerique> ofType(TypeAdresseFiscale type) {
+		switch (type) {
+		case COURRIER:
+			return courrier;
+		case REPRESENTATION:
+			return representation;
+		case POURSUITE:
+			return poursuite;
+		case DOMICILE:
+			return domicile;
+		default:
+			throw new IllegalArgumentException("Type d'adresse inconnu = " + type.name());
+		}
+	}
+
+	public void add(TypeAdresseFiscale type, AdresseGenerique adresse) {
 		switch (type) {
 		case COURRIER:
 			courrier.add(adresse);

@@ -12,6 +12,7 @@ import java.util.Set;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.AdresseException;
+import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.webservices.tiers2.data.*;
@@ -376,7 +377,7 @@ public class DataHelper {
 		return coreToWeb(RegDateHelper.dashStringToDate(s));
 	}
 
-	public static AdresseEnvoi createAdresseFormattee(ch.vd.uniregctb.tiers.Tiers tiers, RegDate date, Context context, TypeAdresseTiers type) throws AdresseException {
+	public static AdresseEnvoi createAdresseFormattee(ch.vd.uniregctb.tiers.Tiers tiers, RegDate date, Context context, TypeAdresseFiscale type) throws AdresseException {
 		final AdresseEnvoiDetaillee adressePoursuite = context.adresseService.getAdresseEnvoi(tiers, date, type, false);
 		if (adressePoursuite == null) {
 			return null;

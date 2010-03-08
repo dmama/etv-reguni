@@ -5,6 +5,7 @@ import java.rmi.RemoteException;
 import java.text.SimpleDateFormat;
 
 import ch.vd.uniregctb.adresse.AdresseException;
+import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 import noNamespace.FichierImpressionISDocument;
 import noNamespace.InfoArchivageDocument;
@@ -352,7 +353,7 @@ public class ImpressionSommationLRHelperImpl implements ImpressionSommationLRHel
 		bvrstd.setNoCompte(bvrReponse.getNoAdherent());
 		bvrstd.setIBAN(dpi.getNumeroCompteBancaire());
 		try {
-			AdresseEnvoiDetaillee adresseEnvoi = adresseService.getAdresseEnvoi(dpi, null, TypeAdresseTiers.COURRIER, false);
+			AdresseEnvoiDetaillee adresseEnvoi = adresseService.getAdresseEnvoi(dpi, null, TypeAdresseFiscale.COURRIER, false);
 			bvrstd.setVerseParLigne1(adresseEnvoi.getLigne1());
 			bvrstd.setVerseParLigne2(adresseEnvoi.getLigne2());
 			bvrstd.setVerseParLigne3(adresseEnvoi.getLigne3());

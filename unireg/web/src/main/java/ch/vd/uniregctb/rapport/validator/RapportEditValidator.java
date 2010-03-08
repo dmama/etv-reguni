@@ -7,6 +7,7 @@ import org.springframework.validation.Validator;
 
 import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.adresse.AdresseService;
+import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.rapport.view.RapportView;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
@@ -47,7 +48,7 @@ public class RapportEditValidator implements Validator {
 				tiers = tiersDAO.get(rapportView.getTiers().getNumero());
 			}
 			try {
-				AdresseGenerique adrTuteur = adresseService.getAdresseFiscale(tiers, TypeAdresseTiers.REPRESENTATION, rapportView
+				AdresseGenerique adrTuteur = adresseService.getAdresseFiscale(tiers, TypeAdresseFiscale.REPRESENTATION, rapportView
 						.getRegDateDebut(), false);
 				if (adrTuteur == null) {
 					errors.reject("error.rapport.adresse");

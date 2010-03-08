@@ -4,6 +4,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseCourrierPourRF;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.AdresseService;
+import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.common.ListesResults;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.*;
@@ -83,7 +84,7 @@ public class ListesNominativesResults extends ListesResults<ListesNominativesRes
 		if (ctb instanceof PersonnePhysique) {
 			final String nomPrenom = tiersService.getNomPrenom((PersonnePhysique) ctb);
 			if (typeAdressesIncluses == TypeAdresse.FORMATTEE) {
-				final AdresseEnvoiDetaillee adresse = adresseService.getAdresseEnvoi(ctb, null, TypeAdresseTiers.COURRIER, false);
+				final AdresseEnvoiDetaillee adresse = adresseService.getAdresseEnvoi(ctb, null, TypeAdresseFiscale.COURRIER, false);
 				addTiers(ctb.getNumero(), nomPrenom, null, adresse.getLignes());
 			}
 			else if (typeAdressesIncluses == TypeAdresse.STRUCTUREE_RF) {
@@ -109,7 +110,7 @@ public class ListesNominativesResults extends ListesResults<ListesNominativesRes
 					nomPrenomConjoint = tiersService.getNomPrenom(conjoint);
 				}
 				if (typeAdressesIncluses == TypeAdresse.FORMATTEE) {
-					final AdresseEnvoiDetaillee adresse = adresseService.getAdresseEnvoi(ctb, null, TypeAdresseTiers.COURRIER, false);
+					final AdresseEnvoiDetaillee adresse = adresseService.getAdresseEnvoi(ctb, null, TypeAdresseFiscale.COURRIER, false);
 					addTiers(ctb.getNumero(), nomPrenomPrincipal, nomPrenomConjoint, adresse.getLignes());
 				}
 				else if (typeAdressesIncluses == TypeAdresse.STRUCTUREE_RF) {
@@ -135,7 +136,7 @@ public class ListesNominativesResults extends ListesResults<ListesNominativesRes
         }
 
         if (typeAdressesIncluses == TypeAdresse.FORMATTEE) {
-            final AdresseEnvoiDetaillee adresse = adresseService.getAdresseEnvoi(debiteur, null, TypeAdresseTiers.COURRIER, false);
+            final AdresseEnvoiDetaillee adresse = adresseService.getAdresseEnvoi(debiteur, null, TypeAdresseFiscale.COURRIER, false);
             addTiers(debiteur.getNumero(), nom1, nom2, adresse.getLignes());
         }
         else if (typeAdressesIncluses == TypeAdresse.STRUCTUREE_RF) {
@@ -172,7 +173,7 @@ public class ListesNominativesResults extends ListesResults<ListesNominativesRes
         if (typeAdressesIncluses == TypeAdresse.FORMATTEE) {
             String[] lignesAdresse = LIGNES_ADRESSE_VIDE;
             try {
-                final AdresseEnvoiDetaillee adresse = adresseService.getAdresseEnvoi(tiers, null, TypeAdresseTiers.COURRIER, false);
+                final AdresseEnvoiDetaillee adresse = adresseService.getAdresseEnvoi(tiers, null, TypeAdresseFiscale.COURRIER, false);
                 lignesAdresse = adresse.getLignes();
             }
             catch (Exception ex) {

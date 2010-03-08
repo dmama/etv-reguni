@@ -5,6 +5,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.adresse.AdresseService;
+import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.common.FiscalDateHelper;
 import ch.vd.uniregctb.common.ListesThread;
 import ch.vd.uniregctb.common.StatusManager;
@@ -99,7 +100,7 @@ public class ListeContribuablesResidentsSansForVaudoisThread extends ListesThrea
 		}
 
 		if (suisseOuPermisC) {
-			final AdresseGenerique adresseDomicile = adresseService.getAdresseFiscale(ctb, TypeAdresseTiers.DOMICILE, dateTraitement, false);
+			final AdresseGenerique adresseDomicile = adresseService.getAdresseFiscale(ctb, TypeAdresseFiscale.DOMICILE, dateTraitement, false);
 			if (adresseDomicile != null && serviceInfrastructure.estDansLeCanton(adresseDomicile)) {
 
 				// dans ce cas-à seulement, on met le contribuable dans le rapport :

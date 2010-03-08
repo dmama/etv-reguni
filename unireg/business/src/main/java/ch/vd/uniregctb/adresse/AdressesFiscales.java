@@ -28,7 +28,22 @@ public class AdressesFiscales {
 		}
 	}
 
-	public void set(TypeAdresseTiers type, AdresseGenerique adresse) {
+	public AdresseGenerique ofType(TypeAdresseFiscale type) {
+		switch (type) {
+		case COURRIER:
+			return courrier;
+		case REPRESENTATION:
+			return representation;
+		case POURSUITE:
+			return poursuite;
+		case DOMICILE:
+			return domicile;
+		default:
+			throw new IllegalArgumentException("Type d'adresse inconnu = " + type.name());
+		}
+	}
+
+	public void set(TypeAdresseFiscale type, AdresseGenerique adresse) {
 		switch (type) {
 		case COURRIER:
 			assertIsEmpty(courrier, adresse, TypeAdresseTiers.COURRIER);

@@ -34,6 +34,7 @@ import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.AdresseSupplementaire;
 import ch.vd.uniregctb.adresse.AdresseTiers;
+import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.Declaration;
@@ -1524,7 +1525,7 @@ public class TiersServiceImpl implements TiersService {
 			// on doit vérifier l'adresse de domicile du contribuable,
 			// et ne le passer en non-habitant que si cette adresse n'est pas vaudoise...
 			try {
-				final AdresseGenerique adresseDomicile = adresseService.getAdresseFiscale(pp, TypeAdresseTiers.DOMICILE, null, false);
+				final AdresseGenerique adresseDomicile = adresseService.getAdresseFiscale(pp, TypeAdresseFiscale.DOMICILE, null, false);
 				if (adresseDomicile != null) {
 					final boolean hs = adresseDomicile.getNoOfsPays() != null && adresseDomicile.getNoOfsPays() != ServiceInfrastructureService.noOfsSuisse;
 					final CommuneSimple commune = serviceInfra.getCommuneByAdresse(adresseDomicile);
@@ -1552,7 +1553,7 @@ public class TiersServiceImpl implements TiersService {
 			// on doit vérifier l'adresse de domicile du contribuable,
 			// et ne le passer en habitant que si cette adresse est vaudoise...
 			try {
-				final AdresseGenerique adresseDomicile = adresseService.getAdresseFiscale(pp, TypeAdresseTiers.DOMICILE, null, false);
+				final AdresseGenerique adresseDomicile = adresseService.getAdresseFiscale(pp, TypeAdresseFiscale.DOMICILE, null, false);
 				if (adresseDomicile != null) {
 					final CommuneSimple commune = serviceInfra.getCommuneByAdresse(adresseDomicile);
 					if (commune != null && commune.isVaudoise()) {

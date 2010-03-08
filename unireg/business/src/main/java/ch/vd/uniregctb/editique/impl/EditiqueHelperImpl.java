@@ -15,6 +15,7 @@ import ch.vd.uniregctb.adresse.AdresseEnvoi;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
+import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.editique.EditiqueException;
@@ -54,7 +55,7 @@ public class EditiqueHelperImpl implements EditiqueHelper {
 	}
 
 	private Destinataire remplitAdresseEnvoiDestinataire(Tiers tiers, InfoEnteteDocument infoEnteteDocument) throws AdresseException {
-		final AdresseEnvoi adresseEnvoi = adresseService.getAdresseEnvoi(tiers, null, TypeAdresseTiers.COURRIER, false);
+		final AdresseEnvoi adresseEnvoi = adresseService.getAdresseEnvoi(tiers, null, TypeAdresseFiscale.COURRIER, false);
 		final Destinataire destinataire = infoEnteteDocument.addNewDestinataire();
 		final TypAdresse.Adresse adresseDestinataire = destinataire.addNewAdresse();
 		final TypAdresse.Adresse adresseDestinataireImpression = remplitAdresse(adresseEnvoi, adresseDestinataire);
@@ -85,7 +86,7 @@ public class EditiqueHelperImpl implements EditiqueHelper {
 		//
 		// Porte adresse
 		//
-		AdresseEnvoi adresseEnvoi = adresseService.getAdresseEnvoi(tiers, null, TypeAdresseTiers.COURRIER, false);
+		AdresseEnvoi adresseEnvoi = adresseService.getAdresseEnvoi(tiers, null, TypeAdresseFiscale.COURRIER, false);
 		TypAdresse porteAdresse = infoEnteteDocument.addNewPorteAdresse();
 		TypAdresse.Adresse adressePorteAdresse = porteAdresse.addNewAdresse();
 		TypAdresse.Adresse adressePorteAdresseImpression = remplitAdresse(adresseEnvoi, adressePorteAdresse);

@@ -10,6 +10,7 @@ import ch.vd.registre.civil.model.EnumTypePermis;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseService;
+import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.interfaces.model.Adresse;
@@ -210,11 +211,11 @@ public class Ec_18000_13_Arrivee_JIRA1789_Scenario extends EvenementCivilScenari
 
 	private void assertAdresses(final MenageCommun menage, final String nomCommune) throws AdresseException {
 		final EnsembleTiersCouple ensemble = tiersService.getEnsembleTiersCouple(menage, null);
-		final AdresseEnvoiDetaillee adresseMenage = adresseService.getAdresseEnvoi(menage, null, TypeAdresseTiers.COURRIER, true);
+		final AdresseEnvoiDetaillee adresseMenage = adresseService.getAdresseEnvoi(menage, null, TypeAdresseFiscale.COURRIER, true);
 		assertTrue(adresseMenage.getNpaEtLocalite().contains(nomCommune), String.format("L'adresse d'envoi du ménage devrait être à %s", nomCommune));
-		final AdresseEnvoiDetaillee adresseAntoine = adresseService.getAdresseEnvoi(ensemble.getPrincipal(), null, TypeAdresseTiers.COURRIER, true);
+		final AdresseEnvoiDetaillee adresseAntoine = adresseService.getAdresseEnvoi(ensemble.getPrincipal(), null, TypeAdresseFiscale.COURRIER, true);
 		assertTrue(adresseAntoine.getNpaEtLocalite().contains(nomCommune), String.format("L'adresse d'envoi du principal devrait être à %s", nomCommune));
-		final AdresseEnvoiDetaillee adresseCleo = adresseService.getAdresseEnvoi(menage, null, TypeAdresseTiers.COURRIER, true);
+		final AdresseEnvoiDetaillee adresseCleo = adresseService.getAdresseEnvoi(menage, null, TypeAdresseFiscale.COURRIER, true);
 		assertTrue(adresseCleo.getNpaEtLocalite().contains(nomCommune), String.format("L'adresse d'envoi du conjoint devrait être à %s", nomCommune));
 	}
 }

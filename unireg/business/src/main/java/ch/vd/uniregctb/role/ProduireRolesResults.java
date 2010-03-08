@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 import org.apache.log4j.Logger;
 
@@ -195,7 +196,7 @@ public class ProduireRolesResults extends JobResults<Long, ProduireRolesResults>
 
 			AdresseEnvoiDetaillee adresseEnvoi;
 			try {
-				adresseEnvoi = adresseService.getAdresseEnvoi(ctb, RegDate.get(annee, 12, 31), TypeAdresseTiers.COURRIER, false);
+				adresseEnvoi = adresseService.getAdresseEnvoi(ctb, RegDate.get(annee, 12, 31), TypeAdresseFiscale.COURRIER, false);
 			}
 			catch (AdresseException e) {
 				LOGGER.warn("Résolution de l'adresse du contribuable " + ctb.getNumero() + " impossible", e);

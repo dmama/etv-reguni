@@ -7,6 +7,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.adresse.AdresseService;
+import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.EtatCivilHelper;
 import ch.vd.uniregctb.common.FiscalDateHelper;
@@ -179,7 +180,7 @@ public abstract class ObtentionPermisCOuNationaliteSuisseHandler extends Eveneme
 			if (noOfsEtendu == 0) {
 				// récupération du numero OFS de la commune à partir de l'adresse du tiers
 				try {
-					final AdresseGenerique adresse = adresseService.getAdresseFiscale(habitant, TypeAdresseTiers.DOMICILE, dateEvenement, false);
+					final AdresseGenerique adresse = adresseService.getAdresseFiscale(habitant, TypeAdresseFiscale.DOMICILE, dateEvenement, false);
 					if (adresse != null) {
 						final CommuneSimple commune = getService().getServiceInfra().getCommuneByAdresse(adresse);
 						// uniquement si la commune de domicile est vaudoise

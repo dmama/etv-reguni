@@ -11,6 +11,7 @@ import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.AdresseSuisse;
 import ch.vd.uniregctb.adresse.AdresseSupplementaire;
 import ch.vd.uniregctb.adresse.AdresseTiers;
+import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
@@ -223,7 +224,7 @@ public class Ec_19000_07_Depart_JIRA1703_Scenario extends DepartScenario {
 	public void check3() throws Exception {
 
 		final MenageCommun menage = (MenageCommun) tiersDAO.get(noMenage);
-		final AdresseEnvoiDetaillee adresseEnvoi = adresseService.getAdresseEnvoi(menage, dateArrivee, TypeAdresseTiers.COURRIER, true);
+		final AdresseEnvoiDetaillee adresseEnvoi = adresseService.getAdresseEnvoi(menage, dateArrivee, TypeAdresseFiscale.COURRIER, true);
 		assertTrue(adresseEnvoi.getNpaEtLocalite().contains(MockCommune.Lausanne.getNomMinuscule()), "Surcharge non prise en compte");
 
 		final Set<AdresseTiers> adresses = menage.getAdressesTiers();
@@ -256,7 +257,7 @@ public class Ec_19000_07_Depart_JIRA1703_Scenario extends DepartScenario {
 		assertEquals(TypeAutoriteFiscale.PAYS_HS, ffp.getTypeAutoriteFiscale(), "Le for n'est pas HS");
 		assertEquals(paysArrivee.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale(), "Le for n'est pas dans le bon pays");
 
-		final AdresseEnvoiDetaillee adresseEnvoi = adresseService.getAdresseEnvoi(menageCommun, dateArrivee, TypeAdresseTiers.COURRIER, true);
+		final AdresseEnvoiDetaillee adresseEnvoi = adresseService.getAdresseEnvoi(menageCommun, dateArrivee, TypeAdresseFiscale.COURRIER, true);
 		assertTrue(adresseEnvoi.getNpaEtLocalite().contains(MockCommune.Lausanne.getNomMinuscule()), "Surcharge non prise en compte");
 
 		final Set<AdresseTiers> adresses = menageCommun.getAdressesTiers();

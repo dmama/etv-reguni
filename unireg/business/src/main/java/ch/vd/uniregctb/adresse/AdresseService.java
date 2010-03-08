@@ -55,7 +55,7 @@ public interface AdresseService {
 	 *               (dans la mesure du possible) pour ne pas lever d'exception.
 	 * @throws AdresseException en cas d'erreur dans les adresses (plages se recoupant, cycle infini détecté, ...).
 	 */
-	public abstract AdresseGenerique getAdresseFiscale(Tiers tiers, TypeAdresseTiers type, RegDate date, boolean strict) throws AdresseException;
+	public abstract AdresseGenerique getAdresseFiscale(Tiers tiers, TypeAdresseFiscale type, RegDate date, boolean strict) throws AdresseException;
 
 	/**
 	 * Extrait l'historique des adresses fiscales (= adresses civils + adresse tiers) pour le tiers spécifié.
@@ -91,7 +91,7 @@ public interface AdresseService {
 	 * @return l'adresse d'envoi déjà formattée.
 	 * @throws AdresseException en cas d'erreur dans les adresses (plages se recoupant, cycle infini détecté, ...).
 	 */
-	public abstract AdresseEnvoiDetaillee getAdresseEnvoi(Tiers tiers, RegDate date, TypeAdresseTiers type, boolean strict) throws AdresseException;
+	public abstract AdresseEnvoiDetaillee getAdresseEnvoi(Tiers tiers, RegDate date, TypeAdresseFiscale type, boolean strict) throws AdresseException;
 
 	/**
 	 * Crée et retourne l'adresse d'envoi pour un individu donné.
@@ -176,5 +176,5 @@ public interface AdresseService {
 	 * @param tiers
 	 * @return
 	 */
-	public AdresseGenerique getDerniereAdresseVaudoise(Tiers tiers, TypeAdresseTiers type) throws AdressesResolutionException, InfrastructureException,AdresseException ;
+	public AdresseGenerique getDerniereAdresseVaudoise(Tiers tiers, TypeAdresseFiscale type) throws AdressesResolutionException, InfrastructureException,AdresseException ;
 }

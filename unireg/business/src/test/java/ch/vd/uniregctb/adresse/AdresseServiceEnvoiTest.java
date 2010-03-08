@@ -64,7 +64,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 			PersonnePhysique habitant = (PersonnePhysique) tiersService.getTiers(noHabitant);
 			assertNotNull(habitant);
 
-			AdresseEnvoiDetaillee adresse = adresseService.getAdresseEnvoi(habitant, null, TypeAdresseTiers.COURRIER, false);
+			AdresseEnvoiDetaillee adresse = adresseService.getAdresseEnvoi(habitant, null, TypeAdresseFiscale.COURRIER, false);
 			assertNotNull(adresse);
 			assertEquals("Monsieur", adresse.getLigne1());
 			assertEquals("Pierre Dupont", adresse.getLigne2());
@@ -76,9 +76,9 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 			assertEquals("Monsieur", adresse.getSalutations());
 			assertEquals("Monsieur", adresse.getFormuleAppel());
 
-			assertAdressesEquals(adresse, adresseService.getAdresseEnvoi(habitant, null, TypeAdresseTiers.DOMICILE, false));
-			assertAdressesEquals(adresse, adresseService.getAdresseEnvoi(habitant, null, TypeAdresseTiers.POURSUITE, false));
-			assertAdressesEquals(adresse, adresseService.getAdresseEnvoi(habitant, null, TypeAdresseTiers.REPRESENTATION, false));
+			assertAdressesEquals(adresse, adresseService.getAdresseEnvoi(habitant, null, TypeAdresseFiscale.DOMICILE, false));
+			assertAdressesEquals(adresse, adresseService.getAdresseEnvoi(habitant, null, TypeAdresseFiscale.POURSUITE, false));
+			assertAdressesEquals(adresse, adresseService.getAdresseEnvoi(habitant, null, TypeAdresseFiscale.REPRESENTATION, false));
 
 			List<String> nomCourrier = adresseService.getNomCourrier(habitant, null, false);
 			assertNotNull(nomCourrier);
@@ -135,7 +135,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 			final MenageCommun menage = (MenageCommun) tiersService.getTiers(noMenageCommun);
 			assertNotNull(menage);
 
-			AdresseEnvoiDetaillee adresse = adresseService.getAdresseEnvoi(menage, null, TypeAdresseTiers.COURRIER, false);
+			AdresseEnvoiDetaillee adresse = adresseService.getAdresseEnvoi(menage, null, TypeAdresseFiscale.COURRIER, false);
 			assertNotNull(adresse);
 			assertEquals("Monsieur et Madame", adresse.getLigne1());
 			assertEquals("Pierre Dupont", adresse.getLigne2());
@@ -147,9 +147,9 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 			assertEquals("Monsieur et Madame", adresse.getSalutations());
 			assertEquals("Monsieur et Madame", adresse.getFormuleAppel());
 
-			assertAdressesEquals(adresse, adresseService.getAdresseEnvoi(menage, null, TypeAdresseTiers.DOMICILE, false));
-			assertAdressesEquals(adresse, adresseService.getAdresseEnvoi(menage, null, TypeAdresseTiers.POURSUITE, false));
-			assertAdressesEquals(adresse, adresseService.getAdresseEnvoi(menage, null, TypeAdresseTiers.REPRESENTATION, false));
+			assertAdressesEquals(adresse, adresseService.getAdresseEnvoi(menage, null, TypeAdresseFiscale.DOMICILE, false));
+			assertAdressesEquals(adresse, adresseService.getAdresseEnvoi(menage, null, TypeAdresseFiscale.POURSUITE, false));
+			assertAdressesEquals(adresse, adresseService.getAdresseEnvoi(menage, null, TypeAdresseFiscale.REPRESENTATION, false));
 
 			List<String> nomCourrier = adresseService.getNomCourrier(menage, null, false);
 			assertNotNull(nomCourrier);
@@ -193,7 +193,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 			PersonnePhysique habitant = (PersonnePhysique) tiersService.getTiers(noHabitant);
 			assertNotNull(habitant);
 
-			AdresseEnvoiDetaillee adresse = adresseService.getAdresseEnvoi(habitant, null, TypeAdresseTiers.COURRIER, false);
+			AdresseEnvoiDetaillee adresse = adresseService.getAdresseEnvoi(habitant, null, TypeAdresseFiscale.COURRIER, false);
 			assertNotNull(adresse);
 			assertEquals("Monsieur", adresse.getLigne1());
 			assertEquals("Pierre Dupont", adresse.getLigne2());
@@ -205,9 +205,9 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 			assertEquals("Monsieur", adresse.getSalutations());
 			assertEquals("Monsieur", adresse.getFormuleAppel());
 
-			assertAdressesEquals(adresse, adresseService.getAdresseEnvoi(habitant, null, TypeAdresseTiers.DOMICILE, false));
-			assertAdressesEquals(adresse, adresseService.getAdresseEnvoi(habitant, null, TypeAdresseTiers.REPRESENTATION, false));
-			assertAdressesEquals(adresse, adresseService.getAdresseEnvoi(habitant, null, TypeAdresseTiers.POURSUITE, false));
+			assertAdressesEquals(adresse, adresseService.getAdresseEnvoi(habitant, null, TypeAdresseFiscale.DOMICILE, false));
+			assertAdressesEquals(adresse, adresseService.getAdresseEnvoi(habitant, null, TypeAdresseFiscale.REPRESENTATION, false));
+			assertAdressesEquals(adresse, adresseService.getAdresseEnvoi(habitant, null, TypeAdresseFiscale.POURSUITE, false));
 
 			List<String> nomCourrier = adresseService.getNomCourrier(habitant, null, false);
 			assertNotNull(nomCourrier);
@@ -249,7 +249,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 			PersonnePhysique habitant = (PersonnePhysique) tiersService.getTiers(noHabitant);
 			assertNotNull(habitant);
 
-			AdresseEnvoiDetaillee adresse = adresseService.getAdresseEnvoi(habitant, null, TypeAdresseTiers.COURRIER, false);
+			AdresseEnvoiDetaillee adresse = adresseService.getAdresseEnvoi(habitant, null, TypeAdresseFiscale.COURRIER, false);
 			assertNotNull(adresse);
 			assertEquals("Monsieur", adresse.getLigne1());
 			assertEquals("Pierre Dupont", adresse.getLigne2());
@@ -261,9 +261,9 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 			assertEquals("Monsieur", adresse.getSalutations());
 			assertEquals("Monsieur", adresse.getFormuleAppel());
 
-			assertAdressesEquals(adresse, adresseService.getAdresseEnvoi(habitant, null, TypeAdresseTiers.DOMICILE, false));
-			assertAdressesEquals(adresse, adresseService.getAdresseEnvoi(habitant, null, TypeAdresseTiers.REPRESENTATION, false));
-			assertAdressesEquals(adresse, adresseService.getAdresseEnvoi(habitant, null, TypeAdresseTiers.POURSUITE, false));
+			assertAdressesEquals(adresse, adresseService.getAdresseEnvoi(habitant, null, TypeAdresseFiscale.DOMICILE, false));
+			assertAdressesEquals(adresse, adresseService.getAdresseEnvoi(habitant, null, TypeAdresseFiscale.REPRESENTATION, false));
+			assertAdressesEquals(adresse, adresseService.getAdresseEnvoi(habitant, null, TypeAdresseFiscale.POURSUITE, false));
 
 			List<String> nomCourrier = adresseService.getNomCourrier(habitant, null, false);
 			assertNotNull(nomCourrier);
@@ -306,7 +306,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 			PersonnePhysique habitant = (PersonnePhysique) tiersService.getTiers(noHabitant);
 			assertNotNull(habitant);
 
-			AdresseEnvoiDetaillee adresse = adresseService.getAdresseEnvoi(habitant, null, TypeAdresseTiers.COURRIER, false);
+			AdresseEnvoiDetaillee adresse = adresseService.getAdresseEnvoi(habitant, null, TypeAdresseFiscale.COURRIER, false);
 			assertNotNull(adresse);
 			assertEquals("Monsieur", adresse.getLigne1());
 			assertEquals("Pierre Dupont", adresse.getLigne2());
@@ -318,9 +318,9 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 			assertEquals("Monsieur", adresse.getSalutations());
 			assertEquals("Monsieur", adresse.getFormuleAppel());
 
-			assertAdressesEquals(adresse, adresseService.getAdresseEnvoi(habitant, null, TypeAdresseTiers.DOMICILE, false));
-			assertAdressesEquals(adresse, adresseService.getAdresseEnvoi(habitant, null, TypeAdresseTiers.REPRESENTATION, false));
-			assertAdressesEquals(adresse, adresseService.getAdresseEnvoi(habitant, null, TypeAdresseTiers.POURSUITE, false));
+			assertAdressesEquals(adresse, adresseService.getAdresseEnvoi(habitant, null, TypeAdresseFiscale.DOMICILE, false));
+			assertAdressesEquals(adresse, adresseService.getAdresseEnvoi(habitant, null, TypeAdresseFiscale.REPRESENTATION, false));
+			assertAdressesEquals(adresse, adresseService.getAdresseEnvoi(habitant, null, TypeAdresseFiscale.POURSUITE, false));
 
 			List<String> nomCourrier = adresseService.getNomCourrier(habitant, null, false);
 			assertNotNull(nomCourrier);
@@ -375,7 +375,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 			final MenageCommun menage = (MenageCommun) tiersService.getTiers(noMenageCommun);
 			assertNotNull(menage);
 
-			AdresseEnvoiDetaillee adresse = adresseService.getAdresseEnvoi(menage, null, TypeAdresseTiers.COURRIER, false);
+			AdresseEnvoiDetaillee adresse = adresseService.getAdresseEnvoi(menage, null, TypeAdresseFiscale.COURRIER, false);
 			assertNotNull(adresse);
 			assertEquals("Monsieur et Madame", adresse.getLigne1());
 			assertEquals("Pierre Dupont", adresse.getLigne2());
@@ -387,9 +387,9 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 			assertEquals("Monsieur et Madame", adresse.getSalutations());
 			assertEquals("Monsieur et Madame", adresse.getFormuleAppel());
 
-			assertAdressesEquals(adresse, adresseService.getAdresseEnvoi(menage, null, TypeAdresseTiers.DOMICILE, false));
-			assertAdressesEquals(adresse, adresseService.getAdresseEnvoi(menage, null, TypeAdresseTiers.REPRESENTATION, false));
-			assertAdressesEquals(adresse, adresseService.getAdresseEnvoi(menage, null, TypeAdresseTiers.POURSUITE, false));
+			assertAdressesEquals(adresse, adresseService.getAdresseEnvoi(menage, null, TypeAdresseFiscale.DOMICILE, false));
+			assertAdressesEquals(adresse, adresseService.getAdresseEnvoi(menage, null, TypeAdresseFiscale.REPRESENTATION, false));
+			assertAdressesEquals(adresse, adresseService.getAdresseEnvoi(menage, null, TypeAdresseFiscale.POURSUITE, false));
 
 			List<String> nomCourrier = adresseService.getNomCourrier(menage, null, false);
 			assertNotNull(nomCourrier);
@@ -443,7 +443,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 			DebiteurPrestationImposable debiteur = (DebiteurPrestationImposable) tiersService.getTiers(noDebiteur);
 			assertNotNull(debiteur);
 
-			AdresseEnvoiDetaillee adresse = adresseService.getAdresseEnvoi(debiteur, null, TypeAdresseTiers.COURRIER, false);
+			AdresseEnvoiDetaillee adresse = adresseService.getAdresseEnvoi(debiteur, null, TypeAdresseFiscale.COURRIER, false);
 			assertNotNull(adresse);
 			assertEquals("Ma petite entreprise", adresse.getLigne1());
 			assertEquals("Av de Beaulieu 3bis", adresse.getLigne2());
@@ -453,9 +453,9 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 			assertNull(adresse.getSalutations());
 			assertNull(adresse.getFormuleAppel());
 
-			assertAdressesEquals(adresse, adresseService.getAdresseEnvoi(debiteur, null, TypeAdresseTiers.DOMICILE, false));
-			assertAdressesEquals(adresse, adresseService.getAdresseEnvoi(debiteur, null, TypeAdresseTiers.REPRESENTATION, false));
-			assertAdressesEquals(adresse, adresseService.getAdresseEnvoi(debiteur, null, TypeAdresseTiers.POURSUITE, false));
+			assertAdressesEquals(adresse, adresseService.getAdresseEnvoi(debiteur, null, TypeAdresseFiscale.DOMICILE, false));
+			assertAdressesEquals(adresse, adresseService.getAdresseEnvoi(debiteur, null, TypeAdresseFiscale.REPRESENTATION, false));
+			assertAdressesEquals(adresse, adresseService.getAdresseEnvoi(debiteur, null, TypeAdresseFiscale.POURSUITE, false));
 
 			List<String> nomCourrier = adresseService.getNomCourrier(debiteur, null, false);
 			assertNotNull(nomCourrier);
@@ -518,7 +518,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 			DebiteurPrestationImposable debiteur = (DebiteurPrestationImposable) tiersService.getTiers(noDebiteur);
 			assertNotNull(debiteur);
 
-			AdresseEnvoiDetaillee adresseCourrier = adresseService.getAdresseEnvoi(debiteur, null, TypeAdresseTiers.COURRIER, false);
+			AdresseEnvoiDetaillee adresseCourrier = adresseService.getAdresseEnvoi(debiteur, null, TypeAdresseFiscale.COURRIER, false);
 			assertNotNull(adresseCourrier);
 			assertEquals("Ma petite entreprise", adresseCourrier.getLigne1());
 			assertEquals("Chemin de Riondmorcel 2bis", adresseCourrier.getLigne2());
@@ -528,7 +528,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 			assertNull(adresseCourrier.getSalutations());
 			assertNull(adresseCourrier.getFormuleAppel());
 
-			AdresseEnvoiDetaillee adresseDomicile = adresseService.getAdresseEnvoi(debiteur, null, TypeAdresseTiers.DOMICILE, false);
+			AdresseEnvoiDetaillee adresseDomicile = adresseService.getAdresseEnvoi(debiteur, null, TypeAdresseFiscale.DOMICILE, false);
 			assertNotNull(adresseDomicile);
 			assertEquals("Ma petite entreprise", adresseDomicile.getLigne1());
 			assertEquals("Av de Beaulieu 3bis", adresseDomicile.getLigne2());
@@ -538,8 +538,8 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 			assertNull(adresseDomicile.getSalutations());
 			assertNull(adresseDomicile.getFormuleAppel());
 
-			assertAdressesEquals(adresseDomicile, adresseService.getAdresseEnvoi(debiteur, null, TypeAdresseTiers.REPRESENTATION, false));
-			assertAdressesEquals(adresseDomicile, adresseService.getAdresseEnvoi(debiteur, null, TypeAdresseTiers.POURSUITE, false));
+			assertAdressesEquals(adresseDomicile, adresseService.getAdresseEnvoi(debiteur, null, TypeAdresseFiscale.REPRESENTATION, false));
+			assertAdressesEquals(adresseDomicile, adresseService.getAdresseEnvoi(debiteur, null, TypeAdresseFiscale.POURSUITE, false));
 
 			List<String> nomCourrier = adresseService.getNomCourrier(debiteur, null, false);
 			assertNotNull(nomCourrier);
@@ -604,7 +604,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 			DebiteurPrestationImposable tribunal = (DebiteurPrestationImposable) tiersService.getTiers(noDebiteur);
 			assertNotNull(tribunal);
 
-			AdresseEnvoiDetaillee adresse = adresseService.getAdresseEnvoi(tribunal, null, TypeAdresseTiers.COURRIER, false);
+			AdresseEnvoiDetaillee adresse = adresseService.getAdresseEnvoi(tribunal, null, TypeAdresseFiscale.COURRIER, false);
 			assertNotNull(adresse);
 			assertEquals("Service du Personnel", adresse.getLigne1());
 			assertEquals("Route du Signal 8", adresse.getLigne2());
@@ -614,9 +614,9 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 			assertNull(adresse.getSalutations());
 			assertNull(adresse.getFormuleAppel());
 
-			assertAdressesEquals(adresse, adresseService.getAdresseEnvoi(tribunal, null, TypeAdresseTiers.DOMICILE, false));
-			assertAdressesEquals(adresse, adresseService.getAdresseEnvoi(tribunal, null, TypeAdresseTiers.REPRESENTATION, false));
-			assertAdressesEquals(adresse, adresseService.getAdresseEnvoi(tribunal, null, TypeAdresseTiers.POURSUITE, false));
+			assertAdressesEquals(adresse, adresseService.getAdresseEnvoi(tribunal, null, TypeAdresseFiscale.DOMICILE, false));
+			assertAdressesEquals(adresse, adresseService.getAdresseEnvoi(tribunal, null, TypeAdresseFiscale.REPRESENTATION, false));
+			assertAdressesEquals(adresse, adresseService.getAdresseEnvoi(tribunal, null, TypeAdresseFiscale.POURSUITE, false));
 
 			List<String> nomCourrier = adresseService.getNomCourrier(tribunal, null, false);
 			assertNotNull(nomCourrier);
@@ -660,7 +660,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 			DebiteurPrestationImposable debiteur = (DebiteurPrestationImposable) tiersService.getTiers(noDebiteur);
 			assertNotNull(debiteur);
 
-			AdresseEnvoiDetaillee adresseCourrier = adresseService.getAdresseEnvoi(debiteur, null, TypeAdresseTiers.COURRIER, false);
+			AdresseEnvoiDetaillee adresseCourrier = adresseService.getAdresseEnvoi(debiteur, null, TypeAdresseFiscale.COURRIER, false);
 			assertNotNull(adresseCourrier);
 			assertEquals("Usine d'Orbe", adresseCourrier.getLigne1());
 			assertEquals("Finance et Audit", adresseCourrier.getLigne2());
@@ -671,7 +671,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 			assertNull(adresseCourrier.getSalutations());
 			assertNull(adresseCourrier.getFormuleAppel());
 
-			AdresseEnvoiDetaillee adresseDomicile = adresseService.getAdresseEnvoi(debiteur, null, TypeAdresseTiers.DOMICILE, false);
+			AdresseEnvoiDetaillee adresseDomicile = adresseService.getAdresseEnvoi(debiteur, null, TypeAdresseFiscale.DOMICILE, false);
 			assertNotNull(adresseDomicile);
 			assertEquals("Usine d'Orbe", adresseDomicile.getLigne1());
 			assertEquals("Entre-Deux-Villes", adresseDomicile.getLigne2());
@@ -682,8 +682,8 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 			assertNull(adresseDomicile.getSalutations());
 			assertNull(adresseDomicile.getFormuleAppel());
 
-			assertAdressesEquals(adresseCourrier, adresseService.getAdresseEnvoi(debiteur, null, TypeAdresseTiers.REPRESENTATION, false));
-			assertAdressesEquals(adresseDomicile, adresseService.getAdresseEnvoi(debiteur, null, TypeAdresseTiers.POURSUITE, false));
+			assertAdressesEquals(adresseCourrier, adresseService.getAdresseEnvoi(debiteur, null, TypeAdresseFiscale.REPRESENTATION, false));
+			assertAdressesEquals(adresseDomicile, adresseService.getAdresseEnvoi(debiteur, null, TypeAdresseFiscale.POURSUITE, false));
 
 			List<String> nomCourrier = adresseService.getNomCourrier(debiteur, null, false);
 			assertNotNull(nomCourrier);
@@ -745,7 +745,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 			DebiteurPrestationImposable debiteur = (DebiteurPrestationImposable) tiersService.getTiers(noDebiteur);
 			assertNotNull(debiteur);
 
-			AdresseEnvoiDetaillee adresseCourrier = adresseService.getAdresseEnvoi(debiteur, null, TypeAdresseTiers.COURRIER, false);
+			AdresseEnvoiDetaillee adresseCourrier = adresseService.getAdresseEnvoi(debiteur, null, TypeAdresseFiscale.COURRIER, false);
 			assertNotNull(adresseCourrier);
 			assertEquals("Usine d'Orbe", adresseCourrier.getLigne1());
 			assertEquals("La plaine", adresseCourrier.getLigne2());
@@ -755,7 +755,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 			assertNull(adresseCourrier.getSalutations());
 			assertNull(adresseCourrier.getFormuleAppel());
 
-			AdresseEnvoiDetaillee adresseDomicile = adresseService.getAdresseEnvoi(debiteur, null, TypeAdresseTiers.DOMICILE, false);
+			AdresseEnvoiDetaillee adresseDomicile = adresseService.getAdresseEnvoi(debiteur, null, TypeAdresseFiscale.DOMICILE, false);
 			assertNotNull(adresseDomicile);
 			assertEquals("Usine d'Orbe", adresseDomicile.getLigne1());
 			assertEquals("Entre-Deux-Villes", adresseDomicile.getLigne2());
@@ -765,7 +765,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 			assertNull(adresseDomicile.getSalutations());
 			assertNull(adresseDomicile.getFormuleAppel());
 
-			AdresseEnvoiDetaillee adresseRepresentation = adresseService.getAdresseEnvoi(debiteur, null, TypeAdresseTiers.REPRESENTATION, false);
+			AdresseEnvoiDetaillee adresseRepresentation = adresseService.getAdresseEnvoi(debiteur, null, TypeAdresseFiscale.REPRESENTATION, false);
 			assertNotNull(adresseRepresentation);
 			assertEquals("Usine d'Orbe", adresseRepresentation.getLigne1());
 			assertEquals("Finance et Audit", adresseRepresentation.getLigne2());
@@ -777,7 +777,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 			assertNull(adresseRepresentation.getSalutations());
 			assertNull(adresseRepresentation.getFormuleAppel());
 
-			assertAdressesEquals(adresseDomicile, adresseService.getAdresseEnvoi(debiteur, null, TypeAdresseTiers.POURSUITE, false));
+			assertAdressesEquals(adresseDomicile, adresseService.getAdresseEnvoi(debiteur, null, TypeAdresseFiscale.POURSUITE, false));
 
 			List<String> nomCourrier = adresseService.getNomCourrier(debiteur, null, false);
 			assertNotNull(nomCourrier);
@@ -845,7 +845,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 			CollectiviteAdministrative collectivite = (CollectiviteAdministrative) tiersService.getTiers(noContribuable);
 			assertNotNull(collectivite);
 
-			AdresseEnvoiDetaillee adresse = adresseService.getAdresseEnvoi(collectivite, null, TypeAdresseTiers.COURRIER, false);
+			AdresseEnvoiDetaillee adresse = adresseService.getAdresseEnvoi(collectivite, null, TypeAdresseFiscale.COURRIER, false);
 			assertNotNull(adresse);
 			assertEquals("Office Cantonal de la Sieste et", adresse.getLigne1());
 			assertEquals("du Grand Repos", adresse.getLigne2());
@@ -857,9 +857,9 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 			assertNull(adresse.getSalutations());
 			assertNull(adresse.getFormuleAppel());
 
-			assertAdressesEquals(adresse, adresseService.getAdresseEnvoi(collectivite, null, TypeAdresseTiers.DOMICILE, false));
-			assertAdressesEquals(adresse, adresseService.getAdresseEnvoi(collectivite, null, TypeAdresseTiers.REPRESENTATION, false));
-			assertAdressesEquals(adresse, adresseService.getAdresseEnvoi(collectivite, null, TypeAdresseTiers.POURSUITE, false));
+			assertAdressesEquals(adresse, adresseService.getAdresseEnvoi(collectivite, null, TypeAdresseFiscale.DOMICILE, false));
+			assertAdressesEquals(adresse, adresseService.getAdresseEnvoi(collectivite, null, TypeAdresseFiscale.REPRESENTATION, false));
+			assertAdressesEquals(adresse, adresseService.getAdresseEnvoi(collectivite, null, TypeAdresseFiscale.POURSUITE, false));
 
 			List<String> nomCourrier = adresseService.getNomCourrier(collectivite, null, false);
 			assertNotNull(nomCourrier);
@@ -926,7 +926,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 			PersonnePhysique habitant = (PersonnePhysique) tiersService.getTiers(noCtbPupille);
 			assertNotNull(habitant);
 
-			AdresseEnvoiDetaillee adresseCourrier = adresseService.getAdresseEnvoi(habitant, null, TypeAdresseTiers.COURRIER, false);
+			AdresseEnvoiDetaillee adresseCourrier = adresseService.getAdresseEnvoi(habitant, null, TypeAdresseFiscale.COURRIER, false);
 			assertNotNull(adresseCourrier);
 			assertEquals("Monsieur", adresseCourrier.getLigne1());
 			assertEquals("Pierre Dupont", adresseCourrier.getLigne2());
@@ -938,7 +938,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 			assertEquals("Monsieur", adresseCourrier.getSalutations());
 			assertEquals("Monsieur", adresseCourrier.getFormuleAppel());
 
-			AdresseEnvoiDetaillee adresseDomicile = adresseService.getAdresseEnvoi(habitant, null, TypeAdresseTiers.DOMICILE, false);
+			AdresseEnvoiDetaillee adresseDomicile = adresseService.getAdresseEnvoi(habitant, null, TypeAdresseFiscale.DOMICILE, false);
 			assertNotNull(adresseDomicile);
 			assertEquals("Monsieur", adresseDomicile.getLigne1());
 			assertEquals("Pierre Dupont", adresseDomicile.getLigne2());
@@ -950,8 +950,8 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 			assertEquals("Monsieur", adresseDomicile.getSalutations());
 			assertEquals("Monsieur", adresseDomicile.getFormuleAppel());
 			
-			assertAdressesEquals(adresseDomicile, adresseService.getAdresseEnvoi(habitant, null, TypeAdresseTiers.REPRESENTATION, false));
-			assertAdressesEquals(adresseDomicile, adresseService.getAdresseEnvoi(habitant, null, TypeAdresseTiers.POURSUITE, false));
+			assertAdressesEquals(adresseDomicile, adresseService.getAdresseEnvoi(habitant, null, TypeAdresseFiscale.REPRESENTATION, false));
+			assertAdressesEquals(adresseDomicile, adresseService.getAdresseEnvoi(habitant, null, TypeAdresseFiscale.POURSUITE, false));
 
 			List<String> nomCourrier = adresseService.getNomCourrier(habitant, null, false);
 			assertNotNull(nomCourrier);
@@ -1033,7 +1033,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 			assertNotNull(menage);
 
 			// L'adresse courrier du couple correspondant à celle du conjoint, car celui-ci n'est pas sous tutelle
-			AdresseEnvoiDetaillee adresseCourrier = adresseService.getAdresseEnvoi(menage, null, TypeAdresseTiers.COURRIER, false);
+			AdresseEnvoiDetaillee adresseCourrier = adresseService.getAdresseEnvoi(menage, null, TypeAdresseFiscale.COURRIER, false);
 			assertNotNull(adresseCourrier);
 			assertEquals("Monsieur et Madame", adresseCourrier.getLigne1());
 			assertEquals("Pierre Dupont", adresseCourrier.getLigne2());
@@ -1046,7 +1046,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 			assertEquals("Monsieur et Madame", adresseCourrier.getFormuleAppel());
 
 			// L'adresse de domicile est toujours (vraiment ?) celle du principal
-			AdresseEnvoiDetaillee adresseDomicile = adresseService.getAdresseEnvoi(menage, null, TypeAdresseTiers.DOMICILE, false);
+			AdresseEnvoiDetaillee adresseDomicile = adresseService.getAdresseEnvoi(menage, null, TypeAdresseFiscale.DOMICILE, false);
 			assertNotNull(adresseDomicile);
 			assertEquals("Monsieur et Madame", adresseDomicile.getLigne1());
 			assertEquals("Pierre Dupont", adresseDomicile.getLigne2());
@@ -1058,8 +1058,8 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 			assertEquals("Monsieur et Madame", adresseDomicile.getSalutations());
 			assertEquals("Monsieur et Madame", adresseDomicile.getFormuleAppel());
 
-			assertAdressesEquals(adresseDomicile, adresseService.getAdresseEnvoi(menage, null, TypeAdresseTiers.REPRESENTATION, false));
-			assertAdressesEquals(adresseDomicile, adresseService.getAdresseEnvoi(menage, null, TypeAdresseTiers.POURSUITE, false));
+			assertAdressesEquals(adresseDomicile, adresseService.getAdresseEnvoi(menage, null, TypeAdresseFiscale.REPRESENTATION, false));
+			assertAdressesEquals(adresseDomicile, adresseService.getAdresseEnvoi(menage, null, TypeAdresseFiscale.POURSUITE, false));
 			
 			List<String> nomCourrier = adresseService.getNomCourrier(menage, null, false);
 			assertNotNull(nomCourrier);
@@ -1142,7 +1142,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 			assertNotNull(menage);
 
 			// L'adresse courrier du couple correspondant à celle du principal, car la tutelle du conjoint est ignorée dans ce cas
-			AdresseEnvoiDetaillee adresse = adresseService.getAdresseEnvoi(menage, null, TypeAdresseTiers.COURRIER, false);
+			AdresseEnvoiDetaillee adresse = adresseService.getAdresseEnvoi(menage, null, TypeAdresseFiscale.COURRIER, false);
 			assertNotNull(adresse);
 			assertEquals("Monsieur et Madame", adresse.getLigne1());
 			assertEquals("Pierre Dupont", adresse.getLigne2());
@@ -1154,9 +1154,9 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 			assertEquals("Monsieur et Madame", adresse.getSalutations());
 			assertEquals("Monsieur et Madame", adresse.getFormuleAppel());
 
-			assertAdressesEquals(adresse, adresseService.getAdresseEnvoi(menage, null, TypeAdresseTiers.DOMICILE, false));
-			assertAdressesEquals(adresse, adresseService.getAdresseEnvoi(menage, null, TypeAdresseTiers.REPRESENTATION, false));
-			assertAdressesEquals(adresse, adresseService.getAdresseEnvoi(menage, null, TypeAdresseTiers.POURSUITE, false));
+			assertAdressesEquals(adresse, adresseService.getAdresseEnvoi(menage, null, TypeAdresseFiscale.DOMICILE, false));
+			assertAdressesEquals(adresse, adresseService.getAdresseEnvoi(menage, null, TypeAdresseFiscale.REPRESENTATION, false));
+			assertAdressesEquals(adresse, adresseService.getAdresseEnvoi(menage, null, TypeAdresseFiscale.POURSUITE, false));
 
 			List<String> nomCourrier = adresseService.getNomCourrier(menage, null, false);
 			assertNotNull(nomCourrier);
@@ -1261,7 +1261,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 			assertNotNull(menage);
 
 			// L'adresse courrier du couple correspondant à celle du principal, car la tutelle du conjoint est ignorée dans ce cas
-			AdresseEnvoiDetaillee adresseCourrier = adresseService.getAdresseEnvoi(menage, null, TypeAdresseTiers.COURRIER, false);
+			AdresseEnvoiDetaillee adresseCourrier = adresseService.getAdresseEnvoi(menage, null, TypeAdresseFiscale.COURRIER, false);
 			assertNotNull(adresseCourrier);
 			assertEquals("Monsieur et Madame", adresseCourrier.getLigne1());
 			assertEquals("Pierre Dupont", adresseCourrier.getLigne2());
@@ -1273,7 +1273,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 			assertEquals("Monsieur et Madame", adresseCourrier.getSalutations());
 			assertEquals("Monsieur et Madame", adresseCourrier.getFormuleAppel());
 
-			AdresseEnvoiDetaillee adresseDomicile = adresseService.getAdresseEnvoi(menage, null, TypeAdresseTiers.DOMICILE, false);
+			AdresseEnvoiDetaillee adresseDomicile = adresseService.getAdresseEnvoi(menage, null, TypeAdresseFiscale.DOMICILE, false);
 			assertNotNull(adresseDomicile);
 			assertEquals("Monsieur et Madame", adresseDomicile.getLigne1());
 			assertEquals("Pierre Dupont", adresseDomicile.getLigne2());
@@ -1285,8 +1285,8 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 			assertEquals("Monsieur et Madame", adresseDomicile.getSalutations());
 			assertEquals("Monsieur et Madame", adresseDomicile.getFormuleAppel());
 
-			assertAdressesEquals(adresseDomicile, adresseService.getAdresseEnvoi(menage, null, TypeAdresseTiers.REPRESENTATION, false));
-			assertAdressesEquals(adresseDomicile, adresseService.getAdresseEnvoi(menage, null, TypeAdresseTiers.POURSUITE, false));
+			assertAdressesEquals(adresseDomicile, adresseService.getAdresseEnvoi(menage, null, TypeAdresseFiscale.REPRESENTATION, false));
+			assertAdressesEquals(adresseDomicile, adresseService.getAdresseEnvoi(menage, null, TypeAdresseFiscale.POURSUITE, false));
 
 			List<String> nomCourrier = adresseService.getNomCourrier(menage, null, false);
 			assertNotNull(nomCourrier);
@@ -1325,7 +1325,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 		paul.addAdresseTiers(adresseSuisse);
 
 		// Adresse telle que non-décédés
-		AdresseEnvoiDetaillee adresse = adresseService.getAdresseEnvoi(menage, aujourdhui, TypeAdresseTiers.COURRIER, false);
+		AdresseEnvoiDetaillee adresse = adresseService.getAdresseEnvoi(menage, aujourdhui, TypeAdresseFiscale.COURRIER, false);
 		assertNotNull(adresse);
 		assertEquals("Monsieur et Madame", adresse.getLigne1());
 		assertEquals("Paul Duchêne", adresse.getLigne2());
@@ -1337,16 +1337,16 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 		assertEquals("Monsieur et Madame", adresse.getSalutations());
 		assertEquals("Monsieur et Madame", adresse.getFormuleAppel());
 
-		assertAdressesEquals(adresse, adresseService.getAdresseEnvoi(menage, null, TypeAdresseTiers.DOMICILE, false));
-		assertAdressesEquals(adresse, adresseService.getAdresseEnvoi(menage, null, TypeAdresseTiers.REPRESENTATION, false));
-		assertAdressesEquals(adresse, adresseService.getAdresseEnvoi(menage, null, TypeAdresseTiers.POURSUITE, false));
+		assertAdressesEquals(adresse, adresseService.getAdresseEnvoi(menage, null, TypeAdresseFiscale.DOMICILE, false));
+		assertAdressesEquals(adresse, adresseService.getAdresseEnvoi(menage, null, TypeAdresseFiscale.REPRESENTATION, false));
+		assertAdressesEquals(adresse, adresseService.getAdresseEnvoi(menage, null, TypeAdresseFiscale.POURSUITE, false));
 
 		// Décès de Paul
 		paul.setDateDeces(dateDeces);
 		rapportPaul.setDateFin(dateDeces);
 		rapportJoelle.setDateFin(dateDeces);
 
-		adresse = adresseService.getAdresseEnvoi(menage, aujourdhui, TypeAdresseTiers.COURRIER, false);
+		adresse = adresseService.getAdresseEnvoi(menage, aujourdhui, TypeAdresseFiscale.COURRIER, false);
 		assertNotNull(adresse);
 		assertEquals("Aux héritiers de", adresse.getLigne1());
 		assertEquals("Paul Duchêne, défunt", adresse.getLigne2());
@@ -1358,9 +1358,9 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 		assertEquals("Aux héritiers de", adresse.getSalutations());
 		assertEquals("Madame, Monsieur", adresse.getFormuleAppel()); // [UNIREG-1398]
 
-		assertAdressesEquals(adresse, adresseService.getAdresseEnvoi(menage, null, TypeAdresseTiers.DOMICILE, false));
-		assertAdressesEquals(adresse, adresseService.getAdresseEnvoi(menage, null, TypeAdresseTiers.REPRESENTATION, false));
-		assertAdressesEquals(adresse, adresseService.getAdresseEnvoi(menage, null, TypeAdresseTiers.POURSUITE, false));
+		assertAdressesEquals(adresse, adresseService.getAdresseEnvoi(menage, null, TypeAdresseFiscale.DOMICILE, false));
+		assertAdressesEquals(adresse, adresseService.getAdresseEnvoi(menage, null, TypeAdresseFiscale.REPRESENTATION, false));
+		assertAdressesEquals(adresse, adresseService.getAdresseEnvoi(menage, null, TypeAdresseFiscale.POURSUITE, false));
 
 		// Décès de Joëlle
 		paul.setDateDeces(null);
@@ -1368,7 +1368,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 		rapportPaul.setDateFin(dateDeces);
 		rapportJoelle.setDateFin(dateDeces);
 
-		adresse = adresseService.getAdresseEnvoi(menage, aujourdhui, TypeAdresseTiers.COURRIER, false);
+		adresse = adresseService.getAdresseEnvoi(menage, aujourdhui, TypeAdresseFiscale.COURRIER, false);
 		assertNotNull(adresse);
 		assertEquals("Aux héritiers de", adresse.getLigne1());
 		assertEquals("Paul Duchêne", adresse.getLigne2());
@@ -1380,9 +1380,9 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 		assertEquals("Aux héritiers de", adresse.getSalutations());
 		assertEquals("Madame, Monsieur", adresse.getFormuleAppel()); // [UNIREG-1398]
 
-		assertAdressesEquals(adresse, adresseService.getAdresseEnvoi(menage, null, TypeAdresseTiers.DOMICILE, false));
-		assertAdressesEquals(adresse, adresseService.getAdresseEnvoi(menage, null, TypeAdresseTiers.REPRESENTATION, false));
-		assertAdressesEquals(adresse, adresseService.getAdresseEnvoi(menage, null, TypeAdresseTiers.POURSUITE, false));
+		assertAdressesEquals(adresse, adresseService.getAdresseEnvoi(menage, null, TypeAdresseFiscale.DOMICILE, false));
+		assertAdressesEquals(adresse, adresseService.getAdresseEnvoi(menage, null, TypeAdresseFiscale.REPRESENTATION, false));
+		assertAdressesEquals(adresse, adresseService.getAdresseEnvoi(menage, null, TypeAdresseFiscale.POURSUITE, false));
 
 		// Décès des deux
 		paul.setDateDeces(dateDeces);
@@ -1390,7 +1390,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 		rapportPaul.setDateFin(dateDeces);
 		rapportJoelle.setDateFin(dateDeces);
 
-		adresse = adresseService.getAdresseEnvoi(menage, aujourdhui, TypeAdresseTiers.COURRIER, false);
+		adresse = adresseService.getAdresseEnvoi(menage, aujourdhui, TypeAdresseFiscale.COURRIER, false);
 		assertNotNull(adresse);
 		assertEquals("Aux héritiers de", adresse.getLigne1());
 		assertEquals("Paul Duchêne, défunt", adresse.getLigne2());
@@ -1402,9 +1402,9 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 		assertEquals("Aux héritiers de", adresse.getSalutations());
 		assertEquals("Madame, Monsieur", adresse.getFormuleAppel()); // [UNIREG-1398]
 
-		assertAdressesEquals(adresse, adresseService.getAdresseEnvoi(menage, null, TypeAdresseTiers.DOMICILE, false));
-		assertAdressesEquals(adresse, adresseService.getAdresseEnvoi(menage, null, TypeAdresseTiers.REPRESENTATION, false));
-		assertAdressesEquals(adresse, adresseService.getAdresseEnvoi(menage, null, TypeAdresseTiers.POURSUITE, false));
+		assertAdressesEquals(adresse, adresseService.getAdresseEnvoi(menage, null, TypeAdresseFiscale.DOMICILE, false));
+		assertAdressesEquals(adresse, adresseService.getAdresseEnvoi(menage, null, TypeAdresseFiscale.REPRESENTATION, false));
+		assertAdressesEquals(adresse, adresseService.getAdresseEnvoi(menage, null, TypeAdresseFiscale.POURSUITE, false));
 	}
 
 	@Test
@@ -1425,7 +1425,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 		paul.addAdresseTiers(adresseEtrangere);
 
 		// Adresse d'envoi hors-Suisse
-		AdresseEnvoiDetaillee adresse = adresseService.getAdresseEnvoi(paul, aujourdhui, TypeAdresseTiers.COURRIER, false);
+		AdresseEnvoiDetaillee adresse = adresseService.getAdresseEnvoi(paul, aujourdhui, TypeAdresseFiscale.COURRIER, false);
 		assertNotNull(adresse);
 		assertEquals("Monsieur", adresse.getLigne1());
 		assertEquals("Paul Duchêne", adresse.getLigne2());
@@ -1437,9 +1437,9 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 		assertEquals("Monsieur", adresse.getSalutations());
 		assertEquals("Monsieur", adresse.getFormuleAppel());
 
-		assertAdressesEquals(adresse, adresseService.getAdresseEnvoi(paul, null, TypeAdresseTiers.DOMICILE, false));
-		assertAdressesEquals(adresse, adresseService.getAdresseEnvoi(paul, null, TypeAdresseTiers.REPRESENTATION, false));
-		assertAdressesEquals(adresse, adresseService.getAdresseEnvoi(paul, null, TypeAdresseTiers.POURSUITE, false));
+		assertAdressesEquals(adresse, adresseService.getAdresseEnvoi(paul, null, TypeAdresseFiscale.DOMICILE, false));
+		assertAdressesEquals(adresse, adresseService.getAdresseEnvoi(paul, null, TypeAdresseFiscale.REPRESENTATION, false));
+		assertAdressesEquals(adresse, adresseService.getAdresseEnvoi(paul, null, TypeAdresseFiscale.POURSUITE, false));
 	}
 
 	@Test
@@ -1486,7 +1486,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 		madame.addRapportSujet(curatelle);
 		curateurMadame.addRapportObjet(curatelle);
 
-		final AdresseEnvoiDetaillee adresseEnvoi = adresseService.getAdresseEnvoi(mc, null, TypeAdresseTiers.COURRIER, true);
+		final AdresseEnvoiDetaillee adresseEnvoi = adresseService.getAdresseEnvoi(mc, null, TypeAdresseFiscale.COURRIER, true);
 		assertNotNull(adresseEnvoi);
 		assertEquals("Pierre Dupont est le curateur de Madame, seule habitante du couple", "p.a. Pierre Dupont", adresseEnvoi.getPourAdresse());
 	}

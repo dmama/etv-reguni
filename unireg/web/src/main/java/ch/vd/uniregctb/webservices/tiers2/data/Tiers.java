@@ -12,6 +12,7 @@ import javax.xml.bind.annotation.XmlType;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseException;
+import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 import org.apache.log4j.Logger;
 
@@ -207,10 +208,10 @@ public abstract class Tiers {
 
 		if (parts != null && parts.contains(TiersPart.ADRESSES_ENVOI)) {
 			try {
-				this.adresseEnvoi = DataHelper.createAdresseFormattee(tiers, date, context, TypeAdresseTiers.COURRIER);
-				this.adresseDomicileFormattee = DataHelper.createAdresseFormattee(tiers, date, context, TypeAdresseTiers.DOMICILE);
-				this.adresseRepresentationFormattee = DataHelper.createAdresseFormattee(tiers, date, context, TypeAdresseTiers.REPRESENTATION);
-				this.adressePoursuiteFormattee = DataHelper.createAdresseFormattee(tiers, date, context, TypeAdresseTiers.POURSUITE);
+				this.adresseEnvoi = DataHelper.createAdresseFormattee(tiers, date, context, TypeAdresseFiscale.COURRIER);
+				this.adresseDomicileFormattee = DataHelper.createAdresseFormattee(tiers, date, context, TypeAdresseFiscale.DOMICILE);
+				this.adresseRepresentationFormattee = DataHelper.createAdresseFormattee(tiers, date, context, TypeAdresseFiscale.REPRESENTATION);
+				this.adressePoursuiteFormattee = DataHelper.createAdresseFormattee(tiers, date, context, TypeAdresseFiscale.POURSUITE);
 			}
 			catch (AdresseException e) {
 				LOGGER.error(e, e);

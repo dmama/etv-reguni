@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import ch.vd.uniregctb.adresse.AdresseException;
+import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 import org.apache.log4j.Logger;
 import org.springframework.validation.BindException;
@@ -165,7 +166,7 @@ public class TiersTimelineController extends AbstractTiersController {
 
 		// Renseignement de l'adresse
 		try {
-			AdresseEnvoi adresseEnvoi = adresseService.getAdresseEnvoi(tiers, null, TypeAdresseTiers.COURRIER, false);
+			AdresseEnvoi adresseEnvoi = adresseService.getAdresseEnvoi(tiers, null, TypeAdresseFiscale.COURRIER, false);
 			bean.setAdresse(adresseEnvoi);
 		}
 		catch (AdresseException e) {

@@ -20,6 +20,7 @@ import ch.vd.registre.civil.model.EnumAttributeIndividu;
 import ch.vd.registre.civil.model.EnumTypeEtatCivil;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.adresse.AdresseService;
+import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.common.BatchTransactionTemplate;
 import ch.vd.uniregctb.common.FiscalDateHelper;
 import ch.vd.uniregctb.common.LoggingStatusManager;
@@ -404,7 +405,7 @@ public class OuvertureForsContribuablesMajeursProcessor {
 
 		final AdresseGenerique adresseDomicile;
 		try {
-			adresseDomicile = adresseService.getAdresseFiscale(habitant, TypeAdresseTiers.DOMICILE, dateReference, false);
+			adresseDomicile = adresseService.getAdresseFiscale(habitant, TypeAdresseFiscale.DOMICILE, dateReference, false);
 		}
 		catch (AdresseException e) {
 			LOGGER.error("Erreur dans les adresse de l'habitant n° " + habitant.getNumero(), e);

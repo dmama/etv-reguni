@@ -188,7 +188,7 @@ public class EvenementManagerImpl implements EvenementManager, MessageSourceAwar
 
 		String localiteOuPays = "";
 
-		AdresseGenerique adresseCourrier = adresseService.getAdresseFiscale(tiers, TypeAdresseTiers.COURRIER, null, false);
+		AdresseGenerique adresseCourrier = adresseService.getAdresseFiscale(tiers, TypeAdresseFiscale.COURRIER, null, false);
 		if (adresseCourrier != null) {
 			Integer noOfsPays = adresseCourrier.getNoOfsPays();
 			Pays pays;
