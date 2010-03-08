@@ -245,26 +245,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 
 			if (criteres.getNAVS13() != null) {
 				personne.setNumeroAssureSocial(criteres.getNAVS13());
-			}
-
-			if (criteres.getDateNaissance() != null) {
-				personne.setDateNaissance(criteres.getDateNaissance());
-			}
-			if (criteres.getDateNaissance() != null) {
-				personne.setDateNaissance(criteres.getDateNaissance());
-			}
-			if (criteres.getNom() != null) {
-				personne.setNom(criteres.getNom());
-			}
-			if (criteres.getPrenoms() != null) {
-				personne.setPrenom(criteres.getPrenoms());
-			}
-			if (criteres.getSexe() != null) {
-				personne.setSexe(criteres.getSexe());
-			}
-
-			mettreAJourAdresseNonHabitant(message, personne);
-
+			}			
 		}
 
 	}
