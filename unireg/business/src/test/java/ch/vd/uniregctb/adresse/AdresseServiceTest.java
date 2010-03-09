@@ -3766,7 +3766,8 @@ public class AdresseServiceTest extends BusinessTest {
 	@Test
 	public void testGetAdressesPoursuiteContribuableCelibataire() throws Exception {
 
-		final long noIndividu = 1;
+		final long noTiers = 44018108;
+		final long noIndividu = 381865;
 
 		// un individu célibataire avec une adresse de domicile
 		serviceCivil.setUp(new MockServiceCivil() {
@@ -3776,7 +3777,7 @@ public class AdresseServiceTest extends BusinessTest {
 				addAdresse(individu, EnumTypeAdresse.PRINCIPALE, MockRue.GrangesMarnand.SousLeBois, null, date(2000, 1, 1), null);
 			}
 		});
-		final PersonnePhysique ctb = addHabitant(noIndividu);
+		final PersonnePhysique ctb = addHabitant(noTiers, noIndividu);
 
 		// les adresses fiscales
 		final AdressesFiscales adresses = adresseService.getAdressesFiscales(ctb, null, false);
@@ -3806,8 +3807,11 @@ public class AdresseServiceTest extends BusinessTest {
 	@Test
 	public void testGetAdressesPoursuiteContribuableCouple() throws Exception {
 
-		final long noIndividuPrincipal = 1;
-		final long noIndividuConjoint = 2;
+		final long noTiersPrincipal = 77619511;
+		final long noTiersConjoint = 46713404;
+
+		final long noIndividuPrincipal = 412949;
+		final long noIndividuConjoint = 125125;
 
 		// un individu célibataire avec une adresse de domicile
 		serviceCivil.setUp(new MockServiceCivil() {
@@ -3820,8 +3824,8 @@ public class AdresseServiceTest extends BusinessTest {
 				addAdresse(conjoint, EnumTypeAdresse.PRINCIPALE, MockRue.GrangesMarnand.RueDeVerdairuz, null, date(2000, 1, 1), null);
 			}
 		});
-		final PersonnePhysique principal = addHabitant(noIndividuPrincipal);
-		final PersonnePhysique conjoint = addHabitant(noIndividuConjoint);
+		final PersonnePhysique principal = addHabitant(noTiersPrincipal, noIndividuPrincipal);
+		final PersonnePhysique conjoint = addHabitant(noTiersConjoint, noIndividuConjoint);
 		final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(principal, conjoint, date(2000, 1, 1));
 		assertNotNull(ensemble);
 
@@ -3872,8 +3876,11 @@ public class AdresseServiceTest extends BusinessTest {
 	@Test
 	public void testGetAdressesPoursuiteContribuableSousCuratelle() throws Exception {
 
-		final long noIndividu = 1;
-		final long noCurateur = 2;
+		final long noTiers = 89016804;
+		final long noCurateur = 13110204;
+
+		final long noIndividu = 410156;
+		final long noIndCurateur = 431638;
 
 		// un contribuable sous curatelle avec un curateur possèdant une adresse de représentation sur Lausanne
 		serviceCivil.setUp(new MockServiceCivil() {
@@ -3882,12 +3889,12 @@ public class AdresseServiceTest extends BusinessTest {
 				MockIndividu individu = addIndividu(noIndividu, date(1953, 11, 2), "Staheli", "Marc", true);
 				addAdresse(individu, EnumTypeAdresse.PRINCIPALE, MockRue.Bussigny.RueDeLIndustrie, null, date(2000, 1, 1), null);
 
-				MockIndividu curateur = addIndividu(noCurateur, date(1953, 11, 2), "Bally", "Alain", true);
+				MockIndividu curateur = addIndividu(noIndCurateur, date(1953, 11, 2), "Bally", "Alain", true);
 				addAdresse(curateur, EnumTypeAdresse.PRINCIPALE, MockRue.Vevey.RueDesMoulins, null, date(2000, 1, 1), null);
 			}
 		});
-		final PersonnePhysique ctb = addHabitant(noIndividu);
-		final PersonnePhysique curateur = addHabitant(noCurateur);
+		final PersonnePhysique ctb = addHabitant(noTiers, noIndividu);
+		final PersonnePhysique curateur = addHabitant(noCurateur, noIndCurateur);
 		addAdresseSuisse(curateur, TypeAdresseTiers.REPRESENTATION, date(2000,1,1), null, MockRue.Lausanne.PlaceSaintFrancois);
 		addCuratelle(ctb, curateur, date(2000, 1, 1));
 
@@ -3936,7 +3943,8 @@ public class AdresseServiceTest extends BusinessTest {
 	@Test
 	public void testGetAdressesPoursuiteContribuableSousTutelle() throws Exception {
 
-		final long noIndividu = 1;
+		final long noTiers = 60510843;
+		final long noIndividu = 750946;
 
 		// un contribuable sous tutelle avec l'OTG (Lausanne) comme tuteur et l'autorité tutelaire de Yverdon et environs
 		serviceCivil.setUp(new MockServiceCivil() {
@@ -3947,7 +3955,7 @@ public class AdresseServiceTest extends BusinessTest {
 			}
 		});
 
-		final PersonnePhysique ctb = addHabitant(noIndividu);
+		final PersonnePhysique ctb = addHabitant(noTiers, noIndividu);
 		final CollectiviteAdministrative tuteur = addCollAdm(ServiceInfrastructureService.noTuteurGeneral);
 		final CollectiviteAdministrative autoriteTutelaire = addCollAdm(MockCollectiviteAdministrative.JusticePaix.DistrictsJuraNordVaudoisEtGrosDeVaud.getNoColAdm());
 		addTutelle(ctb, tuteur, autoriteTutelaire, date(2000, 1, 1));
@@ -4000,12 +4008,15 @@ public class AdresseServiceTest extends BusinessTest {
 	@Test
 	public void testGetAdressesPoursuiteContribuableHSAvecRepresentantConventionel() throws Exception {
 
+		final long noTiers = 10536395;
+		final long noEntreprise = MockPersonneMorale.KPMG.getNumeroEntreprise();
+		
 		servicePM.setUp(new DefaultMockServicePM());
 
 		// un contribuable hors-Suisse avec un représentant conventionnel en Suisse (avec extension de l'exécution forcée)
-		final PersonnePhysique ctb = addNonHabitant("Claude-Alain", "Proz", date(1953, 11, 2), Sexe.MASCULIN);
+		final PersonnePhysique ctb = addNonHabitant(noTiers, "Claude-Alain", "Proz", date(1953, 11, 2), Sexe.MASCULIN);
 		addAdresseEtrangere(ctb, TypeAdresseTiers.DOMICILE, date(2000, 1, 1), null, "Izmir", MockPays.Turquie);
-		final Entreprise representant = addEntreprise(MockPersonneMorale.KPMG.getNumeroEntreprise());
+		final Entreprise representant = addEntreprise(noEntreprise);
 		addRepresentationConventionnelle(ctb, representant, date(2000, 1, 1), true);
 
 		// les adresses fiscales
@@ -4051,7 +4062,9 @@ public class AdresseServiceTest extends BusinessTest {
 	@Test
 	public void testGetAdressesPoursuiteContribuableVDAvecRepresentantConventionel() throws Exception {
 
-		final long noIndividu = 1;
+		final long noTiers = 10033975;
+		final long noIndividu = 330581;
+		final long noEntreprise = MockPersonneMorale.CuriaTreuhand.getNumeroEntreprise();
 
 		servicePM.setUp(new DefaultMockServicePM());
 
@@ -4064,8 +4077,8 @@ public class AdresseServiceTest extends BusinessTest {
 			}
 		});
 
-		final PersonnePhysique ctb = addHabitant(noIndividu);
-		final Entreprise representant = addEntreprise(MockPersonneMorale.CuriaTreuhand.getNumeroEntreprise());
+		final PersonnePhysique ctb = addHabitant(noTiers, noIndividu);
+		final Entreprise representant = addEntreprise(noEntreprise);
 		addRepresentationConventionnelle(ctb, representant, date(2000, 1, 1), false);
 
 		// les adresses fiscales
@@ -4104,7 +4117,8 @@ public class AdresseServiceTest extends BusinessTest {
 	@Test
 	public void testGetAdressesPoursuiteContribuableAvecAdresseSpecifiquePoursuite() throws Exception {
 
-		final long noIndividu = 1;
+		final long noTiers = 44018109;
+		final long noIndividu = 381865;
 
 		servicePM.setUp(new DefaultMockServicePM());
 
@@ -4117,7 +4131,7 @@ public class AdresseServiceTest extends BusinessTest {
 			}
 		});
 
-		final PersonnePhysique ctb = addHabitant(noIndividu);
+		final PersonnePhysique ctb = addHabitant(noTiers, noIndividu);
 		addAdresseSuisse(ctb, TypeAdresseTiers.POURSUITE, date(2000,1,1), null, MockRue.Lausanne.CheminPrazBerthoud);
 
 		// les adresses fiscales

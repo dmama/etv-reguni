@@ -730,10 +730,26 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		return (PersonnePhysique) hibernateTemplate.merge(hab);
 	}
 
+	protected PersonnePhysique addHabitant(long noTiers, long noIndividu) {
+		PersonnePhysique hab = new PersonnePhysique(true);
+		hab.setNumero(noTiers);
+		hab.setNumeroIndividu(noIndividu);
+		return (PersonnePhysique) hibernateTemplate.merge(hab);
+	}
+
 	/**
 	 * Crée et ajoute dans la base de données un non-habitant minimal.
 	 */
 	protected PersonnePhysique addNonHabitant(String prenom, String nom, RegDate dateNaissance, Sexe sexe) {
+		PersonnePhysique nh = new PersonnePhysique(false);
+		nh.setPrenom(prenom);
+		nh.setNom(nom);
+		nh.setDateNaissance(dateNaissance);
+		nh.setSexe(sexe);
+		return (PersonnePhysique) hibernateTemplate.merge(nh);
+	}
+
+	protected PersonnePhysique addNonHabitant(long noTiers, String prenom, String nom, RegDate dateNaissance, Sexe sexe) {
 		PersonnePhysique nh = new PersonnePhysique(false);
 		nh.setPrenom(prenom);
 		nh.setNom(nom);
