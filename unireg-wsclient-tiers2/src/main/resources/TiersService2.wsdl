@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<!-- version 2.3 -->
+<!-- version 2.4 -->
 <wsdl:definitions name="TiersService" targetNamespace="http://www.vd.ch/uniregctb/webservices/tiers2" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
 				  xmlns:tns="http://www.vd.ch/uniregctb/webservices/tiers2" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
 	<wsdl:types>
@@ -81,6 +81,8 @@
 					<xs:element minOccurs="0" name="forGestion" type="tns:ForGestion" />
 					<xs:element minOccurs="0" name="declaration" type="tns:Declaration" />
 					<xs:element maxOccurs="unbounded" minOccurs="0" name="comptesBancaires" type="tns:CompteBancaire" />
+					<xs:element minOccurs="0" name="adressePoursuiteAutreTiers" type="tns:AdresseAutreTiers" />
+					<xs:element minOccurs="0" name="adressePoursuiteAutreTiersFormattee" type="tns:AdresseEnvoiAutreTiers" />
 				</xs:sequence>
 			</xs:complexType>
 			<xs:complexType name="Adresse">
@@ -191,6 +193,24 @@
 					<xs:element minOccurs="0" name="nomInstitution" type="xs:string" />
 				</xs:sequence>
 			</xs:complexType>
+			<xs:complexType name="AdresseAutreTiers">
+				<xs:complexContent>
+					<xs:extension base="tns:Adresse">
+						<xs:sequence>
+							<xs:element name="type" type="tns:TypeAdressePoursuiteAutreTiers" />
+						</xs:sequence>
+					</xs:extension>
+				</xs:complexContent>
+			</xs:complexType>
+			<xs:complexType name="AdresseEnvoiAutreTiers">
+				<xs:complexContent>
+					<xs:extension base="tns:AdresseEnvoi">
+						<xs:sequence>
+							<xs:element name="type" type="tns:TypeAdressePoursuiteAutreTiers" />
+						</xs:sequence>
+					</xs:extension>
+				</xs:complexContent>
+			</xs:complexType>
 			<xs:complexType name="GetBatchTiers">
 				<xs:sequence>
 					<xs:element name="login" type="tns:UserLogin" />
@@ -249,6 +269,8 @@
 					<xs:element maxOccurs="unbounded" minOccurs="0" name="forsGestions" type="tns:ForGestion" />
 					<xs:element maxOccurs="unbounded" minOccurs="0" name="declarations" type="tns:Declaration" />
 					<xs:element maxOccurs="unbounded" minOccurs="0" name="comptesBancaires" type="tns:CompteBancaire" />
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="adressesPoursuiteAutreTiers" type="tns:AdresseAutreTiers" />
+					<xs:element minOccurs="0" name="adressePoursuiteAutreTiersFormattee" type="tns:AdresseEnvoiAutreTiers" />
 				</xs:sequence>
 			</xs:complexType>
 			<xs:complexType name="SetTiersBlocRembAuto">
@@ -703,6 +725,15 @@
 				<xs:restriction base="xs:string">
 					<xs:enumeration value="IBAN" />
 					<xs:enumeration value="SPECIFIQUE_CH" />
+				</xs:restriction>
+			</xs:simpleType>
+			<xs:simpleType name="TypeAdressePoursuiteAutreTiers">
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="TUTELLE" />
+					<xs:enumeration value="CONSEIL_LEGAL" />
+					<xs:enumeration value="CURATELLE" />
+					<xs:enumeration value="MANDATAIRE" />
+					<xs:enumeration value="SPECIFIQUE" />
 				</xs:restriction>
 			</xs:simpleType>
 			<xs:simpleType name="WebServiceExceptionType">
