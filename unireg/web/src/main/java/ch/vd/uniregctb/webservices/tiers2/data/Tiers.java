@@ -10,10 +10,9 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlEnum;
 import javax.xml.bind.annotation.XmlType;
 
-import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
-import ch.vd.uniregctb.type.TypeAdresseTiers;
+
 import org.apache.log4j.Logger;
 
 import ch.vd.registre.base.utils.Assert;
@@ -31,7 +30,7 @@ import ch.vd.uniregctb.webservices.tiers2.impl.DataHelper;
 		"numero", "complementNom", "dateDebutActivite", "dateFinActivite", "dateAnnulation", "personneContact", "numeroTelPrive", "numeroTelProf", "numeroTelPortable", "numeroTelecopie",
 		"adresseCourrierElectronique", "blocageRemboursementAutomatique", "isDebiteurInactif", "adresseCourrier", "adressePoursuite", "adresseRepresentation", "adresseDomicile", "adresseEnvoi",
 		"adressePoursuiteFormattee", "adresseRepresentationFormattee", "adresseDomicileFormattee", "rapportsEntreTiers", "forFiscalPrincipal", "autresForsFiscaux", "forGestion", "declaration",
-		"comptesBancaires"
+		"comptesBancaires", "adressePoursuiteAutreTiers", "adressePoursuiteAutreTiersFormattee"
 })
 public abstract class Tiers {
 
@@ -105,10 +104,6 @@ public abstract class Tiers {
 	@XmlElement(required = false)
 	public Adresse adresseCourrier;
 
-	/** Adresse poursuite du tiers. */
-	@XmlElement(required = false)
-	public Adresse adressePoursuite;
-
 	/** Adresse représentation du tiers. */
 	@XmlElement(required = false)
 	public Adresse adresseRepresentation;
@@ -117,13 +112,22 @@ public abstract class Tiers {
 	@XmlElement(required = false)
 	public Adresse adresseDomicile;
 
+	/** Adresse poursuite du tiers. C'est l'adresse qui permet de déterminer le for de poursuite du tiers. */
+	@XmlElement(required = false)
+	public Adresse adressePoursuite;
+
+	/**
+	 * Adresse poursuite <i>autre tiers</i>.
+	 * <p/>
+	 * Cette adresse est renseignée lorsque le tiers possède un <i>autre tiers</i> (tuteur, curateur, ...) qui doit
+	 * être notifié des poursuites en plus (ou à la place) du tiers. Dans tous les autres cas, cette adresse est nulle.
+	 */
+	@XmlElement(required = false)
+	public AdresseAutreTiers adressePoursuiteAutreTiers;
+
 	/** Adresse <b>courrier</b> formattée pour l'envoi (six lignes) */
 	@XmlElement(required = false)
 	public AdresseEnvoi adresseEnvoi;
-
-	/** Adresse de poursuite formattée pour l'envoi (six lignes) */
-	@XmlElement(required = false)
-	public AdresseEnvoi adressePoursuiteFormattee;
 
 	/** Adresse de représentation formattée pour l'envoi (six lignes) */
 	@XmlElement(required = false)
@@ -132,6 +136,13 @@ public abstract class Tiers {
 	/** Adresse de domicile formattée pour l'envoi (six lignes) */
 	@XmlElement(required = false)
 	public AdresseEnvoi adresseDomicileFormattee;
+
+	/** Adresse de poursuite formattée pour l'envoi (six lignes) */
+	@XmlElement(required = false)
+	public AdresseEnvoi adressePoursuiteFormattee;
+
+	/** Adresse de poursuite <i>autre tiers </i> formattée pour l'envoi (six lignes) */
+	public AdresseEnvoiAutreTiers adressePoursuiteAutreTiersFormattee;
 
 	/** Rapports entre tiers ouverts pour le tiers. */
 	@XmlElement(required = false)
@@ -201,8 +212,9 @@ public abstract class Tiers {
 			if (adresses != null) {
 				this.adresseCourrier = DataHelper.coreToWeb(adresses.courrier, context.infraService);
 				this.adresseRepresentation = DataHelper.coreToWeb(adresses.representation, context.infraService);
-				this.adressePoursuite = DataHelper.coreToWeb(adresses.poursuite, context.infraService);
 				this.adresseDomicile = DataHelper.coreToWeb(adresses.domicile, context.infraService);
+				this.adressePoursuite = DataHelper.coreToWeb(adresses.poursuite, context.infraService);
+				this.adressePoursuiteAutreTiers = DataHelper.coreToWebAT(adresses.poursuiteAutreTiers, context.infraService);
 			}
 		}
 
@@ -212,6 +224,7 @@ public abstract class Tiers {
 				this.adresseDomicileFormattee = DataHelper.createAdresseFormattee(tiers, date, context, TypeAdresseFiscale.DOMICILE);
 				this.adresseRepresentationFormattee = DataHelper.createAdresseFormattee(tiers, date, context, TypeAdresseFiscale.REPRESENTATION);
 				this.adressePoursuiteFormattee = DataHelper.createAdresseFormattee(tiers, date, context, TypeAdresseFiscale.POURSUITE);
+				this.adressePoursuiteAutreTiersFormattee = DataHelper.createAdresseFormatteeAT(tiers, date, context, TypeAdresseFiscale.POURSUITE_AUTRE_TIERS);
 			}
 			catch (AdresseException e) {
 				LOGGER.error(e, e);
@@ -314,6 +327,7 @@ public abstract class Tiers {
 	}
 
 	/**
+	 * @param parts les parts à cloner.
 	 * @return une copie du tiers courant dont seules les parts spécifiées sont renseignées.
 	 */
 	public abstract Tiers clone(Set<TiersPart> parts);
@@ -327,15 +341,17 @@ public abstract class Tiers {
 		if (parts != null && parts.contains(TiersPart.ADRESSES)) {
 			this.adresseCourrier = tiers.adresseCourrier;
 			this.adresseRepresentation = tiers.adresseRepresentation;
-			this.adressePoursuite = tiers.adressePoursuite;
 			this.adresseDomicile = tiers.adresseDomicile;
+			this.adressePoursuite = tiers.adressePoursuite;
+			this.adressePoursuiteAutreTiers = tiers.adressePoursuiteAutreTiers;
 		}
 
 		if (parts != null && parts.contains(TiersPart.ADRESSES_ENVOI)) {
 			this.adresseEnvoi = tiers.adresseEnvoi;
-			this.adresseDomicileFormattee = tiers.adresseDomicileFormattee;
 			this.adresseRepresentationFormattee = tiers.adresseRepresentationFormattee;
+			this.adresseDomicileFormattee = tiers.adresseDomicileFormattee;
 			this.adressePoursuiteFormattee = tiers.adressePoursuiteFormattee;
+			this.adressePoursuiteAutreTiersFormattee = tiers.adressePoursuiteAutreTiersFormattee;
 		}
 
 		if (parts != null && parts.contains(TiersPart.RAPPORTS_ENTRE_TIERS)) {

@@ -12,7 +12,7 @@ import javax.xml.bind.annotation.XmlType;
 
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
-import ch.vd.uniregctb.type.TypeAdresseTiers;
+
 import org.apache.log4j.Logger;
 
 import ch.vd.registre.base.date.DateRangeHelper;
@@ -33,7 +33,7 @@ import ch.vd.uniregctb.webservices.tiers2.impl.ForFiscalComparator;
 		"numero", "complementNom", "dateDebutActivite", "dateFinActivite", "dateAnnulation", "personneContact", "numeroTelPrive", "numeroTelProf", "numeroTelPortable", "numeroTelecopie",
 		"adresseCourrierElectronique", "blocageRemboursementAutomatique", "isDebiteurInactif", "adressesCourrier", "adressesPoursuite", "adressesRepresentation", "adressesDomicile", "adresseEnvoi",
 		"adressePoursuiteFormattee", "adresseRepresentationFormattee", "adresseDomicileFormattee", "rapportsEntreTiers", "forsFiscauxPrincipaux", "autresForsFiscaux", "forsGestions", "declarations",
-		"comptesBancaires"
+		"comptesBancaires", "adressesPoursuiteAutreTiers", "adressePoursuiteAutreTiersFormattee"
 })
 public abstract class TiersHisto {
 
@@ -91,10 +91,6 @@ public abstract class TiersHisto {
 	@XmlElement(required = false)
 	public List<Adresse> adressesCourrier = null;
 
-	/** Historique des adresses poursuite du tiers (de la plus ancienne à la plus récente). */
-	@XmlElement(required = false)
-	public List<Adresse> adressesPoursuite = null;
-
 	/** Historique des adresses représentation du tiers (de la plus ancienne à la plus récente). */
 	@XmlElement(required = false)
 	public List<Adresse> adressesRepresentation = null;
@@ -102,6 +98,19 @@ public abstract class TiersHisto {
 	/** Historique des adresses domicile du tiers (de la plus ancienne à la plus récente). */
 	@XmlElement(required = false)
 	public List<Adresse> adressesDomicile = null;
+
+	/** Historique des adresses poursuite du tiers (de la plus ancienne à la plus récente). Les adresses de poursuites permettent de déterminer l'historique des fors de poursuite */
+	@XmlElement(required = false)
+	public List<Adresse> adressesPoursuite = null;
+
+	/**
+	 * Historique des adresses poursuite <i>autre tiers</i> du tiers (de la plus ancienne à la plus récente).
+	 * <p/>
+	 * Ces adresses sont renseignées lorsque le tiers possède des <i>autres tiers</i> (tuteurs, curateurs, ...) qui doivent
+	 * être notifiés des poursuites en plus (ou à la place) du tiers. Dans tous les autres cas, ces adresses sont nulle.
+	 */
+	@XmlElement(required = false)
+	public List<AdresseAutreTiers> adressesPoursuiteAutreTiers = null;
 
 	/**
 	 * Adresse <b>courrier</b> formattée pour l'envoi (six lignes)
@@ -112,6 +121,14 @@ public abstract class TiersHisto {
 	public AdresseEnvoi adresseEnvoi = null;
 
 	/**
+	 * Adresse de représentation formattée pour l'envoi (six lignes)
+	 * <p>
+	 * <b>Attention !</b> Il s'agit de l'adresse d'envoi la plus récente connue, indépendemment de la période historique demandée.
+	 */
+	@XmlElement(required = false)
+	public AdresseEnvoi adresseRepresentationFormattee;
+
+	/**
 	 * Adresse de poursuite formattée pour l'envoi (six lignes)
 	 * <p>
 	 * <b>Attention !</b> Il s'agit de l'adresse d'envoi la plus récente connue, indépendemment de la période historique demandée.
@@ -120,13 +137,13 @@ public abstract class TiersHisto {
 	public AdresseEnvoi adressePoursuiteFormattee;
 
 	/**
-	 * Adresse de représentation formattée pour l'envoi (six lignes)
+	 * Adresse de poursuite <i>autre tiers </i> formattée pour l'envoi (six lignes)
 	 * <p>
 	 * <b>Attention !</b> Il s'agit de l'adresse d'envoi la plus récente connue, indépendemment de la période historique demandée.
 	 */
 	@XmlElement(required = false)
-	public AdresseEnvoi adresseRepresentationFormattee;
-
+	public AdresseEnvoiAutreTiers adressePoursuiteAutreTiersFormattee;
+	
 	/**
 	 * Adresse de domicile formattée pour l'envoi (six lignes)
 	 * <p>
@@ -166,13 +183,13 @@ public abstract class TiersHisto {
 	}
 
 	public TiersHisto(ch.vd.uniregctb.tiers.Tiers tiers, Set<TiersPart> parts, Context context) throws BusinessException {
-		initBase(tiers, context);
+		initBase(tiers);
 		initParts(context, tiers, parts, null);
 	}
 
 	public TiersHisto(ch.vd.uniregctb.tiers.Tiers tiers, int periode, Set<TiersPart> parts, Context context) throws BusinessException {
 		final Range range = new Range(RegDate.get(periode, 1, 1), RegDate.get(periode, 12, 31));
-		initBase(tiers, context);
+		initBase(tiers);
 		initParts(context, tiers, parts, range);
 	}
 
@@ -207,11 +224,12 @@ public abstract class TiersHisto {
 	}
 
 	/**
+	 * @param parts les parts à cloner.
 	 * @return une copie du tiers courant dont seules les parts spécifiées sont renseignées.
 	 */
 	public abstract TiersHisto clone(Set<TiersPart> parts);
 
-	private void initBase(ch.vd.uniregctb.tiers.Tiers tiers, Context context) {
+	private void initBase(ch.vd.uniregctb.tiers.Tiers tiers) {
 		this.numero = tiers.getNumero();
 		this.complementNom = tiers.getComplementNom();
 		this.dateDebutActivite = DataHelper.coreToWeb(tiers.getDateDebutActivite());
@@ -243,7 +261,7 @@ public abstract class TiersHisto {
 		}
 
 		if (parts != null && parts.contains(TiersPart.RAPPORTS_ENTRE_TIERS)) {
-			initRapports(tiers, context, range);
+			initRapports(tiers, range);
 		}
 
 		if (parts != null && (parts.contains(TiersPart.FORS_FISCAUX) || parts.contains(TiersPart.FORS_FISCAUX_VIRTUELS))) {
@@ -270,9 +288,10 @@ public abstract class TiersHisto {
 	private void initAdressesEnvoi(ch.vd.uniregctb.tiers.Tiers tiers, Context context) throws BusinessException {
 		try {
 			this.adresseEnvoi = DataHelper.createAdresseFormattee(tiers, null, context, TypeAdresseFiscale.COURRIER);
-			this.adresseDomicileFormattee = DataHelper.createAdresseFormattee(tiers, null, context, TypeAdresseFiscale.DOMICILE);
 			this.adresseRepresentationFormattee = DataHelper.createAdresseFormattee(tiers, null, context, TypeAdresseFiscale.REPRESENTATION);
+			this.adresseDomicileFormattee = DataHelper.createAdresseFormattee(tiers, null, context, TypeAdresseFiscale.DOMICILE);
 			this.adressePoursuiteFormattee = DataHelper.createAdresseFormattee(tiers, null, context, TypeAdresseFiscale.POURSUITE);
+			this.adressePoursuiteAutreTiersFormattee = DataHelper.createAdresseFormatteeAT(tiers, null, context, TypeAdresseFiscale.POURSUITE_AUTRE_TIERS);
 		}
 		catch (AdresseException e) {
 			LOGGER.error(e, e);
@@ -344,7 +363,7 @@ public abstract class TiersHisto {
 		}
 	}
 
-	private void initRapports(ch.vd.uniregctb.tiers.Tiers tiers, Context context, final Range range) {
+	private void initRapports(ch.vd.uniregctb.tiers.Tiers tiers, final Range range) {
 		this.rapportsEntreTiers = new ArrayList<RapportEntreTiers>();
 		// Ajoute les rapports dont le tiers est le sujet
 		for (ch.vd.uniregctb.tiers.RapportEntreTiers rapport : tiers.getRapportsSujet()) {
@@ -381,9 +400,10 @@ public abstract class TiersHisto {
 
 		if (adresses != null) {
 			this.adressesCourrier = DataHelper.coreToWeb(adresses.courrier, range, context.infraService);
-			this.adressesPoursuite = DataHelper.coreToWeb(adresses.poursuite, range, context.infraService);
 			this.adressesRepresentation = DataHelper.coreToWeb(adresses.representation, range, context.infraService);
 			this.adressesDomicile = DataHelper.coreToWeb(adresses.domicile, range, context.infraService);
+			this.adressesPoursuite = DataHelper.coreToWeb(adresses.poursuite, range, context.infraService);
+			this.adressesPoursuiteAutreTiers = DataHelper.coreToWebAT(adresses.poursuiteAutreTiers, range, context.infraService);
 		}
 	}
 
@@ -395,16 +415,18 @@ public abstract class TiersHisto {
 
 		if (parts != null && parts.contains(TiersPart.ADRESSES)) {
 			this.adressesCourrier = tiers.adressesCourrier;
-			this.adressesPoursuite = tiers.adressesPoursuite;
 			this.adressesRepresentation = tiers.adressesRepresentation;
 			this.adressesDomicile = tiers.adressesDomicile;
+			this.adressesPoursuite = tiers.adressesPoursuite;
+			this.adressesPoursuiteAutreTiers = tiers.adressesPoursuiteAutreTiers;
 		}
 
 		if (parts != null && parts.contains(TiersPart.ADRESSES_ENVOI)) {
 			this.adresseEnvoi = tiers.adresseEnvoi;
-			this.adresseDomicileFormattee = tiers.adresseDomicileFormattee;
 			this.adresseRepresentationFormattee = tiers.adresseRepresentationFormattee;
+			this.adresseDomicileFormattee = tiers.adresseDomicileFormattee;
 			this.adressePoursuiteFormattee = tiers.adressePoursuiteFormattee;
+			this.adressePoursuiteAutreTiersFormattee = tiers.adressePoursuiteAutreTiersFormattee;
 		}
 
 		if (parts != null && parts.contains(TiersPart.RAPPORTS_ENTRE_TIERS)) {

@@ -12,9 +12,9 @@ import java.util.Set;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.AdresseException;
+import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.webservices.tiers2.data.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
@@ -51,7 +51,7 @@ import ch.vd.uniregctb.webservices.tiers2.params.SearchTiers;
 public class DataHelper {
 
 	public static boolean coreToWeb(Boolean value) {
-		return value != null && value.booleanValue();
+		return value != null && value;
 	}
 
 	public static Date coreToWeb(java.util.Date date) {
@@ -74,6 +74,14 @@ public class DataHelper {
 		return new Adresse(adresse, serviceInfra);
 	}
 
+	public static AdresseAutreTiers coreToWebAT(ch.vd.uniregctb.adresse.AdresseGenerique adresse,
+			ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService serviceInfra) throws BusinessException {
+		if (adresse == null) {
+			return null;
+		}
+		return new AdresseAutreTiers(adresse, serviceInfra);
+	}
+
 	public static List<Adresse> coreToWeb(List<ch.vd.uniregctb.adresse.AdresseGenerique> adresses,
 			ch.vd.registre.base.date.DateRangeHelper.Range range,
 			ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService serviceInfra) throws BusinessException {
@@ -88,6 +96,26 @@ public class DataHelper {
 			}
 			if (range == null || DateRangeHelper.intersect(a, range)) {
 				list.add(new Adresse(a, serviceInfra));
+			}
+		}
+
+		return list.isEmpty() ? null : list;
+	}
+
+	public static List<AdresseAutreTiers> coreToWebAT(List<ch.vd.uniregctb.adresse.AdresseGenerique> adresses,
+			ch.vd.registre.base.date.DateRangeHelper.Range range,
+			ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService serviceInfra) throws BusinessException {
+		if (adresses == null || adresses.isEmpty()) {
+			return null;
+		}
+
+		List<AdresseAutreTiers> list = new ArrayList<AdresseAutreTiers>();
+		for (ch.vd.uniregctb.adresse.AdresseGenerique a : adresses) {
+			if (a.isAnnule()) {
+				continue;
+			}
+			if (range == null || DateRangeHelper.intersect(a, range)) {
+				list.add(new AdresseAutreTiers(a, serviceInfra));
 			}
 		}
 
@@ -178,6 +206,9 @@ public class DataHelper {
 	}
 
 	/**
+	 * @param numeroOfsCommune le numéro Ofs de la commune
+	 * @param date             la date de validité
+	 * @param serviceInfra     le service d'infrastructure
 	 * @return le nom minuscule de la commune; ou <b>null</b> si la commune n'existe pas ou en cas d'erreur d'accès à l'infrastructure.
 	 */
 	public static String getNomCommune(int numeroOfsCommune, RegDate date, ServiceInfrastructureService serviceInfra) {
@@ -383,5 +414,36 @@ public class DataHelper {
 			return null;
 		}
 		return new AdresseEnvoi(adressePoursuite);
+	}
+
+	public static AdresseEnvoiAutreTiers createAdresseFormatteeAT(ch.vd.uniregctb.tiers.Tiers tiers, RegDate date, Context context, TypeAdresseFiscale type) throws AdresseException {
+		final AdresseEnvoiDetaillee adressePoursuite = context.adresseService.getAdresseEnvoi(tiers, date, type, false);
+		if (adressePoursuite == null) {
+			return null;
+		}
+		return new AdresseEnvoiAutreTiers(adressePoursuite);
+	}
+
+	public static TypeAdresseAutreTiers source2type(AdresseGenerique.Source source) {
+
+		if (source == null) {
+			return null;
+		}
+
+		switch (source) {
+		case FISCALE:
+			return TypeAdresseAutreTiers.SPECIFIQUE;
+		case REPRESENTATION:
+			return TypeAdresseAutreTiers.MANDATAIRE;
+		case CURATELLE:
+			return TypeAdresseAutreTiers.CURATELLE;
+		case CONSEIL_LEGAL:
+			return TypeAdresseAutreTiers.CONSEIL_LEGAL;
+		case TUTELLE:
+			return TypeAdresseAutreTiers.TUTELLE;
+		default:
+			throw new IllegalArgumentException("Le type de source = [" + source + "] n'est pas représentable comme type d'adresse autre tiers");
+		}
+
 	}
 }
