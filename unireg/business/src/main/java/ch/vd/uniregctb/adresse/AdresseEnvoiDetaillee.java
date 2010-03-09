@@ -21,6 +21,11 @@ public class AdresseEnvoiDetaillee extends AdresseEnvoi {
 	private String casePostale;
 	private String npaEtLocalite;
 	private String pays;
+	private AdresseGenerique.Source source;
+
+	public AdresseEnvoiDetaillee(AdresseGenerique.Source source) {
+		this.source = source;
+	}
 
 	public void addFormulePolitesse(FormulePolitesse formule) {
 		this.salutations = formule.salutations();
@@ -102,6 +107,10 @@ public class AdresseEnvoiDetaillee extends AdresseEnvoi {
 	public void addPays(String ligne, int optionalite) {
 		this.pays = ligne;
 		addLine(ligne, optionalite);
+	}
+
+	public AdresseGenerique.Source getSource() {
+		return source;
 	}
 
 	/**

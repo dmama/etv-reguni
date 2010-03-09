@@ -6,11 +6,12 @@ import ch.vd.uniregctb.type.TypeAdresseTiers;
  * Type d'adresse disponible au niveau fiscal.
  */
 public enum TypeAdresseFiscale {
-	
+
 	COURRIER(TypeAdresseTiers.COURRIER),
 	REPRESENTATION(TypeAdresseTiers.REPRESENTATION),
 	POURSUITE(TypeAdresseTiers.POURSUITE),
-	DOMICILE(TypeAdresseTiers.DOMICILE);
+	DOMICILE(TypeAdresseTiers.DOMICILE),
+	POURSUITE_AUTRE_TIERS(null);
 
 	TypeAdresseTiers coreType;
 

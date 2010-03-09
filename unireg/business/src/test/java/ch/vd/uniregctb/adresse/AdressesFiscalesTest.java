@@ -21,18 +21,26 @@ public class AdressesFiscalesTest {
 
 		final AdresseCivileAdapter adresseCourrier = new AdresseCivileAdapter(new MockAdresse(), false,serviceInfra);
 		final AdresseCivileAdapter adresseRepresentation = new AdresseCivileAdapter(new MockAdresse(), false,serviceInfra);
-		final AdresseCivileAdapter adressePoursuite = new AdresseCivileAdapter(new MockAdresse(), false,serviceInfra);
 		final AdresseCivileAdapter adresseDomicile = new AdresseCivileAdapter(new MockAdresse(), false,serviceInfra);
+		final AdresseCivileAdapter adressePoursuite = new AdresseCivileAdapter(new MockAdresse(), false,serviceInfra);
+		final AdresseCivileAdapter adressePoursuiteAutreTiers = new AdresseCivileAdapter(new MockAdresse(), false,serviceInfra);
 
 		AdressesFiscales adresses = new AdressesFiscales();
 		adresses.courrier = adresseCourrier;
 		adresses.representation = adresseRepresentation;
-		adresses.poursuite = adressePoursuite;
 		adresses.domicile = adresseDomicile;
+		adresses.poursuite = adressePoursuite;
+		adresses.poursuiteAutreTiers = adressePoursuiteAutreTiers;
 
 		assertEquals(adresseCourrier, adresses.ofType(TypeAdresseTiers.COURRIER));
 		assertEquals(adresseRepresentation, adresses.ofType(TypeAdresseTiers.REPRESENTATION));
-		assertEquals(adressePoursuite, adresses.ofType(TypeAdresseTiers.POURSUITE));
 		assertEquals(adresseDomicile, adresses.ofType(TypeAdresseTiers.DOMICILE));
+		assertEquals(adressePoursuite, adresses.ofType(TypeAdresseTiers.POURSUITE));
+
+		assertEquals(adresseCourrier, adresses.ofType(TypeAdresseFiscale.COURRIER));
+		assertEquals(adresseRepresentation, adresses.ofType(TypeAdresseFiscale.REPRESENTATION));
+		assertEquals(adresseDomicile, adresses.ofType(TypeAdresseFiscale.DOMICILE));
+		assertEquals(adressePoursuite, adresses.ofType(TypeAdresseFiscale.POURSUITE));
+		assertEquals(adressePoursuiteAutreTiers, adresses.ofType(TypeAdresseFiscale.POURSUITE_AUTRE_TIERS));
 	}
 }

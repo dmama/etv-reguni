@@ -3,6 +3,7 @@ package ch.vd.uniregctb.webservices.tiers2.impl.pm;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.pm.model.EnumTypeAdresseEntreprise;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
+import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.interfaces.model.*;
 import ch.vd.uniregctb.interfaces.service.PartPM;
 import ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleService;
@@ -681,7 +682,7 @@ public class TiersWebServiceWithPM implements TiersWebService {
 	}
 
 	private AdresseEnvoi calculateAdresseEnvoi(PersonneMoraleHisto pm, List<Adresse> adresses) {
-		AdresseEnvoiDetaillee adresse = new AdresseEnvoiDetaillee();
+		AdresseEnvoiDetaillee adresse = new AdresseEnvoiDetaillee(AdresseGenerique.Source.PM);
 
 		if (pm.designationAbregee != null) {
 			adresse.addNomPrenom(pm.designationAbregee);

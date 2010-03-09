@@ -136,7 +136,7 @@ public class TiersHelper {
 	 *            la date de référence, ou null pour obtenir l'adresse courante.
 	 * @return une adresse tiers, ou null autrement.
 	 */
-	public static AdresseTiers getAdresseTiers(Tiers tiers, TypeAdresseTiers type, RegDate date) throws AdressesResolutionException {
+	public static AdresseTiers getAdresseTiers(Tiers tiers, TypeAdresseTiers type, RegDate date) {
 
 		if (tiers == null) {
 			return null;

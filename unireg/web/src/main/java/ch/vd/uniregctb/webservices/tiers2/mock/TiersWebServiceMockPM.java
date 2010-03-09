@@ -5,6 +5,7 @@ import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
+import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.webservices.tiers2.TiersWebService;
 import ch.vd.uniregctb.webservices.tiers2.data.*;
@@ -438,7 +439,7 @@ public class TiersWebServiceMockPM implements TiersWebService, InitializingBean 
 	}
 
 	private AdresseEnvoi calculateAdresseEnvoi(PersonneMoraleHisto pm, List<Adresse> adresses) {
-		AdresseEnvoiDetaillee adresse = new AdresseEnvoiDetaillee();
+		AdresseEnvoiDetaillee adresse = new AdresseEnvoiDetaillee(AdresseGenerique.Source.PM);
 
 		if (pm.designationAbregee != null) {
 			adresse.addNomPrenom(pm.designationAbregee);
