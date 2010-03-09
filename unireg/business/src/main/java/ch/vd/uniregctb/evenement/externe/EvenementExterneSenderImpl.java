@@ -62,7 +62,6 @@ public class EvenementExterneSenderImpl implements EvenementExterneSender {
 		final EsbMessage m = esbMessageFactory.createMessage();
 		m.setBusinessId(String.valueOf(businessId));
 		m.setBusinessUser(businessUser);
-		m.setBusinessCorrelationId(String.valueOf(businessId));
 		m.setServiceDestination(serviceDestination);
 		m.setDomain("fiscalite");
 		m.setContext("evenementExterne");

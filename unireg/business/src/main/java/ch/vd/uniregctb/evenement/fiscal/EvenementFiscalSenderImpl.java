@@ -67,11 +67,11 @@ public final class EvenementFiscalSenderImpl implements EvenementFiscalSender {
 			final EsbMessage m = esbMessageFactory.createMessage();
 			m.setBusinessId(String.valueOf(evenement.getId()));
 			m.setBusinessUser(principal);
-			m.setBusinessCorrelationId(String.valueOf(evenement.getId()));
 			m.setServiceDestination(serviceDestination);
 			m.setDomain("fiscalite");
 			m.setContext("evenementFiscal");
 			m.setApplication("unireg");
+			m.addHeader("noCtb", String.valueOf(evenement.getTiers().getNumero()));
 			final Node node = document.newDomNode();
 			m.setBody((Document) node);
 

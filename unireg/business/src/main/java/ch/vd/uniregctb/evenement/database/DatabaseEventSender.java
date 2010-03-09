@@ -114,7 +114,6 @@ public class DatabaseEventSender implements DatabaseListener, InitializingBean {
 		final EsbMessage m = esbMessageFactory.createMessage();
 		m.setBusinessId(String.valueOf(id));
 		m.setBusinessUser(businessUser);
-		m.setBusinessCorrelationId(String.valueOf(id));
 		m.setServiceDestination(serviceDestination);
 		m.setDomain("fiscalite");
 		m.setContext("databaseEvent");
