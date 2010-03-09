@@ -455,6 +455,11 @@ public class TacheServiceImpl implements TacheService {
 		case SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT:
 			generateTacheNouveauDossier(contribuable);
 			genereTachesEnvoiDI(contribuable, forFiscal.getDateDebut());
+			//Pour les périodes fiscales pour lesquelles une déclaration d’impôt a déjà été émise,
+			// une tâche de contrôle de déclaration d’impôt est engendrée
+			if(existDIEmise(contribuable) && MotifFor.ARRIVEE_HC.equals(motifOuverture)){
+				genereTacheControleDossier(contribuable);
+			}
 			break;
 		case CHGT_MODE_IMPOSITION:
 			if (!ancienModeImposition.isAuRole() && modeImposition.isAuRole()) {
@@ -496,6 +501,14 @@ public class TacheServiceImpl implements TacheService {
 			}
 			break;
 		}
+	}
+
+	private boolean existDIEmise(Contribuable contribuable) {
+		List<Declaration> declarations = contribuable.getDeclarationsSorted();
+		if(declarations!=null && !declarations.isEmpty()){
+			return true;
+		}
+		return false;
 	}
 
 	/**
