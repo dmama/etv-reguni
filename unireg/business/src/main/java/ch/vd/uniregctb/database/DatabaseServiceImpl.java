@@ -374,7 +374,7 @@ public class DatabaseServiceImpl implements DatabaseService {
 			});
 
 			final List<ITable> retTables;
-			if (parts.rapportsEntreTiers) {
+			if (parts.rapportsEntreTiers && !allRETIds.isEmpty()) {
 				// Les rapports-entre-tiers
 				retTables = queryDataSet(allRETIds, connection, "Récupération des rapports-entre-tiers", status, new QueryDataSetCallback() {
 					public QueryDataSet execute(Collection<Long> ids, DatabaseConnection connection) throws SQLException {
