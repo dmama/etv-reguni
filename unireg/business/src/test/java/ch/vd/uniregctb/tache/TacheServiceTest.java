@@ -158,63 +158,6 @@ public class TacheServiceTest extends BusinessTest {
 
 	}
 
-
-	@Test
-			public void testGenereControleDISuiteArriveeHCDepuisOuvertureForPrincipal() throws Exception {
-
-
-				// Etat 2008
-			 doInNewTransaction(new TxCallback() {
-				@Override
-				public Object execute(TransactionStatus status) throws Exception {
-					loadDatabase(DB_UNIT_DATA_FILE);
-					return null;
-				}
-			});
-
-
-				PersonnePhysique hab = new PersonnePhysique(true);
-				hab.setNumero(11111111L);
-				hab.setNumeroIndividu(333908L);
-				hab = (PersonnePhysique) hibernateTemplate.merge(hab);
-
-				ForFiscalPrincipal forFiscalPrincipal = new ForFiscalPrincipal(RegDate.get(2006, 6, 12), null, 5652,
-						TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
-				hab.addForFiscal(forFiscalPrincipal);
-				forFiscalPrincipal.setMotifOuverture(MotifFor.ARRIVEE_HC);
-				PeriodeFiscale pf2006 = (PeriodeFiscale) tacheDAO.getHibernateTemplate().get(PeriodeFiscale.class, 6L);
-				ModeleDocument modele2006 = (ModeleDocument) tacheDAO.getHibernateTemplate().get(ModeleDocument.class, 1L);
-			    addDeclarationImpot(hab, pf2006, date(2006, 1, 1), date(2006, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2006);
-
-				tacheService.genereTacheDepuisOuvertureForPrincipal(hab, forFiscalPrincipal, null);
-				TacheCriteria criterionControle = new TacheCriteria();
-				verifieControleDossier(criterionControle,1);
-
-
-
-			}
-
-
-@Test
-		public void testVerifierTachesSuiteArriveeHCPeriodeCourante() throws Exception {
-
-	PersonnePhysique hab = new PersonnePhysique(true);
-			hab.setNumero(11111111L);
-			hab.setNumeroIndividu(333908L);
-			hab = (PersonnePhysique) hibernateTemplate.merge(hab);
-
-			ForFiscalPrincipal forFiscalPrincipal = new ForFiscalPrincipal(RegDate.get(2010, 1, 12), null, 5652,
-					TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
-			hab.addForFiscal(forFiscalPrincipal);
-			forFiscalPrincipal.setMotifOuverture(MotifFor.ARRIVEE_HC);
-			tacheService.genereTacheDepuisOuvertureForPrincipal(hab, forFiscalPrincipal, null);
-
-			TacheCriteria criterion = new TacheCriteria();
-			assertAucuneTacheGenerees(criterion);
-
-		}
-
-
 	@Test
 	public void testGenereMariageDepuisOuvertureForPrincipal() throws Exception {
 
@@ -238,7 +181,7 @@ public class TacheServiceTest extends BusinessTest {
 
 		assertTachesEnvoi(criterion, true);
 	}
-	                                                              
+
 	@Test
 	public void testGenereDecesDepuisOuvertureForPrincipal() throws Exception {
 
@@ -2008,13 +1951,6 @@ public class TacheServiceTest extends BusinessTest {
 		return tacheDAO.count(c);
 	}
 
-
-
-	private void assertAucuneTacheGenerees(TacheCriteria criterion){
-		     List<Tache> taches;		
-			taches = tacheDAO.find(criterion);
-			assertNotNull(taches);
-	};
 	/**
 	 * Verification des taches d'envoi DI
 	 *
@@ -2050,28 +1986,6 @@ public class TacheServiceTest extends BusinessTest {
 			final TacheEnvoiDeclarationImpot tacheEnvoi = (TacheEnvoiDeclarationImpot) taches.get(0);
 			assertNotNull(tacheEnvoi);
 			assertEquals(RegDate.get(2007, 1, 1), tacheEnvoi.getDateDebut());
-		}
-		for (int i = 2008 ; i < RegDate.get().year() ; ++ i) {
-			criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpot);
-			criterion.setAnnee(2008);
-			final List<Tache> taches = tacheDAO.find(criterion);
-			assertNotNull(taches);
-			assertEquals(1, taches.size());
-			Assert.isTrue(taches.get(0) instanceof TacheEnvoiDeclarationImpot);
-			final TacheEnvoiDeclarationImpot tacheEnvoi = (TacheEnvoiDeclarationImpot) taches.get(0);
-			assertNotNull(tacheEnvoi);
-			assertEquals(RegDate.get(2008, 1, 1), tacheEnvoi.getDateDebut());
-		}
-		for (int i = 2009 ; i < RegDate.get().year() ; ++ i) {
-			criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpot);
-			criterion.setAnnee(2009);
-			final List<Tache> taches = tacheDAO.find(criterion);
-			assertNotNull(taches);
-			assertEquals(1, taches.size());
-			Assert.isTrue(taches.get(0) instanceof TacheEnvoiDeclarationImpot);
-			final TacheEnvoiDeclarationImpot tacheEnvoi = (TacheEnvoiDeclarationImpot) taches.get(0);
-			assertNotNull(tacheEnvoi);
-			assertEquals(RegDate.get(2009, 1, 1), tacheEnvoi.getDateDebut());
 		}
 
 		{
