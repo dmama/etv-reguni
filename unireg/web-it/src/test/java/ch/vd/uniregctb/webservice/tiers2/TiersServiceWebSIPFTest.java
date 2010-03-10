@@ -441,25 +441,25 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 
 		final Adresse adressePoursuite = pm.getAdressePoursuite();
 		assertNotNull(adressePoursuite);
-		assertSameDay(newDate(2003,4,3), adressePoursuite.getDateDebut());
+		assertSameDay(newDate(1979,8,7), adressePoursuite.getDateDebut());
 		assertNull(adressePoursuite.getDateFin());
-		assertEquals("p.a. Office des faillites", adressePoursuite.getTitre());
+		assertNull(adressePoursuite.getTitre());
 		assertNull(adressePoursuite.getCasePostale());
 		assertNull(adressePoursuite.getNumeroAppartement());
-		assertNull(adressePoursuite.getRue());
+		assertEquals("La Coche", adressePoursuite.getRue());
 		assertNull(adressePoursuite.getNumeroRue());
-		assertEquals("1860", adressePoursuite.getNumeroPostal());
-		assertEquals("Aigle", adressePoursuite.getLocalite());
+		assertEquals("1852", adressePoursuite.getNumeroPostal());
+		assertEquals("Roche VD", adressePoursuite.getLocalite());
 		assertNull(adressePoursuite.getPays());
-		assertEquals(1100, adressePoursuite.getNoOrdrePostal());
+		assertEquals(1094, adressePoursuite.getNoOrdrePostal());
 		assertNull(adressePoursuite.getNoRue());
 
 		final AdresseEnvoi adressePoursuiteFormattee = pm.getAdressePoursuiteFormattee();
 		assertNotNull(adressePoursuiteFormattee);
 		assertEquals("KALESA", trimValiPattern(adressePoursuiteFormattee.getLigne1()));
 		assertEquals("Fiduciaire Turrian SA", trimValiPattern(adressePoursuiteFormattee.getLigne2()));
-		assertEquals("p.a. Office des faillites", trimValiPattern(adressePoursuiteFormattee.getLigne3()));
-		assertEquals("1860 Aigle", trimValiPattern(adressePoursuiteFormattee.getLigne4()));
+		assertEquals("La Coche", trimValiPattern(adressePoursuiteFormattee.getLigne3()));
+		assertEquals("1852 Roche VD", trimValiPattern(adressePoursuiteFormattee.getLigne4()));
 		assertNull(adressePoursuiteFormattee.getLigne5());
 		assertNull(adressePoursuiteFormattee.getLigne6());
 		assertTrue(adressePoursuiteFormattee.isIsSuisse());

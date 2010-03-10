@@ -395,7 +395,6 @@ public class TiersWebServiceMockPM implements TiersWebService, InitializingBean 
 
 		final Map<Long, List<Adresse>> adressesCourrier = loadAdressesPM("C"); // C =  Courrier
 		final Map<Long, List<Adresse>> adressesDomicile = loadAdressesPM("S"); // S = Siège
-		final Map<Long, List<Adresse>> adressesPoursuite = loadAdressesPM("F"); // F = Faillite
 		final Map<Long, List<Assujettissement>> assujettissementsLIC = loadAssujettissements(AssujettissementType.LIC);
 		final Map<Long, List<Assujettissement>> assujettissementsLIFD = loadAssujettissements(AssujettissementType.LIFD);
 		final Map<Long, List<Capital>> capitaux = loadCapitauxPM();
@@ -412,8 +411,10 @@ public class TiersWebServiceMockPM implements TiersWebService, InitializingBean 
 		for (PersonneMoraleHisto pm : pms) {
 			// associe chacune des PM avec ses données
 			pm.adressesCourrier = adressesCourrier.get(pm.numero);
+			pm.adressesRepresentation = pm.adressesCourrier;
 			pm.adressesDomicile = adressesDomicile.get(pm.numero);
-			pm.adressesPoursuite = adressesPoursuite.get(pm.numero);
+			// [UNIREG-1808] les adresses de poursuite des PMs sont déterminées à partir des adresses siège, en attendant des évolutions dans le host.
+			pm.adressesPoursuite = pm.adressesDomicile;
 			pm.adresseEnvoi = calculateAdresseEnvoi(pm, pm.adressesCourrier);
 			pm.adresseDomicileFormattee = calculateAdresseEnvoi(pm, pm.adressesDomicile);
 			pm.adresseRepresentationFormattee = calculateAdresseEnvoi(pm, pm.adressesRepresentation);

@@ -324,29 +324,27 @@ public class TiersWebServiceWithPM implements TiersWebService {
 			final Collection<ch.vd.uniregctb.interfaces.model.AdresseEntreprise> adresses = pmHost.getAdresses();
 			if (adresses != null) {
 				for (ch.vd.uniregctb.interfaces.model.AdresseEntreprise a : adresses) {
-					final List<Adresse> list;
 					if (a.getType().equals(EnumTypeAdresseEntreprise.COURRIER)) {
 						if (pmHisto.adressesCourrier == null) {
 							pmHisto.adressesCourrier = new ArrayList<Adresse>();
+							pmHisto.adressesRepresentation = pmHisto.adressesCourrier;
 						}
-						list = pmHisto.adressesCourrier;
+						pmHisto.adressesCourrier.add(host2web(a));
 					}
 					else if (a.getType().equals(EnumTypeAdresseEntreprise.SIEGE)) {
 						if (pmHisto.adressesDomicile == null) {
 							pmHisto.adressesDomicile = new ArrayList<Adresse>();
+							// [UNIREG-1808] les adresses de poursuite des PMs sont déterminées à partir des adresses siège, en attendant des évolutions dans le host.
+							pmHisto.adressesPoursuite = pmHisto.adressesDomicile;
 						}
-						list = pmHisto.adressesDomicile;
+						pmHisto.adressesDomicile.add(host2web(a));
 					}
 					else if (a.getType().equals(EnumTypeAdresseEntreprise.FACTURATION)) {
-						if (pmHisto.adressesPoursuite == null) {
-							pmHisto.adressesPoursuite = new ArrayList<Adresse>();
-						}
-						list = pmHisto.adressesPoursuite;
+						// ces adresses sont ignorées
 					}
 					else {
 						throw new IllegalArgumentException("Type d'adresse entreprise inconnue = [" + a.getType().getName() + "]");
 					}
-					list.add(host2web(a));
 				}
 			}
 		}
