@@ -3,7 +3,9 @@ package ch.vd.uniregctb.mouvement.manager;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.context.MessageSource;
@@ -299,16 +301,22 @@ public class AbstractMouvementManagerImpl implements AbstractMouvementManager, M
 	}
 
 	protected void detruireMouvementsTropVieux(Contribuable ctb) {
+		detruireMouvementsTropVieux(mouvementDossierDAO, ctb);
+	}
+
+	protected static void detruireMouvementsTropVieux(MouvementDossierDAO dao, Contribuable ctb) {
 		// on ne doit garder que les x derniers mouvements de dossiers pour ce contribuable
 		if (ctb.getMouvementsDossier().size() > NB_MAX_MOUVEMENTS_GARDES) {
 
 			final List<MouvementDossier> mvts = new ArrayList<MouvementDossier>(ctb.getMouvementsDossier());
 			Collections.sort(mvts, new AntiChronologiqueMouvementComparator());
 
-			// on garde les x plus récents, et on détruit les autres...
-			for (int i = NB_MAX_MOUVEMENTS_GARDES ; i < mvts.size() ; ++ i) {
-				final MouvementDossier mvtADetruire = mvts.get(i);
-				mouvementDossierDAO.remove(mvtADetruire.getId());
+			final List<MouvementDossier> aDetruire = mvts.subList(NB_MAX_MOUVEMENTS_GARDES, mvts.size());
+			final Set<MouvementDossier> restant = new HashSet<MouvementDossier>(mvts.subList(0, NB_MAX_MOUVEMENTS_GARDES));
+			ctb.setMouvementsDossier(restant);
+
+			for (MouvementDossier mvtADetruire : aDetruire) {
+				dao.remove(mvtADetruire.getId());
 			}
 		}
 	}
