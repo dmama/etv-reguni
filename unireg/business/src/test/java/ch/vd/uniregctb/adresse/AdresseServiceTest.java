@@ -7,6 +7,7 @@ import ch.vd.uniregctb.adresse.AdresseGenerique.Source;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.interfaces.model.mock.*;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServicePM;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
 import ch.vd.uniregctb.interfaces.service.mock.MockServicePM;
@@ -3496,6 +3497,37 @@ public class AdresseServiceTest extends BusinessTest {
 		assertNotNull(adressesHisto);
 		assertEquals(2, adressesHisto.courrier.size());
 		assertAdresse(date(1988, 3, 2), null, "Lausanne", Source.FISCALE, false, adressesHisto.courrier.get(0));
+		assertTrue(adressesHisto.courrier.get(1).isAnnule());
+	}
+
+	/**
+	 * [UNIREG-1580] Cas du contribuable n°107.147.00
+	 */
+	@Test
+	public void testAnnulerAdresseAvecAdresseFiscalePrecedenteExistanteMaisAvecDateFinNulle() throws Exception {
+
+		loadDatabase("classpath:ch/vd/uniregctb/adresse/TiersAvecDeuxAdressesFiscalesAvecDatesFinNulles.xml");
+		
+		serviceCivil.setUp(new DefaultMockServiceCivil(false));
+
+		final long id =10714700L;
+		final Tiers tiers = tiersDAO.get(id);
+
+		final AdresseTiers adresse0 = tiers.getAdressesTiersSorted().get(0);
+		assertFalse(adresse0.isAnnule());
+		assertNull(adresse0.getDateFin());
+		final AdresseTiers adresse1 = tiers.getAdressesTiersSorted().get(1);
+		assertFalse(adresse1.isAnnule());
+		assertNull(adresse1.getDateFin());
+
+		// Annulation de l'adresse
+		adresseService.annulerAdresse(adresse1);
+
+		// Teste des adresses résultantes
+		AdressesFiscalesHisto adressesHisto = adresseService.getAdressesFiscalHisto(tiers, false);
+		assertNotNull(adressesHisto);
+		assertEquals(2, adressesHisto.courrier.size());
+		assertAdresse(date(2009, 8, 29), null, "Genève Secteur de dist.", Source.FISCALE, false, adressesHisto.courrier.get(0));
 		assertTrue(adressesHisto.courrier.get(1).isAnnule());
 	}
 

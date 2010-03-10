@@ -55,6 +55,7 @@ public class MockLocalite implements Localite {
 	public static final MockLocalite Bumpliz = new MockLocalite(3333, 3018, null, "Bumpliz", MockCommune.Bern);
 	public static final MockLocalite Enney = new MockLocalite(839, 1667, null, "Enney", MockCommune.Enney);
 	public static final MockLocalite Zurich = new MockLocalite(8120, 8001, null, "Zurich", MockCommune.Zurich);
+	public static final MockLocalite GeneveSecteurDist = new MockLocalite(368, 1202, null, "Genève Secteur de dist.", MockCommune.Geneve);
 
 	
 	private Integer chiffreComplementaire;

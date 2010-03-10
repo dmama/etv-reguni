@@ -460,7 +460,11 @@ public abstract class MockServiceCivil implements ServiceCivilService {
 
 		Collection<Adresse> adressesActives = new ArrayList<Adresse>();
 
-		Individu individu = individusMap.get(numeroIndividu);
+		final Individu individu = individusMap.get(numeroIndividu);
+		if (individu == null) {
+			return null;
+		}
+
 		final Collection<Adresse> adresses = individu.getAdresses();
 		if (adresses != null) {
 			if (date == null) {

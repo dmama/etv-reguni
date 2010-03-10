@@ -18,6 +18,16 @@ import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 
 public class DefaultMockServiceCivil extends MockServiceCivil {
 
+	private final boolean returnFakeAdresses;
+
+	public DefaultMockServiceCivil() {
+		this.returnFakeAdresses = true; // pour des raisons historiques
+	}
+
+	public DefaultMockServiceCivil(boolean returnFakeAdresses) {
+		this.returnFakeAdresses = returnFakeAdresses;
+	}
+
 	/**
 	 * Crée des tiers
 	 */
@@ -92,31 +102,31 @@ public class DefaultMockServiceCivil extends MockServiceCivil {
 	 */
 	@Override
 	public Collection<Adresse> getAdressesActives(Long numeroIndividu, RegDate date) {
-		Collection<Adresse> adresses = new ArrayList<Adresse>();
-		if (numeroIndividu==34567){
-			adresses = super.getAdressesActives(numeroIndividu,date);
-		}else{
-			MockAdresse adresse = new MockAdresse();
-			adresse.setTypeAdresse(EnumTypeAdresse.PRINCIPALE);
-			adresse.setLocalite("Mock Localite " + new Date());
-			adresse.setCasePostale("1234");
-			adresse.setNumeroPostal("4848");
-			adresse.setDateDebutValidite(RegDate.get(1980, 11, 2));
-			adresse.setNumeroOrdrePostal(MockLocalite.Lausanne.getNoOrdre());
-			adresse.setCommuneAdresse(MockCommune.Lausanne);
-			adresses.add(adresse);
-
-			adresse = new MockAdresse();
-			adresse.setTypeAdresse(EnumTypeAdresse.COURRIER);
-			adresse.setLocalite("Mock Localite " + new Date());
-			adresse.setCasePostale("4567");
-			adresse.setNumeroPostal("5252");
-			adresse.setDateDebutValidite(RegDate.get(1980, 11, 2));
-			adresse.setNumeroOrdrePostal(MockLocalite.CossonayVille.getNoOrdre());
-			adresse.setCommuneAdresse(MockCommune.Cossonay);
-			adresses.add(adresse);
+		
+		if (numeroIndividu == 34567 || !returnFakeAdresses) {
+			return super.getAdressesActives(numeroIndividu, date);
 		}
+
+		Collection<Adresse> adresses = new ArrayList<Adresse>();
+		MockAdresse adresse = new MockAdresse();
+		adresse.setTypeAdresse(EnumTypeAdresse.PRINCIPALE);
+		adresse.setLocalite("Mock Localite " + new Date());
+		adresse.setCasePostale("1234");
+		adresse.setNumeroPostal("4848");
+		adresse.setDateDebutValidite(RegDate.get(1980, 11, 2));
+		adresse.setNumeroOrdrePostal(MockLocalite.Lausanne.getNoOrdre());
+		adresse.setCommuneAdresse(MockCommune.Lausanne);
+		adresses.add(adresse);
+
+		adresse = new MockAdresse();
+		adresse.setTypeAdresse(EnumTypeAdresse.COURRIER);
+		adresse.setLocalite("Mock Localite " + new Date());
+		adresse.setCasePostale("4567");
+		adresse.setNumeroPostal("5252");
+		adresse.setDateDebutValidite(RegDate.get(1980, 11, 2));
+		adresse.setNumeroOrdrePostal(MockLocalite.CossonayVille.getNoOrdre());
+		adresse.setCommuneAdresse(MockCommune.Cossonay);
+		adresses.add(adresse);
 		return adresses;
 	}
-
 }

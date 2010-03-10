@@ -2330,8 +2330,10 @@ public class AdresseServiceImpl implements AdresseService {
 		Assert.notNull(tiers);
 
 		// On rouvre l'adresse fiscale précédente, si elle existe *et* qu'elle est accolée à l'adresse annulée
-		AdresseTiers adressePrecedente = tiers.getAdresseTiersAt(-2, usage); // = avant-dernière adresse tiers
-		if (adressePrecedente != null && adressePrecedente.getDateFin().getOneDayAfter().equals(adresse.getDateDebut())) {
+		final AdresseTiers adressePrecedente = tiers.getAdresseTiersAt(-2, usage); // = avant-dernière adresse tiers
+		final RegDate dateFinAdressePrecedente = (adressePrecedente == null ? null : adressePrecedente.getDateFin()); // [UNIREG-1580]
+
+		if (dateFinAdressePrecedente != null && dateFinAdressePrecedente.getOneDayAfter().equals(adresse.getDateDebut())) {
 			adressePrecedente.setDateFin(null);
 		}
 

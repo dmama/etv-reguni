@@ -16,6 +16,7 @@ public class MockCommune extends MockEntityOFS implements Commune, CommuneSimple
 	private static final String ZURICH = "ZH";
 	private static final String NEUCHATEL = "NE";
 	private static final String FRIBOURG = "FR";
+	private static final String GENEVE = "GE";
 
 	// Quelques communes vaudoises
 	//                                                        OFS   NOM    CANTON
@@ -100,6 +101,7 @@ public class MockCommune extends MockEntityOFS implements Commune, CommuneSimple
 	public static final MockCommune Neuchatel = new MockCommune(6458, "Neuchâtel", NEUCHATEL, null);
 	public static final MockCommune Peseux = new MockCommune(6412, "Peseux", NEUCHATEL, null);
 	public static final MockCommune Enney = new MockCommune(2132, "ENNEY", FRIBOURG, null);
+	public static final MockCommune Geneve = new MockCommune(6621, "Genève", GENEVE, null);
 
 	
 	private String nomMinusculeOFS;
