@@ -217,7 +217,9 @@ public class AdresseServiceImpl implements AdresseService {
 					data = new EnvoiInfo(autoriteTutelaire, autoriteTutelaire, false, TypeAdresseFiscale.REPRESENTATION, Source.TUTELLE);
 				}
 				else {
-					// TODO (msi) aller chercher la coll adm de la justice de paix correspondant à la commune de domicile
+					// (msi 10.03.2010) Précision de Thierry: dans le cas d'un contribuable sous tutuelle sans autorité tutelaire renseignée, l'adresse de poursuite est simplement
+					// l'adresse de domicile du contribuable. L'office de poursuite sera donc déterminé par SIPF à partir de l'adresse de domicile, ce qui est le meilleure choix
+					// possible sans information plus spécifique.  
 				}
 			}
 

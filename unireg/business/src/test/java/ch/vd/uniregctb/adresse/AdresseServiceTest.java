@@ -3937,11 +3937,66 @@ public class AdresseServiceTest extends BusinessTest {
 
 	/**
 	 * Voir la spécification "BesoinsContentieux.doc"
-	 *
-	 * TODO (msi) faire un test sans autorité tutelaire
 	 */
 	@Test
-	public void testGetAdressesPoursuiteContribuableSousTutelle() throws Exception {
+	public void testGetAdressesPoursuiteContribuableSousTutelleSansAutoriteTutelaire() throws Exception {
+
+		final long noTiers = 60510843;
+		final long noIndividu = 750946;
+
+		// un contribuable sous tutelle avec l'OTG (Lausanne) comme tuteur et sans autorité tutelaire renseignée
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				MockIndividu individu = addIndividu(noIndividu, date(1953, 11, 2), "Lopes", "Anabela", false);
+				addAdresse(individu, EnumTypeAdresse.PRINCIPALE, MockRue.Echallens.GrandRue, null, date(2000, 1, 1), null);
+			}
+		});
+
+		final PersonnePhysique ctb = addHabitant(noTiers, noIndividu);
+		final CollectiviteAdministrative tuteur = addCollAdm(ServiceInfrastructureService.noTuteurGeneral);
+		addTutelle(ctb, tuteur, null, date(2000, 1, 1));
+
+		// les adresses fiscales
+		final AdressesFiscales adresses = adresseService.getAdressesFiscales(ctb, null, false);
+		assertAdresse(date(2000, 1, 1), null, "Echallens", Source.CIVILE, false, adresses.domicile);
+		assertAdresse(date(2000, 1, 1), null, "Lausanne", Source.TUTELLE, false, adresses.courrier); // adresse du tuteur
+		assertAdressesEquals(adresses.domicile, adresses.poursuite); // adresse de domicile de la pupille
+		assertAdresse(date(2000, 1, 1), null, "Echallens", Source.CIVILE, true, adresses.representation);
+		assertAdresse(date(2000, 1, 1), null, "Lausanne", Source.TUTELLE, false, adresses.poursuiteAutreTiers); // adresse du tuteur
+
+		// les adresses d'envoi
+		final AdresseEnvoi domicile = adresseService.getAdresseEnvoi(ctb, null, TypeAdresseFiscale.DOMICILE, false);
+		assertEquals("Madame", domicile.getLigne1());
+		assertEquals("Anabela Lopes", domicile.getLigne2());
+		assertEquals("Grand Rue", domicile.getLigne3());
+		assertEquals("1040 Echallens", domicile.getLigne4());
+		assertNull(domicile.getLigne5());
+
+		final AdresseEnvoi courrier = adresseService.getAdresseEnvoi(ctb, null, TypeAdresseFiscale.COURRIER, false);
+		assertEquals("Madame", courrier.getLigne1());
+		assertEquals("Anabela Lopes", courrier.getLigne2());
+		assertEquals("p.a. OTG", courrier.getLigne3());
+		assertEquals("Chemin de Mornex 32", courrier.getLigne4());
+		assertEquals("1014 Lausanne", courrier.getLigne5());
+		assertNull(courrier.getLigne6());
+
+		assertEquals(domicile, adresseService.getAdresseEnvoi(ctb, null, TypeAdresseFiscale.REPRESENTATION, false));
+		assertEquals(domicile, adresseService.getAdresseEnvoi(ctb, null, TypeAdresseFiscale.POURSUITE, false));
+
+		final AdresseEnvoiDetaillee poursuiteAutreTiers = adresseService.getAdresseEnvoi(ctb, null, TypeAdresseFiscale.POURSUITE_AUTRE_TIERS, false);
+		assertEquals("Office Tuteur général", poursuiteAutreTiers.getLigne1());
+		assertEquals("Chemin de Mornex 32", poursuiteAutreTiers.getLigne2());
+		assertEquals("1014 Lausanne", poursuiteAutreTiers.getLigne3());
+		assertNull(poursuiteAutreTiers.getLigne4());
+		assertEquals(Source.TUTELLE, poursuiteAutreTiers.getSource());
+	}
+
+	/**
+	 * Voir la spécification "BesoinsContentieux.doc"
+	 */
+	@Test
+	public void testGetAdressesPoursuiteContribuableSousTutelleAvecAutoriteTutelaire() throws Exception {
 
 		final long noTiers = 60510843;
 		final long noIndividu = 750946;
@@ -3985,7 +4040,7 @@ public class AdresseServiceTest extends BusinessTest {
 		assertNull(courrier.getLigne6());
 
 		assertEquals(domicile, adresseService.getAdresseEnvoi(ctb, null, TypeAdresseFiscale.REPRESENTATION, false));
-		
+
 		final AdresseEnvoi poursuite = adresseService.getAdresseEnvoi(ctb, null, TypeAdresseFiscale.POURSUITE, false);
 		assertEquals("Justice de Paix des districts du", poursuite.getLigne1());
 		assertEquals("Jura-Nord Vaudois et du Gros-de-Vaud", poursuite.getLigne2());
