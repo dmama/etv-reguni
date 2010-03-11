@@ -78,19 +78,20 @@ public class PdfRolesCommunesRapport extends PdfRapport {
 	                    + "les valeurs ci-dessous sont donc incomplètes.");
 	        }
 
+		    final int nbCommunesTraitees;
+		    if (results.noOfsCommune != null) {
+		        nbCommunesTraitees = 1; // par définition
+		    } else if (results.noColOID != null) {
+		        // calcule le compte exact des communes gérées par l'OID (le résultats du job
+		        // peut en contenir plus en fonction des déménagements, ...)
+		        final List<Integer> list = getListeCommunesDansOid(getListeCommunes(results, false), results.noColOID);
+		        nbCommunesTraitees = list.size();
+		    } else {
+		        nbCommunesTraitees = results.infosCommunes.size();
+		    }
+
 	        addTableSimple(2, new PdfRapport.TableSimpleCallback() {
 	            public void fillTable(PdfTableSimple table) throws DocumentException {
-	                final int nbCommunesTraitees;
-	                if (results.noOfsCommune != null) {
-	                    nbCommunesTraitees = 1; // par définition
-	                } else if (results.noColOID != null) {
-	                    // calcule le compte exact des communes gérées par l'OID (le résultats du job
-	                    // peut en contenir plus en fonction des déménagements, ...)
-	                    final List<Commune> list = getListeCommunesByOID(results.noColOID);
-	                    nbCommunesTraitees = Math.min(list.size(), results.infosCommunes.size());
-	                } else {
-	                    nbCommunesTraitees = results.infosCommunes.size();
-	                }
 	                table.addLigne("Nombre de communes traitées:", String.valueOf(nbCommunesTraitees));
 	                table.addLigne("Nombre de contribuables traités:", String.valueOf(results.ctbsTraites));
 	                table.addLigne("Nombre de contribuables ignorés:", String.valueOf(results.ctbsIgnores.size()));
@@ -130,19 +131,24 @@ public class PdfRolesCommunesRapport extends PdfRapport {
 	    status.setMessage("Génération du rapport terminée.");
 	}
 
+	private List<Integer> getListeCommunesDansOid(List<Commune> communes, int noColOID) throws InfrastructureException {
+		final List<Integer> ofsCommunesDansOID = new ArrayList<Integer>(communes.size());
+		for (Commune commune : communes) {
+			final OfficeImpot office = infraService.getOfficeImpotDeCommune(commune.getNoOFSEtendu());
+			if (office != null && office.getNoColAdm() == noColOID) {
+				ofsCommunesDansOID.add(commune.getNoOFSEtendu());
+			}
+		}
+		return ofsCommunesDansOID;
+	}
+
 	private void writePourOid(ProduireRolesResults results, Date dateGeneration, StatusManager status, PdfWriter writer) throws InfrastructureException, DocumentException {
 
 		final List<Commune> communes = getListeCommunes(results, false);
 		final Map<Integer, String> nomsCommunes = buildNomsCommunes(communes);
 
 		// filtrage des seules communes qui sont effectivement dans l'OID
-		final List<Integer> ofsCommunesDansOID = new ArrayList<Integer>(communes.size());
-		for (Commune commune : communes) {
-			final OfficeImpot office = infraService.getOfficeImpotDeCommune(commune.getNoOFSEtendu());
-			if (office != null && office.getNoColAdm() == results.noColOID) {
-				ofsCommunesDansOID.add(commune.getNoOFSEtendu());
-			}
-		}
+		final List<Integer> ofsCommunesDansOID = getListeCommunesDansOid(communes, results.noColOID);
 
 		final Map<Long, ProduireRolesResults.InfoContribuable> infoOid = results.buildInfosPourRegroupementCommunes(ofsCommunesDansOID);
 
