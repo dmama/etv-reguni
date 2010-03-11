@@ -50,14 +50,14 @@ private final Logger LOGGER = Logger.getLogger(EnvoiLRsEnMasseProcessor.class);
 	 * @param status         un status manager; ou <b>null</b> pour logger la progression dans log4j.
 	 * @return les résultats du traitement
 	 */
-	public EnvoiSommationLRsResults run(CategorieImpotSource categorie, final RegDate dateTraitement, StatusManager status) {
+	public EnvoiSommationLRsResults run(final CategorieImpotSource categorie, final RegDate dateTraitement, StatusManager status) {
 
 		if (status == null) {
 			status = new LoggingStatusManager(LOGGER);
 		}
 		final StatusManager s = status;
 
-		final EnvoiSommationLRsResults rapportFinal = new EnvoiSommationLRsResults(dateTraitement);
+		final EnvoiSommationLRsResults rapportFinal = new EnvoiSommationLRsResults(categorie, dateTraitement);
 
 		//liste de toutes les LR à passer en revue
 		final List<Long> list = getListIdLRs(dateTraitement, categorie);
@@ -68,7 +68,7 @@ private final Logger LOGGER = Logger.getLogger(EnvoiLRsEnMasseProcessor.class);
 
 			@Override
 			public EnvoiSommationLRsResults createSubRapport() {
-				return new EnvoiSommationLRsResults(dateTraitement);
+				return new EnvoiSommationLRsResults(categorie, dateTraitement);
 			}
 
 			@Override

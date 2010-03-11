@@ -7,6 +7,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.JobResults;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
+import ch.vd.uniregctb.type.CategorieImpotSource;
 
 public class EnvoiSommationLRsResults extends JobResults<Long, EnvoiSommationLRsResults> {
 
@@ -58,14 +59,17 @@ public class EnvoiSommationLRsResults extends JobResults<Long, EnvoiSommationLRs
 				return raison.description;
 		}
 	}
-	
+
+	public final CategorieImpotSource categorie;
 	public final RegDate dateTraitement;
+	
 	public int nbLRsTotal;//nombre de LR analysé
 	public List<Traite> LRSommees = new ArrayList<Traite>();//LR sommée
 	public List<Erreur> SommationLREnErrors = new ArrayList<Erreur>();//sommation LR KO
 	public boolean interrompu;
 	
-	public EnvoiSommationLRsResults(RegDate dateTrait) {
+	public EnvoiSommationLRsResults(CategorieImpotSource categorie, RegDate dateTrait) {
+		this.categorie = categorie;
 		this.dateTraitement = dateTrait;
 	}
 	
