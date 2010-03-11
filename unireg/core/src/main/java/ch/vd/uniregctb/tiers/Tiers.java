@@ -1600,14 +1600,14 @@ public abstract class Tiers extends HibernateEntity implements Validateable, Bus
 		RegDate lastDateDebut = null;
 		for (int i = 0; i < list.size(); i++) {
 			AdresseTiers adr = list.get(i);
-			if (lastDateFin != null) {
-				if (adr.getDateDebut().isBeforeOrEqual(lastDateFin)) {
+			if (i > 0) {
+				if (lastDateFin == null || adr.getDateDebut().isBeforeOrEqual(lastDateFin)) {
 					// Overlap
-					results
-							.addError("L'adresse de type " + adr.getUsage() + " numéro " + i + " (début="
-									+ RegDateHelper.dateToDisplayString(lastDateDebut) + " fin="
-									+ RegDateHelper.dateToDisplayString(lastDateFin) + ") chevauche l'adresse " + (i + 1) + " (début="
-									+ RegDateHelper.dateToDisplayString(adr.getDateDebut()) + ")");
+					final String message =
+							String.format("L'adresse fiscale numéro %d (type=%s début=%s fin=%s) chevauche l'adresse fiscale numéro %d (type=%s début=%s fin=%s)", i,
+									adr.getUsage().name().toLowerCase(), RegDateHelper.dateToDisplayString(lastDateDebut), RegDateHelper.dateToDisplayString(lastDateFin), (i + 1),
+									adr.getUsage().name().toLowerCase(), RegDateHelper.dateToDisplayString(adr.getDateDebut()), RegDateHelper.dateToDisplayString(adr.getDateFin()));
+					results.addError(message);
 				}
 			}
 
@@ -1619,11 +1619,6 @@ public abstract class Tiers extends HibernateEntity implements Validateable, Bus
 			// Date debut peut pas etre nulle
 			if (adr.getDateDebut() == null) {
 				results.addError("L'adresse " + i + " n'a pas de date de début");
-			}
-
-			// On ne peut avoir une date de fin nulle que pour la dernière
-			if (adr.getDateFin() == null && i != list.size() - 1) {
-				results.addError("L'adresse " + i + " n'a pas de date de fin");
 			}
 
 			lastDateDebut = adr.getDateDebut();

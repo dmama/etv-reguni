@@ -28,7 +28,6 @@ import ch.vd.uniregctb.tiers.view.AdresseView;
 import ch.vd.uniregctb.tiers.view.TiersEditView;
 import ch.vd.uniregctb.tiers.view.TiersVisuView;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
-import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 import ch.vd.uniregctb.utils.WebContextUtils;
 
 /**
@@ -192,7 +191,7 @@ public class AdresseManagerImpl extends TiersManager implements AdresseManager {
 
 			Tiers representant = getTiersService().getTiers(addDisponibleView.getNumeroTiers());
 			addAutreTiers.setAutreTiers(representant);
-			tiers.addAdresseTiers(addAutreTiers);
+			adresseService.addAdresse(tiers, addAutreTiers);
 
 		}
 		else if ("repriseCivil".equals(adresseView.getMode())) {
@@ -202,7 +201,7 @@ public class AdresseManagerImpl extends TiersManager implements AdresseManager {
 			addCivil.setUsage(adresseView.getUsage());
 			addCivil.setType(addDisponibleView.getTypeAdresse());
 
-			tiers.addAdresseTiers(addCivil);
+			adresseService.addAdresse(tiers, addCivil);
 		}
 	}
 
