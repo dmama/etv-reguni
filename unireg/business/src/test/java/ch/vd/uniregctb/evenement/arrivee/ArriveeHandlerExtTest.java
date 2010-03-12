@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.*;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
@@ -1557,7 +1558,8 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 		/*
 		 * Création des données du mock service civil
 		 */
-		serviceCivil.setUp(new MockServiceCivil() {
+		final ServiceInfrastructureService infraService = getBean(ServiceInfrastructureService.class, "serviceInfrastructureService");
+		serviceCivil.setUp(new MockServiceCivil(infraService) {
 			@Override
 			protected void init() {
 				MockIndividu pierre = addIndividu(noIndividuPrincipal, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
@@ -1710,7 +1712,8 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 		/*
 		 * Création des données du mock service civil
 		 */
-		serviceCivil.setUp(new MockServiceCivil() {
+		final ServiceInfrastructureService infraService = getBean(ServiceInfrastructureService.class, "serviceInfrastructureService");
+		serviceCivil.setUp(new MockServiceCivil(infraService) {
 			@Override
 			protected void init() {
 				MockIndividu pierre = addIndividu(noIndividuPrincipal, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
@@ -1966,7 +1969,8 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 		/*
 		 * Création des données du mock service civil
 		 */
-		serviceCivil.setUp(new MockServiceCivil() {
+		final ServiceInfrastructureService infraService = getBean(ServiceInfrastructureService.class, "serviceInfrastructureService");
+		serviceCivil.setUp(new MockServiceCivil(infraService) {
 			@Override
 			protected void init() {
 				MockIndividu pierre = addIndividu(noIndividuPrincipal, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);

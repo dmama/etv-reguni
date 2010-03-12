@@ -177,35 +177,34 @@
 		class="ch.vd.uniregctb.norentes.civil.obtention.nationalite.Ec_12000_01_NationaliteSuisse_AvecPermisC_Scenario" />
 	
 	<!-- Arrivées -->
-	<bean id="ec_18000_01_Arrivee_1_2_1_Scenario" parent="evenementCivilScenario"
-		class="ch.vd.uniregctb.norentes.civil.arrivee.Ec_18000_01_Arrivee_1_2_1_Scenario" />
-	<bean id="ec_18000_02_Arrivee_HC_1_Scenario" parent="evenementCivilScenario"
-		class="ch.vd.uniregctb.norentes.civil.arrivee.Ec_18000_02_Arrivee_HC_1_Scenario" />
-	<bean id="ec_18000_03_arrivee_Immeuble_1_Scenario" parent="evenementCivilScenario"
-		class="ch.vd.uniregctb.norentes.civil.arrivee.Ec_18000_03_Arrivee_Immeuble_1_Scenario" />
-	<bean id="ec_18000_04_arrivee_ChgtNom_1_Scenario" parent="evenementCivilScenario"
-		class="ch.vd.uniregctb.norentes.civil.arrivee.Ec_18000_04_Arrivee_ChgtNom_1_Scenario" />
-	<bean id="ec_18000_05_arrivee_RollBack_1_Scenario" parent="evenementCivilScenario"
-		class="ch.vd.uniregctb.norentes.civil.arrivee.Ec_18000_05_Arrivee_RollBack_1_Scenario" />
-	<bean id="ec_18000_06_Arrivee_HC_1_Scenario" parent="evenementCivilScenario"
-		class="ch.vd.uniregctb.norentes.civil.arrivee.Ec_18000_06_Arrivee_HC_1_Scenario" />
-	<bean id="ec_18000_07_Arrivee_Commune_Scenario" parent="evenementCivilScenario"
-		class="ch.vd.uniregctb.norentes.civil.arrivee.Ec_18000_07_Arrivee_Commune_Scenario" />
-	<bean id="ec_18000_08_Depart_HS_Arrivee_HC_Meme_Periode_Scenario" parent="evenementCivilScenario"
-		class="ch.vd.uniregctb.norentes.civil.arrivee.Ec_18000_08_Depart_HS_Arrivee_HC_Meme_Periode_Scenario" />
-	<bean id="ec_18000_09_Arrivee_Mariee_Seule_Deja_Mariee_Scenario" parent="evenementCivilScenario"
-		class="ch.vd.uniregctb.norentes.civil.arrivee.Ec_18000_09_Arrivee_Mariee_Seule_Deja_Mariee_Scenario" />
-	<bean id="ec_18000_10_Arrivee_HC_PermisC_Scenario" parent="evenementCivilScenario"
-		class="ch.vd.uniregctb.norentes.civil.arrivee.Ec_18000_10_Arrivee_HC_PermisC_Scenario" />
-	<bean id="ec_18000_11_Arrivee_HS_Habitant_Scenario" parent="evenementCivilScenario"
-		class="ch.vd.uniregctb.norentes.civil.arrivee.Ec_18000_11_Arrivee_HS_Habitant_Scenario" />		
-	<bean id="ec_18000_12_Arrivee_Couple_AdresseFiscale_Scenario" parent="evenementCivilScenario"
-		class="ch.vd.uniregctb.norentes.civil.arrivee.Ec_18000_12_Arrivee_Couple_AdresseFiscale_PP_Scenario">
-		<property name="adresseService" ref="adresseService" />
+	<bean id="ec_18000_01_Arrivee_1_2_1_Scenario" parent="evenementCivilScenario" class="ch.vd.uniregctb.norentes.civil.arrivee.Ec_18000_01_Arrivee_1_2_1_Scenario">
+		<property name="serviceInfrastructureService" ref="serviceInfrastructureService"/>
 	</bean>
-	<bean id="ec_18000_13_Arrivee_JIRA1789_Scenario" parent="evenementCivilScenario"
-		class="ch.vd.uniregctb.norentes.civil.arrivee.Ec_18000_13_Arrivee_JIRA1789_Scenario" >
+	<bean id="ec_18000_02_Arrivee_HC_1_Scenario" parent="evenementCivilScenario" class="ch.vd.uniregctb.norentes.civil.arrivee.Ec_18000_02_Arrivee_HC_1_Scenario" />
+	<bean id="ec_18000_03_arrivee_Immeuble_1_Scenario" parent="evenementCivilScenario" class="ch.vd.uniregctb.norentes.civil.arrivee.Ec_18000_03_Arrivee_Immeuble_1_Scenario" />
+	<bean id="ec_18000_04_arrivee_ChgtNom_1_Scenario" parent="evenementCivilScenario" class="ch.vd.uniregctb.norentes.civil.arrivee.Ec_18000_04_Arrivee_ChgtNom_1_Scenario" />
+	<bean id="ec_18000_05_arrivee_RollBack_1_Scenario" parent="evenementCivilScenario" class="ch.vd.uniregctb.norentes.civil.arrivee.Ec_18000_05_Arrivee_RollBack_1_Scenario" />
+	<bean id="ec_18000_06_Arrivee_HC_1_Scenario" parent="evenementCivilScenario" class="ch.vd.uniregctb.norentes.civil.arrivee.Ec_18000_06_Arrivee_HC_1_Scenario" />
+	<bean id="ec_18000_07_Arrivee_Commune_Scenario" parent="evenementCivilScenario" class="ch.vd.uniregctb.norentes.civil.arrivee.Ec_18000_07_Arrivee_Commune_Scenario" />
+	<bean id="ec_18000_08_Depart_HS_Arrivee_HC_Meme_Periode_Scenario" parent="evenementCivilScenario" class="ch.vd.uniregctb.norentes.civil.arrivee.Ec_18000_08_Depart_HS_Arrivee_HC_Meme_Periode_Scenario" />
+	<bean id="ec_18000_09_Arrivee_Mariee_Seule_Deja_Mariee_Scenario" parent="evenementCivilScenario" class="ch.vd.uniregctb.norentes.civil.arrivee.Ec_18000_09_Arrivee_Mariee_Seule_Deja_Mariee_Scenario" />
+	<bean id="ec_18000_10_Arrivee_HC_PermisC_Scenario" parent="evenementCivilScenario" class="ch.vd.uniregctb.norentes.civil.arrivee.Ec_18000_10_Arrivee_HC_PermisC_Scenario" />
+	<bean id="ec_18000_11_Arrivee_HS_Habitant_Scenario" parent="evenementCivilScenario" class="ch.vd.uniregctb.norentes.civil.arrivee.Ec_18000_11_Arrivee_HS_Habitant_Scenario" />
+	<bean id="ec_18000_12_Arrivee_Couple_AdresseFiscale_Scenario" parent="evenementCivilScenario" class="ch.vd.uniregctb.norentes.civil.arrivee.Ec_18000_12_Arrivee_Couple_AdresseFiscale_PP_Scenario">
 		<property name="adresseService" ref="adresseService" />
+		<property name="serviceInfrastructureService" ref="serviceInfrastructureService"/>
+	</bean>
+	<bean id="ec_18000_13_Arrivee_JIRA1789_Scenario" parent="evenementCivilScenario" class="ch.vd.uniregctb.norentes.civil.arrivee.Ec_18000_13_Arrivee_JIRA1789_Scenario" >
+		<property name="adresseService" ref="adresseService" />
+		<property name="serviceInfrastructureService" ref="serviceInfrastructureService"/>
+	</bean>
+	<bean id="ec_18000_14_Arrivee_JIRA1789_Scenario" parent="evenementCivilScenario" class="ch.vd.uniregctb.norentes.civil.arrivee.Ec_18000_14_Arrivee_JIRA1789_Scenario" >
+		<property name="adresseService" ref="adresseService" />
+		<property name="serviceInfrastructureService" ref="serviceInfrastructureService"/>
+	</bean>
+	<bean id="ec_18000_15_Arrivee_JIRA1789_Scenario" parent="evenementCivilScenario" class="ch.vd.uniregctb.norentes.civil.arrivee.Ec_18000_15_Arrivee_JIRA1789_Scenario" >
+		<property name="adresseService" ref="adresseService" />
+		<property name="serviceInfrastructureService" ref="serviceInfrastructureService"/>
 	</bean>
 
 	<!-- Scénarios de départ -->

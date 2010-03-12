@@ -43,7 +43,7 @@
 	<bean id="adoptionHandler" class="ch.vd.uniregctb.evenement.adoption.AdoptionHandler" parent="evenementHandler" />
 	-->
 	<bean id="arriveeHandler" class="ch.vd.uniregctb.evenement.arrivee.ArriveeHandler" parent="evenementHandler">
-		<property name="adresseService" ref="adresseService"/>
+		<property name="serviceCivilService" ref="serviceCivilService"/>
 	</bean>
 	<bean id="changementNomHandler" class="ch.vd.uniregctb.evenement.changement.nom.ChangementNomHandler" parent="abstractChangementHandler" />
 	<bean id="changementSexeHandler" class="ch.vd.uniregctb.evenement.changement.sexe.ChangementSexeHandler" parent="abstractChangementHandler" />

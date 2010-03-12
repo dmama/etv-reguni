@@ -3,10 +3,12 @@ package ch.vd.uniregctb.interfaces.service;
 import java.util.Collection;
 import java.util.List;
 
+import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.civil.model.EnumAttributeIndividu;
 import ch.vd.uniregctb.adresse.AdressesCiviles;
 import ch.vd.uniregctb.adresse.AdressesCivilesHisto;
+import ch.vd.uniregctb.adresse.HistoriqueCommune;
 import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
@@ -40,6 +42,17 @@ public interface ServiceCivilService {
 	 * @return l'historique des adresses civiles de l'individu spécifié.
 	 */
 	AdressesCivilesHisto getAdressesHisto(long noIndividu, boolean strict) throws DonneesCivilesException;
+
+	/**
+	 * Construit la liste des communes de domiciles connues pour l'individu donné, et ce depuis une date de référence
+	 * @param depuis        date de référence à partir de laquelle on cherche les domiciles successifs de l'individu
+	 * @param noIndividu    l'individu dont on cherche les communes de domicile
+	 * @param strict        si <i>vrai</i>, la cohérence des données est vérifiée de manière stricte et en cas d'incohérence, une exception est levée. Si <i>faux</i>, la méthode essaie de corriger les
+	 *                      données (dans la mesure du possible) pour ne pas lever d'exception.
+	 * @param seulementVaud <code>true</code> si on ne s'intéresse qu'aux communes vaudoises (i.e. commune <code>null</code> pour HC/HS)
+	 * @return une liste des communes de domiciles fréquentées depuis la date de référence
+	 */
+	List<HistoriqueCommune> getCommunesDomicileHisto(RegDate depuis, long noIndividu, boolean strict, boolean seulementVaud) throws DonneesCivilesException, InfrastructureException;
 
 	/**
 	 * Retourne la liste des adresses, valides <b>jusqu'à</b> l'année en paramètre, pour un individu identifié par le numéro en paramètre.

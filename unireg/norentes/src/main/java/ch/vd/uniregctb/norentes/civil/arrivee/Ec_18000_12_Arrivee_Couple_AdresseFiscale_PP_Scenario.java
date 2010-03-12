@@ -9,6 +9,7 @@ import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.AdresseSuisse;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.mock.*;
@@ -26,6 +27,12 @@ public class Ec_18000_12_Arrivee_Couple_AdresseFiscale_PP_Scenario extends Evene
 	public static final String NAME = "Ec_18000_12_Arrivee_Couple_AdresseFiscale_PP";
 
 	private AdresseService adresseService;
+
+	private ServiceInfrastructureService serviceInfrastructureService;
+
+	public void setServiceInfrastructureService(ServiceInfrastructureService serviceInfrastructureService) {
+		this.serviceInfrastructureService = serviceInfrastructureService;
+	}
 
 	@Override
 	public String getName() {
@@ -61,7 +68,7 @@ public class Ec_18000_12_Arrivee_Couple_AdresseFiscale_PP_Scenario extends Evene
 
 	@Override
 	protected void initServiceCivil() {
-		serviceCivilService.setUp(new MockServiceCivil() {
+		serviceCivilService.setUp(new MockServiceCivil(serviceInfrastructureService) {
 			@Override
 			protected void init() {
 				indAntoine = addIndividu(noIndAntoine, date(1952, 2, 21) , "Lenormand", "Antoine", true);

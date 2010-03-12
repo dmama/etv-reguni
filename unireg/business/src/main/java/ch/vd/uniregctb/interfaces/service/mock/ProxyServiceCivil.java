@@ -3,11 +3,13 @@ package ch.vd.uniregctb.interfaces.service.mock;
 import java.util.Collection;
 import java.util.List;
 
+import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.civil.model.EnumAttributeIndividu;
 import ch.vd.uniregctb.adresse.AdressesCiviles;
 import ch.vd.uniregctb.adresse.AdressesCivilesHisto;
+import ch.vd.uniregctb.adresse.HistoriqueCommune;
 import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
@@ -117,5 +119,9 @@ public class ProxyServiceCivil implements ServiceCivilService {
 
 	public void onIndividuChange(long numero) {
 		target.onIndividuChange(numero);
+	}
+
+	public List<HistoriqueCommune> getCommunesDomicileHisto(RegDate depuis, long noIndividu, boolean strict, boolean seulementVaud) throws DonneesCivilesException, InfrastructureException {
+		return target.getCommunesDomicileHisto(depuis, noIndividu, strict, seulementVaud);
 	}
 }

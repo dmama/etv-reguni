@@ -28,6 +28,7 @@ import ch.vd.uniregctb.interfaces.model.mock.*;
 import ch.vd.uniregctb.interfaces.service.CivilListener;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilServiceBase;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 
 /**
  * Mock du Service Civil.
@@ -57,10 +58,22 @@ public abstract class MockServiceCivil extends ServiceCivilServiceBase {
 	private final Map<Long, Individu> individusMap = new HashMap<Long, Individu>();
 
 	/**
-	 * Constructeur par défaut qui appel init pour initialiser le mock.
+	 * Constructeur qui permet d'injecter le service infrastructure ; appelle init()
+	 * pour l'initialisation des données
+	 * @param infraService
+	 */
+	public MockServiceCivil(ServiceInfrastructureService infraService) {
+		setInfraService(infraService);
+		init();
+	}
+
+	/**
+	 * Constructeur par défaut qui appelle init pour initialiser le mock
+	 * (si le service infrastructure est nécessaire aux méthodes testées,
+	 * il faut utiliser {@link #MockServiceCivil(ServiceInfrastructureService)})
 	 */
 	public MockServiceCivil() {
-		init();
+		this(null);
 	}
 
 	/**

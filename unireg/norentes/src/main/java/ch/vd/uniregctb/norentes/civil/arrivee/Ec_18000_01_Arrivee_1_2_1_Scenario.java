@@ -13,6 +13,7 @@ import ch.vd.uniregctb.interfaces.model.mock.MockAdresse;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
 import ch.vd.uniregctb.norentes.common.EvenementCivilScenario;
 import ch.vd.uniregctb.tiers.ForFiscal;
@@ -29,6 +30,12 @@ import ch.vd.uniregctb.type.TypeEvenementCivil;
 public class Ec_18000_01_Arrivee_1_2_1_Scenario extends EvenementCivilScenario {
 
 	public static final String NAME = "18000_01_Arrivee";
+
+	private ServiceInfrastructureService serviceInfrastructureService;
+
+	public void setServiceInfrastructureService(ServiceInfrastructureService serviceInfrastructureService) {
+		this.serviceInfrastructureService = serviceInfrastructureService;
+	}
 
 	@Override
 	public String getName() {
@@ -77,7 +84,7 @@ public class Ec_18000_01_Arrivee_1_2_1_Scenario extends EvenementCivilScenario {
 
 	@Override
 	protected void initServiceCivil() {
-		serviceCivilService.setUp(new MockServiceCivil() {
+		serviceCivilService.setUp(new MockServiceCivil(serviceInfrastructureService) {
 			@Override
 			protected void init() {
 

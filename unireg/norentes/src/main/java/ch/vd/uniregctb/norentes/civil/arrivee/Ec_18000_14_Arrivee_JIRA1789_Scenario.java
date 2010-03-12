@@ -4,6 +4,7 @@ import java.util.Collection;
 
 import annotation.Check;
 import annotation.Etape;
+
 import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.civil.model.EnumTypePermis;
@@ -12,27 +13,26 @@ import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.mock.MockAdresse;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
 import ch.vd.uniregctb.norentes.common.EvenementCivilScenario;
+import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.MotifFor;
-import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
-public class Ec_18000_13_Arrivee_JIRA1789_Scenario extends EvenementCivilScenario {
+public class Ec_18000_14_Arrivee_JIRA1789_Scenario extends EvenementCivilScenario {
 
-	public static final String NAME = "Ec_18000_13_Arrivee_JIRA1789_Scenario";
+	public static final String NAME = "Ec_18000_14_Arrivee_JIRA1789_Scenario";
 
 	private AdresseService adresseService;
 
@@ -53,7 +53,7 @@ public class Ec_18000_13_Arrivee_JIRA1789_Scenario extends EvenementCivilScenari
 
 	@Override
 	public String getDescription() {
-		return "Déménagement vaudois d'un seul conjoint";
+		return "Déménagement vaudois d'un seul conjoint avec déménagement ultérieur de l'autre vers une troisième commune";
 	}
 
 	@Override
@@ -63,7 +63,7 @@ public class Ec_18000_13_Arrivee_JIRA1789_Scenario extends EvenementCivilScenari
 
 	private final long noIndAntonio = 250797;
 	private final long noIndAnneLaure = 250798;
-	
+
 	private MockIndividu indAntonio;
 	private MockIndividu indAnneLaure;
 
@@ -74,7 +74,8 @@ public class Ec_18000_13_Arrivee_JIRA1789_Scenario extends EvenementCivilScenari
 	private final RegDate dateMariage = date(1995, 1, 6);
 	private final RegDate dateArriveeBex = date(2007, 7, 1);
 	private final RegDate dateArriveeLausanne = date(2009, 6, 1);
-	
+	private final RegDate dateArriveeBussigny = date(2009, 10, 4);
+
 	@Override
 	protected void initServiceCivil() {
 		serviceCivilService.setUp(new MockServiceCivil(serviceInfrastructureService) {
@@ -84,7 +85,7 @@ public class Ec_18000_13_Arrivee_JIRA1789_Scenario extends EvenementCivilScenari
 				indAnneLaure = addIndividu(noIndAnneLaure, date(1976, 8, 6), "Lauria", "Anne-Laure", false);
 
 				addPermis(indAntonio, EnumTypePermis.ETABLLISSEMENT, date(2005, 1, 11), null, 1, false);
-				
+
 				marieIndividus(indAntonio, indAnneLaure, dateMariage);
 
 				addAdresse(indAntonio, EnumTypeAdresse.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, dateArriveeBex, null);
@@ -121,45 +122,45 @@ public class Ec_18000_13_Arrivee_JIRA1789_Scenario extends EvenementCivilScenari
 			assertNotNull(antonio, "Le non habitant Antonio n'a pas été créé");
 			assertNull(antonio.getForFiscalPrincipalAt(null), "Antonio ne devrait avoir aucun for fiscal principal");
 		}
-		
+
 		// Anne-Laure
 		final PersonnePhysique anneLaure = (PersonnePhysique) tiersDAO.get(noHabAnneLaure);
 		{
 			assertNotNull(anneLaure, "L'habitant Anne-Laure n'a pas été créé");
 			assertNull(antonio.getForFiscalPrincipalAt(null), "Anne-Laure ne devrait avoir aucun for fiscal principal");
 		}
-		
+
 		// ménage
 		final MenageCommun menage = (MenageCommun) tiersDAO.get(noMenage);
 		{
 			assertNotNull(menage, "Le ménage commun n'a pas été créé");
-			
+
 		}
-		
+
 		assertAdresses(menage, "Bex");
 	}
 
 	@Etape(id = 2, descr = "Déménagement d'Antonio à Lausanne")
 	public void etape2() throws Exception {
 
-		addNouvelleAdresse(indAntonio);
+		addNouvelleAdresse(indAntonio, MockRue.Lausanne.AvenueDeBeaulieu, dateArriveeLausanne);
 
 		final long id = addEvenementCivil(TypeEvenementCivil.ARRIVEE_PRINCIPALE_VAUDOISE, noIndAntonio, dateArriveeLausanne, MockCommune.Lausanne.getNoOFS());
 		commitAndStartTransaction();
 		regroupeEtTraiteEvenements(id);
 	}
 
-	private void addNouvelleAdresse(MockIndividu individu) {
+	private void addNouvelleAdresse(MockIndividu individu, MockRue nouvelleRue, RegDate dateArrivee) {
+
 		final Collection<Adresse> adrs = individu.getAdresses();
 		MockAdresse lastAdr = null;
 		for (Adresse a : adrs) {
 			lastAdr = (MockAdresse) a;
 		}
 		assertNotNull(lastAdr, "Aucune adresse connue!");
-		lastAdr.setDateFinValidite(dateArriveeLausanne.getOneDayBefore());
+		lastAdr.setDateFinValidite(dateArrivee.getOneDayBefore());
 
-		final Adresse adresse = MockServiceCivil.newAdresse(EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null,
-				dateArriveeLausanne, null);
+		final Adresse adresse = MockServiceCivil.newAdresse(EnumTypeAdresse.PRINCIPALE, nouvelleRue, null, dateArrivee, null);
 		adrs.add(adresse);
 	}
 
@@ -185,17 +186,17 @@ public class Ec_18000_13_Arrivee_JIRA1789_Scenario extends EvenementCivilScenari
 		assertAdresses(menage, "Lausanne");
 	}
 
-	@Etape(id = 3, descr = "Déménagement d'Anne-Laure aussi à Lausanne")
+	@Etape(id = 3, descr = "Déménagement d'Anne-Laure aussi, mais vers Bussigny")
 	public void etape3() throws Exception {
 
-		addNouvelleAdresse(indAnneLaure);
+		addNouvelleAdresse(indAnneLaure, MockRue.Bussigny.RueDeLIndustrie, dateArriveeBussigny);
 
-		final long id = addEvenementCivil(TypeEvenementCivil.ARRIVEE_PRINCIPALE_VAUDOISE, noIndAnneLaure, dateArriveeLausanne, MockCommune.Lausanne.getNoOFS());
+		final long id = addEvenementCivil(TypeEvenementCivil.ARRIVEE_PRINCIPALE_VAUDOISE, noIndAnneLaure, dateArriveeBussigny, MockCommune.Bussigny.getNoOFS());
 		commitAndStartTransaction();
 		regroupeEtTraiteEvenements(id);
 	}
 
-	@Check(id = 3, descr = "Vérifions maintenant que le couple est bien passés sur Lausanne (les deux membres ont déménagé)")
+	@Check(id = 3, descr = "Vérifions maintenant que le couple est bien passé sur Lausanne (les deux membres ont déménagé, et le principal est maintenant sur Lausanne)")
 	public void check3() throws Exception {
 		final EvenementCivilRegroupe evenement = getEvenementCivilRegoupeForHabitant(noHabAnneLaure);
 		assertNotNull(evenement, "Pas d'événement pour Anne-Laure?");

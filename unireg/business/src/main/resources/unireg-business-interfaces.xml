@@ -25,11 +25,15 @@
 
 	<!-- Service Civil -->
 
-	<bean id="serviceCivilServiceRaw" class="ch.vd.uniregctb.interfaces.service.ServiceCivilServiceImpl">
+	<bean id="serviceCivilServiceBase" abstract="true" class="ch.vd.uniregctb.interfaces.service.ServiceCivilServiceBase">
+		<property name="infraService" ref="serviceInfrastructureService"/>
+	</bean>
+
+	<bean id="serviceCivilServiceRaw" class="ch.vd.uniregctb.interfaces.service.ServiceCivilServiceImpl" parent="serviceCivilServiceBase">
 		<property name="serviceCivil" ref="_serviceCivil" />
 	</bean>
 
-	<bean id="serviceCivilServiceCache" class="ch.vd.uniregctb.interfaces.service.ServiceCivilCache">
+	<bean id="serviceCivilServiceCache" class="ch.vd.uniregctb.interfaces.service.ServiceCivilCache" parent="serviceCivilServiceBase">
 		<property name="target" ref="serviceCivilServiceRaw" />
 		<property name="cacheManager" ref="ehCacheManager" />
 		<property name="cacheName" value="serviceCivil" />

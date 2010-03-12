@@ -3,8 +3,9 @@ package ch.vd.uniregctb.interfaces.service;
 import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdressesCiviles;
+import ch.vd.uniregctb.adresse.HistoriqueCommune;
+import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.common.DonneesCivilesException;
-import ch.vd.uniregctb.common.WithoutSpringTest;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
 import ch.vd.uniregctb.interfaces.model.Permis;
@@ -12,11 +13,13 @@ import ch.vd.uniregctb.interfaces.model.mock.*;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
 import ch.vd.uniregctb.interfaces.service.mock.ProxyServiceCivil;
 import static org.junit.Assert.*;
+
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.List;
 
-public class ServiceCivilServiceImplTest extends WithoutSpringTest {
+public class ServiceCivilServiceImplTest extends BusinessTest {
 
 	private final ProxyServiceCivil service = new ProxyServiceCivil();
 
@@ -392,5 +395,210 @@ public class ServiceCivilServiceImplTest extends WithoutSpringTest {
 		assertEquals(RegDate.get(2000, 1, 1), principale.getDateDebut());
 		assertNull(principale.getDateFin());
 		assertEquals(MockRue.Lausanne.AvenueDeBeaulieu.getDesignationCourrier(), principale.getRue());
+	}
+
+	@Test
+	public void testHistoriqueDomicilesToutesCommunes() throws Exception {
+
+		final long noIndividu = 1L;
+
+		final RegDate naissance = RegDate.get(1961, 3, 12);
+		final RegDate arriveeZurich = RegDate.get(1980, 6, 1);
+		final RegDate arriveeAllemagne = RegDate.get(1985, 11, 5);
+		final RegDate arriveeCossonay = RegDate.get(1987, 3, 15);
+		final RegDate arriveeLeSentier = RegDate.get(1990, 4, 22);
+
+		// crée un individu avec tout un parcours (y compris HC/HS)
+		final ServiceInfrastructureService infraService = getBean(ServiceInfrastructureService.class, "serviceInfrastructureService");
+		service.setUp(new MockServiceCivil(infraService) {
+			@Override
+			protected void init() {
+				final MockIndividu individu = addIndividu(noIndividu, naissance, "Durant", "Maurice", true);
+				addAdresse(individu, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.BoulevardGrancy, null, naissance, arriveeZurich.getOneDayBefore());
+				addAdresse(individu, EnumTypeAdresse.PRINCIPALE, MockRue.Zurich.GloriaStrasse, null, arriveeZurich, arriveeAllemagne.getOneDayBefore());
+				addAdresse(individu, EnumTypeAdresse.PRINCIPALE, "Pariser Platz", "1", null, null, "10117 Berlin", MockPays.Allemagne, arriveeAllemagne, arriveeCossonay.getOneDayBefore());
+				addAdresse(individu, EnumTypeAdresse.PRINCIPALE, MockRue.CossonayVille.AvenueDuFuniculaire, null, arriveeCossonay, arriveeLeSentier.getOneDayBefore());
+				addAdresse(individu, EnumTypeAdresse.PRINCIPALE, MockRue.LeSentier.GrandRue, null, arriveeLeSentier, null);
+			}
+		});
+
+		final List<HistoriqueCommune> domiciles = service.getCommunesDomicileHisto(naissance, noIndividu, false, false);
+		assertNotNull(domiciles);
+		assertEquals(5, domiciles.size());
+
+		// test du contenu
+		{
+			final HistoriqueCommune domicile = domiciles.get(0);
+			assertEquals(naissance, domicile.getDateDebut());
+			assertEquals(arriveeZurich.getOneDayBefore(), domicile.getDateFin());
+			assertNotNull(domicile.getCommune());
+			assertEquals(MockCommune.Lausanne.getNoOFSEtendu(), domicile.getCommune().getNoOFSEtendu());
+		}
+		{
+			final HistoriqueCommune domicile = domiciles.get(1);
+			assertEquals(arriveeZurich, domicile.getDateDebut());
+			assertEquals(arriveeAllemagne.getOneDayBefore(), domicile.getDateFin());
+			assertNotNull(domicile.getCommune());
+			assertEquals(MockCommune.Zurich.getNoOFSEtendu(), domicile.getCommune().getNoOFSEtendu());
+		}
+		{
+			final HistoriqueCommune domicile = domiciles.get(2);
+			assertEquals(arriveeAllemagne, domicile.getDateDebut());
+			assertEquals(arriveeCossonay.getOneDayBefore(), domicile.getDateFin());
+			assertNull(domicile.getCommune());
+		}
+		{
+			final HistoriqueCommune domicile = domiciles.get(3);
+			assertEquals(arriveeCossonay, domicile.getDateDebut());
+			assertEquals(arriveeLeSentier.getOneDayBefore(), domicile.getDateFin());
+			assertNotNull(domicile.getCommune());
+			assertEquals(MockCommune.Cossonay.getNoOFSEtendu(), domicile.getCommune().getNoOFSEtendu());
+		}
+		{
+			final HistoriqueCommune domicile = domiciles.get(4);
+			assertEquals(arriveeLeSentier, domicile.getDateDebut());
+			assertNull(domicile.getDateFin());
+			assertNotNull(domicile.getCommune());
+			assertEquals(MockCommune.Fraction.LeSentier.getNoOFSEtendu(), domicile.getCommune().getNoOFSEtendu());
+		}
+	}
+
+	@Test
+	public void testHistoriqueDomicilesCommunesVaudoises() throws Exception {
+
+		final long noIndividu = 1L;
+
+		final RegDate naissance = RegDate.get(1961, 3, 12);
+		final RegDate arriveeZurich = RegDate.get(1980, 6, 1);
+		final RegDate arriveeAllemagne = RegDate.get(1985, 11, 5);
+		final RegDate arriveeCossonay = RegDate.get(1987, 3, 15);
+		final RegDate arriveeLeSentier = RegDate.get(1990, 4, 22);
+
+		// crée un individu avec tout un parcours (y compris HC/HS)
+		final ServiceInfrastructureService infraService = getBean(ServiceInfrastructureService.class, "serviceInfrastructureService");
+		service.setUp(new MockServiceCivil(infraService) {
+			@Override
+			protected void init() {
+				final MockIndividu individu = addIndividu(noIndividu, naissance, "Durant", "Maurice", true);
+				addAdresse(individu, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.BoulevardGrancy, null, naissance, arriveeZurich.getOneDayBefore());
+				addAdresse(individu, EnumTypeAdresse.PRINCIPALE, MockRue.Zurich.GloriaStrasse, null, arriveeZurich, arriveeAllemagne.getOneDayBefore());
+				addAdresse(individu, EnumTypeAdresse.PRINCIPALE, "Pariser Platz", "1", null, null, "10117 Berlin", MockPays.Allemagne, arriveeAllemagne, arriveeCossonay.getOneDayBefore());
+				addAdresse(individu, EnumTypeAdresse.PRINCIPALE, MockRue.CossonayVille.AvenueDuFuniculaire, null, arriveeCossonay, arriveeLeSentier.getOneDayBefore());
+				addAdresse(individu, EnumTypeAdresse.PRINCIPALE, MockRue.LeSentier.GrandRue, null, arriveeLeSentier, null);
+			}
+		});
+
+		final List<HistoriqueCommune> domiciles = service.getCommunesDomicileHisto(naissance, noIndividu, false, true);
+		assertNotNull(domiciles);
+		assertEquals(4, domiciles.size());
+
+		// test du contenu
+		{
+			final HistoriqueCommune domicile = domiciles.get(0);
+			assertEquals(naissance, domicile.getDateDebut());
+			assertEquals(arriveeZurich.getOneDayBefore(), domicile.getDateFin());
+			assertNotNull(domicile.getCommune());
+			assertEquals(MockCommune.Lausanne.getNoOFSEtendu(), domicile.getCommune().getNoOFSEtendu());
+		}
+		{
+			final HistoriqueCommune domicile = domiciles.get(1);
+			assertEquals(arriveeZurich, domicile.getDateDebut());
+			assertEquals(arriveeCossonay.getOneDayBefore(), domicile.getDateFin());
+			assertNull(domicile.getCommune());
+		}
+		{
+			final HistoriqueCommune domicile = domiciles.get(2);
+			assertEquals(arriveeCossonay, domicile.getDateDebut());
+			assertEquals(arriveeLeSentier.getOneDayBefore(), domicile.getDateFin());
+			assertNotNull(domicile.getCommune());
+			assertEquals(MockCommune.Cossonay.getNoOFSEtendu(), domicile.getCommune().getNoOFSEtendu());
+		}
+		{
+			final HistoriqueCommune domicile = domiciles.get(3);
+			assertEquals(arriveeLeSentier, domicile.getDateDebut());
+			assertNull(domicile.getDateFin());
+			assertNotNull(domicile.getCommune());
+			assertEquals(MockCommune.Fraction.LeSentier.getNoOFSEtendu(), domicile.getCommune().getNoOFSEtendu());
+		}
+	}
+
+	@Test
+	public void testHistoriqueDomicilesAvecTrous() throws Exception {
+
+		final long noIndividu = 1L;
+
+		final RegDate naissance = RegDate.get(1961, 3, 12);
+		final RegDate arriveeZurich = RegDate.get(1980, 6, 1);
+		final RegDate arriveeAllemagne = RegDate.get(1985, 11, 5);
+		final RegDate arriveeCossonay = RegDate.get(1987, 3, 15);
+		final RegDate departCossonay = RegDate.get(1989, 10, 31);
+		final RegDate arriveeLeSentier = RegDate.get(1990, 4, 22);
+		final RegDate departLeSentier = RegDate.get(1999, 12, 31);
+
+		// crée un individu avec tout un parcours (y compris HC/HS)
+		final ServiceInfrastructureService infraService = getBean(ServiceInfrastructureService.class, "serviceInfrastructureService");
+		service.setUp(new MockServiceCivil(infraService) {
+			@Override
+			protected void init() {
+				final MockIndividu individu = addIndividu(noIndividu, naissance, "Durant", "Maurice", true);
+				addAdresse(individu, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.BoulevardGrancy, null, naissance, arriveeZurich.getOneDayBefore());
+				addAdresse(individu, EnumTypeAdresse.PRINCIPALE, MockRue.Zurich.GloriaStrasse, null, arriveeZurich, arriveeAllemagne.getOneDayBefore());
+				addAdresse(individu, EnumTypeAdresse.PRINCIPALE, "Pariser Platz", "1", null, null, "10117 Berlin", MockPays.Allemagne, arriveeAllemagne, arriveeCossonay.getOneDayBefore());
+				addAdresse(individu, EnumTypeAdresse.PRINCIPALE, MockRue.CossonayVille.AvenueDuFuniculaire, null, arriveeCossonay, departCossonay);
+				addAdresse(individu, EnumTypeAdresse.PRINCIPALE, MockRue.LeSentier.GrandRue, null, arriveeLeSentier, departLeSentier);
+			}
+		});
+
+		final RegDate limite = naissance.addMonths(-12);
+		final List<HistoriqueCommune> domiciles = service.getCommunesDomicileHisto(limite, noIndividu, false, true);
+		assertNotNull(domiciles);
+		assertEquals(7, domiciles.size());
+
+		// test du contenu
+		{
+			final HistoriqueCommune domicile = domiciles.get(0);
+			assertEquals(limite.getOneDayBefore(), domicile.getDateDebut());
+			assertEquals(naissance.getOneDayBefore(), domicile.getDateFin());
+			assertNull(domicile.getCommune());
+		}
+		{
+			final HistoriqueCommune domicile = domiciles.get(1);
+			assertEquals(naissance, domicile.getDateDebut());
+			assertEquals(arriveeZurich.getOneDayBefore(), domicile.getDateFin());
+			assertNotNull(domicile.getCommune());
+			assertEquals(MockCommune.Lausanne.getNoOFSEtendu(), domicile.getCommune().getNoOFSEtendu());
+		}
+		{
+			final HistoriqueCommune domicile = domiciles.get(2);
+			assertEquals(arriveeZurich, domicile.getDateDebut());
+			assertEquals(arriveeCossonay.getOneDayBefore(), domicile.getDateFin());
+			assertNull(domicile.getCommune());
+		}
+		{
+			final HistoriqueCommune domicile = domiciles.get(3);
+			assertEquals(arriveeCossonay, domicile.getDateDebut());
+			assertEquals(departCossonay, domicile.getDateFin());
+			assertNotNull(domicile.getCommune());
+			assertEquals(MockCommune.Cossonay.getNoOFSEtendu(), domicile.getCommune().getNoOFSEtendu());
+		}
+		{
+			final HistoriqueCommune domicile = domiciles.get(4);
+			assertEquals(departCossonay.getOneDayAfter(), domicile.getDateDebut());
+			assertEquals(arriveeLeSentier.getOneDayBefore(), domicile.getDateFin());
+			assertNull(domicile.getCommune());
+		}
+		{
+			final HistoriqueCommune domicile = domiciles.get(5);
+			assertEquals(arriveeLeSentier, domicile.getDateDebut());
+			assertEquals(departLeSentier, domicile.getDateFin());
+			assertNotNull(domicile.getCommune());
+			assertEquals(MockCommune.Fraction.LeSentier.getNoOFSEtendu(), domicile.getCommune().getNoOFSEtendu());
+		}
+		{
+			final HistoriqueCommune domicile = domiciles.get(6);
+			assertEquals(departLeSentier.getOneDayAfter(), domicile.getDateDebut());
+			assertNull(domicile.getDateFin());
+			assertNull(domicile.getCommune());
+		}
 	}
 }

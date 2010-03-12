@@ -9,17 +9,19 @@ import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.adresse.AdresseException;
-import ch.vd.uniregctb.adresse.AdresseGenerique;
+import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
+import ch.vd.uniregctb.adresse.AdressesCiviles;
+import ch.vd.uniregctb.adresse.HistoriqueCommune;
 import ch.vd.uniregctb.audit.Audit;
+import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.common.EtatCivilHelper;
 import ch.vd.uniregctb.common.FiscalDateHelper;
 import ch.vd.uniregctb.evenement.EvenementCivil;
 import ch.vd.uniregctb.evenement.EvenementCivilErreur;
 import ch.vd.uniregctb.evenement.GenericEvenementAdapter;
 import ch.vd.uniregctb.interfaces.model.CommuneSimple;
+import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.evenement.common.EvenementCivilHandlerBase;
 import ch.vd.uniregctb.evenement.common.EvenementCivilHandlerException;
@@ -42,7 +44,6 @@ import ch.vd.uniregctb.tiers.TiersCriteria.TypeTiers;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
-import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 import ch.vd.uniregctb.type.TypeEvenementErreur;
@@ -64,10 +65,10 @@ public class ArriveeHandler extends EvenementCivilHandlerBase {
 		ARRIVEE_ADRESSE_PRINCIPALE, ARRIVEE_RESIDENCE_SECONDAIRE
 	}
 
-	private AdresseService adresseService;
-
-	public void setAdresseService(AdresseService adresseService) {
-		this.adresseService = adresseService;
+	private ServiceCivilService serviceCivilService;
+	
+	public void setServiceCivilService(ServiceCivilService serviceCivilService) {
+		this.serviceCivilService = serviceCivilService;
 	}
 
 	@Override
@@ -335,11 +336,7 @@ public class ArriveeHandler extends EvenementCivilHandlerBase {
 			 */
 			final ArriveeType type = getArriveeType(getService().getServiceInfra(), arrivee);
 
-			RegDate dateEvenement = dateArrivee;
-			if (TypeEvenementCivil.ARRIVEE_PRINCIPALE_VAUDOISE == arrivee.getType()) {
-				// vérification du dépassement du 20/12
-				dateEvenement = FiscalDateHelper.getDateEvenementFiscal(dateEvenement);
-			}
+			final RegDate dateEvenement = getDateEvenementPourFor(arrivee);
 
 			final boolean individuMajeur = FiscalDateHelper.isMajeurAt(individu, dateEvenement);
 			final CommuneSimple communeArrivee = getCommuneArrivee(getService().getServiceInfra(), arrivee, type);
@@ -418,7 +415,7 @@ public class ArriveeHandler extends EvenementCivilHandlerBase {
 		for (final TiersIndexedData tiersIndexedData : results) {
 			final PersonnePhysique pp = (PersonnePhysique) getService().getTiers(tiersIndexedData.getNumero());
 			// [UNIREG-770] le non habitant doit être assujetti
-			if (!assujettissementObligatoire || (assujettissementObligatoire && pp.getForFiscalPrincipalAt(null) != null)) {
+			if (!assujettissementObligatoire || pp.getForFiscalPrincipalAt(null) != null) {
 				nonHabitants.add(pp);
 			}
 		}
@@ -497,31 +494,26 @@ public class ArriveeHandler extends EvenementCivilHandlerBase {
 		final Individu conjoint = individu.getConjoint();
 		Assert.notNull(individu); // prérequis
 
-		RegDate dateEvenement = arrivee.getDate();
+		final RegDate dateEvenement = getDateEvenementPourFor(arrivee);
 		final Long numeroEvenement = arrivee.getNumeroEvenement();
 
 		/*
 		 * Récupération/création des habitants
 		 */
-		final PersonnePhysique habitantPrincipal = getOrCreateHabitant(individu, dateEvenement, numeroEvenement, FindBehavior.ASSUJETTISSEMENT_NON_OBLIGATOIRE_NO_ERROR_IF_SEVERAL);
-		final PersonnePhysique habitantConjoint;
+		final PersonnePhysique arrivant = getOrCreateHabitant(individu, dateEvenement, numeroEvenement, FindBehavior.ASSUJETTISSEMENT_NON_OBLIGATOIRE_NO_ERROR_IF_SEVERAL);
+		final PersonnePhysique conjointArrivant;
 		if (conjoint != null) {
-			habitantConjoint = getOrCreateHabitant(conjoint, dateEvenement, numeroEvenement, FindBehavior.ASSUJETTISSEMENT_NON_OBLIGATOIRE_NO_ERROR_IF_SEVERAL);
+			conjointArrivant = getOrCreateHabitant(conjoint, dateEvenement, numeroEvenement, FindBehavior.ASSUJETTISSEMENT_NON_OBLIGATOIRE_NO_ERROR_IF_SEVERAL);
 		}
 		else {
-			habitantConjoint = null;
-		}
-
-		if (TypeEvenementCivil.ARRIVEE_PRINCIPALE_VAUDOISE == arrivee.getType()) {
-			// vérification du dépassement du 20/12
-			dateEvenement = FiscalDateHelper.getDateEvenementFiscal(dateEvenement);
+			conjointArrivant = null;
 		}
 
 		/*
 		 * Récupération/création du ménage commun et du rapports entre tiers
 		 */
 
-		final MenageCommun menageCommun = getOrCreateMenageCommun(habitantPrincipal, habitantConjoint, dateEvenement, numeroEvenement);
+		final MenageCommun menageCommun = getOrCreateMenageCommun(arrivant, conjointArrivant, dateEvenement, numeroEvenement);
 		Assert.notNull(menageCommun);
 
 		/*
@@ -542,8 +534,20 @@ public class ArriveeHandler extends EvenementCivilHandlerBase {
 			/*
 			 * Le for fiscal principal reste inchangé en cas d'arrivée en résidence secondaire.
 			 */
-			createOrUpdateForFiscalPrincipalOnCouple(arrivee, habitantPrincipal, habitantConjoint, menageCommun, warnings);
+			createOrUpdateForFiscalPrincipalOnCouple(arrivee, arrivant, menageCommun, warnings);
 		}
+	}
+
+	private RegDate getDateEvenementPourFor(Arrivee arrivee) {
+		final RegDate dateEvenement;
+		if (TypeEvenementCivil.ARRIVEE_PRINCIPALE_VAUDOISE == arrivee.getType()) {
+			// vérification du dépassement du 20/12
+			dateEvenement = FiscalDateHelper.getDateEvenementFiscal(arrivee.getDate());
+		}
+		else {
+			dateEvenement = arrivee.getDate();
+		}
+		return dateEvenement;
 	}
 
 	/**
@@ -597,21 +601,22 @@ public class ArriveeHandler extends EvenementCivilHandlerBase {
 	 * @param date date de référence
 	 * @param pp personne physique concernée
 	 * @return commune de l'adresse de domicile, à la date donnée, de la personne physique donnée
-	 * @throws AdresseException
+	 * @throws DonneesCivilesException
 	 * @throws InfrastructureException
 	 */
-	private CommuneSimple getCommuneDomicile(RegDate date, PersonnePhysique pp) throws AdresseException, InfrastructureException {
+	private CommuneSimple getCommuneDomicile(RegDate date, PersonnePhysique pp) throws DonneesCivilesException, InfrastructureException {
 		final CommuneSimple commune;
-		if (pp != null) {
-			final AdresseGenerique adresseDomicile = adresseService.getAdresseFiscale(pp, TypeAdresseFiscale.DOMICILE, date, false);
+		if (pp != null && pp.getNumeroIndividu() != null && pp.getNumeroIndividu() > 0) {
+			final AdressesCiviles adresseDomicile = serviceCivilService.getAdresses(pp.getNumeroIndividu(), date, false);
 			if (adresseDomicile != null) {
-				commune = getService().getServiceInfra().getCommuneByAdresse(adresseDomicile);
+				commune = getService().getServiceInfra().getCommuneByAdresse(adresseDomicile.principale);
 			}
 			else {
 				commune = null;
 			}
 		}
 		else {
+			// personne inconnue au civil...
 			commune = null;
 		}
 		return commune;
@@ -625,18 +630,84 @@ public class ArriveeHandler extends EvenementCivilHandlerBase {
 	 * <li>s'il y en a deux vaudoises, et qu'elles sont dans deux communes différentes, on ne touche à rien s'il y a déjà un for vaudois ouvert sur le couple, et on prend la commune du principal du couple sinon</li>
 	 * <li>si on a pu déterminer une commune avec les conditions ci-dessus, on ouvre un for dessus à la date d'arrivée</li>
 	 * </ul>
-	 * @param arrivee
-	 * @param principal
-	 * @param conjoint
-	 * @param menage
-	 * @return
+	 * @param arrivee événement d'arrivée
+	 * @param arrivant personne physique concernée par l'arrivée
+	 * @param ensemble ensemble du ménage et des personnes physiques le composant
+	 * @return une commune selon les règles édictées plus haut
 	 */
-	private CommuneSimple getCommuneForSuiteArriveeCouple(Arrivee arrivee, PersonnePhysique principal, PersonnePhysique conjoint, MenageCommun menage) {
+	private Pair<CommuneSimple, RegDate> getCommuneForSuiteArriveeCouple(Arrivee arrivee, PersonnePhysique arrivant, EnsembleTiersCouple ensemble) {
 
 		final RegDate dateArrivee = arrivee.getDate();
 		try {
-			final CommuneSimple residencePrincipal = getCommuneDomicile(dateArrivee, principal);
-			final CommuneSimple residenceConjoint = getCommuneDomicile(dateArrivee, conjoint);
+			final PersonnePhysique principal = ensemble.getPrincipal();
+			final PersonnePhysique conjoint = ensemble.getConjoint();
+			final MenageCommun menage = ensemble.getMenage();
+
+			RegDate dateDebutFor = dateArrivee;
+
+			final ForFiscalPrincipal ffpArrivee = menage.getForFiscalPrincipalAt(dateArrivee);
+			if (ffpArrivee != null && ffpArrivee.getDateFin() != null) {
+				// un for existe, mais le for est déjà fermé... il ya eu d'autres modifications déjà après la date d'arrivée
+				// -> a régler manuellement
+				throw new EvenementCivilHandlerException("Il y a eu d'autres changements déjà pris en compte après l'arrivée"); 
+			}
+			else if (ffpArrivee != null) {
+
+				// quelles sont les communes de domicile de l'autre membre du menage (par rapport à celui qui arrive) ?
+				final PersonnePhysique autre = ensemble.getConjoint(arrivant);
+				if (autre != null && autre.getNumeroIndividu() != null && autre.getNumeroIndividu() > 0) {
+					final List<HistoriqueCommune> communes = serviceCivilService.getCommunesDomicileHisto(dateArrivee, autre.getNumeroIndividu(), false, true);
+
+					// s'il n'y en a pas (personne inconnue, ou HC/HS), ou une seule, il n'y a pas de problème : le conjoint (= l'autre)
+					// n'a pas déménagé (en tout cas en ce qui concerne les fors) depuis l'arrivée
+					if (communes != null && communes.size() > 1) {
+
+						// il y a eu un déménagement (au moins)...
+
+						// résumons-nous :
+						// - il y avait déjà un for sur le ménage à la date d'arrivée, for toujours ouvert
+						// - nous avons déjà connaissance du déménagement du conjoint de l'arrivant APRES cette arrivée-ci
+						// --> les événements ne sont pas arrivés dans le bon ordre...
+
+						// s'il y a plus d'un déménagement marquant (on ne compte pas les déménagements qui n'ont aucun lien avec le canton)
+						// alors cela devient compliqué... --> traitemant manuel
+						if (communes.size() > 2) {
+							final StringBuilder b = new StringBuilder();
+							for (int i = 1 ; i < communes.size() ; ++ i) {
+								final CommuneSimple ancienneCommune = communes.get(i - 1).getCommune();
+								final String nomAncienneCommune = ancienneCommune != null ? String.format("%s (%d)", ancienneCommune.getNomMinuscule(), ancienneCommune.getNoOFSEtendu()) : "HC/HS";
+								final CommuneSimple nouvelleCommune = communes.get(i).getCommune();
+								final String nomNouvelleCommune = nouvelleCommune != null ? String.format("%s (%d)", nouvelleCommune.getNomMinuscule(), nouvelleCommune.getNoOFSEtendu()) : "HC/HS";
+								if (i > 1) {
+									b.append(", ");
+								}
+								b.append(nomAncienneCommune).append(" -> ").append(nomNouvelleCommune).append(" au ").append(communes.get(i).getDateDebut());
+							}
+
+							throw new EvenementCivilHandlerException(String.format("Le contribuable %d a déjà déménagé plus d'une fois après l'arrivée de son conjoint (%s)", autre.getNumero(), b.toString()));
+						}
+						else {
+							// un seul déménagement...
+							final CommuneSimple ancienneCommune = communes.get(0).getCommune();
+							final CommuneSimple nouvelleCommune = communes.get(1).getCommune();
+							if (ancienneCommune == null) {
+								// arrivée HC/HS --> réglé plus bas
+							}
+							else if (nouvelleCommune == null) {
+								// départ HC/HS --> réglé plus bas
+							}
+							else {
+								// déménagement vaudois -> c'est seulement à partir du moment
+								// où les deux conjoints on déménagés que le for doit bouger
+								dateDebutFor = communes.get(1).getDateDebut();
+							}
+						}
+					}
+				}
+			}
+
+			final CommuneSimple residencePrincipal = getCommuneDomicile(dateDebutFor, principal);
+			final CommuneSimple residenceConjoint = getCommuneDomicile(dateDebutFor, conjoint);
 			final boolean principalVaudois = residencePrincipal != null && residencePrincipal.isVaudoise();
 			final boolean conjointVaudois = residenceConjoint != null && residenceConjoint.isVaudoise();
 
@@ -658,10 +729,9 @@ public class ArriveeHandler extends EvenementCivilHandlerBase {
 			else {
 				// deux adresses vaudoises, mais sur des communes différentes
 				// y a-t-il déjà un for vaudois ouvert sur le couple (cette méthode est appelée avant la fermeture des fors...)
-				final ForFiscalPrincipal ffp = menage.getForFiscalPrincipalAt(dateArrivee);
-				if (ffp != null && ffp.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
+				if (ffpArrivee != null && ffpArrivee.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
 					// si le for principal vaudois sur le couple correspond à l'une des communes du principal ou du conjoint, on ne touche à rien
-					if (ffp.getNumeroOfsAutoriteFiscale() == residencePrincipal.getNoOFSEtendu() || ffp.getNumeroOfsAutoriteFiscale() == residenceConjoint.getNoOFSEtendu()) {
+					if (ffpArrivee.getNumeroOfsAutoriteFiscale() == residencePrincipal.getNoOFSEtendu() || ffpArrivee.getNumeroOfsAutoriteFiscale() == residenceConjoint.getNoOFSEtendu()) {
 						commune = null;
 					}
 					else {
@@ -675,12 +745,12 @@ public class ArriveeHandler extends EvenementCivilHandlerBase {
 				}
 			}
 
-			return commune;
+			return commune == null ? null : new Pair<CommuneSimple, RegDate>(commune, dateDebutFor);
 		}
 		catch (InfrastructureException e) {
 			throw new EvenementCivilHandlerException(e.getMessage(), e);
 		}
-		catch (AdresseException e) {
+		catch (DonneesCivilesException e) {
 			throw new EvenementCivilHandlerException(e.getMessage(), e);
 		}
 	}
@@ -697,37 +767,33 @@ public class ArriveeHandler extends EvenementCivilHandlerBase {
 	 * <li>si on a pu déterminer une commune avec les conditions ci-dessus, on ouvre un for dessus à la date d'arrivée</li>
 	 * </ul>
 	 * @param arrivee l'événement d'arrivée
-	 * @param habitantPrincipal le contribuable principal
-	 * @param habitantConjoint le conjoint (peut être null)
+	 * @param arrivant personne physique concernée par l'arrivée
 	 * @param menageCommun le ménage commun
 	 * @param warnings liste des erreurs à peupler en cas de problème
 	 */
-	private void createOrUpdateForFiscalPrincipalOnCouple(final Arrivee arrivee, final PersonnePhysique habitantPrincipal, PersonnePhysique habitantConjoint,
-			final MenageCommun menageCommun, List<EvenementCivilErreur> warnings) {
+	private void createOrUpdateForFiscalPrincipalOnCouple(final Arrivee arrivee, final PersonnePhysique arrivant,final MenageCommun menageCommun, List<EvenementCivilErreur> warnings) {
 
 		Assert.notNull(arrivee);
-		Assert.notNull(habitantPrincipal);
 		Assert.notNull(menageCommun);
 
-		final CommuneSimple communePourFor = getCommuneForSuiteArriveeCouple(arrivee, habitantPrincipal, habitantConjoint, menageCommun);
-		if (communePourFor == null) {
+		final EnsembleTiersCouple ensemble = getService().getEnsembleTiersCouple(menageCommun, arrivee.getDate());
+		final Pair<CommuneSimple, RegDate> infosFor = getCommuneForSuiteArriveeCouple(arrivee, arrivant, ensemble);
+		if (infosFor == null) {
 			// pas de for à créer...
 			return;
 		}
 
-		RegDate dateEvenement = arrivee.getDate();
-		if (TypeEvenementCivil.ARRIVEE_PRINCIPALE_VAUDOISE == arrivee.getType()) {
-			// vérification du dépassement du 20/12
-			dateEvenement = FiscalDateHelper.getDateEvenementFiscal(dateEvenement);
-		}
+		final RegDate dateEvenement = infosFor.getSecond();
+		final CommuneSimple commune = infosFor.getFirst();
 
 		try {
 
-			final ForFiscalPrincipal ffpHabitantPrincipal = habitantPrincipal.getForFiscalPrincipalAt(null);
-			final ForFiscalPrincipal ffpHabitantConjoint = (habitantConjoint == null ? null : habitantConjoint.getForFiscalPrincipalAt(null));
+			final PersonnePhysique principal = ensemble.getPrincipal();
+			final PersonnePhysique conjoint = ensemble.getConjoint();
+			final ForFiscalPrincipal ffpHabitantPrincipal = principal.getForFiscalPrincipalAt(null);
+			final ForFiscalPrincipal ffpHabitantConjoint = (conjoint == null ? null : conjoint.getForFiscalPrincipalAt(null));
 			final ForFiscalPrincipal ffpMenage = menageCommun.getForFiscalPrincipalAt(null);
-			final CommuneSimple communeArrivee = getCommuneArrivee(getService().getServiceInfra(), arrivee, ArriveeType.ARRIVEE_ADRESSE_PRINCIPALE);
-			final int numeroOfsNouveau = communeArrivee.getNoOFSEtendu();
+			final int numeroOfsNouveau = commune.getNoOFSEtendu();
 
 			// pour un couple, le for principal est toujours sur le ménage commun
 			if (ffpHabitantPrincipal != null) {
@@ -739,30 +805,39 @@ public class ArriveeHandler extends EvenementCivilHandlerBase {
 			MotifFor motifOuverture = getMotifOuverture(arrivee);
 			if(motifOuverture == null){
 				motifOuverture = MotifFor.ARRIVEE_HS;
-				warnings.add(new EvenementCivilErreur("ancienne adresse avant l'arrivée inconnue : "
-						+ "veuillez indiquer le motif d'ouverture du for principal", TypeEvenementErreur.WARNING));
+				warnings.add(new EvenementCivilErreur("Ancienne adresse avant l'arrivée inconnue : veuillez indiquer le motif d'ouverture du for principal", TypeEvenementErreur.WARNING));
 			}
 			if (ffpMenage == null) {
-				if (!getService().isEtrangerSansPermisC(habitantPrincipal, dateEvenement) ||
-					getService().isHabitantRefugie(habitantPrincipal, dateEvenement) ||
-					(habitantConjoint != null &&
-							(!getService().isEtrangerSansPermisC(habitantConjoint, dateEvenement) ||
-							getService().isHabitantRefugie(habitantConjoint, dateEvenement)))) {
-					openForFiscalPrincipalDomicileVaudoisOrdinaire(menageCommun, dateEvenement, numeroOfsNouveau, motifOuverture, false);
+				final ModeImposition modeImposition;
+				final RegDate dateOuvertureFor;
+				if (!getService().isEtrangerSansPermisC(principal, dateEvenement) ||
+					getService().isHabitantRefugie(principal, dateEvenement) ||
+					(conjoint != null &&
+							(!getService().isEtrangerSansPermisC(conjoint, dateEvenement) ||
+							getService().isHabitantRefugie(conjoint, dateEvenement)))) {
+					modeImposition = ModeImposition.ORDINAIRE;
+					dateOuvertureFor = dateEvenement;
 					Audit.info(arrivee.getNumeroEvenement(), "Création d'un for fiscal principal ordinaire sur le ménage commun");
 				}
 				else if (motifOuverture == MotifFor.ARRIVEE_HC || motifOuverture == MotifFor.ARRIVEE_HS) {
-					final RegDate dateOuverture = findDateOuvertureSourcier(dateEvenement, arrivee.getType(), communeArrivee);
-					openForFiscalPrincipal(menageCommun, dateOuverture, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, numeroOfsNouveau,
-						MotifRattachement.DOMICILE, motifOuverture, ModeImposition.SOURCE, false);
+					dateOuvertureFor = findDateOuvertureSourcier(dateEvenement, arrivee.getType(), commune);
+					modeImposition = ModeImposition.SOURCE;
 					Audit.info(arrivee.getNumeroEvenement(), "Création d'un for fiscal principal sourcier sur le ménage commun");
+				}
+				else {
+					modeImposition = null;
+					dateOuvertureFor = null;
+				}
+
+				if (modeImposition != null) {
+					openForFiscalPrincipal(menageCommun, dateOuvertureFor, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, numeroOfsNouveau, MotifRattachement.DOMICILE, motifOuverture, modeImposition, false);
 				}
 			}
 			else {
 
 				RegDate dateOuvertureNouveauFor = dateEvenement;
 				if (isSourcier(ffpMenage.getModeImposition())) {
-					dateOuvertureNouveauFor = findDateOuvertureSourcier(dateEvenement, arrivee.getType(), communeArrivee);
+					dateOuvertureNouveauFor = findDateOuvertureSourcier(dateEvenement, arrivee.getType(), commune);
 				}
 
 				updateForFiscalPrincipal(menageCommun, dateOuvertureNouveauFor, numeroOfsNouveau, motifOuverture, motifOuverture, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, false);
@@ -770,9 +845,6 @@ public class ArriveeHandler extends EvenementCivilHandlerBase {
 			}
 		}
 		catch (TiersException e) {
-			throw new EvenementCivilHandlerException(e.getMessage(), e);
-		}
-		catch (InfrastructureException e) {
 			throw new EvenementCivilHandlerException(e.getMessage(), e);
 		}
 	}

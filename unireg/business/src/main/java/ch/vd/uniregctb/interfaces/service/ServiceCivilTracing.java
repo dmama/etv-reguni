@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import ch.vd.infrastructure.service.InfrastructureException;
+import ch.vd.uniregctb.adresse.HistoriqueCommune;
 import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.stats.StatsService;
 import org.springframework.beans.factory.DisposableBean;
@@ -194,6 +196,18 @@ public class ServiceCivilTracing implements ServiceCivilService, ServiceTracingI
 			tracing.end(time);
 		}
 
+		return result;
+	}
+
+	public List<HistoriqueCommune> getCommunesDomicileHisto(RegDate depuis, long noIndividu, boolean strict, boolean seulementVaud) throws DonneesCivilesException, InfrastructureException {
+		final List<HistoriqueCommune> result;
+		final long time = tracing.start();
+		try {
+			result = target.getCommunesDomicileHisto(depuis, noIndividu, strict, seulementVaud);
+		}
+		finally {
+			tracing.end(time);
+		}
 		return result;
 	}
 
