@@ -383,14 +383,42 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 		final AdresseEnvoi adresseEnvoi = pm.getAdresseEnvoi();
 		assertNotNull(adresseEnvoi);
 		assertEquals("KALESA", trimValiPattern(adresseEnvoi.getLigne1()));
-		assertEquals("Fiduciaire Turrian SA", trimValiPattern(adresseEnvoi.getLigne2()));
-		assertEquals("p.a. Office des faillites", trimValiPattern(adresseEnvoi.getLigne3()));
-		assertEquals("1860 Aigle", trimValiPattern(adresseEnvoi.getLigne4()));
+		assertEquals("p.a. Office des faillites", trimValiPattern(adresseEnvoi.getLigne2()));
+		assertEquals("1860 Aigle", trimValiPattern(adresseEnvoi.getLigne3()));
+		assertNull(adresseEnvoi.getLigne4());
 		assertNull(adresseEnvoi.getLigne5());
 		assertNull(adresseEnvoi.getLigne6());
 		assertTrue(adresseEnvoi.isIsSuisse());
 	}
 
+	/**
+	 * [UNIREG-1973] la personne de contact de la PM ne doit pas apparaître dans l'adresse d'envoi.
+	 */
+	@Test
+	public void testFournirAdresseEnvoi() throws Exception {
+
+		final GetTiers params = new GetTiers();
+		params.setLogin(login);
+		params.setTiersNumber(25000);
+		params.setDate(newDate(2009, 10, 14));
+		params.getParts().add(TiersPart.ADRESSES_ENVOI);
+
+
+		final PersonneMorale pm = (PersonneMorale) service.getTiers(params);
+		assertNotNull(pm);
+
+		// Récupération de l'adresse d'envoi de la PM
+
+		final AdresseEnvoi adresseEnvoi = pm.getAdresseEnvoi();
+		assertNotNull(adresseEnvoi);
+		assertEquals("ELECTRIQUE INTERCOMMUN", trimValiPattern(adresseEnvoi.getLigne1()));
+		assertEquals("Rte des Avouillons 2 / CP 321", trimValiPattern(adresseEnvoi.getLigne2()));
+		assertEquals("1196 Gland", trimValiPattern(adresseEnvoi.getLigne3()));
+		assertNull(adresseEnvoi.getLigne4());
+		assertNull(adresseEnvoi.getLigne5());
+		assertNull(adresseEnvoi.getLigne6());
+		assertTrue(adresseEnvoi.isIsSuisse());
+	}
 	@Test
 	public void testFournirAdresseContentieuxPM() throws Exception {
 
@@ -430,9 +458,9 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 		final AdresseEnvoi adresseDomicileFormattee = pm.getAdresseDomicileFormattee();
 		assertNotNull(adresseDomicileFormattee);
 		assertEquals("KALESA", trimValiPattern(adresseDomicileFormattee.getLigne1()));
-		assertEquals("Fiduciaire Turrian SA", trimValiPattern(adresseDomicileFormattee.getLigne2()));
-		assertEquals("La Coche", trimValiPattern(adresseDomicileFormattee.getLigne3()));
-		assertEquals("1852 Roche VD", trimValiPattern(adresseDomicileFormattee.getLigne4()));
+		assertEquals("La Coche", trimValiPattern(adresseDomicileFormattee.getLigne2()));
+		assertEquals("1852 Roche VD", trimValiPattern(adresseDomicileFormattee.getLigne3()));
+		assertNull(adresseDomicileFormattee.getLigne4());
 		assertNull(adresseDomicileFormattee.getLigne5());
 		assertNull(adresseDomicileFormattee.getLigne6());
 		assertTrue(adresseDomicileFormattee.isIsSuisse());
@@ -457,9 +485,9 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 		final AdresseEnvoi adressePoursuiteFormattee = pm.getAdressePoursuiteFormattee();
 		assertNotNull(adressePoursuiteFormattee);
 		assertEquals("KALESA", trimValiPattern(adressePoursuiteFormattee.getLigne1()));
-		assertEquals("Fiduciaire Turrian SA", trimValiPattern(adressePoursuiteFormattee.getLigne2()));
-		assertEquals("La Coche", trimValiPattern(adressePoursuiteFormattee.getLigne3()));
-		assertEquals("1852 Roche VD", trimValiPattern(adressePoursuiteFormattee.getLigne4()));
+		assertEquals("La Coche", trimValiPattern(adressePoursuiteFormattee.getLigne2()));
+		assertEquals("1852 Roche VD", trimValiPattern(adressePoursuiteFormattee.getLigne3()));
+		assertNull(adressePoursuiteFormattee.getLigne4());
 		assertNull(adressePoursuiteFormattee.getLigne5());
 		assertNull(adressePoursuiteFormattee.getLigne6());
 		assertTrue(adressePoursuiteFormattee.isIsSuisse());

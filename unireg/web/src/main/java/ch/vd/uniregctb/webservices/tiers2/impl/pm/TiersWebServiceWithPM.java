@@ -686,9 +686,10 @@ public class TiersWebServiceWithPM implements TiersWebService {
 			adresse.addNomPrenom(pm.designationAbregee);
 		}
 
-		if (pm.personneContact != null) {
-			adresse.addPourAdresse(pm.personneContact);
-		}
+// [UNIREG-1973] il ne faut pas utiliser la personne de contact dans les adresses		
+//		if (pm.personneContact != null) {
+//			adresse.addPourAdresse(pm.personneContact);
+//		}
 
 		if (pm.complementNom != null) {
 			adresse.addComplement(pm.complementNom);
