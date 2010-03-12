@@ -610,9 +610,9 @@
 			<id>oracle</id>
 			<properties>
 				<jdbc.profile>oracle</jdbc.profile>
-				<jdbc.groupId>com.oracle</jdbc.groupId>
-				<jdbc.artifactId>ojdbc</jdbc.artifactId>
-				<jdbc.version>10.2.0.4</jdbc.version>
+				<jdbc.groupId>oracle.jdbc</jdbc.groupId>
+				<jdbc.artifactId>ojdbc5</jdbc.artifactId>
+				<jdbc.version>${oracle.version}</jdbc.version>
 				<jdbc.driverClassName>oracle.jdbc.OracleDriver</jdbc.driverClassName>
 				
 				<hibernate.dialect>ch.vd.uniregctb.hibernate.dialect.Oracle10gDialectWithNVarChar</hibernate.dialect>
@@ -726,7 +726,7 @@
 		<unireg.log4j.location>file:${ch.vd.appDir}/${unireg.appname}/config/unireg-log4j.xml</unireg.log4j.location>
 
 		<!-- Application settings -->
-		<copyright.year>2009</copyright.year>
+		<copyright.year>2010</copyright.year>
 		<dao.framework>hibernate</dao.framework>
 		<web.framework>spring</web.framework>
 		<amp.genericCore>true</amp.genericCore>
@@ -748,20 +748,20 @@
 
 		<!-- Testing dependency versions -->
 		<junit.version>4.4</junit.version>
-		<!-- WebTest dependency versions  -->
 		<javamail.version>1.4</javamail.version>
 		<log4j.version>1.2.14</log4j.version>
 		<oro.version>2.0.8</oro.version>
 
 		<!-- Database settings -->
+		<oracle.version>11.2.0.1.0</oracle.version>
 		<dbunit.version>2.2.3</dbunit.version>
 		<dbunit.dataTypeFactoryName>org.dbunit.dataset.datatype.DefaultDataTypeFactory</dbunit.dataTypeFactoryName>
 		<dbunit.operation.type>CLEAN_INSERT</dbunit.operation.type>
 
 		<!-- Parametres DB par défaut -->
-		<jdbc.groupId>com.oracle</jdbc.groupId>
-		<jdbc.artifactId>ojdbc</jdbc.artifactId>
-		<jdbc.version>10.2.0.4</jdbc.version>
+		<jdbc.groupId>oracle.jdbc</jdbc.groupId>
+		<jdbc.artifactId>ojdbc5</jdbc.artifactId>
+		<jdbc.version>${oracle.version}</jdbc.version>
 
 		<!-- Version des Host-Interfaces -->
 		<host-interfaces.version-short>1.9</host-interfaces.version-short>
