@@ -7,18 +7,13 @@ import java.util.List;
 import java.util.Map;
 
 import ch.vd.common.model.EnumTypeAdresse;
-import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.registre.civil.model.EnumAttributeIndividu;
 import ch.vd.registre.civil.model.EnumTypeEtatCivil;
 import ch.vd.registre.civil.model.EnumTypePermis;
 import ch.vd.registre.civil.model.EnumTypeTutelle;
-import ch.vd.uniregctb.adresse.AdressesCiviles;
-import ch.vd.uniregctb.adresse.AdressesCivilesHisto;
-import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
@@ -32,6 +27,7 @@ import ch.vd.uniregctb.interfaces.model.Tutelle;
 import ch.vd.uniregctb.interfaces.model.mock.*;
 import ch.vd.uniregctb.interfaces.service.CivilListener;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
+import ch.vd.uniregctb.interfaces.service.ServiceCivilServiceBase;
 
 /**
  * Mock du Service Civil.
@@ -53,7 +49,7 @@ import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
  * </pre>
  */
 @SuppressWarnings({"JavaDoc"})
-public abstract class MockServiceCivil implements ServiceCivilService {
+public abstract class MockServiceCivil extends ServiceCivilServiceBase {
 
 	/**
 	 * Map des individus par numéro.
@@ -422,35 +418,6 @@ public abstract class MockServiceCivil implements ServiceCivilService {
 		return individusMap.get(numeroIndividu);
 	}
 
-	public AdressesCiviles getAdresses(long noIndividu, RegDate date, boolean strict) throws DonneesCivilesException {
-		final Collection<Adresse> adressesCiviles = getAdressesActives(noIndividu, date);
-
-		AdressesCiviles resultat = new AdressesCiviles();
-		if (adressesCiviles != null) {
-			for (Object object : adressesCiviles) {
-				Adresse adresse = (Adresse) object;
-				if (adresse.isValidAt(date)) {
-					resultat.set(adresse, strict);
-				}
-			}
-		}
-		return resultat;
-	}
-
-	public AdressesCivilesHisto getAdressesHisto(long noIndividu, boolean strict) throws DonneesCivilesException {
-		final Collection<Adresse> adressesCiviles = getAdressesActives(noIndividu, null);
-
-		AdressesCivilesHisto resultat = new AdressesCivilesHisto();
-		if (adressesCiviles != null) {
-			for (Adresse adresse : adressesCiviles) {
-				resultat.add(adresse);
-			}
-		}
-		resultat.finish(strict);
-
-		return resultat;
-	}
-
 	/*
 	 * (non-Javadoc)
 	 *
@@ -480,27 +447,6 @@ public abstract class MockServiceCivil implements ServiceCivilService {
 		}
 
 		return adressesActives;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see ch.vd.uniregctb.interfaces.service.HostCivilService#getAdressesActives(java.lang.Long)
-	 */
-	public Collection<Adresse> getAdressesActives(Long numeroIndividu) {
-		return getAdressesActives(numeroIndividu, RegDate.get());
-	}
-
-	public Collection<Adresse> getAdresses(long noIndividu, int annee) {
-		return getAdressesActives(noIndividu, null);
-	}
-
-	public Individu getIndividu(long noIndividu, int annee) {
-		MockIndividu individu = (MockIndividu) getIndividu(noIndividu);
-		if (individu != null) {
-			individu.setAdresses(getAdressesActives(noIndividu, null));
-		}
-		return individu;
 	}
 
 	public Individu getIndividu(long noIndividu, int annee, EnumAttributeIndividu... parties) {
@@ -542,74 +488,6 @@ public abstract class MockServiceCivil implements ServiceCivilService {
 	public Collection<Nationalite> getNationalites(long noIndividu, int annee) {
 		Individu ind = getIndividu(noIndividu);
 		return ind.getNationalites();
-	}
-
-	public EtatCivil getEtatCivilActif(long noIndividu, RegDate date)  {
-
-		EtatCivil etat = null;
-
-		final int year = (date == null ? 2400 : date.year());
-		final MockIndividu individu = (MockIndividu) getIndividu(noIndividu, year);
-
-		final Collection<?> etats = individu.getEtatsCivils();
-		if (etats != null) {
-			for (Object o : etats) {
-
-				final EtatCivil e = (EtatCivil) o;
-				final RegDate debutValidite = e.getDateDebutValidite();
-
-				/*
-				 * Attention: les état-civils ne sont pas triés dans la collection, et certains n'ont pas de date de fin de validité (=
-				 * implicite à la date d'ouverture du suivant)
-				 */
-				if (RegDateHelper.isBetween(date, debutValidite, null, NullDateBehavior.LATEST)) {
-					if (etat == null) {
-						/* premier état-civil trouvé */
-						etat = e;
-					}
-					else if (debutValidite != null && etat.getDateDebutValidite() != null && debutValidite.isAfterOrEqual(etat.getDateDebutValidite())) {
-						/* trouvé un état-civil valide et dont la date de validité est après celle de l'état-civil courant */
-						etat = e;
-					}
-				}
-			}
-		}
-		return etat;
-	}
-
-	public Permis getPermisActif(long noIndividu, RegDate date) {
-
-		final int year = (date == null ? 2400 : date.year());
-		final MockIndividu individu = (MockIndividu) getIndividu(noIndividu, year);
-
-		Permis permis = null;
-
-		final Collection<?> coll = individu.getPermis();
-		if (coll != null) {
-			for (Object o : coll) {
-
-				final Permis e = (Permis) o;
-				final RegDate debutValidite = e.getDateDebutValidite();
-				final RegDate finValidite = e.getDateFinValidite();
-
-				/*
-				 * Attention: les permis ne sont pas triés dans la collection, et certains n'ont pas de date de fin de validité (= implicite
-				 * à la date d'ouverture du suivant)
-				 */
-				if (RegDateHelper.isBetween(date, debutValidite, finValidite, NullDateBehavior.LATEST)) {
-					if (permis == null) {
-						/* premier permis trouvé */
-						permis = e;
-					}
-					else if (debutValidite.isAfterOrEqual(permis.getDateDebutValidite())) {
-						/* trouvé un permis valide et dont la date de validité est après celle de l'état-civil courant */
-						permis = e;
-					}
-				}
-			}
-		}
-
-		return permis;
 	}
 
 	public void setUp(ServiceCivilService target) {

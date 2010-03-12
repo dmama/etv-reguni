@@ -94,8 +94,11 @@ public class ServiceCivilServiceImplTest extends WithoutSpringTest {
 		final MockEtatCivil ec2 = new MockEtatCivil();
 		final MockEtatCivil ec3 = new MockEtatCivil();
 		ec1.setDateDebutValidite(RegDate.get(1930, 3, 1));
+		ec1.setNoSequence(1);
 		ec2.setDateDebutValidite(RegDate.get(1985, 4, 21));
+		ec2.setNoSequence(3);
 		ec3.setDateDebutValidite(RegDate.get(1973, 1, 8));
+		ec3.setNoSequence(2);
 
 		service.setUp(new MockServiceCivil() {
 			@Override
@@ -355,7 +358,7 @@ public class ServiceCivilServiceImplTest extends WithoutSpringTest {
 			fail();
 		}
 		catch (DonneesCivilesException e) {
-			assertEquals("Plus d'une adresse 'principale' détectée", e.getMessage());
+			assertEquals(String.format("Plus d'une adresse 'principale' détectée sur l'individu n°%d et pour l'année %d.", noIndividu, 2002), e.getMessage());
 		}
 	}
 
