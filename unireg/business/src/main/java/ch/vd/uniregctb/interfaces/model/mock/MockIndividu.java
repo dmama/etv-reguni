@@ -112,6 +112,10 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 		this.dateNaissance = dateNaissance;
 	}
 
+	public boolean isMineur(RegDate date) {
+		return dateNaissance != null && dateNaissance.addYears(18).compareTo(date) > 0;
+	}
+
 	public HistoriqueIndividu getDernierHistoriqueIndividu() {
 		return dernierHistoriqueIndividu;
 	}

@@ -21,6 +21,7 @@ import ch.vd.uniregctb.evenement.GenericEvenementAdapter;
 import ch.vd.uniregctb.evenement.changement.AbstractChangementHandler;
 import ch.vd.uniregctb.evenement.common.EvenementCivilHandlerException;
 import ch.vd.uniregctb.interfaces.model.CommuneSimple;
+import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
@@ -109,9 +110,15 @@ public class ModificationAdresseNotificationHandler extends AbstractChangementHa
 			}
 
 			if (ofsCommune == null) {
-				final String msg = String.format("Impossible de trouver la commune du for actif au %s de l'indidivu %d (ctb %s)",
-												RegDateHelper.dateToDisplayString(dateTraitement), noIndividu, FormatNumeroHelper.numeroCTBToDisplay(pp.getNumero()));
-				throw new EvenementCivilHandlerException(msg);
+
+				// si l'individu est mineur... on laisse passer...
+				final Individu individu = evenement.getIndividu();
+				if (!individu.isMineur(dateTraitement)) {
+
+					final String msg = String.format("Impossible de trouver la commune du for actif au %s de l'indidivu %d (ctb %s)",
+													RegDateHelper.dateToDisplayString(dateTraitement), noIndividu, FormatNumeroHelper.numeroCTBToDisplay(pp.getNumero()));
+					throw new EvenementCivilHandlerException(msg);
+				}
 			}
 			else {
 				// la commune d'annonce de l'événement n'est pas forcément la commune de domicile

@@ -299,6 +299,10 @@
 		  class="ch.vd.uniregctb.norentes.civil.correction.adresse.Ec_43000_01_CorrectionAdresse_MemeCommune_Scenario"/>
 	<bean id="ec_43000_02_CorrectionAdresse_CommuneDifferente_Test" parent="evenementCivilScenario"
 		  class="ch.vd.uniregctb.norentes.civil.correction.adresse.Ec_43000_02_CorrectionAdresse_CommuneDifferente_Scenario"/>
+	<bean id="ec_43000_03_CorrectionAdresse_IndividuMineur_Test" parent="evenementCivilScenario"
+		  class="ch.vd.uniregctb.norentes.civil.correction.adresse.Ec_43000_03_CorrectionAdresse_IndividuMineur_Scenario"/>
+	<bean id="ec_43000_04_CorrectionAdresse_IndividuMajeurSansFor_Test" parent="evenementCivilScenario"
+		  class="ch.vd.uniregctb.norentes.civil.correction.adresse.Ec_43000_04_CorrectionAdresse_IndividuMajeurSansFor_Scenario"/>
 
 	<bean id="ec_48000_01_CorrectionIdentificationHabitant_Test" parent="evenementCivilScenario"
 		class="ch.vd.uniregctb.norentes.civil.changement.identification.Ec_48000_01_CorrectionIdentificationHabitant_Scenario"/>

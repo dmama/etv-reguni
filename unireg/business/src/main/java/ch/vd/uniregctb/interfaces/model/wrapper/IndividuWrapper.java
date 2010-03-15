@@ -114,6 +114,10 @@ public class IndividuWrapper extends EntiteCivileWrapper implements Individu {
 		return naissance;
 	}
 
+	public boolean isMineur(RegDate date) {
+		return naissance != null && naissance.addYears(18).compareTo(date) > 0;
+	}
+
 	public HistoriqueIndividu getDernierHistoriqueIndividu() {
 		if (dernierHistorique == null) {
 			dernierHistorique = HistoriqueIndividuWrapper.get(target.getDernierHistoriqueIndividu());

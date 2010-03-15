@@ -36,6 +36,14 @@ public interface Individu extends EntiteCivile {
      */
     RegDate getDateNaissance();
 
+	/**
+	 * Renvoie <code>true</code> si la date de naissance de l'individu est connue
+	 * et si elle est moins de 18 ans avant la date passée en paramètre
+	 * @param date date pour laquelle la réponse est valable
+	 * @return <code>true</code> si l'individu est encore mineur à la date donnée, <code>false</code> s'il est déjà majeur (ou si sa date de naissance est inconnue)
+	 */
+	boolean isMineur(RegDate date);
+
     /**
      * Retourne le dernier historique de l'individu.
      *
