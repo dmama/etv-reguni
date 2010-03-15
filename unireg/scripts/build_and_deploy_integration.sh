@@ -32,9 +32,9 @@ echo "Version: $sversion / $lversion"
 
 user=dsi_unireg@ssv0309v
 upDir=/ccv/data/dsi_unireg/uploads
-configDir=/ccv/data/dsi_unireg/cat_uniregI/app/unireg-is/config
-deployDir=/ccv/data/dsi_unireg/cat_uniregI/webapps/fiscalite#int-unireg-is
-workDir=/ccv/data/dsi_unireg/cat_uniregI/work/unireg-is
+configDir=/ccv/data/dsi_unireg/cat_uniregI/app/unireg/config
+deployDir=/ccv/data/dsi_unireg/cat_uniregI/webapps/fiscalite#int-unireg
+workDir=/ccv/data/dsi_unireg/cat_uniregI/work/unireg
 env=integration
 
 relFileOrig=uniregctb-release.zip
