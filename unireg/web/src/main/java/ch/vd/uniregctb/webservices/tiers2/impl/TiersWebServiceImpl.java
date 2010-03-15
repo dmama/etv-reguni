@@ -1,0 +1,539 @@
+package ch.vd.uniregctb.webservices.tiers2.impl;
+
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.utils.Assert;
+import ch.vd.uniregctb.adresse.AdresseService;
+import ch.vd.uniregctb.iban.IbanValidator;
+import ch.vd.uniregctb.indexer.IndexerException;
+import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
+import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
+import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.parametrage.ParametreAppService;
+import ch.vd.uniregctb.situationfamille.SituationFamilleService;
+import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
+import ch.vd.uniregctb.tiers.TiersCriteria;
+import ch.vd.uniregctb.tiers.TiersDAO;
+import ch.vd.uniregctb.tiers.TiersDAO.Parts;
+import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.webservices.common.NoOfsTranslator;
+import ch.vd.uniregctb.webservices.tiers2.TiersWebService;
+import ch.vd.uniregctb.webservices.tiers2.data.*;
+import ch.vd.uniregctb.webservices.tiers2.data.Date;
+import ch.vd.uniregctb.webservices.tiers2.data.Tiers.Type;
+import ch.vd.uniregctb.webservices.tiers2.exception.AccessDeniedException;
+import ch.vd.uniregctb.webservices.tiers2.exception.BusinessException;
+import ch.vd.uniregctb.webservices.tiers2.exception.TechnicalException;
+import ch.vd.uniregctb.webservices.tiers2.exception.WebServiceException;
+import ch.vd.uniregctb.webservices.tiers2.params.*;
+import org.apache.log4j.Logger;
+import org.springframework.orm.hibernate3.HibernateTemplate;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.*;
+
+public class TiersWebServiceImpl implements TiersWebService {
+
+	private static final Logger LOGGER = Logger.getLogger(TiersWebServiceImpl.class);
+
+	private static final int MAX_BATCH_SIZE = 500; // la limite Oracle est à 1'000, mais comme on peut recevoir des ménages communs, il faut garder une bonne marge pour charger les personnes physiques associées.
+
+	private final Context context = new Context();
+
+	private GlobalTiersSearcher tiersSearcher;
+
+	public void setTiersDAO(TiersDAO tiersDAO) {
+		context.tiersDAO = tiersDAO;
+	}
+
+	public void setTiersService(TiersService tiersService) {
+		context.tiersService = tiersService;
+	}
+
+	public void setSituationService(SituationFamilleService situationService) {
+		context.situationService = situationService;
+	}
+
+	public void setAdresseService(AdresseService adresseService) {
+		context.adresseService = adresseService;
+	}
+
+	public void setInfraService(ServiceInfrastructureService infraService) {
+		context.infraService = infraService;
+	}
+
+	public void setIbanValidator(IbanValidator ibanValidator) {
+		context.ibanValidator = ibanValidator;
+	}
+
+	public void setParametreService(ParametreAppService parametreService) {
+		context.parametreService = parametreService;
+	}
+
+	public void setTiersSearcher(GlobalTiersSearcher tiersSearcher) {
+		this.tiersSearcher = tiersSearcher;
+	}
+
+	public void setServiceCivil(ServiceCivilService service) {
+		context.serviceCivilService = service;
+	}
+
+	public void setNoOfsTranslator(NoOfsTranslator translator) {
+		context.noOfsTranslator = translator;
+	}
+
+	public void setHibernateTemplate(HibernateTemplate template) {
+		context.hibernateTemplate = template;
+	}
+
+	public void setTransactionManager(PlatformTransactionManager manager) {
+		context.transactionManager = manager;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Transactional(readOnly = true)
+	public List<TiersInfo> searchTiers(SearchTiers params) throws BusinessException, AccessDeniedException, TechnicalException {
+
+		try {
+			Set<TiersInfo> set = new HashSet<TiersInfo>();
+
+			final List<TiersCriteria> criteria = DataHelper.webToCore(params);
+			for (TiersCriteria criterion : criteria) {
+				final List<TiersIndexedData> values = tiersSearcher.search(criterion);
+				for (TiersIndexedData value : values) {
+					final TiersInfo info = DataHelper.coreToWeb(value);
+					set.add(info);
+				}
+			}
+
+			return new ArrayList<TiersInfo>(set);
+		}
+		catch (IndexerException e) {
+			LOGGER.error(e, e);
+			throw new BusinessException(e);
+		}
+		catch (RuntimeException e) {
+			LOGGER.error(e, e);
+			throw new TechnicalException(e);
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Transactional(readOnly = true)
+	public Tiers getTiers(GetTiers params) throws BusinessException, AccessDeniedException, TechnicalException {
+
+		try {
+			final ch.vd.registre.base.date.RegDate date = ch.vd.registre.base.date.RegDate.get(Date.asJavaDate(params.date));
+			Tiers data;
+
+			final ch.vd.uniregctb.tiers.Tiers tiers = context.tiersService.getTiers(params.tiersNumber);
+			if (tiers == null) {
+				return null;
+			}
+
+			if (tiers instanceof ch.vd.uniregctb.tiers.PersonnePhysique) {
+				final ch.vd.uniregctb.tiers.PersonnePhysique personne = (ch.vd.uniregctb.tiers.PersonnePhysique) tiers;
+				data = new PersonnePhysique(personne, params.parts, date, context);
+			}
+			else if (tiers instanceof ch.vd.uniregctb.tiers.MenageCommun) {
+				final ch.vd.uniregctb.tiers.MenageCommun menage = (ch.vd.uniregctb.tiers.MenageCommun) tiers;
+				data = new MenageCommun(menage, params.parts, date, context);
+			}
+			else if (tiers instanceof ch.vd.uniregctb.tiers.DebiteurPrestationImposable) {
+				final ch.vd.uniregctb.tiers.DebiteurPrestationImposable debiteur = (ch.vd.uniregctb.tiers.DebiteurPrestationImposable) tiers;
+				data = new Debiteur(debiteur, params.parts, date, context);
+			}
+			else {
+				data = null;
+			}
+
+			return data;
+		}
+		catch (RuntimeException e) {
+			LOGGER.error(e, e);
+			throw new TechnicalException(e);
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Transactional(readOnly = true)
+	public TiersHisto getTiersPeriode(GetTiersPeriode params) throws BusinessException, AccessDeniedException, TechnicalException {
+
+		try {
+			final ch.vd.uniregctb.tiers.Tiers tiers = context.tiersService.getTiers(params.tiersNumber);
+			if (tiers == null) {
+				return null;
+			}
+
+			final TiersHisto data;
+			if (tiers instanceof ch.vd.uniregctb.tiers.PersonnePhysique) {
+				final ch.vd.uniregctb.tiers.PersonnePhysique personne = (ch.vd.uniregctb.tiers.PersonnePhysique) tiers;
+				data = new PersonnePhysiqueHisto(personne, params.periode, params.parts, context);
+			}
+			else if (tiers instanceof ch.vd.uniregctb.tiers.MenageCommun) {
+				final ch.vd.uniregctb.tiers.MenageCommun menage = (ch.vd.uniregctb.tiers.MenageCommun) tiers;
+				data = new MenageCommunHisto(menage, params.periode, params.parts, context);
+			}
+			else if (tiers instanceof ch.vd.uniregctb.tiers.DebiteurPrestationImposable) {
+				final ch.vd.uniregctb.tiers.DebiteurPrestationImposable debiteur = (ch.vd.uniregctb.tiers.DebiteurPrestationImposable) tiers;
+				data = new DebiteurHisto(debiteur, params.periode, params.parts, context);
+			}
+			else {
+				data = null;
+			}
+
+			return data;
+		}
+		catch (RuntimeException e) {
+			LOGGER.error(e, e);
+			throw new TechnicalException(e);
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Transactional(readOnly = true)
+	public TiersHisto getTiersHisto(GetTiersHisto params) throws BusinessException, AccessDeniedException, TechnicalException {
+
+		try {
+			final ch.vd.uniregctb.tiers.Tiers tiers = context.tiersService.getTiers(params.tiersNumber);
+			if (tiers == null) {
+				return null;
+			}
+
+			final TiersHisto data;
+			if (tiers instanceof ch.vd.uniregctb.tiers.PersonnePhysique) {
+				final ch.vd.uniregctb.tiers.PersonnePhysique personne = (ch.vd.uniregctb.tiers.PersonnePhysique) tiers;
+				data = new PersonnePhysiqueHisto(personne, params.parts, context);
+			}
+			else if (tiers instanceof ch.vd.uniregctb.tiers.MenageCommun) {
+				final ch.vd.uniregctb.tiers.MenageCommun menage = (ch.vd.uniregctb.tiers.MenageCommun) tiers;
+				data = new MenageCommunHisto(menage, params.parts, context);
+			}
+			else if (tiers instanceof ch.vd.uniregctb.tiers.DebiteurPrestationImposable) {
+				final ch.vd.uniregctb.tiers.DebiteurPrestationImposable debiteur = (ch.vd.uniregctb.tiers.DebiteurPrestationImposable) tiers;
+				data = new DebiteurHisto(debiteur, params.parts, context);
+			}
+			else {
+				data = null;
+			}
+
+			return data;
+		}
+		catch (RuntimeException e) {
+			LOGGER.error(e, e);
+			throw new TechnicalException(e);
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public BatchTiers getBatchTiers(final GetBatchTiers params) throws BusinessException, AccessDeniedException, TechnicalException {
+		try {
+			if (params.tiersNumbers == null || params.tiersNumbers.isEmpty()) {
+				return new BatchTiers();
+			}
+
+			if (params.tiersNumbers.size() > MAX_BATCH_SIZE) {
+				final String message = "La taille des requêtes batch ne peut pas dépasser " + MAX_BATCH_SIZE + ".";
+				LOGGER.error(message);
+				throw new BusinessException(message);
+			}
+
+
+			final ch.vd.registre.base.date.RegDate date = ch.vd.registre.base.date.RegDate.get(Date.asJavaDate(params.date));
+
+			final Map<Long, Object> results = mapTiers(params.tiersNumbers, date, params.parts, new MapCallback() {
+				public Object map(ch.vd.uniregctb.tiers.Tiers tiers, Set<TiersPart> parts, RegDate date, Context context) {
+					try {
+						final Tiers t;
+						if (tiers instanceof ch.vd.uniregctb.tiers.PersonnePhysique) {
+							final ch.vd.uniregctb.tiers.PersonnePhysique personne = (ch.vd.uniregctb.tiers.PersonnePhysique) tiers;
+							t = new PersonnePhysique(personne, parts, date, context);
+						}
+						else if (tiers instanceof ch.vd.uniregctb.tiers.MenageCommun) {
+							final ch.vd.uniregctb.tiers.MenageCommun menage = (ch.vd.uniregctb.tiers.MenageCommun) tiers;
+							t = new MenageCommun(menage, parts, date, context);
+						}
+						else if (tiers instanceof DebiteurPrestationImposable) {
+							final DebiteurPrestationImposable debiteur = (DebiteurPrestationImposable) tiers;
+							t = new Debiteur(debiteur, parts, date, context);
+						}
+						else {
+							t = null;
+						}
+						return t;
+					}
+					catch (WebServiceException e) {
+						return e;
+					}
+					catch (RuntimeException e) {
+						LOGGER.error(e, e);
+						return new TechnicalException(e);
+					}
+				}
+			});
+
+
+			return new BatchTiers(results);
+		}
+		catch (RuntimeException e) {
+			LOGGER.error(e, e);
+			throw new TechnicalException(e);
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public BatchTiersHisto getBatchTiersHisto(final GetBatchTiersHisto params) throws BusinessException, AccessDeniedException, TechnicalException {
+		try {
+			if (params.tiersNumbers == null || params.tiersNumbers.isEmpty()) {
+				return new BatchTiersHisto();
+			}
+
+			if (params.tiersNumbers.size() > MAX_BATCH_SIZE) {
+				final String message = "La taille des requêtes batch ne peut pas dépasser " + MAX_BATCH_SIZE + ".";
+				LOGGER.error(message);
+				throw new BusinessException(message);
+			}
+
+			final Map<Long, Object> results = mapTiers(params.tiersNumbers, null, params.parts, new MapCallback() {
+				public Object map(ch.vd.uniregctb.tiers.Tiers tiers, Set<TiersPart> parts, RegDate date, Context context) {
+					try {
+						final TiersHisto t;
+						if (tiers instanceof ch.vd.uniregctb.tiers.PersonnePhysique) {
+							final ch.vd.uniregctb.tiers.PersonnePhysique personne = (ch.vd.uniregctb.tiers.PersonnePhysique) tiers;
+							t = new PersonnePhysiqueHisto(personne, parts, context);
+						}
+						else if (tiers instanceof ch.vd.uniregctb.tiers.MenageCommun) {
+							final ch.vd.uniregctb.tiers.MenageCommun menage = (ch.vd.uniregctb.tiers.MenageCommun) tiers;
+							t = new MenageCommunHisto(menage, parts, context);
+						}
+						else if (tiers instanceof DebiteurPrestationImposable) {
+							final DebiteurPrestationImposable debiteur = (DebiteurPrestationImposable) tiers;
+							t = new DebiteurHisto(debiteur, parts, context);
+						}
+						else {
+							t = null;
+						}
+						return t;
+					}
+					catch (WebServiceException e) {
+						return e;
+					}
+					catch (RuntimeException e) {
+						LOGGER.error(e, e);
+						return new TechnicalException(e);
+					}
+				}
+			});
+
+
+			return new BatchTiersHisto(results);
+		}
+		catch (RuntimeException e) {
+			LOGGER.error(e, e);
+			throw new TechnicalException(e);
+		}
+	}
+
+	/**
+	 * Cette méthode charge les tiers à partir de la base de données Unireg et les converti au format des Tiers du web-service.
+	 *
+	 * @param tiersNumbers les numéros de tiers à extraire.
+	 * @param date         la date de validité des tiers (<b>null</b> pour la date courante)
+	 * @param parts        les parties à renseigner sur les tiers
+	 * @param callback     la méthode de callback qui va convertir chacuns des tiers de la base de données en tiers du web-service.
+	 * @return une map contenant les tiers extraits, indexés par leurs numéros. Lorsqu'un tiers n'existe pas, la valeur associée à son id est nulle. En cas d'exception, la valeur associée à l'id est
+	 *         l'exception elle-même.
+	 */
+	@SuppressWarnings({"unchecked"})
+	private Map<Long, Object> mapTiers(Set<Long> tiersNumbers, RegDate date, Set<TiersPart> parts, MapCallback callback) {
+
+		final Set<Long> allIds = trim(tiersNumbers);
+
+		// on travaille en utilisant plusieurs threads
+		final int nbThreads = Math.max(1, Math.min(5, allIds.size() / 25)); // un thread pour chaque multiple de 25 tiers. Au minimum 1 thread, au maximum 5 threads
+		final List<Set<Long>> list = split(allIds, nbThreads);
+
+		// démarrage des threads
+		final List<MappingThread> threads = new ArrayList<MappingThread>(nbThreads);
+		for (Set<Long> ids : list) {
+			MappingThread t = new MappingThread(ids, date, parts, context, callback);
+			threads.add(t);
+			t.start();
+		}
+
+		final Map<Long, Object> results = new HashMap<Long, Object>();
+
+		long loadTiersTime = 0;
+		long warmIndividusTime = 0;
+		long mapTiersTime = 0;
+
+		// attente de la fin des threads
+		for (MappingThread t : threads) {
+			try {
+				t.join();
+			}
+			catch (InterruptedException e) {
+				// thread interrompu: il ne tourne plus, rien de spécial à faire en fait.
+				LOGGER.warn("Le thread " + t.getId() + " a été interrompu", e);
+			}
+			results.putAll(t.getResults());
+
+			loadTiersTime += t.loadTiersTime;
+			warmIndividusTime += t.warmIndividusTime;
+			mapTiersTime += t.mapTiersTime;
+		}
+		long totalTime = loadTiersTime + warmIndividusTime + mapTiersTime;
+
+		if (totalTime > 0) {
+			LOGGER.info(String.format("temps d'exécution: chargement des tiers=%d%%, préchargement des individus=%d%%, mapping des tiers=%d%%", loadTiersTime * 100 / totalTime,
+					warmIndividusTime * 100 / totalTime, mapTiersTime * 100 / totalTime));
+		}
+
+		if (results.isEmpty()) {
+			// aucun résultat, pas la peine d'aller plus loin.
+			return null;
+		}
+
+		// ajoute les tiers non trouvés dans la base
+		for (Long id : tiersNumbers) {
+			if (!results.containsKey(id)) {
+				results.put(id, null);
+			}
+		}
+
+		return results;
+	}
+
+	/**
+	 * Découpe le set d'ids en <i>n</i> sous-sets de tailles à peu près égales.
+	 *
+	 * @param allIds le set d'ids à découper
+	 * @param n      le nombre de sous-sets voulu
+	 * @return une liste de sous-sets
+	 */
+	private static List<Set<Long>> split(Set<Long> allIds, int n) {
+
+		Iterator<Long> iter = allIds.iterator();
+		int count = allIds.size() / n;
+
+		List<Set<Long>> list = new ArrayList<Set<Long>>();
+
+		for (int i = 0; i < n; i++) {
+			Set<Long> ids = new HashSet<Long>();
+			for (int j = 0; j < count && iter.hasNext(); j++) {
+				ids.add(iter.next());
+			}
+			if (i == n - 1) { // le dernier prends tout ce qui reste
+				while (iter.hasNext()) {
+					ids.add(iter.next());
+				}
+			}
+			list.add(ids);
+		}
+		return list;
+	}
+
+	/**
+	 * @param input un set d'entrée
+	 * @return une copie du set d'entrée avec toutes les valeurs nulles supprimées; ou le set d'entrée lui-même s'il ne contient pas de valeur nulle.
+	 */
+	private static Set<Long> trim(Set<Long> input) {
+		if (input.contains(null)) {
+			HashSet<Long> trimmed = new HashSet<Long>(input);
+			trimmed.remove(null);
+			return trimmed;
+		}
+		return input;
+	}
+
+	/**
+	 * Converti les <i>parties</i> du web-service en <i>parties</i> de la couche business, en y ajoutant la partie des fors fiscaux.
+	 *
+	 * @param parts les parties du web-service
+	 * @return les parties de la couche business.
+	 */
+	protected static Set<Parts> webToCoreWithForsFiscaux(Set<TiersPart> parts) {
+		Set<Parts> coreParts = DataHelper.webToCore(parts);
+		if (coreParts == null) {
+			coreParts = new HashSet<Parts>();
+		}
+		// les fors fiscaux sont nécessaires pour déterminer les dates de début et de fin d'activité.
+		coreParts.add(Parts.FORS_FISCAUX);
+		// les adresses et les rapports-entre-tiers sont nécessaires pour calculer les raisons sociales des débiteurs
+		coreParts.add(Parts.ADRESSES);
+		coreParts.add(Parts.RAPPORTS_ENTRE_TIERS);
+
+		return coreParts;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Transactional(readOnly = true)
+	public Tiers.Type getTiersType(GetTiersType params) throws BusinessException, AccessDeniedException, TechnicalException {
+
+		try {
+			final ch.vd.uniregctb.tiers.Tiers tiers = context.tiersService.getTiers(params.tiersNumber);
+			if (tiers == null) {
+				return null;
+			}
+
+			final Type type = DataHelper.getType(tiers);
+			if (type == null) {
+				Assert.fail("Type de tiers inconnu = [" + tiers.getClass().getSimpleName());
+			}
+
+			return type;
+		}
+		catch (RuntimeException e) {
+			LOGGER.error(e, e);
+			throw new TechnicalException(e);
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Transactional(rollbackFor = Throwable.class)
+	public void setTiersBlocRembAuto(final SetTiersBlocRembAuto params) throws BusinessException, AccessDeniedException, TechnicalException {
+
+		try {
+			final ch.vd.uniregctb.tiers.Tiers tiers = context.tiersService.getTiers(params.tiersNumber);
+			if (tiers == null) {
+				throw new BusinessException("Le tiers n°" + params.tiersNumber + " n'existe pas.");
+			}
+
+			tiers.setBlocageRemboursementAutomatique(params.blocage);
+		}
+		catch (RuntimeException e) {
+			LOGGER.error(e, e);
+			throw new TechnicalException(e);
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public List<EvenementPM> searchEvenementsPM(SearchEvenementsPM params) throws BusinessException, AccessDeniedException, TechnicalException {
+		throw new TechnicalException("Fonctionnalité pas encore implémentée.");
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void doNothing(AllConcreteTiersClasses dummy) {
+	}
+}

@@ -1,0 +1,35 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+  <table name="EVENEMENT_CIVIL_REGROUPE">
+    <column>LOG_MDATE</column>
+    <column>ID</column>
+    <column>TYPE</column>
+    <column>DATE_EVENEMENT</column>
+    <column>NUMERO_OFS_ANNONCE</column>
+    <row>
+      <value>2008-01-01</value>
+      <value>9001</value>
+      <value>NAISSANCE</value>
+      <value>19791025</value>
+      <value>1010</value>
+    </row>
+  </table>
+  <table name="EVENEMENT_CIVIL_UNITAIRE">
+    <column>LOG_MDATE</column>
+    <column>ID</column>
+    <column>TYPE</column>
+    <column>DATE_EVENEMENT</column>
+    <column>NUMERO_INDIVIDU</column>
+    <column>NUMERO_OFS_ANNONCE</column>
+    <column>ETAT</column>
+    <row>
+      <value>2008-01-01</value>
+      <value>9001</value>
+      <value>NAISSANCE</value>
+      <value>19791025</value>
+      <value>123456789</value>
+      <value>1010</value>
+      <value>TRAITE</value>
+    </row>
+  </table>
+</dataset>

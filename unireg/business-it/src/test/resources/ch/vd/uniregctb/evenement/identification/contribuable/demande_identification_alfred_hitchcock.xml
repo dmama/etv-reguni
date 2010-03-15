@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<identificationCTB xmlns="http://www.vd.ch/fiscalite/registre/identificationContribuable-v1.6">
+	<demande>
+		<demande>
+			<messageId>1234</messageId>
+			<emetteurId>IdentificationContribuableTest</emetteurId>
+			<typeMessage>ssk-3001-000101</typeMessage>
+			<periodeFiscale>2008+01:00</periodeFiscale>
+			<prioriteEmetteur>false</prioriteEmetteur>
+			<prioriteUtilisateur>2</prioriteUtilisateur>
+		</demande>
+		<personne>
+			<nom>Hitchcock</nom>
+			<prenoms>Alfred Joseph</prenoms>
+			<sexe>1</sexe>
+			<dateNaissance>
+				<anneeMoisJour>1903-08-13+01:00</anneeMoisJour>
+			</dateNaissance>
+			<adresse>
+				<lieu>London</lieu>
+				<pays>UK</pays>
+			</adresse>
+		</personne>
+	</demande>
+</identificationCTB>

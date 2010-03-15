@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Notification>
+	<instance>Blue</instance>
+	<sender>+41762223343</sender>
+	<operator>orange</operator>
+	<service>IFD</service>
+	<language>fr</language>
+	<command>FORWARD</command>
+	<requestUid>sms5627964</requestUid>
+	<parameters>
+		<text>Ifd 10000002</text>
+		<message>Ifd 10000002</message>
+	</parameters>
+</Notification>

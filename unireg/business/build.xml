@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="UniregCTB-core" default="all" basedir=".">
+    
+    <!--property file="${regch.web}/src/config/regch.properties.val" / -->
+	<!--property environment="env" / -->
+	
+	<!-- property name="basedir" value="." / -->
+
+	<target name="all" depends="uml.host" />
+
+	<target name="init">
+	  	<mkdir dir="target/uml" />
+	  	<mkdir dir="target/site/uml" />
+	</target>
+	
+	<target name="uml.host" depends="init">
+
+	  	<echo message="Running UMLGraph for Host entities ..." />
+	  	<java 	fork="true"
+	  			jar="../core/extlibs/gr/spinellis/UmlGraph.jar">
+	  		<arg value="-private" />
+	  		<arg value="-apidocroot" />
+	  		<arg value="http://calimero.etat-de-vaud.ch/unireg-web/apidocs" />
+	  		<arg value="-output" />
+	  		<arg value="target/uml/host.dot" />
+	  		<arg value="../core/src/main/java/ch/vd/uniregctb/UMLOptions.java" />
+			<arg value="src/main/java/ch/vd/uniregctb/host/model/HostContribuable.java" />
+			<arg value="src/main/java/ch/vd/uniregctb/host/model/HostAdresseFiscale.java" />
+			<arg value="src/main/java/ch/vd/uniregctb/host/model/HostAdressePostale.java" />
+			<arg value="src/main/java/ch/vd/uniregctb/host/model/HostCategorieEmployeur.java" />
+			<arg value="src/main/java/ch/vd/uniregctb/host/model/HostCommune.java" />
+			<arg value="src/main/java/ch/vd/uniregctb/host/model/HostContribuable.java" />
+			<arg value="src/main/java/ch/vd/uniregctb/host/model/HostEmployeur.java" />
+			<arg value="src/main/java/ch/vd/uniregctb/host/model/HostEntity.java" />
+			<arg value="src/main/java/ch/vd/uniregctb/host/model/HostHistoRole.java" />
+			<arg value="src/main/java/ch/vd/uniregctb/host/model/HostIndividu.java" />
+			<arg value="src/main/java/ch/vd/uniregctb/host/model/HostLocalitePostale.java" />
+			<arg value="src/main/java/ch/vd/uniregctb/host/model/HostPays.java" />
+			<arg value="src/main/java/ch/vd/uniregctb/host/model/HostPermisTravail.java" />
+			<arg value="src/main/java/ch/vd/uniregctb/host/model/HostRapportTravail.java" />
+			<arg value="src/main/java/ch/vd/uniregctb/host/model/HostRemboursementIs.java" />
+			<arg value="src/main/java/ch/vd/uniregctb/host/model/HostRue.java" />
+			<arg value="src/main/java/ch/vd/uniregctb/host/model/HostSourcier.java" />
+			<arg value="src/main/java/ch/vd/uniregctb/host/model/HostTypeImposition.java" />
+	  	</java>
+	  	<echo message="Running dot ..." />
+	  	<exec executable="neato">
+	  		<arg value="-Gratio=0.7" />
+	  		<arg value="-Eminlen=2" />
+	  		<arg value="-Tpng" />
+	  		<arg value="-otarget/site/uml/host.png" />
+	  		<arg value="target/uml/host.dot" />
+	  	</exec>
+	  	<echo message="dot is done." />
+	</target>
+
+</project>

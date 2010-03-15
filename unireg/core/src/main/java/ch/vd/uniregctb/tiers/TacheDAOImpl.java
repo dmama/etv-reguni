@@ -1,0 +1,447 @@
+package ch.vd.uniregctb.tiers;
+
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import ch.vd.registre.base.dao.GenericDAOImpl;
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.common.ObjectNotFoundException;
+import ch.vd.uniregctb.common.ParamPagination;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
+import ch.vd.uniregctb.type.TypeEtatTache;
+import ch.vd.uniregctb.type.TypeTache;
+import org.apache.log4j.Logger;
+import org.hibernate.*;
+import org.hibernate.engine.EntityKey;
+import org.hibernate.impl.SessionImpl;
+import org.springframework.dao.support.DataAccessUtils;
+import org.springframework.orm.hibernate3.HibernateCallback;
+
+import ch.vd.registre.base.dao.GenericDAOImpl;
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.common.ParamPagination;
+import ch.vd.uniregctb.type.TypeEtatTache;
+import ch.vd.uniregctb.type.TypeTache;
+
+public class TacheDAOImpl extends GenericDAOImpl<Tache, Long> implements TacheDAO {
+
+	//private static final Logger LOGGER = Logger.getLogger(TacheDAOImpl.class);
+
+	public TacheDAOImpl() {
+		super(Tache.class);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public List<Tache> find(TacheCriteria criterion) {
+		return find(criterion, false);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@SuppressWarnings("unchecked")
+	public List<Tache> find(TacheCriteria criterion, boolean doNotAutoFlush) {
+
+		List<Object> params = new ArrayList<Object>();
+		final String query = "select tache " + buildFromWhereClause(criterion, params) + " order by tache.id asc";
+
+		final FlushMode mode = (doNotAutoFlush ? FlushMode.MANUAL : null);
+		final List<Tache> list = (List<Tache>) find(query, params.toArray(), mode);
+		return list;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@SuppressWarnings("unchecked")
+	public List<Tache> find(long noContribuable) {
+		final String query = "select t from Tache t where t.contribuable.id=" + noContribuable + " order by t.id asc";
+		return getHibernateTemplate().find(query);
+	}
+
+	/**
+	 * Recherche d'un range de toutes les tâches correspondant au critère de sélection
+	 *
+	 * @param criterion
+	 * @param page
+	 * @param pageSize
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public List<Tache> find(final TacheCriteria criterion, final ParamPagination paramPagination) {
+
+		return (List<Tache>) getHibernateTemplate().executeWithNativeSession(new HibernateCallback() {
+			public Object doInHibernate(Session session) throws HibernateException, SQLException {
+
+				List<Object> params = new ArrayList<Object>();
+				String query = "select tache " + buildFromWhereClause(criterion, params);
+
+				query = query + buildOrderClause(paramPagination);
+
+				Query queryObject = session.createQuery(query);
+				Object[] values = params.toArray();
+				if (values != null) {
+					for (int i = 0; i < values.length; i++) {
+						queryObject.setParameter(i, values[i]);
+					}
+				}
+				int firstResult = (paramPagination.getNumeroPage() - 1) * paramPagination.getTaillePage();
+				int maxResult = paramPagination.getTaillePage();
+				queryObject.setFirstResult(firstResult);
+				queryObject.setMaxResults(maxResult);
+
+				return queryObject.list();
+			}
+		});
+	}
+
+	/**
+	 * Construit la clause order
+	 *
+	 * @param paramPagination
+	 * @return
+	 */
+	private String buildOrderClause(ParamPagination paramPagination) {
+		String clauseOrder = "";
+		if (paramPagination.getChamp() != null) {
+			if (paramPagination.getChamp().equals("type")) {
+				clauseOrder = " order by tache.class";
+			}
+			else {
+				clauseOrder = " order by tache." + paramPagination.getChamp();
+			}
+
+			if (paramPagination.isSensAscending()) {
+				clauseOrder = clauseOrder + " asc";
+			}
+			else {
+				clauseOrder = clauseOrder + " desc";
+			}
+		}
+		else {
+			clauseOrder = " order by tache.id asc";
+
+		}
+		return clauseOrder;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public int count(TacheCriteria criterion) {
+		return count(criterion, false);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public int count(long noContribuable) {
+		final String query = "select count(*) from Tache t where t.contribuable.id=" + noContribuable + " order by t.id asc";
+		return DataAccessUtils.intResult(getHibernateTemplate().find(query));
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public int count(TacheCriteria criterion, boolean doNotAutoFlush) {
+		List<Object> params = new ArrayList<Object>();
+		final String query = "select count(*) " + buildFromWhereClause(criterion, params);
+
+		final FlushMode mode = (doNotAutoFlush ? FlushMode.MANUAL : null);
+		int count = DataAccessUtils.intResult(find(query, params.toArray(), mode));
+		return count;
+	}
+
+	/**
+	 * Construit les clauses 'from' et 'where' de la requête de recherche des tâches.
+	 */
+	private String buildFromWhereClause(TacheCriteria criterion, List<Object> params) {
+
+		String clause = "";
+
+		// Type de tache
+		final TypeTache typeTache = criterion.getTypeTache();
+		if (typeTache == null || criterion.isInvertTypeTache()) {
+			clause = "from Tache tache where 1=1 ";
+		}
+		else {
+			clause = "from " + typeTache.name() + " tache where 1=1 ";
+		}
+		if (criterion.isInvertTypeTache()) {
+			clause += " and tache.class != " + typeTache.name() + " ";
+		}
+
+		// Contribuable
+		final Contribuable contribuable = criterion.getContribuable();
+		if (contribuable != null) {
+			clause += " and tache.contribuable = ? ";
+			params.add(contribuable);
+		}
+
+		// Numéro de contribuable
+		if (criterion.getNumeroCTB() != null) {
+			clause += " and tache.contribuable.numero = ? ";
+			params.add(criterion.getNumeroCTB());
+		}
+
+		// Etat tache
+		final TypeEtatTache etatTache = criterion.getEtatTache();
+		if (etatTache != null) {
+			clause += " and tache.etat = ? ";
+			params.add(etatTache.name());
+		}
+
+		// Année de la période d'imposition
+		final Integer annee = criterion.getAnnee();
+		if (annee != null) {
+			RegDate dateDebutPeriode = RegDate.get(annee.intValue(), 1, 1);
+			RegDate dateFinPeriode = RegDate.get(annee.intValue(), 12, 31);
+
+			if (TypeTache.TacheEnvoiDeclarationImpot.equals(typeTache)) {
+				clause += " and tache.dateDebut >= ? ";
+				clause += " and tache.dateFin <= ? ";
+				params.add(new Integer(dateDebutPeriode.index()));
+				params.add(new Integer(dateFinPeriode.index()));
+			}
+			else if (TypeTache.TacheAnnulationDeclarationImpot.equals(typeTache)) {
+				clause += " and tache.declarationImpotOrdinaire.dateDebut >= ? ";
+				clause += " and tache.declarationImpotOrdinaire.dateFin <= ? ";
+				params.add(new Integer(dateDebutPeriode.index()));
+				params.add(new Integer(dateFinPeriode.index()));
+			}
+		}
+
+		// Office d'impôt
+		final Integer oid = criterion.getOid();
+		if (oid != null) {
+			// [UNIREG-1850]
+			clause += " and tache.collectiviteAdministrativeAssignee.numeroCollectiviteAdministrative = ? ";
+			params.add(oid);
+		}
+
+		// Office d'impot de l'utilisateur
+		final Integer[] oidUser = criterion.getOidUser();
+		if (oidUser != null && oidUser.length > 0) {
+			clause += " and (tache.collectiviteAdministrativeAssignee is null or " +
+					"tache.collectiviteAdministrativeAssignee.numeroCollectiviteAdministrative in (?";
+			params.add(oidUser[0]);
+			for (int i = 1; i < oidUser.length; i++) {
+				clause += ",?";
+				params.add(oidUser[i]);
+			}
+			clause += "))";
+		}
+
+		final Date dateCreationDepuis = criterion.getDateCreationDepuis();
+		if (dateCreationDepuis != null) {
+			clause += " and tache.logCreationDate >= ? ";
+			params.add(dateCreationDepuis);
+		}
+
+		final Date dateCreationJusqua = criterion.getDateCreationJusqua();
+		if (dateCreationJusqua != null) {
+			clause += " and tache.logCreationDate <= ? ";
+			params.add(dateCreationJusqua);
+		}
+
+		final RegDate dateEcheanceJusqua = criterion.getDateEcheanceJusqua();
+		if (dateEcheanceJusqua != null) {
+			clause += " and tache.dateEcheance <= ? ";
+			params.add(dateEcheanceJusqua.index());
+		}
+
+		final boolean inclureTachesAnnulees = criterion.isInclureTachesAnnulees();
+		if (!inclureTachesAnnulees) {
+			clause += " and tache.annulationDate is null";
+		}
+
+		final DeclarationImpotOrdinaire declarationAnnulee = criterion.getDeclarationAnnulee();
+		if (declarationAnnulee != null && typeTache == TypeTache.TacheAnnulationDeclarationImpot) {
+			clause += " and tache.declarationImpotOrdinaire = ?";
+			params.add(declarationAnnulee);
+		}
+
+		return clause;
+	}
+
+	@SuppressWarnings("unchecked")
+	public boolean existsTacheEnInstanceOuEnCours(final long noCtb, final TypeTache type) {
+
+		return (Boolean) getHibernateTemplate().executeWithNativeSession(new HibernateCallback() {
+			public Object doInHibernate(Session session) throws HibernateException, SQLException {
+
+				// Recherche dans le cache de la session
+
+				SessionImpl s = (SessionImpl) session;
+				final Map<EntityKey, Object> entities = s.getPersistenceContext().getEntitiesByKey();
+				for (Object entity : entities.values()) {
+					if (entity instanceof Tache) {
+						final Tache t = (Tache) entity;
+						if (t.getContribuable().getNumero().equals(noCtb) && type.equals(t.getTypeTache()) && (isTacheOuverte(t))) {
+							return true;
+						}
+					}
+				}
+
+				// Recherche dans la base de données
+
+				Object[] params = {
+						noCtb
+				};
+				final String query = "from "
+						+ type.name()
+						+ " tache where tache.contribuable = ? and tache.annulationDate is null and (tache.etat = 'EN_INSTANCE' or tache.etat = 'EN_COURS')";
+				final List<Tache> list = (List<Tache>) find(query, params, FlushMode.MANUAL);
+				return !list.isEmpty();
+			}
+		});
+	}
+
+
+	@SuppressWarnings("unchecked")
+	public boolean existsTacheEnvoiEnInstanceOuEnCours(final long noCtb, final RegDate dateDebut, final RegDate dateFin) {
+
+		return (Boolean) getHibernateTemplate().executeWithNativeSession(new HibernateCallback() {
+			public Object doInHibernate(Session session) throws HibernateException, SQLException {
+
+				// Recherche dans le cache de la session
+				SessionImpl s = (SessionImpl) session;
+				final Map<EntityKey, Object> entities = s.getPersistenceContext().getEntitiesByKey();
+				for (Object entity : entities.values()) {
+					if (entity instanceof Tache) {
+						final Tache t = (Tache) entity;
+						if (t.getContribuable().getNumero().equals(noCtb) && t instanceof TacheEnvoiDeclarationImpot && (isTacheOuverte(t))) {
+							final TacheEnvoiDeclarationImpot envoi = (TacheEnvoiDeclarationImpot) t;
+							if (dateDebut.equals(envoi.getDateDebut()) && dateFin.equals(envoi.getDateFin())) {
+								return true;
+							}
+						}
+					}
+				}
+
+				// Recherche dans la base de données
+				Object[] params = {
+						noCtb, dateDebut.index(), dateFin.index()
+				};
+				final String query = "from TacheEnvoiDeclarationImpot tache where tache.contribuable = ? and tache.dateDebut = ?  and tache.dateFin = ? and tache.annulationDate is null and (tache.etat = 'EN_INSTANCE' or tache.etat = 'EN_COURS')";
+				final List<Tache> list = (List<Tache>) find(query, params, FlushMode.MANUAL);
+				return !list.isEmpty();
+			}
+		});
+	}
+
+	@SuppressWarnings("unchecked")
+	public boolean existsTacheAnnulationEnInstanceOuEnCours(final long noCtb, final long noDi) {
+
+		// Recherche dans le cache de la session
+
+		return (Boolean) getHibernateTemplate().executeWithNativeSession(new HibernateCallback() {
+			public Object doInHibernate(Session session) throws HibernateException, SQLException {
+
+				SessionImpl s = (SessionImpl) session;
+				final Map<EntityKey, Object> entities = s.getPersistenceContext().getEntitiesByKey();
+				for (Object entity : entities.values()) {
+					if (entity instanceof Tache) {
+						final Tache t = (Tache) entity;
+						if (t.getContribuable().getNumero().equals(noCtb) && t instanceof TacheAnnulationDeclarationImpot
+								&& (isTacheOuverte(t))) {
+							final TacheAnnulationDeclarationImpot annul = (TacheAnnulationDeclarationImpot) t;
+							if (Long.valueOf(noDi).equals(annul.getDeclarationImpotOrdinaire().getId())) {
+								return true;
+							}
+						}
+					}
+				}
+
+				// Recherche dans la base de données
+
+				Object[] params = {
+						noCtb, noDi
+				};
+				final String query = "from TacheAnnulationDeclarationImpot tache where tache.contribuable = ? and "
+						+ "tache.declarationImpotOrdinaire.id = ? and tache.annulationDate is null and (tache.etat = 'EN_INSTANCE' or tache.etat = 'EN_COURS')";
+				final List<Tache> list = (List<Tache>) find(query, params, FlushMode.MANUAL);
+				return !list.isEmpty();
+			}
+		});
+	}
+
+	private static boolean isTacheOuverte(final Tache t) {
+		return TypeEtatTache.EN_INSTANCE.equals(t.getEtat()) || TypeEtatTache.EN_COURS.equals(t.getEtat());
+	}
+
+	@SuppressWarnings("unchecked")
+	public <T extends Tache> List<T> listTaches(long noCtb, TypeTache type) {
+		Object[] params = {
+				noCtb
+		};
+		final String query = "from " + type.name() + " tache where tache.contribuable = ?";
+		final List<T> list = (List<T>) find(query, params, FlushMode.MANUAL);
+		return list;
+	}
+
+//	private static final String updateCollAdm =
+//			"update TACHE set CA_ID = :caId where " +
+//					"ETAT = 'EN_INSTANCE' and " + // il ne faut pas modifier les tâches déjà traitées
+//					"TACHE_TYPE != 'CTRL_DOSSIER' and " + // [UNIREG-1024] les contrôles de dossiers doivent rester à l'ancien OID
+//					"CTB_ID = :ctbId and " +
+//					"ANNULATION_DATE is null and " + // inutile de modifier les tâches annulées
+//					"CA_ID != :caId"; // inutiles de modifier les tâches annulées pour rien
+
+	private static final String updateCollAdm =
+			"update TACHE set CA_ID = (select ca.NUMERO from TIERS ca where ca.NUMERO_CA = :oid) where " +
+					"ETAT = 'EN_INSTANCE' and " + // il ne faut pas modifier les tâches déjà traitées
+					"TACHE_TYPE != 'CTRL_DOSSIER' and " + // [UNIREG-1024] les contrôles de dossiers doivent rester à l'ancien OID
+					"CTB_ID = :ctbId and " +
+					"ANNULATION_DATE is null"; // inutiles de modifier les tâches annulées pour rien
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void updateCollAdmAssignee(final Long ctbId, final Integer newOid) {
+
+		// [UNIREG-1024] On met-à-jour les tâches encore ouvertes, à l'exception des tâches de contrôle de dossier
+		getHibernateTemplate().executeWithNativeSession(new HibernateCallback() {
+			public Object doInHibernate(Session session) throws HibernateException, SQLException {
+				final FlushMode mode = session.getFlushMode();
+				try {
+					session.setFlushMode(FlushMode.MANUAL);
+
+					// TODO (msi) le code en commentaires ci-dessous vérifie que l'office d'impôt existe bien dans la base. En production, tous les offices d'impôt sont créés depuis belle lurette,
+					// ne pas faire cette vérification ne pose donc pas de problème. Cependant, être sûr c'est bien, vérifier c'est mieux : il vaudrait mieux activer cette vérification. Le problème,
+					// c'est que aucun du millier (et quelque) de tests unitaires existants ne crée d'office d'impôt dans la base de données; ils passent donc presque tous en erreur.  
+
+//					// récupère le numéro de tiers de l'office d'impôt
+//					final SQLQuery select = session.createSQLQuery("select ca.NUMERO from TIERS ca where ca.NUMERO_CA = :oid");
+//					select.setParameter("oid", newOid);
+//					final Number caId = (Number) select.uniqueResult();
+//					if (caId == null) {
+//						throw new ObjectNotFoundException("L'office d'impôt (collectivité administrative) avec le numéro technique = [" + newOid + "] n'existe pas dans la base de données.");
+//					}
+//
+//					// met-à-jour les tâches concernées
+//					final Query update = session.createSQLQuery(updateCollAdm);
+//					update.setParameter("caId", caId.longValue());
+//					update.setParameter("ctbId", ctbId);
+//					update.executeUpdate();
+
+					// met-à-jour les tâches concernées
+					final Query update = session.createSQLQuery(updateCollAdm);
+					update.setParameter("oid", newOid);
+					update.setParameter("ctbId", ctbId);
+					update.executeUpdate();
+
+					return null;
+				}
+				finally {
+					session.setFlushMode(mode);
+				}
+			}
+		});
+	}
+}

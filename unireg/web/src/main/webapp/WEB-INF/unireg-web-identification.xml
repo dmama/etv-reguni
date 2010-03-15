@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+	<!--  Identification -->
+	<bean id="abstractIdentificationController" class="ch.vd.uniregctb.identification.contribuable.AbstractIdentificationController">
+		<property name="identificationMapHelper" ref="identificationMapHelper" />
+		<property name="tacheMapHelper" ref="tacheMapHelper" />
+	</bean>
+	
+	<bean id="identificationMessagesListValidator" class="ch.vd.uniregctb.identification.contribuable.validator.IdentificationMessagesListValidator" />
+	
+	<bean id="identificationMessagesStatsValidator" class="ch.vd.uniregctb.identification.contribuable.validator.IdentificationMessagesStatsValidator" />
+	
+	<bean id="identificationMessagesListController" class="ch.vd.uniregctb.identification.contribuable.IdentificationMessagesListController" parent="abstractIdentificationController">
+		<property name="sessionForm" value="true" />
+		<property name="commandClass" value="ch.vd.uniregctb.identification.contribuable.view.IdentificationMessagesListView" />
+		<property name="commandName" value="command" />
+		<property name="formView" value="identification/gestion-messages/list" />
+		<property name="successView" value="list.do" />
+		<property name="validator" ref="identificationMessagesListValidator" />
+		<property name="identificationMessagesListManager" ref="identificationMessagesListManager" />
+	</bean>
+	<bean id="identificationMessagesListEnCoursController" class="ch.vd.uniregctb.identification.contribuable.IdentificationMessagesListEnCoursController" parent="abstractIdentificationController">
+		<property name="sessionForm" value="true" />
+		<property name="commandClass" value="ch.vd.uniregctb.identification.contribuable.view.IdentificationMessagesListView" />
+		<property name="commandName" value="command" />
+		<property name="formView" value="identification/gestion-messages/list" />
+		<property name="successView" value="listEnCours.do" />
+		<property name="validator" ref="identificationMessagesListValidator" />
+		<property name="identificationMessagesListManager" ref="identificationMessagesListManager" />
+	</bean>
+	
+	<bean id="identificationMessagesListTraiteController" class="ch.vd.uniregctb.identification.contribuable.IdentificationMessagesListTraiteController" parent="abstractIdentificationController">
+		<property name="sessionForm" value="true" />
+		<property name="commandClass" value="ch.vd.uniregctb.identification.contribuable.view.IdentificationMessagesListView" />
+		<property name="commandName" value="command" />
+		<property name="formView" value="identification/gestion-messages/list" />
+		<property name="successView" value="listTraite.do" />
+		<property name="validator" ref="identificationMessagesListValidator" />
+		<property name="identificationMessagesListManager" ref="identificationMessagesListManager" />
+	</bean>
+	
+	<bean id="identificationMessagesListManager" class="ch.vd.uniregctb.identification.contribuable.manager.IdentificationMessagesListManagerImpl">
+		<property name="identCtbService" ref="identCtbService" />
+		<property name="identCtbDAO" ref="identCtbDAO" />
+	</bean>
+	<bean id="identificationMessagesStatsController" class="ch.vd.uniregctb.identification.contribuable.IdentificationMessagesStatsController" parent="abstractIdentificationController">
+		<property name="sessionForm" value="true" />
+		<property name="commandClass" value="ch.vd.uniregctb.identification.contribuable.view.IdentificationMessagesStatsView" />
+		<property name="commandName" value="command" />
+		<property name="formView" value="/identification/tableau-bord/stats" />
+		<property name="successView" value="stats.do" />
+		<property name="validator" ref="identificationMessagesStatsValidator" />
+		<property name="identificationMessagesStatsManager" ref="identificationMessagesStatsManager" />
+	</bean>
+	
+	<bean id="identificationMessagesStatsManager" class="ch.vd.uniregctb.identification.contribuable.manager.IdentificationMessagesStatsManagerImpl">
+		<property name="identCtbService" ref="identCtbService" />
+		<property name="identCtbDAO" ref="identCtbDAO" />
+	</bean>
+
+	<bean id="identificationMessagesEditController" class="ch.vd.uniregctb.identification.contribuable.IdentificationMessagesEditController" parent="abstractTiersListController">
+		<property name="sessionForm" value="true" />
+		<property name="commandClass" value="ch.vd.uniregctb.identification.contribuable.view.IdentificationMessagesEditView" />
+		<property name="commandName" value="command" />
+		<property name="formView" value="identification/identification" />
+		<property name="successView" value="edit.do" />
+		<property name="identificationMessagesEditManager" ref="identificationMessagesEditManager" />
+	</bean>
+	<bean id="identificationMessagesNonIdentifieController" class="ch.vd.uniregctb.identification.contribuable.IdentificationMessagesNonIdentifieController" parent="abstractIdentificationController">
+		<property name="sessionForm" value="true" />
+		<property name="commandClass" value="ch.vd.uniregctb.identification.contribuable.view.IdentificationMessagesEditView" />
+		<property name="commandName" value="command" />
+		<property name="formView" value="identification/gestion-messages/nonIdentifie" />
+		<property name="successView" value="nonIdentifie.do" />
+		<property name="identificationMessagesEditManager" ref="identificationMessagesEditManager" />
+	</bean>
+	
+	<bean id="identificationMessagesEditManager" class="ch.vd.uniregctb.identification.contribuable.manager.IdentificationMessagesEditManagerImpl">
+		<property name="identCtbService" ref="identCtbService" />
+		<property name="identCtbDAO" ref="identCtbDAO" />
+		<property name="tiersDAO" ref="tiersDAO" />
+	</bean>
+	
+	<bean id="identificationMapHelper" class="ch.vd.uniregctb.identification.contribuable.IdentificationMapHelper" >
+		<property name="identCtbService" ref="identCtbService" />
+		<property name="identCtbDAO" ref="identCtbDAO" />
+	</bean>
+	
+</beans>

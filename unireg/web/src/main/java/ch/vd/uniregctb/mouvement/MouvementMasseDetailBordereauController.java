@@ -1,0 +1,144 @@
+package ch.vd.uniregctb.mouvement;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.StringTokenizer;
+
+import org.apache.log4j.Logger;
+import org.springframework.validation.BindException;
+import org.springframework.web.servlet.ModelAndView;
+
+import ch.vd.infrastructure.service.InfrastructureException;
+import ch.vd.registre.base.utils.Pair;
+import ch.vd.uniregctb.editique.EditiqueException;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.mouvement.view.MouvementDetailView;
+import ch.vd.uniregctb.mouvement.view.MouvementMasseDetailBordereauView;
+import ch.vd.uniregctb.print.PrintPCLManager;
+import ch.vd.uniregctb.type.Localisation;
+import ch.vd.uniregctb.type.TypeMouvement;
+
+/**
+ * Controlleur pour l'affichage des mouvements sur un proto-bordereau, la sélection
+ * de certains d'entre eux et l'impression du bordereau correspondant
+ */
+public class MouvementMasseDetailBordereauController extends AbstractMouvementMasseController {
+
+	public static final Logger LOGGER = Logger.getLogger(MouvementMasseDetailBordereauController.class);
+
+	private static final String TYPE = "type";      // type de mouvement du bordereau : EnvoiDossier ou ReceptionDossier
+	private static final String SRC = "src";        // ID technique de l'OID initiateur des mouvements
+	private static final String DEST = "dest";      // en cas d'envoi, ID technique de l'OID destinataire des mouvements
+
+	private static final String IMPRIMER = "imprimer";
+
+	private ServiceInfrastructureService infraService;
+	private PrintPCLManager printPCLManager;
+
+	public void setInfraService(ServiceInfrastructureService infraService) {
+		this.infraService = infraService;
+	}
+
+	public void setPrintPCLManager(PrintPCLManager printPCLManager) {
+		this.printPCLManager = printPCLManager;
+	}
+
+	@Override
+	protected MouvementMasseDetailBordereauView formBackingObject(HttpServletRequest request) throws Exception {
+		final MouvementMasseDetailBordereauView view = new MouvementMasseDetailBordereauView();
+		doFind(request, view);
+		return view;
+	}
+
+	@Override
+	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors) throws Exception {
+		final String imprimer = request.getParameter(IMPRIMER);
+		// validation de l'impression ?
+		if (imprimer != null) {
+			final MouvementMasseDetailBordereauView view = (MouvementMasseDetailBordereauView) command;
+			boolean bordereauCree = false;
+			try {
+				final String docId = getMouvementManager().imprimerBordereau(view.getSelection());
+				if (LOGGER.isDebugEnabled()) {
+					LOGGER.debug("Document envoyé : ID = " + docId);
+				}
+				bordereauCree = true;
+
+				final byte[] pcl = getMouvementManager().recevoirImpressionBordereau(docId);
+				printPCLManager.openPclStream(request, response, pcl);
+			}
+			catch (EditiqueException e) {
+				errors.reject("global.error.msg", e.getMessage());
+				if (bordereauCree) {
+					// comme on est obligé d'avoir deux transactions (une pour l'envoi de la demande,
+					// l'autre pour la réception du flux), et que la notion de duplicata de bordereau
+					// n'existe pas, il faut maintenant détruire le bordereau créé
+					getMouvementManager().annulerBordereau(view.getSelection());
+				}
+			}
+		}
+		return showForm(request, response, errors);
+	}
+
+	/**
+	 * Renvoie une paire d'identifiants (numéro de tiers + numéro de collectivité administrative)
+	 * trouvés depuis une chaîne de caractères dont le séparateur est "/"
+	 * @param paramValue
+	 * @return
+	 */
+	private static Pair<Long, Integer> decodeCollAdmParamter(String paramValue) {
+		if (paramValue != null) {
+			final StringTokenizer tokenizer = new StringTokenizer(paramValue, "/", false);
+			if (tokenizer.hasMoreTokens()) {
+				final String noTiers = tokenizer.nextToken();
+				final String noCa = tokenizer.nextToken();
+				return new Pair<Long, Integer>(Long.valueOf(noTiers), Integer.valueOf(noCa));
+			}
+		}
+		return null;
+	}
+
+	private void doFind(HttpServletRequest request, MouvementMasseDetailBordereauView view) throws InfrastructureException {
+		final String typeStr = request.getParameter(TYPE);
+		final String srcStr = request.getParameter(SRC);        // format "ID/noCa"
+		final String destStr = request.getParameter(DEST);      // format "ID/noCa"
+
+		final Pair<Long, Integer> src = decodeCollAdmParamter(srcStr);
+		final Pair<Long, Integer> dest = decodeCollAdmParamter(destStr);
+
+		final TypeMouvement typeMouvement = TypeMouvement.valueOf(typeStr);
+		final MouvementDossierCriteria criteria = new MouvementDossierCriteria();
+		criteria.setTypeMouvement(typeMouvement);
+		criteria.setEtatsMouvement(Arrays.asList(EtatMouvementDossier.A_ENVOYER));
+		criteria.setInclureMouvementsAnnules(false);
+		if (typeMouvement == TypeMouvement.ReceptionDossier) {
+			// les bordereaux de réception sont pour les archives
+			criteria.setLocalisation(Localisation.ARCHIVES);
+			criteria.setIdCollAdministrativeInitiatrice(src.getFirst());
+		}
+		else {
+			criteria.setIdCollAdministrativeDestinataire(dest.getFirst());
+			criteria.setIdCollAdministrativeInitiatrice(src.getFirst());
+		}
+
+		// la liste des mouvements
+		final List<MouvementDetailView> mouvements = getMouvementManager().find(criteria);
+		view.setMouvements(mouvements);
+
+		// les détails de la recherche...
+		view.setTypeMouvement(typeMouvement);
+		final String nomCollInitiatrice = infraService.getCollectivite(src.getSecond()).getNomCourt();
+		final String nomCollReceptrice;
+		if (typeMouvement == TypeMouvement.ReceptionDossier) {
+			nomCollReceptrice = null;
+		}
+		else {
+			nomCollReceptrice = infraService.getCollectivite(dest.getSecond()).getNomCourt();
+		}
+		view.setNomCollAdmInitiatrice(nomCollInitiatrice);
+		view.setNomCollAdmDestinataire(nomCollReceptrice);
+	}
+}
