@@ -198,11 +198,11 @@ public class ArriveeHandler extends EvenementCivilHandlerBase {
 					String msg;
 					if (rapportMenage != null) {
 						msg = String.format(
-							"A la date de l'événement, le ménage commun (ctb: %s) au quel appartient la personne physique associée l'individu a déja une for principal vaudois",
+							"A la date de l'événement, le ménage commun (ctb: %s) au quel appartient la personne physique associée l'individu a déjà un for principal vaudois",
 							ctb.getNumero());
 					} else {
 						msg = String.format(
-								"A la date de l'événement, la personne physique (ctb: %s) associée à l'individu a déja une for principal vaudois",
+								"A la date de l'événement, la personne physique (ctb: %s) associée à l'individu a déjà un for principal vaudois",
 								ctb.getNumero());
 					}
 					erreurs.add(new EvenementCivilErreur(msg));
