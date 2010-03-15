@@ -32,9 +32,9 @@ echo "Version: $sversion / $lversion"
 
 user=dsi_unireg@ssv0309v
 upDir=/ccv/data/dsi_unireg/uploads
-configDir=/ccv/data/dsi_unireg/cat_uniregI/app/unireg-is/config
-deployDir=/ccv/data/dsi_unireg/cat_uniregI/webapps/fiscalite#int-unireg-is
-workDir=/ccv/data/dsi_unireg/cat_uniregI/work/unireg-is
+configDir=/ccv/data/dsi_unireg/cat_uniregI/app/unireg/config
+deployDir=/ccv/data/dsi_unireg/cat_uniregI/webapps/fiscalite#int-unireg
+workDir=/ccv/data/dsi_unireg/cat_uniregI/work/unireg
 env=integration
 
 relFileOrig=uniregctb-release.zip
@@ -67,9 +67,6 @@ ssh $user "cd $upDir/explode && unzip $upDir/$relFileDest"
 # copie des fichiers de config
 ssh $user "mkdir -p $configDir/"
 ssh $user "cp $upDir/explode/config/$env/* $configDir/"
-
-# ajoute le suffixe '-pm' au fichier de log
-ssh $user "sed 's/unireg-web\.log/unireg-web-pm.log/' $upDir/explode/config/$env/unireg-log4j.xml > $configDir/unireg-log4j.xml"
 
 # unzip du war
 ssh $user "rm -rf $deployDir"

@@ -689,7 +689,7 @@
 		<profile>
 			<id>env.int</id>
 			<properties>
-				<unireg.appname>unireg-pm</unireg.appname>
+				<unireg.appname>unireg</unireg.appname>
 			</properties>
 		</profile>
 
