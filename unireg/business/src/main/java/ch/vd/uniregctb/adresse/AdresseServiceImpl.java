@@ -792,7 +792,7 @@ public class AdresseServiceImpl implements AdresseService {
 	private String getRaisonSociale(Entreprise entreprise) {
 		final Long numeroEntreprise = entreprise.getNumeroEntreprise();
 		Assert.notNull(numeroEntreprise);
-		final PersonneMorale pm = servicePM.getPersonneMorale(numeroEntreprise, (PartPM[])null);
+		final PersonneMorale pm = servicePM.getPersonneMorale(numeroEntreprise);
 		return pm.getRaisonSociale();
 	}
 
@@ -806,7 +806,7 @@ public class AdresseServiceImpl implements AdresseService {
 
 		final Long numeroEntreprise = entreprise.getNumeroEntreprise();
 		Assert.notNull(numeroEntreprise);
-		final PersonneMorale pm = servicePM.getPersonneMorale(numeroEntreprise, (PartPM[])null);
+		final PersonneMorale pm = servicePM.getPersonneMorale(numeroEntreprise);
 
 		final List<String> nomsComplets = new ArrayList<String>(3);
 		if (!StringUtils.isEmpty(pm.getRaisonSociale1())) {

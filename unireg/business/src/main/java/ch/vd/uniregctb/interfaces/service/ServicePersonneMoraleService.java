@@ -20,15 +20,6 @@ public interface ServicePersonneMoraleService {
 	/**
 	 * Charge une personne morale spécifiée par son id.
 	 *
-	 * @param id l'id de la personne à charger
-	 * @return une personne morale; ou <b>null</b> si cette personne n'existe pas.
-	 * @deprecated remplacé par {@link #getPersonneMorale(Long, PartPM...)}
-	 */
-	PersonneMorale getPersonneMorale(Long id);
-
-	/**
-	 * Charge une personne morale spécifiée par son id.
-	 *
 	 * @param id    l'id de la personne à charger
 	 * @param parts les attributs multivalués à renseigner sur la personne morale.
 	 * @return une personne morale; ou <b>null</b> si cette personne n'existe pas.

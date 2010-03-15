@@ -29,11 +29,6 @@ public class ProxyServicePM implements ServicePersonneMoraleService {
 		return target.getAllIds();
 	}
 
-	public PersonneMorale getPersonneMorale(Long id) {
-		assertTargetNotNull();
-		return target.getPersonneMorale(id);
-	}
-
 	public PersonneMorale getPersonneMorale(Long id, PartPM... parts) {
 		assertTargetNotNull();
 		return target.getPersonneMorale(id, parts);

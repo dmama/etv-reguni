@@ -123,51 +123,6 @@ public class ServicePersonneMoraleCache implements ServicePersonneMoraleService,
 		return ids;
 	}
 
-	private static class GetPersonneMoraleByIdKey {
-		private long id;
-
-		private GetPersonneMoraleByIdKey(long id) {
-			this.id = id;
-		}
-
-		@Override
-		public boolean equals(Object o) {
-			if (this == o) return true;
-			if (o == null || getClass() != o.getClass()) return false;
-
-			final GetPersonneMoraleByIdKey that = (GetPersonneMoraleByIdKey) o;
-
-			return id == that.id;
-
-		}
-
-		@Override
-		public int hashCode() {
-			return (int) (id ^ (id >>> 32));
-		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public PersonneMorale getPersonneMorale(Long id) {
-
-		final PersonneMorale pm;
-
-		final GetPersonneMoraleByIdKey key = new GetPersonneMoraleByIdKey(id);
-		final Element element = cache.get(key);
-		if (element == null) {
-			// l'élément n'est pas en cache, on le récupère et on l'insère
-			pm = target.getPersonneMorale(id);
-			cache.put(new Element(key, pm));
-		}
-		else {
-			pm = (PersonneMorale) element.getObjectValue();
-		}
-
-		return pm;
-	}
-
 	private static class GetPersonneMoraleByIdAndPartsKey {
 		private long id;
 		private Set<PartPM> parts;

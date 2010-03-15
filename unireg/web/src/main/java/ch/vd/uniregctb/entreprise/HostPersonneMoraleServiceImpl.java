@@ -2,6 +2,7 @@ package ch.vd.uniregctb.entreprise;
 
 import ch.vd.uniregctb.interfaces.model.FormeJuridique;
 import ch.vd.uniregctb.interfaces.model.PersonneMorale;
+import ch.vd.uniregctb.interfaces.service.PartPM;
 import ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleService;
 
 import java.util.List;
@@ -33,7 +34,7 @@ public class HostPersonneMoraleServiceImpl implements HostPersonneMoraleService 
 
 		EntrepriseView entrepriseView = new EntrepriseView();
 
-		PersonneMorale pm = servicePersonneMoraleService.getPersonneMorale(numeroEntreprise);
+		PersonneMorale pm = servicePersonneMoraleService.getPersonneMorale(numeroEntreprise, PartPM.ADRESSES, PartPM.FORMES_JURIDIQUES);
 
 		entrepriseView.setRaisonSociale(pm.getRaisonSociale());
 		final List<FormeJuridique> formes = pm.getFormesJuridiques();

@@ -271,7 +271,7 @@ public class TiersWebServiceWithPM implements TiersWebService {
 	 * @return <i>vrai</i> si la personne morale existe; <i>faux</i> autrement.
 	 */
 	public boolean existsPM(Long id) {
-		return servicePM.getPersonneMorale(id, new PartPM[]{}) != null;
+		return servicePM.getPersonneMorale(id) != null;
 	}
 
 	/**

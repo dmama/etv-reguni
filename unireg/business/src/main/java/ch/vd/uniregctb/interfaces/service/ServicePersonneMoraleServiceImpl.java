@@ -42,16 +42,6 @@ public class ServicePersonneMoraleServiceImpl implements ServicePersonneMoraleSe
 		}
 	}
 
-
-	public PersonneMorale getPersonneMorale(Long id) {
-		try {
-			return PersonneMoraleWrapper.get(servicePersonneMorale.getPersonneMorale(id));
-		}
-		catch (Exception e) {
-			throw new PersonneMoraleException(e);
-		}
-	}
-
 	public PersonneMorale getPersonneMorale(Long id, PartPM... parts) {
 		try {
 			return PersonneMoraleWrapper.get(servicePersonneMorale.getPersonneMorale(id, part2attribute(parts)));

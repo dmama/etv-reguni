@@ -120,10 +120,6 @@ public abstract class MockServicePM implements ServicePersonneMoraleService {
 		return new ArrayList<Long>(map.keySet());
 	}
 
-	public PersonneMorale getPersonneMorale(Long id) {
-		return map.get(id);
-	}
-
 	public PersonneMorale getPersonneMorale(Long id, PartPM... parts) {
 		return map.get(id);
 	}

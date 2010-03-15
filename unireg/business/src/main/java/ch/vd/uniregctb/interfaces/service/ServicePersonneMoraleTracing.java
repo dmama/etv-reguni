@@ -78,19 +78,6 @@ public class ServicePersonneMoraleTracing implements ServicePersonneMoraleServic
 		return result;
 	}
 
-	public PersonneMorale getPersonneMorale(Long id) {
-		PersonneMorale result;
-		long time = tracing.start();
-		try {
-			result = target.getPersonneMorale(id);
-		}
-		finally {
-			tracing.end(time);
-		}
-		return result;
-
-	}
-
 	public PersonneMorale getPersonneMorale(Long id, PartPM... parts) {
 		PersonneMorale result;
 		long time = tracing.start();
