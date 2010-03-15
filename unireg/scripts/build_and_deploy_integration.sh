@@ -68,9 +68,6 @@ ssh $user "cd $upDir/explode && unzip $upDir/$relFileDest"
 ssh $user "mkdir -p $configDir/"
 ssh $user "cp $upDir/explode/config/$env/* $configDir/"
 
-# ajoute le suffixe '-pm' au fichier de log
-ssh $user "sed 's/unireg-web\.log/unireg-web-pm.log/' $upDir/explode/config/$env/unireg-log4j.xml > $configDir/unireg-log4j.xml"
-
 # unzip du war
 ssh $user "rm -rf $deployDir"
 ssh $user "rm -rf $workDir"
