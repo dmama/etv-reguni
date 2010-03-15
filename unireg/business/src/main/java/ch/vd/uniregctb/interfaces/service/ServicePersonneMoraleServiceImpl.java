@@ -28,6 +28,7 @@ public class ServicePersonneMoraleServiceImpl implements ServicePersonneMoraleSe
 		JvmVersionHelper.checkJava_1_5();
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setServicePersonneMorale(ServicePersonneMorale servicePersonneMorale) {
 		this.servicePersonneMorale = servicePersonneMorale;
 	}
@@ -74,7 +75,7 @@ public class ServicePersonneMoraleServiceImpl implements ServicePersonneMoraleSe
 
 		AdressesPM adresses = new AdressesPM();
 
-		final PersonneMorale entreprise = getPersonneMorale(noEntreprise);
+		final PersonneMorale entreprise = getPersonneMorale(noEntreprise, PartPM.ADRESSES);
 		final Collection<AdresseEntreprise> adressesPM = entreprise.getAdresses();
 
 		for (AdresseEntreprise a : adressesPM) {
@@ -90,7 +91,7 @@ public class ServicePersonneMoraleServiceImpl implements ServicePersonneMoraleSe
 
 		AdressesPMHisto adresses = new AdressesPMHisto();
 
-		final PersonneMorale entreprise = getPersonneMorale(noEntreprise);
+		final PersonneMorale entreprise = getPersonneMorale(noEntreprise, PartPM.ADRESSES);
 		final Collection<AdresseEntreprise> adressesPM = entreprise.getAdresses();
 
 		for (AdresseEntreprise a : adressesPM) {

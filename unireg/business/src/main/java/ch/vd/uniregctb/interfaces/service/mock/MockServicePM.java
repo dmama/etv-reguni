@@ -35,20 +35,20 @@ public abstract class MockServicePM implements ServicePersonneMoraleService {
 	protected PersonneMorale addPM(PersonneMorale pm) {
 		final long numero = pm.getNumeroEntreprise();
 		Assert.isTrue(numero > 0);
-		Assert.isFalse(map.containsKey(Long.valueOf(numero)));
-		map.put(Long.valueOf(numero), pm);
+		Assert.isFalse(map.containsKey(numero));
+		map.put(numero, pm);
 		return pm;
 	}
 
 	protected MockPersonneMorale addPM(long numero, String raisonSociale, String codeFormeJuridique, RegDate debut, RegDate fin) {
-		Assert.isFalse(map.containsKey(Long.valueOf(numero)));
+		Assert.isFalse(map.containsKey(numero));
 		MockPersonneMorale pm = new MockPersonneMorale();
 		pm.setNumeroEntreprise(numero);
 		pm.setRaisonSociale(raisonSociale);
 		pm.getFormesJuridiques().add(new MockFormeJuridique(null, null, codeFormeJuridique));
 		pm.setDateConstitution(debut);
 		pm.setDateFinActivite(fin);
-		map.put(Long.valueOf(numero), pm);
+		map.put(numero, pm);
 		return pm;
 	}
 
@@ -82,7 +82,7 @@ public abstract class MockServicePM implements ServicePersonneMoraleService {
 
 	public AdressesPM getAdresses(long noEntreprise, RegDate date) {
 
-		final PersonneMorale entreprise = getPersonneMorale(noEntreprise);
+		final PersonneMorale entreprise = getPersonneMorale(noEntreprise, PartPM.ADRESSES);
 		if (entreprise == null) {
 			return null;
 		}
@@ -105,7 +105,7 @@ public abstract class MockServicePM implements ServicePersonneMoraleService {
 
 		AdressesPMHisto adresses = new AdressesPMHisto();
 
-		final PersonneMorale entreprise = getPersonneMorale(noEntreprise);
+		final PersonneMorale entreprise = getPersonneMorale(noEntreprise, PartPM.ADRESSES);
 		final Collection<AdresseEntreprise> adressesPM = entreprise.getAdresses();
 
 		for (AdresseEntreprise a : adressesPM) {
