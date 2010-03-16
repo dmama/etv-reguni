@@ -773,7 +773,7 @@
 		<surefire.useFile>false</surefire.useFile>
 
 		<!-- Editique -->
-		<editique.locale.attente.timeout>30</editique.locale.attente.timeout>
+		<editique.locale.attente.timeout>120</editique.locale.attente.timeout>
 	</properties>
 
 </project>
