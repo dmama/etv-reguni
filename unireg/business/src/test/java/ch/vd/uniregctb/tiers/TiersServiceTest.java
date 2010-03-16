@@ -761,6 +761,110 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 	@Test
+	public void testGetByNoIndividuSurContribuableAnnule() throws Exception {
+
+		final long noIndividu = 3244521L;
+
+		// registre civil
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				addIndividu(noIndividu, RegDate.get(1963, 4, 12), "Dupont", "Albert", true);
+			}
+		});
+
+		class Ids {
+			public Long noCtbPourAnnulation = null;
+			public Long noCtbAutre = null;
+			public Long noCtbDoublonNonAnnule = null;
+		}
+
+		// création d'un tiers sur cet individu
+		final Ids ids = new Ids();
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				ids.noCtbPourAnnulation = addHabitant(noIndividu).getNumero();
+				return null;
+			}
+		});
+
+		assertNotNull(ids.noCtbPourAnnulation);
+
+		// premier essai, le "get par numéro d'individu" doit fonctionner
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
+				assertNotNull(pp);
+				assertEquals(ids.noCtbPourAnnulation, pp.getNumero());
+
+				// et on l'annule maintenant
+				pp.setAnnule(true);
+				return null;
+			}
+		});
+
+		// deuxième essai, maintenant que le tiers a été annulé, le "get par numéro d'individu" ne doit plus fonctionner
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
+				assertNull(pp);
+				return null;
+			}
+		});
+
+		// création d'un deuxième tiers avec le même numéro d'individu -> il devait alors sortir du "get par numéro d'individu"
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				ids.noCtbAutre = addHabitant(noIndividu).getNumero();
+				return null;
+			}
+		});
+
+		assertNotNull(ids.noCtbAutre);
+		assertTrue(ids.noCtbAutre.longValue() != ids.noCtbPourAnnulation.longValue());
+
+		// le "get par numéro d'individu" doit maintenant retourner le deuxième tiers
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
+				assertNotNull(pp);
+				assertEquals(ids.noCtbAutre, pp.getNumero());
+
+				// rajoutons encore un tiers avec ce même numéro d'individu...
+				ids.noCtbDoublonNonAnnule = addHabitant(noIndividu).getNumero();
+				return null;
+			}
+		});
+
+		assertNotNull(ids.noCtbDoublonNonAnnule);
+		assertTrue(ids.noCtbAutre.longValue() != ids.noCtbDoublonNonAnnule.longValue());
+		assertTrue(ids.noCtbDoublonNonAnnule.longValue() != ids.noCtbPourAnnulation.longValue());
+
+		// le "get par numéro d'individu" doit maintenant exploser avec une exception bien précise...
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+
+				try {
+					final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
+					fail();
+				}
+				catch (PlusieursPersonnesPhysiquesAvecMemeNumeroIndividuException e) {
+					final long[] noCtbDoublons = new long[] { ids.noCtbAutre, ids.noCtbDoublonNonAnnule };
+					final String msg = String.format("Plusieurs tiers non-annulés partagent le même numéro d'individu %d (%s)", noIndividu, Arrays.toString(noCtbDoublons));
+					assertEquals(msg, e.getMessage());
+				}
+				return null;
+			}
+		});
+	}
+
+	@Test
 	public void testGetEnsembleTiersCouple() throws Exception {
 
 		final long NO_PIERRE = 1;

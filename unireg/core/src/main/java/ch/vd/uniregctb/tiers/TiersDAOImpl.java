@@ -430,35 +430,43 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
     }
 
     public PersonnePhysique getHabitantByNumeroIndividu(Long numeroIndividu, boolean doNotAutoFlush) {
-
-        Object[] criteria = {
-                numeroIndividu
-        };
-        String query = "from PersonnePhysique habitant where habitant.numeroIndividu = ? and habitant.habitant = true ";
-
-        final FlushMode mode = (doNotAutoFlush ? FlushMode.MANUAL : null);
-        final List<?> list = find(query, criteria, mode);
-        if (list.size() > 0) {
-            return (PersonnePhysique) list.get(0);
-        } else {
-            return null;
-        }
+	    return getPPByNumeroIndividu(numeroIndividu, true, doNotAutoFlush);
     }
 
     /**
      * @see ch.vd.uniregctb.tiers.TiersDAO#getPPByNumeroIndividu(java.lang.Long, boolean)
      */
     public PersonnePhysique getPPByNumeroIndividu(Long numeroIndividu, boolean doNotAutoFlush) {
-        Object[] criteria = {numeroIndividu};
-        String query = "from PersonnePhysique pp where pp.numeroIndividu = ? ";
-        final FlushMode mode = (doNotAutoFlush ? FlushMode.MANUAL : null);
-        final List<?> list = find(query, criteria, mode);
-        if (list.size() > 0) {
-            return (PersonnePhysique) list.get(0);
-        } else {
-            return null;
-        }
+	    return getPPByNumeroIndividu(numeroIndividu, false, doNotAutoFlush);
     }
+
+	private PersonnePhysique getPPByNumeroIndividu(Long numeroIndividu, boolean habitantSeulement, boolean doNotAutoFlush) {
+
+		final Object[] criteria = {numeroIndividu};
+		final StringBuilder b = new StringBuilder("from PersonnePhysique pp where pp.numeroIndividu = ? and pp.annulationDate is null");
+		if (habitantSeulement) {
+			b.append(" and pp.habitant = true");
+		}
+		b.append(" order by pp.numero asc");
+		final String query = b.toString();
+
+		final FlushMode mode = (doNotAutoFlush ? FlushMode.MANUAL : null);
+		final List<?> list = find(query, criteria, mode);
+		if (list.size() == 0) {
+			return null;
+		}
+		else if (list.size() == 1) {
+		    return (PersonnePhysique) list.get(0);
+		}
+		else {
+			final long[] noPersonnesPhysiques = new long[list.size()];
+			for (int i = 0 ; i < list.size() ; ++ i) {
+				final PersonnePhysique pp = (PersonnePhysique) list.get(i);
+				noPersonnesPhysiques[i] = pp.getNumero();
+			}
+		    throw new PlusieursPersonnesPhysiquesAvecMemeNumeroIndividuException(numeroIndividu, noPersonnesPhysiques);
+		}
+	}
 
     /**
      * {@inheritDoc}

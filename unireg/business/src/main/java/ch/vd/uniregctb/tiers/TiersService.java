@@ -57,9 +57,8 @@ public interface TiersService {
 	/**
 	 * Renvoie la personne physique correspondant au numéro d'individu passé en paramètre.
 	 *
-	 * @param numeroIndividu
-	 *            le numéro de l'individu.
-	 * @return la personne physique correspondante au numéro d'individu passé en paramètre, ou <b>null</b>.
+	 * @param numeroIndividu le numéro de l'individu.
+	 * @return la personne physique (tiers non-annulé) correspondante au numéro d'individu passé en paramètre, ou <b>null</b>.
 	 */
 	public PersonnePhysique getPersonnePhysiqueByNumeroIndividu(long numeroIndividu);
 

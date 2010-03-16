@@ -114,9 +114,10 @@ public interface TiersDAO extends GenericDAO<Tiers, Long> {
 
 	/**
 	 * Renvoie la personne physique dont le numéro d'individu est passé en paramètre
-	 * @param numeroIndividu
-	 * @return la personne physique dont le numéro d'individu est passé en paramètre
-	 * attention la PP retournée peut habitant ou non habitant
+	 *
+	 * @param numeroIndividu le numéro de l'individu
+	 * @return la personne physique (non-annulée) dont le numéro d'individu est passé en paramètre
+	 * <p/><b>Attention !</b> La PP retournée peut être "habitant" ou "non habitant" (ancien habitant)
 	 */
 	PersonnePhysique getPPByNumeroIndividu(Long numeroIndividu);
 
@@ -125,9 +126,8 @@ public interface TiersDAO extends GenericDAO<Tiers, Long> {
 	/**
 	 * Renvoie l'habitant correspondant au numéro d'individu passé en paramètre.
 	 *
-	 * @param numeroIndividu
-	 *            le numéro de l'individu.
-	 * @return l'habitant correspondant au numéro d'individu passé en paramètre, ou <b>null</b> s'il n'existe pas.
+	 * @param numeroIndividu le numéro de l'individu.
+	 * @return l'habitant (tiers non-annulé) correspondant au numéro d'individu passé en paramètre, ou <b>null</b> s'il n'existe pas.
 	 */
 	PersonnePhysique getHabitantByNumeroIndividu(Long numeroIndividu);
 
