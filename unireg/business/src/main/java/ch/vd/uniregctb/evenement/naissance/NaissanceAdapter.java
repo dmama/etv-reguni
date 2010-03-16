@@ -2,7 +2,9 @@ package ch.vd.uniregctb.evenement.naissance;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
+import ch.vd.registre.civil.model.EnumAttributeIndividu;
 import ch.vd.uniregctb.evenement.EvenementAdapterException;
 import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
 import ch.vd.uniregctb.evenement.GenericEvenementAdapter;
@@ -54,6 +56,9 @@ public class NaissanceAdapter extends GenericEvenementAdapter implements Naissan
 		return parents;
 	}
 
-
-
+	@Override
+	protected void fillRequiredParts(Set<EnumAttributeIndividu> parts) {
+		super.fillRequiredParts(parts);
+		parts.add(EnumAttributeIndividu.PARENTS);
+	}
 }

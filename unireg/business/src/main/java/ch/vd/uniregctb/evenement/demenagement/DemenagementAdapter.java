@@ -5,9 +5,9 @@ import org.apache.log4j.Logger;
 
 import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.uniregctb.adresse.AdressesCiviles;
+import ch.vd.uniregctb.evenement.EvenementAdapterAvecAdresses;
 import ch.vd.uniregctb.evenement.EvenementAdapterException;
 import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
-import ch.vd.uniregctb.evenement.GenericEvenementAdapter;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.CommuneSimple;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -18,7 +18,7 @@ import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
  *
  * @author Ludovic Bertin </a>
  */
-public class DemenagementAdapter extends GenericEvenementAdapter implements Demenagement {
+public class DemenagementAdapter extends EvenementAdapterAvecAdresses implements Demenagement {
 
 	/** LOGGER log4J */
 	protected static Logger LOGGER = Logger.getLogger(DemenagementAdapter.class);

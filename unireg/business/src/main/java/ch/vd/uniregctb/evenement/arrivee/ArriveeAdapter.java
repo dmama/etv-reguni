@@ -7,9 +7,9 @@ import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.adresse.AdressesCiviles;
+import ch.vd.uniregctb.evenement.EvenementAdapterAvecAdresses;
 import ch.vd.uniregctb.evenement.EvenementAdapterException;
 import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
-import ch.vd.uniregctb.evenement.GenericEvenementAdapter;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.CommuneSimple;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
@@ -21,7 +21,7 @@ import ch.vd.uniregctb.type.TypeEvenementCivil;
  *
  * @author <a href="mailto:abenaissi@cross-systems.com">Akram BEN AISSI </a>
  */
-public class ArriveeAdapter extends GenericEvenementAdapter implements Arrivee {
+public class ArriveeAdapter extends EvenementAdapterAvecAdresses implements Arrivee {
 
 	protected static Logger LOGGER = Logger.getLogger(ArriveeAdapter.class);
 

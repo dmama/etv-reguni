@@ -1,11 +1,14 @@
 package ch.vd.uniregctb.evenement.obtentionpermis;
 
+import java.util.Set;
+
 import org.apache.log4j.Logger;
 
 import ch.vd.infrastructure.service.InfrastructureException;
+import ch.vd.registre.civil.model.EnumAttributeIndividu;
+import ch.vd.uniregctb.evenement.EvenementAdapterAvecAdresses;
 import ch.vd.uniregctb.evenement.EvenementAdapterException;
 import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
-import ch.vd.uniregctb.evenement.GenericEvenementAdapter;
 import ch.vd.uniregctb.interfaces.model.CommuneSimple;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -15,7 +18,7 @@ import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
  *
  * @author <a href="mailto:ludovic.bertin@oosphere.com">Ludovic BERTIN</a>
  */
-public class ObtentionNationaliteAdapter extends GenericEvenementAdapter implements ObtentionNationalite {
+public class ObtentionNationaliteAdapter extends EvenementAdapterAvecAdresses implements ObtentionNationalite {
 
 	/**
 	 * LOGGER log4J
@@ -48,5 +51,11 @@ public class ObtentionNationaliteAdapter extends GenericEvenementAdapter impleme
 	
 	public Integer getNumeroOfsEtenduCommunePrincipale() {
 		return numeroOfsEtenduCommunePrincipale;
+	}
+
+	@Override
+	protected void fillRequiredParts(Set<EnumAttributeIndividu> parts) {
+		super.fillRequiredParts(parts);
+		parts.add(EnumAttributeIndividu.PERMIS);
 	}
 }

@@ -1,14 +1,16 @@
 package ch.vd.uniregctb.evenement.obtentionpermis;
 
 import java.util.Collection;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 
 import ch.vd.infrastructure.service.InfrastructureException;
+import ch.vd.registre.civil.model.EnumAttributeIndividu;
 import ch.vd.registre.civil.model.EnumTypePermis;
+import ch.vd.uniregctb.evenement.EvenementAdapterAvecAdresses;
 import ch.vd.uniregctb.evenement.EvenementAdapterException;
 import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
-import ch.vd.uniregctb.evenement.GenericEvenementAdapter;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.CommuneSimple;
 import ch.vd.uniregctb.interfaces.model.Permis;
@@ -20,7 +22,7 @@ import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
  *
  * @author <a href="mailto:ludovic.bertin@oosphere.com">Ludovic BERTIN</a>
  */
-public class ObtentionPermisAdapter extends GenericEvenementAdapter implements ObtentionPermis {
+public class ObtentionPermisAdapter extends EvenementAdapterAvecAdresses implements ObtentionPermis {
 
 	/** LOGGER log4J */
 	protected static Logger LOGGER = Logger.getLogger(ObtentionPermisAdapter.class);
@@ -93,5 +95,11 @@ public class ObtentionPermisAdapter extends GenericEvenementAdapter implements O
 
 	public Integer getNumeroOfsEtenduCommunePrincipale() {
 		return numeroOfsEtenduCommunePrincipale;
+	}
+
+	@Override
+	protected void fillRequiredParts(Set<EnumAttributeIndividu> parts) {
+		super.fillRequiredParts(parts);
+		parts.add(EnumAttributeIndividu.PERMIS);
 	}
 }

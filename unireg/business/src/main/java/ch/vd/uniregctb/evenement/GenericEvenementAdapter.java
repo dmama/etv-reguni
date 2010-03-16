@@ -1,14 +1,14 @@
 package ch.vd.uniregctb.evenement;
 
-import ch.vd.uniregctb.common.DonneesCivilesException;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.civil.model.EnumAttributeIndividu;
-import ch.vd.uniregctb.adresse.AdressesCiviles;
-import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -20,21 +20,6 @@ import ch.vd.uniregctb.type.TypeEvenementCivil;
  * @author <a href="mailto:abenaissi@cross-systems.com">Akram BEN AISSI </a>
  */
 public abstract class GenericEvenementAdapter implements EvenementCivil {
-
-	/**
-	 * L'adresse principale de l'individu .
-	 */
-	private Adresse adressePrincipale;
-
-	/**
-	 * L'adresse secondaire de l'individu.
-	 */
-	private Adresse adresseSecondaire;
-
-	/**
-	 * L'adresse courrier de l'individu .
-	 */
-	private Adresse adresseCourrier;
 
 	/**
 	 * L'individu principal.
@@ -85,44 +70,25 @@ public abstract class GenericEvenementAdapter implements EvenementCivil {
 		 * plus des états civils, on veut les adresses, le conjoint et les
 		 * enfants
 		 */
-		EnumAttributeIndividu[] attributs = null;
 		int anneeReference = anneeVeille;
 
 		switch (this.type) {
 			case NAISSANCE :
 			case CORREC_FILIATION :
 				anneeReference = anneeEvenement;
-				attributs =  new EnumAttributeIndividu[] {	EnumAttributeIndividu.ADRESSES,
-															EnumAttributeIndividu.PARENTS };
 				break;
-			case NATIONALITE_SUISSE :
-				anneeReference = anneeVeille;
-				attributs =  new EnumAttributeIndividu[] {	EnumAttributeIndividu.ADRESSES,
-															EnumAttributeIndividu.CONJOINT,
-															EnumAttributeIndividu.PERMIS };
-				break;
-			default:
-				anneeReference = anneeVeille;
-				attributs =  new EnumAttributeIndividu[] {	EnumAttributeIndividu.ADRESSES,
-															EnumAttributeIndividu.CONJOINT };
 		}
-		final long noIndividu = evenement.getNumeroIndividuPrincipal();
-		this.individuPrincipal = serviceCivil.getIndividu(noIndividu, anneeReference, attributs);
-		Assert.notNull(individuPrincipal, "L'individu principal est null");
 
-		// Distinction adresse principale et adresse courrier
-		//On recupère les adresses à la date de l'évènement plus 1 jour
-		final AdressesCiviles adresses;
-		try {
-			adresses = serviceCivil.getAdresses(individuPrincipal.getNoTechnique(), date.getOneDayAfter(), false);
+		final Set<EnumAttributeIndividu> requiredParts = new HashSet<EnumAttributeIndividu>();
+		if (evenement.getNumeroIndividuConjoint() != null) {
+			requiredParts.add(EnumAttributeIndividu.CONJOINT);
 		}
-		catch (DonneesCivilesException e) {
-			throw new EvenementAdapterException(e);
-		}
-		Assert.notNull(adresses, "L'individu principal n'a pas d'adresses valide");
-		this.adressePrincipale = adresses.principale;
-		this.adresseSecondaire = adresses.secondaire;
-		this.adresseCourrier = adresses.courrier;
+		fillRequiredParts(requiredParts);
+		final EnumAttributeIndividu[] parts = requiredParts.toArray(new EnumAttributeIndividu[requiredParts.size()]);
+
+		final long noIndividu = evenement.getNumeroIndividuPrincipal();
+		this.individuPrincipal = serviceCivil.getIndividu(noIndividu, anneeReference, parts);
+		Assert.notNull(individuPrincipal, "L'individu principal est null");
 
 		/* Récupération des informations sur le conjoint */
 		if (evenement.getNumeroIndividuConjoint() != null) {
@@ -131,26 +97,12 @@ public abstract class GenericEvenementAdapter implements EvenementCivil {
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see ch.vd.uniregctb.evenement.Evenement#getAdressePrincipale()
+	/**
+	 * Doit-être implémenté par les classes dérivées pour savoir quelles parts
+	 * demander au service civil pour l'individu pointé par l'événement civil
+	 * @param parts ensemble à remplir
 	 */
-	public Adresse getAdressePrincipale() {
-		return adressePrincipale;
-	}
-
-	public Adresse getAdresseSecondaire() {
-		return adresseSecondaire;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see ch.vd.uniregctb.evenement.Evenement#getAdresseCourrier()
-	 */
-	public Adresse getAdresseCourrier() {
-		return adresseCourrier;
+	protected void fillRequiredParts(Set<EnumAttributeIndividu> parts) {
 	}
 
 	/*
