@@ -810,7 +810,7 @@
 		<migreg.fichierRapprochementPmEmployeur>../migreg/pmEmployeur.txt</migreg.fichierRapprochementPmEmployeur>
 
 		<!-- Editique -->
-		<editique.locale.attente.timeout>30</editique.locale.attente.timeout>
+		<editique.locale.attente.timeout>120</editique.locale.attente.timeout>
 	</properties>
 
 </project>
