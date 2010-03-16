@@ -129,4 +129,9 @@ public class DefaultMockServiceCivil extends MockServiceCivil {
 		adresses.add(adresse);
 		return adresses;
 	}
+
+	public Long getNumeroIndividuConjoint(Long noIndividuPrincipal, RegDate date) {
+		//A implementer en cas de besoin
+		return null;
+	}
 }

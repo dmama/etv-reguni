@@ -86,6 +86,16 @@ public abstract class ServiceCivilServiceBase implements ServiceCivilService {
 		return getIndividu(noIndividu, annee, (EnumAttributeIndividu[])null); // -> va charger implicitement l'état-civil et l'historique
 	}
 
+	public final Individu getIndividuConjoint(Long noIndividuPrincipal, RegDate date) {
+		final Long numeroIndividuConjoint = getNumeroIndividuConjoint(noIndividuPrincipal, date);
+		 Individu individuConjoint=null;		
+		if(numeroIndividuConjoint!=null){
+			individuConjoint = getIndividu(numeroIndividuConjoint,date.year());
+		}
+
+		return individuConjoint;
+	}
+
 	/**
 	 * @param noIndividu le numéro d'individu
 	 * @param date

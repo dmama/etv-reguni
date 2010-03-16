@@ -526,4 +526,8 @@ public abstract class MockServiceCivil extends ServiceCivilServiceBase {
 	public void onIndividuChange(long numero) {
 		// rien à faire
 	}
+
+	public Long getNumeroIndividuConjoint(Long noIndividuPrincipal, RegDate date) {
+				return null;  //To change body of implemented methods use File | Settings | File Templates.
+			}
 }

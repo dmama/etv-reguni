@@ -2,11 +2,16 @@ package ch.vd.uniregctb.interfaces.service;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.NotImplementedException;
-import ch.vd.registre.civil.model.EnumAttributeIndividu;
+import ch.vd.registre.civil.model.*;
 import ch.vd.registre.civil.service.ServiceCivil;
 import ch.vd.registre.common.service.RegistreException;
 import ch.vd.uniregctb.common.JvmVersionHelper;
 import ch.vd.uniregctb.interfaces.model.*;
+import ch.vd.uniregctb.interfaces.model.Individu;
+import ch.vd.uniregctb.interfaces.model.Nationalite;
+import ch.vd.uniregctb.interfaces.model.Origine;
+import ch.vd.uniregctb.interfaces.model.Permis;
+import ch.vd.uniregctb.interfaces.model.Tutelle;
 import ch.vd.uniregctb.interfaces.model.wrapper.*;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.log4j.Logger;
@@ -35,6 +40,31 @@ public class ServiceCivilServiceImpl extends ServiceCivilServiceBase {
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setServiceCivil(ServiceCivil serviceCivil) {
 		this.serviceCivil = serviceCivil;
+	}
+
+	public Long getNumeroIndividuConjoint(Long noIndividuPrincipal, RegDate date) {
+
+		if (LOGGER.isTraceEnabled()) {
+			LOGGER.trace("Calling getIndividu(" + noIndividuPrincipal + ", " + date.year() + ")");
+		}
+		try {
+			final EnumAttributeIndividu[] attributsConjoints = {EnumAttributeIndividu.CONJOINT};
+			ch.vd.registre.civil.model.Individu ind =serviceCivil.getIndividu(noIndividuPrincipal, date.year(), attributsConjoints);
+			if (LOGGER.isTraceEnabled()) {
+				LOGGER.trace("End of getIndividu(" + noIndividuPrincipal + ", " + date.year() + ")");
+			}
+			if (ind != null) {
+				assertCoherence(noIndividuPrincipal, ind.getNoTechnique());
+				return ind.getConjoint(date.asJavaDate());
+			}
+			return null;
+		}
+		catch (RemoteException e) {
+			throw new ServiceCivilException("Impossible de récupérer l'individu n°" + noIndividuPrincipal + " pour l'année " + date.year(), e);
+		}
+		catch (RegistreException e) {
+			throw new ServiceCivilException("Impossible de récupérer l'individu n°" + noIndividuPrincipal + " pour l'année " + date.year(), e);
+		}
 	}
 
 	public Individu getIndividu(long noIndividu, int annee, EnumAttributeIndividu... parties) {

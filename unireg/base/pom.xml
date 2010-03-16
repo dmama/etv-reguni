@@ -765,7 +765,7 @@
 
 		<!-- Version des Host-Interfaces -->
 		<host-interfaces.version-short>1.9</host-interfaces.version-short>
-		<host-interfaces.version-long>1.9.23-SNAPSHOT</host-interfaces.version-long>
+		<host-interfaces.version-long>1.9.26-SNAPSHOT</host-interfaces.version-long>
 		<host-interfaces.factory>weblogic.jndi.WLInitialContextFactory</host-interfaces.factory>
 		<host-interfaces.ejb-proxy-class>org.springframework.ejb.access.SimpleRemoteStatelessSessionProxyFactoryBean</host-interfaces.ejb-proxy-class>
 

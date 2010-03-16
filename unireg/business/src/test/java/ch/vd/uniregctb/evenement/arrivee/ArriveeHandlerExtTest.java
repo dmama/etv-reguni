@@ -93,6 +93,9 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.CossonayVille.CheminDeRiondmorcel, null,
 						dateArrivee, null);
 			}
+
+
+			
 		});
 
 		final Individu individu = serviceCivil.getIndividu(noIndividu, dateArrivee.year());

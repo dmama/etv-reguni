@@ -65,6 +65,17 @@ public class ProxyServiceCivil implements ServiceCivilService {
 		return target.getIndividu(noTechniqueIndividu, anneeValidite);
 	}
 
+	public Individu getIndividuConjoint(Long noIndividuPrincipal, RegDate date) {
+		assertTargetNotNull();
+		return target.getIndividuConjoint(noIndividuPrincipal,date);
+	}
+
+	@SuppressWarnings("unchecked")
+	public Long getNumeroIndividuConjoint(Long noIndividuPrincipal, RegDate date) {
+		assertTargetNotNull();
+		return target.getNumeroIndividuConjoint(noIndividuPrincipal,date);  
+	}
+
 	public List<Individu> getIndividus(Collection<Long> nosIndividus, RegDate date, EnumAttributeIndividu... parties) {
 		assertTargetNotNull();
 		return target.getIndividus(nosIndividus, date, parties);
