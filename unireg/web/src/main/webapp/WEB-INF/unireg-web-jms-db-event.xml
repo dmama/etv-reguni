@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:jee="http://www.springframework.org/schema/jee"
+	xmlns:jms="http://www.springframework.org/schema/jms"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+							http://www.springframework.org/schema/beans/spring-beans.xsd
+        					http://www.springframework.org/schema/beans
+							http://www.springframework.org/schema/beans/spring-beans.xsd
+							http://www.springframework.org/schema/jee
+							http://www.springframework.org/schema/jee/spring-jee-2.0.xsd
+							http://www.springframework.org/schema/jms
+							http://www.springframework.org/schema/jms/spring-lang.xsd">
+
+
+	<bean id="databaseEventListener" class="ch.vd.uniregctb.evenement.database.DatabaseEventListener">
+		<property name="esbStore" ref="raftEsbStore" />
+		<property name="databaseService" ref="databaseService" />
+	</bean>
+
+	<bean id="jmsDatabaseEventListenerContainer" class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+		<property name="connectionFactory" ref="jmsConnectionFactory" />
+		<property name="messageListener" ref="databaseEventListener" />
+		<property name="transactionManager" ref="transactionManager" />
+		<property name="cacheLevelName" value="CACHE_CONSUMER" />
+		<property name="sessionTransacted" value="true" />
+		<property name="destinationName" value="${extprop.jms.queue.db.event.input}" />
+		<property name="autoStartup" value="${extprop.jms.queue.db.event.enabled}" />
+	</bean>
+
+</beans>

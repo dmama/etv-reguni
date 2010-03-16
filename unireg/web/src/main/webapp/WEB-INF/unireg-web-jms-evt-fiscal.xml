@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans default-lazy-init="true" xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:jee="http://www.springframework.org/schema/jee" xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+							http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+							http://www.springframework.org/schema/jee
+							http://www.springframework.org/schema/jee/spring-jee-2.0.xsd
+							http://www.springframework.org/schema/util
+							http://www.springframework.org/schema/util/spring-util-2.0.xsd">
+
+	<bean id="jmsEvenementFiscalTemplatePublisher" class="org.springframework.jms.core.JmsTemplate">
+		<property name="connectionFactory" ref="jmsConnectionFactory" />
+		<property name="defaultDestinationName" value="${extprop.jms.queue.evtFiscal}" />
+	</bean>
+
+	<bean id="evenementFiscalFacade" class="ch.vd.uniregctb.evenement.fiscal.jms.EvenementFiscalFacadeImpl">
+		<property name="publisher" ref="jmsEvenementFiscalTemplatePublisher" />
+		<property name="enabled" value="${extprop.jms.queue.evtFiscal.enabled}" />
+	</bean>
+
+</beans>

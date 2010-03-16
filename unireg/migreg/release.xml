@@ -1,0 +1,51 @@
+<assembly>
+	<id>release</id>
+	<formats>
+		<format>zip</format>
+	</formats>
+	<includeBaseDirectory>false</includeBaseDirectory>
+	<dependencySets>
+		<dependencySet>
+			<outputDirectory>lib</outputDirectory>
+			<scope>runtime</scope>
+		</dependencySet>
+	</dependencySets>
+	<files>
+		<file>
+			<source>src/main/scripts/migreg.sh</source>
+			<destName>migreg.sh</destName>
+		</file>
+		<file>
+			<source>pmEmployeur.txt</source>
+			<destName>pmEmployeur.txt</destName>
+		</file>
+		<file>
+			<source>src/main/scripts/migreg_full.sh</source>
+			<destName>migreg_full.sh</destName>
+		</file>
+		<file>
+			<source>src/main/scripts/build.xml</source>
+			<destName>build.xml</destName>
+		</file>
+		<file>
+			<source>src/main/resources/log4j.xml</source>
+			<destName>log4j.xml</destName>
+		</file>
+		<file>
+			<source>src/main/resources/ehcache.xml</source>
+			<destName>ehcache.xml</destName>
+		</file>
+		<file>
+			<source>target/classes/migreg.properties</source>
+			<destName>migreg.properties</destName>
+		</file>
+		<file>
+			<!-- BEGIN_LVERSION -->
+			<source>target/uniregctb-migreg-3.5.3a.jar</source>
+			<!-- END_LVERSION -->
+			<outputDirectory>lib</outputDirectory>
+			<destName>uniregctb-migreg.jar</destName>
+		</file>
+	</files>
+
+</assembly>

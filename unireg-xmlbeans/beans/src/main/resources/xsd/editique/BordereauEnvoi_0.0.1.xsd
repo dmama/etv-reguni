@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2005 rel. 3 U (http://www.altova.com) by Etat de Vaud (Etat de Vaud) -->
+<!--Version  0.0.1  - 28.04.09 : JVO - Première version de spec Bordereau d' envoi de dossier-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:include schemaLocation="DonneesTechniques_0.0.2.xsd"/>
+	<xs:element name="BordereauEnvoi">
+		<xs:annotation>
+			<xs:documentation>RGPB0801</xs:documentation>
+		</xs:annotation>
+		<!-- Description du schema pour l'impression du document BVR-->
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="Periode" type="typPeriode"/>
+				<xs:element name="Dossier" maxOccurs="unbounded">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="NomPrenom" type="typCdata">
+								<xs:annotation>
+									<xs:documentation>Nom, Prenom</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="NumCTB" type="xs:string">
+								<xs:annotation>
+									<xs:documentation>Numéro CTB</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="Num" type="typEntier">
+								<xs:annotation>
+									<xs:documentation>Numéro de transfert</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="DateEnv" type="typDatAAAAMMJJ">
+								<xs:annotation>
+									<xs:documentation>Date du transfert</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="CommuneDe" type="typCdata">
+								<xs:annotation>
+									<xs:documentation>Commune de départ</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="CommuneA" type="typCdata">
+								<xs:annotation>
+									<xs:documentation>Commune d 'arrivée de dossier</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

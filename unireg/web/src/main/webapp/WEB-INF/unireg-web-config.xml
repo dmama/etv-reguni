@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+	<!-- Initialisation du champ "bridageIs" du helper à partir de la valeur dans unireg.properties -->
+    <bean id="bridageISHelper" class="ch.vd.uniregctb.utils.BridageISHelper">
+    	<property name="bridageIS" value="${extprop.bridageIS.valeur}" />
+    </bean>
+    
+	<!-- Initialisation du champ "testMode" du helper à partir de la valeur dans unireg.properties -->
+    <bean id="testModeHelper" class="ch.vd.uniregctb.utils.TestModeHelper">
+    	<property name="testMode" value="${extprop.testMode}" />
+    </bean>
+
+	<!-- Initialisation du champ "environnement" du helper à partir de la valeur dans unireg.properties -->
+	<bean id="environnementHelper" class="ch.vd.uniregctb.utils.EnvironnementHelper">
+		<property name="environnement" value="${extprop.environnement}"/>
+	</bean>
+    
+</beans>

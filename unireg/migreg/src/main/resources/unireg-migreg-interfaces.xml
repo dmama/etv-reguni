@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns:util="http://www.springframework.org/schema/util"
+		xsi:schemaLocation="http://www.springframework.org/schema/beans
+							http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+							http://www.springframework.org/schema/util
+							http://www.springframework.org/schema/util/spring-util-2.0.xsd">
+
+	<!-- Bean remoteJndiConnection for Host-Interfaces EJBs -->
+	<bean id="ejbJndiTemplate" class="ch.vd.uniregctb.utils.UniregJndiTemplate">
+		<property name="environment">
+			<map>
+				<entry key="java.naming.factory.initial" value="${host-interfaces.factory}" />
+				<entry key="java.naming.provider.url" value="${extmigreg.host-interfaces.serverurl}"/>
+				<entry key="java.naming.security.principal" value="${extmigreg.host-interfaces.username}" />
+				<entry key="java.naming.security.credentials" value="${extmigreg.host-interfaces.password}" />
+			</map>
+		</property>
+	</bean>
+
+	<!-- Bean client serviceInfrastructure -->
+	<bean name="_serviceInfrastructure" class="org.springframework.ejb.access.SimpleRemoteStatelessSessionProxyFactoryBean">
+		<property name="jndiName" value="ejb/ch.vd.infrastructure.service.ServiceInfrastructure-${host-interfaces.version-short}"/>
+		<property name="resourceRef" value="false"/>
+		<property name="lookupHomeOnStartup" value="false"/>
+		<property name="businessInterface" value="ch.vd.infrastructure.service.ServiceInfrastructure"/>
+		<property name="jndiTemplate" ref="ejbJndiTemplate"/>
+	</bean>
+
+	<!-- Bean client serviceCivil -->
+	<bean name="_serviceCivil" class="org.springframework.ejb.access.SimpleRemoteStatelessSessionProxyFactoryBean">
+		<property name="jndiName" value="ejb/ch.vd.registre.civil.service.ServiceCivil-${host-interfaces.version-short}"/>
+		<property name="resourceRef" value="false"/>
+		<property name="lookupHomeOnStartup" value="false"/>
+		<property name="businessInterface" value="ch.vd.registre.civil.service.ServiceCivil"/>
+		<property name="jndiTemplate" ref="ejbJndiTemplate"/>
+	</bean>
+
+	<!-- Bean client serviceSecurite -->
+	<bean name="_serviceSecurite" class="org.springframework.ejb.access.SimpleRemoteStatelessSessionProxyFactoryBean">
+		<property name="jndiName" value="ejb/ch.vd.securite.service.ServiceSecurite-${host-interfaces.version-short}"/>
+		<property name="resourceRef" value="false"/>
+		<property name="lookupHomeOnStartup" value="false"/>
+		<property name="businessInterface" value="ch.vd.securite.service.ServiceSecurite"/>
+		<property name="jndiTemplate" ref="ejbJndiTemplate"/>
+	</bean>
+
+	<!-- Bean client servicePM -->
+	<bean name="_servicePersonneMorale" class="org.springframework.ejb.access.SimpleRemoteStatelessSessionProxyFactoryBean">
+		<property name="jndiName" value="ejb/ch.vd.registre.pm.service.ServicePersonneMorale-${host-interfaces.version-short}"/>
+		<property name="resourceRef" value="false"/>
+		<property name="lookupHomeOnStartup" value="false"/>
+		<property name="businessInterface" value="ch.vd.registre.pm.service.ServicePersonneMorale"/>
+		<property name="jndiTemplate" ref="ejbJndiTemplate"/>
+	</bean>
+
+	<!-- File based -->
+	<bean id="fileGlobalIndexDirectory" class="ch.vd.uniregctb.indexer.jdbc.FSDirectoryProvider" lazy-init="true">
+		<constructor-arg value="${extmigreg.globalIndexPath}" />
+	</bean>
+
+	<bean id="docService" class="ch.vd.uniregctb.document.DocumentServiceImpl" lazy-init="true">
+		<property name="hibernateTemplate" ref="hibernateTemplate" />
+		<property name="repository" value="${extmigreg.documents.repository}" />
+	</bean>
+
+</beans>

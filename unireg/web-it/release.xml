@@ -1,0 +1,35 @@
+<assembly>
+	<id>release</id>
+	<formats>
+		<format>zip</format>
+	</formats>
+	<includeBaseDirectory>false</includeBaseDirectory>
+	<dependencySets>
+		<dependencySet>
+			<outputDirectory>lib</outputDirectory>
+			<scope>runtime</scope>
+		</dependencySet>
+	</dependencySets>
+	<files>
+		<file>
+			<source>src/main/scripts/perfs.sh</source>
+			<destName>perfs.sh</destName>
+		</file>
+		<file>
+			<source>src/main/scripts/perfs2.sh</source>
+			<destName>perfs2.sh</destName>
+		</file>
+		<file>
+			<source>src/main/java/ch/vd/uniregctb/webservices/tiers/log4j.xml</source>
+			<destName>log4j.xml</destName>
+		</file>
+		<file>
+			<!-- BEGIN_LVERSION -->
+			<source>target/uniregctb-web-it-3.5.3a.jar</source>
+			<!-- END_LVERSION -->
+			<outputDirectory>lib</outputDirectory>
+			<destName>uniregctb-web-it.jar</destName>
+		</file>
+	</files>
+
+</assembly>

@@ -1,0 +1,49 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+  <table name="TIERS">
+    <column>LOG_MDATE</column>
+    <column>NUMERO</column>
+    <column>TIERS_TYPE</column>
+    <column>NH_NOM</column>
+    <column>NH_PRENOM</column>
+    <column>DEBITEUR_INACTIF</column>
+    <column>INDEX_DIRTY</column>
+    <column>PP_HABITANT</column>
+    <row>
+      <value>2008-01-01</value>
+      <value>6791</value>
+      <value>PersonnePhysique</value>
+      <value>Bla</value>
+      <value>Blo</value>
+      <value>0</value>
+      <value>1</value>
+      <value>0</value>
+    </row>
+  </table>
+  <table name="FOR_FISCAL">
+    <column>LOG_MDATE</column>
+    <column>ID</column>
+    <column>TIERS_ID</column>
+    <column>DATE_OUVERTURE</column>
+    <column>DATE_FERMETURE</column>
+    <column>MOTIF_RATTACHEMENT</column>
+    <column>TYPE_AUT_FISC</column>
+    <column>NUMERO_OFS</column>
+    <column>GENRE_IMPOT</column>
+    <column>FOR_TYPE</column>
+    <column>MODE_IMPOSITION</column>
+    <row>
+      <value>2008-01-01</value>
+      <value>100005</value>
+      <value>6791</value>
+      <value>20070101</value>
+      <null/>
+      <value>DOMICILE</value>
+      <value>COMMUNE_HC</value>
+      <value>261</value>
+      <value>REVENU_FORTUNE</value>
+      <value>ForFiscalPrincipal</value>
+      <value>ORDINAIRE</value>
+    </row>
+  </table>
+</dataset>

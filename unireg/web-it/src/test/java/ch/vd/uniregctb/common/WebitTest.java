@@ -1,0 +1,115 @@
+package ch.vd.uniregctb.common;
+
+import com.gargoylesoftware.htmlunit.Page;
+import com.gargoylesoftware.htmlunit.ThreadedRefreshHandler;
+import com.gargoylesoftware.htmlunit.WebClient;
+import com.gargoylesoftware.htmlunit.html.HtmlElement;
+import com.gargoylesoftware.htmlunit.html.HtmlFileInput;
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import com.gargoylesoftware.htmlunit.html.HtmlSubmitInput;
+import org.apache.log4j.Logger;
+
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.Properties;
+
+public abstract class WebitTest extends WithoutSpringTest {
+
+	private static final Logger LOGGER = Logger.getLogger(WebitTest.class);
+
+	protected String baseUrl;
+	protected String username;
+	protected String password;
+	protected String batchUrl;
+	protected String securiteUrl;
+	protected String tiers1Url;
+	protected String tiers2Url;
+
+	protected WebClient webClient;
+
+	@Override
+	public void onSetUp() throws Exception {
+		super.onSetUp();
+
+		// Charge les propriétés propre aux tests Web-IT
+		Properties propsWebIT = new Properties();
+		InputStream inStream = getClass().getResourceAsStream("/ut/unireg-webit.properties");
+		try {
+			propsWebIT.load(inStream);
+		}
+		finally {
+			inStream.close();
+		}
+
+		// Charge les propriétés générales pour les tests UT
+		final String uniregUTPropertiesFile = propsWebIT.getProperty("unireg-ut.properties");
+		Properties propsUT = new Properties();
+		inStream = new FileInputStream(uniregUTPropertiesFile);
+		try {
+			propsUT.load(inStream);
+		}
+		finally {
+			inStream.close();
+		}
+
+		// Récupère les valeurs des propriétés 
+		baseUrl = propsWebIT.getProperty("unireg.baseurl") + propsUT.getProperty("testprop.unireg.deploymenturl");
+		username = propsWebIT.getProperty("webservice.username");
+		password = propsWebIT.getProperty("webservice.password");
+		batchUrl = baseUrl + propsWebIT.getProperty("webservice.batch.serverurl");
+		securiteUrl = baseUrl + propsWebIT.getProperty("webservice.securite.serverurl");
+		tiers1Url = baseUrl + propsWebIT.getProperty("webservice.tiers.serverurl");
+		tiers2Url = baseUrl + propsWebIT.getProperty("webservice.tiers2.serverurl");
+
+		LOGGER.debug("baseUrl: " + baseUrl);
+
+		webClient = new WebClient();
+		webClient.setJavaScriptEnabled(false);
+		webClient.setRefreshHandler(new ThreadedRefreshHandler());
+	}
+
+	protected HtmlPage getHtmlPage(String relativeUrl) throws Exception {
+		LOGGER.debug("Calling HTML page: " + relativeUrl);
+		URL url = getAbsoluteUrl(relativeUrl);
+		return (HtmlPage) webClient.getPage(url);
+	}
+
+	protected URL getAbsoluteUrl(String u) throws Exception {
+		return new URL(baseUrl + u);
+	}
+
+	/**
+	 * Charge un script DB unit dans la base de données de l'application testée
+	 *
+	 * @param filename le nom du fichier DB unit à charger
+	 * @throws Exception en cas de problème
+	 */
+	public void loadDatabase(String filename) throws Exception {
+
+		LOGGER.info("Chargement du fichier DB unit " + filename);
+
+		// Détermine l'URL de la page d'import
+		final URL importPageUrl = new URL(baseUrl + "/admin/tiersImport.do");
+
+		// Détermine l'URL du fichier DB unit
+		final URL dbUnitUrl = getClass().getResource(filename);
+
+		// Charge la page d'import
+		HtmlPage page = (HtmlPage) webClient.getPage(importPageUrl);
+
+		// Rempli le champ d'import avec le chemin vers le fichier DB unit
+		HtmlFileInput file = (HtmlFileInput) page.getHtmlElementById("scriptData");
+		file.setValueAttribute(dbUnitUrl.getPath());
+
+		// Exécute le formulaire
+		final HtmlElement element = page.getHtmlElementById("charger");
+		HtmlSubmitInput charger = (HtmlSubmitInput) element;
+		final Page resultat = charger.click();
+
+		// Vérification que tout s'est bien passé
+		final String content = resultat.getWebResponse().getContentAsString();
+		assertContains("Script lancé avec succès", content, "Le script DB unit ne s'est pas importé correctement !");
+	}
+
+}

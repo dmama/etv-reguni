@@ -1,0 +1,324 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>RechercheHSU4Test</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">RechercheHSU4Test</td></tr>
+</thead><tbody>
+<tr>
+	<td>open</td>
+	<td>/fiscalite/unireg/tiers/hostlist.do</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Batchs</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>startJobsHiContribuableIndexerJobSmall</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>link=Rechercher</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>effacer</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>numeroFormatte</td>
+	<td>10010219</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Rechercher']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Un tiers trouvé</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>effacer</td>
+	<td></td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>typeRechercheDuNom</td>
+	<td>label=Commence par</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>nomRaison</td>
+	<td>Mayer</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Rechercher']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Un tiers trouvé</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>effacer</td>
+	<td></td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>typeRechercheDuNom</td>
+	<td>label=Contient</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>nomRaison</td>
+	<td>Ma</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Rechercher']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>26 tiers trouvés</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>effacer</td>
+	<td></td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>typeRechercheDuNom</td>
+	<td>label=Ressemble à</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>nomRaison</td>
+	<td>Mayer</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Rechercher']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>2 Tous tiers trouvés</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>effacer</td>
+	<td></td>
+</tr>
+<tr>
+	<td>select</td>
+	<td>typeRechercheDuNom</td>
+	<td>label=Est exactement</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>nomRaison</td>
+	<td>Mayer</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Rechercher']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Un tiers trouvé</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>effacer</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>localiteOuPays</td>
+	<td>nyon</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Rechercher']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>5 Tous tiers trouvés</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>effacer</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>localiteOuPays</td>
+	<td>France</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Rechercher']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>2 Tous tiers trouvés</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>effacer</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>nomRaison</td>
+	<td>Weber</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>localiteOuPays</td>
+	<td>nyon</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Rechercher']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Un tiers trouvé</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>effacer</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>forAll</td>
+	<td>Lausanne</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Rechercher']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>19 Tous tiers trouvés</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>effacer</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>forAll</td>
+	<td>France</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Rechercher']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>4 Tous tiers trouvés</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>effacer</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>dateNaissanceFormattee</td>
+	<td>30.05.1965</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Rechercher']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Un tiers trouvé</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>effacer</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>dateNaissanceFormattee</td>
+	<td>21.07.1926</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>nomRaison</td>
+	<td>mayor</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Rechercher']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Un tiers trouvé</td>
+	<td></td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>effacer</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>numeroAVS</td>
+	<td>13883770000</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//input[@value='Rechercher']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Un tiers trouvé</td>
+	<td></td>
+</tr>
+
+</tbody></table>
+</body>
+</html>

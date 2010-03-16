@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd">
+
+	<!-- Audit -->
+	<bean id="auditManager" class="ch.vd.uniregctb.audit.AuditManager">
+		<property name="auditLineDAO" ref="auditLineDAO" />
+		<!-- BEGIN_LVERSION -->
+		<property name="appName" value="RattrapageMigration (version 3.5.3a)" />
+		<!-- END_LVERSION -->
+	</bean>
+
+	<!-- Transaction manager -->
+
+	<bean id="transactionManager" class="org.jencks.factory.TransactionManagerFactoryBean">
+		<property name="transactionLogDir" value="target/txlog"/>
+		<property name="defaultTransactionTimeoutSeconds" value="86400"/>
+	</bean>
+
+	<!-- Datasource Oracle UniregCTB -->
+	<bean id="dataSource" class="org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy">
+		<property name="targetDataSource" ref="rawDataSource" />
+	</bean>
+
+	<!-- Datasource Oracle UniregCTB -->
+	<bean id="rawDataSource" class="ch.vd.uniregctb.datasource.UniregDataSource" destroy-method="close">
+		<property name="driverClassName" value="${jdbc.driverClassName}" />
+		<property name="url" value="${rattrapage.jdbc.url}" />
+		<property name="username" value="${rattrapage.jdbc.username}" />
+		<property name="password" value="${rattrapage.jdbc.password}" />
+
+		<property name="initialSize" value="4" />
+		<!-- 50 Connection max c'est la meme chose que dans Weblogic -->
+		<property name="maxActive" value="50" />
+		
+	</bean>
+	
+
+<!-- Datasource pour la DB host DB2 (pour la migration/indexation) -->
+	<bean id="hostDataSourceDB2" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+		<property name="driverClassName" value="${rattrapage.db2.driverClassName}" />
+		<property name="url" value="jdbc:db2://${rattrapage.db2.server}:${rattrapage.db2.port}/${rattrapage.db2.instance}" />
+		<property name="username" value="${rattrapage.db2.username}" />
+		<property name="password" value="${rattrapage.db2.password}" />
+		<property name="initialSize" value="1" />
+		<property name="maxActive" value="-1" />
+	</bean>
+	
+	<!-- hibernateProperties specifiques à cette datasource. -->
+	<util:map id="hibernateProperties">
+		<entry key="hibernate.connection.autocommit" value="false" />
+		<entry key="hibernate.query.factory_class" value="org.hibernate.hql.classic.ClassicQueryTranslatorFactory" />
+		<entry key="hibernate.dialect" value="${hibernate.dialect}" />
+		<entry key="hibernate.query.substitutions" value="${hibernate.query.substitutions}" />
+		<entry key="hibernate.show_sql" value="false" />
+		<entry key="hibernate.jdbc.batch_size" value="0" />
+		<entry key="hibernate.jdbc.use_streams_for_binary" value="true" />
+		<entry key="hibernate.hbm2ddl.auto" value="update" />
+	</util:map>
+     <bean id="db2Schema" class="java.lang.String">
+		<constructor-arg value="${rattrapage.db2.schema}" />
+	</bean>
+</beans>

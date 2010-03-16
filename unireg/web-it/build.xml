@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="unireg-web-it" default="all" basedir=".">
+
+	<target name="init">
+		
+		<mkdir dir="target/generated/ch/vd/uniregctb/tests" />
+
+		<path id="unireg-cp">
+			<pathelement path="target/classes" />
+			<pathelement path="extlibs/selenium-core-0.8.3-SNAPSHOT.jar" />
+		</path>
+		
+	</target>
+
+	<target name="all" depends="init">
+
+		<java classname="ch.vd.uniregctb.selenium.XlateHtmlSeleneseToJava" fork="true" failonerror="true" classpathref="unireg-cp">
+			<arg value="target/generated/ch/vd/uniregctb/tests" />
+			<arg value="-package" />
+			<arg value="ch.vd.uniregctb.tests" />
+			<arg value="-dir" />
+			<arg value="src/test/selenese" />
+			<arg value="-silent" />
+		</java>
+	</target>
+
+</project>

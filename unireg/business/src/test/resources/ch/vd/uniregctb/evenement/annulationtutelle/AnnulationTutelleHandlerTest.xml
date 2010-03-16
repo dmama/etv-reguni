@@ -1,0 +1,53 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+  <table name="TIERS">
+    <column>LOG_MDATE</column>
+    <column>NUMERO</column>
+    <column>TIERS_TYPE</column>
+    <column>NUMERO_INDIVIDU</column>
+    <column>DEBITEUR_INACTIF</column>
+    <column>PP_HABITANT</column>
+    <row>
+      <value>2008-01-01</value>
+      <value>7000</value>
+      <value>PersonnePhysique</value>
+      <value>12345</value>
+      <value>0</value>
+      <value>1</value>
+    </row>
+    <row>
+      <value>2008-01-01</value>
+      <value>7001</value>
+      <value>PersonnePhysique</value>
+      <value>54321</value>
+      <value>0</value>
+      <value>1</value>
+    </row>
+    <row>
+      <value>2008-01-01</value>
+      <value>7002</value>
+      <value>PersonnePhysique</value>
+      <value>45678</value>
+      <value>0</value>
+      <value>1</value>
+    </row>
+  </table>
+  <table name="RAPPORT_ENTRE_TIERS">
+    <column>LOG_MDATE</column>
+    <column>ID</column>
+    <column>RAPPORT_ENTRE_TIERS_TYPE</column>
+    <column>DATE_DEBUT</column>
+    <column>DATE_FIN</column>
+    <column>TIERS_SUJET_ID</column>
+    <column>TIERS_OBJET_ID</column>
+    <row>
+      <value>2008-01-01</value>
+      <value>10002</value>
+      <value>Tutelle</value>
+      <value>19860408</value>
+      <null/>
+      <value>7001</value>
+      <value>7000</value>
+    </row>
+  </table>
+</dataset>

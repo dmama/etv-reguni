@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns:util="http://www.springframework.org/schema/util"
+		xsi:schemaLocation="http://www.springframework.org/schema/beans
+							http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+							http://www.springframework.org/schema/util
+							http://www.springframework.org/schema/util/spring-util-2.0.xsd">
+
+	<bean id="develPropertyConfigurer" class="org.springframework.beans.factory.config.PreferencesPlaceholderConfigurer">
+		<property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE" />
+		<property name="ignoreResourceNotFound" value="true" />
+		<property name="ignoreUnresolvablePlaceholders" value="false" />
+		<property name="locations">
+			<list>
+				<value>file:rattrapage.properties</value>
+			 	<value>file:target/classes/rattrapage.properties</value>
+			</list>
+		 </property>
+	</bean>
+
+	<bean id="editiqueService" class="ch.vd.uniregctb.editique.mock.MockEditiqueService" lazy-init="true">
+	</bean>
+
+	
+	
+	
+	
+
+	<bean id="propertiesLogger" class="ch.vd.uniregctb.common.SpringPropertiesLogger">
+		<constructor-arg value="Business - Properties provenant de la config Maven" />
+		<property name="properties"
+			value="
+                | JDBC driver             : ${jdbc.driverClassName}
+                | Hibernate dialect       : ${hibernate.dialect}
+                | JDBC url                : ${rattrapage.jdbc.url}
+                | UniregCTB DB user       : ${rattrapage.jdbc.username}                
+                | Host Interfaces URL     : ${rattrapage.host-interfaces.serverurl}
+                | Host Interfaces user    : ${rattrapage.host-interfaces.username}                   
+                | Index path UT           : ${rattrapage.globalIndexPath}
+                | Docs repository UT      : ${rattrapage.documents.repository}
+                | Host interface          : ${rattrapage.host-interfaces.serverurl}               
+                " />
+	</bean>
+
+</beans>

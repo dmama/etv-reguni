@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans default-lazy-init="true" xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+	<!-- Audit -->
+	<bean id="auditManager" class="ch.vd.uniregctb.audit.AuditManager">
+		<property name="auditLineDAO" ref="auditLineDAO" />
+		<property name="appName" value="Apireg Test" />
+	</bean>
+
+	<!-- Transaction manager -->
+
+	<bean id="transactionManager" class="org.jencks.factory.TransactionManagerFactoryBean">
+		<property name="transactionLogDir" value="target/txlog"/>
+		<property name="defaultTransactionTimeoutSeconds" value="86400"/>
+	</bean>
+
+	<bean name="_serviceInfrastructure" class="org.springframework.ejb.access.SimpleRemoteStatelessSessionProxyFactoryBean">
+		<property name="jndiName" value="ejb/ch.vd.infrastructure.service.ServiceInfrastructure-${host-interfaces.version-short}"/>
+		<property name="resourceRef" value="false"/>
+		<property name="lookupHomeOnStartup" value="false"/>
+		<property name="businessInterface" value="ch.vd.infrastructure.service.ServiceInfrastructure"/>
+		<property name="jndiTemplate" ref="ejbJndiTemplate"/>
+	</bean>
+
+	<bean id="serviceInfrastructureService" class="ch.vd.uniregctb.interfaces.service.ServiceInfrastructureServiceImpl">
+		<property name="serviceInfrastructure" ref="_serviceInfrastructure" />
+	</bean>
+
+	<!-- Host -->
+
+	<bean id="ejbJndiTemplate" class="ch.vd.uniregctb.utils.UniregJndiTemplate">
+		<property name="environment">
+			<map>
+				<entry key="java.naming.factory.initial" value="${host-interfaces.factory}" />
+				<entry key="java.naming.provider.url" value="${testprop.host-interfaces.url}"/>
+				<entry key="java.naming.security.principal" value="${testprop.host-interfaces.username}" />
+				<entry key="java.naming.security.credentials" value="${testprop.host-interfaces.password}" />
+			</map>
+		</property>
+	</bean>
+
+	<bean name="_serviceCivil" class="org.springframework.ejb.access.SimpleRemoteStatelessSessionProxyFactoryBean">
+		<property name="jndiName" value="ejb/ch.vd.registre.civil.service.ServiceCivil-${host-interfaces.version-short}"/>
+		<property name="resourceRef" value="false"/>
+		<property name="lookupHomeOnStartup" value="false"/>
+		<property name="businessInterface" value="ch.vd.registre.civil.service.ServiceCivil"/>
+		<property name="jndiTemplate" ref="ejbJndiTemplate"/>
+	</bean>
+	
+	<bean id="serviceCivilService" class="ch.vd.uniregctb.interfaces.service.ServiceCivilServiceImpl">
+		<property name="serviceCivil" ref="_serviceCivil" />
+	</bean>
+
+	<!-- Apireg -->
+
+	<import resource="classpath:apireg-dao.xml"/>
+	
+	<alias alias="hostDataSource" name="hostDataSourceDB2"/>
+	<alias alias="hostSchema" name="db2Schema" />
+
+	<bean id="serviceCivilApireg" class="ch.vd.uniregctb.interfaces.service.ServiceCivilApireg">
+		<property name="dao" ref="regppIndividuDAO" />
+		<property name="infraService" ref="serviceInfrastructureService" />
+	</bean>
+
+	<bean id="hostDataSourceDB2"
+		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="driverClassName" value="${testprop.db2.driverClassName}"/>
+		<property name="url" value="${testprop.db2.proxy}"/>
+		<property name="username" value="${testprop.db2.username}"/>
+		<property name="password" value="${testprop.db2.password}"/>
+	</bean>
+	<bean id="db2Schema" class="java.lang.String">
+		<constructor-arg value="${testprop.db2.schema}" />
+	</bean>
+
+</beans>
