@@ -12,7 +12,7 @@
 		<groupId>ch.vd.uniregctb</groupId>
 		<artifactId>uniregctb</artifactId>
 		<!-- BEGIN_LVERSION -->
-		<version>3.5.3b</version>
+		<version>3.5.3c</version>
 		<!-- END_LVERSION -->
 		<relativePath>../base/pom.xml</relativePath>
 	</parent>
