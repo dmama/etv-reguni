@@ -69,7 +69,6 @@ import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeActivite;
-import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
@@ -2385,22 +2384,7 @@ public class TiersServiceImpl implements TiersService {
 	 * {@inheritDoc}
 	 */
 	public String getNomPrenom(Individu individu) {
-		final HistoriqueIndividu individuHisto = individu.getDernierHistoriqueIndividu();
-		String nomPrenom = "";
-		if (individuHisto != null) {
-			final String prenom = individuHisto.getPrenom() != null ? individuHisto.getPrenom().trim() : null;
-			final String nom = individuHisto.getNom() != null ? individuHisto.getNom().trim() : null;
-			if (nom != null && prenom != null ) {
-				nomPrenom = String.format("%s %s", prenom, nom);
-			}
-			else if (nom != null) {
-				nomPrenom = nom;
-			}
-			else if (prenom != null) {
-				nomPrenom = prenom;
-			}
-		}
-		return nomPrenom;
+		return serviceCivilService.getNomPrenom(individu);
 	}
 
 	/**

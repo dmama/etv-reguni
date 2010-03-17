@@ -371,4 +371,8 @@ public class MockPersonneMorale implements PersonneMorale {
 	public void setForsFiscauxSecondaires(List<ForPM> forsFiscauxSecondaires) {
 		this.forsFiscauxSecondaires = forsFiscauxSecondaires;
 	}
+
+	public List<Mandat> getMandats() {
+		return null;
+	}
 }

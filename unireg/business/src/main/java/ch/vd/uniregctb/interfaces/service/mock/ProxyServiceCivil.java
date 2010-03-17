@@ -102,6 +102,11 @@ public class ProxyServiceCivil implements ServiceCivilService {
 		return target.getNationalites(noTechniqueIndividu, anneeValidite);
 	}
 
+	public String getNomPrenom(Individu individu) {
+		assertTargetNotNull();
+		return target.getNomPrenom(individu);
+	}
+
 	private void assertTargetNotNull() {
 		Assert.notNull(target, "Le service civil n'a pas été défini !");
 	}

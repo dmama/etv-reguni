@@ -19,6 +19,7 @@ import org.junit.Test;
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
+@SuppressWarnings({"JavaDoc"})
 public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 
 	// private static final Logger LOGGER = Logger.getLogger(WebitTest.class);
@@ -341,6 +342,37 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 		assertEquals(FormatNumeroCompte.IBAN, compteMandataire.getFormat());
 		assertEquals("Maître George-Edouard Dubeauchapeau", compteMandataire.getTitulaire());
 		assertEquals("Banque privée Piquet S.A.", compteMandataire.getNomInstitution());
+	}
+
+	/**
+	 * [UNIREG-2106] teste que les coordonnées fiscales d'un mandataire de type 'T' sont bien exposées
+	 */
+	@Test
+	public void testFournirCoordonneesFinancieresAvecMandatairePM() throws Exception {
+
+		final GetTiers params = new GetTiers();
+		params.setLogin(login);
+		params.setTiersNumber(32592);
+		params.setDate(newDate(2010, 3, 17));
+		params.getParts().add(TiersPart.COMPTES_BANCAIRES);
+
+		final PersonneMorale pm = (PersonneMorale) service.getTiers(params);
+		assertNotNull(pm);
+		assertEquals(32592L, pm.getNumero());
+
+		final List<CompteBancaire> comptes = pm.getComptesBancaires();
+		assertNotNull(comptes);
+		assertEquals(1, comptes.size());
+
+		final CompteBancaire compteMandataire = comptes.get(0);
+		assertNotNull(compteMandataire);
+		assertEquals(426, compteMandataire.getNumeroTiersTitulaire());
+		assertEquals("230-575.013.03", compteMandataire.getNumero());
+		assertNull(compteMandataire.getClearing());
+		assertNull(compteMandataire.getAdresseBicSwift());
+		assertEquals(FormatNumeroCompte.SPECIFIQUE_CH, compteMandataire.getFormat());
+		assertEquals("Deloitte AG", trimValiPattern(compteMandataire.getTitulaire()));
+		assertEquals("UBS AG", trimValiPattern(compteMandataire.getNomInstitution()));
 	}
 
 	@Test

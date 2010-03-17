@@ -3,6 +3,7 @@ package ch.vd.uniregctb.interfaces.service;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdressesPM;
 import ch.vd.uniregctb.adresse.AdressesPMHisto;
+import ch.vd.uniregctb.interfaces.model.Etablissement;
 import ch.vd.uniregctb.interfaces.model.EvenementPM;
 import ch.vd.uniregctb.interfaces.model.PersonneMorale;
 import ch.vd.uniregctb.stats.StatsService;
@@ -95,6 +96,30 @@ public class ServicePersonneMoraleTracing implements ServicePersonneMoraleServic
 		long time = tracing.start();
 		try {
 			result = target.getPersonnesMorales(ids, parts);
+		}
+		finally {
+			tracing.end(time);
+		}
+		return result;
+	}
+
+	public Etablissement getEtablissement(long id) {
+		Etablissement result;
+		long time = tracing.start();
+		try {
+			result = target.getEtablissement(id);
+		}
+		finally {
+			tracing.end(time);
+		}
+		return result;
+	}
+
+	public List<Etablissement> getEtablissements(List<Long> ids) {
+		List<Etablissement> result;
+		long time = tracing.start();
+		try {
+			result = target.getEtablissements(ids);
 		}
 		finally {
 			tracing.end(time);

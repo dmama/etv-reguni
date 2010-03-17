@@ -4,6 +4,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.adresse.AdressesPM;
 import ch.vd.uniregctb.adresse.AdressesPMHisto;
+import ch.vd.uniregctb.interfaces.model.Etablissement;
 import ch.vd.uniregctb.interfaces.model.EvenementPM;
 import ch.vd.uniregctb.interfaces.model.PersonneMorale;
 import ch.vd.uniregctb.interfaces.service.PartPM;
@@ -37,6 +38,16 @@ public class ProxyServicePM implements ServicePersonneMoraleService {
 	public List<PersonneMorale> getPersonnesMorales(List<Long> ids, PartPM... parts) {
 		assertTargetNotNull();
 		return target.getPersonnesMorales(ids, parts);
+	}
+
+	public Etablissement getEtablissement(long id) {
+		assertTargetNotNull();
+		return target.getEtablissement(id);
+	}
+
+	public List<Etablissement> getEtablissements(List<Long> ids) {
+		assertTargetNotNull();
+		return target.getEtablissements(ids);
 	}
 
 	public AdressesPM getAdresses(long noEntreprise, RegDate date) {

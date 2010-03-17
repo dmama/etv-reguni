@@ -190,6 +190,14 @@ public interface ServiceCivilService {
 	public Permis getPermisActif(long noIndividu, RegDate date);
 
 	/**
+	 * Retourne les nom et prénoms pour l'adressage de l'individu spécifié.
+	 *
+	 * @param individu un individu
+	 * @return le prénom + le nom du l'individu
+	 */
+	public String getNomPrenom(Individu individu);
+
+	/**
 	 * Utile pour la sous-classe Proxy
 	 *
 	 * @param target

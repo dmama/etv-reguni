@@ -1,11 +1,15 @@
 package ch.vd.uniregctb.webservices.tiers2.impl.pm;
 
+import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.pm.model.EnumTypeAdresseEntreprise;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.interfaces.model.*;
+import ch.vd.uniregctb.interfaces.model.Etablissement;
 import ch.vd.uniregctb.interfaces.service.PartPM;
+import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleService;
 import ch.vd.uniregctb.tiers.*;
 import ch.vd.uniregctb.webservices.common.NoOfsTranslator;
@@ -42,9 +46,11 @@ import java.util.*;
 @SuppressWarnings({"UnusedDeclaration"})
 public class TiersWebServiceWithPM implements TiersWebService {
 
+	private TiersDAO tiersDAO;
 	private TiersWebService target;
 	private ServicePersonneMoraleService servicePM;
-	private TiersDAO tiersDAO;
+	private ServiceCivilService serviceCivil;
+	private ServiceInfrastructureService serviceInfra;
 	private NoOfsTranslator noOfsTranslator;
 
 	public void setTarget(TiersWebService target) {
@@ -53,6 +59,14 @@ public class TiersWebServiceWithPM implements TiersWebService {
 
 	public void setServicePM(ServicePersonneMoraleService servicePM) {
 		this.servicePM = servicePM;
+	}
+
+	public void setServiceCivil(ServiceCivilService serviceCivil) {
+		this.serviceCivil = serviceCivil;
+	}
+
+	public void setServiceInfra(ServiceInfrastructureService serviceInfra) {
+		this.serviceInfra = serviceInfra;
 	}
 
 	public void setTiersDAO(TiersDAO tiersDAO) {
@@ -304,7 +318,7 @@ public class TiersWebServiceWithPM implements TiersWebService {
 		pmHisto.numero = pmHost.getNumeroEntreprise();
 		pmHisto.numeroTelProf = pmHost.getTelephoneContact();
 		pmHisto.numeroTelecopie = pmHost.getTelecopieContact();
-		pmHisto.comptesBancaires = comptes2web(pmHost.getComptesBancaires());
+		pmHisto.comptesBancaires = calculateComptesBancaires(pmHost);
 
 		pmHisto.personneContact = pmHost.getNomContact();
 		pmHisto.designationAbregee = pmHost.getDesignationAbregee();
@@ -388,6 +402,139 @@ public class TiersWebServiceWithPM implements TiersWebService {
 		}
 
 		return pmHisto;
+	}
+
+	private List<CompteBancaire> calculateComptesBancaires(ch.vd.uniregctb.interfaces.model.PersonneMorale pmHost) {
+
+		// on tient du compte du compte bancaire de la PM elle-même
+		List<CompteBancaire> list = comptes2web(pmHost.getComptesBancaires());
+
+		// [UNIREG-2106] on ajoute les comptes bancaires des mandats de type 'T'
+		final List<Mandat> mandats = pmHost.getMandats();
+		if (mandats != null) {
+			for (Mandat m : mandats) {
+				if (m.getCode().equals("T")) { // on ignore tous les autres types de mandataire
+
+					CompteBancaire cb = new CompteBancaire();
+					cb.numeroTiersTitulaire = m.getNumeroMandataire();
+
+					// on rempli les informations à partir du mandataire
+					fillCompteBancaireDepuisMandataire(cb, m);
+
+					// on surcharge les informations à partir du mandat, si nécessaire
+					fillCompteBancaireDepuisMandat(cb, m);
+
+					if (list == null) {
+						list = new ArrayList<CompteBancaire>();
+					}
+					list.add(cb);
+				}
+			}
+		}
+
+		return list;
+	}
+
+	private void fillCompteBancaireDepuisMandataire(CompteBancaire cb, Mandat m) {
+		switch (m.getTypeMandataire()) {
+		case INDIVIDU:
+			fillCompteBancaireDepuisMandataireIndividu(cb, m.getNumeroMandataire());
+			break;
+		case PERSONNE_MORALE:
+			fillCompteBancaireDepuisMandatairePersonneMorale(cb, m.getNumeroMandataire());
+			break;
+		case ETABLISSEMENT:
+			fillCompteBancaireDepuisMandataireEtablissement(cb, m.getNumeroMandataire());
+			break;
+		default:
+			throw new IllegalArgumentException("Type de mandataire inconnu =[" + m.getTypeMandataire() + "]");
+		}
+	}
+
+	/**
+	 * Renseigne les numéros de comptes (et les informations y relatives) à partir des valeurs spécifiées.<p> Si plusieurs types de comptes sont spécifiés (IBAN + CCP, par exemple), cette méthode utilise
+	 * l'ordre de priorité suivant : l'IBAN, puis le compte bancaire et enfin le compte CCP. Si aucun type de compte n'est spécifié, cette méthode ne fait rien.
+	 *
+	 * @param cb              le compte bancaire à remplir
+	 * @param iban            un numéro de compte au format IBAN
+	 * @param comptesBancaire un numéro au format bancaire (banque suisse)
+	 * @param ccp             un numéro de compte au format CCP (poste suisse)
+	 * @param bicSwift        le code bic swift
+	 * @param nomInstitution  le nom de l'institution financière
+	 */
+	private void fillCompteBancaire(CompteBancaire cb, String iban, String comptesBancaire, String ccp, String bicSwift, String nomInstitution) {
+		if (iban != null) {
+			cb.numero = iban;
+			cb.format = CompteBancaire.Format.IBAN;
+			cb.adresseBicSwift = bicSwift;
+			cb.nomInstitution = nomInstitution;
+		}
+		else if (comptesBancaire != null) {
+			cb.numero = comptesBancaire;
+			cb.format = CompteBancaire.Format.SPECIFIQUE_CH;
+			cb.adresseBicSwift = bicSwift;
+			cb.nomInstitution = nomInstitution;
+		}
+		else if (ccp != null) {
+			cb.numero = ccp;
+			cb.format = CompteBancaire.Format.SPECIFIQUE_CH;
+			cb.adresseBicSwift = bicSwift;
+			cb.nomInstitution = nomInstitution;
+		}
+	}
+
+	private void fillCompteBancaireDepuisMandataireEtablissement(CompteBancaire cb, long noEtablissement) {
+		final Etablissement etablissement = servicePM.getEtablissement(noEtablissement);
+		if (etablissement != null) {
+			cb.titulaire = etablissement.getEnseigne();
+			fillCompteBancaire(cb, etablissement.getIBAN(), etablissement.getCompteBancaire(), etablissement.getCCP(), etablissement.getBicSwift(), etablissement.getNomInstitutionFinanciere());
+		}
+	}
+
+	private void fillCompteBancaireDepuisMandatairePersonneMorale(CompteBancaire cb, long noPM) {
+		final ch.vd.uniregctb.interfaces.model.PersonneMorale pm = servicePM.getPersonneMorale(noPM, (PartPM[]) null);
+		if (pm != null) {
+			cb.titulaire = pm.getRaisonSociale();
+
+			final List<ch.vd.uniregctb.interfaces.model.CompteBancaire> cpm = pm.getComptesBancaires();
+			if (cpm != null && !cpm.isEmpty()) {
+				final ch.vd.uniregctb.interfaces.model.CompteBancaire c = cpm.get(0); // faut-il vraiment toujours le premier ?
+				cb.format = CompteBancaire.Format.valueOf(c.getFormat().name());
+				cb.numero = c.getNumero();
+				cb.nomInstitution = c.getNomInstitution();
+			}
+		}
+	}
+
+	private void fillCompteBancaireDepuisMandataireIndividu(CompteBancaire cb, long noIndividu) {
+		final Individu individu = serviceCivil.getIndividu(noIndividu, 2400);
+		if (individu != null) {
+			cb.titulaire = serviceCivil.getNomPrenom(individu);
+			// aucune information de compte bancaire sur un individu...
+		}
+	}
+
+	private void fillCompteBancaireDepuisMandat(CompteBancaire cb, Mandat m) {
+		final String nomInstitution = getNomInstitution(m.getNumeroInstitutionFinanciere());
+
+		fillCompteBancaire(cb, m.getIBAN(), m.getCompteBancaire(), m.getCCP(), m.getBicSwift(), nomInstitution);
+	}
+
+	private String getNomInstitution(Long noInstit) {
+
+		if (noInstit == null) {
+			return null;
+		}
+
+		final InstitutionFinanciere instit;
+		try {
+			instit = serviceInfra.getInstitutionFinanciere(noInstit.intValue());
+		}
+		catch (InfrastructureException e) {
+			throw new RuntimeException("L'institution financière avec le numéro = [" + noInstit + "] n'existe pas.");
+		}
+
+		return instit.getNomInstitutionFinanciere();
 	}
 
 	private List<EvenementPM> events2web(List<ch.vd.uniregctb.interfaces.model.EvenementPM> events) {
@@ -658,7 +805,7 @@ public class TiersWebServiceWithPM implements TiersWebService {
 			set.add(PartPM.CAPITAUX);
 		}
 		if (parts.contains(TiersPart.COMPTES_BANCAIRES)) {
-			// toujours renseigné
+			set.add(PartPM.MANDATS);
 		}
 		if (parts.contains(TiersPart.ETATS_PM)) {
 			set.add(PartPM.ETATS);

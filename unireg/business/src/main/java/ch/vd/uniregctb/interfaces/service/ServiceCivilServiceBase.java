@@ -9,7 +9,10 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.adresse.HistoriqueCommune;
 import ch.vd.uniregctb.interfaces.model.CommuneSimple;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
+import ch.vd.uniregctb.interfaces.model.HistoriqueIndividu;
 import ch.vd.uniregctb.interfaces.model.Permis;
+
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import ch.vd.registre.base.date.RegDate;
@@ -153,6 +156,37 @@ public abstract class ServiceCivilServiceBase implements ServiceCivilService {
 		return permis;
 	}
 
+	public String getNomPrenom(Individu individu) {
+
+		if (individu == null) {
+			return null;
+		}
+
+		final HistoriqueIndividu individuHisto = individu.getDernierHistoriqueIndividu();
+		if (individuHisto == null) {
+			return "";
+		}
+
+		final String nomPrenom;
+
+		final String prenom = StringUtils.trimToNull(individuHisto.getPrenom());
+		final String nom = StringUtils.trimToNull(individuHisto.getNom());
+
+		if (nom != null && prenom != null) {
+			nomPrenom = String.format("%s %s", prenom, nom);
+		}
+		else if (nom != null) {
+			nomPrenom = nom;
+		}
+		else if (prenom != null) {
+			nomPrenom = prenom;
+		}
+		else {
+			nomPrenom = "";
+		}
+
+		return nomPrenom;
+	}
 
 	public void onIndividuChange(long numero) {
 		for (CivilListener l : listeners) {

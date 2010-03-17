@@ -6,6 +6,7 @@ import ch.vd.uniregctb.adresse.AdressesPM;
 import ch.vd.uniregctb.adresse.AdressesPMHisto;
 import ch.vd.uniregctb.cache.UniregCacheInterface;
 import ch.vd.uniregctb.cache.UniregCacheManager;
+import ch.vd.uniregctb.interfaces.model.Etablissement;
 import ch.vd.uniregctb.interfaces.model.EvenementPM;
 import ch.vd.uniregctb.interfaces.model.PersonneMorale;
 import ch.vd.uniregctb.stats.StatsService;
@@ -216,6 +217,59 @@ public class ServicePersonneMoraleCache implements ServicePersonneMoraleService,
 			result = 31 * result + (date != null ? date.hashCode() : 0);
 			return result;
 		}
+	}
+
+	private static class GetEtablissementByIdKey {
+		private long id;
+
+		private GetEtablissementByIdKey(long id) {
+			this.id = id;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (o == null || getClass() != o.getClass()) return false;
+
+			final GetEtablissementByIdKey that = (GetEtablissementByIdKey) o;
+
+			return id == that.id;
+
+		}
+
+		@Override
+		public int hashCode() {
+			return (int) (id ^ (id >>> 32));
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public Etablissement getEtablissement(long id) {
+
+		final Etablissement pm;
+
+		final GetEtablissementByIdKey key = new GetEtablissementByIdKey(id);
+		final Element element = cache.get(key);
+		if (element == null) {
+			// l'élément n'est pas en cache, on le récupère et on l'insère
+			pm = target.getEtablissement(id);
+			cache.put(new Element(key, pm));
+		}
+		else {
+			pm = (Etablissement) element.getObjectValue();
+		}
+
+		return pm;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public List<Etablissement> getEtablissements(List<Long> ids) {
+		// pas caché : cela en vaut-il vraiment la peine ?
+		return target.getEtablissements(ids);
 	}
 
 	/**

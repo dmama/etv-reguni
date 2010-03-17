@@ -1,12 +1,30 @@
 package ch.vd.uniregctb.interfaces.model.wrapper;
 
-import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.interfaces.model.*;
-import ch.vd.uniregctb.interfaces.model.wrapper.hostinterfaces.*;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.interfaces.model.AdresseEntreprise;
+import ch.vd.uniregctb.interfaces.model.AssujettissementPM;
+import ch.vd.uniregctb.interfaces.model.Capital;
+import ch.vd.uniregctb.interfaces.model.CompteBancaire;
+import ch.vd.uniregctb.interfaces.model.EtatPM;
+import ch.vd.uniregctb.interfaces.model.ForPM;
+import ch.vd.uniregctb.interfaces.model.FormeJuridique;
+import ch.vd.uniregctb.interfaces.model.Mandat;
+import ch.vd.uniregctb.interfaces.model.PersonneMorale;
+import ch.vd.uniregctb.interfaces.model.RegimeFiscal;
+import ch.vd.uniregctb.interfaces.model.Siege;
+import ch.vd.uniregctb.interfaces.model.wrapper.hostinterfaces.AssujettissementPMWrapper;
+import ch.vd.uniregctb.interfaces.model.wrapper.hostinterfaces.CapitalWrapper;
+import ch.vd.uniregctb.interfaces.model.wrapper.hostinterfaces.CompteBancaireWrapper;
+import ch.vd.uniregctb.interfaces.model.wrapper.hostinterfaces.EtatPMWrapper;
+import ch.vd.uniregctb.interfaces.model.wrapper.hostinterfaces.ForPMWrapper;
+import ch.vd.uniregctb.interfaces.model.wrapper.hostinterfaces.FormeJuridiqueWrapper;
+import ch.vd.uniregctb.interfaces.model.wrapper.hostinterfaces.MandatWrapper;
+import ch.vd.uniregctb.interfaces.model.wrapper.hostinterfaces.RegimeFiscalWrapper;
+import ch.vd.uniregctb.interfaces.model.wrapper.hostinterfaces.SiegeWrapper;
 
 public class PersonneMoraleWrapper implements PersonneMorale {
 
@@ -25,6 +43,7 @@ public class PersonneMoraleWrapper implements PersonneMorale {
 	private List<AssujettissementPM> assujettissementsLIFD = null;
 	private List<ForPM> forsFiscauxPrincipaux = null;
 	private List<ForPM> forsFiscauxSecondaires = null;
+	private List<Mandat> mandats = null;
 
 	private final ch.vd.registre.pm.model.PersonneMorale target;
 
@@ -264,5 +283,20 @@ public class PersonneMoraleWrapper implements PersonneMorale {
 			}
 		}
 		return forsFiscauxSecondaires;
+	}
+
+	public List<Mandat> getMandats() {
+		if (mandats == null) {
+			// TODO (msi) rendre thread-safe ce code et ceux des autres méthodes 
+			mandats = new ArrayList<Mandat>();
+			final List<ch.vd.registre.pm.model.Mandat> targetMandats = target.getMandats();
+			if (targetMandats != null) {
+				for (Object o : targetMandats) {
+					ch.vd.registre.pm.model.Mandat m = (ch.vd.registre.pm.model.Mandat) o;
+					mandats.add(MandatWrapper.get(m));
+				}
+			}
+		}
+		return mandats;
 	}
 }

@@ -133,6 +133,14 @@ public abstract class MockServicePM implements ServicePersonneMoraleService {
 		return list;
 	}
 
+	public Etablissement getEtablissement(long id) {
+		return null;
+	}
+
+	public List<Etablissement> getEtablissements(List<Long> ids) {
+		return Collections.emptyList();
+	}
+
 	public List<EvenementPM> findEvenements(Long numeroEntreprise, String code, RegDate minDate, RegDate maxDate) {
 		return Collections.emptyList();
 	}

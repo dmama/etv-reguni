@@ -138,4 +138,9 @@ public interface PersonneMorale {
 	 * @return toutes les fors fiscaux secondaires de la PM, triés par ordre chronologique croissant.
 	 */
 	List<ForPM> getForsFiscauxSecondaires();
+
+	/**
+	 * @return tous les mandats de la PM, triés par ordre chronologique croissant.
+	 */
+	List<Mandat> getMandats();
 }

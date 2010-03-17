@@ -1,5 +1,8 @@
 package ch.vd.uniregctb.common;
 
+import java.util.regex.Pattern;
+
+import org.apache.commons.lang.StringUtils;
 import org.springframework.test.context.ContextConfiguration;
 
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
@@ -43,6 +46,32 @@ public abstract class BusinessItTest extends AbstractBusinessTest {
 	@Override
 	protected void indexData() throws Exception {
 		globalTiersIndexer.indexAllDatabaseAsync(null, 1, Mode.FULL, false);
+	}
+
+	private static final Pattern valiPattern = Pattern.compile("( *---.{4}-)");
+
+	/**
+	 * Supprime l'éventuel pattern "---VALI-" ou "---TEST-" ajouté aux DB de validation/test.
+	 */
+	public static String trimValiPattern(String string) {
+		if (string == null) {
+			return null;
+		}
+		else {
+			return valiPattern.matcher(string).replaceAll("").trim();
+		}
+	}
+
+	/**
+	 * Supprime l'éventuel pattern "---VALI-" ou "---TEST-" ajouté aux DB de validation/test.
+	 */
+	public static String trimValiPatternToNull(String string) {
+		if (string == null) {
+			return null;
+		}
+		else {
+			return StringUtils.trimToNull(valiPattern.matcher(string).replaceAll(""));
+		}
 	}
 
 }

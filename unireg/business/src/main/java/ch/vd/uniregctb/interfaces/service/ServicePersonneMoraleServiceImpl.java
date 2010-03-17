@@ -14,9 +14,11 @@ import ch.vd.uniregctb.adresse.AdressesPM;
 import ch.vd.uniregctb.adresse.AdressesPMHisto;
 import ch.vd.uniregctb.common.JvmVersionHelper;
 import ch.vd.uniregctb.interfaces.model.AdresseEntreprise;
+import ch.vd.uniregctb.interfaces.model.Etablissement;
 import ch.vd.uniregctb.interfaces.model.EvenementPM;
 import ch.vd.uniregctb.interfaces.model.PersonneMorale;
 import ch.vd.uniregctb.interfaces.model.wrapper.PersonneMoraleWrapper;
+import ch.vd.uniregctb.interfaces.model.wrapper.hostinterfaces.EtablissementWrapper;
 import ch.vd.uniregctb.interfaces.model.wrapper.hostinterfaces.EvenementPMWrapper;
 
 public class ServicePersonneMoraleServiceImpl implements ServicePersonneMoraleService {
@@ -71,6 +73,34 @@ public class ServicePersonneMoraleServiceImpl implements ServicePersonneMoraleSe
 		}
 	}
 
+	public Etablissement getEtablissement(long id) {
+		try {
+			return EtablissementWrapper.get(servicePersonneMorale.getEtablissement(id));
+		}
+		catch (Exception e) {
+			throw new PersonneMoraleException(e);
+		}
+	}
+
+	public List<Etablissement> getEtablissements(List<Long> ids) {
+		try {
+			final List list = servicePersonneMorale.getEtablissement(ids);
+			if (list == null) {
+				return Collections.emptyList();
+			}
+
+			final List<Etablissement> personnes = new ArrayList<Etablissement>(list.size());
+			for (Object o : list) {
+				personnes.add(EtablissementWrapper.get((ch.vd.registre.pm.model.Etablissement) o));
+			}
+
+			return personnes;
+		}
+		catch (Exception e) {
+			throw new PersonneMoraleException(e);
+		}
+	}
+	
 	public AdressesPM getAdresses(long noEntreprise, RegDate date) {
 
 		AdressesPM adresses = new AdressesPM();

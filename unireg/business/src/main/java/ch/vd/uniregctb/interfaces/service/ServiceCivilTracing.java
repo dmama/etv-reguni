@@ -225,6 +225,19 @@ public class ServiceCivilTracing implements ServiceCivilService, ServiceTracingI
 		return result;
 	}
 
+	public String getNomPrenom(Individu individu) {
+		String result;
+		long time = tracing.start();
+		try {
+			result = target.getNomPrenom(individu);
+		}
+		finally {
+			tracing.end(time);
+		}
+
+		return result;
+	}
+
 	public List<HistoriqueCommune> getCommunesDomicileHisto(RegDate depuis, long noIndividu, boolean strict, boolean seulementVaud) throws DonneesCivilesException, InfrastructureException {
 		final List<HistoriqueCommune> result;
 		final long time = tracing.start();

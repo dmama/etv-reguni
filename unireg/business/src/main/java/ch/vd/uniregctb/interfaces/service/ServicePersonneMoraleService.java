@@ -3,6 +3,7 @@ package ch.vd.uniregctb.interfaces.service;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdressesPM;
 import ch.vd.uniregctb.adresse.AdressesPMHisto;
+import ch.vd.uniregctb.interfaces.model.Etablissement;
 import ch.vd.uniregctb.interfaces.model.EvenementPM;
 import ch.vd.uniregctb.interfaces.model.PersonneMorale;
 
@@ -34,6 +35,22 @@ public interface ServicePersonneMoraleService {
 	 * @return une liste contenant zéro, une ou plusieurs personnes morales.
 	 */
 	List<PersonneMorale> getPersonnesMorales(List<Long> ids, PartPM... parts);
+
+	/**
+	 * Charge un établissement par son id.
+	 *
+	 * @param id l'id de l'établissement à charger
+	 * @return un établissement; ou <b>null</b> s'il n'existe pas
+	 */
+	Etablissement getEtablissement(long id);
+
+	/**
+	 * Charge un lot d'établissements spécifiés par leurs ids.
+	 *
+	 * @param ids   les ids des établissements à charger
+	 * @return une liste contenant zéro, un ou plusieurs établissements.
+	 */
+	List<Etablissement> getEtablissements(List<Long> ids);
 
 	/**
 	 * Retourne les adresses PM valide à la date donnée.

@@ -17,6 +17,8 @@
 		<property name="servicePM" ref="servicePersonneMoraleService" />
 		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="noOfsTranslator" ref="noOfsTranslator" />
+		<property name="serviceInfra" ref="serviceInfrastructureService" />
+		<property name="serviceCivil" ref="serviceCivilService" />
 	</bean>
 
 	<!-- Version PM du tiers DAO -->
