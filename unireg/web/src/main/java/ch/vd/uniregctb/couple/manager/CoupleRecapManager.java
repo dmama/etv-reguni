@@ -22,6 +22,7 @@ public interface CoupleRecapManager {
 	 * @param numeroSecond
 	 * @return
 	 */
+	@Transactional(readOnly = true)
 	public CoupleRecapView get(Long numeroPremierPP, Long numeroSecondPP) ;
 
 	/**
@@ -33,6 +34,7 @@ public interface CoupleRecapManager {
 	 * @param numeroCTB le numéro du contribuable ouvert.
 	 * @return
 	 */
+	@Transactional(readOnly = true)
 	public CoupleRecapView get(Long numeroPremierPP, Long numeroSecondPP, Long numeroCTB);
 
 	/**
@@ -41,6 +43,7 @@ public interface CoupleRecapManager {
 	 * @param numeroPremier
 	 * @return
 	 */
+	@Transactional(readOnly = true)
 	public CoupleRecapView get(Long numeroPP1);
 
 	/**

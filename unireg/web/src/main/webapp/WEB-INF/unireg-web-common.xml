@@ -77,9 +77,8 @@
     </bean>
     
 	<bean id="openSessionInViewInterceptor" class="org.springframework.orm.hibernate3.support.OpenSessionInViewInterceptor">
-		<property name="sessionFactory">
-			<ref bean="sessionFactory" />
-		</property>
+		<property name="sessionFactory" ref="sessionFactory" />
+		<property name="singleSession" value="false" /> <!-- [UNIREG-1521] -->
 	</bean>
 
 	<!-- default view -->

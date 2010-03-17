@@ -44,6 +44,7 @@ public class CoupleRecapManagerImpl extends TiersManager implements CoupleRecapM
 	 * @param numeroPremier
 	 * @return
 	 */
+	@Transactional(readOnly = true)
 	public CoupleRecapView get(Long numeroPremierPP)  {
 		CoupleRecapView coupleRecapView = new CoupleRecapView();
 		initializeCouple(getPP(numeroPremierPP), null, null, coupleRecapView);
@@ -57,6 +58,7 @@ public class CoupleRecapManagerImpl extends TiersManager implements CoupleRecapM
 	 * @param numeroSecond
 	 * @return
 	 */
+	@Transactional(readOnly = true)
 	public CoupleRecapView get(Long numeroPremierPP, Long numeroSecondPP)  {
 		CoupleRecapView coupleRecapView = new CoupleRecapView();
 		initializeCouple(getPP(numeroPremierPP), getPP(numeroSecondPP), null, coupleRecapView);
@@ -66,6 +68,7 @@ public class CoupleRecapManagerImpl extends TiersManager implements CoupleRecapM
 	/* (non-Javadoc)
 	 * @see ch.vd.uniregctb.couple.manager.CoupleRecapManager#get(java.lang.Long, java.lang.Long, java.lang.Long)
 	 */
+	@Transactional(readOnly = true)
 	public CoupleRecapView get(Long numeroPremierPP, Long numeroSecondPP, Long numeroCTB) {
 		CoupleRecapView coupleRecapView = new CoupleRecapView();
 		PersonnePhysique pp1 = getPP(numeroPremierPP);
