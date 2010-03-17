@@ -16,6 +16,7 @@ public class MockPays extends MockEntityOFS implements Pays {
 	public static final MockPays Espagne = new MockPays(8236, "Espagne", "ES");
 	public static final MockPays Albanie = new MockPays(8201, "Albanie", "AL");
 	public static final MockPays Turquie = new MockPays(8239, "Turquie", "TR");
+	public static final MockPays CoreeSud = new MockPays(8539, "Corée (Sud)", "KR");
 	public static final MockPays PaysInconnu = new MockPays(8999, "PaysInconnu", "INC");
 
 	private String nomMinusculeOFS;
