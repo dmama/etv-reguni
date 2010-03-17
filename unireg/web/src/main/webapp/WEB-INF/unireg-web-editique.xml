@@ -26,8 +26,11 @@
 	</bean>
 
 	<bean id="editiqueService" class="ch.vd.uniregctb.editique.impl.EditiqueServiceImpl" lazy-init="true">
-		<property name="editiqueOutput" ref="editiqueJMSTemplateOutput" />
-		<property name="editiqueInput" ref="editiqueJMSTemplateInput" />
+		<property name="jmsConnectionFactory" ref="jmsConnectionFactory" />
+		<property name="jmsStatsService" ref="jmsStatsService" />
+		<property name="queueEditiqueOutput" value="${extprop.jms.queue.editique.output}" />
+		<property name="queueEditiqueInput" value="${extprop.jms.queue.editique.input}" />
+		<property name="receiveTimeout" value="${editique.locale.attente.timeout}" />
 		<property name="impressionDIHelper" ref="impressionDIHelper" />
 		<property name="impressionLRHelper" ref="impressionLRHelper" />
 		<property name="impressionSommationDIHelper" ref="impressionSommationDIHelper" />
@@ -37,7 +40,6 @@
 		<property name="impressionTaxationOfficeHelper" ref="impressionTaxationOfficeHelper" />
 		<property name="impressionBordereauMouvementDossierHelper" ref="impressionBordereauMouvementDossierHelper" />
 		<property name="foldersService" ref="externeFoldersService" />
-		<property name="receiveTimeout" value="${editique.locale.attente.timeout}" />
 		<property name="serviceSecurite" ref="serviceSecuriteService" />
 	</bean>
 

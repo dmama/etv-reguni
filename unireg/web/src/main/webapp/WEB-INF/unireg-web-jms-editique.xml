@@ -7,19 +7,4 @@
 							http://www.springframework.org/schema/util
 							http://www.springframework.org/schema/util/spring-util-2.0.xsd">
 
-	<bean id="editiqueJMSTemplateOutput" class="ch.vd.uniregctb.jms.JmsTemplateTracing">
-		<property name="statsService" ref="jmsStatsService" />
-		<property name="target">
-			<bean class="org.springframework.jms.core.JmsTemplate" lazy-init="true">
-				<property name="connectionFactory" ref="jmsConnectionFactory" />
-				<property name="defaultDestinationName" value="${extprop.jms.queue.editique.output}" />
-			</bean>
-		</property>
-	</bean>
-
-	<bean id="editiqueJMSTemplateInput" class="org.springframework.jms.core.JmsTemplate" lazy-init="true">
-		<property name="connectionFactory" ref="jmsConnectionFactory" />
-		<property name="defaultDestinationName" value="${extprop.jms.queue.editique.input}" />
-	</bean>
-
 </beans>

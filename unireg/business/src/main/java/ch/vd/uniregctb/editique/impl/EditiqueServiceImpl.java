@@ -7,6 +7,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 import javax.jms.BytesMessage;
+import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
 import javax.jms.Message;
 
@@ -19,7 +20,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.xmlbeans.XmlObject;
 import org.apache.xmlbeans.XmlOptions;
-import org.springframework.jms.core.JmsOperations;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.util.Assert;
 
@@ -49,9 +49,11 @@ import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueResultat;
 import ch.vd.uniregctb.editique.EditiqueService;
 import ch.vd.uniregctb.interfaces.service.ServiceSecuriteService;
+import ch.vd.uniregctb.jms.JmsTemplateTracing;
 import ch.vd.uniregctb.mouvement.BordereauMouvementDossier;
 import ch.vd.uniregctb.mouvement.ImpressionBordereauMouvementDossierHelper;
 import ch.vd.uniregctb.mouvement.ImpressionBordereauMouvementDossierHelperParams;
+import ch.vd.uniregctb.stats.StatsService;
 import ch.vd.uniregctb.tache.ImpressionNouveauxDossiersHelper;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.type.TypeDocument;
@@ -75,11 +77,14 @@ public final class EditiqueServiceImpl implements EditiqueService {
 
 	private FoldersService foldersService;
 
-	/** Queue d'envoi vers éditique */
-	private JmsOperations editiqueOutput;
+	// ConnectionFactory pour les envois/réceptions JMS (éditique)
+	private ConnectionFactory jmsConnectionFactory;
 
-	/** Queue de réception de éditique */
-	private JmsTemplate editiqueInput;
+	private StatsService jmsStatsService;
+
+	private String queueEditiqueOutput;
+
+	private String queueEditiqueInput;
 
 	/** Temps d'attente (en secondes) du retour du document PDF / PCL lors d'une impression locale. */
 	private int receiveTimeout = 120;
@@ -191,13 +196,23 @@ public final class EditiqueServiceImpl implements EditiqueService {
 		}
 
 		try {
-			RequestSendMessageCreator  messageCreator = new RequestSendMessageCreator(xml, nomDocument, typeDocument, typeImpression, typeFormat, archive);
+			final RequestSendMessageCreator messageCreator = new RequestSendMessageCreator(xml, nomDocument, typeDocument, typeImpression, typeFormat, archive);
 
-			editiqueOutput.send(messageCreator);
-			jmsMessageID = messageCreator.getMessage().getJMSMessageID();
-			if (LOGGER.isTraceEnabled()) {
-				LOGGER.trace("Message ID JMS :" + jmsMessageID + "--");
-				LOGGER.trace("ID :" +  nomDocument + "--");
+			final JmsTemplateTracing output = new JmsTemplateTracing();
+			output.setTarget(new JmsTemplate(jmsConnectionFactory));
+			output.setStatsService(jmsStatsService);
+			output.afterPropertiesSet();
+
+			try {
+				output.send(queueEditiqueOutput, messageCreator);
+				jmsMessageID = messageCreator.getMessage().getJMSMessageID();
+				if (LOGGER.isTraceEnabled()) {
+					LOGGER.trace("Message ID JMS :" + jmsMessageID + "--");
+					LOGGER.trace("ID :" +  nomDocument + "--");
+				}
+			}
+			finally {
+				output.destroy();
 			}
 		}
 		catch (Exception e) {
@@ -214,17 +229,18 @@ public final class EditiqueServiceImpl implements EditiqueService {
 	 */
 	public EditiqueResultat getDocument(String correlationID, boolean appliqueDelai) throws JMSException {
 
-		long timeout = (appliqueDelai ? receiveTimeout * 1000 : JmsTemplate.RECEIVE_TIMEOUT_NO_WAIT);
-		editiqueInput.setReceiveTimeout(timeout);
+		final JmsTemplate input = new JmsTemplate(jmsConnectionFactory);
+		final long timeout = (appliqueDelai ? receiveTimeout * 1000 : JmsTemplate.RECEIVE_TIMEOUT_NO_WAIT);
+		input.setReceiveTimeout(timeout);
+		input.afterPropertiesSet();
 
 		// On n'extrait de la queue que le message demandé
-		Message message = editiqueInput.receiveSelected(DI_ID + " = '" + correlationID + "'");
+		final Message message = input.receiveSelected(queueEditiqueInput, DI_ID + " = '" + correlationID + "'");
 		if (message == null) {
 			return null;
 		}
 
-		EditiqueResultat resultat = createResultfromMessage(message);
-		return resultat;
+		return createResultfromMessage(message);
 	}
 
 	/**
@@ -591,16 +607,24 @@ public final class EditiqueServiceImpl implements EditiqueService {
 		}
 	}*/
 
-	public void setEditiqueOutput(JmsOperations template) {
-		this.editiqueOutput = template;
-	}
-
-	public void setEditiqueInput(JmsTemplate template) {
-		this.editiqueInput = template;
-	}
-
 	public int getReceiveTimeout() {
 		return receiveTimeout;
+	}
+
+	public void setJmsConnectionFactory(ConnectionFactory jmsConnectionFactory) {
+		this.jmsConnectionFactory = jmsConnectionFactory;
+	}
+
+	public void setQueueEditiqueOutput(String queueEditiqueOutput) {
+		this.queueEditiqueOutput = queueEditiqueOutput;
+	}
+
+	public void setQueueEditiqueInput(String queueEditiqueInput) {
+		this.queueEditiqueInput = queueEditiqueInput;
+	}
+
+	public void setJmsStatsService(StatsService jmsStatsService) {
+		this.jmsStatsService = jmsStatsService;
 	}
 
 	public void setReceiveTimeout(int recieveTimeout) {
