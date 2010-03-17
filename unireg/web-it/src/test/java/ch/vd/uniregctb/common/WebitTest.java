@@ -1,18 +1,24 @@
 package ch.vd.uniregctb.common;
 
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.Iterator;
+import java.util.Properties;
+
 import com.gargoylesoftware.htmlunit.Page;
 import com.gargoylesoftware.htmlunit.ThreadedRefreshHandler;
 import com.gargoylesoftware.htmlunit.WebClient;
+import com.gargoylesoftware.htmlunit.html.HtmlDivision;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlFileInput;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.html.HtmlSubmitInput;
+import junit.framework.Assert;
 import org.apache.log4j.Logger;
 
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.net.URL;
-import java.util.Properties;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public abstract class WebitTest extends WithoutSpringTest {
 
@@ -112,4 +118,32 @@ public abstract class WebitTest extends WithoutSpringTest {
 		assertContains("Script lancé avec succès", content, "Le script DB unit ne s'est pas importé correctement !");
 	}
 
+	protected void assertNatureTiers(String nature, long tiersId) throws Exception {
+
+		final HtmlPage page = getHtmlPage("/tiers/visu.do?id=" + tiersId);
+		assertNotNull(page);
+
+		final HtmlDivision div = (HtmlDivision) page.getHtmlElementById("debugNatureTiers");
+		assertNotNull(div);
+
+		assertEquals(nature, div.asText());
+	}
+
+	@SuppressWarnings("unchecked")
+	protected static void assertContains(String contenu, HtmlPage page) throws Exception {
+
+		// vérification du contenu
+		boolean trouve = false;
+		Iterator<HtmlElement> iter = page.getAllHtmlChildElements();
+		while (iter.hasNext()) {
+			HtmlElement element = iter.next();
+			if (element.asText().contains(contenu)) {
+				trouve = true;
+				break;
+			}
+		}
+		if (!trouve) {
+			Assert.fail("Le corps de la page ne contient pas le texte '" + contenu + "'.");
+		}
+	}
 }
