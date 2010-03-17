@@ -12,7 +12,7 @@ import java.util.Map;
  */
 public enum TypeEvenementCivil {
 
-	ETAT_COMPLET(0, "Déclaration de l'état complet d'un individu (eCH-99)"),// TRAITE (ignoré)
+	ETAT_COMPLET(0, "Déclaration de l'état complet d'un individu (eCH-99)", true),// TRAITE (ignoré)
 
 	NAISSANCE(1000, "Naissance"),											// TRAITE naissance ou adoption si enfant inconnu du registre civil
 	DECES(2000, "Décés"),													// TRAITE
@@ -83,7 +83,15 @@ public enum TypeEvenementCivil {
 	 */
 	private final int id;
 
+	/**
+	 * Description textuelle du type de l'événement
+	 */
 	private final String description;
+
+	/**
+	 * Si ce flag est levé, alors l'événement civil doit être complètement ignoré
+	 */
+	private boolean ignore;
 
 	/**
 	 * Map permettant d'accéder à un type d'événement par son code.
@@ -104,8 +112,20 @@ public enum TypeEvenementCivil {
 	 * @param description description du type d'événement
 	 */
 	private TypeEvenementCivil(int i, String description) {
+		this(i, description, false);
+	}
+
+	/**
+	 * Un type d'événement est construit avec son code.
+	 *
+	 * @param i   code identifiant le type d'événement
+	 * @param description description du type d'événement
+	 * @param ignore vrai si un événement civil de ce type doit être complètement ignoré
+	 */
+	private TypeEvenementCivil(int i, String description, boolean ignore) {
 		this.id = i;
 		this.description = description;
+		this.ignore = ignore;
 	}
 
 	/**
@@ -138,5 +158,9 @@ public enum TypeEvenementCivil {
 
 	public String getFullDescription() {
 		return description + " (" + id +")";
+	}
+
+	public boolean isIgnore() {
+		return ignore;
 	}
 }

@@ -11,7 +11,11 @@ public interface EvenementCivilUnitaireMDP {
 
 	public void onMessage(String message) throws Exception;
 
-	public long insertEvenementUnitaire(String message) throws XmlException;
+	/**
+	 * @return <code>null</code> si l'événement unitaire n'a pas été inséré (ignoré)
+	 */
+	public Long insertEvenementUnitaire(String message) throws XmlException;
+
 	public boolean insertRegroupeAndTraite(String message, StringBuffer errorMsg);
 	public long regroupeEvenement(long id, StringBuffer errorMsg);
 

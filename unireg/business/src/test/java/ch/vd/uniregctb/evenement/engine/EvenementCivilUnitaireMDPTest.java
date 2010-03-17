@@ -1,6 +1,8 @@
 package ch.vd.uniregctb.evenement.engine;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 
 import java.util.List;
@@ -137,6 +139,30 @@ public class EvenementCivilUnitaireMDPTest extends BusinessTest {
 		assertEquals("Le type d'événement n'a pas été récupéré correctement", TypeEvenementCivil.NAISSANCE, evenement.getType());
 		assertEquals("Le numéro d'individu n'a pas été récupéré correctement", new Long(9876543L), evenement.getNumeroIndividu());
 		assertEquals("Le numéro OFS n'a pas été récupéré correctement", new Integer(111), evenement.getNumeroOfsCommuneAnnonce());
+	}
+
+	@Test
+	public void testMessageDeTypeInconnu() throws Exception {
+		final String xmlContent = createMessage(42, 1542313, 9876543, RegDate.get(2007, 9, 18), 111);
+
+		final StringBuffer msg = new StringBuffer();
+		final boolean traite = evenementCivilUnitaireMDP.insertRegroupeAndTraite(xmlContent, msg);
+		assertFalse(traite);
+		assertEquals("Message ignoré", msg.toString());
+	}
+
+	@Test
+	public void testMessageDeTypeConnuMaisIgnore() throws Exception {
+		final int typeConnuMaisIgnore = 0;
+		final TypeEvenementCivil typeIgnore = TypeEvenementCivil.valueOf(typeConnuMaisIgnore);
+		assertNotNull(typeIgnore);
+		assertTrue(typeIgnore.isIgnore());
+
+		final String xmlContent = createMessage(42, typeConnuMaisIgnore, 9876543, RegDate.get(2007, 9, 18), 111);
+		final StringBuffer msg = new StringBuffer();
+		final boolean traite = evenementCivilUnitaireMDP.insertRegroupeAndTraite(xmlContent, msg);
+		assertFalse(traite);
+		assertEquals("Message ignoré", msg.toString());
 	}
 
 	@Test

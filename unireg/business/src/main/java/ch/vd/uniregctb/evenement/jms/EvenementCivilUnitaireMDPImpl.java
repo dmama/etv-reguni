@@ -67,25 +67,13 @@ public class EvenementCivilUnitaireMDPImpl implements EvenementCivilUnitaireMDP 
 		try {
 
 			// D'abord on insére l'evenement
-			long id = insertEvenementUnitaire(message);
+			final Long id = insertEvenementUnitaire(message);
 
-			// Ensuite on regroupe
-			long ret = -1L;
-			try {
-				ret = evenementCivilRegrouper.regroupeUnEvenementById(id, null);
-			}
-			catch (Exception e) {
-				/*
-				 * On catche l'exception et on ne FAIT RIEN!
-				 * Le regroupement peut failer mais la consommation du message JMS ne doit pas être impactée.
-				 * L'Etat de l'événement civil REGROUPE est mis à ERREUR.
-				 */
-				LOGGER.error(e, e);
-			}
-
-			if (ret > 0) {
+			if (id != null) {
+				// Ensuite on regroupe
+				long ret = -1L;
 				try {
-					evenementCivilProcessor.traiteEvenementCivilRegroupe(ret);
+					ret = evenementCivilRegrouper.regroupeUnEvenementById(id, null);
 				}
 				catch (Exception e) {
 					/*
@@ -94,6 +82,20 @@ public class EvenementCivilUnitaireMDPImpl implements EvenementCivilUnitaireMDP 
 					 * L'Etat de l'événement civil REGROUPE est mis à ERREUR.
 					 */
 					LOGGER.error(e, e);
+				}
+
+				if (ret > 0) {
+					try {
+						evenementCivilProcessor.traiteEvenementCivilRegroupe(ret);
+					}
+					catch (Exception e) {
+						/*
+						 * On catche l'exception et on ne FAIT RIEN!
+						 * Le regroupement peut failer mais la consommation du message JMS ne doit pas être impactée.
+						 * L'Etat de l'événement civil REGROUPE est mis à ERREUR.
+						 */
+						LOGGER.error(e, e);
+					}
 				}
 			}
 		}
@@ -106,7 +108,7 @@ public class EvenementCivilUnitaireMDPImpl implements EvenementCivilUnitaireMDP 
 		}
 	}
 
-	public long insertEvenementUnitaire(final String message) {
+	public Long insertEvenementUnitaire(final String message) {
 
 		TransactionCallback callback = new TransactionCallback() {
 
@@ -123,48 +125,57 @@ public class EvenementCivilUnitaireMDPImpl implements EvenementCivilUnitaireMDP 
 				}
 				EvtRegCivil bean = doc.getEvtRegCivil();
 
-				Audit.info(bean.getNoTechnique(), "Arrivée du message JMS avec l'id " + bean.getNoTechnique());
-
-				/*
-				 * Si l'événement se trouve déja dans la base, on log la duplication est on ne fait rien.
-				 *
-				 * Par définition, un événement identifié par un id est immutable: s'il est dans la base, il a déjà été traité et on ne peut rien
-				 * faire de plus. Recevoir plus d'un fois un même événement ne doit cependant pas être traité comme une erreur grave (= pas
-				 * d'exception). Car dans la pratique il est possible que ce cas de figure se produise lorsque le gateway des événements est
-				 * rebooté.
-				 */
-				long id = bean.getNoTechnique();
-				if (!evenementCivilUnitaireDAO.exists(id)) {
-
-					/* Sauvegarde du nouvel événement en base de donnée */
-					EvenementCivilUnitaire evt = new EvenementCivilUnitaire();
-					evt.setId(id);
-					evt.setType( TypeEvenementCivil.valueOf(bean.getCode()) );
-					evt.setEtat(EtatEvenementCivil.A_TRAITER);
-					evt.setNumeroIndividu((long) bean.getNoIndividu());
-					evt.setDateEvenement(RegDate.get(bean.getDateEvenement().getTime()));
-					evt.setNumeroOfsCommuneAnnonce(bean.getNumeroOFS());
-
-					// Checks
-					checkNotNull(evt.getId(), "L'ID de l'événement ne peut pas être null");
-					checkNotNull(evt.getType(), "Le type de l'événement ("+bean.getCode()+") ne peut pas être null");
-					checkNotNull(evt.getDateEvenement(), "La date de l'événement ne peut pas être null");
-					checkNotNull(evt.getNumeroIndividu(), "Le numéro d'individu de l'événement ne peut pas être null");
-
-					evenementCivilUnitaireDAO.save(evt);
-
-					String msg = "L'Evenement unitaire " + id + " est inséré en base de données.";
-					msg += " Id=" + evt.getId();
-					msg += " Type=" + evt.getType();
-					msg += " Date=" + RegDateHelper.dateToDashString(evt.getDateEvenement());
-					msg += " No individu=" + evt.getNumeroIndividu();
-					msg += " OFS commune=" + evt.getNumeroOfsCommuneAnnonce();
-					Audit.info(id, msg);
+				// filtrage des événements que l'on ne connait pas ou que l'on connait
+				// mais que l'on ne traite pas...
+				final long id = bean.getNoTechnique();
+				final TypeEvenementCivil type = TypeEvenementCivil.valueOf(bean.getCode());
+				if (type == null || type.isIgnore()) {
+					Audit.info(id, String.format("Arrivée d'un message JMS ignoré (id %d, code %d)", id, bean.getCode()));
+					return null;
 				}
-				else { // L'Evt existe deja
-					Audit.warn(id, "L'Evenement unitaire "+id+" existe DEJA en DB");
+				else {
+					Audit.info(bean.getNoTechnique(), "Arrivée du message JMS avec l'id " + bean.getNoTechnique());
+
+					/*
+					 * Si l'événement se trouve déja dans la base, on log la duplication est on ne fait rien.
+					 *
+					 * Par définition, un événement identifié par un id est immutable: s'il est dans la base, il a déjà été traité et on ne peut rien
+					 * faire de plus. Recevoir plus d'un fois un même événement ne doit cependant pas être traité comme une erreur grave (= pas
+					 * d'exception). Car dans la pratique il est possible que ce cas de figure se produise lorsque le gateway des événements est
+					 * rebooté.
+					 */
+					if (!evenementCivilUnitaireDAO.exists(id)) {
+
+						/* Sauvegarde du nouvel événement en base de donnée */
+						EvenementCivilUnitaire evt = new EvenementCivilUnitaire();
+						evt.setId(id);
+						evt.setType( TypeEvenementCivil.valueOf(bean.getCode()) );
+						evt.setEtat(EtatEvenementCivil.A_TRAITER);
+						evt.setNumeroIndividu((long) bean.getNoIndividu());
+						evt.setDateEvenement(RegDate.get(bean.getDateEvenement().getTime()));
+						evt.setNumeroOfsCommuneAnnonce(bean.getNumeroOFS());
+
+						// Checks
+						checkNotNull(evt.getId(), "L'ID de l'événement ne peut pas être null");
+						checkNotNull(evt.getType(), "Le type de l'événement ("+bean.getCode()+") ne peut pas être null");
+						checkNotNull(evt.getDateEvenement(), "La date de l'événement ne peut pas être null");
+						checkNotNull(evt.getNumeroIndividu(), "Le numéro d'individu de l'événement ne peut pas être null");
+
+						evenementCivilUnitaireDAO.save(evt);
+
+						String msg = "L'Evenement unitaire " + id + " est inséré en base de données.";
+						msg += " Id=" + evt.getId();
+						msg += " Type=" + evt.getType();
+						msg += " Date=" + RegDateHelper.dateToDashString(evt.getDateEvenement());
+						msg += " No individu=" + evt.getNumeroIndividu();
+						msg += " OFS commune=" + evt.getNumeroOfsCommuneAnnonce();
+						Audit.info(id, msg);
+					}
+					else { // L'Evt existe deja
+						Audit.warn(id, "L'Evenement unitaire "+id+" existe DEJA en DB");
+					}
+					return id;
 				}
-				return id;
 			}
 		};
 
@@ -184,11 +195,11 @@ public class EvenementCivilUnitaireMDPImpl implements EvenementCivilUnitaireMDP 
 
 		// D'abord on insére l'evenement
 		boolean ok = true;
-		long idU = -1L;
+		Long idU = null;
 		try {
 			idU = insertEvenementUnitaire(message);
-			if (idU < 0) {
-				errorMsg.append("Probleme lors de l'insertion du message unitaire "+idU);
+			if (idU == null) {
+				errorMsg.append("Message ignoré");
 				ok = false;
 			}
 		}
