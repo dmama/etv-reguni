@@ -84,8 +84,8 @@ public class EvenementExterneServiceImpl implements EvenementExterneService, Ini
 	@Transactional(rollbackFor = Throwable.class)
 	public void onEvent(EvenementExterne event) throws EvenementExterneException {
 
-		if (evenementExterneDAO.existe(event.getCorrelationId())) {
-			LOGGER.warn("Le message avec le correlation id=[" + event.getCorrelationId() + "] existe déjà en base: il est ignoré.");
+		if (evenementExterneDAO.existe(event.getBusinessId())) {
+			LOGGER.warn("Le message avec le business id=[" + event.getBusinessId() + "] existe déjà en base: il est ignoré.");
 			return;
 		}
 
@@ -289,12 +289,12 @@ public class EvenementExterneServiceImpl implements EvenementExterneService, Ini
 			final QuittanceLR quittance = (QuittanceLR) evenementExterneDAO.get(id);
 
 			// Récupère le message xml stocké dans la base
-			final String correlationId = quittance.getCorrelationId();
+			final String bussinessId = quittance.getBusinessId();
 			final String message = quittance.getMessage();
 			Assert.notNull(message, "Le message est nul.");
 
 			// Interpète le xml et renseigne les colonnes manquantes
-			final EvenementExterne completeEvent = EvenementExterneListenerImpl.string2event(message, correlationId);
+			final EvenementExterne completeEvent = EvenementExterneListenerImpl.string2event(message, bussinessId);
 			if (completeEvent instanceof QuittanceLR) {
 				final QuittanceLR completeQuittance = (QuittanceLR) completeEvent;
 				if (quittance.getTiers() == null) {

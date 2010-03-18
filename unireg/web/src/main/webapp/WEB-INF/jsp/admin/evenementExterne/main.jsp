@@ -65,7 +65,7 @@
                                 <th>dateEvenement</th>
                                 <th>dateTraitement</th>
                                 <th>errorMessage</th>
-                                <th>correlationId</th>
+                                <th>businessId</th>
                             </tr>
                         </thead>
                         <tbody id="evenementsList">

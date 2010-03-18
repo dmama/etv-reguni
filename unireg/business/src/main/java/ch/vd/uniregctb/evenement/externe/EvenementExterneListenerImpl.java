@@ -39,7 +39,8 @@ public class EvenementExterneListenerImpl extends EsbMessageListener {
 
 		try {
 			final String message = esbMessage.getBodyAsString();
-			onMessage(message, esbMessage.getBusinessCorrelationId());
+			final String businessId = esbMessage.getBusinessId();
+			onMessage(message, businessId);
 		}
 		catch (RuntimeException e) {
 			LOGGER.error(e, e);
@@ -54,17 +55,17 @@ public class EvenementExterneListenerImpl extends EsbMessageListener {
 	 * Traite le message XML reçu pour en extraire les informations de l'événement externe et les persister en base. La methode onMessage() ne doit être appelée explicitement Seul le mechanisme JMS doit
 	 * l'appeler
 	 *
-	 * @param message       le message JMS sous forme string
-	 * @param correlationId l'identifiant de correlation du message
+	 * @param message    le message JMS sous forme string
+	 * @param businessId l'identifiant métier du message
 	 * @throws Exception en cas d'erreur
 	 */
-	protected void onMessage(String message, String correlationId) throws Exception {
+	protected void onMessage(String message, String businessId) throws Exception {
 
-		final EvenementExterne event = string2event(message, correlationId);
+		final EvenementExterne event = string2event(message, businessId);
 		handler.onEvent(event);
 	}
 
-	public static EvenementExterne string2event(String message, String correlationId) throws XmlException {
+	public static EvenementExterne string2event(String message, String businessId) throws XmlException {
 
 		final XmlObject evt = XmlObject.Factory.parse(message);
 		if (evt == null) {
@@ -93,7 +94,7 @@ public class EvenementExterneListenerImpl extends EsbMessageListener {
 
 			QuittanceLR q = new QuittanceLR();
 			q.setMessage(message);
-			q.setCorrelationId(correlationId);
+			q.setBusinessId(businessId);
 			q.setDateEvenement(cal2date(type.getDateQuittance()));
 			q.setDateTraitement(new Date());
 			q.setDateDebut(cal2regdate(type.getDateDebutPeriode()));
