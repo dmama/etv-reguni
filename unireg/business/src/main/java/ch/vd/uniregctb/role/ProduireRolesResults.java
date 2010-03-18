@@ -171,7 +171,7 @@ public class ProduireRolesResults extends JobResults<Long, ProduireRolesResults>
 		 */
 		public enum TypeAssujettissement {
 			NON_ASSUJETTI("Non assujetti"),         // l'assujettissement s'est terminé avant le début de la période fiscale
-			TERMINE_DANS_PF("Termniné"),            // l'assujettissement s'est terminé dans la période fiscale
+			TERMINE_DANS_PF("Terminé"),             // l'assujettissement s'est terminé dans la période fiscale
 			POURSUIVI_APRES_PF("Poursuivi");        // l'assujetissement existe et se poursuit dans la période fiscale suivante
 
 			private final String description;

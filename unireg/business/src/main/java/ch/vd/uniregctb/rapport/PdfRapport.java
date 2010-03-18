@@ -7,11 +7,11 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.*;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.springframework.util.Assert;
 
 import com.lowagie.text.Cell;
 import com.lowagie.text.Chunk;
@@ -153,7 +153,7 @@ public abstract class PdfRapport extends Document {
 	/**
 	 * Attache un fichier au document PDF et ajoute une référence sur celui-ci au <b>début</b> de la ligne courante du document.
 	 */
-	public void attacheFichier(PdfWriter writer, String filename, String description, String contenu, float x) throws DocumentException {
+	protected void attacheFichier(PdfWriter writer, String filename, String description, String contenu, float x) throws DocumentException {
 
 		float y = writer.getVerticalPosition(false);
 		Rectangle position = new Rectangle(x, y, x + 20f, y + 20f);
@@ -170,35 +170,56 @@ public abstract class PdfRapport extends Document {
 	}
 
 	/**
-	 * Ajoute un paragraphe listant de manière détaillé un résultat de processing.
+	 * Ajoute un paragraphe listant de manière détaillée un résultat de processing.
 	 */
-	public void addListeDetaillee(PdfWriter writer, int size, String titre, String listVide, String filename, String contenu)
-			throws DocumentException {
+	protected void addListeDetaillee(PdfWriter writer, int size, String titre, String listVide, String filename, String contenu) throws DocumentException {
+		addEnteteListeDetaillee(titre);
+		addPartieDeListeDetaillee(writer, size, titre, listVide, filename, contenu);
+	}
 
-		Paragraph entete = new Paragraph();
+	private void addEnteteListeDetaillee(String titre) throws DocumentException {
+		final Paragraph entete = new Paragraph();
 		entete.setSpacingBefore(10);
 		entete.add(new Chunk(titre, entete1));
 		add(entete);
+	}
 
-		Paragraph details = new Paragraph();
+	/**
+	 * Ajoute un lien vers un fichier de détails
+	 */
+	private void addPartieDeListeDetaillee(PdfWriter writer, int size, String titre, String listVide, String filename, String contenu) throws DocumentException {
+		final Paragraph details = new Paragraph();
 		details.setIndentationLeft(50);
 		details.setSpacingBefore(10);
 		details.setSpacingAfter(10);
 		details.setFont(normalFont);
-		{
-			if (size == 0) {
-				details.add(new Chunk(listVide));
-			}
-			else {
-				details.add(new Chunk("(voir le fichier attaché " + filename + ")"));
-			}
 
-			add(details);
+		if (size == 0) {
+			details.add(new Chunk(listVide));
+		}
+		else {
+			details.add(new Chunk("(voir le fichier attaché " + filename + ")"));
+		}
 
-			if (size > 0) {
-				Assert.notNull(contenu);
-				attacheFichier(writer, filename, titre, contenu);
+		add(details);
+
+		if (size > 0) {
+			Assert.notNull(contenu);
+			attacheFichier(writer, filename, titre, contenu);
+		}
+	}
+
+	protected void addListeDetailleeDecoupee(PdfWriter writer, int size, String titre, String listVide, String[] filenames, String[] contenus) throws DocumentException {
+		Assert.isEqual(filenames.length, contenus.length);
+
+		addEnteteListeDetaillee(titre);
+		if (filenames.length > 0) {
+			for (int i = 0 ; i < filenames.length ; ++ i) {
+				addPartieDeListeDetaillee(writer, size, titre, listVide, filenames[i], contenus[i]);
 			}
+		}
+		else {
+			addPartieDeListeDetaillee(writer, size, titre, listVide, "empty-file", "");
 		}
 	}
 

@@ -25,6 +25,8 @@ import java.util.*;
  */
 public class PdfRolesCommunesRapport extends PdfRapport {
 
+	private static final int MAX_ROLES_PAR_FICHIER = 50000;
+
 	private ServiceInfrastructureService infraService;
 
 	public PdfRolesCommunesRapport(ServiceInfrastructureService infraService) {
@@ -167,13 +169,24 @@ public class PdfRolesCommunesRapport extends PdfRapport {
 		// Fichier CVS détaillé
 		{
 			final OfficeImpot office = getOfficeImpot(results.noColOID);
-			final String filename = String.format("%d_roles_%s.csv", results.annee, human2file(office.getNomCourt()));
-			final String contenu = asCsvFile(nomsCommunes, infoOid, status);
-			final String titre = "Liste détaillée";
-			final String listVide = "(aucun rôle trouvé)";
-		    addListeDetaillee(writer, infoOid.size(), titre, listVide, filename, contenu);
+			final String[] contenu = asCsvFiles(nomsCommunes, infoOid, status);
+			writeFichierDetail(results, writer, contenu, infoOid.size(), office.getNomCourt());
 		}
+	}
 
+	private void writeFichierDetail(ProduireRolesResults results, PdfWriter writer, String[] contenu, int size, String nomEntite) throws DocumentException {
+		final String[] filenames = new String[contenu.length];
+		if (filenames.length > 1) {
+			for (int i = 0 ; i < contenu.length ; ++ i) {
+				filenames[i] = String.format("%d_roles_%s_%d.csv", results.annee, human2file(nomEntite), i + 1);
+			}
+		}
+		else if (filenames.length == 1) {
+			filenames[0] = String.format("%d_roles_%s.csv", results.annee, human2file(nomEntite));
+		}
+		final String titre = "Liste détaillée";
+		final String listVide = "(aucun rôle trouvé)";
+	    addListeDetailleeDecoupee(writer, size, titre, listVide, filenames, contenu);
 	}
 
 	private void writeCommuneParCommune(final ProduireRolesResults results, final Date dateGeneration, StatusManager status, PdfWriter writer) throws InfrastructureException, DocumentException {
@@ -233,11 +246,8 @@ public class PdfRolesCommunesRapport extends PdfRapport {
 
 		    // Fichier CVS détaillé
 		    {
-		        final String filename = String.format("%d_roles_%s.csv", results.annee, human2file(nomCommune));
-		        final String contenu = asCsvFile(nomsCommunes, infoCommune, status);
-		        final String titre = "Liste détaillée";
-		        final String listVide = "(aucun rôle trouvé)";
-		        addListeDetaillee(writer, totalContribuables, titre, listVide, filename, contenu);
+			    final String[] contenu = asCsvFiles(nomsCommunes, infoCommune, status);
+			    writeFichierDetail(results, writer, contenu, totalContribuables, nomCommune);
 		    }
 		}
 	}
@@ -347,18 +357,16 @@ public class PdfRolesCommunesRapport extends PdfRapport {
 	/**
 	 * Utilisé par le traitement d'un OID complet
 	 */
-	private String asCsvFile(Map<Integer, String> nomsCommunes, Map<Long, ProduireRolesResults.InfoContribuable> infoOid, StatusManager status) {
+	private String[] asCsvFiles(Map<Integer, String> nomsCommunes, Map<Long, ProduireRolesResults.InfoContribuable> infoOid, StatusManager status) {
 		final List<ProduireRolesResults.InfoContribuable> infos = getListeTriee(infoOid.values());
-		final StringBuilder b = getBuilderWithHeader();
 		status.setMessage("Génération du rapport");
-		b.append(traiteOid(infos, nomsCommunes));
-		return b.toString();
+		return traiteOid(infos, nomsCommunes);
 	}
 
 	/**
 	 * Utilisé par le traitement commune par commune
 	 */
-	private String asCsvFile(final Map<Integer, String> nomsCommunes, ProduireRolesResults.InfoCommune infoCommune, StatusManager status) {
+	private String[] asCsvFiles(final Map<Integer, String> nomsCommunes, ProduireRolesResults.InfoCommune infoCommune, StatusManager status) {
 
 		final int noOfsCommune = infoCommune.getNoOfs();
 		final List<ProduireRolesResults.InfoContribuable> infos = getListeTriee(infoCommune.getInfosContribuables().values());
@@ -366,9 +374,7 @@ public class PdfRolesCommunesRapport extends PdfRapport {
 		final String nomCommune = nomsCommunes.get(noOfsCommune);
 		status.setMessage(String.format("Génération du rapport pour la commune de %s...", nomCommune));
 
-		final StringBuilder b = getBuilderWithHeader();
-		b.append(traiteCommune(infos, noOfsCommune, nomsCommunes));
-	    return b.toString();
+		return traiteCommune(infos, noOfsCommune, nomsCommunes);
 	}
 
 	private static StringBuilder getBuilderWithHeader() {
@@ -414,7 +420,7 @@ public class PdfRolesCommunesRapport extends PdfRapport {
 		int getNoOfsCommune(ProduireRolesResults.InfoContribuable infoContribuable);
 	}
 
-	private String traiteOid(final List<ProduireRolesResults.InfoContribuable> infos, final Map<Integer, String> nomsCommunes) {
+	private String[] traiteOid(final List<ProduireRolesResults.InfoContribuable> infos, final Map<Integer, String> nomsCommunes) {
 		return traiteListeContribuable(infos, nomsCommunes, new AccesCommune() {
 			public int getNoOfsCommune(ProduireRolesResults.InfoContribuable infoContribuable) {
 				return infoContribuable.getNoOfsDerniereCommune();
@@ -422,7 +428,7 @@ public class PdfRolesCommunesRapport extends PdfRapport {
 		});
 	}
 
-	private String traiteCommune(final List<ProduireRolesResults.InfoContribuable> infos, final int noOfsCommune, final Map<Integer, String> nomsCommunes) {
+	private String[] traiteCommune(final List<ProduireRolesResults.InfoContribuable> infos, final int noOfsCommune, final Map<Integer, String> nomsCommunes) {
 		return traiteListeContribuable(infos, nomsCommunes, new AccesCommune() {
 			public int getNoOfsCommune(ProduireRolesResults.InfoContribuable infoContribuable) {
 				return noOfsCommune;
@@ -430,12 +436,16 @@ public class PdfRolesCommunesRapport extends PdfRapport {
 		});
 	}
 
-	private String traiteListeContribuable(final List<ProduireRolesResults.InfoContribuable> infos, Map<Integer, String> nomsCommunes, final AccesCommune accesCommune) {
+	private String[] traiteListeContribuable(final List<ProduireRolesResults.InfoContribuable> infos, Map<Integer, String> nomsCommunes, final AccesCommune accesCommune) {
 
-	    final StringBuilder b = new StringBuilder();
-
+		final List<String> fichiers = new ArrayList<String>();
+	    StringBuilder b = null;
+		int index = 0;
 		for (ProduireRolesResults.InfoContribuable info : infos) {
 
+			if (b == null) {
+				b = getBuilderWithHeader();
+			}
 	        final long noCtb = info.noCtb;
 			final List<String> noms = info.getNomsPrenoms();
 			final List<String> nosAvs = info.getNosAvs();
@@ -497,11 +507,21 @@ public class PdfRolesCommunesRapport extends PdfRapport {
 			b.append(numeroAvs1).append(COMMA);
 			b.append(numeroAvs2).append(COMMA);
 			b.append(assujettissement);
-
 	        b.append("\n");
+
+			++ index;
+			if (index >= MAX_ROLES_PAR_FICHIER) {
+				fichiers.add(b.toString());
+				index = 0;
+				b = null;
+			}
 	    }
 
-	    return b.toString();
+		// reliquat
+		if (b != null) {
+			fichiers.add(b.toString());
+		}
+	    return fichiers.toArray(new String[fichiers.size()]);
 	}
 
 	private String asCvsField(ProduireRolesResults.InfoContribuable.TypeContribuable typeCtb) {
