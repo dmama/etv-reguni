@@ -137,7 +137,7 @@ public class EvenementExterneController extends AbstractEnhancedSimpleFormContro
 		};
 		for (EvenementExterne ev : evenementExternes) {
 			TableRow row = new TableRow(ev, new String[] {
-					"numeroTiers", "etat", "dateEvenement", "dateTraitement", "errorMessage", "correlationId"
+					"numeroTiers", "etat", "dateEvenement", "dateTraitement", "errorMessage", "businessId"
 			}, renderingCallback);
 			rows.add(row);
 		}

@@ -26,12 +26,12 @@ public class EvenementExterneDAOImpl extends GenericDAOImpl<EvenementExterne, Lo
 		super(EvenementExterne.class);
 	}
 
-	public boolean existe(final String correlationId) {
+	public boolean existe(final String businessId) {
 		return (Boolean) getHibernateTemplate().executeWithNativeSession(new HibernateCallback() {
 			public Object doInHibernate(Session session) throws HibernateException, SQLException {
 				Criteria criteria = session.createCriteria(EvenementExterne.class);
 				criteria.setProjection(Projections.rowCount());
-				criteria.add(Expression.eq("correlationId", correlationId));
+				criteria.add(Expression.eq("businessId", businessId));
 				Integer count = (Integer) criteria.uniqueResult();
 				return count > 0;
 			}

@@ -13,7 +13,7 @@ import ch.vd.registre.base.dao.GenericDAO;
  */
 public interface EvenementExterneDAO extends GenericDAO<EvenementExterne, Long> {
 
-	boolean existe(String correlationId);
+	boolean existe(String businessId);
 
 	public Collection<EvenementExterne> getEvenementExternes(boolean ascending, EtatEvenementExterne... etatEvenementExternes);
 

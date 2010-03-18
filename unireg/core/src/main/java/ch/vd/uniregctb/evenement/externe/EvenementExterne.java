@@ -29,7 +29,7 @@ public abstract class EvenementExterne extends HibernateEntity {
 	private Date dateTraitement;
 	private String message;
 	private String errorMessage;
-	private String correlationId;
+	private String businessId;
 	private EtatEvenementExterne etat;
 
 	@Transient
@@ -164,17 +164,17 @@ public abstract class EvenementExterne extends HibernateEntity {
 	}
 
 	/**
-	 * @return the correlationID
+	 * @return the businessId
 	 */
-	@Column(name = "CORRELATION_ID", nullable=false)
-	public String getCorrelationId() {
-		return correlationId;
+	@Column(name = "CORRELATION_ID", nullable=false) // nom colonne faux pour raisons historiques
+	public String getBusinessId() {
+		return businessId;
 	}
 
 	/**
-	 * @param correlationID the correlationID to set
+	 * @param businessId the businessId to set
 	 */
-	public void setCorrelationId(String correlationId) {
-		this.correlationId = correlationId;
+	public void setBusinessId(String businessId) {
+		this.businessId = businessId;
 	}
 }

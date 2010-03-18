@@ -11,7 +11,6 @@ import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 import org.junit.Test;
-import org.springframework.test.annotation.ExpectedException;
 import org.springframework.test.annotation.NotTransactional;
 import org.springframework.transaction.TransactionStatus;
 
@@ -152,8 +151,8 @@ public class EvenementExterneListenerTest extends BusinessTest {
 
 		// envoi d'un premier événement externe avec insertion de l'événement dans la base
 		String message = createMessageQuittancement(TypeQuittance.QUITTANCEMENT);
-		final String correlationId = "TEST-" + System.currentTimeMillis();
-		listener.onMessage(message, correlationId);
+		final String businessId = "TEST-" + System.currentTimeMillis();
+		listener.onMessage(message, businessId);
 
 		// vérification que un seul événement a été inséré dans la base
 		{
@@ -165,7 +164,7 @@ public class EvenementExterneListenerTest extends BusinessTest {
 		}
 
 		// envoi du même message une seconde fois
-		listener.onMessage(message, correlationId);
+		listener.onMessage(message, businessId);
 
 		// vérification que la base n'a pas changé
 		{
@@ -204,7 +203,7 @@ public class EvenementExterneListenerTest extends BusinessTest {
 	private static void assertQuittanceLR(Long numeroTiers, EtatEvenementExterne etat, Date dateEvenement, Date dateTraitement, String errorMessage, RegDate dateDebut, RegDate dateFin,
 	                                      ch.vd.uniregctb.evenement.externe.TypeQuittance type, EvenementExterne event) {
 		assertNotNull(event);
-		assertNotNull(event.getCorrelationId());
+		assertNotNull(event.getBusinessId());
 		assertEquals(dateTraitement, event.getDateTraitement());
 		assertEquals(errorMessage, event.getErrorMessage());
 		assertEquals(etat, event.getEtat());
