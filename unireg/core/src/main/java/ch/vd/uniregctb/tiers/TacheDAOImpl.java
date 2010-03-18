@@ -1,24 +1,28 @@
 package ch.vd.uniregctb.tiers;
 
-import ch.vd.registre.base.dao.GenericDAOImpl;
-import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.ObjectNotFoundException;
-import ch.vd.uniregctb.common.ParamPagination;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
-import ch.vd.uniregctb.type.TypeEtatTache;
-import ch.vd.uniregctb.type.TypeTache;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.log4j.Logger;
-import org.hibernate.*;
+import org.hibernate.FlushMode;
+import org.hibernate.HibernateException;
+import org.hibernate.Query;
+import org.hibernate.Session;
 import org.hibernate.engine.EntityKey;
 import org.hibernate.impl.SessionImpl;
 import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.orm.hibernate3.HibernateCallback;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import ch.vd.registre.base.dao.GenericDAOImpl;
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.common.ParamPagination;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
+import ch.vd.uniregctb.type.TypeEtatTache;
+import ch.vd.uniregctb.type.TypeTache;
 
 public class TacheDAOImpl extends GenericDAOImpl<Tache, Long> implements TacheDAO {
 
@@ -442,5 +446,77 @@ public class TacheDAOImpl extends GenericDAOImpl<Tache, Long> implements TacheDA
 				}
 			}
 		});
+	}
+
+	final static String queryTaches =
+			"select " +
+					"tache.collectiviteAdministrativeAssignee.numeroCollectiviteAdministrative, count(*) " +
+					"from Tache tache " +
+					"where tache.class != TacheNouveauDossier and tache.etat = 'EN_INSTANCE' and tache.dateEcheance <= :dateEcheance and tache.annulationDate is null " +
+					"group by tache.collectiviteAdministrativeAssignee.numeroCollectiviteAdministrative";
+
+	final static String queryDossiers =
+			"select " +
+					"tache.collectiviteAdministrativeAssignee.numeroCollectiviteAdministrative, count(*) " +
+					"from TacheNouveauDossier tache " +
+					"where tache.etat = 'EN_INSTANCE' and tache.dateEcheance <= :dateEcheance and tache.annulationDate is null " +
+					"group by tache.collectiviteAdministrativeAssignee.numeroCollectiviteAdministrative";
+	
+	public Map<Integer, TacheStats> getTacheStats() {
+		
+		final Map<Integer, TacheStats> stats = new HashMap<Integer, TacheStats>();
+
+		// récupère les stats des tâches en instance
+		getHibernateTemplate().execute(new HibernateCallback() {
+			public Object doInHibernate(Session session) throws HibernateException, SQLException {
+
+				final Query query = session.createQuery(queryTaches);
+				query.setParameter("dateEcheance", RegDate.get().index());
+
+				final List list = query.list();
+				for (Object o : list) {
+					Object tuple[] = (Object[]) o;
+					final Integer oid = (Integer) tuple[0];
+					final Long count = (Long) tuple[1];
+
+					TacheStats s = stats.get(oid);
+					if (s == null) {
+						s = new TacheStats();
+						stats.put(oid, s);
+					}
+
+					s.tachesEnInstance = count.intValue();
+				}
+				return null;
+			}
+		});
+
+		// récupère les stats des dossiers en instance
+		getHibernateTemplate().execute(new HibernateCallback() {
+			public Object doInHibernate(Session session) throws HibernateException, SQLException {
+
+				final Query query = session.createQuery(queryDossiers);
+				query.setParameter("dateEcheance", RegDate.get().index());
+
+				final List list = query.list();
+				for (Object o : list) {
+					Object tuple[] = (Object[]) o;
+					final Integer oid = (Integer) tuple[0];
+					final Long count = (Long) tuple[1];
+
+					TacheStats s = stats.get(oid);
+					if (s == null) {
+						s = new TacheStats();
+						stats.put(oid, s);
+					}
+
+					s.dossiersEnInstance = count.intValue();
+				}
+				return null;
+			}
+		});
+
+		// pas de besoin de synchronisation parce que l'assignement est atomique en java
+		return stats;
 	}
 }

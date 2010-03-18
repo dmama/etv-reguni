@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.tiers;
 
 import java.util.List;
+import java.util.Map;
 
 import ch.vd.registre.base.dao.GenericDAO;
 import ch.vd.registre.base.date.RegDate;
@@ -139,4 +140,16 @@ public interface TacheDAO extends GenericDAO<Tache, Long> {
 	 * @param newOid le numéro technique de l'office d'impôt à assigner.
 	 */
 	void updateCollAdmAssignee(Long ctbId, Integer newOid);
+
+	/**
+	 * Calcul et retourne les statistiques des tâches en instance au moment de l'appel.
+	 *
+	 * @return une map indexée par numéro d'Oid avec le nombre de tâches et de mouvements de dossier en instance.
+	 */
+	Map<Integer, TacheStats> getTacheStats();
+
+	public static class TacheStats {
+		public int tachesEnInstance;
+		public int dossiersEnInstance;
+	}
 }

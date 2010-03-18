@@ -63,18 +63,6 @@ public interface TacheService {
 	@Transactional(rollbackFor = Throwable.class)
 	public void genereTachesDepuisAnnulationDeFor(Contribuable contribuable);
 
-
-	/**
-	 * Retourne le nombre de tâches en cours pour l'utilisateur spécifié.
-	 *
-	 * @param username
-	 *            l'utilisateur dont on veut connaître le nombre de tâches en cours
-	 * @param oid
-	 *            l'id de l'office d'impôt courant de l'utilisateur
-	 * @return le nombre de tâches en cours
-	 */
-	public int getTachesEnCoursCount(String username, Integer oid);
-
 	/**
 	 * @param oid
 	 *            l'id de l'office d'impôt courant de l'utilisateur

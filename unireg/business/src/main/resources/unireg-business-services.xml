@@ -91,6 +91,7 @@
 		<property name="hibernateTemplate" ref="hibernateTemplate" />
 		<property name="transactionManager" ref="transactionManager" />
 		<property name="tiersService" ref="tiersService" />
+		<property name="scheduler" ref="scheduler" />
 	</bean>
 
 	<bean id="adresseService" class="ch.vd.uniregctb.adresse.AdresseServiceImpl">

@@ -1,11 +1,27 @@
 package ch.vd.uniregctb.tache;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.log4j.Logger;
+import org.quartz.CronTrigger;
+import org.quartz.Job;
+import org.quartz.JobDetail;
+import org.quartz.JobExecutionContext;
+import org.quartz.JobExecutionException;
+import org.quartz.Scheduler;
+import org.quartz.Trigger;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.DateRange;
@@ -38,12 +54,13 @@ import ch.vd.uniregctb.tiers.TacheAnnulationDeclarationImpot;
 import ch.vd.uniregctb.tiers.TacheControleDossier;
 import ch.vd.uniregctb.tiers.TacheCriteria;
 import ch.vd.uniregctb.tiers.TacheDAO;
+import ch.vd.uniregctb.tiers.TacheDAO.TacheStats;
 import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpot;
 import ch.vd.uniregctb.tiers.TacheNouveauDossier;
 import ch.vd.uniregctb.tiers.TacheTransmissionDossier;
-import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.tiers.Tiers.ForsParType;
 import ch.vd.uniregctb.tiers.Tiers.ForsParTypeAt;
+import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
@@ -63,9 +80,9 @@ import ch.vd.uniregctb.type.TypeTache;
  * @author xcifde
  *
  */
-public class TacheServiceImpl implements TacheService {
+public class TacheServiceImpl implements TacheService, InitializingBean {
 
-	//private static final Logger LOGGER = Logger.getLogger(TacheServiceImpl.class);
+	private static final Logger LOGGER = Logger.getLogger(TacheServiceImpl.class);
 
 	private TacheDAO tacheDAO;
 
@@ -81,10 +98,11 @@ public class TacheServiceImpl implements TacheService {
 
 	private TiersService tiersService;
 
-
+	private Scheduler scheduler;
 
 	private PlatformTransactionManager transactionManager;
 
+	private Map<Integer, TacheStats> tacheStatsPerOid = new HashMap<Integer, TacheStats>();
 
 	public void setTacheDAO(TacheDAO tacheDAO) {
 		this.tacheDAO = tacheDAO;
@@ -100,6 +118,73 @@ public class TacheServiceImpl implements TacheService {
 
 	public void setParametres(ParametreAppService parametres) {
 		this.parametres = parametres;
+	}
+
+	public void setScheduler(Scheduler scheduler) {
+		this.scheduler = scheduler;
+	}
+
+	public void afterPropertiesSet() throws Exception {
+
+		// Enregistre le job sous un cron qui va mettre-à-jour les stats des tâches toutes les 5 minutes
+		final JobDetail job = new JobDetail("UpdateTacheStats", Scheduler.DEFAULT_GROUP, UpdateStatsJob.class);
+		job.getJobDataMap().put("TacheService", this);
+
+		final Trigger trigger = new CronTrigger("UpdateTacheStatsCron", Scheduler.DEFAULT_GROUP, "0 0/5 6-20 * * ?"); // toutes les 5 minutes, de 6h à 20h tous les jours
+		scheduler.scheduleJob(job, trigger);
+	}
+
+	public static class UpdateStatsJob implements Job {
+		public void execute(JobExecutionContext context) throws JobExecutionException {
+			final TacheServiceImpl service = (TacheServiceImpl) context.getJobDetail().getJobDataMap().get("TacheService");
+			service.updateStats();
+		}
+	}
+
+	/**
+	 * Cette méthode met-à-jour les statistiques des tâches et des mouvements de dossier en instance
+	 */
+	@SuppressWarnings({"unchecked", "UnnecessaryLocalVariable"})
+	private void updateStats() {
+
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
+		template.setReadOnly(true);
+
+		final long start = System.nanoTime();
+
+		// on est appelé dans un thread Quartz -> pas de transaction ouverte par défaut
+		final Map<Integer, TacheStats> stats = (Map<Integer, TacheStats>) template.execute(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				return tacheDAO.getTacheStats();
+			}
+		});
+
+		final long end = System.nanoTime();
+
+		if (LOGGER.isDebugEnabled()) {
+			final long ms = (end - start) / 1000000;
+			
+			StringBuilder s = new StringBuilder();
+			s.append("Statistiques des tâches en instances par OID (récupérées en ").append(ms).append(" ms)").append(" :\n");
+
+			// trie la liste par OID
+			List<Map.Entry<Integer, TacheStats>> list = new ArrayList<Map.Entry<Integer, TacheStats>>(stats.entrySet());
+			Collections.sort(list, new Comparator<Map.Entry<Integer, TacheStats>>() {
+				public int compare(Map.Entry<Integer, TacheStats> o1, Map.Entry<Integer, TacheStats> o2) {
+					return o1.getKey().compareTo(o2.getKey());
+				}
+			});
+
+			for (Map.Entry<Integer, TacheStats> e : list) {
+				final TacheStats ts = e.getValue();
+				s.append("  - ").append(e.getKey()).append(" : tâches=").append(ts.tachesEnInstance).append(" dossiers=").append(ts.dossiersEnInstance).append('\n');
+			}
+
+			LOGGER.debug(s.toString());
+		}
+
+		// pas de besoin de synchronisation parce que l'assignement est atomique en java
+		tacheStatsPerOid = stats;
 	}
 
 	/**
@@ -675,37 +760,17 @@ public class TacheServiceImpl implements TacheService {
 	/**
 	 * {@inheritDoc}
 	 */
-	public int getTachesEnCoursCount(String username, Integer oid) {
-		TacheCriteria criteria = new TacheCriteria();
-		criteria.setEtatTache(TypeEtatTache.EN_COURS);
-		criteria.setOid(oid);
-		// TODO (msi) tenir compte du username
-		return tacheDAO.count(criteria);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
 	public int getTachesEnInstanceCount(Integer oid) {
-		TacheCriteria criteria = new TacheCriteria();
-		criteria.setTypeTache(TypeTache.TacheNouveauDossier);
-		criteria.setInvertTypeTache(true); // on veut tout sauf les nouveau dossiers
-		criteria.setEtatTache(TypeEtatTache.EN_INSTANCE);
-		criteria.setDateEcheanceJusqua(RegDate.get());
-		criteria.setOid(oid);
-		return tacheDAO.count(criteria);
+		final TacheStats stats = tacheStatsPerOid.get(oid);
+		return stats == null ? 0: stats.tachesEnInstance;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public int getDossiersEnInstanceCount(Integer oid) {
-		TacheCriteria criteria = new TacheCriteria();
-		criteria.setTypeTache(TypeTache.TacheNouveauDossier);
-		criteria.setEtatTache(TypeEtatTache.EN_INSTANCE);
-		criteria.setDateEcheanceJusqua(RegDate.get());
-		criteria.setOid(oid);
-		return tacheDAO.count(criteria);
+		final TacheStats stats = tacheStatsPerOid.get(oid);
+		return stats == null ? 0: stats.dossiersEnInstance;
 	}
 
 	private int getPremierePeriodeFiscale() {
