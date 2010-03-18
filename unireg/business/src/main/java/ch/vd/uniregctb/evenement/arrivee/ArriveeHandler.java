@@ -10,7 +10,6 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.utils.Pair;
-import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.AdressesCiviles;
 import ch.vd.uniregctb.adresse.HistoriqueCommune;
 import ch.vd.uniregctb.audit.Audit;
@@ -491,7 +490,7 @@ public class ArriveeHandler extends EvenementCivilHandlerBase {
 	protected final void handleIndividuEnMenage(Arrivee arrivee, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
 
 		final Individu individu = arrivee.getIndividu();
-		final Individu conjoint = individu.getConjoint();
+		final Individu conjoint = getServiceCivil().getConjoint(arrivee.getIndividu().getNoTechnique(), arrivee.getDate());
 		Assert.notNull(individu); // prérequis
 
 		final RegDate dateEvenement = getDateEvenementPourFor(arrivee);

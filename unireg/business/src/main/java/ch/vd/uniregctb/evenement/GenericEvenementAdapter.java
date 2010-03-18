@@ -123,6 +123,7 @@ public abstract class GenericEvenementAdapter implements EvenementCivil {
 		return conjoint;
 	}
 
+
 	/*
 	 * (non-Javadoc)
 	 *

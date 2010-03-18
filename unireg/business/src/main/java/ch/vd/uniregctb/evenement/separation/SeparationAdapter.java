@@ -38,7 +38,7 @@ public class SeparationAdapter extends GenericEvenementAdapter implements Separa
 		EnumAttributeIndividu[] attributs = { EnumAttributeIndividu.CONJOINT };
 		final long noIndividu = getIndividu().getNoTechnique();
 		Individu individuPrincipal = serviceCivil.getIndividu(noIndividu, anneeEvenement, attributs);
-		this.ancienConjoint = individuPrincipal.getConjoint();
+		this.ancienConjoint = serviceCivil.getConjoint(individuPrincipal.getNoTechnique(),getDate().getOneDayBefore());
 		
 	}
 

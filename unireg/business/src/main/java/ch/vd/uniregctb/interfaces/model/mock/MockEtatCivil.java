@@ -10,6 +10,8 @@ public class MockEtatCivil implements EtatCivil {
 
 	private int noSequence;
 
+	private Long numeroConjoint;
+
 	private EnumTypeEtatCivil typeEtatCivil;
 
 	public RegDate getDateDebutValidite() {
@@ -34,5 +36,12 @@ public class MockEtatCivil implements EtatCivil {
 
 	public void setTypeEtatCivil(EnumTypeEtatCivil typeEtatCivil) {
 		this.typeEtatCivil = typeEtatCivil;
+	}
+	public Long getNumeroConjoint() {
+		return numeroConjoint;
+	}
+
+	public void setNumeroConjoint(Long numeroConjoint) {
+		this.numeroConjoint = numeroConjoint;
 	}
 }

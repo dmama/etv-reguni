@@ -7,6 +7,7 @@ import java.util.Set;
 import ch.vd.uniregctb.evenement.EvenementCivil;
 import ch.vd.uniregctb.evenement.EvenementCivilErreur;
 import ch.vd.uniregctb.evenement.GenericEvenementAdapter;
+import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.evenement.common.EvenementCivilHandlerBase;
 import ch.vd.uniregctb.evenement.common.EvenementCivilHandlerException;
@@ -43,9 +44,11 @@ public class AnnulationReconciliationHandler extends EvenementCivilHandlerBase {
 		if (menage == null) {
 			throw new EvenementCivilHandlerException("Le tiers ménage commun n'a pu être trouvé");
 		}
-		if (annulation.getIndividu().getConjoint() != null) {
+
+		final Individu individuConjoint = getServiceCivil().getConjoint(annulation.getIndividu().getNoTechnique(), target.getDate());
+		if (individuConjoint != null) {
 			// Obtention du tiers correspondant au conjoint.
-			PersonnePhysique conjoint = getService().getPersonnePhysiqueByNumeroIndividu(annulation.getIndividu().getConjoint().getNoTechnique());
+			PersonnePhysique conjoint = getService().getPersonnePhysiqueByNumeroIndividu(individuConjoint.getNoTechnique());
 			// Vérification de la cohérence
 			if (!menageComplet.estComposeDe(principal, conjoint)) {
 				throw new EvenementCivilHandlerException("Les tiers composant le tiers ménage trouvé ne correspondent pas avec les individus unis dans le civil");
@@ -61,8 +64,9 @@ public class AnnulationReconciliationHandler extends EvenementCivilHandlerBase {
 		PersonnePhysique principal = getService().getPersonnePhysiqueByNumeroIndividu(annulation.getIndividu().getNoTechnique());
 		// Obtention du tiers correspondant au conjoint.
 		PersonnePhysique conjoint = null;
-		if (annulation.getIndividu().getConjoint() != null) {
-			conjoint = getService().getPersonnePhysiqueByNumeroIndividu(annulation.getIndividu().getConjoint().getNoTechnique());
+		final Individu individuConjoint = getServiceCivil().getConjoint(evenement.getIndividu().getNoTechnique(), evenement.getDate());
+		if (individuConjoint != null) {
+			conjoint = getService().getPersonnePhysiqueByNumeroIndividu(individuConjoint.getNoTechnique());
 		}
 		// Traitement de l'annulation de réconciliation
 		getMetier().annuleReconciliation(principal, conjoint, annulation.getDate(), annulation.getNumeroEvenement());

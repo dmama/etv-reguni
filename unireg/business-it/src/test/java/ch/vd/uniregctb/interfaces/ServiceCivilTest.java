@@ -39,8 +39,9 @@ public class ServiceCivilTest extends BusinessItTest {
 		assertNotNull(jean);
 		jean = service.getIndividu(333528, 2006, EnumAttributeIndividu.CONJOINT);
 		assertNotNull(jean);
-		assertNotNull(jean.getConjoint());
-		Individu sara = jean.getConjoint();
+		Individu sara = service.getConjoint(jean.getNoTechnique(),RegDate.get(2007,1,1));
+		assertNotNull(sara);
+
 		assertEquals("Sara", sara.getDernierHistoriqueIndividu().getPrenom());
 	}
 	@Test
@@ -60,27 +61,27 @@ public class ServiceCivilTest extends BusinessItTest {
 	public void testGetIndividuConjoint(){
 		Individu jeanMarc = service.getIndividu(132720L, 2006);
 		assertNotNull(jeanMarc);
-		Individu conjoint = service.getIndividuConjoint(jeanMarc.getNoTechnique(), RegDate.get(2006,1,1));
+		Individu conjoint = service.getConjoint(jeanMarc.getNoTechnique(), RegDate.get(2006,1,1));
 	   //Celibataire
 		assertEquals(null,conjoint);
 
-		conjoint = service.getIndividuConjoint(jeanMarc.getNoTechnique(), RegDate.get(2007,6,24));
+		conjoint = service.getConjoint(jeanMarc.getNoTechnique(), RegDate.get(2007,6,24));
 	   //Marié
 	    assertNotNull(conjoint);
 		assertEquals("Amélie",conjoint.getDernierHistoriqueIndividu().getPrenom());
 		assertEquals(845875,conjoint.getNoTechnique());
 
-		conjoint = service.getIndividuConjoint(jeanMarc.getNoTechnique(), RegDate.get(2008,6,28));
+		conjoint = service.getConjoint(jeanMarc.getNoTechnique(), RegDate.get(2008,6,28));
 	   //Séparé
 		assertNotNull(conjoint);
 		assertEquals("Amélie",conjoint.getDernierHistoriqueIndividu().getPrenom());
 		assertEquals(845875,conjoint.getNoTechnique());
 
 
-		conjoint = service.getIndividuConjoint(jeanMarc.getNoTechnique(), RegDate.get(2009,7,28));
+		conjoint = service.getConjoint(jeanMarc.getNoTechnique(), RegDate.get(2009,7,28));
 	   //Divorcé
 		assertEquals(null,conjoint);
-	   conjoint = service.getIndividuConjoint(jeanMarc.getNoTechnique(), RegDate.get(2010,3,28));
+	   conjoint = service.getConjoint(jeanMarc.getNoTechnique(), RegDate.get(2010,3,28));
 
 	   //Remarié
 		assertNotNull(conjoint);

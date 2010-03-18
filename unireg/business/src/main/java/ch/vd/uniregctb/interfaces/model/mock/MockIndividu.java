@@ -273,7 +273,7 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 			adoptionsReconnaissances = individu.getAdoptionsReconnaissances();
 		}
 		if (parts != null && parts.contains(EnumAttributeIndividu.CONJOINT)) {
-			conjoint = individu.getConjoint();
+		//	conjoint = individu.getConjoint();
 		}
 		if (parts != null && parts.contains(EnumAttributeIndividu.ENFANTS)) {
 			enfants = individu.getEnfants();

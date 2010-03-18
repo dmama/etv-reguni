@@ -96,7 +96,7 @@ public interface ServiceCivilService {
 	 * @param date à laquelle on veut savoir si l'indivdu a un conjoint valide.
 	 * @return l'individu conjoint populé avec les données valides à la date spécifiée.
 	 */
-	Individu getIndividuConjoint(Long noIndividuPrincipal, RegDate date);
+	Individu getConjoint(Long noIndividuPrincipal, RegDate date);
 
 	/**
 	 * Retourne le numéro de l'individu conjoint valide <b>à la date</b> passée en paramètre, de l'indivu dont le numéro est  en paramètre.

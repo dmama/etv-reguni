@@ -99,12 +99,7 @@ public class IndividuWrapper extends EntiteCivileWrapper implements Individu {
 		return adoptions;
 	}
 
-	public Individu getConjoint() {
-		if (conjoint == null) {
-			conjoint = IndividuWrapper.get(target.getConjoint());
-		}
-		return conjoint;
-	}
+	
 
 	public RegDate getDateDeces() {
 		return deces;
@@ -278,7 +273,7 @@ public class IndividuWrapper extends EntiteCivileWrapper implements Individu {
 			adoptions = individu.getAdoptionsReconnaissances();
 		}
 		if (parts != null && parts.contains(EnumAttributeIndividu.CONJOINT)) {
-			conjoint = individu.getConjoint();
+			//conjoint = individu.getConjoint();
 		}
 		if (parts != null && parts.contains(EnumAttributeIndividu.ENFANTS)) {
 			enfants = individu.getEnfants();

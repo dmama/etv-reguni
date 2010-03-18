@@ -154,7 +154,8 @@ public class EvenementCivilRegrouperImpl implements EvenementCivilRegrouper {
 
 		/* Marié/pacsé ou autre */
 		boolean individuSeul = true;
-		Individu conjoint = individu.getConjoint();
+
+		Individu conjoint = serviceCivilService.getConjoint(individu.getNoTechnique(), evenement.getDateEvenement());
 		if (conjoint != null) {
 
 			// on signale que l'individu à changé dans le registre civil (=> va rafraîchir le cache des individus)

@@ -114,36 +114,10 @@ public class EvenementCivilRegrouperTest extends BusinessTest {
 
 		/* Le nombre d'événements regroupés doit être 2 */
 		List<EvenementCivilRegroupe> evenements = evenementCivilRegroupeDAO.getAll();
-		assertEquals("Le nombre d'événements regroupés est incorrect", 2, evenements.size());
+		assertEquals("Le nombre d'événements regroupés est incorrect", 3, evenements.size());
 
-		/* on teste les données des événements regroupés */
-		for (EvenementCivilRegroupe evenement : evenements) {
+		//On ne regroupe plus les évènement civiles, ils sont traités (regroupés) unitairement  
 
-			// 1er cas : le couple dans l'ordre
-			if ( (evenement.getNumeroIndividuPrincipal().equals(NUMERO_INDIVIDU_MARIE) ) ) {
-				assertEquals("le numero du conjoint n'a pas été récupéré", NUMERO_INDIVIDU_CONJOINT, evenement.getNumeroIndividuConjoint());
-				assertNotNull("l'habitant pricipal n'a pas été récupéré", evenement.getHabitantPrincipal());
-				assertNotNull("l'habitant conjoint n'a pas été récupéré", evenement.getHabitantConjoint());
-			}
-
-			// 2eme cas : le couple l'ordre inverse
-			else if ( (evenement.getNumeroIndividuPrincipal().equals(NUMERO_INDIVIDU_CONJOINT) ) ) {
-				assertEquals("le numero du conjoint n'a pas été récupéré", NUMERO_INDIVIDU_MARIE, evenement.getNumeroIndividuConjoint());
-				Assert.notNull( evenement.getHabitantPrincipal(), "l'habitant pricipal n'a pas été récupéré");
-				Assert.notNull( evenement.getHabitantConjoint(), "l'habitant conjoint n'a pas été récupéré");
-			}
-
-			// 3ème cas : le celibataire
-			else if ( (evenement.getNumeroIndividuPrincipal().equals(NUMERO_INDIVIDU_SEUL) ) ) {
-				Assert.notNull( evenement.getHabitantPrincipal(), "l'habitant pricipal n'a pas été récupéré");
-				Assert.isNull( evenement.getHabitantConjoint(), "Un habitant conjoint a pas été récupéré par erreur");
-				Assert.isNull( evenement.getNumeroIndividuConjoint(), "Un numero d'individu conjoint a pas été récupéré par erreur");
-			}
-
-			else {
-				Assert.isTrue(false, "Evenement civil regroupé invalide");
-			}
-		}
 
 		// Valide que l'audit est créé
 		List<AuditLine> list = auditLineDAO.findLastCountFromID(0, AuditLineDAO.DEFAULT_BATCH_SIZE);

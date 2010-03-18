@@ -15,12 +15,7 @@ public interface Individu extends EntiteCivile {
      */
     Collection<AdoptionReconnaissance> getAdoptionsReconnaissances();
 
-    /**
-     * Retourne le conjoint de l'individu.
-     *
-     * @return le conjoint de l'individu.
-     */
-    Individu getConjoint();
+   
 
     /**
      * Retourne la date de décès de l'individu.
