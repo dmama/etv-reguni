@@ -74,10 +74,10 @@ public class SeparationListController extends  AbstractTiersListController {
 						bean.setNumeroAVS(FormatNumeroHelper.removeSpaceAndDash(bean.getNumeroAVS()));
 					}
 					try {
-						List<TiersIndexedData> results = service.search(bean);
+						List<TiersIndexedData> results = searchTiers(bean);
 						List<TiersIndexedData> filtredResults = new ArrayList<TiersIndexedData>();
 						for (TiersIndexedData tiersIndexedData : results) {
-							Tiers tiers = service.getTiers(tiersIndexedData.getNumero());
+							Tiers tiers = getTiersSloooow(tiersIndexedData.getNumero());
 							if (tiers.getDernierForFiscalPrincipal() != null && tiers.getDernierForFiscalPrincipal().getDateFin() == null) {
 								filtredResults.add(tiersIndexedData);
 							}

@@ -58,7 +58,7 @@ public class DebiteurListController  extends  AbstractTiersListController implem
 		String numeroSrcParam = request.getParameter(NUMERO_SOURCIER_PARAMETER_NAME);
 		Long numeroSrc = Long.parseLong(numeroSrcParam);
 
-		Contribuable ctb = (Contribuable) service.getTiers(numeroSrc);
+		Contribuable ctb = (Contribuable) getTiersSloooow(numeroSrc);
 		if (ctb == null) {
 			throw new ObjectNotFoundException(this.getMessageSource().getMessage("error.sourcier.inexistant" , null,  WebContextUtils.getDefaultLocale()));
 		}

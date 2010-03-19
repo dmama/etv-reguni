@@ -12,6 +12,7 @@ public interface TiersAnnulationRecapManager {
 	 * @param numeroTiers
 	 * @return
 	 */
+	@Transactional(readOnly = true)
 	public TiersAnnulationRecapView get(Long numeroTiers);
 
 	/**
@@ -21,6 +22,7 @@ public interface TiersAnnulationRecapManager {
 	 * @param numeroTiersRemplacant
 	 * @return
 	 */
+	@Transactional(readOnly = true)
 	public TiersAnnulationRecapView get(Long numeroTiers, Long numeroTiersRemplacant)  ;
 
 	/**

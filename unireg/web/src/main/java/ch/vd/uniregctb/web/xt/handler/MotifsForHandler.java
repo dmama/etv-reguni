@@ -10,6 +10,10 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.support.MessageSourceAccessor;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springmodules.xt.ajax.AbstractAjaxHandler;
 import org.springmodules.xt.ajax.AjaxActionEvent;
 import org.springmodules.xt.ajax.AjaxResponse;
@@ -38,6 +42,7 @@ public class MotifsForHandler extends AbstractAjaxHandler implements Application
 	private MessageSourceAccessor messageSourceAccessor;
 
 	private TiersDAO tiersDAO;
+	private PlatformTransactionManager transactionManager;
 
 	/**
 	 * Met-à-jour la liste déroulante Html des motifs d'ouverture de fors.
@@ -113,6 +118,7 @@ public class MotifsForHandler extends AbstractAjaxHandler implements Application
 	 * @param parameters les paramètres de la requête
 	 * @return null si le numéro de contribuable ne correspond à rien de connu
 	 */
+	@SuppressWarnings({"UnnecessaryLocalVariable"})
 	private TypeFor extractTypeFor(Map<String, String> parameters) {
 		final String numeroCtbString = parameters.get("numeroCtb");
 		final String genreImpotString = parameters.get("genreImpot");
@@ -121,12 +127,21 @@ public class MotifsForHandler extends AbstractAjaxHandler implements Application
 		final GenreImpot genreImpot = GenreImpot.valueOf(genreImpotString);
 		final MotifRattachement rattachement = MotifRattachement.valueOf(rattachementString);
 		final Long numeroCtb = Long.valueOf(numeroCtbString);
-		final Tiers tiers = tiersDAO.get(numeroCtb);
-		TypeFor typeFor = null;
-		if (tiers != null) {
-			final String natureTiers = tiers.getNatureTiers();
-			typeFor = new TypeFor(natureTiers, genreImpot, rattachement);
-		}
+
+		TransactionTemplate template = new TransactionTemplate(transactionManager);
+		template.setReadOnly(true);
+
+		final TypeFor typeFor = (TypeFor) template.execute(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final Tiers tiers = tiersDAO.get(numeroCtb);
+				if (tiers == null) {
+					return null;
+				}
+				final String natureTiers = tiers.getNatureTiers();
+				return new TypeFor(natureTiers, genreImpot, rattachement);
+			}
+		});
+
 		return typeFor;
 	}
 
@@ -165,5 +180,9 @@ public class MotifsForHandler extends AbstractAjaxHandler implements Application
 
 	public void setTiersDAO(TiersDAO tiersDAO) {
 		this.tiersDAO = tiersDAO;
+	}
+
+	public void setTransactionManager(PlatformTransactionManager transactionManager) {
+		this.transactionManager = transactionManager;
 	}
 }

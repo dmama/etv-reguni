@@ -49,6 +49,7 @@ public class DecesRecapManagerImpl implements  DecesRecapManager  {
 	 * @param numero
 	 * @return
 	 */
+	@Transactional(readOnly = true)
 	public DecesRecapView get(Long numero) {
 		DecesRecapView decesRecapView =  new DecesRecapView();
 		//FIXME (CGD) impléementer Ifosec

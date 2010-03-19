@@ -660,41 +660,50 @@ public class DeterminationDIsAEmettreProcessor {
 		final RegDate debutAnnee = RegDate.get(annee, 1, 1);
 		final RegDate finAnnee = RegDate.get(annee, 12, 31);
 
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
+		template.setReadOnly(true);
 
-		final List<Long> idsFors = (List<Long>) hibernateTemplate.execute(new HibernateCallback() {
-			public Object doInHibernate(Session session) throws HibernateException {
-				Query queryObject = session.createQuery(queryIdsCtbWithFors);
-				queryObject.setParameter("debutAnnee", debutAnnee.index());
-				queryObject.setParameter("finAnnee", finAnnee.index());
-				return queryObject.list();
+		final List<Long> ids = (List<Long>) template.execute(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+
+				final List<Long> idsFors = (List<Long>) hibernateTemplate.execute(new HibernateCallback() {
+					public Object doInHibernate(Session session) throws HibernateException {
+						Query queryObject = session.createQuery(queryIdsCtbWithFors);
+						queryObject.setParameter("debutAnnee", debutAnnee.index());
+						queryObject.setParameter("finAnnee", finAnnee.index());
+						return queryObject.list();
+					}
+				});
+
+				final List<Long> idsTasks = (List<Long>) hibernateTemplate.execute(new HibernateCallback() {
+					public Object doInHibernate(Session session) throws HibernateException {
+						Query queryObject = session.createQuery(queryIdsCtbWithTasks);
+						queryObject.setParameter("debutAnnee", debutAnnee.index());
+						queryObject.setParameter("finAnnee", finAnnee.index());
+						return queryObject.list();
+					}
+				});
+
+				final List<Long> idsDIs = (List<Long>) hibernateTemplate.execute(new HibernateCallback() {
+					public Object doInHibernate(Session session) throws HibernateException {
+						Query queryObject = session.createQuery(queryIdsCtbWithDeclarations);
+						queryObject.setParameter("debutAnnee", debutAnnee.index());
+						queryObject.setParameter("finAnnee", finAnnee.index());
+						return queryObject.list();
+					}
+				});
+
+				final Set<Long> set = new HashSet<Long>(idsFors.size() + idsTasks.size() + idsDIs.size());
+				set.addAll(idsFors);
+				set.addAll(idsTasks);
+				set.addAll(idsDIs);
+
+				final List<Long> ids = new ArrayList<Long>(set);
+				Collections.sort(ids);
+
+				return ids;
 			}
 		});
-
-		final List<Long> idsTasks = (List<Long>) hibernateTemplate.execute(new HibernateCallback() {
-			public Object doInHibernate(Session session) throws HibernateException {
-				Query queryObject = session.createQuery(queryIdsCtbWithTasks);
-				queryObject.setParameter("debutAnnee", debutAnnee.index());
-				queryObject.setParameter("finAnnee", finAnnee.index());
-				return queryObject.list();
-			}
-		});
-
-		final List<Long> idsDIs = (List<Long>) hibernateTemplate.execute(new HibernateCallback() {
-			public Object doInHibernate(Session session) throws HibernateException {
-				Query queryObject = session.createQuery(queryIdsCtbWithDeclarations);
-				queryObject.setParameter("debutAnnee", debutAnnee.index());
-				queryObject.setParameter("finAnnee", finAnnee.index());
-				return queryObject.list();
-			}
-		});
-
-		final Set<Long> set = new HashSet<Long>(idsFors.size() + idsTasks.size() + idsDIs.size());
-		set.addAll(idsFors);
-		set.addAll(idsTasks);
-		set.addAll(idsDIs);
-
-		final List<Long> ids = new ArrayList<Long>(set);
-		Collections.sort(ids);
 
 		return ids;
 	}

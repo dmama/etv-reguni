@@ -49,6 +49,7 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 	 * @throws AdressesResolutionException
 	 * @throws InfrastructureException
 	 */
+	@Transactional(readOnly = true)
 	public TiersEditView getComplementView(Long numero) throws AdresseException, InfrastructureException {
 
 		TiersEditView tiersEditView = new TiersEditView();
@@ -115,6 +116,7 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 	 * @throws AdressesResolutionException
 	 * @throws InfrastructureException
 	 */
+	@Transactional(readOnly = true)
 	public TiersEditView getDebiteursView(Long numero) throws AdresseException, InfrastructureException {
 		TiersEditView tiersEditView = new TiersEditView();
 		if ( numero == null) {

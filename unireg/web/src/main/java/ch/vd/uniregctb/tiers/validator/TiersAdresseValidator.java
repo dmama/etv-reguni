@@ -4,6 +4,7 @@ import ch.vd.uniregctb.adresse.*;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
@@ -29,20 +30,12 @@ public class TiersAdresseValidator implements Validator {
 	private TiersService tiersService;
 	private ServiceInfrastructureService serviceInfra;
 
-	public AdresseService getAdresseService() {
-		return adresseService;
-	}
-
 	public void setAdresseService(AdresseService adresseService) {
 		this.adresseService = adresseService;
 	}
 
 	public void setServiceInfra(ServiceInfrastructureService serviceInfra) {
 		this.serviceInfra = serviceInfra;
-	}
-
-	public TiersService getTiersService() {
-		return tiersService;
 	}
 
 	public void setTiersService(TiersService tiersService) {
@@ -61,6 +54,7 @@ public class TiersAdresseValidator implements Validator {
 	/**
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
+	@Transactional(readOnly = true)
 	public void validate(Object obj, Errors errors) {
 
 		if (obj == null) {
@@ -124,7 +118,7 @@ public class TiersAdresseValidator implements Validator {
 			}
 			AdressesFiscales adressesFiscales = null;
 			try {
-				adressesFiscales = getAdresseService().getAdressesFiscales(tiers, null, false);
+				adressesFiscales = adresseService.getAdressesFiscales(tiers, null, false);
 			}
 			catch (AdresseException e) {
 				LOGGER.debug(e, e);

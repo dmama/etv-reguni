@@ -19,20 +19,13 @@ import ch.vd.uniregctb.tiers.view.TiersEditView;
  */
 public interface ForFiscalManager {
 
-	public abstract ForFiscalDAO getForFiscalDAO();
-
-	public abstract void setForFiscalDAO(ForFiscalDAO forFiscalDAO);
-
-	public abstract TiersDAO getTiersDAO();
-
-	public abstract void setTiersDAO(TiersDAO tiersDAO);
-
 	/**
 	 * Recupere la vue ForFiscalView
 	 *
 	 * @param id
 	 * @return
 	 */
+	@Transactional(readOnly = true)
 	public abstract ForFiscalView get(Long id) throws Exception;
 
 	/**
@@ -41,6 +34,7 @@ public interface ForFiscalManager {
 	 * @param id
 	 * @return
 	 */
+	@Transactional(readOnly = true)
 	public abstract ForFiscalView create(Long numeroCtb, boolean dpi);
 
 	/**
@@ -68,7 +62,6 @@ public interface ForFiscalManager {
 	 * @throws AdressesResolutionException
 	 * @throws InfrastructureException
 	 */
+	@Transactional(readOnly = true)
 	public TiersEditView getView(Long numero) throws AdresseException, InfrastructureException;
-
-
 }

@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.param.validator;
 
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
@@ -20,6 +21,7 @@ public class ModeleDocumentValidator implements Validator{
 		return clazz.isAssignableFrom(ModeleDocumentView.class);
 	}
 
+	@Transactional(readOnly = true)
 	public void validate(Object target, Errors errors) {
 		ModeleDocumentView view = (ModeleDocumentView) target;
 		PeriodeFiscale pf = periodeFiscaleDAO.get(view.getIdPeriode());

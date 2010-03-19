@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.fusion.manager;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import ch.vd.uniregctb.fusion.view.FusionListView;
 
 /**
@@ -16,6 +18,7 @@ public interface FusionListManager {
 	 * @param numeroNonHab
 	 * @return une vue FusionListView
 	 */
+	@Transactional(readOnly = true)
 	public FusionListView get(Long numeroNonHab) ;
 
 }

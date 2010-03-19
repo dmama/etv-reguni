@@ -2,14 +2,11 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
-	<bean 	id="abstractTiersController"
-			parent="abstractSimpleFormController"
-			abstract="true"
-			class="ch.vd.uniregctb.tiers.AbstractTiersController">
+	<bean id="abstractTiersController" parent="abstractSimpleFormController" abstract="true" class="ch.vd.uniregctb.tiers.AbstractTiersController">
 		<property name="tiersMapHelper" ref="tiersMapHelper" />
-		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="service" ref="tiersService" />
 		<property name="paramApplicationManager" ref="paramApplicationManager" />
+		<property name="transactionManager" ref="transactionManager" />
 	</bean>
 
 	<bean 	id="abstractTiersListController"
@@ -57,6 +54,7 @@
 		<property name="tiersDao" ref="tiersDAO" />
 		<property name="tiersService" ref="tiersService" />
 		<property name="adresseService" ref="adresseService" />
+		<property name="transactionManager" ref="transactionManager" />
 	</bean>
 
 	<bean id="tiersEditController" class="ch.vd.uniregctb.tiers.TiersEditController" parent="abstractTiersController">
@@ -155,6 +153,7 @@
 		<property name="mouvementDossierDAO" ref="mouvementDossierDAO" />
 		<property name="formView" value="common/consult-log" />
 		<property name="successView" value="common/refresh-parent" />
+		<property name="transactionManager" ref="transactionManager" />
 	</bean>
 
 	<bean id="mouvementVisuController" class="ch.vd.uniregctb.tiers.MouvementVisuController" parent="abstractTiersController">

@@ -43,8 +43,13 @@ public class IcEvtCivilNaissanceTest extends InContainerTest {
 
 		evenementCivilProcessor.traiteEvenementCivilRegroupe(9006L);
 
-		PersonnePhysique tiers = getTiersDAO().getHabitantByNumeroIndividu(noInd);
-		Assert.notNull(tiers, "Pas de Tiers créé");
+		tmpl.execute(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				PersonnePhysique tiers = getTiersDAO().getHabitantByNumeroIndividu(noInd);
+				Assert.notNull(tiers, "Pas de Tiers créé");
+				return null;
+			}
+		});
 	}
 
 	public void setEvenementCivilProcessor(EvenementCivilProcessor evenementCivilProcessor) {

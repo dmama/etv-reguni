@@ -18,20 +18,13 @@ import ch.vd.uniregctb.tiers.view.TiersEditView;
  */
 public interface AdresseManager {
 
-	public abstract AdresseService getAdresseService();
-
-	public abstract void setAdresseService(AdresseService adresseService);
-
-	public abstract TiersService getTiersService();
-
-	public abstract void setTiersService(TiersService tiersService);
-
 	/**
 	 * Alimente la vue AdresseView pour une adresse existante
 	 *
 	 * @param id
 	 * @return
 	 */
+	@Transactional(readOnly = true)
 	public abstract AdresseView getAdresseView(Long id);
 
 	/**
@@ -40,6 +33,7 @@ public interface AdresseManager {
 	 * @param id
 	 * @return
 	 */
+	@Transactional(readOnly = true)
 	public abstract AdresseView create(Long numeroCtb);
 
 	/**
@@ -55,6 +49,7 @@ public interface AdresseManager {
 	 *
 	 * @param idAdresse
 	 */
+	@Transactional(rollbackFor = Throwable.class)
 	public void annulerAdresse(Long idAdresse);
 
 	/**
@@ -62,6 +57,7 @@ public interface AdresseManager {
 	 *
 	 * @param adresseView
 	 */
+	@Transactional(rollbackFor = Throwable.class)
 	public abstract void saveReprise(AdresseView adresseView);
 
 	/**
@@ -72,6 +68,7 @@ public interface AdresseManager {
 	 * @throws AdressesResolutionException
 	 * @throws InfrastructureException
 	 */
+	@Transactional(readOnly = true)
 	public TiersEditView getView(Long numero) throws InfrastructureException, AdresseException;
 
 }

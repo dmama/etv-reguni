@@ -9,6 +9,9 @@ import org.hibernate.Session;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.RegDate;
@@ -144,15 +147,24 @@ public class ReinitialiserBaremeDoubleGainProcessor {
 			+ "ORDER BY "// --------------------------------------------------------------------------------------
 			+ "    sit.id";
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({"unchecked", "UnnecessaryLocalVariable"})
 	protected List<Long> retrieveSituationsDoubleGain(final RegDate dateValidite) {
-		final List<Long> ids = (List<Long>) hibernateTemplate.execute(new HibernateCallback() {
-			public Object doInHibernate(Session session) throws HibernateException {
-				Query query = session.createQuery(QUERY_STRING);
-				query.setParameter("date", dateValidite.index());
-				return query.list();
+
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
+		template.setReadOnly(true);
+
+		final List<Long> ids = (List<Long>) template.execute(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				return hibernateTemplate.execute(new HibernateCallback() {
+					public Object doInHibernate(Session session) throws HibernateException {
+						Query query = session.createQuery(QUERY_STRING);
+						query.setParameter("date", dateValidite.index());
+						return query.list();
+					}
+				});
 			}
 		});
+
 		return ids;
 	}
 

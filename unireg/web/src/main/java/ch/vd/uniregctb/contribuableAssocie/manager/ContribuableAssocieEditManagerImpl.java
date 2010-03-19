@@ -15,6 +15,7 @@ import ch.vd.uniregctb.utils.WebContextUtils;
 
 public class ContribuableAssocieEditManagerImpl extends TiersManager  implements ContribuableAssocieEditManager{
 
+	@Transactional(readOnly = true)
 	public ContribuableAssocieEditView get(Long numeroDebiteur, Long numeroContribuable) throws AdressesResolutionException {
 
 		DebiteurPrestationImposable debiteur = (DebiteurPrestationImposable) tiersService.getTiers(numeroDebiteur);
@@ -55,6 +56,7 @@ public class ContribuableAssocieEditManagerImpl extends TiersManager  implements
 		tiersService.addContactImpotSource(debiteur, contribuable);
 	}
 
+	@Transactional(readOnly = true)
 	public ContribuableAssocieListView getContribuableList(Long numeroDpi) {
 		DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(numeroDpi) ;
 		ContribuableAssocieListView bean = new ContribuableAssocieListView();

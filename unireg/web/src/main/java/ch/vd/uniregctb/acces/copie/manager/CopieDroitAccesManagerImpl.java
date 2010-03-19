@@ -59,6 +59,7 @@ public class CopieDroitAccesManagerImpl implements CopieDroitAccesManager {
 	 * @return
 	 * @throws AdressesResolutionException
 	 */
+	@Transactional(readOnly = true)
 	public ConfirmCopieView get(long noOperateurReference, long noOperateurDestination) throws AdresseException {
 		ConfirmCopieView confirmCopieView = new ConfirmCopieView();
 		UtilisateurView utilisateurReferenceView = utilisateurManager.get(noOperateurReference);

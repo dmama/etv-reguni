@@ -8,6 +8,10 @@ import net.sf.ehcache.Element;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.cache.UniregCacheInterface;
@@ -30,6 +34,7 @@ public class SecurityProviderCache implements UniregCacheInterface, SecurityProv
 	private TiersDAO tiersDAO;
 	private DroitAccesDAO droitAccesDAO;
 	private UniregCacheManager uniregCacheManager;
+	private PlatformTransactionManager transactionManager;
 
 	/**
 	 * Cache de l'existence des tiers dans la base.
@@ -75,6 +80,10 @@ public class SecurityProviderCache implements UniregCacheInterface, SecurityProv
 
 	public void setPreloadTiersIds(boolean preloadTiersIds) {
 		this.preloadTiersIds = preloadTiersIds;
+	}
+
+	public void setTransactionManager(PlatformTransactionManager transactionManager) {
+		this.transactionManager = transactionManager;
 	}
 
 	private static class KeyGetDroitAcces {
@@ -202,8 +211,15 @@ public class SecurityProviderCache implements UniregCacheInterface, SecurityProv
 					exists = Boolean.FALSE;
 				}
 				else {
+					final TransactionTemplate template = new TransactionTemplate(transactionManager);
+					template.setReadOnly(true);
+
 					// le tiers n'existe pas dans le cache non-préloadé -> on va chercher cette information dans la base
-					exists = tiersDAO.exists(id);
+					exists = (Boolean) template.execute(new TransactionCallback() {
+						public Object doInTransaction(TransactionStatus status) {
+							return tiersDAO.exists(id);
+						}
+					});
 					tiersExistenceCache.put(id, exists);
 				}
 			}
@@ -326,14 +342,23 @@ public class SecurityProviderCache implements UniregCacheInterface, SecurityProv
 	private void initCaches() {
 		synchronized (this) {
 			// cache.init() -> rien à faire sur le ehcache : il va se construire tout seul à la demande
-			if (preloadTiersIds) {
-				LOGGER.info("Préchargement du cache des tiers existants...");
-				final List<Long> ids = tiersDAO.getAllIds();
-				for (Long id : ids) {
-					tiersExistenceCache.put(id, Boolean.TRUE);
+
+			final TransactionTemplate template = new TransactionTemplate(transactionManager);
+			template.setReadOnly(true);
+
+			template.execute(new TransactionCallback() {
+				public Object doInTransaction(TransactionStatus status) {
+					if (preloadTiersIds) {
+						LOGGER.info("Préchargement du cache des tiers existants...");
+						final List<Long> ids = tiersDAO.getAllIds();
+						for (Long id : ids) {
+							tiersExistenceCache.put(id, Boolean.TRUE);
+						}
+					}
+					dossiersControles = droitAccesDAO.getContribuablesControles();
+					return null;
 				}
-			}
-			dossiersControles = droitAccesDAO.getContribuablesControles();
+			});
 		}
 	}
 

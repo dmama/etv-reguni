@@ -23,6 +23,7 @@ public interface TiersEditManager {
 	 * @throws AdressesResolutionException
 	 * @throws InfrastructureException
 	 */
+	@Transactional(readOnly = true)
 	public TiersEditView getComplementView(Long numero) throws AdresseException, InfrastructureException;
 
 	/**
@@ -33,6 +34,7 @@ public interface TiersEditManager {
 	 * @throws AdressesResolutionException
 	 * @throws InfrastructureException
 	 */
+	@Transactional(readOnly = true)
 	public TiersEditView getDebiteursView(Long numero) throws AdresseException, InfrastructureException;
 
 
@@ -102,5 +104,6 @@ public interface TiersEditManager {
 	 * @param numeroDebiteur
 	 * @return
 	 */
+	@Transactional(readOnly = true)
 	public int countRapportsPrestationImposable(Long numeroDebiteur);
 }

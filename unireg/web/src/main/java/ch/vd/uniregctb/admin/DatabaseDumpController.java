@@ -7,6 +7,10 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
@@ -41,6 +45,7 @@ public class DatabaseDumpController extends AbstractSimpleFormController {
 	private DocumentService docService;
 	private BatchScheduler batchScheduler;
 	private TiersDAO dao;
+	private PlatformTransactionManager transactionManager;
 
 	@Override
 	public ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -77,15 +82,35 @@ public class DatabaseDumpController extends AbstractSimpleFormController {
 	 */
 	private void dumpToResponse(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
-		final int nbTiers = dao.getCount(Tiers.class);
+		TransactionTemplate template = new TransactionTemplate(transactionManager);
+		template.setReadOnly(true);
+
+		final int nbTiers = (Integer)template.execute(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				return dao.getCount(Tiers.class);
+			}
+		});
+
 		if (nbTiers > MAX_TIERS_TO_DUMP) {
 			throw new TooManyTiersException("Il y a " + nbTiers + " tiers dans la base de données. Impossible d'exporter plus de "
 					+ MAX_TIERS_TO_DUMP);
 		}
 
+		final ByteArrayOutputStream content = new ByteArrayOutputStream();
+
 		// Dump la base de données
-		ByteArrayOutputStream content = new ByteArrayOutputStream();
-		dbService.dumpToDbunitFile(content);
+		template.execute(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				try {
+					dbService.dumpToDbunitFile(content);
+				}
+				catch (Exception e) {
+					throw new RuntimeException(e);
+				}
+				return null;
+			}
+		});
+		
 
 		// Retourne le contenu de la base sous forme de fichier XML
 		final String filename = "database-dump-" + RegDate.get().toString() + ".xml";
@@ -166,5 +191,9 @@ public class DatabaseDumpController extends AbstractSimpleFormController {
 
 	public void setBatchScheduler(BatchScheduler batchScheduler) {
 		this.batchScheduler = batchScheduler;
+	}
+
+	public void setTransactionManager(PlatformTransactionManager transactionManager) {
+		this.transactionManager = transactionManager;
 	}
 }

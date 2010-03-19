@@ -36,6 +36,7 @@ public class TiersReactivationRecapManagerImpl implements TiersReactivationRecap
 	 * @param numeroTiers
 	 * @return
 	 */
+	@Transactional(readOnly = true)
 	public TiersReactivationRecapView get(Long numeroTiers)  {
 		TiersReactivationRecapView tiersReactivationRecapView = new TiersReactivationRecapView();
 		Tiers tiers = tiersService.getTiers(numeroTiers);

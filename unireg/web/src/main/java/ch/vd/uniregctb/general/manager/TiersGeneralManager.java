@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.general.manager;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import ch.vd.uniregctb.general.view.TiersGeneralView;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -17,6 +19,7 @@ public interface TiersGeneralManager {
 	 * @param tiers
 	 * @return
 	 */
+	@Transactional(readOnly = true)
 	public TiersGeneralView get(Tiers tiers) ;
 
 	/**
@@ -26,6 +29,7 @@ public interface TiersGeneralManager {
 	 * @param etendu
 	 * @return
 	 */
+	@Transactional(readOnly = true)
 	public TiersGeneralView get(DebiteurPrestationImposable dpi, boolean etendu) ;
 
 	/**
@@ -35,5 +39,6 @@ public interface TiersGeneralManager {
 	 * @param etendu
 	 * @return
 	 */
+	@Transactional(readOnly = true)
 	public TiersGeneralView get(PersonnePhysique pp, boolean etendu) ;
 }

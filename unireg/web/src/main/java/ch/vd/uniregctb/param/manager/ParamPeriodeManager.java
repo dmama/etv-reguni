@@ -2,6 +2,8 @@ package ch.vd.uniregctb.param.manager;
 
 import java.util.List;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.ModeleFeuilleDocument;
 import ch.vd.uniregctb.declaration.ParametrePeriodeFiscale;
@@ -15,6 +17,7 @@ public interface ParamPeriodeManager {
 	/**
 	 * @return La liste de toute les périodes fiscales
 	 */
+	@Transactional(readOnly = true)
 	List<PeriodeFiscale> getAllPeriodeFiscale();
 
 	/**
@@ -23,12 +26,14 @@ public interface ParamPeriodeManager {
 	 * @param periodeFiscale
 	 * @return 
 	 */
+	@Transactional(readOnly = true)
 	List<ModeleDocument> getModeleDocuments(PeriodeFiscale periodeFiscale);
 	
 	/**
 	 * @param modeleDocument
 	 * @return
 	 */
+	@Transactional(readOnly = true)
 	List<ModeleFeuilleDocument> getModeleFeuilleDocuments(ModeleDocument modeleDocument);
 	
 	/**
@@ -37,6 +42,7 @@ public interface ParamPeriodeManager {
 	 * @param periodeFiscale la période fiscale
 	 * @return
 	 */
+	@Transactional(readOnly = true)
 	ParametrePeriodeFiscale getVaudByPeriodeFiscale(PeriodeFiscale periodeFiscale);
 	
 	
@@ -46,6 +52,7 @@ public interface ParamPeriodeManager {
 	 * @param periodeFiscale la période fiscale
 	 * @return
 	 */
+	@Transactional(readOnly = true)
 	ParametrePeriodeFiscale getDepenseByPeriodeFiscale(PeriodeFiscale periodeFiscale);
 	
 	/**
@@ -54,6 +61,7 @@ public interface ParamPeriodeManager {
 	 * @param periodeFiscale la période fiscale
 	 * @return
 	 */
+	@Transactional(readOnly = true)
 	ParametrePeriodeFiscale getHorsCantonByPeriodeFiscale(PeriodeFiscale periodeFiscale);
 	
 	
@@ -64,6 +72,7 @@ public interface ParamPeriodeManager {
 	 * @param periodeFiscale la période fiscale
 	 * @return
 	 */
+	@Transactional(readOnly = true)
 	ParametrePeriodeFiscale getHorsSuisseByPeriodeFiscale(PeriodeFiscale periodeFiscale);
 	
 	/**
@@ -71,6 +80,7 @@ public interface ParamPeriodeManager {
 	 * 
 	 * @return true si la nouvelle période est bien initialisée
 	 */
+	@Transactional(rollbackFor = Throwable.class)
 	PeriodeFiscale initNouvellePeriodeFiscale();
 	
 	/**
@@ -87,6 +97,7 @@ public interface ParamPeriodeManager {
 	 *  
 	 * @param command
 	 */
+	@Transactional(rollbackFor = Throwable.class)
 	void saveParametrePeriodeFiscaleView(ParametrePeriodeFiscaleView command);
 	
 	/**
@@ -103,6 +114,7 @@ public interface ParamPeriodeManager {
 	 * @param idModele L'id du {@link ModeleFeuilleDocument} à éditer
 	 * 
 	 */	
+	@Transactional(readOnly = true)
 	ModeleFeuilleDocumentView createModeleFeuilleDocumentViewEdit(Long periodeId, Long modeleId, Long feuilleId);
 	
 	
@@ -112,6 +124,7 @@ public interface ParamPeriodeManager {
 	 * @param modeleId L'id du {@link ModeleDocument} parent
 	 * 
 	 */	
+	@Transactional(readOnly = true)
 	ModeleFeuilleDocumentView createModeleFeuilleDocumentViewAdd(Long periodeId, Long modeleId);
 
 	/**
@@ -119,13 +132,15 @@ public interface ParamPeriodeManager {
 	 *  
 	 * @param command
 	 */
-	void saveModeleDocumentView (ModeleDocumentView command);	
+	@Transactional(rollbackFor = Throwable.class)
+	void saveModeleDocumentView (ModeleDocumentView command);
 	
 	/**
 	 * Supprime le modele de document et les feuilles associées
 	 * 
 	 * @param idModeleDocument
 	 */
+	@Transactional(rollbackFor = Throwable.class)
 	void deleteModeleDocument(Long idModeleDocument);
 	
 	/**
@@ -133,6 +148,7 @@ public interface ParamPeriodeManager {
 	 * 
 	 * @param idModeleFeuilleDocument
 	 */
+	@Transactional(rollbackFor = Throwable.class)
 	void deleteModeleFeuilleDocument(Long idModeleFeuilleDocument);
 
 	/**
@@ -140,6 +156,7 @@ public interface ParamPeriodeManager {
 	 *  
 	 * @param command
 	 */
+	@Transactional(rollbackFor = Throwable.class)
 	void saveModeleFeuilleDocumentViewAdd (ModeleFeuilleDocumentView mfdv);
 	
 	/**
@@ -147,5 +164,6 @@ public interface ParamPeriodeManager {
 	 *  
 	 * @param command
 	 */
-	void saveModeleFeuilleDocumentViewEdit (ModeleFeuilleDocumentView mfdv);	
+	@Transactional(rollbackFor = Throwable.class)
+	void saveModeleFeuilleDocumentViewEdit (ModeleFeuilleDocumentView mfdv);
 }

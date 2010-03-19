@@ -10,6 +10,7 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.RegDate;
@@ -113,6 +114,7 @@ public class AbstractMouvementManagerImpl implements AbstractMouvementManager, M
 	 * @return la vue
 	 * @throws InfrastructureException
 	 */
+	@Transactional(readOnly = true)
 	public MouvementDetailView getView(MouvementDossier mvt) throws InfrastructureException {
 		final MouvementDetailView view = buildAndFillCommonElements(mvt);
 		if (mvt instanceof ReceptionDossier) {

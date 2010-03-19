@@ -2,6 +2,8 @@ package ch.vd.uniregctb.lr.manager;
 
 import java.util.List;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.common.ParamPagination;
@@ -23,6 +25,7 @@ public interface ListeRecapListManager {
 	 * @return
 	 * @throws AdressesResolutionException
 	 */
+	@Transactional(readOnly = true)
 	public List<ListeRecapDetailView> find(ListeRecapCriteria lrCriteria, ParamPagination paramPagination) throws AdresseException;
 
 	/**
@@ -30,6 +33,7 @@ public interface ListeRecapListManager {
 	 * @param lrCriteria
 	 * @return
 	 */
+	@Transactional(readOnly = true)
 	public int count(ListeRecapCriteria lrCriteria);
 
 }

@@ -32,6 +32,7 @@ public interface TacheListManager {
 	 * @throws InfrastructureException
 	 * @throws AdressesResolutionException
 	 */
+	@Transactional(readOnly = true)
 	public List<TacheListView> find(TacheCriteriaView tacheCriteria, ParamPagination paramPagination) throws InfrastructureException, AdressesResolutionException;
 
 	/**
@@ -42,6 +43,7 @@ public interface TacheListManager {
 	 * @throws InfrastructureException
 	 * @throws AdressesResolutionException
 	 */
+	@Transactional(readOnly = true)
 	public List<NouveauDossierListView> find(NouveauDossierCriteriaView dossierCriteria) throws InfrastructureException, AdresseException;
 
 	/**
@@ -53,6 +55,7 @@ public interface TacheListManager {
 	 * @throws InfrastructureException
 	 * @throws AdressesResolutionException
 	 */
+	@Transactional(readOnly = true)
 	public List<NouveauDossierListView> find(NouveauDossierCriteriaView dossierCriteria, ParamPagination paramPagination) throws InfrastructureException, AdresseException;
 
 	/**
@@ -79,6 +82,7 @@ public interface TacheListManager {
 	 * @return
 	 * @throws InfrastructureException
 	 */
+	@Transactional(readOnly = true)
 	public int count(TacheCriteriaView criterion) throws InfrastructureException ;
 
 	/**
@@ -88,6 +92,7 @@ public interface TacheListManager {
 	 * @return
 	 * @throws InfrastructureException
 	 */
+	@Transactional(readOnly = true)
 	public int count(NouveauDossierCriteriaView nouveauDossierCriteriaView) throws InfrastructureException ;
 
 	/**

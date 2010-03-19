@@ -22,31 +22,12 @@ import ch.vd.uniregctb.tiers.TiersService;
  */
 public interface ListeRecapEditManager {
 
-	public abstract EvenementFiscalService getEvenementFiscalService();
-
-	public abstract void setEvenementFiscalService(EvenementFiscalService evenementFiscalService);
-
-	public abstract ListeRecapitulativeDAO getLrDAO();
-
-	public abstract void setLrDAO(ListeRecapitulativeDAO lrDAO);
-
-	public abstract TiersDAO getTiersDAO();
-
-	public abstract void setTiersDAO(TiersDAO tiersDAO);
-
-	public abstract TiersService getTiersService();
-
-	public abstract void setTiersService(TiersService tiersService);
-
-	public abstract ListeRecapService getLrService();
-
-	public abstract void setLrService(ListeRecapService lrService);
-
 	/**
 	 * Alimente la vue ListeRecapEditView en fonction de l'ID de la LR
 	 * @param id
 	 * @return une vue ListeRecapEditView
 	 */
+	@Transactional(readOnly = true)
 	public ListeRecapDetailView get(Long id) ;
 
 	/**
@@ -55,11 +36,14 @@ public interface ListeRecapEditManager {
 	 * @param view
 	 * @return
 	 */
+	@Transactional(readOnly = true)
 	public ListeRecapDetailView refresh(ListeRecapDetailView view) ;
+
 	/**
 	 * Alimente la vue ListeRecapListView en fonction d'un debiteur
 	 * @return une vue ListeRecapListView
 	 */
+	@Transactional(readOnly = true)
 	public abstract ListeRecapListView findByNumero(Long numero) ;
 
 	/**
@@ -68,6 +52,7 @@ public interface ListeRecapEditManager {
 	 * @param numero
 	 * @return
 	 */
+	@Transactional(readOnly = true)
 	public abstract ListeRecapDetailView creerLr(Long numero) ;
 
 	/**
@@ -100,6 +85,7 @@ public interface ListeRecapEditManager {
 	 *
 	 * @param id
 	 */
+	@Transactional(readOnly = true)
 	public void controleLR(Long id);
 
 	/**
@@ -126,6 +112,7 @@ public interface ListeRecapEditManager {
 	 * @return
 	 * @throws Exception
 	 */
+	@Transactional(readOnly = true)
 	public String envoieImpressionLocalDuplicataLR(ListeRecapDetailView lrEditView) throws Exception  ;
 
 	/**

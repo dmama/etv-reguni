@@ -8,6 +8,7 @@ import java.util.Iterator;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 import org.apache.log4j.Logger;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.RegDate;
@@ -90,6 +91,7 @@ public class TiersGeneralManagerImpl implements TiersGeneralManager{
 	 * @return TiersGeneralView
 	 * @throws AdressesResolutionException
 	 */
+	@Transactional(readOnly = true)
 	public TiersGeneralView get(Tiers tiers) {
 		final TiersGeneralView tiersGeneralView = new TiersGeneralView();
 		setRole(tiersGeneralView, tiers);
@@ -280,6 +282,7 @@ public class TiersGeneralManagerImpl implements TiersGeneralManager{
 	 * @param etendu
 	 * @return
 	 */
+	@Transactional(readOnly = true)
 	public TiersGeneralView get(DebiteurPrestationImposable dpi, boolean etendu) {
 		TiersGeneralView tiersGeneralView = get(dpi);
 		setRole(tiersGeneralView, dpi);
@@ -302,6 +305,7 @@ public class TiersGeneralManagerImpl implements TiersGeneralManager{
 	 * @param etendu
 	 * @return
 	 */
+	@Transactional(readOnly = true)
 	public TiersGeneralView get(PersonnePhysique pp, boolean etendu) {
 		TiersGeneralView tiersGeneralView = get(pp);
 		setRole(tiersGeneralView, pp);

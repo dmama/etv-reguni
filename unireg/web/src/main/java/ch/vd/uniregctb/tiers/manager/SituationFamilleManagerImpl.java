@@ -49,6 +49,7 @@ public class SituationFamilleManagerImpl extends TiersManager implements Situati
 	 * @return
 	 * @throws AdressesResolutionException
 	 */
+	@Transactional(readOnly = true)
 	public SituationFamilleView create(Long numeroCtb) throws AdresseException {
 		final Contribuable contribuable = (Contribuable) tiersService.getTiers(numeroCtb);
 

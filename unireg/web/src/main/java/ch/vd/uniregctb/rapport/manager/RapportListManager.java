@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.rapport.manager;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import ch.vd.uniregctb.rapport.view.RapportListView;
 
 /**
@@ -16,6 +18,7 @@ public interface RapportListManager {
 	 * @param numero
 	 * @return une vue RapportListView
 	 */
+	@Transactional(readOnly = true)
 	public RapportListView get(Long numero) ;
 
 }

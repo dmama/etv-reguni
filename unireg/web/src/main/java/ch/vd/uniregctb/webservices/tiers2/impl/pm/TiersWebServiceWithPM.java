@@ -38,6 +38,8 @@ import ch.vd.uniregctb.webservices.tiers2.params.*;
 import javax.jws.WebParam;
 import java.util.*;
 
+import org.springframework.transaction.annotation.Transactional;
+
 /**
  * Classe qui retourne des données bouchonnées concernant les personnes morales. Les appels concernant les personnes physiques sont simplement délégués plus loin.
  *
@@ -82,6 +84,7 @@ public class TiersWebServiceWithPM implements TiersWebService {
 		return target.searchTiers(params);
 	}
 
+	@Transactional(readOnly = true)
 	public Tiers.Type getTiersType(@WebParam(targetNamespace = "http://www.vd.ch/uniregctb/webservices/tiers2",
 			partName = "params", name = "GetTiersType") GetTiersType params) throws BusinessException, AccessDeniedException, TechnicalException {
 		if (isEntreprise(params.tiersNumber)) {
@@ -92,6 +95,7 @@ public class TiersWebServiceWithPM implements TiersWebService {
 		}
 	}
 
+	@Transactional(readOnly = true)
 	public Tiers getTiers(@WebParam(targetNamespace = "http://www.vd.ch/uniregctb/webservices/tiers2",
 			partName = "params", name = "GetTiers") GetTiers params) throws BusinessException, AccessDeniedException, TechnicalException {
 		if (isEntreprise(params.tiersNumber)) {
@@ -103,6 +107,7 @@ public class TiersWebServiceWithPM implements TiersWebService {
 		}
 	}
 
+	@Transactional(readOnly = true)
 	public TiersHisto getTiersPeriode(@WebParam(targetNamespace = "http://www.vd.ch/uniregctb/webservices/tiers2",
 			partName = "params", name = "GetTiersPeriode") GetTiersPeriode params) throws BusinessException, AccessDeniedException, TechnicalException {
 		if (isEntreprise(params.tiersNumber)) {
@@ -114,6 +119,7 @@ public class TiersWebServiceWithPM implements TiersWebService {
 		}
 	}
 
+	@Transactional(readOnly = true)
 	public TiersHisto getTiersHisto(@WebParam(targetNamespace = "http://www.vd.ch/uniregctb/webservices/tiers2",
 			partName = "params", name = "GetTiersHisto") GetTiersHisto params) throws BusinessException, AccessDeniedException, TechnicalException {
 		if (isEntreprise(params.tiersNumber)) {
@@ -124,6 +130,7 @@ public class TiersWebServiceWithPM implements TiersWebService {
 		}
 	}
 
+	@Transactional(readOnly = true)
 	public BatchTiers getBatchTiers(@WebParam(targetNamespace = "http://www.vd.ch/uniregctb/webservices/tiers2",
 			partName = "params", name = "GetBatchTiers") GetBatchTiers params) throws BusinessException, AccessDeniedException, TechnicalException {
 
@@ -189,6 +196,7 @@ public class TiersWebServiceWithPM implements TiersWebService {
 		return batch;
 	}
 
+	@Transactional(readOnly = true)
 	public BatchTiersHisto getBatchTiersHisto(@WebParam(targetNamespace = "http://www.vd.ch/uniregctb/webservices/tiers2",
 			partName = "params", name = "GetBatchTiersHisto") GetBatchTiersHisto params) throws BusinessException, AccessDeniedException, TechnicalException {
 
@@ -252,6 +260,7 @@ public class TiersWebServiceWithPM implements TiersWebService {
 		return batch;
 	}
 
+	@Transactional(rollbackFor = Throwable.class)
 	public void setTiersBlocRembAuto(@WebParam(targetNamespace = "http://www.vd.ch/uniregctb/webservices/tiers2",
 			partName = "params", name = "SetTiersBlocRembAuto") SetTiersBlocRembAuto params) throws BusinessException, AccessDeniedException, TechnicalException {
 		
@@ -284,15 +293,8 @@ public class TiersWebServiceWithPM implements TiersWebService {
 	 * @param id l'id de la personne morale.
 	 * @return <i>vrai</i> si la personne morale existe; <i>faux</i> autrement.
 	 */
-	public boolean existsPM(Long id) {
+	private boolean existsPM(Long id) {
 		return servicePM.getPersonneMorale(id) != null;
-	}
-
-	/**
-	 * @return la liste de tous les ids des PM existantes.
-	 */
-	public List<Long> getAllIdsPM() {
-		return servicePM.getAllIds();
 	}
 
 	/**

@@ -73,10 +73,10 @@ public class AnnulationDecesListController extends AbstractTiersListController {
 						bean.setNumeroAVS(FormatNumeroHelper.removeSpaceAndDash(bean.getNumeroAVS()));
 					}
 					try {
-						List<TiersIndexedData> results = service.search(bean);
+						List<TiersIndexedData> results = searchTiers(bean);
 						List<TiersIndexedData> filtredResults = new ArrayList<TiersIndexedData>();
 						for (TiersIndexedData tiersIndexedData : results) {
-							PersonnePhysique tiers = (PersonnePhysique) service.getTiers(tiersIndexedData.getNumero());
+							PersonnePhysique tiers = (PersonnePhysique) getTiersSloooow(tiersIndexedData.getNumero());
 							if (tiersService.isDecede(tiers)) {
 								filtredResults.add(tiersIndexedData);
 							}

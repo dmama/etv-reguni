@@ -33,10 +33,6 @@ public class TiersEditValidator implements Validator {
 
 	private IbanValidator ibanValidator;
 
-	public IbanValidator getIbanValidator() {
-		return ibanValidator;
-	}
-
 	public void setIbanValidator(IbanValidator ibanValidator) {
 		this.ibanValidator = ibanValidator;
 	}

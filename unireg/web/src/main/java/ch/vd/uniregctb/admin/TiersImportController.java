@@ -18,6 +18,10 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 import org.dbunit.DatabaseUnitException;
 import org.dbunit.dataset.DataSetException;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.multipart.support.ByteArrayMultipartFileEditor;
@@ -64,6 +68,7 @@ public class TiersImportController extends AbstractSimpleFormController {
 	private DatabaseService dbService;
 
 	private GlobalTiersIndexer globalIndexer;
+	private PlatformTransactionManager transactionManager;
 
 	/**
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest)
@@ -115,12 +120,22 @@ public class TiersImportController extends AbstractSimpleFormController {
 			return new ModelAndView(new RedirectView("/index.do", true));
 		}
 
-		ModelAndView mav = super.showForm(request, response, errors, model);
+		final ModelAndView mav = super.showForm(request, response, errors, model);
 		//HttpSession session = request.getSession();
 
 		mav.addObject("listFilesName", getScriptFilenames());
 		mav.addObject("fileDumps", docService.getDocuments(DatabaseDump.class));
-		mav.getModel().put("tiersCount", dao.getCount(Tiers.class));
+
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
+		template.setReadOnly(true);
+
+		template.execute(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				mav.getModel().put("tiersCount", dao.getCount(Tiers.class));
+				return null;
+			}
+		});
+
 		return mav;
 	}
 
@@ -276,5 +291,9 @@ public class TiersImportController extends AbstractSimpleFormController {
 
 	public void setDbService(DatabaseService dbService) {
 		this.dbService = dbService;
+	}
+
+	public void setTransactionManager(PlatformTransactionManager transactionManager) {
+		this.transactionManager = transactionManager;
 	}
 }

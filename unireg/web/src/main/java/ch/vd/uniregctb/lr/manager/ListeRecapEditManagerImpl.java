@@ -183,6 +183,7 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 	 * @param id
 	 * @return une vue ListeRecapEditView
 	 */
+	@Transactional(readOnly = true)
 	public ListeRecapDetailView get(Long id) {
 		ListeRecapDetailView lrEditView = new ListeRecapDetailView();
 		DeclarationImpotSource lr = lrDAO.get(id);
@@ -222,6 +223,7 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 	 * @param view
 	 * @return
 	 */
+	@Transactional(readOnly = true)
 	public ListeRecapDetailView refresh(ListeRecapDetailView view) {
 		if ( view.getId() == null)
 			return null;
@@ -242,6 +244,7 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 	 * Alimente la vue ListeRecapListView en fonction d'un debiteur
 	 * @return une vue ListeRecapListView
 	 */
+	@Transactional(readOnly = true)
 	public ListeRecapListView findByNumero(Long numero) {
 		ListeRecapListView lrListView = new ListeRecapListView();
 		TiersGeneralView tiersGeneralView = creerDpiLr(numero);
@@ -292,6 +295,7 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 	 * @param numero
 	 * @return
 	 */
+	@Transactional(readOnly = true)
 	public ListeRecapDetailView creerLr(Long numero) {
 		final ListeRecapDetailView lrEditView = new ListeRecapDetailView();
 		lrEditView.setDpi(creerDpiLr(numero));
@@ -696,6 +700,7 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 	 *
 	 * @param id
 	 */
+	@Transactional(readOnly = true)
 	public void controleLR(Long id) {
 		DeclarationImpotSource lr = lrDAO.get(id);
 		if (lr == null) {
@@ -773,6 +778,7 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 		return editiqueResultat.getDocument();
 	}
 
+	@Transactional(readOnly = true)
 	public String envoieImpressionLocalDuplicataLR(ListeRecapDetailView lrEditView) throws Exception {
 		DeclarationImpotSource lr = lrDAO.get(lrEditView.getId());
 		return editiqueService.imprimeLROnline(lr, RegDate.get(), TypeDocument.LISTE_RECAPITULATIVE);

@@ -76,6 +76,7 @@ public class ForFiscalManagerImpl extends TiersManager implements ForFiscalManag
 	 * @throws AdressesResolutionException
 	 * @throws InfrastructureException
 	 */
+	@Transactional(readOnly = true)
 	public TiersEditView getView(Long numero) throws AdresseException, InfrastructureException {
 		TiersEditView tiersEditView = new TiersEditView();
 
@@ -132,6 +133,7 @@ public class ForFiscalManagerImpl extends TiersManager implements ForFiscalManag
 	 * @param id
 	 * @return
 	 */
+	@Transactional(readOnly = true)
 	public ForFiscalView get(Long id) throws Exception {
 		final ForFiscal forFiscal = forFiscalDAO.get(id);
 
@@ -215,6 +217,7 @@ public class ForFiscalManagerImpl extends TiersManager implements ForFiscalManag
 	 * @param id
 	 * @return
 	 */
+	@Transactional(readOnly = true)
 	public ForFiscalView create(Long numeroCtb, boolean dpi) {
 		ForFiscalView forFiscalView = new ForFiscalView();
 		forFiscalView.setChangementModeImposition("false");

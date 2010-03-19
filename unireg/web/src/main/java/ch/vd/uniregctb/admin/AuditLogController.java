@@ -7,6 +7,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.orm.hibernate3.HibernateTemplate;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -27,6 +31,7 @@ public class AuditLogController extends AbstractSimpleFormController {
 	private static final int PAGE_SIZE = 50;
 
 	private AuditLineDAO auditLineDAO;
+	private PlatformTransactionManager transactionManager;
 
 	private List<AuditView> coreToWeb(List<AuditLine> list) {
 		final HibernateTemplate hibernateTemplate = auditLineDAO.getHibernateTemplate();
@@ -66,18 +71,26 @@ public class AuditLogController extends AbstractSimpleFormController {
 		return super.showForm(request, response, errors);
 	}
 
-	private void fillBean(AuditLogBean bean, WebParamPagination pagination) {
-		List<AuditLine> l = auditLineDAO.find(bean.getCriteria(), pagination);
-		List<AuditView> list = coreToWeb(l);
-		bean.setList(list);
-		bean.setTotalSize(auditLineDAO.count(bean.getCriteria()));
-	}
+	private void fillBean(final AuditLogBean bean, final WebParamPagination pagination) {
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
+		template.setReadOnly(true);
 
-	public AuditLineDAO getAuditLineDAO() {
-		return auditLineDAO;
+		template.execute(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				List<AuditLine> l = auditLineDAO.find(bean.getCriteria(), pagination);
+				List<AuditView> list = coreToWeb(l);
+				bean.setList(list);
+				bean.setTotalSize(auditLineDAO.count(bean.getCriteria()));
+				return null;
+			}
+		});
 	}
 
 	public void setAuditLineDAO(AuditLineDAO auditLineDAO) {
 		this.auditLineDAO = auditLineDAO;
+	}
+
+	public void setTransactionManager(PlatformTransactionManager transactionManager) {
+		this.transactionManager = transactionManager;
 	}
 }

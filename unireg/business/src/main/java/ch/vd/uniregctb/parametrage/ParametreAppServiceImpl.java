@@ -26,6 +26,10 @@ import java.util.Map;
 import org.acegisecurity.providers.AbstractAuthenticationToken;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.parametrage.ParametreApp;
@@ -57,7 +61,8 @@ public class ParametreAppServiceImpl implements ParametreAppService, Initializin
 		LOGGER.debug(ParametreAppServiceImpl.class.getName() + " est en adequation avec " + ParametreEnum.class.getName());
 	}
 
-	ParametreAppDAO dao;
+	private ParametreAppDAO dao;
+	private PlatformTransactionManager transactionManager;
 
 	Map<ParametreEnum, ParametreApp> parametres = new HashMap<ParametreEnum, ParametreApp>();
 
@@ -72,23 +77,29 @@ public class ParametreAppServiceImpl implements ParametreAppService, Initializin
 
 		AuthenticationHelper.pushPrincipal(AuthenticationHelper.SYSTEM_USER);
 		try {
-			for (ParametreApp p : dao.getAll()) {
-				try {
-					parametres.put(ParametreEnum.valueOf(p.getNom()), p);
+			final TransactionTemplate template = new TransactionTemplate(transactionManager);
+			template.execute(new TransactionCallback() {
+				public Object doInTransaction(TransactionStatus status) {
+					for (ParametreApp p : dao.getAll()) {
+						try {
+							parametres.put(ParametreEnum.valueOf(p.getNom()), p);
+						}
+						catch (IllegalArgumentException e) {
+							LOGGER.error(p.getNom() + " n'est pas défini dans ParametreEnum", e);
+							throw e;
+						}
+					}
+					for (ParametreEnum p : ParametreEnum.values()) {
+						ParametreApp pa = parametres.get(p);
+						if (pa == null) {
+							pa = new ParametreApp(p.name(), p.getDefaut());
+							parametres.put(p, pa);
+							dao.save(pa);
+						}
+					}
+					return null;
 				}
-				catch (IllegalArgumentException e) {
-					LOGGER.error(p.getNom() + " n'est pas défini dans ParametreEnum", e);
-					throw e;
-				}
-			}
-			for (ParametreEnum p : ParametreEnum.values()) {
-				ParametreApp pa = parametres.get(p);
-				if (pa == null) {
-					pa = new ParametreApp(p.name(), p.getDefaut());
-					parametres.put(p, pa);
-					dao.save(pa);
-				}
-			}
+			});
 		}
 		finally {
 			AuthenticationHelper.popPrincipal();
@@ -214,6 +225,10 @@ public class ParametreAppServiceImpl implements ParametreAppService, Initializin
 
 	public void setDao(ParametreAppDAO dao) {
 		this.dao = dao;
+	}
+
+	public void setTransactionManager(PlatformTransactionManager transactionManager) {
+		this.transactionManager = transactionManager;
 	}
 
 	public void setDelaiAttenteDeclarationImpotPersonneDecedee(Integer val) {

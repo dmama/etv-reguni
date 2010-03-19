@@ -43,6 +43,7 @@ public class IdentificationMessagesEditManagerImpl implements IdentificationMess
 	 * @return la vue
 	 * @throws Exception
 	 */
+	@Transactional(readOnly = true)
 	public IdentificationMessagesEditView getView(Long id) throws Exception {
 		IdentificationMessagesEditView identificationMessagesEditView = new IdentificationMessagesEditView();
 		identificationMessagesEditView.setTypeTiers(TypeTiers.PERSONNE_PHYSIQUE);
@@ -76,6 +77,7 @@ public class IdentificationMessagesEditManagerImpl implements IdentificationMess
 	 * @return la vue du cartouche
 	 * @throws Exception
 	 */
+	@Transactional(readOnly = true)
 	public DemandeIdentificationView getDemandeIdentificationView (Long id) throws Exception {
 
 		IdentificationContribuable identificationContribuable = identCtbDAO.get(id);

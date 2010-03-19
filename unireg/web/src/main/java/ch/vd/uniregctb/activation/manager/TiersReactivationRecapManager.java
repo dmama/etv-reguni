@@ -12,6 +12,7 @@ public interface TiersReactivationRecapManager {
 	 * @param numeroTiers
 	 * @return
 	 */
+	@Transactional(readOnly = true)
 	public TiersReactivationRecapView get(Long numeroTiers);
 
 	/**

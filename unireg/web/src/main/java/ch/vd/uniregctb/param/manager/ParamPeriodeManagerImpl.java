@@ -35,6 +35,7 @@ public class ParamPeriodeManagerImpl implements ParamPeriodeManager {
 	private ParametrePeriodeFiscaleDAO parametrePeriodeFiscaleDAO;
 	private PeriodeFiscaleService periodeFiscaleService;
 
+	@Transactional(readOnly = true)
 	public List<PeriodeFiscale> getAllPeriodeFiscale() {
 		List<PeriodeFiscale> list = periodeFiscaleDAO.getAllDesc();
 		// force le chargment des ParametrePeriodeFiscale
@@ -44,10 +45,12 @@ public class ParamPeriodeManagerImpl implements ParamPeriodeManager {
 		return list;
 	}
 
+	@Transactional(readOnly = true)
 	public List<ModeleDocument> getModeleDocuments (PeriodeFiscale periodeFiscale) {
 		 return modeleDocumentDAO.getByPeriodeFiscale(periodeFiscale);
 	}
 
+	@Transactional(readOnly = true)
 	public List<ModeleFeuilleDocument> getModeleFeuilleDocuments(ModeleDocument modeleDocument) {
 		return modeleFeuilleDocumentDAO.getByModeleDocument(modeleDocument);
 	}
@@ -71,18 +74,22 @@ public class ParamPeriodeManagerImpl implements ParamPeriodeManager {
 
 	}
 
+	@Transactional(readOnly = true)
 	public ParametrePeriodeFiscale getDepenseByPeriodeFiscale(PeriodeFiscale periodeFiscale) {
 		return parametrePeriodeFiscaleDAO.getDepenseByPeriodeFiscale(periodeFiscale);
 	}
 
+	@Transactional(readOnly = true)
 	public ParametrePeriodeFiscale getHorsCantonByPeriodeFiscale(PeriodeFiscale periodeFiscale) {
 		return parametrePeriodeFiscaleDAO.getHorsCantonByPeriodeFiscale(periodeFiscale);
 	}
 
+	@Transactional(readOnly = true)
 	public ParametrePeriodeFiscale getHorsSuisseByPeriodeFiscale(PeriodeFiscale periodeFiscale) {
 		return parametrePeriodeFiscaleDAO.getHorsSuisseByPeriodeFiscale(periodeFiscale);
 	}
 
+	@Transactional(readOnly = true)
 	public ParametrePeriodeFiscale getVaudByPeriodeFiscale(PeriodeFiscale periodeFiscale) {
 		return parametrePeriodeFiscaleDAO.getVaudByPeriodeFiscale(periodeFiscale);
 	}
@@ -153,6 +160,7 @@ public class ParamPeriodeManagerImpl implements ParamPeriodeManager {
 		return mdv;
 	}
 
+	@Transactional(readOnly = true)
 	public ModeleFeuilleDocumentView createModeleFeuilleDocumentViewAdd(Long periodeId, Long modeleId) {
 		ModeleFeuilleDocumentView mfdv = new ModeleFeuilleDocumentView();
 		PeriodeFiscale pf = retrievePeriodeFromDAO(periodeId);
@@ -164,6 +172,7 @@ public class ParamPeriodeManagerImpl implements ParamPeriodeManager {
 		return mfdv;
 	}
 
+	@Transactional(readOnly = true)
 	public ModeleFeuilleDocumentView createModeleFeuilleDocumentViewEdit(Long periodeId, Long modeleId, Long feuilleId) {
 		ModeleFeuilleDocumentView mfdv = createModeleFeuilleDocumentViewAdd(periodeId, modeleId);
 		ModeleFeuilleDocument mfd = retrieveFeuilleFromDAO(feuilleId);

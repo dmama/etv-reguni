@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.activation.manager;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import ch.vd.uniregctb.activation.view.TiersActivationListView;
 
 public interface TiersActivationListManager {

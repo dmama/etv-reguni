@@ -17,6 +17,7 @@ public interface RapportPrestationEditManager {
 	 * @return
 	 * @throws AdressesResolutionException
 	 */
+	@Transactional(readOnly = true)
 	public RapportPrestationView get (Long numeroSrc, Long numeroDpi, String provenance) ;
 
 	/**
@@ -33,6 +34,7 @@ public interface RapportPrestationEditManager {
 	 * @param numeroSrc
 	 * @return
 	 */
+	@Transactional(readOnly = true)
 	public DebiteurListView getDebiteurList(Long numeroSrc) ;
 
 
@@ -42,5 +44,6 @@ public interface RapportPrestationEditManager {
 	 * @param numeroDpi
 	 * @return
 	 */
+	@Transactional(readOnly = true)
 	public SourcierListView getSourcierList(Long numeroDpi) ;
 }

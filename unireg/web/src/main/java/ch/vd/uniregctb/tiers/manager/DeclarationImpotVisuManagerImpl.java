@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
@@ -44,6 +45,7 @@ public class DeclarationImpotVisuManagerImpl implements DeclarationImpotVisuMana
 	 * @param numero
 	 * @return un objet DeclarationImpotOrdinaireView
 	 */
+	@Transactional(readOnly = true)
 	public DeclarationImpotDetailView get(Long numero) {
 		DeclarationImpotDetailView diView = new DeclarationImpotDetailView();
 		DeclarationImpotOrdinaire di = diDAO.get(numero);

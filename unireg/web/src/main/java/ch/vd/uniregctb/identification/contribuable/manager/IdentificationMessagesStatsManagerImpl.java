@@ -10,6 +10,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.support.MessageSourceAccessor;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentCtbDAO;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable;
@@ -55,6 +56,7 @@ public class IdentificationMessagesStatsManagerImpl implements IdentificationMes
 		return identificationMessagesStatsView;
 	}
 
+	@Transactional(readOnly = true)
 	public List<IdentificationMessagesStatsResultView> calculerStats(IdentificationContribuableCriteria bean) {
 		List<IdentificationMessagesStatsResultView> statsView = new ArrayList<IdentificationMessagesStatsResultView>();
 		Map<IdentificationContribuable.Etat, Integer> resultatsStats = identCtbService.calculerStats(bean);

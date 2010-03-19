@@ -13,6 +13,7 @@ public interface SeparationRecapManager {
 	 * @param numero
 	 * @return
 	 */
+	@Transactional(readOnly = true)
 	public SeparationRecapView get(Long numero);
 
 

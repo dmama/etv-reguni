@@ -35,15 +35,13 @@ public class DeclarationImpotEditDelaiController extends AbstractDeclarationImpo
 			throw new AccessDeniedException("vous n'avez pas le droit d'ajouter un delai à une DI");
 		}
 
-		Long idDi = extractLongParam(request, DI_ID_PARAMETER_NAME);
-
-		DelaiDeclarationView  delaiView = diEditManager.creerDelai(idDi);
+		final Long idDi = extractLongParam(request, DI_ID_PARAMETER_NAME);
 
 		// vérification des droits d'accès au dossier du contribuable
-		DeclarationImpotOrdinaire di = getDiDAO().get(delaiView.getIdDeclaration());
-		checkAccesDossierEnEcriture(di.getTiers().getNumero());
+		final Long tiersId = diEditManager.getTiersId(idDi);
+		checkAccesDossierEnEcriture(tiersId);
 
-		return delaiView;
+		return diEditManager.creerDelai(idDi);
 	}
 
 	/**
@@ -78,10 +76,11 @@ public class DeclarationImpotEditDelaiController extends AbstractDeclarationImpo
 		ModelAndView mav = super.onSubmit(request, response, command, errors);
 
 		DelaiDeclarationView delaiView = (DelaiDeclarationView) command;
+		final Long idDI = delaiView.getIdDeclaration();
 
 		// vérification des droits d'accès au dossier du contribuable
-		DeclarationImpotOrdinaire di = getDiDAO().get(delaiView.getIdDeclaration());
-		checkAccesDossierEnEcriture(di.getTiers().getNumero());
+		final Long tiersId = diEditManager.getTiersId(idDI);
+		checkAccesDossierEnEcriture(tiersId);
 
 		diEditManager.saveDelai(delaiView);
 

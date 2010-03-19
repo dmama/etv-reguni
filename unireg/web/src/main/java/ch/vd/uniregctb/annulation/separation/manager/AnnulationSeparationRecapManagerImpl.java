@@ -55,6 +55,7 @@ public class AnnulationSeparationRecapManagerImpl implements AnnulationSeparatio
 	 * @param numero
 	 * @return
 	 */
+	@Transactional(readOnly = true)
 	public AnnulationSeparationRecapView get(Long numero) {
 		AnnulationSeparationRecapView annulationSeparationRecapView =  new AnnulationSeparationRecapView();
 		//FIXME (CGD) impléementer Ifosec

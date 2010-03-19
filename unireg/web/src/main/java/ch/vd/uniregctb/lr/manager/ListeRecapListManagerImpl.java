@@ -5,6 +5,7 @@ import java.util.List;
 
 import ch.vd.uniregctb.adresse.AdresseException;
 import org.apache.log4j.Logger;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.ParamPagination;
@@ -81,6 +82,7 @@ public class ListeRecapListManagerImpl implements ListeRecapListManager{
 	/**
 	 * @see ch.vd.uniregctb.lr.manager.ListeRecapListManager#count(ch.vd.uniregctb.declaration.ListeRecapCriteria)
 	 */
+	@Transactional(readOnly = true)
 	public int count(ListeRecapCriteria lrCriteria) {
 		return lrDAO.count(lrCriteria);
 	}
@@ -88,6 +90,7 @@ public class ListeRecapListManagerImpl implements ListeRecapListManager{
 	/**
 	 * @see ch.vd.uniregctb.lr.manager.ListeRecapListManager#find(ch.vd.uniregctb.declaration.ListeRecapCriteria, ch.vd.uniregctb.common.ParamPagination)
 	 */
+	@Transactional(readOnly = true)
 	public List<ListeRecapDetailView> find(ListeRecapCriteria lrCriteria, ParamPagination paramPagination) throws AdresseException {
 
 		final List<DeclarationImpotSource> bos = lrDAO.find(lrCriteria, paramPagination);

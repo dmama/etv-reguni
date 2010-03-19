@@ -6,6 +6,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -45,6 +49,8 @@ public class ConsultLogController  extends AbstractSimpleFormController {
 	private TacheDAO tacheDAO;
 	private DroitAccesDAO droitAccesDAO;
 
+	private PlatformTransactionManager transactionManager;
+
 	public final static String ID_PARAMETER_NAME = "id";
 	public final static String NATURE_PARAMETER_NAME = "nature";
 	public final static String NATURE_FOR_PARAMETER_VALUE = "ForFiscal";
@@ -63,46 +69,69 @@ public class ConsultLogController  extends AbstractSimpleFormController {
 	/**
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
+	@SuppressWarnings({"UnnecessaryLocalVariable"})
 	@Override
 	protected Object formBackingObject(HttpServletRequest request) throws Exception {
-		ConsultLogView consultLogView = null;
-		String idParam = request.getParameter(ID_PARAMETER_NAME);
-		String nature = request.getParameter(NATURE_PARAMETER_NAME);
 
-		if (idParam != null && !"".equals(idParam.trim())) {
-			Long id = Long.parseLong(idParam);
-			if (nature.equals(NATURE_FOR_PARAMETER_VALUE)) {
-				ForFiscal forFiscal = forFiscalDAO.get(id);
-				consultLogView = fillConsultLogView(forFiscal);
-			} else if (nature.equals(NATURE_SITUATION_PARAMETER_VALUE)) {
-				SituationFamille situationFamille = situationFamilleDAO.get(id);
-				consultLogView = fillConsultLogView(situationFamille);
-			} else if (nature.equals(NATURE_ADRESSE_PARAMETER_VALUE)) {
-				AdresseTiers adresseTiers = adresseTiersDAO.get(id);
-				consultLogView = fillConsultLogView(adresseTiers);
-			} else if (nature.equals(NATURE_RAPPORT_PARAMETER_VALUE)) {
-				RapportEntreTiers rapportEntreTiers = rapportEntreTiersDAO.get(id);
-				consultLogView = fillConsultLogView(rapportEntreTiers);
-			} else if (nature.equals(NATURE_DI_PARAMETER_VALUE)) {
-				DeclarationImpotOrdinaire di = diDAO.get(id);
-				consultLogView = fillConsultLogView(di);
-			} else if (nature.equals(NATURE_LR_PARAMETER_VALUE)) {
-				DeclarationImpotSource lr = lrDAO.get(id);
-				consultLogView = fillConsultLogView(lr);
-			} else if (nature.equals(NATURE_TIERS_PARAMETER_VALUE)) {
-				Tiers tiers = tiersDAO.get(id);
-				consultLogView = fillConsultLogView(tiers);
-			} else if (nature.equals(NATURE_MOUVEMENT_PARAMETER_VALUE)) {
-				MouvementDossier mvt = mouvementDossierDAO.get(id);
-				consultLogView = fillConsultLogView(mvt);
-			} else if (nature.equals(NATURE_TACHE_PARAMETER_VALUE)) {
-				Tache tache = tacheDAO.get(id);
-				consultLogView = fillConsultLogView(tache);
-			} else if (nature.equals(NATURE_DROIT_ACCES_PARAMETER_VALUE)) {
-				DroitAcces droitAcces = droitAccesDAO.get(id);
-				consultLogView = fillConsultLogView(droitAcces);
-			}
+		final String idParam = request.getParameter(ID_PARAMETER_NAME);
+		final String nature = request.getParameter(NATURE_PARAMETER_NAME);
+
+		if (idParam == null || "".equals(idParam.trim())) {
+			return null;
 		}
+
+		final Long id = Long.parseLong(idParam);
+
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
+		template.setReadOnly(true);
+
+		final ConsultLogView consultLogView = (ConsultLogView) template.execute(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				if (nature.equals(NATURE_FOR_PARAMETER_VALUE)) {
+					ForFiscal forFiscal = forFiscalDAO.get(id);
+					return fillConsultLogView(forFiscal);
+				}
+				else if (nature.equals(NATURE_SITUATION_PARAMETER_VALUE)) {
+					SituationFamille situationFamille = situationFamilleDAO.get(id);
+					return fillConsultLogView(situationFamille);
+				}
+				else if (nature.equals(NATURE_ADRESSE_PARAMETER_VALUE)) {
+					AdresseTiers adresseTiers = adresseTiersDAO.get(id);
+					return fillConsultLogView(adresseTiers);
+				}
+				else if (nature.equals(NATURE_RAPPORT_PARAMETER_VALUE)) {
+					RapportEntreTiers rapportEntreTiers = rapportEntreTiersDAO.get(id);
+					return fillConsultLogView(rapportEntreTiers);
+				}
+				else if (nature.equals(NATURE_DI_PARAMETER_VALUE)) {
+					DeclarationImpotOrdinaire di = diDAO.get(id);
+					return fillConsultLogView(di);
+				}
+				else if (nature.equals(NATURE_LR_PARAMETER_VALUE)) {
+					DeclarationImpotSource lr = lrDAO.get(id);
+					return fillConsultLogView(lr);
+				}
+				else if (nature.equals(NATURE_TIERS_PARAMETER_VALUE)) {
+					Tiers tiers = tiersDAO.get(id);
+					return fillConsultLogView(tiers);
+				}
+				else if (nature.equals(NATURE_MOUVEMENT_PARAMETER_VALUE)) {
+					MouvementDossier mvt = mouvementDossierDAO.get(id);
+					return fillConsultLogView(mvt);
+				}
+				else if (nature.equals(NATURE_TACHE_PARAMETER_VALUE)) {
+					Tache tache = tacheDAO.get(id);
+					return fillConsultLogView(tache);
+				}
+				else if (nature.equals(NATURE_DROIT_ACCES_PARAMETER_VALUE)) {
+					DroitAcces droitAcces = droitAccesDAO.get(id);
+					return fillConsultLogView(droitAcces);
+				}
+				return null;
+			}
+		});
+
+
 		return consultLogView;
 	}
 
@@ -129,84 +158,47 @@ public class ConsultLogController  extends AbstractSimpleFormController {
 		return mav;
 	}
 
-	public ForFiscalDAO getForFiscalDAO() {
-		return forFiscalDAO;
-	}
-
 	public void setForFiscalDAO(ForFiscalDAO forFiscalDAO) {
 		this.forFiscalDAO = forFiscalDAO;
-	}
-
-	public SituationFamilleDAO getSituationFamilleDAO() {
-		return situationFamilleDAO;
 	}
 
 	public void setSituationFamilleDAO(SituationFamilleDAO situationFamilleDAO) {
 		this.situationFamilleDAO = situationFamilleDAO;
 	}
 
-	public AdresseTiersDAO getAdresseTiersDAO() {
-		return adresseTiersDAO;
-	}
-
 	public void setAdresseTiersDAO(AdresseTiersDAO adresseTiersDAO) {
 		this.adresseTiersDAO = adresseTiersDAO;
-	}
-
-	public RapportEntreTiersDAO getRapportEntreTiersDAO() {
-		return rapportEntreTiersDAO;
 	}
 
 	public void setRapportEntreTiersDAO(RapportEntreTiersDAO rapportEntreTiersDAO) {
 		this.rapportEntreTiersDAO = rapportEntreTiersDAO;
 	}
 
-	public DeclarationImpotOrdinaireDAO getDiDAO() {
-		return diDAO;
-	}
-
 	public void setDiDAO(DeclarationImpotOrdinaireDAO diDAO) {
 		this.diDAO = diDAO;
-	}
-
-	public ListeRecapitulativeDAO getLrDAO() {
-		return lrDAO;
 	}
 
 	public void setLrDAO(ListeRecapitulativeDAO lrDAO) {
 		this.lrDAO = lrDAO;
 	}
 
-	public TiersDAO getTiersDAO() {
-		return tiersDAO;
-	}
-
 	public void setTiersDAO(TiersDAO tiersDAO) {
 		this.tiersDAO = tiersDAO;
-	}
-
-	public MouvementDossierDAO getMouvementDossierDAO() {
-		return mouvementDossierDAO;
 	}
 
 	public void setMouvementDossierDAO(MouvementDossierDAO mouvementDossierDAO) {
 		this.mouvementDossierDAO = mouvementDossierDAO;
 	}
 
-	public TacheDAO getTacheDAO() {
-		return tacheDAO;
-	}
-
 	public void setTacheDAO(TacheDAO tacheDAO) {
 		this.tacheDAO = tacheDAO;
-	}
-
-	public DroitAccesDAO getDroitAccesDAO() {
-		return droitAccesDAO;
 	}
 
 	public void setDroitAccesDAO(DroitAccesDAO droitAccesDAO) {
 		this.droitAccesDAO = droitAccesDAO;
 	}
 
+	public void setTransactionManager(PlatformTransactionManager transactionManager) {
+		this.transactionManager = transactionManager;
+	}
 }

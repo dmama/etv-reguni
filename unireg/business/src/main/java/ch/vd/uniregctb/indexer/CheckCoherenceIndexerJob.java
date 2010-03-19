@@ -7,6 +7,10 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.StatusManager;
@@ -38,19 +42,29 @@ public class CheckCoherenceIndexerJob extends JobDefinition {
 
 	private GlobalTiersSearcher searcher;
 	private TiersDAO tiersDAO;
+	private PlatformTransactionManager transactionManager;
 
 	public CheckCoherenceIndexerJob(int sortOrder, String description) {
 		super(NAME, CATEGORIE, sortOrder, description, params, defaultParams);
 	}
 
+	@SuppressWarnings({"unchecked"})
 	@Override
 	protected void doExecute(HashMap<String, Object> params) throws Exception {
 
 		final StatusManager statusManager = getStatusManager();
 		statusManager.setMessage("Chargement des tiers de la base de données...", 25);
 
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
+		template.setReadOnly(true);
+
 		// Charge les ids des tiers existants dans la base de données
-		final Set<Long> existingIds = new HashSet<Long>(tiersDAO.getAllIds());
+		final Set<Long> existingIds = (Set<Long>) template.execute(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				return new HashSet<Long>(tiersDAO.getAllIds());
+			}
+		});
+
 		if (statusManager.interrupted()) {
 			LOGGER.warn("Traitement interrompu.");
 			return;
@@ -96,5 +110,9 @@ public class CheckCoherenceIndexerJob extends JobDefinition {
 
 	public void setTiersDAO(TiersDAO tiersDAO) {
 		this.tiersDAO = tiersDAO;
+	}
+
+	public void setTransactionManager(PlatformTransactionManager transactionManager) {
+		this.transactionManager = transactionManager;
 	}
 }

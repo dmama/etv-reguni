@@ -51,6 +51,7 @@ public class AnnulationCoupleRecapManagerImpl implements AnnulationCoupleRecapMa
 	 * @param numero
 	 * @return
 	 */
+	@Transactional(readOnly = true)
 	public AnnulationCoupleRecapView get(Long numero) {
 		AnnulationCoupleRecapView annulationCoupleRecapView =  new AnnulationCoupleRecapView();
 		//FIXME (CGD) impléementer Ifosec

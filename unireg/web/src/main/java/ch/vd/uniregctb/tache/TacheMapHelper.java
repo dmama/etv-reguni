@@ -8,6 +8,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
+
 import ch.vd.uniregctb.common.ApplicationConfig;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.CommonMapHelper;
@@ -31,6 +36,8 @@ public class TacheMapHelper extends CommonMapHelper {
 
     private ServiceSecuriteService serviceSecurite;
 
+	private PlatformTransactionManager transactionManager;
+
 	public void setPeriodeFiscaleDAO(PeriodeFiscaleDAO periodeFiscaleDAO) {
 		this.periodeFiscaleDAO = periodeFiscaleDAO;
 	}
@@ -39,6 +46,9 @@ public class TacheMapHelper extends CommonMapHelper {
 		this.serviceSecurite = serviceSecurite;
 	}
 
+	public void setTransactionManager(PlatformTransactionManager transactionManager) {
+		this.transactionManager = transactionManager;
+	}
 
 	/**
 	 * Initialise la map des periodes fiscales
@@ -46,12 +56,23 @@ public class TacheMapHelper extends CommonMapHelper {
 	 */
 	public Map<Integer, String> initMapPeriodeFiscale() {
 		if (mapPeriodeFiscale == null) {
+
+			TransactionTemplate template = new TransactionTemplate(transactionManager);
+			template.setReadOnly(true);
+
 			final Map<Integer, String> map = new TreeMap<Integer, String>();
-			final List<PeriodeFiscale> periodes = periodeFiscaleDAO.getAllDesc();
-			for (PeriodeFiscale periode : periodes) {
-				final int annee = periode.getAnnee();
-				map.put(annee, Integer.toString(annee));
-			}
+
+			template.execute(new TransactionCallback() {
+				public Object doInTransaction(TransactionStatus status) {
+					final List<PeriodeFiscale> periodes = periodeFiscaleDAO.getAllDesc();
+					for (PeriodeFiscale periode : periodes) {
+						final int annee = periode.getAnnee();
+						map.put(annee, Integer.toString(annee));
+					}
+					return null;
+				}
+			});
+
 			mapPeriodeFiscale = map;
 		}
 		return mapPeriodeFiscale;

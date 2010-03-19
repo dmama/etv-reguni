@@ -2,6 +2,8 @@ package ch.vd.uniregctb.indexer.tiers;
 
 import java.util.List;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.indexer.GlobalIndexInterface;
@@ -72,6 +74,7 @@ public interface GlobalTiersIndexer {
 	 *
 	 * @return le nombre de tiers indexés
 	 */
+	@Transactional(rollbackFor = Throwable.class)
 	public int indexAllDatabaseAsync(StatusManager statusManager, int nbThreads, Mode mode, boolean prefetchIndividus)
 			throws IndexerException;
 

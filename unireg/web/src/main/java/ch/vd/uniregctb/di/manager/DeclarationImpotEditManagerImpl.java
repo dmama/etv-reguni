@@ -129,6 +129,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	 *
 	 * @param id
 	 */
+	@Transactional(readOnly = true)
 	public void controleDI(Long id) {
 		DeclarationImpotOrdinaire di = diDAO.get(id);
 		if (di == null) {
@@ -185,6 +186,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	/**
 	 * {@inheritDoc}
 	 */
+	@Transactional(readOnly = true)
 	public void creerDI(Long numeroCtb, DateRange range, DeclarationImpotDetailView diEditView) {
 
 		// on charge le tiers
@@ -241,6 +243,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	/**
 	 * {@inheritDoc}
 	 */
+	@Transactional(readOnly = true)
 	public List<PeriodeImposition> calculateRangesProchainesDIs(Long numero) throws ValidationException {
 
 		// on charge le tiers
@@ -433,6 +436,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 		return derniere;
 	}
 
+	@Transactional(readOnly = true)
 	public RegDate getDateNewDi(Long numero){
 		RegDate dateNewDi = null;
 
@@ -488,6 +492,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	 * Alimente la vue DeclarationImpotListView en fonction d'un contribuable
 	 * @throws AdressesResolutionException
 	 */
+	@Transactional(readOnly = true)
 	public void findByNumero(Long numero, DeclarationImpotListView diListView) {
 
 		diListView.setContribuable(creerCtbDI(numero));
@@ -516,6 +521,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	 * @return une vue DeclarationImpotEditView
 	 * @throws AdressesResolutionException
 	 */
+	@Transactional(readOnly = true)
 	public void get(Long id, DeclarationImpotDetailView diEditView) {
 
 		DeclarationImpotOrdinaire di = diDAO.get(id);
@@ -550,6 +556,15 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 		}
 
 		diEditView.setSommable(isSommable);
+	}
+
+	@Transactional(readOnly = true)
+	public Long getTiersId(Long idDI) {
+		final DeclarationImpotOrdinaire di = diDAO.get(idDI);
+		if (di == null) {
+			return null;
+		}
+		return di.getTiers().getNumero();
 	}
 
 	private void setDelais(DeclarationImpotDetailView diEditView, DeclarationImpotOrdinaire di) {
@@ -616,6 +631,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	 * @return
 	 * @throws AdressesResolutionException
 	 */
+	@Transactional(readOnly = true)
 	public DeclarationImpotDetailView refresh(DeclarationImpotDetailView diEditView) {
 		DeclarationImpotOrdinaire di = diDAO.get(diEditView.getId());
 		if (di == null) {
@@ -820,6 +836,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	 * @param idDeclaration
 	 * @return
 	 */
+	@Transactional(rollbackFor = Throwable.class)
 	public DelaiDeclarationView creerDelai(Long idDeclaration) {
 		DelaiDeclarationView  delaiView = new DelaiDeclarationView();
 		delaiView.setIdDeclaration(idDeclaration);
@@ -861,6 +878,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	 * @return
 	 * @throws AdressesResolutionException
 	 */
+	@Transactional(readOnly = true)
 	public TiersGeneralView creerCtbDI(Long numero) {
 
 		Tiers tiers = tiersDAO.get(numero);
@@ -922,6 +940,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	 * @param typeDocument
 	 * @return
 	 */
+	@Transactional(readOnly = true)
 	public DeclarationImpotImpressionView getView(Long id, String typeDocument) {
 
 		DeclarationImpotOrdinaire di = diDAO.get(id);
@@ -1035,6 +1054,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 		return docId;
 	}
 
+	@Transactional(rollbackFor = Throwable.class)
 	public byte[] getCopieConformeSommation(DeclarationImpotDetailView diEditView) throws EditiqueException {
 		DeclarationImpotOrdinaire di = diDAO.get(diEditView.getId());
 		String nomDocument = diService.construitIdArchivageSommationDI(di);

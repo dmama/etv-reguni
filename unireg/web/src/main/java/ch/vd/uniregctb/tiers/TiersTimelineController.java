@@ -10,6 +10,10 @@ import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 import org.apache.log4j.Logger;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -41,10 +45,12 @@ public class TiersTimelineController extends AbstractTiersController {
 	private AdresseService adresseService;
 	private TiersService tiersService;
 
+	private PlatformTransactionManager transactionManager;
+
 	@Override
 	protected Object formBackingObject(HttpServletRequest request) throws Exception {
 
-		TiersTimelineView bean = (TiersTimelineView) super.formBackingObject(request);
+		final TiersTimelineView bean = (TiersTimelineView) super.formBackingObject(request);
 
 		Long id = extractLongParam(request, ID_PARAMETER);
 		if (id != null) {
@@ -52,7 +58,16 @@ public class TiersTimelineController extends AbstractTiersController {
 			bean.setTiersId(id);
 		}
 
-		fillTimeline(bean);
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
+		template.setReadOnly(true);
+
+		template.execute(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				fillTimeline(bean);
+				return null;
+			}
+		});
+
 		return bean;
 	}
 
@@ -184,5 +199,9 @@ public class TiersTimelineController extends AbstractTiersController {
 
 	public void setTiersService(TiersService tiersService) {
 		this.tiersService = tiersService;
+	}
+
+	public void setTransactionManager(PlatformTransactionManager transactionManager) {
+		this.transactionManager = transactionManager;
 	}
 }

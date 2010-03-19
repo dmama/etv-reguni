@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.couple.manager;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import ch.vd.uniregctb.couple.view.CoupleListView;
 
 
@@ -17,6 +19,7 @@ public interface CoupleListManager {
 	 * @param numeroPP
 	 * @return une vue CoupleListView
 	 */
+	@Transactional(readOnly = true)
 	public CoupleListView get(Long numeroPP) ;
 
 	/**

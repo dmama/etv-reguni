@@ -2,6 +2,7 @@ package ch.vd.uniregctb.fusion.manager;
 
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
@@ -65,6 +66,7 @@ public class FusionListManagerImpl implements FusionListManager, MessageSourceAw
 	 * @param numeroNonHab
 	 * @return une vue FusionListView
 	 */
+	@Transactional(readOnly = true)
 	public FusionListView get(Long numeroNonHab) {
 		PersonnePhysique nonHab = (PersonnePhysique) tiersDAO.get(numeroNonHab);
 		if (nonHab == null || nonHab.isHabitant()) {

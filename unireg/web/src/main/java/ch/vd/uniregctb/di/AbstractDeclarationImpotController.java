@@ -6,9 +6,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import ch.vd.uniregctb.common.AbstractSimpleFormController;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
 import ch.vd.uniregctb.servlet.ServletService;
-import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersMapHelper;
 
 public class AbstractDeclarationImpotController extends AbstractSimpleFormController {
@@ -19,19 +17,8 @@ public class AbstractDeclarationImpotController extends AbstractSimpleFormContro
 
 	private ServletService servletService;
 
-	private TiersDAO tiersDAO;
-	private DeclarationImpotOrdinaireDAO diDAO;
-
-	public TiersMapHelper getTiersMapHelper() {
-		return tiersMapHelper;
-	}
-
 	public void setTiersMapHelper(TiersMapHelper tiersMapHelper) {
 		this.tiersMapHelper = tiersMapHelper;
-	}
-
-	public DeclarationImpotMapHelper getDiMapHelper() {
-		return diMapHelper;
 	}
 
 	public void setDiMapHelper(DeclarationImpotMapHelper diMapHelper) {
@@ -46,22 +33,6 @@ public class AbstractDeclarationImpotController extends AbstractSimpleFormContro
 		this.servletService = servletService;
 	}
 
-	public TiersDAO getTiersDAO() {
-		return tiersDAO;
-	}
-
-	public void setTiersDAO(TiersDAO tiersDAO) {
-		this.tiersDAO = tiersDAO;
-	}
-
-	public DeclarationImpotOrdinaireDAO getDiDAO() {
-		return diDAO;
-	}
-
-	public void setDiDAO(DeclarationImpotOrdinaireDAO diDAO) {
-		this.diDAO = diDAO;
-	}
-
 	/**
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest)
 	 */
@@ -69,10 +40,10 @@ public class AbstractDeclarationImpotController extends AbstractSimpleFormContro
 	protected Map<String, Object> referenceData(HttpServletRequest request) throws Exception {
 
 		Map<String, Object> data = new HashMap<String, Object>();
-		data.put(ETAT_DOCUMENT_MAP_NAME, getTiersMapHelper().getMapTypeEtatDeclaration());
-		data.put(PERIODE_FISCALE_MAP_NAME, getDiMapHelper().initMapPeriodeFiscale());
-		data.put(TYPE_DECLARATION_IMPOT_MAP_NAME, getTiersMapHelper().getTypesDeclarationImpot());
-		data.put(TYPE_ADRESSE_RETOUR_MAP_NAME, getTiersMapHelper().getTypesAdresseRetour());
+		data.put(ETAT_DOCUMENT_MAP_NAME, tiersMapHelper.getMapTypeEtatDeclaration());
+		data.put(PERIODE_FISCALE_MAP_NAME, diMapHelper.initMapPeriodeFiscale());
+		data.put(TYPE_DECLARATION_IMPOT_MAP_NAME, tiersMapHelper.getTypesDeclarationImpot());
+		data.put(TYPE_ADRESSE_RETOUR_MAP_NAME, tiersMapHelper.getTypesAdresseRetour());
 		return data;
 	}
 

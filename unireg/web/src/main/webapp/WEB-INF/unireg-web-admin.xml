@@ -12,6 +12,7 @@
 		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="docService" ref="docService" />
 		<property name="dbService" ref="databaseService" />
+		<property name="transactionManager" ref="transactionManager" />
 	</bean>
 
 	<!-- Performance -->
@@ -54,6 +55,7 @@
 		<property name="formView" value="admin/audit" />
 		<property name="successView" value="admin/audit" />
 		<property name="auditLineDAO" ref="auditLineDAO" />
+		<property name="transactionManager" ref="transactionManager" />
 	</bean>
 
 	<!-- Dump de la base de donnee -->
@@ -89,22 +91,26 @@
 		<property name="formView" value="admin/evenementExterne/main" />
 		<property name="successView" value="admin/evenementExterne/main.do" />
 		<property name="evenementExterneDAO" ref="evenementExterneDAO" />
+		<property name="transactionManager" ref="transactionManager" />
 	</bean>
+
 	<bean id="quittancementController" class="ch.vd.uniregctb.admin.evenementExterne.QuittancementController" parent="ajaxContainer">
 		<property name="formView" value="admin/evenementExterne/quittancement" />
 		<property name="successView" value="admin/evenementExterne/quittancement.do" />
 		<property name="evenementExterneService" ref="evenementExterneService" />
 
 	</bean>
-	<bean id="rapportTravailController" class="ch.vd.uniregctb.admin.evenementExterne.RapportTravailController"
-		parent="ajaxContainer">
+
+	<bean id="rapportTravailController" class="ch.vd.uniregctb.admin.evenementExterne.RapportTravailController" parent="ajaxContainer">
 		<property name="formView" value="admin/evenementExterne/rapporttravail" />
 		<property name="successView" value="admin/evenementExterne/rapporttravail.do" />
 	</bean>
+
 	<bean id="evolutionController" class="ch.vd.uniregctb.admin.evenementExterne.EvolutionController" parent="ajaxContainer">
 		<property name="formView" value="admin/evenementExterne/evolution" />
 		<property name="successView" value="admin/evenementExterne/evolution.do" />
 	</bean>
+
 	<bean id="civilUnitaireController" class="ch.vd.uniregctb.admin.evenementExterne.CivilUnitaireController" parent="ajaxContainer">
 		<property name="formView" value="admin/evenementExterne/civilunitaire" />
 		<property name="successView" value="admin/evenementExterne/civilunitaire.do" />

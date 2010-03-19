@@ -247,6 +247,7 @@
 	<!--  Paramètres -->
 	<bean id="parametreAppService" class="ch.vd.uniregctb.parametrage.ParametreAppServiceImpl">
 		<property name="dao" ref="parametreAppDAO" />
+		<property name="transactionManager" ref="transactionManager"/>
 	</bean>
 	
 	<bean id="joursFeriesProvider" class="ch.vd.uniregctb.parametrage.JoursFeriesProviderImpl">

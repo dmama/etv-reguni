@@ -2,6 +2,7 @@ package ch.vd.uniregctb.separation.validator;
 
 import java.util.List;
 
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
@@ -29,6 +30,7 @@ public class SeparationRecapValidator implements Validator {
 		return SeparationRecapView.class.equals(clazz) ;
 	}
 
+	@Transactional(readOnly = true)
 	public void validate(Object obj, Errors errors) {
 
 		Assert.isTrue(obj instanceof SeparationRecapView);
@@ -76,16 +78,8 @@ public class SeparationRecapValidator implements Validator {
 		}
 	}
 
-	public MetierService getMetierService() {
-		return metierService;
-	}
-
 	public void setMetierService(MetierService metierService) {
 		this.metierService = metierService;
-	}
-
-	public TiersService getTiersService() {
-		return tiersService;
 	}
 
 	public void setTiersService(TiersService tiersService) {

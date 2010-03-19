@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.di.validator;
 
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
@@ -26,6 +27,7 @@ public class DeclarationImpotEditValidator implements Validator {
 				|| DeclarationImpotSelectView.class.equals(clazz);
 	}
 
+	@Transactional(readOnly = true)
 	public void validate(Object target, Errors errors) {
 
 		if (target instanceof DeclarationImpotDetailView) {

@@ -13,6 +13,7 @@ public interface IdentificationMessagesEditManager {
 	 * @param id
 	 * @return la vue
 	 */
+	@Transactional(readOnly = true)
 	public IdentificationMessagesEditView getView(Long id) throws Exception ;
 
 	/**
@@ -20,6 +21,7 @@ public interface IdentificationMessagesEditManager {
 	 * @param id
 	 * @return la vue du cartouche
 	 */
+	@Transactional(readOnly = true)
 	public DemandeIdentificationView getDemandeIdentificationView (Long id) throws Exception  ;
 
 	/**

@@ -94,7 +94,7 @@ public class UtilisateurListPersonneController extends AbstractTiersListControll
 						bean.setNumeroAVS(FormatNumeroHelper.removeSpaceAndDash(bean.getNumeroAVS()));
 					}
 					try {
-						List<TiersIndexedData> results = service.search(bean);
+						List<TiersIndexedData> results = searchTiers(bean);
 						mav.addObject(PERSONNE_LIST_ATTRIBUTE_NAME, results);
 					}
 					catch (TooManyResultsIndexerException ee) {

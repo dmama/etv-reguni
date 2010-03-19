@@ -21,6 +21,7 @@ public interface DossierEditRestrictionManager {
 	 * @return
 	 * @throws InfrastructureException
 	 */
+	@Transactional(readOnly = true)
 	public DossierEditRestrictionView get(Long numeroPP)  throws InfrastructureException;
 
 	/**

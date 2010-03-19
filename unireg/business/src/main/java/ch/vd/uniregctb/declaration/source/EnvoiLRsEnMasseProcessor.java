@@ -10,6 +10,9 @@ import org.hibernate.Session;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
@@ -137,18 +140,27 @@ public class EnvoiLRsEnMasseProcessor {
 
 	/**
 	 * retourne la liste des dpi ayant une périodicité non ponctuelle
+	 *
 	 * @return itérateur sur les ids des dpi trouvés
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({"unchecked", "UnnecessaryLocalVariable"})
 	protected List<Long> getListDPI() {
 
-		final List<Long> i = (List<Long>) hibernateTemplate.execute(new HibernateCallback() {
-			public Object doInHibernate(Session session) throws HibernateException {
-				final String queryDPI = "SELECT dpi.id FROM DebiteurPrestationImposable AS dpi WHERE dpi.annulationDate IS NULL AND dpi.periodiciteDecompte != :periodicite AND dpi.sansListeRecapitulative <> :sansLr";
-				final Query queryObject = session.createQuery(queryDPI);
-				queryObject.setParameter("periodicite", PeriodiciteDecompte.UNIQUE);
-				queryObject.setParameter("sansLr", Boolean.TRUE);
-				return queryObject.list();
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
+		template.setReadOnly(true);
+
+		final List<Long> i = (List<Long>) template.execute(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				return hibernateTemplate.execute(new HibernateCallback() {
+					public Object doInHibernate(Session session) throws HibernateException {
+						final String queryDPI =
+								"SELECT dpi.id FROM DebiteurPrestationImposable AS dpi WHERE dpi.annulationDate IS NULL AND dpi.periodiciteDecompte != :periodicite AND dpi.sansListeRecapitulative <> :sansLr";
+						final Query queryObject = session.createQuery(queryDPI);
+						queryObject.setParameter("periodicite", PeriodiciteDecompte.UNIQUE);
+						queryObject.setParameter("sansLr", Boolean.TRUE);
+						return queryObject.list();
+					}
+				});
 			}
 		});
 

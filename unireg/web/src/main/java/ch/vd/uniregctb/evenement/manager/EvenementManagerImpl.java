@@ -111,6 +111,7 @@ public class EvenementManagerImpl implements EvenementManager, MessageSourceAwar
 	 * @return
 	 * @throws InfrastructureException
 	 */
+	@Transactional(readOnly = true)
 	public EvenementView get(Long id) throws AdresseException, InfrastructureException {
 
 		final EvenementView evtView = new EvenementView();
@@ -267,6 +268,7 @@ public class EvenementManagerImpl implements EvenementManager, MessageSourceAwar
 	 * @return
 	 * @throws AdressesResolutionException
 	 */
+	@Transactional(readOnly = true)
 	public List<EvenementCivilRegroupeView> find(EvenementCriteriaView bean, WebParamPagination pagination)
 			throws AdresseException {
 		List<EvenementCivilRegroupeView> evtsView = new ArrayList<EvenementCivilRegroupeView>();
@@ -324,6 +326,7 @@ public class EvenementManagerImpl implements EvenementManager, MessageSourceAwar
 	 * @param criterion
 	 * @return
 	 */
+	@Transactional(readOnly = true)
 	public int count(EvenementCriteria criterion) {
 		return evenementService.count(criterion);
 	}

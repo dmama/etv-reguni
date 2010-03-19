@@ -19,6 +19,7 @@ public interface FusionRecapManager {
 	 * @param numeroHabitant
 	 * @return
 	 */
+	@Transactional(readOnly = true)
 	public FusionRecapView get (Long numeroNonHabitant, Long numeroHabitant) ;
 
 	/**

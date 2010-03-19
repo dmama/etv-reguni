@@ -50,6 +50,7 @@ public class MouvementMasseManagerImpl extends AbstractMouvementManagerImpl impl
 		return ca.getNumero();
 	}
 
+	@Transactional(readOnly = true)
 	public List<MouvementDetailView> find(MouvementMasseCriteriaView view, Integer noCollAdmInitiatrice, ParamPagination paramPagination, MutableLong total) throws InfrastructureException {
 
 		if (view == null) {
@@ -97,6 +98,7 @@ public class MouvementMasseManagerImpl extends AbstractMouvementManagerImpl impl
 		}
 	}
 
+	@Transactional(readOnly = true)
 	public List<MouvementDetailView> find(MouvementDossierCriteria criteria) throws InfrastructureException {
 		final List<MouvementDossier> mvts = getMouvementDossierDAO().find(criteria, null);
 		return getViews(mvts);
@@ -116,6 +118,7 @@ public class MouvementMasseManagerImpl extends AbstractMouvementManagerImpl impl
 		}
 	}
 
+	@Transactional(readOnly = true)
 	public List<BordereauListElementView> getProtoBordereaux(Integer noCollAdmInitiatrice) {
 		final List<ProtoBordereauMouvementDossier> protos = getMouvementDossierDAO().getAllProtoBordereaux(noCollAdmInitiatrice);
 		if (protos != null && protos.size() > 0) {
@@ -147,6 +150,7 @@ public class MouvementMasseManagerImpl extends AbstractMouvementManagerImpl impl
 		mouvementService.viderEtDetruireBordereau(mvts);
 	}
 
+	@Transactional(readOnly = true)
 	public List<BordereauEnvoiView> findBordereauxAReceptionner(Integer noCollAdmReceptrice) {
 		final List<BordereauMouvementDossier> bordereaux = bordereauDAO.getBordereauxAReceptionner(noCollAdmReceptrice);
 		if (bordereaux != null && bordereaux.size() > 0) {
@@ -161,6 +165,7 @@ public class MouvementMasseManagerImpl extends AbstractMouvementManagerImpl impl
 		}
 	}
 
+	@Transactional(readOnly = true)
 	public BordereauEnvoiReceptionView getBordereauPourReception(long idBordereau) throws InfrastructureException {
 		final BordereauEnvoiReceptionView view = new BordereauEnvoiReceptionView();
 		final BordereauMouvementDossier bordereau = bordereauDAO.get(idBordereau);
@@ -189,6 +194,7 @@ public class MouvementMasseManagerImpl extends AbstractMouvementManagerImpl impl
 		}
 	}
 
+	@Transactional(readOnly = true)
 	public void refreshView(BordereauEnvoiReceptionView view) throws InfrastructureException {
 		final BordereauMouvementDossier bordereau = bordereauDAO.get(view.getId());
 		fillView(bordereau, view);

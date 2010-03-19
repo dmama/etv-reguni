@@ -24,6 +24,7 @@ public interface TiersVisuManager {
 	 * @return un objet TiersVisuView
 	 * @throws AdressesResolutionException
 	 */
+	@Transactional(readOnly = true)
 	public TiersVisuView getView(Long numero, boolean adresseActive, WebParamPagination webParamPagination) throws AdresseException, InfrastructureException;
 
 	/**
@@ -40,6 +41,7 @@ public interface TiersVisuManager {
 	 * @param numeroDebiteur
 	 * @return
 	 */
+	@Transactional(readOnly = true)
 	public int countRapportsPrestationImposable(Long numeroDebiteur);
 
 }

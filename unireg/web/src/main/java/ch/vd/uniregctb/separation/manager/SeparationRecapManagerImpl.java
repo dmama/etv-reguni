@@ -51,6 +51,7 @@ public class SeparationRecapManagerImpl implements SeparationRecapManager {
 	 * @param numero
 	 * @return
 	 */
+	@Transactional(readOnly = true)
 	public SeparationRecapView get(Long numero) {
 		SeparationRecapView separationRecapView =  new SeparationRecapView();
 		//FIXME (CGD) impléementer Ifosec

@@ -158,8 +158,17 @@ public class ValidationJob extends JobDefinition {
 
 	@SuppressWarnings("unchecked")
 	private List<Long> getCtbIds(final StatusManager statusManager) {
-		final List<Long> ids = tiersDAO.getHibernateTemplate()
-				.find("select cont.numero from Contribuable as cont order by cont.numero asc");
+
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
+		template.setReadOnly(true);
+
+		final List<Long> ids = (List<Long>) template.execute(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				return tiersDAO.getHibernateTemplate()
+						.find("select cont.numero from Contribuable as cont order by cont.numero asc");
+			}
+		});
+
 		statusManager.setMessage(String.format("%d contribuables trouvés", ids.size()));
 		return ids;
 	}

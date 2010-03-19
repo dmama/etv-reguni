@@ -55,6 +55,7 @@ public class AnnulationDecesRecapManagerImpl implements AnnulationDecesRecapMana
 	 * @param numero
 	 * @return
 	 */
+	@Transactional(readOnly = true)
 	public AnnulationDecesRecapView get(Long numero) {
 		AnnulationDecesRecapView annulationDecesRecapView =  new AnnulationDecesRecapView();
 		//FIXME (CGD) impléementer Ifosec

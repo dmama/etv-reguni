@@ -1,9 +1,5 @@
 package ch.vd.uniregctb.evenement.engine;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.fail;
-
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -40,6 +36,10 @@ import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
+
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.fail;
 
 public class EvenementCivilProcessorTest extends BusinessTest {
 
@@ -95,11 +95,18 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 
 		traiteEvenements();
 
-		// Test de l'état des événements;
-		List<EvenementCivilRegroupe> list = evenementCivilDAO.getAll();
-		assertEquals(1, list.size());
-		EvenementCivilRegroupe e = list.get(0);
-		assertEvtState(EtatEvenementCivil.EN_ERREUR, e);
+		doInTransaction(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+
+				// Test de l'état des événements;
+				List<EvenementCivilRegroupe> list = evenementCivilDAO.getAll();
+				assertEquals(1, list.size());
+				EvenementCivilRegroupe e = list.get(0);
+				assertEvtState(EtatEvenementCivil.EN_ERREUR, e);
+
+				return null;
+			}
+		});
 	}
 
 	@NotTransactional
@@ -110,11 +117,18 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 
 		traiteEvenements();
 
-		// Test de l'état des événements;
-		List<EvenementCivilRegroupe> list = evenementCivilDAO.getAll();
-		assertEquals(1, list.size());
-		EvenementCivilRegroupe e = list.get(0);
-		assertEvtState(EtatEvenementCivil.EN_ERREUR, e);
+		doInTransaction(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+
+				// Test de l'état des événements;
+				List<EvenementCivilRegroupe> list = evenementCivilDAO.getAll();
+				assertEquals(1, list.size());
+				EvenementCivilRegroupe e = list.get(0);
+				assertEvtState(EtatEvenementCivil.EN_ERREUR, e);
+
+				return null;
+			}
+		});
 	}
 
 	/**
@@ -128,11 +142,18 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 
 		traiteEvenements();
 
-		// Test de l'état des événements;
-		List<EvenementCivilRegroupe> list = evenementCivilDAO.getAll();
-		assertEquals(1, list.size());
-		EvenementCivilRegroupe e = list.get(0);
-		assertEvtState(EtatEvenementCivil.EN_ERREUR, e);
+		doInTransaction(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+
+				// Test de l'état des événements;
+				List<EvenementCivilRegroupe> list = evenementCivilDAO.getAll();
+				assertEquals(1, list.size());
+				EvenementCivilRegroupe e = list.get(0);
+				assertEvtState(EtatEvenementCivil.EN_ERREUR, e);
+
+				return null;
+			}
+		});
 	}
 
 	@NotTransactional
@@ -143,14 +164,21 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 
 		traiteEvenements();
 
-		// Test de l'état des événements;
-		List<EvenementCivilRegroupe> list = evenementCivilDAO.getAll();
-		assertEquals(1, list.size());
-		EvenementCivilRegroupe e = list.get(0);
-		assertEvtState(EtatEvenementCivil.TRAITE, e);
+		doInTransaction(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
 
-		PersonnePhysique tiers = tiersDAO.getHabitantByNumeroIndividu(983254L);
-		assertNotNull(tiers);
+				// Test de l'état des événements;
+				List<EvenementCivilRegroupe> list = evenementCivilDAO.getAll();
+				assertEquals(1, list.size());
+				EvenementCivilRegroupe e = list.get(0);
+				assertEvtState(EtatEvenementCivil.TRAITE, e);
+
+				PersonnePhysique tiers = tiersDAO.getHabitantByNumeroIndividu(983254L);
+				assertNotNull(tiers);
+
+				return null;
+			}
+		});
 	}
 
 	@NotTransactional
@@ -163,11 +191,18 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 		// Lancement du traitement des événements
 		evenementCivilProcessor.traiteEvenementCivilRegroupe(9002L);
 
-		// Test de l'état des événements;
-		List<EvenementCivilRegroupe> list = evenementCivilDAO.getAll();
-		assertEquals(1, list.size());
-		EvenementCivilRegroupe e = list.get(0);
-		assertEvtState(EtatEvenementCivil.EN_ERREUR, e);
+		doInTransaction(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+
+				// Test de l'état des événements;
+				List<EvenementCivilRegroupe> list = evenementCivilDAO.getAll();
+				assertEquals(1, list.size());
+				EvenementCivilRegroupe e = list.get(0);
+				assertEvtState(EtatEvenementCivil.EN_ERREUR, e);
+
+				return null;
+			}
+		});
 	}
 
 	@NotTransactional
@@ -179,11 +214,18 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 
 		traiteEvenements();
 
-		// Test de l'état des événements;
-		List<EvenementCivilRegroupe> list = evenementCivilDAO.getAll();
-		assertEquals(1, list.size());
-		EvenementCivilRegroupe e = list.get(0);
-		assertEvtState(EtatEvenementCivil.EN_ERREUR, e);
+		doInTransaction(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+
+				// Test de l'état des événements;
+				List<EvenementCivilRegroupe> list = evenementCivilDAO.getAll();
+				assertEquals(1, list.size());
+				EvenementCivilRegroupe e = list.get(0);
+				assertEvtState(EtatEvenementCivil.EN_ERREUR, e);
+
+				return null;
+			}
+		});
 	}
 
 	@NotTransactional
@@ -194,12 +236,19 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 
 		traiteEvenements();
 
-		// Test de l'état des événements;
-		List<EvenementCivilRegroupe> list = evenementCivilDAO.getAll();
-		assertEquals(1, list.size());
-		EvenementCivilRegroupe e = list.get(0);
-		assertEvtState(EtatEvenementCivil.EN_ERREUR, e);
-		assertErreurs(2, e);
+		doInTransaction(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+
+				// Test de l'état des événements;
+				List<EvenementCivilRegroupe> list = evenementCivilDAO.getAll();
+				assertEquals(1, list.size());
+				EvenementCivilRegroupe e = list.get(0);
+				assertEvtState(EtatEvenementCivil.EN_ERREUR, e);
+				assertErreurs(2, e);
+
+				return null;
+			}
+		});
 	}
 
 	@NotTransactional
@@ -226,12 +275,19 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 
 		traiteEvenements();
 
-		// Test de l'état des événements;
-		List<EvenementCivilRegroupe> list = evenementCivilDAO.getAll();
-		assertEquals(1, list.size());
-		EvenementCivilRegroupe e = list.get(0);
-		assertEvtState(EtatEvenementCivil.A_VERIFIER, e);
-		assertWarnings(1, e);
+		doInTransaction(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+
+				// Test de l'état des événements;
+				List<EvenementCivilRegroupe> list = evenementCivilDAO.getAll();
+				assertEquals(1, list.size());
+				EvenementCivilRegroupe e = list.get(0);
+				assertEvtState(EtatEvenementCivil.A_VERIFIER, e);
+				assertWarnings(1, e);
+
+				return null;
+			}
+		});
 	}
 
 	@NotTransactional
@@ -258,12 +314,19 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 
 		traiteEvenements();
 
-		// Test de l'état des événements;
-		List<EvenementCivilRegroupe> list = evenementCivilDAO.getAll();
-		assertEquals(1, list.size());
-		EvenementCivilRegroupe e = list.get(0);
-		assertEvtState(EtatEvenementCivil.EN_ERREUR, e);
-		assertErreurs(1, e);
+		doInTransaction(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+
+				// Test de l'état des événements;
+				List<EvenementCivilRegroupe> list = evenementCivilDAO.getAll();
+				assertEquals(1, list.size());
+				EvenementCivilRegroupe e = list.get(0);
+				assertEvtState(EtatEvenementCivil.EN_ERREUR, e);
+				assertErreurs(1, e);
+
+				return null;
+			}
+		});
 	}
 
 	@NotTransactional
@@ -275,12 +338,19 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 
 		traiteEvenements();
 
-		// Test de l'état des événements;
-		List<EvenementCivilRegroupe> list = evenementCivilDAO.getAll();
-		assertEquals(1, list.size());
-		EvenementCivilRegroupe e = list.get(0);
-		assertEvtState(EtatEvenementCivil.EN_ERREUR, e);
-		assertErreurs(1, e);
+		doInTransaction(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+
+				// Test de l'état des événements;
+				List<EvenementCivilRegroupe> list = evenementCivilDAO.getAll();
+				assertEquals(1, list.size());
+				EvenementCivilRegroupe e = list.get(0);
+				assertEvtState(EtatEvenementCivil.EN_ERREUR, e);
+				assertErreurs(1, e);
+
+				return null;
+			}
+		});
 	}
 
 	@NotTransactional
@@ -303,16 +373,22 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 
 		traiteEvenements();
 
-		// Test de l'état des événements;
-		List<EvenementCivilRegroupe> list = evenementCivilDAO.getAll();
-		assertEquals(1, list.size());
-		EvenementCivilRegroupe e = list.get(0);
-		assertEvtState(EtatEvenementCivil.EN_ERREUR, e);
-		assertErreurs(1, e);
+		doInTransaction(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+
+				// Test de l'état des événements;
+				List<EvenementCivilRegroupe> list = evenementCivilDAO.getAll();
+				assertEquals(1, list.size());
+				EvenementCivilRegroupe e = list.get(0);
+				assertEvtState(EtatEvenementCivil.EN_ERREUR, e);
+				assertErreurs(1, e);
+
+				return null;
+			}
+		});
 	}
 
 	/**
-	 *
 	 * Test l'integration de lévènement départ dans le moteur d'évenement
 	 *
 	 * @throws Exception
@@ -325,6 +401,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 		saveEvenement(9105L, TypeEvenementCivil.DEPART_COMMUNE, RegDate.get(2007, 10, 25), 34567L, null, MockCommune.Cossonay
 				.getNoOFS());
 		traiteEvenements();
+
 		TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.execute(new TransactionCallback() {
 			public Object doInTransaction(TransactionStatus status) {
@@ -339,6 +416,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 		});
 
 	}
+
 	@NotTransactional
 	@Test
 	public void testEvenementsChangementSexe() throws Exception {
@@ -346,7 +424,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 		setUpHabitant();
 
 		// Rech du tiers avant modif
-		TiersCriteria criteria = new TiersCriteria();
+		final TiersCriteria criteria = new TiersCriteria();
 		criteria.setNumero(67919191L);
 
 		// changement du sexe dans le registre civil
@@ -360,24 +438,31 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 
 		traiteEvenements();
 
-		// Test de l'état des événements;
-		List<EvenementCivilRegroupe> listEv = evenementCivilDAO.getAll();
-		assertEquals(1, listEv.size());
-		EvenementCivilRegroupe e = listEv.get(0);
-		assertEvtState(EtatEvenementCivil.TRAITE, e);
+		doInTransaction(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
 
-		// Nouvelle recherche
-		List<TiersIndexedData> lTiers = searcher.search(criteria);
-		Assert.isTrue(lTiers.size() == 1, "L'indexation n'a pas fonctionné");
-		Individu indi = serviceCivil.getIndividu(34567L, RegDate.get().year());
-		MockHistoriqueIndividu histoIndi = (MockHistoriqueIndividu) indi.getDernierHistoriqueIndividu();
+				// Test de l'état des événements;
+				List<EvenementCivilRegroupe> listEv = evenementCivilDAO.getAll();
+				assertEquals(1, listEv.size());
+				EvenementCivilRegroupe e = listEv.get(0);
+				assertEvtState(EtatEvenementCivil.TRAITE, e);
 
-		// on verifie que le changement a bien été effectué
-		Sexe sexeIndi = histoIndi.getSexe();
-		Assert.isTrue(sexeIndi == Sexe.MASCULIN, "le nouveau sexe n'a pas été indexé");
+				// Nouvelle recherche
+				List<TiersIndexedData> lTiers = searcher.search(criteria);
+				Assert.isTrue(lTiers.size() == 1, "L'indexation n'a pas fonctionné");
+				Individu indi = serviceCivil.getIndividu(34567L, RegDate.get().year());
+				MockHistoriqueIndividu histoIndi = (MockHistoriqueIndividu) indi.getDernierHistoriqueIndividu();
 
-		// PersonnePhysique tiers = tiersDAO.getHabitantByNumeroIndividu(983254L);
-		// assertNotNull(tiers);
+				// on verifie que le changement a bien été effectué
+				Sexe sexeIndi = histoIndi.getSexe();
+				Assert.isTrue(sexeIndi == Sexe.MASCULIN, "le nouveau sexe n'a pas été indexé");
+
+				// PersonnePhysique tiers = tiersDAO.getHabitantByNumeroIndividu(983254L);
+				// assertNotNull(tiers);
+
+				return null;
+			}
+		});
 	}
 
 	/**
@@ -385,7 +470,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 	 */
 	@NotTransactional
 	@Test
-	public void testRetraitementPlusieursEvenementsCivil() {
+	public void testRetraitementPlusieursEvenementsCivil() throws Exception {
 
 		final long noIndividu = 34567L; // Sophie Dupuis
 
@@ -396,29 +481,37 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 				.getNoOFS());
 
 		evenementCivilProcessor.traiteEvenementsCivilsRegroupes(null);
-		{
-			final List<EvenementCivilRegroupe> list = evenementCivilDAO.getAll();
-			assertNotNull(list);
-			sortEvenements(list);
-			assertEquals(2, list.size());
-			assertEvenement(9000, TypeEvenementCivil.CHGT_CORREC_NOM_PRENOM, EtatEvenementCivil.EN_ERREUR, list.get(0));
-			assertEvenement(9001, TypeEvenementCivil.CHGT_CORREC_NOM_PRENOM, EtatEvenementCivil.EN_ERREUR, list.get(1));
-		}
+
+		doInTransaction(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final List<EvenementCivilRegroupe> list = evenementCivilDAO.getAll();
+				assertNotNull(list);
+				sortEvenements(list);
+				assertEquals(2, list.size());
+				assertEvenement(9000, TypeEvenementCivil.CHGT_CORREC_NOM_PRENOM, EtatEvenementCivil.EN_ERREUR, list.get(0));
+				assertEvenement(9001, TypeEvenementCivil.CHGT_CORREC_NOM_PRENOM, EtatEvenementCivil.EN_ERREUR, list.get(1));
+				return null;
+			}
+		});
 
 		// Arrivée de l'événement d'arrivée -> ce dernier doit être traité et provoquer le retraitement des événements de changement de nom
 		saveEvenement(9002L, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HS, RegDate.get(1980, 11, 2), noIndividu, null, MockCommune.Lausanne
 				.getNoOFS());
 
 		evenementCivilProcessor.traiteEvenementCivilRegroupe(9002L);
-		{
-			final List<EvenementCivilRegroupe> list = evenementCivilDAO.getAll();
-			assertNotNull(list);
-			sortEvenements(list);
-			assertEquals(3, list.size());
-			assertEvenement(9000, TypeEvenementCivil.CHGT_CORREC_NOM_PRENOM, EtatEvenementCivil.TRAITE, list.get(0));
-			assertEvenement(9001, TypeEvenementCivil.CHGT_CORREC_NOM_PRENOM, EtatEvenementCivil.TRAITE, list.get(1));
-			assertEvenement(9002, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HS, EtatEvenementCivil.TRAITE, list.get(2));
-		}
+
+		doInTransaction(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final List<EvenementCivilRegroupe> list = evenementCivilDAO.getAll();
+				assertNotNull(list);
+				sortEvenements(list);
+				assertEquals(3, list.size());
+				assertEvenement(9000, TypeEvenementCivil.CHGT_CORREC_NOM_PRENOM, EtatEvenementCivil.TRAITE, list.get(0));
+				assertEvenement(9001, TypeEvenementCivil.CHGT_CORREC_NOM_PRENOM, EtatEvenementCivil.TRAITE, list.get(1));
+				assertEvenement(9002, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HS, EtatEvenementCivil.TRAITE, list.get(2));
+				return null;
+			}
+		});
 	}
 
 	/**
@@ -434,17 +527,22 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 
 	// ********************************************************************
 
-	private void saveEvenement(long id, TypeEvenementCivil type, RegDate date, Long indPri, Long indSec, int ofs) {
+	private void saveEvenement(final long id, final TypeEvenementCivil type, final RegDate date, final Long indPri, final Long indSec, final int ofs) throws Exception {
 
-		EvenementCivilRegroupe evt = new EvenementCivilRegroupe();
-		evt.setId(id);
-		evt.setType(type);
-		evt.setDateEvenement(date);
-		evt.setEtat(EtatEvenementCivil.A_TRAITER);
-		evt.setNumeroIndividuPrincipal(indPri);
-		evt.setNumeroIndividuConjoint(indSec);
-		evt.setNumeroOfsCommuneAnnonce(ofs);
-		evt = evenementCivilDAO.save(evt);
+		doInTransaction(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				EvenementCivilRegroupe evt = new EvenementCivilRegroupe();
+				evt.setId(id);
+				evt.setType(type);
+				evt.setDateEvenement(date);
+				evt.setEtat(EtatEvenementCivil.A_TRAITER);
+				evt.setNumeroIndividuPrincipal(indPri);
+				evt.setNumeroIndividuConjoint(indSec);
+				evt.setNumeroOfsCommuneAnnonce(ofs);
+				evt = evenementCivilDAO.save(evt);
+				return evt;
+			}
+		});
 	}
 
 	private void assertErreurs(int expected, EvenementCivilRegroupe e) {

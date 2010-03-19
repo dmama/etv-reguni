@@ -22,6 +22,7 @@ public class ParamApplicationManagerImpl implements ParamApplicationManager{
 	/**
 	 * @inherit
 	 */
+	@Transactional(readOnly = true)
 	public ParamApplicationView getForm() {
 		ParamApplicationView form = new ParamApplicationView();
 		ParametreEnum.copyProperties(service, form);
@@ -51,6 +52,7 @@ public class ParamApplicationManagerImpl implements ParamApplicationManager{
 	/* (non-Javadoc)
 	 * @see ch.vd.uniregctb.param.manager.ParamApplicationManager#getDefaut(ch.vd.uniregctb.parametrage.ParametreEnum)
 	 */
+	@Transactional(readOnly = true)
 	public String getDefaut(ParametreEnum param) {
 		return service.getDefaut(param);
 	}

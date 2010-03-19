@@ -7,6 +7,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
@@ -51,6 +52,7 @@ public class ListeRecapVisuManagerImpl implements ListeRecapVisuManager,MessageS
 	 * @return un objet ListeRecapitulativeView
 	 * @throws AdressesResolutionException
 	 */
+	@Transactional(readOnly = true)
 	public ListeRecapDetailView get(Long numero) {
 		ListeRecapDetailView lrView = new ListeRecapDetailView();
 		DeclarationImpotSource lr = lrDAO.get(numero);

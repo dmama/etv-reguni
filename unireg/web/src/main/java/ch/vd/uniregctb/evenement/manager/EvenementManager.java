@@ -29,6 +29,7 @@ public interface EvenementManager {
 	 * @return
 	 * @throws AdressesResolutionException
 	 */
+	@Transactional(readOnly = true)
 	public EvenementView get(Long id) throws AdresseException, InfrastructureException;
 
 	/**
@@ -53,6 +54,7 @@ public interface EvenementManager {
 	 * @return
 	 * @throws AdressesResolutionException
 	 */
+	@Transactional(readOnly = true)
 	public List<EvenementCivilRegroupeView> find(EvenementCriteriaView bean, WebParamPagination pagination) throws AdresseException;
 
 	/**
@@ -60,6 +62,7 @@ public interface EvenementManager {
 	 * @param criterion
 	 * @return
 	 */
+	@Transactional(readOnly = true)
 	public int count(EvenementCriteria criterion);
 
 }

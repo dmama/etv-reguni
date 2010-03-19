@@ -4,6 +4,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.Transactional;
+
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
 
@@ -29,6 +32,7 @@ public class DeclarationImpotMapHelper {
 	 * Initialise la map des periodes fiscales
 	 * @return une map
 	 */
+	@Transactional(readOnly = true)
 	public Map<String, String> initMapPeriodeFiscale() {
 		Map<String, String> mapPeriodeFiscale = new TreeMap<String, String>();
 		List<PeriodeFiscale> periodes = periodeFiscaleDAO.getAllDesc();

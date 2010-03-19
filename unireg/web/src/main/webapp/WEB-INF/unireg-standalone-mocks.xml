@@ -75,6 +75,7 @@
 		<property name="droitAccesDAO" ref="droitAccesDAO" />
 		<property name="uniregCacheManager" ref="uniregCacheManager" />
 		<property name="preloadTiersIds" value="${extprop.cache.preload.tiers.ids}"/>
+		<property name="transactionManager" ref="transactionManager" />
 	</bean>
 
 </beans>

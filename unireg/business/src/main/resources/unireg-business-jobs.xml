@@ -53,6 +53,7 @@
         <constructor-arg value="Vérifier la cohérence des données de l'indexer"/>
         <property name="searcher" ref="globalTiersSearcher"/>
         <property name="tiersDAO" ref="tiersDAO"/>
+		<property name="transactionManager" ref="transactionManager"/>
     </bean>
 
     <!-- Job qui recalcul l'OID de chaque tiers -->
@@ -302,6 +303,7 @@
         <property name="dbService" ref="databaseService"/>
         <property name="docService" ref="docService"/>
         <property name="tiersDAO" ref="tiersDAO"/>
+		<property name="transactionManager" ref="transactionManager"/>
     </bean>
 
     <bean id="loadDatabaseJob" parent="schedulerJob" class="ch.vd.uniregctb.database.LoadDatabaseJob">

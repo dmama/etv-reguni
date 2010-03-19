@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
@@ -41,6 +42,7 @@ public class ForFiscalValidator implements Validator {
 		return ForFiscalView.class.equals(clazz) ;
 	}
 
+	@Transactional(readOnly = true)
 	public void validate(Object obj, Errors errors) {
 		ForFiscalView forFiscalView = (ForFiscalView) obj;
 		TypeForFiscal typeFor = TypeForFiscal.getType(forFiscalView.getGenreImpot(), forFiscalView.getMotifRattachement());

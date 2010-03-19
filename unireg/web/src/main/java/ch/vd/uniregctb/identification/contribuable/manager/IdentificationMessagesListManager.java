@@ -25,6 +25,7 @@ public interface IdentificationMessagesListManager {
 	 * @throws AdressesResolutionException
 	 * @throws InfrastructureException
 	 */
+	@Transactional(readOnly = true)
 	public List<IdentificationMessagesResultView> find(IdentificationContribuableCriteria bean, WebParamPagination pagination, boolean nonTraiteOnly, boolean archiveOnly,boolean nonTraiterAndSuspendu)
 	throws AdressesResolutionException, InfrastructureException ;
 
@@ -36,6 +37,7 @@ public interface IdentificationMessagesListManager {
 	 * @param nonTraiterAndSuspendu TODO
 	 * @return
 	 */
+	@Transactional(readOnly = true)
 	public int count(IdentificationContribuableCriteria criterion, boolean nonTraiteOnly, boolean archiveOnly,boolean nonTraiterAndSuspendu) ;
 
 	/**
@@ -86,6 +88,7 @@ public interface IdentificationMessagesListManager {
 	 * @param criterion
 	 * @return
 	 */
+	@Transactional(readOnly = true)
 	public int countEnCoursSeul(IdentificationContribuableCriteria criterion);
 
 
@@ -98,6 +101,7 @@ public interface IdentificationMessagesListManager {
 	 * @throws EditiqueException
 	 */
 
+	@Transactional(rollbackFor = Throwable.class)
 	public void ResoumettreIdentificationMessages(IdentificationMessagesListView bean);
 
 }

@@ -16,6 +16,7 @@ public interface ContribuableAssocieEditManager {
 	 * @return une RapportView
 	 * @throws AdressesResolutionException
 	 */
+	@Transactional(readOnly = true)
 	public ContribuableAssocieEditView get (Long numeroDebiteur, Long numeroContribuable) throws AdressesResolutionException;
 
 	/**
@@ -32,5 +33,6 @@ public interface ContribuableAssocieEditManager {
 	 * @param numeroDpi
 	 * @return
 	 */
+	@Transactional(readOnly = true)
 	public ContribuableAssocieListView getContribuableList(Long numeroDpi) ;
 }

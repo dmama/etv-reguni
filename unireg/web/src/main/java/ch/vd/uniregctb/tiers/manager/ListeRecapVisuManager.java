@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.tiers.manager;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import ch.vd.uniregctb.lr.view.ListeRecapDetailView;
 
 /**
@@ -16,6 +18,7 @@ public interface ListeRecapVisuManager {
 	 * @param numero
 	 * @return un objet ListeRecapDetailView
 	 */
+	@Transactional(readOnly = true)
 	public ListeRecapDetailView get(Long numero) ;
 
 }

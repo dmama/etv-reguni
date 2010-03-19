@@ -103,18 +103,8 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		setDataSource(getBean(DataSource.class, "dataSource"));
 		hibernateTemplate = getBean(HibernateTemplate.class, "hibernateTemplate");
 
-		try {
-			truncateDatabase();
-			doLoadDatabase();
-		}
-		catch (Exception e) {
-			throw new RuntimeException(e);
-		}
+		truncateDatabase();
 	}
-	// Can be overriden
-	protected void doLoadDatabase() throws Exception {
-	}
-
 
 	public void setDataSource(DataSource dataSource) {
 		this.dataSource = dataSource;

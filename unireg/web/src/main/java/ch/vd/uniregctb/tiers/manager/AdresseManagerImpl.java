@@ -51,6 +51,7 @@ public class AdresseManagerImpl extends TiersManager implements AdresseManager {
 	 * @param numero
 	 * @return
 	 */
+	@Transactional(readOnly = true)
 	public AdresseView getAdresseView(Long id) {
 		AdresseView adresseView = new AdresseView();
 		AdresseTiers adresseTiers = getAdresseTiersDAO().get(id);
@@ -75,6 +76,7 @@ public class AdresseManagerImpl extends TiersManager implements AdresseManager {
 	 * @param id
 	 * @return
 	 */
+	@Transactional(readOnly = true)
 	public AdresseView create(Long numeroCtb) {
 		AdresseView adresseView = new AdresseView();
 		adresseView.setNumCTB(numeroCtb);
@@ -679,6 +681,7 @@ public class AdresseManagerImpl extends TiersManager implements AdresseManager {
 	 * @throws AdresseException
 	 * @throws InfrastructureException
 	 */
+	@Transactional(readOnly = true)
 	public TiersEditView getView(Long numero) throws AdresseException, InfrastructureException{
 
 		if ( numero == null) {

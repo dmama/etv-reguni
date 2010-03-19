@@ -10,6 +10,7 @@ import net.sf.ehcache.CacheManager;
 import org.junit.Test;
 import org.springframework.test.annotation.NotTransactional;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
@@ -71,7 +72,7 @@ public class EvenementCivilTest extends BusinessTest {
 		final CacheManager cacheManager = getBean(CacheManager.class, "ehCacheManager");
 		assertNotNull(cacheManager);
 
-		ServiceCivilCache cache = new ServiceCivilCache();
+		final ServiceCivilCache cache = new ServiceCivilCache();
 		cache.setCacheManager(cacheManager);
 		cache.setCacheName("serviceCivil");
 		serviceCivil.setUp(cache);
@@ -139,15 +140,22 @@ public class EvenementCivilTest extends BusinessTest {
 		});
 
 		// L'événement civil doit avoir été traité
-		final List<EvenementCivilUnitaire> evsCivils = evenementCivilUnitaireDAO.getAll();
-		assertNotNull(evsCivils);
-		assertEquals(1, evsCivils.size());
-		assertEquals(EtatEvenementCivil.TRAITE, evsCivils.get(0).getEtat());
+		doInTransaction(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
 
-		// On vérifie que le tiers a bien été mis-à-jour dans le cache ...
-		assertNomIndividu("Jacquard", "Jean", cache, jeanNoInd);
-		// ... mais que l'indexeur est toujours sur l'ancien nom puisque l'événement regroupé n'a pas encore été traité
-		assertNomIndexer("Jacquouille", "Jean", jeanId);
+				final List<EvenementCivilUnitaire> evsCivils = evenementCivilUnitaireDAO.getAll();
+				assertNotNull(evsCivils);
+				assertEquals(1, evsCivils.size());
+				assertEquals(EtatEvenementCivil.TRAITE, evsCivils.get(0).getEtat());
+
+				// On vérifie que le tiers a bien été mis-à-jour dans le cache ...
+				assertNomIndividu("Jacquard", "Jean", cache, jeanNoInd);
+				// ... mais que l'indexeur est toujours sur l'ancien nom puisque l'événement regroupé n'a pas encore été traité
+				assertNomIndexer("Jacquouille", "Jean", jeanId);
+
+				return null;
+			}
+		});
 
 		/*
 		 * Traitement de l'événement de changement de nom
@@ -157,15 +165,22 @@ public class EvenementCivilTest extends BusinessTest {
 		evenementCivilProcessor.traiteEvenementsCivilsRegroupes(null);
 
 		// L'événement regroupé doit avoir été traité
-		final List<EvenementCivilRegroupe> evsRegroupes = evenementCivilRegroupeDAO.getAll();
-		assertNotNull(evsRegroupes);
-		assertEquals(1, evsRegroupes.size());
-		assertEquals(EtatEvenementCivil.TRAITE, evsRegroupes.get(0).getEtat());
+		doInTransaction(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
 
-		// On vérifie que le tiers a bien été mis-à-jour dans l'indexeur ...
-		assertNomIndexer("Jacquard", "Jean", jeanId);
-		// ... et que l'individu est toujours correct dans le cache
-		assertNomIndividu("Jacquard", "Jean", cache, jeanNoInd);
+				final List<EvenementCivilRegroupe> evsRegroupes = evenementCivilRegroupeDAO.getAll();
+				assertNotNull(evsRegroupes);
+				assertEquals(1, evsRegroupes.size());
+				assertEquals(EtatEvenementCivil.TRAITE, evsRegroupes.get(0).getEtat());
+
+				// On vérifie que le tiers a bien été mis-à-jour dans l'indexeur ...
+				assertNomIndexer("Jacquard", "Jean", jeanId);
+				// ... et que l'individu est toujours correct dans le cache
+				assertNomIndividu("Jacquard", "Jean", cache, jeanNoInd);
+
+				return null;
+			}
+		});
 	}
 
 	private void assertNomIndexer(String nom, String prenom, final Long tiersId) {

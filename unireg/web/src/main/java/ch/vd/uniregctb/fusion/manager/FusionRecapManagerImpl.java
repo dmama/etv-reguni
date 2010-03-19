@@ -74,6 +74,7 @@ public class FusionRecapManagerImpl implements FusionRecapManager, MessageSource
 	 * @param numeroHabitant
 	 * @return
 	 */
+	@Transactional(readOnly = true)
 	public FusionRecapView get (Long numeroNonHabitant, Long numeroHabitant) {
 		FusionRecapView fusionRecapView =  new FusionRecapView();
 

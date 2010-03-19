@@ -17,6 +17,7 @@ public interface UtilisateurEditRestrictionManager {
 	 * @return
 	 * @throws InfrastructureException
 	 */
+	@Transactional(readOnly = true)
 	public UtilisateurEditRestrictionView get(long noIndividuOperateur) throws InfrastructureException, AdresseException;
 
 
@@ -29,6 +30,7 @@ public interface UtilisateurEditRestrictionManager {
 	 * @throws InfrastructureException
 	 * @throws AdressesResolutionException
 	 */
+	@Transactional(readOnly = true)
 	public RecapPersonneUtilisateurView get(Long numeroPP, Long noIndividuOperateur) throws InfrastructureException, AdressesResolutionException ;
 
 

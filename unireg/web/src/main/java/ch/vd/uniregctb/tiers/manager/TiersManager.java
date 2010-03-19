@@ -1515,8 +1515,9 @@ public class TiersManager implements MessageSourceAware {
 	 * @param numeroDebiteur
 	 * @return
 	 */
+	@Transactional(readOnly = true)
 	public int countRapportsPrestationImposable(Long numeroDebiteur){
-		return getRapportEntreTiersDAO().countRapportsPrestationImposable(numeroDebiteur);
+		return rapportEntreTiersDAO.countRapportsPrestationImposable(numeroDebiteur);
 	}
 
 	public HostCivilService getHostCivilService() {

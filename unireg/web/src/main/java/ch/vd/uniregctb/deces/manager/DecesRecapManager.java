@@ -17,6 +17,7 @@ public interface DecesRecapManager {
 	 * @param numero
 	 * @return
 	 */
+	@Transactional(readOnly = true)
 	public DecesRecapView get(Long numero);
 
 

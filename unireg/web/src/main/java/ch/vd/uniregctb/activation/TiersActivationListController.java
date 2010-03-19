@@ -76,7 +76,7 @@ public class TiersActivationListController extends AbstractTiersListController {
 				if (bean != null && !bean.isEmpty()) {
 					LOGGER.debug("Critères de recherche=" + bean);
 					try {
-						List<TiersIndexedData> results = service.search(bean);
+						List<TiersIndexedData> results = searchTiers(bean);
 						mav.addObject(ACTIVATION_LIST_ATTRIBUTE_NAME, results);
 					}
 					catch (TooManyResultsIndexerException ee) {

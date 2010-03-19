@@ -81,6 +81,7 @@ public class IdentificationMessagesListManagerImpl implements IdentificationMess
 	 * @throws AdressesResolutionException
 	 * @throws InfrastructureException
 	 */
+	@Transactional(readOnly = true)
 	public List<IdentificationMessagesResultView> find(IdentificationContribuableCriteria bean, WebParamPagination pagination, boolean nonTraiteOnly, boolean archiveOnly, boolean nonTraiterAndSuspendu)
 			throws AdressesResolutionException, InfrastructureException {
 		List<IdentificationMessagesResultView> identificationsView = new ArrayList<IdentificationMessagesResultView>();
@@ -113,6 +114,7 @@ public class IdentificationMessagesListManagerImpl implements IdentificationMess
 	 * @param criterion
 	 * @return
 	 */
+	@Transactional(readOnly = true)
 	public int count(IdentificationContribuableCriteria criterion, boolean nonTraiteOnly, boolean archiveOnly, boolean nonTraiterAndSuspendu) {
 		return identCtbService.count(criterion, nonTraiteOnly, archiveOnly, nonTraiterAndSuspendu);
 	}
@@ -122,6 +124,7 @@ public class IdentificationMessagesListManagerImpl implements IdentificationMess
 	 * @param criterion
 	 * @return
 	 */
+	@Transactional(readOnly = true)
 	public int countEnCoursSeul(IdentificationContribuableCriteria criterion) {
 		criterion.setEtatMessage(Etat.A_TRAITER_MANUELLEMENT.name());
 		return identCtbService.count(criterion, false, false, false);

@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.*;
@@ -59,6 +61,7 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 	 * @return un objet TiersVisuView
 	 * @throws AdressesResolutionException
 	 */
+	@Transactional(readOnly = true)
 	public TiersVisuView getView(Long numero, boolean adressesHisto, WebParamPagination webParamPagination) throws AdresseException, InfrastructureException {
 
 		TiersVisuView tiersVisuView = new TiersVisuView();

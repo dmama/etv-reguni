@@ -57,6 +57,7 @@ public class DossierEditRestrictionManagerImpl implements DossierEditRestriction
 	 * @return
 	 * @throws InfrastructureException
 	 */
+	@Transactional(readOnly = true)
 	public DossierEditRestrictionView get(Long numeroPP) throws InfrastructureException {
 		PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(numeroPP);
 

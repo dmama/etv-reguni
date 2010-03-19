@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.tiers.manager;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.individu.IndividuView;
@@ -9,6 +11,7 @@ import ch.vd.uniregctb.utils.WebContextUtils;
 
 public class CivilDataManagerImpl extends TiersManager implements CivilDataManager {
 
+	@Transactional(readOnly = true)
 	public IndividuView getIndividuView(Long numero) throws AdressesResolutionException, InfrastructureException {
 
 		IndividuView individuView = null;

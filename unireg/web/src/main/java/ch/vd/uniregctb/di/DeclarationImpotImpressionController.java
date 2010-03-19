@@ -104,8 +104,9 @@ public class DeclarationImpotImpressionController  extends AbstractDeclarationIm
 
 		// vérification des droits d'accès au dossier du contribuable
 		if (diImpressionView != null) {
-			DeclarationImpotOrdinaire di = getDiDAO().get(diImpressionView.getIdDI());
-			checkAccesDossierEnEcriture(di.getTiers().getNumero());
+			final Long idDi = diImpressionView.getIdDI();
+			final Long tiersId = diEditManager.getTiersId(idDi);
+			checkAccesDossierEnEcriture(tiersId);
 		}
 
 		return diImpressionView;
@@ -139,8 +140,9 @@ public class DeclarationImpotImpressionController  extends AbstractDeclarationIm
 		String action = request.getParameter(ACTION_PARAMETER_NAME);
 		DeclarationImpotImpressionView bean = (DeclarationImpotImpressionView) command;
 
-		DeclarationImpotOrdinaire di = getDiDAO().get(bean.getIdDI());
-		checkAccesDossierEnEcriture(di.getTiers().getNumero());
+		final Long idDi = bean.getIdDI();
+		final Long tiersId = diEditManager.getTiersId(idDi);
+		checkAccesDossierEnEcriture(tiersId);
 
 		if(action.equals(EFFACER_PARAMETER_VALUE)) {
 

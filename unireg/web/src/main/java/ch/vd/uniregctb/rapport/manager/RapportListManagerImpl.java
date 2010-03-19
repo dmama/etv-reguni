@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.rapport.manager;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.general.view.TiersGeneralView;
 import ch.vd.uniregctb.rapport.view.RapportListView;
@@ -22,6 +24,7 @@ public class RapportListManagerImpl extends TiersManager implements RapportListM
 	 * @param numero
 	 * @return une vue RapportListView
 	 */
+	@Transactional(readOnly = true)
 	public RapportListView get(Long numero) {
 		Tiers tiers = tiersService.getTiers(numero);
 

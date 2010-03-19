@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.couple.manager;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.couple.view.CoupleListView;
 import ch.vd.uniregctb.general.view.TiersGeneralView;
@@ -28,6 +30,7 @@ public class CoupleListManagerImpl extends TiersManager implements CoupleListMan
 	 * @param numeroPP
 	 * @return une vue CoupleListView
 	 */
+	@Transactional(readOnly = true)
 	public CoupleListView get(Long numeroPP) {
 		Tiers tiers = tiersService.getTiers(numeroPP) ;
 		if (tiers == null) {

@@ -16,6 +16,7 @@ public interface CopieDroitAccesManager {
 	 * @return
 	 * @throws AdressesResolutionException
 	 */
+	@Transactional(readOnly = true)
 	public ConfirmCopieView get(long noOperateurReference, long noOperateurDestination) throws AdresseException;
 
 	/**

@@ -19,6 +19,7 @@ public interface MouvementEditManager extends AbstractMouvementManager {
 	 * @param seulementTraites si levé, signifie que les mouvements de masse non "traités" ne sont pas pris en compte
 	 * @return une vue MouvementListView
 	 */
+	@Transactional(readOnly = true)
 	public abstract MouvementListView findByNumeroDossier(Long numero, boolean seulementTraites) throws InfrastructureException;
 
 	/**
@@ -27,6 +28,7 @@ public interface MouvementEditManager extends AbstractMouvementManager {
 	 * @param numero
 	 * @return
 	 */
+	@Transactional(readOnly = true)
 	public MouvementDetailView creerMvt(Long numero) ;
 
 	/**
@@ -36,6 +38,7 @@ public interface MouvementEditManager extends AbstractMouvementManager {
 	 * @param idTache
 	 * @return
 	 */
+	@Transactional(readOnly = true)
 	public MouvementDetailView creerMvtForTacheTransmissionDossier(Long numero, Long idTache) throws InfrastructureException ;
 
 	/**

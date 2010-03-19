@@ -13,6 +13,7 @@ import ch.vd.uniregctb.type.TypeEtatDeclaration;
 import org.junit.Test;
 import org.springframework.test.annotation.NotTransactional;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
 
 import java.util.Date;
 import java.util.List;
@@ -147,7 +148,13 @@ public class EvenementExterneListenerTest extends BusinessTest {
 	@Test
 	@NotTransactional
 	public void testEvenementQuittancementTwice() throws Exception {
-		assertEquals(0, evenementExterneDAO.getAll().size()); // précondition
+		
+		doInTransaction(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				assertEquals(0, evenementExterneDAO.getAll().size()); // précondition
+				return null;
+			}
+		});
 
 		// envoi d'un premier événement externe avec insertion de l'événement dans la base
 		String message = createMessageQuittancement(TypeQuittance.QUITTANCEMENT);
@@ -155,24 +162,30 @@ public class EvenementExterneListenerTest extends BusinessTest {
 		listener.onMessage(message, businessId);
 
 		// vérification que un seul événement a été inséré dans la base
-		{
-			final List<EvenementExterne> all = evenementExterneDAO.getAll();
-			assertEquals(1, all.size());
-			assertQuittanceLR(NUMERO_CONTRIBUABLE, EtatEvenementExterne.TRAITE, DATE_QUITTANCEMENT.asJavaDate(), DATE_QUITTANCEMENT.asJavaDate(), null, DATE_DEBUT_PERIODE, DATE_FIN_PERIODE,
-					ch.vd.uniregctb.evenement.externe.TypeQuittance.QUITTANCEMENT,
-					all.get(0));
-		}
+		doInTransaction(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final List<EvenementExterne> all = evenementExterneDAO.getAll();
+				assertEquals(1, all.size());
+				assertQuittanceLR(NUMERO_CONTRIBUABLE, EtatEvenementExterne.TRAITE, DATE_QUITTANCEMENT.asJavaDate(), DATE_QUITTANCEMENT.asJavaDate(), null, DATE_DEBUT_PERIODE, DATE_FIN_PERIODE,
+						ch.vd.uniregctb.evenement.externe.TypeQuittance.QUITTANCEMENT,
+						all.get(0));
+				return null;
+			}
+		});
 
 		// envoi du même message une seconde fois
 		listener.onMessage(message, businessId);
 
 		// vérification que la base n'a pas changé
-		{
-			final List<EvenementExterne> all = evenementExterneDAO.getAll();
-			assertEquals(1, all.size());
-			assertQuittanceLR(NUMERO_CONTRIBUABLE, EtatEvenementExterne.TRAITE, DATE_QUITTANCEMENT.asJavaDate(), DATE_QUITTANCEMENT.asJavaDate(), null, DATE_DEBUT_PERIODE, DATE_FIN_PERIODE,
-					ch.vd.uniregctb.evenement.externe.TypeQuittance.QUITTANCEMENT, all.get(0));
-		}
+		doInTransaction(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final List<EvenementExterne> all = evenementExterneDAO.getAll();
+				assertEquals(1, all.size());
+				assertQuittanceLR(NUMERO_CONTRIBUABLE, EtatEvenementExterne.TRAITE, DATE_QUITTANCEMENT.asJavaDate(), DATE_QUITTANCEMENT.asJavaDate(), null, DATE_DEBUT_PERIODE, DATE_FIN_PERIODE,
+						ch.vd.uniregctb.evenement.externe.TypeQuittance.QUITTANCEMENT, all.get(0));
+				return null;
+			}
+		});
 	}
 
 	private String createMessageQuittancement(TypeQuittance.Enum quitancement) {

@@ -59,6 +59,7 @@ public interface CoupleRecapManager {
 	 * @param numero
 	 * @return
 	 */
+	@Transactional(readOnly = true)
 	public boolean estDejaEnMenage(Long numero) ;
 
 	/**
@@ -68,6 +69,7 @@ public interface CoupleRecapManager {
 	 * @param dateDebut
 	 * @return
 	 */
+	@Transactional(readOnly = true)
 	public boolean isMajeurAt(TiersGeneralView tiersGeneralView, RegDate dateDebut) ;
 
 }

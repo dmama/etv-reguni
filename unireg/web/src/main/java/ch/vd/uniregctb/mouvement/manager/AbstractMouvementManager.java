@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.mouvement.manager;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.uniregctb.mouvement.MouvementDossier;
 import ch.vd.uniregctb.mouvement.view.MouvementDetailView;
@@ -12,6 +14,7 @@ public interface AbstractMouvementManager {
 	 * @return la vue
 	 * @throws ch.vd.infrastructure.service.InfrastructureException
 	 */
+	@Transactional(readOnly = true)
 	MouvementDetailView getView(MouvementDossier mvt) throws InfrastructureException;
 
 }

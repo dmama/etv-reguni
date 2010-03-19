@@ -12,6 +12,7 @@ public interface AnnulationDecesRecapManager {
 	 * @param numero
 	 * @return
 	 */
+	@Transactional(readOnly = true)
 	public AnnulationDecesRecapView get(Long numero);
 
 

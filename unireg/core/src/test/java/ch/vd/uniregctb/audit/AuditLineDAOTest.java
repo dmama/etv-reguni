@@ -40,12 +40,16 @@ public class AuditLineDAOTest extends CoreDAOTest {
 		Audit.info("bli");
 		resetAuthentication();
 
-		List<AuditLine> list = auditLineDAO.findLastCountFromID(0, 2);
-		assertEquals(2, list.size());
+		doInTransaction(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				List<AuditLine> list = auditLineDAO.findLastCountFromID(0, 2);
+				assertEquals(2, list.size());
+				return null;
+			}
+		});
 	}
 
 	@Test
-	@NotTransactional
 	public void testLogAuditLineInNewTx() throws Exception {
 
 		doInNewTransaction(new TxCallback() {
@@ -88,7 +92,6 @@ public class AuditLineDAOTest extends CoreDAOTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testLogAuditLineIdCriterion() throws Exception {
 
 		final int ALL_LINES = 12345; // big enough
@@ -140,7 +143,6 @@ public class AuditLineDAOTest extends CoreDAOTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testLogAuditLineCountLimit() throws Exception {
 
 		final int ALL_IDS = 0;
@@ -202,7 +204,6 @@ public class AuditLineDAOTest extends CoreDAOTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testLogEventWhenThrowException() throws Exception {
 
 		AuditLineDAOTestService service = getBean(AuditLineDAOTestService.class, "auditLineDAOTestService");

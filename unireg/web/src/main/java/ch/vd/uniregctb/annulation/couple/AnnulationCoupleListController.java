@@ -6,7 +6,6 @@ import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.TooManyResultsIndexerException;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
 import ch.vd.uniregctb.tiers.AbstractTiersListController;
-import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.view.TiersCriteriaView;
@@ -75,11 +74,11 @@ public class AnnulationCoupleListController extends AbstractTiersListController 
 						bean.setNumeroAVS(FormatNumeroHelper.removeSpaceAndDash(bean.getNumeroAVS()));
 					}
 					try {
-						List<TiersIndexedData> results = service.search(bean);
+						List<TiersIndexedData> results = searchTiers(bean);
 						List<TiersIndexedData> filtredResults = new ArrayList<TiersIndexedData>();
 						for (TiersIndexedData tiersIndexedData : results) {
-							Tiers tiers = service.getTiers(tiersIndexedData.getNumero());
-							EnsembleTiersCouple ensembleTiersCouple = service.getEnsembleTiersCouple((MenageCommun) tiers, null);
+							Tiers tiers = getTiersSloooow(tiersIndexedData.getNumero());
+							EnsembleTiersCouple ensembleTiersCouple = getEnsembleTiersCoupleSloooow(tiers);
 							PersonnePhysique principal = ensembleTiersCouple.getPrincipal();
 							PersonnePhysique conjoint = ensembleTiersCouple.getConjoint();
 							if ((principal != null) || (conjoint != null)) {

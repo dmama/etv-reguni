@@ -16,6 +16,7 @@
 	<bean id="hibernateTemplate" class="org.springframework.orm.hibernate3.HibernateTemplate">
 		<property name="sessionFactory" ref="sessionFactory" />
 		<property name="cacheQueries" value="true" />
+		<property name="allowCreate" value="false" />
 	</bean>
 
 	<!-- Definition des DAOs -->

@@ -60,6 +60,7 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 	 * @return une RapportView
 	 * @throws AdressesResolutionException
 	 */
+	@Transactional(readOnly = true)
 	public RapportView get(Long numeroTiers, Long numeroTiersLie) throws AdressesResolutionException{
 		//création d'un rapport autre que travail
 		Tiers tiers = tiersService.getTiers(numeroTiers);
@@ -97,6 +98,7 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 	 * @return
 	 * @throws AdressesResolutionException
 	 */
+	@Transactional(readOnly = true)
 	public RapportView get (Long idRapport, SensRapportEntreTiers sensRapportEntreTiers) throws AdresseException {
 		//édition d'un rapport
 		RapportView rapportView =  new RapportView();
@@ -225,6 +227,7 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 	 * @throws AdressesResolutionException
 	 * @throws InfrastructureException
 	 */
+	@Transactional(readOnly = true)
 	public TiersEditView getView(Long numero) throws AdresseException, InfrastructureException {
 		TiersEditView tiersEditView = new TiersEditView();
 		if ( numero == null) {
@@ -274,6 +277,7 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 	 * @throws AdressesResolutionException
 	 * @throws InfrastructureException
 	 */
+	@Transactional(readOnly = true)
 	public TiersEditView getRapportsPrestationView(Long numero, WebParamPagination webParamPagination) throws AdresseException, InfrastructureException {
 		TiersEditView tiersEditView = new TiersEditView();
 		if ( numero == null) {

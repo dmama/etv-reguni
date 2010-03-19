@@ -35,6 +35,7 @@ public class TiersAnnulationRecapManagerImpl implements TiersAnnulationRecapMana
 	 * @param numeroTiers
 	 * @return
 	 */
+	@Transactional(readOnly = true)
 	public TiersAnnulationRecapView get(Long numeroTiers)  {
 		TiersAnnulationRecapView tiersAnnulationRecapView = new TiersAnnulationRecapView();
 		Tiers tiers = tiersService.getTiers(numeroTiers);
@@ -53,6 +54,7 @@ public class TiersAnnulationRecapManagerImpl implements TiersAnnulationRecapMana
 	 * @param numeroTiersRemplacant
 	 * @return
 	 */
+	@Transactional(readOnly = true)
 	public TiersAnnulationRecapView get(Long numeroTiers, Long numeroTiersRemplacant)  {
 		TiersAnnulationRecapView tiersAnnulationRecapView = new TiersAnnulationRecapView();
 		Tiers tiers = tiersService.getTiers(numeroTiers);

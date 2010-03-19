@@ -87,7 +87,7 @@ public abstract class AbstractTiersListController extends AbstractTiersControlle
 						bean.setNumeroAVS(FormatNumeroHelper.removeSpaceAndDash(bean.getNumeroAVS()));
 					}
 					try {
-						List<TiersIndexedData> results = service.search(bean);
+						List<TiersIndexedData> results = searchTiers(bean);
 
 						ExternalAppsUrlHelper urlHelper = new ExternalAppsUrlHelper(uniregProperties);
 

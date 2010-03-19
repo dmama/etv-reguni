@@ -7,6 +7,10 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
@@ -34,6 +38,7 @@ import ch.vd.uniregctb.web.xt.component.SimpleText;
 public class EvenementExterneController extends AbstractEnhancedSimpleFormController {
 
 	private EvenementExterneDAO evenementExterneDAO;
+	private PlatformTransactionManager transactionManager;
 
 	@Override
 	protected Object formBackingObject(HttpServletRequest request) throws Exception {
@@ -105,6 +110,7 @@ public class EvenementExterneController extends AbstractEnhancedSimpleFormContro
 		return response;
 	}
 
+	@SuppressWarnings({"unchecked"})
 	public AjaxResponse etatsOnChange(AjaxEvent event) {
 		String etatId = event.getHttpRequest().getParameter("etats");
 		AjaxResponse response = new AjaxResponseImpl();
@@ -112,35 +118,48 @@ public class EvenementExterneController extends AbstractEnhancedSimpleFormContro
 			return response;
 		}
 
-		EtatEvenementExterne etat = null;
+		EtatEvenementExterne e = null;
 		try {
-			etat = EtatEvenementExterne.valueOf(etatId);
+			e = EtatEvenementExterne.valueOf(etatId);
 		}
 		catch (Exception ex) {
 			// noop
 		}
-		Collection<EvenementExterne> evenementExternes = null;
-		if (etat == null)
-			evenementExternes = this.evenementExterneDAO.getEvenementExternes(false);
-		else
-			evenementExternes = this.evenementExterneDAO.getEvenementExternes(false, etat);
+
+		TransactionTemplate template = new TransactionTemplate(transactionManager);
+		template.setReadOnly(true);
+
+		final EtatEvenementExterne etat = e;
+
+		final Collection<EvenementExterne> evenementExternes = (Collection<EvenementExterne>) template.execute(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				Collection<EvenementExterne> evenementExternes = null;
+				if (etat == null)
+					evenementExternes = evenementExterneDAO.getEvenementExternes(false);
+				else
+					evenementExternes = evenementExterneDAO.getEvenementExternes(false, etat);
+
+				return evenementExternes;
+			}
+		});
 
 		// Create the components to render (a list of html table rows):
-		List<Component> rows = new LinkedList<Component>();
 		TextRenderingCallback renderingCallback = new TextRenderingCallback() {
 			private static final long serialVersionUID = 281028973463503864L;
 
 			public Component getRenderingComponent(String text) {
 				return new ch.vd.uniregctb.web.xt.component.SimpleText(text);
 			}
-
 		};
+		
+		final List<Component> rows = new LinkedList<Component>();
 		for (EvenementExterne ev : evenementExternes) {
 			TableRow row = new TableRow(ev, new String[] {
 					"numeroTiers", "etat", "dateEvenement", "dateTraitement", "errorMessage", "businessId"
 			}, renderingCallback);
 			rows.add(row);
 		}
+
 		// Create an ajax action for replacing the old table body content, inserting these new rows:
 		ReplaceContentAction replaceRowsAction = new ReplaceContentAction("evenementsList", rows);
 
@@ -257,5 +276,9 @@ public class EvenementExterneController extends AbstractEnhancedSimpleFormContro
 	 */
 	public void setEvenementExterneDAO(EvenementExterneDAO evenementExterneDAO) {
 		this.evenementExterneDAO = evenementExterneDAO;
+	}
+
+	public void setTransactionManager(PlatformTransactionManager transactionManager) {
+		this.transactionManager = transactionManager;
 	}
 }

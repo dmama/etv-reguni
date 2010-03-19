@@ -54,7 +54,7 @@ public class SourcierListController  extends  AbstractTiersListController implem
 		String numeroDpiParam = request.getParameter(NUMERO_DEBITEUR_PARAMETER_NAME);
 		Long numeroDpi = Long.parseLong(numeroDpiParam);
 
-		DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) service.getTiers(numeroDpi);
+		DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) getTiersSloooow(numeroDpi);
 		if (dpi == null) {
 			throw new ObjectNotFoundException(this.getMessageSource().getMessage("error.debiteur.inexistant" , null,  WebContextUtils.getDefaultLocale()));
 		}

@@ -44,6 +44,7 @@ public class MouvementEditManagerImpl extends AbstractMouvementManagerImpl imple
 	 * @return une vue MouvementListView
 	 * @throws InfrastructureException
 	 */
+	@Transactional(readOnly = true)
 	public MouvementListView findByNumeroDossier(Long numero, boolean seulementTraites) throws InfrastructureException {
 		final MouvementListView mvtListView = new MouvementListView();
 		mvtListView.setContribuable(creerCtb(numero));
@@ -65,6 +66,7 @@ public class MouvementEditManagerImpl extends AbstractMouvementManagerImpl imple
 	 * @param numero
 	 * @return
 	 */
+	@Transactional(readOnly = true)
 	public MouvementDetailView creerMvt(Long numero) {
 		final MouvementDetailView mvtDetailView = new MouvementDetailView();
 		mvtDetailView.setContribuable(creerCtb(numero));
@@ -90,6 +92,7 @@ public class MouvementEditManagerImpl extends AbstractMouvementManagerImpl imple
 	 * @return
 	 * @throws InfrastructureException
 	 */
+	@Transactional(readOnly = true)
 	public MouvementDetailView creerMvtForTacheTransmissionDossier(Long numero, Long idTache) throws InfrastructureException {
 		final MouvementDetailView mvtDetailView = new MouvementDetailView();
 		mvtDetailView.setContribuable(creerCtb(numero));

@@ -26,6 +26,10 @@ import net.sf.ehcache.Statistics;
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.ParameterizableViewController;
 import org.springmodules.xt.ajax.*;
@@ -59,6 +63,8 @@ public class InfoController extends ParameterizableViewController implements Aja
 	private GestionBatchController batchController;
 	private StatsService statsService;
 	private BVRPlusClient bvrClient;
+
+	private PlatformTransactionManager transactionManager;
 
 	private RollingInMemoryAppender inMemoryAppender;
 
@@ -102,6 +108,10 @@ public class InfoController extends ParameterizableViewController implements Aja
 		this.bvrClient = bvrClient;
 	}
 
+	public void setTransactionManager(PlatformTransactionManager transactionManager) {
+		this.transactionManager = transactionManager;
+	}
+
 	@Override
 	protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		ModelAndView mav = super.handleRequestInternal(request, response);
@@ -139,14 +149,22 @@ public class InfoController extends ParameterizableViewController implements Aja
 	}
 
 	private String getTiersCount() {
-		String tiersCount;
-		try {
-			tiersCount = String.valueOf(dao.getCount(Tiers.class));
-		}
-		catch (Exception e) {
-			tiersCount = e.getMessage();
-		}
-		return tiersCount;
+
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
+		template.setReadOnly(true);
+
+		return (String) template.execute(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				String tiersCount;
+				try {
+					tiersCount = String.valueOf(dao.getCount(Tiers.class));
+				}
+				catch (Exception e) {
+					tiersCount = e.getMessage();
+				}
+				return tiersCount;
+			}
+		});
 	}
 
 	private String getExtProps() {

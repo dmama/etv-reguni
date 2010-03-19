@@ -9,6 +9,7 @@ import javax.jws.WebService;
 import javax.jws.soap.SOAPBinding;
 
 import org.apache.log4j.Logger;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.security.DroitAccesDAO;
@@ -58,6 +59,7 @@ public class SecuriteWebServiceImpl implements SecuriteWebService {
 	@SOAPBinding(parameterStyle = SOAPBinding.ParameterStyle.BARE)
 	@WebMethod
 	@WebResult(targetNamespace = "http://www.vd.ch/uniregctb/webservices/security")
+	@Transactional(readOnly = true)
 	public Set<Long> getDossiersControles(
 			@WebParam(targetNamespace = "http://www.vd.ch/uniregctb/webservices/security", partName = "params", name = "GetDossiersControles") GetDossiersControles params)
 			throws WebServiceException {

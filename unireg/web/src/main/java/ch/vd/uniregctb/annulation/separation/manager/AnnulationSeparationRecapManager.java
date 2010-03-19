@@ -13,6 +13,7 @@ public interface AnnulationSeparationRecapManager {
 	 * @param numero
 	 * @return
 	 */
+	@Transactional(readOnly = true)
 	public AnnulationSeparationRecapView get(Long numero);
 
 

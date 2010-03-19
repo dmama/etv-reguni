@@ -37,6 +37,7 @@
 	<bean id="tacheMapHelper" class="ch.vd.uniregctb.tache.TacheMapHelper">
 		<property name="periodeFiscaleDAO" ref="periodeFiscaleDAO" />
 		<property name="serviceSecurite" ref="serviceSecuriteService" />
+		<property name="transactionManager" ref="transactionManager" />
 	</bean>
 	
 	<bean 	id="nouveauDossierListController"

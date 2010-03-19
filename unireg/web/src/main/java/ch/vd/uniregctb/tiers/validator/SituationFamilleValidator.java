@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.tiers.validator;
 
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
@@ -14,10 +15,6 @@ public class SituationFamilleValidator implements Validator {
 
 	private TiersDAO tiersDAO;
 
-	public TiersDAO getTiersDAO() {
-		return tiersDAO;
-	}
-
 	public void setTiersDAO(TiersDAO tiersDAO) {
 		this.tiersDAO = tiersDAO;
 	}
@@ -27,6 +24,7 @@ public class SituationFamilleValidator implements Validator {
 		return SituationFamilleView.class.equals(clazz) ;
 	}
 
+	@Transactional(readOnly = true)
 	public void validate(Object obj, Errors errors) {
 		SituationFamilleView situationFamilleView = (SituationFamilleView) obj;
 

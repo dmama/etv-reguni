@@ -84,7 +84,7 @@ public class ContribuableAssocieListController  extends  AbstractTiersListContro
 						bean.setNumeroAVS(FormatNumeroHelper.removeSpaceAndDash(bean.getNumeroAVS()));
 					}
 					try {
-						List<TiersIndexedData> results = service.search(bean);
+						List<TiersIndexedData> results = searchTiers(bean);
 						mav.addObject(CONTRIBUABLE_ASSOCIE_LIST_ATTRIBUTE_NAME, results);
 					}
 					catch (TooManyResultsIndexerException ee) {

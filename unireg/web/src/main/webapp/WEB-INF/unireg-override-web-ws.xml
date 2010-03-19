@@ -24,7 +24,7 @@
 	<!-- Version PM du tiers DAO -->
 	<bean id="tiersDAOPM" class="ch.vd.uniregctb.webservices.tiers2.impl.pm.TiersDAOWithPM">
 		<property name="target" ref="tiersDAO" />
-		<property name="wsPM" ref="tiersService2PM" />
+		<property name="servicePM" ref="servicePersonneMoraleService" />
 	</bean>
 
 	<!-- redéfinition du cache avec le service PM comme target -->
@@ -46,6 +46,7 @@
 		<property name="droitAccesDAO" ref="droitAccesDAO" />
 		<property name="uniregCacheManager" ref="uniregCacheManager" />
 		<property name="preloadTiersIds" value="${extprop.cache.preload.tiers.ids}" />
+		<property name="transactionManager" ref="transactionManager" />
 	</bean>
 
 </beans>

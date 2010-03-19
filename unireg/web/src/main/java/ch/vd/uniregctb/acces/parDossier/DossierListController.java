@@ -79,7 +79,7 @@ public class DossierListController  extends AbstractTiersListController {
 						bean.setNumeroAVS(FormatNumeroHelper.removeSpaceAndDash(bean.getNumeroAVS()));
 					}
 					try {
-						List<TiersIndexedData> results = service.search(bean);
+						List<TiersIndexedData> results = searchTiers(bean);
 						mav.addObject(DOSSIER_LIST_ATTRIBUTE_NAME, results);
 					}
 					catch (TooManyResultsIndexerException ee) {

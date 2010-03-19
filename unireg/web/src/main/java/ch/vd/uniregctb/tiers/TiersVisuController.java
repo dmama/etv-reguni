@@ -126,11 +126,11 @@ public class TiersVisuController extends AbstractTiersController {
 		session.removeAttribute("warnings");
 
 		mav.addObject(URL_RETOUR_SESSION_NAME, session.getAttribute(URL_RETOUR_SESSION_NAME));
-		mav.addObject(PAGE_SIZE_NAME, Integer.valueOf(PAGE_SIZE));
+		mav.addObject(PAGE_SIZE_NAME, PAGE_SIZE);
 		String idParam = request.getParameter(TIERS_ID_PARAMETER_NAME);
 		if (idParam != null && !idParam.equals("")) {
 			Long numeroDebiteur = Long.parseLong(idParam);
-			mav.addObject(RESULT_SIZE_NAME, new Integer(getTiersVisuManager().countRapportsPrestationImposable(numeroDebiteur)));
+			mav.addObject(RESULT_SIZE_NAME, tiersVisuManager.countRapportsPrestationImposable(numeroDebiteur));
 		}
 		return mav;
 	}

@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.tiers.manager;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import ch.vd.uniregctb.di.view.DeclarationImpotDetailView;
 
 /**
@@ -16,6 +18,7 @@ public interface DeclarationImpotVisuManager {
 	 * @param numero
 	 * @return un objet DeclarationImpotOrdinaireView
 	 */
+	@Transactional(readOnly = true)
 	public DeclarationImpotDetailView get(Long numero) ;
 
 }

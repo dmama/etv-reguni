@@ -13,11 +13,11 @@ import java.util.List;
 import org.junit.Test;
 import org.springframework.test.annotation.NotTransactional;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.adresse.AdresseSuisse;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.evenement.identification.contribuable.CriteresAdresse;
 import ch.vd.uniregctb.evenement.identification.contribuable.CriteresPersonne;
@@ -373,8 +373,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		});
 
 
-
-		assertEquals(0, identCtbDAO.getCount(IdentificationContribuable.class));
+		assertCountDemandes(0);
 
 		// création et traitement du message d'identification
 		CriteresAdresse adresse = new CriteresAdresse();
@@ -814,7 +813,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	public void testHandleDemandeZeroContribuableTrouve() throws Exception {
 
 		// la base est vide
-		assertEquals(0, identCtbDAO.getCount(IdentificationContribuable.class));
+		assertCountDemandes(0);
 
 		// création et traitement du message d'identification
 		final IdentificationContribuable message = createDemande("Arnold", "Duchoux");
@@ -826,17 +825,24 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			}
 		});
 
-		// Arnold Duchoux ne doit pas être trouvé
-		final List<IdentificationContribuable> list = identCtbDAO.getAll();
-		assertEquals(1, list.size());
+		doInTransaction(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
 
-		final IdentificationContribuable ic = list.get(0);
-		assertNotNull(ic);
-		assertEquals(Etat.A_TRAITER_MANUELLEMENT, ic.getEtat());
-		assertEquals(Integer.valueOf(0), ic.getNbContribuablesTrouves());
+				// Arnold Duchoux ne doit pas être trouvé
+				final List<IdentificationContribuable> list = identCtbDAO.getAll();
+				assertEquals(1, list.size());
 
-		// Pas de réponse automatique
-		assertEmpty(messageHandler.getSentMessages());
+				final IdentificationContribuable ic = list.get(0);
+				assertNotNull(ic);
+				assertEquals(Etat.A_TRAITER_MANUELLEMENT, ic.getEtat());
+				assertEquals(Integer.valueOf(0), ic.getNbContribuablesTrouves());
+
+				// Pas de réponse automatique
+				assertEmpty(messageHandler.getSentMessages());
+				
+				return null;
+			}
+		});
 	}
 
 	@NotTransactional
@@ -852,7 +858,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 				return zora.getNumero();
 			}
 		});
-		assertEquals(0, identCtbDAO.getCount(IdentificationContribuable.class));
+		assertCountDemandes(0);
 
 		// création et traitement du message d'identification
 		final IdentificationContribuable message = createDemande("Zora", "Larousse");
@@ -864,24 +870,32 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			}
 		});
 
-		// Zora doit avoir été trouvée, et traitée automatiquement
-		final List<IdentificationContribuable> list = identCtbDAO.getAll();
-		assertEquals(1, list.size());
+		doInTransaction(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				
+				// Zora doit avoir été trouvée, et traitée automatiquement
+				final List<IdentificationContribuable> list = identCtbDAO.getAll();
+				assertEquals(1, list.size());
 
-		final IdentificationContribuable ic = list.get(0);
-		assertNotNull(ic);
-		assertEquals(Etat.TRAITE_AUTOMATIQUEMENT, ic.getEtat());
-		assertEquals(Integer.valueOf(1), ic.getNbContribuablesTrouves());
+				final IdentificationContribuable ic = list.get(0);
+				assertNotNull(ic);
+				assertEquals(Etat.TRAITE_AUTOMATIQUEMENT, ic.getEtat());
+				assertEquals(Integer.valueOf(1), ic.getNbContribuablesTrouves());
 
-		final Reponse reponse = ic.getReponse();
-		assertNotNull(reponse);
-		assertNull(reponse.getErreur());
-		assertEquals(id, reponse.getNoContribuable());
+				final Reponse reponse = ic.getReponse();
+				assertNotNull(reponse);
+				assertNull(reponse.getErreur());
+				assertEquals(id, reponse.getNoContribuable());
 
-		// La demande doit avoir reçu une réponse automatiquement
-		assertEquals(1, messageHandler.getSentMessages().size());
-		final IdentificationContribuable sent = messageHandler.getSentMessages().get(0);
-		assertEquals(ic.getId(), sent.getId());
+				// La demande doit avoir reçu une réponse automatiquement
+				assertEquals(1, messageHandler.getSentMessages().size());
+				final IdentificationContribuable sent = messageHandler.getSentMessages().get(0);
+				assertEquals(ic.getId(), sent.getId());
+
+				return null;
+			}
+		});
+
 	}
 
 	@NotTransactional
@@ -898,7 +912,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 				return null;
 			}
 		});
-		assertEquals(0, identCtbDAO.getCount(IdentificationContribuable.class));
+		assertCountDemandes(0);
 
 		// création et traitement du message d'identification
 		final IdentificationContribuable message = createDemande("Larousse", "Larousse");
@@ -910,14 +924,21 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			}
 		});
 
-		// Plus de un contribuable doivent avoir été trouvés, et le message doit être passé en mode manuel
-		final List<IdentificationContribuable> list = identCtbDAO.getAll();
-		assertEquals(1, list.size());
+		doInTransaction(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				
+				// Plus de un contribuable doivent avoir été trouvés, et le message doit être passé en mode manuel
+				final List<IdentificationContribuable> list = identCtbDAO.getAll();
+				assertEquals(1, list.size());
 
-		final IdentificationContribuable ic = list.get(0);
-		assertNotNull(ic);
-		assertEquals(Etat.A_TRAITER_MANUELLEMENT, ic.getEtat());
-		assertEquals(Integer.valueOf(3), ic.getNbContribuablesTrouves());
+				final IdentificationContribuable ic = list.get(0);
+				assertNotNull(ic);
+				assertEquals(Etat.A_TRAITER_MANUELLEMENT, ic.getEtat());
+				assertEquals(Integer.valueOf(3), ic.getNbContribuablesTrouves());
+
+				return null;
+			}
+		});
 
 		// Pas de réponse automatique
 		assertEmpty(messageHandler.getSentMessages());
@@ -936,7 +957,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 				return null;
 			}
 		});
-		assertEquals(0, identCtbDAO.getCount(IdentificationContribuable.class));
+		assertCountDemandes(0);
 
 		try {
 			// provoque une exception à l'envoi
@@ -956,23 +977,30 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			messageHandler.setThrowExceptionOnSend(false);
 		}
 
-		// Zora doit avoir été trouvée, mais le traitement interrompu à cause de l'exception
-		final List<IdentificationContribuable> list = identCtbDAO.getAll();
-		assertEquals(1, list.size());
+		doInTransaction(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
 
-		final IdentificationContribuable ic = list.get(0);
-		assertNotNull(ic);
-		assertEquals(Etat.EXCEPTION, ic.getEtat());
-		assertNull(ic.getNbContribuablesTrouves());
+				// Zora doit avoir été trouvée, mais le traitement interrompu à cause de l'exception
+				final List<IdentificationContribuable> list = identCtbDAO.getAll();
+				assertEquals(1, list.size());
 
-		final Reponse reponse = ic.getReponse();
-		assertNotNull(reponse);
-		assertNull(reponse.getNoContribuable());
+				final IdentificationContribuable ic = list.get(0);
+				assertNotNull(ic);
+				assertEquals(Etat.EXCEPTION, ic.getEtat());
+				assertNull(ic.getNbContribuablesTrouves());
 
-		final Erreur erreur = reponse.getErreur();
-		assertNotNull(erreur);
-		assertEquals(TypeErreur.TECHNIQUE, erreur.getType());
-		assertEquals("Exception de test.", erreur.getMessage());
+				final Reponse reponse = ic.getReponse();
+				assertNotNull(reponse);
+				assertNull(reponse.getNoContribuable());
+
+				final Erreur erreur = reponse.getErreur();
+				assertNotNull(erreur);
+				assertEquals(TypeErreur.TECHNIQUE, erreur.getType());
+				assertEquals("Exception de test.", erreur.getMessage());
+
+				return null;  //To change body of implemented methods use File | Settings | File Templates.
+			}
+		});
 
 		// Pas de réponse automatique
 		assertEmpty(messageHandler.getSentMessages());
@@ -998,7 +1026,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 				return edouard.getNumero();
 			}
 		});
-		assertEquals(0, identCtbDAO.getCount(IdentificationContribuable.class));
+		assertCountDemandes(0);
 
 		// création et traitement du message d'identification
 		final IdentificationContribuable message = createDemande("Edouard", "Bonhote", "7569613127861");
@@ -1010,21 +1038,28 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			}
 		});
 
-		// Le numéro AVS n'est pas connu, mais le contribuable doit néansmoins avoir été trouvé, et le message doit être passé en mode
-		// automatique
-		final List<IdentificationContribuable> list = identCtbDAO.getAll();
-		assertEquals(1, list.size());
+		doInTransaction(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
 
-		final IdentificationContribuable ic = list.get(0);
-		assertNotNull(ic);
-		assertEquals(Etat.TRAITE_AUTOMATIQUEMENT, ic.getEtat());
-		assertEquals(Integer.valueOf(1), ic.getNbContribuablesTrouves());
-		assertEquals(id, ic.getReponse().getNoContribuable());
+				// Le numéro AVS n'est pas connu, mais le contribuable doit néansmoins avoir été trouvé, et le message doit être passé en mode
+				// automatique
+				final List<IdentificationContribuable> list = identCtbDAO.getAll();
+				assertEquals(1, list.size());
 
-		// La demande doit avoir reçu une réponse automatiquement
-		assertEquals(1, messageHandler.getSentMessages().size());
-		final IdentificationContribuable sent = messageHandler.getSentMessages().get(0);
-		assertEquals(ic.getId(), sent.getId());
+				final IdentificationContribuable ic = list.get(0);
+				assertNotNull(ic);
+				assertEquals(Etat.TRAITE_AUTOMATIQUEMENT, ic.getEtat());
+				assertEquals(Integer.valueOf(1), ic.getNbContribuablesTrouves());
+				assertEquals(id, ic.getReponse().getNoContribuable());
+
+				// La demande doit avoir reçu une réponse automatiquement
+				assertEquals(1, messageHandler.getSentMessages().size());
+				final IdentificationContribuable sent = messageHandler.getSentMessages().get(0);
+				assertEquals(ic.getId(), sent.getId());
+				
+				return null;
+			}
+		});
 	}
 
 	/**
@@ -1048,7 +1083,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 				return edouard.getNumero();
 			}
 		});
-		assertEquals(0, identCtbDAO.getCount(IdentificationContribuable.class));
+		assertCountDemandes(0);
 
 		// création et traitement du message d'identification
 		final IdentificationContribuable message = createDemande("George", "Pompidou", "7569613127861");
@@ -1060,19 +1095,26 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			}
 		});
 
-		// Le numéro AVS est connu, mais les critères nom/prénom ne correspondnet pas -> on doit quand même trouver le contribuable
-		// car la priorité du navs13 est la plus forte
-		final List<IdentificationContribuable> list = identCtbDAO.getAll();
-		assertEquals(1, list.size());
+		doInTransaction(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
 
-		final IdentificationContribuable ic = list.get(0);
-		assertNotNull(ic);
-		assertEquals(Etat.TRAITE_AUTOMATIQUEMENT, ic.getEtat());
-		assertEquals(Integer.valueOf(1), ic.getNbContribuablesTrouves());
+				// Le numéro AVS est connu, mais les critères nom/prénom ne correspondnet pas -> on doit quand même trouver le contribuable
+				// car la priorité du navs13 est la plus forte
+				final List<IdentificationContribuable> list = identCtbDAO.getAll();
+				assertEquals(1, list.size());
 
-		// Réponse automatique
-		final IdentificationContribuable sent = messageHandler.getSentMessages().get(0);
-		assertEquals(ic.getId(), sent.getId());
+				final IdentificationContribuable ic = list.get(0);
+				assertNotNull(ic);
+				assertEquals(Etat.TRAITE_AUTOMATIQUEMENT, ic.getEtat());
+				assertEquals(Integer.valueOf(1), ic.getNbContribuablesTrouves());
+
+				// Réponse automatique
+				final IdentificationContribuable sent = messageHandler.getSentMessages().get(0);
+				assertEquals(ic.getId(), sent.getId());
+
+				return null;
+			}
+		});
 	}
 
 	/**
@@ -1107,7 +1149,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 				return null;
 			}
 		});
-		assertEquals(0, identCtbDAO.getCount(IdentificationContribuable.class));
+		assertCountDemandes(0);
 
 		// création et traitement du message d'identification
 		final IdentificationContribuable message = createDemande("Zora", "Larousse");
@@ -1119,25 +1161,32 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			}
 		});
 
-		// Zora doit avoir été trouvée, et traitée automatiquement
-		final List<IdentificationContribuable> list = identCtbDAO.getAll();
-		assertEquals(1, list.size());
+		doInTransaction(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				
+				// Zora doit avoir été trouvée, et traitée automatiquement
+				final List<IdentificationContribuable> list = identCtbDAO.getAll();
+				assertEquals(1, list.size());
 
-		final IdentificationContribuable ic = list.get(0);
-		assertNotNull(ic);
-		assertEquals(Etat.TRAITE_AUTOMATIQUEMENT, ic.getEtat());
-		assertEquals(Integer.valueOf(1), ic.getNbContribuablesTrouves());
+				final IdentificationContribuable ic = list.get(0);
+				assertNotNull(ic);
+				assertEquals(Etat.TRAITE_AUTOMATIQUEMENT, ic.getEtat());
+				assertEquals(Integer.valueOf(1), ic.getNbContribuablesTrouves());
 
-		final Reponse reponse = ic.getReponse();
-		assertNotNull(reponse);
-		assertNull(reponse.getErreur());
-		assertEquals(ids.zora, reponse.getNoContribuable());
-		assertEquals(ids.mc, reponse.getNoMenageCommun()); // [UNIREG-1911]
+				final Reponse reponse = ic.getReponse();
+				assertNotNull(reponse);
+				assertNull(reponse.getErreur());
+				assertEquals(ids.zora, reponse.getNoContribuable());
+				assertEquals(ids.mc, reponse.getNoMenageCommun()); // [UNIREG-1911]
 
-		// La demande doit avoir reçu une réponse automatiquement
-		assertEquals(1, messageHandler.getSentMessages().size());
-		final IdentificationContribuable sent = messageHandler.getSentMessages().get(0);
-		assertEquals(ic.getId(), sent.getId());
+				// La demande doit avoir reçu une réponse automatiquement
+				assertEquals(1, messageHandler.getSentMessages().size());
+				final IdentificationContribuable sent = messageHandler.getSentMessages().get(0);
+				assertEquals(ic.getId(), sent.getId());
+
+				return null;
+			}
+		});
 	}
 
 	private static IdentificationContribuable createDemande(final String prenoms, final String nom) {
@@ -1201,5 +1250,14 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		message.setDemande(demande);
 
 		return message;
+	}
+
+	private void assertCountDemandes(final int count) throws Exception {
+		doInTransaction(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				assertEquals(count, identCtbDAO.getCount(IdentificationContribuable.class));
+				return null;
+			}
+		});
 	}
 }

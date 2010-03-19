@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.tiers.manager;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.uniregctb.mouvement.manager.AbstractMouvementManager;
 import ch.vd.uniregctb.mouvement.view.MouvementDetailView;
@@ -17,6 +19,7 @@ public interface MouvementVisuManager extends AbstractMouvementManager {
 	 * @param numero identifiant technique du mouvement
 	 * @return un objet MouvementDetailView
 	 */
+	@Transactional(readOnly = true)
 	public MouvementDetailView get(Long numero) throws InfrastructureException;
 
 }

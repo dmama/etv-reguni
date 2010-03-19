@@ -189,6 +189,7 @@ public class CoupleRecapManagerImpl extends TiersManager implements CoupleRecapM
 	 * @param numero
 	 * @return
 	 */
+	@Transactional(readOnly = true)
 	public boolean estDejaEnMenage(Long numero) {
 		PersonnePhysique personne = (PersonnePhysique) tiersService.getTiers(numero);
 		MenageCommun menageCommun = getTiersService().findMenageCommun(personne, null);
@@ -273,6 +274,7 @@ public class CoupleRecapManagerImpl extends TiersManager implements CoupleRecapM
 	 * @param dateDebut
 	 * @return
 	 */
+	@Transactional(readOnly = true)
 	public boolean isMajeurAt(TiersGeneralView tiersGeneralView, RegDate dateDebut) {
 		PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(tiersGeneralView.getNumero());
 		return metierService.isMajeurAt(pp, dateDebut);

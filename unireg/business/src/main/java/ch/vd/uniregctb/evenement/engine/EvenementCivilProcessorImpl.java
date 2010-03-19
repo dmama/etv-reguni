@@ -60,8 +60,18 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor, Eve
 	/**
 	 * {@inheritDoc}
 	 */
+	@SuppressWarnings({"unchecked"})
 	public void traiteEvenementsCivilsRegroupes(StatusManager status) {
-		final List<Long> ids = evenementCivilRegroupeDAO.getEvenementCivilsNonTraites();
+
+		// Récupère les ids des événements à traiter
+		TransactionTemplate template = new TransactionTemplate(transactionManager);
+		template.setReadOnly(true);
+		final List<Long> ids = (List<Long>) template.execute(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				return evenementCivilRegroupeDAO.getEvenementCivilsNonTraites();
+			}
+		});
+
 		traiteEvenements(ids, false, status);
 	}
 
@@ -252,9 +262,17 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor, Eve
 		}
 	}
 
-	private void retraiteEvenementsEnErreurIndividu(Long numIndividu){
+	@SuppressWarnings({"unchecked"})
+	private void retraiteEvenementsEnErreurIndividu(final Long numIndividu) {
+
 		// 1 - Récupération des ids des événements civils regroupés en erreur de l'individu
-		final List<Long> ids = evenementCivilRegroupeDAO.getIdsEvenementCivilsErreurIndividu(numIndividu);
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
+		template.setReadOnly(true);
+		final List<Long> ids = (List<Long>) template.execute(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				return evenementCivilRegroupeDAO.getIdsEvenementCivilsErreurIndividu(numIndividu);
+			}
+		});
 
 		/* 2 - Iteration sur les ids des événements regroupés */
 		traiteEvenements(ids, false, null);
@@ -270,7 +288,7 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor, Eve
 	private void traiteEvenements(final List<Long> ids, boolean forceRecyclage, StatusManager status) {
 		Set<Long> individusTraites = new HashSet<Long>();
 		// Traite les événements spécifiées
-		for (Long id : ids) {
+		for (final Long id : ids) {
 			if (status != null && status.interrupted()) {
 				break;
 			}
@@ -279,7 +297,15 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor, Eve
 				individusTraites.add(numInd);
 			}
 			else if (forceRecyclage && numInd == -1L) {//evt en erreur
-				Long numIndividu = evenementCivilRegroupeDAO.get(id).getNumeroIndividuPrincipal();
+
+				final TransactionTemplate template = new TransactionTemplate(transactionManager);
+				template.setReadOnly(true);
+				final Long numIndividu = (Long) template.execute(new TransactionCallback() {
+					public Object doInTransaction(TransactionStatus status) {
+						return evenementCivilRegroupeDAO.get(id).getNumeroIndividuPrincipal();
+					}
+				});
+
 				individusTraites.add(numIndividu);
 			}
 		}

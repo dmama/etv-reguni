@@ -11,6 +11,8 @@ import junit.framework.Assert;
 
 import org.junit.Test;
 import org.springframework.test.annotation.NotTransactional;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.web.servlet.ModelAndView;
 
 import ch.vd.common.model.EnumTypeAdresse;
@@ -123,10 +125,17 @@ public class TiersImportControllerTest extends WebTest {
 		assertNotNull("l'objet result n'a pas été trouvé dans le modèle", result);
 		assertEquals("exception :" + model.get("exception"), "success", result);
 
-		int nbTiers = tiersDAO.getCount(Tiers.class);
-		assertEquals(21, nbTiers);
-		int nbInIndex = globalTiersSearcher.getGlobalIndex().getExactDocCount();
-		assertEquals(18, nbInIndex); // => les individus 325631 et 325740 n'existent pas
+		doInTransaction(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				
+				int nbTiers = tiersDAO.getCount(Tiers.class);
+				assertEquals(21, nbTiers);
+				int nbInIndex = globalTiersSearcher.getGlobalIndex().getExactDocCount();
+				assertEquals(18, nbInIndex); // => les individus 325631 et 325740 n'existent pas
+
+				return null;
+			}
+		});
 	}
 
 }

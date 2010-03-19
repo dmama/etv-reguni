@@ -1,6 +1,8 @@
 package ch.vd.uniregctb.rapport.validator;
 
 import ch.vd.uniregctb.adresse.AdresseException;
+
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
@@ -31,6 +33,7 @@ public class RapportEditValidator implements Validator {
 		return RapportView.class.equals(clazz) ;
 	}
 
+	@Transactional(readOnly = true)
 	public void validate(Object obj, Errors errors) {
 
 		RapportView rapportView = (RapportView) obj;
@@ -59,16 +62,8 @@ public class RapportEditValidator implements Validator {
 		}
 	}
 
-	public TiersDAO getTiersDAO() {
-		return tiersDAO;
-	}
-
 	public void setTiersDAO(TiersDAO tiersDAO) {
 		this.tiersDAO = tiersDAO;
-	}
-
-	public AdresseService getAdresseService() {
-		return adresseService;
 	}
 
 	public void setAdresseService(AdresseService adresseService) {

@@ -11,6 +11,8 @@ import org.junit.Test;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.test.annotation.NotTransactional;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.BatchTransactionTemplate.BatchCallback;
@@ -73,7 +75,7 @@ public class BatchTransactionTemplateTest extends BusinessTest {
 
 	@NotTransactional
 	@Test
-	public void testSansRepriseSansException() {
+	public void testSansRepriseSansException() throws Exception {
 
 		List<Long> list = new ArrayList<Long>();
 		list.add(0L);
@@ -82,7 +84,7 @@ public class BatchTransactionTemplateTest extends BusinessTest {
 		list.add(3L);
 		list.add(4L);
 
-		assertEquals(0, tiersDAO.getCount(Tiers.class));
+		assertTiersCountHorsTransaction(0);
 
 		BatchTransactionTemplate<Long, JobResults> template = new BatchTransactionTemplate<Long, JobResults>(list, 2, Behavior.SANS_REPRISE, transactionManager, null, hibernateTemplate);
 		template.execute(new BatchCallback<Long, JobResults>() {
@@ -100,26 +102,32 @@ public class BatchTransactionTemplateTest extends BusinessTest {
 			}
 		});
 
-		// On vérifie que les batchs ont bien été processés et committés
-		final List<Tiers> lines = tiersDAO.getAll();
-		Collections.sort(lines, new Comparator<Tiers>() {
-			public int compare(Tiers o1, Tiers o2) {
-				return (int) (o1.getNumero() - o2.getNumero()); // -> ordre naturel d'insertion
+		doInTransaction(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+
+				// On vérifie que les batchs ont bien été processés et committés
+				final List<Tiers> lines = tiersDAO.getAll();
+				Collections.sort(lines, new Comparator<Tiers>() {
+					public int compare(Tiers o1, Tiers o2) {
+						return (int) (o1.getNumero() - o2.getNumero()); // -> ordre naturel d'insertion
+					}
+				});
+				assertEquals(3, lines.size());
+
+				final PersonnePhysique tiers0 = (PersonnePhysique) lines.get(0);
+				assertEquals("Traitement du batch = [0, 1]", tiers0.getNom());
+				final PersonnePhysique tiers1 = (PersonnePhysique) lines.get(1);
+				assertEquals("Traitement du batch = [2, 3]", tiers1.getNom());
+				final PersonnePhysique tiers2 = (PersonnePhysique) lines.get(2);
+				assertEquals("Traitement du batch = [4]", tiers2.getNom());
+				return null;
 			}
 		});
-		assertEquals(3, lines.size());
-
-		final PersonnePhysique tiers0 = (PersonnePhysique) lines.get(0);
-		assertEquals("Traitement du batch = [0, 1]", tiers0.getNom());
-		final PersonnePhysique tiers1 = (PersonnePhysique) lines.get(1);
-		assertEquals("Traitement du batch = [2, 3]", tiers1.getNom());
-		final PersonnePhysique tiers2 = (PersonnePhysique) lines.get(2);
-		assertEquals("Traitement du batch = [4]", tiers2.getNom());
 	}
 
 	@NotTransactional
 	@Test
-	public void testSansRepriseAvecException() {
+	public void testSansRepriseAvecException() throws Exception {
 
 		List<Long> list = new ArrayList<Long>();
 		list.add(0L);
@@ -128,7 +136,7 @@ public class BatchTransactionTemplateTest extends BusinessTest {
 		list.add(3L);
 		list.add(4L);
 
-		assertEquals(0, tiersDAO.getCount(Tiers.class));
+		assertTiersCountHorsTransaction(0);
 
 		BatchTransactionTemplate<Long, JobResults> template = new BatchTransactionTemplate<Long, JobResults>(list, 2, Behavior.SANS_REPRISE, transactionManager, null, hibernateTemplate);
 		template.execute(new BatchCallback<Long, JobResults>() {
@@ -151,24 +159,30 @@ public class BatchTransactionTemplateTest extends BusinessTest {
 			}
 		});
 
-		// On vérifie que les batchs ont bien été processés et committés à l'exception du deuxième batch qui a été rollé-back
-		final List<Tiers> lines = tiersDAO.getAll();
-		Collections.sort(lines, new Comparator<Tiers>() {
-			public int compare(Tiers o1, Tiers o2) {
-				return (int) (o1.getNumero() - o2.getNumero()); // -> ordre naturel d'insertion
+		doInTransaction(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				
+				// On vérifie que les batchs ont bien été processés et committés à l'exception du deuxième batch qui a été rollé-back
+				final List<Tiers> lines = tiersDAO.getAll();
+				Collections.sort(lines, new Comparator<Tiers>() {
+					public int compare(Tiers o1, Tiers o2) {
+						return (int) (o1.getNumero() - o2.getNumero()); // -> ordre naturel d'insertion
+					}
+				});
+				assertEquals(2, lines.size());
+
+				final PersonnePhysique tiers0 = (PersonnePhysique) lines.get(0);
+				assertEquals("Traitement du batch = [0, 1]", tiers0.getNom());
+				final PersonnePhysique tiers1 = (PersonnePhysique) lines.get(1);
+				assertEquals("Traitement du batch = [4]", tiers1.getNom());
+				return null;
 			}
 		});
-		assertEquals(2, lines.size());
-
-		final PersonnePhysique tiers0 = (PersonnePhysique) lines.get(0);
-		assertEquals("Traitement du batch = [0, 1]", tiers0.getNom());
-		final PersonnePhysique tiers1 = (PersonnePhysique) lines.get(1);
-		assertEquals("Traitement du batch = [4]", tiers1.getNom());
 	}
 
 	@NotTransactional
 	@Test
-	public void testAvecRepriseSansException() {
+	public void testAvecRepriseSansException() throws Exception {
 
 		List<Long> list = new ArrayList<Long>();
 		list.add(0L);
@@ -177,7 +191,7 @@ public class BatchTransactionTemplateTest extends BusinessTest {
 		list.add(3L);
 		list.add(4L);
 
-		assertEquals(0, tiersDAO.getCount(Tiers.class));
+		assertTiersCountHorsTransaction(0);
 
 		BatchTransactionTemplate<Long, JobResults> template = new BatchTransactionTemplate<Long, JobResults>(list, 2, Behavior.REPRISE_AUTOMATIQUE,
 				transactionManager, null, hibernateTemplate);
@@ -196,26 +210,32 @@ public class BatchTransactionTemplateTest extends BusinessTest {
 			}
 		});
 
-		// On vérifie que les batchs ont bien été processés et committés
-		final List<Tiers> lines = tiersDAO.getAll();
-		Collections.sort(lines, new Comparator<Tiers>() {
-			public int compare(Tiers o1, Tiers o2) {
-				return (int) (o1.getNumero() - o2.getNumero()); // -> ordre naturel d'insertion
+		doInTransaction(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+
+				// On vérifie que les batchs ont bien été processés et committés
+				final List<Tiers> lines = tiersDAO.getAll();
+				Collections.sort(lines, new Comparator<Tiers>() {
+					public int compare(Tiers o1, Tiers o2) {
+						return (int) (o1.getNumero() - o2.getNumero()); // -> ordre naturel d'insertion
+					}
+				});
+				assertEquals(3, lines.size());
+
+				final PersonnePhysique tiers0 = (PersonnePhysique) lines.get(0);
+				assertEquals("Traitement du batch = [0, 1]", tiers0.getNom());
+				final PersonnePhysique tiers1 = (PersonnePhysique) lines.get(1);
+				assertEquals("Traitement du batch = [2, 3]", tiers1.getNom());
+				final PersonnePhysique tiers2 = (PersonnePhysique) lines.get(2);
+				assertEquals("Traitement du batch = [4]", tiers2.getNom());
+				return null;
 			}
 		});
-		assertEquals(3, lines.size());
-
-		final PersonnePhysique tiers0 = (PersonnePhysique) lines.get(0);
-		assertEquals("Traitement du batch = [0, 1]", tiers0.getNom());
-		final PersonnePhysique tiers1 = (PersonnePhysique) lines.get(1);
-		assertEquals("Traitement du batch = [2, 3]", tiers1.getNom());
-		final PersonnePhysique tiers2 = (PersonnePhysique) lines.get(2);
-		assertEquals("Traitement du batch = [4]", tiers2.getNom());
 	}
 
 	@NotTransactional
 	@Test
-	public void testAvecRepriseAvecException() {
+	public void testAvecRepriseAvecException() throws Exception {
 
 		List<Long> list = new ArrayList<Long>();
 		list.add(0L);
@@ -224,7 +244,7 @@ public class BatchTransactionTemplateTest extends BusinessTest {
 		list.add(3L);
 		list.add(4L);
 
-		assertEquals(0, tiersDAO.getCount(Tiers.class));
+		assertTiersCountHorsTransaction(0);
 
 		BatchTransactionTemplate<Long, JobResults> template = new BatchTransactionTemplate<Long, JobResults>(list, 2, Behavior.REPRISE_AUTOMATIQUE,
 				transactionManager, null, hibernateTemplate);
@@ -256,38 +276,45 @@ public class BatchTransactionTemplateTest extends BusinessTest {
 			}
 		});
 
-		/**
-		 * On vérifie que :
-		 * <ul>
-		 * <li>le premier batch est committé complétement</li>
-		 * <li>le deuxième batch est committé partiellement (reprise automatique)</li>
-		 * <li>le troisième batch est committé complétement</li>
-		 * </ul>
-		 */
-		final List<Tiers> lines = tiersDAO.getAll();
-		Collections.sort(lines, new Comparator<Tiers>() {
-			public int compare(Tiers o1, Tiers o2) {
-				return (int) (o1.getNumero() - o2.getNumero()); // -> ordre naturel d'insertion
+		doInTransaction(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+
+				/**
+				 * On vérifie que :
+				 * <ul>
+				 * <li>le premier batch est committé complétement</li>
+				 * <li>le deuxième batch est committé partiellement (reprise automatique)</li>
+				 * <li>le troisième batch est committé complétement</li>
+				 * </ul>
+				 */
+				final List<Tiers> lines = tiersDAO.getAll();
+				Collections.sort(lines, new Comparator<Tiers>() {
+					public int compare(Tiers o1, Tiers o2) {
+						return (int) (o1.getNumero() - o2.getNumero()); // -> ordre naturel d'insertion
+					}
+				});
+				assertEquals(3, lines.size());
+
+				final PersonnePhysique tiers0 = (PersonnePhysique) lines.get(0);
+				assertEquals("Traitement du batch = [0, 1]", tiers0.getNom());
+				final PersonnePhysique tiers1 = (PersonnePhysique) lines.get(1);
+				assertEquals("Traitement du batch = [3]", tiers1.getNom());
+				final PersonnePhysique tiers2 = (PersonnePhysique) lines.get(2);
+				assertEquals("Traitement du batch = [4]", tiers2.getNom());
+
+				return null;
 			}
 		});
-		assertEquals(3, lines.size());
-
-		final PersonnePhysique tiers0 = (PersonnePhysique) lines.get(0);
-		assertEquals("Traitement du batch = [0, 1]", tiers0.getNom());
-		final PersonnePhysique tiers1 = (PersonnePhysique) lines.get(1);
-		assertEquals("Traitement du batch = [3]", tiers1.getNom());
-		final PersonnePhysique tiers2 = (PersonnePhysique) lines.get(2);
-		assertEquals("Traitement du batch = [4]", tiers2.getNom());
 	}
 
 	@NotTransactional
 	@Test
-	public void testRollbackOnException() {
+	public void testRollbackOnException() throws Exception {
 
 		List<Long> list = new ArrayList<Long>();
 		list.add(1234L);
 
-		assertEquals(0, tiersDAO.getCount(Tiers.class));
+		assertTiersCountHorsTransaction(0);
 
 		BatchTransactionTemplate<Long, JobResults> template = new BatchTransactionTemplate<Long, JobResults>(list, 2, Behavior.SANS_REPRISE,
 				transactionManager, null, hibernateTemplate);
@@ -333,13 +360,28 @@ public class BatchTransactionTemplateTest extends BusinessTest {
 			}
 		});
 
-		/*
-		 * On vérifie que la base est toujours vide
-		 */
-		assertEquals(0, tiersDAO.getCount(Tiers.class));
-		assertEquals(0, tiersDAO.getCount(DeclarationImpotSource.class));
-		assertEquals(0, tiersDAO.getCount(EtatDeclaration.class));
-		assertEquals(0, tiersDAO.getCount(DelaiDeclaration.class));
+		doInTransaction(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				/*
+				 * On vérifie que la base est toujours vide
+				 */
+				assertEquals(0, tiersDAO.getCount(Tiers.class));
+				assertEquals(0, tiersDAO.getCount(DeclarationImpotSource.class));
+				assertEquals(0, tiersDAO.getCount(EtatDeclaration.class));
+				assertEquals(0, tiersDAO.getCount(DelaiDeclaration.class));
+				return null;
+			}
+		});
+
+	}
+
+	private void assertTiersCountHorsTransaction(final int count) throws Exception {
+		doInTransaction(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				assertEquals(count, tiersDAO.getCount(Tiers.class));
+				return null;
+			}
+		});
 	}
 
 	/**

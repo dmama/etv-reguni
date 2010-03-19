@@ -12,6 +12,7 @@ public interface AnnulationCoupleRecapManager {
 	 * @param numero
 	 * @return
 	 */
+	@Transactional(readOnly = true)
 	public AnnulationCoupleRecapView get(Long numero);
 
 

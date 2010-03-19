@@ -16,6 +16,7 @@
 		<property name="batchController" ref="gestionBatchController" />
 		<property name="statsService" ref="statsService" />
 		<property name="bvrClient" ref="bvrPlusClient" />
+		<property name="transactionManager" ref="transactionManager" />
 	</bean>
 
 	<bean id="infoIFOSecController" class="ch.vd.uniregctb.admin.InfoIFOSecController">

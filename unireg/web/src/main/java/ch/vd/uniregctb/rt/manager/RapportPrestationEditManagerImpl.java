@@ -84,6 +84,7 @@ public class RapportPrestationEditManagerImpl implements RapportPrestationEditMa
 	 * @return
 	 * @throws AdressesResolutionException
 	 */
+	@Transactional(readOnly = true)
 	public RapportPrestationView get (Long numeroSrc, Long numeroDpi, String provenance) {
 		RapportPrestationView rapportView =  new RapportPrestationView();
 
@@ -184,6 +185,7 @@ public class RapportPrestationEditManagerImpl implements RapportPrestationEditMa
 	 * @param numeroSrc
 	 * @return
 	 */
+	@Transactional(readOnly = true)
 	public DebiteurListView getDebiteurList(Long numeroSrc) {
 		PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(numeroSrc) ;
 		DebiteurListView bean = new DebiteurListView();
@@ -201,6 +203,7 @@ public class RapportPrestationEditManagerImpl implements RapportPrestationEditMa
 	 * @param numeroDpi
 	 * @return
 	 */
+	@Transactional(readOnly = true)
 	public SourcierListView getSourcierList(Long numeroDpi) {
 		DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(numeroDpi) ;
 		SourcierListView bean = new SourcierListView();

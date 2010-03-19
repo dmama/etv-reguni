@@ -34,12 +34,23 @@ public interface DeclarationImpotEditManager {
 	 *
 	 * @param id
 	 */
+	@Transactional(readOnly = true)
 	public void controleDI(Long id) ;
 
 	/**
 	 * Alimente la vue en fonction de l'ID de la DI
 	 */
+	@Transactional(readOnly = true)
 	public void get(Long id, DeclarationImpotDetailView view);
+
+	/**
+	 * Récupère l'id du tiers qui possède la DI spécifiée.
+	 *
+	 * @param idDI l'id de la déclaration d'impôt
+	 * @return l'id du tiers; ou <b>null</b> si l'id de la DI est nul
+	 */
+	@Transactional(readOnly = true)
+	public Long getTiersId(Long idDI);
 
 	/**
 	 * Reactualise la vue
@@ -47,12 +58,14 @@ public interface DeclarationImpotEditManager {
 	 * @param diEditView
 	 * @return
 	 */
+	@Transactional(readOnly = true)
 	public DeclarationImpotDetailView refresh(DeclarationImpotDetailView diEditView);
 
 
 	/**
 	 * Alimente la vue en fonction d'un contribuable
 	 */
+	@Transactional(readOnly = true)
 	public abstract void findByNumero(Long numero, DeclarationImpotListView view);
 
 	/**
@@ -69,6 +82,7 @@ public interface DeclarationImpotEditManager {
 	 * @param view
 	 *            le form backing object a compléter
 	 */
+	@Transactional(readOnly = true)
 	public abstract void creerDI(Long numeroCtb, DateRange range, DeclarationImpotDetailView view);
 
 	/**
@@ -86,6 +100,7 @@ public interface DeclarationImpotEditManager {
 	 * @throws ValidationException
 	 *             si le contribuable ne valide pas, ou s'il n'est pas possible de déterminer son assujettissement.
 	 */
+	@Transactional(readOnly = true)
 	public List<PeriodeImposition> calculateRangesProchainesDIs(Long numero) throws ValidationException;
 
 	/**
@@ -95,6 +110,7 @@ public interface DeclarationImpotEditManager {
 	 * @param numero
 	 * @return une date dont l'année correspond à la période fiscale d'une nouvelle DI à créer ou null si la période fiscale n'existe pas
 	 */
+	@Transactional(readOnly = true)
 	public abstract RegDate getDateNewDi(Long numero);
 
 	/**
@@ -162,6 +178,7 @@ public interface DeclarationImpotEditManager {
 	 * @return
 	 * @throws AdressesResolutionException
 	 */
+	@Transactional(readOnly = true)
 	public abstract TiersGeneralView creerCtbDI(Long numero) throws AdressesResolutionException;
 
 	/**
@@ -171,6 +188,7 @@ public interface DeclarationImpotEditManager {
 	 * @param type Document
 	 * @return
 	 */
+	@Transactional(readOnly = true)
 	public DeclarationImpotImpressionView getView(Long id, String typeDocument);
 
 
@@ -188,6 +206,7 @@ public interface DeclarationImpotEditManager {
 	 * @param bean
 	 * @param idDelai
 	 */
+	@Transactional(rollbackFor = Throwable.class)
 	public String envoieImpressionLocalConfirmationDelai(DeclarationImpotDetailView bean, Long idDelai)  throws EditiqueException;
 
 	/**
@@ -204,6 +223,7 @@ public interface DeclarationImpotEditManager {
 	 * @param bean
 	 * @param idDelai
 	 */
+	@Transactional(rollbackFor = Throwable.class)
 	public String envoieImpressionLocalTaxationOffice(DeclarationImpotDetailView bean)  throws EditiqueException;
 
 	/**
@@ -212,6 +232,7 @@ public interface DeclarationImpotEditManager {
 	 * @param idDeclaration
 	 * @return
 	 */
+	@Transactional(rollbackFor = Throwable.class)
 	public DelaiDeclarationView creerDelai(Long idDeclaration);
 
 	/**
@@ -230,6 +251,7 @@ public interface DeclarationImpotEditManager {
 	 * @return
 	 * @throws EditiqueException
 	 */
+	@Transactional(rollbackFor = Throwable.class)
 	public byte[] getCopieConformeSommation(DeclarationImpotDetailView diEditView) throws EditiqueException ;
 
 }

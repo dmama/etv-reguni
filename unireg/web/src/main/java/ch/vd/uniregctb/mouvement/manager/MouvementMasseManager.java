@@ -3,6 +3,7 @@ package ch.vd.uniregctb.mouvement.manager;
 import java.util.List;
 
 import org.apache.commons.lang.mutable.MutableLong;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.uniregctb.common.ParamPagination;
@@ -28,6 +29,7 @@ public interface MouvementMasseManager extends AbstractMouvementManager {
 	 * @param paramPagination pagination à utiliser
 	 * @param total En sortie, le nombre total de mouvements qui satifont aux critères   @return Liste paginée de mouvements (jamais null si la view n'est pas nulle)
 	 */
+	@Transactional(readOnly = true)
 	List<MouvementDetailView> find(MouvementMasseCriteriaView view, Integer noCollAdmInitiatrice, ParamPagination paramPagination, MutableLong total) throws InfrastructureException;
 
 	/**
@@ -35,6 +37,7 @@ public interface MouvementMasseManager extends AbstractMouvementManager {
 	 * @param criteria critères de recherche
 	 * @return liste des mouvements trouvés, ou null si rien trouvé
 	 */
+	@Transactional(readOnly = true)
 	List<MouvementDetailView> find(MouvementDossierCriteria criteria) throws InfrastructureException;
 
 	/**
@@ -42,6 +45,7 @@ public interface MouvementMasseManager extends AbstractMouvementManager {
 	 * @param nouvelEtat nouvel état à associer au mouvement
 	 * @param mvtId ID du mouvement de dossier dont l'état doit être modifié
 	 */
+	@Transactional(rollbackFor = Throwable.class)
 	void changeEtat(EtatMouvementDossier nouvelEtat, long mvtId);
 
 	/**
@@ -49,6 +53,7 @@ public interface MouvementMasseManager extends AbstractMouvementManager {
 	 * @param nouvelEtat nouvel état à associer aux mouvements
 	 * @param ids ID des mouvements de dossiers dont l'état doit être modifié
 	 */
+	@Transactional(rollbackFor = Throwable.class)
 	void changeEtat(EtatMouvementDossier nouvelEtat, long[] ids);
 
 	/**
@@ -56,29 +61,34 @@ public interface MouvementMasseManager extends AbstractMouvementManager {
 	 * @param noCollAdmInitiatrice si non-null, ne renvoie que les mouvements initiés par la collectivité administrative donnée
 	 * @return la liste
 	 */
+	@Transactional(readOnly = true)
 	List<BordereauListElementView> getProtoBordereaux(Integer noCollAdmInitiatrice);
 
 	/**
 	 * Effectue la demande d'impression d'un bordereau de mouvements de dossiers avec les mouvements donnés par ID, et renvoie
 	 * l'identifiant à utiliser dans la méthode {@link #recevoirImpressionBordereau} pour récupérer le flux PCL
 	 */
+	@Transactional(rollbackFor = Throwable.class)
 	String imprimerBordereau(long[] idsMouvement) throws EditiqueException;
 
 	/**
 	 * Réceptionne le flux éditique concernant l'impression du bordereau d'envoi de dossiers
 	 */
+	@Transactional(rollbackFor = Throwable.class)
 	byte[] recevoirImpressionBordereau(String docId) throws EditiqueException;
 
 	/**
 	 * Annule le bordereau composé des mouvements dont les ID sont donnés ici
 	 * @param idsMouvement ID techniques des mouvements considérés
 	 */
+	@Transactional(rollbackFor = Throwable.class)
 	void annulerBordereau(long[] idsMouvement);
 
 	/**
 	 * Renvoie les bordereaux de mouvements d'envois restant à réceptionner
 	 * @param noCollAdmReceptrice si assigné, ne prend que les bordereaux d'envoi qui sont envoyés vers la collectivité administrative donnée
 	 */
+	@Transactional(readOnly = true)
 	List<BordereauEnvoiView> findBordereauxAReceptionner(Integer noCollAdmReceptrice);
 
 	/**
@@ -86,6 +96,7 @@ public interface MouvementMasseManager extends AbstractMouvementManager {
 	 * @param idBordereau ID technique du bordereau
 	 * @return Détails du bordereau d'envoi
 	 */
+	@Transactional(readOnly = true)
 	BordereauEnvoiReceptionView getBordereauPourReception(long idBordereau)throws InfrastructureException;
 
 	/**
@@ -93,11 +104,13 @@ public interface MouvementMasseManager extends AbstractMouvementManager {
 	 * les mouvements d'envoi à l'état "RECU_BORDEREAU"
 	 * @param idsMouvements ID techniques des mouvements à traiter
 	 */
+	@Transactional(rollbackFor = Throwable.class)
 	void receptionnerMouvementsEnvoi(long[] idsMouvements);
 
 	/**
 	 * Rafraîchit la vue du bordereau d'envoi après réception de quelques mouvements
 	 * @param view view à rafraîchir
 	 */
+	@Transactional(readOnly = true)
 	void refreshView(BordereauEnvoiReceptionView view) throws InfrastructureException;
 }

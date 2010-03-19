@@ -90,10 +90,10 @@ public class ContribuableListController extends AbstractTiersListController {
 				if (bean != null && !bean.isEmpty()) {
 					LOGGER.debug("Critères de recherche=" + bean);
 					try {
-						List<TiersIndexedData> results = service.search(bean);
+						List<TiersIndexedData> results = searchTiers(bean);
 						List<TiersIndexedData> filtredResults = new ArrayList<TiersIndexedData>();
 						for (TiersIndexedData tiersIndexedData : results) {
-							Contribuable contribuable = (Contribuable) service.getTiers(tiersIndexedData.getNumero());
+							Contribuable contribuable = (Contribuable) getTiersSloooow(tiersIndexedData.getNumero());
 							if (contribuable instanceof PersonnePhysique) {
 								PersonnePhysique nonHabitant = (PersonnePhysique) contribuable;
 								// seulement les contribuables ouverts et indéterminés doivent être affichés

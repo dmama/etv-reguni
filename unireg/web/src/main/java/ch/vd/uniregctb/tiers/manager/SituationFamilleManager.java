@@ -31,6 +31,7 @@ public interface SituationFamilleManager {
 	 * @return
 	 * @throws AdressesResolutionException
 	 */
+	@Transactional(readOnly = true)
 	public SituationFamilleView create(Long numeroCtb) throws AdresseException;
 
 	/**

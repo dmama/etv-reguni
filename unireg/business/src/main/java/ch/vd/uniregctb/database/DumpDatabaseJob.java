@@ -7,6 +7,11 @@ import java.util.HashMap;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
+
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.document.DatabaseDump;
@@ -30,6 +35,7 @@ public class DumpDatabaseJob extends JobDefinition {
 	private DatabaseService dbService;
 	private DocumentService docService;
 	private TiersDAO tiersDAO;
+	private PlatformTransactionManager transactionManager;
 
 	public DumpDatabaseJob(int sortOrder, String description) {
 		super(NAME, CATEGORIE, sortOrder, description);
@@ -47,35 +53,51 @@ public class DumpDatabaseJob extends JobDefinition {
 		this.tiersDAO = tiersDAO;
 	}
 
+	public void setTransactionManager(PlatformTransactionManager transactionManager) {
+		this.transactionManager = transactionManager;
+	}
+
 	@Override
 	protected void doExecute(HashMap<String, Object> params) throws Exception {
 		StatusManager status = getStatusManager();
 		status.setMessage("Export de la base en cours...");
 
-		final Date date = new Date();
-		final int count = tiersDAO.getCount(Tiers.class);
-		final String name = "dbdump_" + FILE_DATE_FORMAT.format(date);
-		final String description = "Export de la base généré le " + SCREEN_DATE_FORMAT.format(date) + " et contenant " + count + " tiers.";
-		final String extension = "zip";
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 
-		DatabaseDump doc = docService.newDoc(DatabaseDump.class, name, description, extension,
-				new DocumentService.WriteDocCallback<DatabaseDump>() {
-					public void writeDoc(DatabaseDump doc, OutputStream os) throws Exception {
+		final DatabaseDump doc = (DatabaseDump) template.execute(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				
+				final Date date = new Date();
+				final int count = tiersDAO.getCount(Tiers.class);
+				final String name = "dbdump_" + FILE_DATE_FORMAT.format(date);
+				final String description = "Export de la base généré le " + SCREEN_DATE_FORMAT.format(date) + " et contenant " + count + " tiers.";
+				final String extension = "zip";
 
-						// Dump la base de donnée dans un fichier zip sur le disque
-						ZipOutputStream zipstream = new ZipOutputStream(os);
-						try {
-							ZipEntry e = new ZipEntry(name + ".xml");
-							zipstream.putNextEntry(e);
-							dbService.dumpToDbunitFile(zipstream);
-						}
-						finally {
-							zipstream.close();
-						}
+				try {
+					return docService.newDoc(DatabaseDump.class, name, description, extension,
+							new DocumentService.WriteDocCallback<DatabaseDump>() {
+								public void writeDoc(DatabaseDump doc, OutputStream os) throws Exception {
 
-						doc.setNbTiers(count);
-					}
-				});
+									// Dump la base de donnée dans un fichier zip sur le disque
+									ZipOutputStream zipstream = new ZipOutputStream(os);
+									try {
+										ZipEntry e = new ZipEntry(name + ".xml");
+										zipstream.putNextEntry(e);
+										dbService.dumpToDbunitFile(zipstream);
+									}
+									finally {
+										zipstream.close();
+									}
+
+									doc.setNbTiers(count);
+								}
+							});
+				}
+				catch (Exception e) {
+					throw new RuntimeException(e);
+				}
+			}
+		});
 
 		setLastRunReport(doc);
 		Audit.success("La base de données a été exportée dans le fichier " + doc.getNom() + " (document #" + doc.getId() + ").", doc);
