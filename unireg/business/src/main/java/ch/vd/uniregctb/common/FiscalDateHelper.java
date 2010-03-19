@@ -207,7 +207,8 @@ public abstract class FiscalDateHelper {
 	 *            la date à vérifier.
 	 * @return <code>true</code> si la période contenant la date est échue; <code>false</code> sinon.
 	 */
+	//UNIREG-] la période échue correspond à n-2 pour les tâches de contrôle de dossier notamment
 	public static boolean isEnPeriodeEchue(RegDate date) {
-		return date.year() <= RegDate.get().year() - 1;
+		return date.year() <= RegDate.get().year() - 2;
 	}
 }

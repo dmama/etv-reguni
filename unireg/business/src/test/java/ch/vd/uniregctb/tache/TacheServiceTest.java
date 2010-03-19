@@ -158,6 +158,56 @@ public class TacheServiceTest extends BusinessTest {
 
 	}
 
+
+	@Test
+	public void testGenereDemenagementVDDepuisOuvertureForPrincipal() {
+		PersonnePhysique hab = new PersonnePhysique(true);
+		hab.setNumero(11111111L);
+		hab.setNumeroIndividu(333908L);
+		hab = (PersonnePhysique) hibernateTemplate.merge(hab);
+
+
+
+
+		ForFiscalPrincipal forFiscalPrincipalDepart = new ForFiscalPrincipal(RegDate.get(2008, 6, 12), RegDate.get(2009, 6, 11), 5586,
+				TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
+		forFiscalPrincipalDepart.setMotifOuverture(MotifFor.ARRIVEE_HC);
+		forFiscalPrincipalDepart.setMotifFermeture(MotifFor.DEMENAGEMENT_VD);
+		hab.addForFiscal(forFiscalPrincipalDepart);
+
+		ForFiscalPrincipal forFiscalPrincipal = new ForFiscalPrincipal(RegDate.get(2009, 6, 12), null, 5652,
+				TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
+		forFiscalPrincipal.setMotifOuverture(MotifFor.DEMENAGEMENT_VD);
+		hab.addForFiscal(forFiscalPrincipal);
+		
+		tacheService.genereTacheDepuisOuvertureForPrincipal(hab, forFiscalPrincipal, null);
+
+		TacheCriteria criterion = new TacheCriteria();
+		verifierTacheControleDossier(criterion, 0);
+
+		PersonnePhysique hab2 = new PersonnePhysique(true);
+		hab2.setNumero(11111112L);
+		hab2.setNumeroIndividu(333904L);
+		hab2 = (PersonnePhysique) hibernateTemplate.merge(hab2);
+
+		ForFiscalPrincipal forFiscalPrincipalDepart2 = new ForFiscalPrincipal(RegDate.get(2007, 6, 12), RegDate.get(2008, 6, 11), 5586,
+				TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
+		forFiscalPrincipalDepart2.setMotifOuverture(MotifFor.ARRIVEE_HC);
+		forFiscalPrincipalDepart2.setMotifFermeture(MotifFor.DEMENAGEMENT_VD);
+		hab2.addForFiscal(forFiscalPrincipalDepart2);
+
+		ForFiscalPrincipal forFiscalPrincipal2 = new ForFiscalPrincipal(RegDate.get(2008, 6, 12), null, 5652,
+				TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
+		forFiscalPrincipal2.setMotifOuverture(MotifFor.DEMENAGEMENT_VD);
+		hab2.addForFiscal(forFiscalPrincipal2);
+
+		tacheService.genereTacheDepuisOuvertureForPrincipal(hab2, forFiscalPrincipal2, null);
+
+		TacheCriteria criterion2 = new TacheCriteria();
+		verifierTacheControleDossier(criterion2, 1);
+
+	}
+
 	@Test
 	public void testGenereMariageDepuisOuvertureForPrincipal() throws Exception {
 
@@ -1949,6 +1999,20 @@ public class TacheServiceTest extends BusinessTest {
 		c.setTypeTache(TypeTache.TacheNouveauDossier);
 		c.setInvertTypeTache(true);
 		return tacheDAO.count(c);
+	}
+
+	/**
+	 * Verification des tâches de contrôle de dossier
+	 *
+	 */
+	private void verifierTacheControleDossier(TacheCriteria criterion, int nombreResultats) {
+
+		criterion.setTypeTache(TypeTache.TacheControleDossier);
+		List<Tache> taches = tacheDAO.find(criterion);
+		assertNotNull(taches);
+		assertEquals(nombreResultats, taches.size());
+		
+
 	}
 
 	/**
