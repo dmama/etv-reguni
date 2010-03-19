@@ -1,16 +1,15 @@
 package ch.vd.uniregctb.jms;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
-
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.Session;
 import javax.jms.TextMessage;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
+import org.apache.activemq.pool.PooledConnectionFactoryBean;
 import org.apache.log4j.Logger;
-import org.jencks.amqpool.JcaPooledConnectionFactory;
 import org.junit.Test;
 import org.junit.internal.runners.JUnit4ClassRunner;
 import org.junit.runner.RunWith;
@@ -52,13 +51,12 @@ public class JmsMessageSenderTest {
 		jmsConnectionManager.setUserName("smx");
 		jmsConnectionManager.setPassword("smx");
 
-		JcaPooledConnectionFactory jmsConnectionFactory = new JcaPooledConnectionFactory();
+		PooledConnectionFactoryBean jmsConnectionFactory = new PooledConnectionFactoryBean();
 		jmsConnectionFactory.setConnectionFactory(jmsConnectionManager);
 		jmsConnectionFactory.setMaxConnections(8);
-		jmsConnectionFactory.setName("Unireg-ActiveMQ");
 		//jmsConnectionFactory.setTransactionManager(transactionManager);
 
-		JmsTemplate jmsTemplate = new JmsTemplate(jmsConnectionFactory);
+		JmsTemplate jmsTemplate = new JmsTemplate(jmsConnectionFactory.getConnectionFactory());
 
 		jmsTemplate.send("ch.vd.registre.evtCivil", new MessageCreator() {
 			public Message createMessage(Session session) throws JMSException {
