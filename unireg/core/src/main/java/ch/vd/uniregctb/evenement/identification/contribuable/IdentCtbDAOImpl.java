@@ -12,6 +12,7 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.orm.hibernate3.HibernateCallback;
+import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.dao.GenericDAOImpl;
 import ch.vd.registre.base.date.RegDate;
@@ -30,7 +31,7 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 		super(IdentificationContribuable.class);
 	}
 
-
+	@Transactional(readOnly = true)
 	public List<IdentificationContribuable> find (IdentificationContribuableCriteria identificationContribuableCriteria, ParamPagination paramPagination, boolean nonTraiteOnly, boolean archiveOnly, boolean nonTraiteAndSuspendu) {
 		if (LOGGER.isTraceEnabled()) {
 			LOGGER.trace("Start of IdentificationContribuableDAO:find");
@@ -87,6 +88,7 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 	 * @param nonTraiteAndSuspendu
 	 * @see ch.vd.uniregctb.evenement.identification.contribuable.IdentCtbDAO#count(ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuableCriteria, boolean, boolean)
 	 */
+	@Transactional(readOnly = true)
 	public int count(IdentificationContribuableCriteria identificationContribuableCriteria, boolean nonTraiteOnly, boolean archiveOnly, boolean nonTraiteAndSuspendu) {
 		if (LOGGER.isTraceEnabled()) {
 			LOGGER.trace("Start of IdentificationContribuableDAO:count");
@@ -106,6 +108,7 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
+	@Transactional(readOnly = true)
 	public List<String> getTypesMessage () {
 		String query = " select distinct identificationContribuable.demande.typeMessage from IdentificationContribuable identificationContribuable";
 		return getHibernateTemplate().find(query);
@@ -116,6 +119,7 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
+	 @Transactional(readOnly = true)
 	public List<String> getEmetteursId () {
 		String query = " select distinct identificationContribuable.demande.emetteurId from IdentificationContribuable identificationContribuable";
 		return getHibernateTemplate().find(query);
