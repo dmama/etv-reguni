@@ -124,11 +124,7 @@ public class Date implements Comparable<Date> {
 		if (getClass() != obj.getClass())
 			return false;
 		Date other = (Date) obj;
-		if (day != other.day)
-			return false;
-		if (month != other.month)
-			return false;
-		return year == other.year;
+		return day == other.day && month == other.month && year == other.year;
 	}
 
 	public int compareTo(Date o) {

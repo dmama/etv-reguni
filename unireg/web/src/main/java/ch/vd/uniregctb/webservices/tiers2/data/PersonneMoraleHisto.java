@@ -78,6 +78,9 @@ public class PersonneMoraleHisto extends ContribuableHisto {
 		this.raisonSociale1 = pm.raisonSociale1;
 		this.raisonSociale2 = pm.raisonSociale2;
 		this.raisonSociale3 = pm.raisonSociale3;
+		this.dateFinDernierExerciceCommercial = pm.dateFinDernierExerciceCommercial;
+		this.dateBouclementFutur = pm.dateBouclementFutur;
+		this.numeroIPMRO = pm.numeroIPMRO;
 		copyParts(pm, parts);
 	}
 
