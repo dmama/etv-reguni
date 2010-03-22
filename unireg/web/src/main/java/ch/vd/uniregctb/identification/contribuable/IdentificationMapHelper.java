@@ -5,6 +5,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
+
 import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.uniregctb.common.ApplicationConfig;
 import ch.vd.uniregctb.common.CommonMapHelper;
@@ -29,6 +35,8 @@ public class IdentificationMapHelper extends CommonMapHelper {
 
 	private Map<Etat, String> mapEtatMessage;
 
+	private PlatformTransactionManager transactionManager;
+
 	public void setIdentCtbDAO(IdentCtbDAO identCtbDAO) {
 		this.identCtbDAO = identCtbDAO;
 	}
@@ -37,26 +45,31 @@ public class IdentificationMapHelper extends CommonMapHelper {
 		this.identCtbService = identCtbService;
 	}
 
+	public void setTransactionManager(PlatformTransactionManager transactionManager) {
+		this.transactionManager = transactionManager;
+	}
 
 
 	/**
 	 * Initialise la map des priorités émetteurs
+	 *
 	 * @return une map
 	 */
 	public Map<PrioriteEmetteur, String> initMapPrioriteEmetteur() {
 
-			mapPrioriteEmetteur = initMapEnum(ApplicationConfig.masterKeyPrioriteEmetteur, PrioriteEmetteur.class);
+		mapPrioriteEmetteur = initMapEnum(ApplicationConfig.masterKeyPrioriteEmetteur, PrioriteEmetteur.class);
 
 		return mapPrioriteEmetteur;
 	}
 
 	/**
 	 * Initialise la map des états du message
+	 *
 	 * @return une map
 	 */
 	public Map<Etat, String> initMapEtatMessage() {
 
-			mapEtatMessage = initMapEnum(ApplicationConfig.masterKeyEtatMessage, Etat.class,Etat.RECU,Etat.SUSPENDU);
+		mapEtatMessage = initMapEnum(ApplicationConfig.masterKeyEtatMessage, Etat.class, Etat.RECU, Etat.SUSPENDU);
 
 		return mapEtatMessage;
 	}
@@ -64,111 +77,131 @@ public class IdentificationMapHelper extends CommonMapHelper {
 
 	/**
 	 * Initialise la map des états du message pour l'ecran des messages en cours
+	 *
 	 * @return une map
 	 */
 	public Map<Etat, String> initMapEtatEnCoursMessage() {
 
-			mapEtatMessage = initMapEnum(ApplicationConfig.masterKeyEtatMessage, Etat.class,
-					Etat.A_EXPERTISER_SUSPENDU,
-					Etat.A_TRAITER_MAN_SUSPENDU,
-					Etat.RECU,
-					Etat.EXCEPTION,
-					Etat.NON_IDENTIFIE,
-					Etat.SUSPENDU,
-					Etat.TRAITE_AUTOMATIQUEMENT,
-					Etat.TRAITE_MANUELLEMENT,
-					Etat.TRAITE_MAN_EXPERT);
+		mapEtatMessage = initMapEnum(ApplicationConfig.masterKeyEtatMessage, Etat.class,
+				Etat.A_EXPERTISER_SUSPENDU,
+				Etat.A_TRAITER_MAN_SUSPENDU,
+				Etat.RECU,
+				Etat.EXCEPTION,
+				Etat.NON_IDENTIFIE,
+				Etat.SUSPENDU,
+				Etat.TRAITE_AUTOMATIQUEMENT,
+				Etat.TRAITE_MANUELLEMENT,
+				Etat.TRAITE_MAN_EXPERT);
 
 		return mapEtatMessage;
 	}
 
 	/**
 	 * Initialise la map des états du message pour l'ecran des messages en cours
+	 *
 	 * @return une map
 	 */
 	public Map<Etat, String> initMapEtatEnCoursSuspenduMessage() {
 
-			mapEtatMessage = initMapEnum(ApplicationConfig.masterKeyEtatMessage, Etat.class,
-					Etat.RECU,
-					Etat.EXCEPTION,
-					Etat.NON_IDENTIFIE,
-					Etat.SUSPENDU,
-					Etat.TRAITE_AUTOMATIQUEMENT,
-					Etat.TRAITE_MANUELLEMENT,
-					Etat.TRAITE_MAN_EXPERT);
+		mapEtatMessage = initMapEnum(ApplicationConfig.masterKeyEtatMessage, Etat.class,
+				Etat.RECU,
+				Etat.EXCEPTION,
+				Etat.NON_IDENTIFIE,
+				Etat.SUSPENDU,
+				Etat.TRAITE_AUTOMATIQUEMENT,
+				Etat.TRAITE_MANUELLEMENT,
+				Etat.TRAITE_MAN_EXPERT);
 
 		return mapEtatMessage;
 	}
 
 	/**
 	 * Initialise la map des états du message pour l'ecran des messages archivées
+	 *
 	 * @return une map
 	 */
 	public Map<Etat, String> initMapEtatArchivewMessage() {
 
-			mapEtatMessage = initMapEnum(ApplicationConfig.masterKeyEtatMessage, Etat.class,
-					Etat.A_EXPERTISER_SUSPENDU,
-					Etat.A_TRAITER_MAN_SUSPENDU,
-					Etat.RECU,
-					Etat.EXCEPTION,
-					Etat.A_EXPERTISER,
-					Etat.A_TRAITER_MANUELLEMENT,
-					Etat.SUSPENDU);
+		mapEtatMessage = initMapEnum(ApplicationConfig.masterKeyEtatMessage, Etat.class,
+				Etat.A_EXPERTISER_SUSPENDU,
+				Etat.A_TRAITER_MAN_SUSPENDU,
+				Etat.RECU,
+				Etat.EXCEPTION,
+				Etat.A_EXPERTISER,
+				Etat.A_TRAITER_MANUELLEMENT,
+				Etat.SUSPENDU);
 
 		return mapEtatMessage;
 	}
 
 	/**
 	 * Initialise la map des types du message
+	 *
 	 * @return une map
 	 */
-	public Map<String, String> initMapTypeMessage() {
 
-			mapTypeMessage = new HashMap<String, String>();
-			List<String> typesMessage = identCtbDAO.getTypesMessage();
-			Iterator<String> itMessages = typesMessage.iterator();
-			while (itMessages.hasNext()) {
-				String typeMessage = itMessages.next();
-				String typeMessageValeur = this.getMessageSourceAccessor().getMessage(ApplicationConfig.masterKeyTypeMessage + typeMessage);
-				mapTypeMessage.put(typeMessage, typeMessageValeur);
+	public Map<String, String> initMapTypeMessage() {
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
+		template.setReadOnly(true);
+
+		mapTypeMessage = new HashMap<String, String>();
+		final List<String> typesMessage = (List<String>) template.execute(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				return identCtbDAO.getTypesMessage();
 			}
+		});
+
+		Iterator<String> itMessages = typesMessage.iterator();
+		while (itMessages.hasNext()) {
+			String typeMessage = itMessages.next();
+			String typeMessageValeur = this.getMessageSourceAccessor().getMessage(ApplicationConfig.masterKeyTypeMessage + typeMessage);
+			mapTypeMessage.put(typeMessage, typeMessageValeur);
+		}
 
 		return mapTypeMessage;
 	}
 
 	/**
 	 * Initialise la map des types du message
+	 *
 	 * @return une map
 	 */
+
 	public Map<String, String> initMapEmetteurId() {
 
-			mapEmetteur = new HashMap<String, String>();
-			List<String> emetteurs = identCtbDAO.getEmetteursId();
-			Iterator<String> itEmetteurs = emetteurs.iterator();
-			while (itEmetteurs.hasNext()) {
-				String emetteur = itEmetteurs.next();
-
-				String nomCantonFromEmetteurId = emetteur;
-				try {
-					nomCantonFromEmetteurId=identCtbService.getNomCantonFromEmetteurId(emetteur);
-				}
-				catch (InfrastructureException e) {
-					//on revoie l'emetteurId Tel Quel
-					 nomCantonFromEmetteurId = emetteur;
-				}
-				mapEmetteur.put(emetteur, nomCantonFromEmetteurId);
+		mapEmetteur = new HashMap<String, String>();
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
+		template.setReadOnly(true);
+		final List<String> emetteurs = (List<String>) template.execute(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				return identCtbDAO.getEmetteursId();
 			}
+		});
+
+		Iterator<String> itEmetteurs = emetteurs.iterator();
+		while (itEmetteurs.hasNext()) {
+			String emetteur = itEmetteurs.next();
+
+			String nomCantonFromEmetteurId = emetteur;
+			try {
+				nomCantonFromEmetteurId = identCtbService.getNomCantonFromEmetteurId(emetteur);
+			}
+			catch (InfrastructureException e) {
+				//on revoie l'emetteurId Tel Quel
+				nomCantonFromEmetteurId = emetteur;
+			}
+			mapEmetteur.put(emetteur, nomCantonFromEmetteurId);
+		}
 
 		return mapEmetteur;
 	}
 
-	public Map<ErreurMessage, String>  initErreurMessage() {
+	public Map<ErreurMessage, String> initErreurMessage() {
 
-			mapErreurMessage = initMapEnum(ApplicationConfig.masterKeyErreurMessage,ErreurMessage.class);
-
-
+		mapErreurMessage = initMapEnum(ApplicationConfig.masterKeyErreurMessage, ErreurMessage.class);
 
 		return mapErreurMessage;
 	}
+
 
 }
