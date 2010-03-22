@@ -17,7 +17,7 @@
 		<property name="adresseService" ref="adresseService" />
 		<property name="tiersService" ref="tiersService" />
 		<property name="serviceSecurite" ref="serviceSecuriteService" />
-		<property name="editiqueService" ref="editiqueService" />
+		<property name="editiqueService" ref="editiqueCompositionService" />
 	</bean>	
 
 	<bean 	id="tacheListController"

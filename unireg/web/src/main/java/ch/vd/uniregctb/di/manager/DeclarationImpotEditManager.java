@@ -16,6 +16,7 @@ import ch.vd.uniregctb.di.view.DeclarationImpotDetailView;
 import ch.vd.uniregctb.di.view.DeclarationImpotImpressionView;
 import ch.vd.uniregctb.di.view.DeclarationImpotListView;
 import ch.vd.uniregctb.editique.EditiqueException;
+import ch.vd.uniregctb.editique.EditiqueResultat;
 import ch.vd.uniregctb.general.view.TiersGeneralView;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
 
@@ -35,13 +36,13 @@ public interface DeclarationImpotEditManager {
 	 * @param id
 	 */
 	@Transactional(readOnly = true)
-	public void controleDI(Long id) ;
+	void controleDI(Long id) ;
 
 	/**
 	 * Alimente la vue en fonction de l'ID de la DI
 	 */
 	@Transactional(readOnly = true)
-	public void get(Long id, DeclarationImpotDetailView view);
+	void get(Long id, DeclarationImpotDetailView view);
 
 	/**
 	 * Récupère l'id du tiers qui possède la DI spécifiée.
@@ -59,14 +60,14 @@ public interface DeclarationImpotEditManager {
 	 * @return
 	 */
 	@Transactional(readOnly = true)
-	public DeclarationImpotDetailView refresh(DeclarationImpotDetailView diEditView);
+	DeclarationImpotDetailView refresh(DeclarationImpotDetailView diEditView);
 
 
 	/**
 	 * Alimente la vue en fonction d'un contribuable
 	 */
 	@Transactional(readOnly = true)
-	public abstract void findByNumero(Long numero, DeclarationImpotListView view);
+	void findByNumero(Long numero, DeclarationImpotListView view);
 
 	/**
 	 * Retourne la vue de création d'une nouvelle DI sur le contribuable spécifié.
@@ -83,7 +84,7 @@ public interface DeclarationImpotEditManager {
 	 *            le form backing object a compléter
 	 */
 	@Transactional(readOnly = true)
-	public abstract void creerDI(Long numeroCtb, DateRange range, DeclarationImpotDetailView view);
+	void creerDI(Long numeroCtb, DateRange range, DeclarationImpotDetailView view);
 
 	/**
 	 * [UNIREG-832] Calcule les dates de début et de fin pour la création de la prochaine d'impôt sur un contribuable. Si plusieurs
@@ -101,7 +102,7 @@ public interface DeclarationImpotEditManager {
 	 *             si le contribuable ne valide pas, ou s'il n'est pas possible de déterminer son assujettissement.
 	 */
 	@Transactional(readOnly = true)
-	public List<PeriodeImposition> calculateRangesProchainesDIs(Long numero) throws ValidationException;
+	List<PeriodeImposition> calculateRangesProchainesDIs(Long numero) throws ValidationException;
 
 	/**
 	 * calcul l'année d'une nouvelle DI et vérifie que la période fiscale correspondante existe
@@ -111,7 +112,7 @@ public interface DeclarationImpotEditManager {
 	 * @return une date dont l'année correspond à la période fiscale d'une nouvelle DI à créer ou null si la période fiscale n'existe pas
 	 */
 	@Transactional(readOnly = true)
-	public abstract RegDate getDateNewDi(Long numero);
+	RegDate getDateNewDi(Long numero);
 
 	/**
 	 * Persiste en base et indexe le tiers modifie
@@ -120,7 +121,7 @@ public interface DeclarationImpotEditManager {
 	 * @param delai
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	public DeclarationImpotOrdinaire save(DeclarationImpotDetailView diEditView) throws Exception ;
+	DeclarationImpotOrdinaire save(DeclarationImpotDetailView diEditView) throws Exception ;
 
 	/**
 	 * Imprime une DI vierge
@@ -129,15 +130,7 @@ public interface DeclarationImpotEditManager {
 	 * @throws EditiqueException
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	public String envoieImpressionLocalDI(DeclarationImpotDetailView diEditView) throws Exception  ;
-
-	/**
-	 * Partie reception d'un document de l'editique
-	 * Partie reception
-	 * @param lrEditView
-	 */
-	@Transactional(rollbackFor = Throwable.class)
-	public abstract byte[] recoitImpressionLocal(String docID) throws DeclarationException;
+	EditiqueResultat envoieImpressionLocalDI(DeclarationImpotDetailView diEditView) throws Exception  ;
 
 	/**
 	 * Annule une DI
@@ -145,7 +138,7 @@ public interface DeclarationImpotEditManager {
 	 * @param diEditView
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	public abstract void annulerDI(DeclarationImpotDetailView diEditView);
+	void annulerDI(DeclarationImpotDetailView diEditView);
 
 	/**
 	 * Mintient une DI et passe la tâche à traitée
@@ -153,7 +146,7 @@ public interface DeclarationImpotEditManager {
 	 * @param idTache
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	public abstract void maintenirDI(Long idTache);
+	void maintenirDI(Long idTache);
 
 	/**
 	 * Annule un delai
@@ -161,7 +154,7 @@ public interface DeclarationImpotEditManager {
 	 * @param diEditView
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	public abstract void annulerDelai(DeclarationImpotDetailView diEditView, Long idDelai);
+	void annulerDelai(DeclarationImpotDetailView diEditView, Long idDelai);
 
 	/**
 	 * Persiste en base le delai
@@ -169,7 +162,7 @@ public interface DeclarationImpotEditManager {
 	 * @param delaiView
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	public abstract void saveDelai(DelaiDeclarationView delaiView);
+	void saveDelai(DelaiDeclarationView delaiView);
 
 	/**
 	 * Alimente la vue contribuable pour la DI
@@ -179,17 +172,17 @@ public interface DeclarationImpotEditManager {
 	 * @throws AdressesResolutionException
 	 */
 	@Transactional(readOnly = true)
-	public abstract TiersGeneralView creerCtbDI(Long numero) throws AdressesResolutionException;
+	TiersGeneralView creerCtbDI(Long numero) throws AdressesResolutionException;
 
 	/**
 	 * Alimente la vue du controller DeclarationImpotImpressionController
 	 *
 	 * @param id
-	 * @param type Document
+	 * @param typeDocument
 	 * @return
 	 */
 	@Transactional(readOnly = true)
-	public DeclarationImpotImpressionView getView(Long id, String typeDocument);
+	DeclarationImpotImpressionView getView(Long id, String typeDocument);
 
 
 	/**
@@ -198,7 +191,7 @@ public interface DeclarationImpotEditManager {
 	 * @param bean
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	public String envoieImpressionLocalSommationDI(DeclarationImpotDetailView bean)  throws EditiqueException;
+	EditiqueResultat envoieImpressionLocalSommationDI(DeclarationImpotDetailView bean)  throws EditiqueException;
 
 	/**
 	 * Imprimer la lettre de confirmation de délai
@@ -207,24 +200,15 @@ public interface DeclarationImpotEditManager {
 	 * @param idDelai
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	public String envoieImpressionLocalConfirmationDelai(DeclarationImpotDetailView bean, Long idDelai)  throws EditiqueException;
-
-	/**
-	 * Imprimer un duplicata de sommation de declaration Impot
-	 *
-	 * @param bean
-	 */
-	@Transactional(rollbackFor = Throwable.class)
-	public String envoieImpressionLocalDuplicataSommationDI(DeclarationImpotDetailView bean)  throws EditiqueException;
+	EditiqueResultat envoieImpressionLocalConfirmationDelai(DeclarationImpotDetailView bean, Long idDelai)  throws EditiqueException;
 
 	/**
 	 * Imprimer la chemise de taxation d'office
 	 *
 	 * @param bean
-	 * @param idDelai
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	public String envoieImpressionLocalTaxationOffice(DeclarationImpotDetailView bean)  throws EditiqueException;
+	EditiqueResultat envoieImpressionLocalTaxationOffice(DeclarationImpotDetailView bean)  throws EditiqueException;
 
 	/**
 	 * Cree une vue pour le delai d'une declaration
@@ -233,16 +217,15 @@ public interface DeclarationImpotEditManager {
 	 * @return
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	public DelaiDeclarationView creerDelai(Long idDeclaration);
+	DelaiDeclarationView creerDelai(Long idDeclaration);
 
 	/**
 	 * @param diImpressionView
-	 * @param declaration
 	 * @throws DeclarationException
 	 * @throws DeclarationException
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	public String envoieImpressionLocalDuplicataDI(DeclarationImpotImpressionView diImpressionView) throws DeclarationException;
+	EditiqueResultat envoieImpressionLocalDuplicataDI(DeclarationImpotImpressionView diImpressionView) throws DeclarationException;
 
 
 	/**
@@ -252,7 +235,7 @@ public interface DeclarationImpotEditManager {
 	 * @throws EditiqueException
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	public byte[] getCopieConformeSommation(DeclarationImpotDetailView diEditView) throws EditiqueException ;
+	byte[] getCopieConformeSommation(DeclarationImpotDetailView diEditView) throws EditiqueException ;
 
 }
 

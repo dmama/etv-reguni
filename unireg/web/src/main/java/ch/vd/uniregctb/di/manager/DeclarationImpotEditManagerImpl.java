@@ -44,6 +44,7 @@ import ch.vd.uniregctb.di.view.DeclarationImpotDetailView;
 import ch.vd.uniregctb.di.view.DeclarationImpotImpressionView;
 import ch.vd.uniregctb.di.view.DeclarationImpotListView;
 import ch.vd.uniregctb.di.view.ModeleDocumentView;
+import ch.vd.uniregctb.editique.EditiqueCompositionService;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueResultat;
 import ch.vd.uniregctb.editique.EditiqueService;
@@ -112,6 +113,8 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	private ModeleDocumentDAO modeleDocumentDAO;
 
 	private TacheDAO tacheDAO;
+
+	private EditiqueCompositionService editiqueCompositionService;
 
 	private EditiqueService editiqueService;
 
@@ -410,8 +413,6 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	}
 
 	/**
-	 * @param numeroTiers
-	 *            le numéro de tiers
 	 * @return la plage de dates [debut; fin] couverte par la dernière déclaration (= la plus récente) existant sur le tiers spécifié; ou
 	 *         <code>null</code> si le tiers ne possède aucune déclaration valide.
 	 */
@@ -460,32 +461,30 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 
 	/**
 	 * @param diImpressionView
-	 * @param declaration
 	 * @throws DeclarationException
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	public String envoieImpressionLocalDuplicataDI(DeclarationImpotImpressionView diImpressionView) throws DeclarationException {
-		DeclarationImpotOrdinaire declaration = diDAO.get(diImpressionView.getIdDI());
+	public EditiqueResultat envoieImpressionLocalDuplicataDI(DeclarationImpotImpressionView diImpressionView) throws DeclarationException {
+		final DeclarationImpotOrdinaire declaration = diDAO.get(diImpressionView.getIdDI());
 
 		if (tiersService.getAndSetOfficeImpot(declaration.getTiers()) == null) {
 			throw new DeclarationException("Le contribuable ne possède pas de for de gestion");
 		}
-		PeriodeFiscale periode = periodeFiscaleDAO.getPeriodeFiscaleByYear(declaration.getPeriode().getAnnee());
-		ModeleDocument modele = modeleDocumentDAO.getModelePourDeclarationImpotOrdinaire(periode, diImpressionView.getSelectedTypeDocument());
+		final PeriodeFiscale periode = periodeFiscaleDAO.getPeriodeFiscaleByYear(declaration.getPeriode().getAnnee());
+		final ModeleDocument modele = modeleDocumentDAO.getModelePourDeclarationImpotOrdinaire(periode, diImpressionView.getSelectedTypeDocument());
 		declaration .setModeleDocument(modele);
 
 		List<ch.vd.uniregctb.declaration.ordinaire.ModeleFeuilleDocumentEditique> annexes = null;
 
-		List<ModeleDocumentView> modeles = diImpressionView.getModelesDocumentView();
+		final List<ModeleDocumentView> modeles = diImpressionView.getModelesDocumentView();
 		for (ModeleDocumentView modeleView : modeles) {
 			if (modeleView.getTypeDocument().equals(diImpressionView.getSelectedTypeDocument())) {
 				annexes = modeleView.getModelesFeuilles();
+				break;
 			}
 		}
 
-		String messageID = diService.envoiDuplicataDIOnline(declaration, RegDate.get(), diImpressionView.getSelectedTypeDocument(), annexes);
-		return messageID;
-
+		return diService.envoiDuplicataDIOnline(declaration, RegDate.get(), diImpressionView.getSelectedTypeDocument(), annexes);
 	}
 
 	/**
@@ -659,7 +658,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	 * @throws Exception
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	public String envoieImpressionLocalDI(DeclarationImpotDetailView diEditView) throws Exception {
+	public EditiqueResultat envoieImpressionLocalDI(DeclarationImpotDetailView diEditView) throws Exception {
 		//Sauvegarde de la DI
 		DeclarationImpotOrdinaire declaration = save(diEditView);
 		if (tiersService.getAndSetOfficeImpot(declaration.getTiers()) == null) {
@@ -670,30 +669,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	}
 
 	/**
-	 * Partie reception d'un document de l'editique
-	 * Partie reception
-	 * @param lrEditView
-	 */
-	@Transactional(rollbackFor = Throwable.class)
-	public byte[] recoitImpressionLocal(String docID) throws DeclarationException {
-		EditiqueResultat editiqueResultat;
-		try {
-			editiqueResultat = editiqueService.getDocument(docID, true);
-		}
-		catch (JMSException e) {
-			throw new DeclarationException(e);
-		}
-		if (editiqueResultat == null) {
-			return null;
-		}
-		return editiqueResultat.getDocument();
-	}
-
-	/**
 	 * Persiste en base et indexe le tiers modifie
-	 *
-	 * @param idDi
-	 * @param delai
 	 */
 	@Transactional(rollbackFor = Throwable.class)
 	public DeclarationImpotOrdinaire save(DeclarationImpotDetailView diEditView) throws Exception {
@@ -893,32 +869,40 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	/**
 	 * Sommer une Declaration Impot
 	 *
-	 * @param diEditView
 	 * @throws EditiqueException
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	public String envoieImpressionLocalSommationDI(DeclarationImpotDetailView bean) throws EditiqueException {
-		DeclarationImpotOrdinaire di = diDAO.get(bean.getId());
-		EtatDeclaration etat = new EtatDeclaration();
+	public EditiqueResultat envoieImpressionLocalSommationDI(DeclarationImpotDetailView bean) throws EditiqueException {
+		final DeclarationImpotOrdinaire di = diDAO.get(bean.getId());
+		final EtatDeclaration etat = new EtatDeclaration();
 		etat.setEtat(TypeEtatDeclaration.SOMMEE);
 		etat.setDateObtention(RegDate.get());
 		di.addEtat(etat);
 		diDAO.save(di);
-		String docId = editiqueService.imprimeSommationDIOnline(di, RegDate.get());
-		evenementFiscalService.publierEvenementFiscalSommationDI((Contribuable)di.getTiers(), di, etat.getDateObtention());
-		return docId;
+
+		try {
+			final EditiqueResultat resultat = editiqueCompositionService.imprimeSommationDIOnline(di, RegDate.get());
+			evenementFiscalService.publierEvenementFiscalSommationDI((Contribuable)di.getTiers(), di, etat.getDateObtention());
+			return resultat;
+		}
+		catch (JMSException e) {
+			throw new EditiqueException(e);
+		}
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	public String envoieImpressionLocalConfirmationDelai(
-			DeclarationImpotDetailView diEditView, Long idDelai) throws EditiqueException {
-		DelaiDeclaration delai =delaiDeclarationDAO.get(idDelai);
-		DeclarationImpotOrdinaire di = diDAO.get(diEditView.getId());
-		String docId = editiqueService.imprimeConfirmationDelaiOnline(di, delai);
-		return docId;
+	public EditiqueResultat envoieImpressionLocalConfirmationDelai(DeclarationImpotDetailView diEditView, Long idDelai) throws EditiqueException {
+		try {
+			final DelaiDeclaration delai = delaiDeclarationDAO.get(idDelai);
+			final DeclarationImpotOrdinaire di = diDAO.get(diEditView.getId());
+			return editiqueCompositionService.imprimeConfirmationDelaiOnline(di, delai);
+		}
+		catch (JMSException e) {
+			throw new EditiqueException(e);
+		}
 	}
 
 	/**
@@ -1032,6 +1016,10 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 		this.messageSource = messageSource;
 	}
 
+	public void setEditiqueCompositionService(EditiqueCompositionService editiqueCompositionService) {
+		this.editiqueCompositionService = editiqueCompositionService;
+	}
+
 	public void setEditiqueService(EditiqueService editiqueService) {
 		this.editiqueService = editiqueService;
 	}
@@ -1048,34 +1036,34 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 		this.delaiDeclarationDAO = delaiDeclarationDAO;
 	}
 
-	public String envoieImpressionLocalDuplicataSommationDI(DeclarationImpotDetailView bean) throws EditiqueException {
-		DeclarationImpotOrdinaire di = diDAO.get(bean.getId());
-		String docId = editiqueService.imprimeSommationDIOnline(di, di.getEtatDeclarationActif(TypeEtatDeclaration.SOMMEE).getDateObtention());
-		return docId;
-	}
-
 	@Transactional(rollbackFor = Throwable.class)
 	public byte[] getCopieConformeSommation(DeclarationImpotDetailView diEditView) throws EditiqueException {
-		DeclarationImpotOrdinaire di = diDAO.get(diEditView.getId());
+		final DeclarationImpotOrdinaire di = diDAO.get(diEditView.getId());
 		String nomDocument = diService.construitIdArchivageSommationDI(di);
-		byte[] pdf = editiqueService.getPDFDocument(di.getTiers().getNumero(), ImpressionSommationDIHelperImpl.TYPE_DOCUMENT_SOMMATION_DI, nomDocument);
+		byte[] pdf = editiqueService.getPDFDeDocumentDepuisArchive(di.getTiers().getNumero(), ImpressionSommationDIHelperImpl.TYPE_DOCUMENT_SOMMATION_DI, nomDocument);
 		if (pdf == null) {
 			nomDocument = diService.construitAncienIdArchivageSommationDI(di);
-			pdf = editiqueService.getPDFDocument(di.getTiers().getNumero(), ImpressionSommationDIHelperImpl.TYPE_DOCUMENT_SOMMATION_DI, nomDocument);
+			pdf = editiqueService.getPDFDeDocumentDepuisArchive(di.getTiers().getNumero(), ImpressionSommationDIHelperImpl.TYPE_DOCUMENT_SOMMATION_DI, nomDocument);
 		}
 		if (pdf == null) {
 			nomDocument = diService.construitAncienIdArchivageSommationDIPourOnLine(di);
-			pdf = editiqueService.getPDFDocument(di.getTiers().getNumero(), ImpressionSommationDIHelperImpl.TYPE_DOCUMENT_SOMMATION_DI, nomDocument);
+			pdf = editiqueService.getPDFDeDocumentDepuisArchive(di.getTiers().getNumero(), ImpressionSommationDIHelperImpl.TYPE_DOCUMENT_SOMMATION_DI, nomDocument);
 		}
 		return pdf;
 	}
 
 	@Transactional(rollbackFor = Throwable.class)
-	public String envoieImpressionLocalTaxationOffice(DeclarationImpotDetailView bean) throws EditiqueException {
-		DeclarationImpotOrdinaire di = diDAO.get(bean.getId());
-		String docId = editiqueService.imprimeTaxationOfficeOnline(di);
+	public EditiqueResultat envoieImpressionLocalTaxationOffice(DeclarationImpotDetailView bean) throws EditiqueException {
+		final DeclarationImpotOrdinaire di = diDAO.get(bean.getId());
 		di.setDateImpressionChemiseTaxationOffice(new Date());
-		return docId;
+
+		try {
+			final EditiqueResultat resulat = editiqueCompositionService.imprimeTaxationOfficeOnline(di);
+			return resulat;
+		}
+		catch (JMSException e) {
+			throw new EditiqueException(e);
+		}
 	}
 
 	@Transactional(rollbackFor = Throwable.class)

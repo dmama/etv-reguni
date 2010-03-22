@@ -6,6 +6,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.DeclarationException;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
+import ch.vd.uniregctb.editique.EditiqueResultat;
 import ch.vd.uniregctb.metier.assujettissement.TypeContribuableDI;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.type.TypeDocument;
@@ -20,7 +21,6 @@ public interface DeclarationImpotService {
 	 *            l'année de la période fiscale considérée.
 	 * @param dateTraitement
 	 *            la date de traitement officielle du job (= aujourd'hui, sauf pour les tests)
-	 * @param nbThreads le nombre de threads à utiliser
 	 * @return le nombre de tâches en instance créées.
 	 */
 	public DeterminationDIsResults determineDIsAEmettre(int anneePeriode, RegDate dateTraitement, int nbThreads, StatusManager status)
@@ -76,7 +76,7 @@ public interface DeclarationImpotService {
 	 * ATTENTION ! cette méthode doit être incluse dans une transaction qui ne sera pas commité car elle créerait des tâches et des DI
 	 * parasites !
 	 *
-	 * @param anneePeriode
+	 * @param annee
 	 *            l'année de la période fiscale considérée.
 	 * @param dateTraitement
 	 *            la date de traitement officielle du job (= aujourd'hui, sauf pour les tests)
@@ -98,22 +98,19 @@ public interface DeclarationImpotService {
 
 	/**
 	 * Envoie à l'impression la déclaration spécifiée pour une visualisation on-line, et envoie un événement fiscal correspondant. Cette
-	 * méthode retourne immédiatement, le document d'impression doit être récupéré par un appel à la méthode
-	 * {@link #getDocument(String, boolean)}.
+	 * méthode retourne directement le document d'impression
 	 *
 	 * @param declaration
 	 *            la déclaration d'impôt ordinaire à imprimer
 	 * @param dateEvenement
 	 *            la date d'impression
 	 * @return l'ID du document d'impression
-	 * @see #getDocument(String, boolean)
 	 */
-	public String envoiDIOnline(DeclarationImpotOrdinaire declaration, RegDate dateEvenement) throws DeclarationException;
+	public EditiqueResultat envoiDIOnline(DeclarationImpotOrdinaire declaration, RegDate dateEvenement) throws DeclarationException;
 
 	/**
 	 * Envoie à l'impression le duplicata de la déclaration spécifiée pour une visualisation on-line. Cette
-	 * méthode retourne immédiatement, le document d'impression doit être récupéré par un appel à la méthode
-	 * {@link #getDocument(String, boolean)}.
+	 * méthode retourne  directement le document d'impression
 	 *
 	 * @param declaration
 	 *            la déclaration d'impôt ordinaire à imprimer
@@ -124,9 +121,8 @@ public interface DeclarationImpotService {
 	 * @param annexes
 	 *            la liste des annexes
 	 * @return l'ID du document d'impression
-	 * @see #getDocument(String, boolean)
 	 */
-	public String envoiDuplicataDIOnline(DeclarationImpotOrdinaire declaration, RegDate dateEvenement, TypeDocument typeDocument,
+	public EditiqueResultat envoiDuplicataDIOnline(DeclarationImpotOrdinaire declaration, RegDate dateEvenement, TypeDocument typeDocument,
 			List<ModeleFeuilleDocumentEditique> annexes) throws DeclarationException;
 
 	/**

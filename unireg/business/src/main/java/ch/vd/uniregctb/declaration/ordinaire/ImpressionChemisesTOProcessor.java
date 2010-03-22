@@ -23,7 +23,7 @@ import ch.vd.uniregctb.common.BatchTransactionTemplate.Behavior;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
-import ch.vd.uniregctb.editique.EditiqueService;
+import ch.vd.uniregctb.editique.EditiqueCompositionService;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.OfficeImpot;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -41,11 +41,11 @@ public class ImpressionChemisesTOProcessor {
 	private final HibernateTemplate hibernateTemplate;
 	private final DeclarationImpotOrdinaireDAO diDAO;
 	private final PlatformTransactionManager transactionManager;
-	private final EditiqueService editiqueService;
+	private final EditiqueCompositionService editiqueService;
 	private final ServiceInfrastructureService infraService;
 
 	public ImpressionChemisesTOProcessor(HibernateTemplate hibernateTemplate, DeclarationImpotOrdinaireDAO diDAO,
-			PlatformTransactionManager transactionManager, EditiqueService editiqueService, ServiceInfrastructureService infraService) {
+			PlatformTransactionManager transactionManager, EditiqueCompositionService editiqueService, ServiceInfrastructureService infraService) {
 		this.hibernateTemplate = hibernateTemplate;
 		this.diDAO = diDAO;
 		this.transactionManager = transactionManager;

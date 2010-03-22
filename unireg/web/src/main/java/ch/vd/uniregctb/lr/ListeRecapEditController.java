@@ -10,6 +10,8 @@ import org.springframework.web.servlet.ModelAndView;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.EditiqueCommunicationException;
+import ch.vd.uniregctb.common.EditiqueErrorHelper;
+import ch.vd.uniregctb.editique.EditiqueResultat;
 import ch.vd.uniregctb.lr.manager.ListeRecapEditManager;
 import ch.vd.uniregctb.lr.view.ListeRecapDetailView;
 import ch.vd.uniregctb.print.PrintPCLManager;
@@ -129,12 +131,14 @@ public class ListeRecapEditController extends AbstractListeRecapController {
 				lrEditManager.annulerDelai(bean, idDelai);
 			}
 			else if (BUTTON_IMPRIMER_LR.equals(getTarget())) {
-				String docID = lrEditManager.envoieImpressionLocalLR(bean);
-				byte[] pcl = lrEditManager.recoitImpressionLocal(docID);
-				if (pcl == null) {
-					throw new EditiqueCommunicationException("La communication avec l'éditique a échoué. Veuillez imprimer un duplicata de la liste récapitulative", docID);
+				final EditiqueResultat resultat = lrEditManager.envoieImpressionLocalLR(bean);
+				if (resultat != null && resultat.getDocument() != null) {
+					printPCLManager.openPclStream(request, response, resultat.getDocument());
 				}
-				printPCLManager.openPclStream(request, response, pcl);
+				else {
+					final String message = String.format("%s Veuillez imprimer un duplicata de la liste récapitulative.", EditiqueErrorHelper.getMessageErreurEditique(resultat));
+					throw new EditiqueCommunicationException(message);
+				}
 			}
 		}
 		else {
@@ -144,21 +148,25 @@ public class ListeRecapEditController extends AbstractListeRecapController {
 				return new ModelAndView("redirect:edit-debiteur.do?numero=" + bean.getDpi().getNumero().toString());
 			}
 			else if (request.getParameter(BUTTON_DUPLICATA_LR) != null) {
-				String docID = lrEditManager.envoieImpressionLocalDuplicataLR(bean);
-				byte[] pcl = lrEditManager.recoitImpressionLocal(docID);
-				if (pcl == null) {
-					throw new EditiqueCommunicationException("La communication avec l'éditique a échoué. Veuillez réessayer plus tard", docID);
+				final EditiqueResultat resultat = lrEditManager.envoieImpressionLocalDuplicataLR(bean);
+				if (resultat != null && resultat.getDocument() != null) {
+					printPCLManager.openPclStream(request, response, resultat.getDocument());
 				}
-				printPCLManager.openPclStream(request, response, pcl);
+				else {
+					final String message = String.format("%s Veuillez ré-essayer plus tard.", EditiqueErrorHelper.getMessageErreurEditique(resultat));
+					throw new EditiqueCommunicationException(message);
+				}
 			}
 			//TODO [FDE] A supprimer - Mis ici pour tester les Sommations LR
 			else if (request.getParameter(BUTTON_SOMMER_LR) != null) {
-				String docID = lrEditManager.envoieImpressionLocalSommationLR(bean);
-				byte[] pdf = lrEditManager.recoitImpressionLocal(docID);
-				if (pdf == null) {
-					throw new EditiqueCommunicationException("La communication avec l'éditique a échoué. Veuillez réessayer plus tard", docID);
+				final EditiqueResultat resultat = lrEditManager.envoieImpressionLocalSommationLR(bean);
+				if (resultat != null && resultat.getDocument() != null) {
+					getServletService().downloadAsFile("sommationLr.pdf", resultat.getDocument(), response);
 				}
-				getServletService().downloadAsFile("sommationLr.pdf", pdf, response);
+				else {
+					final String message = String.format("%s Veuillez ré-essayer plus tard.", EditiqueErrorHelper.getMessageErreurEditique(resultat));
+					throw new EditiqueCommunicationException(message);
+				}
 			}
 			else if (request.getParameter(BUTTON_ANNULER_LR) != null) {
 				lrEditManager.annulerLR(bean);

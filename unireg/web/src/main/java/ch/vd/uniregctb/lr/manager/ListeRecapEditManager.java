@@ -2,17 +2,12 @@ package ch.vd.uniregctb.lr.manager;
 
 import org.springframework.transaction.annotation.Transactional;
 
-import ch.vd.uniregctb.declaration.DeclarationException;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
-import ch.vd.uniregctb.declaration.ListeRecapitulativeDAO;
-import ch.vd.uniregctb.declaration.source.ListeRecapService;
 import ch.vd.uniregctb.editique.EditiqueException;
-import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
+import ch.vd.uniregctb.editique.EditiqueResultat;
 import ch.vd.uniregctb.lr.view.ListeRecapDetailView;
 import ch.vd.uniregctb.lr.view.ListeRecapListView;
-import ch.vd.uniregctb.tiers.TiersDAO;
-import ch.vd.uniregctb.tiers.TiersService;
 
 /**
  * Service offrant des methodes pour gérer le controller ListeRecapEditController
@@ -28,7 +23,7 @@ public interface ListeRecapEditManager {
 	 * @return une vue ListeRecapEditView
 	 */
 	@Transactional(readOnly = true)
-	public ListeRecapDetailView get(Long id) ;
+	ListeRecapDetailView get(Long id) ;
 
 	/**
 	 * Rafraichissement de la vue
@@ -37,14 +32,14 @@ public interface ListeRecapEditManager {
 	 * @return
 	 */
 	@Transactional(readOnly = true)
-	public ListeRecapDetailView refresh(ListeRecapDetailView view) ;
+	ListeRecapDetailView refresh(ListeRecapDetailView view) ;
 
 	/**
 	 * Alimente la vue ListeRecapListView en fonction d'un debiteur
 	 * @return une vue ListeRecapListView
 	 */
 	@Transactional(readOnly = true)
-	public abstract ListeRecapListView findByNumero(Long numero) ;
+	ListeRecapListView findByNumero(Long numero) ;
 
 	/**
 	 * Cree une nouvelle LR
@@ -53,7 +48,7 @@ public interface ListeRecapEditManager {
 	 * @return
 	 */
 	@Transactional(readOnly = true)
-	public abstract ListeRecapDetailView creerLr(Long numero) ;
+	ListeRecapDetailView creerLr(Long numero) ;
 
 	/**
 	 * Persiste en base et indexe le tiers modifie
@@ -62,7 +57,7 @@ public interface ListeRecapEditManager {
 	 * @throws Exception
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	public abstract DeclarationImpotSource save(ListeRecapDetailView lrEditView) throws Exception;
+	DeclarationImpotSource save(ListeRecapDetailView lrEditView);
 
 	/**
 	 * Annule un delai
@@ -70,15 +65,13 @@ public interface ListeRecapEditManager {
 	 * @param lrEditView
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	public abstract void annulerDelai(ListeRecapDetailView lrEditView, Long idDelai);
+	void annulerDelai(ListeRecapDetailView lrEditView, Long idDelai);
 
 	/**
 	 * Persiste en base et indexe le tiers modifie
-	 *
-	 * @param lrEditView
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	public abstract void saveDelai(Long idLr, DelaiDeclaration delai);
+	void saveDelai(Long idLr, DelaiDeclaration delai);
 
 	/**
 	 * Contrôle la présence de la LR
@@ -86,7 +79,7 @@ public interface ListeRecapEditManager {
 	 * @param id
 	 */
 	@Transactional(readOnly = true)
-	public void controleLR(Long id);
+	void controleLR(Long id);
 
 	/**
 	 * Imprime une LR vierge
@@ -95,7 +88,7 @@ public interface ListeRecapEditManager {
 	 * @throws EditiqueException
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	public String envoieImpressionLocalLR(ListeRecapDetailView lrEditView) throws Exception  ;
+	EditiqueResultat envoieImpressionLocalLR(ListeRecapDetailView lrEditView) throws EditiqueException;
 
 	/**
 	 * Imprime une sommation LR
@@ -104,7 +97,7 @@ public interface ListeRecapEditManager {
 	 * @throws EditiqueException
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	public String envoieImpressionLocalSommationLR(ListeRecapDetailView lrEditView) throws Exception  ;
+	EditiqueResultat envoieImpressionLocalSommationLR(ListeRecapDetailView lrEditView) throws EditiqueException;
 
 	/**
 	 * Imprime un duplicata de LR
@@ -113,22 +106,13 @@ public interface ListeRecapEditManager {
 	 * @throws Exception
 	 */
 	@Transactional(readOnly = true)
-	public String envoieImpressionLocalDuplicataLR(ListeRecapDetailView lrEditView) throws Exception  ;
-
-	/**
-	 * Imprime une LR vierge
-	 * Partie reception
-	 * @param docID
-	 */
-	@Transactional(rollbackFor = Throwable.class)
-	public abstract byte[] recoitImpressionLocal(String docID) throws DeclarationException;
+	EditiqueResultat envoieImpressionLocalDuplicataLR(ListeRecapDetailView lrEditView) throws EditiqueException;
 
 	/**
 	 * Annule une LR
 	 *
 	 * @param lrEditView
 	 */
-	@Transactional
-	public abstract void annulerLR(ListeRecapDetailView lrEditView);
-
+	@Transactional(rollbackFor = Throwable.class)
+	void annulerLR(ListeRecapDetailView lrEditView);
 }

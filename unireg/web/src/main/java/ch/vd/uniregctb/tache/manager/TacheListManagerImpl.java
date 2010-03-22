@@ -16,10 +16,9 @@ import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.ParamPagination;
-import ch.vd.uniregctb.declaration.DeclarationException;
+import ch.vd.uniregctb.editique.EditiqueCompositionService;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueResultat;
-import ch.vd.uniregctb.editique.EditiqueService;
 import ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServiceSecuriteException;
@@ -52,14 +51,14 @@ public class TacheListManagerImpl implements TacheListManager {
 
 	protected static final Logger LOGGER = Logger.getLogger(TacheListManagerImpl.class);
 
-	private final Integer DELAI_RETOUR_DI = new Integer(60);
+	private final int DELAI_RETOUR_DI = 60;
 
 	private TacheDAO tacheDAO;
 	private TiersService tiersService;
 	private ServiceInfrastructureService serviceInfrastructureService;
 	private AdresseService adresseService;
 	private ServiceSecuriteService serviceSecurite;
-	private EditiqueService editiqueService;
+	private EditiqueCompositionService editiqueService;
 
 	public void setTacheDAO(TacheDAO tacheDAO) {
 		this.tacheDAO = tacheDAO;
@@ -81,13 +80,7 @@ public class TacheListManagerImpl implements TacheListManager {
 		this.serviceSecurite = serviceSecurite;
 	}
 
-
-
-	public EditiqueService getEditiqueService() {
-		return editiqueService;
-	}
-
-	public void setEditiqueService(EditiqueService editiqueService) {
+	public void setEditiqueService(EditiqueCompositionService editiqueService) {
 		this.editiqueService = editiqueService;
 	}
 
@@ -303,38 +296,26 @@ public class TacheListManagerImpl implements TacheListManager {
 	 * @throws EditiqueException
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	public String envoieImpressionLocalDossier(NouveauDossierCriteriaView nouveauDossierCriteriaView) throws EditiqueException, InfrastructureException {
-		LOGGER.debug("Tab Ids dossiers:" + nouveauDossierCriteriaView.getTabIdsDossiers());
-		List<Contribuable> contribuables = new ArrayList<Contribuable>();
+	public EditiqueResultat envoieImpressionLocalDossier(NouveauDossierCriteriaView nouveauDossierCriteriaView) throws EditiqueException {
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Tab Ids dossiers:" + Arrays.toString(nouveauDossierCriteriaView.getTabIdsDossiers()));
+		}
+
+		final List<Contribuable> contribuables = new ArrayList<Contribuable>();
 		if (nouveauDossierCriteriaView.getTabIdsDossiers() != null) {
 			for (int i = 0; i < nouveauDossierCriteriaView.getTabIdsDossiers().length; i++) {
-				Tache tache = tacheDAO.get(new Long(nouveauDossierCriteriaView.getTabIdsDossiers()[i]));
+				final Tache tache = tacheDAO.get(nouveauDossierCriteriaView.getTabIdsDossiers()[i]);
 				tache.setEtat(TypeEtatTache.TRAITE);
 				contribuables.add(tache.getContribuable());
 			}
 		}
-		String docId = editiqueService.imprimeNouveauxDossiers(contribuables);
-		return docId;
-	}
 
-	/**
-	 * Imprime un nouveau dossier
-	 * Partie reception
-	 * @param lrEditView
-	 */
-	@Transactional(rollbackFor = Throwable.class)
-	public byte[] recoitImpressionLocalDossier(String docID) throws DeclarationException {
-		EditiqueResultat editiqueResultat;
 		try {
-			editiqueResultat = editiqueService.getDocument(docID, true);
+			return editiqueService.imprimeNouveauxDossiers(contribuables);
 		}
 		catch (JMSException e) {
-			throw new DeclarationException(e);
+			throw new EditiqueException(e);
 		}
-		if (editiqueResultat == null) {
-			return null;
-		}
-		return editiqueResultat.getDocument();
 	}
 
 	/**

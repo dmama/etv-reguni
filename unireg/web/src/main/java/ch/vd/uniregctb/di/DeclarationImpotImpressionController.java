@@ -8,15 +8,18 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
 import ch.vd.uniregctb.common.EditiqueCommunicationException;
+import ch.vd.uniregctb.common.EditiqueErrorHelper;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.di.manager.DeclarationImpotEditManager;
 import ch.vd.uniregctb.di.view.DeclarationImpotImpressionView;
+import ch.vd.uniregctb.editique.EditiqueResultat;
 import ch.vd.uniregctb.print.PrintPCLManager;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
@@ -152,18 +155,14 @@ public class DeclarationImpotImpressionController  extends AbstractDeclarationIm
 		}
 		else if (action.equals(DUPLICATA_VALUE)) {
 
-			SimpleDateFormat formater = new java.text.SimpleDateFormat( "dd/MM/yyyy HH:mm:ss" );
-			Date dateEnvoi = new Date();
-			String message = "Impression duplicata DI Début communication avec l'éditique - Timestamp:" + formater.format(dateEnvoi);
-			LOGGER.debug(message);
-			String docID = diEditManager.envoieImpressionLocalDuplicataDI(bean);
-			LOGGER.debug("docID:" + docID + "--");
-			byte[] pcl = diEditManager.recoitImpressionLocal(docID);
-			if (pcl == null) {
-				throw new EditiqueCommunicationException("La communication avec l'éditique à échoué. Veuillez recommencer plus tard.", docID);
+			final EditiqueResultat result = diEditManager.envoieImpressionLocalDuplicataDI(bean);
+			if (result != null && result.getDocument() != null) {
+				printPCLManager.openPclStream(request, response, result.getDocument());
 			}
-			printPCLManager.openPclStream(request, response, pcl);
-
+			else {
+				final String message = String.format("%s Veuillez recommencer plus tard.", EditiqueErrorHelper.getMessageErreurEditique(result));
+				throw new EditiqueCommunicationException(message);
+			}
 		}
 
 		TracingManager.end(tp);

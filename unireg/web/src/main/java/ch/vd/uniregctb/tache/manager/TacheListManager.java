@@ -8,8 +8,8 @@ import org.springframework.transaction.annotation.Transactional;
 import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.common.ParamPagination;
-import ch.vd.uniregctb.declaration.DeclarationException;
 import ch.vd.uniregctb.editique.EditiqueException;
+import ch.vd.uniregctb.editique.EditiqueResultat;
 import ch.vd.uniregctb.tache.view.NouveauDossierCriteriaView;
 import ch.vd.uniregctb.tache.view.NouveauDossierListView;
 import ch.vd.uniregctb.tache.view.TacheCriteriaView;
@@ -65,15 +65,7 @@ public interface TacheListManager {
 	 * @return
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	public String envoieImpressionLocalDossier(NouveauDossierCriteriaView nouveauDossierCriteriaView) throws EditiqueException, InfrastructureException;
-
-	/**
-	 * Imprime un nouveau dossier
-	 * Partie reception
-	 * @param lrEditView
-	 */
-	@Transactional(rollbackFor = Throwable.class)
-	public byte[] recoitImpressionLocalDossier(String docID) throws DeclarationException ;
+	public EditiqueResultat envoieImpressionLocalDossier(NouveauDossierCriteriaView nouveauDossierCriteriaView) throws EditiqueException;
 
 	/**
 	 * Retourne le nombre de tache correspondant aux criteres

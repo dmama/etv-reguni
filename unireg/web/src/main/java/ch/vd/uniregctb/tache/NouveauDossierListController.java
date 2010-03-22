@@ -15,8 +15,10 @@ import org.springframework.web.servlet.view.RedirectView;
 
 import ch.vd.uniregctb.common.ActionException;
 import ch.vd.uniregctb.common.EditiqueCommunicationException;
+import ch.vd.uniregctb.common.EditiqueErrorHelper;
 import ch.vd.uniregctb.common.WebParamPagination;
 import ch.vd.uniregctb.editique.EditiqueException;
+import ch.vd.uniregctb.editique.EditiqueResultat;
 import ch.vd.uniregctb.tache.manager.TacheListManager;
 import ch.vd.uniregctb.tache.view.NouveauDossierCriteriaView;
 import ch.vd.uniregctb.tache.view.NouveauDossierListView;
@@ -137,20 +139,21 @@ public class NouveauDossierListController extends AbstractTacheController {
 		session.setAttribute(NOUVEAU_DOSSIER_CRITERIA_NAME, bean);
 
 		if (request.getParameter(BOUTON_IMPRIMER) != null) {
-			final String docId;
 			try {
-				docId = tacheListManager.envoieImpressionLocalDossier(bean);
+				final EditiqueResultat resultat = tacheListManager.envoieImpressionLocalDossier(bean);
+				if (resultat != null && resultat.getDocument() != null) {
+					getServletService().downloadAsFile("dossier.pdf", resultat.getDocument(), response);
+				}
+				else {
+					final String message = String.format("%s Veuillez recommencer l'opération ultérieurement.", EditiqueErrorHelper.getMessageErreurEditique(resultat));
+					throw new EditiqueCommunicationException(message);
+				}
 			}
 			catch (EditiqueException e) {
 				LOGGER.error(e, e);
 				// UNIREG-1218 : on affiche le message d'erreur de manière sympa
 				throw new ActionException(e.getMessage());
 			}
-			final byte[] pdf = tacheListManager.recoitImpressionLocalDossier(docId);
-			if (pdf == null) {
-				throw new EditiqueCommunicationException("La communication avec l'éditique a échoué. Veuillez recommencer l'opération ultérieurement", docId);
-			}
-			getServletService().downloadAsFile("dossier.pdf", pdf, response);
 		}
 
 		//session.removeAttribute(NOUVEAU_DOSSIER_CRITERIA_NAME);

@@ -142,6 +142,7 @@
 	<alias alias="globalIndex" name="globalIndexTracing"/>
 
 	<bean id="lrService" class="ch.vd.uniregctb.declaration.source.ListeRecapServiceImpl" lazy-init="true">
+		<property name="editiqueCompositionService" ref="editiqueCompositionService" />
 		<property name="editiqueService" ref="editiqueService" />
 		<property name="evenementFiscalService" ref="evenementFiscalService" />
 		<property name="tiersDAO" ref="tiersDAO" />
@@ -156,7 +157,7 @@
 	<bean id="diService" class="ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotServiceImpl">
 		<property name="hibernateTemplate" ref="hibernateTemplate" />
 		<property name="transactionManager" ref="transactionManager" />
-		<property name="editiqueService" ref="editiqueService" />
+		<property name="editiqueService" ref="editiqueCompositionService" />
 		<property name="impressionDIHelper" ref="impressionDIHelper" />
 		<property name="impressionSommationDIHelper" ref="impressionSommationDIHelper" />
 		<property name="periodeDAO" ref="periodeFiscaleDAO" />
@@ -372,7 +373,7 @@
 		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="tiersService" ref="tiersService"/>
 		<property name="mouvementDossierDAO" ref="mouvementDossierDAO"/>
-		<property name="editiqueService" ref="editiqueService"/>
+		<property name="editiqueService" ref="editiqueCompositionService"/>
 	</bean>
 
 	<bean id="impressionBordereauMouvementDossierHelper" class="ch.vd.uniregctb.mouvement.ImpressionBordereauMouvementDossierHelperImpl">

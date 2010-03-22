@@ -28,8 +28,9 @@ import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
 import ch.vd.uniregctb.declaration.source.ListeRecapService;
 import ch.vd.uniregctb.delai.DelaiDeclarationView;
+import ch.vd.uniregctb.editique.EditiqueCompositionService;
+import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueResultat;
-import ch.vd.uniregctb.editique.EditiqueService;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.general.manager.TiersGeneralManager;
 import ch.vd.uniregctb.general.view.TiersGeneralView;
@@ -76,7 +77,7 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 
 	private MessageSource messageSource;
 
-	private EditiqueService editiqueService;
+	private EditiqueCompositionService editiqueCompositionService;
 
 	private DelaisService delaisService;
 
@@ -94,8 +95,8 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 		this.evenementFiscalService = evenementFiscalService;
 	}
 
-	public void setEditiqueService(EditiqueService editiqueService) {
-		this.editiqueService = editiqueService;
+	public void setEditiqueCompositionService(EditiqueCompositionService editiqueCompositionService) {
+		this.editiqueCompositionService = editiqueCompositionService;
 	}
 
 	/**
@@ -604,7 +605,7 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 	 * @param lrEditView
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	public DeclarationImpotSource save(ListeRecapDetailView lrEditView) throws Exception {
+	public DeclarationImpotSource save(ListeRecapDetailView lrEditView) {
 		DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(lrEditView.getDpi().getNumero());
 
 		EtatDeclaration etat = null;
@@ -743,45 +744,48 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 		this.messageSource = messageSource;
 	}
 
-	public String envoieImpressionLocalLR(ListeRecapDetailView lrEditView) throws Exception {
+	public EditiqueResultat envoieImpressionLocalLR(ListeRecapDetailView lrEditView) throws EditiqueException {
 		//Sauvegarde de la DI
-		DeclarationImpotSource lr = save(lrEditView);
+		final DeclarationImpotSource lr = save(lrEditView);
 		lrEditView.setImprimable(false);
-		//Envoi du flux xml à l'éditique
-		return editiqueService.imprimeLROnline(lr, RegDate.get(), TypeDocument.LISTE_RECAPITULATIVE);
+
+		try {
+			//Envoi du flux xml à l'éditique
+			return editiqueCompositionService.imprimeLROnline(lr, RegDate.get(), TypeDocument.LISTE_RECAPITULATIVE);
+		}
+		catch (JMSException e) {
+			throw new EditiqueException(e);
+		}
 	}
 
 
-	public String envoieImpressionLocalSommationLR(ListeRecapDetailView lrEditView) throws Exception {
+	public EditiqueResultat envoieImpressionLocalSommationLR(ListeRecapDetailView lrEditView) throws EditiqueException {
 		//Sauvegarde de la DI
-		DeclarationImpotSource lr = save(lrEditView);
-		EtatDeclaration etat = new EtatDeclaration();
+		final DeclarationImpotSource lr = save(lrEditView);
+		final EtatDeclaration etat = new EtatDeclaration();
 		etat.setEtat(TypeEtatDeclaration.SOMMEE);
 		etat.setDateObtention(RegDate.get());
 		lr.addEtat(etat);
 		lrDAO.save(lr);
-		//Envoi du flux xml à l'éditique
-		return editiqueService.imprimeSommationLROnline(lr, RegDate.get());
-	}
 
-	public byte[] recoitImpressionLocal(String docID) throws DeclarationException {
-		EditiqueResultat editiqueResultat;
 		try {
-			editiqueResultat = editiqueService.getDocument(docID, true);
+			//Envoi du flux xml à l'éditique
+			return editiqueCompositionService.imprimeSommationLROnline(lr, RegDate.get());
 		}
 		catch (JMSException e) {
-			throw new DeclarationException(e);
+			throw new EditiqueException(e);
 		}
-		if (editiqueResultat == null) {
-			return null;
-		}
-		return editiqueResultat.getDocument();
 	}
 
 	@Transactional(readOnly = true)
-	public String envoieImpressionLocalDuplicataLR(ListeRecapDetailView lrEditView) throws Exception {
-		DeclarationImpotSource lr = lrDAO.get(lrEditView.getId());
-		return editiqueService.imprimeLROnline(lr, RegDate.get(), TypeDocument.LISTE_RECAPITULATIVE);
+	public EditiqueResultat envoieImpressionLocalDuplicataLR(ListeRecapDetailView lrEditView) throws EditiqueException {
+		try {
+			final DeclarationImpotSource lr = lrDAO.get(lrEditView.getId());
+			return editiqueCompositionService.imprimeLROnline(lr, RegDate.get(), TypeDocument.LISTE_RECAPITULATIVE);
+		}
+		catch (JMSException e) {
+			throw new EditiqueException(e);
+		}
 	}
 
 	/**
@@ -789,7 +793,7 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 	 *
 	 * @param lrEditView
 	 */
-	@Transactional
+	@Transactional(rollbackFor = Throwable.class)
 	public void annulerLR (ListeRecapDetailView lrEditView) {
 		DeclarationImpotSource lr = lrDAO.get(lrEditView.getId());
 		lr.setAnnule(true);

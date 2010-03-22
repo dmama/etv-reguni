@@ -13,7 +13,9 @@ import org.springframework.web.servlet.ModelAndView;
 
 import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.utils.Pair;
+import ch.vd.uniregctb.common.EditiqueErrorHelper;
 import ch.vd.uniregctb.editique.EditiqueException;
+import ch.vd.uniregctb.editique.EditiqueResultat;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.mouvement.view.MouvementDetailView;
 import ch.vd.uniregctb.mouvement.view.MouvementMasseDetailBordereauView;
@@ -59,25 +61,12 @@ public class MouvementMasseDetailBordereauController extends AbstractMouvementMa
 		// validation de l'impression ?
 		if (imprimer != null) {
 			final MouvementMasseDetailBordereauView view = (MouvementMasseDetailBordereauView) command;
-			boolean bordereauCree = false;
 			try {
-				final String docId = getMouvementManager().imprimerBordereau(view.getSelection());
-				if (LOGGER.isDebugEnabled()) {
-					LOGGER.debug("Document envoyé : ID = " + docId);
-				}
-				bordereauCree = true;
-
-				final byte[] pcl = getMouvementManager().recevoirImpressionBordereau(docId);
-				printPCLManager.openPclStream(request, response, pcl);
+				final EditiqueResultat resultat = getMouvementManager().imprimerBordereau(view.getSelection());
+				printPCLManager.openPclStream(request, response, resultat.getDocument());
 			}
 			catch (EditiqueException e) {
 				errors.reject("global.error.msg", e.getMessage());
-				if (bordereauCree) {
-					// comme on est obligé d'avoir deux transactions (une pour l'envoi de la demande,
-					// l'autre pour la réception du flux), et que la notion de duplicata de bordereau
-					// n'existe pas, il faut maintenant détruire le bordereau créé
-					getMouvementManager().annulerBordereau(view.getSelection());
-				}
 			}
 		}
 		return showForm(request, response, errors);

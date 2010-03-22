@@ -34,6 +34,7 @@
 		<property name="tiersGeneralManager" ref="tiersGeneralManager" />
 		<property name="tiersService" ref="tiersService" />
 		<property name="diService" ref="diService" />
+		<property name="editiqueCompositionService" ref="editiqueCompositionService" />
 		<property name="editiqueService" ref="editiqueService" />
 		<property name="evenementFiscalService" ref="evenementFiscalService" />
 		<property name="modeleDocumentDAO" ref="modeleDocumentDAO" />

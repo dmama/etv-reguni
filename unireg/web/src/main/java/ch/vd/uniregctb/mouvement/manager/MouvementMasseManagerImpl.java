@@ -11,8 +11,10 @@ import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.common.EditiqueErrorHelper;
 import ch.vd.uniregctb.common.ParamPagination;
 import ch.vd.uniregctb.editique.EditiqueException;
+import ch.vd.uniregctb.editique.EditiqueResultat;
 import ch.vd.uniregctb.mouvement.BordereauMouvementDossier;
 import ch.vd.uniregctb.mouvement.BordereauMouvementDossierDAO;
 import ch.vd.uniregctb.mouvement.EnvoiDossierVersCollectiviteAdministrative;
@@ -134,20 +136,14 @@ public class MouvementMasseManagerImpl extends AbstractMouvementManagerImpl impl
 	}
 
 	@Transactional(rollbackFor = Throwable.class)
-	public String imprimerBordereau(long[] idsMouvement) throws EditiqueException {
+	public EditiqueResultat imprimerBordereau(long[] idsMouvement) throws EditiqueException {
 		final List<MouvementDossier> mvts = getMouvementDossierDAO().get(idsMouvement);
-		return mouvementService.envoyerImpressionBordereau(mvts);
-	}
-
-	@Transactional(rollbackFor = Throwable.class)
-	public byte[] recevoirImpressionBordereau(String docId) throws EditiqueException {
-		return mouvementService.recevoirImpressionBordereau(docId);
-	}
-
-	@Transactional(rollbackFor = Throwable.class)
-	public void annulerBordereau(long[] idsMouvement) {
-		final List<MouvementDossier> mvts = getMouvementDossierDAO().get(idsMouvement);
-		mouvementService.viderEtDetruireBordereau(mvts);
+		final EditiqueResultat resultat = mouvementService.envoyerImpressionBordereau(mvts);
+		if (resultat == null || resultat.getDocument() == null) {
+			// je veux faire sauter la transaction pour que le bordereau ne soit pas généré
+			throw new EditiqueException(EditiqueErrorHelper.getMessageErreurEditique(resultat));
+		}
+		return resultat;
 	}
 
 	@Transactional(readOnly = true)

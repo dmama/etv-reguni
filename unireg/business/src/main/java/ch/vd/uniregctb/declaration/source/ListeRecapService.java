@@ -13,20 +13,6 @@ import ch.vd.uniregctb.type.CategorieImpotSource;
 public interface ListeRecapService {
 
 	/**
-	 * Creer un document dans l'editique pour l'impression locale
-	 * @param lr
-	 */
-	public void envoieImpressionLocalLR(DeclarationImpotSource lr) throws EditiqueException;
-
-	/**
-	 * Recoit un document de l'editique pour l'impression locale
-	 * @param lr
-	 * @return
-	 * @throws Exception
-	 */
-	public byte[] recoitImpressionLocalLR(DeclarationImpotSource lr) throws Exception;
-
-	/**
 	 * Recupere à l'éditique un document pour afficher
 	 * une copie conforme (duplicata)
 	 *

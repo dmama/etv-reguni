@@ -24,6 +24,7 @@ import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
 import ch.vd.uniregctb.editique.DelegateEditique;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueResultat;
+import ch.vd.uniregctb.editique.EditiqueCompositionService;
 import ch.vd.uniregctb.editique.EditiqueService;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.parametrage.DelaisService;
@@ -40,6 +41,8 @@ public class ListeRecapServiceImpl implements ListeRecapService, DelegateEditiqu
 	private static final String TYPE_DOCUMENT_LR = "03";
 
 	private DelaisService delaisService;
+
+	private EditiqueCompositionService editiqueCompositionService;
 
 	private EditiqueService editiqueService;
 
@@ -58,30 +61,6 @@ public class ListeRecapServiceImpl implements ListeRecapService, DelegateEditiqu
 	private HibernateTemplate hibernateTemplate;
 
 	/**
-	 * Creer un document dans l'editique pour l'impression locale
-	 *
-	 * @param lr
-	 */
-	public void envoieImpressionLocalLR(DeclarationImpotSource lr) throws EditiqueException {
-		this.editiqueService.creerDocumentImmediatement(lr.getId().toString(), null, TypeFormat.PCL, lr, false);
-	}
-
-	/**
-	 * Recoit un document de l'editique pour l'impression locale
-	 *
-	 * @param lr
-	 * @return
-	 * @throws Exception
-	 */
-	public byte[] recoitImpressionLocalLR(DeclarationImpotSource lr) throws Exception {
-		EditiqueResultat resultat = this.editiqueService.getDocument(lr.getId().toString(), true);
-		if (resultat.hasError()) {
-			throw new Exception(resultat.getError());
-		}
-		return resultat.getDocument();
-	}
-
-	/**
 	 * Recupere à l'éditique un document pour afficher une copie conforme (duplicata)
 	 *
 	 * @param lr
@@ -89,9 +68,7 @@ public class ListeRecapServiceImpl implements ListeRecapService, DelegateEditiqu
 	 * @throws EditiqueException
 	 */
 	public byte[] getCopieConformeLR(DeclarationImpotSource lr) throws EditiqueException {
-		byte[] pdf = editiqueService.getPDFDocument(lr.getTiers().getNumero(), TYPE_DOCUMENT_LR, lr.getId().toString());
-		return pdf;
-
+		return editiqueService.getPDFDeDocumentDepuisArchive(lr.getTiers().getNumero(), TYPE_DOCUMENT_LR, lr.getId().toString());
 	}
 
 	/**
@@ -112,8 +89,7 @@ public class ListeRecapServiceImpl implements ListeRecapService, DelegateEditiqu
 	 *@param dateTraitement  @throws Exception
 	 */
 	public EnvoiSommationLRsResults sommerAllLR(CategorieImpotSource categorie, RegDate dateTraitement, StatusManager status) throws Exception {
-		EnvoiSommationLRsEnMasseProcessor processor = new EnvoiSommationLRsEnMasseProcessor(transactionManager, hibernateTemplate, this,
-				delaisService);
+		final EnvoiSommationLRsEnMasseProcessor processor = new EnvoiSommationLRsEnMasseProcessor(transactionManager, hibernateTemplate, this, delaisService);
 		return processor.run(categorie, dateTraitement, status);
 	}
 
@@ -126,7 +102,7 @@ public class ListeRecapServiceImpl implements ListeRecapService, DelegateEditiqu
 	 * @throws Exception
 	 */
 	public void imprimerLR(DebiteurPrestationImposable dpi, RegDate dateDebutPeriode) throws Exception {
-		DeclarationImpotSource lrSaved = saveLR(dpi, dateDebutPeriode);
+		final DeclarationImpotSource lrSaved = saveLR(dpi, dateDebutPeriode);
 		/*
 		 * Set<Declaration> declarations = dpiSaved.getDeclarations(); Iterator<Declaration> itDec = declarations.iterator();
 		 * DeclarationImpotSource lr = null; while (itDec.hasNext()) { Declaration declaration = itDec.next(); if (declaration instanceof
@@ -134,7 +110,7 @@ public class ListeRecapServiceImpl implements ListeRecapService, DelegateEditiqu
 		 * (lrCourante.getDateDebut().equals(dateDebutPeriode)) { lr = lrCourante; } } }
 		 */
 
-		editiqueService.imprimeLRForBatch(lrSaved, RegDate.get());
+		editiqueCompositionService.imprimeLRForBatch(lrSaved, RegDate.get());
 		evenementFiscalService.publierEvenementFiscalOuverturePeriodeDecompteLR(dpi, lrSaved, RegDate.get());
 	}
 
@@ -145,7 +121,7 @@ public class ListeRecapServiceImpl implements ListeRecapService, DelegateEditiqu
 		lr.setPeriodicite(dpi.getPeriodiciteDecompte());
 		lr.setModeCommunication(dpi.getModeCommunication());
 
-		PeriodeFiscale periodeFiscale = periodeDAO.getPeriodeFiscaleByYear(dateDebutPeriode.year());
+		final PeriodeFiscale periodeFiscale = periodeDAO.getPeriodeFiscaleByYear(dateDebutPeriode.year());
 		Assert.notNull(periodeFiscale);
 		lr.setPeriode(periodeFiscale);
 
@@ -161,12 +137,12 @@ public class ListeRecapServiceImpl implements ListeRecapService, DelegateEditiqu
 
 		lr.setModeleDocument(modDoc);
 
-		EtatDeclaration etat = new EtatDeclaration();
+		final EtatDeclaration etat = new EtatDeclaration();
 		etat.setDateObtention(RegDate.get());
 		etat.setEtat(TypeEtatDeclaration.EMISE);
 		lr.addEtat(etat);
 
-		DelaiDeclaration delai = new DelaiDeclaration();
+		final DelaiDeclaration delai = new DelaiDeclaration();
 		delai.setDateTraitement(RegDate.get());
 
 		// si la date de traitement est avant la fin de la période, alors le délai est 1 mois après la fin de la période
@@ -190,12 +166,12 @@ public class ListeRecapServiceImpl implements ListeRecapService, DelegateEditiqu
 	 * @throws Exception
 	 */
 	public void imprimerSommationLR(DeclarationImpotSource lr, RegDate dateTraitement) throws Exception {
-		EtatDeclaration etat = new EtatDeclaration();
+		final EtatDeclaration etat = new EtatDeclaration();
 		etat.setEtat(TypeEtatDeclaration.SOMMEE);
-		RegDate dateExpedition = delaisService.getDateFinDelaiCadevImpressionListesRecapitulatives(dateTraitement);
+		final RegDate dateExpedition = delaisService.getDateFinDelaiCadevImpressionListesRecapitulatives(dateTraitement);
 		etat.setDateObtention(dateExpedition);
 		lr.addEtat(etat);
-		editiqueService.imprimeSommationLRForBatch(lr, RegDate.get());
+		editiqueCompositionService.imprimeSommationLRForBatch(lr, RegDate.get());
 		evenementFiscalService.publierEvenementFiscalSommationLR((DebiteurPrestationImposable) lr.getTiers(), lr, etat.getDateObtention());
 	}
 
@@ -343,24 +319,16 @@ public class ListeRecapServiceImpl implements ListeRecapService, DelegateEditiqu
 	public void surDocumentRecu(EditiqueResultat resultat) {
 	}
 
-	public EditiqueService getEditiqueService() {
-		return editiqueService;
+	public void setEditiqueCompositionService(EditiqueCompositionService editiqueCompositionService) {
+		this.editiqueCompositionService = editiqueCompositionService;
 	}
 
 	public void setEditiqueService(EditiqueService editiqueService) {
 		this.editiqueService = editiqueService;
 	}
 
-	public TiersDAO getTiersDAO() {
-		return tiersDAO;
-	}
-
 	public void setTiersDAO(TiersDAO tiersDAO) {
 		this.tiersDAO = tiersDAO;
-	}
-
-	public EvenementFiscalService getEvenementFiscalService() {
-		return evenementFiscalService;
 	}
 
 	public void setEvenementFiscalService(EvenementFiscalService evenementFiscalService) {
@@ -369,10 +337,6 @@ public class ListeRecapServiceImpl implements ListeRecapService, DelegateEditiqu
 
 	public void setPeriodeDAO(PeriodeFiscaleDAO periodeDAO) {
 		this.periodeDAO = periodeDAO;
-	}
-
-	public DelaisService getDelaisService() {
-		return delaisService;
 	}
 
 	public void setDelaisService(DelaisService delaisService) {

@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.uniregctb.common.ParamPagination;
 import ch.vd.uniregctb.editique.EditiqueException;
+import ch.vd.uniregctb.editique.EditiqueResultat;
 import ch.vd.uniregctb.mouvement.EtatMouvementDossier;
 import ch.vd.uniregctb.mouvement.MouvementDossierCriteria;
 import ch.vd.uniregctb.mouvement.view.BordereauEnvoiReceptionView;
@@ -66,23 +67,10 @@ public interface MouvementMasseManager extends AbstractMouvementManager {
 
 	/**
 	 * Effectue la demande d'impression d'un bordereau de mouvements de dossiers avec les mouvements donnés par ID, et renvoie
-	 * l'identifiant à utiliser dans la méthode {@link #recevoirImpressionBordereau} pour récupérer le flux PCL
+	 * le flux PCL
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	String imprimerBordereau(long[] idsMouvement) throws EditiqueException;
-
-	/**
-	 * Réceptionne le flux éditique concernant l'impression du bordereau d'envoi de dossiers
-	 */
-	@Transactional(rollbackFor = Throwable.class)
-	byte[] recevoirImpressionBordereau(String docId) throws EditiqueException;
-
-	/**
-	 * Annule le bordereau composé des mouvements dont les ID sont donnés ici
-	 * @param idsMouvement ID techniques des mouvements considérés
-	 */
-	@Transactional(rollbackFor = Throwable.class)
-	void annulerBordereau(long[] idsMouvement);
+	EditiqueResultat imprimerBordereau(long[] idsMouvement) throws EditiqueException;
 
 	/**
 	 * Renvoie les bordereaux de mouvements d'envois restant à réceptionner

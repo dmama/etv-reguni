@@ -19,10 +19,12 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.date.DateRangeHelper.Range;
 import ch.vd.registre.base.validation.ValidationException;
+import ch.vd.uniregctb.common.EditiqueErrorHelper;
 import ch.vd.uniregctb.di.manager.DeclarationImpotEditManager;
 import ch.vd.uniregctb.di.view.DeclarationImpotDetailView;
 import ch.vd.uniregctb.di.view.DeclarationImpotListView;
 import ch.vd.uniregctb.di.view.DeclarationImpotSelectView;
+import ch.vd.uniregctb.editique.EditiqueResultat;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
 import ch.vd.uniregctb.print.PrintPCLManager;
 import ch.vd.uniregctb.security.AccessDeniedException;
@@ -364,21 +366,14 @@ public class DeclarationImpotEditController extends AbstractDeclarationImpotCont
 			throw new ValidationException(null, errorMessage);
 		}
 
-		SimpleDateFormat formater = new java.text.SimpleDateFormat( "dd/MM/yyyy HH:mm:ss" );
-		Date dateEnvoi = new Date();
-		String message = "Impression DI - Début communication avec l'éditique - Timestamp:" +  formater.format(dateEnvoi);
-		LOGGER.debug(message);
-		String docID = diEditManager.envoieImpressionLocalDI(bean);
-		LOGGER.debug("docID:" + docID + "--");
-
-		byte[] pcl = diEditManager.recoitImpressionLocal(docID);
-		if (pcl == null) {
-			session.setAttribute(ERREUR_COMMUNICATION_EDITIQUE, "La communication avec l'éditique a échoué. Veuillez imprimer un duplicata de la déclaration d'impôt");
+		final EditiqueResultat resultat = diEditManager.envoieImpressionLocalDI(bean);
+		if (resultat != null && resultat.getDocument() != null) {
+			printPCLManager.openPclStream(request, response, resultat.getDocument());
+		}
+		else {
+			session.setAttribute(ERREUR_COMMUNICATION_EDITIQUE, String.format("%s Veuillez imprimer un duplicata de la déclaration d'impôt.", EditiqueErrorHelper.getMessageErreurEditique(resultat)));
 			return new ModelAndView("redirect:edit.do?action=listdis&numero=" + bean.getContribuable().getNumero());
 		}
-		printPCLManager.openPclStream(request, response, pcl);
-
-
 
 		if (bean.getId() != null) {
 			diEditManager.refresh(bean);
@@ -429,13 +424,14 @@ public class DeclarationImpotEditController extends AbstractDeclarationImpotCont
 		HttpSession session = request.getSession();
 		checkAccesDossierEnEcriture(bean.getContribuable().getNumero());
 
-		String docID = diEditManager.envoieImpressionLocalTaxationOffice(bean);
-		byte[] pcl = diEditManager.recoitImpressionLocal(docID);
-		if (pcl == null) {
-			session.setAttribute(ERREUR_COMMUNICATION_EDITIQUE, "La communication avec l'éditique a échoué. Veuillez recommencer plus tard");
+		final EditiqueResultat resultat = diEditManager.envoieImpressionLocalTaxationOffice(bean);
+		if (resultat != null && resultat.getDocument() != null) {
+			printPCLManager.openPclStream(request, response, resultat.getDocument());
+		}
+		else {
+			session.setAttribute(ERREUR_COMMUNICATION_EDITIQUE, String.format("%s Veuillez recommencer plus tard.", EditiqueErrorHelper.getMessageErreurEditique(resultat)));
 			return new ModelAndView("redirect:edit.do?action=editdi&id=" + bean.getId());
 		}
-		printPCLManager.openPclStream(request, response, pcl);
 
 		if (bean.getId() != null) {
 			diEditManager.refresh(bean);
@@ -470,14 +466,14 @@ public class DeclarationImpotEditController extends AbstractDeclarationImpotCont
 		final DeclarationImpotDetailView bean = (DeclarationImpotDetailView) command;
 		checkAccesDossierEnEcriture(bean.getContribuable().getNumero());
 
-		String docID = diEditManager.envoieImpressionLocalSommationDI(bean);
-		byte[] pdf = diEditManager.recoitImpressionLocal(docID);
-		if (pdf == null) {
-			errors.reject("global.error.communication.editique");
+		final EditiqueResultat resultat = diEditManager.envoieImpressionLocalSommationDI(bean);
+		if (resultat != null && resultat.getDocument() != null) {
+			getServletService().downloadAsFile("sommationDi.pdf", resultat.getDocument(), response);
 		}
 		else {
-			getServletService().downloadAsFile("sommationDi.pdf", pdf, response);
+			errors.reject("global.error.communication.editique");
 		}
+
 		if (bean.getId() != null) {
 			diEditManager.refresh(bean);
 		}
@@ -489,14 +485,14 @@ public class DeclarationImpotEditController extends AbstractDeclarationImpotCont
 		final DeclarationImpotDetailView bean = (DeclarationImpotDetailView) command;
 		String delai = getEventArgument();
 		Long idDelai = Long.parseLong(delai);
-		String docID = diEditManager.envoieImpressionLocalConfirmationDelai(bean, idDelai);
-		byte[] pdf = diEditManager.recoitImpressionLocal(docID);
-		if (pdf == null) {
-			errors.reject("global.error.communication.editique");
+		final EditiqueResultat resultat = diEditManager.envoieImpressionLocalConfirmationDelai(bean, idDelai);
+		if (resultat != null && resultat.getDocument() != null) {
+			getServletService().downloadAsFile("delai.pdf", resultat.getDocument(), response);
 		}
 		else {
-			getServletService().downloadAsFile("delai.pdf", pdf, response);
+			errors.reject("global.error.communication.editique");
 		}
+
 		if (bean.getId() != null) {
 			diEditManager.refresh(bean);
 		}

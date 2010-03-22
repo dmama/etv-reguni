@@ -9,11 +9,10 @@ import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.StatusManager;
+import ch.vd.uniregctb.editique.EditiqueCompositionService;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueResultat;
-import ch.vd.uniregctb.editique.EditiqueService;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
 
@@ -24,7 +23,7 @@ public class MouvementServiceImpl implements MouvementService {
 	private MouvementDossierDAO mouvementDossierDAO;
 	private HibernateTemplate hibernateTemplate;
 	private PlatformTransactionManager transactionManager;
-	private EditiqueService editiqueService;
+	private EditiqueCompositionService editiqueService;
 
 	public void setTiersDAO(TiersDAO tiersDAO) {
 		this.tiersDAO = tiersDAO;
@@ -46,7 +45,7 @@ public class MouvementServiceImpl implements MouvementService {
 		this.transactionManager = transactionManager;
 	}
 
-	public void setEditiqueService(EditiqueService editiqueService) {
+	public void setEditiqueService(EditiqueCompositionService editiqueService) {
 		this.editiqueService = editiqueService;
 	}
 
@@ -66,9 +65,9 @@ public class MouvementServiceImpl implements MouvementService {
 	/**
 	 * Fait la demande d'impression d'un bordereau de mouvement de dossiers en masse avec les mouvements indiqués
 	 * @param mvts les mouvements constituant le bordereau
-	 * @return l'identifiant à utiliser (dans une autre transaction, afin que le message soit bien envoyé) dans un appel à {@link #recevoirImpressionBordereau(String)}
+	 * @return le document imprimé
 	 */
-	public String envoyerImpressionBordereau(List<MouvementDossier> mvts) throws EditiqueException {
+	public EditiqueResultat envoyerImpressionBordereau(List<MouvementDossier> mvts) throws EditiqueException {
 
 		// 1. création d'un objet bordereau
 		final BordereauMouvementDossier bordereau = creerBordereau();
@@ -84,59 +83,12 @@ public class MouvementServiceImpl implements MouvementService {
 		final Set<MouvementDossier> contenu = new HashSet<MouvementDossier>(mvts);
 		bordereau.setContenu(contenu);
 
-		// demande d'impression éditique...
-		return editiqueService.envoyerImpressionLocaleBordereau(bordereau);
-	}
-
-	/**
-	 * Attend le flux éditique de retour pour l'impression d'un bordereau envoyé par à appel à {@link #envoyerImpressionBordereau(List)}
-	 * @param docId l'identifiant du document à réceptionner
-	 * @return le document imprimé (PCL)
-	 */
-	public byte[] recevoirImpressionBordereau(String docId) throws EditiqueException {
+		// demande d'impression éditique synchrone...
 		try {
-			final EditiqueResultat doc = editiqueService.getDocument(docId, true);
-			if (doc != null) {
-				if (doc.hasError()) {
-					throw new EditiqueException(doc.getError());
-				}
-				return doc.getDocument();
-			}
-			else {
-				throw new EditiqueException("Le service Editique ne répond pas à la demande d'impression, merci de ré-essayer plus tard.");
-			}
+			return editiqueService.envoyerImpressionLocaleBordereau(bordereau);
 		}
 		catch (JMSException e) {
 			throw new EditiqueException(e);
-		}
-	}
-
-	/**
-	 * Annule le bordereau composé des mouvements donnés
-	 * @param mvts les mouvements composant le bordereau
-	 */
-	public void viderEtDetruireBordereau(List<MouvementDossier> mvts) {
-		BordereauMouvementDossier bordereau = null;
-
-		// déconnection des mouvements de leur bordereau
-		for (MouvementDossier mvt : mvts) {
-			final ElementDeBordereau elt = (ElementDeBordereau) mvt;
-			Assert.notNull(elt.getBordereau());
-
-			if (bordereau == null) {
-				bordereau = elt.getBordereau();
-			}
-			else {
-				Assert.isEqual(bordereau.getId(), elt.getBordereau().getId());
-			}
-
-			mvt.setEtat(EtatMouvementDossier.A_ENVOYER);
-			mvt.setDateMouvement(null);
-		}
-
-		if (bordereau != null) {
-			bordereau.getContenu().clear();
-			hibernateTemplate.delete(bordereau);
 		}
 	}
 }

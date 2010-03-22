@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.declaration.ordinaire;
 
+import javax.jms.JMSException;
 import java.util.List;
 
 import org.springframework.orm.hibernate3.HibernateTemplate;
@@ -14,8 +15,9 @@ import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.ModeleDocumentDAO;
 import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
+import ch.vd.uniregctb.editique.EditiqueCompositionService;
 import ch.vd.uniregctb.editique.EditiqueException;
-import ch.vd.uniregctb.editique.EditiqueService;
+import ch.vd.uniregctb.editique.EditiqueResultat;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.metier.assujettissement.TypeContribuableDI;
@@ -33,7 +35,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 
 	private EvenementFiscalService evenementFiscalService;
 
-	private EditiqueService editiqueService;
+	private EditiqueCompositionService editiqueService;
 
 	private HibernateTemplate hibernateTemplate;
 
@@ -64,7 +66,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	public DeclarationImpotServiceImpl() {
 	}
 
-	public DeclarationImpotServiceImpl(EditiqueService editiqueService, HibernateTemplate hibernateTemplate, PeriodeFiscaleDAO periodeDAO,
+	public DeclarationImpotServiceImpl(EditiqueCompositionService editiqueService, HibernateTemplate hibernateTemplate, PeriodeFiscaleDAO periodeDAO,
 			TacheDAO tacheDAO, ModeleDocumentDAO modeleDAO, DelaisService delaisService, ServiceInfrastructureService infraService,
 			TiersService tiersService, ImpressionDeclarationImpotOrdinaireHelper impressionDIHelper, PlatformTransactionManager transactionManager,
 			ParametreAppService parametres) {
@@ -81,7 +83,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 		this.parametres = parametres;
 	}
 
-	public void setEditiqueService(EditiqueService editiqueService) {
+	public void setEditiqueService(EditiqueCompositionService editiqueService) {
 		this.editiqueService = editiqueService;
 	}
 
@@ -206,31 +208,37 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	/**
 	 * {@inheritDoc}
 	 */
-	public String envoiDIOnline(DeclarationImpotOrdinaire declaration, RegDate dateEvenement) throws DeclarationException {
-		String messageID;
+	public EditiqueResultat envoiDIOnline(DeclarationImpotOrdinaire declaration, RegDate dateEvenement) throws DeclarationException {
+		EditiqueResultat resultat;
 		try {
-			messageID = editiqueService.imprimeDIOnline(declaration, dateEvenement);
+			resultat = editiqueService.imprimeDIOnline(declaration, dateEvenement);
 		}
 		catch (EditiqueException e) {
 			throw new DeclarationException(e);
 		}
+		catch (JMSException e) {
+			throw new DeclarationException(e);
+		}
 		evenementFiscalService.publierEvenementFiscalEnvoiDI((Contribuable) declaration.getTiers(), declaration, dateEvenement);
-		return messageID;
+		return resultat;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public String envoiDuplicataDIOnline(DeclarationImpotOrdinaire declaration, RegDate dateEvenement, TypeDocument typeDocument,
+	public EditiqueResultat envoiDuplicataDIOnline(DeclarationImpotOrdinaire declaration, RegDate dateEvenement, TypeDocument typeDocument,
 			List<ModeleFeuilleDocumentEditique> annexes) throws DeclarationException {
-		String messageID;
+		EditiqueResultat resultat;
 		try {
-			messageID = editiqueService.imprimeDIOnline(declaration, dateEvenement, typeDocument, annexes, true);
+			resultat = editiqueService.imprimeDIOnline(declaration, dateEvenement, typeDocument, annexes, true);
 		}
 		catch (EditiqueException e) {
 			throw new DeclarationException(e);
 		}
-		return messageID;
+		catch (JMSException e) {
+			throw new DeclarationException(e);
+		}
+		return resultat;
 	}
 
 	/**

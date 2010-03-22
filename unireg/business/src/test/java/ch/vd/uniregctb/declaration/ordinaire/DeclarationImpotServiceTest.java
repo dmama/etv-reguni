@@ -28,7 +28,7 @@ import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.ModeleDocumentDAO;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
-import ch.vd.uniregctb.editique.EditiqueService;
+import ch.vd.uniregctb.editique.EditiqueCompositionService;
 import ch.vd.uniregctb.evenement.EvenementFiscal;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
@@ -62,7 +62,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 	public void onSetUp() throws Exception {
 
 		super.onSetUp();
-		final EditiqueService editiqueService = getBean(EditiqueService.class, "editiqueService");
+		final EditiqueCompositionService editiqueService = getBean(EditiqueCompositionService.class, "editiqueCompositionService");
 		hibernateTemplate = getBean(HibernateTemplate.class, "hibernateTemplate");
 		periodeDAO = getBean(PeriodeFiscaleDAO.class, "periodeFiscaleDAO");
 		tacheDAO = getBean(TacheDAO.class, "tacheDAO");

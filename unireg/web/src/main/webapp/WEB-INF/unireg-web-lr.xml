@@ -57,7 +57,7 @@
 		<property name="tiersService" ref="tiersService" />
 		<property name="lrService" ref="lrService" />
 		<property name="evenementFiscalService" ref="evenementFiscalService" />
-		<property name="editiqueService" ref="editiqueService" />
+		<property name="editiqueCompositionService" ref="editiqueCompositionService" />
 		<property name="delaisService" ref="delaisService" />
 	</bean>
 
