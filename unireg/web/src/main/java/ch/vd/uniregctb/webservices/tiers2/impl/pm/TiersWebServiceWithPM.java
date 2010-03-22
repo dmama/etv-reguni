@@ -320,13 +320,14 @@ public class TiersWebServiceWithPM implements TiersWebService {
 		pmHisto.numero = pmHost.getNumeroEntreprise();
 		pmHisto.numeroTelProf = pmHost.getTelephoneContact();
 		pmHisto.numeroTelecopie = pmHost.getTelecopieContact();
-		pmHisto.comptesBancaires = calculateComptesBancaires(pmHost);
 
 		pmHisto.personneContact = pmHost.getNomContact();
 		pmHisto.designationAbregee = pmHost.getDesignationAbregee();
 		pmHisto.raisonSociale1 = pmHost.getRaisonSociale1();
 		pmHisto.raisonSociale2 = pmHost.getRaisonSociale2();
 		pmHisto.raisonSociale3 = pmHost.getRaisonSociale3();
+		pmHisto.dateDebutActivite = DataHelper.coreToWeb(pmHost.getDateConstitution());
+		pmHisto.dateFinActivite = DataHelper.coreToWeb(pmHost.getDateFinActivite());
 		pmHisto.dateBouclementFutur = DataHelper.coreToWeb(pmHost.getDateBouclementFuture());
 		pmHisto.numeroIPMRO = pmHost.getNumeroIPMRO();
 
@@ -381,6 +382,10 @@ public class TiersWebServiceWithPM implements TiersWebService {
 			pmHisto.capitaux = capitaux2web(pmHost.getCapitaux());
 		}
 
+		if (parts.contains(TiersPart.COMPTES_BANCAIRES)) {
+			pmHisto.comptesBancaires = calculateComptesBancaires(pmHost);
+		}
+		
 		if (parts.contains(TiersPart.ETATS_PM)) {
 			pmHisto.etats = etats2web(pmHost.getEtats());
 		}
