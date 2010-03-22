@@ -271,6 +271,59 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 		assertEquals(Long.valueOf(222), ev1.getTiersNumber());
 	}
 
+	/**
+	 * [UNIREG-2039] vérifie que les paramètres date mini et date maxi fonctionnent correctement.
+	 */
+	@Test
+	public void testFournirEvenementsPMDateMiniMaxi() throws Exception {
+
+		final SearchEvenementsPM params = new SearchEvenementsPM();
+		params.setLogin(login);
+		params.setDateMinimale(newDate(2000, 1, 1));
+		params.setDateMaximale(newDate(2003, 7, 1));
+		params.setTiersNumber(222L);
+
+		final List<EvenementPM> events = service.searchEvenementsPM(params).getItem();
+		assertNotNull(events);
+		assertEquals(6, events.size());
+
+		final EvenementPM ev0 = events.get(0);
+		assertNotNull(ev0);
+		assertSameDay(newDate(2000, 1, 1), ev0.getDateEvenement());
+		assertEquals("020", ev0.getCodeEvenement());
+		assertEquals(Long.valueOf(222), ev0.getTiersNumber());
+
+		final EvenementPM ev1 = events.get(1);
+		assertNotNull(ev1);
+		assertSameDay(newDate(2001, 9, 6), ev1.getDateEvenement());
+		assertEquals("037", ev1.getCodeEvenement());
+		assertEquals(Long.valueOf(222), ev1.getTiersNumber());
+
+		final EvenementPM ev2 = events.get(2);
+		assertNotNull(ev2);
+		assertSameDay(newDate(2003, 4, 3), ev2.getDateEvenement());
+		assertEquals("003", ev2.getCodeEvenement());
+		assertEquals(Long.valueOf(222), ev2.getTiersNumber());
+
+		final EvenementPM ev3 = events.get(3);
+		assertNotNull(ev3);
+		assertSameDay(newDate(2003, 4, 3), ev3.getDateEvenement());
+		assertEquals("003", ev3.getCodeEvenement());
+		assertEquals(Long.valueOf(222), ev3.getTiersNumber());
+
+		final EvenementPM ev4 = events.get(4);
+		assertNotNull(ev4);
+		assertSameDay(newDate(2003, 4, 3), ev4.getDateEvenement());
+		assertEquals("016", ev4.getCodeEvenement());
+		assertEquals(Long.valueOf(222), ev4.getTiersNumber());
+
+		final EvenementPM ev5 = events.get(5);
+		assertNotNull(ev5);
+		assertSameDay(newDate(2003, 4, 3), ev5.getDateEvenement());
+		assertEquals("023", ev5.getCodeEvenement());
+		assertEquals(Long.valueOf(222), ev5.getTiersNumber());
+	}
+
 	@Test
 	public void testFournirCoordonneesFinancieres() throws Exception {
 

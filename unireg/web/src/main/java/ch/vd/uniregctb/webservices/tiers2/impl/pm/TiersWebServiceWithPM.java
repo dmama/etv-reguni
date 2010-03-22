@@ -280,7 +280,7 @@ public class TiersWebServiceWithPM implements TiersWebService {
 			partName = "params", name = "SearchEvenementsPM") final SearchEvenementsPM params) throws BusinessException, AccessDeniedException, TechnicalException {
 
 		final List<ch.vd.uniregctb.interfaces.model.EvenementPM> list =
-				servicePM.findEvenements(params.tiersNumber, params.codeEvenement, DataHelper.webToCore(params.dateMaximale), DataHelper.webToCore(params.dateMinimale));
+				servicePM.findEvenements(params.tiersNumber, params.codeEvenement, DataHelper.webToCore(params.dateMinimale), DataHelper.webToCore(params.dateMaximale));
 		return events2web(list);
 	}
 
