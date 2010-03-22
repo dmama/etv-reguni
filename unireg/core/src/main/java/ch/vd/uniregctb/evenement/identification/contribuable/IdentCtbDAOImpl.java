@@ -31,31 +31,35 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 		super(IdentificationContribuable.class);
 	}
 
-	@Transactional(readOnly = true)
-	public List<IdentificationContribuable> find (IdentificationContribuableCriteria identificationContribuableCriteria, ParamPagination paramPagination, boolean nonTraiteOnly, boolean archiveOnly, boolean nonTraiteAndSuspendu) {
+
+	public List<IdentificationContribuable> find(IdentificationContribuableCriteria identificationContribuableCriteria, ParamPagination paramPagination, boolean nonTraiteOnly, boolean archiveOnly,
+	                                             boolean nonTraiteAndSuspendu) {
 		if (LOGGER.isTraceEnabled()) {
 			LOGGER.trace("Start of IdentificationContribuableDAO:find");
 		}
 
 		final List<Object> criteria = new ArrayList<Object>();
-		String queryWhere=  buildCriterion(criteria, identificationContribuableCriteria, nonTraiteOnly, archiveOnly, nonTraiteAndSuspendu);
+		String queryWhere = buildCriterion(criteria, identificationContribuableCriteria, nonTraiteOnly, archiveOnly, nonTraiteAndSuspendu);
 
 		String queryOrder = "";
 		return executeSearch(paramPagination, criteria, queryWhere);
 
 	}
+
 	@SuppressWarnings("unchecked")
 	private List<IdentificationContribuable> executeSearch(ParamPagination paramPagination, final List<Object> criteria, String queryWhere) {
 		String queryOrder = new String("");
 		if (paramPagination.getChamp() != null) {
 			queryOrder = " order by identificationContribuable." + paramPagination.getChamp();
-		} else {
+		}
+		else {
 			queryOrder = " order by identificationContribuable.demande.date";
 		}
 		if (paramPagination.isSensAscending()) {
-			queryOrder = queryOrder + " asc" ;
-		} else {
-			queryOrder = queryOrder + " desc" ;
+			queryOrder = queryOrder + " asc";
+		}
+		else {
+			queryOrder = queryOrder + " desc";
 		}
 
 		final String query = " select identificationContribuable from IdentificationContribuable identificationContribuable where 1=1 " + queryWhere + queryOrder;
@@ -82,20 +86,19 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 	}
 
 
-
 	/**
 	 * @param nonTraiteOnly
 	 * @param nonTraiteAndSuspendu
 	 * @see ch.vd.uniregctb.evenement.identification.contribuable.IdentCtbDAO#count(ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuableCriteria, boolean, boolean)
 	 */
-	@Transactional(readOnly = true)
+
 	public int count(IdentificationContribuableCriteria identificationContribuableCriteria, boolean nonTraiteOnly, boolean archiveOnly, boolean nonTraiteAndSuspendu) {
 		if (LOGGER.isTraceEnabled()) {
 			LOGGER.trace("Start of IdentificationContribuableDAO:count");
 		}
 		Assert.notNull(identificationContribuableCriteria, "Les critères de recherche peuvent pas être nuls");
 		List<Object> criteria = new ArrayList<Object>();
-		String queryWhere= buildCriterion(criteria, identificationContribuableCriteria, nonTraiteOnly, archiveOnly, nonTraiteAndSuspendu);
+		String queryWhere = buildCriterion(criteria, identificationContribuableCriteria, nonTraiteOnly, archiveOnly, nonTraiteAndSuspendu);
 
 
 		String query = " select count(*) from IdentificationContribuable identificationContribuable where 1=1 " + queryWhere;
@@ -105,22 +108,22 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 
 	/**
 	 * Récupère la liste des types de message
+	 *
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	@Transactional(readOnly = true)
-	public List<String> getTypesMessage () {
+	public List<String> getTypesMessage() {
 		String query = " select distinct identificationContribuable.demande.typeMessage from IdentificationContribuable identificationContribuable";
 		return getHibernateTemplate().find(query);
 	}
 
 	/**
 	 * Récupère la liste des émetteurs
+	 *
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	 @Transactional(readOnly = true)
-	public List<String> getEmetteursId () {
+	public List<String> getEmetteursId() {
 		String query = " select distinct identificationContribuable.demande.emetteurId from IdentificationContribuable identificationContribuable";
 		return getHibernateTemplate().find(query);
 	}
@@ -131,12 +134,14 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 	 *
 	 * @param criteria
 	 * @param identificationContribuableCriteria
-	 * @param nonTraiteOnly TODO
-	 * @param archiveOnly TODO
+	 *
+	 * @param nonTraiteOnly       TODO
+	 * @param archiveOnly         TODO
 	 * @param nonTraiteOrSuspendu TODO
 	 * @return
 	 */
-	private String buildCriterion(List<Object> criteria, IdentificationContribuableCriteria identificationContribuableCriteria, boolean nonTraiteOnly, boolean archiveOnly, boolean nonTraiteOrSuspendu) {
+	private String buildCriterion(List<Object> criteria, IdentificationContribuableCriteria identificationContribuableCriteria, boolean nonTraiteOnly, boolean archiveOnly,
+	                              boolean nonTraiteOrSuspendu) {
 		String queryWhere = "";
 
 		String typeMessage = identificationContribuableCriteria.getTypeMessage();
@@ -190,10 +195,10 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 		if (nonTraiteOnly) {
 			queryWhere = buildCriterionEtatNonTraite(criteria, queryWhere, identificationContribuableCriteria);
 		}
-		else if(archiveOnly){
+		else if (archiveOnly) {
 			queryWhere = buildCriterionEtatArchive(criteria, queryWhere, identificationContribuableCriteria);
 		}
-		else if(nonTraiteOrSuspendu){
+		else if (nonTraiteOrSuspendu) {
 			queryWhere = buildCriterionEtatNonTraiteOrSuspendu(criteria, queryWhere, identificationContribuableCriteria);
 		}
 		else {
@@ -226,7 +231,7 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 			if (dateNaissance.isPartial()) {
 				RegDate[] partialDateRange = dateNaissance.getPartialDateRange();
 				queryWhere += " and ((identificationContribuable.demande.personne.dateNaissance = ?) " +
-								"or ((identificationContribuable.demande.personne.dateNaissance >= ?) and (identificationContribuable.demande.personne.dateNaissance <= ?)))";
+						"or ((identificationContribuable.demande.personne.dateNaissance >= ?) and (identificationContribuable.demande.personne.dateNaissance <= ?)))";
 				criteria.add(dateNaissance.index());
 				criteria.add(partialDateRange[0].index());
 				criteria.add(partialDateRange[1].index());
@@ -246,19 +251,16 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 	}
 
 
-
-
-
 	/**
 	 * Construit le critere avec les état initialisés à non Traité
 	 *
 	 * @param criteria
 	 * @param identificationContribuableCriteria
+	 *
 	 * @param queryWhere
 	 * @return
 	 */
-	private String buildCriterionEtatNonTraite(List<Object> criteria,String queryWhere,IdentificationContribuableCriteria identificationContribuableCriteria) {
-
+	private String buildCriterionEtatNonTraite(List<Object> criteria, String queryWhere, IdentificationContribuableCriteria identificationContribuableCriteria) {
 
 
 		// Si la valeur n'existe pas (TOUS par exemple), etat = null
@@ -269,7 +271,7 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 		catch (Exception e) {
 			etat = null; // Etat inconnu => TOUS
 		}
-		if (etat==null || TOUS.equals(etat)) {
+		if (etat == null || TOUS.equals(etat)) {
 			// la valeur de l'etat est a expertiser ou en cours
 			Etat aTraiterManuellement = Etat.A_TRAITER_MANUELLEMENT;
 			Etat aExpertiser = Etat.A_EXPERTISER;
@@ -297,11 +299,11 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 	 *
 	 * @param criteria
 	 * @param identificationContribuableCriteria
+	 *
 	 * @param queryWhere
 	 * @return
 	 */
-	private String buildCriterionEtatArchive(List<Object> criteria,String queryWhere,IdentificationContribuableCriteria identificationContribuableCriteria) {
-
+	private String buildCriterionEtatArchive(List<Object> criteria, String queryWhere, IdentificationContribuableCriteria identificationContribuableCriteria) {
 
 
 		// Si la valeur n'existe pas (TOUS par exemple), etat = null
@@ -312,17 +314,16 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 		catch (Exception e) {
 			etat = null; // Etat inconnu => TOUS
 		}
-		if (etat==null || TOUS.equals(etat)) {
+		if (etat == null || TOUS.equals(etat)) {
 			// la valeur de l'etat est a expertiser ou en cours
 			Etat traiterAutomatique = Etat.TRAITE_AUTOMATIQUEMENT;
 			Etat nonIdentifie = Etat.NON_IDENTIFIE;
 			Etat traiteManuellementCBO = Etat.TRAITE_MANUELLEMENT;
-			Etat traiteManuellementGBO = Etat.TRAITE_MAN_EXPERT
-			;
+			Etat traiteManuellementGBO = Etat.TRAITE_MAN_EXPERT;
 			queryWhere += " and identificationContribuable.etat in(?,?,?,?) ";
 			if (LOGGER.isTraceEnabled()) {
 
-				LOGGER.trace("Etat identification CTB: " + traiterAutomatique + " - " + nonIdentifie+ " - " + traiteManuellementCBO+ " - " + traiteManuellementGBO);
+				LOGGER.trace("Etat identification CTB: " + traiterAutomatique + " - " + nonIdentifie + " - " + traiteManuellementCBO + " - " + traiteManuellementGBO);
 			}
 			criteria.add(traiterAutomatique.name());
 			criteria.add(nonIdentifie.name());
@@ -341,18 +342,16 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 	}
 
 
-
-
 	/**
 	 * Construit le critere avec les états en cours, a expertiser
 	 *
 	 * @param criteria
 	 * @param identificationContribuableCriteria
+	 *
 	 * @param queryWhere
 	 * @return
 	 */
-	private String buildCriterionEtatNonTraiteOrSuspendu(List<Object> criteria,String queryWhere,IdentificationContribuableCriteria identificationContribuableCriteria) {
-
+	private String buildCriterionEtatNonTraiteOrSuspendu(List<Object> criteria, String queryWhere, IdentificationContribuableCriteria identificationContribuableCriteria) {
 
 
 		// Si la valeur n'existe pas (TOUS par exemple), etat = null
@@ -363,7 +362,7 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 		catch (Exception e) {
 			etat = null; // Etat inconnu => TOUS
 		}
-		if (etat==null || TOUS.equals(etat)) {
+		if (etat == null || TOUS.equals(etat)) {
 			// la valeur de l'etat est a expertiser ou en cours
 			Etat aExpertiser = Etat.A_EXPERTISER;
 			Etat aExpertiserSuspendu = Etat.A_EXPERTISER_SUSPENDU;
@@ -373,7 +372,7 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 			queryWhere += " and identificationContribuable.etat in(?,?,?,?) ";
 			if (LOGGER.isTraceEnabled()) {
 
-				LOGGER.trace("Etat identification CTB: " + aExpertiser + " - " + aExpertiserSuspendu+ " - " + aTraiterManuellement+ " - " + aTraiterManSuspendu);
+				LOGGER.trace("Etat identification CTB: " + aExpertiser + " - " + aExpertiserSuspendu + " - " + aTraiterManuellement + " - " + aTraiterManSuspendu);
 			}
 			criteria.add(aExpertiser.name());
 			criteria.add(aExpertiserSuspendu.name());
@@ -390,16 +389,17 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 
 		return queryWhere;
 	}
+
 	/**
 	 * Construit le critere avec l'état passé en paramètre
 	 *
 	 * @param criteria
 	 * @param identificationContribuableCriteria
+	 *
 	 * @param queryWhere
 	 * @return
 	 */
-	private String buildCriterionEtat(List<Object> criteria,String queryWhere,IdentificationContribuableCriteria identificationContribuableCriteria) {
-
+	private String buildCriterionEtat(List<Object> criteria, String queryWhere, IdentificationContribuableCriteria identificationContribuableCriteria) {
 
 
 		// Si la valeur n'existe pas (TOUS par exemple), etat = null
@@ -418,7 +418,7 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 				queryWhere += " and identificationContribuable.etat in(?,?,?) ";
 				if (LOGGER.isTraceEnabled()) {
 
-					LOGGER.trace("Etat identification CTB: " + aTraiterManuellementSuspendu + " - " + aExpertiserSuspendu+ " - " +etat);
+					LOGGER.trace("Etat identification CTB: " + aTraiterManuellementSuspendu + " - " + aExpertiserSuspendu + " - " + etat);
 				}
 				criteria.add(aTraiterManuellementSuspendu.name());
 				criteria.add(aExpertiserSuspendu.name());
@@ -437,7 +437,6 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 
 		return queryWhere;
 	}
-
 
 
 }

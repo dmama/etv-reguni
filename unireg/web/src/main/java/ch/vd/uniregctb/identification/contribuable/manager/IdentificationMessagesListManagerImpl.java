@@ -75,6 +75,7 @@ public class IdentificationMessagesListManagerImpl implements IdentificationMess
 
 	/**
 	 * Recherche des identifications correspondant aux critères
+	 *
 	 * @param bean
 	 * @param pagination
 	 * @return
@@ -82,7 +83,8 @@ public class IdentificationMessagesListManagerImpl implements IdentificationMess
 	 * @throws InfrastructureException
 	 */
 	@Transactional(readOnly = true)
-	public List<IdentificationMessagesResultView> find(IdentificationContribuableCriteria bean, WebParamPagination pagination, boolean nonTraiteOnly, boolean archiveOnly, boolean nonTraiterAndSuspendu)
+	public List<IdentificationMessagesResultView> find(IdentificationContribuableCriteria bean, WebParamPagination pagination, boolean nonTraiteOnly, boolean archiveOnly,
+	                                                   boolean nonTraiterAndSuspendu)
 			throws AdressesResolutionException, InfrastructureException {
 		List<IdentificationMessagesResultView> identificationsView = new ArrayList<IdentificationMessagesResultView>();
 		List<IdentificationContribuable> identifications = identCtbService.find(bean, pagination, nonTraiteOnly, archiveOnly, nonTraiterAndSuspendu);
@@ -96,21 +98,24 @@ public class IdentificationMessagesListManagerImpl implements IdentificationMess
 
 	/**
 	 * Recherche des identifications correspondant seulement à l'état en cours
+	 *
 	 * @param bean
 	 * @param pagination
 	 * @return
 	 * @throws AdressesResolutionException
 	 * @throws InfrastructureException
 	 */
+	@Transactional(readOnly = true)
 	public List<IdentificationMessagesResultView> findEncoursSeul(IdentificationContribuableCriteria bean, WebParamPagination pagination)
 			throws AdressesResolutionException, InfrastructureException {
 
 		bean.setEtatMessage(Etat.A_TRAITER_MANUELLEMENT.name());
-		return find(bean, pagination, false, false,false);
+		return find(bean, pagination, false, false, false);
 	}
 
 	/**
 	 * Cherche et compte les identifications correspondant aux criteres
+	 *
 	 * @param criterion
 	 * @return
 	 */
@@ -121,6 +126,7 @@ public class IdentificationMessagesListManagerImpl implements IdentificationMess
 
 	/**
 	 * Cherche et compte les identifications correspondant à l'etat en cours
+	 *
 	 * @param criterion
 	 * @return
 	 */
@@ -138,15 +144,15 @@ public class IdentificationMessagesListManagerImpl implements IdentificationMess
 	 * @throws EditiqueException
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	public void suspendreIdentificationMessages(IdentificationMessagesListView identificationMessagesListView)  {
+	public void suspendreIdentificationMessages(IdentificationMessagesListView identificationMessagesListView) {
 		LOGGER.debug("Tab Ids messages:" + identificationMessagesListView.getTabIdsMessages());
 		if (identificationMessagesListView.getTabIdsMessages() != null) {
 			for (int i = 0; i < identificationMessagesListView.getTabIdsMessages().length; i++) {
 				IdentificationContribuable identificationContribuable = identCtbDAO.get(new Long(identificationMessagesListView.getTabIdsMessages()[i]));
-				if (IdentificationContribuable.Etat.A_TRAITER_MANUELLEMENT.equals( identificationContribuable.getEtat())) {
+				if (IdentificationContribuable.Etat.A_TRAITER_MANUELLEMENT.equals(identificationContribuable.getEtat())) {
 					identificationContribuable.setEtat(Etat.A_TRAITER_MAN_SUSPENDU);
 				}
-				else if (IdentificationContribuable.Etat.A_EXPERTISER.equals( identificationContribuable.getEtat())) {
+				else if (IdentificationContribuable.Etat.A_EXPERTISER.equals(identificationContribuable.getEtat())) {
 					identificationContribuable.setEtat(Etat.A_EXPERTISER_SUSPENDU);
 				}
 			}
@@ -154,25 +160,23 @@ public class IdentificationMessagesListManagerImpl implements IdentificationMess
 	}
 
 
-
 	/**
-	 * Re soumettre l'identification des messages qui sont remis "dans le circuit" afin d'être identifié manuellement
-	 * ou expèrtisé
+	 * Re soumettre l'identification des messages qui sont remis "dans le circuit" afin d'être identifié manuellement ou expèrtisé
 	 *
 	 * @param identificationMessagesListView
 	 * @throws InfrastructureException
 	 * @throws EditiqueException
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	public void ResoumettreIdentificationMessages(IdentificationMessagesListView identificationMessagesListView)  {
+	public void ResoumettreIdentificationMessages(IdentificationMessagesListView identificationMessagesListView) {
 		LOGGER.debug("Tab Ids messages:" + identificationMessagesListView.getTabIdsMessages());
 		if (identificationMessagesListView.getTabIdsMessages() != null) {
 			for (int i = 0; i < identificationMessagesListView.getTabIdsMessages().length; i++) {
 				IdentificationContribuable identificationContribuable = identCtbDAO.get(new Long(identificationMessagesListView.getTabIdsMessages()[i]));
-				if (IdentificationContribuable.Etat.A_TRAITER_MAN_SUSPENDU.equals( identificationContribuable.getEtat())) {
+				if (IdentificationContribuable.Etat.A_TRAITER_MAN_SUSPENDU.equals(identificationContribuable.getEtat())) {
 					identificationContribuable.setEtat(Etat.A_TRAITER_MANUELLEMENT);
 				}
-				else if (IdentificationContribuable.Etat.A_EXPERTISER_SUSPENDU.equals( identificationContribuable.getEtat())) {
+				else if (IdentificationContribuable.Etat.A_EXPERTISER_SUSPENDU.equals(identificationContribuable.getEtat())) {
 					identificationContribuable.setEtat(Etat.A_EXPERTISER);
 				}
 			}
@@ -187,7 +191,7 @@ public class IdentificationMessagesListManagerImpl implements IdentificationMess
 	 * @throws EditiqueException
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	public void soumettreIdentificationMessages(IdentificationMessagesListView identificationMessagesListView)  {
+	public void soumettreIdentificationMessages(IdentificationMessagesListView identificationMessagesListView) {
 		LOGGER.debug("Tab Ids messages:" + identificationMessagesListView.getTabIdsMessages());
 		if (identificationMessagesListView.getTabIdsMessages() != null) {
 			for (int i = 0; i < identificationMessagesListView.getTabIdsMessages().length; i++) {
@@ -213,7 +217,7 @@ public class IdentificationMessagesListManagerImpl implements IdentificationMess
 		else {
 			identificationMessagesResultView.setAnnule(true);
 		}
-		if (identification.getUtilisateurTraitant()!=null) {
+		if (identification.getUtilisateurTraitant() != null) {
 			identificationMessagesResultView.setUtilisateurTraitant(identification.getUtilisateurTraitant());
 		}
 		identificationMessagesResultView.setEtatMessage(identification.getEtat());
@@ -233,7 +237,7 @@ public class IdentificationMessagesListManagerImpl implements IdentificationMess
 
 		if (identification.getReponse() != null) {
 			Long noContribuable = identification.getReponse().getNoContribuable();
-			if (noContribuable!=null) {
+			if (noContribuable != null) {
 				identificationMessagesResultView.setNumeroContribuable(noContribuable);
 			}
 
