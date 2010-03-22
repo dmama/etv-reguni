@@ -204,10 +204,10 @@ public class TiersServiceWebPoursuiteTest extends AbstractTiersServiceWebTest {
 
 		// Teste les adresses formattées
 		assertAdresseEnvoi(tiers.getAdresseDomicileFormattee(), "Monsieur", "Claude-Alain Proz", "Izmir", "Turquie");
-		assertAdresseEnvoi(tiers.getAdresseEnvoi(), "Monsieur", "Claude-Alain Proz", "p.a. KPMG AG (KPMG SA) (KPMG Ltd)", "Badenerstr. 172 - Postfach", "8026 Zürich 26 Aussersihl");
-		assertAdresseEnvoi(tiers.getAdressePoursuiteFormattee(), "KPMG AG", "(KPMG SA)", "(KPMG Ltd)", "Badenerstr. 172 - Postfach", "8026 Zürich 26 Aussersihl");
+		assertAdresseEnvoi(tiers.getAdresseEnvoi(), "Monsieur", "Claude-Alain Proz", "p.a. KPMG AG (KPMG SA) (KPMG Ltd)", "Badenerstr. 172 - Postfach", "8026 Zürich");
+		assertAdresseEnvoi(tiers.getAdressePoursuiteFormattee(), "KPMG AG", "(KPMG SA)", "(KPMG Ltd)", "Badenerstr. 172 - Postfach", "8026 Zürich");
 		assertAdresseEnvoiAutreTiers(tiers.getAdressePoursuiteAutreTiersFormattee(), TypeAdressePoursuiteAutreTiers.MANDATAIRE, "KPMG AG", "(KPMG SA)", "(KPMG Ltd)", "Badenerstr. 172 - Postfach",
-				"8026 Zürich 26 Aussersihl");
+				"8026 Zürich");
 	}
 
 	@Test

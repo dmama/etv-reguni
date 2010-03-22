@@ -1551,7 +1551,7 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 		assertEquals("JAL HOLDING", trimValiPattern(adresse.getLigne1()));
 		assertEquals("pa Fidu. Commerce & Industrie", trimValiPattern(adresse.getLigne2()));
 		assertEquals("Avenue de la Gare 10", trimValiPattern(adresse.getLigne3()));
-		assertEquals("1003 Lausanne Secteur de dist.", trimValiPattern(adresse.getLigne4()));
+		assertEquals("1003 Lausanne", trimValiPattern(adresse.getLigne4()));
 		assertNull(adresse.getLigne5());
 	}
 }
