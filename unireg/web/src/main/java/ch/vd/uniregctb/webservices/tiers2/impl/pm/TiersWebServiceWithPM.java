@@ -640,7 +640,7 @@ public class TiersWebServiceWithPM implements TiersWebService {
 		adresse.noRue = a.getNumeroTechniqueRue();
 		adresse.numeroRue = a.getNumeroMaison();
 		adresse.numeroPostal = a.getNumeroPostal();
-		adresse.localite = a.getLocaliteCompletMinuscule();
+		adresse.localite = a.getLocaliteAbregeMinuscule();
 		adresse.noOrdrePostal = a.getNumeroOrdrePostal();
 		adresse.pays = (a.getPays() == null ? null : a.getPays().getNomMinuscule());
 		return adresse;
