@@ -133,7 +133,7 @@ public class TiersManager implements MessageSourceAware {
 		if (noIndividu != null) {
 			individuView = getHostCivilService().getIndividu(noIndividu);
 		}
-		if (habitant.getDateDeces() != null) {//habitant décédé fiscalement
+		if (habitant.getDateDeces() != null && individuView !=null) {//habitant décédé fiscalement
 			individuView.setEtatCivil("DECEDE");
 			individuView.setDateDernierChgtEtatCivil(RegDate.asJavaDate(habitant.getDateDeces()));
 		}
@@ -169,15 +169,15 @@ public class TiersManager implements MessageSourceAware {
 
 		int year = getCalToday().get(Calendar.YEAR);
 
-		EnumAttributeIndividu[] enumValues = new EnumAttributeIndividu[] {
-			EnumAttributeIndividu.ENFANTS, EnumAttributeIndividu.PARENTS
+		EnumAttributeIndividu[] enumValues = new EnumAttributeIndividu[]{
+				EnumAttributeIndividu.ENFANTS, EnumAttributeIndividu.PARENTS
 		};
 		Individu ind = getServiceCivilService().getIndividu(habitant.getNumeroIndividu(), year, enumValues);
 		Collection<Individu> listFiliations = ind.getEnfants();
 		Iterator<Individu> it = listFiliations.iterator();
 		for (int i = 0; i < listFiliations.size(); i++) {
 			Individu individu = it.next();
-			PersonnePhysique habFils  = tiersDAO.getPPByNumeroIndividu(individu.getNoTechnique());
+			PersonnePhysique habFils = tiersDAO.getPPByNumeroIndividu(individu.getNoTechnique());
 			if (habFils != null) {
 				RapportView rapportView = new RapportView();
 				rapportView.setSensRapportEntreTiers(SensRapportEntreTiers.OBJET);
@@ -191,7 +191,7 @@ public class TiersManager implements MessageSourceAware {
 
 		Individu mere = ind.getMere();
 		if (mere != null) {
-			PersonnePhysique habMere  = tiersDAO.getPPByNumeroIndividu(mere.getNoTechnique());
+			PersonnePhysique habMere = tiersDAO.getPPByNumeroIndividu(mere.getNoTechnique());
 			if (habMere != null) {
 				RapportView rapportMereView = new RapportView();
 				rapportMereView.setNumero(habitant.getNumero());
@@ -205,7 +205,7 @@ public class TiersManager implements MessageSourceAware {
 		}
 		Individu pere = ind.getPere();
 		if (pere != null) {
-			PersonnePhysique habPere  = tiersDAO.getPPByNumeroIndividu(pere.getNoTechnique());
+			PersonnePhysique habPere = tiersDAO.getPPByNumeroIndividu(pere.getNoTechnique());
 			if (habPere != null) {
 				RapportView rapportPereView = new RapportView();
 				rapportPereView.setNumero(habitant.getNumero());
@@ -286,7 +286,7 @@ public class TiersManager implements MessageSourceAware {
 	 * @return
 	 * @throws AdresseException
 	 */
-	protected List<RapportView> getRapports(Tiers tiers) throws AdresseException{
+	protected List<RapportView> getRapports(Tiers tiers) throws AdresseException {
 		List<RapportView> rapportsView = new ArrayList<RapportView>();
 
 		// Rapport entre tiers Objet
@@ -324,7 +324,7 @@ public class TiersManager implements MessageSourceAware {
 				rapportView.setNumero(tiersObjet.getNumero());
 
 				final List<String> nomCourrier = getAdresseService().getNomCourrier(tiersObjet, null, false);
-				if ( nomCourrier != null && nomCourrier.size() != 0) {
+				if (nomCourrier != null && nomCourrier.size() != 0) {
 					rapportView.setNomCourrier(nomCourrier);
 				}
 				if (rapportEntreTiers instanceof RapportPrestationImposable) {
@@ -352,7 +352,7 @@ public class TiersManager implements MessageSourceAware {
 	 * @return
 	 * @throws AdresseException
 	 */
-	protected void setContribuablesAssocies(TiersView tiersView, DebiteurPrestationImposable debiteur) throws AdresseException{
+	protected void setContribuablesAssocies(TiersView tiersView, DebiteurPrestationImposable debiteur) throws AdresseException {
 		List<RapportView> rapportsView = new ArrayList<RapportView>();
 
 		// Rapport entre tiers Objet
@@ -379,8 +379,8 @@ public class TiersManager implements MessageSourceAware {
 	 * @return
 	 * @throws AdresseException
 	 */
-	protected List<RapportPrestationView> getRapportsPrestation(DebiteurPrestationImposable dpi, WebParamPagination pagination) throws AdresseException{
-		List<RapportPrestationView>  rapportPrestationViews = new ArrayList<RapportPrestationView>();
+	protected List<RapportPrestationView> getRapportsPrestation(DebiteurPrestationImposable dpi, WebParamPagination pagination) throws AdresseException {
+		List<RapportPrestationView> rapportPrestationViews = new ArrayList<RapportPrestationView>();
 		List<RapportPrestationImposable> rapports = getRapportEntreTiersDAO().getRapportsPrestationImposable(dpi.getNumero(), pagination);
 		for (RapportPrestationImposable rapport : rapports) {
 			RapportPrestationImposable rapportPrestationImposable = rapport;
@@ -419,8 +419,8 @@ public class TiersManager implements MessageSourceAware {
 	 * @return
 	 * @throws AdresseException
 	 */
-	protected List<RapportPrestationView> getRapportsPrestation(DebiteurPrestationImposable dpi) throws AdresseException{
-		List<RapportPrestationView>  rapportPrestationViews = new ArrayList<RapportPrestationView>();
+	protected List<RapportPrestationView> getRapportsPrestation(DebiteurPrestationImposable dpi) throws AdresseException {
+		List<RapportPrestationView> rapportPrestationViews = new ArrayList<RapportPrestationView>();
 		Set<RapportEntreTiers> rapports = dpi.getRapportsObjet();
 		for (RapportEntreTiers rapport : rapports) {
 			if (rapport instanceof RapportPrestationImposable) {
@@ -497,8 +497,7 @@ public class TiersManager implements MessageSourceAware {
 	}
 
 	/**
-	 * @param noLocalite
-	 *            le numéro OFS de la localité.
+	 * @param noLocalite le numéro OFS de la localité.
 	 * @return la localité correspondante, ou <b>null</b> si elle n'existe pas.
 	 */
 	protected Localite getLocaliteByONRP(final Integer noLocalite) {
@@ -512,8 +511,7 @@ public class TiersManager implements MessageSourceAware {
 	}
 
 	/**
-	 * @param numeroRue
-	 *            le numéro technique de la rue.
+	 * @param numeroRue le numéro technique de la rue.
 	 * @return la rue correspondante, ou <b>null</b> si elle n'existe pas.
 	 */
 	protected Rue getRueByNumero(Integer numeroRue) {
@@ -593,7 +591,7 @@ public class TiersManager implements MessageSourceAware {
 	 * @param tiersView
 	 * @throws AdresseException
 	 */
-	protected void setDebiteurPrestationImposable(TiersView tiersView, DebiteurPrestationImposable dpi, WebParamPagination webParamPagination) throws AdresseException{
+	protected void setDebiteurPrestationImposable(TiersView tiersView, DebiteurPrestationImposable dpi, WebParamPagination webParamPagination) throws AdresseException {
 		tiersView.setTiers(dpi);
 		tiersView.setRapportsPrestation(getRapportsPrestation(dpi, webParamPagination));
 		tiersView.setLrs(getListesRecapitulatives(dpi));
@@ -613,7 +611,7 @@ public class TiersManager implements MessageSourceAware {
 	 */
 	protected void setForsFiscaux(TiersView tiersView, Contribuable contribuable) {
 		ForGestion forGestion = tiersService.getDernierForGestionConnu(tiersView.getTiers(), null);
-		List<ForFiscalView> forsFiscauxView = new ArrayList<ForFiscalView> ();
+		List<ForFiscalView> forsFiscauxView = new ArrayList<ForFiscalView>();
 		Set<ForFiscal> forsFiscaux = contribuable.getForsFiscaux();
 		if (forsFiscaux != null) {
 			for (ForFiscal forFiscal : forsFiscaux) {
@@ -686,7 +684,7 @@ public class TiersManager implements MessageSourceAware {
 	 * @param dpi
 	 */
 	protected void setForsFiscauxDebiteur(TiersView tiersView, DebiteurPrestationImposable dpi) {
-		List<ForFiscalView> forsFiscauxView = new ArrayList<ForFiscalView> ();
+		List<ForFiscalView> forsFiscauxView = new ArrayList<ForFiscalView>();
 		Set<ForFiscal> forsFiscaux = dpi.getForsFiscaux();
 		if (forsFiscaux != null) {
 			for (ForFiscal forFiscal : forsFiscaux) {
@@ -754,7 +752,7 @@ public class TiersManager implements MessageSourceAware {
 			view.setDateFin(situation.getDateFin());
 			view.setNombreEnfants(situation.getNombreEnfants());
 			view.setEtatCivil(situation.getEtatCivil());
-			view.setAllowed(situation.getSource()==VueSituationFamille.Source.FISCALE_TIERS);
+			view.setAllowed(situation.getSource() == VueSituationFamille.Source.FISCALE_TIERS);
 
 			if (situation instanceof VueSituationFamilleMenageCommun) {
 
@@ -783,7 +781,7 @@ public class TiersManager implements MessageSourceAware {
 	 * @param allowedOnglet
 	 * @return true si l'utilisateur a le droit d'éditer le tiers
 	 */
-	protected boolean setDroitEdition(Tiers tiers, Map<String, Boolean> allowedOnglet){
+	protected boolean setDroitEdition(Tiers tiers, Map<String, Boolean> allowedOnglet) {
 		boolean isEditable = false;
 
 		final Niveau acces = SecurityProvider.getDroitAcces(tiers);
@@ -843,8 +841,8 @@ public class TiersManager implements MessageSourceAware {
 					allowedOnglet.put(TiersEditView.ADR_C, Boolean.TRUE);
 				}
 				if (SecurityProvider.isGranted(Role.ADR_P)) {
-						allowedOnglet.put(TiersVisuView.MODIF_ADRESSE, Boolean.TRUE);
-						allowedOnglet.put(TiersEditView.ADR_P, Boolean.TRUE);
+					allowedOnglet.put(TiersVisuView.MODIF_ADRESSE, Boolean.TRUE);
+					allowedOnglet.put(TiersEditView.ADR_P, Boolean.TRUE);
 				}
 				isEditable = true;
 			}
@@ -862,11 +860,11 @@ public class TiersManager implements MessageSourceAware {
 					boolean isSitFamActive = isSituationFamilleActive(contribuable);
 					boolean civilOK = true;
 					if (tiers instanceof PersonnePhysique) {
-						PersonnePhysique pp = (PersonnePhysique)tiers;
+						PersonnePhysique pp = (PersonnePhysique) tiers;
 						if (pp.isHabitant()) {
-						Individu ind = serviceCivilService.getIndividu(pp.getNumeroIndividu(), RegDate.get().year());
+							Individu ind = serviceCivilService.getIndividu(pp.getNumeroIndividu(), RegDate.get().year());
 							for (EtatCivil etatCivil : ind.getEtatsCivils()) {
-								if (etatCivil.getDateDebutValidite() == null){
+								if (etatCivil.getDateDebutValidite() == null) {
 									civilOK = false;
 								}
 							}
@@ -879,8 +877,8 @@ public class TiersManager implements MessageSourceAware {
 					}
 				}
 				if (SecurityProvider.isGranted(Role.DI_EMIS_PP) || SecurityProvider.isGranted(Role.DI_DELAI_PM) ||
-					SecurityProvider.isGranted(Role.DI_DUPLIC_PP) || SecurityProvider.isGranted(Role.DI_QUIT_PP) ||
-					SecurityProvider.isGranted(Role.DI_SOM_PP)) {
+						SecurityProvider.isGranted(Role.DI_DUPLIC_PP) || SecurityProvider.isGranted(Role.DI_QUIT_PP) ||
+						SecurityProvider.isGranted(Role.DI_SOM_PP)) {
 					allowedOnglet.put(TiersVisuView.MODIF_DI, Boolean.TRUE);
 					isEditable = true;
 				}
@@ -888,7 +886,7 @@ public class TiersManager implements MessageSourceAware {
 		}
 
 		if (tiers instanceof PersonnePhysique) {
-			PersonnePhysique pp = (PersonnePhysique)tiers;
+			PersonnePhysique pp = (PersonnePhysique) tiers;
 			if (pp.isHabitant()) {
 				isEditable = setDroitHabitant(tiers, allowedOnglet) || isEditable;
 			}
@@ -932,8 +930,8 @@ public class TiersManager implements MessageSourceAware {
 					allowedOnglet.put(TiersEditView.ADR_C, Boolean.TRUE);
 				}
 				if (SecurityProvider.isGranted(Role.ADR_P)) {
-						allowedOnglet.put(TiersVisuView.MODIF_ADRESSE, Boolean.TRUE);
-						allowedOnglet.put(TiersEditView.ADR_P, Boolean.TRUE);
+					allowedOnglet.put(TiersVisuView.MODIF_ADRESSE, Boolean.TRUE);
+					allowedOnglet.put(TiersEditView.ADR_P, Boolean.TRUE);
 				}
 				isEditable = true;
 			}
@@ -982,14 +980,14 @@ public class TiersManager implements MessageSourceAware {
 		if (forFiscalPrincipal != null) {
 			final ModeImposition modeImposition = tiers.getForFiscalPrincipalAt(null).getModeImposition();
 			switch (modeImposition) {
-				case SOURCE :
-				case MIXTE_137_1 :
-				case MIXTE_137_2 :
-					type = TypeImposition.SOURCIER;
-					break;
-				default :
-					type = TypeImposition.ORDINAIRE_DEPENSE;
-					break;
+			case SOURCE:
+			case MIXTE_137_1:
+			case MIXTE_137_2:
+				type = TypeImposition.SOURCIER;
+				break;
+			default:
+				type = TypeImposition.ORDINAIRE_DEPENSE;
+				break;
 			}
 		}
 		else {
@@ -1046,7 +1044,7 @@ public class TiersManager implements MessageSourceAware {
 		}
 
 		if ((typeImposition.isOrdinaireDepenseOuNonActif() && SecurityProvider.isGranted(Role.FOR_PRINC_ORDDEP_HAB)) ||
-			(typeImposition.isSourcierOuNonActif() && SecurityProvider.isGranted(Role.FOR_PRINC_SOURC_HAB))) {
+				(typeImposition.isSourcierOuNonActif() && SecurityProvider.isGranted(Role.FOR_PRINC_SOURC_HAB))) {
 			allowedOnglet.put(TiersVisuView.MODIF_FISCAL, Boolean.TRUE);
 			allowedOnglet.put(TiersEditView.FISCAL_FOR_PRINC, Boolean.TRUE);
 			isEditable = true;
@@ -1064,7 +1062,7 @@ public class TiersManager implements MessageSourceAware {
 	 * @param tiers
 	 * @param allowedOnglet
 	 */
-	private boolean setDroitNonHabitant(Tiers tiers, Map<String, Boolean> allowedOnglet){
+	private boolean setDroitNonHabitant(Tiers tiers, Map<String, Boolean> allowedOnglet) {
 
 		//les non habitants n'ont jamais l'onglet rapport prestation
 		//les ménage commun n'ont jamais les onglets civil et rapport prestation
@@ -1148,7 +1146,7 @@ public class TiersManager implements MessageSourceAware {
 	 * @param allowedOnglet
 	 * @return
 	 */
-	private boolean codeFactorise1(Tiers tiers, Map<String, Boolean> allowedOnglet ) {
+	private boolean codeFactorise1(Tiers tiers, Map<String, Boolean> allowedOnglet) {
 		boolean isEditable = false;
 		if (SecurityProvider.isGranted(Role.ADR_P)) {
 			allowedOnglet.put(TiersVisuView.MODIF_ADRESSE, Boolean.TRUE);
@@ -1163,7 +1161,8 @@ public class TiersManager implements MessageSourceAware {
 				allowedOnglet.put(TiersEditView.ADR_C, Boolean.TRUE);
 				isEditable = true;
 			}
-		} else if (SecurityProvider.isGranted(Role.ADR_PP_C_DCD) && tiers instanceof MenageCommun) {
+		}
+		else if (SecurityProvider.isGranted(Role.ADR_PP_C_DCD) && tiers instanceof MenageCommun) {
 			MenageCommun mc = (MenageCommun) tiers;
 			for (PersonnePhysique pp : mc.getPersonnesPhysiques()) {
 				if (tiersService.isDecede(pp)) {
@@ -1211,7 +1210,7 @@ public class TiersManager implements MessageSourceAware {
 	 * @return
 	 */
 	private boolean codeFactorise3(Tiers tiers, Map<String, Boolean> allowedOnglet,
-			boolean isEditable) {
+	                               boolean isEditable) {
 		if (!tiers.getForsFiscauxPrincipauxActifsSorted().isEmpty() && SecurityProvider.isGranted(Role.FOR_SECOND_PP)) {
 			allowedOnglet.put(TiersVisuView.MODIF_FISCAL, Boolean.TRUE);
 			allowedOnglet.put(TiersEditView.FISCAL_FOR_SEC, Boolean.TRUE);
@@ -1233,9 +1232,9 @@ public class TiersManager implements MessageSourceAware {
 		boolean isHabitant = false;
 		Tiers tiersAssujetti = null;
 		if (tiers instanceof PersonnePhysique) {
-			PersonnePhysique pp = (PersonnePhysique)tiers;
+			PersonnePhysique pp = (PersonnePhysique) tiers;
 			MenageCommun menage = tiersService.findMenageCommun(pp, null);
-			if (menage != null){
+			if (menage != null) {
 				tiersAssujetti = menage;
 			}
 			else tiersAssujetti = tiers;
@@ -1262,21 +1261,21 @@ public class TiersManager implements MessageSourceAware {
 			TypeAutoriteFiscale typeFor = forpCtbAssu.getTypeAutoriteFiscale();
 			ModeImposition modeImp = forpCtbAssu.getModeImposition();
 			switch (typeFor) {
-				case COMMUNE_OU_FRACTION_VD :
-					switch (modeImp) {
-					case SOURCE :
-						typeCtb = 3;
-						break;
-					case MIXTE_137_1 :
-					case MIXTE_137_2 :
-						typeCtb = 4;
-						break;
-					default :
-						typeCtb = 3;
+			case COMMUNE_OU_FRACTION_VD:
+				switch (modeImp) {
+				case SOURCE:
+					typeCtb = 3;
+					break;
+				case MIXTE_137_1:
+				case MIXTE_137_2:
+					typeCtb = 4;
+					break;
+				default:
+					typeCtb = 3;
 				}
 				break;
-				default :
-					typeCtb = 1;
+			default:
+				typeCtb = 1;
 			}
 		}
 
@@ -1286,7 +1285,7 @@ public class TiersManager implements MessageSourceAware {
 				((typeCtb == 2 || typeCtb == 4) && SecurityProvider.isGranted(Role.MODIF_VD_ORD)) ||
 				(typeCtb > 2 && SecurityProvider.isGranted(Role.MODIF_VD_SOURC))) {
 
-				return true;
+			return true;
 		}
 		return false;
 	}
@@ -1304,7 +1303,7 @@ public class TiersManager implements MessageSourceAware {
 	 * @return true sur l'utilisateur connecté à les droits Ifosec et sécurité dossiers de modif le tiers
 	 * retourne tjs false si le tiers n'est pas une PP ou un ménage
 	 */
-	protected boolean checkDroitEdit(Tiers tiers){
+	protected boolean checkDroitEdit(Tiers tiers) {
 
 		final Niveau acces = SecurityProvider.getDroitAcces(tiers);
 		if (acces == null || acces.equals(Niveau.LECTURE)) {
@@ -1329,7 +1328,7 @@ public class TiersManager implements MessageSourceAware {
 	 * @param tiersView
 	 * @throws AdresseException
 	 */
-	protected void setTiersGeneralView(TiersView tiersView, Tiers tiers) throws AdresseException  {
+	protected void setTiersGeneralView(TiersView tiersView, Tiers tiers) throws AdresseException {
 		TiersGeneralView tiersGeneralView = tiersGeneralManager.get(tiers);
 		tiersView.setTiersGeneral(tiersGeneralView);
 	}
@@ -1381,7 +1380,7 @@ public class TiersManager implements MessageSourceAware {
 	 * Remplir la collection des adressesView avec l'adresse fiscale du type spécifié.
 	 */
 	protected void fillAdressesView(List<AdresseView> adressesView, final AdressesFiscales adressesFiscales, TypeAdresseTiers type,
-			Tiers tiers) {
+	                                Tiers tiers) {
 		AdresseGenerique adresse = adressesFiscales.ofType(type);
 		if (adresse != null) {
 			AdresseView adresseView = createAdresseView(adresse, type, tiers);
@@ -1422,7 +1421,7 @@ public class TiersManager implements MessageSourceAware {
 			Rue rue = getRueByNumero(numeroRue);
 			if (rue != null) {
 				if ((rue.getDesignationCourrier() != null) && (addGen.getCasePostale() == null)) {
-					rueFull = rue.getDesignationCourrier() ;
+					rueFull = rue.getDesignationCourrier();
 					if (addGen.getNumero() != null) {
 						rueFull = rueFull + " " + addGen.getNumero();
 					}
@@ -1500,13 +1499,13 @@ public class TiersManager implements MessageSourceAware {
 	 * @param dateNaissance
 	 * @param numeroAssureSocial
 	 */
-	public void initFieldsWithParams(	TiersCriteriaView tiersCriteriaView,
-										Long numero,
-										String nomRaison,
-										String localiteOuPays,
-										Long noOfsFor,
-										RegDate dateNaissance,
-										String numeroAssureSocial) {
+	public void initFieldsWithParams(TiersCriteriaView tiersCriteriaView,
+	                                 Long numero,
+	                                 String nomRaison,
+	                                 String localiteOuPays,
+	                                 Long noOfsFor,
+	                                 RegDate dateNaissance,
+	                                 String numeroAssureSocial) {
 
 	}
 
@@ -1516,7 +1515,7 @@ public class TiersManager implements MessageSourceAware {
 	 * @return
 	 */
 	@Transactional(readOnly = true)
-	public int countRapportsPrestationImposable(Long numeroDebiteur){
+	public int countRapportsPrestationImposable(Long numeroDebiteur) {
 		return rapportEntreTiersDAO.countRapportsPrestationImposable(numeroDebiteur);
 	}
 
@@ -1637,7 +1636,7 @@ public class TiersManager implements MessageSourceAware {
 	public void annulerTiers(Long numero) {
 		final Tiers tiers = tiersService.getTiers(numero);
 		if (tiers == null) {
-			throw new ObjectNotFoundException(this.getMessageSource().getMessage("error.tiers.inexistant" , null,  WebContextUtils.getDefaultLocale()));
+			throw new ObjectNotFoundException(this.getMessageSource().getMessage("error.tiers.inexistant", null, WebContextUtils.getDefaultLocale()));
 		}
 		tiersService.annuleTiers(tiers);
 	}
