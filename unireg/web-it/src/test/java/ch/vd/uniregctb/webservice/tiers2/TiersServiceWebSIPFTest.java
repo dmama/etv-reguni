@@ -477,6 +477,56 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 	}
 
 	/**
+	 * [UNIREG-1974]
+	 */
+	@Test
+	public void testFournirAdresseCourrierLocaliteAbregee() throws Exception {
+
+		final GetTiers params = new GetTiers();
+		params.setLogin(login);
+		params.setTiersNumber(1314);
+		params.getParts().add(TiersPart.ADRESSES);
+		params.getParts().add(TiersPart.ADRESSES_ENVOI);
+
+
+		final PersonneMorale pm = (PersonneMorale) service.getTiers(params);
+		assertNotNull(pm);
+		assertEquals(1314L, pm.getNumero());
+		assertEquals("R. Borgo", trimValiPattern(pm.getPersonneContact()));
+		assertEquals("JAL HOLDING", trimValiPattern(pm.getDesignationAbregee()));
+		assertEquals("Jal holding S.A.", trimValiPattern(pm.getRaisonSociale1()));
+		assertEquals("", trimValiPattern(pm.getRaisonSociale2()));
+		assertEquals("en liquidation", trimValiPattern(pm.getRaisonSociale3()));
+
+		final Adresse adresseCourrier = pm.getAdresseCourrier();
+		assertNotNull(adresseCourrier);
+		assertSameDay(newDate(2007, 6, 11), adresseCourrier.getDateDebut());
+		assertNull(adresseCourrier.getDateFin());
+		assertEquals("pa Fidu. Commerce & Industrie", adresseCourrier.getTitre());
+		assertNull(adresseCourrier.getCasePostale());
+		assertNull(adresseCourrier.getNumeroAppartement());
+		assertEquals("Avenue de la Gare", adresseCourrier.getRue());
+		assertEquals("10", adresseCourrier.getNumeroRue());
+		assertEquals("1003", adresseCourrier.getNumeroPostal());
+		assertEquals("Lausanne", adresseCourrier.getLocalite());
+		assertNull(adresseCourrier.getPays());
+		assertEquals(150, adresseCourrier.getNoOrdrePostal());
+		assertEquals(Integer.valueOf(30317), adresseCourrier.getNoRue());
+
+		// Récupération de l'adresse d'envoi de la PM
+
+		final AdresseEnvoi adresseEnvoi = pm.getAdresseEnvoi();
+		assertNotNull(adresseEnvoi);
+		assertEquals("JAL HOLDING", trimValiPattern(adresseEnvoi.getLigne1()));
+		assertEquals("pa Fidu. Commerce & Industrie", trimValiPattern(adresseEnvoi.getLigne2()));
+		assertEquals("Avenue de la Gare 10", trimValiPattern(adresseEnvoi.getLigne3()));
+		assertEquals("1003 Lausanne", trimValiPattern(adresseEnvoi.getLigne4()));
+		assertNull(adresseEnvoi.getLigne5());
+		assertNull(adresseEnvoi.getLigne6());
+		assertTrue(adresseEnvoi.isIsSuisse());
+	}
+
+	/**
 	 * [UNIREG-1973] la personne de contact de la PM ne doit pas apparaître dans l'adresse d'envoi.
 	 */
 	@Test
