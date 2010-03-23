@@ -46,7 +46,7 @@ import ch.vd.uniregctb.metier.MetierService;
  */
 public class TacheServiceTest extends BusinessTest {
 
-	private static final Logger LOGGER = Logger.getLogger(TacheServiceTest.class);
+	//private static final Logger LOGGER = Logger.getLogger(TacheServiceTest.class);
 
 	/**
 	 * Les tâches sont par défaut créées avec une date d'échéance au prochain dimanche...
@@ -1063,7 +1063,6 @@ public class TacheServiceTest extends BusinessTest {
 		// les deux premières années d'assujettissement, on ne trouve pas de DI mais on considère le contribuable (ménage)
 		// comme nouvel assujetti (n-1 ou n-2 n'a pas d'assujettissement du tout), donc VAUD_TAX
 		for (int i = 2007 ; i < 2009 ; ++ i) {
-			LOGGER.warn("Vérification année " + i);
 			assertTache(TypeEtatTache.EN_INSTANCE, nextSunday, date(i, 1, 1), date(i, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
 					TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.CEDI, envois.get(i - 2007));
 		}
@@ -1071,7 +1070,6 @@ public class TacheServiceTest extends BusinessTest {
 		// après les deux premières années d'assujettissement, on ne trouve pas de DI et on ne considère pas le contribuable (ménage)
 		// comme nouvel assujetti (n-1 et n-2 ont tous les deux un assujettissement ordinaire), donc COMPLETE
 		for (int i = 2009 ; i < RegDate.get().year() ; ++ i) {
-			LOGGER.warn("Vérification année " + i);
 			assertTache(TypeEtatTache.EN_INSTANCE, nextSunday, date(i, 1, 1), date(i, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
 					TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, TypeAdresseRetour.CEDI, envois.get(i - 2007));
 		}
@@ -1188,7 +1186,6 @@ public class TacheServiceTest extends BusinessTest {
 			// les deux premières années d'assujettissement, on ne trouve pas de DI mais on considère le contribuable
 			// comme nouvel assujetti (n-1 ou n-2 n'a pas d'assujettissement du tout), donc VAUD_TAX
 			for (int i = 2007 ; i < 2009 ; ++ i) {
-				LOGGER.warn("Vérification année " + i);
 				assertTache(TypeEtatTache.EN_INSTANCE, nextSunday, date(i, 1, 1), date(i, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
 						TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.CEDI, envois.get(i - 2007));
 			}
@@ -1196,7 +1193,6 @@ public class TacheServiceTest extends BusinessTest {
 			// après les deux premières années d'assujettissement, on ne trouve pas de DI et on ne considère pas le contribuable
 			// comme nouvel assujetti (n-1 et n-2 ont tous les deux un assujettissement ordinaire), donc COMPLETE
 			for (int i = 2009 ; i < RegDate.get().year() ; ++ i) {
-				LOGGER.warn("Vérification année " + i);
 				assertTache(TypeEtatTache.EN_INSTANCE, nextSunday, date(i, 1, 1), date(i, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
 						TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, TypeAdresseRetour.CEDI, envois.get(i - 2007));
 			}
@@ -1226,7 +1222,6 @@ public class TacheServiceTest extends BusinessTest {
 			// les deux premières années d'assujettissement, on ne trouve pas de DI mais on considère le contribuable
 			// comme nouvel assujetti (n-1 ou n-2 n'a pas d'assujettissement du tout), donc VAUD_TAX
 			for (int i = 2007 ; i < 2009 ; ++ i) {
-				LOGGER.warn("Vérification année " + i);
 				assertTache(TypeEtatTache.EN_INSTANCE, nextSunday, date(i, 1, 1), date(i, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
 						TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.CEDI, envois.get(i - 2007));
 			}
@@ -1234,7 +1229,6 @@ public class TacheServiceTest extends BusinessTest {
 			// après les deux premières années d'assujettissement, on ne trouve pas de DI et on ne considère pas le contribuable
 			// comme nouvel assujetti (n-1 et n-2 ont tous les deux un assujettissement ordinaire), donc COMPLETE
 			for (int i = 2009 ; i < RegDate.get().year() ; ++ i) {
-				LOGGER.warn("Vérification année " + i);
 				assertTache(TypeEtatTache.EN_INSTANCE, nextSunday, date(i, 1, 1), date(i, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
 						TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, TypeAdresseRetour.CEDI, envois.get(i - 2007));
 			}
@@ -1373,7 +1367,6 @@ public class TacheServiceTest extends BusinessTest {
 			// les deux premières années d'assujettissement, on ne trouve pas de DI mais on considère le contribuable
 			// comme nouvel assujetti (n-1 ou n-2 n'a pas d'assujettissement du tout), donc VAUD_TAX
 			for (int i = 2007 ; i < 2009 ; ++ i) {
-				LOGGER.warn("Vérification année " + i);
 				assertTache(TypeEtatTache.EN_INSTANCE, nextSunday, date(i, 1, 1), date(i, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
 						TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.CEDI, envois.get(i - 2007));
 			}
@@ -1381,7 +1374,6 @@ public class TacheServiceTest extends BusinessTest {
 			// après les deux premières années d'assujettissement, on ne trouve pas de DI et on ne considère pas le contribuable
 			// comme nouvel assujetti (n-1 et n-2 ont tous les deux un assujettissement ordinaire), donc COMPLETE
 			for (int i = 2009 ; i < RegDate.get().year() ; ++ i) {
-				LOGGER.warn("Vérification année " + i);
 				assertTache(TypeEtatTache.EN_INSTANCE, nextSunday, date(i, 1, 1), date(i, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
 						TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, TypeAdresseRetour.CEDI, envois.get(i - 2007));
 			}
@@ -1411,7 +1403,6 @@ public class TacheServiceTest extends BusinessTest {
 			// les deux premières années d'assujettissement, on ne trouve pas de DI mais on considère le contribuable
 			// comme nouvel assujetti (n-1 ou n-2 n'a pas d'assujettissement du tout), donc VAUD_TAX
 			for (int i = 2007 ; i < 2009 ; ++ i) {
-				LOGGER.warn("Vérification année " + i);
 				assertTache(TypeEtatTache.EN_INSTANCE, nextSunday, date(i, 1, 1), date(i, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
 						TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.CEDI, envois.get(i - 2007));
 			}
@@ -1419,7 +1410,6 @@ public class TacheServiceTest extends BusinessTest {
 			// après les deux premières années d'assujettissement, on ne trouve pas de DI et on ne considère pas le contribuable
 			// comme nouvel assujetti (n-1 et n-2 ont tous les deux un assujettissement ordinaire), donc COMPLETE
 			for (int i = 2009 ; i < RegDate.get().year() ; ++ i) {
-				LOGGER.warn("Vérification année " + i);
 				assertTache(TypeEtatTache.EN_INSTANCE, nextSunday, date(i, 1, 1), date(i, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
 						TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, TypeAdresseRetour.CEDI, envois.get(i - 2007));
 			}
