@@ -1510,7 +1510,7 @@ public abstract class Tiers extends HibernateEntity implements Validateable, Bus
 	 */
 	protected abstract ValidationResults validateTypeAdresses();
 
-	protected ValidationResults validateFors() {
+	public ValidationResults validateFors() {
 
 		// dumpForDebug();
 

@@ -297,7 +297,7 @@ public class DebiteurPrestationImposable extends Tiers {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected ValidationResults validateFors() {
+	public ValidationResults validateFors() {
 		ValidationResults results = super.validateFors();
 
 		final ForsParType fors = getForsParType(true /* triés par ordre chronologique */);

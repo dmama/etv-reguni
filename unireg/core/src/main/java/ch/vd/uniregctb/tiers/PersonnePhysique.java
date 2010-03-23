@@ -224,7 +224,7 @@ public class PersonnePhysique extends Contribuable {
 	 * {@inheritDoc}
 	 */
 	@Override
-	protected ValidationResults validateFors() {
+	public ValidationResults validateFors() {
 
 		ValidationResults results = super.validateFors();
 
