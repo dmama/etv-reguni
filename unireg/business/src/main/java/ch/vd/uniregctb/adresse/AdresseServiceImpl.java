@@ -1785,7 +1785,6 @@ public class AdresseServiceImpl implements AdresseService {
 	 * Facturation     (non-mappée)
 	 * </pre>
 	 * <p/>
-	 * TODO (msi) Demandez à Thierry la confirmation du mapping ci-dessous !
 	 *
 	 * @param adressePM un groupe d'adresses PM à convertir.
 	 * @return la représentation fiscale des adresses PM spécifiées.
