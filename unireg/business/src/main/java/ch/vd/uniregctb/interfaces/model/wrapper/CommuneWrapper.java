@@ -39,16 +39,24 @@ public class CommuneWrapper extends EntiteOFSWrapper implements Commune {
 
 	public List<CollectiviteAdministrative> getCollectivites() {
 		if (collectivites == null) {
-			collectivites = new ArrayList<CollectiviteAdministrative>();
-			final List<?> targetCollectivites = target.getCollectivites();
-			if (targetCollectivites != null) {
-				for (Object o : targetCollectivites) {
-					ch.vd.infrastructure.model.CollectiviteAdministrative c = (ch.vd.infrastructure.model.CollectiviteAdministrative) o;
-					collectivites.add(CollectiviteAdministrativeWrapper.get(c));
+			initCollectivites();
+		}
+		return collectivites;
+	}
+
+	private void initCollectivites() {
+		synchronized (this) {
+			if (collectivites == null) {
+				collectivites = new ArrayList<CollectiviteAdministrative>();
+				final List<?> targetCollectivites = target.getCollectivites();
+				if (targetCollectivites != null) {
+					for (Object o : targetCollectivites) {
+						ch.vd.infrastructure.model.CollectiviteAdministrative c = (ch.vd.infrastructure.model.CollectiviteAdministrative) o;
+						collectivites.add(CollectiviteAdministrativeWrapper.get(c));
+					}
 				}
 			}
 		}
-		return collectivites;
 	}
 
 	public RegDate getDateDebutValidite() {

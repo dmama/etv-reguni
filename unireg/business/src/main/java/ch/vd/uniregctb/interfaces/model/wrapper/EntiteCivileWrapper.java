@@ -27,16 +27,24 @@ public abstract class EntiteCivileWrapper implements EntiteCivile {
 
 	public Collection<Adresse> getAdresses() {
 		if (adresses == null) {
-			adresses = new ArrayList<Adresse>();
-			final Collection<?> targetAdresses = target.getAdresses();
-			if (targetAdresses != null) {
-				for (Object o : targetAdresses) {
-					ch.vd.common.model.Adresse a = (ch.vd.common.model.Adresse) o;
-					adresses.add(AdresseWrapper.get(a));
+			initAdresses();
+		}
+		return adresses;
+	}
+
+	private void initAdresses() {
+		synchronized (this) {
+			if (adresses == null) {
+				adresses = new ArrayList<Adresse>();
+				final Collection<?> targetAdresses = target.getAdresses();
+				if (targetAdresses != null) {
+					for (Object o : targetAdresses) {
+						ch.vd.common.model.Adresse a = (ch.vd.common.model.Adresse) o;
+						adresses.add(AdresseWrapper.get(a));
+					}
 				}
 			}
 		}
-		return adresses;
 	}
 
 	public void copyPartsFrom(Individu individu, Set<EnumAttributeIndividu> parts) {

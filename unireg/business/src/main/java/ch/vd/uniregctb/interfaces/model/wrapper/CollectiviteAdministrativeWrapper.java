@@ -55,16 +55,24 @@ public class CollectiviteAdministrativeWrapper implements CollectiviteAdministra
 
 	public List<Commune> getCommunes() {
 		if (communes == null) {
-			communes = new ArrayList<Commune>();
-			final List<?> targetCommunes = target.getCommunes();
-			if (targetCommunes != null) {
-				for (Object o : targetCommunes) {
-					ch.vd.infrastructure.model.Commune c = (ch.vd.infrastructure.model.Commune) o;
-					communes.add(CommuneWrapper.get(c));
+			initCommunes();
+		}
+		return communes;
+	}
+
+	private void initCommunes() {
+		synchronized (this) {
+			if (communes == null) {
+				communes = new ArrayList<Commune>();
+				final List<?> targetCommunes = target.getCommunes();
+				if (targetCommunes != null) {
+					for (Object o : targetCommunes) {
+						ch.vd.infrastructure.model.Commune c = (ch.vd.infrastructure.model.Commune) o;
+						communes.add(CommuneWrapper.get(c));
+					}
 				}
 			}
 		}
-		return communes;
 	}
 
 	public RegDate getDateFinValidite() {

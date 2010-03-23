@@ -63,16 +63,24 @@ public class PersonneMoraleWrapper implements PersonneMorale {
 
 	public Collection<AdresseEntreprise> getAdresses() {
 		if (adresses == null) {
-			adresses = new ArrayList<AdresseEntreprise>();
-			final Collection<?> targetAdresses = target.getAdresses();
-			if (targetAdresses != null) {
-				for (Object o : targetAdresses) {
-					ch.vd.registre.pm.model.AdresseEntreprise a = (ch.vd.registre.pm.model.AdresseEntreprise) o;
-					adresses.add(AdresseEntrepriseWrapper.get(a));
+			initAdresses();
+		}
+		return adresses;
+	}
+
+	private void initAdresses() {
+		synchronized (this) {
+			if (adresses == null) {
+				adresses = new ArrayList<AdresseEntreprise>();
+				final Collection<?> targetAdresses = target.getAdresses();
+				if (targetAdresses != null) {
+					for (Object o : targetAdresses) {
+						ch.vd.registre.pm.model.AdresseEntreprise a = (ch.vd.registre.pm.model.AdresseEntreprise) o;
+						adresses.add(AdresseEntrepriseWrapper.get(a));
+					}
 				}
 			}
 		}
-		return adresses;
 	}
 
 	public RegDate getDateConstitution() {
@@ -85,16 +93,24 @@ public class PersonneMoraleWrapper implements PersonneMorale {
 
 	public List<FormeJuridique> getFormesJuridiques() {
 		if (formesJuridiques == null) {
-			formesJuridiques = new ArrayList<FormeJuridique>();
-			final List<?> targetFormes = target.getFormesJuridiques();
-			if (targetFormes != null) {
-				for (Object o : targetFormes) {
-					ch.vd.registre.pm.model.FormeJuridique f = (ch.vd.registre.pm.model.FormeJuridique) o;
-					formesJuridiques.add(FormeJuridiqueWrapper.get(f));
+			initFormesJuridiques();
+		}
+		return formesJuridiques;
+	}
+
+	private void initFormesJuridiques() {
+		synchronized (this) {
+			if (formesJuridiques == null) {
+				formesJuridiques = new ArrayList<FormeJuridique>();
+				final List<?> targetFormes = target.getFormesJuridiques();
+				if (targetFormes != null) {
+					for (Object o : targetFormes) {
+						ch.vd.registre.pm.model.FormeJuridique f = (ch.vd.registre.pm.model.FormeJuridique) o;
+						formesJuridiques.add(FormeJuridiqueWrapper.get(f));
+					}
 				}
 			}
 		}
-		return formesJuridiques;
 	}
 
 	public String getNomContact() {
@@ -103,16 +119,24 @@ public class PersonneMoraleWrapper implements PersonneMorale {
 
 	public List<CompteBancaire> getComptesBancaires() {
 		if (comptesBancaires == null) {
-			comptesBancaires = new ArrayList<CompteBancaire>();
-			final Collection<?> targetComptes = target.getComptesBancaires();
-			if (targetComptes != null) {
-				for (Object o : targetComptes) {
-					ch.vd.registre.pm.model.CompteBancaire c = (ch.vd.registre.pm.model.CompteBancaire) o;
-					comptesBancaires.add(CompteBancaireWrapper.get(c));
+			initComptesBancaires();
+		}
+		return comptesBancaires;
+	}
+
+	private void initComptesBancaires() {
+		synchronized (this) {
+			if (comptesBancaires == null) {
+				comptesBancaires = new ArrayList<CompteBancaire>();
+				final Collection<?> targetComptes = target.getComptesBancaires();
+				if (targetComptes != null) {
+					for (Object o : targetComptes) {
+						ch.vd.registre.pm.model.CompteBancaire c = (ch.vd.registre.pm.model.CompteBancaire) o;
+						comptesBancaires.add(CompteBancaireWrapper.get(c));
+					}
 				}
 			}
 		}
-		return comptesBancaires;
 	}
 
 	public long getNumeroEntreprise() {
@@ -161,142 +185,221 @@ public class PersonneMoraleWrapper implements PersonneMorale {
 
 	public List<Capital> getCapitaux() {
 		if (capitaux == null) {
-			capitaux = new ArrayList<Capital>();
-			final Collection<?> targetCapitaux = target.getCapitaux();
-			if (targetCapitaux != null) {
-				for (Object o : targetCapitaux) {
-					ch.vd.registre.pm.model.Capital c = (ch.vd.registre.pm.model.Capital) o;
-					capitaux.add(CapitalWrapper.get(c));
-				}
-			}
+			initCapitaux();
 		}
 		return capitaux;
 	}
 
-	public List<EtatPM> getEtats() {
-		if (etats == null) {
-			etats = new ArrayList<EtatPM>();
-			final Collection<?> targetEtats = target.getEtats();
-			if (targetEtats != null) {
-				for (Object o : targetEtats) {
-					ch.vd.registre.pm.model.EtatPM e = (ch.vd.registre.pm.model.EtatPM) o;
-					etats.add(EtatPMWrapper.get(e));
+	private void initCapitaux() {
+		synchronized (this) {
+			if (capitaux == null) {
+				capitaux = new ArrayList<Capital>();
+				final Collection<?> targetCapitaux = target.getCapitaux();
+				if (targetCapitaux != null) {
+					for (Object o : targetCapitaux) {
+						ch.vd.registre.pm.model.Capital c = (ch.vd.registre.pm.model.Capital) o;
+						capitaux.add(CapitalWrapper.get(c));
+					}
 				}
 			}
+		}
+	}
+
+	public List<EtatPM> getEtats() {
+		if (etats == null) {
+			initEtats();
 		}
 		return etats;
 	}
 
-	public List<RegimeFiscal> getRegimesVD() {
-		if (regimesVD == null) {
-			regimesVD = new ArrayList<RegimeFiscal>();
-			final Collection<?> targetRegimes = target.getRegimesVD();
-			if (targetRegimes != null) {
-				for (Object o : targetRegimes) {
-					ch.vd.registre.pm.model.RegimeFiscal r = (ch.vd.registre.pm.model.RegimeFiscal) o;
-					regimesVD.add(RegimeFiscalWrapper.get(r));
+	private void initEtats() {
+		synchronized (this) {
+			if (etats == null) {
+				etats = new ArrayList<EtatPM>();
+				final Collection<?> targetEtats = target.getEtats();
+				if (targetEtats != null) {
+					for (Object o : targetEtats) {
+						ch.vd.registre.pm.model.EtatPM e = (ch.vd.registre.pm.model.EtatPM) o;
+						etats.add(EtatPMWrapper.get(e));
+					}
 				}
 			}
+		}
+	}
+
+	public List<RegimeFiscal> getRegimesVD() {
+		if (regimesVD == null) {
+			initRegimesVD();
 		}
 		return regimesVD;
 	}
 
-	public List<RegimeFiscal> getRegimesCH() {
-		if (regimesCH == null) {
-			regimesCH = new ArrayList<RegimeFiscal>();
-			final Collection<?> targetRegimes = target.getRegimesCH();
-			if (targetRegimes != null) {
-				for (Object o : targetRegimes) {
-					ch.vd.registre.pm.model.RegimeFiscal r = (ch.vd.registre.pm.model.RegimeFiscal) o;
-					regimesCH.add(RegimeFiscalWrapper.get(r));
+	private void initRegimesVD() {
+		synchronized (this) {
+			if (regimesVD == null) {
+				regimesVD = new ArrayList<RegimeFiscal>();
+				final Collection<?> targetRegimes = target.getRegimesVD();
+				if (targetRegimes != null) {
+					for (Object o : targetRegimes) {
+						ch.vd.registre.pm.model.RegimeFiscal r = (ch.vd.registre.pm.model.RegimeFiscal) o;
+						regimesVD.add(RegimeFiscalWrapper.get(r));
+					}
 				}
 			}
+		}
+	}
+
+	public List<RegimeFiscal> getRegimesCH() {
+		if (regimesCH == null) {
+			initRegimesCH();
 		}
 		return regimesCH;
 	}
 
-	public List<Siege> getSieges() {
-		if (sieges == null) {
-			sieges = new ArrayList<Siege>();
-			final Collection<?> targetSieges = target.getSieges();
-			if (targetSieges != null) {
-				for (Object o : targetSieges) {
-					ch.vd.registre.pm.model.Siege s = (ch.vd.registre.pm.model.Siege) o;
-					sieges.add(SiegeWrapper.get(s));
+	private void initRegimesCH() {
+		synchronized (this) {
+			if (regimesCH == null) {
+				regimesCH = new ArrayList<RegimeFiscal>();
+				final Collection<?> targetRegimes = target.getRegimesCH();
+				if (targetRegimes != null) {
+					for (Object o : targetRegimes) {
+						ch.vd.registre.pm.model.RegimeFiscal r = (ch.vd.registre.pm.model.RegimeFiscal) o;
+						regimesCH.add(RegimeFiscalWrapper.get(r));
+					}
 				}
 			}
+		}
+	}
+
+	public List<Siege> getSieges() {
+		if (sieges == null) {
+			initSieges();
 		}
 		return sieges;
 	}
 
-	public List<AssujettissementPM> getAssujettissementsLIC() {
-		if (assujettissementsLIC == null) {
-			assujettissementsLIC = new ArrayList<AssujettissementPM>();
-			final Collection<?> targetAssujettissements = target.getAssujettissementsLIC();
-			if (targetAssujettissements != null) {
-				for (Object o : targetAssujettissements) {
-					ch.vd.registre.fiscal.model.Assujettissement a = (ch.vd.registre.fiscal.model.Assujettissement) o;
-					assujettissementsLIC.add(AssujettissementPMWrapper.get(a));
+	private void initSieges() {
+		synchronized (this) {
+			if (sieges == null) {
+				sieges = new ArrayList<Siege>();
+				final Collection<?> targetSieges = target.getSieges();
+				if (targetSieges != null) {
+					for (Object o : targetSieges) {
+						ch.vd.registre.pm.model.Siege s = (ch.vd.registre.pm.model.Siege) o;
+						sieges.add(SiegeWrapper.get(s));
+					}
 				}
 			}
+		}
+	}
+
+	public List<AssujettissementPM> getAssujettissementsLIC() {
+		if (assujettissementsLIC == null) {
+			initAssujettissementsLIC();
 		}
 		return assujettissementsLIC;
 	}
 
-	public List<AssujettissementPM> getAssujettissementsLIFD() {
-		if (assujettissementsLIFD == null) {
-			assujettissementsLIFD = new ArrayList<AssujettissementPM>();
-			final Collection<?> targetAssujettissements = target.getAssujettissementsLIFD();
-			if (targetAssujettissements != null) {
-				for (Object o : targetAssujettissements) {
-					ch.vd.registre.fiscal.model.Assujettissement a = (ch.vd.registre.fiscal.model.Assujettissement) o;
-					assujettissementsLIFD.add(AssujettissementPMWrapper.get(a));
+	private void initAssujettissementsLIC() {
+		synchronized (this) {
+			if (assujettissementsLIC == null) {
+				assujettissementsLIC = new ArrayList<AssujettissementPM>();
+				final Collection<?> targetAssujettissements = target.getAssujettissementsLIC();
+				if (targetAssujettissements != null) {
+					for (Object o : targetAssujettissements) {
+						ch.vd.registre.fiscal.model.Assujettissement a = (ch.vd.registre.fiscal.model.Assujettissement) o;
+						assujettissementsLIC.add(AssujettissementPMWrapper.get(a));
+					}
 				}
 			}
+		}
+	}
+
+	public List<AssujettissementPM> getAssujettissementsLIFD() {
+		if (assujettissementsLIFD == null) {
+			initAssujettissementsLIFD();
 		}
 		return assujettissementsLIFD;
 	}
 
-	public List<ForPM> getForsFiscauxPrincipaux() {
-		if (forsFiscauxPrincipaux == null) {
-			forsFiscauxPrincipaux = new ArrayList<ForPM>();
-			final Collection<?> targetFors = target.getForsFiscauxPrincipaux();
-			if (targetFors != null) {
-				for (Object o : targetFors) {
-					ch.vd.registre.pm.model.ForPM a = (ch.vd.registre.pm.model.ForPM) o;
-					forsFiscauxPrincipaux.add(ForPMWrapper.get(a));
+	private void initAssujettissementsLIFD() {
+		synchronized (this) {
+			if (assujettissementsLIFD == null) {
+				assujettissementsLIFD = new ArrayList<AssujettissementPM>();
+				final Collection<?> targetAssujettissements = target.getAssujettissementsLIFD();
+				if (targetAssujettissements != null) {
+					for (Object o : targetAssujettissements) {
+						ch.vd.registre.fiscal.model.Assujettissement a = (ch.vd.registre.fiscal.model.Assujettissement) o;
+						assujettissementsLIFD.add(AssujettissementPMWrapper.get(a));
+					}
 				}
 			}
+		}
+	}
+
+	public List<ForPM> getForsFiscauxPrincipaux() {
+		if (forsFiscauxPrincipaux == null) {
+			initForsFiscauxPrincipaux();
 		}
 		return forsFiscauxPrincipaux;
 	}
 
-	public List<ForPM> getForsFiscauxSecondaires() {
-		if (forsFiscauxSecondaires == null) {
-			forsFiscauxSecondaires = new ArrayList<ForPM>();
-			final Collection<?> targetFors = target.getForsFiscauxSecondaires();
-			if (targetFors != null) {
-				for (Object o : targetFors) {
-					ch.vd.registre.pm.model.ForPM a = (ch.vd.registre.pm.model.ForPM) o;
-					forsFiscauxSecondaires.add(ForPMWrapper.get(a));
+	private void initForsFiscauxPrincipaux() {
+		synchronized (this) {
+			if (forsFiscauxPrincipaux == null) {
+				forsFiscauxPrincipaux = new ArrayList<ForPM>();
+				final Collection<?> targetFors = target.getForsFiscauxPrincipaux();
+				if (targetFors != null) {
+					for (Object o : targetFors) {
+						ch.vd.registre.pm.model.ForPM a = (ch.vd.registre.pm.model.ForPM) o;
+						forsFiscauxPrincipaux.add(ForPMWrapper.get(a));
+					}
 				}
 			}
+		}
+	}
+
+	public List<ForPM> getForsFiscauxSecondaires() {
+		if (forsFiscauxSecondaires == null) {
+			initForsFiscauxSecondaires();
 		}
 		return forsFiscauxSecondaires;
 	}
 
-	public List<Mandat> getMandats() {
-		if (mandats == null) {
-			// TODO (msi) rendre thread-safe ce code et ceux des autres méthodes 
-			mandats = new ArrayList<Mandat>();
-			final List<ch.vd.registre.pm.model.Mandat> targetMandats = target.getMandats();
-			if (targetMandats != null) {
-				for (Object o : targetMandats) {
-					ch.vd.registre.pm.model.Mandat m = (ch.vd.registre.pm.model.Mandat) o;
-					mandats.add(MandatWrapper.get(m));
+	private void initForsFiscauxSecondaires() {
+		synchronized (this) {
+			if (forsFiscauxSecondaires == null) {
+				forsFiscauxSecondaires = new ArrayList<ForPM>();
+				final Collection<?> targetFors = target.getForsFiscauxSecondaires();
+				if (targetFors != null) {
+					for (Object o : targetFors) {
+						ch.vd.registre.pm.model.ForPM a = (ch.vd.registre.pm.model.ForPM) o;
+						forsFiscauxSecondaires.add(ForPMWrapper.get(a));
+					}
 				}
 			}
 		}
+	}
+
+	public List<Mandat> getMandats() {
+		if (mandats == null) {
+			initMandats();
+		}
 		return mandats;
+	}
+
+	private void initMandats() {
+		synchronized (this) {
+			if (mandats == null) {
+				mandats = new ArrayList<Mandat>();
+				final List<ch.vd.registre.pm.model.Mandat> targetMandats = target.getMandats();
+				if (targetMandats != null) {
+					for (Object o : targetMandats) {
+						ch.vd.registre.pm.model.Mandat m = (ch.vd.registre.pm.model.Mandat) o;
+						mandats.add(MandatWrapper.get(m));
+					}
+				}
+			}
+		}
 	}
 }

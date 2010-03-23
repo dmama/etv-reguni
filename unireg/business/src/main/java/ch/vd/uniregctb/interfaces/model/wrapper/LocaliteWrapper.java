@@ -35,7 +35,7 @@ public class LocaliteWrapper implements Localite {
 
 	public Integer getComplementNPA() {
 		final Integer c = target.getComplementNPA();
-		if (c == null || c.intValue() == 0) {	// un complément de 0 signifie pas de complément
+		if (c == null || c == 0) {	// un complément de 0 signifie pas de complément
 			return null;
 		}
 		else {

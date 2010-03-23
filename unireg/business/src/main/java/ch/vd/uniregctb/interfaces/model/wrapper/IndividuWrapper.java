@@ -56,7 +56,7 @@ public class IndividuWrapper extends EntiteCivileWrapper implements Individu {
 		this.dernierHistorique = individuWrapper.getDernierHistoriqueIndividu();
 		this.historique = individuWrapper.getHistoriqueIndividu();
 		this.etatsCivils = individuWrapper.getEtatsCivils();
-		
+
 		if (parts != null && parts.contains(EnumAttributeIndividu.ADOPTIONS)) {
 			adoptions = individuWrapper.adoptions;
 		}
@@ -87,19 +87,25 @@ public class IndividuWrapper extends EntiteCivileWrapper implements Individu {
 
 	public Collection<AdoptionReconnaissance> getAdoptionsReconnaissances() {
 		if (adoptions == null) {
-			adoptions = new ArrayList<AdoptionReconnaissance>();
-			final Collection<?> targetAdoptions = target.getAdoptionsReconnaissances();
-			if (targetAdoptions != null) {
-				for (Object o : targetAdoptions) {
-					ch.vd.registre.civil.model.AdoptionReconnaissance a = (ch.vd.registre.civil.model.AdoptionReconnaissance) o;
-					adoptions.add(AdoptionReconnaissanceWrapper.get(a));
-				}
-			}
+			initAdoptions();
 		}
 		return adoptions;
 	}
 
-	
+	private void initAdoptions() {
+		synchronized (this) {
+			if (adoptions == null) {
+				adoptions = new ArrayList<AdoptionReconnaissance>();
+				final Collection<?> targetAdoptions = target.getAdoptionsReconnaissances();
+				if (targetAdoptions != null) {
+					for (Object o : targetAdoptions) {
+						ch.vd.registre.civil.model.AdoptionReconnaissance a = (ch.vd.registre.civil.model.AdoptionReconnaissance) o;
+						adoptions.add(AdoptionReconnaissanceWrapper.get(a));
+					}
+				}
+			}
+		}
+	}
 
 	public RegDate getDateDeces() {
 		return deces;
@@ -122,23 +128,39 @@ public class IndividuWrapper extends EntiteCivileWrapper implements Individu {
 
 	public Collection<Individu> getEnfants() {
 		if (enfants == null) {
-			enfants = new ArrayList<Individu>();
-			final Collection<?> targetEnfants = target.getEnfants();
-			if (targetEnfants != null) {
-				for (Object o : targetEnfants) {
-					ch.vd.registre.civil.model.Individu i = (ch.vd.registre.civil.model.Individu) o;
-					enfants.add(IndividuWrapper.get(i));
-				}
-			}
+			initEnfants();
 		}
 		return enfants;
 	}
 
+	private void initEnfants() {
+		synchronized (this) {
+			if (enfants == null) {
+				enfants = new ArrayList<Individu>();
+				final Collection<?> targetEnfants = target.getEnfants();
+				if (targetEnfants != null) {
+					for (Object o : targetEnfants) {
+						ch.vd.registre.civil.model.Individu i = (ch.vd.registre.civil.model.Individu) o;
+						enfants.add(IndividuWrapper.get(i));
+					}
+				}
+			}
+		}
+	}
+
 	public EtatCivilList getEtatsCivils() {
 		if (etatsCivils == null) {
-			etatsCivils = extractEtatsCivils(target);
+			initEtatsCivils();
 		}
 		return etatsCivils;
+	}
+
+	private void initEtatsCivils() {
+		synchronized (this) {
+			if (etatsCivils == null) {
+				etatsCivils = extractEtatsCivils(target);
+			}
+		}
 	}
 
 	private static EtatCivilList extractEtatsCivils(ch.vd.registre.civil.model.Individu individu) {
@@ -178,16 +200,24 @@ public class IndividuWrapper extends EntiteCivileWrapper implements Individu {
 
 	public Collection<HistoriqueIndividu> getHistoriqueIndividu() {
 		if (historique == null) {
-			historique = new ArrayList<HistoriqueIndividu>();
-			final Collection<?> targetHistorique = target.getHistoriqueIndividu();
-			if (targetHistorique != null) {
-				for (Object o : targetHistorique) {
-					ch.vd.registre.civil.model.HistoriqueIndividu h = (ch.vd.registre.civil.model.HistoriqueIndividu) o;
-					historique.add(HistoriqueIndividuWrapper.get(h));
+			initHistorique();
+		}
+		return historique;
+	}
+
+	private void initHistorique() {
+		synchronized (this) {
+			if (historique == null) {
+				historique = new ArrayList<HistoriqueIndividu>();
+				final Collection<?> targetHistorique = target.getHistoriqueIndividu();
+				if (targetHistorique != null) {
+					for (Object o : targetHistorique) {
+						ch.vd.registre.civil.model.HistoriqueIndividu h = (ch.vd.registre.civil.model.HistoriqueIndividu) o;
+						historique.add(HistoriqueIndividuWrapper.get(h));
+					}
 				}
 			}
 		}
-		return historique;
 	}
 
 	public Individu getMere() {
@@ -199,16 +229,24 @@ public class IndividuWrapper extends EntiteCivileWrapper implements Individu {
 
 	public Collection<Nationalite> getNationalites() {
 		if (nationalites == null) {
-			Collection<?> targetNationalites = target.getNationalites();
-			if (targetNationalites != null) {
-				nationalites = new ArrayList<Nationalite>();
-				for (Object o : targetNationalites) {
-					ch.vd.registre.civil.model.Nationalite n = (ch.vd.registre.civil.model.Nationalite) o;
-					nationalites.add(NationaliteWrapper.get(n));
+			initNationalites();
+		}
+		return nationalites;
+	}
+
+	private void initNationalites() {
+		synchronized (this) {
+			if (nationalites == null) {
+				Collection<?> targetNationalites = target.getNationalites();
+				if (targetNationalites != null) {
+					nationalites = new ArrayList<Nationalite>();
+					for (Object o : targetNationalites) {
+						ch.vd.registre.civil.model.Nationalite n = (ch.vd.registre.civil.model.Nationalite) o;
+						nationalites.add(NationaliteWrapper.get(n));
+					}
 				}
 			}
 		}
-		return nationalites;
 	}
 
 	public long getNoTechnique() {
@@ -244,16 +282,24 @@ public class IndividuWrapper extends EntiteCivileWrapper implements Individu {
 
 	public Collection<Permis> getPermis() {
 		if (permis == null) {
-			Collection<?> targetPermis = target.getPermis();
-			if (targetPermis != null) {
-				permis = new ArrayList<Permis>();
-				for (Object o : targetPermis) {
-					ch.vd.registre.civil.model.Permis p = (ch.vd.registre.civil.model.Permis) o;
-					permis.add(PermisWrapper.get(p));
+			initPermis();
+		}
+		return permis;
+	}
+
+	private void initPermis() {
+		synchronized (this) {
+			if (permis == null) {
+				Collection<?> targetPermis = target.getPermis();
+				if (targetPermis != null) {
+					permis = new ArrayList<Permis>();
+					for (Object o : targetPermis) {
+						ch.vd.registre.civil.model.Permis p = (ch.vd.registre.civil.model.Permis) o;
+						permis.add(PermisWrapper.get(p));
+					}
 				}
 			}
 		}
-		return permis;
 	}
 
 	public Tutelle getTutelle() {
