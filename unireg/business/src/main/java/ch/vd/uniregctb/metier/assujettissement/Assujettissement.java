@@ -1,20 +1,30 @@
 package ch.vd.uniregctb.metier.assujettissement;
 
-import ch.vd.registre.base.date.*;
-import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.common.ProgrammingException;
-import ch.vd.uniregctb.common.Triplet;
-import ch.vd.uniregctb.common.TripletIterator;
-import ch.vd.uniregctb.tiers.*;
-import ch.vd.uniregctb.type.ModeImposition;
-import ch.vd.uniregctb.type.MotifFor;
-import ch.vd.uniregctb.type.MotifRattachement;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+
+import ch.vd.registre.base.date.CollatableDateRange;
+import ch.vd.registre.base.date.DateRange;
+import ch.vd.registre.base.date.DateRangeComparator;
+import ch.vd.registre.base.date.DateRangeHelper;
+import ch.vd.registre.base.date.NullDateBehavior;
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.registre.base.utils.Assert;
+import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.uniregctb.common.Triplet;
+import ch.vd.uniregctb.common.TripletIterator;
+import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.ForFiscal;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
+import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.type.ModeImposition;
+import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.MotifRattachement;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 /**
  * Classe de base abstraite représentant une période d'assujettissement.
@@ -131,20 +141,34 @@ public abstract class Assujettissement implements CollatableDateRange {
 			return null;
 		}
 
-		// Détermination des données d'assujettissement brutes
-		final Tiers.ForsParType fpt = ctb.getForsParType(true);
-		final List<Fraction> fractionnements = new ArrayList<Fraction>();
-		final List<Data> domicile = determineAssujettissementDomicile(fpt.principaux, fractionnements);
-		final List<Data> economique = determineAssujettissementEconomique(fpt.secondaires, fractionnements);
-		fusionne(domicile, economique);
+		try {
+			// Détermination des données d'assujettissement brutes
+			final Tiers.ForsParType fpt = ctb.getForsParType(true);
+			final List<Fraction> fractionnements = new ArrayList<Fraction>();
+			final List<Data> domicile = determineAssujettissementDomicile(fpt.principaux, fractionnements);
+			final List<Data> economique = determineAssujettissementEconomique(fpt.secondaires, fractionnements);
+			fusionne(domicile, economique);
 
-		// Création des assujettissements finaux
-		List<Assujettissement> assujettissements = instanciate(ctb, domicile);
-		assujettissements = DateRangeHelper.collate(assujettissements);
-		adapteDatesDebutEtFin(assujettissements);
+			// Création des assujettissements finaux
+			List<Assujettissement> assujettissements = instanciate(ctb, domicile);
+			assujettissements = DateRangeHelper.collate(assujettissements);
+			adapteDatesDebutEtFin(assujettissements);
 
-		assertCoherenceRanges(assujettissements);
-		return assujettissements;
+			assertCoherenceRanges(assujettissements);
+
+			return assujettissements;
+		}
+		catch (AssujettissementException e) {
+			final ValidationResults vr = ctb.validateFors();
+			if (vr.hasErrors()) {
+				// si le contribuable ne valide pas, on est un peu plus explicite
+				throw new AssujettissementException("Une exception a été levée sur le contribuable n°" + ctb.getNumero() + " lors du calcul des assujettissements, mais en fait le contribuable ne valide pas: " + vr.toString(), e);
+			}
+			else {
+				// autrement, on propage simplement l'exception
+				throw e;
+			}
+		}
 	}
 
 	/**
@@ -210,13 +234,14 @@ public abstract class Assujettissement implements CollatableDateRange {
 	 * Asserte que les ranges ne se chevauchent pas.
 	 *
 	 * @param ranges les ranges à tester
+	 * @throws AssujettissementException en cas d'impossibilité de calculer l'assujettissement
 	 */
-	private static void assertCoherenceRanges(List<? extends DateRange> ranges) {
+	private static void assertCoherenceRanges(List<? extends DateRange> ranges) throws AssujettissementException {
 		DateRange previous = null;
 		for (DateRange current : ranges) {
 			if (previous != null) {
 				if (DateRangeHelper.intersect(previous, current)) {
-					throw new ProgrammingException("L'assujettissement [" + previous + "] entre en collision avec le suivant [" + current + "]");
+					throw new AssujettissementException("L'assujettissement [" + previous + "] entre en collision avec le suivant [" + current + "]");
 				}
 			}
 			previous = current;
