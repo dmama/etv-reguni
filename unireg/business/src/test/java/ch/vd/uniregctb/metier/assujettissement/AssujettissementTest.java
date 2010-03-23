@@ -2280,6 +2280,27 @@ public class AssujettissementTest extends MetierTest {
 		assertHorsSuisse(date(2006, 11, 16), null, MotifFor.DEMENAGEMENT_VD, null, list.get(2));
 	}
 
+	/**
+	 * [UNIREG-2155] Cas du contribuable n°10441002
+	 */
+	@Test
+	public void testDetermineDepartHSSourcierEtArriveeHSOrdinaireMemeMois() throws Exception {
+
+		final Contribuable ctb = createContribuableSansFor();
+
+		ForFiscalPrincipal fp = addForPrincipal(ctb, date(2003, 1, 1), MotifFor.ARRIVEE_HS, date(2009, 8, 13), MotifFor.DEPART_HS, MockCommune.Lausanne);
+		fp.setModeImposition(ModeImposition.SOURCE);
+		addForPrincipal(ctb, date(2009, 8, 14), MotifFor.DEPART_HS, date(2009, 8, 18), MotifFor.ARRIVEE_HS, MockPays.Colombie);
+		addForPrincipal(ctb, date(2009, 8, 19), MotifFor.ARRIVEE_HS, date(2009, 12, 13), MotifFor.DEPART_HS, MockCommune.Lausanne);
+		addForPrincipal(ctb, date(2009, 12, 14), MotifFor.DEPART_HS, MockPays.EtatsUnis);
+
+		final List<Assujettissement> list = Assujettissement.determine(ctb);
+		assertNotNull(list);
+		assertEquals(2, list.size());
+		assertSourcierPur(date(2003, 1, 1), date(2009, 8, 13), MotifFor.ARRIVEE_HS, MotifFor.DEPART_HS, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
+		assertOrdinaire(date(2009, 8, 19), date(2009, 12, 13), MotifFor.ARRIVEE_HS, MotifFor.DEPART_HS, list.get(1));
+	}
+
 	@Test
 	public void testCommuneActiveForPrincipal() throws Exception {
 		final Contribuable ctb = createUnForSimple();
