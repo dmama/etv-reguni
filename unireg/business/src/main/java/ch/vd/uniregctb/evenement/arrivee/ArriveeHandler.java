@@ -347,48 +347,51 @@ public class ArriveeHandler extends EvenementCivilHandlerBase {
 			if (type == ArriveeType.ARRIVEE_ADRESSE_PRINCIPALE && individuMajeur) {
 
 				MotifFor motifOuverture = getMotifOuverture(arrivee);
-
+				final int numeroOfsNouveau = communeArrivee.getNoOFSEtendu();
 				final ForFiscalPrincipal forFiscal = habitant.getForFiscalPrincipalAt(null);
+
+				// détermination du mode d'imposition
+				final ModeImposition modeImposition;
 				if (forFiscal == null) {
-					// s'il est suisse, titulaire d'un permis C ou a obtenu le statut de réfugié => ordinaire
 					if (!getService().isEtrangerSansPermisC(habitant, dateEvenement) || getService().isHabitantRefugie(habitant, dateEvenement)) {
+						// s'il est suisse, titulaire d'un permis C ou a obtenu le statut de réfugié => ordinaire
 						Audit.info(numeroEvenement, "Création d'un for fiscal ordinaire");
-						final int numeroOfsNouveau = communeArrivee.getNoOFSEtendu();
-						if(motifOuverture == null){
-							motifOuverture = MotifFor.ARRIVEE_HS;
-							warnings.add(new EvenementCivilErreur("ancienne adresse avant l'arrivée inconnue : "
-									+ "veuillez indiquer le motif d'ouverture du for principal", TypeEvenementErreur.WARNING));
-						}
-						openForFiscalPrincipalDomicileVaudoisOrdinaire(habitant, dateEvenement, numeroOfsNouveau, motifOuverture, false);
+						modeImposition = ModeImposition.ORDINAIRE;
 					}
 					else if (motifOuverture == MotifFor.ARRIVEE_HC || motifOuverture == MotifFor.ARRIVEE_HS || motifOuverture == null) {
 						Audit.info(arrivee.getNumeroEvenement(), "Création d'un for fiscal source");
-						final int numeroOfsNouveau = communeArrivee.getNoOFSEtendu();
-						if(motifOuverture == null){
-							motifOuverture = MotifFor.ARRIVEE_HS;
-							warnings.add(new EvenementCivilErreur("ancienne adresse avant l'arrivée inconnue : "
-									+ "veuillez indiquer le motif d'ouverture du for principal", TypeEvenementErreur.WARNING));
-						}
-						final RegDate dateOuverture = findDateOuvertureSourcier(dateEvenement, arrivee.getType(), arrivee.getAncienneCommunePrincipale());
-						openForFiscalPrincipal(habitant, dateOuverture, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, numeroOfsNouveau,
-								MotifRattachement.DOMICILE, motifOuverture, ModeImposition.SOURCE, false);
+						modeImposition = ModeImposition.SOURCE;
+					}
+					else {
+						modeImposition = null;
 					}
 				}
 				else {
 					Audit.info(numeroEvenement, "Mise a jour des fors fiscaux avec conservation du mode d'imposition");
-					final int numeroOfsNouveau = communeArrivee.getNoOFSEtendu();
-					if(motifOuverture == null){
+					modeImposition = forFiscal.getModeImposition();
+				}
+
+				// détermination de la date d'ouverture
+				final RegDate dateOuverture;
+				if (isSourcier(modeImposition)) {
+					dateOuverture = findDateOuvertureSourcier(dateEvenement, arrivee.getType(), arrivee.getAncienneCommunePrincipale());
+				}
+				else {
+					dateOuverture = dateEvenement;
+				}
+
+				if (modeImposition != null) {
+					if (motifOuverture == null) {
 						motifOuverture = MotifFor.ARRIVEE_HS;
-						warnings.add(new EvenementCivilErreur("ancienne adresse avant l'arrivée inconnue : "
-								+ "veuillez indiquer le motif d'ouverture du for principal", TypeEvenementErreur.WARNING));
+						warnings.add(new EvenementCivilErreur("ancienne adresse avant l'arrivée inconnue : veuillez indiquer le motif d'ouverture du for principal", TypeEvenementErreur.WARNING));
 					}
-
-					RegDate dateOuvertureNouveauFor = dateEvenement;
-					if (isSourcier(forFiscal.getModeImposition())) {
-						dateOuvertureNouveauFor = findDateOuvertureSourcier(dateEvenement, arrivee.getType(), communeArrivee);
+					if (forFiscal == null) {
+						openForFiscalPrincipal(habitant, dateOuverture, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, numeroOfsNouveau, MotifRattachement.DOMICILE, motifOuverture, modeImposition,
+								false);
 					}
-
-					updateForFiscalPrincipal(habitant, dateOuvertureNouveauFor, numeroOfsNouveau, motifOuverture, motifOuverture, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, false);
+					else {
+						updateForFiscalPrincipal(habitant, dateOuverture, numeroOfsNouveau, motifOuverture, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, modeImposition, false);
+					}
 				}
 			}
 		}
@@ -801,46 +804,51 @@ public class ArriveeHandler extends EvenementCivilHandlerBase {
 			if (ffpHabitantConjoint != null) {
 				throw new EvenementCivilHandlerException("Le conjoint du ménage [" + menageCommun + "] possède un for fiscal principal individuel");
 			}
+
 			MotifFor motifOuverture = getMotifOuverture(arrivee);
-			if(motifOuverture == null){
-				motifOuverture = MotifFor.ARRIVEE_HS;
-				warnings.add(new EvenementCivilErreur("Ancienne adresse avant l'arrivée inconnue : veuillez indiquer le motif d'ouverture du for principal", TypeEvenementErreur.WARNING));
-			}
+
+			// détermination du mode d'imposition
+			final ModeImposition modeImposition;
 			if (ffpMenage == null) {
-				final ModeImposition modeImposition;
-				final RegDate dateOuvertureFor;
-				if (!getService().isEtrangerSansPermisC(principal, dateEvenement) ||
-					getService().isHabitantRefugie(principal, dateEvenement) ||
-					(conjoint != null &&
-							(!getService().isEtrangerSansPermisC(conjoint, dateEvenement) ||
-							getService().isHabitantRefugie(conjoint, dateEvenement)))) {
+				if (!getService().isEtrangerSansPermisC(principal, dateEvenement) || getService().isHabitantRefugie(principal, dateEvenement) ||
+						(conjoint != null && (!getService().isEtrangerSansPermisC(conjoint, dateEvenement) || getService().isHabitantRefugie(conjoint, dateEvenement)))) {
 					modeImposition = ModeImposition.ORDINAIRE;
-					dateOuvertureFor = dateEvenement;
 					Audit.info(arrivee.getNumeroEvenement(), "Création d'un for fiscal principal ordinaire sur le ménage commun");
 				}
 				else if (motifOuverture == MotifFor.ARRIVEE_HC || motifOuverture == MotifFor.ARRIVEE_HS) {
-					dateOuvertureFor = findDateOuvertureSourcier(dateEvenement, arrivee.getType(), commune);
 					modeImposition = ModeImposition.SOURCE;
 					Audit.info(arrivee.getNumeroEvenement(), "Création d'un for fiscal principal sourcier sur le ménage commun");
 				}
 				else {
 					modeImposition = null;
-					dateOuvertureFor = null;
-				}
-
-				if (modeImposition != null) {
-					openForFiscalPrincipal(menageCommun, dateOuvertureFor, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, numeroOfsNouveau, MotifRattachement.DOMICILE, motifOuverture, modeImposition, false);
 				}
 			}
 			else {
-
-				RegDate dateOuvertureNouveauFor = dateEvenement;
-				if (isSourcier(ffpMenage.getModeImposition())) {
-					dateOuvertureNouveauFor = findDateOuvertureSourcier(dateEvenement, arrivee.getType(), commune);
-				}
-
-				updateForFiscalPrincipal(menageCommun, dateOuvertureNouveauFor, numeroOfsNouveau, motifOuverture, motifOuverture, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, false);
+				modeImposition = ffpMenage.getModeImposition();
 				Audit.info(arrivee.getNumeroEvenement(), "Mise à jour du for fiscal principal sur le ménage commun");
+			}
+
+			// détermination de la date d'ouverture
+			final RegDate dateOuvertureFor;
+			if (isSourcier(modeImposition)) {
+				dateOuvertureFor = findDateOuvertureSourcier(dateEvenement, arrivee.getType(), commune);
+			}
+			else {
+				dateOuvertureFor = dateEvenement;
+			}
+
+			if (modeImposition != null) {
+				if (motifOuverture == null) {
+					motifOuverture = MotifFor.ARRIVEE_HS;
+					warnings.add(new EvenementCivilErreur("Ancienne adresse avant l'arrivée inconnue : veuillez indiquer le motif d'ouverture du for principal", TypeEvenementErreur.WARNING));
+				}
+				if (ffpMenage == null) {
+					openForFiscalPrincipal(menageCommun, dateOuvertureFor, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, numeroOfsNouveau, MotifRattachement.DOMICILE, motifOuverture, modeImposition,
+							false);
+				}
+				else {
+					updateForFiscalPrincipal(menageCommun, dateOuvertureFor, numeroOfsNouveau, motifOuverture, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, modeImposition, false);
+				}
 			}
 		}
 		catch (TiersException e) {

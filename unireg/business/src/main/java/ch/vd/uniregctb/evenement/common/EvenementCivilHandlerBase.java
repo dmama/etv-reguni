@@ -238,19 +238,20 @@ public abstract class EvenementCivilHandlerBase implements EvenementCivilHandler
 	}
 
 	/**
-	 * Met-à-jour (= ferme l'ancien et ouvre un nouveau) le for fiscal principal d'un contribuable lors d'un changement de commune. Aucun
-	 * changement n'est enregistré si la nouvelle commune n'est pas différente de la commune actuelle.
+	 * Met-à-jour (= ferme l'ancien et ouvre un nouveau) le for fiscal principal d'un contribuable lors d'un changement de commune. Aucun changement n'est enregistré si la nouvelle commune n'est pas
+	 * différente de la commune actuelle.
 	 *
-	 * @param contribuable
-	 *            le contribuable en question.
-	 * @param dateChangement
-	 *            la date de début de validité du nouveau for.
-	 * @param numeroOfsAutoriteFiscale
-	 *            le numéro OFS étendue de l'autorité fiscale du nouveau for.
-	 * @param changeHabitantFlag 
+	 * @param contribuable             le contribuable en question.
+	 * @param dateChangement           la date de début de validité du nouveau for.
+	 * @param numeroOfsAutoriteFiscale le numéro OFS étendue de l'autorité fiscale du nouveau for.
+	 * @param motifFermetureOuverture  le motif de fermeture du for existant et le motif d'ouverture du nouveau for
+	 * @param typeAutorite             le type d'autorité fiscale
+	 * @param modeImposition           le mode d'imposition du nouveau for. Peut être <b>null</b> auquel cas le mode d'imposition de l'ancien for est utilisé.
+	 * @param changeHabitantFlag
 	 * @return le nouveau for fiscal principal
 	 */
-	protected ForFiscalPrincipal updateForFiscalPrincipal(Contribuable contribuable, final RegDate dateChangement, int numeroOfsAutoriteFiscale, MotifFor motifFermeture, MotifFor motifOuverture, TypeAutoriteFiscale typeAutorite, boolean changeHabitantFlag) {
+	protected ForFiscalPrincipal updateForFiscalPrincipal(Contribuable contribuable, final RegDate dateChangement, int numeroOfsAutoriteFiscale, MotifFor motifFermetureOuverture,
+	                                                      TypeAutoriteFiscale typeAutorite, ModeImposition modeImposition, boolean changeHabitantFlag) {
 
 		ForFiscalPrincipal forFiscalPrincipal = contribuable.getForFiscalPrincipalAt(null);
 		Assert.notNull(forFiscalPrincipal);
@@ -258,8 +259,12 @@ public abstract class EvenementCivilHandlerBase implements EvenementCivilHandler
 
 		// On ne ferme et ouvre les fors que si nécessaire
 		if (numeroOfsActuel == null || !numeroOfsActuel.equals(numeroOfsAutoriteFiscale)) {
-			closeForFiscalPrincipal(contribuable, dateChangement.getOneDayBefore(), motifFermeture);
-			forFiscalPrincipal = openForFiscalPrincipal(contribuable, dateChangement, typeAutorite, numeroOfsAutoriteFiscale, forFiscalPrincipal.getMotifRattachement(), motifOuverture, forFiscalPrincipal.getModeImposition(), changeHabitantFlag);
+			closeForFiscalPrincipal(contribuable, dateChangement.getOneDayBefore(), motifFermetureOuverture);
+			if (modeImposition == null) {
+				modeImposition = forFiscalPrincipal.getModeImposition();
+			}
+			forFiscalPrincipal = openForFiscalPrincipal(contribuable, dateChangement, typeAutorite, numeroOfsAutoriteFiscale, forFiscalPrincipal.getMotifRattachement(), motifFermetureOuverture,
+					modeImposition, changeHabitantFlag);
 		}
 		return forFiscalPrincipal;
 	}

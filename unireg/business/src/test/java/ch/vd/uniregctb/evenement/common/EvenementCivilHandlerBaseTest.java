@@ -94,7 +94,9 @@ public class EvenementCivilHandlerBaseTest extends BusinessTest {
 		 */
 		{
 			assertEquals(1, habitant.getForsFiscaux().size());
-			handler.updateForFiscalPrincipal(habitant, dateChangement, MockCommune.Cossonay.getNoOFSEtendu(), MotifFor.DEMENAGEMENT_VD, MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, true);
+			handler.updateForFiscalPrincipal(habitant, dateChangement, MockCommune.Cossonay.getNoOFSEtendu(), MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, null,
+					true
+			);
 			assertEquals(1, habitant.getForsFiscaux().size());
 			assertNull(forInitial.getDateFin());
 		}
@@ -104,7 +106,9 @@ public class EvenementCivilHandlerBaseTest extends BusinessTest {
 		 */
 		{
 			assertEquals(1, habitant.getForsFiscaux().size());
-			handler.updateForFiscalPrincipal(habitant, dateChangement, MockCommune.LesClees.getNoOFSEtendu(), MotifFor.DEMENAGEMENT_VD, MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, true);
+			handler.updateForFiscalPrincipal(habitant, dateChangement, MockCommune.LesClees.getNoOFSEtendu(), MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, null,
+					true
+			);
 			assertEquals(2, habitant.getForsFiscaux().size());
 			assertEquals(veilleChangement, forInitial.getDateFin());
 
@@ -131,7 +135,7 @@ public class EvenementCivilHandlerBaseTest extends BusinessTest {
 		habitant = (PersonnePhysique)tiersDAO.save(habitant);
 
 		// déménagement sur Lausanne
-		handler.updateForFiscalPrincipal(habitant, RegDate.get(2004,7,1), MockCommune.Lausanne.getNoOFSEtendu(), MotifFor.DEMENAGEMENT_VD, MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, true);
+		handler.updateForFiscalPrincipal(habitant, RegDate.get(2004,7,1), MockCommune.Lausanne.getNoOFSEtendu(), MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, null, true);
 
 		// on vérifie que le type d'autorité fiscale, le motif de rattachement et le mode d'imposition restent inchangés
 		final List<ForFiscal> fors = habitant.getForsFiscauxSorted();
