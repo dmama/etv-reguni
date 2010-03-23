@@ -392,10 +392,12 @@ public abstract class Assujettissement implements CollatableDateRange {
 		if (courant instanceof SourcierPur) {
 			final RegDate debut = courant.getDateDebut();
 			final RegDate fin = courant.getDateFin();
+			final MotifFor motifDebut = courant.getMotifFractDebut();
+			final MotifFor motifFin = courant.getMotifFractFin();
 
 			// faut-il adapter la date de début ?
 			final Assujettissement precedent = triplet.previous;
-			if (precedent == null || !(precedent instanceof Sourcier)) {
+			if ((precedent == null || !(precedent instanceof Sourcier)) && !isDepartOuArriveeHorsSuisse(motifDebut)) { // [UNIREG-2155]
 				// on doit arrondir au début du mois
 				final RegDate newDebut = RegDate.get(debut.year(), debut.month(), 1);
 				if (newDebut != debut) {
@@ -410,7 +412,7 @@ public abstract class Assujettissement implements CollatableDateRange {
 			}
 
 			// faut-il adapter la date de fin ?
-			if (fin != null) {
+			if (fin != null && !isDepartOuArriveeHorsSuisse(motifFin)) { // [UNIREG-2155]
 				final Assujettissement suivant = triplet.next;
 				if (suivant == null || !(suivant instanceof Sourcier)) {
 					// on doit arrondir à la fin du mois
@@ -429,6 +431,10 @@ public abstract class Assujettissement implements CollatableDateRange {
 		}
 
 		return res;
+	}
+
+	private static boolean isDepartOuArriveeHorsSuisse(MotifFor motif) {
+		return motif == MotifFor.DEPART_HS || motif == MotifFor.ARRIVEE_HS;
 	}
 
 	/**
