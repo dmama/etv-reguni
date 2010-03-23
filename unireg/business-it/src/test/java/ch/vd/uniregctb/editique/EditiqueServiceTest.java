@@ -9,7 +9,7 @@ import javax.jms.Session;
 import javax.jms.TextMessage;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
-import org.jencks.amqpool.JcaPooledConnectionFactory;
+import org.apache.activemq.pool.PooledConnectionFactoryBean;
 import org.junit.Test;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
@@ -85,12 +85,12 @@ public class EditiqueServiceTest extends BusinessItTest {
 			ActiveMQConnectionFactory jmsConnectionManager = new ActiveMQConnectionFactory();
 			jmsConnectionManager.setBrokerURL("vm://localhost");
 
-			JcaPooledConnectionFactory jmsConnectionFactory = new JcaPooledConnectionFactory();
+			PooledConnectionFactoryBean jmsConnectionFactory = new PooledConnectionFactoryBean();
 			jmsConnectionFactory.setConnectionFactory(jmsConnectionManager);
 			jmsConnectionFactory.setMaxConnections(8);
-			jmsConnectionFactory.setName("Unireg-ActiveMQ");
+			//jmsConnectionFactory.setTransactionManager(transactionManager);
 
-			JmsTemplate jmsTemplate = new JmsTemplate(jmsConnectionFactory);
+			JmsTemplate jmsTemplate = new JmsTemplate(jmsConnectionFactory.getConnectionFactory());
 
 			jmsTemplate.send("ch.vd.editique.output", new MessageCreator() {
 				public Message createMessage(Session session) throws JMSException {
