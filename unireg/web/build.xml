@@ -36,7 +36,7 @@
 
 	<target name="_deploy">
 		<!-- BEGIN_LVERSION -->
-		<property name="app.src" value="target/uniregctb-web-3.5.3d.war" />
+		<property name="app.src" value="target/uniregctb-web-3.5.3e.war" />
 		<!-- END_LVERSION -->
 		<!-- BEGIN_SVERSION -->
 		<property name="app.name" value="uniregctb-war-3.5" />
@@ -105,7 +105,7 @@
 		<!-- END_LVERSION -->
 
 		<!-- BEGIN_LVERSION -->
-		<copy overwrite="true" verbose="true" file="target/uniregctb-web-3.5.3d.war" tofile="/opt/apache-tomcat-6.0.16/webapps/unireg.war" />
+		<copy overwrite="true" verbose="true" file="target/uniregctb-web-3.5.3e.war" tofile="/opt/apache-tomcat-6.0.16/webapps/unireg.war" />
 		<!-- END_LVERSION -->
 
 	</target>

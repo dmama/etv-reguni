@@ -55,7 +55,7 @@
 	<files>
 		<file>
 			<!-- BEGIN_LVERSION -->
-			<source>target/uniregctb-web-3.5.3d.war</source>
+			<source>target/uniregctb-web-3.5.3e.war</source>
 			<!-- END_LVERSION -->
 			<outputDirectory>deployment</outputDirectory>
 			<destName>uniregctb.war</destName>
