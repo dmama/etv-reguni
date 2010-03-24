@@ -254,6 +254,10 @@ public class TacheServiceImpl implements TacheService, InitializingBean {
 			generateTacheTransmissionDossier(contribuable);
 			// [UNIREG-1112] Annule toutes les déclarations d'impôt à partir de l'année de décès (car elles n'ont pas lieu d'être)
 			genereTachesAnnulationDI(contribuable, dateFermeture.year() + 1);
+			//[UNIREG-2104] Génère la tache d'envoi de DI assigné à l'ACI
+			CollectiviteAdministrative aci = tiersService.getCollectiviteAdministrative(ServiceInfrastructureService.noACI);
+			genereTacheEnvoiDISuiteFinAssujettissement(contribuable,dateFermeture,dateFermeture.addDays(30),aci);
+
 			break;
 		case SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT:
 			if (!contribuable.getForsParTypeAt(dateFermeture, false).secondaires.isEmpty()) {
@@ -331,16 +335,18 @@ public class TacheServiceImpl implements TacheService, InitializingBean {
 	}
 
 	/**
-	 * Génère une tache d'envoi de DI suite à la fin de l'assujettissement d'un contribuable
+	 * Génère une tache d'envoi de DI suite à la fin de l'assujettissement d'un contribuable et la rattache à une collectivité administrative
 	 *
 	 * @param contribuable
 	 *            le contribuable concerné
 	 * @param dateFinAssujettissement
-	 *            la date de fin d'assujettissement.
+*            la date de fin d'assujettissement.
 	 * @param dateEcheance
-	 *            (optionel) la date d'échéance de la déclaration d'impôt à créer.
+	 *
+	 * @param collectivite
+	 *         la collectvite a laquel on veut rattacher la tache a creer peut être null
 	 */
-	private void genereTacheEnvoiDISuiteFinAssujettissement(Contribuable contribuable, RegDate dateFinAssujettissement, RegDate dateEcheance) {
+	private void genereTacheEnvoiDISuiteFinAssujettissement(Contribuable contribuable, RegDate dateFinAssujettissement, RegDate dateEcheance, CollectiviteAdministrative collectivite) {
 
 		final int year = dateFinAssujettissement.year();
 		if (year < getPremierePeriodeFiscale()) {
@@ -394,7 +400,22 @@ public class TacheServiceImpl implements TacheService, InitializingBean {
 			adresseRetour = TypeAdresseRetour.CEDI;
 		}
 
-		genereTacheEnvoiDeclarationImpot(contribuable, dateDebut, dateFin, typeContribuable, typeDocument, dateEcheance, qualification, adresseRetour);
+		genereTacheEnvoiDeclarationImpot(contribuable, dateDebut, dateFin, typeContribuable, typeDocument, dateEcheance, qualification, adresseRetour,collectivite);
+	}
+
+
+
+	/**
+	 * Génère une tache d'envoi de DI suite à la fin de l'assujettissement d'un contribuable
+	 *
+	 * @param contribuable
+	 *            le contribuable concerné
+	 * @param dateFinAssujettissement
+*            la date de fin d'assujettissement.
+	 * @param dateEcheance
+	 */
+	private void genereTacheEnvoiDISuiteFinAssujettissement(Contribuable contribuable, RegDate dateFinAssujettissement, RegDate dateEcheance) {
+		       genereTacheEnvoiDISuiteFinAssujettissement(contribuable, dateFinAssujettissement, dateEcheance,null);
 	}
 
 	/**
@@ -402,7 +423,7 @@ public class TacheServiceImpl implements TacheService, InitializingBean {
 	 * @param adresseRetour
 	 */
 	private void genereTacheEnvoiDeclarationImpot(Contribuable contribuable, RegDate dateDebut, RegDate dateFin, TypeContribuable typeContribuable, TypeDocument typeDocument, RegDate dateEcheance,
-	                                              Qualification qualification, TypeAdresseRetour adresseRetour) {
+	                                              Qualification qualification, TypeAdresseRetour adresseRetour,CollectiviteAdministrative collectivite){
 
 		// d'abord il faut vérifier qu'il n'y a pas de DI du même type déjà émise et non-annulée pour la période considérée
 		boolean envoiDejaFait = false;
@@ -464,11 +485,18 @@ public class TacheServiceImpl implements TacheService, InitializingBean {
 			// [UNIREG-1105] on évite de créer des tâches dupliquées
 			if (!tacheDAO.existsTacheEnvoiEnInstanceOuEnCours(contribuable.getNumero(), dateDebut, dateFin)) {
 				final TacheEnvoiDeclarationImpot tache = new TacheEnvoiDeclarationImpot(TypeEtatTache.EN_INSTANCE, dateEcheance,
-						contribuable, dateDebut, dateFin, typeContribuable, typeDocument, qualification, adresseRetour);
+					contribuable, dateDebut, dateFin, typeContribuable, typeDocument, qualification, adresseRetour,collectivite);				
 				tacheDAO.save(tache);
 			}
 		}
 	}
+
+	private void genereTacheEnvoiDeclarationImpot(Contribuable contribuable, RegDate dateDebut, RegDate dateFin, TypeContribuable typeContribuable, TypeDocument typeDocument, RegDate dateEcheance,
+	                                              Qualification qualification, TypeAdresseRetour adresseRetour){
+          genereTacheEnvoiDeclarationImpot(contribuable, dateDebut, dateFin, typeContribuable, typeDocument, dateEcheance, qualification, adresseRetour,null);		
+
+	}
+
 
 	/**
 	 * Génère une tache de contrôle de dossier sur un contribuable, en prenant bien soin de vérifier qu'il n'y en a pas déjà une non-traitée
@@ -551,8 +579,8 @@ public class TacheServiceImpl implements TacheService, InitializingBean {
 			generateTacheNouveauDossier(contribuable);
 			// [UNIREG-1112] il faut générer les tâches d'envoi de DIs sur le tiers survivant
 			// [UNIREG-1265] Plus de création de tâche de génération de DI pour les décès
-			// FIXME (PBO) à modifier quand UNIREG-1198 sera mis en place
-			//genereTachesEnvoiDI(contribuable, forFiscal.getDateDebut(), false);
+			  //[UNIREG-1198] assignation de la tache au service succession mis en place
+			genereTachesEnvoiDI(contribuable, forFiscal.getDateDebut());
 			break;
 		case DEMENAGEMENT_VD:
 			// si le demenagement arrive dans une periode fiscale échue, une tâche de contrôle

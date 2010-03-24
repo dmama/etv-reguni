@@ -202,9 +202,10 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 
 		// Si la période fiscale de la di concerne l'année en cours, il s'agit d'une di ouverte
 		diEditView.setOuverte(RegDate.get().year() == range.getDateDebut().year());
+		PeriodeImposition periode = null;
 
 		try {
-			checkRangeDi((Contribuable) tiers, range);
+			periode = checkRangeDi((Contribuable) tiers, range);
 		}
 		catch (ValidationException e) {
 			error = e;
@@ -217,10 +218,10 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 		}
 		else {
 			diEditView.setImprimable(true);
-			diEditView.setPeriodeFiscale(range.getDateDebut().year());
-			diEditView.setDateDebutPeriodeImposition(range.getDateDebut());
-			diEditView.setDateFinPeriodeImposition(range.getDateFin());
-			diEditView.setTypeAdresseRetour(TypeAdresseRetour.CEDI);
+			diEditView.setPeriodeFiscale(periode.getDateDebut().year());
+			diEditView.setDateDebutPeriodeImposition(periode.getDateDebut());
+			diEditView.setDateFinPeriodeImposition(periode.getDateFin());
+			diEditView.setTypeAdresseRetour(periode.getAdresseRetour());
 			diEditView.setDelaiAccorde(delaisService.getDateFinDelaiRetourDeclarationImpotEmiseManuellement(RegDate.get()));
 
 			//Par défaut le type de DI est celui de la dernière DI émise
@@ -354,7 +355,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	 *             si le contribuable ne valide pas, n'est pas du tout assujetti, si les dates ne correspondent pas à l'assujettissement
 	 *             calculé ou s'il existe déjà une déclaration.
 	 */
-	protected void checkRangeDi(Contribuable contribuable, DateRange range) {
+	protected PeriodeImposition checkRangeDi(Contribuable contribuable, DateRange range) {
 
 		if (range.getDateDebut().year() != range.getDateFin().year()) {
 			throw new ValidationException(contribuable, "La déclaration doit tenir dans une année complète.");
@@ -410,6 +411,8 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 			throw new ValidationException(contribuable, "Le contribuable possède déjà une déclaration sur la période spécifiée [" + range
 					+ "].");
 		}
+
+		return (PeriodeImposition) elu;
 	}
 
 	/**

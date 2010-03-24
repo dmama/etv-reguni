@@ -93,7 +93,7 @@ public abstract class Tache extends HibernateEntity {
 	 * @param dateEcheance date à partir de laquelle les OID voient cette tâche (si null -> dimanche prochain)
 	 * @param contribuable contribuable à associer à la tâche
 	 */
-	public Tache(TypeEtatTache etat, RegDate dateEcheance, Contribuable contribuable) {
+	public Tache(TypeEtatTache etat, RegDate dateEcheance, Contribuable contribuable,CollectiviteAdministrative collectivite) {
 		this.etat = etat;
 		this.contribuable = contribuable;
 
@@ -104,7 +104,15 @@ public abstract class Tache extends HibernateEntity {
 			dateEcheance = aujourdhui.addDays(RegDate.WeekDay.SUNDAY.ordinal() - jour.ordinal());
 		}
 		this.dateEcheance = dateEcheance;
+		if(collectivite!=null){
+			this.collectiviteAdministrativeAssignee = collectivite;
+		}
 	}
+
+public Tache(TypeEtatTache etat, RegDate dateEcheance, Contribuable contribuable) {
+		this(etat, dateEcheance, contribuable,null);
+	}
+
 
 	@Transient
 	@Override

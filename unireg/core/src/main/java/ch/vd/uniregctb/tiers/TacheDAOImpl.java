@@ -394,6 +394,7 @@ public class TacheDAOImpl extends GenericDAOImpl<Tache, Long> implements TacheDA
 			"update TACHE set CA_ID = (select ca.NUMERO from TIERS ca where ca.NUMERO_CA = :oid) where " +
 					"ETAT = 'EN_INSTANCE' and " + // il ne faut pas modifier les tâches déjà traitées
 					"TACHE_TYPE != 'CTRL_DOSSIER' and " + // [UNIREG-1024] les contrôles de dossiers doivent rester à l'ancien OID
+					"CA_ID != (select aci.NUMERO from TIERS aci where aci.NUMERO_CA = 22) and " + // [UNIREG-2104] les tâches pour les décédés sont assignées à l'ACI et doivent le rester
 					"CTB_ID = :ctbId and " +
 					"ANNULATION_DATE is null"; // inutiles de modifier les tâches annulées pour rien
 

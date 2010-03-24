@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.tache;
 
+import ch.vd.uniregctb.common.AbstractSpringTest;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.*;
 import ch.vd.uniregctb.type.*;
@@ -14,7 +15,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.util.Assert;
@@ -298,7 +298,7 @@ public class TacheServiceTest extends BusinessTest {
 	@Test
 	public void testGenereTacheApresDeces() throws Exception {
 
-		// Etat 2008
+		// Etat 2010
 		final Long id = (Long) doInNewTransaction(new TxCallback() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
@@ -339,7 +339,7 @@ public class TacheServiceTest extends BusinessTest {
 		assertEquals(2, taches.size());     // tâche de transmission de dossier + tâche d'annulation de la DI 2009
 
 		// [UNIREG-1305]
-		// TacheEnvoiDeclarationImpot tacheEnvoi = null;
+		 TacheEnvoiDeclarationImpot tacheEnvoi = null;
 
 		TacheTransmissionDossier tacheTransmission = null;
 		TacheAnnulationDeclarationImpot tacheAnnulationDeclaration = null;
@@ -369,7 +369,7 @@ public class TacheServiceTest extends BusinessTest {
 		// [UNIREG-1305]
 		// la tâche d'envoi de DI
 		// assertTache(TypeEtatTache.EN_INSTANCE, dateDeces.addDays(30), date(2009, 1, 1), dateDeces, TypeContribuable.VAUDOIS_ORDINAIRE,
-		//		TypeDocument.DECLARATION_IMPOT_COMPLETE, tacheEnvoi);
+		//		TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL,TypeAdresseRetour.ACI, tacheEnvoi);
 
 		// la tâche de transmission de dossier
 		assertNotNull(tacheTransmission);
@@ -381,6 +381,89 @@ public class TacheServiceTest extends BusinessTest {
 		assertEquals(TypeEtatTache.EN_INSTANCE, tacheAnnulationDeclaration.getEtat());
 		assertEquals(2009, (int) tacheAnnulationDeclaration.getDeclarationImpotOrdinaire().getPeriode().getAnnee());
 	}
+
+	@Test
+	public void testGenereTacheEmissionDiApresDeces() throws Exception {
+
+		// Etat 2010
+		final Long id = (Long) doInNewTransaction(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+
+				final PeriodeFiscale periode2007 = addPeriodeFiscale(2007);
+				final ModeleDocument modele2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2007);
+				final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);
+				final ModeleDocument modele2008 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2008);
+				
+
+				PersonnePhysique pp = addNonHabitant("Hubert", "Duchemole", date(1922, 7, 13), Sexe.MASCULIN);
+				addForPrincipal(pp, date(1970, 9, 21), MotifFor.ARRIVEE_HC, MockCommune.Leysin);
+
+				addDeclarationImpot(pp, periode2007, date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2007);
+
+
+				return pp.getNumero();
+			}
+		});
+
+		final CollectiviteAdministrative aci = (CollectiviteAdministrative) doInNewTransaction(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				return  tiersService.getOrCreateCollectiviteAdministrative(serviceInfra.getACI().getNoColAdm());
+
+			}
+		});
+
+		// [UNIREG-1956] date de décès explicitement déplacée de 2009 à 2008 pour vérifier que la DI 2009 (et pas la 2008) est annulée
+		final RegDate dateDeces = date(2008, 12, 5);
+
+		// Evénement de décès
+		doInNewTransaction(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(id);
+				tiersService.closeForFiscalPrincipal(pp, dateDeces, MotifFor.VEUVAGE_DECES);
+				return null;
+			}
+		});
+
+		final List<Tache> taches = tacheDAO.getAll();
+		assertNotNull(taches);
+		assertEquals(2, taches.size());   // tâche de transmission de dossier + tâche d'envoi de DI 2008
+
+		TacheEnvoiDeclarationImpot tacheEnvoi = null;
+
+		TacheTransmissionDossier tacheTransmission = null;
+
+		for (Tache t : taches) {
+			if (t instanceof TacheEnvoiDeclarationImpot) {
+				tacheEnvoi = (TacheEnvoiDeclarationImpot) t;
+				continue;
+			}
+			if (t instanceof TacheTransmissionDossier) {
+				if (tacheTransmission != null) {
+					fail("Trouvé plusieurs tâches de transmission de dossier");
+				}
+				tacheTransmission = (TacheTransmissionDossier) t;
+			}
+			else {
+				fail("type de tâche non attendu : " + t.getClass().getName());
+			}
+		}
+
+
+		// [UNIREG-1305]
+		// la tâche d'envoi de DI
+		 assertTache(TypeEtatTache.EN_INSTANCE, dateDeces.addDays(30), date(2008, 1, 1), dateDeces, TypeContribuable.VAUDOIS_ORDINAIRE,
+				TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,TypeAdresseRetour.ACI,aci, tacheEnvoi);
+
+		// la tâche de transmission de dossier
+		assertNotNull(tacheTransmission);
+		assertEquals(TypeEtatTache.EN_INSTANCE, tacheTransmission.getEtat());
+		assertEquals(getNextSunday(RegDate.get()), tacheTransmission.getDateEcheance());
+
+	}
+
 
 	@Test
 	public void testGenereDivorceDepuisOuvertureForPrincipal() throws Exception {
@@ -948,7 +1031,7 @@ public class TacheServiceTest extends BusinessTest {
 		assertNotNull(tache);
 		// activité indépendante -> type contribuable = vaudois ordinaire
 		assertTache(TypeEtatTache.EN_INSTANCE, getNextSunday(RegDate.get()), date(2005, 1, 1), date(2005, 2, 1), TypeContribuable.VAUDOIS_ORDINAIRE,
-				TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, TypeAdresseRetour.CEDI, tache);
+				TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, TypeAdresseRetour.CEDI, null, tache);
 	}
 
 	/**
@@ -1432,8 +1515,7 @@ public class TacheServiceTest extends BusinessTest {
 	/**
 	 * [UNIREG-1112] Vérifie qu'il y a le nombre correct d'annulation de DIs et d'émission de DIs générées lors du décès d'un des composants d'un ménage commun pour une période passée (= événement de
 	 * décès reçu en retard).
-	 * <p/>
-	 * [UNIREG-1305] Le décés ne génère plus de tache d'emission de DI
+	 * <p/>	
 	 */
 
 	@Test
@@ -1515,16 +1597,19 @@ public class TacheServiceTest extends BusinessTest {
 
 		// Ménage
 		{
-// [UNIREG-1305]
-//				// Vérifie qu'une tâche d'émission de DIs pour 2007 (période partielle) est générée sur le ménage.
-//				final List<TacheEnvoiDeclarationImpot> envois = tacheDAO.listTaches(ids.menageId, TypeTache.TacheEnvoiDeclarationImpot);
-//				assertNotNull(envois);
-//				assertEquals(1, envois.size());
-//
-//				assertTache(TypeEtatTache.EN_INSTANCE, dateDeces.addDays(30), date(2007, 1, 1), dateDeces, TypeContribuable.VAUDOIS_ORDINAIRE,
-//						TypeDocument.DECLARATION_IMPOT_COMPLETE, envois.get(0));
+
+ //[UNIREG-1305]
+				// Vérifie qu'une tâche d'émission de DIs pour 2007 (période partielle) est générée sur le ménage.
+				final List<TacheEnvoiDeclarationImpot> envois = tacheDAO.listTaches(ids.menageId, TypeTache.TacheEnvoiDeclarationImpot);
+				assertNotNull(envois);
+			//La DI 2007 existe, pas de tache d'envoi de déclaration a générer
+				assertEquals(0, envois.size());
+
+
 
 			// Vérifie qu'une tâche d'annulation de DI est générée sur le ménage pour 2008
+
+
 			final List<TacheAnnulationDeclarationImpot> annulations = tacheDAO.listTaches(ids.menageId, TypeTache.TacheAnnulationDeclarationImpot);
 			assertNotNull(annulations);
 			assertEquals(1, annulations.size());
@@ -1561,16 +1646,16 @@ public class TacheServiceTest extends BusinessTest {
 			final List<TacheEnvoiDeclarationImpot> envois = tacheDAO.listTaches(ids.madameId, TypeTache.TacheEnvoiDeclarationImpot);
 			assertNotNull(envois);
 			// [UNIREG-1265] Plus de création de tâche de génération de DI pour les décès
-			assertEquals(0, envois.size());
-			/*
-			assertEquals(2, envois.size());
+			//assertEquals(0, envois.size());
+
+
 
 			sortTachesEnvoi(envois);
-			assertTache(TypeEtatTache.EN_INSTANCE, RegDate.get(), dateDeces.getOneDayAfter(), date(2007, 12, 31),
-					TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE, envois.get(0));
-			assertTache(TypeEtatTache.EN_INSTANCE, RegDate.get(), date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-					TypeDocument.DECLARATION_IMPOT_COMPLETE, envois.get(1));
-			 */
+			assertTache(TypeEtatTache.EN_INSTANCE, getNextSunday(RegDate.get()), dateDeces.getOneDayAfter(), date(2007, 12, 31),
+					TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX,TypeAdresseRetour.CEDI, envois.get(0));
+			assertTache(TypeEtatTache.EN_INSTANCE,  getNextSunday(RegDate.get()), date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
+					TypeDocument.DECLARATION_IMPOT_VAUDTAX,TypeAdresseRetour.CEDI, envois.get(1));
+
 
 			// Vérifie qu'il y a bien une tâche nouveau dossier (voir spécification SCU-EngendrerUneTacheEnInstance §3.1.14
 			// "Fermeture en raison d’une séparation, d’un divorce ou d’une dissolution de partenariat")
@@ -1583,6 +1668,7 @@ public class TacheServiceTest extends BusinessTest {
 			assertEmpty(tacheDAO.listTaches(ids.madameId, TypeTache.TacheAnnulationDeclarationImpot));
 			assertEmpty(tacheDAO.listTaches(ids.madameId, TypeTache.TacheControleDossier));
 			assertEmpty(tacheDAO.listTaches(ids.madameId, TypeTache.TacheTransmissionDossier));
+			
 		}
 	}
 
@@ -1640,11 +1726,11 @@ public class TacheServiceTest extends BusinessTest {
 		final List<Tache> taches = tacheDAO.find(criterion);
 		assertEquals(RegDate.get().year() - 2005, taches.size());
 		assertTache(TypeEtatTache.EN_INSTANCE, nextSunday, date(2005, 1, 1), date(2005, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-				TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, TypeAdresseRetour.CEDI, (TacheEnvoiDeclarationImpot) taches.get(0));
+				TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, TypeAdresseRetour.CEDI, null, (TacheEnvoiDeclarationImpot) taches.get(0));
 
 		for (int annee = 2006; annee < RegDate.get().year(); annee++) {
 			assertTache(TypeEtatTache.EN_INSTANCE, nextSunday, date(annee, 1, 1), date(annee, 12, 31),
-					TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, TypeAdresseRetour.CEDI, (TacheEnvoiDeclarationImpot) taches
+					TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, TypeAdresseRetour.CEDI, null, (TacheEnvoiDeclarationImpot) taches
 							.get(annee - 2005));
 		}
 	}
@@ -1747,7 +1833,7 @@ public class TacheServiceTest extends BusinessTest {
 	@Test
 	public void testgenereTacheDepuisFermetureForPrincipalUNIREG1305() throws Exception {
 
-		// 1 Contribuable qui décéde avec sans déclarartion active : aucune tache d'émission de DI ne doit être émise.
+		// 1 Contribuable qui décéde avec sans déclarartion active : une tache d'émission de DI doit être généré.
 
 		class Ids {
 			Long raoulId;
@@ -1778,11 +1864,15 @@ public class TacheServiceTest extends BusinessTest {
 		assertNotNull(raoul);
 		tiersService.closeForFiscalPrincipal(raoul, date(2008, 11, 1), MotifFor.VEUVAGE_DECES);
 		// Annulation du for fiscal -> Une tache d'annulation pour la DI 2008 doit etre generée
+		boolean trouve = false;
 		for (Tache t : tacheDAO.getAll()) {
-			if (t.getTypeTache() == TypeTache.TacheEnvoiDeclarationImpot) {
-				fail("Une tache d'envoi de DI n'aurait pas du être émise");
+			if (TypeTache.TacheEnvoiDeclarationImpot.equals(t.getTypeTache())) {
+				trouve=true;
+				break;
 			}
+
 		}
+		assertTrue("Pas de Di généré",trouve);
 	}
 
 	/**

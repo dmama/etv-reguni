@@ -522,7 +522,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	 * Asserte que la tâche passée en paramètre possède bien les valeurs spécifiées.
 	 */
 	protected static void assertTache(TypeEtatTache etat, RegDate dateEcheance, RegDate dateDebut, RegDate dateFin,
-	                                  TypeContribuable typeCtb, TypeDocument typeDoc, TypeAdresseRetour adresseRetour, TacheEnvoiDeclarationImpot tache) {
+	                                  TypeContribuable typeCtb, TypeDocument typeDoc, TypeAdresseRetour adresseRetour, CollectiviteAdministrative collectivite, TacheEnvoiDeclarationImpot tache) {
 		assertNotNull(tache);
 		assertEquals(etat, tache.getEtat());
 		assertEquals(dateEcheance, tache.getDateEcheance());
@@ -531,6 +531,19 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		assertEquals(typeCtb, tache.getTypeContribuable());
 		assertEquals(typeDoc, tache.getTypeDocument());
 		assertEquals(adresseRetour, tache.getAdresseRetour());
+		if(collectivite!=null){
+			assertEquals(collectivite, tache.getCollectiviteAdministrativeAssignee());
+		}
+
+	}
+
+	/**
+	 * Asserte que la tâche passée en paramètre possède bien les valeurs spécifiées.
+	 */
+	protected static void assertTache(TypeEtatTache etat, RegDate dateEcheance, RegDate dateDebut, RegDate dateFin,
+	                                  TypeContribuable typeCtb, TypeDocument typeDoc, TypeAdresseRetour adresseRetour, TacheEnvoiDeclarationImpot tache) {
+		assertTache(etat, dateEcheance, dateDebut, dateFin, typeCtb, typeDoc, adresseRetour,null, tache);
+
 	}
 
 	/**
