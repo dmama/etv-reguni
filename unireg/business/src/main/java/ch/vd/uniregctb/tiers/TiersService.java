@@ -175,6 +175,16 @@ public interface TiersService {
 	public boolean isSuisse(PersonnePhysique pp, RegDate date) throws TiersException;
 
 	/**
+	 * Détermine si une personne physique est suisse, possède un permis C ou est réfugiée.
+	 *
+	 * @param pp            une personne physique
+	 * @param dateEvenement la date à laquelle on désire connaître cette information
+	 * @return <b>true</b> si la personne physique possède la nationalité suisse, ou si elle possède un permis C ou si elle est réfugiée; <b>false</b> autrement.
+	 * @throws TiersException si la nationalite ne peut être déterminée
+	 */
+	boolean isSuisseOuPermisCOuRefugie(PersonnePhysique pp, RegDate dateEvenement) throws TiersException;
+
+	/**
 	 * Détermine si un individu est suisse.
 	 *
 	 * @param individu un individu

@@ -1,15 +1,9 @@
 package ch.vd.uniregctb.evenement.arrivee;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.springframework.util.Assert;
 
@@ -23,19 +17,22 @@ import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
-import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertTrue;
+
+/**
+ * <b>Note:</b> La plupart des tests de l'arrivée handler sont dans la class {@link ArriveeHandlerExtTest}.
+ */
+@SuppressWarnings({"JavaDoc"})
 public class ArriveeHandlerTest extends AbstractEvenementHandlerTest {
 
-	private static final Logger LOGGER = Logger.getLogger(ArriveeHandlerTest.class);
-
-	/**
-	 * Le fichier de données de test.
-	 */
 	private static final String DB_UNIT_DATA_FILE = "ArriveeHandlerTest.xml";
 
 	/**
@@ -46,7 +43,6 @@ public class ArriveeHandlerTest extends AbstractEvenementHandlerTest {
 
 	private static final Long NUMERO_INDIVIDU_SEUL = 34567L;
 	private static final Long NUMERO_INDIVIDU_MARIE_SEUL = 12345L;
-	private static final Long NUMERO_INDIVIDU_MARIE = 54321L;
 
 	private static final RegDate DATE_VALIDE = RegDate.get(2007, 11, 19);
 	private static final RegDate DATE_FUTURE = RegDate.get(2020, 11, 19);
@@ -71,20 +67,16 @@ public class ArriveeHandlerTest extends AbstractEvenementHandlerTest {
 		List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
 
 		// 1er test : individu seul
-		LOGGER.debug("Test arrivée individu seul...");
 		MockIndividu individuSeul = (MockIndividu) serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, 2000);
 		MockArrivee arrivee = createValidArrivee(individuSeul);
 		evenementCivilHandler.checkCompleteness(arrivee, erreurs, warnings);
 		Assert.isTrue(erreurs.isEmpty(), "individu célibataire : ca n'aurait pas du causer une erreur");
-		LOGGER.debug("Test arrivée individu seul : OK");
 
 		// 2ème test : individu marié seul
-		LOGGER.debug("Test arrivée individu marié seul...");
 		MockIndividu individuMarieSeul = (MockIndividu) serviceCivil.getIndividu(NUMERO_INDIVIDU_MARIE_SEUL, 2000);
 		arrivee = createValidArrivee(individuMarieSeul);
 		evenementCivilHandler.checkCompleteness(arrivee, erreurs, warnings);
 		Assert.isTrue(erreurs.isEmpty(), "individu célibataire marié seul : ca n'aurait pas du causer une erreur");
-		LOGGER.debug("Test arrivée individu marié seul : OK");
 	}
 
 	@Test
@@ -97,16 +89,13 @@ public class ArriveeHandlerTest extends AbstractEvenementHandlerTest {
 		List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
 
 		// 1er test : évènement avec une date dans le futur
-		LOGGER.debug("Test date événement future...");
 		MockArrivee arrivee = createValidArrivee((MockIndividu) serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, 2000));
 		arrivee.setDate(DATE_FUTURE);
 		evenementCivilHandler.validate(arrivee, erreurs, warnings);
 		Assert.notEmpty(erreurs, "Une date future pour l'évènement aurait du renvoyer une erreur");
-		LOGGER.debug("Test date événement future : OK");
 
 		// 2ème test : arrivée antérieur à la date de début de validité de
 		// l'ancienne adresse
-		LOGGER.debug("Test arrivée antérieur à la date de début de validité de l'ancienne adresse...");
 		erreurs.clear();
 		warnings.clear();
 		arrivee = createValidArrivee((MockIndividu) serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, 2000));
@@ -121,10 +110,8 @@ public class ArriveeHandlerTest extends AbstractEvenementHandlerTest {
 		evenementCivilHandler.validate(arrivee, erreurs, warnings);
 		Assert.notEmpty(erreurs,
 				"L'arrivée est antérieur à la date de début de validité de l'ancienne adresse, une erreur aurait du être déclenchée");
-		LOGGER.debug("Test arrivée antérieur à la date de début de validité de l'ancienne adresse : OK");
 
 		// 3ème test : arrivée hors canton
-		LOGGER.debug("Test arrivée hors canton...");
 		erreurs.clear();
 		warnings.clear();
 		arrivee = createValidArrivee((MockIndividu) serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, 2000));
@@ -132,10 +119,8 @@ public class ArriveeHandlerTest extends AbstractEvenementHandlerTest {
 		arrivee.setNumeroOfsCommuneAnnonce(MockCommune.Neuchatel.getNoOFSEtendu());
 		evenementCivilHandler.validate(arrivee, erreurs, warnings);
 		Assert.notEmpty(erreurs, "L'arrivée est hors canton, une erreur aurait du être déclenchée");
-		LOGGER.debug("Test arrivée hors canton : OK");
 
 		// 4ème test : commune du Sentier -> traitement manuel dans tous les cas
-		LOGGER.debug("Test arrivée commune du sentier...");
 		erreurs.clear();
 		warnings.clear();
 		arrivee = createValidArrivee((MockIndividu) serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, 2000));
@@ -143,7 +128,6 @@ public class ArriveeHandlerTest extends AbstractEvenementHandlerTest {
 		arrivee.setNumeroOfsCommuneAnnonce(MockCommune.LeChenit.getNoOFSEtendu());
 		evenementCivilHandler.validate(arrivee, erreurs, warnings);
 		Assert.isTrue(warnings.size() == 1, "L'arrivée est dans la commune du sentier, un warning aurait du être déclenchée");
-		LOGGER.debug("Test arrivée commune du sentier : OK");
 	}
 
 	/**
@@ -158,7 +142,6 @@ public class ArriveeHandlerTest extends AbstractEvenementHandlerTest {
 		/*
 		 * 1er test : évènement avec le tiers correspondant à l'individu manquant
 		 */
-		LOGGER.debug("Test tiers individu inconnu...");
 		MockIndividu inconnu = new MockIndividu();
 		inconnu.setDateNaissance(RegDate.get(1953, 11, 2));
 		inconnu.setNoTechnique(NUMERO_INDIVIDU_INCONNU);
@@ -167,12 +150,10 @@ public class ArriveeHandlerTest extends AbstractEvenementHandlerTest {
 		arrivee.setAdressePrincipale(null);
 		evenementCivilHandler.validate(arrivee, erreurs, warnings);
 		Assert.isTrue(erreurs.isEmpty(), "Le tiers rattaché à l'individu n'existe pas, mais ceci est un cas valide et aucune erreur n'aurait dû être déclenchée");
-		LOGGER.debug("Test tiers individu inconnu : OK");
 
 		/*
 		 * 2ème test : évènement avec le tiers correspondant au conjoint manquant
 		 */
-		LOGGER.debug("Test tiers individu inconnu...");
 		erreurs.clear();
 		warnings.clear();
 		MockIndividu individu = new MockIndividu();
@@ -183,17 +164,12 @@ public class ArriveeHandlerTest extends AbstractEvenementHandlerTest {
 		arrivee.setAdressePrincipale(null);
 		evenementCivilHandler.validate(arrivee, erreurs, warnings);
 		Assert.isTrue(erreurs.isEmpty(), "Le tiers rattaché au conjoint n'existe pas, mais ceci est un cas valide et aucune erreur n'aurait dû être déclenchée");
-		LOGGER.debug("Test tiers individu inconnu : OK");
 
 	}
 
-	/**
-	 * @param tiers
-	 */
 	@Test
 	public void testHandle() throws Exception {
 
-		LOGGER.debug("Test de traitement d'un événement d'arrivée vaudois.");
 
 		final MockIndividu individu = (MockIndividu) serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, 2000);
 		Arrivee arrivee = createValidArrivee(individu);
@@ -214,9 +190,7 @@ public class ArriveeHandlerTest extends AbstractEvenementHandlerTest {
 		for (AdresseTiers adresse : adresses) {
 			assertFalse(adresse instanceof AdresseCivile);
 		}
-		assertTrue(tiers instanceof Contribuable);
-		Contribuable contribuable = tiers;
-		Set<ForFiscal> forsFiscaux = contribuable.getForsFiscaux();
+		Set<ForFiscal> forsFiscaux = tiers.getForsFiscaux();
 		assertFalse("Le contribuable n'a aucun for fiscal", forsFiscaux.isEmpty());
 
 		ForFiscal forFiscalPrincipal = null;
@@ -230,7 +204,6 @@ public class ArriveeHandlerTest extends AbstractEvenementHandlerTest {
 
 		assertEquals(1, eventSender.count);
 		assertEquals(1, getEvenementFiscalService().getEvenementFiscals(tiers).size());
-		LOGGER.debug("Test de traitement d'un événement d'arrivée vaudois OK");
 	}
 
 	private MockArrivee createValidArrivee(MockIndividu individu) {

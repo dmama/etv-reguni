@@ -682,6 +682,13 @@ public class TiersServiceImpl implements TiersService {
 	/**
 	 * {@inheritDoc}
 	 */
+	public boolean isSuisseOuPermisCOuRefugie(PersonnePhysique pp, RegDate dateEvenement) throws TiersException {
+		return !isEtrangerSansPermisC(pp, dateEvenement) || isHabitantRefugie(pp, dateEvenement);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	public boolean isSuisse(Individu individu, RegDate date) throws TiersException {
 		if (date == null) date = RegDate.get();
 		final Collection<Nationalite> nationalites = individu.getNationalites();

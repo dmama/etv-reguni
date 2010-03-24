@@ -353,22 +353,30 @@ public class ArriveeHandler extends EvenementCivilHandlerBase {
 				// détermination du mode d'imposition
 				final ModeImposition modeImposition;
 				if (forFiscal == null) {
-					if (!getService().isEtrangerSansPermisC(habitant, dateEvenement) || getService().isHabitantRefugie(habitant, dateEvenement)) {
+					if (getService().isSuisseOuPermisCOuRefugie(habitant, dateEvenement)) {
 						// s'il est suisse, titulaire d'un permis C ou a obtenu le statut de réfugié => ordinaire
-						Audit.info(numeroEvenement, "Création d'un for fiscal ordinaire");
 						modeImposition = ModeImposition.ORDINAIRE;
 					}
 					else if (motifOuverture == MotifFor.ARRIVEE_HC || motifOuverture == MotifFor.ARRIVEE_HS || motifOuverture == null) {
-						Audit.info(arrivee.getNumeroEvenement(), "Création d'un for fiscal source");
 						modeImposition = ModeImposition.SOURCE;
 					}
 					else {
+						// une arrivée dans le canton, sans for pré-existant en n'arrivant pas de hors-Suisse ni de hors-Canton, cela ne devrait pas être possible, il me semble...
 						modeImposition = null;
 					}
 				}
 				else {
-					Audit.info(numeroEvenement, "Mise a jour des fors fiscaux avec conservation du mode d'imposition");
-					modeImposition = forFiscal.getModeImposition();
+					if (motifOuverture == MotifFor.ARRIVEE_HC || motifOuverture == MotifFor.ARRIVEE_HS || motifOuverture == null) {
+						if (getService().isSuisseOuPermisCOuRefugie(habitant, dateEvenement)) {
+							modeImposition = ModeImposition.ORDINAIRE;
+						}
+						else {
+							modeImposition = ModeImposition.SOURCE;
+						}
+					}
+					else {
+						modeImposition = forFiscal.getModeImposition();
+					}
 				}
 
 				// détermination de la date d'ouverture
@@ -386,10 +394,12 @@ public class ArriveeHandler extends EvenementCivilHandlerBase {
 						warnings.add(new EvenementCivilErreur("ancienne adresse avant l'arrivée inconnue : veuillez indiquer le motif d'ouverture du for principal", TypeEvenementErreur.WARNING));
 					}
 					if (forFiscal == null) {
+						Audit.info(numeroEvenement, "Création d'un for fiscal ordinaire avec mode d'imposition [" + modeImposition + "]");
 						openForFiscalPrincipal(habitant, dateOuverture, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, numeroOfsNouveau, MotifRattachement.DOMICILE, motifOuverture, modeImposition,
 								false);
 					}
 					else {
+						Audit.info(numeroEvenement, "Mise-à-jour du fors fiscal avec mode d'imposition [" + modeImposition + "]");
 						updateForFiscalPrincipal(habitant, dateOuverture, numeroOfsNouveau, motifOuverture, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, modeImposition, false);
 					}
 				}
@@ -810,22 +820,29 @@ public class ArriveeHandler extends EvenementCivilHandlerBase {
 			// détermination du mode d'imposition
 			final ModeImposition modeImposition;
 			if (ffpMenage == null) {
-				if (!getService().isEtrangerSansPermisC(principal, dateEvenement) || getService().isHabitantRefugie(principal, dateEvenement) ||
-						(conjoint != null && (!getService().isEtrangerSansPermisC(conjoint, dateEvenement) || getService().isHabitantRefugie(conjoint, dateEvenement)))) {
+				if (getService().isSuisseOuPermisCOuRefugie(principal, dateEvenement) || (conjoint != null && (getService().isSuisseOuPermisCOuRefugie(conjoint, dateEvenement)))) {
 					modeImposition = ModeImposition.ORDINAIRE;
-					Audit.info(arrivee.getNumeroEvenement(), "Création d'un for fiscal principal ordinaire sur le ménage commun");
 				}
 				else if (motifOuverture == MotifFor.ARRIVEE_HC || motifOuverture == MotifFor.ARRIVEE_HS) {
 					modeImposition = ModeImposition.SOURCE;
-					Audit.info(arrivee.getNumeroEvenement(), "Création d'un for fiscal principal sourcier sur le ménage commun");
 				}
 				else {
+					// une arrivée dans le canton, sans for pré-existant en n'arrivant pas de hors-Suisse ni de hors-Canton, cela ne devrait pas être possible, il me semble...
 					modeImposition = null;
 				}
 			}
 			else {
-				modeImposition = ffpMenage.getModeImposition();
-				Audit.info(arrivee.getNumeroEvenement(), "Mise à jour du for fiscal principal sur le ménage commun");
+				if (motifOuverture == MotifFor.ARRIVEE_HC || motifOuverture == MotifFor.ARRIVEE_HS || motifOuverture == null) {
+					if (getService().isSuisseOuPermisCOuRefugie(principal, dateEvenement) || (conjoint != null && (getService().isSuisseOuPermisCOuRefugie(conjoint, dateEvenement)))) {
+						modeImposition = ModeImposition.ORDINAIRE;
+					}
+					else {
+						modeImposition = ModeImposition.SOURCE;
+					}
+				}
+				else {
+					modeImposition = ffpMenage.getModeImposition();
+				}
 			}
 
 			// détermination de la date d'ouverture
@@ -843,10 +860,12 @@ public class ArriveeHandler extends EvenementCivilHandlerBase {
 					warnings.add(new EvenementCivilErreur("Ancienne adresse avant l'arrivée inconnue : veuillez indiquer le motif d'ouverture du for principal", TypeEvenementErreur.WARNING));
 				}
 				if (ffpMenage == null) {
+					Audit.info(arrivee.getNumeroEvenement(), "Création d'un for fiscal principal sur le ménage commun avec mode d'imposition [" + modeImposition + "]");
 					openForFiscalPrincipal(menageCommun, dateOuvertureFor, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, numeroOfsNouveau, MotifRattachement.DOMICILE, motifOuverture, modeImposition,
 							false);
 				}
 				else {
+					Audit.info(arrivee.getNumeroEvenement(), "Mise-à-jour for fiscal principal sur le ménage commun avec mode d'imposition [" + modeImposition + "]");
 					updateForFiscalPrincipal(menageCommun, dateOuvertureFor, numeroOfsNouveau, motifOuverture, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, modeImposition, false);
 				}
 			}

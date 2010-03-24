@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import ch.vd.uniregctb.interfaces.model.mock.MockAdresse;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.*;
 import org.junit.Test;
@@ -44,6 +45,7 @@ import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
+@SuppressWarnings({"JavaDoc"})
 public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 
 	private EvenementCivilHandler arriveeHandler;
@@ -180,7 +182,7 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 						dateArrivee, null);
 
 				// marie l'individu, mais seul
-				marieIndividu(pierre, RegDate.get(1985, 07, 11));
+				marieIndividu(pierre, RegDate.get(1985, 7, 11));
 			}
 		});
 
@@ -275,7 +277,7 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 						null);
 
 				// marie les individus
-				marieIndividus(pierre, julie, RegDate.get(1985, 07, 11));
+				marieIndividus(pierre, julie, RegDate.get(1985, 7, 11));
 
 				// individu hors-couple
 				MockIndividu sophie = addIndividu(noIndividuHorsCouple, RegDate.get(1964, 4, 8), "Dupuis", "Sophie", false);
@@ -371,6 +373,7 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 			@Override
 			protected void init() {
 				MockIndividu pierre = addIndividu(noIndividu, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
+				addNationalite(pierre, MockPays.Suisse, date(1953, 11, 2), null, 1);
 
 				// adresses avant l'arrivée
 				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate.get(
@@ -1462,7 +1465,7 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 				addPermis(julie, EnumTypePermis.ETABLLISSEMENT, RegDate.get(1963, 8, 20), null, 0, false);
 
 				// marie les individus
-				marieIndividus(pierre, julie, RegDate.get(1985, 07, 11));
+				marieIndividus(pierre, julie, RegDate.get(1985, 7, 11));
 			}
 		});
 
@@ -1597,7 +1600,7 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 				addPermis(julie, EnumTypePermis.ETABLLISSEMENT, RegDate.get(1963, 8, 20), null, 0, false);
 
 				// marie les individus
-				marieIndividus(pierre, julie, RegDate.get(1985, 07, 11));
+				marieIndividus(pierre, julie, RegDate.get(1985, 7, 11));
 			}
 		});
 
@@ -1751,7 +1754,7 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 				addPermis(julie, EnumTypePermis.FRONTALIER, RegDate.get(1963, 8, 20), null, 0, false);
 
 				// marie les individus
-				marieIndividus(pierre, julie, RegDate.get(1985, 07, 11));
+				marieIndividus(pierre, julie, RegDate.get(1985, 7, 11));
 			}
 		});
 
@@ -1953,7 +1956,7 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 			assertEquals(1, adressesTiers.size());
 			AdresseTiers adresseCourrier = (AdresseTiers) adressesTiers.toArray()[0];
 			assertNotNull(adresseCourrier);
-			assertEquals(RegDate.get(2000, 03, 20), adresseCourrier.getDateDebut());
+			assertEquals(RegDate.get(2000, 3, 20), adresseCourrier.getDateDebut());
 			assertNull(adresseCourrier.getDateFin()); // l'adresse courrier ne doit pas être fermée
 		}
 	}
@@ -2008,7 +2011,7 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 				addPermis(julie, EnumTypePermis.ETABLLISSEMENT, RegDate.get(1963, 8, 20), null, 0, false);
 
 				// marie les individus
-				marieIndividus(pierre, julie, RegDate.get(1985, 07, 11));
+				marieIndividus(pierre, julie, RegDate.get(1985, 7, 11));
 			}
 		});
 
@@ -2120,8 +2123,8 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 			AdresseTiers adresse2 = (AdresseSuisse) adressesTiers.toArray()[1];
 			assertNotNull(adresse1);
 			assertNotNull(adresse2);
-			AdresseTiers adresseCourrier = null;
-			AdresseTiers adresseDomicile = null;
+			AdresseTiers adresseCourrier;
+			AdresseTiers adresseDomicile;
 			if (adresse1.getUsage().equals(TypeAdresseTiers.COURRIER)) {
 				adresseCourrier = adresse1;
 				adresseDomicile = adresse2;
@@ -2131,7 +2134,7 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 				adresseDomicile = adresse1;
 				assertEquals(TypeAdresseTiers.DOMICILE, adresse1.getUsage());
 			}
-			assertEquals(RegDate.get(2000, 03, 20), adresseCourrier.getDateDebut());
+			assertEquals(RegDate.get(2000, 3, 20), adresseCourrier.getDateDebut());
 			assertNull(adresseCourrier.getDateFin()); // l'adresse courrier ne doit pas être fermée car elle est permanante
 			assertNotNull(adresseDomicile.getDateFin()); // l'adresse domicile doit être fermée car elle est temporaire
 		}
@@ -2334,7 +2337,7 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 				addPermis(julie, EnumTypePermis.ETABLLISSEMENT, RegDate.get(1963, 8, 20), null, 0, false);
 
 				// marie les individus
-				marieIndividus(pierre, julie, RegDate.get(1985, 07, 11));
+				marieIndividus(pierre, julie, RegDate.get(1985, 7, 11));
 			}
 		});
 		
@@ -2474,7 +2477,211 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 		}
 		
 	}
-	
+
+	/**
+	 * [UNIREG-2145]
+	 */
+	@Test
+	public void testArriveVaudoiseSourcierMixteAvecPermisB() throws Exception {
+
+		final long noInd = 1;
+		final long noTiers = 10000001;
+
+		// Crée un habitant actuellement dans le canton et avec un mode d'imposition source-mixte
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				MockIndividu ind = addIndividu(noInd, date(1950, 1, 1), "Pouly", "Mohamed", true);
+				addNationalite(ind, MockPays.Colombie, date(1950, 1, 1), null, 1);
+				addPermis(ind, EnumTypePermis.ANNUEL, date(1980, 1, 1), null, 1, false);
+			}
+		});
+
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				PersonnePhysique habitant = addHabitant(noTiers, noInd);
+				ForFiscalPrincipal ffp = addForPrincipal(habitant, date(1980, 1, 1), MotifFor.ARRIVEE_HS, date(2005, 6, 30), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
+				ffp.setModeImposition(ModeImposition.MIXTE_137_1);
+				ffp = addForPrincipal(habitant, date(2005, 7, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Bussigny);
+				ffp.setModeImposition(ModeImposition.MIXTE_137_1);
+				return null;
+			}
+		});
+
+		final RegDate dateArrivee = date(2010, 3, 24);
+
+		// Crée un événement d'arrivée de Bussigny à Lausanne au 24 mars 2010
+		MockArrivee arrivee = new MockArrivee();
+		arrivee.setType(TypeEvenementCivil.ARRIVEE_DANS_COMMUNE);
+		arrivee.setIndividu(serviceCivil.getIndividu(noInd, 2400));
+		MockAdresse nouvelleAdresse = new MockAdresse();
+		nouvelleAdresse.setDateDebutValidite(dateArrivee);
+		arrivee.setNouvelleAdressePrincipale(nouvelleAdresse);
+		arrivee.setNouvelleCommunePrincipale(MockCommune.Lausanne);
+		arrivee.setNumeroOfsCommuneAnnonce(MockCommune.Lausanne.getNoOFSEtendu());
+		arrivee.setDate(dateArrivee);
+		arrivee.setType(TypeEvenementCivil.ARRIVEE_PRINCIPALE_VAUDOISE);
+
+		// Traite l'événement d'arrivée
+		final List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
+		final List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
+		evenementCivilHandler.checkCompleteness(arrivee, erreurs, warnings);
+		evenementCivilHandler.validate(arrivee, erreurs, warnings);
+		evenementCivilHandler.handle(arrivee, warnings);
+		assertEmpty(erreurs);
+
+		// [UNIREG-2145] On vérifique que la for principal ouvert possède le même mode d'imposition (source-mixte) que le précédent
+		final PersonnePhysique hab = (PersonnePhysique) tiersDAO.get(noTiers);
+		assertNotNull(hab);
+
+		final List<ForFiscal> fors = hab.getForsFiscauxSorted();
+		assertEquals(3, fors.size());
+		assertForPrincipal(date(1980, 1, 1), MotifFor.ARRIVEE_HS, date(2005, 6, 30), MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFSEtendu(),
+				MotifRattachement.DOMICILE, ModeImposition.MIXTE_137_1, (ForFiscalPrincipal) fors.get(0));
+		assertForPrincipal(date(2005, 7, 1), MotifFor.DEMENAGEMENT_VD, dateArrivee.getOneDayBefore(), MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Bussigny.getNoOFSEtendu(),
+				MotifRattachement.DOMICILE, ModeImposition.MIXTE_137_1, (ForFiscalPrincipal) fors.get(1));
+		assertForPrincipal(dateArrivee, MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFSEtendu(), MotifRattachement.DOMICILE, ModeImposition.MIXTE_137_1,
+				(ForFiscalPrincipal) fors.get(2));
+	}
+
+	/**
+	 * [UNIREG-2145]
+	 */
+	@Test
+	public void testArriveHCAncienSourcierMixteAvecPermisB() throws Exception {
+
+		final long noInd = 1;
+		final long noTiers = 10000001;
+
+		// Crée un habitant actuellement hors-canton et avec un mode d'imposition source-mixte
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				MockIndividu ind = addIndividu(noInd, date(1950, 1, 1), "Pouly", "Mohamed", true);
+				addNationalite(ind, MockPays.Colombie, date(1950, 1, 1), null, 1);
+				addPermis(ind, EnumTypePermis.ANNUEL, date(1980, 1, 1), null, 1, false);
+			}
+		});
+
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				PersonnePhysique habitant = addHabitant(noTiers, noInd);
+				ForFiscalPrincipal ffp = addForPrincipal(habitant, date(1980, 1, 1), MotifFor.ARRIVEE_HS, date(2005, 6, 30), MotifFor.DEPART_HC, MockCommune.Lausanne);
+				ffp.setModeImposition(ModeImposition.MIXTE_137_1);
+				ffp = addForPrincipal(habitant, date(2005, 7, 1), MotifFor.DEPART_HC, MockCommune.Bern);
+				ffp.setModeImposition(ModeImposition.MIXTE_137_1);
+				return null;
+			}
+		});
+
+		final RegDate dateArrivee = date(2010, 3, 24);
+
+		// Crée un événement d'arrivée de HC à Lausanne au 24 mars 2010
+		MockArrivee arrivee = new MockArrivee();
+		arrivee.setType(TypeEvenementCivil.ARRIVEE_DANS_COMMUNE);
+		arrivee.setIndividu(serviceCivil.getIndividu(noInd, 2400));
+		MockAdresse nouvelleAdresse = new MockAdresse();
+		nouvelleAdresse.setDateDebutValidite(dateArrivee);
+		arrivee.setNouvelleAdressePrincipale(nouvelleAdresse);
+		arrivee.setNouvelleCommunePrincipale(MockCommune.Lausanne);
+		arrivee.setNumeroOfsCommuneAnnonce(MockCommune.Lausanne.getNoOFSEtendu());
+		arrivee.setDate(dateArrivee);
+		arrivee.setType(TypeEvenementCivil.ARRIVEE_PRINCIPALE_HC);
+
+		// Traite l'événement d'arrivée
+		final List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
+		final List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
+		evenementCivilHandler.checkCompleteness(arrivee, erreurs, warnings);
+		evenementCivilHandler.validate(arrivee, erreurs, warnings);
+		evenementCivilHandler.handle(arrivee, warnings);
+		assertEmpty(erreurs);
+
+		// [UNIREG-2145] On vérifique que la for principal ouvert possède le mode d'imposition source, et non plus source-mixte
+		final PersonnePhysique hab = (PersonnePhysique) tiersDAO.get(noTiers);
+		assertNotNull(hab);
+
+		final List<ForFiscal> fors = hab.getForsFiscauxSorted();
+		assertEquals(3, fors.size());
+		assertForPrincipal(date(1980, 1, 1), MotifFor.ARRIVEE_HS, date(2005, 6, 30), MotifFor.DEPART_HC, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFSEtendu(),
+				MotifRattachement.DOMICILE, ModeImposition.MIXTE_137_1, (ForFiscalPrincipal) fors.get(0));
+		assertForPrincipal(date(2005, 7, 1), MotifFor.DEPART_HC, dateArrivee.getOneDayBefore(), MotifFor.ARRIVEE_HC, TypeAutoriteFiscale.COMMUNE_HC, MockCommune.Bern.getNoOFSEtendu(),
+				MotifRattachement.DOMICILE, ModeImposition.MIXTE_137_1, (ForFiscalPrincipal) fors.get(1));
+		assertForPrincipal(dateArrivee, MotifFor.ARRIVEE_HC, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFSEtendu(), MotifRattachement.DOMICILE, ModeImposition.SOURCE,
+				(ForFiscalPrincipal) fors.get(2));
+	}
+
+	/**
+	 * [UNIREG-2145]
+	 */
+	@Test
+	public void testArriveHSAncienSourcierMixteAvecPermisB() throws Exception {
+
+		final long noInd = 1;
+		final long noTiers = 10000001;
+
+		// Crée un habitant actuellement hors-Suisse et avec un mode d'imposition source-mixte
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				MockIndividu ind = addIndividu(noInd, date(1950, 1, 1), "Pouly", "Mohamed", true);
+				addNationalite(ind, MockPays.Colombie, date(1950, 1, 1), null, 1);
+				addPermis(ind, EnumTypePermis.ANNUEL, date(1980, 1, 1), null, 1, false);
+			}
+		});
+
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				PersonnePhysique habitant = addHabitant(noTiers, noInd);
+				ForFiscalPrincipal ffp = addForPrincipal(habitant, date(1980, 1, 1), MotifFor.ARRIVEE_HS, date(2005, 6, 30), MotifFor.DEPART_HS, MockCommune.Lausanne);
+				ffp.setModeImposition(ModeImposition.MIXTE_137_1);
+				ffp = addForPrincipal(habitant, date(2005, 7, 1), MotifFor.DEPART_HS, MockPays.Colombie);
+				ffp.setModeImposition(ModeImposition.MIXTE_137_1);
+				return null;
+			}
+		});
+
+		final RegDate dateArrivee = date(2010, 3, 24);
+
+		// Crée un événement d'arrivée de HS à Lausanne au 24 mars 2010
+		MockArrivee arrivee = new MockArrivee();
+		arrivee.setType(TypeEvenementCivil.ARRIVEE_DANS_COMMUNE);
+		arrivee.setIndividu(serviceCivil.getIndividu(noInd, 2400));
+		MockAdresse nouvelleAdresse = new MockAdresse();
+		nouvelleAdresse.setDateDebutValidite(dateArrivee);
+		arrivee.setNouvelleAdressePrincipale(nouvelleAdresse);
+		arrivee.setNouvelleCommunePrincipale(MockCommune.Lausanne);
+		arrivee.setNumeroOfsCommuneAnnonce(MockCommune.Lausanne.getNoOFSEtendu());
+		arrivee.setDate(dateArrivee);
+		arrivee.setType(TypeEvenementCivil.ARRIVEE_PRINCIPALE_HS);
+
+		// Traite l'événement d'arrivée
+		final List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
+		final List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
+		evenementCivilHandler.checkCompleteness(arrivee, erreurs, warnings);
+		evenementCivilHandler.validate(arrivee, erreurs, warnings);
+		evenementCivilHandler.handle(arrivee, warnings);
+		assertEmpty(erreurs);
+
+		// [UNIREG-2145] On vérifique que la for principal ouvert possède le mode d'imposition source, et non plus source-mixte
+		final PersonnePhysique hab = (PersonnePhysique) tiersDAO.get(noTiers);
+		assertNotNull(hab);
+
+		final List<ForFiscal> fors = hab.getForsFiscauxSorted();
+		assertEquals(3, fors.size());
+		assertForPrincipal(date(1980, 1, 1), MotifFor.ARRIVEE_HS, date(2005, 6, 30), MotifFor.DEPART_HS, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFSEtendu(),
+				MotifRattachement.DOMICILE, ModeImposition.MIXTE_137_1, (ForFiscalPrincipal) fors.get(0));
+		assertForPrincipal(date(2005, 7, 1), MotifFor.DEPART_HS, dateArrivee.getOneDayBefore(), MotifFor.ARRIVEE_HS, TypeAutoriteFiscale.PAYS_HS, MockPays.Colombie.getNoOFS(),
+				MotifRattachement.DOMICILE, ModeImposition.MIXTE_137_1, (ForFiscalPrincipal) fors.get(1));
+		assertForPrincipal(dateArrivee, MotifFor.ARRIVEE_HS, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFSEtendu(), MotifRattachement.DOMICILE, ModeImposition.SOURCE,
+				(ForFiscalPrincipal) fors.get(2));
+	}
+
 	private static PersonnePhysique newHabitant(long noIndividuPrincipal) throws Exception {
 
 		PersonnePhysique habitant = new PersonnePhysique(true);
