@@ -315,7 +315,8 @@ public class TacheDAOTest extends CoreDAOTest {
 			long ctb;
 			long ca1;
 			long ca2;
-
+			long ca3;
+			
 			long envoiEnInstance;
 			long annulationEnInstance;
 			long controleEnInstance;
@@ -351,6 +352,7 @@ public class TacheDAOTest extends CoreDAOTest {
 				CollectiviteAdministrative ca = addCollAdm(3232);
 				ids.ca1 = ca.getNumero();
 				ids.ca2 = addCollAdm(7777).getNumero();
+				ids.ca3 = addCollAdm(22).getNumero();
 
 				ids.envoiEnInstance = addTacheEnvoi(ctb, TypeEtatTache.EN_INSTANCE, ca).getId();
 				ids.annulationEnInstance = addTacheAnnulation(ctb, TypeEtatTache.EN_INSTANCE, ca, di).getId();
