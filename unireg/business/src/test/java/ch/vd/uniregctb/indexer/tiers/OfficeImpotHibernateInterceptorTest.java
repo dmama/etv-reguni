@@ -4,6 +4,7 @@ import static junit.framework.Assert.assertNotNull;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.*;
 import ch.vd.uniregctb.type.*;
 import org.junit.Test;
@@ -308,6 +309,8 @@ public class OfficeImpotHibernateInterceptorTest extends BusinessTest {
 			long lausanne;
 			long aigle;
 			long tache;
+			long aci;
+
 		}
 		final Ids ids = new Ids();
 
@@ -317,6 +320,7 @@ public class OfficeImpotHibernateInterceptorTest extends BusinessTest {
 			public Object execute(TransactionStatus status) throws Exception {
 				ids.lausanne = addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm()).getNumero();
 				ids.aigle = addCollAdm(MockOfficeImpot.OID_AIGLE.getNoColAdm()).getNumero();
+				ids.aci = addCollAdm(ServiceInfrastructureService.noACI).getNumero();
 				return null;
 			}
 		});
