@@ -29,7 +29,6 @@ import ch.vd.uniregctb.interfaces.model.CommuneSimple;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.Pays;
 import ch.vd.uniregctb.interfaces.model.PersonneMorale;
-import ch.vd.uniregctb.interfaces.service.PartPM;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleService;
@@ -49,6 +48,7 @@ import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.FormulePolitesse;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
+import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
 public class AdresseServiceImpl implements AdresseService {
 
@@ -489,11 +489,7 @@ public class AdresseServiceImpl implements AdresseService {
 		// Une adresse courrier n'existe pas forcément (exemple: couple en cours de création)
 		if (adresseDestination != null) {
 
-			/* Récupère la vue historique complète du ménage (date = null) */
-			final PersonnePhysique principal = getPrincipalPourAdresse(menageCommun, null);
-			if (principal != null) { // cas des couple annulé
-				fillRepresentantPourAdresse(adresse, date, adresseDestination, principal);
-			}
+			fillRepresentantPourAdresse(adresse, date, adresseDestination, menageCommun);
 
 			// Rue, numéro et ville
 			fillAdresseEnvoi(adresse, adresseDestination);
@@ -503,15 +499,15 @@ public class AdresseServiceImpl implements AdresseService {
 	/**
 	 * Remplit la champs 'pour adresse' si l'adresse fiscale spécifiée découle d'une représentation (tutelle, curatelle, ...)
 	 *
-	 * @param adresse          l'adresse d'envoi détaillée à compléter
-	 * @param date             la date de validité
-	 * @param adresseFiscale   l'adresse fiscale considéré
-	 * @param personnePhysique la personne physique associée à l'adresse
+	 * @param adresse        l'adresse d'envoi détaillée à compléter
+	 * @param date           la date de validité
+	 * @param adresseFiscale l'adresse fiscale considéré
+	 * @param tiers          le tiers associée à l'adresse
 	 */
-	private void fillRepresentantPourAdresse(AdresseEnvoiDetaillee adresse, RegDate date, AdresseGenerique adresseFiscale, PersonnePhysique personnePhysique) {
+	private void fillRepresentantPourAdresse(AdresseEnvoiDetaillee adresse, RegDate date, AdresseGenerique adresseFiscale, Tiers tiers) {
 		final TypeAdresseRepresentant type = TypeAdresseRepresentant.getTypeAdresseRepresentantFromSource(adresseFiscale.getSource());
 		if (type != null) {
-			final Tiers representant = getRepresentant(personnePhysique, type, date);
+			final Tiers representant = getRepresentant(tiers, type, date);
 			Assert.notNull(representant);
 			adresse.addPourAdresse(getPourAdresse(representant));
 		}
@@ -1208,6 +1204,28 @@ public class AdresseServiceImpl implements AdresseService {
 	 */
 	private Tiers getRepresentant(Tiers tiers, TypeAdresseRepresentant type, RegDate date) {
 
+		final Tiers representant;
+
+		if (tiers instanceof MenageCommun) {
+			representant = getRepresentantPourMenage((MenageCommun)tiers, type, date);
+		}
+		else {
+			representant  = getRepresentantPourTiers(tiers, type, date);
+		}
+
+		return representant;
+	}
+
+	/**
+	 * Retourne le représentant à la date donnée du tiers spécifié.
+	 *
+	 * @param tiers le tiers potentiellement mis sous tutelle ou possèdant un conseil légal.
+	 * @param type  le type de représentant
+	 * @param date  la date de référence, ou null pour obtenir le représentant courant.
+	 * @return le représentant, ou null si le tiers ne possède pas de représentant à la date spécifiée.
+	 */
+	private Tiers getRepresentantPourTiers(Tiers tiers, TypeAdresseRepresentant type, RegDate date) {
+
 		final RapportEntreTiers rapport = TiersHelper.getRapportSujetOfType(tiers, type.getTypeRapport(), date);
 		if (rapport == null) {
 			return null;
@@ -1218,6 +1236,47 @@ public class AdresseServiceImpl implements AdresseService {
 		Assert.isTrue(tiers == rapport.getSujet());
 
 		return representant;
+	}
+
+	/**
+	 * Retourne le représentant à la date donnée du ménage commun spécifié.
+	 *
+	 * @param menage le ménage commun possèdant un conseil légal ou dont un des membres est potentiellement sous tutelle.
+	 * @param type   le type de représentant
+	 * @param date   la date de référence, ou null pour obtenir le représentant courant.
+	 * @return le représentant, ou null si le ménage ne possède pas de représentant à la date spécifiée.
+	 */
+	private Tiers getRepresentantPourMenage(MenageCommun menage, TypeAdresseRepresentant type, RegDate date) {
+
+		final RapportEntreTiers rapport;
+
+		if (type == TypeAdresseRepresentant.TUTELLE || type == TypeAdresseRepresentant.CURATELLE) {
+
+			final EnsembleTiersCouple ensemble = tiersService.getEnsembleTiersCouple(menage, date);
+			final PersonnePhysique principal = getPrincipalPourAdresse(menage, date);
+			final PersonnePhysique conjoint = ensemble.getConjoint(principal);
+
+			final RapportEntreTiers rapportPrincipal = TiersHelper.getRapportSujetOfType(principal, type.getTypeRapport(), date);
+			if (rapportPrincipal == null) {
+				rapport = null; // pas de tuteur ni curateur
+			}
+			else if (conjoint != null && TiersHelper.getRapportSujetOfType(conjoint, TypeRapportEntreTiers.TUTELLE, date) == null &&
+					TiersHelper.getRapportSujetOfType(conjoint, TypeRapportEntreTiers.CURATELLE, date) == null) {
+				rapport = null; // le conjoint n'est pas sous tutelle (ni curatelle), le ménage ne l'est donc pas non plus
+			}
+			else {
+				rapport = rapportPrincipal; // le ménage est sous tutelle (ou curatelle)
+			}
+		}
+		else {
+			rapport = TiersHelper.getRapportSujetOfType(menage, type.getTypeRapport(), date);
+		}
+
+		if (rapport == null) {
+			return null;
+		}
+
+		return type.getRepresentant(rapport);
 	}
 
 	/**
@@ -1238,7 +1297,7 @@ public class AdresseServiceImpl implements AdresseService {
 			adresseTuteur = getAdresseRepresentantPourMenage((MenageCommun) tiers, date, typeAdresseRepresentant, callDepth + 1, strict);
 		}
 		else {
-			adresseTuteur = getAdresseRepresentantAutreQueMenage(tiers, date, typeAdresseRepresentant, callDepth + 1, strict);
+			adresseTuteur = getAdresseRepresentantPourTiers(tiers, date, typeAdresseRepresentant, callDepth + 1, strict);
 		}
 		return adresseTuteur;
 	}
@@ -1248,45 +1307,54 @@ public class AdresseServiceImpl implements AdresseService {
 	 * <p/>
 	 * Dans le cas d'un ménage commun, l'adresse courrier du conjoint prime sur celle du tuteur (pour autant que le conjoint ne soit pas lui-même sous tutelle).
 	 *
-	 * @param menage                  un ménage commun
-	 * @param date                    la date à laquelle l'adresse retournée est valide
-	 * @param typeAdresseRepresentant le type de représentant
-	 * @param callDepth               paramètre technique pour éviter les récursions infinies
-	 * @param strict                  si <b>faux</b> essaie de résoudre silencieusement les problèmes détectés durant le traitement; autrement lève une exception.
+	 * @param menage    un ménage commun
+	 * @param date      la date à laquelle l'adresse retournée est valide
+	 * @param type      le type de représentant
+	 * @param callDepth paramètre technique pour éviter les récursions infinies
+	 * @param strict    si <b>faux</b> essaie de résoudre silencieusement les problèmes détectés durant le traitement; autrement lève une exception.
 	 * @return l'adresse demandée, ou <b>null</b> si le principal du ménage n'est pas sous tutelle.
 	 * @throws AdresseException en cas de problème dans le traitement
 	 */
-	private AdresseGenerique getAdresseRepresentantPourMenage(MenageCommun menage, RegDate date, TypeAdresseRepresentant typeAdresseRepresentant, int callDepth, boolean strict) throws
+	private AdresseGenerique getAdresseRepresentantPourMenage(MenageCommun menage, RegDate date, TypeAdresseRepresentant type, int callDepth, boolean strict) throws
 			AdresseException {
 
-		final EnsembleTiersCouple ensemble = tiersService.getEnsembleTiersCouple(menage, date);
-		final PersonnePhysique principal = getPrincipalPourAdresse(menage, date);
-		final PersonnePhysique conjoint = ensemble.getConjoint(principal);
+		final AdresseGenerique adresse;
 
-		if (principal == null) {
-			// pas de principal -> pas de tuteur non plus
-			Assert.isNull(conjoint);
-			return null;
+		if (type == TypeAdresseRepresentant.TUTELLE || type == TypeAdresseRepresentant.CURATELLE) {
+			// Un ménage ne peut pas être mis sous tutelle/curatelle, seulement les personnes physiques qui le compose. On va donc chercher le tuteur/curateur sur ces derniers.
+
+			final EnsembleTiersCouple ensemble = tiersService.getEnsembleTiersCouple(menage, date);
+			final PersonnePhysique principal = getPrincipalPourAdresse(menage, date);
+			final PersonnePhysique conjoint = ensemble.getConjoint(principal);
+
+			if (principal == null) {
+				// pas de principal, pas de tuteur
+				return null;
+			}
+
+			// On récupère l'adresse du tuteur du principal
+			final AdresseGenerique adresseTuteur = getAdresseRepresentantPourTiers(principal, date, type, callDepth + 1, strict);
+			if (adresseTuteur == null) {
+				adresse = null;
+			}
+			else if (conjoint == null) {
+				// cas du marié seul
+				adresse = adresseTuteur;
+			}
+			else {
+				final AdresseGenerique courrierConjoint = getAdresseFiscale(conjoint, TypeAdresseFiscale.COURRIER, date, true, callDepth + 1, strict);
+				if (courrierConjoint != null && courrierConjoint.getSource() != Source.TUTELLE && courrierConjoint.getSource() != Source.CURATELLE) {
+					// si le conjoint n'est pas sous tutelle, on utilise son adresse courrier comme adresse de représentation du ménage
+					adresse = new AdresseGeneriqueAdapter(courrierConjoint, Source.CONJOINT, false);
+				}
+				else {
+					adresse = adresseTuteur;
+				}
+			}
 		}
-
-		// On récupère l'adresse de représentant du principal
-		final AdresseGenerique adressesTuteur = getAdresseRepresentantAutreQueMenage(principal, date, typeAdresseRepresentant, callDepth + 1, strict);
-		if (adressesTuteur == null) {
-			// pas de représentation
-			return null;
-		}
-
-		if (conjoint == null) {
-			// cas du marié seul
-			return adressesTuteur;
-		}
-
-		AdresseGenerique adresse = adressesTuteur;
-
-		// Si le conjoit n'est pas sous tutelle, on utilise son adresse courrier comme adresse de représentation du ménage
-		final AdresseGenerique courrierConjoint = getAdresseFiscale(conjoint, TypeAdresseFiscale.COURRIER, date, true, callDepth + 1, strict);
-		if (courrierConjoint.getSource() != Source.TUTELLE && courrierConjoint.getSource() != Source.CURATELLE) {
-			adresse = new AdresseGeneriqueAdapter(courrierConjoint, Source.CONJOINT, false);
+		else {
+			// On récupère l'adresse de représentant du ménage
+			adresse = getAdresseRepresentantPourTiers(menage, date, type, callDepth + 1, strict);
 		}
 
 		return adresse;
@@ -1300,7 +1368,7 @@ public class AdresseServiceImpl implements AdresseService {
 		return getAdresseRepresentant(tiers, date, type, 0, strict);
 	}
 
-	private AdresseGenerique getAdresseRepresentantAutreQueMenage(Tiers tiers, RegDate date, TypeAdresseRepresentant type, int callDepth, boolean strict)
+	private AdresseGenerique getAdresseRepresentantPourTiers(Tiers tiers, RegDate date, TypeAdresseRepresentant type, int callDepth, boolean strict)
 			throws AdresseException {
 
 		final RapportEntreTiers rapport = TiersHelper.getRapportSujetOfType(tiers, type.getTypeRapport(), date);
@@ -1347,7 +1415,7 @@ public class AdresseServiceImpl implements AdresseService {
 			adressesTuteur = getAdressesRepresentantHistoPourMenage((MenageCommun) tiers, typeAdresseRepresentant, callDepth + 1, strict);
 		}
 		else {
-			adressesTuteur = getAdressesRepresentantHistoAutreQueMenage(tiers, typeAdresseRepresentant, callDepth + 1, strict);
+			adressesTuteur = getAdressesRepresentantHistoPourTiers(tiers, typeAdresseRepresentant, callDepth + 1, strict);
 		}
 		return adressesTuteur;
 	}
@@ -1357,63 +1425,72 @@ public class AdresseServiceImpl implements AdresseService {
 	 * <p/>
 	 * Dans le cas d'un ménage commun, les adresses courrier du conjoint priment sur celles du tuteur (pour autant que le conjoint ne soit pas lui-même sous tutelle).
 	 *
-	 * @param menage                  le ménage commun potentiellement sous mis sous tutelle.
-	 * @param typeAdresseRepresentant le type de représentant
-	 * @param callDepth               paramètre technique pour éviter les récursions infinies
-	 * @param strict                  si <b>faux</b> essaie de résoudre silencieusement les problèmes détectés durant le traitement; autrement lève une exception.
+	 * @param menage    le ménage commun potentiellement sous mis sous tutelle.
+	 * @param type      le type de représentant
+	 * @param callDepth paramètre technique pour éviter les récursions infinies
+	 * @param strict    si <b>faux</b> essaie de résoudre silencieusement les problèmes détectés durant le traitement; autrement lève une exception.
 	 * @return les adresses demandées, ou une liste vide si le principal du ménage n'a jamais été sous tutelle.
 	 * @throws AdresseException en cas de problème dans le traitement
 	 */
-	private List<AdresseGenerique> getAdressesRepresentantHistoPourMenage(final MenageCommun menage, TypeAdresseRepresentant typeAdresseRepresentant, int callDepth, boolean strict) throws
+	private List<AdresseGenerique> getAdressesRepresentantHistoPourMenage(final MenageCommun menage, TypeAdresseRepresentant type, int callDepth, boolean strict) throws
 			AdresseException {
 
-		// Récupère la vue historique complète du ménage (date = null)
-		final EnsembleTiersCouple ensemble = tiersService.getEnsembleTiersCouple(menage, null);
-		final PersonnePhysique principal = getPrincipalPourAdresse(menage, null);
-		final PersonnePhysique conjoint = ensemble.getConjoint(principal);
-		if (principal == null) {
-			// ménage commun sans principal (tous les rapports sont annulés)
-			return null;
-		}
+		final List<AdresseGenerique> adresses;
 
-		// On récupère l'historique des adresses du représentant du principal
-		final List<AdresseGenerique> adressesTuteur = getAdressesRepresentantHistoAutreQueMenage(principal, typeAdresseRepresentant, callDepth + 1, strict);
-		if (adressesTuteur.isEmpty()) {
-			// pas de représentation sur le principal, pas de représentation sur le ménage non plus
-			return Collections.emptyList();
-		}
+		if (type == TypeAdresseRepresentant.TUTELLE || type == TypeAdresseRepresentant.CURATELLE) {
+			// Un ménage ne peut pas être mis sous tutelle/curatelle, seulement les personnes physiques qui le compose. On va donc chercher le tuteur/curateur sur ces derniers.
 
-		if (conjoint == null) {
-			// cas du marié seul
-			return adressesTuteur;
-		}
+			// Récupère la vue historique complète du ménage (date = null)
+			final EnsembleTiersCouple ensemble = tiersService.getEnsembleTiersCouple(menage, null);
+			final PersonnePhysique principal = getPrincipalPourAdresse(menage, null);
+			final PersonnePhysique conjoint = ensemble.getConjoint(principal);
 
-		/*
-		 * On détermine les périodes durant lesquelles le principal est sous tutelle de manière continue
-		 */
-		final List<DateRange> ranges = DateRangeHelper.collateRange(adressesTuteur);
+			if (principal == null) {
+				// pas de principal, par de tuteur
+				return Collections.emptyList();
+			}
 
-		/*
-		 * On récupère les adresses du conjoint et on les filtre pour ne garder que celles valides durant les périodes calculées plus haut.
-		 */
-		final AdressesFiscalesHisto adressesConjoint = getAdressesFiscalHisto(conjoint, callDepth + 1, strict);
-		if (strict) {
-			verifieCoherenceAdresses(adressesConjoint.courrier, "Adresse de courrier", conjoint);
-		}
+			// On récupère l'historique des adresses du tuteur du principal
+			final List<AdresseGenerique> adressesTuteur = getAdressesRepresentantHistoPourTiers(principal, type, callDepth + 1, strict);
 
-		final List<AdresseGenerique> surcharge = new ArrayList<AdresseGenerique>();
+			if (adressesTuteur.isEmpty()) {
+				adresses = Collections.emptyList();
+			}
+			else if (conjoint == null) {
+				// cas du marié seul
+				adresses = adressesTuteur;
+			}
+			else {
+				// On détermine les périodes durant lesquelles le principal est sous tutelle de manière continue
+				final List<DateRange> ranges = DateRangeHelper.collateRange(adressesTuteur);
 
-		for (DateRange range : ranges) {
-			final List<AdresseGenerique> adressesRange = AdresseMixer.extract(adressesConjoint.courrier, range.getDateDebut(), range.getDateFin());
-			for (AdresseGenerique adresse : adressesRange) {
-				// on ignore toutes les adresses où le conjoint est lui-même sous tutelle
-				if (adresse.getSource() != Source.TUTELLE && adresse.getSource() != Source.CURATELLE) {
-					surcharge.add(new AdresseGeneriqueAdapter(adresse, Source.CONJOINT, false));
+				// On récupère les adresses du conjoint et on les filtre pour ne garder que celles valides durant les périodes calculées plus haut
+				final AdressesFiscalesHisto adressesConjoint = getAdressesFiscalHisto(conjoint, callDepth + 1, strict);
+				if (strict) {
+					verifieCoherenceAdresses(adressesConjoint.courrier, "Adresse de courrier", conjoint);
 				}
+
+				final List<AdresseGenerique> adressesConjointSansTutelle = new ArrayList<AdresseGenerique>();
+
+				for (DateRange range : ranges) {
+					final List<AdresseGenerique> adressesRange = AdresseMixer.extract(adressesConjoint.courrier, range.getDateDebut(), range.getDateFin());
+					for (AdresseGenerique adresse : adressesRange) {
+						// on ignore toutes les adresses où le conjoint est lui-même sous tutelle
+						if (adresse.getSource() != Source.TUTELLE && adresse.getSource() != Source.CURATELLE) {
+							adressesConjointSansTutelle.add(new AdresseGeneriqueAdapter(adresse, Source.CONJOINT, false));
+						}
+					}
+				}
+
+				adresses = AdresseMixer.override(adressesTuteur, adressesConjointSansTutelle, null, null);
 			}
 		}
+		else {
+			// On récupère l'historique des adresses du représentant du principal
+			adresses = getAdressesRepresentantHistoPourTiers(menage, type, callDepth + 1, strict);
+		}
 
-		return AdresseMixer.override(adressesTuteur, surcharge, null, null);
+		return adresses;
 	}
 
 	/**
@@ -1426,7 +1503,7 @@ public class AdresseServiceImpl implements AdresseService {
 	 * @return les adresses demandées, ou une liste vide si le tiers n'a jamais été sous tutelle.
 	 * @throws AdresseException en cas de problème dans le traitement
 	 */
-	private List<AdresseGenerique> getAdressesRepresentantHistoAutreQueMenage(Tiers tiers, TypeAdresseRepresentant type, int callDepth, boolean strict)
+	private List<AdresseGenerique> getAdressesRepresentantHistoPourTiers(Tiers tiers, TypeAdresseRepresentant type, int callDepth, boolean strict)
 			throws AdresseException {
 
 		List<AdresseGenerique> adresses = new ArrayList<AdresseGenerique>();

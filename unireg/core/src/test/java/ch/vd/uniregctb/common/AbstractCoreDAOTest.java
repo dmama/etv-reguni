@@ -423,6 +423,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		assertEquals(modeImposition, forPrincipal.getModeImposition());
 	}
 
+	// TODO (msi) remplacer les paramètres type et noOfs par des MockCommune et MockPays
 	protected static void assertForPrincipal(RegDate debut, MotifFor motifOuverture, RegDate fin, MotifFor motifFermeture,
 			TypeAutoriteFiscale type, int noOfs, MotifRattachement motif, ModeImposition modeImposition, ForFiscalPrincipal forPrincipal) {
 		assertNotNull(forPrincipal);
@@ -800,9 +801,10 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		return ensemble;
 	}
 
-	protected Tutelle addTutelle(PersonnePhysique pupille, Tiers tuteur, Tiers autoriteTutelaire, RegDate dateDebut) {
+	protected Tutelle addTutelle(PersonnePhysique pupille, Tiers tuteur, Tiers autoriteTutelaire, RegDate dateDebut, RegDate dateFin) {
 		Tutelle rapport = new Tutelle();
 		rapport.setDateDebut(dateDebut);
+		rapport.setDateFin(dateFin);
 		rapport.setObjet(tuteur);
 		rapport.setSujet(pupille);
 		rapport.setAutoriteTutelaire(autoriteTutelaire);
@@ -812,9 +814,10 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		return rapport;
 	}
 
-	protected Curatelle addCuratelle(PersonnePhysique pupille, Tiers curateur, RegDate dateDebut) {
+	protected Curatelle addCuratelle(PersonnePhysique pupille, Tiers curateur, RegDate dateDebut, RegDate dateFin) {
 		Curatelle rapport = new Curatelle();
 		rapport.setDateDebut(dateDebut);
+		rapport.setDateFin(dateFin);
 		rapport.setObjet(curateur);
 		rapport.setSujet(pupille);
 		rapport = (Curatelle) hibernateTemplate.merge(rapport);
@@ -823,14 +826,25 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		return rapport;
 	}
 
-	protected RepresentationConventionnelle addRepresentationConventionnelle(PersonnePhysique pupille, Tiers representant, RegDate dateDebut, boolean extensionExecutionForcee) {
+	protected RepresentationConventionnelle addRepresentationConventionnelle(Tiers represente, Tiers representant, RegDate dateDebut, boolean extensionExecutionForcee) {
 		RepresentationConventionnelle rapport = new RepresentationConventionnelle();
 		rapport.setDateDebut(dateDebut);
 		rapport.setObjet(representant);
-		rapport.setSujet(pupille);
+		rapport.setSujet(represente);
 		rapport.setExtensionExecutionForcee(extensionExecutionForcee);
 		rapport = (RepresentationConventionnelle) hibernateTemplate.merge(rapport);
 		representant.addRapportObjet(rapport);
+		represente.addRapportSujet(rapport);
+		return rapport;
+	}
+
+	protected ConseilLegal addConseilLegal(Tiers pupille, Tiers conseiller, RegDate dateDebut) {
+		ConseilLegal rapport = new ConseilLegal();
+		rapport.setDateDebut(dateDebut);
+		rapport.setObjet(conseiller);
+		rapport.setSujet(pupille);
+		rapport = (ConseilLegal) hibernateTemplate.merge(rapport);
+		conseiller.addRapportObjet(rapport);
 		pupille.addRapportSujet(rapport);
 		return rapport;
 	}
