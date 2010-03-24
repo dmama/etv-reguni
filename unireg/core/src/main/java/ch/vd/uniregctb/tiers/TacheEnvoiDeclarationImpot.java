@@ -85,16 +85,23 @@ public class TacheEnvoiDeclarationImpot extends Tache implements DateRange, Vali
 	}
 
 	public TacheEnvoiDeclarationImpot(TypeEtatTache etat, RegDate dateEcheance, Contribuable contribuable, RegDate dateDebut, RegDate dateFin, TypeContribuable typeContribuable,
-	                                  TypeDocument typeDocument, Qualification qualification, TypeAdresseRetour adresseRetour) {
-		super(etat, dateEcheance, contribuable);
+	                                  TypeDocument typeDocument, Qualification qualification, TypeAdresseRetour adresseRetour,CollectiviteAdministrative collectivite) {
+		super(etat, dateEcheance, contribuable,collectivite);
 		this.dateDebut = dateDebut;
 		this.dateFin = dateFin;
 		this.typeContribuable = typeContribuable;
 		this.typeDocument = typeDocument;
 		this.qualification = qualification;
 		this.adresseRetour = adresseRetour;
+
 	}
 
+	public TacheEnvoiDeclarationImpot(TypeEtatTache etat, RegDate dateEcheance, Contribuable contribuable, RegDate dateDebut, RegDate dateFin, TypeContribuable typeContribuable,
+	                                  TypeDocument typeDocument, Qualification qualification, TypeAdresseRetour adresseRetour){
+		   	this(etat, dateEcheance, contribuable, dateDebut, dateFin, typeContribuable, typeDocument, qualification, adresseRetour,null);
+	}
+
+	
 
 	/**
 	 * <!-- begin-user-doc -->
