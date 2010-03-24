@@ -97,7 +97,7 @@ public class FusionDeCommunesProcessor {
 
 			@Override
 			public FusionDeCommunesResults createSubRapport() {
-				return super.createSubRapport();
+				return new FusionDeCommunesResults(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement);
 			}
 
 			@Override
