@@ -22,8 +22,6 @@
 		<property name="connectionFactory" ref="jmsConnectionFactory" />
 		<property name="messageListener" ref="identCtbMessageHandler" />
 		<property name="transactionManager" ref="transactionManager" />
-		<property name="cacheLevelName" value="CACHE_CONSUMER" />
-		<property name="sessionTransacted" value="true" />
 		<property name="destinationName" value="${extprop.jms.queue.ident.ctb.input}" />
 		<property name="autoStartup" value="${extprop.jms.queue.ident.ctb.enabled}" />
 	</bean>
