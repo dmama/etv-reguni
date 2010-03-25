@@ -745,16 +745,12 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	 * Crée et ajoute dans la base de données un non-habitant minimal.
 	 */
 	protected PersonnePhysique addNonHabitant(String prenom, String nom, RegDate dateNaissance, Sexe sexe) {
-		PersonnePhysique nh = new PersonnePhysique(false);
-		nh.setPrenom(prenom);
-		nh.setNom(nom);
-		nh.setDateNaissance(dateNaissance);
-		nh.setSexe(sexe);
-		return (PersonnePhysique) hibernateTemplate.merge(nh);
+		return addNonHabitant(null, prenom, nom, dateNaissance, sexe);
 	}
 
-	protected PersonnePhysique addNonHabitant(long noTiers, String prenom, String nom, RegDate dateNaissance, Sexe sexe) {
+	protected PersonnePhysique addNonHabitant(Long noTiers, String prenom, String nom, RegDate dateNaissance, Sexe sexe) {
 		PersonnePhysique nh = new PersonnePhysique(false);
+		nh.setNumero(noTiers);
 		nh.setPrenom(prenom);
 		nh.setNom(nom);
 		nh.setDateNaissance(dateNaissance);
@@ -766,8 +762,17 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	 * Crée et ajoute dans la base de données un menage-commun.
 	 */
 	protected EnsembleTiersCouple addEnsembleTiersCouple(PersonnePhysique principal, PersonnePhysique conjoint, RegDate dateMariage) {
+		return addEnsembleTiersCouple(null, principal, conjoint, dateMariage);
+	}
 
-		MenageCommun menage = (MenageCommun) hibernateTemplate.merge(new MenageCommun());
+	/**
+	 * Crée et ajoute dans la base de données un menage-commun.
+	 */
+	protected EnsembleTiersCouple addEnsembleTiersCouple(Long noTiers, PersonnePhysique principal, PersonnePhysique conjoint, RegDate dateMariage) {
+
+		MenageCommun menage = new MenageCommun();
+		menage.setNumero(noTiers);
+		menage = (MenageCommun) hibernateTemplate.merge(menage);
 		principal = (PersonnePhysique) hibernateTemplate.merge(principal);
 		if (conjoint != null) {
 			conjoint = (PersonnePhysique) hibernateTemplate.merge(conjoint);

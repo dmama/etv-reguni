@@ -21,7 +21,7 @@ public class AssujettissementTest extends MetierTest {
 
 	@Test
 	public void testDetermineAucunFor() throws Exception {
-		final Contribuable paul = createContribuableSansFor();
+		final Contribuable paul = createContribuableSansFor(10000001L);
 		assertEmpty(Assujettissement.determine(paul, 2008));
 		assertEmpty(Assujettissement.determine(paul, RANGE_2002_2010, true));
 	}
@@ -29,7 +29,7 @@ public class AssujettissementTest extends MetierTest {
 	@Test
 	public void testDetermineUnForSimple() throws Exception {
 
-		final Contribuable paul = createUnForSimple();
+		final Contribuable paul = createUnForSimple(10000002L);
 		List<Assujettissement> list = Assujettissement.determine(paul, 2008);
 		assertNotNull(list);
 		assertEquals(1, list.size());
@@ -44,7 +44,7 @@ public class AssujettissementTest extends MetierTest {
 	@Test
 	public void testDetermineMenageCommunMarieDansLAnnee() throws Exception {
 
-		final EnsembleTiersCouple ensemble = createMenageCommunMarie(date(2008, 7, 1));
+		final EnsembleTiersCouple ensemble = createMenageCommunMarie(10000003L, 10000004L, 10000005L, date(2008, 7, 1));
 
 		// 2007
 		{
@@ -94,7 +94,7 @@ public class AssujettissementTest extends MetierTest {
 	@Test
 	public void testDetermineMenageCommunMarieAu1erJanvier() throws Exception {
 
-		final EnsembleTiersCouple ensemble = createMenageCommunMarie(date(2009, 1, 1));
+		final EnsembleTiersCouple ensemble = createMenageCommunMarie(10000006L, 10000007L, 10000008L, date(2009, 1, 1));
 
 		// 2008
 		{
@@ -146,7 +146,7 @@ public class AssujettissementTest extends MetierTest {
 
 		final RegDate dateMariage = date(2000, 1, 1);
 		final RegDate dateDivorce = date(2008, 7, 1);
-		final EnsembleTiersCouple ensemble = createMenageCommunDivorce(dateMariage, dateDivorce);
+		final EnsembleTiersCouple ensemble = createMenageCommunDivorce(10000009L, 10000010L, 10000011L, dateMariage, dateDivorce);
 
 		// 2007
 		{
@@ -198,7 +198,7 @@ public class AssujettissementTest extends MetierTest {
 
 		final RegDate dateMariage = date(2000, 1, 1);
 		final RegDate dateDivorce = date(2008, 7, 1);
-		final EnsembleTiersCouple ensemble = createMenageCommunDivorce(dateMariage, dateDivorce);
+		final EnsembleTiersCouple ensemble = createMenageCommunDivorce(10000012L, 10000013L, 10000014L, dateMariage, dateDivorce);
 
 		// 2007
 		{
@@ -250,7 +250,7 @@ public class AssujettissementTest extends MetierTest {
 
 		final RegDate dateMariage = date(2008, 3, 1);
 		final RegDate dateDivorce = date(2008, 11, 15);
-		final EnsembleTiersCouple ensemble = createMenageCommunDivorce(dateMariage, dateDivorce);
+		final EnsembleTiersCouple ensemble = createMenageCommunDivorce(10000015L, 10000016L, 10000017L, dateMariage, dateDivorce);
 
 		// mariage et divorce dans la même année -> aucun effet
 		
@@ -303,7 +303,7 @@ public class AssujettissementTest extends MetierTest {
 	@Test
 	public void testDetermineDepartHorsCantonDansLAnnee() throws Exception {
 
-		final Contribuable paul = createDepartHorsCanton(date(2008, 6, 30));
+		final Contribuable paul = createDepartHorsCanton(10000018L, date(2008, 6, 30));
 
 		// 2007
 		{
@@ -330,7 +330,7 @@ public class AssujettissementTest extends MetierTest {
 	@Test
 	public void testDetermineDepartHorsCantonAu31Decembre() throws Exception {
 
-		final Contribuable paul = createDepartHorsCanton(date(2008, 12, 31));
+		final Contribuable paul = createDepartHorsCanton(10000019L, date(2008, 12, 31));
 
 		// 2008
 		{
@@ -352,7 +352,7 @@ public class AssujettissementTest extends MetierTest {
 	@Test
 	public void testDetermineDepartHorsCantonDansLAnneeAvecImmeuble() throws Exception {
 
-		final Contribuable paul = createDepartHorsCantonAvecImmeuble(date(2008, 6, 30));
+		final Contribuable paul = createDepartHorsCantonAvecImmeuble(10000020L, date(2008, 6, 30));
 
 		// 2007
 		{
@@ -383,7 +383,7 @@ public class AssujettissementTest extends MetierTest {
 	@Test
 	public void testDetermineDepartHorsCantonAu31DecembreAvecImmeuble() throws Exception {
 
-		final Contribuable paul = createDepartHorsCantonAvecImmeuble(date(2008, 12, 31));
+		final Contribuable paul = createDepartHorsCantonAvecImmeuble(10000021L, date(2008, 12, 31));
 
 		// 2008
 		{
@@ -414,7 +414,7 @@ public class AssujettissementTest extends MetierTest {
 	@Test
 	public void testDetermineDepartHorsCantonEtVenteImmeubleDansLAnnee() throws Exception {
 
-		final Contribuable paul = createDepartHorsCantonEtVenteImmeuble(date(2008, 6, 30), date(2008, 9, 30));
+		final Contribuable paul = createDepartHorsCantonEtVenteImmeuble(10000022L, date(2008, 6, 30), date(2008, 9, 30));
 
 		// 2007
 		{
@@ -446,7 +446,7 @@ public class AssujettissementTest extends MetierTest {
 	@Test
 	public void testDetermineDepartHorsCantonSourcierPur() throws Exception {
 
-		final Contribuable paul = createDepartHorsCantonSourcierPur(date(2008, 9, 25));
+		final Contribuable paul = createDepartHorsCantonSourcierPur(10000023L, date(2008, 9, 25));
 
 		// 2007
 		{
@@ -487,7 +487,7 @@ public class AssujettissementTest extends MetierTest {
 	@Test
 	public void testDetermineDepartHorsCantonSourcierMixte137Al1() throws Exception {
 
-		final Contribuable paul = createDepartHorsCantonSourcierMixte137Al1(date(2008, 9, 25));
+		final Contribuable paul = createDepartHorsCantonSourcierMixte137Al1(10000024L, date(2008, 9, 25));
 
 		// 2007
 		{
@@ -527,7 +527,7 @@ public class AssujettissementTest extends MetierTest {
 	@Test
 	public void testDetermineDepartHorsCantonSourcierMixte137Al2() throws Exception {
 
-		final Contribuable paul = createDepartHorsCantonSourcierMixte137Al2(date(2008, 9, 25));
+		final Contribuable paul = createDepartHorsCantonSourcierMixte137Al2(10000025L, date(2008, 9, 25));
 
 		// 2007
 		{
@@ -568,7 +568,7 @@ public class AssujettissementTest extends MetierTest {
 	@Test
 	public void testDetermineArriveeHorsCantonSourcierPur() throws Exception {
 
-		final Contribuable paul = createArriveeHorsCantonSourcierPur(date(2008, 9, 25));
+		final Contribuable paul = createArriveeHorsCantonSourcierPur(10000026L, date(2008, 9, 25));
 
 		// 2007
 		{
@@ -609,7 +609,7 @@ public class AssujettissementTest extends MetierTest {
 	@Test
 	public void testDetermineArriveeHorsCantonDansLAnnee() throws Exception {
 
-		final Contribuable paul = createArriveeHorsCanton(date(2008, 9, 25));
+		final Contribuable paul = createArriveeHorsCanton(10000026L, date(2008, 9, 25));
 
 		// 2007
 		{
@@ -644,7 +644,7 @@ public class AssujettissementTest extends MetierTest {
 	@Test
 	public void testDetermineArriveeHorsCantonAvecImmeubleDansLAnnee() throws Exception {
 
-		final Contribuable paul = createArriveeHorsCantonAvecImmeuble(date(2008, 9, 25));
+		final Contribuable paul = createArriveeHorsCantonAvecImmeuble(10000027L, date(2008, 9, 25));
 
 		// 2007
 		{
@@ -683,7 +683,7 @@ public class AssujettissementTest extends MetierTest {
 	@Test
 	public void testDetermineArriveeHorsCantonAu1erJanvier() throws Exception {
 
-		final Contribuable paul = createArriveeHorsCanton(date(2008, 1, 1));
+		final Contribuable paul = createArriveeHorsCanton(10000028L, date(2008, 1, 1));
 
 		// 2007
 		{
@@ -718,7 +718,7 @@ public class AssujettissementTest extends MetierTest {
 	@Test
 	public void testDetermineArriveeHorsCantonSourcierMixte137Al1() throws Exception {
 
-		final Contribuable paul = createArriveeHorsCantonSourcierMixte137Al1(date(2008, 9, 25));
+		final Contribuable paul = createArriveeHorsCantonSourcierMixte137Al1(10000029L, date(2008, 9, 25));
 
 		// 2007
 		{
@@ -758,7 +758,7 @@ public class AssujettissementTest extends MetierTest {
 	@Test
 	public void testDetermineArriveeHorsCantonSourcierMixte137Al2() throws Exception {
 
-		final Contribuable paul = createArriveeHorsCantonSourcierMixte137Al2(date(2008, 9, 25));
+		final Contribuable paul = createArriveeHorsCantonSourcierMixte137Al2(10000030L, date(2008, 9, 25));
 
 		// 2007
 		{
@@ -799,7 +799,7 @@ public class AssujettissementTest extends MetierTest {
 	@Test
 	public void testDetermineDepartHorsSuisseDansLAnnee() throws Exception {
 
-		final Contribuable paul = createDepartHorsSuisse(date(2008, 6, 30));
+		final Contribuable paul = createDepartHorsSuisse(10000031L, date(2008, 6, 30));
 
 		// 2008
 		{
@@ -822,7 +822,7 @@ public class AssujettissementTest extends MetierTest {
 	@Test
 	public void testDetermineDepartHorsSuisseAu31Decembre() throws Exception {
 
-		final Contribuable paul = createDepartHorsSuisse(date(2008, 12, 31));
+		final Contribuable paul = createDepartHorsSuisse(10000032L, date(2008, 12, 31));
 
 		// 2008
 		{
@@ -845,7 +845,7 @@ public class AssujettissementTest extends MetierTest {
 	@Test
 	public void testDetermineDepartHorsSuisseDansLAnneeAvecImmeuble() throws Exception {
 
-		final Contribuable paul = createDepartHorsSuisseAvecImmeuble(date(2008, 6, 30));
+		final Contribuable paul = createDepartHorsSuisseAvecImmeuble(10000033L, date(2008, 6, 30));
 
 		// 2008
 		{
@@ -871,7 +871,7 @@ public class AssujettissementTest extends MetierTest {
 	@Test
 	public void testDetermineDepartHorsSuisseAu31DecembreAvecImmeuble() throws Exception {
 
-		final Contribuable paul = createDepartHorsSuisseAvecImmeuble(date(2008, 12, 31));
+		final Contribuable paul = createDepartHorsSuisseAvecImmeuble(10000034L, date(2008, 12, 31));
 
 		// 2008
 		{
@@ -902,7 +902,7 @@ public class AssujettissementTest extends MetierTest {
 	@Test
 	public void testDetermineDepartHorsSuisseDepuisHorsCantonAvecImmeuble() throws Exception {
 
-		final Contribuable ctb = createDepartHorsSuisseDepuisHorsCantonAvecImmeuble(date(2008, 6, 30));
+		final Contribuable ctb = createDepartHorsSuisseDepuisHorsCantonAvecImmeuble(10000034L, date(2008, 6, 30));
 
 		// 2007 (hors-canton)
 		{
@@ -944,7 +944,7 @@ public class AssujettissementTest extends MetierTest {
 
 		final RegDate dateDepart = RegDate.get(2007, 3, 15);
 		final RegDate dateArrivee = RegDate.get(2007, 10, 1);
-		final Contribuable ctb = createDepartHorsSuisseEtArriveeDeHorsCanton(dateDepart, dateArrivee);
+		final Contribuable ctb = createDepartHorsSuisseEtArriveeDeHorsCanton(10000035L, dateDepart, dateArrivee);
 
 		// 2006
 		{
@@ -975,7 +975,7 @@ public class AssujettissementTest extends MetierTest {
 	@Test
 	public void testDetermineDepartHorsSuisseDepuisHorsCantonAvecActiviteIndependante() throws Exception {
 
-		final Contribuable ctb = createDepartHorsSuisseDepuisHorsCantonAvecActiviteIndependante(date(2008, 6, 30));
+		final Contribuable ctb = createDepartHorsSuisseDepuisHorsCantonAvecActiviteIndependante(10000036L, date(2008, 6, 30));
 
 		// 2007 (hors-canton)
 		{
@@ -1020,7 +1020,7 @@ public class AssujettissementTest extends MetierTest {
 
 		final RegDate dateAchat = date(2000, 7, 1);
 		final RegDate dateVente = date(2007, 5, 30);
-		final Contribuable paul = createHorsSuisseAvecAchatEtVenteImmeuble(dateAchat, dateVente);
+		final Contribuable paul = createHorsSuisseAvecAchatEtVenteImmeuble(10000037L, dateAchat, dateVente);
 
 		// 2006
 		{
@@ -1059,7 +1059,7 @@ public class AssujettissementTest extends MetierTest {
 	public void testDetermineArriveeHorsSuisseAvecImmeuble() throws Exception {
 
 		final RegDate dateArrivee = date(2007, 3, 1);
-		final Contribuable ctb = createArriveeHorsSuisseAvecImmeuble(dateArrivee);
+		final Contribuable ctb = createArriveeHorsSuisseAvecImmeuble(10000038L, dateArrivee);
 
 		// 2006
 		{
@@ -1098,7 +1098,7 @@ public class AssujettissementTest extends MetierTest {
 	public void testDetermineArriveeHorsSuisseAvecImmeubleEtMotifFermetureNul() throws Exception {
 
 		final RegDate dateArrivee = date(2007, 3, 1);
-		final Contribuable ctb = createArriveeHorsSuisseAvecImmeuble(dateArrivee);
+		final Contribuable ctb = createArriveeHorsSuisseAvecImmeuble(10000039L, dateArrivee);
 		
 		final ForFiscalPrincipal ffp0 = (ForFiscalPrincipal) ctb.getForsFiscauxSorted().get(0);
 		ffp0.setMotifFermeture(null);
@@ -1143,7 +1143,7 @@ public class AssujettissementTest extends MetierTest {
 
 		final RegDate dateArrivee = date(2007, 3, 1);
 		final RegDate dateVente = date(2007, 5, 30);
-		final Contribuable paul = createArriveeHorsSuisseEtVenteImmeuble(dateArrivee, dateVente);
+		final Contribuable paul = createArriveeHorsSuisseEtVenteImmeuble(10000040L, dateArrivee, dateVente);
 
 		// 2006
 		{
@@ -1189,10 +1189,7 @@ public class AssujettissementTest extends MetierTest {
 
 		final RegDate dateArrivee = date(2007, 3, 1);
 		final RegDate dateDemenagement = date(2007, 7, 1);
-
-		Contribuable ctb = addNonHabitant("Werner", "Karey", date(1963, 1, 1), Sexe.MASCULIN);
-		addForPrincipal(ctb, dateArrivee, MotifFor.ARRIVEE_HS, dateDemenagement.getOneDayBefore(), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
-		addForPrincipal(ctb, dateDemenagement, MotifFor.DEMENAGEMENT_VD, MockCommune.Bex);
+		final Contribuable ctb = createArriveHorsSuisseEtDemenagementVaudoisDansLAnnee(10000041L, dateArrivee, dateDemenagement);
 
 		// 2006
 		{
@@ -1225,7 +1222,7 @@ public class AssujettissementTest extends MetierTest {
 		final RegDate dateArrivee = date(2007, 3, 1);
 		final RegDate dateAchat = date(2007, 5, 30);
 		final RegDate dateDepart = date(2007, 12, 8);
-		final Contribuable paul = createArriveeHSAchatImmeubleEtDepartHS(dateArrivee, dateAchat, dateDepart);
+		final Contribuable paul = createArriveeHSAchatImmeubleEtDepartHS(10000042L, dateArrivee, dateAchat, dateDepart);
 
 		// 2006
 		{
@@ -1273,7 +1270,7 @@ public class AssujettissementTest extends MetierTest {
 		final RegDate dateArrivee = date(2007, 2, 1);
 		final RegDate dateDepart = date(2007, 7, 30);
 		final RegDate dateAchat = date(2007, 10, 8);
-		final Contribuable paul = createArriveeHSDepartHSPuisAchatImmeuble(dateArrivee, dateDepart, dateAchat);
+		final Contribuable paul = createArriveeHSDepartHSPuisAchatImmeuble(10000043L, dateArrivee, dateDepart, dateAchat);
 
 		// 2006
 		{
@@ -1314,7 +1311,7 @@ public class AssujettissementTest extends MetierTest {
 	@Test
 	public void testDeterminePassageRoleSourceAOrdinaire() throws Exception {
 
-		final Contribuable paul = createPassageRoleSourceAOrdinaire(date(2008, 2, 12));
+		final Contribuable paul = createPassageRoleSourceAOrdinaire(10000044L, date(2008, 2, 12));
 
 		// 2008
 		{
@@ -1340,7 +1337,7 @@ public class AssujettissementTest extends MetierTest {
 	@Test
 	public void testDetermineSourcierPureHorsCanton() throws Exception {
 
-		final Contribuable paul = createSourcierPureHorsCanton();
+		final Contribuable paul = createSourcierPureHorsCanton(10000045L);
 
 		// 2008
 		{
@@ -1362,7 +1359,7 @@ public class AssujettissementTest extends MetierTest {
 	@Test
 	public void testDetermineSourcierPureHorsSuisse() throws Exception {
 
-		final Contribuable paul = createSourcierPureHorsSuisse();
+		final Contribuable paul = createSourcierPureHorsSuisse(10000046L);
 
 		// 2008
 		{
@@ -1385,7 +1382,7 @@ public class AssujettissementTest extends MetierTest {
 	public void testDetermineSourcierMixte137Al1HorsCanton() throws Exception {
 
 		final RegDate achatImmeuble = date(2007, 7, 1);
-		final Contribuable paul = createSourcierMixte137Al1HorsCanton(achatImmeuble);
+		final Contribuable paul = createSourcierMixte137Al1HorsCanton(10000047L, achatImmeuble);
 
 		// 2006
 		{
@@ -1429,7 +1426,7 @@ public class AssujettissementTest extends MetierTest {
 	public void testDetermineSourcierMixte137Al1HorsSuisse() throws Exception {
 
 		final RegDate dateChangement = date(2007, 7, 1);
-		final Contribuable paul = createSourcierMixte137Al1HorsSuisse(dateChangement);
+		final Contribuable paul = createSourcierMixte137Al1HorsSuisse(10000048L, dateChangement);
 
 		// 2006
 		{
@@ -1471,7 +1468,7 @@ public class AssujettissementTest extends MetierTest {
 	@Test
 	public void testDetermineSourcierMixte137Al2() throws Exception {
 
-		final Contribuable paul = createSourcierPassageMixte137Al2(date(2005, 1, 1));
+		final Contribuable paul = createSourcierPassageMixte137Al2(10000049L, date(2005, 1, 1));
 
 		// 2008
 		{
@@ -1501,11 +1498,7 @@ public class AssujettissementTest extends MetierTest {
 	@Test
 	public void testDetermineOrdinairePuisSourcierCasLimite() throws Exception {
 
-		final Contribuable paul = createContribuableSansFor();
-		addForPrincipal(paul, date(1983, 4, 13), MotifFor.ARRIVEE_HC, date(2006, 1, 15), MotifFor.CHGT_MODE_IMPOSITION,
-				MockCommune.Lausanne);
-		ForFiscalPrincipal fp = addForPrincipal(paul, date(2006, 1, 16), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Lausanne);
-		fp.setModeImposition(ModeImposition.SOURCE);
+		final Contribuable paul = createOrdinairePuisSourcierCasLimite(10000050L);
 
 		// 2005 (ordinaire)
 		{
@@ -1542,11 +1535,7 @@ public class AssujettissementTest extends MetierTest {
 	@Test
 	public void testDetermineSourcierPuisOrdinaireCasLimite() throws Exception {
 
-		final Contribuable paul = createContribuableSansFor();
-		ForFiscalPrincipal fp = addForPrincipal(paul, date(1983, 4, 13), MotifFor.ARRIVEE_HC, date(2006, 12, 16),
-				MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Lausanne);
-		fp.setModeImposition(ModeImposition.SOURCE);
-		addForPrincipal(paul, date(2006, 12, 17), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Lausanne);
+		final Contribuable paul = createSourcierPuisOrdinaireCasLimite(10000051L);
 
 		// 2005
 		{
@@ -1576,7 +1565,7 @@ public class AssujettissementTest extends MetierTest {
 	@Test
 	public void testDetermineDiplomateAvecImmeuble() throws Exception {
 
-		final Contribuable paul = createDiplomateAvecImmeuble(date(2000, 1, 1), date(2001, 6, 13));
+		final Contribuable paul = createDiplomateAvecImmeuble(10000052L, date(2000, 1, 1), date(2001, 6, 13));
 
 		// 1999
 		{
@@ -1622,7 +1611,7 @@ public class AssujettissementTest extends MetierTest {
 	public void testDetermineHorsSuisseForPrincipalFermeSansMotif() throws Exception {
 
 		final RegDate dateVente = date(2009, 3, 24);
-		final Contribuable ctb = createHorsSuisseVenteImmeubleEtFermetureFFPSansMotif(dateVente);
+		final Contribuable ctb = createHorsSuisseVenteImmeubleEtFermetureFFPSansMotif(10000053L, dateVente);
 
 		final List<Assujettissement> list = Assujettissement.determine(ctb, 2009);
 		assertNotNull(list);
@@ -1634,7 +1623,7 @@ public class AssujettissementTest extends MetierTest {
 	public void testDetermineHorsCantonAvecImmeuble() throws Exception {
 
 		final RegDate dateAchat = date(2008, 4, 21);
-		final Contribuable ctb = createHorsCantonAvecImmeuble(dateAchat);
+		final Contribuable ctb = createHorsCantonAvecImmeuble(10000054L, dateAchat);
 
 		// 2007
 		{
@@ -1691,7 +1680,7 @@ public class AssujettissementTest extends MetierTest {
 
 		final Range immeuble1 = new Range(date(2008, 1, 15), date(2008, 3, 30));
 		final Range immeuble2 = new Range(date(2008, 6, 2), date(2008, 11, 26));
-		final Contribuable ctb = createHorsSuisseAvecAchatsEtVentesImmeubles(immeuble1, immeuble2);
+		final Contribuable ctb = createHorsSuisseAvecAchatsEtVentesImmeubles(10000055L, immeuble1, immeuble2);
 
 		// 2007
 		{
@@ -1721,7 +1710,7 @@ public class AssujettissementTest extends MetierTest {
 
 		final RegDate dateAchat = date(2008, 1, 15);
 		final RegDate dateVente = date(2008, 3, 30);
-		final Contribuable ctb = createHorsSuisseSourcierAvecAchatEtVenteImmeuble(dateAchat, dateVente);
+		final Contribuable ctb = createHorsSuisseSourcierAvecAchatEtVenteImmeuble(10000056L, dateAchat, dateVente);
 
 		// 2007
 		{
@@ -1754,7 +1743,7 @@ public class AssujettissementTest extends MetierTest {
 	public void testDetermineVenteImmeubleHorsCanton() throws Exception {
 
 		final RegDate dateVente = date(2008, 9, 30);
-		final Contribuable ctb = createVenteImmeubleHorsCanton(dateVente);
+		final Contribuable ctb = createVenteImmeubleHorsCanton(10000057L, dateVente);
 
 		// 2007
 		{
@@ -1783,7 +1772,7 @@ public class AssujettissementTest extends MetierTest {
 	public void testDetermineFinActiviteHorsCanton() throws Exception {
 
 		final RegDate dateFin = date(2008, 9, 30);
-		final Contribuable ctb = createFinActiviteHorsCanton(dateFin);
+		final Contribuable ctb = createFinActiviteHorsCanton(10000058L, dateFin);
 
 		// 2007
 		{
@@ -1812,7 +1801,7 @@ public class AssujettissementTest extends MetierTest {
 	public void testDetermineDecesHorsCantonAvecImmeuble() throws Exception {
 
 		final RegDate dateDeces = date(2008, 10, 26);
-		final Contribuable ctb = createDecesHorsCantonAvecImmeuble(date(2006, 8, 5), dateDeces);
+		final Contribuable ctb = createDecesHorsCantonAvecImmeuble(10000059L, date(2006, 8, 5), dateDeces);
 
 		// 2007
 		{
@@ -1841,7 +1830,7 @@ public class AssujettissementTest extends MetierTest {
 	public void testDetermineDecesHorsCantonActiviteIndependante() throws Exception {
 
 		final RegDate dateDeces = date(2008, 2, 23);
-		final Contribuable ctb = createDecesHorsCantonActiviteIndependante(date(1990, 4, 13), dateDeces);
+		final Contribuable ctb = createDecesHorsCantonActiviteIndependante(10000060L, date(1990, 4, 13), dateDeces);
 
 		// 2007
 		{
@@ -1874,7 +1863,7 @@ public class AssujettissementTest extends MetierTest {
 
 		final RegDate dateAchat = date(1998, 10, 17);
 		final RegDate dateArrivee = date(2003, 1, 1);
-		final Contribuable ctb = createArriveeHorsSuisseAvecImmeubleEtMotifDemanagement(dateAchat, dateArrivee);
+		final Contribuable ctb = createArriveeHorsSuisseAvecImmeubleEtMotifDemanagement(10000061L, dateAchat, dateArrivee);
 
 		// 2002
 		{
@@ -1907,7 +1896,7 @@ public class AssujettissementTest extends MetierTest {
 	@Test
 	public void testDetermineCasCompletementTordu() throws Exception {
 
-		final Contribuable paul = createContribuableSansFor();
+		final Contribuable paul = createContribuableSansFor(10000171L);
 
 		ForFiscalPrincipal fp = addForPrincipal(paul, date(2003, 4, 1), MotifFor.INDETERMINE, date(2005, 12, 18), MotifFor.DEPART_HS, MockCommune.Lausanne);
 		fp.setModeImposition(ModeImposition.MIXTE_137_2);
@@ -1984,7 +1973,7 @@ public class AssujettissementTest extends MetierTest {
 	@Test
 	public void testDetermineFausseArriveeHorsSuisse() throws Exception {
 
-		final Contribuable paul = createContribuableSansFor();
+		final Contribuable paul = createContribuableSansFor(10002045L);
 
 		ForFiscalPrincipal fp = addForPrincipal(paul, date(2001, 1, 1), MotifFor.ARRIVEE_HS, date(2003, 10, 9), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Aubonne);
 		fp.setModeImposition(ModeImposition.SOURCE);
@@ -2030,7 +2019,7 @@ public class AssujettissementTest extends MetierTest {
 	@Test
 	public void testDetermineFausseArriveeHorsSuisse2() throws Exception {
 
-		final Contribuable paul = createContribuableSansFor();
+		final Contribuable paul = createContribuableSansFor(10003318L);
 
 		addForPrincipal(paul, date(2002, 5, 31), MotifFor.INDETERMINE, date(2002, 6, 4), MotifFor.DEMENAGEMENT_VD, MockCommune.Neuchatel);
 		// le motif d'ouverture du second for principal est incorrect que le for immédiatement précédent n'est pas hors-Suisse.
@@ -2081,7 +2070,7 @@ public class AssujettissementTest extends MetierTest {
 	@Test
 	public void testDetermineSourcierPurePuisMixteSurDepartHSPuisArriveeHSDansLAnneeAvecImmeubleEtMotifsGrandguignolesques() throws Exception {
 
-		final Contribuable paul = createContribuableSansFor();
+		final Contribuable paul = createContribuableSansFor(10003348L);
 
 		ForFiscalPrincipal fp = addForPrincipal(paul, date(2003, 1, 1), MotifFor.ARRIVEE_HS, date(2003, 5, 27), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Lausanne);
 		fp.setModeImposition(ModeImposition.SOURCE);
@@ -2124,7 +2113,7 @@ public class AssujettissementTest extends MetierTest {
 	@Test
 	public void testDetermineFauxDemenagementVD() throws Exception {
 
-		final Contribuable paul = createContribuableSansFor();
+		final Contribuable paul = createContribuableSansFor(10002080L);
 
 		// le motif de fermeture est incorrect, il devrait être ARRIVEE_HC
 		ForFiscalPrincipal fp = addForPrincipal(paul, date(2003, 9, 9), MotifFor.INDETERMINE, date(2004, 7, 26), MotifFor.DEMENAGEMENT_VD, MockCommune.Neuchatel);
@@ -2171,7 +2160,7 @@ public class AssujettissementTest extends MetierTest {
 	@Test
 	public void testDetermineFauxDepartHS() throws Exception {
 
-		final Contribuable paul = createContribuableSansFor();
+		final Contribuable paul = createContribuableSansFor(10004709L);
 
 		// Dans le cas d'un contribuable avec deux fors principaux vaudois se touchant avec changement
 		// au 31 décembre pour motif DEPART_HS, on vérifie que le motiff DEPART_HS est bien ignoré
@@ -2219,7 +2208,7 @@ public class AssujettissementTest extends MetierTest {
 	@Test
 	public void testDetermineDepartHSAchatImmeubleEtArriveeHC() throws Exception {
 
-		final Contribuable paul = createContribuableSansFor();
+		final Contribuable paul = createContribuableSansFor(10008508L);
 
 		addForPrincipal(paul, date(1995, 11, 2), MotifFor.ARRIVEE_HS, date(1997, 3, 1), MotifFor.DEPART_HS, MockCommune.Lausanne);
 		addForPrincipal(paul, date(1997, 3, 3), MotifFor.DEMENAGEMENT_VD, date(2004, 12, 31), MotifFor.DEPART_HC, MockPays.Albanie);
@@ -2240,7 +2229,7 @@ public class AssujettissementTest extends MetierTest {
 	@Test
 	public void testDetermineSourcierMixteHorsSuisseAvecImmeuble() throws Exception {
 
-		final Contribuable paul = createContribuableSansFor();
+		final Contribuable paul = createContribuableSansFor(10015452L);
 
 		ForFiscalPrincipal fp = addForPrincipal(paul, date(2004, 5, 6), MotifFor.INDETERMINE, date(2006, 7, 31), MotifFor.DEMENAGEMENT_VD, MockPays.Espagne);
 		fp.setModeImposition(ModeImposition.MIXTE_137_1);
@@ -2261,7 +2250,7 @@ public class AssujettissementTest extends MetierTest {
 	@Test
 	public void testDetermineSourcierHCDepartHSEtAchatImmeuble() throws Exception {
 
-		final Contribuable paul = createContribuableSansFor();
+		final Contribuable paul = createContribuableSansFor(10019036L);
 
 		ForFiscalPrincipal fp = addForPrincipal(paul, date(2004, 1, 1), MotifFor.ARRIVEE_HS, date(2004, 6, 14), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Neuchatel);
 		fp.setModeImposition(ModeImposition.SOURCE);
@@ -2286,7 +2275,7 @@ public class AssujettissementTest extends MetierTest {
 	@Test
 	public void testDetermineDepartHSSourcierEtArriveeHSOrdinaireMemeMois() throws Exception {
 
-		final Contribuable ctb = createContribuableSansFor();
+		final Contribuable ctb = createContribuableSansFor(10441002L);
 
 		ForFiscalPrincipal fp = addForPrincipal(ctb, date(2003, 1, 1), MotifFor.ARRIVEE_HS, date(2009, 8, 13), MotifFor.DEPART_HS, MockCommune.Lausanne);
 		fp.setModeImposition(ModeImposition.SOURCE);
