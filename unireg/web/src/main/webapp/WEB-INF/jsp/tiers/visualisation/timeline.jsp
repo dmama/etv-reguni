@@ -64,7 +64,13 @@
 				<tr>
 				 	<%-- période --%>
 					<td class="periode">
-						<unireg:date date="${ligne.periode.dateDebut}" /><br/><unireg:date date="${ligne.periode.dateFin}" />
+						<unireg:date date="${ligne.periode.dateDebut}" /><br/>
+						<c:if test="${ligne.periode.dateFin != null}">
+							<unireg:date date="${ligne.periode.dateFin}" />
+						</c:if>
+						<c:if test="${ligne.periode.dateFin == null}">
+							...
+						</c:if>
 					</td>
 					
 					<%-- fors principaux --%>
