@@ -2,21 +2,35 @@
 <%@ include file="/WEB-INF/jsp/include/common.jsp"%>
 <%@ taglib uri="http://www.unireg.com/uniregTagLib" prefix="unireg" %>
 
-<tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
+<c:if test="${command.forPrint}">
+	<c:set var="templateUrl" value="/WEB-INF/jsp/templates/templateIFrame.jsp" />
+</c:if>
+<c:if test="${!command.forPrint}">
+	<c:set var="templateUrl" value="/WEB-INF/jsp/templates/template.jsp" />
+</c:if>
+
+<tiles:insert template="${templateUrl}">
 
 	<tiles:put name="head"><script type="text/javascript" src="<c:url value="/js/tiers.js"/>"></script></tiles:put>
 	<tiles:put name="title">Vue chronologique des fors fiscaux et des assujettissements</tiles:put>
 
 	<tiles:put name="body">
 	
-		<p style="text-align: center; color:red;">Attention: cette page est une aide pour les développeurs de Unireg. Il ne s'agit en aucune manière d'une page officielle, et aucun support n'est prévu.</p>
-	
-		<a href="<c:url value="/tiers/visu.do?id=" /><c:out value="${command.tiersId}" />" >Retour à la visualisation</a>
+		<c:if test="${command.forPrint}">
+				<h1><c:out value="${command.title}"/></h1>
+				<h3><c:out value="${command.description}"/></h3>
+		</c:if>
+		<c:if test="${!command.forPrint}">
+			<p style="text-align: center; color:red;">Attention: cette page est une aide pour les développeurs de Unireg. Il ne s'agit en aucune manière d'une page officielle, et aucun support n'est prévu.</p>
 
-		<display:table name="${command.adresse.lignes}" id="ligne" class="list" cellspacing="2" > 
-			<display:column>${ligne}</display:column>
-		</display:table>
-		
+			<a href="<c:url value="/tiers/visu.do?id=" /><c:out value="${command.tiersId}" />" >Retour à la visualisation</a>
+
+			<display:table name="${command.adresse.lignes}" id="ligne" class="list" cellspacing="2" >
+				<display:column>${ligne}</display:column>
+			</display:table>
+		</c:if>
+
+
 		<c:if test="${fn:length(command.exceptions) > 0}">
 			<table class="validation_error" cellspacing="0" cellpadding="0" border="0">
 				<tr><td class="heading">Les assujettissements n'ont pas tous pu être calculés pour les raisons suivantes:</td></tr>

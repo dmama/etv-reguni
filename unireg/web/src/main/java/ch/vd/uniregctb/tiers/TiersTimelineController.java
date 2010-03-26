@@ -8,7 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
-import ch.vd.uniregctb.type.TypeAdresseTiers;
+
 import org.apache.log4j.Logger;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
@@ -20,7 +20,6 @@ import org.springframework.web.servlet.ModelAndView;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.DateRangeHelper.Range;
 import ch.vd.uniregctb.adresse.AdresseEnvoi;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
@@ -39,6 +38,9 @@ public class TiersTimelineController extends AbstractTiersController {
 	private final Logger LOGGER = Logger.getLogger(TiersTimelineController.class);
 
 	public final static String ID_PARAMETER = "id";
+	public final static String FOR_PRINT = "print";
+	public final static String TITLE = "title";
+	public final static String DESCRIPTION = "description";
 
 	private TiersDAO dao;
 
@@ -52,10 +54,25 @@ public class TiersTimelineController extends AbstractTiersController {
 
 		final TiersTimelineView bean = (TiersTimelineView) super.formBackingObject(request);
 
-		Long id = extractLongParam(request, ID_PARAMETER);
+		final Long id = extractLongParam(request, ID_PARAMETER);
 		if (id != null) {
 			checkAccesDossierEnLecture(id);
 			bean.setTiersId(id);
+		}
+
+		final Boolean forPrint = extractBooleanParam(request, FOR_PRINT);
+		if (forPrint != null){
+			bean.setForPrint(forPrint);
+		}
+
+		final String title = request.getParameter(TITLE);
+		if (title != null) {
+			bean.setTitle(title);
+		}
+
+		final String description = request.getParameter(DESCRIPTION);
+		if (description != null) {
+			bean.setDescription(description);
 		}
 
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);

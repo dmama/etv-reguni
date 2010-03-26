@@ -26,6 +26,10 @@ public class TiersTimelineView {
 	private final Table table = new Table();
 	private final List<AssujettissementException> exceptions = new ArrayList<AssujettissementException>();
 
+	private boolean forPrint = false;
+	private String title;
+	private String description;
+
 	/**
 	 * Représente une cellule dans la table
 	 */
@@ -307,6 +311,30 @@ public class TiersTimelineView {
 
 	public void setTiersId(Long tiersId) {
 		this.tiersId = tiersId;
+	}
+
+	public boolean isForPrint() {
+		return forPrint;
+	}
+
+	public void setForPrint(boolean forPrint) {
+		this.forPrint = forPrint;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
 	public AdresseEnvoi getAdresse() {

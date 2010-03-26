@@ -239,6 +239,20 @@ public abstract class AbstractSimpleFormController extends SimpleFormController 
 		return id;
 	}
 
+	protected static Boolean extractBooleanParam(HttpServletRequest request, String parameterName) {
+		Boolean forPrint = null;
+		String string = request.getParameter(parameterName);
+		if (string != null) {
+			try {
+				forPrint = Boolean.valueOf(string);
+			}
+			catch (NumberFormatException e) {
+				forPrint = false;
+			}
+		}
+		return forPrint;
+	}
+
 	/**
 	 * Vérifie que l'opérateur courant possède les droits d'accès en lecture et écriture sur le <b>dossier</b> du tiers spécifié.
 	 * <p>

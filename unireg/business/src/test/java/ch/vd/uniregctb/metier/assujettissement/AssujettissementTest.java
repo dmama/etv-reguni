@@ -1,24 +1,42 @@
 package ch.vd.uniregctb.metier.assujettissement;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import org.junit.Test;
+
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
+import ch.vd.registre.webscreenshot.WebScreenshot;
+import ch.vd.registre.webscreenshot.WebScreenshotDoc;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.type.*;
-import org.junit.Test;
-
-import java.util.*;
+import ch.vd.uniregctb.type.ModeImposition;
+import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.MotifRattachement;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 import static ch.vd.registre.base.date.DateRangeHelper.Range;
 import static junit.framework.Assert.assertNotNull;
 import static org.junit.Assert.assertEquals;
 
-@SuppressWarnings({"JavaDoc"})
+// Activer les annotations ci-dessous pour générer des screenshots des assujettissements
+//@TransactionConfiguration(transactionManager = "transactionManager", defaultRollback = false)
+//@WebScreenshotTestListenerConfig(baseUrl = "http://localhost:8080", browserStartCommand = "*firefox /usr/lib/firefox-3.5.8/firefox", outputDir = "/home/msi/bidon/assujettissements")
+//@TestExecutionListeners(value = {DependencyInjectionTestExecutionListener.class,
+//		DirtiesContextTestExecutionListener.class,
+//		WebScreenshotTransactionalTestExecutionListener.class},
+//		inheritListeners = false)
+@SuppressWarnings({"JavaDoc", "deprecation"})
 public class AssujettissementTest extends MetierTest {
 
+	@WebScreenshot(urls = "/fiscalite/unireg/tiers/timeline.do?id=10000001&print=true&title=${methodName}")
 	@Test
 	public void testDetermineAucunFor() throws Exception {
 		final Contribuable paul = createContribuableSansFor(10000001L);
@@ -26,6 +44,7 @@ public class AssujettissementTest extends MetierTest {
 		assertEmpty(Assujettissement.determine(paul, RANGE_2002_2010, true));
 	}
 
+	@WebScreenshot(urls = "/fiscalite/unireg/tiers/timeline.do?id=10000002&print=true&title=${methodName}")
 	@Test
 	public void testDetermineUnForSimple() throws Exception {
 
@@ -41,6 +60,9 @@ public class AssujettissementTest extends MetierTest {
 		assertOrdinaire(date(2002, 1, 1), date(2010, 12, 31), null, null, list.get(0));
 	}
 
+	@WebScreenshot(urls = {"/fiscalite/unireg/tiers/timeline.do?id=10000003&print=true&title=${methodName}&description=Situation%20de%20Monsieur",
+			"/fiscalite/unireg/tiers/timeline.do?id=10000004&print=true&title=${methodName}&description=Situation%20de%20Madame",
+			"/fiscalite/unireg/tiers/timeline.do?id=10000005&print=true&title=${methodName}&description=Situation%20du%20Couple"})
 	@Test
 	public void testDetermineMenageCommunMarieDansLAnnee() throws Exception {
 
@@ -91,6 +113,9 @@ public class AssujettissementTest extends MetierTest {
 		}
 	}
 
+	@WebScreenshot(urls = {"/fiscalite/unireg/tiers/timeline.do?id=10000006&print=true&title=${methodName}&description=Situation%20de%20Monsieur",
+			"/fiscalite/unireg/tiers/timeline.do?id=10000007&print=true&title=${methodName}&description=Situation%20de%20Madame",
+			"/fiscalite/unireg/tiers/timeline.do?id=10000008&print=true&title=${methodName}&description=Situation%20du%20couple"})
 	@Test
 	public void testDetermineMenageCommunMarieAu1erJanvier() throws Exception {
 
@@ -141,6 +166,9 @@ public class AssujettissementTest extends MetierTest {
 		}
 	}
 
+	@WebScreenshot(urls = {"/fiscalite/unireg/tiers/timeline.do?id=10000009&print=true&title=${methodName}&description=Situation%20de%20Monsieur", 
+			"/fiscalite/unireg/tiers/timeline.do?id=10000010&print=true&title=${methodName}&description=Situation%20de%20Madame",
+			"/fiscalite/unireg/tiers/timeline.do?id=10000011&print=true&title=${methodName}&description=Situation%20du%20couple"})
 	@Test
 	public void testDetermineMenageCommunDivorceDansLAnnee() throws Exception {
 
@@ -193,6 +221,9 @@ public class AssujettissementTest extends MetierTest {
 		}
 	}
 	
+	@WebScreenshot(urls = {"/fiscalite/unireg/tiers/timeline.do?id=10000012&print=true&title=${methodName}&description=Situation%20de%20Monsieur", 
+			"/fiscalite/unireg/tiers/timeline.do?id=10000013&print=true&title=${methodName}&description=Situation%20de%20Madame",
+			"/fiscalite/unireg/tiers/timeline.do?id=10000014&print=true&title=${methodName}&description=Situation%20du%20couple"})
 	@Test
 	public void testDetermineMenageCommunDivorceAu1erJanvier() throws Exception {
 
@@ -245,6 +276,9 @@ public class AssujettissementTest extends MetierTest {
 		}
 	}
 
+	@WebScreenshot(urls = {"/fiscalite/unireg/tiers/timeline.do?id=10000015&print=true&title=${methodName}&description=Situation%20de%20Monsieur", 
+			"/fiscalite/unireg/tiers/timeline.do?id=10000016&print=true&title=${methodName}&description=Situation%20de%20Madame",
+			"/fiscalite/unireg/tiers/timeline.do?id=10000017&print=true&title=${methodName}&description=Situation%20du%20couple"})
 	@Test
 	public void testDetermineMenageCommunMarieEtDivorceDansLAnnee() throws Exception {
 
@@ -300,6 +334,7 @@ public class AssujettissementTest extends MetierTest {
 		}
 	}
 
+	@WebScreenshot(urls = "/fiscalite/unireg/tiers/timeline.do?id=10000018&print=true&title=${methodName}")
 	@Test
 	public void testDetermineDepartHorsCantonDansLAnnee() throws Exception {
 
@@ -327,6 +362,7 @@ public class AssujettissementTest extends MetierTest {
 		}
 	}
 
+	@WebScreenshot(urls = "/fiscalite/unireg/tiers/timeline.do?id=10000019&print=true&title=${methodName}")
 	@Test
 	public void testDetermineDepartHorsCantonAu31Decembre() throws Exception {
 
@@ -349,6 +385,7 @@ public class AssujettissementTest extends MetierTest {
 		}
 	}
 
+	@WebScreenshot(urls = "/fiscalite/unireg/tiers/timeline.do?id=10000020&print=true&title=${methodName}")
 	@Test
 	public void testDetermineDepartHorsCantonDansLAnneeAvecImmeuble() throws Exception {
 
@@ -380,6 +417,7 @@ public class AssujettissementTest extends MetierTest {
 		}
 	}
 
+	@WebScreenshot(urls = "/fiscalite/unireg/tiers/timeline.do?id=10000021&print=true&title=${methodName}")
 	@Test
 	public void testDetermineDepartHorsCantonAu31DecembreAvecImmeuble() throws Exception {
 
@@ -411,6 +449,7 @@ public class AssujettissementTest extends MetierTest {
 		}
 	}
 
+	@WebScreenshot(urls = "/fiscalite/unireg/tiers/timeline.do?id=10000022&print=true&title=${methodName}")
 	@Test
 	public void testDetermineDepartHorsCantonEtVenteImmeubleDansLAnnee() throws Exception {
 
@@ -443,6 +482,7 @@ public class AssujettissementTest extends MetierTest {
 		}
 	}
 
+	@WebScreenshot(urls = "/fiscalite/unireg/tiers/timeline.do?id=10000023&print=true&title=${methodName}")
 	@Test
 	public void testDetermineDepartHorsCantonSourcierPur() throws Exception {
 
@@ -484,6 +524,9 @@ public class AssujettissementTest extends MetierTest {
 		}
 	}
 
+	@WebScreenshot(urls = "/fiscalite/unireg/tiers/timeline.do?id=10000024&print=true&title=${methodName}&description=${docDescription}")	
+	@WebScreenshotDoc(description = "[UNIREG-1742] pas de fractionnement en 2008 car le contribuable reste assujetti toute l'année à raison de son for secondaire (immeuble ou activité " +
+			"indépendante)")
 	@Test
 	public void testDetermineDepartHorsCantonSourcierMixte137Al1() throws Exception {
 
@@ -524,6 +567,8 @@ public class AssujettissementTest extends MetierTest {
 		}
 	}
 
+	@WebScreenshot(urls = "/fiscalite/unireg/tiers/timeline.do?id=10000025&print=true&title=${methodName}&description=${docDescription}")	
+	@WebScreenshotDoc(description = "[UNIREG-1742] fractionnement de l'assujettissement en 2008 (mais pas d'arrondi à la fin de mois)")
 	@Test
 	public void testDetermineDepartHorsCantonSourcierMixte137Al2() throws Exception {
 
@@ -565,6 +610,7 @@ public class AssujettissementTest extends MetierTest {
 		}
 	}
 
+	@WebScreenshot(urls = "/fiscalite/unireg/tiers/timeline.do?id=10000026&print=true&title=${methodName}")
 	@Test
 	public void testDetermineArriveeHorsCantonSourcierPur() throws Exception {
 
@@ -606,10 +652,11 @@ public class AssujettissementTest extends MetierTest {
 		}
 	}
 
+	@WebScreenshot(urls = "/fiscalite/unireg/tiers/timeline.do?id=11000026&print=true&title=${methodName}")
 	@Test
 	public void testDetermineArriveeHorsCantonDansLAnnee() throws Exception {
 
-		final Contribuable paul = createArriveeHorsCanton(10000026L, date(2008, 9, 25));
+		final Contribuable paul = createArriveeHorsCanton(11000026L, date(2008, 9, 25));
 
 		// 2007
 		{
@@ -641,6 +688,7 @@ public class AssujettissementTest extends MetierTest {
 		}
 	}
 
+	@WebScreenshot(urls = "/fiscalite/unireg/tiers/timeline.do?id=10000027&print=true&title=${methodName}")
 	@Test
 	public void testDetermineArriveeHorsCantonAvecImmeubleDansLAnnee() throws Exception {
 
@@ -680,6 +728,7 @@ public class AssujettissementTest extends MetierTest {
 		}
 	}
 
+	@WebScreenshot(urls = "/fiscalite/unireg/tiers/timeline.do?id=10000028&print=true&title=${methodName}")
 	@Test
 	public void testDetermineArriveeHorsCantonAu1erJanvier() throws Exception {
 
@@ -715,6 +764,9 @@ public class AssujettissementTest extends MetierTest {
 		}
 	}
 
+	@WebScreenshot(urls = "/fiscalite/unireg/tiers/timeline.do?id=10000029&print=true&title=${methodName}&description=${docDescription}")	
+	@WebScreenshotDoc(description = "[UNIREG-1742] pas de fractionnement en 2008 dans ce cas-là car le contribuable reste assujetti toute l'année à raison de son for secondaire (immeuble " +
+			"ou activité indépendante).")
 	@Test
 	public void testDetermineArriveeHorsCantonSourcierMixte137Al1() throws Exception {
 
@@ -755,6 +807,8 @@ public class AssujettissementTest extends MetierTest {
 		}
 	}
 
+	@WebScreenshot(urls = "/fiscalite/unireg/tiers/timeline.do?id=10000030&print=true&title=${methodName}&description=${docDescription}")	
+	@WebScreenshotDoc(description = "[UNIREG-1742] fractionnement de l'assujettissement (mais pas d'arrondi à la fin de mois)")
 	@Test
 	public void testDetermineArriveeHorsCantonSourcierMixte137Al2() throws Exception {
 
@@ -796,6 +850,7 @@ public class AssujettissementTest extends MetierTest {
 		}
 	}
 
+	@WebScreenshot(urls = "/fiscalite/unireg/tiers/timeline.do?id=10000031&print=true&title=${methodName}")
 	@Test
 	public void testDetermineDepartHorsSuisseDansLAnnee() throws Exception {
 
@@ -819,6 +874,7 @@ public class AssujettissementTest extends MetierTest {
 		}
 	}
 
+	@WebScreenshot(urls = "/fiscalite/unireg/tiers/timeline.do?id=10000032&print=true&title=${methodName}")
 	@Test
 	public void testDetermineDepartHorsSuisseAu31Decembre() throws Exception {
 
@@ -842,6 +898,7 @@ public class AssujettissementTest extends MetierTest {
 		}
 	}
 
+	@WebScreenshot(urls = "/fiscalite/unireg/tiers/timeline.do?id=10000033&print=true&title=${methodName}")
 	@Test
 	public void testDetermineDepartHorsSuisseDansLAnneeAvecImmeuble() throws Exception {
 
@@ -868,6 +925,7 @@ public class AssujettissementTest extends MetierTest {
 		}
 	}
 
+	@WebScreenshot(urls = "/fiscalite/unireg/tiers/timeline.do?id=10000034&print=true&title=${methodName}")
 	@Test
 	public void testDetermineDepartHorsSuisseAu31DecembreAvecImmeuble() throws Exception {
 
@@ -899,10 +957,13 @@ public class AssujettissementTest extends MetierTest {
 		}
 	}
 	
+	@WebScreenshot(urls = "/fiscalite/unireg/tiers/timeline.do?id=11000034&print=true&title=${methodName}&description=${docDescription}")	
+	@WebScreenshotDoc(description = "[UNIREG-1742] le départ hors-Suisse depuis hors-canton ne doit pas fractionner l'assujettissement en cours de période (car le rattachement économique n'est pas " +
+			"interrompu)")
 	@Test
 	public void testDetermineDepartHorsSuisseDepuisHorsCantonAvecImmeuble() throws Exception {
 
-		final Contribuable ctb = createDepartHorsSuisseDepuisHorsCantonAvecImmeuble(10000034L, date(2008, 6, 30));
+		final Contribuable ctb = createDepartHorsSuisseDepuisHorsCantonAvecImmeuble(11000034L, date(2008, 6, 30));
 
 		// 2007 (hors-canton)
 		{
@@ -939,6 +1000,8 @@ public class AssujettissementTest extends MetierTest {
 		}
 	}
 
+	@WebScreenshot(urls = "/fiscalite/unireg/tiers/timeline.do?id=10000035&print=true&title=${methodName}&description=${docDescription}")	
+	@WebScreenshotDoc(description = "(départ HS et arrivée HC dans l'année -> pas moyen de connaître la date d'arrivée de HS dans l'autre canton, on prend toute la période restante par défaut)")
 	@Test
 	public void testDetermineDepartHorsSuisseEtArriveeDeHorsCantonDansLAnnee() throws Exception {
 
@@ -972,6 +1035,9 @@ public class AssujettissementTest extends MetierTest {
 		}
 	}
 
+	@WebScreenshot(urls = "/fiscalite/unireg/tiers/timeline.do?id=10000036&print=true&title=${methodName}&description=${docDescription}")	
+	@WebScreenshotDoc(description = "[UNIREG-1742] le départ hors-Suisse depuis hors-canton en 2008 ne doit pas fractionner l'assujettissement en cours de période (car le rattachement économique " +
+			"n'est pas interrompu)")
 	@Test
 	public void testDetermineDepartHorsSuisseDepuisHorsCantonAvecActiviteIndependante() throws Exception {
 
@@ -1015,6 +1081,8 @@ public class AssujettissementTest extends MetierTest {
 	/**
 	 * [UNIREG-1327] Vérifie que l'assujettissement d'un HS qui vend son immeuble ne s'étend pas au delà de la date de vente.
 	 */
+	@WebScreenshot(urls = "/fiscalite/unireg/tiers/timeline.do?id=10000037&print=true&title=${methodName}&description=${docDescription}")	
+	@WebScreenshotDoc(description = "[UNIREG-1327] Vérifie que l'assujettissement d'un HS qui vend son immeuble ne s'étend pas au delà de la date de vente.")
 	@Test
 	public void testDetermineVenteImmeubleContribuableHorsSuisse() throws Exception {
 
@@ -1055,6 +1123,7 @@ public class AssujettissementTest extends MetierTest {
 		}
 	}
 
+	@WebScreenshot(urls = "/fiscalite/unireg/tiers/timeline.do?id=10000038&print=true&title=${methodName}")
 	@Test
 	public void testDetermineArriveeHorsSuisseAvecImmeuble() throws Exception {
 
@@ -1094,6 +1163,8 @@ public class AssujettissementTest extends MetierTest {
 	/**
 	 * Version spéciale avec motif de fermeture du fors HS nul.
 	 */
+	@WebScreenshot(urls = "/fiscalite/unireg/tiers/timeline.do?id=10000039&print=true&title=${methodName}&description=${docDescription}")	
+	@WebScreenshotDoc(description = "Version spéciale avec motif de fermeture du fors HS nul.")
 	@Test
 	public void testDetermineArriveeHorsSuisseAvecImmeubleEtMotifFermetureNul() throws Exception {
 
@@ -1138,6 +1209,9 @@ public class AssujettissementTest extends MetierTest {
 	 * [UNIREG-1327] Vérifie que l'assujettissement d'un contribuable HS qui possède un immeuble, arrive de HS et vend son immeuble dans la
 	 * même année est bien fractionné à la date d'arrivée HS.
 	 */
+	@WebScreenshot(urls = "/fiscalite/unireg/tiers/timeline.do?id=10000040&print=true&title=${methodName}&description=${docDescription}")	
+	@WebScreenshotDoc(description = "[UNIREG-1327] Vérifie que l'assujettissement d'un contribuable HS qui possède un immeuble, arrive de HS et vend son immeuble dans la même année est bien " +
+			"fractionné à la date d'arrivée HS")
 	@Test
 	public void testDetermineArriveeHorsSuisseEtVenteImmeubleDansLAnnee() throws Exception {
 
@@ -1184,6 +1258,7 @@ public class AssujettissementTest extends MetierTest {
 		}
 	}
 
+	@WebScreenshot(urls = "/fiscalite/unireg/tiers/timeline.do?id=10000041&print=true&title=${methodName}")
 	@Test
 	public void testDetermineArriveHorsSuisseEtDemenagementVaudoisDansLAnnee() throws Exception {
 
@@ -1216,6 +1291,8 @@ public class AssujettissementTest extends MetierTest {
 	/**
 	 * Cas très spécial du contribuable qui arrive de HS et qui repart HS la même année, et qui achète un immeuble entre-deux.
 	 */
+	@WebScreenshot(urls = "/fiscalite/unireg/tiers/timeline.do?id=10000042&print=true&title=${methodName}&description=${docDescription}")	
+	@WebScreenshotDoc(description = "Cas très spécial du contribuable qui arrive de HS et qui repart HS la même année, et qui achète un immeuble entre-deux.")
 	@Test
 	public void testDetermineArriveeHorsSuisseAchatImmeubleEtDepartHorsSuisseDansLAnnee() throws Exception {
 
@@ -1264,6 +1341,9 @@ public class AssujettissementTest extends MetierTest {
 	 * Cas très spécial du contribuable qui arrive de HS et qui repart HS la même année, et qui achète un immeuble après son départ. Il doit
 	 * y avoir deux assujettissements distincts : un pour sa présence en Suisse, et un autre pour son immeuble acheté plus tard.
 	 */
+	@WebScreenshot(urls = "/fiscalite/unireg/tiers/timeline.do?id=10000043&print=true&title=${methodName}&description=${docDescription}")	
+	@WebScreenshotDoc(description = "Cas très spécial du contribuable qui arrive de HS et qui repart HS la même année, et qui achète un immeuble après son départ. Il doit y avoir deux " +
+			"assujettissements distincts : un pour sa présence en Suisse, et un autre pour son immeuble acheté plus tard.")
 	@Test
 	public void testDetermineArriveeHorsSuisseEtDepartHorsSuissePuisAchatImmeubleDansLAnnee() throws Exception {
 
@@ -1308,6 +1388,7 @@ public class AssujettissementTest extends MetierTest {
 		}
 	}
 
+	@WebScreenshot(urls = "/fiscalite/unireg/tiers/timeline.do?id=10000044&print=true&title=${methodName}")
 	@Test
 	public void testDeterminePassageRoleSourceAOrdinaire() throws Exception {
 
@@ -1334,6 +1415,7 @@ public class AssujettissementTest extends MetierTest {
 		}
 	}
 
+	@WebScreenshot(urls = "/fiscalite/unireg/tiers/timeline.do?id=10000045&print=true&title=${methodName}")
 	@Test
 	public void testDetermineSourcierPureHorsCanton() throws Exception {
 
@@ -1356,6 +1438,7 @@ public class AssujettissementTest extends MetierTest {
 		}
 	}
 
+	@WebScreenshot(urls = "/fiscalite/unireg/tiers/timeline.do?id=10000046&print=true&title=${methodName}")
 	@Test
 	public void testDetermineSourcierPureHorsSuisse() throws Exception {
 
@@ -1378,6 +1461,9 @@ public class AssujettissementTest extends MetierTest {
 		}
 	}
 
+	@WebScreenshot(urls = "/fiscalite/unireg/tiers/timeline.do?id=10000047&print=true&title=${methodName}&description=${docDescription}")	
+	@WebScreenshotDoc(description = "Note: le passage de sourcier pure à sourcier mixte ne provoque pas de fractionnement de l'assujettissement, la validité de l'assujettissement sourcier mixte " +
+			"débute simplement le 1er janvier")
 	@Test
 	public void testDetermineSourcierMixte137Al1HorsCanton() throws Exception {
 
@@ -1422,6 +1508,7 @@ public class AssujettissementTest extends MetierTest {
 		}
 	}
 
+	@WebScreenshot(urls = "/fiscalite/unireg/tiers/timeline.do?id=10000048&print=true&title=${methodName}")
 	@Test
 	public void testDetermineSourcierMixte137Al1HorsSuisse() throws Exception {
 
@@ -1465,6 +1552,7 @@ public class AssujettissementTest extends MetierTest {
 		}
 	}
 
+	@WebScreenshot(urls = "/fiscalite/unireg/tiers/timeline.do?id=10000049&print=true&title=${methodName}")
 	@Test
 	public void testDetermineSourcierMixte137Al2() throws Exception {
 
@@ -1495,6 +1583,10 @@ public class AssujettissementTest extends MetierTest {
 	 * être ajustées en conséquence. Et il s'agit donc d'un cas particulier parce qu'en avançant le début d'assujettissement source du 16
 	 * janvier au 1 janvier, la première période d'assujettissement ordinaire (du 1er janvier au 15) est écrasée.
 	 */
+	@WebScreenshot(urls = "/fiscalite/unireg/tiers/timeline.do?id=10000050&print=true&title=${methodName}&description=${docDescription}")	
+	@WebScreenshotDoc(description = "Teste le cas limite où le passage du mode d'imposition ordinaire -> sourcier tombe au milieu du premier mois. Selon les règles en vigueur, le passage source -> " +
+			"ordinaire doit tomber au fin de mois: les périodes d'assujettissement doivent donc être ajustées en conséquence. Et il s'agit donc d'un cas particulier parce qu'en avançant le début " +
+			"d'assujettissement source du 16 janvier au 1 janvier, la première période d'assujettissement ordinaire (du 1er janvier au 15) est écrasée.")
 	@Test
 	public void testDetermineOrdinairePuisSourcierCasLimite() throws Exception {
 
@@ -1532,6 +1624,10 @@ public class AssujettissementTest extends MetierTest {
 	 * être ajustées en conséquence. Et il s'agit donc d'un cas particulier parce qu'en poussant la fin d'assujettissement source du 16
 	 * décembre au 31 décembre, la seconde période d'assujettissement ordinaire (du 17 décembre au 31) est écrasée.
 	 */
+	@WebScreenshot(urls = "/fiscalite/unireg/tiers/timeline.do?id=10000051&print=true&title=${methodName}&description=${docDescription}")	
+	@WebScreenshotDoc(description = "Teste le cas limite où le passage du mode d'imposition sourcier -> ordinaire tombe au milieu du dernier mois. Selon les règles en vigueur, le passage source -> " +
+			"ordinaire doit tomber au fin de mois: les périodes d'assujettissement doivent donc être ajustées en conséquence. Et il s'agit donc d'un cas particulier parce qu'en poussant la fin " +
+			"d'assujettissement source du 16 décembre au 31 décembre, la seconde période d'assujettissement ordinaire (du 17 décembre au 31) est écrasée.")
 	@Test
 	public void testDetermineSourcierPuisOrdinaireCasLimite() throws Exception {
 
@@ -1562,6 +1658,8 @@ public class AssujettissementTest extends MetierTest {
 		}
 	}
 
+	@WebScreenshot(urls = "/fiscalite/unireg/tiers/timeline.do?id=10000052&print=true&title=${methodName}&description=${docDescription}")	
+	@WebScreenshotDoc(description = "(le fait de posséder un immeuble en suisse fait basculer le diplomate dans la catégorie hors-Suisse)")
 	@Test
 	public void testDetermineDiplomateAvecImmeuble() throws Exception {
 
@@ -1607,6 +1705,8 @@ public class AssujettissementTest extends MetierTest {
 	 * [UNIREG-1390] Vérifie qu'il est possible de déterminer l'assujettissement d'un hors-Suisse qui vend son immeuble et dont le for
 	 * principal est fermé sans motif (cas du ctb n°807.110.03).
 	 */
+	@WebScreenshot(urls = "/fiscalite/unireg/tiers/timeline.do?id=10000053&print=true&title=${methodName}&description=${docDescription}")	
+	@WebScreenshotDoc(description = "[UNIREG-1390] Vérifie qu'il est possible de déterminer l'assujettissement d'un hors-Suisse qui vend son immeuble et dont le for principal est fermé sans motif (cas du ctb n°807.110.03).")
 	@Test
 	public void testDetermineHorsSuisseForPrincipalFermeSansMotif() throws Exception {
 
@@ -1619,6 +1719,7 @@ public class AssujettissementTest extends MetierTest {
 		assertHorsSuisse(date(2009, 1, 1), dateVente, null, MotifFor.VENTE_IMMOBILIER, list.get(0));
 	}
 
+	@WebScreenshot(urls = "/fiscalite/unireg/tiers/timeline.do?id=10000054&print=true&title=${methodName}")
 	@Test
 	public void testDetermineHorsCantonAvecImmeuble() throws Exception {
 
@@ -1675,6 +1776,9 @@ public class AssujettissementTest extends MetierTest {
 	 * [UNIREG-1742] Vérifie que l'assujettissement d'un contribuable hors-Suisse débute/arrête bien à l'achat/vente du premier/dernier immeuble. Dans le cas d'achats et de ventes de plusieurs immeubles
 	 * (sans chevauchement) dans le même année, les périodes sont donc fractionnées.
 	 */
+	@WebScreenshot(urls = "/fiscalite/unireg/tiers/timeline.do?id=10000055&print=true&title=${methodName}&description=${docDescription}")	
+	@WebScreenshotDoc(description = "[UNIREG-1742] Vérifie que l'assujettissement d'un contribuable hors-Suisse débute/arrête bien à l'achat/vente du premier/dernier immeuble. Dans le cas d'achats " +
+			"et de ventes de plusieurs immeubles (sans chevauchement) dans le même année, les périodes sont donc fractionnées.")
 	@Test
 	public void testDetermineAchatsEtVentesMultipleHorsSuisse() throws Exception {
 
@@ -1705,6 +1809,9 @@ public class AssujettissementTest extends MetierTest {
 	/**
 	 * [UNIREG-1742] Vérifie que les périodes d'un contribuable hors-Suisse sourcier sont bien fractionnées en cas d'achat d'un immeuble (passage pur -> mixte, et vice-versa).
 	 */
+	@WebScreenshot(urls = "/fiscalite/unireg/tiers/timeline.do?id=10000056&print=true&title=${methodName}&description=${docDescription}")	
+	@WebScreenshotDoc(description = "[UNIREG-1742] Vérifie que les périodes d'un contribuable hors-Suisse sourcier sont bien fractionnées en cas d'achat d'un immeuble (passage pur -> mixte, et " +
+			"vice-versa).")
 	@Test
 	public void testDetermineAchatEtVenteImmeubleHorsSuisseSourcier() throws Exception {
 
@@ -1739,6 +1846,7 @@ public class AssujettissementTest extends MetierTest {
 		}
 	}
 
+	@WebScreenshot(urls = "/fiscalite/unireg/tiers/timeline.do?id=10000057&print=true&title=${methodName}")
 	@Test
 	public void testDetermineVenteImmeubleHorsCanton() throws Exception {
 
@@ -1768,6 +1876,7 @@ public class AssujettissementTest extends MetierTest {
 		}
 	}
 
+	@WebScreenshot(urls = "/fiscalite/unireg/tiers/timeline.do?id=10000058&print=true&title=${methodName}")
 	@Test
 	public void testDetermineFinActiviteHorsCanton() throws Exception {
 
@@ -1797,6 +1906,7 @@ public class AssujettissementTest extends MetierTest {
 		}
 	}
 
+	@WebScreenshot(urls = "/fiscalite/unireg/tiers/timeline.do?id=10000059&print=true&title=${methodName}")
 	@Test
 	public void testDetermineDecesHorsCantonAvecImmeuble() throws Exception {
 
@@ -1826,6 +1936,7 @@ public class AssujettissementTest extends MetierTest {
 		}
 	}
 
+	@WebScreenshot(urls = "/fiscalite/unireg/tiers/timeline.do?id=10000060&print=true&title=${methodName}")
 	@Test
 	public void testDetermineDecesHorsCantonActiviteIndependante() throws Exception {
 
@@ -1858,6 +1969,8 @@ public class AssujettissementTest extends MetierTest {
 	/**
 	 * Cas du contribuable n°16109718
 	 */
+	@WebScreenshot(urls = "/fiscalite/unireg/tiers/timeline.do?id=10000061&print=true&title=${methodName}&description=${docDescription}")	
+	@WebScreenshotDoc(description = "Cas du contribuable n°16109718")
 	@Test
 	public void testDetermineArriveeHorsSuisseAvecImmeubleEtMotifDemanagement() throws Exception {
 
@@ -1893,6 +2006,8 @@ public class AssujettissementTest extends MetierTest {
 	/**
 	 * Cas du contribuable n°10000171
 	 */
+	@WebScreenshot(urls = "/fiscalite/unireg/tiers/timeline.do?id=10000171&print=true&title=${methodName}&description=${docDescription}")	
+	@WebScreenshotDoc(description = "Cas du contribuable n°10000171")
 	@Test
 	public void testDetermineCasCompletementTordu() throws Exception {
 
@@ -1970,6 +2085,9 @@ public class AssujettissementTest extends MetierTest {
 	/**
 	 * Cas du contribuable n°10002045
 	 */
+	@WebScreenshot(urls = "/fiscalite/unireg/tiers/timeline.do?id=10002045&print=true&title=${methodName}&description=${docDescription}")	
+	@WebScreenshotDoc(description = "Cas du contribuable n°10002045 (le motif d'ouverture du second for principal est incorrect parce que le for immédiatement précédent n'est pas hors-Suisse. " +
+			"Dans ce cas-là, il ne doit pas y avoir de fractionnement de l'assujettissement.)")
 	@Test
 	public void testDetermineFausseArriveeHorsSuisse() throws Exception {
 
@@ -1978,7 +2096,7 @@ public class AssujettissementTest extends MetierTest {
 		ForFiscalPrincipal fp = addForPrincipal(paul, date(2001, 1, 1), MotifFor.ARRIVEE_HS, date(2003, 10, 9), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Aubonne);
 		fp.setModeImposition(ModeImposition.SOURCE);
 
-		// le motif d'ouverture du second for principal est incorrect que le for immédiatement précédent n'est pas hors-Suisse.
+		// le motif d'ouverture du second for principal est incorrect parce que le for immédiatement précédent n'est pas hors-Suisse.
 		// Dans ce cas-là, il ne doit pas y avoir de fractionnement de l'assujettissement.
 		fp = addForPrincipal(paul, date(2003, 10, 10), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
 		fp.setModeImposition(ModeImposition.MIXTE_137_2);
@@ -2016,13 +2134,16 @@ public class AssujettissementTest extends MetierTest {
 	/**
 	 * Cas du contribuable n°10003318
 	 */
+	@WebScreenshot(urls = "/fiscalite/unireg/tiers/timeline.do?id=10003318&print=true&title=${methodName}&description=${docDescription}")	
+	@WebScreenshotDoc(description = "Cas du contribuable n°10003318 (le motif d'ouverture du second for principal est incorrect parce que le for immédiatement précédent n'est pas hors-Suisse. " +
+			"Dans ce cas-là, il ne doit pas y avoir de fractionnement de l'assujettissement.)")
 	@Test
 	public void testDetermineFausseArriveeHorsSuisse2() throws Exception {
 
 		final Contribuable paul = createContribuableSansFor(10003318L);
 
 		addForPrincipal(paul, date(2002, 5, 31), MotifFor.INDETERMINE, date(2002, 6, 4), MotifFor.DEMENAGEMENT_VD, MockCommune.Neuchatel);
-		// le motif d'ouverture du second for principal est incorrect que le for immédiatement précédent n'est pas hors-Suisse.
+		// le motif d'ouverture du second for principal est incorrect parce que le for immédiatement précédent n'est pas hors-Suisse.
 		// Dans ce cas-là, il ne doit pas y avoir de fractionnement de l'assujettissement.
 		addForPrincipal(paul, date(2002, 6, 5), MotifFor.ARRIVEE_HS, date(2007, 6, 30), MotifFor.DEPART_HS, MockCommune.Lausanne);
 		addForPrincipal(paul, date(2007, 7, 1), MotifFor.DEMENAGEMENT_VD, MockPays.Albanie);
@@ -2067,6 +2188,8 @@ public class AssujettissementTest extends MetierTest {
 	/**
 	 * Cas du contribuable n°10003348
 	 */
+	@WebScreenshot(urls = "/fiscalite/unireg/tiers/timeline.do?id=10003348&print=true&title=${methodName}&description=${docDescription}")	
+	@WebScreenshotDoc(description = "Cas du contribuable n°10003348")
 	@Test
 	public void testDetermineSourcierPurePuisMixteSurDepartHSPuisArriveeHSDansLAnneeAvecImmeubleEtMotifsGrandguignolesques() throws Exception {
 
@@ -2110,6 +2233,8 @@ public class AssujettissementTest extends MetierTest {
 	/**
 	 * Cas du contribuable n°10002080
 	 */
+	@WebScreenshot(urls = "/fiscalite/unireg/tiers/timeline.do?id=10002080&print=true&title=${methodName}&description=${docDescription}")	
+	@WebScreenshotDoc(description = "Cas du contribuable n°10002080")
 	@Test
 	public void testDetermineFauxDemenagementVD() throws Exception {
 
@@ -2157,6 +2282,9 @@ public class AssujettissementTest extends MetierTest {
 	/**
 	 * Cas du contribuable n°10004709
 	 */
+	@WebScreenshot(urls = "/fiscalite/unireg/tiers/timeline.do?id=10004709&print=true&title=${methodName}&description=${docDescription}")	
+	@WebScreenshotDoc(description = "Cas du contribuable n°10004709 (Dans le cas d'un contribuable avec deux fors principaux vaudois se touchant avec changement au 31 décembre pour " +
+			"motif DEPART_HS, on vérifie que le motiff DEPART_HS est bien ignoré)")
 	@Test
 	public void testDetermineFauxDepartHS() throws Exception {
 
@@ -2205,6 +2333,8 @@ public class AssujettissementTest extends MetierTest {
 	/**
 	 * Cas du contribuable n°10008508
 	 */
+	@WebScreenshot(urls = "/fiscalite/unireg/tiers/timeline.do?id=10008508&print=true&title=${methodName}&description=${docDescription}")	
+	@WebScreenshotDoc(description = "Cas du contribuable n°10008508")
 	@Test
 	public void testDetermineDepartHSAchatImmeubleEtArriveeHC() throws Exception {
 
@@ -2226,6 +2356,8 @@ public class AssujettissementTest extends MetierTest {
 	/**
 	 * Cas du contribuable n°10015452
 	 */
+	@WebScreenshot(urls = "/fiscalite/unireg/tiers/timeline.do?id=10015452&print=true&title=${methodName}&description=${docDescription}")	
+	@WebScreenshotDoc(description = "Cas du contribuable n°10015452")
 	@Test
 	public void testDetermineSourcierMixteHorsSuisseAvecImmeuble() throws Exception {
 
@@ -2247,6 +2379,8 @@ public class AssujettissementTest extends MetierTest {
 	/**
 	 * Cas du contribuable n°10019036
 	 */
+	@WebScreenshot(urls = "/fiscalite/unireg/tiers/timeline.do?id=10019036&print=true&title=${methodName}&description=${docDescription}")	
+	@WebScreenshotDoc(description = "Cas du contribuable n°10019036")
 	@Test
 	public void testDetermineSourcierHCDepartHSEtAchatImmeuble() throws Exception {
 
@@ -2272,6 +2406,8 @@ public class AssujettissementTest extends MetierTest {
 	/**
 	 * [UNIREG-2155] Cas du contribuable n°10441002
 	 */
+	@WebScreenshot(urls = "/fiscalite/unireg/tiers/timeline.do?id=10441002&print=true&title=${methodName}&description=${docDescription}")	
+	@WebScreenshotDoc(description = "[UNIREG-2155] Cas du contribuable n°10441002")
 	@Test
 	public void testDetermineDepartHSSourcierEtArriveeHSOrdinaireMemeMois() throws Exception {
 
