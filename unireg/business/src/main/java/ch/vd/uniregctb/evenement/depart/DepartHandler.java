@@ -375,7 +375,10 @@ public class DepartHandler extends EvenementCivilHandlerBase {
 	 */
 	public void validateCoherenceAdresse(Adresse adresse, CommuneSimple commune, Depart depart, List<EvenementCivilErreur> erreurs) {
 
-		if (adresse.getDateFin() == null) {
+		if (adresse == null) {
+			erreurs.add(new EvenementCivilErreur("Adresse de résidence avant départ inconnue"));
+		}
+		else if (adresse.getDateFin() == null) {
 			erreurs.add(new EvenementCivilErreur("La date de fin de validité de la résidence est inconnue"));
 		}
 		// la date de départ est differente de la date de fin de validité de l'adresse
@@ -387,11 +390,16 @@ public class DepartHandler extends EvenementCivilHandlerBase {
 		// La commune d'annonce est differente de la commune de résidence avant l'évenement
 		// de départ
 		//TODO (BNM) attention si depart.getNumeroOfsCommuneAnnonce correspond à une commune avec des fractions
-		if ((!commune.isFraction() && commune.getNoOFS() != depart.getNumeroOfsCommuneAnnonce()) ||
-				(commune.isFraction() && commune.getNumTechMere() != depart.getNumeroOfsCommuneAnnonce())) {
-			erreurs.add(new EvenementCivilErreur("La commune d'annonce est differente de la dernière commune de résidence"));
+		if (commune != null) {
+			if ((!commune.isFraction() && commune.getNoOFS() != depart.getNumeroOfsCommuneAnnonce()) ||
+					(commune.isFraction() && commune.getNumTechMere() != depart.getNumeroOfsCommuneAnnonce())) {
+				erreurs.add(new EvenementCivilErreur("La commune d'annonce est differente de la dernière commune de résidence"));
+			}
+		} else if (adresse != null) {
+			// si l'adresse est nulle, il y a déjà eu une erreur, donc on ne rajoute une erreur que
+			// si l'adresse n'est pas nulle, justement...
+			erreurs.add(new EvenementCivilErreur("Commune de résidence avant départ inconnue"));
 		}
-
 	}
 
 	/**
