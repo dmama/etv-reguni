@@ -4668,6 +4668,28 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals(Source.FISCALE, poursuiteAutreTiers.getSource());
 	}
 
+	/**
+	 * Vérifie que les rapports entre tiers annulés ne sont pas pris en compte.
+	 */
+	@Test
+	public void testGetAdressesFiscalesRapportsAnnules() throws Exception {
+
+		final PersonnePhysique representant = addNonHabitant("Marcel", "Espol", date(1923, 3, 2), Sexe.MASCULIN);
+		addAdresseSuisse(representant, TypeAdresseTiers.COURRIER, date(1923, 3, 2), null, MockRue.Bussigny.RueDeLIndustrie);
+		final PersonnePhysique represente = addNonHabitant("Julius", "Raeb", date(1923, 3, 2), Sexe.MASCULIN);
+		addAdresseSuisse(represente, TypeAdresseTiers.COURRIER, date(1923, 3, 2), null, MockRue.GrangesMarnand.RueDeVerdairuz);
+
+		final RepresentationConventionnelle rapport = addRepresentationConventionnelle(represente, representant, date(2000, 1, 1), false);
+		rapport.setAnnule(true);
+
+		final AdressesFiscales adresses = adresseService.getAdressesFiscales(represente, null, true);
+		assertAdresse(date(1923, 3, 2), null, "Granges-près-Marnand", Source.FISCALE, false, adresses.courrier);
+
+		final AdressesFiscalesHisto adressesHisto = adresseService.getAdressesFiscalHisto(represente, true);
+		assertEquals(1, adressesHisto.courrier.size());
+		assertAdresse(date(1923, 3, 2), null, "Granges-près-Marnand", Source.FISCALE, false, adressesHisto.courrier.get(0));
+	}
+
 	@Test
 	public void testIsPrefixedByPourAdresse() {
 

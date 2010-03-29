@@ -1388,7 +1388,8 @@ public class AdresseServiceImpl implements AdresseService {
 		final RegDate fin = rapport.getDateFin();
 
 		// ajustement de la validité de l'adresse à la durée de la représentation
-		final AdresseGenerique adressesRepresentant = getAdresseFiscale(representant, TypeAdresseFiscale.REPRESENTATION, date, true, callDepth + 1, strict);
+		final int nextDepth = oneLevelDeeper(callDepth, tiers, representant, null);
+		final AdresseGenerique adressesRepresentant = getAdresseFiscale(representant, TypeAdresseFiscale.REPRESENTATION, date, true, nextDepth, strict);
 		if (adressesRepresentant == null) {
 			Audit.warn("Le tiers " + representant + " est le représentant du tiers n°" + tiers.getNumero() + ", mais il ne possède aucune adresse !");
 			return null;
@@ -1514,6 +1515,10 @@ public class AdresseServiceImpl implements AdresseService {
 			/* pour toutes les périodes de mise sous tutelles/conseil légal */
 			for (RapportEntreTiers rapport : rapports) {
 
+				if (rapport.isAnnule()) {
+					continue;
+				}
+
 				final Tiers representant = type.getRepresentant(rapport);
 				if (representant == null) {
 					continue;
@@ -1524,7 +1529,8 @@ public class AdresseServiceImpl implements AdresseService {
 				/*
 				 * Extrait les adresses du représentant et ajuste-les pour qu'elles correspondent à la durée de la représentation
 				 */
-				final AdressesFiscalesHisto adressesRepresentant = getAdressesFiscalHisto(representant, callDepth + 1, strict);
+				final int nextDepth = oneLevelDeeper(callDepth, tiers, representant, null);
+				final AdressesFiscalesHisto adressesRepresentant = getAdressesFiscalHisto(representant, nextDepth, strict);
 				if (strict) {
 					verifieCoherenceAdresses(adressesRepresentant.representation, "Adresses de représentation", representant);
 				}
@@ -2105,17 +2111,8 @@ public class AdresseServiceImpl implements AdresseService {
 			final TypeAdresseFiscale type = TypeAdresseFiscale.fromCore(a.getType());
 			Assert.notNull(autreTiers);
 
-			if (callDepth >= MAX_CALL_DEPTH) {
-				AdressesResolutionException exception = new AdressesResolutionException(
-						"Cycle infini détecté dans la résolution des adresses ! " + "Veuillez vérifier les adresses des tiers n°"
-								+ tiers.getNumero() + " et n°" + autreTiers.getNumero() + ".");
-				exception.addTiers(tiers);
-				exception.addTiers(autreTiers);
-				exception.addAdresse(adresseSurchargee);
-				throw exception;
-			}
-
-			final AdresseGenerique autreAdresse = getAdresseFiscale(autreTiers, type, adresseSurchargee.getDateDebut(), true, callDepth + 1, strict);
+			final int nextDepth = oneLevelDeeper(callDepth, tiers, autreTiers, adresseSurchargee);
+			final AdresseGenerique autreAdresse = getAdresseFiscale(autreTiers, type, adresseSurchargee.getDateDebut(), true, nextDepth, strict);
 			if (autreAdresse != null) {
 				surcharge = new AdresseGeneriqueAdapter(autreAdresse, debut, fin, AdresseGenerique.Source.FISCALE, false);
 			}
@@ -2476,4 +2473,18 @@ public class AdresseServiceImpl implements AdresseService {
 	}
 
 
+	private static int oneLevelDeeper(int callDepth, Tiers tiers, Tiers autreTiers, AdresseTiers adresseSurchargee) throws AdressesResolutionException {
+
+		if (callDepth >= MAX_CALL_DEPTH) {
+			AdressesResolutionException exception = new AdressesResolutionException(
+					"Cycle infini détecté dans la résolution des adresses ! " + "Veuillez vérifier les adresses des tiers n°"
+							+ tiers.getNumero() + " et n°" + autreTiers.getNumero() + ".");
+			exception.addTiers(tiers);
+			exception.addTiers(autreTiers);
+			exception.addAdresse(adresseSurchargee);
+			throw exception;
+		}
+
+		return callDepth+1;
+	}
 }
