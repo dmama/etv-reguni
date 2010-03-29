@@ -18,6 +18,9 @@ import org.hibernate.Session;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.util.HashMap;
 import java.util.List;
@@ -315,15 +318,22 @@ public class FusionDeCommunesProcessor {
 	@SuppressWarnings({"unchecked", "UnnecessaryLocalVariable"})
 	private List<Long> getListTiersTouchesParFusion(final Set<Integer> anciensNoOfs, final RegDate dateFusion) {
 
-		final List<Long> list = (List<Long>) hibernateTemplate.execute(new HibernateCallback() {
-			public Object doInHibernate(Session session) throws HibernateException {
-				Query queryObject = session.createQuery(queryTiers);
-				queryObject.setParameter("dateFusion", dateFusion.index());
-				queryObject.setParameterList("nosOfs", anciensNoOfs);
-				return queryObject.list();
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
+		template.setReadOnly(true);
+
+		return (List<Long>) template.execute(new TransactionCallback() {
+			public List<Long> doInTransaction(TransactionStatus status) {
+				final List<Long> list = (List<Long>) hibernateTemplate.execute(new HibernateCallback() {
+					public Object doInHibernate(Session session) throws HibernateException {
+						Query queryObject = session.createQuery(queryTiers);
+						queryObject.setParameter("dateFusion", dateFusion.index());
+						queryObject.setParameterList("nosOfs", anciensNoOfs);
+						return queryObject.list();
+					}
+				});
+
+				return list;
 			}
 		});
-
-		return list;
 	}
 }

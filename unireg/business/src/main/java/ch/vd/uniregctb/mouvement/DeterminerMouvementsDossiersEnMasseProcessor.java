@@ -11,6 +11,9 @@ import org.hibernate.Session;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
@@ -270,14 +273,19 @@ public class DeterminerMouvementsDossiersEnMasseProcessor {
 	@SuppressWarnings({"unchecked"})
 	private List<Long> getListeIdsContribuablesAvecFors() {
 
-		final List<Long> ids = (List<Long>) hibernateTemplate.execute(new HibernateCallback() {
-			public Object doInHibernate(Session session) throws HibernateException {
-				final String hql = "SELECT ctb.id FROM Contribuable ctb WHERE ctb.annulationDate IS NULL AND EXISTS (SELECT ff.id FROM ForFiscal ff WHERE ff.tiers=ctb AND ff.annulationDate IS NULL) ORDER BY ctb.id ASC";
-				final Query query = session.createQuery(hql);
-				return query.list();
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
+		template.setReadOnly(true);
+
+		return (List<Long>) template.execute(new TransactionCallback() {
+			public List<Long> doInTransaction(TransactionStatus status) {
+				return (List<Long>) hibernateTemplate.execute(new HibernateCallback() {
+					public List<Long> doInHibernate(Session session) throws HibernateException {
+						final String hql = "SELECT ctb.id FROM Contribuable ctb WHERE ctb.annulationDate IS NULL AND EXISTS (SELECT ff.id FROM ForFiscal ff WHERE ff.tiers=ctb AND ff.annulationDate IS NULL) ORDER BY ctb.id ASC";
+						final Query query = session.createQuery(hql);
+						return query.list();
+					}
+				});
 			}
 		});
-		return ids;
-
 	}
 }

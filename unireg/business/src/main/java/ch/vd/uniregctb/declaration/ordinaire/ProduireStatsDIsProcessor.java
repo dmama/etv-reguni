@@ -10,6 +10,9 @@ import org.hibernate.Session;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.DateRangeHelper;
@@ -254,8 +257,12 @@ public class ProduireStatsDIsProcessor {
 	@SuppressWarnings("unchecked")
 	protected List<Long> chargerIdentifiantsDeclarations(final int annee) {
 
-		final List<Long> i = (List<Long>) hibernateTemplate
-				.execute(new HibernateCallback() {
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
+		template.setReadOnly(true);
+
+		return (List<Long>) template.execute(new TransactionCallback() {
+			public List<Long> doInTransaction(TransactionStatus status) {
+				final List<Long> i = (List<Long>) hibernateTemplate.execute(new HibernateCallback() {
 					public Object doInHibernate(Session session) throws HibernateException {
 						final Query queryObject = session.createQuery(queryDIs);
 						queryObject.setParameter("annee", annee);
@@ -263,6 +270,8 @@ public class ProduireStatsDIsProcessor {
 					}
 				});
 
-		return i;
+				return i;
+			}
+		});
 	}
 }

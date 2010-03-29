@@ -9,6 +9,9 @@ import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.util.List;
 
@@ -41,7 +44,14 @@ public class CorrectionFlagHabitantProcessor {
 						 + " and ((ff.tiers.habitant = 0 and ff.typeAutoriteFiscale = 'COMMUNE_OU_FRACTION_VD')"
 						 + " or (ff.tiers.habitant = 1 and ff.typeAutoriteFiscale != 'COMMUNE_OU_FRACTION_VD'))";
 
-		return (List<Long>) hibernateTemplate.find(hql);
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
+		template.setReadOnly(true);
+
+		return (List<Long>) template.execute(new TransactionCallback() {
+			public List<Long> doInTransaction(TransactionStatus status) {
+				return (List<Long>) hibernateTemplate.find(hql);
+			}
+		});
 	}
 
 	public CorrectionFlagHabitantSurPersonnesPhysiquesResults corrigeFlagSurPersonnesPhysiques(int nbThreads) {

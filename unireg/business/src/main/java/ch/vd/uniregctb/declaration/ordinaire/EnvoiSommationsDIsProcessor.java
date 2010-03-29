@@ -12,6 +12,9 @@ import org.hibernate.Session;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
@@ -251,47 +254,55 @@ public class EnvoiSommationsDIsProcessor  {
 	@SuppressWarnings("unchecked")
 	private List<Long> retrieveListIdDIs(final RegDate dateLimite, final Integer nombreMax) {
 
-		final List<Long> ids = (List<Long>) hibernateTemplate.execute(new HibernateCallback() {
-			public Object doInHibernate(Session session) throws HibernateException {
-				SQLQuery sqlQuery = session.createSQLQuery("alter session set optimizer_index_caching = 90");
-				sqlQuery.executeUpdate();
-				sqlQuery = session.createSQLQuery("alter session set optimizer_index_cost_adj = 10");
-				sqlQuery.executeUpdate();
-				Query query = session.createQuery(
-					"SELECT di.id"
-					+ " FROM DeclarationImpotOrdinaire AS di"
-					+ " WHERE di.annulationDate IS NULL "
-					+ " AND EXISTS ("
-					+ "   SELECT etat1.declaration.id"
-					+ "   FROM EtatDeclaration AS etat1"
-					+ "   WHERE di.id = etat1.declaration.id"
-					+ "     AND etat1.annulationDate IS NULL"
-					+ "     AND etat1.etat = 'EMISE'"
-					+ "     AND etat1.dateObtention IN ("
-					+ "       SELECT MAX(etat2.dateObtention) "
-					+ "       FROM EtatDeclaration AS etat2 "
-					+ "       WHERE etat1.declaration.id = etat2.declaration.id AND etat2.annulationDate IS NULL))"
-					+ " AND EXISTS ( "
-					+ "   SELECT delai.declaration.id  FROM DelaiDeclaration AS delai"
-					+ "   WHERE delai.declaration.id = di.id"
-					+ "   AND delai.annulationDate IS NULL"
-					+ "   AND delai.delaiAccordeAu IS NOT NULL"
-					+ "   GROUP BY delai.declaration.id"
-					+ "   HAVING MAX(delai.delaiAccordeAu) < :dateLimite"
-					+ " )"
-				);
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
+		template.setReadOnly(true);
 
-				query.setParameter("dateLimite", dateLimite.index());
-				if (nombreMax > 0) {
-					// On fait une query sur 2 x le nombre max. Pour etre statistiquement sûr
-					// de sommer le nombreMax de DI
-					query.setMaxResults(nombreMax * 2);
-				}
-				return query.list();
+		return (List<Long>) template.execute(new TransactionCallback() {
+			public List<Long> doInTransaction(TransactionStatus status) {
 
+				final List<Long> ids = (List<Long>) hibernateTemplate.execute(new HibernateCallback() {
+					public Object doInHibernate(Session session) throws HibernateException {
+						SQLQuery sqlQuery = session.createSQLQuery("alter session set optimizer_index_caching = 90");
+						sqlQuery.executeUpdate();
+						sqlQuery = session.createSQLQuery("alter session set optimizer_index_cost_adj = 10");
+						sqlQuery.executeUpdate();
+						Query query = session.createQuery(
+							"SELECT di.id"
+							+ " FROM DeclarationImpotOrdinaire AS di"
+							+ " WHERE di.annulationDate IS NULL "
+							+ " AND EXISTS ("
+							+ "   SELECT etat1.declaration.id"
+							+ "   FROM EtatDeclaration AS etat1"
+							+ "   WHERE di.id = etat1.declaration.id"
+							+ "     AND etat1.annulationDate IS NULL"
+							+ "     AND etat1.etat = 'EMISE'"
+							+ "     AND etat1.dateObtention IN ("
+							+ "       SELECT MAX(etat2.dateObtention) "
+							+ "       FROM EtatDeclaration AS etat2 "
+							+ "       WHERE etat1.declaration.id = etat2.declaration.id AND etat2.annulationDate IS NULL))"
+							+ " AND EXISTS ( "
+							+ "   SELECT delai.declaration.id  FROM DelaiDeclaration AS delai"
+							+ "   WHERE delai.declaration.id = di.id"
+							+ "   AND delai.annulationDate IS NULL"
+							+ "   AND delai.delaiAccordeAu IS NOT NULL"
+							+ "   GROUP BY delai.declaration.id"
+							+ "   HAVING MAX(delai.delaiAccordeAu) < :dateLimite"
+							+ " )"
+						);
+
+						query.setParameter("dateLimite", dateLimite.index());
+						if (nombreMax > 0) {
+							// On fait une query sur 2 x le nombre max. Pour etre statistiquement sûr
+							// de sommer le nombreMax de DI
+							query.setMaxResults(nombreMax * 2);
+						}
+						return query.list();
+
+					}
+				});
+				return ids;
 			}
 		});
-		return ids;
 	}
 
 }

@@ -11,6 +11,9 @@ import org.hibernate.Session;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.RegDate;
@@ -263,15 +266,22 @@ public class ProduireStatsCtbsProcessor {
 		final RegDate debutAnnee = RegDate.get(annee, 1, 1);
 		final RegDate finAnnee = RegDate.get(annee, 12, 31);
 
-		final List<Long> i = (List<Long>) hibernateTemplate.execute(new HibernateCallback() {
-			public Object doInHibernate(Session session) throws HibernateException {
-				Query queryObject = session.createQuery(queryCtbs);
-				queryObject.setParameter("debutAnnee", debutAnnee.index());
-				queryObject.setParameter("finAnnee", finAnnee.index());
-				return queryObject.list();
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
+		template.setReadOnly(true);
+
+		return (List<Long>) template.execute(new TransactionCallback() {
+			public List<Long> doInTransaction(TransactionStatus status) {
+				final List<Long> i = (List<Long>) hibernateTemplate.execute(new HibernateCallback() {
+					public Object doInHibernate(Session session) throws HibernateException {
+						Query queryObject = session.createQuery(queryCtbs);
+						queryObject.setParameter("debutAnnee", debutAnnee.index());
+						queryObject.setParameter("finAnnee", finAnnee.index());
+						return queryObject.list();
+					}
+				});
+
+				return i;
 			}
 		});
-
-		return i;
 	}
 }

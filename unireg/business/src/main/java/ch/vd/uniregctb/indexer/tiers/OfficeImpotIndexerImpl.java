@@ -170,14 +170,21 @@ public class OfficeImpotIndexerImpl implements OfficeImpotIndexer {
 	@SuppressWarnings("unchecked")
 	protected List<Long> getIdsAllTiers() {
 
-		final List<Long> ids = (List<Long>) hibernateTemplate.execute(new HibernateCallback() {
-			public Object doInHibernate(Session session) throws HibernateException {
-				Query queryObject = session.createQuery(queryAllTiers);
-				return queryObject.list();
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
+		template.setReadOnly(true);
+
+		return (List<Long>) template.execute(new TransactionCallback() {
+			public List<Long> doInTransaction(TransactionStatus status) {
+				final List<Long> ids = (List<Long>) hibernateTemplate.execute(new HibernateCallback() {
+					public Object doInHibernate(Session session) throws HibernateException {
+						Query queryObject = session.createQuery(queryAllTiers);
+						return queryObject.list();
+					}
+				});
+
+				return ids;
 			}
 		});
-
-		return ids;
 	}
 
 	final private static String queryTiersWithNullOID = // ------------------------------
@@ -209,13 +216,20 @@ public class OfficeImpotIndexerImpl implements OfficeImpotIndexer {
 	@SuppressWarnings("unchecked")
 	protected List<Long> getIdsTiersWithNullOID() {
 
-		final List<Long> ids = (List<Long>) hibernateTemplate.execute(new HibernateCallback() {
-			public Object doInHibernate(Session session) throws HibernateException {
-				Query queryObject = session.createQuery(queryTiersWithNullOID);
-				return queryObject.list();
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
+		template.setReadOnly(true);
+
+		return (List<Long>) template.execute(new TransactionCallback() {
+			public List<Long> doInTransaction(TransactionStatus status) {
+				final List<Long> ids = (List<Long>) hibernateTemplate.execute(new HibernateCallback() {
+					public Object doInHibernate(Session session) throws HibernateException {
+						Query queryObject = session.createQuery(queryTiersWithNullOID);
+						return queryObject.list();
+					}
+				});
+
+				return ids;
 			}
 		});
-
-		return ids;
 	}
 }

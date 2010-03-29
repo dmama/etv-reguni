@@ -10,6 +10,9 @@ import org.hibernate.Session;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.RegDate;
@@ -185,20 +188,26 @@ public class EchoirDIsProcessor {
 	@SuppressWarnings("unchecked")
 	private List<Long> retrieveListDIsSommees() {
 
-		final List<Long> ids = (List<Long>) hibernateTemplate.execute(new HibernateCallback() {
-			public Object doInHibernate(Session session) throws HibernateException {
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
+		template.setReadOnly(true);
 
-				// requêtes nécessaires en production pour avoir des performances acceptables
-				SQLQuery sqlQuery = session.createSQLQuery("alter session set optimizer_index_caching = 90");
-				sqlQuery.executeUpdate();
-				sqlQuery = session.createSQLQuery("alter session set optimizer_index_cost_adj = 10");
-				sqlQuery.executeUpdate();
+		return (List<Long>) template.execute(new TransactionCallback() {
+			public List<Long> doInTransaction(TransactionStatus status) {
+				return (List<Long>) hibernateTemplate.execute(new HibernateCallback() {
+					public List<Long> doInHibernate(Session session) throws HibernateException {
 
-				Query query = session.createQuery(QUERY_STRING);
-				return query.list();
+						// requêtes nécessaires en production pour avoir des performances acceptables
+						SQLQuery sqlQuery = session.createSQLQuery("alter session set optimizer_index_caching = 90");
+						sqlQuery.executeUpdate();
+						sqlQuery = session.createSQLQuery("alter session set optimizer_index_cost_adj = 10");
+						sqlQuery.executeUpdate();
+
+						final Query query = session.createQuery(QUERY_STRING);
+						return query.list();
+					}
+				});
 			}
 		});
-		return ids;
 	}
 
 	/**

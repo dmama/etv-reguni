@@ -13,6 +13,9 @@ import org.hibernate.Session;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.uniregctb.common.BatchTransactionTemplate;
@@ -58,9 +61,17 @@ public class ImpressionChemisesTOProcessor {
 
 		// première transaction pour récupérer les identifiants des DI candidates à la chemise TO
 		final int nbMaxTO = nombreMax > 0 ? nombreMax : 0;
-		final List<Long> ids = (List<Long>) hibernateTemplate.executeWithNewSession(new HibernateCallback() {
-			public List<Long> doInHibernate(Session session) throws HibernateException, SQLException {
-				return getIdDesDIPourTO(session);
+
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
+		template.setReadOnly(true);
+
+		final List<Long> ids = (List<Long>) template.execute(new TransactionCallback() {
+			public List<Long> doInTransaction(TransactionStatus status) {
+				return (List<Long>) hibernateTemplate.executeWithNativeSession(new HibernateCallback() {
+					public List<Long> doInHibernate(Session session) throws HibernateException, SQLException {
+						return getIdDesDIPourTO(session);
+					}
+				});
 			}
 		});
 

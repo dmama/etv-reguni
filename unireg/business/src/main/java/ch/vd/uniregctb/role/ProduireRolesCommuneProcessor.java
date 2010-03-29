@@ -17,6 +17,9 @@ import org.hibernate.Session;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.RegDate;
@@ -766,16 +769,23 @@ public class ProduireRolesCommuneProcessor {
 		b.append(" ORDER BY cont.id ASC");
 		final String hql = b.toString();
 
-		return (List<Long>) hibernateTemplate.executeWithNativeSession(new HibernateCallback() {
-			public List<Long> doInHibernate(Session session) throws HibernateException, SQLException {
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
+		template.setReadOnly(true);
 
-				final RegDate debutPeriode = RegDate.get(annee, 1, 1);
-				final RegDate finPeriode = RegDate.get(annee, 12, 31);
+		return (List<Long>) template.execute(new TransactionCallback() {
+			public List<Long> doInTransaction(TransactionStatus status) {
+				return (List<Long>) hibernateTemplate.executeWithNativeSession(new HibernateCallback() {
+					public List<Long> doInHibernate(Session session) throws HibernateException, SQLException {
 
-				final Query query = session.createQuery(hql);
-				query.setParameter("debutPeriode", debutPeriode.index());
-				query.setParameter("finPeriode", finPeriode.index());
-				return query.list();
+						final RegDate debutPeriode = RegDate.get(annee, 1, 1);
+						final RegDate finPeriode = RegDate.get(annee, 12, 31);
+
+						final Query query = session.createQuery(hql);
+						query.setParameter("debutPeriode", debutPeriode.index());
+						query.setParameter("finPeriode", finPeriode.index());
+						return query.list();
+					}
+				});
 			}
 		});
 	}
@@ -798,17 +808,24 @@ public class ProduireRolesCommuneProcessor {
 		b.append(" ORDER BY cont.id ASC");
 		final String hql = b.toString();
 
-		return (List<Long>) hibernateTemplate.executeWithNativeSession(new HibernateCallback() {
-			public List<Long> doInHibernate(Session session) throws HibernateException, SQLException {
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
+		template.setReadOnly(true);
 
-				final RegDate debutPeriode = RegDate.get(annee, 1, 1);
-				final RegDate finPeriode = RegDate.get(annee, 12, 31);
+		return (List<Long>) template.execute(new TransactionCallback() {
+			public List<Long> doInTransaction(TransactionStatus status) {
+				return (List<Long>) hibernateTemplate.executeWithNativeSession(new HibernateCallback() {
+					public List<Long> doInHibernate(Session session) throws HibernateException, SQLException {
 
-				final Query query = session.createQuery(hql);
-				query.setParameter("debutPeriode", debutPeriode.index());
-				query.setParameter("finPeriode", finPeriode.index());
-				query.setParameterList("noOfsCommune", noOfsCommunes);
-				return query.list();
+						final RegDate debutPeriode = RegDate.get(annee, 1, 1);
+						final RegDate finPeriode = RegDate.get(annee, 12, 31);
+
+						final Query query = session.createQuery(hql);
+						query.setParameter("debutPeriode", debutPeriode.index());
+						query.setParameter("finPeriode", finPeriode.index());
+						query.setParameterList("noOfsCommune", noOfsCommunes);
+						return query.list();
+					}
+				});
 			}
 		});
 	}

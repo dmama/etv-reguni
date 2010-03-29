@@ -10,6 +10,9 @@ import org.hibernate.Session;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.RegDate;
@@ -541,15 +544,20 @@ public class OuvertureForsContribuablesMajeursProcessor {
 
 		final RegDate datePivot = date.addYears(-FiscalDateHelper.AGE_MAJORITE);
 
-		final List<Long> i = (List<Long>) hibernateTemplate.execute(new HibernateCallback() {
-			public Object doInHibernate(Session session) throws HibernateException {
-				Query queryObject = session.createQuery(queryHabitantWithoutFor);
-				queryObject.setParameter("pivot", datePivot.index());
-				queryObject.setParameter("date", date.index());
-				return queryObject.list();
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
+		template.setReadOnly(true);
+
+		return (List<Long>) template.execute(new TransactionCallback() {
+			public List<Long> doInTransaction(TransactionStatus status) {
+				return (List<Long>) hibernateTemplate.execute(new HibernateCallback() {
+					public List<Long> doInHibernate(Session session) throws HibernateException {
+						final Query queryObject = session.createQuery(queryHabitantWithoutFor);
+						queryObject.setParameter("pivot", datePivot.index());
+						queryObject.setParameter("date", date.index());
+						return queryObject.list();
+					}
+				});
 			}
 		});
-
-		return i;
 	}
 }
