@@ -89,21 +89,32 @@ public class StatsEvenementsCivilsResults {
 	}
 
 	private final Map<EtatEvenementCivil, BigDecimal> etats;
+	private final Map<EtatEvenementCivil, BigDecimal> etatsNouveaux;
 	private final Map<TypeEvenementCivil, BigDecimal> erreursParType;
 	private final List<EvenementCivilEnErreurInfo> toutesErreurs;
 	private final List<EvenementCivilTraiteManuellementInfo> manipulationsManuelles;
+	private final Map<Integer, BigDecimal> ignores;
 
-	public StatsEvenementsCivilsResults(Map<EtatEvenementCivil, BigDecimal> etats, Map<TypeEvenementCivil, BigDecimal> erreursParType,
+	public StatsEvenementsCivilsResults(Map<EtatEvenementCivil, BigDecimal> etats,
+	                                    Map<EtatEvenementCivil, BigDecimal> etatsNouveaux,
+	                                    Map<TypeEvenementCivil, BigDecimal> erreursParType,
 	                                    List<EvenementCivilEnErreurInfo> toutesErreurs,
-	                                    List<EvenementCivilTraiteManuellementInfo> manipulationsManuelles) {
+	                                    List<EvenementCivilTraiteManuellementInfo> manipulationsManuelles,
+	                                    Map<Integer, BigDecimal> ignores) {
 		this.etats = etats != null ? Collections.unmodifiableMap(etats) : Collections.<EtatEvenementCivil, BigDecimal>emptyMap();
+		this.etatsNouveaux = etatsNouveaux != null ? Collections.unmodifiableMap(etatsNouveaux) : Collections.<EtatEvenementCivil, BigDecimal>emptyMap();
 		this.erreursParType = erreursParType != null ? Collections.unmodifiableMap(erreursParType) : Collections.<TypeEvenementCivil, BigDecimal>emptyMap();
 		this.toutesErreurs = toutesErreurs != null ? Collections.unmodifiableList(toutesErreurs) : Collections.<EvenementCivilEnErreurInfo>emptyList();
 		this.manipulationsManuelles = manipulationsManuelles != null ? Collections.unmodifiableList(manipulationsManuelles) : Collections.<EvenementCivilTraiteManuellementInfo>emptyList();
+		this.ignores = ignores != null ? Collections.unmodifiableMap(ignores) : Collections.<Integer, BigDecimal>emptyMap();
 	}
 
 	public Map<EtatEvenementCivil, BigDecimal> getEtats() {
 		return etats;
+	}
+
+	public Map<EtatEvenementCivil, BigDecimal> getEtatsNouveaux() {
+		return etatsNouveaux;
 	}
 
 	public Map<TypeEvenementCivil, BigDecimal> getErreursParType() {
@@ -116,5 +127,9 @@ public class StatsEvenementsCivilsResults {
 
 	public List<EvenementCivilTraiteManuellementInfo> getManipulationsManuelles() {
 		return manipulationsManuelles;
+	}
+
+	public Map<Integer, BigDecimal> getIgnores() {
+		return ignores;
 	}
 }

@@ -110,7 +110,7 @@ public abstract class PdfRapport extends Document {
 	 * Ajoute une table toute simple (sans bord ni attributs spéciaux).
 	 */
 	public void addTableSimple(int columns, TableSimpleCallback callback) throws DocumentException {
-		PdfTableSimple t = new PdfTableSimple(2);
+		final PdfTableSimple t = new PdfTableSimple(columns);
 		t.getDefaultCell().setBorder(Cell.NO_BORDER);
 		callback.fillTable(t);
 		add(t);

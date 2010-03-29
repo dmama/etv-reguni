@@ -16,6 +16,8 @@ import com.lowagie.text.pdf.PdfWriter;
 
 import java.io.OutputStream;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -58,13 +60,21 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 			// Evénements civils : états
 			addEntete1("Etats des événements civils");
 			{
-				addTableSimple(2, new PdfRapport.TableSimpleCallback() {
+				addTableSimple(3, new PdfRapport.TableSimpleCallback() {
 					public void fillTable(PdfTableSimple table) throws DocumentException {
 
+						table.addLigne("Etat", "Total", "Depuis " + RegDateHelper.dateToDisplayString(dateReference));
+						table.setHeaderRows(1);
+
 						final Map<EtatEvenementCivil, BigDecimal> etats = civils.getEtats();
+						final Map<EtatEvenementCivil, BigDecimal> etatsNouveaux = civils.getEtatsNouveaux();
 						for (EtatEvenementCivil etat : EtatEvenementCivil.values()) {
 							final BigDecimal nombre = etats.get(etat);
-							table.addLigne(String.format("Etat %s:", etat.toString()), nombre != null ? nombre.toPlainString() : "0");
+							final BigDecimal nombreNouveaux = etatsNouveaux.get(etat);
+
+							final String total = nombre != null ? nombre.toPlainString() : "0";
+							final String totalNouveaux = nombreNouveaux != null ? nombreNouveaux.toPlainString() : "0";
+							table.addLigne(String.format("%s", etat.toString()), total, totalNouveaux);
 						}
 					}
 				});
@@ -80,7 +90,7 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 						for (TypeEvenementCivil type : TypeEvenementCivil.values()) {
 							final BigDecimal nombre = erreurs.get(type);
 							if (nombre != null && nombre.signum() > 0) {
-								table.addLigne(String.format("%s:", type.getDescription()), nombre.toPlainString());
+								table.addLigne(String.format("%s :", type.getDescription()), nombre.toPlainString());
 							}
 						}
 					}
@@ -115,6 +125,31 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 				String titre = "Manipulations manuelles des événements civils";
 				String listVide = "(aucune)";
 				addListeDetaillee(writer, civils.getManipulationsManuelles().size(), titre, listVide, filename, contenu);
+			}
+
+			// événements ignorés
+			addEntete1("Evenements civils ignorés depuis le " + RegDateHelper.dateToDisplayString(dateReference));
+			{
+				addTableSimple(2, new TableSimpleCallback() {
+					public void fillTable(PdfTableSimple table) throws DocumentException {
+						final Map<Integer, BigDecimal> ignores = civils.getIgnores();
+
+						if (ignores.size() > 0) {
+							table.addLigne("Code reçu", "Nombre");
+							table.setHeaderRows(1);
+
+							final List<Integer> codes = new ArrayList<Integer>(ignores.keySet());
+							Collections.sort(codes);
+							for (int code : codes) {
+								final BigDecimal nb = ignores.get(code);
+								table.addLigne(String.valueOf(code), nb != null ? nb.toPlainString() : "0");
+							}
+						}
+						else {
+							table.addLigne("(aucun)", "");
+						}
+					}
+				});
 			}
 		}
 

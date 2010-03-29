@@ -3,6 +3,7 @@ package ch.vd.uniregctb.stats.evenements;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.evenement.externe.EtatEvenementExterne;
+import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 import org.hibernate.HibernateException;
@@ -29,21 +30,62 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 	 * Renvoie les statistiques sur les événements civils
 	 */
 	public StatsEvenementsCivilsResults getStatistiquesEvenementsCivils(RegDate debutActivite) {
-		final Map<EtatEvenementCivil, BigDecimal> etats = getEtatsEvenementsCivils();
+		final Map<EtatEvenementCivil, BigDecimal> etats = getEtatsEvenementsCivils(null);
+		final Map<EtatEvenementCivil, BigDecimal> etatsNouveaux = getEtatsEvenementsCivils(debutActivite);
 		final Map<TypeEvenementCivil, BigDecimal> erreursParType = getNombreEvenementsCivilsEnErreurParType();
 		final List<StatsEvenementsCivilsResults.EvenementCivilEnErreurInfo> toutesErreurs = getToutesErreursEvenementsCivils();
 		final List<StatsEvenementsCivilsResults.EvenementCivilTraiteManuellementInfo> manipulationsManuelles = getManipulationsManuelles(debutActivite);
-		return new StatsEvenementsCivilsResults(etats, erreursParType, toutesErreurs, manipulationsManuelles);
+		final Map<Integer, BigDecimal> ignores = getNombreEvenementsCivilsIgnores(debutActivite);
+		return new StatsEvenementsCivilsResults(etats, etatsNouveaux, erreursParType, toutesErreurs, manipulationsManuelles, ignores);
 	}
 
-	private Map<EtatEvenementCivil, BigDecimal> getEtatsEvenementsCivils() {
-		final String sql = "SELECT ETAT, COUNT(*) FROM EVENEMENT_CIVIL_REGROUPE GROUP BY ETAT";
-		return getNombreParModalite(EtatEvenementCivil.class, sql);
+	private Map<EtatEvenementCivil, BigDecimal> getEtatsEvenementsCivils(RegDate debutActivite) {
+		final String sql;
+		final Map<String, Object> sqlParameters;
+		if (debutActivite != null) {
+			sql = "SELECT ETAT, COUNT(*) FROM EVENEMENT_CIVIL_REGROUPE WHERE LOG_CDATE > TO_DATE(:debutActivite, 'YYYYMMDD') GROUP BY ETAT";
+			sqlParameters = new HashMap<String, Object>(1);
+			sqlParameters.put("debutActivite", debutActivite.index());
+		}
+		else {
+			sql = "SELECT ETAT, COUNT(*) FROM EVENEMENT_CIVIL_REGROUPE GROUP BY ETAT";
+			sqlParameters = null;
+		}
+		return getNombreParModalite(EtatEvenementCivil.class, sql, sqlParameters);
 	}
 
 	private Map<TypeEvenementCivil, BigDecimal> getNombreEvenementsCivilsEnErreurParType() {
 		final String sql = "SELECT TYPE, COUNT(*) FROM EVENEMENT_CIVIL_REGROUPE WHERE ETAT='EN_ERREUR' GROUP BY TYPE";
-		return getNombreParModalite(TypeEvenementCivil.class, sql);
+		return getNombreParModalite(TypeEvenementCivil.class, sql, null);
+	}
+
+	@SuppressWarnings({"unchecked"})
+	private Map<Integer, BigDecimal> getNombreEvenementsCivilsIgnores(final RegDate debutActivite) {
+		final String sql = "SELECT REPLACE(SUBSTR(MESSAGE, INSTR(MESSAGE, 'code ') + 5), ')') AS CODE, COUNT(*) FROM AUDIT_LOG" +
+				" WHERE MESSAGE LIKE 'Arrivée d''un message JMS ignoré (%' AND LOG_DATE > TO_DATE(:debutActivite, 'YYYYMMDD')" +
+				" GROUP BY REPLACE(SUBSTR(MESSAGE, INSTR(MESSAGE, 'code ') + 5), ')')";
+
+		return (Map<Integer, BigDecimal>) hibernateTemplate.executeWithNewSession(new HibernateCallback() {
+			public Map<Integer, BigDecimal> doInHibernate(Session session) throws HibernateException, SQLException {
+
+				final Query query = session.createSQLQuery(sql);
+				query.setParameter("debutActivite", debutActivite.index());
+
+				final List<Object[]> result = query.list();
+				if (result != null && result.size() > 0) {
+					final Map<Integer, BigDecimal> map = new HashMap<Integer, BigDecimal>(result.size());
+					for (Object[] row : result) {
+						final Integer code = Integer.valueOf((String) row[0]);
+						final BigDecimal nombre = (BigDecimal) row[1];
+						map.put(code, nombre);
+					}
+					return map;
+				}
+				else {
+					return null;
+				}
+			}
+		});
 	}
 
 	private List<StatsEvenementsCivilsResults.EvenementCivilEnErreurInfo> getToutesErreursEvenementsCivils() {
@@ -122,7 +164,7 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 
 	private Map<EtatEvenementExterne, BigDecimal> getEtatsEvenementsExternes() {
 		final String sql = "SELECT ETAT, COUNT(*) FROM EVENEMENT_EXTERNE GROUP BY ETAT";
-		return getNombreParModalite(EtatEvenementExterne.class, sql);
+		return getNombreParModalite(EtatEvenementExterne.class, sql, null);
 	}
 
 	private static interface SelectCallback<T> {
@@ -154,10 +196,15 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 	}
 
 	@SuppressWarnings({"unchecked"})
-	private <T extends Enum<T>> Map<T, BigDecimal> getNombreParModalite(final Class<T> enumClass, final String sql) {
+	private <T extends Enum<T>> Map<T, BigDecimal> getNombreParModalite(final Class<T> enumClass, final String sql, final Map<String, Object> sqlParameters) {
 		return (Map<T, BigDecimal>) hibernateTemplate.executeWithNewSession(new HibernateCallback() {
 			public Map<T, BigDecimal> doInHibernate(Session session) throws HibernateException, SQLException {
 				final Query query = session.createSQLQuery(sql);
+				if (sqlParameters != null && sqlParameters.size() > 0) {
+					for (Map.Entry<String, Object> entry : sqlParameters.entrySet()) {
+						query.setParameter(entry.getKey(), entry.getValue());
+					}
+				}
 				final List<Object[]> result = query.list();
 				if (result != null && result.size() > 0) {
 					final Map<T, BigDecimal> map = new HashMap<T, BigDecimal>(result.size());
@@ -173,5 +220,20 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 				}
 			}
 		});
+	}
+
+	private Map<IdentificationContribuable.Etat, BigDecimal> getEtatsEvenementsIdentificationContribuable(RegDate debutActivite) {
+		final String sql;
+		final Map<String, Object> sqlParameters;
+		if (debutActivite != null) {
+			sql = "SELECT ETAT, COUNT(*) FROM EVENEMENT_IDENTIFICATION_CTB WHERE LOG_CDATE > TO_DATE(:debutActivite, 'YYYYMMDD') GROUP BY ETAT";
+			sqlParameters = new HashMap<String, Object>(1);
+			sqlParameters.put("debutActivite", debutActivite.index());
+		}
+		else {
+			sql = "SELECT ETAT, COUNT(*) FROM EVENEMENT_IDENTIFICATION_CTB GROUP BY ETAT";
+			sqlParameters = null;
+		}
+		return getNombreParModalite(IdentificationContribuable.Etat.class, sql, sqlParameters);
 	}
 }
