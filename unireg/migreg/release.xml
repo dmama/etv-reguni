@@ -41,7 +41,7 @@
 		</file>
 		<file>
 			<!-- BEGIN_LVERSION -->
-			<source>target/uniregctb-migreg-3.5.3e.jar</source>
+			<source>target/uniregctb-migreg-3.5.3f.jar</source>
 			<!-- END_LVERSION -->
 			<outputDirectory>lib</outputDirectory>
 			<destName>uniregctb-migreg.jar</destName>

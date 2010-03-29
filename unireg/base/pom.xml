@@ -10,7 +10,7 @@
 	<groupId>ch.vd.uniregctb</groupId>
 	<artifactId>uniregctb</artifactId>
 	<!-- BEGIN_LVERSION -->
-	<version>3.5.3e</version>
+	<version>3.5.3f</version>
 	<!-- END_LVERSION -->
 	<packaging>pom</packaging>
 
