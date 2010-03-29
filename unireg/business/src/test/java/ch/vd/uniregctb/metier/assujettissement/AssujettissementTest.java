@@ -2465,7 +2465,7 @@ public class AssujettissementTest extends MetierTest {
 	@Test
 	public void testCommuneActiveDemenagementVaudois() throws Exception {
 		final Contribuable ctb = createContribuableSansFor();
-		addForPrincipal(ctb, date(2005, 2, 4), MotifFor.ARRIVEE_HS, date(2006, 6, 30), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE);
+		addForPrincipal(ctb, date(2005, 2, 4), MotifFor.ARRIVEE_HS, date(2006, 6, 30), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
 		addForPrincipal(ctb, date(2006, 7, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Leysin);
 
 		for (int annee = 2005 ; annee <= 2007 ; ++ annee) {

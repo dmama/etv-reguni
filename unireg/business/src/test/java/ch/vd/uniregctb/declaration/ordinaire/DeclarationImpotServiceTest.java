@@ -548,14 +548,12 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 				// Un diplomate suisse en mission hors suisse
 				Contribuable marc = addNonHabitant("Marc", "Ramatruelle", date(1948, 11, 3), Sexe.MASCULIN);
 				ids.marcId = marc.getNumero();
-				addForPrincipal(marc, date(1968, 11, 3), MotifFor.ARRIVEE_HC, null, null, MockCommune.Lausanne.getNoOFS(),
-						TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DIPLOMATE_SUISSE);
+				addForPrincipal(marc, date(1968, 11, 3), MotifFor.ARRIVEE_HC, MockCommune.Lausanne, MotifRattachement.DIPLOMATE_SUISSE);
 
 				// Un diplomate étranger en mission en Suisse et possédant un immeuble dans le Canton
 				Contribuable ramon = addNonHabitant("Ramon", "Zapapatotoche", date(1948, 11, 3), Sexe.MASCULIN);
 				ids.ramonId = ramon.getNumero();
-				addForPrincipal(ramon, date(1968, 11, 3), MotifFor.ARRIVEE_HC, null, null, MockPays.Espagne.getNoOFS(),
-						TypeAutoriteFiscale.PAYS_HS, MotifRattachement.DIPLOMATE_ETRANGER);
+				addForPrincipal(ramon, date(1968, 11, 3), MotifFor.ARRIVEE_HC, MockPays.Espagne, MotifRattachement.DIPLOMATE_ETRANGER);
 				addForSecondaire(ramon, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(),
 						MotifRattachement.IMMEUBLE_PRIVE);
 				return null;

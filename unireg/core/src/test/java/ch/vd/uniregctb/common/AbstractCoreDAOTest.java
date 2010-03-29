@@ -423,7 +423,6 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		assertEquals(modeImposition, forPrincipal.getModeImposition());
 	}
 
-	// TODO (msi) remplacer les paramètres type et noOfs par des MockCommune et MockPays
 	protected static void assertForPrincipal(RegDate debut, MotifFor motifOuverture, RegDate fin, MotifFor motifFermeture,
 			TypeAutoriteFiscale type, int noOfs, MotifRattachement motif, ModeImposition modeImposition, ForFiscalPrincipal forPrincipal) {
 		assertNotNull(forPrincipal);

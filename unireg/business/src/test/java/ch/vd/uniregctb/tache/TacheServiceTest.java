@@ -2230,7 +2230,7 @@ public class TacheServiceTest extends BusinessTest {
 	private List<Tache> genereChangementImposition(ModeImposition ancienMode, ModeImposition nouveauMode) {
 		PersonnePhysique pp = new PersonnePhysique(false);
 		pp.setNom("Bidule");
-		final ForFiscalPrincipal ffp = addForPrincipal(pp, date(2000, 1, 1), MotifFor.ARRIVEE_HS, null, null, MockCommune.Lausanne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE);
+		final ForFiscalPrincipal ffp = addForPrincipal(pp, date(2000, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
 		ffp.setModeImposition(ancienMode);
 		pp = (PersonnePhysique) ffp.getTiers();
 

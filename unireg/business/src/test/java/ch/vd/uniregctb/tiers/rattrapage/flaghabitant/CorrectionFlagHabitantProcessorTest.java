@@ -54,7 +54,7 @@ public class CorrectionFlagHabitantProcessorTest extends BusinessTest {
 					addForPrincipal(pp, RegDate.get(2008, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Bex);
 				}
 				else {
-					addForPrincipal(pp, RegDate.get(2008, 1, 1), MotifFor.ACHAT_IMMOBILIER, null, null, MockCommune.Bern.getNoOFS(), TypeAutoriteFiscale.COMMUNE_HC, MotifRattachement.DOMICILE);
+					addForPrincipal(pp, RegDate.get(2008, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
 				}
 				return pp.getNumero();
 			}

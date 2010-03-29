@@ -147,7 +147,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 
 		// Contribuable avec un for fiscal principal à Neuchâtel
 		Contribuable maxwell = addNonHabitant("Maxwell", "Dupuis", date(1955, 1, 1), Sexe.MASCULIN);
-		addForPrincipal(maxwell, date(1980, 1, 1), null, null, null, MockCommune.Neuchatel);
+		addForPrincipal(maxwell, date(1980, 1, 1), null, MockCommune.Neuchatel);
 		assertFalse(EnvoiDIsEnMasseProcessor.estAssujettiDansLeCanton(maxwell, null));
 
 		// Contribuable avec un for fiscal principal ouvert à Lausanne

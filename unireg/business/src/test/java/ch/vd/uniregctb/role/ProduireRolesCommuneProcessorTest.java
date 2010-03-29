@@ -652,8 +652,7 @@ public class ProduireRolesCommuneProcessorTest extends BusinessTest {
 	 */
 	private Contribuable newCtbDiplomateSuisse(MockCommune commune) {
 		final Contribuable marc = addNonHabitant("Marc", "Ramatruelle", date(1948, 11, 3), Sexe.MASCULIN);
-		addForPrincipal(marc, date(1968, 11, 3), MotifFor.MAJORITE, null, null, MockCommune.Lausanne.getNoOFS(),
-				TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DIPLOMATE_SUISSE);
+		addForPrincipal(marc, date(1968, 11, 3), MotifFor.MAJORITE, MockCommune.Lausanne, MotifRattachement.DIPLOMATE_SUISSE);
 		return marc;
 	}
 
@@ -699,7 +698,7 @@ public class ProduireRolesCommuneProcessorTest extends BusinessTest {
 	 */
 	private Contribuable newCtbHorsCantonEtImmeuble(MockCommune commune) {
 		final Contribuable geo = addNonHabitant("Geo", "Trouverien", date(1948, 11, 3), Sexe.MASCULIN);
-		addForPrincipal(geo, date(1968, 11, 3), null, null, null, MockCommune.Neuchatel.getNoOFS(), TypeAutoriteFiscale.COMMUNE_HC, MotifRattachement.DOMICILE);
+		addForPrincipal(geo, date(1968, 11, 3), null, MockCommune.Neuchatel);
 		addImmeuble(geo, commune, date(2003, 3, 1), null);
 		return geo;
 	}
@@ -709,7 +708,7 @@ public class ProduireRolesCommuneProcessorTest extends BusinessTest {
 	 */
 	private Contribuable newCtbHorsCantonEtDeuxImmeubles(MockCommune communeImmeuble1, MockCommune communeImmeuble2) {
 		final Contribuable donald = addNonHabitant("Donald", "Trouverien", date(1948, 11, 3), Sexe.MASCULIN);
-		addForPrincipal(donald, date(1968, 11, 3), null, null, null, MockCommune.Neuchatel.getNoOFS(), TypeAutoriteFiscale.COMMUNE_HC, MotifRattachement.DOMICILE);
+		addForPrincipal(donald, date(1968, 11, 3), null, MockCommune.Neuchatel);
 		addImmeuble(donald, communeImmeuble1, date(2007, 3, 1), date(2007, 6, 30));
 		addImmeuble(donald, communeImmeuble2, date(1990, 1, 15), null);
 		return donald;
@@ -720,7 +719,7 @@ public class ProduireRolesCommuneProcessorTest extends BusinessTest {
 	 */
 	private Contribuable newCtbHorsCantonDeuxImmeublesNonChevauchant(MockCommune communeImmeuble1, MockCommune communeImmeuble2) {
 		final Contribuable georges = addNonHabitant("Georges", "Trouverien", date(1948, 11, 3), Sexe.MASCULIN);
-		addForPrincipal(georges, date(1968, 11, 3), null, null, null, MockCommune.Neuchatel.getNoOFS(), TypeAutoriteFiscale.COMMUNE_HC, MotifRattachement.DOMICILE);
+		addForPrincipal(georges, date(1968, 11, 3), null, MockCommune.Neuchatel);
 		addImmeuble(georges, communeImmeuble1, date(1980, 3, 1), date(2007, 6, 30));
 		addImmeuble(georges, communeImmeuble2, date(2007, 11, 15), null);
 		return georges;
@@ -731,7 +730,7 @@ public class ProduireRolesCommuneProcessorTest extends BusinessTest {
 	 */
 	private Contribuable newCtbHorsCantonEtImmeubleVenduEn2007(MockCommune commune) {
 		final Contribuable johnny = addNonHabitant("Johnny", "Hallyday", date(1948, 11, 3), Sexe.MASCULIN);
-		addForPrincipal(johnny, date(2005, 11, 3), null, null, null, MockCommune.Bern.getNoOFS(), TypeAutoriteFiscale.COMMUNE_HC, MotifRattachement.DOMICILE);
+		addForPrincipal(johnny, date(2005, 11, 3), null, MockCommune.Bern);
 		addImmeuble(johnny, commune, date(2005, 11, 3), date(2007, 8, 30));
 		return johnny;
 	}
@@ -741,7 +740,7 @@ public class ProduireRolesCommuneProcessorTest extends BusinessTest {
 	 */
 	private Contribuable newCtbHorsSuisseImmeubleVenduTrenteEtUnDecembre(MockCommune commune) {
 		final Contribuable tom = addNonHabitant("Tom", "Cruise", date(1948, 11, 3), Sexe.MASCULIN);
-		addForPrincipal(tom, date(2005, 11, 3), null, null, null, MockPays.Albanie.getNoOFS(), TypeAutoriteFiscale.PAYS_HS, MotifRattachement.DOMICILE);
+		addForPrincipal(tom, date(2005, 11, 3), null, MockPays.Albanie);
 		addImmeuble(tom, commune, date(2005, 11, 3), date(2007, 12, 31));
 		return tom;
 	}
@@ -751,7 +750,7 @@ public class ProduireRolesCommuneProcessorTest extends BusinessTest {
 	 */
 	private Contribuable newCtbHorsCantonEtActiviteIndStoppeeEn2007(MockCommune commune) {
 		final Contribuable tyler = addNonHabitant("Tyler", "Brulé", date(1948, 11, 3), Sexe.MASCULIN);
-		addForPrincipal(tyler, date(2005, 11, 3), null, null, null, MockCommune.Bern.getNoOFS(), TypeAutoriteFiscale.COMMUNE_HC, MotifRattachement.DOMICILE);
+		addForPrincipal(tyler, date(2005, 11, 3), null, MockCommune.Bern);
 		addForSecondaire(tyler, date(2005, 11, 3), MotifFor.DEBUT_EXPLOITATION, date(2007, 8, 30), MotifFor.FIN_EXPLOITATION, commune.getNoOFS(), MotifRattachement.ACTIVITE_INDEPENDANTE);
 		return tyler;
 	}
@@ -781,7 +780,7 @@ public class ProduireRolesCommuneProcessorTest extends BusinessTest {
 	 */
 	private Contribuable newCtbHorsCantonSansForSecondaire() {
 		final Contribuable jeans = addNonHabitant("Jean", "Studer", date(1948, 11, 3), Sexe.MASCULIN);
-		addForPrincipal(jeans, date(1968, 11, 3), null, null, null, MockCommune.Neuchatel.getNoOFS(), TypeAutoriteFiscale.COMMUNE_HC, MotifRattachement.DOMICILE);
+		addForPrincipal(jeans, date(1968, 11, 3), null, MockCommune.Neuchatel);
 		return jeans;
 	}
 
@@ -790,7 +789,7 @@ public class ProduireRolesCommuneProcessorTest extends BusinessTest {
 	 */
 	private Contribuable newCtbHorsCantonEtImmeubleVenduEn2005(MockCommune commune) {
 		final Contribuable popol = addNonHabitant("Popol", "Dillon", date(1948, 11, 3), Sexe.MASCULIN);
-		addForPrincipal(popol, date(1968, 11, 3), null, null, null, MockCommune.Neuchatel.getNoOFS(), TypeAutoriteFiscale.COMMUNE_HC, MotifRattachement.DOMICILE);
+		addForPrincipal(popol, date(1968, 11, 3), null, MockCommune.Neuchatel);
 		addImmeuble(popol, commune, date(2003, 3, 1), date(2005, 5, 31));
 		return popol;
 	}
@@ -800,7 +799,7 @@ public class ProduireRolesCommuneProcessorTest extends BusinessTest {
 	 */
 	private Contribuable newCtbHorsCantonEtForImmeubleAnnule(MockCommune commune) {
 		final Contribuable rama = addNonHabitant("Rama", "Truelle", date(1948, 11, 3), Sexe.MASCULIN);
-		addForPrincipal(rama, date(1968, 11, 3), null, null, null, MockCommune.Neuchatel.getNoOFS(), TypeAutoriteFiscale.COMMUNE_HC, MotifRattachement.DOMICILE);
+		addForPrincipal(rama, date(1968, 11, 3), null, MockCommune.Neuchatel);
 		ForFiscalSecondaire fs = addImmeuble(rama, commune, date(2003, 3, 1), null);
 		fs.setAnnule(true);
 		return rama;
