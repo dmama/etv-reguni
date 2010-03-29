@@ -134,7 +134,7 @@
 						// mis-à-jour du DOM
 						setChild(E$('td_tiers_gauche'), contenuGauche);
 						setChild(E$('td_tiers_droite'), contenuDroite);
-												 
+
 
 						E$('flecheMilieu').innerHTML = 'est le ' + autorite + ' de';
 					}
@@ -151,6 +151,33 @@
 						if (type.value == 'REPRESENTATION') {
 							E$('executionForcee').style.display = '';
 							E$('executionForceeLabel').style.display = '';
+
+							// [UNIREG-1341] execution forcee est seulement valable pour les non-habitants
+							var sens = E$('sensRapport');
+							var tiersRepresente;
+							switch (sens.value) {
+							case 'SUJET':
+								// le tiers lié est le sujet
+								tiersRepresente = E$('div_tiers_lie');
+								break;
+							case 'OBJET':
+								// le tiers lié est l'objet
+								tiersRepresente = E$('div_tiers');
+								break;
+							}
+
+							var natureRepresente = getNatureTiers(tiersRepresente);
+
+							if (natureRepresente == 'Habitant') {
+								E$('executionForcee').disabled = 'disabled';
+								E$('executionForceeLabel').style.color = 'gray';
+								E$('executionForceeLabel').title = "L'extension de l'exécution forcée est uniquement autorisée pour les tiers domiciliés à l'étranger";
+							}
+							else {
+								E$('executionForcee').disabled = null;
+								E$('executionForceeLabel').style.color = '';
+								E$('executionForceeLabel').title = "";
+							}
 						}
 						else {
 							E$('executionForcee').style.display = 'none';
@@ -158,6 +185,18 @@
 						}
 					}
 				
+					function getNatureTiers(divTiers) {
+						var inputs = divTiers.getElementsByTagName('input');
+						var natureInput;
+						for (var i = 0; i < inputs.length; ++i) {
+							if (inputs[i].name == 'debugNatureTiers') {
+								natureInput = inputs[i];
+								break;
+							}
+						}
+						return natureInput.value;
+					}
+
 					function onTypeChange(element) {
 						refreshExecutionForcee();
 						refreshLegend(element);
@@ -172,6 +211,7 @@
 							sens.value = 'SUJET';
 						}
 						refreshLegend(sens);
+						refreshExecutionForcee();
 					}
 
 					refreshExecutionForcee();

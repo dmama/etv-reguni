@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.uniregctb.adresse.AdresseException;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +20,7 @@ import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityProvider;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.RapportEntreTiersDAO;
 import ch.vd.uniregctb.tiers.RapportPrestationImposable;
@@ -185,6 +187,7 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 			// [UNIREG-755] tenir compte de l'extension de l'exécution à la création du rapport
 			if (rapport instanceof RepresentationConventionnelle) {
 				final RepresentationConventionnelle repres = (RepresentationConventionnelle) rapport;
+				validateRepresentationConventionnelle(rapportView, sujet);
 				repres.setExtensionExecutionForcee(rapportView.isExtensionExecutionForcee());
 			}
 
@@ -201,10 +204,18 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 			}
 			else if (rapportEntreTiers instanceof RepresentationConventionnelle) {
 				final RepresentationConventionnelle repres = (RepresentationConventionnelle) rapportEntreTiers;
+				validateRepresentationConventionnelle(rapportView, repres.getSujet());
 				repres.setExtensionExecutionForcee(rapportView.isExtensionExecutionForcee());
 			}
 		}
 
+	}
+
+	private void validateRepresentationConventionnelle(RapportView rapportView, Tiers sujet) {
+		if (rapportView.isExtensionExecutionForcee() && sujet instanceof PersonnePhysique && ((PersonnePhysique)sujet).isHabitant()) {
+			// [UNIREG-1341]
+			throw new ValidationException(sujet, "L'extension de l'exécution forcée est uniquement autorisée pour les tiers domiciliés à l'étranger");
+		}
 	}
 
 	/**

@@ -17,7 +17,7 @@
 		</c:if>
 	</span></legend>
 
-	<div id="debugNatureTiers" style="display:none;"><c:out value="${tiersGeneral.natureTiers}"/></div>
+	<input name="debugNatureTiers" type="hidden" value="<c:out value="${tiersGeneral.natureTiers}"/>"></input>
 
 	<table cellspacing="0" cellpadding="0" border="0">
 		<tr>

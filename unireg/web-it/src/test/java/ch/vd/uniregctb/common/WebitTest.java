@@ -4,14 +4,15 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Properties;
 
 import com.gargoylesoftware.htmlunit.Page;
 import com.gargoylesoftware.htmlunit.ThreadedRefreshHandler;
 import com.gargoylesoftware.htmlunit.WebClient;
-import com.gargoylesoftware.htmlunit.html.HtmlDivision;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlFileInput;
+import com.gargoylesoftware.htmlunit.html.HtmlInput;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.html.HtmlSubmitInput;
 import junit.framework.Assert;
@@ -123,10 +124,13 @@ public abstract class WebitTest extends WithoutSpringTest {
 		final HtmlPage page = getHtmlPage("/tiers/visu.do?id=" + tiersId);
 		assertNotNull(page);
 
-		final HtmlDivision div = (HtmlDivision) page.getHtmlElementById("debugNatureTiers");
-		assertNotNull(div);
+		final List<?> list = (List<?>)page.getHtmlElementsByName("debugNatureTiers");
+		assertNotNull(list);
+		assertEquals(1, list.size());
 
-		assertEquals(nature, div.asText());
+		final HtmlInput input = (HtmlInput) list.get(0);
+		assertNotNull(input);
+		assertEquals(nature, input.getValueAttribute());
 	}
 
 	@SuppressWarnings("unchecked")

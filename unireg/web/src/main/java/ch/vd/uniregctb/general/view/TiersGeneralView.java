@@ -39,6 +39,13 @@ public class TiersGeneralView {
 		DEBITEUR
 	}
 
+	public TiersGeneralView() {
+	}
+
+	public TiersGeneralView(Long numero) {
+		this.numero = numero;
+	}
+
 	private RoleView role;
 
 	private Long numero;
