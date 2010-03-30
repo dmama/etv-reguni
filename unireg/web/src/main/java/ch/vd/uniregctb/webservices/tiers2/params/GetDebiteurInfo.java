@@ -8,39 +8,40 @@ import javax.xml.bind.annotation.XmlType;
 import ch.vd.uniregctb.webservices.common.UserLogin;
 
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "GetTiersType")
-public class GetTiersType {
+@XmlType(name = "GetDebiteurInfo")
+public class GetDebiteurInfo {
 
 	/** Les informations de login de l'utilisateur de l'application */
 	@XmlElement(required = true)
 	public UserLogin login;
-
+	
+	/**
+	 * Le numéro de tiers du débiteur de prestations imposables.
+	 */
 	@XmlElement(required = true)
-	public long tiersNumber;
+	public long numeroDebiteur;
 
-	@Override
-	public String toString() {
-		return "GetTiersType{" +
-				"login=" + login +
-				", tiersNumber=" + tiersNumber +
-				'}';
-	}
+	/**
+	 * La période fiscale considérée (1er janvier au 31 décembre).
+	 */
+	@XmlElement(required = true)
+	public int periodeFiscale;
 
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 
-		final GetTiersType that = (GetTiersType) o;
+		final GetDebiteurInfo that = (GetDebiteurInfo) o;
 
-		return tiersNumber == that.tiersNumber && !(login != null ? !login.equals(that.login) : that.login != null);
+		return numeroDebiteur == that.numeroDebiteur && periodeFiscale == that.periodeFiscale;
 
 	}
 
 	@Override
 	public int hashCode() {
-		int result = login != null ? login.hashCode() : 0;
-		result = 31 * result + (int) (tiersNumber ^ (tiersNumber >>> 32));
+		int result = (int) (numeroDebiteur ^ (numeroDebiteur >>> 32));
+		result = 31 * result + periodeFiscale;
 		return result;
 	}
 }

@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.webservices.tiers2.impl;
 
 import ch.vd.uniregctb.adresse.AdresseService;
+import ch.vd.uniregctb.declaration.source.ListeRecapService;
 import ch.vd.uniregctb.iban.IbanValidator;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -38,4 +39,6 @@ public class Context {
 	public PlatformTransactionManager transactionManager;
 	
 	public NoOfsTranslator noOfsTranslator;
+
+	public ListeRecapService lrService; 
 }

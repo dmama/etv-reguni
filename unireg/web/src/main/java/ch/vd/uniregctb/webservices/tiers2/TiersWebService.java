@@ -13,7 +13,6 @@ import ch.vd.uniregctb.webservices.tiers2.exception.AccessDeniedException;
 import ch.vd.uniregctb.webservices.tiers2.exception.BusinessException;
 import ch.vd.uniregctb.webservices.tiers2.exception.TechnicalException;
 import ch.vd.uniregctb.webservices.tiers2.params.*;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Interface du web-service <i>tiers</i> <b>version 2</b> du registre fiscal Unireg.
@@ -165,6 +164,22 @@ public interface TiersWebService {
 	@WebResult(targetNamespace = "http://www.vd.ch/uniregctb/webservices/tiers2")
 	public List<EvenementPM> searchEvenementsPM(
 			@WebParam(targetNamespace = "http://www.vd.ch/uniregctb/webservices/tiers2", partName = "params", name = "SearchEvenementsPM") SearchEvenementsPM params)
+			throws BusinessException, AccessDeniedException, TechnicalException;
+
+	/**
+	 * Calcule et retourne des informations métier supplémentaires (notamment sur les déclarations impôt source (LRs)) d'un débiteur de prestations imposables.
+	 *
+	 * @param params le numéro du débiteur et la période fiscale considérée
+	 * @return le nombre de déclarations théoriques et réellement émises.
+	 * @throws BusinessException     en cas d'erreur métier
+	 * @throws AccessDeniedException en cas d'accès interdit à la ressource demandée
+	 * @throws TechnicalException    en cas d'erreur inattendue (bug)
+	 */
+	@SOAPBinding(parameterStyle = SOAPBinding.ParameterStyle.BARE)
+	@WebMethod
+	@WebResult(targetNamespace = "http://www.vd.ch/uniregctb/webservices/tiers2")
+	public DebiteurInfo getDebiteurInfo(
+			@WebParam(targetNamespace = "http://www.vd.ch/uniregctb/webservices/tiers2", partName = "params", name = "GetDebiteurInfo") GetDebiteurInfo params)
 			throws BusinessException, AccessDeniedException, TechnicalException;
 
 	/**

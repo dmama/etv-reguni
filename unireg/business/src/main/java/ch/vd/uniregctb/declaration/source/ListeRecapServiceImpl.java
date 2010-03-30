@@ -177,12 +177,7 @@ public class ListeRecapServiceImpl implements ListeRecapService, DelegateEditiqu
 
 
 	/**
-	 * Trouve toutes les LR manquantes d'un débiteur
-	 *
-	 * @param dpi
-	 * @param dateFinPeriode
-	 * @param lrTrouveesOut
-	 * @return une liste de range de LR manquante
+	 * {@inheritDoc}
 	 */
 	public List<DateRange> findLRsManquantes(DebiteurPrestationImposable dpi, RegDate dateFinPeriode, List<DateRange> lrTrouveesOut) {
 		// l'algo est le suivant :

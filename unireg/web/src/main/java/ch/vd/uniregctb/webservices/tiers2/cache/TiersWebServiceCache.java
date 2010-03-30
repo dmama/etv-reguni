@@ -23,8 +23,6 @@ import ch.vd.uniregctb.webservices.tiers2.exception.AccessDeniedException;
 import ch.vd.uniregctb.webservices.tiers2.exception.BusinessException;
 import ch.vd.uniregctb.webservices.tiers2.exception.TechnicalException;
 
-import javax.jws.WebParam;
-
 public class TiersWebServiceCache implements UniregCacheInterface, TiersWebService, InitializingBean, DisposableBean {
 
 	private static final String SERVICE_NAME = "TiersWebService2";
@@ -52,10 +50,12 @@ public class TiersWebServiceCache implements UniregCacheInterface, TiersWebServi
 		initCache();
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setUniregCacheManager(UniregCacheManager uniregCacheManager) {
 		this.uniregCacheManager = uniregCacheManager;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setStatsService(StatsService statsService) {
 		this.statsService = statsService;
 	}
@@ -319,6 +319,29 @@ public class TiersWebServiceCache implements UniregCacheInterface, TiersWebServi
 	public List<EvenementPM> searchEvenementsPM(SearchEvenementsPM params) throws BusinessException, AccessDeniedException, TechnicalException {
 		// on ne cache pas les événements PM car on ne sait pas quand ils changent
 		return target.searchEvenementsPM(params);
+	}
+
+	public DebiteurInfo getDebiteurInfo(GetDebiteurInfo params) throws
+			BusinessException, AccessDeniedException, TechnicalException {
+
+		final DebiteurInfo resultat;
+
+		try {
+			final Element element = cache.get(params);
+			if (element == null) {
+				resultat = target.getDebiteurInfo(params);
+				cache.put(new Element(params, resultat));
+			}
+			else {
+				resultat = (DebiteurInfo) element.getObjectValue();
+			}
+		}
+		catch (RuntimeException e) {
+			LOGGER.error(e, e);
+			throw new TechnicalException(e);
+		}
+
+		return resultat;
 	}
 
 	/**

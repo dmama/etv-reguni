@@ -58,11 +58,11 @@ public interface ListeRecapService {
 
 	/**
 	 * Trouve toutes les LR manquantes d'un débiteur
-	 * @param dpi
-	 * @param dateFinPeriode
-	 * @param lrTrouveesOut
-	 * @return une liste de range de LR manquante
+	 *
+	 * @param dpi            un débiteur de prestations imposables
+	 * @param dateFinPeriode date de fin de la période considérée (la date de début étant la date de début d'activité du débiteur)
+	 * @param lrTrouveesOut  liste des périodes pour lesquelles il existe déjà des LRs. Attention, ces périodes sont fusionnées si elles se touchent.
+	 * @return une liste de range de LRs manquantes
 	 */
-	public List<DateRange> findLRsManquantes(DebiteurPrestationImposable dpi, RegDate dateFinPeriode, List<DateRange> lrTrouveesOut) ;
-
+	public List<DateRange> findLRsManquantes(DebiteurPrestationImposable dpi, RegDate dateFinPeriode, List<DateRange> lrTrouveesOut);
 }

@@ -17,10 +17,12 @@ import ch.vd.uniregctb.webservices.tiers2.CategorieDebiteur;
 import ch.vd.uniregctb.webservices.tiers2.Date;
 import ch.vd.uniregctb.webservices.tiers2.Debiteur;
 import ch.vd.uniregctb.webservices.tiers2.DebiteurHisto;
+import ch.vd.uniregctb.webservices.tiers2.DebiteurInfo;
 import ch.vd.uniregctb.webservices.tiers2.Declaration;
 import ch.vd.uniregctb.webservices.tiers2.DeclarationImpotSource;
 import ch.vd.uniregctb.webservices.tiers2.EtatCivil;
 import ch.vd.uniregctb.webservices.tiers2.ForFiscal;
+import ch.vd.uniregctb.webservices.tiers2.GetDebiteurInfo;
 import ch.vd.uniregctb.webservices.tiers2.GetTiers;
 import ch.vd.uniregctb.webservices.tiers2.GetTiersHisto;
 import ch.vd.uniregctb.webservices.tiers2.MenageCommunHisto;
@@ -46,6 +48,7 @@ import ch.vd.uniregctb.webservices.tiers2.TypeRecherche;
 import ch.vd.uniregctb.webservices.tiers2.TypeTiers;
 import ch.vd.uniregctb.webservices.tiers2.UserLogin;
 
+@SuppressWarnings({"JavaDoc"})
 public class TiersServiceWebTAOISTest extends AbstractTiersServiceWebTest {
 
 	//private static final Logger LOGGER = Logger.getLogger(WebitTest.class);
@@ -958,5 +961,34 @@ public class TiersServiceWebTAOISTest extends AbstractTiersServiceWebTest {
 		assertSameDay(newDate(2008, 1, 1), p2008.getDateDebut());
 		assertSameDay(newDate(2008, 12, 31), p2008.getDateFin());
 		assertEquals(Long.valueOf(6), p2008.getIdDI());
+	}
+
+	/**
+	 * [UNIREG-2110]
+	 */
+	@Test
+	public void testGetDebiteurInfo() throws Exception {
+
+		GetDebiteurInfo params = new GetDebiteurInfo();
+		params.setLogin(login);
+		params.setNumeroDebiteur(1678432L); // débiteur trimestriel
+
+		// 2008
+		params.setPeriodeFiscale(2008);
+		final DebiteurInfo info2008 = service.getDebiteurInfo(params);
+		assertNotNull(info2008);
+		assertEquals(1678432L, info2008.getNumeroDebiteur());
+		assertEquals(2008, info2008.getPeriodeFiscale());
+		assertEquals(4, info2008.getNbLRsTheorique());
+		assertEquals(2, info2008.getNbLRsEmises()); // deux LRs émises : 2008010->20080331 et 20080401->20080630
+
+		// 2009
+		params.setPeriodeFiscale(2009);
+		final DebiteurInfo info2009 = service.getDebiteurInfo(params);
+		assertNotNull(info2009);
+		assertEquals(1678432L, info2009.getNumeroDebiteur());
+		assertEquals(2009, info2009.getPeriodeFiscale());
+		assertEquals(4, info2009.getNbLRsTheorique());
+		assertEquals(0, info2009.getNbLRsEmises()); // aucune LR émise
 	}
 }

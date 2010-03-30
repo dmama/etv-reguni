@@ -15,12 +15,12 @@ import ch.vd.uniregctb.webservices.tiers2.exception.BusinessException;
 import ch.vd.uniregctb.webservices.tiers2.exception.TechnicalException;
 import ch.vd.uniregctb.webservices.tiers2.impl.DataHelper;
 import ch.vd.uniregctb.webservices.tiers2.params.*;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.ResourceUtils;
 
-import javax.jws.WebParam;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
@@ -111,13 +111,11 @@ public class TiersWebServiceMockPM implements TiersWebService, InitializingBean 
 		this.evenementsPMCsvFile = evenementsPMCsvFile;
 	}
 
-	public List<TiersInfo> searchTiers(@WebParam(targetNamespace = "http://www.vd.ch/uniregctb/webservices/tiers2",
-			partName = "params", name = "SearchTiers") SearchTiers params) throws BusinessException, AccessDeniedException, TechnicalException {
+	public List<TiersInfo> searchTiers(SearchTiers params) throws BusinessException, AccessDeniedException, TechnicalException {
 		return target.searchTiers(params);
 	}
 
-	public Tiers.Type getTiersType(@WebParam(targetNamespace = "http://www.vd.ch/uniregctb/webservices/tiers2",
-			partName = "params", name = "GetTiersType") GetTiersType params) throws BusinessException, AccessDeniedException, TechnicalException {
+	public Tiers.Type getTiersType(GetTiersType params) throws BusinessException, AccessDeniedException, TechnicalException {
 		if (isEntreprise(params.tiersNumber)) {
 			realLifeFactor();
 			return pmsHisto.containsKey(params.tiersNumber) ? Tiers.Type.PERSONNE_MORALE : null;
@@ -127,8 +125,7 @@ public class TiersWebServiceMockPM implements TiersWebService, InitializingBean 
 		}
 	}
 
-	public Tiers getTiers(@WebParam(targetNamespace = "http://www.vd.ch/uniregctb/webservices/tiers2",
-			partName = "params", name = "GetTiers") GetTiers params) throws BusinessException, AccessDeniedException, TechnicalException {
+	public Tiers getTiers(GetTiers params) throws BusinessException, AccessDeniedException, TechnicalException {
 		if (isEntreprise(params.tiersNumber)) {
 			realLifeFactor();
 			final PersonneMoraleHisto pmHisto = pmsHisto.get(params.tiersNumber);
@@ -144,8 +141,7 @@ public class TiersWebServiceMockPM implements TiersWebService, InitializingBean 
 		}
 	}
 
-	public TiersHisto getTiersPeriode(@WebParam(targetNamespace = "http://www.vd.ch/uniregctb/webservices/tiers2",
-			partName = "params", name = "GetTiersPeriode") GetTiersPeriode params) throws BusinessException, AccessDeniedException, TechnicalException {
+	public TiersHisto getTiersPeriode(GetTiersPeriode params) throws BusinessException, AccessDeniedException, TechnicalException {
 		if (isEntreprise(params.tiersNumber)) {
 			realLifeFactor();
 			final PersonneMoraleHisto pm = pmsHisto.get(params.tiersNumber);
@@ -156,8 +152,7 @@ public class TiersWebServiceMockPM implements TiersWebService, InitializingBean 
 		}
 	}
 
-	public TiersHisto getTiersHisto(@WebParam(targetNamespace = "http://www.vd.ch/uniregctb/webservices/tiers2",
-			partName = "params", name = "GetTiersHisto") GetTiersHisto params) throws BusinessException, AccessDeniedException, TechnicalException {
+	public TiersHisto getTiersHisto(GetTiersHisto params) throws BusinessException, AccessDeniedException, TechnicalException {
 		if (isEntreprise(params.tiersNumber)) {
 			realLifeFactor();
 			final PersonneMoraleHisto pm = pmsHisto.get(params.tiersNumber);
@@ -168,8 +163,7 @@ public class TiersWebServiceMockPM implements TiersWebService, InitializingBean 
 		}
 	}
 
-	public BatchTiers getBatchTiers(@WebParam(targetNamespace = "http://www.vd.ch/uniregctb/webservices/tiers2",
-			partName = "params", name = "GetBatchTiers") GetBatchTiers params) throws BusinessException, AccessDeniedException, TechnicalException {
+	public BatchTiers getBatchTiers(GetBatchTiers params) throws BusinessException, AccessDeniedException, TechnicalException {
 
 		// sépare les ids PP des ids PM
 		final Set<Long> idsPP = new HashSet<Long>();
@@ -300,14 +294,12 @@ public class TiersWebServiceMockPM implements TiersWebService, InitializingBean 
 		return batch;
 	}
 
-	public void setTiersBlocRembAuto(@WebParam(targetNamespace = "http://www.vd.ch/uniregctb/webservices/tiers2",
-			partName = "params", name = "SetTiersBlocRembAuto") SetTiersBlocRembAuto params) throws BusinessException, AccessDeniedException, TechnicalException {
+	public void setTiersBlocRembAuto(SetTiersBlocRembAuto params) throws BusinessException, AccessDeniedException, TechnicalException {
 		target.setTiersBlocRembAuto(params);
 	}
 
 	@SuppressWarnings({"unchecked"})
-	public List<EvenementPM> searchEvenementsPM(@WebParam(targetNamespace = "http://www.vd.ch/uniregctb/webservices/tiers2",
-			partName = "params", name = "SearchEvenementsPM") final SearchEvenementsPM params) throws BusinessException, AccessDeniedException, TechnicalException {
+	public List<EvenementPM> searchEvenementsPM(final SearchEvenementsPM params) throws BusinessException, AccessDeniedException, TechnicalException {
 
 		List<EvenementPM> events = new LinkedList<EvenementPM>();
 
@@ -343,6 +335,11 @@ public class TiersWebServiceMockPM implements TiersWebService, InitializingBean 
 		realLifeFactorBatch(events.size());
 
 		return events;
+	}
+
+	public DebiteurInfo getDebiteurInfo(GetDebiteurInfo params) throws
+			BusinessException, AccessDeniedException, TechnicalException {
+		return target.getDebiteurInfo(params);
 	}
 
 	private void sortEvents(List<EvenementPM> events) {

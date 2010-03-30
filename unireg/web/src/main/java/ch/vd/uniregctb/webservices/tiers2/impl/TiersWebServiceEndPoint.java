@@ -384,6 +384,43 @@ public class TiersWebServiceEndPoint implements TiersWebService {
 		}
 	}
 
+	@SOAPBinding(parameterStyle = SOAPBinding.ParameterStyle.BARE)
+	@WebMethod
+	@WebResult(targetNamespace = "http://www.vd.ch/uniregctb/webservices/tiers2")
+	public DebiteurInfo getDebiteurInfo(
+			@WebParam(targetNamespace = "http://www.vd.ch/uniregctb/webservices/tiers2", partName = "params", name = "GetDebiteurInfo") GetDebiteurInfo params) throws
+			BusinessException, AccessDeniedException, TechnicalException {
+		try {
+			login(params.login);
+			checkGeneralReadAccess(params.login);
+			final DebiteurInfo info = service.getDebiteurInfo(params);
+			if (info != null) {
+				checkTiersReadAccess(params.numeroDebiteur);
+				assertCoherence(params.numeroDebiteur, info.numeroDebiteur);
+			}
+			return info;
+		}
+		catch (BusinessException e) {
+			LOGGER.error("Exception lors du traitement du message " + params + " : " + e.getMessage());
+			throw e;
+		}
+		catch (AccessDeniedException e) {
+			LOGGER.error("Exception lors du traitement du message " + params + " : " + e.getMessage());
+			throw e;
+		}
+		catch (TechnicalException e) {
+			LOGGER.error("Exception lors du traitement du message " + params + " : " + e.getMessage());
+			throw e;
+		}
+		catch (RuntimeException e) {
+			LOGGER.error("Exception lors du traitement du message " + params, e);
+			throw new TechnicalException(e);
+		}
+		finally {
+			logout();
+		}
+	}
+
 	/**
 	 * Cette méthode s'assure que les classes concrètes dérivant de Tiers sont exposées dans le WSDL. Elle ne fait rien proprement dit.
 	 */

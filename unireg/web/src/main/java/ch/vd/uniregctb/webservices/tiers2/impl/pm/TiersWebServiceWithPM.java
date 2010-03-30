@@ -35,7 +35,6 @@ import ch.vd.uniregctb.webservices.tiers2.impl.RangeHelper;
 import ch.vd.uniregctb.webservices.tiers2.impl.RangeImpl;
 import ch.vd.uniregctb.webservices.tiers2.params.*;
 
-import javax.jws.WebParam;
 import java.util.*;
 
 import org.springframework.transaction.annotation.Transactional;
@@ -79,14 +78,12 @@ public class TiersWebServiceWithPM implements TiersWebService {
 		noOfsTranslator = translator;
 	}
 
-	public List<TiersInfo> searchTiers(@WebParam(targetNamespace = "http://www.vd.ch/uniregctb/webservices/tiers2",
-			partName = "params", name = "SearchTiers") SearchTiers params) throws BusinessException, AccessDeniedException, TechnicalException {
+	public List<TiersInfo> searchTiers(SearchTiers params) throws BusinessException, AccessDeniedException, TechnicalException {
 		return target.searchTiers(params);
 	}
 
 	@Transactional(readOnly = true)
-	public Tiers.Type getTiersType(@WebParam(targetNamespace = "http://www.vd.ch/uniregctb/webservices/tiers2",
-			partName = "params", name = "GetTiersType") GetTiersType params) throws BusinessException, AccessDeniedException, TechnicalException {
+	public Tiers.Type getTiersType(GetTiersType params) throws BusinessException, AccessDeniedException, TechnicalException {
 		if (isEntreprise(params.tiersNumber)) {
 			return existsPM(params.tiersNumber) ? Tiers.Type.PERSONNE_MORALE : null;
 		}
@@ -96,8 +93,7 @@ public class TiersWebServiceWithPM implements TiersWebService {
 	}
 
 	@Transactional(readOnly = true)
-	public Tiers getTiers(@WebParam(targetNamespace = "http://www.vd.ch/uniregctb/webservices/tiers2",
-			partName = "params", name = "GetTiers") GetTiers params) throws BusinessException, AccessDeniedException, TechnicalException {
+	public Tiers getTiers(GetTiers params) throws BusinessException, AccessDeniedException, TechnicalException {
 		if (isEntreprise(params.tiersNumber)) {
 			final PersonneMoraleHisto pmHisto = getPmHisto(params.tiersNumber, params.parts);
 			return pmHisto == null ? null : getAt(pmHisto, params.date);
@@ -108,8 +104,7 @@ public class TiersWebServiceWithPM implements TiersWebService {
 	}
 
 	@Transactional(readOnly = true)
-	public TiersHisto getTiersPeriode(@WebParam(targetNamespace = "http://www.vd.ch/uniregctb/webservices/tiers2",
-			partName = "params", name = "GetTiersPeriode") GetTiersPeriode params) throws BusinessException, AccessDeniedException, TechnicalException {
+	public TiersHisto getTiersPeriode(GetTiersPeriode params) throws BusinessException, AccessDeniedException, TechnicalException {
 		if (isEntreprise(params.tiersNumber)) {
 			final PersonneMoraleHisto pmHisto = getPmHisto(params.tiersNumber, params.parts);
 			return pmHisto == null ? null : getAt(pmHisto, params.periode);
@@ -120,8 +115,7 @@ public class TiersWebServiceWithPM implements TiersWebService {
 	}
 
 	@Transactional(readOnly = true)
-	public TiersHisto getTiersHisto(@WebParam(targetNamespace = "http://www.vd.ch/uniregctb/webservices/tiers2",
-			partName = "params", name = "GetTiersHisto") GetTiersHisto params) throws BusinessException, AccessDeniedException, TechnicalException {
+	public TiersHisto getTiersHisto(GetTiersHisto params) throws BusinessException, AccessDeniedException, TechnicalException {
 		if (isEntreprise(params.tiersNumber)) {
 			return getPmHisto(params.tiersNumber, params.parts);
 		}
@@ -131,8 +125,7 @@ public class TiersWebServiceWithPM implements TiersWebService {
 	}
 
 	@Transactional(readOnly = true)
-	public BatchTiers getBatchTiers(@WebParam(targetNamespace = "http://www.vd.ch/uniregctb/webservices/tiers2",
-			partName = "params", name = "GetBatchTiers") GetBatchTiers params) throws BusinessException, AccessDeniedException, TechnicalException {
+	public BatchTiers getBatchTiers(GetBatchTiers params) throws BusinessException, AccessDeniedException, TechnicalException {
 
 		if (params.tiersNumbers == null || params.tiersNumbers.isEmpty()) {
 			return new BatchTiers();
@@ -197,8 +190,7 @@ public class TiersWebServiceWithPM implements TiersWebService {
 	}
 
 	@Transactional(readOnly = true)
-	public BatchTiersHisto getBatchTiersHisto(@WebParam(targetNamespace = "http://www.vd.ch/uniregctb/webservices/tiers2",
-			partName = "params", name = "GetBatchTiersHisto") GetBatchTiersHisto params) throws BusinessException, AccessDeniedException, TechnicalException {
+	public BatchTiersHisto getBatchTiersHisto(GetBatchTiersHisto params) throws BusinessException, AccessDeniedException, TechnicalException {
 
 		if (params.tiersNumbers == null || params.tiersNumbers.isEmpty()) {
 			return new BatchTiersHisto();
@@ -261,8 +253,7 @@ public class TiersWebServiceWithPM implements TiersWebService {
 	}
 
 	@Transactional(rollbackFor = Throwable.class)
-	public void setTiersBlocRembAuto(@WebParam(targetNamespace = "http://www.vd.ch/uniregctb/webservices/tiers2",
-			partName = "params", name = "SetTiersBlocRembAuto") SetTiersBlocRembAuto params) throws BusinessException, AccessDeniedException, TechnicalException {
+	public void setTiersBlocRembAuto(SetTiersBlocRembAuto params) throws BusinessException, AccessDeniedException, TechnicalException {
 		
 		if (isEntreprise(params.tiersNumber) && !tiersDAO.exists(params.tiersNumber)) {
 			// [UNIREG-2040] on crée l'entreprise à la volée
@@ -276,12 +267,16 @@ public class TiersWebServiceWithPM implements TiersWebService {
 	}
 
 	@SuppressWarnings({"unchecked"})
-	public List<EvenementPM> searchEvenementsPM(@WebParam(targetNamespace = "http://www.vd.ch/uniregctb/webservices/tiers2",
-			partName = "params", name = "SearchEvenementsPM") final SearchEvenementsPM params) throws BusinessException, AccessDeniedException, TechnicalException {
+	public List<EvenementPM> searchEvenementsPM(final SearchEvenementsPM params) throws BusinessException, AccessDeniedException, TechnicalException {
 
 		final List<ch.vd.uniregctb.interfaces.model.EvenementPM> list =
 				servicePM.findEvenements(params.tiersNumber, params.codeEvenement, DataHelper.webToCore(params.dateMinimale), DataHelper.webToCore(params.dateMaximale));
 		return events2web(list);
+	}
+
+	public DebiteurInfo getDebiteurInfo(GetDebiteurInfo params) throws
+			BusinessException, AccessDeniedException, TechnicalException {
+		return target.getDebiteurInfo(params);
 	}
 
 	public void doNothing(AllConcreteTiersClasses dummy) {
