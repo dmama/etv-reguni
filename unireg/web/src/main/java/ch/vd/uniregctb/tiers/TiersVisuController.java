@@ -1,17 +1,17 @@
 package ch.vd.uniregctb.tiers;
 
-import java.util.List;
-import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 
 import ch.vd.uniregctb.common.WebParamPagination;
+import ch.vd.uniregctb.fidor.FidorService;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityProvider;
@@ -43,16 +43,12 @@ public class TiersVisuController extends AbstractTiersController {
 
 	private TacheListManager tacheListManager;
 
-	private UniregProperties uniregProperties;
+	private FidorService fidorService;
 
 	public static final String PAGE_SIZE_NAME = "pageSize";
 	public static final String RESULT_SIZE_NAME = "resultSize";
 	private static final String TABLE_NAME = "rapportPrestation";
 	private static final int PAGE_SIZE = 10;
-
-	public void setUniregProperties(UniregProperties uniregProperties) {
-		this.uniregProperties = uniregProperties;
-	}
 
 	/**
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
@@ -77,10 +73,10 @@ public class TiersVisuController extends AbstractTiersController {
 			else {
 				tiersVisuView = getTiersVisuManager().getView(id, true, pagination);
 			}
-			tiersVisuView.setUrlTaoPP(new ExternalAppsUrlHelper(uniregProperties).getUrlTaoPP(id));
-			tiersVisuView.setUrlTaoBA(new ExternalAppsUrlHelper(uniregProperties).getUrlTaoBA(id));
-			tiersVisuView.setUrlTaoIS(new ExternalAppsUrlHelper(uniregProperties).getUrlTaoIS(id));
-			tiersVisuView.setUrlSipf(new ExternalAppsUrlHelper(uniregProperties).getUrlSipf(id));
+			tiersVisuView.setUrlTaoPP(fidorService.getUrlTaoPP(id));
+			tiersVisuView.setUrlTaoBA(fidorService.getUrlTaoBA(id));
+			tiersVisuView.setUrlTaoIS(fidorService.getUrlTaoIS(id));
+			tiersVisuView.setUrlSipf(fidorService.getUrlSipf(id));
 
 			//vérification des droits de visualisation
 			boolean isAllowed = true;
@@ -169,5 +165,7 @@ public class TiersVisuController extends AbstractTiersController {
 		this.tacheListManager = tacheListManager;
 	}
 
-
+	public void setFidorService(FidorService fidorService) {
+		this.fidorService = fidorService;
+	}
 }

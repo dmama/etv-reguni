@@ -22,5 +22,5 @@
 	<bean id="uniregExternalProperties" class="ch.vd.uniregctb.utils.UniregProperties">
 		<property name ="filename" value="${unireg.properties.path}" />
 	</bean>
-	
+
 </beans>

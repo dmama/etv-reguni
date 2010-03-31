@@ -9,12 +9,9 @@
 		<property name="transactionManager" ref="transactionManager" />
 	</bean>
 
-	<bean 	id="abstractTiersListController"
-			parent="abstractTiersController"
-			abstract="true"
-			class="ch.vd.uniregctb.tiers.AbstractTiersListController" >
-			<property name="uniregProperties" ref="uniregExternalProperties" />
-			<property name="tiersService" ref="tiersService" />
+	<bean id="abstractTiersListController" parent="abstractTiersController" abstract="true" class="ch.vd.uniregctb.tiers.AbstractTiersListController">
+		<property name="tiersService" ref="tiersService" />
+		<property name="fidorService" ref="fidorService" />
 	</bean>
 
 	<bean id="tiersMapHelper" class="ch.vd.uniregctb.tiers.TiersMapHelper" />
@@ -43,7 +40,7 @@
 		<property name="tacheListManager" ref="tacheListManager" />
 		<property name="formView" value="tiers/visualisation/visu" />
 		<property name="successView" value="redirect:/tiers/list.do" />
-		<property name="uniregProperties" ref="uniregExternalProperties" />
+		<property name="fidorService" ref="fidorService" />
 	</bean>
 
 	<bean id="tiersTimelineController" class="ch.vd.uniregctb.tiers.TiersTimelineController" parent="abstractTiersController">

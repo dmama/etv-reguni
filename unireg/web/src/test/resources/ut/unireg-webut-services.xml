@@ -11,4 +11,6 @@
 
 	<bean id="servletService" class="ch.vd.uniregctb.servlet.MockServletService"/>
 
+	<bean id="fidorService" class="ch.vd.uniregctb.fidor.MockFidorService"/>
+
 </beans>

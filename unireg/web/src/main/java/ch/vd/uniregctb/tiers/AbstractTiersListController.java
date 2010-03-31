@@ -1,11 +1,10 @@
 package ch.vd.uniregctb.tiers;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -13,6 +12,7 @@ import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 
 import ch.vd.uniregctb.common.FormatNumeroHelper;
+import ch.vd.uniregctb.fidor.FidorService;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.TooManyResultsIndexerException;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
@@ -29,9 +29,8 @@ public abstract class AbstractTiersListController extends AbstractTiersControlle
 
 	protected final Logger LOGGER = Logger.getLogger(AbstractTiersListController.class);
 
-	private UniregProperties uniregProperties;
-	
 	protected TiersService tiersService;
+	private FidorService fidorService;
 
 	/**
 	 * Bouton rechercher
@@ -89,8 +88,6 @@ public abstract class AbstractTiersListController extends AbstractTiersControlle
 					try {
 						List<TiersIndexedData> results = searchTiers(bean);
 
-						ExternalAppsUrlHelper urlHelper = new ExternalAppsUrlHelper(uniregProperties);
-
 						ArrayList<TiersIndexedDataView> displaysTiers = new ArrayList<TiersIndexedDataView>();
 						for (TiersIndexedData v : results) {
 							TiersIndexedDataView oneTiersLine = new TiersIndexedDataView(v.getDocument());
@@ -98,10 +95,10 @@ public abstract class AbstractTiersListController extends AbstractTiersControlle
 
 							// Populate les URLs TAO/SIPF/...
 							Long numero = v.getNumero();
-							oneTiersLine.setUrlTaoPP(urlHelper.getUrlTaoPP(numero));
-							oneTiersLine.setUrlTaoBA(urlHelper.getUrlTaoBA(numero));
-							oneTiersLine.setUrlTaoIS(urlHelper.getUrlTaoIS(numero));
-							oneTiersLine.setUrlSipf(urlHelper.getUrlSipf(numero));
+							oneTiersLine.setUrlTaoPP(fidorService.getUrlTaoPP(numero));
+							oneTiersLine.setUrlTaoBA(fidorService.getUrlTaoBA(numero));
+							oneTiersLine.setUrlTaoIS(fidorService.getUrlTaoIS(numero));
+							oneTiersLine.setUrlSipf(fidorService.getUrlSipf(numero));
 						}
 
 						mav.addObject(listAttributeName, displaysTiers);
@@ -122,12 +119,11 @@ public abstract class AbstractTiersListController extends AbstractTiersControlle
 		return mav;
 	}
 
-	public void setUniregProperties(UniregProperties uniregProperties) {
-		this.uniregProperties = uniregProperties;
-	}
-
 	public void setTiersService(TiersService tiersService) {
 		this.tiersService = tiersService;
 	}
 
+	public void setFidorService(FidorService fidorService) {
+		this.fidorService = fidorService;
+	}
 }

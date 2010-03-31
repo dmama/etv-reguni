@@ -16,10 +16,6 @@ public class MockUniregProperties extends UniregProperties {
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		addProperty("extprop.url.taopp", "https://blabla/_NOCTB_/_OID_");
-		addProperty("extprop.url.taoba", "https://blabla/_NOCTB_/_OID_");
-		addProperty("extprop.url.taois", "https://blabla/_NOCTB_/_OID_");
-		addProperty("extprop.url.sipf", "https://blabla/_NOCTB_/_OID_");
 		addProperty("extprop.ifosec.debug", "true");
 	}
 }
