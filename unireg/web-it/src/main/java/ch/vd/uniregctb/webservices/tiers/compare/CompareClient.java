@@ -15,6 +15,7 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.springframework.util.ResourceUtils;
@@ -103,7 +104,7 @@ public class CompareClient {
 		FiscalService fs = new FiscalService(wsdlUrl);
 		Fiscal service = fs.getFiscalServicePort();
 		Map<String, Object> context = ((BindingProvider) service).getRequestContext();
-		if (username != null) {
+		if (StringUtils.isNotBlank(username)) {
 			context.put(BindingProvider.USERNAME_PROPERTY, username);
 			context.put(BindingProvider.PASSWORD_PROPERTY, password);
 		}

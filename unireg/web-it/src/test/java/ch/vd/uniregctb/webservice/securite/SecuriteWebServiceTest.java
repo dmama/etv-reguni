@@ -14,6 +14,7 @@ import javax.xml.ws.BindingProvider;
 
 import net.java.dev.jaxb.array.LongArray;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 
@@ -56,7 +57,7 @@ public class SecuriteWebServiceTest extends WebitTest {
 			service = s.getSecuritePortPort();
 
 			Map<String, Object> context = ((BindingProvider) service).getRequestContext();
-			if (username != null) {
+			if (StringUtils.isNotBlank(username)) {
 				context.put(BindingProvider.USERNAME_PROPERTY, username);
 				context.put(BindingProvider.PASSWORD_PROPERTY, password);
 			}

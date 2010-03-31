@@ -12,6 +12,7 @@ import javax.activation.DataHandler;
 import javax.mail.util.ByteArrayDataSource;
 import javax.xml.ws.BindingProvider;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.cxf.interceptor.Fault;
 import org.apache.log4j.Logger;
 import org.springframework.util.ResourceUtils;
@@ -155,7 +156,7 @@ public class BatchRunnerClient {
 		BatchService ts = new BatchService(wsdlUrl);
 		BatchPort service = ts.getBatchPortPort();
 		Map<String, Object> context = ((BindingProvider) service).getRequestContext();
-		if (username != null) {
+		if (StringUtils.isNotBlank(username)) {
 			context.put(BindingProvider.USERNAME_PROPERTY, username);
 			context.put(BindingProvider.PASSWORD_PROPERTY, password);
 		}

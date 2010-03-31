@@ -10,6 +10,7 @@ import java.util.regex.Pattern;
 
 import javax.xml.ws.BindingProvider;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import ch.vd.uniregctb.common.WebitTest;
@@ -38,7 +39,7 @@ public abstract class AbstractTiersServiceWebTest extends WebitTest {
 			service = s.getTiersPortPort();
 
 			Map<String, Object> context = ((BindingProvider) service).getRequestContext();
-			if (username != null) {
+			if (StringUtils.isNotBlank(username)) {
 				context.put(BindingProvider.USERNAME_PROPERTY, username);
 				context.put(BindingProvider.PASSWORD_PROPERTY, password);
 			}
