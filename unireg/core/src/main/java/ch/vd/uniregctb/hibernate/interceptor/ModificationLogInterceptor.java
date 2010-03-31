@@ -38,8 +38,8 @@ public class ModificationLogInterceptor implements ModificationSubInterceptor, I
 			if (methodName.equals(propertyNames[i])) {
 				if (!completeOnly || currentState[i] == null) {
 					currentState[i] = value;
+					result = true; // Modified
 				}
-				result = true; // Modified
 			}
 		}
 		return result;
