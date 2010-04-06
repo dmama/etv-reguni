@@ -48,6 +48,8 @@ public class TiersView {
 
 	private List<RapportPrestationView> rapportsPrestation;
 
+	private boolean rapportsPrestationHisto;
+
 	private Set<DebiteurView> debiteurs;
 
 	private List<RapportView> contribuablesAssocies;
@@ -236,6 +238,14 @@ public class TiersView {
 
 	public void setRapportsPrestation(List<RapportPrestationView> rapportsPrestation) {
 		this.rapportsPrestation = rapportsPrestation;
+	}
+
+	public boolean isRapportsPrestationHisto() {
+		return rapportsPrestationHisto;
+	}
+
+	public void setRapportsPrestationHisto(boolean rapportsPrestationHisto) {
+		this.rapportsPrestationHisto = rapportsPrestationHisto;
 	}
 
 	public List<ListeRecapDetailView> getLrs() {

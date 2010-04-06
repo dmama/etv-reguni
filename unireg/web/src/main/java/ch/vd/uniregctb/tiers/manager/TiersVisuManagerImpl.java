@@ -55,17 +55,14 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 	}
 
 	/**
-	 * Charge les informations dans TiersVisuView
-	 *
-	 * @param numero
-	 * @return un objet TiersVisuView
-	 * @throws AdressesResolutionException
+	 * {@inheritDoc}
 	 */
 	@Transactional(readOnly = true)
-	public TiersVisuView getView(Long numero, boolean adressesHisto, WebParamPagination webParamPagination) throws AdresseException, InfrastructureException {
+	public TiersVisuView getView(Long numero, boolean adressesHisto, boolean rapportsPrestationHisto, WebParamPagination webParamPagination) throws AdresseException, InfrastructureException {
 
 		TiersVisuView tiersVisuView = new TiersVisuView();
 		tiersVisuView.setAdressesHisto(adressesHisto);
+		tiersVisuView.setRapportsPrestationHisto(rapportsPrestationHisto);
 
 		final Tiers tiers = getTiersDAO().get(numero);
 		if (tiers == null) {
@@ -96,7 +93,7 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 		}
 		else if (tiers instanceof DebiteurPrestationImposable) {
 			DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiers;
-			setDebiteurPrestationImposable(tiersVisuView, dpi, webParamPagination);
+			setDebiteurPrestationImposable(tiersVisuView, dpi, rapportsPrestationHisto, webParamPagination);
 			setContribuablesAssocies(tiersVisuView, dpi);
 			setForsFiscauxDebiteur(tiersVisuView, dpi);
 		}

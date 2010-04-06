@@ -19,7 +19,6 @@ import ch.vd.uniregctb.tache.manager.TacheListManager;
 import ch.vd.uniregctb.tiers.manager.TiersVisuManager;
 import ch.vd.uniregctb.tiers.view.TiersVisuView;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
-import ch.vd.uniregctb.utils.UniregProperties;
 
 /**
  * Controller spring permettant la visualisation ou la saisie d'une objet metier
@@ -34,10 +33,9 @@ public class TiersVisuController extends AbstractTiersController {
 	protected final Logger LOGGER = Logger.getLogger(TiersVisuController.class);
 
 	public final static String BUTTON_ANNULER_TIERS = "annulerTiers";
-
 	private final static String ADRESSES_HISTO_PARAM = "adressesHisto";
-
 	private final static String TACHE_ID_TRAITE_PARAM = "idTacheTraite";
+	private final static String RAPPORTS_PREST_HISTO_PARAM = "rapportsPrestationHisto";
 
 	private TiersVisuManager tiersVisuManager ;
 
@@ -50,15 +48,23 @@ public class TiersVisuController extends AbstractTiersController {
 	private static final String TABLE_NAME = "rapportPrestation";
 	private static final int PAGE_SIZE = 10;
 
+	private static boolean getBooleanParam(HttpServletRequest request, String paramName) {
+		final String param = request.getParameter(paramName);
+		return param != null && param.equalsIgnoreCase("true");
+	}
+
 	/**
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
 	@Override
 	protected Object formBackingObject(HttpServletRequest request) throws Exception {
+
 		TiersVisuView tiersVisuView = null;
-		String idParam = request.getParameter(TIERS_ID_PARAMETER_NAME);
-		String adrHistoParam = request.getParameter(ADRESSES_HISTO_PARAM);
-		String idTacheTraiteParam = request.getParameter(TACHE_ID_TRAITE_PARAM);
+
+		final String idParam = request.getParameter(TIERS_ID_PARAMETER_NAME);
+		final boolean adrHistoParam = getBooleanParam(request, ADRESSES_HISTO_PARAM);
+		final String idTacheTraiteParam = request.getParameter(TACHE_ID_TRAITE_PARAM);
+		final boolean rapportsPrestationHisto = getBooleanParam(request, RAPPORTS_PREST_HISTO_PARAM);
 
 		if (idParam != null && !idParam.equals("")) {
 			Long id = Long.parseLong(idParam);
@@ -67,12 +73,7 @@ public class TiersVisuController extends AbstractTiersController {
 			checkAccesDossierEnLecture(id);
 
 			WebParamPagination pagination = new WebParamPagination(request, TABLE_NAME, PAGE_SIZE);
-			if ((adrHistoParam == null) || (adrHistoParam.equals("false"))) {
-				tiersVisuView = getTiersVisuManager().getView(id, false, pagination);
-			}
-			else {
-				tiersVisuView = getTiersVisuManager().getView(id, true, pagination);
-			}
+			tiersVisuView = tiersVisuManager.getView(id, adrHistoParam, rapportsPrestationHisto, pagination);
 			tiersVisuView.setUrlTaoPP(fidorService.getUrlTaoPP(id));
 			tiersVisuView.setUrlTaoBA(fidorService.getUrlTaoBA(id));
 			tiersVisuView.setUrlTaoIS(fidorService.getUrlTaoIS(id));
@@ -121,12 +122,14 @@ public class TiersVisuController extends AbstractTiersController {
 		mav.addObject("warnings", warnings);
 		session.removeAttribute("warnings");
 
+		final boolean rapportsPrestationHisto = getBooleanParam(request, RAPPORTS_PREST_HISTO_PARAM);
+
 		mav.addObject(URL_RETOUR_SESSION_NAME, session.getAttribute(URL_RETOUR_SESSION_NAME));
 		mav.addObject(PAGE_SIZE_NAME, PAGE_SIZE);
 		String idParam = request.getParameter(TIERS_ID_PARAMETER_NAME);
 		if (idParam != null && !idParam.equals("")) {
 			Long numeroDebiteur = Long.parseLong(idParam);
-			mav.addObject(RESULT_SIZE_NAME, tiersVisuManager.countRapportsPrestationImposable(numeroDebiteur));
+			mav.addObject(RESULT_SIZE_NAME, tiersVisuManager.countRapportsPrestationImposable(numeroDebiteur, rapportsPrestationHisto));
 		}
 		return mav;
 	}
@@ -149,16 +152,8 @@ public class TiersVisuController extends AbstractTiersController {
 		return showForm(request, response, errors);
 	}
 
-	public TiersVisuManager getTiersVisuManager() {
-		return tiersVisuManager;
-	}
-
 	public void setTiersVisuManager(TiersVisuManager tiersVisuManager) {
 		this.tiersVisuManager = tiersVisuManager;
-	}
-
-	public TacheListManager getTacheListManager() {
-		return tacheListManager;
 	}
 
 	public void setTacheListManager(TacheListManager tacheListManager) {

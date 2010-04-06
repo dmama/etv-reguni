@@ -35,16 +35,16 @@ public class RapportEntreTiersDAOImpl extends GenericDAOImpl<RapportEntreTiers, 
 	}
 
 	/**
-	 * Retourne les rapports prestation imposable d'un débiteur
-	 * @param numeroDebiteur
-	 * @param paramPagination
-	 * @return
+	 * {@inheritDoc}
 	 */
 	@SuppressWarnings("unchecked")
-	public List<RapportPrestationImposable> getRapportsPrestationImposable(final Long numeroDebiteur, ParamPagination paramPagination) {
+	public List<RapportPrestationImposable> getRapportsPrestationImposable(final Long numeroDebiteur, ParamPagination paramPagination, boolean activesOnly) {
 
 		final StringBuilder b = new StringBuilder();
 		b.append("SELECT rapport FROM RapportPrestationImposable rapport WHERE rapport.objetId = :debiteur");
+		if (activesOnly) {
+			b.append(" and rapport.dateFin is null and rapport.annulationDate is null");
+		}
 		if (paramPagination.getChamp() == null) {
 			b.append(" ORDER BY rapport.logCreationDate");
 		}
@@ -73,16 +73,15 @@ public class RapportEntreTiersDAOImpl extends GenericDAOImpl<RapportEntreTiers, 
 		});
 	}
 
-
 	/**
-	 * Compte le nombre de rapports prestation imposable d'un débiteur
-	 *
-	 * @param numeroDebiteur
-	 * @return
+	 * {@inheritDoc}
 	 */
-	public int countRapportsPrestationImposable(Long numeroDebiteur){
+	public int countRapportsPrestationImposable(Long numeroDebiteur, boolean activesOnly){
 
 		String query = "select count(*) from RapportPrestationImposable rapport where rapport.objetId = " + numeroDebiteur ;
+		if (activesOnly) {
+			query += " and rapport.dateFin is null and rapport.annulationDate is null";
+		}
 		int count = DataAccessUtils.intResult(getHibernateTemplate().find(query));
 		return count;
 	}

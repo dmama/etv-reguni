@@ -24,17 +24,20 @@ public interface RapportEntreTiersDAO extends GenericDAO<RapportEntreTiers, Long
 
 	/**
 	 * Retourne les rapports prestation imposable d'un débiteur
-	 * @param numeroDebiteur
-	 * @param paramPagination
-	 * @return
+	 *
+	 * @param numeroDebiteur  un numéro de débiteur
+	 * @param paramPagination des éventuels paramètres de pagination
+	 * @param activesOnly     <b>vrai</b> s'il ne faut retourner que les rapports actifs à l'heure actuelle; <b>faux</b> pour retourner tous les rapports existants.
+	 * @return les rapports trouvés.
 	 */
-	public List<RapportPrestationImposable> getRapportsPrestationImposable(Long numeroDebiteur, ParamPagination paramPagination) ;
+	public List<RapportPrestationImposable> getRapportsPrestationImposable(Long numeroDebiteur, ParamPagination paramPagination, boolean activesOnly);
 
 	/**
 	 * Compte le nombre de rapports prestation imposable d'un débiteur
 	 *
-	 * @param numeroDebiteur
-	 * @return
+	 * @param numeroDebiteur un numéro de débiteur
+	 * @param activesOnly    <b>vrai</b> s'il ne faut tenir compte que des rapports actifs à l'heure actuelle; <b>faux</b> pour tenir compte de tous les rapports existants.
+	 * @return le nombre de rapports trouvés
 	 */
-	public int countRapportsPrestationImposable(Long numeroDebiteur);
+	public int countRapportsPrestationImposable(Long numeroDebiteur, boolean activesOnly);
 }

@@ -58,7 +58,7 @@ public class RapportsPrestationEditController extends AbstractTiersController {
 				//gestion des droits d'édition d'un tier par tiersEditManager
 				checkAccesDossierEnLecture(id);
 				WebParamPagination pagination = new WebParamPagination(request, TABLE_NAME, PAGE_SIZE);
-				tiersView = rapportEditManager.getRapportsPrestationView(id, pagination);
+				tiersView = rapportEditManager.getRapportsPrestationView(id, pagination, true);
 			}
 		}
 		return tiersView;
@@ -78,7 +78,7 @@ public class RapportsPrestationEditController extends AbstractTiersController {
 		String idParam = request.getParameter(TIERS_ID_PARAMETER_NAME);
 		if (idParam != null && !idParam.equals("")) {
 			Long numeroDebiteur = Long.parseLong(idParam);
-			mav.addObject(RESULT_SIZE_NAME, new Integer(getTiersEditManager().countRapportsPrestationImposable(numeroDebiteur)));
+			mav.addObject(RESULT_SIZE_NAME, getTiersEditManager().countRapportsPrestationImposable(numeroDebiteur, true));
 		}
 		return mav;
 	}

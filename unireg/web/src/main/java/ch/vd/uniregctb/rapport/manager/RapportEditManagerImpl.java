@@ -22,7 +22,6 @@ import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
-import ch.vd.uniregctb.tiers.RapportEntreTiersDAO;
 import ch.vd.uniregctb.tiers.RapportPrestationImposable;
 import ch.vd.uniregctb.tiers.RepresentationConventionnelle;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -41,18 +40,6 @@ import ch.vd.uniregctb.utils.WebContextUtils;
  *
  */
 public class RapportEditManagerImpl extends TiersManager implements RapportEditManager {
-
-	private RapportEntreTiersDAO rapportEntreTiersDAO;
-
-	@Override
-	public RapportEntreTiersDAO getRapportEntreTiersDAO() {
-		return rapportEntreTiersDAO;
-	}
-
-	@Override
-	public void setRapportEntreTiersDAO(RapportEntreTiersDAO rapportEntreTiersDAO) {
-		this.rapportEntreTiersDAO = rapportEntreTiersDAO;
-	}
 
 	/**
 	 * Alimente la vue RapportView
@@ -281,16 +268,10 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 	}
 
 	/**
-	 * Charge les informations dans TiersView
-	 *
-	 * @param numero
-	 * @param webParamPagination
-	 * @return un objet TiersView
-	 * @throws AdressesResolutionException
-	 * @throws InfrastructureException
+	 * {@inheritDoc}
 	 */
 	@Transactional(readOnly = true)
-	public TiersEditView getRapportsPrestationView(Long numero, WebParamPagination webParamPagination) throws AdresseException, InfrastructureException {
+	public TiersEditView getRapportsPrestationView(Long numero, WebParamPagination webParamPagination, boolean rapportsPrestationHisto) throws AdresseException, InfrastructureException {
 		TiersEditView tiersEditView = new TiersEditView();
 		if ( numero == null) {
 			return null;
@@ -301,35 +282,30 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 			throw new RuntimeException( this.getMessageSource().getMessage("error.tiers.inexistant" , null,  WebContextUtils.getDefaultLocale()));
 		}
 
-		if (tiers != null){
-			tiersEditView.setTiers(tiers);
-			TiersGeneralView tiersGeneralView = tiersGeneralManager.get(tiers);
-			tiersEditView.setTiersGeneral(tiersGeneralView);
-			if (tiers instanceof DebiteurPrestationImposable ) {
-				DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiers;
-				tiersEditView.setRapportsPrestation(getRapportsPrestation(dpi, webParamPagination));
-				setContribuablesAssocies(tiersEditView, dpi);
-				if (dpi.getContribuableId() == null) {
-					tiersEditView.setAddContactISAllowed(true);
-				}
-				else {
-					tiersEditView.setAddContactISAllowed(false);
-				}
+		tiersEditView.setTiers(tiers);
+		TiersGeneralView tiersGeneralView = tiersGeneralManager.get(tiers);
+		tiersEditView.setTiersGeneral(tiersGeneralView);
+		if (tiers instanceof DebiteurPrestationImposable ) {
+			DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiers;
+			tiersEditView.setRapportsPrestation(getRapportsPrestation(dpi, webParamPagination, rapportsPrestationHisto));
+			setContribuablesAssocies(tiersEditView, dpi);
+			if (dpi.getContribuableId() == null) {
+				tiersEditView.setAddContactISAllowed(true);
 			}
-			//gestion des droits d'édition
-			boolean allowed = false;
-			Map<String, Boolean> allowedOnglet = initAllowedOnglet();
-			allowed = setDroitEdition(tiers, allowedOnglet);
-
-			tiersEditView.setAllowedOnglet(allowedOnglet);
-			tiersEditView.setAllowed(allowed);
-
-			if(!allowed){
-				tiersEditView.setTiers(null);
+			else {
+				tiersEditView.setAddContactISAllowed(false);
 			}
 		}
-		else {
-			tiersEditView.setAllowed(true);
+		//gestion des droits d'édition
+		boolean allowed = false;
+		Map<String, Boolean> allowedOnglet = initAllowedOnglet();
+		allowed = setDroitEdition(tiers, allowedOnglet);
+
+		tiersEditView.setAllowedOnglet(allowedOnglet);
+		tiersEditView.setAllowed(allowed);
+
+		if(!allowed){
+			tiersEditView.setTiers(null);
 		}
 
 		return tiersEditView;

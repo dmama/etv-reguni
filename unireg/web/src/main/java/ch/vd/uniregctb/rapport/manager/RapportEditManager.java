@@ -70,11 +70,12 @@ public interface RapportEditManager {
 	 *
 	 * @param numero
 	 * @param webParamPagination
+	 * @param rapportsPrestationHisto
 	 * @return un objet TiersView
 	 * @throws AdressesResolutionException
 	 * @throws InfrastructureException
 	 */
 	@Transactional(readOnly = true)
-	public TiersEditView getRapportsPrestationView(Long numero, WebParamPagination webParamPagination) throws AdresseException, InfrastructureException;
+	public TiersEditView getRapportsPrestationView(Long numero, WebParamPagination webParamPagination, boolean rapportsPrestationHisto) throws AdresseException, InfrastructureException;
 
 }

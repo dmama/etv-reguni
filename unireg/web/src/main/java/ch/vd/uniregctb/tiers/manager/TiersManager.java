@@ -118,7 +118,7 @@ public class TiersManager implements MessageSourceAware {
 
 	protected SituationFamilleService situationFamilleService;
 
-	private RapportEntreTiersDAO rapportEntreTiersDAO;
+	protected RapportEntreTiersDAO rapportEntreTiersDAO;
 
 	/**
 	 * Recupere l'individu correspondant au tiers
@@ -376,22 +376,24 @@ public class TiersManager implements MessageSourceAware {
 	 * Alimente List<RapportPrestationView>
 	 *
 	 * @param dpi
+	 * @param rapportsPrestationHisto
 	 * @return
 	 * @throws AdresseException
 	 */
-	protected List<RapportPrestationView> getRapportsPrestation(DebiteurPrestationImposable dpi, WebParamPagination pagination) throws AdresseException {
+	protected List<RapportPrestationView> getRapportsPrestation(DebiteurPrestationImposable dpi, WebParamPagination pagination, boolean rapportsPrestationHisto) throws AdresseException {
+
 		List<RapportPrestationView> rapportPrestationViews = new ArrayList<RapportPrestationView>();
-		List<RapportPrestationImposable> rapports = getRapportEntreTiersDAO().getRapportsPrestationImposable(dpi.getNumero(), pagination);
+
+		List<RapportPrestationImposable> rapports = rapportEntreTiersDAO.getRapportsPrestationImposable(dpi.getNumero(), pagination, !rapportsPrestationHisto);
 		for (RapportPrestationImposable rapport : rapports) {
-			RapportPrestationImposable rapportPrestationImposable = rapport;
 			RapportPrestationView rapportPrestationView = new RapportPrestationView();
-			rapportPrestationView.setId(rapportPrestationImposable.getId());
-			rapportPrestationView.setAnnule(rapportPrestationImposable.isAnnule());
-			rapportPrestationView.setTypeActivite(rapportPrestationImposable.getTypeActivite());
-			rapportPrestationView.setTauxActivite(rapportPrestationImposable.getTauxActivite());
-			rapportPrestationView.setDateDebut(rapportPrestationImposable.getDateDebut());
-			rapportPrestationView.setDateFin(rapportPrestationImposable.getDateFin());
-			Tiers tiersObjet = tiersDAO.get(rapportPrestationImposable.getSujetId());
+			rapportPrestationView.setId(rapport.getId());
+			rapportPrestationView.setAnnule(rapport.isAnnule());
+			rapportPrestationView.setTypeActivite(rapport.getTypeActivite());
+			rapportPrestationView.setTauxActivite(rapport.getTauxActivite());
+			rapportPrestationView.setDateDebut(rapport.getDateDebut());
+			rapportPrestationView.setDateFin(rapport.getDateFin());
+			Tiers tiersObjet = tiersDAO.get(rapport.getSujetId());
 			if (tiersObjet instanceof PersonnePhysique) {
 				PersonnePhysique pp = (PersonnePhysique) tiersObjet;
 				String nouveauNumeroAvs = tiersService.getNumeroAssureSocial(pp);
@@ -587,13 +589,13 @@ public class TiersManager implements MessageSourceAware {
 	/**
 	 * Met a jour la vue en fonction du debiteur prestation imposable
 	 *
-	 * @param entreprise
 	 * @param tiersView
+	 * @param rapportsPrestationHisto
 	 * @throws AdresseException
 	 */
-	protected void setDebiteurPrestationImposable(TiersView tiersView, DebiteurPrestationImposable dpi, WebParamPagination webParamPagination) throws AdresseException {
+	protected void setDebiteurPrestationImposable(TiersView tiersView, DebiteurPrestationImposable dpi, boolean rapportsPrestationHisto, WebParamPagination webParamPagination) throws AdresseException {
 		tiersView.setTiers(dpi);
-		tiersView.setRapportsPrestation(getRapportsPrestation(dpi, webParamPagination));
+		tiersView.setRapportsPrestation(getRapportsPrestation(dpi, webParamPagination, rapportsPrestationHisto));
 		tiersView.setLrs(getListesRecapitulatives(dpi));
 		if (dpi.getContribuableId() == null) {
 			tiersView.setAddContactISAllowed(true);
@@ -1512,11 +1514,12 @@ public class TiersManager implements MessageSourceAware {
 	/**
 	 * Compte le nombre de rapports prestation imposable pour un débiteur
 	 * @param numeroDebiteur
+	 * @param rapportsPrestationHisto
 	 * @return
 	 */
 	@Transactional(readOnly = true)
-	public int countRapportsPrestationImposable(Long numeroDebiteur) {
-		return rapportEntreTiersDAO.countRapportsPrestationImposable(numeroDebiteur);
+	public int countRapportsPrestationImposable(Long numeroDebiteur, boolean rapportsPrestationHisto) {
+		return rapportEntreTiersDAO.countRapportsPrestationImposable(numeroDebiteur, !rapportsPrestationHisto);
 	}
 
 	public HostCivilService getHostCivilService() {
@@ -1609,10 +1612,6 @@ public class TiersManager implements MessageSourceAware {
 
 	public void setAdresseTiersDAO(AdresseTiersDAO adresseTiersDAO) {
 		this.adresseTiersDAO = adresseTiersDAO;
-	}
-
-	public RapportEntreTiersDAO getRapportEntreTiersDAO() {
-		return rapportEntreTiersDAO;
 	}
 
 	public void setRapportEntreTiersDAO(RapportEntreTiersDAO rapportEntreTiersDAO) {

@@ -105,5 +105,5 @@ public interface TiersEditManager {
 	 * @return
 	 */
 	@Transactional(readOnly = true)
-	public int countRapportsPrestationImposable(Long numeroDebiteur);
+	public int countRapportsPrestationImposable(Long numeroDebiteur, boolean rapportsPrestationHisto);
 }

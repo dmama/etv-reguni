@@ -53,7 +53,7 @@ public class TiersVisuManagerTest extends WebTest {
 	public void testGetViewHabitant() throws Exception{
 
 		WebParamPagination webParamPagination = new WebParamPagination(1, 10, "logCreationDate", true);
-		TiersVisuView view = tiersVisuManager.getView(new Long(6789), true, webParamPagination);
+		TiersVisuView view = tiersVisuManager.getView((long) 6789, true, false, webParamPagination);
 		Tiers tiers = view.getTiers();
 		PersonnePhysique hab = (PersonnePhysique) tiers;
 		assertNotNull(hab);
@@ -63,7 +63,7 @@ public class TiersVisuManagerTest extends WebTest {
 	@Test
 	public void testGetViewNonHabitant() throws Exception {
 		WebParamPagination webParamPagination = new WebParamPagination(1, 10, "logCreationDate", true);
-		TiersVisuView view = tiersVisuManager.getView(new Long(12600002), true, webParamPagination);
+		TiersVisuView view = tiersVisuManager.getView((long) 12600002, true, false, webParamPagination);
 		Tiers tiers = view.getTiers();
 		PersonnePhysique nonHab = (PersonnePhysique) tiers;
 		assertNotNull(nonHab);
@@ -74,7 +74,7 @@ public class TiersVisuManagerTest extends WebTest {
 	@Test
 	public void testGetAdressesHistoriques() throws Exception {
 		WebParamPagination webParamPagination = new WebParamPagination(1, 10, "logCreationDate", true);
-		TiersVisuView view = tiersVisuManager.getView(new Long(6789), true, webParamPagination);
+		TiersVisuView view = tiersVisuManager.getView((long) 6789, true, false, webParamPagination);
 		List<AdresseView> adresses = view.getHistoriqueAdresses();
 		/*
 		 * 2 * courrier
