@@ -36,7 +36,7 @@
 					</c:if>
 				<c:if test="${rapportPrestation.annule}"></strike></c:if>	
 			</display:column>
-			<display:column sortable="true" titleKey="label.numero.contribuable" sortProperty="sujet.numero" sortName="sujet.numero" >
+			<display:column sortable="true" titleKey="label.numero.contribuable" sortProperty="sujetId" sortName="sujetId" >
 				<c:if test="${rapportPrestation.annule}"><strike></c:if>
 					<c:if test="${page == 'visu' }">
 						<a href="../tiers/visu.do?id=${rapportPrestation.numero}&urlRetour=../tiers/visu.do?id=${tiersGeneral.numero}"><unireg:numCTB numero="${rapportPrestation.numero}"></unireg:numCTB></a>
