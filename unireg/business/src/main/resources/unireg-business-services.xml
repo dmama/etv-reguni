@@ -107,6 +107,7 @@
 
 	<bean id="adresseService" class="ch.vd.uniregctb.adresse.AdresseServiceImpl">
 		<property name="tiersService" ref="tiersService" />
+		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="serviceCivilService" ref="serviceCivilService" />
 		<property name="serviceInfra" ref="serviceInfrastructureService" />
 		<property name="servicePM" ref="servicePersonneMoraleService" />

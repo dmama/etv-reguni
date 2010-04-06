@@ -259,7 +259,7 @@ public class TiersManager implements MessageSourceAware {
 		if (rapports != null) {
 			for (RapportEntreTiers r : rapports) {
 				if (r instanceof ContactImpotSource) {
-					final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) r.getObjet();
+					final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(r.getObjetId());
 					final DebiteurView debiteurView = new DebiteurView();
 					debiteurView.setAnnule(r.isAnnule());
 					debiteurView.setId(r.getId());
@@ -300,7 +300,7 @@ public class TiersManager implements MessageSourceAware {
 				rapportView.setDateDebut(rapportEntreTiers.getDateDebut());
 				rapportView.setDateFin(rapportEntreTiers.getDateFin());
 
-				final Tiers tiersSujet = rapportEntreTiers.getSujet();
+				final Tiers tiersSujet = tiersDAO.get(rapportEntreTiers.getSujetId());
 				rapportView.setNumero(tiersSujet.getNumero());
 
 				final List<String> nomCourrier = getAdresseService().getNomCourrier(tiersSujet, null, false);
@@ -320,7 +320,7 @@ public class TiersManager implements MessageSourceAware {
 				rapportView.setDateDebut(rapportEntreTiers.getDateDebut());
 				rapportView.setDateFin(rapportEntreTiers.getDateFin());
 
-				final Tiers tiersObjet = rapportEntreTiers.getObjet();
+				final Tiers tiersObjet = tiersDAO.get(rapportEntreTiers.getObjetId());
 				rapportView.setNumero(tiersObjet.getNumero());
 
 				final List<String> nomCourrier = getAdresseService().getNomCourrier(tiersObjet, null, false);
@@ -362,7 +362,7 @@ public class TiersManager implements MessageSourceAware {
 				RapportView rapportView = new RapportView();
 				rapportView.setId(rapportEntreTiers.getId());
 				rapportView.setAnnule(rapportEntreTiers.isAnnule());
-				Tiers tiersSujet = rapportEntreTiers.getSujet();
+				Tiers tiersSujet = tiersDAO.get(rapportEntreTiers.getSujetId());
 				rapportView.setNumero(tiersSujet.getNumero());
 				List<String> nomCourrier = getAdresseService().getNomCourrier(tiersSujet, null, false);
 				rapportView.setNomCourrier(nomCourrier);
@@ -391,7 +391,7 @@ public class TiersManager implements MessageSourceAware {
 			rapportPrestationView.setTauxActivite(rapportPrestationImposable.getTauxActivite());
 			rapportPrestationView.setDateDebut(rapportPrestationImposable.getDateDebut());
 			rapportPrestationView.setDateFin(rapportPrestationImposable.getDateFin());
-			Tiers tiersObjet = rapportPrestationImposable.getSujet();
+			Tiers tiersObjet = tiersDAO.get(rapportPrestationImposable.getSujetId());
 			if (tiersObjet instanceof PersonnePhysique) {
 				PersonnePhysique pp = (PersonnePhysique) tiersObjet;
 				String nouveauNumeroAvs = tiersService.getNumeroAssureSocial(pp);
@@ -432,7 +432,7 @@ public class TiersManager implements MessageSourceAware {
 				rapportPrestationView.setTauxActivite(rapportPrestationImposable.getTauxActivite());
 				rapportPrestationView.setDateDebut(rapportPrestationImposable.getDateDebut());
 				rapportPrestationView.setDateFin(rapportPrestationImposable.getDateFin());
-				Tiers tiersObjet = rapportPrestationImposable.getSujet();
+				Tiers tiersObjet = tiersDAO.get(rapportPrestationImposable.getSujetId());
 				if (tiersObjet instanceof PersonnePhysique) {
 					PersonnePhysique pp = (PersonnePhysique) tiersObjet;
 					String nouveauNumeroAvs = tiersService.getNumeroAssureSocial(pp);
@@ -595,7 +595,7 @@ public class TiersManager implements MessageSourceAware {
 		tiersView.setTiers(dpi);
 		tiersView.setRapportsPrestation(getRapportsPrestation(dpi, webParamPagination));
 		tiersView.setLrs(getListesRecapitulatives(dpi));
-		if (dpi.getContribuable() == null) {
+		if (dpi.getContribuableId() == null) {
 			tiersView.setAddContactISAllowed(true);
 		}
 		else {
@@ -898,7 +898,7 @@ public class TiersManager implements MessageSourceAware {
 			//les ménages n'ont jamais les onglets civil et rapport prestation
 			MenageCommun menageCommun = (MenageCommun) tiers;
 			boolean isHabitant = false;
-			for (PersonnePhysique pp : menageCommun.getPersonnesPhysiques()) {
+			for (PersonnePhysique pp : tiersService.getPersonnesPhysiques(menageCommun)) {
 				if (pp.isHabitant()) {
 					isHabitant = true;
 					break;
@@ -1164,7 +1164,7 @@ public class TiersManager implements MessageSourceAware {
 		}
 		else if (SecurityProvider.isGranted(Role.ADR_PP_C_DCD) && tiers instanceof MenageCommun) {
 			MenageCommun mc = (MenageCommun) tiers;
-			for (PersonnePhysique pp : mc.getPersonnesPhysiques()) {
+			for (PersonnePhysique pp : tiersService.getPersonnesPhysiques(mc)) {
 				if (tiersService.isDecede(pp)) {
 					allowedOnglet.put(TiersVisuView.MODIF_ADRESSE, Boolean.TRUE);
 					allowedOnglet.put(TiersEditView.ADR_C, Boolean.TRUE);
@@ -1247,7 +1247,7 @@ public class TiersManager implements MessageSourceAware {
 			tiersAssujetti = tiers;
 			//les ménages n'ont jamais les onglets civil et rapport prestation
 			MenageCommun menageCommun = (MenageCommun) tiers;
-			for (PersonnePhysique pp : menageCommun.getPersonnesPhysiques()) {
+			for (PersonnePhysique pp : tiersService.getPersonnesPhysiques(menageCommun)) {
 				if (pp.isHabitant()) {
 					isHabitant = true;
 					break;

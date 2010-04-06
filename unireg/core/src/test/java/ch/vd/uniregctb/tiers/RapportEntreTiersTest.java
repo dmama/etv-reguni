@@ -14,6 +14,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.CoreDAOTest;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
+@SuppressWarnings({"JavaDoc"})
 public class RapportEntreTiersTest extends CoreDAOTest {
 
 	// private static final Logger LOGGER = Logger.getLogger(RapportEntreTiersTest.class);
@@ -97,11 +98,11 @@ public class RapportEntreTiersTest extends CoreDAOTest {
 
 			final RapportEntreTiers ret1 = (RapportEntreTiers) rapportsObjet.toArray()[0];
 			final RapportEntreTiers ret2 = (RapportEntreTiers) rapportsObjet.toArray()[1];
-			assertEquals(menage, ret1.getObjet());
-			assertEquals(menage, ret2.getObjet());
+			assertEquals(menage.getId(), ret1.getObjetId());
+			assertEquals(menage.getId(), ret2.getObjetId());
 
-			final PersonnePhysique habitant1 = (PersonnePhysique) ret1.getSujet();
-			final PersonnePhysique habitant2 = (PersonnePhysique) ret2.getSujet();
+			final PersonnePhysique habitant1 = (PersonnePhysique) dao.get(ret1.getSujetId());
+			final PersonnePhysique habitant2 = (PersonnePhysique) dao.get(ret2.getSujetId());
 			assertNotNull(habitant1);
 			assertNotNull(habitant2);
 			assertTrue(habitant1.getNumeroIndividu() == 12345L || habitant1.getNumeroIndividu() == 23456L);
@@ -126,8 +127,8 @@ public class RapportEntreTiersTest extends CoreDAOTest {
 
 			final RapportEntreTiers ret = (RapportEntreTiers) rapportsSujet.toArray()[0];
 			assertNotNull(ret);
-			assertEquals(habitant1, ret.getSujet());
-			assertEquals(menage, ret.getObjet());
+			assertEquals(habitant1.getId(), ret.getSujetId());
+			assertEquals(menage.getId(), ret.getObjetId());
 		}
 
 		// Tests depuis le point de vue de l'habitant n°2
@@ -148,8 +149,8 @@ public class RapportEntreTiersTest extends CoreDAOTest {
 
 			final RapportEntreTiers ret = (RapportEntreTiers) rapportsSujet.toArray()[0];
 			assertNotNull(ret);
-			assertEquals(habitant2, ret.getSujet());
-			assertEquals(menage, ret.getObjet());
+			assertEquals(habitant2.getId(), ret.getSujetId());
+			assertEquals(menage.getId(), ret.getObjetId());
 		}
 	}
 
@@ -226,8 +227,8 @@ public class RapportEntreTiersTest extends CoreDAOTest {
 
 			final RapportEntreTiers ret = (RapportEntreTiers) rapportsObjet.toArray()[0];
 			assertNotNull(ret);
-			assertEquals(pupille, ret.getSujet());
-			assertEquals(tuteur, ret.getObjet());
+			assertEquals(pupille.getId(), ret.getSujetId());
+			assertEquals(tuteur.getId(), ret.getObjetId());
 		}
 
 		// Depuis le point de vue de la pupille
@@ -250,8 +251,8 @@ public class RapportEntreTiersTest extends CoreDAOTest {
 			final RapportEntreTiers ret = (RapportEntreTiers) rapportsSujet.toArray()[0];
 			assertNotNull(ret);
 			assertEquals(TypeRapportEntreTiers.TUTELLE, ret.getType());
-			assertEquals(pupille, ret.getSujet());
-			assertEquals(tuteur, ret.getObjet());
+			assertEquals(pupille.getId(), ret.getSujetId());
+			assertEquals(tuteur.getId(), ret.getObjetId());
 		}
 	}
 

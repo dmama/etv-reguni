@@ -82,7 +82,7 @@ public class AnnulationReconciliationHandlerTest extends AbstractEvenementHandle
 		for (RapportEntreTiers rapport : pierre.getRapportsSujet()) {
 			if (TypeRapportEntreTiers.APPARTENANCE_MENAGE.equals(rapport.getType()) && dateReconciliation.equals(rapport.getDateDebut())) {
 				nbMenagesCommuns++;
-				menageCommun = (MenageCommun) rapport.getObjet();
+				menageCommun = (MenageCommun) tiersDAO.get(rapport.getObjetId());
 				assertEquals("Tous les rapports ménage devraient être fermés ou annulés", true, rapport.isAnnule());
 			}
 		}
@@ -157,7 +157,7 @@ public class AnnulationReconciliationHandlerTest extends AbstractEvenementHandle
 		for (RapportEntreTiers rapport : momo.getRapportsSujet()) {
 			if (TypeRapportEntreTiers.APPARTENANCE_MENAGE.equals(rapport.getType()) && dateReconciliation.equals(rapport.getDateDebut())) {
 				nbMenagesCommuns++;
-				menageCommun = (MenageCommun) rapport.getObjet();
+				menageCommun = (MenageCommun) tiersDAO.get(rapport.getObjetId());
 				assertEquals("Tous les rapports ménage devraient être fermés ou annulés", true, rapport.isAnnule());
 			}
 		}

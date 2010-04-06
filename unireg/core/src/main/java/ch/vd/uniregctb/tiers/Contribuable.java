@@ -63,31 +63,6 @@ public abstract class Contribuable extends Tiers {
 	private RegDate dateLimiteExclusionEnvoiDeclarationImpot;
 
 	/**
-	 * @return la liste des débiteurs - c'est-à-dire des contacts IS - connus à l'instant présent pour le contribuable; ou <b>null</b> s'il
-	 *         n'en existe aucun.
-	 */
-	@Transient
-	public Set<DebiteurPrestationImposable> getDebiteursPrestationImposable() {
-
-		Set<DebiteurPrestationImposable> debiteurs = null;
-
-		final Set<RapportEntreTiers> rapports = getRapportsSujet();
-		if (rapports != null) {
-			for (RapportEntreTiers r : rapports) {
-				if (r.isValidAt(null) && r instanceof ContactImpotSource) {
-					final DebiteurPrestationImposable d = (DebiteurPrestationImposable) r.getObjet();
-					if (debiteurs == null) {
-						debiteurs = new HashSet<DebiteurPrestationImposable>(); // création à la demande
-					}
-					debiteurs.add(d);
-				}
-			}
-		}
-
-		return debiteurs;
-	}
-
-	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 *
 	 * @return the situationsFamille

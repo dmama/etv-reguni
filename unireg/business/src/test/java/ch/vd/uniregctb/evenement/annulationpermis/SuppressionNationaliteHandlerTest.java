@@ -188,7 +188,7 @@ public class SuppressionNationaliteHandlerTest extends AbstractEvenementHandlerT
 		for (RapportEntreTiers rapport : pierre.getRapportsSujet()) {
 			if (rapport.getType().equals(TypeRapportEntreTiers.APPARTENANCE_MENAGE)) {
 				nbMenagesCommuns++;
-				menageCommun = (MenageCommun) rapport.getObjet();
+				menageCommun = (MenageCommun) tiersDAO.get(rapport.getObjetId());
 			}
 		}
 		assertEquals("Plusieurs ou aucun tiers MenageCommun ont été trouvés", 1, nbMenagesCommuns);
@@ -256,7 +256,7 @@ public class SuppressionNationaliteHandlerTest extends AbstractEvenementHandlerT
 		for (RapportEntreTiers rapport : momo.getRapportsSujet()) {
 			if (rapport.getType().equals(TypeRapportEntreTiers.APPARTENANCE_MENAGE)) {
 				nbMenagesCommuns++;
-				menageCommun = (MenageCommun) rapport.getObjet();
+				menageCommun = (MenageCommun) tiersDAO.get(rapport.getObjetId());
 			}
 		}
 		assertEquals("Plusieurs ou aucun tiers MenageCommun ont été trouvés", 1, nbMenagesCommuns);

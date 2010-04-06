@@ -74,7 +74,7 @@ public class ListeContribuablesResidentsSansForVaudoisProcessor extends ListesPr
 
 		final String hql = "select ctb.id from Contribuable as ctb where ctb.class in (MenageCommun, PersonnePhysique)"
 				+ " and not exists (select ff.id from ForFiscalPrincipal as ff where ff.tiers = ctb and ff.annulationDate is null and ff.dateFin is null and ff.typeAutoriteFiscale = 'COMMUNE_OU_FRACTION_VD')"
-				+ " and not exists (select r.id from AppartenanceMenage as r where r.sujet = ctb and r.annulationDate is null and r.dateFin is null)"
+				+ " and not exists (select r.id from AppartenanceMenage as r where r.sujetId = ctb.id and r.annulationDate is null and r.dateFin is null)"
 				+ " order by ctb.id asc";
 
 		final Query query = session.createQuery(hql);

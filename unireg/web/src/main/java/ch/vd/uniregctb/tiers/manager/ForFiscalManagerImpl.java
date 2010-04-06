@@ -151,7 +151,7 @@ public class ForFiscalManagerImpl extends TiersManager implements ForFiscalManag
 		if(tiers.getNatureTiers().equals(Tiers.NATURE_MENAGECOMMUN)){
 			MenageCommun menage = (MenageCommun)tiers;
 			boolean isHabitant = false;
-			for (PersonnePhysique pp : menage.getPersonnesPhysiques()) {
+			for (PersonnePhysique pp : tiersService.getPersonnesPhysiques(menage)) {
 				if (pp.isHabitant()) {
 					isHabitant = true;
 					break;
@@ -226,7 +226,7 @@ public class ForFiscalManagerImpl extends TiersManager implements ForFiscalManag
 		if(Tiers.NATURE_MENAGECOMMUN.equals(tiers.getNatureTiers())){
 			MenageCommun menage = (MenageCommun)tiers;
 			boolean isHabitant = false;
-			for (PersonnePhysique pp : menage.getPersonnesPhysiques()) {
+			for (PersonnePhysique pp : tiersService.getPersonnesPhysiques(menage)) {
 				if (pp.isHabitant()) {
 					isHabitant = true;
 					break;

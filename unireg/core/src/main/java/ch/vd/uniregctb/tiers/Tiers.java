@@ -666,8 +666,9 @@ public abstract class Tiers extends HibernateEntity implements Validateable, Bus
 	 * @return the rapportsObjet
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_ON1FcZNZEdygKK6Oe0tVlw?GETTER"
 	 */
-	@OneToMany(mappedBy = "objet", fetch = FetchType.LAZY)
+	@OneToMany(fetch = FetchType.LAZY)
 	@ForeignKey(name = "FK_RET_TRS_OBJ_ID")
+	@JoinColumn(name = "TIERS_OBJET_ID")
 	public Set<RapportEntreTiers> getRapportsObjet() {
 		// begin-user-code
 		return rapportsObjet;
@@ -708,7 +709,7 @@ public abstract class Tiers extends HibernateEntity implements Validateable, Bus
 			}
 		}
 		rapportsObjet.add(rapport);
-		Assert.isTrue(rapport.getObjet() == null || rapport.getObjet() == this);
+		Assert.isTrue(rapport.getObjetId() == null || rapport.getObjetId().equals(numero));
 		rapport.setObjet(this);
 	}
 
@@ -718,8 +719,9 @@ public abstract class Tiers extends HibernateEntity implements Validateable, Bus
 	 * @return the rapportsSujet
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_BeZlcpNZEdygKK6Oe0tVlw?GETTER"
 	 */
-	@OneToMany(mappedBy = "sujet", fetch = FetchType.LAZY)
+	@OneToMany(fetch = FetchType.LAZY)
 	@ForeignKey(name = "FK_RET_TRS_SUJ_ID")
+	@JoinColumn(name = "TIERS_SUJET_ID")
 	public Set<RapportEntreTiers> getRapportsSujet() {
 		// begin-user-code
 		return rapportsSujet;
@@ -760,7 +762,7 @@ public abstract class Tiers extends HibernateEntity implements Validateable, Bus
 			}
 		}
 		rapportsSujet.add(rapport);
-		Assert.isTrue(rapport.getSujet() == null || rapport.getSujet() == this);
+		Assert.isTrue(rapport.getSujetId() == null || rapport.getSujetId() == numero);
 		rapport.setSujet(this);
 	}
 
@@ -802,10 +804,8 @@ public abstract class Tiers extends HibernateEntity implements Validateable, Bus
 	public RapportEntreTiers getPremierRapportSujet(TypeRapportEntreTiers type, Tiers tiers) {
 		RapportEntreTiers premierRapport = null;
 		for (RapportEntreTiers rapportSujet : rapportsSujet) {
-			if (!rapportSujet.isAnnule() && type.equals(rapportSujet.getType()) && rapportSujet.getObjet().equals(tiers)) {
-				if (premierRapport == null
-						|| RegDateHelper.isBeforeOrEqual(rapportSujet.getDateDebut(), premierRapport.getDateDebut(),
-								NullDateBehavior.EARLIEST)) {
+			if (!rapportSujet.isAnnule() && type == rapportSujet.getType() && rapportSujet.getObjetId().equals(tiers.getId())) {
+				if (premierRapport == null || RegDateHelper.isBeforeOrEqual(rapportSujet.getDateDebut(), premierRapport.getDateDebut(), NullDateBehavior.EARLIEST)) {
 					premierRapport = rapportSujet;
 				}
 			}
@@ -851,10 +851,8 @@ public abstract class Tiers extends HibernateEntity implements Validateable, Bus
 	public RapportEntreTiers getPremierRapportObjet(TypeRapportEntreTiers type, Tiers tiers) {
 		RapportEntreTiers premierRapport = null;
 		for (RapportEntreTiers rapportObjet : rapportsObjet) {
-			if (!rapportObjet.isAnnule() && type.equals(rapportObjet.getType()) && rapportObjet.getSujet().equals(tiers)) {
-				if (premierRapport == null
-						|| RegDateHelper.isBeforeOrEqual(rapportObjet.getDateDebut(), premierRapport.getDateDebut(),
-								NullDateBehavior.EARLIEST)) {
+			if (!rapportObjet.isAnnule() && type == rapportObjet.getType() && rapportObjet.getSujetId().equals(tiers.getId())) {
+				if (premierRapport == null || RegDateHelper.isBeforeOrEqual(rapportObjet.getDateDebut(), premierRapport.getDateDebut(), NullDateBehavior.EARLIEST)) {
 					premierRapport = rapportObjet;
 				}
 			}

@@ -27,7 +27,7 @@ public class RapportEntreTiersDAOImpl extends GenericDAOImpl<RapportEntreTiers, 
 	public List<RapportEntreTiers> getRepresentationLegaleAvecTuteurEtPupille(Long noTiersTuteur, Long noTiersPupille, boolean doNotAutoFlush) {
 
 		Object[] criteria = { noTiersTuteur,noTiersPupille };
-		String query = "from RapportEntreTiers ret where ret.objet = ? and ret.sujet = ?";
+		String query = "from RapportEntreTiers ret where ret.objetId = ? and ret.sujetId = ?";
 		final FlushMode mode = (doNotAutoFlush ? FlushMode.MANUAL : null);
 
 		List<RapportEntreTiers> list = (List<RapportEntreTiers>) find(query, criteria, mode);
@@ -44,7 +44,7 @@ public class RapportEntreTiersDAOImpl extends GenericDAOImpl<RapportEntreTiers, 
 	public List<RapportPrestationImposable> getRapportsPrestationImposable(final Long numeroDebiteur, ParamPagination paramPagination) {
 
 		final StringBuilder b = new StringBuilder();
-		b.append("SELECT rapport FROM RapportPrestationImposable rapport WHERE rapport.objet.numero=:debiteur");
+		b.append("SELECT rapport FROM RapportPrestationImposable rapport WHERE rapport.objetId = :debiteur");
 		if (paramPagination.getChamp() == null) {
 			b.append(" ORDER BY rapport.logCreationDate");
 		}
@@ -82,7 +82,7 @@ public class RapportEntreTiersDAOImpl extends GenericDAOImpl<RapportEntreTiers, 
 	 */
 	public int countRapportsPrestationImposable(Long numeroDebiteur){
 
-		String query = "select count(*) from RapportPrestationImposable rapport where rapport.objet.numero = " + numeroDebiteur ;
+		String query = "select count(*) from RapportPrestationImposable rapport where rapport.objetId = " + numeroDebiteur ;
 		int count = DataAccessUtils.intResult(getHibernateTemplate().find(query));
 		return count;
 	}

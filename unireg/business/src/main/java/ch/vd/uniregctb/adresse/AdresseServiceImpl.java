@@ -43,6 +43,7 @@ import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersHelper;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.FormulePolitesse;
@@ -70,12 +71,17 @@ public class AdresseServiceImpl implements AdresseService {
 
 
 	private TiersService tiersService;
+	private TiersDAO tiersDAO;
 	private ServiceInfrastructureService serviceInfra;
 	private ServicePersonneMoraleService servicePM;
 	private ServiceCivilService serviceCivilService;
 
 	public void setTiersService(TiersService tiersService) {
 		this.tiersService = tiersService;
+	}
+
+	public void setTiersDAO(TiersDAO tiersDAO) {
+		this.tiersDAO = tiersDAO;
 	}
 
 	public void setServiceInfra(ServiceInfrastructureService serviceInfra) {
@@ -94,9 +100,10 @@ public class AdresseServiceImpl implements AdresseService {
 	public AdresseServiceImpl() {
 	}
 
-	protected AdresseServiceImpl(TiersService tiersService, ServiceInfrastructureService serviceInfra,
+	protected AdresseServiceImpl(TiersService tiersService, TiersDAO tiersDAO, ServiceInfrastructureService serviceInfra,
 			ServicePersonneMoraleService servicePM, ServiceCivilService serviceCivilService) {
 		this.tiersService = tiersService;
+		this.tiersDAO = tiersDAO;
 		this.serviceInfra = serviceInfra;
 		this.servicePM = servicePM;
 		this.serviceCivilService = serviceCivilService;
@@ -201,7 +208,7 @@ public class AdresseServiceImpl implements AdresseService {
 			}
 			else {
 				// on prend le contribuable associé au débiteur comme pour adresse (enfin, s'il existe)
-				final Contribuable ctb = debiteur.getContribuable();
+				final Contribuable ctb = tiersService.getContribuable(debiteur);
 				if (ctb != null) {
 					data = new EnvoiInfo(debiteur, ctb, false, type, null);
 				}
@@ -981,7 +988,7 @@ public class AdresseServiceImpl implements AdresseService {
 			// Pour le cas du débiteur, les adresses du contribuable associé sont utilisées comme premier défaut. Il peut cependant arriver
 			// que le débiteur ne possède pas de contribuable associé, dans ce cas on continue
 			final DebiteurPrestationImposable debiteur = (DebiteurPrestationImposable) tiers;
-			final Contribuable contribuable = debiteur.getContribuable();
+			final Contribuable contribuable = tiersService.getContribuable(debiteur);
 			if (contribuable != null) {
 				final AdressesFiscalesHisto adressesContribuable = getAdressesFiscalHisto(contribuable, callDepth + 1, strict);
 
@@ -1231,11 +1238,15 @@ public class AdresseServiceImpl implements AdresseService {
 			return null;
 		}
 
-		// info de la tutelle
-		final Tiers representant = type.getRepresentant(rapport);
-		Assert.isTrue(tiers == rapport.getSujet());
+		Assert.isEqual(tiers.getId(), rapport.getSujetId());
 
-		return representant;
+		// info de la tutelle
+		final Long representantId = type.getRepresentantId(rapport);
+		if (representantId == null) {
+			return null;
+		}
+
+		return tiersDAO.get(representantId);
 	}
 
 	/**
@@ -1276,7 +1287,12 @@ public class AdresseServiceImpl implements AdresseService {
 			return null;
 		}
 
-		return type.getRepresentant(rapport);
+		final Long representantId = type.getRepresentantId(rapport);
+		if (representantId == null) {
+			return null;
+		}
+
+		return tiersDAO.get(representantId);
 	}
 
 	/**
@@ -1377,12 +1393,14 @@ public class AdresseServiceImpl implements AdresseService {
 		}
 
 		// info de la représentation
-		final Tiers representant = type.getRepresentant(rapport);
-		if (representant == null) {
+		final Long representantId = type.getRepresentantId(rapport);
+		if (representantId == null) {
 			return null;
 		}
+
+		final Tiers representant = tiersDAO.get(representantId);
 		Assert.notNull(representant);
-		Assert.isSame(tiers, rapport.getSujet());
+		Assert.isEqual(tiers.getId(), rapport.getSujetId());
 
 		final RegDate debut = rapport.getDateDebut();
 		final RegDate fin = rapport.getDateFin();
@@ -1519,10 +1537,11 @@ public class AdresseServiceImpl implements AdresseService {
 					continue;
 				}
 
-				final Tiers representant = type.getRepresentant(rapport);
-				if (representant == null) {
+				final Long representantId = type.getRepresentantId(rapport);
+				if (representantId == null) {
 					continue;
 				}
+				final Tiers representant = tiersDAO.get(representantId);
 				final RegDate debutRapport = rapport.getDateDebut();
 				final RegDate finRapport = rapport.getDateFin();
 
@@ -1717,7 +1736,7 @@ public class AdresseServiceImpl implements AdresseService {
 			else if (tiers instanceof DebiteurPrestationImposable) {
 				// Pour le cas du débiteur, les adresses du contribuable associé sont utilisées comme premier défaut
 				final DebiteurPrestationImposable debiteur = (DebiteurPrestationImposable) tiers;
-				final AdresseGenerique adresseContribuable = getAdresseFiscale(debiteur.getContribuable(), type, date, true, callDepth + 1, strict);
+				final AdresseGenerique adresseContribuable = getAdresseFiscale(tiersService.getContribuable(debiteur), type, date, true, callDepth + 1, strict);
 				adresse = surchargeAdresses(adresse, adresseContribuable, Source.CONTRIBUABLE, true);
 			}
 		}
@@ -2390,7 +2409,7 @@ public class AdresseServiceImpl implements AdresseService {
 		// Et on ajoute la nouvelle adresse
 		tiers.addAdresseTiers(adresse);
 
-		return tiersService.getTiersDAO().save(tiers);
+		return tiersDAO.save(tiers);
 	}
 
 	/**

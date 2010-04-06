@@ -363,7 +363,8 @@ public class SituationFamilleServiceImpl implements SituationFamilleService {
 				Set<MenageCommun> menages = new HashSet<MenageCommun>();
 				for (RapportEntreTiers rapportSujet : rapportsSujet) {
 					if (TypeRapportEntreTiers.APPARTENANCE_MENAGE.equals(rapportSujet.getType()) && !rapportSujet.isAnnule()) {
-						menages.add((MenageCommun) rapportSujet.getObjet());
+						final MenageCommun menage =(MenageCommun) hibernateTemplate.get(MenageCommun.class, rapportSujet.getObjetId());
+						menages.add(menage);
 					}
 				}
 				List<VueSituationFamille> listCouple = new ArrayList<VueSituationFamille>();

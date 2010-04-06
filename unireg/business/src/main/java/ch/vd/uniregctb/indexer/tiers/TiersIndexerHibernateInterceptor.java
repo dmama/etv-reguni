@@ -63,10 +63,10 @@ public class TiersIndexerHibernateInterceptor implements ModificationSubIntercep
 		}
 		else if (entity instanceof RapportEntreTiers) {
 			RapportEntreTiers ret = (RapportEntreTiers) entity;
-			Tiers tiers1 = ret.getObjet();
-			addModifiedTiers(tiers1);
-			Tiers tiers2 = ret.getSujet();
-			addModifiedTiers(tiers2);
+			Long tiersId1 = ret.getObjetId();
+			addModifiedTiers(tiersId1);
+			Long tiersId2 = ret.getSujetId();
+			addModifiedTiers(tiersId2);
 		}
 
 		return false; // encore tiers n'a été immédiatement modifié
@@ -85,6 +85,18 @@ public class TiersIndexerHibernateInterceptor implements ModificationSubIntercep
 		registerTxInterceptor();
 		if (tiers != null) {
 			getModifiedTiersIds().add(tiers.getNumero());
+		}
+	}
+
+	/**
+	 * Ajoute le tiers spécifié dans les liste des tiers qui seront indéxés après le flush.
+	 *
+	 * @param tiers le tiers en question.
+	 */
+	private void addModifiedTiers(Long tiersId) {
+		registerTxInterceptor();
+		if (tiersId != null) {
+			getModifiedTiersIds().add(tiersId);
 		}
 	}
 

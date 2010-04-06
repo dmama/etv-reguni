@@ -254,9 +254,9 @@ public class CorrectionFlagHabitantProcessor {
 				+ " where ff.tiers.class = MenageCommun and ff.tiers.annulationDate is null"
 				+ " and ff.annulationDate is null and ff.dateFin is null"
 				+ " and ff.typeAutoriteFiscale = 'COMMUNE_OU_FRACTION_VD'"
-				+ " and exists (select am.objet.id from AppartenanceMenage am where ff.tiers = am.objet and am.annulationDate is null and am.dateFin is null)"
-				+ " and not exists (select am.objet.id from AppartenanceMenage am where ff.tiers.id = am.objet.id and am.annulationDate is null and am.dateFin is null"
-					+ " and am.sujet.class = PersonnePhysique and am.sujet.habitant = 1)";
+				+ " and exists (select am.objetId from AppartenanceMenage am where ff.tiers.id = am.objetId and am.annulationDate is null and am.dateFin is null)"
+				+ " and not exists (select am.objetId from AppartenanceMenage am, Tiers sujet where ff.tiers.id = am.objetId and sujet.id = am.sujetId"
+					+ " and am.annulationDate is null and am.dateFin is null and sujet.class = PersonnePhysique and sujet.habitant = 1)";
 
 		return (List<Long>) hibernateTemplate.find(hql);
 	}
@@ -267,8 +267,8 @@ public class CorrectionFlagHabitantProcessor {
 				+ " where ff.tiers.class = MenageCommun and ff.tiers.annulationDate is null"
 				+ " and ff.annulationDate is null and ff.dateFin is null"
 				+ " and ff.typeAutoriteFiscale != 'COMMUNE_OU_FRACTION_VD'"
-				+ " and exists (select am.objet.id from AppartenanceMenage am where ff.tiers = am.objet and am.annulationDate is null and am.dateFin is null"
-					+ " and am.sujet.class = PersonnePhysique and am.sujet.habitant = 1)";
+				+ " and exists (select am.objetId from AppartenanceMenage am, Tiers sujet where ff.tiers.id = am.objetId and sujet.id = am.sujetId"
+					+ " and am.annulationDate is null and am.dateFin is null and sujet.class = PersonnePhysique and sujet.habitant = 1)";
 
 		return (List<Long>) hibernateTemplate.find(hql);
 	}

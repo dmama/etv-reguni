@@ -15,6 +15,7 @@ import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.webservices.tiers2.data.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
@@ -362,7 +363,7 @@ public class DataHelper {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static List<ch.vd.uniregctb.tiers.ForFiscalPrincipal> getForsFiscauxVirtuels(ch.vd.uniregctb.tiers.Tiers tiers) {
+	public static List<ch.vd.uniregctb.tiers.ForFiscalPrincipal> getForsFiscauxVirtuels(ch.vd.uniregctb.tiers.Tiers tiers, TiersDAO tiersDAO) {
 
 		// Récupère les appartenances ménages du tiers
 		final Set<ch.vd.uniregctb.tiers.RapportEntreTiers> rapports = tiers.getRapportsSujet();
@@ -381,23 +382,25 @@ public class DataHelper {
 
 		// Extrait les fors principaux du ménage, en les adaptant à la période de validité des appartenances ménages
 		for (AppartenanceMenage a : rapportsMenage) {
-			final ch.vd.uniregctb.tiers.MenageCommun menage = (ch.vd.uniregctb.tiers.MenageCommun) a.getObjet();
-			final List<ch.vd.uniregctb.tiers.ForFiscalPrincipal> forsMenage = new ArrayList<ch.vd.uniregctb.tiers.ForFiscalPrincipal>(
-					menage.getForsFiscauxPrincipauxActifsSorted());
-			final List<ch.vd.uniregctb.tiers.ForFiscalPrincipal> extraction = DateRangeHelper.extract(forsMenage, a.getDateDebut(), a
-					.getDateFin(), new DateRangeHelper.AdapterCallback<ch.vd.uniregctb.tiers.ForFiscalPrincipal>() {
-				public ch.vd.uniregctb.tiers.ForFiscalPrincipal adapt(ch.vd.uniregctb.tiers.ForFiscalPrincipal f, RegDate debut, RegDate fin) {
-					if (debut == null && fin == null) {
-						return f;
-					}
-					else {
-						ch.vd.uniregctb.tiers.ForFiscalPrincipal clone = (ForFiscalPrincipal) f.duplicate();
-						clone.setDateDebut(debut);
-						clone.setDateFin(fin);
-						return clone;
-					}
-				}
-			});
+			final Long menageId = a.getObjetId();
+			final List<ch.vd.uniregctb.tiers.ForFiscalPrincipal> forsMenage =
+					tiersDAO.getHibernateTemplate().find("from ForFiscalPrincipal f where f.annulationDate is null and f.tiers.id = ? order by f.dateDebut asc", menageId);
+
+			final List<ch.vd.uniregctb.tiers.ForFiscalPrincipal> extraction = DateRangeHelper.extract(forsMenage, a.getDateDebut(), a.getDateFin(),
+					new DateRangeHelper.AdapterCallback<ch.vd.uniregctb.tiers.ForFiscalPrincipal>() {
+						public ch.vd.uniregctb.tiers.ForFiscalPrincipal adapt(ch.vd.uniregctb.tiers.ForFiscalPrincipal f, RegDate debut, RegDate fin) {
+							if (debut == null && fin == null) {
+								return f;
+							}
+							else {
+								ch.vd.uniregctb.tiers.ForFiscalPrincipal clone = (ForFiscalPrincipal) f.duplicate();
+								clone.setDateDebut(debut);
+								clone.setDateFin(fin);
+								return clone;
+							}
+						}
+					});
+			
 			forsVirtuels.addAll(extraction);
 		}
 

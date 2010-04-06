@@ -120,7 +120,7 @@ public class TutelleHandlerTest extends AbstractEvenementHandlerTest {
 		Assert.isTrue(rapports.size() == 1, "le rapport de tutelle entre le pupille et le tuteur n'a pas été créé");
 		for (RapportEntreTiers rapport : rapports) {
 			Assert.isTrue(rapport.getType().equals(TypeRapportEntreTiers.TUTELLE), "Le rapport créé n'est pas de type tutelle");
-			Assert.isTrue(rapport.getObjet().equals(tiersTuteur), "Le rapport créé ne l'a pas été avec le tuteur");
+			Assert.isTrue(rapport.getObjetId().equals(tiersTuteur.getId()), "Le rapport créé ne l'a pas été avec le tuteur");
 		}
 
 		/*
@@ -130,7 +130,7 @@ public class TutelleHandlerTest extends AbstractEvenementHandlerTest {
 		Assert.isTrue(rapports.size() == 1, "le rapport de tutelle entre le tuteur et le pupille n'a pas été créé");
 		for (RapportEntreTiers rapport : rapports) {
 			Assert.isTrue(rapport.getType().equals(TypeRapportEntreTiers.TUTELLE), "Le rapport créé n'est pas de type tutelle");
-			Assert.isTrue(rapport.getSujet().equals(tiersPupille), "Le rapport créé ne l'a pas été avec le pupille");
+			Assert.isTrue(rapport.getSujetId().equals(tiersPupille.getId()), "Le rapport créé ne l'a pas été avec le pupille");
 		}
 	}
 
@@ -182,7 +182,7 @@ public class TutelleHandlerTest extends AbstractEvenementHandlerTest {
 		Assert.isTrue(rapports.size() == 1, "le rapport de tutelle entre le pupille et le tuteur n'a pas été créé");
 		for (RapportEntreTiers rapport : rapports) {
 			Assert.isTrue(rapport.getType().equals(TypeRapportEntreTiers.TUTELLE), "Le rapport créé n'est pas de type tutelle");
-			Assert.isTrue(rapport.getObjet().equals(tiersOTG), "Le rapport créé ne l'a pas été avec le tuteur");
+			Assert.isTrue(rapport.getObjetId().equals(tiersOTG.getId()), "Le rapport créé ne l'a pas été avec le tuteur");
 		}
 
 		/*
@@ -192,7 +192,7 @@ public class TutelleHandlerTest extends AbstractEvenementHandlerTest {
 		Assert.isTrue(rapports.size() == 1, "le rapport de tutelle entre le tuteur et le pupille n'a pas été créé");
 		for (RapportEntreTiers rapport : rapports) {
 			Assert.isTrue(rapport.getType().equals(TypeRapportEntreTiers.TUTELLE), "Le rapport créé n'est pas de type tutelle");
-			Assert.isTrue(rapport.getSujet().equals(tiersPupille), "Le rapport créé ne l'a pas été avec le pupille");
+			Assert.isTrue(rapport.getSujetId().equals(tiersPupille.getId()), "Le rapport créé ne l'a pas été avec le pupille");
 		}
 	}
 

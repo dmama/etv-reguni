@@ -126,10 +126,10 @@ public class TutelleHandler extends EvenementCivilHandlerBase {
 				}
 				if (TypeRapportEntreTiers.TUTELLE.equals(rapport.getType()) || TypeRapportEntreTiers.CURATELLE.equals(rapport.getType())
 						|| TypeRapportEntreTiers.CONSEIL_LEGAL.equals(rapport.getType())) {
-					if (numeroTuteur != null && rapport.getObjet().getNumero().equals(numeroTuteur)) {
+					if (numeroTuteur != null && rapport.getObjetId().equals(numeroTuteur)) {
 						return true;
 					}
-					if (numeroAutoriteTutelaire != null && rapport.getObjet().getNumero().equals(numeroAutoriteTutelaire)) {
+					if (numeroAutoriteTutelaire != null && rapport.getObjetId().equals(numeroAutoriteTutelaire)) {
 						return true;
 					}
 				}

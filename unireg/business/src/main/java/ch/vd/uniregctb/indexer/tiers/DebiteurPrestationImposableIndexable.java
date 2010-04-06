@@ -34,7 +34,7 @@ public class DebiteurPrestationImposableIndexable extends TiersIndexable {
 	                                            DebiteurPrestationImposable dpi) throws IndexerException {
 		super(adresseService, tiersService, serviceInfra, dpi, new DebiteurPrestationImposableSubIndexable(tiersService, dpi));
 
-		Contribuable ctb = dpi.getContribuable();
+		Contribuable ctb = tiersService.getContribuable(dpi);
 		if (ctb != null) {
 			if (ctb instanceof PersonnePhysique) {
 				PersonnePhysique pp = (PersonnePhysique) ctb;

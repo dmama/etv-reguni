@@ -205,14 +205,14 @@ public abstract class Tiers {
 			// Ajoute les rapports dont le tiers est le sujet
 			for (ch.vd.uniregctb.tiers.RapportEntreTiers rapport : tiers.getRapportsSujet()) {
 				if (!(rapport instanceof ch.vd.uniregctb.tiers.ContactImpotSource) && rapport.isValidAt(date)) {
-					this.rapportsEntreTiers.add(new RapportEntreTiers(rapport, rapport.getObjet().getNumero()));
+					this.rapportsEntreTiers.add(new RapportEntreTiers(rapport, rapport.getObjetId()));
 				}
 			}
 
 			// Ajoute les rapports dont le tiers est l'objet
 			for (ch.vd.uniregctb.tiers.RapportEntreTiers rapport : tiers.getRapportsObjet()) {
 				if (!(rapport instanceof ch.vd.uniregctb.tiers.ContactImpotSource) && rapport.isValidAt(date)) {
-					this.rapportsEntreTiers.add(new RapportEntreTiers(rapport, rapport.getSujet().getNumero()));
+					this.rapportsEntreTiers.add(new RapportEntreTiers(rapport, rapport.getSujetId()));
 				}
 			}
 		}

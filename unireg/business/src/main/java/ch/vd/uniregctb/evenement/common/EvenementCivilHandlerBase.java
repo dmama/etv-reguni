@@ -598,7 +598,8 @@ public abstract class EvenementCivilHandlerBase implements EvenementCivilHandler
 
 		// fermeture des adresses des tiers
 		if (contribuable instanceof MenageCommun) {
-			for (PersonnePhysique pp : ((MenageCommun) contribuable).getPersonnesPhysiques()) {
+			final Set<PersonnePhysique> pps = service.getPersonnesPhysiques((MenageCommun) contribuable);
+			for (PersonnePhysique pp : pps) {
 				fermeAdresseTiersTemporaire(pp, date);
 			}
 		}

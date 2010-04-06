@@ -1,7 +1,10 @@
 package ch.vd.uniregctb.tiers;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
+import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.registre.civil.model.EnumAttributeIndividu;
@@ -984,5 +987,59 @@ public interface TiersService {
 	 * @return <code>true</code> si la personne physique est un sourcier gris
 	 */
 	boolean isSourcierGris(Contribuable pp, RegDate date);
+
+	Set<DebiteurPrestationImposable> getDebiteursPrestationImposable(Contribuable contribuable);
+
+	/**
+	 * @param menage un ménage commun
+	 * @return l'ensemble des personnes physiques ayant fait ou faisant partie du ménage commun (0, 1 ou 2 personnes max, par définition) en ignorant les rapports annulés
+	 */
+	Set<PersonnePhysique> getPersonnesPhysiques(MenageCommun menage);
+
+	/**
+	 * @param menage un ménage commun
+	 * @return l'ensemble des personnes physiques ayant fait ou faisant partie du ménage commun en prenant en compte les rapports éventuellement annulés (il peut donc y avoir plus de deux personnes
+	 *         physiques concernées en cas de correction de données) ; le dernier rapport entre tiers est également indiqué
+	 */
+	Map<PersonnePhysique, RapportEntreTiers> getToutesPersonnesPhysiquesImpliquees(MenageCommun menage);
+
+	/**
+	 * @return le contribuable associé au débiteur; ou <b>null</b> si le débiteur n'en possède pas.
+	 */
+	Contribuable getContribuable(DebiteurPrestationImposable debiteur);
+
+	/**
+	 * Renvoie une liste des composants du ménage valides à une date donnée.
+	 *
+	 * @param menageCommun
+	 * @param date
+	 *            la date de référence, ou null pour obtenir tous les composants connus dans l'histoire du ménage.
+	 * @return un ensemble contenant 1 ou 2 personnes physiques correspondants au composants du ménage, ou <b>null</b> si aucune personne
+	 *         n'est trouvée
+	 */
+	Set<PersonnePhysique> getComposantsMenage(MenageCommun menageCommun, RegDate date);
+
+	/**
+	 * Renvoie une liste des composants du ménage valides sur une période fiscale (1 janvier au 31 décembre) donnée.
+	 *
+	 * @param menageCommun
+	 *            le ménage en question
+	 * @param anneePeriode
+	 *            la période fiscale de référence
+	 * @return un ensemble contenant 1 ou 2 personnes physiques correspondants au composants du ménage, ou <b>null</b> si aucune personne
+	 *         n'est trouvée
+	 */
+	Set<PersonnePhysique> getComposantsMenage(MenageCommun menageCommun, int anneePeriode);
+
+	/**
+	 * Recherche le menage commun actif auquel est rattaché une personne
+	 *
+	 * @param personne
+	 *            la personne potentiellement rattachée à un ménage commun
+	 * @param periode
+	 * @return le ménage commun trouvé, ou null si cette personne n'est pas rattaché au ménage.
+	 * @throws TiersException si plus d'un ménage commun est trouvé
+	 */
+	MenageCommun getMenageCommunActifAt(final Contribuable personne, final DateRangeHelper.Range periode) throws TiersException;
 }
 

@@ -109,7 +109,7 @@ public class AnnulationVeuvageHandlerTest extends AbstractEvenementHandlerTest {
 		for ( RapportEntreTiers rapport : andre.getRapportsSujet() ) {
 			if ( rapport.getType().equals( TypeRapportEntreTiers.APPARTENANCE_MENAGE ) ) {
 				nbMenagesCommuns++;
-				menageCommun = (MenageCommun) rapport.getObjet();
+				menageCommun = (MenageCommun) tiersDAO.get(rapport.getObjetId());
 			}
 		}
 		assertEquals("Il aurait dû y avoir 2 rapports entre tiers: 1 annulé et 1 rouvert", 2, nbMenagesCommuns);

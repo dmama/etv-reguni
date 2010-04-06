@@ -6,6 +6,7 @@ import static junit.framework.Assert.assertSame;
 import static org.junit.Assert.assertNull;
 
 import java.util.List;
+import java.util.Set;
 
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
@@ -72,14 +73,16 @@ public class DebiteurPrestationImposableIndexableTest extends BusinessTest {
 			final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) dao.get(numeros.noCtbDpi);
 			assertNotNull(dpi);
 			assertEquals(PeriodiciteDecompte.MENSUEL, dpi.getPeriodiciteDecompte());
-			assertNotNull(dpi.getContribuable());
+			assertNotNull(tiersService.getContribuable(dpi));
 
 			final PersonnePhysique nh = (PersonnePhysique) dao.get(numeros.noCtbNh);
 			assertNotNull(nh);
 			assertEquals("Entrepreneur", nh.getNom());
-			assertEquals(1, nh.getDebiteursPrestationImposable().size());
 
-			final DebiteurPrestationImposable debiteur = nh.getDebiteursPrestationImposable().iterator().next();
+			final Set<DebiteurPrestationImposable> debiteurs = tiersService.getDebiteursPrestationImposable(nh);
+			assertEquals(1, debiteurs.size());
+
+			final DebiteurPrestationImposable debiteur = debiteurs.iterator().next();
 			assertSame(dpi, debiteur);
 		}
 
@@ -146,15 +149,17 @@ public class DebiteurPrestationImposableIndexableTest extends BusinessTest {
 			final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) dao.get(numeros.noCtbDpi);
 			assertNotNull(dpi);
 			assertEquals(PeriodiciteDecompte.MENSUEL, dpi.getPeriodiciteDecompte());
-			assertNotNull(dpi.getContribuable());
+			assertNotNull(tiersService.getContribuable(dpi));
 
 			final AutreCommunaute ac = (AutreCommunaute) dao.get(numeros.noCtbEnt);
 			assertNotNull(ac);
 			assertEquals("Nestle", ac.getNom());
 			assertEquals("Orbe", ac.getComplementNom());
-			assertEquals(1, ac.getDebiteursPrestationImposable().size());
 
-			final DebiteurPrestationImposable debiteur = ac.getDebiteursPrestationImposable().iterator().next();
+			final Set<DebiteurPrestationImposable> debiteurs = tiersService.getDebiteursPrestationImposable(ac);
+			assertEquals(1, debiteurs.size());
+
+			final DebiteurPrestationImposable debiteur = debiteurs.iterator().next();
 			assertSame(dpi, debiteur);
 		}
 

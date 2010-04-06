@@ -114,10 +114,10 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 		rapportView.setTypeRapportEntreTiers(TypeRapportEntreTiersWeb.fromCore(rapportEntreTiers.getType()));
 		Long numero = null;
 		if (sensRapportEntreTiers.equals(SensRapportEntreTiers.OBJET)) {
-			numero = rapportEntreTiers.getSujet().getNumero();
+			numero = rapportEntreTiers.getSujetId();
 		}
 		if (sensRapportEntreTiers.equals(SensRapportEntreTiers.SUJET)) {
-			numero = rapportEntreTiers.getObjet().getNumero();
+			numero = rapportEntreTiers.getObjetId();
 		}
 		rapportView.setNumero(numero);
 		final Tiers tiers = getTiersService().getTiers(numero);
@@ -204,7 +204,8 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 			}
 			else if (rapportEntreTiers instanceof RepresentationConventionnelle) {
 				final RepresentationConventionnelle repres = (RepresentationConventionnelle) rapportEntreTiers;
-				validateRepresentationConventionnelle(rapportView, repres.getSujet());
+				final Tiers sujet = tiersDAO.get(repres.getSujetId());
+				validateRepresentationConventionnelle(rapportView, sujet);
 				repres.setExtensionExecutionForcee(rapportView.isExtensionExecutionForcee());
 			}
 		}
@@ -308,7 +309,7 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 				DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiers;
 				tiersEditView.setRapportsPrestation(getRapportsPrestation(dpi, webParamPagination));
 				setContribuablesAssocies(tiersEditView, dpi);
-				if (dpi.getContribuable() == null) {
+				if (dpi.getContribuableId() == null) {
 					tiersEditView.setAddContactISAllowed(true);
 				}
 				else {

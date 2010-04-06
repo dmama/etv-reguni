@@ -52,7 +52,7 @@ public class MenageCommunIndexable extends ContribuableIndexable {
 		// 1. si au moins un lien n'est pas annulé, on ne prend que les liens non-annulés
 		// 2. s'ils sont tous annulés, alors on trie les liens et on en prend au maximum deux
 		final Set<PersonnePhysique> personnesPhysiques;
-		final Map<PersonnePhysique, RapportEntreTiers> personnes = menage.getToutesPersonnesPhysiquesImpliquees();
+		final Map<PersonnePhysique, RapportEntreTiers> personnes = tiersService.getToutesPersonnesPhysiquesImpliquees(menage);
 		if (personnes != null && personnes.size() > 0) {
 			final Set<PersonnePhysique> nonAnnules = new HashSet<PersonnePhysique>(2);
 			for (Map.Entry<PersonnePhysique, RapportEntreTiers> entry : personnes.entrySet()) {

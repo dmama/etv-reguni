@@ -177,7 +177,7 @@ public class AnnulationSeparationHandlerTest extends AbstractEvenementHandlerTes
 			if (TypeRapportEntreTiers.APPARTENANCE_MENAGE.equals(rapport.getType()) &&
 					(rapport.getDateFin() != null && dateSeparation.getOneDayBefore().equals(rapport.getDateFin()))) {
 				nbMenagesCommuns++;
-				menageCommun = (MenageCommun) rapport.getObjet();
+				menageCommun = (MenageCommun) tiersDAO.get(rapport.getObjetId());
 				assertEquals("Tous les rapports ménage devraient être fermés ou annulés", true, rapport.isAnnule());
 			}
 		}

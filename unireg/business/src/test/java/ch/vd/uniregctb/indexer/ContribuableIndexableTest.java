@@ -1,14 +1,40 @@
 package ch.vd.uniregctb.indexer;
 
+import javax.persistence.NonUniqueResultException;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.hibernate.FlushMode;
+import org.junit.Test;
+import org.springframework.orm.hibernate3.HibernateTemplate;
+
 import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.adresse.*;
+import ch.vd.registre.base.hqlbuilder.AbstractCriteria;
+import ch.vd.registre.base.utils.Assert;
+import ch.vd.registre.base.utils.NotImplementedException;
+import ch.vd.uniregctb.adresse.AdresseCivile;
+import ch.vd.uniregctb.adresse.AdresseEtrangere;
+import ch.vd.uniregctb.adresse.AdresseServiceImpl;
+import ch.vd.uniregctb.adresse.AdresseSuisse;
+import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.common.Constants;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.WithoutSpringTest;
-import ch.vd.uniregctb.indexer.tiers.*;
+import ch.vd.uniregctb.indexer.tiers.DebiteurPrestationImposableIndexable;
+import ch.vd.uniregctb.indexer.tiers.HabitantIndexable;
+import ch.vd.uniregctb.indexer.tiers.MenageCommunIndexable;
+import ch.vd.uniregctb.indexer.tiers.NonHabitantIndexable;
+import ch.vd.uniregctb.indexer.tiers.TiersIndexable;
+import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
+import ch.vd.uniregctb.indexer.tiers.TiersSearchFields;
 import ch.vd.uniregctb.interfaces.model.HistoriqueIndividu;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.mock.MockHistoriqueIndividu;
@@ -18,13 +44,29 @@ import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
-import ch.vd.uniregctb.tiers.*;
-import ch.vd.uniregctb.type.*;
-import org.junit.Test;
-
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
+import ch.vd.uniregctb.tiers.AppartenanceMenage;
+import ch.vd.uniregctb.tiers.AutreCommunaute;
+import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
+import ch.vd.uniregctb.tiers.ContactImpotSource;
+import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
+import ch.vd.uniregctb.tiers.MenageCommun;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.tiers.RapportEntreTiers;
+import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.tiers.TiersDAO;
+import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.tiers.TiersServiceImpl;
+import ch.vd.uniregctb.type.CategorieImpotSource;
+import ch.vd.uniregctb.type.GenreImpot;
+import ch.vd.uniregctb.type.ModeImposition;
+import ch.vd.uniregctb.type.MotifRattachement;
+import ch.vd.uniregctb.type.Sexe;
+import ch.vd.uniregctb.type.TexteCasePostale;
+import ch.vd.uniregctb.type.TypeAdresseTiers;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNull;
@@ -40,7 +82,8 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 	private TiersService tiersService;
 	private ServiceCivilService serviceCivil;
 	private ServiceInfrastructureService serviceInfra;
-
+	private MockTiersDAO tiersDAO;
+	
 	@Override
 	public void onSetUp() {
 
@@ -72,11 +115,14 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 				addIndividu(4567L, RegDate.get(1970, 1, 1), "Arnold", "Dupond", true);
 			}
 		};
+		
+		tiersDAO = new MockTiersDAO();
 
 		tiersService = new TiersServiceImpl();
 		serviceInfra = new DefaultMockServiceInfrastructureService();
 		tiersService.setServiceInfra(serviceInfra);
 		tiersService.setServiceCivilService(serviceCivil);
+		tiersService.setTiersDAO(tiersDAO);
 
 		adresseService = new AdresseServiceImpl();
 		adresseService.setServiceInfra(new DefaultMockServiceInfrastructureService());
@@ -208,6 +254,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		PersonnePhysique hab = new PersonnePhysique(true);
 		hab.setNumero(1234L);
 		hab.setNumeroIndividu(7643L);
+		tiersDAO.addTiers(hab);
 		Individu ind = serviceCivil.getIndividu(hab.getNumeroIndividu(), DateHelper.getCurrentYear());
 		HistoriqueIndividu histo = ind.getDernierHistoriqueIndividu();
 
@@ -217,6 +264,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		dpi.setNom2("Nom2 débiteur");
 		dpi.setCategorieImpotSource(CategorieImpotSource.REGULIERS);
 		dpi.setComplementNom("Service bidon");
+		tiersDAO.addTiers(dpi);
 
 		ContactImpotSource contact = new ContactImpotSource(RegDate.get(), null, hab, dpi);
 		hab.addRapportSujet(contact);
@@ -250,12 +298,14 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		nhab.setNumero(1234L);
 		nhab.setNom("Bli");
 		nhab.setPrenom("Bla");
+		tiersDAO.addTiers(nhab);
 
 		DebiteurPrestationImposable dpi = new DebiteurPrestationImposable();
 		dpi.setNumero(23348L);
 		dpi.setNom1("Nom1 débiteur");
 		dpi.setNom2("Nom2 débiteur");
 		dpi.setCategorieImpotSource(CategorieImpotSource.REGULIERS);
+		tiersDAO.addTiers(dpi);
 
 		ContactImpotSource contact = new ContactImpotSource(RegDate.get(), null, nhab, dpi);
 		nhab.addRapportSujet(contact);
@@ -286,6 +336,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		ac.setNumero(1234L);
 		ac.setNom("Nestle SA");
 		ac.setComplementNom("Filiale de Orbe");
+		tiersDAO.addTiers(ac);
 
 		DebiteurPrestationImposable dpi = new DebiteurPrestationImposable();
 		dpi.setNumero(23348L);
@@ -293,6 +344,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		dpi.setNom2("Nom2 débiteur");
 		dpi.setCategorieImpotSource(CategorieImpotSource.REGULIERS);
 		dpi.setComplementNom("Service bidon");
+		tiersDAO.addTiers(dpi);
 
 		ContactImpotSource contact = new ContactImpotSource(RegDate.get(), null, ac, dpi);
 		ac.addRapportSujet(contact);
@@ -743,7 +795,11 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		//assertContains("", values.get(TiersIndexedData.DATE_NAISSANCE));
 	}
 
-	public static RapportEntreTiers addTiers(MenageCommun menage, PersonnePhysique tiers, RegDate dateDebut) {
+	public RapportEntreTiers addTiers(MenageCommun menage, PersonnePhysique tiers, RegDate dateDebut) {
+
+		tiersDAO.addTiers(tiers);
+		tiersDAO.addTiers(menage);
+
 		RapportEntreTiers appartenance = new AppartenanceMenage();
 		appartenance.setDateDebut(dateDebut);
 		appartenance.setDateFin(null);
@@ -754,5 +810,174 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		tiers.addRapportSujet(appartenance);
 
 		return appartenance;
+	}
+
+	private static class MockTiersDAO implements TiersDAO {
+		
+		private Map<Long, Tiers> map = new HashMap<Long, Tiers>();
+		
+		public void addTiers(Tiers tiers) {
+			final Long id = tiers.getId();
+			Assert.notNull(id);
+			map.put(id,  tiers);
+		}
+		
+		public Tiers get(long id, boolean doNotAutoFlush) {
+			return map.get(id);
+		}
+
+		public List<Tiers> getBatch(Collection<Long> ids, Set<Parts> parts) {
+			throw new NotImplementedException();
+		}
+
+		public RapportEntreTiers save(RapportEntreTiers object) {
+			throw new NotImplementedException();
+		}
+
+		public List<Long> getAllIds() {
+			throw new NotImplementedException();
+		}
+
+		public List<Long> getDirtyIds() {
+			throw new NotImplementedException();
+		}
+
+		public List<Long> getAllNumeroIndividu() {
+			throw new NotImplementedException();
+		}
+
+		public List<Long> getNumerosIndividu(Set<Long> tiersIds) {
+			throw new NotImplementedException();
+		}
+
+		public List<Long> getHabitantsForMajorite(RegDate dateReference) {
+			throw new NotImplementedException();
+		}
+
+		public List<Long> getTiersInRange(int ctbStart, int ctbEnd) {
+			throw new NotImplementedException();
+		}
+
+		public Contribuable getContribuableByNumero(Long numeroContribuable) {
+			throw new NotImplementedException();
+		}
+
+		public DebiteurPrestationImposable getDebiteurPrestationImposableByNumero(Long numeroDPI) {
+			throw new NotImplementedException();
+		}
+
+		public PersonnePhysique getPPByNumeroIndividu(Long numeroIndividu) {
+			throw new NotImplementedException();
+		}
+
+		public PersonnePhysique getPPByNumeroIndividu(Long numeroIndividu, boolean doNotAutoFlush) {
+			throw new NotImplementedException();
+		}
+
+		public PersonnePhysique getHabitantByNumeroIndividu(Long numeroIndividu) {
+			throw new NotImplementedException();
+		}
+
+		public PersonnePhysique getHabitantByNumeroIndividu(Long numeroIndividu, boolean doNotAutoFlush) {
+			throw new NotImplementedException();
+		}
+
+		public CollectiviteAdministrative getCollectiviteAdministrativesByNumeroTechnique(int numeroTechnique) {
+			throw new NotImplementedException();
+		}
+
+		public CollectiviteAdministrative getCollectiviteAdministrativesByNumeroTechnique(int numeroTechnique, boolean doNotAutoFlush) {
+			throw new NotImplementedException();
+		}
+
+		public List<PersonnePhysique> getSourciers(int noSourcier) {
+			throw new NotImplementedException();
+		}
+
+		public List<PersonnePhysique> getAllMigratedSourciers() {
+			throw new NotImplementedException();
+		}
+
+		public Tiers getTiersForIndexation(long id) {
+			return map.get(id);
+		}
+
+		public List<MenageCommun> getMenagesCommuns(List<Long> ids, Set<Parts> parts) {
+			throw new NotImplementedException();
+		}
+
+		public List<Tiers> getAll() {
+			throw new NotImplementedException();
+		}
+
+		public Tiers get(Long id) {
+			return map.get(id);
+		}
+
+		public boolean exists(Long id) {
+			return map.containsKey(id);
+		}
+
+		public boolean exists(Long id, FlushMode flushModeOverride) {
+			return map.containsKey(id);
+		}
+
+		public Tiers save(Tiers object) {
+			return object;
+		}
+
+		public Object saveObject(Object object) {
+			return object;
+		}
+
+		public void remove(Long id) {
+			map.remove(id);
+		}
+
+		public void removeAll() {
+			map.clear();
+		}
+
+		public HibernateTemplate getHibernateTemplate() {
+			throw new NotImplementedException();
+		}
+
+		public Iterator<Tiers> iterate(String query) {
+			throw new NotImplementedException();
+		}
+
+		public int getCount(Class<?> clazz) {
+			return 0;
+		}
+
+		public void clearSession() {
+		}
+
+		public void evict(Object o) {
+		}
+
+		public List<Tiers> getResultList(AbstractCriteria aCriteria) {
+			throw new NotImplementedException();
+		}
+
+		public List<Tiers> getResultList(AbstractCriteria aCriteria, int aMaxResults) {
+			throw new NotImplementedException();
+		}
+
+		public Tiers getSingleResult(AbstractCriteria aCriteria) throws NonUniqueResultException {
+			throw new NotImplementedException();
+		}
+
+		public List<Tiers> getDistinctResultList(AbstractCriteria aCriteria) {
+			throw new NotImplementedException();
+		}
+
+		public List<Tiers> getDistinctResultList(AbstractCriteria aCriteria, int aMaxResults) {
+			throw new NotImplementedException();
+		}
+
+		public long getRowCountResult(AbstractCriteria aCriteria) {
+			throw new NotImplementedException();
+		}
 	}
 }

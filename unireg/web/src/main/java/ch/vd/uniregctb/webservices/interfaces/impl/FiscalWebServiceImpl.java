@@ -47,12 +47,12 @@ public class FiscalWebServiceImpl implements Fiscal {
 	public RechercherNoContribuableResponse rechercherNoContribuable(RechercherNoContribuable parameters) {
 
 		List<TiersIndexedData> resultsUnireg = new ArrayList<TiersIndexedData>();
-		TiersIndexedData tiersTrouve = null;
+		TiersIndexedData tiersTrouve;
 		int periode = parameters.getAnnee();
 		long numeroCtbSeul = 0;
 
-		TiersCriteria tiersCriteria = null;
-		Contribuable contribuable = null;
+		TiersCriteria tiersCriteria;
+		Contribuable contribuable;
 		if (periode==0) {
 			periode = RegDate.get().year();
 		}
@@ -133,7 +133,7 @@ public class FiscalWebServiceImpl implements Fiscal {
 					Range rangePeriode = new Range(RegDate.get(periode, RegDate.JANVIER, 1), RegDate.get(periode, RegDate.DECEMBRE, 31));
 					MenageCommun menage = null;
 					try {
-						menage = FiscalHelper.getMenageCommunActifAt(contribuable, rangePeriode);
+						menage = context.tiersService.getMenageCommunActifAt(contribuable, rangePeriode);
 					}
 					catch (Exception e) {
 

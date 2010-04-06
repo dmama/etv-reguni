@@ -75,7 +75,7 @@ public class DebiteurPrestationImposableTest extends CoreDAOTest {
 			}
 			assertNotNull(ent);
 			assertNotNull(dpi);
-			assertEquals(ent, dpi.getContribuable());
+			assertEquals(ent.getId(), dpi.getContribuableId());
 		}
 	}
 
@@ -118,7 +118,7 @@ public class DebiteurPrestationImposableTest extends CoreDAOTest {
 			}
 			assertNotNull(ent);
 			assertNotNull(dpi);
-			assertEquals(ent, dpi.getContribuable());
+			assertEquals(ent.getId(), dpi.getContribuableId());
 		}
 
 	}
@@ -161,7 +161,7 @@ public class DebiteurPrestationImposableTest extends CoreDAOTest {
 			}
 			assertNotNull(ent);
 			assertNotNull(dpi);
-			assertEquals(ent, dpi.getContribuable());
+			assertEquals(ent.getId(), dpi.getContribuableId());
 		}
 
 	}

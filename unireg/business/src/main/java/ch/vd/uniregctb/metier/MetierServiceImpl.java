@@ -117,9 +117,9 @@ public class MetierServiceImpl implements MetierService {
 	private void checkRapportsMenage(PersonnePhysique pp, RegDate dateMariage, ValidationResults results) {
 		for (RapportEntreTiers rapport : pp.getRapportsSujet()) {
 			if (!rapport.isAnnule() && TypeRapportEntreTiers.APPARTENANCE_MENAGE == rapport.getType() && rapport.getDateFin() == null) {
-				MenageCommun mc = (MenageCommun) rapport.getObjet();
+				Long mcId = rapport.getObjetId();
 				results.addError("Le contribuable n° " + FormatNumeroHelper.numeroCTBToDisplay(pp.getNumero()) +
-						" appartient déjà au ménage commun n° " + FormatNumeroHelper.numeroCTBToDisplay(mc.getNumero()));
+						" appartient déjà au ménage commun n° " + FormatNumeroHelper.numeroCTBToDisplay(mcId));
 			}
 		}
 	}
@@ -532,7 +532,7 @@ public class MetierServiceImpl implements MetierService {
 			/*
 			 * Fermeture de la situation de famille actuelle sur les membres du ménage
 			 */
-			for (PersonnePhysique pp : menageCommun.getPersonnesPhysiques()) {
+			for (PersonnePhysique pp : tiersService.getPersonnesPhysiques(menageCommun)) {
 				situationFamilleService.closeSituationFamille(pp, date.getOneDayBefore());
 			}
 
@@ -695,7 +695,7 @@ public class MetierServiceImpl implements MetierService {
 	}
 
 	private void checkMenageIsNotComplete(MenageCommun menage, ValidationResults results) {
-		if (menage.getPersonnesPhysiques().size() > 1) {
+		if (tiersService.getPersonnesPhysiques(menage).size() > 1) {
 			results.addError("Le ménage n° " + FormatNumeroHelper.numeroCTBToDisplay(menage.getNumero()) + " semble complet");
 		}
 	}
@@ -802,8 +802,8 @@ public class MetierServiceImpl implements MetierService {
 		}
 
 		// les deux ménages on un for à la même date ou pas de for
-		final PersonnePhysique pp1 = menage1.getPersonnesPhysiques().toArray(new PersonnePhysique[0])[0];
-		final PersonnePhysique pp2 = menage2.getPersonnesPhysiques().toArray(new PersonnePhysique[0])[0];
+		final PersonnePhysique pp1 = tiersService.getPersonnesPhysiques(menage1).toArray(new PersonnePhysique[0])[0];
+		final PersonnePhysique pp2 = tiersService.getPersonnesPhysiques(menage2).toArray(new PersonnePhysique[0])[0];
 		final PersonnePhysique principal = tiersService.getPrincipal(pp1, pp2);
 		if (principal == pp1) {
 			return menage1;
@@ -821,8 +821,8 @@ public class MetierServiceImpl implements MetierService {
 		final MenageCommun menageChoisi = getMenageForFusion(menagePrincipal, menageConjoint);
 		final MenageCommun autreMenage = (menageChoisi == menagePrincipal ? menageConjoint : menagePrincipal);
 
-		final PersonnePhysique principal = menageChoisi.getPersonnesPhysiques().toArray(new PersonnePhysique[0])[0];
-		final PersonnePhysique conjoint = autreMenage.getPersonnesPhysiques().toArray(new PersonnePhysique[0])[0];
+		final PersonnePhysique principal = tiersService.getPersonnesPhysiques(menageChoisi).toArray(new PersonnePhysique[0])[0];
+		final PersonnePhysique conjoint = tiersService.getPersonnesPhysiques(autreMenage).toArray(new PersonnePhysique[0])[0];
 
 		final ForFiscalPrincipal forFPMenage = menageChoisi.getForFiscalPrincipalAt(null);
 		final ModeImposition impositionMenage = (forFPMenage == null ? null : forFPMenage.getModeImposition());
@@ -852,7 +852,7 @@ public class MetierServiceImpl implements MetierService {
 		// fermeture des rapport du ménage (1 seul doit exister);
 		for (RapportEntreTiers rapport : autreMenage.getRapportsObjet()) {
 			if (!rapport.isAnnule() && TypeRapportEntreTiers.APPARTENANCE_MENAGE.equals(rapport.getType()) &&
-					rapport.getDateFin() == null && rapport.getSujet().equals(conjoint)) {
+					rapport.getDateFin() == null && rapport.getSujetId().equals(conjoint.getId())) {
 				rapport.setAnnule(true);
 			}
 		}
@@ -908,7 +908,7 @@ public class MetierServiceImpl implements MetierService {
 				throw new EvenementCivilHandlerException("Il y a eu d'autres opérations après le mariage/réconciliation");
 			}
 		}
-		MenageCommun menage = (MenageCommun) dernierRapportMenage.getObjet();
+		MenageCommun menage = (MenageCommun) tiersDAO.get(dernierRapportMenage.getObjetId());
 		EnsembleTiersCouple ensembleTiersCouple = getTiersService().getEnsembleTiersCouple(menage, dernierRapportMenage.getDateDebut());
 		if (!ensembleTiersCouple.estComposeDe(principal, conjoint)) {
 			String message = "Le dernier ménage n'est pas composé";
@@ -991,7 +991,7 @@ public class MetierServiceImpl implements MetierService {
 		/*
 		 * Réouverture de la situation de famille actuelle sur les membres du ménage
 		 */
-		for (PersonnePhysique pp : menage.getPersonnesPhysiques()) {
+		for (PersonnePhysique pp : tiersService.getPersonnesPhysiques(menage)) {
 			reopenSituationFamille(date, pp);
 		}
 	}
@@ -1016,7 +1016,7 @@ public class MetierServiceImpl implements MetierService {
 		/*
 		 * Réouverture de la situation de famille actuelle sur les membres du ménage
 		 */
-		for (PersonnePhysique pp : menage.getPersonnesPhysiques()) {
+		for (PersonnePhysique pp : tiersService.getPersonnesPhysiques(menage)) {
 			cancelSituationFamillePP(date, pp);
 		}
 	}
@@ -1075,7 +1075,7 @@ public class MetierServiceImpl implements MetierService {
 			}
 		}
 		Assert.notNull(dernierRapportMenage, "Le dernier ménage n'a pas été trouvé");
-		MenageCommun menageCommun = (MenageCommun) dernierRapportMenage.getObjet();
+		MenageCommun menageCommun = (MenageCommun) tiersDAO.get(dernierRapportMenage.getObjetId());
 		EnsembleTiersCouple ensembleTiersCouple = getTiersService().getEnsembleTiersCouple(menageCommun, dernierRapportMenage.getDateDebut());
 		if (!ensembleTiersCouple.estComposeDe(principal, conjoint)) {
 			String message = "Le dernier ménage n'est pas composé";
@@ -1191,7 +1191,7 @@ public class MetierServiceImpl implements MetierService {
 			throw new EvenementCivilHandlerException("Le ménage est null");
 		}
 
-		final EnsembleTiersCouple ensemble = tiersService.getEnsembleTiersCouple(menage.getPersonnesPhysiques().iterator().next(), date);
+		final EnsembleTiersCouple ensemble = tiersService.getEnsembleTiersCouple(tiersService.getPersonnesPhysiques(menage).iterator().next(), date);
 
 		final PersonnePhysique principal = ensemble.getPrincipal();
 		final PersonnePhysique conjoint = ensemble.getConjoint();
@@ -1251,7 +1251,7 @@ public class MetierServiceImpl implements MetierService {
 		SituationFamille situationFamilleActive = menageCommun.getSituationFamilleActive();
 		situationFamilleService.closeSituationFamille(menageCommun, date.getOneDayBefore());
 
-		for (PersonnePhysique pp : menageCommun.getPersonnesPhysiques()) {
+		for (PersonnePhysique pp : tiersService.getPersonnesPhysiques(menageCommun)) {
 
 			boolean nonHabitant = false;
 			boolean sansEtatCivil = false;
@@ -1346,15 +1346,17 @@ public class MetierServiceImpl implements MetierService {
 		for (RapportEntreTiers rapport : menage.getRapportsObjet()) {
 			if (!rapport.isAnnule() && date.getOneDayBefore().equals(rapport.getDateFin())) {
 				RapportEntreTiers nouveauRapport = reopenRapportEntreTiers(rapport);
-				nouveauRapport.setSujet(rapport.getSujet());
-				nouveauRapport.setObjet(rapport.getObjet());
+				nouveauRapport.setSujetId(rapport.getSujetId());
+				nouveauRapport.setObjetId(rapport.getObjetId());
 				// ajout à la liste des rapports à ajouter
 				rapportOuverts.add(nouveauRapport);
 			}
 		}
 		for (RapportEntreTiers rapport : rapportOuverts) {
 			// assigner le nouveau rapport au tiers
-	  		tiersService.addRapport(rapport, rapport.getSujet(), rapport.getObjet());
+			final Tiers sujet = tiersDAO.get(rapport.getSujetId());
+			final Tiers objet = tiersDAO.get(rapport.getObjetId());
+	  		tiersService.addRapport(rapport, sujet, objet);
 		}
 
 		/*
@@ -1365,7 +1367,7 @@ public class MetierServiceImpl implements MetierService {
 		/*
 		 * Mise à jour de la situation de famille
 		 */
-		PersonnePhysique[] personnes = menage.getPersonnesPhysiques().toArray(new PersonnePhysique[0]);
+		PersonnePhysique[] personnes = tiersService.getPersonnesPhysiques(menage).toArray(new PersonnePhysique[0]);
 		PersonnePhysique tiers1 = personnes[0];
 		PersonnePhysique tiers2 = null;
 		if (personnes.length > 1) {
@@ -1392,7 +1394,7 @@ public class MetierServiceImpl implements MetierService {
 		if (sf == null) {
 			boolean auMoinsUnNonHabitant = false;
 			boolean etatsCivilsDifferents = false;
-			for (PersonnePhysique pp : menage.getPersonnesPhysiques()) {
+			for (PersonnePhysique pp : tiersService.getPersonnesPhysiques(menage)) {
 				if (!pp.isHabitant()) {
 					auMoinsUnNonHabitant = true;
 				}
@@ -1797,7 +1799,7 @@ public class MetierServiceImpl implements MetierService {
 
 			// récuperer le ménage que si celui-ci est valide au moment du décès
 			if (date.equals(dernierRapportMenage.getDateFin())) {
-				menageCommun = (MenageCommun) dernierRapportMenage.getObjet();
+				menageCommun = (MenageCommun) tiersDAO.get(dernierRapportMenage.getObjetId());
 				EnsembleTiersCouple ensembleTiersCouple = getTiersService().getEnsembleTiersCouple(menageCommun, dernierRapportMenage.getDateDebut());
 				conjoint = ensembleTiersCouple.getConjoint(tiers);
 				if (!ensembleTiersCouple.estComposeDe(tiers, conjoint)) {
@@ -1883,7 +1885,7 @@ public class MetierServiceImpl implements MetierService {
 			 * Réouverture des rapports sur les membres du ménage
 			 */
 			EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(menageCommun, date);
-			for (PersonnePhysique pp : couple.getMenage().getPersonnesPhysiques()) {
+			for (PersonnePhysique pp : tiersService.getPersonnesPhysiques(couple.getMenage())) {
 				reopenRapportsEntreTiers(pp, date);
 			}
 		}
@@ -1900,15 +1902,17 @@ public class MetierServiceImpl implements MetierService {
 
 					// duplique le rapport et réouvre le nouveau
 					RapportEntreTiers nouRapport = reopenRapportEntreTiers(rapport);
-					nouRapport.setSujet(rapport.getSujet());
-					nouRapport.setObjet(rapport.getObjet());
+					nouRapport.setSujetId(rapport.getSujetId());
+					nouRapport.setObjetId(rapport.getObjetId());
 					// ajout à la liste des rapports à ajouter
 					rapportAOuvrir.add(nouRapport);
 				}
 			}
 			for (RapportEntreTiers rapport : rapportAOuvrir) {
 				// assigner le nouveau rapport au tiers
-				tiersService.addRapport(rapport, rapport.getSujet(), rapport.getObjet());
+				final Tiers sujet = tiersDAO.get(rapport.getSujetId());
+				final Tiers objet = tiersDAO.get(rapport.getObjetId());
+				tiersService.addRapport(rapport, sujet, objet);
 			}
 		}
 	}
@@ -2043,7 +2047,7 @@ public class MetierServiceImpl implements MetierService {
 		RapportEntreTiers dernierRapportMenage = tiers.getDernierRapportSujet(TypeRapportEntreTiers.APPARTENANCE_MENAGE);
 		Assert.notNull(dernierRapportMenage, "Le dernier ménage n'a pas été trouvé");
 		Assert.isEqual(dernierRapportMenage.getDateFin(), date, "La date du dernier rapport entre tiers n'est pas la même que celle de l'événement");
-		MenageCommun menageCommun = (MenageCommun) dernierRapportMenage.getObjet();
+		MenageCommun menageCommun = (MenageCommun) tiersDAO.get(dernierRapportMenage.getObjetId());
 		EnsembleTiersCouple ensembleTiersCouple = getTiersService().getEnsembleTiersCouple(menageCommun, dernierRapportMenage.getDateDebut());
 		if (!ensembleTiersCouple.contient(tiers)) {
 			 throw new EvenementCivilHandlerException("Le dernier ménage n'est pas composé du tiers n° " + FormatNumeroHelper.numeroCTBToDisplay(tiers.getNumero()));
@@ -2066,7 +2070,9 @@ public class MetierServiceImpl implements MetierService {
 			/*
 			 *  Assigner le nouveau rapport au tiers
 			 */
-	  		tiersService.addRapport(rapport, dernierRapportMenage.getSujet(), dernierRapportMenage.getObjet());
+			final Tiers sujet = tiersDAO.get(dernierRapportMenage.getSujetId());
+			final Tiers objet = tiersDAO.get(dernierRapportMenage.getObjetId());
+			tiersService.addRapport(rapport, sujet, objet);
 
 			/*
 			 * Réouverture des fors du ménage commun

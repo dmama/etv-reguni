@@ -106,8 +106,8 @@ public class ContribuableListController extends AbstractTiersListController {
 								// seulement les ménages communs annulés du ou des contribuables doivent être affichés
 								for (RapportEntreTiers rapport : menage.getRapportsObjet()) {
 									if (rapport.isAnnule() &&
-											(rapport.getSujet().getNumero().equals(bean.getNumeroPremierePersonne()) ||
-													rapport.getSujet().getNumero().equals(bean.getNumeroSecondePersonne())) &&
+											(rapport.getSujetId().equals(bean.getNumeroPremierePersonne()) ||
+													rapport.getSujetId().equals(bean.getNumeroSecondePersonne())) &&
 											/* pour pas repeter 2 fois le même ménage */
 											!filtredResults.contains(tiersIndexedData)) {
 										filtredResults.add(tiersIndexedData);

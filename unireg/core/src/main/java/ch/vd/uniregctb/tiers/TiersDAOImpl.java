@@ -120,12 +120,12 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 		final Set<Long> idsLies = new HashSet<Long>();
 
 		if (parts != null && parts.contains(Parts.RAPPORTS_ENTRE_TIERS)) {
-			Query qsujets = session.createQuery("select r.sujet.id from RapportEntreTiers r where r.objet.id in (:ids)");
+			Query qsujets = session.createQuery("select r.sujetId from RapportEntreTiers r where r.objetId in (:ids)");
 			qsujets.setParameterList("ids", ids);
 			final List<Long> idsSujets = qsujets.list();
 			idsLies.addAll(idsSujets);
 
-			Query qobjets = session.createQuery("select r.objet.id from RapportEntreTiers r where r.sujet.id in (:ids)");
+			Query qobjets = session.createQuery("select r.objetId from RapportEntreTiers r where r.sujetId in (:ids)");
 			qobjets.setParameterList("ids", ids);
 			final List<Long> idsObjets = qobjets.list();
 			idsLies.addAll(idsObjets);
@@ -230,14 +230,14 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 		if (parts != null && parts.contains(Parts.RAPPORTS_ENTRE_TIERS)) {
 			// on charge tous les rapports entre tiers en vrac
 			{
-				Query q = session.createQuery("from RapportEntreTiers as r where r.sujet.id in (:ids)");
+				Query q = session.createQuery("from RapportEntreTiers as r where r.sujetId in (:ids)");
 				q.setParameterList("ids", idsDemandes);
 				List<RapportEntreTiers> rapports = q.list();
 
 				// on associe les rapports avec les tiers à la main
 				associate(session, rapports, tiers, new TiersIdGetter<RapportEntreTiers>() {
 					public Long getTiersId(RapportEntreTiers entity) {
-						return entity.getSujet().getId();
+						return entity.getSujetId();
 					}
 				}, new EntitySetSetter<RapportEntreTiers>() {
 					public void setEntitySet(Tiers tiers, Set<RapportEntreTiers> set) {
@@ -247,14 +247,14 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 			}
 			{
 
-				Query q = session.createQuery("from RapportEntreTiers as r where r.objet.id in (:ids)");
+				Query q = session.createQuery("from RapportEntreTiers as r where r.objetId in (:ids)");
 				q.setParameterList("ids", idsDemandes);
 				List<RapportEntreTiers> rapports = q.list();
 
 				// on associe les rapports avec les tiers à la main
 				associate(session, rapports, tiers, new TiersIdGetter<RapportEntreTiers>() {
 					public Long getTiersId(RapportEntreTiers entity) {
-						return entity.getObjet().getId();
+						return entity.getObjetId();
 					}
 				}, new EntitySetSetter<RapportEntreTiers>() {
 					public void setEntitySet(Tiers tiers, Set<RapportEntreTiers> set) {

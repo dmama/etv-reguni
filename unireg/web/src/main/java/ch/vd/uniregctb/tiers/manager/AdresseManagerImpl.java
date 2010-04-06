@@ -619,7 +619,7 @@ public class AdresseManagerImpl extends TiersManager implements AdresseManager {
 
 		if (type == TypeAdresseRepresentant.CONSEIL_LEGAL || type == TypeAdresseRepresentant.TUTELLE || type == TypeAdresseRepresentant.CURATELLE) {
 			final RapportEntreTiers rapport = TiersHelper.getRapportSujetOfType(tiers, type.getTypeRapport(), null);
-			final Tiers conseiller = rapport.getObjet();
+			final Tiers conseiller = tiersDAO.get(rapport.getObjetId());
 			
 			addDispoView.setSource(type.getTypeSource());
 			addDispoView.setRepresentantLegal(getNomCourrier(conseiller));

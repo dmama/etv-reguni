@@ -309,7 +309,7 @@ public abstract class TiersHisto {
 				continue;
 			}
 
-			this.rapportsEntreTiers.add(new RapportEntreTiers(rapport, rapport.getObjet().getNumero()));
+			this.rapportsEntreTiers.add(new RapportEntreTiers(rapport, rapport.getObjetId()));
 		}
 
 		// Ajoute les rapports dont le tiers est l'objet
@@ -317,7 +317,7 @@ public abstract class TiersHisto {
 			if (rapport instanceof ch.vd.uniregctb.tiers.ContactImpotSource || (range != null && !DateRangeHelper.intersect(rapport, range))) {
 				continue;
 			}
-			this.rapportsEntreTiers.add(new RapportEntreTiers(rapport, rapport.getSujet().getNumero()));
+			this.rapportsEntreTiers.add(new RapportEntreTiers(rapport, rapport.getSujetId()));
 		}
 		if (this.rapportsEntreTiers.isEmpty()) {
 			this.rapportsEntreTiers = null;

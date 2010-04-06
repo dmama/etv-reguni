@@ -619,16 +619,6 @@ public class TiersDAOTest extends CoreDAOTest {
 	}
 
 	@Test
-	public void testGetDebiteurPrestationImposable() throws Exception {
-		loadDatabase(DB_UNIT_DATA_FILE);
-
-		DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) dao.get(1234L);
-		Contribuable ctb = dpi.getContribuable();
-		assertNotNull(ctb);
-		assertEquals(new Long(6789L), ctb.getNumero());
-	}
-
-	@Test
 	public void testGetRapportCouple() throws Exception {
 
 		loadDatabase(DB_UNIT_DATA_FILE);
@@ -641,16 +631,16 @@ public class TiersDAOTest extends CoreDAOTest {
 		{
 			assertEquals(0, ctb1.getRapportsObjet().size());
 			RapportEntreTiers rap = ctb1.getRapportSujetValidAt(null, TypeRapportEntreTiers.APPARTENANCE_MENAGE);
-			assertEquals(ctb1, rap.getSujet());
-			assertEquals(couple, rap.getObjet());
+			assertEquals(ctb1.getId(), rap.getSujetId());
+			assertEquals(couple.getId(), rap.getObjetId());
 		}
 
 		// CTB2
 		{
 			assertEquals(0, ctb2.getRapportsObjet().size());
 			RapportEntreTiers rap = ctb2.getRapportSujetValidAt(null, TypeRapportEntreTiers.APPARTENANCE_MENAGE);
-			assertEquals(ctb2, rap.getSujet());
-			assertEquals(couple, rap.getObjet());
+			assertEquals(ctb2.getId(), rap.getSujetId());
+			assertEquals(couple.getId(), rap.getObjetId());
 		}
 
 		// Couple
@@ -664,14 +654,14 @@ public class TiersDAOTest extends CoreDAOTest {
 			RapportEntreTiers rctb1 = iter.next();
 			RapportEntreTiers rctb2 = iter.next();
 
-			assertEquals(couple, rctb1.getObjet());
-			if (rctb1.getSujet().getNumero().equals(6789L)) {
-				assertEquals(new Long(6789L), rctb1.getSujet().getNumero());
-				assertEquals(new Long(7890L), rctb2.getSujet().getNumero());
+			assertEquals(couple.getId(), rctb1.getObjetId());
+			if (rctb1.getSujetId().equals(6789L)) {
+				assertEquals(new Long(6789L), rctb1.getSujetId());
+				assertEquals(new Long(7890L), rctb2.getSujetId());
 			}
 			else {
-				assertEquals(new Long(7890L), rctb1.getSujet().getNumero());
-				assertEquals(new Long(6789L), rctb2.getSujet().getNumero());
+				assertEquals(new Long(7890L), rctb1.getSujetId());
+				assertEquals(new Long(6789L), rctb2.getSujetId());
 			}
 		}
 	}
@@ -804,24 +794,24 @@ public class TiersDAOTest extends CoreDAOTest {
 			assertNotNull(ctb1.getRapportsSujet());
 			assertEquals(1L, ctb1.getRapportsSujet().size());
 			RapportEntreTiers rapport1 = ctb1.getRapportsSujet().iterator().next();
-			assertEquals(ctb1, rapport1.getSujet());
-			assertEquals(menage, rapport1.getObjet());
+			assertEquals(ctb1.getId(), rapport1.getSujetId());
+			assertEquals(menage.getId(), rapport1.getObjetId());
 
 			assertTrue(ctb2.getRapportsObjet() == null || ctb2.getRapportsObjet().isEmpty());
 			assertNotNull(ctb2.getRapportsSujet());
 			assertEquals(1L, ctb2.getRapportsSujet().size());
 			RapportEntreTiers rapport2 = ctb2.getRapportsSujet().iterator().next();
-			assertEquals(ctb2, rapport2.getSujet());
-			assertEquals(menage, rapport2.getObjet());
+			assertEquals(ctb2.getId(), rapport2.getSujetId());
+			assertEquals(menage.getId(), rapport2.getObjetId());
 
 			assertNotNull(menage.getRapportsObjet());
 			assertEquals(2L, menage.getRapportsObjet().size());
 			RapportEntreTiers rapportMenage1 = (RapportEntreTiers) menage.getRapportsObjet().toArray()[0];
 			RapportEntreTiers rapportMenage2 = (RapportEntreTiers) menage.getRapportsObjet().toArray()[1];
-			assertEquals(menage, rapportMenage1.getObjet());
-			assertEquals(menage, rapportMenage2.getObjet());
-			assertTrue(rapportMenage1.getSujet().getNumero().equals(numeros.numeroCtb1) || rapportMenage1.getSujet().getNumero().equals(numeros.numeroCtb2));
-			assertTrue(rapportMenage2.getSujet().getNumero().equals(numeros.numeroCtb1) || rapportMenage2.getSujet().getNumero().equals(numeros.numeroCtb2));
+			assertEquals(menage.getId(), rapportMenage1.getObjetId());
+			assertEquals(menage.getId(), rapportMenage2.getObjetId());
+			assertTrue(rapportMenage1.getSujetId().equals(numeros.numeroCtb1) || rapportMenage1.getSujetId().equals(numeros.numeroCtb2));
+			assertTrue(rapportMenage2.getSujetId().equals(numeros.numeroCtb1) || rapportMenage2.getSujetId().equals(numeros.numeroCtb2));
 		}
 	}
 
@@ -891,11 +881,7 @@ public class TiersDAOTest extends CoreDAOTest {
 
 				{
 					// pupille <=> tuteur
-					tierss.rapport1 = new Tutelle(RegDate.get(2002, 2, 1), null, tierss.pupille, tierss.tuteur);
-					tierss.pupille.addRapportSujet(tierss.rapport1);
-					tierss.tuteur.addRapportObjet(tierss.rapport1);
-
-					tierss.rapport1 = dao.save(tierss.rapport1);
+					tierss.rapport1 = addTutelle(tierss.pupille, tierss.tuteur, null, RegDate.get(2002, 2, 1), null);
 				}
 				return tierss;
 			}
@@ -908,13 +894,13 @@ public class TiersDAOTest extends CoreDAOTest {
 			assertFalse(tierss.tuteur.getRapportsObjet().isEmpty());
 			assertTrue(tierss.tuteur.getRapportsSujet().isEmpty());
 			assertEquals(1L, tierss.tuteur.getRapportsObjet().size());
-			assertTrue(tierss.tuteur.getRapportsObjet().iterator().next().getSujet().equals(tierss.pupille));
+			assertEquals(tierss.pupille.getId(), tierss.tuteur.getRapportsObjet().iterator().next().getSujetId());
 
 			assertTrue(tierss.pupille.getRapportsObjet().isEmpty());
 			assertFalse(tierss.pupille.getRapportsSujet().isEmpty());
 			assertEquals(1L, tierss.pupille.getRapportsSujet().size());
-			assertTrue(tierss.tuteur.getRapportsObjet().iterator().next().getSujet().equals(tierss.pupille));
-			assertTrue(tierss.pupille.getRapportsSujet().iterator().next().getObjet().equals(tierss.tuteur));
+			assertEquals(tierss.pupille.getId(), tierss.tuteur.getRapportsObjet().iterator().next().getSujetId());
+			assertEquals(tierss.tuteur.getId(), tierss.pupille.getRapportsSujet().iterator().next().getObjetId());
 		}
 	}
 
@@ -1315,7 +1301,7 @@ public class TiersDAOTest extends CoreDAOTest {
 		assertEquals(1, rapports.size());
 
 		final AppartenanceMenage rapport0 = (AppartenanceMenage) rapports.iterator().next();
-		final MenageCommun menage = (MenageCommun) rapport0.getObjet();
+		final MenageCommun menage = (MenageCommun) dao.get(rapport0.getObjetId());
 		assertNotNull(menage);
 
 		// [UNIREG-1985] Le ménage commun doit être chargé sans que les fors fiscaux soient initialisés : la collection doit être un persistent set non-initialisé

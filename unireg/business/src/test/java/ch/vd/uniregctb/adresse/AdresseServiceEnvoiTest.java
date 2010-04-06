@@ -124,9 +124,8 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 				conjoint.setNumeroIndividu(noIndividuConjoint);
 				MenageCommun menage = new MenageCommun();
 				RapportEntreTiers rapport = tiersService.addTiersToCouple(menage, principal, RegDate.get(2004, 7, 14), null);
-				menage = (MenageCommun) rapport.getObjet();
-				rapport = tiersService.addTiersToCouple(menage, conjoint, RegDate.get(1980, 1, 1), null);
-				menage = (MenageCommun) rapport.getObjet();
+				menage = (MenageCommun) tiersDAO.get(rapport.getObjetId());
+				tiersService.addTiersToCouple(menage, conjoint, RegDate.get(1980, 1, 1), null);
 				return menage.getNumero();
 			}
 		});
@@ -364,9 +363,8 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 				conjoint.setNumeroIndividu(noIndividuConjoint);
 				MenageCommun menage = new MenageCommun();
 				RapportEntreTiers rapport = tiersService.addTiersToCouple(menage, principal, RegDate.get(2004, 7, 14), null);
-				menage = (MenageCommun) rapport.getObjet();
-				rapport = tiersService.addTiersToCouple(menage, conjoint, RegDate.get(1980, 1, 1), null);
-				menage = (MenageCommun) rapport.getObjet();
+				menage = (MenageCommun) tiersDAO.get(rapport.getObjetId());
+				tiersService.addTiersToCouple(menage, conjoint, RegDate.get(1980, 1, 1), null);
 				return menage.getNumero();
 			}
 		});
@@ -1006,10 +1004,9 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 				conjoint.setNumeroIndividu(noIndividuConjoint);
 				MenageCommun menage = new MenageCommun();
 				RapportEntreTiers rapport = tiersService.addTiersToCouple(menage, principal, RegDate.get(2004, 7, 14), null);
-				principal = (PersonnePhysique) rapport.getSujet();
-				menage = (MenageCommun) rapport.getObjet();
-				rapport = tiersService.addTiersToCouple(menage, conjoint, RegDate.get(1980, 1, 1), null);
-				menage = (MenageCommun) rapport.getObjet();
+				principal = (PersonnePhysique) tiersDAO.get(rapport.getSujetId());
+				menage = (MenageCommun) tiersDAO.get(rapport.getObjetId());
+				tiersService.addTiersToCouple(menage, conjoint, RegDate.get(1980, 1, 1), null);
 				long noMenageCommun = menage.getNumero();
 
 				// tuteur
@@ -1115,10 +1112,9 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 				conjoint.setNumeroIndividu(noIndividuConjoint);
 				MenageCommun menage = new MenageCommun();
 				RapportEntreTiers rapport = tiersService.addTiersToCouple(menage, principal, RegDate.get(2004, 7, 14), null);
-				menage = (MenageCommun) rapport.getObjet();
+				menage = (MenageCommun) tiersDAO.get(rapport.getObjetId());
 				rapport = tiersService.addTiersToCouple(menage, conjoint, RegDate.get(1980, 1, 1), null);
-				conjoint = (PersonnePhysique) rapport.getSujet();
-				menage = (MenageCommun) rapport.getObjet();
+				conjoint = (PersonnePhysique) tiersDAO.get(rapport.getSujetId());
 				long noMenageCommun = menage.getNumero();
 
 				// tuteur
@@ -1220,11 +1216,10 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 				conjoint.setNumeroIndividu(noIndividuConjoint);
 				MenageCommun menage = new MenageCommun();
 				RapportEntreTiers rapport = tiersService.addTiersToCouple(menage, principal, RegDate.get(2004, 7, 14), null);
-				principal = (PersonnePhysique) rapport.getSujet();
-				menage = (MenageCommun) rapport.getObjet();
+				principal = (PersonnePhysique) tiersDAO.get(rapport.getSujetId());
+				menage = (MenageCommun) tiersDAO.get(rapport.getObjetId());
 				rapport = tiersService.addTiersToCouple(menage, conjoint, RegDate.get(1980, 1, 1), null);
-				conjoint = (PersonnePhysique) rapport.getSujet();
-				menage = (MenageCommun) rapport.getObjet();
+				conjoint = (PersonnePhysique) tiersDAO.get(rapport.getSujetId());
 				long noMenageCommun = menage.getNumero();
 
 				// tuteur du principal

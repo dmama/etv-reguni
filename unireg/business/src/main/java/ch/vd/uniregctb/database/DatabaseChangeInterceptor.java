@@ -73,8 +73,8 @@ public class DatabaseChangeInterceptor implements ModificationSubInterceptor, In
 					if (r.isAnnule() || r.getType() != TypeRapportEntreTiers.APPARTENANCE_MENAGE) {
 						continue;
 					}
-					final MenageCommun mc = (MenageCommun) r.getObjet();
-					dbService.onDroitAccessChange(mc.getNumero());
+					final Long mcId = r.getObjetId();
+					dbService.onDroitAccessChange(mcId);
 				}
 			}
 		}

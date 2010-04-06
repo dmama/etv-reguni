@@ -79,8 +79,7 @@ public class DebiteurHisto extends TiersHisto {
 		this.modeCommunication = EnumHelper.coreToWeb(debiteur.getModeCommunication());
 		this.sansRappel = DataHelper.coreToWeb(debiteur.getSansRappel());
 		this.sansListRecapitulative = DataHelper.coreToWeb(debiteur.getSansListeRecapitulative());
-		final Contribuable contribuable = debiteur.getContribuable();
-		this.contribuableAssocie = (contribuable == null ? null : contribuable.getNumero());
+		this.contribuableAssocie = debiteur.getContribuableId();
 	}
 
 	/**

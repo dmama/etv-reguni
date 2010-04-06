@@ -519,7 +519,7 @@ public class OuvertureForsContribuablesMajeursProcessor {
 			+ "            RapportEntreTiers AS rap                                "
 			+ "        WHERE                                                       "
 			+ "            rap.annulationDate IS null                              "
-			+ "            AND rap.sujet.id = hab.id                               "
+			+ "            AND rap.sujetId = hab.id                                "
 			+ "            AND rap.class = AppartenanceMenage                      "
 			+ "            AND rap.dateDebut <= :date                              "
 			+ "            AND (rap.dateFin IS null OR rap.dateFin >= :date)       "

@@ -138,10 +138,10 @@ public class CoupleRecapManagerImpl extends TiersManager implements CoupleRecapM
 				final RapportEntreTiers dernierRapportPP1 = premierPP.getDernierRapportSujet(TypeRapportEntreTiers.APPARTENANCE_MENAGE);
 				final RapportEntreTiers dernierRapportPP2 = secondPP.getDernierRapportSujet(TypeRapportEntreTiers.APPARTENANCE_MENAGE);
 				if (dernierRapportPP1 != null && dernierRapportPP2 != null) {
-					final MenageCommun menagePP1 = (MenageCommun) dernierRapportPP1.getObjet();
-					final MenageCommun menagePP2 = (MenageCommun) dernierRapportPP2.getObjet();
+					final Long idMenagePP1 = dernierRapportPP1.getObjetId();
+					final Long idMenagePP2 = dernierRapportPP2.getObjetId();
 					// ...et ont fait partie en dernier lieu d’un même ménage commun fermé pour cause de séparation...
-					if (menagePP1 != null && menagePP1 == menagePP2) {
+					if (idMenagePP1 != null && idMenagePP1.equals(idMenagePP2)) {
 						// ...il s’agit d’une réconciliation
 						type = TypeUnion.RECONCILIATION;
 					}
@@ -156,7 +156,7 @@ public class CoupleRecapManagerImpl extends TiersManager implements CoupleRecapM
 					type = TypeUnion.FUSION_MENAGES;
 					final MenageCommun menagePrincipal = metierService.getMenageForFusion(couplePP1.getMenage(), couplePP2.getMenage());
 					if (menagePrincipal != null) {
-						final PersonnePhysique principal = menagePrincipal.getPersonnesPhysiques().toArray(new PersonnePhysique[0])[0];
+						final PersonnePhysique principal = tiersService.getPersonnesPhysiques(menagePrincipal).toArray(new PersonnePhysique[0])[0];
 						final RapportEntreTiers rapport = menagePrincipal.getPremierRapportObjet(TypeRapportEntreTiers.APPARTENANCE_MENAGE, principal);
 						coupleRecapView.setDateDebut(rapport.getDateDebut().asJavaDate());
 					}

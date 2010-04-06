@@ -926,7 +926,7 @@ public class TiersServiceTest extends BusinessTest {
 					PersonnePhysique momo = new PersonnePhysique(true);
 					momo.setNumeroIndividu(NO_MOMO);
 					RapportEntreTiers rapport = tiersService.addTiersToCouple(menage, momo, dateMariage, null);
-					numeros.NO_CTB_MOMO = rapport.getSujet().getNumero();
+					numeros.NO_CTB_MOMO = rapport.getSujetId();
 				}
 
 				{
@@ -935,7 +935,7 @@ public class TiersServiceTest extends BusinessTest {
 					PersonnePhysique enguerrand = new PersonnePhysique(true);
 					enguerrand.setNumeroIndividu(NO_ENGUERRAND);
 					RapportEntreTiers rapport = tiersService.addTiersToCouple(menage, enguerrand, dateMariage, null);
-					numeros.NO_CTB_ENGUERRAND = rapport.getSujet().getNumero();
+					numeros.NO_CTB_ENGUERRAND = rapport.getSujetId();
 				}
 
 				{
@@ -945,13 +945,13 @@ public class TiersServiceTest extends BusinessTest {
 					PersonnePhysique arnold = new PersonnePhysique(true);
 					arnold.setNumeroIndividu(NO_ARNOLD);
 					RapportEntreTiers rapport = tiersService.addTiersToCouple(menage, arnold, dateMariage, null);
-					numeros.NO_CTB_ARNOLD = rapport.getSujet().getNumero();
-					menage = (MenageCommun) rapport.getObjet();
+					numeros.NO_CTB_ARNOLD = rapport.getSujetId();
+					menage = (MenageCommun) tiersDAO.get(rapport.getObjetId());
 
 					PersonnePhysique gudrun = new PersonnePhysique(true);
 					gudrun.setNumeroIndividu(NO_GUDRUN);
 					rapport = tiersService.addTiersToCouple(menage, gudrun, dateMariage, null);
-					numeros.NO_CTB_GUDRUN = rapport.getSujet().getNumero();
+					numeros.NO_CTB_GUDRUN = rapport.getSujetId();
 				}
 				return null;
 			}
@@ -1031,7 +1031,14 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 	@Test
-	public void testFindMenageCommun() {
+	public void testFindMenageCommun() throws Exception {
+
+		class Ids {
+			long personne;
+			long menage1;
+			long menage2;
+		}
+		final Ids ids = new Ids();
 
 		/**
 		 * Une personne avec deux ménages :
@@ -1039,12 +1046,27 @@ public class TiersServiceTest extends BusinessTest {
 		 *  o [1990,1,1] à [2000,1,1]
 		 *  o [2004,1,1] à ...
 		 */
-		PersonnePhysique personne = new PersonnePhysique(false);
-		MenageCommun menage1 = new MenageCommun();
-		MenageCommun menage2 = new MenageCommun();
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				PersonnePhysique personne = addNonHabitant("Jean", "Sairien", date(1990, 9, 9), Sexe.MASCULIN);
+				MenageCommun menage1 = (MenageCommun) tiersDAO.save(new MenageCommun());
+				MenageCommun menage2 = (MenageCommun) tiersDAO.save(new MenageCommun());
 
-		personne.addRapportSujet(new AppartenanceMenage(RegDate.get(1990, 1, 1), RegDate.get(2000, 1, 1), personne, menage1));
-		personne.addRapportSujet(new AppartenanceMenage(RegDate.get(2004, 1, 1), null, personne, menage2));
+				ids.personne = personne.getId();
+				ids.menage1 = menage1.getId();
+				ids.menage2 = menage2.getId();
+
+				hibernateTemplate.merge(new AppartenanceMenage(RegDate.get(1990, 1, 1), RegDate.get(2000, 1, 1), personne, menage1));
+				hibernateTemplate.merge(new AppartenanceMenage(RegDate.get(2004, 1, 1), null, personne, menage2));
+
+				return null;
+			}
+		});
+
+		final PersonnePhysique personne = (PersonnePhysique) tiersDAO.get(ids.personne);
+		final MenageCommun menage1 = (MenageCommun) tiersDAO.get(ids.menage1);
+		final MenageCommun menage2 = (MenageCommun) tiersDAO.get(ids.menage2);
 
 		assertNull(tiersService.findMenageCommun(personne, RegDate.get(1980, 1, 1)));
 		assertSame(menage1, tiersService.findMenageCommun(personne, RegDate.get(1995, 1, 1)));
@@ -2749,4 +2771,15 @@ public class TiersServiceTest extends BusinessTest {
 		final MenageCommun menage = (MenageCommun) tiersDAO.get(idCtbCouple.longValue());
 		Assert.assertFalse("Couple avec for source vaudois et un membre habitant, pourquoi 'gris' ?", tiersService.isSourcierGris(menage, null));
 	}
+
+	@Test
+	public void testGetDebiteurPrestationImposable() throws Exception {
+		loadDatabase("TiersServiceTest.xml");
+
+		DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(1234L);
+		Contribuable ctb = tiersService.getContribuable(dpi);
+		assertNotNull(ctb);
+		assertEquals(new Long(6789L), ctb.getNumero());
+	}
+
 }

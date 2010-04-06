@@ -82,7 +82,7 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 			else if (tiers instanceof DebiteurPrestationImposable) {
 				DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiers;
 				tiersEditView.setTiers(dpi);
-				if (dpi.getContribuable() == null) {
+				if (dpi.getContribuableId() == null) {
 					tiersEditView.setAddContactISAllowed(true);
 				}
 				else {
@@ -218,7 +218,7 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 			tiersEditView.setTiers(dpi);
 			setForsFiscauxDebiteur(tiersEditView, dpi);
 			setContribuablesAssocies(tiersEditView, dpi);
-			if (dpi.getContribuable() == null) {
+			if (dpi.getContribuableId() == null) {
 				tiersEditView.setAddContactISAllowed(true);
 			}
 			else {
@@ -462,7 +462,7 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 				//getTiersDAO().getHibernateTemplate().merge(contact);
 				final RapportEntreTiers rapport = tiersService.addContactImpotSource(dpi, ctbAss);
 
-				final DebiteurPrestationImposable dpiRtr = (DebiteurPrestationImposable) rapport.getObjet();
+				final DebiteurPrestationImposable dpiRtr = (DebiteurPrestationImposable) tiersDAO.get(rapport.getObjetId());
 
 				return dpiRtr;
 			}

@@ -193,7 +193,8 @@ public class SecuriteDossierServiceImpl implements SecuriteDossierService, Messa
 		Set<Tiers> composants = new HashSet<Tiers>();
 		for (RapportEntreTiers r : mc.getRapportsObjet()) {
 			if (!r.isAnnule() && TypeRapportEntreTiers.APPARTENANCE_MENAGE.equals(r.getType())) {
-				composants.add(r.getSujet());
+				final Tiers sujet = tiersDAO.get(r.getSujetId());
+				composants.add(sujet);
 			}
 		}
 
@@ -232,7 +233,7 @@ public class SecuriteDossierServiceImpl implements SecuriteDossierService, Messa
 			idsPPparMC.put(mc.getNumero(), idsComposants);
 			for (RapportEntreTiers r : mc.getRapportsObjet()) {
 				if (!r.isAnnule() && TypeRapportEntreTiers.APPARTENANCE_MENAGE.equals(r.getType())) {
-					Long id = r.getSujet().getNumero();
+					final Long id = r.getSujetId();
 					idsPP.add(id);
 					idsComposants.add(id);
 				}

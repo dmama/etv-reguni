@@ -121,7 +121,7 @@ public class MariageHandlerTest extends AbstractEvenementHandlerTest {
 		for ( RapportEntreTiers rapport : pierre.getRapportsSujet() ) {
 			if ( rapport.getType().equals( TypeRapportEntreTiers.APPARTENANCE_MENAGE ) ) {
 				nbMenagesCommuns++;
-				menageCommun = (MenageCommun) rapport.getObjet();
+				menageCommun = (MenageCommun) tiersDAO.get(rapport.getObjetId());
 			}
 		}
 		Assert.isTrue( nbMenagesCommuns == 1, "Plusieurs ou aucun tiers MenageCommun ont été trouvés");
@@ -218,7 +218,7 @@ public class MariageHandlerTest extends AbstractEvenementHandlerTest {
 		for ( RapportEntreTiers rapport : bea.getRapportsSujet() ) {
 			if ( rapport.getType().equals( TypeRapportEntreTiers.APPARTENANCE_MENAGE ) ) {
 				nbMenagesCommuns++;
-				menageCommun = (MenageCommun) rapport.getObjet();
+				menageCommun = (MenageCommun) tiersDAO.get(rapport.getObjetId());
 			}
 		}
 		Assert.isTrue( nbMenagesCommuns == 1, "Plusieurs ou aucun tiers MenageCommun ont été trouvés");
@@ -319,7 +319,7 @@ public class MariageHandlerTest extends AbstractEvenementHandlerTest {
 		for ( RapportEntreTiers rapport : julien.getRapportsSujet() ) {
 			if ( rapport.getType().equals( TypeRapportEntreTiers.APPARTENANCE_MENAGE ) ) {
 				nbMenagesCommuns++;
-				menageCommun = (MenageCommun) rapport.getObjet();
+				menageCommun = (MenageCommun) tiersDAO.get(rapport.getObjetId());
 			}
 		}
 		Assert.isTrue( nbMenagesCommuns == 1, "Plusieurs ou aucun tiers MenageCommun ont été trouvés");

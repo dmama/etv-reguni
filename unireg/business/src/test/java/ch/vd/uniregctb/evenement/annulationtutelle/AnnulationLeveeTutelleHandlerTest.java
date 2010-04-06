@@ -103,7 +103,7 @@ public class AnnulationLeveeTutelleHandlerTest extends AbstractEvenementHandlerT
 		int nombreRapportOuverts = 0;
 		for (RapportEntreTiers rapport : rapports) {
 			Assert.isTrue(rapport.getType().equals(TypeRapportEntreTiers.TUTELLE), "Le rapport n'est pas de type tutelle");
-			Assert.isTrue(rapport.getObjet().equals(tiersTuteur), "Le rapport n'est pas avec le tuteur");
+			Assert.isTrue(rapport.getObjetId().equals(tiersTuteur.getId()), "Le rapport n'est pas avec le tuteur");
 			if (rapport.getDateFin() == null &&
 					RegDateHelper.isBetween(DATE_ANNULATION_TUTELLE, rapport.getDateDebut(), rapport.getDateFin(), null)) {
 				nombreRapportOuverts++;

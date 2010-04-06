@@ -118,7 +118,7 @@ public class DroitAccesDAOImpl extends GenericDAOImpl<DroitAcces, Long> implemen
 
 		// ajoute les ids des ménages communs ayant (ou ayant eu) pour membre une personne physique avec droits d'accès
 		{
-			final String query = "select am.objet.id from AppartenanceMenage am, DroitAcces da where am.sujet = da.tiers and am.annulationDate is null and da.annulationDate is null and da.dateDebut <= :today and (da.dateFin is null or da.dateFin >= :today)";
+			final String query = "select am.objetId from AppartenanceMenage am, DroitAcces da where am.sujetId = da.tiers.id and am.annulationDate is null and da.annulationDate is null and da.dateDebut <= :today and (da.dateFin is null or da.dateFin >= :today)";
 			final RegDate today = RegDate.get();
 
 			final List<Long> ids = (List<Long>) getHibernateTemplate().executeWithNativeSession(new HibernateCallback() {

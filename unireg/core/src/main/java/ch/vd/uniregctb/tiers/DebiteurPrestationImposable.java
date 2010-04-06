@@ -235,24 +235,24 @@ public class DebiteurPrestationImposable extends Tiers {
 	}
 
 	/**
-	 * @return le contribuable associé au débiteur; ou <b>null</b> si le débiteur n'en possède pas.
+	 * @return l'id du contribuable associé au débiteur; ou <b>null</b> si le débiteur n'en possède pas.
 	 */
 	@Transient
-	public Contribuable getContribuable() {
+	public Long getContribuableId() {
 
-		Contribuable contribuable = null;
+		Long ctbId = null;
 
 		final Set<RapportEntreTiers> rapports = getRapportsObjet();
 		if (rapports != null) {
 			for (RapportEntreTiers r : rapports) {
 				if (r.isValidAt(null) && r instanceof ContactImpotSource) {
-					contribuable = (Contribuable) r.getSujet();
+					ctbId = r.getSujetId();
 					break;
 				}
 			}
 		}
 
-		return contribuable;
+		return ctbId;
 	}
 
 	/**

@@ -190,7 +190,7 @@ public class ArriveeHandler extends EvenementCivilHandlerBase {
 				RapportEntreTiers rapportMenage = pp.getRapportSujetValidAt(arrivee.getDate(), TypeRapportEntreTiers.APPARTENANCE_MENAGE);
 				Contribuable ctb = pp;
 				if (rapportMenage != null) {
-					ctb = (Contribuable)rapportMenage.getObjet();
+					ctb = (Contribuable) getTiersDAO().get(rapportMenage.getObjetId());
 				}
 				ForFiscalPrincipal forFP = ctb.getForFiscalPrincipalAt(arrivee.getDate());
 				if (forFP != null && forFP.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
@@ -915,11 +915,11 @@ public class ArriveeHandler extends EvenementCivilHandlerBase {
 				if (rapportsObjet != null) {
 					for (RapportEntreTiers rapport : rapportsObjet) {
 						if (!rapport.isAnnule() && TypeRapportEntreTiers.APPARTENANCE_MENAGE.equals(rapport.getType()) && rapport.isValidAt(dateEvenement)) {
-							final Tiers tiers = rapport.getSujet();
-							if (habitantPrincipal.getNumero().equals(tiers.getNumero())) {
+							final Long tiersId = rapport.getSujetId();
+							if (habitantPrincipal.getNumero().equals(tiersId)) {
 								rapportPrincipalTrouve = true;
 							}
-							else if (habitantConjoint != null && habitantConjoint.getNumero().equals(tiers.getNumero())) {
+							else if (habitantConjoint != null && habitantConjoint.getNumero().equals(tiersId)) {
 								rapportConjointTrouve = true;
 							}
 						}
@@ -989,7 +989,7 @@ public class ArriveeHandler extends EvenementCivilHandlerBase {
 				if (habitantConjoint != null) {
 					RapportEntreTiers rapport = getService().addTiersToCouple(menage, habitantConjoint, dateEvenement, null);
 
-					menageCommun = (MenageCommun) rapport.getObjet();
+					menageCommun = (MenageCommun) getTiersDAO().get(rapport.getObjetId());
 					Audit.info(evenementId, "L'arrivant [" + habitantConjoint.getNumero() + "] a été attaché au ménage commun ["
 							+ menageCommun.getNumero() + "] déjà existant");
 				}
@@ -1022,7 +1022,7 @@ public class ArriveeHandler extends EvenementCivilHandlerBase {
 				 * On ajoute le rapport entre l'habitant principal et le ménage existant
 				 */
 				RapportEntreTiers rapport = getService().addTiersToCouple(menage, habitantPrincipal, dateEvenement, null);
-				menageCommun = (MenageCommun) rapport.getObjet();
+				menageCommun = (MenageCommun) getTiersDAO().get(rapport.getObjetId());
 
 				Audit.info(evenementId, "L'arrivant [" + habitantPrincipal.getNumero() + "] a été attaché au ménage commun ["
 						+ menageCommun.getNumero() + "] déjà existant");
@@ -1045,8 +1045,11 @@ public class ArriveeHandler extends EvenementCivilHandlerBase {
 	private PersonnePhysique getAutrePersonneDuMenage(MenageCommun menageCommun, PersonnePhysique personne) throws EvenementCivilHandlerException {
 
 		final RapportEntreTiers rapportAutrePersonne = getAppartenanceAuMenageAutrePersonne(menageCommun, personne);
-		final PersonnePhysique autrePersonne = (rapportAutrePersonne == null ? null : (PersonnePhysique) rapportAutrePersonne.getSujet());
-		return autrePersonne;
+		if (rapportAutrePersonne == null) {
+			return null;
+		}
+
+		return (PersonnePhysique) getTiersDAO().get(rapportAutrePersonne.getSujetId());
 	}
 
 	/**
@@ -1070,7 +1073,7 @@ public class ArriveeHandler extends EvenementCivilHandlerBase {
 			if (!rapportObjet.isAnnule() && TypeRapportEntreTiers.APPARTENANCE_MENAGE.equals(rapportObjet.getType())
 					&& rapportObjet.getDateFin() == null) {
 
-				if (rapportObjet.getSujet() != personne) {
+				if (!rapportObjet.getSujetId().equals(personne.getId())) {
 					if (appartenanceAutrePersonne != null) {
 						throw new EvenementCivilHandlerException("Plus d'un conjoint trouvé pour la ménage commun = ["
 								+ menageCommun.toString() + "]");
@@ -1111,7 +1114,7 @@ public class ArriveeHandler extends EvenementCivilHandlerBase {
 						throw new EvenementCivilHandlerException("Plus d'un ménage commun trouvé pour la personne = ["
 								+ personne.toString() + "]");
 					}
-					menageCommun = (MenageCommun) rapportSujet.getObjet();
+					menageCommun = (MenageCommun) getTiersDAO().get(rapportSujet.getObjetId());
 				}
 			}
 		}
@@ -1138,7 +1141,7 @@ public class ArriveeHandler extends EvenementCivilHandlerBase {
 				if (!rapport.isAnnule() && TypeRapportEntreTiers.APPARTENANCE_MENAGE.equals(rapport.getType())
 						&& rapport.getDateFin() != null) {
 
-					final MenageCommun menage = (MenageCommun) rapport.getObjet();
+					final MenageCommun menage = (MenageCommun) getTiersDAO().get(rapport.getObjetId());
 
 					final EnsembleTiersCouple couple = getService().getEnsembleTiersCouple(menage, rapport.getDateDebut());
 					if (couple != null && couple.estComposeDe(principal, conjoint)) {

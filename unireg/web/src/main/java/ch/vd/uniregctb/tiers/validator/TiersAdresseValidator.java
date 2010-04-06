@@ -154,7 +154,7 @@ public class TiersAdresseValidator implements Validator {
 					else if (tiers instanceof MenageCommun) {
 						final MenageCommun mc = (MenageCommun) tiers;
 						boolean auMoinsUnDecede = false;
-						for (PersonnePhysique pp : mc.getPersonnesPhysiques()) {
+						for (PersonnePhysique pp : tiersService.getPersonnesPhysiques(mc)) {
 							if (tiersService.isDecede(pp)) {
 								auMoinsUnDecede = true;
 							}

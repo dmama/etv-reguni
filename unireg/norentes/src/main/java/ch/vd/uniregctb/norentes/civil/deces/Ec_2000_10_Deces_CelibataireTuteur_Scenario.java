@@ -104,7 +104,7 @@ public class Ec_2000_10_Deces_CelibataireTuteur_Scenario extends EvenementCivilS
 		assertNotNull(rapports, "Rapport tutelle inexistant");
 		assertEquals(1, rapports.size(), "Nombre de rapports incorrect");
 		RapportEntreTiers tutelle = rapports.iterator().next();
-		assertEquals(nora, tutelle.getSujet(), "Mauvais rapport tutelle");
+		assertEquals(nora.getId(), tutelle.getSujetId(), "Mauvais rapport tutelle");
 		assertEquals(dateTutelle, tutelle.getDateDebut(), "Date de début tutelle fausse");
 		assertNull(tutelle.getDateFin(), "Date de fin tutelle fausse");
 
@@ -144,7 +144,7 @@ public class Ec_2000_10_Deces_CelibataireTuteur_Scenario extends EvenementCivilS
 		final PersonnePhysique nora = (PersonnePhysique) tiersDAO.get(noHabNora);
 
 		RapportEntreTiers tutelle = rapports.iterator().next();
-		assertEquals(nora, tutelle.getSujet(), "Mauvais rapport tutelle");
+		assertEquals(nora.getId(), tutelle.getSujetId(), "Mauvais rapport tutelle");
 		assertEquals(dateTutelle, tutelle.getDateDebut(), "Date de début tutelle fausse");
 		assertEquals(dateDeces, tutelle.getDateFin(), "Date de fin tutelle fausse");
 

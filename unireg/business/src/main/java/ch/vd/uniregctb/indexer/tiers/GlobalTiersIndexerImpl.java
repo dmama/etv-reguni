@@ -500,7 +500,7 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer {
             List<RapportEntreTiers> rapports = TiersHelper.getRapportSujetHistoOfType(tiers, TypeRapportEntreTiers.APPARTENANCE_MENAGE);
             if (rapports != null && rapports.size() > 0) {
                 for (RapportEntreTiers r : rapports) {
-                    MenageCommun menage = (MenageCommun) r.getObjet();
+                    MenageCommun menage = (MenageCommun) tiersDAO.get(r.getObjetId());
                     list.add(menage);
                 }
             }
@@ -511,7 +511,7 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer {
             List<RapportEntreTiers> rapports = TiersHelper.getRapportObjetHistoOfType(tiers, TypeRapportEntreTiers.APPARTENANCE_MENAGE);
             if (rapports != null && rapports.size() > 0) {
                 for (RapportEntreTiers r : rapports) {
-                    PersonnePhysique pp = (PersonnePhysique) r.getSujet();
+                    PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(r.getSujetId());
                     list.add(pp);
                 }
             }
@@ -520,7 +520,7 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer {
         // Reindex les DPI si on a un CTB
         if (tiers instanceof Contribuable) {
             Contribuable ctb = (Contribuable) tiers;
-            Set<DebiteurPrestationImposable> dpis = ctb.getDebiteursPrestationImposable();
+            Set<DebiteurPrestationImposable> dpis = tiersService.getDebiteursPrestationImposable(ctb);
             if (dpis != null) {
                 for (DebiteurPrestationImposable dpi : dpis) {
                     list.add(dpi);

@@ -44,7 +44,7 @@ public class AdresseServiceTest extends BusinessTest {
 		globalTiersIndexer.setOnTheFlyIndexation(false);
 
 		// Instanciation du service à la main pour pouvoir taper dans les méthodes protégées.
-		adresseService = new AdresseServiceImpl(tiersService, serviceInfra, servicePM, serviceCivil);
+		adresseService = new AdresseServiceImpl(tiersService, tiersDAO, serviceInfra, servicePM, serviceCivil);
 	}
 
 	@Override
@@ -1547,9 +1547,8 @@ public class AdresseServiceTest extends BusinessTest {
 				conjoint.setNumeroIndividu(noIndividuConjoint);
 				MenageCommun menage = new MenageCommun();
 				RapportEntreTiers rapport = tiersService.addTiersToCouple(menage, principal, date(2004, 7, 14), null);
-				menage = (MenageCommun) rapport.getObjet();
-				rapport = tiersService.addTiersToCouple(menage, conjoint, date(2004, 7, 14), null);
-				menage = (MenageCommun) rapport.getObjet();
+				menage = (MenageCommun) tiersDAO.get(rapport.getObjetId());
+				tiersService.addTiersToCouple(menage, conjoint, date(2004, 7, 14), null);
 				return menage.getNumero();
 			}
 		});
@@ -1612,9 +1611,8 @@ public class AdresseServiceTest extends BusinessTest {
 
 				MenageCommun menage = new MenageCommun();
 				RapportEntreTiers rapport = tiersService.addTiersToCouple(menage, principal, date(2004, 7, 14), null);
-				menage = (MenageCommun) rapport.getObjet();
-				rapport = tiersService.addTiersToCouple(menage, conjoint, date(2004, 7, 14), null);
-				menage = (MenageCommun) rapport.getObjet();
+				menage = (MenageCommun) tiersDAO.get(rapport.getObjetId());
+				tiersService.addTiersToCouple(menage, conjoint, date(2004, 7, 14), null);
 				return menage.getNumero();
 			}
 		});
@@ -1866,13 +1864,13 @@ public class AdresseServiceTest extends BusinessTest {
 
 				MenageCommun menage = new MenageCommun();
 				RapportEntreTiers rapport = tiersService.addTiersToCouple(menage, principal, date(2000, 1, 1), null);
-				menage = (MenageCommun) rapport.getObjet();
+				menage = (MenageCommun) tiersDAO.get(rapport.getObjetId());
 				numeros.numeroContribuableMenage = menage.getNumero();
-				principal = (PersonnePhysique) rapport.getSujet();
+				principal = (PersonnePhysique) tiersDAO.get(rapport.getSujetId());
 				numeros.numeroContribuablePrincipal = principal.getNumero();
 
 				rapport = tiersService.addTiersToCouple(menage, conjoint, date(2000, 1, 1), null);
-				conjoint = (PersonnePhysique) rapport.getSujet();
+				conjoint = (PersonnePhysique) tiersDAO.get(rapport.getSujetId());
 				numeros.numeroContribuableConjoint = conjoint.getNumero();
 
 				// Crée le tuteur
@@ -2042,13 +2040,13 @@ public class AdresseServiceTest extends BusinessTest {
 
 				MenageCommun menage = new MenageCommun();
 				RapportEntreTiers rapport = tiersService.addTiersToCouple(menage, principal, date(2000, 1, 1), null);
-				menage = (MenageCommun) rapport.getObjet();
+				menage = (MenageCommun) tiersDAO.get(rapport.getObjetId());
 				numeros.numeroContribuableMenage = menage.getNumero();
-				principal = (PersonnePhysique) rapport.getSujet();
+				principal = (PersonnePhysique) tiersDAO.get(rapport.getSujetId());
 				numeros.numeroContribuablePrincipal = principal.getNumero();
 
 				rapport = tiersService.addTiersToCouple(menage, conjoint, date(2000, 1, 1), null);
-				conjoint = (PersonnePhysique) rapport.getSujet();
+				conjoint = (PersonnePhysique) tiersDAO.get(rapport.getSujetId());
 				numeros.numeroContribuableConjoint = conjoint.getNumero();
 
 				// Crée le tuteur
@@ -2230,13 +2228,13 @@ public class AdresseServiceTest extends BusinessTest {
 
 				MenageCommun menage = new MenageCommun();
 				RapportEntreTiers rapport = tiersService.addTiersToCouple(menage, principal, date(2000, 1, 1), null);
-				menage = (MenageCommun) rapport.getObjet();
+				menage = (MenageCommun) tiersDAO.get(rapport.getObjetId());
 				numeros.numeroContribuableMenage = menage.getNumero();
-				principal = (PersonnePhysique) rapport.getSujet();
+				principal = (PersonnePhysique) tiersDAO.get(rapport.getSujetId());
 				numeros.numeroContribuablePrincipal = principal.getNumero();
 
 				rapport = tiersService.addTiersToCouple(menage, conjoint, date(2000, 1, 1), null);
-				conjoint = (PersonnePhysique) rapport.getSujet();
+				conjoint = (PersonnePhysique) tiersDAO.get(rapport.getSujetId());
 				numeros.numeroContribuableConjoint = conjoint.getNumero();
 
 				// Crée la tutelle sur le principal
@@ -3754,10 +3752,9 @@ public class AdresseServiceTest extends BusinessTest {
 				MenageCommun menage = new MenageCommun();
 				RapportEntreTiers rapport = tiersService.addTiersToCouple(menage, principal, date(2004, 7, 14), null);
 				rapport.setAnnule(true);
-				menage = (MenageCommun) rapport.getObjet();
+				menage = (MenageCommun) tiersDAO.get(rapport.getObjetId());
 				rapport = tiersService.addTiersToCouple(menage, conjoint, date(2004, 7, 14), null);
 				rapport.setAnnule(true);
-				menage = (MenageCommun) rapport.getObjet();
 				return menage.getNumero();
 			}
 		});
@@ -4838,184 +4835,185 @@ public class AdresseServiceTest extends BusinessTest {
 	}
 
 	/**
-	 * [UNIREG-1398]
+	 * [UNIREG-1398] Types de tiers qui n'ont pas de formule de politesse
 	 */
 	@Test
-	public void testGetFormulePolitesse() {
+	public void testGetFormulePolitesseTiersSansFormule() {
 
-		// Tous ces types de tiers n'ont pas de formule de politesse
 		assertNull(adresseService.getFormulePolitesse(new AutreCommunaute()));
 		assertNull(adresseService.getFormulePolitesse(new CollectiviteAdministrative()));
 		assertNull(adresseService.getFormulePolitesse(new Entreprise()));
 		assertNull(adresseService.getFormulePolitesse(new Etablissement()));
 		assertNull(adresseService.getFormulePolitesse(new DebiteurPrestationImposable()));
+	}
 
-		// Cas des personnes physiques
-		{
-			PersonnePhysique pp = new PersonnePhysique(false);
-			pp.setSexe(Sexe.MASCULIN);
-			assertEquals(FormulePolitesse.MONSIEUR, adresseService.getFormulePolitesse(pp));
+	/**
+	 * [UNIREG-1398] Cas des personnes physiques
+	 */
+	@Test
+	public void testGetFormulePolitessePersonnesPhysiques() {
 
-			pp.setSexe(Sexe.FEMININ);
-			assertEquals(FormulePolitesse.MADAME, adresseService.getFormulePolitesse(pp));
+		PersonnePhysique pp = new PersonnePhysique(false);
+		pp.setSexe(Sexe.MASCULIN);
+		assertEquals(FormulePolitesse.MONSIEUR, adresseService.getFormulePolitesse(pp));
 
-			pp.setSexe(null);
-			assertEquals(FormulePolitesse.MADAME_MONSIEUR, adresseService.getFormulePolitesse(pp));
-		}
+		pp.setSexe(Sexe.FEMININ);
+		assertEquals(FormulePolitesse.MADAME, adresseService.getFormulePolitesse(pp));
 
-		// Cas des personnes physiques décédées
-		{
-			PersonnePhysique pp = new PersonnePhysique(false);
-			pp.setDateDeces(date(2000,1,1));
-			pp.setSexe(Sexe.MASCULIN);
-			assertEquals(FormulePolitesse.HERITIERS, adresseService.getFormulePolitesse(pp));
+		pp.setSexe(null);
+		assertEquals(FormulePolitesse.MADAME_MONSIEUR, adresseService.getFormulePolitesse(pp));
+	}
 
-			pp.setSexe(Sexe.FEMININ);
-			assertEquals(FormulePolitesse.HERITIERS, adresseService.getFormulePolitesse(pp));
+	/**
+	 * [UNIREG-1398] Cas des personnes physiques décédées
+	 */
+	@Test
+	public void testGetFormulePolitessePersonnePhysiquesDecedees() {
 
-			pp.setSexe(null);
-			assertEquals(FormulePolitesse.HERITIERS, adresseService.getFormulePolitesse(pp));
-		}
+		PersonnePhysique pp = new PersonnePhysique(false);
+		pp.setDateDeces(date(2000,1,1));
+		pp.setSexe(Sexe.MASCULIN);
+		assertEquals(FormulePolitesse.HERITIERS, adresseService.getFormulePolitesse(pp));
 
-		// Cas des ménages communs
-		{
-			PersonnePhysique pp1 = new PersonnePhysique(false);
-			pp1.setNom("pp1");
-			PersonnePhysique pp2 = new PersonnePhysique(false);
-			pp2.setNom("pp2");
-			MenageCommun mc = new MenageCommun();
-			final AppartenanceMenage rpp1 = new AppartenanceMenage(date(2000,1,1), null, pp1, mc);
-			pp1.addRapportSujet(rpp1);
-			mc.addRapportObjet(rpp1);
-			final AppartenanceMenage rpp2 = new AppartenanceMenage(date(2000,1,1), null, pp2, mc);
-			pp2.addRapportSujet(rpp2);
-			mc.addRapportObjet(rpp2);
+		pp.setSexe(Sexe.FEMININ);
+		assertEquals(FormulePolitesse.HERITIERS, adresseService.getFormulePolitesse(pp));
 
-			// couple mixte
-			pp1.setSexe(Sexe.MASCULIN);
-			pp2.setSexe(Sexe.FEMININ);
-			assertEquals(FormulePolitesse.MONSIEUR_ET_MADAME, adresseService.getFormulePolitesse(mc));
+		pp.setSexe(null);
+		assertEquals(FormulePolitesse.HERITIERS, adresseService.getFormulePolitesse(pp));
+	}
 
-			// couple mixte (variante)
-			pp1.setSexe(Sexe.FEMININ);
-			pp2.setSexe(Sexe.MASCULIN);
-			assertEquals(FormulePolitesse.MONSIEUR_ET_MADAME, adresseService.getFormulePolitesse(mc));
+	/**
+	 * [UNIREG-1398] Cas des ménages communs
+	 */
+	@Test
+	public void testGetFormulePolitesseMenageCommuns() {
 
-			// couple homosexuel
-			pp1.setSexe(Sexe.MASCULIN);
-			pp2.setSexe(Sexe.MASCULIN);
-			assertEquals(FormulePolitesse.MESSIEURS, adresseService.getFormulePolitesse(mc));
+		PersonnePhysique pp1 = addNonHabitant(null, "pp1", date(1977, 1, 1), Sexe.MASCULIN);
+		PersonnePhysique pp2 = addNonHabitant(null, "pp2", date(1977, 1, 1), Sexe.MASCULIN);
+		EnsembleTiersCouple ensemble = addEnsembleTiersCouple(pp1, pp2, date(2000, 1, 1));
+		MenageCommun mc = ensemble.getMenage();
 
-			// couple homosexuel féminin
-			pp1.setSexe(Sexe.FEMININ);
-			pp2.setSexe(Sexe.FEMININ);
-			assertEquals(FormulePolitesse.MESDAMES, adresseService.getFormulePolitesse(mc));
+		// couple mixte
+		pp1.setSexe(Sexe.MASCULIN);
+		pp2.setSexe(Sexe.FEMININ);
+		assertEquals(FormulePolitesse.MONSIEUR_ET_MADAME, adresseService.getFormulePolitesse(mc));
 
-			// couples partiellement indéterminés (les 4 variantes)
-			pp1.setSexe(Sexe.MASCULIN);
-			pp2.setSexe(null);
-			assertEquals(FormulePolitesse.MADAME_MONSIEUR, adresseService.getFormulePolitesse(mc));
+		// couple mixte (variante)
+		pp1.setSexe(Sexe.FEMININ);
+		pp2.setSexe(Sexe.MASCULIN);
+		assertEquals(FormulePolitesse.MONSIEUR_ET_MADAME, adresseService.getFormulePolitesse(mc));
 
-			pp1.setSexe(Sexe.FEMININ);
-			pp2.setSexe(null);
-			assertEquals(FormulePolitesse.MADAME_MONSIEUR, adresseService.getFormulePolitesse(mc));
+		// couple homosexuel
+		pp1.setSexe(Sexe.MASCULIN);
+		pp2.setSexe(Sexe.MASCULIN);
+		assertEquals(FormulePolitesse.MESSIEURS, adresseService.getFormulePolitesse(mc));
 
-			pp1.setSexe(null);
-			pp2.setSexe(Sexe.MASCULIN);
-			assertEquals(FormulePolitesse.MADAME_MONSIEUR, adresseService.getFormulePolitesse(mc));
+		// couple homosexuel féminin
+		pp1.setSexe(Sexe.FEMININ);
+		pp2.setSexe(Sexe.FEMININ);
+		assertEquals(FormulePolitesse.MESDAMES, adresseService.getFormulePolitesse(mc));
 
-			pp1.setSexe(null);
-			pp2.setSexe(Sexe.FEMININ);
-			assertEquals(FormulePolitesse.MADAME_MONSIEUR, adresseService.getFormulePolitesse(mc));
+		// couples partiellement indéterminés (les 4 variantes)
+		pp1.setSexe(Sexe.MASCULIN);
+		pp2.setSexe(null);
+		assertEquals(FormulePolitesse.MADAME_MONSIEUR, adresseService.getFormulePolitesse(mc));
 
-			// couple complétement indéterminé
-			pp1.setSexe(null);
-			pp2.setSexe(null);
-			assertEquals(FormulePolitesse.MADAME_MONSIEUR, adresseService.getFormulePolitesse(mc));
-		}
+		pp1.setSexe(Sexe.FEMININ);
+		pp2.setSexe(null);
+		assertEquals(FormulePolitesse.MADAME_MONSIEUR, adresseService.getFormulePolitesse(mc));
 
-		// Cas des ménages communs avec un ou plusieurs composants décédés
-		{
-			PersonnePhysique pp1 = new PersonnePhysique(false);
-			pp1.setNom("pp1");
-			PersonnePhysique pp2 = new PersonnePhysique(false);
-			pp2.setNom("pp2");
-			MenageCommun mc = new MenageCommun();
-			final AppartenanceMenage rpp1 = new AppartenanceMenage(date(2000,1,1), null, pp1, mc);
-			pp1.addRapportSujet(rpp1);
-			mc.addRapportObjet(rpp1);
-			final AppartenanceMenage rpp2 = new AppartenanceMenage(date(2000,1,1), null, pp2, mc);
-			pp2.addRapportSujet(rpp2);
-			mc.addRapportObjet(rpp2);
+		pp1.setSexe(null);
+		pp2.setSexe(Sexe.MASCULIN);
+		assertEquals(FormulePolitesse.MADAME_MONSIEUR, adresseService.getFormulePolitesse(mc));
 
-			// couple mixte (les 3 variantes)
-			pp1.setSexe(Sexe.MASCULIN);
-			pp1.setDateDeces(date(2000, 1, 1));
-			pp2.setSexe(Sexe.FEMININ);
-			assertEquals(FormulePolitesse.HERITIERS, adresseService.getFormulePolitesse(mc));
+		pp1.setSexe(null);
+		pp2.setSexe(Sexe.FEMININ);
+		assertEquals(FormulePolitesse.MADAME_MONSIEUR, adresseService.getFormulePolitesse(mc));
 
-			pp1.setSexe(Sexe.MASCULIN);
-			pp1.setDateDeces(date(2000, 1, 1));
-			pp2.setSexe(Sexe.FEMININ);
-			pp2.setDateDeces(date(2000, 1, 1));
-			assertEquals(FormulePolitesse.HERITIERS, adresseService.getFormulePolitesse(mc));
+		// couple complétement indéterminé
+		pp1.setSexe(null);
+		pp2.setSexe(null);
+		assertEquals(FormulePolitesse.MADAME_MONSIEUR, adresseService.getFormulePolitesse(mc));
+	}
 
-			// couple homosexuel
-			pp1.setSexe(Sexe.MASCULIN);
-			pp2.setSexe(Sexe.MASCULIN);
-			pp2.setDateDeces(date(2000, 1, 1));
-			assertEquals(FormulePolitesse.HERITIERS, adresseService.getFormulePolitesse(mc));
+	/**
+	 * [UNIREG-1398] Cas des ménages communs avec un ou plusieurs composants décédés
+	 */
+	@Test
+	public void testGetFormulePolitesseMenageCommunsAvecDecedes() {
 
-			pp1.setSexe(Sexe.MASCULIN);
-			pp1.setDateDeces(date(2000, 1, 1));
-			pp2.setSexe(Sexe.MASCULIN);
-			pp2.setDateDeces(date(2000, 1, 1));
-			assertEquals(FormulePolitesse.HERITIERS, adresseService.getFormulePolitesse(mc));
+		PersonnePhysique pp1 = addNonHabitant(null, "pp1", date(1977, 1, 1), Sexe.MASCULIN);
+		PersonnePhysique pp2 = addNonHabitant(null, "pp2", date(1977, 1, 1), Sexe.MASCULIN);
+		EnsembleTiersCouple ensemble = addEnsembleTiersCouple(pp1, pp2, date(2000, 1, 1));
+		MenageCommun mc = ensemble.getMenage();
 
-			// couple homosexuel féminin
-			pp1.setSexe(Sexe.FEMININ);
-			pp1.setDateDeces(date(2000, 1, 1));
-			pp2.setSexe(Sexe.FEMININ);
-			assertEquals(FormulePolitesse.HERITIERS, adresseService.getFormulePolitesse(mc));
+		// couple mixte (les 3 variantes)
+		pp1.setSexe(Sexe.MASCULIN);
+		pp1.setDateDeces(date(2000, 1, 1));
+		pp2.setSexe(Sexe.FEMININ);
+		assertEquals(FormulePolitesse.HERITIERS, adresseService.getFormulePolitesse(mc));
 
-			pp1.setSexe(Sexe.FEMININ);
-			pp1.setDateDeces(date(2000, 1, 1));
-			pp2.setSexe(Sexe.FEMININ);
-			pp2.setDateDeces(date(2000, 1, 1));
-			assertEquals(FormulePolitesse.HERITIERS, adresseService.getFormulePolitesse(mc));
+		pp1.setSexe(Sexe.MASCULIN);
+		pp1.setDateDeces(date(2000, 1, 1));
+		pp2.setSexe(Sexe.FEMININ);
+		pp2.setDateDeces(date(2000, 1, 1));
+		assertEquals(FormulePolitesse.HERITIERS, adresseService.getFormulePolitesse(mc));
 
-			// couples partiellement indéterminés
-			pp1.setSexe(Sexe.MASCULIN);
-			pp1.setDateDeces(date(2000, 1, 1));
-			pp2.setSexe(null);
-			assertEquals(FormulePolitesse.HERITIERS, adresseService.getFormulePolitesse(mc));
+		// couple homosexuel
+		pp1.setSexe(Sexe.MASCULIN);
+		pp2.setSexe(Sexe.MASCULIN);
+		pp2.setDateDeces(date(2000, 1, 1));
+		assertEquals(FormulePolitesse.HERITIERS, adresseService.getFormulePolitesse(mc));
 
-			pp1.setSexe(Sexe.MASCULIN);
-			pp2.setSexe(null);
-			pp2.setDateDeces(date(2000, 1, 1));
-			assertEquals(FormulePolitesse.HERITIERS, adresseService.getFormulePolitesse(mc));
+		pp1.setSexe(Sexe.MASCULIN);
+		pp1.setDateDeces(date(2000, 1, 1));
+		pp2.setSexe(Sexe.MASCULIN);
+		pp2.setDateDeces(date(2000, 1, 1));
+		assertEquals(FormulePolitesse.HERITIERS, adresseService.getFormulePolitesse(mc));
 
-			pp1.setSexe(Sexe.FEMININ);
-			pp1.setDateDeces(date(2000, 1, 1));
-			pp2.setSexe(null);
-			assertEquals(FormulePolitesse.HERITIERS, adresseService.getFormulePolitesse(mc));
+		// couple homosexuel féminin
+		pp1.setSexe(Sexe.FEMININ);
+		pp1.setDateDeces(date(2000, 1, 1));
+		pp2.setSexe(Sexe.FEMININ);
+		assertEquals(FormulePolitesse.HERITIERS, adresseService.getFormulePolitesse(mc));
 
-			pp1.setSexe(Sexe.FEMININ);
-			pp2.setSexe(null);
-			pp2.setDateDeces(date(2000, 1, 1));
-			assertEquals(FormulePolitesse.HERITIERS, adresseService.getFormulePolitesse(mc));
+		pp1.setSexe(Sexe.FEMININ);
+		pp1.setDateDeces(date(2000, 1, 1));
+		pp2.setSexe(Sexe.FEMININ);
+		pp2.setDateDeces(date(2000, 1, 1));
+		assertEquals(FormulePolitesse.HERITIERS, adresseService.getFormulePolitesse(mc));
 
-			// couple complétement indéterminé
-			pp1.setSexe(null);
-			pp1.setDateDeces(date(2000, 1, 1));
-			pp2.setSexe(null);
-			assertEquals(FormulePolitesse.HERITIERS, adresseService.getFormulePolitesse(mc));
+		// couples partiellement indéterminés
+		pp1.setSexe(Sexe.MASCULIN);
+		pp1.setDateDeces(date(2000, 1, 1));
+		pp2.setSexe(null);
+		assertEquals(FormulePolitesse.HERITIERS, adresseService.getFormulePolitesse(mc));
 
-			pp1.setSexe(null);
-			pp2.setSexe(null);
-			pp2.setDateDeces(date(2000, 1, 1));
-			assertEquals(FormulePolitesse.HERITIERS, adresseService.getFormulePolitesse(mc));
-		}
+		pp1.setSexe(Sexe.MASCULIN);
+		pp2.setSexe(null);
+		pp2.setDateDeces(date(2000, 1, 1));
+		assertEquals(FormulePolitesse.HERITIERS, adresseService.getFormulePolitesse(mc));
+
+		pp1.setSexe(Sexe.FEMININ);
+		pp1.setDateDeces(date(2000, 1, 1));
+		pp2.setSexe(null);
+		assertEquals(FormulePolitesse.HERITIERS, adresseService.getFormulePolitesse(mc));
+
+		pp1.setSexe(Sexe.FEMININ);
+		pp2.setSexe(null);
+		pp2.setDateDeces(date(2000, 1, 1));
+		assertEquals(FormulePolitesse.HERITIERS, adresseService.getFormulePolitesse(mc));
+
+		// couple complétement indéterminé
+		pp1.setSexe(null);
+		pp1.setDateDeces(date(2000, 1, 1));
+		pp2.setSexe(null);
+		assertEquals(FormulePolitesse.HERITIERS, adresseService.getFormulePolitesse(mc));
+
+		pp1.setSexe(null);
+		pp2.setSexe(null);
+		pp2.setDateDeces(date(2000, 1, 1));
+		assertEquals(FormulePolitesse.HERITIERS, adresseService.getFormulePolitesse(mc));
 	}
 
 	private void assertAdressesByTypeEquals(final AdressesFiscales adresses, Tiers tiers, RegDate date) throws AdresseException {

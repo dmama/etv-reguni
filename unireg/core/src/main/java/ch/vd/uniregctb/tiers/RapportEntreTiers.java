@@ -68,14 +68,14 @@ public abstract class RapportEntreTiers extends HibernateEntity implements DateR
 	 *
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_BeZlcZNZEdygKK6Oe0tVlw"
 	 */
-	private Tiers sujet;
+	private Long sujetId;
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 *
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_ON1FcpNZEdygKK6Oe0tVlw"
 	 */
-	private Tiers objet;
+	private Long objetId;
 
 
 	public RapportEntreTiers() {
@@ -85,12 +85,19 @@ public abstract class RapportEntreTiers extends HibernateEntity implements DateR
 	public RapportEntreTiers(RegDate dateDebut, RegDate dateFin, Tiers sujet, Tiers objet) {
 		this.dateDebut = dateDebut;
 		this.dateFin = dateFin;
-		this.sujet = sujet;
-		this.objet = objet;
+		this.sujetId = (sujet == null ? null : sujet.getId());
+		this.objetId = (objet == null ? null : objet.getId());
+	}
+
+	protected RapportEntreTiers(RegDate dateDebut, RegDate dateFin, Long sujetId, Long objetId) {
+		this.dateDebut = dateDebut;
+		this.dateFin = dateFin;
+		this.sujetId = sujetId;
+		this.objetId = objetId;
 	}
 
 	public RapportEntreTiers(RapportEntreTiers rapport) {
-		this(rapport.getDateDebut(), rapport.getDateFin(), rapport.getSujet(), rapport.getObjet());
+		this(rapport.getDateDebut(), rapport.getDateFin(), rapport.getSujetId(), rapport.getObjetId());
 	}
 
 	@Transient
@@ -170,24 +177,27 @@ public abstract class RapportEntreTiers extends HibernateEntity implements DateR
 	 * @return the sujet
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_BeZlcZNZEdygKK6Oe0tVlw?GETTER"
 	 */
-	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "TIERS_SUJET_ID", nullable = false)
+	@Column(name = "TIERS_SUJET_ID", nullable = false)
 	@Index(name = "IDX_RET_TRS_SUJ_ID", columnNames = "TIERS_SUJET_ID")
 	@ForeignKey(name = "FK_RET_TRS_SUJ_ID")
-	public Tiers getSujet() {
+	public Long getSujetId() {
 		// begin-user-code
-		return sujet;
+		return sujetId;
 		// end-user-code
+	}
+
+	public void setSujetId(Long sujetId) {
+		this.sujetId = sujetId;
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @param theSujet the sujet to set
+	 * @param sujet the sujet to set
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_BeZlcZNZEdygKK6Oe0tVlw?SETTER"
 	 */
-	public void setSujet(Tiers theSujet) {
+	public void setSujet(Tiers sujet) {
 		// begin-user-code
-		sujet = theSujet;
+		this.sujetId = (sujet == null ? null : sujet.getId());
 		// end-user-code
 	}
 
@@ -196,24 +206,27 @@ public abstract class RapportEntreTiers extends HibernateEntity implements DateR
 	 * @return the objet
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_ON1FcpNZEdygKK6Oe0tVlw?GETTER"
 	 */
-	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "TIERS_OBJET_ID", nullable = false)
+	@Column(name = "TIERS_OBJET_ID", nullable = false)
 	@Index(name = "IDX_RET_TRS_OBJ_ID", columnNames = "TIERS_OBJET_ID")
 	@ForeignKey(name = "FK_RET_TRS_OBJ_ID")
-	public Tiers getObjet() {
+	public Long getObjetId() {
 		// begin-user-code
-		return objet;
+		return objetId;
 		// end-user-code
+	}
+
+	public void setObjetId(Long objetId) {
+		this.objetId = objetId;
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @param theObjet the objet to set
+	 * @param objet the objet to set
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_ON1FcpNZEdygKK6Oe0tVlw?SETTER"
 	 */
-	public void setObjet(Tiers theObjet) {
+	public void setObjet(Tiers objet) {
 		// begin-user-code
-		objet = theObjet;
+		this.objetId = (objet == null ? null : objet.getId());
 		// end-user-code
 	}
 
@@ -226,14 +239,13 @@ public abstract class RapportEntreTiers extends HibernateEntity implements DateR
 
 	public boolean equalsTo(RapportEntreTiers rapportEntreTiers) {
 		EqualsBuilder equalsBuilder = new EqualsBuilder();
-		equalsBuilder.append(this.getSujet(), rapportEntreTiers.getSujet());
+		equalsBuilder.append(this.sujetId, rapportEntreTiers.sujetId);
 		equalsBuilder.append(this.getDateDebut(), rapportEntreTiers.getDateDebut());
 		equalsBuilder.append(this.getDateFin(), rapportEntreTiers.getDateFin());
-		equalsBuilder.append(this.getObjet(), rapportEntreTiers.getObjet());
+		equalsBuilder.append(this.objetId, rapportEntreTiers.objetId);
 		equalsBuilder.append(this.getType(), rapportEntreTiers.getType());
 		equalsBuilder.append(this.isAnnule(), rapportEntreTiers.isAnnule());
-		boolean status = equalsBuilder.isEquals();
-		return status;
+		return equalsBuilder.isEquals();
 	}
 
 	@Transient

@@ -127,10 +127,10 @@ public class RapportPrestationEditManagerImpl implements RapportPrestationEditMa
 		rapportView.setTypeRapportEntreTiers(rapportEntreTiers.getType());
 		Long numero = null;
 		if (sensRapportEntreTiers.equals(SensRapportEntreTiers.OBJET)) {
-			numero = rapportEntreTiers.getSujet().getNumero();
+			numero = rapportEntreTiers.getSujetId();
 		}
 		if (sensRapportEntreTiers.equals(SensRapportEntreTiers.SUJET)) {
-			numero = rapportEntreTiers.getObjet().getNumero();
+			numero = rapportEntreTiers.getObjetId();
 		}
 		setNomCourrier(rapportView, numero);
 		rapportView.setId(rapportEntreTiers.getId());

@@ -5,6 +5,7 @@ import java.util.*;
 
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorValue;
+import javax.persistence.Transient;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -910,7 +911,7 @@ public class TiersServiceImpl implements TiersService {
 	 * {@inheritDoc}
 	 */
 	public PersonnePhysique getPrincipal(MenageCommun menageCommun) {
-		PersonnePhysique[] personnes = menageCommun.getPersonnesPhysiques().toArray(new PersonnePhysique[0]);
+		PersonnePhysique[] personnes = getPersonnesPhysiques(menageCommun).toArray(new PersonnePhysique[0]);
 		PersonnePhysique tiers1 = personnes[0];
 		PersonnePhysique tiers2 = null;
 		if (personnes.length > 1) {
@@ -929,7 +930,7 @@ public class TiersServiceImpl implements TiersService {
 		}
 
 		// Récupération des deux parties du ménage
-		final Set<PersonnePhysique> personnes = TiersHelper.getComposantsMenage(menageCommun, date);
+		final Set<PersonnePhysique> personnes = getComposantsMenage(menageCommun, date);
 		return construitEnsembleTiersCouple(menageCommun, personnes);
 	}
 
@@ -943,7 +944,7 @@ public class TiersServiceImpl implements TiersService {
 		}
 
 		// Récupération des deux parties du ménage
-		final Set<PersonnePhysique> personnes = TiersHelper.getComposantsMenage(menageCommun, anneePeriode);
+		final Set<PersonnePhysique> personnes = getComposantsMenage(menageCommun, anneePeriode);
 		return construitEnsembleTiersCouple(menageCommun, personnes);
 	}
 
@@ -1034,7 +1035,7 @@ public class TiersServiceImpl implements TiersService {
 					/*
 					 * le rapport de l'apartenance a été trouvé, on en déduit donc le tiers ménage
 					 */
-					menageCommun = (MenageCommun) rapportSujet.getObjet();
+					menageCommun = (MenageCommun) tiersDAO.get(rapportSujet.getObjetId());
 					break;
 				}
 			}
@@ -1067,7 +1068,7 @@ public class TiersServiceImpl implements TiersService {
 			}
 		}
 		if (lastRapport != null) {
-			menageCommun = (MenageCommun) lastRapport.getObjet();
+			menageCommun = (MenageCommun) tiersDAO.get(lastRapport.getObjetId());
 		}
 
 		return menageCommun;
@@ -1170,7 +1171,7 @@ public class TiersServiceImpl implements TiersService {
 	 */
 	public void closeAppartenanceMenage(PersonnePhysique pp, MenageCommun menage, RegDate dateFermeture) {
 		for (RapportEntreTiers rapportObjet : menage.getRapportsObjet()) {
-			if (rapportObjet.getDateFin() == null && rapportObjet.getSujet().getId().equals(pp.getId()) && !rapportObjet.isAnnule()) {
+			if (rapportObjet.getDateFin() == null && rapportObjet.getSujetId().equals(pp.getId()) && !rapportObjet.isAnnule()) {
 				rapportObjet.setDateFin(dateFermeture);
 
 				// on ne sort pas de la boucle au cas où il y aurait plusieurs rapports à fermer
@@ -1258,14 +1259,14 @@ public class TiersServiceImpl implements TiersService {
 		// Création du ménage et de la relation avec le premier tiers
 		MenageCommun menage = new MenageCommun();
 		RapportEntreTiers rapport = addTiersToCouple(menage, tiers1, dateDebut, dateFin);
-		menage = (MenageCommun) rapport.getObjet();
-		tiers1 = (PersonnePhysique) rapport.getSujet();
+		menage = (MenageCommun) tiersDAO.get(rapport.getObjetId());
+		tiers1 = (PersonnePhysique) tiersDAO.get(rapport.getSujetId());
 
 		// Création de la relation avec le second tiers
 		if (tiers2 != null) {
 			rapport = addTiersToCouple(menage, tiers2, dateDebut, dateFin);
-			menage = (MenageCommun) rapport.getObjet();
-			tiers2 = (PersonnePhysique) rapport.getSujet();
+			menage = (MenageCommun) tiersDAO.get(rapport.getObjetId());
+			tiers2 = (PersonnePhysique) tiersDAO.get(rapport.getSujetId());
 		}
 
 		// Distinction principal/conjoint
@@ -3115,6 +3116,27 @@ public class TiersServiceImpl implements TiersService {
 		}
 	}
 
+	public Set<DebiteurPrestationImposable> getDebiteursPrestationImposable(Contribuable contribuable) {
+
+		Set<DebiteurPrestationImposable> debiteurs = null;
+
+		final Set<RapportEntreTiers> rapports = contribuable.getRapportsSujet();
+		if (rapports != null) {
+			for (RapportEntreTiers r : rapports) {
+				if (r.isValidAt(null) && r instanceof ContactImpotSource) {
+					final Long debiteurId = (Long) r.getObjetId();
+					final DebiteurPrestationImposable d = (DebiteurPrestationImposable) tiersDAO.get(debiteurId);
+					if (debiteurs == null) {
+						debiteurs = new HashSet<DebiteurPrestationImposable>(); // création à la demande
+					}
+					debiteurs.add(d);
+				}
+			}
+		}
+
+		return debiteurs;
+	}
+
 	private static boolean isForVaudoisSource(ForFiscalPrincipal ffp) {
 		return ffp.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD && ffp.getModeImposition() == ModeImposition.SOURCE;
 	}
@@ -3177,5 +3199,191 @@ public class TiersServiceImpl implements TiersService {
 		return gris;
 	}
 
+
+    public Set<PersonnePhysique> getPersonnesPhysiques(MenageCommun menage) {
+        return getPersonnesPhysiques(menage, false).keySet();
+    }
+
+    public Map<PersonnePhysique, RapportEntreTiers> getToutesPersonnesPhysiquesImpliquees(MenageCommun menage) {
+        return getPersonnesPhysiques(menage, true);
+    }
+
+    /**
+     * @return l'ensemble des personnes physiques ayant fait ou faisant partie du ménage commun
+     *         en ignorant (ou pas) les rapports annulés ; le dernier rapport entre tiers est également indiqué
+     */
+    private Map<PersonnePhysique, RapportEntreTiers> getPersonnesPhysiques(MenageCommun menage, boolean aussiRapportsAnnules) {
+        final Map<PersonnePhysique, RapportEntreTiers> personnes = new HashMap<PersonnePhysique, RapportEntreTiers>(aussiRapportsAnnules ? 4 : 2);
+        final Set<RapportEntreTiers> rapports = menage.getRapportsObjet();
+        if (rapports != null) {
+            for (RapportEntreTiers r : rapports) {
+                if ((aussiRapportsAnnules || !r.isAnnule()) && r.getType().equals(TypeRapportEntreTiers.APPARTENANCE_MENAGE)) {
+
+	                // on ne considère que les rapport dont le ménage commun est l'objet
+	                // (les autres correspondent à des rattrapages de données en prod...)
+	                final Long objetId = r.getObjetId();
+	                if (objetId.equals(menage.getId())) {
+
+		                final Long ppId = r.getSujetId();
+						final PersonnePhysique sujet = (PersonnePhysique) tiersDAO.get(ppId);
+
+						// si le rapport est annulé, on vérifie qu'il n'existe pas un
+						// autre rapport avec la même personne physique (le non-annulé a la priorité !)
+						boolean ignore = false;
+						if (r.isAnnule()) {
+							// s'il n'y est pas déjà, ou
+							// s'il y est déjà, et que l'autre date d'annulation est antérieure,
+							// alors cette nouvelle date remplace la valeur précédente
+							final RapportEntreTiers rapportConnu = personnes.get(sujet);
+							if (rapportConnu != null) {
+								final Date annulationConnue = rapportConnu.getAnnulationDate();
+								if (annulationConnue == null || annulationConnue.after(r.getAnnulationDate())) {
+									ignore = true;
+								}
+							}
+						}
+						if (!ignore) {
+							personnes.put(sujet, r);
+						}
+	                }
+                }
+            }
+        }
+        return personnes;
+    }
+
+	/**
+	 * @return le contribuable associé au débiteur; ou <b>null</b> si le débiteur n'en possède pas.
+	 */
+	public Contribuable getContribuable(DebiteurPrestationImposable debiteur) {
+
+		final Long ctbId = debiteur.getContribuableId();
+		if (ctbId == null) {
+			return null;
+		}
+
+		return (Contribuable) tiersDAO.get(ctbId);
+	}
+
+	public Set<PersonnePhysique> getComposantsMenage(MenageCommun menageCommun, RegDate date) {
+		if (menageCommun == null) {
+			return null;
+		}
+
+		final Set<RapportEntreTiers> rapportsEntreTiers = menageCommun.getRapportsObjet();
+		if (rapportsEntreTiers == null) {
+			return null;
+		}
+
+		Set<PersonnePhysique> personnes = null;
+		for (RapportEntreTiers rapport : rapportsEntreTiers) {
+			if (!rapport.isAnnule() && TypeRapportEntreTiers.APPARTENANCE_MENAGE.equals(rapport.getType())) {
+				if (date == null || rapport.isValidAt(date)) {
+					if (personnes == null) {
+						// création à la demande
+						personnes = new HashSet<PersonnePhysique>();
+					}
+					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(rapport.getSujetId());
+					personnes.add(pp);
+				}
+			}
+		}
+
+		return personnes;
+	}
+
+	public Set<PersonnePhysique> getComposantsMenage(MenageCommun menageCommun, int anneePeriode) {
+		if (menageCommun == null) {
+			return null;
+		}
+
+		final Set<RapportEntreTiers> rapportsEntreTiers = menageCommun.getRapportsObjet();
+		if (rapportsEntreTiers == null) {
+			return null;
+		}
+
+		final DateRangeHelper.Range periode = new DateRangeHelper.Range(RegDate.get(anneePeriode, 1, 1), RegDate.get(anneePeriode, 12, 31));
+
+		Set<PersonnePhysique> personnes = null;
+		for (RapportEntreTiers rapport : rapportsEntreTiers) {
+			if (!rapport.isAnnule() && TypeRapportEntreTiers.APPARTENANCE_MENAGE.equals(rapport.getType())) {
+				if (DateRangeHelper.intersect(rapport, periode)) {
+					if (personnes == null) {
+						// création à la demande
+						personnes = new HashSet<PersonnePhysique>();
+					}
+					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(rapport.getSujetId());
+					personnes.add(pp);
+				}
+			}
+		}
+
+		return personnes;
+	}
+
+	/**
+	 * Recherche le menage commun actif auquel est rattaché une personne
+	 *
+	 * @param personne
+	 *            la personne potentiellement rattachée à un ménage commun
+	 * @param periode
+	 * @return le ménage commun trouvé, ou null si cette personne n'est pas rattaché au ménage.
+	 * @throws Exception
+	 * @throws ch.vd.registre.common.service.RegistreException
+	 *             si plus d'un ménage commun est trouvé.
+	 */
+	public MenageCommun getMenageCommunActifAt(final Contribuable personne, final DateRangeHelper.Range periode) throws TiersException {
+
+		if (personne == null) {
+			return null;
+		}
+
+		if(personne instanceof MenageCommun){
+			return (MenageCommun)personne;
+		}
+
+		MenageCommun menageCommun = null;
+
+		final Set<RapportEntreTiers> rapportsSujet = personne.getRapportsSujet();
+		if (rapportsSujet != null) {
+			for (RapportEntreTiers rapportSujet : rapportsSujet) {
+				if (!rapportSujet.isAnnule() && TypeRapportEntreTiers.APPARTENANCE_MENAGE.equals(rapportSujet.getType())
+						&& RegDateHelper.isBeforeOrEqual(periode.getDateDebut(), rapportSujet.getDateFin(), NullDateBehavior.LATEST)) {
+					/*
+					 * le rapport de l'apartenance a été trouvé, on en déduit donc le tiers ménage
+					 */
+					if (menageCommun != null) {
+						throw new TiersException("Plus d'un ménage commun trouvé pour la personne = [" + personne.toString() + "]");
+					}
+
+					menageCommun = (MenageCommun) tiersDAO.get(rapportSujet.getObjetId());
+					// on verifie la presence d'un for principal ou secondaire sur la période
+
+					if (!isForActifSurPeriode(menageCommun, periode)) {
+						menageCommun = null;
+					}
+				}
+			}
+		}
+
+		return menageCommun;
+	}
+
+	/**
+	 * Recherche la presence d'un for actif sur une période
+	 *
+	 * @param contribuableUnireg
+	 * @param periode
+	 * @return booleen
+	 */
+	public static boolean isForActifSurPeriode(final ch.vd.uniregctb.tiers.Contribuable contribuableUnireg, final DateRangeHelper.Range periode) {
+
+		for (ForFiscal f : contribuableUnireg.getForsFiscaux()) {
+			if (DateRangeHelper.intersect(f, periode) && !f.isAnnule()) {
+				return true;
+			}
+		}
+		return false;
+	}
 }
 

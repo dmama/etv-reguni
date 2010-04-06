@@ -348,7 +348,7 @@ public abstract class TiersHisto {
 
 		// [UNIREG-1291] ajout des fors fiscaux virtuels
 		if (parts.contains(TiersPart.FORS_FISCAUX_VIRTUELS)) {
-			final List<ch.vd.uniregctb.tiers.ForFiscalPrincipal> forsVirtuels = DataHelper.getForsFiscauxVirtuels(tiers);
+			final List<ch.vd.uniregctb.tiers.ForFiscalPrincipal> forsVirtuels = DataHelper.getForsFiscauxVirtuels(tiers, context.tiersDAO);
 			for (ch.vd.uniregctb.tiers.ForFiscalPrincipal forFiscal : forsVirtuels) {
 				this.forsFiscauxPrincipaux.add(new ForFiscal(forFiscal, true, context));
 			}
@@ -372,7 +372,7 @@ public abstract class TiersHisto {
 				continue;
 			}
 
-			this.rapportsEntreTiers.add(new RapportEntreTiers(rapport, rapport.getObjet().getNumero()));
+			this.rapportsEntreTiers.add(new RapportEntreTiers(rapport, rapport.getObjetId()));
 		}
 
 		// Ajoute les rapports dont le tiers est l'objet
@@ -381,7 +381,7 @@ public abstract class TiersHisto {
 					|| (range != null && !DateRangeHelper.intersect(rapport, range))) {
 				continue;
 			}
-			this.rapportsEntreTiers.add(new RapportEntreTiers(rapport, rapport.getSujet().getNumero()));
+			this.rapportsEntreTiers.add(new RapportEntreTiers(rapport, rapport.getSujetId()));
 		}
 		if (this.rapportsEntreTiers.isEmpty()) {
 			this.rapportsEntreTiers = null;

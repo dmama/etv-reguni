@@ -3,7 +3,6 @@ package ch.vd.uniregctb.adresse;
 import ch.vd.uniregctb.adresse.AdresseGenerique.Source;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.RepresentationConventionnelle;
-import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.Tutelle;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
@@ -15,11 +14,11 @@ public enum TypeAdresseRepresentant {
 	REPRESENTATION(TypeRapportEntreTiers.REPRESENTATION, Source.REPRESENTATION),
 	REPRESENTATION_AVEC_EXECUTION_FORCEE(TypeRapportEntreTiers.REPRESENTATION, Source.REPRESENTATION) {
 		@Override
-		public Tiers getRepresentant(RapportEntreTiers rapport) {
+		public Long getRepresentantId(RapportEntreTiers rapport) {
 			// cas spécial de la représentation conventionnelle avec exécution forcée : on ignore les représentations sans ce flag
 			final RepresentationConventionnelle representation = (RepresentationConventionnelle) rapport;
 			if (representation.getExtensionExecutionForcee() == Boolean.TRUE) {
-				return representation.getObjet();
+				return representation.getObjetId();
 			}
 			else {
 				return null;
@@ -28,9 +27,9 @@ public enum TypeAdresseRepresentant {
 	TUTELLE(TypeRapportEntreTiers.TUTELLE, Source.TUTELLE),
 	AUTORITE_TUTELAIRE(TypeRapportEntreTiers.TUTELLE, Source.TUTELLE) {
 		@Override
-		public Tiers getRepresentant(RapportEntreTiers rapport) {
+		public Long getRepresentantId(RapportEntreTiers rapport) {
 			// cas spécial de l'autorité tutelaire dont le représentant se trouve sur un attribut spécifique.
-			return ((Tutelle) rapport).getAutoriteTutelaire();
+			return ((Tutelle) rapport).getAutoriteTutelaireId();
 		}},
 	CURATELLE(TypeRapportEntreTiers.CURATELLE, Source.CURATELLE),
 	CONSEIL_LEGAL(TypeRapportEntreTiers.CONSEIL_LEGAL, Source.CONSEIL_LEGAL);
@@ -57,8 +56,8 @@ public enum TypeAdresseRepresentant {
 	 * @param rapport un rapport entre tiers
 	 * @return le représentant du rapport pour le type courant
 	 */
-	public Tiers getRepresentant(RapportEntreTiers rapport) {
-		return rapport.getObjet();
+	public Long getRepresentantId(RapportEntreTiers rapport) {
+		return rapport.getObjetId();
 	}
 
 	/**

@@ -28,69 +28,6 @@ public class MenageCommun extends Contribuable {
 
     private static final long serialVersionUID = -2860998550744237583L;
 
-    /**
-     * @return l'ensemble des personnes physiques ayant fait ou faisant partie du ménage commun
-     *         (0, 1 ou 2 personnes max, par définition) en ignorant les rapports annulés
-     */
-    @Transient
-    public Set<PersonnePhysique> getPersonnesPhysiques() {
-        return getPersonnesPhysiques(false).keySet();
-    }
-
-    /**
-     * @return l'ensemble des personnes physiques ayant fait ou faisant partie du ménage commun
-     *         en prenant en compte les rapports éventuellement annulés (il peut donc y avoir plus de
-     *         deux personnes physiques concernées en cas de correction de données) ; le dernier
-     *         rapport entre tiers est également indiqué
-     */
-    @Transient
-    public Map<PersonnePhysique, RapportEntreTiers> getToutesPersonnesPhysiquesImpliquees() {
-        return getPersonnesPhysiques(true);
-    }
-
-    /**
-     * @return l'ensemble des personnes physiques ayant fait ou faisant partie du ménage commun
-     *         en ignorant (ou pas) les rapports annulés ; le dernier rapport entre tiers est également indiqué
-     */
-    private Map<PersonnePhysique, RapportEntreTiers> getPersonnesPhysiques(boolean aussiRapportsAnnules) {
-        final Map<PersonnePhysique, RapportEntreTiers> personnes = new HashMap<PersonnePhysique, RapportEntreTiers>(aussiRapportsAnnules ? 4 : 2);
-        final Set<RapportEntreTiers> rapports = getRapportsObjet();
-        if (rapports != null) {
-            for (RapportEntreTiers r : rapports) {
-                if ((aussiRapportsAnnules || !r.isAnnule()) && r.getType().equals(TypeRapportEntreTiers.APPARTENANCE_MENAGE)) {
-
-	                // on ne considère que les rapport dont le ménage commun est l'objet
-	                // (les autres correspondent à des rattrapages de données en prod...)
-	                final Tiers objet = r.getObjet();
-	                if (objet.getId().equals(getId())) {
-
-						final PersonnePhysique sujet = (PersonnePhysique) r.getSujet();
-
-						// si le rapport est annulé, on vérifie qu'il n'existe pas un
-						// autre rapport avec la même personne physique (le non-annulé a la priorité !)
-						boolean ignore = false;
-						if (r.isAnnule()) {
-							// s'il n'y est pas déjà, ou
-							// s'il y est déjà, et que l'autre date d'annulation est antérieure,
-							// alors cette nouvelle date remplace la valeur précédente
-							final RapportEntreTiers rapportConnu = personnes.get(sujet);
-							if (rapportConnu != null) {
-								final Date annulationConnue = rapportConnu.getAnnulationDate();
-								if (annulationConnue == null || annulationConnue.after(r.getAnnulationDate())) {
-									ignore = true;
-								}
-							}
-						}
-						if (!ignore) {
-							personnes.put(sujet, r);
-						}
-	                }
-                }
-            }
-        }
-        return personnes;
-    }
-
     @Transient
     @Override
     public String getNatureTiers() {
@@ -111,9 +48,9 @@ public class MenageCommun extends Contribuable {
             final Set<Long> idComposants = new HashSet<Long>(4);
             for (RapportEntreTiers r : rapports) {
                 if (!r.isAnnule() && TypeRapportEntreTiers.APPARTENANCE_MENAGE.equals(r.getType())) {
-                    final Tiers composant = r.getSujet();
-                    if (composant != null) {
-                        idComposants.add(composant.getNumero());
+                    final Long id = r.getSujetId();
+                    if (id != null) {
+                        idComposants.add(id);
                     }
                 }
             }
