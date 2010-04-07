@@ -6,7 +6,7 @@ import java.text.SimpleDateFormat;
 
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
-import ch.vd.uniregctb.type.TypeAdresseTiers;
+import ch.vd.uniregctb.type.ModeCommunication;
 import noNamespace.FichierImpressionISDocument;
 import noNamespace.InfoDocumentDocument1;
 import noNamespace.InfoEnteteDocumentDocument1;
@@ -61,6 +61,7 @@ public class ImpressionListeRecapHelperImpl implements ImpressionListeRecapHelpe
 	private static final String IMPOT_A_LA_SOURCE_MAJ = "IMPOT A LA SOURCE";
 
 	private static final String CODE_DOC_LR_REG = "LR_SREG";
+	private static final String CODE_DOC_LR_REG_SANS_PREIMP = "LR_SREG_NO_PRE";
 	private static final String CODE_DOC_LR_CAS = "LR_SCAS";
 	private static final String CODE_DOC_LR_ADM = "LR_SADM";
 	private static final String CODE_DOC_LR_PRE = "LR_SPRE";
@@ -152,29 +153,50 @@ public class ImpressionListeRecapHelperImpl implements ImpressionListeRecapHelpe
 		prefixe += DOCUM;
 		infoDocument.setPrefixe(prefixe);
 		infoDocument.setTypDoc(TYPE_DOC_LR);
-		String codeDoc = null;
-		DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) lr.getTiers();
-		if (dpi.getCategorieImpotSource().equals(CategorieImpotSource.REGULIERS)) {
-			codeDoc = CODE_DOC_LR_REG;
+
+		final String codeDoc;
+		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) lr.getTiers();
+		switch (dpi.getCategorieImpotSource()) {
+			case REGULIERS:
+				// [UNIREG-2054] seuls les débiteurs "papiers" doivent recevoir le pré-imprimé
+				if (dpi.getModeCommunication() == ModeCommunication.PAPIER) {
+					codeDoc = CODE_DOC_LR_REG;
+				}
+				else {
+					codeDoc = CODE_DOC_LR_REG_SANS_PREIMP;
+				}
+				break;
+
+			case CONFERENCIERS_ARTISTES_SPORTIFS:
+		        codeDoc = CODE_DOC_LR_CAS;
+				break;
+
+			case ADMINISTRATEURS:
+				codeDoc = CODE_DOC_LR_ADM;
+				break;
+
+			case PRESTATIONS_PREVOYANCE:
+				codeDoc = CODE_DOC_LR_PRE;
+				break;
+
+			case CREANCIERS_HYPOTHECAIRES:
+				codeDoc = CODE_DOC_LR_HYP;
+				break;
+
+			case LOI_TRAVAIL_AU_NOIR:
+				codeDoc = CODE_DOC_LR_LTN;
+				break;
+
+			default:
+				codeDoc = null;
+				break;
 		}
-		else if (dpi.getCategorieImpotSource().equals(CategorieImpotSource.CONFERENCIERS_ARTISTES_SPORTIFS)) {
-			codeDoc = CODE_DOC_LR_CAS;
-		}
-		else if (dpi.getCategorieImpotSource().equals(CategorieImpotSource.ADMINISTRATEURS)) {
-			codeDoc = CODE_DOC_LR_ADM;
-		}
-		else if (dpi.getCategorieImpotSource().equals(CategorieImpotSource.PRESTATIONS_PREVOYANCE)) {
-			codeDoc = CODE_DOC_LR_PRE;
-		}
-		else if (dpi.getCategorieImpotSource().equals(CategorieImpotSource.CREANCIERS_HYPOTHECAIRES)) {
-			codeDoc = CODE_DOC_LR_HYP;
-		}
-		else if (dpi.getCategorieImpotSource().equals(CategorieImpotSource.LOI_TRAVAIL_AU_NOIR)) {
-			codeDoc = CODE_DOC_LR_LTN;
-		}
+
 		infoDocument.setCodDoc(codeDoc);
-		CleRgp cleRgp = infoDocument.addNewCleRgp();
+
+		final CleRgp cleRgp = infoDocument.addNewCleRgp();
 		cleRgp.addNewGenreImpot();
+
 		infoDocument.setVersion(VERSION);
 		infoDocument.setLogo(LOGO_CANT);
 		infoDocument.setPopulations(POPULATIONS_PP);
