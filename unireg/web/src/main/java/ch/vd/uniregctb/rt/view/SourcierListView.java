@@ -9,6 +9,8 @@ public class SourcierListView extends TiersCriteriaView {
 
 	private TiersGeneralView debiteur;
 
+	private String provenance;
+
 	public TiersGeneralView getDebiteur() {
 		return debiteur;
 	}
@@ -17,5 +19,11 @@ public class SourcierListView extends TiersCriteriaView {
 		this.debiteur = debiteur;
 	}
 
+	public String getProvenance() {
+		return provenance;
+	}
 
+	public void setProvenance(String provenance) {
+		this.provenance = provenance;
+	}
 }

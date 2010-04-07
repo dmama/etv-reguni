@@ -57,9 +57,20 @@
 		}
 	</script>
 
-	<input name="rapportsPrestationHisto" type="checkbox" id="rapportsPrestationHisto"
-		<c:if test="${command.rapportsPrestationHisto}">checked</c:if> onClick="window.location = toggleBooleanParam(window.location, 'rapportsPrestationHisto', true)" />
-	<label for="rapportsPrestationHisto"><fmt:message key="label.historique" /></label>
+
+	<table border="0">
+		<tr>
+			<td>
+				<input name="rapportsPrestationHisto" type="checkbox" id="rapportsPrestationHisto"
+					<c:if test="${command.rapportsPrestationHisto}">checked</c:if> onClick="window.location = toggleBooleanParam(window.location, 'rapportsPrestationHisto', true)" />
+				<label for="rapportsPrestationHisto"><fmt:message key="label.historique" /></label>
+			</td>
+
+			<td id="timeline" align="right">
+				<a href="<c:url value="/rapports-prestation/list.do?idDpi=" /><c:out value="${command.tiers.numero}" />" >Liste complète</a>
+			</td>
+		</tr>
+	</table>
 
 	<jsp:include page="../common/rapports-prestation.jsp">
 		<jsp:param name="page" value="visu"/>

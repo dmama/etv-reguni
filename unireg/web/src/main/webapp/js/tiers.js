@@ -122,6 +122,36 @@ function annulerRapport(idRapport) {
  	}
 }
 
+/*
+ * Annuler un rapport entre un débiteur et un sourcier
+ */
+function annulerRapportPrestation(idRapport, refreshCurrentPageAfterwards) {
+	if(confirm('Voulez-vous vraiment annuler ce rapport entre tiers ?')) {
+		var form = document.createElement("form");
+		form.action = getContextPath() + "/rapports-prestation/edit.do";
+		form.method = 'POST';
+
+		var target = document.createElement('input');
+		target.name = '__TARGET__';
+		target.value = 'annulerRapport';
+		form.appendChild(target);
+
+		var argument = document.createElement('input');
+		argument.name = '__EVENT_ARGUMENT__';
+		argument.value = idRapport;
+		form.appendChild(argument);
+
+		if (refreshCurrentPageAfterwards) {
+			var retour = document.createElement('input');
+			retour.name = '__URL_RETOUR__';
+			retour.value = window.location;
+			form.appendChild(retour);
+		}
+
+		form.submit();
+ 	}
+}
+
 /**
 * Popup de confirmation de sauvegarde du tiers avant de quitter la page
 */ 

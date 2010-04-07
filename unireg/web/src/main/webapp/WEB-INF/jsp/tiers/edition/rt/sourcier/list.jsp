@@ -33,7 +33,7 @@
 			<display:setProperty name="paging.banner.all_items_found"><span class="pagebanner">{0} <fmt:message key="banner.sourciers.trouves" /></span></display:setProperty>
 
 			<display:column sortable ="true" titleKey="label.numero.contribuable" sortProperty="numero" >
-				<a href="edit.do?numeroSrc=${row.numero}&numeroDpi=${numeroDpi}&provenance=debiteur"><unireg:numCTB numero="${row.numero}" /></a>
+				<a href="edit.do?numeroSrc=${row.numero}&numeroDpi=${numeroDpi}&provenance=${command.provenance}"><unireg:numCTB numero="${row.numero}" /></a>
 			</display:column>
 			<display:column sortable ="true" titleKey="label.prenom.nom" >
 				<c:out value="${row.nom1}" />

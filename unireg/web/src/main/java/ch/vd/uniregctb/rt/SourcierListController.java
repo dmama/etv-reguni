@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
@@ -67,6 +68,15 @@ public class SourcierListController  extends  AbstractTiersListController implem
 				((action != null) && action.equals(EFFACER_PARAMETER_VALUE)) ) {
 			bean = rapportPrestationEditManager.getSourcierList(numeroDpi);
 	 	}
+
+		final String provenance = request.getParameter("provenance");
+		if (StringUtils.isNotBlank(provenance)) {
+			bean.setProvenance(provenance);
+		}
+		else {
+			bean.setProvenance("debiteur");
+		}
+
 		return bean;
 	}
 
@@ -100,10 +110,21 @@ public class SourcierListController  extends  AbstractTiersListController implem
 		HttpSession session = request.getSession();
 		session.setAttribute(SOURCIER_CRITERIA_NAME, bean);
 
+		String view = null;
 		if (request.getParameter(BOUTON_RECHERCHER) != null) {
-			mav.setView(new RedirectView("list-sourcier.do?numeroDpi=" + bean.getNumeroDebiteur()));
-		} else if (request.getParameter(BOUTON_EFFACER) != null) {
-			mav.setView(new RedirectView("list-sourcier.do?numeroDpi=" + bean.getNumeroDebiteur() + "&action=effacer"));
+			view = "list-sourcier.do?numeroDpi=" + bean.getNumeroDebiteur();
+		}
+		else if (request.getParameter(BOUTON_EFFACER) != null) {
+			view = "list-sourcier.do?numeroDpi=" + bean.getNumeroDebiteur() + "&action=effacer";
+		}
+		
+		if (view != null) {
+
+			if (StringUtils.isNotBlank(bean.getProvenance())) {
+				view += "&provenance=" + bean.getProvenance();
+			}
+
+			mav.setView(new RedirectView(view));
 		}
 
 		return mav;

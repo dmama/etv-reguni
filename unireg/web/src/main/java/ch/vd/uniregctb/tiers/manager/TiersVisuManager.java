@@ -5,6 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.common.WebParamPagination;
+import ch.vd.uniregctb.tiers.view.RapportsPrestationView;
 import ch.vd.uniregctb.tiers.view.TiersVisuView;
 
 /**
@@ -48,4 +49,7 @@ public interface TiersVisuManager {
 	 */
 	@Transactional(readOnly = true)
 	public int countRapportsPrestationImposable(Long numeroDebiteur, boolean rapportsPrestationHisto);
+
+	@Transactional(readOnly = true)
+	void fillRapportsPrestationView(long noDebiteur, RapportsPrestationView view);
 }

@@ -13,6 +13,9 @@ var form = window.parent.document.forms["theForm"];
 if ( form) {
 	Form.doPostBack(form,"refresh", "refresh");
 }
+else {
+	window.parent.location.reload(true);
+}
 
 </script>
 </body>

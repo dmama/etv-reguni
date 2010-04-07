@@ -63,6 +63,7 @@ public class StandardBatchIterator<E> implements Iterator<Iterator<E>>, BatchIte
 		return next != null;
 	}
 
+	// TODO (msi) faire retourner une liste
 	public Iterator<E> next() {
 		Iterator<E> result = next;
 		next = buildNext();

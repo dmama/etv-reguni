@@ -26,6 +26,7 @@ public class RapportPrestationEditController  extends AbstractRapportPrestationC
 
 	private final String PROVENANCE_SOURCIER_VALUE = "sourcier";
 	private final String PROVENANCE_DEBITEUR_VALUE = "debiteur";
+	private final String PROVENANCE_LISTE_RAPPORTS = "listeRPI";
 
 
 	private RapportPrestationEditManager rapportPrestationEditManager;
@@ -107,6 +108,9 @@ public class RapportPrestationEditController  extends AbstractRapportPrestationC
 		}
 		if (provenance.equals(PROVENANCE_DEBITEUR_VALUE)) {
 			mav.setView(new RedirectView("../tiers/visu.do?id=" + rapportView.getDebiteur().getNumero()));
+		}
+		if (provenance.equals(PROVENANCE_LISTE_RAPPORTS)) {
+			mav.setView(new RedirectView("../rapports-prestation/list.do?idDpi=" + rapportView.getDebiteur().getNumero()));
 		}
 
 		return mav;

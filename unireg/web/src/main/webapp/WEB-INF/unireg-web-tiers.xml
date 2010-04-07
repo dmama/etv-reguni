@@ -43,6 +43,10 @@
 		<property name="fidorService" ref="fidorService" />
 	</bean>
 
+	<bean id="rapportsPrestationListController" class="ch.vd.uniregctb.tiers.RapportsPrestationListController">
+		<property name="manager" ref="tiersVisuManager" />
+	</bean>
+
 	<bean id="tiersTimelineController" class="ch.vd.uniregctb.tiers.TiersTimelineController" parent="abstractTiersController">
 		<property name="sessionForm" value="true" />
 		<property name="commandClass" value="ch.vd.uniregctb.tiers.view.TiersTimelineView" />

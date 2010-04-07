@@ -5,14 +5,17 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 
 import ch.vd.uniregctb.common.WebParamPagination;
 import ch.vd.uniregctb.rapport.manager.RapportEditManager;
+import ch.vd.uniregctb.rapport.view.RapportView;
 import ch.vd.uniregctb.tiers.manager.TiersEditManager;
 import ch.vd.uniregctb.tiers.view.TiersEditView;
+import ch.vd.uniregctb.type.SensRapportEntreTiers;
 
 /**
  * @author xcifde
@@ -51,16 +54,23 @@ public class RapportsPrestationEditController extends AbstractTiersController {
 	@Override
 	protected Object formBackingObject(HttpServletRequest request) throws Exception {
 		TiersEditView tiersView = new TiersEditView();
-		String idParam = request.getParameter(TIERS_ID_PARAMETER_NAME);
-		if (idParam != null) {
-			Long id = Long.parseLong(idParam);
-			if (!"".equals(idParam)) {
-				//gestion des droits d'édition d'un tier par tiersEditManager
-				checkAccesDossierEnLecture(id);
-				WebParamPagination pagination = new WebParamPagination(request, TABLE_NAME, PAGE_SIZE);
-				tiersView = rapportEditManager.getRapportsPrestationView(id, pagination, true);
-			}
+
+		Long id = getLongParam(request, TIERS_ID_PARAMETER_NAME);
+
+		if (id == null && getTarget() != null) {
+			// si on va annuler un rapport, on va chercher l'id du tiers lié
+			final Long idRapport = getLongEventArgument();
+			final RapportView rapport = rapportEditManager.get(idRapport, SensRapportEntreTiers.SUJET); // on récupère l'id du débiteur
+			id = rapport.getNumero();
 		}
+
+		if (id != null) {
+			//gestion des droits d'édition d'un tiers par tiersEditManager
+			checkAccesDossierEnLecture(id);
+			WebParamPagination pagination = new WebParamPagination(request, TABLE_NAME, PAGE_SIZE);
+			tiersView = rapportEditManager.getRapportsPrestationView(id, pagination, true);
+		}
+
 		return tiersView;
 	}
 
@@ -94,12 +104,19 @@ public class RapportsPrestationEditController extends AbstractTiersController {
 		checkAccesDossierEnEcriture(bean.getTiers().getId());
 
 		if (getTarget() != null) {
-			if (TARGET_ANNULER_RAPPORT.equals(getTarget())) {
-				String idRapportParam = getEventArgument();
-				if (idRapportParam != null) {
-					Long idRapport = Long.parseLong(idRapportParam);
+			final boolean annulerRapport = TARGET_ANNULER_RAPPORT.equals(getTarget());
+			if (annulerRapport) {
+				final Long idRapport = getLongEventArgument();
+				if (idRapport != null) {
 					rapportEditManager.annulerRapport(idRapport);
-					return new ModelAndView("redirect:edit.do?id=" + bean.getTiers().getNumero());
+
+					final String urlRetour = getUrlRetour();
+					if (StringUtils.isNotBlank(urlRetour)) {
+						return new ModelAndView("redirect:" + urlRetour);
+					}
+					else {
+						return new ModelAndView("redirect:edit.do?id=" + bean.getTiers().getNumero());
+					}
 				}
 			}
 		}

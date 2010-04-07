@@ -1,25 +1,37 @@
 package ch.vd.uniregctb.tiers.manager;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
+import org.hibernate.HibernateException;
+import org.hibernate.Query;
+import org.hibernate.Session;
+import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.adresse.*;
+import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
+import ch.vd.uniregctb.common.StandardBatchIterator;
 import ch.vd.uniregctb.common.WebParamPagination;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.di.view.DeclarationImpotDetailComparator;
 import ch.vd.uniregctb.di.view.DeclarationImpotDetailView;
+import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.mouvement.MouvementDossier;
 import ch.vd.uniregctb.mouvement.view.MouvementDetailView;
 import ch.vd.uniregctb.rapport.view.RapportView;
@@ -32,9 +44,12 @@ import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.tiers.RapportEntreTiers;
+import ch.vd.uniregctb.tiers.RapportPrestationImposable;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.view.AdresseView;
 import ch.vd.uniregctb.tiers.view.AdresseViewComparator;
+import ch.vd.uniregctb.tiers.view.RapportsPrestationView;
 import ch.vd.uniregctb.tiers.view.TiersVisuView;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
@@ -284,5 +299,197 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 		}
 		Collections.sort(mvtsView);
 		return mvtsView;
+	}
+
+	@Transactional(readOnly = true)
+	public void fillRapportsPrestationView(long noDebiteur, RapportsPrestationView view) {
+
+		final DebiteurPrestationImposable debiteur = (DebiteurPrestationImposable) tiersDAO.get(noDebiteur);
+		if (debiteur == null) {
+			throw new ObjectNotFoundException(this.getMessageSource().getMessage("error.tiers.inexistant", null, WebContextUtils.getDefaultLocale()));
+		}
+
+		final List<RapportsPrestationView.Rapport> rapports = new ArrayList<RapportsPrestationView.Rapport>();
+		final Map<Long, List<RapportsPrestationView.Rapport>> rapportsByNumero = new HashMap<Long, List<RapportsPrestationView.Rapport>>();
+
+		final long startRapports = System.nanoTime();
+
+		final Set<RapportEntreTiers> list = debiteur.getRapportsObjet();
+
+		// Rempli les informations de base
+
+		for (RapportEntreTiers r : list) {
+			if (r.getType() != TypeRapportEntreTiers.PRESTATION_IMPOSABLE) {
+				continue;
+			}
+
+			final RapportPrestationImposable rpi =(RapportPrestationImposable) r;
+
+			final RapportsPrestationView.Rapport rapport = new RapportsPrestationView.Rapport();
+			rapport.id = r.getId();
+			rapport.annule = r.isAnnule();
+			rapport.noCTB = r.getSujetId();
+			rapport.dateDebut = r.getDateDebut();
+			rapport.dateFin = r.getDateFin();
+			rapport.typeActivite = rpi.getTypeActivite();
+			rapport.tauxActivite = rpi.getTauxActivite();
+			rapport.noCTB = rpi.getSujetId();
+			rapports.add(rapport);
+
+			ArrayList<RapportsPrestationView.Rapport> rl = (ArrayList<RapportsPrestationView.Rapport>) rapportsByNumero.get(rapport.noCTB);
+			if (rl == null) {
+				rl = new ArrayList<RapportsPrestationView.Rapport>();
+				rapportsByNumero.put(rapport.noCTB, rl);
+			}
+
+			rl.add(rapport);
+		}
+
+		final long endRapports = System.nanoTime();
+		LOGGER.debug("- chargement des rapports en " + ((endRapports - startRapports) / 1000000) + " ms");
+
+		// Complète les noms, prénoms et nouveaux numéros AVS des non-habitants
+
+		final long startNH = System.nanoTime();
+
+		final Set<Long> pasDeNouveauNosAvs = new HashSet<Long>();
+
+		final List infoNonHabitants = tiersDAO.getHibernateTemplate()
+				.find("select pp.numero, pp.prenom, pp.nom, pp.numeroAssureSocial from PersonnePhysique pp, RapportPrestationImposable rpi " +
+						"where pp.habitant = false and pp.numero = rpi.sujetId and rpi.objetId =  " + noDebiteur);
+		for (Object o : infoNonHabitants) {
+			final Object line[] = (Object[]) o;
+			final Long numero = (Long) line[0];
+			final String prenom = (String) line[1];
+			final String nom = (String) line[2];
+			final String noAVS = (String) line[3];
+
+			if (StringUtils.isBlank(noAVS)) {
+				pasDeNouveauNosAvs.add(numero);
+			}
+
+			final List<RapportsPrestationView.Rapport> rl = rapportsByNumero.get(numero);
+			Assert.notNull(rl);
+
+			for (RapportsPrestationView.Rapport r : rl) {
+				r.nomCourrier1 = getNomPrenom(prenom, nom);
+				r.noAVS = FormatNumeroHelper.formatNumAVS(noAVS);
+			}
+		}
+
+		// Complète les anciens numéros AVS des non-habitants qui n'en possède pas des nouveaux
+
+		if (!pasDeNouveauNosAvs.isEmpty()) {
+			final StandardBatchIterator<Long> it = new StandardBatchIterator<Long>(pasDeNouveauNosAvs, 500);
+			while (it.hasNext()) {
+				final List<Long> ids = asList(it.next());
+
+				final List ancienNosAvs = (List) tiersDAO.getHibernateTemplate().executeWithNativeSession(new HibernateCallback() {
+					public Object doInHibernate(Session session) throws HibernateException, SQLException {
+						final Query query = session.createQuery(
+								"select ip.personnePhysique.id, ip.identifiant from IdentificationPersonne ip where ip.categorieIdentifiant = 'CH_AHV_AVS' and ip.personnePhysique.id in (:ids)");
+						query.setParameterList("ids", ids);
+						return query.list();
+					}
+				});
+
+				for (Object o : ancienNosAvs) {
+					final Object line[] = (Object[]) o;
+					final Long numero = (Long) line[0];
+					final String noAVS = (String) line[1];
+
+					final List<RapportsPrestationView.Rapport> rl = rapportsByNumero.get(numero);
+					Assert.notNull(rl);
+
+					for (RapportsPrestationView.Rapport r : rl) {
+						r.noAVS = FormatNumeroHelper.formatAncienNumAVS(noAVS);
+					}
+				}
+			}
+		}
+
+		final long endNH = System.nanoTime();
+		LOGGER.debug("- chargement des non-habitants en " + ((endNH - startNH) / 1000000) + " ms");
+
+		// Complète les noms, prénoms et numéros AVS des habitants
+
+		final long startH = System.nanoTime();
+
+		final Map<Long, List<RapportsPrestationView.Rapport>> rapportsByNumeroIndividu = new HashMap<Long, List<RapportsPrestationView.Rapport>>();
+
+		final List infoHabitants = tiersDAO.getHibernateTemplate().find("select pp.numero, pp.numeroIndividu from PersonnePhysique pp, RapportPrestationImposable rpi " +
+						"where pp.habitant = true and pp.numero = rpi.sujetId and rpi.objetId =  " + noDebiteur);
+		for (Object o : infoHabitants) {
+			final Object line[] = (Object[]) o;
+			final Long numero = (Long) line[0];
+			final Long numeroIndividu = (Long) line[1];
+
+			ArrayList<RapportsPrestationView.Rapport> rl = (ArrayList<RapportsPrestationView.Rapport>) rapportsByNumeroIndividu.get(numeroIndividu);
+			if (rl == null) {
+				rl = new ArrayList<RapportsPrestationView.Rapport>();
+				rapportsByNumeroIndividu.put(numeroIndividu, rl);
+			}
+
+			rl.addAll(rapportsByNumero.get(numero));
+		}
+
+		final Set<Long> numerosIndividus = rapportsByNumeroIndividu.keySet();
+		final StandardBatchIterator<Long> iterator = new StandardBatchIterator<Long>(numerosIndividus, 500);
+		while (iterator.hasNext()) {
+			final List<Long> batch = asList(iterator.next());
+			final List<Individu> individus = serviceCivilService.getIndividus(batch, null);
+			for (Individu ind : individus) {
+				final List<RapportsPrestationView.Rapport> rl = rapportsByNumeroIndividu.get(ind.getNoTechnique());
+				Assert.notNull(rl);
+				for (RapportsPrestationView.Rapport rapport : rl) {
+					rapport.nomCourrier1 = serviceCivilService.getNomPrenom(ind);
+					rapport.noAVS = getNumeroAvs(ind);
+				}
+			}
+		}
+
+		final long endH = System.nanoTime();
+		LOGGER.debug("- chargement des habitants en " + ((endH - startH) / 1000000) + " ms");
+
+		view.idDpi = noDebiteur;
+		view.tiersGeneral = tiersGeneralManager.get(debiteur);
+		view.editionAllowed = SecurityProvider.isGranted(Role.RT);
+		view.rapports = rapports;
+	}
+
+	private String getNumeroAvs(Individu ind) {
+		final String noAVS;
+		if (StringUtils.isBlank(ind.getNouveauNoAVS())) {
+			noAVS = FormatNumeroHelper.formatAncienNumAVS(ind.getDernierHistoriqueIndividu().getNoAVS());
+		}
+		else {
+			noAVS = FormatNumeroHelper.formatNumAVS(ind.getNouveauNoAVS());
+		}
+		return noAVS;
+	}
+
+	private List<Long> asList(Iterator<Long> i) {
+		List<Long> b = new ArrayList<Long>();
+		while (i.hasNext()) {
+			b.add(i.next());
+		}
+		return b;
+	}
+
+	private String getNomPrenom(String prenom, String nom) {
+		final String nomPrenom;
+		if (nom != null && prenom != null) {
+			nomPrenom = String.format("%s %s", prenom, nom);
+		}
+		else if (nom != null) {
+			nomPrenom = nom;
+		}
+		else if (prenom != null) {
+			nomPrenom = prenom;
+		}
+		else {
+			nomPrenom = "";
+		}
+		return nomPrenom;
 	}
 }

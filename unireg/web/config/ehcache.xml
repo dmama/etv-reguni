@@ -36,7 +36,7 @@
 		diskExpiryThreadIntervalSeconds="120" />
 
     <cache name="serviceCivil"
-        maxElementsInMemory="2500"
+        maxElementsInMemory="5000"
         eternal="false"
         timeToIdleSeconds="500"
         timeToLiveSeconds="500"

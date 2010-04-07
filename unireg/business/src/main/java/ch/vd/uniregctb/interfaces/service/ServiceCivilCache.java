@@ -159,12 +159,86 @@ public class ServiceCivilCache extends ServiceCivilServiceBase implements Unireg
 		return individu;
 	}
 
+	// TODO (msi) merger cette classe avec GetIndividuKey (nécessite changement d'interface de la méthode getIndividu)
+	private static class GetIndividuParDateKey {
+
+		private long noIndividu;
+		private RegDate date;
+		private Set<EnumAttributeIndividu> parties;
+
+		private GetIndividuParDateKey(long noIndividu, RegDate date, Set<EnumAttributeIndividu> parties) {
+			this.noIndividu = noIndividu;
+			this.date = date;
+			this.parties = parties;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (o == null || getClass() != o.getClass()) return false;
+
+			final GetIndividuParDateKey that = (GetIndividuParDateKey) o;
+
+			if (noIndividu != that.noIndividu) return false;
+			if (date != null ? !date.equals(that.date) : that.date != null) return false;
+			if (parties != null ? !parties.equals(that.parties) : that.parties != null) return false;
+
+			return true;
+		}
+
+		@Override
+		public int hashCode() {
+			int result = (int) (noIndividu ^ (noIndividu >>> 32));
+			result = 31 * result + (date != null ? date.hashCode() : 0);
+			result = 31 * result + (parties != null ? parties.hashCode() : 0);
+			return result;
+		}
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
 	public List<Individu> getIndividus(Collection<Long> nosIndividus, RegDate date, EnumAttributeIndividu... parties) {
-		// cette méthode n'est pas cachée pour l'instant. A faire si la nécessité se fait sentir...
-		return target.getIndividus(nosIndividus, date, parties);
+
+		final Set<EnumAttributeIndividu> partiesSet = arrayToSet(parties);
+		
+		final Map<Long, Individu> map = new HashMap<Long, Individu>(nosIndividus.size());
+		final Set<Long> uncached = new HashSet<Long>(nosIndividus.size());
+
+		// Récupère les individus dans le cache
+		for (Long no : nosIndividus) {
+			final GetIndividuParDateKey key = new GetIndividuParDateKey(no, date, partiesSet);
+			final Element element = cache.get(key);
+			if (element == null) {
+				uncached.add(no);
+			}
+			else {
+				Individu individu = (Individu) element.getObjectValue();
+				map.put(no, individu);
+			}
+		}
+
+		// Effectue l'appel au service pour les individus non-cachés
+		if (!uncached.isEmpty()) {
+			final List<Individu> list = target.getIndividus(uncached, date, parties);
+			for (Individu ind : list) {
+				final long no = ind.getNoTechnique();
+				map.put(no, ind);
+				final GetIndividuParDateKey key = new GetIndividuParDateKey(no, date, partiesSet);
+				cache.put(new Element(key, ind));
+			}
+		}
+
+		// Ajoute les nouveaux individus dans le cache
+		final List<Individu> individus = new ArrayList<Individu>(nosIndividus.size());
+		for (Long no : nosIndividus) {
+			Individu ind = map.get(no);
+			if (ind != null) {
+				individus.add(ind);
+			}
+		}
+
+		return individus;
 	}
 
 	/**
@@ -287,8 +361,8 @@ public class ServiceCivilCache extends ServiceCivilServiceBase implements Unireg
 	}
 
 	private static Set<EnumAttributeIndividu> arrayToSet(EnumAttributeIndividu[] parties) {
-		if (parties == null) {
-		return null;
+		if (parties == null || parties.length == 0) {
+			return null;
 		}
 
 		final Set<EnumAttributeIndividu> set = new HashSet<EnumAttributeIndividu>(parties.length);

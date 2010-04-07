@@ -96,7 +96,7 @@ public class TiersManager implements MessageSourceAware {
 
 	private HostPersonneMoraleService hostPersonneMoraleService;
 
-	private ServiceCivilService serviceCivilService;
+	protected ServiceCivilService serviceCivilService;
 
 	private final Calendar calToday = new GregorianCalendar();
 
@@ -406,7 +406,7 @@ public class TiersManager implements MessageSourceAware {
 				}
 			}
 			rapportPrestationView.setNumero(tiersObjet.getNumero());
-			List<String> nomCourrier = getAdresseService().getNomCourrier(tiersObjet, null, false);
+			List<String> nomCourrier = adresseService.getNomCourrier(tiersObjet, null, false);
 			rapportPrestationView.setNomCourrier(nomCourrier);
 			rapportPrestationViews.add(rapportPrestationView);
 		}

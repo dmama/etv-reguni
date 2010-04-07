@@ -14,6 +14,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.LogFactory;
 import org.apache.log4j.Logger;
 import org.springframework.beans.propertyeditors.CustomBooleanEditor;
@@ -52,11 +53,13 @@ public abstract class AbstractSimpleFormController extends SimpleFormController 
 
 	public final static String PARAMETER_TARGET = "__TARGET__";
 	public final static String PARAMETER_EVENT_ARGUMENT = "__EVENT_ARGUMENT__";
+	public final static String PARAMETER_URL_RETOUR = "__URL_RETOUR__";
 
 	private boolean modified = false;
 
 	private String target;
 	private String eventArgument;
+	private String urlRetour;
 
 	protected AbstractSimpleFormController() {
 		// On change le logger de la classe Spring 'ApplicationObjectSupport', de manière à pouvoir régler le niveau de log par package.
@@ -103,23 +106,16 @@ public abstract class AbstractSimpleFormController extends SimpleFormController 
 		String modifier = request.getParameter(PARAMETER_MODIFIER);
 		target = null;
 		eventArgument = null;
+		urlRetour = null;
+
 		if (this.isFormSubmission(request)) {
-			target = request.getParameter(PARAMETER_TARGET);
-			if ("".equals(target)) {
-				target = null;
-			}
-			eventArgument = request.getParameter(PARAMETER_EVENT_ARGUMENT);
-			if ("".equals(eventArgument)) {
-				eventArgument = null;
-			}
+			target = StringUtils.trimToNull(request.getParameter(PARAMETER_TARGET));
+			eventArgument = StringUtils.trimToNull(request.getParameter(PARAMETER_EVENT_ARGUMENT));
+			urlRetour = StringUtils.trimToNull(request.getParameter(PARAMETER_URL_RETOUR));
 		}
 
-		if (modifier != null && !"".equals(modifier)) {
-			modified = Boolean.parseBoolean(modifier);
-		}
-		else {
-			modified = false;
-		}
+		modified = StringUtils.isNotBlank(modifier) && Boolean.parseBoolean(modifier);
+		
 		ModelAndView view = super.handleRequest(request, response);
 		request.setAttribute(PARAMETER_MODIFIER, modified);
 		return view;
@@ -267,15 +263,7 @@ public abstract class AbstractSimpleFormController extends SimpleFormController 
 	 *             si l'opérateur ne possède pas les droits d'accès suffisants.
 	 */
 	protected static void checkAccesDossierEnLecture(Long tiersId) throws ObjectNotFoundException, AccessDeniedException {
-		if (tiersId != null) {
-			Niveau acces = SecurityProvider.getDroitAcces(tiersId);
-			if (acces == null) {
-				final String message = String.format("L'opérateur [%s] s'est vu refusé l'accès en lecture sur le tiers n°%d",
-						AuthenticationHelper.getCurrentPrincipal(), tiersId);
-				LOGGER.warn(message);
-				throw new AccessDeniedException("Vous ne possédez pas les droits de visualisation sur ce contribuable");
-			}
-		}
+		ControllerUtils.checkAccesDossierEnLecture(tiersId);
 	}
 
 	/**
@@ -292,16 +280,7 @@ public abstract class AbstractSimpleFormController extends SimpleFormController 
 	 *             si l'opérateur ne possède pas les droits d'accès suffisants.
 	 */
 	protected static void checkAccesDossierEnEcriture(Long tiersId) throws ObjectNotFoundException, AccessDeniedException {
-		if (tiersId != null) {
-			Niveau acces = SecurityProvider.getDroitAcces(tiersId);
-			if (acces == null || acces.equals(Niveau.LECTURE)) {
-				final String message = String.format(
-						"L'opérateur [%s] s'est vu refusé l'accès en écriture sur le tiers n°%d (acces autorisé=%s)", AuthenticationHelper
-								.getCurrentPrincipal(), tiersId, (acces == null ? "null" : acces.toString()));
-				LOGGER.warn(message);
-				throw new AccessDeniedException("Vous ne possédez pas les droits d'édition sur ce contribuable");
-			}
-		}
+		ControllerUtils.checkAccesDossierEnEcriture(tiersId);
 	}
 
 	/**
@@ -359,6 +338,14 @@ public abstract class AbstractSimpleFormController extends SimpleFormController 
 		}
 	}
 
+	protected static Long getLongParam(HttpServletRequest request, String paramName) {
+		final String longAsString = request.getParameter(paramName);
+		if (StringUtils.isBlank(longAsString)) {
+			return null;
+		}
+		return Long.valueOf(longAsString);
+	}
+
 	/**
 	 * @return the modified
 	 */
@@ -386,5 +373,21 @@ public abstract class AbstractSimpleFormController extends SimpleFormController 
 	 */
 	public String getEventArgument() {
 		return eventArgument;
+	}
+
+	/**
+	 * @return the argument
+	 */
+	public Long getLongEventArgument() {
+		if (StringUtils.isBlank(eventArgument)) {
+			return null;
+		}
+		else {
+			return Long.valueOf(eventArgument);
+		}
+	}
+
+	public String getUrlRetour() {
+		return urlRetour;
 	}
 }
