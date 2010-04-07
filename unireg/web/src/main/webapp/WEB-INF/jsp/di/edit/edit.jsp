@@ -48,10 +48,10 @@
 						<input type="submit" id="boutonSommerActif" name="sommer" value="<fmt:message key="label.bouton.sommer" />"  onclick="javascript:return Page_SommerDI(event || window.event);" />
 						<input type="submit" id="boutonSommerNonActif" style="display:none;" name="sommer" disabled="disabled"  value="<fmt:message key="label.bouton.sommer" />"  onclick="javascript:return Page_SommerDI(event || window.event);" />
 					</c:if>
-					<c:if test="${command.etat != 'EMISE'}">
+					<c:if test="${command.wasSommee}">
 						<input type="submit" name="copierSommation" value="<fmt:message key="label.bouton.copie.conforme.sommation" />"  onclick="javascript:return Page_CopierSommationDI(event || window.event);" />
 					</c:if>
-						<input type="submit" id="boutonCopieConformeActif" style="display:none;" name="copierSommation" value="<fmt:message key="label.bouton.copie.conforme.sommation" />"  onclick="javascript:return Page_CopierSommationDI(event || window.event);" />
+					<input type="submit" id="boutonCopieConformeActif" style="display:none;" name="copierSommation" value="<fmt:message key="label.bouton.copie.conforme.sommation" />"  onclick="javascript:return Page_CopierSommationDI(event || window.event);" />
 				</c:if>
 	
 				<!-- Duplicata DI -->

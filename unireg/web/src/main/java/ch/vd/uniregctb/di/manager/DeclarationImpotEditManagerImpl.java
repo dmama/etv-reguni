@@ -535,6 +535,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 		diEditView.setImprimable(true);
 		diEditView.setContribuable(tiersGeneralView);
 		diEditView.setId(id);
+
 		final EtatDeclaration etatDI = di.getDernierEtat();
 		diEditView.setEtat(etatDI == null ? null : etatDI.getEtat());
 		diEditView.setPeriodeFiscale(di.getPeriode().getAnnee());
@@ -557,7 +558,16 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 			diEditView.setAllowedDelai(false);
 		}
 
+		boolean wasSommee = false;
+		for (EtatDeclaration etat : di.getEtats()) {
+			if (!etat.isAnnule() && etat.getEtat() == TypeEtatDeclaration.SOMMEE) {
+				wasSommee = true;
+				break;
+			}
+		}
+
 		diEditView.setSommable(isSommable);
+		diEditView.setWasSommee(wasSommee);
 	}
 
 	@Transactional(readOnly = true)

@@ -69,6 +69,11 @@ public class DeclarationImpotDetailView implements
 
 	private boolean isSommable;
 
+	/**
+	 * VRAI si la DI a été sommée (même si elle est maintenant retournée ou échue)
+	 */
+	private boolean wasSommee;
+
 	private boolean imprimable;
 
 	private TypeAdresseRetour typeAdresseRetour;
@@ -345,5 +350,13 @@ public class DeclarationImpotDetailView implements
 
 	public boolean isOuverte() {
 		return ouverte;
+	}
+
+	public boolean isWasSommee() {
+		return wasSommee;
+	}
+
+	public void setWasSommee(boolean wasSommee) {
+		this.wasSommee = wasSommee;
 	}
 }
