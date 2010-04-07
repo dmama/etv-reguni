@@ -7,6 +7,7 @@ import java.util.Set;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.registre.base.utils.Pair;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.evenement.EvenementCivil;
 import ch.vd.uniregctb.evenement.EvenementCivilErreur;
@@ -88,7 +89,7 @@ public class DecesHandler extends EvenementCivilHandlerBase {
 	}
 
 	@Override
-	public void handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
+	public Pair<PersonnePhysique,PersonnePhysique> handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
 
 		/*
 		 * Cast en Deces.
@@ -106,14 +107,14 @@ public class DecesHandler extends EvenementCivilHandlerBase {
 			
 			if (dateDecesUnireg.equals(deces.getDate())) {
 				// si l'evt civil de Décès est identique à la date de décès dans UNIREG : OK (evt traité sans modif dans UNIREG)
-				return;
+				return null;
 			}
 			else {
 				
 				final boolean unJourDifference = RegDateHelper.isBetween(deces.getDate(), dateDecesUnireg.getOneDayBefore(), dateDecesUnireg.getOneDayAfter(), NullDateBehavior.EARLIEST);
 				if (unJourDifference && dateDecesUnireg.year() == deces.getDate().year()) {
 					// si 1 jour de différence dans la même Période Fiscale (même année) : OK (evt traité sans modif dans UNIREG)
-					return;
+					return null;
 				}
 				else if (!unJourDifference || dateDecesUnireg.year() != deces.getDate().year()) {
 					// si plus d'1 jour d'écart ou sur une PF différente : KO (evt en Erreur --> pour traitement par la Cellule vérif de la date de décès)
@@ -123,7 +124,7 @@ public class DecesHandler extends EvenementCivilHandlerBase {
 		}
 		
 		getMetier().deces(defunt, deces.getDate(), null, deces.getNumeroEvenement());
-
+		return null;
 	}
 
 	@Override

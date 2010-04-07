@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.evenement.EvenementCivil;
 import ch.vd.uniregctb.evenement.EvenementCivilErreur;
 import ch.vd.uniregctb.evenement.GenericEvenementAdapter;
@@ -57,7 +58,7 @@ public class AnnulationReconciliationHandler extends EvenementCivilHandlerBase {
 	}
 
 	@Override
-	public void handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
+	public Pair<PersonnePhysique,PersonnePhysique> handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
 		// Cas d'annulation de réconciliation
 		AnnulationReconciliation annulation = (AnnulationReconciliation) evenement;
 		// Récupération du tiers principal.
@@ -70,6 +71,7 @@ public class AnnulationReconciliationHandler extends EvenementCivilHandlerBase {
 		}
 		// Traitement de l'annulation de réconciliation
 		getMetier().annuleReconciliation(principal, conjoint, annulation.getDate(), annulation.getNumeroEvenement());
+		return null;
 	}
 
 	@Override

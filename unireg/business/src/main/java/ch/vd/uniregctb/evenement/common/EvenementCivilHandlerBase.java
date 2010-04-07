@@ -3,6 +3,7 @@ package ch.vd.uniregctb.evenement.common;
 import java.util.List;
 import java.util.Set;
 
+import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.tiers.*;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
@@ -132,7 +133,7 @@ public abstract class EvenementCivilHandlerBase implements EvenementCivilHandler
 	/**
 	 * @see ch.vd.uniregctb.evenement.common.www#handle(ch.vd.uniregctb.evenement.EvenementCivil)
 	 */
-	public abstract void handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException;
+	public abstract Pair<PersonnePhysique,PersonnePhysique> handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException;
 
 	private void validateCommon(EvenementCivil evenement, List<EvenementCivilErreur> erreurs, List<EvenementCivilErreur> warnings) {
 

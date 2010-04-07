@@ -7,6 +7,7 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.FiscalDateHelper;
 import ch.vd.uniregctb.evenement.EvenementCivil;
@@ -59,7 +60,7 @@ public class NaissanceHandler extends EvenementCivilHandlerBase {
 	 * @throws EvenementCivilHandlerException
 	 */
 	@Override
-	public void handle(EvenementCivil evenementCivil, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
+	public Pair<PersonnePhysique,PersonnePhysique> handle(EvenementCivil evenementCivil, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
 		LOGGER.debug("Traitement de la naissance de l'individu : " + evenementCivil.getIndividu().getNoTechnique() );
 
 		try {
@@ -84,7 +85,7 @@ public class NaissanceHandler extends EvenementCivilHandlerBase {
 			Audit.info(naissance.getNumeroEvenement(), "Création d'un nouveau tiers habitant (numéro: "+bebe.getNumero()+")");
 
 			this.getEvenementFiscalService().publierEvenementFiscalChangementSituation(bebe, dateEvenement, bebe.getId());
-
+			return new Pair<PersonnePhysique, PersonnePhysique>(bebe, null);
 		}
 		catch (Exception e) {
 			LOGGER.debug("Erreur lors de la sauvegarde du nouveau tiers", e);

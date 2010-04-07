@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.FiscalDateHelper;
 import ch.vd.uniregctb.evenement.EvenementCivil;
@@ -39,7 +40,7 @@ public class CorrectionDateNaissanceHandler extends AbstractChangementHandler {
 
 	@Override
 	@Transactional(propagation = Propagation.MANDATORY, rollbackFor = Throwable.class)
-	public void handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
+	public Pair<PersonnePhysique,PersonnePhysique> handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
 
 		LOGGER.debug("Correction de la date de naissance de l'individu : " + evenement.getIndividu().getNoTechnique());
 		Audit.info(evenement.getNumeroEvenement(), "Correction de la date de naissance de l'individu : " + evenement.getIndividu().getNoTechnique());
@@ -73,6 +74,7 @@ public class CorrectionDateNaissanceHandler extends AbstractChangementHandler {
 			// forcer la reindexation du tiers
 			super.handle(evenement, warnings);
 		}
+		return null;
 	}
 
 	@Override

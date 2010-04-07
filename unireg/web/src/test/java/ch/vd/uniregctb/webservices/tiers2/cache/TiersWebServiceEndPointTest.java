@@ -105,7 +105,7 @@ public class TiersWebServiceEndPointTest extends WebTest {
 				ids.a = a.getNumero();
 				final PersonnePhysique b = addNonHabitant("B", "Bidon", date(1970, 4, 19), Sexe.FEMININ);
 				ids.b = b.getNumero();
-				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(a, b, date(2000, 1, 1));
+				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(a, b, date(2000, 1, 1), null);
 				ids.mc = ensemble.getMenage().getNumero();
 
 				return null;

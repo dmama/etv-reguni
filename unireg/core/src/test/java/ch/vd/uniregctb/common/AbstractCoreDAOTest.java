@@ -760,14 +760,14 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	/**
 	 * Crée et ajoute dans la base de données un menage-commun.
 	 */
-	protected EnsembleTiersCouple addEnsembleTiersCouple(PersonnePhysique principal, PersonnePhysique conjoint, RegDate dateMariage) {
-		return addEnsembleTiersCouple(null, principal, conjoint, dateMariage);
+	protected EnsembleTiersCouple addEnsembleTiersCouple(PersonnePhysique principal, PersonnePhysique conjoint, RegDate dateMariage, RegDate dateFin) {
+		return addEnsembleTiersCouple(null, principal, conjoint, dateMariage, dateFin);
 	}
 
 	/**
 	 * Crée et ajoute dans la base de données un menage-commun.
 	 */
-	protected EnsembleTiersCouple addEnsembleTiersCouple(Long noTiers, PersonnePhysique principal, PersonnePhysique conjoint, RegDate dateMariage) {
+	protected EnsembleTiersCouple addEnsembleTiersCouple(Long noTiers, PersonnePhysique principal, PersonnePhysique conjoint, RegDate dateMariage, RegDate dateFin) {
 
 		MenageCommun menage = new MenageCommun();
 		menage.setNumero(noTiers);
@@ -779,6 +779,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 
 		RapportEntreTiers rapport = new AppartenanceMenage();
 		rapport.setDateDebut(dateMariage);
+		rapport.setDateFin(dateFin);
 		rapport.setObjet(menage);
 		rapport.setSujet(principal);
 		rapport = (RapportEntreTiers) hibernateTemplate.merge(rapport);
@@ -789,6 +790,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		if (conjoint != null) {
 			rapport = new AppartenanceMenage();
 			rapport.setDateDebut(dateMariage);
+			rapport.setDateFin(dateFin);
 			rapport.setObjet(menage);
 			rapport.setSujet(conjoint);
 			rapport = (RapportEntreTiers) hibernateTemplate.merge(rapport);

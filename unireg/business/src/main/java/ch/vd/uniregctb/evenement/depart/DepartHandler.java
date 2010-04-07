@@ -7,6 +7,7 @@ import java.util.Set;
 import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.FiscalDateHelper;
 import ch.vd.uniregctb.evenement.EvenementCivil;
@@ -73,7 +74,7 @@ public class DepartHandler extends EvenementCivilHandlerBase {
 	}
 
 	@Override
-	public void handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
+	public Pair<PersonnePhysique,PersonnePhysique> handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
 		final Depart depart = (Depart) evenement;
 
 		final PersonnePhysique habitant = getTiersDAO().getHabitantByNumeroIndividu(depart.getIndividu().getNoTechnique());
@@ -95,7 +96,7 @@ public class DepartHandler extends EvenementCivilHandlerBase {
 			 */
 			if (!isDepartComplet(depart)) {
 				getService().changeHabitantenNH(habitant);
-				return;
+				return null;
 			}
 
 			// le deuxième doit aussi passer à non habitant
@@ -142,6 +143,8 @@ public class DepartHandler extends EvenementCivilHandlerBase {
 			Assert.isEqual(TypeEvenementCivil.DEPART_SECONDAIRE, depart.getType());
 			handleDepartResidenceSecondaire(depart, contribuable, dateFermeture, motifFermeture);
 		}
+
+		return null;
 	}
 
 

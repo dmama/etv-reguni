@@ -4,12 +4,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import ch.vd.registre.base.utils.Pair;
 import ch.vd.registre.civil.model.EnumTypePermis;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.evenement.EvenementCivil;
 import ch.vd.uniregctb.evenement.EvenementCivilErreur;
 import ch.vd.uniregctb.evenement.GenericEvenementAdapter;
 import ch.vd.uniregctb.evenement.common.EvenementCivilHandlerException;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 /**
@@ -51,17 +53,17 @@ public class ObtentionPermisHandler extends ObtentionPermisCOuNationaliteSuisseH
 	 *
 	 */
 	@Override
-	public void handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
+	public Pair<PersonnePhysique,PersonnePhysique> handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
 		ObtentionPermis obtentionPermis = (ObtentionPermis) evenement;
 
 		/* Seul le permis C a une influence */
 		if (!obtentionPermis.getTypePermis().equals(EnumTypePermis.ETABLLISSEMENT)) {
 			Audit.info(obtentionPermis.getNumeroEvenement(), "Permis non C : ignoré");
-			return;
+			return null;
 		}
-
-		else
-			super.handle(evenement, warnings);
+		else {
+			return super.handle(evenement, warnings);
+		}
 	}
 
 	@Override

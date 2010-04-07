@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.utils.Pair;
 import ch.vd.registre.civil.model.EnumTypeEtatCivil;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.FiscalDateHelper;
@@ -80,7 +81,7 @@ public class DemenagementHandler extends EvenementCivilCoupleHandler {
 	 *
 	 */
 	@Override
-	public void handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
+	public Pair<PersonnePhysique,PersonnePhysique> handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
 
 		Demenagement demenagement = (Demenagement) evenement;
 
@@ -199,6 +200,7 @@ public class DemenagementHandler extends EvenementCivilCoupleHandler {
 				fermeAdresseTiersTemporaire(menage, evenement.getDate().getOneDayBefore());
 			}
 		}
+		return null;
 	}
 
 	@Override

@@ -1,8 +1,10 @@
 package ch.vd.uniregctb.evenement.common;
 
+import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.evenement.EvenementCivil;
 import ch.vd.uniregctb.evenement.EvenementCivilErreur;
 import ch.vd.uniregctb.evenement.GenericEvenementAdapter;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
 
 import java.util.List;
 
@@ -22,8 +24,9 @@ public abstract class EvenementCivilIgnoreHandler extends EvenementCivilHandlerB
 	}
 
 	@Override
-	public void handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
+	public Pair<PersonnePhysique,PersonnePhysique> handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
 		// simplement ignoré
+		return null;
 	}
 
 	@Override

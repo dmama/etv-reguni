@@ -3,6 +3,7 @@ package ch.vd.uniregctb.evenement.annulationpermis;
 import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.common.EtatCivilHelper;
 import ch.vd.uniregctb.evenement.EvenementCivil;
 import ch.vd.uniregctb.evenement.EvenementCivilErreur;
@@ -29,7 +30,7 @@ public abstract class AnnulationPermisCOuNationaliteSuisseHandler extends Evenem
 	 * @see ch.vd.uniregctb.evenement.common.EvenementCivilHandlerBase#handle(ch.vd.uniregctb.evenement.EvenementCivil)
 	 */
 	@Override
-	public void handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
+	public Pair<PersonnePhysique,PersonnePhysique> handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
 
 		Individu individu = evenement.getIndividu();
 
@@ -55,7 +56,7 @@ public abstract class AnnulationPermisCOuNationaliteSuisseHandler extends Evenem
 			// il y a eu d'autres opérations aprés l'obtention, passer en erreur
 			throw new EvenementCivilHandlerException("Il y a eu d'autres opérations après l'obtention du permis C/nationalité");
 		}
-
+		return null;
 	}
 
 	/**

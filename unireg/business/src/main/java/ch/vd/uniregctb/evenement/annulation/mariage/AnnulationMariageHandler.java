@@ -7,6 +7,7 @@ import java.util.Set;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.common.EtatCivilHelper;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.evenement.EvenementCivil;
@@ -49,7 +50,7 @@ public class AnnulationMariageHandler extends EvenementCivilHandlerBase {
 	}
 
 	@Override
-	public void handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
+	public Pair<PersonnePhysique,PersonnePhysique> handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
 		// Cas d'annulation de mariage
 		final AnnulationMariage annulation = (AnnulationMariage) evenement;
 		// Obtention du tiers correspondant au conjoint principal.
@@ -87,6 +88,7 @@ public class AnnulationMariageHandler extends EvenementCivilHandlerBase {
 		if (conjoint != null && conjoint.isHabitant()) {
 			getService().getServiceCivilService().onIndividuChange(conjoint.getNumeroIndividu());
 		}
+		return null;
 	}
 
 	/**

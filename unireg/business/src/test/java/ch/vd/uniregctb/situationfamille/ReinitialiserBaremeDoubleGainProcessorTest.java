@@ -75,7 +75,7 @@ public class ReinitialiserBaremeDoubleGainProcessorTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique julien = addNonHabitant("Julien", "Renard", date(1970, 12, 27), Sexe.MASCULIN);
-				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(julien, null, date(2001, 3, 2));
+				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(julien, null, date(2001, 3, 2), null);
 				final MenageCommun menage = ensemble.getMenage();
 				final SituationFamilleMenageCommun situation = addSituation(menage, date(2005, 1, 1), null, 0, TarifImpotSource.NORMAL);
 				return situation.getId();
@@ -118,7 +118,7 @@ public class ReinitialiserBaremeDoubleGainProcessorTest extends BusinessTest {
 			public Object execute(TransactionStatus status) throws Exception {
 
 				final PersonnePhysique julien = addNonHabitant("Julien", "Renard", date(1970, 12, 27), Sexe.MASCULIN);
-				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(julien, null, date(2001, 3, 2));
+				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(julien, null, date(2001, 3, 2), null);
 				final MenageCommun menage = ensemble.getMenage();
 				ids.menage = menage.getNumero();
 
@@ -174,7 +174,7 @@ public class ReinitialiserBaremeDoubleGainProcessorTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique julien = addNonHabitant("Julien", "Renard", date(1970, 12, 27), Sexe.MASCULIN);
-				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(julien, null, date(2001, 3, 2));
+				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(julien, null, date(2001, 3, 2), null);
 				final MenageCommun menage = ensemble.getMenage();
 				addSituation(menage, date(2001, 3, 2), date(2003, 10, 1), 0, TarifImpotSource.NORMAL);
 				addSituation(menage, date(2003, 10, 2), date(2005, 12, 31), 0, TarifImpotSource.DOUBLE_GAIN);
@@ -218,7 +218,7 @@ public class ReinitialiserBaremeDoubleGainProcessorTest extends BusinessTest {
 			public Object execute(TransactionStatus status) throws Exception {
 
 				final PersonnePhysique julien = addNonHabitant("Julien", "Renard", date(1970, 12, 27), Sexe.MASCULIN);
-				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(julien, null, date(2001, 3, 2));
+				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(julien, null, date(2001, 3, 2), null);
 				final MenageCommun menage = ensemble.getMenage();
 				ids.menage = menage.getNumero();
 
@@ -278,7 +278,7 @@ public class ReinitialiserBaremeDoubleGainProcessorTest extends BusinessTest {
 			public Object execute(TransactionStatus status) throws Exception {
 
 				final PersonnePhysique julien = addNonHabitant("Julien", "Renard", date(1970, 12, 27), Sexe.MASCULIN);
-				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(julien, null, date(2001, 3, 2));
+				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(julien, null, date(2001, 3, 2), null);
 				final MenageCommun menage = ensemble.getMenage();
 				ids.menage = menage.getNumero();
 

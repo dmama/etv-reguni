@@ -7,6 +7,7 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.utils.Pair;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.common.EtatCivilHelper;
 import ch.vd.uniregctb.evenement.EvenementCivil;
@@ -88,15 +89,16 @@ public class ReconciliationHandler extends EvenementCivilHandlerBase {
 	}
 
 	@Override
-	public void handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
+	public Pair<PersonnePhysique,PersonnePhysique> handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
 
-		Reconciliation reconciliation = (Reconciliation) evenement;
+		final Reconciliation reconciliation = (Reconciliation) evenement;
 		try {
 			final PersonnePhysique contribuable = getHabitantOrThrowException(reconciliation.getIndividu().getNoTechnique());
 			final Individu individuConjoint = getServiceCivil().getConjoint(reconciliation.getIndividu().getNoTechnique(),reconciliation.getDate());
 			final PersonnePhysique conjoint = (individuConjoint == null) ? null : getHabitantOrThrowException(individuConjoint.getNoTechnique());
 
 			getMetier().reconcilie(contribuable, conjoint, reconciliation.getDateReconciliation(), null, false, reconciliation.getNumeroEvenement());
+			return null;
 		}
 		catch (Exception e) {
 			LOGGER.error("Erreur lors du traitement de réconciliation", e);

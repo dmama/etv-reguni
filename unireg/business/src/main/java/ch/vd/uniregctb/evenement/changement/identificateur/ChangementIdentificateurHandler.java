@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import org.apache.log4j.Logger;
@@ -28,7 +29,7 @@ public class ChangementIdentificateurHandler extends AbstractChangementHandler {
 
 	@Override
 	@Transactional(propagation = Propagation.MANDATORY, rollbackFor = Throwable.class)
-	public void handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
+	public Pair<PersonnePhysique,PersonnePhysique> handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
 
 		final long noIndividu = evenement.getIndividu().getNoTechnique();
 		LOGGER.debug("Traitement du changement d'identificateur de l'individu : " + noIndividu);
@@ -45,7 +46,7 @@ public class ChangementIdentificateurHandler extends AbstractChangementHandler {
 			}
 		}
 
-		super.handle(evenement, warnings);
+		return super.handle(evenement, warnings);
 	}
 
 	@Override

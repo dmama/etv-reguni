@@ -4,6 +4,7 @@ import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.registre.base.utils.Pair;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.common.EtatCivilHelper;
 import ch.vd.uniregctb.evenement.EvenementCivil;
@@ -164,7 +165,7 @@ public abstract class SeparationOuDivorceHandler extends EvenementCivilHandlerBa
 	}
 
 	@Override
-	public void handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
+	public Pair<PersonnePhysique,PersonnePhysique> handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
 
 		long numeroIndividu = evenement.getIndividu().getNoTechnique();
 		RegDate dateEvenement = evenement.getDate();
@@ -179,6 +180,7 @@ public abstract class SeparationOuDivorceHandler extends EvenementCivilHandlerBa
 		if (EtatCivilHelper.estSepare(etatCivil) || EtatCivilHelper.estDivorce(etatCivil)) { // si l'individu est séparé ou divorcé
 			handleSeparation(evenement, warnings);
 		}
+		return null;
 	}
 
 	private void handleSeparation(EvenementCivil evenement, List<EvenementCivilErreur> warnings) {

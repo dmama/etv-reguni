@@ -1468,7 +1468,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 
 		final PersonnePhysique monsieur = addNonHabitant("Achille", "Talon", date(1963,11,7), Sexe.MASCULIN);
 		final PersonnePhysique madame = addHabitant(noIndividuMadame);
-		final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(monsieur, madame, date(2000, 1, 1));
+		final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(monsieur, madame, date(2000, 1, 1), null);
 		final MenageCommun mc = ensemble.getMenage();
 
 		final PersonnePhysique tuteurMonsieur = addHabitant(noIndividuTuteurMonsieur);

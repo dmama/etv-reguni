@@ -3827,7 +3827,7 @@ public class AdresseServiceTest extends BusinessTest {
 
 				PersonnePhysique principal = addHabitant(noIndividuPrincipal);
 				PersonnePhysique conjoint = addHabitant(noIndividuConjoint);
-				EnsembleTiersCouple ensemble = addEnsembleTiersCouple(principal, conjoint, date(2004, 7, 14));
+				EnsembleTiersCouple ensemble = addEnsembleTiersCouple(principal, conjoint, date(2004, 7, 14), null);
 				MenageCommun menage = ensemble.getMenage();
 
 				addRepresentationConventionnelle(menage, representant, date(2007, 1, 1), false);
@@ -3905,7 +3905,7 @@ public class AdresseServiceTest extends BusinessTest {
 
 				PersonnePhysique principal = addHabitant(noIndividuPrincipal);
 				PersonnePhysique conjoint = addHabitant(noIndividuConjoint);
-				EnsembleTiersCouple ensemble = addEnsembleTiersCouple(principal, conjoint, date(2004, 7, 14));
+				EnsembleTiersCouple ensemble = addEnsembleTiersCouple(principal, conjoint, date(2004, 7, 14), null);
 				MenageCommun menage = ensemble.getMenage();
 
 				addConseilLegal(menage, conseiller, date(2007, 1, 1));
@@ -3988,7 +3988,7 @@ public class AdresseServiceTest extends BusinessTest {
 
 				PersonnePhysique principal = addHabitant(noIndividuPrincipal);
 				PersonnePhysique conjoint = addHabitant(noIndividuConjoint);
-				EnsembleTiersCouple ensemble = addEnsembleTiersCouple(principal, conjoint, date(2000, 7, 14));
+				EnsembleTiersCouple ensemble = addEnsembleTiersCouple(principal, conjoint, date(2000, 7, 14), null);
 				MenageCommun menage = ensemble.getMenage();
 
 				// 2003 : principal sous curatelle
@@ -4118,7 +4118,7 @@ public class AdresseServiceTest extends BusinessTest {
 
 				PersonnePhysique principal = addHabitant(noIndividuPrincipal);
 				PersonnePhysique conjoint = addHabitant(noIndividuConjoint);
-				EnsembleTiersCouple ensemble = addEnsembleTiersCouple(principal, conjoint, date(2000, 7, 14));
+				EnsembleTiersCouple ensemble = addEnsembleTiersCouple(principal, conjoint, date(2000, 7, 14), null);
 				MenageCommun menage = ensemble.getMenage();
 
 				// 2003 : principal sous tutelle
@@ -4271,7 +4271,7 @@ public class AdresseServiceTest extends BusinessTest {
 		});
 		final PersonnePhysique principal = addHabitant(noTiersPrincipal, noIndividuPrincipal);
 		final PersonnePhysique conjoint = addHabitant(noTiersConjoint, noIndividuConjoint);
-		final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(principal, conjoint, date(2000, 1, 1));
+		final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(principal, conjoint, date(2000, 1, 1), null);
 		assertNotNull(ensemble);
 
 		// les adresses fiscales
@@ -4890,7 +4890,7 @@ public class AdresseServiceTest extends BusinessTest {
 
 		PersonnePhysique pp1 = addNonHabitant(null, "pp1", date(1977, 1, 1), Sexe.MASCULIN);
 		PersonnePhysique pp2 = addNonHabitant(null, "pp2", date(1977, 1, 1), Sexe.MASCULIN);
-		EnsembleTiersCouple ensemble = addEnsembleTiersCouple(pp1, pp2, date(2000, 1, 1));
+		EnsembleTiersCouple ensemble = addEnsembleTiersCouple(pp1, pp2, date(2000, 1, 1), null);
 		MenageCommun mc = ensemble.getMenage();
 
 		// couple mixte
@@ -4944,7 +4944,7 @@ public class AdresseServiceTest extends BusinessTest {
 
 		PersonnePhysique pp1 = addNonHabitant(null, "pp1", date(1977, 1, 1), Sexe.MASCULIN);
 		PersonnePhysique pp2 = addNonHabitant(null, "pp2", date(1977, 1, 1), Sexe.MASCULIN);
-		EnsembleTiersCouple ensemble = addEnsembleTiersCouple(pp1, pp2, date(2000, 1, 1));
+		EnsembleTiersCouple ensemble = addEnsembleTiersCouple(pp1, pp2, date(2000, 1, 1), null);
 		MenageCommun mc = ensemble.getMenage();
 
 		// couple mixte (les 3 variantes)

@@ -18,7 +18,7 @@ public class EnsembleTiersCoupleTest extends CoreDAOTest{
 	public void testEstComposeDe2Personnes(){
 		PersonnePhysique alain = addNonHabitant("alain", "proviste", RegDate.get(1956, 3, 15), Sexe.MASCULIN);
 		PersonnePhysique mylaine = addNonHabitant("mylaine", "micoton", RegDate.get(1960, 3, 12), Sexe.FEMININ);
-		EnsembleTiersCouple couple = addEnsembleTiersCouple(alain,mylaine,RegDate.get(1985,5, 8) );
+		EnsembleTiersCouple couple = addEnsembleTiersCouple(alain,mylaine,RegDate.get(1985,5, 8), null);
 
 		assertEquals(couple.estComposeDe(alain, mylaine),true);
 		assertEquals(couple.estComposeDe(null, mylaine),false);
@@ -33,7 +33,7 @@ public class EnsembleTiersCoupleTest extends CoreDAOTest{
 
 		PersonnePhysique alain = addNonHabitant("alain", "proviste", RegDate.get(1956, 3, 15), Sexe.MASCULIN);
 		PersonnePhysique mylaine = addNonHabitant("mylaine", "micoton", RegDate.get(1960, 3, 12), Sexe.FEMININ);
-		EnsembleTiersCouple couple = addEnsembleTiersCouple(alain,null,RegDate.get(1985,5, 8) );
+		EnsembleTiersCouple couple = addEnsembleTiersCouple(alain,null,RegDate.get(1985,5, 8), null);
 
 		assertEquals(couple.estComposeDe(alain, mylaine),false);
 		assertEquals(couple.estComposeDe(null, mylaine),false);
@@ -49,7 +49,7 @@ public class EnsembleTiersCoupleTest extends CoreDAOTest{
 
 		PersonnePhysique alain = addNonHabitant("alain", "proviste", RegDate.get(1956, 3, 15), Sexe.MASCULIN);
 		PersonnePhysique mylaine = addNonHabitant("mylaine", "micoton", RegDate.get(1960, 3, 12), Sexe.FEMININ);
-		EnsembleTiersCouple couple = addEnsembleTiersCouple(mylaine,null,RegDate.get(1985,5, 8) );
+		EnsembleTiersCouple couple = addEnsembleTiersCouple(mylaine,null,RegDate.get(1985,5, 8), null);
 
 		assertEquals(couple.estComposeDe(alain, mylaine),false);
 		assertEquals(couple.estComposeDe(null, mylaine),true);
@@ -64,7 +64,7 @@ public class EnsembleTiersCoupleTest extends CoreDAOTest{
 		PersonnePhysique alain = addNonHabitant("alain", "proviste", RegDate.get(1956, 3, 15), Sexe.MASCULIN);
 		PersonnePhysique mylaine = addNonHabitant("mylaine", "micoton", RegDate.get(1960, 3, 12), Sexe.FEMININ);
 		PersonnePhysique Atanase = addNonHabitant("Atanase", "illard", RegDate.get(1960, 3, 12), Sexe.FEMININ);
-		EnsembleTiersCouple couple = addEnsembleTiersCouple(mylaine,null,RegDate.get(1985,5, 8) );
+		EnsembleTiersCouple couple = addEnsembleTiersCouple(mylaine,null,RegDate.get(1985,5, 8), null);
 
 		assertEquals(couple.contient(Atanase),false);
 		assertEquals(couple.contient(mylaine),true);
@@ -80,7 +80,7 @@ public class EnsembleTiersCoupleTest extends CoreDAOTest{
 		PersonnePhysique alain = addNonHabitant("alain", "proviste", RegDate.get(1956, 3, 15), Sexe.MASCULIN);
 		PersonnePhysique mylaine = addNonHabitant("mylaine", "micoton", RegDate.get(1960, 3, 12), Sexe.FEMININ);
 		PersonnePhysique Atanase = addNonHabitant("Atanase", "illard", RegDate.get(1960, 3, 12), Sexe.FEMININ);
-		EnsembleTiersCouple couple = addEnsembleTiersCouple(alain,null,RegDate.get(1985,5, 8) );
+		EnsembleTiersCouple couple = addEnsembleTiersCouple(alain,null,RegDate.get(1985,5, 8), null);
 
 		assertEquals(couple.contient(Atanase),false);
 		assertEquals(couple.contient(mylaine),false);
@@ -95,7 +95,7 @@ public class EnsembleTiersCoupleTest extends CoreDAOTest{
 		PersonnePhysique alain = addNonHabitant("alain", "proviste", RegDate.get(1956, 3, 15), Sexe.MASCULIN);
 		PersonnePhysique mylaine = addNonHabitant("mylaine", "micoton", RegDate.get(1960, 3, 12), Sexe.FEMININ);
 		PersonnePhysique Atanase = addNonHabitant("Atanase", "illard", RegDate.get(1960, 3, 12), Sexe.FEMININ);
-		EnsembleTiersCouple couple = addEnsembleTiersCouple(mylaine,alain,RegDate.get(1985,5, 8) );
+		EnsembleTiersCouple couple = addEnsembleTiersCouple(mylaine,alain,RegDate.get(1985,5, 8), null);
 
 		assertEquals(couple.contient(Atanase),false);
 		assertEquals(couple.contient(mylaine),true);

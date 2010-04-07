@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import ch.vd.registre.base.utils.Pair;
 import ch.vd.registre.civil.model.EnumTypePermis;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.evenement.EvenementCivil;
@@ -62,8 +63,9 @@ public class FinPermisHandler extends EvenementCivilHandlerBase {
 	}
 
 	@Override
-	public void handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
+	public Pair<PersonnePhysique,PersonnePhysique> handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
 		// rien à faire tout ce passe dans le validateSpecific
+		return null;
 	}
 
 	@Override

@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.evenement.EvenementCivil;
 import ch.vd.uniregctb.evenement.EvenementCivilErreur;
 import ch.vd.uniregctb.evenement.GenericEvenementAdapter;
@@ -29,7 +30,7 @@ public class LeveeTutelleHandler extends AbstractTutelleHandler {
 	}
 
 	@Override
-	public void handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
+	public Pair<PersonnePhysique,PersonnePhysique> handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
 		
 		LeveeTutelle leveeTutelle = (LeveeTutelle) evenement;
 		/*
@@ -45,6 +46,7 @@ public class LeveeTutelleHandler extends AbstractTutelleHandler {
 		
 		// Clôture de la tutelle
 		rapportEntreTiers.setDateFin(leveeTutelle.getDate());
+		return null;
 	}
 
 	@Override

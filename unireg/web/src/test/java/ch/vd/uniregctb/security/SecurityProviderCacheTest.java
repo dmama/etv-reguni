@@ -101,7 +101,7 @@ public class SecurityProviderCacheTest extends SecurityTest {
 				ids.a = a.getNumero();
 				final PersonnePhysique b = addNonHabitant("B", "Bidon", date(1970, 4, 19), Sexe.FEMININ);
 				ids.b = b.getNumero();
-				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(a, b, date(2000, 1, 1));
+				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(a, b, date(2000, 1, 1), null);
 				ids.mc = ensemble.getMenage().getNumero();
 
 				addDroitAcces(111, a, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE, date(1990, 1, 1), null);
@@ -156,7 +156,7 @@ public class SecurityProviderCacheTest extends SecurityTest {
 				ids.a = a.getNumero();
 				final PersonnePhysique b = addNonHabitant("B", "Bidon", date(1970, 4, 19), Sexe.FEMININ);
 				ids.b = b.getNumero();
-				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(a, b, date(2000, 1, 1));
+				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(a, b, date(2000, 1, 1), null);
 				ids.mc = ensemble.getMenage().getNumero();
 
 				return null;

@@ -2374,7 +2374,7 @@ public class TiersServiceTest extends BusinessTest {
 				final PersonnePhysique madame = addHabitant(noIndMadame);
 				addAdresseSuisse(madame, TypeAdresseTiers.DOMICILE, date(1998, 1, 1), null, MockRue.Lausanne.AvenueDeBeaulieu);
 
-				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(monsieur, madame, date(1998, 1, 1));
+				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(monsieur, madame, date(1998, 1, 1), null);
 				final MenageCommun mc = ensemble.getMenage();
 				addForPrincipal(mc, date(1998, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
 
@@ -2447,7 +2447,7 @@ public class TiersServiceTest extends BusinessTest {
 
 				final PersonnePhysique madame = addHabitant(noIndMadame);
 
-				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(monsieur, madame, date(1998, 1, 1));
+				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(monsieur, madame, date(1998, 1, 1), null);
 				final MenageCommun mc = ensemble.getMenage();
 				addForPrincipal(mc, date(2000, 1, 1), MotifFor.DEPART_HS, date(2010, 2, 23), MotifFor.ARRIVEE_HS, MockPays.Espagne);
 				addForPrincipal(mc, date(2010, 2, 24), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);  
@@ -2631,7 +2631,7 @@ public class TiersServiceTest extends BusinessTest {
 				final PersonnePhysique sec = addNonHabitant("Huguette", "Marcot", date(1950, 4, 12), Sexe.FEMININ);
 				idCtbConjoint.setValue(sec.getNumero());
 
-				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(prn, sec, date(1975, 1, 5));
+				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(prn, sec, date(1975, 1, 5), null);
 				final MenageCommun mc = ensemble.getMenage();
 				idCtbCouple.setValue(mc.getNumero());
 
@@ -2665,7 +2665,7 @@ public class TiersServiceTest extends BusinessTest {
 				final PersonnePhysique prn = addNonHabitant("Achille", "Talon", date(1950, 3, 24), Sexe.MASCULIN);
 				idCtbPrincipal.setValue(prn.getNumero());
 
-				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(prn, null, date(1975, 1, 5));
+				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(prn, null, date(1975, 1, 5), null);
 				final MenageCommun mc = ensemble.getMenage();
 				idCtbCouple.setValue(mc.getNumero());
 
@@ -2710,7 +2710,7 @@ public class TiersServiceTest extends BusinessTest {
 				final PersonnePhysique sec = addNonHabitant("Huguette", "Marcot", date(1950, 4, 12), Sexe.FEMININ);
 				idCtbConjoint.setValue(sec.getNumero());
 
-				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(prn, sec, date(1975, 1, 5));
+				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(prn, sec, date(1975, 1, 5), null);
 				final MenageCommun mc = ensemble.getMenage();
 				idCtbCouple.setValue(mc.getNumero());
 
@@ -2754,7 +2754,7 @@ public class TiersServiceTest extends BusinessTest {
 				prn.setNumeroIndividu(noIndAchille);
 				idCtbPrincipal.setValue(prn.getNumero());
 
-				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(prn, null, date(1975, 1, 5));
+				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(prn, null, date(1975, 1, 5), null);
 				final MenageCommun mc = ensemble.getMenage();
 				idCtbCouple.setValue(mc.getNumero());
 

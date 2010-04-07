@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.common.StatusManager;
 import org.apache.log4j.Logger;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -28,6 +29,7 @@ import ch.vd.uniregctb.evenement.common.EvenementCivilHandler;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
@@ -231,7 +233,19 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor, Eve
 						evenementCivilHandler.validate(adapter, erreurs, warnings);
 						/* 2.3 - lancement du traitement par le handler */
 						if (erreurs.isEmpty()) {
-							evenementCivilHandler.handle(adapter, warnings);
+							final Pair<PersonnePhysique, PersonnePhysique> nouvellesPP = evenementCivilHandler.handle(adapter, warnings);
+
+							// adaptation des données dans l'événement civil regroupé en cas de création de nouvelles personnes physiques
+							if (nouvellesPP != null) {
+								if (nouvellesPP.getFirst() != null && evenementCivilRegroupe.getNumeroIndividuPrincipal() != null && evenementCivilRegroupe.getNumeroIndividuPrincipal() > 0L) {
+									Assert.isNull(evenementCivilRegroupe.getHabitantPrincipal());
+									evenementCivilRegroupe.setHabitantPrincipal(nouvellesPP.getFirst());
+								}
+								if (nouvellesPP.getSecond() != null && evenementCivilRegroupe.getNumeroIndividuConjoint() != null && evenementCivilRegroupe.getNumeroIndividuConjoint() > 0L) {
+									Assert.isNull(evenementCivilRegroupe.getHabitantConjoint());
+									evenementCivilRegroupe.setHabitantConjoint(nouvellesPP.getSecond());
+								}
+							}
 						}
 						else {
 							Audit.error(adapter.getNumeroEvenement(), "l'événement n'est pas valide");

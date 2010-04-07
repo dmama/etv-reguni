@@ -117,7 +117,7 @@ public class MetiersServiceTest extends BusinessTest {
 				fabrice.setNumeroOfsNationalite(MockPays.Suisse.getNoOFS());
 				final PersonnePhysique georgette = addNonHabitant("Georgette", "Dunant", date(1975, 1, 1), Sexe.FEMININ);
 				georgette.setNumeroOfsNationalite(MockPays.Suisse.getNoOFS());
-				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(fabrice, georgette, date(2001, 1, 6));
+				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(fabrice, georgette, date(2001, 1, 6), null);
 				final MenageCommun menage = ensemble.getMenage();
 
 				ids.fabrice = fabrice.getNumero();
@@ -183,7 +183,7 @@ public class MetiersServiceTest extends BusinessTest {
 				fabrice.setNumeroOfsNationalite(MockPays.Suisse.getNoOFS());
 				final PersonnePhysique georgette = addNonHabitant("Georgette", "Dunant", date(1975, 1, 1), Sexe.FEMININ);
 				georgette.setNumeroOfsNationalite(MockPays.Suisse.getNoOFS());
-				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(fabrice, georgette, date(2001, 1, 6));
+				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(fabrice, georgette, date(2001, 1, 6), null);
 				final MenageCommun menage = ensemble.getMenage();
 
 				ids.fabrice = fabrice.getNumero();
@@ -235,7 +235,7 @@ public class MetiersServiceTest extends BusinessTest {
 				fabrice.setNumeroOfsNationalite(MockPays.Suisse.getNoOFS());
 				final PersonnePhysique georgette = addNonHabitant("Georgette", "Dunant", date(1975, 1, 1), Sexe.FEMININ);
 				georgette.setNumeroOfsNationalite(MockPays.Suisse.getNoOFS());
-				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(fabrice, georgette, date(2001, 1, 6));
+				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(fabrice, georgette, date(2001, 1, 6), null);
 				final MenageCommun menage = ensemble.getMenage();
 
 				ids.georgette = georgette.getNumero();

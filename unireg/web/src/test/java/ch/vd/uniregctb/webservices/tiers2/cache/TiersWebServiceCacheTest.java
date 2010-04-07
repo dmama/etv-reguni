@@ -90,7 +90,7 @@ public class TiersWebServiceCacheTest extends WebTest {
 			public Object execute(TransactionStatus status) throws Exception {
 				PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
 				PersonnePhysique monique = addNonHabitant("Monique", "Bolomey", date(1969, 12, 3), Sexe.FEMININ);
-				EnsembleTiersCouple ensemble = addEnsembleTiersCouple(eric, monique, date(1989, 5, 1));
+				EnsembleTiersCouple ensemble = addEnsembleTiersCouple(eric, monique, date(1989, 5, 1), null);
 				ch.vd.uniregctb.tiers.MenageCommun mc = ensemble.getMenage();
 				mc.setNumeroCompteBancaire("CH9308440717427290198");
 

@@ -5,11 +5,13 @@ import java.util.List;
 import java.util.Set;
 
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.evenement.EvenementCivil;
 import ch.vd.uniregctb.evenement.EvenementCivilErreur;
 import ch.vd.uniregctb.evenement.GenericEvenementAdapter;
 import ch.vd.uniregctb.evenement.common.EvenementCivilHandlerException;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 /**
@@ -51,20 +53,22 @@ public class ObtentionNationaliteHandler extends ObtentionPermisCOuNationaliteSu
 	 *
 	 */
 	@Override
-	public void handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
-		ObtentionNationalite obtentionNationalite = (ObtentionNationalite) evenement;
+	public Pair<PersonnePhysique,PersonnePhysique> handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
+		final ObtentionNationalite obtentionNationalite = (ObtentionNationalite) evenement;
 
 		switch (obtentionNationalite.getType()) {
-		case NATIONALITE_SUISSE:
-			super.handle(evenement, warnings);
-			break;
-		case NATIONALITE_NON_SUISSE:
-			/* Seul l'obtention de nationalité suisse est traitée */
-			Audit.info(obtentionNationalite.getNumeroEvenement(), "Nationalité non suisse : ignorée");
-			return;
-		default:
-			Assert.fail();
+			case NATIONALITE_SUISSE:
+				return super.handle(evenement, warnings);
+
+			case NATIONALITE_NON_SUISSE:
+				/* Seul l'obtention de nationalité suisse est traitée */
+				Audit.info(obtentionNationalite.getNumeroEvenement(), "Nationalité non suisse : ignorée");
+				break;
+
+			default:
+				Assert.fail();
 		}
+		return null;
 	}
 
 	@Override

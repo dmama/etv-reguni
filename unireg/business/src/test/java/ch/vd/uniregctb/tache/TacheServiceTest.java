@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.tache;
 
-import ch.vd.uniregctb.common.AbstractSpringTest;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.*;
 import ch.vd.uniregctb.type.*;
@@ -1210,7 +1209,7 @@ public class TacheServiceTest extends BusinessTest {
 						MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
 				ids.madameId = madame.getNumero();
 
-				EnsembleTiersCouple ensemble = addEnsembleTiersCouple(monsieur, madame, dateMariage);
+				EnsembleTiersCouple ensemble = addEnsembleTiersCouple(monsieur, madame, dateMariage, null);
 				MenageCommun menage = ensemble.getMenage();
 				addForPrincipal(menage, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
 				ids.menageId = menage.getNumero();
@@ -1383,7 +1382,7 @@ public class TacheServiceTest extends BusinessTest {
 						MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
 				ids.madameId = madame.getNumero();
 
-				EnsembleTiersCouple ensemble = addEnsembleTiersCouple(monsieur, madame, dateMariage);
+				EnsembleTiersCouple ensemble = addEnsembleTiersCouple(monsieur, madame, dateMariage, null);
 				MenageCommun menage = ensemble.getMenage();
 				addForPrincipal(menage, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
 				ids.menageId = menage.getNumero();
@@ -1566,7 +1565,7 @@ public class TacheServiceTest extends BusinessTest {
 						MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
 				ids.madameId = madame.getNumero();
 
-				EnsembleTiersCouple ensemble = addEnsembleTiersCouple(monsieur, madame, dateMariage);
+				EnsembleTiersCouple ensemble = addEnsembleTiersCouple(monsieur, madame, dateMariage, null);
 				MenageCommun menage = ensemble.getMenage();
 				addForPrincipal(menage, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
 				ids.menageId = menage.getNumero();

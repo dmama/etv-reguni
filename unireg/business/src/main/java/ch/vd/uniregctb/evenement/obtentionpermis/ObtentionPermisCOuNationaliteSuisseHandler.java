@@ -4,6 +4,7 @@ import java.util.List;
 
 import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.adresse.AdresseService;
@@ -83,7 +84,7 @@ public abstract class ObtentionPermisCOuNationaliteSuisseHandler extends Eveneme
 	 *
 	 */
 	@Override
-	public void handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
+	public Pair<PersonnePhysique,PersonnePhysique> handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
 		// Recupere le tiers correspondant a l'individu
 		final Individu individu = evenement.getIndividu();
 		final PersonnePhysique habitant = getHabitantOrThrowException(individu.getNoTechnique());
@@ -218,5 +219,6 @@ public abstract class ObtentionPermisCOuNationaliteSuisseHandler extends Eveneme
 				}
 			}
 		}
+		return null;
 	}
 }

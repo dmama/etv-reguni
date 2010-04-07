@@ -5,10 +5,12 @@ import java.util.List;
 import java.util.Set;
 
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.evenement.EvenementCivil;
 import ch.vd.uniregctb.evenement.EvenementCivilErreur;
 import ch.vd.uniregctb.evenement.GenericEvenementAdapter;
 import ch.vd.uniregctb.evenement.common.EvenementCivilHandlerException;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 /**
@@ -33,19 +35,20 @@ public class SuppressionNationaliteHandler extends AnnulationPermisCOuNationalit
 	 * @see ch.vd.uniregctb.evenement.annulationpermis.AnnulationPermisCOuNationaliteSuisseHandler#handle(ch.vd.uniregctb.evenement.EvenementCivil, java.util.List)
 	 */
 	@Override
-	public void handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
+	public Pair<PersonnePhysique,PersonnePhysique> handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
 		
-		SuppressionNationalite suppressionNationalite = (SuppressionNationalite) evenement;
+		final SuppressionNationalite suppressionNationalite = (SuppressionNationalite) evenement;
 		switch (suppressionNationalite.getType()) {
 		case SUP_NATIONALITE_SUISSE:
-			super.handle(suppressionNationalite, warnings);
-			break;
+			return super.handle(suppressionNationalite, warnings);
+
 		case SUP_NATIONALITE_NON_SUISSE:
 			/* Seul l'obtention de nationalité suisse est traitée */
 			break;
 		default:
 			Assert.fail();
 		}
+		return null;
 	}
 
 	@Override

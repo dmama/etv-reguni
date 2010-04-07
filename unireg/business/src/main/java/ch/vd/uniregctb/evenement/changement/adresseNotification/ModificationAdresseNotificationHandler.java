@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.AdressesCiviles;
@@ -69,7 +70,7 @@ public class ModificationAdresseNotificationHandler extends AbstractChangementHa
 
 	@Override
 	@Transactional(propagation = Propagation.MANDATORY, rollbackFor = Throwable.class)
-	public void handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
+	public Pair<PersonnePhysique,PersonnePhysique> handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
 
 		final long noIndividu = evenement.getIndividu().getNoTechnique();
 		Audit.info(evenement.getNumeroEvenement(), String.format("%s de l'individu : %d", evenement.getType().getDescription(), noIndividu));
@@ -134,7 +135,7 @@ public class ModificationAdresseNotificationHandler extends AbstractChangementHa
 			fermeAdresseTiersTemporaire(pp, evenement.getDate().getOneDayBefore());
 		}
 
-		super.handle(evenement, warnings);
+		return super.handle(evenement, warnings);
 	}
 
 	@Override

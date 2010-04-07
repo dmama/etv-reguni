@@ -14,6 +14,8 @@ import java.util.Set;
 import ch.vd.uniregctb.interfaces.model.mock.MockAdresse;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.*;
+
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 
@@ -44,6 +46,7 @@ import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
+import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
 @SuppressWarnings({"JavaDoc"})
 public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
@@ -1426,6 +1429,7 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 		final long noIndividuConjoint = 2;
 		final RegDate dateArrivee = RegDate.get(1990, 7, 1);
 		final RegDate veilleArrivee = dateArrivee.getOneDayBefore();
+		final RegDate dateMariage = RegDate.get(1985, 7, 11);
 
 		/*
 		 * Création des données du mock service civil
@@ -1465,7 +1469,7 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 				addPermis(julie, EnumTypePermis.ETABLLISSEMENT, RegDate.get(1963, 8, 20), null, 0, false);
 
 				// marie les individus
-				marieIndividus(pierre, julie, RegDate.get(1985, 7, 11));
+				marieIndividus(pierre, julie, dateMariage);
 			}
 		});
 
@@ -1529,6 +1533,16 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 			MenageCommun menage = couple.getMenage();
 			assertNotNull(menage);
 
+			final AppartenanceMenage rapportMenagePrincipal = (AppartenanceMenage) habitantPrincipal.getRapportSujetValidAt(dateArrivee, TypeRapportEntreTiers.APPARTENANCE_MENAGE);
+			assertNotNull(rapportMenagePrincipal);
+			assertEquals(dateMariage, rapportMenagePrincipal.getDateDebut());
+			assertNull(rapportMenagePrincipal.getDateFin());
+
+			final AppartenanceMenage rapportMenageConjoint = (AppartenanceMenage) habitantConjoint.getRapportSujetValidAt(dateArrivee, TypeRapportEntreTiers.APPARTENANCE_MENAGE);
+			assertNotNull(rapportMenageConjoint);
+			assertEquals(dateMariage, rapportMenageConjoint.getDateDebut());
+			assertNull(rapportMenageConjoint.getDateFin());
+
 			/*
 			 * Tests sur les adresses
 			 */
@@ -1560,6 +1574,7 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 		final RegDate dateArriveInitiale = RegDate.get(1980, 1, 1);
 		final RegDate dateArrivee = RegDate.get(1990, 7, 1);
 		final RegDate veilleArrivee = dateArrivee.getOneDayBefore();
+		final RegDate dateMariage = RegDate.get(1979, 7, 11);
 
 		/*
 		 * Création des données du mock service civil
@@ -1600,7 +1615,7 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 				addPermis(julie, EnumTypePermis.ETABLLISSEMENT, RegDate.get(1963, 8, 20), null, 0, false);
 
 				// marie les individus
-				marieIndividus(pierre, julie, RegDate.get(1985, 7, 11));
+				marieIndividus(pierre, julie, dateMariage);
 			}
 		});
 
@@ -1616,7 +1631,7 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 				 * Création des habitants et de leurs situations avant l'arrivée
 				 */
 				final EnsembleTiersCouple ensemble = tiersService.createEnsembleTiersCouple(newHabitant(noIndividuPrincipal),
-						newHabitant(noIndividuConjoint), dateArriveInitiale, null);
+						newHabitant(noIndividuConjoint), dateMariage, null);
 
 				MenageCommun menage = ensemble.getMenage();
 				ForFiscalPrincipal f = addForPrincipal(menage, MockCommune.Lausanne, dateArriveInitiale, null);
@@ -1714,6 +1729,7 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 		final RegDate dateArriveInitiale = RegDate.get(1980, 1, 1);
 		final RegDate dateArrivee = RegDate.get(1990, 7, 1);
 		final RegDate veilleArrivee = dateArrivee.getOneDayBefore();
+		final RegDate dateMariage = RegDate.get(1979, 7, 11);
 
 		/*
 		 * Création des données du mock service civil
@@ -1754,7 +1770,7 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 				addPermis(julie, EnumTypePermis.FRONTALIER, RegDate.get(1963, 8, 20), null, 0, false);
 
 				// marie les individus
-				marieIndividus(pierre, julie, RegDate.get(1985, 7, 11));
+				marieIndividus(pierre, julie, dateMariage);
 			}
 		});
 
@@ -1770,7 +1786,7 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 				 * Création de l'habitant et de sa situation avant l'arrivée
 				 */
 				final EnsembleTiersCouple ensemble = tiersService.createEnsembleTiersCouple(newHabitant(noIndividuPrincipal),
-						newHabitant(noIndividuConjoint), dateArriveInitiale, null);
+						newHabitant(noIndividuConjoint), dateMariage, null);
 
 				MenageCommun menage = ensemble.getMenage();
 				ForFiscalPrincipal f = addForPrincipal(menage, MockCommune.Lausanne, RegDate.get(1980, 1, 1), null);
@@ -1971,6 +1987,7 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 		final RegDate dateArriveInitiale = RegDate.get(1980, 1, 1);
 		final RegDate dateArrivee = RegDate.get(2004, 7, 1);
 		final RegDate veilleArrivee = dateArrivee.getOneDayBefore();
+		final RegDate dateMariage =  RegDate.get(1979, 7, 11);
 
 		/*
 		 * Création des données du mock service civil
@@ -1983,24 +2000,16 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 				MockIndividu julie = addIndividu(noIndividuConjoint, RegDate.get(1957, 4, 19), "Goux", "Julie", false);
 
 				// adresses avant l'arrivée
-				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null,
-						dateArriveInitiale, veilleArrivee);
-				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null,
-						dateArriveInitiale, veilleArrivee);
-				addAdresse(julie, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null,
-						dateArriveInitiale, veilleArrivee);
-				addAdresse(julie, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null,
-						dateArriveInitiale, veilleArrivee);
+				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateArriveInitiale, veilleArrivee);
+				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, dateArriveInitiale, veilleArrivee);
+				addAdresse(julie, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateArriveInitiale, veilleArrivee);
+				addAdresse(julie, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, dateArriveInitiale, veilleArrivee);
 
 				// adresses après l'arrivée
-				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, MockRue.CossonayVille.CheminDeRiondmorcel, null,
-						dateArrivee, null);
-				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.CossonayVille.CheminDeRiondmorcel, null,
-						dateArrivee, null);
-				addAdresse(julie, EnumTypeAdresse.PRINCIPALE, MockRue.CossonayVille.CheminDeRiondmorcel, null,
-						dateArrivee, null);
-				addAdresse(julie, EnumTypeAdresse.COURRIER, MockRue.CossonayVille.CheminDeRiondmorcel, null,
-						dateArrivee, null);
+				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, MockRue.CossonayVille.CheminDeRiondmorcel, null, dateArrivee, null);
+				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.CossonayVille.CheminDeRiondmorcel, null, dateArrivee, null);
+				addAdresse(julie, EnumTypeAdresse.PRINCIPALE, MockRue.CossonayVille.CheminDeRiondmorcel, null, dateArrivee, null);
+				addAdresse(julie, EnumTypeAdresse.COURRIER, MockRue.CossonayVille.CheminDeRiondmorcel, null, dateArrivee, null);
 
 				// nationalité
 				addOrigine(pierre, MockPays.Suisse, MockCommune.Lausanne, RegDate.get(1963, 8, 20));
@@ -2011,7 +2020,7 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 				addPermis(julie, EnumTypePermis.ETABLLISSEMENT, RegDate.get(1963, 8, 20), null, 0, false);
 
 				// marie les individus
-				marieIndividus(pierre, julie, RegDate.get(1985, 7, 11));
+				marieIndividus(pierre, julie, dateMariage);
 			}
 		});
 
@@ -2026,8 +2035,7 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 				/*
 				 * Création des habitants et de leurs situations avant l'arrivée
 				 */
-				final EnsembleTiersCouple ensemble = tiersService.createEnsembleTiersCouple(newHabitant(noIndividuPrincipal),
-						newHabitant(noIndividuConjoint), dateArriveInitiale, null);
+				final EnsembleTiersCouple ensemble = tiersService.createEnsembleTiersCouple(newHabitant(noIndividuPrincipal), newHabitant(noIndividuConjoint), dateMariage, null);
 				MenageCommun menage = ensemble.getMenage();
 
 				ForFiscalPrincipal f = addForPrincipal(menage, MockCommune.Lausanne, dateArriveInitiale, null);
@@ -2100,8 +2108,8 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 			 */
 			final PersonnePhysique habitantPrincipal = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividuPrincipal);
 			final PersonnePhysique habitantConjoint = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividuConjoint);
-			assertEquals(new Long(noIndividuPrincipal), habitantPrincipal.getNumeroIndividu());
-			assertEquals(new Long(noIndividuConjoint), habitantConjoint.getNumeroIndividu());
+			assertEquals(Long.valueOf(noIndividuPrincipal), habitantPrincipal.getNumeroIndividu());
+			assertEquals(Long.valueOf(noIndividuConjoint), habitantConjoint.getNumeroIndividu());
 
 			EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(habitantConjoint, dateArrivee);
 			assertNotNull(couple);
@@ -2292,6 +2300,7 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 		final RegDate dateDepart = RegDate.get(2005, 1, 1);
 		final RegDate dateArrivee = RegDate.get(2008, 7, 1);
 		final RegDate veilleArrivee = dateArrivee.getOneDayBefore();
+		final RegDate dateMariage = RegDate.get(1979, 7, 11);
 
 		long noCTBPrincipal;
 		long noCTBConjoint;
@@ -2337,7 +2346,7 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 				addPermis(julie, EnumTypePermis.ETABLLISSEMENT, RegDate.get(1963, 8, 20), null, 0, false);
 
 				// marie les individus
-				marieIndividus(pierre, julie, RegDate.get(1985, 7, 11));
+				marieIndividus(pierre, julie, dateMariage);
 			}
 		});
 		
@@ -2369,7 +2378,7 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 				/*
 				 * Création des habitants et de leurs situations avant l'arrivée
 				 */
-				final EnsembleTiersCouple ensemble = tiersService.createEnsembleTiersCouple(principal, conjoint, dateArriveInitiale, dateDepart);
+				final EnsembleTiersCouple ensemble = tiersService.createEnsembleTiersCouple(principal, conjoint, dateMariage, null);
 
 				MenageCommun menage = ensemble.getMenage();
 				final ForFiscalPrincipal f = addForPrincipal(menage, MockCommune.Vevey, dateArriveInitiale, dateDepart);
@@ -2428,7 +2437,7 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 		// Nombre d'éléments stockés dans la base
 		{
 			assertEquals("Nombre de tiers incorrect", 3, tiersDAO.getCount(Tiers.class));
-			assertEquals("Nombre de rapport-entre-tiers incorrect", 4, tiersDAO.getCount(RapportEntreTiers.class));
+			assertEquals("Nombre de rapport-entre-tiers incorrect", 2, tiersDAO.getCount(RapportEntreTiers.class));
 			assertEquals("Nombre d'adresses incorrect", 0, tiersDAO.getCount(AdresseTiers.class));
 			assertEquals("Nombre de fors fiscaux", 2, tiersDAO.getCount(ForFiscal.class));
 		}
@@ -2446,6 +2455,16 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 			assertEquals(new Long(noIndividuConjoint), habitantConjoint.getNumeroIndividu());
 			assertEquals(new Long(noCTBConjoint), habitantConjoint.getNumero());
 			
+			final AppartenanceMenage rapportMenagePrincipal = (AppartenanceMenage) habitantPrincipal.getRapportSujetValidAt(dateArrivee, TypeRapportEntreTiers.APPARTENANCE_MENAGE);
+			assertNotNull(rapportMenagePrincipal);
+			assertEquals(dateMariage, rapportMenagePrincipal.getDateDebut());
+			assertNull(rapportMenagePrincipal.getDateFin());
+
+			final AppartenanceMenage rapportMenageConjoint = (AppartenanceMenage) habitantConjoint.getRapportSujetValidAt(dateArrivee, TypeRapportEntreTiers.APPARTENANCE_MENAGE);
+			assertNotNull(rapportMenageConjoint);
+			assertEquals(dateMariage, rapportMenageConjoint.getDateDebut());
+			assertNull(rapportMenageConjoint.getDateFin());
+
 			/*
 			 * Tests sur les adresses
 			 */
@@ -2612,6 +2631,142 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 				MotifRattachement.DOMICILE, ModeImposition.MIXTE_137_1, (ForFiscalPrincipal) fors.get(1));
 		assertForPrincipal(dateArrivee, MotifFor.ARRIVEE_HC, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFSEtendu(), MotifRattachement.DOMICILE, ModeImposition.SOURCE,
 				(ForFiscalPrincipal) fors.get(2));
+	}
+
+	@Ignore(value = "Cas très rare, on y réfléchira plus tard")
+	@Test
+	/**
+	 * Scénario :
+	 * - M. et Mme vivaient heureux à lausanne jusqu'à leur séparation (fiscale seulement)
+	 * - Ils se sont donc séparés, fiscalement, puis sont tous les deux partis hors du territoire cantonal : lui à Genève, elle à Neuchâtel
+	 * - Mme revient
+	 *
+	 * Quelques questions se posent...
+	 *  1. la séparation fiscale est-elle toujours valable ? je ne pense pas... si elle n'a pas été suivie d'une séparation civile, il
+	 *     faudra refaire la demande à l'administration fiscale...
+	 *  --> donc on ouvre un nouveau for sur le couple, et on ré-ouvre les rapports entre tiers...
+	 *
+	 *  2. A quelle date faut-il ré-ouvrir les rapports entre tiers ? On va dire la date d'arrivée...
+	 */
+	public void testRetourHCdeCoupleSepareFiscalementLorsDuPremierSejour() throws Exception {
+
+		final long noIndividuPierre = 1;
+		final long noIndividuJulie = 2;
+		final RegDate dateMariage =  RegDate.get(1979, 7, 11);
+		final RegDate dateArriveInitiale = RegDate.get(1980, 1, 1);
+		final RegDate dateSeparationFiscale = RegDate.get(1999, 5, 31);
+		final RegDate dateDepart = RegDate.get(2006, 6, 30);
+		final RegDate lendemainDepart = dateDepart.getOneDayAfter();
+		final RegDate dateRetour = RegDate.get(2008, 7, 1);
+		final RegDate veilleRetour = dateRetour.getOneDayBefore();
+
+		/*
+		 * Création des données du mock service civil
+		 */
+		final ServiceInfrastructureService infraService = getBean(ServiceInfrastructureService.class, "serviceInfrastructureService");
+		serviceCivil.setUp(new MockServiceCivil(infraService) {
+			@Override
+			protected void init() {
+				final MockIndividu pierre = addIndividu(noIndividuPierre, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
+				final MockIndividu julie = addIndividu(noIndividuJulie, RegDate.get(1957, 4, 19), "Goux", "Julie", false);
+
+				// adresses avant le départ
+				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateArriveInitiale, dateDepart);
+				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, dateArriveInitiale, dateDepart);
+				addAdresse(julie, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateArriveInitiale, dateDepart);
+				addAdresse(julie, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, dateArriveInitiale, dateDepart);
+
+				// adresses hors du canton
+				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, MockRue.Geneve.AvenueGuiseppeMotta, null, lendemainDepart, null);
+				addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.Geneve.AvenueGuiseppeMotta, null, lendemainDepart, null);
+				addAdresse(julie, EnumTypeAdresse.PRINCIPALE, MockRue.Neuchatel.RueDesBeauxArts, null, lendemainDepart, veilleRetour);
+				addAdresse(julie, EnumTypeAdresse.COURRIER, MockRue.Neuchatel.RueDesBeauxArts, null, lendemainDepart, veilleRetour);
+
+				// adresse après retour de madame
+				addAdresse(julie, EnumTypeAdresse.PRINCIPALE, MockRue.CossonayVille.AvenueDuFuniculaire, null, dateRetour, null);
+				addAdresse(julie, EnumTypeAdresse.COURRIER, MockRue.CossonayVille.AvenueDuFuniculaire, null, dateRetour, null);
+
+				// nationalité
+				addOrigine(pierre, MockPays.Suisse, MockCommune.Lausanne, RegDate.get(1963, 8, 20));
+				addNationalite(pierre, MockPays.Suisse, RegDate.get(1963, 8, 20), null, 0);
+				addOrigine(julie, MockPays.Suisse, MockCommune.Lausanne, RegDate.get(1963, 8, 20));
+				addNationalite(julie, MockPays.Suisse, RegDate.get(1963, 8, 20), null, 0);
+
+				// marie les individus
+				marieIndividus(pierre, julie, dateMariage);
+			}
+		});
+
+		class Ids {
+			long noCtbPierre;
+			long noCtbJulie;
+			long noCtbMenage;
+		}
+		final Ids ids = new Ids();
+
+		// création des fors
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+
+				// tiers habitants (en fait, monsieur ne l'est plus)
+				final PersonnePhysique pierre = addNonHabitant("Pierre", "Dupont", RegDate.get(1953, 11, 2), Sexe.MASCULIN);
+				pierre.setNumeroIndividu(noIndividuPierre);
+
+				final PersonnePhysique julie = addHabitant(noIndividuJulie);
+				final EnsembleTiersCouple menage = addEnsembleTiersCouple(pierre, julie, dateMariage, dateSeparationFiscale);
+				final ForFiscalPrincipal ffpMenage = addForPrincipal(menage.getMenage(), dateArriveInitiale, MotifFor.ARRIVEE_HS, dateSeparationFiscale, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Lausanne);
+
+				final ForFiscalPrincipal ffpPierreVaudois = addForPrincipal(pierre, dateSeparationFiscale.getOneDayAfter(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, dateDepart, MotifFor.DEPART_HC, MockCommune.Lausanne);
+				final ForFiscalPrincipal ffpPierreGenevois = addForPrincipal(pierre, lendemainDepart, MotifFor.DEPART_HC, MockCommune.Geneve);
+
+				final ForFiscalPrincipal ffpJulieVaudois = addForPrincipal(julie, dateSeparationFiscale.getOneDayAfter(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, dateDepart, MotifFor.DEPART_HC, MockCommune.Lausanne);
+				final ForFiscalPrincipal ffpJulieNeuchatelois = addForPrincipal(julie, lendemainDepart, MotifFor.DEPART_HC, MockCommune.Neuchatel);
+
+				ids.noCtbJulie = julie.getNumero();
+				ids.noCtbPierre = pierre.getNumero();
+				ids.noCtbMenage = menage.getMenage().getNumero();
+				return null;
+			}
+		});
+
+		// retour de Julie
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+
+				// Crée un événement d'arrivée de HC à Lausanne au 24 mars 2010
+				final MockArrivee arrivee = new MockArrivee();
+				arrivee.setType(TypeEvenementCivil.ARRIVEE_PRINCIPALE_HC);
+				arrivee.setIndividu(serviceCivil.getIndividu(noIndividuJulie, 2400));
+
+				final MockAdresse nouvelleAdresse = new MockAdresse();
+				nouvelleAdresse.setDateDebutValidite(dateRetour);
+
+				arrivee.setNouvelleAdressePrincipale(nouvelleAdresse);
+				arrivee.setNouvelleCommunePrincipale(MockCommune.Lausanne);
+				arrivee.setNumeroOfsCommuneAnnonce(MockCommune.Lausanne.getNoOFSEtendu());
+				arrivee.setDate(dateRetour);
+
+				// Traite l'événement d'arrivée
+				final List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
+				final List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
+				evenementCivilHandler.checkCompleteness(arrivee, erreurs, warnings);
+				evenementCivilHandler.validate(arrivee, erreurs, warnings);
+				evenementCivilHandler.handle(arrivee, warnings);
+				assertEmpty(erreurs);
+
+				return null;
+			}
+		});
+
+		// vérification des fors et rapports d'appartenance ménage
+		final MenageCommun menage = (MenageCommun) tiersDAO.get(ids.noCtbMenage);
+		assertNotNull(menage);
+
+		final Set<RapportEntreTiers> pps = menage.getRapportsObjet();
+		assertNotNull(pps);
+		assertEquals(4, pps.size());
 	}
 
 	/**

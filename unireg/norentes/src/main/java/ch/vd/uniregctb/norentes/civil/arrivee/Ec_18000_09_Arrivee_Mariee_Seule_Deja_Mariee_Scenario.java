@@ -123,8 +123,7 @@ public class Ec_18000_09_Arrivee_Mariee_Seule_Deja_Mariee_Scenario extends Evene
 	@Etape(id = 2, descr = "Envoi de l'événement d'arrivée HC de Georgette en tant que mariée seule")
 	public void etape2() throws Exception {
 
-		evenementId = addEvenementCivil(TypeEvenementCivil.ARRIVEE_PRINCIPALE_VAUDOISE, noIndGeorgette, date(2009, 6, 13), MockCommune.Lausanne
-				.getNoOFS());
+		evenementId = addEvenementCivil(TypeEvenementCivil.ARRIVEE_PRINCIPALE_HC, noIndGeorgette, date(2009, 6, 13), MockCommune.Lausanne.getNoOFS());
 		commitAndStartTransaction();
 
 		// On traite le nouvel événement

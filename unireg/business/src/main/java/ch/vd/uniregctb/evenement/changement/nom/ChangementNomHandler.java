@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.interfaces.model.HistoriqueIndividu;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -37,7 +38,7 @@ public class ChangementNomHandler extends AbstractChangementHandler {
 
 	@Override
 	@Transactional(propagation = Propagation.MANDATORY, rollbackFor = Throwable.class)
-	public void handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
+	public Pair<PersonnePhysique,PersonnePhysique> handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
 
 		final long noIndividu = evenement.getIndividu().getNoTechnique();
 
@@ -58,7 +59,7 @@ public class ChangementNomHandler extends AbstractChangementHandler {
 			pp.setPrenom(prenom != null ? prenom.trim() : "");
 		}
 
-		super.handle(evenement, warnings);
+		return super.handle(evenement, warnings);
 	}
 
 	@Override

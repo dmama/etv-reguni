@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.util.Assert;
 
+import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.evenement.EvenementCivil;
 import ch.vd.uniregctb.evenement.EvenementCivilErreur;
 import ch.vd.uniregctb.evenement.common.EvenementCivilHandlerBase;
@@ -22,7 +23,7 @@ public abstract class AbstractChangementHandler extends EvenementCivilHandlerBas
 	private GlobalTiersIndexer indexer;
 
 	@Override
-	public void handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
+	public Pair<PersonnePhysique,PersonnePhysique> handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
 
 		// [UNIREG-1321] on évite de flusher la session parce que cela provoque des optimistic exceptions sur les corrections de date de naissance.
 		// [UNIREG-1691] on accepte que l'événement ne concerne pas un habitant (il suffit que la personne ait été habitante un jour pour que
@@ -42,6 +43,7 @@ public abstract class AbstractChangementHandler extends EvenementCivilHandlerBas
 			// on peut maintenant resetter le flag dirty s'il existait
 			pp.setIndexDirty(Boolean.FALSE);
 		}
+		return null;
 	}
 
 	public void setIndexer(GlobalTiersIndexer indexer) {

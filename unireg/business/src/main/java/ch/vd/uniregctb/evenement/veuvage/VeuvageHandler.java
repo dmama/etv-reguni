@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import ch.vd.registre.base.utils.Pair;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.evenement.EvenementCivil;
 import ch.vd.uniregctb.evenement.EvenementCivilErreur;
@@ -41,7 +42,7 @@ public class VeuvageHandler extends EvenementCivilHandlerBase {
 	}
 
 	@Override
-	public void handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
+	public Pair<PersonnePhysique,PersonnePhysique> handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
 		/*
 		 * Cas de veuvage
 		 */
@@ -56,6 +57,7 @@ public class VeuvageHandler extends EvenementCivilHandlerBase {
 		 * Traitement de l'événement
 		 */
 		getMetier().veuvage(veuf, veuvage.getDateVeuvage(), null, veuvage.getNumeroEvenement());
+		return null;
 	}
 
 	@Override

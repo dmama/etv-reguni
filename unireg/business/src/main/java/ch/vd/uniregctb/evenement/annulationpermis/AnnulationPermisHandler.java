@@ -4,13 +4,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import ch.vd.registre.base.utils.Pair;
 import ch.vd.registre.civil.model.EnumTypePermis;
 import ch.vd.uniregctb.evenement.EvenementCivil;
 import ch.vd.uniregctb.evenement.EvenementCivilErreur;
 import ch.vd.uniregctb.evenement.GenericEvenementAdapter;
 import ch.vd.uniregctb.evenement.common.EvenementCivilHandlerException;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.TiersException;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 /**
@@ -35,11 +35,12 @@ public class AnnulationPermisHandler extends AnnulationPermisCOuNationaliteSuiss
 	 * @see ch.vd.uniregctb.evenement.annulationpermis.AnnulationPermisCOuNationaliteSuisseHandler#handle(ch.vd.uniregctb.evenement.EvenementCivil, java.util.List)
 	 */
 	@Override
-	public void handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
+	public Pair<PersonnePhysique,PersonnePhysique> handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
 		AnnulationPermis annulationPermis = (AnnulationPermis) evenement;
 		if (isAnnulationPermisC(annulationPermis)) {
-			super.handle(annulationPermis, warnings);
+			return super.handle(annulationPermis, warnings);
 		}
+		return null;
 	}
 
 	private boolean isAnnulationPermisC(AnnulationPermis annulationPermis) {

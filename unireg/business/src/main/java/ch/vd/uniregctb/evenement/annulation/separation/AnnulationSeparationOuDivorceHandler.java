@@ -2,6 +2,7 @@ package ch.vd.uniregctb.evenement.annulation.separation;
 
 import java.util.List;
 
+import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.evenement.EvenementCivil;
 import ch.vd.uniregctb.evenement.EvenementCivilErreur;
 import ch.vd.uniregctb.interfaces.model.Individu;
@@ -41,13 +42,14 @@ public abstract class AnnulationSeparationOuDivorceHandler extends EvenementCivi
 	}
 	
 	@Override
-	public void handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
+	public Pair<PersonnePhysique,PersonnePhysique> handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
 		// Récupération du tiers principal.
 		PersonnePhysique principal = getService().getPersonnePhysiqueByNumeroIndividu(evenement.getIndividu().getNoTechnique());
 		// Récupération du menage du tiers
 		MenageCommun menage = getService().getEnsembleTiersCouple(principal, evenement.getDate().getOneDayBefore()).getMenage();
 		// Traitement de l'annulation de séparation
 		getMetier().annuleSeparation(menage, evenement.getDate(), evenement.getNumeroEvenement());
+		return null;
 	}
 
 }

@@ -7,6 +7,7 @@ import java.util.Set;
 import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.evenement.EvenementCivil;
 import ch.vd.uniregctb.evenement.EvenementCivilErreur;
@@ -52,7 +53,7 @@ public class TutelleHandler extends EvenementCivilHandlerBase {
 	}
 
 	@Override
-	public void handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
+	public Pair<PersonnePhysique,PersonnePhysique> handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
 
 		final Tutelle tutelle = (Tutelle) evenement;
 
@@ -102,11 +103,12 @@ public class TutelleHandler extends EvenementCivilHandlerBase {
 			/*
 			 * Création d'un rapport entre tiers
 			 */
-			RapportEntreTiers rapport = creeRepresentationLegale(tutelle.getDate(), pupille, tuteur, autoriteTutelaire, tutelle
-					.getTypeTutelle());
+			RapportEntreTiers rapport = creeRepresentationLegale(tutelle.getDate(), pupille, tuteur, autoriteTutelaire, tutelle.getTypeTutelle());
 			rapport = getTiersDAO().save(rapport);
 			Audit.info(evenement.getNumeroEvenement(), "Création d'un rapport entre le pupille et son tuteur physique");
 		}
+
+		return null;
 	}
 
 	/**

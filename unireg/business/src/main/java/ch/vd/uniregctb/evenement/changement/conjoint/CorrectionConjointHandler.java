@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.utils.Pair;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.evenement.EvenementCivil;
 import ch.vd.uniregctb.evenement.EvenementCivilErreur;
@@ -79,7 +80,7 @@ public class CorrectionConjointHandler extends EvenementCivilHandlerBase {
 	}
 
 	@Override
-	public void handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
+	public Pair<PersonnePhysique,PersonnePhysique> handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
 
 		final Individu individu = evenement.getIndividu();
 		final PersonnePhysique habitant = getService().getPersonnePhysiqueByNumeroIndividu(individu.getNoTechnique());
@@ -104,6 +105,8 @@ public class CorrectionConjointHandler extends EvenementCivilHandlerBase {
 			final ReconstitutionMenage reconstitution = getReconstitution(habitant, conjoint, coupleHabitant, coupleConjoint);
 			handleReconstitutionMenage(reconstitution, etatCivilFamille, warnings);
 		}
+
+		return null;
 	}
 
 	private void handleReconstitutionMenage(final ReconstitutionMenage reconstitution, final EtatCivil etatCivilFamille, List<EvenementCivilErreur> warnings) {

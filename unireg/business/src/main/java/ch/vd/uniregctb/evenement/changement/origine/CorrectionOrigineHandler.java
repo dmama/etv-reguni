@@ -8,12 +8,14 @@ import org.apache.log4j.Logger;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.evenement.EvenementCivil;
 import ch.vd.uniregctb.evenement.EvenementCivilErreur;
 import ch.vd.uniregctb.evenement.GenericEvenementAdapter;
 import ch.vd.uniregctb.evenement.changement.AbstractChangementHandler;
 import ch.vd.uniregctb.evenement.common.EvenementCivilHandlerException;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 public class CorrectionOrigineHandler extends AbstractChangementHandler {
@@ -32,12 +34,12 @@ public class CorrectionOrigineHandler extends AbstractChangementHandler {
 
 	@Override
 	@Transactional(propagation = Propagation.MANDATORY, rollbackFor = Throwable.class)
-	public void handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
+	public Pair<PersonnePhysique,PersonnePhysique> handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
 
 		LOGGER.debug("Traitement correction de origine de l'individu : " + evenement.getIndividu().getNoTechnique() );
 		Audit.info(evenement.getNumeroEvenement(), "Traitement correction de origine de l'individu : " + evenement.getIndividu().getNoTechnique());
 
-		super.handle(evenement, warnings);
+		return super.handle(evenement, warnings);
 	}
 
 	@Override

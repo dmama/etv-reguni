@@ -6,6 +6,7 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
+import ch.vd.registre.base.utils.Pair;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.common.EtatCivilHelper;
 import ch.vd.uniregctb.evenement.EvenementCivil;
@@ -102,7 +103,7 @@ public class MariageHandler extends EvenementCivilHandlerBase {
 	 *
 	 */
 	@Override
-	public void handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
+	public Pair<PersonnePhysique,PersonnePhysique> handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
 		Mariage mariage = (Mariage) evenement;
 
 		try {
@@ -135,12 +136,13 @@ public class MariageHandler extends EvenementCivilHandlerBase {
 			else {
 				getMetier().marie(mariage.getDate(), contribuable, conjointContribuable, null, etatCivilUnireg, false, mariage.getNumeroEvenement());
 			}
+
+			return null;
 		}
 		catch (Exception e) {
 			LOGGER.error("Erreur lors du traitement de mariage", e);
 			throw new EvenementCivilHandlerException(e.getMessage(), e);
 		}
-
 	}
 
 	@Override
