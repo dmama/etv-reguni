@@ -97,10 +97,10 @@ public class FidorServiceImpl implements FidorService {
 			synchronized (this) {
 				if (patternTaoPP == null) {
 					final FidorPortType service = initWebService(serviceUrl, username, password);
-					patternTaoPP = getUrl(service, "TAOPP");
-					patternTaoBA = getUrl(service, "TAOBA");
-					patternTaoIS = getUrl(service, "TAOIS");
-					patternSipf = getUrl(service, "SIPF");
+					patternTaoPP = getUrl(service, "TAOPP", "default");
+					patternTaoBA = getUrl(service, "TAOBA", "dossier");
+					patternTaoIS = getUrl(service, "TAOIS", "default");
+					patternSipf = getUrl(service, "SIPF", "default");
 					LOGGER.info("URLs externes (FiDoR) :\n" +
 							" * TAOPP = " + patternTaoPP + "\n" +
 							" * TAOBA = " + patternTaoBA + "\n" +
@@ -111,10 +111,10 @@ public class FidorServiceImpl implements FidorService {
 		}
 	}
 
-	private String getUrl(FidorPortType service, String app) {
-		final String url = service.getUrl(app, environnement, "default", null);
+	private String getUrl(FidorPortType service, String app, String target) {
+		final String url = service.getUrl(app, environnement, target, null);
 		if (url == null) {
-			LOGGER.error("Il manque l'url d'accès à " + app + " pour l'environnement " + environnement + " dans FiDoR !");
+			LOGGER.error(String.format("Il manque l'url d'accès à %s (target %s) pour l'environnement %s dans FiDoR !", app, target, environnement));
 		}
 		return url;
 	}
