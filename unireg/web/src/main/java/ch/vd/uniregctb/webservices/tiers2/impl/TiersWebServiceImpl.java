@@ -17,6 +17,10 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.adresse.AdresseService;
+import ch.vd.uniregctb.declaration.Declaration;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
+import ch.vd.uniregctb.declaration.EtatDeclaration;
+import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.uniregctb.declaration.source.ListeRecapService;
 import ch.vd.uniregctb.iban.IbanValidator;
 import ch.vd.uniregctb.indexer.IndexerException;
@@ -26,11 +30,13 @@ import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.situationfamille.SituationFamilleService;
+import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersDAO.Parts;
 import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.type.TypeEtatDeclaration;
 import ch.vd.uniregctb.webservices.common.NoOfsTranslator;
 import ch.vd.uniregctb.webservices.tiers2.TiersWebService;
 import ch.vd.uniregctb.webservices.tiers2.data.BatchTiers;
@@ -39,11 +45,13 @@ import ch.vd.uniregctb.webservices.tiers2.data.Date;
 import ch.vd.uniregctb.webservices.tiers2.data.Debiteur;
 import ch.vd.uniregctb.webservices.tiers2.data.DebiteurHisto;
 import ch.vd.uniregctb.webservices.tiers2.data.DebiteurInfo;
+import ch.vd.uniregctb.webservices.tiers2.data.DemandeQuittancementDeclaration;
 import ch.vd.uniregctb.webservices.tiers2.data.EvenementPM;
 import ch.vd.uniregctb.webservices.tiers2.data.MenageCommun;
 import ch.vd.uniregctb.webservices.tiers2.data.MenageCommunHisto;
 import ch.vd.uniregctb.webservices.tiers2.data.PersonnePhysique;
 import ch.vd.uniregctb.webservices.tiers2.data.PersonnePhysiqueHisto;
+import ch.vd.uniregctb.webservices.tiers2.data.ReponseQuittancementDeclaration;
 import ch.vd.uniregctb.webservices.tiers2.data.Tiers;
 import ch.vd.uniregctb.webservices.tiers2.data.Tiers.Type;
 import ch.vd.uniregctb.webservices.tiers2.data.TiersHisto;
@@ -61,6 +69,7 @@ import ch.vd.uniregctb.webservices.tiers2.params.GetTiers;
 import ch.vd.uniregctb.webservices.tiers2.params.GetTiersHisto;
 import ch.vd.uniregctb.webservices.tiers2.params.GetTiersPeriode;
 import ch.vd.uniregctb.webservices.tiers2.params.GetTiersType;
+import ch.vd.uniregctb.webservices.tiers2.params.QuittancerDeclarations;
 import ch.vd.uniregctb.webservices.tiers2.params.SearchEvenementsPM;
 import ch.vd.uniregctb.webservices.tiers2.params.SearchTiers;
 import ch.vd.uniregctb.webservices.tiers2.params.SetTiersBlocRembAuto;
@@ -140,6 +149,10 @@ public class TiersWebServiceImpl implements TiersWebService {
 		context.lrService = service;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setDiService(DeclarationImpotService service) {
+		context.diService = service;
+	}
 	/**
 	 * {@inheritDoc}
 	 */
@@ -611,6 +624,117 @@ public class TiersWebServiceImpl implements TiersWebService {
 			LOGGER.error(e, e);
 			throw new TechnicalException(e);
 		}
+	}
+
+	@Transactional(rollbackFor = Throwable.class)
+	public List<ReponseQuittancementDeclaration> quittancerDeclarations(QuittancerDeclarations params) throws BusinessException, AccessDeniedException, TechnicalException {
+
+		try {
+			final List<ReponseQuittancementDeclaration> reponses = new ArrayList<ReponseQuittancementDeclaration>();
+
+			for (DemandeQuittancementDeclaration demande : params.demandes) {
+				ReponseQuittancementDeclaration r;
+				try {
+					r = traiterDemande(demande);
+				}
+				catch (WebServiceException e) {
+					r = new ReponseQuittancementDeclaration(demande.key, e);
+				}
+				catch (RuntimeException e) {
+					LOGGER.error(e, e);
+					r = new ReponseQuittancementDeclaration(demande.key, e);
+				}
+				reponses.add(r);
+			}
+			
+			return reponses;
+		}
+		catch (RuntimeException e) {
+			LOGGER.error(e, e);
+			throw new TechnicalException(e);
+		}
+	}
+
+	private ReponseQuittancementDeclaration traiterDemande(DemandeQuittancementDeclaration demande) throws BusinessException {
+
+		final ch.vd.uniregctb.tiers.Contribuable ctb = (Contribuable) context.tiersDAO.get(demande.key.ctbId);
+		if (ctb == null) {
+			// return new QuittanceDeclarationReponse(demande.key, QuittanceDeclarationReponse.Code.ERREUR_CTB_INCONNU);
+			throw new BusinessException("Le contribuable est inconnu.");
+		}
+
+		if (ctb.getDernierForFiscalPrincipal() == null) {
+			throw new BusinessException("Le contribuable ne possède aucun for principal : il n'aurait pas dû recevoir de déclaration d'impôt.");
+		}
+
+		if (ctb.isDebiteurInactif()) {
+			throw new BusinessException("Le contribuable est un débiteur inactif : impossible de quittancer la déclaration.");
+		}
+
+		final DeclarationImpotOrdinaire declaration = findDeclaration(ctb, demande.key.periodeFiscale, demande.key.numeroSequenceDI);
+		if (declaration == null) {
+			throw new BusinessException("La déclaration n'existe pas.");
+			// return new QuittanceDeclarationReponse(demande.key, QuittanceDeclarationReponse.Code.ERREUR_DECLARATION_INEXISTANTE);
+		}
+
+		final RegDate dateRetour = DataHelper.webToCore(demande.dateRetour);
+
+		if (dateRetour.isBeforeOrEqual(declaration.getDateExpedition())) {
+			throw new BusinessException("La date de retour spécifiée (" + dateRetour + ") est avant la date d'envoi de la déclaration (" + declaration.getDateExpedition() + ").");
+		}
+
+		if (declaration.isAnnule()) {
+			throw new BusinessException("La déclaration a été annulée entre-temps.");
+			// return new QuittanceDeclarationReponse(demande.key, QuittanceDeclarationReponse.Code.ERREUR_DECLARATION_ANNULEE);
+		}
+
+		// Si la déclaration est sommée à une date située après la date de retour, on annule cette état de sommation pour permettre le quittancement.
+		final EtatDeclaration etat = declaration.getDernierEtat();
+		if (etat.getEtat() == TypeEtatDeclaration.SOMMEE && etat.getDateObtention().isAfter(dateRetour)) {
+			etat.setAnnule(true);
+		}
+
+		// La déclaration est correcte, on la quittance
+		context.diService.retourDI(ctb, declaration, dateRetour);
+		Assert.isEqual(TypeEtatDeclaration.RETOURNEE, declaration.getDernierEtat().getEtat());
+
+		return new ReponseQuittancementDeclaration(demande.key, ReponseQuittancementDeclaration.Code.OK);
+	}
+
+	/**
+	 * Recherche la declaration pour une année et un numéro de déclaration dans l'année
+	 *
+	 * @param contribuable     un contribuable
+	 * @param annee            une période fiscale complète (ex. 2010)
+	 * @param numeroSequenceDI le numéro de séquence de la déclaration pour le contribuable et la période considérés
+	 * @return une déclaration d'impôt ordinaire, ou <b>null</b> si aucune déclaration correspondant aux critère n'est trouvée.
+	 */
+	private static DeclarationImpotOrdinaire findDeclaration(final Contribuable contribuable, final int annee, int numeroSequenceDI) {
+
+		DeclarationImpotOrdinaire declaration = null;
+
+		final List<Declaration> declarations = contribuable.getDeclarationsSorted();
+		if (declarations != null && !declarations.isEmpty()) {
+			for (Declaration d : declarations) {
+				if (d.getPeriode().getAnnee() != annee) {
+					continue;
+				}
+				final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) d;
+				if (numeroSequenceDI == 0) {
+					// Dans le cas ou le numero dans l'année n'est pas spécifié on prend la dernière DI trouvée sur la période
+					declaration = di;
+				}
+				else {
+					if (di.getNumero() == numeroSequenceDI) {
+						declaration = di;
+						break;
+					}
+				}
+
+			}
+		}
+
+		return declaration;
 	}
 
 	/**

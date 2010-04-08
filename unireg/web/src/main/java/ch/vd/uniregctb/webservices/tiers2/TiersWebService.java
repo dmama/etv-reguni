@@ -1,24 +1,42 @@
 package ch.vd.uniregctb.webservices.tiers2;
 
-import java.util.List;
-
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebResult;
 import javax.jws.WebService;
 import javax.jws.soap.SOAPBinding;
+import java.util.List;
 
-import ch.vd.uniregctb.webservices.tiers2.data.*;
+import ch.vd.uniregctb.webservices.tiers2.data.BatchTiers;
+import ch.vd.uniregctb.webservices.tiers2.data.BatchTiersHisto;
+import ch.vd.uniregctb.webservices.tiers2.data.DebiteurInfo;
+import ch.vd.uniregctb.webservices.tiers2.data.EvenementPM;
+import ch.vd.uniregctb.webservices.tiers2.data.ReponseQuittancementDeclaration;
+import ch.vd.uniregctb.webservices.tiers2.data.Tiers;
+import ch.vd.uniregctb.webservices.tiers2.data.TiersHisto;
+import ch.vd.uniregctb.webservices.tiers2.data.TiersInfo;
 import ch.vd.uniregctb.webservices.tiers2.exception.AccessDeniedException;
 import ch.vd.uniregctb.webservices.tiers2.exception.BusinessException;
 import ch.vd.uniregctb.webservices.tiers2.exception.TechnicalException;
-import ch.vd.uniregctb.webservices.tiers2.params.*;
+import ch.vd.uniregctb.webservices.tiers2.params.AllConcreteTiersClasses;
+import ch.vd.uniregctb.webservices.tiers2.params.GetBatchTiers;
+import ch.vd.uniregctb.webservices.tiers2.params.GetBatchTiersHisto;
+import ch.vd.uniregctb.webservices.tiers2.params.GetDebiteurInfo;
+import ch.vd.uniregctb.webservices.tiers2.params.GetTiers;
+import ch.vd.uniregctb.webservices.tiers2.params.GetTiersHisto;
+import ch.vd.uniregctb.webservices.tiers2.params.GetTiersPeriode;
+import ch.vd.uniregctb.webservices.tiers2.params.GetTiersType;
+import ch.vd.uniregctb.webservices.tiers2.params.QuittancerDeclarations;
+import ch.vd.uniregctb.webservices.tiers2.params.SearchEvenementsPM;
+import ch.vd.uniregctb.webservices.tiers2.params.SearchTiers;
+import ch.vd.uniregctb.webservices.tiers2.params.SetTiersBlocRembAuto;
 
 /**
  * Interface du web-service <i>tiers</i> <b>version 2</b> du registre fiscal Unireg.
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
+@SuppressWarnings({"UnusedDeclaration"})
 @SOAPBinding(parameterStyle = SOAPBinding.ParameterStyle.BARE)
 @WebService(targetNamespace = "http://www.vd.ch/uniregctb/webservices/tiers2", name = "TiersPort", serviceName = "TiersService")
 public interface TiersWebService {
@@ -26,9 +44,11 @@ public interface TiersWebService {
 	/**
 	 * Recherche un ou plusieurs tiers en fonction de paramètres.
 	 *
-	 * @param params
-	 *            les paramètres de recherche.
+	 * @param params les paramètres de recherche.
 	 * @return une liste contenant 0 ou n informations sur les tiers correspondants aux critères de recherche.
+	 * @throws BusinessException     en cas d'erreur métier
+	 * @throws AccessDeniedException en cas d'accès interdit à la ressource demandée
+	 * @throws TechnicalException    en cas d'erreur inattendue (bug)
 	 */
 	@SOAPBinding(parameterStyle = SOAPBinding.ParameterStyle.BARE)
 	@WebMethod
@@ -40,9 +60,11 @@ public interface TiersWebService {
 	/**
 	 * Retourne le type d'un tiers en fonction de son numéro de tiers.
 	 *
-	 * @param tiersNumber
-	 *            le numéro de tiers
+	 * @param tiersNumber le numéro de tiers
 	 * @return le type de tiers, ou null si le tiers n'existe pas
+	 * @throws BusinessException     en cas d'erreur métier
+	 * @throws AccessDeniedException en cas d'accès interdit à la ressource demandée
+	 * @throws TechnicalException    en cas d'erreur inattendue (bug)
 	 */
 	@SOAPBinding(parameterStyle = SOAPBinding.ParameterStyle.BARE)
 	@WebMethod
@@ -54,13 +76,13 @@ public interface TiersWebService {
 	/**
 	 * Retourne les informations du tiers correspondant au numéro de contribuable spécifié.
 	 *
-	 * @param tiersNumber
-	 *            le numéro de contribuable du tiers.
-	 * @param date
-	 *            la date de validité des informations à retourner, ou null pour obtenir les valeurs courantes.
-	 * @param parts
-	 *            la liste des parties à renseigner.
+	 * @param tiersNumber le numéro de contribuable du tiers.
+	 * @param date        la date de validité des informations à retourner, ou null pour obtenir les valeurs courantes.
+	 * @param parts       la liste des parties à renseigner.
 	 * @return les informations du tiers spécifiée, ou null si ce tiers n'existe pas.
+	 * @throws BusinessException     en cas d'erreur métier
+	 * @throws AccessDeniedException en cas d'accès interdit à la ressource demandée
+	 * @throws TechnicalException    en cas d'erreur inattendue (bug)
 	 */
 	@SOAPBinding(parameterStyle = SOAPBinding.ParameterStyle.BARE)
 	@WebMethod
@@ -72,13 +94,13 @@ public interface TiersWebService {
 	/**
 	 * Retourne les informations du tiers correspondant au numéro de contribuable spécifié pour la période spécifiée.
 	 *
-	 * @param tiersNumber
-	 *            le numéro de contribuable du tiers.
-	 * @param periode
-	 *            la période fiscale des informations à retourner, ou null pour obtenir la période courante.
-	 * @param parts
-	 *            la liste des parties à renseigner.
+	 * @param tiersNumber le numéro de contribuable du tiers.
+	 * @param periode     la période fiscale des informations à retourner, ou null pour obtenir la période courante.
+	 * @param parts       la liste des parties à renseigner.
 	 * @return les informations du tiers spécifiée, ou null si ce tiers n'existe pas.
+	 * @throws BusinessException     en cas d'erreur métier
+	 * @throws AccessDeniedException en cas d'accès interdit à la ressource demandée
+	 * @throws TechnicalException    en cas d'erreur inattendue (bug)
 	 */
 	@SOAPBinding(parameterStyle = SOAPBinding.ParameterStyle.BARE)
 	@WebMethod
@@ -90,11 +112,12 @@ public interface TiersWebService {
 	/**
 	 * Retourne l'historique des informations du tiers correspondant au numéro de contribuable spécifié.
 	 *
-	 * @param tiersNumber
-	 *            le numéro de contribuable du tiers.
-	 * @param parts
-	 *            la liste des parties à renseigner.
+	 * @param tiersNumber le numéro de contribuable du tiers.
+	 * @param parts       la liste des parties à renseigner.
 	 * @return les informations du tiers spécifié, ou null si le tiers n'existe pas.
+	 * @throws BusinessException     en cas d'erreur métier
+	 * @throws AccessDeniedException en cas d'accès interdit à la ressource demandée
+	 * @throws TechnicalException    en cas d'erreur inattendue (bug)
 	 */
 	@SOAPBinding(parameterStyle = SOAPBinding.ParameterStyle.BARE)
 	@WebMethod
@@ -105,16 +128,16 @@ public interface TiersWebService {
 
 	/**
 	 * Retourne les tiers correspondant aux numéros de tiers spécifiés.
-	 * <p>
+	 * <p/>
 	 * <b>Attention !</b> Le nombre maximal d'ids supporté est de 500.
 	 *
-	 * @param tiersNumbers
-	 *            les numéros des tiers.
-	 * @param date
-	 *            la date de validité des informations à retourner, ou null pour obtenir les valeurs courantes.
-	 * @param parts
-	 *            la liste des parties à renseigner.
+	 * @param tiersNumbers les numéros des tiers.
+	 * @param date         la date de validité des informations à retourner, ou null pour obtenir les valeurs courantes.
+	 * @param parts        la liste des parties à renseigner.
 	 * @return les tiers indexés par leurs ids.
+	 * @throws BusinessException     en cas d'erreur métier
+	 * @throws AccessDeniedException en cas d'accès interdit à la ressource demandée
+	 * @throws TechnicalException    en cas d'erreur inattendue (bug)
 	 */
 	@SOAPBinding(parameterStyle = SOAPBinding.ParameterStyle.BARE)
 	@WebMethod
@@ -131,6 +154,9 @@ public interface TiersWebService {
 	 * @param tiersNumbers les numéros des tiers.
 	 * @param parts        la liste des parties à renseigner.
 	 * @return les tiers indexés par leurs ids.
+	 * @throws BusinessException     en cas d'erreur métier
+	 * @throws AccessDeniedException en cas d'accès interdit à la ressource demandée
+	 * @throws TechnicalException    en cas d'erreur inattendue (bug)
 	 */
 	@SOAPBinding(parameterStyle = SOAPBinding.ParameterStyle.BARE)
 	@WebMethod
@@ -142,8 +168,10 @@ public interface TiersWebService {
 	/**
 	 * Change le code de blocage du remboursement automatique sur le tiers spécifié.
 	 *
-	 * @param params
-	 *            les paramètres permettant d'identifier l'utilisateur, le tiers et le code blocage.
+	 * @param params les paramètres permettant d'identifier l'utilisateur, le tiers et le code blocage.
+	 * @throws BusinessException     en cas d'erreur métier
+	 * @throws AccessDeniedException en cas d'accès interdit à la ressource demandée
+	 * @throws TechnicalException    en cas d'erreur inattendue (bug)
 	 */
 	@SOAPBinding(parameterStyle = SOAPBinding.ParameterStyle.BARE)
 	@WebMethod
@@ -155,9 +183,11 @@ public interface TiersWebService {
 	/**
 	 * Recherche un ou plusieurs événements PM en fonction de certains critères.
 	 *
-	 * @param params
-	 *            les critères de sélection des événements
+	 * @param params les critères de sélection des événements
 	 * @return une liste contenant 0 ou plusieurs événements
+	 * @throws BusinessException     en cas d'erreur métier
+	 * @throws AccessDeniedException en cas d'accès interdit à la ressource demandée
+	 * @throws TechnicalException    en cas d'erreur inattendue (bug)
 	 */
 	@SOAPBinding(parameterStyle = SOAPBinding.ParameterStyle.BARE)
 	@WebMethod
@@ -183,7 +213,24 @@ public interface TiersWebService {
 			throws BusinessException, AccessDeniedException, TechnicalException;
 
 	/**
+	 * Cette méthode permet de quittancer les déclarations d'impôt ordinaires aux dates spécifiées.
+	 *
+	 * @param params les demandes de quittancement
+	 * @return le résultat détaillé du processing des quittancements
+	 * @throws BusinessException     en cas d'erreur métier
+	 * @throws AccessDeniedException en cas d'accès interdit à la ressource demandée
+	 * @throws TechnicalException    en cas d'erreur inattendue (bug)
+	 */
+	@SOAPBinding(parameterStyle = SOAPBinding.ParameterStyle.BARE)
+	@WebMethod
+	@WebResult(targetNamespace = "http://www.vd.ch/uniregctb/webservices/tiers2")
+	public List<ReponseQuittancementDeclaration> quittancerDeclarations(
+			@WebParam(targetNamespace = "http://www.vd.ch/uniregctb/webservices/tiers2", partName = "params", name = "QuittancerDeclarations") QuittancerDeclarations params) throws BusinessException,
+			AccessDeniedException, TechnicalException;
+
+	/**
 	 * Cette méthode s'assure que les classes concrètes dérivant de Tiers sont exposées dans le WSDL. Elle ne fait rien proprement dit.
+	 * @param dummy paramètre bidon.
 	 */
 	@SOAPBinding(parameterStyle = SOAPBinding.ParameterStyle.BARE)
 	@WebMethod

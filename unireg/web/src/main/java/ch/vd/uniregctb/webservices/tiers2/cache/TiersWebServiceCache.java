@@ -347,6 +347,14 @@ public class TiersWebServiceCache implements UniregCacheInterface, TiersWebServi
 	/**
 	 * {@inheritDoc}
 	 */
+	public List<ReponseQuittancementDeclaration> quittancerDeclarations(QuittancerDeclarations params) throws BusinessException, AccessDeniedException, TechnicalException {
+		// méthode de modification -> rien à cacher
+		return target.quittancerDeclarations(params);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	public void doNothing(AllConcreteTiersClasses dummy) {
 	}
 

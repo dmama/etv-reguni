@@ -421,6 +421,44 @@ public class TiersWebServiceEndPoint implements TiersWebService {
 		}
 	}
 
+	@SOAPBinding(parameterStyle = SOAPBinding.ParameterStyle.BARE)
+	@WebMethod
+	@WebResult(targetNamespace = "http://www.vd.ch/uniregctb/webservices/tiers2")
+	public List<ReponseQuittancementDeclaration> quittancerDeclarations(
+			@WebParam(targetNamespace = "http://www.vd.ch/uniregctb/webservices/tiers2", partName = "params", name = "QuittancerDeclarations") QuittancerDeclarations params) throws BusinessException,
+			AccessDeniedException, TechnicalException {
+		try {
+			login(params.login);
+			checkGeneralReadAccess(params.login);
+
+			if (!SecurityProvider.isGranted(Role.DI_QUIT_PP, params.login.userId, params.login.oid)) {
+				throw new AccessDeniedException(
+						"L'utilisateur spécifié (" + params.login.userId + "/" + params.login.oid + ") n'a pas les droits de quittancement des déclarations d'impôt ordinaires sur l'application.");
+			}
+
+			return service.quittancerDeclarations(params);
+		}
+		catch (BusinessException e) {
+			LOGGER.error("Exception lors du traitement du message " + params + " : " + e.getMessage());
+			throw e;
+		}
+		catch (AccessDeniedException e) {
+			LOGGER.error("Exception lors du traitement du message " + params + " : " + e.getMessage());
+			throw e;
+		}
+		catch (TechnicalException e) {
+			LOGGER.error("Exception lors du traitement du message " + params + " : " + e.getMessage());
+			throw e;
+		}
+		catch (RuntimeException e) {
+			LOGGER.error("Exception lors du traitement du message " + params, e);
+			throw new TechnicalException(e);
+		}
+		finally {
+			logout();
+		}
+	}
+
 	/**
 	 * Cette méthode s'assure que les classes concrètes dérivant de Tiers sont exposées dans le WSDL. Elle ne fait rien proprement dit.
 	 */

@@ -279,6 +279,10 @@ public class TiersWebServiceWithPM implements TiersWebService {
 		return target.getDebiteurInfo(params);
 	}
 
+	public List<ReponseQuittancementDeclaration> quittancerDeclarations(QuittancerDeclarations params) throws BusinessException, AccessDeniedException, TechnicalException {
+		return target.quittancerDeclarations(params);
+	}
+
 	public void doNothing(AllConcreteTiersClasses dummy) {
 	}
 

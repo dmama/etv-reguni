@@ -342,6 +342,10 @@ public class TiersWebServiceMockPM implements TiersWebService, InitializingBean 
 		return target.getDebiteurInfo(params);
 	}
 
+	public List<ReponseQuittancementDeclaration> quittancerDeclarations(QuittancerDeclarations params) throws BusinessException, AccessDeniedException, TechnicalException {
+		return target.quittancerDeclarations(params);
+	}
+
 	private void sortEvents(List<EvenementPM> events) {
 		Collections.sort(events, new Comparator<EvenementPM>() {
 			public int compare(EvenementPM o1, EvenementPM o2) {

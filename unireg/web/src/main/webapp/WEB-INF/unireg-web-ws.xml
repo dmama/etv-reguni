@@ -80,6 +80,7 @@
 		<property name="transactionManager" ref="transactionManager" />
 		<property name="noOfsTranslator" ref="noOfsTranslator" />
 		<property name="lrService" ref="lrService" />
+		<property name="diService" ref="diService" />
 	</bean>
 
 	<bean id="tiersService2Cache" class="ch.vd.uniregctb.webservices.tiers2.cache.TiersWebServiceCache">
