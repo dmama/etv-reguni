@@ -10,6 +10,7 @@ import org.apache.log4j.Logger;
 import org.springframework.util.Assert;
 import org.springframework.util.ResourceUtils;
 
+import ch.vd.fidor.ws.v1.generated.Acces;
 import ch.vd.fidor.ws.v1.generated.Env;
 import ch.vd.fidor.ws.v1.generated.FidorPortType;
 import ch.vd.uniregctb.common.AuthenticationHelper;
@@ -112,7 +113,7 @@ public class FidorServiceImpl implements FidorService {
 	}
 
 	private String getUrl(FidorPortType service, String app, String target) {
-		final String url = service.getUrl(app, environnement, target, null);
+		final String url = service.getUrl(app, environnement, Acces.INTERNE, target, null);
 		if (url == null) {
 			LOGGER.error(String.format("Il manque l'url d'accès à %s (target %s) pour l'environnement %s dans FiDoR !", app, target, environnement));
 		}
