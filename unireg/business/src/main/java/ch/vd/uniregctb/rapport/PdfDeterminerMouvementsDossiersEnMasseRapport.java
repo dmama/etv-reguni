@@ -114,7 +114,7 @@ public class PdfDeterminerMouvementsDossiersEnMasseRapport extends PdfRapport {
 				final DeterminerMouvementsDossiersEnMasseResults.NonTraite nonTraite = iterator.next();
 				b.append(nonTraite.noCtb).append(COMMA);
 				b.append(escapeChars(nonTraite.getTypeInformation())).append(COMMA);
-				b.append(escapeChars(nonTraite.complement));
+				b.append(asCsvField(nonTraite.complement.split("\n")));
 
 				if (!iterator.isLast()) {
 					b.append("\n");

@@ -85,7 +85,7 @@ public class DeterminerMouvementsDossiersEnMasseProcessor {
 		final RangesUtiles rangesUtiles = new RangesUtiles(dateTraitement);
 
 		final BatchTransactionTemplate<Long, DeterminerMouvementsDossiersEnMasseResults> template = new BatchTransactionTemplate<Long, DeterminerMouvementsDossiersEnMasseResults>(ctbs, BATCH_SIZE, BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE, transactionManager, status, hibernateTemplate);
-		template.execute(new BatchTransactionTemplate.BatchCallback<Long, DeterminerMouvementsDossiersEnMasseResults>() {
+		template.execute(rapportFinal, new BatchTransactionTemplate.BatchCallback<Long, DeterminerMouvementsDossiersEnMasseResults>() {
 
 			@Override
 			public DeterminerMouvementsDossiersEnMasseResults createSubRapport() {
