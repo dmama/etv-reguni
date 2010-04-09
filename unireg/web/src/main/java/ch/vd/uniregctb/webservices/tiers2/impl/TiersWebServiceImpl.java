@@ -41,6 +41,7 @@ import ch.vd.uniregctb.webservices.common.NoOfsTranslator;
 import ch.vd.uniregctb.webservices.tiers2.TiersWebService;
 import ch.vd.uniregctb.webservices.tiers2.data.BatchTiers;
 import ch.vd.uniregctb.webservices.tiers2.data.BatchTiersHisto;
+import ch.vd.uniregctb.webservices.tiers2.data.CodeQuittancement;
 import ch.vd.uniregctb.webservices.tiers2.data.Date;
 import ch.vd.uniregctb.webservices.tiers2.data.Debiteur;
 import ch.vd.uniregctb.webservices.tiers2.data.DebiteurHisto;
@@ -61,6 +62,7 @@ import ch.vd.uniregctb.webservices.tiers2.exception.AccessDeniedException;
 import ch.vd.uniregctb.webservices.tiers2.exception.BusinessException;
 import ch.vd.uniregctb.webservices.tiers2.exception.TechnicalException;
 import ch.vd.uniregctb.webservices.tiers2.exception.WebServiceException;
+import ch.vd.uniregctb.webservices.tiers2.impl.exception.QuittancementErreur;
 import ch.vd.uniregctb.webservices.tiers2.params.AllConcreteTiersClasses;
 import ch.vd.uniregctb.webservices.tiers2.params.GetBatchTiers;
 import ch.vd.uniregctb.webservices.tiers2.params.GetBatchTiersHisto;
@@ -637,7 +639,7 @@ public class TiersWebServiceImpl implements TiersWebService {
 				try {
 					r = traiterDemande(demande);
 				}
-				catch (WebServiceException e) {
+				catch (QuittancementErreur e) {
 					r = new ReponseQuittancementDeclaration(demande.key, e);
 				}
 				catch (RuntimeException e) {
@@ -655,37 +657,42 @@ public class TiersWebServiceImpl implements TiersWebService {
 		}
 	}
 
-	private ReponseQuittancementDeclaration traiterDemande(DemandeQuittancementDeclaration demande) throws BusinessException {
+	/**
+	 * Traite une demande de quittancement de déclaration,
+	 *
+	 * @param demande la demande de quittancement à traiter
+	 * @return la réponse de la demande de quittancement en cas de traitement effectué.
+	 * @throws QuittancementErreur une erreur explicite en cas d'impossibilité d'effectuer le traitement.
+	 */
+	private ReponseQuittancementDeclaration traiterDemande(DemandeQuittancementDeclaration demande) throws QuittancementErreur {
 
 		final ch.vd.uniregctb.tiers.Contribuable ctb = (Contribuable) context.tiersDAO.get(demande.key.ctbId);
 		if (ctb == null) {
-			// return new QuittanceDeclarationReponse(demande.key, QuittanceDeclarationReponse.Code.ERREUR_CTB_INCONNU);
-			throw new BusinessException("Le contribuable est inconnu.");
+			throw new QuittancementErreur(CodeQuittancement.ERREUR_CTB_INCONNU, "Le contribuable est inconnu.");
 		}
 
 		if (ctb.getDernierForFiscalPrincipal() == null) {
-			throw new BusinessException("Le contribuable ne possède aucun for principal : il n'aurait pas dû recevoir de déclaration d'impôt.");
+			throw new QuittancementErreur(CodeQuittancement.ERREUR_ASSUJETTISSEMENT_CTB, "Le contribuable ne possède aucun for principal : il n'aurait pas dû recevoir de déclaration d'impôt.");
 		}
 
 		if (ctb.isDebiteurInactif()) {
-			throw new BusinessException("Le contribuable est un débiteur inactif : impossible de quittancer la déclaration.");
+			throw new QuittancementErreur(CodeQuittancement.ERREUR_CTB_DEBITEUR_INACTIF, "Le contribuable est un débiteur inactif : impossible de quittancer la déclaration.");
 		}
 
 		final DeclarationImpotOrdinaire declaration = findDeclaration(ctb, demande.key.periodeFiscale, demande.key.numeroSequenceDI);
 		if (declaration == null) {
-			throw new BusinessException("La déclaration n'existe pas.");
-			// return new QuittanceDeclarationReponse(demande.key, QuittanceDeclarationReponse.Code.ERREUR_DECLARATION_INEXISTANTE);
-		}
-
-		final RegDate dateRetour = DataHelper.webToCore(demande.dateRetour);
-
-		if (dateRetour.isBeforeOrEqual(declaration.getDateExpedition())) {
-			throw new BusinessException("La date de retour spécifiée (" + dateRetour + ") est avant la date d'envoi de la déclaration (" + declaration.getDateExpedition() + ").");
+			throw new QuittancementErreur(CodeQuittancement.ERREUR_DECLARATION_INEXISTANTE, "La déclaration n'existe pas.");
 		}
 
 		if (declaration.isAnnule()) {
-			throw new BusinessException("La déclaration a été annulée entre-temps.");
-			// return new QuittanceDeclarationReponse(demande.key, QuittanceDeclarationReponse.Code.ERREUR_DECLARATION_ANNULEE);
+			throw new QuittancementErreur(CodeQuittancement.ERREUR_DECLARATION_ANNULEE, "La déclaration a été annulée entre-temps.");
+		}
+		
+		final RegDate dateRetour = DataHelper.webToCore(demande.dateRetour);
+
+		if (dateRetour.isBeforeOrEqual(declaration.getDateExpedition())) {
+			throw new QuittancementErreur(CodeQuittancement.ERREUR_DATE_RETOUR_INVALIDE,
+					"La date de retour spécifiée (" + dateRetour + ") est avant la date d'envoi de la déclaration (" + declaration.getDateExpedition() + ").");
 		}
 
 		// Si la déclaration est sommée à une date située après la date de retour, on annule cette état de sommation pour permettre le quittancement.
@@ -698,7 +705,7 @@ public class TiersWebServiceImpl implements TiersWebService {
 		context.diService.retourDI(ctb, declaration, dateRetour);
 		Assert.isEqual(TypeEtatDeclaration.RETOURNEE, declaration.getDernierEtat().getEtat());
 
-		return new ReponseQuittancementDeclaration(demande.key, ReponseQuittancementDeclaration.Code.OK);
+		return new ReponseQuittancementDeclaration(demande.key, CodeQuittancement.OK);
 	}
 
 	/**
