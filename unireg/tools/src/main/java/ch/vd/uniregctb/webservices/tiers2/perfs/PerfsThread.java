@@ -18,11 +18,15 @@ import ch.vd.uniregctb.webservices.tiers2.GetBatchTiers;
 import ch.vd.uniregctb.webservices.tiers2.GetTiers;
 import ch.vd.uniregctb.webservices.tiers2.GetTiersHisto;
 import ch.vd.uniregctb.webservices.tiers2.GetTiersPeriode;
+import ch.vd.uniregctb.webservices.tiers2.MenageCommun;
+import ch.vd.uniregctb.webservices.tiers2.PersonnePhysique;
+import ch.vd.uniregctb.webservices.tiers2.SearchTiers;
 import ch.vd.uniregctb.webservices.tiers2.TechnicalException_Exception;
 import ch.vd.uniregctb.webservices.tiers2.Tiers;
 import ch.vd.uniregctb.webservices.tiers2.TiersHisto;
 import ch.vd.uniregctb.webservices.tiers2.TiersPart;
 import ch.vd.uniregctb.webservices.tiers2.TiersPort;
+import ch.vd.uniregctb.webservices.tiers2.TypeRecherche;
 import ch.vd.uniregctb.webservices.tiers2.UserLogin;
 
 /**
@@ -202,6 +206,68 @@ public class PerfsThread extends Thread {
 		@Override
 		public String description() {
 			return "operateur=" + getOperateurDescription() + ", histo, parts=" + getPartsDescription();
+		}
+	}
+
+	public static class SearchQuery extends Query {
+
+		public SearchQuery(String operateur, int oid) {
+			super(operateur, oid);
+		}
+
+		@Override
+		public Object execute(TiersPort port, long id) throws TechnicalException_Exception, AccessDeniedException_Exception,
+				BusinessException_Exception {
+
+			// Récupère le tiers
+
+			GetTiers params = new GetTiers();
+			params.setLogin(login);
+			params.setTiersNumber(id);
+			params.getParts().add(TiersPart.COMPOSANTS_MENAGE);
+
+			Tiers tiers = port.getTiers(params);
+			if (tiers == null) {
+				return null;
+			}
+
+			// Effectue une recherche sur son nom courrier
+
+			final String nomCourrier;
+			if (tiers instanceof PersonnePhysique) {
+				PersonnePhysique pp =(PersonnePhysique) tiers;
+				nomCourrier = pp.getPrenom() + " " + pp.getNom();
+			}
+			else if (tiers instanceof MenageCommun) {
+				MenageCommun mc = (MenageCommun) tiers;
+				PersonnePhysique pp1 = mc.getContribuablePrincipal();
+				if (pp1 == null) {
+					return null;
+				}
+				nomCourrier = pp1.getPrenom() + " " + pp1.getNom();
+			}
+			else {
+				return null;
+			}
+
+			SearchTiers search = new SearchTiers();
+			search.setLogin(login);
+			search.setTypeRecherche(TypeRecherche.CONTIENT);
+			search.setNomCourrier(nomCourrier);
+
+			port.searchTiers(search);
+
+			return tiers; // on retourne le tiers, parce que le framework attend ça
+		}
+
+		@Override
+		public List<?> executeBatch(TiersPort port, Collection<Long> ids) {
+			throw new NotImplementedException();
+		}
+
+		@Override
+		public String description() {
+			return "operateur=" + getOperateurDescription() + ", get+search";
 		}
 	}
 

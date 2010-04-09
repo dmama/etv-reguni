@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.webservices.tiers2.perfs;
 
+import javax.xml.ws.BindingProvider;
 import java.io.File;
 import java.net.URL;
 import java.text.SimpleDateFormat;
@@ -10,8 +11,6 @@ import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-
-import javax.xml.ws.BindingProvider;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -36,6 +35,7 @@ import ch.vd.uniregctb.webservices.tiers2.perfs.PerfsThread.DateQuery;
 import ch.vd.uniregctb.webservices.tiers2.perfs.PerfsThread.HistoQuery;
 import ch.vd.uniregctb.webservices.tiers2.perfs.PerfsThread.PeriodeQuery;
 import ch.vd.uniregctb.webservices.tiers2.perfs.PerfsThread.Query;
+import ch.vd.uniregctb.webservices.tiers2.perfs.PerfsThread.SearchQuery;
 
 /**
  * Application de test des performances du web-service Tiers de Unireg.
@@ -91,14 +91,15 @@ public class PerfsClient {
 		final Integer batch = Integer.valueOf(line.getOptionValue("batch", "1"));
 		final String operateur = line.getOptionValue("operateur", "PerfsClient");
 		final Integer oid = Integer.valueOf(line.getOptionValue("oid", "22"));
+		final boolean search = line.hasOption("search");
 
 		if (ctbIdAsString == null && accessFilename == null) {
 			System.err.println("Une des deux options 'ctb' ou 'accessFile' doit être spécifiée.");
 			System.exit(1);
 		}
 
-		if (dateAsString == null && periodeAsString == null && !histo) {
-			System.err.println("Une des trois options 'date', 'periode' ou 'histo' doit être spécifiée.");
+		if (dateAsString == null && periodeAsString == null && !histo && !search) {
+			System.err.println("Une des quatre options 'date', 'periode', 'histo' ou 'search' doit être spécifiée.");
 			System.exit(1);
 		}
 
@@ -120,8 +121,11 @@ public class PerfsClient {
 				int annee = Integer.valueOf(periodeAsString);
 				query = new PeriodeQuery(annee, operateur, oid);
 			}
-			else {
+			else if (histo) {
 				query = new HistoQuery(operateur, oid);
+			}
+			else {
+				query = new SearchQuery(operateur, oid);
 			}
 
 			if (partsAsString != null) {
@@ -299,7 +303,7 @@ public class PerfsClient {
 		}
 	}
 
-	@SuppressWarnings("static-access")
+	@SuppressWarnings({"static-access", "AccessStaticViaInstance"})
 	private static CommandLine parseCommandLine(String[] args) {
 
 		final CommandLine line;
@@ -333,6 +337,7 @@ public class PerfsClient {
 			"nom de l'opérateur (défaut=PerfsClient)").create("operateur");
 			Option oid = OptionBuilder.withArgName("oid").hasArg().withDescription(
 			"office d'impôt de l'opérateur (défaut=22)").create("oid");
+			Option search = new Option("search", "récupère le nom et prénom d'un tiers puis effecture une recherche avec ces critères");
 
 			Options options = new Options();
 			options.addOption(help);
@@ -349,6 +354,7 @@ public class PerfsClient {
 			options.addOption(threads);
 			options.addOption(operateur);
 			options.addOption(oid);
+			options.addOption(search);
 
 			// parse the command line arguments
 			line = parser.parse(options, args);
