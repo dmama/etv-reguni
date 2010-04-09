@@ -3,7 +3,6 @@ package ch.vd.uniregctb.interfaces.model.wrapper;
 import java.util.Date;
 
 import ch.vd.common.model.EnumTypeAdresse;
-import ch.vd.infrastructure.model.Pays;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
@@ -14,9 +13,22 @@ import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 
 public class AdresseWrapper implements Adresse {
 
-	private final ch.vd.common.model.Adresse target;
 	private final RegDate dateDebut;
 	private final RegDate dateFin;
+	private String casePostale;
+	private String localiteAbregeMinuscule;
+	private String numero;
+	private String numeroAppartement;
+	private Integer numeroRue;
+	private int numeroOrdrePostal;
+	private String numeroPostal;
+	private String numeroPostalComplementaire;
+	private int noOfsPays;
+	private String rue;
+	private String titre;
+	private EnumTypeAdresse typeAdresse;
+	private CommuneSimpleWrapper communeAdresse;
+	private ch.vd.infrastructure.model.CommuneSimple targetCommuneAdresse;
 
 	public static AdresseWrapper get(ch.vd.common.model.Adresse target) {
 		if (target == null) {
@@ -32,13 +44,25 @@ public class AdresseWrapper implements Adresse {
 	}
 
 	private AdresseWrapper(ch.vd.common.model.Adresse target) {
-		this.target = target;
+		this.targetCommuneAdresse = target.getCommuneAdresse();
 		this.dateDebut = RegDate.get(target.getDateDebutValidite());
 		this.dateFin = RegDate.get(target.getDateFinValidite());
+		this.casePostale = target.getCasePostale();
+		this.localiteAbregeMinuscule = target.getLocaliteAbregeMinuscule();
+		this.numero = target.getNumero();
+		this.numeroAppartement = target.getNumeroAppartement();
+		this.numeroRue = target.getNumeroTechniqueRue();
+		this.numeroOrdrePostal = target.getNumeroOrdrePostal();
+		this.numeroPostal = target.getNumeroPostal();
+		this.numeroPostalComplementaire = target.getNumeroPostalComplementaire();
+		this.noOfsPays = (target.getPays() == null ? ServiceInfrastructureService.noOfsSuisse:  target.getPays().getNoOFS()); // le pays n'est pas toujours renseignée dans le base lorsqu'il s'agit de la Suisse
+		this.rue = target.getRue();
+		this.titre = target.getTitre();
+		this.typeAdresse = target.getTypeAdresse();
 	}
 
 	public String getCasePostale() {
-		return target.getCasePostale();
+		return casePostale;
 	}
 
 	public RegDate getDateDebut() {
@@ -50,59 +74,55 @@ public class AdresseWrapper implements Adresse {
 	}
 
 	public String getLocalite() {
-		return target.getLocaliteAbregeMinuscule();
+		return localiteAbregeMinuscule;
 	}
 
 	public String getNumero() {
-		return target.getNumero();
+		return numero;
 	}
 
 	public String getNumeroAppartement() {
-		return target.getNumeroAppartement();
+		return numeroAppartement;
 	}
 
-	@SuppressWarnings("deprecation")
 	public Integer getNumeroRue() {
-		// Note: host-interface retourne bien le numéro technique de la rue, et non pas le numéro Ofs !
-		return target.getNumeroOfsRue();
+		return numeroRue;
 	}
 
 	public int getNumeroOrdrePostal() {
-		return target.getNumeroOrdrePostal();
+		return numeroOrdrePostal;
 	}
 
 	public String getNumeroPostal() {
-		return target.getNumeroPostal();
+		return numeroPostal;
 	}
 
 	public String getNumeroPostalComplementaire() {
-		return target.getNumeroPostalComplementaire();
+		return numeroPostalComplementaire;
 	}
 
 	public Integer getNoOfsPays() {
-		final Pays pays = target.getPays();
-		if (pays == null) {
-			return ServiceInfrastructureService.noOfsSuisse; // le pays n'est pas toujours renseignée dans le base lorsqu'il s'agit de la Suisse
-		}
-		else {
-			return pays.getNoOFS();
-		}
+		return noOfsPays;
 	}
 
 	public String getRue() {
-		return target.getRue();
+		return rue;
 	}
 
 	public String getTitre() {
-		return target.getTitre();
+		return titre;
 	}
 
 	public EnumTypeAdresse getTypeAdresse() {
-		return target.getTypeAdresse();
+		return typeAdresse;
 	}
 
 	public CommuneSimple getCommuneAdresse() {
-		return CommuneSimpleWrapper.get(target.getCommuneAdresse());
+		if (communeAdresse == null && targetCommuneAdresse != null) {
+			communeAdresse = CommuneSimpleWrapper.get(targetCommuneAdresse);
+			targetCommuneAdresse = null;
+		}
+		return communeAdresse;
 	}
 
 	/**

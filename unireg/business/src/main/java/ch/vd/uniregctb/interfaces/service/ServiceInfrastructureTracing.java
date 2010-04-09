@@ -185,19 +185,6 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 		return result;
 	}
 
-	public List<Rue> getAllRues() throws InfrastructureException {
-		List<Rue> result;
-		long time = tracing.start();
-		try {
-			result = target.getAllRues();
-		}
-		finally {
-			tracing.end(time);
-		}
-
-		return result;
-	}
-
 	public Canton getCanton(int cantonOFS) throws InfrastructureException {
 		Canton result;
 		long time = tracing.start();

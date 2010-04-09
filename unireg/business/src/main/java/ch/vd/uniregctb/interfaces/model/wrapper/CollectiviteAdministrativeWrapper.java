@@ -1,25 +1,30 @@
 package ch.vd.uniregctb.interfaces.model.wrapper;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import ch.vd.infrastructure.model.EnumSigleUsageEmail;
 import ch.vd.infrastructure.model.EnumTypeCollectivite;
-import ch.vd.infrastructure.model.EnumTypeSupportEchangeInformation;
 import ch.vd.infrastructure.model.TypeCollectivite;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative;
-import ch.vd.uniregctb.interfaces.model.Commune;
-import ch.vd.uniregctb.interfaces.model.Region;
 
 public class CollectiviteAdministrativeWrapper implements CollectiviteAdministrative {
 
-	private final ch.vd.infrastructure.model.CollectiviteAdministrative target;
 	private Adresse adresse = null;
 	private final RegDate dateFin;
-	private List<Commune> communes = null;
-	private Region region = null;
+	private String adresseEmail;
+	private String noCCP;
+	private int noColAdm;
+	private String noFax;
+	private String noTelephone;
+	private String nomComplet1;
+	private String nomComplet2;
+	private String nomComplet3;
+	private String nomCourt;
+	private String sigle;
+	private String sigleCanton;
+	private TypeCollectivite type;
+	private boolean aci;
+	private boolean oid;
+	private boolean valide;
 
 	public static CollectiviteAdministrativeWrapper get(ch.vd.infrastructure.model.CollectiviteAdministrative target) {
 		if (target == null) {
@@ -34,45 +39,31 @@ public class CollectiviteAdministrativeWrapper implements CollectiviteAdministra
 	}
 
 	protected CollectiviteAdministrativeWrapper(ch.vd.infrastructure.model.CollectiviteAdministrative target) {
-		this.target = target;
+		this.adresse = AdresseWrapper.get(target.getAdresse());
 		this.dateFin = RegDate.get(target.getDateFinValidite());
+		this.adresseEmail = target.getAdresseEmail();
+		this.noCCP = target.getNoCCP();
+		this.noColAdm = target.getNoColAdm();
+		this.noFax = target.getNoFax();
+		this.noTelephone = target.getNoTelephone();
+		this.nomComplet1 = target.getNomComplet1();
+		this.nomComplet2 = target.getNomComplet2();
+		this.nomComplet3 = target.getNomComplet3();
+		this.nomCourt = target.getNomCourt();
+		this.sigle = target.getSigle();
+		this.sigleCanton = target.getSigleCanton();
+		this.type = target.getType();
+		this.aci = target.isACI();
+		this.oid = target.isOID();
+		this.valide = target.isValide();
 	}
 
 	public Adresse getAdresse() {
-		if (adresse == null) {
-			adresse = AdresseWrapper.get(target.getAdresse());
-		}
 		return adresse;
 	}
 
 	public String getAdresseEmail() {
-		return target.getAdresseEmail();
-	}
-
-	public String getAdresseEmail(EnumSigleUsageEmail sigleUsage) {
-		return target.getAdresseEmail();
-	}
-
-	public List<Commune> getCommunes() {
-		if (communes == null) {
-			initCommunes();
-		}
-		return communes;
-	}
-
-	private void initCommunes() {
-		synchronized (this) {
-			if (communes == null) {
-				communes = new ArrayList<Commune>();
-				final List<?> targetCommunes = target.getCommunes();
-				if (targetCommunes != null) {
-					for (Object o : targetCommunes) {
-						ch.vd.infrastructure.model.Commune c = (ch.vd.infrastructure.model.Commune) o;
-						communes.add(CommuneWrapper.get(c));
-					}
-				}
-			}
-		}
+		return adresseEmail;
 	}
 
 	public RegDate getDateFinValidite() {
@@ -80,74 +71,59 @@ public class CollectiviteAdministrativeWrapper implements CollectiviteAdministra
 	}
 
 	public String getNoCCP() {
-		return target.getNoCCP();
+		return noCCP;
 	}
 
 	public int getNoColAdm() {
-		return target.getNoColAdm();
+		return noColAdm;
 	}
 
 	public String getNoFax() {
-		return target.getNoFax();
+		return noFax;
 	}
 
 	public String getNoTelephone() {
-		return target.getNoTelephone();
+		return noTelephone;
 	}
 
 	public String getNomComplet1() {
-		return target.getNomComplet1();
+		return nomComplet1;
 	}
 
 	public String getNomComplet2() {
-		return target.getNomComplet2();
+		return nomComplet2;
 	}
 
 	public String getNomComplet3() {
-		return target.getNomComplet3();
+		return nomComplet3;
 	}
 
 	public String getNomCourt() {
-		return target.getNomCourt();
-	}
-
-	public Region getRegionRattachement() {
-		if (region == null) {
-			region = RegionWrapper.get(target.getRegionRattachement());
-		}
-		return region;
+		return nomCourt;
 	}
 
 	public String getSigle() {
-		return target.getSigle();
+		return sigle;
 	}
 
 	public String getSigleCanton() {
-		return target.getSigleCanton();
-	}
-
-	public EnumTypeSupportEchangeInformation getSupportEchangeTAO() {
-		return target.getSupportEchangeTAO();
+		return sigleCanton;
 	}
 
 	public TypeCollectivite getType() {
-		return target.getType();
+		return type;
 	}
 
 	public boolean isACI() {
-		return target.isACI();
+		return aci;
 	}
 
 	public boolean isOID() {
-		return target.isOID();
-	}
-
-	public boolean isTiersTAO() {
-		return target.isTiersTAO();
+		return oid;
 	}
 
 	public boolean isValide() {
-		return target.isValide();
+		return valide;
 	}
 
 }

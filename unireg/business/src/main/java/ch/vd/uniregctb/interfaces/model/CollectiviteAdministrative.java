@@ -25,21 +25,6 @@ public interface CollectiviteAdministrative {
     String getAdresseEmail();
 
     /**
-     * Retourne l'adresse email associée au sigle usage de la collectivité administrative.
-     * Si la collectivité ne possede pas d'email pour le code usage saisi, null est retourné.
-     *
-     * @return l'adresse email de la collectivité administrative.
-     */
-    String getAdresseEmail(EnumSigleUsageEmail sigleUsage);
-
-    /**
-     * Retourne les communes de la collectivité administrative.
-     *
-     * @return les communes de la collectivité administrative.
-     */
-    List<Commune> getCommunes();
-
-    /**
      * Retourne la date de fin de validité de la collectivité administrative.
      *
      * @return la date de fin de validité de la collectivité administrative.
@@ -103,13 +88,6 @@ public interface CollectiviteAdministrative {
     String getNoTelephone();
 
     /**
-     * Retourne la région de la collectivité administrative.
-     *
-     * @return la région de la collectivité administrative.
-     */
-    Region getRegionRattachement();
-
-    /**
      * Retourne le sigle de la collectivité administrative.
      *
      * @return le sigle de la collectivité administrative.
@@ -122,13 +100,6 @@ public interface CollectiviteAdministrative {
      * @return le sigle du canton de la collectivité administrative.
      */
     String getSigleCanton();
-
-    /**
-     * Retourne l'énumération du type de support pour l'échange d'information de la collectivité administrative.
-     *
-     * @return  l'énumération du type de support pour l'échange d'information de la collectivité administrative.
-     */
-    EnumTypeSupportEchangeInformation getSupportEchangeTAO();
 
     /**
      * Retourne le type de la collectivité administrative.
@@ -150,13 +121,6 @@ public interface CollectiviteAdministrative {
      * @return <code>true</code> si la collectivité administrative est un Office d'Impôts de District
      */
     boolean isOID();
-
-    /**
-     * Indique si la collectivité administrative un tiers TAO.
-     *
-     * @return <code>true</code> si la collectivité administrative un tiers TAO.
-     */
-    boolean isTiersTAO();
 
     /**
      * Indique si la collectivité administrative est valide.

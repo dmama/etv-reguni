@@ -8,11 +8,16 @@ import ch.vd.uniregctb.interfaces.model.TuteurGeneral;
 
 public class TutelleWrapper implements Tutelle {
 
-	private final ch.vd.registre.civil.model.Tutelle target;
 	private final RegDate dateDebut;
 	private final RegDate dateFin;
 	private Individu tuteur;
+	private ch.vd.registre.civil.model.Individu targetTuteur;
 	private TuteurGeneral tuteurGeneral;
+	private ch.vd.registre.civil.model.TuteurGeneral targetTuteurGeneral;
+	private String libelleMotif;
+	private int noSequence;
+	private String nomAutoriteTutelaire;
+	private EnumTypeTutelle typeTutelle;
 
 	public static TutelleWrapper get(ch.vd.registre.civil.model.Tutelle target) {
 		if (target == null) {
@@ -22,9 +27,14 @@ public class TutelleWrapper implements Tutelle {
 	}
 
 	private TutelleWrapper(ch.vd.registre.civil.model.Tutelle target) {
-		this.target = target;
 		this.dateDebut = RegDate.get(target.getDateDebut());
 		this.dateFin = RegDate.get(target.getDateFin());
+		this.libelleMotif = target.getLibelleMotif();
+		this.noSequence = target.getNoSequence();
+		this.nomAutoriteTutelaire = target.getNomAutoriteTutelaire();
+		this.targetTuteur = target.getTuteur();
+		this.targetTuteurGeneral = target.getTuteurGeneral();
+		this.typeTutelle = target.getTypeTutelle();
 	}
 
 	public RegDate getDateDebut() {
@@ -36,33 +46,35 @@ public class TutelleWrapper implements Tutelle {
 	}
 
 	public String getLibelleMotif() {
-		return target.getLibelleMotif();
+		return libelleMotif;
 	}
 
 	public int getNoSequence() {
-		return target.getNoSequence();
+		return noSequence;
 	}
 
 	public String getNomAutoriteTutelaire() {
-		return target.getNomAutoriteTutelaire();
+		return nomAutoriteTutelaire;
 	}
 
 	public Individu getTuteur() {
-		if (tuteur == null) {
-			tuteur = IndividuWrapper.get(target.getTuteur());
+		if (tuteur == null && targetTuteur != null) {
+			tuteur = IndividuWrapper.get(targetTuteur);
+			targetTuteur = null;
 		}
 		return tuteur;
 	}
 
 	public TuteurGeneral getTuteurGeneral() {
-		if (tuteurGeneral == null) {
-			tuteurGeneral = TuteurGeneralWrapper.get(target.getTuteurGeneral());
+		if (tuteurGeneral == null && targetTuteurGeneral != null) {
+			tuteurGeneral = TuteurGeneralWrapper.get(targetTuteurGeneral);
+			targetTuteurGeneral = null;
 		}
 		return tuteurGeneral;
 	}
 
 	public EnumTypeTutelle getTypeTutelle() {
-		return target.getTypeTutelle();
+		return typeTutelle;
 	}
 
 }

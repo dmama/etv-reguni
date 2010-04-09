@@ -118,40 +118,6 @@ public class ServiceInfrastructureCache extends AbstractServiceInfrastructureSer
 		return resultat;
 	}
 
-	private static class KeyGetAllRues {
-
-		@Override
-		public int hashCode() {
-			return 57372893;
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj)
-				return true;
-			if (obj == null)
-				return false;
-			return getClass() == obj.getClass();
-		}
-	}
-
-	@SuppressWarnings("unchecked")
-	public List<Rue> getAllRues() throws InfrastructureException {
-		final List<Rue> resultat;
-
-		final KeyGetAllRues key = new KeyGetAllRues();
-		final Element element = cache.get(key);
-		if (element == null) {
-			resultat = target.getAllRues();
-			cache.put(new Element(key, resultat));
-		}
-		else {
-			resultat = (List<Rue>) element.getObjectValue();
-		}
-
-		return resultat;
-	}
-
 	private static class KeyGetCanton {
 		int cantonOFS;
 

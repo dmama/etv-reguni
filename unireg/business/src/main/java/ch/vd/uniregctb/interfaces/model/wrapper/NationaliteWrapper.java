@@ -6,10 +6,11 @@ import ch.vd.uniregctb.interfaces.model.Pays;
 
 public class NationaliteWrapper implements Nationalite {
 
-	private final ch.vd.registre.civil.model.Nationalite target;
 	private final RegDate dateDebut;
 	private final RegDate dateFin;
 	private Pays pays = null;
+	private ch.vd.infrastructure.model.Pays targetPays;
+	private int noSequence;
 
 	public static NationaliteWrapper get(ch.vd.registre.civil.model.Nationalite target) {
 		if (target == null) {
@@ -19,9 +20,10 @@ public class NationaliteWrapper implements Nationalite {
 	}
 
 	private NationaliteWrapper(ch.vd.registre.civil.model.Nationalite target) {
-		this.target = target;
 		this.dateDebut = RegDate.get(target.getDateDebutValidite());
 		this.dateFin = RegDate.get(target.getDateFinValidite());
+		this.noSequence = target.getNoSequence();
+		this.targetPays = target.getPays();
 	}
 
 	public RegDate getDateDebutValidite() {
@@ -33,12 +35,13 @@ public class NationaliteWrapper implements Nationalite {
 	}
 
 	public int getNoSequence() {
-		return target.getNoSequence();
+		return noSequence;
 	}
 
 	public Pays getPays() {
-		if (pays == null) {
-			pays = PaysWrapper.get(target.getPays());
+		if (pays == null && targetPays != null) {
+			pays = PaysWrapper.get(targetPays);
+			targetPays = null;
 		}
 		return pays;
 	}

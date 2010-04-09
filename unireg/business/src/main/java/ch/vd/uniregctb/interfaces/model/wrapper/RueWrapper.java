@@ -4,7 +4,9 @@ import ch.vd.uniregctb.interfaces.model.Rue;
 
 public class RueWrapper implements Rue {
 
-	private final ch.vd.infrastructure.model.Rue target;
+	private String designationCourrier;
+	private Integer noLocalite;
+	private Integer noRue;
 
 	public static RueWrapper get(ch.vd.infrastructure.model.Rue target) {
 		if (target == null) {
@@ -14,18 +16,20 @@ public class RueWrapper implements Rue {
 	}
 
 	private RueWrapper(ch.vd.infrastructure.model.Rue target) {
-		this.target = target;
+		this.designationCourrier = target.getDesignationCourrier();
+		this.noLocalite = target.getNoLocalite();
+		this.noRue = target.getNoRue();
 	}
 
 	public String getDesignationCourrier() {
-		return target.getDesignationCourrier();
+		return designationCourrier;
 	}
 
 	public Integer getNoLocalite() {
-		return target.getNoLocalite();
+		return noLocalite;
 	}
 
 	public Integer getNoRue() {
-		return target.getNoRue();
+		return noRue;
 	}
 }

@@ -181,15 +181,6 @@ public abstract class MockServiceInfrastructureService extends AbstractServiceIn
 	/*
 	 * (non-Javadoc)
 	 *
-	 * @see ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService#getAllRues()
-	 */
-	public List<Rue> getAllRues() throws InfrastructureException {
-		return rues;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 *
 	 * @see ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService#getRues(ch.vd.infrastructure.model.Canton)
 	 */
 	public List<Rue> getRues(Canton canton) throws InfrastructureException {
@@ -218,7 +209,7 @@ public abstract class MockServiceInfrastructureService extends AbstractServiceIn
 	 */
 	public Rue getRueByNumero(int numero) throws InfrastructureException {
 		Rue rue = null;
-		for (Rue r : getAllRues()) {
+		for (Rue r : rues) {
 			if (r.getNoRue().equals(numero)) {
 				rue = r;
 			}

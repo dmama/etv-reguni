@@ -5,8 +5,17 @@ import ch.vd.uniregctb.interfaces.model.HistoriqueIndividu;
 
 public class HistoriqueIndividuWrapper implements HistoriqueIndividu {
 
-	private final ch.vd.registre.civil.model.HistoriqueIndividu target;
 	private final RegDate dateDebut;
+	private String autresPrenoms;
+	private String complementIdentification;
+	private String noAVS;
+	private int noSequence;
+	private String nom;
+	private String nomCourrier1;
+	private String nomCourrier2;
+	private String nomNaissance;
+	private String prenom;
+	private String profession;
 
 	public static HistoriqueIndividuWrapper get(ch.vd.registre.civil.model.HistoriqueIndividu target) {
 		if (target == null) {
@@ -16,16 +25,25 @@ public class HistoriqueIndividuWrapper implements HistoriqueIndividu {
 	}
 
 	private HistoriqueIndividuWrapper(ch.vd.registre.civil.model.HistoriqueIndividu target) {
-		this.target = target;
 		this.dateDebut = RegDate.get(target.getDateDebutValidite());
+		this.autresPrenoms = target.getAutresPrenoms();
+		this.complementIdentification = target.getComplementIdentification();
+		this.noAVS = target.getNoAVS();
+		this.noSequence = target.getNoSequence();
+		this.nom = target.getNom();
+		this.nomCourrier1 = target.getNomCourrier1();
+		this.nomCourrier2 = target.getNomCourrier2();
+		this.nomNaissance = target.getNomNaissance();
+		this.prenom = target.getPrenom();
+		this.profession = target.getProfession();
 	}
 
 	public String getAutresPrenoms() {
-		return target.getAutresPrenoms();
+		return autresPrenoms;
 	}
 
 	public String getComplementIdentification() {
-		return target.getComplementIdentification();
+		return complementIdentification;
 	}
 
 	public RegDate getDateDebutValidite() {
@@ -33,34 +51,34 @@ public class HistoriqueIndividuWrapper implements HistoriqueIndividu {
 	}
 
 	public String getNoAVS() {
-		return target.getNoAVS();
+		return noAVS;
 	}
 
 	public int getNoSequence() {
-		return target.getNoSequence();
+		return noSequence;
 	}
 
 	public String getNom() {
-		return target.getNom();
+		return nom;
 	}
 
 	public String getNomCourrier1() {
-		return target.getNomCourrier1();
+		return nomCourrier1;
 	}
 
 	public String getNomCourrier2() {
-		return target.getNomCourrier2();
+		return nomCourrier2;
 	}
 
 	public String getNomNaissance() {
-		return target.getNomNaissance();
+		return nomNaissance;
 	}
 
 	public String getPrenom() {
-		return target.getPrenom();
+		return prenom;
 	}
 
 	public String getProfession() {
-		return target.getProfession();
+		return profession;
 	}
 }

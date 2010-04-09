@@ -105,9 +105,7 @@ public class MockCommune extends MockEntityOFS implements Commune, CommuneSimple
 
 	
 	private String nomMinusculeOFS;
-	private CollectiviteAdministrative adminstreePar;
 	private String cantonID;
-	private List<CollectiviteAdministrative> collectivites;
 	private RegDate dateDebutValidite;
 	private RegDate dateDebValidite;
 	private RegDate dateFinValidite;
@@ -135,16 +133,8 @@ public class MockCommune extends MockEntityOFS implements Commune, CommuneSimple
 		this.nomMinusculeOFS = nomMinusculeOFS;
 	}
 
-	public CollectiviteAdministrative getAdminstreePar() {
-		return adminstreePar;
-	}
-
 	public String getCantonID() {
 		return cantonID;
-	}
-
-	public List<CollectiviteAdministrative> getCollectivites() {
-		return collectivites;
 	}
 
 	public RegDate getDateDebutValidite() {

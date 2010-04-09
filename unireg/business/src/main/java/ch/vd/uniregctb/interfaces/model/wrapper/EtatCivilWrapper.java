@@ -6,8 +6,9 @@ import ch.vd.uniregctb.interfaces.model.EtatCivil;
 
 public class EtatCivilWrapper implements EtatCivil {
 
-	private final ch.vd.registre.civil.model.EtatCivil target;
 	private final RegDate dateDebut;
+	private int noSequence;
+	private EnumTypeEtatCivil typeEtatCivil;
 
 	public static EtatCivilWrapper get(ch.vd.registre.civil.model.EtatCivil target) {
 		if (target == null) {
@@ -17,8 +18,9 @@ public class EtatCivilWrapper implements EtatCivil {
 	}
 
 	private EtatCivilWrapper(ch.vd.registre.civil.model.EtatCivil target) {
-		this.target = target;
 		this.dateDebut = RegDate.get(target.getDateDebutValidite());
+		this.noSequence = target.getNoSequence();
+		this.typeEtatCivil = target.getTypeEtatCivil();
 	}
 
 	public RegDate getDateDebutValidite() {
@@ -26,43 +28,32 @@ public class EtatCivilWrapper implements EtatCivil {
 	}
 
 	public int getNoSequence() {
-		return target.getNoSequence();
+		return noSequence;
 	}
 
 	public EnumTypeEtatCivil getTypeEtatCivil() {
-		return target.getTypeEtatCivil();
+		return typeEtatCivil;
 	}
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
 	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		final EtatCivilWrapper other = (EtatCivilWrapper) obj;
-		if (dateDebut == null) {
-			if (other.dateDebut != null)
-				return false;
-		}
-		else if (!dateDebut.equals(other.dateDebut))
-			return false;
-		if (target == null) {
-			if (other.target != null)
-				return false;
-		}
-		else  {
-			if (target.getNoSequence() != other.target.getNoSequence())
-				return false;
-			else if (!target.getTypeEtatCivil().equals(other.target.getTypeEtatCivil()))
-				return false;
-		}
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		final EtatCivilWrapper that = (EtatCivilWrapper) o;
+
+		if (noSequence != that.noSequence) return false;
+		if (dateDebut != null ? !dateDebut.equals(that.dateDebut) : that.dateDebut != null) return false;
+		if (typeEtatCivil != null ? !typeEtatCivil.equals(that.typeEtatCivil) : that.typeEtatCivil != null) return false;
+
 		return true;
 	}
 
-
+	@Override
+	public int hashCode() {
+		int result = dateDebut != null ? dateDebut.hashCode() : 0;
+		result = 31 * result + noSequence;
+		result = 31 * result + (typeEtatCivil != null ? typeEtatCivil.hashCode() : 0);
+		return result;
+	}
 }

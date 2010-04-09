@@ -50,10 +50,6 @@ public class ProxyServiceInfrastructureService implements ServiceInfrastructureS
 		return target.getAllCantons();
 	}
 
-	public List<Rue> getAllRues() throws InfrastructureException {
-		return target.getAllRues();
-	}
-
 	public Canton getCanton(int cantonOFS) throws InfrastructureException {
 		return target.getCanton(cantonOFS);
 	}

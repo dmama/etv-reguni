@@ -319,28 +319,6 @@ public class ServiceInfrastructureServiceImpl extends AbstractServiceInfrastruct
 	/**
 	 * {@inheritDoc}
 	 */
-	public List<Rue> getAllRues() throws InfrastructureException {
-
-		ArrayList<Rue> rues = new ArrayList<Rue>();
-		try {
-			for (Canton canton : getAllCantons()) {
-				final ch.vd.infrastructure.model.Canton c = ((CantonWrapper) canton).getTarget();
-				final List<?> list = serviceInfrastructure.getRues(c);
-				for (Object o : list) {
-					ch.vd.infrastructure.model.Rue r = (ch.vd.infrastructure.model.Rue) o;
-					rues.add(RueWrapper.get(r));
-				}
-			}
-		}
-		catch (RemoteException e) {
-			throw new InfrastructureException("Acces a la liste des rues", e);
-		}
-		return Collections.unmodifiableList(rues);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
 	public List<Rue> getRues(Localite localite) throws InfrastructureException {
 		List<Rue> rues = new ArrayList<Rue>();
 		try {

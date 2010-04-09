@@ -6,10 +6,11 @@ import ch.vd.uniregctb.interfaces.model.Permis;
 
 public class PermisWrapper implements Permis {
 
-	private final ch.vd.registre.civil.model.Permis target;
 	private final RegDate dateDebut;
 	private final RegDate dateFin;
 	private final RegDate dateAnnulation;
+	private final int noSequence;
+	private final EnumTypePermis typePermis;
 
 	public static PermisWrapper get(ch.vd.registre.civil.model.Permis target) {
 		if (target == null) {
@@ -19,10 +20,11 @@ public class PermisWrapper implements Permis {
 	}
 
 	private PermisWrapper(ch.vd.registre.civil.model.Permis target) {
-		this.target = target;
 		this.dateDebut = RegDate.get(target.getDateDebutValidite());
 		this.dateFin = RegDate.get(target.getDateFinValidite());
 		this.dateAnnulation = RegDate.get(target.getDateAnnulation());
+		this.noSequence = target.getNoSequence();
+		this.typePermis = target.getTypePermis();
 	}
 
 	public RegDate getDateDebutValidite() {
@@ -38,11 +40,11 @@ public class PermisWrapper implements Permis {
 	}
 
 	public int getNoSequence() {
-		return target.getNoSequence();
+		return noSequence;
 	}
 
 	public EnumTypePermis getTypePermis() {
-		return target.getTypePermis();
+		return typePermis;
 	}
 
 }

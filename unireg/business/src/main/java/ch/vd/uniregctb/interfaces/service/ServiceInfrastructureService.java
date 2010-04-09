@@ -159,12 +159,6 @@ public interface ServiceInfrastructureService {
 	 * @return
 	 * @throws Exception
 	 */
-	public List<Rue> getAllRues() throws InfrastructureException;
-
-	/**
-	 * @return
-	 * @throws Exception
-	 */
 	public List<Rue> getRues(Localite localite) throws InfrastructureException;
 
 	/**

@@ -4,45 +4,55 @@ import ch.vd.uniregctb.interfaces.model.EntiteOFS;
 
 public abstract class EntiteOFSWrapper implements EntiteOFS {
 
-	private final ch.vd.infrastructure.model.EntiteOFS target;
+	private int noOFS;
+	private String nomMajuscule;
+	private String nomMinuscule;
+	private String sigleOFS;
 
 	public EntiteOFSWrapper(ch.vd.infrastructure.model.EntiteOFS target) {
-		this.target = target;
+		this.noOFS = target.getNoOFS();
+		this.nomMajuscule = target.getNomMajuscule();
+		this.nomMinuscule = target.getNomMinuscule();
+		this.sigleOFS = target.getSigleOFS();
 	}
 
 	public int getNoOFS() {
-		return target.getNoOFS();
+		return noOFS;
 	}
 
 	public String getNomMajuscule() {
-		return target.getNomMajuscule();
+		return nomMajuscule;
 	}
 
 	public String getNomMinuscule() {
-		return target.getNomMinuscule();
+		return nomMinuscule;
 	}
 
 	public String getSigleOFS() {
-		return target.getSigleOFS();
+		return sigleOFS;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		final EntiteOFSWrapper that = (EntiteOFSWrapper) o;
+
+		if (noOFS != that.noOFS) return false;
+		if (nomMajuscule != null ? !nomMajuscule.equals(that.nomMajuscule) : that.nomMajuscule != null) return false;
+		if (nomMinuscule != null ? !nomMinuscule.equals(that.nomMinuscule) : that.nomMinuscule != null) return false;
+		if (sigleOFS != null ? !sigleOFS.equals(that.sigleOFS) : that.sigleOFS != null) return false;
+
+		return true;
 	}
 
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + target.getNoOFS();
+		int result = noOFS;
+		result = 31 * result + (nomMajuscule != null ? nomMajuscule.hashCode() : 0);
+		result = 31 * result + (nomMinuscule != null ? nomMinuscule.hashCode() : 0);
+		result = 31 * result + (sigleOFS != null ? sigleOFS.hashCode() : 0);
 		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		EntiteOFSWrapper other = (EntiteOFSWrapper) obj;
-		return target.getNoOFS() == other.target.getNoOFS();
 	}
 }

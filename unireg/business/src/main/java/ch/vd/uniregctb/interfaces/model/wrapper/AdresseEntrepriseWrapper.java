@@ -7,10 +7,19 @@ import ch.vd.uniregctb.interfaces.model.Pays;
 
 public class AdresseEntrepriseWrapper implements AdresseEntreprise {
 
-	private final ch.vd.registre.pm.model.AdresseEntreprise target;
 	private final RegDate dateDebut;
 	private final RegDate dateFin;
 	private final PaysWrapper pays;
+	private String complement;
+	private Integer numeroTechniqueRue;
+	private String localiteAbregeMinuscule;
+	private String localiteCompletMinuscule;
+	private String numeroMaison;
+	private int numeroOrdrePostal;
+	private String numeroPostal;
+	private String numeroPostalComplementaire;
+	private String rue;
+	private EnumTypeAdresseEntreprise type;
 
 	public static AdresseEntrepriseWrapper get(ch.vd.registre.pm.model.AdresseEntreprise target) {
 		if (target == null) {
@@ -20,18 +29,27 @@ public class AdresseEntrepriseWrapper implements AdresseEntreprise {
 	}
 
 	private AdresseEntrepriseWrapper(ch.vd.registre.pm.model.AdresseEntreprise target) {
-		this.target = target;
 		this.dateDebut = RegDate.get(target.getDateDebutValidite());
 		this.dateFin = RegDate.get(target.getDateFinValidite());
 		this.pays = PaysWrapper.get(target.getPays());
+		this.complement = target.getComplement();
+		this.numeroTechniqueRue = target.getNumeroTechniqueRue();
+		this.localiteAbregeMinuscule = target.getLocaliteAbregeMinuscule();
+		this.localiteCompletMinuscule = target.getLocaliteCompletMinuscule();
+		this.numeroMaison = target.getNumeroMaison();
+		this.numeroOrdrePostal = target.getNumeroOrdrePostal();
+		this.numeroPostal = target.getNumeroPostal();
+		this.numeroPostalComplementaire = target.getNumeroPostalComplementaire();
+		this.rue = target.getRue();
+		this.type = target.getType();
 	}
 
 	public String getComplement() {
-		return target.getComplement();
+		return complement;
 	}
 
 	public Integer getNumeroTechniqueRue() {
-		return target.getNumeroTechniqueRue();
+		return numeroTechniqueRue;
 	}
 
 	public RegDate getDateDebutValidite() {
@@ -43,11 +61,11 @@ public class AdresseEntrepriseWrapper implements AdresseEntreprise {
 	}
 
 	public String getLocaliteAbregeMinuscule() {
-		return target.getLocaliteAbregeMinuscule();
+		return localiteAbregeMinuscule;
 	}
 
 	public String getLocaliteCompletMinuscule() {
-		return target.getLocaliteCompletMinuscule();
+		return localiteCompletMinuscule;
 	}
 
 	public Pays getPays() {
@@ -55,27 +73,27 @@ public class AdresseEntrepriseWrapper implements AdresseEntreprise {
 	}
 
 	public String getNumeroMaison() {
-		return target.getNumeroMaison();
+		return numeroMaison;
 	}
 
 	public int getNumeroOrdrePostal() {
-		return target.getNumeroOrdrePostal();
+		return numeroOrdrePostal;
 	}
 
 	public String getNumeroPostal() {
-		return target.getNumeroPostal();
+		return numeroPostal;
 	}
 
 	public String getNumeroPostalComplementaire() {
-		return target.getNumeroPostalComplementaire();
+		return numeroPostalComplementaire;
 	}
 
 	public String getRue() {
-		return target.getRue();
+		return rue;
 	}
 
 	public EnumTypeAdresseEntreprise getType() {
-		return target.getType();
+		return type;
 	}
 
 }

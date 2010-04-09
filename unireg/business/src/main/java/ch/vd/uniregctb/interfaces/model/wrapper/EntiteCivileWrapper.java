@@ -11,17 +11,17 @@ import ch.vd.uniregctb.interfaces.model.Individu;
 
 public abstract class EntiteCivileWrapper implements EntiteCivile {
 
-	private final ch.vd.registre.civil.model.EntiteCivile target;
+	private Collection<?> targetAdresses = null;
 	private Collection<Adresse> adresses = null;
 
 	public EntiteCivileWrapper(ch.vd.registre.civil.model.EntiteCivile target) {
-		this.target = target;
+		this.targetAdresses = target.getAdresses();
 	}
 
 	public EntiteCivileWrapper(EntiteCivileWrapper wrapper, Set<EnumAttributeIndividu> parts) {
-		this.target = wrapper.target;
 		if (parts != null && parts.contains(EnumAttributeIndividu.ADRESSES)) {
-			adresses = wrapper.getAdresses();
+			this.adresses = wrapper.adresses;
+			this.targetAdresses = wrapper.targetAdresses;
 		}
 	}
 
@@ -36,13 +36,13 @@ public abstract class EntiteCivileWrapper implements EntiteCivile {
 		synchronized (this) {
 			if (adresses == null) {
 				adresses = new ArrayList<Adresse>();
-				final Collection<?> targetAdresses = target.getAdresses();
 				if (targetAdresses != null) {
 					for (Object o : targetAdresses) {
 						ch.vd.common.model.Adresse a = (ch.vd.common.model.Adresse) o;
 						adresses.add(AdresseWrapper.get(a));
 					}
 				}
+				targetAdresses = null;
 			}
 		}
 	}

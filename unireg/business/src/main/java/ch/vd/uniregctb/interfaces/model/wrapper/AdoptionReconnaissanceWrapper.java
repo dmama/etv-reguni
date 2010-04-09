@@ -6,7 +6,7 @@ import ch.vd.uniregctb.interfaces.model.Individu;
 
 public class AdoptionReconnaissanceWrapper implements AdoptionReconnaissance {
 
-	private final ch.vd.registre.civil.model.AdoptionReconnaissance target;
+	private ch.vd.registre.civil.model.Individu targetAdopte;
 	private Individu adopte;
 	private final RegDate dateAccueil;
 	private final RegDate dateAdoption;
@@ -21,16 +21,17 @@ public class AdoptionReconnaissanceWrapper implements AdoptionReconnaissance {
 	}
 
 	private AdoptionReconnaissanceWrapper(ch.vd.registre.civil.model.AdoptionReconnaissance target) {
-		this.target = target;
-		dateAccueil = RegDate.get(target.getDateAccueilAdoption());
-		dateAdoption = RegDate.get(target.getDateAdoption());
-		dateDesaveu = RegDate.get(target.getDateDesaveu());
-		dateReconnaissance = RegDate.get(target.getDateReconnaissance());
+		this.targetAdopte = target.getAdopteReconnu();
+		this.dateAccueil = RegDate.get(target.getDateAccueilAdoption());
+		this.dateAdoption = RegDate.get(target.getDateAdoption());
+		this.dateDesaveu = RegDate.get(target.getDateDesaveu());
+		this.dateReconnaissance = RegDate.get(target.getDateReconnaissance());
 	}
 
 	public Individu getAdopteReconnu() {
-		if (adopte == null) {
-			adopte = IndividuWrapper.get(target.getAdopteReconnu());
+		if (adopte == null && targetAdopte != null) {
+			adopte = IndividuWrapper.get(targetAdopte);
+			targetAdopte = null;
 		}
 		return adopte;
 	}

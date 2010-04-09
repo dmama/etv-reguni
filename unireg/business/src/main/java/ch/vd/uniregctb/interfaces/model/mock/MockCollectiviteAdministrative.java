@@ -9,7 +9,6 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.model.Commune;
-import ch.vd.uniregctb.interfaces.model.Region;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceInfrastructureService;
 
@@ -30,7 +29,6 @@ public class MockCollectiviteAdministrative implements CollectiviteAdministrativ
 
 	private Adresse adresse = null;
 	private String adresseEmail = null;
-	private List<Commune> communes = null;
 	private RegDate dateFinValidite = null;
 	private String noCCP = null;
 	private long noColAdm;
@@ -40,7 +38,6 @@ public class MockCollectiviteAdministrative implements CollectiviteAdministrativ
 	private String nomComplet2 = null;
 	private String nomComplet3 = null;
 	private String nomCourt = null;
-	private Region regionRattachement = null;
 	private String sigle = null;
 	private String sigleCanton = null;
 	private EnumTypeSupportEchangeInformation supportEchanAO = null;
@@ -93,21 +90,6 @@ public class MockCollectiviteAdministrative implements CollectiviteAdministrativ
 	 */
 	public void setAdresseEmail(String adresseEmail) {
 		this.adresseEmail = adresseEmail;
-	}
-
-	/**
-	 * @return the communes
-	 */
-	public List<Commune> getCommunes() {
-		return communes;
-	}
-
-	/**
-	 * @param communes
-	 *            the communes to set
-	 */
-	public void setCommunes(List<Commune> communes) {
-		this.communes = communes;
 	}
 
 	/**
@@ -246,21 +228,6 @@ public class MockCollectiviteAdministrative implements CollectiviteAdministrativ
 	}
 
 	/**
-	 * @return the regionRattachement
-	 */
-	public Region getRegionRattachement() {
-		return regionRattachement;
-	}
-
-	/**
-	 * @param regionRattachement
-	 *            the regionRattachement to set
-	 */
-	public void setRegionRattachement(Region regionRattachement) {
-		this.regionRattachement = regionRattachement;
-	}
-
-	/**
 	 * @return the sigle
 	 */
 	public String getSigle() {
@@ -351,13 +318,6 @@ public class MockCollectiviteAdministrative implements CollectiviteAdministrativ
 	}
 
 	/**
-	 * @return the isTiersTAO
-	 */
-	public boolean isTiersTAO() {
-		return isTiersTAO;
-	}
-
-	/**
 	 * @param isTiersTAO
 	 *            the isTiersTAO to set
 	 */
@@ -379,14 +339,4 @@ public class MockCollectiviteAdministrative implements CollectiviteAdministrativ
 	public void setValide(boolean isValide) {
 		this.isValide = isValide;
 	}
-
-
-	public String getAdresseEmail(EnumSigleUsageEmail arg0) {
-		return null;
-	}
-
-	public EnumTypeSupportEchangeInformation getSupportEchangeTAO() {
-		return null;
-	}
-
 }
