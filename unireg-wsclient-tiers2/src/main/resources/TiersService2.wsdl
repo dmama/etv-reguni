@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<!-- version 2.6-SNAPSHOT -->
+<!-- version 2.6 -->
 <wsdl:definitions name="TiersService" targetNamespace="http://www.vd.ch/uniregctb/webservices/tiers2" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
 				  xmlns:tns="http://www.vd.ch/uniregctb/webservices/tiers2" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
 	<wsdl:types>
@@ -788,6 +788,12 @@
 			<xs:simpleType name="CodeQuittancement">
 				<xs:restriction base="xs:string">
 					<xs:enumeration value="EXCEPTION" />
+					<xs:enumeration value="ERREUR_DATE_RETOUR_INVALIDE" />
+					<xs:enumeration value="ERREUR_DECLARATION_ANNULEE" />
+					<xs:enumeration value="ERREUR_DECLARATION_INEXISTANTE" />
+					<xs:enumeration value="ERREUR_CTB_DEBITEUR_INACTIF" />
+					<xs:enumeration value="ERREUR_ASSUJETTISSEMENT_CTB" />
+					<xs:enumeration value="ERREUR_CTB_INCONNU" />
 					<xs:enumeration value="OK" />
 				</xs:restriction>
 			</xs:simpleType>
