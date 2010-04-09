@@ -64,6 +64,12 @@ public final class ServiceTracing implements ServiceTracingInterface {
 		return ping;
 	}
 
+	public long getTotalCount() {
+		synchronized (this) {
+			return total.calls;
+		}
+	}
+
 	public long getRecentTime() {
 		synchronized (this) {
 			long time = 0;
@@ -89,6 +95,16 @@ public final class ServiceTracing implements ServiceTracingInterface {
 			ping = (time / calls) / NANO_TO_MILLI;
 		}
 		return ping;
+	}
+
+	public long getRecentCount() {
+		long calls = 0;
+		synchronized (this) {
+			for (Data recent : recents) {
+				calls += recent.calls;
+			}
+		}
+		return calls;
 	}
 
 	protected void addTime(long time) {

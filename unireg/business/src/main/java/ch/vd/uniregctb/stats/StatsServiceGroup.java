@@ -28,23 +28,23 @@ public class StatsServiceGroup implements StatsService, ServiceTracingInterface,
 		this.groupName = groupName;
 	}
 
-	public void registerRaw(String serviceName, ServiceTracingInterface tracing) {
+	public void registerService(String serviceName, ServiceTracingInterface tracing) {
 		synchronized (subServices) {
 			subServices.put(serviceName, tracing);
 		}
 	}
 
-	public void registerCached(String serviceName, Ehcache cache) {
+	public void registerCache(String serviceName, Ehcache cache) {
 		throw new NotImplementedException();
 	}
 
-	public void unregisterRaw(String serviceName) {
+	public void unregisterService(String serviceName) {
 		synchronized (subServices) {
 			subServices.remove(serviceName);
 		}
 	}
 
-	public void unregisterCached(String serviceName) {
+	public void unregisterCache(String serviceName) {
 		throw new NotImplementedException();
 	}
 
@@ -83,6 +83,16 @@ public class StatsServiceGroup implements StatsService, ServiceTracingInterface,
 		return count > 0 ? (total / count) : 0;
 	}
 
+	public long getTotalCount() {
+		long count = 0;
+		synchronized (subServices) {
+			for (ServiceTracingInterface s : subServices.values()) {
+				count += s.getTotalCount();
+			}
+		}
+		return count;
+	}
+
 	public long getRecentTime() {
 		long recent = 0;
 		synchronized (subServices) {
@@ -108,19 +118,29 @@ public class StatsServiceGroup implements StatsService, ServiceTracingInterface,
 		return count > 0 ? (total / count) : 0;
 	}
 
+	public long getRecentCount() {
+		long count = 0;
+		synchronized (subServices) {
+			for (ServiceTracingInterface s : subServices.values()) {
+				count += s.getRecentCount();
+			}
+		}
+		return count;
+	}
+
 	public Map<String, ? extends ServiceTracingInterface> getDetailedData() {
 		return subServices;
 	}
 
 	public void afterPropertiesSet() throws Exception {
 		if (statsService != null) {
-			statsService.registerRaw(groupName, this);
+			statsService.registerService(groupName, this);
 		}
 	}
 
 	public void destroy() throws Exception {
 		if (statsService != null) {
-			statsService.unregisterRaw(groupName);
+			statsService.unregisterService(groupName);
 		}
 	}
 

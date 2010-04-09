@@ -7,7 +7,6 @@ import ch.vd.uniregctb.interfaces.service.ServiceTracing;
 import ch.vd.uniregctb.stats.StatsService;
 import org.springframework.beans.factory.DisposableBean;
 
-import javax.jms.Destination;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -44,7 +43,7 @@ public class EsbTemplateTracing extends EsbJmsTemplate implements DisposableBean
 			if (s == null) {
 				s = new ServiceTracing();
 				map.put(destination, s);
-				statsService.registerRaw(destination, s);
+				statsService.registerService(destination, s);
 			}
 			return s;
 		}
@@ -52,7 +51,7 @@ public class EsbTemplateTracing extends EsbJmsTemplate implements DisposableBean
 
 	public void destroy() throws Exception {
 		for (String s : map.keySet()) {
-			statsService.unregisterRaw(s);
+			statsService.unregisterService(s);
 		}
 	}
 

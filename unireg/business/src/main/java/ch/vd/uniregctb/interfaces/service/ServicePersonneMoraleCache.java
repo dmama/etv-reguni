@@ -66,14 +66,14 @@ public class ServicePersonneMoraleCache implements ServicePersonneMoraleService,
 
 	public void destroy() throws Exception {
 		if (statsService != null) {
-			statsService.unregisterCached(SERVICE_NAME);
+			statsService.unregisterCache(SERVICE_NAME);
 		}
 	}
 
 	public void afterPropertiesSet() throws Exception {
 		initCache();
 		if (statsService != null) {
-			statsService.registerCached(SERVICE_NAME, cache);
+			statsService.registerCache(SERVICE_NAME, cache);
 		}
 		uniregCacheManager.register(this);
 	}

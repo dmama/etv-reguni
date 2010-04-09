@@ -62,14 +62,14 @@ public class ServiceSecuriteCache implements UniregCacheInterface, ServiceSecuri
 
 	public void afterPropertiesSet() throws Exception {
 		if (statsService != null) {
-			statsService.registerCached(SERVICE_NAME, cache);
+			statsService.registerCache(SERVICE_NAME, cache);
 		}
 		uniregCacheManager.register(this);
 	}
 
 	public void destroy() throws Exception {
 		if (statsService != null) {
-			statsService.unregisterCached(SERVICE_NAME);
+			statsService.unregisterCache(SERVICE_NAME);
 		}
 		uniregCacheManager.unregister(this);
 	}

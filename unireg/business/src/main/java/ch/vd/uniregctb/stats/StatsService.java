@@ -10,13 +10,13 @@ import net.sf.ehcache.Ehcache;
  */
 public interface StatsService {
 
-	void registerRaw(String serviceName, ServiceTracingInterface tracing);
+	void registerService(String serviceName, ServiceTracingInterface tracing);
 
-	void registerCached(String serviceName, Ehcache cache);
+	void registerCache(String serviceName, Ehcache cache);
 
-	void unregisterRaw(String serviceName);
+	void unregisterService(String serviceName);
 
-	void unregisterCached(String serviceName);
+	void unregisterCache(String serviceName);
 
 	/**
 	 * @return une tableau contenant les différents stats

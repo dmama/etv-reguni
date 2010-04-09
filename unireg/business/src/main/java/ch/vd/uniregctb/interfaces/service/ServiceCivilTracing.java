@@ -29,7 +29,7 @@ import ch.vd.uniregctb.interfaces.model.Tutelle;
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
-public class ServiceCivilTracing implements ServiceCivilService, ServiceTracingInterface, InitializingBean, DisposableBean {
+public class ServiceCivilTracing implements ServiceCivilService, InitializingBean, DisposableBean {
 
 	private ServiceCivilService target;
 	private StatsService statsService;
@@ -298,35 +298,15 @@ public class ServiceCivilTracing implements ServiceCivilService, ServiceTracingI
 		}
 	}
 
-	public long getLastCallTime() {
-		return tracing.getLastCallTime();
-	}
-
-	public long getTotalTime() {
-		return tracing.getTotalTime();
-	}
-
-	public long getTotalPing() {
-		return tracing.getTotalPing();
-	}
-
-	public long getRecentTime() {
-		return tracing.getRecentTime();
-	}
-
-	public long getRecentPing() {
-		return tracing.getRecentPing();
-	}
-
 	public void afterPropertiesSet() throws Exception {
 		if (statsService != null) {
-			statsService.registerRaw(SERVICE_NAME, this);
+			statsService.registerService(SERVICE_NAME, tracing);
 		}
 	}
 
 	public void destroy() throws Exception {
 		if (statsService != null) {
-			statsService.unregisterRaw(SERVICE_NAME);
+			statsService.unregisterService(SERVICE_NAME);
 		}
 	}
 

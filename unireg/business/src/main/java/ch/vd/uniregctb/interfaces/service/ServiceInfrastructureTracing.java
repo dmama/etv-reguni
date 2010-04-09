@@ -28,7 +28,7 @@ import ch.vd.uniregctb.interfaces.model.Rue;
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
-public class ServiceInfrastructureTracing implements ServiceInfrastructureService, ServiceTracingInterface, InitializingBean, DisposableBean {
+public class ServiceInfrastructureTracing implements ServiceInfrastructureService, InitializingBean, DisposableBean {
 
 	private ServiceInfrastructureService target;
 	private StatsService statsService;
@@ -668,35 +668,15 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 		return result;
 	}
 
-	public long getLastCallTime() {
-		return tracing.getLastCallTime();
-	}
-
-	public long getTotalTime() {
-		return tracing.getTotalTime();
-	}
-
-	public long getTotalPing() {
-		return tracing.getTotalPing();
-	}
-
-	public long getRecentTime() {
-		return tracing.getRecentTime();
-	}
-
-	public long getRecentPing() {
-		return tracing.getRecentPing();
-	}
-
 	public void afterPropertiesSet() throws Exception {
 		if (statsService != null) {
-			statsService.registerRaw(SERVICE_NAME, this);
+			statsService.registerService(SERVICE_NAME, tracing);
 		}
 	}
 
 	public void destroy() throws Exception {
 		if (statsService != null) {
-			statsService.unregisterRaw(SERVICE_NAME);
+			statsService.unregisterService(SERVICE_NAME);
 		}
 	}
 

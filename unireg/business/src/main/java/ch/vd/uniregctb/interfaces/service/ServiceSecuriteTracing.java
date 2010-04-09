@@ -17,7 +17,7 @@ import ch.vd.securite.model.ProfilOperateur;
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
-public class ServiceSecuriteTracing implements ServiceSecuriteService, ServiceTracingInterface, InitializingBean, DisposableBean {
+public class ServiceSecuriteTracing implements ServiceSecuriteService, InitializingBean, DisposableBean {
 
 	private ServiceSecuriteService target;
 	private StatsService statsService;
@@ -103,40 +103,20 @@ public class ServiceSecuriteTracing implements ServiceSecuriteService, ServiceTr
 		}
 		return result;
 	}
-
-	public long getLastCallTime() {
-		return tracing.getLastCallTime();
-	}
-
-	public long getTotalPing() {
-		return tracing.getTotalPing();
-	}
-
-	public long getTotalTime() {
-		return tracing.getTotalTime();
-	}
-
-	public long getRecentTime() {
-		return tracing.getRecentTime();
-	}
-
-	public long getRecentPing() {
-		return tracing.getRecentPing();
-	}
-
+	
 	public Map<String, ? extends ServiceTracingInterface> getDetailedData() {
 		return null;
 	}
 
 	public void afterPropertiesSet() throws Exception {
 		if (statsService != null) {
-			statsService.registerRaw(SERVICE_NAME, this);
+			statsService.registerService(SERVICE_NAME, tracing);
 		}
 	}
 
 	public void destroy() throws Exception {
 		if (statsService != null) {
-			statsService.unregisterRaw(SERVICE_NAME);
+			statsService.unregisterService(SERVICE_NAME);
 		}
 	}
 }

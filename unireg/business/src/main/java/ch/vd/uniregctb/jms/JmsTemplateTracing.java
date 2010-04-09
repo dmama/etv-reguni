@@ -33,13 +33,13 @@ public class JmsTemplateTracing implements JmsOperations, InitializingBean, Disp
 
 	public void afterPropertiesSet() throws Exception {
 		if (statsService != null) {
-			statsService.registerRaw(target.getDefaultDestinationName(), tracing);
+			statsService.registerService(target.getDefaultDestinationName(), tracing);
 		}
 	}
 
 	public void destroy() throws Exception {
 		if (statsService != null) {
-			statsService.unregisterRaw(target.getDefaultDestinationName());
+			statsService.unregisterService(target.getDefaultDestinationName());
 		}
 	}
 

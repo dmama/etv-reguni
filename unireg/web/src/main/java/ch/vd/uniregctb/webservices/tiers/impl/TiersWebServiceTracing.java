@@ -42,13 +42,13 @@ public class TiersWebServiceTracing implements ServiceTracingInterface, Initiali
 
 	public void afterPropertiesSet() throws Exception {
 		if (statsService != null) {
-			statsService.registerRaw(SERVICE_NAME, this);
+			statsService.registerService(SERVICE_NAME, this);
 		}
 	}
 
 	public void destroy() throws Exception {
 		if (statsService != null) {
-			statsService.unregisterRaw(SERVICE_NAME);
+			statsService.unregisterService(SERVICE_NAME);
 		}
 	}
 
@@ -108,6 +108,14 @@ public class TiersWebServiceTracing implements ServiceTracingInterface, Initiali
 		return globalCounter.getRecentTime();
 	}
 
+	public long getRecentCount() {
+		refreshCounters();
+		if (globalCounter == null) {
+			return 0;
+		}
+		return globalCounter.getRecentCount();
+	}
+
 	public long getTotalPing() {
 		refreshCounters();
 		if (globalCounter == null) {
@@ -122,6 +130,14 @@ public class TiersWebServiceTracing implements ServiceTracingInterface, Initiali
 			return 0;
 		}
 		return globalCounter.getTotalTime();
+	}
+
+	public long getTotalCount() {
+		refreshCounters();
+		if (globalCounter == null) {
+			return 0;
+		}
+		return globalCounter.getTotalCount();
 	}
 
 	public Map<String, ? extends ServiceTracingInterface> getDetailedData() {
@@ -156,6 +172,10 @@ public class TiersWebServiceTracing implements ServiceTracingInterface, Initiali
 			return getTotalTime();
 		}
 
+		public long getRecentCount() {
+			return getTotalCount();
+		}
+
 		public long getTotalPing() {
 			if (counter == null) {
 				return 0;
@@ -173,6 +193,14 @@ public class TiersWebServiceTracing implements ServiceTracingInterface, Initiali
 			final long numInvocations = counter.getNumInvocations().longValue();
 			long totalPing = getTotalPing();
 			return numInvocations * totalPing;
+		}
+
+		public long getTotalCount() {
+			if (counter == null) {
+				return 0;
+			}
+
+			return counter.getNumInvocations().longValue();
 		}
 	}
 }

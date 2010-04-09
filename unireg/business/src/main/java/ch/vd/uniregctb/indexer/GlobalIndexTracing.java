@@ -16,7 +16,7 @@ import ch.vd.uniregctb.interfaces.service.ServiceTracingInterface;
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
-public class GlobalIndexTracing implements GlobalIndexInterface, ServiceTracingInterface, InitializingBean, DisposableBean {
+public class GlobalIndexTracing implements GlobalIndexInterface, InitializingBean, DisposableBean {
 
 	public static final String SERVICE_NAME = "GlobalIndex";
 
@@ -169,35 +169,15 @@ public class GlobalIndexTracing implements GlobalIndexInterface, ServiceTracingI
 		}
 	}
 
-	public long getLastCallTime() {
-		return tracing.getLastCallTime();
-	}
-
-	public long getTotalTime() {
-		return tracing.getTotalTime();
-	}
-
-	public long getTotalPing() {
-		return tracing.getTotalPing();
-	}
-
-	public long getRecentTime() {
-		return tracing.getRecentTime();
-	}
-
-	public long getRecentPing() {
-		return tracing.getRecentPing();
-	}
-
 	public void afterPropertiesSet() throws Exception {
 		if (statsService != null) {
-			statsService.registerRaw(SERVICE_NAME, this);
+			statsService.registerService(SERVICE_NAME, tracing);
 		}
 	}
 
 	public void destroy() throws Exception {
 		if (statsService != null) {
-			statsService.unregisterRaw(SERVICE_NAME);
+			statsService.unregisterService(SERVICE_NAME);
 		}
 	}
 
