@@ -51,11 +51,11 @@ public class IndividuWrapper extends EntiteCivileWrapper implements Individu {
 	protected IndividuWrapper(IndividuWrapper individuWrapper, Set<EnumAttributeIndividu> parts) {
 		super(individuWrapper, parts);
 		this.target = individuWrapper.target;
-		this.deces = RegDate.get(target.getDateDeces());
-		this.naissance = RegDate.get(target.getDateNaissance());
-		this.dernierHistorique = individuWrapper.getDernierHistoriqueIndividu();
-		this.historique = individuWrapper.getHistoriqueIndividu();
-		this.etatsCivils = individuWrapper.getEtatsCivils();
+		this.deces = individuWrapper.deces;
+		this.naissance = individuWrapper.naissance;
+		this.dernierHistorique = individuWrapper.dernierHistorique;
+		this.historique = individuWrapper.historique;
+		this.etatsCivils = individuWrapper.etatsCivils;
 
 		if (parts != null && parts.contains(EnumAttributeIndividu.ADOPTIONS)) {
 			adoptions = individuWrapper.adoptions;
