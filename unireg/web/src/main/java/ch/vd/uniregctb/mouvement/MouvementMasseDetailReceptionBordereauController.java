@@ -27,6 +27,7 @@ public class MouvementMasseDetailReceptionBordereauController extends AbstractMo
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors) throws Exception {
 		final String receptionner = request.getParameter(RECEPTIONNER);
 		if (receptionner != null) {
+			checkAccess();
 			final BordereauEnvoiReceptionView view = (BordereauEnvoiReceptionView) command;
 			getMouvementManager().receptionnerMouvementsEnvoi(view.getSelection());
 			getMouvementManager().refreshView(view);

@@ -13,7 +13,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.utils.Pair;
-import ch.vd.uniregctb.common.EditiqueErrorHelper;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueResultat;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -60,6 +59,7 @@ public class MouvementMasseDetailBordereauController extends AbstractMouvementMa
 		final String imprimer = request.getParameter(IMPRIMER);
 		// validation de l'impression ?
 		if (imprimer != null) {
+			checkAccess();
 			final MouvementMasseDetailBordereauView view = (MouvementMasseDetailBordereauView) command;
 			try {
 				final EditiqueResultat resultat = getMouvementManager().imprimerBordereau(view.getSelection());
