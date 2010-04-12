@@ -12,10 +12,7 @@ import ch.vd.uniregctb.tiers.view.TiersEditView;
 
 public class CivilEditController extends AbstractTiersController {
 
-	/**
-	 * Un LOGGER.
-	 */
-	protected final Logger LOGGER = Logger.getLogger(CivilEditController.class);
+	//protected final Logger LOGGER = Logger.getLogger(CivilEditController.class);
 
 	public final static String BUTTON_SAVE = "save";
 
@@ -61,7 +58,6 @@ public class CivilEditController extends AbstractTiersController {
 		if (request.getParameter(BUTTON_SAVE) != null) {
 			this.setModified(false);
 			Tiers tierSaved = tiersEditManager.save(bean);
-			LOGGER.info("Tiers saved : numero tiers :" + tierSaved.getId());
 			return new ModelAndView("redirect:../tiers/visu.do?id=" + tierSaved.getId());
 		}
 		else if (request.getParameter(BUTTON_BACK_TO_LIST) != null) {

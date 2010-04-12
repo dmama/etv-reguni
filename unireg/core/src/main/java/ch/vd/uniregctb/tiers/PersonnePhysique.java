@@ -14,6 +14,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.*;
 
 import ch.vd.registre.base.date.DateRange;
@@ -213,7 +214,7 @@ public class PersonnePhysique extends Contribuable {
 			results.addError("Le numero d'individu du CH est un attribut obligatoire pour un habitant");
 		}
 
-		if (!habitant && (nom == null || nom.equals(""))) {
+		if (!habitant && StringUtils.isBlank(nom)) {
 			results.addError("Le nom est un attribut obligatoire pour un non habitant");
 		}
 
