@@ -15,7 +15,12 @@
 		<property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE" />
 		<property name="ignoreResourceNotFound" value="false" />
 		<property name="ignoreUnresolvablePlaceholders" value="false" />
-		<property name="location" value="file:${unireg.properties.path}" />
+		<property name="locations">
+			<list>
+				<value>file:${unireg.properties.path}</value>
+				<value>file:${credentials.properties.path}</value>
+			</list>
+		</property>
 	</bean>
 
 	<!-- Ce bean offre la possibilité d'accéder directement aux propriétés externes depuis le code java -->	

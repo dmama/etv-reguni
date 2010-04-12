@@ -728,6 +728,7 @@
 		<unireg.webreleasexml>release.xml</unireg.webreleasexml>
 
 		<unireg.properties.path>${ch.vd.appDir}/${unireg.appname}/config/unireg.properties</unireg.properties.path>
+		<credentials.properties.path>${ch.vd.appDir}/${unireg.appname}/config/credentials.properties</credentials.properties.path>
 		<unireg.log4j.location>file:${ch.vd.appDir}/${unireg.appname}/config/unireg-log4j.xml</unireg.log4j.location>
 
 		<!-- Application settings -->
