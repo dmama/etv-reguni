@@ -973,7 +973,7 @@ public class AdresseServiceImpl implements AdresseService {
 		if (tiers instanceof MenageCommun) {
 			/* Pour le cas du ménage commun, les adresses du principal sont utilisées comme premier défaut */
 			final MenageCommun menage = (MenageCommun) tiers;
-			final PersonnePhysique principal = getPrincipalPourAdresse(menage, null);
+			final PersonnePhysique principal = getPrincipalPourAdresse(menage);
 			final AdressesTiersHisto adressesPrincipal = TiersHelper.getAdressesTiersHisto(principal);
 
 			if (adressesPrincipal != null) {
@@ -1264,8 +1264,13 @@ public class AdresseServiceImpl implements AdresseService {
 		if (type == TypeAdresseRepresentant.TUTELLE || type == TypeAdresseRepresentant.CURATELLE) {
 
 			final EnsembleTiersCouple ensemble = tiersService.getEnsembleTiersCouple(menage, date);
-			final PersonnePhysique principal = getPrincipalPourAdresse(menage, date);
+			final PersonnePhysique principal = getPrincipalPourAdresse(menage);
 			final PersonnePhysique conjoint = ensemble.getConjoint(principal);
+
+			if (principal == null) {
+				// pas de principal, pas de tuteur
+				return null;
+			}
 
 			final RapportEntreTiers rapportPrincipal = TiersHelper.getRapportSujetOfType(principal, type.getTypeRapport(), date);
 			if (rapportPrincipal == null) {
@@ -1340,7 +1345,7 @@ public class AdresseServiceImpl implements AdresseService {
 			// Un ménage ne peut pas être mis sous tutelle/curatelle, seulement les personnes physiques qui le compose. On va donc chercher le tuteur/curateur sur ces derniers.
 
 			final EnsembleTiersCouple ensemble = tiersService.getEnsembleTiersCouple(menage, date);
-			final PersonnePhysique principal = getPrincipalPourAdresse(menage, date);
+			final PersonnePhysique principal = getPrincipalPourAdresse(menage);
 			final PersonnePhysique conjoint = ensemble.getConjoint(principal);
 
 			if (principal == null) {
@@ -1459,9 +1464,8 @@ public class AdresseServiceImpl implements AdresseService {
 		if (type == TypeAdresseRepresentant.TUTELLE || type == TypeAdresseRepresentant.CURATELLE) {
 			// Un ménage ne peut pas être mis sous tutelle/curatelle, seulement les personnes physiques qui le compose. On va donc chercher le tuteur/curateur sur ces derniers.
 
-			// Récupère la vue historique complète du ménage (date = null)
 			final EnsembleTiersCouple ensemble = tiersService.getEnsembleTiersCouple(menage, null);
-			final PersonnePhysique principal = getPrincipalPourAdresse(menage, null);
+			final PersonnePhysique principal = getPrincipalPourAdresse(menage);
 			final PersonnePhysique conjoint = ensemble.getConjoint(principal);
 
 			if (principal == null) {
@@ -1729,7 +1733,7 @@ public class AdresseServiceImpl implements AdresseService {
 			if (tiers instanceof MenageCommun) {
 				// Pour le cas du ménage commun, les adresses du principal sont utilisées comme premier défaut
 				final MenageCommun menage = (MenageCommun) tiers;
-				final PersonnePhysique principal = getPrincipalPourAdresse(menage, null); // date nulle -> on s'intéresse à la vue historique du couple
+				final PersonnePhysique principal = getPrincipalPourAdresse(menage);
 				AdresseTiers adressePrincipal = TiersHelper.getAdresseTiers(principal, type.asCoreType(), date);
 				adresse = surchargeAdresseTiers(tiers, adresse, adressePrincipal, callDepth + 1, strict);
 			}
@@ -1766,11 +1770,11 @@ public class AdresseServiceImpl implements AdresseService {
 	 * considéré comme principal pour le calcul des adresses.
 	 *
 	 * @param menageCommun le ménage commun
-	 * @param date         la date de validité du principal
 	 * @return le principal trouvé, ou <b>null</b> si le ménage ne possède aucun membre à la date spécifiée
 	 */
-	private PersonnePhysique getPrincipalPourAdresse(final MenageCommun menageCommun, RegDate date) {
-		final EnsembleTiersCouple ensemble = tiersService.getEnsembleTiersCouple(menageCommun, date);
+	private PersonnePhysique getPrincipalPourAdresse(final MenageCommun menageCommun) {
+		// [UNIREG-2234] date=null -> on s'intéresse à la vue historique du couple dans tous les cas.
+		final EnsembleTiersCouple ensemble = tiersService.getEnsembleTiersCouple(menageCommun, null);
 		final PersonnePhysique principal = ensemble.getPrincipal();
 		PersonnePhysique principalOuVaudois = principal;
 		/*
@@ -1927,7 +1931,7 @@ public class AdresseServiceImpl implements AdresseService {
 		}
 		else if (tiers instanceof MenageCommun) {
 			final MenageCommun menage = (MenageCommun) tiers;
-			final PersonnePhysique principal = getPrincipalPourAdresse(menage, date);
+			final PersonnePhysique principal = getPrincipalPourAdresse(menage);
 
 			if (principal != null && principal.getNumeroIndividu() != null && principal.getNumeroIndividu() != 0) { //le principal peut être null dans le cas d'un mariage annulé
 				adressesCiviles = getAdressesCiviles(principal, date, strict);
@@ -1994,8 +1998,7 @@ public class AdresseServiceImpl implements AdresseService {
 		}
 		else if (tiers instanceof MenageCommun) {
 			final MenageCommun menage = (MenageCommun) tiers;
-			/* Récupère la vue historique complète du ménage (date = null) */
-			final PersonnePhysique principal = getPrincipalPourAdresse(menage, null);
+			final PersonnePhysique principal = getPrincipalPourAdresse(menage);
 
 			if (principal != null && principal.getNumeroIndividu() != null && principal.getNumeroIndividu() != 0) { //le principal peut être null dans le cas d'un couple annulé
 				adressesCiviles = getAdressesCivilesHisto(principal, strict);

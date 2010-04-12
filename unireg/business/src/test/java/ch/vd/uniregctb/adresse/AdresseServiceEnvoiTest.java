@@ -17,6 +17,7 @@ import java.util.List;
 
 import static org.junit.Assert.*;
 
+@SuppressWarnings({"JavaDoc"})
 public class AdresseServiceEnvoiTest extends BusinessTest {
 
 	private AdresseService adresseService;
@@ -155,6 +156,68 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 			assertEquals(2, nomCourrier.size());
 			assertEquals("Pierre Dupont", nomCourrier.get(0));
 			assertEquals("Marie Dupont", nomCourrier.get(1));
+		}
+	}
+
+	/**
+	 * [UNIREG-2234] Vérifie que l'adresse complète du couple est disponible, même après la date de séparation/divorce
+	 */
+	@Test
+	public void testGetAdresseEnvoiCoupleApresDivorce() throws Exception {
+
+		final long noIndividuPrincipal = 2;
+		final long noIndividuConjoint = 4;
+
+		/*
+		 * Crée les données du mock service civil
+		 */
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				MockIndividu pierre = addIndividu(noIndividuPrincipal, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
+				MockIndividu marie = addIndividu(noIndividuConjoint, RegDate.get(1959, 3, 14), "Dupont", "Marie", false);
+
+				marieIndividus(pierre, marie, RegDate.get(1980, 1, 1));
+
+				// adresses courriers
+				MockAdresse adressePierre = (MockAdresse) addAdresse(pierre, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate.get(1980, 1, 1), null);
+				adressePierre.setNumero("3bis");
+				addAdresse(marie, EnumTypeAdresse.COURRIER, MockRue.Lausanne.BoulevardGrancy, null, RegDate.get(1980, 1, 1), null);
+			}
+		});
+
+		long noMenageCommun = (Long) doInNewTransaction(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				// Crée un ménage composé de deux habitants divorcé en 2004
+				PersonnePhysique principal = addHabitant(noIndividuPrincipal);
+				PersonnePhysique conjoint = addHabitant(noIndividuConjoint);
+				EnsembleTiersCouple ensemble = addEnsembleTiersCouple(principal, conjoint, date(1994, 7, 14), date(2004, 7, 14));
+				return ensemble.getMenage().getNumero();
+			}
+		});
+
+		{
+			final MenageCommun menage = (MenageCommun) tiersService.getTiers(noMenageCommun);
+			assertNotNull(menage);
+
+			// Adresse d'envoi sans mention de date (= dernier état connu)
+			final AdresseEnvoiDetaillee adresse = adresseService.getAdresseEnvoi(menage, null, TypeAdresseFiscale.COURRIER, true);
+			assertNotNull(adresse);
+			assertEquals("Monsieur et Madame", adresse.getLigne1());
+			assertEquals("Pierre Dupont", adresse.getLigne2());
+			assertEquals("Marie Dupont", adresse.getLigne3());
+			assertEquals("Av de Beaulieu 3bis", adresse.getLigne4());
+			assertEquals("1000 Lausanne", adresse.getLigne5());
+			assertNull(adresse.getLigne6());
+			assertTrue(adresse.isSuisse());
+			assertEquals("Monsieur et Madame", adresse.getSalutations());
+			assertEquals("Monsieur et Madame", adresse.getFormuleAppel());
+
+			// Toutes les adresses d'envoi (avant mariage, pendant et après) du couple doivent être les mêmes en l'occurence
+			assertAdressesEquals(adresse, adresseService.getAdresseEnvoi(menage, date(1980, 1, 1), TypeAdresseFiscale.COURRIER, true)); // avant
+			assertAdressesEquals(adresse, adresseService.getAdresseEnvoi(menage, date(2000, 1, 1), TypeAdresseFiscale.COURRIER, true)); // pendant
+			assertAdressesEquals(adresse, adresseService.getAdresseEnvoi(menage, date(2010, 1, 1), TypeAdresseFiscale.COURRIER, true)); // après
 		}
 	}
 
