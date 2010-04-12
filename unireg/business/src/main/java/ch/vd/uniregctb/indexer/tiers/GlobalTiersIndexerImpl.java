@@ -266,7 +266,7 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer {
 		int i = 0;
 		
 		for (Long id : ids) {
-			statusManager.setMessage("Suppression du tiers " + id + " sur " + size, (100 * i) / size);
+			statusManager.setMessage("Suppression du tiers " + id, (100 * i) / size);
 			removeEntity(id, TiersIndexable.TYPE);
 			i++;
 		}
