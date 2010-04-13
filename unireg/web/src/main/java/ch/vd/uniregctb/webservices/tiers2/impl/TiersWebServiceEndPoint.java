@@ -35,6 +35,8 @@ import java.util.List;
 public class TiersWebServiceEndPoint implements TiersWebService {
 
 	private static final Logger LOGGER = Logger.getLogger(TiersWebServiceEndPoint.class);
+	private static final Logger READ_ACCESS = Logger.getLogger("tiers2.read");
+	private static final Logger WRITE_ACCESS = Logger.getLogger("tiers2.write");
 
 	private TiersWebService service;
 
@@ -52,6 +54,7 @@ public class TiersWebServiceEndPoint implements TiersWebService {
 			@WebParam(targetNamespace = "http://www.vd.ch/uniregctb/webservices/tiers2", partName = "params", name = "SearchTiers") SearchTiers params)
 			throws BusinessException, AccessDeniedException, TechnicalException {
 		try {
+			logReadAccess(params);
 			login(params.login);
 			checkLimitedReadAccess(params.login);
 			return service.searchTiers(params);
@@ -87,6 +90,7 @@ public class TiersWebServiceEndPoint implements TiersWebService {
 			@WebParam(targetNamespace = "http://www.vd.ch/uniregctb/webservices/tiers2", partName = "params", name = "GetTiersType") GetTiersType params)
 			throws BusinessException, AccessDeniedException, TechnicalException {
 		try {
+			logReadAccess(params);
 			login(params.login);
 			checkGeneralReadAccess(params.login);
 			final Type type = service.getTiersType(params);
@@ -126,6 +130,7 @@ public class TiersWebServiceEndPoint implements TiersWebService {
 			@WebParam(targetNamespace = "http://www.vd.ch/uniregctb/webservices/tiers2", partName = "params", name = "GetTiers") GetTiers params)
 			throws BusinessException, AccessDeniedException, TechnicalException {
 		try {
+			logReadAccess(params);
 			login(params.login);
 			checkGeneralReadAccess(params.login);
 			final Tiers tiers = service.getTiers(params);
@@ -166,6 +171,7 @@ public class TiersWebServiceEndPoint implements TiersWebService {
 			@WebParam(targetNamespace = "http://www.vd.ch/uniregctb/webservices/tiers2", partName = "params", name = "GetTiersPeriode") GetTiersPeriode params)
 			throws BusinessException, AccessDeniedException, TechnicalException {
 		try {
+			logReadAccess(params);
 			login(params.login);
 			checkGeneralReadAccess(params.login);
 			final TiersHisto tiers = service.getTiersPeriode(params);
@@ -206,6 +212,7 @@ public class TiersWebServiceEndPoint implements TiersWebService {
 			@WebParam(targetNamespace = "http://www.vd.ch/uniregctb/webservices/tiers2", partName = "params", name = "GetTiersHisto") GetTiersHisto params)
 			throws BusinessException, AccessDeniedException, TechnicalException {
 		try {
+			logReadAccess(params);
 			login(params.login);
 			checkGeneralReadAccess(params.login);
 			final TiersHisto tiers = service.getTiersHisto(params);
@@ -243,6 +250,7 @@ public class TiersWebServiceEndPoint implements TiersWebService {
 			@WebParam(targetNamespace = "http://www.vd.ch/uniregctb/webservices/tiers2", partName = "params", name = "GetBatchTiers") GetBatchTiers params)
 			throws BusinessException, AccessDeniedException, TechnicalException {
 		try {
+			logReadAccess(params);
 			login(params.login);
 			checkGeneralReadAccess(params.login);
 			final BatchTiers batch = service.getBatchTiers(params);
@@ -281,6 +289,7 @@ public class TiersWebServiceEndPoint implements TiersWebService {
 			@WebParam(targetNamespace = "http://www.vd.ch/uniregctb/webservices/tiers2", partName = "params", name = "GetBatchTiersHisto") GetBatchTiersHisto params)
 			throws BusinessException, AccessDeniedException, TechnicalException {
 		try {
+			logReadAccess(params);
 			login(params.login);
 			checkGeneralReadAccess(params.login);
 			final BatchTiersHisto batch = service.getBatchTiersHisto(params);
@@ -322,6 +331,7 @@ public class TiersWebServiceEndPoint implements TiersWebService {
 			@WebParam(targetNamespace = "http://www.vd.ch/uniregctb/webservices/tiers2", partName = "params", name = "SetTiersBlocRembAuto") SetTiersBlocRembAuto params)
 			throws BusinessException, AccessDeniedException, TechnicalException {
 		try {
+			logWriteAccess(params);
 			login(params.login);
 			checkGeneralReadAccess(params.login);
 			checkTiersWriteAccess(params.tiersNumber);
@@ -358,6 +368,7 @@ public class TiersWebServiceEndPoint implements TiersWebService {
 			@WebParam(targetNamespace = "http://www.vd.ch/uniregctb/webservices/tiers2", partName = "params", name = "SearchEvenementsPM") SearchEvenementsPM params)
 			throws BusinessException, AccessDeniedException, TechnicalException {
 		try {
+			logReadAccess(params);
 			login(params.login);
 			checkGeneralReadAccess(params.login);
 			// TODO (msi) implémenter le contrôle d'accès au niveau PM
@@ -391,6 +402,7 @@ public class TiersWebServiceEndPoint implements TiersWebService {
 			@WebParam(targetNamespace = "http://www.vd.ch/uniregctb/webservices/tiers2", partName = "params", name = "GetDebiteurInfo") GetDebiteurInfo params) throws
 			BusinessException, AccessDeniedException, TechnicalException {
 		try {
+			logReadAccess(params);
 			login(params.login);
 			checkGeneralReadAccess(params.login);
 			final DebiteurInfo info = service.getDebiteurInfo(params);
@@ -428,6 +440,7 @@ public class TiersWebServiceEndPoint implements TiersWebService {
 			@WebParam(targetNamespace = "http://www.vd.ch/uniregctb/webservices/tiers2", partName = "params", name = "QuittancerDeclarations") QuittancerDeclarations params) throws BusinessException,
 			AccessDeniedException, TechnicalException {
 		try {
+			logWriteAccess(params);
 			login(params.login);
 			checkGeneralReadAccess(params.login);
 
@@ -728,6 +741,18 @@ public class TiersWebServiceEndPoint implements TiersWebService {
 				message.append("\", type=").append(entry.exceptionType);
 			}
 			LOGGER.error(message.toString());
+		}
+	}
+
+	private static void logReadAccess(Object params) {
+		if (READ_ACCESS.isInfoEnabled()) {
+			READ_ACCESS.info(params.toString());
+		}
+	}
+
+	private static void logWriteAccess(Object params) {
+		if (WRITE_ACCESS.isInfoEnabled()) {
+			WRITE_ACCESS.info(params.toString());
 		}
 	}
 }
