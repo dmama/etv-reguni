@@ -53,13 +53,14 @@ public class PdfEnvoiSommationsDIsRapport extends PdfRapport {
                 public void fillTable(PdfTableSimple table) throws DocumentException {
                     table.addLigne("Nombre total de DI sommées:", String.valueOf(results.getTotalDisSommees()));
                     for (Integer annee : results.getListeAnnees()) {
-                        table.addLigne(String.format("Période %s:", annee), String.valueOf(results.getTotalSommations(annee)));
+                        table.addLigne(String.format("Période %s :", annee), String.valueOf(results.getTotalSommations(annee)));
                     }
-                    table.addLigne("Nombre de DI non sommées pour cause de non assujettisement:", String.valueOf(results
-                            .getTotalNonAssujettissement()));
-                    table.addLigne("Nombre de sommations en erreur:", String.valueOf(results.getTotalSommationsEnErreur()));
-	                table.addLigne("Durée d'exécution du job:", formatDureeExecution(results));
-                    table.addLigne("Date de génération du rapport:", formatTimestamp(dateGeneration));
+                    table.addLigne("Nombre de DI non sommées pour cause de non assujettisement :", String.valueOf(results.getTotalNonAssujettissement()));
+                    table.addLigne("Nombre de DI non sommées pour cause de contribuable indigent :", String.valueOf(results.getTotalIndigent()));
+                    table.addLigne("Nombre de DI non sommées pour cause d'optionnalité :", String.valueOf(results.getTotalDisOptionnelles()));
+                    table.addLigne("Nombre de sommations en erreur :", String.valueOf(results.getTotalSommationsEnErreur()));
+	                table.addLigne("Durée d'exécution du job :", formatDureeExecution(results));
+                    table.addLigne("Date de génération du rapport :", formatTimestamp(dateGeneration));
                 }
             });
         }
@@ -84,11 +85,20 @@ public class PdfEnvoiSommationsDIsRapport extends PdfRapport {
 
         // DI avec contribuables indigents.
         {
-            String filename = "indigent.csv";
+            String filename = "indigents.csv";
             String contenu = asCsvFileSommationDI(results.getListeIndigent(), filename, status);
             String titre = "Liste des déclarations dont les contribuables sont indigents";
             String listVide = "(aucune déclaration n'est liée à un contribuable indigent)";
             addListeDetaillee(writer, results.getTotalIndigent(), titre, listVide, filename, contenu);
+        }
+
+        // DI optionnelles
+        {
+            String filename = "optionnelles.csv";
+            String contenu = asCsvFileSommationDI(results.getDisOptionnelles(), filename, status);
+            String titre = "Liste des déclarations non-sommées car optionnelles";
+            String listVide = "(aucune déclaration sommable n'est optionnelle)";
+            addListeDetaillee(writer, results.getTotalDisOptionnelles(), titre, listVide, filename, contenu);
         }
 
         // DI sommées.
@@ -97,7 +107,7 @@ public class PdfEnvoiSommationsDIsRapport extends PdfRapport {
             String contenu = asCsvFileSommationDI(results.getSommations(), filename, status);
             String titre = "Liste des déclarations sommées";
             String listVide = "(aucune déclaration sommée)";
-            addListeDetaillee(writer, results.getTotalNonAssujettissement(), titre, listVide, filename, contenu);
+            addListeDetaillee(writer, results.getTotalDisSommees(), titre, listVide, filename, contenu);
         }
 
         close();

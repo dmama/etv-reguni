@@ -16,6 +16,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.BatchTransactionTemplate;
@@ -28,7 +29,9 @@ import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
+import ch.vd.uniregctb.metier.assujettissement.DecompositionForsAnneeComplete;
 import ch.vd.uniregctb.metier.assujettissement.Indigent;
+import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
 import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
@@ -85,7 +88,6 @@ public class EnvoiSommationsDIsProcessor  {
 		t.execute(rapportFinal, new BatchCallback<Long, EnvoiSommationsDIsResults>() {
 
 			int currentBatch = 0;
-			private EnvoiSommationsDIsResults rapport;
 
 			@Override
 			public EnvoiSommationsDIsResults createSubRapport() {
@@ -93,106 +95,18 @@ public class EnvoiSommationsDIsProcessor  {
 			}
 
 			public boolean doInTransaction(List<Long> batch, EnvoiSommationsDIsResults r) {
-				rapport = r;
 				currentBatch++;
 				try {
 					final Set<DeclarationImpotOrdinaire> declarations = declarationImpotOrdinaireDAO.getDIsForSommation(batch);
 					final Iterator<DeclarationImpotOrdinaire> iter = declarations.iterator();
-					while (iter.hasNext() && ! status.interrupted() && ( nombreMax == 0 || (rapportFinal.getTotalDisSommees()  + this.rapport.getTotalDisSommees() )< nombreMax) ) {
-						DeclarationImpotOrdinaire di = iter.next();
-						// Verification des pré-requis avant la sommation
-						if ( !checkEtat(di) || !checkDateDelai(di) || !checkContribuable(di) ) {
-							continue;
-						}
-						RegDate finDelai;
-						finDelai = delaisService.getDateFinDelaiEnvoiSommationDeclarationImpot(di.getDelaiAccordeAu());
-						if (finDelai.isBefore(dateTraitement)) {
-							try {
-								List<Assujettissement> assujettissements = Assujettissement.determine((Contribuable)di.getTiers(), di.getPeriode().getAnnee());
-								if (assujettissements == null || assujettissements.isEmpty()) {
-									String msg = String.format(
-											"La di [id: %s] n'a pas été sommée car le contribuable [%s] n'est pas assujetti pour la période fiscale %s",
-											di.getId().toString(), di.getTiers().getNumero(), di.getPeriode().getAnnee());
-									LOGGER.info(msg);
-									this.rapport.addNonAssujettissement(di);
-								} else {
-									// Le contribuable est assujetti
-									if (isIndigent(di,	assujettissements)) {
-										String msg = String.format(
-												"La di [id: %s] n'a pas été sommée car le contribuable [%s] est indigent au %s",
-												di.getId().toString(), di.getTiers().getNumero(), RegDateHelper.dateToDisplayString(di.getDateFin()));
-										LOGGER.info(msg);
-										this.rapport.addIndigent(di);
-									} else {
-										sommerDI(di, miseSousPliImpossible, dateTraitement);
-										LOGGER.info(
-												String.format(
-														"La di [id: %s; ctb: %s; periode: %s; debut: %s; fin: %s] a été sommée",
-														di.getId().toString(),
-														di.getTiers().getNumero().toString(),
-														di.getPeriode().getAnnee(),
-														di.getDateDebut(),
-														di.getDateFin()));
-										this.rapport.addDiSommee(di.getPeriode().getAnnee(), di);
-									}
-								}
-							}
-							catch (RuntimeException e) {
-								this.rapport.addError(di,e.getMessage());
-								LOGGER.error(e.getMessage(), e);
-								throw e;
-							} catch (Exception e) {
-								this.rapport.addError(di,e.getMessage());
-								LOGGER.error(e.getMessage(), e);
-								throw new RuntimeException(e);
-							}
-						} else {
-							LOGGER.info(
-									String.format(
-											"le délai de la DI (au %s) + le délai de sommation effictive (au %s) n'est pas dépassé",
-											di.getDelaiAccordeAu().toString(), finDelai.toString()));
-						}
+					while (iter.hasNext() && ! status.interrupted() && (nombreMax == 0 || (rapportFinal.getTotalDisSommees()  + r.getTotalDisSommees()) < nombreMax)) {
+						final DeclarationImpotOrdinaire di = iter.next();
+						traiterDI(di, r, dateTraitement, miseSousPliImpossible);
 					}
 				} finally {
 					LOGGER.debug("Batch no " + currentBatch + " terminé");
 				}
-				return  (nombreMax == 0 || (rapportFinal.getTotalDisSommees()  + this.rapport.getTotalDisSommees() ) < nombreMax) && !status.interrupted();
-			}
-
-			private boolean checkDateDelai(DeclarationImpotOrdinaire di) {
-				if (di.getDelaiAccordeAu() == null) {
-					// Ce cas ne devrait plus se produire, toute les di devraient avoir un délai
-					String msg = String.format("La di [id: %s] n'a pas de délai, cela ne devrait pas être possible !", di.getNumero());
-					LOGGER.error(msg);
-					rapport.addError(di, msg);
-					return false;
-				}
-				return true;
-			}
-
-			private boolean checkContribuable(DeclarationImpotOrdinaire di) {
-				if (!(di.getTiers() instanceof Contribuable)) {
-					// Ce cas ne devrait pas se produire, une di est forcement rattaché à un tiers qui est un contribuable.
-					String msg = String.format(
-							"Le tiers [%s] n'est pas un contribuable, on ne peut pas calculer son assujettisement",
-							di.getId().toString());
-					LOGGER.error(msg);
-					rapport.addError(di, msg);
-					return false;
-				}
-				return true;
-			}
-
-			private boolean checkEtat(DeclarationImpotOrdinaire di) {
-				if (TypeEtatDeclaration.EMISE != di.getDernierEtat().getEtat()) {
-					// Ce cas pourrait eventuellement se produire dans le cas ou une di aurait 2 états à la même date,
-					// il s'agirait alors de donnée corrompue ...
-					String msg = String.format("La di [id: %s] n'est pas à l'état 'EMISE' et ne peut donc être sommée",	di.getId().toString());
-					LOGGER.error(msg);
-					rapport.addError(di, msg);
-					return false;
-				}
-				return true;
+				return  (nombreMax == 0 || (rapportFinal.getTotalDisSommees()  + r.getTotalDisSommees() ) < nombreMax) && !status.interrupted();
 			}
 
 			@Override
@@ -205,17 +119,108 @@ public class EnvoiSommationsDIsProcessor  {
 			}
 		});
 
-		String msg = String.format(
+		final String msg = String.format(
 				"Envoi des sommations pour les DI au %s (traitement terminé; %d sommées, %d en erreur))",
 				RegDateHelper.dateToDisplayString(dateTraitement),
 				rapportFinal.getTotalDisSommees(),
-				rapportFinal.getTotalSommationsEnErreur()
-			);
+				rapportFinal.getTotalSommationsEnErreur());
 		LOGGER.info(msg);
 		statusManager.setMessage(msg);
 		rapportFinal.setInterrompu(statusManager.interrupted());
 		rapportFinal.end();
 		return rapportFinal;
+	}
+
+	private void traiterDI(DeclarationImpotOrdinaire di, EnvoiSommationsDIsResults r, RegDate dateTraitement, boolean miseSousPliImpossible) {
+		// Verification des pré-requis avant la sommation
+		if (checkEtat(di, r) && checkDateDelai(di, r) && checkContribuable(di, r)) {
+
+			final RegDate finDelai = delaisService.getDateFinDelaiEnvoiSommationDeclarationImpot(di.getDelaiAccordeAu());
+			if (finDelai.isBefore(dateTraitement)) {
+				try {
+					final List<Assujettissement> assujettissements = Assujettissement.determine((Contribuable)di.getTiers(), di.getPeriode().getAnnee());
+					if (assujettissements == null || assujettissements.isEmpty()) {
+						final String msg = String.format(
+								"La di [id: %s] n'a pas été sommée car le contribuable [%s] n'est pas assujetti pour la période fiscale %s",
+								di.getId().toString(), di.getTiers().getNumero(), di.getPeriode().getAnnee());
+						LOGGER.info(msg);
+						r.addNonAssujettissement(di);
+					}
+					else if (isIndigent(di,	assujettissements)) {
+						final String msg = String.format(
+									"La di [id: %s] n'a pas été sommée car le contribuable [%s] est indigent au %s",
+									di.getId().toString(), di.getTiers().getNumero(), RegDateHelper.dateToDisplayString(di.getDateFin()));
+							LOGGER.info(msg);
+							r.addIndigent(di);
+					}
+					else if (isOptionnelle(di, assujettissements)) {
+						final String msg = String.format(
+									"La di [id: %s] du contribuable [%s] n'a pas été sommée car elle était optionelle",
+									di.getId().toString(), di.getTiers().getNumero());
+							LOGGER.info(msg);
+							r.addDiOptionelle(di);
+					}
+					else {
+						sommerDI(di, miseSousPliImpossible, dateTraitement);
+						LOGGER.info(String.format(
+										"La di [id: %s; ctb: %s; periode: %s; debut: %s; fin: %s] a été sommée",
+										di.getId().toString(),
+										di.getTiers().getNumero().toString(),
+										di.getPeriode().getAnnee(),
+										di.getDateDebut(),
+										di.getDateFin()));
+						r.addDiSommee(di.getPeriode().getAnnee(), di);
+					}
+				}
+				catch (RuntimeException e) {
+					r.addError(di,e.getMessage());
+					LOGGER.error(e.getMessage(), e);
+					throw e;
+				} catch (Exception e) {
+					r.addError(di,e.getMessage());
+					LOGGER.error(e.getMessage(), e);
+					throw new RuntimeException(e);
+				}
+			} else {
+				LOGGER.info(String.format(
+								"le délai de la DI (au %s) + le délai de sommation effective (au %s) n'est pas dépassé",
+								di.getDelaiAccordeAu().toString(), finDelai.toString()));
+			}
+		}
+	}
+
+	private boolean checkDateDelai(DeclarationImpotOrdinaire di, EnvoiSommationsDIsResults r) {
+		if (di.getDelaiAccordeAu() == null) {
+			// Ce cas ne devrait plus se produire, toute les di devraient avoir un délai
+			final String msg = String.format("La di [id: %s] n'a pas de délai, cela ne devrait pas être possible !", di.getNumero());
+			LOGGER.error(msg);
+			r.addError(di, msg);
+			return false;
+		}
+		return true;
+	}
+
+	private boolean checkContribuable(DeclarationImpotOrdinaire di, EnvoiSommationsDIsResults r) {
+		if (!(di.getTiers() instanceof Contribuable)) {
+			// Ce cas ne devrait pas se produire, une di est forcement rattaché à un tiers qui est un contribuable.
+			final String msg = String.format("Le tiers [%s] n'est pas un contribuable, on ne peut pas calculer son assujettisement", di.getId().toString());
+			LOGGER.error(msg);
+			r.addError(di, msg);
+			return false;
+		}
+		return true;
+	}
+
+	private boolean checkEtat(DeclarationImpotOrdinaire di, EnvoiSommationsDIsResults r) {
+		if (TypeEtatDeclaration.EMISE != di.getDernierEtat().getEtat()) {
+			// Ce cas pourrait eventuellement se produire dans le cas ou une di aurait 2 états à la même date,
+			// il s'agirait alors de donnée corrompue ...
+			final String msg = String.format("La di [id: %s] n'est pas à l'état 'EMISE' et ne peut donc être sommée",	di.getId().toString());
+			LOGGER.error(msg);
+			r.addError(di, msg);
+			return false;
+		}
+		return true;
 	}
 
 	private void sommerDI(final DeclarationImpotOrdinaire di, boolean miseSousPliImpossible, final RegDate dateTraitement) throws DeclarationException {
@@ -229,6 +234,24 @@ public class EnvoiSommationsDIsProcessor  {
 		di.addEtat(etat);
 
 		diService.envoiSommationDIForBatch(di, miseSousPliImpossible, dateTraitement);
+	}
+
+	/**
+	 * Si la DI était optionelle (ou remplacée par une note), alors il ne faut pas la sommer
+	 */
+	private boolean isOptionnelle(DeclarationImpotOrdinaire di, List<Assujettissement> assujettissements) {
+		final DecompositionForsAnneeComplete fors = new DecompositionForsAnneeComplete((Contribuable) di.getTiers(), di.getPeriode().getAnnee());
+		boolean optionnel = true;
+		for (Assujettissement a : assujettissements) {
+			final PeriodeImposition periodeImposition = PeriodeImposition.determinePeriodeImposition(fors, a);
+			if (DateRangeHelper.intersect(di, periodeImposition)) {
+				optionnel = periodeImposition.isOptionnelle() || periodeImposition.isRemplaceeParNote();
+				if (!optionnel) {
+					break;
+				}
+			}
+		}
+		return optionnel;
 	}
 	
 	/**

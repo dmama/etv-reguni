@@ -15,14 +15,12 @@ public class EnvoiSommationsDIsResults extends JobResults<Long, EnvoiSommationsD
 
 	public static class Info {
 		protected static final String COMMA = ";";
-		private DeclarationImpotOrdinaire di;
 		private Long noTiers;
 		private Integer anneePeriode;
 		private RegDate diDateDebut;
 		private RegDate diDateFin;
 		
 		private Info(DeclarationImpotOrdinaire di) {
-			this.di = di;
 			noTiers = di.getTiers().getNumero();
 			anneePeriode = di.getPeriode().getAnnee();
 			diDateDebut = di.getDateDebut();
@@ -30,15 +28,10 @@ public class EnvoiSommationsDIsResults extends JobResults<Long, EnvoiSommationsD
 		}
 
 		private Info(Long noTiers) {
-			this.di = null;
 			this.noTiers = noTiers;
 			anneePeriode = null;
 			diDateDebut = null;
 			diDateFin = null;
-		}
-
-		public DeclarationImpotOrdinaire getDi() {
-			return di;
 		}
 
 		public Long getNumeroTiers() {
@@ -66,7 +59,7 @@ public class EnvoiSommationsDIsResults extends JobResults<Long, EnvoiSommationsD
 		}
 
 		public String getCVS() {
-			StringBuilder cvs =  new StringBuilder();
+			final StringBuilder cvs =  new StringBuilder();
 			cvs.append(getNumeroTiers()).append(COMMA);
 			cvs.append(getAnneePeriode()).append(COMMA);
 			cvs.append(RegDateHelper.dateToDisplayString(getDiDateDebut())).append(COMMA);
@@ -118,11 +111,13 @@ public class EnvoiSommationsDIsResults extends JobResults<Long, EnvoiSommationsD
 	private Map<Integer, List<Info>> sommationsParPeriode = new HashMap<Integer, List<Info>>();
 	private List<Info> disContribuablesNonAssujettis = new ArrayList<Info>();
 	private List<Info> disContribuablesIndigents = new ArrayList<Info>();
+	private List<Info> disOptionnelles = new ArrayList<Info>();
 
 	public void addAll(EnvoiSommationsDIsResults right) {
 		this.sommationsEnErreur.addAll(right.sommationsEnErreur);
 		this.disContribuablesNonAssujettis.addAll(right.disContribuablesNonAssujettis);
 		this.disContribuablesIndigents.addAll(right.disContribuablesIndigents);
+		this.disOptionnelles.addAll(right.disOptionnelles);
 		List<Integer> annees = new ArrayList<Integer>(sommationsParPeriode.keySet());
 		for (Integer annee : annees) {
 			if (right.sommationsParPeriode.containsKey(annee)) {
@@ -187,7 +182,7 @@ public class EnvoiSommationsDIsResults extends JobResults<Long, EnvoiSommationsD
 	}
 	
 	public int getTotalDisTraitees() {
-		return getTotalDisSommees() + getTotalSommationsEnErreur() + getTotalNonAssujettissement();
+		return getTotalDisSommees() + getTotalSommationsEnErreur() + getTotalNonAssujettissement() + getTotalIndigent() + getTotalDisOptionnelles();
 	}
 
 	public RegDate getDateTraitement() {
@@ -229,13 +224,25 @@ public class EnvoiSommationsDIsResults extends JobResults<Long, EnvoiSommationsD
 	public void addIndigent(DeclarationImpotOrdinaire di) {
 		disContribuablesIndigents.add(new Info(di));
 	}
-	
+
 	public int getTotalIndigent() {
 		return disContribuablesIndigents.size();
 	}
 
 	public List<Info> getListeIndigent() {
 		return Collections.unmodifiableList(disContribuablesIndigents);
+	}
+
+	public void addDiOptionelle(DeclarationImpotOrdinaire di) {
+		disOptionnelles.add(new Info(di));
+	}
+
+	public int getTotalDisOptionnelles() {
+		return disOptionnelles.size();
+	}
+
+	public List<Info> getDisOptionnelles() {
+		return Collections.unmodifiableList(disOptionnelles);
 	}
 
 	public List<Info> getSommations() {
