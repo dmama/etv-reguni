@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Set;
 
 import ch.vd.uniregctb.tiers.*;
+
+import org.apache.commons.lang.StringUtils;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 
@@ -330,7 +332,7 @@ public class MetierServiceImpl implements MetierService {
 					}
 					else {
 						final ForFiscalPrincipal ffpPrincipal = principal.getForFiscalPrincipalAt(dateEffective);
-						if (ffpPrincipal != null && dateEffective.equals(ffpPrincipal.getDateDebut()) && MotifFor.MAJORITE.equals(ffpPrincipal.getMotifOuverture())) {
+						if (ffpPrincipal != null && dateEffective.equals(ffpPrincipal.getDateDebut()) && MotifFor.MAJORITE == ffpPrincipal.getMotifOuverture()) {
 							// mariage d'une personne physique avec un for le même jour du mariage (motif majorité)
 
 							// annulation du for puisqu'il va être "remplacé" par celui du couple
@@ -340,8 +342,8 @@ public class MetierServiceImpl implements MetierService {
 						}
 
 						if (conjoint != null) {
-							ForFiscalPrincipal ffpConjoint = conjoint.getForFiscalPrincipalAt(dateEffective);
-							if (ffpConjoint != null && dateEffective.equals(ffpConjoint.getDateDebut()) && MotifFor.MAJORITE.equals(ffpConjoint.getMotifOuverture())) {
+							final ForFiscalPrincipal ffpConjoint = conjoint.getForFiscalPrincipalAt(dateEffective);
+							if (ffpConjoint != null && dateEffective.equals(ffpConjoint.getDateDebut()) && MotifFor.MAJORITE == ffpConjoint.getMotifOuverture()) {
 								// mariage d'une personne physique avec un for le même jour du mariage (motif majorité)
 
 								// annulation du for puisqu'il va être "remplacé" par celui du couple
@@ -372,8 +374,8 @@ public class MetierServiceImpl implements MetierService {
 				}
 				else {
 					// sinon il faut determiner selon le principe dans [UNIREG-1462]
-					final boolean principalDansCanton = (forPrincipal == null ? false : TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD.equals(forPrincipal.getTypeAutoriteFiscale()));
-					final boolean conjointDansCanton = (forConjoint == null ? false : TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD.equals(forConjoint.getTypeAutoriteFiscale()));
+					final boolean principalDansCanton = forPrincipal != null && TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD == forPrincipal.getTypeAutoriteFiscale();
+					final boolean conjointDansCanton = forConjoint != null && TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD == forConjoint.getTypeAutoriteFiscale();
 					if (principalDansCanton || !conjointDansCanton) {
 						// si le for du principal est dans le canton ou celui de son conjoint ne l'est pas, on utilise le for du principal
 						forPourMenage = forPrincipal;
@@ -405,7 +407,7 @@ public class MetierServiceImpl implements MetierService {
 			createForsAutreElementImpossable(dateEffective, menageCommun, ffaeiConjoint, motifOuverture);
 		}
 
-		if (remarque != null && !"".equals(remarque.trim())) {
+		if (!StringUtils.isBlank(remarque)) {
 			principal.setRemarque((principal.getRemarque() != null ? principal.getRemarque() : "") + remarque);
 			if (conjoint != null) {
 				conjoint.setRemarque((conjoint.getRemarque() != null ? conjoint.getRemarque() : "") + remarque);
@@ -525,8 +527,8 @@ public class MetierServiceImpl implements MetierService {
 		if (etatCivilPrincipal == null || (!estMarieSeul && etatCivilConjoint == null)) {
 			auMoinsUnSansEtatCivil = true;
 		}
-		else if (etatCivilPrincipal != null) {
-			etatsCivilsDifferents = !etatCivilPrincipal.equals(etatCivilFamille) || (!estMarieSeul && !etatCivilConjoint.equals(etatCivilFamille));
+		else {
+			etatsCivilsDifferents = (etatCivilPrincipal != etatCivilFamille) || (!estMarieSeul && !etatCivilConjoint.equals(etatCivilFamille));
 		}
 		if (auMoinsUnNonHabitant || auMoinsUnSansEtatCivil || etatsCivilsDifferents) {
 			/*
@@ -751,7 +753,7 @@ public class MetierServiceImpl implements MetierService {
 		 */
 		updateSituationFamilleMariage(menage, date, etatCivilFamille);
 
-		if (remarque != null && !"".equals(remarque.trim())) {
+		if (!StringUtils.isBlank(remarque)) {
 			menage.setRemarque((menage.getRemarque() != null ? menage.getRemarque() : "") + remarque);
 			pp.setRemarque((pp.getRemarque() != null ? pp.getRemarque() : "") + remarque);
 		}
@@ -851,7 +853,7 @@ public class MetierServiceImpl implements MetierService {
 
 		// fermeture des rapport du ménage (1 seul doit exister);
 		for (RapportEntreTiers rapport : autreMenage.getRapportsObjet()) {
-			if (!rapport.isAnnule() && TypeRapportEntreTiers.APPARTENANCE_MENAGE.equals(rapport.getType()) &&
+			if (!rapport.isAnnule() && TypeRapportEntreTiers.APPARTENANCE_MENAGE == rapport.getType() &&
 					rapport.getDateFin() == null && rapport.getSujetId().equals(conjoint.getId())) {
 				rapport.setAnnule(true);
 			}
@@ -868,7 +870,7 @@ public class MetierServiceImpl implements MetierService {
 		createForsAutreElementImpossable(dateDebut, menageChoisi, ffaeiAutreMenage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
 
 		// si le nouveau mode d'imposition a pu être déterminé et n'est pas le même
-		if (imposition != null && !imposition.getModeImposition().equals(impositionMenage)) {
+		if (imposition != null && imposition.getModeImposition() != impositionMenage) {
 			forFPMenage.setModeImposition(imposition.getModeImposition());
 		}
 
@@ -878,7 +880,7 @@ public class MetierServiceImpl implements MetierService {
 		updateSituationFamilleMariage(menageChoisi, dateDebut, etatCivilFamille);
 
 		// ajout de la remarque aux tiers mis à jour
-		if (remarque != null && !"".equals(remarque.trim())) {
+		if (!StringUtils.isBlank(remarque)) {
 			principal.setRemarque((principal.getRemarque() != null ? principal.getRemarque() : "") + remarque);
 			if (conjoint != null) {
 				conjoint.setRemarque((conjoint.getRemarque() != null ? conjoint.getRemarque() : "") + remarque);
@@ -1068,7 +1070,7 @@ public class MetierServiceImpl implements MetierService {
 		Set<RapportEntreTiers> rapports = principal.getRapportsSujet();
 		RapportEntreTiers dernierRapportMenage = null;
 		for (RapportEntreTiers rapportEntreTiers : rapports) {
-			if (!rapportEntreTiers.isAnnule() && TypeRapportEntreTiers.APPARTENANCE_MENAGE.equals(rapportEntreTiers.getType())) {
+			if (!rapportEntreTiers.isAnnule() && TypeRapportEntreTiers.APPARTENANCE_MENAGE == rapportEntreTiers.getType()) {
 				if (dernierRapportMenage == null || RegDateHelper.isAfterOrEqual(rapportEntreTiers.getDateDebut(), dernierRapportMenage.getDateDebut(), NullDateBehavior.EARLIEST)) {
 					dernierRapportMenage = rapportEntreTiers;
 				}
@@ -1226,7 +1228,7 @@ public class MetierServiceImpl implements MetierService {
 				}
 			}
 
-			if (remarque != null && !"".equals(remarque.trim())) {
+			if (!StringUtils.isBlank(remarque)) {
 				principal.setRemarque((principal.getRemarque() != null ? principal.getRemarque() : "") + remarque);
 				if (conjoint != null) {
 					conjoint.setRemarque((conjoint.getRemarque() != null ? conjoint.getRemarque() : "") + remarque);
@@ -1267,7 +1269,7 @@ public class MetierServiceImpl implements MetierService {
 				sansEtatCivil = true;
 			}
 			else {
-				etatCivilDifferent = !etatCivilActif.equals(etatCivil);
+				etatCivilDifferent = etatCivilActif != etatCivil;
 			}
 
 			if (nonHabitant || sansEtatCivil || etatCivilDifferent) {
@@ -1400,7 +1402,7 @@ public class MetierServiceImpl implements MetierService {
 				}
 				else {
 					ch.vd.uniregctb.type.EtatCivil etatCivilActif = situationFamilleService.getEtatCivil(pp, date);
-					if (!etatCivilActif.equals(etatCivilFamille)) {
+					if (etatCivilActif != etatCivilFamille) {
 						etatsCivilsDifferents = true;
 					}
 				}
@@ -1522,7 +1524,7 @@ public class MetierServiceImpl implements MetierService {
 				boolean isForFiscalRevenuFortune = forFiscal instanceof ForFiscalRevenuFortune;
 				boolean isForFiscalAutreImpot = forFiscal instanceof ForFiscalAutreImpot;
 				if (isForFiscalAutreImpot ||
-						(isForFiscalRevenuFortune && motifOverture.equals(((ForFiscalRevenuFortune) forFiscal).getMotifOuverture()))) {
+						(isForFiscalRevenuFortune && motifOverture == ((ForFiscalRevenuFortune) forFiscal).getMotifOuverture())) {
 					forFiscal.setAnnule(true);
 				}
 			}
@@ -1591,8 +1593,8 @@ public class MetierServiceImpl implements MetierService {
 			else {
 
 				// Pour le défunt
-				ForFiscalPrincipal ffpDefunt = defunt.getDernierForFiscalPrincipal();
-				if (ffpDefunt != null && ffpDefunt.getDateDebut().isAfter(date) && !MotifFor.VEUVAGE_DECES.equals(ffpDefunt.getMotifOuverture())) {
+				final ForFiscalPrincipal ffpDefunt = defunt.getDernierForFiscalPrincipal();
+				if (ffpDefunt != null && ffpDefunt.getDateDebut().isAfter(date) && MotifFor.VEUVAGE_DECES != ffpDefunt.getMotifOuverture()) {
 					results.addError("Le défunt possède un for fiscal principal ouvert après la date de décès" );
 				}
 			}
@@ -1622,7 +1624,7 @@ public class MetierServiceImpl implements MetierService {
 
 		RegDate lendemainDeces = date.getOneDayAfter();
 		ForFiscalPrincipal ffpApresDeces = defunt.getForFiscalPrincipalAt(lendemainDeces);
-		if (ffpApresDeces != null && ffpApresDeces.getDateDebut().equals(lendemainDeces) && MotifFor.VEUVAGE_DECES.equals(ffpApresDeces.getMotifOuverture())) {
+		if (ffpApresDeces != null && ffpApresDeces.getDateDebut().equals(lendemainDeces) && MotifFor.VEUVAGE_DECES == ffpApresDeces.getMotifOuverture()) {
 			// si le défunt posède un for le lendemain du décès, lui et son conjoint sont décédés le même jour
 			Audit.info(numeroEvenement, "Les deux conjoints sont décédés le même jour");
 			Audit.info(numeroEvenement, "Annulation du for fiscal du deuxième défunt");
@@ -1709,7 +1711,7 @@ public class MetierServiceImpl implements MetierService {
 			tiersService.closeAllRapports(defunt, date);
 		}
 
-		if (remarque != null && !"".equals(remarque.trim())) {
+		if (!StringUtils.isBlank(remarque)) {
 			defunt.setRemarque((defunt.getRemarque() != null ? defunt.getRemarque() : "") + remarque);
 			if (veuf != null) {
 				veuf.setRemarque((veuf.getRemarque() != null ? veuf.getRemarque() : "") + remarque);
@@ -2006,7 +2008,7 @@ public class MetierServiceImpl implements MetierService {
 			createForsAutreElementImpossable(date.getOneDayAfter(), veuf, forsAutreElement, MotifFor.VEUVAGE_DECES);
 		}
 
-		if (remarque != null && !"".equals(remarque.trim())) {
+		if (!StringUtils.isBlank(remarque)) {
 			veuf.setRemarque((veuf.getRemarque() != null ? veuf.getRemarque() : "") + remarque);
 			menage.setRemarque((menage.getRemarque() != null ? menage.getRemarque() : "") + remarque);
 		}
@@ -2024,7 +2026,7 @@ public class MetierServiceImpl implements MetierService {
 			ForFiscalPrincipal dernierForMenage = menage.getDernierForFiscalPrincipal();
 			ForFiscalPrincipal forCourantVeuf = veuf.getForFiscalPrincipalAt(null);
 
-			if (dernierForMenage != null && date.equals(dernierForMenage.getDateFin()) && MotifFor.VEUVAGE_DECES.equals(dernierForMenage.getMotifFermeture())
+			if (dernierForMenage != null && date.equals(dernierForMenage.getDateFin()) && MotifFor.VEUVAGE_DECES == dernierForMenage.getMotifFermeture()
 					&& forCourantVeuf == null ) {
 				return true;
 			}
@@ -2062,7 +2064,7 @@ public class MetierServiceImpl implements MetierService {
 		 */
 		cancelForsOpenedSince(lendemain, tiers, MotifFor.VEUVAGE_DECES);
 
-		if (ffp != null && MotifFor.VEUVAGE_DECES.equals(ffp.getMotifOuverture())) {
+		if (ffp != null && MotifFor.VEUVAGE_DECES == ffp.getMotifOuverture()) {
 			/*
 			 * Réouverture du rapport tiers-ménage
 			 */
