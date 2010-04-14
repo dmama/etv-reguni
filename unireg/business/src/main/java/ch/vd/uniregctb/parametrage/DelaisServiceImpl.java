@@ -149,7 +149,7 @@ public class DelaisServiceImpl implements DelaisService {
 	 * @see ch.vd.uniregctb.parametrage.DelaisService#getDateFinDelaiEnvoiSommationListeRecapitulative(ch.vd.registre.base.date.RegDate)
 	 */
 	public RegDate getDateFinDelaiEnvoiSommationListeRecapitulative(RegDate dateDebut){
-		return getFinDelai(dateDebut, parametreAppService.getDelaiEcheanceSommationListeRecapitualtive());
+		return getFinDelai(dateDebut, parametreAppService.getDelaiEnvoiSommationListeRecapitulative());
 	}
 
 	/* (non-Javadoc)
