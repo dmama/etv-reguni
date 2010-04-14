@@ -104,17 +104,14 @@ public class Ec_2001_05_AnnulationDeces_Separe_Scenario extends EvenementCivilSc
 	public void etape1() throws Exception {
 
 		final PersonnePhysique jean = addHabitant(noIndJean);
-		addForFiscalPrincipal(jean, MockCommune.Lausanne.getNoOFS(), LENDEMAIN_DATE_SEPARATION, DATE_DECES,
-				MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MotifFor.VEUVAGE_DECES);
+		addForFiscalPrincipal(jean, MockCommune.Lausanne, LENDEMAIN_DATE_SEPARATION, DATE_DECES, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MotifFor.VEUVAGE_DECES);
 
 		final PersonnePhysique georgette = addHabitant(noIndGeorgette);
-		addForFiscalPrincipal(georgette, MockCommune.Lausanne.getNoOFS(), LENDEMAIN_DATE_SEPARATION, null,
-				MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, null);
+		addForFiscalPrincipal(georgette, MockCommune.Lausanne, LENDEMAIN_DATE_SEPARATION, null, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, null);
 
 		final EnsembleTiersCouple ensemble = tiersService.createEnsembleTiersCouple(jean, georgette, DATE_MARIAGE, DATE_SEPARATION);
 		final MenageCommun menage = ensemble.getMenage();
-		addForFiscalPrincipal(menage, MockCommune.Lausanne.getNoOFS(), DATE_MARIAGE, DATE_SEPARATION,
-				MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT);
+		addForFiscalPrincipal(menage, MockCommune.Lausanne, DATE_MARIAGE, DATE_SEPARATION, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT);
 
 		noCtbJean = jean.getNumero();
 	}

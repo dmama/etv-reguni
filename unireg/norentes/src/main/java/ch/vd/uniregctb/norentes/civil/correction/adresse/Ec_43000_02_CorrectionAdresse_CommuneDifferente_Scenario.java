@@ -74,7 +74,7 @@ public class Ec_43000_02_CorrectionAdresse_CommuneDifferente_Scenario extends Ev
 	@Etape(id=1, descr="Construction du contribuable")
 	public void etape1() throws Exception {
 		final PersonnePhysique conceicao = addHabitant(noIndConceicao);
-		addForFiscalPrincipal(conceicao, MockCommune.Aubonne.getNoOFS(), date(2008, 4, 1), null, MotifFor.ARRIVEE_HS, null);
+		addForFiscalPrincipal(conceicao, MockCommune.Aubonne, date(2008, 4, 1), null, MotifFor.ARRIVEE_HS, null);
 		noHabConceicao = conceicao.getNumero();
 	}
 

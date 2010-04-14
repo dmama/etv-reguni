@@ -75,16 +75,14 @@ public class Ec_7000_01_Reconciliation_MarieSeul_Scenario extends EvenementCivil
 	public void step1() {
 		PersonnePhysique pierre = addHabitant(noIndPierre);
 		noHabPierre = pierre.getNumero();
-		addForFiscalPrincipal(pierre, MockCommune.Lausanne.getNoOFS(), dateSeparation, null,
-				MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, null);
+		addForFiscalPrincipal(pierre, MockCommune.Lausanne, dateSeparation, null, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, null);
 
 		// ménage
 		MenageCommun menage = new MenageCommun();
 		menage = (MenageCommun) tiersDAO.save(menage);
 		noMenage = menage.getNumero();
 		tiersService.addTiersToCouple(menage, pierre, dateMariage, dateSeparation.getOneDayBefore());
-		addForFiscalPrincipal(menage, communeMariage.getNoOFS(), dateMariage, dateSeparation.getOneDayBefore(),
-				MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT);
+		addForFiscalPrincipal(menage, communeMariage, dateMariage, dateSeparation.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT);
 	}
 
 	@Check(id=1, descr="Vérifie que l'habitant Pierre a un For fiscal principal ouvert et que le For du ménage est fermé")

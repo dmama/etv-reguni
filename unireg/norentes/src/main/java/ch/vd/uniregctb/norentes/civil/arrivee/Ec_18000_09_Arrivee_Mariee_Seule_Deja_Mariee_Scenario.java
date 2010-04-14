@@ -101,8 +101,7 @@ public class Ec_18000_09_Arrivee_Mariee_Seule_Deja_Mariee_Scenario extends Evene
 		final EnsembleTiersCouple ensemble = tiersService.createEnsembleTiersCouple(jean, georgette, date(2008, 7, 26), null);
 
 		final MenageCommun menage = ensemble.getMenage();
-		addForFiscalPrincipal(menage, MockCommune.Lausanne.getNoOFS(), date(2008, 7, 26), null,
-				MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null);
+		addForFiscalPrincipal(menage, MockCommune.Lausanne, date(2008, 7, 26), null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null);
 
 		noCtbMenageCommun = menage.getNumero();
 		noCtbJean = jean.getNumero();

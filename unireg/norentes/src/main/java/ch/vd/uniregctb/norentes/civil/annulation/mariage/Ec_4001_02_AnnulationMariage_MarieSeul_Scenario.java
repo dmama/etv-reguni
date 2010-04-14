@@ -82,8 +82,7 @@ public class Ec_4001_02_AnnulationMariage_MarieSeul_Scenario extends EvenementCi
 		PersonnePhysique pierre = addHabitant(noIndPierre);
 		noHabPierre = pierre.getNumero();
 
-		ForFiscalPrincipal f = addForFiscalPrincipal(pierre, commune.getNoOFS(), dateDebutSuisse, dateMariage.getOneDayBefore(),
-				MotifFor.ARRIVEE_HC, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
+		ForFiscalPrincipal f = addForFiscalPrincipal(pierre, commune, dateDebutSuisse, dateMariage.getOneDayBefore(), MotifFor.ARRIVEE_HC, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
 		f.setModeImposition(ModeImposition.SOURCE);
 
 		// Ménage
@@ -91,8 +90,7 @@ public class Ec_4001_02_AnnulationMariage_MarieSeul_Scenario extends EvenementCi
 		noMenage = menage.getNumero();
 		tiersService.addTiersToCouple(menage, pierre, dateMariage, null);
 
-		f = addForFiscalPrincipal(menage, commune.getNoOFS(), dateMariage, null,
-				MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null);
+		f = addForFiscalPrincipal(menage, commune, dateMariage, null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null);
 		f.setModeImposition(ModeImposition.SOURCE);
 	}
 

@@ -83,8 +83,7 @@ public class Ec_6000_01_Separation_MarieSeul_Scenario extends EvenementCivilScen
 		final PersonnePhysique julie = addHabitant(noIndJulie);
 		{
 			noHabJulie = julie.getNumero();
-			addForFiscalPrincipal(julie, MockCommune.Lausanne.getNoOFS(), dateMajorite, dateAvantMariage, MotifFor.MAJORITE,
-					MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
+			addForFiscalPrincipal(julie, MockCommune.Lausanne, dateMajorite, dateAvantMariage, MotifFor.MAJORITE, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
 		}
 
 		// ménage
@@ -93,8 +92,7 @@ public class Ec_6000_01_Separation_MarieSeul_Scenario extends EvenementCivilScen
 			menage = (MenageCommun)tiersDAO.save(menage);
 			noMenage = menage.getNumero();
 			tiersService.addTiersToCouple(menage, julie, dateMariage, null);
-			final ForFiscalPrincipal f = addForFiscalPrincipal(menage, communeMariage.getNoOFS(), dateMariage, null,
-					MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null);
+			final ForFiscalPrincipal f = addForFiscalPrincipal(menage, communeMariage, dateMariage, null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null);
 			f.setModeImposition(ModeImposition.DEPENSE);
 		}
 	}

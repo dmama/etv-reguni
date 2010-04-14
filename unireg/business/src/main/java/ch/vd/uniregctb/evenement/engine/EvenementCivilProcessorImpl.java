@@ -233,17 +233,25 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor, Eve
 						evenementCivilHandler.validate(adapter, erreurs, warnings);
 						/* 2.3 - lancement du traitement par le handler */
 						if (erreurs.isEmpty()) {
-							final Pair<PersonnePhysique, PersonnePhysique> nouvellesPP = evenementCivilHandler.handle(adapter, warnings);
+							final Pair<PersonnePhysique, PersonnePhysique> nouveauxHabitants = evenementCivilHandler.handle(adapter, warnings);
 
-							// adaptation des données dans l'événement civil regroupé en cas de création de nouvelles personnes physiques
-							if (nouvellesPP != null) {
-								if (nouvellesPP.getFirst() != null && evenementCivilRegroupe.getNumeroIndividuPrincipal() != null && evenementCivilRegroupe.getNumeroIndividuPrincipal() > 0L) {
-									Assert.isNull(evenementCivilRegroupe.getHabitantPrincipal());
-									evenementCivilRegroupe.setHabitantPrincipal(nouvellesPP.getFirst());
+							// adaptation des données dans l'événement civil regroupé en cas de création de nouveaux habitants
+							if (nouveauxHabitants != null) {
+								if (nouveauxHabitants.getFirst() != null && evenementCivilRegroupe.getNumeroIndividuPrincipal() != null && evenementCivilRegroupe.getNumeroIndividuPrincipal() > 0L) {
+									if (evenementCivilRegroupe.getHabitantPrincipal() == null) {
+										evenementCivilRegroupe.setHabitantPrincipal(nouveauxHabitants.getFirst());
+									}
+									else {
+										Assert.isEqual(evenementCivilRegroupe.getHabitantPrincipal().getNumero(), nouveauxHabitants.getFirst().getNumero());
+									}
 								}
-								if (nouvellesPP.getSecond() != null && evenementCivilRegroupe.getNumeroIndividuConjoint() != null && evenementCivilRegroupe.getNumeroIndividuConjoint() > 0L) {
-									Assert.isNull(evenementCivilRegroupe.getHabitantConjoint());
-									evenementCivilRegroupe.setHabitantConjoint(nouvellesPP.getSecond());
+								if (nouveauxHabitants.getSecond() != null && evenementCivilRegroupe.getNumeroIndividuConjoint() != null && evenementCivilRegroupe.getNumeroIndividuConjoint() > 0L) {
+									if (evenementCivilRegroupe.getHabitantConjoint() == null) {
+										evenementCivilRegroupe.setHabitantConjoint(nouveauxHabitants.getSecond());
+									}
+									else {
+										Assert.isEqual(evenementCivilRegroupe.getHabitantConjoint().getNumero(), nouveauxHabitants.getSecond().getNumero());
+									}
 								}
 							}
 						}

@@ -78,8 +78,7 @@ public class Ec_10000_02_Veuvage_NonSuisseMarieSeul_Scenario extends EvenementCi
 		// Pierre
 		PersonnePhysique mikkel = addHabitant(noIndMikkel);
 		noHabMikkel = mikkel.getNumero();
-		ForFiscalPrincipal f = addForFiscalPrincipal(mikkel, MockCommune.VillarsSousYens.getNoOFS(), RegDate.get(1974, 3, 3),
-				avantDateMariage, MotifFor.DEMENAGEMENT_VD, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
+		ForFiscalPrincipal f = addForFiscalPrincipal(mikkel, MockCommune.VillarsSousYens, RegDate.get(1974, 3, 3), avantDateMariage, MotifFor.DEMENAGEMENT_VD, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
 		f.setModeImposition(ModeImposition.SOURCE);
 
 		// ménage
@@ -87,8 +86,7 @@ public class Ec_10000_02_Veuvage_NonSuisseMarieSeul_Scenario extends EvenementCi
 		menage = (MenageCommun)tiersDAO.save(menage);
 		noMenage = menage.getNumero();
 		tiersService.addTiersToCouple(menage, mikkel, dateMariage, null);
-		f = addForFiscalPrincipal(menage, communeMariage.getNoOFS(), dateMariage, null,
-				MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null);
+		f = addForFiscalPrincipal(menage, communeMariage, dateMariage, null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null);
 		f.setModeImposition(ModeImposition.ORDINAIRE);
 
 	}

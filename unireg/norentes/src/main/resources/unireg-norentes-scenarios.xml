@@ -209,6 +209,9 @@
 	<bean id="ec_18000_16_Arrivee_CoupleDateRapportEntreTiers_Scenario" parent="evenementCivilScenario" class="ch.vd.uniregctb.norentes.civil.arrivee.Ec_18000_16_Arrivee_CoupleDateRapportEntreTiers_Scenario" >
 		<property name="serviceInfrastructureService" ref="serviceInfrastructureService"/>
 	</bean>
+	<bean id="ec_18000_17_Arrivee_JIRA1677_Scenario" parent="evenementCivilScenario" class="ch.vd.uniregctb.norentes.civil.arrivee.Ec_18000_17_Arrivee_JIRA1677_Scenario" >
+		<property name="serviceInfrastructureService" ref="serviceInfrastructureService"/>
+	</bean>
 
 	<!-- Scénarios de départ -->
 	<bean id="ec_19000_01_Depart_1_Scenario" parent="evenementCivilScenario"

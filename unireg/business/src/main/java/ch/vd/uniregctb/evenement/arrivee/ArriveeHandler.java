@@ -467,13 +467,14 @@ public class ArriveeHandler extends EvenementCivilHandlerBase {
 		final PersonnePhysique pp = getTiersDAO().getPPByNumeroIndividu(individu.getNoTechnique());
 		final PersonnePhysique habitant;
 		if (pp != null) {
-			nouveau.setValue(false);
 			if (pp.isHabitant()) {
+				nouveau.setValue(false);
 				habitant = pp;
 			}
 			else {
 				habitant = getService().changeNHenHabitant(pp, pp.getNumeroIndividu(), dateEvenement);
 				Audit.info(evenementId, "Le non habitant " + habitant.getNumero() + " devient habitant");
+				nouveau.setValue(true);
 			}
 		}
 		else {
@@ -482,7 +483,7 @@ public class ArriveeHandler extends EvenementCivilHandlerBase {
 				final PersonnePhysique nhab = nonHabitants.get(0);
 				habitant = getService().changeNHenHabitant(nhab, individu.getNoTechnique(), dateEvenement);
 				Audit.info(evenementId, "Le non habitant " + habitant.getNumero() + " devient habitant");
-				nouveau.setValue(false);
+				nouveau.setValue(true);
 			}
 			else if (nonHabitants.size() == 0 || !behavior.isErrorOnMultiples()) {
 				final PersonnePhysique nouvelHabitant = new PersonnePhysique(true);

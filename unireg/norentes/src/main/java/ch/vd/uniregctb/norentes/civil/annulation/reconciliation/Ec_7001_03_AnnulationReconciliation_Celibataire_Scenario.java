@@ -45,7 +45,7 @@ public class Ec_7001_03_AnnulationReconciliation_Celibataire_Scenario extends Ab
 		// Julie
 		PersonnePhysique julie = addHabitant(noIndJulie);
 		noHabJulie = julie.getNumero();
-		ForFiscalPrincipal ffp = addForFiscalPrincipal(julie, commune.getNoOFS(), dateDebut, null, MotifFor.ARRIVEE_HC, null);
+		ForFiscalPrincipal ffp = addForFiscalPrincipal(julie, commune, dateDebut, null, MotifFor.ARRIVEE_HC, null);
 		ffp.setModeImposition(ModeImposition.SOURCE);
 	}
 

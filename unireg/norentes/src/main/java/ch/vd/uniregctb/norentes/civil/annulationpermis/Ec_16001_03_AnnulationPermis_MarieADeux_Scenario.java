@@ -87,24 +87,21 @@ public class Ec_16001_03_AnnulationPermis_MarieADeux_Scenario extends Annulation
 		// momo
 		PersonnePhysique momo = addHabitant(noIndMomo);
 		noHabMomo = momo.getNumero();
-		ForFiscalPrincipal f = addForFiscalPrincipal(momo, MockCommune.VillarsSousYens.getNoOFS(), dateArriveeVillars, dateAvantMariage,
-				MotifFor.ARRIVEE_HS, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
+		ForFiscalPrincipal f = addForFiscalPrincipal(momo, MockCommune.VillarsSousYens, dateArriveeVillars, dateAvantMariage, MotifFor.ARRIVEE_HS, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
 		f.setModeImposition(ModeImposition.SOURCE);
 		// bea
 		PersonnePhysique bea = addHabitant(noIndBea);
 		noHabBea = bea.getNumero();
-		addForFiscalPrincipal(bea, MockCommune.Lausanne.getNoOFS(), dateMajorite, dateAvantMariage, MotifFor.MAJORITE,
-				MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
+		addForFiscalPrincipal(bea, MockCommune.Lausanne, dateMajorite, dateAvantMariage, MotifFor.MAJORITE, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
 		// ménage
 		MenageCommun menage = new MenageCommun();
 		menage = (MenageCommun)tiersDAO.save(menage);
 		noMenage = menage.getNumero();
 		tiersService.addTiersToCouple(menage, momo, dateMariage, null);
 		tiersService.addTiersToCouple(menage, bea, dateMariage, null);
-		f = addForFiscalPrincipal(menage, communeMariage.getNoOFS(), dateMariage, dateObtentionPermis.getOneDayBefore(),
-				MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MotifFor.PERMIS_C_SUISSE);
+		f = addForFiscalPrincipal(menage, communeMariage, dateMariage, dateObtentionPermis.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MotifFor.PERMIS_C_SUISSE);
 		f.setModeImposition(ModeImposition.ORDINAIRE);
-		f = addForFiscalPrincipal(menage, communeMariage.getNoOFS(), dateObtentionPermis, null, MotifFor.PERMIS_C_SUISSE, null);
+		f = addForFiscalPrincipal(menage, communeMariage, dateObtentionPermis, null, MotifFor.PERMIS_C_SUISSE, null);
 		f.setModeImposition(ModeImposition.ORDINAIRE);
 	}
 

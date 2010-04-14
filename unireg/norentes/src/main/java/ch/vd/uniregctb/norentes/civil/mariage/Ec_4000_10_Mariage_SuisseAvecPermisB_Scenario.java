@@ -86,7 +86,7 @@ public class Ec_4000_10_Mariage_SuisseAvecPermisB_Scenario extends EvenementCivi
 
 		// rafa est sourcier
 		noCtbRafa = rafa.getNumero();
-		final ForFiscalPrincipal ffpRafa = addForFiscalPrincipal(rafa, MockCommune.Lausanne.getNoOFS(), dateMajoriteRafa, null, MotifFor.MAJORITE, null);
+		final ForFiscalPrincipal ffpRafa = addForFiscalPrincipal(rafa, MockCommune.Lausanne, dateMajoriteRafa, null, MotifFor.MAJORITE, null);
 		ffpRafa.setModeImposition(ModeImposition.SOURCE);
 
 		// maria n'a pas de for

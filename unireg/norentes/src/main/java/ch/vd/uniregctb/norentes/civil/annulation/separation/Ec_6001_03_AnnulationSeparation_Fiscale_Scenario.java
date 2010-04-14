@@ -83,8 +83,7 @@ public class Ec_6001_03_AnnulationSeparation_Fiscale_Scenario extends AbstractAn
 		PersonnePhysique andrea = addHabitant(noIndAndrea);
 		noHabAndrea = andrea.getNumero();
 		{
-			ForFiscalPrincipal ffp = addForFiscalPrincipal(andrea, commune.getNoOFS(), dateSeparation, null,
-					MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, null);
+			ForFiscalPrincipal ffp = addForFiscalPrincipal(andrea, commune, dateSeparation, null, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, null);
 			ffp.setModeImposition(ModeImposition.ORDINAIRE);
 		}
 
@@ -92,8 +91,7 @@ public class Ec_6001_03_AnnulationSeparation_Fiscale_Scenario extends AbstractAn
 		PersonnePhysique liliana = addHabitant(noIndLiliana);
 		noHabLiliana = liliana.getNumero();
 		{
-			ForFiscalPrincipal ffp = addForFiscalPrincipal(liliana, commune.getNoOFS(), dateSeparation, null,
-					MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, null);
+			ForFiscalPrincipal ffp = addForFiscalPrincipal(liliana, commune, dateSeparation, null, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, null);
 			ffp.setModeImposition(ModeImposition.ORDINAIRE);
 		}
 
@@ -103,8 +101,7 @@ public class Ec_6001_03_AnnulationSeparation_Fiscale_Scenario extends AbstractAn
 		tiersService.addTiersToCouple(menage, andrea, dateMariage, dateSeparation.getOneDayBefore());
 		tiersService.addTiersToCouple(menage, liliana, dateMariage, dateSeparation.getOneDayBefore());
 		{
-			ForFiscalPrincipal ffp = addForFiscalPrincipal(menage, commune.getNoOFS(), dateMariage, dateSeparation.getOneDayBefore(),
-					MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT);
+			ForFiscalPrincipal ffp = addForFiscalPrincipal(menage, commune, dateMariage, dateSeparation.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT);
 			ffp.setModeImposition(ModeImposition.ORDINAIRE);
 		}
 	}

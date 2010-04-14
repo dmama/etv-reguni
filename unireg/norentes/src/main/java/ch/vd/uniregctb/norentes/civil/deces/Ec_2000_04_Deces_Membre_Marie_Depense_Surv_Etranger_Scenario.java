@@ -68,7 +68,7 @@ public class Ec_2000_04_Deces_Membre_Marie_Depense_Surv_Etranger_Scenario extend
 
 	private final RegDate lendemainDeces = dateDeces.getOneDayAfter();
 
-	private final int commune = MockCommune.Lausanne.getNoOFS();
+	private final MockCommune commune = MockCommune.Lausanne;
 
 	@Override
 	protected void initServiceCivil() {
@@ -144,7 +144,7 @@ public class Ec_2000_04_Deces_Membre_Marie_Depense_Surv_Etranger_Scenario extend
 			assertNotNull(ffp, "For principal du Ménage " + mc.getNumero() + " null");
 			assertEquals(dateArriveeVD, ffp.getDateDebut(), "Date de début du dernier for fausse");
 			assertNull(ffp.getDateFin(), "Date de fin du dernier for fausse");
-			assertEquals(commune, ffp.getNumeroOfsAutoriteFiscale(), "Le dernier for n'est pas sur Lausanne");
+			assertEquals(commune.getNoOFSEtendu(), ffp.getNumeroOfsAutoriteFiscale(), "Le dernier for n'est pas sur Lausanne");
 			assertEquals(ModeImposition.DEPENSE, ffp.getModeImposition(), "Le mode d'imposition n'est pas la dépense");
 
 			// [UNIREG-823] situation de famille

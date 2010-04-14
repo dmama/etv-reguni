@@ -106,7 +106,7 @@ public class Ec_4000_09_Mariage_JIRA1481_Scenario extends EvenementCivilScenario
 		{
 			noCtbAngela = angela.getNumero();
 			
-			addForFiscalPrincipal(angela, commune.getNoOFS(), dateArriveeAngela, null, MotifFor.ARRIVEE_HC, null);
+			addForFiscalPrincipal(angela, commune, dateArriveeAngela, null, MotifFor.ARRIVEE_HC, null);
 		}
 	}
 

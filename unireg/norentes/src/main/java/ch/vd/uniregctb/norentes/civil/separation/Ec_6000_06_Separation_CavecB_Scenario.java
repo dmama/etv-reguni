@@ -108,8 +108,7 @@ public class Ec_6000_06_Separation_CavecB_Scenario extends EvenementCivilScenari
 			noMenage = menage.getNumero();
 			tiersService.addTiersToCouple(menage, esad, dateDebutCouple, null);
 			tiersService.addTiersToCouple(menage, aida, dateDebutCouple, null);
-			final ForFiscalPrincipal f = addForFiscalPrincipal(menage, commune.getNoOFS(), dateDebutForCouple, null,
-					MotifFor.DEMENAGEMENT_VD, null);
+			final ForFiscalPrincipal f = addForFiscalPrincipal(menage, commune, dateDebutForCouple, null, MotifFor.DEMENAGEMENT_VD, null);
 			f.setModeImposition(ModeImposition.ORDINAIRE);
 		}
 	}

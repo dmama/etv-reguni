@@ -107,7 +107,7 @@ public class Ec_19000_05_Depart_JIRA1394_Scenario extends DepartScenario {
 			tiersService.addTiersToCouple(menage, sven, dateMariage, null);
 			tiersService.addTiersToCouple(menage, elly, dateMariage, null);
 			
-			addForFiscalPrincipal(menage, commune.getNoOFS(), dateMariage, null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null);
+			addForFiscalPrincipal(menage, commune, dateMariage, null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null);
 			addForFiscalSecondaire(menage, commune.getNoOFS(), dateAchatImmeuble, null);
 		}
 	}

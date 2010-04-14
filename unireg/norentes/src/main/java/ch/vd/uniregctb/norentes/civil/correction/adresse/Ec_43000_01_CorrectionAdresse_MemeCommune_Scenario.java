@@ -73,7 +73,7 @@ public class Ec_43000_01_CorrectionAdresse_MemeCommune_Scenario extends Evenemen
 	@Etape(id=1, descr="Construction du contribuable")
 	public void etape1() throws Exception {
 		final PersonnePhysique conceicao = addHabitant(noIndConceicao);
-		addForFiscalPrincipal(conceicao, MockCommune.Lausanne.getNoOFS(), date(2008, 4, 1), null, MotifFor.ARRIVEE_HS, null);
+		addForFiscalPrincipal(conceicao, MockCommune.Lausanne, date(2008, 4, 1), null, MotifFor.ARRIVEE_HS, null);
 		noHabConceicao = conceicao.getNumero();
 	}
 

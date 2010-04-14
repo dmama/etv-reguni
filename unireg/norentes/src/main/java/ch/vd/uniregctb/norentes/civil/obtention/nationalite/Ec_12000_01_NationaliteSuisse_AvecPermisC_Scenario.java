@@ -75,11 +75,10 @@ public class Ec_12000_01_NationaliteSuisse_AvecPermisC_Scenario extends Evenemen
 	public void etape1() {
 		PersonnePhysique julie = addHabitant(noIndJulie);
 		noHabJulie = julie.getNumero();
-		ForFiscalPrincipal f = addForFiscalPrincipal(julie, commune.getNoOFS(), dateDebutSuisse, dateObtentionPermis.getOneDayBefore(),
-				MotifFor.DEBUT_EXPLOITATION, MotifFor.PERMIS_C_SUISSE);
+		ForFiscalPrincipal f = addForFiscalPrincipal(julie, commune, dateDebutSuisse, dateObtentionPermis.getOneDayBefore(), MotifFor.DEBUT_EXPLOITATION, MotifFor.PERMIS_C_SUISSE);
 		f.setModeImposition(ModeImposition.SOURCE);
 
-		f = addForFiscalPrincipal(julie, commune.getNoOFS(), dateObtentionPermis, null, MotifFor.PERMIS_C_SUISSE, null);
+		f = addForFiscalPrincipal(julie, commune, dateObtentionPermis, null, MotifFor.PERMIS_C_SUISSE, null);
 		f.setModeImposition(ModeImposition.ORDINAIRE);
 	}
 

@@ -73,23 +73,19 @@ public class Ec_4001_04_AnnulationMariage_CoupleSepare_Scenario extends Evenemen
 		// Maurice
 		PersonnePhysique momo = addHabitant(noIndMomo);
 		noHabMomo = momo.getNumero();
-		ForFiscalPrincipal ffpMomo = addForFiscalPrincipal(momo, commune.getNoOFS(), dateDebutMomo, dateMariage.getOneDayBefore(),
-				MotifFor.ARRIVEE_HC, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
+		ForFiscalPrincipal ffpMomo = addForFiscalPrincipal(momo, commune, dateDebutMomo, dateMariage.getOneDayBefore(), MotifFor.ARRIVEE_HC, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
 		ffpMomo.setModeImposition(ModeImposition.ORDINAIRE);
 
-		ffpMomo = addForFiscalPrincipal(momo, commune.getNoOFS(), dateSeparation, null,
-				MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, null);
+		ffpMomo = addForFiscalPrincipal(momo, commune, dateSeparation, null, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, null);
 		ffpMomo.setModeImposition(ModeImposition.ORDINAIRE);
 
 		// Béatrice
 		PersonnePhysique bea = addHabitant(noIndBea);
 		noHabBea = bea.getNumero();
-		ForFiscalPrincipal ffpBea = addForFiscalPrincipal(bea, commune.getNoOFS(), datedebutBea, dateMariage.getOneDayBefore(),
-				MotifFor.MAJORITE, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
+		ForFiscalPrincipal ffpBea = addForFiscalPrincipal(bea, commune, datedebutBea, dateMariage.getOneDayBefore(), MotifFor.MAJORITE, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
 		ffpBea.setModeImposition(ModeImposition.ORDINAIRE);
 
-		ffpBea = addForFiscalPrincipal(bea, commune.getNoOFS(), dateSeparation, null, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT,
-				null);
+		ffpBea = addForFiscalPrincipal(bea, commune, dateSeparation, null, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, null);
 		ffpBea.setModeImposition(ModeImposition.ORDINAIRE);
 
 		// Ménage commun
@@ -98,8 +94,7 @@ public class Ec_4001_04_AnnulationMariage_CoupleSepare_Scenario extends Evenemen
 		tiersService.addTiersToCouple(menage, momo, dateMariage, dateSeparation.getOneDayBefore());
 		tiersService.addTiersToCouple(menage, bea, dateMariage, dateSeparation.getOneDayBefore());
 
-		ForFiscalPrincipal ffpMennage = addForFiscalPrincipal(menage, commune.getNoOFS(), dateMariage, dateSeparation.getOneDayBefore(),
-				MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT);
+		ForFiscalPrincipal ffpMennage = addForFiscalPrincipal(menage, commune, dateMariage, dateSeparation.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT);
 		ffpMennage.setModeImposition(ModeImposition.ORDINAIRE);
 	}
 

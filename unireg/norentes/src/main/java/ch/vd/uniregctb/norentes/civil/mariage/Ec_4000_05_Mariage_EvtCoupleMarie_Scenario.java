@@ -101,15 +101,13 @@ public class Ec_4000_05_Mariage_EvtCoupleMarie_Scenario extends EvenementCivilSc
 		final PersonnePhysique jeanBruno = addHabitant(noIndJeanBruno);
 		{
 			noHabJeanBruno = jeanBruno.getNumero();
-			addForFiscalPrincipal(jeanBruno, commune.getNoOFS(), dateDebutJeanBruno, dateMariage.getOneDayBefore(),
-					MotifFor.DEBUT_EXPLOITATION, MotifFor.DEMENAGEMENT_VD);
+			addForFiscalPrincipal(jeanBruno, commune, dateDebutJeanBruno, dateMariage.getOneDayBefore(), MotifFor.DEBUT_EXPLOITATION, MotifFor.DEMENAGEMENT_VD);
 		}
 
 		final PersonnePhysique christelle = addHabitant(noIndChristelle);
 		{
 			noHabChristelle = christelle.getNumero();
-			addForFiscalPrincipal(christelle, commune.getNoOFS(), dateDemenagementChristelle, dateMariage.getOneDayBefore(),
-					MotifFor.DEMENAGEMENT_VD, MotifFor.DEMENAGEMENT_VD);
+			addForFiscalPrincipal(christelle, commune, dateDemenagementChristelle, dateMariage.getOneDayBefore(), MotifFor.DEMENAGEMENT_VD, MotifFor.DEMENAGEMENT_VD);
 		}
 
 		// ménage
@@ -120,8 +118,7 @@ public class Ec_4000_05_Mariage_EvtCoupleMarie_Scenario extends EvenementCivilSc
 			tiersService.addTiersToCouple(menage, jeanBruno, dateMariage, null);
 			tiersService.addTiersToCouple(menage, christelle, dateMariage, null);
 
-			final ForFiscalPrincipal f = addForFiscalPrincipal(menage, commune.getNoOFS(), dateMariage, null, MotifFor.DEMENAGEMENT_VD,
-					null);
+			final ForFiscalPrincipal f = addForFiscalPrincipal(menage, commune, dateMariage, null, MotifFor.DEMENAGEMENT_VD, null);
 			f.setModeImposition(ModeImposition.ORDINAIRE);
 		}
 	}

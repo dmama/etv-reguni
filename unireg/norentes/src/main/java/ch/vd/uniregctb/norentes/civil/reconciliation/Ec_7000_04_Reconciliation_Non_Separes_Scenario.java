@@ -83,22 +83,19 @@ public class Ec_7000_04_Reconciliation_Non_Separes_Scenario extends EvenementCiv
 		// momo
 		PersonnePhysique momo = addHabitant(noIndMomo);
 		noHabMomo = momo.getNumero();
-		addForFiscalPrincipal(momo, commune.getNoOFS(), RegDate.get(1981, 3, 12), dateMariage.getOneDayBefore(), MotifFor.MAJORITE,
-				MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
+		addForFiscalPrincipal(momo, commune, RegDate.get(1981, 3, 12), dateMariage.getOneDayBefore(), MotifFor.MAJORITE, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
 
 		// bea
 		PersonnePhysique bea = addHabitant(noIndBea);
 		noHabBea = bea.getNumero();
-		addForFiscalPrincipal(bea, commune.getNoOFS(), RegDate.get(1983, 8, 20), dateMariage.getOneDayBefore(), MotifFor.MAJORITE,
-				MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
+		addForFiscalPrincipal(bea, commune, RegDate.get(1983, 8, 20), dateMariage.getOneDayBefore(), MotifFor.MAJORITE, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
 
 		// ménage
 		MenageCommun menage = (MenageCommun) tiersDAO.save(new MenageCommun());
 		noMenage = menage.getNumero();
 		tiersService.addTiersToCouple(menage, momo, dateMariage, null);
 		tiersService.addTiersToCouple(menage, bea, dateMariage, null);
-		addForFiscalPrincipal(menage, commune.getNoOFS(), dateMariage, null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION,
-				null);
+		addForFiscalPrincipal(menage, commune, dateMariage, null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null);
 	}
 
 	@Check(id = 1, descr = "Vérifie que les habitants sont bien toujours mariés (Maurice et Béatrice possèdent chacun un for fiscal principal fermé et le for principal du ménage est ouvert)")

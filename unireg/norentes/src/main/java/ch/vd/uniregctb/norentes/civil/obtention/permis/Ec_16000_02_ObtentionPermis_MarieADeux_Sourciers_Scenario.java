@@ -9,7 +9,6 @@ import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
-import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
@@ -99,8 +98,7 @@ public class Ec_16000_02_ObtentionPermis_MarieADeux_Sourciers_Scenario extends E
 			tiersService.addTiersToCouple(menage, momo, dateMariage, null);
 			tiersService.addTiersToCouple(menage, bea, dateMariage, null);
 
-			ForFiscalPrincipal ffp = addForFiscalPrincipal(menage, MockLocalite.Lausanne.getCommuneLocalite().getNoOFS(), dateMariage,
-					null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null);
+			ForFiscalPrincipal ffp = addForFiscalPrincipal(menage, MockCommune.Lausanne, dateMariage, null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null);
 			ffp.setModeImposition(ModeImposition.SOURCE);
 		}
 	}

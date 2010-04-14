@@ -112,17 +112,15 @@ public class Ec_18000_01_Arrivee_1_2_1_Scenario extends EvenementCivilScenario {
 
 		PersonnePhysique alain = addHabitant(noIndAlain);
 		noHabAlain = alain.getNumero();
-		addForFiscalPrincipal(alain, MockCommune.VillarsSousYens.getNoOFS(), dateArriveeVillars, avantDateMariage, MotifFor.ARRIVEE_HC,
-				MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
+		addForFiscalPrincipal(alain, MockCommune.VillarsSousYens, dateArriveeVillars, avantDateMariage, MotifFor.ARRIVEE_HC, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
 
 		PersonnePhysique janine = addHabitant(noIndJanine);
 		noHabJanine = janine.getNumero();
-		addForFiscalPrincipal(janine, MockCommune.Lausanne.getNoOFS(), dateArriveeLausanne, avantDateMariage, MotifFor.ARRIVEE_HC,
-				MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
+		addForFiscalPrincipal(janine, MockCommune.Lausanne, dateArriveeLausanne, avantDateMariage, MotifFor.ARRIVEE_HC, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
 
 		PersonnePhysique julien = addHabitant(noIndJulien);
 		noHabJulien = julien.getNumero();
-		addForFiscalPrincipal(julien, MockCommune.Bex.getNoOFS(), dateMajoriteJulien, null, MotifFor.MAJORITE, null);
+		addForFiscalPrincipal(julien, MockCommune.Bex, dateMajoriteJulien, null, MotifFor.MAJORITE, null);
 
 		PersonnePhysique fanny = addHabitant(noIndFanny);
 		noHabFanny = fanny.getNumero();
@@ -133,8 +131,7 @@ public class Ec_18000_01_Arrivee_1_2_1_Scenario extends EvenementCivilScenario {
 		noMenage = menage.getNumero();
 		tiersService.addTiersToCouple(menage, alain, dateMariage, null);
 		tiersService.addTiersToCouple(menage, janine, dateMariage, null);
-		addForFiscalPrincipal(menage, MockCommune.Bex.getNoOFS(), dateMariage, null,
-				MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null);
+		addForFiscalPrincipal(menage, MockCommune.Bex, dateMariage, null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null);
 	}
 
 	@Check(id=1, descr="Vérifie que les 4 Habitant ont leur adresse à Bex et leur For à Bex")

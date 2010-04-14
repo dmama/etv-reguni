@@ -57,8 +57,8 @@ public class Ec_8000_02_Divorce_MarieAvecEtrangerSansPermisC_Scenario extends Ev
 	private final RegDate avantDateMariage = RegDate.get(1986, 4, 27);
 	private final RegDate dateMariage = avantDateMariage.addDays(1);
 	private final RegDate dateDivorce = RegDate.get(2008, 10, 10);
-	private final int communeMariage = MockCommune.Lausanne.getNoOFS();
-	private final int communeDivorce = MockCommune.VillarsSousYens.getNoOFS();
+	private final MockCommune communeMariage = MockCommune.Lausanne;
+	private final MockCommune communeDivorce = MockCommune.VillarsSousYens;
 
 	@Override
 	protected void initServiceCivil() {
@@ -91,8 +91,7 @@ public class Ec_8000_02_Divorce_MarieAvecEtrangerSansPermisC_Scenario extends Ev
 		final PersonnePhysique momo = addHabitant(noIndMomo);
 		{
 			noHabMomo = momo.getNumero();
-			final ForFiscalPrincipal f = addForFiscalPrincipal(momo, MockCommune.VillarsSousYens.getNoOFS(), dateArriveeVillars,
-					avantDateMariage, MotifFor.DEMENAGEMENT_VD, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
+			final ForFiscalPrincipal f = addForFiscalPrincipal(momo, MockCommune.VillarsSousYens, dateArriveeVillars, avantDateMariage, MotifFor.DEMENAGEMENT_VD, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
 			f.setModeImposition(ModeImposition.SOURCE);
 		}
 
@@ -100,8 +99,7 @@ public class Ec_8000_02_Divorce_MarieAvecEtrangerSansPermisC_Scenario extends Ev
 		final PersonnePhysique bea = addHabitant(noIndBea);
 		{
 			noHabBea = bea.getNumero();
-			final ForFiscalPrincipal f = addForFiscalPrincipal(bea, MockCommune.Lausanne.getNoOFS(), dateMajorite, avantDateMariage,
-					MotifFor.MAJORITE, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
+			final ForFiscalPrincipal f = addForFiscalPrincipal(bea, MockCommune.Lausanne, dateMajorite, avantDateMariage, MotifFor.MAJORITE, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
 			f.setModeImposition(ModeImposition.ORDINAIRE);
 		}
 
@@ -112,8 +110,7 @@ public class Ec_8000_02_Divorce_MarieAvecEtrangerSansPermisC_Scenario extends Ev
 			noMenage = menage.getNumero();
 			tiersService.addTiersToCouple(menage, momo, dateMariage, null);
 			tiersService.addTiersToCouple(menage, bea, dateMariage, null);
-			final ForFiscalPrincipal f = addForFiscalPrincipal(menage, communeMariage, dateMariage, null,
-					MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null);
+			final ForFiscalPrincipal f = addForFiscalPrincipal(menage, communeMariage, dateMariage, null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null);
 			f.setModeImposition(ModeImposition.ORDINAIRE);
 		}
 	}
@@ -142,7 +139,7 @@ public class Ec_8000_02_Divorce_MarieAvecEtrangerSansPermisC_Scenario extends Ev
 			assertNotNull(ffp, "For principal du Ménage " + mc.getNumero() + " null");
 			assertEquals(dateMariage, ffp.getDateDebut(), "Date de début du dernier for fausse");
 			assertNull(ffp.getDateFin(), "Date de fin du dernier for fausse");
-			assertEquals(communeMariage, ffp.getNumeroOfsAutoriteFiscale(), "Le dernier for n'est pas sur Villars-sous-Yens");
+			assertEquals(communeMariage.getNoOFSEtendu(), ffp.getNumeroOfsAutoriteFiscale(), "Le dernier for n'est pas sur Villars-sous-Yens");
 		}
 
 		// PBM 29.07.2009: UNIREG-1266 -> Blocage des remboursements automatiques sur tous les nouveaux tiers
@@ -151,7 +148,7 @@ public class Ec_8000_02_Divorce_MarieAvecEtrangerSansPermisC_Scenario extends Ev
 
 	@Etape(id=2, descr="Envoi de l'événement de Divorce")
 	public void etape2() throws Exception {
-		long id = addEvenementCivil(TypeEvenementCivil.DIVORCE, noIndMomo, dateDivorce, communeDivorce);
+		long id = addEvenementCivil(TypeEvenementCivil.DIVORCE, noIndMomo, dateDivorce, communeDivorce.getNoOFSEtendu());
 		commitAndStartTransaction();
 
 		regroupeEtTraiteEvenements(id);

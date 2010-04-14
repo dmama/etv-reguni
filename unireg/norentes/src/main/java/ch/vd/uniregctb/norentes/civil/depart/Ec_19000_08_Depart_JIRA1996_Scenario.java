@@ -113,7 +113,7 @@ public class Ec_19000_08_Depart_JIRA1996_Scenario extends DepartScenario {
 			tiersService.addTiersToCouple(menage, charles, dateMariage, null);
 			tiersService.addTiersToCouple(menage, georgette, dateMariage, null);
 
-			addForFiscalPrincipal(menage, communeDepart.getNoOFS(), dateDebutForChamblon, null, MotifFor.DEMENAGEMENT_VD, null);
+			addForFiscalPrincipal(menage, communeDepart, dateDebutForChamblon, null, MotifFor.DEMENAGEMENT_VD, null);
 		}
 	}
 

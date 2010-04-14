@@ -76,13 +76,13 @@ public class Ec_2000_10_Deces_CelibataireTuteur_Scenario extends EvenementCivilS
 		final PersonnePhysique charles = addHabitant(noIndCharles);
 		noHabCharles = charles.getNumero();
 		{
-			addForFiscalPrincipal(charles, MockCommune.Lausanne.getNoOFS(), dateArriveeVD, null, MotifFor.DEMENAGEMENT_VD, null);
+			addForFiscalPrincipal(charles, MockCommune.Lausanne, dateArriveeVD, null, MotifFor.DEMENAGEMENT_VD, null);
 		}
 
 		final PersonnePhysique nora = addHabitant(noIndNora);
 		noHabNora = nora.getNumero();
 		{
-			addForFiscalPrincipal(nora, MockCommune.Lausanne.getNoOFS(), dateArriveeVD, null, MotifFor.DEMENAGEMENT_VD, null);
+			addForFiscalPrincipal(nora, MockCommune.Lausanne, dateArriveeVD, null, MotifFor.DEMENAGEMENT_VD, null);
 		}
 
 		RapportEntreTiers rapportTutelle = new ch.vd.uniregctb.tiers.Tutelle(dateTutelle, null, nora, charles, null);

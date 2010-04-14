@@ -29,6 +29,8 @@ import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer.Mode;
+import ch.vd.uniregctb.interfaces.model.Commune;
+import ch.vd.uniregctb.interfaces.model.Pays;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
@@ -115,14 +117,24 @@ public abstract class EvenementScenario extends NorentesScenario {
 		}
 	}
 
-	protected ForFiscalPrincipal addForFiscalPrincipal(Tiers tiers, int noOFS, RegDate debut, RegDate fin, MotifFor motifDebut, MotifFor motifFin) {
+	protected ForFiscalPrincipal addForFiscalPrincipal(Tiers tiers, Commune commune, RegDate debut, RegDate fin, MotifFor motifDebut, MotifFor motifFin) {
+		final TypeAutoriteFiscale typeAutoriteFiscale = commune.isVaudoise() ? TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD : TypeAutoriteFiscale.COMMUNE_HC;
+		return addForFiscalPrincipal(tiers, commune.getNoOFSEtendu(), typeAutoriteFiscale, debut, fin, motifDebut, motifFin);
+	}
 
+	protected ForFiscalPrincipal addForFiscalprincipal(Tiers tiers, Pays pays, RegDate debut, RegDate fin, MotifFor motifDebut, MotifFor motifFin) {
+		Assert.notNull(pays);
+		Assert.isFalse(pays.isSuisse());
+		return addForFiscalPrincipal(tiers, pays.getNoOFS(), TypeAutoriteFiscale.PAYS_HS, debut, fin, motifDebut, motifFin);
+	}
+
+	private ForFiscalPrincipal addForFiscalPrincipal(Tiers tiers, int noOFS, TypeAutoriteFiscale typeAutoriteFiscale, RegDate debut, RegDate fin, MotifFor motifDebut, MotifFor motifFin) {
 		ForFiscalPrincipal ffp = new ForFiscalPrincipal();
 		ffp.setDateDebut(debut);
 		ffp.setDateFin(fin);
 		ffp.setMotifOuverture(motifDebut);
 		ffp.setMotifFermeture(motifFin);
-		ffp.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
+		ffp.setTypeAutoriteFiscale(typeAutoriteFiscale);
 		ffp.setNumeroOfsAutoriteFiscale(noOFS);
 		ffp.setMotifRattachement(MotifRattachement.DOMICILE);
 		ffp.setGenreImpot(GenreImpot.REVENU_FORTUNE);

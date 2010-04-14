@@ -110,7 +110,7 @@ public class Ec_18000_15_Arrivee_JIRA1789_Scenario extends EvenementCivilScenari
 			tiersService.addTiersToCouple(menage, antonio, dateMariage, null);
 			tiersService.addTiersToCouple(menage, anneLaure, dateMariage, null);
 
-			addForFiscalPrincipal(menage, MockCommune.Bex.getNoOFS(), dateArriveeBex, null, MotifFor.DEMENAGEMENT_VD, null);
+			addForFiscalPrincipal(menage, MockCommune.Bex, dateArriveeBex, null, MotifFor.DEMENAGEMENT_VD, null);
 		}
 	}
 

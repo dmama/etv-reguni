@@ -66,16 +66,14 @@ public class Ec_2001_03_AnnulationDeces_Marie_Scenario extends EvenementCivilSce
 		// momo
 		PersonnePhysique momo = addHabitant(noIndMomo);
 		noHabMomo = momo.getNumero();
-		addForFiscalPrincipal(momo, commune.getNoOFS(), dateArriveeMomo, veilleMariage, MotifFor.DEMENAGEMENT_VD,
-				MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
+		addForFiscalPrincipal(momo, commune, dateArriveeMomo, veilleMariage, MotifFor.DEMENAGEMENT_VD, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
 
 		addSituationFamille(momo, dateArriveeMomo, veilleMariage, EtatCivil.CELIBATAIRE, 0);
 
 		// bea
 		PersonnePhysique bea = addHabitant(noIndBea);
 		noHabBea = bea.getNumero();
-		addForFiscalPrincipal(bea, MockCommune.Lausanne.getNoOFS(), dateMajoriteBea, veilleMariage, MotifFor.MAJORITE,
-				MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
+		addForFiscalPrincipal(bea, MockCommune.Lausanne, dateMajoriteBea, veilleMariage, MotifFor.MAJORITE, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
 
 		addSituationFamille(bea, dateMajoriteBea, veilleMariage, EtatCivil.CELIBATAIRE, 0);
 		addSituationFamille(bea, lendemainDeces, null, EtatCivil.VEUF, 0);
@@ -85,8 +83,7 @@ public class Ec_2001_03_AnnulationDeces_Marie_Scenario extends EvenementCivilSce
 		noMenage = menage.getNumero();
 		tiersService.addTiersToCouple(menage, momo, dateMariage, dateDeces);
 		tiersService.addTiersToCouple(menage, bea, dateMariage, dateDeces);
-		addForFiscalPrincipal(menage, commune.getNoOFS(), dateMariage, dateDeces,
-				MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MotifFor.VEUVAGE_DECES);
+		addForFiscalPrincipal(menage, commune, dateMariage, dateDeces, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MotifFor.VEUVAGE_DECES);
 
 		addSituationFamille(menage, dateMariage, dateDeces, EtatCivil.MARIE, 0, null, momo);
 	}

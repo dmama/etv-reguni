@@ -20,7 +20,6 @@ import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 import org.springframework.util.Assert;
 
-import java.util.Date;
 import java.util.List;
 
 public class Ec_48000_02_CorrectionIdentificationNonHabitant_Scenario extends EvenementCivilScenario {
@@ -77,11 +76,10 @@ public class Ec_48000_02_CorrectionIdentificationNonHabitant_Scenario extends Ev
 		final PersonnePhysique momo = addHabitant(noIndMomo);
 		noHabMomo = momo.getNumero();
 
-		final ForFiscalPrincipal f = addForFiscalPrincipal(momo, MockCommune.VillarsSousYens.getNoOFS(), dateNaissance.addYears(18),
-				dateNaissance.addYears(22), MotifFor.MAJORITE, MotifFor.DEPART_HC);
+		final ForFiscalPrincipal f = addForFiscalPrincipal(momo, MockCommune.VillarsSousYens, dateNaissance.addYears(18), dateNaissance.addYears(22), MotifFor.MAJORITE, MotifFor.DEPART_HC);
 		f.setModeImposition(ModeImposition.ORDINAIRE);
 
-		final ForFiscalPrincipal fhc = addForFiscalPrincipal(momo, MockCommune.Neuchatel.getNoOFS(), dateNaissance.addYears(22).getOneDayAfter(), null, MotifFor.DEPART_HC, null);
+		final ForFiscalPrincipal fhc = addForFiscalPrincipal(momo, MockCommune.Neuchatel, dateNaissance.addYears(22).getOneDayAfter(), null, MotifFor.DEPART_HC, null);
 		fhc.setModeImposition(ModeImposition.ORDINAIRE);
 
 		tiersService.changeHabitantenNH(momo);

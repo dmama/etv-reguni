@@ -60,7 +60,7 @@ public class Ec_2000_02_Deces_Membre_Marie_Scenario extends EvenementCivilScenar
 
 	private final RegDate dateMariage = RegDate.get(1975, 6, 12);
 
-	private final int communeMariage = MockCommune.Lausanne.getNoOFS();
+	private final MockCommune communeMariage = MockCommune.Lausanne;
 
 	private final RegDate veilleMariage = dateMariage.getOneDayBefore();
 
@@ -95,8 +95,7 @@ public class Ec_2000_02_Deces_Membre_Marie_Scenario extends EvenementCivilScenar
 		final PersonnePhysique guillaume = addHabitant(noIndGuillaume);
 		{
 			noHabGuillaume = guillaume.getNumero();
-			final ForFiscalPrincipal ffp = addForFiscalPrincipal(guillaume, MockCommune.Lausanne.getNoOFS(), dateArriveeVD, veilleMariage,
-					MotifFor.ARRIVEE_HC, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
+			final ForFiscalPrincipal ffp = addForFiscalPrincipal(guillaume, MockCommune.Lausanne, dateArriveeVD, veilleMariage, MotifFor.ARRIVEE_HC, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
 			ffp.setModeImposition(ModeImposition.ORDINAIRE);
 
 			addSituationFamille(guillaume, dateArriveeVD, veilleMariage, EtatCivil.CELIBATAIRE, 0);
@@ -106,8 +105,7 @@ public class Ec_2000_02_Deces_Membre_Marie_Scenario extends EvenementCivilScenar
 		final PersonnePhysique heidi = addHabitant(noIndHeidi);
 		{
 			noHabHeidi = heidi.getNumero();
-			final ForFiscalPrincipal ffp = addForFiscalPrincipal(heidi, MockCommune.Lausanne.getNoOFS(), dateArriveeVD, veilleMariage,
-					MotifFor.ARRIVEE_HC, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
+			final ForFiscalPrincipal ffp = addForFiscalPrincipal(heidi, MockCommune.Lausanne, dateArriveeVD, veilleMariage, MotifFor.ARRIVEE_HC, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
 			ffp.setModeImposition(ModeImposition.ORDINAIRE);
 
 			addSituationFamille(heidi, dateArriveeVD, veilleMariage, EtatCivil.CELIBATAIRE, 0);
@@ -119,8 +117,7 @@ public class Ec_2000_02_Deces_Membre_Marie_Scenario extends EvenementCivilScenar
 			noMenage = menage.getNumero();
 			tiersService.addTiersToCouple(menage, guillaume, dateMariage, null);
 			tiersService.addTiersToCouple(menage, heidi, dateMariage, null);
-			final ForFiscalPrincipal ffp = addForFiscalPrincipal(menage, communeMariage, dateMariage, null,
-					MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null);
+			final ForFiscalPrincipal ffp = addForFiscalPrincipal(menage, communeMariage, dateMariage, null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null);
 			ffp.setModeImposition(ModeImposition.ORDINAIRE);
 
 			addSituationFamille(menage, dateMariage, null, EtatCivil.MARIE, 0, null, null);
@@ -164,7 +161,7 @@ public class Ec_2000_02_Deces_Membre_Marie_Scenario extends EvenementCivilScenar
 			assertNotNull(ffp, "For principal du Ménage " + mc.getNumero() + " null");
 			assertEquals(dateMariage, ffp.getDateDebut(), "Date de début du dernier for fausse");
 			assertNull(ffp.getDateFin(), "Date de fin du dernier for fausse");
-			assertEquals(communeMariage, ffp.getNumeroOfsAutoriteFiscale(), "Le dernier for n'est pas sur Villars-sous-Yens");
+			assertEquals(communeMariage.getNoOFSEtendu(), ffp.getNumeroOfsAutoriteFiscale(), "Le dernier for n'est pas sur Lausanne");
 
 			// [UNIREG-823] situation de famille
 			assertNull(mc.getSituationFamilleAt(veilleMariage),

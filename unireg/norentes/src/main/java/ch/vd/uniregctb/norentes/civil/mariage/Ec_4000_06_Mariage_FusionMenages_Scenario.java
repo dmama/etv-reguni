@@ -116,8 +116,7 @@ public class Ec_4000_06_Mariage_FusionMenages_Scenario extends EvenementCivilSce
 			noMenageAlfredo = menage.getNumero();
 			tiersService.addTiersToCouple(menage, alfredo, dateMariageAlfredo, null);
 
-			final ForFiscalPrincipal f = addForFiscalPrincipal(menage, commune.getNoOFS(), dateMariageAlfredo, null, MotifFor.INDETERMINE,
-					null);
+			final ForFiscalPrincipal f = addForFiscalPrincipal(menage, commune, dateMariageAlfredo, null, MotifFor.INDETERMINE, null);
 			f.setModeImposition(ModeImposition.ORDINAIRE);
 		}
 
@@ -132,8 +131,7 @@ public class Ec_4000_06_Mariage_FusionMenages_Scenario extends EvenementCivilSce
 			noMenageArmando = menage.getNumero();
 			tiersService.addTiersToCouple(menage, armando, dateMariageArmando, null);
 
-			final ForFiscalPrincipal f = addForFiscalPrincipal(menage, commune.getNoOFS(), dateMariageArmando, null, MotifFor.INDETERMINE,
-					null);
+			final ForFiscalPrincipal f = addForFiscalPrincipal(menage, commune, dateMariageArmando, null, MotifFor.INDETERMINE, null);
 			f.setModeImposition(ModeImposition.ORDINAIRE);
 		}
 	}

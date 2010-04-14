@@ -76,12 +76,11 @@ public class Ec_41010_01_CorrectionDateNaissance_Scenario extends EvenementCivil
 		PersonnePhysique momo = addHabitant(noIndMomo);
 		noHabMomo = momo.getNumero();
 
-		ForFiscalPrincipal f = addForFiscalPrincipal(momo, MockCommune.VillarsSousYens.getNoOFS(), dateNaissanceOriginale.addYears(18),
+		ForFiscalPrincipal f = addForFiscalPrincipal(momo, MockCommune.VillarsSousYens, dateNaissanceOriginale.addYears(18),
 				dateNaissanceOriginale.addYears(22), MotifFor.MAJORITE, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
 		f.setModeImposition(ModeImposition.ORDINAIRE);
 
-		f = addForFiscalPrincipal(momo, MockCommune.VillarsSousYens.getNoOFS(), dateNaissanceOriginale.addYears(22).addDays(1), null,
-				MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null);
+		f = addForFiscalPrincipal(momo, MockCommune.VillarsSousYens, dateNaissanceOriginale.addYears(22).addDays(1), null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null);
 		f.setModeImposition(ModeImposition.ORDINAIRE);
 	}
 

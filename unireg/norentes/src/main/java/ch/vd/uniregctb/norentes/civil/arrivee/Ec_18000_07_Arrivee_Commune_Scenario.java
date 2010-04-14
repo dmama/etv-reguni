@@ -73,7 +73,7 @@ public class Ec_18000_07_Arrivee_Commune_Scenario extends EvenementCivilScenario
 	public void step1() throws Exception {
 		PersonnePhysique adrienne = addHabitant(noIndAdrienne);
 		noHabAdrienne = adrienne.getNumero();
-		addForFiscalPrincipal(adrienne, communeDepart.getNoOFS(), RegDate.get(2003, 1, 6), null, MotifFor.VEUVAGE_DECES, null);
+		addForFiscalPrincipal(adrienne, communeDepart, RegDate.get(2003, 1, 6), null, MotifFor.VEUVAGE_DECES, null);
 	}
 
 	@Check(id=1, descr="Vérifie qu'Adrienne a son adresse et son for à Orbe")

@@ -47,7 +47,7 @@ public class Ec_18000_11_Arrivee_HS_Habitant_Scenario extends EvenementCivilScen
 	@Etape(id = 1, descr = "Antoine vit à Lausanne depuis sa majorité")
 	public void etape1() throws Exception {
 		PersonnePhysique antoine = addHabitant(noIndAntoine);
-		addForFiscalPrincipal(antoine, MockCommune.Lausanne.getNoOFS(), date(1990, 1, 1), null, MotifFor.MAJORITE, null);
+		addForFiscalPrincipal(antoine, MockCommune.Lausanne, date(1990, 1, 1), null, MotifFor.MAJORITE, null);
 	}
 
 	@Etape(id = 2, descr = "Pour on ne sait quelle raison on reçoit un evenement comme quoi Antoine arrive à Renens depuis l'etranger")

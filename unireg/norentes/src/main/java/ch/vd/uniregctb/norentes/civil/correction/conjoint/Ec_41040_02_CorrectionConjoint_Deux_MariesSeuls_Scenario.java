@@ -109,8 +109,7 @@ public class Ec_41040_02_CorrectionConjoint_Deux_MariesSeuls_Scenario extends Ev
 		PersonnePhysique rafa = addHabitant(noIndRafa);
 		{
 			noHabRafa = rafa.getNumero();
-			final ForFiscalPrincipal f = addForFiscalPrincipal(rafa, commune.getNoOFS(), dateArrivee, dateAvantMariage,
-					MotifFor.DEMENAGEMENT_VD, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
+			final ForFiscalPrincipal f = addForFiscalPrincipal(rafa, commune, dateArrivee, dateAvantMariage, MotifFor.DEMENAGEMENT_VD, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
 			f.setModeImposition(ModeImposition.ORDINAIRE);
 		}
 
@@ -120,8 +119,7 @@ public class Ec_41040_02_CorrectionConjoint_Deux_MariesSeuls_Scenario extends Ev
 			menage = (MenageCommun) tiersDAO.save(menage);
 			noMenageRafa = menage.getNumero();
 			tiersService.addTiersToCouple(menage, rafa, dateMariage, null);
-			final ForFiscalPrincipal f = addForFiscalPrincipal(menage, commune.getNoOFS(), dateMariage, null,
-					MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null);
+			final ForFiscalPrincipal f = addForFiscalPrincipal(menage, commune, dateMariage, null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null);
 			f.setModeImposition(ModeImposition.ORDINAIRE);
 		}
 
@@ -129,8 +127,7 @@ public class Ec_41040_02_CorrectionConjoint_Deux_MariesSeuls_Scenario extends Ev
 		PersonnePhysique maria = addHabitant(noIndMaria);
 		{
 			noHabMaria = maria.getNumero();
-			final ForFiscalPrincipal f = addForFiscalPrincipal(maria, commune.getNoOFS(), dateArrivee, dateAvantMariage,
-					MotifFor.DEMENAGEMENT_VD, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
+			final ForFiscalPrincipal f = addForFiscalPrincipal(maria, commune, dateArrivee, dateAvantMariage, MotifFor.DEMENAGEMENT_VD, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
 			f.setModeImposition(ModeImposition.ORDINAIRE);
 		}
 
@@ -140,8 +137,7 @@ public class Ec_41040_02_CorrectionConjoint_Deux_MariesSeuls_Scenario extends Ev
 			menage = (MenageCommun) tiersDAO.save(menage);
 			noMenageMaria = menage.getNumero();
 			tiersService.addTiersToCouple(menage, maria, dateMariage, null);
-			final ForFiscalPrincipal f = addForFiscalPrincipal(menage, commune.getNoOFS(), dateMariage, null,
-					MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null);
+			final ForFiscalPrincipal f = addForFiscalPrincipal(menage, commune, dateMariage, null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null);
 			f.setModeImposition(ModeImposition.ORDINAIRE);
 		}
 	}

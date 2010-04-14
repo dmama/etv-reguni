@@ -67,22 +67,19 @@ public class Ec_10001_02_AnnulationVeuvage_NonMarie_Scenario extends EvenementCi
 		// momo
 		PersonnePhysique momo = addHabitant(noIndMomo);
 		noHabMomo = momo.getNumero();
-		ForFiscalPrincipal f = addForFiscalPrincipal(momo, MockCommune.VillarsSousYens.getNoOFS(), dateArriveeVillars, dateAvantMariage,
-				MotifFor.ARRIVEE_HS, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
+		ForFiscalPrincipal f = addForFiscalPrincipal(momo, MockCommune.VillarsSousYens, dateArriveeVillars, dateAvantMariage, MotifFor.ARRIVEE_HS, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
 		f.setModeImposition(ModeImposition.SOURCE);
 		// bea
 		PersonnePhysique bea = addHabitant(noIndBea);
 		noHabBea = bea.getNumero();
-		addForFiscalPrincipal(bea, MockCommune.Lausanne.getNoOFS(), dateMajorite, dateAvantMariage, MotifFor.MAJORITE,
-				MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
+		addForFiscalPrincipal(bea, MockCommune.Lausanne, dateMajorite, dateAvantMariage, MotifFor.MAJORITE, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
 		// ménage
 		MenageCommun menage = new MenageCommun();
 		menage = (MenageCommun) tiersDAO.save(menage);
 		noMenage = menage.getNumero();
 		tiersService.addTiersToCouple(menage, momo, dateMariage, null);
 		tiersService.addTiersToCouple(menage, bea, dateMariage, null);
-		f = addForFiscalPrincipal(menage, commune.getNoOFS(), dateMariage, null,
-				MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null);
+		f = addForFiscalPrincipal(menage, commune, dateMariage, null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null);
 		f.setModeImposition(ModeImposition.ORDINAIRE);
 	}
 

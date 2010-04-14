@@ -150,7 +150,7 @@ public class Ec_19000_03_Depart_HS_Scenario extends DepartScenario {
 			tiersService.addTiersToCouple(menage, sandra, dateArriveeBex, null);
 			// fors du ménage
 			{
-				addForFiscalPrincipal(menage, MockCommune.Bex.getNoOFS(), dateArriveeBex, null, MotifFor.ARRIVEE_HC, null);
+				addForFiscalPrincipal(menage, MockCommune.Bex, dateArriveeBex, null, MotifFor.ARRIVEE_HC, null);
 			}
 		}
 	}

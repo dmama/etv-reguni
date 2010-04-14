@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.norentes.civil.changement.identification;
 
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.util.Assert;
@@ -78,7 +77,7 @@ public class Ec_48000_01_CorrectionIdentificationHabitant_Scenario extends Evene
 		PersonnePhysique momo = addHabitant(noIndMomo);
 		noHabMomo = momo.getNumero();
 
-		final ForFiscalPrincipal f = addForFiscalPrincipal(momo, MockCommune.VillarsSousYens.getNoOFS(), dateNaissance.addYears(18), null, MotifFor.MAJORITE, null);
+		final ForFiscalPrincipal f = addForFiscalPrincipal(momo, MockCommune.VillarsSousYens, dateNaissance.addYears(18), null, MotifFor.MAJORITE, null);
 		f.setModeImposition(ModeImposition.ORDINAIRE);
 	}
 

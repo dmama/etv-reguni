@@ -99,8 +99,7 @@ public class Ec_18000_12_Arrivee_Couple_AdresseFiscale_PP_Scenario extends Evene
 			tiersService.addTiersToCouple(menage, antoine, dateMariage, null);
 			tiersService.addTiersToCouple(menage, cleo, dateMariage, null);
 
-			final ForFiscalPrincipal f = addForFiscalPrincipal(menage, MockCommune.Bex.getNoOFS(), date(1990, 1, 1),
-					null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null);
+			final ForFiscalPrincipal f = addForFiscalPrincipal(menage, MockCommune.Bex, date(1990, 1, 1), null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null);
 			f.setModeImposition(ModeImposition.ORDINAIRE);
 		}
 

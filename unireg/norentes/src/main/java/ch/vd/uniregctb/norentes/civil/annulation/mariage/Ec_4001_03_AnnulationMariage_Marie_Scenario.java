@@ -72,15 +72,13 @@ public class Ec_4001_03_AnnulationMariage_Marie_Scenario extends EvenementCivilS
 		// Maurice
 		PersonnePhysique momo = addHabitant(noIndMomo);
 		noHabMomo = momo.getNumero();
-		ForFiscalPrincipal ffpMomo = addForFiscalPrincipal(momo, commune.getNoOFS(), dateDebutMomo, dateMariage.getOneDayBefore(),
-				MotifFor.ARRIVEE_HC, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
+		ForFiscalPrincipal ffpMomo = addForFiscalPrincipal(momo, commune, dateDebutMomo, dateMariage.getOneDayBefore(), MotifFor.ARRIVEE_HC, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
 		ffpMomo.setModeImposition(ModeImposition.ORDINAIRE);
 
 		// Béatrice
 		PersonnePhysique bea = addHabitant(noIndBea);
 		noHabBea = bea.getNumero();
-		ForFiscalPrincipal ffpBea = addForFiscalPrincipal(bea, commune.getNoOFS(), datedebutBea, dateMariage.getOneDayBefore(),
-				MotifFor.MAJORITE, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
+		ForFiscalPrincipal ffpBea = addForFiscalPrincipal(bea, commune, datedebutBea, dateMariage.getOneDayBefore(), MotifFor.MAJORITE, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
 		ffpBea.setModeImposition(ModeImposition.ORDINAIRE);
 
 		// Ménage commun
@@ -89,8 +87,7 @@ public class Ec_4001_03_AnnulationMariage_Marie_Scenario extends EvenementCivilS
 		tiersService.addTiersToCouple(menage, momo, dateMariage, null);
 		tiersService.addTiersToCouple(menage, bea, dateMariage, null);
 
-		ForFiscalPrincipal ffpMennage = addForFiscalPrincipal(menage, commune.getNoOFS(), dateMariage, null,
-				MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null);
+		ForFiscalPrincipal ffpMennage = addForFiscalPrincipal(menage, commune, dateMariage, null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null);
 		ffpMennage.setModeImposition(ModeImposition.ORDINAIRE);
 	}
 

@@ -74,19 +74,17 @@ public class Ec_16001_02_AnnulationPermis_MarieSeul_Scenario extends AnnulationP
 	public void etape1() {
 		PersonnePhysique julie = addHabitant(noIndJulie);
 		noHabJulie = julie.getNumero();
-		addForFiscalPrincipal(julie, MockCommune.Lausanne.getNoOFS(), dateMajorite, dateAvantMariage, MotifFor.MAJORITE,
-				MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
+		addForFiscalPrincipal(julie, MockCommune.Lausanne, dateMajorite, dateAvantMariage, MotifFor.MAJORITE, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
 
 		// ménage
 		MenageCommun menage = new MenageCommun();
 		menage = (MenageCommun)tiersDAO.save(menage);
 		noMenage = menage.getNumero();
 		tiersService.addTiersToCouple(menage, julie, dateMariage, null);
-		ForFiscalPrincipal f = addForFiscalPrincipal(menage, communeMariage.getNoOFS(), dateMariage, dateObtentionPermis.getOneDayBefore(),
-				MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MotifFor.PERMIS_C_SUISSE);
+		ForFiscalPrincipal f = addForFiscalPrincipal(menage, communeMariage, dateMariage, dateObtentionPermis.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MotifFor.PERMIS_C_SUISSE);
 		f.setModeImposition(ModeImposition.DEPENSE);
 
-		f = addForFiscalPrincipal(menage, communeMariage.getNoOFS(), dateObtentionPermis, null, MotifFor.PERMIS_C_SUISSE, null);
+		f = addForFiscalPrincipal(menage, communeMariage, dateObtentionPermis, null, MotifFor.PERMIS_C_SUISSE, null);
 		f.setModeImposition(ModeImposition.ORDINAIRE);
 	}
 

@@ -49,12 +49,10 @@ public class Ec_7001_01_AnnulationReconciliation_MarieSeul_Scenario extends Abst
 		PersonnePhysique pierre = addHabitant(noIndPierre);
 		noHabPierre = pierre.getNumero();
 
-		ForFiscalPrincipal ffp = addForFiscalPrincipal(pierre, commune.getNoOFS(), dateDebutSuisse, dateMariage.getOneDayBefore(),
-				MotifFor.ARRIVEE_HC, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
+		ForFiscalPrincipal ffp = addForFiscalPrincipal(pierre, commune, dateDebutSuisse, dateMariage.getOneDayBefore(), MotifFor.ARRIVEE_HC, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
 		ffp.setModeImposition(ModeImposition.SOURCE);
 
-		ffp = addForFiscalPrincipal(pierre, commune.getNoOFS(), dateSeparation, dateReconciliation.getOneDayBefore(),
-				MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
+		ffp = addForFiscalPrincipal(pierre, commune, dateSeparation, dateReconciliation.getOneDayBefore(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
 		ffp.setModeImposition(ModeImposition.SOURCE);
 
 		// Ménage
@@ -63,12 +61,10 @@ public class Ec_7001_01_AnnulationReconciliation_MarieSeul_Scenario extends Abst
 		tiersService.addTiersToCouple(menage, pierre, dateMariage, dateSeparation.getOneDayBefore());
 		tiersService.addTiersToCouple(menage, pierre, dateReconciliation, null);
 
-		ffp = addForFiscalPrincipal(menage, commune.getNoOFS(), dateMariage, dateSeparation.getOneDayBefore(),
-				MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT);
+		ffp = addForFiscalPrincipal(menage, commune, dateMariage, dateSeparation.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT);
 		ffp.setModeImposition(ModeImposition.SOURCE);
 
-		ffp = addForFiscalPrincipal(menage, commune.getNoOFS(), dateReconciliation, null,
-				MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null);
+		ffp = addForFiscalPrincipal(menage, commune, dateReconciliation, null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null);
 		ffp.setModeImposition(ModeImposition.SOURCE);
 	}
 

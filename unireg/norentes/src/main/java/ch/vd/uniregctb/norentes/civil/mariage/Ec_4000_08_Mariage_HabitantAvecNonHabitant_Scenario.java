@@ -99,8 +99,8 @@ public class Ec_4000_08_Mariage_HabitantAvecNonHabitant_Scenario extends Eveneme
 		{
 			noCtbRafa = rafa.getNumero();
 			
-			addForFiscalPrincipal(rafa, MockCommune.Lausanne.getNoOFS(), dateMajoriteRafa, dateDepartRafa.getOneDayBefore(), MotifFor.MAJORITE, MotifFor.DEPART_HC);
-			addForFiscalPrincipal(rafa, communeRafa.getNoOFS(), dateDepartRafa, null, MotifFor.DEPART_HC, null).setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_HC);
+			addForFiscalPrincipal(rafa, MockCommune.Lausanne, dateMajoriteRafa, dateDepartRafa.getOneDayBefore(), MotifFor.MAJORITE, MotifFor.DEPART_HC);
+			addForFiscalPrincipal(rafa, communeRafa, dateDepartRafa, null, MotifFor.DEPART_HC, null);
 			addForFiscalSecondaire(rafa, MockCommune.Lausanne.getNoOFS(), dateMajoriteRafa.addYears(5), null);
 		}
 	}

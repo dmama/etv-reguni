@@ -129,10 +129,8 @@ public class Ec_4001_07_AnnulationMariage_JIRA1086_Scenario extends EvenementCiv
 		tiersService.addTiersToCouple(menage, deborah, dateMariage, null);
 
 		// Fors ménage
-		addForFiscalPrincipal(menage, MockCommune.Renens.getNoOFS(), dateMariage, dateDemenagement, MotifFor.INDETERMINE,
-				MotifFor.DEMENAGEMENT_VD);
-		addForFiscalPrincipal(menage, MockCommune.Lausanne.getNoOFS(), dateDemenagement.getOneDayAfter(), null, MotifFor.DEMENAGEMENT_VD,
-				null);
+		addForFiscalPrincipal(menage, MockCommune.Renens, dateMariage, dateDemenagement, MotifFor.INDETERMINE, MotifFor.DEMENAGEMENT_VD);
+		addForFiscalPrincipal(menage, MockCommune.Lausanne, dateDemenagement.getOneDayAfter(), null, MotifFor.DEMENAGEMENT_VD, null);
 	}
 
 	@Check(id=1, descr="Vérifie que les habitants existent et le ménage commun a un for ouvert")

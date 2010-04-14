@@ -123,7 +123,7 @@ public class Ec_6000_07_Separation_JIRA1255_Scenario extends EvenementCivilScena
 			tiersService.addTiersToCouple(menage, patrick, dateMariage, null);
 			tiersService.addTiersToCouple(menage, sylvie, dateMariage, RegDate.get(2008, 12, 31)).setAnnule(true);
 			tiersService.addTiersToCouple(menage, sylvie, dateMariage, null);
-			final ForFiscalPrincipal f = addForFiscalPrincipal(menage, commune.getNoOFS(), dateMariage, null, MotifFor.INDETERMINE, null);
+			final ForFiscalPrincipal f = addForFiscalPrincipal(menage, commune, dateMariage, null, MotifFor.INDETERMINE, null);
 			f.setModeImposition(ModeImposition.ORDINAIRE);
 
 			SituationFamilleMenageCommun sf = new SituationFamilleMenageCommun();

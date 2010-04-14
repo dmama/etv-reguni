@@ -102,26 +102,21 @@ public class Ec_7000_05_Reconciliation_Non_Assujettis_Scenario extends Evenement
 		// momo
 		PersonnePhysique momo = addHabitant(noIndMomo);
 		noHabMomo = momo.getNumero();
-		addForFiscalPrincipal(momo, lausanne.getNoOFS(), RegDate.get(1981, 3, 12), dateMariage.getOneDayBefore(), MotifFor.MAJORITE,
-				MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
-		addForFiscalPrincipal(momo, lausanne.getNoOFS(), dateSeparation, dateDepartHC.getOneDayBefore(),
-				MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MotifFor.DEPART_HC);
+		addForFiscalPrincipal(momo, lausanne, RegDate.get(1981, 3, 12), dateMariage.getOneDayBefore(), MotifFor.MAJORITE, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
+		addForFiscalPrincipal(momo, lausanne, dateSeparation, dateDepartHC.getOneDayBefore(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MotifFor.DEPART_HC);
 
 		// bea
 		PersonnePhysique bea = addHabitant(noIndBea);
 		noHabBea = bea.getNumero();
-		addForFiscalPrincipal(bea, lausanne.getNoOFS(), RegDate.get(1983, 8, 20), dateMariage.getOneDayBefore(), MotifFor.MAJORITE,
-				MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
-		addForFiscalPrincipal(bea, lausanne.getNoOFS(), dateSeparation, dateDepartHC.getOneDayBefore(),
-				MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MotifFor.DEPART_HC);
+		addForFiscalPrincipal(bea, lausanne, RegDate.get(1983, 8, 20), dateMariage.getOneDayBefore(), MotifFor.MAJORITE, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
+		addForFiscalPrincipal(bea, lausanne, dateSeparation, dateDepartHC.getOneDayBefore(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MotifFor.DEPART_HC);
 
 		// ménage
 		MenageCommun menage = (MenageCommun) tiersDAO.save(new MenageCommun());
 		noMenage = menage.getNumero();
 		tiersService.addTiersToCouple(menage, momo, dateMariage, dateSeparation.getOneDayBefore());
 		tiersService.addTiersToCouple(menage, bea, dateMariage, dateSeparation.getOneDayBefore());
-		addForFiscalPrincipal(menage, lausanne.getNoOFS(), dateMariage, dateSeparation.getOneDayBefore(),
-				MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT);
+		addForFiscalPrincipal(menage, lausanne, dateMariage, dateSeparation.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT);
 	}
 
 	@Check(id = 1, descr = "Vérifie que les habitants ne sont pas assujettis (Maurice et Béatrice possèdent chacun un for fiscal principal fermé et le for principal du ménage est aussi fermé)")

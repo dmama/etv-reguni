@@ -119,8 +119,7 @@ public class Ec_8000_03_Divorce_CivilApresFiscal_Scenario extends EvenementCivil
 			tiersService.addTiersToCouple(menage, pierre, dateDemenagement, null);
 			tiersService.addTiersToCouple(menage, karina, dateDemenagement, null);
 
-			final ForFiscalPrincipal f = addForFiscalPrincipal(menage, commune.getNoOFS(), dateDemenagement, null,
-					MotifFor.DEMENAGEMENT_VD, null);
+			final ForFiscalPrincipal f = addForFiscalPrincipal(menage, commune, dateDemenagement, null, MotifFor.DEMENAGEMENT_VD, null);
 			f.setModeImposition(ModeImposition.ORDINAIRE);
 		}
 	}

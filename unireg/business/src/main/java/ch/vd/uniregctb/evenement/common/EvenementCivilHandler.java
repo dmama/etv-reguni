@@ -36,7 +36,7 @@ public interface EvenementCivilHandler {
 
 	/**
 	 * Traite l'événement passé en paramètre.
-	 * @return une pair contenant les personnes physiques créées par cet événement (respectivement le principal et le conjoint), ou <code>null</code> si aucun n'a été nouvellement créé
+	 * @return une pair contenant les habitants créés par cet événement (respectivement le principal et le conjoint), ou <code>null</code> si aucun n'a été nouvellement créé (ou passé habitant)
 	 */
 	Pair<PersonnePhysique, PersonnePhysique> handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException;
 

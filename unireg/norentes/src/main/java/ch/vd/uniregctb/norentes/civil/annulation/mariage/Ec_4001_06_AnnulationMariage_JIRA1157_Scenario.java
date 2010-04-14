@@ -115,8 +115,7 @@ public class Ec_4001_06_AnnulationMariage_JIRA1157_Scenario extends EvenementCiv
 		final PersonnePhysique sylvie = addHabitant(noIndSylvie);
 		noHabSylvie = sylvie.getNumero();
 
-		final ForFiscalPrincipal ffpSylvie = addForFiscalPrincipal(sylvie, MockCommune.Vevey.getNoOFS(), dateArriveeSylvie, null,
-				MotifFor.ARRIVEE_HC, null);
+		final ForFiscalPrincipal ffpSylvie = addForFiscalPrincipal(sylvie, MockCommune.Vevey, dateArriveeSylvie, null, MotifFor.ARRIVEE_HC, null);
 		ffpSylvie.setModeImposition(ModeImposition.ORDINAIRE);
 	}
 

@@ -87,8 +87,7 @@ public class Ec_10000_04_Veuvage_DecesPuisVeuvageMemeJour_Scenario extends Evene
 		// Pierre
 		PersonnePhysique pierre = addHabitant(noIndPierre);
 		noHabPierre = pierre.getNumero();
-		ForFiscalPrincipal f = addForFiscalPrincipal(pierre, MockCommune.VillarsSousYens.getNoOFS(), RegDate.get(1974, 3, 3),
-				avantDateMariage, MotifFor.DEMENAGEMENT_VD, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
+		ForFiscalPrincipal f = addForFiscalPrincipal(pierre, MockCommune.VillarsSousYens, RegDate.get(1974, 3, 3),avantDateMariage, MotifFor.DEMENAGEMENT_VD, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
 		f.setModeImposition(ModeImposition.SOURCE);
 		addSituationFamille(pierre, dateNaissance, dateMariage.getOneDayBefore(), EtatCivil.CELIBATAIRE, 0);
 
@@ -97,8 +96,7 @@ public class Ec_10000_04_Veuvage_DecesPuisVeuvageMemeJour_Scenario extends Evene
 		menage = (MenageCommun)tiersDAO.save(menage);
 		noMenage = menage.getNumero();
 		tiersService.addTiersToCouple(menage, pierre, dateMariage, null);
-		f = addForFiscalPrincipal(menage, communeMariage.getNoOFS(), dateMariage, null,
-				MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null);
+		f = addForFiscalPrincipal(menage, communeMariage, dateMariage, null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null);
 		f.setModeImposition(ModeImposition.ORDINAIRE);
 		addSituationFamille(menage, dateMariage, null, EtatCivil.MARIE, 0, null, pierre);
 

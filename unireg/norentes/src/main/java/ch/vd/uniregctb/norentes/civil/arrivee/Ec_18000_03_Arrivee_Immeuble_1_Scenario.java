@@ -75,7 +75,7 @@ public class Ec_18000_03_Arrivee_Immeuble_1_Scenario extends EvenementCivilScena
 
 		PersonnePhysique alain = addHabitant(noIndAlain);
 		noHabAlain = alain.getNumero();
-		addForFiscalPrincipal(alain, MockCommune.Lausanne.getNoOFS(), dateArrivee, null, MotifFor.ARRIVEE_HC, null);
+		addForFiscalPrincipal(alain, MockCommune.Lausanne, dateArrivee, null, MotifFor.ARRIVEE_HC, null);
 
 		addForFiscalSecondaire(alain, MockCommune.Renens.getNoOFS(), dateAchatImmeuble, null);
 	}

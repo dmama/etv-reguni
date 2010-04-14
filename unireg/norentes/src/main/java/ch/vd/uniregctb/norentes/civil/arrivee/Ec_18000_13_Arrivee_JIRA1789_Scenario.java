@@ -26,7 +26,6 @@ import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.MotifFor;
-import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
@@ -109,7 +108,7 @@ public class Ec_18000_13_Arrivee_JIRA1789_Scenario extends EvenementCivilScenari
 			tiersService.addTiersToCouple(menage, antonio, dateMariage, null);
 			tiersService.addTiersToCouple(menage, anneLaure, dateMariage, null);
 
-			addForFiscalPrincipal(menage, MockCommune.Bex.getNoOFS(), dateArriveeBex, null, MotifFor.DEMENAGEMENT_VD, null);
+			addForFiscalPrincipal(menage, MockCommune.Bex, dateArriveeBex, null, MotifFor.DEMENAGEMENT_VD, null);
 		}
 	}
 

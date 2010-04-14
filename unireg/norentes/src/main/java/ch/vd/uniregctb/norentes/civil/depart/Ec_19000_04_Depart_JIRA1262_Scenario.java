@@ -98,7 +98,7 @@ public class Ec_19000_04_Depart_JIRA1262_Scenario extends DepartScenario {
 		final PersonnePhysique sebastien = addHabitant(noIndSebastien);
 		noHabSebastien = sebastien.getNumero();
 
-		addForFiscalPrincipal(sebastien, communeDepart.getNoOFS(), dateSeparation, null, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, null);
+		addForFiscalPrincipal(sebastien, communeDepart, dateSeparation, null, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, null);
 
 		final DeclarationImpotOrdinaire di2007 = addDeclarationImpot(sebastien, RegDate.get(2007, 1, 1), RegDate.get(2007, 12, 31), RegDate.get(2008, 1, 13), 90);
 		{

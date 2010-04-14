@@ -71,7 +71,7 @@ public class Ec_2001_02_AnnulationDeces_MarieSeul_Scenario extends EvenementCivi
 	public void step1() {
 		PersonnePhysique andre = addHabitant(noIndAndre);
 		noHabAndre = andre.getNumero();
-		ForFiscalPrincipal f = addForFiscalPrincipal(andre, commune.getNoOFS(), dateDebutSuisse, dateMariage.getOneDayBefore(),
+		ForFiscalPrincipal f = addForFiscalPrincipal(andre, commune, dateDebutSuisse, dateMariage.getOneDayBefore(),
 				MotifFor.ARRIVEE_HC, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
 		f.setModeImposition(ModeImposition.SOURCE);
 
@@ -80,7 +80,7 @@ public class Ec_2001_02_AnnulationDeces_MarieSeul_Scenario extends EvenementCivi
 		menage = (MenageCommun) tiersDAO.save(menage);
 		noMenage = menage.getNumero();
 		tiersService.addTiersToCouple(menage, andre, dateMariage, dateDeces);
-		f = addForFiscalPrincipal(menage, commune.getNoOFS(), dateMariage, dateDeces,
+		f = addForFiscalPrincipal(menage, commune, dateMariage, dateDeces,
 				MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MotifFor.VEUVAGE_DECES);
 		f.setModeImposition(ModeImposition.SOURCE);
 	}

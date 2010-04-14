@@ -94,16 +94,15 @@ public class Ec_4000_07_Mariage_HabitantAvecNonHabitant_Scenario extends Eveneme
 		final PersonnePhysique maria = addHabitant(noIndMaria);
 		{
 			noCtbMaria = maria.getNumero();
-			addForFiscalPrincipal(maria, communeMaria.getNoOFS(), dateMajoriteMaria, null, MotifFor.MAJORITE, null);
+			addForFiscalPrincipal(maria, communeMaria, dateMajoriteMaria, null, MotifFor.MAJORITE, null);
 		}
 		
 		// rafa
 		final PersonnePhysique rafa = addNonHabitant("Nadalino", "Rafa", dateNaissanceRafa);
 		{
 			noCtbRafa = rafa.getNumero();
-			addForFiscalPrincipal(rafa, communeRafa.getNoOFS(), dateMajoriteRafa, dateDepartRafa.getOneDayBefore(), MotifFor.MAJORITE, MotifFor.DEPART_HC);
-			ForFiscalPrincipal ffp = addForFiscalPrincipal(rafa, communeRafa.getNoOFS(), dateDepartRafa, null, MotifFor.DEPART_HC, null);
-			ffp.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_HC);
+			addForFiscalPrincipal(rafa, communeRafa, dateMajoriteRafa, dateDepartRafa.getOneDayBefore(), MotifFor.MAJORITE, MotifFor.DEPART_HC);
+			addForFiscalPrincipal(rafa, communeRafa, dateDepartRafa, null, MotifFor.DEPART_HC, null);
 			addForFiscalSecondaire(rafa, MockCommune.Lausanne.getNoOFS(), dateMajoriteRafa.addYears(5), null);
 		}
 	}

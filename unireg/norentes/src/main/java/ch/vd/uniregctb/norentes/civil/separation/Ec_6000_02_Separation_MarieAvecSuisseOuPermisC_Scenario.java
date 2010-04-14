@@ -93,16 +93,14 @@ public class Ec_6000_02_Separation_MarieAvecSuisseOuPermisC_Scenario extends Eve
 		final PersonnePhysique momo = addHabitant(noIndMomo);
 		{
 			noHabMomo = momo.getNumero();
-			addForFiscalPrincipal(momo, MockCommune.VillarsSousYens.getNoOFS(), dateArriveeMomoVillars, dateAvantMariage,
-					MotifFor.DEMENAGEMENT_VD, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
+			addForFiscalPrincipal(momo, MockCommune.VillarsSousYens, dateArriveeMomoVillars, dateAvantMariage, MotifFor.DEMENAGEMENT_VD, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
 		}
 
 		// bea
 		final PersonnePhysique bea = addHabitant(noIndBea);
 		{
 			noHabBea = bea.getNumero();
-			addForFiscalPrincipal(bea, MockCommune.Lausanne.getNoOFS(), dateMajoriteBea, dateAvantMariage, MotifFor.MAJORITE,
-					MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
+			addForFiscalPrincipal(bea, MockCommune.Lausanne, dateMajoriteBea, dateAvantMariage, MotifFor.MAJORITE, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
 		}
 
 		// ménage
@@ -112,8 +110,7 @@ public class Ec_6000_02_Separation_MarieAvecSuisseOuPermisC_Scenario extends Eve
 			noMenage = menage.getNumero();
 			tiersService.addTiersToCouple(menage, momo, dateMariage, null);
 			tiersService.addTiersToCouple(menage, bea, dateMariage, null);
-			final ForFiscalPrincipal f = addForFiscalPrincipal(menage, communeMariage.getNoOFS(), dateMariage, null,
-					MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null);
+			final ForFiscalPrincipal f = addForFiscalPrincipal(menage, communeMariage, dateMariage, null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null);
 			f.setModeImposition(ModeImposition.DEPENSE);
 		}
 	}

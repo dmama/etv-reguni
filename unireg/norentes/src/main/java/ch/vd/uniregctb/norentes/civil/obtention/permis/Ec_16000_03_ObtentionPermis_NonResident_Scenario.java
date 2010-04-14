@@ -66,9 +66,8 @@ public class Ec_16000_03_ObtentionPermis_NonResident_Scenario extends EvenementC
 		momo.setNumeroIndividu(noIndMomo);
 		noCtbMomo = momo.getNumero();
 
-		final ForFiscalPrincipal ffp = addForFiscalPrincipal(momo, MockCommune.Neuchatel.getNoOFS(), dateObtentionPermisB, null, MotifFor.ARRIVEE_HS, null);
+		final ForFiscalPrincipal ffp = addForFiscalPrincipal(momo, MockCommune.Neuchatel, dateObtentionPermisB, null, MotifFor.ARRIVEE_HS, null);
 		ffp.setModeImposition(ModeImposition.SOURCE);
-		ffp.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_HC);
 	}
 
 	@Check(id=1, descr="Vérification de l'état du for")

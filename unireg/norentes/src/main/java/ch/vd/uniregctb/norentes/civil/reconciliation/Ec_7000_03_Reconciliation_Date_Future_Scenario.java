@@ -86,12 +86,12 @@ public class Ec_7000_03_Reconciliation_Date_Future_Scenario extends EvenementCiv
 		// momo
 		PersonnePhysique momo = addHabitant(noIndMomo);
 		noHabMomo = momo.getNumero();
-		addForFiscalPrincipal(momo, commune.getNoOFS(), dateSeparation, null, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, null);
+		addForFiscalPrincipal(momo, commune, dateSeparation, null, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, null);
 
 		// bea
 		PersonnePhysique bea = addHabitant(noIndBea);
 		noHabBea = bea.getNumero();
-		addForFiscalPrincipal(bea, commune.getNoOFS(), dateSeparation, null, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, null);
+		addForFiscalPrincipal(bea, commune, dateSeparation, null, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, null);
 
 		// ménage
 		MenageCommun menage = new MenageCommun();
@@ -99,8 +99,7 @@ public class Ec_7000_03_Reconciliation_Date_Future_Scenario extends EvenementCiv
 		noMenage = menage.getNumero();
 		tiersService.addTiersToCouple(menage, momo, dateMariage, dateSeparation.getOneDayBefore());
 		tiersService.addTiersToCouple(menage, bea, dateMariage, dateSeparation.getOneDayBefore());
-		addForFiscalPrincipal(menage, commune.getNoOFS(), dateMariage, dateSeparation.getOneDayBefore(),
-				MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT);
+		addForFiscalPrincipal(menage, commune, dateMariage, dateSeparation.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT);
 	}
 
 	@Check(id = 1, descr = "Vérifie que les habitants sont bien séparés (Maurice et Béatrice possèdent chacun un for fiscal principal ouvert et le for principal du ménage est fermé)")

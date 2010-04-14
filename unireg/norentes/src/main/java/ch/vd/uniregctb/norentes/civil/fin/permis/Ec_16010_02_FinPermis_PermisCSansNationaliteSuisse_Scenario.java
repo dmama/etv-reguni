@@ -52,7 +52,7 @@ public class Ec_16010_02_FinPermis_PermisCSansNationaliteSuisse_Scenario extends
 	private final RegDate dateArrivee = RegDate.get(2007, 1, 1);
 	private final RegDate dateObtentionPermisC = RegDate.get(2007, 6, 1);
 	private final RegDate dateFinPermisC = RegDate.get(2008, 10, 10);
-	private final int communePermis = MockCommune.VillarsSousYens.getNoOFS();
+	private final MockCommune communePermis = MockCommune.VillarsSousYens;
 
 	private final class MyMockServiceCivil extends DefaultMockServiceCivil {
 
@@ -85,8 +85,7 @@ public class Ec_16010_02_FinPermis_PermisCSansNationaliteSuisse_Scenario extends
 	public void step1() {
 		PersonnePhysique rosa = addHabitant(noIndRosa);
 		noHabRosa = rosa.getNumero();
-		ForFiscalPrincipal f = addForFiscalPrincipal(rosa, communePermis, dateArrivee, dateObtentionPermisC.getOneDayBefore(),
-				MotifFor.ARRIVEE_HC, MotifFor.PERMIS_C_SUISSE);
+		ForFiscalPrincipal f = addForFiscalPrincipal(rosa, communePermis, dateArrivee, dateObtentionPermisC.getOneDayBefore(), MotifFor.ARRIVEE_HC, MotifFor.PERMIS_C_SUISSE);
 		f.setModeImposition(ModeImposition.SOURCE);
 
 		f = addForFiscalPrincipal(rosa, communePermis, dateObtentionPermisC, null, MotifFor.PERMIS_C_SUISSE, null);
@@ -106,7 +105,7 @@ public class Ec_16010_02_FinPermis_PermisCSansNationaliteSuisse_Scenario extends
 	public void step2() throws Exception {
 		mockServiceCivil.setupForTest();
 
-		long id = addEvenementCivil(TypeEvenementCivil.FIN_CHANGEMENT_CATEGORIE_ETRANGER, noIndRosa, dateFinPermisC, communePermis);
+		long id = addEvenementCivil(TypeEvenementCivil.FIN_CHANGEMENT_CATEGORIE_ETRANGER, noIndRosa, dateFinPermisC, communePermis.getNoOFSEtendu());
 		commitAndStartTransaction();
 		regroupeEtTraiteEvenements(id);
 	}

@@ -57,12 +57,10 @@ public class Ec_2001_01_AnnulationDeces_Celibataire_Scenario extends EvenementCi
 	public void step1() {
 		PersonnePhysique julie = addHabitant(noIndJulie);
 		noHabJulie = julie.getNumero();
-		ForFiscalPrincipal f = addForFiscalPrincipal(julie, commune.getNoOFS(), dateDebutSuisse, dateObtentionPermis.getOneDayBefore(),
-				MotifFor.DEBUT_EXPLOITATION, MotifFor.PERMIS_C_SUISSE);
+		ForFiscalPrincipal f = addForFiscalPrincipal(julie, commune, dateDebutSuisse, dateObtentionPermis.getOneDayBefore(), MotifFor.DEBUT_EXPLOITATION, MotifFor.PERMIS_C_SUISSE);
 		f.setModeImposition(ModeImposition.SOURCE);
 
-		f = addForFiscalPrincipal(julie, commune.getNoOFS(), dateObtentionPermis, dateDeces, MotifFor.PERMIS_C_SUISSE,
-				MotifFor.VEUVAGE_DECES);
+		f = addForFiscalPrincipal(julie, commune, dateObtentionPermis, dateDeces, MotifFor.PERMIS_C_SUISSE, MotifFor.VEUVAGE_DECES);
 		f.setModeImposition(ModeImposition.ORDINAIRE);
 	}
 

@@ -48,12 +48,10 @@ public class Ec_6001_01_AnnulationSeparation_MarieSeul_Scenario extends Abstract
 		PersonnePhysique pierre = addHabitant(noIndPierre);
 		noHabPierre = pierre.getNumero();
 
-		ForFiscalPrincipal ffp = addForFiscalPrincipal(pierre, commune.getNoOFS(), dateDebutSuisse, dateMariage.getOneDayBefore(),
-				MotifFor.ARRIVEE_HC, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
+		ForFiscalPrincipal ffp = addForFiscalPrincipal(pierre, commune, dateDebutSuisse, dateMariage.getOneDayBefore(), MotifFor.ARRIVEE_HC, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
 		ffp.setModeImposition(ModeImposition.SOURCE);
 
-		ffp = addForFiscalPrincipal(pierre, commune.getNoOFS(), dateSeparation, null, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT,
-				null);
+		ffp = addForFiscalPrincipal(pierre, commune, dateSeparation, null, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, null);
 		ffp.setModeImposition(ModeImposition.SOURCE);
 
 		// Ménage
@@ -61,8 +59,7 @@ public class Ec_6001_01_AnnulationSeparation_MarieSeul_Scenario extends Abstract
 		noMenage = menage.getNumero();
 		tiersService.addTiersToCouple(menage, pierre, dateMariage, dateSeparation.getOneDayBefore());
 
-		ffp = addForFiscalPrincipal(menage, commune.getNoOFS(), dateMariage, dateSeparation.getOneDayBefore(),
-				MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT);
+		ffp = addForFiscalPrincipal(menage, commune, dateMariage, dateSeparation.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT);
 		ffp.setModeImposition(ModeImposition.SOURCE);
 	}
 

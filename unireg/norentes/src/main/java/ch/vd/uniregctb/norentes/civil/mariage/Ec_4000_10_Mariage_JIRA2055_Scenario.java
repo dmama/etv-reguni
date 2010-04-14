@@ -121,22 +121,19 @@ public class Ec_4000_10_Mariage_JIRA2055_Scenario extends EvenementCivilScenario
 		final PersonnePhysique jeanMarc = addHabitant(noIndJeanMarc);
 		{
 			noHabJeanMarc = jeanMarc.getNumero();
-			addForFiscalPrincipal(jeanMarc, commune.getNoOFS(), dateDebutJeanMarc, dateMariageAvecAmelie.getOneDayBefore(),
-					MotifFor.DEBUT_EXPLOITATION, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
+			addForFiscalPrincipal(jeanMarc, commune, dateDebutJeanMarc, dateMariageAvecAmelie.getOneDayBefore(), MotifFor.DEBUT_EXPLOITATION, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
 		}
 
 		final PersonnePhysique amelie = addHabitant(noIndAmelie);
 		{
 			noHabAmelie = amelie.getNumero();
-			addForFiscalPrincipal(amelie, commune.getNoOFS(), dateDemenagementAmelie, dateMariageAvecAmelie.getOneDayBefore(),
-					MotifFor.DEMENAGEMENT_VD, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
+			addForFiscalPrincipal(amelie, commune, dateDemenagementAmelie, dateMariageAvecAmelie.getOneDayBefore(), MotifFor.DEMENAGEMENT_VD, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
 		}
 
 		final PersonnePhysique stephanie = addHabitant(noIndStephanie);
 		{
 			noHabStephanie = stephanie.getNumero();
-			addForFiscalPrincipal(stephanie, commune.getNoOFS(), dateDemenagementAmelie, dateMariageAvecStephanie.getOneDayBefore(),
-					MotifFor.DEMENAGEMENT_VD, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
+			addForFiscalPrincipal(stephanie, commune, dateDemenagementAmelie, dateMariageAvecStephanie.getOneDayBefore(), MotifFor.DEMENAGEMENT_VD, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
 		}
 
 		// ménage
@@ -147,7 +144,7 @@ public class Ec_4000_10_Mariage_JIRA2055_Scenario extends EvenementCivilScenario
 			tiersService.addTiersToCouple(menage, jeanMarc, dateMariageAvecAmelie, dateSeparationAvecAmelie);
 			tiersService.addTiersToCouple(menage, amelie, dateMariageAvecAmelie,dateSeparationAvecAmelie);
 
-			final ForFiscalPrincipal f = addForFiscalPrincipal(menage, commune.getNoOFS(), dateMariageAvecAmelie, dateSeparationAvecAmelie, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION,
+			final ForFiscalPrincipal f = addForFiscalPrincipal(menage, commune, dateMariageAvecAmelie, dateSeparationAvecAmelie, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION,
 					MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT);
 			f.setModeImposition(ModeImposition.ORDINAIRE);
 		}

@@ -74,15 +74,13 @@ public class Ec_10001_01_AnnulationVeuvage_MarieSeul_Scenario extends EvenementC
 		PersonnePhysique andre = addHabitant(noIndAndre);
 		noHabAndre = andre.getNumero();
 
-		addForFiscalPrincipal(andre, commune.getNoOFS(), RegDate.get(1980, 3, 1), dateAvantMariage, MotifFor.ARRIVEE_HC,
-				MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
-		addForFiscalPrincipal(andre, commune.getNoOFS(), dateVeuvage.getOneDayAfter(), null, MotifFor.VEUVAGE_DECES, null);
+		addForFiscalPrincipal(andre, commune, RegDate.get(1980, 3, 1), dateAvantMariage, MotifFor.ARRIVEE_HC, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
+		addForFiscalPrincipal(andre, commune, dateVeuvage.getOneDayAfter(), null, MotifFor.VEUVAGE_DECES, null);
 
 		MenageCommun menage = (MenageCommun) tiersDAO.save(new MenageCommun());
 		noMenage = menage.getNumero();
 		tiersService.addTiersToCouple(menage, andre, dateMariage, dateVeuvage);
-		addForFiscalPrincipal(menage, commune.getNoOFS(), dateMariage, dateVeuvage,
-				MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MotifFor.VEUVAGE_DECES);
+		addForFiscalPrincipal(menage, commune, dateMariage, dateVeuvage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MotifFor.VEUVAGE_DECES);
 	}
 
 	@Check(id=1, descr="Vérifie que l'habitant André a un For ouvert et le For du ménage est fermé")

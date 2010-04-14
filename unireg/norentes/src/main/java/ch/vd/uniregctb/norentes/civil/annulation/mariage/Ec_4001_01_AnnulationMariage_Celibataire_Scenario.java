@@ -56,7 +56,7 @@ public class Ec_4001_01_AnnulationMariage_Celibataire_Scenario extends Evenement
 		PersonnePhysique julie = addHabitant(noIndJulie);
 		noHabJulie = julie.getNumero();
 
-		ForFiscalPrincipal f = addForFiscalPrincipal(julie, commune.getNoOFS(), RegDate.get(1995, 4, 19), null, MotifFor.ARRIVEE_HC, null);
+		ForFiscalPrincipal f = addForFiscalPrincipal(julie, commune, RegDate.get(1995, 4, 19), null, MotifFor.ARRIVEE_HC, null);
 		f.setModeImposition(ModeImposition.ORDINAIRE);
 	}
 

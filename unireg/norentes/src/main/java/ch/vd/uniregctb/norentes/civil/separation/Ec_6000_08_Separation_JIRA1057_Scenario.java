@@ -95,7 +95,7 @@ public class Ec_6000_08_Separation_JIRA1057_Scenario extends EvenementCivilScena
 			tiersService.addTiersToCouple(menage, momo, dateMariage, null);
 			tiersService.addTiersToCouple(menage, bea, dateMariage, null);
 			
-			addForFiscalPrincipal(menage, commune.getNoOFS(), dateMariage, null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null);
+			addForFiscalPrincipal(menage, commune, dateMariage, null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null);
 			addForFiscalSecondaire(menage, communeSecondaire.getNoOFS(), dateMariage.addMonths(3), null);
 			addForFiscalSecondaire(menage, communeSecondaire.getNoOFS(), dateMariage.addMonths(8), null);
 		}
