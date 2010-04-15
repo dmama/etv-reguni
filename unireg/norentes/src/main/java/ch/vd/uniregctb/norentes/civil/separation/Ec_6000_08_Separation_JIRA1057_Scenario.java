@@ -8,6 +8,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
+import ch.vd.uniregctb.interfaces.model.mock.MockOfficeImpot;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
 import ch.vd.uniregctb.norentes.common.EvenementCivilScenario;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -73,18 +74,16 @@ public class Ec_6000_08_Separation_JIRA1057_Scenario extends EvenementCivilScena
 
 	@Etape(id=1, descr="Chargement des habitants et du ménage commun")
 	public void step1() {
+
+		addColAdm(MockOfficeImpot.OID_LAUSANNE_OUEST);
 		
 		// Maurice
 		final PersonnePhysique momo = addHabitant(noIndMomo);
-		{
-			noHabMomo = momo.getNumero();
-		}
+		noHabMomo = momo.getNumero();
 
 		// Hélène
 		final PersonnePhysique bea = addHabitant(noIndBea);
-		{
-			noHabBea = bea.getNumero();
-		}
+		noHabBea = bea.getNumero();
 
 		// ménage
 		{

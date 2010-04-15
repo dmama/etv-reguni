@@ -29,7 +29,6 @@ import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.common.BatchTransactionTemplate.BatchCallback;
 import ch.vd.uniregctb.common.BatchTransactionTemplate.Behavior;
-import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationException;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
@@ -643,14 +642,9 @@ public class EnvoiDIsEnMasseProcessor {
 			Assert.isEqual(TypeAdresseRetour.OID, adresseRetour);
 
 			final Contribuable ctb = tache.getContribuable();
-			final Integer oid = tiersService.getOfficeImpotAt(ctb, tache.getDateFin());
-			if (oid == null) {
-				throw new IllegalArgumentException("Impossible de trouver l'office d'impôt à la date de fin de la déclaration.");
-			}
-
-			final CollectiviteAdministrative coll = tiersService.getOrCreateCollectiviteAdministrative(oid, true);
+			final CollectiviteAdministrative coll = tiersService.getOfficeImpotAt(ctb, tache.getDateFin());
 			if (coll == null) {
-				throw new IllegalArgumentException("Impossible de trouver la collectivité correspondant à l'office d'impôt n°" + oid + ".");
+				throw new IllegalArgumentException("Impossible de trouver l'office d'impôt à la date de fin de la déclaration.");
 			}
 
 			di.setRetourCollectiviteAdministrative(coll);

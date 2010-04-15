@@ -3,6 +3,7 @@ package ch.vd.uniregctb.tache;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -14,6 +15,8 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.junit.Test;
+import org.springframework.test.annotation.NotTransactional;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.util.Assert;
 
@@ -21,6 +24,7 @@ import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.uniregctb.common.BusinessTest;
+import ch.vd.uniregctb.common.TestingConstants;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotCriteria;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
@@ -29,14 +33,17 @@ import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.evenement.common.EnsembleTiersCouple;
 import ch.vd.uniregctb.interfaces.model.Individu;
+import ch.vd.uniregctb.interfaces.model.mock.MockCollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
+import ch.vd.uniregctb.interfaces.model.mock.MockOfficeImpot;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
 import ch.vd.uniregctb.metier.MetierService;
+import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
@@ -62,6 +69,7 @@ import ch.vd.uniregctb.type.TypeAdresseRetour;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
+import ch.vd.uniregctb.type.TypeEtatDeclaration;
 import ch.vd.uniregctb.type.TypeEtatTache;
 import ch.vd.uniregctb.type.TypeTache;
 
@@ -71,6 +79,10 @@ import ch.vd.uniregctb.type.TypeTache;
  * @author xcifde
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
+@SuppressWarnings({"JavaDoc"})
+@ContextConfiguration(locations = {
+	TestingConstants.UNIREG_BUSINESS_UT_TACHES
+})
 public class TacheServiceTest extends BusinessTest {
 
 	private static final Logger LOGGER = Logger.getLogger(TacheServiceTest.class);
@@ -129,6 +141,15 @@ public class TacheServiceTest extends BusinessTest {
 			}
 		});
 
+		doInNewTransactionAndSession(new TxCallback(){
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				for (MockCollectiviteAdministrative ca : MockCollectiviteAdministrative.getAll()) {
+					addCollAdm(ca);
+				}
+				return null;
+			}
+		});
 	}
 
 	@Test
@@ -485,9 +506,7 @@ public class TacheServiceTest extends BusinessTest {
 		loadDatabase(DB_UNIT_DATA_FILE);
 
 		PersonnePhysique hab = (PersonnePhysique) tiersService.getTiers(12300001);
-		ForFiscalPrincipal forFiscalPrincipal = new ForFiscalPrincipal(RegDate.get(2004, 6, 12), RegDate.get(2006, 6, 12),
-				new Integer(5652), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
-		forFiscalPrincipal.setMotifFermeture(MotifFor.DEPART_HS);
+		ForFiscalPrincipal forFiscalPrincipal = addForPrincipal(hab, date(2004, 6, 12), MotifFor.ARRIVEE_HC, date(2006, 6, 12), MotifFor.DEPART_HS, MockCommune.VillarsSousYens);
 
 		tacheService.genereTacheDepuisFermetureForPrincipal(hab, forFiscalPrincipal);
 
@@ -697,10 +716,7 @@ public class TacheServiceTest extends BusinessTest {
 		loadDatabase(DB_UNIT_DATA_FILE);
 
 		PersonnePhysique hab = (PersonnePhysique) tiersService.getTiers(12300001);
-
-		ForFiscalPrincipal forFiscalPrincipal = new ForFiscalPrincipal(RegDate.get(2004, 6, 12), RegDate.get(2006, 6, 12),
-				new Integer(5652), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
-		forFiscalPrincipal.setMotifFermeture(MotifFor.DEPART_HC);
+		ForFiscalPrincipal forFiscalPrincipal = addForPrincipal(hab, date(2004, 6, 12), MotifFor.ARRIVEE_HC, date(2006, 6, 12), MotifFor.DEPART_HC, MockCommune.VillarsSousYens);
 
 		tacheService.genereTacheDepuisFermetureForPrincipal(hab, forFiscalPrincipal);
 
@@ -709,6 +725,84 @@ public class TacheServiceTest extends BusinessTest {
 
 		verifieTachesAnnulation(criterion, 0, false);
 
+	}
+
+	/**
+	 * [UNIREG-2266] Vérifie que les nouvelles tâches possède bien une collectivité administrative assignée, même si l'OID du tiers ne change pas suite au changement de for.
+	 */
+	@NotTransactional
+	@Test
+	public void testGenereTacheDepartHCTardif() throws Exception {
+
+		class Ids {
+			Long raoulId;
+		}
+		final Ids ids = new Ids();
+
+		// Création de la situation initiale : contribuable vaudois ordinaire dans le canton depuis 2008 avec une DI pour 2008
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+
+				final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);
+				final ModeleDocument modele2008 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2008);
+
+				final Contribuable raoul = addNonHabitant("Raoul", "Lavanchy", date(1963, 1, 1), Sexe.MASCULIN);
+				ids.raoulId = raoul.getNumero();
+				addForPrincipal(raoul, date(2008, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Orbe);
+
+				final DeclarationImpotOrdinaire di = addDeclarationImpot(raoul, periode2008, date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2008);
+				addEtatDeclaration(di, date(2009, 1, 15), TypeEtatDeclaration.EMISE);
+				addEtatDeclaration(di, date(2009, 2, 21), TypeEtatDeclaration.RETOURNEE);
+				
+				return null;
+			}
+		});
+
+		// Saisie d'un départ hors-canton au mileu 2008 (départ entrée tardivement, donc)
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+
+				final Contribuable raoul = (Contribuable) tiersService.getTiers(ids.raoulId);
+				assertNotNull(raoul);
+
+				tiersService.closeForFiscalPrincipal(raoul, date(2008, 5, 23), MotifFor.DEPART_HC);
+				tiersService.openForFiscalPrincipal(raoul, date(2008, 5, 24), MotifRattachement.DOMICILE, MockCommune.Neuchatel.getNoOFS(), TypeAutoriteFiscale.COMMUNE_HC, ModeImposition.ORDINAIRE,
+						MotifFor.DEPART_HC, true);
+
+				return null;
+			}
+		});
+
+		// Vérifie qu'il y a bien une tâche d'annulation de la DI 2008 et qu'elle est bien assignée à l'OID d'Orbe
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+
+				final Contribuable raoul = (Contribuable) tiersService.getTiers(ids.raoulId);
+				assertNotNull(raoul);
+				assertEquals(Integer.valueOf(MockOfficeImpot.OID_ORBE.getNoColAdm()), raoul.getOfficeImpotId());
+
+				final CollectiviteAdministrative oidOrbe = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_ORBE.getNoColAdm());
+				assertNotNull(oidOrbe);
+
+				final TacheCriteria criterion = new TacheCriteria();
+				criterion.setContribuable(raoul);
+				criterion.setEtatTache(TypeEtatTache.EN_INSTANCE);
+
+				final List<Tache> list = tacheDAO.find(criterion);
+				assertEquals(1, list.size());
+
+				final Tache tache = list.get(0);
+				assertInstanceOf(TacheAnnulationDeclarationImpot.class, tache);
+
+				final TacheAnnulationDeclarationImpot annulDI = (TacheAnnulationDeclarationImpot) tache;
+				assertSame(oidOrbe, annulDI.getCollectiviteAdministrativeAssignee());
+				
+				return null;
+			}
+		});
 	}
 
 	@Test
@@ -1847,6 +1941,10 @@ public class TacheServiceTest extends BusinessTest {
 		doInNewTransaction(new TxCallback() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
+
+				final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
+				assertNotNull(colAdm);
+				
 				Contribuable raoul = addHabitant(100000);
 				ids.raoulId = raoul.getNumero();
 				addForPrincipal(raoul, date(1980, 1, 1), MotifFor.MAJORITE, MockCommune.Lausanne);
@@ -1857,17 +1955,17 @@ public class TacheServiceTest extends BusinessTest {
 				DeclarationImpotOrdinaire declaration = addDeclarationImpot(raoul, periode, date(2074, 1, 1), date(2074, 12, 31),
 						TypeContribuable.VAUDOIS_ORDINAIRE, modele);
 				final TacheAnnulationDeclarationImpot annulDI = addTacheAnnulDI(TypeEtatTache.EN_INSTANCE, date(2000, 1, 1), declaration,
-						raoul);
+						raoul, colAdm);
 				ids.tacheAnnulDI = annulDI.getId();
 
 				// tâche de contrôle de dossier
-				final TacheControleDossier tacheControl = addTacheControleDossier(TypeEtatTache.EN_INSTANCE, date(2000, 1, 1), raoul);
+				final TacheControleDossier tacheControl = addTacheControleDossier(TypeEtatTache.EN_INSTANCE, date(2000, 1, 1), raoul, colAdm);
 				ids.tacheControl = tacheControl.getId();
 
 				// tâche d'envoi de DI
 				final TacheEnvoiDeclarationImpot tacheEnvoi = addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(2000, 1, 1),
 						date(2005, 1, 1), date(2005, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
-						raoul, null);
+						raoul, null, colAdm);
 				ids.tacheEnvoi = tacheEnvoi.getId();
 				return null;
 			}

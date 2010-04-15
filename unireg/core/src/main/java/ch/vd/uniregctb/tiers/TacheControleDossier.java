@@ -26,8 +26,8 @@ public class TacheControleDossier extends Tache {
 	protected TacheControleDossier() {
 	}
 
-	public TacheControleDossier(TypeEtatTache etat, RegDate dateEcheance, Contribuable contribuable) {
-		super(etat, dateEcheance, contribuable);
+	public TacheControleDossier(TypeEtatTache etat, RegDate dateEcheance, Contribuable contribuable, CollectiviteAdministrative collectiviteAdministrativeAssignee) {
+		super(etat, dateEcheance, contribuable, collectiviteAdministrativeAssignee);
 	}
 
 	@Transient

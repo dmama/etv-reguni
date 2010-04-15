@@ -5,6 +5,7 @@ import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.interfaces.model.Nationalite;
+import ch.vd.uniregctb.interfaces.model.mock.MockCollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
 import ch.vd.uniregctb.interfaces.model.mock.MockNationalite;
 
@@ -620,6 +621,8 @@ public class TiersServiceTest extends BusinessTest {
 		doInNewTransaction(new TxCallback() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
+
+				addCollAdm(MockCollectiviteAdministrative.CEDI);
 
 				final PeriodeFiscale pf2006 = addPeriodeFiscale(2006);
 				final PeriodeFiscale pf2007 = addPeriodeFiscale(2007);

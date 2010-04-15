@@ -148,7 +148,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 				}
 				else {
 					// [UNIREG-1257] tenir compte de l'OID valide durant la période de validité de la déclaration
-					final Integer officeImpotId = tiersService.getOfficeImpotAt(declaration.getTiers(), declaration.getDateFin());
+					final Integer officeImpotId = tiersService.getOfficeImpotIdAt(declaration.getTiers(), declaration.getDateFin());
 					if (officeImpotId != null) {
 						idEnvoi = officeImpotId.toString();
 					}
@@ -203,10 +203,8 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 		// Expediteur
 		//
 		// [UNIREG-1257] tenir compte de l'OID valide durant la période de validité de la déclaration
-		final Integer numOid = tiersService.getOfficeImpotAt(declaration.getTiers(), declaration.getDateFin());
-
 		// [UNIREG-1857] passer par le service des adresses pour bâtir l'adresse de la collectivité administrative (manquait la case postale)
-		final CollectiviteAdministrative oid = tiersService.getOrCreateCollectiviteAdministrative(numOid);
+		final CollectiviteAdministrative oid = tiersService.getOfficeImpotAt(declaration.getTiers(), declaration.getDateFin());
 		Assert.notNull(oid);
 
 		final AdresseEnvoiDetaillee adresse = adresseService.getAdresseEnvoi(oid, null);
@@ -215,7 +213,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 		remplitAdresse(adresseExpediteur, adresse);
 		expediteur.setAdresse(adresseExpediteur);
 
-		final ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative collectivite = infraService.getOfficeImpot(numOid);
+		final ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative collectivite = infraService.getOfficeImpot(oid.getNumeroCollectiviteAdministrative());
 
 		expediteur.setAdrMes(collectivite.getAdresseEmail());
 		expediteur.setNumTelephone(collectivite.getNoTelephone());
@@ -348,7 +346,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 
 			// Cas général, les déclarations sont adressées au CEDI pour scannage avec le numéro de l'office d'impôt destinataire dans l'adresse
 			// [UNIREG-1257] tenir compte de l'OID valide durant la période de validité de la déclaration
-			final Integer officeImpot = tiersService.getOfficeImpotAt(declaration.getTiers(), declaration.getDateFin());
+			final Integer officeImpot = tiersService.getOfficeImpotIdAt(declaration.getTiers(), declaration.getDateFin());
 			Assert.notNull(officeImpot);
 			remplitAdresseRetourCEDI(adresseRetour, officeImpot);
 		}
@@ -420,9 +418,8 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 
 		// [UNIREG-1741] les DIs dépenses ne peuvent pas être scannées au CEDI, elles doivent retourner directement aux OIDs (ou éventuellement à l'ACI en cas de décès)
 		if (collAdm.getNumeroCollectiviteAdministrative() == ServiceInfrastructureService.noCEDI && declaration.getTypeDeclaration() == TypeDocument.DECLARATION_IMPOT_DEPENSE) {
-			final Integer oid = tiersService.getOfficeImpotAt(declaration.getTiers(), declaration.getDateFin());
-			Assert.notNull(oid);
-			collAdm = tiersService.getOrCreateCollectiviteAdministrative(oid);
+			collAdm = tiersService.getOfficeImpotAt(declaration.getTiers(), declaration.getDateFin());
+			Assert.notNull(collAdm);
 		}
 
 		return collAdm;
@@ -538,7 +535,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 
 	private String calculNooid(DeclarationImpotOrdinaire declaration, Tiers tiers) {
 		// [UNIREG-1257] tenir compte de l'OID valide durant la période de validité de la déclaration
-		final Integer officeImpotId = tiersService.getOfficeImpotAt(tiers, declaration.getDateFin());
+		final Integer officeImpotId = tiersService.getOfficeImpotIdAt(tiers, declaration.getDateFin());
 		Assert.notNull(officeImpotId);
 		String nooid = StringUtils.leftPad(officeImpotId.toString(), 2, "0") + "-";
 		if (declaration.getQualification() != null && (declaration.getQualification() == Qualification.AUTOMATIQUE || declaration.getQualification() == Qualification.SEMI_AUTOMATIQUE)) {
@@ -602,7 +599,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 	private String calculCodeBarre(DeclarationImpotOrdinaire declaration) {
 		Tiers tiers = declaration.getTiers();
 		// [UNIREG-1257] tenir compte de l'OID valide durant la période de validité de la déclaration
-		final Integer officeImpotId = tiersService.getOfficeImpotAt(tiers, declaration.getDateFin());
+		final Integer officeImpotId = tiersService.getOfficeImpotIdAt(tiers, declaration.getDateFin());
 		Assert.notNull(officeImpotId);
 		String codbarr = StringUtils.leftPad(tiers.getNumero().toString(), 9, "0") + declaration.getPeriode().getAnnee().toString()
 				+ StringUtils.leftPad(declaration.getNumero().toString(), 2, "0")

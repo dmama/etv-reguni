@@ -19,6 +19,8 @@ import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.validation.Validateable;
+import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.type.TypeEtatTache;
@@ -42,7 +44,7 @@ import ch.vd.uniregctb.type.TypeTache;
 })
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "TACHE_TYPE", discriminatorType = DiscriminatorType.STRING, length = LengthConstants.TACHE_TYPE)
-public abstract class Tache extends HibernateEntity {
+public abstract class Tache extends HibernateEntity implements Validateable {
 
 	/**
 	 *
@@ -92,10 +94,12 @@ public abstract class Tache extends HibernateEntity {
 	 * @param etat etat de la tâche à la construction
 	 * @param dateEcheance date à partir de laquelle les OID voient cette tâche (si null -> dimanche prochain)
 	 * @param contribuable contribuable à associer à la tâche
+	 * @param collectiviteAdministrativeAssignee la collectivité administrative (généralement un OID) à qui la tâche est assignée
 	 */
-	public Tache(TypeEtatTache etat, RegDate dateEcheance, Contribuable contribuable) {
+	public Tache(TypeEtatTache etat, RegDate dateEcheance, Contribuable contribuable, CollectiviteAdministrative collectiviteAdministrativeAssignee) {
 		this.etat = etat;
 		this.contribuable = contribuable;
+		this.collectiviteAdministrativeAssignee = collectiviteAdministrativeAssignee;
 
 		if (dateEcheance == null) {
 			// [UNIREG-1987] on place l'échéance de la tâche à dimanche prochain
@@ -240,4 +244,15 @@ public abstract class Tache extends HibernateEntity {
 	 */
 	@Transient
 	public abstract TypeTache getTypeTache();
+
+	public ValidationResults validate() {
+
+		ValidationResults results = new ValidationResults();
+
+		if (collectiviteAdministrativeAssignee == null) {
+			results.addError("La collectivité assignée doit être renseignée.");
+		}
+
+		return results;
+	}
 }

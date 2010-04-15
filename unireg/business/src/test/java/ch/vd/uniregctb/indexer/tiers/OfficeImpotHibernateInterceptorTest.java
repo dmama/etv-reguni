@@ -345,7 +345,7 @@ public class OfficeImpotHibernateInterceptorTest extends BusinessTest {
 				final CollectiviteAdministrative lausanne = (CollectiviteAdministrative) hibernateTemplate.get(CollectiviteAdministrative.class, ids.lausanne);
 				assertNotNull(lausanne);
 
-				TacheNouveauDossier tache = new TacheNouveauDossier(TypeEtatTache.EN_INSTANCE, date(2010, 1, 1), nh);
+				TacheNouveauDossier tache = new TacheNouveauDossier(TypeEtatTache.EN_INSTANCE, date(2010, 1, 1), nh, lausanne);
 				tache.setCollectiviteAdministrativeAssignee(lausanne);
 				tache = (TacheNouveauDossier) tiersDAO.saveObject(tache);
 				ids.tache = tache.getId();

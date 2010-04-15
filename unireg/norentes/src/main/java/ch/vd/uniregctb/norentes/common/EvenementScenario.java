@@ -29,6 +29,8 @@ import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer.Mode;
+import ch.vd.uniregctb.interfaces.model.mock.MockCollectiviteAdministrative;
+import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
@@ -180,6 +182,12 @@ public abstract class EvenementScenario extends NorentesScenario {
 
 		tiers.addDeclaration(di);
 		return di;
+	}
+
+	protected CollectiviteAdministrative addColAdm(MockCollectiviteAdministrative ca) {
+		CollectiviteAdministrative coll = new CollectiviteAdministrative();
+		coll.setNumeroCollectiviteAdministrative(ca.getNoColAdm());
+		return (CollectiviteAdministrative) tiersDAO.save(coll);
 	}
 
 	protected PersonnePhysique addHabitant(long noIndividu) {

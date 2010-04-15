@@ -266,7 +266,7 @@ public class ImpressionTaxationOfficeHelperImpl implements ImpressionTaxationOff
 	}
 
 	private Integer getOfficeImpotAt(Contribuable ctb, RegDate date) {
-		return tiersService.getOfficeImpotAt(ctb, date);
+		return tiersService.getOfficeImpotIdAt(ctb, date);
 	}
 
 	/**

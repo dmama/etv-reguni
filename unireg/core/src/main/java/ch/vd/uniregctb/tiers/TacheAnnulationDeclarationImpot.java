@@ -34,8 +34,9 @@ public class TacheAnnulationDeclarationImpot extends Tache implements Validateab
 	protected TacheAnnulationDeclarationImpot() {
 	}
 
-	public TacheAnnulationDeclarationImpot(TypeEtatTache etat, RegDate dateEcheance, Contribuable contribuable, DeclarationImpotOrdinaire declarationImpotOrdinaire) {
-		super(etat, dateEcheance, contribuable);
+	public TacheAnnulationDeclarationImpot(TypeEtatTache etat, RegDate dateEcheance, Contribuable contribuable, DeclarationImpotOrdinaire declarationImpotOrdinaire,
+	                                       CollectiviteAdministrative collectiviteAdministrativeAssignee) {
+		super(etat, dateEcheance, contribuable, collectiviteAdministrativeAssignee);
 		this.declarationImpotOrdinaire = declarationImpotOrdinaire;
 	}
 
@@ -76,7 +77,7 @@ public class TacheAnnulationDeclarationImpot extends Tache implements Validateab
 
 	public ValidationResults validate() {
 
-		ValidationResults results = new ValidationResults();
+		ValidationResults results = super.validate();
 
 		if (declarationImpotOrdinaire == null) {
 			results.addError("La déclaration ne peut pas être nulle.");

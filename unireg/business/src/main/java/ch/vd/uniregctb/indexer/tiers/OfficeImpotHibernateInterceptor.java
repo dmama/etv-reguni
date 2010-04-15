@@ -120,6 +120,7 @@ public class OfficeImpotHibernateInterceptor extends AbstractLinkedInterceptor {
 		for (Map.Entry<Long, Integer> e : modifs.entrySet()) {
 			tacheDAO.updateCollAdmAssignee(e.getKey(), e.getValue());
 		}
+		modifs.clear();
 	}
 
 	@Override

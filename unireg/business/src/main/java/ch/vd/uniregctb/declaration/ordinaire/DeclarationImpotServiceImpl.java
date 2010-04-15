@@ -151,7 +151,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 			throws DeclarationException {
 
 		final DeterminationDIsAEmettreProcessor processer = new DeterminationDIsAEmettreProcessor(hibernateTemplate, periodeDAO, tacheDAO,
-				parametres, transactionManager);
+				parametres, tiersService, transactionManager);
 		return processer.run(anneePeriode, dateTraitement, status);
 	}
 

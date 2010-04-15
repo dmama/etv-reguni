@@ -7,6 +7,7 @@ import ch.vd.uniregctb.declaration.*;
 import ch.vd.uniregctb.evenement.EvenementCivilUnitaire;
 import ch.vd.uniregctb.evenement.common.EnsembleTiersCouple;
 import ch.vd.uniregctb.interfaces.model.Pays;
+import ch.vd.uniregctb.interfaces.model.mock.MockCollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
@@ -500,13 +501,23 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 		return feuille;
 	}
 
+	protected CollectiviteAdministrative addCollAdm(MockCollectiviteAdministrative oid) {
+		CollectiviteAdministrative ca = new CollectiviteAdministrative();
+		ca.setNumeroCollectiviteAdministrative(oid.getNoColAdm());
+		ca = (CollectiviteAdministrative) hibernateTemplate.merge(ca);
+		hibernateTemplate.flush();
+		return ca;
+	}
+
 	/**
 	 * Ajoute une tâche d'envoi de déclaration d'impôt avec les paramètres spécifiés.
 	 */
-	protected TacheEnvoiDeclarationImpot addTacheEnvoiDI(TypeEtatTache etat, RegDate dateEcheance, RegDate dateDebut, RegDate dateFin,
-			TypeContribuable typeContribuable, TypeDocument typeDocument, Contribuable contribuable, Qualification qualification) {
+	protected TacheEnvoiDeclarationImpot addTacheEnvoiDI(TypeEtatTache etat, RegDate dateEcheance, RegDate dateDebut, RegDate dateFin, TypeContribuable typeContribuable, TypeDocument typeDocument,
+	                                                     Contribuable contribuable, Qualification qualification, CollectiviteAdministrative colAdm) {
+
 		TacheEnvoiDeclarationImpot tache = new TacheEnvoiDeclarationImpot(etat, dateEcheance, contribuable, dateDebut, dateFin,
-				typeContribuable, typeDocument, qualification, TypeAdresseRetour.CEDI);
+				typeContribuable, typeDocument, qualification, TypeAdresseRetour.CEDI, colAdm);
+
 		tache = (TacheEnvoiDeclarationImpot) hibernateTemplate.merge(tache);
 		return tache;
 	}
@@ -514,9 +525,10 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 	/**
 	 * Ajoute une tâche d'annulation de déclaration d'impôt avec les paramètres spécifiés.
 	 */
-	protected TacheAnnulationDeclarationImpot addTacheAnnulDI(TypeEtatTache etat, RegDate dateEcheance,
-			DeclarationImpotOrdinaire declaration, Contribuable contribuable) {
-		TacheAnnulationDeclarationImpot tache = new TacheAnnulationDeclarationImpot(etat, dateEcheance, contribuable, declaration);
+	protected TacheAnnulationDeclarationImpot addTacheAnnulDI(TypeEtatTache etat, RegDate dateEcheance, DeclarationImpotOrdinaire declaration, Contribuable contribuable,
+	                                                          CollectiviteAdministrative colAdm) {
+
+		TacheAnnulationDeclarationImpot tache = new TacheAnnulationDeclarationImpot(etat, dateEcheance, contribuable, declaration, colAdm);
 		tache = (TacheAnnulationDeclarationImpot) hibernateTemplate.merge(tache);
 		return tache;
 	}
@@ -524,8 +536,9 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 	/**
 	 * Ajoute une tâche d'annulation de déclaration d'impôt avec les paramètres spécifiés.
 	 */
-	protected TacheControleDossier addTacheControleDossier(TypeEtatTache etat, RegDate dateEcheance, Contribuable contribuable) {
-		TacheControleDossier tache = new TacheControleDossier(etat, dateEcheance, contribuable);
+	protected TacheControleDossier addTacheControleDossier(TypeEtatTache etat, RegDate dateEcheance, Contribuable contribuable, CollectiviteAdministrative colAdm) {
+
+		TacheControleDossier tache = new TacheControleDossier(etat, dateEcheance, contribuable, colAdm);
 		tache = (TacheControleDossier) hibernateTemplate.merge(tache);
 		return tache;
 	}
@@ -650,7 +663,7 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 		d.setTypeContribuable(typeC);
 		d.setModeleDocument(modele);
 
-		final CollectiviteAdministrative cedi = tiersService.getOrCreateCollectiviteAdministrative(ServiceInfrastructureService.noCEDI);
+		final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureService.noCEDI);
 		assertNotNull(cedi);
 		d.setRetourCollectiviteAdministrative(cedi);
 

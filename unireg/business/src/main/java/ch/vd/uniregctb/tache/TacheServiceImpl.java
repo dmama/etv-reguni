@@ -272,7 +272,9 @@ public class TacheServiceImpl implements TacheService, InitializingBean {
 	}
 
 	private void generateTacheTransmissionDossier(Contribuable contribuable) {
-		final TacheTransmissionDossier tache = new TacheTransmissionDossier(TypeEtatTache.EN_INSTANCE, null, contribuable);
+		final CollectiviteAdministrative oid = tiersService.getOfficeImpotAt(contribuable, null);
+		Assert.notNull(oid);
+		final TacheTransmissionDossier tache = new TacheTransmissionDossier(TypeEtatTache.EN_INSTANCE, null, contribuable, oid);
 		tacheDAO.save(tache);
 	}
 
@@ -463,8 +465,10 @@ public class TacheServiceImpl implements TacheService, InitializingBean {
 		else if (!envoiDejaFait) {
 			// [UNIREG-1105] on évite de créer des tâches dupliquées
 			if (!tacheDAO.existsTacheEnvoiEnInstanceOuEnCours(contribuable.getNumero(), dateDebut, dateFin)) {
-				final TacheEnvoiDeclarationImpot tache = new TacheEnvoiDeclarationImpot(TypeEtatTache.EN_INSTANCE, dateEcheance,
-						contribuable, dateDebut, dateFin, typeContribuable, typeDocument, qualification, adresseRetour);
+				final CollectiviteAdministrative oid = tiersService.getOfficeImpotAt(contribuable, null);
+				Assert.notNull(oid);
+				final TacheEnvoiDeclarationImpot tache =
+						new TacheEnvoiDeclarationImpot(TypeEtatTache.EN_INSTANCE, dateEcheance, contribuable, dateDebut, dateFin, typeContribuable, typeDocument, qualification, adresseRetour, oid);
 				tacheDAO.save(tache);
 			}
 		}
@@ -490,11 +494,12 @@ public class TacheServiceImpl implements TacheService, InitializingBean {
 	private void genereTacheControleDossier(Contribuable contribuable,CollectiviteAdministrative collectivite) {
 
 		if (!tacheDAO.existsTacheEnInstanceOuEnCours(contribuable.getNumero(), TypeTache.TacheControleDossier)) {
-			final TacheControleDossier tache = new TacheControleDossier(TypeEtatTache.EN_INSTANCE, null, contribuable);
 			//UNIREG-1024 "la tâche de contrôle du dossier doit être engendrée pour l'ancien office d'impôt"
-			if (collectivite!=null) {
-				tache.setCollectiviteAdministrativeAssignee(collectivite);
+			if (collectivite == null) {
+				collectivite = tiersService.getOfficeImpotAt(contribuable, null);
+				Assert.notNull(collectivite);
 			}
+			final TacheControleDossier tache = new TacheControleDossier(TypeEtatTache.EN_INSTANCE, null, contribuable, collectivite);
 			tacheDAO.save(tache);
 		}
 	}
@@ -589,6 +594,9 @@ public class TacheServiceImpl implements TacheService, InitializingBean {
 	@Transactional(rollbackFor = Throwable.class)
 	public void genereTachesDepuisAnnulationDeFor(Contribuable contribuable) {
 
+		final CollectiviteAdministrative oid = tiersService.getOfficeImpotAt(contribuable, null);
+		Assert.notNull(oid);
+
 		final DeclarationImpotCriteria criterion = new DeclarationImpotCriteria();
 		criterion.setContribuable(contribuable.getNumero());
 
@@ -598,7 +606,7 @@ public class TacheServiceImpl implements TacheService, InitializingBean {
 				final List<Assujettissement> assuj = Assujettissement.determine(contribuable, di, false);
 				if (assuj == null || assuj.isEmpty()) {
 					if (!tacheDAO.existsTacheAnnulationEnInstanceOuEnCours(contribuable.getNumero(), di.getId())) {
-						final TacheAnnulationDeclarationImpot tacheAnnulationDI = new TacheAnnulationDeclarationImpot(TypeEtatTache.EN_INSTANCE, null, contribuable, di);
+						final TacheAnnulationDeclarationImpot tacheAnnulationDI = new TacheAnnulationDeclarationImpot(TypeEtatTache.EN_INSTANCE, null, contribuable, di, oid);
 						tacheDAO.save(tacheAnnulationDI);
 					}
 				}
@@ -610,7 +618,9 @@ public class TacheServiceImpl implements TacheService, InitializingBean {
 	}
 
 	private void generateTacheNouveauDossier(Contribuable contribuable) {
-		final TacheNouveauDossier tacheNouveauDossier = new TacheNouveauDossier(TypeEtatTache.EN_INSTANCE, null, contribuable);
+		final CollectiviteAdministrative oid = tiersService.getOfficeImpotAt(contribuable, null);
+		Assert.notNull(oid);
+		final TacheNouveauDossier tacheNouveauDossier = new TacheNouveauDossier(TypeEtatTache.EN_INSTANCE, null, contribuable, oid);
 		tacheDAO.save(tacheNouveauDossier);
 	}
 
@@ -663,6 +673,9 @@ public class TacheServiceImpl implements TacheService, InitializingBean {
 		final RegDate aujourdhui = RegDate.get();
 		final int anneeCourante = aujourdhui.year();
 
+		final CollectiviteAdministrative oid = tiersService.getOfficeImpotAt(contribuable, null);
+		Assert.notNull(oid);
+
 		final DeclarationImpotCriteria criterion = new DeclarationImpotCriteria();
 		criterion.setContribuable(contribuable.getNumero());
 		criterion.setAnneeRange(new Pair<Integer, Integer>(anneeDebut, anneeCourante - 1));
@@ -673,7 +686,7 @@ public class TacheServiceImpl implements TacheService, InitializingBean {
 			if (di.getPeriode().getAnnee() >= premierePeriodeFiscale) {
 				// [UNIREG-1105] on évite de créer des tâches dupliquées
 				if (!tacheDAO.existsTacheAnnulationEnInstanceOuEnCours(contribuable.getNumero(), di.getId())) {
-					final TacheAnnulationDeclarationImpot tacheAnnulationDI = new TacheAnnulationDeclarationImpot(TypeEtatTache.EN_INSTANCE, null, contribuable, di);
+					final TacheAnnulationDeclarationImpot tacheAnnulationDI = new TacheAnnulationDeclarationImpot(TypeEtatTache.EN_INSTANCE, null, contribuable, di, oid);
 					tacheDAO.save(tacheAnnulationDI);
 				}
 			}
@@ -692,6 +705,9 @@ public class TacheServiceImpl implements TacheService, InitializingBean {
 
 		final RegDate aujourdhui = RegDate.get();
 		final int anneeCourante = aujourdhui.year();
+
+		final CollectiviteAdministrative oid = tiersService.getOfficeImpotAt(contribuable, null);
+		Assert.notNull(oid);
 
 		final DeclarationImpotCriteria criterion = new DeclarationImpotCriteria();
 		criterion.setContribuable(contribuable.getNumero());
@@ -721,7 +737,7 @@ public class TacheServiceImpl implements TacheService, InitializingBean {
 				if (diEchue) {
 					// [UNIREG-1105] on évite de créer des tâches dupliquées
 					if (!tacheDAO.existsTacheAnnulationEnInstanceOuEnCours(contribuable.getNumero(), di.getId())) {
-						final TacheAnnulationDeclarationImpot tacheAnnulationDI = new TacheAnnulationDeclarationImpot(TypeEtatTache.EN_INSTANCE, null, contribuable, di);
+						final TacheAnnulationDeclarationImpot tacheAnnulationDI = new TacheAnnulationDeclarationImpot(TypeEtatTache.EN_INSTANCE, null, contribuable, di, oid);
 						tacheDAO.save(tacheAnnulationDI);
 					}
 				}

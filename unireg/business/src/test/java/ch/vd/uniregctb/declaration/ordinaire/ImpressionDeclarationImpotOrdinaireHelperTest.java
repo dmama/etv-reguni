@@ -7,6 +7,7 @@ import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.editique.EditiqueHelper;
+import ch.vd.uniregctb.interfaces.model.mock.MockCollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockOfficeImpot;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -182,7 +183,8 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 	@Test
 	public void testAdresseRetourDIDepense() throws Exception {
 
-		final CollectiviteAdministrative vevey = tiersService.getOrCreateCollectiviteAdministrative(MockOfficeImpot.OID_VEVEY.getNoColAdm());
+		addCollAdm(MockCollectiviteAdministrative.CEDI);
+		final CollectiviteAdministrative vevey = addCollAdm(MockOfficeImpot.OID_VEVEY);
 
 		// Crée une personne physique (ctb ordinaire vaudois) à la dépense
 		final PersonnePhysique pp = addNonHabitant("Julien", "Glayre", date(1975, 1, 1), Sexe.MASCULIN);
@@ -213,7 +215,8 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 	@Test
 	public void testAdresseRetourDIDecede() throws Exception {
 
-		final CollectiviteAdministrative aci = tiersService.getOrCreateCollectiviteAdministrative(MockOfficeImpot.ACI.getNoColAdm());
+		addCollAdm(MockCollectiviteAdministrative.CEDI);
+		final CollectiviteAdministrative aci = addCollAdm(MockCollectiviteAdministrative.ACI);
 
 		// Crée une personne physique décédé
 		final PersonnePhysique pp = addNonHabitant("Julien", "Glayre", date(1975, 1, 1), Sexe.MASCULIN);

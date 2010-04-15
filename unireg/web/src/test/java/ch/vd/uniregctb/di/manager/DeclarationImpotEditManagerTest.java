@@ -19,6 +19,7 @@ import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
+import ch.vd.uniregctb.interfaces.model.mock.MockCollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
@@ -88,6 +89,8 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 	@Test
 	public void testCheckRangeDiContribuableAssujettiEnContinu() {
 
+		addCollAdm(MockCollectiviteAdministrative.CEDI);
+
 		final PeriodeFiscale periode2000 = addPeriodeFiscale(2000);
 		final PeriodeFiscale periode2040 = addPeriodeFiscale(2040);
 		final ModeleDocument modele2000 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2000);
@@ -110,6 +113,8 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 
 	@Test
 	public void testCheckRangeDiContribuableAvecFinAssujettissement() {
+
+		addCollAdm(MockCollectiviteAdministrative.CEDI);
 
 		final PeriodeFiscale periode2007 = addPeriodeFiscale(2007);
 		final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);
@@ -141,6 +146,8 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 	@Test
 	public void testCheckRangeDiContribuableAvecDebutAssujettissement() {
 
+		addCollAdm(MockCollectiviteAdministrative.CEDI);
+
 		final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);
 		final PeriodeFiscale periode2009 = addPeriodeFiscale(2009);
 		final ModeleDocument modele2008 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2008);
@@ -166,6 +173,8 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 
 	@Test
 	public void testCheckRangeDiContribuableAvecDepartHSEtRetourDansLAnnee() {
+
+		addCollAdm(MockCollectiviteAdministrative.CEDI);
 
 		final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);
 		final ModeleDocument modele2008 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2008);
@@ -226,6 +235,8 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 
 	@Test
 	public void testCalculateRangeProchaineDIContribuableAssujettiEnContinu() {
+
+		addCollAdm(MockCollectiviteAdministrative.CEDI);
 
 		final PeriodeFiscale periode2003 = addPeriodeFiscale(2003);
 		final ModeleDocument modele2003 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2003);
@@ -343,6 +354,8 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 	@Test
 	public void testCalculateRangeProchaineDIContribuableDeclarationAnnulee() {
 
+		addCollAdm(MockCollectiviteAdministrative.CEDI);
+
 		final PeriodeFiscale periode2003 = addPeriodeFiscale(2003);
 		final PeriodeFiscale periode2004 = addPeriodeFiscale(2004);
 		final ModeleDocument modele2003 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2003);
@@ -372,6 +385,8 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 	@Test
 	public void testCalculateRangeProchaineDIContribuableDansLeFutur() {
 
+		addCollAdm(MockCollectiviteAdministrative.CEDI);
+
 		final int anneeCourante = RegDate.get().year();
 
 		final PeriodeFiscale periode = addPeriodeFiscale(anneeCourante);
@@ -392,6 +407,8 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 
 	@Test
 	public void testCalculateRangeProchaineDIContribuableAvecFinAssujettissement() {
+
+		addCollAdm(MockCollectiviteAdministrative.CEDI);
 
 		final PeriodeFiscale periode2003 = addPeriodeFiscale(2003);
 		final PeriodeFiscale periode2004 = addPeriodeFiscale(2004);
@@ -423,6 +440,8 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 	@Test
 	public void testCalculateRangeProchaineDIContribuableAvecDebutAssujettissement() {
 
+		addCollAdm(MockCollectiviteAdministrative.CEDI);
+
 		final PeriodeFiscale periode2003 = addPeriodeFiscale(2003);
 		final PeriodeFiscale periode2004 = addPeriodeFiscale(2004);
 		final ModeleDocument modele2003 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2003);
@@ -450,6 +469,8 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 	@Test
 	public void testCalculateRangeProchaineDIContribuableAvecDepartHSEtRetourDansLAnnee() {
 
+		addCollAdm(MockCollectiviteAdministrative.CEDI);
+		
 		final PeriodeFiscale periode2003 = addPeriodeFiscale(2003);
 		final PeriodeFiscale periode2004 = addPeriodeFiscale(2004);
 		final PeriodeFiscale periode2005 = addPeriodeFiscale(2005);

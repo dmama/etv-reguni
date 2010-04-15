@@ -10,9 +10,11 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.junit.Test;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.common.TestingConstants;
 import ch.vd.uniregctb.evenement.AbstractEvenementHandlerTest;
 import ch.vd.uniregctb.evenement.EvenementCivilErreur;
 import ch.vd.uniregctb.interfaces.model.mock.MockAdresse;
@@ -36,6 +38,9 @@ import ch.vd.uniregctb.type.TypeRapportEntreTiers;
  * @author Céline GRAND
  *
  */
+@ContextConfiguration(locations = {
+	TestingConstants.UNIREG_BUSINESS_UT_TACHES
+})
 public class DemenagementHandlerTest extends AbstractEvenementHandlerTest {
 
 	private static final Logger LOGGER = Logger.getLogger(DemenagementHandlerTest.class);

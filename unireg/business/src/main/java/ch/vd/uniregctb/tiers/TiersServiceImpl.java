@@ -51,7 +51,6 @@ import ch.vd.uniregctb.interfaces.model.Permis;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
-import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
 import ch.vd.uniregctb.situationfamille.SituationFamilleService;
 import ch.vd.uniregctb.situationfamille.VueSituationFamille;
 import ch.vd.uniregctb.tache.TacheService;
@@ -2483,13 +2482,13 @@ public class TiersServiceImpl implements TiersService {
 	 * {@inheritDoc}
 	 */
 	public Integer getAndSetOfficeImpot(Tiers tiers) {
-		return getOfficeImpotAt(tiers, null);
+		return getOfficeImpotIdAt(tiers, null);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public Integer getOfficeImpotAt(Tiers tiers, RegDate date) {
+	public Integer getOfficeImpotIdAt(Tiers tiers, RegDate date) {
 
 		Integer oid = tiers.getOfficeImpotId();
 		if (date == null && oid != null) {
@@ -2510,6 +2509,21 @@ public class TiersServiceImpl implements TiersService {
 //		}
 
 		return oid;
+	}
+
+	public CollectiviteAdministrative getOfficeImpotAt(Tiers tiers, RegDate date) {
+
+		final Integer oid = getOfficeImpotIdAt(tiers, date);
+		if (oid == null) {
+			return null;
+		}
+
+		final CollectiviteAdministrative ca = getCollectiviteAdministrative(oid, true);
+		if (ca == null) {
+			throw new IllegalArgumentException("Impossible de trouver la collectivité correspondant à l'office d'impôt n°" + oid + ".");
+		}
+
+		return ca;
 	}
 
 	/**

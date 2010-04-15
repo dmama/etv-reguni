@@ -85,8 +85,8 @@ public class TacheEnvoiDeclarationImpot extends Tache implements DateRange, Vali
 	}
 
 	public TacheEnvoiDeclarationImpot(TypeEtatTache etat, RegDate dateEcheance, Contribuable contribuable, RegDate dateDebut, RegDate dateFin, TypeContribuable typeContribuable,
-	                                  TypeDocument typeDocument, Qualification qualification, TypeAdresseRetour adresseRetour) {
-		super(etat, dateEcheance, contribuable);
+	                                  TypeDocument typeDocument, Qualification qualification, TypeAdresseRetour adresseRetour, CollectiviteAdministrative collectiviteAdministrativeAssignee) {
+		super(etat, dateEcheance, contribuable, collectiviteAdministrativeAssignee);
 		this.dateDebut = dateDebut;
 		this.dateFin = dateFin;
 		this.typeContribuable = typeContribuable;
@@ -246,7 +246,7 @@ public class TacheEnvoiDeclarationImpot extends Tache implements DateRange, Vali
 	 */
 	public ValidationResults validate() {
 
-		ValidationResults results = new ValidationResults();
+		ValidationResults results = super.validate();
 
 		DateRangeHelper.validate(this, false, false, results);
 

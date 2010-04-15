@@ -26,8 +26,8 @@ public class TacheTransmissionDossier extends Tache {
 	protected TacheTransmissionDossier() {
 	}
 
-	public TacheTransmissionDossier(TypeEtatTache etat, RegDate dateEcheance, Contribuable contribuable) {
-		super(etat, dateEcheance, contribuable);
+	public TacheTransmissionDossier(TypeEtatTache etat, RegDate dateEcheance, Contribuable contribuable, CollectiviteAdministrative collectiviteAdministrativeAssignee) {
+		super(etat, dateEcheance, contribuable, collectiviteAdministrativeAssignee);
 	}
 
 	@Transient

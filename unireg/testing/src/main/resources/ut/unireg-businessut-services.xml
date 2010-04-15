@@ -45,4 +45,8 @@
 		<property name="repository" value="${testprop.documents.repository}" />
 	</bean>
 
+	<!-- Override du tache service défini dans unireg-business-service.xml pour éviter de devoir
+	ajouter toutes les collectivités administratives (oids) et devoir modifier tous les tests -->
+	<bean id="tacheService" class="ch.vd.uniregctb.tache.MockTacheService"/>
+
 </beans>

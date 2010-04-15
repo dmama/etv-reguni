@@ -7,10 +7,12 @@ import java.util.HashMap;
 
 import org.apache.log4j.Logger;
 import org.junit.Test;
+import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.declaration.DeterminerDIsJob;
+import ch.vd.uniregctb.interfaces.model.mock.MockCollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
@@ -56,6 +58,16 @@ public class DetermineDIsJobTest extends BusinessTest {
 				MockIndividu laurent = addIndividu(333908, date(1953, 11, 2), "Schmidt", "Laurent", true);
 				addAdresse(laurent, EnumTypeAdresse.COURRIER, MockRue.LesClees.ChampDuRaffour, null, MockLocalite.LesClees,
 						date(2001, 6, 4), null);
+			}
+		});
+
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				for (MockCollectiviteAdministrative ca : MockCollectiviteAdministrative.getAll()) {
+					addCollAdm(ca);
+				}
+				return null;
 			}
 		});
 	}

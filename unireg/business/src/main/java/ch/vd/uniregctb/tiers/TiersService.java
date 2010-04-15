@@ -765,7 +765,16 @@ public interface TiersService {
 	 * @param date  la date de validité de l'office d'impôt; ou <i>null</i> pour obtenir l'état courant.
 	 * @return un id de l'office d'impôt; ou <i>null</null> si le tiers n'est pas assujetti ou que son office d'impôt ne peut pas être calculé pour une autre raison.
 	 */
-	public Integer getOfficeImpotAt(Tiers tiers, RegDate date);
+	public Integer getOfficeImpotIdAt(Tiers tiers, RegDate date);
+
+	/**
+	 * Calcule et retourne l'office d'impôt responsable d'un tiers à une date donnée.
+	 *
+	 * @param tiers le tiers dont on veut connaître l'office d'impôt
+	 * @param date  la date de validité de l'office d'impôt; ou <i>null</i> pour obtenir l'état courant.
+	 * @return un office d'impôt; ou <i>null</null> si le tiers n'est pas assujetti ou que son office d'impôt ne peut pas être calculé pour une autre raison.
+	 */
+	public CollectiviteAdministrative getOfficeImpotAt(Tiers tiers, RegDate date);
 
 	/**
 	 * Retourne la liste de tous les Numéros d'habitant des tiers en base

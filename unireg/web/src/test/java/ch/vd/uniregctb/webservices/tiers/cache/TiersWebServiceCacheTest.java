@@ -22,6 +22,7 @@ import ch.vd.uniregctb.common.WebTest;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.evenement.common.EnsembleTiersCouple;
+import ch.vd.uniregctb.interfaces.model.mock.MockCollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -85,6 +86,9 @@ public class TiersWebServiceCacheTest extends WebTest {
 		menageId = (Long) doInNewTransaction(new TxCallback() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
+
+				addCollAdm(MockCollectiviteAdministrative.CEDI);
+		
 				PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
 				PersonnePhysique monique = addNonHabitant("Monique", "Bolomey", date(1969, 12, 3), Sexe.FEMININ);
 				EnsembleTiersCouple ensemble = createEnsembleTiersCouple(eric, monique, date(1989, 5, 1));

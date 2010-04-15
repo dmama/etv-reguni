@@ -12,6 +12,7 @@ import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.*;
 import ch.vd.uniregctb.declaration.ordinaire.DeterminationDIsAEmettreProcessor.ExistenceResults.TacheStatus;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
 import ch.vd.uniregctb.metier.assujettissement.TypeContribuableDI;
@@ -42,6 +43,7 @@ public class DeterminationDIsAEmettreProcessor {
 	private final PeriodeFiscaleDAO periodeDAO;
 	private final TacheDAO tacheDAO;
 	private final ParametreAppService parametres;
+	private final TiersService tiersService;
 	private final PlatformTransactionManager transactionManager;
 
 	private DeterminationDIsResults rapport;
@@ -49,11 +51,12 @@ public class DeterminationDIsAEmettreProcessor {
 	private int batchSize = BATCH_SIZE;
 
 	public DeterminationDIsAEmettreProcessor(HibernateTemplate hibernateTemplate, PeriodeFiscaleDAO periodeDAO, TacheDAO tacheDAO,
-			ParametreAppService parametres, PlatformTransactionManager transactionManager) {
+	                                         ParametreAppService parametres, TiersService tiersService, PlatformTransactionManager transactionManager) {
 		this.hibernateTemplate = hibernateTemplate;
 		this.periodeDAO = periodeDAO;
 		this.tacheDAO = tacheDAO;
 		this.parametres = parametres;
+		this.tiersService = tiersService;
 		this.transactionManager = transactionManager;
 	}
 
@@ -279,8 +282,16 @@ public class DeterminationDIsAEmettreProcessor {
 			criterion.setEtatTache(TypeEtatTache.EN_INSTANCE);
 
 			if (tacheDAO.count(criterion, true /* don't flush */) == 0) {
+
+				CollectiviteAdministrative oid = tiersService.getOfficeImpotAt(contribuable, null);
+				if (oid == null) {
+					// le contribuable n'a jamais possédé de for fiscal vaudois -> on l'envoie sur l'ACI
+					oid = tiersService.getCollectiviteAdministrative(ServiceInfrastructureService.noACI);
+					Assert.notNull(oid);
+				}
+
 				// [UNIREG-1742] pas de période pour la déclaration => on crée une tâche d'annulation
-				TacheAnnulationDeclarationImpot tache = new TacheAnnulationDeclarationImpot(TypeEtatTache.EN_INSTANCE, null, contribuable, di);
+				TacheAnnulationDeclarationImpot tache = new TacheAnnulationDeclarationImpot(TypeEtatTache.EN_INSTANCE, null, contribuable, di, oid);
 				if (rapport != null) {
 					rapport.addTacheAnnulationCreee(contribuable, tache);
 				}
@@ -474,13 +485,16 @@ public class DeterminationDIsAEmettreProcessor {
 			}
 		}
 
+		final CollectiviteAdministrative oid = tiersService.getOfficeImpotAt(contribuable, null);
+		Assert.notNull(oid);
+
 		// Création et sauvegarde de la tâche en base
 		final TypeContribuableDI type = details.getTypeContribuableDI();
 		final RegDate dateEcheance = periode.getParametrePeriodeFiscale(type.getTypeContribuable()).getDateFinEnvoiMasseDI();
 		Assert.notNull(dateEcheance);
 
 		final TacheEnvoiDeclarationImpot tache = new TacheEnvoiDeclarationImpot(TypeEtatTache.EN_INSTANCE, dateEcheance, contribuable, details.getDateDebut(), details.getDateFin(),
-				type.getTypeContribuable(), type.getTypeDocument(), details.getQualification(), details.getAdresseRetour());
+				type.getTypeContribuable(), type.getTypeDocument(), details.getQualification(), details.getAdresseRetour(), oid);
 		if (rapport != null) {
 			rapport.addTacheEnvoiCreee(contribuable, tache);
 		}

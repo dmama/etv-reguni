@@ -1,8 +1,10 @@
 package ch.vd.uniregctb.declaration.ordinaire;
 
 import ch.vd.uniregctb.declaration.*;
+import ch.vd.uniregctb.interfaces.model.mock.MockCollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.model.mock.MockOfficeImpot;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.type.*;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
@@ -207,6 +209,9 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 		doInNewTransaction(new TxCallback() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
+
+				final CollectiviteAdministrative colAdm = addCollAdm(MockCollectiviteAdministrative.ACI);
+
 				ModeleDocument declarationComplete2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, addPeriodeFiscale(2007));
 				addModeleFeuilleDocument("Déclaration", "210", declarationComplete2007);
 				addModeleFeuilleDocument("Annexe 1", "220", declarationComplete2007);
@@ -218,7 +223,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 				ids.ctb = contribuable.getNumero();
 
 				TacheEnvoiDeclarationImpot tache = addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-						TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, contribuable, null);
+						TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, contribuable, null, colAdm);
 				ids.tache = tache.getId();
 				return null;
 			}
@@ -247,6 +252,8 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 		doInNewTransaction(new TxCallback() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
+
+				addCollAdm(MockCollectiviteAdministrative.CEDI);
 
 				PeriodeFiscale periode2007 = addPeriodeFiscale(2007);
 				ModeleDocument declarationComplete = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2007);
@@ -337,6 +344,8 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
+				final CollectiviteAdministrative colAdm = addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST);
+
 				final PeriodeFiscale periode2007 = addPeriodeFiscale(2007);
 				final ModeleDocument declarationComplete = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2007);
 				addModeleFeuilleDocument("Déclaration", "210", declarationComplete);
@@ -351,10 +360,10 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 				ids.marcId = marc.getNumero();
 
 				final TacheEnvoiDeclarationImpot tache1 = addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 1, 1), date(2007, 3, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-						TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, marc, null);
+						TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, marc, null, colAdm);
 				ids.tache1Id = tache1.getId();
 				final TacheEnvoiDeclarationImpot tache2 = addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(2008, 1, 31), date(2007, 7, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-						TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, marc, null);
+						TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, marc, null, colAdm);
 				ids.tache2Id = tache2.getId();
 				return null;
 			}
@@ -414,6 +423,8 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
+				final CollectiviteAdministrative colAdm = addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST);
+
 				final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);
 				final ModeleDocument declarationComplete = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2008);
 				addModeleFeuilleDocument("Déclaration", "210", declarationComplete);
@@ -436,15 +447,15 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 				ids.jacquesId = jacques.getNumero();
 
 				final TacheEnvoiDeclarationImpot tacheMarc = addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(2009, 1, 1), date(2008, 1, 1),
-						date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, marc, null);
+						date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, marc, null, colAdm);
 				ids.tacheMarcId = tacheMarc.getId();
 
 				final TacheEnvoiDeclarationImpot tacheJean = addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(2009, 1, 1), date(2008, 1, 1),
-						date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, jean, null);
+						date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, jean, null, colAdm);
 				ids.tacheJeanId = tacheJean.getId();
 
 				final TacheEnvoiDeclarationImpot tacheJacques = addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(2009, 1, 1), date(2008, 1,
-						1), date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, jacques, null);
+						1), date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, jacques, null, colAdm);
 				ids.tacheJacquesId = tacheJacques.getId();
 
 				return null;
@@ -502,6 +513,8 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
+				final CollectiviteAdministrative colAdm = addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST);
+
 				final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);
 				final ModeleDocument declarationComplete = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2008);
 				addModeleFeuilleDocument("Déclaration", "210", declarationComplete);
@@ -517,14 +530,14 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 
 				// traitement du batch de détermination des DIs -> création d'une tâche sur toute l'année 2008
 				final TacheEnvoiDeclarationImpot premiereTache = addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(2009, 1, 1), date(2008, 1, 1),
-						date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, marc, null);
+						date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, marc, null, colAdm);
 				ids.premiereTacheId = premiereTache.getId();
 
 				// arrivée d'un événement de décès en retard -> fermeture du for principal au milieu 2008 et génération d'une nouvelle tâche correspondante
 				ffp.setDateFin(dateDeces);
 				ffp.setMotifFermeture(MotifFor.VEUVAGE_DECES);
 				final TacheEnvoiDeclarationImpot secondeTache = addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(2009, 1, 1), date(2008, 1, 1),
-						dateDeces, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, marc, null);
+						dateDeces, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, marc, null, colAdm);
 				ids.secondeTacheId = secondeTache.getId();
 
 				return null;
@@ -589,6 +602,8 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
+				final CollectiviteAdministrative colAdm = addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST);
+
 				final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);
 				final ModeleDocument declarationComplete = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2008);
 				addModeleFeuilleDocument("Déclaration", "210", declarationComplete);
@@ -604,14 +619,14 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 
 				// traitement du batch de détermination des DIs -> création d'une tâche jusqu'au décès
 				final TacheEnvoiDeclarationImpot premiereTache = addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(2009, 1, 1), date(2008, 1, 1),
-						dateDeces, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, marc, null);
+						dateDeces, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, marc, null, colAdm);
 				ids.premiereTacheId = premiereTache.getId();
 
 				// arrivée d'un événement d'annulation de décès en retard -> réouverture du for principal et génération d'une nouvelle tâche sur toute l'année 2008
 				ffp.setDateFin(null);
 				ffp.setMotifFermeture(null);
 				final TacheEnvoiDeclarationImpot secondeTache = addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(2009, 1, 1), date(2008, 1, 1),
-						date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, marc, null);
+						date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, marc, null, colAdm);
 				ids.secondeTacheId = secondeTache.getId();
 
 				return null;
@@ -675,6 +690,8 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
+				final CollectiviteAdministrative colAdm = addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST);
+
 				final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);
 				final ModeleDocument declarationComplete = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2008);
 				addModeleFeuilleDocument("Déclaration", "210", declarationComplete);
@@ -690,7 +707,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 
 				// traitement du batch de détermination des DIs -> création d'une tâche jusqu'au décès
 				addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(2009, 1, 1), date(2008, 1, 1),
-						dateDeces, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, marc, null);
+						dateDeces, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, marc, null, colAdm);
 				return null;
 			}
 		});
@@ -732,6 +749,8 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
+				final CollectiviteAdministrative colAdm = addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST);
+
 				final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);
 				final ModeleDocument declarationComplete = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2008);
 				addModeleFeuilleDocument("Déclaration", "210", declarationComplete);
@@ -747,7 +766,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 
 				// traitement du batch de détermination des DIs -> création d'une tâche sur toute l'année
 				addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(2009, 1, 1), date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
-						marc, null);
+						marc, null, colAdm);
 				return null;
 			}
 		});
@@ -791,6 +810,8 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
+				final CollectiviteAdministrative colAdm = addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST);
+
 				final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);
 				final ModeleDocument declarationComplete = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2008);
 				addModeleFeuilleDocument("Déclaration", "210", declarationComplete);
@@ -807,7 +828,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 
 				// traitement du batch de détermination des DIs -> création d'une tâche sur une fraction d'année
 				TacheEnvoiDeclarationImpot t = addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(2009, 1, 1), date(2008, 1, 1), dateDeces, TypeContribuable.VAUDOIS_ORDINAIRE,
-						TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, marc, null);
+						TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, marc, null, colAdm);
 				t.setAdresseRetour(TypeAdresseRetour.ACI);
 				return null;
 			}
@@ -850,6 +871,8 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
+				final CollectiviteAdministrative colAdm = addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST);
+				
 				final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);
 				final ModeleDocument declarationComplete = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2008);
 				addModeleFeuilleDocument("Déclaration", "210", declarationComplete);
@@ -866,7 +889,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 
 				// simulation du traitement du batch de détermination des DIs
 				TacheEnvoiDeclarationImpot t = addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(2009, 1, 1), date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-						TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, marc, null);
+						TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, marc, null, colAdm);
 				t.setAdresseRetour(TypeAdresseRetour.ACI);
 				return null;
 			}
