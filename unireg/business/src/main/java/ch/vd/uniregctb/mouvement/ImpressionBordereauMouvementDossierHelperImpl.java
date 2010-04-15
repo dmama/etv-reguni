@@ -11,6 +11,7 @@ import noNamespace.InfoDocumentDocument1;
 import noNamespace.InfoEnteteDocumentDocument1;
 import noNamespace.TypFichierImpression;
 import noNamespace.TypPeriode;
+import org.apache.commons.lang.StringUtils;
 
 import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.RegDate;
@@ -190,6 +191,12 @@ public class ImpressionBordereauMouvementDossierHelperImpl implements Impression
 		final InfoEnteteDocumentDocument1.InfoEnteteDocument.Expediteur expediteur = editiqueHelper.remplitExpediteur(expediteurBordereau, infoEnteteDocument);
 		expediteur.setTraitePar(params.getNomOperateur());
 		expediteur.setDateExpedition(RegDateHelper.toIndexString(RegDate.get()));
+		if (!StringUtils.isBlank(params.getNumeroTelephoneOperateur())) {
+			expediteur.setNumTelephone(params.getNumeroTelephoneOperateur());
+		}
+		if (!StringUtils.isBlank(params.getEmailOperateur())) {
+			expediteur.setAdrMes(params.getEmailOperateur());
+		}
 		infoEnteteDocument.setExpediteur(expediteur);
 
 		final CollectiviteAdministrative destinataireBordereau = bordereau.getDestinataire();

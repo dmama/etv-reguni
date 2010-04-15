@@ -10,7 +10,6 @@ import org.apache.log4j.Logger;
 import org.springframework.util.Assert;
 
 import ch.vd.editique.service.enumeration.TypeFormat;
-import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.securite.model.Operateur;
 import ch.vd.securite.model.ProfilOperateur;
@@ -172,6 +171,10 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		return editiqueService.creerDocumentImmediatement(nomDocument, typeDocument, TypeFormat.PDF, editiqueDI, true);
 	}
 
+	/**
+	 * Renvoie le nom et l'e-mail de l'utilisateur connecté
+	 * @return tableau contenant le nom et l'e-mail (si disponibles) de l'utilisateur connecté
+	 */
 	private String[] getInfoOperateur () {
 		final String traitePar[] = {"ACI", null};
 		final String visa = AuthenticationHelper.getCurrentPrincipal();
@@ -214,7 +217,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 	public EditiqueResultat imprimeConfirmationDelaiOnline(DeclarationImpotOrdinaire di, DelaiDeclaration delai) throws EditiqueException, JMSException {
 		final String typeDocument = impressionConfirmationDelaiHelper.calculPrefixe();
 		final String[] infoOperateur = getInfoOperateur();
-		final ImpressionConfirmationDelaiHelperParams params = new ImpressionConfirmationDelaiHelperParams(di, delai.getDelaiAccordeAu(), infoOperateur[0], infoOperateur[1], getNumeroTelephoneOperateur());
+		final ImpressionConfirmationDelaiHelperParams params = new ImpressionConfirmationDelaiHelperParams(di, delai.getDelaiAccordeAu(), infoOperateur[0], getNumeroTelephoneOperateur(), infoOperateur[1]);
 		final TypFichierImpression xml = impressionConfirmationDelaiHelper.remplitConfirmationDelai(params);
 		final String nomDocument = impressionConfirmationDelaiHelper.construitIdDocument(di);
 		return editiqueService.creerDocumentImmediatement(nomDocument, typeDocument, TypeFormat.PDF, xml, false);
