@@ -515,7 +515,7 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 		assertEquals("1162", info.getNpa());
 		assertEquals("St-Prex", info.getLocalite());
 		assertEquals("Suisse", info.getPays());
-		assertEquals("Rue Couvaloup 2", info.getRue());
+		assertEquals("Chemin du Riau 2A", info.getRue());
 		assertEquals(TypeTiers.PERSONNE_PHYSIQUE, info.getType());
 	}
 
@@ -579,7 +579,7 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 		assertEquals("1162", info.getNpa());
 		assertEquals("St-Prex", info.getLocalite());
 		assertEquals("Suisse", info.getPays());
-		assertEquals("Rue Couvaloup 2", info.getRue());
+		assertEquals("Chemin du Riau 2A", info.getRue());
 		assertEquals(TypeTiers.PERSONNE_PHYSIQUE, info.getType());
 	}
 
