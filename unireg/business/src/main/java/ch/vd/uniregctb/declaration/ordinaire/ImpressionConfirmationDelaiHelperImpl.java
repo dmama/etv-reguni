@@ -95,15 +95,21 @@ public class ImpressionConfirmationDelaiHelperImpl implements
 
 		try {
 			infoEnteteDocument.setPrefixe(calculPrefixe() + "HAUT1");
-			TypAdresse porteAdresse = editiqueHelper.remplitPorteAdresse(params.getDi().getTiers(), infoEnteteDocument);
+
+			final TypAdresse porteAdresse = editiqueHelper.remplitPorteAdresse(params.getDi().getTiers(), infoEnteteDocument);
 			infoEnteteDocument.setPorteAdresse(porteAdresse);
-			Expediteur expediteur = editiqueHelper.remplitExpediteurCAT(infoEnteteDocument);
+
+			final Expediteur expediteur = editiqueHelper.remplitExpediteurCAT(infoEnteteDocument);
 			expediteur.setDateExpedition(RegDateHelper.toIndexString(RegDate.get()));
 			expediteur.setTraitePar(params.getTraitePar());
-			if (!StringUtils.isEmpty(params.getNoTelephone())) {
-				expediteur.setNumTelephone(params.getNoTelephone());
+
+			// ici c'est un peu tordu : on veut afficher le numéro de téléphone du CAT dans l'entête mais
+			// le numéro de téléphone du collaborateur dans le cadre (affaire traitée par), là où est
+			// normalement prévue l'adresse e-mail du collaborateur
+			if (!StringUtils.isBlank(params.getNoTelephone())) {
+				expediteur.setAdrMes(params.getNoTelephone());
 			}
-			expediteur.setAdrMes(params.getAdrMsg());
+
 			infoEnteteDocument.setExpediteur(expediteur);
 			Destinataire destinataire = editiqueHelper.remplitDestinataire(params.getDi().getTiers(), infoEnteteDocument);
 			infoEnteteDocument.setDestinataire(destinataire);
