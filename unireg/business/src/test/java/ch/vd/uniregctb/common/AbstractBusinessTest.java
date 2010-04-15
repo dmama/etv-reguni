@@ -6,6 +6,7 @@ import ch.vd.uniregctb.adresse.AdresseSuisse;
 import ch.vd.uniregctb.declaration.*;
 import ch.vd.uniregctb.evenement.EvenementCivilUnitaire;
 import ch.vd.uniregctb.interfaces.model.Pays;
+import ch.vd.uniregctb.interfaces.model.mock.MockCollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
@@ -288,6 +289,13 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 		return adresse;
 	}
 
+	protected CollectiviteAdministrative addCollAdm(MockCollectiviteAdministrative oid) {
+		CollectiviteAdministrative ca = new CollectiviteAdministrative();
+		ca.setNumeroCollectiviteAdministrative(oid.getNoColAdm());
+		ca = (CollectiviteAdministrative) hibernateTemplate.merge(ca);
+		hibernateTemplate.flush();
+		return ca;
+	}
 
 	protected DeclarationImpotSource addLR(DebiteurPrestationImposable debiteur, RegDate debut, RegDate fin, PeriodeFiscale periode) {
 		DeclarationImpotSource lr = new DeclarationImpotSource();
@@ -339,7 +347,7 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 	protected DeclarationImpotOrdinaire addDeclarationImpot(Contribuable tiers, PeriodeFiscale periode, RegDate debut, RegDate fin,
 	                                                        TypeContribuable typeC, ModeleDocument modele) {
 
-		final CollectiviteAdministrative cedi = tiersService.getOrCreateCollectiviteAdministrative(ServiceInfrastructureService.noCEDI);
+		final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureService.noCEDI);
 		assertNotNull(cedi);
 
 		return addDeclarationImpot(tiers, periode, debut, fin, cedi, typeC, modele);

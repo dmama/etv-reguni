@@ -19,6 +19,7 @@ import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
 import ch.vd.uniregctb.declaration.ordinaire.DemandeDelaiCollectiveResults.ErreurType;
+import ch.vd.uniregctb.interfaces.model.mock.MockCollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeContribuable;
@@ -50,6 +51,8 @@ public class DemandeDelaiCollectiveProcessorTest extends BusinessTest {
 		final int annee = 2009;
 		final PeriodeFiscale periode = addPeriodeFiscale(annee);
 		final ModeleDocument modeleDocument = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
+
+		addCollAdm(MockCollectiviteAdministrative.CEDI);
 
 		final List<Long> ids = Collections.emptyList();
 		final Contribuable mrKong = addNonHabitant("King", "Kong", date(1965, 4, 13), Sexe.MASCULIN);

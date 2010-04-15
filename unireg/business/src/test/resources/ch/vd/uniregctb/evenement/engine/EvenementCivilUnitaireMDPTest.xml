@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <EvtRegCivil xmlns="http://www.vd.ch/schema/registreCivil/20070914/EvtRegCivil">
-  <NoTechnique>54</NoTechnique>
-  <Code>1000</Code> <!-- Naissance -->
-  <NoIndividu>9876543</NoIndividu>
-  <DateEvenement>2007-09-18</DateEvenement>
-  <DateTraitement>2007-09-25</DateTraitement>
-  <NumeroOFS>111</NumeroOFS>
+	<NoTechnique>54</NoTechnique>
+	<Code>1000</Code>
+	<!-- Naissance -->
+	<NoIndividu>9876543</NoIndividu>
+	<DateEvenement>2007-09-18</DateEvenement>
+	<DateTraitement>2007-09-25</DateTraitement>
+	<NumeroOFS>111</NumeroOFS>
 </EvtRegCivil>

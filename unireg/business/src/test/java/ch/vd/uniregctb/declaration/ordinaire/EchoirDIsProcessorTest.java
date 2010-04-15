@@ -17,6 +17,7 @@ import ch.vd.uniregctb.declaration.ordinaire.EchoirDIsResults.Erreur;
 import ch.vd.uniregctb.declaration.ordinaire.EchoirDIsResults.ErreurType;
 import ch.vd.uniregctb.declaration.ordinaire.EchoirDIsResults.Ignore;
 import ch.vd.uniregctb.declaration.ordinaire.EchoirDIsResults.IgnoreType;
+import ch.vd.uniregctb.interfaces.model.mock.MockCollectiviteAdministrative;
 import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.Sexe;
@@ -37,6 +38,14 @@ public class EchoirDIsProcessorTest extends BusinessTest {
 
 		// création du processeur à la main de manière à pouvoir appeler les méthodes protégées
 		processor = new EchoirDIsProcessor(hibernateTemplate, delaisService, diService, transactionManager);
+
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				addCollAdm(MockCollectiviteAdministrative.CEDI);
+				return null;
+			}
+		});
 	}
 
 	@Test

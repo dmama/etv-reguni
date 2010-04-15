@@ -18,10 +18,13 @@ import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.interfaces.model.Individu;
+import ch.vd.uniregctb.interfaces.model.mock.MockCollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
+import ch.vd.uniregctb.interfaces.model.mock.MockOfficeImpot;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
+import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.MenageCommun;
@@ -79,6 +82,9 @@ public class ForFiscalManagerTest extends WebTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
+				final CollectiviteAdministrative colAdm = addCollAdm(MockOfficeImpot.OID_AIGLE);
+				addCollAdm(MockCollectiviteAdministrative.CEDI);
+
 				final PeriodeFiscale periode2005 = addPeriodeFiscale(2005);
 				final PeriodeFiscale periode2006 = addPeriodeFiscale(2006);
 				final PeriodeFiscale periode2007 = addPeriodeFiscale(2007);
@@ -108,10 +114,10 @@ public class ForFiscalManagerTest extends WebTest {
 						modele2007);
 
 				addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(2007, 10, 25), date(2007, 1, 1), date(2007, 12, 31),
-						TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, menage, null);
-				addTacheAnnulDI(TypeEtatTache.EN_INSTANCE, date(2007, 10, 25), declaration2005, menage);
-				addTacheControleDossier(TypeEtatTache.TRAITE, date(2007, 10, 25), menage);
-				addTacheControleDossier(TypeEtatTache.EN_INSTANCE, date(2007, 10, 25), menage);
+						TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, menage, null, colAdm);
+				addTacheAnnulDI(TypeEtatTache.EN_INSTANCE, date(2007, 10, 25), declaration2005, menage, colAdm);
+				addTacheControleDossier(TypeEtatTache.TRAITE, date(2007, 10, 25), menage, colAdm);
+				addTacheControleDossier(TypeEtatTache.EN_INSTANCE, date(2007, 10, 25), menage, colAdm);
 				return menage.getNumero();
 			}
 		});
@@ -198,6 +204,9 @@ public class ForFiscalManagerTest extends WebTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
+				final CollectiviteAdministrative colAdm = addCollAdm(MockOfficeImpot.OID_AIGLE);
+				addCollAdm(MockCollectiviteAdministrative.CEDI);
+				
 				final PeriodeFiscale periode2005 = addPeriodeFiscale(2005);
 				final PeriodeFiscale periode2006 = addPeriodeFiscale(2006);
 				final PeriodeFiscale periode2007 = addPeriodeFiscale(2007);
@@ -226,10 +235,10 @@ public class ForFiscalManagerTest extends WebTest {
 						modele2007);
 
 				addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(2007, 10, 25), date(2007, 1, 1), date(2007, 12, 31),
-						TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, menage, null);
-				addTacheAnnulDI(TypeEtatTache.EN_INSTANCE, date(2007, 10, 25), declaration2005, menage);
-				addTacheControleDossier(TypeEtatTache.TRAITE, date(2007, 10, 25), menage);
-				addTacheControleDossier(TypeEtatTache.EN_INSTANCE, date(2007, 10, 25), menage);
+						TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, menage, null, colAdm);
+				addTacheAnnulDI(TypeEtatTache.EN_INSTANCE, date(2007, 10, 25), declaration2005, menage, colAdm);
+				addTacheControleDossier(TypeEtatTache.TRAITE, date(2007, 10, 25), menage, colAdm);
+				addTacheControleDossier(TypeEtatTache.EN_INSTANCE, date(2007, 10, 25), menage, colAdm);
 				return christine.getNumero();
 			}
 		});

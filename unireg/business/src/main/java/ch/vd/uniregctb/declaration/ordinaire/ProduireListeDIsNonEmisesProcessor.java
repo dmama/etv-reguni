@@ -75,7 +75,7 @@ public class ProduireListeDIsNonEmisesProcessor {
 		this.envoiDIsEnMasseProcessor = new EnvoiDIsEnMasseProcessor(tiersService, hibernateTemplate, modeleDocumentDAO, periodeDAO,
 				delaisService, diService, 1, transactionManager);
 		this.determinationDIsAEmettreProcessor = new DeterminationDIsAEmettreProcessor(hibernateTemplate, periodeDAO, tacheDAO, parametres,
-				transactionManager);
+				tiersService, transactionManager);
 		this.envoiDIsEnMasseProcessor.initCache(anneePeriode, TypeContribuableDI.VAUDOIS_ORDINAIRE);
 
 		// Récupère la période fiscale

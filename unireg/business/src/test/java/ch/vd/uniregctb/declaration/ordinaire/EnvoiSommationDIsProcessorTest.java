@@ -13,6 +13,7 @@ import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
+import ch.vd.uniregctb.interfaces.model.mock.MockCollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.parametrage.DelaisService;
@@ -45,6 +46,8 @@ public class EnvoiSommationDIsProcessorTest extends BusinessTest {
 
 		final long diId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
 			public Long doInTransaction(TransactionStatus status) {
+
+				addCollAdm(MockCollectiviteAdministrative.CEDI);
 
 				final PersonnePhysique pp = addNonHabitant("Jacques", "Cartier", RegDate.get(1980, 1, 5), Sexe.MASCULIN);
 				addForPrincipal(pp, RegDate.get(2000, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Aubonne);
@@ -87,6 +90,8 @@ public class EnvoiSommationDIsProcessorTest extends BusinessTest {
 		final long diId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
 			public Long doInTransaction(TransactionStatus status) {
 
+				addCollAdm(MockCollectiviteAdministrative.CEDI);
+
 				final PersonnePhysique pp = addNonHabitant("Jacques", "Cartier", RegDate.get(1980, 1, 5), Sexe.MASCULIN);
 				addForPrincipal(pp, RegDate.get(2000, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Aubonne);
 
@@ -125,6 +130,8 @@ public class EnvoiSommationDIsProcessorTest extends BusinessTest {
 		final long diId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
 			public Long doInTransaction(TransactionStatus status) {
 
+				addCollAdm(MockCollectiviteAdministrative.CEDI);
+
 				final PersonnePhysique pp = addNonHabitant("Jacques", "Cartier", RegDate.get(1980, 1, 5), Sexe.MASCULIN);
 				addForPrincipal(pp, RegDate.get(2000, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Aubonne);
 
@@ -161,6 +168,8 @@ public class EnvoiSommationDIsProcessorTest extends BusinessTest {
 
 		final long diId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
 			public Long doInTransaction(TransactionStatus status) {
+
+				addCollAdm(MockCollectiviteAdministrative.CEDI);
 
 				final PersonnePhysique pp = addNonHabitant("Jacques", "Cartier", RegDate.get(1980, 1, 5), Sexe.MASCULIN);
 				final ForFiscalPrincipal ffp = addForPrincipal(pp, RegDate.get(2000, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Aubonne);
@@ -200,6 +209,8 @@ public class EnvoiSommationDIsProcessorTest extends BusinessTest {
 		final long diId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
 			public Long doInTransaction(TransactionStatus status) {
 
+				addCollAdm(MockCollectiviteAdministrative.CEDI);
+
 				final PersonnePhysique pp = addNonHabitant("Jacques", "Cartier", RegDate.get(1980, 1, 5), Sexe.MASCULIN);
 				final ForFiscalPrincipal ffp = addForPrincipal(pp, RegDate.get(2000, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Aubonne);
 				ffp.setAnnule(true);
@@ -237,6 +248,8 @@ public class EnvoiSommationDIsProcessorTest extends BusinessTest {
 
 		final long diId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
 			public Long doInTransaction(TransactionStatus status) {
+
+				addCollAdm(MockCollectiviteAdministrative.CEDI);
 
 				final PersonnePhysique pp = addNonHabitant("Jacques", "Cartier", RegDate.get(1980, 1, 5), Sexe.MASCULIN);
 				addForPrincipal(pp, RegDate.get(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockPays.France);
@@ -276,6 +289,8 @@ public class EnvoiSommationDIsProcessorTest extends BusinessTest {
 		final long diId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
 			public Long doInTransaction(TransactionStatus status) {
 
+				addCollAdm(MockCollectiviteAdministrative.CEDI);
+				
 				final PersonnePhysique pp = addNonHabitant("Jacques", "Cartier", RegDate.get(1980, 1, 5), Sexe.MASCULIN);
 				addForPrincipal(pp, RegDate.get(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, RegDate.get(anneePf, 5, 31), MotifFor.ARRIVEE_HS, MockPays.France);
 				addForPrincipal(pp, RegDate.get(anneePf, 6, 1), MotifFor.ARRIVEE_HS, MockCommune.Aubonne);

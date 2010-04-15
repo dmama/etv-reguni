@@ -1,233 +1,233 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <dataset>
-  <table name="TIERS">
-    <column>LOG_MDATE</column>
-    <column>NUMERO</column>
-    <column>TIERS_TYPE</column>
-    <column>DEBITEUR_INACTIF</column>
-    <column>NUMERO_INDIVIDU</column>
-    <column>REMARQUE</column>
-    <column>NH_NOM</column>
-    <column>NH_PRENOM</column>
-    <column>NH_DATE_NAISSANCE</column>
-    <column>NH_SEXE</column>
-    <column>DATE_DECES</column>
-    <column>PP_HABITANT</column>
-    <row>
-      <value>2008-01-01</value>
-      <value>8901</value>
-      <value>MenageCommun</value>
-      <value>0</value>
-      <none/>
-      <none/>
-      <none/>
-      <none/>
-      <none/>
-      <none/>
-      <none/>
-      <null/>
-    </row>
-    <row>
-      <value>2008-01-01</value>
-      <value>7823</value>
-      <value>PersonnePhysique</value>
-      <value>0</value>
-      <null/>
-      <null/>
-      <value>Bolomido</value>
-      <value>Marcel</value>
-      <null/>
-      <value>MASCULIN</value>
-      <null/>
-      <value>0</value>
-    </row>
-    <row>
-      <value>2008-01-01</value>
-      <value>5434</value>
-      <value>PersonnePhysique</value>
-      <value>0</value>
-      <value>54321</value>
-      <none/>
-      <none/>
-      <none/>
-      <none/>
-      <none/>
-      <none/>
-      <value>1</value>
-    </row>
-  </table>
-  <table name="FOR_FISCAL">
-    <column>LOG_MDATE</column>
-    <column>ID</column>
-    <column>TIERS_ID</column>
-    <column>DATE_OUVERTURE</column>
-    <column>DATE_FERMETURE</column>
-    <column>MOTIF_RATTACHEMENT</column>
-    <column>TYPE_AUT_FISC</column>
-    <column>NUMERO_OFS</column>
-    <column>GENRE_IMPOT</column>
-    <column>FOR_TYPE</column>
-    <column>MODE_IMPOSITION</column>
-    <column>MOTIF_OUVERTURE</column>
-    <column>MOTIF_FERMETURE</column>
-    <row>
-      <value>2008-01-01</value>
-      <value>11</value>
-      <value>5434</value>
-      <value>19981201</value>
-      <value>20060222</value>
-      <value>DOMICILE</value>
-      <value>COMMUNE_OU_FRACTION_VD</value>
-      <value>5586</value>
-      <value>REVENU_FORTUNE</value>
-      <value>ForFiscalPrincipal</value>
-      <value>ORDINAIRE</value>
-      <value>ARRIVEE_HC</value>
-      <value>MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION</value>
-    </row>
-    <row>
-      <value>2008-01-01</value>
-      <value>12</value>
-      <value>8901</value>
-      <value>20060223</value>
-      <null/>
-      <value>DOMICILE</value>
-      <value>COMMUNE_OU_FRACTION_VD</value>
-      <value>5586</value>
-      <value>REVENU_FORTUNE</value>
-      <value>ForFiscalPrincipal</value>
-      <value>ORDINAIRE</value>
-      <value>MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION</value>
-      <null/>
-    </row>
-    <row>
-      <value>2008-01-01</value>
-      <value>13</value>
-      <value>5434</value>
-      <value>19981201</value>
-      <value>20000831</value>
-      <value>IMMEUBLE_PRIVE</value>
-      <value>COMMUNE_OU_FRACTION_VD</value>
-      <value>5586</value>
-      <value>REVENU_FORTUNE</value>
-      <value>ForFiscalSecondaire</value>
-      <null/>
-      <value>ACHAT_IMMOBILIER</value>
-      <value>VENTE_IMMOBILIER</value>
-    </row>
-    <row>
-      <value>2008-01-01</value>
-      <value>14</value>
-      <value>5434</value>
-      <value>20000901</value>
-      <value>20060222</value>
-      <value>IMMEUBLE_PRIVE</value>
-      <value>COMMUNE_OU_FRACTION_VD</value>
-      <value>5761</value>
-      <value>REVENU_FORTUNE</value>
-      <value>ForFiscalSecondaire</value>
-      <null/>
-      <value>ACHAT_IMMOBILIER</value>
-      <value>MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION</value>
-    </row>
-    <row>
-      <value>2008-01-01</value>
-      <value>15</value>
-      <value>8901</value>
-      <value>20060223</value>
-      <null/>
-      <value>IMMEUBLE_PRIVE</value>
-      <value>COMMUNE_OU_FRACTION_VD</value>
-      <value>5761</value>
-      <value>REVENU_FORTUNE</value>
-      <value>ForFiscalSecondaire</value>
-      <null/>
-      <value>MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION</value>
-      <null/>
-    </row>
-    <row>
-      <value>2008-01-01</value>
-      <value>16</value>
-      <value>5434</value>
-      <value>20040422</value>
-      <value>20040422</value>
-      <null/>
-      <value>COMMUNE_OU_FRACTION_VD</value>
-      <value>5477</value>
-      <value>DROIT_MUTATION</value>
-      <value>ForFiscalAutreImpot</value>
-      <null/>
-      <null/>
-      <null/>
-    </row>
-  </table>
-  <table name="ADRESSE_TIERS">
-    <column>LOG_MDATE</column>
-    <column>ID</column>
-    <column>TIERS_ID</column>
-    <column>ADR_TYPE</column>
-    <column>NUMERO_ORDRE_POSTE</column>
-    <column>NUMERO_RUE</column>
-    <column>RUE</column>
-    <column>COMPLEMENT</column>
-    <column>DATE_DEBUT</column>
-    <column>DATE_FIN</column>
-    <column>USAGE_TYPE</column>
-    <column>PERMANENTE</column>
-    <row>
-      <value>2008-01-01</value>
-      <value>1</value>
-      <value>5434</value>
-      <value>AdresseSuisse</value>
-      <value>104</value>
-      <null/>
-      <value>Blablateur</value>
-      <value>AdresseCourrierLigne1.1</value>
-      <value>20020123</value>
-      <value>20031031</value>
-      <value>COURRIER</value>
-      <value>0</value>
-    </row>
-    <row>
-      <value>2008-01-01</value>
-      <value>2</value>
-      <value>5434</value>
-      <value>AdresseSuisse</value>
-      <value>528</value>
-      <value>83404</value>
-      <value><![CDATA[Av qu'il ne faut pas trouver]]></value>
-      <value>AdresseCourrierLigne1.3</value>
-      <value>20051201</value>
-      <null/>
-      <value>COURRIER</value>
-      <value>0</value>
-    </row>
-  </table>
-  <table name="RAPPORT_ENTRE_TIERS">
-    <column>LOG_MDATE</column>
-    <column>ID</column>
-    <column>TIERS_SUJET_ID</column>
-    <column>TIERS_OBJET_ID</column>
-    <column>DATE_DEBUT</column>
-    <column>DATE_FIN</column>
-    <column>RAPPORT_ENTRE_TIERS_TYPE</column>
-    <row>
-      <value>2008-01-01</value>
-      <value>1</value>
-      <value>7823</value>
-      <value>8901</value>
-      <value>20031001</value>
-      <null/>
-      <value>AppartenanceMenage</value>
-    </row>
-    <row>
-      <value>2008-01-01</value>
-      <value>2</value>
-      <value>5434</value>
-      <value>8901</value>
-      <value>20060223</value>
-      <null/>
-      <value>AppartenanceMenage</value>
-    </row>
-  </table>
+	<table name="TIERS">
+		<column>LOG_MDATE</column>
+		<column>NUMERO</column>
+		<column>TIERS_TYPE</column>
+		<column>DEBITEUR_INACTIF</column>
+		<column>NUMERO_INDIVIDU</column>
+		<column>REMARQUE</column>
+		<column>NH_NOM</column>
+		<column>NH_PRENOM</column>
+		<column>NH_DATE_NAISSANCE</column>
+		<column>NH_SEXE</column>
+		<column>DATE_DECES</column>
+		<column>PP_HABITANT</column>
+		<row>
+			<value>2008-01-01</value>
+			<value>8901</value>
+			<value>MenageCommun</value>
+			<value>0</value>
+			<none />
+			<none />
+			<none />
+			<none />
+			<none />
+			<none />
+			<none />
+			<null />
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>7823</value>
+			<value>PersonnePhysique</value>
+			<value>0</value>
+			<null />
+			<null />
+			<value>Bolomido</value>
+			<value>Marcel</value>
+			<null />
+			<value>MASCULIN</value>
+			<null />
+			<value>0</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>5434</value>
+			<value>PersonnePhysique</value>
+			<value>0</value>
+			<value>54321</value>
+			<none />
+			<none />
+			<none />
+			<none />
+			<none />
+			<none />
+			<value>1</value>
+		</row>
+	</table>
+	<table name="FOR_FISCAL">
+		<column>LOG_MDATE</column>
+		<column>ID</column>
+		<column>TIERS_ID</column>
+		<column>DATE_OUVERTURE</column>
+		<column>DATE_FERMETURE</column>
+		<column>MOTIF_RATTACHEMENT</column>
+		<column>TYPE_AUT_FISC</column>
+		<column>NUMERO_OFS</column>
+		<column>GENRE_IMPOT</column>
+		<column>FOR_TYPE</column>
+		<column>MODE_IMPOSITION</column>
+		<column>MOTIF_OUVERTURE</column>
+		<column>MOTIF_FERMETURE</column>
+		<row>
+			<value>2008-01-01</value>
+			<value>11</value>
+			<value>5434</value>
+			<value>19981201</value>
+			<value>20060222</value>
+			<value>DOMICILE</value>
+			<value>COMMUNE_OU_FRACTION_VD</value>
+			<value>5586</value>
+			<value>REVENU_FORTUNE</value>
+			<value>ForFiscalPrincipal</value>
+			<value>ORDINAIRE</value>
+			<value>ARRIVEE_HC</value>
+			<value>MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>12</value>
+			<value>8901</value>
+			<value>20060223</value>
+			<null />
+			<value>DOMICILE</value>
+			<value>COMMUNE_OU_FRACTION_VD</value>
+			<value>5586</value>
+			<value>REVENU_FORTUNE</value>
+			<value>ForFiscalPrincipal</value>
+			<value>ORDINAIRE</value>
+			<value>MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION</value>
+			<null />
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>13</value>
+			<value>5434</value>
+			<value>19981201</value>
+			<value>20000831</value>
+			<value>IMMEUBLE_PRIVE</value>
+			<value>COMMUNE_OU_FRACTION_VD</value>
+			<value>5586</value>
+			<value>REVENU_FORTUNE</value>
+			<value>ForFiscalSecondaire</value>
+			<null />
+			<value>ACHAT_IMMOBILIER</value>
+			<value>VENTE_IMMOBILIER</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>14</value>
+			<value>5434</value>
+			<value>20000901</value>
+			<value>20060222</value>
+			<value>IMMEUBLE_PRIVE</value>
+			<value>COMMUNE_OU_FRACTION_VD</value>
+			<value>5761</value>
+			<value>REVENU_FORTUNE</value>
+			<value>ForFiscalSecondaire</value>
+			<null />
+			<value>ACHAT_IMMOBILIER</value>
+			<value>MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>15</value>
+			<value>8901</value>
+			<value>20060223</value>
+			<null />
+			<value>IMMEUBLE_PRIVE</value>
+			<value>COMMUNE_OU_FRACTION_VD</value>
+			<value>5761</value>
+			<value>REVENU_FORTUNE</value>
+			<value>ForFiscalSecondaire</value>
+			<null />
+			<value>MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION</value>
+			<null />
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>16</value>
+			<value>5434</value>
+			<value>20040422</value>
+			<value>20040422</value>
+			<null />
+			<value>COMMUNE_OU_FRACTION_VD</value>
+			<value>5477</value>
+			<value>DROIT_MUTATION</value>
+			<value>ForFiscalAutreImpot</value>
+			<null />
+			<null />
+			<null />
+		</row>
+	</table>
+	<table name="ADRESSE_TIERS">
+		<column>LOG_MDATE</column>
+		<column>ID</column>
+		<column>TIERS_ID</column>
+		<column>ADR_TYPE</column>
+		<column>NUMERO_ORDRE_POSTE</column>
+		<column>NUMERO_RUE</column>
+		<column>RUE</column>
+		<column>COMPLEMENT</column>
+		<column>DATE_DEBUT</column>
+		<column>DATE_FIN</column>
+		<column>USAGE_TYPE</column>
+		<column>PERMANENTE</column>
+		<row>
+			<value>2008-01-01</value>
+			<value>1</value>
+			<value>5434</value>
+			<value>AdresseSuisse</value>
+			<value>104</value>
+			<null />
+			<value>Blablateur</value>
+			<value>AdresseCourrierLigne1.1</value>
+			<value>20020123</value>
+			<value>20031031</value>
+			<value>COURRIER</value>
+			<value>0</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>2</value>
+			<value>5434</value>
+			<value>AdresseSuisse</value>
+			<value>528</value>
+			<value>83404</value>
+			<value><![CDATA[Av qu'il ne faut pas trouver]]></value>
+			<value>AdresseCourrierLigne1.3</value>
+			<value>20051201</value>
+			<null />
+			<value>COURRIER</value>
+			<value>0</value>
+		</row>
+	</table>
+	<table name="RAPPORT_ENTRE_TIERS">
+		<column>LOG_MDATE</column>
+		<column>ID</column>
+		<column>TIERS_SUJET_ID</column>
+		<column>TIERS_OBJET_ID</column>
+		<column>DATE_DEBUT</column>
+		<column>DATE_FIN</column>
+		<column>RAPPORT_ENTRE_TIERS_TYPE</column>
+		<row>
+			<value>2008-01-01</value>
+			<value>1</value>
+			<value>7823</value>
+			<value>8901</value>
+			<value>20031001</value>
+			<null />
+			<value>AppartenanceMenage</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>2</value>
+			<value>5434</value>
+			<value>8901</value>
+			<value>20060223</value>
+			<null />
+			<value>AppartenanceMenage</value>
+		</row>
+	</table>
 </dataset>

@@ -37,7 +37,7 @@
 		<column>MOTIF_RATTACHEMENT</column>
 		<column>TYPE_AUT_FISC</column>
 		<column>NUMERO_OFS</column>
-		<column>GENRE_IMPOT</column>		
+		<column>GENRE_IMPOT</column>
 		<row>
 			<value>2008-01-01</value>
 			<value>100001</value>
@@ -72,7 +72,7 @@
 			<value>DROIT_MUTATION</value>
 		</row>
 	</table>
-	
+
 	<table name="EVENEMENT_CIVIL_REGROUPE">
 		<column>LOG_MDATE</column>
 		<column>ID</column>
@@ -87,7 +87,8 @@
 		<row>
 			<value>2008-01-01</value>
 			<value>9001</value>
-			<value>DEMENAGEMENT_DANS_COMMUNE</value> <!-- DEMENAGEMENT -->
+			<value>DEMENAGEMENT_DANS_COMMUNE</value>
+			<!-- DEMENAGEMENT -->
 			<value>20071025</value>
 			<value>6789</value>
 			<value>12345</value>

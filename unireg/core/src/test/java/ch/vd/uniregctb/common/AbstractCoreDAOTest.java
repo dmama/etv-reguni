@@ -679,10 +679,10 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	/**
 	 * Ajoute une tâche d'envoi de déclaration d'impôt avec les paramètres spécifiés.
 	 */
-	protected TacheEnvoiDeclarationImpot addTacheEnvoiDI(TypeEtatTache etat, RegDate dateEcheance, RegDate dateDebut, RegDate dateFin,
-			TypeContribuable typeContribuable, TypeDocument typeDocument, Contribuable contribuable, Qualification qualification) {
-		TacheEnvoiDeclarationImpot tache = new TacheEnvoiDeclarationImpot(etat, dateEcheance, contribuable, dateDebut, dateFin,
-				typeContribuable, typeDocument, qualification, TypeAdresseRetour.CEDI);
+	protected TacheEnvoiDeclarationImpot addTacheEnvoiDI(TypeEtatTache etat, RegDate dateEcheance, RegDate dateDebut, RegDate dateFin, TypeContribuable typeContribuable, TypeDocument typeDocument,
+	                                                     Contribuable contribuable, Qualification qualification, CollectiviteAdministrative colAdm) {
+		TacheEnvoiDeclarationImpot tache =
+				new TacheEnvoiDeclarationImpot(etat, dateEcheance, contribuable, dateDebut, dateFin, typeContribuable, typeDocument, qualification, TypeAdresseRetour.CEDI, colAdm);
 		tache = (TacheEnvoiDeclarationImpot) hibernateTemplate.merge(tache);
 		return tache;
 	}
@@ -690,9 +690,9 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	/**
 	 * Ajoute une tâche d'annulation de déclaration d'impôt avec les paramètres spécifiés.
 	 */
-	protected TacheAnnulationDeclarationImpot addTacheAnnulDI(TypeEtatTache etat, RegDate dateEcheance,
-			DeclarationImpotOrdinaire declaration, Contribuable contribuable) {
-		TacheAnnulationDeclarationImpot tache = new TacheAnnulationDeclarationImpot(etat, dateEcheance, contribuable, declaration);
+	protected TacheAnnulationDeclarationImpot addTacheAnnulDI(TypeEtatTache etat, RegDate dateEcheance, DeclarationImpotOrdinaire declaration, Contribuable contribuable,
+	                                                          CollectiviteAdministrative colAdm) {
+		TacheAnnulationDeclarationImpot tache = new TacheAnnulationDeclarationImpot(etat, dateEcheance, contribuable, declaration, colAdm);
 		tache = (TacheAnnulationDeclarationImpot) hibernateTemplate.merge(tache);
 		return tache;
 	}
@@ -700,29 +700,26 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	/**
 	 * Ajoute une tâche d'annulation de déclaration d'impôt avec les paramètres spécifiés.
 	 */
-	protected TacheControleDossier addTacheControleDossier(TypeEtatTache etat, RegDate dateEcheance, Contribuable contribuable) {
-		TacheControleDossier tache = new TacheControleDossier(etat, dateEcheance, contribuable);
+	protected TacheControleDossier addTacheControleDossier(TypeEtatTache etat, RegDate dateEcheance, Contribuable contribuable, CollectiviteAdministrative colAdm) {
+		TacheControleDossier tache = new TacheControleDossier(etat, dateEcheance, contribuable, colAdm);
 		tache = (TacheControleDossier) hibernateTemplate.merge(tache);
 		return tache;
 	}
 
 	protected TacheTransmissionDossier addTacheTransmission(PersonnePhysique ctb, TypeEtatTache etat, CollectiviteAdministrative ca) {
-		TacheTransmissionDossier transmission = new TacheTransmissionDossier(etat, date(2010, 1, 1), ctb);
-		transmission.setCollectiviteAdministrativeAssignee(ca);
+		TacheTransmissionDossier transmission = new TacheTransmissionDossier(etat, date(2010, 1, 1), ctb, ca);
 		transmission = (TacheTransmissionDossier) hibernateTemplate.merge(transmission);
 		return transmission;
 	}
 
 	protected TacheNouveauDossier addTacheNouveau(PersonnePhysique ctb, TypeEtatTache etat, CollectiviteAdministrative ca) {
-		TacheNouveauDossier nouveau = new TacheNouveauDossier(etat, date(2010, 1, 1), ctb);
-		nouveau.setCollectiviteAdministrativeAssignee(ca);
+		TacheNouveauDossier nouveau = new TacheNouveauDossier(etat, date(2010, 1, 1), ctb, ca);
 		nouveau = (TacheNouveauDossier) hibernateTemplate.merge(nouveau);
 		return nouveau;
 	}
 
 	protected TacheControleDossier addTacheControle(PersonnePhysique ctb, TypeEtatTache etat, CollectiviteAdministrative ca) {
-		TacheControleDossier controle = new TacheControleDossier(etat, date(2010, 1, 1), ctb);
-		controle.setCollectiviteAdministrativeAssignee(ca);
+		TacheControleDossier controle = new TacheControleDossier(etat, date(2010, 1, 1), ctb, ca);
 		controle = (TacheControleDossier) hibernateTemplate.merge(controle);
 		return controle;
 	}

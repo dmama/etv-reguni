@@ -1,202 +1,202 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <dataset>
-  <table name="TIERS">
-    <column>LOG_MDATE</column>
-    <column>NUMERO</column>
-    <column>TIERS_TYPE</column>
-    <column>CATEGORIE_IMPOT_SOURCE</column>
-    <column>PERIODICITE_DECOMPTE</column>
-    <column>MODE_COM</column>
-    <column>COMPLEMENT_NOM</column>
-    <column>DEBITEUR_INACTIF</column>
-    <column>NH_NOM</column>
-    <column>NH_PRENOM</column>
-    <column>NH_NUMERO_ASSURE_SOCIAL</column>
-    <column>NH_DATE_NAISSANCE</column>
-    <column>NH_SEXE</column>
-    <column>NH_NO_OFS_NATIONALITE</column>
-    <column>DATE_DECES</column>
-    <column>PP_HABITANT</column>
-    <row>
-      <value>2008-01-01</value>
-      <value>12300002</value>
-      <value>PersonnePhysique</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <value>0</value>
-      <value>SCHMID</value>
-      <value>Laurent</value>
-      <value>1245789312435</value>
-      <value>19700123</value>
-      <value>MASCULIN</value>
-      <value>8212</value>
-      <null/>
-      <value>0</value>
-    </row>
-    <row>
-      <value>2008-01-01</value>
-      <value>12500001</value>
-      <value>DebiteurPrestationImposable</value>
-      <value>ADMINISTRATEURS</value>
-      <value>MENSUEL</value>
-      <value>PAPIER</value>
-      <value><![CDATA[Service pour administrateurs]]></value>
-      <value>0</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-    </row>
-    <row>
-      <value>2008-01-01</value>
-      <value>12500002</value>
-      <value>DebiteurPrestationImposable</value>
-      <value>CONFERENCIERS_ARTISTES_SPORTIFS</value>
-      <value>TRIMESTRIEL</value>
-      <value>PAPIER</value>
-      <value><![CDATA[Service artistes]]></value>
-      <value>0</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-    </row>
-    <row>
-      <value>2008-01-01</value>
-      <value>12500003</value>
-      <value>DebiteurPrestationImposable</value>
-      <value>CREANCIERS_HYPOTHECAIRES</value>
-      <value>SEMESTRIEL</value>
-      <value>PAPIER</value>
-      <value><![CDATA[Service creancier hypothecaire]]></value>
-      <value>0</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-    </row>
-    <row>
-      <value>2008-01-01</value>
-      <value>12500004</value>
-      <value>DebiteurPrestationImposable</value>
-      <value>PRESTATIONS_PREVOYANCE</value>
-      <value>ANNUEL</value>
-      <value>PAPIER</value>
-      <value><![CDATA[Service prestations prevoyances]]></value>
-      <value>0</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-    </row>
-  </table>
-  <table name="PERIODE_FISCALE">
-    <column>LOG_MDATE</column>
-    <column>ID</column>
-    <column>ANNEE</column>
-    <row>
-      <value>2008-01-01</value>
-      <value>1</value>
-      <value>2008</value>
-    </row>
-  </table>
-  <table name="PARAMETRE_PERIODE_FISCALE">
-    <column>LOG_MDATE</column>
-    <column>ID</column>
-    <column>TERME_GEN_SOMM_REGL</column>
-    <column>TERME_GEN_SOMM_EFFECT</column>
-    <column>DATE_FIN_ENVOI_MASSE</column>
-    <column>TYPE_CTB</column>
-    <column>PERIODE_ID</column>
-    <row>
-      <value>2008-01-01</value>
-      <value>1</value>
-      <value>20090131</value>
-      <value>20090331</value>
-      <value>20090430</value>
-      <value>VAUDOIS_ORDINAIRE</value>
-      <value>1</value>
-    </row>
-    <row>
-      <value>2008-01-01</value>
-      <value>2</value>
-      <value>20090131</value>
-      <value>20090331</value>
-      <value>20090630</value>
-      <value>VAUDOIS_DEPENSE</value>
-      <value>1</value>
-    </row>
-    <row>
-      <value>2008-01-01</value>
-      <value>3</value>
-      <value>20090131</value>
-      <value>20090331</value>
-      <value>20090630</value>
-      <value>HORS_CANTON</value>
-      <value>1</value>
-    </row>
-    <row>
-      <value>2008-01-01</value>
-      <value>4</value>
-      <value>20090131</value>
-      <value>20090331</value>
-      <value>20090630</value>
-      <value>HORS_SUISSE</value>
-      <value>1</value>
-    </row>
-  </table>
-  <table name="DECLARATION">
-    <column>LOG_MDATE</column>
-    <column>ID</column>
-    <column>DOCUMENT_TYPE</column>
-    <column>TIERS_ID</column>
-    <column>DATE_DEBUT</column>
-    <column>DATE_FIN</column>
-    <column>PERIODICITE</column>
-    <column>MODE_COM</column>
-    <column>ANNULATION_DATE</column>
-    <column>PERIODE_ID</column>
-    <row>
-      <value>2008-01-01</value>
-      <value>21</value>
-      <value>LR</value>
-      <value>12500001</value>
-      <value>20080101</value>
-      <value>20080131</value>
-      <value>MENSUEL</value>
-      <value>PAPIER</value>
-      <null/>
-      <value>1</value>
-    </row>
-    <row>
-      <value>2008-01-01</value>
-      <value>22</value>
-      <value>LR</value>
-      <value>12500001</value>
-      <value>20080101</value>
-      <value>20081231</value>
-      <value>ANNUEL</value>
-      <value>PAPIER</value>
-      <value>2008-02-02</value>
-      <value>1</value>
-    </row>
-  </table>
+	<table name="TIERS">
+		<column>LOG_MDATE</column>
+		<column>NUMERO</column>
+		<column>TIERS_TYPE</column>
+		<column>CATEGORIE_IMPOT_SOURCE</column>
+		<column>PERIODICITE_DECOMPTE</column>
+		<column>MODE_COM</column>
+		<column>COMPLEMENT_NOM</column>
+		<column>DEBITEUR_INACTIF</column>
+		<column>NH_NOM</column>
+		<column>NH_PRENOM</column>
+		<column>NH_NUMERO_ASSURE_SOCIAL</column>
+		<column>NH_DATE_NAISSANCE</column>
+		<column>NH_SEXE</column>
+		<column>NH_NO_OFS_NATIONALITE</column>
+		<column>DATE_DECES</column>
+		<column>PP_HABITANT</column>
+		<row>
+			<value>2008-01-01</value>
+			<value>12300002</value>
+			<value>PersonnePhysique</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<value>0</value>
+			<value>SCHMID</value>
+			<value>Laurent</value>
+			<value>1245789312435</value>
+			<value>19700123</value>
+			<value>MASCULIN</value>
+			<value>8212</value>
+			<null />
+			<value>0</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>12500001</value>
+			<value>DebiteurPrestationImposable</value>
+			<value>ADMINISTRATEURS</value>
+			<value>MENSUEL</value>
+			<value>PAPIER</value>
+			<value><![CDATA[Service pour administrateurs]]></value>
+			<value>0</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>12500002</value>
+			<value>DebiteurPrestationImposable</value>
+			<value>CONFERENCIERS_ARTISTES_SPORTIFS</value>
+			<value>TRIMESTRIEL</value>
+			<value>PAPIER</value>
+			<value><![CDATA[Service artistes]]></value>
+			<value>0</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>12500003</value>
+			<value>DebiteurPrestationImposable</value>
+			<value>CREANCIERS_HYPOTHECAIRES</value>
+			<value>SEMESTRIEL</value>
+			<value>PAPIER</value>
+			<value><![CDATA[Service creancier hypothecaire]]></value>
+			<value>0</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>12500004</value>
+			<value>DebiteurPrestationImposable</value>
+			<value>PRESTATIONS_PREVOYANCE</value>
+			<value>ANNUEL</value>
+			<value>PAPIER</value>
+			<value><![CDATA[Service prestations prevoyances]]></value>
+			<value>0</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+		</row>
+	</table>
+	<table name="PERIODE_FISCALE">
+		<column>LOG_MDATE</column>
+		<column>ID</column>
+		<column>ANNEE</column>
+		<row>
+			<value>2008-01-01</value>
+			<value>1</value>
+			<value>2008</value>
+		</row>
+	</table>
+	<table name="PARAMETRE_PERIODE_FISCALE">
+		<column>LOG_MDATE</column>
+		<column>ID</column>
+		<column>TERME_GEN_SOMM_REGL</column>
+		<column>TERME_GEN_SOMM_EFFECT</column>
+		<column>DATE_FIN_ENVOI_MASSE</column>
+		<column>TYPE_CTB</column>
+		<column>PERIODE_ID</column>
+		<row>
+			<value>2008-01-01</value>
+			<value>1</value>
+			<value>20090131</value>
+			<value>20090331</value>
+			<value>20090430</value>
+			<value>VAUDOIS_ORDINAIRE</value>
+			<value>1</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>2</value>
+			<value>20090131</value>
+			<value>20090331</value>
+			<value>20090630</value>
+			<value>VAUDOIS_DEPENSE</value>
+			<value>1</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>3</value>
+			<value>20090131</value>
+			<value>20090331</value>
+			<value>20090630</value>
+			<value>HORS_CANTON</value>
+			<value>1</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>4</value>
+			<value>20090131</value>
+			<value>20090331</value>
+			<value>20090630</value>
+			<value>HORS_SUISSE</value>
+			<value>1</value>
+		</row>
+	</table>
+	<table name="DECLARATION">
+		<column>LOG_MDATE</column>
+		<column>ID</column>
+		<column>DOCUMENT_TYPE</column>
+		<column>TIERS_ID</column>
+		<column>DATE_DEBUT</column>
+		<column>DATE_FIN</column>
+		<column>PERIODICITE</column>
+		<column>MODE_COM</column>
+		<column>ANNULATION_DATE</column>
+		<column>PERIODE_ID</column>
+		<row>
+			<value>2008-01-01</value>
+			<value>21</value>
+			<value>LR</value>
+			<value>12500001</value>
+			<value>20080101</value>
+			<value>20080131</value>
+			<value>MENSUEL</value>
+			<value>PAPIER</value>
+			<null />
+			<value>1</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>22</value>
+			<value>LR</value>
+			<value>12500001</value>
+			<value>20080101</value>
+			<value>20081231</value>
+			<value>ANNUEL</value>
+			<value>PAPIER</value>
+			<value>2008-02-02</value>
+			<value>1</value>
+		</row>
+	</table>
 </dataset>

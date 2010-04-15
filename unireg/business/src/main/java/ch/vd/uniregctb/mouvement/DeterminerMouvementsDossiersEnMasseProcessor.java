@@ -175,8 +175,8 @@ public class DeterminerMouvementsDossiersEnMasseProcessor {
 					}
 
 					// calculons les OID de gestion à ces dates là...
-					final Integer oidAvant = tiersService.getOfficeImpotAt(ctb, avant);
-					final Integer oidApres = tiersService.getOfficeImpotAt(ctb, apres);
+					final Integer oidAvant = tiersService.getOfficeImpotIdAt(ctb, avant);
+					final Integer oidApres = tiersService.getOfficeImpotIdAt(ctb, apres);
 					if (oidAvant == null || oidApres == null) {
 						// erreur -> on ne peut pas déterminer l'office d'impôt de gestion alors que le contribuable est assujetti
 						if (oidAvant == null) {
@@ -223,7 +223,7 @@ public class DeterminerMouvementsDossiersEnMasseProcessor {
 
 					// il faut trouver l'OID de gestion du contribuable
 					final RegDate dateFinAssujettissement = assujettissements.get(assujettissements.size() - 1).getDateFin();
-					final Integer oid = tiersService.getOfficeImpotAt(ctb, dateFinAssujettissement);
+					final Integer oid = tiersService.getOfficeImpotIdAt(ctb, dateFinAssujettissement);
 					if (oid == null) {
 						// erreur -> on ne peut pas déterminer l'office d'impôt de gestion au moment du dernier assujettissement
 						onAbsenseOidGestion(ctb, dateFinAssujettissement, assujettissements, rapport);

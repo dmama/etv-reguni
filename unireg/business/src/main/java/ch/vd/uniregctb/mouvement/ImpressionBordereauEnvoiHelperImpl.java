@@ -137,7 +137,7 @@ public class ImpressionBordereauEnvoiHelperImpl implements ImpressionBordereauEn
 		// ?? dossier.setNum("1");
 		dossier.setNumCTB(FormatNumeroHelper.numeroCTBToDisplay(contribuable.getNumero()));
 		RegDate dateFinExerciceDepart = RegDate.get(anneeFiscale.intValue() - 2, 12, 31);
-		Integer numeroOfficeImpotDepart = tiersService.getOfficeImpotAt(contribuable, dateFinExerciceDepart);
+		Integer numeroOfficeImpotDepart = tiersService.getOfficeImpotIdAt(contribuable, dateFinExerciceDepart);
 		OfficeImpot officeImpotDepart = serviceInfrastructureService.getOfficeImpot(numeroOfficeImpotDepart);
 		ForFiscalPrincipal forFiscalPrincipal = contribuable.getForFiscalPrincipalAt(dateFinExerciceDepart);
 
@@ -152,7 +152,7 @@ public class ImpressionBordereauEnvoiHelperImpl implements ImpressionBordereauEn
 
 //		dossier.setCommuneDe(officeImpotDepart.getNomCourt());
 		RegDate dateFinExerciceArrivee = RegDate.get(anneeFiscale.intValue() -1, 12, 31);
-		Integer numeroOfficeImpotArrivee = tiersService.getOfficeImpotAt(contribuable, dateFinExerciceArrivee);
+		Integer numeroOfficeImpotArrivee = tiersService.getOfficeImpotIdAt(contribuable, dateFinExerciceArrivee);
 		OfficeImpot officeImpotArrivee = serviceInfrastructureService.getOfficeImpot(numeroOfficeImpotArrivee);
 //		dossier.setCommuneA(officeImpotArrivee.getNomCourt());
 //		dossier.setDateEnv(forFiscalPrincipal.getDateDebut().toString());

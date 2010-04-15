@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.interfaces.model.mock;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import ch.vd.infrastructure.model.EnumSigleUsageEmail;
@@ -15,6 +17,8 @@ import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceInfrastructureS
 public class MockCollectiviteAdministrative implements CollectiviteAdministrative {
 
 	private static final long serialVersionUID = 4272590042497410216L;
+
+	private static final List<MockCollectiviteAdministrative> all = new ArrayList<MockCollectiviteAdministrative>();
 
 	public static MockCollectiviteAdministrative OTG = new MockCollectiviteAdministrative(ServiceInfrastructureService.noTuteurGeneral, new MockAdresse("Chemin de Mornex", "32", "1014", "Lausanne"), "Office Tuteur général", null, null, "OTG");
 	public static MockCollectiviteAdministrative CEDI = new MockCollectiviteAdministrative(ServiceInfrastructureService.noCEDI, new MockAdresse("", "", "1014", "Lausanne Adm cant"), "Centre d'enregistrement", "des déclarations d'impôt", null, "CEDI");
@@ -60,6 +64,7 @@ public class MockCollectiviteAdministrative implements CollectiviteAdministrativ
 		this.nomCourt = nomCourt;
 
 		DefaultMockServiceInfrastructureService.addColAdm(this);
+		all.add(this);
 	}
 
 	/**
@@ -338,5 +343,9 @@ public class MockCollectiviteAdministrative implements CollectiviteAdministrativ
 	 */
 	public void setValide(boolean isValide) {
 		this.isValide = isValide;
+	}
+
+	public static List<MockCollectiviteAdministrative> getAll() {
+		return Collections.unmodifiableList(all);
 	}
 }

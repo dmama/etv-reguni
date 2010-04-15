@@ -479,16 +479,13 @@ public class TacheDAOTest extends CoreDAOTest {
 	}
 
 	private TacheAnnulationDeclarationImpot addTacheAnnulation(PersonnePhysique ctb, TypeEtatTache etat, CollectiviteAdministrative ca, DeclarationImpotOrdinaire di) {
-		TacheAnnulationDeclarationImpot annulation = addTacheAnnulDI(etat, date(2010, 1, 1), di, ctb);
-		annulation.setCollectiviteAdministrativeAssignee(ca);
-		return annulation;
+		return addTacheAnnulDI(etat, date(2010, 1, 1), di, ctb, ca);
 	}
 
 	private TacheEnvoiDeclarationImpot addTacheEnvoi(PersonnePhysique ctb, TypeEtatTache etat, CollectiviteAdministrative ca) {
 		TacheEnvoiDeclarationImpot envoi = addTacheEnvoiDI(etat, date(2010, 1, 1), date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-				TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, ctb, Qualification.AUTOMATIQUE);
+				TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, ctb, Qualification.AUTOMATIQUE, ca);
 		envoi.setAdresseRetour(TypeAdresseRetour.CEDI);
-		envoi.setCollectiviteAdministrativeAssignee(ca);
 		envoi = (TacheEnvoiDeclarationImpot) hibernateTemplate.merge(envoi);
 		return envoi;
 	}

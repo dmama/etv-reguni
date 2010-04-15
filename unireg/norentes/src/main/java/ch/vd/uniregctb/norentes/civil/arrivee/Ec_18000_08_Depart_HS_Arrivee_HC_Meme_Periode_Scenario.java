@@ -9,6 +9,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
+import ch.vd.uniregctb.interfaces.model.mock.MockOfficeImpot;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
@@ -80,6 +81,8 @@ public class Ec_18000_08_Depart_HS_Arrivee_HC_Meme_Periode_Scenario extends Even
 	@Etape(id=1, descr="Création de l'individu parti HS")
 	public void etape1() throws Exception {
 
+		addColAdm(MockOfficeImpot.OID_LAUSANNE_OUEST);
+		
 		final PersonnePhysique alain = addHabitant(noIndAlain);
 		addForFiscalPrincipal(alain, MockCommune.Lausanne, dateMajorite, dateDepartHS.getOneDayBefore(), MotifFor.MAJORITE, MotifFor.DEPART_HS);
 		tiersService.openForFiscalPrincipal(alain, dateDepartHS, MotifRattachement.DOMICILE, MockPays.PaysInconnu.getNoOFS(), TypeAutoriteFiscale.PAYS_HS, ModeImposition.ORDINAIRE, MotifFor.DEPART_HS, true);

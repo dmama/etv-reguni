@@ -1,410 +1,410 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <dataset>
-  <table name="TIERS">
-    <column>LOG_MDATE</column>
-    <column>NUMERO</column>
-    <column>TIERS_TYPE</column>
-    <column>NUMERO_INDIVIDU</column>
-    <column>NUMERO_PM</column>
-    <column>CATEGORIE_IMPOT_SOURCE</column>
-    <column>PERIODICITE_DECOMPTE</column>
-    <column>MODE_COM</column>
-    <column>DEBITEUR_INACTIF</column>
-    <column>AC_NOM</column>
-    <column>AC_FORME_JURIDIQUE</column>
-    <column>NH_NOM</column>
-    <column>NH_PRENOM</column>
-    <column>NH_NUMERO_ASSURE_SOCIAL</column>
-    <column>NH_DATE_NAISSANCE</column>
-    <column>NH_SEXE</column>
-    <column>NH_NO_OFS_NATIONALITE</column>
-    <column>DATE_DECES</column>
-    <column>PP_HABITANT</column>
-    <row>
-      <value>2008-01-01</value>
-      <value>6789</value>
-      <value>PersonnePhysique</value>
-      <value>282315</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <value>0</value>
-      <none/>
-      <none/>
-      <none/>
-      <none/>
-      <none/>
-      <none/>
-      <none/>
-      <none/>
-      <none/>
-      <value>1</value>
-    </row>
-    <row>
-      <value>2008-01-01</value>
-      <value>1234</value>
-      <value>DebiteurPrestationImposable</value>
-      <null/>
-      <null/>
-      <value>ADMINISTRATEURS</value>
-      <value>MENSUEL</value>
-      <value>SITE_WEB</value>
-      <value>0</value>
-      <null/>
-      <null/>
-      <null/>
-      <none/>
-      <none/>
-      <none/>
-      <none/>
-      <none/>
-      <none/>
-      <null/>
-    </row>
-    <row>
-      <value>2008-01-01</value>
-      <value>7890</value>
-      <value>PersonnePhysique</value>
-      <value>333528</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <value>0</value>
-      <none/>
-      <none/>
-      <none/>
-      <none/>
-      <none/>
-      <none/>
-      <none/>
-      <none/>
-      <none/>
-      <value>1</value>
-    </row>
-    <row>
-      <value>2008-01-01</value>
-      <value>8901</value>
-      <value>MenageCommun</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <value>0</value>
-      <none/>
-      <none/>
-      <none/>
-      <none/>
-      <none/>
-      <none/>
-      <none/>
-      <none/>
-      <none/>
-      <null/>
-    </row>
-    <row>
-      <value>2008-01-01</value>
-      <value>1111</value>
-      <value>PersonnePhysique</value>
-      <value>1111</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <value>0</value>
-      <null/>
-      <null/>
-      <value>Conchita</value>
-      <value>Andrea</value>
-      <value>1245789012345</value>
-      <value>19700123</value>
-      <value>FEMININ</value>
-      <value>8212</value>
-      <null/>
-      <value>0</value>
-    </row>
-    <row>
-      <value>2008-01-01</value>
-      <value>2222</value>
-      <value>AutreCommunaute</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <value>0</value>
-      <value><![CDATA[Communaute XYZ]]></value>
-      <value>ASS</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <none/>
-      <none/>
-      <null/>
-    </row>
-    <row>
-      <value>2008-01-01</value>
-      <value>10000010</value>
-      <value>PersonnePhysique</value>
-      <value>333526</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <value>0</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <none/>
-      <none/>
-      <value>1</value>
-    </row>
-    <row>
-      <value>2008-01-01</value>
-      <value>10000001</value>
-      <value>PersonnePhysique</value>
-      <value>333529</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <value>0</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <none/>
-      <none/>
-      <value>1</value>
-    </row>
-    <row>
-      <value>2008-01-01</value>
-      <value>10000002</value>
-      <value>PersonnePhysique</value>
-      <value>333527</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <value>0</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <none/>
-      <none/>
-      <value>1</value>
-    </row>
-    <row>
-      <value>2008-01-01</value>
-      <value>10000004</value>
-      <value>PersonnePhysique</value>
-      <value>333525</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <value>0</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <none/>
-      <none/>
-      <value>1</value>
-    </row>
-    <row>
-      <value>2008-01-01</value>
-      <value>10000005</value>
-      <value>PersonnePhysique</value>
-      <value>333524</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <value>0</value>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <null/>
-      <none/>
-      <none/>
-      <value>1</value>
-    </row>
-  </table>
-  <table name="IDENTIFICATION_PERSONNE">
-    <column>LOG_MDATE</column>
-    <column>ID</column>
-    <column>IDENTIFIANT</column>
-    <column>CATEGORIE</column>
-    <column>NON_HABITANT_ID</column>
-    <row>
-      <value>2008-01-01</value>
-      <value>0</value>
-      <value>15489652357</value>
-      <value>CH_AHV_AVS</value>
-      <value>1111</value>
-    </row>
-    <row>
-      <value>2008-01-01</value>
-      <value>1</value>
-      <value>99999999</value>
-      <value>CH_ZAR_RCE</value>
-      <value>1111</value>
-    </row>
-  </table>
-  <table name="RAPPORT_ENTRE_TIERS">
-    <column>LOG_MDATE</column>
-    <column>ID</column>
-    <column>TIERS_SUJET_ID</column>
-    <column>TIERS_OBJET_ID</column>
-    <column>RAPPORT_ENTRE_TIERS_TYPE</column>
-    <row>
-      <value>2008-01-01</value>
-      <value>1</value>
-      <value>6789</value>
-      <value>8901</value>
-      <value>AppartenanceMenage</value>
-    </row>
-    <row>
-      <value>2008-01-01</value>
-      <value>2</value>
-      <value>7890</value>
-      <value>8901</value>
-      <value>AppartenanceMenage</value>
-    </row>
-    <row>
-      <value>2008-01-01</value>
-      <value>3</value>
-      <value>1111</value>
-      <value>1234</value>
-      <value>RapportPrestationImposable</value>
-    </row>
-    <row>
-      <value>2008-01-01</value>
-      <value>4</value>
-      <value>6789</value>
-      <value>1234</value>
-      <value>ContactImpotSource</value>
-    </row>
-  </table>
-  <table name="ADRESSE_TIERS">
-    <column>LOG_MDATE</column>
-    <column>ID</column>
-    <column>ADR_TYPE</column>
-    <column>USAGE_TYPE</column>
-    <column>DATE_DEBUT</column>
-    <column>DATE_FIN</column>
-    <column>TIERS_ID</column>
-    <column>NUMERO_MAISON</column>
-    <column>NUMERO_ORDRE_POSTE</column>
-    <column>PERMANENTE</column>
-    <row>
-      <value>2008-01-01</value>
-      <value>1</value>
-      <value>AdresseSuisse</value>
-      <value>COURRIER</value>
-      <value>20060223</value>
-      <null/>
-      <value>6789</value>
-      <value>12</value>
-      <value>104</value>
-      <value>0</value>
-    </row>
-    <row>
-      <value>2008-01-01</value>
-      <value>2</value>
-      <value>AdresseSuisse</value>
-      <value>COURRIER</value>
-      <value>20050223</value>
-      <value>20060222</value>
-      <value>6789</value>
-      <value>9</value>
-      <value>104</value>
-      <value>0</value>
-    </row>
-    <row>
-      <value>2008-01-01</value>
-      <value>3</value>
-      <value>AdresseSuisse</value>
-      <value>COURRIER</value>
-      <value>20060223</value>
-      <null/>
-      <value>1111</value>
-      <value>56</value>
-      <value>104</value>
-      <value>0</value>
-    </row>
-    <row>
-      <value>2008-01-01</value>
-      <value>4</value>
-      <value>AdresseSuisse</value>
-      <value>COURRIER</value>
-      <value>20060223</value>
-      <null/>
-      <value>1234</value>
-      <value>8</value>
-      <value>104</value>
-      <value>0</value>
-    </row>
-  </table>
-  <table name="FOR_FISCAL">
-    <column>LOG_MDATE</column>
-    <column>ID</column>
-    <column>FOR_TYPE</column>
-    <column>TIERS_ID</column>
-    <column>GENRE_IMPOT</column>
-    <column>MOTIF_RATTACHEMENT</column>
-    <column>DATE_OUVERTURE</column>
-    <column>DATE_FERMETURE</column>
-    <column>TYPE_AUT_FISC</column>
-    <column>NUMERO_OFS</column>
-    <column>MODE_IMPOSITION</column>
-    <row>
-      <value>2008-01-01</value>
-      <value>1</value>
-      <value>ForFiscalPrincipal</value>
-      <value>6789</value>
-      <value>REVENU_FORTUNE</value>
-      <value>DOMICILE</value>
-      <value>20060301</value>
-      <value>20060831</value>
-      <value>COMMUNE_HC</value>
-      <value>6200</value>
-      <value>ORDINAIRE</value>
-    </row>
-    <row>
-      <value>2008-01-01</value>
-      <value>2</value>
-      <value>ForFiscalSecondaire</value>
-      <value>6789</value>
-      <value>REVENU_FORTUNE</value>
-      <value>ACTIVITE_INDEPENDANTE</value>
-      <value>20060501</value>
-      <value>20060831</value>
-      <value>COMMUNE_OU_FRACTION_VD</value>
-      <value>8212</value>
-      <null/>
-    </row>
-  </table>
+	<table name="TIERS">
+		<column>LOG_MDATE</column>
+		<column>NUMERO</column>
+		<column>TIERS_TYPE</column>
+		<column>NUMERO_INDIVIDU</column>
+		<column>NUMERO_PM</column>
+		<column>CATEGORIE_IMPOT_SOURCE</column>
+		<column>PERIODICITE_DECOMPTE</column>
+		<column>MODE_COM</column>
+		<column>DEBITEUR_INACTIF</column>
+		<column>AC_NOM</column>
+		<column>AC_FORME_JURIDIQUE</column>
+		<column>NH_NOM</column>
+		<column>NH_PRENOM</column>
+		<column>NH_NUMERO_ASSURE_SOCIAL</column>
+		<column>NH_DATE_NAISSANCE</column>
+		<column>NH_SEXE</column>
+		<column>NH_NO_OFS_NATIONALITE</column>
+		<column>DATE_DECES</column>
+		<column>PP_HABITANT</column>
+		<row>
+			<value>2008-01-01</value>
+			<value>6789</value>
+			<value>PersonnePhysique</value>
+			<value>282315</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<value>0</value>
+			<none />
+			<none />
+			<none />
+			<none />
+			<none />
+			<none />
+			<none />
+			<none />
+			<none />
+			<value>1</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>1234</value>
+			<value>DebiteurPrestationImposable</value>
+			<null />
+			<null />
+			<value>ADMINISTRATEURS</value>
+			<value>MENSUEL</value>
+			<value>SITE_WEB</value>
+			<value>0</value>
+			<null />
+			<null />
+			<null />
+			<none />
+			<none />
+			<none />
+			<none />
+			<none />
+			<none />
+			<null />
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>7890</value>
+			<value>PersonnePhysique</value>
+			<value>333528</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<value>0</value>
+			<none />
+			<none />
+			<none />
+			<none />
+			<none />
+			<none />
+			<none />
+			<none />
+			<none />
+			<value>1</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>8901</value>
+			<value>MenageCommun</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<value>0</value>
+			<none />
+			<none />
+			<none />
+			<none />
+			<none />
+			<none />
+			<none />
+			<none />
+			<none />
+			<null />
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>1111</value>
+			<value>PersonnePhysique</value>
+			<value>1111</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<value>0</value>
+			<null />
+			<null />
+			<value>Conchita</value>
+			<value>Andrea</value>
+			<value>1245789012345</value>
+			<value>19700123</value>
+			<value>FEMININ</value>
+			<value>8212</value>
+			<null />
+			<value>0</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>2222</value>
+			<value>AutreCommunaute</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<value>0</value>
+			<value><![CDATA[Communaute XYZ]]></value>
+			<value>ASS</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<none />
+			<none />
+			<null />
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>10000010</value>
+			<value>PersonnePhysique</value>
+			<value>333526</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<value>0</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<none />
+			<none />
+			<value>1</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>10000001</value>
+			<value>PersonnePhysique</value>
+			<value>333529</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<value>0</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<none />
+			<none />
+			<value>1</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>10000002</value>
+			<value>PersonnePhysique</value>
+			<value>333527</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<value>0</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<none />
+			<none />
+			<value>1</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>10000004</value>
+			<value>PersonnePhysique</value>
+			<value>333525</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<value>0</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<none />
+			<none />
+			<value>1</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>10000005</value>
+			<value>PersonnePhysique</value>
+			<value>333524</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<value>0</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<none />
+			<none />
+			<value>1</value>
+		</row>
+	</table>
+	<table name="IDENTIFICATION_PERSONNE">
+		<column>LOG_MDATE</column>
+		<column>ID</column>
+		<column>IDENTIFIANT</column>
+		<column>CATEGORIE</column>
+		<column>NON_HABITANT_ID</column>
+		<row>
+			<value>2008-01-01</value>
+			<value>0</value>
+			<value>15489652357</value>
+			<value>CH_AHV_AVS</value>
+			<value>1111</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>1</value>
+			<value>99999999</value>
+			<value>CH_ZAR_RCE</value>
+			<value>1111</value>
+		</row>
+	</table>
+	<table name="RAPPORT_ENTRE_TIERS">
+		<column>LOG_MDATE</column>
+		<column>ID</column>
+		<column>TIERS_SUJET_ID</column>
+		<column>TIERS_OBJET_ID</column>
+		<column>RAPPORT_ENTRE_TIERS_TYPE</column>
+		<row>
+			<value>2008-01-01</value>
+			<value>1</value>
+			<value>6789</value>
+			<value>8901</value>
+			<value>AppartenanceMenage</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>2</value>
+			<value>7890</value>
+			<value>8901</value>
+			<value>AppartenanceMenage</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>3</value>
+			<value>1111</value>
+			<value>1234</value>
+			<value>RapportPrestationImposable</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>4</value>
+			<value>6789</value>
+			<value>1234</value>
+			<value>ContactImpotSource</value>
+		</row>
+	</table>
+	<table name="ADRESSE_TIERS">
+		<column>LOG_MDATE</column>
+		<column>ID</column>
+		<column>ADR_TYPE</column>
+		<column>USAGE_TYPE</column>
+		<column>DATE_DEBUT</column>
+		<column>DATE_FIN</column>
+		<column>TIERS_ID</column>
+		<column>NUMERO_MAISON</column>
+		<column>NUMERO_ORDRE_POSTE</column>
+		<column>PERMANENTE</column>
+		<row>
+			<value>2008-01-01</value>
+			<value>1</value>
+			<value>AdresseSuisse</value>
+			<value>COURRIER</value>
+			<value>20060223</value>
+			<null />
+			<value>6789</value>
+			<value>12</value>
+			<value>104</value>
+			<value>0</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>2</value>
+			<value>AdresseSuisse</value>
+			<value>COURRIER</value>
+			<value>20050223</value>
+			<value>20060222</value>
+			<value>6789</value>
+			<value>9</value>
+			<value>104</value>
+			<value>0</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>3</value>
+			<value>AdresseSuisse</value>
+			<value>COURRIER</value>
+			<value>20060223</value>
+			<null />
+			<value>1111</value>
+			<value>56</value>
+			<value>104</value>
+			<value>0</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>4</value>
+			<value>AdresseSuisse</value>
+			<value>COURRIER</value>
+			<value>20060223</value>
+			<null />
+			<value>1234</value>
+			<value>8</value>
+			<value>104</value>
+			<value>0</value>
+		</row>
+	</table>
+	<table name="FOR_FISCAL">
+		<column>LOG_MDATE</column>
+		<column>ID</column>
+		<column>FOR_TYPE</column>
+		<column>TIERS_ID</column>
+		<column>GENRE_IMPOT</column>
+		<column>MOTIF_RATTACHEMENT</column>
+		<column>DATE_OUVERTURE</column>
+		<column>DATE_FERMETURE</column>
+		<column>TYPE_AUT_FISC</column>
+		<column>NUMERO_OFS</column>
+		<column>MODE_IMPOSITION</column>
+		<row>
+			<value>2008-01-01</value>
+			<value>1</value>
+			<value>ForFiscalPrincipal</value>
+			<value>6789</value>
+			<value>REVENU_FORTUNE</value>
+			<value>DOMICILE</value>
+			<value>20060301</value>
+			<value>20060831</value>
+			<value>COMMUNE_HC</value>
+			<value>6200</value>
+			<value>ORDINAIRE</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>2</value>
+			<value>ForFiscalSecondaire</value>
+			<value>6789</value>
+			<value>REVENU_FORTUNE</value>
+			<value>ACTIVITE_INDEPENDANTE</value>
+			<value>20060501</value>
+			<value>20060831</value>
+			<value>COMMUNE_OU_FRACTION_VD</value>
+			<value>8212</value>
+			<null />
+		</row>
+	</table>
 </dataset>

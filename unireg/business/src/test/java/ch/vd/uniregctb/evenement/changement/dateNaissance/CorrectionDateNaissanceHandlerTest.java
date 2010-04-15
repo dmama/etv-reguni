@@ -26,6 +26,7 @@ import ch.vd.uniregctb.evenement.common.EvenementCivilHandlerException;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
 import ch.vd.uniregctb.interfaces.model.Individu;
+import ch.vd.uniregctb.interfaces.model.mock.MockCollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
@@ -287,6 +288,8 @@ public class CorrectionDateNaissanceHandlerTest extends AbstractEvenementHandler
 		doInNewTransaction(new TxCallback() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
+
+				addCollAdm(MockCollectiviteAdministrative.CEDI);
 
 				final PersonnePhysique huguette = addHabitant(noIndHuguette);
 				addForPrincipal(huguette, ancienneDateMajorite, MotifFor.MAJORITE, MockCommune.Lausanne);

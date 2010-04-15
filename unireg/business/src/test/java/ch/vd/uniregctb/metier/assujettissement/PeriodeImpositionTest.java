@@ -2,6 +2,7 @@ package ch.vd.uniregctb.metier.assujettissement;
 
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.interfaces.model.mock.MockCollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
@@ -951,6 +952,7 @@ public class PeriodeImpositionTest extends MetierTest {
 	@Test
 	public void testDetermineIndigent() throws Exception {
 
+		addCollAdm(MockCollectiviteAdministrative.CEDI);
 		final Contribuable ctb = createIndigentAvecDIs(2008, TypeDocument.DECLARATION_IMPOT_VAUDTAX);
 
 		final List<PeriodeImposition> list = PeriodeImposition.determine(ctb, 2009);
