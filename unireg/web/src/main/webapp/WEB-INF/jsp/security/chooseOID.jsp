@@ -20,9 +20,11 @@
 			List<CollectiviteAdministrative> collectivites = (List<CollectiviteAdministrative>) request.getSession().getAttribute(IFOSecAuthenticationProcessingFilter.IFOSEC_OID_USER_LIST);
 			
 			for (CollectiviteAdministrative collectivite : collectivites) {
-				%>
-				<option value="<%=collectivite.getNoColAdm()%>"><%=collectivite.getNomCourt()%></option>
-				<%
+				if (collectivite != null) {
+					%>
+					<option value="<%=collectivite.getNoColAdm()%>"><%=collectivite.getNomCourt()%></option>
+					<%
+				}
 			}
 		%>
 		</select>
