@@ -82,20 +82,20 @@ public class ServiceCivilApiregTest extends AbstractSpringTest {
 	@Test
 	public void testGetIndividu() {
 
-		final Individu laurentHost = serviceHost.getIndividu(NO_IND_LAURENT_SCHMIDT, 2009);
-		final Individu laurentApireg = serviceApireg.getIndividu(NO_IND_LAURENT_SCHMIDT, 2009);
+		final Individu laurentHost = serviceHost.getIndividu(NO_IND_LAURENT_SCHMIDT, 2010);
+		final Individu laurentApireg = serviceApireg.getIndividu(NO_IND_LAURENT_SCHMIDT, 2010);
 		assertIndEquals(laurentHost, laurentApireg, null);
 
-		final Individu danielHost = serviceHost.getIndividu(NO_IND_DANIEL_BRELAZ, 2009);
-		final Individu danielApireg = serviceApireg.getIndividu(NO_IND_DANIEL_BRELAZ, 2009);
+		final Individu danielHost = serviceHost.getIndividu(NO_IND_DANIEL_BRELAZ, 2010);
+		final Individu danielApireg = serviceApireg.getIndividu(NO_IND_DANIEL_BRELAZ, 2010);
 		assertIndEquals(danielHost, danielApireg, null);
 
-		final Individu camilleHost = serviceHost.getIndividu(NO_IND_CAMILLE_JAQUIER, 2009);
-		final Individu camilleApireg = serviceApireg.getIndividu(NO_IND_CAMILLE_JAQUIER, 2009);
+		final Individu camilleHost = serviceHost.getIndividu(NO_IND_CAMILLE_JAQUIER, 2010);
+		final Individu camilleApireg = serviceApireg.getIndividu(NO_IND_CAMILLE_JAQUIER, 2010);
 		assertIndEquals(camilleHost, camilleApireg, null);
 
-		final Individu hsHost = serviceHost.getIndividu(NO_IND_HORS_SUISSE, 2009);
-		final Individu hsApireg = serviceApireg.getIndividu(NO_IND_HORS_SUISSE, 2009);
+		final Individu hsHost = serviceHost.getIndividu(NO_IND_HORS_SUISSE, 2010);
+		final Individu hsApireg = serviceApireg.getIndividu(NO_IND_HORS_SUISSE, 2010);
 		assertIndEquals(hsHost, hsApireg, null);
 	}
 
@@ -198,7 +198,7 @@ public class ServiceCivilApiregTest extends AbstractSpringTest {
 		assertStringEquals(expected.getLocalite(), actual.getLocalite(), message);
 		assertEquals(message, expected.getNoOfsPays(), actual.getNoOfsPays());
 		assertStringEquals(expected.getNumero(), actual.getNumero(), message);
-		assertEquals(message, expected.getNumeroAppartement(), actual.getNumeroAppartement());
+		// host-interfaces ne renseigne pas le numéro d'appartement : assertEquals(message, expected.getNumeroAppartement(), actual.getNumeroAppartement());
 		assertEquals(message, expected.getNumeroOrdrePostal(), actual.getNumeroOrdrePostal());
 		assertEquals(message, expected.getNumeroPostal(), actual.getNumeroPostal());
 		assertNumeroEquals(expected.getNumeroPostalComplementaire(), actual.getNumeroPostalComplementaire(), message);
@@ -232,21 +232,21 @@ public class ServiceCivilApiregTest extends AbstractSpringTest {
 		// not implemented in apireg : assertEquals(actual.getNumeroRCE(), expected.getNumeroRCE());
 		// not implemented in apireg : assertEquals(actual.getOrigine(), expected.getOrigine());
 
-		final HistoriqueIndividu expectedHisto = actual.getDernierHistoriqueIndividu();
-		final HistoriqueIndividu expectedActual = expected.getDernierHistoriqueIndividu();
+		final HistoriqueIndividu actualHisto = actual.getDernierHistoriqueIndividu();
+		final HistoriqueIndividu expectedHisto = expected.getDernierHistoriqueIndividu();
+		assertNotNull(message, actualHisto);
 		assertNotNull(message, expectedHisto);
-		assertNotNull(message, expectedActual);
-		assertStringEquals(expectedHisto.getAutresPrenoms(), expectedActual.getAutresPrenoms(), message);
-		assertStringEquals(expectedHisto.getComplementIdentification(), expectedActual.getComplementIdentification(), message);
-		assertEquals(message, expectedHisto.getDateDebutValidite(), expectedActual.getDateDebutValidite());
-		assertNumeroEquals(expectedHisto.getNoAVS(), expectedActual.getNoAVS(), message);
-		assertEquals(message, expectedHisto.getNom(), expectedActual.getNom());
+		assertStringEquals(expectedHisto.getAutresPrenoms(), actualHisto.getAutresPrenoms(), message);
+		assertStringEquals(expectedHisto.getComplementIdentification(), actualHisto.getComplementIdentification(), message);
+		assertEquals(message, expectedHisto.getDateDebutValidite(), actualHisto.getDateDebutValidite());
+		assertNumeroEquals(expectedHisto.getNoAVS(), actualHisto.getNoAVS(), message);
+		assertEquals(message, expectedHisto.getNom(), actualHisto.getNom());
 		// not implemented in apireg : assertEquals(expectedHisto.getNomCourrier1(), expectedActual.getNomCourrier1());
 		// not implemented in apireg : assertEquals(expectedHisto.getNomCourrier2(), expectedActual.getNomCourrier2());
-		assertStringEquals(expectedHisto.getNomNaissance(), expectedActual.getNomNaissance(), message);
-		assertEquals(message, expectedHisto.getNoSequence(), expectedActual.getNoSequence());
-		assertEquals(message, expectedHisto.getPrenom(), expectedActual.getPrenom());
-		assertStringEquals(expectedHisto.getProfession(), expectedActual.getProfession(), message);
+		assertStringEquals(expectedHisto.getNomNaissance(), actualHisto.getNomNaissance(), message);
+		assertEquals(message, expectedHisto.getNoSequence(), actualHisto.getNoSequence());
+		assertEquals(message, expectedHisto.getPrenom(), actualHisto.getPrenom());
+		assertStringEquals(expectedHisto.getProfession(), actualHisto.getProfession(), message);
 	}
 
 	private static void assertStringEquals(final String expected, final String actual, String message) {
