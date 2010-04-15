@@ -38,12 +38,14 @@ public class CorrectionConjointHandler extends EvenementCivilHandlerBase {
 		if (habitant == null) {
 			return;
 		}
-		
-		if (individu.getConjoint() == null) {
-			errors.add(new EvenementCivilErreur("L'individu n'a pas de conjoint dans le civil"));
+
+
+		final Individu individuConjoint = getServiceCivil().getConjoint(individu.getNoTechnique(), evenement.getDate());
+		if (individuConjoint == null) {
+			errors.add(new EvenementCivilErreur("L'individu n'a pas de conjoint en date du "+evenement.getDate().toString()+" dans le civil"));
 			return;
 		}
-		final PersonnePhysique conjoint = getHabitantOrFillErrors(individu.getConjoint().getNoTechnique(), errors);
+		final PersonnePhysique conjoint = getHabitantOrFillErrors(individuConjoint.getNoTechnique(), errors);
 		
 		final EnsembleTiersCouple coupleHabitant = getService().getEnsembleTiersCouple(habitant, null);
 		final EnsembleTiersCouple coupleConjoint = getService().getEnsembleTiersCouple(conjoint, null);
@@ -81,7 +83,9 @@ public class CorrectionConjointHandler extends EvenementCivilHandlerBase {
 
 		final Individu individu = evenement.getIndividu();
 		final PersonnePhysique habitant = getService().getPersonnePhysiqueByNumeroIndividu(individu.getNoTechnique());
-		final PersonnePhysique conjoint = getService().getPersonnePhysiqueByNumeroIndividu(individu.getConjoint().getNoTechnique());
+
+		final Individu individuConjoint = getServiceCivil().getConjoint(individu.getNoTechnique(), evenement.getDate());
+		final PersonnePhysique conjoint = getService().getPersonnePhysiqueByNumeroIndividu(individuConjoint.getNoTechnique());
 		
 		final EnsembleTiersCouple coupleHabitant = getService().getEnsembleTiersCouple(habitant, evenement.getDate());
 		final EnsembleTiersCouple coupleConjoint = getService().getEnsembleTiersCouple(conjoint, evenement.getDate());

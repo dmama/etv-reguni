@@ -18,11 +18,13 @@ public abstract class EvenementCivilCoupleHandler extends EvenementCivilHandlerB
 			erreurs.add(new EvenementCivilErreur("Impossible de récupérer l'individu concerné par cet événement [#" + target.getNumeroEvenement() + ", type: '" + target.getType().getDescription() + "']"));
 		}
 		else {
+
+			 final Individu individuConjoint = getServiceCivil().getConjoint(individuPrincipal.getNoTechnique(), target.getDate());
 			/*
 			 * si l'individu est marié, ou pacsé, on regarde si le conjoint a
 			 * lui aussi fait l'objet d'un événement
 			 */
-			if (individuPrincipal.getConjoint() != null && !EtatCivilHelper.estSepare(individuPrincipal.getEtatCivil(target.getDate()))) {
+			if (individuConjoint != null && !EtatCivilHelper.estSepare(individuPrincipal.getEtatCivil(target.getDate()))) {
 
 				// erreur si l'événement conjoint n'a pas été reçu
 				if (target.getConjoint() == null) {
@@ -31,7 +33,7 @@ public abstract class EvenementCivilCoupleHandler extends EvenementCivilHandlerB
 
 				// erreur si l'id du conjoint reçu ne correspond pas à celui de
 				// l'état civil
-				else if (target.getConjoint().getNoTechnique() != individuPrincipal.getConjoint().getNoTechnique()) {
+				else if (target.getConjoint().getNoTechnique() != individuConjoint.getNoTechnique()) {
 					erreurs.add(new EvenementCivilErreur("Mauvais regroupement : le conjoint déclaré dans l'événement et celui dans le registre civil diffèrent"));
 				}
 			}

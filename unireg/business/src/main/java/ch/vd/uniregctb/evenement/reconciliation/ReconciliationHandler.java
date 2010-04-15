@@ -50,7 +50,7 @@ public class ReconciliationHandler extends EvenementCivilHandlerBase {
 		 * Dans le cas où le conjoint réside dans le canton, il faut que le tiers contribuable existe.
 		 */
 		PersonnePhysique habitantConjoint = null;
-		Individu conjoint = individu.getConjoint();
+		Individu conjoint = getServiceCivil().getConjoint(individu.getNoTechnique(),target.getDate());
 		if (conjoint != null) {
 
 			/*
@@ -93,7 +93,8 @@ public class ReconciliationHandler extends EvenementCivilHandlerBase {
 		Reconciliation reconciliation = (Reconciliation) evenement;
 		try {
 			final PersonnePhysique contribuable = getHabitantOrThrowException(reconciliation.getIndividu().getNoTechnique());
-			final PersonnePhysique conjoint = (reconciliation.getIndividu().getConjoint() == null) ? null : getHabitantOrThrowException(reconciliation.getIndividu().getConjoint().getNoTechnique());
+			final Individu individuConjoint = getServiceCivil().getConjoint(reconciliation.getIndividu().getNoTechnique(),reconciliation.getDate());
+			final PersonnePhysique conjoint = (individuConjoint == null) ? null : getHabitantOrThrowException(individuConjoint.getNoTechnique());
 
 			getMetier().reconcilie(contribuable, conjoint, reconciliation.getDateReconciliation(), null, false, reconciliation.getNumeroEvenement());
 		}

@@ -222,11 +222,11 @@ public class ReconciliationHandlerTest extends AbstractEvenementHandlerTest {
 		/*
 		 * Simulation de séparation
 		 */
-		individu.getEtatsCivils().add(createEtatCivilSeparation(individu, DATE_SEPARATION));
-		individu.getEtatsCivils().add(createEtatCivilReconciliation(individu, DATE_RECONCILIATION));
+		individu.getEtatsCivils().add(createEtatCivilSeparation(individu, conjoint, DATE_SEPARATION));
+		individu.getEtatsCivils().add(createEtatCivilReconciliation(individu, conjoint, DATE_RECONCILIATION));
 		if (conjoint != null) {
-			conjoint.getEtatsCivils().add(createEtatCivilSeparation(conjoint, DATE_SEPARATION));
-			conjoint.getEtatsCivils().add(createEtatCivilReconciliation(conjoint, DATE_RECONCILIATION));
+			conjoint.getEtatsCivils().add(createEtatCivilSeparation(conjoint, individu, DATE_SEPARATION));
+			conjoint.getEtatsCivils().add(createEtatCivilReconciliation(conjoint, individu, DATE_RECONCILIATION));
 		}
 
 
@@ -239,19 +239,25 @@ public class ReconciliationHandlerTest extends AbstractEvenementHandlerTest {
 		return reconciliation;
 	}
 
-	private EtatCivil createEtatCivilSeparation(Individu individu, RegDate dateSeparation) {
+	private EtatCivil createEtatCivilSeparation(Individu individu, Individu conjoint, RegDate dateSeparation) {
 		MockEtatCivil separation = new MockEtatCivil();
 		separation.setDateDebutValidite(dateSeparation);
 		separation.setNoSequence(individu.getEtatsCivils().size());
 		separation.setTypeEtatCivil(EnumTypeEtatCivil.SEPARE);
+		if(conjoint!=null){
+		  separation.setNumeroConjoint(conjoint.getNoTechnique());	
+		}
 		return separation;
 	}
 
-	private EtatCivil createEtatCivilReconciliation(Individu individu, RegDate dateReconciliation) {
-		MockEtatCivil separation = new MockEtatCivil();
-		separation.setDateDebutValidite(dateReconciliation);
-		separation.setNoSequence(individu.getEtatsCivils().size());
-		separation.setTypeEtatCivil(EnumTypeEtatCivil.MARIE);
-		return separation;
+	private EtatCivil createEtatCivilReconciliation(Individu individu, Individu conjoint, RegDate dateReconciliation) {
+		MockEtatCivil marie = new MockEtatCivil();
+		marie.setDateDebutValidite(dateReconciliation);
+		marie.setNoSequence(individu.getEtatsCivils().size());
+		marie.setTypeEtatCivil(EnumTypeEtatCivil.MARIE);
+		if(conjoint!=null){
+		  marie.setNumeroConjoint(conjoint.getNoTechnique());
+		}
+		return marie;
 	}
 }

@@ -60,12 +60,7 @@ public class IndividuWrapper extends EntiteCivileWrapper implements Individu {
 		return adoptions;
 	}
 
-	public Individu getConjoint() {
-		if (conjoint == null) {
-			conjoint = IndividuWrapper.get(target.getConjoint());
-		}
-		return conjoint;
-	}
+	
 
 	public RegDate getDateDeces() {
 		return deces;

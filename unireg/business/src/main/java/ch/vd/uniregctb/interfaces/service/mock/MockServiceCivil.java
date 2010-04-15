@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 
 import ch.vd.common.model.EnumTypeAdresse;
+import ch.vd.registre.base.date.DateRange;
+import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
@@ -101,7 +103,7 @@ public abstract class MockServiceCivil implements ServiceCivilService {
 
 		// Etats civils
 		ArrayList<EtatCivil> etatsCivils = new ArrayList<EtatCivil>();
-		etatsCivils.add(creeEtatCivil(dateNaissance, EnumTypeEtatCivil.CELIBATAIRE, 0));
+		etatsCivils.add(creeEtatCivil(dateNaissance, EnumTypeEtatCivil.CELIBATAIRE, 0, null));
 		individu.setEtatsCivils(etatsCivils);
 		// Adresses
 		ArrayList<Adresse> sdresses = new ArrayList<Adresse>();
@@ -121,7 +123,7 @@ public abstract class MockServiceCivil implements ServiceCivilService {
 
 	protected EtatCivil addEtatCivil(MockIndividu individu, RegDate dateDebut, EnumTypeEtatCivil type) {
 		Collection<EtatCivil> etats = individu.getEtatsCivils();
-		EtatCivil etat = creeEtatCivil(dateDebut, type, etats.size());
+		EtatCivil etat = creeEtatCivil(dateDebut, type, etats.size(), null);
 		etats.add(etat);
 		return etat;
 	}
@@ -261,13 +263,13 @@ public abstract class MockServiceCivil implements ServiceCivilService {
 
 		List<EtatCivil> etatsCivilIndividu = individu.getEtatsCivils();
 		MockEtatCivil dernierEtatCivilIndividu = (MockEtatCivil) etatsCivilIndividu.get(etatsCivilIndividu.size() - 1);
-		EtatCivil etatCivilIndividu = creeEtatCivil(dateMariage, etatCivil, dernierEtatCivilIndividu.getNoSequence() + 1);
+		EtatCivil etatCivilIndividu = creeEtatCivil(dateMariage, etatCivil, dernierEtatCivilIndividu.getNoSequence() + 1, conjoint.getNoTechnique());
 		etatsCivilIndividu.add(etatCivilIndividu);
 		individu.setConjoint(conjoint);
 
 		List<EtatCivil> etatsCivilConjoint = conjoint.getEtatsCivils();
 		MockEtatCivil dernierEtatCivilConjoint = (MockEtatCivil) etatsCivilConjoint.get(etatsCivilConjoint.size() - 1);
-		EtatCivil etatCivilConjoint = creeEtatCivil(dateMariage, etatCivil, dernierEtatCivilConjoint.getNoSequence() + 1);
+		EtatCivil etatCivilConjoint = creeEtatCivil(dateMariage, etatCivil, dernierEtatCivilConjoint.getNoSequence() + 1, individu.getNoTechnique());
 		etatsCivilConjoint.add(etatCivilConjoint);
 		conjoint.setConjoint(individu);
 		/* les maries peuvent s'embrasser */
@@ -279,19 +281,23 @@ public abstract class MockServiceCivil implements ServiceCivilService {
 	protected void marieIndividu(MockIndividu individu, RegDate dateMariage) {
 		List<EtatCivil> etatsCivilIndividu = individu.getEtatsCivils();
 		MockEtatCivil dernierEtatCivilIndividu = (MockEtatCivil) etatsCivilIndividu.get(etatsCivilIndividu.size() - 1);
-		EtatCivil etatCivilIndividu = creeEtatCivil(dateMariage, EnumTypeEtatCivil.MARIE, dernierEtatCivilIndividu.getNoSequence() + 1);
+		EtatCivil etatCivilIndividu = creeEtatCivil(dateMariage, EnumTypeEtatCivil.MARIE, dernierEtatCivilIndividu.getNoSequence() + 1, null);
 		etatsCivilIndividu.add(etatCivilIndividu);
 	}
 
 	protected void separeIndividus(MockIndividu individu, MockIndividu conjoint, RegDate dateSeparation) {
-		separeIndividu(individu, dateSeparation);
-		separeIndividu(conjoint, dateSeparation);
+		separeIndividu(individu, conjoint, dateSeparation);
+		separeIndividu(conjoint, individu, dateSeparation);
 	}
 
-	protected void separeIndividu(MockIndividu individu, RegDate dateSeparation) {
+	protected void separeIndividu(MockIndividu individu, MockIndividu conjoint, RegDate dateSeparation) {
 		List<EtatCivil> etatsCivilIndividu = individu.getEtatsCivils();
 		MockEtatCivil dernierEtatCivilIndividu = (MockEtatCivil) etatsCivilIndividu.get(etatsCivilIndividu.size() - 1);
-		EtatCivil etatCivilIndividu = creeEtatCivil(dateSeparation, EnumTypeEtatCivil.SEPARE, dernierEtatCivilIndividu.getNoSequence() + 1);
+		Long numeroConjoint = null;
+		if(conjoint!=null){
+			numeroConjoint = conjoint.getNoTechnique();
+		}
+		EtatCivil etatCivilIndividu = creeEtatCivil(dateSeparation, EnumTypeEtatCivil.SEPARE, dernierEtatCivilIndividu.getNoSequence() + 1, numeroConjoint);
 		etatsCivilIndividu.add(etatCivilIndividu);
 	}
 
@@ -303,7 +309,7 @@ public abstract class MockServiceCivil implements ServiceCivilService {
 	protected void divorceIndividu(MockIndividu individu, RegDate dateDivorce) {
 		List<EtatCivil> etatsCivilIndividu = individu.getEtatsCivils();
 		MockEtatCivil dernierEtatCivilIndividu = (MockEtatCivil) etatsCivilIndividu.get(etatsCivilIndividu.size() - 1);
-		EtatCivil etatCivilIndividu = creeEtatCivil(dateDivorce, EnumTypeEtatCivil.DIVORCE, dernierEtatCivilIndividu.getNoSequence() + 1);
+		EtatCivil etatCivilIndividu = creeEtatCivil(dateDivorce, EnumTypeEtatCivil.DIVORCE, dernierEtatCivilIndividu.getNoSequence() + 1, null);
 		etatsCivilIndividu.add(etatCivilIndividu);
 	}
 
@@ -382,15 +388,16 @@ public abstract class MockServiceCivil implements ServiceCivilService {
 	 *            le type
 	 * @param noSequence
 	 *            le numero de sequence
+	 * @param numeroConjoint le numero de conjoint en cas de mariage ou pacs
 	 *
 	 * @return l'état civil créé
 	 */
-	private EtatCivil creeEtatCivil(RegDate date, EnumTypeEtatCivil typeEtatCivil, int noSequence) {
+	private EtatCivil creeEtatCivil(RegDate date, EnumTypeEtatCivil typeEtatCivil, int noSequence, Long numeroConjoint) {
 		MockEtatCivil etatCivil = new MockEtatCivil();
 		etatCivil.setDateDebutValidite(date);
 		etatCivil.setTypeEtatCivil(typeEtatCivil);
 		etatCivil.setNoSequence(noSequence);
-
+		etatCivil.setNumeroConjoint(numeroConjoint);
 		return etatCivil;
 	}
 
@@ -421,9 +428,7 @@ public abstract class MockServiceCivil implements ServiceCivilService {
 		list.add(adresse);
 	}
 
-	/**
-	 * @see ch.vd.uniregctb.individu.HostCivilService#getIndividu(java.lang.Long)
-	 */
+
 	public Individu getIndividu(Long numeroIndividu) {
 		return individusMap.get(numeroIndividu);
 	}
@@ -441,6 +446,15 @@ public abstract class MockServiceCivil implements ServiceCivilService {
 			}
 		}
 		return resultat;
+	}
+
+	public Long getNumeroIndividuConjoint(Long noIndividuPrincipal, RegDate date){
+		Individu individu = getIndividu(noIndividuPrincipal);
+		MockEtatCivil etatCivil =(MockEtatCivil) individu.getEtatCivil(date);
+		if(etatCivil!=null){
+			return etatCivil.getNumeroConjoint();
+		}
+		return null;
 	}
 
 	public AdressesCivilesHisto getAdressesHisto(long noIndividu) {
@@ -496,6 +510,16 @@ public abstract class MockServiceCivil implements ServiceCivilService {
 		return getAdressesActives(noIndividu, null);
 	}
 
+
+		public final Individu getConjoint(Long noIndividuPrincipal, RegDate date) {
+		final Long numeroIndividuConjoint = getNumeroIndividuConjoint(noIndividuPrincipal, date);
+		 Individu individuConjoint=null;
+		if(numeroIndividuConjoint!=null){
+			individuConjoint = getIndividu(numeroIndividuConjoint,date.year());
+		}
+
+		return individuConjoint;
+	}
 	public Individu getIndividu(long noIndividu, int annee) {
 		MockIndividu individu = (MockIndividu) getIndividu(noIndividu);
 		if (individu != null) {

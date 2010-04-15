@@ -225,6 +225,11 @@ public class ServiceCivilCache extends ServiceCivilServiceBase implements Unireg
 		return resultat;
 	}
 
+		public Long getNumeroIndividuConjoint(Long noIndividuPrincipal, RegDate date) {
+		//méthode non caché,
+		return  target.getNumeroIndividuConjoint(noIndividuPrincipal,date);
+	}
+
 	public List<Individu> getIndividus(Collection<Long> nosIndividus, RegDate date, EnumAttributeIndividu... parties) {
 		// cette méthode n'est pas cachée pour l'instant. A faire si la nécessité se fait sentir...
 		return target.getIndividus(nosIndividus, date, parties);

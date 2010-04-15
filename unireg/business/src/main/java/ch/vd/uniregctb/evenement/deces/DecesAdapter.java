@@ -19,10 +19,18 @@ public class DecesAdapter extends GenericEvenementAdapter implements Deces {
 
 	protected static Logger LOGGER = Logger.getLogger(DecesAdapter.class);
 
+/**
+	 * Le conjoint Survivant.
+	 */
+	private Individu conjointSurvivant;
+
+
 	@Override
 	public void init(EvenementCivilRegroupe evenement, ServiceCivilService serviceCivil, ServiceInfrastructureService infrastructureService)
 			throws EvenementAdapterException {
 		super.init(evenement, serviceCivil, infrastructureService);
+		 conjointSurvivant = serviceCivil.getConjoint(evenement.getNumeroIndividuPrincipal(),evenement.getDateEvenement().getOneDayBefore());
+
 	}
 
 	public Individu getConjointSurvivant() {
@@ -36,6 +44,6 @@ public class DecesAdapter extends GenericEvenementAdapter implements Deces {
 			return null;
 		}
 
-		return getIndividu().getConjoint();
+		return conjointSurvivant;
 	}
 }

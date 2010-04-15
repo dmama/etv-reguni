@@ -66,8 +66,8 @@ public class MariageAdapter extends GenericEvenementAdapter implements Mariage {
 	 * @return le conjoint correct ou null si le conjoint trouvé n'a pas le bon état civil
 	 */
 	private Individu getConjointValide(Individu individuPrincipal,ServiceCivilService serviceCivil) {
-		Individu conjointTrouve = individuPrincipal.getConjoint();
-		if (conjointTrouve!=null && isBonConjoint(individuPrincipal, conjointTrouve)) {
+		Individu conjointTrouve = serviceCivil.getConjoint(individuPrincipal.getNoTechnique(),getDate().getOneDayAfter());
+		if (conjointTrouve!=null && isBonConjoint(individuPrincipal, conjointTrouve, serviceCivil)) {
 			final EtatCivil etatCivilConjoint = serviceCivil.getEtatCivilActif(conjointTrouve.getNoTechnique(), getDate());
 			//Si le conjoint n'a pas d'état civil ou son état civil est différent de marié, on renvoie null
 			if (etatCivilConjoint!=null ) {
@@ -82,8 +82,8 @@ public class MariageAdapter extends GenericEvenementAdapter implements Mariage {
 	}
 
 
-	private boolean isBonConjoint(Individu principal,Individu conjoint){
-		Individu principalAttendu = conjoint.getConjoint();
+	private boolean isBonConjoint(Individu principal, Individu conjoint, ServiceCivilService serviceCivil){
+		Individu principalAttendu = serviceCivil.getConjoint(conjoint.getNoTechnique(),getDate().getOneDayAfter());
 		if (principalAttendu!=null && principal.getNoTechnique()== principalAttendu.getNoTechnique()) {
 			return true;
 		}

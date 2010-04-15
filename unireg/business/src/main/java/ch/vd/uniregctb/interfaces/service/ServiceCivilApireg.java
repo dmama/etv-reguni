@@ -138,6 +138,10 @@ public class ServiceCivilApireg extends ServiceCivilServiceBase implements Servi
 		return set;
 	}
 
+	public Long getNumeroIndividuConjoint(Long noIndividuPrincipal, RegDate date) {
+	return null;
+	}
+
 	public Individu getIndividu(final long noIndividu, int annee, EnumAttributeIndividu... parties) {
 		long time = tracing.start();
 		try {

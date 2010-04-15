@@ -497,7 +497,7 @@ public class ArriveeHandler extends EvenementCivilHandlerBase {
 	protected final void handleIndividuEnMenage(Arrivee arrivee, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
 
 		final Individu individu = arrivee.getIndividu();
-		final Individu conjoint = individu.getConjoint();
+		final Individu conjoint = getServiceCivil().getConjoint(arrivee.getIndividu().getNoTechnique(), arrivee.getDate());
 		Assert.notNull(individu); // prérequis
 
 		RegDate dateEvenement = arrivee.getDate();

@@ -99,6 +99,32 @@ public class ServiceCivilTracing implements ServiceCivilService, ServiceTracingI
 		return result;
 	}
 
+	public Individu getConjoint(Long noIndividuPrincipal, RegDate date) {
+		Individu result;
+		long time = tracing.start();
+		try {
+			result = target.getConjoint(noIndividuPrincipal,date);
+		}
+		finally {
+			tracing.end(time);
+		}
+
+		return result;
+	}
+
+	public Long getNumeroIndividuConjoint(Long noIndividuPrincipal, RegDate date) {
+		Long result;
+		long time = tracing.start();
+		try {
+			result = target.getNumeroIndividuConjoint(noIndividuPrincipal,date);
+		}
+		finally {
+			tracing.end(time);
+		}
+
+		return result;
+	}
+
 	public Individu getIndividu(long noIndividu, int annee, EnumAttributeIndividu... parties) {
 		Individu result;
 		long time = tracing.start();

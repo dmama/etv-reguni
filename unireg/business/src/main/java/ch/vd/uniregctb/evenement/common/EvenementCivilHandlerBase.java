@@ -83,6 +83,13 @@ public abstract class EvenementCivilHandlerBase implements EvenementCivilHandler
 	 */
 	private TiersDAO tiersDAO;
 
+
+
+	/**
+	 * Le service civil
+	 */
+	private ServiceCivilService serviceCivil;
+
 	/**
 	 * Renvoie le type d'evenement que ce handler supporte
 	 *
@@ -168,7 +175,7 @@ public abstract class EvenementCivilHandlerBase implements EvenementCivilHandler
 			 * Il n’existe pas de tiers contribuable correspondant au conjoint, assujetti ou non (mineur, conjoint) correspondant à
 			 * l’individu.
 			 */
-			final Individu conjoint = individu.getConjoint();
+			final Individu conjoint = serviceCivil.getConjoint(individu.getNoTechnique(),evenement.getDate());
 			if (conjoint != null) {
 
 				if (evenement.getConjoint() != null && conjoint.getNoTechnique() != evenement.getConjoint().getNoTechnique()) {
@@ -418,6 +425,14 @@ public abstract class EvenementCivilHandlerBase implements EvenementCivilHandler
 		this.service = service;
 	}
 
+	public void setServiceCivil(ServiceCivilService serviceCivil) {
+		this.serviceCivil = serviceCivil;
+	}
+
+	public ServiceCivilService getServiceCivil() {
+		return serviceCivil;
+	}
+
 	public MetierService getMetier() {
 		return metier;
 	}
@@ -515,7 +530,7 @@ public abstract class EvenementCivilHandlerBase implements EvenementCivilHandler
 				/*
 				 * si l'individu est marié ou pacsé, on vérifie que le conjoint est spécifié de manière cohérente
 				 */
-				final Individu conjointDeIndividu = mouvement.getIndividu().getConjoint();
+				final Individu conjointDeIndividu =serviceCivil.getConjoint(mouvement.getIndividu().getNoTechnique(),mouvement.getDate());
 				final Individu conjointDeMouvement = mouvement.getConjoint();
 
 				if (conjointDeIndividu == null && conjointDeMouvement == null) {

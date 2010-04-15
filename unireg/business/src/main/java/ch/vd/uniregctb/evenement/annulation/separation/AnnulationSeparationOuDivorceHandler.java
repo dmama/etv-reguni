@@ -7,6 +7,7 @@ import ch.vd.uniregctb.evenement.EvenementCivilErreur;
 import ch.vd.uniregctb.evenement.common.EnsembleTiersCouple;
 import ch.vd.uniregctb.evenement.common.EvenementCivilHandlerBase;
 import ch.vd.uniregctb.evenement.common.EvenementCivilHandlerException;
+import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.MenageCommun;
 
@@ -28,9 +29,10 @@ public abstract class AnnulationSeparationOuDivorceHandler extends EvenementCivi
 			throw new EvenementCivilHandlerException("Le tiers ménage commun n'a pu être trouvé");
 		}
 		PersonnePhysique conjoint = null;
-		if (target.getIndividu().getConjoint() != null) {
+		final Individu individuConjoint = getServiceCivil().getConjoint(target.getIndividu().getNoTechnique(), target.getDate());
+		if (individuConjoint != null) {
 			// Obtention du tiers correspondant au conjoint.
-			conjoint = getService().getPersonnePhysiqueByNumeroIndividu(target.getIndividu().getConjoint().getNoTechnique());
+			conjoint = getService().getPersonnePhysiqueByNumeroIndividu(individuConjoint.getNoTechnique());
 		}
 		// Vérification de la cohérence
 		if (!menageComplet.estComposeDe(principal, conjoint)) {

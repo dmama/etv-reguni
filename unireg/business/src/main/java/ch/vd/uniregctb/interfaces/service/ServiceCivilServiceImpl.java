@@ -49,6 +49,31 @@ public class ServiceCivilServiceImpl extends ServiceCivilServiceBase {
 		this.serviceCivil = serviceCivil;
 	}
 
+		public Long getNumeroIndividuConjoint(Long noIndividuPrincipal, RegDate date) {
+
+		if (LOGGER.isTraceEnabled()) {
+			LOGGER.trace("Calling getIndividu(" + noIndividuPrincipal + ", " + date.year() + ")");
+		}
+		try {
+			final EnumAttributeIndividu[] attributsConjoints = {EnumAttributeIndividu.CONJOINT};
+			ch.vd.registre.civil.model.Individu ind =serviceCivil.getIndividu(noIndividuPrincipal, date.year(), attributsConjoints);
+			if (LOGGER.isTraceEnabled()) {
+				LOGGER.trace("End of getIndividu(" + noIndividuPrincipal + ", " + date.year() + ")");
+			}
+			if (ind != null) {
+				assertCoherence(noIndividuPrincipal, ind.getNoTechnique());
+				return ind.getConjoint(date.asJavaDate());
+			}
+			return null;
+		}
+		catch (RemoteException e) {
+			throw new ServiceCivilException("Impossible de récupérer l'individu n°" + noIndividuPrincipal + " pour l'année " + date.year(), e);
+		}
+		catch (RegistreException e) {
+			throw new ServiceCivilException("Impossible de récupérer l'individu n°" + noIndividuPrincipal + " pour l'année " + date.year(), e);
+		}
+	}
+	
 	public Individu getIndividu(long noIndividu, int annee, EnumAttributeIndividu... parties) {
 		if (LOGGER.isTraceEnabled()) {
 			LOGGER.trace("Calling getIndividu(" + noIndividu + ", " + annee + ")");

@@ -75,6 +75,30 @@ public interface ServiceCivilService {
 	Individu getIndividu(long noIndividu, int annee);
 
 	/**
+	 * Retourne l'individu conjoint valide <b>à la date</b> passée en paramètre, de l'indivu dont le numéro est  en paramètre.
+	 * <p/>
+	 * Ce service renseigne, pour chaque objet du graphe retourné, l'ensemble des attributs mono-valués ainsi que les attributs muti-valués suivants : <li>La liste des historiques de l'individu.</li>
+	 * <li>La liste des états civils de l'individu.</li>
+	 * <p/>
+	 * L'objet retourné par ce service peut être <code>null</code>, signifiant l'absence de données d'un point de vue métier pour les paramêtres donnés.
+	 * autrement dit l'abscence de conjoint à la date renseignée
+	 *
+	 * @param noIndividuPrincipal le numéro technique de l'individu dont on cherche le conjoint.
+	 * @param date à laquelle on veut savoir si l'indivdu a un conjoint valide.
+	 * @return l'individu conjoint populé avec les données valides à la date spécifiée.
+	 */
+	Individu getConjoint(Long noIndividuPrincipal, RegDate date);
+
+	/**
+	 * Retourne le numéro de l'individu conjoint valide <b>à la date</b> passée en paramètre, de l'indivu dont le numéro est  en paramètre.
+	 * <p/>
+	 *
+	 * @param noIndividuPrincipal le numéro technique de l'individu dont on cherche le conjoint.
+	 * @param date à laquelle on veut savoir si l'indivdu a un conjoint valide.
+	 * @return  le numéro de l'individu conjoint valide à la date spécifiée.
+	 */
+	Long getNumeroIndividuConjoint(Long noIndividuPrincipal, RegDate date);
+	/**
 	 * Même chose que {@link #getIndividu(long, int)} avec la possibilité de demander des parties supplémentaires.
 	 */
 	Individu getIndividu(long noIndividu, int annee, EnumAttributeIndividu... parties);
