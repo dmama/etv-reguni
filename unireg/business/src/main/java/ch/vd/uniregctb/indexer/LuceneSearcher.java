@@ -25,9 +25,11 @@ public class LuceneSearcher extends LuceneEngine {
 
 	public LuceneSearcher(Directory directory) throws IndexerException {
 		try {
-			directoryReader = IndexReader.open(directory);
+			directoryReader = IndexReader.open(directory, true);
 			is = new IndexSearcher(directoryReader);
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
+			close();
 			throw new IndexerException(e);
 		}
 	}
