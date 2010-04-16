@@ -24,7 +24,16 @@ public class Directory {
 
 	public Directory(org.apache.lucene.store.Directory directory) {
 		this.directory = directory;
-		this.lock = new ReentrantReadWriteLock();
+		// [UNIREG-2287] On utilise le mode 'fair' parce qu'autrement les writers peuvent se trouver en situation de famine
+		// prolongée si des readers font des requêtes continuelles à l'indexeur. A noter que l'implémentation 'fair' de ce lock
+		// est buggée en java 1.5 (http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6315709).
+		// Elle part en dead-lock si :
+		//  - un thread A obtient le lock en read
+		//  - un thread B fait une demande du lock en write
+		//  - le thread A fait une demande rééentrante du lock en read
+		// Ce bug a été corrigé en java 1.6. Pour l'instant on s'assure parce inspection visuelle du code qu'aucun reader ne fait
+		// d'appel réentrant.
+		this.lock = new ReentrantReadWriteLock(true);
 	}
 
 	public void close() throws IOException {
@@ -156,6 +165,7 @@ public class Directory {
 	 */
 	private LuceneWriter acquireWriteLock() {
 		lock.writeLock().lock();
+
 		try {
 			// pas de synchronisation nécessaire : uniquement un thread en écriture par définition
 			if (searcher != null) {

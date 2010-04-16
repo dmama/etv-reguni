@@ -38,4 +38,9 @@ public final class IndexableData {
 	public HashMap<String, String> getKeyValues() {
 		return keyValues;
 	}
+
+	@Override
+	public String toString() {
+		return String.valueOf(id);
+	}
 }
