@@ -129,11 +129,6 @@
 			</c:choose>
 
 			<input type="submit" name="save"  value="<fmt:message key="label.bouton.sauver" />"  />			
-			<c:if test="${command.tiers.numero != null}">
-				<authz:authorize ifAnyGranted="ROLE_ANNUL_TIERS">
-					<input type="submit" name="annulerTiers" value="<fmt:message key="label.bouton.annuler.tiers" />" onClick="javascript:return Page_AnnulerTiers(event || window.event);" />
-				</authz:authorize>
-			</c:if>
 			<!-- Fin Boutons -->
 		&nbsp;
 		</c:if> <!-- Fin visualisation du tiers -->

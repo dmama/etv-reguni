@@ -60,7 +60,7 @@ public enum Role {
 	SIT_FAM("ROLE_SIT_FAM", "UR000060"),
 	RT("ROLE_RT", "UR000061"),
 	COOR_FIN("ROLE_COOR_FIN", "UR000062"),
-	//ANNUL_TIERS("ROLE_ANNUL_TIERS", "UR000063"),
+	ANNUL_TIERS("ROLE_ANNUL_TIERS", "UR000063"),
 	LR("ROLE_LR", "UR000070"),
 	EVEN("ROLE_EVEN", "UR000071"),
 	FORM_OUV_DOSS("ROLE_FORM_OUV_DOSS", "UR000072"),
@@ -190,7 +190,7 @@ public enum Role {
 					put(Role.RT);
 				}
 				put(Role.COOR_FIN);
-				//put(Role.ANNUL_TIERS);
+				put(Role.ANNUL_TIERS);
 				if (!UniregModeHelper.isBridageIS()) {
 					put(Role.LR);
 				}

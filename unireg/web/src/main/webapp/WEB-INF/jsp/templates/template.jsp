@@ -94,17 +94,21 @@ function ouvrirAide(url) {
 									<li><a href="<c:url value='/couple/list-pp.do'/>"><fmt:message key="title.couple" /></a></li>
 									<li><a href="<c:url value='/separation/list.do'/>"><fmt:message key="title.separation" /></a></li>
 									<li><a href="<c:url value='/deces/list.do'/>"><fmt:message key="title.deces" /></a></li>
-									<li><a href="<c:url value='/activation/list.do?activation=reactivation'/>"><fmt:message key="title.reactivation.tiers" /></a></li>
+									<authz:authorize ifAnyGranted="ROLE_ANNUL_TIERS">
+										<li><a href="<c:url value='/activation/list.do?activation=reactivation'/>"><fmt:message key="title.reactivation.tiers" /></a></li>
+									</authz:authorize>
 								</authz:authorize>
 							</ul>
 						</li>
 						<authz:authorize ifAnyGranted="ROLE_MODIF_VD_ORD, ROLE_MODIF_VD_SOURC, ROLE_MODIF_HC_HS, ROLE_MODIF_HAB_DEBPUR, ROLE_MODIF_NONHAB_DEBPUR">
 							<li><fmt:message key="label.action.annulation" />
 								<ul>
-										<li><a href="<c:url value='/annulation/couple/list.do'/>"><fmt:message key="title.couple" /></a></li>
-										<li><a href="<c:url value='/annulation/separation/list.do'/>"><fmt:message key="title.separation" /></a></li>
-										<li><a href="<c:url value='/annulation/deces/list.do'/>"><fmt:message key="title.deces" /></a></li>
+									<li><a href="<c:url value='/annulation/couple/list.do'/>"><fmt:message key="title.couple" /></a></li>
+									<li><a href="<c:url value='/annulation/separation/list.do'/>"><fmt:message key="title.separation" /></a></li>
+									<li><a href="<c:url value='/annulation/deces/list.do'/>"><fmt:message key="title.deces" /></a></li>
+									<authz:authorize ifAnyGranted="ROLE_ANNUL_TIERS">
 										<li><a href="<c:url value='/activation/list.do?activation=annulation'/>"><fmt:message key="title.tiers" /></a></li>
+									</authz:authorize>
 								</ul>
 							</li>
 						</authz:authorize>

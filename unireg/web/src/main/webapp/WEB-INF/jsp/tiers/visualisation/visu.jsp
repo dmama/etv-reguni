@@ -143,13 +143,6 @@
 		<c:if test="${not empty param['retour']}">
 			<input type="button" value="<fmt:message key="label.bouton.retour" />" onClick="document.location='../identification/gestion-messages/listTraite.do'" />
 		</c:if>
-		<c:if test="${!command.tiers.annule}">
-			<c:if test="${command.tiers.numero != null}">
-				<authz:authorize ifAnyGranted="ROLE_ANNUL_TIERS">
-					<input type="submit" name="annulerTiers" value="<fmt:message key="label.bouton.annuler.tiers" />" onClick="javascript:return Page_AnnulerTiers(event || window.event);" />
-				</authz:authorize>
-			</c:if>
-		</c:if>
 		</form:form>
 		<!-- Fin Boutons -->
 		&nbsp;
