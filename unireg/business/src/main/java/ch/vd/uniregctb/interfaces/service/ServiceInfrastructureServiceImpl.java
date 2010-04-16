@@ -426,8 +426,10 @@ public class ServiceInfrastructureServiceImpl extends AbstractServiceInfrastruct
 			List<?> list = serviceInfrastructure.getCollectivites(TYPE_COLLECTIVITE_OID);
 			for (Object o : list) {
 				ch.vd.infrastructure.model.CollectiviteAdministrative c = (ch.vd.infrastructure.model.CollectiviteAdministrative) o;
-				CollectiviteAdministrative oid = CollectiviteAdministrativeWrapper.get(c);
-				offices.add((OfficeImpot) oid);
+				if (isValid(c.getDateFinValidite())) {
+					CollectiviteAdministrative oid = CollectiviteAdministrativeWrapper.get(c);
+					offices.add((OfficeImpot) oid);
+				}
 			}
 		}
 		catch (RemoteException e) {
@@ -436,20 +438,41 @@ public class ServiceInfrastructureServiceImpl extends AbstractServiceInfrastruct
 		return Collections.unmodifiableList(offices);
 	}
 
+	private static boolean isValid(Date dateFinValidite) {
+		final boolean valide;
+		if (dateFinValidite != null) {
+			final RegDate finValidite = RegDate.get(dateFinValidite);
+			final RegDate now = RegDate.get();
+			if (!RegDateHelper.isAfterOrEqual(finValidite, now, NullDateBehavior.LATEST)) {
+				valide = false;
+			}
+			else {
+				valide = true;
+			}
+		}
+		else {
+			valide = true;
+		}
+		return valide;
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
+	@SuppressWarnings({"unchecked"})
 	public List<CollectiviteAdministrative> getCollectivitesAdministratives() throws InfrastructureException {
 
-		List<CollectiviteAdministrative> collectivites = new ArrayList<CollectiviteAdministrative>();
+		final List<CollectiviteAdministrative> collectivites = new ArrayList<CollectiviteAdministrative>();
 		try {
 			// TODO (FDE) A changer lors de la prochaine mise en prod des interfaces
-			CantonImpl cantonVaud = new CantonImpl();
+			final CantonImpl cantonVaud = new CantonImpl();
 			cantonVaud.setSigleOFS(ServiceInfrastructureService.SIGLE_CANTON_VD);
-			List<?> list = serviceInfrastructure.getCollectivitesAdministratives(cantonVaud);
-			for (Object o : list) {
-				ch.vd.infrastructure.model.CollectiviteAdministrative c = (ch.vd.infrastructure.model.CollectiviteAdministrative) o;
-				collectivites.add(CollectiviteAdministrativeWrapper.get(c));
+
+			final List<ch.vd.infrastructure.model.CollectiviteAdministrative> list = serviceInfrastructure.getCollectivitesAdministratives(cantonVaud);
+			for (ch.vd.infrastructure.model.CollectiviteAdministrative c : list) {
+				if (isValid(c.getDateFinValidite())) {
+					collectivites.add(CollectiviteAdministrativeWrapper.get(c));
+				}
 			}
 		}
 		catch (RemoteException e) {
@@ -462,32 +485,16 @@ public class ServiceInfrastructureServiceImpl extends AbstractServiceInfrastruct
 	/**
 	 * {@inheritDoc}
 	 */
+	@SuppressWarnings({"unchecked"})
 	public List<CollectiviteAdministrative> getCollectivitesAdministratives(List<EnumTypeCollectivite> typesCollectivite)
 			throws InfrastructureException {
 
-		List<CollectiviteAdministrative> collectivites = new ArrayList<CollectiviteAdministrative>();
+		final List<CollectiviteAdministrative> collectivites = new ArrayList<CollectiviteAdministrative>();
 		try {
-			final EnumTypeCollectivite[] tabTypesCollectivite = new EnumTypeCollectivite[typesCollectivite.size()] ;
-			final Iterator<EnumTypeCollectivite> itTypesCol = typesCollectivite.iterator();
-			int i = 0;
-			while (itTypesCol.hasNext()) {
-				final EnumTypeCollectivite typeCol = itTypesCol.next();
-				tabTypesCollectivite[i] = typeCol;
-				i++;
-			}
-			final List<?> list = serviceInfrastructure.getCollectivitesAdministratives(tabTypesCollectivite);
-			for (Object o : list) {
-				final ch.vd.infrastructure.model.CollectiviteAdministrative c = (ch.vd.infrastructure.model.CollectiviteAdministrative) o;
-
-				boolean inclureCollectivite = true;
-				if (c.getDateFinValidite() != null) {
-					final RegDate finValidite = RegDate.get(c.getDateFinValidite());
-					final RegDate now = RegDate.get();
-					if (!RegDateHelper.isAfterOrEqual(finValidite, now, NullDateBehavior.LATEST)) {
-						inclureCollectivite = false;
-					}
-				}
-				if (inclureCollectivite) {
+			final EnumTypeCollectivite[] tabTypesCollectivite = typesCollectivite.toArray(new EnumTypeCollectivite[typesCollectivite.size()]);
+			final List<ch.vd.infrastructure.model.CollectiviteAdministrative> list = serviceInfrastructure.getCollectivitesAdministratives(tabTypesCollectivite);
+			for (ch.vd.infrastructure.model.CollectiviteAdministrative c : list) {
+				if (isValid(c.getDateFinValidite())) {
 					collectivites.add(CollectiviteAdministrativeWrapper.get(c));
 				}
 			}
