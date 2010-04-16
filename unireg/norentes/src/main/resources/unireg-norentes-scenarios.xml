@@ -257,6 +257,8 @@
 		class="ch.vd.uniregctb.norentes.civil.veuvage.Ec_10000_04_Veuvage_DecesPuisVeuvageMemeJour_Scenario" />
 	<bean id="ec_10000_05_Veuvage_VeuvageErreurPuisAnnulation_Test" parent="evenementCivilScenario"
 		class="ch.vd.uniregctb.norentes.civil.veuvage.Ec_10000_05_Veuvage_VeuvageErreurPuisAnnulation_Scenario" />
+	<bean id="ec_10000_06_Veuvage_VeuvageHabitantMarieAvecNonHabitant_Test" parent="evenementCivilScenario"
+		class="ch.vd.uniregctb.norentes.civil.veuvage.Ec_10000_06_Veuvage_VeuvageHabitantMarieAvecNonHabitant_Scenario" />
 
 	<!-- Scénarios d'annulation de veuvage -->
 	<bean id="ec_10001_01_AnnulationVeuvage_MarieSeul_Test" parent="evenementCivilScenario"

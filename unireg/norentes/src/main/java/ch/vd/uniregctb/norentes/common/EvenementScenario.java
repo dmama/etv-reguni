@@ -48,6 +48,7 @@ import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
+import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TarifImpotSource;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeDocument;
@@ -209,11 +210,12 @@ public abstract class EvenementScenario extends NorentesScenario {
 		return (PersonnePhysique) tiersDAO.save(hab);
 	}
 
-	protected PersonnePhysique addNonHabitant(final String nom, final String prenom, RegDate dateNaissance) {
+	protected PersonnePhysique addNonHabitant(final String nom, final String prenom, RegDate dateNaissance, Sexe sexe) {
 		PersonnePhysique nonHab = new PersonnePhysique(false);
 		nonHab.setNom(nom);
 		nonHab.setPrenom(prenom);
 		nonHab.setDateNaissance(dateNaissance);
+		nonHab.setSexe(sexe);
 
 		return (PersonnePhysique) tiersDAO.save(nonHab);
 	}

@@ -20,6 +20,7 @@ import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
@@ -84,7 +85,7 @@ public class Ec_18000_17_Arrivee_JIRA1677_Scenario extends EvenementCivilScenari
 
 	@Etape(id = 1, descr = "Création du couple marié seul non habitant propriétaire d'immeuble")
 	public void etape1() throws Exception {
-		final PersonnePhysique pp = addNonHabitant("Bouchet", "Olivier", RegDate.get(1969, 1, 18));
+		final PersonnePhysique pp = addNonHabitant("Bouchet", "Olivier", RegDate.get(1969, 1, 18), Sexe.MASCULIN);
 		final EnsembleTiersCouple couple = tiersService.createEnsembleTiersCouple(pp, null, dateMariage, null);
 		final MenageCommun mc = couple.getMenage();
 		assertNotNull(mc, "Erreur lors de la création du ménage commun");

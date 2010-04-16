@@ -62,7 +62,7 @@ public class Ec_16000_03_ObtentionPermis_NonResident_Scenario extends EvenementC
 	public void etape1() throws Exception {
 
 		// il a été habitant un jour mais ne l'est plus...
-		final PersonnePhysique momo = addNonHabitant("Durant", "Maurice", dateNaissanceMomo);
+		final PersonnePhysique momo = addNonHabitant("Durant", "Maurice", dateNaissanceMomo, Sexe.MASCULIN);
 		momo.setNumeroIndividu(noIndMomo);
 		noCtbMomo = momo.getNumero();
 

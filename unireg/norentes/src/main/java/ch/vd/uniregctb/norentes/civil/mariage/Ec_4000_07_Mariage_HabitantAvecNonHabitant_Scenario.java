@@ -20,6 +20,7 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.SituationFamille;
 import ch.vd.uniregctb.type.EtatCivil;
 import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
@@ -98,7 +99,7 @@ public class Ec_4000_07_Mariage_HabitantAvecNonHabitant_Scenario extends Eveneme
 		}
 		
 		// rafa
-		final PersonnePhysique rafa = addNonHabitant("Nadalino", "Rafa", dateNaissanceRafa);
+		final PersonnePhysique rafa = addNonHabitant("Nadalino", "Rafa", dateNaissanceRafa, Sexe.MASCULIN);
 		{
 			noCtbRafa = rafa.getNumero();
 			addForFiscalPrincipal(rafa, communeRafa, dateMajoriteRafa, dateDepartRafa.getOneDayBefore(), MotifFor.MAJORITE, MotifFor.DEPART_HC);

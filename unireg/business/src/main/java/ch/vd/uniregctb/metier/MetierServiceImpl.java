@@ -1920,16 +1920,16 @@ public class MetierServiceImpl implements MetierService {
 	}
 
 	public ValidationResults validateVeuvage(PersonnePhysique veuf, RegDate date) {
-		ValidationResults results = new ValidationResults();
+		final ValidationResults results = new ValidationResults();
 		/*
 		 * Récupération du ménage du veuf
 		 */
-		EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(veuf, date);
-		if (couple == null || couple.getMenage() == null || couple.getConjoint(veuf) != null) {
+		final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(veuf, date);
+		if (couple == null || couple.getMenage() == null || (couple.getConjoint(veuf) != null && couple.getConjoint(veuf).isConnuAuCivil())) {
 			/*
 			 * Normalement le veuvage ne doit s'appliquer qu'aux personnes mariées seules.
 			 */
-			results.addError("Le veuvage ne peut s'appliquer qu'à une personne mariée seule.");
+			results.addError("Le veuvage ne peut s'appliquer qu'à une personne mariée seule dans le civil.");
 		}
 
 		if (!results.hasErrors())
@@ -1939,9 +1939,9 @@ public class MetierServiceImpl implements MetierService {
 			 */
 
 			// Pour le ménage (si existant)
-			EnsembleTiersCouple dernierCouple = tiersService.getEnsembleTiersCouple(veuf, null);
+			final EnsembleTiersCouple dernierCouple = tiersService.getEnsembleTiersCouple(veuf, null);
 			if (dernierCouple != null && dernierCouple.getMenage() != null) {
-				ForFiscalPrincipal ffpMenage = dernierCouple.getMenage().getDernierForFiscalPrincipal();
+				final ForFiscalPrincipal ffpMenage = dernierCouple.getMenage().getDernierForFiscalPrincipal();
 				if (ffpMenage != null && ffpMenage.getDateDebut().isAfter(date)) {
 					results.addError("Le ménage du veuf possède un for fiscal principal ouvert après la date de décès" );
 				}
@@ -1949,7 +1949,7 @@ public class MetierServiceImpl implements MetierService {
 			else {
 
 				// Pour le veuf
-				ForFiscalPrincipal ffpDefunt = veuf.getDernierForFiscalPrincipal();
+				final ForFiscalPrincipal ffpDefunt = veuf.getDernierForFiscalPrincipal();
 				if (ffpDefunt != null && ffpDefunt.getDateDebut().isAfter(date)) {
 					results.addError("Le veuf possède un for fiscal principal ouvert après la date de décès" );
 				}
@@ -1964,23 +1964,18 @@ public class MetierServiceImpl implements MetierService {
 		/*
 		 * Récupération de l'ensemble veuf-menageCommun
 		 */
-		EnsembleTiersCouple menageComplet = tiersService.getEnsembleTiersCouple(veuf, date);
+		final EnsembleTiersCouple menageComplet = tiersService.getEnsembleTiersCouple(veuf, date);
+		final MenageCommun menage = menageComplet.getMenage();
+		final PersonnePhysique conjointDecede = menageComplet.getConjoint(veuf);
 
-		MenageCommun menage = null;
-
-		if (menageComplet != null) {
-			// On récupère le tiers MenageCommun
-			menage = menageComplet.getMenage();
-		}
-
-		ForFiscalPrincipal forMenage = menage.getForFiscalPrincipalAt(null);
+		final ForFiscalPrincipal forMenage = menage.getForFiscalPrincipalAt(null);
 
 		/*
 		 * Sauvegarde des fors secondaires et autre élément imposable du ménage pour réouverture sur le veuf
 		 */
 		final ForsParType forsParType = menage.getForsParType(false);
-		List<ForFiscalSecondaire> forsSecondaires = forsParType.secondaires;
-		List<ForFiscalAutreElementImposable> forsAutreElement = forsParType.autreElementImpot;
+		final List<ForFiscalSecondaire> forsSecondaires = forsParType.secondaires;
+		final List<ForFiscalAutreElementImposable> forsAutreElement = forsParType.autreElementImpot;
 
 		// Fermeture des fors du MenageCommun
 		tiersService.closeAllForsFiscaux(menage, date, MotifFor.VEUVAGE_DECES);
@@ -1988,15 +1983,26 @@ public class MetierServiceImpl implements MetierService {
 		// Fermeture des RapportEntreTiers du menage
 		tiersService.closeAppartenanceMenage(veuf, menage, date);
 
+		// [UNIREG-2242] Il peut y avoir un conjoint (non-habitant) pour lequel le civil nous aurait envoyé un événement
+		// de veuvage (car le non-habitant ne serait pas connu dans le civil)
+		if (conjointDecede != null) {
+			tiersService.closeAppartenanceMenage(conjointDecede, menage, date);
+
+			// on ne renseigne la date de décès que si elle n'est pas renseignée du tout 
+			if (!conjointDecede.isHabitant() && conjointDecede.getDateDeces() == null) {
+				conjointDecede.setDateDeces(date);
+			}
+		}
+
 		if (forMenage != null) {
-			ModeImposition imposition = forMenage.getModeImposition();
-			Integer noOfsEtendu = forMenage.getNumeroOfsAutoriteFiscale();
-			TypeAutoriteFiscale typeAutoriteFiscale = forMenage.getTypeAutoriteFiscale();
+			final ModeImposition imposition = forMenage.getModeImposition();
+			final Integer noOfsEtendu = forMenage.getNumeroOfsAutoriteFiscale();
+			final TypeAutoriteFiscale typeAutoriteFiscale = forMenage.getTypeAutoriteFiscale();
 
 			/*
 			 * Résolution du mode d'imposition du veuf
 			 */
-			ModeImpositionResolver decesResolver = new DecesModeImpositionResolver(tiersService, numeroEvenement);
+			final ModeImpositionResolver decesResolver = new DecesModeImpositionResolver(tiersService, numeroEvenement);
 			/*
 			 * ouverture d'un nouveau for fiscal sur le veuf
 			 */
@@ -2021,10 +2027,10 @@ public class MetierServiceImpl implements MetierService {
 
 	private boolean isVeuvageApresDeces(PersonnePhysique veuf, MenageCommun menage, RegDate date) {
 
-		ForFiscalPrincipal forMenage = menage.getForFiscalPrincipalAt(null);
+		final ForFiscalPrincipal forMenage = menage.getForFiscalPrincipalAt(null);
 		if (forMenage == null) {
-			ForFiscalPrincipal dernierForMenage = menage.getDernierForFiscalPrincipal();
-			ForFiscalPrincipal forCourantVeuf = veuf.getForFiscalPrincipalAt(null);
+			final ForFiscalPrincipal dernierForMenage = menage.getDernierForFiscalPrincipal();
+			final ForFiscalPrincipal forCourantVeuf = veuf.getForFiscalPrincipalAt(null);
 
 			if (dernierForMenage != null && date.equals(dernierForMenage.getDateFin()) && MotifFor.VEUVAGE_DECES == dernierForMenage.getMotifFermeture()
 					&& forCourantVeuf == null ) {
@@ -2036,8 +2042,8 @@ public class MetierServiceImpl implements MetierService {
 	}
 
 	private void updateSituationFamilleVeuvage(PersonnePhysique veuf, RegDate date) {
-		EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(veuf, date);
-		MenageCommun menage = couple.getMenage();
+		final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(veuf, date);
+		final MenageCommun menage = couple.getMenage();
 		doUpdateSituationFamilleDeces(null, veuf, menage, date);
 	}
 
@@ -2046,18 +2052,18 @@ public class MetierServiceImpl implements MetierService {
 		/*
 		 * Recherche du dernier ménage
 		 */
-		RapportEntreTiers dernierRapportMenage = tiers.getDernierRapportSujet(TypeRapportEntreTiers.APPARTENANCE_MENAGE);
+		final RapportEntreTiers dernierRapportMenage = tiers.getDernierRapportSujet(TypeRapportEntreTiers.APPARTENANCE_MENAGE);
 		Assert.notNull(dernierRapportMenage, "Le dernier ménage n'a pas été trouvé");
 		Assert.isEqual(dernierRapportMenage.getDateFin(), date, "La date du dernier rapport entre tiers n'est pas la même que celle de l'événement");
-		MenageCommun menageCommun = (MenageCommun) tiersDAO.get(dernierRapportMenage.getObjetId());
-		EnsembleTiersCouple ensembleTiersCouple = getTiersService().getEnsembleTiersCouple(menageCommun, dernierRapportMenage.getDateDebut());
+		final MenageCommun menageCommun = (MenageCommun) tiersDAO.get(dernierRapportMenage.getObjetId());
+		final EnsembleTiersCouple ensembleTiersCouple = getTiersService().getEnsembleTiersCouple(menageCommun, dernierRapportMenage.getDateDebut());
 		if (!ensembleTiersCouple.contient(tiers)) {
 			 throw new EvenementCivilHandlerException("Le dernier ménage n'est pas composé du tiers n° " + FormatNumeroHelper.numeroCTBToDisplay(tiers.getNumero()));
 		}
+		final PersonnePhysique conjointDecede = ensembleTiersCouple.getConjoint(tiers);
 
-		RegDate lendemain = date.getOneDayAfter();
-
-		ForFiscalPrincipal ffp = tiers.getForFiscalPrincipalAt(lendemain);
+		final RegDate lendemain = date.getOneDayAfter();
+		final ForFiscalPrincipal ffp = tiers.getForFiscalPrincipalAt(lendemain);
 
 		/*
 		 * Fermeture des fors ouverts sur le tiers
@@ -2068,13 +2074,19 @@ public class MetierServiceImpl implements MetierService {
 			/*
 			 * Réouverture du rapport tiers-ménage
 			 */
-			RapportEntreTiers rapport = reopenRapportEntreTiers(dernierRapportMenage);
-			/*
-			 *  Assigner le nouveau rapport au tiers
-			 */
-			final Tiers sujet = tiersDAO.get(dernierRapportMenage.getSujetId());
-			final Tiers objet = tiersDAO.get(dernierRapportMenage.getObjetId());
-			tiersService.addRapport(rapport, sujet, objet);
+			final RapportEntreTiers rapport = reopenRapportEntreTiers(dernierRapportMenage);
+			tiersService.addRapport(rapport, tiers, menageCommun);
+
+			// [UNIREG-1422] Traitement du conjoint décédé inconnu du civil
+			if (conjointDecede != null) {
+				final RapportEntreTiers rapportDecede = conjointDecede.getDernierRapportSujet(TypeRapportEntreTiers.APPARTENANCE_MENAGE);
+				final RapportEntreTiers nouveauRapportDecede = reopenRapportEntreTiers(rapportDecede);
+				tiersService.addRapport(nouveauRapportDecede, conjointDecede, menageCommun);
+
+				if (!conjointDecede.isHabitant() && conjointDecede.getDateDeces() != null) {
+					conjointDecede.setDateDeces(null);
+				}
+			}
 
 			/*
 			 * Réouverture des fors du ménage commun

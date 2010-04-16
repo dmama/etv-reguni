@@ -204,18 +204,15 @@ public class PersonnePhysique extends Contribuable {
 
 	@Override
 	public ValidationResults validate() {
-		ValidationResults results = super.validate();
-
+		final ValidationResults results = super.validate();
 		if (habitant == null) {
 			results.addError("La personne physique doit être habitant ou non habitant");
 		}
-
-		if (habitant && (getNumeroIndividu() == null || getNumeroIndividu().equals(new Long(0)))) {
-			results.addError("Le numero d'individu du CH est un attribut obligatoire pour un habitant");
+		else if (habitant && (numeroIndividu == null || numeroIndividu <= 0L)) {
+			results.addError("Le numero d'individu du registre civil est un attribut obligatoire pour un habitant");
 		}
-
-		if (!habitant && StringUtils.isBlank(nom)) {
-			results.addError("Le nom est un attribut obligatoire pour un non habitant");
+		else if (!habitant && StringUtils.isBlank(nom)) {
+			results.addError("Le nom est un attribut obligatoire pour un non-habitant");
 		}
 
 		return results;
@@ -293,6 +290,11 @@ public class PersonnePhysique extends Contribuable {
 		if (habitant) {
 			ddump(nbTabs, "Individu: "+ numeroIndividu);
 		}
+	}
+
+	@Transient
+	public boolean isConnuAuCivil() {
+		return numeroIndividu != null;
 	}
 
 	/**
