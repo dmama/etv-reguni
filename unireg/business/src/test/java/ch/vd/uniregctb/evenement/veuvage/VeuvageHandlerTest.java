@@ -12,6 +12,7 @@ import org.apache.log4j.Logger;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.civil.model.EnumTypeEtatCivil;
 import ch.vd.uniregctb.evenement.AbstractEvenementHandlerTest;
 import ch.vd.uniregctb.evenement.EvenementCivilErreur;
 import ch.vd.uniregctb.interfaces.model.Individu;
@@ -79,20 +80,24 @@ public class VeuvageHandlerTest extends AbstractEvenementHandlerTest {
 			protected void init() {
 				super.init();
 				
-				RegDate dateNaissanceMikkel = RegDate.get(1961, 3, 12);
-				MockIndividu mikkel = addIndividu(NO_INDIVIDU_VEUF_ETRANGER, dateNaissanceMikkel, "Hirst", "Mikkel", true);
+				final RegDate dateNaissanceMikkel = RegDate.get(1961, 3, 12);
+				final MockIndividu mikkel = addIndividu(NO_INDIVIDU_VEUF_ETRANGER, dateNaissanceMikkel, "Hirst", "Mikkel", true);
 				addDefaultAdressesTo(mikkel);
 				marieIndividu(mikkel, RegDate.get(1986, 4, 8));
 				addOrigine(mikkel, MockPays.Danemark, null, dateNaissanceMikkel);
 				addNationalite(mikkel, MockPays.Danemark, dateNaissanceMikkel, null, 0);
+				addEtatCivil(mikkel, DATE_VEUVAGE, EnumTypeEtatCivil.VEUF);
 				
-				
-				RegDate dateNaissanceRyan = RegDate.get(1961, 3, 1);
-				MockIndividu ryan = addIndividu(NO_INDIVIDU_VEUF_AVEC_FOR, dateNaissanceRyan, "Bolomé", "Ryan", true);
+				final RegDate dateNaissanceRyan = RegDate.get(1961, 3, 1);
+				final MockIndividu ryan = addIndividu(NO_INDIVIDU_VEUF_AVEC_FOR, dateNaissanceRyan, "Bolomé", "Ryan", true);
 				addDefaultAdressesTo(ryan);
 				marieIndividu(ryan, RegDate.get(1986, 4, 8));
 				addOrigine(ryan, MockPays.Suisse, MockCommune.Renens, dateNaissanceRyan);
 				addNationalite(ryan, MockPays.Suisse, dateNaissanceRyan, null, 0);
+				addEtatCivil(ryan, DATE_VEUVAGE, EnumTypeEtatCivil.VEUF);
+
+				final MockIndividu pierre = (MockIndividu) getIndividu(NO_INDIVIDU_VEUF);
+				addEtatCivil(pierre, DATE_VEUVAGE, EnumTypeEtatCivil.VEUF);
 			}
 		});
 		loadDatabase(DB_UNIT_DATA_FILE);
@@ -147,10 +152,9 @@ public class VeuvageHandlerTest extends AbstractEvenementHandlerTest {
 		 * Evénements fiscaux devant être générés :
 		 *  - fermeture for fiscal principal sur le ménage commun
 		 *  - ouverture for fiscal principal sur le veuf
-		 *  - création d'une nouvelle situation de famille sur le veuf
 		 */
-		assertEquals(3, eventSender.count);
-		assertEquals(2, getEvenementFiscalService().getEvenementFiscals(pierre).size());
+		assertEquals(2, eventSender.count);
+		assertEquals(1, getEvenementFiscalService().getEvenementFiscals(pierre).size());
 		assertEquals(1, getEvenementFiscalService().getEvenementFiscals(menageCommun).size());
 	}
 
@@ -203,10 +207,9 @@ public class VeuvageHandlerTest extends AbstractEvenementHandlerTest {
 		 * Evénements fiscaux devant être générés :
 		 *  - fermeture for fiscal principal sur le ménage commun
 		 *  - ouverture for fiscal principal sur le veuf
-		 *  - création d'une nouvelle situation de famille sur le veuf
 		 */
-		assertEquals(3, eventSender.count);
-		assertEquals(2, getEvenementFiscalService().getEvenementFiscals(pierre).size());
+		assertEquals(2, eventSender.count);
+		assertEquals(1, getEvenementFiscalService().getEvenementFiscals(pierre).size());
 		assertEquals(1, getEvenementFiscalService().getEvenementFiscals(menageCommun).size());
 	}
 	

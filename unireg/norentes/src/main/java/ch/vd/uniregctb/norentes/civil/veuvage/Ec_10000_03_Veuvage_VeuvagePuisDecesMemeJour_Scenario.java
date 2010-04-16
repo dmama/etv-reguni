@@ -3,6 +3,7 @@ package ch.vd.uniregctb.norentes.civil.veuvage;
 import annotation.Check;
 import annotation.Etape;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.civil.model.EnumTypeEtatCivil;
 import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.interfaces.model.Commune;
@@ -77,7 +78,7 @@ public class Ec_10000_03_Veuvage_VeuvagePuisDecesMemeJour_Scenario extends Evene
 
 				addOrigine(indPierre, MockPays.Suisse, null, dateNaissance);
 				addNationalite(indPierre, MockPays.Suisse, dateNaissance, null, 0);
-
+				addEtatCivil(indPierre, dateVeuvage, EnumTypeEtatCivil.VEUF);
 			}
 		});
 	}
@@ -147,7 +148,7 @@ public class Ec_10000_03_Veuvage_VeuvagePuisDecesMemeJour_Scenario extends Evene
 			ModeImposition expected = ModeImposition.ORDINAIRE;
 			assertEquals(expected, ffp.getModeImposition(), "L'habitant devrait être en mode " + expected.texte());
 			assertNull(pierre.getSituationFamilleAt(dateVeuvage), "Pierre ne devrait pas avoir de situation de famille le jour du veuvage.");
-			assertSituationFamille(lendemainVeuvage, null, EtatCivil.VEUF, 0, pierre.getSituationFamilleAt(lendemainVeuvage), "Situation de famille de Pierre le lendemain du veuvage:");
+			assertNull(pierre.getSituationFamilleAt(lendemainVeuvage), "Pierre ne devrait pas avoir de nouvelle situation de famille au lendemain du veuvage car il est déjà marqué comme VEUF au civil");
 		}
 
 		{

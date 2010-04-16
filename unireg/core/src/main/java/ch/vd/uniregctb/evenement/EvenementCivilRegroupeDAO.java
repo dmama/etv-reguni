@@ -25,20 +25,20 @@ public interface EvenementCivilRegroupeDAO extends GenericDAO<EvenementCivilRegr
 	 *
 	 * @return  la liste des événements regroupés rattaché à l'individu pour une date et un type d'événement donné.
 	 */
-	List<EvenementCivilRegroupe> rechercheEvenementExistant(RegDate dateEvenement, TypeEvenementCivil typeEvenement, Long noIndividu );
+	List<EvenementCivilRegroupe> rechercheEvenementExistantEtTraitable(RegDate dateEvenement, TypeEvenementCivil typeEvenement, Long noIndividu );
 
 	/**
 	 * @param criterion
 	 * @param paramPagination
 	 * @return
 	 */
-	public List<EvenementCivilRegroupe> find(EvenementCriteria criterion, ParamPagination paramPagination);
+	List<EvenementCivilRegroupe> find(EvenementCriteria criterion, ParamPagination paramPagination);
 
 	/**
 	 * @param criterion
 	 * @return
 	 */
-	public int count(EvenementCriteria criterion);
+	int count(EvenementCriteria criterion);
 
 	/**
 	 * Récupère la liste des ids des événements civils dont le statut est A_TRAITE ou EN_ERREUR.

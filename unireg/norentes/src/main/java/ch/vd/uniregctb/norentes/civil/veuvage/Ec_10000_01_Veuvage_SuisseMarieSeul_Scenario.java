@@ -3,6 +3,7 @@ package ch.vd.uniregctb.norentes.civil.veuvage;
 import annotation.Check;
 import annotation.Etape;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.civil.model.EnumTypeEtatCivil;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
@@ -67,7 +68,7 @@ public class Ec_10000_01_Veuvage_SuisseMarieSeul_Scenario extends EvenementCivil
 
 				addOrigine(indPierre, MockPays.Suisse, null, RegDate.get(1953, 11, 2));
 				addNationalite(indPierre, MockPays.Suisse, RegDate.get(1953, 11, 2), null, 0);
-
+				addEtatCivil(indPierre, dateVeuvage, EnumTypeEtatCivil.VEUF);
 			}
 		});
 	}

@@ -51,7 +51,7 @@ public class EvenementListController extends AbstractEvenementController {
 		if (bean == null || (buttonEffacer != null && buttonEffacer.equals(EFFACER_PARAMETER_VALUE))) {
 	 		bean = (EvenementCriteriaView) super.formBackingObject(request);
 			bean.setTypeRechercheDuNom(EvenementCriteria.TypeRechercheDuNom.EST_EXACTEMENT);
-			bean.setEtat(EtatEvenementCivil.A_VERIFIER.name());
+			bean.setEtat(EtatEvenementCivil.A_VERIFIER);
 			session.setAttribute(EVENEMENT_CRITERIA_NAME, bean);
 		}
 

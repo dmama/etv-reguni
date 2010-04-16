@@ -162,7 +162,7 @@ public class EvenementCivilRegrouperImpl implements EvenementCivilRegrouper {
 			serviceCivilService.onIndividuChange(conjoint.getNoTechnique());
 
 			/* on recherche un evenement rattaché au conjoint, meme date, meme type dont l'état n'est pas TRAITE / A_VERIFIER */
-			List<EvenementCivilRegroupe> evenements = evenementCivilRegroupeDAO.rechercheEvenementExistant(evenement.getDateEvenement(), evenement.getType(),
+			List<EvenementCivilRegroupe> evenements = evenementCivilRegroupeDAO.rechercheEvenementExistantEtTraitable(evenement.getDateEvenement(), evenement.getType(),
 					conjoint.getNoTechnique());
 
 			/* si plusieurs événements trouvés, on met l'événement unitaire en erreur */

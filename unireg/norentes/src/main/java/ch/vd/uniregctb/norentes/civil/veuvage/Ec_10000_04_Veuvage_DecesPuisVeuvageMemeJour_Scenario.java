@@ -1,9 +1,13 @@
 package ch.vd.uniregctb.norentes.civil.veuvage;
 
+import java.util.List;
+
 import annotation.Check;
 import annotation.Etape;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.civil.model.EnumTypeEtatCivil;
 import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
+import ch.vd.uniregctb.evenement.EvenementCriteria;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
@@ -76,7 +80,7 @@ public class Ec_10000_04_Veuvage_DecesPuisVeuvageMemeJour_Scenario extends Evene
 
 				addOrigine(indPierre, MockPays.Suisse, null, dateNaissance);
 				addNationalite(indPierre, MockPays.Suisse, dateNaissance, null, 0);
-
+				addEtatCivil(indPierre, dateVeuvage, EnumTypeEtatCivil.VEUF);
 			}
 		});
 	}
@@ -138,6 +142,16 @@ public class Ec_10000_04_Veuvage_DecesPuisVeuvageMemeJour_Scenario extends Evene
 	@Check(id=2, descr="Vérifie que le menage commun a été fermé et le For principal de l'individu créé")
 	public void check2() {
 
+		final EvenementCriteria criterion = new EvenementCriteria();
+		criterion.setNumeroIndividu(noIndPierre);
+		criterion.setType(TypeEvenementCivil.DECES);
+		final List<EvenementCivilRegroupe> evts = evtRegroupeDAO.find(criterion, null);
+		assertNotNull(evts, "Pas du tout d'événement de décès?");
+		assertEquals(1, evts.size(), "Il devrait y avoir un événement de DECES pour Pierre");
+
+		final EvenementCivilRegroupe evt = evts.get(0);
+		assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat(), "L'événement n'a pas été traité correctement");
+
 		{
 			PersonnePhysique pierre = (PersonnePhysique) tiersDAO.get(noHabPierre);
 			assertNull(pierre.getForFiscalPrincipalAt(lendemainDeces), "Pierre ne devrait pas avoir de for après son décès");
@@ -167,7 +181,14 @@ public class Ec_10000_04_Veuvage_DecesPuisVeuvageMemeJour_Scenario extends Evene
 	@Check(id=3, descr="Vérifie que le défunt n'a aucun for ni aucune situation de famille active")
 	public void check3() {
 
-		final EvenementCivilRegroupe evt = getEvenementCivilRegoupeForHabitant(noHabPierre);
+		final EvenementCriteria criterion = new EvenementCriteria();
+		criterion.setNumeroIndividu(noIndPierre);
+		criterion.setType(TypeEvenementCivil.VEUVAGE);
+		final List<EvenementCivilRegroupe> evts = evtRegroupeDAO.find(criterion, null);
+		assertNotNull(evts, "Pas du tout d'événement de veuvage?");
+		assertEquals(1, evts.size(), "Il devrait y avoir un événement de VEUVAGE pour Pierre");
+
+		final EvenementCivilRegroupe evt = evts.get(0);
 		assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat(), "L'événement n'a pas été traité correctement");
 
 		{

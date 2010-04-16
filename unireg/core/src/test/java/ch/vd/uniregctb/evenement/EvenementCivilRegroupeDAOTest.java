@@ -13,6 +13,7 @@ import ch.vd.uniregctb.common.CoreDAOTest;
 import ch.vd.uniregctb.common.ParamPagination;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
+import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 /**
  * @author
@@ -82,7 +83,7 @@ public class EvenementCivilRegroupeDAOTest extends CoreDAOTest {
 	public void testFind() throws Exception {
 
 		EvenementCriteria evenementCriteria = new EvenementCriteria();
-		evenementCriteria.setType("MARIAGE");
+		evenementCriteria.setType(TypeEvenementCivil.MARIAGE);
 		ParamPagination pagination = new ParamPagination(1, 50, "dateEvenement", true);
 		List<EvenementCivilRegroupe> list = dao.find(evenementCriteria, pagination);
 		assertNotNull(list);

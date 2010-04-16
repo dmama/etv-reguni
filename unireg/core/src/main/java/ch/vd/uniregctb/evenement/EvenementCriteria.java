@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.Date;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.type.EtatEvenementCivil;
+import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 public class EvenementCriteria implements Serializable {
 
@@ -18,20 +20,20 @@ public class EvenementCriteria implements Serializable {
 		EST_EXACTEMENT
 	}
 
-	private String etat;
+	private EtatEvenementCivil etat;
 
-	public String getEtat() {
+	public EtatEvenementCivil getEtat() {
 		return etat;
 	}
 
-	public void setEtat(String etat) {
+	public void setEtat(EtatEvenementCivil etat) {
 		this.etat = etat;
 	}
 
 	/**
 	 * Le type de l'evenement
 	 */
-	private String type;
+	private TypeEvenementCivil type;
 
 	/**
 	 * La date de traitement debut
@@ -72,11 +74,11 @@ public class EvenementCriteria implements Serializable {
 	 */
 	private boolean autresNoms;
 
-	public String getType() {
+	public TypeEvenementCivil getType() {
 		return type;
 	}
 
-	public void setType(String type) {
+	public void setType(TypeEvenementCivil type) {
 		this.type = type;
 	}
 

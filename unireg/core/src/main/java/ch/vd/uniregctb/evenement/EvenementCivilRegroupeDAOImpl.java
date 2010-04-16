@@ -41,7 +41,7 @@ public class EvenementCivilRegroupeDAOImpl extends GenericDAOImpl<EvenementCivil
 	 * @see ch.vd.uniregctb.evenement.EvenementCivilRegroupeDAO#rechercheEvenementExistant(java.util.Date, java.lang.Long)
 	 */
 	@SuppressWarnings("unchecked")
-	public List<EvenementCivilRegroupe> rechercheEvenementExistant(RegDate dateEvenement, TypeEvenementCivil typeEvenement, Long noIndividu ) {
+	public List<EvenementCivilRegroupe> rechercheEvenementExistantEtTraitable(RegDate dateEvenement, TypeEvenementCivil typeEvenement, Long noIndividu ) {
 		StringBuffer sql = new StringBuffer();
 		sql.append("from EvenementCivilRegroupe as ec where ec.dateEvenement = ? ");
 		sql.append("and ec.type = ? ");
@@ -52,7 +52,7 @@ public class EvenementCivilRegroupeDAOImpl extends GenericDAOImpl<EvenementCivil
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<EvenementCivilRegroupe> find(EvenementCriteria criterion, ParamPagination paramPagination) {
+	public List<EvenementCivilRegroupe> find(final EvenementCriteria criterion, final ParamPagination paramPagination) {
 		if (LOGGER.isTraceEnabled()) {
 			LOGGER.trace("Start of EvenementCivilRegroupeDAO:find");
 		}
@@ -61,21 +61,18 @@ public class EvenementCivilRegroupeDAOImpl extends GenericDAOImpl<EvenementCivil
 		final List<Object> criteria = new ArrayList<Object>();
 		String queryWhere = buildCriterion(criteria, criterion);
 		String queryOrder = "";
-		if (paramPagination.getChamp() != null) {
+		if (paramPagination != null && paramPagination.getChamp() != null) {
 			queryOrder = " order by evenement." + paramPagination.getChamp();
 		} else {
 			queryOrder = " order by evenement.dateEvenement";
 		}
-		if (paramPagination.isSensAscending()) {
+		if (paramPagination != null && paramPagination.isSensAscending()) {
 			queryOrder = queryOrder + " asc" ;
 		} else {
 			queryOrder = queryOrder + " desc" ;
 		}
 
 		final String query = " select evenement from EvenementCivilRegroupe evenement where 1=1 " + queryWhere + queryOrder;
-
-		final int firstResult = (paramPagination.getNumeroPage() - 1) * paramPagination.getTaillePage();
-		final int maxResult = paramPagination.getTaillePage();
 
 		return (List<EvenementCivilRegroupe>) getHibernateTemplate().executeWithNativeSession(new HibernateCallback() {
 			public Object doInHibernate(Session session) throws HibernateException, SQLException {
@@ -87,8 +84,13 @@ public class EvenementCivilRegroupeDAOImpl extends GenericDAOImpl<EvenementCivil
 						queryObject.setParameter(i, values[i]);
 					}
 				}
-				queryObject.setFirstResult(firstResult);
-				queryObject.setMaxResults(maxResult);
+				if (paramPagination != null) {
+					final int firstResult = (paramPagination.getNumeroPage() - 1) * paramPagination.getTaillePage();
+					final int maxResult = paramPagination.getTaillePage();
+
+                    queryObject.setFirstResult(firstResult);
+                    queryObject.setMaxResults(maxResult);
+				}
 
 				return queryObject.list();
 			}
@@ -122,14 +124,7 @@ public class EvenementCivilRegroupeDAOImpl extends GenericDAOImpl<EvenementCivil
 		String queryWhere = "";
 
 		// Si la valeur n'existe pas (TOUS par exemple), type = null
-		TypeEvenementCivil type;
-		try {
-			type = TypeEvenementCivil.valueOf(criterion.getType());
-		}
-		catch (Exception e) {
-			type = null; // Type inconnu => TOUS
-		}
-
+		final TypeEvenementCivil type = criterion.getType();
 		if (type != null) {
 			queryWhere += " and evenement.type = ? ";
 			if (LOGGER.isTraceEnabled()) {
@@ -139,14 +134,7 @@ public class EvenementCivilRegroupeDAOImpl extends GenericDAOImpl<EvenementCivil
 		}
 
 		// Si la valeur n'existe pas (TOUS par exemple), etat = null
-		EtatEvenementCivil etat;
-		try {
-			etat = EtatEvenementCivil.valueOf(criterion.getEtat());
-		}
-		catch (Exception e) {
-			etat = null; // Etat inconnu => TOUS
-		}
-
+		final EtatEvenementCivil etat = criterion.getEtat();
 		if (etat != null) {
 			queryWhere += " and evenement.etat = ? ";
 			if (LOGGER.isTraceEnabled()) {
