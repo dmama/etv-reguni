@@ -32,6 +32,8 @@ public class ConcurrentAccessTest extends BusinessTest {
 		ConcurrentAccessIndexerThread thread1 = new ConcurrentAccessIndexerThread(globalIndex);
 		ConcurrentAccessSearcherThread thread2 = new ConcurrentAccessSearcherThread(globalIndex);
 
+		LOGGER.info("Starting...");
+
 		thread1.start();
 		thread2.start();
 

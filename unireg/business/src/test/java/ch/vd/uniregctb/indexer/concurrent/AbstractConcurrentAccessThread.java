@@ -6,7 +6,7 @@ import ch.vd.uniregctb.indexer.GlobalIndexInterface;
 
 public abstract class AbstractConcurrentAccessThread extends Thread {
 
-	private Logger LOGGER = Logger.getLogger(ConcurrentAccessIndexerThread.class);
+	private Logger LOGGER = Logger.getLogger(AbstractConcurrentAccessThread.class);
 	
 	private boolean stopPlease = false;
 	protected GlobalIndexInterface globalIndex;
@@ -14,8 +14,8 @@ public abstract class AbstractConcurrentAccessThread extends Thread {
 
 
 	public AbstractConcurrentAccessThread(GlobalIndexInterface globalIndex) {
-		
 		this.globalIndex = globalIndex;
+		setName(getClass().getSimpleName());
 	}
 
 	public boolean isInError() {

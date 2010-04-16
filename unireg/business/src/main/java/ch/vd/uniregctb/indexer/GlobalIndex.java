@@ -13,6 +13,7 @@ import org.springframework.util.FileSystemUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -245,6 +246,10 @@ public class GlobalIndex implements InitializingBean, DisposableBean, GlobalInde
 	public void removeThenIndexEntities(final List<IndexableData> data) {
 		Assert.notNull(data);
 
+		if (LOGGER.isTraceEnabled()) {
+			LOGGER.trace("Re-indexing entities: ids = " + Arrays.toString(data.toArray()));
+		}
+
 		if (directory == null) {
 			LOGGER.warn("L'indexeur n'est pas initialisé" + hashCode());
 			return;
@@ -259,6 +264,10 @@ public class GlobalIndex implements InitializingBean, DisposableBean, GlobalInde
 				return null;
 			}
 		});
+
+		if (LOGGER.isTraceEnabled()) {
+			LOGGER.trace("Re-indexing entities done: ids = " + Arrays.toString(data.toArray()));
+		}
 	}
 
 	/**
@@ -294,6 +303,10 @@ public class GlobalIndex implements InitializingBean, DisposableBean, GlobalInde
 	public void indexEntities(final List<IndexableData> data) {
 		Assert.notNull(data);
 
+		if (LOGGER.isTraceEnabled()) {
+			LOGGER.trace("Indexing entities: ids = " + Arrays.toString(data.toArray()));
+		}
+
 		if (directory == null) {
 			LOGGER.warn("L'indexeur n'est pas initialisé" + hashCode());
 			return;
@@ -307,6 +320,10 @@ public class GlobalIndex implements InitializingBean, DisposableBean, GlobalInde
 				return null;
 			}
 		});
+
+		if (LOGGER.isTraceEnabled()) {
+			LOGGER.trace("Indexing entities done: ids = " + Arrays.toString(data.toArray()));
+		}
 	}
 
 	/**

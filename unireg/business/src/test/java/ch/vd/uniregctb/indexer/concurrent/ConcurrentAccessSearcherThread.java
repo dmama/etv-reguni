@@ -27,7 +27,8 @@ public class ConcurrentAccessSearcherThread extends AbstractConcurrentAccessThre
 			globalIndex.search("Prenom:good", new SearchCallback() {
 				public void handle(List<DocHit> hits, DocGetter docGetter) throws Exception {
 					int count = hits.size();
-					LOGGER.debug("S:Doc count: " + globalIndex.getApproxDocCount() + " Hits: " + count);
+					// [UNIREG-2287] Désactivé l'appel ci-dessus à cause bug de réentrance (deadlock) sur l'implémentation 'fair' en java 1.5 :
+					// LOGGER.debug("S:Doc count: " + globalIndex.getApproxDocCount() + " Hits: " + count);
 				}
 			});
 			nbSearch++;
