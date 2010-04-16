@@ -1172,6 +1172,12 @@ public class TiersServiceImpl implements TiersService {
 	public void closeAppartenanceMenage(PersonnePhysique pp, MenageCommun menage, RegDate dateFermeture) {
 		for (RapportEntreTiers rapportObjet : menage.getRapportsObjet()) {
 			if (rapportObjet.getDateFin() == null && rapportObjet.getSujetId().equals(pp.getId()) && !rapportObjet.isAnnule()) {
+
+				if (!RegDateHelper.isAfterOrEqual(dateFermeture, rapportObjet.getDateDebut(), NullDateBehavior.EARLIEST)) {
+					final String msg = String.format("On ne peut fermer le rapport d'appartenance ménage avant sa date de début");
+					throw new RuntimeException(msg);
+				}
+
 				rapportObjet.setDateFin(dateFermeture);
 
 				// on ne sort pas de la boucle au cas où il y aurait plusieurs rapports à fermer

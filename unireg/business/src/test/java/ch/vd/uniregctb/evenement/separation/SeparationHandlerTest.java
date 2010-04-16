@@ -7,19 +7,25 @@ import static junit.framework.Assert.assertNull;
 import java.util.ArrayList;
 import java.util.List;
 
+import junit.framework.Assert;
 import org.apache.log4j.Logger;
 import org.junit.Test;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.evenement.AbstractEvenementHandlerTest;
 import ch.vd.uniregctb.evenement.EvenementCivilErreur;
 import ch.vd.uniregctb.interfaces.model.Individu;
+import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.type.ModeImposition;
+import ch.vd.uniregctb.type.MotifFor;
 
 /**
  * Test du handler de séparation:
@@ -33,7 +39,7 @@ public class SeparationHandlerTest extends AbstractEvenementHandlerTest {
 	private static final Logger LOGGER = Logger.getLogger(SeparationHandlerTest.class);
 	
 	final static private RegDate DATE_SEPARATION = date(2008, 10, 10);
-	
+
 	// test personne mariée seule
 	private static final long INDIVIDU_MARIE_SEUL = 12345;
 	private static final long MARIE_SEUL_MENAGE_COMMUN = 7008;
@@ -74,12 +80,13 @@ public class SeparationHandlerTest extends AbstractEvenementHandlerTest {
 				separeIndividus(leon, helene, DATE_SEPARATION);
 			}
 		});
-		loadDatabase(DB_UNIT_DATA_FILE);
 	}
 	
 	@Test
-	public void testSeparationPersonneMarieeSeule() {
+	public void testSeparationPersonneMarieeSeule() throws Exception {
 		
+		loadDatabase(DB_UNIT_DATA_FILE);
+
 		LOGGER.debug("Test de traitement d'un événement de séparation d'une personne mariée seule.");
 		Individu marieSeul = serviceCivil.getIndividu(INDIVIDU_MARIE_SEUL, 2008);
 		Separation separation = createValidSeparation(marieSeul, null);
@@ -128,6 +135,8 @@ public class SeparationHandlerTest extends AbstractEvenementHandlerTest {
 	@Test
 	public void testSeparationPersonneMarieeAvecSuisseOuPermisC() throws Exception {
 		
+		loadDatabase(DB_UNIT_DATA_FILE);
+
 		LOGGER.debug("Test de traitement d'un événement de séparation d'une personne mariée avec un suisse ou étranger avec permis C.");
 		Individu marie = serviceCivil.getIndividu(INDIVIDU_MARIE, 2008);
 		Individu conjoint = serviceCivil.getIndividu(INDIVIDU_MARIE_CONJOINT, 2008);
@@ -195,6 +204,8 @@ public class SeparationHandlerTest extends AbstractEvenementHandlerTest {
 	@Test
 	public void testSeparationPersonneMarieeDeNationaliteInconnue() throws Exception {
 		
+		loadDatabase(DB_UNIT_DATA_FILE);
+
 		LOGGER.debug("Test de traitement d'un événement de séparation d'une personne de nationalité inconnue.");
 		Individu marie = serviceCivil.getIndividu(INDIVIDU_MARIE2, 2008);
 		Individu conjoint = serviceCivil.getIndividu(INDIVIDU_MARIE2_CONJOINT, 2008);
@@ -210,10 +221,61 @@ public class SeparationHandlerTest extends AbstractEvenementHandlerTest {
 		assertEquals("L'événement aurait du être en erreur car impossible de déterminer la nationalité de la personne", false, erreurs.isEmpty());
 		
 	}
+
+	@Test
+	/**
+	 * Voir JIRA UNIREG-2292
+	 */
+	public void testSeparationJourDuMariage() throws Exception {
+
+		serviceCivil.setUp(new DefaultMockServiceCivil() {
+			@Override
+			protected void init() {
+				super.init();
+
+				final MockIndividu leon = (MockIndividu) getIndividu(INDIVIDU_MARIE2);
+				final MockIndividu helene = (MockIndividu) getIndividu(INDIVIDU_MARIE2_CONJOINT);
+				separeIndividus(leon, helene, DATE_SEPARATION);
+			}
+		});
+
+		// création des contribuables
+		doInNewTransaction(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique leon = addHabitant(INDIVIDU_MARIE2);
+				final PersonnePhysique helene = addHabitant(INDIVIDU_MARIE2_CONJOINT);
+				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(leon, helene, DATE_SEPARATION, null);        // on les marie au fiscal le jour où ils arrivent HC (ils vont en fait se séparer)
+				addForPrincipal(ensemble.getMenage(), DATE_SEPARATION, MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
+				return null;
+			}
+		});
+
+		final Individu marie = serviceCivil.getIndividu(INDIVIDU_MARIE2, 2008);
+		final Individu conjoint = serviceCivil.getIndividu(INDIVIDU_MARIE2_CONJOINT, 2008);
+		final Separation separation = createValidSeparation(marie, conjoint);
+
+		final List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
+		final List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
+
+		evenementCivilHandler.checkCompleteness(separation, erreurs, warnings);
+		assertEmpty("Une erreur est survenue lors du checkCompleteness de la séparation.", erreurs);
+
+		evenementCivilHandler.validate(separation, erreurs, warnings);
+		assertEquals("L'événement aurait du être en erreur car impossible de déterminer la nationalité de la personne", false, erreurs.isEmpty());
+
+		try {
+			evenementCivilHandler.handle(separation, warnings);
+			Assert.fail("Le traitement de l'événement aurait dû lancer une exception");
+		}
+		catch (RuntimeException e) {
+			final String message = e.getMessage();
+			assertEquals("On ne peut fermer le rapport d'appartenance ménage avant sa date de début", message);
+		}
+	}
 	
 	private Separation createValidSeparation(Individu individu, Individu conjoint) {
 		
-		MockSeparation separation = new MockSeparation();
+		final MockSeparation separation = new MockSeparation();
 		separation.setIndividu(individu);
 		separation.setAncienConjoint(conjoint);
 		separation.setNumeroOfsCommuneAnnonce(5652);
