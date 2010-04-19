@@ -141,7 +141,7 @@ public class ContribuableManager {
 	}
 
 
-	@Transactional
+
 	public void rattraperMarieSeul(final LoggingStatusManager statutManager) {
 
 		globalTiersIndexer.setOnTheFlyIndexation(false);
@@ -199,7 +199,7 @@ public class ContribuableManager {
 			@Override
 			public void afterTransactionCommit() {
 				rapportFinal.add(rapportMarieCourant);
-				statutManager.setMessage("Traitement des doublons:", percent);
+				statutManager.setMessage("Traitement des mariés seuls posant problème:", percent);
 			}
 		});
 
@@ -248,16 +248,16 @@ public class ContribuableManager {
 
 	private void ecrireRapportMarieSeul(RattrapageMarieSeul rapportFinal) {
 
-		LOGGER.info("Nombre de Marie Seul à vérifier :" + rapportFinal.nombreCtbCharges);
-		LOGGER.info("Nombre de Marie seuls posant problème et corrigés :" + rapportFinal.nbCtbsTotal);
-		LOGGER.info("Nombre de for supprimés :" + rapportFinal.nbCtbFors);
+		LOGGER.info("Nombre de Maries Seuls créés depuis le 15 Mars 2010 :" + rapportFinal.nombreCtbCharges);
+		LOGGER.info("Nombre de Maries seuls posant problème et corrigés :" + rapportFinal.nbCtbsTotal);
+		LOGGER.info("Nombre de fors fermés :" + rapportFinal.nbCtbFors);
 		LOGGER.info("Nombre d'erreurs:" + rapportFinal.nbErrors);
-		LOGGER.info("Nombre de conjoint:" + rapportFinal.nbConjoint);
+		LOGGER.info("Nombre de couples reformés:" + rapportFinal.nbConjoint);
 
 		RAPPORT.info("numéro du marie seul; numéro du ménage;numéro du conjoint;Numéro OFS autorité fiscal(null si pas de for)");
 		RAPPORTFORSUPPRIME.info("Numéro ctb;Date Debut;Date Fin;modeImposition;Numero OFS Autorite fiscale;Type");
 
-		ERROR.info("numéro du marié seul; message erreur");
+		ERROR.error("numéro du marié seul; message erreur");
 
 
 		List<String> listeMessage = rapportFinal.listeResultats;
@@ -271,7 +271,7 @@ public class ContribuableManager {
 
 		listeMessage = rapportFinal.listeError;
 		for (String message : listeMessage) {
-			ERROR.info(message);
+			ERROR.error(message);
 		}
 
 
@@ -323,12 +323,11 @@ public class ContribuableManager {
 						if(menage.getDernierForFiscalPrincipal()!=null){
 							numeroAutorite = menage.getDernierForFiscalPrincipal().getNumeroOfsAutoriteFiscale();
 						}
-						rapportMarieCourant.addResultat(personneMarieSeul.getNumero() + ";" + menage.getNumero() + ";" + conjoint.getNumero());
+						rapportMarieCourant.addResultat(personneMarieSeul.getNumero() + ";" + menage.getNumero() + ";" + conjoint.getNumero()+";"+numeroAutorite);
 						rapportMarieCourant.addConjoint(conjoint.getNumero()+";"+numeroAutorite);
 					}
 				}
-				//	PersonnePhysique personneCorrecte = getPersonneCorrecte(personneDoublon);
-				//	traiterDoublon(personneDoublon, personneCorrecte);
+			
 			}
 
 			LOGGER.debug(tiers.getNumero());

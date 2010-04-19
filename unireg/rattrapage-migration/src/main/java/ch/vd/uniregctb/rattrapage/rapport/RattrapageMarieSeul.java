@@ -37,7 +37,7 @@ public class RattrapageMarieSeul extends JobResults {
 
 
 	public final List<String> listeResultats = new ArrayList<String>();
-		public final List<String> listeFor = new ArrayList<String>();
+	public final List<String> listeFor = new ArrayList<String>();
 	public final List<String> listeError = new ArrayList<String>();
 	public final List<String> listeConjoint = new ArrayList<String>();
 

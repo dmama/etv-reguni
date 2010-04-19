@@ -26,7 +26,7 @@
 	</appender>
 	<appender name="RAPPORTFORSUPPRIME" class="org.apache.log4j.FileAppender">
 		<param name="Append" value="false" />
-		<param name="File" value="RapportForSupprime.csv" />
+		<param name="File" value="RapportForFerme.csv" />
 		<layout class="org.apache.log4j.PatternLayout">
 			<param name="ConversionPattern" value="%m%n" />
 		</layout>
@@ -68,7 +68,7 @@
 		<level value="DEBUG" />
 	</logger>
 
-	<logger name="ch.vd.uniregctb.rattrapage.ContribuableManager.For" additivity="false">
+	<logger name="ch.vd.uniregctb.rattrapage.ContribuableManager.ForSupprime" additivity="false">
 		<level value="INFO" />
 		<appender-ref ref="RAPPORTFORSUPPRIME"/>
 	</logger>
