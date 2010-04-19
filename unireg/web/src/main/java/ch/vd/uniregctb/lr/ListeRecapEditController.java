@@ -161,7 +161,7 @@ public class ListeRecapEditController extends AbstractListeRecapController {
 			else if (request.getParameter(BUTTON_SOMMER_LR) != null) {
 				final EditiqueResultat resultat = lrEditManager.envoieImpressionLocalSommationLR(bean);
 				if (resultat != null && resultat.getDocument() != null) {
-					getServletService().downloadAsFile("sommationLr.pdf", resultat.getDocument(), response);
+					printPCLManager.openPclStream(request, response, resultat.getDocument());
 				}
 				else {
 					final String message = String.format("%s Veuillez ré-essayer plus tard.", EditiqueErrorHelper.getMessageErreurEditique(resultat));

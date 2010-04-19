@@ -211,7 +211,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		final String typeDocument = impressionSommationLRHelper.calculPrefixe();
 		final TypFichierImpressionIS editiqueDI = impressionSommationLRHelper.remplitSommationLR(lr, dateEvenement);
 		final String nomDocument = impressionSommationLRHelper.construitIdDocument(lr);
-		return editiqueService.creerDocumentImmediatement(nomDocument, typeDocument, TypeFormat.PDF, editiqueDI, true);
+		return editiqueService.creerDocumentImmediatement(nomDocument, typeDocument, TypeFormat.PCL, editiqueDI, true);
 	}
 
 	public EditiqueResultat imprimeConfirmationDelaiOnline(DeclarationImpotOrdinaire di, DelaiDeclaration delai) throws EditiqueException, JMSException {
