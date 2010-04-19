@@ -34,12 +34,4 @@ public class WatchDogUniregIntegarationTest extends WatchDogTest {
 		assertStatus("OK", page, "serviceSecuriteStatus");
 		assertStatus("OK", page, "bvrPlusStatus");
 	}
-
-	private static void assertStatus(final String expected, final HtmlPage page, final String statusIdName) {
-		final HtmlTableCell td = (HtmlTableCell) page.getHtmlElementById(statusIdName);
-		assertNotNull(td);
-		final DomText status = (DomText) td.getFirstDomChild();
-		assertNotNull(status);
-		assertEquals("Problème avec le " + statusIdName, expected, status.asText());
-	}
 }

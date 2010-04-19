@@ -21,4 +21,15 @@ public class WatchDogUniregValidationTest extends WatchDogTest {
 		String titre = page.getTitleText();
 		assertTrue(titre.equalsIgnoreCase("Recherche des tiers") || titre.equalsIgnoreCase("Sélection de l'OID de travail"));
 	}
+
+	public void testValidationConnectivite() throws Exception {
+		LOGGER.info("Vérification de la connectivité de Unireg en validation...");
+		final HtmlPage page = (HtmlPage) webClient.getPage(new URL(
+				"https://validation.portail.etat-de-vaud.ch/fiscalite/val-unireg/admin/status.do"));
+		assertNotNull(page);
+		assertStatus("OK", page, "serviceCivilStatus");
+		assertStatus("OK", page, "serviceInfraStatus");
+		assertStatus("OK", page, "serviceSecuriteStatus");
+		assertStatus("OK", page, "bvrPlusStatus");
+	}
 }

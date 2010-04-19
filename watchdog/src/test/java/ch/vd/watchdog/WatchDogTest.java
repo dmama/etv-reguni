@@ -2,6 +2,8 @@ package ch.vd.watchdog;
 
 import java.net.URL;
 
+import com.gargoylesoftware.htmlunit.html.DomText;
+import com.gargoylesoftware.htmlunit.html.HtmlTableCell;
 import junit.framework.TestCase;
 
 import org.apache.log4j.Logger;
@@ -55,5 +57,13 @@ public abstract class WatchDogTest extends TestCase {
 			page = (HtmlPage) resultat.getNewPage();
 			assertNotNull(page);
 		}
+	}
+
+	protected static void assertStatus(final String expected, final HtmlPage page, final String statusIdName) {
+		final HtmlTableCell td = (HtmlTableCell) page.getHtmlElementById(statusIdName);
+		assertNotNull(td);
+		final DomText status = (DomText) td.getFirstDomChild();
+		assertNotNull(status);
+		assertEquals("Problème avec le " + statusIdName, expected, status.asText());
 	}
 }
