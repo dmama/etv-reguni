@@ -12,6 +12,7 @@ import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleService;
 import ch.vd.uniregctb.tiers.*;
+import ch.vd.uniregctb.type.FormulePolitesse;
 import ch.vd.uniregctb.webservices.common.NoOfsTranslator;
 import ch.vd.uniregctb.webservices.tiers2.TiersWebService;
 import ch.vd.uniregctb.webservices.tiers2.data.*;
@@ -834,6 +835,9 @@ public class TiersWebServiceWithPM implements TiersWebService {
 
 	private AdresseEnvoi calculateAdresseEnvoi(PersonneMoraleHisto pm, List<Adresse> adresses) {
 		AdresseEnvoiDetaillee adresse = new AdresseEnvoiDetaillee(AdresseGenerique.Source.PM);
+
+		// [UNIREG-2302]
+		adresse.addFormulePolitesse(FormulePolitesse.PERSONNE_MORALE);
 
 		if (pm.designationAbregee != null) {
 			adresse.addNomPrenom(pm.designationAbregee);

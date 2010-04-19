@@ -65,6 +65,16 @@ public enum FormulePolitesse {
 		public String formuleAppel() {
 			return MADAME_MONSIEUR.salutations();
 		}
+	},
+
+	/**
+	 * [UNIREG-2302] Formule de politesse à l'usage des personnes morales.
+	 */
+	PERSONNE_MORALE(null) {
+		@Override
+		public String formuleAppel() {
+			return MADAME_MONSIEUR.salutations();
+		}
 	};
 
 	private String format;

@@ -78,6 +78,8 @@ public class MockPersonneMorale implements PersonneMorale {
 		}
 
 		{
+			BCV.setDesignationAbregee("BCV");
+
 			MockAdresseEntreprise siege = new MockAdresseEntreprise();
 			siege.setComplement(null);
 			siege.setLocalite("1003 Lausanne Secteur de dist.");
@@ -91,7 +93,7 @@ public class MockPersonneMorale implements PersonneMorale {
 			BCV.addAdresse(siege);
 
 			MockAdresseEntreprise courrier = new MockAdresseEntreprise();
-			courrier.setComplement(null);
+			courrier.setComplement("pa Comptabilité financière");
 			courrier.setLocalite("1003 Lausanne Secteur de dist.");
 			courrier.setRue("Saint-François, place");
 			courrier.setNumeroMaison("14");

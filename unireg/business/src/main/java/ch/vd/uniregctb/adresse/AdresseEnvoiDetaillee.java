@@ -30,13 +30,17 @@ public class AdresseEnvoiDetaillee extends AdresseEnvoi {
 	public void addFormulePolitesse(FormulePolitesse formule) {
 		this.salutations = formule.salutations();
 		this.formuleAppel = formule.formuleAppel();
-		addLine(this.salutations);
+		if (this.salutations != null) {
+			addLine(this.salutations);
+		}
 	}
 
 	public void addFormulePolitesse(FormulePolitesse formule, int optionalite) {
 		this.salutations = formule.salutations();
 		this.formuleAppel = formule.formuleAppel();
-		addLine(this.salutations, optionalite);
+		if (this.salutations != null) {
+			addLine(this.salutations, optionalite);
+		}
 	}
 
 	public void addNomPrenom(String ligne) {

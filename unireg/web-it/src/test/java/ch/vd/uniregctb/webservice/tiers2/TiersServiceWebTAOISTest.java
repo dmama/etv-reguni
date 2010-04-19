@@ -30,6 +30,7 @@ import ch.vd.uniregctb.webservices.tiers2.ModeCommunication;
 import ch.vd.uniregctb.webservices.tiers2.ModeImposition;
 import ch.vd.uniregctb.webservices.tiers2.PeriodeImposition;
 import ch.vd.uniregctb.webservices.tiers2.PeriodiciteDecompte;
+import ch.vd.uniregctb.webservices.tiers2.PersonneMorale;
 import ch.vd.uniregctb.webservices.tiers2.PersonnePhysique;
 import ch.vd.uniregctb.webservices.tiers2.PersonnePhysiqueHisto;
 import ch.vd.uniregctb.webservices.tiers2.RapportEntreTiers;
@@ -990,5 +991,34 @@ public class TiersServiceWebTAOISTest extends AbstractTiersServiceWebTest {
 		assertEquals(2009, info2009.getPeriodeFiscale());
 		assertEquals(4, info2009.getNbLRsTheorique());
 		assertEquals(0, info2009.getNbLRsEmises()); // aucune LR émise
+	}
+
+	/**
+	 * [UNIREG-2302]
+	 */
+	@Test
+	public void testGetAdresseEnvoiPersonneMorale() throws Exception {
+
+		GetTiers params = new GetTiers();
+		params.setLogin(login);
+		params.setTiersNumber(20222); // la BCV
+		params.getParts().add(TiersPart.ADRESSES_ENVOI);
+
+		final PersonneMorale pm = (PersonneMorale) service.getTiers(params);
+		assertNotNull(pm);
+
+		final AdresseEnvoi adresseEnvoi = pm.getAdresseEnvoi();
+		assertNotNull(adresseEnvoi);
+
+		// l'adresse d'envoi n'a pas de salutations
+		assertNull(adresseEnvoi.getSalutations());
+		assertEquals("BCV", trimValiPattern(adresseEnvoi.getLigne1()));
+		assertEquals("Place Saint-François", adresseEnvoi.getLigne2());
+		assertEquals("1003 Lausanne", adresseEnvoi.getLigne3());
+		assertNull(adresseEnvoi.getLigne5());
+		assertNull(adresseEnvoi.getLigne6());
+
+		// par contre, la formule d'appel est renseignée
+		assertEquals("Madame, Monsieur", adresseEnvoi.getFormuleAppel());
 	}
 }
