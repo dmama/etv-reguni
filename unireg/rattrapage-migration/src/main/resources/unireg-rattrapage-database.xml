@@ -7,7 +7,7 @@
 	<bean id="auditManager" class="ch.vd.uniregctb.audit.AuditManager">
 		<property name="auditLineDAO" ref="auditLineDAO" />
 		<!-- BEGIN_LVERSION -->
-		<property name="appName" value="RattrapageMigration (version 3.5.3f)" />
+		<property name="appName" value="RattrapageMigration (version 3.5.3g)" />
 		<!-- END_LVERSION -->
 	</bean>
 

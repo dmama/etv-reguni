@@ -33,7 +33,7 @@
 		</file>
 		<file>
 			<!-- BEGIN_LVERSION -->
-			<source>target/uniregctb-rattrapage-migration-3.5.3f.jar</source>
+			<source>target/uniregctb-rattrapage-migration-3.5.3g.jar</source>
 			<!-- END_LVERSION -->
 			<outputDirectory>lib</outputDirectory>
 			<destName>uniregctb-rattrapage-migration.jar</destName>
