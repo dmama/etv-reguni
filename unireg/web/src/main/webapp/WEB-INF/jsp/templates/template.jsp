@@ -220,13 +220,16 @@ function ouvrirAide(url) {
 
 			<div id="header" >
 				<span class="departement"><a href="http://www.aci.vd.ch" target="_blank"><fmt:message key="label.aci" /></a></span>
+				<unireg:testMode>
+					<div style="color:LawnGreen; left:360px; top:20px; position:absolute; font-size:21pt; font-weight:bold; z-index:100">
+						<span style="color:white;font-size:21pt;font-weight: bold">(</span>
+							<unireg:environnement/>
+						<span style="color:white;font-size:21pt;font-weight: bold">)</span>
+					</div>
+				</unireg:testMode>
 				<unireg:norentes>
-					<div style="color:LawnGreen; left:360px; top:20px; position:absolute; font-size:21pt; font-weight:bold; z-index:100"><span style="color:white;font-size:21pt;font-weight: bold">(</span>Norentes<span style="color:white;font-size:21pt;font-weight: bold">)</span></div>
 					<div style="left:170px; top:100px; color:white; position:absolute; font-size:12pt"><unireg:norentesScenarioName/></div>
 				</unireg:norentes>
-				<unireg:standalone>
-					<div style="color:LawnGreen; left:360px; top:20px; position:absolute; font-size:21pt; font-weight:bold; z-index:100"><span style="color:white;font-size:21pt;font-weight: bold">(</span>Standalone<span style="color:white;font-size:21pt;font-weight: bold">)</span></div>
-				</unireg:standalone>
 				<div class="application"><span class="label"><fmt:message key="application.name" /></span></div>
 				<%-- le champ d'accès rapide dans l'entête de l'application --%>
 				<div class="quicksearch">
