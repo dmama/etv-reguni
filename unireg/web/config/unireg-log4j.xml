@@ -75,7 +75,7 @@
 	</logger>
 
 	<category name="tiers2.read" additivity="false">
-	  <priority value="WARN"/>
+	  <priority value="INFO"/>
 	  <appender-ref ref="WS_ACCESS"/>
 	</category>
 
