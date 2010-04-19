@@ -70,7 +70,8 @@ public class LuceneWriter extends LuceneEngine {
 			LOGGER.info("Index created (overwrite mode)");
 		}
 		iw = new IndexWriter(directory, an, createIt, IndexWriter.MaxFieldLength.LIMITED);
-		iw.setMaxBufferedDeleteTerms(1); // Force le delete a chaque fois
+		// [UNIREG-2220] ce paramètre provoque un usage excessif de mémoire et il n'est pas nécessaire que les terms effacés seront flushés lors du close du writer: 
+		// iw.setMaxBufferedDeleteTerms(1); // Force le delete a chaque fois
 		Assert.isTrue(!createIt || iw.maxDoc() == 0, "L'indexeur n'est pas vide apres l'overwrite");
 	}
 
