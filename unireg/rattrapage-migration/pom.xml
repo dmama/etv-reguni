@@ -52,6 +52,12 @@
             <artifactId>stax-api</artifactId>
             <version>1.0-2</version>
 		</dependency>
+		<dependency>
+			<groupId>com.oracle</groupId>
+			<artifactId>ojdbc</artifactId>
+			<version>10.2.0.4</version>
+			<scope>runtime</scope>
+		</dependency>
     </dependencies>
 
 	<!-- Build plugins and sources -->
@@ -86,7 +92,7 @@
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<configuration>
-					<finalName>rattrapageMigration-${version}</finalName>
+					<finalName>rattrapage-${version}</finalName>
 					<descriptors>
 						<descriptor>release.xml</descriptor>
 					</descriptors>

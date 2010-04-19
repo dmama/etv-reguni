@@ -42,9 +42,9 @@ public class RattrapageMigrationMain {
 		}
 		// Récupération des paramètres
 		final String objetATraiter = args[0];
-		LoggingStatusManager statutManager =new LoggingStatusManager(LOGGER);
+		LoggingStatusManager statutManager = new LoggingStatusManager(LOGGER);
 
-		LOGGER.info("Debut Rattrapage Migration :"+objetATraiter);
+		LOGGER.info("Debut Rattrapage Migration :" + objetATraiter);
 		String[] files = {
 				ClientConstants.UNIREG_CORE_DAO, ClientConstants.UNIREG_CORE_SF, ClientConstants.UNIREG_BUSINESS_SERVICES,
 				ClientConstants.UNIREG_BUSINESS_INTERFACES, "classpath:unireg-business-rattrapage.xml",
@@ -68,15 +68,17 @@ public class RattrapageMigrationMain {
 		else if ("DOUBLON".equals(objetATraiter)) {
 			contribuableManager.rattraperDoublont(statutManager);
 		}
+		else if ("MARIE".equals(objetATraiter)) {
+			contribuableManager.rattraperMarieSeul(statutManager);
+		}
 		else if ("ALL".equals(objetATraiter)) {
 			contribuableManager.rattraperDoublont(statutManager);
 			forManager.rattraperForSourcier(statutManager);
 
 		}
-		else{
+		else {
 			LOGGER.error("USAGE: DOUBLON  or FORS");
 		}
-
 
 
 		AuthenticationHelper.resetAuthentication();

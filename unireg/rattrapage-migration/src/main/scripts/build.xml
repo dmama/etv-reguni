@@ -11,7 +11,7 @@
 
 	<target name="rattrape" depends="init">
 
-		<echo message="Job: Rattrapage de la migration : ${objet}" />
+		<echo message="Job: Rattrapage de données Unireg : ${objet}" />
 
 		<java maxmemory="1024m" classname="ch.vd.uniregctb.rattrapage.RattrapageMigrationMain" fork="true" failonerror="true" classpathref="rattrapage-cp">			
 			<arg value="${objet}" />			

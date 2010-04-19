@@ -1,5 +1,5 @@
 #!/bin/bash
-# ce script permet de lancer le rattrapage de la migration
+# ce script permet de lancer un rattrapage de données sur Unireg
 
 DATE=`date +"%Y%m%d%H%M%S"`
 
@@ -7,8 +7,8 @@ DATE=`date +"%Y%m%d%H%M%S"`
 REPERTOIRE_LOGS=logs
 JAVA_HOME=/usr/lib/jvm/java-1.5.0-sun
 
-# Créations des fors sources
-ant -Dobjet=DOUBLON 
+# Vérification et Mis a jour des mariés seuls
+ant -Dobjet=MARIE 
 mkdir -p $REPERTOIRE_LOGS/rattrapage_$DATE
 mkdir -p $REPERTOIRE_LOGS/Rapports_$DATE
 mv *.log* $REPERTOIRE_LOGS/rattrapage_$DATE
