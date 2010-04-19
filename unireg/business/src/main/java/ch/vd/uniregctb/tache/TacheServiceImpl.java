@@ -165,21 +165,27 @@ public class TacheServiceImpl implements TacheService, InitializingBean {
 			final long ms = (end - start) / 1000000;
 			
 			StringBuilder s = new StringBuilder();
-			s.append("Statistiques des tâches en instances par OID (récupérées en ").append(ms).append(" ms)").append(" :\n");
+			s.append("Statistiques des tâches en instances par OID (récupérées en ").append(ms).append(" ms)");
 
-			// trie la liste par OID
-			List<Map.Entry<Integer, TacheStats>> list = new ArrayList<Map.Entry<Integer, TacheStats>>(stats.entrySet());
-			Collections.sort(list, new Comparator<Map.Entry<Integer, TacheStats>>() {
-				public int compare(Map.Entry<Integer, TacheStats> o1, Map.Entry<Integer, TacheStats> o2) {
-					return o1.getKey().compareTo(o2.getKey());
-				}
-			});
-
-			for (Map.Entry<Integer, TacheStats> e : list) {
-				final TacheStats ts = e.getValue();
-				s.append("  - ").append(e.getKey()).append(" : tâches=").append(ts.tachesEnInstance).append(" dossiers=").append(ts.dossiersEnInstance).append('\n');
+			if (stats.isEmpty()) {
+				s.append(" : aucune tâche trouvée");
 			}
+			else {
+				s.append(" :\n");
 
+				// trie la liste par OID
+				List<Map.Entry<Integer, TacheStats>> list = new ArrayList<Map.Entry<Integer, TacheStats>>(stats.entrySet());
+				Collections.sort(list, new Comparator<Map.Entry<Integer, TacheStats>>() {
+					public int compare(Map.Entry<Integer, TacheStats> o1, Map.Entry<Integer, TacheStats> o2) {
+						return o1.getKey().compareTo(o2.getKey());
+					}
+				});
+
+				for (Map.Entry<Integer, TacheStats> e : list) {
+					final TacheStats ts = e.getValue();
+					s.append("  - ").append(e.getKey()).append(" : tâches=").append(ts.tachesEnInstance).append(" dossiers=").append(ts.dossiersEnInstance).append('\n');
+				}
+			}
 			LOGGER.debug(s.toString());
 		}
 
