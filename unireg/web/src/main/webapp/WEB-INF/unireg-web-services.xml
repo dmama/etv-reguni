@@ -20,7 +20,6 @@
 		<property name="serviceUrl" value="${extprop.webservice.fidor.url}" />
 		<property name="username" value="${extprop.webservice.fidor.username}" />
 		<property name="password" value="${extprop.webservice.fidor.password}" />
-		<property name="environnement" value="${extprop.environnement}" />
 	</bean>
 
 
