@@ -151,5 +151,22 @@ public interface TacheDAO extends GenericDAO<Tache, Long> {
 	public static class TacheStats {
 		public int tachesEnInstance;
 		public int dossiersEnInstance;
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (o == null || getClass() != o.getClass()) return false;
+
+			final TacheStats that = (TacheStats) o;
+
+			return dossiersEnInstance == that.dossiersEnInstance && tachesEnInstance == that.tachesEnInstance;
+		}
+
+		@Override
+		public int hashCode() {
+			int result = tachesEnInstance;
+			result = 31 * result + dossiersEnInstance;
+			return result;
+		}
 	}
 }

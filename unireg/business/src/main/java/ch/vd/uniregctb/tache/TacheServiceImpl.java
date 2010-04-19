@@ -161,7 +161,9 @@ public class TacheServiceImpl implements TacheService, InitializingBean {
 
 		final long end = System.nanoTime();
 
-		if (LOGGER.isDebugEnabled()) {
+		final boolean somethingChanged = (tacheStatsPerOid == null || !tacheStatsPerOid.equals(stats));
+
+		if (LOGGER.isDebugEnabled() && somethingChanged) { // on évite de logger si rien n'a changé depuis le dernier appel
 			final long ms = (end - start) / 1000000;
 			
 			StringBuilder s = new StringBuilder();
