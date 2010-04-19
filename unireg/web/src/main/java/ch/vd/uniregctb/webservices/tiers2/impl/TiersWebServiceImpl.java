@@ -461,8 +461,8 @@ public class TiersWebServiceImpl implements TiersWebService {
 		}
 		long totalTime = loadTiersTime + warmIndividusTime + mapTiersTime;
 
-		if (totalTime > 0) {
-			LOGGER.info(String.format("temps d'exécution: chargement des tiers=%d%%, préchargement des individus=%d%%, mapping des tiers=%d%%", loadTiersTime * 100 / totalTime,
+		if (totalTime > 0 && LOGGER.isDebugEnabled()) {
+			LOGGER.debug(String.format("temps d'exécution: chargement des tiers=%d%%, préchargement des individus=%d%%, mapping des tiers=%d%%", loadTiersTime * 100 / totalTime,
 					warmIndividusTime * 100 / totalTime, mapTiersTime * 100 / totalTime));
 		}
 
