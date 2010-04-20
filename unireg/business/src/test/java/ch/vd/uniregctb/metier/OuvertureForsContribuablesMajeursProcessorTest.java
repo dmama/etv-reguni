@@ -17,6 +17,7 @@ import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
+import ch.vd.uniregctb.interfaces.model.mock.MockOfficeImpot;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
@@ -336,5 +337,45 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 		assertNotNull(e2);
 		assertEquals(OuvertureForsResults.ErreurType.CIVIL_EXCEPTION, e2.raison);
 		assertEquals("ch.vd.uniregctb.tiers.TiersException: Impossible de déterminer la nationalité de l'individu n°" + noIndividu2, e2.details);
+	}
+
+	/**
+	 * [UNIREG-1585] Vérifie que le batch renseigne bien l'office d'impôt, notamment sur les contribuables qui ne possèdaient pas de for fiscal avant
+	 */
+	@Test
+	public void testRenseignementOIDapresTraitement() {
+
+		final int noIndividu = 1234;
+		final RegDate dateTraitement = date(2009, 1, 1);
+		final RegDate dateNaissance = date(1990, 1, 1);
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				MockIndividu individu = addIndividu(noIndividu, dateNaissance, "Duschmole", "Jean", true);
+				addAdresse(individu, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateNaissance, null);
+				addNationalite(individu, MockPays.Suisse, dateNaissance, null, 1);
+			}
+		});
+
+		final PersonnePhysique h = addHabitant(noIndividu);
+
+		// Lancement du batch
+		final OuvertureForsResults rapport = new OuvertureForsResults(dateTraitement);
+		processor.rapport = rapport;
+		processor.traiteHabitant(h.getNumero(), dateTraitement);
+
+		// Vérification du rapport
+		assertEquals(1, rapport.nbHabitantsTotal);
+		assertEmpty(rapport.habitantEnErrors);
+
+		final List<Traite> traites = rapport.habitantTraites;
+		assertEquals(1, traites.size());
+
+		final Traite traite = traites.get(0);
+		assertEquals(h.getNumero().longValue(), traite.noCtb);
+		assertEquals(ModeImposition.ORDINAIRE, traite.modeImposition);
+		assertNotNull(traite.officeImpotID);
+		assertEquals(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm(), traite.officeImpotID.intValue());
 	}
 }

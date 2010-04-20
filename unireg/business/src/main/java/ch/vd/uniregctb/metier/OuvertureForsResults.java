@@ -86,8 +86,8 @@ public class OuvertureForsResults extends JobResults<Long, OuvertureForsResults>
 		this.habitantEnErrors.addAll(right.habitantEnErrors);
 	}
 
-	public void addHabitantTraite(PersonnePhysique h, ModeImposition modeImposition) {
-		habitantTraites.add(new Traite(h.getNumero(), h.getOfficeImpotId(), modeImposition));
+	public void addHabitantTraite(PersonnePhysique h, Integer officeImpotId, ModeImposition modeImposition) {
+		habitantTraites.add(new Traite(h.getNumero(), officeImpotId, modeImposition));
 	}
 
 	public void addUnknownException(PersonnePhysique h, Exception e) {

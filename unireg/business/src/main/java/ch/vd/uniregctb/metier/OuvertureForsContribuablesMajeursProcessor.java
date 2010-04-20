@@ -45,7 +45,6 @@ import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
-import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 /**
@@ -340,7 +339,14 @@ public class OuvertureForsContribuablesMajeursProcessor {
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug("-> ouverture du for principal pour l'habitant n° " + habitant.getNumero());
 		}
-		rapport.addHabitantTraite(habitant, modeImposition);
+
+		// [UNIREG-1585] on s'assure que l'oid est bien renseigné
+		Integer oid = habitant.getOfficeImpotId();
+		if (oid == null) {
+			oid = tiersService.getOfficeImpotIdAt(habitant, null);
+		}
+		
+		rapport.addHabitantTraite(habitant, oid, modeImposition);
 	}
 
 	private void fillDatesNaissanceEtDeces(PersonnePhysique habitant, final HabitantData data, RegDate dateReference) throws OuvertureForsException {
