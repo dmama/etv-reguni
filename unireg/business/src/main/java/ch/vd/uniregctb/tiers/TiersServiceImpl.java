@@ -628,22 +628,22 @@ public class TiersServiceImpl implements TiersService {
 	 */
 	public boolean isAvecPermisC(Individu individu, RegDate date) {
 		final Collection<?> permiss = individu.getPermis();
-		if (permiss==null) {
+		if (permiss == null) {
 			return false;
 		}
 		for (Object obj : permiss) {
 			final Permis permis = (Permis) obj;
+			// [UNIREG-1860] les permis annulés ne doivent pas être comptabilisés
+			if (permis.getDateAnnulation() != null) {
+				continue;
+			}
 			/*
 			 * [UNIREG-725]
 			 * la date de fin de permis n'était pas reconnue si même jour,
 			 * donc permis.getDateFin().isAfter(date) devient permis.getDateFin().isAfterOrEqual(date)
-			 *
-			 * [UNIREG-1860] les permis annulés ne doivent pas être comptabilisés
 			 */
-			if (permis.getDateAnnulation() == null && (permis.getDateFinValidite() == null) || (permis.getDateFinValidite().isAfterOrEqual(date))) {
-				if (permis.getTypePermis().equals(EnumTypePermis.ETABLLISSEMENT)) {
-					return true;
-				}
+			if (permis.getTypePermis().equals(EnumTypePermis.ETABLLISSEMENT) && RegDateHelper.isBetween(date, permis.getDateDebutValidite(), permis.getDateFinValidite(), NullDateBehavior.LATEST)) {
+				return true;
 			}
 		}
 		return false;
