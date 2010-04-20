@@ -421,6 +421,11 @@ public class OuvertureForsContribuablesMajeursProcessor {
 			throw new OuvertureForsException(habitant, ErreurType.ADRESSE_EXCEPTION, e);
 		}
 
+		if (adresseDomicile == null) {
+			final String message = "Impossibilité d'identifier le domicile du contribuable n° " + habitant.getNumero() + " car il ne possède pas d'adresse.";
+			throw new OuvertureForsException(habitant, ErreurType.DOMICILE_INCONNU, message);
+		}
+
 		if (adresseDomicile.isDefault()) {
 			// msi/tdq 3.6.09 : on ne doit pas tenir compte des adresses de domicile par défaut car elles n'ont pas de valeur pour
 			// déterminer si un contribuable est dans le canton
