@@ -9,7 +9,7 @@
 	<groupId>ch.vd.uniregctb</groupId>
 	<artifactId>uniregctb-wsclient-tiers2</artifactId>
 	<packaging>jar</packaging>
-	<version>2.6</version> <!-- Attention ! Aussi changer la version dans le fichier TiersService2.wsdl ! -->
+	<version>2.7</version> <!-- Attention ! Aussi changer la version dans le fichier TiersService2.wsdl ! -->
 
 	<name>Unireg - Client WS Tiers v2</name>
 	<description>Unireg - Client Java pour le web-service Tiers v2 de Unireg</description>

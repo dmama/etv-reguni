@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<!-- version 2.6 -->
+<!-- version 2.7 -->
 <wsdl:definitions name="TiersService" targetNamespace="http://www.vd.ch/uniregctb/webservices/tiers2" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
 				  xmlns:tns="http://www.vd.ch/uniregctb/webservices/tiers2" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
 	<wsdl:types>
@@ -16,6 +16,9 @@
 					<xs:element minOccurs="0" name="noOfsFor" type="xs:int" />
 					<xs:element minOccurs="0" name="forPrincipalActif" type="xs:boolean" />
 					<xs:element minOccurs="0" name="typeRecherche" type="tns:TypeRecherche" />
+					<xs:element minOccurs="0" name="typeTiers" type="tns:TypeTiers" />
+					<xs:element minOccurs="0" name="categorieDebiteur" type="tns:CategorieDebiteur" />
+					<xs:element minOccurs="0" name="tiersActif" type="xs:boolean" />
 				</xs:sequence>
 			</xs:complexType>
 			<xs:complexType name="UserLogin">
@@ -644,6 +647,16 @@
 					<xs:enumeration value="PERSONNE_PHYSIQUE" />
 				</xs:restriction>
 			</xs:simpleType>
+			<xs:simpleType name="CategorieDebiteur">
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="LOI_TRAVAIL_AU_NOIR" />
+					<xs:enumeration value="REGULIERS" />
+					<xs:enumeration value="PRESTATIONS_PREVOYANCE" />
+					<xs:enumeration value="CREANCIERS_HYPOTHECAIRES" />
+					<xs:enumeration value="CONFERENCIERS_ARTISTES_SPORTIFS" />
+					<xs:enumeration value="ADMINISTRATEURS" />
+				</xs:restriction>
+			</xs:simpleType>
 			<xs:simpleType name="TiersPart">
 				<xs:restriction base="xs:string">
 					<xs:enumeration value="ETATS_PM" />
@@ -844,16 +857,6 @@
 				<xs:restriction base="xs:string">
 					<xs:enumeration value="ILLIMITE" />
 					<xs:enumeration value="LIMITE" />
-				</xs:restriction>
-			</xs:simpleType>
-			<xs:simpleType name="CategorieDebiteur">
-				<xs:restriction base="xs:string">
-					<xs:enumeration value="LOI_TRAVAIL_AU_NOIR" />
-					<xs:enumeration value="REGULIERS" />
-					<xs:enumeration value="PRESTATIONS_PREVOYANCE" />
-					<xs:enumeration value="CREANCIERS_HYPOTHECAIRES" />
-					<xs:enumeration value="CONFERENCIERS_ARTISTES_SPORTIFS" />
-					<xs:enumeration value="ADMINISTRATEURS" />
 				</xs:restriction>
 			</xs:simpleType>
 			<xs:simpleType name="PeriodiciteDecompte">
