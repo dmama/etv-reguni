@@ -2,6 +2,7 @@ package ch.vd.uniregctb.indexer.tiers;
 
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.TiersService;
 
 public abstract class ContribuableSubIndexable extends TiersSubIndexable {
@@ -19,9 +20,14 @@ public abstract class ContribuableSubIndexable extends TiersSubIndexable {
 	@Override
 	protected void fillKeyValues(IndexMap map) throws IndexerException {
 		super.fillKeyValues(map);
-		if ( ctb.getDernierForFiscalPrincipal() != null) {
-			map.putRawValue(F_MODE_IMPOSITION, ctb.getDernierForFiscalPrincipal().getModeImposition().toString());
+
+		final ForFiscalPrincipal ffp = ctb.getDernierForFiscalPrincipal();
+		if (ffp != null) {
+			map.putRawValue(F_MODE_IMPOSITION, ffp.getModeImposition().toString());
 		}
+		
+		final boolean isActif = (ffp != null && ffp.isValidAt(null));
+		map.putRawValue(F_TIERS_ACTIF, isActif);
 	}
 
 }

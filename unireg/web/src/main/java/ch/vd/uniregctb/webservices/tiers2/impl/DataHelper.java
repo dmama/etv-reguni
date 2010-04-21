@@ -15,7 +15,9 @@ import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.tiers.TiersDAO;
+import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.webservices.tiers2.data.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
@@ -152,6 +154,14 @@ public class DataHelper {
 			if (criteria.forPrincipalActif != null) {
 				coreCriteria.setForPrincipalActif(criteria.forPrincipalActif);
 			}
+			if (criteria.typeTiers != null) {
+				coreCriteria.setTypeTiers(webToCore(criteria.typeTiers));
+			}
+			if (criteria.categorieDebiteur != null) {
+				coreCriteria.setCategorieDebiteurIs(CategorieImpotSource.valueOf(criteria.categorieDebiteur.name()));
+			}
+
+			coreCriteria.setTiersActif(criteria.tiersActif);
 
 			list.add(coreCriteria);
 		}
@@ -181,6 +191,21 @@ public class DataHelper {
 		}
 
 		return list;
+	}
+
+	public static TiersCriteria.TypeTiers webToCore(Type typeTiers) {
+		switch (typeTiers) {
+		case DEBITEUR:
+			return TiersCriteria.TypeTiers.DEBITEUR_PRESTATION_IMPOSABLE;
+		case MENAGE_COMMUN:
+			return TiersCriteria.TypeTiers.MENAGE_COMMUN;
+		case PERSONNE_MORALE:
+			return TiersCriteria.TypeTiers.ENTREPRISE;
+		case PERSONNE_PHYSIQUE:
+			return TiersCriteria.TypeTiers.PERSONNE_PHYSIQUE;
+		default:
+			throw new IllegalArgumentException("Type de tiers inconnu = [" + typeTiers + "]");
+		}
 	}
 
 	public static TiersInfo coreToWeb(ch.vd.uniregctb.indexer.tiers.TiersIndexedData value) {

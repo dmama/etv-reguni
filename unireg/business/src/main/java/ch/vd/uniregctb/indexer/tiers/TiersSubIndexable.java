@@ -21,6 +21,7 @@ public abstract class TiersSubIndexable extends AbstractSubIndexable {
 	public static final String F_ANNULE = "ANNULE";
 	public static final String F_DEBITEUR_INACTIF = "DEBITEUR_INACTIF";
 	public static final String F_INDEXATION_DATE = "INDEXATION_DATE";
+	public static final String F_TIERS_ACTIF = "TIERS_ACTIF";
 
 	private final Tiers tiers;
 

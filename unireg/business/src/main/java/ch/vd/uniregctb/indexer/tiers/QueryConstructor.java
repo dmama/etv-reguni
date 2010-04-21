@@ -277,42 +277,49 @@ public class QueryConstructor {
 		}
 	}
 
+	private void addCategorieDebiteurIs(BooleanQuery fullQuery) throws IndexerException {
+
+		if (criteria.getCategorieDebiteurIs() != null) {
+			final Query q = new TermQuery(new Term(TiersSearchFields.CATEGORIE_DEBITEUR_IS, criteria.getCategorieDebiteurIs().toString().toLowerCase()));
+			fullQuery.add(q, must);
+		}
+	}
+
+	private void addTiersActif(BooleanQuery fullQuery) throws IndexerException {
+
+		if (criteria.isTiersActif() != null) {
+			final String value = (criteria.isTiersActif() ? Constants.OUI.toLowerCase() : Constants.NON.toLowerCase());
+			final Query q = new TermQuery(new Term(TiersSearchFields.TIERS_ACTIF, value));
+			fullQuery.add(q, must);
+		}
+	}
+
 	public Query constructQuery() throws IndexerException {
 
 		BooleanQuery fullQuery = new BooleanQuery();
 
 		addTypeTiers(fullQuery);
 
-		// Si on a un NUMERO CTB, on ne recherche que sur celui-ci
 		if (criteria.getNumero() != null) {
+			// Si on a un NUMERO CTB, on ne recherche que sur celui-ci
 			addNumero(fullQuery);
 		}
 		else {
 			// Sinon, on recherche sur les autres critères
-
 			addNomRaison(fullQuery);
-
 			addFors(fullQuery);
-
 			addLocalitePays(fullQuery);
-
 			addNpa(fullQuery);
-
 			addNumeroAVS(fullQuery);
-
 			addDateNaissance(fullQuery);
-
 			addNatureJuridique(fullQuery);
-
 			addAnnule(fullQuery);
-
 			addActif(fullQuery);
-
 			addDebiteurInactif(fullQuery);
-
 			addModeImposition(fullQuery);
-
 			addNumeroSymic(fullQuery);
+			addCategorieDebiteurIs(fullQuery);
+			addTiersActif(fullQuery);
 		}
 
 		addLimitation(fullQuery);

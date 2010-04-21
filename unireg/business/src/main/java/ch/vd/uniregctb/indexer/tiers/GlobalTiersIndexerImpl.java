@@ -81,6 +81,9 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer {
                 Tiers tiers = tiersDAO.get(id);
                 if (tiers != null) {
                     indexTiers(tiers);
+	                if (tiers.isDirty()) {
+		                tiers.setIndexDirty(Boolean.FALSE); // il est plus dirty maintenant
+	                }
                 }
                 return null;
             }

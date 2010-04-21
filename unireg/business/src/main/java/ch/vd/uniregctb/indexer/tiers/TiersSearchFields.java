@@ -16,6 +16,8 @@ public class TiersSearchFields {
 	public static final String NUMERO_ASSURE_SOCIAL = "S_NUMERO_ASSURE_SOCIAL";
 	public static final String ANNULE = "S_ANNULE";
 	public static final String DEBITEUR_INACTIF = "S_DEBITEUR_INACTIF";
+	public static final String CATEGORIE_DEBITEUR_IS = "S_CATEGORIE_DEBITEUR_IS";
 	public static final String MODE_IMPOSITION = "S_MODE_IMPOSITION";
 	public static final String NO_SYMIC = "S_NO_SYMIC";
+	public static final String TIERS_ACTIF = "S_TIERS_ACTIF";
 }

@@ -6,6 +6,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.ModeImposition;
 
 /**
@@ -167,6 +168,16 @@ public class TiersCriteria implements Serializable {
 	private boolean tiersAnnulesSeulement;
 
 	/**
+	 * La catégorie de débiteur impôt source (uniquement valable pour les débiteurs de prestations imposables)
+	 */
+	private CategorieImpotSource categorieDebiteurIs;
+
+	/**
+	 * Vrai si le tiers est actif, c'est-à-dire qu'il possède un for principal ouvert à la date d'indexation.
+	 */
+	private Boolean tiersActif;
+
+	/**
 	 * @return true si aucun paramétre de recherche n'est renseigné. false
 	 *         autrement.
 	 */
@@ -182,7 +193,9 @@ public class TiersCriteria implements Serializable {
 				&& (noOfsFor == null || "".equals(noOfsFor))
 				&& (noSymic == null || "".equals(noSymic))
 				&& (formeJuridique == null || "".equals(formeJuridique))
-				&& (modeImposition == null) ;
+				&& (modeImposition == null)
+				&& (categorieDebiteurIs == null)
+				&& (tiersActif == null);
 	}
 
 	/**
@@ -443,4 +456,19 @@ public class TiersCriteria implements Serializable {
 		this.noSymic = noSymic;
 	}
 
+	public CategorieImpotSource getCategorieDebiteurIs() {
+		return categorieDebiteurIs;
+	}
+
+	public void setCategorieDebiteurIs(CategorieImpotSource categorieDebiteurIs) {
+		this.categorieDebiteurIs = categorieDebiteurIs;
+	}
+
+	public Boolean isTiersActif() {
+		return tiersActif;
+	}
+
+	public void setTiersActif(Boolean tiersActif) {
+		this.tiersActif = tiersActif;
+	}
 }

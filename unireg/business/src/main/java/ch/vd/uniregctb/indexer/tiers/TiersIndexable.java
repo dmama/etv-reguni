@@ -54,6 +54,7 @@ public abstract class TiersIndexable extends AbstractIndexable {
 			//Search
 			addValueToMap(values, TiersSearchFields.ANNULE, subValues, TiersSubIndexable.F_ANNULE);
 			addValueToMap(values, TiersSearchFields.DEBITEUR_INACTIF, subValues, TiersSubIndexable.F_DEBITEUR_INACTIF);
+			addValueToMap(values, TiersSearchFields.TIERS_ACTIF, subValues, TiersSubIndexable.F_TIERS_ACTIF);
 			// Display
 			addValueToMap(values, TiersIndexedData.ROLE_LIGNE1, subValues, TiersSubIndexable.F_ROLE_LIGNE1);
 			addValueToMap(values, TiersIndexedData.ROLE_LIGNE2, subValues, TiersSubIndexable.F_ROLE_LIGNE2);

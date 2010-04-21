@@ -2,6 +2,7 @@ package ch.vd.uniregctb.indexer.tiers;
 
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
+import ch.vd.uniregctb.tiers.ForDebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.TiersService;
 
 public class DebiteurPrestationImposableSubIndexable extends TiersSubIndexable {
@@ -24,9 +25,14 @@ public class DebiteurPrestationImposableSubIndexable extends TiersSubIndexable {
 	@Override
 	protected void fillKeyValues(IndexMap map) throws IndexerException {
 		super.fillKeyValues(map);
+
 		map.putRawValue(F_NOM1, dis.getNom1());
 		map.putRawValue(F_NOM2, dis.getNom2());
 		map.putRawValue(F_CATEGORIE_IS, dis.getCategorieImpotSource());
 		map.putRawValue(F_COMPLEMENT_NOM, dis.getComplementNom());
+		
+		final ForDebiteurPrestationImposable fdpi = dis.getDernierForDebiteur();
+		final boolean isActif = (fdpi != null && fdpi.isValidAt(null));
+		map.putRawValue(F_TIERS_ACTIF, isActif);
 	}
 }

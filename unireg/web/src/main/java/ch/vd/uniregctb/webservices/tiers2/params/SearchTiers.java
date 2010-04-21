@@ -6,7 +6,9 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
 import ch.vd.uniregctb.webservices.common.UserLogin;
+import ch.vd.uniregctb.webservices.tiers2.data.CategorieDebiteur;
 import ch.vd.uniregctb.webservices.tiers2.data.Date;
+import ch.vd.uniregctb.webservices.tiers2.data.Tiers;
 import ch.vd.uniregctb.webservices.tiers2.data.TypeRecherche;
 
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -25,8 +27,12 @@ public class SearchTiers {
 	@XmlElement(required = false)
 	public String numero;
 
+	/**
+	 * Nom courrier des tiers à rechercher (= prénoms et noms des personnes physiques ou raisons sociales des personnes morales).
+	 */
 	@XmlElement(required = false)
 	public String nomCourrier;
+
 	@XmlElement(required = false)
 	public String localiteOuPays;
 	@XmlElement(required = false)
@@ -37,7 +43,7 @@ public class SearchTiers {
 	public Integer noOfsFor;
 
 	/**
-	 * Si vrai, restreint la recherche sur les fors principaux actifs.
+	 * Si <i>vrai</i>, restreint le critère {@link #noOfsFor} sur les fors principaux actifs.
 	 */
 	@XmlElement(required = false)
 	public Boolean forPrincipalActif;
@@ -47,6 +53,22 @@ public class SearchTiers {
 	 */
 	@XmlElement(required = false)
 	public TypeRecherche typeRecherche;
+
+	/**
+	 * Si renseigné, restreint la recherche sur un type de tiers
+	 */
+	public Tiers.Type typeTiers;
+
+	/**
+	 * La catégorie de débiteur (uniquement valable sur les débiteurs)
+	 */
+	@XmlElement(required = false)
+	public CategorieDebiteur categorieDebiteur;
+
+	/**
+	 * Si renseigné, restreint la recherche sur les tiers actifs (= un for fiscal principal ouvert) ou inactifs (= pas de for fiscal principal ouvert).
+	 */
+	public Boolean tiersActif;
 
 	@Override
 	public String toString() {
@@ -60,6 +82,9 @@ public class SearchTiers {
 				", noOfsFor=" + noOfsFor +
 				", forPrincipalActif=" + forPrincipalActif +
 				", typeRecherche=" + typeRecherche +
+				", typeTiers=" + typeTiers +
+				", categorieDebiteur=" + categorieDebiteur +
+				", tiersActif=" + tiersActif +
 				'}';
 	}
 }

@@ -80,6 +80,7 @@ public class DebiteurPrestationImposableIndexable extends TiersIndexable {
 		// Search
 		addValueToMap(values, TiersSearchFields.NUMEROS, dpiKeyValues, TiersSubIndexable.F_NUMERO);
 		addValueToMap(values, TiersSearchFields.NOM_RAISON, dpiKeyValues, DebiteurPrestationImposableSubIndexable.F_NOM1);
+		addValueToMap(values, TiersSearchFields.CATEGORIE_DEBITEUR_IS, dpiKeyValues, DebiteurPrestationImposableSubIndexable.F_CATEGORIE_IS);
 
 		// CTB
 		if (ctbIndexable != null) {
