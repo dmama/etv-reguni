@@ -322,9 +322,11 @@ public class SecurityProviderCache implements UniregCacheInterface, SecurityProv
 		 * fait maintenant partie des tiers nouvellement contrôlés et on l'ajoute à la liste. Au pire, on fera un appel en trop au service
 		 * pour ce tiers.
 		 */
-		final Set<Long> newSet = new HashSet<Long>(dossiersControles);
-		newSet.add(tiersId);
-		dossiersControles = newSet; // l'assignement est atomique en java, pas besoin de locking
+		synchronized (this) { // les trois lignes de code ci-dessous ne doivent pas être executée par plusieurs threads en même temps
+			final Set<Long> newSet = new HashSet<Long>(dossiersControles);
+			newSet.add(tiersId);
+			dossiersControles = newSet; // l'assignement est atomique en java, pas besoin de locking
+		}
 	}
 
 	public void onTruncateDatabase() {
