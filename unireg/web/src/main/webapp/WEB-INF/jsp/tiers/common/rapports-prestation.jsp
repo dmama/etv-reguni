@@ -38,12 +38,7 @@
 			</display:column>
 			<display:column sortable="true" titleKey="label.numero.contribuable" sortProperty="sujetId" sortName="sujetId" >
 				<c:if test="${rapportPrestation.annule}"><strike></c:if>
-					<c:if test="${page == 'visu' }">
-						<a href="../tiers/visu.do?id=${rapportPrestation.numero}&urlRetour=../tiers/visu.do?id=${tiersGeneral.numero}"><unireg:numCTB numero="${rapportPrestation.numero}"></unireg:numCTB></a>
-					</c:if>
-					<c:if test="${page == 'edit' }">
-						<a href="../tiers/visu.do?id=${rapportPrestation.numero}&urlRetour=../rapports-prestation/edit.do?id=${tiersGeneral.numero}"><unireg:numCTB numero="${rapportPrestation.numero}"></unireg:numCTB></a>
-					</c:if>
+					<a href="../tiers/visu.do?id=${rapportPrestation.numero}"><unireg:numCTB numero="${rapportPrestation.numero}"></unireg:numCTB></a>
 				<c:if test="${rapportPrestation.annule}"></strike></c:if>
 			</display:column>
 			<display:column titleKey="label.nom.prenom" >
