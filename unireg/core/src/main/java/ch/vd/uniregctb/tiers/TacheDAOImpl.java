@@ -382,67 +382,6 @@ public class TacheDAOImpl extends GenericDAOImpl<Tache, Long> implements TacheDA
 		return list;
 	}
 
-//	private static final String updateCollAdm =
-//			"update TACHE set CA_ID = :caId where " +
-//					"ETAT = 'EN_INSTANCE' and " + // il ne faut pas modifier les tâches déjà traitées
-//					"TACHE_TYPE != 'CTRL_DOSSIER' and " + // [UNIREG-1024] les contrôles de dossiers doivent rester à l'ancien OID
-//					"CTB_ID = :ctbId and " +
-//					"ANNULATION_DATE is null and " + // inutile de modifier les tâches annulées
-//					"CA_ID != :caId"; // inutiles de modifier les tâches annulées pour rien
-
-	private static final String updateCollAdm =
-			"update TACHE set CA_ID = (select ca.NUMERO from TIERS ca where ca.NUMERO_CA = :oid) where " +
-					"ETAT = 'EN_INSTANCE' and " + // il ne faut pas modifier les tâches déjà traitées
-					"TACHE_TYPE != 'CTRL_DOSSIER' and " + // [UNIREG-1024] les contrôles de dossiers doivent rester à l'ancien OID
-					"CA_ID != (select aci.NUMERO from TIERS aci where aci.NUMERO_CA = 22) and " + // [UNIREG-2104] les tâches pour les décédés sont assignées à l'ACI et doivent le rester
-					"CTB_ID = :ctbId and " +
-					"ANNULATION_DATE is null"; // inutiles de modifier les tâches annulées pour rien
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void updateCollAdmAssignee(final Long ctbId, final Integer newOid) {
-
-		// [UNIREG-1024] On met-à-jour les tâches encore ouvertes, à l'exception des tâches de contrôle de dossier
-		getHibernateTemplate().executeWithNativeSession(new HibernateCallback() {
-			public Object doInHibernate(Session session) throws HibernateException, SQLException {
-				final FlushMode mode = session.getFlushMode();
-				try {
-					session.setFlushMode(FlushMode.MANUAL);
-
-					// TODO (msi) le code en commentaires ci-dessous vérifie que l'office d'impôt existe bien dans la base. En production, tous les offices d'impôt sont créés depuis belle lurette,
-					// ne pas faire cette vérification ne pose donc pas de problème. Cependant, être sûr c'est bien, vérifier c'est mieux : il vaudrait mieux activer cette vérification. Le problème,
-					// c'est que aucun du millier (et quelque) de tests unitaires existants ne crée d'office d'impôt dans la base de données; ils passent donc presque tous en erreur.  
-
-//					// récupère le numéro de tiers de l'office d'impôt
-//					final SQLQuery select = session.createSQLQuery("select ca.NUMERO from TIERS ca where ca.NUMERO_CA = :oid");
-//					select.setParameter("oid", newOid);
-//					final Number caId = (Number) select.uniqueResult();
-//					if (caId == null) {
-//						throw new ObjectNotFoundException("L'office d'impôt (collectivité administrative) avec le numéro technique = [" + newOid + "] n'existe pas dans la base de données.");
-//					}
-//
-//					// met-à-jour les tâches concernées
-//					final Query update = session.createSQLQuery(updateCollAdm);
-//					update.setParameter("caId", caId.longValue());
-//					update.setParameter("ctbId", ctbId);
-//					update.executeUpdate();
-
-					// met-à-jour les tâches concernées
-					final Query update = session.createSQLQuery(updateCollAdm);
-					update.setParameter("oid", newOid);
-					update.setParameter("ctbId", ctbId);
-					update.executeUpdate();
-
-					return null;
-				}
-				finally {
-					session.setFlushMode(mode);
-				}
-			}
-		});
-	}
-
 	final static String queryTaches =
 			"select " +
 					"tache.collectiviteAdministrativeAssignee.numeroCollectiviteAdministrative, count(*) " +

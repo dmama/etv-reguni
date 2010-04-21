@@ -982,14 +982,6 @@ public interface TiersService {
 	public CorrectionFlagHabitantSurMenagesResults corrigeFlagHabitantSurMenagesCommuns(int nbThreads, StatusManager statusManager);
 
 	/**
-	 * Met-à-jour l'office d'impôt sur le tiers spécifié, ainsi que sur les éventuelles tâches en instances.
-	 *
-	 * @param tiers le tiers à mettre-à-jour
-	 * @param oid   le nouveau numéro technique de l'office d'impôt.
-	 */
-	void updateOfficeID(Tiers tiers, Integer oid);
-
-	/**
 	 * Renvoie <code>true</code> si la personne physique est un sourcier gris à la date donnée
 	 * @param pp personne physique
 	 * @param date date de référence

@@ -3104,20 +3104,6 @@ public class TiersServiceImpl implements TiersService {
 		return rapport;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void updateOfficeID(Tiers tiers, Integer oid) {
-
-		// Met-à-jour l'OID sur le tiers
-		tiers.setOfficeImpotId(oid);
-
-		// Met-à-jour l'OID sur les éventuelles tâches en instances associé au contribuable
-		if (tiers instanceof Contribuable) {
-			tacheDAO.updateCollAdmAssignee(tiers.getNumero(), oid);
-		}
-	}
-
 	public boolean isSourcierGris(Contribuable ctb, RegDate date) {
 
 		if (date == null) {

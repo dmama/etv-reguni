@@ -56,7 +56,6 @@
 		<property name="chainingInterceptor" ref="chainingInterceptor" />
 		<property name="infraService" ref="serviceInfrastructureService" />
 		<property name="tiersService" ref="tiersService" />
-		<property name="tacheDAO" ref="tacheDAO" />
 	</bean>
 	 
 	<bean id="globalTiersSearcher" class="ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcherImpl">

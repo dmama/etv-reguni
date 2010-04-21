@@ -1,19 +1,22 @@
 package ch.vd.uniregctb.indexer.tiers;
 
-import ch.vd.infrastructure.service.InfrastructureException;
-import ch.vd.uniregctb.hibernate.interceptor.AbstractLinkedInterceptor;
-import ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.tiers.*;
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Iterator;
+
 import org.apache.log4j.Logger;
 import org.hibernate.CallbackException;
 import org.hibernate.Transaction;
 import org.hibernate.type.Type;
 
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import ch.vd.infrastructure.service.InfrastructureException;
+import ch.vd.uniregctb.hibernate.interceptor.AbstractLinkedInterceptor;
+import ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.tiers.ForFiscal;
+import ch.vd.uniregctb.tiers.ForGestion;
+import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.tiers.TiersService;
 
 /**
  * Cet intercepteur se charge de tenir à-jour l'id de l'office d'impôt caché au niveau de chaque tiers.
@@ -23,7 +26,6 @@ public class OfficeImpotHibernateInterceptor extends AbstractLinkedInterceptor {
 	private static final Logger LOGGER = Logger.getLogger(OfficeImpotHibernateInterceptor.class);
 
 	private TiersService tiersService;
-	private TacheDAO tacheDAO;
 	private ServiceInfrastructureService infraService;
 
 	private static class Behavior {
@@ -114,13 +116,7 @@ public class OfficeImpotHibernateInterceptor extends AbstractLinkedInterceptor {
 	@Override
 	public void postFlush(Iterator<?> entities) throws CallbackException {
 		super.postFlush(entities);
-
-		// maintenant que l'on connait les tiers qui ont été changés, on met-à-jour toutes les tâches impactées en vrac
-		final HashMap<Long, Integer> modifs = getModifiedOids();
-		for (Map.Entry<Long, Integer> e : modifs.entrySet()) {
-			tacheDAO.updateCollAdmAssignee(e.getKey(), e.getValue());
-		}
-		modifs.clear();
+		getModifiedOids().clear();
 	}
 
 	@Override
@@ -176,7 +172,11 @@ public class OfficeImpotHibernateInterceptor extends AbstractLinkedInterceptor {
 	public Integer updateOfficeID(Tiers tiers) {
 		Integer oid = detectNewOfficeID(tiers);
 		if (oid != null) {
-			tiersService.updateOfficeID(tiers, oid);
+			// Met-à-jour l'OID sur le tiers
+			tiers.setOfficeImpotId(oid);
+
+			// [UNIREG-2306] on ne met plus à jour automatiquement les tâches  
+			//tiersService.updateOfficeID(tiers, oid);
 		}
 		return oid;
 	}
@@ -237,10 +237,6 @@ public class OfficeImpotHibernateInterceptor extends AbstractLinkedInterceptor {
 
 	public void setTiersService(TiersService tiersService) {
 		this.tiersService = tiersService;
-	}
-
-	public void setTacheDAO(TacheDAO tacheDAO) {
-		this.tacheDAO = tacheDAO;
 	}
 
 	private Behavior getByThreadBehavior() {
