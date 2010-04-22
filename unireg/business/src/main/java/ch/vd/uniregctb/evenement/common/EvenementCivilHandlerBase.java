@@ -366,8 +366,8 @@ public abstract class EvenementCivilHandlerBase implements EvenementCivilHandler
 	 * @throws EvenementCivilHandlerException
 	 *             si aucun habitant (ou ancien habitant) ne correspond au numéro d'individu donné.
 	 */
-	protected PersonnePhysique getHabitantOrThrowException(Long noIndividu) throws EvenementCivilHandlerException {
-		return getHabitantOrThrowException(noIndividu, false);
+	protected PersonnePhysique getPersonnePhysiqueOrThrowException(Long noIndividu) throws EvenementCivilHandlerException {
+		return getPersonnePhysiqueOrThrowException(noIndividu, false);
 	}
 
 	/**
@@ -378,7 +378,7 @@ public abstract class EvenementCivilHandlerBase implements EvenementCivilHandler
 	 * @throws EvenementCivilHandlerException
 	 *             si aucun habitant (ou ancien habitant) ne correspond au numéro d'individu donné.
 	 */
-	protected PersonnePhysique getHabitantOrThrowException(Long noIndividu, boolean doNotAutoFlush) throws EvenementCivilHandlerException {
+	protected PersonnePhysique getPersonnePhysiqueOrThrowException(Long noIndividu, boolean doNotAutoFlush) throws EvenementCivilHandlerException {
 		final PersonnePhysique habitant = tiersDAO.getPPByNumeroIndividu(noIndividu, doNotAutoFlush);
 		if (habitant == null) {
 			throw new EvenementCivilHandlerException("L'habitant avec le numéro d'individu = " + noIndividu
@@ -394,7 +394,7 @@ public abstract class EvenementCivilHandlerBase implements EvenementCivilHandler
 	 *            la collection des erreurs qui sera remplie automatiquement si l'habitant n'existe pas
 	 * @return l'habitant (ou ancien habitant) correspondant à son numéro d'individu, ou <b>null<b> si aucun habitant (ou ancien habitant) ne correspond au numéro d'individu donné.
 	 */
-	protected PersonnePhysique getHabitantOrFillErrors(Long noIndividu, List<EvenementCivilErreur> errors) {
+	protected PersonnePhysique getPersonnePhysiqueOrFillErrors(Long noIndividu, List<EvenementCivilErreur> errors) {
 		final PersonnePhysique habitant = getService().getPersonnePhysiqueByNumeroIndividu(noIndividu);
 		if (habitant == null) {
 			errors.add(new EvenementCivilErreur("L'habitant avec le numéro d'individu = " + noIndividu

@@ -54,7 +54,7 @@ public class MariageHandler extends EvenementCivilHandlerBase {
 		/*
 		 * Le tiers correspondant doit exister
 		 */
-		PersonnePhysique habitant = getHabitantOrFillErrors(individu.getNoTechnique(), errors);
+		PersonnePhysique habitant = getPersonnePhysiqueOrFillErrors(individu.getNoTechnique(), errors);
 		if (habitant == null) {
 			return;
 		}
@@ -79,7 +79,7 @@ public class MariageHandler extends EvenementCivilHandlerBase {
 			/*
 			 * Le tiers correspondant doit exister
 			 */
-			habitantConjoint = getHabitantOrFillErrors(conjoint.getNoTechnique(), errors);
+			habitantConjoint = getPersonnePhysiqueOrFillErrors(conjoint.getNoTechnique(), errors);
 			if (habitantConjoint == null) {
 				return;
 			}
@@ -107,8 +107,8 @@ public class MariageHandler extends EvenementCivilHandlerBase {
 		Mariage mariage = (Mariage) evenement;
 
 		try {
-			final PersonnePhysique contribuable = getHabitantOrThrowException(mariage.getIndividu().getNoTechnique());
-			final PersonnePhysique conjointContribuable = (mariage.getNouveauConjoint() == null) ? null : getHabitantOrThrowException(mariage.getNouveauConjoint().getNoTechnique());
+			final PersonnePhysique contribuable = getPersonnePhysiqueOrThrowException(mariage.getIndividu().getNoTechnique());
+			final PersonnePhysique conjointContribuable = (mariage.getNouveauConjoint() == null) ? null : getPersonnePhysiqueOrThrowException(mariage.getNouveauConjoint().getNoTechnique());
 
 			// état civil pour traitement
 			final EtatCivil etatCivil = getService().getServiceCivilService().getEtatCivilActif(contribuable.getNumeroIndividu(), mariage.getDate());

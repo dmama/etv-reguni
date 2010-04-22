@@ -101,7 +101,7 @@ public class DemenagementHandler extends EvenementCivilCoupleHandler {
 			 * en ouvre des nouveaux
 			 */
 			Individu individu = demenagement.getIndividu();
-			PersonnePhysique habitant = getHabitantOrThrowException(individu.getNoTechnique());
+			PersonnePhysique habitant = getPersonnePhysiqueOrThrowException(individu.getNoTechnique());
 			
 			if (demenagement.getConjoint() == null) {
 				// Mise à jour des fors fiscaux du contribuable (que
@@ -154,7 +154,7 @@ public class DemenagementHandler extends EvenementCivilCoupleHandler {
 			 * Cas d'un individu avec conjoint, c'est le contibuable ménage qui est impacté
 			 */
 			else {
-				PersonnePhysique conjoint = getHabitantOrThrowException(demenagement.getConjoint().getNoTechnique());
+				PersonnePhysique conjoint = getPersonnePhysiqueOrThrowException(demenagement.getConjoint().getNoTechnique());
 
 				EnsembleTiersCouple ensembleTiersCouple = getService().getEnsembleTiersCouple(habitant, dateEvenement);
 				if (!ensembleTiersCouple.estComposeDe(habitant, conjoint)) {

@@ -214,34 +214,24 @@
 	</bean>
 
 	<!-- Scénarios de départ -->
-	<bean id="ec_19000_01_Depart_1_Scenario" parent="evenementCivilScenario"
-		class="ch.vd.uniregctb.norentes.civil.depart.Ec_19000_01_Depart_1_Scenario" />
-	<bean id="ec_19000_02_Depart_1_Scenario" parent="evenementCivilScenario"
-		class="ch.vd.uniregctb.norentes.civil.depart.Ec_19000_02_Depart_1_Scenario" />	
-	<bean id="ec_19000_03_Depart_HS_Test" parent="evenementCivilScenario"
-		class="ch.vd.uniregctb.norentes.civil.depart.Ec_19000_03_Depart_HS_Scenario" />	
-	<bean id="ec_19000_04_Depart_JIRA1262_Test" parent="evenementCivilScenario"
-		class="ch.vd.uniregctb.norentes.civil.depart.Ec_19000_04_Depart_JIRA1262_Scenario" >
+	<bean id="ec_19000_01_Depart_1_Scenario" parent="evenementCivilScenario" class="ch.vd.uniregctb.norentes.civil.depart.Ec_19000_01_Depart_1_Scenario" />
+	<bean id="ec_19000_02_Depart_1_Scenario" parent="evenementCivilScenario" class="ch.vd.uniregctb.norentes.civil.depart.Ec_19000_02_Depart_1_Scenario" />
+	<bean id="ec_19000_03_Depart_HS_Test" parent="evenementCivilScenario" class="ch.vd.uniregctb.norentes.civil.depart.Ec_19000_03_Depart_HS_Scenario" />
+	<bean id="ec_19000_04_Depart_JIRA1262_Test" parent="evenementCivilScenario" class="ch.vd.uniregctb.norentes.civil.depart.Ec_19000_04_Depart_JIRA1262_Scenario" >
 		<property name="diDAO" ref="diDAO" />
 	</bean>
-	<bean id="ec_19000_05_Depart_JIRA1394_Test" parent="evenementCivilScenario"
-		class="ch.vd.uniregctb.norentes.civil.depart.Ec_19000_05_Depart_JIRA1394_Scenario" />
-
-	<bean id="ec_19000_06_Depart_JIRA771_Test" parent="evenementCivilScenario"
-		class="ch.vd.uniregctb.norentes.civil.depart.Ec_19000_06_Depart_JIRA771_Scenario" >
-		
+	<bean id="ec_19000_05_Depart_JIRA1394_Test" parent="evenementCivilScenario" class="ch.vd.uniregctb.norentes.civil.depart.Ec_19000_05_Depart_JIRA1394_Scenario"/>
+	<bean id="ec_19000_06_Depart_JIRA771_Test" parent="evenementCivilScenario" class="ch.vd.uniregctb.norentes.civil.depart.Ec_19000_06_Depart_JIRA771_Scenario" >
 		<property name="adresseService" ref="adresseService" />
 	</bean>
-
-	<bean id="ec_19000_07_Depart_JIRA1703_Test" parent="evenementCivilScenario"
-		class="ch.vd.uniregctb.norentes.civil.depart.Ec_19000_07_Depart_JIRA1703_Scenario" >
+	<bean id="ec_19000_07_Depart_JIRA1703_Test" parent="evenementCivilScenario" class="ch.vd.uniregctb.norentes.civil.depart.Ec_19000_07_Depart_JIRA1703_Scenario" >
 		<property name="adresseService" ref="adresseService" />
 	</bean>
-	
-	<bean id="ec_19000_08_Depart_JIRA1996_Test" parent="evenementCivilScenario"
-		class="ch.vd.uniregctb.norentes.civil.depart.Ec_19000_08_Depart_JIRA1996_Scenario" >
+	<bean id="ec_19000_08_Depart_JIRA1996_Test" parent="evenementCivilScenario" class="ch.vd.uniregctb.norentes.civil.depart.Ec_19000_08_Depart_JIRA1996_Scenario" >
 		<property name="adresseService" ref="adresseService" />
 	</bean>
+	<bean id="ec_19000_09_Depart_DejaNonHabitant_Test" parent="evenementCivilScenario" class="ch.vd.uniregctb.norentes.civil.depart.Ec_19000_09_Depart_DejaNonHabitant_Scenario"/>
+	<bean id="ec_19000_10_Depart_DejaNonHabitantDejaForLoin_Test" parent="evenementCivilScenario" class="ch.vd.uniregctb.norentes.civil.depart.Ec_19000_10_Depart_DejaNonHabitantDejaForLoin_Scenario"/>
 
 	<bean id="ec_20000_01_Demenagement_Celibataire_Test" parent="evenementCivilScenario"
 		class="ch.vd.uniregctb.norentes.civil.demenagement.Ec_20000_01_Demenagement_Celibataire_Scenario" />

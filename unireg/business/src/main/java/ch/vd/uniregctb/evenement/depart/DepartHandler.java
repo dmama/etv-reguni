@@ -77,38 +77,34 @@ public class DepartHandler extends EvenementCivilHandlerBase {
 	public Pair<PersonnePhysique,PersonnePhysique> handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
 		final Depart depart = (Depart) evenement;
 
-		final PersonnePhysique habitant = getTiersDAO().getHabitantByNumeroIndividu(depart.getIndividu().getNoTechnique());
-
-		if (habitant == null) {
-			// dans certains cas le tiers est marqué non-habitant dans unireg
-			throw new EvenementCivilHandlerException("Aucun habitant trouvé avec numéro d'individu " + depart.getIndividu().getNoTechnique());
+		final PersonnePhysique pp = getTiersDAO().getPPByNumeroIndividu(depart.getIndividu().getNoTechnique());
+		if (pp == null) {
+			// si on ne connaissait pas le gaillard, c'est un problème
+			throw new EvenementCivilHandlerException("Aucun habitant (ou ancien habitant) trouvé avec numéro d'individu " + depart.getIndividu().getNoTechnique());
 		}
 
 		//[UNIREG-1996] on traite les deux habitants ensemble conformement à l'ancien fonctionement
 		if (depart.isAncienTypeDepart()) {
-
-			traiteHabitantOfAncienDepart(depart, habitant);
+			traiteHabitantOfAncienDepart(depart, pp);
 		}
 		else {
 
-			/*
-			 * [UNIREG-771] : L'événement de départ du premier doit passer l'individu de habitant à non habitant.
-			 */
-			if (!isDepartComplet(depart)) {
-				getService().changeHabitantenNH(habitant);
-				return null;
+			// [UNIREG-1691] si la personne physique était déjà notée non-habitante, on ne fait que régulariser une situation bancale
+			if (pp.isHabitant()) {
+				getService().changeHabitantenNH(pp);
 			}
 
-			// le deuxième doit aussi passer à non habitant
-			getService().changeHabitantenNH(habitant);
-
 			/*
-			 * [UNIREG-771] : L'événement de départ du second doit effectuer le traitement.
+			 * [UNIREG-771] : L'événement de départ du premier doit passer l'individu de habitant à non habitant et ne rien faire d'autre
+			 * (notamment au niveau des fors fiscaux)
 			 */
+			if (!isDepartComplet(depart)) {
+				return null;
+			}
 		}
 		final MotifFor motifFermeture = findMotifFermeture(depart);
-		final RegDate dateFermeture = findDateFermeture(depart, habitant, motifFermeture == MotifFor.DEMENAGEMENT_VD);
-		final Contribuable contribuable = findContribuable(depart, habitant, motifFermeture == MotifFor.DEMENAGEMENT_VD);
+		final RegDate dateFermeture = findDateFermeture(depart, pp, motifFermeture == MotifFor.DEMENAGEMENT_VD);
+		final Contribuable contribuable = findContribuable(depart, pp, motifFermeture == MotifFor.DEMENAGEMENT_VD);
 		Audit.info(depart.getNumeroEvenement(), "Traitement du départ");
 
 		/*
@@ -448,7 +444,10 @@ public class DepartHandler extends EvenementCivilHandlerBase {
 		Audit.info(depart.getNumeroEvenement(), "Fermeture du for principal d'un contribuable au " + dateFermeture.toString()
 				+ " pour motif suivant: " + motifFermeture);
 
-		ForFiscalPrincipal ffp = getService().closeForFiscalPrincipal(contribuable, dateFermeture, motifFermeture);
+		final ForFiscalPrincipal ffp = getService().closeForFiscalPrincipal(contribuable, dateFermeture, motifFermeture);
+		if (ffp != null && ffp.getTypeAutoriteFiscale() != TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
+			throw new RuntimeException("Le for du contribuable est déjà hors du canton");
+		}
 
 		Audit.info(depart.getNumeroEvenement(), "ouverture du for principal d'un contribuable au "
 				+ dateFermeture.getOneDayAfter().toString() + " pour motif suivant: " + motifFermeture);

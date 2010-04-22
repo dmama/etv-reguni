@@ -46,7 +46,7 @@ public class CorrectionDateNaissanceHandler extends AbstractChangementHandler {
 		Audit.info(evenement.getNumeroEvenement(), "Correction de la date de naissance de l'individu : " + evenement.getIndividu().getNoTechnique());
 
 		try {
-			final PersonnePhysique habitant = getHabitantOrThrowException(evenement.getIndividu().getNoTechnique());
+			final PersonnePhysique habitant = getPersonnePhysiqueOrThrowException(evenement.getIndividu().getNoTechnique());
 			final RegDate dateNaissance = evenement.getDate();
 
 			// [UNIREG-1114] La date de naissance est cachée au niveau de l'habitant

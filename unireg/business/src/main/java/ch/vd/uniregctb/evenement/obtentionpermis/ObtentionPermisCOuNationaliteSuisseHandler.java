@@ -59,7 +59,7 @@ public abstract class ObtentionPermisCOuNationaliteSuisseHandler extends Eveneme
 		 * assujetti ou non (mineur, conjoint) correspondant à l'individu.
 		 */
 		Individu individu = evenementCivil.getIndividu();
-		PersonnePhysique habitant = getHabitantOrFillErrors(individu.getNoTechnique(), errors);
+		PersonnePhysique habitant = getPersonnePhysiqueOrFillErrors(individu.getNoTechnique(), errors);
 		if (habitant == null) {
 			return;
 		}
@@ -87,7 +87,7 @@ public abstract class ObtentionPermisCOuNationaliteSuisseHandler extends Eveneme
 	public Pair<PersonnePhysique,PersonnePhysique> handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
 		// Recupere le tiers correspondant a l'individu
 		final Individu individu = evenement.getIndividu();
-		final PersonnePhysique habitant = getHabitantOrThrowException(individu.getNoTechnique());
+		final PersonnePhysique habitant = getPersonnePhysiqueOrThrowException(individu.getNoTechnique());
 
 		final RegDate dateEvenement = evenement.getDate();
 		final ForFiscalPrincipal forPrincipalHabitant = habitant.getForFiscalPrincipalAt(null);

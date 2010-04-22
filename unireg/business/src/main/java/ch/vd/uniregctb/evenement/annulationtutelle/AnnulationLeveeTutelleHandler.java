@@ -36,7 +36,7 @@ public class AnnulationLeveeTutelleHandler extends AbstractTutelleHandler {
 		AnnulationLeveeTutelle annulationLeveeTutelle = (AnnulationLeveeTutelle) evenement;
 		// Récupération du tiers habitant correspondant au pupille
 		long numeroIndividu = annulationLeveeTutelle.getIndividu().getNoTechnique();
-		PersonnePhysique pupille = getHabitantOrThrowException(numeroIndividu);
+		PersonnePhysique pupille = getPersonnePhysiqueOrThrowException(numeroIndividu);
 
 		// Récupération du rapport entre tiers (de type tutelle)
 		RapportEntreTiers rapportEntreTiers = getRapportTutelleOuvert(pupille, annulationLeveeTutelle.getDate());

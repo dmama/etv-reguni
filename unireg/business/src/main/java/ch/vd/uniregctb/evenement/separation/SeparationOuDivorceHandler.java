@@ -38,7 +38,7 @@ public abstract class SeparationOuDivorceHandler extends EvenementCivilHandlerBa
 
 		RegDate date = separation.getDate();
 		// obtention du tiers correspondant a l'individu.
-		PersonnePhysique habitant = getHabitantOrFillErrors(individu.getNoTechnique(), erreurs);
+		PersonnePhysique habitant = getPersonnePhysiqueOrFillErrors(individu.getNoTechnique(), erreurs);
 		if (habitant == null) {
 			return;
 		}
@@ -53,7 +53,7 @@ public abstract class SeparationOuDivorceHandler extends EvenementCivilHandlerBa
 		PersonnePhysique conjoint = null;
 		if (separation.getAncienConjoint() != null) {
 			// obtention du tiers correspondant au conjoint.
-			conjoint = getHabitantOrFillErrors(separation.getAncienConjoint().getNoTechnique(), erreurs);
+			conjoint = getPersonnePhysiqueOrFillErrors(separation.getAncienConjoint().getNoTechnique(), erreurs);
 			if (conjoint == null) {
 				return;
 			}

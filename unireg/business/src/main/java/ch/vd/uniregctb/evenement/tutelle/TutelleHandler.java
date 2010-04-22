@@ -58,13 +58,13 @@ public class TutelleHandler extends EvenementCivilHandlerBase {
 		final Tutelle tutelle = (Tutelle) evenement;
 
 		// Récupération de la pupille
-		final PersonnePhysique pupille = getHabitantOrThrowException(tutelle.getIndividu().getNoTechnique());
+		final PersonnePhysique pupille = getPersonnePhysiqueOrThrowException(tutelle.getIndividu().getNoTechnique());
 		Assert.notNull(pupille);
 
 		// Récupération du tuteur. Dans certains cas, le tuteur n'est pas renseigné et c'est l'autorité tutelaire que le remplace.
 		final PersonnePhysique tuteur;
 		if (tutelle.getTuteur() != null) {
-			tuteur = getHabitantOrThrowException(tutelle.getTuteur().getNoTechnique());
+			tuteur = getPersonnePhysiqueOrThrowException(tutelle.getTuteur().getNoTechnique());
 			Assert.notNull(tuteur);
 		}
 		else {

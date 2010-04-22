@@ -35,7 +35,7 @@ public class CorrectionConjointHandler extends EvenementCivilHandlerBase {
 		final Individu individu = evenement.getIndividu();
 		
 		// obtention du tiers correspondant a l'individu.
-		final PersonnePhysique habitant = getHabitantOrFillErrors(individu.getNoTechnique(), errors);
+		final PersonnePhysique habitant = getPersonnePhysiqueOrFillErrors(individu.getNoTechnique(), errors);
 		if (habitant == null) {
 			return;
 		}
@@ -46,7 +46,7 @@ public class CorrectionConjointHandler extends EvenementCivilHandlerBase {
 			errors.add(new EvenementCivilErreur("L'individu n'a pas de conjoint en date du "+evenement.getDate().toString()+" dans le civil"));
 			return;
 		}
-		final PersonnePhysique conjoint = getHabitantOrFillErrors(individuConjoint.getNoTechnique(), errors);
+		final PersonnePhysique conjoint = getPersonnePhysiqueOrFillErrors(individuConjoint.getNoTechnique(), errors);
 		
 		final EnsembleTiersCouple coupleHabitant = getService().getEnsembleTiersCouple(habitant, null);
 		final EnsembleTiersCouple coupleConjoint = getService().getEnsembleTiersCouple(conjoint, null);

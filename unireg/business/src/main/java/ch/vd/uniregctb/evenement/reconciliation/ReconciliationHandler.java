@@ -37,7 +37,7 @@ public class ReconciliationHandler extends EvenementCivilHandlerBase {
 		/*
 		 * Le tiers correspondant doit exister
 		 */
-		PersonnePhysique habitant = getHabitantOrFillErrors(individu.getNoTechnique(), errors);
+		PersonnePhysique habitant = getPersonnePhysiqueOrFillErrors(individu.getNoTechnique(), errors);
 		if (habitant == null) {
 			return;
 		}
@@ -57,7 +57,7 @@ public class ReconciliationHandler extends EvenementCivilHandlerBase {
 			/*
 			 * Le tiers correspondant doit exister
 			 */
-			habitantConjoint = getHabitantOrFillErrors(conjoint.getNoTechnique(), errors);
+			habitantConjoint = getPersonnePhysiqueOrFillErrors(conjoint.getNoTechnique(), errors);
 			if (habitantConjoint == null) {
 				return;
 			}
@@ -93,9 +93,9 @@ public class ReconciliationHandler extends EvenementCivilHandlerBase {
 
 		final Reconciliation reconciliation = (Reconciliation) evenement;
 		try {
-			final PersonnePhysique contribuable = getHabitantOrThrowException(reconciliation.getIndividu().getNoTechnique());
+			final PersonnePhysique contribuable = getPersonnePhysiqueOrThrowException(reconciliation.getIndividu().getNoTechnique());
 			final Individu individuConjoint = getServiceCivil().getConjoint(reconciliation.getIndividu().getNoTechnique(),reconciliation.getDate());
-			final PersonnePhysique conjoint = (individuConjoint == null) ? null : getHabitantOrThrowException(individuConjoint.getNoTechnique());
+			final PersonnePhysique conjoint = (individuConjoint == null) ? null : getPersonnePhysiqueOrThrowException(individuConjoint.getNoTechnique());
 
 			getMetier().reconcilie(contribuable, conjoint, reconciliation.getDateReconciliation(), null, false, reconciliation.getNumeroEvenement());
 			return null;
