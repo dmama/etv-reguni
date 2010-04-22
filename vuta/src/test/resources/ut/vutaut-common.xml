@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd">
+
+	<bean id="dataSource"
+		class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="driverClassName" value="${jdbc.driverClassName}"/>
+        <property name="url" value="${jdbc.url}"/>
+        <property name="username" value="${jdbc.username}"/>
+        <property name="password" value="${jdbc.password}"/>
+    </bean>
+
+	<!-- hibernateProperties specifiques à cette datasource. -->
+	<util:map id="hibernateProperties">
+		<entry key="hibernate.connection.autocommit" value="false" />
+		<entry key="hibernate.query.factory_class" value="org.hibernate.hql.classic.ClassicQueryTranslatorFactory" />
+		<entry key="hibernate.dialect" value="${hibernate.dialect}" />
+		<entry key="hibernate.show_sql" value="false" />
+		<entry key="hibernate.jdbc.batch_size" value="0" />
+		<entry key="hibernate.jdbc.use_streams_for_binary" value="true" />
+		<entry key="hibernate.hbm2ddl.auto" value="create" />
+
+		<entry key="hibernate.c3p0.minPoolSize" value="5" />
+		<entry key="hibernate.c3p0.maxPoolSize" value="20" />
+	</util:map>
+
+</beans>

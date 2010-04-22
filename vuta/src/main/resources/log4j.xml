@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+	<!-- Log4j config for WEB -->
+
+	<appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
+		<!-- Le "Threshold" veut dire qu'il ne va logger que les messages -->
+		<!-- "Threshold level" ou plus haut -->
+		<param name="Threshold" value="DEBUG" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="[vuta] %-5p [%d{yyyy-MM-dd HH:mm:ss.SSS}] %c{1}.%M(%L) | %m%n" />
+		</layout>
+	</appender>
+
+	<appender name="LOGFILE" class="org.apache.log4j.FileAppender">
+		<param name="Threshold" value="DEBUG" />
+		<param name="Append" value="false" />
+		<param name="File" value="smsgw.log" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="[vuta] %-5p [%d{yyyy-MM-dd HH:mm:ss.SSS}] %c{1}.%M(%L) | %m%n" />
+		</layout>
+	</appender>
+
+	<logger name="ch.vd.dfin">
+		<level value="DEBUG" />
+	</logger>
+
+
+	<logger name="net.sf.ehcache">
+		<level value="ERROR" />
+	</logger>
+
+	<logger name="org.apache">
+		<level value="WARN" />
+	</logger>
+
+	<logger name="org.hibernate">
+		<level value="WARN" />
+	</logger>
+
+	<!--logger name="org.hibernate.SQL">
+		<level value="INFO"/>
+		</logger-->
+
+	<logger name="org.springframework">
+		<level value="INFO" />
+	</logger>
+	<!-- Suppress warnings from Commons Validator -->
+	<logger name="org.apache.commons.validator.ValidatorResources">
+		<level value="ERROR" />
+	</logger>
+
+
+	<root>
+		<level value="INFO" />
+		<appender-ref ref="CONSOLE" />
+		<appender-ref ref="LOGFILE" />
+	</root>
+
+</log4j:configuration>

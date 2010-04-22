@@ -1,0 +1,211 @@
+<web-app version="2.4" xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+
+	<display-name>FIXME (jec) dégager ce fichier ! Crénom ! UniregCTB - Le registre fiscal de l'Etat de Vaud</display-name>
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>
+			classpath*:/unireg-core-dao.xml,
+			classpath*:/unireg-core-sf.xml,
+			classpath*:/unireg-business-services.xml,
+			classpath*:/unireg-business-jobs.xml,
+			classpath*:/unireg-business-jms.xml,
+			classpath*:/unireg-business-interfaces.xml,
+			classpath*:/unireg-business-evtcivil.xml,
+			classpath*:/unireg-business-jobs4webit.xml,
+			/WEB-INF/unireg-web-admin.xml,
+			/WEB-INF/unireg-web-cache.xml,
+			/WEB-INF/unireg-web-common.xml,
+			/WEB-INF/unireg-web-jms.xml,
+			/WEB-INF/unireg-web-couple.xml,
+			/WEB-INF/unireg-web-separation.xml,
+			/WEB-INF/unireg-web-deces.xml,
+			/WEB-INF/unireg-web-database.xml,
+			/WEB-INF/unireg-web-di.xml,
+			/WEB-INF/unireg-web-evenements.xml,
+			/WEB-INF/unireg-web-fusion.xml,
+			/WEB-INF/unireg-web-info.xml,
+			/WEB-INF/unireg-web-interfaces.xml,
+			/WEB-INF/unireg-web-lr.xml,
+			/WEB-INF/unireg-web-parametrage.xml,
+			/WEB-INF/unireg-web-properties.xml,
+			/WEB-INF/unireg-web-rapport.xml,
+			/WEB-INF/unireg-web-security.xml,
+			/WEB-INF/unireg-web-services.xml,
+			/WEB-INF/unireg-web-tiers.xml,
+			/WEB-INF/unireg-web-mouvement.xml,
+			/WEB-INF/unireg-web-tache.xml,
+			/WEB-INF/unireg-web-fiscal.xml,
+			/WEB-INF/unireg-web-adresse.xml,
+			/WEB-INF/unireg-web-complement.xml,
+			/WEB-INF/unireg-web-civil.xml,
+			/WEB-INF/unireg-web-acces.xml,
+			/WEB-INF/unireg-web-activation.xml,
+			/WEB-INF/unireg-web-client-ws.xml,
+			/WEB-INF/unireg-web-identification.xml,
+			/WEB-INF/unireg-weblight.xml
+		</param-value>
+		<!-- Pour permettre une analyse des perfs, -->
+		<!-- il faut décommenter ce fichier -->
+		<!--
+			/WEB-INF/unireg-performance.xml,
+		-->
+	</context-param>
+
+	<context-param>
+		<param-name>log4jConfigLocation</param-name>
+		<param-value>${unireg.log4j.location}</param-value>
+	</context-param>
+	<context-param>
+		<!-- On ne peut pas exposer le webapp root si le war est pas exapndé -->
+		<param-name>log4jExposeWebAppRoot</param-name>
+		<param-value>false</param-value>
+	</context-param>
+
+	<!--  Les servlets de notre application -->
+	<servlet>
+		<servlet-name>uniregServlet</servlet-name>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+		<init-param>
+			<param-name>contextConfigLocation</param-name>
+			<param-value>
+				<!-- Cette propriété doit exister mais être vide! -->
+			</param-value>
+		</init-param>
+		<load-on-startup>3</load-on-startup>
+	</servlet>
+	<!--  Mapping entre les servlets et les URLs qu'elles servent -->
+	<servlet-mapping>
+		<servlet-name>uniregServlet</servlet-name>
+		<url-pattern>*.do</url-pattern>
+	</servlet-mapping>
+
+	<!-- Emplacement du fichier index -->
+	<welcome-file-list>
+		<welcome-file>index.jsp</welcome-file>
+	</welcome-file-list>
+
+	<!-- Les listener de notre application -->
+	<listener>
+ 		<listener-class>org.springframework.web.util.Log4jConfigListener</listener-class>
+	</listener>
+	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
+	<listener>
+		<listener-class>org.springframework.web.util.IntrospectorCleanupListener</listener-class>
+	</listener>
+	<listener>
+		<!-- permet de redéployer unireg dans Tomcat sans obtenir une erreur de lecture sur ehcache.xml -->
+		<!-- voir http://ehcache.sourceforge.net/documentation/shutdown.html -->
+		<listener-class>net.sf.ehcache.constructs.web.ShutdownListener</listener-class>
+	</listener>	
+
+	<!-- Les filters de notre application -->
+	<filter>
+		<filter-name>encodingFilter</filter-name>
+		<filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+		<init-param>
+			<param-name>encoding</param-name>
+			<param-value>UTF-8</param-value>
+		</init-param>
+		<init-param>
+			<param-name>forceEncoding</param-name>
+			<param-value>true</param-value>
+		</init-param>
+	</filter>
+	<filter>
+		<filter-name>responseOverrideFilter</filter-name>
+		<filter-class>org.displaytag.filter.ResponseOverrideFilter</filter-class>
+	</filter>
+	
+	<!-- Acegi security -->
+	<filter>
+		<filter-name>springSecurityFilter</filter-name>
+		<filter-class>org.acegisecurity.util.FilterToBeanProxy</filter-class>
+		<init-param>
+			<param-name>targetBean</param-name>
+			<param-value>filterChainProxy</param-value>
+		</init-param>
+	</filter>
+
+	<!-- Filtre de performance pour les URLs -->
+	<filter>
+		<filter-name>WebPerformanceFilter</filter-name>
+		<filter-class>ch.vd.uniregctb.performance.PerformanceFilter</filter-class>
+	</filter>
+
+	<!-- Filtre de logging des requêtes http -->
+	<filter>
+		<filter-name>servletRequestLoggingFilter</filter-name>
+		<filter-class>ch.vd.uniregctb.log.ServletRequestLoggingFilter</filter-class>
+	</filter>
+
+	<filter-mapping>
+		<filter-name>encodingFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>responseOverrideFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>springSecurityFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>WebPerformanceFilter</filter-name>
+		<url-pattern>*.do</url-pattern>
+	</filter-mapping>
+	<!-- décommenter cette partie pour activer le logging des requêtes http 
+	<filter-mapping>
+		<filter-name>servletRequestLoggingFilter</filter-name>
+		<url-pattern>*.do</url-pattern>
+	</filter-mapping>
+	 -->
+
+	<!--  La configuration de la session utilisateur -->
+	<session-config>
+		<!-- timeout de 1 heure, comme IAM -->
+		<session-timeout>60</session-timeout>
+	</session-config>
+	<jsp-config>
+		<jsp-property-group>
+			<description>Property group for common configuration for all the JSP's</description>
+			<url-pattern>*.jsp</url-pattern>
+			<el-ignored>false</el-ignored>
+			<page-encoding>UTF-8</page-encoding>
+		</jsp-property-group>
+	</jsp-config>
+	<!-- Les pages d'erreurs et code HTTP associés -->
+	<error-page>
+		<error-code>500</error-code>
+		<location>/error.do</location>
+	</error-page>
+	<error-page>
+		<error-code>400</error-code>
+		<location>/WEB-INF/jsp/index.jsp</location>
+	</error-page>
+	<error-page>
+		<error-code>403</error-code>
+		<location>/403.do</location>
+	</error-page>
+	<error-page>
+		<error-code>404</error-code>
+		<location>/404.do</location>
+	</error-page>
+
+	<mime-mapping>
+		<extension>js</extension>
+		<mime-type>application/x-javascript</mime-type>
+	</mime-mapping>
+    <mime-mapping>
+        <extension>csv</extension>
+        <mime-type>application/octet-stream</mime-type>
+    </mime-mapping>
+    <mime-mapping>
+        <extension>xls</extension>
+        <mime-type>application/vnd.ms-excel</mime-type>
+    </mime-mapping>
+
+</web-app>

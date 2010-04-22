@@ -1,0 +1,145 @@
+<dataset>
+
+	<table name="TIERS">
+		<column>LOG_MDATE</column>
+		<column>NUMERO</column>
+		<column>TIERS_TYPE</column>
+		<column>NUMERO_INDIVIDU</column>
+		<column>DEBITEUR_INACTIF</column>
+		<row>
+			<value>2008-01-01</value>
+			<value>6789</value>
+			<value>Habitant</value>
+			<value>12345</value>
+			<value>0</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>6790</value>
+			<value>Habitant</value>
+			<value>12345</value>
+			<value>0</value>
+		</row>
+	</table>
+
+
+	<table name="ADRESSE_TIERS">
+		<column>LOG_MDATE</column>
+		<column>ID</column>
+		<column>ADR_TYPE</column>
+		<column>TIERS_ID</column>
+		<column>DATE_DEBUT</column>
+		<column>NUMERO_MAISON</column>
+		<column>PERMANENTE</column>
+		<row>
+			<value>2008-01-01</value>
+			<value>1</value>
+			<value>AdresseSuisse</value>
+			<value>6789</value>
+			<value>20060223</value>
+			<value>12</value>
+			<value>0</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>2</value>
+			<value>AdresseSuisse</value>
+			<value>6789</value>
+			<value>20050830</value>
+			<value>9</value>
+			<value>0</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>3</value>
+			<value>AdresseSuisse</value>
+			<value>6789</value>
+			<value>20050112</value>
+			<value>56</value>
+			<value>0</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>4</value>
+			<value>AdresseSuisse</value>
+			<value>6789</value>
+			<value>20070112</value>
+			<value>8</value>
+			<value>0</value>
+		</row>
+	</table>
+
+	<table name="FOR_FISCAL">
+		<column>LOG_MDATE</column>
+		<column>ID</column>
+		<column>TIERS_ID</column>
+		<column>DATE_OUVERTURE</column>
+		<column>DATE_FERMETURE</column>
+		<column>MOTIF_RATTACHEMENT</column>
+		<column>TYPE_AUT_FISC</column>
+		<column>NUMERO_OFS</column>
+		<column>GENRE_IMPOT</column>
+		<row>
+			<value>2008-01-01</value>
+			<value>100001</value>
+			<value>6789</value>
+			<value>20060101</value>
+			<value>20071231</value>
+			<null />
+			<value>COMMUNE_HC</value>
+			<value>261</value>
+			<value>REVENU_FORTUNE</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>100002</value>
+			<value>6789</value>
+			<value>20070101</value>
+			<null />
+			<null />
+			<value>COMMUNE_HC</value>
+			<value>261</value>
+			<value>REVENU_FORTUNE</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>100003</value>
+			<value>6789</value>
+			<value>20060901</value>
+			<null />
+			<null />
+			<value>COMMUNE_HC</value>
+			<value>261</value>
+			<value>REVENU_FORTUNE</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>100004</value>
+			<value>6790</value>
+			<value>20070101</value>
+			<null />
+			<null />
+			<value>COMMUNE_HC</value>
+			<value>261</value>
+			<value>REVENU_FORTUNE</value>
+		</row>
+	</table>
+	<table name="EVENEMENT_CIVIL_UNITAIRE">
+		<column>LOG_MDATE</column>
+		<column>ID</column>
+		<column>TYPE</column>
+		<column>DATE_EVENEMENT</column>
+		<column>NUMERO_INDIVIDU</column>
+		<column>NUMERO_OFS_ANNONCE</column>
+		<column>ETAT</column>
+		<row>
+			<value>2008-01-01</value>
+			<value>9001</value>
+			<value>MARIAGE</value>
+			<value>19791025</value>
+			<value>123456789</value>
+			<value>1010</value>
+			<value>TRAITE</value>
+		</row>
+	</table>
+</dataset>

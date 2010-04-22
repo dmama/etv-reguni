@@ -1,0 +1,51 @@
+<xb:config xmlns:xb="http://xml.apache.org/xmlbeans/2004/02/xbean/config">
+	<xb:namespace uri="http://vd.ch/uniregctb/evenement/schema">
+	  	<xb:suffix>XmlBean</xb:suffix>
+ 	</xb:namespace>
+ 	
+ 	<!-- Evenements Externes -->
+ 	
+	<xb:extension for="ch.vd.fiscalite.registre.evenementImpotSourceV1.EvenementImpotSourceQuittanceType">
+		<xb:interface name="ch.vd.uniregctb.evenement.externe.IEvenementExterne">
+			<xb:staticHandler>ch.vd.uniregctb.evenement.externe.EvenementExterneStaticHandler</xb:staticHandler>
+		</xb:interface>
+	</xb:extension>
+
+	<!-- DI Editique -->
+
+	<xb:extension for="noNamespace.DIDocument$DI">
+		<xb:interface name="ch.vd.uniregctb.editique.document.IDeclaration">
+			<xb:staticHandler>ch.vd.uniregctb.editique.document.DeclarationStaticHandler</xb:staticHandler>
+		</xb:interface>
+	</xb:extension>
+
+	<xb:extension for="noNamespace.DIDPDocument$DIDP">
+		<xb:interface name="ch.vd.uniregctb.editique.document.IDeclaration">
+			<xb:staticHandler>ch.vd.uniregctb.editique.document.DeclarationStaticHandler</xb:staticHandler>
+		</xb:interface>
+	</xb:extension>
+	
+	<xb:extension for="noNamespace.DIHCDocument$DIHC">
+		<xb:interface name="ch.vd.uniregctb.editique.document.IDeclaration">
+			<xb:staticHandler>ch.vd.uniregctb.editique.document.DeclarationStaticHandler</xb:staticHandler>
+		</xb:interface>
+	</xb:extension>
+
+	<xb:extension for="noNamespace.DIVDTAXDocument$DIVDTAX">
+		<xb:interface name="ch.vd.uniregctb.editique.document.IDeclaration">
+			<xb:staticHandler>ch.vd.uniregctb.editique.document.DeclarationStaticHandler</xb:staticHandler>
+		</xb:interface>
+	</xb:extension>
+	
+
+	<!-- Identification de CTB -->	
+    <xb:namespace uri="http://www.vd.ch/fiscalite/registre/identificationContribuable-v1.6">
+        <xb:package>ch.vd.fiscalite.registre.identificationContribuable</xb:package>
+    </xb:namespace>
+
+	<!-- Evénements DB -->	
+    <xb:namespace uri="http://www.vd.ch/fiscalite/registre/databaseEvent-v1.0">
+        <xb:package>ch.vd.fiscalite.registre.databaseEvent</xb:package>
+    </xb:namespace>
+	
+</xb:config>
