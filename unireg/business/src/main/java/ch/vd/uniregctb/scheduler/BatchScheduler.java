@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.scheduler;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -7,10 +8,12 @@ import java.util.List;
 
 import org.acegisecurity.Authentication;
 import org.apache.log4j.Logger;
+import org.quartz.CronTrigger;
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.SimpleTrigger;
+import org.quartz.Trigger;
 import org.quartz.UnableToInterruptJobException;
 import org.springframework.beans.factory.DisposableBean;
 
@@ -57,6 +60,34 @@ public class BatchScheduler implements DisposableBean {
 		jobs.put(job.getName(), job);
 		scheduler.addJobListener(new UniregJobListener(job));
 		LOGGER.info("Job added: " + job.getName());
+	}
+
+	/**
+	 * Enregistre un job comme devant être exécuté comme un cron.
+	 *
+	 * @param job            un job
+	 * @param cronExpression l'expression cron (par exemple: "0 0/5 6-20 * * ?" pour exécuter le job toutes les 5 minutes, de 6h à 20h tous les jours)
+	 * @throws SchedulerException en cas d'exception dans le scheduler
+	 * @throws ParseException     en cas d'erreur dans la syntaxe de l'expression cron
+	 */
+	public void registerCron(JobDefinition job, String cronExpression) throws SchedulerException, ParseException {
+
+		AuthenticationHelper.pushPrincipal("[cron]");
+		try {
+			final Authentication auth = AuthenticationHelper.getAuthentication();
+			Assert.notNull(auth);
+
+			final JobDetail jobDetail = new JobDetail(job.getName(), Scheduler.DEFAULT_GROUP, JobStarter.class);
+			jobDetail.getJobDataMap().put(JobDefinition.KEY_JOB, job);
+			jobDetail.getJobDataMap().put(JobDefinition.KEY_AUTH, auth);
+			jobDetail.getJobDataMap().put(JobDefinition.KEY_PARAMS, job.getDefaultParams());
+
+			final Trigger trigger = new CronTrigger("CronTrigger-" + job.getName(), Scheduler.DEFAULT_GROUP, cronExpression);
+			scheduler.scheduleJob(jobDetail, trigger);
+		}
+		finally {
+			AuthenticationHelper.popPrincipal();
+		}
 	}
 
 	/**
@@ -128,7 +159,6 @@ public class BatchScheduler implements DisposableBean {
 
 		// Ajout du job au scheduler
 		jobDetail.addJobListener(job.getName());
-		job.initialize();
 		scheduler.scheduleJob(jobDetail, trigger);
 
 	}

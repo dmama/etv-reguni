@@ -46,7 +46,7 @@ public abstract class JobDefinition implements InitializingBean, Comparable<Obje
 	private String description;
 	private List<JobParam> paramDefinition = Collections.emptyList();
 
-	private BatchScheduler batchScheduler;
+	protected BatchScheduler batchScheduler;
 
 	private HashMap<String, Object> currentParameters = null;
 

@@ -44,4 +44,10 @@ public class OptimizeIndexJob extends JobDefinition {
 	public void setIndex(GlobalIndex index) {
 		this.index = index;
 	}
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		super.afterPropertiesSet();
+		batchScheduler.registerCron(this, "0 0 2 * * ?"); // tous les jours, à 2 heures du matin
+	}
 }

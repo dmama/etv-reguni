@@ -54,7 +54,7 @@ public class JobStarter implements Job, InterruptableJob {
 		params = (HashMap<String, Object>)dataMap.get(KEY_PARAMS);
 
 		try {
-
+			job.initialize();
 			job.setRunningMessage("Initialisation du job...");
 
 			if (params == null || params.isEmpty()) {
