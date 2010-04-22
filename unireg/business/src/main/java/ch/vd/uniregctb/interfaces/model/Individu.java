@@ -168,4 +168,14 @@ public interface Individu extends EntiteCivile {
 	 * @return un nouvel individu.
 	 */
 	Individu clone(Set<EnumAttributeIndividu> parts);
+
+	/**
+	 * Détermine le permis actif d'individu à une date donnée.
+	 * <p/>
+	 * <b>Note:</b> l'individu doit avoir sa collection de permis renseignée pour que cette méthode puisse retourner un résultat correct.
+	 *
+	 * @param date la date de validité du permis, ou <b>null</b> pour obtenir le dernis permis valide.
+	 * @return le permis actif d'un individu à une date donnée.
+	 */
+	Permis getPermisActif(RegDate date);
 }

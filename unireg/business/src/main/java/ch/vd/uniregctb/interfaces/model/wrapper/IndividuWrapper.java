@@ -15,6 +15,7 @@ import ch.vd.uniregctb.interfaces.model.Nationalite;
 import ch.vd.uniregctb.interfaces.model.Origine;
 import ch.vd.uniregctb.interfaces.model.Permis;
 import ch.vd.uniregctb.interfaces.model.Tutelle;
+import ch.vd.uniregctb.interfaces.model.helper.IndividuHelper;
 
 public class IndividuWrapper extends EntiteCivileWrapper implements Individu {
 
@@ -344,5 +345,9 @@ public class IndividuWrapper extends EntiteCivileWrapper implements Individu {
 
 	public Individu clone(Set<EnumAttributeIndividu> parts) {
 		return new IndividuWrapper(this, parts);
+	}
+
+	public Permis getPermisActif(RegDate date) {
+		return IndividuHelper.getPermisActif(this, date);
 	}
 }

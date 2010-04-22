@@ -115,45 +115,13 @@ public abstract class ServiceCivilServiceBase implements ServiceCivilService {
 
 	/**
 	 * @param noIndividu le numéro d'individu
-	 * @param date la date de validité du permis, ou <b>null</b> pour obtenir le dernis permis valide.
+	 * @param date       la date de validité du permis, ou <b>null</b> pour obtenir le dernis permis valide.
 	 * @return le permis actif d'un individu à une date donnée.
 	 */
 	public final Permis getPermisActif(long noIndividu, RegDate date) {
-
 		final int year = (date == null ? 2400 : date.year());
 		final Individu individu = getIndividu(noIndividu, year, EnumAttributeIndividu.PERMIS);
-
-		Permis permis = null;
-
-		final Collection<Permis> coll = individu.getPermis();
-		if (coll != null) {
-
-			// tri des permis par leur date de début et numéro de séquence (utile si les dates de début sont nulles)
-			final List<Permis> liste = new ArrayList<Permis>(coll);
-			Collections.sort(liste, new Comparator<Permis>() {
-				public int compare(Permis o1, Permis o2) {
-					if (RegDateHelper.equals(o1.getDateDebutValidite(), o2.getDateDebutValidite())) {
-						return o1.getNoSequence() - o2.getNoSequence();
-					}
-					else {
-						return RegDateHelper.isBeforeOrEqual(o1.getDateDebutValidite(), o2.getDateDebutValidite(), NullDateBehavior.EARLIEST) ? -1 : 1;
-					}
-				}
-			});
-
-			// itération sur la liste des permis, dans l'ordre inverse de l'obtention
-			// (on s'arrête sur le premier pour lequel les dates sont bonnes - et on ne prends pas en compte les permis annulés)
-			for (int i = liste.size() - 1 ; i >= 0 ; --i) {
-				final Permis e = liste.get(i);
-				if (e.getDateAnnulation() == null
-						&& RegDateHelper.isBetween(date, e.getDateDebutValidite(), e.getDateFinValidite(), NullDateBehavior.LATEST)) {
-					permis = e;
-					break;
-				}
-			}
-		}
-
-		return permis;
+		return (individu == null ? null : individu.getPermisActif(date));
 	}
 
 	public String getNomPrenom(Individu individu) {

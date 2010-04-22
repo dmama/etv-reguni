@@ -15,6 +15,7 @@ import ch.vd.uniregctb.interfaces.model.Nationalite;
 import ch.vd.uniregctb.interfaces.model.Origine;
 import ch.vd.uniregctb.interfaces.model.Permis;
 import ch.vd.uniregctb.interfaces.model.Tutelle;
+import ch.vd.uniregctb.interfaces.model.helper.IndividuHelper;
 
 public class MockIndividu extends MockEntiteCivile implements Individu {
 
@@ -298,5 +299,9 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 
 	public Individu clone(Set<EnumAttributeIndividu> parts) {
 		return new MockIndividu(this, parts);
+	}
+
+	public Permis getPermisActif(RegDate date) {
+		return IndividuHelper.getPermisActif(this, date);
 	}
 }
