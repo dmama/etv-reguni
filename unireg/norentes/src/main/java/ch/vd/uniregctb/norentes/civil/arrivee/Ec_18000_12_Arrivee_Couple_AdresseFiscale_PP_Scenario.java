@@ -118,7 +118,7 @@ public class Ec_18000_12_Arrivee_Couple_AdresseFiscale_PP_Scenario extends Evene
 		final MenageCommun menage = (MenageCommun) tiersDAO.get(noMenage);
 		assertNotNull(menage, "On ne retrouve plus le ménage commun!");
 		final PersonnePhysique antoine = (PersonnePhysique) tiersDAO.get(noHabAntoine);
-		assertNotNull(menage, "On ne retrouve plus Antoine!");
+		assertNotNull(antoine, "On ne retrouve plus Antoine!");
 		final PersonnePhysique cleo = (PersonnePhysique) tiersDAO.get(noHabCleo);
 		assertNotNull(cleo, "On ne retrouve plus Cléo!");
 
