@@ -72,11 +72,6 @@ public class AnnulationDecesRecapManagerImpl implements AnnulationDecesRecapMana
 			throw new ObjectNotFoundException("Impossible de déterminer la date de décès du contribuable");
 		}
 
-		//TODO (CGD) a-t-on le droit d'annulé le décès d'un habitant décédé dans le civil ?
-		if (pp.getDateDeces() == null) {
-			throw new ObjectNotFoundException("Le contribuable habitant est mort dans le civil, il n'est pas possible d'annuler son décès dans le fiscal");
-		}
-
 		return annulationDecesRecapView;
 	}
 
