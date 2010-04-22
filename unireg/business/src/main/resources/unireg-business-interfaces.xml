@@ -8,20 +8,20 @@
 		<property name="serviceInfrastructure" ref="_serviceInfrastructure" />
 	</bean>
 
-	<bean id="serviceInfrastructureCache" class="ch.vd.uniregctb.interfaces.service.ServiceInfrastructureCache">
+	<bean id="serviceInfrastructureTracing" class="ch.vd.uniregctb.interfaces.service.ServiceInfrastructureTracing">
 		<property name="target" ref="serviceInfrastructureServiceRaw" />
+		<property name="statsService" ref="statsService" />
+	</bean>
+
+	<bean id="serviceInfrastructureCache" class="ch.vd.uniregctb.interfaces.service.ServiceInfrastructureCache">
+		<property name="target" ref="serviceInfrastructureTracing" />
 		<property name="cacheManager" ref="ehCacheManager" />
 		<property name="cacheName" value="serviceInfra" />
 		<property name="uniregCacheManager" ref="uniregCacheManager" />
 		<property name="statsService" ref="statsService" />
 	</bean>
 
-	<bean id="serviceInfrastructureTracing" class="ch.vd.uniregctb.interfaces.service.ServiceInfrastructureTracing">
-		<property name="target" ref="serviceInfrastructureCache" />
-		<property name="statsService" ref="statsService" />
-	</bean>
-
-	<alias alias="serviceInfrastructureService" name="serviceInfrastructureTracing"/>
+	<alias alias="serviceInfrastructureService" name="serviceInfrastructureCache"/>
 
 	<!-- Service Civil -->
 
@@ -33,20 +33,20 @@
 		<property name="serviceCivil" ref="_serviceCivil" />
 	</bean>
 
-	<bean id="serviceCivilServiceCache" class="ch.vd.uniregctb.interfaces.service.ServiceCivilCache" parent="serviceCivilServiceBase">
+	<bean id="serviceCivilServiceTracing" class="ch.vd.uniregctb.interfaces.service.ServiceCivilTracing">
 		<property name="target" ref="serviceCivilServiceRaw" />
+		<property name="statsService" ref="statsService" />
+	</bean>
+
+	<bean id="serviceCivilServiceCache" class="ch.vd.uniregctb.interfaces.service.ServiceCivilCache" parent="serviceCivilServiceBase">
+		<property name="target" ref="serviceCivilServiceTracing" />
 		<property name="cacheManager" ref="ehCacheManager" />
 		<property name="cacheName" value="serviceCivil" />
 		<property name="uniregCacheManager" ref="uniregCacheManager" />
 		<property name="statsService" ref="statsService" />
 	</bean>
 
-	<bean id="serviceCivilServiceTracing" class="ch.vd.uniregctb.interfaces.service.ServiceCivilTracing">
-		<property name="target" ref="serviceCivilServiceCache" />
-		<property name="statsService" ref="statsService" />
-	</bean>
-	
-	<alias alias="serviceCivilService" name="serviceCivilServiceTracing"/>
+	<alias alias="serviceCivilService" name="serviceCivilServiceCache"/>
 
 	<!-- Service Securité -->
 
@@ -54,20 +54,20 @@
 		<property name="serviceSecurite" ref="_serviceSecurite" />
 	</bean>
 
-	<bean id="serviceSecuriteCache" class="ch.vd.uniregctb.interfaces.service.ServiceSecuriteCache">
+	<bean id="serviceSecuriteServiceTracing" class="ch.vd.uniregctb.interfaces.service.ServiceSecuriteTracing">
 		<property name="target" ref="serviceSecuriteServiceRaw" />
+		<property name="statsService" ref="statsService" />
+	</bean>
+
+	<bean id="serviceSecuriteCache" class="ch.vd.uniregctb.interfaces.service.ServiceSecuriteCache">
+		<property name="target" ref="serviceSecuriteServiceTracing" />
 		<property name="cacheManager" ref="ehCacheManager" />
 		<property name="cacheName" value="serviceSecurite" />
 		<property name="uniregCacheManager" ref="uniregCacheManager" />
 		<property name="statsService" ref="statsService" />
 	</bean>
 
-	<bean id="serviceSecuriteServiceTracing" class="ch.vd.uniregctb.interfaces.service.ServiceSecuriteTracing">
-		<property name="target" ref="serviceSecuriteCache" />
-		<property name="statsService" ref="statsService" />
-	</bean>
-
-	<alias alias="serviceSecuriteService" name="serviceSecuriteServiceTracing"/>
+	<alias alias="serviceSecuriteService" name="serviceSecuriteCache"/>
 
 	<!-- Service PM -->
 	
@@ -75,18 +75,19 @@
 		<property name="servicePersonneMorale" ref="_servicePersonneMorale" />
 	</bean>
 
-	<bean id="servicePersonneMoraleServiceCache" class="ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleCache">
+	<bean id="servicePersonneMoraleServiceTracing" class="ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleTracing">
 		<property name="target" ref="servicePersonneMoraleServiceRaw" />
+		<property name="statsService" ref="statsService" />
+	</bean>
+
+	<bean id="servicePersonneMoraleServiceCache" class="ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleCache">
+		<property name="target" ref="servicePersonneMoraleServiceTracing" />
 		<property name="cacheManager" ref="ehCacheManager" />
 		<property name="cacheName" value="servicePM" />
 		<property name="uniregCacheManager" ref="uniregCacheManager" />
 		<property name="statsService" ref="statsService" />
 	</bean>
+
+	<alias alias="servicePersonneMoraleService" name="servicePersonneMoraleServiceCache"/>
 	
-	<bean id="servicePersonneMoraleServiceTracing" class="ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleTracing">
-		<property name="target" ref="servicePersonneMoraleServiceCache" />
-		<property name="statsService" ref="statsService" />
-	</bean>
-	
-	<alias alias="servicePersonneMoraleService" name="servicePersonneMoraleServiceTracing"/>
 </beans>
