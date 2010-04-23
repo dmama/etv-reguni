@@ -2,6 +2,7 @@ package ch.vd.uniregctb.scheduler;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.document.Document;
 import ch.vd.uniregctb.utils.UniregModeHelper;
@@ -31,7 +32,6 @@ public abstract class JobDefinition implements InitializingBean, Comparable<Obje
 	private String runningMessage;
 	private Integer percentProgression;
 	private JobStatut statut = JobStatut.JOB_OK;
-	private boolean interrupted = false;
 	private Date lastStart;
 	private Date lastEnd;
 	private Document lastRunReport;
@@ -56,13 +56,9 @@ public abstract class JobDefinition implements InitializingBean, Comparable<Obje
 
 	public enum JobStatut {
 		/**
-		 * JOB_OK estt l'état du test soit avant qu'il ait tourné, soit si le retour est OK
+		 * JOB_OK est l'état du test soit avant qu'il ait tourné, soit si le retour est OK
 		 */
 		JOB_OK,
-		/**
-		 * JOB_READY veut dire que le test a été starté mais ne tourne pas encore (état transitoire)
-		 */
-		JOB_READY,
 		/**
 		 * JOB_RUNNING veut dire que le job est en train de tourner en ce moment
 		 */
@@ -118,13 +114,7 @@ public abstract class JobDefinition implements InitializingBean, Comparable<Obje
 	}
 
 	protected final void initialize() {
-		setStatut(JobStatut.JOB_READY);
-		interrupted = false;
-		runningMessage = "";
-		percentProgression = null;
-		lastStart = new Date();
-		lastEnd = null;
-
+		runningMessage = "Initialisation du job...";
 		doInitialize();
 	}
 
@@ -137,13 +127,17 @@ public abstract class JobDefinition implements InitializingBean, Comparable<Obje
 	}
 
 	protected final void terminate() throws Exception {
-
 		doTerminate();
-		this.currentParameters = null;
+		currentParameters = null;
 		lastEnd = new Date();
 	}
 
 	protected void execute(HashMap<String, Object> params) throws Exception {
+
+		lastStart = new Date();
+		lastEnd = null;
+
+		percentProgression = null;
 		currentParameters = params;
 		doExecute(params);
 	}
@@ -167,14 +161,24 @@ public abstract class JobDefinition implements InitializingBean, Comparable<Obje
 	 */
 	protected abstract void doExecute(HashMap<String, Object> params) throws Exception;
 
-	public void interrupt() throws UnableToInterruptJobException {
-
-		interrupted = true;
+	public void interrupt() {
+		setStatut(JobStatut.JOB_INTERRUPTED);
 		LOGGER.info("Job interrupted flag set");
 	}
 
+	public void toBeExecuted() {
+		Assert.isTrue(statut != JobStatut.JOB_RUNNING);
+		setStatut(JobStatut.JOB_RUNNING);
+	}
+
+	public void wasExecuted() {
+		if (statut == JobStatut.JOB_RUNNING) {
+			setStatut(JobStatut.JOB_OK);
+		}
+	}
+
 	protected boolean isInterrupted() {
-		return interrupted;
+		return statut == JobStatut.JOB_INTERRUPTED;
 	}
 
 	/**
@@ -230,7 +234,7 @@ public abstract class JobDefinition implements InitializingBean, Comparable<Obje
 	 * @return le status du job
 	 */
 	public boolean isRunning() {
-		return statut == JobStatut.JOB_READY || statut == JobStatut.JOB_RUNNING;
+		return statut == JobStatut.JOB_RUNNING;
 	}
 
 	public String getRunningMessage() {
@@ -248,7 +252,7 @@ public abstract class JobDefinition implements InitializingBean, Comparable<Obje
 
 	public void setRunningMessage(String message, int percentProgression) {
 		this.runningMessage = message;
-		this.percentProgression = Integer.valueOf(percentProgression);
+		this.percentProgression = percentProgression;
 	}
 
 	/**

@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.common;
 
+import java.util.Date;
+
 import org.springframework.test.context.ContextConfiguration;
 
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
@@ -8,6 +10,7 @@ import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer.Mode;
 import ch.vd.uniregctb.interfaces.service.mock.ProxyServiceCivil;
 import ch.vd.uniregctb.interfaces.service.mock.ProxyServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.mock.ProxyServicePM;
+import ch.vd.uniregctb.scheduler.JobDefinition;
 
 @ContextConfiguration(locations = {
 	BusinessTestingConstants.UNIREG_BUSINESS_UT_JOBS
@@ -91,5 +94,11 @@ public abstract class BusinessTest extends AbstractBusinessTest {
 		// Si on Index en ASYNC (on créée des Threads) tout va bien
 		// Sinon, avec indexAllDb(), il y a des problemes de OptimisticLock...
 		globalTiersIndexer.indexAllDatabaseAsync(null, 1, Mode.FULL, false);
+	}
+
+	protected static void waitUntilRunning(JobDefinition job, Date startTime) throws Exception {
+		while (job.getLastStart() == null || job.getLastStart().before(startTime)) {
+			Thread.sleep(100); // 100ms
+		}
 	}
 }

@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.editique;
 
+import java.util.Date;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -33,14 +34,18 @@ public class EditiqueSommationLRJobTest extends BusinessTest {
 		tiersDAO = getBean(TiersDAO.class, "tiersDAO");
 	}
 
-	@Test
+	@Test(timeout = 10000)
 	public void testEditiqueSommationLRJob() throws Exception {
-
-		LOGGER.debug("EditiqueListeRecapJobTest - testEditiqueSommationLRJob");
 
 		loadDatabase(DB_UNIT_DATA_FILE);
 
-		JobDefinition job = batchScheduler.startJobWithDefaultParams(EditiqueSommationLRJob.NAME);
+		final Date statTime = new Date();
+		final JobDefinition job = batchScheduler.startJobWithDefaultParams(EditiqueSommationLRJob.NAME);
+		
+		// Attente du démarrage de l'exécution
+		waitUntilRunning(job, statTime);
+
+		// Attente de l'arrêt de l'exécution
 		while (job.isRunning()) {
 			Thread.sleep(2000);
 			LOGGER.debug("Attente de la fin du job de creation de sommation des LRs");
@@ -49,7 +54,7 @@ public class EditiqueSommationLRJobTest extends BusinessTest {
 
 		//Verification que la LR est passe a l'etat SOMME
 		//Debiteur 12500001 avec delais
-		Tiers tiers = tiersDAO.get(new Long(12500001));
+		Tiers tiers = tiersDAO.get((long) 12500001);
 		Assert.assertNotNull(tiers.getDeclarations());
 		Set<Declaration> declarations = tiers.getDeclarations();
 		Iterator<Declaration> itDec = declarations.iterator();
@@ -58,13 +63,12 @@ public class EditiqueSommationLRJobTest extends BusinessTest {
 
 		//Verification que la LR n'a pas été SOMME
 		//Debiteur 12500002 avec delai en 2020
-		tiers = tiersDAO.get(new Long(12500002));
+		tiers = tiersDAO.get((long) 12500002);
 		Assert.assertNotNull(tiers.getDeclarations());
 		declarations = tiers.getDeclarations();
 		itDec = declarations.iterator();
 		lr = (DeclarationImpotSource) itDec.next();
 		Assert.assertEquals(TypeEtatDeclaration.EMISE, lr.getDernierEtat().getEtat());
-
 	}
 
 }

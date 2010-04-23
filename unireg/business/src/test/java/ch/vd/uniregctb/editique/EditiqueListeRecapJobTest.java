@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.editique;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
@@ -22,6 +23,7 @@ import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
 
+@SuppressWarnings({"JavaDoc"})
 public class EditiqueListeRecapJobTest extends BusinessTest {
 
 	private final static String DB_UNIT_DATA_FILE = "classpath:ch/vd/uniregctb/editique/ListeRecapJobTest.xml";
@@ -36,7 +38,7 @@ public class EditiqueListeRecapJobTest extends BusinessTest {
 		tiersDAO = getBean(TiersDAO.class, "tiersDAO");
 	}
 
-	@Test
+	@Test(timeout = 30000)
 	@NotTransactional
 	/**
 	 * Not transactional: pour rendre visibles les données DBUnit au job qui tourne dans un autre thread
@@ -68,8 +70,13 @@ public class EditiqueListeRecapJobTest extends BusinessTest {
 
 	public void launchJob(HashMap<String, Object> params) throws Exception {
 
-		JobDefinition job = batchScheduler.startJob(EditiqueListeRecapJob.NAME, params);
+		final Date statTime = new Date();
+		final JobDefinition job = batchScheduler.startJob(EditiqueListeRecapJob.NAME, params);
 
+		// Attente du démarrage de l'exécution
+		waitUntilRunning(job, statTime);
+
+		// Attente de l'arrêt de l'exécution
 		while (job.isRunning()) {
 			Thread.sleep(2000);
 			logger.debug("Attente de la fin du job de creation des LRs");
@@ -95,7 +102,7 @@ public class EditiqueListeRecapJobTest extends BusinessTest {
 	// FIXME(FDE) : Aussi checker que les evt fiscaux sont envoyés
 	private void checkLRsInTransaction() {
 		// Debiteur 12500001
-		Tiers tiers = tiersDAO.get(new Long(12500001));
+		Tiers tiers = tiersDAO.get((long) 12500001);
 		Assert.assertNotNull(tiers.getDeclarations());
 		Set<Declaration> declarations = tiers.getDeclarations();
 		Assert.assertEquals(12, declarations.size());		// toute l'année
@@ -120,7 +127,7 @@ public class EditiqueListeRecapJobTest extends BusinessTest {
 		Assert.assertTrue(mensuels.isEmpty());
 
 		// Debiteur 12500002
-		tiers = tiersDAO.get(new Long(12500002));
+		tiers = tiersDAO.get((long) 12500002);
 		Assert.assertNotNull(tiers.getDeclarations());
 		declarations = tiers.getDeclarations();
 		Assert.assertEquals(4, declarations.size());		// toute l'année
@@ -145,7 +152,7 @@ public class EditiqueListeRecapJobTest extends BusinessTest {
 		Assert.assertTrue(trimestriel.isEmpty());
 
 		// Debiteur 12500003
-		tiers = tiersDAO.get(new Long(12500003));
+		tiers = tiersDAO.get((long) 12500003);
 		Assert.assertNotNull(tiers.getDeclarations());
 		declarations = tiers.getDeclarations();
 		Assert.assertEquals(2, declarations.size());		// toute l'année
@@ -170,14 +177,14 @@ public class EditiqueListeRecapJobTest extends BusinessTest {
 		Assert.assertTrue(semestriel.isEmpty());
 
 		// Debiteur 12500004
-		tiers = tiersDAO.get(new Long(12500004));
+		tiers = tiersDAO.get((long) 12500004);
 		Assert.assertNotNull(tiers.getDeclarations());
 		declarations = tiers.getDeclarations();
 		Assert.assertEquals(1, declarations.size());
 		{
 			final DeclarationImpotSource lr = (DeclarationImpotSource) declarations.iterator().next();
 			Assert.assertEquals(PeriodiciteDecompte.ANNUEL, lr.getPeriodicite());
-			Assert.assertEquals(RegDate.get(2008, 01, 1), lr.getDateDebut());
+			Assert.assertEquals(RegDate.get(2008, 1, 1), lr.getDateDebut());
 			Assert.assertEquals(RegDate.get(2008, 12, 31), lr.getDateFin());
 			Assert.assertNotNull(lr.getId());
 		}

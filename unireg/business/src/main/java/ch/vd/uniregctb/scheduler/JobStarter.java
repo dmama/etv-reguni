@@ -7,7 +7,6 @@ import org.apache.log4j.Logger;
 import org.quartz.InterruptableJob;
 import org.quartz.Job;
 import org.quartz.JobDataMap;
-import org.quartz.JobDetail;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.quartz.UnableToInterruptJobException;
@@ -23,12 +22,8 @@ public class JobStarter implements Job, InterruptableJob {
 	public final static String KEY_AUTH = "authentication";
 	public final static String KEY_PARAMS = "params";
 
-	private JobExecutionContext context;
-	private JobDetail jobDetail;
-	private JobDataMap dataMap;
 	private Authentication authentication;
 	private JobDefinition job;
-	private HashMap<String, Object> params;
 
 	/**
 	 * Initialise le context de sécurité Acegi avec les rôles donnés en paramètres
@@ -45,17 +40,14 @@ public class JobStarter implements Job, InterruptableJob {
 	@SuppressWarnings("unchecked")
 	public void execute(JobExecutionContext ctxt) throws JobExecutionException {
 
-		context = ctxt;
-		jobDetail = context.getJobDetail();
-		dataMap = jobDetail.getJobDataMap();
+		final JobDataMap dataMap = ctxt.getJobDetail().getJobDataMap();
 
-		job = (JobDefinition)dataMap.get(KEY_JOB);
-		authentication = (Authentication)dataMap.get(KEY_AUTH);
-		params = (HashMap<String, Object>)dataMap.get(KEY_PARAMS);
+		job = (JobDefinition) dataMap.get(KEY_JOB);
+		authentication = (Authentication) dataMap.get(KEY_AUTH);
+		final HashMap<String, Object> params = (HashMap<String, Object>) dataMap.get(KEY_PARAMS);
 
 		try {
 			job.initialize();
-			job.setRunningMessage("Initialisation du job...");
 
 			if (params == null || params.isEmpty()) {
 				LOGGER.info("Démarrage du job " + job.getName() + " sans paramètre");
@@ -67,24 +59,17 @@ public class JobStarter implements Job, InterruptableJob {
 
 			try {
 				job.execute(params);
-
-				if (job.isInterrupted()) {
-					job.setStatut(JobDefinition.JobStatut.JOB_INTERRUPTED);
-				}
-				else {
-					job.setStatut(JobDefinition.JobStatut.JOB_OK);
-				}
 			}
 			finally {
 				job.terminate();
 			}
 
-			LOGGER.info("Job "+job.getName()+" finished: "+job.getStatut()+" "+job);
+			LOGGER.info("Job " + job.getName() + " finished: " + job.getStatut() + " " + job);
 
 			terminate();
 		}
 		catch (Exception e) {
-			LOGGER.error("Job execution exception: "+e.getMessage(), e);
+			LOGGER.error("Job execution exception: " + e.getMessage(), e);
 			job.setStatut(JobDefinition.JobStatut.JOB_EXCEPTION);
 			job.setRunningMessage(e.getMessage());
 		}
@@ -104,5 +89,4 @@ public class JobStarter implements Job, InterruptableJob {
 	public void interrupt() throws UnableToInterruptJobException {
 		job.interrupt();
 	}
-
 }

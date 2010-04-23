@@ -35,9 +35,9 @@ public class LoggingJob extends JobDefinition {
 	protected void doExecute(HashMap<String, Object> params) throws Exception {
 		LOGGER.debug("LoggingJob started...");
 
-		Integer delay = 1000; // 1 seconde
-		if (params != null) {
-			delay = (Integer)params.get(I_DELAY);
+		Integer delay = getIntegerValue(params, I_DELAY);
+		if (delay == null) {
+			delay = 1000; // 1 seconde
 		}
 
 		for (int i=0;i<10;i++) {

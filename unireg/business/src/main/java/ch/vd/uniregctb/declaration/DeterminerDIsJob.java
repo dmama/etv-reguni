@@ -84,11 +84,6 @@ public class DeterminerDIsJob extends JobDefinition {
 		params.get(1).setEnabled(isTesting());
 	}
 
-	@Override
-	protected void doInitialize() {
-		super.doInitialize();
-	}
-
 	public void setService(DeclarationImpotService service) {
 		this.service = service;
 	}

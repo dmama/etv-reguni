@@ -159,8 +159,23 @@ public class BatchScheduler implements DisposableBean {
 
 		// Ajout du job au scheduler
 		jobDetail.addJobListener(job.getName());
-		scheduler.scheduleJob(jobDetail, trigger);
 
+		while (scheduler.getJobDetail(job.getName(), Scheduler.DEFAULT_GROUP) != null) {
+			// si on arrive ici c'est que le job précédent ne tourne effectivement plus (c'est asserté plus haut) *mais* que - pour des raisons de scheduling
+			// de la JVM - le quartz scheduler n'a pas encore pu supprimer les détails associé au job. On lui laisse donc un peu de temps pour le faire.
+			sleep(50);
+		}
+
+		scheduler.scheduleJob(jobDetail, trigger);
+	}
+
+	private void sleep(int millis) throws SchedulerException {
+		try {
+			Thread.sleep(millis);
+		}
+		catch (InterruptedException e) {
+			throw new SchedulerException(e);
+		}
 	}
 
 	private JobDefinition startJob(JobDefinition job, HashMap<String, Object> params) throws JobAlreadyStartedException, SchedulerException {
