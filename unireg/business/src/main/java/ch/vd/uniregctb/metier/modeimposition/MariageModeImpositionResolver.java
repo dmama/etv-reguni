@@ -61,15 +61,6 @@ public class MariageModeImpositionResolver extends TiersModeImpositionResolver {
 		 */
 		if (forFPPrincipal != null) {
 			final ModeImposition modeImpositionContribuable = forFPPrincipal.getModeImposition();
-			boolean etrangerSansPermisC = false;
-			try {
-				etrangerSansPermisC = getTiersService().isEtrangerSansPermisC(principal, forFPPrincipal.getDateDebut());
-			}
-			catch (TiersException e) {
-				// ne rien faire si le permis ne peut pas être déterminé
-				// le test de cohérence ne sera pas effectué
-			}
-			
 			return new Imposition(date, modeImpositionContribuable);
 		}
 		
@@ -121,93 +112,85 @@ public class MariageModeImpositionResolver extends TiersModeImpositionResolver {
 		/*
 		 * Paramétrage de la catégorie de l'impôt ordre de priorité : dépense, ordinaire, mixte loi, mixte pratique, source
 		 */
-		ModeImposition modeImposition;
-		
-		String logAudit = "Le nouveau for fiscal principal pour le tiers ménage commun aura le role ";
+		final ModeImposition modeImposition;
 		if (isAuMoinsUnDepense(impositionContribuable, impositionConjoint)) {
 			modeImposition = ModeImposition.DEPENSE;
-			logAudit += "dépense";
 		}
 		else if (isAuMoinsUncontribuableOrdinaire(impositionContribuable, impositionConjoint)) {
 			modeImposition = ModeImposition.ORDINAIRE;
-			logAudit += "ordinaire";
 		}
 		else if (isAuMoinsUnIndigent(impositionContribuable, impositionConjoint)) {
 			if (isIndigent(impositionContribuable) && isIndigent(impositionConjoint)) {
 				modeImposition = ModeImposition.INDIGENT;
-				logAudit += "indigent";
 			}
 			else {
 				modeImposition = ModeImposition.ORDINAIRE;
-				logAudit += "ordinaire";
 			}
 		}
 		else if (isAuMoinsUnSourcierMixteLoi(impositionContribuable, impositionConjoint)) {
 			modeImposition = ModeImposition.MIXTE_137_1;
-			logAudit += "mixte_tou";
 		}
 		else if (isAuMoinsUnSourcierMixtePratique(impositionContribuable, impositionConjoint)) {
 			modeImposition = ModeImposition.MIXTE_137_2;
-			logAudit += "mixte_toc";
 		}
 		else if (isAuMoinsUnSourcierPur(impositionContribuable, impositionConjoint)) {
 			modeImposition = ModeImposition.SOURCE;
-			logAudit += "source";
 		}
 		else { // les deux sont sans revenu ni fortune => ordinaire
 			modeImposition = ModeImposition.ORDINAIRE;
-			logAudit += "ordinaire";
 		}
+
+		final String logAudit = String.format("Le nouveau for fiscal principal pour le tiers ménage commun aura le role %s", modeImposition.texte());
 		Audit.info(numeroEvenement, logAudit);
 		
 		return new Imposition(date, modeImposition);
 	}
 
-	private boolean isAuMoinsUncontribuableOrdinaire(ModeImposition impositionPrincipal, ModeImposition impositionConjoint) {
+	private static boolean isAuMoinsUncontribuableOrdinaire(ModeImposition impositionPrincipal, ModeImposition impositionConjoint) {
 		return isOrdinaire(impositionPrincipal) || isOrdinaire(impositionConjoint);
 	}
 
-	private boolean isAuMoinsUnDepense(ModeImposition impositionPrincipal, ModeImposition impositionConjoint) {
+	private static boolean isAuMoinsUnDepense(ModeImposition impositionPrincipal, ModeImposition impositionConjoint) {
 		return isDepense(impositionPrincipal) || isDepense(impositionConjoint);
 	}
 	
-	private boolean isAuMoinsUnSourcierPur(ModeImposition impositionPrincipal, ModeImposition impositionConjoint) {
+	private static boolean isAuMoinsUnSourcierPur(ModeImposition impositionPrincipal, ModeImposition impositionConjoint) {
 		return isSourcierPur(impositionPrincipal) || isSourcierPur(impositionConjoint);
 	}
 
-	private boolean isAuMoinsUnSourcierMixteLoi(ModeImposition impositionPrincipal, ModeImposition impositionConjoint) {
+	private static boolean isAuMoinsUnSourcierMixteLoi(ModeImposition impositionPrincipal, ModeImposition impositionConjoint) {
 		return isSourcierMixteLoi(impositionPrincipal) || isSourcierMixteLoi(impositionConjoint);
 	}
 
-	private boolean isAuMoinsUnSourcierMixtePratique(ModeImposition impositionPrincipal, ModeImposition impositionConjoint) {
+	private static boolean isAuMoinsUnSourcierMixtePratique(ModeImposition impositionPrincipal, ModeImposition impositionConjoint) {
 		return isSourcierMixtePratique(impositionPrincipal) || isSourcierMixtePratique(impositionConjoint);
 	}
 
-	private boolean isAuMoinsUnIndigent(ModeImposition impositionPrincipal, ModeImposition impositionConjoint) {
+	private static boolean isAuMoinsUnIndigent(ModeImposition impositionPrincipal, ModeImposition impositionConjoint) {
 		return isIndigent(impositionPrincipal) || isIndigent(impositionConjoint);
 	}
 	
-	private boolean isOrdinaire(ModeImposition modeImposition) {
-		return ModeImposition.ORDINAIRE.equals(modeImposition);
+	private static boolean isOrdinaire(ModeImposition modeImposition) {
+		return ModeImposition.ORDINAIRE == modeImposition;
 	}
 
-	private boolean isDepense(ModeImposition modeImposition) {
-		return ModeImposition.DEPENSE.equals(modeImposition);
+	private static boolean isDepense(ModeImposition modeImposition) {
+		return ModeImposition.DEPENSE == modeImposition;
 	}
 	
-	private boolean isSourcierPur(ModeImposition modeImposition) {
-		return ModeImposition.SOURCE.equals(modeImposition);
+	private static boolean isSourcierPur(ModeImposition modeImposition) {
+		return ModeImposition.SOURCE == modeImposition;
 	}
 
-	private boolean isSourcierMixteLoi(ModeImposition modeImposition) {
-		return ModeImposition.MIXTE_137_1.equals(modeImposition);
+	private static boolean isSourcierMixteLoi(ModeImposition modeImposition) {
+		return ModeImposition.MIXTE_137_1 == modeImposition;
 	}
 	
-	private boolean isSourcierMixtePratique(ModeImposition modeImposition) {
-		return ModeImposition.MIXTE_137_2.equals(modeImposition);
+	private static boolean isSourcierMixtePratique(ModeImposition modeImposition) {
+		return ModeImposition.MIXTE_137_2 == modeImposition;
 	}
 
-	private boolean isIndigent(ModeImposition modeImposition) {
-		return ModeImposition.INDIGENT.equals(modeImposition);
+	private static boolean isIndigent(ModeImposition modeImposition) {
+		return ModeImposition.INDIGENT == modeImposition;
 	}
 }

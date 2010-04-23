@@ -1193,8 +1193,7 @@ public class MetierServiceImpl implements MetierService {
 			throw new EvenementCivilHandlerException("Le ménage est null");
 		}
 
-		final EnsembleTiersCouple ensemble = tiersService.getEnsembleTiersCouple(tiersService.getPersonnesPhysiques(menage).iterator().next(), date);
-
+		final EnsembleTiersCouple ensemble = tiersService.getEnsembleTiersCouple(menage, date);
 		final PersonnePhysique principal = ensemble.getPrincipal();
 		final PersonnePhysique conjoint = ensemble.getConjoint();
 
