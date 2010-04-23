@@ -1,15 +1,14 @@
 package ch.vd.uniregctb.batch;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
+import com.gargoylesoftware.htmlunit.html.HtmlButtonInput;
+import com.gargoylesoftware.htmlunit.html.HtmlDivision;
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import org.junit.Test;
 
 import ch.vd.uniregctb.common.WebitTest;
 
-import com.gargoylesoftware.htmlunit.html.HtmlButtonInput;
-import com.gargoylesoftware.htmlunit.html.HtmlDivision;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class WebitIncontainerTestingJobTest extends WebitTest {
 
@@ -19,7 +18,7 @@ public class WebitIncontainerTestingJobTest extends WebitTest {
 		webClient.setJavaScriptEnabled(true);
 	}
 
-	@Test
+	@Test(timeout = 20000)
 	public void testRunBatch() throws Exception {
 
 		final String jobName = "IT-InContainerTestingJob";
@@ -31,15 +30,21 @@ public class WebitIncontainerTestingJobTest extends WebitTest {
 			button.click();
 		}
 
-		// L'exécution du rapport devrait être immédiate, mais on attend 2 seconde par mesure de précaution
+		// Le démarrage du batch devrait être immédiat, mais on attend 2 secondes par mesure de précaution
 		Thread.sleep(2000);
 
-		{
-			final HtmlPage page = getHtmlPage("/admin/batch.do");
-			final HtmlDivision divStatus = (HtmlDivision) page.getHtmlElementById(jobName + "-status");
-			final String status = divStatus.asText();
-			assertEquals("OK", status);
+		// Attente de la fin de l'exécution
+		while (getStatus(jobName).equals("En cours")) {
+			Thread.sleep(100);
 		}
+
+		final String status = getStatus(jobName);
+		assertEquals("OK", status);
 	}
 
+	private String getStatus(String jobName) throws Exception {
+		final HtmlPage page = getHtmlPage("/admin/batch.do");
+		final HtmlDivision divStatus = (HtmlDivision) page.getHtmlElementById(jobName + "-status");
+		return divStatus.asText();
+	}
 }
