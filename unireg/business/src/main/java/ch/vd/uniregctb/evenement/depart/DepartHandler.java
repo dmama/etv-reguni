@@ -215,10 +215,9 @@ public class DepartHandler extends EvenementCivilHandlerBase {
 	private RegDate findDateFermeture(Depart depart, PersonnePhysique habitant, boolean demenagementVD) {
 
 		final RegDate dateEvenement = demenagementVD ? FiscalDateHelper.getDateEvenementFiscal(depart.getDate()) : depart.getDate();
-
 		RegDate dateFermeture = dateEvenement;
+
 		ForFiscalPrincipal forFiscal = habitant.getForFiscalPrincipalAt(dateEvenement);
-		ModeImposition modeImposition = null;
 		if (forFiscal == null) {
 			final EnsembleTiersCouple couple = getService().getEnsembleTiersCouple(habitant, dateEvenement);
 			if (couple != null) {
@@ -228,12 +227,13 @@ public class DepartHandler extends EvenementCivilHandlerBase {
 				}
 			}
 		}
+
+		ModeImposition modeImposition = null;
 		if (forFiscal != null) {
 			modeImposition = forFiscal.getModeImposition();
 		}
 
-		if (ModeImposition.SOURCE.equals(modeImposition) || ModeImposition.MIXTE_137_1.equals(modeImposition) ||
-				ModeImposition.MIXTE_137_2.equals(modeImposition)) {
+		if (ModeImposition.SOURCE == modeImposition || ModeImposition.MIXTE_137_1 == modeImposition || ModeImposition.MIXTE_137_2 == modeImposition) {
 			if (dateEvenement.isAfter(RegDate.get(dateEvenement.year(), dateEvenement.month(), 25))) {
 				dateFermeture = dateEvenement.getLastDayOfTheMonth();
 			}
@@ -411,8 +411,7 @@ public class DepartHandler extends EvenementCivilHandlerBase {
 	 * @param motifOuverture
 	 * @return
 	 */
-	protected ForFiscalPrincipal openForFiscalPrincipalHC(Contribuable contribuable, final RegDate dateOuverture, int numeroOfsAutoriteFiscale, ModeImposition modeImposition, MotifFor motifOuverture
-	) {
+	protected ForFiscalPrincipal openForFiscalPrincipalHC(Contribuable contribuable, final RegDate dateOuverture, int numeroOfsAutoriteFiscale, ModeImposition modeImposition, MotifFor motifOuverture) {
 		return getService().openForFiscalPrincipal(contribuable, dateOuverture, MotifRattachement.DOMICILE, numeroOfsAutoriteFiscale,
 				TypeAutoriteFiscale.COMMUNE_HC, modeImposition, motifOuverture, false);
 	}
