@@ -35,7 +35,9 @@ import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
@@ -369,7 +371,17 @@ public class ArriveeHandler extends EvenementCivilHandlerBase {
 							modeImposition = ModeImposition.ORDINAIRE;
 						}
 						else {
-							modeImposition = ModeImposition.SOURCE;
+							// Si l'individu est déjà présent en for secondaire, il passe mixte_1, sinon, il passe source
+							final List<ForFiscal> fors = habitant.getForsFiscauxValidAt(dateEvenement);
+							boolean hasForSecondaire = false;
+							for (ForFiscal ff : fors) {
+								// si on trouve au moins un for secondaire, alors mixte_1
+								if (ff instanceof ForFiscalSecondaire) {
+									hasForSecondaire = true;
+									break;
+								}
+							}
+							modeImposition = hasForSecondaire ? ModeImposition.MIXTE_137_1 : ModeImposition.SOURCE;
 						}
 					}
 					else {
@@ -884,7 +896,17 @@ public class ArriveeHandler extends EvenementCivilHandlerBase {
 						modeImposition = ModeImposition.ORDINAIRE;
 					}
 					else {
-						modeImposition = ModeImposition.SOURCE;
+						// Si le couple est déjà présent en for secondaire, il passe mixte_1, sinon, il passe source
+						final List<ForFiscal> fors = menageCommun.getForsFiscauxValidAt(dateEvenement);
+						boolean hasForSecondaire = false;
+						for (ForFiscal ff : fors) {
+							// si on trouve au moins un for secondaire, alors mixte_1
+							if (ff instanceof ForFiscalSecondaire) {
+								hasForSecondaire = true;
+								break;
+							}
+						}
+						modeImposition = hasForSecondaire ? ModeImposition.MIXTE_137_1 : ModeImposition.SOURCE;
 					}
 				}
 				else {

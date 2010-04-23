@@ -2633,6 +2633,68 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 				(ForFiscalPrincipal) fors.get(2));
 	}
 
+	@Test
+	public void testModeImpositionArriveeHCEtrangerNonEtabliAvecImmeuble() throws Exception {
+
+		final long noInd = 123456;
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				MockIndividu ind = addIndividu(noInd, date(1950, 1, 1), "Pouly", "Mohamed", true);
+				addNationalite(ind, MockPays.Colombie, date(1950, 1, 1), null, 1);
+				addPermis(ind, EnumTypePermis.ANNUEL, date(1980, 1, 1), null, 1, false);
+			}
+		});
+
+		final RegDate dateAchat = date(2009, 4, 10);
+
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique habitant = addNonHabitant("Mohamed", "Pouly", date(1950, 1, 1), Sexe.MASCULIN);
+				final ForFiscalPrincipal ffp = addForPrincipal(habitant, MockCommune.Bern, dateAchat, null);
+				ffp.setMotifOuverture(MotifFor.ACHAT_IMMOBILIER);
+				ffp.setModeImposition(ModeImposition.ORDINAIRE);
+
+				final ForFiscalSecondaire ffs = addForSecondaire(habitant, MockCommune.Aubonne, dateAchat, null);
+				ffs.setMotifOuverture(MotifFor.ACHAT_IMMOBILIER);
+				return null;
+			}
+		});
+
+		final RegDate dateArrivee = date(2009, 12, 1);
+		final MockArrivee arrivee = new MockArrivee();
+		arrivee.setType(TypeEvenementCivil.ARRIVEE_DANS_COMMUNE);
+		arrivee.setIndividu(serviceCivil.getIndividu(noInd, 2400));
+
+		final MockAdresse nouvelleAdresse = new MockAdresse();
+		nouvelleAdresse.setDateDebutValidite(dateArrivee);
+		arrivee.setNouvelleAdressePrincipale(nouvelleAdresse);
+		arrivee.setNouvelleCommunePrincipale(MockCommune.Lausanne);
+		arrivee.setNumeroOfsCommuneAnnonce(MockCommune.Lausanne.getNoOFSEtendu());
+		arrivee.setDate(dateArrivee);
+		arrivee.setType(TypeEvenementCivil.ARRIVEE_PRINCIPALE_HC);
+
+		// Traite l'événement d'arrivée
+		final List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
+		final List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
+		evenementCivilHandler.checkCompleteness(arrivee, erreurs, warnings);
+		evenementCivilHandler.validate(arrivee, erreurs, warnings);
+		evenementCivilHandler.handle(arrivee, warnings);
+		assertEmpty(erreurs);
+
+		final PersonnePhysique hab = tiersService.getPersonnePhysiqueByNumeroIndividu(noInd);
+		assertNotNull(hab);
+
+		// on vérifie les fors fiscaux, en particulier le for principal créé par l'arrivée : son mode d'imposition doit être MIXTE_1
+		final List<ForFiscal> fors = hab.getForsFiscauxSorted();
+		assertEquals(3, fors.size());
+		assertForPrincipal(dateAchat, MotifFor.ACHAT_IMMOBILIER, dateArrivee.addDays(-1), MotifFor.ARRIVEE_HC, TypeAutoriteFiscale.COMMUNE_HC, MockCommune.Bern.getNoOFSEtendu(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, (ForFiscalPrincipal) fors.get(0));
+		assertForSecondaire(dateAchat, MotifFor.ACHAT_IMMOBILIER, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Aubonne.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE, (ForFiscalSecondaire) fors.get(1));
+		assertForPrincipal(dateArrivee, MotifFor.ARRIVEE_HC, null, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFSEtendu(), MotifRattachement.DOMICILE, ModeImposition.MIXTE_137_1, (ForFiscalPrincipal) fors.get(2));
+	}
+
 	@Ignore(value = "Cas très rare, on y réfléchira plus tard")
 	@Test
 	/**
