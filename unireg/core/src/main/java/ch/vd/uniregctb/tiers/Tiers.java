@@ -1134,7 +1134,19 @@ public abstract class Tiers extends HibernateEntity implements Validateable, Bus
 		if (forsFiscaux != null) {
 			fors = new ArrayList<ForFiscal>();
 			fors.addAll(forsFiscaux);
-			Collections.sort(fors, new DateRangeComparator<ForFiscal>());
+			Collections.sort(fors, new DateRangeComparator<ForFiscal>() {
+				@Override
+				public int compare(ForFiscal o1, ForFiscal o2) {
+					int comparisonDates = super.compare(o1, o2);
+					if (comparisonDates == 0) {
+						// à dates égales, il faut comparer selon le type d'autorité fiscale
+						return o1.getTypeAutoriteFiscale().ordinal() - o2.getTypeAutoriteFiscale().ordinal();
+					}
+					else {
+						return comparisonDates;
+					}
+				}
+			});
 		}
 		return fors;
 	}
