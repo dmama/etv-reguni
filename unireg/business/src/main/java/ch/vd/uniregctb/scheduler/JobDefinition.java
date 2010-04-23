@@ -174,6 +174,8 @@ public abstract class JobDefinition implements InitializingBean, Comparable<Obje
 	public void wasExecuted() {
 		if (statut == JobStatut.JOB_RUNNING) {
 			setStatut(JobStatut.JOB_OK);
+			// Si le job s'est terminé correctement, on supprime le message
+			runningMessage = "";
 		}
 	}
 

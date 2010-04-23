@@ -79,11 +79,6 @@ public class JobStarter implements Job, InterruptableJob {
 			job.setRunningMessage(e.getMessage());
 			throw e;
 		}
-
-		// Si le job s'est terminé correctement, on supprime le message
-		if (job.getStatut() == JobDefinition.JobStatut.JOB_OK) {
-			job.setRunningMessage("");
-		}
 	}
 
 	public void interrupt() throws UnableToInterruptJobException {
