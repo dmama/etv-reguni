@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="uniregctb-web" default="deploy.AdminServer" basedir=".">
+
+	<!-- Build.xml for web -->
+
+	<target name="deploy.AdminServer">
+		<antcall target="_deploy" />
+	</target>
+
+	<target name="undeploy.AdminServer">
+		<antcall target="_undeploy" />
+	</target>
+
+	<target name="deploy.int">
+		<property name="app.src" value="/solve61v/data1/bea1001/wls_sdUniRegI_61v/ch_vd_appDir/unireg/deployment/uniregctb.war" />
+		<property name="app.target" value="ss_uniregi_61v" />
+		<property name="admin.url" value="t3://solve61v:64910" />
+		<property name="admin.username" value="system" />
+		<property name="admin.password" value="be@un1reg1" />
+
+		<property name="weblogic.extra.arguments" value="-remote" />
+		<antcall target="_deploy" />
+	</target>
+
+	<target name="deploy.norentes">
+		<property name="admin.url" value="t3://localhost:12345" />
+
+		<antcall target="_deploy" />
+	</target>
+
+	<target name="_deploy">
+		<!-- BEGIN_LVERSION -->
+		<property name="app.src" value="target/uniregctb-web-4.3.0-SNAPSHOT.war" />
+		<!-- END_LVERSION -->
+		<!-- BEGIN_SVERSION -->
+		<property name="app.name" value="uniregctb-war-4.3" />
+		<!-- END_SVERSION -->
+		<property name="app.target" value="AdminServer" />
+		<property name="admin.url" value="t3://localhost:7001" />
+		<property name="admin.username" value="weblogic" />
+		<property name="admin.password" value="weblogic" />
+		<property name="weblogic.jar" value="${user.home}/.m2/repository/weblogic/weblogic/9.2mp2/weblogic-9.2mp2.jar" />
+		<property name="weblogic.extra.arguments" value="" />
+
+		<echo message="${weblogic.jar}" />
+
+		<java classname="weblogic.Deployer" fork="true" failonerror="true" classpath="${weblogic.jar}">
+			<jvmarg value="-Xmx256m" />
+			<arg value="-adminurl" />
+			<arg value="${admin.url}" />
+			<arg value="-username" />
+			<arg value="${admin.username}" />
+			<arg value="-password" />
+			<arg value="${admin.password}" />
+			<arg value="-name" />
+			<arg value="${app.name}" />
+			<arg value="-source" />
+			<arg value="${app.src}" />
+			<arg value="-targets" />
+			<arg value="${app.target}" />
+			<arg value="-deploy" />
+			<arg value="${weblogic.extra.arguments}" />
+		</java>
+	</target>
+
+	<target name="_undeploy">
+		<!-- BEGIN_SVERSION -->
+		<property name="app.name" value="uniregctb-war-4.3" />
+		<!-- END_SVERSION -->
+		<property name="app.target" value="AdminServer" />
+		<property name="admin.url" value="t3://localhost:7001" />
+		<property name="admin.username" value="weblogic" />
+		<property name="admin.password" value="weblogic" />
+		<property name="weblogic.jar" value="${user.home}/.m2/repository/weblogic/weblogic/9.2mp2/weblogic-9.2mp2.jar" />
+		<property name="weblogic.extra.arguments" value="" />
+
+		<java classname="weblogic.Deployer" fork="true" failonerror="true" classpath="${weblogic.jar}">
+			<jvmarg value="-Xmx256m" />
+			<arg value="-adminurl" />
+			<arg value="${admin.url}" />
+			<arg value="-username" />
+			<arg value="${admin.username}" />
+			<arg value="-password" />
+			<arg value="${admin.password}" />
+			<arg value="-name" />
+			<arg value="${app.name}" />
+			<arg value="-targets" />
+			<arg value="${app.target}" />
+			<arg value="-undeploy" />
+			<arg value="${weblogic.extra.arguments}" />
+		</java>
+	</target>
+
+	<target name="deploy.tomcat">
+		<!-- BEGIN_LVERSION -->
+		<!--
+		<copy file="config/devel/tomcat.xml" tofile="/opt/apache-tomcat-6.0.16/conf/Catalina/localhost/fiscalite#unireg.xml" />
+		-->
+		<!-- END_LVERSION -->
+
+		<!-- BEGIN_LVERSION -->
+		<copy overwrite="true" verbose="true" file="target/uniregctb-web-4.3.0-SNAPSHOT.war" tofile="/opt/apache-tomcat-6.0.16/webapps/unireg.war" />
+		<!-- END_LVERSION -->
+
+	</target>
+
+</project>

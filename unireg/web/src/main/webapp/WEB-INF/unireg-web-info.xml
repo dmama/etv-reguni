@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+						http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd">
+
+	<bean id="infoController" class="ch.vd.uniregctb.admin.InfoController">
+		<property name="viewName" value="admin/status" />
+		<property name="globalIndexer" ref="globalTiersIndexer" />
+		<property name="tiersDAO" ref="tiersDAO" />
+		<property name="uniregProperties" ref="uniregExternalProperties" />
+		<property name="serviceCivilRaw" ref="serviceCivilServiceRaw" />
+		<property name="serviceInfraRaw" ref="serviceInfrastructureServiceRaw" />
+		<property name="serviceSecuriteRaw" ref="serviceSecuriteServiceRaw" />
+		<property name="cacheManager" ref="ehCacheManager" />
+		<property name="batchController" ref="gestionBatchController" />
+		<property name="statsService" ref="statsService" />
+		<property name="bvrClient" ref="bvrPlusClient" />
+		<property name="transactionManager" ref="transactionManager" />
+	</bean>
+
+	<bean id="infoIFOSecController" class="ch.vd.uniregctb.admin.InfoIFOSecController">
+		<property name="viewName" value="admin/ifosec" />
+		<property name="serviceSecurite" ref="serviceSecuriteService" />
+	</bean>
+
+</beans>

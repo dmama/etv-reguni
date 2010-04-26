@@ -1,0 +1,1036 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+	<table name="TIERS">
+		<column>LOG_MDATE</column>
+		<column>NUMERO</column>
+		<column>TIERS_TYPE</column>
+		<column>DEBITEUR_INACTIF</column>
+		<column>NUMERO_INDIVIDU</column>
+		<column>NUMERO_PM</column>
+		<column>CATEGORIE_IMPOT_SOURCE</column>
+		<column>PERIODICITE_DECOMPTE</column>
+		<column>MODE_COM</column>
+		<column>NH_NOM</column>
+		<column>NH_PRENOM</column>
+		<column>NH_NUMERO_ASSURE_SOCIAL</column>
+		<column>NH_DATE_NAISSANCE</column>
+		<column>NH_SEXE</column>
+		<column>NH_NO_OFS_NATIONALITE</column>
+		<column>AC_NOM</column>
+		<column>AC_FORME_JURIDIQUE</column>
+		<column>PERSONNE_CONTACT</column>
+		<column>NUMERO_TEL_PRIVE</column>
+		<column>NUMERO_TEL_PROF</column>
+		<column>NUMERO_TELECOPIE</column>
+		<column>ADRESSE_EMAIL</column>
+		<column>NUMERO_COMPTE_BANCAIRE</column>
+		<column>REMARQUE</column>
+		<column>ADRESSE_BIC_SWIFT</column>
+		<column>BLOC_REMB_AUTO</column>
+		<column>TITULAIRE_COMPTE_BANCAIRE</column>
+		<column>NUMERO_TEL_PORTABLE</column>
+		<column>COMPLEMENT_NOM</column>
+		<column>NUMERO_CA</column>
+		<column>DATE_DECES</column>
+		<column>PP_HABITANT</column>
+		<row>
+			<value>2008-01-01</value>
+			<value>2000010</value>
+			<value>CollectiviteAdministrative</value>
+			<value>0</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<value>10</value>
+			<null />
+			<null />
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>12600004</value>
+			<value>MenageCommun</value>
+			<value>0</value>
+			<none />
+			<none />
+			<none />
+			<none />
+			<none />
+			<none />
+			<none />
+			<none />
+			<none />
+			<none />
+			<none />
+			<none />
+			<none />
+			<none />
+			<none />
+			<none />
+			<none />
+			<none />
+			<none />
+			<none />
+			<none />
+			<none />
+			<none />
+			<none />
+			<none />
+			<none />
+			<none />
+			<null />
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>12600003</value>
+			<value>PersonnePhysique</value>
+			<value>0</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<value>Dupont</value>
+			<value>Maria</value>
+			<null />
+			<value>19531218</value>
+			<value>FEMININ</value>
+			<value>8231</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<value>0</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<value>0</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>12600009</value>
+			<value>PersonnePhysique</value>
+			<value>0</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<value>Dupont</value>
+			<value>Alain</value>
+			<null />
+			<value>19770212</value>
+			<value>MASCULIN</value>
+			<value>8201</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<value>0</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<value>0</value>
+		</row>
+	</table>
+	<table name="IDENTIFICATION_PERSONNE">
+		<column>LOG_MDATE</column>
+		<column>ID</column>
+		<column>NON_HABITANT_ID</column>
+		<column>CATEGORIE</column>
+		<column>IDENTIFIANT</column>
+		<row>
+			<value>2008-01-01</value>
+			<value>1</value>
+			<value>12600003</value>
+			<value>CH_AHV_AVS</value>
+			<value>15489652357</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>2</value>
+			<value>12600003</value>
+			<value>CH_ZAR_RCE</value>
+			<value>0784.7621/5</value>
+		</row>
+	</table>
+	<table name="RAPPORT_ENTRE_TIERS">
+		<column>LOG_MDATE</column>
+		<column>ID</column>
+		<column>RAPPORT_ENTRE_TIERS_TYPE</column>
+		<column>TIERS_SUJET_ID</column>
+		<column>TIERS_OBJET_ID</column>
+		<column>DATE_DEBUT</column>
+		<column>DATE_FIN</column>
+		<column>TYPE_ACTIVITE</column>
+		<column>TAUX_ACTIVITE</column>
+		<row>
+			<value>2008-01-01</value>
+			<value>5</value>
+			<value>AppartenanceMenage</value>
+			<value>12600003</value>
+			<value>12600004</value>
+			<value>19900703</value>
+			<null />
+			<null />
+			<null />
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>7</value>
+			<value>AppartenanceMenage</value>
+			<value>12600009</value>
+			<value>12600004</value>
+			<value>19900703</value>
+			<null />
+			<null />
+			<null />
+		</row>
+	</table>
+	<table name="ADRESSE_TIERS">
+		<column>LOG_MDATE</column>
+		<column>ID</column>
+		<column>ADR_TYPE</column>
+		<column>TIERS_ID</column>
+		<column>USAGE_TYPE</column>
+		<column>DATE_DEBUT</column>
+		<column>DATE_FIN</column>
+		<column>NUMERO_RUE</column>
+		<column>NUMERO_MAISON</column>
+		<column>RUE</column>
+		<column>TEXTE_CASE_POSTALE</column>
+		<column>NUMERO_CASE_POSTALE</column>
+		<column>TYPE</column>
+		<column>NUMERO_ORDRE_POSTE</column>
+		<column>COMPLEMENT_LOCALITE</column>
+		<column>NUMERO_POSTAL_LOCALITE</column>
+		<column>NUMERO_OFS_PAYS</column>
+		<column>AUTRE_TIERS_ID</column>
+		<column>PERMANENTE</column>
+		<row>
+			<value>2008-01-01</value>
+			<value>8</value>
+			<value>AdresseSuisse</value>
+			<value>12600003</value>
+			<value>COURRIER</value>
+			<value>20080129</value>
+			<null />
+			<null />
+			<value>12</value>
+			<value><![CDATA[Rue des terreaux]]></value>
+			<null />
+			<null />
+			<null />
+			<value>571</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<value>0</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>9</value>
+			<value>AdresseSuisse</value>
+			<value>12600004</value>
+			<value>COURRIER</value>
+			<value>20080129</value>
+			<null />
+			<null />
+			<value>12</value>
+			<value><![CDATA[Rue des terreaux]]></value>
+			<null />
+			<null />
+			<null />
+			<value>571</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<value>0</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>11</value>
+			<value>AdresseSuisse</value>
+			<value>12600009</value>
+			<value>COURRIER</value>
+			<value>20060701</value>
+			<null />
+			<value>32296</value>
+			<value>12</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<value>0</value>
+		</row>
+	</table>
+	<table name="FOR_FISCAL">
+		<column>LOG_MDATE</column>
+		<column>ID</column>
+		<column>FOR_TYPE</column>
+		<column>TIERS_ID</column>
+		<column>GENRE_IMPOT</column>
+		<column>MOTIF_RATTACHEMENT</column>
+		<column>MODE_IMPOSITION</column>
+		<column>DATE_OUVERTURE</column>
+		<column>MOTIF_OUVERTURE</column>
+		<column>DATE_FERMETURE</column>
+		<column>MOTIF_FERMETURE</column>
+		<column>TYPE_AUT_FISC</column>
+		<column>NUMERO_OFS</column>
+		<row>
+			<value>2008-01-01</value>
+			<value>5</value>
+			<value>ForFiscalPrincipal</value>
+			<value>12600004</value>
+			<value>REVENU_FORTUNE</value>
+			<value>DOMICILE</value>
+			<value>ORDINAIRE</value>
+			<value>19850215</value>
+			<value>MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION</value>
+			<null />
+			<null />
+			<value>COMMUNE_OU_FRACTION_VD</value>
+			<value>5652</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>9</value>
+			<value>ForFiscalPrincipal</value>
+			<value>12600004</value>
+			<value>REVENU_FORTUNE</value>
+			<value>DOMICILE</value>
+			<value>SOURCE</value>
+			<value>20080129</value>
+			<value>DEMENAGEMENT_VD</value>
+			<null />
+			<null />
+			<value>COMMUNE_OU_FRACTION_VD</value>
+			<value>5757</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>13</value>
+			<value>ForFiscalPrincipal</value>
+			<value>12600009</value>
+			<value>REVENU_FORTUNE</value>
+			<value>DOMICILE</value>
+			<value>ORDINAIRE</value>
+			<value>20060605</value>
+			<value>DEMENAGEMENT_VD</value>
+			<null />
+			<null />
+			<value>PAYS_HS</value>
+			<value>8201</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>14</value>
+			<value>ForFiscalSecondaire</value>
+			<value>12600009</value>
+			<value>REVENU_FORTUNE</value>
+			<value>IMMEUBLE_PRIVE</value>
+			<null />
+			<value>19691117</value>
+			<value>MAJORITE</value>
+			<value>19900702</value>
+			<value>MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION</value>
+			<value>COMMUNE_OU_FRACTION_VD</value>
+			<value>5407</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>15</value>
+			<value>ForFiscalPrincipal</value>
+			<value>12600003</value>
+			<value>REVENU_FORTUNE</value>
+			<value>DOMICILE</value>
+			<value>SOURCE</value>
+			<value>19711218</value>
+			<value>MAJORITE</value>
+			<value>19900702</value>
+			<value>MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION</value>
+			<value>COMMUNE_OU_FRACTION_VD</value>
+			<value>5591</value>
+		</row>
+	</table>
+	<table name="PERIODE_FISCALE">
+		<column>LOG_MDATE</column>
+		<column>ID</column>
+		<column>ANNEE</column>
+		<row>
+			<value>2008-01-01</value>
+			<value>2</value>
+			<value>2002</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>3</value>
+			<value>2003</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>4</value>
+			<value>2004</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>5</value>
+			<value>2005</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>6</value>
+			<value>2006</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>7</value>
+			<value>2007</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>8</value>
+			<value>2008</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>9</value>
+			<value>2009</value>
+		</row>
+	</table>
+	<table name="PARAMETRE_PERIODE_FISCALE">
+		<column>LOG_MDATE</column>
+		<column>ID</column>
+		<column>DATE_FIN_ENVOI_MASSE</column>
+		<column>TERME_GEN_SOMM_REGL</column>
+		<column>TERME_GEN_SOMM_EFFECT</column>
+		<column>TYPE_CTB</column>
+		<column>PERIODE_ID</column>
+		<row>
+			<value>2008-01-01</value>
+			<value>1</value>
+			<value>20030131</value>
+			<value>20030331</value>
+			<value>20030430</value>
+			<value>VAUDOIS_ORDINAIRE</value>
+			<value>2</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>2</value>
+			<value>20030131</value>
+			<value>20030331</value>
+			<value>20030630</value>
+			<value>VAUDOIS_DEPENSE</value>
+			<value>2</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>3</value>
+			<value>20030131</value>
+			<value>20030331</value>
+			<value>20030630</value>
+			<value>HORS_CANTON</value>
+			<value>2</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>4</value>
+			<value>20030131</value>
+			<value>20030331</value>
+			<value>20030630</value>
+			<value>HORS_SUISSE</value>
+			<value>2</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>5</value>
+			<value>20040131</value>
+			<value>20040331</value>
+			<value>20040430</value>
+			<value>VAUDOIS_ORDINAIRE</value>
+			<value>3</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>6</value>
+			<value>20040131</value>
+			<value>20040331</value>
+			<value>20040630</value>
+			<value>VAUDOIS_DEPENSE</value>
+			<value>3</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>7</value>
+			<value>20040131</value>
+			<value>20040331</value>
+			<value>20040630</value>
+			<value>HORS_CANTON</value>
+			<value>3</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>8</value>
+			<value>20040131</value>
+			<value>20040331</value>
+			<value>20040630</value>
+			<value>HORS_SUISSE</value>
+			<value>3</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>9</value>
+			<value>20050131</value>
+			<value>20050331</value>
+			<value>20050430</value>
+			<value>VAUDOIS_ORDINAIRE</value>
+			<value>4</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>10</value>
+			<value>20050131</value>
+			<value>20050331</value>
+			<value>20050630</value>
+			<value>VAUDOIS_DEPENSE</value>
+			<value>4</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>11</value>
+			<value>20050131</value>
+			<value>20050331</value>
+			<value>20050630</value>
+			<value>HORS_CANTON</value>
+			<value>4</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>12</value>
+			<value>20050131</value>
+			<value>20050331</value>
+			<value>20050630</value>
+			<value>HORS_SUISSE</value>
+			<value>4</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>13</value>
+			<value>20060131</value>
+			<value>20060331</value>
+			<value>20060430</value>
+			<value>VAUDOIS_ORDINAIRE</value>
+			<value>5</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>14</value>
+			<value>20060131</value>
+			<value>20060331</value>
+			<value>20060630</value>
+			<value>VAUDOIS_DEPENSE</value>
+			<value>5</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>15</value>
+			<value>20060131</value>
+			<value>20060331</value>
+			<value>20060630</value>
+			<value>HORS_CANTON</value>
+			<value>5</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>16</value>
+			<value>20060131</value>
+			<value>20060331</value>
+			<value>20060630</value>
+			<value>HORS_SUISSE</value>
+			<value>5</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>17</value>
+			<value>20070131</value>
+			<value>20070331</value>
+			<value>20070430</value>
+			<value>VAUDOIS_ORDINAIRE</value>
+			<value>6</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>18</value>
+			<value>20070131</value>
+			<value>20070331</value>
+			<value>20070630</value>
+			<value>VAUDOIS_DEPENSE</value>
+			<value>6</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>19</value>
+			<value>20070131</value>
+			<value>20070331</value>
+			<value>20070630</value>
+			<value>HORS_CANTON</value>
+			<value>6</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>20</value>
+			<value>20070131</value>
+			<value>20070331</value>
+			<value>20070630</value>
+			<value>HORS_SUISSE</value>
+			<value>6</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>21</value>
+			<value>20080131</value>
+			<value>20080331</value>
+			<value>20080430</value>
+			<value>VAUDOIS_ORDINAIRE</value>
+			<value>7</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>22</value>
+			<value>20080131</value>
+			<value>20080331</value>
+			<value>20080630</value>
+			<value>VAUDOIS_DEPENSE</value>
+			<value>7</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>23</value>
+			<value>20080131</value>
+			<value>20080331</value>
+			<value>20080630</value>
+			<value>HORS_CANTON</value>
+			<value>7</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>24</value>
+			<value>20080131</value>
+			<value>20080331</value>
+			<value>20080630</value>
+			<value>HORS_SUISSE</value>
+			<value>7</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>25</value>
+			<value>20090131</value>
+			<value>20090331</value>
+			<value>20090430</value>
+			<value>VAUDOIS_ORDINAIRE</value>
+			<value>8</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>26</value>
+			<value>20090131</value>
+			<value>20090331</value>
+			<value>20090630</value>
+			<value>VAUDOIS_DEPENSE</value>
+			<value>8</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>27</value>
+			<value>20090131</value>
+			<value>20090331</value>
+			<value>20090630</value>
+			<value>HORS_CANTON</value>
+			<value>8</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>28</value>
+			<value>20090131</value>
+			<value>20090331</value>
+			<value>20090630</value>
+			<value>HORS_SUISSE</value>
+			<value>8</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>29</value>
+			<value>20100131</value>
+			<value>20100331</value>
+			<value>20100430</value>
+			<value>VAUDOIS_ORDINAIRE</value>
+			<value>9</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>30</value>
+			<value>20100131</value>
+			<value>20100331</value>
+			<value>20100630</value>
+			<value>VAUDOIS_DEPENSE</value>
+			<value>9</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>31</value>
+			<value>20100131</value>
+			<value>20100331</value>
+			<value>20100630</value>
+			<value>HORS_CANTON</value>
+			<value>9</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>32</value>
+			<value>20100131</value>
+			<value>20100331</value>
+			<value>20100630</value>
+			<value>HORS_SUISSE</value>
+			<value>9</value>
+		</row>
+	</table>
+	<table name="MODELE_DOCUMENT">
+		<column>LOG_MDATE</column>
+		<column>ID</column>
+		<column>TYPE_DOCUMENT</column>
+		<column>PERIODE_ID</column>
+		<row>
+			<value>2008-01-01</value>
+			<value>1</value>
+			<value>DECLARATION_IMPOT_COMPLETE_BATCH</value>
+			<value>8</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>2</value>
+			<value>DECLARATION_IMPOT_VAUDTAX</value>
+			<value>8</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>3</value>
+			<value>DECLARATION_IMPOT_DEPENSE</value>
+			<value>8</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>4</value>
+			<value>DECLARATION_IMPOT_HC_IMMEUBLE</value>
+			<value>8</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>5</value>
+			<value>DECLARATION_IMPOT_COMPLETE_BATCH</value>
+			<value>9</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>6</value>
+			<value>DECLARATION_IMPOT_VAUDTAX</value>
+			<value>9</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>7</value>
+			<value>DECLARATION_IMPOT_DEPENSE</value>
+			<value>9</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>8</value>
+			<value>DECLARATION_IMPOT_HC_IMMEUBLE</value>
+			<value>9</value>
+		</row>
+	</table>
+	<table name="MODELE_FEUILLE_DOC">
+		<column>LOG_MDATE</column>
+		<column>ID</column>
+		<column>INTITULE_FEUILLE</column>
+		<column>MODELE_ID</column>
+		<row>
+			<value>2008-01-01</value>
+			<value>1</value>
+			<value><![CDATA[déclaration d'impot standard]]></value>
+			<value>1</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>2</value>
+			<value><![CDATA[annexe 1]]></value>
+			<value>1</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>3</value>
+			<value><![CDATA[annexe 2 et 3]]></value>
+			<value>1</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>4</value>
+			<value><![CDATA[annexe 4 et 5]]></value>
+			<value>1</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>5</value>
+			<value><![CDATA[déclaration d'impot vaud tax]]></value>
+			<value>2</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>6</value>
+			<value><![CDATA[déclaration d'impot standard]]></value>
+			<value>3</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>7</value>
+			<value><![CDATA[annexe 1]]></value>
+			<value>3</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>8</value>
+			<value><![CDATA[annexe 2 et 3]]></value>
+			<value>3</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>9</value>
+			<value><![CDATA[annexe 4 et 5]]></value>
+			<value>3</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>10</value>
+			<value><![CDATA[annexe dépense]]></value>
+			<value>3</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>11</value>
+			<value><![CDATA[déclaration d'impot HC]]></value>
+			<value>4</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>12</value>
+			<value><![CDATA[déclaration d'impot standard]]></value>
+			<value>5</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>13</value>
+			<value><![CDATA[annexe 1]]></value>
+			<value>5</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>14</value>
+			<value><![CDATA[annexe 2 et 3]]></value>
+			<value>5</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>15</value>
+			<value><![CDATA[annexe 4 et 5]]></value>
+			<value>5</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>16</value>
+			<value><![CDATA[déclaration d'impot vaud tax]]></value>
+			<value>6</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>17</value>
+			<value><![CDATA[déclaration d'impot standard]]></value>
+			<value>7</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>18</value>
+			<value><![CDATA[annexe 1]]></value>
+			<value>7</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>19</value>
+			<value><![CDATA[annexe 2 et 3]]></value>
+			<value>7</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>20</value>
+			<value><![CDATA[annexe 4 et 5]]></value>
+			<value>7</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>21</value>
+			<value><![CDATA[annexe dépense]]></value>
+			<value>7</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>22</value>
+			<value><![CDATA[déclaration d'impot HC]]></value>
+			<value>8</value>
+		</row>
+	</table>
+	<table name="DECLARATION">
+		<column>LOG_MDATE</column>
+		<column>LOG_MUSER</column>
+		<column>ID</column>
+		<column>DOCUMENT_TYPE</column>
+		<column>TIERS_ID</column>
+		<column>DATE_DEBUT</column>
+		<column>DATE_FIN</column>
+		<column>TYPE_CTB</column>
+		<column>PERIODICITE</column>
+		<column>MODE_COM</column>
+		<column>PERIODE_ID</column>
+		<column>MODELE_DOC_ID</column>
+		<column>NO_OFS_FOR_GESTION</column>
+		<row>
+			<value>2008-01-01</value>
+			<value>xcitst</value>
+			<value>2</value>
+			<value>DI</value>
+			<value>12600004</value>
+			<value>20050101</value>
+			<value>20051231</value>
+			<value>VAUDOIS_ORDINAIRE</value>
+			<null />
+			<null />
+			<value>5</value>
+			<value>1</value>
+			<value>5652</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>xcitst</value>
+			<value>3</value>
+			<value>DI</value>
+			<value>12600004</value>
+			<value>20060101</value>
+			<value>20061231</value>
+			<value>VAUDOIS_ORDINAIRE</value>
+			<null />
+			<null />
+			<value>6</value>
+			<value>1</value>
+			<value>5652</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>xcitst</value>
+			<value>4</value>
+			<value>DI</value>
+			<value>12600004</value>
+			<value>20070101</value>
+			<value>20071231</value>
+			<value>VAUDOIS_ORDINAIRE</value>
+			<null />
+			<null />
+			<value>7</value>
+			<value>2</value>
+			<value>5652</value>
+		</row>
+	</table>
+	<table name="DELAI_DECLARATION">
+		<column>LOG_MDATE</column>
+		<column>ID</column>
+		<column>DECLARATION_ID</column>
+		<column>DATE_DEMANDE</column>
+		<column>DATE_TRAITEMENT</column>
+		<column>DELAI_ACCORDE_AU</column>
+		<column>CONFIRMATION_ECRITE</column>
+		<row>
+			<value>2008-01-01</value>
+			<value>2</value>
+			<value>2</value>
+			<null />
+			<null />
+			<value>20060315</value>
+			<value>0</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>3</value>
+			<value>2</value>
+			<value>20060220</value>
+			<value>20060220</value>
+			<value>20060731</value>
+			<value>0</value>
+		</row>
+	</table>
+	<table name="ETAT_DECLARATION">
+		<column>LOG_MDATE</column>
+		<column>ID</column>
+		<column>DECLARATION_ID</column>
+		<column>TYPE</column>
+		<column>DATE_OBTENTION</column>
+		<row>
+			<value>2008-01-01</value>
+			<value>2</value>
+			<value>2</value>
+			<value>EMISE</value>
+			<value>20060115</value>
+		</row>
+	</table>
+</dataset>

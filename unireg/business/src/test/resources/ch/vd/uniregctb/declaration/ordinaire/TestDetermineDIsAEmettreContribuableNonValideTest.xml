@@ -1,0 +1,314 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+	<table name="TIERS">
+		<column>TIERS_TYPE</column>
+		<column>NUMERO</column>
+		<column>ANNULATION_DATE</column>
+		<column>ANNULATION_USER</column>
+		<column>LOG_CDATE</column>
+		<column>LOG_CUSER</column>
+		<column>LOG_MDATE</column>
+		<column>LOG_MUSER</column>
+		<column>ADRESSE_BIC_SWIFT</column>
+		<column>ADRESSE_EMAIL</column>
+		<column>BLOC_REMB_AUTO</column>
+		<column>COMPLEMENT_NOM</column>
+		<column>DEBITEUR_INACTIF</column>
+		<column>INDEX_DIRTY</column>
+		<column>NUMERO_COMPTE_BANCAIRE</column>
+		<column>NUMERO_TELECOPIE</column>
+		<column>NUMERO_TEL_PORTABLE</column>
+		<column>NUMERO_TEL_PRIVE</column>
+		<column>NUMERO_TEL_PROF</column>
+		<column>OID</column>
+		<column>PERSONNE_CONTACT</column>
+		<column>REMARQUE</column>
+		<column>TITULAIRE_COMPTE_BANCAIRE</column>
+		<column>AC_FORME_JURIDIQUE</column>
+		<column>AC_NOM</column>
+		<column>NUMERO_CA</column>
+		<column>CATEGORIE_IMPOT_SOURCE</column>
+		<column>MODE_COM</column>
+		<column>PERIODE_DECOMPTE</column>
+		<column>PERIODICITE_DECOMPTE</column>
+		<column>SANS_LISTE_RECAP</column>
+		<column>SANS_RAPPEL</column>
+		<column>NUMERO_PM</column>
+		<column>NUMERO_ETABLISSEMENT</column>
+		<column>ANCIEN_NUMERO_SOURCIER</column>
+		<column>NUMERO_INDIVIDU</column>
+		<column>NH_CAT_ETRANGER</column>
+		<column>NH_DATE_DEBUT_VALID_AUTORIS</column>
+		<column>NH_DATE_NAISSANCE</column>
+		<column>NH_NOM</column>
+		<column>NH_NUMERO_ASSURE_SOCIAL</column>
+		<column>NH_NO_OFS_NATIONALITE</column>
+		<column>NH_PRENOM</column>
+		<column>NH_SEXE</column>
+		<column>DATE_DECES</column>
+		<column>PP_HABITANT</column>
+		<row>
+			<value>PersonnePhysique</value>
+			<value>10000004</value>
+			<null />
+			<null />
+			<value><![CDATA[2008-12-23 09:24:18.293]]></value>
+			<value><![CDATA[[UT] DeclarationImpotServiceTest]]></value>
+			<value><![CDATA[2008-12-23 09:24:18.304]]></value>
+			<value><![CDATA[[UT] DeclarationImpotServiceTest]]></value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<value>0</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<value>7</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<value>19650413</value>
+			<value>Bolomey</value>
+			<null />
+			<null />
+			<value>John</value>
+			<value>MASCULIN</value>
+			<null />
+			<value>0</value>
+		</row>
+		<row>
+			<value>PersonnePhysique</value>
+			<value>10000003</value>
+			<null />
+			<null />
+			<value><![CDATA[2008-12-23 09:24:18.273]]></value>
+			<value><![CDATA[[UT] DeclarationImpotServiceTest]]></value>
+			<value><![CDATA[2008-12-23 09:24:18.303]]></value>
+			<value><![CDATA[[UT] DeclarationImpotServiceTest]]></value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<value>0</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<value>7</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<value>19650413</value>
+			<value>Bolomey</value>
+			<null />
+			<null />
+			<value>Eric</value>
+			<value>MASCULIN</value>
+			<null />
+			<value>0</value>
+		</row>
+	</table>
+	<table name="PERIODE_FISCALE">
+		<column>ID</column>
+		<column>ANNULATION_DATE</column>
+		<column>ANNULATION_USER</column>
+		<column>LOG_CDATE</column>
+		<column>LOG_CUSER</column>
+		<column>LOG_MDATE</column>
+		<column>LOG_MUSER</column>
+		<column>ANNEE</column>
+		<row>
+			<value>6</value>
+			<null />
+			<null />
+			<value><![CDATA[2008-12-23 09:24:18.247]]></value>
+			<value><![CDATA[[UT] DeclarationImpotServiceTest]]></value>
+			<value><![CDATA[2008-12-23 09:24:18.302]]></value>
+			<value><![CDATA[[UT] DeclarationImpotServiceTest]]></value>
+			<value>2007</value>
+		</row>
+	</table>
+	<table name="PARAMETRE_PERIODE_FISCALE">
+		<column>LOG_MDATE</column>
+		<column>ID</column>
+		<column>DATE_FIN_ENVOI_MASSE</column>
+		<column>TERME_GEN_SOMM_REGL</column>
+		<column>TERME_GEN_SOMM_EFFECT</column>
+		<column>TYPE_CTB</column>
+		<column>PERIODE_ID</column>
+		<row>
+			<value>2008-01-01</value>
+			<value>1</value>
+			<value>20080131</value>
+			<value>20080331</value>
+			<value>20080430</value>
+			<value>VAUDOIS_ORDINAIRE</value>
+			<value>6</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>2</value>
+			<value>20080131</value>
+			<value>20080331</value>
+			<value>20080630</value>
+			<value>VAUDOIS_DEPENSE</value>
+			<value>6</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>3</value>
+			<value>20080131</value>
+			<value>20080331</value>
+			<value>20080630</value>
+			<value>HORS_CANTON</value>
+			<value>6</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>4</value>
+			<value>20080131</value>
+			<value>20080331</value>
+			<value>20080630</value>
+			<value>HORS_SUISSE</value>
+			<value>6</value>
+		</row>
+	</table>
+	<table name="MODELE_DOCUMENT">
+		<column>ID</column>
+		<column>ANNULATION_DATE</column>
+		<column>ANNULATION_USER</column>
+		<column>LOG_CDATE</column>
+		<column>LOG_CUSER</column>
+		<column>LOG_MDATE</column>
+		<column>LOG_MUSER</column>
+		<column>TYPE_DOCUMENT</column>
+		<column>PERIODE_ID</column>
+		<row>
+			<value>7</value>
+			<null />
+			<null />
+			<value><![CDATA[2008-12-23 09:24:18.25]]></value>
+			<value><![CDATA[[UT] DeclarationImpotServiceTest]]></value>
+			<value><![CDATA[2008-12-23 09:24:18.25]]></value>
+			<value><![CDATA[[UT] DeclarationImpotServiceTest]]></value>
+			<value>DECLARATION_IMPOT_COMPLETE_BATCH</value>
+			<value>6</value>
+		</row>
+	</table>
+	<table name="FOR_FISCAL">
+		<column>FOR_TYPE</column>
+		<column>ID</column>
+		<column>ANNULATION_DATE</column>
+		<column>ANNULATION_USER</column>
+		<column>LOG_CDATE</column>
+		<column>LOG_CUSER</column>
+		<column>LOG_MDATE</column>
+		<column>LOG_MUSER</column>
+		<column>DATE_OUVERTURE</column>
+		<column>DATE_FERMETURE</column>
+		<column>GENRE_IMPOT</column>
+		<column>NUMERO_OFS</column>
+		<column>TYPE_AUT_FISC</column>
+		<column>MOTIF_FERMETURE</column>
+		<column>MOTIF_OUVERTURE</column>
+		<column>MOTIF_RATTACHEMENT</column>
+		<column>MODE_IMPOSITION</column>
+		<column>TIERS_ID</column>
+		<row>
+			<value>ForFiscalPrincipal</value>
+			<value>8</value>
+			<null />
+			<null />
+			<value><![CDATA[2008-12-23 09:24:18.285]]></value>
+			<value><![CDATA[[UT] DeclarationImpotServiceTest]]></value>
+			<value><![CDATA[2008-12-23 09:24:18.285]]></value>
+			<value><![CDATA[[UT] DeclarationImpotServiceTest]]></value>
+			<value>19830413</value>
+			<null />
+			<value>REVENU_FORTUNE</value>
+			<value>5586</value>
+			<value>COMMUNE_OU_FRACTION_VD</value>
+			<null />
+			<value>MAJORITE</value>
+			<value>DOMICILE</value>
+			<value>ORDINAIRE</value>
+			<value>10000003</value>
+		</row>
+		<row>
+			<value>ForFiscalPrincipal</value>
+			<value>9</value>
+			<null />
+			<null />
+			<value><![CDATA[2008-12-23 09:24:18.296]]></value>
+			<value><![CDATA[[UT] DeclarationImpotServiceTest]]></value>
+			<value><![CDATA[2008-12-23 09:24:18.296]]></value>
+			<value><![CDATA[[UT] DeclarationImpotServiceTest]]></value>
+			<value>19830513</value>
+			<null />
+			<value>REVENU_FORTUNE</value>
+			<value>6458</value>
+			<value>COMMUNE_HC</value>
+			<null />
+			<value>MAJORITE</value>
+			<value>DOMICILE</value>
+			<value>ORDINAIRE</value>
+			<value>10000004</value>
+		</row>
+		<row>
+			<value>ForFiscalSecondaire</value>
+			<value>10</value>
+			<null />
+			<null />
+			<value><![CDATA[2008-12-23 09:24:18.301]]></value>
+			<value><![CDATA[[UT] DeclarationImpotServiceTest]]></value>
+			<value><![CDATA[2008-12-23 09:24:18.301]]></value>
+			<value><![CDATA[[UT] DeclarationImpotServiceTest]]></value>
+			<value>19830413</value>
+			<null />
+			<value>REVENU_FORTUNE</value>
+			<value>5586</value>
+			<value>COMMUNE_OU_FRACTION_VD</value>
+			<null />
+			<value>ACHAT_IMMOBILIER</value>
+			<value>IMMEUBLE_PRIVE</value>
+			<null />
+			<value>10000004</value>
+		</row>
+	</table>
+</dataset>

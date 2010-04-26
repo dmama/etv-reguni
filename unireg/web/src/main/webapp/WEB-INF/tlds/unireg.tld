@@ -1,0 +1,542 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<taglib xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee web-jsptaglibrary_2_0.xsd"
+	version="2.0">
+	<tlib-version>1.0</tlib-version>
+	<short-name>unireg</short-name>
+	<uri>http://www.unireg.com/uniregTagLib</uri>
+	<description>UNIREG tag library</description>
+
+	<!-- *************************************************************************************************** -->
+	<!-- **                                      client  Tag                     			              ** -->
+	<!-- *************************************************************************************************** -->
+	<function>
+		<name>startsWith</name>
+		<function-class>ch.vd.uniregctb.taglibs.JstlFunctionUtils</function-class>
+		<function-signature>boolean startsWith( java.lang.String, java.lang.String )</function-signature>
+	</function>
+	<function>
+		<name>equals</name>
+		<function-class>ch.vd.uniregctb.taglibs.JstlFunctionUtils</function-class>
+		<function-signature>boolean equals( java.lang.String, java.lang.String )</function-signature>
+	</function>
+
+	<tag>
+		<name>numCTB</name>
+		<tag-class>ch.vd.uniregctb.taglibs.JspTagNoCTB</tag-class>
+		<body-content>JSP</body-content>
+		<description>display numCTB </description>
+		<attribute>
+			<name>numero</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>field advertiser object</description>
+		</attribute>
+	</tag>
+	<tag>
+		<name>numAVS</name>
+		<tag-class>ch.vd.uniregctb.taglibs.JspTagNoAVS</tag-class>
+		<body-content>JSP</body-content>
+		<description>display numAVS </description>
+		<attribute>
+			<name>numeroAssureSocial</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>field advertiser object</description>
+		</attribute>
+	</tag>
+	<tag>
+		<name>ancienNumeroAVS</name>
+		<tag-class>ch.vd.uniregctb.taglibs.JspTagAncienNoAVS</tag-class>
+		<body-content>JSP</body-content>
+		<description>display ancienNumAVS </description>
+		<attribute>
+			<name>ancienNumeroAVS</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>field advertiser object</description>
+		</attribute>
+	</tag>
+	<tag>
+		<name>date</name>
+		<tag-class>ch.vd.uniregctb.taglibs.JspTagFormatDate</tag-class>
+		<body-content>JSP</body-content>
+		<description>display date </description>
+		<attribute>
+			<name>date</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>field advertiser object</description>
+		</attribute>
+	</tag>
+	<tag>
+		<name>regdate</name>
+		<tag-class>ch.vd.uniregctb.taglibs.JspTagFormatRegDate</tag-class>
+		<body-content>JSP</body-content>
+		<description>display RegDate</description>
+		<attribute>
+			<name>regdate</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>RegDate value</description>
+		</attribute>
+		<attribute>
+			<name>format</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>output format (see RegDateHelper.StringFormat for available values)</description>
+		</attribute>
+	</tag>
+	<tag>
+		<name>sdate</name>
+		<tag-class>ch.vd.uniregctb.taglibs.JspTagFormatDateToString</tag-class>
+		<body-content>JSP</body-content>
+		<description>display Date to String </description>
+		<attribute>
+			<name>sdate</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>format Date</description>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>user</name>
+		<tag-class>ch.vd.uniregctb.taglibs.JspTagUser</tag-class>
+		<body-content>JSP</body-content>
+		<description>display user </description>
+	</tag>
+
+	<tag>
+		<name>batchForm</name>
+		<tag-class>ch.vd.uniregctb.taglibs.JspTagBatchForm</tag-class>
+		<body-content>JSP</body-content>
+		<description>Constuit le formulaire qui permet de démarrer un batch (paramètres compris)</description>
+		<attribute>
+			<name>job</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>le batch</description>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>document</name>
+		<tag-class>ch.vd.uniregctb.taglibs.JspTagDocument</tag-class>
+		<body-content>JSP</body-content>
+		<description>Icon et liens vers un document</description>
+		<attribute>
+			<name>doc</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>le document</description>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>infra</name>
+		<tag-class>ch.vd.uniregctb.taglibs.JspTagInfra</tag-class>
+		<body-content>JSP</body-content>
+		<description>Interface sur le service infrastructure</description>
+		<attribute>
+			<name>entityType</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>le type de l'entité (canton/collectivite/commune/localite/officeImpot/pays/rue)</description>
+		</attribute>
+		<attribute>
+			<name>entityId</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>l'id de l'entité (numéro Ofs ou numéro postal, selon les cas)</description>
+		</attribute>
+		<attribute>
+			<name>entityPropertyName</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>la propriété de l'entité à afficher (nomMinuscule/dateDebutValidite/...)</description>
+		</attribute>
+	</tag>
+	
+	<tag>
+		<name>testMode</name>
+		<tag-class>ch.vd.uniregctb.taglibs.JspTagTestMode</tag-class>
+		<body-content>JSP</body-content>
+		<description>Permet d'afficher du contenu uniquement si le test mode est activé dans le fichier de configuration</description>
+	</tag>
+
+	<tag>
+		<name>norentes</name>
+		<tag-class>ch.vd.uniregctb.taglibs.JspTagNorentes</tag-class>
+		<body-content>JSP</body-content>
+		<description>Permet d'afficher du contenu uniquement si l'application est en mode Norentes</description>
+	</tag>
+
+	<tag>
+		<name>norentesScenarioName</name>
+		<tag-class>ch.vd.uniregctb.taglibs.JspTagNorentesScenarioName</tag-class>
+		<body-content>JSP</body-content>
+		<description>Retourne le nom du scénario Norentes courant, ou chaîne vide s'il n'y a pas de scénario ou si l'application n'est pas en mode Norentes</description>
+	</tag>
+
+	<tag>
+		<name>standalone</name>
+		<tag-class>ch.vd.uniregctb.taglibs.JspTagStandalone</tag-class>
+		<body-content>JSP</body-content>
+		<description>Permet d'afficher du contenu uniquement si l'application est en mode standalone</description>
+	</tag>
+
+	<tag>
+		<name>BridageIS</name>
+		<tag-class>ch.vd.uniregctb.taglibs.JspTagBridageIS</tag-class>
+		<body-content>JSP</body-content>
+		<description>Permet de cacher du contenu lié à la gestion de l'impot source lorsque le mode Bridage IS est activé dans le fichier de configuration</description>
+	</tag>
+	
+	<tag>
+		<name>environnement</name>
+		<tag-class>ch.vd.uniregctb.taglibs.JspTagEnvironnement</tag-class>
+		<body-content>JSP</body-content>
+		<description>Nom de l'environnement de déploiement d'après la propriété externe extprop.environnement</description>
+	</tag>
+
+	<tag>
+		<name>raccourciAnnuler</name>
+		<tag-class>ch.vd.uniregctb.taglibs.JspTagRaccourci$Annuler</tag-class>
+		<body-content>JSP</body-content>
+		<description>Affiche une icône d'annulation</description>
+		<attribute>
+			<name>link</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Valeur du lien</description>
+		</attribute>
+		<attribute>
+			<name>onClick</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Action à lancer en cas de click (nécessaire si l'attribut link n'est pas renseigné)</description>
+		</attribute>
+		<attribute>
+			<name>display</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Valeur à afficher dans le lien associé à l'icône</description>
+		</attribute>
+		<attribute>
+			<name>tooltip</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Valeur à afficher dans le tooltip associé au lien</description>
+		</attribute>
+		<attribute>
+			<name>id</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>id à associer au lien</description>
+		</attribute>
+		<attribute>
+			<name>thickbox</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Vrai si le nom de la classe css à utiliser doit être suffixé par "thickbox"</description>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>raccourciModifier</name>
+		<tag-class>ch.vd.uniregctb.taglibs.JspTagRaccourci$Modifier</tag-class>
+		<body-content>JSP</body-content>
+		<description>Affiche une icône de modification</description>
+		<attribute>
+			<name>link</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Valeur du lien</description>
+		</attribute>
+		<attribute>
+			<name>onClick</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Action à lancer en cas de click (nécessaire si l'attribut link n'est pas renseigné)</description>
+		</attribute>
+		<attribute>
+			<name>display</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Valeur à afficher dans le lien associé à l'icône</description>
+		</attribute>
+		<attribute>
+			<name>tooltip</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Valeur à afficher dans le tooltip associé au lien</description>
+		</attribute>
+		<attribute>
+			<name>id</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>id à associer au lien</description>
+		</attribute>
+		<attribute>
+			<name>thickbox</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Vrai si le nom de la classe css à utiliser doit être suffixé par "thickbox"</description>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>raccourciAjouter</name>
+		<tag-class>ch.vd.uniregctb.taglibs.JspTagRaccourci$Ajouter</tag-class>
+		<body-content>JSP</body-content>
+		<description>Affiche une icône d'ajout</description>
+		<attribute>
+			<name>link</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Valeur du lien</description>
+		</attribute>
+		<attribute>
+			<name>onClick</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Action à lancer en cas de click (nécessaire si l'attribut link n'est pas renseigné)</description>
+		</attribute>
+		<attribute>
+			<name>display</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Valeur à afficher dans le lien associé à l'icône</description>
+		</attribute>
+		<attribute>
+			<name>tooltip</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Valeur à afficher dans le tooltip associé au lien</description>
+		</attribute>
+		<attribute>
+			<name>id</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>id à associer au lien</description>
+		</attribute>
+		<attribute>
+			<name>thickbox</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Vrai si le nom de la classe css à utiliser doit être suffixé par "thickbox"</description>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>raccourciConsulter</name>
+		<tag-class>ch.vd.uniregctb.taglibs.JspTagRaccourci$Consulter</tag-class>
+		<body-content>JSP</body-content>
+		<description>Affiche une icône de consultation</description>
+		<attribute>
+			<name>link</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Valeur du lien</description>
+		</attribute>
+		<attribute>
+			<name>onClick</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Action à lancer en cas de click (nécessaire si l'attribut link n'est pas renseigné)</description>
+		</attribute>
+		<attribute>
+			<name>display</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Valeur à afficher dans le lien associé à l'icône</description>
+		</attribute>
+		<attribute>
+			<name>tooltip</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Valeur à afficher dans le tooltip associé au lien</description>
+		</attribute>
+		<attribute>
+			<name>id</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>id à associer au lien</description>
+		</attribute>
+		<attribute>
+			<name>thickbox</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Vrai si le nom de la classe css à utiliser doit être suffixé par "thickbox"</description>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>raccourciDemarrer</name>
+		<tag-class>ch.vd.uniregctb.taglibs.JspTagRaccourci$Demarrer</tag-class>
+		<body-content>JSP</body-content>
+		<description>Affiche une icône de démarrage</description>
+		<attribute>
+			<name>link</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Valeur du lien</description>
+		</attribute>
+		<attribute>
+			<name>onClick</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Action à lancer en cas de click (nécessaire si l'attribut link n'est pas renseigné)</description>
+		</attribute>
+		<attribute>
+			<name>display</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Valeur à afficher dans le lien associé à l'icône</description>
+		</attribute>
+		<attribute>
+			<name>tooltip</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Valeur à afficher dans le tooltip associé au lien</description>
+		</attribute>
+		<attribute>
+			<name>id</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>id à associer au lien</description>
+		</attribute>
+		<attribute>
+			<name>thickbox</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Vrai si le nom de la classe css à utiliser doit être suffixé par "thickbox"</description>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>raccourciIdentifier</name>
+		<tag-class>ch.vd.uniregctb.taglibs.JspTagRaccourci$Identifier</tag-class>
+		<body-content>JSP</body-content>
+		<description>Affiche une icône d'identification</description>
+		<attribute>
+			<name>link</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Valeur du lien</description>
+		</attribute>
+		<attribute>
+			<name>onClick</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Action à lancer en cas de click (nécessaire si l'attribut link n'est pas renseigné)</description>
+		</attribute>
+		<attribute>
+			<name>display</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Valeur à afficher dans le lien associé à l'icône</description>
+		</attribute>
+		<attribute>
+			<name>tooltip</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Valeur à afficher dans le tooltip associé au lien</description>
+		</attribute>
+		<attribute>
+			<name>id</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>id à associer au lien</description>
+		</attribute>
+		<attribute>
+			<name>thickbox</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Vrai si le nom de la classe css à utiliser doit être suffixé par "thickbox"</description>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>raccourciReinit</name>
+		<tag-class>ch.vd.uniregctb.taglibs.JspTagRaccourci$Reinit</tag-class>
+		<body-content>JSP</body-content>
+		<description>Affiche une icône de ré-initialisation</description>
+		<attribute>
+			<name>link</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Valeur du lien</description>
+		</attribute>
+		<attribute>
+			<name>onClick</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Action à lancer en cas de click (nécessaire si l'attribut link n'est pas renseigné)</description>
+		</attribute>
+		<attribute>
+			<name>display</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Valeur à afficher dans le lien associé à l'icône</description>
+		</attribute>
+		<attribute>
+			<name>tooltip</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Valeur à afficher dans le tooltip associé au lien</description>
+		</attribute>
+		<attribute>
+			<name>id</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>id à associer au lien</description>
+		</attribute>
+		<attribute>
+			<name>thickbox</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Vrai si le nom de la classe css à utiliser doit être suffixé par "thickbox"</description>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>callstack</name>
+		<tag-class>ch.vd.uniregctb.taglibs.JspTagCallstack</tag-class>
+		<body-content>JSP</body-content>
+		<description>Permet d'afficher une call-stack (cachée par défaut)</description>
+		<attribute>
+			<name>headerMessage</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>le message d'entête à afficher avant la callstack</description>
+		</attribute>
+		<attribute>
+			<name>exception</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>l'exception dont on veut afficher la callstack</description>
+		</attribute>
+		<attribute>
+			<name>callstack</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>la callstack déjà résolue de l'exception</description>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>closeOverlayButton</name>
+		<tag-class>ch.vd.uniregctb.taglibs.JspTagCloseOverlayButton</tag-class>
+		<body-content>JSP</body-content>
+		<description>Permet d'afficher un bouton pour fermer l'overlay. Le bouton ne s'affiche que s'il est bien dans un overlay.</description>
+		<attribute>
+			<name>text</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>le texte du bouton ('Fermer' par défaut)</description>
+		</attribute>
+	</tag>
+
+</taglib>
