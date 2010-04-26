@@ -57,7 +57,7 @@ public class RattrapageMigrationMain {
 
 		LOGGER.info("Chargement du context terminé");
 
-		AuthenticationHelper.setPrincipal("[Rattrapage-MigrationSource]");
+		AuthenticationHelper.setPrincipal("[Rattrapage-Donnees]");
 		ForManager forManager = (ForManager) ctx.getBean("forManager");
 		ContribuableManager contribuableManager = (ContribuableManager) ctx.getBean("contribuableManager");
 
@@ -77,7 +77,7 @@ public class RattrapageMigrationMain {
 
 		}
 		else {
-			LOGGER.error("USAGE: DOUBLON  or FORS");
+			LOGGER.error("USAGE: DOUBLON  or FORS or MARIE");
 		}
 
 

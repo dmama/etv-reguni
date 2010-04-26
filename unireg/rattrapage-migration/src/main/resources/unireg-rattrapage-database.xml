@@ -18,18 +18,39 @@
 		<property name="defaultTransactionTimeoutSeconds" value="86400"/>
 	</bean>
 
-	<!-- Datasource Oracle UniregCTB -->
-	<bean id="dataSource" class="org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy">
-		<property name="targetDataSource" ref="rawDataSource" />
+	<bean id="jdbcConnectionManager" class="org.jencks.factory.ConnectionManagerFactoryBean">
+		<property name="transaction" value="xa"/>
+		<property name="transactionManager" ref="transactionManager"/>
+		<property name="poolMaxSize" value="10"/>
 	</bean>
+
+	<bean id="realDataSource" class="org.jencks.factory.ConnectionFactoryFactoryBean">
+		<property name="managedConnectionFactory" ref="jdbcManagedConnectionFactory"/>
+		<property name="connectionManager" ref="jdbcConnectionManager"/>
+	</bean>
+
+	<bean id="jdbcManagedConnectionFactory" class="ch.vd.uniregctb.datasource.UniregXAMCF">
+		<property name="driverType" value="thin" />
+		<property name="serverName" value="${rattrapage.jdbc.server}" />
+		<property name="portNumber" value="${rattrapage.jdbc.port}" />
+		<property name="databaseName" value="${rattrapage.jdbc.instance}" />
+		<property name="userName" value="${rattrapage.jdbc.username}" />
+		<property name="password" value="${rattrapage.jdbc.password}" />
+	</bean>
+
+	<bean id="dataSource" class="ch.vd.uniregctb.dbutils.DebugDataSource">
+		<property name="target" ref="realDataSource" />
+		<property name="maxConnections" value="10" />
+		<property name="enabled" value="false" />
+	</bean>
+
 
 	<!-- Datasource Oracle UniregCTB -->
 	<bean id="rawDataSource" class="ch.vd.uniregctb.datasource.UniregDataSource" destroy-method="close">
 		<property name="driverClassName" value="${jdbc.driverClassName}" />
-		<property name="url" value="${rattrapage.jdbc.url}" />
+		<property name="url" value="jdbc:oracle:thin:@${rattrapage.jdbc.server}:${rattrapage.jdbc.port}:${rattrapage.jdbc.instance}" />
 		<property name="username" value="${rattrapage.jdbc.username}" />
 		<property name="password" value="${rattrapage.jdbc.password}" />
-
 		<property name="initialSize" value="4" />
 		<!-- 50 Connection max c'est la meme chose que dans Weblogic -->
 		<property name="maxActive" value="50" />
@@ -39,12 +60,7 @@
 
 <!-- Datasource pour la DB host DB2 (pour la migration/indexation) -->
 	<bean id="hostDataSourceDB2" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
-		<property name="driverClassName" value="${rattrapage.db2.driverClassName}" />
-		<property name="url" value="jdbc:db2://${rattrapage.db2.server}:${rattrapage.db2.port}/${rattrapage.db2.instance}" />
-		<property name="username" value="${rattrapage.db2.username}" />
-		<property name="password" value="${rattrapage.db2.password}" />
-		<property name="initialSize" value="1" />
-		<property name="maxActive" value="-1" />
+
 	</bean>
 	
 	<!-- hibernateProperties specifiques à cette datasource. -->
@@ -59,6 +75,6 @@
 		<entry key="hibernate.hbm2ddl.auto" value="update" />
 	</util:map>
      <bean id="db2Schema" class="java.lang.String">
-		<constructor-arg value="${rattrapage.db2.schema}" />
+		
 	</bean>
 </beans>

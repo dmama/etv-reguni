@@ -31,13 +31,14 @@ public class RattrapageMarieSeul extends JobResults {
 	public int nbCtbsTotal=0;
 	public int nbErrors=0;
 	public int nbConjoint=0;
-	public int nbCtbFors=0;
-
+	public int nbCtbForsSupprimes =0;
+	public int nbCtbForsCrees =0;
 
 
 
 	public final List<String> listeResultats = new ArrayList<String>();
-	public final List<String> listeFor = new ArrayList<String>();
+	public final List<String> listeForSupprimes = new ArrayList<String>();
+	public final List<String> listeForCrees = new ArrayList<String>();
 	public final List<String> listeError = new ArrayList<String>();
 	public final List<String> listeConjoint = new ArrayList<String>();
 
@@ -61,12 +62,15 @@ public class RattrapageMarieSeul extends JobResults {
 
 		nbCtbsTotal += rapport.nbCtbsTotal;
 		nbConjoint += rapport.nbConjoint;
-		nbCtbFors += rapport.nbCtbFors;
+		nbCtbForsSupprimes += rapport.nbCtbForsSupprimes;
+		nbCtbForsCrees += rapport.nbCtbForsCrees;
+		nbErrors+= rapport.nbErrors;
 
 		listeError.addAll(rapport.listeError);
 		listeResultats.addAll(rapport.listeResultats);
 		listeConjoint.addAll(rapport.listeConjoint);
-		listeFor.addAll(rapport.listeFor);
+		listeForSupprimes.addAll(rapport.listeForSupprimes);
+		listeForCrees.addAll(rapport.listeForCrees);
 
 	}
 
@@ -86,9 +90,14 @@ public class RattrapageMarieSeul extends JobResults {
 		listeConjoint.add(message);
 
 	}
-	public void addFor(String message){
-		++nbCtbFors;
-		listeFor.add(message);
+	public void addForSupprimes(String message){
+		++nbCtbForsSupprimes;
+		listeForSupprimes.add(message);
+	}
+
+		public void addForCrees(String message){
+		++nbCtbForsCrees;
+		listeForCrees.add(message);
 	}
 
 

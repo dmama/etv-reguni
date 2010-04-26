@@ -35,6 +35,17 @@
 		</filter>
 		<filter class="org.apache.log4j.varia.DenyAllFilter" />
 	</appender>
+	<appender name="RAPPORTFORCREES" class="org.apache.log4j.FileAppender">
+		<param name="Append" value="false" />
+		<param name="File" value="RapportForsCrees.csv" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%m%n" />
+		</layout>
+		<filter class="org.apache.log4j.varia.LevelMatchFilter">
+			<param name="levelToMatch" value="INFO" />
+		</filter>
+		<filter class="org.apache.log4j.varia.DenyAllFilter" />
+	</appender>
 	<appender name="RAPPORTMARIESEULFILE" class="org.apache.log4j.FileAppender">
 		<param name="Append" value="false" />
 		<param name="File" value="RapportTraitementMarieSeul.csv" />
@@ -71,6 +82,10 @@
 	<logger name="ch.vd.uniregctb.rattrapage.ContribuableManager.ForSupprime" additivity="false">
 		<level value="INFO" />
 		<appender-ref ref="RAPPORTFORSUPPRIME"/>
+	</logger>
+		<logger name="ch.vd.uniregctb.rattrapage.ContribuableManager.ForCrees" additivity="false">
+		<level value="INFO" />
+		<appender-ref ref="RAPPORTFORCREES"/>
 	</logger>
 	<logger name="ch.vd.uniregctb.rattrapage.ContribuableManager.Rapport" additivity="false">
 		<level value="INFO" />

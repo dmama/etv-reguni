@@ -1,6 +1,8 @@
 package ch.vd.uniregctb.rattrapage;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -10,19 +12,27 @@ import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
 
+import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.uniregctb.adresse.AdresseService;
+import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.BatchTransactionTemplate;
+import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.BatchTransactionTemplate.BatchCallback;
 import ch.vd.uniregctb.common.BatchTransactionTemplate.Behavior;
 import ch.vd.uniregctb.evenement.common.EnsembleTiersCouple;
+import ch.vd.uniregctb.evenement.common.EvenementCivilHandlerException;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.metier.modeimposition.MariageModeImpositionResolver;
+import ch.vd.uniregctb.metier.modeimposition.ModeImpositionResolver;
+import ch.vd.uniregctb.metier.modeimposition.ModeImpositionResolverException;
 import ch.vd.uniregctb.rattrapage.rapport.RattrapageDoublonResults;
 import ch.vd.uniregctb.rattrapage.rapport.RattrapageMarieSeul;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -39,8 +49,12 @@ import ch.vd.uniregctb.tiers.RapportPrestationImposable;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.type.EtatCivil;
+import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TypeActivite;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
 public class ContribuableManager {
@@ -72,6 +86,7 @@ public class ContribuableManager {
 
 
 	private static final Logger RAPPORTFORSUPPRIME = Logger.getLogger(ContribuableManager.class.getName() + ".ForSupprime");
+	private static final Logger RAPPORTFORCREES = Logger.getLogger(ContribuableManager.class.getName() + ".ForCrees");
 
 
 	@Transactional
@@ -141,14 +156,14 @@ public class ContribuableManager {
 	}
 
 
-
 	public void rattraperMarieSeul(final LoggingStatusManager statutManager) {
 
 		globalTiersIndexer.setOnTheFlyIndexation(false);
 
 		final List<Long> listATraiter = getMarieSeul();
 		//final List<Long> listATraiter = new ArrayList<Long>();
-		// listATraiter.add(10687809L);
+		//listATraiter.add(10733709L);
+		//listATraiter.add(10601726L);
 		final int nombreMarieSeul = listATraiter.size();
 		final RattrapageMarieSeul rapportFinal = new RattrapageMarieSeul(nombreMarieSeul);
 		LOGGER.info("Chargement terminée: " + nombreMarieSeul + " mariés seuls chargés");
@@ -170,7 +185,7 @@ public class ContribuableManager {
 			@Override
 			public boolean doInTransaction(List<Long> batch) throws Exception {
 				batchEnCours = batch;
-				LOGGER.info("Traitement du batch [" + batch.get(0) + "; " + batch.get(batch.size() - 1) + "] ...");
+				LOGGER.info("Traitement du batch " + Arrays.toString(batch.toArray()) + " ...");
 
 				if (batch.size() == 1) {
 					idCtb = batch.get(0);
@@ -181,9 +196,9 @@ public class ContribuableManager {
 
 			@Override
 			public void afterTransactionRollback(Exception e, boolean willRetry) {
-				String message = "===> Rollback du batch [" + batchEnCours.get(0) + "-" + batchEnCours.get(batchEnCours.size() - 1)
+				String message = "===> Rollback du batch [" + Arrays.toString(batchEnCours.toArray()) + " ..."
 						+ "] willRetry=" + willRetry;
-
+				LOGGER.error(message);
 
 				if (willRetry) {
 					// le batch va être rejoué -> on peut ignorer le rapport
@@ -250,7 +265,8 @@ public class ContribuableManager {
 
 		LOGGER.info("Nombre de Maries Seuls créés depuis le 15 Mars 2010 :" + rapportFinal.nombreCtbCharges);
 		LOGGER.info("Nombre de Maries seuls posant problème et corrigés :" + rapportFinal.nbCtbsTotal);
-		LOGGER.info("Nombre de fors fermés :" + rapportFinal.nbCtbFors);
+		LOGGER.info("Nombre de fors fermés :" + rapportFinal.nbCtbForsSupprimes);
+		LOGGER.info("Nombre de fors créés :" + rapportFinal.nbCtbForsCrees);
 		LOGGER.info("Nombre d'erreurs:" + rapportFinal.nbErrors);
 		LOGGER.info("Nombre de couples reformés:" + rapportFinal.nbConjoint);
 
@@ -264,10 +280,16 @@ public class ContribuableManager {
 		for (String message : listeMessage) {
 			RAPPORT.info(message);
 		}
-		listeMessage = rapportFinal.listeFor;
+		listeMessage = rapportFinal.listeForSupprimes;
 		for (String message : listeMessage) {
 			RAPPORTFORSUPPRIME.info(message);
 		}
+
+		listeMessage = rapportFinal.listeForCrees;
+		for (String message : listeMessage) {
+			RAPPORTFORCREES.info(message);
+		}
+
 
 		listeMessage = rapportFinal.listeError;
 		for (String message : listeMessage) {
@@ -313,28 +335,71 @@ public class ContribuableManager {
 				if (individuConjoint != null) {
 					PersonnePhysique conjoint = tiersService.getPersonnePhysiqueByNumeroIndividu(individuConjoint.getNoTechnique());
 					if (conjoint != null) {
-						//fermeture des fors fiscaux
-						final RegDate dateMariage = rapport.getDateDebut();
-						RegDate dateFermeture = dateMariage.getOneDayBefore();
-						fermerForFiscaux(conjoint, dateFermeture, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
+						final EnsembleTiersCouple ensembleConjoint = tiersService.getEnsembleTiersCouple(conjoint, RegDate.get());
+						if (ensembleConjoint == null || isDateDebutRapportDifferente(conjoint, rapport)) {
+							//fermeture des fors fiscaux
+							final RegDate dateMariage = rapport.getDateDebut();
+							RegDate dateFermeture = dateMariage.getOneDayBefore();
+							if (iscoherentAvecDateMariage(conjoint, dateMariage)) {
+								LOGGER.debug("la personne " + conjoint.getNumero() + " va être ajoutée dans le ménage " + menage.getNumero());
 
-						//tiersService.addTiersToCouple(menage, conjoint, dateMariage, null);
-						Integer numeroAutorite = null;
-						if(menage.getDernierForFiscalPrincipal()!=null){
-							numeroAutorite = menage.getDernierForFiscalPrincipal().getNumeroOfsAutoriteFiscale();
+								tiersService.addTiersToCouple(menage, conjoint, dateMariage, null);
+
+								LOGGER.debug("la personne " + conjoint.getNumero() + " ajoutée dans le ménage " + menage.getNumero());
+
+								doMariageReconciliation(menage, dateMariage, null, EtatCivil.MARIE, 0L, false);
+
+								Integer numeroAutorite = null;
+								ModeImposition mode = null;
+								if (menage.getDernierForFiscalPrincipal() != null) {
+									numeroAutorite = menage.getDernierForFiscalPrincipal().getNumeroOfsAutoriteFiscale();
+									mode = menage.getDernierForFiscalPrincipal().getModeImposition();
+								}
+								rapportMarieCourant.addResultat(personneMarieSeul.getNumero() + ";" + menage.getNumero() + ";" + conjoint.getNumero() + ";" + numeroAutorite + ";" + mode);
+								rapportMarieCourant.addConjoint(conjoint.getNumero() + ";" + numeroAutorite);
+							}
+							else {
+								String message = personneMarieSeul.getNumero() + ";" + "le conjoint potentiel " +
+										conjoint.getNumero() + " a un ou plusieur fors ouverts après la date du mariage";
+
+								rapportMarieCourant.addError(message);
+							}
+
+
 						}
-						rapportMarieCourant.addResultat(personneMarieSeul.getNumero() + ";" + menage.getNumero() + ";" + conjoint.getNumero()+";"+numeroAutorite);
-						rapportMarieCourant.addConjoint(conjoint.getNumero()+";"+numeroAutorite);
+						else {
+							String message = personneMarieSeul.getNumero() + ";" + "le conjoint potentiel " +
+									conjoint.getNumero() + " a son propre ménage: " + ensembleConjoint.getMenage().getNumero();
+
+							rapportMarieCourant.addError(message);
+						}
+
 					}
 				}
-			
-			}
 
-			LOGGER.debug(tiers.getNumero());
+			}
 
 
 		}
 
+	}
+
+	private boolean iscoherentAvecDateMariage(PersonnePhysique conjoint, RegDate dateMariage) {
+		final ForFiscalPrincipal forFiscal = conjoint.getDernierForFiscalPrincipal();
+		if (forFiscal == null) {
+			return true;
+		}
+		return dateMariage.isAfter(forFiscal.getDateDebut());
+	}
+
+	private boolean isDateDebutRapportDifferente(PersonnePhysique conjoint, RapportEntreTiers rapport) {
+		final RapportEntreTiers rapportConjoint = conjoint.getDernierRapportSujet(TypeRapportEntreTiers.APPARTENANCE_MENAGE);
+		if(!rapportConjoint.getDateDebut().equals(rapport.getDateDebut())){
+			LOGGER.info("conjoint avec Menage =>"+conjoint.getNumero());
+		}
+
+
+		return !rapportConjoint.getDateDebut().equals(rapport.getDateDebut());
 	}
 
 	private void fermerForFiscaux(PersonnePhysique conjoint, RegDate dateFermeture, MotifFor motifFermeture) {
@@ -379,13 +444,13 @@ public class ContribuableManager {
 					+ ") du for fiscal actif");
 		}
 
-	//	forFiscalPrincipal.setDateFin(dateFermeture);
-	//	forFiscalPrincipal.setMotifFermeture(motifFermeture);
-		rapportMarieCourant.addFor(conjoint.getNumero()+ ";"
-				+ forFiscalPrincipal.getDateDebut()+ ";"
-				+ forFiscalPrincipal.getDateFin()+ ";"
-				+ forFiscalPrincipal.getModeImposition()+ ";"
-				+ forFiscalPrincipal.getNumeroOfsAutoriteFiscale()+	";"
+		forFiscalPrincipal.setDateFin(dateFermeture);
+		forFiscalPrincipal.setMotifFermeture(motifFermeture);
+		rapportMarieCourant.addForSupprimes(conjoint.getNumero() + ";"
+				+ forFiscalPrincipal.getDateDebut() + ";"
+				+ forFiscalPrincipal.getDateFin() + ";"
+				+ forFiscalPrincipal.getModeImposition() + ";"
+				+ forFiscalPrincipal.getNumeroOfsAutoriteFiscale() + ";"
 				+ forFiscalPrincipal.getTypeAutoriteFiscale());
 	}
 
@@ -396,14 +461,14 @@ public class ContribuableManager {
 						+ RegDateHelper.dateToDisplayString(dateFermeture) + ") est avant la date de début ("
 						+ RegDateHelper.dateToDisplayString(forFiscalSecondaire.getDateDebut()) + ") du for fiscal actif");
 			}
-		//	forFiscalSecondaire.setDateFin(dateFermeture);
-		//	forFiscalSecondaire.setMotifFermeture(motifFermeture);
-			rapportMarieCourant.addFor(conjoint.getNumero()+ ";"
-				+ forFiscalSecondaire.getDateDebut()+ ";"
-				+ forFiscalSecondaire.getDateFin()+ ";"
-				+ "Secondaire;"
-				+ forFiscalSecondaire.getNumeroOfsAutoriteFiscale()+	";"
-				+ forFiscalSecondaire.getTypeAutoriteFiscale());
+			forFiscalSecondaire.setDateFin(dateFermeture);
+			forFiscalSecondaire.setMotifFermeture(motifFermeture);
+			rapportMarieCourant.addForSupprimes(conjoint.getNumero() + ";"
+					+ forFiscalSecondaire.getDateDebut() + ";"
+					+ forFiscalSecondaire.getDateFin() + ";"
+					+ "Secondaire;"
+					+ forFiscalSecondaire.getNumeroOfsAutoriteFiscale() + ";"
+					+ forFiscalSecondaire.getTypeAutoriteFiscale());
 		}
 	}
 
@@ -414,12 +479,12 @@ public class ContribuableManager {
 					+ RegDateHelper.dateToDisplayString(dateFermeture) + ") est avant la date de début ("
 					+ RegDateHelper.dateToDisplayString(forFiscalAutreImpot.getDateDebut()) + ") du for fiscal actif");
 		}
-	//	forFiscalAutreImpot.setDateFin(dateFermeture);
-		rapportMarieCourant.addFor(conjoint.getNumero()+ ";"
-				+ forFiscalAutreImpot.getDateDebut()+ ";"
-				+ forFiscalAutreImpot.getDateFin()+ ";"
+		forFiscalAutreImpot.setDateFin(dateFermeture);
+		rapportMarieCourant.addForSupprimes(conjoint.getNumero() + ";"
+				+ forFiscalAutreImpot.getDateDebut() + ";"
+				+ forFiscalAutreImpot.getDateFin() + ";"
 				+ "autrImpot;"
-				+ forFiscalAutreImpot.getNumeroOfsAutoriteFiscale()+	";"
+				+ forFiscalAutreImpot.getNumeroOfsAutoriteFiscale() + ";"
 				+ forFiscalAutreImpot.getTypeAutoriteFiscale());
 	}
 
@@ -430,14 +495,14 @@ public class ContribuableManager {
 						+ RegDateHelper.dateToDisplayString(dateFermeture) + ") est avant la date de début ("
 						+ RegDateHelper.dateToDisplayString(forFiscalAutreElementImposable.getDateDebut()) + ") du for fiscal actif");
 			}
-			//forFiscalAutreElementImposable.setDateFin(dateFermeture);
-		//	forFiscalAutreElementImposable.setMotifFermeture(motifFermeture);
-			rapportMarieCourant.addFor(conjoint.getNumero()+ ";"
-				+ forFiscalAutreElementImposable.getDateDebut()+ ";"
-				+ forFiscalAutreElementImposable.getDateFin()+ ";"
+			forFiscalAutreElementImposable.setDateFin(dateFermeture);
+			forFiscalAutreElementImposable.setMotifFermeture(motifFermeture);
+			rapportMarieCourant.addForSupprimes(conjoint.getNumero() + ";"
+					+ forFiscalAutreElementImposable.getDateDebut() + ";"
+					+ forFiscalAutreElementImposable.getDateFin() + ";"
 					+ "autrElementImposable;"
-				+ forFiscalAutreElementImposable.getNumeroOfsAutoriteFiscale()+	";"
-				+ forFiscalAutreElementImposable.getTypeAutoriteFiscale());
+					+ forFiscalAutreElementImposable.getNumeroOfsAutoriteFiscale() + ";"
+					+ forFiscalAutreElementImposable.getTypeAutoriteFiscale());
 		}
 	}
 
@@ -566,6 +631,350 @@ public class ContribuableManager {
 		}
 		return contribuable;
 	}
+
+	private MenageCommun doMariageReconciliation(MenageCommun menageCommun, RegDate date, String remarque, ch.vd.uniregctb.type.EtatCivil etatCivilFamille, Long numeroEvenement,
+	                                             boolean changeHabitantFlag) {
+
+		final EnsembleTiersCouple ensemble = tiersService.getEnsembleTiersCouple(menageCommun, date);
+
+		final PersonnePhysique principal = ensemble.getPrincipal();
+		final PersonnePhysique conjoint = ensemble.getConjoint();
+
+		RegDate dateEffective = date;
+
+		final ModeImpositionResolver mariageResolver = new MariageModeImpositionResolver(tiersService, numeroEvenement);
+		final ModeImpositionResolver.Imposition imposition;
+		try {
+			imposition = mariageResolver.resolve(menageCommun, dateEffective, null);
+		}
+		catch (ModeImpositionResolverException ex) {
+			throw new EvenementCivilHandlerException(ex.getMessage(), ex);
+		}
+
+		// si le mode d'imposition a pu être déterminé
+		if (imposition != null) {
+
+			dateEffective = imposition.getDateDebut();
+			ModeImposition modeImposition = imposition.getModeImposition();
+
+			/*
+			 * sauvegarde des fors secondaires et autre élément imposable de chaque tiers
+			 */
+			final List<ForFiscalSecondaire> ffsPrincipal;
+			final List<ForFiscalAutreElementImposable> ffaeiPrincipal;
+			{
+				final Tiers.ForsParType fors = principal.getForsParType(false);
+				ffsPrincipal = fors.secondaires;
+				ffaeiPrincipal = fors.autreElementImpot;
+			}
+
+			final List<ForFiscalSecondaire> ffsConjoint;
+			final List<ForFiscalAutreElementImposable> ffaeiConjoint;
+			if (conjoint != null) {
+				final Tiers.ForsParType fors = conjoint.getForsParType(false);
+				ffsConjoint = fors.secondaires;
+				ffaeiConjoint = fors.autreElementImpot;
+			}
+			else {
+				ffsConjoint = Collections.emptyList();
+				ffaeiConjoint = Collections.emptyList();
+			}
+
+			/*
+			 * le traitement met fin aux fors de chacun des tiers
+			 */
+			final RegDate veilleMariage = dateEffective.getOneDayBefore();
+			final ForFiscalPrincipal forPrincipal = principal.getForFiscalPrincipalAt(veilleMariage);
+			ForFiscalPrincipal forConjoint = null;
+			if (conjoint != null) {
+				forConjoint = conjoint.getForFiscalPrincipalAt(veilleMariage);
+			}
+
+			/*
+			 * fermeture des fors des tiers
+			 */
+
+			fermerForFiscaux(principal, veilleMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
+			fermerForFiscaux(conjoint, veilleMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
+
+
+			Audit.info(numeroEvenement, "Fermeture des fors fiscaux des membres du ménage");
+
+			/* On récupère la commune de résidence du contribuable principal, ou à défaut celle de son conjoint. */
+			Integer noOfsCommune = null;
+			TypeAutoriteFiscale typeAutoriteCommune = null;
+			MotifFor motifOuverture = MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION;
+
+			// Plusieurs cas se présentent, dans le cas ou l'événement de mariage nous parvient après les événements d'arrivée,
+			// alors que le mariage a en fait eu lieu avant l'arrivée d'au moins l'un des deux)
+			// 1. le mariage a eu lieu avant l'arrivée des deux protagonistes : il faut alors annuler les fors des deux
+			//		membres du couple, créer un nouveau contribuable ménage et lui ouvrir un for à la date d'arrivée
+			//		du premier arrivé des deux membres du couple
+			// 2. le mariage a eu lieu entre l'arrivée de l'un et l'arrivée de l'autre : il faut alors fermer le for de la personne
+			//		déjà là à la veille du mariage (déjà fait plus haut - closeAllForsFiscaux), annuler le for de la personne
+			//		effectivement arrivée après le mariage, créer un contribuable couple et lui ouvrir un for à la date du mariage
+			if (forPrincipal == null || (conjoint != null && forConjoint == null)) {
+
+				final DonneesOuvertureFor donneesPrincipal = traiterCasEvenementMariageRecuApresEvenementArriveeMaisMariageAnterieur(principal, dateEffective);
+				final DonneesOuvertureFor donneesConjoint = conjoint != null ? traiterCasEvenementMariageRecuApresEvenementArriveeMaisMariageAnterieur(conjoint, dateEffective) : null;
+
+				// le mariage a été prononcé avant l'arrivée d'au moins un des conjoints dans le canton,
+				// mais on ne l'a su qu'après
+				if (donneesPrincipal != null || donneesConjoint != null) {
+
+					// on prend la date d'arrivée du premier (après mariage) des deux, et les données qui vont avec
+					final DonneesOuvertureFor source;
+					if (donneesPrincipal != null && (donneesConjoint == null || donneesPrincipal.getDateDebut().isBeforeOrEqual(donneesConjoint.getDateDebut()))) {
+						source = donneesPrincipal;
+					}
+					else {
+						source = donneesConjoint;
+					}
+
+					final boolean conjointInconnuAuFiscal = conjoint == null || conjoint.getForsFiscauxNonAnnules(false).size() == 0;
+					final boolean tousLesConjointsConnusSontEnFaitArrivesMaries = donneesPrincipal != null && (conjointInconnuAuFiscal || donneesConjoint != null);
+
+					final boolean unDesConjointEstPartiAvantMariage = (getDernierForFermePourDepart(principal) != null || (conjoint != null && getDernierForFermePourDepart(conjoint) != null));
+
+					if (tousLesConjointsConnusSontEnFaitArrivesMaries || unDesConjointEstPartiAvantMariage) {
+
+						// le motif d'ouverture doit être le mariage dès qu'au moins un des futurs
+						// conjoints était déjà présent dans le canton à la date du mariage ;
+						// dans le cas où ils étaient tous deux HC/HS à la date du mariage, le
+						// motif d'ouverture du for du ménage commun doit être l'arrivée
+						motifOuverture = source.getMotifOuverture();
+
+						// la date effective d'ouverture du for du couple doit être la date du mariage
+						// dès qu'un au moins des futurs conjoints était déjà présent dans le canton
+						// à la date du mariage, et ne prend la valeur de la date d'arrivée du premier
+						// des deux conjoints que s'ils étaient déjà mariés en arrivant (mais on ne le
+						// savait pas)
+						dateEffective = source.getDateDebut();
+
+						// la commune du for du ménage commun, maintenant...
+						// si les deux conjoints sont arrivés en fait mariés (mais on ne le savait pas), c'est
+						// l'arrivée du premier qui détermine le for du couple ; mais si l'un était déjà là
+						// avant le mariage, la commune du for sera la sienne (donc on laisse la variable
+						// à null ici, elle sera renseignée plus bas)
+						noOfsCommune = source.getNumeroOfsAutoriteFiscale();
+						typeAutoriteCommune = source.getTypeAutoriteFiscale();
+					}
+				}
+				else {
+
+					// pas de mariage prononcé-avant-mais-reçu-après une arrivée, et aucun for ouvert à la veille du mariage
+					// mais si on a pu trouver un mode d'imposition, c'est qu'il y a un for actif maintenant (on suppose ici
+					// que la date du mariage est dans le passé), donc celui-ci a été ouvert après la date du mariage
+					if (forPrincipal == null && (conjoint != null && forConjoint == null)) {
+
+						if (forPrincipal == null) {
+							throw new EvenementCivilHandlerException(
+									"Le contribuable n° " + FormatNumeroHelper.numeroCTBToDisplay(principal.getNumero()) + " possède déjà un for ouvert après la date de mariage");
+						}
+						else {
+							throw new EvenementCivilHandlerException(
+									"Le contribuable n° " + FormatNumeroHelper.numeroCTBToDisplay(conjoint.getNumero()) + " possède déjà un for ouvert après la date de mariage");
+						}
+					}
+					else {
+						final ForFiscalPrincipal ffpPrincipal = principal.getForFiscalPrincipalAt(dateEffective);
+						if (ffpPrincipal != null && dateEffective.equals(ffpPrincipal.getDateDebut()) && MotifFor.MAJORITE.equals(ffpPrincipal.getMotifOuverture())) {
+							// mariage d'une personne physique avec un for le même jour du mariage (motif majorité)
+
+							// annulation du for puisqu'il va être "remplacé" par celui du couple
+							ffpPrincipal.setAnnule(true);
+							noOfsCommune = ffpPrincipal.getNumeroOfsAutoriteFiscale();
+							typeAutoriteCommune = ffpPrincipal.getTypeAutoriteFiscale();
+						}
+
+						if (conjoint != null) {
+							ForFiscalPrincipal ffpConjoint = conjoint.getForFiscalPrincipalAt(dateEffective);
+							if (ffpConjoint != null && dateEffective.equals(ffpConjoint.getDateDebut()) && MotifFor.MAJORITE.equals(ffpConjoint.getMotifOuverture())) {
+								// mariage d'une personne physique avec un for le même jour du mariage (motif majorité)
+
+								// annulation du for puisqu'il va être "remplacé" par celui du couple
+								ffpConjoint.setAnnule(true);
+								if (noOfsCommune == null) {
+									noOfsCommune = ffpConjoint.getNumeroOfsAutoriteFiscale();
+									typeAutoriteCommune = ffpConjoint.getTypeAutoriteFiscale();
+								}
+							}
+						}
+					}
+				}
+			}
+
+			if (noOfsCommune == null) {
+				// il n'est apparemment pas possible que les deux fors soient nuls, sinon on n'aurait pas pu trouver de
+				// mode d'imposition
+				ForFiscalPrincipal forPourMenage = null;
+
+				if ((forPrincipal != null && forConjoint == null) || (forPrincipal == null && forConjoint != null)) {
+					// si un seul for existe, on utilise ses données
+					if (forPrincipal == null) {
+						forPourMenage = forConjoint;
+					}
+					else {
+						forPourMenage = forPrincipal;
+					}
+				}
+				else {
+					// sinon il faut determiner selon le principe dans [UNIREG-1462]
+					final boolean principalDansCanton = (forPrincipal == null ? false : TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD.equals(forPrincipal.getTypeAutoriteFiscale()));
+					final boolean conjointDansCanton = (forConjoint == null ? false : TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD.equals(forConjoint.getTypeAutoriteFiscale()));
+					if (principalDansCanton || !conjointDansCanton) {
+						// si le for du principal est dans le canton ou celui de son conjoint ne l'est pas, on utilise le for du principal
+						forPourMenage = forPrincipal;
+					}
+					else if (conjointDansCanton) {
+						// si le conjoint est habitant
+						forPourMenage = forConjoint;
+					}
+				}
+
+				noOfsCommune = forPourMenage.getNumeroOfsAutoriteFiscale();
+				typeAutoriteCommune = forPourMenage.getTypeAutoriteFiscale();
+			}
+
+			final ForFiscalPrincipal forFiscalPrincipalAt = menageCommun.getForFiscalPrincipalAt(dateEffective);
+			if (isForFiscalAbsentOuIncoherent(forFiscalPrincipalAt,
+					dateEffective, noOfsCommune, typeAutoriteCommune, modeImposition, motifOuverture)) {
+
+				// Si un for existe, à ce stade, c'est qu'il est incoherent, on l'annule
+				if (forFiscalPrincipalAt != null) {
+					forFiscalPrincipalAt.setAnnule(true);
+				}
+
+				openForFiscalPrincipal(menageCommun, dateEffective, MotifRattachement.DOMICILE, noOfsCommune,
+						typeAutoriteCommune, modeImposition, motifOuverture, changeHabitantFlag);
+			}
+
+			/*
+			 * réouverture des autres fors
+			 */
+
+			createForsAutreElementImpossable(dateEffective, menageCommun, ffaeiPrincipal, motifOuverture);
+			createForsAutreElementImpossable(dateEffective, menageCommun, ffaeiConjoint, motifOuverture);
+		}
+
+		/*	if (remarque != null && !"".equals(remarque.trim())) {
+			principal.setRemarque((principal.getRemarque() != null ? principal.getRemarque() : "") + remarque);
+			if (conjoint != null) {
+				conjoint.setRemarque((conjoint.getRemarque() != null ? conjoint.getRemarque() : "") + remarque);
+			}
+			menageCommun.setRemarque((menageCommun.getRemarque() != null ? menageCommun.getRemarque() : "") + remarque);
+		}*/
+
+		//	updateSituationFamilleMariage(menageCommun, dateEffective, etatCivilFamille);
+
+		return menageCommun;
+	}
+
+	private boolean isForFiscalAbsentOuIncoherent(ForFiscalPrincipal forFiscal, RegDate dateDebut,
+	                                              Integer noOfsCommune, TypeAutoriteFiscale typeAutorite,
+	                                              ModeImposition mode, MotifFor motifOuverture) {
+
+		if (forFiscal == null) {
+			return true;
+		}
+
+		boolean incoherence = !dateDebut.equals(forFiscal.getDateDebut()) ||
+				!noOfsCommune.equals(forFiscal.getNumeroOfsAutoriteFiscale()) ||
+				!typeAutorite.equals(forFiscal.getTypeAutoriteFiscale()) ||
+				!mode.equals(forFiscal.getModeImposition()) ||
+				!motifOuverture.equals(forFiscal.getMotifOuverture()) ||
+				!MotifRattachement.DOMICILE.equals(forFiscal.getMotifRattachement());
+		return incoherence;
+	}
+
+	private DonneesOuvertureFor traiterCasEvenementMariageRecuApresEvenementArriveeMaisMariageAnterieur(
+			PersonnePhysique membreCouple, RegDate dateMariage) {
+
+		final ForFiscalPrincipal ffp = membreCouple.getDernierForFiscalPrincipal();
+
+		// arrivé en fait après le mariage mais déjà connu avant?
+		DonneesOuvertureFor retour = null;
+		if (ffp != null && ffp.getDateDebut().isAfter(dateMariage) && isArrivee(ffp.getMotifOuverture())) {
+
+			// il faut annuler les fors individuels créés par l'arrivée
+			ffp.setAnnule(true);
+
+			// on garde le motif d'ouverture, la date d'ouverture, ainsi que la commune d'ouverture pour le nouveau for à créer
+			retour = new DonneesOuvertureFor(ffp.getMotifOuverture(), ffp.getDateDebut(), ffp.getNumeroOfsAutoriteFiscale(), ffp.getTypeAutoriteFiscale());
+		}
+
+		return retour;
+	}
+
+	private ForFiscalPrincipal getDernierForFermePourDepart(final PersonnePhysique pp) {
+		ForFiscalPrincipal dernierFor = null;
+		for (ForFiscal ff : pp.getForsFiscaux()) {
+			if (!ff.isAnnule() && ff.isPrincipal()) {
+				ForFiscalPrincipal ffp = (ForFiscalPrincipal) ff;
+				if (isDepart(ffp.getMotifFermeture()) && (dernierFor == null || RegDateHelper.isAfterOrEqual(dernierFor.getDateFin(), ffp.getDateFin(), NullDateBehavior.EARLIEST))) {
+					dernierFor = ffp;
+				}
+			}
+		}
+		return dernierFor;
+	}
+
+	private boolean isDepart(MotifFor motif) {
+		return (MotifFor.DEPART_HC == motif || MotifFor.DEPART_HS == motif);
+	}
+
+	private boolean isArrivee(MotifFor motif) {
+		return (MotifFor.ARRIVEE_HC == motif || MotifFor.ARRIVEE_HS == motif);
+	}
+
+	/**
+	 * Ouvre les fors de type autre élément imposable sur le contribuable.
+	 *
+	 * @param date           la date des nouveaux fors secondaires.
+	 * @param contribuable   le contribuable.
+	 * @param fors           liste de fors autre élément imposable à créer.
+	 * @param motifOuverture motif d'ouverture assigner aux nouveaux fors.
+	 */
+	private void createForsAutreElementImpossable(RegDate date, Contribuable contribuable, List<ForFiscalAutreElementImposable> fors, MotifFor motifOuverture) {
+		for (ForFiscalAutreElementImposable forFiscalAutreElementImposable : fors) {
+			if (forFiscalAutreElementImposable.isValidAt(date.getOneDayBefore())) {
+				tiersService.openForFiscalAutreElementImposable(contribuable, forFiscalAutreElementImposable.getGenreImpot(),
+						date, forFiscalAutreElementImposable.getMotifRattachement(),
+						forFiscalAutreElementImposable.getNumeroOfsAutoriteFiscale(),
+						forFiscalAutreElementImposable.getTypeAutoriteFiscale(), motifOuverture);
+			}
+		}
+	}
+
+
+	public ForFiscalPrincipal openForFiscalPrincipal(Contribuable contribuable, final RegDate dateOuverture,
+	                                                 MotifRattachement motifRattachement, int numeroOfsAutoriteFiscale, TypeAutoriteFiscale typeAutoriteFiscale,
+	                                                 ModeImposition modeImposition, MotifFor motifOuverture, boolean changeHabitantFlag) {
+
+		Assert.isNull(contribuable.getForFiscalPrincipalAt(null), "Le contribuable possède déjà un for principal ouvert");
+
+		// Ouvre un nouveau for à la date d'événement
+
+		ForFiscalPrincipal nouveauForFiscal = new ForFiscalPrincipal();
+		nouveauForFiscal.setDateDebut(dateOuverture);
+		nouveauForFiscal.setMotifRattachement(motifRattachement);
+		nouveauForFiscal.setNumeroOfsAutoriteFiscale(numeroOfsAutoriteFiscale);
+		nouveauForFiscal.setTypeAutoriteFiscale(typeAutoriteFiscale);
+		nouveauForFiscal.setModeImposition(modeImposition);
+		nouveauForFiscal.setMotifOuverture(motifOuverture);
+		nouveauForFiscal = (ForFiscalPrincipal) tiersService.addAndSave(contribuable, nouveauForFiscal);
+
+
+		Assert.notNull(nouveauForFiscal);
+		String message = contribuable.getNumero() + ";" + nouveauForFiscal.getNumeroOfsAutoriteFiscale() + ";" + nouveauForFiscal.getDateDebut() + ";" +
+				nouveauForFiscal.getDateFin() + ";" + nouveauForFiscal.getModeImposition() + ";" + nouveauForFiscal.getTypeAutoriteFiscale() + ";" +
+				nouveauForFiscal.getNumeroOfsAutoriteFiscale();
+
+		rapportMarieCourant.addForCrees(message);
+		return nouveauForFiscal;
+
+	}
+
 
 	private List<RapportPrestationImposable> getRapportPrestationImposable(PersonnePhysique personneDoublon) {
 		String queryWhere = " and rapport.sujet.numero = " + personneDoublon.getNumero();
@@ -706,5 +1115,40 @@ public class ContribuableManager {
 
 	public void setServiceCivilService(ServiceCivilService serviceCivilService) {
 		this.serviceCivilService = serviceCivilService;
+	}
+
+	/**
+	 * Classe interne qui permet de conserver les données qui peuvent passer d'un for à l'autre suite à l'annulation du premier en vu de création du deuxième
+	 */
+	private static final class DonneesOuvertureFor {
+
+		private final MotifFor motifOuverture;
+		private final RegDate dateDebut;
+		private final Integer numeroOfsAutoriteFiscale;
+		private final TypeAutoriteFiscale typeAutoriteFiscale;
+
+		public DonneesOuvertureFor(MotifFor motifOuverture, RegDate dateDebut, Integer numeroOfsAutoriteFiscale,
+		                           TypeAutoriteFiscale typeAutoriteFiscale) {
+			this.motifOuverture = motifOuverture;
+			this.dateDebut = dateDebut;
+			this.numeroOfsAutoriteFiscale = numeroOfsAutoriteFiscale;
+			this.typeAutoriteFiscale = typeAutoriteFiscale;
+		}
+
+		public MotifFor getMotifOuverture() {
+			return motifOuverture;
+		}
+
+		public RegDate getDateDebut() {
+			return dateDebut;
+		}
+
+		public Integer getNumeroOfsAutoriteFiscale() {
+			return numeroOfsAutoriteFiscale;
+		}
+
+		public TypeAutoriteFiscale getTypeAutoriteFiscale() {
+			return typeAutoriteFiscale;
+		}
 	}
 }

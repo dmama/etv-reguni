@@ -33,7 +33,7 @@
 			value="
                 | JDBC driver             : ${jdbc.driverClassName}
                 | Hibernate dialect       : ${hibernate.dialect}
-                | JDBC url                : ${rattrapage.jdbc.url}
+                | JDBC url                : ${rattrapage.jdbc.server}:${rattrapage.jdbc.port}:${rattrapage.jdbc.instance}
                 | UniregCTB DB user       : ${rattrapage.jdbc.username}                
                 | Host Interfaces URL     : ${rattrapage.host-interfaces.serverurl}
                 | Host Interfaces user    : ${rattrapage.host-interfaces.username}                   

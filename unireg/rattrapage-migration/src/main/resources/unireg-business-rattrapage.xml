@@ -20,14 +20,14 @@
 		<property name="globalTiersIndexer" ref="globalTiersIndexer" />					
 	</bean>
 	<bean id="contribuableManager" class="ch.vd.uniregctb.rattrapage.ContribuableManager">		
-		<property name="transactionManager" ref="transactionManager" />		
+		<property name="transactionManager" ref="transactionManager" />
 		<property name="hibernateTemplate" ref="hibernateTemplate" />
-		<property name="tiersDAO" ref="tiersDAO" />	
-		<property name="adresseService" ref="adresseService" />	
+		<property name="tiersDAO" ref="tiersDAO" />
+		<property name="adresseService" ref="adresseService" />
 		<property name="serviceInfra" ref="serviceInfrastructureService" />
 		<property name="serviceCivilService" ref="serviceCivilService" />
 		<property name="tiersService" ref="tiersService" />
-		<property name="globalTiersIndexer" ref="globalTiersIndexer" />		
+		<property name="globalTiersIndexer" ref="globalTiersIndexer" />
 	</bean>
 
 </beans>
