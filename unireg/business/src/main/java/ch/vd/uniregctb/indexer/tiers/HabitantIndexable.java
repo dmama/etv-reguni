@@ -71,7 +71,6 @@ public class HabitantIndexable extends PersonnePhysiqueIndexable {
 		// Individu Display
 		addValueToMap(values, TiersIndexedData.NOM1, indSubValues, IndividuSubIndexable.F_NOM);
 		addValueToMap(values, TiersIndexedData.NOM1, indSubValues, IndividuSubIndexable.F_PRENOM);
-		addValueToMap(values, TiersIndexedData.DATE_NAISSANCE, indSubValues, IndividuSubIndexable.F_DATE_NAISSANCE);
 		if (subValues.containsKey(HabitantSubIndexable.F_DATE_DECES)) {//surcharge de la date de décès
 			addValueToMap(values, TiersIndexedData.DATE_DECES, subValues, HabitantSubIndexable.F_DATE_DECES);
 		}

@@ -184,7 +184,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		HashMap<String, String> values = indexable.getKeyValues();
 		assertEquals(DateHelper.dateToIndexString(nonHab.getDateNaissance().asJavaDate()), values.get(TiersSearchFields.DATE_NAISSANCE));
 		assertEquals("Suisse", values.get(TiersIndexedData.PAYS));
-		assertEquals("19650312", values.get(TiersIndexedData.DATE_NAISSANCE));
+		assertEquals("19650312", values.get(TiersSearchFields.DATE_NAISSANCE));
 		assertEquals("", values.get(TiersIndexedData.DATE_DECES));
 	}
 
@@ -540,7 +540,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 
 		HashMap<String, String> values = indexable.getKeyValues();
 
-		assertEquals("1000", values.get(TiersIndexedData.NPA));
+		assertEquals("1000", values.get(TiersSearchFields.NPA));
 		assertContains("Lausanne", values.get(TiersSearchFields.LOCALITE_PAYS));
 		assertContains("Lausanne", values.get(TiersIndexedData.LOCALITE));
 		assertContains(Constants.OUI, values.get(TiersIndexedData.DOMICILE_VD));
@@ -604,7 +604,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 
 		HashMap<String, String> values = indexable.getKeyValues();
 
-		assertEquals("1000", values.get(TiersIndexedData.NPA));
+		assertEquals("1000", values.get(TiersSearchFields.NPA));
 		assertContains("Lausanne", values.get(TiersSearchFields.LOCALITE_PAYS));
 		assertContains("Lausanne", values.get(TiersIndexedData.LOCALITE));
 		assertEquals("", values.get(TiersIndexedData.DOMICILE_VD)); // adresse de domicile par défaut -> pas de détermination possible
@@ -655,7 +655,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 
 		//String s1 = values.get(TiersSearchFields.LOCALITE_PAYS);
 		assertContains("abeilles", values.get(TiersIndexedData.RUE));
-		assertEquals("", values.get(TiersIndexedData.NPA));
+		assertEquals("", values.get(TiersSearchFields.NPA));
 		assertContains("France", values.get(TiersSearchFields.LOCALITE_PAYS));
 		assertContains("France", values.get(TiersSearchFields.LOCALITE_PAYS));
 		assertContains("Paris", values.get(TiersIndexedData.LOCALITE));
@@ -692,7 +692,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		HashMap<String, String> values = indexable.getKeyValues();
 
 		//String s1 = values.get(TiersSearchFields.LOCALITE_PAYS);
-		assertEquals("1880", values.get(TiersIndexedData.NPA));
+		assertEquals("1880", values.get(TiersSearchFields.NPA));
 		assertContains("Bex", values.get(TiersSearchFields.LOCALITE_PAYS));
 		assertContains("Bex", values.get(TiersIndexedData.LOCALITE));
 		assertContains(Constants.OUI, values.get(TiersIndexedData.DOMICILE_VD));

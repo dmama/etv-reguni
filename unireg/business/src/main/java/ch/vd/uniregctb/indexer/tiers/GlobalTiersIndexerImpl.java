@@ -424,7 +424,7 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer {
             LOGGER.trace("Reindexation du Tiers " + tiers.getNumero() + " (remove=" + removeBefore + " couple=" + followDependents + ")");
         }
 
-        final List<Indexable> indexables = buildIndexables(tiers, followDependents);
+        final List<TiersIndexable> indexables = buildIndexables(tiers, followDependents);
         indexIndexable(indexables, removeBefore);
 
         if (LOGGER.isTraceEnabled()) {
@@ -441,10 +441,10 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer {
 
         // construit la liste des indexables
 
-        final List<Indexable> indexables = new ArrayList<Indexable>(tiers.size());
+        final List<TiersIndexable> indexables = new ArrayList<TiersIndexable>(tiers.size());
         for (Tiers t : tiers) {
             try {
-                final List<Indexable> i = buildIndexables(t, followDependents);
+                final List<TiersIndexable> i = buildIndexables(t, followDependents);
                 indexables.addAll(i);
             }
             catch (Exception e) {
@@ -478,9 +478,9 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer {
     }
 
 
-    private List<Indexable> buildIndexables(Tiers tiers, boolean followDependents) {
+    private List<TiersIndexable> buildIndexables(Tiers tiers, boolean followDependents) {
 
-        final List<Indexable> indexables = new ArrayList<Indexable>();
+        final List<TiersIndexable> indexables = new ArrayList<TiersIndexable>();
 
         if (followDependents) {
             List<Tiers> list = buildDependents(tiers);
@@ -533,9 +533,9 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer {
         return list;
     }
 
-    private Indexable buildIndexable(Tiers tiers) {
+    private TiersIndexable buildIndexable(Tiers tiers) {
 
-        final Indexable indexable;
+        final TiersIndexable indexable;
 
         if (tiers instanceof DebiteurPrestationImposable) {
             DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiers;
@@ -626,11 +626,11 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer {
         return nbTiersIndexed;
     }
 
-    private void indexIndexable(List<Indexable> indexables, boolean removeBefore) throws IndexerException {
+    private void indexIndexable(List<TiersIndexable> indexables, boolean removeBefore) throws IndexerException {
 
         final List<IndexableData> data = new ArrayList<IndexableData>(indexables.size());
-        for (Indexable i : indexables) {
-            data.add(new IndexableData(i));
+        for (TiersIndexable i : indexables) {
+            data.add(new TiersIndexableData(i));
         }
 
         if (removeBefore) {

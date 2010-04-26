@@ -1,25 +1,57 @@
 package ch.vd.uniregctb.indexer.perf;
 
-import ch.vd.uniregctb.indexer.*;
-import ch.vd.uniregctb.indexer.DocGetter;
-import ch.vd.uniregctb.indexer.DocHit;
-import static junit.framework.Assert.assertEquals;
-
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.apache.lucene.document.Document;
+import org.apache.lucene.document.Field;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.uniregctb.common.BusinessTest;
+import ch.vd.uniregctb.indexer.DocGetter;
+import ch.vd.uniregctb.indexer.DocHit;
+import ch.vd.uniregctb.indexer.GlobalIndexInterface;
+import ch.vd.uniregctb.indexer.IndexableData;
+import ch.vd.uniregctb.indexer.SearchCallback;
+
+import static junit.framework.Assert.assertEquals;
 
 public class IndexerPerformanceTest extends BusinessTest {
 
 	private final Logger LOGGER = Logger.getLogger(IndexerPerformanceTest.class);
 
 	private GlobalIndexInterface globalIndex;
+
+	private static class Data extends IndexableData {
+
+		private String nom;
+		private String prenom;
+		private String date;
+
+		private Data(Long id, String type, String subType, String nom, String prenom, String date) {
+			super(id, type, subType);
+			this.nom = nom;
+			this.prenom = prenom;
+			this.date = date;
+		}
+
+		public String getSubType() {
+			return subType;
+		}
+
+		@Override
+		public Document asDoc() {
+			Document d = super.asDoc();
+
+			d.add(new Field("NOM", nom, Field.Store.YES, Field.Index.ANALYZED));
+			d.add(new Field("PRENOM", prenom, Field.Store.YES, Field.Index.ANALYZED));
+			d.add(new Field("DATE", date, Field.Store.YES, Field.Index.ANALYZED));
+
+			return d;
+		}
+	}
 
 	@Override
 	public void onSetUp() throws Exception {
@@ -46,21 +78,12 @@ public class IndexerPerformanceTest extends BusinessTest {
 		{
 
 			String type = "perfi";
-			List<String> fields = new ArrayList<String>();
-			fields.add("NOM");
-			fields.add("PRENOM");
-			fields.add("DATE");
 
 			LOGGER.info("Begin indexing of "+nbDocs+" documents");
 
-			List<String> values;
 			for (int i=0;i<nbDocs;i++) {
-				values = new ArrayList<String>();
-				values.add("Duchmol-"+(i%450));
-				values.add("Christian-"+(i%220));
-				values.add(DateHelper.dateToIndexString(getDate(i)));
-				GenericIndexable indexable = new GenericIndexable(i, type, fields, values);
-				globalIndex.indexEntity(new IndexableData(indexable));
+				Data d = new Data((long) i, type, null, "Duchmol-"+(i%450), "Christian-"+(i%220), DateHelper.dateToIndexString(getDate(i)));
+				globalIndex.indexEntity(d);
 
 				if (i % 1000 == 0) {
 					LOGGER.info("Indexation: "+i);

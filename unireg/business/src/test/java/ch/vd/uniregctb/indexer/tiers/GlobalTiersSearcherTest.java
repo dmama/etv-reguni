@@ -1,12 +1,6 @@
 package ch.vd.uniregctb.indexer.tiers;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
-import static junit.framework.Assert.fail;
-
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.junit.Test;
@@ -25,11 +19,17 @@ import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.tiers.TiersCriteria.TypeRecherche;
 import ch.vd.uniregctb.tiers.TiersCriteria.TypeTiers;
 
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.fail;
+
 /**
  * Classe pour tester la recherche de tiers
  *
  * @author <a href="mailto:jean-eric.cuendet@vd.ch">Jean-Eric Cuendet</a>
  */
+@SuppressWarnings({"JavaDoc"})
 public class GlobalTiersSearcherTest extends BusinessTest {
 
 	//private static final Logger LOGGER = Logger.getLogger(GlobalTiersSearcherTest.class);
@@ -61,9 +61,9 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 				MockIndividu james = addIndividu(1373, RegDate.get(1992, 1, 14), "Dean", "James", true);
 				MockIndividu francois = addIndividu(403399, RegDate.get(1961, 3, 12), "Lestourgie", "Francois", true);
 				MockIndividu claudine = addIndividu(222, RegDate.get(1975, 11, 30), "Duchene", "Claudine", false);
-				MockIndividu alain2 = addIndividu(111, RegDate.get(1965, 05, 21), "Dupont", "Alain", true);
-				MockIndividu miro = addIndividu(333, RegDate.get(1972, 07, 15), "Boillat dupain", "Miro", true);
-				MockIndividu claudine2 = addIndividu(444, RegDate.get(1922, 02, 12), "Duchene", "Claudine", false);
+				MockIndividu alain2 = addIndividu(111, RegDate.get(1965, 5, 21), "Dupont", "Alain", true);
+				MockIndividu miro = addIndividu(333, RegDate.get(1972, 7, 15), "Boillat dupain", "Miro", true);
+				MockIndividu claudine2 = addIndividu(444, RegDate.get(1922, 2, 12), "Duchene", "Claudine", false);
 
 				addFieldsIndividu(richard, "1234567891023", "98765432109", null);
 
@@ -429,7 +429,6 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 	public void testRechercheNomRessemble() throws Exception {
 		// Recherche "phonetique" sur le nom
 		TiersCriteria criteria = new TiersCriteria();
-		criteria = new TiersCriteria();
 		criteria.setNomRaison("dupant");
 		criteria.setTypeRechercheDuNom(TiersCriteria.TypeRecherche.PHONETIQUE);
 
@@ -504,7 +503,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 
 		// Le nombre de resultats est limité dans la recherche
 		Integer nbMaxParListe = new Integer(ParametreEnum.nbMaxParListe.getDefaut());
-		int nbDocs = nbMaxParListe.intValue() + 20;
+		int nbDocs = nbMaxParListe + 20;
 		for (long i = 0; i < nbDocs; i++) {
 			PersonnePhysique nonHab = new PersonnePhysique(false);
 			nonHab.setNumero(i);

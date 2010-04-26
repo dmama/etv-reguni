@@ -16,10 +16,8 @@ public class TiersIndexedData {
 	public static final String NOM2 = "D_NOM2";
 	public static final String ROLE_LIGNE1 = "D_ROLE1";
 	public static final String ROLE_LIGNE2 = "D_ROLE2";
-	public static final String DATE_NAISSANCE = "D_DATE_NAISSANCE";
 	public static final String DATE_DECES = "D_DATE_DECES";
 	public static final String RUE = "D_RUE";
-	public static final String NPA = "D_NPA";
 	public static final String LOCALITE = "D_LOCALITE";
 	public static final String PAYS = "D_PAYS";
 	public static final String FOR_PRINCIPAL = "D_FOR_PRINCIPAL";
@@ -51,7 +49,7 @@ public class TiersIndexedData {
 	}
 
 	public String getDateNaissance() {
-		return getDocValue(TiersIndexedData.DATE_NAISSANCE);
+		return getDocValue(TiersSearchFields.DATE_NAISSANCE);
 	}
 
 	public String getDateDeces() {
@@ -78,7 +76,7 @@ public class TiersIndexedData {
 	}
 
 	public String getNpa() {
-		return getDocValue(TiersIndexedData.NPA);
+		return getDocValue(TiersSearchFields.NPA);
 	}
 
 	public String getLocalite() {

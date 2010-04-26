@@ -1,18 +1,15 @@
 package ch.vd.uniregctb.indexer;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
 import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.store.Directory;
 import org.springframework.util.Assert;
-
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Wrapper autour d'un index writer lucene qui permet de manipuler directement des objets de type {@link IndexableData}.
@@ -140,7 +137,6 @@ public class LuceneWriter extends LuceneEngine {
 	/**
 	 * Supprime un document représenté par un {@link IndexableData}.
 	 *
-	 * @param id        l'id du document lucene
 	 * @param indexable l'indexable à supprimer.
 	 * @throws IndexerException en cas d'erreur
 	 */
@@ -172,59 +168,18 @@ public class LuceneWriter extends LuceneEngine {
 	}
 
 	/**
-	 * Cette methode ajoute les champs communs a tous les documents Lucene
-	 *
-	 * @param d            le document Lucene
-	 * @param id           l'ID du document (ex: 54666)
-	 * @param typeValue    Le type du Document (ex: 'tiers')
-	 * @param subTypeValue le sous type du Document (ex: 'habitant')
-	 */
-	private void addBaseFields(Document d, Long id, String typeValue, String subTypeValue) {
-
-		String docId = generateDocumentID(typeValue, id);
-		d.add(new Field(F_DOCID, docId, Field.Store.YES, Field.Index.NOT_ANALYZED));
-		d.add(new Field(F_DOCTYPE, typeValue.toLowerCase(), Field.Store.YES, Field.Index.NOT_ANALYZED));
-		d.add(new Field(F_DOCSUBTYPE, subTypeValue.toLowerCase(), Field.Store.YES, Field.Index.NOT_ANALYZED));
-		d.add(new Field(F_ENTITYID, id.toString(), Field.Store.YES, Field.Index.NOT_ANALYZED));
-	}
-
-	/**
 	 * Indexe un document représenté par un {@link IndexableData}.
 	 *
 	 * @param indexable l'indexable à indexer.
 	 * @throws IndexerException en cas d'erreur
 	 */
 	public void index(IndexableData indexable) throws IndexerException {
-		index(indexable.getId(), indexable.getType(), indexable.getSubType(), indexable.getKeyValues());
-	}
-
-	/**
-	 * Indexe un document représenté par ses données brutes.
-	 *
-	 * @param id           l'id du document lucene
-	 * @param typeValue    le type du document
-	 * @param subTypeValue le sous-type du document
-	 * @param data         une map <i>clé => valeur</i> des propriétés à indexer
-	 * @throws IndexerException en cas d'erreur
-	 */
-	public void index(Long id, String typeValue, String subTypeValue, HashMap<String, String> data) throws IndexerException {
 
 		Assert.notNull(iw);
 
 		try {
-			// Then create the new document
-			Document d = new Document();
-			addBaseFields(d, id, typeValue, subTypeValue);
-
-			// Iterate on every document
-			for (Map.Entry<String, String> e : data.entrySet()) {
-				final String k = e.getKey();
-				final String v = e.getValue();
-				final Field field = new Field(k, IndexerFormatHelper.objectToString(v), Field.Store.YES, Field.Index.ANALYZED);
-				d.add(field);
-			}
-
-			// Add to the index
+			Document d = indexable.asDoc();
+			Assert.notNull(d);
 			iw.addDocument(d);
 		}
 		catch (Exception e) {

@@ -3,7 +3,6 @@ package ch.vd.uniregctb.indexer.concurrent;
 import org.apache.log4j.Logger;
 
 import ch.vd.uniregctb.indexer.GlobalIndexInterface;
-import ch.vd.uniregctb.indexer.IndexableData;
 import ch.vd.uniregctb.indexer.MockIndexable;
 
 public class ConcurrentAccessIndexerThread extends AbstractConcurrentAccessThread {
@@ -27,8 +26,8 @@ public class ConcurrentAccessIndexerThread extends AbstractConcurrentAccessThrea
 
 			nbDocs++;
 
-			MockIndexable entity = new MockIndexable(nbDocs);
-			globalIndex.indexEntity(new IndexableData(entity));
+			MockIndexable data = new MockIndexable((long)nbDocs, "U", "a good man du", "dardare", "essuies");
+			globalIndex.indexEntity(data);
 			LOGGER.debug("I:Doc count: "+globalIndex.getApproxDocCount());
 
 			// Sleep de 1 ms permet de donner la main a une autre Thread

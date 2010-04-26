@@ -1,16 +1,16 @@
 package ch.vd.uniregctb.indexer;
 
-import ch.vd.uniregctb.common.WithoutSpringTest;
-import ch.vd.uniregctb.indexer.fs.FSDirectoryProvider;
-import ch.vd.uniregctb.indexer.DocGetter;
-import ch.vd.uniregctb.indexer.DocHit;
-import static junit.framework.Assert.assertEquals;
+import java.util.List;
+
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Query;
 import org.junit.Test;
 
-import java.util.List;
+import ch.vd.uniregctb.common.WithoutSpringTest;
+import ch.vd.uniregctb.indexer.fs.FSDirectoryProvider;
+
+import static junit.framework.Assert.assertEquals;
 
 public class SimpleGlobalIndexTest extends WithoutSpringTest {
 
@@ -19,6 +19,7 @@ public class SimpleGlobalIndexTest extends WithoutSpringTest {
 	private final String path = "tmp/globalIndex";
 	private GlobalIndex globalIndex;
 
+	private MockIndexable data = new MockIndexable(12L, "U", "a good man du", "dardare", "essuies");
 
 	@Override
 	public void onSetUp() throws Exception {
@@ -28,8 +29,7 @@ public class SimpleGlobalIndexTest extends WithoutSpringTest {
 		globalIndex.afterPropertiesSet();
 		globalIndex.overwriteIndex();
 
-		MockIndexable indexable = new MockIndexable();
-		globalIndex.indexEntity(new IndexableData(indexable));
+		globalIndex.indexEntity(data);
 	}
 
 	@Override

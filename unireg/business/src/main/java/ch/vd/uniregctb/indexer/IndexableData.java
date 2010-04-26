@@ -2,6 +2,10 @@ package ch.vd.uniregctb.indexer;
 
 import java.util.HashMap;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.lucene.document.Document;
+import org.apache.lucene.document.Field;
+
 /**
  * Classe représentant les données brutes extraites d'un indexable. Utilisée de manière interne par l'indexeur.
  * <p>
@@ -9,38 +13,60 @@ import java.util.HashMap;
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
-public final class IndexableData {
+public abstract class IndexableData {
 
-	private final Long id;
-	private final String type;
-	private final String subType;
-	private final HashMap<String, String> keyValues;
+	protected Long id;
+	protected String type;
+	protected String subType;
 
-	public IndexableData(Indexable indexable) {
-		id = indexable.getID();
-		type = indexable.getType();
-		subType = indexable.getSubType();
-		keyValues = indexable.getKeyValues();
+	protected IndexableData() {
+	}
+
+	protected IndexableData(Long id, String type, String subType) {
+		this.id = id;
+		this.type = type;
+		this.subType = subType;
 	}
 
 	public Long getId() {
 		return id;
 	}
 
+	public void setId(Long id) {
+		this.id = id;
+	}
+
 	public String getType() {
 		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
 	}
 
 	public String getSubType() {
 		return subType;
 	}
 
-	public HashMap<String, String> getKeyValues() {
-		return keyValues;
+	public void setSubType(String subType) {
+		this.subType = subType;
 	}
 
 	@Override
 	public String toString() {
 		return String.valueOf(id);
+	}
+
+	public Document asDoc() {
+		Document d = new Document();
+
+		d.add(new Field(LuceneEngine.F_ENTITYID, id.toString(), Field.Store.YES, Field.Index.NOT_ANALYZED));
+		d.add(new Field(LuceneEngine.F_DOCID, type.toLowerCase() + "-" + id, Field.Store.YES, Field.Index.NOT_ANALYZED));
+		d.add(new Field(LuceneEngine.F_DOCTYPE, type.toLowerCase(), Field.Store.YES, Field.Index.NOT_ANALYZED));
+		if (StringUtils.isNotBlank(subType)) {
+			d.add(new Field(LuceneEngine.F_DOCSUBTYPE, subType.toLowerCase(), Field.Store.YES, Field.Index.NOT_ANALYZED));
+		}
+
+		return d;
 	}
 }

@@ -1,56 +1,36 @@
 package ch.vd.uniregctb.indexer;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import org.apache.lucene.document.Document;
+import org.apache.lucene.document.Field;
 
-public class MockIndexable extends AbstractIndexable {
-	
-	private ArrayList<String> fields;
-	private ArrayList<String> values;
-	private Long id;
-	
-	public MockIndexable() {
+public class MockIndexable extends IndexableData {
 
-		id = 12L;
-		init();
-	}
+	private String nom;
+	private String prenom;
+	private String nomCourrier;
+	private String champ1;
 
-	public MockIndexable(long id) {
-
-		this.id = id;
-		init();
-	}
-	
-	private void init() {
-
-		fields = new ArrayList<String>();
-		fields.add("Nom");
-		fields.add("Prenom");
-		fields.add("NomCourier");
-		fields.add("Champ1");
-		values = new ArrayList<String>();
-		values.add("U");
-		values.add("a good man du");
-		values.add("dardare");
-		values.add("essuies");
-	}
-	
-	public Long getID() {
-		return id;
+	public MockIndexable(Long id, String nom, String prenom, String nomCourrier, String champ1) {
+		super(id, "TheType", "TheSubType");
+		this.nom = nom;
+		this.prenom = prenom;
+		this.nomCourrier = nomCourrier;
+		this.champ1 = champ1;
 	}
 
 	public String getSubType() {
-		return "TheSubType";
-	}
-
-	public String getType() {
-		return "TheType";
+		return subType;
 	}
 
 	@Override
-	public HashMap<String, String> getKeyValues() throws IndexerException {
-		
-		return listsToMap(fields, values);
-	}
+	public Document asDoc() {
+		Document d = super.asDoc();
 
+		d.add(new Field("Nom", nom, Field.Store.YES, Field.Index.ANALYZED));
+		d.add(new Field("Prenom", prenom, Field.Store.YES, Field.Index.ANALYZED));
+		d.add(new Field("NomCourier", nomCourrier, Field.Store.YES, Field.Index.ANALYZED));
+		d.add(new Field("Champ1", champ1, Field.Store.YES, Field.Index.ANALYZED));
+
+		return d;
+	}
 }

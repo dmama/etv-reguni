@@ -1,28 +1,37 @@
 package ch.vd.uniregctb.indexer;
 
-import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.indexer.fs.FSDirectoryProvider;
-import ch.vd.uniregctb.indexer.DocGetter;
-import ch.vd.uniregctb.indexer.DocHit;
-import static junit.framework.Assert.*;
-import org.apache.log4j.Logger;
-import org.apache.lucene.document.Document;
-import org.apache.lucene.index.Term;
-import org.apache.lucene.queryParser.ParseException;
-import org.apache.lucene.search.*;
-import org.junit.Test;
-import org.springframework.test.annotation.NotTransactional;
-
 import java.io.File;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.log4j.Logger;
+import org.apache.lucene.document.Document;
+import org.apache.lucene.document.Field;
+import org.apache.lucene.index.Term;
+import org.apache.lucene.queryParser.ParseException;
+import org.apache.lucene.search.BooleanClause;
+import org.apache.lucene.search.BooleanQuery;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.TermQuery;
+import org.apache.lucene.search.WildcardQuery;
+import org.junit.Test;
+import org.springframework.test.annotation.NotTransactional;
+
+import ch.vd.uniregctb.common.BusinessTest;
+import ch.vd.uniregctb.indexer.fs.FSDirectoryProvider;
+import ch.vd.uniregctb.indexer.tiers.TiersSearchFields;
+
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.fail;
 
 /**
  * Classe pour tester l'indexation de tiers
  *
  * @author <a href="mailto:jean-eric.cuendet@vd.ch">Jean-Eric Cuendet</a>
  */
+@SuppressWarnings({"JavaDoc"})
 public class GlobalIndexTest extends BusinessTest {
 
 	private static final Logger LOGGER = Logger.getLogger(GlobalIndexTest.class);
@@ -36,41 +45,51 @@ public class GlobalIndexTest extends BusinessTest {
 	private static final String TYPE_ALT = "TestDocAlternate";
 	private static final String SUBTYPE_ALT = "SubestDocAlternate";
 
-	private static final String[] fieldNames = {
-			"TYPE", "SUBTYPE", "NUMERO", "NOM", "RAISON", "DESCR", "DATE"
-	};
+	private static class Data extends IndexableData {
 
-	private static final String[][] fieldValues = {
-			{
-					TYPE, SUBTYPE, "1234", "Cuendét Jean-Eric", "JeSC Consulting", "Une société de conseil en informatique", "19740322"
-			},
-			{
-					TYPE, SUBTYPE, "2345", "Lehmann Jean-Pierre", "SoPE", "Solutions pedagogiques", "19520811"
-			},
-			{
-					TYPE, SUBTYPE, "4567", "Mme Cuendet Sara née Barbie", "Sage femmes réunies", "Solutions d'accouchements a la maison",
-					"19790223"
-			},
-			{
-					TYPE_ALT, SUBTYPE_ALT, "1234", "Un autre gars", "Une raison", "Corporate engineering2", "20060317"
-			},
-			{
-					TYPE_ALT, SUBTYPE_ALT, "6543", "Bla bli", "Une raison", "Corporate engineering1", "200603"
-			},
-			{
-					TYPE_ALT, SUBTYPE_ALT, "6544", "Corporate society", "Une raison", "Voila engineering", "20060322"
-			},
-			{
-					TYPE_ALT, SUBTYPE_ALT, "6545", "Une raison", "Un corporate building", "Bien au beurre salé", "2006"
-			},
-			{
-					TYPE_ALT, SUBTYPE_ALT, "2345", "Encore une autre raison", "Encore un autre building", "Encore un autre champ",
-					"20070127"
-			}, {
-					TYPE, SUBTYPE, "7373", "Le nom 1", "La raison 1", "Une description: TemaPHilE", "20070127"
-			}, {
-					TYPE, SUBTYPE, "7374", "Le nom 2", "La raison 2", "Une description: telephone", "20070127"
-			},
+		private String nom;
+		private String raison;
+		private String description;
+		private String date;
+
+		private Data(Long id, String type, String subType, String nom, String raison, String description, String date) {
+			super(id, type, subType);
+			this.nom = nom;
+			this.raison = raison;
+			this.description = description;
+			this.date = date;
+		}
+
+		public String getSubType() {
+			return subType;
+		}
+
+		@Override
+		public Document asDoc() {
+			Document d = super.asDoc();
+
+			d.add(new Field("NUMERO", id.toString(), Field.Store.YES, Field.Index.NOT_ANALYZED));
+			d.add(new Field("TYPE", type, Field.Store.YES, Field.Index.ANALYZED));
+			d.add(new Field("NOM", nom, Field.Store.YES, Field.Index.ANALYZED));
+			d.add(new Field("RAISON", raison, Field.Store.YES, Field.Index.ANALYZED));
+			d.add(new Field("DESCR", description, Field.Store.YES, Field.Index.ANALYZED));
+			d.add(new Field("DATE", date, Field.Store.YES, Field.Index.ANALYZED));
+
+			return d;
+		}
+	}
+
+	private static final Data[] data = {
+			new Data(1234L, TYPE, SUBTYPE, "Cuendét Jean-Eric", "JeSC Consulting", "Une société de conseil en informatique", "19740322"),
+			new Data(2345L, TYPE, SUBTYPE, "Lehmann Jean-Pierre", "SoPE", "Solutions pedagogiques", "19520811"),
+			new Data(4567L, TYPE, SUBTYPE, "Mme Cuendet Sara née Barbie", "Sage femmes réunies", "Solutions d'accouchements a la maison", "19790223"),
+			new Data(1234L, TYPE_ALT, SUBTYPE_ALT, "Un autre gars", "Une raison", "Corporate engineering2", "20060317"),
+			new Data(6543L, TYPE_ALT, SUBTYPE_ALT, "Bla bli", "Une raison", "Corporate engineering1", "200603"),
+			new Data(6544L, TYPE_ALT, SUBTYPE_ALT, "Corporate society", "Une raison", "Voila engineering", "20060322"),
+			new Data(6545L, TYPE_ALT, SUBTYPE_ALT, "Une raison", "Un corporate building", "Bien au beurre salé", "2006"),
+			new Data(2345L, TYPE_ALT, SUBTYPE_ALT, "Encore une autre raison", "Encore un autre building", "Encore un autre champ", "20070127"),
+			new Data(7373L, TYPE, SUBTYPE, "Le nom 1", "La raison 1", "Une description: TemaPHilE", "20070127"),
+			new Data(7374L, TYPE, SUBTYPE, "Le nom 2", "La raison 2", "Une description: telephone", "20070127")
 	};
 
 	// Members
@@ -113,15 +132,14 @@ public class GlobalIndexTest extends BusinessTest {
 			}
 			assertTrue(success);
 		}
+		
 		globalIndex = getBean(GlobalIndexInterface.class, "globalIndex");
 		globalIndex.overwriteIndex();
-		// Index data
-		for (String[] vv : fieldValues) {
-			Long id = Long.parseLong(vv[2]);
-			GenericIndexable indexable = new GenericIndexable(id, vv[0], vv[1], asStringList(fieldNames), asStringList(vv));
-			globalIndex.indexEntity(new IndexableData(indexable));
-		}
 
+		// Index data
+		for (Data d : data) {
+			globalIndex.indexEntity(d);
+		}
 	}
 
 	// Test non utilisé en v2
@@ -129,6 +147,31 @@ public class GlobalIndexTest extends BusinessTest {
 		assertHits(2, "NOM:cuendet");
 		assertHits(0, "NOM:Mme");
 		assertHits(0, "NOM:née");
+	}
+
+	private static class SimpleData extends IndexableData {
+
+		private String value;
+
+		private SimpleData(Long id, String type, String subType, String value) {
+			super(id, type, subType);
+			this.value = value;
+		}
+
+		@Override
+		public Document asDoc() {
+			final Document doc = super.asDoc();
+			doc.add(new Field("field1", value, Field.Store.YES, Field.Index.ANALYZED));
+			return doc;
+		}
+
+		public String getValue() {
+			return value;
+		}
+
+		public void setValue(String value) {
+			this.value = value;
+		}
 	}
 
 	@NotTransactional
@@ -139,29 +182,13 @@ public class GlobalIndexTest extends BusinessTest {
 
 		assertHits(1, LuceneEngine.F_DOCID + ":" + TYPE + "-1234");
 
-		{
-			List<String> fields = new ArrayList<String>();
-			fields.add("field1");
-			List<String> values = new ArrayList<String>();
-			values.add("value1");
-			Indexable indexable = new GenericIndexable(123456, "TheType", fields, values);
-			globalIndex.indexEntity(new IndexableData(indexable));
-		}
-
+		globalIndex.indexEntity(new SimpleData(123456L, "TheType", null, "value1"));
 		assertHits(1, LuceneEngine.F_DOCID + ":TheType-123456");
 
 		int after1 = globalIndex.getApproxDocCount();
 		assertEquals(after1, before + 1);
 
-		{
-			List<String> fields = new ArrayList<String>();
-			fields.add("field1");
-			List<String> values = new ArrayList<String>();
-			values.add("value1");
-			Indexable indexable = new GenericIndexable(654321, "TheType2", fields, values);
-			globalIndex.indexEntity(new IndexableData(indexable));
-		}
-
+		globalIndex.indexEntity(new SimpleData(654321L, "TheType2", null, "value1"));
 		assertHits(1, LuceneEngine.F_DOCID + ":TheType2-654321");
 
 		int after2 = globalIndex.getApproxDocCount();
@@ -355,7 +382,7 @@ public class GlobalIndexTest extends BusinessTest {
 
 		// First we should have the same number of docs in the 2
 		int dc = globalIndex.getApproxDocCount();
-		assertEquals(fieldValues.length, dc);
+		assertEquals(data.length, dc);
 
 		// Un hit avec TYPE=TYPE and ID=2345
 		assertHits(1, LuceneEngine.F_DOCID + ":" + TYPE + "-2345");
@@ -376,7 +403,7 @@ public class GlobalIndexTest extends BusinessTest {
 			globalIndex.optimize();
 			int after = globalIndex.getApproxDocCount();
 			assertEquals(after, before - 1);
-			assertEquals(fieldValues.length - 1, globalIndex.getApproxDocCount());
+			assertEquals(data.length - 1, globalIndex.getApproxDocCount());
 		}
 
 		// We should have no more document with ID=1234 and TYPE=DocType
@@ -392,7 +419,7 @@ public class GlobalIndexTest extends BusinessTest {
 			globalIndex.optimize(); // Delete pour de vrai
 			int after = globalIndex.getApproxDocCount();
 			assertEquals(after, before - 1);
-			assertEquals(fieldValues.length - 2, globalIndex.getApproxDocCount());
+			assertEquals(data.length - 2, globalIndex.getApproxDocCount());
 		}
 
 		// We should have no more document with ID=2345
@@ -414,16 +441,9 @@ public class GlobalIndexTest extends BusinessTest {
 
 		// Incremental indexer
 		{
-			String[] oldValues = fieldValues[0];
-			Long id = Long.parseLong(oldValues[2]);
-			String[] newValues = {
-					oldValues[0], oldValues[1], id.toString(), "Cuendet Marc-André", "JeSC Corporation",
-					"Une société de conseil en informatique", "20020123"
-			};
-			GenericIndexable indexable = new GenericIndexable(id.longValue(), newValues[0], newValues[1], asStringList(fieldNames),
-					asStringList(newValues));
+			Data newData = new Data(data[0].getId(), data[0].getType(), data[0].getSubType(), "Cuendet Marc-André", "JeSC Corporation", "Une société de conseil en informatique", "20020123");
 			// This should replace the "Cuendet jean-Eric" doc with ID=1234
-			globalIndex.removeThenIndexEntity(new IndexableData(indexable));
+			globalIndex.removeThenIndexEntity(newData);
 		}
 
 		// Un hit avec ID=1234
@@ -477,10 +497,8 @@ public class GlobalIndexTest extends BusinessTest {
 		Runnable command = new Runnable() {
 			public void run() {
 				for (int i = 1; i < 10; ++i) {
-					for (String[] vv : fieldValues) {
-						Long id = Long.parseLong(vv[2]);
-						GenericIndexable indexable = new GenericIndexable(id, vv[0], vv[1], asStringList(fieldNames), asStringList(vv));
-						globalIndex.indexEntity(new IndexableData(indexable));
+					for (Data d : data) {
+						globalIndex.indexEntity(d);
 					}
 				}
 			}
@@ -543,9 +561,7 @@ public class GlobalIndexTest extends BusinessTest {
 			public void run() {
 
 				for (int i = 1; i < 10; ++i) {
-					for (String[] vv : fieldValues) {
-						Long id = Long.parseLong(vv[2]);
-						GenericIndexable indexable = new GenericIndexable(id, vv[0], vv[1], asStringList(fieldNames), asStringList(vv));
+					for (Data d : data) {
 
 						/*
 						 * on contourne la synchronisation de globalIndex.indexEntity(indexable), de manière simuler plusieurs processus
@@ -554,7 +570,7 @@ public class GlobalIndexTest extends BusinessTest {
 						LuceneWriter writer = null;
 						try {
 							writer = new LuceneWriter(localIndex.directory.directory, false);
-							writer.index(indexable.getID(), indexable.getType(), indexable.getSubType(), indexable.getKeyValues());
+							writer.index(d);
 						}
 						finally {
 							if (writer != null) {

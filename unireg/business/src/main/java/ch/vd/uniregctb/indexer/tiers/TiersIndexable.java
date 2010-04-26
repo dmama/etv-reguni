@@ -72,7 +72,6 @@ public abstract class TiersIndexable extends AbstractIndexable {
 
 			// Display fields
 			addValueToMap(values, TiersIndexedData.RUE, subValues, AdressesTiersSubIndexable.F_RUE);
-			addValueToMap(values, TiersIndexedData.NPA, subValues, AdressesTiersSubIndexable.F_NPA);
 			addValueToMap(values, TiersIndexedData.LOCALITE, subValues, AdressesTiersSubIndexable.F_LOCALITE);
 			addValueToMap(values, TiersIndexedData.PAYS, subValues, AdressesTiersSubIndexable.F_PAYS);
 			addValueToMap(values, TiersIndexedData.DOMICILE_VD, subValues, AdressesTiersSubIndexable.F_DOMICILE_VD);

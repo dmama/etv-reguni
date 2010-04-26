@@ -41,7 +41,6 @@ public class NonHabitantIndexable extends PersonnePhysiqueIndexable {
 		// Display values
 		addValueToMap(values, TiersIndexedData.NOM1, subValues, NonHabitantSubIndexable.F_NOM);
 		addValueToMap(values, TiersIndexedData.NOM1, subValues, NonHabitantSubIndexable.F_PRENOM);
-		addValueToMap(values, TiersIndexedData.DATE_NAISSANCE, subValues, NonHabitantSubIndexable.F_DATE_NAISSANCE);
 		addValueToMap(values, TiersIndexedData.DATE_DECES, subValues, NonHabitantSubIndexable.F_DATE_DECES);
 
 		return values;

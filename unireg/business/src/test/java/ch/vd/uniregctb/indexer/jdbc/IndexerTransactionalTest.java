@@ -6,6 +6,8 @@ import ch.vd.uniregctb.indexer.*;
 import ch.vd.uniregctb.indexer.DocHit;
 import static junit.framework.Assert.assertEquals;
 import org.apache.log4j.Logger;
+import org.apache.lucene.document.Document;
+import org.apache.lucene.document.Field;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
@@ -23,16 +25,41 @@ public class IndexerTransactionalTest extends BusinessTest {
 	private static final String TYPE = "perfi";
 	private final List<String> fields = new ArrayList<String>();
 
+	private static class Data extends IndexableData {
+
+		private String nom;
+		private String prenom;
+		private String date;
+
+		private Data(Long id, String type, String subType, String nom, String prenom, String date) {
+			super(id, type, subType);
+			this.nom = nom;
+			this.prenom = prenom;
+			this.date = date;
+		}
+
+		public String getSubType() {
+			return subType;
+		}
+
+		@Override
+		public Document asDoc() {
+			Document d = super.asDoc();
+
+			d.add(new Field("NOM", nom, Field.Store.YES, Field.Index.ANALYZED));
+			d.add(new Field("PRENOM", prenom, Field.Store.YES, Field.Index.ANALYZED));
+			d.add(new Field("DATE", date, Field.Store.YES, Field.Index.ANALYZED));
+
+			return d;
+		}
+	}
+
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
 
 		globalIndex = getBean(GlobalIndexInterface.class, "globalIndex");
 		globalIndex.overwriteIndex();
-
-		fields.add("NOM");
-		fields.add("PRENOM");
-		fields.add("DATE");
 	}
 
 	private void fillIndex() throws Exception {
@@ -49,14 +76,10 @@ public class IndexerTransactionalTest extends BusinessTest {
 					int nbDocs = 10;
 					LOGGER.info("Begin indexing of "+nbDocs+" documents");
 
-					List<String> values;
 					for (int i=0;i<nbDocs;i++) {
-						values = new ArrayList<String>();
-						values.add("Duchmol-"+i);
-						values.add("Christian-"+i);
-						values.add("200801"+i);
-						GenericIndexable indexable = new GenericIndexable(i, TYPE, fields, values);
-						globalIndex.indexEntity(new IndexableData(indexable));
+
+						Data d = new Data((long) i, TYPE, null, "Duchmol-" + i, "Christian-" + i, "200801" + i);
+						globalIndex.indexEntity(d);
 
 						if (i % 1000 == 0) {
 							LOGGER.info("Indexation: "+i);
@@ -88,13 +111,8 @@ public class IndexerTransactionalTest extends BusinessTest {
 			public Object doInTransaction(TransactionStatus status) {
 				// Remplace une entité
 				{
-					ArrayList<String> values = new ArrayList<String>();
-					values.add("Blanc");
-					values.add("Marcel");
-					values.add("20071212");
-
-					GenericIndexable indexable = new GenericIndexable(5, TYPE, fields, values);
-					globalIndex.removeThenIndexEntity(new IndexableData(indexable));
+					Data d = new Data(5L, TYPE, null, "Blanc", "Marcel", "20071212");
+					globalIndex.removeThenIndexEntity(d);
 				}
 
 				// On doit en avoir une de moins
@@ -139,13 +157,8 @@ public class IndexerTransactionalTest extends BusinessTest {
 
 			// Remplace une entité
 			{
-				ArrayList<String> values = new ArrayList<String>();
-				values.add("Blanc");
-				values.add("Marcel");
-				values.add("20071212");
-
-				GenericIndexable indexable = new GenericIndexable(5, TYPE, fields, values);
-				globalIndex.removeThenIndexEntity(new IndexableData(indexable));
+				Data d = new Data(5L, TYPE, null, "Blanc", "Marcel", "20071212");
+				globalIndex.removeThenIndexEntity(d);
 			}
 
 			// Après remplacement, on doit en trouver moins
