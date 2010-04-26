@@ -58,8 +58,6 @@ public abstract class TiersIndexable extends AbstractIndexable {
 			// Display
 			addValueToMap(values, TiersIndexedData.ROLE_LIGNE1, subValues, TiersSubIndexable.F_ROLE_LIGNE1);
 			addValueToMap(values, TiersIndexedData.ROLE_LIGNE2, subValues, TiersSubIndexable.F_ROLE_LIGNE2);
-			addValueToMap(values, TiersIndexedData.ANNULE, subValues, TiersSubIndexable.F_ANNULE);
-			addValueToMap(values, TiersIndexedData.DEBITEUR_INACTIF, subValues, TiersSubIndexable.F_DEBITEUR_INACTIF);
 			addValueToMap(values, TiersIndexedData.INDEXATION_DATE, subValues, TiersSubIndexable.F_INDEXATION_DATE);
 		}
 
@@ -76,7 +74,6 @@ public abstract class TiersIndexable extends AbstractIndexable {
 			addValueToMap(values, TiersIndexedData.RUE, subValues, AdressesTiersSubIndexable.F_RUE);
 			addValueToMap(values, TiersIndexedData.NPA, subValues, AdressesTiersSubIndexable.F_NPA);
 			addValueToMap(values, TiersIndexedData.LOCALITE, subValues, AdressesTiersSubIndexable.F_LOCALITE);
-			addValueToMap(values, TiersIndexedData.LOCALITE_PAYS, subValues, AdressesTiersSubIndexable.F_LOCALITE_PAYS);
 			addValueToMap(values, TiersIndexedData.PAYS, subValues, AdressesTiersSubIndexable.F_PAYS);
 			addValueToMap(values, TiersIndexedData.DOMICILE_VD, subValues, AdressesTiersSubIndexable.F_DOMICILE_VD);
 			addValueToMap(values, TiersIndexedData.NO_OFS_DOMICILE_VD, subValues, AdressesTiersSubIndexable.F_NO_OFS_DOMICILE_VD);
@@ -93,8 +90,6 @@ public abstract class TiersIndexable extends AbstractIndexable {
 
 			// Display
 			addValueToMap(values, TiersIndexedData.FOR_PRINCIPAL, subValues, ForFiscalSubIndexable.F_DERNIER_FOR_PRINCIPAL);
-			addValueToMap(values, TiersIndexedData.DATE_OUVERTURE_FOR, subValues, ForFiscalSubIndexable.F_DATE_OUVERTURE_DERNIER_FOR);
-			addValueToMap(values, TiersIndexedData.DATE_FERMETURE_FOR, subValues, ForFiscalSubIndexable.F_DATE_FERMETURE_DERNIER_FOR);
 		}
 
 		return values;

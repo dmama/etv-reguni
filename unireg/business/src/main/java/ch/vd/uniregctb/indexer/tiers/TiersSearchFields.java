@@ -12,7 +12,6 @@ public class TiersSearchFields {
 	public static final String NPA = "S_NPA";
 	public static final String NATURE_JURIDIQUE = "S_NATURE_JURIDIQUE"; // (PP ou PM)
 	public static final String DATE_NAISSANCE = "S_DATE_NAISSANCE";
-	public static final String NUMERO_REGISTE_ETRANGER = "S_NUMERO_REGISTE_ETRANGER";
 	public static final String NUMERO_ASSURE_SOCIAL = "S_NUMERO_ASSURE_SOCIAL";
 	public static final String ANNULE = "S_ANNULE";
 	public static final String DEBITEUR_INACTIF = "S_DEBITEUR_INACTIF";

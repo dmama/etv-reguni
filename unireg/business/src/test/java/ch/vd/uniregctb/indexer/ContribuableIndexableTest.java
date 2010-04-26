@@ -183,7 +183,6 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 
 		HashMap<String, String> values = indexable.getKeyValues();
 		assertEquals(DateHelper.dateToIndexString(nonHab.getDateNaissance().asJavaDate()), values.get(TiersSearchFields.DATE_NAISSANCE));
-		assertEquals("Villars-sous-Yens", values.get(TiersIndexedData.LOCALITE_PAYS));
 		assertEquals("Suisse", values.get(TiersIndexedData.PAYS));
 		assertEquals("19650312", values.get(TiersIndexedData.DATE_NAISSANCE));
 		assertEquals("", values.get(TiersIndexedData.DATE_DECES));
@@ -438,8 +437,6 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 
 		// Display
 		assertEquals("Le Brassus", values.get(TiersIndexedData.FOR_PRINCIPAL));
-		assertEquals(RegDateHelper.toIndexString(dateOuverture), values.get(TiersIndexedData.DATE_OUVERTURE_FOR));
-		assertEquals("", values.get(TiersIndexedData.DATE_FERMETURE_FOR));
 	}
 
 	@Test
@@ -477,8 +474,6 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		assertNull(values.get(TiersSearchFields.NO_OFS_FOR_PRINCIPAL));
 		// Display
 		assertEquals("Cossonay", values.get(TiersIndexedData.FOR_PRINCIPAL));
-		assertEquals(RegDateHelper.toIndexString(dateOuverture), values.get(TiersIndexedData.DATE_OUVERTURE_FOR));
-		assertEquals(RegDateHelper.toIndexString(dateFermeture), values.get(TiersIndexedData.DATE_FERMETURE_FOR));
 	}
 
 	@Test
@@ -663,7 +658,6 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		assertEquals("", values.get(TiersIndexedData.NPA));
 		assertContains("France", values.get(TiersSearchFields.LOCALITE_PAYS));
 		assertContains("France", values.get(TiersSearchFields.LOCALITE_PAYS));
-		assertContains("France", values.get(TiersIndexedData.LOCALITE_PAYS));
 		assertContains("Paris", values.get(TiersIndexedData.LOCALITE));
 		assertContains("France", values.get(TiersIndexedData.PAYS));
 		assertContains(Constants.NON, values.get(TiersIndexedData.DOMICILE_VD));

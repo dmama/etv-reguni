@@ -271,10 +271,7 @@ public class DebiteurPrestationImposableIndexableTest extends BusinessTest {
 			assertEquals("Bollet SA", dataDpi.getNom1());
 			assertEquals("Vive les champignons !", dataDpi.getNom2());
 			assertEquals("1000", dataDpi.getNpa());
-			assertEquals("Lausanne", dataDpi.getLocaliteOuPays());
 			assertEquals("Lausanne", dataDpi.getForPrincipal());
-			assertSameDay(DateHelper.getDate(2009, 1, 1), dataDpi.getDateOuvertureFor());
-			assertNull(dataDpi.getDateFermetureFor());
 			assertEquals("", dataDpi.getDateNaissance());
 			assertEquals("", dataDpi.getDateDeces());
 
@@ -283,10 +280,7 @@ public class DebiteurPrestationImposableIndexableTest extends BusinessTest {
 			assertEquals("Bollet SA", dataAC.getNom1());
 			assertEquals("Vive les champignons !", dataAC.getNom2());
 			assertEquals("", dataAC.getNpa());
-			assertEquals("", dataAC.getLocaliteOuPays());
 			assertEquals("", dataAC.getForPrincipal());
-			assertNull(dataAC.getDateOuvertureFor());
-			assertNull(dataAC.getDateFermetureFor());
 			assertEquals("", dataAC.getDateNaissance());
 			assertEquals("", dataAC.getDateDeces());
 		}

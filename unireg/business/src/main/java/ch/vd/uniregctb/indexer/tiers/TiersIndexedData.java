@@ -18,16 +18,11 @@ public class TiersIndexedData {
 	public static final String ROLE_LIGNE2 = "D_ROLE2";
 	public static final String DATE_NAISSANCE = "D_DATE_NAISSANCE";
 	public static final String DATE_DECES = "D_DATE_DECES";
-	public static final String DATE_OUVERTURE_FOR = "D_DATE_OUVERTURE_FOR";
-	public static final String DATE_FERMETURE_FOR = "D_DATE_FERMETURE_FOR";
 	public static final String RUE = "D_RUE";
 	public static final String NPA = "D_NPA";
 	public static final String LOCALITE = "D_LOCALITE";
-	public static final String LOCALITE_PAYS = "D_LOCALITE_PAYS";
 	public static final String PAYS = "D_PAYS";
 	public static final String FOR_PRINCIPAL = "D_FOR_PRINCIPAL";
-	public static final String ANNULE = "D_ANNULE";
-	public static final String DEBITEUR_INACTIF = "D_DEBITEUR_INACTIF";
 	public static final String DOMICILE_VD = "D_DOMICILE_VD";
 	public static final String NO_OFS_DOMICILE_VD = "D_NO_OFS_DOMICILE_VD";
 	public static final String INDEXATION_DATE = "D_INDEXATION_DATE";
@@ -78,20 +73,6 @@ public class TiersIndexedData {
 		return getDocValue(TiersIndexedData.ROLE_LIGNE2);
 	}
 
-	public Date getDateOuvertureFor() {
-		String sDate = getDocValue(TiersIndexedData.DATE_OUVERTURE_FOR);
-		Date sDateRtr = DateHelper.indexStringToDate(sDate);
-		//LOGGER.debug("sDate:" + sDate + " Date: '" + sDateRtr + "'");
-		return sDateRtr;
-	}
-
-	public Date getDateFermetureFor() {
-		String sDate = getDocValue(TiersIndexedData.DATE_FERMETURE_FOR);
-		Date sDateRtr = DateHelper.indexStringToDate(sDate);
-		//LOGGER.debug("sDate:" + sDate + " Date: '" + sDateRtr + "'");
-		return sDateRtr;
-	}
-
 	public String getRue() {
 		return getDocValue(TiersIndexedData.RUE);
 	}
@@ -108,20 +89,8 @@ public class TiersIndexedData {
 		return getDocValue(TiersIndexedData.PAYS);
 	}
 
-	public String getLocaliteOuPays() {
-		return getDocValue(TiersIndexedData.LOCALITE_PAYS);
-	}
-
 	public String getForPrincipal() {
 		return getDocValue(TiersIndexedData.FOR_PRINCIPAL);
-	}
-
-	public boolean isAnnule() {
-		return getDocValue(TiersIndexedData.ANNULE).equals(Constants.OUI);
-	}
-
-	public boolean isDebiteurInactif() {
-		return getDocValue(TiersIndexedData.DEBITEUR_INACTIF).equals(Constants.OUI);
 	}
 
 	/**
