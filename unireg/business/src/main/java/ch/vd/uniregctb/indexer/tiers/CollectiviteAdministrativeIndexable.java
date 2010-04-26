@@ -41,11 +41,11 @@ public class CollectiviteAdministrativeIndexable extends ContribuableIndexable {
 		HashMap<String, String> subValues = tiersSubIndexable.getKeyValues();
 
 		// Search
-		addValueToMap(values, TiersSearchFields.NOM_RAISON, subValues, CollectiviteAdministrativeSubIndexable.F_NOM);
-		addValueToMap(values, TiersSearchFields.NUMEROS, subValues, CollectiviteAdministrativeSubIndexable.F_ID);
+		addValueToMap(values, TiersIndexableData.NOM_RAISON, subValues, CollectiviteAdministrativeSubIndexable.F_NOM);
+		addValueToMap(values, TiersIndexableData.NUMEROS, subValues, CollectiviteAdministrativeSubIndexable.F_ID);
 
 		// Display
-		addValueToMap(values, TiersIndexedData.NOM1, subValues, CollectiviteAdministrativeSubIndexable.F_NOM);
+		addValueToMap(values, TiersIndexableData.NOM1, subValues, CollectiviteAdministrativeSubIndexable.F_NOM);
 
 		return values;
 	}

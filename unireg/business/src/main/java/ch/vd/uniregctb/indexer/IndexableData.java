@@ -1,8 +1,5 @@
 package ch.vd.uniregctb.indexer;
 
-import java.util.HashMap;
-
-import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 
@@ -63,9 +60,7 @@ public abstract class IndexableData {
 		d.add(new Field(LuceneEngine.F_ENTITYID, id.toString(), Field.Store.YES, Field.Index.NOT_ANALYZED));
 		d.add(new Field(LuceneEngine.F_DOCID, type.toLowerCase() + "-" + id, Field.Store.YES, Field.Index.NOT_ANALYZED));
 		d.add(new Field(LuceneEngine.F_DOCTYPE, type.toLowerCase(), Field.Store.YES, Field.Index.NOT_ANALYZED));
-		if (StringUtils.isNotBlank(subType)) {
-			d.add(new Field(LuceneEngine.F_DOCSUBTYPE, subType.toLowerCase(), Field.Store.YES, Field.Index.NOT_ANALYZED));
-		}
+		d.add(new Field(LuceneEngine.F_DOCSUBTYPE, (subType == null ? "" : subType.toLowerCase()), Field.Store.YES, Field.Index.NOT_ANALYZED));
 
 		return d;
 	}

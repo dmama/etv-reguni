@@ -20,7 +20,6 @@ import org.springframework.test.annotation.NotTransactional;
 
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.indexer.fs.FSDirectoryProvider;
-import ch.vd.uniregctb.indexer.tiers.TiersSearchFields;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;

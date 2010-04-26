@@ -78,37 +78,37 @@ public class DebiteurPrestationImposableIndexable extends TiersIndexable {
 		// DPI
 		final HashMap<String, String> dpiKeyValues = tiersSubIndexable.getKeyValues();
 		// Search
-		addValueToMap(values, TiersSearchFields.NUMEROS, dpiKeyValues, TiersSubIndexable.F_NUMERO);
-		addValueToMap(values, TiersSearchFields.NOM_RAISON, dpiKeyValues, DebiteurPrestationImposableSubIndexable.F_NOM1);
-		addValueToMap(values, TiersSearchFields.CATEGORIE_DEBITEUR_IS, dpiKeyValues, DebiteurPrestationImposableSubIndexable.F_CATEGORIE_IS);
+		addValueToMap(values, TiersIndexableData.NUMEROS, dpiKeyValues, TiersSubIndexable.F_NUMERO);
+		addValueToMap(values, TiersIndexableData.NOM_RAISON, dpiKeyValues, DebiteurPrestationImposableSubIndexable.F_NOM1);
+		addValueToMap(values, TiersIndexableData.CATEGORIE_DEBITEUR_IS, dpiKeyValues, DebiteurPrestationImposableSubIndexable.F_CATEGORIE_IS);
 
 		// CTB
 		if (ctbIndexable != null) {
 			final HashMap<String, String> ctbKeyValues = ctbIndexable.getKeyValues();
 			// Search
-			addValueToMap(values, TiersSearchFields.NOM_RAISON, ctbKeyValues, TiersSearchFields.NOM_RAISON);
-			addValueToMap(values, TiersSearchFields.NOM_RAISON, ctbKeyValues, DebiteurPrestationImposableSubIndexable.F_COMPLEMENT_NOM);
-			addValueToMap(values, TiersSearchFields.AUTRES_NOM, ctbKeyValues, TiersSearchFields.AUTRES_NOM);
-			addValueToMap(values, TiersSearchFields.LOCALITE_PAYS, ctbKeyValues, TiersSearchFields.LOCALITE_PAYS);
-			addValueToMap(values, TiersSearchFields.NATURE_JURIDIQUE, ctbKeyValues, TiersSearchFields.NATURE_JURIDIQUE);
-			addValueToMap(values, TiersSearchFields.NOM_RAISON, dpiKeyValues, DebiteurPrestationImposableSubIndexable.F_NOM2);
+			addValueToMap(values, TiersIndexableData.NOM_RAISON, ctbKeyValues, TiersIndexableData.NOM_RAISON);
+			addValueToMap(values, TiersIndexableData.NOM_RAISON, ctbKeyValues, DebiteurPrestationImposableSubIndexable.F_COMPLEMENT_NOM);
+			addValueToMap(values, TiersIndexableData.AUTRES_NOM, ctbKeyValues, TiersIndexableData.AUTRES_NOM);
+			addValueToMap(values, TiersIndexableData.LOCALITE_PAYS, ctbKeyValues, TiersIndexableData.LOCALITE_PAYS);
+			addValueToMap(values, TiersIndexableData.NATURE_JURIDIQUE, ctbKeyValues, TiersIndexableData.NATURE_JURIDIQUE);
+			addValueToMap(values, TiersIndexableData.NOM_RAISON, dpiKeyValues, DebiteurPrestationImposableSubIndexable.F_NOM2);
 
 			final String nom1 = dpiKeyValues.get(DebiteurPrestationImposableSubIndexable.F_NOM1);
 			if (StringUtils.isEmpty(nom1)) {
 				// [UNIREG-1376] on va chercher les infos sur le contribuable si elles n'existent pas sur le débiteur
-				addValueToMap(values, TiersIndexedData.NOM1, ctbKeyValues, TiersIndexedData.NOM1);
-				addValueToMap(values, TiersIndexedData.NOM2, ctbKeyValues, TiersIndexedData.NOM2);
+				addValueToMap(values, TiersIndexableData.NOM1, ctbKeyValues, TiersIndexableData.NOM1);
+				addValueToMap(values, TiersIndexableData.NOM2, ctbKeyValues, TiersIndexableData.NOM2);
 			}
 			else {
-				addValueToMap(values, TiersIndexedData.NOM1, dpiKeyValues, DebiteurPrestationImposableSubIndexable.F_NOM1);
-				addValueToMap(values, TiersIndexedData.NOM2, dpiKeyValues, DebiteurPrestationImposableSubIndexable.F_NOM2);
+				addValueToMap(values, TiersIndexableData.NOM1, dpiKeyValues, DebiteurPrestationImposableSubIndexable.F_NOM1);
+				addValueToMap(values, TiersIndexableData.NOM2, dpiKeyValues, DebiteurPrestationImposableSubIndexable.F_NOM2);
 			}
 		}
 		else {
-			addValueToMap(values, TiersSearchFields.NOM_RAISON, dpiKeyValues, DebiteurPrestationImposableSubIndexable.F_COMPLEMENT_NOM);
-			addValueToMap(values, TiersSearchFields.AUTRES_NOM, dpiKeyValues, DebiteurPrestationImposableSubIndexable.F_NOM2);
-			addValueToMap(values, TiersIndexedData.NOM1, dpiKeyValues, DebiteurPrestationImposableSubIndexable.F_NOM1);
-			addValueToMap(values, TiersIndexedData.NOM2, dpiKeyValues, DebiteurPrestationImposableSubIndexable.F_NOM2);
+			addValueToMap(values, TiersIndexableData.NOM_RAISON, dpiKeyValues, DebiteurPrestationImposableSubIndexable.F_COMPLEMENT_NOM);
+			addValueToMap(values, TiersIndexableData.AUTRES_NOM, dpiKeyValues, DebiteurPrestationImposableSubIndexable.F_NOM2);
+			addValueToMap(values, TiersIndexableData.NOM1, dpiKeyValues, DebiteurPrestationImposableSubIndexable.F_NOM1);
+			addValueToMap(values, TiersIndexableData.NOM2, dpiKeyValues, DebiteurPrestationImposableSubIndexable.F_NOM2);
 		}
 		return values;
 	}

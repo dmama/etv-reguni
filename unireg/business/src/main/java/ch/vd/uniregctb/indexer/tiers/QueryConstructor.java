@@ -107,7 +107,7 @@ public class QueryConstructor {
 		if (criteria.getNumero() != null) {
 			BooleanQuery query = new BooleanQuery();
 			query.add(new TermQuery(new Term(LuceneEngine.F_ENTITYID, criteria.getNumero().toString())), should);
-			query.add(new TermQuery(new Term(TiersSearchFields.NUMEROS, criteria.getNumero().toString())), should);
+			query.add(new TermQuery(new Term(TiersIndexableData.NUMEROS, criteria.getNumero().toString())), should);
 			fullQuery.add(query, must);
 		}
 	}
@@ -123,20 +123,20 @@ public class QueryConstructor {
 			switch (typeRecherche) {
 			case PHONETIQUE:
 				// Fuzzy
-				query.add(LuceneEngine.getTermsFuzzy(TiersSearchFields.NOM_RAISON, nomCourrier), should);
-				query.add(LuceneEngine.getTermsFuzzy(TiersSearchFields.AUTRES_NOM, nomCourrier), should);
+				query.add(LuceneEngine.getTermsFuzzy(TiersIndexableData.NOM_RAISON, nomCourrier), should);
+				query.add(LuceneEngine.getTermsFuzzy(TiersIndexableData.AUTRES_NOM, nomCourrier), should);
 				break;
 			case EST_EXACTEMENT:
-				query.add(LuceneEngine.getTermsExact(TiersSearchFields.NOM_RAISON, nomCourrier), should);
-				query.add(LuceneEngine.getTermsExact(TiersSearchFields.AUTRES_NOM, nomCourrier), should);
+				query.add(LuceneEngine.getTermsExact(TiersIndexableData.NOM_RAISON, nomCourrier), should);
+				query.add(LuceneEngine.getTermsExact(TiersIndexableData.AUTRES_NOM, nomCourrier), should);
 				break;
 			case CONTIENT:
 			default:
-				final Query subQuery = LuceneEngine.getTermsContient(TiersSearchFields.NOM_RAISON, nomCourrier, nomRaisonMinLength);
+				final Query subQuery = LuceneEngine.getTermsContient(TiersIndexableData.NOM_RAISON, nomCourrier, nomRaisonMinLength);
 				if (subQuery != null) {
 					query.add(subQuery, should);
 				}
-				final Query subQuery2 = LuceneEngine.getTermsContient(TiersSearchFields.AUTRES_NOM, nomCourrier, nomRaisonMinLength);
+				final Query subQuery2 = LuceneEngine.getTermsContient(TiersIndexableData.AUTRES_NOM, nomCourrier, nomRaisonMinLength);
 				if (subQuery2 != null) {
 					query.add(subQuery2, should);
 				}
@@ -159,12 +159,12 @@ public class QueryConstructor {
 			BooleanQuery query = new BooleanQuery();
 			if (criteria.isForPrincipalActif()) {
 				// Recherche sur les fors principaux actifs uniquement
-				query.add(LuceneEngine.getTermsExact(TiersSearchFields.NO_OFS_FOR_PRINCIPAL, numeroOfsFor), should);
+				query.add(LuceneEngine.getTermsExact(TiersIndexableData.NO_OFS_FOR_PRINCIPAL, numeroOfsFor), should);
 			}
 			else {
 				// Recherche sur tous les fors (principaux, secondaires, inactifs, ...)
-				query.add(LuceneEngine.getTermsExact(TiersSearchFields.NO_OFS_FOR_PRINCIPAL, numeroOfsFor), should);
-				query.add(LuceneEngine.getTermsContient(TiersSearchFields.NOS_OFS_AUTRES_FORS, numeroOfsFor, 0), should);
+				query.add(LuceneEngine.getTermsExact(TiersIndexableData.NO_OFS_FOR_PRINCIPAL, numeroOfsFor), should);
+				query.add(LuceneEngine.getTermsContient(TiersIndexableData.NOS_OFS_AUTRES_FORS, numeroOfsFor, 0), should);
 			}
 
 			fullQuery.add(query, BooleanClause.Occur.MUST);
@@ -176,7 +176,7 @@ public class QueryConstructor {
 		// Localite ou Pays
 		if (!StringUtils.isEmpty(criteria.getLocaliteOuPays())) {
 			final String nomLocaliteOuPays = criteria.getLocaliteOuPays().toLowerCase();
-			final Query q = LuceneEngine.getTermsCommence(TiersSearchFields.LOCALITE_PAYS, nomLocaliteOuPays);
+			final Query q = LuceneEngine.getTermsCommence(TiersIndexableData.LOCALITE_PAYS, nomLocaliteOuPays);
 			fullQuery.add(q, must);
 		}
 	}
@@ -186,7 +186,7 @@ public class QueryConstructor {
 		// Localite ou Pays
 		if (!StringUtils.isEmpty(criteria.getNpa())) {
 			final String npa = criteria.getNpa();
-			final Query q = LuceneEngine.getTermsCommence(TiersSearchFields.NPA, npa);
+			final Query q = LuceneEngine.getTermsCommence(TiersIndexableData.NPA, npa);
 			fullQuery.add(q, must);
 		}
 	}
@@ -196,7 +196,7 @@ public class QueryConstructor {
 		// Numero AVS
 		if (!StringUtils.isEmpty(criteria.getNumeroAVS())) {
 			final String noAVS = IndexerFormatHelper.formatNumeroAVS(criteria.getNumeroAVS());
-			final Query q = LuceneEngine.getTermsCommence(TiersSearchFields.NUMERO_ASSURE_SOCIAL, noAVS);
+			final Query q = LuceneEngine.getTermsCommence(TiersIndexableData.NUMERO_ASSURE_SOCIAL, noAVS);
 			fullQuery.add(q, must);
 		}
 	}
@@ -205,7 +205,7 @@ public class QueryConstructor {
 
 		// Date de naissance
 		if (criteria.getDateNaissance() != null) {
-			final Query q = LuceneEngine.getTermsCommence(TiersSearchFields.DATE_NAISSANCE, RegDateHelper.toIndexString(criteria.getDateNaissance()));
+			final Query q = LuceneEngine.getTermsCommence(TiersIndexableData.DATE_NAISSANCE, RegDateHelper.toIndexString(criteria.getDateNaissance()));
 			fullQuery.add(q, must);
 		}
 	}
@@ -213,7 +213,7 @@ public class QueryConstructor {
 	private void addNatureJuridique(BooleanQuery fullQuery) throws IndexerException {
 
 		if (!StringUtils.isEmpty(criteria.getNatureJuridique())) {
-			final Query q = new TermQuery(new Term(TiersSearchFields.NATURE_JURIDIQUE, criteria.getNatureJuridique().toLowerCase()));
+			final Query q = new TermQuery(new Term(TiersIndexableData.NATURE_JURIDIQUE, criteria.getNatureJuridique().toLowerCase()));
 			fullQuery.add(q, must);
 		}
 	}
@@ -227,12 +227,12 @@ public class QueryConstructor {
 			// restriction des gris
 			query = new BooleanQuery();
 			query.add(new TermQuery(new Term(LuceneEngine.F_DOCSUBTYPE, NonHabitantIndexable.SUB_TYPE)), must);
-			query.add(LuceneEngine.getTermsExact(TiersSearchFields.TYPE_OFS_FOR_PRINCIPAL, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD
+			query.add(LuceneEngine.getTermsExact(TiersIndexableData.TYPE_OFS_FOR_PRINCIPAL, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD
 					.toString()), must);
 			fullQuery.add(query, mustNot);
 			// restriction des I107
 			query = new BooleanQuery();
-			query.add(LuceneEngine.getTermsExact(TiersSearchFields.DEBITEUR_INACTIF, Constants.NON), must);
+			query.add(LuceneEngine.getTermsExact(TiersIndexableData.DEBITEUR_INACTIF, Constants.NON), must);
 			fullQuery.add(query, must);
 		}
 	}
@@ -240,7 +240,7 @@ public class QueryConstructor {
 	private void addAnnule(BooleanQuery fullQuery) throws IndexerException {
 
 		if (!criteria.isInclureTiersAnnules()) {
-			final Query q = new TermQuery(new Term(TiersSearchFields.ANNULE, Constants.NON.toLowerCase()));
+			final Query q = new TermQuery(new Term(TiersIndexableData.ANNULE, Constants.NON.toLowerCase()));
 			fullQuery.add(q, must);
 		}
 	}
@@ -248,7 +248,7 @@ public class QueryConstructor {
 	private void addActif(BooleanQuery fullQuery) throws IndexerException {
 
 		if (criteria.isTiersAnnulesSeulement()) {
-			final Query q = new TermQuery(new Term(TiersSearchFields.ANNULE, Constants.OUI.toLowerCase()));
+			final Query q = new TermQuery(new Term(TiersIndexableData.ANNULE, Constants.OUI.toLowerCase()));
 			fullQuery.add(q, must);
 		}
 	}
@@ -256,7 +256,7 @@ public class QueryConstructor {
 	private void addDebiteurInactif(BooleanQuery fullQuery) throws IndexerException {
 
 		if (!criteria.isInclureI107()) {
-			final Query q = new TermQuery(new Term(TiersSearchFields.DEBITEUR_INACTIF, Constants.NON.toLowerCase()));
+			final Query q = new TermQuery(new Term(TiersIndexableData.DEBITEUR_INACTIF, Constants.NON.toLowerCase()));
 			fullQuery.add(q, must);
 		}
 	}
@@ -264,7 +264,7 @@ public class QueryConstructor {
 	private void addModeImposition(BooleanQuery fullQuery) throws IndexerException {
 
 		if (criteria.getModeImposition() != null) {
-			final Query q = new TermQuery(new Term(TiersSearchFields.MODE_IMPOSITION, criteria.getModeImposition().toString().toLowerCase()));
+			final Query q = new TermQuery(new Term(TiersIndexableData.MODE_IMPOSITION, criteria.getModeImposition().toString().toLowerCase()));
 			fullQuery.add(q, must);
 		}
 	}
@@ -272,7 +272,7 @@ public class QueryConstructor {
 	private void addNumeroSymic(BooleanQuery fullQuery) throws IndexerException {
 
 		if (!StringUtils.isEmpty(criteria.getNoSymic())) {
-			final Query q = new TermQuery(new Term(TiersSearchFields.NO_SYMIC, criteria.getNoSymic().toLowerCase()));
+			final Query q = new TermQuery(new Term(TiersIndexableData.NO_SYMIC, criteria.getNoSymic().toLowerCase()));
 			fullQuery.add(q, must);
 		}
 	}
@@ -280,7 +280,7 @@ public class QueryConstructor {
 	private void addCategorieDebiteurIs(BooleanQuery fullQuery) throws IndexerException {
 
 		if (criteria.getCategorieDebiteurIs() != null) {
-			final Query q = new TermQuery(new Term(TiersSearchFields.CATEGORIE_DEBITEUR_IS, criteria.getCategorieDebiteurIs().toString().toLowerCase()));
+			final Query q = new TermQuery(new Term(TiersIndexableData.CATEGORIE_DEBITEUR_IS, criteria.getCategorieDebiteurIs().toString().toLowerCase()));
 			fullQuery.add(q, must);
 		}
 	}
@@ -289,7 +289,7 @@ public class QueryConstructor {
 
 		if (criteria.isTiersActif() != null) {
 			final String value = (criteria.isTiersActif() ? Constants.OUI.toLowerCase() : Constants.NON.toLowerCase());
-			final Query q = new TermQuery(new Term(TiersSearchFields.TIERS_ACTIF, value));
+			final Query q = new TermQuery(new Term(TiersIndexableData.TIERS_ACTIF, value));
 			fullQuery.add(q, must);
 		}
 	}

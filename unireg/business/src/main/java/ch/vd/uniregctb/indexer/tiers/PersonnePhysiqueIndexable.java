@@ -21,7 +21,7 @@ public abstract class PersonnePhysiqueIndexable extends ContribuableIndexable {
 		final HashMap<String, String> values = super.getKeyValues();
 
 		String s = NatureJuridique.PP.toString();
-		values.put(TiersSearchFields.NATURE_JURIDIQUE, s);
+		values.put(TiersIndexableData.NATURE_JURIDIQUE, s);
 
 		return values;
 	}

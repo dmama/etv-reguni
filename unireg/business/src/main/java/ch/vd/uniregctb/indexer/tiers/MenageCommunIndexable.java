@@ -161,24 +161,24 @@ public class MenageCommunIndexable extends ContribuableIndexable {
 			HashMap<String, String> hab1SubValues = ppIndexable1.getKeyValues();
 			// Search
 			// Hab1 - Ind1
-			// addValueToMap(values, TiersSearchFields.NUMEROS, hab1SubValues, TiersSearchFields.NUMEROS);
-			addValueToMap(values, TiersSearchFields.DATE_NAISSANCE, hab1SubValues, TiersSearchFields.DATE_NAISSANCE);
-			addValueToMap(values, TiersSearchFields.NOM_RAISON, hab1SubValues, TiersSearchFields.NOM_RAISON);
-			addValueToMap(values, TiersSearchFields.AUTRES_NOM, hab1SubValues, TiersSearchFields.AUTRES_NOM);
-			addValueToMap(values, TiersSearchFields.NUMERO_ASSURE_SOCIAL, hab1SubValues, TiersSearchFields.NUMERO_ASSURE_SOCIAL);
+			// addValueToMap(values, TiersIndexableData.NUMEROS, hab1SubValues, TiersIndexableData.NUMEROS);
+			addValueToMap(values, TiersIndexableData.DATE_NAISSANCE, hab1SubValues, TiersIndexableData.DATE_NAISSANCE);
+			addValueToMap(values, TiersIndexableData.NOM_RAISON, hab1SubValues, TiersIndexableData.NOM_RAISON);
+			addValueToMap(values, TiersIndexableData.AUTRES_NOM, hab1SubValues, TiersIndexableData.AUTRES_NOM);
+			addValueToMap(values, TiersIndexableData.NUMERO_ASSURE_SOCIAL, hab1SubValues, TiersIndexableData.NUMERO_ASSURE_SOCIAL);
 			// Display
-			values.put(TiersIndexedData.NOM1, hab1SubValues.get(TiersIndexedData.NOM1));
+			values.put(TiersIndexableData.NOM1, hab1SubValues.get(TiersIndexableData.NOM1));
 		}
 		if (ppIndexable2 != null) {
 			HashMap<String, String> hab2SubValues = ppIndexable2.getKeyValues();
 			// Hab2 - Ind2
-			// addValueToMap(values, TiersSearchFields.NUMEROS, hab2SubValues, TiersSearchFields.NUMEROS);
-			addValueToMap(values, TiersSearchFields.DATE_NAISSANCE, hab2SubValues, TiersSearchFields.DATE_NAISSANCE);
-			addValueToMap(values, TiersSearchFields.NOM_RAISON, hab2SubValues, TiersSearchFields.NOM_RAISON);
-			addValueToMap(values, TiersSearchFields.AUTRES_NOM, hab2SubValues, TiersSearchFields.AUTRES_NOM);
-			addValueToMap(values, TiersSearchFields.NUMERO_ASSURE_SOCIAL, hab2SubValues, TiersSearchFields.NUMERO_ASSURE_SOCIAL);
+			// addValueToMap(values, TiersIndexableData.NUMEROS, hab2SubValues, TiersIndexableData.NUMEROS);
+			addValueToMap(values, TiersIndexableData.DATE_NAISSANCE, hab2SubValues, TiersIndexableData.DATE_NAISSANCE);
+			addValueToMap(values, TiersIndexableData.NOM_RAISON, hab2SubValues, TiersIndexableData.NOM_RAISON);
+			addValueToMap(values, TiersIndexableData.AUTRES_NOM, hab2SubValues, TiersIndexableData.AUTRES_NOM);
+			addValueToMap(values, TiersIndexableData.NUMERO_ASSURE_SOCIAL, hab2SubValues, TiersIndexableData.NUMERO_ASSURE_SOCIAL);
 			// Display
-			values.put(TiersIndexedData.NOM2, hab2SubValues.get(TiersIndexedData.NOM1));
+			values.put(TiersIndexableData.NOM2, hab2SubValues.get(TiersIndexableData.NOM1));
 		}
 
 		// debugDumpValues(values);

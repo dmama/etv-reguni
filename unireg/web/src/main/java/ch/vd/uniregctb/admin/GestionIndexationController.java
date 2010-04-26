@@ -179,12 +179,12 @@ public class GestionIndexationController extends AbstractSimpleFormController {
 					}
 					IndexDocument indexDocument = new IndexDocument();
 					indexDocument.setEntityId(doc.get(LuceneEngine.F_ENTITYID));
-					indexDocument.setNomCourrier1(doc.get(TiersIndexedData.NOM1));
-					indexDocument.setNomCourrier2(doc.get(TiersIndexedData.NOM2));
-					indexDocument.setDateNaissance(doc.get(TiersSearchFields.DATE_NAISSANCE));
-					indexDocument.setNumeroAvs(doc.get(TiersSearchFields.NUMERO_ASSURE_SOCIAL));
-					indexDocument.setNomFor(doc.get(TiersIndexedData.FOR_PRINCIPAL));
-					indexDocument.setLocalite(doc.get(TiersIndexedData.LOCALITE));
+					indexDocument.setNomCourrier1(doc.get(TiersIndexableData.NOM1));
+					indexDocument.setNomCourrier2(doc.get(TiersIndexableData.NOM2));
+					indexDocument.setDateNaissance(doc.get(TiersIndexableData.DATE_NAISSANCE));
+					indexDocument.setNumeroAvs(doc.get(TiersIndexableData.NUMERO_ASSURE_SOCIAL));
+					indexDocument.setNomFor(doc.get(TiersIndexableData.FOR_PRINCIPAL));
+					indexDocument.setLocalite(doc.get(TiersIndexableData.LOCALITE));
 					listIndexDocument.add(indexDocument);
 				}
 			}

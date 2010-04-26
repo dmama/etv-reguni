@@ -10,20 +10,7 @@ import ch.vd.uniregctb.indexer.LuceneEngine;
 
 public class TiersIndexedData {
 
-	//private static final Logger LOGGER = Logger.getLogger(TiersIndexedData.class);
-
-	public static final String NOM1 = "D_NOM1";
-	public static final String NOM2 = "D_NOM2";
-	public static final String ROLE_LIGNE1 = "D_ROLE1";
-	public static final String ROLE_LIGNE2 = "D_ROLE2";
-	public static final String DATE_DECES = "D_DATE_DECES";
-	public static final String RUE = "D_RUE";
-	public static final String LOCALITE = "D_LOCALITE";
-	public static final String PAYS = "D_PAYS";
-	public static final String FOR_PRINCIPAL = "D_FOR_PRINCIPAL";
-	public static final String DOMICILE_VD = "D_DOMICILE_VD";
-	public static final String NO_OFS_DOMICILE_VD = "D_NO_OFS_DOMICILE_VD";
-	public static final String INDEXATION_DATE = "D_INDEXATION_DATE";
+	//private static final Logger LOGGER = Logger.getLogger(TiersIndexableData.class);
 
 	private final Document document;
 
@@ -49,46 +36,46 @@ public class TiersIndexedData {
 	}
 
 	public String getDateNaissance() {
-		return getDocValue(TiersSearchFields.DATE_NAISSANCE);
+		return getDocValue(TiersIndexableData.DATE_NAISSANCE);
 	}
 
 	public String getDateDeces() {
-		return getDocValue(TiersIndexedData.DATE_DECES);
+		return getDocValue(TiersIndexableData.DATE_DECES);
 	}
 
 	public String getNom1() {
-		return getDocValue(TiersIndexedData.NOM1);
+		return getDocValue(TiersIndexableData.NOM1);
 	}
 
 	public String getNom2() {
-		return getDocValue(TiersIndexedData.NOM2);
+		return getDocValue(TiersIndexableData.NOM2);
 	}
 
 	public String getRoleLigne1() {
-		return getDocValue(TiersIndexedData.ROLE_LIGNE1);
+		return getDocValue(TiersIndexableData.ROLE_LIGNE1);
 	}
 	public String getRoleLigne2() {
-		return getDocValue(TiersIndexedData.ROLE_LIGNE2);
+		return getDocValue(TiersIndexableData.ROLE_LIGNE2);
 	}
 
 	public String getRue() {
-		return getDocValue(TiersIndexedData.RUE);
+		return getDocValue(TiersIndexableData.RUE);
 	}
 
 	public String getNpa() {
-		return getDocValue(TiersSearchFields.NPA);
+		return getDocValue(TiersIndexableData.NPA);
 	}
 
 	public String getLocalite() {
-		return getDocValue(TiersIndexedData.LOCALITE);
+		return getDocValue(TiersIndexableData.LOCALITE);
 	}
 
 	public String getPays() {
-		return getDocValue(TiersIndexedData.PAYS);
+		return getDocValue(TiersIndexableData.PAYS);
 	}
 
 	public String getForPrincipal() {
-		return getDocValue(TiersIndexedData.FOR_PRINCIPAL);
+		return getDocValue(TiersIndexableData.FOR_PRINCIPAL);
 	}
 
 	/**
@@ -96,7 +83,7 @@ public class TiersIndexedData {
 	 *         hors-Suisse et <b>null</b> si cette information n'est pas disponible.
 	 */
 	public Boolean isDomicilieDansLeCanton() {
-		final String estDansLeCanton = getDocValue(TiersIndexedData.DOMICILE_VD);
+		final String estDansLeCanton = getDocValue(TiersIndexableData.DOMICILE_VD);
 		if (estDansLeCanton == null || "".equals(estDansLeCanton)) {
 			return null;
 		}
@@ -108,7 +95,7 @@ public class TiersIndexedData {
 	 *         tiers n'est pas domicilié dans le canton.
 	 */
 	public Integer getNoOfsCommuneDomicile() {
-		final String noOfs = getDocValue(TiersIndexedData.NO_OFS_DOMICILE_VD);
+		final String noOfs = getDocValue(TiersIndexableData.NO_OFS_DOMICILE_VD);
 		if (noOfs == null || "".equals(noOfs)) {
 			return null;
 		}
@@ -116,7 +103,7 @@ public class TiersIndexedData {
 	}
 
 	public Date getIndexationDate() {
-		String string = getDocValue(INDEXATION_DATE);
+		String string = getDocValue(TiersIndexableData.INDEXATION_DATE);
 		long milliseconds = Long.parseLong(string);
 		return new Date(milliseconds);
 	}

@@ -37,17 +37,17 @@ public class AutreCommunauteIndexable extends ContribuableIndexable {
 		HashMap<String, String> values = super.getKeyValues();
 		// Search
 		String s = NatureJuridique.PM.toString();
-		values.put(TiersSearchFields.NATURE_JURIDIQUE, s);
+		values.put(TiersIndexableData.NATURE_JURIDIQUE, s);
 
 		// Tiers
 		HashMap<String, String> subValues = tiersSubIndexable.getKeyValues();
 		// Search
-		addValueToMap(values, TiersSearchFields.NUMEROS, subValues, TiersSubIndexable.F_NUMERO);
-		addValueToMap(values, TiersSearchFields.NOM_RAISON, subValues, AutreCommunauteSubIndexable.F_NOM);
-		addValueToMap(values, TiersSearchFields.NOM_RAISON, subValues, AutreCommunauteSubIndexable.F_COMPLEMENT_NOM);
+		addValueToMap(values, TiersIndexableData.NUMEROS, subValues, TiersSubIndexable.F_NUMERO);
+		addValueToMap(values, TiersIndexableData.NOM_RAISON, subValues, AutreCommunauteSubIndexable.F_NOM);
+		addValueToMap(values, TiersIndexableData.NOM_RAISON, subValues, AutreCommunauteSubIndexable.F_COMPLEMENT_NOM);
 		// Display
-		addValueToMap(values, TiersIndexedData.NOM1, subValues, AutreCommunauteSubIndexable.F_NOM);
-		addValueToMap(values, TiersIndexedData.NOM2, subValues, AutreCommunauteSubIndexable.F_COMPLEMENT_NOM);
+		addValueToMap(values, TiersIndexableData.NOM1, subValues, AutreCommunauteSubIndexable.F_NOM);
+		addValueToMap(values, TiersIndexableData.NOM2, subValues, AutreCommunauteSubIndexable.F_COMPLEMENT_NOM);
 
 		return values;
 	}

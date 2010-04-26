@@ -30,18 +30,18 @@ public class NonHabitantIndexable extends PersonnePhysiqueIndexable {
 		HashMap<String, String> subValues = tiersSubIndexable.getKeyValues();
 
 		// Search values
-		addValueToMap(values, TiersSearchFields.NUMEROS, subValues, NonHabitantSubIndexable.F_ID);
-		addValueToMap(values, TiersSearchFields.NOM_RAISON, subValues, NonHabitantSubIndexable.F_NOM);
-		addValueToMap(values, TiersSearchFields.AUTRES_NOM, subValues, NonHabitantSubIndexable.F_NOM);
-		addValueToMap(values, TiersSearchFields.AUTRES_NOM, subValues, NonHabitantSubIndexable.F_PRENOM);
-		addValueToMap(values, TiersSearchFields.DATE_NAISSANCE, subValues, NonHabitantSubIndexable.F_DATE_NAISSANCE);
-		addValueToMap(values, TiersSearchFields.NUMERO_ASSURE_SOCIAL, subValues, NonHabitantSubIndexable.F_NO_ASSURE_SOCIAL);
-		addValueToMap(values, TiersSearchFields.NUMERO_ASSURE_SOCIAL, subValues, NonHabitantSubIndexable.F_ANCIEN_NUMERO_AVS);
+		addValueToMap(values, TiersIndexableData.NUMEROS, subValues, NonHabitantSubIndexable.F_ID);
+		addValueToMap(values, TiersIndexableData.NOM_RAISON, subValues, NonHabitantSubIndexable.F_NOM);
+		addValueToMap(values, TiersIndexableData.AUTRES_NOM, subValues, NonHabitantSubIndexable.F_NOM);
+		addValueToMap(values, TiersIndexableData.AUTRES_NOM, subValues, NonHabitantSubIndexable.F_PRENOM);
+		addValueToMap(values, TiersIndexableData.DATE_NAISSANCE, subValues, NonHabitantSubIndexable.F_DATE_NAISSANCE);
+		addValueToMap(values, TiersIndexableData.NUMERO_ASSURE_SOCIAL, subValues, NonHabitantSubIndexable.F_NO_ASSURE_SOCIAL);
+		addValueToMap(values, TiersIndexableData.NUMERO_ASSURE_SOCIAL, subValues, NonHabitantSubIndexable.F_ANCIEN_NUMERO_AVS);
 
 		// Display values
-		addValueToMap(values, TiersIndexedData.NOM1, subValues, NonHabitantSubIndexable.F_NOM);
-		addValueToMap(values, TiersIndexedData.NOM1, subValues, NonHabitantSubIndexable.F_PRENOM);
-		addValueToMap(values, TiersIndexedData.DATE_DECES, subValues, NonHabitantSubIndexable.F_DATE_DECES);
+		addValueToMap(values, TiersIndexableData.NOM1, subValues, NonHabitantSubIndexable.F_NOM);
+		addValueToMap(values, TiersIndexableData.NOM1, subValues, NonHabitantSubIndexable.F_PRENOM);
+		addValueToMap(values, TiersIndexableData.DATE_DECES, subValues, NonHabitantSubIndexable.F_DATE_DECES);
 
 		return values;
 	}

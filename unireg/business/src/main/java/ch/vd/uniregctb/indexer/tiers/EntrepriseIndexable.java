@@ -44,7 +44,7 @@ public class EntrepriseIndexable extends ContribuableIndexable {
 
 		// Search
 		String s = NatureJuridique.PM.toString();
-		values.put(TiersSearchFields.NATURE_JURIDIQUE, s);
+		values.put(TiersIndexableData.NATURE_JURIDIQUE, s);
 
 		return values;
 	}

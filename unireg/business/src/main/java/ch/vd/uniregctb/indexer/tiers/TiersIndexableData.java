@@ -11,6 +11,39 @@ import ch.vd.uniregctb.indexer.IndexableData;
 @SuppressWarnings({"UnusedDeclaration"})
 public class TiersIndexableData extends IndexableData {
 
+	// champs de recherche
+	public static final String NUMEROS = "S_NUMEROS";
+	public static final String NOM_RAISON = "S_NOM_RAISON";
+	public static final String AUTRES_NOM = "S_AUTRES_NOM";
+	public static final String NO_OFS_FOR_PRINCIPAL = "S_NO_OFS_FOR_PRINCIPAL";
+	public static final String TYPE_OFS_FOR_PRINCIPAL = "S_TYPE_OFS_FOR_PRINCIPAL";
+	public static final String NOS_OFS_AUTRES_FORS = "S_NOS_OFS_AUTRES_FORS";
+	public static final String LOCALITE_PAYS = "S_LOCALITE_PAYS";
+	public static final String NPA = "S_NPA";
+	public static final String NATURE_JURIDIQUE = "S_NATURE_JURIDIQUE"; // (PP ou PM)
+	public static final String DATE_NAISSANCE = "S_DATE_NAISSANCE";
+	public static final String NUMERO_ASSURE_SOCIAL = "S_NUMERO_ASSURE_SOCIAL";
+	public static final String ANNULE = "S_ANNULE";
+	public static final String DEBITEUR_INACTIF = "S_DEBITEUR_INACTIF";
+	public static final String CATEGORIE_DEBITEUR_IS = "S_CATEGORIE_DEBITEUR_IS";
+	public static final String MODE_IMPOSITION = "S_MODE_IMPOSITION";
+	public static final String NO_SYMIC = "S_NO_SYMIC";
+	public static final String TIERS_ACTIF = "S_TIERS_ACTIF";
+
+	// champs de stockage (pas recherchables)
+	public static final String NOM1 = "D_NOM1";
+	public static final String NOM2 = "D_NOM2";
+	public static final String ROLE_LIGNE1 = "D_ROLE1";
+	public static final String ROLE_LIGNE2 = "D_ROLE2";
+	public static final String DATE_DECES = "D_DATE_DECES";
+	public static final String RUE = "D_RUE";
+	public static final String LOCALITE = "D_LOCALITE";
+	public static final String PAYS = "D_PAYS";
+	public static final String FOR_PRINCIPAL = "D_FOR_PRINCIPAL";
+	public static final String DOMICILE_VD = "D_DOMICILE_VD";
+	public static final String NO_OFS_DOMICILE_VD = "D_NO_OFS_DOMICILE_VD";
+	public static final String INDEXATION_DATE = "D_INDEXATION_DATE";
+	
 	private String subType;
 
 	// champs de recherche
@@ -58,36 +91,36 @@ public class TiersIndexableData extends IndexableData {
 
 		final HashMap<String, String> kv = indexable.getKeyValues();
 
-		this.numeros = kv.get(TiersSearchFields.NUMEROS);
-		this.nomRaison = kv.get(TiersSearchFields.NOM_RAISON);
-		this.autresNom = kv.get(TiersSearchFields.AUTRES_NOM);
-		this.dateNaissance = kv.get(TiersSearchFields.DATE_NAISSANCE);
-		this.noOfsForPrincipal = kv.get(TiersSearchFields.NO_OFS_FOR_PRINCIPAL);
-		this.typeOfsForPrincipal = kv.get(TiersSearchFields.TYPE_OFS_FOR_PRINCIPAL);
-		this.nosOfsAutresFors = kv.get(TiersSearchFields.NOS_OFS_AUTRES_FORS);
-		this.npa = kv.get(TiersSearchFields.NPA);
-		this.localiteEtPays = kv.get(TiersSearchFields.LOCALITE_PAYS);
-		this.natureJuridique = kv.get(TiersSearchFields.NATURE_JURIDIQUE);
-		this.numeroAssureSocial = kv.get(TiersSearchFields.NUMERO_ASSURE_SOCIAL);
-		this.categorieDebiteurIs = kv.get(TiersSearchFields.CATEGORIE_DEBITEUR_IS);
-		this.modeImposition = kv.get(TiersSearchFields.MODE_IMPOSITION);
-		this.noSymic = kv.get(TiersSearchFields.NO_SYMIC);
-		this.tiersActif = kv.get(TiersSearchFields.TIERS_ACTIF);
-		this.annule = kv.get(TiersSearchFields.ANNULE);
-		this.debiteurInactif = kv.get(TiersSearchFields.DEBITEUR_INACTIF);
+		this.numeros = kv.get(TiersIndexableData.NUMEROS);
+		this.nomRaison = kv.get(TiersIndexableData.NOM_RAISON);
+		this.autresNom = kv.get(TiersIndexableData.AUTRES_NOM);
+		this.dateNaissance = kv.get(TiersIndexableData.DATE_NAISSANCE);
+		this.noOfsForPrincipal = kv.get(TiersIndexableData.NO_OFS_FOR_PRINCIPAL);
+		this.typeOfsForPrincipal = kv.get(TiersIndexableData.TYPE_OFS_FOR_PRINCIPAL);
+		this.nosOfsAutresFors = kv.get(TiersIndexableData.NOS_OFS_AUTRES_FORS);
+		this.npa = kv.get(TiersIndexableData.NPA);
+		this.localiteEtPays = kv.get(TiersIndexableData.LOCALITE_PAYS);
+		this.natureJuridique = kv.get(TiersIndexableData.NATURE_JURIDIQUE);
+		this.numeroAssureSocial = kv.get(TiersIndexableData.NUMERO_ASSURE_SOCIAL);
+		this.categorieDebiteurIs = kv.get(TiersIndexableData.CATEGORIE_DEBITEUR_IS);
+		this.modeImposition = kv.get(TiersIndexableData.MODE_IMPOSITION);
+		this.noSymic = kv.get(TiersIndexableData.NO_SYMIC);
+		this.tiersActif = kv.get(TiersIndexableData.TIERS_ACTIF);
+		this.annule = kv.get(TiersIndexableData.ANNULE);
+		this.debiteurInactif = kv.get(TiersIndexableData.DEBITEUR_INACTIF);
 
-		this.nom1 = kv.get(TiersIndexedData.NOM1);
-		this.nom2 = kv.get(TiersIndexedData.NOM2);
-		this.roleLigne1 = kv.get(TiersIndexedData.ROLE_LIGNE1);
-		this.roleLigne2 = kv.get(TiersIndexedData.ROLE_LIGNE2);
-		this.dateDeces = kv.get(TiersIndexedData.DATE_DECES);
-		this.rue = kv.get(TiersIndexedData.RUE);
-		this.localite = kv.get(TiersIndexedData.LOCALITE);
-		this.pays = kv.get(TiersIndexedData.PAYS);
-		this.forPrincipal = kv.get(TiersIndexedData.FOR_PRINCIPAL);
-		this.domicileVd = kv.get(TiersIndexedData.DOMICILE_VD);
-		this.noOfsDomicileVd = kv.get(TiersIndexedData.NO_OFS_DOMICILE_VD);
-		this.indexationDate = kv.get(TiersIndexedData.INDEXATION_DATE);
+		this.nom1 = kv.get(TiersIndexableData.NOM1);
+		this.nom2 = kv.get(TiersIndexableData.NOM2);
+		this.roleLigne1 = kv.get(TiersIndexableData.ROLE_LIGNE1);
+		this.roleLigne2 = kv.get(TiersIndexableData.ROLE_LIGNE2);
+		this.dateDeces = kv.get(TiersIndexableData.DATE_DECES);
+		this.rue = kv.get(TiersIndexableData.RUE);
+		this.localite = kv.get(TiersIndexableData.LOCALITE);
+		this.pays = kv.get(TiersIndexableData.PAYS);
+		this.forPrincipal = kv.get(TiersIndexableData.FOR_PRINCIPAL);
+		this.domicileVd = kv.get(TiersIndexableData.DOMICILE_VD);
+		this.noOfsDomicileVd = kv.get(TiersIndexableData.NO_OFS_DOMICILE_VD);
+		this.indexationDate = kv.get(TiersIndexableData.INDEXATION_DATE);
 	}
 
 	public Document asDoc() {
@@ -97,37 +130,37 @@ public class TiersIndexableData extends IndexableData {
 		// Note : pour des raisons de performance de l'index Lucene, il est important que l'ordre des champs soit constant
 
 		// champs de recherche
-		addAnalyzedValue(d, TiersSearchFields.NUMEROS, numeros);
-		addAnalyzedValue(d, TiersSearchFields.NOM_RAISON, nomRaison);
-		addAnalyzedValue(d, TiersSearchFields.AUTRES_NOM, autresNom);
-		addAnalyzedValue(d, TiersSearchFields.DATE_NAISSANCE, dateNaissance);
-		addAnalyzedValue(d, TiersSearchFields.NO_OFS_FOR_PRINCIPAL, noOfsForPrincipal);
-		addAnalyzedValue(d, TiersSearchFields.TYPE_OFS_FOR_PRINCIPAL, typeOfsForPrincipal);
-		addAnalyzedValue(d, TiersSearchFields.NOS_OFS_AUTRES_FORS, nosOfsAutresFors);
-		addAnalyzedValue(d, TiersSearchFields.NPA, npa);
-		addAnalyzedValue(d, TiersSearchFields.LOCALITE_PAYS, localiteEtPays);
-		addAnalyzedValue(d, TiersSearchFields.NATURE_JURIDIQUE, natureJuridique);
-		addAnalyzedValue(d, TiersSearchFields.NUMERO_ASSURE_SOCIAL, numeroAssureSocial);
-		addAnalyzedValue(d, TiersSearchFields.CATEGORIE_DEBITEUR_IS, categorieDebiteurIs);
-		addAnalyzedValue(d, TiersSearchFields.MODE_IMPOSITION, modeImposition);
-		addAnalyzedValue(d, TiersSearchFields.NO_SYMIC, noSymic);
-		addAnalyzedValue(d, TiersSearchFields.TIERS_ACTIF, tiersActif);
-		addAnalyzedValue(d, TiersSearchFields.ANNULE, annule);
-		addAnalyzedValue(d, TiersSearchFields.DEBITEUR_INACTIF, debiteurInactif);
+		addAnalyzedValue(d, TiersIndexableData.NUMEROS, numeros);
+		addAnalyzedValue(d, TiersIndexableData.NOM_RAISON, nomRaison);
+		addAnalyzedValue(d, TiersIndexableData.AUTRES_NOM, autresNom);
+		addAnalyzedValue(d, TiersIndexableData.DATE_NAISSANCE, dateNaissance);
+		addAnalyzedValue(d, TiersIndexableData.NO_OFS_FOR_PRINCIPAL, noOfsForPrincipal);
+		addAnalyzedValue(d, TiersIndexableData.TYPE_OFS_FOR_PRINCIPAL, typeOfsForPrincipal);
+		addAnalyzedValue(d, TiersIndexableData.NOS_OFS_AUTRES_FORS, nosOfsAutresFors);
+		addAnalyzedValue(d, TiersIndexableData.NPA, npa);
+		addAnalyzedValue(d, TiersIndexableData.LOCALITE_PAYS, localiteEtPays);
+		addAnalyzedValue(d, TiersIndexableData.NATURE_JURIDIQUE, natureJuridique);
+		addAnalyzedValue(d, TiersIndexableData.NUMERO_ASSURE_SOCIAL, numeroAssureSocial);
+		addAnalyzedValue(d, TiersIndexableData.CATEGORIE_DEBITEUR_IS, categorieDebiteurIs);
+		addAnalyzedValue(d, TiersIndexableData.MODE_IMPOSITION, modeImposition);
+		addAnalyzedValue(d, TiersIndexableData.NO_SYMIC, noSymic);
+		addAnalyzedValue(d, TiersIndexableData.TIERS_ACTIF, tiersActif);
+		addAnalyzedValue(d, TiersIndexableData.ANNULE, annule);
+		addAnalyzedValue(d, TiersIndexableData.DEBITEUR_INACTIF, debiteurInactif);
 
 		// champs de stockage (pas recherchables)
-		addStockedValue(d, TiersIndexedData.NOM1, nom1);
-		addStockedValue(d, TiersIndexedData.NOM2, nom2);
-		addStockedValue(d, TiersIndexedData.ROLE_LIGNE1, roleLigne1);
-		addStockedValue(d, TiersIndexedData.ROLE_LIGNE2, roleLigne2);
-		addStockedValue(d, TiersIndexedData.DATE_DECES, dateDeces);
-		addStockedValue(d, TiersIndexedData.RUE, rue);
-		addStockedValue(d, TiersIndexedData.LOCALITE, localite);
-		addStockedValue(d, TiersIndexedData.PAYS, pays);
-		addStockedValue(d, TiersIndexedData.FOR_PRINCIPAL, forPrincipal);
-		addStockedValue(d, TiersIndexedData.DOMICILE_VD, domicileVd);
-		addStockedValue(d, TiersIndexedData.NO_OFS_DOMICILE_VD, noOfsDomicileVd);
-		addStockedValue(d, TiersIndexedData.INDEXATION_DATE, indexationDate);
+		addStockedValue(d, TiersIndexableData.NOM1, nom1);
+		addStockedValue(d, TiersIndexableData.NOM2, nom2);
+		addStockedValue(d, TiersIndexableData.ROLE_LIGNE1, roleLigne1);
+		addStockedValue(d, TiersIndexableData.ROLE_LIGNE2, roleLigne2);
+		addStockedValue(d, TiersIndexableData.DATE_DECES, dateDeces);
+		addStockedValue(d, TiersIndexableData.RUE, rue);
+		addStockedValue(d, TiersIndexableData.LOCALITE, localite);
+		addStockedValue(d, TiersIndexableData.PAYS, pays);
+		addStockedValue(d, TiersIndexableData.FOR_PRINCIPAL, forPrincipal);
+		addStockedValue(d, TiersIndexableData.DOMICILE_VD, domicileVd);
+		addStockedValue(d, TiersIndexableData.NO_OFS_DOMICILE_VD, noOfsDomicileVd);
+		addStockedValue(d, TiersIndexableData.INDEXATION_DATE, indexationDate);
 
 		return d;
 	}

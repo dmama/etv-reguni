@@ -24,7 +24,7 @@ public abstract class ContribuableIndexable extends TiersIndexable {
 		// CTB
 		HashMap<String, String> subValues = tiersSubIndexable.getKeyValues();
 		// Search
-		addValueToMap(values, TiersSearchFields.MODE_IMPOSITION, subValues, ContribuableSubIndexable.F_MODE_IMPOSITION);
+		addValueToMap(values, TiersIndexableData.MODE_IMPOSITION, subValues, ContribuableSubIndexable.F_MODE_IMPOSITION);
 
 		return values;
 	}

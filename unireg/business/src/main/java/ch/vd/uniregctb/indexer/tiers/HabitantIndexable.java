@@ -56,26 +56,26 @@ public class HabitantIndexable extends PersonnePhysiqueIndexable {
 
 		HashMap<String, String> subValues = tiersSubIndexable.getKeyValues();
 		// Tiers
-		addValueToMap(values, TiersSearchFields.NUMEROS, subValues, TiersSubIndexable.F_NUMERO);
+		addValueToMap(values, TiersIndexableData.NUMEROS, subValues, TiersSubIndexable.F_NUMERO);
 
 		HashMap<String, String> indSubValues = individuSubIndexable.getKeyValues();
 		// Individu search
-		addValueToMap(values, TiersSearchFields.AUTRES_NOM, indSubValues, IndividuSubIndexable.F_NOM);
-		addValueToMap(values, TiersSearchFields.AUTRES_NOM, indSubValues, IndividuSubIndexable.F_PRENOM);
-		addValueToMap(values, TiersSearchFields.AUTRES_NOM, indSubValues, IndividuSubIndexable.F_NOM_NAISSANCE);
-		addValueToMap(values, TiersSearchFields.DATE_NAISSANCE, indSubValues, IndividuSubIndexable.F_DATE_NAISSANCE);
-		addValueToMap(values, TiersSearchFields.NOM_RAISON, indSubValues, IndividuSubIndexable.F_NOM);
-		addValueToMap(values, TiersSearchFields.NUMERO_ASSURE_SOCIAL, indSubValues, IndividuSubIndexable.F_NO_ASSURE_SOCIAL);
-		addValueToMap(values, TiersSearchFields.NUMERO_ASSURE_SOCIAL, indSubValues, IndividuSubIndexable.F_ANCIEN_NUMERO_AVS);
-		addValueToMap(values, TiersSearchFields.NO_SYMIC, indSubValues, IndividuSubIndexable.F_NO_SYMIC);
+		addValueToMap(values, TiersIndexableData.AUTRES_NOM, indSubValues, IndividuSubIndexable.F_NOM);
+		addValueToMap(values, TiersIndexableData.AUTRES_NOM, indSubValues, IndividuSubIndexable.F_PRENOM);
+		addValueToMap(values, TiersIndexableData.AUTRES_NOM, indSubValues, IndividuSubIndexable.F_NOM_NAISSANCE);
+		addValueToMap(values, TiersIndexableData.DATE_NAISSANCE, indSubValues, IndividuSubIndexable.F_DATE_NAISSANCE);
+		addValueToMap(values, TiersIndexableData.NOM_RAISON, indSubValues, IndividuSubIndexable.F_NOM);
+		addValueToMap(values, TiersIndexableData.NUMERO_ASSURE_SOCIAL, indSubValues, IndividuSubIndexable.F_NO_ASSURE_SOCIAL);
+		addValueToMap(values, TiersIndexableData.NUMERO_ASSURE_SOCIAL, indSubValues, IndividuSubIndexable.F_ANCIEN_NUMERO_AVS);
+		addValueToMap(values, TiersIndexableData.NO_SYMIC, indSubValues, IndividuSubIndexable.F_NO_SYMIC);
 		// Individu Display
-		addValueToMap(values, TiersIndexedData.NOM1, indSubValues, IndividuSubIndexable.F_NOM);
-		addValueToMap(values, TiersIndexedData.NOM1, indSubValues, IndividuSubIndexable.F_PRENOM);
+		addValueToMap(values, TiersIndexableData.NOM1, indSubValues, IndividuSubIndexable.F_NOM);
+		addValueToMap(values, TiersIndexableData.NOM1, indSubValues, IndividuSubIndexable.F_PRENOM);
 		if (subValues.containsKey(HabitantSubIndexable.F_DATE_DECES)) {//surcharge de la date de décès
-			addValueToMap(values, TiersIndexedData.DATE_DECES, subValues, HabitantSubIndexable.F_DATE_DECES);
+			addValueToMap(values, TiersIndexableData.DATE_DECES, subValues, HabitantSubIndexable.F_DATE_DECES);
 		}
 		else {
-			addValueToMap(values, TiersIndexedData.DATE_DECES, indSubValues, IndividuSubIndexable.F_DATE_DECES);
+			addValueToMap(values, TiersIndexableData.DATE_DECES, indSubValues, IndividuSubIndexable.F_DATE_DECES);
 		}
 		return values;
 	}

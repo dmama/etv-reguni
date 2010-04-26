@@ -52,13 +52,13 @@ public abstract class TiersIndexable extends AbstractIndexable {
 			HashMap<String, String> subValues = tiersSubIndexable.getKeyValues();
 
 			//Search
-			addValueToMap(values, TiersSearchFields.ANNULE, subValues, TiersSubIndexable.F_ANNULE);
-			addValueToMap(values, TiersSearchFields.DEBITEUR_INACTIF, subValues, TiersSubIndexable.F_DEBITEUR_INACTIF);
-			addValueToMap(values, TiersSearchFields.TIERS_ACTIF, subValues, TiersSubIndexable.F_TIERS_ACTIF);
+			addValueToMap(values, TiersIndexableData.ANNULE, subValues, TiersSubIndexable.F_ANNULE);
+			addValueToMap(values, TiersIndexableData.DEBITEUR_INACTIF, subValues, TiersSubIndexable.F_DEBITEUR_INACTIF);
+			addValueToMap(values, TiersIndexableData.TIERS_ACTIF, subValues, TiersSubIndexable.F_TIERS_ACTIF);
 			// Display
-			addValueToMap(values, TiersIndexedData.ROLE_LIGNE1, subValues, TiersSubIndexable.F_ROLE_LIGNE1);
-			addValueToMap(values, TiersIndexedData.ROLE_LIGNE2, subValues, TiersSubIndexable.F_ROLE_LIGNE2);
-			addValueToMap(values, TiersIndexedData.INDEXATION_DATE, subValues, TiersSubIndexable.F_INDEXATION_DATE);
+			addValueToMap(values, TiersIndexableData.ROLE_LIGNE1, subValues, TiersSubIndexable.F_ROLE_LIGNE1);
+			addValueToMap(values, TiersIndexableData.ROLE_LIGNE2, subValues, TiersSubIndexable.F_ROLE_LIGNE2);
+			addValueToMap(values, TiersIndexableData.INDEXATION_DATE, subValues, TiersSubIndexable.F_INDEXATION_DATE);
 		}
 
 		// Adresses
@@ -66,16 +66,16 @@ public abstract class TiersIndexable extends AbstractIndexable {
 			HashMap<String, String> subValues = adressesSubIndexable.getKeyValues();
 
 			// Search fields
-			addValueToMap(values, TiersSearchFields.LOCALITE_PAYS, subValues, AdressesTiersSubIndexable.F_LOCALITE);
-			addValueToMap(values, TiersSearchFields.LOCALITE_PAYS, subValues, AdressesTiersSubIndexable.F_PAYS);
-			addValueToMap(values, TiersSearchFields.NPA, subValues, AdressesTiersSubIndexable.F_NPA);
+			addValueToMap(values, TiersIndexableData.LOCALITE_PAYS, subValues, AdressesTiersSubIndexable.F_LOCALITE);
+			addValueToMap(values, TiersIndexableData.LOCALITE_PAYS, subValues, AdressesTiersSubIndexable.F_PAYS);
+			addValueToMap(values, TiersIndexableData.NPA, subValues, AdressesTiersSubIndexable.F_NPA);
 
 			// Display fields
-			addValueToMap(values, TiersIndexedData.RUE, subValues, AdressesTiersSubIndexable.F_RUE);
-			addValueToMap(values, TiersIndexedData.LOCALITE, subValues, AdressesTiersSubIndexable.F_LOCALITE);
-			addValueToMap(values, TiersIndexedData.PAYS, subValues, AdressesTiersSubIndexable.F_PAYS);
-			addValueToMap(values, TiersIndexedData.DOMICILE_VD, subValues, AdressesTiersSubIndexable.F_DOMICILE_VD);
-			addValueToMap(values, TiersIndexedData.NO_OFS_DOMICILE_VD, subValues, AdressesTiersSubIndexable.F_NO_OFS_DOMICILE_VD);
+			addValueToMap(values, TiersIndexableData.RUE, subValues, AdressesTiersSubIndexable.F_RUE);
+			addValueToMap(values, TiersIndexableData.LOCALITE, subValues, AdressesTiersSubIndexable.F_LOCALITE);
+			addValueToMap(values, TiersIndexableData.PAYS, subValues, AdressesTiersSubIndexable.F_PAYS);
+			addValueToMap(values, TiersIndexableData.DOMICILE_VD, subValues, AdressesTiersSubIndexable.F_DOMICILE_VD);
+			addValueToMap(values, TiersIndexableData.NO_OFS_DOMICILE_VD, subValues, AdressesTiersSubIndexable.F_NO_OFS_DOMICILE_VD);
 		}
 
 		// Fors
@@ -83,12 +83,12 @@ public abstract class TiersIndexable extends AbstractIndexable {
 			HashMap<String, String> subValues = forsIndexable.getKeyValues();
 
 			// Search
-			addValueToMap(values, TiersSearchFields.NO_OFS_FOR_PRINCIPAL, subValues, ForFiscalSubIndexable.F_NO_OFS_FOR_PRINCIPAL_ACTIF);
-			addValueToMap(values, TiersSearchFields.TYPE_OFS_FOR_PRINCIPAL, subValues, ForFiscalSubIndexable.F_TYPE_OFS_FOR_PRINCIPAL_ACTIF);
-			addValueToMap(values, TiersSearchFields.NOS_OFS_AUTRES_FORS, subValues, ForFiscalSubIndexable.F_NOS_OFS_AUTRES_FORS);
+			addValueToMap(values, TiersIndexableData.NO_OFS_FOR_PRINCIPAL, subValues, ForFiscalSubIndexable.F_NO_OFS_FOR_PRINCIPAL_ACTIF);
+			addValueToMap(values, TiersIndexableData.TYPE_OFS_FOR_PRINCIPAL, subValues, ForFiscalSubIndexable.F_TYPE_OFS_FOR_PRINCIPAL_ACTIF);
+			addValueToMap(values, TiersIndexableData.NOS_OFS_AUTRES_FORS, subValues, ForFiscalSubIndexable.F_NOS_OFS_AUTRES_FORS);
 
 			// Display
-			addValueToMap(values, TiersIndexedData.FOR_PRINCIPAL, subValues, ForFiscalSubIndexable.F_DERNIER_FOR_PRINCIPAL);
+			addValueToMap(values, TiersIndexableData.FOR_PRINCIPAL, subValues, ForFiscalSubIndexable.F_DERNIER_FOR_PRINCIPAL);
 		}
 
 		return values;
