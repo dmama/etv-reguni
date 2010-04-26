@@ -81,39 +81,6 @@ public class DemenagementHandlerTest extends AbstractEvenementHandlerTest {
 
 	@Test
 	/**
-	 * Teste les différents scénarios devant échouer au test de complétude du déménagement.
-	 */
-	public void testCheckCompleteness() throws Exception {
-		List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
-		List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
-
-		// 1er test : individu seul
-		LOGGER.debug("Test déménagement individu seul...");
-		MockIndividu individuSeul = (MockIndividu) serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, 2000);
-		MockDemenagement demenagement = createValidDemenagement(individuSeul, DATE_VALIDE);
-		evenementCivilHandler.checkCompleteness(demenagement, erreurs, warnings);
-		Assert.isTrue(erreurs.isEmpty(), "individu célibataire : ca n'aurait pas du causer une erreur");
-		LOGGER.debug("Test arrivée individu seul : OK");
-
-		// 2ème test : individu marié seul
-		LOGGER.debug("Test déménagement individu marié seul...");
-		MockIndividu individuMarieSeul = (MockIndividu) serviceCivil.getIndividu(NUMERO_INDIVIDU_MARIE_SEUL, 2000);
-		demenagement = createValidDemenagement(individuMarieSeul, DATE_VALIDE);
-		evenementCivilHandler.checkCompleteness(demenagement, erreurs, warnings);
-		Assert.isTrue(erreurs.isEmpty(), "individu célibataire marié seul : ca n'aurait pas du causer une erreur");
-		LOGGER.debug("Test arrivée individu marié seul : OK");
-
-		// 3ème test : individu marié
-		LOGGER.debug("Test déménagement individu marié ...");
-		MockIndividu individuMarie = (MockIndividu) serviceCivil.getIndividu(NUMERO_INDIVIDU_MARIE1, 2000);
-		demenagement = createValidDemenagement(individuMarie, DATE_VALIDE);
-		evenementCivilHandler.checkCompleteness(demenagement, erreurs, warnings);
-		Assert.notEmpty(erreurs, "individu célibataire marié : une erreur aurait du être déclenchée");
-		LOGGER.debug("Test arrivée individu marié  : OK");
-	}
-
-	@Test
-	/**
 	 * Teste les différents scénarios devant échouer à la validation.
 	 */
 	public void testValidate() throws Exception {

@@ -12,8 +12,8 @@ import ch.vd.uniregctb.common.FiscalDateHelper;
 import ch.vd.uniregctb.evenement.EvenementCivil;
 import ch.vd.uniregctb.evenement.EvenementCivilErreur;
 import ch.vd.uniregctb.evenement.GenericEvenementAdapter;
+import ch.vd.uniregctb.evenement.common.EvenementCivilHandlerBase;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
-import ch.vd.uniregctb.evenement.common.EvenementCivilCoupleHandler;
 import ch.vd.uniregctb.evenement.common.EvenementCivilHandlerException;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.CommuneSimple;
@@ -34,7 +34,11 @@ import ch.vd.uniregctb.type.TypeEvenementErreur;
  * @author Ludovic Bertin
  *
  */
-public class DemenagementHandler extends EvenementCivilCoupleHandler {
+public class DemenagementHandler extends EvenementCivilHandlerBase {
+
+	@Override
+	public void checkCompleteness(EvenementCivil target, List<EvenementCivilErreur> erreurs, List<EvenementCivilErreur> warnings) {
+	}
 
 	/**
 	 * @see ch.vd.uniregctb.evenement.common.EvenementCivilHandler#validate(java.lang.Object,
