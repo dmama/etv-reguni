@@ -22,6 +22,7 @@ import ch.vd.uniregctb.role.ProduireRolesResults;
 import ch.vd.uniregctb.situationfamille.ReinitialiserBaremeDoubleGainResults;
 import ch.vd.uniregctb.stats.evenements.StatsEvenementsCivilsResults;
 import ch.vd.uniregctb.stats.evenements.StatsEvenementsExternesResults;
+import ch.vd.uniregctb.stats.evenements.StatsEvenementsIdentificationContribuableResults;
 import ch.vd.uniregctb.tache.ListeTachesEnIsntanceParOID;
 import ch.vd.uniregctb.tiers.ExclureContribuablesEnvoiResults;
 import ch.vd.uniregctb.tiers.TiersService;
@@ -564,7 +565,9 @@ public class RapportServiceImpl implements RapportService {
 		}
 	}
 
-	public StatistiquesEvenementsRapport generateRapport(final StatsEvenementsCivilsResults civils, final StatsEvenementsExternesResults externes, final RegDate dateReference, StatusManager s) {
+	public StatistiquesEvenementsRapport generateRapport(final StatsEvenementsCivilsResults civils, final StatsEvenementsExternesResults externes,
+	                                                     final StatsEvenementsIdentificationContribuableResults identCtb,
+	                                                     final RegDate dateReference, StatusManager s) {
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 
 		final String nom = "RapportStatsEvenements";
@@ -575,7 +578,7 @@ public class RapportServiceImpl implements RapportService {
 			return docService.newDoc(StatistiquesEvenementsRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<StatistiquesEvenementsRapport>() {
 				public void writeDoc(StatistiquesEvenementsRapport doc, OutputStream os) throws Exception {
 					final PdfStatistiquesEvenementsRapport document = new PdfStatistiquesEvenementsRapport();
-					document.write(civils, externes, dateReference, nom, description, dateGeneration, os, status);
+					document.write(civils, externes, identCtb, dateReference, nom, description, dateGeneration, os, status);
 				}
 			});
 		}

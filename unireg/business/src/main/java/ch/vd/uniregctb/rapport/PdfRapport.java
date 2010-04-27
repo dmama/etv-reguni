@@ -111,9 +111,18 @@ public abstract class PdfRapport extends Document {
 	 */
 	public void addTableSimple(int columns, TableSimpleCallback callback) throws DocumentException {
 		final PdfTableSimple t = new PdfTableSimple(columns);
-		t.getDefaultCell().setBorder(Cell.NO_BORDER);
-		callback.fillTable(t);
-		add(t);
+		fillTableSimple(t, callback);
+	}
+
+	public void addTableSimple(float[] widths, TableSimpleCallback callback) throws DocumentException {
+		final PdfTableSimple t = new PdfTableSimple(widths);
+		fillTableSimple(t, callback);
+	}
+
+	protected void fillTableSimple(PdfTableSimple table, TableSimpleCallback callback) throws DocumentException {
+		table.getDefaultCell().setBorder(Cell.NO_BORDER);
+		callback.fillTable(table);
+		add(table);
 	}
 
 	/**

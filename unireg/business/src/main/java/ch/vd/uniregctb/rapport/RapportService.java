@@ -27,6 +27,7 @@ import ch.vd.uniregctb.role.ProduireRolesResults;
 import ch.vd.uniregctb.situationfamille.ReinitialiserBaremeDoubleGainResults;
 import ch.vd.uniregctb.stats.evenements.StatsEvenementsCivilsResults;
 import ch.vd.uniregctb.stats.evenements.StatsEvenementsExternesResults;
+import ch.vd.uniregctb.stats.evenements.StatsEvenementsIdentificationContribuableResults;
 import ch.vd.uniregctb.tache.ListeTachesEnIsntanceParOID;
 import ch.vd.uniregctb.tiers.ExclureContribuablesEnvoiResults;
 import ch.vd.uniregctb.tiers.rattrapage.flaghabitant.CorrectionFlagHabitantSurMenagesResults;
@@ -246,11 +247,14 @@ public interface RapportService {
 	 * Génère le rapport des statistiques sur les événements unireg
 	 * @param civils
 	 * @param externes
+	 * @param identCtb
 	 * @param dateReference date que les requêtes du type "évolutions depuis le..." utilisent
-	 * @param statusManager 
+	 * @param statusManager
 	 * @return le rapport
 	 */
-	StatistiquesEvenementsRapport generateRapport(StatsEvenementsCivilsResults civils, StatsEvenementsExternesResults externes, RegDate dateReference, StatusManager statusManager);
+	StatistiquesEvenementsRapport generateRapport(StatsEvenementsCivilsResults civils, StatsEvenementsExternesResults externes,
+	                                              StatsEvenementsIdentificationContribuableResults identCtb,
+	                                              RegDate dateReference, StatusManager statusManager);
 
 	/**
 	 * Génère le rapport d'exécution du job de détermination des mouvements de masse
