@@ -1,32 +1,23 @@
 package ch.vd.uniregctb.indexer.tiers;
 
-import java.util.HashMap;
-
+import ch.vd.infrastructure.service.InfrastructureException;
+import ch.vd.registre.base.utils.Assert;
+import ch.vd.uniregctb.indexer.IndexerFormatHelper;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import org.apache.log4j.Logger;
 
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.TiersService;
 
-/**
- * @author Sean Paul
- *
- */
 public class CollectiviteAdministrativeIndexable extends ContribuableIndexable {
 
-	/** LOGGER */
-	private static final Logger LOGGER = Logger.getLogger(CollectiviteAdministrativeIndexable.class);
+//	private static final Logger LOGGER = Logger.getLogger(CollectiviteAdministrativeIndexable.class);
 
 	public static final String SUB_TYPE = "collectiviteadministrative";
 
-	/**
-	 * @param serviceInfra
-	 * @throws IndexerException
-	 */
 	public CollectiviteAdministrativeIndexable(AdresseService adresseService, TiersService tiersService, ServiceInfrastructureService serviceInfra, CollectiviteAdministrative collectivite) throws IndexerException {
-		super(adresseService, tiersService, serviceInfra, collectivite, new CollectiviteAdministrativeSubIndexable(adresseService, tiersService, serviceInfra, collectivite));
+		super(adresseService, tiersService, serviceInfra, collectivite);
 	}
 
 	public String getSubType() {
@@ -34,20 +25,22 @@ public class CollectiviteAdministrativeIndexable extends ContribuableIndexable {
 	}
 
 	@Override
-	public HashMap<String, String> getKeyValues() throws IndexerException {
+	protected void fillBaseData(TiersIndexableData data) {
+		super.fillBaseData(data);
 
-		HashMap<String, String> values = super.getKeyValues();
+		final CollectiviteAdministrative ca =(CollectiviteAdministrative) tiers;
+		final long noColAdm = ca.getNumeroCollectiviteAdministrative();
+		final ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative collectiviteCivile;
+		try {
+			collectiviteCivile = serviceInfra.getCollectivite((int) noColAdm);
+		}
+		catch (InfrastructureException e) {
+			throw new RuntimeException(e);
+		}
+		Assert.notNull(collectiviteCivile);
 
-		HashMap<String, String> subValues = tiersSubIndexable.getKeyValues();
-
-		// Search
-		addValueToMap(values, TiersIndexableData.NOM_RAISON, subValues, CollectiviteAdministrativeSubIndexable.F_NOM);
-		addValueToMap(values, TiersIndexableData.NUMEROS, subValues, CollectiviteAdministrativeSubIndexable.F_ID);
-
-		// Display
-		addValueToMap(values, TiersIndexableData.NOM1, subValues, CollectiviteAdministrativeSubIndexable.F_NOM);
-
-		return values;
+		data.setNumeros(IndexerFormatHelper.objectToString(noColAdm));
+		data.setNom1(collectiviteCivile.getNomComplet1());
+		data.setNomRaison(collectiviteCivile.getNomComplet1());
 	}
-
 }

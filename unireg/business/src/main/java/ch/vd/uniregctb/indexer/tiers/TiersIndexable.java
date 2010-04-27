@@ -1,126 +1,198 @@
 package ch.vd.uniregctb.indexer.tiers;
 
-import java.util.HashMap;
+import java.util.Date;
 
+import ch.vd.infrastructure.service.InfrastructureException;
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.adresse.AdresseGenerique;
+import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
+import ch.vd.uniregctb.indexer.IndexableData;
+import ch.vd.uniregctb.indexer.IndexerFormatHelper;
+import ch.vd.uniregctb.interfaces.model.Commune;
+import ch.vd.uniregctb.interfaces.model.CommuneSimple;
+import ch.vd.uniregctb.interfaces.model.Pays;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+
+import org.apache.log4j.Logger;
 import org.springframework.util.Assert;
 
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.indexer.AbstractIndexable;
 import ch.vd.uniregctb.indexer.IndexerException;
+import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 public abstract class TiersIndexable extends AbstractIndexable {
 
-	//private Logger LOGGER = Logger.getLogger(TiersIndexable.class);
+	private Logger LOGGER = Logger.getLogger(TiersIndexable.class);
 
 	public static final String TYPE = "tiers";
 
-	private final Tiers tiers;
+	protected final Tiers tiers;
+	protected final TiersService tiersService;
+	protected final AdresseService adresseService;
+	protected final ServiceInfrastructureService serviceInfra;
 
-	/** Les adresses à indexer */
-	protected final TiersSubIndexable tiersSubIndexable;
-	private final AdressesTiersSubIndexable adressesSubIndexable;
-	private final ForFiscalSubIndexable forsIndexable;
-
-	public TiersIndexable(AdresseService adresseService, TiersService tiersService, ServiceInfrastructureService serviceInfra, Tiers tiers, TiersSubIndexable tiersSubIndexable) throws IndexerException {
+	public TiersIndexable(AdresseService adresseService, TiersService tiersService, ServiceInfrastructureService serviceInfra, Tiers tiers) throws IndexerException {
 		Assert.notNull(tiers);
 		Assert.notNull(adresseService);
-
 		this.tiers = tiers;
-		this.tiersSubIndexable = tiersSubIndexable;
-		this.forsIndexable = new ForFiscalSubIndexable(serviceInfra, tiers);
-		this.adressesSubIndexable = new AdressesTiersSubIndexable(adresseService, serviceInfra, tiers);
+		this.tiersService = tiersService;
+		this.adresseService = adresseService;
+		this.serviceInfra = serviceInfra;
+	}
+
+	public Long getID() {
+		return tiers.getNumero();
 	}
 
 	public String getType() {
 		return TYPE;
 	}
 
-	public Long getID() {
-		return tiers.getId();
+	public abstract String getSubType();
+
+	public IndexableData getIndexableData() {
+
+		TiersIndexableData data = new TiersIndexableData(tiers.getNumero(), TYPE, getSubType());
+
+		fillBaseData(data);
+		fillAdresseData(data);
+		fillForsData(data);
+
+		return data;
 	}
 
-	@Override
-	public HashMap<String, String> getKeyValues() throws IndexerException {
+	protected void fillBaseData(TiersIndexableData data) {
 
-		HashMap<String, String> values = new HashMap<String, String>();
+		data.setDebiteurInactif(IndexerFormatHelper.objectToString(tiers.isDebiteurInactif()));
+		data.setAnnule(IndexerFormatHelper.objectToString(tiers.isAnnule()));
+		data.setRoleLigne1(tiers.getRoleLigne1());
+		data.setRoleLigne2(tiersService.getRoleAssujettissement(tiers, RegDate.get()));
 
-		// Tiers
-		{
-			HashMap<String, String> subValues = tiersSubIndexable.getKeyValues();
-
-			//Search
-			addValueToMap(values, TiersIndexableData.ANNULE, subValues, TiersSubIndexable.F_ANNULE);
-			addValueToMap(values, TiersIndexableData.DEBITEUR_INACTIF, subValues, TiersSubIndexable.F_DEBITEUR_INACTIF);
-			addValueToMap(values, TiersIndexableData.TIERS_ACTIF, subValues, TiersSubIndexable.F_TIERS_ACTIF);
-			// Display
-			addValueToMap(values, TiersIndexableData.ROLE_LIGNE1, subValues, TiersSubIndexable.F_ROLE_LIGNE1);
-			addValueToMap(values, TiersIndexableData.ROLE_LIGNE2, subValues, TiersSubIndexable.F_ROLE_LIGNE2);
-			addValueToMap(values, TiersIndexableData.INDEXATION_DATE, subValues, TiersSubIndexable.F_INDEXATION_DATE);
-		}
-
-		// Adresses
-		{
-			HashMap<String, String> subValues = adressesSubIndexable.getKeyValues();
-
-			// Search fields
-			addValueToMap(values, TiersIndexableData.LOCALITE_PAYS, subValues, AdressesTiersSubIndexable.F_LOCALITE);
-			addValueToMap(values, TiersIndexableData.LOCALITE_PAYS, subValues, AdressesTiersSubIndexable.F_PAYS);
-			addValueToMap(values, TiersIndexableData.NPA, subValues, AdressesTiersSubIndexable.F_NPA);
-
-			// Display fields
-			addValueToMap(values, TiersIndexableData.RUE, subValues, AdressesTiersSubIndexable.F_RUE);
-			addValueToMap(values, TiersIndexableData.LOCALITE, subValues, AdressesTiersSubIndexable.F_LOCALITE);
-			addValueToMap(values, TiersIndexableData.PAYS, subValues, AdressesTiersSubIndexable.F_PAYS);
-			addValueToMap(values, TiersIndexableData.DOMICILE_VD, subValues, AdressesTiersSubIndexable.F_DOMICILE_VD);
-			addValueToMap(values, TiersIndexableData.NO_OFS_DOMICILE_VD, subValues, AdressesTiersSubIndexable.F_NO_OFS_DOMICILE_VD);
-		}
-
-		// Fors
-		{
-			HashMap<String, String> subValues = forsIndexable.getKeyValues();
-
-			// Search
-			addValueToMap(values, TiersIndexableData.NO_OFS_FOR_PRINCIPAL, subValues, ForFiscalSubIndexable.F_NO_OFS_FOR_PRINCIPAL_ACTIF);
-			addValueToMap(values, TiersIndexableData.TYPE_OFS_FOR_PRINCIPAL, subValues, ForFiscalSubIndexable.F_TYPE_OFS_FOR_PRINCIPAL_ACTIF);
-			addValueToMap(values, TiersIndexableData.NOS_OFS_AUTRES_FORS, subValues, ForFiscalSubIndexable.F_NOS_OFS_AUTRES_FORS);
-
-			// Display
-			addValueToMap(values, TiersIndexableData.FOR_PRINCIPAL, subValues, ForFiscalSubIndexable.F_DERNIER_FOR_PRINCIPAL);
-		}
-
-		return values;
+		final Long millisecondes = new Date().getTime();
+		data.setIndexationDate(IndexerFormatHelper.objectToString(millisecondes));
 	}
 
-	/**
-	 * Helper method
-	 * Ajoute une valeur a la map passée en paramètre
-	 * Si la valeur est déja présente dans la map, la valeur courante est cooncaténée acelle existante
-	 *
-	 * @param values
-	 * @param tiersField
-	 * @param subValues
-	 * @param subField
-	 */
-	protected static void addValueToMap(HashMap<String, String> values, String tiersField, HashMap<String, String> subValues, String subField) {
+	protected abstract void fillForsData(TiersIndexableData data);
 
-		// La valeur du Tiers courant
-		String v = subValues.get(subField);
+	private void fillAdresseData(TiersIndexableData data) {
 
-		// La valeur existante?
-		String value = values.get(tiersField);
-		if (value != null) {
-			// Concaténé
-			if (!"".equals(v)) {
-				value += " " + v;
+		String rue = "";
+		String npa = "";
+		String localite = "";
+		String localitePays = "";
+		String pays = "";
+		Boolean estDansLeCanton = null;
+		Integer noOfsCommuneVD = null;
+
+		try {
+			// Défaut => adresse courrier
+			AdresseGenerique courrier = adresseService.getAdresseFiscale(tiers, TypeAdresseFiscale.COURRIER, null, false);
+			if (courrier != null) {
+				rue = courrier.getRue();
+				npa = courrier.getNumeroPostal();
+				localite = courrier.getLocalite();
+
+				final Integer noOfsPays = courrier.getNoOfsPays();
+				final Pays p = (noOfsPays == null ? null : serviceInfra.getPays(noOfsPays));
+				if (p == null) {
+					pays = "";
+					localitePays = localite;
+				}
+				else {
+					pays = p.getNomMinuscule();
+					if (p.isSuisse()) {
+						localitePays = localite;
+					}
+					else {
+						localitePays = pays;
+					}
+				}
 			}
 		}
-		else {
-			// Nouvelle valeur
-			value = v;
+		catch (Exception e) {
+			throw new IndexerException(tiers, e);
 		}
-		values.put(tiersField, value);
+
+		try {
+			final AdresseGenerique domicile = adresseService.getAdresseFiscale(tiers, TypeAdresseFiscale.DOMICILE, null, false);
+			// msi/tdq 3.6.09 : on ne doit pas tenir compte des adresses de domicile par défaut car elles n'ont pas de valeur pour
+			// déterminer si un contribuable est dans le canton
+			if (domicile != null && !domicile.isDefault()) {
+				estDansLeCanton = serviceInfra.estDansLeCanton(domicile);
+				if (estDansLeCanton) {
+					final CommuneSimple c = serviceInfra.getCommuneByAdresse(domicile);
+					if (c != null) {
+						noOfsCommuneVD = c.getNoOFSEtendu();
+					}
+				}
+			}
+		}
+		catch (Exception e) {
+			LOGGER.warn("L'adresse de domicile du tiers n°" + tiers.getNumero() + " ne peut être indexée à cause de l'erreur suivante: "
+					+ e.getMessage());
+			// il y a beaucoup de tiers qui pètent des exceptions sur l'adresse domicile -> on stocke null dans l'indexeur pour l'instant
+			//throw new IndexerException(e);
+		}
+
+		data.setRue(rue);
+		data.setNpa(npa);
+		data.setLocalite(localite);
+		data.setLocaliteEtPays(localitePays);
+		data.setPays(pays);
+		data.setDomicileVd(IndexerFormatHelper.objectToString(estDansLeCanton));
+		data.setNoOfsDomicileVd(IndexerFormatHelper.objectToString(noOfsCommuneVD));
+	}
+
+	protected String getForCommuneAsString(ForFiscal forF) throws IndexerException {
+
+		String forStr= "";
+
+		try {
+			TypeAutoriteFiscale typeForFiscal = forF.getTypeAutoriteFiscale();
+
+			// Commune vaudoise
+			if (typeForFiscal == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
+					Commune com = serviceInfra.getCommuneByNumeroOfsEtendu(forF.getNumeroOfsAutoriteFiscale(), forF.getDateFin());
+					if (com == null) {
+						throw new IndexerException("Commune pas trouvée: noOfsEtendu=" + forF.getNumeroOfsAutoriteFiscale());
+					}
+					forStr = com.getNomMinuscule();
+			}
+			// Commune suisse
+			else if (typeForFiscal == TypeAutoriteFiscale.COMMUNE_HC) {
+					Commune com = serviceInfra.getCommuneByNumeroOfsEtendu(forF.getNumeroOfsAutoriteFiscale(), forF.getDateFin());
+					if (com == null) {
+						throw new IndexerException("Commune pas trouvée: noOfs=" + forF.getNumeroOfsAutoriteFiscale());
+					}
+					forStr = com.getNomMinuscule();
+			}
+			// Pays
+			else if (typeForFiscal == TypeAutoriteFiscale.PAYS_HS) {
+					Pays p = serviceInfra.getPays(forF.getNumeroOfsAutoriteFiscale());
+					if (p == null) {
+						throw new IndexerException("Pays pas trouvé: noOfs=" + forF.getNumeroOfsAutoriteFiscale());
+					}
+					forStr = p.getNomMinuscule();
+			}
+			else {
+				ch.vd.registre.base.utils.Assert.fail("Le Type du For doit toujours etre présent");
+			}
+		}
+		catch (InfrastructureException e) {
+			throw new IndexerException(forF.getTiers(), e);
+		}
+
+		return forStr;
+	}
+
+	protected static StringBuilder addValue(StringBuilder s, String value) {
+		if (s.length() > 0) {
+			s.append(" ");
+		}
+		return s.append(value);
 	}
 }

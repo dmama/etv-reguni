@@ -630,7 +630,7 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer {
 
         final List<IndexableData> data = new ArrayList<IndexableData>(indexables.size());
         for (TiersIndexable i : indexables) {
-            data.add(new TiersIndexableData(i));
+            data.add(i.getIndexableData());
         }
 
         if (removeBefore) {

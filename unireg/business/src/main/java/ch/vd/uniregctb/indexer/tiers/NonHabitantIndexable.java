@@ -1,21 +1,22 @@
 package ch.vd.uniregctb.indexer.tiers;
 
-import java.util.HashMap;
+import java.util.Set;
 
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.indexer.IndexerException;
+import ch.vd.uniregctb.indexer.IndexerFormatHelper;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.tiers.IdentificationPersonne;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.type.CategorieIdentifiant;
 
 public class NonHabitantIndexable extends PersonnePhysiqueIndexable {
-
-	//private static final Logger LOGGER = Logger.getLogger(NonHabitantIndexable.class);
 
 	public static final String SUB_TYPE = "nonhabitant";
 
 	public NonHabitantIndexable(AdresseService adresseService, TiersService tiersService, ServiceInfrastructureService serviceInfra, PersonnePhysique nonHabitant) throws IndexerException {
-		super(adresseService, tiersService, serviceInfra, nonHabitant, new NonHabitantSubIndexable(tiersService, nonHabitant));
+		super(adresseService, tiersService, serviceInfra, nonHabitant);
 	}
 
 	public String getSubType() {
@@ -23,28 +24,30 @@ public class NonHabitantIndexable extends PersonnePhysiqueIndexable {
 	}
 
 	@Override
-	public HashMap<String, String> getKeyValues() throws IndexerException {
+	protected void fillBaseData(TiersIndexableData data) {
+		super.fillBaseData(data);
 
-		HashMap<String, String> values = super.getKeyValues();
+		final PersonnePhysique pp =(PersonnePhysique) tiers;
 
-		HashMap<String, String> subValues = tiersSubIndexable.getKeyValues();
+		String ancienNumAVS = null;
+		final Set<IdentificationPersonne> ident = pp.getIdentificationsPersonnes();
+		if (ident != null) {
+			for (IdentificationPersonne idPersonne : ident) {
+				if (idPersonne.getCategorieIdentifiant().equals(CategorieIdentifiant.CH_AHV_AVS)) {
+					ancienNumAVS = idPersonne.getIdentifiant();
+				}
+			}
+		}
 
-		// Search values
-		addValueToMap(values, TiersIndexableData.NUMEROS, subValues, NonHabitantSubIndexable.F_ID);
-		addValueToMap(values, TiersIndexableData.NOM_RAISON, subValues, NonHabitantSubIndexable.F_NOM);
-		addValueToMap(values, TiersIndexableData.AUTRES_NOM, subValues, NonHabitantSubIndexable.F_NOM);
-		addValueToMap(values, TiersIndexableData.AUTRES_NOM, subValues, NonHabitantSubIndexable.F_PRENOM);
-		addValueToMap(values, TiersIndexableData.DATE_NAISSANCE, subValues, NonHabitantSubIndexable.F_DATE_NAISSANCE);
-		addValueToMap(values, TiersIndexableData.NUMERO_ASSURE_SOCIAL, subValues, NonHabitantSubIndexable.F_NO_ASSURE_SOCIAL);
-		addValueToMap(values, TiersIndexableData.NUMERO_ASSURE_SOCIAL, subValues, NonHabitantSubIndexable.F_ANCIEN_NUMERO_AVS);
-
-		// Display values
-		addValueToMap(values, TiersIndexableData.NOM1, subValues, NonHabitantSubIndexable.F_NOM);
-		addValueToMap(values, TiersIndexableData.NOM1, subValues, NonHabitantSubIndexable.F_PRENOM);
-		addValueToMap(values, TiersIndexableData.DATE_DECES, subValues, NonHabitantSubIndexable.F_DATE_DECES);
-
-		return values;
+		data.setNumeros(IndexerFormatHelper.objectToString(tiers.getNumero()));
+		data.setNomRaison(pp.getNom());
+		data.addAutresNom(pp.getNom());
+		data.addAutresNom(pp.getPrenom());
+		data.setDateNaissance(IndexerFormatHelper.objectToString(pp.getDateNaissance()));
+		data.addNumeroAssureSocial(pp.getNumeroAssureSocial());
+		data.addNumeroAssureSocial(ancienNumAVS);
+		data.addNom1(pp.getNom());
+		data.addNom1(pp.getPrenom());
+		data.setDateDeces(IndexerFormatHelper.objectToString(pp.getDateDeces()));
 	}
-
-
 }

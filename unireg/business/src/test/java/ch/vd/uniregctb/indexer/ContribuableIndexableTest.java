@@ -34,7 +34,6 @@ import ch.vd.uniregctb.indexer.tiers.MenageCommunIndexable;
 import ch.vd.uniregctb.indexer.tiers.NonHabitantIndexable;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexable;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexableData;
-import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
 import ch.vd.uniregctb.interfaces.model.HistoriqueIndividu;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.mock.MockHistoriqueIndividu;
@@ -144,17 +143,17 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 
 		MenageCommunIndexable indexable = new MenageCommunIndexable(adresseService, tiersService, serviceCivil, serviceInfra, mc);
 
-		HashMap<String, String> values = indexable.getKeyValues();
+		final TiersIndexableData values = (TiersIndexableData) indexable.getIndexableData();
 
 		// Search
 		//assertContains(numCtb1.toString(), values.get(TiersIndexableData.NUMEROS));
-		assertContains("Maillard", values.get(TiersIndexableData.NOM_RAISON));
-		assertContains(RegDateHelper.toIndexString(RegDate.get(1956, 1, 21)), values.get(TiersIndexableData.DATE_NAISSANCE));
-		assertContains(FormatNumeroHelper.formatAncienNumAVS("123.45.678"), values.get(TiersIndexableData.NUMERO_ASSURE_SOCIAL));
+		assertContains("Maillard", values.getNomRaison());
+		assertContains(RegDateHelper.toIndexString(RegDate.get(1956, 1, 21)), values.getDateNaissance());
+		assertContains(FormatNumeroHelper.formatAncienNumAVS("123.45.678"), values.getNumeroAssureSocial());
 		// Display
-		assertContains("Maillard", values.get(TiersIndexableData.NOM1));
-		assertContains("Philippe", values.get(TiersIndexableData.NOM1));
-		assertEquals(null, values.get(TiersIndexableData.NOM2));
+		assertContains("Maillard", values.getNom1());
+		assertContains("Philippe", values.getNom1());
+		assertEquals(null, values.getNom2());
 	}
 
 	@Test
@@ -181,11 +180,11 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		assertEquals(TiersIndexable.TYPE, indexable.getType());
 		assertEquals(NonHabitantIndexable.SUB_TYPE, indexable.getSubType());
 
-		HashMap<String, String> values = indexable.getKeyValues();
-		assertEquals(DateHelper.dateToIndexString(nonHab.getDateNaissance().asJavaDate()), values.get(TiersIndexableData.DATE_NAISSANCE));
-		assertEquals("Suisse", values.get(TiersIndexableData.PAYS));
-		assertEquals("19650312", values.get(TiersIndexableData.DATE_NAISSANCE));
-		assertEquals("", values.get(TiersIndexableData.DATE_DECES));
+		final TiersIndexableData values = (TiersIndexableData) indexable.getIndexableData();
+		assertEquals(DateHelper.dateToIndexString(nonHab.getDateNaissance().asJavaDate()), values.getDateNaissance());
+		assertEquals("Suisse", values.getPays());
+		assertEquals("19650312", values.getDateNaissance());
+		assertEquals("", values.getDateDeces());
 	}
 
 	@Test
@@ -203,14 +202,14 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		assertEquals(HabitantIndexable.SUB_TYPE, indexable.getSubType());
 
 		// Ctb
-		HashMap<String, String> values = indexable.getKeyValues();
-		assertContains(hab.getNumero().toString(), values.get(TiersIndexableData.NUMEROS));
-		assertContains("Contribuable PP", values.get(TiersIndexableData.ROLE_LIGNE1));
+		final TiersIndexableData values = (TiersIndexableData) indexable.getIndexableData();
+		assertContains(hab.getNumero().toString(), values.getNumeros());
+		assertContains("Contribuable PP", values.getRoleLigne1());
 
 		// Individu
-		assertEquals(IndexerFormatHelper.objectToString(individu.getDateNaissance()), values.get(TiersIndexableData.DATE_NAISSANCE));
-		assertEquals(histoInd.getNom()+" "+histoInd.getPrenom(), values.get(TiersIndexableData.NOM1));
-		assertContains(IndexerFormatHelper.formatNumeroAVS(individu.getNouveauNoAVS()), values.get(TiersIndexableData.NUMERO_ASSURE_SOCIAL));
+		assertEquals(IndexerFormatHelper.objectToString(individu.getDateNaissance()), values.getDateNaissance());
+		assertEquals(histoInd.getNom()+" "+histoInd.getPrenom(), values.getNom1());
+		assertContains(IndexerFormatHelper.formatNumeroAVS(individu.getNouveauNoAVS()), values.getNumeroAssureSocial());
 	}
 
 	@Test
@@ -236,15 +235,15 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		assertEquals(HabitantIndexable.SUB_TYPE, indexable.getSubType());
 
 		// Ctb
-		HashMap<String, String> values = indexable.getKeyValues();
-		assertContains(hab.getNumero().toString(), values.get(TiersIndexableData.NUMEROS));
-		assertContains("Contribuable PP", values.get(TiersIndexableData.ROLE_LIGNE1));
-		assertContains("source", values.get(TiersIndexableData.ROLE_LIGNE2));
+		final TiersIndexableData values = (TiersIndexableData) indexable.getIndexableData();
+		assertContains(hab.getNumero().toString(), values.getNumeros());
+		assertContains("Contribuable PP", values.getRoleLigne1());
+		assertContains("source", values.getRoleLigne2());
 
 		// Individu
-		assertEquals(IndexerFormatHelper.objectToString(individu.getDateNaissance()), values.get(TiersIndexableData.DATE_NAISSANCE));
-		assertEquals(histoInd.getNom()+" "+histoInd.getPrenom(), values.get(TiersIndexableData.NOM1));
-		assertContains(IndexerFormatHelper.formatNumeroAVS(individu.getNouveauNoAVS()), values.get(TiersIndexableData.NUMERO_ASSURE_SOCIAL));
+		assertEquals(IndexerFormatHelper.objectToString(individu.getDateNaissance()), values.getDateNaissance());
+		assertEquals(histoInd.getNom()+" "+histoInd.getPrenom(), values.getNom1());
+		assertContains(IndexerFormatHelper.formatNumeroAVS(individu.getNouveauNoAVS()), values.getNumeroAssureSocial());
 	}
 
 	@Test
@@ -274,20 +273,20 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		assertEquals(TiersIndexable.TYPE, indexable.getType());
 		assertEquals(DebiteurPrestationImposableIndexable.SUB_TYPE, indexable.getSubType());
 
-		HashMap<String, String> values = indexable.getKeyValues();
+		final TiersIndexableData values = (TiersIndexableData) indexable.getIndexableData();
 
-		assertContains(dpi.getNumero().toString(), values.get(TiersIndexableData.NUMEROS));
+		assertContains(dpi.getNumero().toString(), values.getNumeros());
 		// On ne doit pas pouvoir rechercher sur le NO_IND
-		assertNotContains(hab.getNumeroIndividu().toString(), values.get(TiersIndexableData.NUMEROS));
-		assertContains("Débiteur IS", values.get(TiersIndexableData.ROLE_LIGNE1));
-		assertContains("Réguliers", values.get(TiersIndexableData.ROLE_LIGNE2));
-		assertContains(histo.getNom(), values.get(TiersIndexableData.NOM_RAISON));
-		assertContains(histo.getNom(), values.get(TiersIndexableData.AUTRES_NOM));
-		assertContains(histo.getPrenom(), values.get(TiersIndexableData.AUTRES_NOM));
+		assertNotContains(hab.getNumeroIndividu().toString(), values.getNumeros());
+		assertContains("Débiteur IS", values.getRoleLigne1());
+		assertContains("Réguliers", values.getRoleLigne2());
+		assertContains(histo.getNom(), values.getNomRaison());
+		assertContains(histo.getNom(), values.getAutresNom());
+		assertContains(histo.getPrenom(), values.getAutresNom());
 
 		// Display
-		assertContains("Nom1 débiteur", values.get(TiersIndexableData.NOM1));
-		assertEquals("Nom2 débiteur", values.get(TiersIndexableData.NOM2));
+		assertContains("Nom1 débiteur", values.getNom1());
+		assertEquals("Nom2 débiteur", values.getNom2());
 	}
 
 	@Test
@@ -315,18 +314,18 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		assertEquals(TiersIndexable.TYPE, indexable.getType());
 		assertEquals(DebiteurPrestationImposableIndexable.SUB_TYPE, indexable.getSubType());
 
-		HashMap<String, String> values = indexable.getKeyValues();
+		final TiersIndexableData values = (TiersIndexableData) indexable.getIndexableData();
 		// Search
-		assertContains(dpi.getNumero().toString(), values.get(TiersIndexableData.NUMEROS));
-		assertContains("Débiteur IS", values.get(TiersIndexableData.ROLE_LIGNE1));
-		assertContains("Réguliers", values.get(TiersIndexableData.ROLE_LIGNE2));
-		assertContains(nhab.getNom(), values.get(TiersIndexableData.NOM_RAISON));
-		assertContains(nhab.getNom(), values.get(TiersIndexableData.AUTRES_NOM));
-		assertContains(nhab.getPrenom(), values.get(TiersIndexableData.AUTRES_NOM));
+		assertContains(dpi.getNumero().toString(), values.getNumeros());
+		assertContains("Débiteur IS", values.getRoleLigne1());
+		assertContains("Réguliers", values.getRoleLigne2());
+		assertContains(nhab.getNom(), values.getNomRaison());
+		assertContains(nhab.getNom(), values.getAutresNom());
+		assertContains(nhab.getPrenom(), values.getAutresNom());
 
 		// Display
-		assertContains("Nom1 débiteur", values.get(TiersIndexableData.NOM1));
-		assertEquals("Nom2 débiteur", values.get(TiersIndexableData.NOM2));
+		assertContains("Nom1 débiteur", values.getNom1());
+		assertEquals("Nom2 débiteur", values.getNom2());
 	}
 	@Test
 	public void testDebiteurImpotSourceAutreCommuncauteIndexable() throws Exception {
@@ -354,18 +353,18 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		assertEquals(TiersIndexable.TYPE, indexable.getType());
 		assertEquals(DebiteurPrestationImposableIndexable.SUB_TYPE, indexable.getSubType());
 
-		HashMap<String, String> values = indexable.getKeyValues();
+		final TiersIndexableData values = (TiersIndexableData) indexable.getIndexableData();
 
 		// Search
-		assertContains(dpi.getNumero().toString(), values.get(TiersIndexableData.NUMEROS));
-		assertContains("Débiteur IS", values.get(TiersIndexableData.ROLE_LIGNE1));
-		assertContains("Réguliers", values.get(TiersIndexableData.ROLE_LIGNE2));
-		assertContains(ac.getNom(), values.get(TiersIndexableData.NOM_RAISON));
-		assertContains(ac.getComplementNom(), values.get(TiersIndexableData.NOM_RAISON));
+		assertContains(dpi.getNumero().toString(), values.getNumeros());
+		assertContains("Débiteur IS", values.getRoleLigne1());
+		assertContains("Réguliers", values.getRoleLigne2());
+		assertContains(ac.getNom(), values.getNomRaison());
+		assertContains(ac.getComplementNom(), values.getNomRaison());
 
 		// Display
-		assertContains("Nom1 débiteur", values.get(TiersIndexableData.NOM1));
-		assertContains("Nom2 débiteur", values.get(TiersIndexableData.NOM2));
+		assertContains("Nom1 débiteur", values.getNom1());
+		assertContains("Nom2 débiteur", values.getNom2());
 	}
 
 	@Test
@@ -426,17 +425,17 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 
 		NonHabitantIndexable indexable = new NonHabitantIndexable(adresseService, tiersService, serviceInfra, nonHab);
 
-		HashMap<String, String> values = indexable.getKeyValues();
+		final TiersIndexableData values = (TiersIndexableData) indexable.getIndexableData();
 
 		// Search
-		assertEquals("8001", values.get(TiersIndexableData.NO_OFS_FOR_PRINCIPAL));
-		assertContainsNoCase("5586", values.get(TiersIndexableData.NOS_OFS_AUTRES_FORS));
-		assertContainsNoCase("5873", values.get(TiersIndexableData.NOS_OFS_AUTRES_FORS));
-		assertContainsNoCase("5761", values.get(TiersIndexableData.NOS_OFS_AUTRES_FORS));
-		assertContainsNoCase("8001", values.get(TiersIndexableData.NOS_OFS_AUTRES_FORS));
+		assertEquals("8001", values.getNoOfsForPrincipal());
+		assertContainsNoCase("5586", values.getNosOfsAutresFors());
+		assertContainsNoCase("5873", values.getNosOfsAutresFors());
+		assertContainsNoCase("5761", values.getNosOfsAutresFors());
+		assertContainsNoCase("8001", values.getNosOfsAutresFors());
 
 		// Display
-		assertEquals("Le Brassus", values.get(TiersIndexableData.FOR_PRINCIPAL));
+		assertEquals("Le Brassus", values.getForPrincipal());
 	}
 
 	@Test
@@ -466,14 +465,14 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 
 		NonHabitantIndexable indexable = new NonHabitantIndexable(adresseService, tiersService, serviceInfra, nonHab);
 
-		HashMap<String, String> values = indexable.getKeyValues();
+		final TiersIndexableData values = (TiersIndexableData) indexable.getIndexableData();
 
 		// for principal fermé -> tout null
 
 		// Search
-		assertNull(values.get(TiersIndexableData.NO_OFS_FOR_PRINCIPAL));
+		assertNull(values.getNoOfsForPrincipal());
 		// Display
-		assertEquals("Cossonay", values.get(TiersIndexableData.FOR_PRINCIPAL));
+		assertEquals("Cossonay", values.getForPrincipal());
 	}
 
 	@Test
@@ -538,12 +537,12 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 
 		NonHabitantIndexable indexable = new NonHabitantIndexable(adresseService, tiersService, serviceInfra, nonHab);
 
-		HashMap<String, String> values = indexable.getKeyValues();
+		final TiersIndexableData values = (TiersIndexableData) indexable.getIndexableData();
 
-		assertEquals("1000", values.get(TiersIndexableData.NPA));
-		assertContains("Lausanne", values.get(TiersIndexableData.LOCALITE_PAYS));
-		assertContains("Lausanne", values.get(TiersIndexableData.LOCALITE));
-		assertContains(Constants.OUI, values.get(TiersIndexableData.DOMICILE_VD));
+		assertEquals("1000", values.getNpa());
+		assertContains("Lausanne", values.getLocaliteEtPays());
+		assertContains("Lausanne", values.getLocalite());
+		assertContains(Constants.OUI, values.getDomicileVd());
 
 	}
 
@@ -602,12 +601,12 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 
 		NonHabitantIndexable indexable = new NonHabitantIndexable(adresseService, tiersService, serviceInfra, nonHab);
 
-		HashMap<String, String> values = indexable.getKeyValues();
+		final TiersIndexableData values = (TiersIndexableData) indexable.getIndexableData();
 
-		assertEquals("1000", values.get(TiersIndexableData.NPA));
-		assertContains("Lausanne", values.get(TiersIndexableData.LOCALITE_PAYS));
-		assertContains("Lausanne", values.get(TiersIndexableData.LOCALITE));
-		assertEquals("", values.get(TiersIndexableData.DOMICILE_VD)); // adresse de domicile par défaut -> pas de détermination possible
+		assertEquals("1000", values.getNpa());
+		assertContains("Lausanne", values.getLocaliteEtPays());
+		assertContains("Lausanne", values.getLocalite());
+		assertEquals("", values.getDomicileVd()); // adresse de domicile par défaut -> pas de détermination possible
 
 	}
 
@@ -651,16 +650,16 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 
 		NonHabitantIndexable indexable = new NonHabitantIndexable(adresseService, tiersService, serviceInfra, nonHab);
 
-		HashMap<String, String> values = indexable.getKeyValues();
+		final TiersIndexableData values = (TiersIndexableData) indexable.getIndexableData();
 
-		//String s1 = values.get(TiersIndexableData.LOCALITE_PAYS);
-		assertContains("abeilles", values.get(TiersIndexableData.RUE));
-		assertEquals("", values.get(TiersIndexableData.NPA));
-		assertContains("France", values.get(TiersIndexableData.LOCALITE_PAYS));
-		assertContains("France", values.get(TiersIndexableData.LOCALITE_PAYS));
-		assertContains("Paris", values.get(TiersIndexableData.LOCALITE));
-		assertContains("France", values.get(TiersIndexableData.PAYS));
-		assertContains(Constants.NON, values.get(TiersIndexableData.DOMICILE_VD));
+		//String s1 = values.getLocaliteEtPays();
+		assertContains("abeilles", values.getRue());
+		assertEquals("", values.getNpa());
+		assertContains("France", values.getLocaliteEtPays());
+		assertContains("France", values.getLocaliteEtPays());
+		assertContains("Paris", values.getLocalite());
+		assertContains("France", values.getPays());
+		assertContains(Constants.NON, values.getDomicileVd());
 	}
 
 	@Test
@@ -689,13 +688,13 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 
 		HabitantIndexable indexable = new HabitantIndexable(adresseService, tiersService, serviceInfra, hab, individu);
 
-		HashMap<String, String> values = indexable.getKeyValues();
+		final TiersIndexableData values = (TiersIndexableData) indexable.getIndexableData();
 
-		//String s1 = values.get(TiersIndexableData.LOCALITE_PAYS);
-		assertEquals("1880", values.get(TiersIndexableData.NPA));
-		assertContains("Bex", values.get(TiersIndexableData.LOCALITE_PAYS));
-		assertContains("Bex", values.get(TiersIndexableData.LOCALITE));
-		assertContains(Constants.OUI, values.get(TiersIndexableData.DOMICILE_VD));
+		//String s1 = values.getLocaliteEtPays();
+		assertEquals("1880", values.getNpa());
+		assertContains("Bex", values.getLocaliteEtPays());
+		assertContains("Bex", values.getLocalite());
+		assertContains(Constants.OUI, values.getDomicileVd());
 
 	}
 
@@ -717,24 +716,24 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 
 		MenageCommunIndexable indexable = new MenageCommunIndexable(adresseService, tiersService, serviceCivil, serviceInfra, mc);
 
-		HashMap<String, String> values = indexable.getKeyValues();
-
+		final TiersIndexableData values = (TiersIndexableData) indexable.getIndexableData();
+		
 		// Search
-		//assertContains(numCtb1.toString(), values.get(TiersIndexableData.NUMEROS));
-		//assertContains(numCtb2.toString(), values.get(TiersIndexableData.NUMEROS));
-		assertContains("Maillard", values.get(TiersIndexableData.NOM_RAISON));
-		assertContains("Gallet", values.get(TiersIndexableData.NOM_RAISON));
-		assertContains(RegDateHelper.toIndexString(RegDate.get(1956, 1, 21)), values.get(TiersIndexableData.DATE_NAISSANCE));
-		assertContains(RegDateHelper.toIndexString(RegDate.get(1967, 12, 3)), values.get(TiersIndexableData.DATE_NAISSANCE));
-		assertContains(FormatNumeroHelper.formatAncienNumAVS("123.45.678"), values.get(TiersIndexableData.NUMERO_ASSURE_SOCIAL));
-		assertContains(FormatNumeroHelper.formatAncienNumAVS("987.65.432"), values.get(TiersIndexableData.NUMERO_ASSURE_SOCIAL));
+		//assertContains(numCtb1.toString(), values.getNumeros());
+		//assertContains(numCtb2.toString(), values.getNumeros());
+		assertContains("Maillard", values.getNomRaison());
+		assertContains("Gallet", values.getNomRaison());
+		assertContains(RegDateHelper.toIndexString(RegDate.get(1956, 1, 21)), values.getDateNaissance());
+		assertContains(RegDateHelper.toIndexString(RegDate.get(1967, 12, 3)), values.getDateNaissance());
+		assertContains(FormatNumeroHelper.formatAncienNumAVS("123.45.678"), values.getNumeroAssureSocial());
+		assertContains(FormatNumeroHelper.formatAncienNumAVS("987.65.432"), values.getNumeroAssureSocial());
 		// Display
-		assertContains("Maillard", values.get(TiersIndexableData.NOM1));
-		assertContains("Philippe", values.get(TiersIndexableData.NOM1));
-		assertContains("Gallet", values.get(TiersIndexableData.NOM2));
-		assertContains("Gladys", values.get(TiersIndexableData.NOM2));
+		assertContains("Maillard", values.getNom1());
+		assertContains("Philippe", values.getNom1());
+		assertContains("Gallet", values.getNom2());
+		assertContains("Gladys", values.getNom2());
 
-		//assertContains("", values.get(TiersIndexableData.DATE_NAISSANCE));
+		//assertContains("", values.getDateNaissance());
 	}
 
 	@Test
@@ -769,24 +768,24 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 
 		MenageCommunIndexable indexable = new MenageCommunIndexable(adresseService, tiersService, serviceCivil, serviceInfra, mc);
 
-		HashMap<String, String> values = indexable.getKeyValues();
+		final TiersIndexableData values = (TiersIndexableData) indexable.getIndexableData();
 
 		// Search
-		//assertContains(numCtb1.toString(), values.get(TiersIndexableData.NUMEROS));
-		//assertContains(numCtb2.toString(), values.get(TiersIndexableData.NUMEROS));
-		assertContains("Maillard", values.get(TiersIndexableData.NOM_RAISON));
-		assertContains("Gallet", values.get(TiersIndexableData.NOM_RAISON));
-		assertContains(RegDateHelper.toIndexString(dateN1), values.get(TiersIndexableData.DATE_NAISSANCE));
-		assertContains(RegDateHelper.toIndexString(dateN2), values.get(TiersIndexableData.DATE_NAISSANCE));
-		assertContains(FormatNumeroHelper.formatAncienNumAVS(noAVS1), values.get(TiersIndexableData.NUMERO_ASSURE_SOCIAL));
-		assertContains(FormatNumeroHelper.formatAncienNumAVS(noAVS2), values.get(TiersIndexableData.NUMERO_ASSURE_SOCIAL));
+		//assertContains(numCtb1.toString(), values.getNumeros());
+		//assertContains(numCtb2.toString(), values.getNumeros());
+		assertContains("Maillard", values.getNomRaison());
+		assertContains("Gallet", values.getNomRaison());
+		assertContains(RegDateHelper.toIndexString(dateN1), values.getDateNaissance());
+		assertContains(RegDateHelper.toIndexString(dateN2), values.getDateNaissance());
+		assertContains(FormatNumeroHelper.formatAncienNumAVS(noAVS1), values.getNumeroAssureSocial());
+		assertContains(FormatNumeroHelper.formatAncienNumAVS(noAVS2), values.getNumeroAssureSocial());
 		// Display
-		assertContains("Maillard", values.get(TiersIndexableData.NOM1));
-		assertContains("Philippe", values.get(TiersIndexableData.NOM1));
-		assertContains("Gallet", values.get(TiersIndexableData.NOM2));
-		assertContains("Gladys", values.get(TiersIndexableData.NOM2));
+		assertContains("Maillard", values.getNom1());
+		assertContains("Philippe", values.getNom1());
+		assertContains("Gallet", values.getNom2());
+		assertContains("Gladys", values.getNom2());
 
-		//assertContains("", values.get(TiersIndexableData.DATE_NAISSANCE));
+		//assertContains("", values.getDateNaissance());
 	}
 
 	public RapportEntreTiers addTiers(MenageCommun menage, PersonnePhysique tiers, RegDate dateDebut) {
@@ -972,6 +971,11 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 
 		public long getRowCountResult(AbstractCriteria aCriteria) {
 			throw new NotImplementedException();
+		}
+
+		public Contribuable getContribuable(DebiteurPrestationImposable debiteur) {
+			final Long ctbId = debiteur.getContribuableId();
+			return (Contribuable) get(ctbId);
 		}
 	}
 }

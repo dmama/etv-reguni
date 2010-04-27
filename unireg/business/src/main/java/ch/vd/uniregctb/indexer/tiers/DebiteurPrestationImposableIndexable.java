@@ -1,29 +1,28 @@
 package ch.vd.uniregctb.indexer.tiers;
 
-import java.util.HashMap;
+import java.util.Set;
 
-import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import org.apache.commons.lang.StringUtils;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.indexer.IndexerException;
+import ch.vd.uniregctb.indexer.IndexerFormatHelper;
 import ch.vd.uniregctb.interfaces.model.Individu;
+import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.AutreCommunaute;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.ForDebiteurPrestationImposable;
+import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersService;
 
-/**
- * @author Mickaël Jackson
- *
- */
 public class DebiteurPrestationImposableIndexable extends TiersIndexable {
 
 	public static final String SUB_TYPE = "debiteurprestationimposable";
@@ -32,9 +31,9 @@ public class DebiteurPrestationImposableIndexable extends TiersIndexable {
 
 	public DebiteurPrestationImposableIndexable(AdresseService adresseService, TiersService tiersService, ServiceCivilService serviceCivil, ServiceInfrastructureService serviceInfra,
 	                                            DebiteurPrestationImposable dpi) throws IndexerException {
-		super(adresseService, tiersService, serviceInfra, dpi, new DebiteurPrestationImposableSubIndexable(tiersService, dpi));
+		super(adresseService, tiersService, serviceInfra, dpi);
 
-		Contribuable ctb = tiersService.getContribuable(dpi);
+		final Contribuable ctb = tiersService.getContribuable(dpi);
 		if (ctb != null) {
 			if (ctb instanceof PersonnePhysique) {
 				PersonnePhysique pp = (PersonnePhysique) ctb;
@@ -47,16 +46,16 @@ public class DebiteurPrestationImposableIndexable extends TiersIndexable {
 				}
 			}
 			else if (ctb instanceof Entreprise) {
-				ctbIndexable = new EntrepriseIndexable(adresseService, tiersService, serviceInfra, (Entreprise)ctb);
+				ctbIndexable = new EntrepriseIndexable(adresseService, tiersService, serviceInfra, (Entreprise) ctb);
 			}
 			else if (ctb instanceof AutreCommunaute) {
-				ctbIndexable = new AutreCommunauteIndexable(adresseService, tiersService, serviceInfra, (AutreCommunaute)ctb);
+				ctbIndexable = new AutreCommunauteIndexable(adresseService, tiersService, serviceInfra, (AutreCommunaute) ctb);
 			}
 			else if (ctb instanceof CollectiviteAdministrative) {
-				ctbIndexable = new CollectiviteAdministrativeIndexable(adresseService, tiersService, serviceInfra, (CollectiviteAdministrative)ctb);
+				ctbIndexable = new CollectiviteAdministrativeIndexable(adresseService, tiersService, serviceInfra, (CollectiviteAdministrative) ctb);
 			}
 			else if (ctb instanceof MenageCommun) {
-				ctbIndexable = new MenageCommunIndexable(adresseService, tiersService, serviceCivil, serviceInfra, ((MenageCommun)ctb));
+				ctbIndexable = new MenageCommunIndexable(adresseService, tiersService, serviceCivil, serviceInfra, ((MenageCommun) ctb));
 			}
 			else {
 				Assert.fail("Type de contribuable inconnu = " + ctb.getNatureTiers());
@@ -64,53 +63,82 @@ public class DebiteurPrestationImposableIndexable extends TiersIndexable {
 		}
 	}
 
-	/**
-	 * @see ch.vd.uniregctb.indexer.Indexable#getSubType()
-	 */
 	public String getSubType() {
 		return SUB_TYPE;
 	}
 
 	@Override
-	public HashMap<String, String> getKeyValues() throws IndexerException {
-		HashMap<String, String> values = super.getKeyValues();
+	protected void fillBaseData(TiersIndexableData data) {
+		super.fillBaseData(data);
 
-		// DPI
-		final HashMap<String, String> dpiKeyValues = tiersSubIndexable.getKeyValues();
-		// Search
-		addValueToMap(values, TiersIndexableData.NUMEROS, dpiKeyValues, TiersSubIndexable.F_NUMERO);
-		addValueToMap(values, TiersIndexableData.NOM_RAISON, dpiKeyValues, DebiteurPrestationImposableSubIndexable.F_NOM1);
-		addValueToMap(values, TiersIndexableData.CATEGORIE_DEBITEUR_IS, dpiKeyValues, DebiteurPrestationImposableSubIndexable.F_CATEGORIE_IS);
+		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiers;
 
-		// CTB
-		if (ctbIndexable != null) {
-			final HashMap<String, String> ctbKeyValues = ctbIndexable.getKeyValues();
-			// Search
-			addValueToMap(values, TiersIndexableData.NOM_RAISON, ctbKeyValues, TiersIndexableData.NOM_RAISON);
-			addValueToMap(values, TiersIndexableData.NOM_RAISON, ctbKeyValues, DebiteurPrestationImposableSubIndexable.F_COMPLEMENT_NOM);
-			addValueToMap(values, TiersIndexableData.AUTRES_NOM, ctbKeyValues, TiersIndexableData.AUTRES_NOM);
-			addValueToMap(values, TiersIndexableData.LOCALITE_PAYS, ctbKeyValues, TiersIndexableData.LOCALITE_PAYS);
-			addValueToMap(values, TiersIndexableData.NATURE_JURIDIQUE, ctbKeyValues, TiersIndexableData.NATURE_JURIDIQUE);
-			addValueToMap(values, TiersIndexableData.NOM_RAISON, dpiKeyValues, DebiteurPrestationImposableSubIndexable.F_NOM2);
+		data.setNumeros(IndexerFormatHelper.objectToString(tiers.getNumero()));
+		data.setNomRaison(dpi.getNom1());
+		data.setCategorieDebiteurIs(IndexerFormatHelper.objectToString(dpi.getCategorieImpotSource()));
 
-			final String nom1 = dpiKeyValues.get(DebiteurPrestationImposableSubIndexable.F_NOM1);
-			if (StringUtils.isEmpty(nom1)) {
-				// [UNIREG-1376] on va chercher les infos sur le contribuable si elles n'existent pas sur le débiteur
-				addValueToMap(values, TiersIndexableData.NOM1, ctbKeyValues, TiersIndexableData.NOM1);
-				addValueToMap(values, TiersIndexableData.NOM2, ctbKeyValues, TiersIndexableData.NOM2);
-			}
-			else {
-				addValueToMap(values, TiersIndexableData.NOM1, dpiKeyValues, DebiteurPrestationImposableSubIndexable.F_NOM1);
-				addValueToMap(values, TiersIndexableData.NOM2, dpiKeyValues, DebiteurPrestationImposableSubIndexable.F_NOM2);
-			}
+		if (ctbIndexable == null) {
+			data.addNomRaison(dpi.getComplementNom());
+			data.setAutresNom(dpi.getNom2());
+			data.setNom1(dpi.getNom1());
+			data.setNom2(dpi.getNom2());
 		}
 		else {
-			addValueToMap(values, TiersIndexableData.NOM_RAISON, dpiKeyValues, DebiteurPrestationImposableSubIndexable.F_COMPLEMENT_NOM);
-			addValueToMap(values, TiersIndexableData.AUTRES_NOM, dpiKeyValues, DebiteurPrestationImposableSubIndexable.F_NOM2);
-			addValueToMap(values, TiersIndexableData.NOM1, dpiKeyValues, DebiteurPrestationImposableSubIndexable.F_NOM1);
-			addValueToMap(values, TiersIndexableData.NOM2, dpiKeyValues, DebiteurPrestationImposableSubIndexable.F_NOM2);
+			final TiersIndexableData ctbData = (TiersIndexableData) ctbIndexable.getIndexableData();
+			data.addNomRaison(ctbData.getNomRaison());
+			data.setAutresNom(ctbData.getAutresNom());
+			data.addLocaliteEtPays(ctbData.getLocaliteEtPays());
+			data.addNatureJuridique(ctbData.getNatureJuridique());
+
+			if (StringUtils.isBlank(dpi.getNom1())) {
+				// [UNIREG-1376] on va chercher les infos sur le contribuable si elles n'existent pas sur le débiteur
+				data.setNom1(ctbData.getNom1());
+				data.setNom2(ctbData.getNom2());
+			}
+			else {
+				data.setNom1(dpi.getNom1());
+				data.setNom2(dpi.getNom2());
+			}
 		}
-		return values;
+
+		final ForDebiteurPrestationImposable fdpi = dpi.getDernierForDebiteur();
+		final boolean isActif = (fdpi != null && fdpi.isValidAt(null));
+		data.setTiersActif(IndexerFormatHelper.objectToString(isActif));
 	}
 
+	@Override
+	protected void fillForsData(TiersIndexableData data) {
+
+		// For principal actif
+		String typeAutFfpActif = null;
+		String noOfsFfpActif = null;
+
+		final ForDebiteurPrestationImposable principalActif = tiers.getForDebiteurPrestationImposableAt(null);
+		if (principalActif != null) {
+			typeAutFfpActif = principalActif.getTypeAutoriteFiscale().toString();
+			noOfsFfpActif = principalActif.getNumeroOfsAutoriteFiscale().toString();
+		}
+
+		// For principal
+		String communeDernierFfp = null;
+		final ForDebiteurPrestationImposable dernierPrincipal = tiers.getDernierForDebiteur();
+		if (dernierPrincipal != null) {
+			communeDernierFfp =  getForCommuneAsString(dernierPrincipal);
+		}
+
+		// Autre fors
+		StringBuilder noOfsAutresFors = new StringBuilder();
+		final Set<ForFiscal> fors = tiers.getForsFiscaux();
+		if (fors != null) {
+			for (ForFiscal forF : fors) {
+				addValue(noOfsAutresFors, forF.getNumeroOfsAutoriteFiscale().toString());
+			}
+		}
+
+		data.setNoOfsForPrincipal(noOfsFfpActif);
+		data.setTypeOfsForPrincipal(typeAutFfpActif);
+		data.setNosOfsAutresFors(noOfsAutresFors.toString());
+		data.setForPrincipal(communeDernierFfp);
+
+	}
 }

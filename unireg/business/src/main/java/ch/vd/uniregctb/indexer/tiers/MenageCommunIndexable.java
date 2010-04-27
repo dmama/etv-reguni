@@ -27,14 +27,16 @@ public class MenageCommunIndexable extends ContribuableIndexable {
 	public static final String SUB_TYPE = "menagecommun";
 
 	public MenageCommunIndexable(AdresseService adresseService, TiersService tiersService, ServiceCivilService serviceCivil, ServiceInfrastructureService serviceInfra, MenageCommun menage) throws IndexerException {
-		super(adresseService, tiersService, serviceInfra, menage, new MenageCommunSubIndexable(tiersService, menage));
+		super(adresseService, tiersService, serviceInfra, menage);
 
 		final EnsembleTiersCouple ensemble = extractEnsembleForIndexation(tiersService, menage);
 		ppIndexable1 = getPPIndexable(adresseService, tiersService, serviceCivil, serviceInfra, ensemble.getPrincipal());
 		if (ensemble.getConjoint() != null) {
 			ppIndexable2 = getPPIndexable(adresseService, tiersService, serviceCivil, serviceInfra, ensemble.getConjoint());
 		}
-		else ppIndexable2 = null;//marié seul => pas d'indexation du conjoint
+		else {
+			ppIndexable2 = null;//marié seul => pas d'indexation du conjoint
+		}
 	}
 
 	/**
@@ -144,46 +146,32 @@ public class MenageCommunIndexable extends ContribuableIndexable {
 		return ppIndexable;
 	}
 
-	/**
-	 * @see ch.vd.uniregctb.indexer.Indexable#getSubType()
-	 */
 	public String getSubType() {
 		return SUB_TYPE;
 	}
 
 	@Override
-	public HashMap<String, String> getKeyValues() throws IndexerException {
+	protected void fillBaseData(TiersIndexableData data) {
+		super.fillBaseData(data);
 
-		HashMap<String, String> values = super.getKeyValues();
-
-		// HashMap<String, String> subValues = menageSubIndexable.getKeyValues();
 		if (ppIndexable1 != null) {
-			HashMap<String, String> hab1SubValues = ppIndexable1.getKeyValues();
-			// Search
-			// Hab1 - Ind1
-			// addValueToMap(values, TiersIndexableData.NUMEROS, hab1SubValues, TiersIndexableData.NUMEROS);
-			addValueToMap(values, TiersIndexableData.DATE_NAISSANCE, hab1SubValues, TiersIndexableData.DATE_NAISSANCE);
-			addValueToMap(values, TiersIndexableData.NOM_RAISON, hab1SubValues, TiersIndexableData.NOM_RAISON);
-			addValueToMap(values, TiersIndexableData.AUTRES_NOM, hab1SubValues, TiersIndexableData.AUTRES_NOM);
-			addValueToMap(values, TiersIndexableData.NUMERO_ASSURE_SOCIAL, hab1SubValues, TiersIndexableData.NUMERO_ASSURE_SOCIAL);
-			// Display
-			values.put(TiersIndexableData.NOM1, hab1SubValues.get(TiersIndexableData.NOM1));
+			final TiersIndexableData ppData = (TiersIndexableData) ppIndexable1.getIndexableData();
+
+			data.addDateNaissance(ppData.getDateNaissance());
+			data.addNomRaison(ppData.getNomRaison());
+			data.addAutresNom(ppData.getAutresNom());
+			data.addNumeroAssureSocial(ppData.getNumeroAssureSocial());
+			data.setNom1(ppData.getNom1());
 		}
+
 		if (ppIndexable2 != null) {
-			HashMap<String, String> hab2SubValues = ppIndexable2.getKeyValues();
-			// Hab2 - Ind2
-			// addValueToMap(values, TiersIndexableData.NUMEROS, hab2SubValues, TiersIndexableData.NUMEROS);
-			addValueToMap(values, TiersIndexableData.DATE_NAISSANCE, hab2SubValues, TiersIndexableData.DATE_NAISSANCE);
-			addValueToMap(values, TiersIndexableData.NOM_RAISON, hab2SubValues, TiersIndexableData.NOM_RAISON);
-			addValueToMap(values, TiersIndexableData.AUTRES_NOM, hab2SubValues, TiersIndexableData.AUTRES_NOM);
-			addValueToMap(values, TiersIndexableData.NUMERO_ASSURE_SOCIAL, hab2SubValues, TiersIndexableData.NUMERO_ASSURE_SOCIAL);
-			// Display
-			values.put(TiersIndexableData.NOM2, hab2SubValues.get(TiersIndexableData.NOM1));
+			final TiersIndexableData ppData = (TiersIndexableData) ppIndexable2.getIndexableData();
+
+			data.addDateNaissance(ppData.getDateNaissance());
+			data.addNomRaison(ppData.getNomRaison());
+			data.addAutresNom(ppData.getAutresNom());
+			data.addNumeroAssureSocial(ppData.getNumeroAssureSocial());
+			data.setNom2(ppData.getNom1());
 		}
-
-		// debugDumpValues(values);
-
-		return values;
 	}
-
 }

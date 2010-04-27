@@ -1,36 +1,19 @@
 package ch.vd.uniregctb.indexer.tiers;
 
-import java.util.HashMap;
-
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.indexer.IndexerException;
+import ch.vd.uniregctb.indexer.IndexerFormatHelper;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.NatureJuridique;
 
-/**
- * @author Sean Paul
- *
- */
 public class EntrepriseIndexable extends ContribuableIndexable {
-
-	/** LOGGER */
-	//private static final Logger LOGGER = Logger.getLogger(EntrepriseIndexable.class);
 
 	public static final String SUB_TYPE = "entreprise";
 
-	//private ForFiscalSubIndexable forsIndexable = null;
-
-	/**
-	 * @param serviceInfra
-	 * @throws IndexerException
-	 */
 	public EntrepriseIndexable(AdresseService adresseService, TiersService tiersService, ServiceInfrastructureService serviceInfra, Entreprise entreprise) throws IndexerException {
-		super(adresseService, tiersService, serviceInfra, entreprise, new EntrepriseSubIndexable(tiersService, entreprise));
-
-		// TODO(MSI) : A corriger quand les Entreprise seront liées par HI
-		//forsIndexable = new ForFiscalSubIndexable(serviceInfrastructure, entreprise);
+		super(adresseService, tiersService, serviceInfra, entreprise);
 	}
 
 	public String getSubType() {
@@ -38,15 +21,8 @@ public class EntrepriseIndexable extends ContribuableIndexable {
 	}
 
 	@Override
-	public HashMap<String, String> getKeyValues() throws IndexerException {
-
-		HashMap<String, String> values = super.getKeyValues();
-
-		// Search
-		String s = NatureJuridique.PM.toString();
-		values.put(TiersIndexableData.NATURE_JURIDIQUE, s);
-
-		return values;
+	protected void fillBaseData(TiersIndexableData data) {
+		super.fillBaseData(data);
+		data.setNatureJuridique(IndexerFormatHelper.objectToString(NatureJuridique.PM));
 	}
-
 }

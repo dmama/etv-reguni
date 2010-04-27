@@ -578,4 +578,21 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
         }
         return menages;
     }
+
+	public Contribuable getContribuable(final DebiteurPrestationImposable debiteur) {
+		return (Contribuable) getHibernateTemplate().executeWithNativeSession(new HibernateCallback() {
+		    public Object doInHibernate(Session session) throws HibernateException {
+		        Query query = session.createQuery("select t from ContactImpotSource r, Tiers t where r.objetId = :dpiId and r.sujetId = t.id and r.annulationDate is null");
+		        query.setParameter("dpiId", debiteur.getId());
+			    final FlushMode mode = session.getFlushMode();
+			    try {
+			        session.setFlushMode(FlushMode.MANUAL);
+				    return query.uniqueResult();
+			    }
+			    finally {
+			        session.setFlushMode(mode);
+			    }
+		    }
+		});
+	}
 }

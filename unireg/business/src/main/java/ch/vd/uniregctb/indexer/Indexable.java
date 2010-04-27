@@ -2,25 +2,13 @@ package ch.vd.uniregctb.indexer;
 
 
 /**
- * Element indexable par le moteur de recherche.
+ * Interface des éléments pouvant être indexés par Lucene.
  * 
  */
-public interface Indexable extends SubIndexable {
+public interface Indexable {
 
 	/**
-	 * @return l'identifiant technique de l'objet à indexer.
+	 * @return Une structure de données (préférablement de taille fixe -> perfs d'optimisation) qui représentent l'objet devant être indexé.
 	 */
-	public Long getID();
-
-	/**
-	 * @return le type de l'objet à indexer, généralement sa classe parente,
-	 *         mais celà peut-être autre chose.
-	 */
-	public String getType();
-	
-	/**
-	 * @return L'entité lui même de la classe fille
-	 */
-	public String getSubType();
-	
+	IndexableData getIndexableData();
 }

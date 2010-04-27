@@ -1,7 +1,5 @@
 package ch.vd.uniregctb.indexer.tiers;
 
-import java.util.HashMap;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -44,8 +42,6 @@ public class TiersIndexableData extends IndexableData {
 	public static final String NO_OFS_DOMICILE_VD = "D_NO_OFS_DOMICILE_VD";
 	public static final String INDEXATION_DATE = "D_INDEXATION_DATE";
 	
-	private String subType;
-
 	// champs de recherche
 	private String numeros;
 	private String nomRaison;
@@ -79,48 +75,8 @@ public class TiersIndexableData extends IndexableData {
 	private String noOfsDomicileVd;
 	private String indexationDate;
 
-	public TiersIndexableData() {
-		
-	}
-
-	/**
-	 * Constructeur temporaire utilisé pendant la reécriture des indexables
-	 */
-	public TiersIndexableData(TiersIndexable indexable) {
-		super(indexable.getID(), indexable.getType(), indexable.getSubType());
-
-		final HashMap<String, String> kv = indexable.getKeyValues();
-
-		this.numeros = kv.get(TiersIndexableData.NUMEROS);
-		this.nomRaison = kv.get(TiersIndexableData.NOM_RAISON);
-		this.autresNom = kv.get(TiersIndexableData.AUTRES_NOM);
-		this.dateNaissance = kv.get(TiersIndexableData.DATE_NAISSANCE);
-		this.noOfsForPrincipal = kv.get(TiersIndexableData.NO_OFS_FOR_PRINCIPAL);
-		this.typeOfsForPrincipal = kv.get(TiersIndexableData.TYPE_OFS_FOR_PRINCIPAL);
-		this.nosOfsAutresFors = kv.get(TiersIndexableData.NOS_OFS_AUTRES_FORS);
-		this.npa = kv.get(TiersIndexableData.NPA);
-		this.localiteEtPays = kv.get(TiersIndexableData.LOCALITE_PAYS);
-		this.natureJuridique = kv.get(TiersIndexableData.NATURE_JURIDIQUE);
-		this.numeroAssureSocial = kv.get(TiersIndexableData.NUMERO_ASSURE_SOCIAL);
-		this.categorieDebiteurIs = kv.get(TiersIndexableData.CATEGORIE_DEBITEUR_IS);
-		this.modeImposition = kv.get(TiersIndexableData.MODE_IMPOSITION);
-		this.noSymic = kv.get(TiersIndexableData.NO_SYMIC);
-		this.tiersActif = kv.get(TiersIndexableData.TIERS_ACTIF);
-		this.annule = kv.get(TiersIndexableData.ANNULE);
-		this.debiteurInactif = kv.get(TiersIndexableData.DEBITEUR_INACTIF);
-
-		this.nom1 = kv.get(TiersIndexableData.NOM1);
-		this.nom2 = kv.get(TiersIndexableData.NOM2);
-		this.roleLigne1 = kv.get(TiersIndexableData.ROLE_LIGNE1);
-		this.roleLigne2 = kv.get(TiersIndexableData.ROLE_LIGNE2);
-		this.dateDeces = kv.get(TiersIndexableData.DATE_DECES);
-		this.rue = kv.get(TiersIndexableData.RUE);
-		this.localite = kv.get(TiersIndexableData.LOCALITE);
-		this.pays = kv.get(TiersIndexableData.PAYS);
-		this.forPrincipal = kv.get(TiersIndexableData.FOR_PRINCIPAL);
-		this.domicileVd = kv.get(TiersIndexableData.DOMICILE_VD);
-		this.noOfsDomicileVd = kv.get(TiersIndexableData.NO_OFS_DOMICILE_VD);
-		this.indexationDate = kv.get(TiersIndexableData.INDEXATION_DATE);
+	public TiersIndexableData(Long id, String type, String subType) {
+		super(id, type, subType);
 	}
 
 	public Document asDoc() {
@@ -181,16 +137,8 @@ public class TiersIndexableData extends IndexableData {
 		return type;
 	}
 
-	public void setType(String type) {
-		this.type = type;
-	}
-
 	public String getSubType() {
 		return subType;
-	}
-
-	public void setSubType(String subType) {
-		this.subType = subType;
 	}
 
 	public String getNumeros() {
@@ -201,12 +149,20 @@ public class TiersIndexableData extends IndexableData {
 		this.numeros = numeros;
 	}
 
+	public void addNumeros(String numeros) {
+		this.numeros = add(this.numeros, numeros);
+	}
+
 	public String getNomRaison() {
 		return nomRaison;
 	}
 
 	public void setNomRaison(String nomRaison) {
 		this.nomRaison = nomRaison;
+	}
+
+	public void addNomRaison(String nomRaison) {
+		this.nomRaison = add(this.nomRaison, nomRaison);
 	}
 
 	public String getAutresNom() {
@@ -217,12 +173,20 @@ public class TiersIndexableData extends IndexableData {
 		this.autresNom = autresNom;
 	}
 
+	public void addAutresNom(String autresNom) {
+		this.autresNom = add(this.autresNom, autresNom);
+	}
+
 	public String getDateNaissance() {
 		return dateNaissance;
 	}
 
 	public void setDateNaissance(String dateNaissance) {
 		this.dateNaissance = dateNaissance;
+	}
+
+	public void addDateNaissance(String dateNaissance) {
+		this.dateNaissance = add(this.dateNaissance, dateNaissance);
 	}
 
 	public String getNoOfsForPrincipal() {
@@ -265,6 +229,10 @@ public class TiersIndexableData extends IndexableData {
 		this.localiteEtPays = localiteEtPays;
 	}
 
+	public void addLocaliteEtPays(String localiteEtPays) {
+		this.localiteEtPays = add(this.localiteEtPays, localiteEtPays);
+	}
+
 	public String getNatureJuridique() {
 		return natureJuridique;
 	}
@@ -273,12 +241,20 @@ public class TiersIndexableData extends IndexableData {
 		this.natureJuridique = natureJuridique;
 	}
 
+	public void addNatureJuridique(String natureJuridique) {
+		this.natureJuridique = add(this.natureJuridique, natureJuridique);
+	}
+
 	public String getNumeroAssureSocial() {
 		return numeroAssureSocial;
 	}
 
 	public void setNumeroAssureSocial(String numeroAssureSocial) {
 		this.numeroAssureSocial = numeroAssureSocial;
+	}
+
+	public void addNumeroAssureSocial(String numeroAssureSocial) {
+		this.numeroAssureSocial = add(this.numeroAssureSocial, numeroAssureSocial);
 	}
 
 	public String getCategorieDebiteurIs() {
@@ -335,6 +311,10 @@ public class TiersIndexableData extends IndexableData {
 
 	public void setNom1(String nom1) {
 		this.nom1 = nom1;
+	}
+
+	public void addNom1(String nom1) {
+		this.nom1 = add(this.nom1, nom1);
 	}
 
 	public String getNom2() {
@@ -423,5 +403,17 @@ public class TiersIndexableData extends IndexableData {
 
 	public void setIndexationDate(String indexationDate) {
 		this.indexationDate = indexationDate;
+	}
+
+	private static String add(String left, String right) {
+		if (StringUtils.isBlank(left)) {
+			return right;
+		}
+		else if (StringUtils.isBlank(right)) {
+			return left;
+		}
+		else {
+			return left + " " + right;
+		}
 	}
 }

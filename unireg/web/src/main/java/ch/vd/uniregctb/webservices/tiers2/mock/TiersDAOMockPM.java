@@ -195,4 +195,8 @@ public class TiersDAOMockPM implements TiersDAO {
 	public List<MenageCommun> getMenagesCommuns(List<Long> ids, Set<Parts> parts) {
 		throw new NotImplementedException();
 	}
+
+	public Contribuable getContribuable(DebiteurPrestationImposable debiteur) {
+		throw new NotImplementedException();
+	}
 }

@@ -12,12 +12,9 @@ import org.apache.lucene.document.Field;
  */
 public abstract class IndexableData {
 
-	protected Long id;
-	protected String type;
-	protected String subType;
-
-	protected IndexableData() {
-	}
+	protected final Long id;
+	protected final String type;
+	protected final String subType;
 
 	protected IndexableData(Long id, String type, String subType) {
 		this.id = id;
@@ -29,24 +26,12 @@ public abstract class IndexableData {
 		return id;
 	}
 
-	public void setId(Long id) {
-		this.id = id;
-	}
-
 	public String getType() {
 		return type;
 	}
 
-	public void setType(String type) {
-		this.type = type;
-	}
-
 	public String getSubType() {
 		return subType;
-	}
-
-	public void setSubType(String subType) {
-		this.subType = subType;
 	}
 
 	@Override

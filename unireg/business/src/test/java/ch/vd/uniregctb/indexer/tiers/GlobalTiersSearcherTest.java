@@ -235,7 +235,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 	@Test
 	public void testRechercheParTypeTiers() throws Exception {
 
-		rechercheParTypeTiers("dupont", TypeTiers.HABITANT, 1);
+		rechercheParTypeTiers("dupont", TypeTiers.HABITANT, 1); // Dupont Alain
 		rechercheParTypeTiers(null, TypeTiers.NON_HABITANT, 2);
 		rechercheParTypeTiers("du", TypeTiers.PERSONNE_PHYSIQUE, 2); // Dupont Alain et Duchene Claudine
 		rechercheParTypeTiers("du", TypeTiers.CONTRIBUABLE, 3); // Dupont Alain, Duchene Claudine + (Bolomido Marcel & Duchene Claudine)

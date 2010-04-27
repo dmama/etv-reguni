@@ -1,7 +1,7 @@
 package ch.vd.uniregctb.indexer.tiers;
 
-import java.util.HashMap;
-
+import ch.vd.uniregctb.indexer.IndexerFormatHelper;
+import ch.vd.uniregctb.interfaces.model.HistoriqueIndividu;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import org.springframework.util.Assert;
 
@@ -17,67 +17,44 @@ import ch.vd.uniregctb.tiers.TiersService;
  */
 public class HabitantIndexable extends PersonnePhysiqueIndexable {
 
-	//private static final Logger LOGGER = Logger.getLogger(HabitantIndexable.class);
-
-	/**
-	 * La sous entité liée à indexer (Individu)
-	 *
-	 */
-	private final IndividuSubIndexable individuSubIndexable;
-
 	public static final String SUB_TYPE = "habitant";
 
+	private Individu individu;
 
-
-	/**
-	 * @param serviceInfra
-	 *@param individu  @throws IndexerException
-	 */
 	public HabitantIndexable(AdresseService adresseService, TiersService tiersService, ServiceInfrastructureService serviceInfra, PersonnePhysique hab, Individu individu) throws IndexerException {
-		super(adresseService, tiersService, serviceInfra, hab, new HabitantSubIndexable(tiersService, hab));
+		super(adresseService, tiersService, serviceInfra, hab);
 		Assert.notNull(individu);
-
-		individuSubIndexable = new IndividuSubIndexable(individu);
+		this.individu = individu;
 	}
 
 	public String getSubType() {
 		return SUB_TYPE;
 	}
 
-	/**
-	 *
-	 * @see ch.vd.uniregctb.indexer.SubIndexable#getKeyValues()
-	 */
 	@Override
-	public HashMap<String, String> getKeyValues() throws IndexerException {
+	protected void fillBaseData(TiersIndexableData data) {
+		super.fillBaseData(data);
 
-		// Récupère les valeurs communes (adresses, fors)
-		HashMap<String, String> values = super.getKeyValues();
+		final PersonnePhysique pp =(PersonnePhysique) tiers;
+		final HistoriqueIndividu histo = individu.getDernierHistoriqueIndividu();
 
-		HashMap<String, String> subValues = tiersSubIndexable.getKeyValues();
-		// Tiers
-		addValueToMap(values, TiersIndexableData.NUMEROS, subValues, TiersSubIndexable.F_NUMERO);
+		data.setNumeros(IndexerFormatHelper.objectToString(tiers.getNumero()));
+		data.addAutresNom(histo.getNom());
+		data.addAutresNom(histo.getPrenom());
+		data.addAutresNom(histo.getNomNaissance());
+		data.setDateNaissance(IndexerFormatHelper.objectToString(individu.getDateNaissance()));
+		data.setNomRaison(histo.getNom());
+		data.addNumeroAssureSocial(individu.getNouveauNoAVS());
+		data.addNumeroAssureSocial(histo.getNoAVS());
+		data.setNoSymic(individu.getNumeroRCE());
+		data.addNom1(histo.getNom());
+		data.addNom1(histo.getPrenom());
 
-		HashMap<String, String> indSubValues = individuSubIndexable.getKeyValues();
-		// Individu search
-		addValueToMap(values, TiersIndexableData.AUTRES_NOM, indSubValues, IndividuSubIndexable.F_NOM);
-		addValueToMap(values, TiersIndexableData.AUTRES_NOM, indSubValues, IndividuSubIndexable.F_PRENOM);
-		addValueToMap(values, TiersIndexableData.AUTRES_NOM, indSubValues, IndividuSubIndexable.F_NOM_NAISSANCE);
-		addValueToMap(values, TiersIndexableData.DATE_NAISSANCE, indSubValues, IndividuSubIndexable.F_DATE_NAISSANCE);
-		addValueToMap(values, TiersIndexableData.NOM_RAISON, indSubValues, IndividuSubIndexable.F_NOM);
-		addValueToMap(values, TiersIndexableData.NUMERO_ASSURE_SOCIAL, indSubValues, IndividuSubIndexable.F_NO_ASSURE_SOCIAL);
-		addValueToMap(values, TiersIndexableData.NUMERO_ASSURE_SOCIAL, indSubValues, IndividuSubIndexable.F_ANCIEN_NUMERO_AVS);
-		addValueToMap(values, TiersIndexableData.NO_SYMIC, indSubValues, IndividuSubIndexable.F_NO_SYMIC);
-		// Individu Display
-		addValueToMap(values, TiersIndexableData.NOM1, indSubValues, IndividuSubIndexable.F_NOM);
-		addValueToMap(values, TiersIndexableData.NOM1, indSubValues, IndividuSubIndexable.F_PRENOM);
-		if (subValues.containsKey(HabitantSubIndexable.F_DATE_DECES)) {//surcharge de la date de décès
-			addValueToMap(values, TiersIndexableData.DATE_DECES, subValues, HabitantSubIndexable.F_DATE_DECES);
+		if (pp.getDateDeces() != null) { //surcharge de la date de décès
+			data.setDateDeces(IndexerFormatHelper.objectToString(pp.getDateDeces()));
 		}
 		else {
-			addValueToMap(values, TiersIndexableData.DATE_DECES, indSubValues, IndividuSubIndexable.F_DATE_DECES);
+			data.setDateDeces(IndexerFormatHelper.objectToString(individu.getDateDeces()));
 		}
-		return values;
 	}
-
 }

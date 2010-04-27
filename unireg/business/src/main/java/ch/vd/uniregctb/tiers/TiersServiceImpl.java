@@ -3263,13 +3263,7 @@ public class TiersServiceImpl implements TiersService {
 	 * @return le contribuable associé au débiteur; ou <b>null</b> si le débiteur n'en possède pas.
 	 */
 	public Contribuable getContribuable(DebiteurPrestationImposable debiteur) {
-
-		final Long ctbId = debiteur.getContribuableId();
-		if (ctbId == null) {
-			return null;
-		}
-
-		return (Contribuable) tiersDAO.get(ctbId);
+		return tiersDAO.getContribuable(debiteur);
 	}
 
 	public Set<PersonnePhysique> getComposantsMenage(MenageCommun menageCommun, RegDate date) {

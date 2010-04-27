@@ -157,4 +157,10 @@ public interface TiersDAO extends GenericDAO<Tiers, Long> {
 	 * @return la liste des ménages communs contenus dans la liste des ids spécifiés.
 	 */
 	List<MenageCommun> getMenagesCommuns(List<Long> ids, Set<Parts> parts);
+
+	/**
+	 * @param debiteur un débiteur
+	 * @return le contribuable associé au débiteur, s'il existe
+	 */
+	Contribuable getContribuable(DebiteurPrestationImposable debiteur);
 }

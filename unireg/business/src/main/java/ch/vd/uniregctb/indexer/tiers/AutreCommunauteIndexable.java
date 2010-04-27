@@ -1,9 +1,8 @@
 package ch.vd.uniregctb.indexer.tiers;
 
-import java.util.HashMap;
-
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.indexer.IndexerException;
+import ch.vd.uniregctb.indexer.IndexerFormatHelper;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.AutreCommunaute;
 import ch.vd.uniregctb.tiers.TiersService;
@@ -19,12 +18,8 @@ public class AutreCommunauteIndexable extends ContribuableIndexable {
 
 	public static final String SUB_TYPE = "autreCommunaute";
 
-	/**
-	 * @param serviceInfra
-	 * @throws IndexerException
-	 */
 	public AutreCommunauteIndexable(AdresseService adresseService, TiersService tiersService, ServiceInfrastructureService serviceInfra, AutreCommunaute autreCommunaute) throws IndexerException {
-		super(adresseService, tiersService, serviceInfra, autreCommunaute, new AutreCommunauteSubIndexable(tiersService, autreCommunaute));
+		super(adresseService, tiersService, serviceInfra, autreCommunaute);
 	}
 
 	public String getSubType() {
@@ -32,24 +27,16 @@ public class AutreCommunauteIndexable extends ContribuableIndexable {
 	}
 
 	@Override
-	public HashMap<String, String> getKeyValues() throws IndexerException {
+	protected void fillBaseData(TiersIndexableData data) {
+		super.fillBaseData(data);
 
-		HashMap<String, String> values = super.getKeyValues();
-		// Search
-		String s = NatureJuridique.PM.toString();
-		values.put(TiersIndexableData.NATURE_JURIDIQUE, s);
+		final AutreCommunaute ac = (AutreCommunaute) tiers;
 
-		// Tiers
-		HashMap<String, String> subValues = tiersSubIndexable.getKeyValues();
-		// Search
-		addValueToMap(values, TiersIndexableData.NUMEROS, subValues, TiersSubIndexable.F_NUMERO);
-		addValueToMap(values, TiersIndexableData.NOM_RAISON, subValues, AutreCommunauteSubIndexable.F_NOM);
-		addValueToMap(values, TiersIndexableData.NOM_RAISON, subValues, AutreCommunauteSubIndexable.F_COMPLEMENT_NOM);
-		// Display
-		addValueToMap(values, TiersIndexableData.NOM1, subValues, AutreCommunauteSubIndexable.F_NOM);
-		addValueToMap(values, TiersIndexableData.NOM2, subValues, AutreCommunauteSubIndexable.F_COMPLEMENT_NOM);
-
-		return values;
+		data.setNumeros(IndexerFormatHelper.objectToString(ac.getNumero()));
+		data.addNomRaison(ac.getNom());
+		data.addNomRaison(ac.getComplementNom());
+		data.setNom1(ac.getNom());
+		data.setNom2(ac.getComplementNom());
+		data.setNatureJuridique(IndexerFormatHelper.objectToString(NatureJuridique.PM));
 	}
-
 }
