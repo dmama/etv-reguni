@@ -54,6 +54,8 @@ public class EvenementFiscalSenderTest extends EvenementTest {
 		esbTemplate.setConnectionFactory(jmsConnectionManager);
 		esbTemplate.setEsbStore(esbStore);
 		esbTemplate.setReceiveTimeout(200);
+		esbTemplate.setApplication("unireg");
+		esbTemplate.setDomain("fiscalite");
 //		esbTemplate.afterPropertiesSet();       // la méthode n'existe plus en 2.1
 
 		clearQueue(OUTPUT_QUEUE);

@@ -115,9 +115,7 @@ public class DatabaseEventSender implements DatabaseListener, InitializingBean {
 		m.setBusinessId(String.valueOf(id));
 		m.setBusinessUser(businessUser);
 		m.setServiceDestination(serviceDestination);
-		m.setDomain("fiscalite");
 		m.setContext("databaseEvent");
-		m.setApplication("unireg");
 		final Node node = doc.newDomNode();
 		m.setBody((Document) node);
 

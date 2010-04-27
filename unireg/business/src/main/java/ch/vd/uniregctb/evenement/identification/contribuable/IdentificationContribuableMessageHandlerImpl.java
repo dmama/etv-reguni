@@ -121,9 +121,7 @@ public class IdentificationContribuableMessageHandlerImpl extends EsbMessageList
 		m.setBusinessUser(businessUser);
 		m.setBusinessCorrelationId(businessId);
 		m.setServiceDestination(replyTo);
-		m.setDomain("fiscalite"); // selon mail de Giorgio du 08.09.2009
 		m.setContext("identificationContribuable");
-		m.setApplication("unireg");
 		final Node node = identificationCtb.newDomNode();
 		m.setBody((Document) node);
 
