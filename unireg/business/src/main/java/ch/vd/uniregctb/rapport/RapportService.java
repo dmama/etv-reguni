@@ -13,6 +13,7 @@ import ch.vd.uniregctb.declaration.ordinaire.ImpressionChemisesTOResults;
 import ch.vd.uniregctb.declaration.ordinaire.ListeDIsNonEmises;
 import ch.vd.uniregctb.declaration.ordinaire.StatistiquesCtbs;
 import ch.vd.uniregctb.declaration.ordinaire.StatistiquesDIs;
+import ch.vd.uniregctb.declaration.source.DeterminerLRsEchuesResults;
 import ch.vd.uniregctb.declaration.source.EnvoiLRsResults;
 import ch.vd.uniregctb.declaration.source.EnvoiSommationLRsResults;
 import ch.vd.uniregctb.document.*;
@@ -263,4 +264,12 @@ public interface RapportService {
 	 * @return le rapport
 	 */
 	DeterminerMouvementsDossiersEnMasseRapport generateRapport(DeterminerMouvementsDossiersEnMasseResults results, StatusManager status);
+
+	/**
+	 * Génère le rapport d'exécution du job d'échéance des LR
+	 * @param results
+	 * @param status
+	 * @return le rapport
+	 */
+	DeterminerLRsEchuesRapport generateRapport(DeterminerLRsEchuesResults results, StatusManager status);
 }

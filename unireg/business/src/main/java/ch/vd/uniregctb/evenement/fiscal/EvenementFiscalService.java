@@ -121,7 +121,7 @@ public interface EvenementFiscalService {
 	 * @param dateEvenement
 	 */
 	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
-	void publierEvenementLRManquante(DebiteurPrestationImposable debiteur, DeclarationImpotSource lr, RegDate dateEvenement);
+	void publierEvenementFiscalLRManquante(DebiteurPrestationImposable debiteur, DeclarationImpotSource lr, RegDate dateEvenement);
 
 	/**
 	 * Publie un événement fiscal de type 'Annulation LR'

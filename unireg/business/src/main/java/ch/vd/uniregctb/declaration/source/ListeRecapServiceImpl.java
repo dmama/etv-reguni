@@ -8,7 +8,6 @@ import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.util.Assert;
 
-import ch.vd.editique.service.enumeration.TypeFormat;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
@@ -254,6 +253,18 @@ public class ListeRecapServiceImpl implements ListeRecapService, DelegateEditiqu
 			lrTrouveesOut.addAll(lrTrouveesIn);
 		}
 		return lrPeriodiquesManquantes;
+	}
+
+	/**
+	 * Pour chacun des débiteurs à qui on a envoyé toutes les LR de la période fiscale donnée, et pour lesquels il existe au
+	 * moins une LR échue (dont le délai de retour de la sommation a été bien dépassé à la date de traitement),
+	 * envoie un événement fiscal "liste récapitulative manquante"
+	 * @param periodeFiscale période fiscale sur laquelle les LR sont inspectées
+	 * @param dateTraitement date déterminante pour savoir si un délai a été dépassé
+	 */
+	public DeterminerLRsEchuesResults determineLRsEchues(int periodeFiscale, RegDate dateTraitement, StatusManager status) throws Exception {
+		final DeterminerLRsEchuesProcessor processor = new DeterminerLRsEchuesProcessor(transactionManager, hibernateTemplate, this, delaisService, tiersDAO, listeRecapDAO, evenementFiscalService);
+		return processor.run(periodeFiscale, dateTraitement, status);
 	}
 
 	/**

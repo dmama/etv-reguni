@@ -121,6 +121,14 @@
         <property name="rapportService" ref="rapportService"/>
     </bean>
 
+	<bean id="determinerLRsEchuesJob" parent="schedulerJob" class="ch.vd.uniregctb.declaration.source.DeterminerLRsEchuesJob">
+		<constructor-arg value="303"/>
+		<constructor-arg value="Produire la liste des listes récapitulatives à échoir"/>
+		<property name="lrService" ref="lrService"/>
+		<property name="rapportService" ref="rapportService"/>
+		<property name="transactionManager" ref="transactionManager"/>
+	</bean>
+
     <bean id="determineDIsJob" parent="schedulerJob" class="ch.vd.uniregctb.declaration.DeterminerDIsJob">
         <constructor-arg value="400"/>
         <constructor-arg value="Déterminer les déclarations d'impôt à envoyer et créer des tâches en instance"/>
