@@ -9,6 +9,8 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
+import org.hibernate.FlushMode;
+import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -222,6 +224,10 @@ public class AsyncTiersIndexer {
 	 * Indexe les BATCH_SIZE prochains tiers et rend la main à l'appelant (même s'il reste des tiers dans la queue).
 	 */
 	private void indexBatch() {
+
+		final List<Long> indexed = new ArrayList<Long>();
+		final List<Long> dirties = new ArrayList<Long>();
+
 		/*
 		 * On crée à la main une nouvelle session hibernate avec un intercepteur vide (HibernateFakeInterceptor). Cela permet de désactiver
 		 * la validation des tiers, et de flagger comme 'dirty' même les tiers qui ne valident pas. Autrement, le premier tiers qui ne valide pas
@@ -229,19 +235,24 @@ public class AsyncTiersIndexer {
 		 */
 		Session session = sessionFactory.openSession(new HibernateFakeInterceptor());
 		try {
-			List<Tiers> list = new ArrayList<Tiers>();
-			for (int i = 0; i < BATCH_SIZE; ++i) {
-				// On fait du polling pour permettre à la thread de s'arrêter si nécessaire
-				Long id = nextId();
-				if (id == null) {
-					break;
-				}
+			session.setFlushMode(FlushMode.MANUAL);
 
-				final Tiers tiers = (Tiers) session.get(Tiers.class, id);
-				list.add(tiers);
-			}
+			final List<Tiers> list = getNextBatch(session);
+
 			indexTiers(list);
-			session.flush();
+
+			for (Tiers t : list) {
+				if (t.isDirty()) {
+					dirties.add(t.getNumero());
+				}
+				else {
+					indexed.add(t.getNumero());
+				}
+			}
+
+			// on ne modifie pas la base et on met-à-jour le flag 'dirty' dans une seconde session,
+			// parce que Hibernate prend beaucoup de temps pour parser toutes les instances chargées
+			session.clear();
 		}
 		catch (Exception e) {
 			LOGGER.error(e, e);
@@ -249,6 +260,45 @@ public class AsyncTiersIndexer {
 		finally {
 			session.close();
 		}
+
+		// Met-à-jour les flags 'dirty'
+		session = sessionFactory.openSession(new HibernateFakeInterceptor());
+		try {
+			if (!dirties.isEmpty()) {
+				SQLQuery query = session.createSQLQuery("update TIERS set INDEX_DIRTY = 1 where NUMERO in (:ids)");
+				query.setParameterList("ids", dirties);
+				query.executeUpdate();
+			}
+
+			if (!indexed.isEmpty()) {
+				SQLQuery query = session.createSQLQuery("update TIERS set INDEX_DIRTY = 0 where NUMERO in (:ids)");
+				query.setParameterList("ids", indexed);
+				query.executeUpdate();
+			}
+		}
+		catch (Exception e) {
+			LOGGER.error(e, e);
+		}
+		finally {
+			session.close();
+		}
+	}
+
+	private List<Tiers> getNextBatch(Session session) {
+
+		final List<Tiers> list = new ArrayList<Tiers>(BATCH_SIZE);
+		
+		for (int i = 0; i < BATCH_SIZE; ++i) {
+			// On fait du polling pour permettre au thread de s'arrêter si nécessaire
+			Long id = nextId();
+			if (id == null) {
+				break;
+			}
+
+			final Tiers tiers = (Tiers) session.get(Tiers.class, id);
+			list.add(tiers);
+		}
+		return list;
 	}
 
 	private void indexTiers(List<Tiers> tiers) {
