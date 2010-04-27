@@ -17,8 +17,14 @@ public interface StatistiquesEvenementsService {
 
 	/**
 	 * Renvoie les statistiques sur les événements externes
-	 * @return les données nécessaires é l'établissement d'un rapport
+	 * @return les données nécessaires à l'établissement d'un rapport
 	 */
 	StatsEvenementsExternesResults getStatistiquesEvenementsExternes();
 
+	/**
+	 * Renvoie les statistiques sur les événements de demande d'identification de contribuable
+	 * @return les données nécessaires à l'établissement d'un rapport
+	 * @param debutActivite
+	 */
+	StatsEvenementsIdentificationContribuableResults getStatistiquesEvenementsIdentificationContribuable(RegDate debutActivite);
 }

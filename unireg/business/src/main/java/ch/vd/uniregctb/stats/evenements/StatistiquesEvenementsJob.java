@@ -30,7 +30,7 @@ public class StatistiquesEvenementsJob extends JobDefinition {
 
 	private static final String EVTS_CIVILS = "EVTS_CIVILS";
 	private static final String EVTS_EXTERNES = "EVTS_EXTERNES";
-	private static final String EVTS_IDENTIFICATION = "EVTS_IDENTIFICATION";
+	private static final String EVTS_IDENT_CTB = "EVTS_IDENT_CTB";
 	private static final String DUREE_REFERENCE = "DUREE";
 
 	private static final List<JobParam> params;
@@ -56,14 +56,14 @@ public class StatistiquesEvenementsJob extends JobDefinition {
 			params.add(param);
 		}
 
-//		{
-//			JobParam param = new JobParam();
-//			param.setDescription("Evénements d'identification");
-//			param.setName(EVTS_IDENTIFICATION);
-//			param.setMandatory(false);
-//			param.setType(new JobParamBoolean());
-//			params.add(param);
-//		}
+		{
+			JobParam param = new JobParam();
+			param.setDescription("Evénements d'identification");
+			param.setName(EVTS_IDENT_CTB);
+			param.setMandatory(false);
+			param.setType(new JobParamBoolean());
+			params.add(param);
+		}
 
 		{
 			JobParam param = new JobParam();
@@ -78,7 +78,7 @@ public class StatistiquesEvenementsJob extends JobDefinition {
 		{
 			defaultParams.put(EVTS_CIVILS, Boolean.TRUE);
 			defaultParams.put(EVTS_EXTERNES, Boolean.TRUE);
-			defaultParams.put(EVTS_IDENTIFICATION, Boolean.FALSE);
+			defaultParams.put(EVTS_IDENT_CTB, Boolean.TRUE);
 			defaultParams.put(DUREE_REFERENCE, 7);
 		}
 	}
@@ -105,7 +105,7 @@ public class StatistiquesEvenementsJob extends JobDefinition {
 		// allons chercher les paramètres
 		final boolean civils = getBooleanValue(params, EVTS_CIVILS);
 		final boolean externes = getBooleanValue(params, EVTS_EXTERNES);
-		final boolean identification = getBooleanValue(params, EVTS_IDENTIFICATION);
+		final boolean identCtb = getBooleanValue(params, EVTS_IDENT_CTB);
 		Integer dureeReference = (Integer) params.get(DUREE_REFERENCE);
 		if (dureeReference == null) {
 			dureeReference = (Integer) defaultParams.get(DUREE_REFERENCE);
@@ -130,19 +130,24 @@ public class StatistiquesEvenementsJob extends JobDefinition {
 			resultatsExternes = null;
 		}
 
+		final StatsEvenementsIdentificationContribuableResults resultatsIdentCtb;
+		if (identCtb) {
+			resultatsIdentCtb = service.getStatistiquesEvenementsIdentificationContribuable(debutActivite);
+		}
+		else {
+			resultatsIdentCtb = null;
+		}
+
 		// Produit le rapport dans une transaction read-write
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(false);
 		final StatistiquesEvenementsRapport rapport = (StatistiquesEvenementsRapport) template.execute(new TransactionCallback() {
 			public StatistiquesEvenementsRapport doInTransaction(TransactionStatus status) {
-				return rapportService.generateRapport(resultatsCivils, resultatsExternes, debutActivite, getStatusManager());
+				return rapportService.generateRapport(resultatsCivils, resultatsExternes, resultatsIdentCtb, debutActivite, getStatusManager());
 			}
 		});
 
 		setLastRunReport(rapport);
-		Audit.success("La production des statistiques des événements en date du " + RegDate.get() + " est terminée.", rapport);
-
-		// génération des rapports
-		rapportService.generateRapport(resultatsCivils, resultatsExternes, debutActivite, getStatusManager());
+		Audit.success("La production des statistiques des événements reçus en date du " + RegDate.get() + " est terminée.", rapport);
 	}
 }

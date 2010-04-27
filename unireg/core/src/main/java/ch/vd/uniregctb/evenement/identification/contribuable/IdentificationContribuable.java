@@ -75,9 +75,15 @@ public class IdentificationContribuable extends HibernateEntity {
 		/**
 		 * L'événement n'a pas permis d'identifier le contribuable
 		 */
-		NON_IDENTIFIE
+		NON_IDENTIFIE;
 
-
+		/**
+		 * @return <code>true</code> si l'événement n'est pas dans un état terminal
+		 */
+		public boolean isEncoreATraiter() {
+			return this == RECU || this == A_TRAITER_MANUELLEMENT || this == A_TRAITER_MAN_SUSPENDU
+					|| this == EXCEPTION || this == A_EXPERTISER || this == A_EXPERTISER_SUSPENDU;
+		}
 	}
 
 	public enum	ErreurMessage {

@@ -3,8 +3,10 @@ package ch.vd.uniregctb.stats.evenements;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.evenement.externe.EtatEvenementExterne;
+import ch.vd.uniregctb.evenement.identification.contribuable.CriteresAdresse;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
+import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
@@ -167,6 +169,96 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 		return getNombreParModalite(EtatEvenementExterne.class, sql, null);
 	}
 
+	public StatsEvenementsIdentificationContribuableResults getStatistiquesEvenementsIdentificationContribuable(RegDate debutActivite) {
+		final Map<IdentificationContribuable.Etat, BigDecimal> etats = getEtatsEvenementsIdentificationContribuable(null);
+		final Map<IdentificationContribuable.Etat, BigDecimal> etatsNouveaux = getEtatsEvenementsIdentificationContribuable(debutActivite);
+		final List<StatsEvenementsIdentificationContribuableResults.EvenementInfo> aTraiter = getEvenementsIdentificationContribuableATraiter();
+		return new StatsEvenementsIdentificationContribuableResults(etats, etatsNouveaux, aTraiter);
+	}
+
+	private Map<IdentificationContribuable.Etat, BigDecimal> getEtatsEvenementsIdentificationContribuable(RegDate debutActivite) {
+		final String sql;
+		final Map<String, Object> sqlParameters;
+		if (debutActivite != null) {
+			sql = "SELECT ETAT, COUNT(*) FROM EVENEMENT_IDENTIFICATION_CTB WHERE LOG_CDATE > TO_DATE(:debutActivite, 'YYYYMMDD') GROUP BY ETAT";
+			sqlParameters = new HashMap<String, Object>(1);
+			sqlParameters.put("debutActivite", debutActivite.index());
+		}
+		else {
+			sql = "SELECT ETAT, COUNT(*) FROM EVENEMENT_IDENTIFICATION_CTB GROUP BY ETAT";
+			sqlParameters = null;
+		}
+		return getNombreParModalite(IdentificationContribuable.Etat.class, sql, sqlParameters);
+	}
+
+	private List<StatsEvenementsIdentificationContribuableResults.EvenementInfo> getEvenementsIdentificationContribuableATraiter() {
+		/*
+			-- Liste des messages à traiter manuellement
+			SELECT DATE_DEMANDE, EMETTEUR_ID, ETAT, MESSAGE_ID, PERIODE_FISCALE, TYPE_MESSAGE, BUSINESS_ID, NB_CTB_TROUVES, NAVS11, NAVS13, ADR_CH_COMPL, ADR_CODE_PAYS, ADR_LIEU,
+				   ADR_LIGNE_1, ADR_LIGNE_2, ADR_LOCALITE, ADR_NO_APPART, ADR_ORDRE_POSTE, ADR_NO_POLICE, ADR_NPA_ETRANGER, ADR_NPA_SUISSE, ADR_NO_CP, ADR_RUE, ADR_TEXT_CP,
+				   ADR_TYPE, DATE_NAISSANCE, NOM, PRENOMS, SEXE
+			FROM EVENEMENT_IDENTIFICATION_CTB
+			WHERE ETAT IN (... états encore à traiter ...)
+			ORDER BY DATE_DEMANDE;
+		 */
+		final StringBuilder b = new StringBuilder();
+		b.append("SELECT DATE_DEMANDE, EMETTEUR_ID, ETAT, MESSAGE_ID, PERIODE_FISCALE, TYPE_MESSAGE, BUSINESS_ID, NB_CTB_TROUVES, NAVS11, NAVS13, ADR_CH_COMPL, ADR_CODE_PAYS, ADR_LIEU,");
+		b.append(" ADR_LIGNE_1, ADR_LIGNE_2, ADR_LOCALITE, ADR_NO_APPART, ADR_ORDRE_POSTE, ADR_NO_POLICE, ADR_NPA_ETRANGER, ADR_NPA_SUISSE, ADR_NO_CP, ADR_RUE, ADR_TEXT_CP,");
+		b.append(" ADR_TYPE, DATE_NAISSANCE, NOM, PRENOMS, SEXE");
+		b.append(" FROM EVENEMENT_IDENTIFICATION_CTB WHERE ETAT IN (");
+		boolean first = true;
+		for (IdentificationContribuable.Etat etat : IdentificationContribuable.Etat.values()) {
+			if (etat.isEncoreATraiter()) {
+				if (!first) {
+					b.append(", ");
+				}
+				b.append("'").append(etat.name()).append("'");
+				first = false;
+			}
+		}
+		b.append(") ORDER BY DATE_DEMANDE");
+		final String sql = b.toString();
+
+		return executeSelect(sql, new SelectCallback<StatsEvenementsIdentificationContribuableResults.EvenementInfo>() {
+			public StatsEvenementsIdentificationContribuableResults.EvenementInfo onRow(Object[] row) {
+
+				final Date dateDemande = (Date) row[0];
+				final String emetteurId = (String) row[1];
+				final IdentificationContribuable.Etat etat = IdentificationContribuable.Etat.valueOf((String) row[2]);
+				final String messageId = (String) row[3];
+				final Integer pf = row[4] != null ? ((BigDecimal) row[4]).intValueExact() : null;
+				final String typeMessage = (String) row[5];
+				final String businessId = (String) row[6];
+				final Integer nbCtbTrouves = row[7] != null ? ((BigDecimal) row[7]).intValueExact() : null;
+				final String navs11 = (String) row[8];
+				final String navs13 = (String) row[9];
+				final String adresseChiffreComplementaire = (String) row[10];
+				final String adresseCodePays = (String) row[11];
+				final String adresseLieu = (String) row[12];
+				final String adresseLigne1 = (String) row[13];
+				final String adresseLigne2 = (String) row[14];
+				final String adresseLocalite = (String) row[15];
+				final String adresseNumeroAppartement = (String) row[16];
+				final Integer adresseNumeroOrdrePoste = row[17] != null ? ((BigDecimal) row[17]).intValueExact() : null;
+				final String adresseNumeroPolice = (String) row[18];
+				final String adresseNpaEtranger = (String) row[19];
+				final Integer adresseNpaSuisse = row[20] != null ? ((BigDecimal) row[20]).intValueExact() : null;
+				final Integer adresseNumeroCasePostale = row[21] != null ? ((BigDecimal) row[21]).intValueExact() : null;
+				final String adresseRue = (String) row[22];
+				final String adresseTexteCasePostale = (String) row[23];
+				final CriteresAdresse.TypeAdresse adresseType = row[24] != null ? CriteresAdresse.TypeAdresse.valueOf((String) row[24]) : null;
+				final RegDate dateNaissance = row[25] != null ? RegDate.fromIndex(((BigDecimal) row[25]).intValueExact(), true) : null;
+				final String nom = (String) row[26];
+				final String prenoms = (String) row[27];
+				final Sexe sexe = row[28] != null ? Sexe.valueOf((String) row[28]) : null;
+
+				return new StatsEvenementsIdentificationContribuableResults.EvenementInfo(dateDemande, emetteurId, etat, messageId, pf, typeMessage, businessId, nbCtbTrouves, navs11, navs13,
+						adresseChiffreComplementaire, adresseCodePays, adresseLieu, adresseLigne1, adresseLigne2, adresseLocalite, adresseNumeroAppartement, adresseNumeroOrdrePoste, adresseNumeroPolice, adresseNpaEtranger,
+						adresseNpaSuisse, adresseNumeroCasePostale, adresseRue, adresseTexteCasePostale, adresseType, dateNaissance, nom, prenoms, sexe);
+			}
+		});
+	}
+
 	private static interface SelectCallback<T> {
 		T onRow(Object[] row);
 	}
@@ -220,20 +312,5 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 				}
 			}
 		});
-	}
-
-	private Map<IdentificationContribuable.Etat, BigDecimal> getEtatsEvenementsIdentificationContribuable(RegDate debutActivite) {
-		final String sql;
-		final Map<String, Object> sqlParameters;
-		if (debutActivite != null) {
-			sql = "SELECT ETAT, COUNT(*) FROM EVENEMENT_IDENTIFICATION_CTB WHERE LOG_CDATE > TO_DATE(:debutActivite, 'YYYYMMDD') GROUP BY ETAT";
-			sqlParameters = new HashMap<String, Object>(1);
-			sqlParameters.put("debutActivite", debutActivite.index());
-		}
-		else {
-			sql = "SELECT ETAT, COUNT(*) FROM EVENEMENT_IDENTIFICATION_CTB GROUP BY ETAT";
-			sqlParameters = null;
-		}
-		return getNombreParModalite(IdentificationContribuable.Etat.class, sql, sqlParameters);
 	}
 }
