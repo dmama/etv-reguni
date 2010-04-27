@@ -58,9 +58,7 @@ public class EvenementCivilUnitaireSenderImpl implements EvenementCivilUnitaireS
 		m.setBusinessUser(businessUser);
 		m.setBusinessCorrelationId(evenement.getId().toString());
 		m.setServiceDestination(serviceDestination);
-		m.setDomain("fiscalite"); // selon mail de Giorgio du 08.09.2009
 		m.setContext("evenementCivil");
-		m.setApplication("unireg");
 		final Node node = document.newDomNode();
 		m.setBody((Document) node);
 

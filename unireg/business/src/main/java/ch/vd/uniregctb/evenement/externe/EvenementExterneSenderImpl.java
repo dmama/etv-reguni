@@ -63,9 +63,7 @@ public class EvenementExterneSenderImpl implements EvenementExterneSender {
 		m.setBusinessId(String.valueOf(businessId));
 		m.setBusinessUser(businessUser);
 		m.setServiceDestination(serviceDestination);
-		m.setDomain("fiscalite");
 		m.setContext("evenementExterne");
-		m.setApplication("unireg");
 		final Node node = document.newDomNode();
 		m.setBody((Document) node);
 

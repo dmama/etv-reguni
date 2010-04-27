@@ -45,9 +45,7 @@ public abstract class EvenementTest {
 		final EsbMessage m = esbMessageFactory.createMessage();
 		m.setBusinessUser("EvenementTest");
 		m.setBusinessId(String.valueOf(m.hashCode()));
-		m.setDomain("fiscalite");
 		m.setContext("test");
-		m.setApplication("unireg");
 		m.setServiceDestination(queueName);
 		m.setBody(texte);
 
