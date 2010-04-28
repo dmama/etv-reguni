@@ -43,12 +43,10 @@ public class EvenementListController extends AbstractEvenementController {
 		if (!SecurityProvider.isGranted(Role.EVEN)) {
 			throw new AccessDeniedException("vous ne possédez aucun droit IfoSec de gestion des évènements civils");
 		}
-		HttpSession session = request.getSession();
-		String buttonEffacer = request.getParameter(ACTION_PARAMETER_NAME);
-
+		final HttpSession session = request.getSession();
 		EvenementCriteriaView bean = (EvenementCriteriaView) session.getAttribute(EVENEMENT_CRITERIA_NAME);
 
-		if (bean == null || (buttonEffacer != null && buttonEffacer.equals(EFFACER_PARAMETER_VALUE))) {
+		if (bean == null || isAppuiSurEffacer(request)) {
 	 		bean = (EvenementCriteriaView) super.formBackingObject(request);
 			bean.setTypeRechercheDuNom(EvenementCriteria.TypeRechercheDuNom.EST_EXACTEMENT);
 			bean.setEtat(EtatEvenementCivil.A_VERIFIER);
@@ -56,6 +54,11 @@ public class EvenementListController extends AbstractEvenementController {
 		}
 
 		return bean;
+	}
+
+	private static boolean isAppuiSurEffacer(HttpServletRequest request) {
+		final String actionParameter = request.getParameter(ACTION_PARAMETER_NAME);
+		return actionParameter != null && EFFACER_PARAMETER_VALUE.equals(actionParameter);
 	}
 
 	/**
@@ -68,21 +71,21 @@ public class EvenementListController extends AbstractEvenementController {
 	@Override
 	protected ModelAndView showForm(HttpServletRequest request, HttpServletResponse response, BindException errors, Map model) throws Exception {
 
-		HttpSession session = request.getSession();
-		ModelAndView mav = super.showForm(request, response, errors, model);
-		EvenementCriteriaView bean = (EvenementCriteriaView) session.getAttribute(EVENEMENT_CRITERIA_NAME);
-		if (bean != null) {
+		final HttpSession session = request.getSession();
+		final ModelAndView mav = super.showForm(request, response, errors, model);
+		final EvenementCriteriaView bean = (EvenementCriteriaView) session.getAttribute(EVENEMENT_CRITERIA_NAME);
+		if (bean != null && !isAppuiSurEffacer(request)) {
 			// Récupération de la pagination
 			// [UNIREG-1173] tri par défaut: id evt en décroissant (voir aussi evenement/list.jsp pour l'affichage dans la page)
-			WebParamPagination pagination = new WebParamPagination(request, TABLE_NAME, PAGE_SIZE, DEFAULT_FIELD, false);
-			List<EvenementCivilRegroupeView> listEvenements = getEvenementManager().find(bean, pagination);
+			final WebParamPagination pagination = new WebParamPagination(request, TABLE_NAME, PAGE_SIZE, DEFAULT_FIELD, false);
+			final List<EvenementCivilRegroupeView> listEvenements = getEvenementManager().find(bean, pagination);
 
 			mav.addObject(EVENEMENT_LIST_ATTRIBUTE_NAME, listEvenements);
-			mav.addObject(EVENEMENT_LIST_ATTRIBUTE_SIZE, new Integer(getEvenementManager().count(bean)));
+			mav.addObject(EVENEMENT_LIST_ATTRIBUTE_SIZE, getEvenementManager().count(bean));
 		}
 		else {
 			mav.addObject(EVENEMENT_LIST_ATTRIBUTE_NAME, new ArrayList<EvenementCivilRegroupe>());
-			mav.addObject(EVENEMENT_LIST_ATTRIBUTE_SIZE, Integer.valueOf(0));
+			mav.addObject(EVENEMENT_LIST_ATTRIBUTE_SIZE, 0);
 		}
 
 		return mav;
@@ -96,11 +99,11 @@ public class EvenementListController extends AbstractEvenementController {
 	@Override
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors) throws Exception {
 
-		ModelAndView mav = super.onSubmit(request, response, command, errors);
+		final ModelAndView mav = super.onSubmit(request, response, command, errors);
 		mav.setView(new RedirectView(getSuccessView()));
 
-		EvenementCriteriaView bean = (EvenementCriteriaView) command;
-		HttpSession session = request.getSession();
+		final EvenementCriteriaView bean = (EvenementCriteriaView) command;
+		final HttpSession session = request.getSession();
 		session.setAttribute(EVENEMENT_CRITERIA_NAME, bean);
 		if (request.getParameter(EFFACER_PARAMETER_VALUE) != null) {
 			mav.setView(new RedirectView("list.do?action=effacer"));
@@ -116,9 +119,8 @@ public class EvenementListController extends AbstractEvenementController {
 	 * @param	module	Name of the specific module
 	 */
 	public static void removeModuleFromSession(HttpServletRequest request, String module) {
-		HttpSession session = request.getSession(true);
+		final HttpSession session = request.getSession(true);
 		session.removeAttribute(module);
-
 	}
 
 }
