@@ -5,7 +5,7 @@
 	<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
 		<td width="25%"><fmt:message key="label.type.evenement" />&nbsp;:</td>
 		<td width="75%" colspan ="3">
-			<form:select path="type">
+			<form:select path="typeEvenement">
 				<form:option value="TOUS" ><fmt:message key="option.TOUS" /></form:option>
 				<form:options items="${typesEvenement}"/>
 			</form:select>	
@@ -15,7 +15,7 @@
 	<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
 		<td width="25%"><fmt:message key="label.etat.evenement" />&nbsp;:</td>
 		<td width="25%">
-			<form:select path="etat" >
+			<form:select path="etatEvenement" >
 				<form:option value="TOUS" ><fmt:message key="option.TOUS" /></form:option>
 				<form:options items="${etatsEvenement}" />
 			</form:select>
