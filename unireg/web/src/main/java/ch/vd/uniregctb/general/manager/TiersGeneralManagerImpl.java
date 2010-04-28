@@ -6,7 +6,6 @@ import java.util.GregorianCalendar;
 import java.util.Iterator;
 
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
-import ch.vd.uniregctb.type.TypeAdresseTiers;
 import org.apache.log4j.Logger;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -107,6 +106,7 @@ public class TiersGeneralManagerImpl implements TiersGeneralManager{
 		}
 		tiersGeneralView.setNatureTiers(tiers.getNatureTiers());
 		tiersGeneralView.setAnnule(tiers.isAnnule());
+		tiersGeneralView.setAnnulationDate(tiers.getAnnulationDate());
 
 		final ValidationResults validationResults = tiers.validate();
 		setErreursFiliation(tiers, validationResults);

@@ -27,7 +27,7 @@
 		<spring:bind path="${bind}" >
 			<c:if test="${tiersGeneral.annule}">
 				<tr class="inactif">
-					<td colspan="3" width="100%"><center><fmt:message key="label.tiers.annule" /></center></td>
+					<td colspan="3" width="100%"><center><fmt:message key="label.tiers.annule.au"/>&nbsp;<fmt:formatDate value="${tiersGeneral.annulationDate}" pattern="dd.MM.yyyy"/></center></td>
 				</tr>
 			</c:if>
 		</spring:bind>
