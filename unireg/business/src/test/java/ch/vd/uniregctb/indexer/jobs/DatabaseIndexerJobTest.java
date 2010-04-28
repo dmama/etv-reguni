@@ -109,7 +109,7 @@ public class DatabaseIndexerJobTest extends BusinessTest {
 		}
 
 		// L'index est vidé
-		globalTiersSearcher.getGlobalIndex().overwriteIndex();
+		globalTiersIndexer.overwriteIndex();
 
 		// L'index est vide
 		{
@@ -163,7 +163,7 @@ public class DatabaseIndexerJobTest extends BusinessTest {
 			assertTrue(ids.contains(Long.valueOf(63427)));
 			assertTrue(ids.contains(Long.valueOf(76327)));
 
-			int nb = globalTiersSearcher.getGlobalIndex().getExactDocCount();
+			int nb = globalTiersSearcher.getExactDocCount();
 			assertEquals(8, nb);
 		}
 	}

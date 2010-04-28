@@ -7,6 +7,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -18,11 +19,12 @@ public class IcGlobalIndexTest extends InContainerTest {
 	private static final Logger LOGGER = Logger.getLogger(IcGlobalIndexTest.class);
 
 	private GlobalTiersSearcher globalTiersSearcher;
+	private GlobalTiersIndexer globalTiersIndexer;
 
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
-		globalTiersSearcher.getGlobalIndex().overwriteIndex();
+		globalTiersIndexer.overwriteIndex();
 	}
 
 	@Test
@@ -128,12 +130,16 @@ public class IcGlobalIndexTest extends InContainerTest {
 			}
 		}
 
-		Assert.isEqual(1, globalTiersSearcher.getGlobalIndex().getApproxDocCount());
+		Assert.isEqual(1, globalTiersSearcher.getApproxDocCount());
 	}
 
 
 	public void setGlobalTiersSearcher(GlobalTiersSearcher globalTiersSearcher) {
 		this.globalTiersSearcher = globalTiersSearcher;
+	}
+
+	public void setGlobalTiersIndexer(GlobalTiersIndexer globalTiersIndexer) {
+		this.globalTiersIndexer = globalTiersIndexer;
 	}
 
 	/**

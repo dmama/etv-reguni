@@ -18,6 +18,7 @@
 				/logoutiam.do=httpSessionContextIntegrationFilter
 				/errors/**=httpSessionContextIntegrationFilter
 				/ws/**=#NONE#
+				/remoting/**=#NONE#
 				/chooseoid.do=httpSessionContextIntegrationFilter
 				/authenticationfailed.do=httpSessionContextIntegrationFilter
 				<!-- Version IAM + IFOSEC -->

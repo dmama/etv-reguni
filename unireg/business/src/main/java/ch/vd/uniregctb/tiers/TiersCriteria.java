@@ -13,9 +13,7 @@ import ch.vd.uniregctb.type.ModeImposition;
  * Critères de recherche pour les tiers.
  */
 public class TiersCriteria implements Serializable {
-	/**
-	 *
-	 */
+
 	private static final long serialVersionUID = 4798896788504617011L;
 
 	public enum TypeRecherche {
@@ -114,7 +112,7 @@ public class TiersCriteria implements Serializable {
 	/**
 	 * La date de naissance
 	 */
-	private RegDate dateNaissance;
+	private SerializableDate dateNaissance;
 
 	/**
 	 * Le numéro AVS
@@ -177,6 +175,36 @@ public class TiersCriteria implements Serializable {
 	 */
 	private Boolean tiersActif;
 
+	private static class SerializableDate implements Serializable {
+
+		private static final long serialVersionUID = 1L;
+
+		private int year;
+		private int month;
+		private int day;
+
+		SerializableDate() {
+		}
+
+		SerializableDate(RegDate date) {
+			this.year = date.year();
+			this.month = date.month();
+			this.day = date.day();
+		}
+
+		private RegDate asRegDate() {
+			if (month == RegDate.UNDEFINED) {
+				return RegDate.get(year);
+			}
+			else if (day == RegDate.UNDEFINED) {
+				return RegDate.get(year, month);
+			}
+			else {
+				return RegDate.get(year, month, day);
+			}
+		}
+	}
+
 	/**
 	 * @return true si aucun paramétre de recherche n'est renseigné. false
 	 *         autrement.
@@ -184,7 +212,7 @@ public class TiersCriteria implements Serializable {
 	public boolean isEmpty() {
 		return (numero == null)
 				&& (nomRaison == null || "".equals(nomRaison))
-				&& (dateNaissance == null || "".equals(dateNaissance))
+				&& (dateNaissance == null)
 				&& (numeroEtranger == null || "".equals(numeroEtranger))
 				&& (numeroAVS == null || "".equals(numeroAVS))
 				&& (localiteOuPays == null || "".equals(localiteOuPays))
@@ -272,7 +300,7 @@ public class TiersCriteria implements Serializable {
 	 * @return the dateNaissance
 	 */
 	public RegDate getDateNaissance() {
-		return dateNaissance;
+		return dateNaissance == null ? null : dateNaissance.asRegDate();
 	}
 
 	/**
@@ -280,7 +308,12 @@ public class TiersCriteria implements Serializable {
 	 *            the dateNaissance to set
 	 */
 	public void setDateNaissance(RegDate dateNaissance) {
-		this.dateNaissance = dateNaissance;
+		if (dateNaissance == null) {
+			this.dateNaissance = null;
+		}
+		else {
+			this.dateNaissance = new SerializableDate(dateNaissance);
+		}
 	}
 
 	/**

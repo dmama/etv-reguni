@@ -243,7 +243,10 @@
 				<entry key="/identification/tableau-bord/stats.do" value-ref="identificationMessagesStatsController" />
 				<entry key="/identification/gestion-messages/listTraite.do" value-ref="identificationMessagesListTraiteController" />
 				<entry key="/identification/gestion-messages/nonIdentifie.do" value-ref="identificationMessagesNonIdentifieController" />
-				</map>
+
+				<!-- Mapping des beans de remoting -->
+				<entry key="/tiersSearcher.remoting" value-ref="remoteTiersSearch" />
+			</map>
 		</property>
 	</bean>
 	

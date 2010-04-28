@@ -90,7 +90,7 @@ public abstract class AbstractTiersListController extends AbstractTiersControlle
 
 						ArrayList<TiersIndexedDataView> displaysTiers = new ArrayList<TiersIndexedDataView>();
 						for (TiersIndexedData v : results) {
-							TiersIndexedDataView oneTiersLine = new TiersIndexedDataView(v.getDocument());
+							TiersIndexedDataView oneTiersLine = new TiersIndexedDataView(v);
 							displaysTiers.add(oneTiersLine);
 
 							// Populate les URLs TAO/SIPF/...

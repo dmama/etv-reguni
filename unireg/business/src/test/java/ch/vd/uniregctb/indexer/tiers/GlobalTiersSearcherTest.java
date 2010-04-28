@@ -85,7 +85,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 		});
 
 		loadDatabase(DB_UNIT_DATA_FILE);
-		int c = globalTiersSearcher.getGlobalIndex().getExactDocCount();
+		int c = globalTiersSearcher.getExactDocCount();
 		assertEquals(8, c);
 	}
 

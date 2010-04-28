@@ -14,8 +14,8 @@ public class TiersIndexedDataView {
 	private String urlTaoIS;
 	private String urlSipf;
 
-	public TiersIndexedDataView(Document doc) {
-		this.data = new TiersIndexedData(doc);
+	public TiersIndexedDataView(TiersIndexedData data) {
+		this.data = data;
 	}
 
 	public Long getNumero() {
