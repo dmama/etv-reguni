@@ -18,7 +18,7 @@
 		<relativePath>../base/pom.xml</relativePath>
 	</parent>
 
-	<name>UniregCTB - Testing</name>
+	<name>Unireg - Testing</name>
 	<description>UniregCTB, Le registre unifie de l'Etat de Vaud - Testing</description>
 
 	<dependencies>

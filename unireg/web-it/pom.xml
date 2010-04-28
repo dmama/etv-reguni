@@ -17,7 +17,7 @@
 		<relativePath>../base/pom.xml</relativePath>
 	</parent>
 
-	<name>UniregCTB - Web IT</name>
+	<name>Unireg - Web IT</name>
 	<description>
 		UniregCTB, Le registre unifie de l'Etat de Vaud - Web
 		Integration Tests

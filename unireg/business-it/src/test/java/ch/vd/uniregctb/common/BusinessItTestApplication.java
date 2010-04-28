@@ -79,16 +79,15 @@ public abstract class BusinessItTestApplication {
 				CoreTestingConstants.UNIREG_CORE_UT_PROPERTIES,
 				BusinessTestingConstants.UNIREG_BUSINESS_UT_CACHE,
 				BusinessTestingConstants.UNIREG_BUSINESS_INTERFACES,
+				BusinessTestingConstants.UNIREG_BUSINESS_ESSENTIALS,
 				BusinessTestingConstants.UNIREG_BUSINESS_SERVICES,
-				// TestingConstants.UNIREG_BUSINESS_MDP,
-				// TestingConstants.UNIREG_BUSINESS_JOBS,
 				BusinessTestingConstants.UNIREG_BUSINESS_EVT_CIVIL,
+				BusinessTestingConstants.UNIREG_BUSINESS_EVT_FISCAL,
 				BusinessTestingConstants.UNIREG_BUSINESS_UT_SERVICES,
 				BusinessTestingConstants.UNIREG_BUSINESS_UT_CLIENT_WEBSERVICE,
 				BusinessTestingConstants.UNIREG_BUSINESS_UT_INTERFACES,
 				BusinessTestingConstants.UNIREG_BUSINESS_UT_EDITIQUE,
 				BusinessTestingConstants.UNIREG_BUSINESS_UT_JMS
-		// TestingConstants.UNIREG_BUSINESS_UT_JOBS
 		};
 
 		context = new ClassPathXmlApplicationContext(files);

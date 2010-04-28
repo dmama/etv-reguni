@@ -18,7 +18,7 @@
 		<relativePath>../base/pom.xml</relativePath>
 	</parent>
 
-	<name>UniregCTB - Norentes</name>
+	<name>Unireg - Norentes</name>
 	<description>UniregCTB, Le registre unifie de l'Etat de Vaud - NOn REgressioN TESts</description>
 
 	<dependencies>
