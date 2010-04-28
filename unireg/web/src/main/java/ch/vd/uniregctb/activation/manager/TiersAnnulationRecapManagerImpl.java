@@ -1,15 +1,20 @@
 package ch.vd.uniregctb.activation.manager;
 
+import org.apache.log4j.Logger;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.uniregctb.activation.ActivationService;
+import ch.vd.uniregctb.activation.ActivationServiceException;
 import ch.vd.uniregctb.activation.view.TiersAnnulationRecapView;
+import ch.vd.uniregctb.common.ActionException;
 import ch.vd.uniregctb.general.manager.TiersGeneralManager;
 import ch.vd.uniregctb.general.view.TiersGeneralView;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
 
 public class TiersAnnulationRecapManagerImpl implements TiersAnnulationRecapManager {
+
+	public static final Logger LOGGER = Logger.getLogger(TiersAnnulationRecapManagerImpl.class);
 
 	private TiersGeneralManager tiersGeneralManager;
 
@@ -75,15 +80,21 @@ public class TiersAnnulationRecapManagerImpl implements TiersAnnulationRecapMana
 	 */
 	@Transactional(rollbackFor = Throwable.class)
 	public void save(TiersAnnulationRecapView tiersAnnulationRecapView) {
-		Tiers tiers = tiersService.getTiers(tiersAnnulationRecapView.getTiers().getNumero());
-		if (tiersAnnulationRecapView.getTiersRemplacant() != null) {
-			Tiers tiersRemplacant = tiersService.getTiers(tiersAnnulationRecapView.getTiersRemplacant().getNumero());
-			activationService.remplaceTiers(tiers, tiersRemplacant, tiersAnnulationRecapView.getDateAnnulation());
-		}
-		else {
-			activationService.annuleTiers(tiers, tiersAnnulationRecapView.getDateAnnulation());
-		}
 
+		try {
+			final Tiers tiers = tiersService.getTiers(tiersAnnulationRecapView.getTiers().getNumero());
+			if (tiersAnnulationRecapView.getTiersRemplacant() != null) {
+				final Tiers tiersRemplacant = tiersService.getTiers(tiersAnnulationRecapView.getTiersRemplacant().getNumero());
+				activationService.remplaceTiers(tiers, tiersRemplacant, tiersAnnulationRecapView.getDateAnnulation());
+			}
+			else {
+				activationService.annuleTiers(tiers, tiersAnnulationRecapView.getDateAnnulation());
+			}
+		}
+		catch (ActivationServiceException e) {
+			LOGGER.error("L'opération d'annulation/remplacement de tiers a échoué", e);
+			throw new ActionException(e.getMessage());
+		}
 	}
 
 }

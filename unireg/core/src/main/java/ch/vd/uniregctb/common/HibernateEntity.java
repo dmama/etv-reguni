@@ -280,19 +280,27 @@ public abstract class HibernateEntity implements Serializable, Loggable {
 	@Transient
 	public void setAnnule(boolean annule) {
 		if (annule) {
-			setAnnulationDate(new Date());
-			if (AuthenticationHelper.getAuthentication() != null) {
-				setAnnulationUser(AuthenticationHelper.getCurrentPrincipal());
-			}
-			else {
-				setAnnulationUser("INCONNU");
-			}
+			annulerPourDate(new Date());
 		}
 		else {
 			setAnnulationDate(null);
 			setAnnulationUser(null);
 		}
 	}
+
+	public void annulerPourDate(Date dateAnnulation) {
+		if (dateAnnulation == null) {
+			throw new RuntimeException("Une annulation doit se faire avec une date donnée.");
+		}
+		setAnnulationDate(dateAnnulation);
+		if (AuthenticationHelper.getAuthentication() != null) {
+			setAnnulationUser(AuthenticationHelper.getCurrentPrincipal());
+		}
+		else {
+			setAnnulationUser("INCONNU");
+		}
+	}
+
 	@Transient
 	public boolean isAnnule() {
 		return annulationDate != null;

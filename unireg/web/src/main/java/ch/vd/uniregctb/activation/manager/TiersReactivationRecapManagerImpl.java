@@ -56,9 +56,8 @@ public class TiersReactivationRecapManagerImpl implements TiersReactivationRecap
 	 */
 	@Transactional(rollbackFor = Throwable.class)
 	public void save(TiersReactivationRecapView tiersReactivationRecapView) {
-		Tiers tiers = tiersService.getTiers(tiersReactivationRecapView.getTiers().getNumero());
+		final Tiers tiers = tiersService.getTiers(tiersReactivationRecapView.getTiers().getNumero());
 		activationService.reactiveTiers(tiers, tiersReactivationRecapView.getDateReactivation());
-
 	}
 
 }
