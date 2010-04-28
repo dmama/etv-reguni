@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.general.view;
 
+import java.util.Date;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
@@ -79,6 +81,8 @@ public class TiersGeneralView {
 	private String nomCommuneGestion;
 
 	private boolean annule;
+
+	private Date annulationDate;
 
 	private ValidationResults validationResults;
 
@@ -233,5 +237,13 @@ public class TiersGeneralView {
 	 */
 	public String getNumeroAsString() {
 		return numero == null ? null : numero.toString();
+	}
+
+	public Date getAnnulationDate() {
+		return annulationDate;
+	}
+
+	public void setAnnulationDate(Date annulationDate) {
+		this.annulationDate = annulationDate;
 	}
 }
