@@ -169,7 +169,7 @@ public class EvenementFiscalServiceImpl implements EvenementFiscalService {
 	 * {@inheritDoc}
 	 */
 	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
-	public void publierEvenementLRManquante(DebiteurPrestationImposable debiteur, DeclarationImpotSource lr, RegDate dateEvenement) {
+	public void publierEvenementFiscalLRManquante(DebiteurPrestationImposable debiteur, DeclarationImpotSource lr, RegDate dateEvenement) {
 		if (peutPublierEvenementFiscal(dateEvenement)) {
 			final EvenementFiscal evenementFiscal = new EvenementFiscalLR(debiteur, dateEvenement, TypeEvenementFiscal.LR_MANQUANTE, lr.getDateDebut(), lr.getDateFin(), lr.getId());
 			publierEvenementFiscal(evenementFiscal);

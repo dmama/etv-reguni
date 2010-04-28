@@ -7,6 +7,7 @@ import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.DeclarationException;
 import ch.vd.uniregctb.declaration.ordinaire.*;
+import ch.vd.uniregctb.declaration.source.DeterminerLRsEchuesResults;
 import ch.vd.uniregctb.declaration.source.EnvoiLRsResults;
 import ch.vd.uniregctb.declaration.source.EnvoiSommationLRsResults;
 import ch.vd.uniregctb.document.*;
@@ -606,5 +607,27 @@ public class RapportServiceImpl implements RapportService {
 		catch (Exception e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	public DeterminerLRsEchuesRapport generateRapport(final DeterminerLRsEchuesResults results, StatusManager s) {
+
+		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
+
+		final String nom = "RapportLrEchues";
+		final String description = "Rapport d'exécution du job de détermination LR échues. Date de traitement = " + results.getDateTraitement();
+		final Date dateGeneration = new Date();
+
+		try {
+			return docService.newDoc(DeterminerLRsEchuesRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<DeterminerLRsEchuesRapport>() {
+				public void writeDoc(DeterminerLRsEchuesRapport doc, OutputStream os) throws Exception {
+					final PdfDeterminerLRsEchuesRapport document = new PdfDeterminerLRsEchuesRapport();
+					document.write(results, nom, description, dateGeneration, os, status);
+				}
+			});
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+
 	}
 }

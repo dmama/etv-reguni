@@ -19,7 +19,7 @@ public interface ListeRecapService {
 	 * @param lr
 	 * @return le document pdf
 	 */
-	public byte[] getCopieConformeLR(DeclarationImpotSource lr) throws EditiqueException;
+	byte[] getCopieConformeLR(DeclarationImpotSource lr) throws EditiqueException;
 
 	/**
 	 * Impression d'une sommation LR
@@ -29,7 +29,7 @@ public interface ListeRecapService {
 	 * @#param date de traitement de la sommation
 	 * @throws Exception
 	 */
-	public void imprimerSommationLR (DeclarationImpotSource lr, RegDate dateTraitement) throws Exception ;
+	void imprimerSommationLR (DeclarationImpotSource lr, RegDate dateTraitement) throws Exception ;
 
 	/**
 	 * Imprime toutes des LR a une date de fin de periode donnee
@@ -37,7 +37,7 @@ public interface ListeRecapService {
 	 * @param dateFinPeriode
 	 * @throws Exception
 	 */
-	public EnvoiLRsResults imprimerAllLR(RegDate dateFinPeriode, StatusManager status) throws Exception ;
+	EnvoiLRsResults imprimerAllLR(RegDate dateFinPeriode, StatusManager status) throws Exception ;
 
 	/**
 	 * Somme toutes LR à sommer
@@ -45,7 +45,7 @@ public interface ListeRecapService {
 	 * @param categorie
 	 *@param dateTraitement  @throws Exception
 	 */
-	public EnvoiSommationLRsResults sommerAllLR(CategorieImpotSource categorie, RegDate dateTraitement, StatusManager status) throws Exception ;
+	EnvoiSommationLRsResults sommerAllLR(CategorieImpotSource categorie, RegDate dateTraitement, StatusManager status) throws Exception ;
 
 	/**
 	 * création et impression batch d'une LR
@@ -53,7 +53,7 @@ public interface ListeRecapService {
 	 * @param dateDebutPeriode
 	 * @throws Exception
 	 */
-	public void imprimerLR(DebiteurPrestationImposable dpi, RegDate dateDebutPeriode) throws Exception ;
+	void imprimerLR(DebiteurPrestationImposable dpi, RegDate dateDebutPeriode) throws Exception ;
 
 
 	/**
@@ -64,5 +64,14 @@ public interface ListeRecapService {
 	 * @param lrTrouveesOut  liste des périodes pour lesquelles il existe déjà des LRs. Attention, ces périodes sont fusionnées si elles se touchent.
 	 * @return une liste de range de LRs manquantes
 	 */
-	public List<DateRange> findLRsManquantes(DebiteurPrestationImposable dpi, RegDate dateFinPeriode, List<DateRange> lrTrouveesOut);
+	List<DateRange> findLRsManquantes(DebiteurPrestationImposable dpi, RegDate dateFinPeriode, List<DateRange> lrTrouveesOut);
+
+	/**
+	 * Pour chacun des débiteurs à qui on a envoyé toutes les LR de la période fiscale donnée, et pour lesquels il existe au
+	 * moins une LR échue (dont le délai de retour de la sommation a été bien dépassé à la date de traitement),
+	 * envoie un événement fiscal "liste récapitulative manquante"
+	 * @param periodeFiscale période fiscale sur laquelle les LR sont inspectées
+	 * @param dateTraitement date déterminante pour savoir si un délai a été dépassé
+	 */
+	DeterminerLRsEchuesResults determineLRsEchues(int periodeFiscale, RegDate dateTraitement, StatusManager status) throws Exception;
 }
