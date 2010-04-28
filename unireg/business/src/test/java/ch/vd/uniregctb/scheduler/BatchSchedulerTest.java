@@ -4,14 +4,11 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
-import java.util.TimeZone;
 
 import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.springframework.test.annotation.NotTransactional;
 
-import ch.vd.registre.base.date.DateHelper;
-import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.BusinessTest;
 
 import static ch.vd.uniregctb.scheduler.JobDefinition.JobStatut;
@@ -21,6 +18,7 @@ import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+@SuppressWarnings({"JavaDoc"})
 public class BatchSchedulerTest extends BusinessTest {
 
 	private final static Logger LOGGER = Logger.getLogger(BatchSchedulerTest.class);
@@ -215,10 +213,11 @@ public class BatchSchedulerTest extends BusinessTest {
 	@NotTransactional
 	public void testCronJob() throws Exception {
 
-		// Construit une expression cron pour faire démarrer le batch dans deux secondes
-		final Calendar cal = GregorianCalendar.getInstance();
+		// Construit une expression cron pour faire démarrer le batch dans trois secondes (= temps d'initialisation maximum estimé entre l'enregistrement d'un job dans Quartz et son démarrage) 
 		final Date startTime = new Date();
-		final String cron = String.format("%d %d %d * * ?", cal.get(Calendar.SECOND) + 2, cal.get(Calendar.MINUTE), cal.get(Calendar.HOUR_OF_DAY));
+		final Calendar cal = GregorianCalendar.getInstance();
+		cal.add(Calendar.SECOND, 3);
+		final String cron = String.format("%d %d %d * * ?", cal.get(Calendar.SECOND), cal.get(Calendar.MINUTE), cal.get(Calendar.HOUR_OF_DAY));
 		LOGGER.debug("cron = \"" + cron + "\"");
 
 		// Schedule le cron
