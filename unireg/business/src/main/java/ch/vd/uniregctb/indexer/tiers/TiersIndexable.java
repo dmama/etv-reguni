@@ -141,7 +141,7 @@ public abstract class TiersIndexable extends AbstractIndexable {
 		data.setRue(rue);
 		data.setNpa(npa);
 		data.setLocalite(localite);
-		data.setLocaliteEtPays(localitePays);
+		data.addLocaliteEtPays(localitePays);
 		data.setPays(pays);
 		data.setDomicileVd(IndexerFormatHelper.objectToString(estDansLeCanton));
 		data.setNoOfsDomicileVd(IndexerFormatHelper.objectToString(noOfsCommuneVD));

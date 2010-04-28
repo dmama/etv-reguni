@@ -56,10 +56,14 @@ public class DebiteurPrestationImposableIndexableTest extends BusinessTest {
 				dpi = (DebiteurPrestationImposable) dao.save(dpi);
 				numeros.noCtbDpi = dpi.getNumero();
 
+				addAdresseSuisse(dpi, TypeAdresseTiers.COURRIER, date(2000,1,1), null, MockRue.Lausanne.BoulevardGrancy);
+
 				PersonnePhysique nh = new PersonnePhysique(false);
 				nh.setNom("Entrepreneur");
 				nh = (PersonnePhysique) dao.save(nh);
 				numeros.noCtbNh = nh.getNumero();
+
+				addAdresseSuisse(nh, TypeAdresseTiers.COURRIER, date(2000,1,1), null, MockRue.Chamblon.GrandRue);
 
 				ContactImpotSource contact = new ContactImpotSource(RegDate.get(), null, nh, dpi);
 				dao.getHibernateTemplate().merge(contact);
@@ -110,7 +114,9 @@ public class DebiteurPrestationImposableIndexableTest extends BusinessTest {
 			final TiersIndexedData dataNh = (data0.getNumero().equals(numeros.noCtbNh) ? data0 : data1);
 			final TiersIndexedData dataDpi = (data0.getNumero().equals(numeros.noCtbNh) ? data1 : data0);
 			assertEquals(numeros.noCtbNh, dataNh.getNumero());
+			assertEquals("Chamblon", dataNh.getLocaliteOuPays());
 			assertEquals(numeros.noCtbDpi, dataDpi.getNumero());
+			assertEquals("Chamblon Lausanne", dataDpi.getLocaliteOuPays()); // les localités du débiteur et du contribuable associé doivent apparaître
 		}
 	}
 

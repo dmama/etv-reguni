@@ -89,7 +89,7 @@ public class DebiteurPrestationImposableIndexable extends TiersIndexable {
 			data.addNomRaison(ctbData.getNomRaison());
 			data.setAutresNom(ctbData.getAutresNom());
 			data.addLocaliteEtPays(ctbData.getLocaliteEtPays());
-			data.addNatureJuridique(ctbData.getNatureJuridique());
+			data.setNatureJuridique(ctbData.getNatureJuridique());
 
 			if (StringUtils.isBlank(dpi.getNom1())) {
 				// [UNIREG-1376] on va chercher les infos sur le contribuable si elles n'existent pas sur le débiteur
