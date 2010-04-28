@@ -38,6 +38,8 @@ public class TiersIndexableData extends IndexableData {
 	public static final String LOCALITE = "D_LOCALITE";
 	public static final String PAYS = "D_PAYS";
 	public static final String FOR_PRINCIPAL = "D_FOR_PRINCIPAL";
+	public static final String DATE_OUVERTURE_FOR = "D_DATE_OUVERTURE_FOR";
+	public static final String DATE_FERMETURE_FOR = "D_DATE_FERMETURE_FOR";
 	public static final String DOMICILE_VD = "D_DOMICILE_VD";
 	public static final String NO_OFS_DOMICILE_VD = "D_NO_OFS_DOMICILE_VD";
 	public static final String INDEXATION_DATE = "D_INDEXATION_DATE";
@@ -71,6 +73,8 @@ public class TiersIndexableData extends IndexableData {
 	private String localite;
 	private String pays;
 	private String forPrincipal;
+	private String dateOuvertureFor;
+	private String dateFermtureFor;
 	private String domicileVd;
 	private String noOfsDomicileVd;
 	private String indexationDate;
@@ -114,6 +118,8 @@ public class TiersIndexableData extends IndexableData {
 		addStockedValue(d, TiersIndexableData.LOCALITE, localite);
 		addStockedValue(d, TiersIndexableData.PAYS, pays);
 		addStockedValue(d, TiersIndexableData.FOR_PRINCIPAL, forPrincipal);
+		addStockedValue(d, TiersIndexableData.DATE_OUVERTURE_FOR, dateOuvertureFor);
+		addStockedValue(d, TiersIndexableData.DATE_FERMETURE_FOR, dateFermtureFor);
 		addStockedValue(d, TiersIndexableData.DOMICILE_VD, domicileVd);
 		addStockedValue(d, TiersIndexableData.NO_OFS_DOMICILE_VD, noOfsDomicileVd);
 		addStockedValue(d, TiersIndexableData.INDEXATION_DATE, indexationDate);
@@ -379,6 +385,22 @@ public class TiersIndexableData extends IndexableData {
 
 	public void setForPrincipal(String forPrincipal) {
 		this.forPrincipal = forPrincipal;
+	}
+
+	public String getDateOuvertureFor() {
+		return dateOuvertureFor;
+	}
+
+	public void setDateOuvertureFor(String dateOuvertureFor) {
+		this.dateOuvertureFor = dateOuvertureFor;
+	}
+
+	public String getDateFermtureFor() {
+		return dateFermtureFor;
+	}
+
+	public void setDateFermtureFor(String dateFermtureFor) {
+		this.dateFermtureFor = dateFermtureFor;
 	}
 
 	public String getDomicileVd() {

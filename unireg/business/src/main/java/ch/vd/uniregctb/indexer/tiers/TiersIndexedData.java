@@ -58,6 +58,16 @@ public class TiersIndexedData {
 		return getDocValue(TiersIndexableData.ROLE_LIGNE2);
 	}
 
+	public Date getDateOuvertureFor() {
+		final String sDate = getDocValue(TiersIndexableData.DATE_OUVERTURE_FOR);
+		return DateHelper.indexStringToDate(sDate);
+	}
+
+	public Date getDateFermetureFor() {
+		final String sDate = getDocValue(TiersIndexableData.DATE_FERMETURE_FOR);
+		return DateHelper.indexStringToDate(sDate);
+	}
+
 	public String getRue() {
 		return getDocValue(TiersIndexableData.RUE);
 	}
@@ -74,8 +84,20 @@ public class TiersIndexedData {
 		return getDocValue(TiersIndexableData.PAYS);
 	}
 
+	public String getLocaliteOuPays() {
+		return getDocValue(TiersIndexableData.LOCALITE_PAYS);
+	}
+
 	public String getForPrincipal() {
 		return getDocValue(TiersIndexableData.FOR_PRINCIPAL);
+	}
+
+	public boolean isAnnule() {
+		return Constants.OUI.equals(getDocValue(TiersIndexableData.ANNULE));
+	}
+
+	public boolean isDebiteurInactif() {
+		return Constants.OUI.equals(getDocValue(TiersIndexableData.DEBITEUR_INACTIF));
 	}
 
 	/**

@@ -5,6 +5,7 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 
 import ch.vd.registre.base.date.DateHelper;
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.indexer.IndexerException;
@@ -121,9 +122,13 @@ public class DebiteurPrestationImposableIndexable extends TiersIndexable {
 
 		// For principal
 		String communeDernierFfp = null;
+		RegDate dateOuvertureFor = null;
+		RegDate dateFermetureFor = null;
 		final ForDebiteurPrestationImposable dernierPrincipal = tiers.getDernierForDebiteur();
 		if (dernierPrincipal != null) {
 			communeDernierFfp =  getForCommuneAsString(dernierPrincipal);
+			dateOuvertureFor = dernierPrincipal.getDateDebut();
+			dateFermetureFor = dernierPrincipal.getDateFin();
 		}
 
 		// Autre fors
@@ -139,6 +144,7 @@ public class DebiteurPrestationImposableIndexable extends TiersIndexable {
 		data.setTypeOfsForPrincipal(typeAutFfpActif);
 		data.setNosOfsAutresFors(noOfsAutresFors.toString());
 		data.setForPrincipal(communeDernierFfp);
-
+		data.setDateOuvertureFor(IndexerFormatHelper.objectToString(dateOuvertureFor));
+		data.setDateFermtureFor(IndexerFormatHelper.objectToString(dateFermetureFor));
 	}
 }

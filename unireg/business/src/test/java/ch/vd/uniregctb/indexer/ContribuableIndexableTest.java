@@ -436,6 +436,8 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 
 		// Display
 		assertEquals("Le Brassus", values.getForPrincipal());
+		assertEquals(RegDateHelper.toIndexString(dateOuverture), values.getDateOuvertureFor());
+		assertEquals("", values.getDateFermtureFor());
 	}
 
 	@Test
@@ -473,6 +475,8 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		assertNull(values.getNoOfsForPrincipal());
 		// Display
 		assertEquals("Cossonay", values.getForPrincipal());
+		assertEquals(RegDateHelper.toIndexString(dateOuverture), values.getDateOuvertureFor());
+		assertEquals(RegDateHelper.toIndexString(dateFermeture), values.getDateFermtureFor());
 	}
 
 	@Test

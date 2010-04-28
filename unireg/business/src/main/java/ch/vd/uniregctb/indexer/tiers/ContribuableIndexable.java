@@ -2,6 +2,7 @@ package ch.vd.uniregctb.indexer.tiers;
 
 import java.util.Set;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.IndexerFormatHelper;
@@ -49,9 +50,13 @@ public abstract class ContribuableIndexable extends TiersIndexable {
 
 		// For principal
 		String communeDernierFfp = null;
+		RegDate dateOuvertureFor = null;
+		RegDate dateFermetureFor = null;
 		final ForFiscalPrincipal dernierPrincipal = tiers.getDernierForFiscalPrincipal();
 		if (dernierPrincipal != null) {
-			communeDernierFfp =  getForCommuneAsString(dernierPrincipal);
+			communeDernierFfp = getForCommuneAsString(dernierPrincipal);
+			dateOuvertureFor = dernierPrincipal.getDateDebut();
+			dateFermetureFor = dernierPrincipal.getDateFin();
 		}
 
 		// Autre fors
@@ -67,6 +72,8 @@ public abstract class ContribuableIndexable extends TiersIndexable {
 		data.setTypeOfsForPrincipal(typeAutFfpActif);
 		data.setNosOfsAutresFors(noOfsAutresFors.toString());
 		data.setForPrincipal(communeDernierFfp);
+		data.setDateOuvertureFor(IndexerFormatHelper.objectToString(dateOuvertureFor));
+		data.setDateFermtureFor(IndexerFormatHelper.objectToString(dateFermetureFor));
 	}
 }
 
