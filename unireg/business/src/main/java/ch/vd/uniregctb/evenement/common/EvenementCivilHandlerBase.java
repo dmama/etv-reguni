@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Set;
 
 import ch.vd.registre.base.utils.Pair;
+import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.tiers.*;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
@@ -83,7 +84,7 @@ public abstract class EvenementCivilHandlerBase implements EvenementCivilHandler
 	 */
 	private TiersDAO tiersDAO;
 
-
+	protected DataEventService dataEventService;
 
 	/**
 	 * Le service civil
@@ -432,6 +433,10 @@ public abstract class EvenementCivilHandlerBase implements EvenementCivilHandler
 
 	public void setServiceCivil(ServiceCivilService serviceCivil) {
 		this.serviceCivil = serviceCivil;
+	}
+
+	public void setDataEventService(DataEventService dataEventService) {
+		this.dataEventService = dataEventService;
 	}
 
 	public ServiceCivilService getServiceCivil() {

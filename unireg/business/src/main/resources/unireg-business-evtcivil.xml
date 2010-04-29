@@ -22,6 +22,7 @@
 		<property name="evenementCivilRegroupeDAO" ref="evenementCivilRegroupeDAO"/>
 		<property name="tiersDAO" ref="tiersDAO"/>
 		<property name="serviceCivilService" ref="serviceCivilService"/>
+		<property name="dataEventService" ref="dataEventService"/>
 		<property name="transactionManager" ref="transactionManager"/>
 	</bean>
 
@@ -31,6 +32,7 @@
 		<property name="metier" ref="metierService" />
 		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="serviceCivil" ref="serviceCivilService"/>
+		<property name="dataEventService" ref="dataEventService"/>
 		<property name="evenementFiscalService" ref="evenementFiscalService" />
 		<property name="registrar" ref="evenementCivilProcessor" />
 	</bean>

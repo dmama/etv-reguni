@@ -6,6 +6,8 @@ import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.registre.civil.model.EnumAttributeIndividu;
 import ch.vd.uniregctb.cache.UniregCacheInterface;
 import ch.vd.uniregctb.cache.UniregCacheManager;
+import ch.vd.uniregctb.data.DataEventListener;
+import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.interfaces.model.*;
 import ch.vd.uniregctb.stats.StatsService;
 import net.sf.ehcache.CacheManager;
@@ -20,7 +22,7 @@ import java.util.*;
 /**
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
-public class ServiceCivilCache extends ServiceCivilServiceBase implements UniregCacheInterface, InitializingBean, DisposableBean {
+public class ServiceCivilCache extends ServiceCivilServiceBase implements UniregCacheInterface, DataEventListener, InitializingBean, DisposableBean {
 
 	private static final Logger LOGGER = Logger.getLogger(ServiceCivilCache.class);
 
@@ -30,6 +32,7 @@ public class ServiceCivilCache extends ServiceCivilServiceBase implements Unireg
 	private Ehcache cache;
 	private UniregCacheManager uniregCacheManager;
 	private StatsService statsService;
+	private DataEventService dataEventService;
 
 	public void setTarget(ServiceCivilService target) {
 		this.target = target;
@@ -54,6 +57,10 @@ public class ServiceCivilCache extends ServiceCivilServiceBase implements Unireg
 		this.statsService = statsService;
 	}
 
+	public void setDataEventService(DataEventService dataEventService) {
+		this.dataEventService = dataEventService;
+	}
+
 	private void initCache() {
 		if (cacheManager != null && cacheName != null) {
 			cache = cacheManager.getCache(cacheName);
@@ -66,6 +73,7 @@ public class ServiceCivilCache extends ServiceCivilServiceBase implements Unireg
 			statsService.registerCache(SERVICE_NAME, cache);
 		}
 		uniregCacheManager.register(this);
+		dataEventService.register(this);
 	}
 
 	public void destroy() throws Exception {
@@ -333,9 +341,7 @@ public class ServiceCivilCache extends ServiceCivilServiceBase implements Unireg
 	/**
 	 * {@inheritDoc}
 	 */
-	@Override
 	public void onIndividuChange(long numero) {
-		super.onIndividuChange(numero);
 
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug("Eviction des données cachées pour l'individu n° " + numero);
@@ -351,6 +357,22 @@ public class ServiceCivilCache extends ServiceCivilServiceBase implements Unireg
 				cache.remove(k);
 			}
 		}
+	}
+
+	public void onTiersChange(long id) {
+		// rien à faire
+	}
+
+	public void onDroitAccessChange(long tiersId) {
+		// rien à faire
+	}
+
+	public void onTruncateDatabase() {
+		// rien à faire
+	}
+
+	public void onLoadDatabase() {
+		// rien à faire
 	}
 
 	private static EnumAttributeIndividu[] setToArray(Set<EnumAttributeIndividu> delta) {

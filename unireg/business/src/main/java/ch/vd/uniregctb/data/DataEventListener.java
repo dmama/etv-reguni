@@ -1,11 +1,11 @@
-package ch.vd.uniregctb.database;
+package ch.vd.uniregctb.data;
 
 /**
- * Interface de notification de changements sur la base de données Unireg.
+ * Interface de notification de changements sur les données Unireg.
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
-public interface DatabaseListener {
+public interface DataEventListener {
 
 	/**
 	 * Cette méthode est appelée lorsqu'un tiers va être ajouté/modifié dans la base de données.
@@ -18,11 +18,21 @@ public interface DatabaseListener {
 	void onTiersChange(long id);
 
 	/**
-	 * Cette méthode est appelée lorsqu'un droit d'accès va être ajouté/modifié dans la base de données.
+	 * Cette méthode est appelée lorsqu'un individu associé à un tiers a été ajouté/modifié dans le registre civil.
 	 * <p>
 	 * Note: toute exception levée durant l'exécution du callback sera ignorée.
 	 *
 	 * @param id
+	 *            le numéro d'individu
+	 */
+	void onIndividuChange(long id);
+
+	/**
+	 * Cette méthode est appelée lorsqu'un droit d'accès va être ajouté/modifié dans la base de données.
+	 * <p>
+	 * Note: toute exception levée durant l'exécution du callback sera ignorée.
+	 *
+	 * @param tiersId
 	 *            le numéro du tiers concerné par le droit d'accès
 	 */
 	void onDroitAccessChange(long tiersId);

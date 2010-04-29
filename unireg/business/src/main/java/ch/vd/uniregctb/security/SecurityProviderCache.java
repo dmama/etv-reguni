@@ -1,11 +1,16 @@
 package ch.vd.uniregctb.security;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
-
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -17,12 +22,12 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.cache.UniregCacheInterface;
 import ch.vd.uniregctb.cache.UniregCacheManager;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
-import ch.vd.uniregctb.database.DatabaseListener;
-import ch.vd.uniregctb.database.DatabaseService;
+import ch.vd.uniregctb.data.DataEventListener;
+import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.type.Niveau;
 
-public class SecurityProviderCache implements UniregCacheInterface, SecurityProviderInterface, DatabaseListener, InitializingBean {
+public class SecurityProviderCache implements UniregCacheInterface, SecurityProviderInterface, DataEventListener, InitializingBean {
 
 	private static final Logger LOGGER = Logger.getLogger(SecurityProviderCache.class);
 
@@ -30,7 +35,7 @@ public class SecurityProviderCache implements UniregCacheInterface, SecurityProv
 	private String cacheName;
 	private SecurityProviderInterface target;
 	private Ehcache cache;
-	private DatabaseService databaseService;
+	private DataEventService dataEventService;
 	private TiersDAO tiersDAO;
 	private DroitAccesDAO droitAccesDAO;
 	private UniregCacheManager uniregCacheManager;
@@ -68,8 +73,8 @@ public class SecurityProviderCache implements UniregCacheInterface, SecurityProv
 		this.uniregCacheManager = uniregCacheManager;
 	}
 
-	public void setDatabaseService(DatabaseService databaseService) {
-		this.databaseService = databaseService;
+	public void setDataEventService(DataEventService dataEventService) {
+		this.dataEventService = dataEventService;
 	}
 
 	public void setTiersDAO(TiersDAO tiersDAO) {
@@ -305,6 +310,10 @@ public class SecurityProviderCache implements UniregCacheInterface, SecurityProv
 		}
 	}
 
+	public void onIndividuChange(long id) {
+		// rien à faire ici
+	}
+
 	public void onDroitAccessChange(long tiersId) {
 		// Supprime tous les éléments cachés sur le tiers spécifié.
 		final List<?> keys = cache.getKeys();
@@ -340,7 +349,7 @@ public class SecurityProviderCache implements UniregCacheInterface, SecurityProv
 	public void afterPropertiesSet() throws Exception {
 		cache = cacheManager.getCache(cacheName);
 		Assert.notNull(cache);
-		databaseService.register(this);
+		dataEventService.register(this);
 		uniregCacheManager.register(this);
 		initCaches();
 	}

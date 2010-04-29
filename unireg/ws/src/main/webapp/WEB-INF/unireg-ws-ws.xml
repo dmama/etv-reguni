@@ -49,7 +49,7 @@
 	</bean>
 	
 	<bean id="tiersServiceCacheManager" class="ch.vd.uniregctb.webservices.tiers.cache.TiersWebServiceCacheManager">
-		<property name="dbService" ref="databaseService" />
+		<property name="dataEventService" ref="dataEventService" />
 		<property name="cache" ref="tiersServiceCache" />
 		<property name="tiersDAO" ref="tiersDAO" />
 	</bean>
@@ -92,7 +92,7 @@
 	</bean>
 	
 	<bean id="tiersService2CacheManager" class="ch.vd.uniregctb.webservices.tiers2.cache.TiersWebServiceCacheManager">
-		<property name="dbService" ref="databaseService" />
+		<property name="dataEventService" ref="dataEventService" />
 		<property name="cache" ref="tiersService2Cache" />
 		<property name="tiersDAO" ref="tiersDAO" />
 	</bean>

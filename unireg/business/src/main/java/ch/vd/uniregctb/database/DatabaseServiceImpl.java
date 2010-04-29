@@ -1,16 +1,31 @@
 package ch.vd.uniregctb.database;
 
-import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.dbutils.SqlFileExecutor;
-import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
-import ch.vd.uniregctb.tiers.Entreprise;
+import javax.sql.DataSource;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+
 import org.apache.commons.collections.map.ListOrderedMap;
 import org.apache.log4j.Logger;
 import org.dbunit.database.DatabaseConfig;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.QueryDataSet;
-import org.dbunit.dataset.*;
+import org.dbunit.dataset.CompositeDataSet;
+import org.dbunit.dataset.DataSetException;
+import org.dbunit.dataset.IDataSet;
+import org.dbunit.dataset.ITable;
+import org.dbunit.dataset.ITableIterator;
+import org.dbunit.dataset.ManagedDataSet;
 import org.dbunit.dataset.xml.XmlDataSet;
 import org.dbunit.ext.oracle.OracleDataTypeFactory;
 import org.dbunit.operation.CompositeOperation;
@@ -32,13 +47,12 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import javax.sql.DataSource;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.*;
+import ch.vd.registre.base.utils.Assert;
+import ch.vd.uniregctb.common.StatusManager;
+import ch.vd.uniregctb.data.DataEventService;
+import ch.vd.uniregctb.dbutils.SqlFileExecutor;
+import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
+import ch.vd.uniregctb.tiers.Entreprise;
 
 public class DatabaseServiceImpl implements DatabaseService {
 
@@ -48,8 +62,8 @@ public class DatabaseServiceImpl implements DatabaseService {
 	private LocalSessionFactoryBean localSessionFactoryBean;
 	private PlatformTransactionManager transactionManager;
 	private DataSource dataSource;
+	private DataEventService dataEventService;
 
-	private final List<DatabaseListener> listeners = new ArrayList<DatabaseListener>();
 	private static final int DEFAULT_BATCH_SIZE = 500;
 
 	/**
@@ -185,7 +199,7 @@ public class DatabaseServiceImpl implements DatabaseService {
 	public void truncateDatabase() throws Exception {
 		LOGGER.debug("Truncating database");
 		try {
-			onTruncateDatabase();
+			dataEventService.onTruncateDatabase();
 			SqlFileExecutor.execute(transactionManager, dataSource, CORE_TRUNCATE_SQL);
 		}
 		catch (Exception e) {
@@ -624,10 +638,10 @@ public class DatabaseServiceImpl implements DatabaseService {
 
 			XmlDataSet dataSet = new XmlDataSet(inputStream);
 			LOGGER.info("Début de l'import de la base de données.");
-			onTruncateDatabase();
+			dataEventService.onTruncateDatabase();
 			CompositeOperation operation = new CompositeOperation(DatabaseOperation.DELETE_ALL, new ManagedInsertOperation(status));
 			operation.execute(connection, dataSet);
-			onLoadDatabase();
+			dataEventService.onLoadDatabase();
 			LOGGER.info("La base de données à été importée.");
 		}
 		catch (Exception e) {
@@ -653,51 +667,8 @@ public class DatabaseServiceImpl implements DatabaseService {
 		this.dataSource = dataSource;
 	}
 
-	private void onTruncateDatabase() {
-		for (DatabaseListener l : listeners) {
-			try {
-				l.onTruncateDatabase();
-			}
-			catch (Exception e) {
-				LOGGER.error("L'exception ci-après a été ignorée car levée dans un listener", e);
-			}
-		}
-	}
-
-	private void onLoadDatabase() {
-		for (DatabaseListener l : listeners) {
-			try {
-				l.onLoadDatabase();
-			}
-			catch (Exception e) {
-				LOGGER.error("L'exception ci-après a été ignorée car levée dans un listener", e);
-			}
-		}
-	}
-
-	public void onTiersChange(long id) {
-		for (DatabaseListener l : listeners) {
-			try {
-				l.onTiersChange(id);
-			}
-			catch (Exception e) {
-				LOGGER.error("L'exception ci-après a été ignorée car levée dans un listener", e);
-			}
-		}
-	}
-
-	public void onDroitAccessChange(long ppId) {
-		for (DatabaseListener l : listeners) {
-			try {
-				l.onDroitAccessChange(ppId);
-			}
-			catch (Exception e) {
-				LOGGER.error("L'exception ci-après a été ignorée car levée dans un listener", e);
-			}
-		}
-	}
-
-	public void register(DatabaseListener listener) {
-		listeners.add(listener);
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setDataEventService(DataEventService dataEventService) {
+		this.dataEventService = dataEventService;
 	}
 }

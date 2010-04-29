@@ -29,7 +29,6 @@ import ch.vd.uniregctb.interfaces.model.Pays;
 import ch.vd.uniregctb.interfaces.model.Permis;
 import ch.vd.uniregctb.interfaces.model.Tutelle;
 import ch.vd.uniregctb.interfaces.model.mock.*;
-import ch.vd.uniregctb.interfaces.service.CivilListener;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilServiceBase;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -540,10 +539,6 @@ public abstract class MockServiceCivil extends ServiceCivilServiceBase {
 
 	public void warmCache(List<Individu> individus, RegDate date, EnumAttributeIndividu... parties) {
 		throw new NotImplementedException();
-	}
-
-	public void register(CivilListener listener) {
-		// rien à faire
 	}
 
 	public void onIndividuChange(long numero) {

@@ -70,19 +70,4 @@ public interface DatabaseService {
 	 * exemple.
 	 */
 	public void ensureSequencesUpToDate(boolean updateHibernateSequence, boolean updatePMSequence, boolean updateDPISequence);
-
-	/**
-	 * Enregistre un listener.
-	 */
-	public void register(DatabaseListener listener);
-
-	/**
-	 * Cette méthode ne doit être appelée que par la classe {@link DatabaseChangeInterceptor}.
-	 */
-	public void onTiersChange(long id);
-
-	/**
-	 * Cette méthode ne doit être appelée que par la classe {@link DatabaseChangeInterceptor}.
-	 */
-	public void onDroitAccessChange(long ppId);
 }

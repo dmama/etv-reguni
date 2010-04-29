@@ -123,12 +123,15 @@
 		<property name="localSessionFactoryBean" ref="&amp;sessionFactory" />
 		<property name="dataSource" ref="dataSource" />
 		<property name="transactionManager" ref="transactionManager" />
+		<property name="dataEventService" ref="dataEventService" />
 	</bean>
 
 	<bean id="databaseChangeInterceptor" class="ch.vd.uniregctb.database.DatabaseChangeInterceptor">
 		<property name="parent" ref="modificationInterceptor" />
-		<property name="dbService" ref="databaseService" />
+		<property name="dataEventService" ref="dataEventService" />
 	</bean>
+
+	<bean id="dataEventService" class="ch.vd.uniregctb.data.DataEventServiceImpl"/>
 
 	<!--  Paramètres -->
 	<bean id="parametreAppService" class="ch.vd.uniregctb.parametrage.ParametreAppServiceImpl">

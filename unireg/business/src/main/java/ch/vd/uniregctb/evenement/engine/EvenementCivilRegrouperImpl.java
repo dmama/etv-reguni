@@ -14,6 +14,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.civil.model.EnumAttributeIndividu;
 import ch.vd.uniregctb.audit.Audit;
+import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
 import ch.vd.uniregctb.evenement.EvenementCivilRegroupeDAO;
 import ch.vd.uniregctb.evenement.EvenementCivilUnitaire;
@@ -39,6 +40,7 @@ public class EvenementCivilRegrouperImpl implements EvenementCivilRegrouper {
 	private TiersDAO tiersDAO = null;
 	private ServiceCivilService serviceCivilService = null;
 	private PlatformTransactionManager transactionManager;
+	private DataEventService dataEventService;
 
 
 	public void regroupeTousEvenementsNonTraites(StatusManager status) {
@@ -144,7 +146,7 @@ public class EvenementCivilRegrouperImpl implements EvenementCivilRegrouper {
 		Assert.notNull(evenement.getDateEvenement(), "La date est invalide");
 
 		// on signale que l'individu à changé dans le registre civil (=> va rafraîchir le cache des individus)
-		serviceCivilService.onIndividuChange(evenement.getNumeroIndividu());
+		dataEventService.onIndividuChange(evenement.getNumeroIndividu());
 
 		/* Récupération de l'individu et de sons conjoint */
 		Individu individu = serviceCivilService.getIndividu(evenement.getNumeroIndividu(), RegDateHelper.getAnneeVeille(evenement.getDateEvenement()), EnumAttributeIndividu.CONJOINT);
@@ -159,7 +161,7 @@ public class EvenementCivilRegrouperImpl implements EvenementCivilRegrouper {
 		if (conjoint != null) {
 
 			// on signale que l'individu à changé dans le registre civil (=> va rafraîchir le cache des individus)
-			serviceCivilService.onIndividuChange(conjoint.getNoTechnique());
+			dataEventService.onIndividuChange(conjoint.getNoTechnique());
 
 			/* on recherche un evenement rattaché au conjoint, meme date, meme type dont l'état n'est pas TRAITE / A_VERIFIER */
 			List<EvenementCivilRegroupe> evenements = evenementCivilRegroupeDAO.rechercheEvenementExistantEtTraitable(evenement.getDateEvenement(), evenement.getType(),
@@ -235,6 +237,10 @@ public class EvenementCivilRegrouperImpl implements EvenementCivilRegrouper {
 
 	public void setServiceCivilService(ServiceCivilService serviceCivilService) {
 		this.serviceCivilService = serviceCivilService;
+	}
+
+	public void setDataEventService(DataEventService dataEventService) {
+		this.dataEventService = dataEventService;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})

@@ -1,0 +1,72 @@
+package ch.vd.uniregctb.data;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.log4j.Logger;
+
+public class DataEventServiceImpl implements DataEventService {
+
+	private static final Logger LOGGER = Logger.getLogger(DataEventServiceImpl.class);
+	
+	private final List<DataEventListener> listeners = new ArrayList<DataEventListener>();
+
+	public void register(DataEventListener listener) {
+		listeners.add(listener);
+	}
+
+	public void onTruncateDatabase() {
+		for (DataEventListener l : listeners) {
+			try {
+				l.onTruncateDatabase();
+			}
+			catch (Exception e) {
+				LOGGER.error("L'exception ci-après a été ignorée car levée dans un listener", e);
+			}
+		}
+	}
+
+	public void onLoadDatabase() {
+		for (DataEventListener l : listeners) {
+			try {
+				l.onLoadDatabase();
+			}
+			catch (Exception e) {
+				LOGGER.error("L'exception ci-après a été ignorée car levée dans un listener", e);
+			}
+		}
+	}
+
+	public void onTiersChange(long id) {
+		for (DataEventListener l : listeners) {
+			try {
+				l.onTiersChange(id);
+			}
+			catch (Exception e) {
+				LOGGER.error("L'exception ci-après a été ignorée car levée dans un listener", e);
+			}
+		}
+	}
+
+	public void onIndividuChange(long id) {
+		for (DataEventListener l : listeners) {
+			try {
+				l.onIndividuChange(id);
+			}
+			catch (Exception e) {
+				LOGGER.error("L'exception ci-après a été ignorée car levée dans un listener", e);
+			}
+		}
+	}
+
+	public void onDroitAccessChange(long ppId) {
+		for (DataEventListener l : listeners) {
+			try {
+				l.onDroitAccessChange(ppId);
+			}
+			catch (Exception e) {
+				LOGGER.error("L'exception ci-après a été ignorée car levée dans un listener", e);
+			}
+		}
+	}
+}

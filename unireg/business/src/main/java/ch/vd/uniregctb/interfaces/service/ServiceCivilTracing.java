@@ -278,26 +278,6 @@ public class ServiceCivilTracing implements ServiceCivilService, InitializingBea
 		}
 	}
 
-	public void register(CivilListener listener) {
-		long time = tracing.start();
-		try {
-			target.register(listener);
-		}
-		finally {
-			tracing.end(time);
-		}
-	}
-
-	public void onIndividuChange(long numero) {
-		long time = tracing.start();
-		try {
-			target.onIndividuChange(numero);
-		}
-		finally {
-			tracing.end(time);
-		}
-	}
-
 	public void afterPropertiesSet() throws Exception {
 		if (statsService != null) {
 			statsService.registerService(SERVICE_NAME, tracing);
