@@ -595,7 +595,6 @@ public class TacheServiceImpl implements TacheService, InitializingBean {
 	public void genereTachesDepuisAnnulationDeFor(Contribuable contribuable) {
 
 		final CollectiviteAdministrative oid = tiersService.getOfficeImpotAt(contribuable, null);
-		Assert.notNull(oid);
 
 		final DeclarationImpotCriteria criterion = new DeclarationImpotCriteria();
 		criterion.setContribuable(contribuable.getNumero());
@@ -606,6 +605,7 @@ public class TacheServiceImpl implements TacheService, InitializingBean {
 				final List<Assujettissement> assuj = Assujettissement.determine(contribuable, di, false);
 				if (assuj == null || assuj.isEmpty()) {
 					if (!tacheDAO.existsTacheAnnulationEnInstanceOuEnCours(contribuable.getNumero(), di.getId())) {
+						Assert.notNull(oid);
 						final TacheAnnulationDeclarationImpot tacheAnnulationDI = new TacheAnnulationDeclarationImpot(TypeEtatTache.EN_INSTANCE, null, contribuable, di, oid);
 						tacheDAO.save(tacheAnnulationDI);
 					}

@@ -2,6 +2,7 @@ package ch.vd.uniregctb.tache;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
@@ -18,6 +19,7 @@ import org.junit.Test;
 import org.springframework.test.annotation.NotTransactional;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.util.Assert;
 
 import ch.vd.common.model.EnumTypeAdresse;
@@ -66,6 +68,7 @@ import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseRetour;
+import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
@@ -2207,6 +2210,54 @@ public class TacheServiceTest extends BusinessTest {
 		final List<Tache> taches = genereChangementImposition(ModeImposition.MIXTE_137_2, ModeImposition.DEPENSE);
 		assertEquals(0, countTaches(TypeTache.TacheNouveauDossier, taches));
 		assertEquals(0, countTaches(TypeTache.TacheEnvoiDeclarationImpot, taches));
+	}
+
+	@Test
+	public void testAnnulationForSansOidGestion() throws Exception {
+
+		// mise en place
+		final long ppId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Marcelin", "Emile", date(1946, 1, 5), Sexe.MASCULIN);
+				final RegDate dateArrivee = date(2008, 4, 1);
+				addAdresseSuisse(pp, TypeAdresseTiers.DOMICILE, dateArrivee, null, MockRue.Bex.RouteDuBoet);
+
+				final ForFiscalPrincipal ffp = addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HS, MockCommune.Bex);
+				ffp.setModeImposition(ModeImposition.SOURCE);
+				return pp.getNumero();
+			}
+		});
+
+		// vérification qu'il n'y a pas d'OID associé au contribuable, puis annulation du for
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
+				final CollectiviteAdministrative oid = tiersService.getOfficeImpotAt(pp, null);
+				assertNull(oid);
+
+				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+				assertNotNull(ffp);
+				assertEquals(ModeImposition.SOURCE, ffp.getModeImposition());
+				tiersService.annuleForFiscal(ffp, false);
+
+				return null;
+			}
+		});
+
+		// aucune tâche générée ?
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
+				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+				assertNull(ffp);
+
+				final List<Tache> taches = tacheDAO.find(ppId);
+				assertNotNull(taches);
+				assertEquals(0, taches.size());
+
+				return null;
+			}
+		});
 	}
 
 	private List<Tache> genereChangementImposition(ModeImposition ancienMode, ModeImposition nouveauMode) {
