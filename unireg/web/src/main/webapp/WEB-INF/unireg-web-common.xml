@@ -23,13 +23,6 @@
 	</bean>
 
 
-	<bean id="URLListController" class="ch.vd.uniregctb.common.URLListController">
-		<property name="commandClass" value="java.lang.Object" />
-		<property name="commandName" value="command" />
-		<property name="formView" value="index" />
-		<property name="successView" value="index" />
-	</bean>
-
 	<!--  xt-Spring configuration -->
 	
 	<bean id="ajaxAutoCompleteHandler" class="ch.vd.uniregctb.web.xt.handler.AutoCompleteHandler">
