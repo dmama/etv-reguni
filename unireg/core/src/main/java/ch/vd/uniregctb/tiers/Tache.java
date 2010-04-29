@@ -243,6 +243,7 @@ public Tache(TypeEtatTache etat, RegDate dateEcheance, Contribuable contribuable
 		collectiviteAdministrativeAssignee = theCollectiviteAdministrativeAssignee;
 		// end-user-code
 	}
+
 	/**
 	 * @return le type de tâche de l'instance concrète.
 	 */
@@ -251,9 +252,8 @@ public Tache(TypeEtatTache etat, RegDate dateEcheance, Contribuable contribuable
 
 	public ValidationResults validate() {
 
-		ValidationResults results = new ValidationResults();
-
-		if (collectiviteAdministrativeAssignee == null) {
+		final ValidationResults results = new ValidationResults();
+		if (collectiviteAdministrativeAssignee == null && etat != TypeEtatTache.TRAITE) {
 			results.addError("La collectivité assignée doit être renseignée.");
 		}
 
