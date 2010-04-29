@@ -333,29 +333,28 @@ public class AutoCompleteHandler extends AbstractAjaxHandler {
 		String filter = event.getParameters().get(AutoCompleteAction.PARAM_SELECTED_VALUE);
 		filter = new String(filter.getBytes(), "UTF-8");
 
-		Collection<Commune> communesVaud = null;
-		Collection<Commune> communesHorsCanton = null;
-		List<WrapperCommuneOuPays> communeOuPays = null;
+		final List<WrapperCommuneOuPays> communeOuPays;
 		if (filter.length() >= MIN_SIZE_FILTER) {
-			// General communes
-			CommunePredicate communePredicate = new CommunePredicate();
-			communePredicate.setFilter(filter);
-			// Communes vaudoises
-			Collection<Commune> colCommunesVaud = serviceInfrastructureService.getCommunesDeVaud();
-			communesVaud = CollectionUtils.select(colCommunesVaud, communePredicate);
 
-			// Communes vaudoises
-			Collection<Commune> colCommunesHorsCanton = serviceInfrastructureService.getCommunesHorsCanton();
-			communesHorsCanton = CollectionUtils.select(colCommunesHorsCanton, communePredicate);
+			// General communes
+			final CommunePredicate communePredicate = new CommunePredicate();
+			communePredicate.setFilter(filter);
+
+			// Communes vaudoises ([UNIREG-2341] sans les communes faîtières des fractions)
+			final Collection<Commune> colCommunesVaud = serviceInfrastructureService.getListeFractionsCommunes();
+			final Collection<Commune> communesVaud = CollectionUtils.select(colCommunesVaud, communePredicate);
+
+			// Communes hors-canton
+			final Collection<Commune> colCommunesHorsCanton = serviceInfrastructureService.getCommunesHorsCanton();
+			final Collection<Commune> communesHorsCanton = CollectionUtils.select(colCommunesHorsCanton, communePredicate);
 
 			// Pays
-			Collection<Pays> pays = null;
-			Collection<Pays> colPays = serviceInfrastructureService.getPays();
-			PaysPredicate paysPredicate = new PaysPredicate();
+			final Collection<Pays> colPays = serviceInfrastructureService.getPays();
+			final PaysPredicate paysPredicate = new PaysPredicate();
 			paysPredicate.setFilter(filter);
-			pays = CollectionUtils.select(colPays, paysPredicate);
+			final Collection<Pays> pays = CollectionUtils.select(colPays, paysPredicate);
 
-			communeOuPays = new ArrayList<WrapperCommuneOuPays>();
+			communeOuPays = new ArrayList<WrapperCommuneOuPays>(communesVaud.size() + communesHorsCanton.size() + pays.size());
 
 			for (Commune commune : communesVaud) {
 				communeOuPays.add(new WrapperCommuneOuPays(commune));
@@ -380,13 +379,13 @@ public class AutoCompleteHandler extends AbstractAjaxHandler {
 		}
 
 		// Create an ajax action for appending it:
-		AutoCompleteAction action = new AutoCompleteAction(event, communeOuPays);
+		final AutoCompleteAction action = new AutoCompleteAction(event, communeOuPays);
 
 		// Create a concrete ajax response:
-		AjaxResponse response = new AjaxResponseImpl();
+		final AjaxResponse response = new AjaxResponseImpl();
+
 		// Add the action:
 		response.addAction(action);
-
 		return response;
 	}
 

@@ -118,16 +118,14 @@ public class ServiceInfrastructureServiceImpl extends AbstractServiceInfrastruct
 	/**
 	 * {@inheritDoc}
 	 */
+	@SuppressWarnings({"unchecked"})
 	public List<Commune> getListeFractionsCommunes() throws InfrastructureException {
 		try {
 			final ch.vd.infrastructure.model.Canton c = ((CantonWrapper) getVaud()).getTarget();
-			final List<?> list = getServiceInfrastructure().getCommunes(c);
-			List<Commune> communes = new ArrayList<Commune>();
-			for (Object o : list) {
-				ch.vd.infrastructure.model.Commune co = (ch.vd.infrastructure.model.Commune) o;
-				if (		(co.getNoTechnique() != 5871)
-						&& 	(co.getNoTechnique() != 5872)
-						&& 	(co.getNoTechnique() != 5873)) {
+			final List<ch.vd.infrastructure.model.Commune> list = getServiceInfrastructure().getCommunes(c);
+			final List<Commune> communes = new ArrayList<Commune>();
+			for (ch.vd.infrastructure.model.Commune co : list) {
+				if (!co.isPrincipale()) {
 					communes.add(CommuneWrapper.get(co));
 				}
 			}
