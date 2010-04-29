@@ -26,6 +26,7 @@ import ch.vd.uniregctb.security.Role;
  */
 @ContextConfiguration(locations = {
 		"classpath:WEB-INF/unireg-web-common.xml",
+		"classpath:WEB-INF/unireg-web-remoting.xml",
 		"classpath:WEB-INF/unireg-web-config.xml",
 		"classpath:WEB-INF/unireg-web-tiers.xml",
 		"classpath:WEB-INF/unireg-web-info.xml",
