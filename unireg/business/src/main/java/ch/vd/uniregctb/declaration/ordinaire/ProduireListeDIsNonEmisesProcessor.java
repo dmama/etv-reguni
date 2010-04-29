@@ -7,6 +7,7 @@ import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
 import org.apache.log4j.Logger;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.BatchTransactionTemplate;
@@ -72,17 +73,8 @@ public class ProduireListeDIsNonEmisesProcessor {
 
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 
-		this.envoiDIsEnMasseProcessor = new EnvoiDIsEnMasseProcessor(tiersService, hibernateTemplate, modeleDocumentDAO, periodeDAO,
-				delaisService, diService, 1, transactionManager);
-		this.determinationDIsAEmettreProcessor = new DeterminationDIsAEmettreProcessor(hibernateTemplate, periodeDAO, tacheDAO, parametres,
-				tiersService, transactionManager);
-		this.envoiDIsEnMasseProcessor.initCache(anneePeriode, TypeContribuableDI.VAUDOIS_ORDINAIRE);
-
-		// Récupère la période fiscale
-		final PeriodeFiscale periode = periodeDAO.getPeriodeFiscaleByYear(anneePeriode);
-		if (periode == null) {
-			throw new DeclarationException("La période fiscale  " + anneePeriode + " n'existe pas dans la base de données.");
-		}
+		this.envoiDIsEnMasseProcessor = new EnvoiDIsEnMasseProcessor(tiersService, hibernateTemplate, modeleDocumentDAO, periodeDAO, delaisService, diService, 1, transactionManager);
+		this.determinationDIsAEmettreProcessor = new DeterminationDIsAEmettreProcessor(hibernateTemplate, periodeDAO, tacheDAO, parametres, tiersService, transactionManager);
 
 		final ListeDIsNonEmises rapportFinal = new ListeDIsNonEmises(anneePeriode, dateTraitement);
 
@@ -91,15 +83,18 @@ public class ProduireListeDIsNonEmisesProcessor {
 		final List<Long> ids = determinationDIsAEmettreProcessor.createListeIdsContribuables(anneePeriode);
 
 		// Traite les contribuables par lots
-		final BatchTransactionTemplate<Long, ListeDIsNonEmises> template = new BatchTransactionTemplate<Long, ListeDIsNonEmises>(ids, BATCH_SIZE, Behavior.REPRISE_AUTOMATIQUE,
-				transactionManager, status, hibernateTemplate);
+		final BatchTransactionTemplate<Long, ListeDIsNonEmises> template = new BatchTransactionTemplate<Long, ListeDIsNonEmises>(ids, BATCH_SIZE, Behavior.REPRISE_AUTOMATIQUE, transactionManager, status, hibernateTemplate);
 		template.execute(rapportFinal, new BatchCallback<Long, ListeDIsNonEmises>() {
-
-			private Long idCtb = null;
 
 			@Override
 			public ListeDIsNonEmises createSubRapport() {
 				return new ListeDIsNonEmises(anneePeriode, dateTraitement);
+			}
+
+			@Override
+			public void afterTransactionStart(TransactionStatus status) {
+				super.afterTransactionStart(status);
+				status.setRollbackOnly();       // pour être vraiment sûr !
 			}
 
 			@Override
@@ -108,9 +103,6 @@ public class ProduireListeDIsNonEmisesProcessor {
 				rapport = r;
 				status.setMessage("Traitement du batch [" + batch.get(0) + "; " + batch.get(batch.size() - 1) + "] ...", percent);
 
-				if (batch.size() == 1) {
-					idCtb = batch.get(0);
-				}
 				traiterBatch(batch, anneePeriode, dateTraitement);
 				return true;
 			}
@@ -122,6 +114,8 @@ public class ProduireListeDIsNonEmisesProcessor {
 	}
 
 	protected void traiterBatch(List<Long> batch, int anneePeriode, RegDate dateTraitement) throws DeclarationException, AssujettissementException {
+
+		this.envoiDIsEnMasseProcessor.initCache(anneePeriode, TypeContribuableDI.VAUDOIS_ORDINAIRE);
 
 		// Récupère la période fiscale
 		final PeriodeFiscale periode = periodeDAO.getPeriodeFiscaleByYear(anneePeriode);

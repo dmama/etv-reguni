@@ -92,23 +92,10 @@ public class ListeDINonEmisesJob extends JobDefinition {
 		final RegDate dateTraitement = RegDate.get(); // = aujourd'hui
 
 		// Exécution de l'envoi dans une transaction.
-		TransactionTemplate template = new TransactionTemplate(transactionManager);
-		final ListeDIsNonEmises results = (ListeDIsNonEmises) template.execute(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
-				try {
-					status.setRollbackOnly();
-					ListeDIsNonEmises res = service.produireListeDIsNonEmises(annee, dateTraitement, getStatusManager());
-					// La creation de la liste implique la simulation de la creation
-					// d'une DI et non sa creation reelle, la seule issue
-					// possible est donc un rollback de la transaction.
-					return res;
-				}
-				catch (Exception e) {
-					throw new RuntimeException(e);
-				}
-			}
-		});
-		Document report = (Document)template.execute(new TransactionCallback() {
+		final ListeDIsNonEmises results = service.produireListeDIsNonEmises(annee, dateTraitement, getStatusManager());
+
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
+		final Document report = (Document) template.execute(new TransactionCallback() {
 			public Object doInTransaction(TransactionStatus status) {
 				try {
 					return rapportService.generateRapport(results, getStatusManager());
