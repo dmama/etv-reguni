@@ -73,9 +73,6 @@ public interface DeclarationImpotService {
 	/**
 	 * Produit la liste des DIs non émises pour la période fiscale spécifiée.
 	 *
-	 * ATTENTION ! cette méthode doit être incluse dans une transaction qui ne sera pas commité car elle créerait des tâches et des DI
-	 * parasites !
-	 *
 	 * @param annee
 	 *            l'année de la période fiscale considérée.
 	 * @param dateTraitement

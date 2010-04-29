@@ -105,6 +105,13 @@ public class BatchTransactionTemplate<E, R extends BatchResults> {
 		}
 
 		/**
+		 * Cette méthode est appelée juste après l'ouverture d'une transaction (dans le contexte de celle-ci)
+		 * @param status un objet qui permet de monitorer la transaction en cours
+		 */
+		public void afterTransactionStart(TransactionStatus status) {
+		}
+
+		/**
 		 * Cette méthode est appelée pour chaque lot. La transaction est ouverte et sera committée à moins qu'une exception soit levée.
 		 *
 		 * @param batch   le lot à processer
@@ -278,6 +285,7 @@ public class BatchTransactionTemplate<E, R extends BatchResults> {
 		try {
 			r.processNextBatch = (Boolean) template.execute(new TransactionCallback() {
 				public Boolean doInTransaction(TransactionStatus status) {
+					action.afterTransactionStart(status);
 					return executeWithNewSession(batch, action, rapport);
 				}
 			});

@@ -680,7 +680,7 @@ public class DeterminationDIsAEmettreProcessor {
 		final List<Long> ids = (List<Long>) template.execute(new TransactionCallback() {
 			public Object doInTransaction(TransactionStatus status) {
 
-				final List<Long> idsFors = (List<Long>) hibernateTemplate.execute(new HibernateCallback() {
+				final List<Long> idsFors = (List<Long>) hibernateTemplate.executeWithNewSession(new HibernateCallback() {
 					public Object doInHibernate(Session session) throws HibernateException {
 						Query queryObject = session.createQuery(queryIdsCtbWithFors);
 						queryObject.setParameter("debutAnnee", debutAnnee.index());
@@ -689,7 +689,7 @@ public class DeterminationDIsAEmettreProcessor {
 					}
 				});
 
-				final List<Long> idsTasks = (List<Long>) hibernateTemplate.execute(new HibernateCallback() {
+				final List<Long> idsTasks = (List<Long>) hibernateTemplate.executeWithNewSession(new HibernateCallback() {
 					public Object doInHibernate(Session session) throws HibernateException {
 						Query queryObject = session.createQuery(queryIdsCtbWithTasks);
 						queryObject.setParameter("debutAnnee", debutAnnee.index());
@@ -698,7 +698,7 @@ public class DeterminationDIsAEmettreProcessor {
 					}
 				});
 
-				final List<Long> idsDIs = (List<Long>) hibernateTemplate.execute(new HibernateCallback() {
+				final List<Long> idsDIs = (List<Long>) hibernateTemplate.executeWithNewSession(new HibernateCallback() {
 					public Object doInHibernate(Session session) throws HibernateException {
 						Query queryObject = session.createQuery(queryIdsCtbWithDeclarations);
 						queryObject.setParameter("debutAnnee", debutAnnee.index());
