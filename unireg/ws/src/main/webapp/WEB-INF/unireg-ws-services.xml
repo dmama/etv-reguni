@@ -3,16 +3,11 @@
 	xmlns:util="http://www.springframework.org/schema/util"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd">
 
-	<!-- File based -->
-	<bean id="fileGlobalIndexDirectory" class="ch.vd.uniregctb.indexer.fs.FSDirectoryProvider" lazy-init="true">
-		<constructor-arg value="${extprop.indexer.globalIndexPath}" />
-	</bean>
-
 	<bean id="globalTiersSearcher" class="ch.vd.uniregctb.common.BasicAuthHttpInvokerProxyFactoryBean">
-		<property name="serviceUrl" value="http://localhost:8080/fiscalite/unireg/tiersSearcher.remoting" />
+		<property name="serviceUrl" value="${extprop.remoting.unireg.url}/tiersSearcher.remoting" />
 		<property name="serviceInterface" value="ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher" />
-		<property name="username" value="unireg-ws" />
-		<property name="password" value="welcome" />
+		<property name="username" value="${extprop.remoting.unireg.username}" />
+		<property name="password" value="${extprop.remoting.unireg.password}" />
 	</bean>
 
 	<bean id="globalTiersIndexer" class="ch.vd.uniregctb.indexer.tiers.ZeroTiersIndexerImpl" />
