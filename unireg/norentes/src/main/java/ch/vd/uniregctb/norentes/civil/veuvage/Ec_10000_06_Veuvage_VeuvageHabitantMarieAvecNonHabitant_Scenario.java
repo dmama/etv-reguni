@@ -7,11 +7,8 @@ import annotation.Check;
 import annotation.Etape;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.civil.model.EnumTypeEtatCivil;
-import ch.vd.uniregctb.evenement.EvenementCivilErreur;
 import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
-import ch.vd.uniregctb.evenement.EvenementCriteria;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
 import ch.vd.uniregctb.interfaces.model.EtatCivilList;
@@ -154,10 +151,7 @@ public class Ec_10000_06_Veuvage_VeuvageHabitantMarieAvecNonHabitant_Scenario ex
 	@Check(id=2, descr="L'événement de veuvage doit être traité correctement même si Pierre n'est pas marié seul au fiscal (il l'est au civil)")
 	public void check2() {
 
-		final EvenementCriteria criterion = new EvenementCriteria();
-		criterion.setNumeroIndividu(noIndPierre);
-		criterion.setType(TypeEvenementCivil.VEUVAGE);
-		final List<EvenementCivilRegroupe> evts = evtRegroupeDAO.find(criterion, null);
+		final List<EvenementCivilRegroupe> evts = getEvenementsCivils(noIndPierre, TypeEvenementCivil.VEUVAGE);
 		assertNotNull(evts, "Pas d'événement trouvé!");
 		assertEquals(1, evts.size(), "Il devrait y avoir un et un seul événement civil de veuvage sur Pierre");
 
@@ -222,10 +216,7 @@ public class Ec_10000_06_Veuvage_VeuvageHabitantMarieAvecNonHabitant_Scenario ex
 	@Check(id=3, descr="Vérification après annulation de veuvage : le conjoint doit être rescussité et les fors rétablis")
 	public void check3() throws Exception {
 
-		final EvenementCriteria criterion = new EvenementCriteria();
-		criterion.setNumeroIndividu(noIndPierre);
-		criterion.setType(TypeEvenementCivil.ANNUL_VEUVAGE);
-		final List<EvenementCivilRegroupe> evts = evtRegroupeDAO.find(criterion, null);
+		final List<EvenementCivilRegroupe> evts = getEvenementsCivils(noIndPierre, TypeEvenementCivil.ANNUL_VEUVAGE);
 		assertNotNull(evts, "Pas d'événement trouvé!");
 		assertEquals(1, evts.size(), "Il devrait y avoir un et un seul événement civil d'annulation de veuvage sur Pierre");
 

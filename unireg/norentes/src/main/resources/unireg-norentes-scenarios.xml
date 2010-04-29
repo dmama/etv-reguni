@@ -69,8 +69,9 @@
 		class="ch.vd.uniregctb.norentes.civil.annulation.deces.Ec_2001_05_AnnulationDeces_Separe_Scenario"/>
 	
 	<!-- Scénarios de mariage -->
-	<bean id="ec_4000_01_Mariage_CoupleArriveHorsSuisse_Test" parent="evenementCivilScenario"
-		class="ch.vd.uniregctb.norentes.civil.mariage.Ec_4000_01_Mariage_CoupleArriveHorsSuisse_Scenario" />
+	<bean id="ec_4000_01_Mariage_CoupleArriveHorsSuisse_Test" parent="evenementCivilScenario" class="ch.vd.uniregctb.norentes.civil.mariage.Ec_4000_01_Mariage_CoupleArriveHorsSuisse_Scenario" >
+		<property name="infraService" ref="serviceInfrastructureService"/>
+	</bean>
 	<bean id="ec_4000_02_Mariage_CoupleArriveHorsSuisse_Test" parent="evenementCivilScenario"
 		class="ch.vd.uniregctb.norentes.civil.mariage.Ec_4000_02_Mariage_CoupleArriveHorsSuisse_Scenario" />
 	<bean id="ec_4000_03_Mariage_MarieSeulArriveHorsSuisse_Test" parent="evenementCivilScenario"

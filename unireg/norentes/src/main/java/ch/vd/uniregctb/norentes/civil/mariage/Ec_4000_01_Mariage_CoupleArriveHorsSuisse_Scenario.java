@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.norentes.civil.mariage;
 
-import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
+import java.util.List;
+
 import org.springframework.util.Assert;
 
 import annotation.Check;
@@ -16,7 +17,9 @@ import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.norentes.common.EvenementCivilScenario;
+import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.MenageCommun;
@@ -48,6 +51,12 @@ public class Ec_4000_01_Mariage_CoupleArriveHorsSuisse_Scenario extends Evenemen
 		return NAME;
 	}
 
+	private ServiceInfrastructureService infraService;
+
+	public void setInfraService(ServiceInfrastructureService infraService) {
+		this.infraService = infraService;
+	}
+
 	private final long noIndRafa = 3913648; // rafa
 	private final long noIndMaria = 3913649; // maria
 
@@ -62,7 +71,7 @@ public class Ec_4000_01_Mariage_CoupleArriveHorsSuisse_Scenario extends Evenemen
 
 	@Override
 	protected void initServiceCivil() {
-		serviceCivilService.setUp(new MockServiceCivil() {
+		serviceCivilService.setUp(new MockServiceCivil(infraService) {
 
 			@Override
 			protected void init() {
@@ -135,7 +144,10 @@ public class Ec_4000_01_Mariage_CoupleArriveHorsSuisse_Scenario extends Evenemen
 	@Check(id=2, descr="Vérifie que l'événement civil est en erreur")
 	public void check2() throws Exception {
 
-		final EvenementCivilRegroupe evt = getEvenementCivilRegoupeForHabitant(noHabRafa);
+		final List<EvenementCivilRegroupe> evts = getEvenementsCivils(noIndRafa, TypeEvenementCivil.MARIAGE);
+		assertNotNull(evts, "Pas d'événement de mariage ?");
+		assertEquals(1, evts.size(), "Rafa ne s'est marié qu'une seule fois!");
+		final EvenementCivilRegroupe evt = evts.get(0);
 
 		assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat(), "L'événement de mariage devrait être en erreur car le couple existe déjà");
 		assertEquals(2, evt.getErreurs().size(), "Il devrait y avoir exactement deux erreurs");

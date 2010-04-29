@@ -7,7 +7,6 @@ import annotation.Etape;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.civil.model.EnumTypeEtatCivil;
 import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
-import ch.vd.uniregctb.evenement.EvenementCriteria;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
@@ -142,10 +141,7 @@ public class Ec_10000_04_Veuvage_DecesPuisVeuvageMemeJour_Scenario extends Evene
 	@Check(id=2, descr="Vérifie que le menage commun a été fermé et le For principal de l'individu créé")
 	public void check2() {
 
-		final EvenementCriteria criterion = new EvenementCriteria();
-		criterion.setNumeroIndividu(noIndPierre);
-		criterion.setType(TypeEvenementCivil.DECES);
-		final List<EvenementCivilRegroupe> evts = evtRegroupeDAO.find(criterion, null);
+		final List<EvenementCivilRegroupe> evts = getEvenementsCivils(noIndPierre, TypeEvenementCivil.DECES);
 		assertNotNull(evts, "Pas du tout d'événement de décès?");
 		assertEquals(1, evts.size(), "Il devrait y avoir un événement de DECES pour Pierre");
 
@@ -181,10 +177,7 @@ public class Ec_10000_04_Veuvage_DecesPuisVeuvageMemeJour_Scenario extends Evene
 	@Check(id=3, descr="Vérifie que le défunt n'a aucun for ni aucune situation de famille active")
 	public void check3() {
 
-		final EvenementCriteria criterion = new EvenementCriteria();
-		criterion.setNumeroIndividu(noIndPierre);
-		criterion.setType(TypeEvenementCivil.VEUVAGE);
-		final List<EvenementCivilRegroupe> evts = evtRegroupeDAO.find(criterion, null);
+		final List<EvenementCivilRegroupe> evts = getEvenementsCivils(noIndPierre, TypeEvenementCivil.VEUVAGE);
 		assertNotNull(evts, "Pas du tout d'événement de veuvage?");
 		assertEquals(1, evts.size(), "Il devrait y avoir un événement de VEUVAGE pour Pierre");
 

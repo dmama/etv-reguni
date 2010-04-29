@@ -7,6 +7,7 @@ import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
 import ch.vd.uniregctb.evenement.EvenementCivilRegroupeDAO;
 import ch.vd.uniregctb.evenement.EvenementCivilUnitaire;
 import ch.vd.uniregctb.evenement.EvenementCivilUnitaireDAO;
+import ch.vd.uniregctb.evenement.EvenementCriteria;
 import ch.vd.uniregctb.evenement.engine.EvenementCivilProcessor;
 import ch.vd.uniregctb.evenement.engine.EvenementCivilRegrouper;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
@@ -111,6 +112,13 @@ public abstract class EvenementCivilScenario extends EvenementScenario {
 			}
 		}
 		return evt;
+	}
+
+	protected List<EvenementCivilRegroupe> getEvenementsCivils(long habitant, TypeEvenementCivil type) {
+		final EvenementCriteria criterion = new EvenementCriteria();
+		criterion.setNumeroIndividu(habitant);
+		criterion.setType(type);
+		return evtRegroupeDAO.find(criterion, null);
 	}
 
 	protected void checkEtatEvtCivils(int nb, EtatEvenementCivil etat) {
