@@ -44,7 +44,7 @@
     </xb:namespace>
 
 	<!-- Evénements DB -->	
-    <xb:namespace uri="http://www.vd.ch/fiscalite/registre/databaseEvent-v1.0">
+    <xb:namespace uri="http://www.vd.ch/fiscalite/registre/databaseEvent-v1.1">
         <xb:package>ch.vd.fiscalite.registre.databaseEvent</xb:package>
     </xb:namespace>
 	
