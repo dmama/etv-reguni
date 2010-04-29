@@ -25,20 +25,26 @@ fi
 
 #########
 # Version
-lversion=$(grep "long=" unireg/base/version.txt|awk -F= '{ print $2; }')
-sversion=$(grep "short=" unireg/base/version.txt|awk -F= '{ print $2; }')
+version=$(grep "long=" unireg/base/version.txt|awk -F= '{ print $2; }')
 #########
-echo "Version: $sversion / $lversion"
+echo "Version: $version"
 
+env=integration
 user=dsi_unireg@ssv0309v
 upDir=/ccv/data/dsi_unireg/uploads
+
 configDir=/ccv/data/dsi_unireg/cat_uniregI/app/unireg/config
 deployDir=/ccv/data/dsi_unireg/cat_uniregI/webapps/fiscalite#int-unireg
 workDir=/ccv/data/dsi_unireg/cat_uniregI/work/unireg
-env=integration
+
+wsConfigDir=/ccv/data/dsi_unireg/cat_uniregI/app/unireg-ws/config
+wsDeployDir=/ccv/data/dsi_unireg/cat_uniregI/webapps/fiscalite#int-unireg-ws
+wsWorkDir=/ccv/data/dsi_unireg/cat_uniregI/work/unireg-ws
 
 relFileOrig=uniregctb-release.zip
-relFileDest=uniregctb-release-${sversion}-SNAP-${DATE}.zip
+relFileDest=uniregctb-release-${version}-${DATE}.zip
+wsFileOrig=uniregws-release.zip
+wsFileDest=uniregws-release-${version}-${DATE}.zip
 
 # Compilation
 if [ $DEPLOY_ONLY == 0 ]; then
@@ -53,13 +59,26 @@ if [ $DEPLOY_ONLY == 0 ]; then
 	(cd unireg/web && mvn -Pnot,env.int,oracle assembly:assembly)
 fi
 if [ $? != 0 ]; then
-	echo "!!! Erreur lors du build"
+	echo "!!! Erreur lors de l'assembly de web"
 	exit 1
 fi
 
-# Deploiement
+if [ $DEPLOY_ONLY == 0 ]; then
+	(cd unireg/ws && mvn -Pnot,env.int,oracle assembly:assembly)
+fi
+if [ $? != 0 ]; then
+	echo "!!! Erreur lors de l'assembly de ws"
+	exit 1
+fi
+
 cp -v unireg/web/target/$relFileOrig unireg/web/target/$relFileDest
+cp -v unireg/ws/target/$wsFileOrig unireg/ws/target/$wsFileDest
+
+#
+# Deploiement de la web-app
+#
 scp unireg/web/target/$relFileDest $user:$upDir/
+
 ssh $user "rm -rf $upDir/explode"
 ssh $user "mkdir -p $upDir/explode"
 ssh $user "cd $upDir/explode && unzip $upDir/$relFileDest"
@@ -69,11 +88,29 @@ ssh $user "mkdir -p $configDir/"
 ssh $user "cp $upDir/explode/config/$env/* $configDir/"
 
 # unzip du war
-ssh $user "rm -rf $deployDir"
-ssh $user "rm -rf $workDir"
+ssh $user "rm -rf $deployDir $workDir"
 ssh $user "mkdir -p $deployDir"
 ssh $user "cd $deployDir && unzip $upDir/explode/deployment/uniregctb.war"
 
+echo "Fin du deploiement de la web-app à: $(date)"
 
-echo "Fin du deploiement at: $(date)"
+#
+# Deploiement des web-services
+#
+scp unireg/wa/target/$wsFileDest $user:$upDir/
+
+ssh $user "rm -rf $upDir/explode"
+ssh $user "mkdir -p $upDir/explode"
+ssh $user "cd $upDir/explode && unzip $upDir/$wsFileDest"
+
+# copie des fichiers de config
+ssh $user "mkdir -p $wsConfigDir/"
+ssh $user "cp $upDir/explode/config/$env/* $wsConfigDir/"
+
+# unzip du war
+ssh $user "rm -rf $wsDeployDir $wsWorkDir"
+ssh $user "mkdir -p $wsDeployDir"
+ssh $user "cd $wsDeployDir && unzip $upDir/explode/deployment/uniregws.war"
+
+echo "Fin du deploiement des web-services à: $(date)"
 

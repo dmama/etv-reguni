@@ -28,6 +28,8 @@ echo "Building version $version ($env)"
 user=dsi_unireg@ssv0309v
 relFileOrig=uniregctb-release.zip
 relFileDest=uniregctb-release-${env}-${version}-${DATE}.zip
+wsFileOrig=uniregws-release.zip
+wsFileDest=uniregws-release-${env}-${version}-${DATE}.zip
 ubrFileOrig=ubr-release.zip
 ubrFileDest=ubr-release-${env}-${version}-${DATE}.zip
 release_dir=/mnt/adacv/Unireg/Releases/
@@ -53,6 +55,12 @@ if [ $? != 0 ]; then
 	exit 1
 fi
 
+(cd unireg/ws && mvn $MVN_OPTS assembly:assembly)
+if [ $? != 0 ]; then
+	echo "!!! Erreur lors de l'assembly de ws"
+	exit 1
+fi
+
 (cd unireg/ubr && mvn $MVN_OPTS assembly:assembly)
 if [ $? != 0 ]; then
 	echo "!!! Erreur lors de l'assembly de ubr"
@@ -61,16 +69,19 @@ fi
 
 # Renommage des fichiers ZIP avec la date
 cp unireg/web/target/$relFileOrig unireg/web/target/$relFileDest
+cp unireg/ws/target/$wsFileOrig unireg/ws/target/$wsFileDest
 cp unireg/ubr/target/$ubrFileOrig unireg/ubr/target/$ubrFileDest
 
 # Copie de la release sur Calimero
 sudo cp -v unireg/web/target/$relFileDest $release_dir
+sudo cp -v unireg/ws/target/$wsFileDest $release_dir
 sudo cp -v unireg/ubr/target/$ubrFileDest $release_dir
 
 # Deploiement sur ssv0309v
 REM_DIR="~/release"
 ssh $user "mkdir $REM_DIR"
 scp unireg/web/target/$relFileDest $user:$REM_DIR
+scp unireg/ws/target/$wsFileDest $user:$REM_DIR
 scp unireg/ubr/target/$ubrFileDest $user:$REM_DIR
 echo "Les fichiers sont sur: $user:/var/tmp/uniregctb/*-${env}-${version}-${DATE}.zip"
 echo "Et aussi sur: $release_dir"
