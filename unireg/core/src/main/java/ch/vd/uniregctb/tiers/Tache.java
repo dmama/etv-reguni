@@ -239,6 +239,7 @@ public abstract class Tache extends HibernateEntity implements Validateable {
 		collectiviteAdministrativeAssignee = theCollectiviteAdministrativeAssignee;
 		// end-user-code
 	}
+
 	/**
 	 * @return le type de tâche de l'instance concrète.
 	 */
@@ -247,9 +248,8 @@ public abstract class Tache extends HibernateEntity implements Validateable {
 
 	public ValidationResults validate() {
 
-		ValidationResults results = new ValidationResults();
-
-		if (collectiviteAdministrativeAssignee == null) {
+		final ValidationResults results = new ValidationResults();
+		if (collectiviteAdministrativeAssignee == null && etat != TypeEtatTache.TRAITE) {
 			results.addError("La collectivité assignée doit être renseignée.");
 		}
 
