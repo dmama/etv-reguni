@@ -96,8 +96,8 @@ public interface ServiceInfrastructureService {
 	public List<Commune> getListeCommunes(Canton canton) throws InfrastructureException;
 
 	/**
-	 * @return
-	 * @throws Exception
+	 * @return La liste des communes vaudoise (en incluant les fractions mais pas leur commune faîtière)
+	 * @throws InfrastructureException en cas de problème d'accès à l'infrastructure
 	 */
 	public List<Commune> getListeFractionsCommunes() throws InfrastructureException;
 
