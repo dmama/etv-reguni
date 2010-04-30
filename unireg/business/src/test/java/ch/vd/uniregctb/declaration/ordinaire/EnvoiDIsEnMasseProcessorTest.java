@@ -491,7 +491,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 					TacheEnvoiDeclarationImpot.class, ids.tacheJacquesId);
 			assertFalse(processor.traiterTache(tacheJacques, dateTraitement, cache));
 			assertEquals(1, rapport.ctbsIgnores.size());
-			final Ignore ignore = rapport.ctbsIgnores.get(0);
+			final Ignore ignore = (Ignore) rapport.ctbsIgnores.get(0);
 			assertEquals(IgnoreType.CTB_EXCLU, ignore.raison);
 		}
 	}
