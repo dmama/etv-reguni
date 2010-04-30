@@ -20,6 +20,7 @@
 		<property name="sessionTransacted" value="true" />
 		<!-- <property name="transactionManager" ref="transactionManager" />  -->
 		<property name="autoStartup" value="${extprop.jms.queue.evtExterne.enabled}" />
+		<property name="cacheLevel" value="3"/>
 	</bean>
 
 	<bean id="evenementExterneSender" class="ch.vd.uniregctb.evenement.externe.MockEvenementExterneSender"/>
