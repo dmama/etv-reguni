@@ -109,7 +109,7 @@
 				<!-- Build -->
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>cobertura-maven-plugin</artifactId>
-				<version>2.2</version>
+				<version>${cobertura.version}</version>
 				<configuration>
 					<maxmem>512m</maxmem>
 				</configuration>
@@ -469,7 +469,7 @@
 				<!-- Reporting -->
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>cobertura-maven-plugin</artifactId>
-				<version>2.1</version>
+				<version>${cobertura.version}</version>
 			</plugin>
 			<plugin>
 				<artifactId>maven-jxr-plugin</artifactId>
@@ -756,6 +756,7 @@
 		<javamail.version>1.4</javamail.version>
 		<log4j.version>1.2.14</log4j.version>
 		<oro.version>2.0.8</oro.version>
+		<cobertura.version>2.3</cobertura.version>
 
 		<!-- Database settings -->
 		<oracle.version>11.2.0.1.0</oracle.version>

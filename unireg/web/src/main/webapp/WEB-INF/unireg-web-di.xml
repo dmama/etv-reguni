@@ -67,7 +67,7 @@
 	<bean id="diImpressionValidator" class="ch.vd.uniregctb.di.validator.DeclarationImpotImpressionValidator" >
 	</bean>
 
-	<bean id="diMapHelper" class="ch.vd.uniregctb.di.DeclarationImpotMapHelper">
+	<bean id="diMapHelper" class="ch.vd.uniregctb.di.DeclarationImpotMapHelperImpl">
 		<property name="periodeFiscaleDAO" ref="periodeFiscaleDAO" />
 	</bean>
 	
