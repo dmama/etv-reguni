@@ -433,7 +433,7 @@ public class TacheServiceImpl implements TacheService, InitializingBean {
 	 * @param adresseRetour
 	 */
 	private void genereTacheEnvoiDeclarationImpot(Contribuable contribuable, RegDate dateDebut, RegDate dateFin, TypeContribuable typeContribuable, TypeDocument typeDocument, RegDate dateEcheance,
-	                                              Qualification qualification, TypeAdresseRetour adresseRetour,CollectiviteAdministrative collectivite){
+	                                              Qualification qualification, TypeAdresseRetour adresseRetour, CollectiviteAdministrative collectivite) {
 
 		// d'abord il faut vérifier qu'il n'y a pas de DI du même type déjà émise et non-annulée pour la période considérée
 		boolean envoiDejaFait = false;
@@ -712,7 +712,6 @@ public class TacheServiceImpl implements TacheService, InitializingBean {
 		final int anneeCourante = aujourdhui.year();
 
 		final CollectiviteAdministrative oid = tiersService.getOfficeImpotAt(contribuable, null);
-		Assert.notNull(oid);
 
 		final DeclarationImpotCriteria criterion = new DeclarationImpotCriteria();
 		criterion.setContribuable(contribuable.getNumero());
@@ -724,6 +723,7 @@ public class TacheServiceImpl implements TacheService, InitializingBean {
 			if (di.getPeriode().getAnnee() >= premierePeriodeFiscale) {
 				// [UNIREG-1105] on évite de créer des tâches dupliquées
 				if (!tacheDAO.existsTacheAnnulationEnInstanceOuEnCours(contribuable.getNumero(), di.getId())) {
+					Assert.notNull(oid);
 					final TacheAnnulationDeclarationImpot tacheAnnulationDI = new TacheAnnulationDeclarationImpot(TypeEtatTache.EN_INSTANCE, null, contribuable, di, oid);
 					tacheDAO.save(tacheAnnulationDI);
 				}
@@ -745,7 +745,6 @@ public class TacheServiceImpl implements TacheService, InitializingBean {
 		final int anneeCourante = aujourdhui.year();
 
 		final CollectiviteAdministrative oid = tiersService.getOfficeImpotAt(contribuable, null);
-		Assert.notNull(oid);
 
 		final DeclarationImpotCriteria criterion = new DeclarationImpotCriteria();
 		criterion.setContribuable(contribuable.getNumero());
@@ -775,6 +774,7 @@ public class TacheServiceImpl implements TacheService, InitializingBean {
 				if (diEchue) {
 					// [UNIREG-1105] on évite de créer des tâches dupliquées
 					if (!tacheDAO.existsTacheAnnulationEnInstanceOuEnCours(contribuable.getNumero(), di.getId())) {
+						Assert.notNull(oid);
 						final TacheAnnulationDeclarationImpot tacheAnnulationDI = new TacheAnnulationDeclarationImpot(TypeEtatTache.EN_INSTANCE, null, contribuable, di, oid);
 						tacheDAO.save(tacheAnnulationDI);
 					}
