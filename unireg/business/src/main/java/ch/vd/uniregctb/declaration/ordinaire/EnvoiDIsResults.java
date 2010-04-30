@@ -10,9 +10,9 @@ import ch.vd.uniregctb.declaration.ordinaire.EnvoiDIsEnMasseProcessor.LotContrib
 import ch.vd.uniregctb.metier.assujettissement.TypeContribuableDI;
 import ch.vd.uniregctb.tiers.Contribuable;
 
-public class EnvoiDIsResults extends JobResults<Long, EnvoiDIsResults> {
+public class EnvoiDIsResults<R extends EnvoiDIsResults> extends JobResults<Long, R> {
 
-	public enum ErreurType {
+	public static enum ErreurType {
 		EXCEPTION(EXCEPTION_DESCRIPTION), // --------------------------------------------------------------
 		ROLLBACK("Le traitement du lot a échoué et a été rollbacké"),
 		COLLISION_DI("une déclaration existe déjà, mais elle ne correspond pas à celle calculée"), // -----
@@ -29,7 +29,7 @@ public class EnvoiDIsResults extends JobResults<Long, EnvoiDIsResults> {
 		}
 	}
 
-	public enum IgnoreType {
+	public static enum IgnoreType {
 		DI_DEJA_EXISTANTE("la déclaration existe déjà"),   // --------------------------------------------
 		CTB_EXCLU("le contribuable est exclu des envois automatiques");
 
@@ -82,11 +82,11 @@ public class EnvoiDIsResults extends JobResults<Long, EnvoiDIsResults> {
 
 	// Données de processing
 	public int nbCtbsTotal;
-	public List<Long> ctbsTraites = new ArrayList<Long>();
-	public List<Long> ctbsIndigents = new ArrayList<Long>();
-	public List<Ignore> ctbsIgnores = new ArrayList<Ignore>();
-	public List<Erreur> ctbsEnErrors = new ArrayList<Erreur>();
-	public List<Erreur> ctbsRollback = new ArrayList<Erreur>();
+	public final List<Long> ctbsTraites = new ArrayList<Long>();
+	public final List<Long> ctbsIndigents = new ArrayList<Long>();
+	public final List<Ignore> ctbsIgnores = new ArrayList<Ignore>();
+	public final List<Erreur> ctbsEnErrors = new ArrayList<Erreur>();
+	public final List<Erreur> ctbsRollback = new ArrayList<Erreur>();
 	public boolean interrompu;
 
 	public EnvoiDIsResults(int annee, TypeContribuableDI type, RegDate dateTraitement, int nbMax, Long noCtbMin, Long noCtbMax) {
@@ -137,7 +137,7 @@ public class EnvoiDIsResults extends JobResults<Long, EnvoiDIsResults> {
 				+ RegDateHelper.dateToDisplayString(dateLimiteExclusion)));
 	}
 
-	public void addAll(EnvoiDIsResults rapport) {
+	public void addAll(R rapport) {
 		if (rapport != null) {
 			this.nbCtbsTotal += rapport.nbCtbsTotal;
 			this.ctbsTraites.addAll(rapport.ctbsTraites);

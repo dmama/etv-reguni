@@ -9,7 +9,7 @@ import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.metier.assujettissement.TypeContribuableDI;
 import ch.vd.uniregctb.tiers.Contribuable;
 
-public class ListeDIsNonEmises extends EnvoiDIsResults {
+public class ListeDIsNonEmises extends EnvoiDIsResults<ListeDIsNonEmises> {
 
 	/**
 	 * Classe pour stocker les informations d'une ligne du fichier csv resulat
@@ -236,7 +236,7 @@ public class ListeDIsNonEmises extends EnvoiDIsResults {
 			);
 	}
 
-	public void add(ListeDIsNonEmises rapport) {
+	public void addAll(ListeDIsNonEmises rapport) {
 		super.addAll(rapport);
 		diNonEmises.addAll(rapport.diNonEmises);
 	}
