@@ -24,6 +24,7 @@
 		<property name="transactionManager" ref="transactionManager" />
 		<property name="destinationName" value="${extprop.jms.queue.ident.ctb.input}" />
 		<property name="autoStartup" value="${extprop.jms.queue.ident.ctb.enabled}" />
+		<property name="cacheLevel" value="3"/>
 	</bean>
 
 </beans>

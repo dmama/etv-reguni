@@ -27,6 +27,7 @@
 		<property name="sessionTransacted" value="true" />
 		<!-- <property name="transactionManager" ref="transactionManager" />  -->
 		<property name="autoStartup" value="${extprop.jms.queue.evtCivil.enabled}" />
+		<property name="cacheLevel" value="3"/>
 	</bean>
 
 	<bean id="evtCivilListener" class="ch.vd.uniregctb.evenement.jms.EvenementCivilUnitaireListener" parent="esbMessageListener">

@@ -12,15 +12,32 @@
 		<property name="start" value="true" />
 	</bean>
 
-	<bean id="jmsConnectionManager" class="org.apache.activemq.spring.ActiveMQConnectionFactory">
-		<property name="brokerURL" value="vm://localhost" />
-		<property name="userName" value="smx"/>
-		<property name="password" value="smx"/>
+	<bean id="jmsConnectionFactory" class="ch.vd.uniregctb.jms.ConnectionFactoryFactoryBean">
+		<property name="connectionManager" ref="jmsConnectionManager"/>
+		<property name="managedConnectionFactory" ref="jmsManagedConnectionFactory"/>
 	</bean>
 
-	<bean id="jmsConnectionFactory" class="org.apache.activemq.pool.PooledConnectionFactoryBean">
-		<property name="connectionFactory" ref="jmsConnectionManager" />
+	<bean id="jmsConnectionManager" class="org.jencks.factory.ConnectionManagerFactoryBean">
+		<property name="transaction" value="xa" />
 		<property name="transactionManager" ref="transactionManager" />
+		<property name="poolMaxSize" value="20"/>
+		<property name="connectionTracker">
+		   <bean class="org.jencks.factory.ConnectionTrackerFactoryBean">
+			   <property name="geronimoTransactionManager" ref="transactionManager" />
+		   </bean>
+		</property>
+	</bean>
+
+	<bean id="jmsManagedConnectionFactory" class="org.apache.activemq.ra.ActiveMQManagedConnectionFactory">
+	   <property name="resourceAdapter">
+		  <bean class="org.apache.activemq.ra.ActiveMQResourceAdapter">
+			 <property name="serverUrl" value="vm://localhost" />
+			 <property name="userName" value="smx" />
+			 <property name="password" value="smx" />
+			 <property name="maximumRedeliveries" value="1"/>
+			 <property name="allPrefetchValues" value="0"/>
+		 </bean>
+	  </property>
 	</bean>
 
 	<bean id="identCtbMessageHandler" class="ch.vd.uniregctb.evenement.identification.contribuable.MockIdentificationContribuableMessageHandler"/>
