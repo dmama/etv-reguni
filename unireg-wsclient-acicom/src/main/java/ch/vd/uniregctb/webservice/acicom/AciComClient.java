@@ -6,7 +6,7 @@ import ch.vd.dfin.acicom.web.services.meldewesen.impl.DocumentNotFoundException_
 import ch.vd.dfin.acicom.web.services.meldewesen.impl.RecupererContenuMessage;
 import ch.vd.dfin.acicom.web.services.meldewesen.impl.RecupererContenuMessageResponse;
 
-public interface AcicomClient {
+public interface AciComClient {
 
-	public ContenuMessage recupererMessage(RecupererContenuMessage infosMessage) throws AciComException_Exception, DocumentNotFoundException_Exception;
+	public ContenuMessage recupererMessage(RecupererContenuMessage infosMessage) throws AciComClientException;
 }

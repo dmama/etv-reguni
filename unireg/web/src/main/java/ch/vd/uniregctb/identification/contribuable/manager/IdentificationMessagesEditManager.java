@@ -3,6 +3,7 @@ package ch.vd.uniregctb.identification.contribuable.manager;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable.Etat;
+import ch.vd.uniregctb.identification.contribuable.FichierOrigine;
 import ch.vd.uniregctb.identification.contribuable.view.DemandeIdentificationView;
 import ch.vd.uniregctb.identification.contribuable.view.IdentificationMessagesEditView;
 
@@ -58,4 +59,7 @@ public interface IdentificationMessagesEditManager {
 	 */
 	@Transactional(rollbackFor = Throwable.class)
 	public  void deVerouillerMessage(Long idIdentification) throws Exception;
+
+
+	public FichierOrigine getMessageFile(String businessId) throws Exception;
 }

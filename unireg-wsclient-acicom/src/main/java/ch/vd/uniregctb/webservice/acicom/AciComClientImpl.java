@@ -1,10 +1,7 @@
 package ch.vd.uniregctb.webservice.acicom;
 
 import javax.xml.ws.BindingProvider;
-import javax.xml.ws.WebServiceException;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.net.URL;
 import java.util.Map;
 
@@ -20,9 +17,9 @@ import ch.vd.dfin.acicom.web.services.meldewesen.impl.MeldewesenConsultationServ
 import ch.vd.dfin.acicom.web.services.meldewesen.impl.RecupererContenuMessage;
 
 
-public class AcicomClientImpl implements AcicomClient {
+public class AciComClientImpl implements AciComClient {
 
-	private static final Logger LOGGER = Logger.getLogger(AcicomClientImpl.class);
+	private static final Logger LOGGER = Logger.getLogger(AciComClientImpl.class);
 
 	private MeldewesenConsultationServiceImplPortType service;
 
@@ -44,7 +41,7 @@ public class AcicomClientImpl implements AcicomClient {
 		this.password = password;
 	}
 
-	public ContenuMessage recupererMessage(RecupererContenuMessage infosMessage) throws AciComException_Exception, DocumentNotFoundException_Exception {
+	public ContenuMessage recupererMessage(RecupererContenuMessage infosMessage) throws AciComClientException {
 		initService();
 
 		ContenuMessage contenuMessage;
@@ -54,28 +51,28 @@ public class AcicomClientImpl implements AcicomClient {
 			contenuMessage = this.service.recupererContenuMessage(businessId);
 
 		}
-		catch (WebServiceException e) {
-			throw new AciComException_Exception(e.getMessage(), e);
+		catch (AciComException_Exception e) {
+			final String message = "Erreur technique d'accès à ACICOM: "+e.getMessage();
+			throw new AciComClientTechniqueException(message);
+		}
+		catch (RuntimeException e) {
+			final String message = "Erreur technique d'accès à ACICOM: "+e.getMessage();
+			throw new AciComClientTechniqueException(message);
+		}
+			catch (DocumentNotFoundException_Exception e) {
+			final String message = "Erreur suite à la recherche du message : "+e.getMessage();
+			throw new AciComClientDocumentNotFoundException(message);
 		}
 
 
 		if (contenuMessage != null) {
 			final String extension = contenuMessage.getExtension();
 			LOGGER.info("Type de document : " + extension);
-
-			try {
-				FileOutputStream fos = new FileOutputStream("messages."+extension);
-				fos.write(contenuMessage.getContent());
-				fos.close();
-			}
-			catch (IOException e) {
-				throw new AciComException_Exception(e.getMessage(), e);
-			}
 			return contenuMessage;
 		}
 		else {
 
-			throw new DocumentNotFoundException_Exception("Le message ayant le business ID"+businessId+"n'a pas été trouvé chez ACICOM");
+			throw new AciComClientTechniqueException("La recherche du message ayant le business ID"+businessId+" a renvoyé un contenu nul");
 
 		}
 

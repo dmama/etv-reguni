@@ -66,6 +66,7 @@
 		<property name="formView" value="identification/identification" />
 		<property name="successView" value="edit.do" />
 		<property name="identificationMessagesEditManager" ref="identificationMessagesEditManager" />
+		<property name="servletService" ref="servletService"/>
 	</bean>
 	<bean id="identificationMessagesNonIdentifieController" class="ch.vd.uniregctb.identification.contribuable.IdentificationMessagesNonIdentifieController" parent="abstractIdentificationController">
 		<property name="sessionForm" value="true" />
@@ -80,6 +81,7 @@
 		<property name="identCtbService" ref="identCtbService" />
 		<property name="identCtbDAO" ref="identCtbDAO" />
 		<property name="tiersDAO" ref="tiersDAO" />
+		<property name="aciComService" ref="aciComService" />
 	</bean>
 	
 	<bean id="identificationMapHelper" class="ch.vd.uniregctb.identification.contribuable.IdentificationMapHelper" >
