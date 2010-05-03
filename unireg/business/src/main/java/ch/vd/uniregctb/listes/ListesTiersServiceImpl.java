@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.listes;
 
+import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.listes.listesnominatives.ListesNominativesProcessor;
 import ch.vd.uniregctb.listes.listesnominatives.ListesNominativesResults;
@@ -32,6 +33,8 @@ public class ListesTiersServiceImpl implements ListesTiersService {
 
 	private ServiceInfrastructureService infraService;
 
+	private ServiceCivilService serviceCivilService;
+
 	public void setTiersService(TiersService tiersService) {
 		this.tiersService = tiersService;
 	}
@@ -56,9 +59,13 @@ public class ListesTiersServiceImpl implements ListesTiersService {
 		this.infraService = infraService;
 	}
 
+	public void setServiceCivilService(ServiceCivilService serviceCivilService) {
+		this.serviceCivilService = serviceCivilService;
+	}
+
 	public ListesNominativesResults produireListesNominatives(RegDate dateTraitement, int nbThreads, TypeAdresse adressesIncluses, boolean avecContribuables, boolean avecDebiteurs,
 	                                                          StatusManager statusManager) {
-		final ListesNominativesProcessor processor = new ListesNominativesProcessor(hibernateTemplate, tiersService, adresseService, transactionManager, tiersDAO);
+		final ListesNominativesProcessor processor = new ListesNominativesProcessor(hibernateTemplate, tiersService, adresseService, transactionManager, tiersDAO, serviceCivilService);
 		return processor.run(dateTraitement, nbThreads, adressesIncluses, avecContribuables, avecDebiteurs, statusManager);
 	}
 
