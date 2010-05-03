@@ -5,6 +5,7 @@ import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.ListesProcessor;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.StatusManager;
+import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
 import org.apache.log4j.Logger;
@@ -36,16 +37,20 @@ public class ListesNominativesProcessor extends ListesProcessor<ListesNominative
 
     private final AdresseService adresseService;
 
+	private final ServiceCivilService serviceCivilService;
+
     public ListesNominativesProcessor(HibernateTemplate hibernateTemplate,
                                       TiersService tiersService,
                                       AdresseService adresseService,
                                       PlatformTransactionManager transactionManager,
-                                      TiersDAO tiersDAO) {
+                                      TiersDAO tiersDAO,
+                                      ServiceCivilService serviceCivilService) {
         this.hibernateTemplate = hibernateTemplate;
         this.tiersService = tiersService;
         this.adresseService = adresseService;
         this.transactionManager = transactionManager;
         this.tiersDAO = tiersDAO;
+	    this.serviceCivilService = serviceCivilService;
     }
 
     /**
@@ -59,7 +64,7 @@ public class ListesNominativesProcessor extends ListesProcessor<ListesNominative
         return doRun(dateTraitement, nbThreads, status, hibernateTemplate, new Customizer<ListesNominativesResults, ListesNominativesThread>() {
 
             public ListesNominativesResults createResults(RegDate dateTraitement) {
-                return new ListesNominativesResults(dateTraitement, nbThreads, adressesIncluses, avecContribuables, avecDebiteurs, tiersService, adresseService);
+                return new ListesNominativesResults(dateTraitement, nbThreads, adressesIncluses, avecContribuables, avecDebiteurs, tiersService, adresseService, serviceCivilService);
             }
 
             public ListesNominativesThread createTread(LinkedBlockingQueue<List<Long>> queue, RegDate dateTraitement, StatusManager status,
@@ -72,7 +77,8 @@ public class ListesNominativesProcessor extends ListesProcessor<ListesNominative
 		                avecDebiteurs,
 		                tiersService,
                         adresseService,
-                        status,
+		                serviceCivilService,
+		                status,
                         compteur,
                         transactionManager,
                         tiersDAO,

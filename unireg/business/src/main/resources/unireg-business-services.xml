@@ -80,6 +80,7 @@
 		<property name="transactionManager" ref="transactionManager"/>
 		<property name="tiersDAO" ref="tiersDAO"/>
 		<property name="infraService" ref="serviceInfrastructureService"/>
+		<property name="serviceCivilService" ref="serviceCivilService" />
 	</bean>
 
 	<bean id="acomptesService" class="ch.vd.uniregctb.acomptes.AcomptesServiceImpl">

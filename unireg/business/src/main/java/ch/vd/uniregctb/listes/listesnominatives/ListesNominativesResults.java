@@ -1,14 +1,15 @@
 package ch.vd.uniregctb.listes.listesnominatives;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.civil.model.EnumAttributeIndividu;
 import ch.vd.uniregctb.adresse.AdresseCourrierPourRF;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.common.ListesResults;
+import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.*;
-import ch.vd.uniregctb.type.TypeAdresseTiers;
 
 import java.util.*;
 
@@ -27,16 +28,20 @@ public class ListesNominativesResults extends ListesResults<ListesNominativesRes
 
     private final TypeAdresse typeAdressesIncluses;
 
+	private final ServiceCivilService serviceCivilService;
+
 	private final boolean avecContribuables;
 
 	private final boolean avecDebiteurs;
 
-	public ListesNominativesResults(RegDate dateTraitement, int nombreThreads, TypeAdresse typeAdressesIncluses, boolean avecContribuables, boolean avecDebiteurs, TiersService tiersService, AdresseService adresseService) {
+	public ListesNominativesResults(RegDate dateTraitement, int nombreThreads, TypeAdresse typeAdressesIncluses, boolean avecContribuables, boolean avecDebiteurs, TiersService tiersService,
+	                                AdresseService adresseService, ServiceCivilService serviceCivilService) {
         super(dateTraitement, nombreThreads, tiersService, adresseService);
         this.typeAdressesIncluses = typeAdressesIncluses;
 	    this.avecContribuables = avecContribuables;
 	    this.avecDebiteurs = avecDebiteurs;
-    }
+		this.serviceCivilService = serviceCivilService;
+	}
 
 	public static class InfoTiers {
         public final long numeroTiers;
@@ -82,7 +87,13 @@ public class ListesNominativesResults extends ListesResults<ListesNominativesRes
 	@Override
 	public void addContribuable(Contribuable ctb) throws Exception {
 		if (ctb instanceof PersonnePhysique) {
-			final String nomPrenom = tiersService.getNomPrenom((PersonnePhysique) ctb);
+
+			// si on a besoin de plus que juste les données de base sur l'individu, on préchauffe le
+			// cache des individus avec les adresses aussi
+			final PersonnePhysique pp = (PersonnePhysique) ctb;
+			prechargeIndividuEtAdressesDuCivil(pp);
+
+			final String nomPrenom = tiersService.getNomPrenom(pp);
 			if (typeAdressesIncluses == TypeAdresse.FORMATTEE) {
 				final AdresseEnvoiDetaillee adresse = adresseService.getAdresseEnvoi(ctb, null, TypeAdresseFiscale.COURRIER, false);
 				addTiers(ctb.getNumero(), nomPrenom, null, adresse.getLignes());
@@ -97,6 +108,16 @@ public class ListesNominativesResults extends ListesResults<ListesNominativesRes
 		}
 		else if (ctb instanceof MenageCommun) {
 			final MenageCommun menage = (MenageCommun) ctb;
+
+			// récupération des personnes physiques sans résolution du principal/conjoint (nécessite le sexe, qui peut demander un appel au registre civil)
+			// -> préchauffage du cache pour tous les habitants du ménage
+			final Set<PersonnePhysique> composantsMenage = tiersService.getComposantsMenage(menage, null);
+			if (composantsMenage != null) {
+				for (PersonnePhysique pp : composantsMenage) {
+					prechargeIndividuEtAdressesDuCivil(pp);
+				}
+			}
+
 			final EnsembleTiersCouple ensembleTiersCouple = tiersService.getEnsembleTiersCouple(menage, null);
 			final PersonnePhysique principal = ensembleTiersCouple.getPrincipal();
 			final PersonnePhysique conjoint = ensembleTiersCouple.getConjoint();
@@ -124,6 +145,13 @@ public class ListesNominativesResults extends ListesResults<ListesNominativesRes
 			else {
 				addErrorManqueLiensMenage(menage);
 			}
+		}
+	}
+
+	private void prechargeIndividuEtAdressesDuCivil(PersonnePhysique pp) {
+		if (typeAdressesIncluses != TypeAdresse.AUCUNE && pp.isHabitant()) {
+			final long noIndividu = pp.getNumeroIndividu();
+			serviceCivilService.getIndividu(noIndividu, 2400, EnumAttributeIndividu.ADRESSES);
 		}
 	}
 
