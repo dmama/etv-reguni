@@ -34,6 +34,10 @@
 	<bean id="bvrPlusClient" class="ch.vd.uniregctb.webservice.sipf.MockBVRPlusClient">
 	</bean>
 
+	<!-- Mock service ACICOM -->
+	<bean id="aciComClient" class="ch.vd.uniregctb.webservice.acicom.MockAciComClient">
+	</bean>
+
 	<!-- Mock du Web-service PM -->
 	<bean id="tiersService2Mock" class="ch.vd.uniregctb.webservices.tiers2.mock.TiersWebServiceMockPM">
 		<property name="target" ref="tiersService2Bean" />

@@ -12,6 +12,7 @@ public class DemandeIdentificationView {
 	private String typeMessage;
 	private Integer periodeFiscale;
 	private String emetteurId;
+	private String businessId;
 	private Date dateMessage;
 	private Etat etatMessage;
 	private String navs13;
@@ -129,4 +130,11 @@ public class DemandeIdentificationView {
 		return noPolice;
 	}
 
+	public String getBusinessId() {
+		return businessId;
+	}
+
+	public void setBusinessId(String businessId) {
+		this.businessId = businessId;
+	}
 }

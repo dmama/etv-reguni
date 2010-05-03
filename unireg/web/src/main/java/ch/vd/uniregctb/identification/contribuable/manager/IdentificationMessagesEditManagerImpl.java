@@ -10,12 +10,15 @@ import ch.vd.uniregctb.evenement.identification.contribuable.IdentCtbDAO;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable;
 import ch.vd.uniregctb.evenement.identification.contribuable.Erreur.TypeErreur;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable.Etat;
+import ch.vd.uniregctb.identification.contribuable.AciComService;
+import ch.vd.uniregctb.identification.contribuable.FichierOrigine;
 import ch.vd.uniregctb.identification.contribuable.IdentificationContribuableService;
 import ch.vd.uniregctb.identification.contribuable.view.DemandeIdentificationView;
 import ch.vd.uniregctb.identification.contribuable.view.IdentificationMessagesEditView;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersCriteria.TypeTiers;
+import ch.vd.uniregctb.webservice.acicom.AciComClientException;
 
 public class IdentificationMessagesEditManagerImpl implements IdentificationMessagesEditManager {
 
@@ -24,6 +27,8 @@ public class IdentificationMessagesEditManagerImpl implements IdentificationMess
 	private IdentCtbDAO identCtbDAO;
 
 	private TiersDAO tiersDAO;
+
+	private AciComService aciComService;
 
 	public void setIdentCtbService(IdentificationContribuableService identCtbService) {
 		this.identCtbService = identCtbService;
@@ -89,6 +94,7 @@ public class IdentificationMessagesEditManagerImpl implements IdentificationMess
 			demandeIdentificationView.setEmetteurId(identCtbService.getNomCantonFromEmetteurId(identificationContribuable.getDemande().getEmetteurId()));
 			demandeIdentificationView.setPeriodeFiscale(Integer.valueOf(identificationContribuable.getDemande().getPeriodeFiscale()));
 			demandeIdentificationView.setTypeMessage(identificationContribuable.getDemande().getTypeMessage());
+			demandeIdentificationView.setBusinessId(identificationContribuable.getHeader().getBusinessId());
 			if(identificationContribuable.getDemande().getPersonne() != null) {
 				demandeIdentificationView.setNom(identificationContribuable.getDemande().getPersonne().getNom());
 				demandeIdentificationView.setPrenoms(identificationContribuable.getDemande().getPersonne().getPrenoms());
@@ -165,4 +171,15 @@ public class IdentificationMessagesEditManagerImpl implements IdentificationMess
 
 	}
 
+	public FichierOrigine getMessageFile(String businessId) throws AciComClientException {
+		return aciComService.getMessageFile(businessId);
+	}
+
+	public AciComService getAciComService() {
+		return aciComService;
+	}
+
+	public void setAciComService(AciComService aciComService) {
+		this.aciComService = aciComService;
+	}
 }

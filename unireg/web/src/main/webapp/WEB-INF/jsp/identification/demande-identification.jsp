@@ -10,7 +10,6 @@
 	<legend><span>
 		<fmt:message key="caracteristiques.message.identification" />
 	</span></legend>
-
 	<table cellspacing="0" cellpadding="0" border="0">
 		<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
 		<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
@@ -76,7 +75,7 @@
 		</tr>
 		<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
 		<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
-			<td></td>
+			<td><input type="button" name="fichier_acicom" value="<fmt:message key="label.bouton.identification.acicom" />" onClick="javascript:VoirMessage();" /></td>
 			<td></td>
 			<td><fmt:message key="label.adresse" />&nbsp;:</td>
 			<td>

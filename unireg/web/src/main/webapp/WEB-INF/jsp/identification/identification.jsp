@@ -124,6 +124,12 @@
 			
 				
 		}
+
+		function VoirMessage() {
+			var form = F$("theForm");
+			form.action = 'edit.do?fichier_acicom=true';
+			form.submit();
+		}
 		
 		
 			function Page_Identifier(idCtb) {

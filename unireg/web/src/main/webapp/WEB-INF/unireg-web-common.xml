@@ -297,6 +297,8 @@
 				<entry key="ch.vd.uniregctb.webservice.sipf.BVRPlusClientException" value="errors/bvrplus" />
 				<entry key="ch.vd.uniregctb.editique.print.PrintPCLException" value="errors/errorPrintPCL" />
 				<entry key="org.springframework.orm.hibernate3.HibernateOptimisticLockingFailureException" value="errors/optimisticLockingFailure" />
+				<entry key="ch.vd.uniregctb.webservice.acicom.AciComClientTechniqueException" value="errors/acicomTechnique" />
+				<entry key="ch.vd.uniregctb.webservice.acicom.AciComClientDocumentNotFoundException" value="errors/acicomDocNotFound" />
 			</map>
 		</property>
 		<property name="notificationService" ref="emailNotificationService" />

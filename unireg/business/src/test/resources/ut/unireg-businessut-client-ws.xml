@@ -4,5 +4,8 @@
 
 	<bean id="bvrPlusClient" class="ch.vd.uniregctb.webservice.sipf.MockBVRPlusClient">
 	</bean>
+		<!-- Mock service ACICOM -->
+	<bean id="aciComClient" class="ch.vd.uniregctb.webservice.acicom.MockAciComClient">
+	</bean>
 	
 </beans>

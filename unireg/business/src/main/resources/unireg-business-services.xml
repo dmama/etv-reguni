@@ -136,6 +136,10 @@
 		<aop:scoped-proxy/>
 	</bean>
 
+	<bean id="aciComService" class="ch.vd.uniregctb.identification.contribuable.AciComServiceImpl">
+		<property name="aciComClient" ref="aciComClient"/>
+	</bean>
+
 	<!-- Helpers de toutes sortes et de tous lieux (Dieu y retrouvera les siens) -->
 
 	<bean id="editiqueHelper" class="ch.vd.uniregctb.editique.impl.EditiqueHelperImpl">
