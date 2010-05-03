@@ -457,7 +457,6 @@ public class TiersServiceWebTAOISTest extends AbstractTiersServiceWebTest {
 		assertEquals("Café du Commerce", debiteur.getComplementNom());
 	}
 
-	@Ignore // en attendant que le WS se connecte sur l'indexeur distant de Unireg
 	@Test
 	public void testSearchPersonneParNomEtDateNaissance() throws Exception {
 

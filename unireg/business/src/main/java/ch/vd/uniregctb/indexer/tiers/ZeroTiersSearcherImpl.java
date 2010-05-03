@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Set;
 
 import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.indexer.GlobalIndexInterface;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.tiers.TiersCriteria;
 
@@ -30,7 +29,11 @@ public class ZeroTiersSearcherImpl implements GlobalTiersSearcher {
 	public void checkCoherenceIndex(Set<Long> existingIds, StatusManager statusManager, CheckCallback callback) {
 	}
 
-	public GlobalIndexInterface getGlobalIndex() {
-		return null;
+	public int getApproxDocCount() {
+		return 0;
+	}
+
+	public int getExactDocCount() {
+		return 0;
 	}
 }

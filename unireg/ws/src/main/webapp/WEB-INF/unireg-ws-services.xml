@@ -8,9 +8,14 @@
 		<constructor-arg value="${extprop.indexer.globalIndexPath}" />
 	</bean>
 
-	<!--TODO(msi) implémenter un global index distant sur Unireg -->
+	<bean id="globalTiersSearcher" class="ch.vd.uniregctb.common.BasicAuthHttpInvokerProxyFactoryBean">
+		<property name="serviceUrl" value="http://localhost:8080/fiscalite/unireg/tiersSearcher.remoting" />
+		<property name="serviceInterface" value="ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher" />
+		<property name="username" value="unireg-ws" />
+		<property name="password" value="welcome" />
+	</bean>
+
 	<bean id="globalTiersIndexer" class="ch.vd.uniregctb.indexer.tiers.ZeroTiersIndexerImpl" />
-	<bean id="globalTiersSearcher" class="ch.vd.uniregctb.indexer.tiers.ZeroTiersSearcherImpl" />
 
 	<bean id="tacheService" class="ch.vd.uniregctb.tache.MockTacheService" />
 	<bean id="delaisService" class="ch.vd.uniregctb.parametrage.MockDelaisService" />

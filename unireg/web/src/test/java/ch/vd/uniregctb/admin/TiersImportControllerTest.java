@@ -130,7 +130,7 @@ public class TiersImportControllerTest extends WebTest {
 				
 				int nbTiers = tiersDAO.getCount(Tiers.class);
 				assertEquals(21, nbTiers);
-				int nbInIndex = globalTiersSearcher.getGlobalIndex().getExactDocCount();
+				int nbInIndex = globalTiersSearcher.getExactDocCount();
 				assertEquals(18, nbInIndex); // => les individus 325631 et 325740 n'existent pas
 
 				return null;

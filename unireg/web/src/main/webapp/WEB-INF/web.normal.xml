@@ -60,6 +60,11 @@
 	</servlet-mapping>
 
 	<servlet-mapping>
+		<servlet-name>uniregServlet</servlet-name>
+		<url-pattern>*.remoting</url-pattern>
+	</servlet-mapping>
+
+	<servlet-mapping>
 		<servlet-name>CXFServlet</servlet-name>
 		<url-pattern>/ws/*</url-pattern>
 	</servlet-mapping>
@@ -77,13 +82,28 @@
 			<role-name>ws-batch-role</role-name>
 		</auth-constraint>
 	</security-constraint>
-	
+
+	<security-constraint>
+		<web-resource-collection>
+			<web-resource-name>Unireg Remoting</web-resource-name>
+			<url-pattern>*.remoting</url-pattern>
+			<http-method>GET</http-method>
+			<http-method>POST</http-method>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>unireg-remoting</role-name>
+		</auth-constraint>
+	</security-constraint>
+
 	<login-config>
 		<auth-method>BASIC</auth-method>
 		<realm-name>security</realm-name>
 	</login-config>
 	<security-role>
 		<role-name>ws-batch-role</role-name>
+	</security-role>
+	<security-role>
+		<role-name>unireg-remoting</role-name>
 	</security-role>
 
 	

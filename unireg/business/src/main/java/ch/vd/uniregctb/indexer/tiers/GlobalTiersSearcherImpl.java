@@ -261,16 +261,15 @@ public class GlobalTiersSearcherImpl implements GlobalTiersSearcher {
 
 	private static long extractTiersId(final Document doc) {
 		final String idAsString = doc.get(LuceneEngine.F_ENTITYID);
-		final long id = Long.parseLong(idAsString);
-		return id;
+		return Long.parseLong(idAsString);
 	}
 
-	/**
-	 * @param globalIndex
-	 *            the globalIndex to set
-	 */
-	public GlobalIndexInterface getGlobalIndex() {
-		return globalIndex;
+	public int getApproxDocCount() {
+		return globalIndex.getApproxDocCount();
+	}
+
+	public int getExactDocCount() {
+		return globalIndex.getExactDocCount();
 	}
 
 	public void setGlobalIndex(GlobalIndexInterface globalIndex) {

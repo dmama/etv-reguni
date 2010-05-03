@@ -23,13 +23,6 @@
 	</bean>
 
 
-	<bean id="URLListController" class="ch.vd.uniregctb.common.URLListController">
-		<property name="commandClass" value="java.lang.Object" />
-		<property name="commandName" value="command" />
-		<property name="formView" value="index" />
-		<property name="successView" value="index" />
-	</bean>
-
 	<!--  xt-Spring configuration -->
 	
 	<bean id="ajaxAutoCompleteHandler" class="ch.vd.uniregctb.web.xt.handler.AutoCompleteHandler">
@@ -243,7 +236,10 @@
 				<entry key="/identification/tableau-bord/stats.do" value-ref="identificationMessagesStatsController" />
 				<entry key="/identification/gestion-messages/listTraite.do" value-ref="identificationMessagesListTraiteController" />
 				<entry key="/identification/gestion-messages/nonIdentifie.do" value-ref="identificationMessagesNonIdentifieController" />
-				</map>
+
+				<!-- Mapping des beans de remoting -->
+				<entry key="/tiersSearcher.remoting" value-ref="remoteTiersSearch" />
+			</map>
 		</property>
 	</bean>
 	

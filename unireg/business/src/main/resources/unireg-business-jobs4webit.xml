@@ -43,6 +43,7 @@
 	<!-- Test de l'indexer -->
 	<bean id="icGlobalIndex" class="ch.vd.uniregctb.testing.IcGlobalIndexTest" parent="inContainerTest">
 		<property name="globalTiersSearcher" ref="globalTiersSearcher" />
+		<property name="globalTiersIndexer" ref="globalTiersIndexer" />
 	</bean>
 
 	<!-- Test le traitement des evt civils -->
