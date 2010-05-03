@@ -215,44 +215,43 @@ public class TiersGeneralManagerImpl implements TiersGeneralManager{
 	 */
 	private void setErreursFiliation(Tiers tiers, ValidationResults validationResults) {
 		if (tiers instanceof PersonnePhysique) {
-			PersonnePhysique pp = (PersonnePhysique) tiers;
+			final PersonnePhysique pp = (PersonnePhysique) tiers;
 			if (pp.isHabitant()) {
-				int year = getCalToday().get(Calendar.YEAR);
-				EnumAttributeIndividu[] enumValues = new EnumAttributeIndividu[] {
-						EnumAttributeIndividu.ENFANTS, EnumAttributeIndividu.PARENTS
-				};
-				Individu ind = serviceCivilService.getIndividu(pp.getNumeroIndividu(), year, enumValues);
-				Collection<Individu> listFiliations = ind.getEnfants();
-				Iterator<Individu> it = listFiliations.iterator();
-				for (int i = 0; i < listFiliations.size(); i++) {
-					Individu individu = it.next();
+				final int year = getCalToday().get(Calendar.YEAR);
+				final EnumAttributeIndividu[] enumValues = new EnumAttributeIndividu[] { EnumAttributeIndividu.ENFANTS, EnumAttributeIndividu.PARENTS };
+				final Individu ind = serviceCivilService.getIndividu(pp.getNumeroIndividu(), year, enumValues);
+				final Collection<Individu> listFiliations = ind.getEnfants();
+				for (Individu individu : listFiliations) {
 					PersonnePhysique habFils  = tiersDAO.getPPByNumeroIndividu(individu.getNoTechnique());
 					if (habFils == null) {
-						validationResults.addError("Le contribuable enfant correspondant à l'individu '"
-													+ tiersService.getNomPrenom(individu) + "' n'existe pas.");
+						final String nomPrenom = tiersService.getNomPrenom(individu);
+						final String message = String.format("Le contribuable 'enfant' correspondant à l'individu '%s' (%d) n'existe pas.", nomPrenom, individu.getNoTechnique());
+						validationResults.addError(message);
 					}
 				}
-				Individu mere = ind.getMere();
+				final Individu mere = ind.getMere();
 				if (mere != null) {
-					PersonnePhysique habMere  = tiersDAO.getPPByNumeroIndividu(mere.getNoTechnique());
+					final PersonnePhysique habMere  = tiersDAO.getPPByNumeroIndividu(mere.getNoTechnique());
 					if (habMere == null) {
-						validationResults.addError("Le contribuable mère correspondant à l'individu '"
-													+ tiersService.getNomPrenom(mere) + "' n'existe pas.");
+						final String nomPrenom = tiersService.getNomPrenom(mere);
+						final String message = String.format("Le contribuable 'mère' correspondant à l'individu '%s' (%d) n'existe pas.", nomPrenom, mere.getNoTechnique());
+						validationResults.addError(message);
 					}
 				}
-				Individu pere = ind.getPere();
+				final Individu pere = ind.getPere();
 				if (pere != null) {
-					PersonnePhysique habPere  = tiersDAO.getPPByNumeroIndividu(pere.getNoTechnique());
+					final PersonnePhysique habPere  = tiersDAO.getPPByNumeroIndividu(pere.getNoTechnique());
 					if (habPere == null) {
-						validationResults.addError("Le contribuable père correspondant à l'individu '"
-													+ tiersService.getNomPrenom(pere) + "' n'existe pas.");
+						final String nomPrenom = tiersService.getNomPrenom(pere);
+						final String message = String.format("Le contribuable 'père' correspondant à l'individu '%s' (%d) n'existe pas.", nomPrenom, pere.getNoTechnique());
+						validationResults.addError(message);
 					}
 				}
 				for (EtatCivil etatCivil : ind.getEtatsCivils()) {
 					if (etatCivil.getDateDebutValidite() == null){
-						validationResults.addWarning("Le contribuable possède un état civil (" +
-							ch.vd.uniregctb.type.EtatCivil.from(etatCivil.getTypeEtatCivil()) + ") sans date de début. " +
-							"Dans la mesure du possible, cette date a été estimée.");
+						final String message = String.format("Le contribuable possède un état civil (%s) sans date de début. Dans la mesure du possible, cette date a été estimée.",
+															ch.vd.uniregctb.type.EtatCivil.from(etatCivil.getTypeEtatCivil()));
+						validationResults.addWarning(message);
 					}
 				}
 			}
