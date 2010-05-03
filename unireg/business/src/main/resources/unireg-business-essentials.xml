@@ -29,6 +29,7 @@
 		<property name="chainingInterceptor" ref="chainingInterceptor" />
 		<property name="infraService" ref="serviceInfrastructureService" />
 		<property name="tiersService" ref="tiersService" />
+		<property name="tacheDAO" ref="tacheDAO" />
 	</bean>
 	 
 	<bean id="tiersService" class="ch.vd.uniregctb.tiers.TiersServiceImpl">
