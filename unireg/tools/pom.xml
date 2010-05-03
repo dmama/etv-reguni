@@ -17,7 +17,7 @@
 		<relativePath>../base/pom.xml</relativePath>
 	</parent>
 
-	<name>UniregCTB - Tools</name>
+	<name>Unireg - Tools</name>
 	<description>UniregCTB, Le registre unifie de l'Etat de Vaud - Tools</description>
 
 	<dependencies>

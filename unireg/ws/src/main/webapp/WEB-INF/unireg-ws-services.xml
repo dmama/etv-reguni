@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd">
+
+	<!-- File based -->
+	<bean id="fileGlobalIndexDirectory" class="ch.vd.uniregctb.indexer.fs.FSDirectoryProvider" lazy-init="true">
+		<constructor-arg value="${extprop.indexer.globalIndexPath}" />
+	</bean>
+
+	<!--TODO(msi) implémenter un global index distant sur Unireg -->
+	<bean id="globalTiersIndexer" class="ch.vd.uniregctb.indexer.tiers.ZeroTiersIndexerImpl" />
+	<bean id="globalTiersSearcher" class="ch.vd.uniregctb.indexer.tiers.ZeroTiersSearcherImpl" />
+
+	<bean id="tacheService" class="ch.vd.uniregctb.tache.MockTacheService" />
+	<bean id="delaisService" class="ch.vd.uniregctb.parametrage.MockDelaisService" />
+	
+	<bean id="editiqueService" class="ch.vd.uniregctb.editique.mock.MockEditiqueService"/>
+	<bean id="editiqueCompositionService" class="ch.vd.uniregctb.editique.mock.MockEditiqueCompositionService"/>
+	<bean id="impressionDIHelper" class="ch.vd.uniregctb.declaration.ordinaire.MockImpressionDeclarationImpotOrdinaireHelper" />
+	<bean id="impressionSommationDIHelper" class="ch.vd.uniregctb.declaration.ordinaire.MockImpressionSommationDIHelper" />
+
+</beans>

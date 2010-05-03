@@ -14,7 +14,7 @@
 	<!-- END_LVERSION -->
 	<packaging>pom</packaging>
 
-	<name>UniregCTB - Base</name>
+	<name>Unireg - Base</name>
 	<description>UniregCTB - Le registre unifie de l'Etat de Vaud</description>
 
 	<modules>
@@ -23,6 +23,7 @@
 		<module>../business</module>
 		<module>../norentes</module>
 		<module>../web</module>
+		<module>../ws</module>
 	</modules>
 
 	<developers>
@@ -524,7 +525,7 @@
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>dashboard-maven-plugin</artifactId>
-				<version>1.0-SNAPSHOT</version>
+				<version>1.0.0-beta-1</version>
 			</plugin>
 		</plugins>
 	</reporting>
@@ -668,13 +669,6 @@
 		<!-- =================== Environnement profiles -->
 		
 		<profile>
-			<!-- version d'Unireg sans les web-services -->
-			<id>weblight</id>
-			<properties>
-				<unireg.webxml>web.light.xml</unireg.webxml>
-			</properties>
-		</profile>
-		<profile>
 			<!-- version spéciale d'Unireg pour les tests manuels de non-régression des événements civils -->
 			<id>env.norentes</id>
 			<properties>
@@ -724,7 +718,7 @@
 		<!--<unireg.deploymenturl>/fiscalite/unireg</unireg.deploymenturl>-->
 		<unireg.appname>unireg</unireg.appname>
 		<unireg.standalone>false</unireg.standalone>
-		<unireg.webxml>web.full.xml</unireg.webxml>
+		<unireg.webxml>web.normal.xml</unireg.webxml>
 		<unireg.webreleasexml>release.xml</unireg.webreleasexml>
 
 		<unireg.properties.path>${ch.vd.appDir}/${unireg.appname}/config/unireg.properties</unireg.properties.path>

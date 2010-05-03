@@ -18,7 +18,7 @@
 		<relativePath>../base/pom.xml</relativePath>
 	</parent>
 
-	<name>UniregCTB - Business</name>
+	<name>Unireg - Business</name>
 	<description>UniregCTB, Le registre unifie de l'Etat de Vaud - Business</description>
 
 	<dependencies>
@@ -90,6 +90,17 @@
 			<groupId>org.apache.lucene</groupId>
 			<artifactId>lucene-analyzers</artifactId>
 			<version>${lucene.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-configuration</groupId>
+			<artifactId>commons-configuration</artifactId>
+			<version>1.4</version>
+			<exclusions>
+				<exclusion>
+					<groupId>commons-jxpath</groupId>
+					<artifactId>commons-jxpath</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>javax.ejb</groupId>

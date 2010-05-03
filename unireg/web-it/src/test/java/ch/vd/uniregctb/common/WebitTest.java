@@ -26,6 +26,7 @@ public abstract class WebitTest extends WithoutSpringTest {
 	private static final Logger LOGGER = Logger.getLogger(WebitTest.class);
 
 	protected String baseUrl;
+	protected String baseWsUrl;
 	protected String username;
 	protected String password;
 	protected String batchUrl;
@@ -62,14 +63,18 @@ public abstract class WebitTest extends WithoutSpringTest {
 
 		// Récupère les valeurs des propriétés 
 		baseUrl = propsWebIT.getProperty("unireg.baseurl") + propsUT.getProperty("testprop.unireg.deploymenturl");
+		baseWsUrl = propsWebIT.getProperty("unireg.baseurl") + propsUT.getProperty("testprop.uniregws.deploymenturl");
+
 		username = propsWebIT.getProperty("webservice.username");
 		password = propsWebIT.getProperty("webservice.password");
+
 		batchUrl = baseUrl + propsWebIT.getProperty("webservice.batch.serverurl");
-		securiteUrl = baseUrl + propsWebIT.getProperty("webservice.securite.serverurl");
-		tiers1Url = baseUrl + propsWebIT.getProperty("webservice.tiers.serverurl");
-		tiers2Url = baseUrl + propsWebIT.getProperty("webservice.tiers2.serverurl");
+		securiteUrl = baseWsUrl + propsWebIT.getProperty("webservice.securite.serverurl");
+		tiers1Url = baseWsUrl + propsWebIT.getProperty("webservice.tiers.serverurl");
+		tiers2Url = baseWsUrl + propsWebIT.getProperty("webservice.tiers2.serverurl");
 
 		LOGGER.debug("baseUrl: " + baseUrl);
+		LOGGER.debug("baseWsUrl: " + baseWsUrl);
 
 		webClient = new WebClient();
 		webClient.setJavaScriptEnabled(false);

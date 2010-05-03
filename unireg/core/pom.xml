@@ -18,7 +18,7 @@
 		<relativePath>../base/pom.xml</relativePath>
 	</parent>
 
-	<name>UniregCTB - Core</name>
+	<name>Unireg - Core</name>
 	<description>UniregCTB, Le registre unifie de l'Etat de Vaud - Core</description>
 
 	<dependencies>

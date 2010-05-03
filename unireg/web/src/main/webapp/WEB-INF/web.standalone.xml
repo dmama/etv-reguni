@@ -1,15 +1,17 @@
 <web-app version="2.4" xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
 
-	<display-name>UniregCTB - Le registre fiscal de l'Etat de Vaud</display-name>
+	<display-name>Unireg - Le registre fiscal de l'Etat de Vaud</display-name>
 	<context-param>
 		<param-name>contextConfigLocation</param-name>
 		<param-value>
 			classpath*:/unireg-core-dao.xml,
 			classpath*:/unireg-core-sf.xml,
+			classpath*:/unireg-business-essentials.xml;
 			classpath*:/unireg-business-services.xml,
 			classpath*:/unireg-business-jobs.xml,
 			classpath*:/unireg-business-evtcivil.xml,		
+			classpath*:/unireg-business-evtfiscal.xml,
 			/WEB-INF/unireg-web-activation.xml,
 			/WEB-INF/unireg-web-admin.xml,
 			/WEB-INF/unireg-web-cache.xml,
@@ -38,7 +40,6 @@
 			/WEB-INF/unireg-web-adresse.xml,
 			/WEB-INF/unireg-web-complement.xml,
 			/WEB-INF/unireg-web-civil.xml,
-			/WEB-INF/unireg-web-ws.xml,
 			/WEB-INF/unireg-web-acces.xml,
 			/WEB-INF/unireg-standalone-mocks.xml
 		</param-value>
@@ -93,30 +94,6 @@
 
 	<security-constraint>
 		<web-resource-collection>
-			<web-resource-name>Web-service Tiers</web-resource-name>
-			<url-pattern>/ws/tiers</url-pattern>
-			<http-method>GET</http-method>
-			<http-method>POST</http-method>
-		</web-resource-collection>
-		<auth-constraint>
-			<role-name>ws-tiers-role</role-name>
-		</auth-constraint>
-	</security-constraint>
-
-	<security-constraint>
-		<web-resource-collection>
-			<web-resource-name>Web-service Securite</web-resource-name>
-			<url-pattern>/ws/securite</url-pattern>
-			<http-method>GET</http-method>
-			<http-method>POST</http-method>
-		</web-resource-collection>
-		<auth-constraint>
-			<role-name>ws-securite-role</role-name>
-		</auth-constraint>
-	</security-constraint>
-
-	<security-constraint>
-		<web-resource-collection>
 			<web-resource-name>Web-service Batch</web-resource-name>
 			<url-pattern>/ws/batch</url-pattern>
 			<http-method>GET</http-method>
@@ -127,33 +104,12 @@
 		</auth-constraint>
 	</security-constraint>
 	
-	<security-constraint>
-		<web-resource-collection>
-			<web-resource-name>Web-service fiscal</web-resource-name>
-			<url-pattern>/ws/fiscal</url-pattern>
-			<http-method>GET</http-method>
-			<http-method>POST</http-method>
-		</web-resource-collection>
-		<auth-constraint>
-			<role-name>ws-fiscal-role</role-name>
-		</auth-constraint>
-	</security-constraint>
-
 	<login-config>
 		<auth-method>BASIC</auth-method>
 		<realm-name>security</realm-name>
 	</login-config>
 	<security-role>
-		<role-name>ws-tiers-role</role-name>
-	</security-role>
-	<security-role>
-		<role-name>ws-securite-role</role-name>
-	</security-role>
-	<security-role>
 		<role-name>ws-batch-role</role-name>
-	</security-role>
-	<security-role>
-		<role-name>ws-fiscal-role</role-name>
 	</security-role>
 
 	

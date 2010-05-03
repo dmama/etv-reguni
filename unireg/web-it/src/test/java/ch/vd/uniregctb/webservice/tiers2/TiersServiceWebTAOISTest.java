@@ -9,6 +9,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import ch.vd.uniregctb.webservices.tiers2.Adresse;
@@ -460,6 +461,7 @@ public class TiersServiceWebTAOISTest extends AbstractTiersServiceWebTest {
 		assertEquals("Café du Commerce", debiteur.getComplementNom());
 	}
 
+	@Ignore // en attendant que le WS se connecte sur l'indexeur distant de Unireg
 	@Test
 	public void testSearchPersonneParNomEtDateNaissance() throws Exception {
 

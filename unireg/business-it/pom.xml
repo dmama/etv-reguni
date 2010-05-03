@@ -18,7 +18,7 @@
 		<relativePath>../base/pom.xml</relativePath>
     </parent>
 
-    <name>UniregCTB - Business IT</name>
+    <name>Unireg - Business IT</name>
     <description>UniregCTB, Le registre unifie de l'Etat de Vaud - Business Integration Tests</description>
 
     <dependencies>

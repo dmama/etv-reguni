@@ -18,7 +18,7 @@
 		<relativePath>../base/pom.xml</relativePath>
 	</parent>
 
-	<name>UniregCTB - Unireg Batch Runner</name>
+	<name>Unireg - Unireg Batch Runner</name>
 	<description>UniregCTB, Le registre unifie de l'Etat de Vaud - UBR</description>
 
 	<dependencies>

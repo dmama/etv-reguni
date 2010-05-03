@@ -11,6 +11,7 @@ import org.springframework.context.MessageSourceAware;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.common.EtatCivilHelper;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
