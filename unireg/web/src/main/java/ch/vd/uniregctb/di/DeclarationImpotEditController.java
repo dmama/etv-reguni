@@ -504,9 +504,9 @@ public class DeclarationImpotEditController extends AbstractDeclarationImpotCont
 		final DeclarationImpotDetailView bean = (DeclarationImpotDetailView) command;
 		checkAccesDossierEnEcriture(bean.getContribuable().getNumero());
 
-		byte[] pdf = diEditManager.getCopieConformeSommation(bean);
+		final byte[] pdf = diEditManager.getCopieConformeSommation(bean);
 		if (pdf == null) {
-			errors.reject("global.error.communication.editique");
+			errors.reject("global.error.aucune.copie.conforme.editique");
 		}
 		else {
 			getServletService().downloadAsFile("copieSommationDi.pdf", pdf, response);
