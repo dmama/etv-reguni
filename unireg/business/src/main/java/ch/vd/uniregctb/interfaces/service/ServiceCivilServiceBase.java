@@ -27,8 +27,6 @@ public abstract class ServiceCivilServiceBase implements ServiceCivilService {
 
 	private static final Logger LOGGER = Logger.getLogger(ServiceCivilServiceBase.class);
 
-	private final List<CivilListener> listeners = new ArrayList<CivilListener>();
-
 	private ServiceInfrastructureService infraService;
 
 	public void setInfraService(ServiceInfrastructureService infraService) {
@@ -155,22 +153,6 @@ public abstract class ServiceCivilServiceBase implements ServiceCivilService {
 
 		return nomPrenom;
 	}
-
-	public void onIndividuChange(long numero) {
-		for (CivilListener l : listeners) {
-			try {
-				l.onIndividuChange(numero);
-			}
-			catch (Exception e) {
-				LOGGER.error("L'exception ci-après a été ignorée car levée dans un listener", e);
-			}
-		}
-	}
-
-	public void register(CivilListener listener) {
-		listeners.add(listener);
-	}
-
 
 	/**
 	 * Construit la liste des communes de domiciles connues pour la personne physique donnée, et ce depuis une date de référence

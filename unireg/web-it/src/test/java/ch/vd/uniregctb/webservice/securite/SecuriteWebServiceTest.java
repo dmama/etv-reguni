@@ -161,7 +161,6 @@ public class SecuriteWebServiceTest extends WebitTest {
 	 * Teste que Daniel Di Lallo ne possède aucun droit sur Laurent Schmid et son couple (interdiction) ni sur Pascal Broulis
 	 * (autorisation exclusive pour Francis Perroset).
 	 */
-	@Ignore // problème de cohérence du cache des dossiers contrôlés : manque encore un événement DB entre Unireg et Unireg-WS 
 	@Test
 	public void testAutorisationsDanielDiLallo() throws Exception {
 

@@ -8,11 +8,11 @@ import org.hibernate.type.Type;
 import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.uniregctb.common.HibernateEntity;
+import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.hibernate.interceptor.ModificationInterceptor;
 import ch.vd.uniregctb.hibernate.interceptor.ModificationSubInterceptor;
 import ch.vd.uniregctb.tiers.DroitAcces;
-import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -26,14 +26,14 @@ import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 public class DatabaseChangeInterceptor implements ModificationSubInterceptor, InitializingBean {
 
 	private ModificationInterceptor parent;
-	private DatabaseService dbService;
+	private DataEventService dataEventService;
 
 	public void setParent(ModificationInterceptor parent) {
 		this.parent = parent;
 	}
 
-	public void setDbService(DatabaseService dbService) {
-		this.dbService = dbService;
+	public void setDataEventService(DataEventService dataEventService) {
+		this.dataEventService = dataEventService;
 	}
 
 	public boolean onChange(HibernateEntity entity, Serializable id, Object[] currentState, Object[] previousState, String[] propertyNames,
@@ -44,7 +44,7 @@ public class DatabaseChangeInterceptor implements ModificationSubInterceptor, In
 			final Tiers tiers = (Tiers) entity;
 			final Long numero = tiers.getNumero();
 			if (numero != null) {
-				dbService.onTiersChange(numero);
+				dataEventService.onTiersChange(numero);
 			}
 		}
 		if (entity instanceof Declaration) {
@@ -52,7 +52,7 @@ public class DatabaseChangeInterceptor implements ModificationSubInterceptor, In
 			final Declaration declaration = (Declaration) entity;
 			final Long numero = declaration.getTiers().getNumero();
 			if (numero != null) {
-				dbService.onTiersChange(numero);
+				dataEventService.onTiersChange(numero);
 			}
 		}
 		else if (entity instanceof DroitAcces) {
@@ -63,7 +63,7 @@ public class DatabaseChangeInterceptor implements ModificationSubInterceptor, In
 			// le tiers lui-même
 			final Long numero = pp.getNumero();
 			if (numero != null) {
-				dbService.onDroitAccessChange(numero);
+				dataEventService.onDroitAccessChange(numero);
 			}
 
 			// tous les ménages communs auxquel il a pu appartenir
@@ -74,7 +74,7 @@ public class DatabaseChangeInterceptor implements ModificationSubInterceptor, In
 						continue;
 					}
 					final Long mcId = r.getObjetId();
-					dbService.onDroitAccessChange(mcId);
+					dataEventService.onDroitAccessChange(mcId);
 				}
 			}
 		}

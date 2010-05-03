@@ -12,13 +12,13 @@
 							http://www.springframework.org/schema/jms/spring-jms.xsd">
 
 
-	<bean id="databaseEventListener" class="ch.vd.uniregctb.evenement.database.DatabaseEventListener" parent="esbMessageListener">
-		<property name="databaseService" ref="databaseService" />
+	<bean id="dataEventJmsListener" class="ch.vd.uniregctb.data.DataEventJmsListener" parent="esbMessageListener">
+		<property name="dataEventService" ref="dataEventService" />
 	</bean>
 
-	<bean id="jmsDatabaseEventListenerContainer" class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+	<bean id="dataEventJmsListenerContainer" class="org.springframework.jms.listener.DefaultMessageListenerContainer">
 		<property name="connectionFactory" ref="jmsConnectionFactory" />
-		<property name="messageListener" ref="databaseEventListener" />
+		<property name="messageListener" ref="dataEventJmsListener" />
 		<property name="transactionManager" ref="transactionManager" />
 		<property name="cacheLevelName" value="CACHE_CONSUMER" />
 		<property name="sessionTransacted" value="true" />

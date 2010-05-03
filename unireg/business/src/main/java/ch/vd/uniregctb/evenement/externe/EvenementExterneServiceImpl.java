@@ -1,21 +1,11 @@
 package ch.vd.uniregctb.evenement.externe;
 
-import ch.vd.fiscalite.registre.evenementImpotSourceV1.EvenementImpotSourceQuittanceDocument;
-import ch.vd.fiscalite.registre.evenementImpotSourceV1.EvenementImpotSourceQuittanceType;
-import ch.vd.infrastructure.model.impl.DateUtils;
-import ch.vd.registre.base.date.DateHelper;
-import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.common.BatchResults;
-import ch.vd.uniregctb.common.BatchTransactionTemplate;
-import ch.vd.uniregctb.database.DatabaseService;
-import ch.vd.uniregctb.declaration.Declaration;
-import ch.vd.uniregctb.declaration.DeclarationImpotSource;
-import ch.vd.uniregctb.declaration.EtatDeclaration;
-import ch.vd.uniregctb.hibernate.interceptor.ModificationLogInterceptor;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TiersDAO;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.log4j.Logger;
 import org.apache.xmlbeans.XmlException;
 import org.springframework.beans.factory.InitializingBean;
@@ -24,7 +14,22 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
-import java.util.*;
+import ch.vd.fiscalite.registre.evenementImpotSourceV1.EvenementImpotSourceQuittanceDocument;
+import ch.vd.fiscalite.registre.evenementImpotSourceV1.EvenementImpotSourceQuittanceType;
+import ch.vd.infrastructure.model.impl.DateUtils;
+import ch.vd.registre.base.date.DateHelper;
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.common.AuthenticationHelper;
+import ch.vd.uniregctb.common.BatchResults;
+import ch.vd.uniregctb.common.BatchTransactionTemplate;
+import ch.vd.uniregctb.data.DataEventService;
+import ch.vd.uniregctb.declaration.Declaration;
+import ch.vd.uniregctb.declaration.DeclarationImpotSource;
+import ch.vd.uniregctb.declaration.EtatDeclaration;
+import ch.vd.uniregctb.hibernate.interceptor.ModificationLogInterceptor;
+import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.tiers.TiersDAO;
+import ch.vd.uniregctb.type.TypeEtatDeclaration;
 
 public class EvenementExterneServiceImpl implements EvenementExterneService, InitializingBean {
 
@@ -37,7 +42,7 @@ public class EvenementExterneServiceImpl implements EvenementExterneService, Ini
 	private PlatformTransactionManager transactionManager;
 	private HibernateTemplate hibernateTemplate;
 	private ModificationLogInterceptor modifInterceptor;
-	private DatabaseService databaseService;
+	private DataEventService dataEventService;
 
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setSender(EvenementExterneSender sender) {
@@ -66,8 +71,8 @@ public class EvenementExterneServiceImpl implements EvenementExterneService, Ini
 		this.modifInterceptor = modifInterceptor;
 	}
 
-	public void setDatabaseService(DatabaseService databaseService) {
-		this.databaseService = databaseService;
+	public void setDataEventService(DataEventService dataEventService) {
+		this.dataEventService = dataEventService;
 	}
 
 	/**
@@ -188,7 +193,7 @@ public class EvenementExterneServiceImpl implements EvenementExterneService, Ini
 		}
 
 		// [UNIREG-1947] EvenementExterneListenerImplne pas oublier d'invalider le cache du tiers!
-		databaseService.onTiersChange(declarationImpotSource.getTiers().getNumero());
+		dataEventService.onTiersChange(declarationImpotSource.getTiers().getNumero());
 	}
 
 	public EvenementImpotSourceQuittanceDocument createEvenementQuittancement(EvenementImpotSourceQuittanceType.TypeQuittance.Enum quitancement, Long numeroCtb, RegDate dateDebut,

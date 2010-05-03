@@ -2,9 +2,8 @@ package ch.vd.uniregctb.webservices.tiers2.cache;
 
 import org.springframework.beans.factory.InitializingBean;
 
-import ch.vd.uniregctb.database.DatabaseListener;
-import ch.vd.uniregctb.database.DatabaseService;
-import ch.vd.uniregctb.interfaces.service.CivilListener;
+import ch.vd.uniregctb.data.DataEventListener;
+import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersDAO;
 
@@ -13,14 +12,14 @@ import ch.vd.uniregctb.tiers.TiersDAO;
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
-public class TiersWebServiceCacheManager implements DatabaseListener, CivilListener, InitializingBean {
+public class TiersWebServiceCacheManager implements DataEventListener, InitializingBean {
 
-	private DatabaseService dbService;
+	private DataEventService dataEventService;
 	private TiersWebServiceCache cache;
 	private TiersDAO tiersDAO;
 
-	public void setDbService(DatabaseService dbService) {
-		this.dbService = dbService;
+	public void setDataEventService(DataEventService dataEventService) {
+		this.dataEventService = dataEventService;
 	}
 
 	public void setCache(TiersWebServiceCache cache) {
@@ -55,6 +54,6 @@ public class TiersWebServiceCacheManager implements DatabaseListener, CivilListe
 	}
 
 	public void afterPropertiesSet() throws Exception {
-		dbService.register(this);
+		dataEventService.register(this);
 	}
 }

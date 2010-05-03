@@ -221,16 +221,4 @@ public interface ServiceCivilService {
 	 * @param parties   les parties renseignées sur les individus
 	 */
 	void warmCache(List<Individu> individus, RegDate date, EnumAttributeIndividu... parties);
-
-	/**
-	 * Enregistre un listener.
-	 */
-	public void register(CivilListener listener);
-
-	/**
-	 * Notifie au service que l'individu spécifié a changé dans le registre civil.
-	 *
-	 * @param numero le numéro d'individu
-	 */
-	void onIndividuChange(long numero);
 }

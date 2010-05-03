@@ -41,7 +41,7 @@
 		<property name="target" ref="securityProviderImpl" />
 		<property name="cacheManager" ref="ehCacheManager" />
 		<property name="cacheName" value="securityProvider" />
-		<property name="databaseService" ref="databaseService" />
+		<property name="dataEventService" ref="dataEventService" />
 		<property name="tiersDAO" ref="tiersDAOPM" /> <!-- override -->
 		<property name="droitAccesDAO" ref="droitAccesDAO" />
 		<property name="uniregCacheManager" ref="uniregCacheManager" />

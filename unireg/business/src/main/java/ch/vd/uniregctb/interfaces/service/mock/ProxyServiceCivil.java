@@ -17,7 +17,6 @@ import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.Origine;
 import ch.vd.uniregctb.interfaces.model.Permis;
 import ch.vd.uniregctb.interfaces.model.Tutelle;
-import ch.vd.uniregctb.interfaces.service.CivilListener;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 
 /**
@@ -127,14 +126,6 @@ public class ProxyServiceCivil implements ServiceCivilService {
 
 	public void warmCache(List<Individu> individus, RegDate date, EnumAttributeIndividu... parties) {
 		target.warmCache(individus, date, parties);
-	}
-
-	public void register(CivilListener listener) {
-		target.register(listener);
-	}
-
-	public void onIndividuChange(long numero) {
-		target.onIndividuChange(numero);
 	}
 
 	public List<HistoriqueCommune> getCommunesDomicileHisto(RegDate depuis, long noIndividu, boolean strict, boolean seulementVaud) throws DonneesCivilesException, InfrastructureException {

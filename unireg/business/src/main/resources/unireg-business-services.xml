@@ -99,7 +99,7 @@
 		<property name="hibernateTemplate" ref="hibernateTemplate" />
 		<property name="transactionManager" ref="transactionManager"/>
 		<property name="modifInterceptor" ref="modificationLogInterceptor"/>
-		<property name="databaseService" ref="databaseService"/>
+		<property name="dataEventService" ref="dataEventService"/>
 	</bean>
 	
 	<bean id="rapportService" class="ch.vd.uniregctb.rapport.RapportServiceImpl">
