@@ -11,16 +11,32 @@
 							http://www.springframework.org/schema/jms
 							http://www.springframework.org/schema/jms/spring-lang.xsd">
 
-	<bean id="jmsConnectionFactory" class="org.apache.activemq.pool.PooledConnectionFactoryBean">
-		<property name="connectionFactory" ref="jmsConnectionManager" />
-		<property name="transactionManager" ref="transactionManager" />
-		<property name="resourceName" value="xa"/>
+	<bean id="jmsConnectionFactory" class="ch.vd.uniregctb.jms.ConnectionFactoryFactoryBean">
+		<property name="connectionManager" ref="jmsConnectionManager"/>
+		<property name="managedConnectionFactory" ref="jmsManagedConnectionFactory"/>
 	</bean>
 
-	<bean id="jmsConnectionManager" class="org.apache.activemq.ActiveMQConnectionFactory">
-		<property name="brokerURL" value="${extprop.jms.esb.url}" />
-		<property name="userName" value="${extprop.jms.esb.username}" />
-		<property name="password" value="${extprop.jms.esb.password}" />
+	<bean id="jmsConnectionManager" class="org.jencks.factory.ConnectionManagerFactoryBean">
+		<property name="transaction" value="xa" />
+		<property name="transactionManager" ref="transactionManager" />
+		<property name="poolMaxSize" value="20"/>
+		<property name="connectionTracker">
+		   <bean class="org.jencks.factory.ConnectionTrackerFactoryBean">
+			   <property name="geronimoTransactionManager" ref="transactionManager" />
+		   </bean>
+		</property>
+	</bean>
+
+	<bean id="jmsManagedConnectionFactory" class="org.apache.activemq.ra.ActiveMQManagedConnectionFactory">
+	   <property name="resourceAdapter">
+		  <bean class="org.apache.activemq.ra.ActiveMQResourceAdapter">
+			 <property name="serverUrl" value="${extprop.jms.esb.url}" />
+			 <property name="userName" value="${extprop.jms.esb.username}" />
+			 <property name="password" value="${extprop.jms.esb.password}" />
+			 <property name="maximumRedeliveries" value="1"/>
+			 <property name="allPrefetchValues" value="50"/>
+		 </bean>
+	  </property>
 	</bean>
 
 	<bean id="esbJmsTemplate" class="ch.vd.uniregctb.jms.EsbTemplateTracing" lazy-init="true">

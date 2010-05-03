@@ -24,6 +24,7 @@
 		<property name="sessionTransacted" value="true" />
 		<property name="destinationName" value="${extprop.jms.queue.db.event.input}" />
 		<property name="autoStartup" value="${extprop.jms.queue.db.event.enabled}" />
+		<property name="cacheLevel" value="3"/>
 	</bean>
 
 </beans>
