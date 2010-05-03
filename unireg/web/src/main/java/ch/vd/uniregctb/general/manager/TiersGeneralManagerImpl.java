@@ -67,10 +67,6 @@ public class TiersGeneralManagerImpl implements TiersGeneralManager{
 		this.tiersService = tiersService;
 	}
 
-	public Calendar getCalToday() {
-		return calToday;
-	}
-
 	public void setServiceCivilService(ServiceCivilService serviceCivilService) {
 		this.serviceCivilService = serviceCivilService;
 	}
@@ -217,7 +213,7 @@ public class TiersGeneralManagerImpl implements TiersGeneralManager{
 		if (tiers instanceof PersonnePhysique) {
 			final PersonnePhysique pp = (PersonnePhysique) tiers;
 			if (pp.isHabitant()) {
-				final int year = getCalToday().get(Calendar.YEAR);
+				final int year = RegDate.get().year();
 				final EnumAttributeIndividu[] enumValues = new EnumAttributeIndividu[] { EnumAttributeIndividu.ENFANTS, EnumAttributeIndividu.PARENTS };
 				final Individu ind = serviceCivilService.getIndividu(pp.getNumeroIndividu(), year, enumValues);
 				final Collection<Individu> listFiliations = ind.getEnfants();
