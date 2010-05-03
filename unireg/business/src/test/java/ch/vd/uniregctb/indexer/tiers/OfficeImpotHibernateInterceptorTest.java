@@ -390,8 +390,8 @@ public class OfficeImpotHibernateInterceptorTest extends BusinessTest {
 			}
 		});
 
-		// [UNIREG-2306] La tâche doit être restée sur l'OID de Lausanne
-		assertCaTache(ids.lausanne, ids.tache);
+		// [UNIREG-2306] La tâche doit être passé sur l'OID d'Aigle
+		assertCaTache(ids.aigle, ids.tache);
 	}
 
 	private void assertCaTache(final Long caId, final Long tacheId) throws Exception {

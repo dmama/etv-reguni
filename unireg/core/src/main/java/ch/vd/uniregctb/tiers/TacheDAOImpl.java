@@ -382,6 +382,41 @@ public class TacheDAOImpl extends GenericDAOImpl<Tache, Long> implements TacheDA
 		return list;
 	}
 
+	private static final String updateCollAdm =
+			"update TACHE set CA_ID = (select ca.NUMERO from TIERS ca where ca.NUMERO_CA = :oid) where " +
+					"ETAT = 'EN_INSTANCE' and " + // il ne faut pas modifier les tâches déjà traitées
+					"TACHE_TYPE != 'CTRL_DOSSIER' and " + // [UNIREG-1024] les contrôles de dossiers doivent rester à l'ancien OID
+					"CA_ID != (select aci.NUMERO from TIERS aci where aci.NUMERO_CA = 22) and " + // [UNIREG-2104] les tâches pour les décédés sont assignées à l'ACI et doivent le rester
+					"CTB_ID = :ctbId and " +
+					"ANNULATION_DATE is null"; // inutiles de modifier les tâches annulées pour rien
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public void updateCollAdmAssignee(final Long ctbId, final Integer newOid) {
+
+		// [UNIREG-1024] On met-à-jour les tâches encore ouvertes, à l'exception des tâches de contrôle de dossier
+		getHibernateTemplate().executeWithNativeSession(new HibernateCallback() {
+			public Object doInHibernate(Session session) throws HibernateException, SQLException {
+				final FlushMode mode = session.getFlushMode();
+				try {
+					session.setFlushMode(FlushMode.MANUAL);
+
+					// met-à-jour les tâches concernées
+					final Query update = session.createSQLQuery(updateCollAdm);
+					update.setParameter("oid", newOid);
+					update.setParameter("ctbId", ctbId);
+					update.executeUpdate();
+
+					return null;
+				}
+				finally {
+					session.setFlushMode(mode);
+				}
+			}
+		});
+	}
+
 	final static String queryTaches =
 			"select " +
 					"tache.collectiviteAdministrativeAssignee.numeroCollectiviteAdministrative, count(*) " +
