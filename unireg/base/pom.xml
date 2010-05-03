@@ -717,6 +717,7 @@
 		<!--  Deployment settings -->
 		<!--<unireg.deploymenturl>/fiscalite/unireg</unireg.deploymenturl>-->
 		<unireg.appname>unireg</unireg.appname>
+		<unireg-ws.appname>unireg-ws</unireg-ws.appname>
 		<unireg.standalone>false</unireg.standalone>
 		<unireg.webxml>web.normal.xml</unireg.webxml>
 		<unireg.webreleasexml>release.xml</unireg.webreleasexml>
@@ -724,6 +725,10 @@
 		<unireg.properties.path>${ch.vd.appDir}/${unireg.appname}/config/unireg.properties</unireg.properties.path>
 		<credentials.properties.path>${ch.vd.appDir}/${unireg.appname}/config/credentials.properties</credentials.properties.path>
 		<unireg.log4j.location>file:${ch.vd.appDir}/${unireg.appname}/config/unireg-log4j.xml</unireg.log4j.location>
+
+		<unireg-ws.properties.path>${ch.vd.appDir}/${unireg-ws.appname}/config/unireg.properties</unireg-ws.properties.path>
+		<unireg-ws.credentials.path>${ch.vd.appDir}/${unireg-ws.appname}/config/credentials.properties</unireg-ws.credentials.path>
+		<unireg-ws.log4j.location>file:${ch.vd.appDir}/${unireg-ws.appname}/config/unireg-log4j.xml</unireg-ws.log4j.location>
 
 		<!-- Application settings -->
 		<copyright.year>2010</copyright.year>

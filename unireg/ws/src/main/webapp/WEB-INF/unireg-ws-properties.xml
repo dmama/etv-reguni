@@ -17,15 +17,15 @@
 		<property name="ignoreUnresolvablePlaceholders" value="false" />
 		<property name="locations">
 			<list>
-				<value>file:${unireg.properties.path}</value>
-				<value>file:${credentials.properties.path}</value>
+				<value>file:${unireg-ws.properties.path}</value>
+				<value>file:${unireg-ws.credentials.path}</value>
 			</list>
 		</property>
 	</bean>
 
 	<!-- Ce bean offre la possibilité d'accéder directement aux propriétés externes depuis le code java -->	
 	<bean id="uniregExternalProperties" class="ch.vd.uniregctb.utils.UniregProperties">
-		<property name ="filename" value="${unireg.properties.path}" />
+		<property name ="filename" value="${unireg-ws.properties.path}" />
 	</bean>
 
 </beans>
