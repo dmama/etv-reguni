@@ -190,12 +190,12 @@ public class IdentificationMessagesEditController extends AbstractTiersListContr
 			return mav;
 		}
 
-		if (request.getParameter(BOUTON_FICHIER_ACICOM) != null) {
+		if (request.getParameter(BOUTON_FICHIER_ACICOM)!= null) {
 
 			retournerFichierOrigine(request, response, command, errors);
 
 			return null;
-		
+
 		}
 
 		session.setAttribute(PP_CRITERIA_NAME, bean);
