@@ -64,11 +64,6 @@ public class ProxyServiceCivil implements ServiceCivilService {
 		return target.getIndividu(noTechniqueIndividu, anneeValidite);
 	}
 
-	public Individu getIndividu(long noIndividu, RegDate date) {
-		assertTargetNotNull();
-		return target.getIndividu(noIndividu, date);
-	}
-
 	public Individu getIndividu(long noIndividu, RegDate date, EnumAttributeIndividu... parties) {
 		assertTargetNotNull();
 		return target.getIndividu(noIndividu, date, parties);

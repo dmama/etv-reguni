@@ -106,7 +106,7 @@ public class PersonnePhysiqueHisto extends ContribuableHisto {
 		}
 		else {
 			final int annee = 2400;
-			final ch.vd.uniregctb.interfaces.model.Individu individu = context.tiersService.getServiceCivilService().getIndividu(personne.getNumeroIndividu(), annee);
+			final ch.vd.uniregctb.interfaces.model.Individu individu = context.tiersService.getServiceCivilService().getIndividu(personne.getNumeroIndividu(), null);
 			if (individu == null) {
 				throw new IndividuNotFoundException(personne);
 			}

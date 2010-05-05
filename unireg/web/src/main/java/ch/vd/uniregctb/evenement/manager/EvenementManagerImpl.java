@@ -123,14 +123,14 @@ public class EvenementManagerImpl implements EvenementManager, MessageSourceAwar
 
 		evtView.setIndividuPrincipal(hostCivilService.getIndividu(evtView.getEvenement().getNumeroIndividuPrincipal()));
 
-		final Individu individu = serviceCivilService.getIndividu(evtView.getEvenement().getNumeroIndividuPrincipal(), DateHelper.getYear(new Date()));
+		final Individu individu = serviceCivilService.getIndividu(evtView.getEvenement().getNumeroIndividuPrincipal(), null);
 		final AdresseEnvoi adressePrincipal = adresseService.getAdresseEnvoi(individu, RegDate.get(), false);
 		evtView.setAdressePrincipal(adressePrincipal);
 
 		final Long conjoint = evtView.getEvenement().getNumeroIndividuConjoint();
 		if (conjoint != null) {
 			evtView.setIndividuConjoint(hostCivilService.getIndividu(conjoint));
-			final Individu conjointInd = serviceCivilService.getIndividu(evtView.getEvenement().getNumeroIndividuPrincipal(), DateHelper.getYear(new Date()));
+			final Individu conjointInd = serviceCivilService.getIndividu(evtView.getEvenement().getNumeroIndividuPrincipal(), null);
 			AdresseEnvoi adresseConjoint = adresseService.getAdresseEnvoi(conjointInd, RegDate.get(), false);
 			evtView.setAdresseConjoint(adresseConjoint);
 		}

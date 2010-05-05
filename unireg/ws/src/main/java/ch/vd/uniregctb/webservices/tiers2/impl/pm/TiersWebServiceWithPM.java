@@ -514,7 +514,7 @@ public class TiersWebServiceWithPM implements TiersWebService {
 	}
 
 	private void fillCompteBancaireDepuisMandataireIndividu(CompteBancaire cb, long noIndividu) {
-		final Individu individu = serviceCivil.getIndividu(noIndividu, 2400);
+		final Individu individu = serviceCivil.getIndividu(noIndividu, null);
 		if (individu != null) {
 			cb.titulaire = serviceCivil.getNomPrenom(individu);
 			// aucune information de compte bancaire sur un individu...

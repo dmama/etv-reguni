@@ -121,19 +121,6 @@ public class ServiceCivilTracing implements ServiceCivilService, InitializingBea
 		return result;
 	}
 
-	public Individu getIndividu(long noIndividu, RegDate date) {
-		Individu result;
-		long time = tracing.start();
-		try {
-			result = target.getIndividu(noIndividu, date);
-		}
-		finally {
-			tracing.end(time, "getIndividu");
-		}
-
-		return result;
-	}
-
 	public Individu getIndividu(long noIndividu, RegDate date, EnumAttributeIndividu... parties) {
 		Individu result;
 		long time = tracing.start();

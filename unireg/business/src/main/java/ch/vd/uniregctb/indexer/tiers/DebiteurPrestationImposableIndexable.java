@@ -4,9 +4,9 @@ import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 
-import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.registre.civil.model.EnumAttributeIndividu;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.IndexerFormatHelper;
@@ -39,7 +39,7 @@ public class DebiteurPrestationImposableIndexable extends TiersIndexable {
 			if (ctb instanceof PersonnePhysique) {
 				PersonnePhysique pp = (PersonnePhysique) ctb;
 				if (pp.isHabitant()) {
-					Individu ind = serviceCivil.getIndividu(pp.getNumeroIndividu(), DateHelper.getCurrentYear());
+					Individu ind = serviceCivil.getIndividu(pp.getNumeroIndividu(), null, EnumAttributeIndividu.ADRESSES);
 					ctbIndexable = new HabitantIndexable(adresseService, tiersService, serviceInfra, pp, ind);
 				}
 				else {

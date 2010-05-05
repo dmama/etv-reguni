@@ -864,7 +864,7 @@ public class TiersManager implements MessageSourceAware {
 					if (tiers instanceof PersonnePhysique) {
 						PersonnePhysique pp = (PersonnePhysique) tiers;
 						if (pp.isHabitant()) {
-							Individu ind = serviceCivilService.getIndividu(pp.getNumeroIndividu(), RegDate.get().year());
+							Individu ind = serviceCivilService.getIndividu(pp.getNumeroIndividu(), null);
 							for (EtatCivil etatCivil : ind.getEtatsCivils()) {
 								if (etatCivil.getDateDebutValidite() == null) {
 									civilOK = false;

@@ -2467,7 +2467,7 @@ public class AdresseServiceImpl implements AdresseService {
 	 * @return le nom courrier de l'individu spécifié
 	 */
 	public String getNomCourrier(long numeroIndividu) {
-		final Individu individu = serviceCivilService.getIndividu(numeroIndividu, DateHelper.getCurrentYear());
+		final Individu individu = serviceCivilService.getIndividu(numeroIndividu, null);
 		if (individu == null) {
 			throw new IndividuNotFoundException(numeroIndividu);
 		}

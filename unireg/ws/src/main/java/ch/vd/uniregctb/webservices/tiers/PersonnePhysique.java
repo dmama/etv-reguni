@@ -113,7 +113,7 @@ public class PersonnePhysique extends Contribuable {
 		}
 		else {
 			final int annee = (date == null ? 2400 : date.year());
-			final ch.vd.uniregctb.interfaces.model.Individu individu = context.tiersService.getServiceCivilService().getIndividu(personne.getNumeroIndividu(), annee);
+			final ch.vd.uniregctb.interfaces.model.Individu individu = context.tiersService.getServiceCivilService().getIndividu(personne.getNumeroIndividu(), date);
 			if (individu == null) {
 				throw new IndividuNotFoundException(personne);
 			}

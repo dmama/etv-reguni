@@ -1,7 +1,7 @@
 package ch.vd.uniregctb.indexer.tiers;
 
-import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.registre.civil.model.EnumAttributeIndividu;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -140,7 +140,7 @@ public class MenageCommunIndexable extends ContribuableIndexable {
 			ppIndexable = new NonHabitantIndexable(adresseService, tiersService, serviceInfra, pp);
 		}
 		else if (pp != null) {
-			Individu ind = serviceCivil.getIndividu(pp.getNumeroIndividu(), DateHelper.getCurrentYear());
+			Individu ind = serviceCivil.getIndividu(pp.getNumeroIndividu(), null, EnumAttributeIndividu.ADRESSES);
 			ppIndexable = new HabitantIndexable(adresseService, tiersService, serviceInfra, pp, ind);
 		}
 		return ppIndexable;

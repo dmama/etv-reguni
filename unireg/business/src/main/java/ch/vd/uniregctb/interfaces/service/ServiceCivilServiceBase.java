@@ -130,10 +130,6 @@ public abstract class ServiceCivilServiceBase implements ServiceCivilService {
 		return getIndividu(noIndividu, annee, (EnumAttributeIndividu[])null); // -> va charger implicitement l'état-civil et l'historique
 	}
 
-	public final Individu getIndividu(long noIndividu, RegDate date) {
-		return getIndividu(noIndividu, date, (EnumAttributeIndividu[])null); // -> va charger implicitement l'état-civil et l'historique
-	}
-
 	public final Individu getIndividu(long noIndividu, RegDate date, EnumAttributeIndividu... parties) {
 		final int annee = (date == null ? 2400 : date.year());
 		return getIndividu(noIndividu, annee, parties);
@@ -162,8 +158,7 @@ public abstract class ServiceCivilServiceBase implements ServiceCivilService {
 	 */
 	public final EtatCivil getEtatCivilActif(long noIndividu, RegDate date) {
 
-		final int year = (date == null ? 2400 : date.year());
-		final Individu individu = getIndividu(noIndividu, year);
+		final Individu individu = getIndividu(noIndividu, date);
 
 		return individu.getEtatCivil(date);
 	}

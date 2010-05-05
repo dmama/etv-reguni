@@ -96,12 +96,8 @@ public interface ServiceCivilService {
 	 *
 	 * @param noIndividu le numéro technique de l'individu.
 	 * @param date       la date de validité des individus
+	 * @param parties      les parties optionnelles devant être renseignées
 	 * @return l'individu populé avec les données valides jusqu'à l'année spécifiée.
-	 */
-	Individu getIndividu(long noIndividu, RegDate date);
-
-	/**
-	 * Même chose que {@link #getIndividu(long, RegDate)} avec la possibilité de demander des parties supplémentaires.
 	 */
 	Individu getIndividu(long noIndividu, RegDate date, EnumAttributeIndividu... parties);
 
