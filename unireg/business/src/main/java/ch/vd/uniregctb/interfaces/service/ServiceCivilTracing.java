@@ -51,7 +51,7 @@ public class ServiceCivilTracing implements ServiceCivilService, InitializingBea
 			result = target.getAdresses(noIndividu, date, strict);
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "getAdresses");
 		}
 		return result;
 	}
@@ -63,7 +63,7 @@ public class ServiceCivilTracing implements ServiceCivilService, InitializingBea
 			result = target.getAdresses(noIndividu, annee);
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "getAdresses");
 		}
 
 		return result;
@@ -76,7 +76,7 @@ public class ServiceCivilTracing implements ServiceCivilService, InitializingBea
 			result = target.getAdressesHisto(noIndividu, strict);
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "getAdressesHisto");
 		}
 
 		return result;
@@ -89,7 +89,7 @@ public class ServiceCivilTracing implements ServiceCivilService, InitializingBea
 			result = target.getEtatCivilActif(noIndividu, date);
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "getEtatCivilActif");
 		}
 
 		return result;
@@ -102,7 +102,7 @@ public class ServiceCivilTracing implements ServiceCivilService, InitializingBea
 			result = target.getIndividu(noIndividu, annee);
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "getIndividu");
 		}
 
 		return result;
@@ -115,7 +115,7 @@ public class ServiceCivilTracing implements ServiceCivilService, InitializingBea
 			result = target.getIndividu(noIndividu, annee, parties);
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "getIndividu");
 		}
 
 		return result;
@@ -128,7 +128,7 @@ public class ServiceCivilTracing implements ServiceCivilService, InitializingBea
 			result = target.getIndividu(noIndividu, date);
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "getIndividu");
 		}
 
 		return result;
@@ -141,7 +141,7 @@ public class ServiceCivilTracing implements ServiceCivilService, InitializingBea
 			result = target.getIndividu(noIndividu, date, parties);
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "getIndividu");
 		}
 
 		return result;
@@ -154,7 +154,7 @@ public class ServiceCivilTracing implements ServiceCivilService, InitializingBea
 			result = target.getConjoint(noIndividuPrincipal,date);
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "getConjoint");
 		}
 
 		return result;
@@ -167,7 +167,7 @@ public class ServiceCivilTracing implements ServiceCivilService, InitializingBea
 			result = target.getNumeroIndividuConjoint(noIndividuPrincipal,date);
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "getNumeroIndividuConjoint");
 		}
 
 		return result;
@@ -180,7 +180,7 @@ public class ServiceCivilTracing implements ServiceCivilService, InitializingBea
 			result = target.getIndividus(nosIndividus, date, parties);
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "getIndividus");
 		}
 
 		return result;
@@ -193,7 +193,7 @@ public class ServiceCivilTracing implements ServiceCivilService, InitializingBea
 			result = target.getIndividus(nosIndividus, annee, parties);
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "getIndividus");
 		}
 
 		return result;
@@ -206,7 +206,7 @@ public class ServiceCivilTracing implements ServiceCivilService, InitializingBea
 			result = target.getNationalites(noIndividu, annee);
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "getNationalites");
 		}
 
 		return result;
@@ -219,7 +219,7 @@ public class ServiceCivilTracing implements ServiceCivilService, InitializingBea
 			result = target.getOrigine(noIndividu, annee);
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "getOrigine");
 		}
 
 		return result;
@@ -232,7 +232,7 @@ public class ServiceCivilTracing implements ServiceCivilService, InitializingBea
 			result = target.getPermis(noIndividu, annee);
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "getPermis");
 		}
 
 		return result;
@@ -245,7 +245,7 @@ public class ServiceCivilTracing implements ServiceCivilService, InitializingBea
 			result = target.getPermisActif(noIndividu, date);
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "getPermisActif");
 		}
 
 		return result;
@@ -258,7 +258,7 @@ public class ServiceCivilTracing implements ServiceCivilService, InitializingBea
 			result = target.getTutelle(noIndividu, annee);
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "getTutelle");
 		}
 
 		return result;
@@ -271,7 +271,7 @@ public class ServiceCivilTracing implements ServiceCivilService, InitializingBea
 			result = target.getNomPrenom(individu);
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "getNomPrenom");
 		}
 
 		return result;
@@ -284,7 +284,7 @@ public class ServiceCivilTracing implements ServiceCivilService, InitializingBea
 			result = target.getCommunesDomicileHisto(depuis, noIndividu, strict, seulementVaud);
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "getCommunesDomicileHisto");
 		}
 		return result;
 	}
@@ -303,7 +303,7 @@ public class ServiceCivilTracing implements ServiceCivilService, InitializingBea
 			return target.isWarmable();
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "isWarmable");
 		}
 	}
 
