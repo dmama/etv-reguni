@@ -188,7 +188,7 @@ public class ServiceCivilCache extends ServiceCivilServiceBase implements Unireg
 			}
 			else {
 				final IndividuCacheValueWithParts value = (IndividuCacheValueWithParts) element.getObjectValue();
-				if (value.getMissingParts(partiesSet).isEmpty()) {
+				if (value.getMissingParts(partiesSet) == null) {
 					// l'élément dans le cache possède toutes les parties demandées -> on le stocke dans le map de résultats
 					Individu individu = value.getValueForParts(partiesSet);
 					map.put(no, individu);
