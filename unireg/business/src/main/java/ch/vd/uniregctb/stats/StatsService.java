@@ -18,6 +18,8 @@ public interface StatsService {
 
 	void unregisterCache(String serviceName);
 
+	ServiceStats getServiceStats(String serviceName);
+
 	/**
 	 * @return une tableau contenant les différents stats
 	 */

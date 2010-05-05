@@ -10,7 +10,8 @@ import ch.vd.uniregctb.indexer.async.AsyncTiersIndexer;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.interfaces.service.ServiceTracingInterface;
+import ch.vd.uniregctb.stats.ServiceStats;
+import ch.vd.uniregctb.stats.StatsService;
 import ch.vd.uniregctb.tiers.*;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 import org.apache.log4j.Level;
@@ -48,6 +49,7 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer {
     private SessionFactory sessionFactory;
     private ServiceInfrastructureService serviceInfra;
     private ServiceCivilService serviceCivilService;
+	private StatsService statsService;
 
     private static class Behavior {
         public boolean onTheFlyIndexation = true;
@@ -180,27 +182,27 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer {
 
         private long getNanoCivil() {
             long timecivil = 0;
-            if (serviceCivilService instanceof ServiceTracingInterface) {
-                ServiceTracingInterface tracing = (ServiceTracingInterface) serviceCivilService;
-                timecivil = tracing.getTotalTime();
+	        final ServiceStats stats = statsService.getServiceStats(ServiceCivilService.SERVICE_NAME);
+            if (stats != null) {
+                timecivil = stats.getTotalTime();
             }
             return timecivil;
         }
 
         private long getNanoInfra() {
             long timeinfra = 0;
-            if (serviceInfra instanceof ServiceTracingInterface) {
-                ServiceTracingInterface tracing = (ServiceTracingInterface) serviceInfra;
-                timeinfra = tracing.getTotalTime();
+	        final ServiceStats stats = statsService.getServiceStats(ServiceInfrastructureService.SERVICE_NAME);
+            if (stats != null) {
+                timeinfra = stats.getTotalTime();
             }
             return timeinfra;
         }
 
         private long getNanoIndex() {
             long timeindex = 0;
-            if (globalIndex instanceof ServiceTracingInterface) {
-                ServiceTracingInterface tracing = (ServiceTracingInterface) globalIndex;
-                timeindex = tracing.getTotalTime();
+	        final ServiceStats stats = statsService.getServiceStats(GlobalIndexTracing.SERVICE_NAME);
+            if (stats != null) {
+                timeindex = stats.getTotalTime();
             }
             return timeindex;
         }
@@ -707,5 +709,9 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer {
     @SuppressWarnings({"UnusedDeclaration"})
     public void setTiersSearcher(GlobalTiersSearcher tiersSearcher) {
         this.tiersSearcher = tiersSearcher;
+	}
+
+	public void setStatsService(StatsService statsService) {
+		this.statsService = statsService;
 	}
 }

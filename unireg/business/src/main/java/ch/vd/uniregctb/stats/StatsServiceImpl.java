@@ -74,7 +74,7 @@ public class StatsServiceImpl implements InitializingBean, DisposableBean, Stats
 		return new CacheStats(cache);
 	}
 
-	private ServiceStats getServiceStats(String serviceName) {
+	public ServiceStats getServiceStats(String serviceName) {
 
 		final ServiceTracingInterface rawService;
 		synchronized (rawServices) {

@@ -147,4 +147,8 @@ public class StatsServiceGroup implements StatsService, ServiceTracingInterface,
 	public String buildStats() {
 		throw new NotImplementedException();
 	}
+
+	public ServiceStats getServiceStats(String serviceName) {
+		throw new NotImplementedException();
+	}
 }

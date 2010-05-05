@@ -14,6 +14,7 @@
 		<property name="tiersService" ref="tiersService" />
 		<property name="transactionManager" ref="transactionManager" />
 		<property name="sessionFactory"  ref="sessionFactory"/>
+		<property name="statsService" ref="statsService" />
 	</bean>
 
 	<bean id="globalTiersSearcher" class="ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcherImpl">
