@@ -103,6 +103,7 @@ public class ParallelBatchTransactionTemplate<E, R extends BatchResults> {
 		final List<BatchThread> threads = new ArrayList<BatchThread>(nbThreads);
 		for (int i = 0; i < nbThreads; ++i) {
 			final BatchThread thread = new BatchThread(rapportFinal, action, AuthenticationHelper.getCurrentPrincipal());
+			thread.setName(String.format("%s-%d", Thread.currentThread().getName(), i));
 			thread.start();
 			threads.add(thread);
 		}

@@ -5,6 +5,7 @@ import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.ListesProcessor;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.StatusManager;
+import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
@@ -29,14 +30,18 @@ public class ListeContribuablesResidentsSansForVaudoisProcessor extends ListesPr
 	private final PlatformTransactionManager transactionManager;
 	private final TiersDAO tiersDAO;
 	private final ServiceInfrastructureService infraService;
+	private final ServiceCivilService serviceCivilService;
 
-	public ListeContribuablesResidentsSansForVaudoisProcessor(HibernateTemplate hibernateTemplate, TiersService tiersService, AdresseService adresseService, PlatformTransactionManager transactionManager, TiersDAO tiersDAO, ServiceInfrastructureService infraService) {
+	public ListeContribuablesResidentsSansForVaudoisProcessor(HibernateTemplate hibernateTemplate, TiersService tiersService, AdresseService adresseService,
+	                                                          PlatformTransactionManager transactionManager, TiersDAO tiersDAO, ServiceInfrastructureService infraService,
+	                                                          ServiceCivilService serviceCivilService) {
 		this.hibernateTemplate = hibernateTemplate;
 		this.tiersService = tiersService;
 		this.adresseService = adresseService;
 		this.transactionManager = transactionManager;
 		this.tiersDAO = tiersDAO;
 		this.infraService = infraService;
+		this.serviceCivilService = serviceCivilService;
 	}
 
 	@Override
@@ -57,7 +62,7 @@ public class ListeContribuablesResidentsSansForVaudoisProcessor extends ListesPr
 
 		    public ListeContribuablesResidentsSansForVaudoisThread createTread(LinkedBlockingQueue<List<Long>> queue, RegDate dateTraitement, StatusManager status,
 		                                               AtomicInteger compteur, HibernateTemplate hibernateTemplate) {
-		        return new ListeContribuablesResidentsSansForVaudoisThread(queue, dateTraitement, nbThreads, status, compteur, transactionManager, hibernateTemplate, tiersDAO, tiersService, adresseService, infraService);
+		        return new ListeContribuablesResidentsSansForVaudoisThread(queue, dateTraitement, nbThreads, status, compteur, transactionManager, hibernateTemplate, tiersDAO, tiersService, adresseService, infraService, serviceCivilService);
 		    }
 
 		    public Iterator<Long> getIdIterator(Session session) {

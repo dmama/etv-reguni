@@ -58,7 +58,7 @@ public class AcomptesJob  extends JobDefinition {
 		{
 			RegDate today = RegDate.get();
 			defaultParams.put(PERIODE_FISCALE, today.year() - 1);
-			defaultParams.put(I_NB_THREADS, Integer.valueOf(10));
+			defaultParams.put(I_NB_THREADS, 2);
 		}
 	}
 

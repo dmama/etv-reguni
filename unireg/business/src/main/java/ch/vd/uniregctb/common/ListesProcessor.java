@@ -80,6 +80,7 @@ public abstract class ListesProcessor<R extends ListesResults<R>, T extends List
 				for (int i = 0; i < nbThreads; i++) {
 					final T thread = customizer.createTread(queue, dateTraitement, status, compteur, hibernateTemplate);
 					threads.add(thread);
+					thread.setName(String.format("%s-%d", Thread.currentThread().getName(), i));
 					thread.start();
 				}
 

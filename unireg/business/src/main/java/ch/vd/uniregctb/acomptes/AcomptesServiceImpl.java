@@ -6,6 +6,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.StatusManager;
+import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
 
@@ -14,6 +15,8 @@ public class AcomptesServiceImpl implements AcomptesService {
 	private TiersService tiersService;
 
 	private AdresseService adresseService;
+
+	private ServiceCivilService serviceCivilService;
 
 	private HibernateTemplate hibernateTemplate;
 
@@ -41,8 +44,12 @@ public class AcomptesServiceImpl implements AcomptesService {
 		this.adresseService = adresseService;
 	}
 
+	public void setServiceCivilService(ServiceCivilService serviceCivilService) {
+		this.serviceCivilService = serviceCivilService;
+	}
+
 	public AcomptesResults produireAcomptes(RegDate dateTraitement, int nbThreads, Integer annee, StatusManager statusManager) {
-		final AcomptesProcessor processor = new AcomptesProcessor(hibernateTemplate, tiersService, adresseService, transactionManager, tiersDAO);
+		final AcomptesProcessor processor = new AcomptesProcessor(hibernateTemplate, tiersService, adresseService, serviceCivilService, transactionManager, tiersDAO);
 		return processor.run(dateTraitement, nbThreads, annee, statusManager);
 	}
 
