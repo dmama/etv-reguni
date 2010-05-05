@@ -20,6 +20,7 @@ import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.ForDebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.ForFiscal;
+import ch.vd.uniregctb.tiers.IndividuNotFoundException;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersService;
@@ -39,7 +40,10 @@ public class DebiteurPrestationImposableIndexable extends TiersIndexable {
 			if (ctb instanceof PersonnePhysique) {
 				PersonnePhysique pp = (PersonnePhysique) ctb;
 				if (pp.isHabitant()) {
-					Individu ind = serviceCivil.getIndividu(pp.getNumeroIndividu(), null, EnumAttributeIndividu.ADRESSES);
+					final Individu ind = serviceCivil.getIndividu(pp.getNumeroIndividu(), null, EnumAttributeIndividu.ADRESSES);
+					if (ind == null) {
+						throw new IndividuNotFoundException(pp);
+					}
 					ctbIndexable = new HabitantIndexable(adresseService, tiersService, serviceInfra, pp, ind);
 				}
 				else {
