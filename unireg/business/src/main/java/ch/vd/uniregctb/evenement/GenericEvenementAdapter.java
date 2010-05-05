@@ -7,11 +7,11 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.civil.model.EnumAttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.tiers.IndividuNotFoundException;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 /**
@@ -88,7 +88,9 @@ public abstract class GenericEvenementAdapter implements EvenementCivil {
 
 		final long noIndividu = evenement.getNumeroIndividuPrincipal();
 		this.individuPrincipal = serviceCivil.getIndividu(noIndividu, anneeReference, parts);
-		Assert.notNull(individuPrincipal, "L'individu principal est null");
+		if (this.individuPrincipal == null) {
+			throw new IndividuNotFoundException(noIndividu);
+		}
 
 		/* Récupération des informations sur le conjoint */
 		if (evenement.getNumeroIndividuConjoint() != null) {

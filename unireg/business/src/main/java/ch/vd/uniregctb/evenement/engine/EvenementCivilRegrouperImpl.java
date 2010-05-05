@@ -22,6 +22,7 @@ import ch.vd.uniregctb.evenement.EvenementCivilUnitaireDAO;
 import ch.vd.uniregctb.evenement.common.EvenementCivilHandlerException;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
+import ch.vd.uniregctb.tiers.IndividuNotFoundException;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
@@ -150,7 +151,9 @@ public class EvenementCivilRegrouperImpl implements EvenementCivilRegrouper {
 
 		/* Récupération de l'individu et de sons conjoint */
 		Individu individu = serviceCivilService.getIndividu(evenement.getNumeroIndividu(), RegDateHelper.getAnneeVeille(evenement.getDateEvenement()), EnumAttributeIndividu.CONJOINT);
-		Assert.notNull(individu, "Individu inconnu");
+		if (individu == null) {
+			throw new IndividuNotFoundException(evenement.getNumeroIndividu());
+		}
 
 		EvenementCivilRegroupe evRegroupe = null;
 
