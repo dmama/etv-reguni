@@ -1,31 +1,34 @@
 package ch.vd.uniregctb.interfaces.service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import org.apache.commons.lang.StringUtils;
 
 import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
-import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.adresse.HistoriqueCommune;
-import ch.vd.uniregctb.interfaces.model.CommuneSimple;
-import ch.vd.uniregctb.interfaces.model.EtatCivil;
-import ch.vd.uniregctb.interfaces.model.HistoriqueIndividu;
-import ch.vd.uniregctb.interfaces.model.Permis;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.civil.model.EnumAttributeIndividu;
 import ch.vd.uniregctb.adresse.AdressesCiviles;
 import ch.vd.uniregctb.adresse.AdressesCivilesHisto;
+import ch.vd.uniregctb.adresse.HistoriqueCommune;
 import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.interfaces.model.Adresse;
+import ch.vd.uniregctb.interfaces.model.CommuneSimple;
+import ch.vd.uniregctb.interfaces.model.EtatCivil;
+import ch.vd.uniregctb.interfaces.model.HistoriqueIndividu;
 import ch.vd.uniregctb.interfaces.model.Individu;
+import ch.vd.uniregctb.interfaces.model.Nationalite;
+import ch.vd.uniregctb.interfaces.model.Origine;
+import ch.vd.uniregctb.interfaces.model.Permis;
+import ch.vd.uniregctb.interfaces.model.Tutelle;
 
 public abstract class ServiceCivilServiceBase implements ServiceCivilService {
 
-	private static final Logger LOGGER = Logger.getLogger(ServiceCivilServiceBase.class);
+	//private static final Logger LOGGER = Logger.getLogger(ServiceCivilServiceBase.class);
 
 	private ServiceInfrastructureService infraService;
 
@@ -75,6 +78,46 @@ public abstract class ServiceCivilServiceBase implements ServiceCivilService {
 		return resultat;
 	}
 
+	public final Collection<Nationalite> getNationalites(long noIndividu, int annee) {
+
+		final Individu individu = getIndividu(noIndividu, annee, EnumAttributeIndividu.NATIONALITE);
+		if (individu == null) {
+			return null;
+		}
+
+		return individu.getNationalites();
+	}
+
+	public final Origine getOrigine(long noIndividu, int annee) {
+
+		final Individu individu = getIndividu(noIndividu, annee, EnumAttributeIndividu.ORIGINE);
+		if (individu == null) {
+			return null;
+		}
+
+		return individu.getOrigine();
+	}
+
+	public final Collection<Permis> getPermis(long noIndividu, int annee) {
+
+		final Individu individu = getIndividu(noIndividu, annee, EnumAttributeIndividu.PERMIS);
+		if (individu == null) {
+			return null;
+		}
+
+		return individu.getPermis();
+	}
+
+	public final Tutelle getTutelle(long noIndividu, int annee) {
+
+		final Individu individu = getIndividu(noIndividu, annee, EnumAttributeIndividu.TUTELLE);
+		if (individu == null) {
+			return null;
+		}
+
+		return individu.getTutelle();
+	}
+
 	public final Collection<Adresse> getAdresses(long noIndividu, int annee) {
 		final Individu individu = getIndividu(noIndividu, annee, EnumAttributeIndividu.ADRESSES);
 		if (individu == null) {
@@ -87,14 +130,28 @@ public abstract class ServiceCivilServiceBase implements ServiceCivilService {
 		return getIndividu(noIndividu, annee, (EnumAttributeIndividu[])null); // -> va charger implicitement l'état-civil et l'historique
 	}
 
+	public final Individu getIndividu(long noIndividu, RegDate date) {
+		return getIndividu(noIndividu, date, (EnumAttributeIndividu[])null); // -> va charger implicitement l'état-civil et l'historique
+	}
+
+	public final Individu getIndividu(long noIndividu, RegDate date, EnumAttributeIndividu... parties) {
+		final int annee = (date == null ? 2400 : date.year());
+		return getIndividu(noIndividu, annee, parties);
+	}
+
+	public final List<Individu> getIndividus(Collection<Long> nosIndividus, RegDate date, EnumAttributeIndividu... parties) {
+		final int annee = (date == null ? 2400 : date.year());
+		return getIndividus(nosIndividus, annee, parties);
+	}
+
 	public final Individu getConjoint(Long noIndividuPrincipal, RegDate date) {
-		final Long numeroIndividuConjoint = getNumeroIndividuConjoint(noIndividuPrincipal, date);
-		 Individu individuConjoint=null;		
-		if(numeroIndividuConjoint!=null){
-			individuConjoint = getIndividu(numeroIndividuConjoint,date.year());
+
+		final Long noConjoint = getNumeroIndividuConjoint(noIndividuPrincipal, date);
+		if (noConjoint == null) {
+			return null;
 		}
 
-		return individuConjoint;
+		return getIndividu(noConjoint, date);
 	}
 
 	/**
@@ -157,7 +214,7 @@ public abstract class ServiceCivilServiceBase implements ServiceCivilService {
 	/**
 	 * Construit la liste des communes de domiciles connues pour la personne physique donnée, et ce depuis une date de référence
 	 * @param date limite (incluse) dans le passé à la recherche des communes
-	 * @param pp personne physique concernée
+	 * @param noIndividu l'individu concerné
 	 * @param seulementVaud <code>true</code> si on ne s'intéresse qu'aux communes vaudoises (i.e. commune <code>null</code> pour HC/HS)
 	 * @return une liste des communes de domiciles fréquentées
 	 */

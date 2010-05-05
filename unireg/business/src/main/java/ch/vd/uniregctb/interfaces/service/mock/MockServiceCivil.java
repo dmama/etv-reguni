@@ -7,11 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import ch.vd.common.model.EnumTypeAdresse;
-import ch.vd.registre.base.date.DateRange;
-import ch.vd.registre.base.date.DateRangeComparator;
-import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.registre.civil.model.EnumAttributeIndividu;
@@ -24,11 +20,20 @@ import ch.vd.uniregctb.interfaces.model.EtatCivil;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.Localite;
 import ch.vd.uniregctb.interfaces.model.Nationalite;
-import ch.vd.uniregctb.interfaces.model.Origine;
 import ch.vd.uniregctb.interfaces.model.Pays;
 import ch.vd.uniregctb.interfaces.model.Permis;
-import ch.vd.uniregctb.interfaces.model.Tutelle;
-import ch.vd.uniregctb.interfaces.model.mock.*;
+import ch.vd.uniregctb.interfaces.model.mock.MockAdresse;
+import ch.vd.uniregctb.interfaces.model.mock.MockEtatCivil;
+import ch.vd.uniregctb.interfaces.model.mock.MockHistoriqueIndividu;
+import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
+import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
+import ch.vd.uniregctb.interfaces.model.mock.MockNationalite;
+import ch.vd.uniregctb.interfaces.model.mock.MockOrigine;
+import ch.vd.uniregctb.interfaces.model.mock.MockPays;
+import ch.vd.uniregctb.interfaces.model.mock.MockPermis;
+import ch.vd.uniregctb.interfaces.model.mock.MockRue;
+import ch.vd.uniregctb.interfaces.model.mock.MockTutelle;
+import ch.vd.uniregctb.interfaces.model.mock.MockTuteurGeneral;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilServiceBase;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -492,37 +497,8 @@ public abstract class MockServiceCivil extends ServiceCivilServiceBase {
 		return individu;
 	}
 
-	public List<Individu> getIndividus(Collection<Long> nosIndividus, RegDate date, EnumAttributeIndividu... parties) {
+	public List<Individu> getIndividus(Collection<Long> nosIndividus, int annee, EnumAttributeIndividu... parties) {
 		throw new NotImplementedException();
-	}
-
-	public Origine getOrigine(long noIndividu, int annee) {
-		MockIndividu individu = (MockIndividu) getIndividu(noIndividu);
-		if (individu != null) {
-			return individu.getOrigine();
-		}
-		return null;
-	}
-
-	public Collection<Permis> getPermis(long noIndividu, int annee) {
-		MockIndividu individu = (MockIndividu) getIndividu(noIndividu);
-		if (individu != null) {
-			return individu.getPermis();
-		}
-		return null;
-	}
-
-	public Tutelle getTutelle(long noIndividu, int annee) {
-		MockIndividu individu = (MockIndividu) getIndividu(noIndividu);
-		if (individu != null) {
-			return individu.getTutelle();
-		}
-		return null;
-	}
-
-	public Collection<Nationalite> getNationalites(long noIndividu, int annee) {
-		Individu ind = getIndividu(noIndividu);
-		return ind.getNationalites();
 	}
 
 	public void setUp(ServiceCivilService target) {
@@ -537,13 +513,8 @@ public abstract class MockServiceCivil extends ServiceCivilServiceBase {
 		return false;
 	}
 
-	public void warmCache(List<Individu> individus, RegDate date, EnumAttributeIndividu... parties) {
-		throw new NotImplementedException();
-	}
-
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void onIndividuChange(long numero) {
 		// rien à faire
 	}
-
-	
 }

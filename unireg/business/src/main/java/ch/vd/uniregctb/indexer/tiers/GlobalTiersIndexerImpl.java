@@ -314,8 +314,7 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer {
 				final List<Long> numerosIndividus = tiersDAO.getNumerosIndividu(ids);
 				if (!numerosIndividus.isEmpty()) { // on peut tomber sur une plage de tiers ne contenant pas d'habitant
 					try {
-						final List<Individu> individus = serviceCivilService.getIndividus(numerosIndividus, null, EnumAttributeIndividu.ADRESSES);
-						serviceCivilService.warmCache(individus, null, EnumAttributeIndividu.ADRESSES);
+						serviceCivilService.getIndividus(numerosIndividus, null, EnumAttributeIndividu.ADRESSES); // chauffe le cache
 
 						long nanosecondes = System.nanoTime() - start;
 						LOGGER.info("=> Récupéré 500 individus en " + (nanosecondes / 1000000000L) + "s.");

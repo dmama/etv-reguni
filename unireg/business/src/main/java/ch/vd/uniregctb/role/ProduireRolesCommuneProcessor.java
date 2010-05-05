@@ -244,8 +244,7 @@ public class ProduireRolesCommuneProcessor {
 		if (ppByNoIndividu.size() > 0) {
 			// remplit le cache des individus...
 			final RegDate date = RegDate.get(anneePeriode, 12, 31);
-			final List<Individu> individus = serviceCivilService.getIndividus(ppByNoIndividu.keySet(), date, EnumAttributeIndividu.ADRESSES);
-			serviceCivilService.warmCache(individus, date, EnumAttributeIndividu.ADRESSES);
+			final List<Individu> individus = serviceCivilService.getIndividus(ppByNoIndividu.keySet(), date, EnumAttributeIndividu.ADRESSES); // chauffe le cache
 
 			// et on remplit aussi le cache individu sur les personnes physiques... (utilisé pour l'accès à la date de décès)
 			for (Individu individu : individus) {

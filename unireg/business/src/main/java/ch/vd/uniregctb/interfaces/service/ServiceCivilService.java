@@ -81,7 +81,29 @@ public interface ServiceCivilService {
 	 */
 	Individu getIndividu(long noIndividu, int annee);
 
+	/**
+	 * Même chose que {@link #getIndividu(long, int)} avec la possibilité de demander des parties supplémentaires.
+	 */
+	Individu getIndividu(long noIndividu, int annee, EnumAttributeIndividu... parties);
 
+	/**
+	 * Retourne l'individu, valide <b>jusqu'à</b> l'année en paramètre, identifié par le numéro en paramètre.
+	 * <p/>
+	 * Ce service renseigne, pour chaque objet du graphe retourné, l'ensemble des attributs mono-valués ainsi que les attributs muti-valués suivants : <li>La liste des historiques de l'individu.</li>
+	 * <li>La liste des états civils de l'individu.</li>
+	 * <p/>
+	 * L'objet retourné par ce service peut être <code>null</code>, signifiant l'absence de données d'un point de vue métier pour les paramêtres donnés.
+	 *
+	 * @param noIndividu le numéro technique de l'individu.
+	 * @param date       la date de validité des individus
+	 * @return l'individu populé avec les données valides jusqu'à l'année spécifiée.
+	 */
+	Individu getIndividu(long noIndividu, RegDate date);
+
+	/**
+	 * Même chose que {@link #getIndividu(long, RegDate)} avec la possibilité de demander des parties supplémentaires.
+	 */
+	Individu getIndividu(long noIndividu, RegDate date, EnumAttributeIndividu... parties);
 
 	/**
 	 * Retourne l'individu conjoint valide <b>à la date</b> passée en paramètre, de l'indivu dont le numéro est  en paramètre.
@@ -107,10 +129,18 @@ public interface ServiceCivilService {
 	 * @return  le numéro de l'individu conjoint valide à la date spécifiée.
 	 */
 	Long getNumeroIndividuConjoint(Long noIndividuPrincipal, RegDate date);
+
 	/**
-	 * Même chose que {@link #getIndividu(long, int)} avec la possibilité de demander des parties supplémentaires.
+	 * Retourne un lot d'individu avec les parties spécifiées.
+	 * <p/>
+	 * <b>Attention !</b> L'ordre des individus retourné ne correspond pas forcément à celui des numéros d'individu spécifiés.
+	 *
+	 * @param nosIndividus les numéros d'individus demandés
+	 * @param annee        l'année de validité.
+	 * @param parties      les parties optionnelles devant être renseignées
+	 * @return la liste des individus trouvés, ou <b>null</b> si le service n'est pas capable de charger les individus par lots.
 	 */
-	Individu getIndividu(long noIndividu, int annee, EnumAttributeIndividu... parties);
+	List<Individu> getIndividus(Collection<Long> nosIndividus, int annee, EnumAttributeIndividu... parties);
 
 	/**
 	 * Retourne un lot d'individu avec les parties spécifiées.
@@ -207,18 +237,7 @@ public interface ServiceCivilService {
 	public void tearDown();
 
 	/**
-	 * @return <b>vrai</b> si l'implémentation courante du service civil possède un cache et que ce cache est susceptible d'être chauffé avec des données externes.
+	 * @return <b>vrai</b> si l'implémentation courante du service civil possède un cache et que ce cache est susceptible d'être chauffé avec un appel à getIndividus().
 	 */
 	boolean isWarmable();
-
-	/**
-	 * Préchauffe le cache du service civil avec les individus spécifiés.
-	 * <p/>
-	 * Note: cette méthode n'a aucun effet sur la plupart des implémentations des services civils. Seul l'implémentation de caching peut en faire quelque chose.
-	 *
-	 * @param individus les individus à stocker dans le cache du service civil.
-	 * @param date      la date de validité des individus spécifiés.
-	 * @param parties   les parties renseignées sur les individus
-	 */
-	void warmCache(List<Individu> individus, RegDate date, EnumAttributeIndividu... parties);
 }
