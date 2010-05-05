@@ -98,8 +98,7 @@ public class MappingThread extends Thread {
 					else {
 						attributs = new EnumAttributeIndividu[]{EnumAttributeIndividu.PERMIS};
 					}
-					final List<Individu> individus = context.serviceCivilService.getIndividus(numerosIndividus, date, attributs);
-					context.serviceCivilService.warmCache(individus, date, attributs);
+					context.serviceCivilService.getIndividus(numerosIndividus, date, attributs); // chauffe le cache
 				}
 				catch (Exception e) {
 					LOGGER.warn("Impossible de précharger le lot d'individus [" + numerosIndividus + "].", e);

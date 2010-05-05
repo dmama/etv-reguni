@@ -64,6 +64,16 @@ public class ProxyServiceCivil implements ServiceCivilService {
 		return target.getIndividu(noTechniqueIndividu, anneeValidite);
 	}
 
+	public Individu getIndividu(long noIndividu, RegDate date) {
+		assertTargetNotNull();
+		return target.getIndividu(noIndividu, date);
+	}
+
+	public Individu getIndividu(long noIndividu, RegDate date, EnumAttributeIndividu... parties) {
+		assertTargetNotNull();
+		return target.getIndividu(noIndividu, date, parties);
+	}
+
 	public Individu getConjoint(Long noIndividuPrincipal, RegDate date) {
 		assertTargetNotNull();
 		return target.getConjoint(noIndividuPrincipal,date);
@@ -78,6 +88,11 @@ public class ProxyServiceCivil implements ServiceCivilService {
 	public List<Individu> getIndividus(Collection<Long> nosIndividus, RegDate date, EnumAttributeIndividu... parties) {
 		assertTargetNotNull();
 		return target.getIndividus(nosIndividus, date, parties);
+	}
+
+	public List<Individu> getIndividus(Collection<Long> nosIndividus, int annee, EnumAttributeIndividu... parties) {
+		assertTargetNotNull();
+		return target.getIndividus(nosIndividus, annee, parties);
 	}
 
 	public Origine getOrigine(long noTechniqueIndividu, int anneeValidite) {
@@ -122,10 +137,6 @@ public class ProxyServiceCivil implements ServiceCivilService {
 
 	public boolean isWarmable() {
 		return target.isWarmable();
-	}
-
-	public void warmCache(List<Individu> individus, RegDate date, EnumAttributeIndividu... parties) {
-		target.warmCache(individus, date, parties);
 	}
 
 	public List<HistoriqueCommune> getCommunesDomicileHisto(RegDate depuis, long noIndividu, boolean strict, boolean seulementVaud) throws DonneesCivilesException, InfrastructureException {

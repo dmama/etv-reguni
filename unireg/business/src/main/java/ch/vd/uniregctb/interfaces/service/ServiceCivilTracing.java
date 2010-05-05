@@ -108,6 +108,45 @@ public class ServiceCivilTracing implements ServiceCivilService, InitializingBea
 		return result;
 	}
 
+	public Individu getIndividu(long noIndividu, int annee, EnumAttributeIndividu... parties) {
+		Individu result;
+		long time = tracing.start();
+		try {
+			result = target.getIndividu(noIndividu, annee, parties);
+		}
+		finally {
+			tracing.end(time);
+		}
+
+		return result;
+	}
+
+	public Individu getIndividu(long noIndividu, RegDate date) {
+		Individu result;
+		long time = tracing.start();
+		try {
+			result = target.getIndividu(noIndividu, date);
+		}
+		finally {
+			tracing.end(time);
+		}
+
+		return result;
+	}
+
+	public Individu getIndividu(long noIndividu, RegDate date, EnumAttributeIndividu... parties) {
+		Individu result;
+		long time = tracing.start();
+		try {
+			result = target.getIndividu(noIndividu, date, parties);
+		}
+		finally {
+			tracing.end(time);
+		}
+
+		return result;
+	}
+
 	public Individu getConjoint(Long noIndividuPrincipal, RegDate date) {
 		Individu result;
 		long time = tracing.start();
@@ -134,11 +173,11 @@ public class ServiceCivilTracing implements ServiceCivilService, InitializingBea
 		return result;
 	}
 
-	public Individu getIndividu(long noIndividu, int annee, EnumAttributeIndividu... parties) {
-		Individu result;
+	public List<Individu> getIndividus(Collection<Long> nosIndividus, RegDate date, EnumAttributeIndividu... parties) {
+		List<Individu> result;
 		long time = tracing.start();
 		try {
-			result = target.getIndividu(noIndividu, annee, parties);
+			result = target.getIndividus(nosIndividus, date, parties);
 		}
 		finally {
 			tracing.end(time);
@@ -147,11 +186,11 @@ public class ServiceCivilTracing implements ServiceCivilService, InitializingBea
 		return result;
 	}
 
-	public List<Individu> getIndividus(Collection<Long> nosIndividus, RegDate date, EnumAttributeIndividu... parties) {
+	public List<Individu> getIndividus(Collection<Long> nosIndividus, int annee, EnumAttributeIndividu... parties) {
 		List<Individu> result;
 		long time = tracing.start();
 		try {
-			result = target.getIndividus(nosIndividus, date, parties);
+			result = target.getIndividus(nosIndividus, annee, parties);
 		}
 		finally {
 			tracing.end(time);
@@ -262,16 +301,6 @@ public class ServiceCivilTracing implements ServiceCivilService, InitializingBea
 		long time = tracing.start();
 		try {
 			return target.isWarmable();
-		}
-		finally {
-			tracing.end(time);
-		}
-	}
-
-	public void warmCache(List<Individu> individus, RegDate date, EnumAttributeIndividu... parties) {
-		long time = tracing.start();
-		try {
-			target.warmCache(individus, date, parties);
 		}
 		finally {
 			tracing.end(time);
