@@ -8,7 +8,6 @@
 							http://www.springframework.org/schema/util/spring-util-2.0.xsd">
 
 	<bean id="uniregModeHelper" class="ch.vd.uniregctb.utils.UniregModeHelper">
-		<property name="bridageIS" value="false" />
 		<property name="testMode" value="true" />
 		<property name="standalone" value="false" />
 	</bean>

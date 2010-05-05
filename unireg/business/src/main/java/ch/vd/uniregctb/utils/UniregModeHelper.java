@@ -7,7 +7,6 @@ package ch.vd.uniregctb.utils;
  */
 public class UniregModeHelper {
 
-	private static boolean bridageIS = false;
 	private static boolean testMode = false;
 	private static boolean standalone = false;
 	private static String environnement;
