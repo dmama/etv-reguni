@@ -24,9 +24,9 @@ import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
-public class Ec_18000_17_Arrivee_JIRA1677_Scenario extends EvenementCivilScenario {
+public class Ec_18000_19_Arrivee_JIRA1677_DatesDifferentes_Scenario extends EvenementCivilScenario {
 
-	public static final String NAME = "Ec_18000_17_Arrivee_JIRA1677";
+	public static final String NAME = "Ec_18000_19_Arrivee";
 
 	private ServiceInfrastructureService serviceInfrastructureService;
 
@@ -42,7 +42,7 @@ public class Ec_18000_17_Arrivee_JIRA1677_Scenario extends EvenementCivilScenari
 
 	@Override
 	public String getDescription() {
-		return "Contrôle de la date d'ouverture du rapport d'appartenance ménage créé lors de l'arrivée d'un couple sur le sol cantonal";
+		return "Contrôle de la date d'ouverture du rapport d'appartenance ménage créé lors de l'arrivée d'un couple (à deux dates différentes) sur le sol cantonal";
 	}
 
 	private final long noIndOlivier = 960713;
@@ -51,11 +51,12 @@ public class Ec_18000_17_Arrivee_JIRA1677_Scenario extends EvenementCivilScenari
 	private MockIndividu indOlivier;
 	private MockIndividu indAlexandra;
 
-	private long noCtbOlivier;
-	private long noCtbMenage;
+	private long noCtbAlex;
 
-	private final RegDate dateMariage = date(2009, 9, 25);
-	private final RegDate dateArriveeLausanne = date(2009, 9, 28);
+	private final RegDate dateMariage = date(1995, 9, 25);
+	private final RegDate dateArriveeMadame = date(2007, 3, 1);
+	private final RegDate dateArriveeMonsieur = date(2007, 3, 5);
+	private final RegDate dateDebutForExistantSurCouple = date(2009, 6, 2);
 
 	public void setServiceInfrastructureService(ServiceInfrastructureService serviceInfrastructureService) {
 		this.serviceInfrastructureService = serviceInfrastructureService;
@@ -72,8 +73,8 @@ public class Ec_18000_17_Arrivee_JIRA1677_Scenario extends EvenementCivilScenari
 				indOlivier = addIndividu(noIndOlivier, naissanceOlivier, "Bouchet", "Olivier", true);
 				indAlexandra = addIndividu(noIndAlexandra, naissanceAlex, "Bouchet", "Alexandra", false);
 
-				addAdresse(indOlivier, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.BoulevardGrancy, null, dateArriveeLausanne, null);
-				addAdresse(indAlexandra, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.BoulevardGrancy, null, dateArriveeLausanne, null);
+				addAdresse(indOlivier, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.BoulevardGrancy, null, dateArriveeMonsieur, null);
+				addAdresse(indAlexandra, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.BoulevardGrancy, null, dateArriveeMadame, null);
 
 				addNationalite(indOlivier, MockPays.Suisse, naissanceOlivier, null, 1);
 				addNationalite(indAlexandra, MockPays.Suisse, naissanceAlex, null, 1);
@@ -83,90 +84,90 @@ public class Ec_18000_17_Arrivee_JIRA1677_Scenario extends EvenementCivilScenari
 		});
 	}
 
-	@Etape(id = 1, descr = "Création du couple marié seul non habitant propriétaire d'immeuble")
+	@Etape(id = 1, descr = "Création du couple marié seul habitant (Madame, date de début d'appartenance ménage = arrivée de madame) avec for débutant encore plus tard sur le couple")
 	public void etape1() throws Exception {
-		final PersonnePhysique pp = addNonHabitant("Bouchet", "Olivier", RegDate.get(1969, 1, 18), Sexe.MASCULIN);
-		final EnsembleTiersCouple couple = tiersService.createEnsembleTiersCouple(pp, null, dateMariage, null);
+		final PersonnePhysique pp = addHabitant(noIndAlexandra);
+		final EnsembleTiersCouple couple = tiersService.createEnsembleTiersCouple(pp, null, dateArriveeMadame, null);
 		final MenageCommun mc = couple.getMenage();
 		assertNotNull(mc, "Erreur lors de la création du ménage commun");
 
-		addForFiscalPrincipal(mc, MockCommune.Bern, dateMariage, null, MotifFor.ACHAT_IMMOBILIER, null);
-		addForFiscalSecondaire(mc, MockCommune.Lausanne.getNoOFSEtendu(), dateMariage, null);
+		addForFiscalPrincipal(mc, MockCommune.Lausanne, dateDebutForExistantSurCouple, null, MotifFor.PERMIS_C_SUISSE, null);
 
-		noCtbOlivier = pp.getNumero();
-		noCtbMenage = mc.getNumero();
+		noCtbAlex = pp.getNumero();
 	}
 
 	@Check(id = 1, descr = "Vérification de l'existence des fors")
 	public void check1() throws Exception {
-		final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(noCtbOlivier);
-		final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(pp, dateMariage);
-		assertNotNull(couple, "Pas de couple trouvé à la date de mariage");
+		final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(noCtbAlex);
+		final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(pp, dateArriveeMadame);
+		assertNotNull(couple, "Pas de couple trouvé à la date d'arrivée de Madame");
 		assertNotNull(couple.getMenage(), "Pas de ménage dans le couple?");
 		assertNull(couple.getConjoint(), "Il devrait être marié seul");
-		assertEquals(false, pp.isHabitant(), "Olivier n'est pas habitant!");
-		assertNull(pp.getNumeroIndividu(), "Olivier n'est pas encore connu du registre civil!");
+		assertEquals(true, pp.isHabitant(), "Alex est habitante!");
 
 		final MenageCommun mc = couple.getMenage();
-		final ForFiscalPrincipal ffp = mc.getForFiscalPrincipalAt(dateMariage);
-		assertNotNull(ffp, "Pas de for principal?");
-		assertEquals(dateMariage, ffp.getDateDebut(), "Mauvaise date de début pour le for principal");
+		final ForFiscalPrincipal ffpDateMariage = mc.getForFiscalPrincipalAt(dateMariage);
+		assertNull(ffpDateMariage, "Le for du ménage commun ne débute pas au mariage, dans ce cas d'espèce");
+		final ForFiscalPrincipal ffp = mc.getForFiscalPrincipalAt(dateDebutForExistantSurCouple);
+		assertNotNull(ffp, "Le for du ménage commun est attendu au " + dateDebutForExistantSurCouple);
+		assertEquals(dateDebutForExistantSurCouple, ffp.getDateDebut(), "Mauvaise date de début pour le for principal");
 
-		final AppartenanceMenage am = (AppartenanceMenage) pp.getRapportSujetValidAt(dateMariage, TypeRapportEntreTiers.APPARTENANCE_MENAGE);
-		assertNotNull(am, "Pas de rapport d'appartenance ménage à la date du mariage");
-		assertEquals(dateMariage, am.getDateDebut(), "Mauvaise date de début pour le rapport d'appartenance ménage");
+		final AppartenanceMenage amDateMariage = (AppartenanceMenage) pp.getRapportSujetValidAt(dateMariage, TypeRapportEntreTiers.APPARTENANCE_MENAGE);
+		assertNull(amDateMariage, "Rapport d'appartenance ménage ouvert trop tôt par rapport aux données du test!");
+
+		final AppartenanceMenage am = (AppartenanceMenage) pp.getRapportSujetValidAt(dateArriveeMadame, TypeRapportEntreTiers.APPARTENANCE_MENAGE);
+		assertNotNull(am, "Pas de rapport d'appartenance ménage à la date d'arrivée de Madame");
+		assertEquals(dateArriveeMadame, am.getDateDebut(), "Mauvaise date de début pour le rapport d'appartenance ménage");
 		assertEquals(mc.getNumero(), am.getObjetId(), "Mauvais ménage commun de l'autre côté du rapport d'appartenance ménage");
 	}
 
 
-	@Etape(id = 2, descr = "Envoi de l'événement d'arrivée de Monsieur et Madame")
+	@Etape(id = 2, descr = "Envoi de l'événement d'arrivée de Monsieur")
 	public void etape2() throws Exception {
 
-		final long idEvtOlivier = addEvenementCivil(TypeEvenementCivil.ARRIVEE_PRINCIPALE_HC, noIndOlivier, dateArriveeLausanne, MockCommune.Lausanne.getNoOFS());
-		final long idEvtAlexandra = addEvenementCivil(TypeEvenementCivil.ARRIVEE_PRINCIPALE_HC, noIndAlexandra, dateArriveeLausanne, MockCommune.Lausanne.getNoOFS());
-
+		final long idEvtOlivier = addEvenementCivil(TypeEvenementCivil.ARRIVEE_PRINCIPALE_HC, noIndOlivier, dateArriveeMonsieur, MockCommune.Lausanne.getNoOFS());
 		commitAndStartTransaction();
 		regroupeEtTraiteEvenements(idEvtOlivier);
-		regroupeEtTraiteEvenements(idEvtAlexandra);
 	}
 
 	@Check(id = 2, descr = "Vérification de l'existence d'un ménage commun dont la date d'ouverture est la date de mariage (et pas la date d'arrivée)")
 	public void check2() throws Exception {
 
-		final PersonnePhysique alex = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndAlexandra);
-		assertNotNull(alex, "L'habitante Alexandra n'a pas été créée");
+		final PersonnePhysique olivier = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndOlivier);
+		assertNotNull(olivier, "L'habitant Olivier n'a pas été créé");
+		assertTrue(olivier.isHabitant(), "Olivier devrait être habitant!");
+
+		final PersonnePhysique alex = (PersonnePhysique) tiersDAO.get(noCtbAlex);
+		assertNotNull(alex, "L'habitante Alexandra n'existe plus ?");
 		assertTrue(alex.isHabitant(), "Alexandra devrait être habitante!");
 
-		final PersonnePhysique olivier = (PersonnePhysique) tiersDAO.get(noCtbOlivier);
 		final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(olivier, dateMariage);
 		assertNotNull(couple, "Pas de couple trouvé à la date de mariage");
 		assertNotNull(couple.getMenage(), "Pas de ménage dans le couple?");
-		assertNotNull(couple.getConjoint(), "Madame est maintenant connue!");
-		assertEquals(alex.getNumero(), couple.getConjoint().getNumero(), "Pas marié avec Madame?");
-		assertTrue(olivier.isHabitant(), "Olivier est maintenant arrivé!");
-		assertEquals(noIndOlivier, olivier.getNumeroIndividu(), "Olivier est maintenant connu du registre civil!");
+
+		// comme la date du rapport entre tiers entre madame et le couple était fausse et qu'on ne la rattrappe pas
+		// madame n'appartient pas au couple à la date du mariage, mais seulement plus tard
+		assertNull(couple.getConjoint(), "Le couple est certes complet, mais madame ne doit pas encore en faire partie (les dates ne coïncident pas)");
 
 		final EvenementCivilRegroupe evenementOlivier = getEvenementCivilRegoupeForHabitant(olivier.getNumero());
 		assertNotNull(evenementOlivier, "Où est l'événement civil d'arrivée d'Olivier ?");
 		assertEquals(EtatEvenementCivil.TRAITE, evenementOlivier.getEtat(), "L'événement civil devrait être en traité.");
 
-		final EvenementCivilRegroupe evenementAlex = getEvenementCivilRegoupeForHabitant(alex.getNumero());
-		assertNotNull(evenementAlex, "Où est l'événement civil d'arrivée d'Alexandra ?");
-		assertEquals(EtatEvenementCivil.TRAITE, evenementAlex.getEtat(), "L'événement civil devrait être en traité.");
-
 		final MenageCommun mc = couple.getMenage();
-		final ForFiscalPrincipal ffp = mc.getForFiscalPrincipalAt(dateMariage);
-		assertNotNull(ffp, "Pas de for principal?");
-		assertEquals(dateMariage, ffp.getDateDebut(), "Mauvaise date de début pour le for principal");
+		final ForFiscalPrincipal ffpDateMariage = mc.getForFiscalPrincipalAt(dateMariage);
+		assertNull(ffpDateMariage, "Le for du ménage commun ne débute pas au mariage, dans ce cas d'espèce");
+		final ForFiscalPrincipal ffp = mc.getForFiscalPrincipalAt(dateDebutForExistantSurCouple);
+		assertNotNull(ffp, "Le for du ménage commun est attendu au " + dateDebutForExistantSurCouple);
+		assertEquals(dateDebutForExistantSurCouple, ffp.getDateDebut(), "Mauvaise date de début pour le for principal");
 
 		final AppartenanceMenage amOlivier = (AppartenanceMenage) olivier.getRapportSujetValidAt(dateMariage, TypeRapportEntreTiers.APPARTENANCE_MENAGE);
 		assertNotNull(amOlivier, "Pas de rapport d'appartenance ménage à la date du mariage");
 		assertEquals(dateMariage, amOlivier.getDateDebut(), "Mauvaise date de début pour le rapport d'appartenance ménage");
 		assertEquals(mc.getNumero(), amOlivier.getObjetId(), "Mauvais ménage commun de l'autre côté du rapport d'appartenance ménage");
 
-		final AppartenanceMenage amAlex = (AppartenanceMenage) alex.getRapportSujetValidAt(dateMariage, TypeRapportEntreTiers.APPARTENANCE_MENAGE);
-		assertNotNull(amAlex, "Pas de rapport d'appartenance ménage à la date du mariage");
-		assertEquals(dateMariage, amAlex.getDateDebut(), "Mauvaise date de début pour le rapport d'appartenance ménage");
+		final AppartenanceMenage amAlex = (AppartenanceMenage) alex.getRapportSujetValidAt(dateArriveeMadame, TypeRapportEntreTiers.APPARTENANCE_MENAGE);
+		assertNotNull(amAlex, "Pas de rapport d'appartenance ménage à la date d'arrivée");
+		assertEquals(dateArriveeMadame, amAlex.getDateDebut(), "Mauvaise date de début pour le rapport d'appartenance ménage");
 		assertEquals(mc.getNumero(), amAlex.getObjetId(), "Mauvais ménage commun de l'autre côté du rapport d'appartenance ménage");
 	}
 }

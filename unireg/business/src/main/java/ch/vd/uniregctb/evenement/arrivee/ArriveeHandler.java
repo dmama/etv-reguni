@@ -1091,7 +1091,7 @@ public class ArriveeHandler extends EvenementCivilHandlerBase {
 				/*
 				 * On ajoute le rapport entre l'habitant principal et le ménage existant
 				 */
-				RapportEntreTiers rapport = getService().addTiersToCouple(menage, habitantPrincipal, dateEvenement, null);
+				final RapportEntreTiers rapport = getService().addTiersToCouple(menage, habitantPrincipal, dateDebutMenage, null);
 				menageCommun = (MenageCommun) getTiersDAO().get(rapport.getObjetId());
 
 				Audit.info(evenementId, "L'arrivant [" + habitantPrincipal.getNumero() + "] a été attaché au ménage commun ["
