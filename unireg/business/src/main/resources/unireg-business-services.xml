@@ -89,6 +89,7 @@
 		<property name="adresseService" ref="adresseService"/>
 		<property name="transactionManager" ref="transactionManager"/>
 		<property name="tiersDAO" ref="tiersDAO"/>
+		<property name="serviceCivilService" ref="serviceCivilService" />
 	</bean>
 
 	<!-- Section Evenement Externe -->

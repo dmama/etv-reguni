@@ -1,9 +1,17 @@
 package ch.vd.uniregctb.common;
 
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.civil.model.EnumAttributeIndividu;
+import ch.vd.uniregctb.interfaces.model.Individu;
+import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.MenageCommun;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersDAO.Parts;
+import ch.vd.uniregctb.tiers.TiersService;
+
 import org.apache.commons.lang.mutable.MutableInt;
 import org.apache.log4j.Logger;
 import org.hibernate.FlushMode;
@@ -18,8 +26,10 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import java.sql.SQLException;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -41,27 +51,34 @@ public abstract class ListesThread<T extends ListesResults<T>> extends Thread {
 
     private final TiersDAO tiersDAO;
 
+	private final ServiceCivilService serviceCivilService;
+
+	private final TiersService tiersService;
+
     private final AtomicInteger compteur;
 
     private final HibernateTemplate hibernateTemplate;
 
-    protected static final Set<Parts> PARTS;
+    protected static final Set<Parts> PARTS_FISCALES;
 
-    static {
+	static {
         // ensemble des parties à récupérer des tiers : les tiers eux-mêmes et les rapports entre tiers
 	    final Set<Parts> parts = new HashSet<Parts>(1);
         parts.add(Parts.RAPPORTS_ENTRE_TIERS);
 
-	    PARTS = Collections.unmodifiableSet(parts);
+	    PARTS_FISCALES = Collections.unmodifiableSet(parts);
     }
 
     public ListesThread(BlockingQueue<List<Long>> queue,
-                        StatusManager status, AtomicInteger compteur, PlatformTransactionManager transactionManager,
+                        StatusManager status, AtomicInteger compteur, ServiceCivilService serviceCivilService,
+                        TiersService tiersService, PlatformTransactionManager transactionManager,
                         TiersDAO tiersDAO, HibernateTemplate hibernateTemplate, T results) {
         this.queue = queue;
         this.status = status;
         this.compteur = compteur;
-        this.hibernateTemplate = hibernateTemplate;
+	    this.serviceCivilService = serviceCivilService;
+	    this.tiersService = tiersService;
+	    this.hibernateTemplate = hibernateTemplate;
         this.transactionTemplate = new TransactionTemplate(transactionManager);
         this.tiersDAO = tiersDAO;
         this.results = results;
@@ -112,7 +129,7 @@ public abstract class ListesThread<T extends ListesResults<T>> extends Thread {
      */
     private void traiteLot(final List<Long> ids) {
 
-	    final Set<Parts> partsToFetch = getPartsToFetch();
+	    final Set<Parts> partsToFetch = getFiscalPartsToFetch();
 	    final MutableInt niveauExtraction = new MutableInt(0);
 	    try {
 
@@ -126,6 +143,10 @@ public abstract class ListesThread<T extends ListesResults<T>> extends Thread {
 					transactionTemplate.execute(new TransactionCallback() {
 						public Object doInTransaction(TransactionStatus transactionStatus) {
 							final List<Tiers> tiers = tiersDAO.getBatch(ids, partsToFetch);
+
+							// prefetch des données civiles
+							prefetchDonneesCiviles(tiers, null);
+
 							for (Tiers t : tiers) {
 								traiteTiers(t);
 								niveauExtraction.increment();
@@ -148,8 +169,57 @@ public abstract class ListesThread<T extends ListesResults<T>> extends Thread {
 	    }
     }
 
-	protected Set<Parts> getPartsToFetch() {
-		return PARTS;
+	protected void prefetchDonneesCiviles(List<Tiers> tiers, RegDate date) {
+		final Map<Long, PersonnePhysique> ppByNoIndividu = new HashMap<Long, PersonnePhysique>(tiers.size() * 2);
+		for (Tiers t : tiers) {
+			if (t instanceof PersonnePhysique) {
+				final PersonnePhysique pp = (PersonnePhysique) t;
+				if (pp.isConnuAuCivil()) {
+					ppByNoIndividu.put(pp.getNumeroIndividu(), pp);
+				}
+			}
+			else if (t instanceof MenageCommun) {
+				final MenageCommun mc = (MenageCommun) t;
+				final Set<PersonnePhysique> membres = tiersService.getComposantsMenage(mc, null);
+				if (membres != null) {
+					for (PersonnePhysique pp : membres) {
+						if (pp.isConnuAuCivil()) {
+							ppByNoIndividu.put(pp.getNumeroIndividu(), pp);
+						}
+					}
+				}
+			}
+		}
+
+		// récupération des attributs civils à récupérer
+		if (ppByNoIndividu.size() > 0) {
+			final Set<EnumAttributeIndividu> attributes = new HashSet<EnumAttributeIndividu>();
+			fillAttributesIndividu(attributes);
+			final EnumAttributeIndividu[] attributesArray;
+			if (attributes.size() > 0) {
+				attributesArray = attributes.toArray(new EnumAttributeIndividu[attributes.size()]);
+			}
+			else {
+				attributesArray = null;
+			}
+
+			// pré-chargement des individus
+			final List<Individu> individus = serviceCivilService.getIndividus(ppByNoIndividu.keySet(), date, attributesArray);
+
+			// et on remplit aussi le cache individu sur les personnes physiques... (utilisé pour l'accès à la date de décès)
+			for (Individu individu : individus) {
+				final PersonnePhysique pp = ppByNoIndividu.get(individu.getNoTechnique());
+				pp.setIndividuCache(individu);
+			}
+		}
+	}
+
+	protected void fillAttributesIndividu(Set<EnumAttributeIndividu> attributes) {
+		// par défaut, rien de spécial à ajouter
+	}
+
+	protected Set<Parts> getFiscalPartsToFetch() {
+		return PARTS_FISCALES;
 	}
 
 	/**

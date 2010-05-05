@@ -3,17 +3,19 @@ package ch.vd.uniregctb.listes.suisseoupermiscresident;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.registre.civil.model.EnumAttributeIndividu;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.common.FiscalDateHelper;
 import ch.vd.uniregctb.common.ListesThread;
 import ch.vd.uniregctb.common.StatusManager;
+import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.*;
-import ch.vd.uniregctb.type.TypeAdresseTiers;
+
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 
@@ -30,18 +32,19 @@ public class ListeContribuablesResidentsSansForVaudoisThread extends ListesThrea
 	private final TiersService tiersService;
 	private final AdresseService adresseService;
 	private final ServiceInfrastructureService serviceInfrastructure;
-	protected static final Set<TiersDAO.Parts> PARTS;
+	private static final Set<TiersDAO.Parts> PARTS_FISCALES;
 
 	static {
-		final Set<TiersDAO.Parts> parts = new HashSet<TiersDAO.Parts>(ListesThread.PARTS.size() + 1);
-		parts.addAll(ListesThread.PARTS);
+		final Set<TiersDAO.Parts> parts = new HashSet<TiersDAO.Parts>(ListesThread.PARTS_FISCALES.size() + 1);
+		parts.addAll(ListesThread.PARTS_FISCALES);
 		parts.add(TiersDAO.Parts.ADRESSES);
 
-		PARTS = Collections.unmodifiableSet(parts);
+		PARTS_FISCALES = Collections.unmodifiableSet(parts);
 	}
 
-	public ListeContribuablesResidentsSansForVaudoisThread(BlockingQueue<List<Long>> queue, RegDate dateTraitement, int nombreThreads, StatusManager status, AtomicInteger compteur, PlatformTransactionManager transactionManager, HibernateTemplate hibernateTemplate, TiersDAO tiersDAO, TiersService tiersService, AdresseService adresseService, ServiceInfrastructureService serviceInfrastructure) {
-		super(queue, status, compteur, transactionManager, tiersDAO, hibernateTemplate,
+	public ListeContribuablesResidentsSansForVaudoisThread(BlockingQueue<List<Long>> queue, RegDate dateTraitement, int nombreThreads, StatusManager status, AtomicInteger compteur, PlatformTransactionManager transactionManager, HibernateTemplate hibernateTemplate,
+	                                                       TiersDAO tiersDAO, TiersService tiersService, AdresseService adresseService, ServiceInfrastructureService serviceInfrastructure, ServiceCivilService serviceCivilService) {
+		super(queue, status, compteur, serviceCivilService, tiersService, transactionManager, tiersDAO, hibernateTemplate,
 				new ListeContribuablesResidentsSansForVaudoisResults(dateTraitement, nombreThreads, tiersService, adresseService));
 		this.dateTraitement = dateTraitement;
 		this.tiersService = tiersService;
@@ -50,8 +53,16 @@ public class ListeContribuablesResidentsSansForVaudoisThread extends ListesThrea
 	}
 
 	@Override
-	protected Set<TiersDAO.Parts> getPartsToFetch() {
-		return PARTS;
+	protected Set<TiersDAO.Parts> getFiscalPartsToFetch() {
+		return PARTS_FISCALES;
+	}
+
+	@Override
+	protected void fillAttributesIndividu(Set<EnumAttributeIndividu> attributes) {
+		super.fillAttributesIndividu(attributes);
+		attributes.add(EnumAttributeIndividu.ADRESSES);
+		attributes.add(EnumAttributeIndividu.NATIONALITE);
+		attributes.add(EnumAttributeIndividu.PERMIS);
 	}
 
 	private boolean isDecede(PersonnePhysique pp, RegDate dateReference) {

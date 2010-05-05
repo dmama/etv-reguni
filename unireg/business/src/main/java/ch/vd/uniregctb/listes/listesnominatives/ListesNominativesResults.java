@@ -88,11 +88,7 @@ public class ListesNominativesResults extends ListesResults<ListesNominativesRes
 	public void addContribuable(Contribuable ctb) throws Exception {
 		if (ctb instanceof PersonnePhysique) {
 
-			// si on a besoin de plus que juste les données de base sur l'individu, on préchauffe le
-			// cache des individus avec les adresses aussi
 			final PersonnePhysique pp = (PersonnePhysique) ctb;
-			prechargeIndividuEtAdressesDuCivil(pp);
-
 			final String nomPrenom = tiersService.getNomPrenom(pp);
 			if (typeAdressesIncluses == TypeAdresse.FORMATTEE) {
 				final AdresseEnvoiDetaillee adresse = adresseService.getAdresseEnvoi(ctb, null, TypeAdresseFiscale.COURRIER, false);
@@ -108,15 +104,6 @@ public class ListesNominativesResults extends ListesResults<ListesNominativesRes
 		}
 		else if (ctb instanceof MenageCommun) {
 			final MenageCommun menage = (MenageCommun) ctb;
-
-			// récupération des personnes physiques sans résolution du principal/conjoint (nécessite le sexe, qui peut demander un appel au registre civil)
-			// -> préchauffage du cache pour tous les habitants du ménage
-			final Set<PersonnePhysique> composantsMenage = tiersService.getComposantsMenage(menage, null);
-			if (composantsMenage != null) {
-				for (PersonnePhysique pp : composantsMenage) {
-					prechargeIndividuEtAdressesDuCivil(pp);
-				}
-			}
 
 			final EnsembleTiersCouple ensembleTiersCouple = tiersService.getEnsembleTiersCouple(menage, null);
 			final PersonnePhysique principal = ensembleTiersCouple.getPrincipal();
@@ -145,13 +132,6 @@ public class ListesNominativesResults extends ListesResults<ListesNominativesRes
 			else {
 				addErrorManqueLiensMenage(menage);
 			}
-		}
-	}
-
-	private void prechargeIndividuEtAdressesDuCivil(PersonnePhysique pp) {
-		if (typeAdressesIncluses != TypeAdresse.AUCUNE && pp.isHabitant()) {
-			final long noIndividu = pp.getNumeroIndividu();
-			serviceCivilService.getIndividu(noIndividu, 2400, EnumAttributeIndividu.ADRESSES);
 		}
 	}
 

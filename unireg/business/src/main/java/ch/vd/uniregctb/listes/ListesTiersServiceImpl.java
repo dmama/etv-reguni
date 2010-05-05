@@ -70,7 +70,8 @@ public class ListesTiersServiceImpl implements ListesTiersService {
 	}
 
 	public ListeContribuablesResidentsSansForVaudoisResults produireListeContribuablesSuissesOuPermisCResidentsMaisSansForVd(RegDate dateTraitement, int nbThreads, StatusManager statusManager) {
-		final ListeContribuablesResidentsSansForVaudoisProcessor processor = new ListeContribuablesResidentsSansForVaudoisProcessor(hibernateTemplate, tiersService, adresseService, transactionManager, tiersDAO, infraService);
+		final ListeContribuablesResidentsSansForVaudoisProcessor processor = new ListeContribuablesResidentsSansForVaudoisProcessor(hibernateTemplate,
+				tiersService, adresseService, transactionManager, tiersDAO, infraService, serviceCivilService);
 		return processor.run(dateTraitement, nbThreads, statusManager);
 	}
 }

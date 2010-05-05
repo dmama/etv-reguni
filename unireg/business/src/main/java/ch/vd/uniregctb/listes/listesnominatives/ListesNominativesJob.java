@@ -79,7 +79,7 @@ public class ListesNominativesJob extends JobDefinition {
 
 		defaultParams = new HashMap<String, Object>();
 		{
-			defaultParams.put(I_NB_THREADS, Integer.valueOf(10));
+			defaultParams.put(I_NB_THREADS, 2);
 			defaultParams.put(E_ADRESSES_INCLUSES, TypeAdresse.AUCUNE);
 			defaultParams.put(B_CONTRIBUABLES, Boolean.TRUE);
 			defaultParams.put(B_DEBITEURS, Boolean.TRUE);
