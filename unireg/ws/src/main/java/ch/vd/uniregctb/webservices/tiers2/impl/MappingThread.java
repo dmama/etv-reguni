@@ -2,7 +2,6 @@ package ch.vd.uniregctb.webservices.tiers2.impl;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.civil.model.EnumAttributeIndividu;
-import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.webservices.tiers2.data.TiersPart;
@@ -88,7 +87,7 @@ public class MappingThread extends Thread {
 			LOGGER.trace("Préchargement des individus - start");
 			start = System.nanoTime();
 
-			final List<Long> numerosIndividus = context.tiersDAO.getNumerosIndividu(ids);
+			final List<Long> numerosIndividus = context.tiersDAO.getNumerosIndividu(ids, true);
 			if (!numerosIndividus.isEmpty()) { // on peut tomber sur une plage de tiers ne contenant pas d'habitant
 				try {
 					final EnumAttributeIndividu[] attributs;

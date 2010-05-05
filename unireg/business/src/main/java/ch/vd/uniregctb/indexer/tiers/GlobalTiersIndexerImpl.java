@@ -311,13 +311,13 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer {
 				// une requête par individu); et avec le préchargement on peut charger 500 individus d'un coup.
 				long start = System.nanoTime();
 
-				final List<Long> numerosIndividus = tiersDAO.getNumerosIndividu(ids);
+				final List<Long> numerosIndividus = tiersDAO.getNumerosIndividu(ids, true);
 				if (!numerosIndividus.isEmpty()) { // on peut tomber sur une plage de tiers ne contenant pas d'habitant
 					try {
 						serviceCivilService.getIndividus(numerosIndividus, null, EnumAttributeIndividu.ADRESSES); // chauffe le cache
 
 						long nanosecondes = System.nanoTime() - start;
-						LOGGER.info("=> Récupéré 500 individus en " + (nanosecondes / 1000000000L) + "s.");
+						LOGGER.info("=> Récupéré " + numerosIndividus.size() + " individus en " + (nanosecondes / 1000000000L) + "s.");
 					}
 					catch (Exception e) {
 						LOGGER.error("Impossible de précharger le lot d'individus [" + numerosIndividus + "]. On continue avec host-interface pour ce lot.", e);
@@ -546,8 +546,10 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer {
                 Long numeroIndividu = pp.getNumeroIndividu();
                 Assert.notNull(numeroIndividu);
                 // Recuperation de l'individu
-                Individu individu = serviceCivilService.getIndividu(numeroIndividu, 2400, EnumAttributeIndividu.ADRESSES);
-                Assert.notNull(individu, "Individu introuvable. Numero=" + numeroIndividu);
+                final Individu individu = serviceCivilService.getIndividu(numeroIndividu, 2400, EnumAttributeIndividu.ADRESSES);
+	            if (individu == null) {
+		            throw new IndividuNotFoundException(pp);
+	            }
                 indexable = new HabitantIndexable(adresseService, tiersService, serviceInfra, pp, individu);
             }
             // NonHabitant

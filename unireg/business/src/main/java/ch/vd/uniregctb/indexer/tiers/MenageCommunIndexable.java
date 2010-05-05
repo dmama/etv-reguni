@@ -140,7 +140,10 @@ public class MenageCommunIndexable extends ContribuableIndexable {
 			ppIndexable = new NonHabitantIndexable(adresseService, tiersService, serviceInfra, pp);
 		}
 		else if (pp != null) {
-			Individu ind = serviceCivil.getIndividu(pp.getNumeroIndividu(), null, EnumAttributeIndividu.ADRESSES);
+			final Individu ind = serviceCivil.getIndividu(pp.getNumeroIndividu(), null, EnumAttributeIndividu.ADRESSES);
+			if (ind == null) {
+				throw new IndividuNotFoundException(pp);
+			}
 			ppIndexable = new HabitantIndexable(adresseService, tiersService, serviceInfra, pp, ind);
 		}
 		return ppIndexable;
