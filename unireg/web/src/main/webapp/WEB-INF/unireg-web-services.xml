@@ -16,11 +16,4 @@
 	<bean id="servletService" class="ch.vd.uniregctb.servlet.ServletServiceImpl">
 	</bean>
 
-	<bean id="fidorService" class="ch.vd.uniregctb.fidor.FidorServiceImpl">
-		<property name="serviceUrl" value="${extprop.webservice.fidor.url}" />
-		<property name="username" value="${extprop.webservice.fidor.username}" />
-		<property name="password" value="${extprop.webservice.fidor.password}" />
-	</bean>
-
-
 </beans>

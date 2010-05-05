@@ -11,11 +11,8 @@
 			<outputDirectory>docs</outputDirectory>
 			<useDefaultExcludes>true</useDefaultExcludes>
 			<includes>
-				<include>*.doc</include>
+				<include>INSTALL.doc</include>
 			</includes>
-			<excludes>
-				<exclude>~*.doc</exclude>
-			</excludes>
 		</fileSet>
 		<!-- Fichier unireg-log4j.xml et ehcache.xml -->
 		<fileSet>
@@ -28,7 +25,7 @@
 		</fileSet>
 		<!-- Fichier properties -->
 		<fileSet>
-			<directory>config/norentes</directory>
+			<directory>config/standalone</directory>
 			<outputDirectory>config</outputDirectory>
 			<useDefaultExcludes>true</useDefaultExcludes>
 		</fileSet>
@@ -45,7 +42,7 @@
 			<source>target/uniregctb-web-4.4-SNAPSHOT.war</source>
 			<!-- END_LVERSION -->
 			<outputDirectory>deployment</outputDirectory>
-			<destName>uniregctb.war</destName>
+			<destName>unireg.war</destName>
 		</file>
 	</files>
 </assembly>

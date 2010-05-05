@@ -17,18 +17,18 @@ fi
 
 #########
 # Version
-env=standalone
 release=0
 version=$(grep "long=" unireg/base/version.txt|awk -F= '{ print $2; }')
 version=$version.$release
 #########
 
-echo "Building version $version ($env)"
+echo "Building version $version (standalone)"
 
 relFileOrig=uniregctb-release.zip
-relFileDest=uniregctb-release-${env}-${version}-${DATE}.zip
+relFileDest=unireg-standalone-${version}-${DATE}.zip
+wsFileOrig=uniregws-release.zip
+wsFileDest=uniregws-standalone-${version}-${DATE}.zip
 MVN_OPTS="-Pnot,oracle,env.standalone"
-
 
 
 (cd unireg/base && mvn $MVN_OPTS clean install)
@@ -39,14 +39,22 @@ fi
 
 (cd unireg/web && mvn $MVN_OPTS assembly:assembly)
 if [ $? != 0 ]; then
-	echo "!!! Erreur lors du build"
+	echo "!!! Erreur lors de l'assembly de web"
+	exit 1
+fi
+
+(cd unireg/ws && mvn $MVN_OPTS assembly:assembly)
+if [ $? != 0 ]; then
+	echo "!!! Erreur lors de l'assembly de ws"
 	exit 1
 fi
 
 
-# Renommage du fichier ZIP avec la date
+# Renommage des fichiers ZIP avec la date
 cp unireg/web/target/$relFileOrig unireg/$relFileDest
+cp unireg/ws/target/$wsFileOrig unireg/$wsFileDest
 
-echo "Le fichier est disponible ici: $(pwd)/unireg/$relFileDest"
+echo "Les fichiers sont disponibles ici:"
+echo "  => $(pwd)/unireg/$relFileDest"
+echo "  => $(pwd)/unireg/$wsFileDest"
 echo "Fin du deploiement at: $(date)"
-

@@ -8,58 +8,30 @@
 			classpath*:/unireg-core-dao.xml,
 			classpath*:/unireg-core-sf.xml,
 			classpath*:/unireg-business-essentials.xml;
-			classpath*:/unireg-business-services.xml,
-			classpath*:/unireg-business-jobs.xml,
-			classpath*:/unireg-business-evtcivil.xml,		
 			classpath*:/unireg-business-evtfiscal.xml,
-			/WEB-INF/unireg-web-activation.xml,
-			/WEB-INF/unireg-web-admin.xml,
-			/WEB-INF/unireg-web-cache.xml,
-			/WEB-INF/unireg-web-common.xml,
-			/WEB-INF/unireg-web-config.xml,
-			/WEB-INF/unireg-web-couple.xml,
-			/WEB-INF/unireg-web-separation.xml,
-			/WEB-INF/unireg-web-deces.xml,
-			/WEB-INF/unireg-web-database.xml,
-			/WEB-INF/unireg-web-di.xml,
-			/WEB-INF/unireg-web-evenements.xml,
-			/WEB-INF/unireg-web-fusion.xml,
-			/WEB-INF/unireg-web-identification.xml,
-			/WEB-INF/unireg-web-info.xml,
-			/WEB-INF/unireg-web-lr.xml,
-			/WEB-INF/unireg-web-parametrage.xml,
-			/WEB-INF/unireg-web-properties.xml,
-			/WEB-INF/unireg-web-rapport.xml,
-			/WEB-INF/unireg-web-remoting.xml,
-			/WEB-INF/unireg-web-security.xml,
-			/WEB-INF/unireg-web-services.xml,
-			/WEB-INF/unireg-web-tiers.xml,
-			/WEB-INF/unireg-web-mouvement.xml,
-			/WEB-INF/unireg-web-tache.xml,
-			/WEB-INF/unireg-web-fiscal.xml,
-			/WEB-INF/unireg-web-adresse.xml,
-			/WEB-INF/unireg-web-complement.xml,
-			/WEB-INF/unireg-web-civil.xml,
-			/WEB-INF/unireg-web-acces.xml,
+			/WEB-INF/unireg-ws-cache.xml,
+			/WEB-INF/unireg-ws-common.xml,
+			/WEB-INF/unireg-ws-config.xml,
+			/WEB-INF/unireg-ws-database.xml,
+			/WEB-INF/unireg-ws-info.xml,
+			/WEB-INF/unireg-ws-properties.xml,
+			/WEB-INF/unireg-ws-security.xml,
+			/WEB-INF/unireg-ws-services.xml,
+			/WEB-INF/unireg-ws-ws.xml,
 			/WEB-INF/unireg-standalone-mocks.xml
 		</param-value>
-		<!-- Pour permettre une analyse des perfs, -->
-		<!-- il faut décommenter ce fichier -->
-		<!--
-			/WEB-INF/unireg-performance.xml,
-		-->
 	</context-param>
-
+	
 	<context-param>
 		<param-name>log4jConfigLocation</param-name>
-		<param-value>${unireg.log4j.location}</param-value>
+		<param-value>${unireg-ws.log4j.location}</param-value>
 	</context-param>
 	<context-param>
 		<!-- On ne peut pas exposer le webapp root si le war est pas exapndé -->
 		<param-name>log4jExposeWebAppRoot</param-name>
 		<param-value>false</param-value>
 	</context-param>
-
+	
 	<!--  Les servlets de notre application -->
 	<servlet>
 		<servlet-name>uniregServlet</servlet-name>
@@ -72,7 +44,7 @@
 		</init-param>
 		<load-on-startup>3</load-on-startup>
 	</servlet>
-
+	
 	<servlet>
 		<servlet-name>CXFServlet</servlet-name>
 		<servlet-class>org.apache.cxf.transport.servlet.CXFServlet</servlet-class>
@@ -86,11 +58,6 @@
 	</servlet-mapping>
 
 	<servlet-mapping>
-		<servlet-name>uniregServlet</servlet-name>
-		<url-pattern>*.remoting</url-pattern>
-	</servlet-mapping>
-	
-	<servlet-mapping>
 		<servlet-name>CXFServlet</servlet-name>
 		<url-pattern>/ws/*</url-pattern>
 	</servlet-mapping>
@@ -99,25 +66,49 @@
 
 	<security-constraint>
 		<web-resource-collection>
-			<web-resource-name>Web-service Batch</web-resource-name>
-			<url-pattern>/ws/batch</url-pattern>
+			<web-resource-name>Web-service Tiers v1</web-resource-name>
+			<url-pattern>/ws/tiers</url-pattern>
 			<http-method>GET</http-method>
 			<http-method>POST</http-method>
 		</web-resource-collection>
 		<auth-constraint>
-			<role-name>ws-batch-role</role-name>
+			<role-name>ws-tiers-role</role-name>
 		</auth-constraint>
 	</security-constraint>
 
 	<security-constraint>
 		<web-resource-collection>
-			<web-resource-name>Unireg Remoting</web-resource-name>
-			<url-pattern>*.remoting</url-pattern>
+			<web-resource-name>Web-service Tiers v2</web-resource-name>
+			<url-pattern>/ws/tiers2</url-pattern>
 			<http-method>GET</http-method>
 			<http-method>POST</http-method>
 		</web-resource-collection>
 		<auth-constraint>
-			<role-name>unireg-remoting</role-name>
+			<role-name>ws-tiers-role</role-name>
+		</auth-constraint>
+	</security-constraint>
+
+	<security-constraint>
+		<web-resource-collection>
+			<web-resource-name>Web-service Securite</web-resource-name>
+			<url-pattern>/ws/securite</url-pattern>
+			<http-method>GET</http-method>
+			<http-method>POST</http-method>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>ws-securite-role</role-name>
+		</auth-constraint>
+	</security-constraint>
+
+	<security-constraint>
+		<web-resource-collection>
+			<web-resource-name>Web-service fiscal</web-resource-name>
+			<url-pattern>/ws/fiscal</url-pattern>
+			<http-method>GET</http-method>
+			<http-method>POST</http-method>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>ws-fiscal-role</role-name>
 		</auth-constraint>
 	</security-constraint>
 
@@ -126,10 +117,13 @@
 		<realm-name>security</realm-name>
 	</login-config>
 	<security-role>
-		<role-name>ws-batch-role</role-name>
+		<role-name>ws-tiers-role</role-name>
 	</security-role>
 	<security-role>
-		<role-name>unireg-remoting</role-name>
+		<role-name>ws-securite-role</role-name>
+	</security-role>
+	<security-role>
+		<role-name>ws-fiscal-role</role-name>
 	</security-role>
 
 	
@@ -171,27 +165,8 @@
 		<filter-name>responseOverrideFilter</filter-name>
 		<filter-class>org.displaytag.filter.ResponseOverrideFilter</filter-class>
 	</filter>
-	<filter>
-		<filter-name>springSecurityFilter</filter-name>
-		<filter-class>org.acegisecurity.util.FilterToBeanProxy</filter-class>
-		<init-param>
-			<param-name>targetClass</param-name>
-			<param-value>org.acegisecurity.util.FilterChainProxy</param-value>
-		</init-param>
-	</filter>
-
-	<!-- Filtre de performance pour les URLs -->
-	<filter>
-		<filter-name>WebPerformanceFilter</filter-name>
-		<filter-class>ch.vd.uniregctb.performance.PerformanceFilter</filter-class>
-	</filter>
 
 	<!-- Filtre de logging des requêtes http -->
-	<filter>
-		<filter-name>servletRequestLoggingFilter</filter-name>
-		<filter-class>ch.vd.uniregctb.log.ServletRequestLoggingFilter</filter-class>
-	</filter>
-
 	<filter-mapping>
 		<filter-name>encodingFilter</filter-name>
 		<url-pattern>/*</url-pattern>
@@ -200,26 +175,13 @@
 		<filter-name>responseOverrideFilter</filter-name>
 		<url-pattern>/*</url-pattern>
 	</filter-mapping>
-	<filter-mapping>
-		<filter-name>springSecurityFilter</filter-name>
-		<url-pattern>/*</url-pattern>
-	</filter-mapping>
-	<filter-mapping>
-		<filter-name>WebPerformanceFilter</filter-name>
-		<url-pattern>*.do</url-pattern>
-	</filter-mapping>
-	<!-- décommenter cette partie pour activer le logging des requêtes http 
-	<filter-mapping>
-		<filter-name>servletRequestLoggingFilter</filter-name>
-		<url-pattern>*.do</url-pattern>
-	</filter-mapping>
-	 -->
 
 	<!--  La configuration de la session utilisateur -->
 	<session-config>
 		<!-- timeout de 1 heure, comme IAM -->
 		<session-timeout>60</session-timeout>
 	</session-config>
+
 	<jsp-config>
 		<jsp-property-group>
 			<description>Property group for common configuration for all the JSP's</description>

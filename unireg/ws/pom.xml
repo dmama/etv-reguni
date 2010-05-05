@@ -77,7 +77,12 @@
 			<artifactId>commons-httpclient</artifactId>
 			<version>3.1</version>
 		</dependency>
-	    <dependency>
+		<dependency>
+			<groupId>net.sf.opencsv</groupId>
+			<artifactId>opencsv</artifactId>
+			<version>2.1</version>
+		</dependency>
+		<dependency>
 			<groupId>${pom.parent.groupId}</groupId>
 			<artifactId>uniregctb-core</artifactId>
 			<version>${pom.parent.version}</version>
@@ -264,6 +269,22 @@
 				</dependencies>
 				
 				<executions>
+
+					<!-- Task ANT qui copie web.xml.xyz sur web.xml -->
+					<execution>
+						<id>copy-web-xml</id>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<phase>generate-sources</phase>
+						<configuration>
+							<tasks>
+								<echo message="Copying ${unireg.webxml} to web.xml" />
+								<copy overwrite="true" file="src/main/webapp/WEB-INF/${unireg.webxml}" tofile="src/main/webapp/WEB-INF/web.xml" />
+							</tasks>
+						</configuration>
+					</execution>
+					
 					<!-- Task ANT qui génère la javadoc des classes exposées par le web-service tiers v1 -->
 					<execution>
 						<id>ws.tiers1.javadoc</id>
@@ -478,7 +499,7 @@
 				<configuration>
 					<finalName>uniregws</finalName>
 					<descriptors>
-						<descriptor>release.xml</descriptor>
+						<descriptor>${unireg.webreleasexml}</descriptor>
 					</descriptors>
 				</configuration>
 			</plugin>
