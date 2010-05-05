@@ -187,13 +187,6 @@
 	</tag>
 
 	<tag>
-		<name>BridageIS</name>
-		<tag-class>ch.vd.uniregctb.taglibs.JspTagBridageIS</tag-class>
-		<body-content>JSP</body-content>
-		<description>Permet de cacher du contenu lié à la gestion de l'impot source lorsque le mode Bridage IS est activé dans le fichier de configuration</description>
-	</tag>
-	
-	<tag>
 		<name>environnement</name>
 		<tag-class>ch.vd.uniregctb.taglibs.JspTagEnvironnement</tag-class>
 		<body-content>JSP</body-content>

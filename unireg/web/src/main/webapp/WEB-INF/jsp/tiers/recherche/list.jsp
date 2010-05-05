@@ -85,9 +85,7 @@
 								<c:if test="${!tiers.debiteurInactif}">
 									<option value="<c:out value='${tiers.urlTaoPP}'/>"><fmt:message key="label.TAOPP" /></option>
 									<option value="<c:out value='${tiers.urlTaoBA}'/>"><fmt:message key="label.TAOBA" /></option>
-									<unireg:BridageIS>
-										<option value="<c:out value='${tiers.urlTaoIS}'/>"><fmt:message key="label.TAOIS" /></option>
-									</unireg:BridageIS>
+									<option value="<c:out value='${tiers.urlTaoIS}'/>"><fmt:message key="label.TAOIS" /></option>
 								</c:if>
 								<option value="<c:out value='${tiers.urlSipf}'/>"><fmt:message key="label.SIPF" /></option>
 								<option value="<c:out value='launchcat.do?numero=' /><c:out value='${tiers.numero}' />" ><fmt:message key="label.CAT" /></option>

@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.utils.UniregModeHelper;
 
 /**
  * Liste des rôles IFOSec utilisés dans Unireg
@@ -123,13 +122,9 @@ public enum Role {
 				put(Role.VISU_LIMITE);
 				put(Role.VISU_ALL);
 				put(Role.CREATE_NONHAB);
-
-				if (!UniregModeHelper.isBridageIS()) {
-					put(Role.CREATE_AC);
-					put(Role.CREATE_DPI);
-					put(Role.CREATE_PM);
-				}
-
+				put(Role.CREATE_AC);
+				put(Role.CREATE_DPI);
+				put(Role.CREATE_PM);
 				put(Role.CREATE_CA);
 				put(Role.MODIF_VD_ORD);
 				put(Role.MODIF_VD_SOURC);
@@ -137,10 +132,8 @@ public enum Role {
 				put(Role.MODIF_HAB_DEBPUR);
 				put(Role.MODIF_NONHAB_DEBPUR);
 				put(Role.MODIF_NONHAB_INACTIF);
-				if (!UniregModeHelper.isBridageIS()) {
-					put(Role.MODIF_AC);
-					put(Role.MODIF_PM);
-				}
+				put(Role.MODIF_AC);
+				put(Role.MODIF_PM);
 				put(Role.MODIF_CA);
 				put(Role.ADR_PP_D);
 				put(Role.ADR_PP_C);
@@ -156,44 +149,26 @@ public enum Role {
 				put(Role.FOR_PRINC_SOURC_HAB);
 				put(Role.FOR_PRINC_SOURC_HCHS);
 				put(Role.FOR_PRINC_SOURC_GRIS);
-				if (!UniregModeHelper.isBridageIS()) {
-					put(Role.FOR_PRINC_PM);
-				}
+				put(Role.FOR_PRINC_PM);
 				put(Role.FOR_SECOND_PP);
-				if (!UniregModeHelper.isBridageIS()) {
-					put(Role.FOR_SECOND_PM);
-				}
+				put(Role.FOR_SECOND_PM);
 
 				put(Role.FOR_AUTRE);
 				put(Role.DI_EMIS_PP);
-				if (!UniregModeHelper.isBridageIS()) {
-					put(Role.DI_EMIS_PM);
-				}
+				put(Role.DI_EMIS_PM);
 				put(Role.DI_SOM_PP);
-				if (!UniregModeHelper.isBridageIS()) {
-					put(Role.DI_SOM_PM);
-				}
+				put(Role.DI_SOM_PM);
 				put(Role.DI_DUPLIC_PP);
-				if (!UniregModeHelper.isBridageIS()) {
-					put(Role.DI_DUPLIC_PM);
-				}
+				put(Role.DI_DUPLIC_PM);
 				put(Role.DI_DELAI_PP);
-				if (!UniregModeHelper.isBridageIS()) {
-					put(Role.DI_DELAI_PM);
-				}
+				put(Role.DI_DELAI_PM);
 				put(Role.DI_QUIT_PP);
-				if (!UniregModeHelper.isBridageIS()) {
-					put(Role.DI_QUIT_PM);
-				}
+				put(Role.DI_QUIT_PM);
 				put(Role.SIT_FAM);
-				if (!UniregModeHelper.isBridageIS()) {
-					put(Role.RT);
-				}
+				put(Role.RT);
 				put(Role.COOR_FIN);
 				put(Role.ANNUL_TIERS);
-				if (!UniregModeHelper.isBridageIS()) {
-					put(Role.LR);
-				}
+				put(Role.LR);
 				put(Role.EVEN);
 				put(Role.FORM_OUV_DOSS);
 				put(Role.SUIVI_DOSS);

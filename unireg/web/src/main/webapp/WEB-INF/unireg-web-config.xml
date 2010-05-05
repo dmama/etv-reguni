@@ -3,7 +3,6 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
 	<bean id="uniregModeHelper" class="ch.vd.uniregctb.utils.UniregModeHelper">
-		<property name="bridageIS" value="${extprop.bridageIS.valeur}" />
 		<property name="testMode" value="${extprop.testMode}" />
 		<property name="standalone" value="${unireg.standalone}" />
 		<property name="environnement" value="${extprop.environnement}"/>

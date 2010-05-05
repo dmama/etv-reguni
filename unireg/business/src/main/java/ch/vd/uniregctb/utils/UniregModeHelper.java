@@ -13,13 +13,6 @@ public class UniregModeHelper {
 	private static String environnement;
 
 	/**
-	 * @return <i>vrai</i> si le bridage IS est activé; <i>faux</i> autrement.
-	 */
-	public static boolean isBridageIS() {
-		return bridageIS;
-	}
-
-	/**
 	 * @return <i>vrai</i> si le mode testing est activé; <i>faux</i> autrement.
 	 */
 	public static boolean isTestMode() {
@@ -39,10 +32,6 @@ public class UniregModeHelper {
 
 	public void setTestMode(String v) {
 		testMode = ("true".equalsIgnoreCase(v) || "1".equals(v) || "yes".equalsIgnoreCase(v));
-	}
-
-	public void setBridageIS(String v) {
-		bridageIS = ("true".equalsIgnoreCase(v) || "1".equals(v) || "yes".equalsIgnoreCase(v));
 	}
 
 	public void setStandalone(boolean v) {

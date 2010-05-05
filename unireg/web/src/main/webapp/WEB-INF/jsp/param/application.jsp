@@ -230,8 +230,7 @@
 						</td>
 			 		</tr>
 		 		</spring:bind>
-		 		<unireg:BridageIS>
-				<spring:bind path="jourDuMoisEnvoiListesRecapitulatives">		 		
+				<spring:bind path="jourDuMoisEnvoiListesRecapitulatives">
 			 		<tr class="odd">
 			 			<td><fmt:message key="label.param.jourDuMoisEnvoiListesRecapitulatives"/></td>
 						<td class="nombre">${jourDuMoisEnvoiListesRecapitulativesParDefaut}</td>
@@ -329,7 +328,6 @@
 						</td>
 			 		</tr><tr class="separator"><th colspan="4" ></th></tr>
 		 		</spring:bind>
-		 		</unireg:BridageIS>
  			</table>
  			<input type="hidden" name="action" id="action" value="" />
  			<input type="submit" id="save" value="<fmt:message key="label.param.action.save"/>"/>

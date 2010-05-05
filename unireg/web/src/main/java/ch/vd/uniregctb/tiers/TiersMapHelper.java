@@ -12,7 +12,6 @@ import ch.vd.uniregctb.tiers.TiersCriteria.TypeRechercheForFiscal;
 import ch.vd.uniregctb.tiers.TiersCriteria.TypeRechercheLocalitePays;
 import ch.vd.uniregctb.tiers.view.TiersCriteriaView;
 import ch.vd.uniregctb.type.*;
-import ch.vd.uniregctb.utils.UniregModeHelper;
 
 /**
  * Cette classe expose les différents enums sours forme de map enum->description.
@@ -145,15 +144,7 @@ public class TiersMapHelper extends CommonMapHelper {
 	 */
 	public Map<MotifRattachement, String> getMapRattachement() {
 		if (mapRattachement == null) {
-			if (UniregModeHelper.isBridageIS()) {
-				mapRattachement = initMapEnum(ApplicationConfig.masterKeyRattachement, MotifRattachement.class,
-						MotifRattachement.ACTIVITE_LUCRATIVE_CAS, MotifRattachement.ADMINISTRATEUR,
-						MotifRattachement.CREANCIER_HYPOTHECAIRE, MotifRattachement.LOI_TRAVAIL_AU_NOIR,
-						MotifRattachement.PRESTATION_PREVOYANCE);
-			}
-			else {
-				mapRattachement = initMapEnum(ApplicationConfig.masterKeyRattachement, MotifRattachement.class);
-			}
+			mapRattachement = initMapEnum(ApplicationConfig.masterKeyRattachement, MotifRattachement.class);
 		}
 		return mapRattachement;
 	}
@@ -202,13 +193,7 @@ public class TiersMapHelper extends CommonMapHelper {
 	public Map<ModeImposition, String> getMapModeImposition() {
 
 		if (mapModeImposition == null) {
-			if (UniregModeHelper.isBridageIS()) {
-				mapModeImposition = initMapEnum(ApplicationConfig.masterKeyModeImposition, ModeImposition.class, ModeImposition.SOURCE);
-			}
-			else {
-				mapModeImposition = initMapEnum(ApplicationConfig.masterKeyModeImposition, ModeImposition.class);
-			}
-
+			mapModeImposition = initMapEnum(ApplicationConfig.masterKeyModeImposition, ModeImposition.class);
 		}
 		return mapModeImposition;
 	}
@@ -292,12 +277,7 @@ public class TiersMapHelper extends CommonMapHelper {
 	 */
 	public Map<TypeRapportEntreTiersWeb, String> getMapTypeRapportEntreTiers() {
 		if (mapTypeRapportEntreTiers == null) {
-			if (UniregModeHelper.isBridageIS()) {
-				mapTypeRapportEntreTiers = initMapEnum(ApplicationConfig.masterKeyTypeRapportEntreTiers, TypeRapportEntreTiersWeb.class, TypeRapportEntreTiersWeb.CONTACT_IMPOT_SOURCE);
-			}
-			else {
-				mapTypeRapportEntreTiers = initMapEnum(ApplicationConfig.masterKeyTypeRapportEntreTiers, TypeRapportEntreTiersWeb.class);
-			}
+			mapTypeRapportEntreTiers = initMapEnum(ApplicationConfig.masterKeyTypeRapportEntreTiers, TypeRapportEntreTiersWeb.class);
 		}
 		return mapTypeRapportEntreTiers;
 	}
@@ -369,15 +349,8 @@ public class TiersMapHelper extends CommonMapHelper {
 	 */
 	public Map<TypeDocument, String> getTypesDeclarationImpotPourParam() {
 
-
 		if (mapTypesDeclarationImpotPourParam == null) {
-			if (UniregModeHelper.isBridageIS()) {
-				mapTypesDeclarationImpotPourParam = initMapEnum(ApplicationConfig.masterKeyTypeDeclarationImpot, TypeDocument.class, TypeDocument.LISTE_RECAPITULATIVE);
-			}
-			else {
-				mapTypesDeclarationImpotPourParam = initMapEnum(ApplicationConfig.masterKeyTypeDeclarationImpot, TypeDocument.class);
-			}
-
+			mapTypesDeclarationImpotPourParam = initMapEnum(ApplicationConfig.masterKeyTypeDeclarationImpot, TypeDocument.class);
 		}
 		return mapTypesDeclarationImpotPourParam;
 	}

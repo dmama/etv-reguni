@@ -10,9 +10,7 @@
 			<option value="">---</option>
 			<option value="<c:out value='${command.urlTaoPP}'/>"><fmt:message key="label.TAOPP" /></option>
 				<option value="<c:out value='${command.urlTaoBA}'/>"><fmt:message key="label.TAOBA" /></option>
-				<unireg:BridageIS>
-					<option value="<c:out value='${command.urlTaoIS}'/>"><fmt:message key="label.TAOIS" /></option>
-				</unireg:BridageIS>
+				<option value="<c:out value='${command.urlTaoIS}'/>"><fmt:message key="label.TAOIS" /></option>
 				<option value="<c:out value='${command.urlSipf}'/>"><fmt:message key="label.SIPF" /></option>
 			<option value="<c:out value='launchcat.do?numero=' /><c:out value='${tiersGeneral.numero}' />" ><fmt:message key="label.CAT" /></option>
 		</select>
