@@ -2,8 +2,6 @@ package ch.vd.uniregctb.tache;
 
 import ch.vd.uniregctb.common.BusinessTestingConstants;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.tiers.*;
-import ch.vd.uniregctb.type.*;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
@@ -17,6 +15,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.test.annotation.NotTransactional;
 import org.springframework.test.context.ContextConfiguration;
@@ -2400,6 +2399,142 @@ public class TacheServiceTest extends BusinessTest {
 				return null;
 			}
 		});
+	}
+
+	@Test
+	public void testSeparationSurContribuableHS() throws Exception {
+
+		class Ids {
+			long idLui;
+			long idElle;
+			long idMenage;
+		}
+		final Ids ids = new Ids();
+
+		// mise en place
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique lui = addNonHabitant("Achille", "Talon", date(1965, 12, 5), Sexe.MASCULIN);
+				lui.setNumeroOfsNationalite(MockPays.Suisse.getNoOFS());
+				final PersonnePhysique elle = addNonHabitant("Géraldine", "Talon", date(1966, 4, 12), Sexe.FEMININ);
+				elle.setNumeroOfsNationalite(MockPays.Suisse.getNoOFS());
+				
+				final EnsembleTiersCouple couple = addEnsembleTiersCouple(lui, elle, date(1990, 5, 1), null);
+				final MenageCommun mc = couple.getMenage();
+				addForPrincipal(mc, date(1995, 1, 10), MotifFor.INDETERMINE, MockPays.France);
+
+				ids.idLui = lui.getNumero();
+				ids.idElle = elle.getNumero();
+				ids.idMenage = mc.getNumero();
+				return null;
+			}
+		});
+
+		// séparation
+		final MenageCommun mc = (MenageCommun) tiersService.getTiers(ids.idMenage);
+		final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(mc, null);
+
+		metierService.separe(mc, date(2009, 6, 12), "Test", EtatCivil.SEPARE, false, null);
+
+		// vérification des tâches générées : pour lui
+		{
+			final TacheCriteria criteria = new TacheCriteria();
+			criteria.setContribuable(couple.getPrincipal());
+			final List<Tache> taches = tacheDAO.find(criteria);
+			assertNotNull(taches);
+			assertEquals(0, taches.size());
+		}
+		// vérification des tâches générées : pour elle
+		{
+			final TacheCriteria criteria = new TacheCriteria();
+			criteria.setContribuable(couple.getConjoint());
+			final List<Tache> taches = tacheDAO.find(criteria);
+			assertNotNull(taches);
+			assertEquals(0, taches.size());
+		}
+		// vérification des tâches générées : pour le ménage
+		{
+			final TacheCriteria criteria = new TacheCriteria();
+			criteria.setContribuable(mc);
+			final List<Tache> taches = tacheDAO.find(criteria);
+			assertNotNull(taches);
+			assertEquals(0, taches.size());
+		}
+	}
+
+	@Ignore(value = "Après la correction du cas jira UNIREG-2378, on a découvert qu'une tâche d'envoi de DI est générée à tort")
+	@Test
+	public void testSeparationSurContribuableHSAvecImmeuble() throws Exception {
+
+		// TODO(msi,jde) Enlever le @Ignore une fois le cas UNIREG-2380 corrigé.
+
+		class Ids {
+			long idLui;
+			long idElle;
+			long idMenage;
+		}
+		final Ids ids = new Ids();
+
+		// mise en place
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique lui = addNonHabitant("Achille", "Talon", date(1965, 12, 5), Sexe.MASCULIN);
+				lui.setNumeroOfsNationalite(MockPays.Suisse.getNoOFS());
+				final PersonnePhysique elle = addNonHabitant("Géraldine", "Talon", date(1966, 4, 12), Sexe.FEMININ);
+				elle.setNumeroOfsNationalite(MockPays.Suisse.getNoOFS());
+
+				final EnsembleTiersCouple couple = addEnsembleTiersCouple(lui, elle, date(1990, 5, 1), null);
+				final MenageCommun mc = couple.getMenage();
+				addForPrincipal(mc, date(1995, 1, 10), MotifFor.ACHAT_IMMOBILIER, MockPays.France);
+				addForSecondaire(mc, date(1995, 1, 10), MotifFor.ACHAT_IMMOBILIER, MockCommune.Aubonne.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+
+				ids.idLui = lui.getNumero();
+				ids.idElle = elle.getNumero();
+				ids.idMenage = mc.getNumero();
+				return null;
+			}
+		});
+
+		// séparation
+		final MenageCommun mc = (MenageCommun) tiersService.getTiers(ids.idMenage);
+		final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(mc, null);
+
+		metierService.separe(mc, date(2009, 6, 12), "Test", EtatCivil.SEPARE, false, null);
+
+		// vérification des tâches générées : pour lui
+		{
+			// toujours pas de tâche, car on ne sait pas sur quel contribuable mettre le for secondaire
+			// (mais une tâche de contrôle de dossier doit avoir été ouverte sur le couple)
+
+			final TacheCriteria criteria = new TacheCriteria();
+			criteria.setContribuable(couple.getPrincipal());
+			final List<Tache> taches = tacheDAO.find(criteria);
+			assertNotNull(taches);
+			assertEquals(0, taches.size());
+		}
+		// vérification des tâches générées : pour elle
+		{
+			// toujours pas de tâche, car on ne sait pas sur quel contribuable mettre le for secondaire
+			// (mais une tâche de contrôle de dossier doit avoir été ouverte sur le couple)
+
+			final TacheCriteria criteria = new TacheCriteria();
+			criteria.setContribuable(couple.getConjoint());
+			final List<Tache> taches = tacheDAO.find(criteria);
+			assertNotNull(taches);
+			assertEquals(0, taches.size());
+		}
+		// vérification des tâches générées : pour le ménage
+		{
+			final TacheCriteria criteria = new TacheCriteria();
+			criteria.setContribuable(mc);
+			final List<Tache> taches = tacheDAO.find(criteria);
+			assertNotNull(taches);
+			assertEquals(1, taches.size());
+
+			final Tache tache = taches.get(0);
+			assertNotNull(tache);
+			assertEquals(TacheControleDossier.class, tache.getClass());
+		}
 	}
 
 	private List<Tache> genereChangementImposition(ModeImposition ancienMode, ModeImposition nouveauMode) {
