@@ -574,6 +574,12 @@ public class TacheServiceImpl implements TacheService, InitializingBean {
 			return; // pas de tâche sur les sourciers purs [UNIREG-1888]
 		}
 
+		// [UNIREG-2378] Les fors principaux HC ou HS ne donnent pas lieu à des générations de tâches
+		// d'ouverture de dossier ou d'envoi de DI
+		if (forFiscal.getTypeAutoriteFiscale() != TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
+			return;
+		}
+
 		switch (motifOuverture) {
 		case ARRIVEE_HC:
 		case MAJORITE:
