@@ -1217,7 +1217,7 @@ public class MetierServiceImpl implements MetierService {
 				final Integer noOfsEtendu = forMenage.getNumeroOfsAutoriteFiscale();
 				final TypeAutoriteFiscale typeAutoriteFiscale = forMenage.getTypeAutoriteFiscale();
 
-				final ModeImpositionResolver divorceResolver = new DivorceModeImpositionResolver(tiersService, menage, numeroEvenement);
+				final ModeImpositionResolver divorceResolver = new DivorceModeImpositionResolver(tiersService, numeroEvenement);
 
 				// on ouvre un nouveau for fiscal pour chaque tiers
 				createForFiscalPrincipal(date, principal, imposition, noOfsEtendu, typeAutoriteFiscale, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, divorceResolver, changeHabitantFlag);

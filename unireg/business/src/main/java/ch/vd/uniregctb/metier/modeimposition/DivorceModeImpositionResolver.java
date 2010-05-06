@@ -22,12 +22,8 @@ public class DivorceModeImpositionResolver extends TiersModeImpositionResolver {
 
 	private final Long numeroEvenement;
 	
-	@SuppressWarnings("unused")
-	private final MenageCommun menage;
-
-	public DivorceModeImpositionResolver(TiersService tiersService, MenageCommun menage, Long numeroEvenement) {
+	public DivorceModeImpositionResolver(TiersService tiersService, Long numeroEvenement) {
 		super(tiersService);
-		this.menage = menage;
 		this.numeroEvenement = numeroEvenement;
 	}
 
@@ -84,7 +80,7 @@ public class DivorceModeImpositionResolver extends TiersModeImpositionResolver {
 					Audit.info(numeroEvenement, String.format("Couple indigent : contribuable %1$s -> indigent", FormatNumeroHelper.numeroCTBToDisplay(contribuablePP.getNumero())));
 					break;
 				case MIXTE_137_1:
-					result.setModeImposition(ModeImposition.DEPENSE);
+					result.setModeImposition(ModeImposition.MIXTE_137_1);
 					Audit.info(numeroEvenement, String.format("Couple mixte 137 al. 1 : contribuable %1$s -> mixte 137 al. 1", FormatNumeroHelper.numeroCTBToDisplay(contribuablePP.getNumero())));
 					break;
 				case MIXTE_137_2:
