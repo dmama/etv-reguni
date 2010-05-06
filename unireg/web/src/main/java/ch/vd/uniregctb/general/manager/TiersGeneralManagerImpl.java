@@ -214,35 +214,7 @@ public class TiersGeneralManagerImpl implements TiersGeneralManager{
 			final PersonnePhysique pp = (PersonnePhysique) tiers;
 			if (pp.isHabitant()) {
 				final int year = RegDate.get().year();
-				final EnumAttributeIndividu[] enumValues = new EnumAttributeIndividu[] { EnumAttributeIndividu.ENFANTS, EnumAttributeIndividu.PARENTS };
-				final Individu ind = serviceCivilService.getIndividu(pp.getNumeroIndividu(), year, enumValues);
-				final Collection<Individu> listFiliations = ind.getEnfants();
-				for (Individu individu : listFiliations) {
-					PersonnePhysique habFils  = tiersDAO.getPPByNumeroIndividu(individu.getNoTechnique());
-					if (habFils == null) {
-						final String nomPrenom = tiersService.getNomPrenom(individu);
-						final String message = String.format("Le contribuable 'enfant' correspondant à l'individu '%s' (%d) n'existe pas.", nomPrenom, individu.getNoTechnique());
-						validationResults.addError(message);
-					}
-				}
-				final Individu mere = ind.getMere();
-				if (mere != null) {
-					final PersonnePhysique habMere  = tiersDAO.getPPByNumeroIndividu(mere.getNoTechnique());
-					if (habMere == null) {
-						final String nomPrenom = tiersService.getNomPrenom(mere);
-						final String message = String.format("Le contribuable 'mère' correspondant à l'individu '%s' (%d) n'existe pas.", nomPrenom, mere.getNoTechnique());
-						validationResults.addError(message);
-					}
-				}
-				final Individu pere = ind.getPere();
-				if (pere != null) {
-					final PersonnePhysique habPere  = tiersDAO.getPPByNumeroIndividu(pere.getNoTechnique());
-					if (habPere == null) {
-						final String nomPrenom = tiersService.getNomPrenom(pere);
-						final String message = String.format("Le contribuable 'père' correspondant à l'individu '%s' (%d) n'existe pas.", nomPrenom, pere.getNoTechnique());
-						validationResults.addError(message);
-					}
-				}
+				final Individu ind = serviceCivilService.getIndividu(pp.getNumeroIndividu(), year);
 				for (EtatCivil etatCivil : ind.getEtatsCivils()) {
 					if (etatCivil.getDateDebutValidite() == null){
 						final String message = String.format("Le contribuable possède un état civil (%s) sans date de début. Dans la mesure du possible, cette date a été estimée.",

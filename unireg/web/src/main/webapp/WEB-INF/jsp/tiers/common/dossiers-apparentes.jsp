@@ -31,10 +31,11 @@
 	</display:column>
 
 	<display:column sortable ="true" titleKey="label.numero.tiers" sortProperty="numero" >
-		<c:if test="${dossierApparente.annule}"><strike></c:if>
-		<a href="../tiers/visu.do?id=${dossierApparente.numero}&rid=${tiersGeneral.numero}"><unireg:numCTB
-			numero="${dossierApparente.numero}"></unireg:numCTB></a>
-		<c:if test="${dossierApparente.annule}"></strike></c:if>
+		<c:if test="${dossierApparente.numero != null}">
+			<c:if test="${dossierApparente.annule}"><strike></c:if>
+			<a href="../tiers/visu.do?id=${dossierApparente.numero}&rid=${tiersGeneral.numero}"><unireg:numCTB numero="${dossierApparente.numero}"></unireg:numCTB></a>
+			<c:if test="${dossierApparente.annule}"></strike></c:if>
+		</c:if>
 	</display:column>
 	
 	<display:column sortable ="true" titleKey="label.nom.raison">
@@ -48,15 +49,17 @@
 		<c:if test="${dossierApparente.annule}"></strike></c:if>
 	</display:column>
 	<display:column style="action">
-		<c:if test="${page == 'visu' }">
-			<unireg:raccourciConsulter link="../common/consult-log.do?height=200&width=800&nature=RapportEntreTiers&id=${dossierApparente.id}&TB_iframe=true&modal=true" thickbox="true" tooltip="Edition des logs"/>
-		</c:if>
-		<c:if test="${page == 'edit' }">
-			<c:if test="${!dossierApparente.annule}">
-			<c:if test="${((dossierApparente.typeRapportEntreTiers == 'PRESTATION_IMPOSABLE') && (command.allowedOnglet.DOS_TRA)) ||
-				((dossierApparente.typeRapportEntreTiers != 'APPARTENANCE_MENAGE') && (dossierApparente.typeRapportEntreTiers != 'PRESTATION_IMPOSABLE') && (command.allowedOnglet.DOS_NO_TRA))  && (dossierApparente.id != null)}">
-					<unireg:raccourciModifier link="../tiers/rapport.do?height=250&width=800&idRapport=${dossierApparente.id}&sens=${dossierApparente.sensRapportEntreTiers}&TB_iframe=true&modal=true" thickbox="true" tooltip="Edition de rapport"/>
-					<unireg:raccourciAnnuler onClick="javascript:annulerRapport(${dossierApparente.id});"/>
+		<c:if test="${dossierApparente.typeRapportEntreTiers != 'FILIATION'}">
+			<c:if test="${page == 'visu' }">
+				<unireg:raccourciConsulter link="../common/consult-log.do?height=200&width=800&nature=RapportEntreTiers&id=${dossierApparente.id}&TB_iframe=true&modal=true" thickbox="true" tooltip="Edition des logs"/>
+			</c:if>
+			<c:if test="${page == 'edit' }">
+				<c:if test="${!dossierApparente.annule}">
+				<c:if test="${((dossierApparente.typeRapportEntreTiers == 'PRESTATION_IMPOSABLE') && (command.allowedOnglet.DOS_TRA)) ||
+					((dossierApparente.typeRapportEntreTiers != 'APPARTENANCE_MENAGE') && (dossierApparente.typeRapportEntreTiers != 'PRESTATION_IMPOSABLE') && (command.allowedOnglet.DOS_NO_TRA))  && (dossierApparente.id != null)}">
+						<unireg:raccourciModifier link="../tiers/rapport.do?height=250&width=800&idRapport=${dossierApparente.id}&sens=${dossierApparente.sensRapportEntreTiers}&TB_iframe=true&modal=true" thickbox="true" tooltip="Edition de rapport"/>
+						<unireg:raccourciAnnuler onClick="javascript:annulerRapport(${dossierApparente.id});"/>
+					</c:if>
 				</c:if>
 			</c:if>
 		</c:if>
