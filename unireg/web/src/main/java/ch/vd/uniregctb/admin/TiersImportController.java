@@ -268,8 +268,8 @@ public class TiersImportController extends AbstractSimpleFormController {
 		}
 
 		// Tout s'est bien passé => Re-Indexation des données
-		globalIndexer.indexAllDatabase();
-		Audit.success("La base de données a été réindexée. Elle contient " + globalIndexer.getApproxDocCount() + " entrées");
+		final int count = globalIndexer.indexAllDatabase();
+		Audit.success("La base de données a été réindexée. Elle contient " + count + " entrées");
 	}
 
 	/**

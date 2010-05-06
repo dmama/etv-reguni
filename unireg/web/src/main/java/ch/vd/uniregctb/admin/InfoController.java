@@ -6,7 +6,7 @@ import ch.vd.service.sipf.wsdl.sipfbvrplus_v1.BvrDemande;
 import ch.vd.service.sipf.wsdl.sipfbvrplus_v1.BvrReponse;
 import ch.vd.uniregctb.common.ExceptionUtils;
 import ch.vd.uniregctb.common.HtmlHelper;
-import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
+import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
@@ -54,7 +54,7 @@ public class InfoController extends ParameterizableViewController implements Aja
 	// private static final Logger LOGGER = Logger.getLogger(InfoController.class);
 
 	private TiersDAO dao;
-	private GlobalTiersIndexer globalIndexer;
+	private GlobalTiersSearcher globalSearcher;
 	private UniregProperties uniregProperties;
 	private ServiceCivilService serviceCivilRaw;
 	private ServiceInfrastructureService serviceInfraRaw;
@@ -68,8 +68,8 @@ public class InfoController extends ParameterizableViewController implements Aja
 
 	private RollingInMemoryAppender inMemoryAppender;
 
-	public void setGlobalIndexer(GlobalTiersIndexer globalIndexer) {
-		this.globalIndexer = globalIndexer;
+	public void setGlobalSearcher(GlobalTiersSearcher globalSearcher) {
+		this.globalSearcher = globalSearcher;
 	}
 
 	public void setTiersDAO(TiersDAO dao) {
@@ -140,7 +140,7 @@ public class InfoController extends ParameterizableViewController implements Aja
 	private String getIndexCount() {
 		String indexCount;
 		try {
-			indexCount = String.valueOf(globalIndexer.getApproxDocCount());
+			indexCount = String.valueOf(globalSearcher.getApproxDocCount());
 		}
 		catch (Exception e) {
 			indexCount = e.getMessage();

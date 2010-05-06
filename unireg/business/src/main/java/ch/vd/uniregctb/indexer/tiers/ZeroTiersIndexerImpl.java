@@ -18,14 +18,6 @@ public class ZeroTiersIndexerImpl implements GlobalTiersIndexer {
 		return null;
 	}
 
-	public int getApproxDocCount() {
-		return 0;
-	}
-
-	public int getExactDocCount() {
-		return 0;
-	}
-
 	public int indexAllDatabase() throws IndexerException {
 		return 0;
 	}

@@ -68,14 +68,6 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer {
         globalIndex.overwriteIndex();
     }
 
-    public int getApproxDocCount() {
-        return globalIndex.getApproxDocCount();
-    }
-
-    public int getExactDocCount() {
-        return globalIndex.getExactDocCount();
-    }
-
     public void indexTiers(final long id) throws IndexerException {
         TransactionTemplate tmpl = new TransactionTemplate(transactionManager);
         tmpl.execute(new TransactionCallback() {
