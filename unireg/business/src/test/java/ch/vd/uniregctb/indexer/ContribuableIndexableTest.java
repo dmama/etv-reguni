@@ -148,7 +148,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		// Search
 		//assertContains(numCtb1.toString(), values.get(TiersIndexableData.NUMEROS));
 		assertContains("Maillard", values.getNomRaison());
-		assertContains(RegDateHelper.toIndexString(RegDate.get(1956, 1, 21)), values.getDateNaissance());
+		assertNull(values.getDateNaissance()); // un ménage-commun ne possède pas de date de naissance
 		assertContains(FormatNumeroHelper.formatAncienNumAVS("123.45.678"), values.getNumeroAssureSocial());
 		// Display
 		assertContains("Maillard", values.getNom1());
@@ -727,8 +727,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		//assertContains(numCtb2.toString(), values.getNumeros());
 		assertContains("Maillard", values.getNomRaison());
 		assertContains("Gallet", values.getNomRaison());
-		assertContains(RegDateHelper.toIndexString(RegDate.get(1956, 1, 21)), values.getDateNaissance());
-		assertContains(RegDateHelper.toIndexString(RegDate.get(1967, 12, 3)), values.getDateNaissance());
+		assertNull(values.getDateNaissance()); // un ménage-commun ne possède pas de date de naissance
 		assertContains(FormatNumeroHelper.formatAncienNumAVS("123.45.678"), values.getNumeroAssureSocial());
 		assertContains(FormatNumeroHelper.formatAncienNumAVS("987.65.432"), values.getNumeroAssureSocial());
 		// Display
@@ -779,8 +778,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		//assertContains(numCtb2.toString(), values.getNumeros());
 		assertContains("Maillard", values.getNomRaison());
 		assertContains("Gallet", values.getNomRaison());
-		assertContains(RegDateHelper.toIndexString(dateN1), values.getDateNaissance());
-		assertContains(RegDateHelper.toIndexString(dateN2), values.getDateNaissance());
+		assertNull(values.getDateNaissance()); // un ménage-commun ne possède pas de date de naissance
 		assertContains(FormatNumeroHelper.formatAncienNumAVS(noAVS1), values.getNumeroAssureSocial());
 		assertContains(FormatNumeroHelper.formatAncienNumAVS(noAVS2), values.getNumeroAssureSocial());
 		// Display

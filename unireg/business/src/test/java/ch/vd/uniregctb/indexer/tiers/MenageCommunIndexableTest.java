@@ -2,6 +2,7 @@ package ch.vd.uniregctb.indexer.tiers;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.BusinessTest;
+import ch.vd.uniregctb.indexer.IndexerFormatHelper;
 import ch.vd.uniregctb.tiers.*;
 import ch.vd.uniregctb.type.Sexe;
 import static org.junit.Assert.assertEquals;
@@ -12,6 +13,7 @@ import org.springframework.transaction.TransactionStatus;
 import java.util.Date;
 import java.util.List;
 
+@SuppressWarnings({"JavaDoc"})
 public class MenageCommunIndexableTest extends BusinessTest {
 
 	private TiersDAO dao;
@@ -42,9 +44,7 @@ public class MenageCommunIndexableTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		/*
-				   * Crée un ménage commun dont les rapports-entre-tiers sont annulés
-				   */
+		// Crée un ménage commun dont les rapports-entre-tiers sont annulés
 		doInNewTransaction(new TxCallback() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
@@ -81,9 +81,9 @@ public class MenageCommunIndexableTest extends BusinessTest {
 			}
 		});
 
-		assertIndexData("Maillard Philippe", "", ids.idHab1);
-		assertIndexData("Maillard-Gallet Gladys", "", ids.idHab2);
-		assertIndexData("Maillard Philippe", "Maillard-Gallet Gladys", ids.idMc);
+		assertIndexData("Maillard Philippe", "", dateN1, ids.idHab1);
+		assertIndexData("Maillard-Gallet Gladys", "", dateN2, ids.idHab2);
+		assertIndexData("Maillard Philippe", "Maillard-Gallet Gladys", null, ids.idMc);
 	}
 
 	/**
@@ -104,9 +104,7 @@ public class MenageCommunIndexableTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		/*
-				 * Crée un ménage commun dont les rapports-entre-tiers sont annulés
-				 */
+		// Crée un ménage commun dont les rapports-entre-tiers sont annulés
 		doInNewTransaction(new TxCallback() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
@@ -142,9 +140,9 @@ public class MenageCommunIndexableTest extends BusinessTest {
 			}
 		});
 
-		assertIndexData("Maillard Philippe", "", ids.idHab1);
-		assertIndexData("Casanova Giacomo", "", ids.idHab3);
-		assertIndexData("Maillard Philippe", "", ids.idMc);
+		assertIndexData("Maillard Philippe", "", dateN1, ids.idHab1);
+		assertIndexData("Casanova Giacomo", "", dateN3, ids.idHab3);
+		assertIndexData("Maillard Philippe", "", null, ids.idMc);
 	}
 
 	/**
@@ -168,9 +166,7 @@ public class MenageCommunIndexableTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		/*
-				 * Crée un ménage commun dont les rapports-entre-tiers sont annulés
-				 */
+		// Crée un ménage commun dont les rapports-entre-tiers sont annulés
 		doInNewTransaction(new TxCallback() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
@@ -223,10 +219,10 @@ public class MenageCommunIndexableTest extends BusinessTest {
 			}
 		});
 
-		assertIndexData("Maillard Philippe", "", ids.idHab1);
-		assertIndexData("Maillard-Gallet Gladys", "", ids.idHab2);
-		assertIndexData("Casanova Giacomo", "", ids.idHab3);
-		assertIndexData("Maillard Philippe", "Maillard-Gallet Gladys", ids.idMc);
+		assertIndexData("Maillard Philippe", "", dateN1, ids.idHab1);
+		assertIndexData("Maillard-Gallet Gladys", "", dateN2, ids.idHab2);
+		assertIndexData("Casanova Giacomo", "", dateN3, ids.idHab3);
+		assertIndexData("Maillard Philippe", "Maillard-Gallet Gladys", null, ids.idMc);
 	}
 
 	/**
@@ -250,9 +246,7 @@ public class MenageCommunIndexableTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		/*
-				 * Crée un ménage commun dont les rapports-entre-tiers sont annulés
-				 */
+		// Crée un ménage commun dont les rapports-entre-tiers sont annulés
 		doInNewTransaction(new TxCallback() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
@@ -308,13 +302,13 @@ public class MenageCommunIndexableTest extends BusinessTest {
 			}
 		});
 
-		assertIndexData("Maillard Philippe", "", ids.idHab1);
-		assertIndexData("Maillard-Gallet Gladys", "", ids.idHab2);
-		assertIndexData("Casanova Giacomo", "", ids.idHab3);
-		assertIndexData("Casanova Giacomo", "Maillard-Gallet Gladys", ids.idMc);
+		assertIndexData("Maillard Philippe", "", dateN1, ids.idHab1);
+		assertIndexData("Maillard-Gallet Gladys", "", dateN2, ids.idHab2);
+		assertIndexData("Casanova Giacomo", "", dateN3, ids.idHab3);
+		assertIndexData("Casanova Giacomo", "Maillard-Gallet Gladys", null, ids.idMc);
 	}
 
-	private void assertIndexData(String nom1, String nom2, long ctbId) {
+	private void assertIndexData(String nom1, String nom2, RegDate dateNaissance, long ctbId) {
 		TiersCriteria criteria = new TiersCriteria();
 		criteria.setNumero(ctbId);
 		final List<TiersIndexedData> resultats = globalTiersSearcher.search(criteria);
@@ -324,5 +318,6 @@ public class MenageCommunIndexableTest extends BusinessTest {
 		final TiersIndexedData data = resultats.get(0);
 		assertEquals(nom1, data.getNom1());
 		assertEquals(nom2, data.getNom2());
+		assertEquals(IndexerFormatHelper.objectToString(dateNaissance), data.getDateNaissance());
 	}
 }

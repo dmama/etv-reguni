@@ -160,7 +160,6 @@ public class MenageCommunIndexable extends ContribuableIndexable {
 		if (ppIndexable1 != null) {
 			final TiersIndexableData ppData = (TiersIndexableData) ppIndexable1.getIndexableData();
 
-			data.addDateNaissance(ppData.getDateNaissance());
 			data.addNomRaison(ppData.getNomRaison());
 			data.addAutresNom(ppData.getAutresNom());
 			data.addNumeroAssureSocial(ppData.getNumeroAssureSocial());
@@ -170,7 +169,6 @@ public class MenageCommunIndexable extends ContribuableIndexable {
 		if (ppIndexable2 != null) {
 			final TiersIndexableData ppData = (TiersIndexableData) ppIndexable2.getIndexableData();
 
-			data.addDateNaissance(ppData.getDateNaissance());
 			data.addNomRaison(ppData.getNomRaison());
 			data.addAutresNom(ppData.getAutresNom());
 			data.addNumeroAssureSocial(ppData.getNumeroAssureSocial());
