@@ -836,10 +836,12 @@ public class PeriodeImpositionTest extends MetierTest {
 			// leur déclaration d’impôt est remplacée (= elle est optionnelle, en fait, voir exemples à la fin de la spécification) par une
 			// note à l’administration fiscale cantonale de leur domicile.
 			// --> par analogie, déclaration optionnelle à l'arrivée
+			// [UNIREG-2328] l'analogie est fausse, en cas d'arrivée de hors-canton, l'administration fiscale responsable est justement l'administration
+			// vaudoise : la déclaration n'est donc ni optionnelle ni remplacée par une note.
 			final List<PeriodeImposition> list = PeriodeImposition.determine(ctb, 2008);
 			assertNotNull(list);
 			assertEquals(1, list.size());
-			assertPeriodeImposition(dateArrivee, date(2008, 12, 31), TypeContribuableDI.VAUDOIS_ORDINAIRE_VAUD_TAX, TypeAdresseRetour.CEDI, true, true, list.get(0));
+			assertPeriodeImposition(dateArrivee, date(2008, 12, 31), TypeContribuableDI.VAUDOIS_ORDINAIRE_VAUD_TAX, TypeAdresseRetour.CEDI, false, false, list.get(0));
 		}
 
 		// 2009

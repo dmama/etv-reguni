@@ -256,11 +256,12 @@ public class PeriodeImposition implements CollatableDateRange {
 			boolean optionnelle = false;
 			boolean remplaceeParNote = false;
 
-			if (forsPeriode.principal.getModeImposition() == ModeImposition.MIXTE_137_2 && (mixte.getMotifFractFin() == MotifFor.DEPART_HC || mixte.getMotifFractDebut() == MotifFor.ARRIVEE_HC)) {
+			if (forsPeriode.principal.getModeImposition() == ModeImposition.MIXTE_137_2 && mixte.getMotifFractFin() == MotifFor.DEPART_HC) {
 				// [UNIREG-1742] Cas des contribuables imposés selon le mode mixte, partis dans un autre canton durant l’année et n’ayant aucun
 				// rattachement économique -> bien qu’ils soient assujettis de manière illimitée jusqu'au dernier jour du mois de leur départ,
 				// leur déclaration d’impôt est remplacée (= elle est optionnelle, en fait, voir exemples à la fin de la spécification) par une
 				// note à l’administration fiscale cantonale de leur domicile.
+				// [UNIREG-2328] A noter que cela ne s'applique pas aux arrivées de hors-canton : dans ce cas l'administration fiscale responsable est l'administration vaudoise.
 				optionnelle = true;
 				remplaceeParNote = true;
 			}
