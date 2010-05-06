@@ -186,7 +186,7 @@ public class Ec_2000_03_Deces_Membre_Marie_Depense_Surv_Suisse_Scenario extends 
 		assertNotNull(ffpSurvivant, "Le survivant n'a pas de for principal");
 		assertEquals(MotifFor.VEUVAGE_DECES, ffpSurvivant.getMotifOuverture(), "Le for principal du survivant devrait être ouvert pour cause de veuvage/décès");
 		assertEquals(dateDeces.getOneDayAfter(), ffpSurvivant.getDateDebut(), "Le for principal du survivant devrait être ouvert au lendemain du décès");
-		assertEquals(ModeImposition.ORDINAIRE, ffpSurvivant.getModeImposition(), "Le mode d'imposition du survivant devrait être ordinaire");
+		assertEquals(ModeImposition.DEPENSE, ffpSurvivant.getModeImposition(), "Le mode d'imposition du survivant devrait être dépense");
 
 		// [UNIREG-823] situation de famille
 		{

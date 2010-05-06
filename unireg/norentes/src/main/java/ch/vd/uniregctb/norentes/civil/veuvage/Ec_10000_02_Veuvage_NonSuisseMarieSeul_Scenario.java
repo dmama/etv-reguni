@@ -133,7 +133,7 @@ public class Ec_10000_02_Veuvage_NonSuisseMarieSeul_Scenario extends EvenementCi
 			ForFiscalPrincipal ffp = mikkel.getDernierForFiscalPrincipal();
 			assertNotNull(ffp, "For principal de l'Habitant " + mikkel.getNumero() + " null");
 			assertNull(ffp.getDateFin(), "Le for principal de l'habitant est fermé");
-			ModeImposition expected = ModeImposition.MIXTE_137_2;
+			ModeImposition expected = ModeImposition.MIXTE_137_1;
 			assertEquals(expected, ffp.getModeImposition(), "L'habitant devrait être en mode " + expected.texte());
 		}
 
