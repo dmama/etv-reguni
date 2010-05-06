@@ -67,7 +67,7 @@ public class ListesNominativesProcessor extends ListesProcessor<ListesNominative
                 return new ListesNominativesResults(dateTraitement, nbThreads, adressesIncluses, avecContribuables, avecDebiteurs, tiersService, adresseService, serviceCivilService);
             }
 
-            public ListesNominativesThread createTread(LinkedBlockingQueue<List<Long>> queue, RegDate dateTraitement, StatusManager status,
+            public ListesNominativesThread createThread(LinkedBlockingQueue<List<Long>> queue, RegDate dateTraitement, StatusManager status,
                                                        AtomicInteger compteur, HibernateTemplate hibernateTemplate) {
                 return new ListesNominativesThread(queue,
                         dateTraitement,

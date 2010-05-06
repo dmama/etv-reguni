@@ -60,7 +60,7 @@ public class ListeContribuablesResidentsSansForVaudoisProcessor extends ListesPr
 		        return new ListeContribuablesResidentsSansForVaudoisResults(dateTraitement, nbThreads, tiersService, adresseService);
 		    }
 
-		    public ListeContribuablesResidentsSansForVaudoisThread createTread(LinkedBlockingQueue<List<Long>> queue, RegDate dateTraitement, StatusManager status,
+		    public ListeContribuablesResidentsSansForVaudoisThread createThread(LinkedBlockingQueue<List<Long>> queue, RegDate dateTraitement, StatusManager status,
 		                                               AtomicInteger compteur, HibernateTemplate hibernateTemplate) {
 		        return new ListeContribuablesResidentsSansForVaudoisThread(queue, dateTraitement, nbThreads, status, compteur, transactionManager, hibernateTemplate, tiersDAO, tiersService, adresseService, infraService, serviceCivilService);
 		    }

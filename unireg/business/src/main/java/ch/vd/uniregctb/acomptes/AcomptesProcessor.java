@@ -64,7 +64,7 @@ public class AcomptesProcessor extends ListesProcessor<AcomptesResults, Acomptes
 				return new AcomptesResults(dateTraitement, nbThreads, annee, tiersService, adresseService);
 			}
 
-			public AcomptesThread createTread(LinkedBlockingQueue<List<Long>> queue, RegDate dateTraitement, StatusManager status, AtomicInteger compteur, HibernateTemplate hibernateTemplate) {
+			public AcomptesThread createThread(LinkedBlockingQueue<List<Long>> queue, RegDate dateTraitement, StatusManager status, AtomicInteger compteur, HibernateTemplate hibernateTemplate) {
 				return new AcomptesThread(queue, dateTraitement, nbThreads, annee, serviceCivilService, tiersService, adresseService,
 											status, compteur, transactionManager, tiersDAO, hibernateTemplate);
 			}

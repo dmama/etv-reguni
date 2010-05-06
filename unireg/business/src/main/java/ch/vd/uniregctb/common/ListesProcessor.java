@@ -42,7 +42,7 @@ public abstract class ListesProcessor<R extends ListesResults<R>, T extends List
 		/**
 		 * Crée une nouvelle instance de thread spécialisé
 		 */
-		T createTread (LinkedBlockingQueue<List<Long>> queue, RegDate dateTraitement, StatusManager status, AtomicInteger compteur, HibernateTemplate hibernateTemplate);
+		T createThread(LinkedBlockingQueue<List<Long>> queue, RegDate dateTraitement, StatusManager status, AtomicInteger compteur, HibernateTemplate hibernateTemplate);
 	}
 
 	/**
@@ -78,7 +78,7 @@ public abstract class ListesProcessor<R extends ListesResults<R>, T extends List
 				final LinkedBlockingQueue<List<Long>> queue = new LinkedBlockingQueue<List<Long>>();
 				final List<T> threads = new ArrayList<T>(nbThreads);
 				for (int i = 0; i < nbThreads; i++) {
-					final T thread = customizer.createTread(queue, dateTraitement, status, compteur, hibernateTemplate);
+					final T thread = customizer.createThread(queue, dateTraitement, status, compteur, hibernateTemplate);
 					threads.add(thread);
 					thread.setName(String.format("%s-%d", thread.getClass().getSimpleName(), i));
 					thread.start();
