@@ -1,16 +1,16 @@
 package ch.vd.uniregctb.tiers.manager;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import ch.vd.registre.base.date.NullDateBehavior;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.tiers.*;
 import org.apache.log4j.Logger;
 import org.springframework.context.MessageSource;
@@ -98,8 +98,6 @@ public class TiersManager implements MessageSourceAware {
 
 	protected ServiceCivilService serviceCivilService;
 
-	private final Calendar calToday = new GregorianCalendar();
-
 	protected TiersDAO tiersDAO;
 
 	private AdresseTiersDAO adresseTiersDAO;
@@ -156,6 +154,43 @@ public class TiersManager implements MessageSourceAware {
 		return entrepriseView;
 	}
 
+	private RapportView createRapportViewPourFilliation(Individu reference, Individu autre, SensRapportEntreTiers sens) {
+		final PersonnePhysique habitant = tiersDAO.getPPByNumeroIndividu(autre.getNoTechnique());
+		final RapportView rapportView = new RapportView();
+		rapportView.setSensRapportEntreTiers(sens);
+		rapportView.setTypeRapportEntreTiers(TypeRapportEntreTiersWeb.FILIATION);
+		if (habitant != null) {
+			rapportView.setNumero(habitant.getNumero());
+		}
+
+		final String nomBrut = tiersService.getNomPrenom(autre);
+		final String nom;
+		if (autre.getDateDeces() != null) {
+			if (autre.isSexeMasculin()) {
+				nom = String.format("%s, défunt", nomBrut);
+			}
+			else {
+				nom = String.format("%s, défunte", nomBrut);
+			}
+		}
+		else {
+			nom = nomBrut;
+		}
+		rapportView.setNomCourrier1(nom);
+
+		// le rapport est terminé au décès de l'un des membres
+		if (reference.getDateDeces() != null || autre.getDateDeces() != null) {
+			final RegDate dateFinRapport = RegDateHelper.minimum(reference.getDateDeces(), autre.getDateDeces(), NullDateBehavior.LATEST);
+			rapportView.setDateFin(dateFinRapport);
+		}
+
+		// le rapport démarre à la naissance du dernier membre
+		final RegDate dateDebutRapport = RegDateHelper.maximum(reference.getDateNaissance(), autre.getDateNaissance(), NullDateBehavior.EARLIEST);
+		rapportView.setDateDebut(dateDebutRapport);
+
+		return rapportView;
+	}
+
 	/**
 	 * Recupère les rapports de filiation de type PARENT ou ENFANT
 	 *
@@ -164,58 +199,31 @@ public class TiersManager implements MessageSourceAware {
 	 * @return
 	 */
 	protected List<RapportView> getRapportsFiliation(PersonnePhysique habitant) {
-		List<RapportView> rapportsView = new ArrayList<RapportView>();
+		final List<RapportView> rapportsView = new ArrayList<RapportView>();
 		Assert.notNull(habitant.getNumeroIndividu(), "La personne physique n'a pas de numéro d'individu connu");
 
-		int year = getCalToday().get(Calendar.YEAR);
+		final int year = RegDate.get().year();
 
-		EnumAttributeIndividu[] enumValues = new EnumAttributeIndividu[]{
-				EnumAttributeIndividu.ENFANTS, EnumAttributeIndividu.PARENTS
-		};
-		Individu ind = getServiceCivilService().getIndividu(habitant.getNumeroIndividu(), year, enumValues);
-		Collection<Individu> listFiliations = ind.getEnfants();
-		Iterator<Individu> it = listFiliations.iterator();
-		for (int i = 0; i < listFiliations.size(); i++) {
-			Individu individu = it.next();
-			PersonnePhysique habFils = tiersDAO.getPPByNumeroIndividu(individu.getNoTechnique());
-			if (habFils != null) {
-				RapportView rapportView = new RapportView();
-				rapportView.setSensRapportEntreTiers(SensRapportEntreTiers.OBJET);
-				rapportView.setTypeRapportEntreTiers(TypeRapportEntreTiersWeb.FILIATION);
-				rapportView.setNumero(habFils.getNumero());
-				rapportView.setNomCourrier1(tiersService.getNomPrenom(individu));
-				rapportView.setDateDebut(RegDate.asJavaDate(individu.getDateNaissance()));
-				rapportsView.add(rapportView);
-			}
+		final EnumAttributeIndividu[] enumValues = new EnumAttributeIndividu[] { EnumAttributeIndividu.ENFANTS, EnumAttributeIndividu.PARENTS };
+		final Individu ind = getServiceCivilService().getIndividu(habitant.getNumeroIndividu(), year, enumValues);
+
+		// enfants
+		final Collection<Individu> listFiliations = ind.getEnfants();
+		for (Individu enfant : listFiliations) {
+			final RapportView rapportView = createRapportViewPourFilliation(ind, enfant, SensRapportEntreTiers.OBJET);
+			rapportsView.add(rapportView);
 		}
 
-		Individu mere = ind.getMere();
+		// parents
+		final Individu mere = ind.getMere();
 		if (mere != null) {
-			PersonnePhysique habMere = tiersDAO.getPPByNumeroIndividu(mere.getNoTechnique());
-			if (habMere != null) {
-				RapportView rapportMereView = new RapportView();
-				rapportMereView.setNumero(habitant.getNumero());
-				rapportMereView.setSensRapportEntreTiers(SensRapportEntreTiers.SUJET);
-				rapportMereView.setTypeRapportEntreTiers(TypeRapportEntreTiersWeb.FILIATION);
-				rapportMereView.setNumero(habMere.getNumero());
-				rapportMereView.setNomCourrier1(tiersService.getNomPrenom(mere));
-				rapportMereView.setDateDebut(RegDate.asJavaDate(ind.getDateNaissance()));
-				rapportsView.add(rapportMereView);
-			}
+			final RapportView rapportView = createRapportViewPourFilliation(ind, mere, SensRapportEntreTiers.SUJET);
+			rapportsView.add(rapportView);
 		}
-		Individu pere = ind.getPere();
+		final Individu pere = ind.getPere();
 		if (pere != null) {
-			PersonnePhysique habPere = tiersDAO.getPPByNumeroIndividu(pere.getNoTechnique());
-			if (habPere != null) {
-				RapportView rapportPereView = new RapportView();
-				rapportPereView.setNumero(habitant.getNumero());
-				rapportPereView.setSensRapportEntreTiers(SensRapportEntreTiers.SUJET);
-				rapportPereView.setTypeRapportEntreTiers(TypeRapportEntreTiersWeb.FILIATION);
-				rapportPereView.setNumero(habPere.getNumero());
-				rapportPereView.setNomCourrier1(tiersService.getNomPrenom(pere));
-				rapportPereView.setDateDebut(RegDate.asJavaDate(ind.getDateNaissance()));
-				rapportsView.add(rapportPereView);
-			}
+			final RapportView rapportView = createRapportViewPourFilliation(ind, pere, SensRapportEntreTiers.SUJET);
+			rapportsView.add(rapportView);
 		}
 
 		return rapportsView;
@@ -1568,10 +1576,6 @@ public class TiersManager implements MessageSourceAware {
 
 	public void setHostPersonneMoraleService(HostPersonneMoraleService hostPersonneMoraleService) {
 		this.hostPersonneMoraleService = hostPersonneMoraleService;
-	}
-
-	public Calendar getCalToday() {
-		return calToday;
 	}
 
 	public AdresseManager getAdresseManager() {
