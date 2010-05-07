@@ -263,8 +263,8 @@ public class TacheServiceImpl implements TacheService, InitializingBean {
 			// [UNIREG-1112] Annule toutes les déclarations d'impôt à partir de l'année de décès (car elles n'ont pas lieu d'être)
 			genereTachesAnnulationDI(contribuable, dateFermeture.year() + 1);
 			//[UNIREG-2104] Génère la tache d'envoi de DI assigné à l'ACI
-			CollectiviteAdministrative aci = tiersService.getCollectiviteAdministrative(ServiceInfrastructureService.noACI);
-			genereTacheEnvoiDISuiteFinAssujettissement(contribuable,dateFermeture,dateFermeture.addDays(30),aci);
+			CollectiviteAdministrative aciSuccessions = tiersService.getCollectiviteAdministrative(ServiceInfrastructureService.noACISuccessions);
+			genereTacheEnvoiDISuiteFinAssujettissement(contribuable,dateFermeture,dateFermeture.addDays(30),aciSuccessions);
 
 			break;
 		case SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT:

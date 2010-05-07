@@ -146,6 +146,19 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 		return result;
 	}
 
+		public CollectiviteAdministrative getACISuccessions() throws InfrastructureException {
+		CollectiviteAdministrative result;
+		long time = tracing.start();
+		try {
+			result = target.getACISuccessions();
+		}
+		finally {
+			tracing.end(time);
+		}
+
+		return result;
+	}
+
 	public CollectiviteAdministrative getCEDI() throws InfrastructureException {
 		CollectiviteAdministrative result;
 		long time = tracing.start();

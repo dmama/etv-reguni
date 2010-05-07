@@ -142,6 +142,10 @@ public class ProxyServiceInfrastructureService implements ServiceInfrastructureS
 		return target.getACI();
 	}
 
+	public CollectiviteAdministrative getACISuccessions() throws InfrastructureException {
+		return target.getACISuccessions();
+	}
+
 	public CollectiviteAdministrative getCEDI() throws InfrastructureException {
 		return target.getCEDI();
 	}

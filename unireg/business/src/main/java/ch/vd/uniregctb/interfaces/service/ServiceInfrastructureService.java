@@ -23,6 +23,7 @@ public interface ServiceInfrastructureService {
 	public static final String SERVICE_NAME = "ServiceInfra";
 
 	public final static int noACI = 22;
+	public final static int noACISuccessions = 1471;
 	public final static int noCEDI = 1012;
 	public final static int noTuteurGeneral = 1013;
 	public final static int noCAT = 1341;
@@ -69,6 +70,12 @@ public interface ServiceInfrastructureService {
 	 * @throws Exception
 	 */
 	public CollectiviteAdministrative getACI() throws InfrastructureException;
+
+	/**
+	 * @return la collectivite administrative  SUCCESSION, service de l'ACI
+	 * @throws Exception
+	 */
+	public CollectiviteAdministrative getACISuccessions() throws InfrastructureException;
 
 	/**
 	 * @return la collectivite administrative du CEDI
