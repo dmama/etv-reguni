@@ -53,6 +53,7 @@ public class ServiceInfrastructureServiceImpl extends AbstractServiceInfrastruct
 	private Pays suisse;
 	private Canton vaud;
 	private CollectiviteAdministrative aci;
+	private CollectiviteAdministrative aciSuccessions;
 	private CollectiviteAdministrative cedi;
 	private CollectiviteAdministrative cat;
 
@@ -525,6 +526,18 @@ public class ServiceInfrastructureServiceImpl extends AbstractServiceInfrastruct
 			}
 		}
 		return aci;
+	}
+
+		public CollectiviteAdministrative getACISuccessions() throws InfrastructureException {
+		if (aciSuccessions == null) {
+			try {
+				aciSuccessions = CollectiviteAdministrativeWrapper.get(serviceInfrastructure.getCollectivite(noACISuccessions));
+			}
+			catch (RemoteException e) {
+				throw new InfrastructureException("Acces a la collectivite administrative", e);
+			}
+		}
+		return aciSuccessions;
 	}
 
 	/**

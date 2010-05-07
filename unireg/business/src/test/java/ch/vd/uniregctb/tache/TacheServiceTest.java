@@ -455,10 +455,10 @@ public class TacheServiceTest extends BusinessTest {
 			}
 		});
 
-		final CollectiviteAdministrative aci = (CollectiviteAdministrative) doInNewTransaction(new TxCallback() {
+		final CollectiviteAdministrative aciSuccessions = (CollectiviteAdministrative) doInNewTransaction(new TxCallback() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				return  tiersService.getOrCreateCollectiviteAdministrative(serviceInfra.getACI().getNoColAdm());
+				return  tiersService.getOrCreateCollectiviteAdministrative(serviceInfra.getACISuccessions().getNoColAdm());
 
 			}
 		});
@@ -504,7 +504,7 @@ public class TacheServiceTest extends BusinessTest {
 		// [UNIREG-1305]
 		// la tâche d'envoi de DI
 		 assertTache(TypeEtatTache.EN_INSTANCE, dateDeces.addDays(30), date(2008, 1, 1), dateDeces, TypeContribuable.VAUDOIS_ORDINAIRE,
-				TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,TypeAdresseRetour.ACI,aci, tacheEnvoi);
+				TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,TypeAdresseRetour.ACI,aciSuccessions, tacheEnvoi);
 
 		// la tâche de transmission de dossier
 		assertNotNull(tacheTransmission);

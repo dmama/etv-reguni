@@ -244,6 +244,14 @@ public abstract class MockServiceInfrastructureService extends AbstractServiceIn
 		return MockCollectiviteAdministrative.ACI;
 	}
 
+	/* (non-Javadoc)
+	 *
+	 * @see ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService#getACISucession()
+	 */
+	public CollectiviteAdministrative getACISuccessions() throws InfrastructureException {
+		return MockCollectiviteAdministrative.ACISUCCESSIONS;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 *
