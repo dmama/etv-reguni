@@ -14,6 +14,7 @@
 
 	<appender name="LOGFILE" class="org.apache.log4j.FileAppender">
 		<param name="Threshold" value="DEBUG" />
+		<param name="Append" value="false" />
 		<param name="File" value="unireg-ut.log"/>
 		<layout class="org.apache.log4j.PatternLayout">
 			<param name="ConversionPattern" value="[ut] %-5p [%d{yyyy-MM-dd HH:mm:ss.SSS}] %c{1}.%M(%L) | %m%n" />
@@ -23,6 +24,10 @@
 	<logger name="ch.vd.uniregctb">
 		<level value="DEBUG" />
 	</logger>
+
+	<!--<logger name="ch.vd.uniregctb.indexer.async">-->
+		<!--<level value="TRACE" />-->
+	<!--</logger>-->
 
 	<logger name="net.sf.ehcache">
 		<level value="ERROR" />
@@ -51,6 +56,10 @@
 
 	<logger name="org.springframework">
 		<level value="INFO" />
+	</logger>
+
+	<logger name="org.springframework.test.jdbc.SimpleJdbcTestUtils">
+		<level value="WARN" />
 	</logger>
 
 	<root>
