@@ -87,6 +87,8 @@ public class Ec_48000_02_CorrectionIdentificationNonHabitant_Scenario extends Ev
 
 	@Check(id=1, descr="Vérifie que l'habitant Maurice a bien été indexé")
 	public void check1() {
+
+		globalIndexer.sync();
 		{
 			final PersonnePhysique momo = tiersDAO.getPPByNumeroIndividu(noIndMomo);
 			Assert.isTrue(!momo.isHabitant(), "Maurice devrait être non-habitant");
@@ -128,6 +130,8 @@ public class Ec_48000_02_CorrectionIdentificationNonHabitant_Scenario extends Ev
 
 	@Check(id=2, descr="Vérifie que le numéro AVS a été mise à jour dans l'indexeur et dans le tiers")
 	public void check2() throws Exception {
+
+		globalIndexer.sync();
 		{
 			final TiersCriteria criteria = new TiersCriteria();
 			criteria.setNumeroAVS(avsNouveau);

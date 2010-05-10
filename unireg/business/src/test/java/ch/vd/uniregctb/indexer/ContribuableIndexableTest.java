@@ -874,6 +874,10 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 			throw new NotImplementedException();
 		}
 
+		public Long getNumeroPPByNumeroIndividu(Long numeroIndividu, boolean doNotAutoFlush) {
+			throw new NotImplementedException();
+		}
+
 		public PersonnePhysique getHabitantByNumeroIndividu(Long numeroIndividu) {
 			throw new NotImplementedException();
 		}

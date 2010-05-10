@@ -19,14 +19,6 @@ public abstract class BusinessItTest extends AbstractBusinessTest {
 
 	//private final static Logger LOGGER = Logger.getLogger(AbstractBusinessItTest.class);
 
-	protected GlobalTiersIndexer globalTiersIndexer;
-
-	@Override
-	public void onSetUp() throws Exception {
-		globalTiersIndexer = getBean(GlobalTiersIndexer.class, "globalTiersIndexer");
-		super.onSetUp();
-	}
-
 	/*
 	@BeforeClass
 	public static void initEnv() {
@@ -34,19 +26,6 @@ public abstract class BusinessItTest extends AbstractBusinessTest {
 		System.getProperties().setProperty(Context.PROVIDER_URL, "t3://localhost:7001");
 	}
 	*/
-
-	@Override
-	protected void removeIndexData() throws Exception {
-		globalTiersIndexer.overwriteIndex();
-	}
-
-	/**
-	 * @throws Exception
-	 */
-	@Override
-	protected void indexData() throws Exception {
-		globalTiersIndexer.indexAllDatabaseAsync(null, 1, Mode.FULL, false);
-	}
 
 	private static final Pattern valiPattern = Pattern.compile("( *---.{4}-)");
 

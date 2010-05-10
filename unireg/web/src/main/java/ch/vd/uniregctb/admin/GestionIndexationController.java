@@ -148,7 +148,7 @@ public class GestionIndexationController extends AbstractSimpleFormController {
 				idAsString = FormatNumeroHelper.removeSpaceAndDash(idAsString);
 				long id = Long.parseLong(idAsString);
 				LOGGER.info("Demande de réindexation manuelle du tiers n° " + id);
-				tiersIndexer.indexTiers(id);
+				tiersIndexer.schedule(id);
 				return new ModelAndView(new RedirectView("/tiers/visu.do?id=" + id, true));
 			}
 		}

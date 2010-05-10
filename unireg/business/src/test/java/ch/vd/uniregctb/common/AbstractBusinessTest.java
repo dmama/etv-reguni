@@ -5,6 +5,8 @@ import ch.vd.uniregctb.adresse.AdresseEtrangere;
 import ch.vd.uniregctb.adresse.AdresseSuisse;
 import ch.vd.uniregctb.declaration.*;
 import ch.vd.uniregctb.evenement.EvenementCivilUnitaire;
+import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
+import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.uniregctb.interfaces.model.Pays;
 import ch.vd.uniregctb.interfaces.model.mock.MockCollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
@@ -52,14 +54,15 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 
 	private boolean wantIndexation = false;
 	protected TiersService tiersService;
-
-	protected abstract void indexData() throws Exception;
-
-	protected abstract void removeIndexData() throws Exception;
+	protected GlobalTiersIndexer globalTiersIndexer;
+	protected GlobalTiersSearcher globalTiersSearcher;
 
 	@Override
 	protected void runOnSetUp() throws Exception {
 		tiersService = getBean(TiersService.class, "tiersService");
+		globalTiersIndexer = getBean(GlobalTiersIndexer.class, "globalTiersIndexer");
+		globalTiersSearcher = getBean(GlobalTiersSearcher.class, "globalTiersSearcher");
+		globalTiersIndexer.setOnTheFlyIndexation(wantIndexation);
 		super.runOnSetUp();
 	}
 
@@ -67,7 +70,9 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 	protected void truncateDatabase() throws Exception {
 		super.truncateDatabase();
 
-		removeIndexData();
+		if (wantIndexation) {
+			removeIndexData();
+		}
 	}
 
 	@Override
@@ -81,6 +86,21 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 
 	public void setWantIndexation(boolean wantIndexation) {
 		this.wantIndexation = wantIndexation;
+		
+		if (globalTiersIndexer != null) {
+			globalTiersIndexer.setOnTheFlyIndexation(wantIndexation);
+		}
+	}
+
+	protected void indexData() throws Exception {
+		// globalTiersIndexer.indexAllDatabase();
+		// Si on Index en ASYNC (on créée des Threads) tout va bien
+		// Sinon, avec indexAllDb(), il y a des problemes de OptimisticLock...
+		globalTiersIndexer.indexAllDatabaseAsync(null, 1, GlobalTiersIndexer.Mode.FULL, false);
+	}
+
+	protected void removeIndexData() throws Exception {
+		globalTiersIndexer.overwriteIndex();
 	}
 
 	protected abstract class TestHibernateCallback implements HibernateCallback {

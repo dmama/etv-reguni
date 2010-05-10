@@ -113,6 +113,8 @@ public class ChangementNomHandlerTest extends AbstractEvenementHandlerTest {
 			}
 		});
 
+		indexer.sync();
+
 		{
 			// on cherche de nouveau
 			List<TiersIndexedData> l = searcher.search(criteria);
@@ -209,6 +211,8 @@ public class ChangementNomHandlerTest extends AbstractEvenementHandlerTest {
 				return null;
 			}
 		});
+
+		indexer.sync();
 
 		{
 			// on cherche de nouveau

@@ -17,6 +17,10 @@ public class MenageCommunIndexableTest extends BusinessTest {
 	private TiersDAO dao;
 	private TiersService tiersService;
 
+	public MenageCommunIndexableTest() {
+		setWantIndexation(true);
+	}
+
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
@@ -81,6 +85,8 @@ public class MenageCommunIndexableTest extends BusinessTest {
 			}
 		});
 
+		globalTiersIndexer.sync();
+
 		assertIndexData("Maillard Philippe", "", ids.idHab1);
 		assertIndexData("Maillard-Gallet Gladys", "", ids.idHab2);
 		assertIndexData("Maillard Philippe", "Maillard-Gallet Gladys", ids.idMc);
@@ -141,6 +147,8 @@ public class MenageCommunIndexableTest extends BusinessTest {
 				return null;
 			}
 		});
+
+		globalTiersIndexer.sync();
 
 		assertIndexData("Maillard Philippe", "", ids.idHab1);
 		assertIndexData("Casanova Giacomo", "", ids.idHab3);
@@ -222,6 +230,8 @@ public class MenageCommunIndexableTest extends BusinessTest {
 				return null;
 			}
 		});
+
+		globalTiersIndexer.sync();
 
 		assertIndexData("Maillard Philippe", "", ids.idHab1);
 		assertIndexData("Maillard-Gallet Gladys", "", ids.idHab2);
@@ -308,6 +318,8 @@ public class MenageCommunIndexableTest extends BusinessTest {
 			}
 		});
 
+		globalTiersIndexer.sync();
+		
 		assertIndexData("Maillard Philippe", "", ids.idHab1);
 		assertIndexData("Maillard-Gallet Gladys", "", ids.idHab2);
 		assertIndexData("Casanova Giacomo", "", ids.idHab3);

@@ -69,8 +69,6 @@ public abstract class WebTest extends AbstractBusinessTest {
 	 */
 	protected HttpServletResponse response;
 
-	protected GlobalTiersIndexer globalTiersIndexer;
-
 	protected ProxyServicePM servicePM;
 	protected ProxyServiceCivil serviceCivil;
 	protected ProxyServiceInfrastructureService serviceInfra;
@@ -82,8 +80,6 @@ public abstract class WebTest extends AbstractBusinessTest {
 	 */
 	@Override
 	public void onSetUp() throws Exception {
-
-		globalTiersIndexer = getBean(GlobalTiersIndexer.class, "globalTiersIndexer");
 
 		super.onSetUp();
 
@@ -153,19 +149,6 @@ public abstract class WebTest extends AbstractBusinessTest {
 			serviceInfra.tearDown();
 			throw e;
 		}
-	}
-
-	@Override
-	protected void removeIndexData() throws Exception {
-		globalTiersIndexer.overwriteIndex();
-	}
-
-	/**
-	 * @throws Exception
-	 */
-	@Override
-	protected void indexData() throws Exception {
-		globalTiersIndexer.indexAllDatabaseAsync(null, 1, Mode.FULL, false);
 	}
 
 	/**

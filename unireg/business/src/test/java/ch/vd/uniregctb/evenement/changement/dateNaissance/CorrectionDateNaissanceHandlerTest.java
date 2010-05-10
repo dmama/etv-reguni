@@ -115,6 +115,8 @@ public class CorrectionDateNaissanceHandlerTest extends AbstractEvenementHandler
 			}
 		});
 
+		indexer.sync();
+
 		{
 			// on cherche de nouveau
 			List<TiersIndexedData> l = searcher.search(criteria);
@@ -256,6 +258,8 @@ public class CorrectionDateNaissanceHandlerTest extends AbstractEvenementHandler
 				return null;
 			}
 		});
+
+		indexer.sync();
 
 		// Vérifie que la date de naissance à bien été corrigée (= cachée sur la personne physique) et que la personne physique n'est plus
 		// flaggée comme dirty.

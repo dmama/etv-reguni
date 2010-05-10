@@ -99,6 +99,8 @@ public class EvenementCivilTest extends BusinessTest {
 			}
 		});
 
+		globalTiersIndexer.sync();		
+
 		// On vérifie que le tiers est bien présent dans le cache
 		assertNomIndividu("Jacquouille", "Jean", cache, jeanNoInd);
 
@@ -172,6 +174,8 @@ public class EvenementCivilTest extends BusinessTest {
 				assertNotNull(evsRegroupes);
 				assertEquals(1, evsRegroupes.size());
 				assertEquals(EtatEvenementCivil.TRAITE, evsRegroupes.get(0).getEtat());
+
+				globalTiersIndexer.sync();
 
 				// On vérifie que le tiers a bien été mis-à-jour dans l'indexeur ...
 				assertNomIndexer("Jacquard", "Jean", jeanId);

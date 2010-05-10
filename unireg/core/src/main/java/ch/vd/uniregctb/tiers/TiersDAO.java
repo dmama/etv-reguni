@@ -124,6 +124,15 @@ public interface TiersDAO extends GenericDAO<Tiers, Long> {
 	PersonnePhysique getPPByNumeroIndividu(Long numeroIndividu, boolean doNotAutoFlush);
 
 	/**
+	 * Renvoie le numéro de la personne physique dont le numéro d'individu est passé en paramètre
+	 *
+	 * @param numeroIndividu le numéro de l'individu
+	 * @param doNotAutoFlush <b>vrai</b> s'il ne faut pas flusher la session hibernate avant d'exécuter la recherche; <b>faux</b> autrement.
+	 * @return la personne physique (non-annulée) dont le numéro d'individu est passé en paramètre
+	 */
+	Long getNumeroPPByNumeroIndividu(Long numeroIndividu, boolean doNotAutoFlush);
+
+	/**
 	 * Renvoie l'habitant correspondant au numéro d'individu passé en paramètre.
 	 *
 	 * @param numeroIndividu le numéro de l'individu.

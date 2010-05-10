@@ -29,6 +29,10 @@ public class DebiteurPrestationImposableIndexableTest extends BusinessTest {
 
 	private TiersDAO dao;
 
+	public DebiteurPrestationImposableIndexableTest() {
+		setWantIndexation(true);
+	}
+
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
@@ -85,6 +89,8 @@ public class DebiteurPrestationImposableIndexableTest extends BusinessTest {
 			final DebiteurPrestationImposable debiteur = debiteurs.iterator().next();
 			assertSame(dpi, debiteur);
 		}
+
+		globalTiersIndexer.sync();
 
 		/* On vérifie que le débiteur et le contribuables sont bien indexés */
 		{
@@ -163,6 +169,8 @@ public class DebiteurPrestationImposableIndexableTest extends BusinessTest {
 			assertSame(dpi, debiteur);
 		}
 
+		globalTiersIndexer.sync();
+
 		/* On vérifie que le débiteur et le contribuables sont bien indexés */
 		{
 			TiersCriteria criteria = new TiersCriteria();
@@ -211,6 +219,8 @@ public class DebiteurPrestationImposableIndexableTest extends BusinessTest {
 			}
 		});
 
+		globalTiersIndexer.sync();
+		
 		/* On vérifie que le débiteur et le contribuables sont bien indexés */
 		{
 			TiersCriteria criteria = new TiersCriteria();
@@ -258,6 +268,8 @@ public class DebiteurPrestationImposableIndexableTest extends BusinessTest {
 			}
 		});
 
+		globalTiersIndexer.sync();
+		
 		// On vérifie que le débiteur et l'autre communauté sont bien indexés
 		{
 			TiersCriteria criteria = new TiersCriteria();

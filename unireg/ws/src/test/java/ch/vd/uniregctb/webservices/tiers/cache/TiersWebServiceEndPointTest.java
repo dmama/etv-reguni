@@ -20,9 +20,14 @@ import ch.vd.uniregctb.webservices.tiers.TiersWebService;
 import ch.vd.uniregctb.webservices.tiers.impl.TiersWebServiceEndPoint;
 import ch.vd.uniregctb.webservices.tiers.params.SearchTiers;
 
+@SuppressWarnings({"JavaDoc"})
 public class TiersWebServiceEndPointTest extends WebserviceTest {
 
 	private TiersWebServiceEndPoint endpoint;
+
+	public TiersWebServiceEndPointTest() {
+		setWantIndexation(true);
+	}
 
 	@Override
 	public void onSetUp() throws Exception {
@@ -52,6 +57,8 @@ public class TiersWebServiceEndPointTest extends WebserviceTest {
 				return null;
 			}
 		});
+
+		globalTiersIndexer.sync();
 
 		SearchTiers params = new SearchTiers();
 		params.login = new UserLogin("test", 33);
