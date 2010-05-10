@@ -168,6 +168,14 @@ public abstract class ServiceCivilServiceBase implements ServiceCivilService {
 		return individu.getEtatCivil(date);
 	}
 
+	public final Long getNumeroIndividuConjoint(Long noIndividuPrincipal, RegDate date) {
+		final EtatCivil etat = getEtatCivilActif(noIndividuPrincipal, date);
+		if (etat == null) {
+			return null;
+		}
+		return etat.getNumeroConjoint();
+	}
+
 	/**
 	 * @param noIndividu le numéro d'individu
 	 * @param date       la date de validité du permis, ou <b>null</b> pour obtenir le dernis permis valide.

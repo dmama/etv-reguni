@@ -132,11 +132,6 @@ public class ServiceCivilCache extends ServiceCivilServiceBase implements Unireg
 		}
 	}
 
-	public Long getNumeroIndividuConjoint(Long noIndividuPrincipal, RegDate date) {
-		//méthode non caché,
-		return  target.getNumeroIndividuConjoint(noIndividuPrincipal,date); 
-	}
-
 	/**
 	 * {@inheritDoc}
 	 */

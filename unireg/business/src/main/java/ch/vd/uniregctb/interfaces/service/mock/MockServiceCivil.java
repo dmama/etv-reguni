@@ -449,15 +449,6 @@ public abstract class MockServiceCivil extends ServiceCivilServiceBase {
 		return individusMap.get(numeroIndividu);
 	}
 
-	public Long getNumeroIndividuConjoint(Long noIndividuPrincipal, RegDate date){
-		Individu individu = getIndividu(noIndividuPrincipal);
-		MockEtatCivil etatCivil =(MockEtatCivil) individu.getEtatCivil(date);
-		if(etatCivil!=null){
-			return etatCivil.getNumeroConjoint();
-		}
-		return null;
-	}
-
 	/*
 	 * (non-Javadoc)
 	 *
