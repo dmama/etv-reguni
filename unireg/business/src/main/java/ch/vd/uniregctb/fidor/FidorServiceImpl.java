@@ -82,9 +82,9 @@ public class FidorServiceImpl implements FidorService {
 	 * le constructeur du service.
 	 */
 	private void lazyInit() {
-		if (patternTaoPP == null) {
+		if (patternSipf == null) {
 			synchronized (this) {
-				if (patternTaoPP == null) {
+				if (patternSipf == null) {
 					final FidorPortType service = initWebService(serviceUrl, username, password);
 					patternTaoPP = getUrl(service, "TAOPP", "default");
 					patternTaoBA = getUrl(service, "TAOBA", "dossier");
