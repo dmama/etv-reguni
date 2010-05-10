@@ -102,10 +102,15 @@ public class EvenementCivilRegrouperImpl implements EvenementCivilRegrouper {
 					ret = doRegroupeEvenement(unitaire);
 				}
 				catch (Exception e) {
-					if (errorMsg != null) {
-						errorMsg.append(e.getMessage());
+					LOGGER.error(e, e);
+					String m = e.getMessage();
+					if (m == null) {
+						m = e.getClass().getName();
 					}
-					Audit.error(e.getMessage());
+					if (errorMsg != null) {
+						errorMsg.append(m);
+					}
+					Audit.error(m);
 					ret = -1L;
 				}
 
