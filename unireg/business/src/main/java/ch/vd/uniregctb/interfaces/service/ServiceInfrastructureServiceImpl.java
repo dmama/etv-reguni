@@ -528,7 +528,7 @@ public class ServiceInfrastructureServiceImpl extends AbstractServiceInfrastruct
 		return aci;
 	}
 
-		public CollectiviteAdministrative getACISuccessions() throws InfrastructureException {
+	public CollectiviteAdministrative getACISuccessions() throws InfrastructureException {
 		if (aciSuccessions == null) {
 			try {
 				aciSuccessions = CollectiviteAdministrativeWrapper.get(serviceInfrastructure.getCollectivite(noACISuccessions));
