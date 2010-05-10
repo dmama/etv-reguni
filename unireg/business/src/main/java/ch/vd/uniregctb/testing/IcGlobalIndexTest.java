@@ -54,6 +54,7 @@ public class IcGlobalIndexTest extends InContainerTest {
 			}
 		});
 
+		globalTiersIndexer.sync();
 		{
 			TiersCriteria criteria = new TiersCriteria();
 			criteria.setNomRaison(nom);
@@ -91,6 +92,7 @@ public class IcGlobalIndexTest extends InContainerTest {
 			id = 0;
 		}
 
+		globalTiersIndexer.sync();
 		{
 			TiersCriteria criteria = new TiersCriteria();
 			criteria.setNomRaison(nom);
@@ -130,6 +132,7 @@ public class IcGlobalIndexTest extends InContainerTest {
 			}
 		}
 
+		globalTiersIndexer.sync();
 		Assert.isEqual(1, globalTiersSearcher.getApproxDocCount());
 	}
 
