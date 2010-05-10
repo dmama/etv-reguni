@@ -26,4 +26,9 @@ public interface EtatCivil {
      * @return le type de l'état civil.
      */
     EnumTypeEtatCivil getTypeEtatCivil();
+
+	/**
+	 * @return le numéro d'individu du conjoint.
+	 */
+	Long getNumeroConjoint();
 }

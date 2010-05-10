@@ -2,6 +2,7 @@ package ch.vd.uniregctb.interfaces.model.wrapper;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.civil.model.EnumTypeEtatCivil;
+import ch.vd.registre.civil.model.impl.EtatCivilImpl;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
 
 public class EtatCivilWrapper implements EtatCivil {
@@ -9,6 +10,7 @@ public class EtatCivilWrapper implements EtatCivil {
 	private final RegDate dateDebut;
 	private int noSequence;
 	private EnumTypeEtatCivil typeEtatCivil;
+	private Long numeroConjoint;
 
 	public static EtatCivilWrapper get(ch.vd.registre.civil.model.EtatCivil target) {
 		if (target == null) {
@@ -21,6 +23,7 @@ public class EtatCivilWrapper implements EtatCivil {
 		this.dateDebut = RegDate.get(target.getDateDebutValidite());
 		this.noSequence = target.getNoSequence();
 		this.typeEtatCivil = target.getTypeEtatCivil();
+		this.numeroConjoint = ((EtatCivilImpl)target).getNoTechniqueConjoint(); // cast : hack en attendant la résolution de [INTER-158]
 	}
 
 	public RegDate getDateDebutValidite() {
@@ -35,6 +38,10 @@ public class EtatCivilWrapper implements EtatCivil {
 		return typeEtatCivil;
 	}
 
+	public Long getNumeroConjoint() {
+		return numeroConjoint;
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
@@ -44,6 +51,7 @@ public class EtatCivilWrapper implements EtatCivil {
 
 		if (noSequence != that.noSequence) return false;
 		if (dateDebut != null ? !dateDebut.equals(that.dateDebut) : that.dateDebut != null) return false;
+		if (numeroConjoint != null ? !numeroConjoint.equals(that.numeroConjoint) : that.numeroConjoint != null) return false;
 		if (typeEtatCivil != null ? !typeEtatCivil.equals(that.typeEtatCivil) : that.typeEtatCivil != null) return false;
 
 		return true;
@@ -54,6 +62,7 @@ public class EtatCivilWrapper implements EtatCivil {
 		int result = dateDebut != null ? dateDebut.hashCode() : 0;
 		result = 31 * result + noSequence;
 		result = 31 * result + (typeEtatCivil != null ? typeEtatCivil.hashCode() : 0);
+		result = 31 * result + (numeroConjoint != null ? numeroConjoint.hashCode() : 0);
 		return result;
 	}
 }
