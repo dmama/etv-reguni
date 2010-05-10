@@ -66,7 +66,9 @@ public class AutoCompleteHandler extends AbstractAjaxHandler {
 			colLocalites = CollectionUtils.select(colLocalites, localitePredicate);
 			localites = new ArrayList<WrapperLocalite>();
 			for (Localite localite : colLocalites) {
-				localites.add(new WrapperLocalite(localite));
+				if (localite.isValide()) {
+					localites.add(new WrapperLocalite(localite));
+				}
 			}
 			Collections.sort(localites, new Comparator<WrapperLocalite>() {
 				public int compare(WrapperLocalite o1, WrapperLocalite o2) {
