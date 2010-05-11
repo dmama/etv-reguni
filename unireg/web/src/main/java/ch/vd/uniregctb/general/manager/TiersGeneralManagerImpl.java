@@ -1,9 +1,8 @@
 package ch.vd.uniregctb.general.manager;
 
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.GregorianCalendar;
-import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import org.apache.log4j.Logger;
@@ -12,11 +11,11 @@ import org.springframework.transaction.annotation.Transactional;
 import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.registre.civil.model.EnumAttributeIndividu;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
+import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.general.view.RoleView;
 import ch.vd.uniregctb.general.view.TiersGeneralView;
@@ -57,18 +56,12 @@ public class TiersGeneralManagerImpl implements TiersGeneralManager{
 
 	private TiersDAO tiersDAO;
 
-	private final Calendar calToday = new GregorianCalendar();
-
 	public void setAdresseService(AdresseService adresseService) {
 		this.adresseService = adresseService;
 	}
 
 	public void setTiersService(TiersService tiersService) {
 		this.tiersService = tiersService;
-	}
-
-	public Calendar getCalToday() {
-		return calToday;
 	}
 
 	public void setServiceCivilService(ServiceCivilService serviceCivilService) {
@@ -107,6 +100,27 @@ public class TiersGeneralManagerImpl implements TiersGeneralManager{
 		tiersGeneralView.setNatureTiers(tiers.getNatureTiers());
 		tiersGeneralView.setAnnule(tiers.isAnnule());
 		tiersGeneralView.setAnnulationDate(tiers.getAnnulationDate());
+
+		final List<EvenementCivilRegroupe> evtsNonTraites = tiersService.getEvenementsCivilsNonTraites(tiers);
+		if (evtsNonTraites == null || evtsNonTraites.size() == 0) {
+			tiersGeneralView.setNosIndividusAvecEvenenementCivilNonTraite(null);
+		}
+		else {
+
+			// ensemble de tous les numéros d'individu concernés
+			final Set<Long> nosIndividus = new TreeSet<Long>();
+			for (EvenementCivilRegroupe evt : evtsNonTraites) {
+				final Long indPrincipal = evt.getNumeroIndividuPrincipal();
+				if (indPrincipal != null) {
+					nosIndividus.add(indPrincipal);
+				}
+				final Long indConjoint = evt.getNumeroIndividuConjoint();
+				if (indConjoint != null) {
+					nosIndividus.add(indConjoint);
+				}
+			}
+			tiersGeneralView.setNosIndividusAvecEvenenementCivilNonTraite(nosIndividus);
+		}
 
 		final ValidationResults validationResults = tiers.validate();
 		setErreursFiliation(tiers, validationResults);
@@ -217,7 +231,7 @@ public class TiersGeneralManagerImpl implements TiersGeneralManager{
 		if (tiers instanceof PersonnePhysique) {
 			final PersonnePhysique pp = (PersonnePhysique) tiers;
 			if (pp.isHabitant()) {
-				final int year = getCalToday().get(Calendar.YEAR);
+				final int year = RegDate.get().year();
 				final Individu ind = serviceCivilService.getIndividu(pp.getNumeroIndividu(), year);
 				for (EtatCivil etatCivil : ind.getEtatsCivils()) {
 					if (etatCivil.getDateDebutValidite() == null){

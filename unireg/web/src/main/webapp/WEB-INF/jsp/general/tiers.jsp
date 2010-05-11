@@ -30,6 +30,20 @@
 					<td colspan="3" width="100%"><center><fmt:message key="label.tiers.annule.au"/>&nbsp;<fmt:formatDate value="${tiersGeneral.annulationDate}" pattern="dd.MM.yyyy"/></center></td>
 				</tr>
 			</c:if>
+			<authz:authorize ifAnyGranted="ROLE_MODIF_VD_ORD">
+				<c:if test="${tiersGeneral.nosIndividusAvecEvenenementCivilNonTraite != null}">
+					<tr class="evts-civils-non-traites">
+						<td colspan="3" width="100%">
+							<center>
+								<fmt:message key="label.tiers.evts.non.traites"/>
+								<c:forEach var="noInd" items="${tiersGeneral.nosIndividusAvecEvenenementCivilNonTraite}">
+									<c:out value="${noInd}"/>
+								</c:forEach>
+							</center>
+						</td>
+					</tr>
+				</c:if>
+			</authz:authorize>
 		</spring:bind>
 		<c:if test="${fn:length(tiersGeneral.validationResults.errors) > 0 || fn:length(tiersGeneral.validationResults.warnings) > 0}">
 			<tr><td colspan="3" width="100%">

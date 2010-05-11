@@ -10,8 +10,8 @@ import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.registre.civil.model.EnumAttributeIndividu;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.common.StatusManager;
+import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
 import ch.vd.uniregctb.evenement.EvenementCivilRegroupeDAO;
-import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
 import ch.vd.uniregctb.interfaces.model.Individu;
@@ -1042,5 +1042,12 @@ public interface TiersService {
 	 * @throws TiersException si plus d'un ménage commun est trouvé
 	 */
 	MenageCommun getMenageCommunActifAt(final Contribuable personne, final DateRangeHelper.Range periode) throws TiersException;
+
+	/**
+	 * Renvoie les événements civils non traités concernant le tiers donné
+	 * @param tiers la personne physique ou le ménage commun considéré (si ménage commun, tous ses membres seront inspectés)
+	 * @return les événements civils encore non-traités (en erreur, ou pas encore traités) sur ce tiers
+	 */
+	List<EvenementCivilRegroupe> getEvenementsCivilsNonTraites(Tiers tiers);
 }
 

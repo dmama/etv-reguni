@@ -357,11 +357,25 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
     }
 
     @SuppressWarnings("unchecked")
-    public List<Long> getNumerosIndividu(final Set<Long> tiersIds) {
+    public List<Long> getNumerosIndividu(final Set<Long> tiersIds, final boolean includesComposantsMenage) {
         return (List<Long>) getHibernateTemplate().executeWithNativeSession(new HibernateCallback() {
             public Object doInHibernate(Session session) throws HibernateException {
-                Query queryObject = session.createQuery("select h.numeroIndividu from PersonnePhysique as h where h.id in (:ids) and h.habitant = true");
-                queryObject.setParameterList("ids", tiersIds);
+
+	            Set<Long> allIds = tiersIds;
+
+	            if (includesComposantsMenage) {
+					final Query queryComposants = session.createQuery("select am.sujetId from AppartenanceMenage am where am.annulationDate is null and am.objetId in (:ids)");
+					queryComposants.setParameterList("ids", tiersIds);
+		            final List<Long> idsComposants = queryComposants.list();
+
+		            if (!idsComposants.isEmpty()) {
+						allIds = new HashSet<Long>(allIds);
+						allIds.addAll(idsComposants);
+		            }
+	            }
+
+                final Query queryObject = session.createQuery("select h.numeroIndividu from PersonnePhysique as h where h.id in (:ids) and h.numeroIndividu is not null");
+                queryObject.setParameterList("ids", allIds);
                 return queryObject.list();
             }
         });
