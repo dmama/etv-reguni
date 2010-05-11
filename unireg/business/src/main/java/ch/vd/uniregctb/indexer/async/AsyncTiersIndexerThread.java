@@ -182,7 +182,7 @@ public class AsyncTiersIndexerThread extends Thread {
 	}
 
 	/**
-	 * @return le prochain lot d'ids à indexer, ou <b>null</b> s'il n'y a (momentanément) plus rien à faire (timeout de 1 seconde)
+	 * @return le prochain lot d'ids à indexer, ou <b>null</b> s'il n'y a (momentanément) plus rien à faire (timeout de 0.1 seconde)
 	 */
 	private List<Long> nextBatch() {
 
@@ -204,11 +204,11 @@ public class AsyncTiersIndexerThread extends Thread {
 	}
 
 	/**
-	 * @return le prochain id à indexer, ou <b>null</b> s'il n'y a (momentanément) plus rien à faire (timeout de 1 seconde)
+	 * @return le prochain id à indexer, ou <b>null</b> s'il n'y a (momentanément) plus rien à faire (timeout de 0.1 seconde)
 	 */
 	private Long nextId() {
 		try {
-			return queue.poll(1, TimeUnit.SECONDS);
+			return queue.poll(100, TimeUnit.MILLISECONDS);
 		}
 		catch (InterruptedException e) {
 			interrupted(); // reset le flag
