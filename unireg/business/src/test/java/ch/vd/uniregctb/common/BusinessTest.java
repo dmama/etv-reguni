@@ -4,9 +4,6 @@ import java.util.Date;
 
 import org.springframework.test.context.ContextConfiguration;
 
-import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
-import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
-import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer.Mode;
 import ch.vd.uniregctb.interfaces.service.mock.ProxyServiceCivil;
 import ch.vd.uniregctb.interfaces.service.mock.ProxyServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.mock.ProxyServicePM;
@@ -23,9 +20,6 @@ public abstract class BusinessTest extends AbstractBusinessTest {
 	protected ProxyServicePM servicePM;
 	protected ProxyServiceInfrastructureService serviceInfra;
 
-	protected GlobalTiersIndexer globalTiersIndexer;
-	protected GlobalTiersSearcher globalTiersSearcher;
-
 	@Override
 	protected void runOnSetUp() throws Exception {
 
@@ -33,8 +27,6 @@ public abstract class BusinessTest extends AbstractBusinessTest {
 			serviceCivil = getBean(ProxyServiceCivil.class, "serviceCivilService");
 			servicePM = getBean(ProxyServicePM.class, "servicePersonneMoraleService");
 			serviceInfra = getBean(ProxyServiceInfrastructureService.class, "serviceInfrastructureService");
-			globalTiersIndexer = getBean(GlobalTiersIndexer.class, "globalTiersIndexer");
-			globalTiersSearcher = getBean(GlobalTiersSearcher.class, "globalTiersSearcher");
 			serviceInfra.setUpDefault();
 
 			super.runOnSetUp();
@@ -78,22 +70,6 @@ public abstract class BusinessTest extends AbstractBusinessTest {
 			servicePM.tearDown();
 			throw e;
 		}
-	}
-
-	@Override
-	protected void removeIndexData() throws Exception {
-		globalTiersIndexer.overwriteIndex();
-	}
-
-	/**
-	 * @throws Exception
-	 */
-	@Override
-	protected void indexData() throws Exception {
-		// globalTiersIndexer.indexAllDatabase();
-		// Si on Index en ASYNC (on créée des Threads) tout va bien
-		// Sinon, avec indexAllDb(), il y a des problemes de OptimisticLock...
-		globalTiersIndexer.indexAllDatabaseAsync(null, 1, Mode.FULL, false);
 	}
 
 	protected static void waitUntilRunning(JobDefinition job, Date startTime) throws Exception {

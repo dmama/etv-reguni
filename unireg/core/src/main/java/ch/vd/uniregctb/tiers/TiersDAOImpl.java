@@ -454,6 +454,29 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 	    return getPPByNumeroIndividu(numeroIndividu, false, doNotAutoFlush);
     }
 
+	public Long getNumeroPPByNumeroIndividu(Long numeroIndividu, boolean doNotAutoFlush) {
+
+		final Object[] criteria = {numeroIndividu};
+		final String query = "select pp.id from PersonnePhysique pp where pp.numeroIndividu = ? and pp.annulationDate is null order by pp.numero asc";
+
+		final FlushMode mode = (doNotAutoFlush ? FlushMode.MANUAL : null);
+		final List<?> list = find(query, criteria, mode);
+
+		if (list.isEmpty()) {
+			return null;
+		}
+
+		if (list.size() > 1) {
+			final long[] ids = new long[list.size()];
+			for (int i = 0; i < list.size(); ++i) {
+				ids[i] = (Long) list.get(i);
+			}
+			throw new PlusieursPersonnesPhysiquesAvecMemeNumeroIndividuException(numeroIndividu, ids);
+		}
+
+		return (Long) list.get(0);
+	}
+
 	private PersonnePhysique getPPByNumeroIndividu(Long numeroIndividu, boolean habitantSeulement, boolean doNotAutoFlush) {
 
 		final Object[] criteria = {numeroIndividu};

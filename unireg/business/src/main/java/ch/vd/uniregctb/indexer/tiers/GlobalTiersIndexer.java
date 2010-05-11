@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.indexer.tiers;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.springframework.transaction.annotation.Transactional;
@@ -20,30 +21,29 @@ public interface GlobalTiersIndexer {
 	public void overwriteIndex();
 
 	/**
-	 * Indexe ou réindexe un tiers à partir de son numéro. Le tiers est chargé de la base dans une transaction spécifique.
+	 * Demande l'indexation ou la ré-indexation d'un tiers.
+	 * <p/>
+	 * Cette méthode retourne immédiatement : l'indexation proprement dites est déléguée à un thread asynchrone.
 	 *
-	 * @param id l'id du tiers à indexer.
-	 * @throws ch.vd.uniregctb.indexer.IndexerException
-	 *          si l'indexation n'a pas pu être faite.
+	 * @param id l'id du tiers à indexer
 	 */
-	public void indexTiers(long id) throws IndexerException;
-
-	public void indexTiers(Tiers tiers) throws IndexerException;
-
-	public void indexTiers(Tiers tiers, boolean removeBefore) throws IndexerException;
-
-	public void indexTiers(Tiers tiers, boolean removeBefore, boolean followDependents) throws IndexerException;
+	void schedule(long id);
 
 	/**
-	 * Index les tiers spécifié.
+	 * Demande l'indexation ou la ré-indexation de plusieurs tiers.
+	 * <p/>
+	 * Cette méthode retourne immédiatement : l'indexation proprement dites est déléguée à un thread asynchrone.
 	 *
-	 * @param tiers            les tiers à indexer
-	 * @param removeBefore     si <b>vrai</b> les données du tiers seront supprimée de l'index avant d'être réinsérée; si <b>false</b> les données seront simplement ajoutées.
-	 * @param followDependents si <b>vrai</b> les tiers liés (ménage commun, ...) seront aussi indexées.
-	 * @throws IndexerBatchException en cas d'exception lors de l'indexation d'un ou plusieurs tiers. La méthode essaie d'indexer tous les tiers dans tous les cas, ce qui veut dire que si le premier
-	 *                               tiers lève une exception, les tiers suivants seront quand même indexés.
+	 * @param ids les ids des tiers à indexer
 	 */
-	public void indexTiers(List<Tiers> tiers, boolean removeBefore, boolean followDependents) throws IndexerBatchException;
+	void schedule(Collection<Long> ids);
+
+	/**
+	 * Attends que tous les tiers dont l'indexation a été demandée aient été indexés.
+	 * <p>
+	 * Cette méthode bloque donc tant que la queue d'indexation est pleine.
+	 */
+	void sync();
 
 	public int indexAllDatabase() throws IndexerException;
 
@@ -68,14 +68,6 @@ public interface GlobalTiersIndexer {
 	 */
 	@Transactional(rollbackFor = Throwable.class)
 	public int indexAllDatabaseAsync(StatusManager statusManager, int nbThreads, Mode mode, boolean prefetchIndividus) throws IndexerException;
-
-	/**
-	 * Supprime un tiers de l'indexer
-	 *
-	 * @param id   l'id du tiers à supprimer
-	 * @param type le type du tiers à supprimer (peut être nul)
-	 */
-	public void removeEntity(Long id, String type);
 
 	/**
 	 * Flag qui indique si l'indexation doit se faire a la volée ou si elle sera faite a posteriori.

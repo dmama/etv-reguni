@@ -10,6 +10,7 @@ import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.Tiers;
 import org.apache.log4j.Logger;
 import org.hibernate.CallbackException;
+import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.type.Type;
@@ -91,7 +92,7 @@ public class TiersIndexerHibernateInterceptor implements ModificationSubIntercep
 	/**
 	 * Ajoute le tiers spécifié dans les liste des tiers qui seront indéxés après le flush.
 	 *
-	 * @param tiers le tiers en question.
+	 * @param tiersId l'id du tiers en question.
 	 */
 	private void addModifiedTiers(Long tiersId) {
 		registerTxInterceptor();
@@ -129,51 +130,13 @@ public class TiersIndexerHibernateInterceptor implements ModificationSubIntercep
 		}
 
 		if (LOGGER.isDebugEnabled()) {
-			LOGGER.debug("Réindexation on-the-fly des tiers = " + Arrays.toString(ids.toArray()));
+			LOGGER.debug("Demande de réindexation on-the-fly des tiers = " + Arrays.toString(ids.toArray()));
 		}
 
-		final TransactionTemplate template = new TransactionTemplate((PlatformTransactionManager) transactionManager);
-		template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
-		
-		template.execute(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
-				Session session = sessionFactory.openSession(new HibernateFakeInterceptor());
-				try {
-					for (Long id : ids) {
-						final Tiers tiers = (Tiers) session.get(Tiers.class, id);
-						if (tiers == null) {
-							// Le tiers peut être null si il y a eu un rollback, et donc pas de flush
-							// Mais on n'est pas notifié en JTA...
-							continue;
-						}
-						try {
-							indexer.indexTiers(tiers, true/* Remove before reindexation */);
-							if (tiers.isDirty()) {
-								tiers.setIndexDirty(Boolean.FALSE); // il est plus dirty maintenant
-							}
-						}
-						catch (Exception ee) {
-							// Pour pas qu'un autre thread le reindex aussi
-							tiers.setIndexDirty(true);
-
-							final String message = "Reindexation du contribuable " + tiers.getId() + " impossible : " + ee.getMessage();
-							LOGGER.error(message, ee);
-						}
-					}
-					session.flush();
-				}
-				finally {
-					session.close();
-				}
-				return null;
-			}
-		});
+		// Demande la ré-indexation des tiers modifiés
+		indexer.schedule(ids);
 
 		ids.clear();
-		
-		if (LOGGER.isDebugEnabled()) {
-			LOGGER.debug("Réindexation on-the-fly des tiers terminée.");
-		}
 	}
 
 	/**
@@ -197,12 +160,9 @@ public class TiersIndexerHibernateInterceptor implements ModificationSubIntercep
 			public Object doInTransaction(TransactionStatus status) {
 				Session session = sessionFactory.openSession(new HibernateFakeInterceptor());
 				try {
-					for (Long id : ids) {
-						final Tiers tiers = (Tiers) session.get(Tiers.class, id);
-						if (tiers != null) {
-							tiers.setIndexDirty(true);
-						}
-					}
+					final SQLQuery query = session.createSQLQuery("update TIERS set INDEX_DIRTY = 1 where NUMERO in (:ids)");
+					query.setParameterList("ids", ids);
+					query.executeUpdate();
 					session.flush();
 				}
 				finally {

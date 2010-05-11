@@ -39,6 +39,10 @@ public class EvenementCivilUnitaireListenerTest extends BusinessTest {
 
 	private EvenementCivilRegroupeDAO evenementCivilRegroupeDAO;
 
+	public EvenementCivilUnitaireListenerTest() {
+		setWantIndexation(true);
+	}
+
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();

@@ -83,6 +83,8 @@ public class Ec_48000_01_CorrectionIdentificationHabitant_Scenario extends Evene
 
 	@Check(id=1, descr="Vérifie que l'habitant Maurice a bien été indexé")
 	public void check1() {
+
+		globalIndexer.sync();
 		{
 			final TiersCriteria criteria = new TiersCriteria();
 			criteria.setNumero(noHabMomo);
@@ -120,6 +122,8 @@ public class Ec_48000_01_CorrectionIdentificationHabitant_Scenario extends Evene
 
 	@Check(id=2, descr="Vérifie que le numéro AVS a été mise à jour dans l'indexeur")
 	public void check2() throws Exception {
+
+		globalIndexer.sync();
 		{
 			final TiersCriteria criteria = new TiersCriteria();
 			criteria.setNumeroAVS(avsNouveau);

@@ -59,6 +59,10 @@ import ch.vd.uniregctb.type.TypeAdresseTiers;
 })
 public class IdentificationContribuableServiceTest extends BusinessTest {
 
+	public IdentificationContribuableServiceTest() {
+		setWantIndexation(true);
+	}
+
 	/**
 	 * Fake message handler pour intercepter les réponses émises.
 	 */
@@ -156,6 +160,8 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			}
 		});
 
+		globalTiersIndexer.sync();
+
 		assertAlbertZweisteinenSeul(id);
 	}
 
@@ -178,6 +184,8 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 				return albert.getNumero();
 			}
 		});
+
+		globalTiersIndexer.sync();
 
 		assertAlbertZweisteinenSeul(id);
 	}
@@ -372,6 +380,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			}
 		});
 
+		globalTiersIndexer.sync();
 
 		assertCountDemandes(0);
 
@@ -549,6 +558,8 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			}
 		});
 
+		globalTiersIndexer.sync();
+
 		// Albert
 		{
 			CriteresPersonne criteres = new CriteresPersonne();
@@ -659,6 +670,8 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 				return null;
 			}
 		});
+
+		globalTiersIndexer.sync();
 
 		// Robert et Jeanne
 		{
@@ -786,6 +799,8 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			}
 		});
 
+		globalTiersIndexer.sync();
+
 		// Robert
 		{
 			CriteresPersonne criteres = new CriteresPersonne();
@@ -860,6 +875,8 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		});
 		assertCountDemandes(0);
 
+		globalTiersIndexer.sync();
+
 		// création et traitement du message d'identification
 		final IdentificationContribuable message = createDemande("Zora", "Larousse");
 		doInTransaction(new TxCallback() {
@@ -914,6 +931,8 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		});
 		assertCountDemandes(0);
 
+		globalTiersIndexer.sync();
+
 		// création et traitement du message d'identification
 		final IdentificationContribuable message = createDemande("Larousse", "Larousse");
 		doInTransaction(new TxCallback() {
@@ -958,6 +977,8 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			}
 		});
 		assertCountDemandes(0);
+
+		globalTiersIndexer.sync();
 
 		try {
 			// provoque une exception à l'envoi
@@ -1028,6 +1049,8 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		});
 		assertCountDemandes(0);
 
+		globalTiersIndexer.sync();
+
 		// création et traitement du message d'identification
 		final IdentificationContribuable message = createDemande("Edouard", "Bonhote", "7569613127861");
 		doInTransaction(new TxCallback() {
@@ -1084,6 +1107,8 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			}
 		});
 		assertCountDemandes(0);
+
+		globalTiersIndexer.sync();
 
 		// création et traitement du message d'identification
 		final IdentificationContribuable message = createDemande("George", "Pompidou", "7569613127861");
@@ -1150,6 +1175,8 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			}
 		});
 		assertCountDemandes(0);
+
+		globalTiersIndexer.sync();
 
 		// création et traitement du message d'identification
 		final IdentificationContribuable message = createDemande("Zora", "Larousse");

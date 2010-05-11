@@ -1,19 +1,18 @@
 package ch.vd.uniregctb.indexer.async;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-
 import java.util.List;
 
 import org.hibernate.SessionFactory;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BusinessTest;
+import ch.vd.uniregctb.indexer.GlobalIndex;
+import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer.Mode;
+import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexerImpl;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexable;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
-import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer.Mode;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockOfficeImpot;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
@@ -28,16 +27,21 @@ import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
-public class AsyncTiersIndexerTest extends BusinessTest {
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
-	private AsyncTiersIndexer indexer;
+public class MassTiersIndexerTest extends BusinessTest {
+
+	private MassTiersIndexer indexer;
 	private TiersDAO tiersDAO;
+	private GlobalTiersIndexerImpl gti;
 
-	public AsyncTiersIndexerTest() {
+	public MassTiersIndexerTest() {
 		setWantIndexation(true);
 	}
 
-	private static final String DBUNIT_FILENAME = "AsyncTiersIndexerTest.xml";
+	private static final String DBUNIT_FILENAME = "MassTiersIndexerTest.xml";
 	private static final Integer oidLausanne = MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm();
 
 	@Override
@@ -49,8 +53,18 @@ public class AsyncTiersIndexerTest extends BusinessTest {
 		tiersDAO = getBean(TiersDAO.class, "tiersDAO");
 		SessionFactory sessionFactory = getBean(SessionFactory.class, "sessionFactory");
 
-		indexer = new AsyncTiersIndexer(globalTiersIndexer, transactionManager, sessionFactory, 4, 10, Mode.FULL);
-		indexer.initialize();
+		gti = new GlobalTiersIndexerImpl(); // pour éviter le proxy
+		gti.setAdresseService(getBean(AdresseService.class, "adresseService"));
+		gti.setGlobalIndex(getBean(GlobalIndex.class, "globalIndex"));
+		gti.setServiceCivilService(serviceCivil);
+		gti.setServiceInfra(serviceInfra);
+		gti.setSessionFactory(sessionFactory);
+		gti.setTiersDAO(tiersDAO);
+		gti.setTiersSearcher(globalTiersSearcher);
+		gti.setTiersService(tiersService);
+		gti.setTransactionManager(transactionManager);
+
+		indexer = new MassTiersIndexer(gti, transactionManager, sessionFactory, 4, 10, Mode.FULL);
 
 		loadDatabase(DBUNIT_FILENAME);
 	}
@@ -97,7 +111,7 @@ public class AsyncTiersIndexerTest extends BusinessTest {
 			}
 		});
 
-		indexer.flushAndWait(); // on attend que tous les tiers soient indexés
+		globalTiersIndexer.sync(); // on attend que tous les tiers soient indexés
 
 		{
 			TiersCriteria criteria = new TiersCriteria();
@@ -118,7 +132,7 @@ public class AsyncTiersIndexerTest extends BusinessTest {
 			assertEquals(2, list.size());
 		}
 
-		globalTiersIndexer.removeEntity(id, TiersIndexable.TYPE);
+		gti.removeEntity(id, TiersIndexable.TYPE);
 		{
 			TiersCriteria criteria = new TiersCriteria();
 			criteria.setNumero(id);
@@ -191,7 +205,7 @@ public class AsyncTiersIndexerTest extends BusinessTest {
 
 		indexer.queueTiersForIndexation(ids.dupres);
 		indexer.queueTiersForIndexation(ids.duclou);
-		indexer.flushAndWait();
+		indexer.sync();
 
 		// Contribuable sans for
 		Tiers nh = tiersDAO.get(ids.dupres);

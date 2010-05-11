@@ -38,7 +38,9 @@ public abstract class AbstractEvenementHandlerTest extends BusinessTest {
 	@Override
 	public void onTearDown() throws Exception {
 		super.onTearDown();
-		serviceCivil.tearDown();
+		if (serviceCivil != null) {
+			serviceCivil.tearDown();
+		}
 	}
 
 	public String getHandlerBeanName() {

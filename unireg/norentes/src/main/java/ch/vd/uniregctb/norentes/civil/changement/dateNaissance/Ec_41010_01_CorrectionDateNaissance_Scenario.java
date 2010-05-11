@@ -86,6 +86,8 @@ public class Ec_41010_01_CorrectionDateNaissance_Scenario extends EvenementCivil
 
 	@Check(id=1, descr="Vérifie que l'habitant Maurice a bien été indexé")
 	public void check1() {
+
+		globalIndexer.sync();
 		{
 			TiersCriteria criteria = new TiersCriteria();
 			criteria.setNumero(noHabMomo);
@@ -108,8 +110,9 @@ public class Ec_41010_01_CorrectionDateNaissance_Scenario extends EvenementCivil
 
 	@Check(id=2, descr="Vérifie que la date de naissance a été mise à jour dans l'indexer")
 	public void check2() throws Exception {
+
+		globalIndexer.sync();
 		{
-			indexData();
 			TiersCriteria criteria = new TiersCriteria();
 			criteria.setNumero(noHabMomo);
 			List<TiersIndexedData> list = globalSearcher.search(criteria);

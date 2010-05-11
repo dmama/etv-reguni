@@ -2190,7 +2190,7 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 		final AdressesCiviles anciennesAdresses = serviceCivil.getAdresses(individu.getNoTechnique(), veilleArrivee, false);
 		final AdressesCiviles nouvellesAdresses = serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false);
 		
-		numeroCTB = ((PersonnePhysique) doInNewTransaction(new TxCallback() {
+		numeroCTB = ((Long) doInNewTransaction(new TxCallback() {
 			@SuppressWarnings("deprecation")
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
@@ -2216,15 +2216,12 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 				}
 				nonHabitant = (PersonnePhysique) tiersDAO.save(nonHabitant);
 				
-				return nonHabitant;
+				return nonHabitant.getNumero();
 			}
 
-		})).getNumero();
+		}));
 		
-		/*
-		 * Indexation des données fiscales
-		 */
-		indexData();
+		indexer.sync();
 		
 		doInNewTransaction(new TxCallback() {
 			@Override
@@ -2662,6 +2659,8 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 				return null;
 			}
 		});
+
+		globalTiersIndexer.sync();
 
 		final RegDate dateArrivee = date(2009, 12, 1);
 		final MockArrivee arrivee = new MockArrivee();

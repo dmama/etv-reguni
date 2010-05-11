@@ -36,6 +36,10 @@ public class TiersWebServiceEndPointTest extends WebserviceTest {
 
 	private TiersWebServiceEndPoint endpoint;
 
+	public TiersWebServiceEndPointTest() {
+		setWantIndexation(true);
+	}
+	
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
@@ -64,6 +68,8 @@ public class TiersWebServiceEndPointTest extends WebserviceTest {
 				return null;
 			}
 		});
+
+		globalTiersIndexer.sync();
 
 		SearchTiers params = new SearchTiers();
 		params.login = new UserLogin("test", 33);

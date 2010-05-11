@@ -126,6 +126,7 @@ public class Ec_18000_17_Arrivee_JIRA1677_Scenario extends EvenementCivilScenari
 		final long idEvtAlexandra = addEvenementCivil(TypeEvenementCivil.ARRIVEE_PRINCIPALE_HC, noIndAlexandra, dateArriveeLausanne, MockCommune.Lausanne.getNoOFS());
 
 		commitAndStartTransaction();
+		globalIndexer.sync();
 		regroupeEtTraiteEvenements(idEvtOlivier);
 		regroupeEtTraiteEvenements(idEvtAlexandra);
 	}

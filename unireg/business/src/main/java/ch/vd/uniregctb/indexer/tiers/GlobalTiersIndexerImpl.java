@@ -6,7 +6,8 @@ import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.*;
 import ch.vd.uniregctb.indexer.*;
-import ch.vd.uniregctb.indexer.async.AsyncTiersIndexer;
+import ch.vd.uniregctb.indexer.async.MassTiersIndexer;
+import ch.vd.uniregctb.indexer.async.OnTheFlyTiersIndexer;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -16,17 +17,24 @@ import ch.vd.uniregctb.tiers.*;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.hibernate.HibernateException;
+import org.hibernate.SQLQuery;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
-public class GlobalTiersIndexerImpl implements GlobalTiersIndexer {
+public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingBean, DisposableBean {
 
     /**
      * Le nombre d'individus préchargés et insérés dans le cache du service civil.
@@ -51,7 +59,9 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer {
     private ServiceCivilService serviceCivilService;
 	private StatsService statsService;
 
-    private static class Behavior {
+	private OnTheFlyTiersIndexer onTheFlyTiersIndexer;
+
+	private static class Behavior {
         public boolean onTheFlyIndexation = true;
     }
 
@@ -65,37 +75,8 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer {
     private TiersService tiersService;
 
     public void overwriteIndex() {
+	    onTheFlyTiersIndexer.reset();
         globalIndex.overwriteIndex();
-    }
-
-    public void indexTiers(final long id) throws IndexerException {
-        TransactionTemplate tmpl = new TransactionTemplate(transactionManager);
-        tmpl.execute(new TransactionCallback() {
-            public Object doInTransaction(TransactionStatus status) {
-                Tiers tiers = tiersDAO.get(id);
-                if (tiers != null) {
-                    indexTiers(tiers);
-	                if (tiers.isDirty()) {
-		                tiers.setIndexDirty(Boolean.FALSE); // il est plus dirty maintenant
-	                }
-                }
-                return null;
-            }
-        });
-    }
-
-    /**
-     * @see ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer#indexTiers(ch.vd.uniregctb.tiers.Tiers)
-     */
-    public void indexTiers(Tiers tiers) throws IndexerException {
-        indexTiers(tiers, true, true);
-    }
-
-    /**
-     * @see ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer#indexTiers(ch.vd.uniregctb.tiers.Tiers, boolean)
-     */
-    public void indexTiers(Tiers tiers, boolean removeBefore) throws IndexerException {
-        indexTiers(tiers, removeBefore, true);
     }
 
     public int indexAllDatabase() throws IndexerException {
@@ -128,7 +109,7 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer {
             startTimeIndex = getNanoIndex() / NANO_TO_MILLI;
         }
 
-        public void end(AsyncTiersIndexer asyncIndexer) {
+        public void end(MassTiersIndexer asyncIndexer) {
             endTime = System.nanoTime() / NANO_TO_MILLI;
             endTimeInfra = getNanoInfra() / NANO_TO_MILLI;
             endTimeCivil = getNanoCivil() / NANO_TO_MILLI;
@@ -159,17 +140,15 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer {
             int percentWaitIndex = (int) (100 * timeWaitIndex / timeWait);
             int percentWaitAutres = 100 - percentWaitInfra - percentWaitCivil - percentWaitIndex;
 
-            LOGGER.info("Temps total d'exécution         : " + timeTotal + " ms");
-            LOGGER.info("Temps 'exec' threads indexation : " + indexerExecTime + " ms");
-            LOGGER.info("Temps 'cpu' threads indexation  : " + indexerCpuTime + " ms" + " (" + percentCpu + "%)");
-            LOGGER.info("Temps 'wait' threads indexation : " + timeWait + " ms" + " (" + percentWait + "%)");
-            LOGGER.info(" - service infrastructure       : "
-                    + (timeWaitInfra == 0 ? "<indisponible>" : timeWaitInfra + " ms" + " (" + percentWaitInfra + "%)"));
-            LOGGER.info(" - service civil                : "
-                    + (timeWaitCivil == 0 ? "<indisponible>" : timeWaitCivil + " ms" + " (" + percentWaitCivil + "%)"));
-            LOGGER.info(" - indexer                      : "
-                    + (timeWaitIndex == 0 ? "<indisponible>" : timeWaitIndex + " ms" + " (" + percentWaitIndex + "%)"));
-            LOGGER.info(" - autre (scheduler, jdbc, ...) : " + timeWaitAutres + " ms" + " (" + percentWaitAutres + "%)");
+	        String log = "Temps total d'exécution         : " + timeTotal + " ms\n";
+	        log += "Temps 'exec' threads indexation : " + indexerExecTime + " ms\n";
+	        log += "Temps 'cpu' threads indexation  : " + indexerCpuTime + " ms" + " (" + percentCpu + "%)\n";
+	        log += "Temps 'wait' threads indexation : " + timeWait + " ms" + " (" + percentWait + "%)\n";
+	        log += " - service infrastructure       : " + (timeWaitInfra == 0 ? "<indisponible>" : timeWaitInfra + " ms" + " (" + percentWaitInfra + "%)\n");
+	        log += " - service civil                : " + (timeWaitCivil == 0 ? "<indisponible>" : timeWaitCivil + " ms" + " (" + percentWaitCivil + "%)\n");
+	        log += " - indexer                      : " + (timeWaitIndex == 0 ? "<indisponible>" : timeWaitIndex + " ms" + " (" + percentWaitIndex + "%)\n");
+	        log += " - autre (scheduler, jdbc, ...) : " + timeWaitAutres + " ms" + " (" + percentWaitAutres + "%)";
+	        LOGGER.info(log);
         }
 
         private long getNanoCivil() {
@@ -278,8 +257,7 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer {
 		timeLog.start();
 
 		final int queueSizeByThread = CIVIL_BATCH_SIZE / nbThreads;
-		AsyncTiersIndexer asyncIndexer = new AsyncTiersIndexer(this, transactionManager, sessionFactory, nbThreads, queueSizeByThread, mode);
-		asyncIndexer.initialize();
+		MassTiersIndexer asyncIndexer = new MassTiersIndexer(this, transactionManager, sessionFactory, nbThreads, queueSizeByThread, mode);
 
 		int size = list.size();
 
@@ -391,9 +369,6 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer {
         return ids;
     }
 
-    /**
-     * @see ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer#indexAllDatabase()
-     */
     public int indexAllDatabase(boolean assertSameNumber, StatusManager statusManager) throws IndexerException {
 
         overwriteIndex();
@@ -426,6 +401,15 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer {
         }
     }
 
+	/**
+	 * Index les tiers spécifié.
+	 *
+	 * @param tiers            les tiers à indexer
+	 * @param removeBefore     si <b>vrai</b> les données du tiers seront supprimée de l'index avant d'être réinsérée; si <b>false</b> les données seront simplement ajoutées.
+	 * @param followDependents si <b>vrai</b> les tiers liés (ménage commun, ...) seront aussi indexées.
+	 * @throws IndexerBatchException en cas d'exception lors de l'indexation d'un ou plusieurs tiers. La méthode essaie d'indexer tous les tiers dans tous les cas, ce qui veut dire que si le premier
+	 *                               tiers lève une exception, les tiers suivants seront quand même indexés.
+	 */
     public void indexTiers(List<Tiers> tiers, boolean removeBefore, boolean followDependents) throws IndexerBatchException {
         Assert.notNull(tiers);
 
@@ -571,6 +555,7 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer {
         return indexable;
     }
 
+	// TODO (msi) supprimer cette méthode complétement dépassée
     private int indexAllGetAll(boolean assertSameNumber, final StatusManager statusManager) {
 
         TransactionTemplate tmpl = new TransactionTemplate(transactionManager);
@@ -601,7 +586,7 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer {
                         }
                     }
                     catch (Exception e) {
-                        tiers.setIndexDirty(true);
+	                    setIndexDirty(tiers);
                         LOGGER.error(e, e);
                     }
 
@@ -621,6 +606,17 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer {
         return nbTiersIndexed;
     }
 
+	private void setIndexDirty(final Tiers tiers) {
+		tiersDAO.getHibernateTemplate().execute(new HibernateCallback() {
+			public Object doInHibernate(Session session) throws HibernateException, SQLException {
+				final SQLQuery query = session.createSQLQuery("update TIERS set INDEX_DIRTY = 1 where NUMERO = :id");
+				query.setParameter("id", tiers.getNumero());
+				query.executeUpdate();
+				return null;
+			}
+		});
+	}
+
     private void indexIndexable(List<TiersIndexable> indexables, boolean removeBefore) throws IndexerException {
 
         final List<IndexableData> data = new ArrayList<IndexableData>(indexables.size());
@@ -639,7 +635,27 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer {
         globalIndex.removeEntity(id, type);
     }
 
-    private String formatPercent(int num, int denom) {
+	public void schedule(long id) {
+		onTheFlyTiersIndexer.schedule(id);
+	}
+
+	public void schedule(Collection<Long> ids) {
+		onTheFlyTiersIndexer.schedule(ids);
+	}
+
+	public void sync() {
+		onTheFlyTiersIndexer.sync();
+	}
+
+	public void afterPropertiesSet() throws Exception {
+		onTheFlyTiersIndexer = new OnTheFlyTiersIndexer(this, transactionManager, sessionFactory);
+	}
+
+	public void destroy() throws Exception {
+		onTheFlyTiersIndexer.destroy();
+	}
+
+	private String formatPercent(int num, int denom) {
         return String.format("%d%%", (int) (num / 1.0f / denom * 100));
     }
 
@@ -660,6 +676,7 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer {
         getByThreadBehavior().onTheFlyIndexation = onTheFlyIndexation;
     }
 
+	@SuppressWarnings({"UnusedDeclaration"})
     public void setGlobalIndex(GlobalIndexInterface globalIndex) {
         this.globalIndex = globalIndex;
     }

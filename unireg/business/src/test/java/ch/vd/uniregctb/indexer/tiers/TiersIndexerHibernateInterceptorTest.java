@@ -29,6 +29,10 @@ public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
 	private final RegDate dateNaissance1 = RegDate.get(2003, 2, 22);
 	private final RegDate dateNaissance2 = RegDate.get(2002, 11, 29);
 
+	public TiersIndexerHibernateInterceptorTest() {
+		setWantIndexation(true);
+	}
+
 	@Override
 	public void onSetUp() throws Exception {
 
@@ -100,6 +104,8 @@ public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
 			}
 		});
 
+		globalTiersIndexer.sync();
+
 		// On doit trouver le tiers
 		{
 			TiersCriteria criteria = new TiersCriteria();
@@ -126,6 +132,8 @@ public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
 				return nh.getId();
 			}
 		});
+
+		globalTiersIndexer.sync();
 
 		// On peut trouver le tiers sur son ancienne date
 		{
@@ -161,6 +169,8 @@ public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
 				return null;
 			}
 		});
+
+		globalTiersIndexer.sync();
 
 		// La date est changée en base et dans l'indexer
 		{
@@ -215,6 +225,8 @@ public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
 		});
 		LOGGER.warn("L'exception ci-dessus générée par l'indexation est normale!");
 
+		globalTiersIndexer.sync();
+
 		// On doit trouver le NH
 		{
 			TiersCriteria criteria = new TiersCriteria();
@@ -266,6 +278,8 @@ public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
 			}
 		});
 
+		globalTiersIndexer.sync();
+
 		// On doit trouver le tiers
 		{
 			TiersCriteria criteria = new TiersCriteria();
@@ -299,6 +313,8 @@ public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
 			}
 		});
 
+		globalTiersIndexer.sync();
+		
 		// On le trouve plus a Lausanne
 		{
 			TiersCriteria criteria = new TiersCriteria();
@@ -340,6 +356,8 @@ public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
 			}
 		});
 
+		globalTiersIndexer.sync();
+		
 		// Son for est maintenant a Villars
 		{
 			TiersCriteria criteria = new TiersCriteria();
@@ -386,6 +404,8 @@ public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
 			}
 		});
 
+		globalTiersIndexer.sync();
+
 		// On doit trouver le tiers et il ne doit pas être dirty
 		doInNewTransaction(new TxCallback() {
 			@Override
@@ -416,6 +436,8 @@ public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
 				}
 			});
 
+			globalTiersIndexer.sync();
+
 			// On doit toujours trouver le tiers, mais il ne doit pas avoir été réindexé et il doit être dirty
 			{
 				TiersCriteria criteria = new TiersCriteria();
@@ -441,6 +463,7 @@ public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
 
 		// Charge un tiers dirty
 		final long id = 6791;
+		setWantIndexation(false);
 		loadDatabase(DB_UNIT_DATA_FILE);
 
 		// Le tiers doit être dirty et on ne doit pas trouver dans l'indexeur
@@ -460,6 +483,8 @@ public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
 			}
 		});
 
+		setWantIndexation(true);
+		
 		// On change le prénom du tiers
 		doInNewTransaction(new TxCallback() {
 			@Override
@@ -470,6 +495,8 @@ public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
 			}
 		});
 
+		globalTiersIndexer.sync();
+		
 		// On doit trouver le tiers, il doit avoir été indexé et il ne doit plus être dirty
 		{
 			TiersCriteria criteria = new TiersCriteria();

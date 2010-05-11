@@ -1394,12 +1394,14 @@ public abstract class Tiers extends HibernateEntity implements Validateable, Bus
 		return indexDirty == null ? false : indexDirty;
 	}
 
-	@Column(name = "INDEX_DIRTY")
+	@Column(name = "INDEX_DIRTY", updatable = false)
+	// updatable false => la mise-à-jour de cette valeur doit être faite uniquement par des update SQL pour éviter des problèmes d'optimistic locking
 	public Boolean getIndexDirty() {
 		return indexDirty;
 	}
 
-	public void setIndexDirty(Boolean dirty) {
+	// protected -> mise-à-jour réservée à Hibernate
+	protected void setIndexDirty(Boolean dirty) {
 		this.indexDirty = dirty;
 	}
 

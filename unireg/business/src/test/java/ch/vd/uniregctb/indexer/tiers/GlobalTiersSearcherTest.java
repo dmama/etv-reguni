@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
@@ -18,6 +20,7 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.tiers.TiersCriteria.TypeRecherche;
 import ch.vd.uniregctb.tiers.TiersCriteria.TypeTiers;
+import ch.vd.uniregctb.type.Sexe;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
@@ -498,19 +501,29 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 		}
 	}
 
+	@SuppressWarnings({"unchecked"})
 	@Test
 	public void testRechercheTropDeResultats() throws Exception {
 
 		// Le nombre de resultats est limité dans la recherche
-		Integer nbMaxParListe = new Integer(ParametreEnum.nbMaxParListe.getDefaut());
-		int nbDocs = nbMaxParListe + 20;
-		for (long i = 0; i < nbDocs; i++) {
-			PersonnePhysique nonHab = new PersonnePhysique(false);
-			nonHab.setNumero(i);
-			nonHab.setNom("Maluna");
-			nonHab.setPrenom("Bimbo");
-			globalTiersIndexer.indexTiers(nonHab, false);
-		}
+		final int nbMaxParListe = new Integer(ParametreEnum.nbMaxParListe.getDefaut());
+		final int nbDocs = nbMaxParListe + 20;
+
+		List<Long> ids = (List<Long>) doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+
+				List<Long> ids = new ArrayList<Long>(2000);
+
+				for (long i = 0; i < nbDocs; i++) {
+					PersonnePhysique pp = addNonHabitant("Bimbo", "Maluna", date(1970, 1, 1), Sexe.MASCULIN);
+					ids.add(pp.getNumero());
+				}
+				return ids;
+			}
+		});
+
+		globalTiersIndexer.schedule(ids);
+		globalTiersIndexer.sync();
 
 		TiersCriteria criteria = new TiersCriteria();
 		criteria.setNomRaison("maluNa");
@@ -528,22 +541,31 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 	 * [UNIREG-1386] Vérifie que le moteur de recherche supprime automatiquement les termes trop communs lorsqu'une exception
 	 * BooleanQuery.TooManyClause est levée par lucene.
 	 */
+	@SuppressWarnings({"unchecked"})
 	@Test
-	public void testRechercheCriteresTropCommuns() {
+	public void testRechercheCriteresTropCommuns() throws Exception {
 
-		// Charge 2000 personnes dans l'index. Ces 2000 personnes possèdent toutes un nom de famille commençant par "Du Pont".
-		for (int i = 1; i < 2000; ++i) {
+		List<Long> ids = (List<Long>) doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
 
-			final String nom = "Du Pont" + i; // "Du Pont0".."Du Pont1999"
-			final String prenom = "Michel" + String.valueOf(i % 50); // 40 * (Michel0..Michel49)
+				List<Long> ids = new ArrayList<Long>(2000);
 
-			PersonnePhysique nonHab = new PersonnePhysique(false);
-			nonHab.setNumero((long)i);
-			nonHab.setNom(nom);
-			nonHab.setPrenom(prenom);
+				// Charge 2000 personnes dans l'index. Ces 2000 personnes possèdent toutes un nom de famille commençant par "Du Pont".
+				for (int i = 1; i < 2000; ++i) {
 
-			globalTiersIndexer.indexTiers(nonHab, false);
-		}
+					final String nom = "Du Pont" + i; // "Du Pont0".."Du Pont1999"
+					final String prenom = "Michel" + String.valueOf(i % 50); // 40 * (Michel0..Michel49)
+					final Long id = (long) i;
+
+					PersonnePhysique pp = addNonHabitant(prenom, nom, date(1970, 1, 1), Sexe.MASCULIN);
+					ids.add(pp.getNumero());
+				}
+				return ids;
+			}
+		});
+
+		globalTiersIndexer.schedule(ids);
+		globalTiersIndexer.sync();
 
 		// Recherche les 40 personnes nommées "Michel22 Du Pont*"
 		final TiersCriteria criteria = new TiersCriteria();

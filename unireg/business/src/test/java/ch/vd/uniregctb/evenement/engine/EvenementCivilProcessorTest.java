@@ -421,6 +421,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 	@Test
 	public void testEvenementsChangementSexe() throws Exception {
 
+		setWantIndexation(true);
 		setUpHabitant();
 
 		// Rech du tiers avant modif
@@ -463,6 +464,8 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 				return null;
 			}
 		});
+
+		setWantIndexation(false);
 	}
 
 	/**
@@ -604,6 +607,8 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 				return null;
 			}
 		});
+
+		globalTiersIndexer.sync();
 	}
 
 	private ForFiscalPrincipal addForPrincipal(Tiers tiers, RegDate ouverture, RegDate fermeture, Integer noOFS) {
