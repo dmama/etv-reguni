@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.general.view;
 
 import java.util.Date;
+import java.util.Set;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationResults;
@@ -81,6 +82,8 @@ public class TiersGeneralView {
 	private String nomCommuneGestion;
 
 	private boolean annule;
+
+	private Set<Long> nosIndividusAvecEvenenementCivilNonTraite;
 
 	private Date annulationDate;
 
@@ -204,6 +207,14 @@ public class TiersGeneralView {
 
 	public void setAnnule(boolean annule) {
 		this.annule = annule;
+	}
+
+	public Set<Long> getNosIndividusAvecEvenenementCivilNonTraite() {
+		return nosIndividusAvecEvenenementCivilNonTraite;
+	}
+
+	public void setNosIndividusAvecEvenenementCivilNonTraite(Set<Long> nosIndividusAvecEvenenementCivilNonTraite) {
+		this.nosIndividusAvecEvenenementCivilNonTraite = nosIndividusAvecEvenenementCivilNonTraite;
 	}
 
 	public Exception getAdresseEnvoiException() {

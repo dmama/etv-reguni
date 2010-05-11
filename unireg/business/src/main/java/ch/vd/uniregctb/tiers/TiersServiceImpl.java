@@ -39,6 +39,7 @@ import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.Declaration;
+import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
 import ch.vd.uniregctb.evenement.EvenementCivilRegroupeDAO;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.indexer.IndexerException;
@@ -3368,6 +3369,20 @@ public class TiersServiceImpl implements TiersService {
 		}
 
 		return menageCommun;
+	}
+
+	public List<EvenementCivilRegroupe> getEvenementsCivilsNonTraites(Tiers tiers) {
+		final Set<Long> noTiers = new HashSet<Long>(1);
+		noTiers.add(tiers.getNumero());
+		final List<Long> nosIndividus = tiersDAO.getNumerosIndividu(noTiers, true);
+		final List<EvenementCivilRegroupe> liste;
+		if (nosIndividus.size() > 0) {
+			liste = evenementCivilRegroupeDAO.getEvenementsCivilsNonTraites(nosIndividus);
+		}
+		else {
+			liste = Collections.emptyList();
+		}
+		return liste;
 	}
 
 	/**

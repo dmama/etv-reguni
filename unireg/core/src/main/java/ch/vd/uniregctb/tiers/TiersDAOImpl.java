@@ -374,7 +374,7 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 		            }
 	            }
 
-                final Query queryObject = session.createQuery("select h.numeroIndividu from PersonnePhysique as h where h.id in (:ids) and h.habitant = true");
+                final Query queryObject = session.createQuery("select h.numeroIndividu from PersonnePhysique as h where h.id in (:ids) and h.numeroIndividu is not null");
                 queryObject.setParameterList("ids", allIds);
                 return queryObject.list();
             }

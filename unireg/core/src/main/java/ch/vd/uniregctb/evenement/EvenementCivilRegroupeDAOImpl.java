@@ -197,6 +197,21 @@ public class EvenementCivilRegroupeDAOImpl extends GenericDAOImpl<EvenementCivil
 	}
 
 	@SuppressWarnings("unchecked")
+	public List<EvenementCivilRegroupe> getEvenementsCivilsNonTraites(final List<Long> nosIndividus) {
+		final String s = "SELECT e FROM EvenementCivilRegroupe e WHERE e.etat IN (:etats) AND (e.numeroIndividuPrincipal IN (:col) OR e.numeroIndividuConjoint IN (:col))";
+		final String[] etatsNonTraites = { EtatEvenementCivil.A_TRAITER.name(), EtatEvenementCivil.EN_ERREUR.name() };
+
+		return (List<EvenementCivilRegroupe>) getHibernateTemplate().execute(new HibernateCallback() {
+			public Object doInHibernate(Session session) throws HibernateException, SQLException {
+				final Query query = session.createQuery(s);
+				query.setParameterList("etats", etatsNonTraites);
+				query.setParameterList("col", nosIndividus);
+				return query.list();
+			}
+		});
+	}
+
+	@SuppressWarnings("unchecked")
 	public List<Long> getIdsEvenementCivilsATraites() {
 		return getHibernateTemplate().find("select evtRegroupe.id from EvenementCivilRegroupe evtRegroupe " +
 			"where evtRegroupe.etat = ? order by evtRegroupe.id asc",

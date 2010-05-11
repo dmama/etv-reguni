@@ -48,6 +48,14 @@ public interface EvenementCivilRegroupeDAO extends GenericDAO<EvenementCivilRegr
 	List<Long> getEvenementCivilsNonTraites();
 
 	/**
+	 * Récupère la liste des ids des événements civils dont le statut est A_TRAITE ou EN_ERREUR pour les individus
+	 * dont le numéro est donné en paramètre.
+	 *
+	 * @return une liste d'ids des événements civils regroupés
+	 */
+	List<EvenementCivilRegroupe> getEvenementsCivilsNonTraites(List<Long> nosIndividus);
+
+	/**
 	 * Récupère la liste des ids des événements civils dont le statut est A_TRAITE.
 	 *
 	 * @return une liste d'ids des événements civils regroupés

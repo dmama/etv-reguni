@@ -134,3 +134,9 @@ fieldset.individu + fieldset.individu {
 	font-weight:bold;
 	font-size:xx-small;
 }
+
+.information tr.evts-civils-non-traites {
+	background-color: #ffc4a7;
+	font-weight:bold;
+	font-size:xx-small;
+}
