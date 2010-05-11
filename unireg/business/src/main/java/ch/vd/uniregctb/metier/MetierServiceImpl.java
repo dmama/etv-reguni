@@ -322,35 +322,50 @@ public class MetierServiceImpl implements MetierService {
 					// mais si on a pu trouver un mode d'imposition, c'est qu'il y a un for actif maintenant (on suppose ici
 					// que la date du mariage est dans le passé), donc celui-ci a été ouvert après la date du mariage
 					if (forPrincipal == null && (conjoint != null && forConjoint == null)) {
-
+						final Long noCtb;
 						if (forPrincipal == null) {
-							throw new EvenementCivilHandlerException("Le contribuable n° " + FormatNumeroHelper.numeroCTBToDisplay(principal.getNumero()) + " possède déjà un for ouvert après la date de mariage");
+							noCtb = principal.getNumero();
 						}
 						else {
-							throw new EvenementCivilHandlerException("Le contribuable n° " + FormatNumeroHelper.numeroCTBToDisplay(conjoint.getNumero()) + " possède déjà un for ouvert après la date de mariage");
+							noCtb = conjoint.getNumero();
 						}
+
+						final String msg = String.format("Le contribuable %s possède déjà un for ouvert après la date du mariage", FormatNumeroHelper.numeroCTBToDisplay(noCtb));
+						throw new EvenementCivilHandlerException(msg);
 					}
 					else {
 						final ForFiscalPrincipal ffpPrincipal = principal.getForFiscalPrincipalAt(dateEffective);
-						if (ffpPrincipal != null && dateEffective.equals(ffpPrincipal.getDateDebut()) && MotifFor.MAJORITE == ffpPrincipal.getMotifOuverture()) {
-							// mariage d'une personne physique avec un for le même jour du mariage (motif majorité)
+						if (ffpPrincipal != null && dateEffective.equals(ffpPrincipal.getDateDebut())) {
+							if (MotifFor.MAJORITE == ffpPrincipal.getMotifOuverture()) {
+								// mariage d'une personne physique avec un for le même jour du mariage (motif majorité)
 
-							// annulation du for puisqu'il va être "remplacé" par celui du couple
-							ffpPrincipal.setAnnule(true);
-							noOfsCommune = ffpPrincipal.getNumeroOfsAutoriteFiscale();
-							typeAutoriteCommune = ffpPrincipal.getTypeAutoriteFiscale();
+								// annulation du for puisqu'il va être "remplacé" par celui du couple
+								ffpPrincipal.setAnnule(true);
+								noOfsCommune = ffpPrincipal.getNumeroOfsAutoriteFiscale();
+								typeAutoriteCommune = ffpPrincipal.getTypeAutoriteFiscale();
+							}
+							else {
+								final String msg = String.format("Le contribuable %s possède déjà un for qui s'ouvre à la date du mariage", FormatNumeroHelper.numeroCTBToDisplay(principal.getNumero()));
+								throw new EvenementCivilHandlerException(msg);
+							}
 						}
 
 						if (conjoint != null) {
 							final ForFiscalPrincipal ffpConjoint = conjoint.getForFiscalPrincipalAt(dateEffective);
-							if (ffpConjoint != null && dateEffective.equals(ffpConjoint.getDateDebut()) && MotifFor.MAJORITE == ffpConjoint.getMotifOuverture()) {
-								// mariage d'une personne physique avec un for le même jour du mariage (motif majorité)
+							if (ffpConjoint != null && dateEffective.equals(ffpConjoint.getDateDebut())) {
+								if (MotifFor.MAJORITE == ffpConjoint.getMotifOuverture()) {
+									// mariage d'une personne physique avec un for le même jour du mariage (motif majorité)
 
-								// annulation du for puisqu'il va être "remplacé" par celui du couple
-								ffpConjoint.setAnnule(true);
-								if (noOfsCommune == null) {
-									noOfsCommune = ffpConjoint.getNumeroOfsAutoriteFiscale();
-									typeAutoriteCommune = ffpConjoint.getTypeAutoriteFiscale();
+									// annulation du for puisqu'il va être "remplacé" par celui du couple
+									ffpConjoint.setAnnule(true);
+									if (noOfsCommune == null) {
+										noOfsCommune = ffpConjoint.getNumeroOfsAutoriteFiscale();
+										typeAutoriteCommune = ffpConjoint.getTypeAutoriteFiscale();
+									}
+								}
+								else {
+									final String msg = String.format("Le contribuable %s possède déjà un for qui s'ouvre à la date du mariage", FormatNumeroHelper.numeroCTBToDisplay(conjoint.getNumero()));
+									throw new EvenementCivilHandlerException(msg);
 								}
 							}
 						}
