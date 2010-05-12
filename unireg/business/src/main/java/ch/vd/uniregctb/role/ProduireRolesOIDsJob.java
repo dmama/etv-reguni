@@ -71,31 +71,23 @@ public class ProduireRolesOIDsJob extends AbstractProduireRolesJob {
 
 		final Integer noColOID = (Integer) params.get(NO_COL_OFFICE_IMPOT);
 
-		final RolesOIDsRapport rapport;
+		final ProduireRolesOIDsResults[] results;
 		if (noColOID != null) {
-			final ProduireRolesOIDsResults results = getService().produireRolesPourUnOfficeImpot(annee, noColOID, nbThreads, statusManager);
-
-			// Produit le rapport dans une transaction read-write.
-			final TransactionTemplate template = new TransactionTemplate(getTransactionManager());
-			template.setReadOnly(false);
-			rapport = (RolesOIDsRapport) template.execute(new TransactionCallback() {
-				public Object doInTransaction(TransactionStatus status) {
-					return getRapportService().generateRapport(new ProduireRolesOIDsResults[] { results }, dateTraitement, statusManager);
-				}
-			});
+			final ProduireRolesOIDsResults resultsUnOid = getService().produireRolesPourUnOfficeImpot(annee, noColOID, nbThreads, statusManager);
+			results = new ProduireRolesOIDsResults[] { resultsUnOid };
 		}
 		else {
-			final ProduireRolesOIDsResults[] results = getService().produireRolesPourTousOfficesImpot(annee, nbThreads, statusManager);
-
-			// Produit le rapport dans une transaction read-write.
-			final TransactionTemplate template = new TransactionTemplate(getTransactionManager());
-			template.setReadOnly(false);
-			rapport = (RolesOIDsRapport) template.execute(new TransactionCallback() {
-				public Object doInTransaction(TransactionStatus status) {
-					return getRapportService().generateRapport(results, dateTraitement, statusManager);
-				}
-			});
+			results = getService().produireRolesPourTousOfficesImpot(annee, nbThreads, statusManager);
 		}
+
+		// Produit le rapport dans une transaction read-write.
+		final TransactionTemplate template = new TransactionTemplate(getTransactionManager());
+		template.setReadOnly(false);
+		final RolesOIDsRapport rapport = (RolesOIDsRapport) template.execute(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				return getRapportService().generateRapport(results, dateTraitement, statusManager);
+			}
+		});
 
 		setLastRunReport(rapport);
 		Audit.success("La production des rôles (OID) pour l'année " + annee + " est terminée.", rapport);
