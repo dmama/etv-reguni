@@ -3,6 +3,7 @@ package ch.vd.uniregctb.tiers.validator;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
@@ -18,6 +19,7 @@ import ch.vd.uniregctb.tiers.AutreCommunaute;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.tiers.view.TiersEditView;
 import ch.vd.uniregctb.utils.AVSValidator;
 import ch.vd.uniregctb.utils.EAN13CheckDigitOperation;
@@ -27,15 +29,22 @@ import ch.vd.uniregctb.utils.ValidateHelper;
  * Validateur de l'objet du meme nom.
  *
  * @author Akram BEN AISSI <mailto:akram.ben-aissi@vd.ch>
- *
  */
 public class TiersEditValidator implements Validator {
 
+
 	private IbanValidator ibanValidator;
+
+	private TiersService tiersService;
 
 	public void setIbanValidator(IbanValidator ibanValidator) {
 		this.ibanValidator = ibanValidator;
 	}
+
+	public void setTiersService(TiersService tiersService) {
+		this.tiersService = tiersService;
+	}
+
 
 	/**
 	 * @see org.springframework.validation.Validator#supports(java.lang.Class)
@@ -48,6 +57,7 @@ public class TiersEditValidator implements Validator {
 	/**
 	 * @see org.springframework.validation.Validator#validate(java.lang.Object, org.springframework.validation.Errors)
 	 */
+	@Transactional(readOnly=true)
 	public void validate(Object obj, Errors errors) {
 		TiersEditView tiersView = (TiersEditView) obj;
 		if (tiersView != null) {
@@ -188,12 +198,18 @@ public class TiersEditValidator implements Validator {
 				}
 
 				if (StringUtils.isNotBlank(tiers.getNumeroCompteBancaire())) {
-					try {
-						ibanValidator.validate(tiers.getNumeroCompteBancaire());
-					}
-					catch (IbanValidationException e) {
-						errors.rejectValue("tiers.numeroCompteBancaire", "error.iban");
-						errors.reject("onglet.error.complements");
+					//[UNIREG-1449] il ne faudrait pas bloquer la sauvegarde de la page des "compléments" si l'IBAN, inchangé, est invalide. 
+					Tiers tiersInBase = tiersService.getTiers(tiers.getNumero());
+					if (!tiers.getNumeroCompteBancaire().equals(tiersInBase.getNumeroCompteBancaire())) {
+
+
+						try {
+							ibanValidator.validate(tiers.getNumeroCompteBancaire());
+						}
+						catch (IbanValidationException e) {
+							errors.rejectValue("tiers.numeroCompteBancaire", "error.iban");
+							errors.reject("onglet.error.complements");
+						}
 					}
 				}
 
