@@ -489,7 +489,14 @@ public abstract class MockServiceCivil extends ServiceCivilServiceBase {
 	}
 
 	public List<Individu> getIndividus(Collection<Long> nosIndividus, int annee, EnumAttributeIndividu... parties) {
-		throw new NotImplementedException();
+		final List<Individu> individus = new ArrayList<Individu>(nosIndividus.size());
+		for (Long noIndividu : nosIndividus) {
+			final Individu individu = getIndividu(noIndividu, annee, parties);
+			if (individu != null) {
+				individus.add(individu);
+			}
+		}
+		return individus;
 	}
 
 	public void setUp(ServiceCivilService target) {
