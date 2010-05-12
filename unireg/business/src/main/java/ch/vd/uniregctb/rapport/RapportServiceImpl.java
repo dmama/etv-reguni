@@ -19,7 +19,8 @@ import ch.vd.uniregctb.metier.FusionDeCommunesResults;
 import ch.vd.uniregctb.metier.OuvertureForsResults;
 import ch.vd.uniregctb.mouvement.DeterminerMouvementsDossiersEnMasseResults;
 import ch.vd.uniregctb.registrefoncier.RapprocherCtbResults;
-import ch.vd.uniregctb.role.ProduireRolesResults;
+import ch.vd.uniregctb.role.ProduireRolesCommunesResults;
+import ch.vd.uniregctb.role.ProduireRolesOIDsResults;
 import ch.vd.uniregctb.situationfamille.ReinitialiserBaremeDoubleGainResults;
 import ch.vd.uniregctb.stats.evenements.StatsEvenementsCivilsResults;
 import ch.vd.uniregctb.stats.evenements.StatsEvenementsExternesResults;
@@ -189,7 +190,7 @@ public class RapportServiceImpl implements RapportService {
 	/**
 	 * {@inheritDoc}
 	 */
-	public RolesCommunesRapport generateRapport(final ProduireRolesResults results, final StatusManager s) {
+	public RolesCommunesRapport generateRapport(final ProduireRolesCommunesResults results, final StatusManager s) {
 
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 
@@ -201,6 +202,32 @@ public class RapportServiceImpl implements RapportService {
 			return docService.newDoc(RolesCommunesRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<RolesCommunesRapport>() {
 				public void writeDoc(RolesCommunesRapport doc, OutputStream os) throws Exception {
 					final PdfRolesCommunesRapport document = new PdfRolesCommunesRapport(infraService);
+					document.write(results, nom, description, dateGeneration, os, status);
+				}
+			});
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	/**
+	 * Genère le rapport (PDF) des rôles des contribuables pour un ou plusieurs OID donné(s)
+	 * @param results le résultat de l'exécution du job de production des rôles pour un ou plusieurs OID.
+	 * @return le rapport
+	 */
+	public RolesOIDsRapport generateRapport(final ProduireRolesOIDsResults[] results, RegDate dateTraitement, StatusManager s) {
+
+		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
+
+		final String nom = "RolesOIDs" + dateTraitement.index();
+		final String description = "Rapport des rôles pour les OID." + ". Date de traitement = " + dateTraitement;
+		final Date dateGeneration = new Date();
+
+		try {
+			return docService.newDoc(RolesOIDsRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<RolesOIDsRapport>() {
+				public void writeDoc(RolesOIDsRapport doc, OutputStream os) throws Exception {
+					final PdfRolesOIDsRapport document = new PdfRolesOIDsRapport(infraService);
 					document.write(results, nom, description, dateGeneration, os, status);
 				}
 			});

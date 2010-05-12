@@ -212,16 +212,22 @@
 		<property name="rapportService" ref="rapportService"/>
 	</bean>
 
-    <bean id="produireRolesCommunesJob" parent="schedulerJob" class="ch.vd.uniregctb.role.ProduireRolesCommunesJob">
+	<bean id="abstractProduireRolesJob" parent="schedulerJob" abstract="true" class="ch.vd.uniregctb.role.AbstractProduireRolesJob">
+		<property name="service" ref="roleService"/>
+		<property name="rapportService" ref="rapportService"/>
+		<property name="transactionManager" ref="transactionManager"/>
+	</bean>
+    <bean id="produireRolesCommunesJob" parent="abstractProduireRolesJob" class="ch.vd.uniregctb.role.ProduireRolesCommunesJob">
         <constructor-arg value="600"/>
         <constructor-arg value="Produire les rôles pour les communes vaudoises"/>
-        <property name="service" ref="roleService"/>
-        <property name="rapportService" ref="rapportService"/>
-        <property name="transactionManager" ref="transactionManager"/>
+    </bean>
+    <bean id="produireRolesOIDsJob" parent="abstractProduireRolesJob" class="ch.vd.uniregctb.role.ProduireRolesOIDsJob">
+        <constructor-arg value="601"/>
+        <constructor-arg value="Produire les rôles pour les OID vaudois"/>
     </bean>
 
     <bean id="produireStatsJob" parent="schedulerJob" class="ch.vd.uniregctb.declaration.ProduireStatsJob">
-        <constructor-arg value="601"/>
+        <constructor-arg value="602"/>
         <constructor-arg value="Produire les statistiques sur les DIs ou les contribuables"/>
         <constructor-arg>
             <map>
@@ -240,7 +246,7 @@
     </bean>
 
     <bean id="listeDINonEmisesJob" parent="schedulerJob" class="ch.vd.uniregctb.declaration.ListeDINonEmisesJob">
-        <constructor-arg value="602"/>
+        <constructor-arg value="603"/>
         <constructor-arg value="Produire la liste des DIs non émises"/>
         <property name="service" ref="diService"/>
         <property name="rapportService" ref="rapportService"/>
@@ -250,7 +256,7 @@
 
     <bean id="listesNominativesJob" parent="schedulerJob"
           class="ch.vd.uniregctb.listes.listesnominatives.ListesNominativesJob">
-        <constructor-arg value="603"/>
+        <constructor-arg value="604"/>
         <constructor-arg
                 value="Produire la liste nominative des personnes physiques et débiteurs de prestation imposable"/>
         <property name="service" ref="listesTiersService"/>
@@ -259,7 +265,7 @@
     </bean>
 
     <bean id="acomptesJob" parent="schedulerJob" class="ch.vd.uniregctb.acomptes.AcomptesJob">
-        <constructor-arg value="604"/>
+        <constructor-arg value="605"/>
         <constructor-arg value="Produire les populations pour les bases acomptes"/>
         <property name="service" ref="acomptesService"/>
         <property name="rapportService" ref="rapportService"/>
@@ -267,7 +273,7 @@
     </bean>
 
     <bean id="validationJob" parent="schedulerJob" class="ch.vd.uniregctb.validation.ValidationJob">
-        <constructor-arg value="605"/>
+        <constructor-arg value="606"/>
         <constructor-arg
                 value="Valider tous les contribuables et générer un rapport d'erreurs pour ceux qui ne conviennent pas"/>
         <property name="tiersDAO" ref="tiersDAO"/>
@@ -279,7 +285,7 @@
     </bean>
     <bean id="listeTachesEnIstanceParOIDJob" parent="schedulerJob"
           class="ch.vd.uniregctb.tache.ListeTachesEnIstanceParOIDJob">
-        <constructor-arg value="606"/>
+        <constructor-arg value="607"/>
         <constructor-arg value="Générer la liste des tâche en instance par OID"/>
         <property name="service" ref="tacheService"/>
         <property name="rapportService" ref="rapportService"/>
@@ -287,7 +293,7 @@
     </bean>
 	<bean id="listeSuissesOuPermisCResidentSansForVaudoisJob" parent="schedulerJob"
 		  class="ch.vd.uniregctb.listes.suisseoupermiscresident.ListeContribuablesResidentsSansForVaudoisJob">
-		<constructor-arg value="607"/>
+		<constructor-arg value="608"/>
 		<constructor-arg
 				value="Produire la liste des contribuables suisses ou titulaires d'un permis C, résidents mais sans for vaudois"/>
 		<property name="service" ref="listesTiersService"/>
@@ -295,7 +301,7 @@
 		<property name="transactionManager" ref="transactionManager"/>
 	</bean>
 	<bean id="statistiquesEvenementsJob" parent="schedulerJob" class="ch.vd.uniregctb.stats.evenements.StatistiquesEvenementsJob">
-		<constructor-arg value="608"/>
+		<constructor-arg value="609"/>
 		<constructor-arg value="Fournir quelques statistiques sur les événements reçus par Unireg"/>
 		<property name="service" ref="statistiquesEvenementsService"/>
 		<property name="rapportService" ref="rapportService"/>

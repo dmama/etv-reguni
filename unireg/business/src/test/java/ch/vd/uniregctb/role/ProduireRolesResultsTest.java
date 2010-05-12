@@ -33,7 +33,7 @@ public class ProduireRolesResultsTest extends BusinessTest {
 
 		adresseService = getBean(AdresseService.class, "adresseService");
 
-		results = new ProduireRolesResults(anneeRoles, 1, dateTraitement);
+		results = new ProduireRolesResults(anneeRoles, 1, dateTraitement) {};
 	}
 
 	private PersonnePhysique addNonHabitantAvecAdresseCourierALausanne() {

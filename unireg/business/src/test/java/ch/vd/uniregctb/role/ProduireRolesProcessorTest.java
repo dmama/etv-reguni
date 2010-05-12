@@ -50,10 +50,10 @@ import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
-public class ProduireRolesCommuneProcessorTest extends BusinessTest {
+public class ProduireRolesProcessorTest extends BusinessTest {
 
 	private HibernateTemplate hibernateTemplate;
-	private ProduireRolesCommuneProcessor processor;
+	private ProduireRolesProcessor processor;
 
 	private static final String DB_UNIT_CTB_INVALIDE = "ContribuableInvalideTest.xml";
 
@@ -69,7 +69,7 @@ public class ProduireRolesCommuneProcessorTest extends BusinessTest {
 		final ServiceCivilService serviceCivilService = getBean(ServiceCivilService.class, "serviceCivilService");
 
 		// création du processeur à la main de manière à pouvoir appeler les méthodes protégées
-		processor = new ProduireRolesCommuneProcessor(hibernateTemplate, infraService, tiersDAO, transactionManager, adresseService, tiersService, serviceCivilService);
+		processor = new ProduireRolesProcessor(hibernateTemplate, infraService, tiersDAO, transactionManager, adresseService, tiersService, serviceCivilService);
 	}
 
 	@Test
@@ -354,14 +354,14 @@ public class ProduireRolesCommuneProcessorTest extends BusinessTest {
 		addForPrincipal(toto, date(2000, 1, 1), MotifFor.MAJORITE, MockCommune.Lausanne);
 		final DecompositionForsAnneeComplete fors = new DecompositionForsAnneeComplete(toto, 2007);
 
-		assertEquals(TypeContribuable.ORDINAIRE, ProduireRolesCommuneProcessor.getTypeContribuable(new VaudoisOrdinaire(toto, null, null, null, null)));
-		assertEquals(TypeContribuable.ORDINAIRE, ProduireRolesCommuneProcessor.getTypeContribuable(new Indigent(toto, null, null, null, null)));
-		assertEquals(TypeContribuable.DEPENSE, ProduireRolesCommuneProcessor.getTypeContribuable(new VaudoisDepense(toto, null, null, null, null)));
-		assertEquals(TypeContribuable.MIXTE, ProduireRolesCommuneProcessor.getTypeContribuable(new SourcierMixte(toto, null, null, null, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD)));
-		assertEquals(TypeContribuable.HORS_CANTON, ProduireRolesCommuneProcessor.getTypeContribuable(new HorsCanton(toto, null, null, null, null)));
-		assertEquals(TypeContribuable.HORS_SUISSE, ProduireRolesCommuneProcessor.getTypeContribuable(new HorsSuisse(toto, null, null, null, null)));
-		assertEquals(TypeContribuable.SOURCE, ProduireRolesCommuneProcessor.getTypeContribuable(new SourcierPur(toto, null, null, null, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD)));
-		assertNull(ProduireRolesCommuneProcessor.getTypeContribuable(new DiplomateSuisse(toto, null, null, null, null)));
+		assertEquals(TypeContribuable.ORDINAIRE, ProduireRolesProcessor.getTypeContribuable(new VaudoisOrdinaire(toto, null, null, null, null)));
+		assertEquals(TypeContribuable.ORDINAIRE, ProduireRolesProcessor.getTypeContribuable(new Indigent(toto, null, null, null, null)));
+		assertEquals(TypeContribuable.DEPENSE, ProduireRolesProcessor.getTypeContribuable(new VaudoisDepense(toto, null, null, null, null)));
+		assertEquals(TypeContribuable.MIXTE, ProduireRolesProcessor.getTypeContribuable(new SourcierMixte(toto, null, null, null, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD)));
+		assertEquals(TypeContribuable.HORS_CANTON, ProduireRolesProcessor.getTypeContribuable(new HorsCanton(toto, null, null, null, null)));
+		assertEquals(TypeContribuable.HORS_SUISSE, ProduireRolesProcessor.getTypeContribuable(new HorsSuisse(toto, null, null, null, null)));
+		assertEquals(TypeContribuable.SOURCE, ProduireRolesProcessor.getTypeContribuable(new SourcierPur(toto, null, null, null, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD)));
+		assertNull(ProduireRolesProcessor.getTypeContribuable(new DiplomateSuisse(toto, null, null, null, null)));
 	}
 
 	@Test

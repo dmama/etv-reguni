@@ -24,7 +24,8 @@ import ch.vd.uniregctb.metier.FusionDeCommunesResults;
 import ch.vd.uniregctb.metier.OuvertureForsResults;
 import ch.vd.uniregctb.mouvement.DeterminerMouvementsDossiersEnMasseResults;
 import ch.vd.uniregctb.registrefoncier.RapprocherCtbResults;
-import ch.vd.uniregctb.role.ProduireRolesResults;
+import ch.vd.uniregctb.role.ProduireRolesCommunesResults;
+import ch.vd.uniregctb.role.ProduireRolesOIDsResults;
 import ch.vd.uniregctb.situationfamille.ReinitialiserBaremeDoubleGainResults;
 import ch.vd.uniregctb.stats.evenements.StatsEvenementsCivilsResults;
 import ch.vd.uniregctb.stats.evenements.StatsEvenementsExternesResults;
@@ -84,7 +85,15 @@ public interface RapportService {
 	 *
 	 * @return le rapport
 	 */
-	RolesCommunesRapport generateRapport(final ProduireRolesResults results, StatusManager status);
+	RolesCommunesRapport generateRapport(final ProduireRolesCommunesResults results, StatusManager status);
+
+	/**
+	 * Genère le rapport (PDF) des rôles des contribuables pour un OID donné
+	 * @param results le résultat de l'exécution du job de production des rôles pour un OID.
+	 * @param dateTraitement date du traitement
+	 * @return le rapport
+	 */
+	RolesOIDsRapport generateRapport(final ProduireRolesOIDsResults[] results, RegDate dateTraitement, StatusManager status);
 
 	/**
 	 * Genère le rapport (PDF) des statistiques sur les déclaration d'impôt ordinaires.
