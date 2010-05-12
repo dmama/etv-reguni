@@ -14,7 +14,6 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.DateRangeHelper.Range;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
-import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.webservices.tiers.impl.Context;
 import ch.vd.uniregctb.webservices.tiers.impl.DataHelper;
 
@@ -200,7 +199,7 @@ public abstract class TiersHisto {
 		this.isDebiteurInactif = tiers.isDebiteurInactif();
 
 		final String numero = tiers.getNumeroCompteBancaire();
-		if (numero != null && !"".equals(numero)) {
+		if (numero != null && !"".equals(numero) && context.ibanValidator.isValidIban(numero)) {
 			this.comptesBancaires = new ArrayList<CompteBancaire>();
 			comptesBancaires.add(new CompteBancaire(tiers, context));
 		}

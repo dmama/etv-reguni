@@ -7,7 +7,7 @@ import org.junit.Test;
 
 import ch.vd.uniregctb.common.BusinessTest;
 
-public class IbanValidatorTest extends BusinessTest{
+public class IbanValidatorTest extends BusinessTest {
 
 	private static final Logger LOGGER = Logger.getLogger(IbanValidatorTest.class);
 
@@ -19,7 +19,9 @@ public class IbanValidatorTest extends BusinessTest{
 		LOGGER.debug("Début de testValidate");
 		ibanValidator = getBean(IbanValidator.class, "ibanValidator");
 		try {
+
 			ibanValidator.validate("CH9308440717427290198");
+
 		}
 		catch (IbanValidationException e) {
 			LOGGER.error("Impossible de valider l'iban CH9300762011623852957", e);
@@ -38,6 +40,22 @@ public class IbanValidatorTest extends BusinessTest{
 
 		final String clearingCh = ibanValidator.getClearing("CH9300762011623852957");
 		Assert.assertEquals("00762", clearingCh);
+	}
+
+	@Test
+	public void testPerfIbanValidator() {
+		LOGGER.debug("Début de testValidate");
+		ibanValidator = getBean(IbanValidator.class, "ibanValidator");
+		try {
+			long startTime = System.currentTimeMillis();
+			ibanValidator.validate("CH9308440717427290198");
+			long time = System.currentTimeMillis() - startTime;
+			LOGGER.info("Temps d'execution: " + time+" ms");
+		}
+		catch (IbanValidationException e) {
+			LOGGER.error("Impossible de valider l'iban CH9300762011623852957", e);
+			Assert.fail();
+		}
 	}
 
 }
