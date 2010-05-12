@@ -13,5 +13,6 @@
 	
 	<bean id="complementEditValidator" class="ch.vd.uniregctb.tiers.validator.ComplementEditValidator" >
 		<property name="ibanValidator" ref="ibanValidator" />
+		<property name="tiersService" ref="tiersService" />
 	</bean>
 </beans>

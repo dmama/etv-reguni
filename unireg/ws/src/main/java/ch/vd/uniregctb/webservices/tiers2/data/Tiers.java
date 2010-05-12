@@ -192,7 +192,7 @@ public abstract class Tiers {
 
 		if (parts != null && parts.contains(TiersPart.COMPTES_BANCAIRES)) {
 			final String numero = tiers.getNumeroCompteBancaire();
-			if (numero != null && !"".equals(numero)) {
+			if (numero != null && !"".equals(numero)  && context.ibanValidator.isValidIban(numero)) {
 				this.comptesBancaires = new ArrayList<CompteBancaire>();
 				comptesBancaires.add(new CompteBancaire(tiers, context));
 			}

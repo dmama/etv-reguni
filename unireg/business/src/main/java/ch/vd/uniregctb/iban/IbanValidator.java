@@ -73,6 +73,16 @@ public class IbanValidator {
 		validateClearing(iban);
 	}
 
+	public boolean isValidIban(String iban){
+		try{
+			validate(iban);
+		}
+		catch(IbanValidationException e){
+			return false;
+		}
+		return true;
+	}
+
 	/**
 	 * Valide la longueur de l'iban. Utilise la table ISO 3166-1 pour connaitre
 	 * la longueur requise selon le pays.
@@ -81,7 +91,7 @@ public class IbanValidator {
 	 *            le code IBAN à tester
 	 * @throws IbanBadLengthException
 	 *             si la longueur est incorrecte.
-	 * @throws IbanUnknownCountry
+	 * @throws IbanUnknownCountryException
 	 *             si le code pays est inconnu
 	 */
 	private void validateLength(String iban) throws IbanBadLengthException, IbanUnknownCountryException {
@@ -162,7 +172,7 @@ public class IbanValidator {
 	 *
 	 * @param iban
 	 *            le code IBAN à tester
-	 * @throws IbanBadClearingException
+	 * @throws IbanBadClearingNumberException
 	 *             si le numéro de clearing bancaire ne correspond à aucun établissement.
 	 */
 	private void validateClearing(String iban) throws IbanBadClearingNumberException {
