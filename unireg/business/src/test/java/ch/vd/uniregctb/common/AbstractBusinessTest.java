@@ -1,10 +1,21 @@
 package ch.vd.uniregctb.common;
 
+import java.sql.SQLException;
+
+import org.hibernate.HibernateException;
+import org.hibernate.Session;
+import org.junit.Assert;
+import org.springframework.orm.hibernate3.HibernateCallback;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.support.TransactionCallback;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseEtrangere;
 import ch.vd.uniregctb.adresse.AdresseSuisse;
-import ch.vd.uniregctb.declaration.*;
-import ch.vd.uniregctb.evenement.EvenementCivilUnitaire;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
+import ch.vd.uniregctb.declaration.DeclarationImpotSource;
+import ch.vd.uniregctb.declaration.ModeleDocument;
+import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.uniregctb.interfaces.model.Pays;
@@ -13,19 +24,34 @@ import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.tiers.*;
-import ch.vd.uniregctb.type.*;
-import org.hibernate.HibernateException;
-import org.hibernate.Session;
-import org.junit.Assert;
-import org.springframework.orm.hibernate3.HibernateCallback;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.transaction.support.TransactionCallback;
+import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
+import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
+import ch.vd.uniregctb.tiers.ForDebiteurPrestationImposable;
+import ch.vd.uniregctb.tiers.ForFiscalAutreElementImposable;
+import ch.vd.uniregctb.tiers.ForFiscalAutreImpot;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
+import ch.vd.uniregctb.tiers.MenageCommun;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.tiers.SituationFamille;
+import ch.vd.uniregctb.tiers.SituationFamilleMenageCommun;
+import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.type.CategorieImpotSource;
+import ch.vd.uniregctb.type.GenreImpot;
+import ch.vd.uniregctb.type.ModeCommunication;
+import ch.vd.uniregctb.type.ModeImposition;
+import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.MotifRattachement;
+import ch.vd.uniregctb.type.PeriodiciteDecompte;
+import ch.vd.uniregctb.type.TarifImpotSource;
+import ch.vd.uniregctb.type.TypeAdresseTiers;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.uniregctb.type.TypeContribuable;
 
-import java.sql.SQLException;
-import java.util.Set;
-
-import static junit.framework.Assert.*;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNotNull;
 
 /**
  * @author
@@ -373,23 +399,6 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 		assertNotNull(cedi);
 
 		return addDeclarationImpot(tiers, periode, debut, fin, cedi, typeC, modele);
-	}
-
-	/**
-	 * Crée et ajoute dans la base un événement civil unitaire.
-	 */
-	protected EvenementCivilUnitaire addEvCivUnit(long id, RegDate dateEvenement, MockCommune communeAnnonce, long noIndividu,
-			TypeEvenementCivil type) {
-		EvenementCivilUnitaire e = new EvenementCivilUnitaire();
-		e.setId(id);
-		e.setDateEvenement(dateEvenement);
-		e.setNumeroOfsCommuneAnnonce(communeAnnonce.getNoOFSEtendu());
-		e.setEtat(EtatEvenementCivil.A_TRAITER);
-		e.setNumeroIndividu(noIndividu);
-		e.setType(type);
-
-		e = (EvenementCivilUnitaire) hibernateTemplate.merge(e);
-		return e;
 	}
 
 	protected SituationFamille addSituation(PersonnePhysique pp, RegDate debut, RegDate fin, Integer nombreEnfants) {

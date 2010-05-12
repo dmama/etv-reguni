@@ -123,11 +123,13 @@ public class Ec_18000_17_Arrivee_JIRA1677_Scenario extends EvenementCivilScenari
 	public void etape2() throws Exception {
 
 		final long idEvtOlivier = addEvenementCivil(TypeEvenementCivil.ARRIVEE_PRINCIPALE_HC, noIndOlivier, dateArriveeLausanne, MockCommune.Lausanne.getNoOFS());
-		final long idEvtAlexandra = addEvenementCivil(TypeEvenementCivil.ARRIVEE_PRINCIPALE_HC, noIndAlexandra, dateArriveeLausanne, MockCommune.Lausanne.getNoOFS());
-
 		commitAndStartTransaction();
 		globalIndexer.sync();
 		regroupeEtTraiteEvenements(idEvtOlivier);
+
+		final long idEvtAlexandra = addEvenementCivil(TypeEvenementCivil.ARRIVEE_PRINCIPALE_HC, noIndAlexandra, dateArriveeLausanne, MockCommune.Lausanne.getNoOFS());
+		commitAndStartTransaction();
+		globalIndexer.sync();
 		regroupeEtTraiteEvenements(idEvtAlexandra);
 	}
 

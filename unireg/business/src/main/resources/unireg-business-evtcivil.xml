@@ -16,16 +16,6 @@
 		<property name="transactionManager" ref="transactionManager" />
 	</bean>
 
-	<!-- Gestionnaire d'evenements: le service regroupement des événements civils unitaires -->
-	<bean id="evenementCivilRegrouper" class="ch.vd.uniregctb.evenement.engine.EvenementCivilRegrouperImpl">
-		<property name="evenementCivilUnitaireDAO" ref="evenementCivilUnitaireDAO"/>
-		<property name="evenementCivilRegroupeDAO" ref="evenementCivilRegroupeDAO"/>
-		<property name="tiersDAO" ref="tiersDAO"/>
-		<property name="serviceCivilService" ref="serviceCivilService"/>
-		<property name="dataEventService" ref="dataEventService"/>
-		<property name="transactionManager" ref="transactionManager"/>
-	</bean>
-
 	<!-- Les Handlers d'evt civils -->
 	<bean id="evenementHandler" class="ch.vd.uniregctb.evenement.common.EvenementCivilHandler" abstract="true">
 		<property name="service" ref="tiersService" />

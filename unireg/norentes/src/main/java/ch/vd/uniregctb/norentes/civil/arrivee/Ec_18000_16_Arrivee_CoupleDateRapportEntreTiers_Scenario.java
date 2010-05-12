@@ -72,10 +72,11 @@ public class Ec_18000_16_Arrivee_CoupleDateRapportEntreTiers_Scenario extends Ev
 	@Etape(id = 1, descr = "Envoi de l'événement d'arrivée")
 	public void etape1() throws Exception {
 		final long idAntonio = addEvenementCivil(TypeEvenementCivil.ARRIVEE_PRINCIPALE_HC, noIndAntonio, dateArriveeLausanne, MockCommune.Lausanne.getNoOFS());
-		final long idAnneLaure = addEvenementCivil(TypeEvenementCivil.ARRIVEE_PRINCIPALE_HC, noIndAnneLaure, dateArriveeLausanne, MockCommune.Lausanne.getNoOFS());
-
 		commitAndStartTransaction();
 		regroupeEtTraiteEvenements(idAntonio);
+
+		final long idAnneLaure = addEvenementCivil(TypeEvenementCivil.ARRIVEE_PRINCIPALE_HC, noIndAnneLaure, dateArriveeLausanne, MockCommune.Lausanne.getNoOFS());
+		commitAndStartTransaction();
 		regroupeEtTraiteEvenements(idAnneLaure);
 	}
 

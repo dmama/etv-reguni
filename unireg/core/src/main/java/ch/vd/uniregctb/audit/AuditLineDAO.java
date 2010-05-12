@@ -13,6 +13,8 @@ public interface AuditLineDAO extends GenericDAO<AuditLine, Long> {
 
 	public List<AuditLine> findLastCountFromID(long id, int count);
 
+	public List<AuditLine> find(long evenementCivilId);
+
 	public void insertLineInNewTx(AuditLine line);
 
 	public int count(AuditLineCriteria criteria);

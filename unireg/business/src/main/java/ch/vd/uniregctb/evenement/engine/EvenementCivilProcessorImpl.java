@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.common.StatusManager;
 import org.apache.log4j.Logger;
@@ -27,6 +28,7 @@ import ch.vd.uniregctb.evenement.EvenementCivilRegroupeDAO;
 import ch.vd.uniregctb.evenement.GenericEvenementAdapter;
 import ch.vd.uniregctb.evenement.common.EvenementCivilHandler;
 import ch.vd.uniregctb.interfaces.model.Commune;
+import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -130,6 +132,10 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor, Eve
 					/* 0 - On enlève les erreurs précédentes */
 					evenementCivilRegroupe.getErreurs().clear();
 
+					// Récupération de l'individu
+					final Individu individu = serviceCivilService.getIndividu(evenementCivilRegroupe.getNumeroIndividuPrincipal(), RegDateHelper.getAnneeVeille(evenementCivilRegroupe.getDateEvenement()));
+					Assert.notNull(individu, "Individu inconnu");
+
 					Assert.notNull(evenementCivilRegroupe.getType(), "le type de l'événement n'est pas renseigné");
 					Assert.notNull(evenementCivilRegroupe.getDateEvenement(), "La date de l'événement n'est pas renseigné");
 					Assert.notNull(evenementCivilRegroupe.getNumeroOfsCommuneAnnonce(), "Le numero de la commune d'annonce n'est pas renseigné");
@@ -223,16 +229,20 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor, Eve
 					LOGGER.debug("Initialisation de l'adaptateur associé à l'événement : " + evenementCivilRegroupe.getId() );
 					GenericEvenementAdapter adapter = evenementCivilHandler.createAdapter();
 					//long indP = evenementCivilRegroupe.getNumeroIndividuPrincipal();
+//					LOGGER.debug("adapter.init(evenementCivilRegroupe, serviceCivilService, serviceInfrastructureService)");
 					adapter.init(evenementCivilRegroupe, serviceCivilService, serviceInfrastructureService);
 
 					/* 2.1 - lancement de la validation par le handler */
+//					LOGGER.debug("evenementCivilHandler.checkCompleteness(adapter, erreurs, warnings)");
 					evenementCivilHandler.checkCompleteness(adapter, erreurs, warnings);
 
 					/* 2.2 - lancement de la validation par le handler */
 					if (erreurs.isEmpty()) {
+//						LOGGER.debug("evenementCivilHandler.validate(adapter, erreurs, warnings)");
 						evenementCivilHandler.validate(adapter, erreurs, warnings);
 						/* 2.3 - lancement du traitement par le handler */
 						if (erreurs.isEmpty()) {
+//							LOGGER.debug("evenementCivilHandler.handle(adapter, warnings)");
 							final Pair<PersonnePhysique, PersonnePhysique> nouveauxHabitants = evenementCivilHandler.handle(adapter, warnings);
 
 							// adaptation des données dans l'événement civil regroupé en cas de création de nouveaux habitants
@@ -254,6 +264,7 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor, Eve
 									}
 								}
 							}
+//							LOGGER.debug("done.");
 						}
 						else {
 							Audit.error(adapter.getNumeroEvenement(), "l'événement n'est pas valide");
