@@ -355,10 +355,28 @@ public abstract class PdfRapport extends Document {
 	 * @return une string représentant la durée sous forme humaine.
 	 */
 	protected static String formatDureeExecution(JobResults results) {
+		final long milliseconds = getDureeExecution(results);
+		return formatDureeExecution(milliseconds);
+	}
+
+	/**
+	 * Calcule la durée d'exécution d'un job en millisecondes
+	 * @param results le résultat d'exécution du job
+	 * @return la durée d'exécution, en millisecondes
+	 */
+	protected static long getDureeExecution(JobResults results) {
 		final long start = results.startTime;
 		final long end = results.endTime == 0 ? System.currentTimeMillis() : results.endTime;
-		final long milliseconds = end - start;
+		return end - start;
+	}
 
+	/**
+	 * Formatte une durée d'exécution d'un rapport sous la forme <i>1 jour, 0 heure, 23 minutes et 1 seconde</i>.
+	 *
+	 * @param milliseconds le nombre de milliseconds que le job à duré
+	 * @return une string représentant la durée sous forme humaine.
+	 */
+	protected static String formatDureeExecution(long milliseconds) {
 		final int seconds = (int) ((milliseconds / 1000) % 60);
 		final int minutes = (int) ((milliseconds / 1000) / 60) % 60;
 		final int hours = (int) ((milliseconds / 1000) / 3600) % 24;
@@ -378,7 +396,7 @@ public abstract class PdfRapport extends Document {
 	 */
 	protected static String formatDureeExecution(int days, int hours, int minutes, int seconds) {
 
-		StringBuilder s = new StringBuilder();
+		final StringBuilder s = new StringBuilder();
 
 		if (days > 0) {
 			s.append(days).append(' ').append(pluralize(days, "jour")).append(", ");

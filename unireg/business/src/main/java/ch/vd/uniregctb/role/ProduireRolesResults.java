@@ -38,7 +38,7 @@ import ch.vd.uniregctb.type.MotifRattachement;
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
-public class ProduireRolesResults extends JobResults<Long, ProduireRolesResults> {
+public abstract class ProduireRolesResults extends JobResults<Long, ProduireRolesResults> {
 	
 	private static final Logger LOGGER = Logger.getLogger(ProduireRolesResults.class);
 
@@ -492,28 +492,16 @@ public class ProduireRolesResults extends JobResults<Long, ProduireRolesResults>
 	public final int annee;
 	public final RegDate dateTraitement;
 	public final int nbThreads;
-	/** renseigné en cas de sélection d'une seule commune */
-	public final Integer noOfsCommune;
-	/** renseigné en cas de sélection d'un office d'impôt */
-	public final Integer noColOID;
 
 	// données de sortie
 	public final Map<Integer, InfoCommune> infosCommunes = new HashMap<Integer, InfoCommune>();
 	public int ctbsTraites = 0;
-	public List<Ignore> ctbsIgnores = new ArrayList<Ignore>();
-	public List<Erreur> ctbsEnErrors = new ArrayList<Erreur>();
+	public final List<Ignore> ctbsIgnores = new ArrayList<Ignore>();
+	public final List<Erreur> ctbsEnErrors = new ArrayList<Erreur>();
 	public boolean interrompu;
 
-	/** résultats pour toutes les communes vaudoises */
 	public ProduireRolesResults(int anneePeriode, int nbThreads, RegDate dateTraitement) {
-		this(anneePeriode, null, null, nbThreads, dateTraitement);
-	}
-
-	/** résultats pour une seule commune vaudoise ou un seul office d'impôt */
-	public ProduireRolesResults(int anneePeriode, Integer noOfsCommune, Integer noColOID, int nbThreads, RegDate dateTraitement) {
 		this.annee = anneePeriode;
-		this.noOfsCommune = noOfsCommune;
-		this.noColOID = noColOID;
 		this.nbThreads = nbThreads;
 		this.dateTraitement = dateTraitement;
 	}

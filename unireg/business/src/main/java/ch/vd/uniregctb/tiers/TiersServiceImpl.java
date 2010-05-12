@@ -437,24 +437,24 @@ public class TiersServiceImpl implements TiersService {
 		return collectivite;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public Sexe getSexe(PersonnePhysique pp) {
-		return getSexe(pp, 2400);
+	private static interface IndividuProvider {
+		Individu getIndividu(PersonnePhysique pp);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public Sexe getSexe(PersonnePhysique pp, int annee) {
+	private final IndividuProvider individuProviderWithoutDate = new IndividuProvider() {
+		public Individu getIndividu(PersonnePhysique pp) {
+			return TiersServiceImpl.this.getIndividu(pp);
+		}
+	};
+
+	private Sexe getSexe(PersonnePhysique pp, IndividuProvider indProvider) {
 		if (pp == null) {
 			return null;
 		}
 
 		final Sexe sexe;
 		if (pp.isHabitant()) {
-			final Individu individu = getIndividu(pp, annee, null);
+			final Individu individu = indProvider.getIndividu(pp);
 			if (individu == null) {
 				throw new IndividuNotFoundException(pp);
 			}
@@ -464,6 +464,24 @@ public class TiersServiceImpl implements TiersService {
 			sexe = pp.getSexe();
 		}
 		return sexe;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public Sexe getSexe(PersonnePhysique pp) {
+		return getSexe(pp, individuProviderWithoutDate);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public Sexe getSexe(PersonnePhysique pp, final int annee) {
+		return getSexe(pp, new IndividuProvider() {
+			public Individu getIndividu(PersonnePhysique pp) {
+				return TiersServiceImpl.this.getIndividu(pp, annee, null);
+			}
+		});
 	}
 
 	/**

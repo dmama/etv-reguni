@@ -54,31 +54,39 @@ public class RoleServiceImpl implements RoleService {
 		this.serviceCivilService = serviceCivilService;
 	}
 
-	private ProduireRolesCommuneProcessor createProcessor() {
-		return new ProduireRolesCommuneProcessor(hibernateTemplate, infraService, tiersDAO, transactionManager, adresseService, tiersService, serviceCivilService);
+	private ProduireRolesProcessor createProcessor() {
+		return new ProduireRolesProcessor(hibernateTemplate, infraService, tiersDAO, transactionManager, adresseService, tiersService, serviceCivilService);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public ProduireRolesResults produireRolesPourToutesCommunes(int anneePeriode, int nbThreads, StatusManager status) throws ServiceException {
-		final ProduireRolesCommuneProcessor processor = createProcessor();
+	public ProduireRolesCommunesResults produireRolesPourToutesCommunes(int anneePeriode, int nbThreads, StatusManager status) throws ServiceException {
+		final ProduireRolesProcessor processor = createProcessor();
 		return processor.runPourToutesCommunes(anneePeriode, nbThreads, status);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public ProduireRolesResults produireRolesPourUneCommune(int anneePeriode, int noOfsCommune, int nbThreads, StatusManager status) throws ServiceException {
-		final ProduireRolesCommuneProcessor processor = createProcessor();
+	public ProduireRolesCommunesResults produireRolesPourUneCommune(int anneePeriode, int noOfsCommune, int nbThreads, StatusManager status) throws ServiceException {
+		final ProduireRolesProcessor processor = createProcessor();
 		return processor.runPourUneCommune(anneePeriode, noOfsCommune, nbThreads, status);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public ProduireRolesResults produireRolesPourUnOfficeImpot(int anneePeriode, int oid, int nbThreads, StatusManager status) throws ServiceException {
-		final ProduireRolesCommuneProcessor processor = createProcessor();
+	public ProduireRolesOIDsResults produireRolesPourUnOfficeImpot(int anneePeriode, int oid, int nbThreads, StatusManager status) throws ServiceException {
+		final ProduireRolesProcessor processor = createProcessor();
 		return processor.runPourUnOfficeImpot(anneePeriode, oid, nbThreads, status);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public ProduireRolesOIDsResults[] produireRolesPourTousOfficesImpot(int anneePeriode, int nbThreads, StatusManager status) throws ServiceException {
+		final ProduireRolesProcessor processor = createProcessor();
+		return processor.runPourTousOfficesImpot(anneePeriode, nbThreads, status);
 	}
 }

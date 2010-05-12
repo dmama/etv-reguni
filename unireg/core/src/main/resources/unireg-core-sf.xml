@@ -96,6 +96,7 @@
 				<value>ch.vd.uniregctb.document.MajoriteRapport</value>
 				<value>ch.vd.uniregctb.document.FusionDeCommunesRapport</value>
 				<value>ch.vd.uniregctb.document.RolesCommunesRapport</value>
+				<value>ch.vd.uniregctb.document.RolesOIDsRapport</value>
 				<value>ch.vd.uniregctb.document.StatistiquesDIsRapport</value>
 				<value>ch.vd.uniregctb.document.StatistiquesCtbsRapport</value>
 				<value>ch.vd.uniregctb.document.ListeDIsNonEmisesRapport</value>
