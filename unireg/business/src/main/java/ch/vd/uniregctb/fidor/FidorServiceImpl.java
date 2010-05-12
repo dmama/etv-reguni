@@ -86,7 +86,7 @@ public class FidorServiceImpl implements FidorService {
 			synchronized (this) {
 				if (patternSipf == null) {
 					final FidorPortType service = initWebService(serviceUrl, username, password);
-					patternTaoPP = getUrl(service, "TAOPP", "default");
+					patternTaoPP = getUrl(service, "TAOPP", "synthese");
 					patternTaoBA = getUrl(service, "TAOBA", "dossier");
 					patternTaoIS = getUrl(service, "TAOIS", "default");
 					patternSipf = getUrl(service, "SIPF", "default");
