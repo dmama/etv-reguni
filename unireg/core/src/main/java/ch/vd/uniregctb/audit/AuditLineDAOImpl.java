@@ -126,6 +126,22 @@ public class AuditLineDAOImpl extends GenericDAOImpl<AuditLine, Long> implements
 		return list;
 	}
 
+	@SuppressWarnings({"unchecked", "UnnecessaryLocalVariable"})
+	public List<AuditLine> find(final long evenementCivilId) {
+
+		final String query = "FROM AuditLine line WHERE line.evenementId = :id ORDER BY line.id ASC";
+
+		final List<AuditLine> list = (List<AuditLine>) getHibernateTemplate().execute(new HibernateCallback() {
+			public Object doInHibernate(Session session) throws HibernateException {
+				Query queryObject = session.createQuery(query);
+				queryObject.setParameter("id", evenementCivilId);
+				return queryObject.list();
+			}
+		});
+
+		return list;
+	}
+
 	/**
 	 *
 	 * @see ch.vd.uniregctb.audit.AuditLineDAO#insertLineInNewTx(ch.vd.uniregctb.audit.AuditLine)

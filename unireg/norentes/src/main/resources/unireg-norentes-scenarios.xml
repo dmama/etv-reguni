@@ -10,8 +10,7 @@
 							http://www.springframework.org/schema/util
 							http://www.springframework.org/schema/util/spring-util-2.0.xsd">
 
-	<bean id="norentesFrameworkTestScenario" parent="evenementCivilScenario"
-		class="ch.vd.uniregctb.norentes.common.NorentesFrameworkTestScenario" />
+	<bean id="norentesFrameworkTestScenario" parent="evenementCivilScenario" class="ch.vd.uniregctb.norentes.common.NorentesFrameworkTestScenario" />
 
 	<bean id="ec_0_01_Ech99Scenario" parent="evenementCivilScenario" class="ch.vd.uniregctb.norentes.civil.ignore.Ec_0_01_Ech99_Scenario">
 		<property name="evtCivilRegroupeDAO" ref="evenementCivilRegroupeDAO" />

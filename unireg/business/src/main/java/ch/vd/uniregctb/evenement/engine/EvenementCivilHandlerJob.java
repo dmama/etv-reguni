@@ -10,11 +10,10 @@ public class EvenementCivilHandlerJob extends JobDefinition {
 	public static String NAME = "EvenementCivilHandlerJob";
 	private static final String CATEGORIE = "Events";
 
-	EvenementCivilRegrouper regrouper = null;
 	EvenementCivilProcessor processor = null;
 
 	public EvenementCivilHandlerJob(int sortOrder) {
-		super(NAME, CATEGORIE, sortOrder, "Regroupement et traitement des Evénements civils");
+		super(NAME, CATEGORIE, sortOrder, "Traitement (ou retraitement) des événements civils");
 	}
 
 	@Override
@@ -22,11 +21,7 @@ public class EvenementCivilHandlerJob extends JobDefinition {
 
 		final StatusManager status = getStatusManager();
 
-		/* 1 - Regroupement des nouveaux événements unitaires */
-		status.setMessage("regroupement des événements...");
-		regrouper.regroupeTousEvenementsNonTraites(status);
-
-		/* 2- Validation/Traitement des événements regroupés */
+		// Validation/Traitement des événements civils
 		status.setMessage("traitement des événements...");
 		processor.traiteEvenementsCivilsRegroupes(status);
 	}
@@ -35,10 +30,4 @@ public class EvenementCivilHandlerJob extends JobDefinition {
 	public void setEvenementCivilProcessor(EvenementCivilProcessor proc) {
 		this.processor = proc;
 	}
-
-	@SuppressWarnings({"UnusedDeclaration"})
-	public void setRegrouper(EvenementCivilRegrouper reader) {
-		this.regrouper = reader;
-	}
-
 }

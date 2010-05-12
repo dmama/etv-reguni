@@ -5,10 +5,7 @@ import java.util.List;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
 import ch.vd.uniregctb.evenement.EvenementCivilRegroupeDAO;
-import ch.vd.uniregctb.evenement.EvenementCivilUnitaire;
-import ch.vd.uniregctb.evenement.EvenementCivilUnitaireDAO;
 import ch.vd.uniregctb.evenement.engine.EvenementCivilProcessor;
-import ch.vd.uniregctb.evenement.engine.EvenementCivilRegrouper;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -24,9 +21,7 @@ public abstract class EvenementCivilScenario extends EvenementScenario {
 	protected ServiceCivilService serviceCivilService;
 
 	protected EvenementCivilProcessor evenementCivilProcessor;
-	protected EvenementCivilRegrouper evenementCivilRegrouper;
 
-	protected EvenementCivilUnitaireDAO evtUnitaireDAO;
 	protected EvenementCivilRegroupeDAO evtRegroupeDAO;
 
 	protected TacheDAO tacheDAO;
@@ -51,34 +46,25 @@ public abstract class EvenementCivilScenario extends EvenementScenario {
 	}
 
 	protected void regroupeEtTraiteEvenements(long id) throws Exception {
-		long idEvtReg = evenementCivilRegrouper.regroupeUnEvenementById(id, null);
-		evenementCivilProcessor.traiteEvenementCivilRegroupe(idEvtReg);
+		evenementCivilProcessor.traiteEvenementCivilRegroupe(id);
 	}
 
 	protected long addEvenementCivil(TypeEvenementCivil type, long numeroIndividu, RegDate date, int ofs) {
-		EvenementCivilUnitaire evt = new EvenementCivilUnitaire();
-		evt.setId(nextEvtId);
-		evt.setDateEvenement(date);
-		evt.setEtat(EtatEvenementCivil.A_TRAITER);
-		evt.setNumeroIndividu(numeroIndividu);
-		evt.setType(type);
-		evt.setNumeroOfsCommuneAnnonce(ofs);
-
-		evtUnitaireDAO.save(evt);
-
-		nextEvtId++;
-
-		return evt.getId();
+		return addEvenementCivilRegroupe(type, numeroIndividu, null, date, ofs);
 	}
 
 
-	protected long addEvenementCivilRegroupe(TypeEvenementCivil type, long numeroIndividuPrincipal,long numeroIndividuConjoint, RegDate date, int ofs) {
+	protected long addEvenementCivilRegroupe(TypeEvenementCivil type, long numeroIndividuPrincipal,Long numeroIndividuConjoint, RegDate date, int ofs) {
 		EvenementCivilRegroupe evt = new EvenementCivilRegroupe();
 		evt.setId(nextEvtId);
 		evt.setDateEvenement(date);
 		evt.setEtat(EtatEvenementCivil.A_TRAITER);
 		evt.setNumeroIndividuPrincipal(numeroIndividuPrincipal);
-		evt.setNumeroIndividuConjoint(numeroIndividuConjoint);
+		evt.setHabitantPrincipal(tiersDAO.getPPByNumeroIndividu(numeroIndividuPrincipal));
+		if (numeroIndividuConjoint != null) {
+			evt.setNumeroIndividuConjoint(numeroIndividuConjoint);
+			evt.setHabitantConjoint(tiersDAO.getPPByNumeroIndividu(numeroIndividuConjoint));
+		}
 		evt.setType(type);
 		evt.setNumeroOfsCommuneAnnonce(ofs);
 
@@ -125,14 +111,6 @@ public abstract class EvenementCivilScenario extends EvenementScenario {
 
 	public void setEvenementCivilProcessor(EvenementCivilProcessor evenementCivilProcessor) {
 		this.evenementCivilProcessor = evenementCivilProcessor;
-	}
-
-	public void setEvenementCivilRegrouper(EvenementCivilRegrouper evenementCivilRegrouper) {
-		this.evenementCivilRegrouper = evenementCivilRegrouper;
-	}
-
-	public void setEvtUnitaireDAO(EvenementCivilUnitaireDAO evtUnitaireDAO) {
-		this.evtUnitaireDAO = evtUnitaireDAO;
 	}
 
 	public void setEvtRegroupeDAO(EvenementCivilRegroupeDAO evtRegroupeDAO) {

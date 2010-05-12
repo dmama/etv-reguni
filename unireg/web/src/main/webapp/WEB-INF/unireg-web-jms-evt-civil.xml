@@ -31,8 +31,9 @@
 	</bean>
 
 	<bean id="evtCivilListener" class="ch.vd.uniregctb.evenement.jms.EvenementCivilUnitaireListener" parent="esbMessageListener">
-		<property name="evenementCivilUnitaireDAO" ref="evenementCivilUnitaireDAO" />
-		<property name="evenementCivilRegrouper" ref="evenementCivilRegrouper" />
+		<property name="tiersDAO" ref="tiersDAO" />
+		<property name="evenementCivilRegroupeDAO" ref="evenementCivilRegroupeDAO" />
+		<property name="dataEventService" ref="dataEventService" />
 		<property name="evenementCivilProcessor" ref="evenementCivilProcessor" />
 		<property name="transactionManager" ref="transactionManager" />
 	</bean>

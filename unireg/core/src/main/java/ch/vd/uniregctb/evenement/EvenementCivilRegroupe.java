@@ -22,6 +22,7 @@ import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Type;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.schema.registreCivil.x20070914.evtRegCivil.EvtRegCivilDocument;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -130,6 +131,16 @@ public class EvenementCivilRegroupe extends HibernateEntity {
 		this.habitantConjoint = conjoint;
 		this.numeroOfsCommuneAnnonce = numeroOfsCommuneAnnonce;
 		this.erreurs = erreurs;
+	}
+
+	public EvenementCivilRegroupe(EvtRegCivilDocument.EvtRegCivil bean) {
+		this.id = (long)bean.getNoTechnique();
+		this.type = TypeEvenementCivil.valueOf(bean.getCode());
+		this.etat = EtatEvenementCivil.A_TRAITER;
+		this.dateEvenement = RegDate.get(bean.getDateEvenement().getTime());
+		this.numeroIndividuPrincipal = (long) bean.getNoIndividu();
+		this.dateTraitement = new Date();
+		this.numeroOfsCommuneAnnonce = bean.getNumeroOFS();
 	}
 
 	@Transient

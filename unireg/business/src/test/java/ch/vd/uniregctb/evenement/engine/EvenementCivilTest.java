@@ -1,12 +1,8 @@
 package ch.vd.uniregctb.evenement.engine;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-
 import java.util.List;
 
 import net.sf.ehcache.CacheManager;
-
 import org.junit.Test;
 import org.springframework.test.annotation.NotTransactional;
 import org.springframework.transaction.TransactionStatus;
@@ -14,11 +10,14 @@ import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.technical.esb.EsbMessage;
 import ch.vd.uniregctb.common.BusinessTest;
+import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
 import ch.vd.uniregctb.evenement.EvenementCivilRegroupeDAO;
-import ch.vd.uniregctb.evenement.EvenementCivilUnitaire;
-import ch.vd.uniregctb.evenement.EvenementCivilUnitaireDAO;
+import ch.vd.uniregctb.evenement.jms.EvenementCivilUnitaireListener;
+import ch.vd.uniregctb.evenement.jms.EvenementCivilUnitaireListenerTest;
+import ch.vd.uniregctb.evenement.jms.MockEsbMessage;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
 import ch.vd.uniregctb.interfaces.model.HistoriqueIndividu;
@@ -31,27 +30,35 @@ import ch.vd.uniregctb.interfaces.service.ServiceCivilCache;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersCriteria;
+import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
+
 @SuppressWarnings({"JavaDoc"})
 public class EvenementCivilTest extends BusinessTest {
 
-	private EvenementCivilUnitaireDAO evenementCivilUnitaireDAO;
 	private EvenementCivilRegroupeDAO evenementCivilRegroupeDAO;
-	private EvenementCivilRegrouper evenementCivilRegrouper;
 	private EvenementCivilProcessor evenementCivilProcessor;
+	private EvenementCivilUnitaireListener evenementCivilListener;
 	private GlobalTiersSearcher searcher;
 
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
-		evenementCivilUnitaireDAO = getBean(EvenementCivilUnitaireDAO.class, "evenementCivilUnitaireDAO");
 		evenementCivilRegroupeDAO = getBean(EvenementCivilRegroupeDAO.class, "evenementCivilRegroupeDAO");
-		evenementCivilRegrouper = getBean(EvenementCivilRegrouper.class, "evenementCivilRegrouper");
 		evenementCivilProcessor = getBean(EvenementCivilProcessor.class, "evenementCivilProcessor");
 		searcher = getBean(GlobalTiersSearcher.class, "globalTiersSearcher");
+
+		evenementCivilListener = new EvenementCivilUnitaireListener();
+		evenementCivilListener.setEvenementCivilProcessor(evenementCivilProcessor);
+		evenementCivilListener.setTransactionManager(transactionManager);
+		evenementCivilListener.setDataEventService(getBean(DataEventService.class, "dataEventService"));
+		evenementCivilListener.setEvenementCivilRegroupeDAO(evenementCivilRegroupeDAO);
+		evenementCivilListener.setTiersDAO(getBean(TiersDAO.class, "tiersDAO"));
 	}
 
 	/**
@@ -128,15 +135,9 @@ public class EvenementCivilTest extends BusinessTest {
 		doInNewTransaction(new TxCallback() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				addEvCivUnit(1, RegDate.get(2009, 1, 1), MockCommune.Lausanne, jeanNoInd, TypeEvenementCivil.CHGT_CORREC_NOM_PRENOM);
-				return null;
-			}
-		});
-
-		doInNewTransaction(new TxCallback() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				evenementCivilRegrouper.regroupeTousEvenementsNonTraites(null);
+				final String body = EvenementCivilUnitaireListenerTest.createMessage(1, TypeEvenementCivil.CHGT_CORREC_NOM_PRENOM.getId(), jeanNoInd, RegDate.get(2009, 1, 1), MockCommune.Lausanne.getNoOFS());
+				final EsbMessage message = new MockEsbMessage(body);
+				evenementCivilListener.onEsbMessage(message);
 				return null;
 			}
 		});
@@ -145,42 +146,17 @@ public class EvenementCivilTest extends BusinessTest {
 		doInTransaction(new TransactionCallback() {
 			public Object doInTransaction(TransactionStatus status) {
 
-				final List<EvenementCivilUnitaire> evsCivils = evenementCivilUnitaireDAO.getAll();
-				assertNotNull(evsCivils);
-				assertEquals(1, evsCivils.size());
-				assertEquals(EtatEvenementCivil.TRAITE, evsCivils.get(0).getEtat());
-
-				// On vérifie que le tiers a bien été mis-à-jour dans le cache ...
-				assertNomIndividu("Jacquard", "Jean", cache, jeanNoInd);
-				// ... mais que l'indexeur est toujours sur l'ancien nom puisque l'événement regroupé n'a pas encore été traité
-				assertNomIndexer("Jacquouille", "Jean", jeanId);
-
-				return null;
-			}
-		});
-
-		/*
-		 * Traitement de l'événement de changement de nom
-		 */
-
-		// Traitement des événements regroupés
-		evenementCivilProcessor.traiteEvenementsCivilsRegroupes(null);
-
-		// L'événement regroupé doit avoir été traité
-		doInTransaction(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
-
-				final List<EvenementCivilRegroupe> evsRegroupes = evenementCivilRegroupeDAO.getAll();
-				assertNotNull(evsRegroupes);
-				assertEquals(1, evsRegroupes.size());
-				assertEquals(EtatEvenementCivil.TRAITE, evsRegroupes.get(0).getEtat());
+				final List<EvenementCivilRegroupe> evenements = evenementCivilRegroupeDAO.getAll();
+				assertNotNull(evenements);
+				assertEquals(1, evenements.size());
+				assertEquals(EtatEvenementCivil.TRAITE, evenements.get(0).getEtat());
 
 				globalTiersIndexer.sync();
 
-				// On vérifie que le tiers a bien été mis-à-jour dans l'indexeur ...
-				assertNomIndexer("Jacquard", "Jean", jeanId);
-				// ... et que l'individu est toujours correct dans le cache
+				// On vérifie que le tiers a bien été mis-à-jour dans le cache ...
 				assertNomIndividu("Jacquard", "Jean", cache, jeanNoInd);
+				// ... et que le tiers a bien été mis-à-jour dans l'indexeur
+				assertNomIndexer("Jacquard", "Jean", jeanId);
 
 				return null;
 			}
