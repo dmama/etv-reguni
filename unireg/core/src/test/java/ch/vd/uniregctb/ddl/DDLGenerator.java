@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.ddl;
 
 import java.io.FileWriter;
+import java.net.URL;
 
 import ch.vd.uniregctb.hibernate.dialect.Oracle10gDialectWithNVarChar;
 import org.apache.log4j.Logger;
@@ -8,6 +9,7 @@ import org.apache.log4j.xml.DOMConfigurator;
 import org.hibernate.dialect.Oracle10gDialect;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean;
+import org.springframework.util.ResourceUtils;
 
 import ch.vd.uniregctb.common.ClientConstants;
 
@@ -23,7 +25,8 @@ public class DDLGenerator {
 
 	public static void main(String[] args) throws Exception {
 
-		DOMConfigurator.configure("target/classes/ddlgen/log4j.xml");
+		final URL log4jUrl = ResourceUtils.getURL("classpath:ddlgen/log4j.xml");
+		DOMConfigurator.configure(log4jUrl);
 
 		//System.out.println("Nb args: "+args.length);
 		String outFileBase = "target/unireg-schema";
