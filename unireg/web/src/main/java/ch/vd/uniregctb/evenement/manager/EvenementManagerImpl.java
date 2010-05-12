@@ -5,6 +5,9 @@ import java.util.Date;
 import java.util.List;
 
 import ch.vd.uniregctb.adresse.*;
+import ch.vd.uniregctb.evenement.EvenementCivilDAO;
+import ch.vd.uniregctb.evenement.EvenementCivilData;
+import ch.vd.uniregctb.evenement.view.EvenementCivilView;
 import ch.vd.uniregctb.tiers.*;
 import org.apache.log4j.Logger;
 import org.springframework.context.MessageSource;
@@ -16,13 +19,10 @@ import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.WebParamPagination;
-import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
-import ch.vd.uniregctb.evenement.EvenementCivilRegroupeDAO;
 import ch.vd.uniregctb.evenement.EvenementCriteria;
 import ch.vd.uniregctb.evenement.EvenementService;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.evenement.engine.EvenementCivilProcessor;
-import ch.vd.uniregctb.evenement.view.EvenementCivilRegroupeView;
 import ch.vd.uniregctb.evenement.view.EvenementCriteriaView;
 import ch.vd.uniregctb.evenement.view.EvenementView;
 import ch.vd.uniregctb.evenement.view.TiersAssocieView;
@@ -33,7 +33,6 @@ import ch.vd.uniregctb.interfaces.model.Pays;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
-import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.utils.WebContextUtils;
 
 /**
@@ -47,40 +46,22 @@ public class EvenementManagerImpl implements EvenementManager, MessageSourceAwar
 	private final Logger LOGGER = Logger.getLogger(EvenementManagerImpl.class);
 
 	private AdresseService adresseService;
-
 	private TiersService tiersService;
-
 	private TiersDAO tiersDAO;
-
 	private EvenementCivilProcessor evenementCivilProcessor;
-
 	private ServiceCivilService serviceCivilService;
-
 	private EvenementService evenementService;
-
 	private ServiceInfrastructureService serviceInfrastructureService;
-
 	private MessageSource messageSource;
+	private HostCivilService hostCivilService;
+	private EvenementCivilDAO evenementCivilDAO;
 
 	public void setEvenementCivilProcessor(EvenementCivilProcessor evenementCivilProcessor) {
 		this.evenementCivilProcessor = evenementCivilProcessor;
 	}
 
-
-	private EvenementCivilRegroupeDAO evenementCivilRegroupeDAO;
-
-	public EvenementCivilRegroupeDAO getEvenementCivilRegroupeDAO() {
-		return evenementCivilRegroupeDAO;
-	}
-
-	public void setEvenementCivilRegroupeDAO(EvenementCivilRegroupeDAO evenementCivilRegroupeDAO) {
-		this.evenementCivilRegroupeDAO = evenementCivilRegroupeDAO;
-	}
-
-	private HostCivilService hostCivilService;
-
-	public HostCivilService getHostCivilService() {
-		return hostCivilService;
+	public void setEvenementCivilDAO(EvenementCivilDAO evenementCivilDAO) {
+		this.evenementCivilDAO = evenementCivilDAO;
 	}
 
 	public void setHostCivilService(HostCivilService hostCivilService) {
@@ -93,10 +74,6 @@ public class EvenementManagerImpl implements EvenementManager, MessageSourceAwar
 
 	public void setTiersDAO(TiersDAO tiersDAO) {
 		this.tiersDAO = tiersDAO;
-	}
-
-	public ServiceInfrastructureService getServiceInfrastructureService() {
-		return serviceInfrastructureService;
 	}
 
 	public void setServiceInfrastructureService(ServiceInfrastructureService serviceInfrastructureService) {
@@ -115,7 +92,7 @@ public class EvenementManagerImpl implements EvenementManager, MessageSourceAwar
 	public EvenementView get(Long id) throws AdresseException, InfrastructureException {
 
 		final EvenementView evtView = new EvenementView();
-		final EvenementCivilRegroupe evt = evenementCivilRegroupeDAO.get(id);
+		final EvenementCivilData evt = evenementCivilDAO.get(id);
 		if (evt == null) {
 			throw new ObjectNotFoundException(this.getMessageSource().getMessage("error.evenement.inexistant" , null,  WebContextUtils.getDefaultLocale()));
 		}
@@ -245,8 +222,8 @@ public class EvenementManagerImpl implements EvenementManager, MessageSourceAwar
 	 *
 	 * @param id
 	 */
-	public void traiteEvenementCivilRegroupe(Long id) {
-		evenementCivilProcessor.recycleEvenementCivilRegroupe(id);
+	public void traiteEvenementCivil(Long id) {
+		evenementCivilProcessor.recycleEvenementCivil(id);
 	}
 
 
@@ -257,8 +234,8 @@ public class EvenementManagerImpl implements EvenementManager, MessageSourceAwar
 	 */
 	@Transactional(rollbackFor = Throwable.class)
 	public void forceEtatTraite(Long id) {
-		EvenementCivilRegroupe evenementCivilRegroupe = evenementCivilRegroupeDAO.get(id);
-		evenementCivilRegroupe.setEtat(EtatEvenementCivil.TRAITE);
+		EvenementCivilData evenementCivilData = evenementCivilDAO.get(id);
+		evenementCivilData.setEtat(EtatEvenementCivil.TRAITE);
 	}
 
 	/**
@@ -269,31 +246,21 @@ public class EvenementManagerImpl implements EvenementManager, MessageSourceAwar
 	 * @throws AdressesResolutionException
 	 */
 	@Transactional(readOnly = true)
-	public List<EvenementCivilRegroupeView> find(EvenementCriteriaView bean, WebParamPagination pagination)
+	public List<EvenementCivilView> find(EvenementCriteriaView bean, WebParamPagination pagination)
 			throws AdresseException {
-		List<EvenementCivilRegroupeView> evtsView = new ArrayList<EvenementCivilRegroupeView>();
-		List<EvenementCivilRegroupe> evts = evenementService.find(bean, pagination);
-		for (EvenementCivilRegroupe evt : evts) {
-			EvenementCivilRegroupeView evtView = buildView(evt);
+		List<EvenementCivilView> evtsView = new ArrayList<EvenementCivilView>();
+		List<EvenementCivilData> evts = evenementService.find(bean, pagination);
+		for (EvenementCivilData evt : evts) {
+			EvenementCivilView evtView = buildView(evt);
 			evtsView.add(evtView);
 		}
 
 		return evtsView;
 	}
 
-	private EvenementCivilRegroupeView buildView(EvenementCivilRegroupe evt) throws AdresseException {
-		EvenementCivilRegroupeView evtView = new EvenementCivilRegroupeView();
-		evtView.setEtat(evt.getEtat());
+	private EvenementCivilView buildView(EvenementCivilData evt) throws AdresseException {
+		final EvenementCivilView evtView = new EvenementCivilView(evt);
 		final PersonnePhysique habitantPrincipal = evt.getHabitantPrincipal();
-		evtView.setHabitantPrincipal(habitantPrincipal);
-		evtView.setHabitantConjoint(evt.getHabitantConjoint());
-		evtView.setId(evt.getId());
-		evtView.setNumeroIndividuPrincipal(evt.getNumeroIndividuPrincipal());
-		evtView.setNumeroIndividuConjoint(evt.getNumeroIndividuConjoint());
-		evtView.setType(evt.getType());
-		evtView.setNumeroOfsCommuneAnnonce(evt.getNumeroOfsCommuneAnnonce());
-		evtView.setDateEvenement(evt.getDateEvenement());
-		evtView.setDateTraitement(evt.getDateTraitement());
 		try {
 			if (habitantPrincipal != null) {
 				final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(habitantPrincipal, null);
@@ -315,7 +282,7 @@ public class EvenementManagerImpl implements EvenementManager, MessageSourceAwar
 		}
 		catch (IndividuNotFoundException e) {
 			// [UNIREG-1545] on cas d'incoherence des données, on évite de crasher (dans la mesure du possible)
-			LOGGER.warn("Impossible d'afficher toutes les données de l'événement regroupé n°" + evt.getId(), e);
+			LOGGER.warn("Impossible d'afficher toutes les données de l'événement civil n°" + evt.getId(), e);
 			evtView.setNom1("<erreur: individu introuvable>");
 		}
 		return evtView;

@@ -174,7 +174,7 @@ public class Ec_4000_10_Mariage_JIRA2055_Scenario extends EvenementCivilScenario
 	public void step2() throws Exception {
 		long id = addEvenementCivil(TypeEvenementCivil.MARIAGE, noIndJeanMarc, dateMariageAvecStephanie, commune.getNoOFS());
 		commitAndStartTransaction();
-		regroupeEtTraiteEvenements(id);
+		traiteEvenements(id);
 	}
 
 	@Check(id=2, descr="Vérifie qu'un nouveau couple different du premier a été créé")

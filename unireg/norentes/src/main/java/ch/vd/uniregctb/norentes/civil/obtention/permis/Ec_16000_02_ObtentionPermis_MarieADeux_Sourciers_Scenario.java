@@ -5,7 +5,7 @@ import annotation.Etape;
 import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.civil.model.EnumTypePermis;
-import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
+import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
@@ -127,12 +127,12 @@ public class Ec_16000_02_ObtentionPermis_MarieADeux_Sourciers_Scenario extends E
 	public void etape2() throws Exception {
 		long id = addEvenementCivil(TypeEvenementCivil.CHGT_CATEGORIE_ETRANGER, noIndMomo, dateObtentionPermis, communeMariage.getNoOFS());
 		commitAndStartTransaction();
-		regroupeEtTraiteEvenements(id);
+		traiteEvenements(id);
 	}
 
 	@Check(id=1, descr="Vérification que le couple est passé au mode ordinaire")
 	public void check2() {
-		final EvenementCivilRegroupe evt = getEvenementCivilRegoupeForHabitant(noHabMomo);
+		final EvenementCivilData evt = getEvenementCivilRegoupeForHabitant(noHabMomo);
 		assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat(), "L'événement aurait dû être traité");
 
 		checkCouple(ModeImposition.ORDINAIRE, dateObtentionPermis);

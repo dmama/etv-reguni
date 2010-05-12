@@ -4,7 +4,7 @@ import org.apache.log4j.Logger;
 
 import ch.vd.registre.civil.model.EnumTypeTutelle;
 import ch.vd.uniregctb.evenement.EvenementAdapterException;
-import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
+import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.evenement.GenericEvenementAdapter;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.TuteurGeneral;
@@ -70,18 +70,18 @@ public class TutelleAdapter extends GenericEvenementAdapter implements Tutelle {
 	/*
 	 * (non-Javadoc)
 	 *
-	 * @see ch.vd.uniregctb.evenement.GenericEvenementAdapter#init(ch.vd.uniregctb.evenement.EvenementCivilRegroupe,
+	 * @see ch.vd.uniregctb.evenement.GenericEvenementAdapter#init(ch.vd.uniregctb.evenement.EvenementCivilData,
 	 *      ch.vd.registre.civil.service.ServiceCivil,
 	 *      ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService)
 	 */
 	@Override
-	public void init(EvenementCivilRegroupe evenementCivilRegroupe, ServiceCivilService serviceCivil, ServiceInfrastructureService infrastructureService) throws EvenementAdapterException {
-		super.init(evenementCivilRegroupe, serviceCivil, infrastructureService);
+	public void init(EvenementCivilData evenementCivilData, ServiceCivilService serviceCivil, ServiceInfrastructureService infrastructureService) throws EvenementAdapterException {
+		super.init(evenementCivilData, serviceCivil, infrastructureService);
 
 		/*
 		 * Récupération de l'année de l'événement
 		 */
-		final int anneeEvenement = evenementCivilRegroupe.getDateEvenement().year();
+		final int anneeEvenement = evenementCivilData.getDateEvenement().year();
 
 		/*
 		 * Récupération de la tutelle.

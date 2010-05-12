@@ -121,7 +121,7 @@ public class Ec_10000_01_Veuvage_SuisseMarieSeul_Scenario extends EvenementCivil
 	public void etape2() throws Exception {
 		long id = addEvenementCivil(TypeEvenementCivil.VEUVAGE, noIndPierre, dateVeuvage, communeMariage.getNoOFS());
 		commitAndStartTransaction();
-		regroupeEtTraiteEvenements(id);
+		traiteEvenements(id);
 	}
 
 	@Check(id=2, descr="Vérifie que le menage commun a été fermé et le For principal de l'individu créé")

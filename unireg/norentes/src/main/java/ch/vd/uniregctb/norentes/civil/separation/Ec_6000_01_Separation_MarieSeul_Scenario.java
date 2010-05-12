@@ -126,7 +126,7 @@ public class Ec_6000_01_Separation_MarieSeul_Scenario extends EvenementCivilScen
 	public void etape2() throws Exception {
 		long id = addEvenementCivil(TypeEvenementCivil.SEPARATION, noIndJulie, dateSeparation, communeMariage.getNoOFS());
 		commitAndStartTransaction();
-		regroupeEtTraiteEvenements(id);
+		traiteEvenements(id);
 	}
 
 	@Check(id=2, descr="Vérifie que le menage commun a été fermé et le For principal de Julie créé")
@@ -161,7 +161,7 @@ public class Ec_6000_01_Separation_MarieSeul_Scenario extends EvenementCivilScen
 	public void etape3() throws Exception {
 		long id = addEvenementCivil(TypeEvenementCivil.DIVORCE, noIndJulie, dateDivorce, communeMariage.getNoOFS());
 		commitAndStartTransaction();
-		regroupeEtTraiteEvenements(id);
+		traiteEvenements(id);
 	}
 
 	@Check(id=3, descr="Vérifie que rien s'est passé depuis l'étape 2")

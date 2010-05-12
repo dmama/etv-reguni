@@ -6,7 +6,7 @@ import annotation.Check;
 import annotation.Etape;
 import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
+import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
@@ -125,14 +125,14 @@ public class Ec_2000_08_Deces_CivilApresFiscal_Difference1Jour_Scenario extends 
 	public void step3() throws Exception {
 		long id = addEvenementCivil(TypeEvenementCivil.DECES, noIndGuillaume, dateDecesCivil, MockCommune.Lausanne.getNoOFS());
 		commitAndStartTransaction();
-		regroupeEtTraiteEvenements(id);
+		traiteEvenements(id);
 	}
 
 	@Check(id=3, descr="Vérification que l'événement a été bien traité et tout doit être comme après l'étape 2")
 	public void check3() {
 
 		// vérification que le
-		final EvenementCivilRegroupe evt = getEvenementCivilRegoupeForHabitant(noHabGuillaume);
+		final EvenementCivilData evt = getEvenementCivilRegoupeForHabitant(noHabGuillaume);
 		assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat(), "L'événement n'a pas été bien traité");
 
 		// le reste pareil qu'après l'étape 2

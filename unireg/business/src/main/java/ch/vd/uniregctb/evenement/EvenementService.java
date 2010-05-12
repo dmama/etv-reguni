@@ -16,7 +16,7 @@ public interface EvenementService {
 	 * @param criterion
 	 * @return
 	 */
-	public List<EvenementCivilRegroupe> find(EvenementCriteria criterion, ParamPagination paramPagination);
+	public List<EvenementCivilData> find(EvenementCriteria criterion, ParamPagination paramPagination);
 
 	/**
 	 * Cherche et compte les evenements correspondant aux criteres
@@ -30,6 +30,6 @@ public interface EvenementService {
 	 * @param id
 	 * @return
 	 */
-	public EvenementCivilRegroupe get(Long id);
+	public EvenementCivilData get(Long id);
 	
 }

@@ -135,7 +135,7 @@ public class Ec_7000_02_Reconciliation_MarieADeux_Scenario extends EvenementCivi
 	public void step2() throws Exception {
 		long id = addEvenementCivil(TypeEvenementCivil.RECONCILIATION, noIndBea, dateReconciliation, commune.getNoOFS());
 		commitAndStartTransaction();
-		regroupeEtTraiteEvenements(id);
+		traiteEvenements(id);
 	}
 
 	@Check(id=2, descr="Vérifie que le For principal du ménage a été rouvert et ceux des tiers fermés")

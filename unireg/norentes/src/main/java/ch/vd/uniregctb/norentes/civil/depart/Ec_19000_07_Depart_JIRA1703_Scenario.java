@@ -238,8 +238,8 @@ public class Ec_19000_07_Depart_JIRA1703_Scenario extends DepartScenario {
 		final long idSeb = addEvenementCivil(TypeEvenementCivil.DEPART_COMMUNE, noIndSebastien, dateDepart, communeDepart.getNoOFS());
 		final long idGloria = addEvenementCivil(TypeEvenementCivil.DEPART_COMMUNE, noIndGloria, dateDepart, communeDepart.getNoOFS());
 		commitAndStartTransaction();
-		regroupeEtTraiteEvenements(idSeb);
-		regroupeEtTraiteEvenements(idGloria);
+		traiteEvenements(idSeb);
+		traiteEvenements(idGloria);
 	}
 
 	@Check(id=4, descr="Vérifie les fors et adresse d'envoi du couple")

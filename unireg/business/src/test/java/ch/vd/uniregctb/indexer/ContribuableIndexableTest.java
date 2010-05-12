@@ -79,7 +79,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 	private static final long noIndGladysMaillard = 3334L;
 
 	private AdresseServiceImpl adresseService;
-	private TiersService tiersService;
+	private TiersServiceImpl tiersService;
 	private ServiceCivilService serviceCivil;
 	private ServiceInfrastructureService serviceInfra;
 	private MockTiersDAO tiersDAO;

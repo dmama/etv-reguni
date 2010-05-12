@@ -54,10 +54,10 @@ public class GenericEvenementAdapterTest extends WithoutSpringTest {
 		};
 
 		/*
-		 * Création d'un événement regroupé composé de deux individus
+		 * Création d'un événement civil composé de deux individus
 		 */
 		final RegDate dateEvenement = RegDate.get(2008, 03, 10);
-		final EvenementCivilRegroupe evenementArriveeCouple = new EvenementCivilRegroupe(1L, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE,
+		final EvenementCivilData evenementArriveeCouple = new EvenementCivilData(1L, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE,
 				EtatEvenementCivil.A_TRAITER, dateEvenement, noIndividuPrincipal,
 				null, noIndividuConjoint, null, MockCommune.Lausanne.getNoOFSEtendu(), null);
 

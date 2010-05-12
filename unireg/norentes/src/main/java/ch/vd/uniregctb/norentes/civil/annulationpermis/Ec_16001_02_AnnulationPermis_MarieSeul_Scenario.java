@@ -119,7 +119,7 @@ public class Ec_16001_02_AnnulationPermis_MarieSeul_Scenario extends AnnulationP
 
 		long id = addEvenementCivil(TypeEvenementCivil.ANNUL_CATEGORIE_ETRANGER, noIndJulie, dateObtentionPermis, communeMariage.getNoOFS());
 		commitAndStartTransaction();
-		regroupeEtTraiteEvenements(id);
+		traiteEvenements(id);
 	}
 
 	@Check(id=2, descr="Vérifie que le for ménage commun précédent est retrouvé")

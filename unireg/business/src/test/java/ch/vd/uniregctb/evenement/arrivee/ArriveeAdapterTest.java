@@ -7,7 +7,7 @@ import org.junit.Test;
 import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.WithoutSpringTest;
-import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
+import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.interfaces.model.mock.MockCanton;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
@@ -38,7 +38,7 @@ public class ArriveeAdapterTest extends WithoutSpringTest {
 		habitant.setNumero(numeroIndividu);
 
 		// Crée l'événement
-		EvenementCivilRegroupe evenement = new EvenementCivilRegroupe(1L, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, EtatEvenementCivil.A_TRAITER, dateArrivee, numeroIndividu, habitant, 0L, null, 1234, null);
+		EvenementCivilData evenement = new EvenementCivilData(1L, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, EtatEvenementCivil.A_TRAITER, dateArrivee, numeroIndividu, habitant, 0L, null, 1234, null);
 
 		// Prend le mock infrastructure par défaut
 		ServiceInfrastructureService infrastructureService = new MockServiceInfrastructureService() {

@@ -78,14 +78,13 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 	 */
 	private static final String DB_UNIT_DATA_FILE = "deparHC26012004.xml";
 
-	//private EvenementCivilRegroupeDAO evenementCivilDAO;
+	//private EvenementCivilDAO evenementCivilDAO;
 
 	@Override
 	public void onSetUp() throws Exception {
 
 		super.onSetUp();
 
-		//evenementCivilDAO = getBean(EvenementCivilRegroupeDAO.class, "evenementCivilRegroupeDAO");
 		serviceInfra.setUp(new DefaultMockServiceInfrastructureService());
 		loadDatabase(DB_UNIT_DATA_FILE);
 		serviceCivil.setUp(new MockServiceCivil() {

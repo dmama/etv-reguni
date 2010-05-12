@@ -4,7 +4,7 @@ import annotation.Check;
 import annotation.Etape;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.civil.model.EnumTypeEtatCivil;
-import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
+import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
@@ -134,7 +134,7 @@ public class Ec_10000_03_Veuvage_VeuvagePuisDecesMemeJour_Scenario extends Evene
 	public void step2() throws Exception {
 		long id = addEvenementCivil(TypeEvenementCivil.VEUVAGE, noIndPierre, dateVeuvage, communeMariage.getNoOFS());
 		commitAndStartTransaction();
-		regroupeEtTraiteEvenements(id);
+		traiteEvenements(id);
 	}
 
 	@Check(id=2, descr="Vérifie que le ménage commun a été fermé et le For principal de l'individu créé")
@@ -171,13 +171,13 @@ public class Ec_10000_03_Veuvage_VeuvagePuisDecesMemeJour_Scenario extends Evene
 	public void step3() throws Exception {
 		long id = addEvenementCivil(TypeEvenementCivil.DECES, noIndPierre, dateDeces, communeMariage.getNoOFS());
 		commitAndStartTransaction();
-		regroupeEtTraiteEvenements(id);
+		traiteEvenements(id);
 	}
 
 	@Check(id=3, descr="Vérifie que le défunt n'a aucun for ni aucune situation de famille active")
 	public void check3() {
 
-		final EvenementCivilRegroupe evt = getEvenementCivilRegoupeForHabitant(noHabPierre);
+		final EvenementCivilData evt = getEvenementCivilRegoupeForHabitant(noHabPierre);
 		assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat(), "L'événement n'a pas été traité correctement");
 
 		{

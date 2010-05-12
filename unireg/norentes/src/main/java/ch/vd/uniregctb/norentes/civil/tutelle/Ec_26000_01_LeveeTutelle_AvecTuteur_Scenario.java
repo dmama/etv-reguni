@@ -119,7 +119,7 @@ public class Ec_26000_01_LeveeTutelle_AvecTuteur_Scenario extends EvenementCivil
 	public void step2() throws Exception {
 		long id = addEvenementCivil(TypeEvenementCivil.LEVEE_TUTELLE, noIndMomo, dateLeveeTutelle, commune.getNoOFS());
 		commitAndStartTransaction();
-		regroupeEtTraiteEvenements(id);
+		traiteEvenements(id);
 	}
 
 	@Check(id=2, descr="Vérifie que le rapport tutelle est clos")

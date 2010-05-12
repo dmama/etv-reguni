@@ -5,7 +5,7 @@ import annotation.Etape;
 
 import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
+import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
@@ -20,7 +20,6 @@ import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.MotifFor;
-import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
@@ -127,7 +126,7 @@ public class Ec_18000_19_Arrivee_JIRA1677_DatesDifferentes_Scenario extends Even
 
 		final long idEvtOlivier = addEvenementCivil(TypeEvenementCivil.ARRIVEE_PRINCIPALE_HC, noIndOlivier, dateArriveeMonsieur, MockCommune.Lausanne.getNoOFS());
 		commitAndStartTransaction();
-		regroupeEtTraiteEvenements(idEvtOlivier);
+		traiteEvenements(idEvtOlivier);
 	}
 
 	@Check(id = 2, descr = "Vérification de l'existence d'un ménage commun dont la date d'ouverture est la date de mariage (et pas la date d'arrivée)")
@@ -149,7 +148,7 @@ public class Ec_18000_19_Arrivee_JIRA1677_DatesDifferentes_Scenario extends Even
 		// madame n'appartient pas au couple à la date du mariage, mais seulement plus tard
 		assertNull(couple.getConjoint(), "Le couple est certes complet, mais madame ne doit pas encore en faire partie (les dates ne coïncident pas)");
 
-		final EvenementCivilRegroupe evenementOlivier = getEvenementCivilRegoupeForHabitant(olivier.getNumero());
+		final EvenementCivilData evenementOlivier = getEvenementCivilRegoupeForHabitant(olivier.getNumero());
 		assertNotNull(evenementOlivier, "Où est l'événement civil d'arrivée d'Olivier ?");
 		assertEquals(EtatEvenementCivil.TRAITE, evenementOlivier.getEtat(), "L'événement civil devrait être en traité.");
 

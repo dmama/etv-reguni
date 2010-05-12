@@ -110,7 +110,7 @@ public class JmsMessageSenderTest {
 		
 		for (int i = 0; i < size; i++) {
 
-			final int eventId = i + 810000;
+			final int eventId = i + 816138;
 			final String body = "<EvtRegCivil xmlns=\"http://www.vd.ch/schema/registreCivil/20070914/EvtRegCivil\">\n" +
 					"  <NoTechnique>" + eventId + "</NoTechnique>\n" +
 					"  <Code>41070</Code>\n" +

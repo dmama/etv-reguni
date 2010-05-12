@@ -11,35 +11,31 @@ import ch.vd.uniregctb.common.ParamPagination;
  */
 public class EvenementServiceImpl implements EvenementService{
 
-	private EvenementCivilRegroupeDAO evenementCivilRegroupeDAO;
+	private EvenementCivilDAO evenementCivilDAO;
 	
-	public EvenementCivilRegroupeDAO getEvenementCivilRegroupeDAO() {
-		return evenementCivilRegroupeDAO;
-	}
-
-	public void setEvenementCivilRegroupeDAO(EvenementCivilRegroupeDAO evenementCivilRegroupeDAO) {
-		this.evenementCivilRegroupeDAO = evenementCivilRegroupeDAO;
+	public void setEvenementCivilDAO(EvenementCivilDAO evenementCivilDAO) {
+		this.evenementCivilDAO = evenementCivilDAO;
 	}
 
 
 	/**
 	 * @see ch.vd.uniregctb.evenement.EvenementService#find(ch.vd.uniregctb.evenement.EvenementCriteria, ch.vd.uniregctb.common.ParamPagination)
 	 */
-	public List<EvenementCivilRegroupe> find(EvenementCriteria criterion, ParamPagination paramPagination) {
-		return evenementCivilRegroupeDAO.find(criterion, paramPagination);
+	public List<EvenementCivilData> find(EvenementCriteria criterion, ParamPagination paramPagination) {
+		return evenementCivilDAO.find(criterion, paramPagination);
 	}
 
 	/**
 	 * @see ch.vd.uniregctb.evenement.EvenementService#count(ch.vd.uniregctb.evenement.EvenementCriteria)
 	 */
 	public int count(EvenementCriteria criterion){
-		return evenementCivilRegroupeDAO.count(criterion);
+		return evenementCivilDAO.count(criterion);
 	}
 	/**
 	 * @see ch.vd.uniregctb.evenement.EvenementService#get(java.lang.Long)
 	 */
-	public EvenementCivilRegroupe get(Long id) {
-		return evenementCivilRegroupeDAO.get(id);
+	public EvenementCivilData get(Long id) {
+		return evenementCivilDAO.get(id);
 	}
 
 }

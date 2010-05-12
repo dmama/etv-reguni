@@ -155,7 +155,7 @@ public class Ec_8000_01_Divorce_MarieAvecSuisseOuEtrangerPermisC_Scenario extend
 		long id = addEvenementCivil(TypeEvenementCivil.DIVORCE, noIndBea, dateDivorce, communeDivorce.getNoOFSEtendu());
 		commitAndStartTransaction();
 
-		regroupeEtTraiteEvenements(id);
+		traiteEvenements(id);
 	}
 
 	@Check(id=2, descr="Vérifie que le menage commun a été fermé et les Fors principaux des individus créés")

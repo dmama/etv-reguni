@@ -105,7 +105,7 @@ public class Ec_41010_01_CorrectionDateNaissance_Scenario extends EvenementCivil
 
 		long id = addEvenementCivil(TypeEvenementCivil.CORREC_DATE_NAISSANCE, noIndMomo, dateNaissanceCorrigee, commune.getNoOFS());
 		commitAndStartTransaction();
-		regroupeEtTraiteEvenements(id);
+		traiteEvenements(id);
 	}
 
 	@Check(id=2, descr="Vérifie que la date de naissance a été mise à jour dans l'indexer")

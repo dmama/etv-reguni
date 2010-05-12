@@ -56,7 +56,7 @@ public class Ec_1000_03_Naissance_HabitantSansIndividuScenario extends Evenement
 		commitAndStartTransaction();
 
 		// On traite les evenements
-		regroupeEtTraiteEvenements(id);
+		traiteEvenements(id);
 	}
 
 	@Check(id=2, descr="Vérifie qu'il y a toujours un seul habitant dans la base de données et que l'événement est en erreur")

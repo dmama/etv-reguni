@@ -6,7 +6,7 @@ import org.springframework.util.Assert;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.civil.model.EnumTypeTutelle;
 import ch.vd.uniregctb.common.WithoutSpringTest;
-import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
+import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.interfaces.model.mock.MockCanton;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
@@ -48,7 +48,8 @@ public class TutelleAdapterTest extends WithoutSpringTest {
 	public void testGetTuteurPupilleAvecTuteur() throws Exception {
 		PersonnePhysique habitant = new PersonnePhysique(true);
 		habitant.setNumero(NO_INDIVIDU_PUPILLE_AVEC_TUTEUR);
-		EvenementCivilRegroupe evenement = new EvenementCivilRegroupe(1L, TypeEvenementCivil.MESURE_TUTELLE, EtatEvenementCivil.A_TRAITER, DATE_TUTELLE, NO_INDIVIDU_PUPILLE_AVEC_TUTEUR , habitant, 0L, null, 1234, null);
+		EvenementCivilData
+				evenement = new EvenementCivilData(1L, TypeEvenementCivil.MESURE_TUTELLE, EtatEvenementCivil.A_TRAITER, DATE_TUTELLE, NO_INDIVIDU_PUPILLE_AVEC_TUTEUR , habitant, 0L, null, 1234, null);
 		TutelleAdapter adapter = new  TutelleAdapter();
 		adapter.init(evenement, serviceCivilSimple, infrastructureService);
 		Assert.notNull( adapter.getTuteur(), "le tuteur n'a pas pu être récupéré");
@@ -64,7 +65,8 @@ public class TutelleAdapterTest extends WithoutSpringTest {
 	public void testGetTuteurPupilleAvecTuteurGeneral() throws Exception {
 		PersonnePhysique habitant = new PersonnePhysique(true);
 		habitant.setNumero(NO_INDIVIDU_PUPILLE_AVEC_TUTEUR_GENERAL);
-		EvenementCivilRegroupe evenement = new EvenementCivilRegroupe(1L, TypeEvenementCivil.MESURE_TUTELLE, EtatEvenementCivil.A_TRAITER, DATE_TUTELLE, NO_INDIVIDU_PUPILLE_AVEC_TUTEUR_GENERAL , habitant, 0L, null, 1234, null);
+		EvenementCivilData
+				evenement = new EvenementCivilData(1L, TypeEvenementCivil.MESURE_TUTELLE, EtatEvenementCivil.A_TRAITER, DATE_TUTELLE, NO_INDIVIDU_PUPILLE_AVEC_TUTEUR_GENERAL , habitant, 0L, null, 1234, null);
 		TutelleAdapter adapter = new  TutelleAdapter();
 		adapter.init(evenement, serviceCivilSimple, infrastructureService);
 		Assert.isNull( adapter.getTuteur(), "le tuteur ne devrait pas exister");
@@ -80,7 +82,8 @@ public class TutelleAdapterTest extends WithoutSpringTest {
 	public void testGetTypeTutellePupilleSousTutelle() throws Exception {
 		PersonnePhysique habitant = new PersonnePhysique(true);
 		habitant.setNumero(NO_INDIVIDU_PUPILLE_SOUS_TUTELLE);
-		EvenementCivilRegroupe evenement = new EvenementCivilRegroupe(1L, TypeEvenementCivil.MESURE_TUTELLE, EtatEvenementCivil.A_TRAITER, DATE_TUTELLE, NO_INDIVIDU_PUPILLE_SOUS_TUTELLE , habitant, 0L, null, 1234, null);
+		EvenementCivilData
+				evenement = new EvenementCivilData(1L, TypeEvenementCivil.MESURE_TUTELLE, EtatEvenementCivil.A_TRAITER, DATE_TUTELLE, NO_INDIVIDU_PUPILLE_SOUS_TUTELLE , habitant, 0L, null, 1234, null);
 		TutelleAdapter adapter = new  TutelleAdapter();
 		adapter.init(evenement, serviceCivilSimple, infrastructureService);
 		Assert.isTrue( adapter.getTypeTutelle().equals(TypeTutelle.TUTELLE), "le type de tutelle n'a pas été correctement récupéré");
@@ -94,7 +97,8 @@ public class TutelleAdapterTest extends WithoutSpringTest {
 	public void testGetTypeTutellePupilleSousCuratelle() throws Exception {
 		PersonnePhysique habitant = new PersonnePhysique(true);
 		habitant.setNumero(NO_INDIVIDU_PUPILLE_SOUS_CURATELLE);
-		EvenementCivilRegroupe evenement = new EvenementCivilRegroupe(1L, TypeEvenementCivil.MESURE_TUTELLE, EtatEvenementCivil.A_TRAITER, DATE_TUTELLE, NO_INDIVIDU_PUPILLE_SOUS_CURATELLE , habitant, 0L, null, 1234, null);
+		EvenementCivilData
+				evenement = new EvenementCivilData(1L, TypeEvenementCivil.MESURE_TUTELLE, EtatEvenementCivil.A_TRAITER, DATE_TUTELLE, NO_INDIVIDU_PUPILLE_SOUS_CURATELLE , habitant, 0L, null, 1234, null);
 		TutelleAdapter adapter = new  TutelleAdapter();
 		adapter.init(evenement, serviceCivilSimple, infrastructureService);
 		Assert.isTrue( adapter.getTypeTutelle().equals(TypeTutelle.CURATELLE), "le type de tutelle n'a pas été correctement récupéré");
@@ -108,7 +112,8 @@ public class TutelleAdapterTest extends WithoutSpringTest {
 	public void testGetTypeTutellePupilleSousConseilLegal() throws Exception {
 		PersonnePhysique habitant = new PersonnePhysique(true);
 		habitant.setNumero(NO_INDIVIDU_PUPILLE_SOUS_CONSEIL_LEGAL);
-		EvenementCivilRegroupe evenement = new EvenementCivilRegroupe(1L, TypeEvenementCivil.MESURE_TUTELLE, EtatEvenementCivil.A_TRAITER, DATE_TUTELLE, NO_INDIVIDU_PUPILLE_SOUS_CONSEIL_LEGAL , habitant, 0L, null, 1234, null);
+		EvenementCivilData
+				evenement = new EvenementCivilData(1L, TypeEvenementCivil.MESURE_TUTELLE, EtatEvenementCivil.A_TRAITER, DATE_TUTELLE, NO_INDIVIDU_PUPILLE_SOUS_CONSEIL_LEGAL , habitant, 0L, null, 1234, null);
 		TutelleAdapter adapter = new  TutelleAdapter();
 		adapter.init(evenement, serviceCivilSimple, infrastructureService);
 		Assert.isTrue( adapter.getTypeTutelle().equals(TypeTutelle.CONSEIL_LEGAL_CODE), "le type de tutelle n'a pas été correctement récupéré");

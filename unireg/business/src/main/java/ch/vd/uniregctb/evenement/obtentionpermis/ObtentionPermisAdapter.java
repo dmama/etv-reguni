@@ -10,7 +10,7 @@ import ch.vd.registre.civil.model.EnumAttributeIndividu;
 import ch.vd.registre.civil.model.EnumTypePermis;
 import ch.vd.uniregctb.evenement.EvenementAdapterAvecAdresses;
 import ch.vd.uniregctb.evenement.EvenementAdapterException;
-import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
+import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.CommuneSimple;
 import ch.vd.uniregctb.interfaces.model.Permis;
@@ -38,18 +38,18 @@ public class ObtentionPermisAdapter extends EvenementAdapterAvecAdresses impleme
 	private Integer numeroOfsEtenduCommunePrincipale;
 
 	@Override
-	public void init(EvenementCivilRegroupe evenementCivilRegroupe, ServiceCivilService serviceCivil, ServiceInfrastructureService infrastructureService) throws EvenementAdapterException {
-		super.init(evenementCivilRegroupe, serviceCivil, infrastructureService);
+	public void init(EvenementCivilData evenementCivilData, ServiceCivilService serviceCivil, ServiceInfrastructureService infrastructureService) throws EvenementAdapterException {
+		super.init(evenementCivilData, serviceCivil, infrastructureService);
 
 		try {
 			// on récupère le permis (= à la date d'événement)
-			final int anneeCourante = evenementCivilRegroupe.getDateEvenement().year();
+			final int anneeCourante = evenementCivilData.getDateEvenement().year();
 			final Collection<Permis> listePermis = serviceCivil.getPermis(super.getIndividu().getNoTechnique(), anneeCourante);
 			if (listePermis == null) {
 				throw new EvenementAdapterException("Aucun permis trouvé dans le registre civil");
 			}
 			for (Permis permis : listePermis) {
-				if (evenementCivilRegroupe.getDateEvenement().equals(permis.getDateDebutValidite())) {
+				if (evenementCivilData.getDateEvenement().equals(permis.getDateDebutValidite())) {
 					this.permis = permis;
 					break;
 				}

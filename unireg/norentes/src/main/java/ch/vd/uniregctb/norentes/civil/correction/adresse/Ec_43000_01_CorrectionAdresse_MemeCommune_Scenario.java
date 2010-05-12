@@ -6,7 +6,7 @@ import annotation.Etape;
 import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.civil.model.EnumTypePermis;
-import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
+import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
@@ -90,12 +90,12 @@ public class Ec_43000_01_CorrectionAdresse_MemeCommune_Scenario extends Evenemen
 	public void etape2() throws Exception {
 		final long id = addEvenementCivil(TypeEvenementCivil.CORREC_ADRESSE, noIndConceicao, dateCorrection, MockCommune.Lausanne.getNoOFS());
 		commitAndStartTransaction();
-		regroupeEtTraiteEvenements(id);
+		traiteEvenements(id);
 	}
 
 	@Check(id=2, descr="Vérification que l'événement a bien été traité sans erreur")
 	public void check2() throws Exception {
-		final EvenementCivilRegroupe evt = getEvenementCivilRegoupeForHabitant(noHabConceicao);
+		final EvenementCivilData evt = getEvenementCivilRegoupeForHabitant(noHabConceicao);
 		assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat(), "L'événement devrait être traité");
 		assertEquals(0, evt.getErreurs().size(), "Il ne devrait y avoir aucune erreur");
 

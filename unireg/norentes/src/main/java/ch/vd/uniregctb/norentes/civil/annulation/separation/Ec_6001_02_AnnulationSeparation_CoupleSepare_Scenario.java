@@ -112,7 +112,7 @@ public class Ec_6001_02_AnnulationSeparation_CoupleSepare_Scenario extends Abstr
 	public void step2() throws Exception {
 		long id = addEvenementCivil(TypeEvenementCivil.ANNUL_SEPARATION, noIndBea, dateSeparation, commune.getNoOFS());
 		commitAndStartTransaction();
-		regroupeEtTraiteEvenements(id);
+		traiteEvenements(id);
 	}
 
 	@Check(id=2, descr="Vérifie que le dernier For principal du ménage a été annulé et celui de Pierre rouvert")

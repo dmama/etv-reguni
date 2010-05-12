@@ -204,7 +204,7 @@ public class Ec_19000_08_Depart_JIRA1996_Scenario extends DepartScenario {
 		final long idCharles = addEvenementCivil(TypeEvenementCivil.DEPART_COMMUNE, noIndCharles, dateDepart, communeDepart.getNoOFS());
 		final long idGeorgette = addEvenementCivil(TypeEvenementCivil.DEPART_COMMUNE, noIndGeorgette, dateDepart, communeDepart.getNoOFS());
 
-		final long idEvenementAncien = addEvenementCivilRegroupe(TypeEvenementCivil.DEPART_COMMUNE, noIndCharles, noIndGeorgette, dateDepart, communeDepart.getNoOFS());
+		final long idEvenementAncien = addEvenementCivil(TypeEvenementCivil.DEPART_COMMUNE, noIndCharles, noIndGeorgette, dateDepart, communeDepart.getNoOFS());
 		commitAndStartTransaction();
 		traiteEvenementsAnciens(idEvenementAncien);
 

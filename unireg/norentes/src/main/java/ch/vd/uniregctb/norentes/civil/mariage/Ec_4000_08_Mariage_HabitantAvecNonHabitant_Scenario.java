@@ -9,7 +9,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.registre.civil.model.EnumTypePermis;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
+import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
@@ -123,14 +123,14 @@ public class Ec_4000_08_Mariage_HabitantAvecNonHabitant_Scenario extends Eveneme
 	public void etape2() throws Exception {
 		final long id = addEvenementCivil(TypeEvenementCivil.ARRIVEE_PRINCIPALE_HC, noIndMaria, dateArriveeMaria, communeMaria.getNoOFS());
 		commitAndStartTransaction();
-		regroupeEtTraiteEvenements(id);
+		traiteEvenements(id);
 	}
 	
 	@Check(id=2, descr="Vérifie que l'evenement d'arrivée est au statut traité et qu'un habitant a été créé")
 	public void check2() {
 		
-		List<EvenementCivilRegroupe> list = evtRegroupeDAO.getAll();
-		for (EvenementCivilRegroupe evt : list) {
+		List<EvenementCivilData> list = evtDAO.getAll();
+		for (EvenementCivilData evt : list) {
 			if (noIndMaria == evt.getNumeroIndividuPrincipal()) {
 				assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat(), "");
 			}

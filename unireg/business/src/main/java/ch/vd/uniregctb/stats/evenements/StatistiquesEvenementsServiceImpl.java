@@ -45,19 +45,19 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 		final String sql;
 		final Map<String, Object> sqlParameters;
 		if (debutActivite != null) {
-			sql = "SELECT ETAT, COUNT(*) FROM EVENEMENT_CIVIL_REGROUPE WHERE LOG_CDATE > TO_DATE(:debutActivite, 'YYYYMMDD') GROUP BY ETAT";
+			sql = "SELECT ETAT, COUNT(*) FROM EVENEMENT_CIVIL WHERE LOG_CDATE > TO_DATE(:debutActivite, 'YYYYMMDD') GROUP BY ETAT";
 			sqlParameters = new HashMap<String, Object>(1);
 			sqlParameters.put("debutActivite", debutActivite.index());
 		}
 		else {
-			sql = "SELECT ETAT, COUNT(*) FROM EVENEMENT_CIVIL_REGROUPE GROUP BY ETAT";
+			sql = "SELECT ETAT, COUNT(*) FROM EVENEMENT_CIVIL GROUP BY ETAT";
 			sqlParameters = null;
 		}
 		return getNombreParModalite(EtatEvenementCivil.class, sql, sqlParameters);
 	}
 
 	private Map<TypeEvenementCivil, BigDecimal> getNombreEvenementsCivilsEnErreurParType() {
-		final String sql = "SELECT TYPE, COUNT(*) FROM EVENEMENT_CIVIL_REGROUPE WHERE ETAT='EN_ERREUR' GROUP BY TYPE";
+		final String sql = "SELECT TYPE, COUNT(*) FROM EVENEMENT_CIVIL WHERE ETAT='EN_ERREUR' GROUP BY TYPE";
 		return getNombreParModalite(TypeEvenementCivil.class, sql, null);
 	}
 
@@ -93,7 +93,7 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 	private List<StatsEvenementsCivilsResults.EvenementCivilEnErreurInfo> getToutesErreursEvenementsCivils() {
 
 		final String sql = "SELECT R.ID, R.DATE_EVENEMENT, R.DATE_TRAITEMENT, R.ETAT, R.NO_INDIVIDU_PRINCIPAL, R.NO_INDIVIDU_CONJOINT, R.TYPE, R.NUMERO_OFS_ANNONCE, E.MESSAGE"
-				+ " FROM EVENEMENT_CIVIL_REGROUPE R JOIN EVENEMENT_CIVIL_ERREUR E ON E.EVT_CIVIL_ID = R.ID WHERE R.ETAT != 'TRAITE' ORDER BY R.ID, R.DATE_TRAITEMENT";
+				+ " FROM EVENEMENT_CIVIL R JOIN EVENEMENT_CIVIL_ERREUR E ON E.EVT_CIVIL_ID = R.ID WHERE R.ETAT != 'TRAITE' ORDER BY R.ID, R.DATE_TRAITEMENT";
 
 		return executeSelect(sql, new SelectCallback<StatsEvenementsCivilsResults.EvenementCivilEnErreurInfo>() {
 			public StatsEvenementsCivilsResults.EvenementCivilEnErreurInfo onRow(Object[] row) {
@@ -116,7 +116,7 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 
 	private List<StatsEvenementsCivilsResults.EvenementCivilTraiteManuellementInfo> getManipulationsManuelles(RegDate debutActivite) {
 
-		final String sql = "SELECT ID, LOG_CDATE, LOG_MDATE, LOG_MUSER, DATE_EVENEMENT, ETAT, NO_INDIVIDU_PRINCIPAL, NO_INDIVIDU_CONJOINT, NUMERO_OFS_ANNONCE, TYPE FROM EVENEMENT_CIVIL_REGROUPE"
+		final String sql = "SELECT ID, LOG_CDATE, LOG_MDATE, LOG_MUSER, DATE_EVENEMENT, ETAT, NO_INDIVIDU_PRINCIPAL, NO_INDIVIDU_CONJOINT, NUMERO_OFS_ANNONCE, TYPE FROM EVENEMENT_CIVIL"
 				+ " WHERE LOG_MUSER LIKE '" + VISA_HUMAIN_TEMPLATE + "' AND LOG_MDATE > TO_DATE('" + debutActivite.index() + "', 'YYYYMMDD') ORDER BY ID";
 
 		return executeSelect(sql, new SelectCallback<StatsEvenementsCivilsResults.EvenementCivilTraiteManuellementInfo>() {

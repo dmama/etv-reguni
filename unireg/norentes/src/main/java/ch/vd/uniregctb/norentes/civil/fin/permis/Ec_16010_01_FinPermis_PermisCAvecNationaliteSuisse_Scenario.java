@@ -6,7 +6,7 @@ import annotation.Check;
 import annotation.Etape;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.civil.model.EnumTypePermis;
-import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
+import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
@@ -111,13 +111,13 @@ public class Ec_16010_01_FinPermis_PermisCAvecNationaliteSuisse_Scenario extends
 
 		long id = addEvenementCivil(TypeEvenementCivil.FIN_CHANGEMENT_CATEGORIE_ETRANGER, noIndRoberto, dateFinPermisC, communePermis.getNoOFSEtendu());
 		commitAndStartTransaction();
-		regroupeEtTraiteEvenements(id);
+		traiteEvenements(id);
 	}
 
 	@Check(id = 2, descr = "Vérifie que l'événement est traité, mais qu'il n'y a aucun changement effectué (en attente de l'événement d'obtention de nationalité Suisse)")
 	public void check2() {
 		{
-			final EvenementCivilRegroupe evt = getEvenementCivilRegoupeForHabitant(noHabRoberto);
+			final EvenementCivilData evt = getEvenementCivilRegoupeForHabitant(noHabRoberto);
 			assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat(), "L'événement devrait être traité");
 
 			final PersonnePhysique roberto = (PersonnePhysique) tiersDAO.get(noHabRoberto);

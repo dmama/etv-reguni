@@ -49,9 +49,9 @@ public abstract class GenericEvenementAdapter implements EvenementCivil {
 	 * 
 	 * @throws EvenementAdapterException
 	 */
-	public void init(EvenementCivilRegroupe evenement, ServiceCivilService serviceCivil, ServiceInfrastructureService infrastructureService) throws EvenementAdapterException {
+	public void init(EvenementCivilData evenement, ServiceCivilService serviceCivil, ServiceInfrastructureService infrastructureService) throws EvenementAdapterException {
 
-		/* récupération des informations liés à l'événement civil regroupé */
+		/* récupération des informations liés à l'événement civil */
 		this.type = evenement.getType();
 		this.date = evenement.getDateEvenement();
 		this.numeroEvenement = evenement.getId();

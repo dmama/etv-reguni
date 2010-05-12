@@ -73,7 +73,7 @@ public class Ec_1000_04_NaissanceAndFiliationScenario extends EvenementCivilScen
 		commitAndStartTransaction();
 
 		// On traite les evenements
-		regroupeEtTraiteEvenements(id);
+		traiteEvenements(id);
 	}
 
 	@Check(id=2, descr="Vérifie que l'événement est en erreur")
@@ -88,7 +88,7 @@ public class Ec_1000_04_NaissanceAndFiliationScenario extends EvenementCivilScen
 		commitAndStartTransaction();
 
 		// On traite les evenements
-		regroupeEtTraiteEvenements(id);
+		traiteEvenements(id);
 	}
 	
 	@Check(id=3, descr="Vérifie que le tiers a été créé")

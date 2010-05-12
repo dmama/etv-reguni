@@ -9,8 +9,8 @@ import annotation.Etape;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.civil.model.EnumTypeEtatCivil;
+import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.evenement.EvenementCivilErreur;
-import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
 import ch.vd.uniregctb.evenement.EvenementCriteria;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
@@ -136,7 +136,7 @@ public class Ec_10000_05_Veuvage_VeuvageErreurPuisAnnulation_Scenario extends Ev
 	public void step2() throws Exception {
 		final long id = addEvenementCivil(TypeEvenementCivil.VEUVAGE, noIndPierre, dateVeuvage, communeMariage.getNoOFS());
 		commitAndStartTransaction();
-		regroupeEtTraiteEvenements(id);
+		traiteEvenements(id);
 	}
 
 	@Check(id=2, descr="L'événement de veuvage doit être en erreur car Pierre est déjà veuf")
@@ -145,11 +145,11 @@ public class Ec_10000_05_Veuvage_VeuvageErreurPuisAnnulation_Scenario extends Ev
 		final EvenementCriteria criterion = new EvenementCriteria();
 		criterion.setNumeroIndividu(noIndPierre);
 		criterion.setType(TypeEvenementCivil.VEUVAGE);
-		final List<EvenementCivilRegroupe> evts = evtRegroupeDAO.find(criterion, null);
+		final List<EvenementCivilData> evts = evtDAO.find(criterion, null);
 		assertNotNull(evts, "Pas d'événement trouvé!");
 		assertEquals(1, evts.size(), "Il devrait y avoir un et un seul événement civil de veuvage sur Pierre");
 
-		final EvenementCivilRegroupe evt = evts.get(0);
+		final EvenementCivilData evt = evts.get(0);
 		assertNotNull(evt, "Evenement null?");
 		assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat(), "L'événement civil a été traité!");
 	}
@@ -171,7 +171,7 @@ public class Ec_10000_05_Veuvage_VeuvageErreurPuisAnnulation_Scenario extends Ev
 
 		final long id = addEvenementCivil(TypeEvenementCivil.ANNUL_VEUVAGE, noIndPierre, dateVeuvage, communeMariage.getNoOFS());
 		commitAndStartTransaction();
-		regroupeEtTraiteEvenements(id);
+		traiteEvenements(id);
 	}
 
 	@Check(id=3, descr="Vérifie que Pierre n'est plus veuf")
@@ -181,11 +181,11 @@ public class Ec_10000_05_Veuvage_VeuvageErreurPuisAnnulation_Scenario extends Ev
 			final EvenementCriteria criterion = new EvenementCriteria();
 			criterion.setNumeroIndividu(noIndPierre);
 			criterion.setType(TypeEvenementCivil.ANNUL_VEUVAGE);
-			final List<EvenementCivilRegroupe> evts = evtRegroupeDAO.find(criterion, null);
+			final List<EvenementCivilData> evts = evtDAO.find(criterion, null);
 			assertNotNull(evts, "Pas d'événement trouvé!");
 			assertEquals(1, evts.size(), "Il devrait y avoir un et un seul événement civil d'annulation de veuvage sur Pierre");
 
-			final EvenementCivilRegroupe evt = evts.get(0);
+			final EvenementCivilData evt = evts.get(0);
 			assertNotNull(evt, "Evenement null?");
 			assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat(), "L'événement civil n'a pas été traité!");
 		}
@@ -194,11 +194,11 @@ public class Ec_10000_05_Veuvage_VeuvageErreurPuisAnnulation_Scenario extends Ev
 			final EvenementCriteria criterion = new EvenementCriteria();
 			criterion.setNumeroIndividu(noIndPierre);
 			criterion.setType(TypeEvenementCivil.VEUVAGE);
-			final List<EvenementCivilRegroupe> evts = evtRegroupeDAO.find(criterion, null);
+			final List<EvenementCivilData> evts = evtDAO.find(criterion, null);
 			assertNotNull(evts, "Pas d'événement trouvé!");
 			assertEquals(1, evts.size(), "Il devrait y avoir un et un seul événement civil de veuvage sur Pierre");
 
-			final EvenementCivilRegroupe evt = evts.get(0);
+			final EvenementCivilData evt = evts.get(0);
 			assertNotNull(evt, "Evenement null?");
 			assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat(), "L'événement civil a été traité!");
 

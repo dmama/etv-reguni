@@ -10,8 +10,8 @@ import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.registre.civil.model.EnumAttributeIndividu;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
-import ch.vd.uniregctb.evenement.EvenementCivilRegroupeDAO;
+import ch.vd.uniregctb.evenement.EvenementCivilData;
+import ch.vd.uniregctb.evenement.EvenementCivilDAO;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
 import ch.vd.uniregctb.interfaces.model.Individu;
@@ -33,20 +33,11 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 @SuppressWarnings({"JavadocReference"})
 public interface TiersService {
 
-	@SuppressWarnings({"UnusedDeclaration"})
-	public void setEvenementCivilRegroupeDAO(EvenementCivilRegroupeDAO evenementCivilRegroupeDAO);
-
 	public TiersDAO getTiersDAO();
-
-	public void setTiersDAO(TiersDAO tiersDAO);
 
 	public ServiceInfrastructureService getServiceInfra();
 
-	public void setServiceInfra(ServiceInfrastructureService serviceInfra);
-
 	public ServiceCivilService getServiceCivilService();
-
-	public void setServiceCivilService(ServiceCivilService serviceCivil);
 
 	/**
 	 * Recherche les Tiers correspondants aux critères dans le data model de Unireg
@@ -1048,6 +1039,6 @@ public interface TiersService {
 	 * @param tiers la personne physique ou le ménage commun considéré (si ménage commun, tous ses membres seront inspectés)
 	 * @return les événements civils encore non-traités (en erreur, ou pas encore traités) sur ce tiers
 	 */
-	List<EvenementCivilRegroupe> getEvenementsCivilsNonTraites(Tiers tiers);
+	List<EvenementCivilData> getEvenementsCivilsNonTraites(Tiers tiers);
 }
 

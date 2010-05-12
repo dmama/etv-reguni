@@ -14,7 +14,7 @@ import ch.vd.uniregctb.declaration.DeclarationImpotCriteria;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
-import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
+import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockOfficeImpot;
@@ -179,7 +179,7 @@ public class Ec_19000_04_Depart_JIRA1262_Scenario extends DepartScenario {
 	public void etape3() throws Exception {
 		long id = addEvenementCivil(TypeEvenementCivil.DEPART_COMMUNE, noIndSebastien, dateDepart, communeDepart.getNoOFS());
 		commitAndStartTransaction();
-		regroupeEtTraiteEvenements(id);
+		traiteEvenements(id);
 	}
 
 	@Check(id=3, descr="Vérifie que l'habitant n'a plus son for sur Bex mais sur Zurich")
@@ -187,7 +187,7 @@ public class Ec_19000_04_Depart_JIRA1262_Scenario extends DepartScenario {
 
 		// On check que le couple est parti
 		{
-			final EvenementCivilRegroupe evt = getEvenementCivilRegoupeForHabitant(noHabSebastien);
+			final EvenementCivilData evt = getEvenementCivilRegoupeForHabitant(noHabSebastien);
 			assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat(), "Etat invalide");
 
 			final PersonnePhysique sebastien = (PersonnePhysique) tiersDAO.get(noHabSebastien);

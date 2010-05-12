@@ -5,7 +5,7 @@ import annotation.Etape;
 import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.civil.model.EnumTypePermis;
-import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
+import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
@@ -94,12 +94,12 @@ public class Ec_20000_01_Demenagement_Celibataire_Scenario extends EvenementCivi
 	public void etape2() throws Exception {
 		long id = addEvenementCivil(TypeEvenementCivil.DEMENAGEMENT_DANS_COMMUNE, noIndConceicao, dateDemenagement, commune.getNoOFS());
 		commitAndStartTransaction();
-		regroupeEtTraiteEvenements(id);
+		traiteEvenements(id);
 	}
 
 	@Check(id=2, descr="Vérification des fors fiscaux & que l'événement civil est traité")
 	public void check2() {
-		final EvenementCivilRegroupe evt = getEvenementCivilRegoupeForHabitant(noHabConceicao);
+		final EvenementCivilData evt = getEvenementCivilRegoupeForHabitant(noHabConceicao);
 		assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat(), "L'événement devrait être traité");
 		assertEquals(0, evt.getErreurs().size(), "Il ne devrait pas y avoir aucune erreur");
 

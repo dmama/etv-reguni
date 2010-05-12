@@ -196,7 +196,7 @@ public class Ec_19000_05_Depart_JIRA1394_Scenario extends DepartScenario {
 	public void step3() throws Exception {
 		long id = addEvenementCivil(TypeEvenementCivil.DEPART_COMMUNE, noIndSven, dateDepart, commune.getNoOFS());
 		commitAndStartTransaction();
-		regroupeEtTraiteEvenements(id);
+		traiteEvenements(id);
 	}
 	
 	@Check(id=3, descr="Vérifie qu'aucune tâche n'a été générée")

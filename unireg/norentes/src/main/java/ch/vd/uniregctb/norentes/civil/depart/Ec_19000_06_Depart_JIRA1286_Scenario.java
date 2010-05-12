@@ -6,7 +6,7 @@ import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.civil.model.EnumTypePermis;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
+import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
@@ -116,14 +116,14 @@ public class Ec_19000_06_Depart_JIRA1286_Scenario extends DepartScenario {
 		
 		long id = addEvenementCivil(TypeEvenementCivil.DEPART_COMMUNE, noIndIan, dateDepart, communeDepart.getNoOFS());
 		commitAndStartTransaction();
-		regroupeEtTraiteEvenements(id);
+		traiteEvenements(id);
 		
 	}
 
 	@Check(id=3, descr="Vérifie que l'habitant n'a pas de for ouvert car il est mineur")
 	public void check3() throws Exception {
 		
-		final EvenementCivilRegroupe evt = getEvenementCivilRegoupeForHabitant(noTiersIan);
+		final EvenementCivilData evt = getEvenementCivilRegoupeForHabitant(noTiersIan);
 		assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat(), "L'événement civil devrait être traité");
 		
 		final PersonnePhysique ian = (PersonnePhysique) tiersDAO.get(noTiersIan);

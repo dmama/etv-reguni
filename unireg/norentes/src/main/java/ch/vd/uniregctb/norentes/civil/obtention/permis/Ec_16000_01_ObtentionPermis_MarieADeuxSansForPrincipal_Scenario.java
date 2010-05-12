@@ -5,7 +5,7 @@ import annotation.Etape;
 import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.civil.model.EnumTypePermis;
-import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
+import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
@@ -115,12 +115,12 @@ public class Ec_16000_01_ObtentionPermis_MarieADeuxSansForPrincipal_Scenario ext
 	public void etape2() throws Exception {
 		long id = addEvenementCivil(TypeEvenementCivil.CHGT_CATEGORIE_ETRANGER, noIndMomo, dateObtentionPermis, communeMariage.getNoOFS());
 		commitAndStartTransaction();
-		regroupeEtTraiteEvenements(id);
+		traiteEvenements(id);
 	}
 
 	@Check(id=2, descr="Vérifie qu'aucun for n'a été ouvert")
 	public void check2() {
-		final EvenementCivilRegroupe evt = getEvenementCivilRegoupeForHabitant(noHabMomo);
+		final EvenementCivilData evt = getEvenementCivilRegoupeForHabitant(noHabMomo);
 		assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat(), "");
 
 		check1();

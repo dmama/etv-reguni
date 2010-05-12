@@ -1,11 +1,11 @@
 package ch.vd.uniregctb.admin.evenementExterne;
 
-import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.SelectContainerValue;
-import ch.vd.uniregctb.evenement.EvenementCivilUnitaire;
-import ch.vd.uniregctb.evenement.jms.EvenementCivilUnitaireSender;
-import ch.vd.uniregctb.type.TypeEvenementCivil;
-import ch.vd.uniregctb.web.xt.AbstractEnhancedSimpleFormController;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.log4j.Logger;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
@@ -15,17 +15,18 @@ import org.springmodules.xt.ajax.action.ReplaceContentAction;
 import org.springmodules.xt.ajax.component.TaggedText;
 import org.springmodules.xt.ajax.web.servlet.AjaxModelAndView;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.common.SelectContainerValue;
+import ch.vd.uniregctb.evenement.EvenementCivilData;
+import ch.vd.uniregctb.evenement.jms.EvenementCivilSender;
+import ch.vd.uniregctb.type.TypeEvenementCivil;
+import ch.vd.uniregctb.web.xt.AbstractEnhancedSimpleFormController;
 
-public class CivilUnitaireController extends AbstractEnhancedSimpleFormController {
+public class EvenementCivilController extends AbstractEnhancedSimpleFormController {
 
-	private static Logger logger = Logger.getLogger(CivilUnitaireController.class);
+	private static Logger logger = Logger.getLogger(EvenementCivilController.class);
 
-	private EvenementCivilUnitaireSender evtCivilSender;
+	private EvenementCivilSender evtCivilSender;
 
 	@Override
 	protected Object formBackingObject(HttpServletRequest request) throws Exception {
@@ -90,7 +91,7 @@ public class CivilUnitaireController extends AbstractEnhancedSimpleFormControlle
 
 		CivilUnitaireView view = (CivilUnitaireView) event.getCommandObject();
 		try {
-			EvenementCivilUnitaire evt= createEvenement(view);
+			EvenementCivilData evt= createEvenement(view);
 
 			sendEvent(evt);
 			response.addAction( new ReplaceContentAction("error.global", new TaggedText("événement envoyé", TaggedText.Tag.DIV)));
@@ -103,17 +104,17 @@ public class CivilUnitaireController extends AbstractEnhancedSimpleFormControlle
 	}
 
 
-	public EvenementCivilUnitaire createEvenement(CivilUnitaireView view) {
-		EvenementCivilUnitaire evenement = new EvenementCivilUnitaire();
+	public EvenementCivilData createEvenement(CivilUnitaireView view) {
+		EvenementCivilData evenement = new EvenementCivilData();
 		evenement.setId(Long.parseLong(view.getNoTechnique()));
 		evenement.setNumeroOfsCommuneAnnonce(Integer.parseInt(view.getNumeroOFS()));
-		evenement.setNumeroIndividu(Long.parseLong(view.getNoIndividu()));
+		evenement.setNumeroIndividuPrincipal(Long.parseLong(view.getNoIndividu()));
 		evenement.setDateEvenement(RegDate.get(view.getDateEvenement()));
 		evenement.setType(TypeEvenementCivil.valueOf(Integer.parseInt(view.getTypeEvenementCivil())));
 		return evenement;
 	}
 
-	private void sendEvent(EvenementCivilUnitaire evtRegCivil) throws Exception {
+	private void sendEvent(EvenementCivilData evtRegCivil) throws Exception {
 		if (evtRegCivil == null) {
 			throw new IllegalArgumentException("Argument evtRegCivil ne peut être null.");
 		}
@@ -121,7 +122,7 @@ public class CivilUnitaireController extends AbstractEnhancedSimpleFormControlle
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
-	public void setEvtCivilSender(EvenementCivilUnitaireSender evtCivilSender) {
+	public void setEvtCivilSender(EvenementCivilSender evtCivilSender) {
 		this.evtCivilSender = evtCivilSender;
 	}
 }

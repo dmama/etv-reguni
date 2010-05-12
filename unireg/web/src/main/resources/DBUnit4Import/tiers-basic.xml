@@ -2387,7 +2387,7 @@
       <null/>
     </row>
   </table>
-  <table name="EVENEMENT_CIVIL_REGROUPE">
+  <table name="EVENEMENT_CIVIL">
     <column>LOG_MDATE</column>
     <column>DATE_TRAITEMENT</column>
     <column>ID</column>

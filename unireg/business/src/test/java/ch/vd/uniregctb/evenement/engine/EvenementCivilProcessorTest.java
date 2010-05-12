@@ -14,9 +14,9 @@ import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.BusinessTest;
+import ch.vd.uniregctb.evenement.EvenementCivilDAO;
+import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.evenement.EvenementCivilErreur;
-import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
-import ch.vd.uniregctb.evenement.EvenementCivilRegroupeDAO;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
 import ch.vd.uniregctb.interfaces.model.Individu;
@@ -53,7 +53,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 	/**
 	 * La DAO pour les evenements
 	 */
-	private EvenementCivilRegroupeDAO evenementCivilDAO;
+	private EvenementCivilDAO evenementCivilDAO;
 
 	/**
 	 * Le DAO.
@@ -76,11 +76,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 
 		evenementCivilProcessor = getBean(EvenementCivilProcessor.class, "evenementCivilProcessor");
 		tiersDAO = getBean(TiersDAO.class, "tiersDAO");
-
-		evenementCivilDAO = getBean(EvenementCivilRegroupeDAO.class, "evenementCivilRegroupeDAO");
-
-		//evenementFiscalService = getBean(EvenementFiscalService.class, "evenementFiscalService");
-
+		evenementCivilDAO = getBean(EvenementCivilDAO.class, "evenementCivilDAO");
 		searcher = getBean(GlobalTiersSearcher.class, "globalTiersSearcher");
 	}
 
@@ -99,9 +95,9 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 			public Object doInTransaction(TransactionStatus status) {
 
 				// Test de l'état des événements;
-				List<EvenementCivilRegroupe> list = evenementCivilDAO.getAll();
+				List<EvenementCivilData> list = evenementCivilDAO.getAll();
 				assertEquals(1, list.size());
-				EvenementCivilRegroupe e = list.get(0);
+				EvenementCivilData e = list.get(0);
 				assertEvtState(EtatEvenementCivil.EN_ERREUR, e);
 
 				return null;
@@ -121,9 +117,9 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 			public Object doInTransaction(TransactionStatus status) {
 
 				// Test de l'état des événements;
-				List<EvenementCivilRegroupe> list = evenementCivilDAO.getAll();
+				List<EvenementCivilData> list = evenementCivilDAO.getAll();
 				assertEquals(1, list.size());
-				EvenementCivilRegroupe e = list.get(0);
+				EvenementCivilData e = list.get(0);
 				assertEvtState(EtatEvenementCivil.EN_ERREUR, e);
 
 				return null;
@@ -146,9 +142,9 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 			public Object doInTransaction(TransactionStatus status) {
 
 				// Test de l'état des événements;
-				List<EvenementCivilRegroupe> list = evenementCivilDAO.getAll();
+				List<EvenementCivilData> list = evenementCivilDAO.getAll();
 				assertEquals(1, list.size());
-				EvenementCivilRegroupe e = list.get(0);
+				EvenementCivilData e = list.get(0);
 				assertEvtState(EtatEvenementCivil.EN_ERREUR, e);
 
 				return null;
@@ -168,9 +164,9 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 			public Object doInTransaction(TransactionStatus status) {
 
 				// Test de l'état des événements;
-				List<EvenementCivilRegroupe> list = evenementCivilDAO.getAll();
+				List<EvenementCivilData> list = evenementCivilDAO.getAll();
 				assertEquals(1, list.size());
-				EvenementCivilRegroupe e = list.get(0);
+				EvenementCivilData e = list.get(0);
 				assertEvtState(EtatEvenementCivil.TRAITE, e);
 
 				PersonnePhysique tiers = tiersDAO.getHabitantByNumeroIndividu(983254L);
@@ -189,15 +185,15 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 		saveEvenement(9002L, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, RegDate.get(2007, 10, 25), 34567L, null, 5402);
 
 		// Lancement du traitement des événements
-		evenementCivilProcessor.traiteEvenementCivilRegroupe(9002L);
+		evenementCivilProcessor.traiteEvenementCivil(9002L);
 
 		doInTransaction(new TransactionCallback() {
 			public Object doInTransaction(TransactionStatus status) {
 
 				// Test de l'état des événements;
-				List<EvenementCivilRegroupe> list = evenementCivilDAO.getAll();
+				List<EvenementCivilData> list = evenementCivilDAO.getAll();
 				assertEquals(1, list.size());
-				EvenementCivilRegroupe e = list.get(0);
+				EvenementCivilData e = list.get(0);
 				assertEvtState(EtatEvenementCivil.EN_ERREUR, e);
 
 				return null;
@@ -218,9 +214,9 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 			public Object doInTransaction(TransactionStatus status) {
 
 				// Test de l'état des événements;
-				List<EvenementCivilRegroupe> list = evenementCivilDAO.getAll();
+				List<EvenementCivilData> list = evenementCivilDAO.getAll();
 				assertEquals(1, list.size());
-				EvenementCivilRegroupe e = list.get(0);
+				EvenementCivilData e = list.get(0);
 				assertEvtState(EtatEvenementCivil.EN_ERREUR, e);
 
 				return null;
@@ -240,9 +236,9 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 			public Object doInTransaction(TransactionStatus status) {
 
 				// Test de l'état des événements;
-				List<EvenementCivilRegroupe> list = evenementCivilDAO.getAll();
+				List<EvenementCivilData> list = evenementCivilDAO.getAll();
 				assertEquals(1, list.size());
-				EvenementCivilRegroupe e = list.get(0);
+				EvenementCivilData e = list.get(0);
 				assertEvtState(EtatEvenementCivil.EN_ERREUR, e);
 				assertErreurs(2, e);
 
@@ -279,9 +275,9 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 			public Object doInTransaction(TransactionStatus status) {
 
 				// Test de l'état des événements;
-				List<EvenementCivilRegroupe> list = evenementCivilDAO.getAll();
+				List<EvenementCivilData> list = evenementCivilDAO.getAll();
 				assertEquals(1, list.size());
-				EvenementCivilRegroupe e = list.get(0);
+				EvenementCivilData e = list.get(0);
 				assertEvtState(EtatEvenementCivil.A_VERIFIER, e);
 				assertWarnings(1, e);
 
@@ -318,9 +314,9 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 			public Object doInTransaction(TransactionStatus status) {
 
 				// Test de l'état des événements;
-				List<EvenementCivilRegroupe> list = evenementCivilDAO.getAll();
+				List<EvenementCivilData> list = evenementCivilDAO.getAll();
 				assertEquals(1, list.size());
-				EvenementCivilRegroupe e = list.get(0);
+				EvenementCivilData e = list.get(0);
 				assertEvtState(EtatEvenementCivil.EN_ERREUR, e);
 				assertErreurs(1, e);
 
@@ -342,9 +338,9 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 			public Object doInTransaction(TransactionStatus status) {
 
 				// Test de l'état des événements;
-				List<EvenementCivilRegroupe> list = evenementCivilDAO.getAll();
+				List<EvenementCivilData> list = evenementCivilDAO.getAll();
 				assertEquals(1, list.size());
-				EvenementCivilRegroupe e = list.get(0);
+				EvenementCivilData e = list.get(0);
 				assertEvtState(EtatEvenementCivil.EN_ERREUR, e);
 				assertErreurs(1, e);
 
@@ -377,9 +373,9 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 			public Object doInTransaction(TransactionStatus status) {
 
 				// Test de l'état des événements;
-				List<EvenementCivilRegroupe> list = evenementCivilDAO.getAll();
+				List<EvenementCivilData> list = evenementCivilDAO.getAll();
 				assertEquals(1, list.size());
-				EvenementCivilRegroupe e = list.get(0);
+				EvenementCivilData e = list.get(0);
 				assertEvtState(EtatEvenementCivil.EN_ERREUR, e);
 				assertErreurs(1, e);
 
@@ -406,9 +402,9 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 		template.execute(new TransactionCallback() {
 			public Object doInTransaction(TransactionStatus status) {
 
-				List<EvenementCivilRegroupe> list = evenementCivilDAO.getAll();
+				List<EvenementCivilData> list = evenementCivilDAO.getAll();
 				assertEquals(1, list.size());
-				EvenementCivilRegroupe e = list.get(0);
+				EvenementCivilData e = list.get(0);
 				//evenement en erreur car pas d'adresse de départ spécifiée
 				assertEvtState(EtatEvenementCivil.EN_ERREUR, e);
 				return null;
@@ -443,9 +439,9 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 			public Object doInTransaction(TransactionStatus status) {
 
 				// Test de l'état des événements;
-				List<EvenementCivilRegroupe> listEv = evenementCivilDAO.getAll();
+				List<EvenementCivilData> listEv = evenementCivilDAO.getAll();
 				assertEquals(1, listEv.size());
-				EvenementCivilRegroupe e = listEv.get(0);
+				EvenementCivilData e = listEv.get(0);
 				assertEvtState(EtatEvenementCivil.TRAITE, e);
 
 				// Nouvelle recherche
@@ -483,11 +479,11 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 		saveEvenement(9001L, TypeEvenementCivil.CHGT_CORREC_NOM_PRENOM, RegDate.get(2007, 10, 23), noIndividu, null, MockCommune.Lausanne
 				.getNoOFS());
 
-		evenementCivilProcessor.traiteEvenementsCivilsRegroupes(null);
+		evenementCivilProcessor.traiteEvenementsCivils(null);
 
 		doInTransaction(new TransactionCallback() {
 			public Object doInTransaction(TransactionStatus status) {
-				final List<EvenementCivilRegroupe> list = evenementCivilDAO.getAll();
+				final List<EvenementCivilData> list = evenementCivilDAO.getAll();
 				assertNotNull(list);
 				sortEvenements(list);
 				assertEquals(2, list.size());
@@ -501,11 +497,11 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 		saveEvenement(9002L, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HS, RegDate.get(1980, 11, 2), noIndividu, null, MockCommune.Lausanne
 				.getNoOFS());
 
-		evenementCivilProcessor.traiteEvenementCivilRegroupe(9002L);
+		evenementCivilProcessor.traiteEvenementCivil(9002L);
 
 		doInTransaction(new TransactionCallback() {
 			public Object doInTransaction(TransactionStatus status) {
-				final List<EvenementCivilRegroupe> list = evenementCivilDAO.getAll();
+				final List<EvenementCivilData> list = evenementCivilDAO.getAll();
 				assertNotNull(list);
 				sortEvenements(list);
 				assertEquals(3, list.size());
@@ -520,9 +516,9 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 	/**
 	 * Trie la liste par ordre croissant d'id.
 	 */
-	private static void sortEvenements(final List<EvenementCivilRegroupe> list) {
-		Collections.sort(list, new Comparator<EvenementCivilRegroupe>() {
-			public int compare(EvenementCivilRegroupe o1, EvenementCivilRegroupe o2) {
+	private static void sortEvenements(final List<EvenementCivilData> list) {
+		Collections.sort(list, new Comparator<EvenementCivilData>() {
+			public int compare(EvenementCivilData o1, EvenementCivilData o2) {
 				return o1.getId().compareTo(o2.getId());
 			}
 		});
@@ -534,7 +530,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 
 		doInTransaction(new TransactionCallback() {
 			public Object doInTransaction(TransactionStatus status) {
-				EvenementCivilRegroupe evt = new EvenementCivilRegroupe();
+				EvenementCivilData evt = new EvenementCivilData();
 				evt.setId(id);
 				evt.setType(type);
 				evt.setDateEvenement(date);
@@ -548,7 +544,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 		});
 	}
 
-	private void assertErreurs(int expected, EvenementCivilRegroupe e) {
+	private void assertErreurs(int expected, EvenementCivilData e) {
 
 		for (EvenementCivilErreur erreur : e.getErreurs()) {
 			String msg = erreur.getMessage();
@@ -557,7 +553,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 		assertEquals(expected, e.getErreurs().size());
 	}
 
-	private void assertWarnings(int expected, EvenementCivilRegroupe e) {
+	private void assertWarnings(int expected, EvenementCivilData e) {
 
 		for (EvenementCivilErreur w : e.getWarnings()) {
 			String msg = w.getMessage();
@@ -566,7 +562,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 		assertEquals(expected, e.getErreurs().size());
 	}
 
-	private void assertEvtState(EtatEvenementCivil expected, EvenementCivilRegroupe e) {
+	private void assertEvtState(EtatEvenementCivil expected, EvenementCivilData e) {
 
 		final boolean ok = e.getEtat().equals(expected);
 		if (!ok) {
@@ -578,7 +574,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 		}
 	}
 
-	private static void assertEvenement(long id, TypeEvenementCivil type, EtatEvenementCivil etat, EvenementCivilRegroupe e) {
+	private static void assertEvenement(long id, TypeEvenementCivil type, EtatEvenementCivil etat, EvenementCivilData e) {
 		assertNotNull(e);
 		assertEquals(id, e.getId().longValue());
 		assertEquals(type, e.getType());
@@ -588,7 +584,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 	private void traiteEvenements() throws Exception {
 
 		// Lancement du traitement des événements
-		evenementCivilProcessor.traiteEvenementsCivilsRegroupes(null);
+		evenementCivilProcessor.traiteEvenementsCivils(null);
 	}
 
 	private void setUpHabitant() throws Exception {

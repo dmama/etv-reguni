@@ -8,7 +8,7 @@ import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.AdresseSuisse;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
-import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
+import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.interfaces.model.Adresse;
@@ -140,8 +140,8 @@ public class Ec_18000_12_Arrivee_Couple_AdresseFiscale_PP_Scenario extends Evene
 		final long idEvtCleo = addEvenementCivil(TypeEvenementCivil.ARRIVEE_PRINCIPALE_VAUDOISE, noIndCleo, dateArriveeLausanne, MockCommune.Lausanne.getNoOFS());
 
 		commitAndStartTransaction();
-		regroupeEtTraiteEvenements(idEvtAntoine);
-		regroupeEtTraiteEvenements(idEvtCleo);
+		traiteEvenements(idEvtAntoine);
+		traiteEvenements(idEvtCleo);
 
 		evenementId = idEvtAntoine;
 	}
@@ -162,7 +162,7 @@ public class Ec_18000_12_Arrivee_Couple_AdresseFiscale_PP_Scenario extends Evene
 
 	@Check(id = 2, descr = "Vérifions maintenant que le couple (ainsi qu'Antoine, qui était à la source de la surcharge d'adresse) sont bien passés sur Lausanne")
 	public void check2() throws Exception {
-		final EvenementCivilRegroupe evenement = evtRegroupeDAO.get(evenementId);
+		final EvenementCivilData evenement = evtDAO.get(evenementId);
 		assertEquals(EtatEvenementCivil.TRAITE, evenement.getEtat(), "L'événement civil devrait être en traité.");
 
 		final MenageCommun menage = (MenageCommun) tiersDAO.get(noMenage);

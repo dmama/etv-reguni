@@ -6,8 +6,7 @@ import annotation.Etape;
 import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.civil.model.EnumTypePermis;
-import ch.vd.uniregctb.evenement.EvenementCivilErreur;
-import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
+import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
@@ -18,8 +17,6 @@ import ch.vd.uniregctb.norentes.common.EvenementCivilScenario;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
-import ch.vd.uniregctb.type.MotifFor;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 public class Ec_43000_03_CorrectionAdresse_IndividuMineur_Scenario extends EvenementCivilScenario {
@@ -91,12 +88,12 @@ public class Ec_43000_03_CorrectionAdresse_IndividuMineur_Scenario extends Evene
 	public void etape2() throws Exception {
 		final long id = addEvenementCivil(TypeEvenementCivil.CORREC_ADRESSE, noIndConceicao, dateCorrection, MockCommune.Lausanne.getNoOFS());
 		commitAndStartTransaction();
-		regroupeEtTraiteEvenements(id);
+		traiteEvenements(id);
 	}
 
 	@Check(id=2, descr="Vérification que l'événement a bien été mis en erreur")
 	public void check2() throws Exception {
-		final EvenementCivilRegroupe evt = getEvenementCivilRegoupeForHabitant(noHabConceicao);
+		final EvenementCivilData evt = getEvenementCivilRegoupeForHabitant(noHabConceicao);
 		assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat(), "L'événement ne devrait pas être en erreur");
 	}
 }

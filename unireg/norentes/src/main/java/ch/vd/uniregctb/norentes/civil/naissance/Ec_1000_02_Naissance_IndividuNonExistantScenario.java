@@ -52,7 +52,7 @@ public class Ec_1000_02_Naissance_IndividuNonExistantScenario extends EvenementC
 		commitAndStartTransaction();
 
 		// On traite les evenements
-		regroupeEtTraiteEvenements(id);
+		traiteEvenements(id);
 	}
 
 	@Check(id=2, descr="Contrôle qu'il n'y a pas de Tiers dans la base de données et que l'événement est en erreur")

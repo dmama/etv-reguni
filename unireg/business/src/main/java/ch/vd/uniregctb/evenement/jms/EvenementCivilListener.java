@@ -18,23 +18,21 @@ import ch.vd.technical.esb.jms.EsbMessageListener;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.data.DataEventService;
-import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
-import ch.vd.uniregctb.evenement.EvenementCivilRegroupeDAO;
+import ch.vd.uniregctb.evenement.EvenementCivilData;
+import ch.vd.uniregctb.evenement.EvenementCivilDAO;
 import ch.vd.uniregctb.evenement.engine.EvenementCivilProcessor;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 /**
- * Message driven Pojo : en charge de la persistence des événements civils unitaires reçus au format XML.
- *
- * @author Jean-Eric Cuendet
+ * Listener des évéments civils envoyés par le registre civil (REG-PP ou RCPers) et reçus à travers l'ESB.
  */
-public class EvenementCivilUnitaireListener extends EsbMessageListener {
+public class EvenementCivilListener extends EsbMessageListener {
 
-	private static final Logger LOGGER = Logger.getLogger(EvenementCivilUnitaireListener.class);
+	private static final Logger LOGGER = Logger.getLogger(EvenementCivilListener.class);
 
 	private TiersDAO tiersDAO;
-	private EvenementCivilRegroupeDAO evenementCivilRegroupeDAO;
+	private EvenementCivilDAO evenementCivilDAO;
 	private DataEventService dataEventService;
 	private EvenementCivilProcessor evenementCivilProcessor;
 	private PlatformTransactionManager transactionManager;
@@ -48,7 +46,7 @@ public class EvenementCivilUnitaireListener extends EsbMessageListener {
 			final String message = esbMessage.getBodyAsString();
 			onEvenementCivil(message);
 		}
-		catch (EvenementUnitaireException e) {
+		catch (EvenementCivilException e) {
 			// on a un truc qui a sauté au moment de l'insertion de l'événement
 			// non seulement il faut committer la transaction de réception du message entrant,
 			// mais aussi envoyer l'erreur dans une queue spécifique
@@ -64,9 +62,9 @@ public class EvenementCivilUnitaireListener extends EsbMessageListener {
 		}
 	}
 
-	protected void onEvenementCivil(String message) throws EvenementUnitaireException {
+	protected void onEvenementCivil(String message) throws EvenementCivilException {
 
-		EvenementCivilRegroupe evenement = extractEvenement(message);
+		EvenementCivilData evenement = extractEvenement(message);
 		if (evenement == null) {
 			return; // rien à faire
 		}
@@ -85,7 +83,7 @@ public class EvenementCivilUnitaireListener extends EsbMessageListener {
 		}
 	}
 
-	private EvenementCivilRegroupe extractEvenement(String xmlMessage) {
+	private EvenementCivilData extractEvenement(String xmlMessage) {
 
 		/* On parse le message XML */
 		EvtRegCivilDocument doc;
@@ -105,7 +103,7 @@ public class EvenementCivilUnitaireListener extends EsbMessageListener {
 			return null;
 		}
 
-		final EvenementCivilRegroupe evenement = new EvenementCivilRegroupe(bean);
+		final EvenementCivilData evenement = new EvenementCivilData(bean);
 		Assert.notNull(evenement.getId(), "L'ID de l'événement ne peut pas être nul");
 		Assert.notNull(evenement.getDateEvenement(), "La date de l'événement ne peut pas être nulle");
 		Assert.notNull(evenement.getNumeroIndividuPrincipal(), "Le numéro d'individu de l'événement ne peut pas être nul");
@@ -113,7 +111,7 @@ public class EvenementCivilUnitaireListener extends EsbMessageListener {
 		return evenement;
 	}
 
-	private boolean insertEvenement(final EvenementCivilRegroupe evenement) throws EvenementUnitaireException {
+	private boolean insertEvenement(final EvenementCivilData evenement) throws EvenementCivilException {
 
 		final Long id = evenement.getId();
 		Audit.info(id, "Arrivée du message JMS avec l'id " + id);
@@ -129,14 +127,14 @@ public class EvenementCivilUnitaireListener extends EsbMessageListener {
 			final boolean ok = (Boolean) template.execute(new TransactionCallback() {
 				public Object doInTransaction(TransactionStatus status) {
 
-					if (evenementCivilRegroupeDAO.exists(id)) {
+					if (evenementCivilDAO.exists(id)) {
 						Audit.warn(id, String.format("L'événement civil n°%d existe DEJA en DB", id));
 						return false; // rien de plus à faire
 					}
 					else {
 
 						evenement.setHabitantPrincipal(tiersDAO.getPPByNumeroIndividu(evenement.getNumeroIndividuPrincipal()));
-						evenementCivilRegroupeDAO.save(evenement);
+						evenementCivilDAO.save(evenement);
 
 						final StringBuilder b = new StringBuilder();
 						b.append("L'événement civil ").append(id).append(" est inséré en base de données.");
@@ -156,12 +154,12 @@ public class EvenementCivilUnitaireListener extends EsbMessageListener {
 			return ok;
 		}
 		catch (TransactionException e) {
-			throw new EvenementUnitaireException(e);
+			throw new EvenementCivilException(e);
 		}
 	}
 
-	private void traiteEvenement(EvenementCivilRegroupe evenement) {
-		evenementCivilProcessor.traiteEvenementCivilRegroupe(evenement.getId());
+	private void traiteEvenement(EvenementCivilData evenement) {
+		evenementCivilProcessor.traiteEvenementCivil(evenement.getId());
 	}
 
 	public void setEvenementCivilProcessor(EvenementCivilProcessor evenementCivilProcessor) {
@@ -176,8 +174,8 @@ public class EvenementCivilUnitaireListener extends EsbMessageListener {
 		this.dataEventService = dataEventService;
 	}
 
-	public void setEvenementCivilRegroupeDAO(EvenementCivilRegroupeDAO evenementCivilRegroupeDAO) {
-		this.evenementCivilRegroupeDAO = evenementCivilRegroupeDAO;
+	public void setEvenementCivilDAO(EvenementCivilDAO evenementCivilDAO) {
+		this.evenementCivilDAO = evenementCivilDAO;
 	}
 
 	public void setTiersDAO(TiersDAO tiersDAO) {

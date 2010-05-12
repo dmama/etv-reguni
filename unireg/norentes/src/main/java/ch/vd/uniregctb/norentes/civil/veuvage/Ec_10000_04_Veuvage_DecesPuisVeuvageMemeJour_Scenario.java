@@ -6,7 +6,7 @@ import annotation.Check;
 import annotation.Etape;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.civil.model.EnumTypeEtatCivil;
-import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
+import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.evenement.EvenementCriteria;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.interfaces.model.Commune;
@@ -136,7 +136,7 @@ public class Ec_10000_04_Veuvage_DecesPuisVeuvageMemeJour_Scenario extends Evene
 	public void step2() throws Exception {
 		long id = addEvenementCivil(TypeEvenementCivil.DECES, noIndPierre, dateDeces, communeMariage.getNoOFS());
 		commitAndStartTransaction();
-		regroupeEtTraiteEvenements(id);
+		traiteEvenements(id);
 	}
 
 	@Check(id=2, descr="Vérifie que le menage commun a été fermé et le For principal de l'individu créé")
@@ -145,11 +145,11 @@ public class Ec_10000_04_Veuvage_DecesPuisVeuvageMemeJour_Scenario extends Evene
 		final EvenementCriteria criterion = new EvenementCriteria();
 		criterion.setNumeroIndividu(noIndPierre);
 		criterion.setType(TypeEvenementCivil.DECES);
-		final List<EvenementCivilRegroupe> evts = evtRegroupeDAO.find(criterion, null);
+		final List<EvenementCivilData> evts = evtDAO.find(criterion, null);
 		assertNotNull(evts, "Pas du tout d'événement de décès?");
 		assertEquals(1, evts.size(), "Il devrait y avoir un événement de DECES pour Pierre");
 
-		final EvenementCivilRegroupe evt = evts.get(0);
+		final EvenementCivilData evt = evts.get(0);
 		assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat(), "L'événement n'a pas été traité correctement");
 
 		{
@@ -175,7 +175,7 @@ public class Ec_10000_04_Veuvage_DecesPuisVeuvageMemeJour_Scenario extends Evene
 	public void step3() throws Exception {
 		long id = addEvenementCivil(TypeEvenementCivil.VEUVAGE, noIndPierre, dateVeuvage, communeMariage.getNoOFS());
 		commitAndStartTransaction();
-		regroupeEtTraiteEvenements(id);
+		traiteEvenements(id);
 	}
 
 	@Check(id=3, descr="Vérifie que le défunt n'a aucun for ni aucune situation de famille active")
@@ -184,11 +184,11 @@ public class Ec_10000_04_Veuvage_DecesPuisVeuvageMemeJour_Scenario extends Evene
 		final EvenementCriteria criterion = new EvenementCriteria();
 		criterion.setNumeroIndividu(noIndPierre);
 		criterion.setType(TypeEvenementCivil.VEUVAGE);
-		final List<EvenementCivilRegroupe> evts = evtRegroupeDAO.find(criterion, null);
+		final List<EvenementCivilData> evts = evtDAO.find(criterion, null);
 		assertNotNull(evts, "Pas du tout d'événement de veuvage?");
 		assertEquals(1, evts.size(), "Il devrait y avoir un événement de VEUVAGE pour Pierre");
 
-		final EvenementCivilRegroupe evt = evts.get(0);
+		final EvenementCivilData evt = evts.get(0);
 		assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat(), "L'événement n'a pas été traité correctement");
 
 		{

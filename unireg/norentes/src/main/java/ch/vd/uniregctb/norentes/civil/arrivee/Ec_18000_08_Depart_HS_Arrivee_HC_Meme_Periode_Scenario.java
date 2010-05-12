@@ -121,7 +121,7 @@ public class Ec_18000_08_Depart_HS_Arrivee_HC_Meme_Periode_Scenario extends Even
 		commitAndStartTransaction();
 
 		// On traite le nouvel événement
-		regroupeEtTraiteEvenements(id);
+		traiteEvenements(id);
 	}
 
 	@Check(id=2, descr="Vérification que le for principal d'Alain est sur le canton et qu'une tâche de contrôle de dossier a été générée")

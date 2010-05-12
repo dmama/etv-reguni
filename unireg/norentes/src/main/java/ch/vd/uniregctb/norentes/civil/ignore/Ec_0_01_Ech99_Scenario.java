@@ -4,8 +4,8 @@ import annotation.Check;
 import annotation.Etape;
 import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
-import ch.vd.uniregctb.evenement.EvenementCivilRegroupeDAO;
+import ch.vd.uniregctb.evenement.EvenementCivilDAO;
+import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
@@ -20,7 +20,7 @@ public class Ec_0_01_Ech99_Scenario extends EvenementCivilScenario {
 
 	private long idEvenementCivil;
 
-	private EvenementCivilRegroupeDAO evtCivilRegroupeDAO;
+	private EvenementCivilDAO evtCivilDAO;
 
 	@Override
 	public TypeEvenementCivil geTypeEvenementCivil() {
@@ -37,8 +37,8 @@ public class Ec_0_01_Ech99_Scenario extends EvenementCivilScenario {
 		return "Test de l'arrivée d'un événement de déclaration de l'état complet des données d'un individu (doit être traité sans autre)";
 	}
 
-	public void setEvtCivilRegroupeDAO(EvenementCivilRegroupeDAO evtCivilRegroupeDAO) {
-		this.evtCivilRegroupeDAO = evtCivilRegroupeDAO;
+	public void setEvtCivilDAO(EvenementCivilDAO evtCivilDAO) {
+		this.evtCivilDAO = evtCivilDAO;
 	}
 
 	private final long noIndAlain = 123456L;
@@ -59,13 +59,13 @@ public class Ec_0_01_Ech99_Scenario extends EvenementCivilScenario {
 	public void etape1() throws Exception {
 		idEvenementCivil = addEvenementCivil(TypeEvenementCivil.ETAT_COMPLET, noIndAlain, RegDate.get(), MockCommune.Vevey.getNoOFS());
 		commitAndStartTransaction();
-		regroupeEtTraiteEvenements(idEvenementCivil);
+		traiteEvenements(idEvenementCivil);
 	}
 
 	@Check(id=1, descr="L'événement doit être traité")
 	public void check1() throws Exception {
-		final EvenementCivilRegroupe evtCivil = evtCivilRegroupeDAO.get(idEvenementCivil);
-		assertNotNull(evtCivil, "Pas de regroupement effectué ?");
+		final EvenementCivilData evtCivil = evtCivilDAO.get(idEvenementCivil);
+		assertNotNull(evtCivil, "L'événement est introuvable.");
 		assertEquals(EtatEvenementCivil.TRAITE, evtCivil.getEtat(), "Evénement non traité");
 	}
 }

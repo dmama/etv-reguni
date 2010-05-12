@@ -1,5 +1,10 @@
 package ch.vd.uniregctb.evenement.jms;
 
+import java.util.Date;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+
 import ch.vd.infrastructure.model.impl.DateUtils;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
@@ -7,19 +12,14 @@ import ch.vd.schema.registreCivil.x20070914.evtRegCivil.EvtRegCivilDocument;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
-import ch.vd.uniregctb.evenement.EvenementCivilUnitaire;
-import org.apache.log4j.Logger;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-
-import java.util.Date;
+import ch.vd.uniregctb.evenement.EvenementCivilData;
 
 /**
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
-public class EvenementCivilUnitaireSenderImpl implements EvenementCivilUnitaireSender {
+public class EvenementCivilSenderImpl implements EvenementCivilSender {
 
-	private static Logger LOGGER = Logger.getLogger(EvenementCivilUnitaireSenderImpl.class);
+	//private static Logger LOGGER = Logger.getLogger(EvenementCivilSenderImpl.class);
 
 	private EsbJmsTemplate esbTemplate;
 	private EsbMessageFactory esbMessageFactory;
@@ -49,7 +49,7 @@ public class EvenementCivilUnitaireSenderImpl implements EvenementCivilUnitaireS
 	/**
 	 * {@inheritDoc}
 	 */
-	public void sendEvent(EvenementCivilUnitaire evenement, String businessUser) throws Exception {
+	public void sendEvent(EvenementCivilData evenement, String businessUser) throws Exception {
 		Assert.notNull(evenement);
 		final EvtRegCivilDocument document = createDocument(evenement);
 
@@ -68,13 +68,13 @@ public class EvenementCivilUnitaireSenderImpl implements EvenementCivilUnitaireS
 		esbTemplate.send(m);
 	}
 
-	public EvtRegCivilDocument createDocument(EvenementCivilUnitaire evenement) {
+	public EvtRegCivilDocument createDocument(EvenementCivilData evenement) {
 		EvtRegCivilDocument document = EvtRegCivilDocument.Factory.newInstance();
 		EvtRegCivilDocument.EvtRegCivil e = document.addNewEvtRegCivil();
 		{
 			e.setNoTechnique(evenement.getId().intValue());
 			e.setNumeroOFS(evenement.getNumeroOfsCommuneAnnonce());
-			e.setNoIndividu(evenement.getNumeroIndividu().intValue());
+			e.setNoIndividu(evenement.getNumeroIndividuPrincipal().intValue());
 			e.setDateEvenement(DateUtils.calendar(RegDate.asJavaDate(evenement.getDateEvenement())));
 			e.setDateTraitement(DateUtils.calendar(new Date()));
 			e.setCode(evenement.getType().getId());

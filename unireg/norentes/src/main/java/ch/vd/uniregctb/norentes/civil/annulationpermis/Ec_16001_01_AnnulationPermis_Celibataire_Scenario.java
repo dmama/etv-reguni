@@ -95,7 +95,7 @@ public class Ec_16001_01_AnnulationPermis_Celibataire_Scenario extends Annulatio
 
 		long id = addEvenementCivil(TypeEvenementCivil.ANNUL_CATEGORIE_ETRANGER, noIndJulie, dateObtentionPermis, commune.getNoOFS());
 		commitAndStartTransaction();
-		regroupeEtTraiteEvenements(id);
+		traiteEvenements(id);
 	}
 
 	@Check(id=2, descr="Vérification des fors fiscaux")

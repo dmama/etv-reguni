@@ -5,7 +5,7 @@ import annotation.Etape;
 
 import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
+import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
@@ -125,12 +125,12 @@ public class Ec_18000_17_Arrivee_JIRA1677_Scenario extends EvenementCivilScenari
 		final long idEvtOlivier = addEvenementCivil(TypeEvenementCivil.ARRIVEE_PRINCIPALE_HC, noIndOlivier, dateArriveeLausanne, MockCommune.Lausanne.getNoOFS());
 		commitAndStartTransaction();
 		globalIndexer.sync();
-		regroupeEtTraiteEvenements(idEvtOlivier);
+		traiteEvenements(idEvtOlivier);
 
 		final long idEvtAlexandra = addEvenementCivil(TypeEvenementCivil.ARRIVEE_PRINCIPALE_HC, noIndAlexandra, dateArriveeLausanne, MockCommune.Lausanne.getNoOFS());
 		commitAndStartTransaction();
 		globalIndexer.sync();
-		regroupeEtTraiteEvenements(idEvtAlexandra);
+		traiteEvenements(idEvtAlexandra);
 	}
 
 	@Check(id = 2, descr = "Vérification de l'existence d'un ménage commun dont la date d'ouverture est la date de mariage (et pas la date d'arrivée)")
@@ -149,11 +149,11 @@ public class Ec_18000_17_Arrivee_JIRA1677_Scenario extends EvenementCivilScenari
 		assertTrue(olivier.isHabitant(), "Olivier est maintenant arrivé!");
 		assertEquals(noIndOlivier, olivier.getNumeroIndividu(), "Olivier est maintenant connu du registre civil!");
 
-		final EvenementCivilRegroupe evenementOlivier = getEvenementCivilRegoupeForHabitant(olivier.getNumero());
+		final EvenementCivilData evenementOlivier = getEvenementCivilRegoupeForHabitant(olivier.getNumero());
 		assertNotNull(evenementOlivier, "Où est l'événement civil d'arrivée d'Olivier ?");
 		assertEquals(EtatEvenementCivil.TRAITE, evenementOlivier.getEtat(), "L'événement civil devrait être en traité.");
 
-		final EvenementCivilRegroupe evenementAlex = getEvenementCivilRegoupeForHabitant(alex.getNumero());
+		final EvenementCivilData evenementAlex = getEvenementCivilRegoupeForHabitant(alex.getNumero());
 		assertNotNull(evenementAlex, "Où est l'événement civil d'arrivée d'Alexandra ?");
 		assertEquals(EtatEvenementCivil.TRAITE, evenementAlex.getEtat(), "L'événement civil devrait être en traité.");
 

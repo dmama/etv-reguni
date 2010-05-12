@@ -4,7 +4,7 @@ import annotation.Check;
 import annotation.Etape;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.evenement.EvenementCivilErreur;
-import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
+import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
 import ch.vd.uniregctb.norentes.common.EvenementCivilScenario;
@@ -73,12 +73,12 @@ public class Ec_4001_01_AnnulationMariage_Celibataire_Scenario extends Evenement
 	public void step2() throws Exception {
 		long id = addEvenementCivil(TypeEvenementCivil.ANNUL_MARIAGE, noIndJulie, RegDate.get(2008, 10, 24), commune.getNoOFS());
 		commitAndStartTransaction();
-		regroupeEtTraiteEvenements(id);
+		traiteEvenements(id);
 	}
 
 	@Check(id=2, descr="Vérifie que l'événement civil est en erreur")
 	public void check2() {
-		final EvenementCivilRegroupe evt = getEvenementCivilRegoupeForHabitant(noHabJulie);
+		final EvenementCivilData evt = getEvenementCivilRegoupeForHabitant(noHabJulie);
 		assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat(), "L'événement d'annulation de mariage devrait être en erreur car le tiers n'est pas marié");
 		assertEquals(1, evt.getErreurs().size(), "Il devrait y avoir exactement une erreur");
 

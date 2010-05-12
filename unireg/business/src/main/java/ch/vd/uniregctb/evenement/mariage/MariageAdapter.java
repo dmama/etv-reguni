@@ -5,7 +5,7 @@ import org.apache.log4j.Logger;
 import ch.vd.registre.civil.model.EnumAttributeIndividu;
 import ch.vd.registre.civil.model.EnumTypeEtatCivil;
 import ch.vd.uniregctb.evenement.EvenementAdapterException;
-import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
+import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.evenement.GenericEvenementAdapter;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
 import ch.vd.uniregctb.interfaces.model.Individu;
@@ -31,7 +31,7 @@ public class MariageAdapter extends GenericEvenementAdapter implements Mariage {
 	 * @throws EvenementAdapterException
 	 */
 	@Override
-	public void init(EvenementCivilRegroupe evenementCivil, ServiceCivilService serviceCivil, ServiceInfrastructureService infrastructureService) throws EvenementAdapterException {
+	public void init(EvenementCivilData evenementCivil, ServiceCivilService serviceCivil, ServiceInfrastructureService infrastructureService) throws EvenementAdapterException {
 		super.init(evenementCivil, serviceCivil, infrastructureService);
 
 		/*

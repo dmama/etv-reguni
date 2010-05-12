@@ -111,7 +111,7 @@
 		<property name="successView" value="admin/evenementExterne/evolution.do" />
 	</bean>
 
-	<bean id="civilUnitaireController" class="ch.vd.uniregctb.admin.evenementExterne.CivilUnitaireController" parent="ajaxContainer">
+	<bean id="civilUnitaireController" class="ch.vd.uniregctb.admin.evenementExterne.EvenementCivilController" parent="ajaxContainer">
 		<property name="formView" value="admin/evenementExterne/civilunitaire" />
 		<property name="successView" value="admin/evenementExterne/civilunitaire.do" />
 		<property name="evtCivilSender" ref="evtCivilSender" />

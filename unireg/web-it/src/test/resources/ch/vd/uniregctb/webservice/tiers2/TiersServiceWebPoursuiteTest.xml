@@ -1321,21 +1321,7 @@
     <column>QLR_TYPE</column>
     <column>TIERS_ID</column>
   </table>
-  <table name="EVENEMENT_CIVIL_UNITAIRE">
-    <column>ID</column>
-    <column>ANNULATION_DATE</column>
-    <column>ANNULATION_USER</column>
-    <column>LOG_CDATE</column>
-    <column>LOG_CUSER</column>
-    <column>LOG_MDATE</column>
-    <column>LOG_MUSER</column>
-    <column>DATE_EVENEMENT</column>
-    <column>ETAT</column>
-    <column>NUMERO_INDIVIDU</column>
-    <column>NUMERO_OFS_ANNONCE</column>
-    <column>TYPE</column>
-  </table>
-  <table name="EVENEMENT_CIVIL_REGROUPE">
+  <table name="EVENEMENT_CIVIL">
     <column>ID</column>
     <column>ANNULATION_DATE</column>
     <column>ANNULATION_USER</column>

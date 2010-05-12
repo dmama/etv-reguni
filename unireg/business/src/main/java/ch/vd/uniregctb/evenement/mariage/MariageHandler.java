@@ -37,8 +37,7 @@ public class MariageHandler extends EvenementCivilHandlerBase {
 
 	@Override
 	public void checkCompleteness(EvenementCivil target, List<EvenementCivilErreur> erreurs, List<EvenementCivilErreur> warnings) {
-		// Rien a vérifier, un seul événement est envoyé pour l'un des 2
-		// individus : donc pas de regroupement
+		// Rien a vérifier, un seul événement est envoyé pour l'un des 2 individus
 	}
 
 	/**

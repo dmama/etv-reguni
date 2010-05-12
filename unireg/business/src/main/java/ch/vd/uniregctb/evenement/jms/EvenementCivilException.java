@@ -4,17 +4,17 @@ package ch.vd.uniregctb.evenement.jms;
  * Exception lancée par le traitement des événements civils unitaires, et qui
  * détermine le remplissage d'une queue d'erreur
  */
-public class EvenementUnitaireException extends Exception {
+public class EvenementCivilException extends Exception {
 
-	public EvenementUnitaireException(String message) {
+	public EvenementCivilException(String message) {
 		super(message);
 	}
 
-	public EvenementUnitaireException(String message, Throwable cause) {
+	public EvenementCivilException(String message, Throwable cause) {
 		super(message, cause);
 	}
 
-	public EvenementUnitaireException(Throwable cause) {
+	public EvenementCivilException(Throwable cause) {
 		super(cause);
 	}
 

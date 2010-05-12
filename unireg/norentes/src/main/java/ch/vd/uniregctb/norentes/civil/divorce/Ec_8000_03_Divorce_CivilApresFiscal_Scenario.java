@@ -177,7 +177,7 @@ public class Ec_8000_03_Divorce_CivilApresFiscal_Scenario extends EvenementCivil
 
 		long id = addEvenementCivil(TypeEvenementCivil.DIVORCE, noIndKarina, dateDivorce, commune.getNoOFS());
 		commitAndStartTransaction();
-		regroupeEtTraiteEvenements(id);
+		traiteEvenements(id);
 	}
 
 	@Check(id=3, descr="Tout doit être comme après l'étape 2, sauf le blocage des remboursements automatiques qui ne doit pas être touché")

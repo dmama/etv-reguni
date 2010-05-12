@@ -26,7 +26,7 @@ public class ChangementNomHandler extends AbstractChangementHandler {
 
 	@Override
 	public void checkCompleteness(EvenementCivil target, List<EvenementCivilErreur> erreurs, List<EvenementCivilErreur> warnings) {
-		/* Rien de spécial pour le changement de nom : pas de regroupement */
+		/* Rien de spécial pour le changement de nom */
 
 	}
 

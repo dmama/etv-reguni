@@ -7,7 +7,7 @@ import annotation.Check;
 import annotation.Etape;
 import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
+import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.mock.MockAdresse;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
@@ -111,14 +111,14 @@ public class Ec_18000_03_Arrivee_Immeuble_1_Scenario extends EvenementCivilScena
 		commitAndStartTransaction();
 
 		// On traite les evenements
-		regroupeEtTraiteEvenements(id);
+		traiteEvenements(id);
 	}
 
 	@Check(id=3, descr="Vérifie que l'habitant Alain n'a plus son for sur Lausanne mais sur Bex")
 	public void check3() throws Exception {
 		// On check que Alain  est parti
 		{
-			EvenementCivilRegroupe evt = getEvenementCivilRegoupeForHabitant(noHabAlain);
+			EvenementCivilData evt = getEvenementCivilRegoupeForHabitant(noHabAlain);
 			assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat(), "");
 
 			PersonnePhysique hab = (PersonnePhysique)tiersDAO.get(noHabAlain);

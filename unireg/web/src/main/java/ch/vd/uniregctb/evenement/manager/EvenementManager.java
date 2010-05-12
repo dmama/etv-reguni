@@ -9,7 +9,7 @@ import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.common.WebParamPagination;
 import ch.vd.uniregctb.evenement.EvenementCriteria;
-import ch.vd.uniregctb.evenement.view.EvenementCivilRegroupeView;
+import ch.vd.uniregctb.evenement.view.EvenementCivilView;
 import ch.vd.uniregctb.evenement.view.EvenementCriteriaView;
 import ch.vd.uniregctb.evenement.view.EvenementView;
 
@@ -33,11 +33,11 @@ public interface EvenementManager {
 	public EvenementView get(Long id) throws AdresseException, InfrastructureException;
 
 	/**
-	 * Traite un evenement civil regroupe designe par l'id
+	 * Traite un evenement civil designe par l'id
 	 *
 	 * @param id
 	 */
-	public void traiteEvenementCivilRegroupe(Long id);
+	public void traiteEvenementCivil(Long id);
 
 	/**
 	 * Force l'etat de l'evenement à TRAITE
@@ -55,7 +55,7 @@ public interface EvenementManager {
 	 * @throws AdressesResolutionException
 	 */
 	@Transactional(readOnly = true)
-	public List<EvenementCivilRegroupeView> find(EvenementCriteriaView bean, WebParamPagination pagination) throws AdresseException;
+	public List<EvenementCivilView> find(EvenementCriteriaView bean, WebParamPagination pagination) throws AdresseException;
 
 	/**
 	 * Cherche et compte les evenements correspondant aux criteres

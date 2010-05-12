@@ -4,7 +4,7 @@ import org.apache.log4j.Logger;
 
 import ch.vd.registre.civil.model.EnumTypeEtatCivil;
 import ch.vd.uniregctb.evenement.EvenementAdapterException;
-import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
+import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.evenement.GenericEvenementAdapter;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
@@ -26,7 +26,7 @@ public class DecesAdapter extends GenericEvenementAdapter implements Deces {
 
 
 	@Override
-	public void init(EvenementCivilRegroupe evenement, ServiceCivilService serviceCivil, ServiceInfrastructureService infrastructureService)
+	public void init(EvenementCivilData evenement, ServiceCivilService serviceCivil, ServiceInfrastructureService infrastructureService)
 			throws EvenementAdapterException {
 		super.init(evenement, serviceCivil, infrastructureService);
 		 conjointSurvivant = serviceCivil.getConjoint(evenement.getNumeroIndividuPrincipal(),evenement.getDateEvenement().getOneDayBefore());

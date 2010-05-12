@@ -6,7 +6,7 @@ import annotation.Etape;
 import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.civil.model.EnumTypePermis;
-import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
+import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
@@ -73,11 +73,11 @@ public class Ec_18000_16_Arrivee_CoupleDateRapportEntreTiers_Scenario extends Ev
 	public void etape1() throws Exception {
 		final long idAntonio = addEvenementCivil(TypeEvenementCivil.ARRIVEE_PRINCIPALE_HC, noIndAntonio, dateArriveeLausanne, MockCommune.Lausanne.getNoOFS());
 		commitAndStartTransaction();
-		regroupeEtTraiteEvenements(idAntonio);
+		traiteEvenements(idAntonio);
 
 		final long idAnneLaure = addEvenementCivil(TypeEvenementCivil.ARRIVEE_PRINCIPALE_HC, noIndAnneLaure, dateArriveeLausanne, MockCommune.Lausanne.getNoOFS());
 		commitAndStartTransaction();
-		regroupeEtTraiteEvenements(idAnneLaure);
+		traiteEvenements(idAnneLaure);
 	}
 
 	@Check(id = 1, descr = "Vérification de l'existence d'un ménage commun dont la date d'ouverture est la date de mariage (et pas la date d'arrivée)")
@@ -89,11 +89,11 @@ public class Ec_18000_16_Arrivee_CoupleDateRapportEntreTiers_Scenario extends Ev
 		final PersonnePhysique anneLaure = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndAnneLaure);
 		assertNotNull(anneLaure, "L'habitant Anne-Laure n'a pas été créé ?");
 
-		final EvenementCivilRegroupe evenementAntonio = getEvenementCivilRegoupeForHabitant(antonio.getNumero());
+		final EvenementCivilData evenementAntonio = getEvenementCivilRegoupeForHabitant(antonio.getNumero());
 		assertNotNull(evenementAntonio, "Où est l'événement civil d'arrivée d'Antonio ?");
 		assertEquals(EtatEvenementCivil.TRAITE, evenementAntonio.getEtat(), "L'événement civil devrait être en traité.");
 
-		final EvenementCivilRegroupe evenementAnneLaure = getEvenementCivilRegoupeForHabitant(anneLaure.getNumero());
+		final EvenementCivilData evenementAnneLaure = getEvenementCivilRegoupeForHabitant(anneLaure.getNumero());
 		assertNotNull(evenementAnneLaure, "Où est l'événement civil d'arrivée d'Anne-Laure ?");
 		assertEquals(EtatEvenementCivil.TRAITE, evenementAnneLaure.getEtat(), "L'événement civil devrait être en traité.");
 

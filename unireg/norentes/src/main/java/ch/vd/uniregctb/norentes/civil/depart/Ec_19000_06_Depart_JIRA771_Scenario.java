@@ -197,7 +197,7 @@ public class Ec_19000_06_Depart_JIRA771_Scenario extends DepartScenario {
 	public void etape3() throws Exception {
 		long id = addEvenementCivil(TypeEvenementCivil.DEPART_COMMUNE, noIndSebastien, dateDepart, communeDepart.getNoOFS());
 		commitAndStartTransaction();
-		regroupeEtTraiteEvenements(id);
+		traiteEvenements(id);
 	}
 
 	@Check(id=3, descr="Vérifie que le couple a toujours son for sur Villars-sous-Yens")

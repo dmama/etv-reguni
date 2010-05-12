@@ -19,20 +19,20 @@ import ch.vd.uniregctb.type.TypeEvenementCivil;
  * @author
  *
  */
-public class EvenementCivilRegroupeDAOTest extends CoreDAOTest {
+public class EvenementCivilDAOTest extends CoreDAOTest {
 
-	protected static final Logger LOGGER = Logger.getLogger(EvenementCivilRegroupeDAOTest.class);
+	protected static final Logger LOGGER = Logger.getLogger(EvenementCivilDAOTest.class);
 
-	private static final String DAO_NAME = "evenementCivilRegroupeDAO";
+	private static final String DAO_NAME = "evenementCivilDAO";
 
-	private static final String DB_UNIT_DATA_FILE = "EvenementCivilRegroupeDAOTest.xml";
+	private static final String DB_UNIT_DATA_FILE = "EvenementCivilDAOTest.xml";
 
 	/**
 	 * Le DAO.
 	 */
-	EvenementCivilRegroupeDAO dao;
+	EvenementCivilDAO dao;
 
-	public EvenementCivilRegroupeDAOTest() throws Exception {
+	public EvenementCivilDAOTest() throws Exception {
 
 	}
 
@@ -44,7 +44,7 @@ public class EvenementCivilRegroupeDAOTest extends CoreDAOTest {
 	public void onSetUp() throws Exception {
 		super.onSetUp();
 
-		dao = getBean(EvenementCivilRegroupeDAO.class, DAO_NAME);
+		dao = getBean(EvenementCivilDAO.class, DAO_NAME);
 
 		loadDatabase(DB_UNIT_DATA_FILE);
 	}
@@ -55,7 +55,7 @@ public class EvenementCivilRegroupeDAOTest extends CoreDAOTest {
 	@Test
 	public void testGetAll() throws Exception {
 
-		List<EvenementCivilRegroupe> list = dao.getAll();
+		List<EvenementCivilData> list = dao.getAll();
 		assertNotNull(list);
 		assertEquals(2, list.size());
 	}
@@ -70,7 +70,7 @@ public class EvenementCivilRegroupeDAOTest extends CoreDAOTest {
 		assertNotNull(list);
 		assertEquals(1, list.size());
 		for (Long id : list) {
-			EvenementCivilRegroupe evt = dao.get(id);
+			EvenementCivilData evt = dao.get(id);
 			Assert.isTrue( !EtatEvenementCivil.TRAITE.equals( evt.getEtat() ), "un évenement traité a été récupéré");
 		}
 	}
@@ -85,12 +85,12 @@ public class EvenementCivilRegroupeDAOTest extends CoreDAOTest {
 		EvenementCriteria evenementCriteria = new EvenementCriteria();
 		evenementCriteria.setType(TypeEvenementCivil.MARIAGE);
 		ParamPagination pagination = new ParamPagination(1, 50, "dateEvenement", true);
-		List<EvenementCivilRegroupe> list = dao.find(evenementCriteria, pagination);
+		List<EvenementCivilData> list = dao.find(evenementCriteria, pagination);
 		assertNotNull(list);
 		assertEquals(1, list.size());
 
 		// Evt
-		EvenementCivilRegroupe evt = list.get(0);
+		EvenementCivilData evt = list.get(0);
 		assertEquals(new Long(12345L), evt.getNumeroIndividuPrincipal());
 		assertEquals(new Long(23456L), evt.getNumeroIndividuConjoint());
 
