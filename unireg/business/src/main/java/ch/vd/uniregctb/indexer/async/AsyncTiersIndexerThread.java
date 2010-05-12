@@ -100,7 +100,8 @@ public class AsyncTiersIndexerThread extends Thread {
 	 * Interrompt l'indexation courante et retourne lorsque le thread est de nouveau en attente
 	 */
 	public void reset() {
-		interrupt(); // on interrompt le poll sur la queue
+		// msi (12.05.2010) appeler 'interrupt' n'est pas une bonne idée: ça fout le bordel dans la gestion des locks de Lucene
+		// interrupt(); // on interrompt le poll sur la queue
 		sync(); // on attend que le thread soit de nouveau en attente
 	}
 
