@@ -11,8 +11,7 @@
 </c:if>
 
 <c:if test="${not empty adresses}">	
-<display:table 	name="${adresses}" id="adresse" pagesize="10" requestURI="${url}"
-		class="display">
+<display:table name="${adresses}" id="adresse" pagesize="10" requestURI="${url}" class="display">
 		<display:column  sortable ="true" titleKey="label.utilisationAdresse">
 			<c:if test="${adresse.annule}"><strike></c:if>
 				<fmt:message key="option.usage.${adresse.usage}" />

@@ -1421,9 +1421,11 @@ public class TiersManager implements MessageSourceAware {
 			else {
 				adresseView.setPermanente(false);
 			}
+			adresseView.setId(addGen.getId());
 		}
 		else {
 			adresseView.setPermanente(false);
+			adresseView.setId(null);
 		}
 		Integer numeroRue = addGen.getNumeroRue();
 		String rueFull = null;
@@ -1491,9 +1493,6 @@ public class TiersManager implements MessageSourceAware {
 		adresseView.setDefault(addGen.isDefault());
 
 		adresseView.setComplements(addGen.getComplement());
-
-		AdresseTiers adresseTiers = tiers.getAdresseActive(type, addGen.getDateDebut());
-		adresseView.setId(adresseTiers == null ? null : adresseTiers.getId());
 
 		return adresseView;
 	}
