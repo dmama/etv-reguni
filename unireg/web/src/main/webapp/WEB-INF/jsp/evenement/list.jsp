@@ -35,7 +35,9 @@
 			</display:column>
 			<!-- NO CTB -->
 			<display:column titleKey="label.numero.contribuable">
-				<unireg:numCTB numero="${row.numeroCTB}" />
+				<c:if test="${row.numeroCTB != null}">
+					<unireg:numCTB numero="${row.numeroCTB}" />
+				</c:if>
 			</display:column>
 			<!-- Nom  /Prénom -->
 			<display:column titleKey="label.prenom.nom">
