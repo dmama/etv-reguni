@@ -107,7 +107,7 @@ public class Ec_10001_01_AnnulationVeuvage_MarieSeul_Scenario extends EvenementC
 	public void step2() throws Exception {
 		long id = addEvenementCivil(TypeEvenementCivil.ANNUL_VEUVAGE, noIndAndre, dateVeuvage, commune.getNoOFS());
 		commitAndStartTransaction();
-		regroupeEtTraiteEvenements(id);
+		traiteEvenements(id);
 	}
 
 	@Check(id=2, descr="Vérifie que le For du ménage commun précédent est retrouvé et les Fors d'André ont été annulés")

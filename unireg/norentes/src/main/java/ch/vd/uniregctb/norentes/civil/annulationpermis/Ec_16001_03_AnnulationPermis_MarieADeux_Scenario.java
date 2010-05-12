@@ -144,7 +144,7 @@ public class Ec_16001_03_AnnulationPermis_MarieADeux_Scenario extends Annulation
 
 		long id = addEvenementCivil(TypeEvenementCivil.ANNUL_CATEGORIE_ETRANGER, noIndMomo, dateObtentionPermis, communeMariage.getNoOFS());
 		commitAndStartTransaction();
-		regroupeEtTraiteEvenements(id);
+		traiteEvenements(id);
 	}
 
 	@Check(id=2, descr="Vérifie que le ménage commun actif est le précédent et son mode d'imposition")

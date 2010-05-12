@@ -90,7 +90,7 @@
 		<property name="transactionManager" ref="transactionManager"/>
     </bean>
 
-    <!-- Job qui regroupe puis traite les evenements civils -->
+    <!-- Job qui traite les evenements civils -->
     <bean id="evenementHandlerJob" parent="schedulerJob" class="ch.vd.uniregctb.evenement.engine.EvenementCivilHandlerJob">
         <constructor-arg value="200"/>
         <property name="evenementCivilProcessor" ref="evenementCivilProcessor"/>

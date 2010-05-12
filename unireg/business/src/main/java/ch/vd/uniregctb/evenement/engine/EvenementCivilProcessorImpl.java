@@ -22,9 +22,9 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.evenement.EvenementAdapterException;
+import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.evenement.EvenementCivilErreur;
-import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
-import ch.vd.uniregctb.evenement.EvenementCivilRegroupeDAO;
+import ch.vd.uniregctb.evenement.EvenementCivilDAO;
 import ch.vd.uniregctb.evenement.GenericEvenementAdapter;
 import ch.vd.uniregctb.evenement.common.EvenementCivilHandler;
 import ch.vd.uniregctb.interfaces.model.Commune;
@@ -46,10 +46,9 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor, Eve
 	private static final Logger LOGGER = Logger.getLogger(EvenementCivilProcessorImpl.class);
 
 	private PlatformTransactionManager transactionManager;
-
 	private ServiceCivilService serviceCivilService;
-
 	private ServiceInfrastructureService serviceInfrastructureService;
+	private EvenementCivilDAO evenementCivilDAO;
 
 	/**
 	 * Liste de EvenementCivilHandler capables de gérer des événements recus par le moteur de règles.
@@ -57,22 +56,17 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor, Eve
 	private final Map<TypeEvenementCivil, EvenementCivilHandler> eventsHandlers = new HashMap<TypeEvenementCivil, EvenementCivilHandler>();
 
 	/**
-	 * Le DAO des événements civils regroupes.
-	 */
-	private EvenementCivilRegroupeDAO evenementCivilRegroupeDAO;
-
-	/**
 	 * {@inheritDoc}
 	 */
 	@SuppressWarnings({"unchecked"})
-	public void traiteEvenementsCivilsRegroupes(StatusManager status) {
+	public void traiteEvenementsCivils(StatusManager status) {
 
 		// Récupère les ids des événements à traiter
 		TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 		final List<Long> ids = (List<Long>) template.execute(new TransactionCallback() {
 			public Object doInTransaction(TransactionStatus status) {
-				return evenementCivilRegroupeDAO.getEvenementCivilsNonTraites();
+				return evenementCivilDAO.getEvenementCivilsNonTraites();
 			}
 		});
 
@@ -82,31 +76,31 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor, Eve
 	/**
 	 * {@inheritDoc}
 	 */
-	public Long traiteEvenementCivilRegroupe(final Long evenementCivilRegroupeId) {
-		traiteEvenements(Arrays.asList(evenementCivilRegroupeId), true, null);
+	public Long traiteEvenementCivil(final Long evenementCivilId) {
+		traiteEvenements(Arrays.asList(evenementCivilId), true, null);
 		return 0L;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public Long recycleEvenementCivilRegroupe(final Long evenementCivilRegroupeId) {
-		traiteEvenements(Arrays.asList(evenementCivilRegroupeId), false, null);
+	public Long recycleEvenementCivil(final Long evenementCivilId) {
+		traiteEvenements(Arrays.asList(evenementCivilId), false, null);
 		return 0L;
 	}
 
 	/**
-	 * Lance la validation puis le traitement de l'événement civil regroupé.
+	 * Lance la validation puis le traitement de l'événement civil.
 	 *
 	 * noRollbackfor = Exception.class => ne rollback dans aucun cas, de manière à toujours garder les traces d'Audit. L'appel de la méthod
 	 * handle() n'est pas impactée car elle se passe dans une autre transaction (= donc les instructions seront rollées-back en cas de
 	 * problème).
 	 *
-	 * @param evenementCivilRegroupeId
-	 *            l'id de l'événement civil regroupé à traiter
+	 * @param evenementCivilId
+	 *            l'id de l'événement civil à traiter
 	 * @return le numéro d'individu traité, ou <i>-1</i> en cas d'erreur.
 	 */
-	private long traiteUnEvenementCivilRegroupe(final Long evenementCivilRegroupeId) {
+	private long traiteUnEvenementCivil(final Long evenementCivilId) {
 
 		TransactionCallback gestionEvenement = new TransactionCallback() {
 
@@ -114,11 +108,11 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor, Eve
 			Long result = 0L;
 			try {
 
-				EvenementCivilRegroupe evenementCivilRegroupe = evenementCivilRegroupeDAO.get(evenementCivilRegroupeId);
-				Assert.notNull(evenementCivilRegroupe, "l'évènement est null");
+				EvenementCivilData evenementCivilData = evenementCivilDAO.get(evenementCivilId);
+				Assert.notNull(evenementCivilData, "l'évènement est null");
 
-				if (evenementCivilRegroupe.getEtat() == EtatEvenementCivil.TRAITE || evenementCivilRegroupe.getEtat() == EtatEvenementCivil.A_VERIFIER) {
-					LOGGER.warn("Tentative de traitement de l'événement n°" + evenementCivilRegroupeId
+				if (evenementCivilData.getEtat() == EtatEvenementCivil.TRAITE || evenementCivilData.getEtat() == EtatEvenementCivil.A_VERIFIER) {
+					LOGGER.warn("Tentative de traitement de l'événement n°" + evenementCivilId
 							+ " qui est déjà traité. Aucune opération effectuée.");
 					return null;
 				}
@@ -130,84 +124,84 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor, Eve
 				try {
 
 					/* 0 - On enlève les erreurs précédentes */
-					evenementCivilRegroupe.getErreurs().clear();
+					evenementCivilData.getErreurs().clear();
 
 					// Récupération de l'individu
-					final Individu individu = serviceCivilService.getIndividu(evenementCivilRegroupe.getNumeroIndividuPrincipal(), RegDateHelper.getAnneeVeille(evenementCivilRegroupe.getDateEvenement()));
+					final Individu individu = serviceCivilService.getIndividu(evenementCivilData.getNumeroIndividuPrincipal(), RegDateHelper.getAnneeVeille(evenementCivilData.getDateEvenement()));
 					Assert.notNull(individu, "Individu inconnu");
 
-					Assert.notNull(evenementCivilRegroupe.getType(), "le type de l'événement n'est pas renseigné");
-					Assert.notNull(evenementCivilRegroupe.getDateEvenement(), "La date de l'événement n'est pas renseigné");
-					Assert.notNull(evenementCivilRegroupe.getNumeroOfsCommuneAnnonce(), "Le numero de la commune d'annonce n'est pas renseigné");
-					Assert.isTrue(evenementCivilRegroupe.getEtat() != EtatEvenementCivil.TRAITE, "l'évènement est déjà traité");
-					Assert.isTrue(evenementCivilRegroupe.getEtat() != EtatEvenementCivil.A_VERIFIER, "l'évènement est déjà traité");
+					Assert.notNull(evenementCivilData.getType(), "le type de l'événement n'est pas renseigné");
+					Assert.notNull(evenementCivilData.getDateEvenement(), "La date de l'événement n'est pas renseigné");
+					Assert.notNull(evenementCivilData.getNumeroOfsCommuneAnnonce(), "Le numero de la commune d'annonce n'est pas renseigné");
+					Assert.isTrue(evenementCivilData.getEtat() != EtatEvenementCivil.TRAITE, "l'évènement est déjà traité");
+					Assert.isTrue(evenementCivilData.getEtat() != EtatEvenementCivil.A_VERIFIER, "l'évènement est déjà traité");
 
 					// Controle la commune OFS
-					int numeroOFS = evenementCivilRegroupe.getNumeroOfsCommuneAnnonce();
+					int numeroOFS = evenementCivilData.getNumeroOfsCommuneAnnonce();
 					if(numeroOFS != 0){
 						// Commune introuvable => Exception
-						Commune c = serviceInfrastructureService.getCommuneByNumeroOfsEtendu(numeroOFS, evenementCivilRegroupe.getDateEvenement());
+						Commune c = serviceInfrastructureService.getCommuneByNumeroOfsEtendu(numeroOFS, evenementCivilData.getDateEvenement());
 						Assert.notNull(c, "La commune avec le numéro OFS "+numeroOFS+" n'existe pas");
 					}
 
 					//2 - traitement de l'événement
-					Audit.info(evenementCivilRegroupe.getId(), "Début du traitement de l'événement civil de type "+evenementCivilRegroupe.getType().name());
+					Audit.info(evenementCivilData.getId(), "Début du traitement de l'événement civil de type "+ evenementCivilData.getType().name());
 
-					if (!eventsHandlers.containsKey(evenementCivilRegroupe.getType())) {
+					if (!eventsHandlers.containsKey(evenementCivilData.getType())) {
 						erreurs.add(new EvenementCivilErreur("Aucun handler défini pour ce type d'événement"));
 					}
 					else {
-						traiteEvenement(evenementCivilRegroupe, erreurs, warnings);
+						traiteEvenement(evenementCivilData, erreurs, warnings);
 					}
 
 					/* 3 - Mise à jour du statut */
 					if (!erreurs.isEmpty()) {
-						evenementCivilRegroupe.setEtat(EtatEvenementCivil.EN_ERREUR);
-						evenementCivilRegroupe.setDateTraitement(new Date());
-						Audit.error(evenementCivilRegroupe.getId(), "Status changé à ERREUR");
+						evenementCivilData.setEtat(EtatEvenementCivil.EN_ERREUR);
+						evenementCivilData.setDateTraitement(new Date());
+						Audit.error(evenementCivilData.getId(), "Status changé à ERREUR");
 						result = -1L;
 						dumpForDebug(erreurs);
 					}
 					else if(!warnings.isEmpty()) {
-						evenementCivilRegroupe.setEtat(EtatEvenementCivil.A_VERIFIER);
-						evenementCivilRegroupe.setDateTraitement(new Date());
-						Audit.warn(evenementCivilRegroupe.getId(), "Status changé à A VERIFIER");
-						result = evenementCivilRegroupe.getNumeroIndividuPrincipal();
+						evenementCivilData.setEtat(EtatEvenementCivil.A_VERIFIER);
+						evenementCivilData.setDateTraitement(new Date());
+						Audit.warn(evenementCivilData.getId(), "Status changé à A VERIFIER");
+						result = evenementCivilData.getNumeroIndividuPrincipal();
 						dumpForDebug(warnings);
 					}
 					else {
-						evenementCivilRegroupe.setEtat(EtatEvenementCivil.TRAITE);
-						evenementCivilRegroupe.setDateTraitement(new Date());
-						Audit.success(evenementCivilRegroupe.getId(), "Status changé à TRAITE");
-						result = evenementCivilRegroupe.getNumeroIndividuPrincipal();
+						evenementCivilData.setEtat(EtatEvenementCivil.TRAITE);
+						evenementCivilData.setDateTraitement(new Date());
+						Audit.success(evenementCivilData.getId(), "Status changé à TRAITE");
+						result = evenementCivilData.getNumeroIndividuPrincipal();
 					}
 				}
 				catch (Exception e) {
-					LOGGER.error("Erreur lors du traitement de l'événement : " + evenementCivilRegroupe.getId(), e);
+					LOGGER.error("Erreur lors du traitement de l'événement : " + evenementCivilData.getId(), e);
 					erreurs.add(new EvenementCivilErreur(e));
-					evenementCivilRegroupe.setEtat(EtatEvenementCivil.EN_ERREUR);
-					Audit.error(evenementCivilRegroupe.getId(), e);
-					Audit.error(evenementCivilRegroupe.getId(), "Status changé à ERREUR");
+					evenementCivilData.setEtat(EtatEvenementCivil.EN_ERREUR);
+					Audit.error(evenementCivilData.getId(), e);
+					Audit.error(evenementCivilData.getId(), "Status changé à ERREUR");
 				}
 
 				for (EvenementCivilErreur e : erreurs) {
-					Audit.error(evenementCivilRegroupe.getId(), e.getMessage());
+					Audit.error(evenementCivilData.getId(), e.getMessage());
 				}
 				for (EvenementCivilErreur w : warnings) {
-					Audit.warn(evenementCivilRegroupe.getId(), w.getMessage());
+					Audit.warn(evenementCivilData.getId(), w.getMessage());
 				}
 
-				evenementCivilRegroupe.addErrors(erreurs);
-				evenementCivilRegroupe.addWarnings(warnings);
+				evenementCivilData.addErrors(erreurs);
+				evenementCivilData.addWarnings(warnings);
 			}
 			catch (IllegalArgumentException e) {
-				LOGGER.error("Traitement impossible de l'événement : " + evenementCivilRegroupeId, e);
+				LOGGER.error("Traitement impossible de l'événement : " + evenementCivilId, e);
 			}
 			return result;
 		}
 		};
 
-		LOGGER.debug("Début du traitement de l'événement" + evenementCivilRegroupeId);
+		LOGGER.debug("Début du traitement de l'événement" + evenementCivilId);
 
 		/*DefaultTransactionDefinition def = new DefaultTransactionDefinition();
 		def.setPropagationBehavior(DefaultTransactionDefinition.PROPAGATION_REQUIRES_NEW);
@@ -217,20 +211,20 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor, Eve
 		return (Long)template.execute(gestionEvenement);
 	}
 
-	private void traiteEvenement(final EvenementCivilRegroupe evenementCivilRegroupe,final List<EvenementCivilErreur> erreurs,final List<EvenementCivilErreur> warnings){
+	private void traiteEvenement(final EvenementCivilData evenementCivilData,final List<EvenementCivilErreur> erreurs,final List<EvenementCivilErreur> warnings){
 
 		TransactionCallback traitementEvenement = new TransactionCallback() {
 
 			public Object doInTransaction(TransactionStatus status) {
 				try{
-					EvenementCivilHandler evenementCivilHandler = eventsHandlers.get(evenementCivilRegroupe.getType());
+					EvenementCivilHandler evenementCivilHandler = eventsHandlers.get(evenementCivilData.getType());
 
 					/* Initialisation de l'Adapter */
-					LOGGER.debug("Initialisation de l'adaptateur associé à l'événement : " + evenementCivilRegroupe.getId() );
+					LOGGER.debug("Initialisation de l'adaptateur associé à l'événement : " + evenementCivilData.getId() );
 					GenericEvenementAdapter adapter = evenementCivilHandler.createAdapter();
-					//long indP = evenementCivilRegroupe.getNumeroIndividuPrincipal();
-//					LOGGER.debug("adapter.init(evenementCivilRegroupe, serviceCivilService, serviceInfrastructureService)");
-					adapter.init(evenementCivilRegroupe, serviceCivilService, serviceInfrastructureService);
+					//long indP = evenementCivilData.getNumeroIndividuPrincipal();
+//					LOGGER.debug("adapter.init(evenementCivilData, serviceCivilService, serviceInfrastructureService)");
+					adapter.init(evenementCivilData, serviceCivilService, serviceInfrastructureService);
 
 					/* 2.1 - lancement de la validation par le handler */
 //					LOGGER.debug("evenementCivilHandler.checkCompleteness(adapter, erreurs, warnings)");
@@ -245,22 +239,22 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor, Eve
 //							LOGGER.debug("evenementCivilHandler.handle(adapter, warnings)");
 							final Pair<PersonnePhysique, PersonnePhysique> nouveauxHabitants = evenementCivilHandler.handle(adapter, warnings);
 
-							// adaptation des données dans l'événement civil regroupé en cas de création de nouveaux habitants
+							// adaptation des données dans l'événement civil en cas de création de nouveaux habitants
 							if (nouveauxHabitants != null) {
-								if (nouveauxHabitants.getFirst() != null && evenementCivilRegroupe.getNumeroIndividuPrincipal() != null && evenementCivilRegroupe.getNumeroIndividuPrincipal() > 0L) {
-									if (evenementCivilRegroupe.getHabitantPrincipal() == null) {
-										evenementCivilRegroupe.setHabitantPrincipal(nouveauxHabitants.getFirst());
+								if (nouveauxHabitants.getFirst() != null && evenementCivilData.getNumeroIndividuPrincipal() != null && evenementCivilData.getNumeroIndividuPrincipal() > 0L) {
+									if (evenementCivilData.getHabitantPrincipal() == null) {
+										evenementCivilData.setHabitantPrincipal(nouveauxHabitants.getFirst());
 									}
 									else {
-										Assert.isEqual(evenementCivilRegroupe.getHabitantPrincipal().getNumero(), nouveauxHabitants.getFirst().getNumero());
+										Assert.isEqual(evenementCivilData.getHabitantPrincipal().getNumero(), nouveauxHabitants.getFirst().getNumero());
 									}
 								}
-								if (nouveauxHabitants.getSecond() != null && evenementCivilRegroupe.getNumeroIndividuConjoint() != null && evenementCivilRegroupe.getNumeroIndividuConjoint() > 0L) {
-									if (evenementCivilRegroupe.getHabitantConjoint() == null) {
-										evenementCivilRegroupe.setHabitantConjoint(nouveauxHabitants.getSecond());
+								if (nouveauxHabitants.getSecond() != null && evenementCivilData.getNumeroIndividuConjoint() != null && evenementCivilData.getNumeroIndividuConjoint() > 0L) {
+									if (evenementCivilData.getHabitantConjoint() == null) {
+										evenementCivilData.setHabitantConjoint(nouveauxHabitants.getSecond());
 									}
 									else {
-										Assert.isEqual(evenementCivilRegroupe.getHabitantConjoint().getNumero(), nouveauxHabitants.getSecond().getNumero());
+										Assert.isEqual(evenementCivilData.getHabitantConjoint().getNumero(), nouveauxHabitants.getSecond().getNumero());
 									}
 								}
 							}
@@ -275,9 +269,9 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor, Eve
 					}
 				}
 				catch (EvenementAdapterException e) {
-					LOGGER.debug("Impossible d'adapter l'événement regroupé : " + evenementCivilRegroupe.getId(), e);
+					LOGGER.debug("Impossible d'adapter l'événement civil : " + evenementCivilData.getId(), e);
 					erreurs.add(new EvenementCivilErreur(e));
-					Audit.error(evenementCivilRegroupe.getId(), e);
+					Audit.error(evenementCivilData.getId(), e);
 				}
 				return null;
 			}
@@ -287,7 +281,7 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor, Eve
 		template.setPropagationBehavior(TransactionTemplate.PROPAGATION_REQUIRES_NEW);
 		try {
 			// on ajoute le numéro de l'événement civil comme suffix à l'utilisateur principal, de manière à faciliter le tracing
-			AuthenticationHelper.pushPrincipal("EvtCivil-" + evenementCivilRegroupe.getId());
+			AuthenticationHelper.pushPrincipal("EvtCivil-" + evenementCivilData.getId());
 			template.execute(traitementEvenement);
 		}
 		finally {
@@ -298,23 +292,23 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor, Eve
 	@SuppressWarnings({"unchecked"})
 	private void retraiteEvenementsEnErreurIndividu(final Long numIndividu) {
 
-		// 1 - Récupération des ids des événements civils regroupés en erreur de l'individu
+		// 1 - Récupération des ids des événements civils en erreur de l'individu
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 		final List<Long> ids = (List<Long>) template.execute(new TransactionCallback() {
 			public Object doInTransaction(TransactionStatus status) {
-				return evenementCivilRegroupeDAO.getIdsEvenementCivilsErreurIndividu(numIndividu);
+				return evenementCivilDAO.getIdsEvenementCivilsErreurIndividu(numIndividu);
 			}
 		});
 
-		/* 2 - Iteration sur les ids des événements regroupés */
+		/* 2 - Iteration sur les ids des événements civils */
 		traiteEvenements(ids, false, null);
 	}
 
 	/**
 	 * [UNIREG-1200] Traite tous les événements civils spécifiés, et retraite automatiquement les événements en erreur si possible.
 	 *
-	 * @param ids            les ids des événements regroupés à traiter
+	 * @param ids            les ids des événements civils à traiter
 	 * @param forceRecyclage si <i>vrai</i>, force le recyclage de tous les événements en erreur associé aux individus traités
 	 * @param status         un status manager (optionel, peut être nul)
 	 */
@@ -325,7 +319,7 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor, Eve
 			if (status != null && status.interrupted()) {
 				break;
 			}
-			final Long numInd = traiteUnEvenementCivilRegroupe(id);
+			final Long numInd = traiteUnEvenementCivil(id);
 			if (numInd != null && numInd > 0L) {
 				individusTraites.add(numInd);
 			}
@@ -335,7 +329,7 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor, Eve
 				template.setReadOnly(true);
 				final Long numIndividu = (Long) template.execute(new TransactionCallback() {
 					public Object doInTransaction(TransactionStatus status) {
-						return evenementCivilRegroupeDAO.get(id).getNumeroIndividuPrincipal();
+						return evenementCivilDAO.get(id).getNumeroIndividuPrincipal();
 					}
 				});
 
@@ -364,13 +358,9 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor, Eve
 		}
 	}
 
-	/**
-	 * @param evenementCivilRegroupeDAO
-	 *            the evenementCivilRegroupeDAO to set
-	 */
 	@SuppressWarnings({"UnusedDeclaration"})
-	public void setEvenementCivilRegroupeDAO(EvenementCivilRegroupeDAO evenementCivilRegroupeDAO) {
-		this.evenementCivilRegroupeDAO = evenementCivilRegroupeDAO;
+	public void setEvenementCivilDAO(EvenementCivilDAO evenementCivilDAO) {
+		this.evenementCivilDAO = evenementCivilDAO;
 	}
 
 	public void register(TypeEvenementCivil type, EvenementCivilHandler handler) {

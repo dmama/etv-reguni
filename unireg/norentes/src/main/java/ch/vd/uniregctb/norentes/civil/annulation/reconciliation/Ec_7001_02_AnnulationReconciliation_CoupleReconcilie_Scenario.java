@@ -113,7 +113,7 @@ public class Ec_7001_02_AnnulationReconciliation_CoupleReconcilie_Scenario exten
 	public void step2() throws Exception {
 		long id = addEvenementCivil(TypeEvenementCivil.ANNUL_RECONCILIATION, noIndMomo, dateReconciliation, commune.getNoOFS());
 		commitAndStartTransaction();
-		regroupeEtTraiteEvenements(id);
+		traiteEvenements(id);
 	}
 
 	@Check(id=2, descr="Vérifie que le dernier For principal du ménage a été annulé et ceux de tiers rouverts")

@@ -6,7 +6,7 @@ import annotation.Check;
 import annotation.Etape;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.civil.model.EnumTypePermis;
-import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
+import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
@@ -180,14 +180,14 @@ public class Ec_6000_04_Separation_SecondEvenementRecu_Scenario extends Evenemen
 	public void etape2() throws Exception {
 		long id = addEvenementCivil(TypeEvenementCivil.SEPARATION, noIndBea, dateSeparation, communeMariage.getNoOFS());
 		commitAndStartTransaction();
-		regroupeEtTraiteEvenements(id);
+		traiteEvenements(id);
 	}
 
 	@Check(id=2, descr="Vérification des for commun et principaux")
 	public void check2() {
 
 		// comme il y a fermeture d'un for secondaire, l'événement doit être dans l'état "A_VERIFIER"
-		final EvenementCivilRegroupe evt = getEvenementCivilRegoupeForHabitant(noHabBea);
+		final EvenementCivilData evt = getEvenementCivilRegoupeForHabitant(noHabBea);
 		assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat(), "");
 
 		{
@@ -245,22 +245,21 @@ public class Ec_6000_04_Separation_SecondEvenementRecu_Scenario extends Evenemen
 	public void etape3() throws Exception {
 		long id = addEvenementCivil(TypeEvenementCivil.SEPARATION, noIndMomo, dateSeparation, communeMariage.getNoOFS());
 		commitAndStartTransaction();
-		regroupeEtTraiteEvenements(id);
+		traiteEvenements(id);
 	}
 
 	@Check(id=3, descr="Vérification des états des événements reçus")
 	public void check3() {
 
 		// l'événement envoyé pour Béa est toujours dans l'état "à vérifier"
-		// (i.e. il n'a pas été regroupé avec le deuxième)
 		{
-			final EvenementCivilRegroupe evt = getEvenementCivilRegoupeForHabitant(noHabBea);
+			final EvenementCivilData evt = getEvenementCivilRegoupeForHabitant(noHabBea);
 			assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat(), "");
 		}
 
 		// l'événement envoyé pour Momo est traité (en fait, il n'avait rien à faire!)
 		{
-			final EvenementCivilRegroupe evt = getEvenementCivilRegoupeForHabitant(noHabMomo);
+			final EvenementCivilData evt = getEvenementCivilRegoupeForHabitant(noHabMomo);
 			assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat(), "");
 		}
 	}

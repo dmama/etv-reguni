@@ -140,7 +140,7 @@ public class Ec_6000_08_Separation_JIRA1057_Scenario extends EvenementCivilScena
 		
 		long id = addEvenementCivil(TypeEvenementCivil.SEPARATION, noIndBea, dateSeparation, commune.getNoOFS());
 		commitAndStartTransaction();
-		regroupeEtTraiteEvenements(id);
+		traiteEvenements(id);
 	}
 	
 	@Check(id=2, descr="Vérifie qu'une tâche de control dossier a été générée")

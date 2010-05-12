@@ -151,7 +151,7 @@ public class Ec_6000_05_Separation_SuisseAvecPermisB_Scenario extends EvenementC
 	public void etape2() throws Exception {
 		long id = addEvenementCivil(TypeEvenementCivil.SEPARATION, noIndBea, dateSeparation, communeMariage.getNoOFS());
 		commitAndStartTransaction();
-		regroupeEtTraiteEvenements(id);
+		traiteEvenements(id);
 	}
 
 	@Check(id=2, descr="Vérification des for commun et principaux")
@@ -196,7 +196,7 @@ public class Ec_6000_05_Separation_SuisseAvecPermisB_Scenario extends EvenementC
 	public void etape3() throws Exception {
 		long id = addEvenementCivil(TypeEvenementCivil.DIVORCE, noIndMomo, dateDivorce, communeMariage.getNoOFS());
 		commitAndStartTransaction();
-		regroupeEtTraiteEvenements(id);
+		traiteEvenements(id);
 	}
 
 	@Check(id=3, descr="Vérifie que rien n'a changé depuis l'étape précédente")

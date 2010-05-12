@@ -57,7 +57,7 @@ public interface Depart extends Mouvement {
 
 	/**
 	 *  Indique si l'evenement est un ancien type de départ, c'est à dire qu'on ne reçoit
-	 *  qu'un evenement civil regroupé pour un couple
+	 *  qu'un evenement civil pour un couple
 	 */
 
 	public abstract boolean isAncienTypeDepart();

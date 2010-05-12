@@ -12,8 +12,8 @@ import ch.vd.uniregctb.audit.AuditLine;
 import ch.vd.uniregctb.audit.AuditLineDAO;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.data.DataEventService;
-import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
-import ch.vd.uniregctb.evenement.EvenementCivilRegroupeDAO;
+import ch.vd.uniregctb.evenement.EvenementCivilData;
+import ch.vd.uniregctb.evenement.EvenementCivilDAO;
 import ch.vd.uniregctb.evenement.engine.EvenementCivilProcessor;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
@@ -35,8 +35,8 @@ public class EvenementCivilUnitaireListenerTest extends BusinessTest {
 
 	//private static final Logger LOGGER = Logger.getLogger(EvenementCivilUnitaireListenerTest.class);
 
-	private EvenementCivilUnitaireListener evenementCivilUnitaireMDP;
-	private EvenementCivilRegroupeDAO evenementCivilRegroupeDAO;
+	private EvenementCivilListener evenementCivilUnitaireMDP;
+	private EvenementCivilDAO evenementCivilDAO;
 	private AuditLineDAO auditLineDAO;
 
 	@Override
@@ -59,15 +59,15 @@ public class EvenementCivilUnitaireListenerTest extends BusinessTest {
 			}
 		});
 
-		evenementCivilRegroupeDAO = getBean(EvenementCivilRegroupeDAO.class, "evenementCivilRegroupeDAO");
+		evenementCivilDAO = getBean(EvenementCivilDAO.class, "evenementCivilDAO");
 		auditLineDAO = getBean(AuditLineDAO.class, "auditLineDAO");
 
 		// On crée le listener à la main pour pouvoir appeler les méthodes protégées
-		evenementCivilUnitaireMDP = new EvenementCivilUnitaireListener();
+		evenementCivilUnitaireMDP = new EvenementCivilListener();
 		evenementCivilUnitaireMDP.setEvenementCivilProcessor(getBean(EvenementCivilProcessor.class, "evenementCivilProcessor"));
 		evenementCivilUnitaireMDP.setTransactionManager(transactionManager);
 		evenementCivilUnitaireMDP.setDataEventService(getBean(DataEventService.class, "dataEventService"));
-		evenementCivilUnitaireMDP.setEvenementCivilRegroupeDAO(evenementCivilRegroupeDAO);
+		evenementCivilUnitaireMDP.setEvenementCivilDAO(evenementCivilDAO);
 		evenementCivilUnitaireMDP.setTiersDAO(getBean(TiersDAO.class, "tiersDAO"));
 	}
 
@@ -102,10 +102,10 @@ public class EvenementCivilUnitaireListenerTest extends BusinessTest {
 		evenementCivilUnitaireMDP.onEvenementCivil(xmlContent);
 
 		// test que l'evenement est bien la
-		final List<EvenementCivilRegroupe> ecr = evenementCivilRegroupeDAO.getAll();
+		final List<EvenementCivilData> ecr = evenementCivilDAO.getAll();
 		assertEquals(1, ecr.size());
 
-		final EvenementCivilRegroupe evenement = ecr.get(0);
+		final EvenementCivilData evenement = ecr.get(0);
 		assertEquals(EtatEvenementCivil.TRAITE, evenement.getEtat());
 		assertTrue("La date de l'événement n'a pas été récupérée correctement", RegDate.get(2008, 2, 12).equals(evenement.getDateEvenement()));
 		assertEquals("Le numéro technique n'a pas été récupéré correctement", new Long(id), evenement.getId());
@@ -125,9 +125,9 @@ public class EvenementCivilUnitaireListenerTest extends BusinessTest {
 		evenementCivilUnitaireMDP.onEvenementCivil(xmlContent);
 
 		// vérifie que l'evenement est bien là, mais que le numéro d'individu inconnu a bien provoqué une erreur
-		List<EvenementCivilRegroupe> evenements = evenementCivilRegroupeDAO.getAll();
+		List<EvenementCivilData> evenements = evenementCivilDAO.getAll();
 		assertEquals(1, evenements.size());
-		EvenementCivilRegroupe evenement = evenements.get(0);
+		EvenementCivilData evenement = evenements.get(0);
 		assertEquals(EtatEvenementCivil.EN_ERREUR, evenement.getEtat());
 		assertTrue("La date de l'événement n'a pas été récupérée correctement", RegDate.get(2007, 9, 18).equals(evenement.getDateEvenement()));
 		assertEquals("Le numéro technique n'a pas été récupéré correctement", new Long(id), evenement.getId());
@@ -140,7 +140,7 @@ public class EvenementCivilUnitaireListenerTest extends BusinessTest {
 	public void testMessageDeTypeInconnu() throws Exception {
 		final String xmlContent = createMessage(42, 1542313, 9876543, RegDate.get(2007, 9, 18), 111);
 		evenementCivilUnitaireMDP.onEvenementCivil(xmlContent);
-		assertEmpty(evenementCivilRegroupeDAO.getAll());
+		assertEmpty(evenementCivilDAO.getAll());
 	}
 
 	@Test
@@ -152,7 +152,7 @@ public class EvenementCivilUnitaireListenerTest extends BusinessTest {
 
 		final String xmlContent = createMessage(42, typeConnuMaisIgnore, 9876543, RegDate.get(2007, 9, 18), 111);
 		evenementCivilUnitaireMDP.onEvenementCivil(xmlContent);
-		assertEmpty(evenementCivilRegroupeDAO.getAll());
+		assertEmpty(evenementCivilDAO.getAll());
 	}
 
 	@Test
@@ -164,7 +164,7 @@ public class EvenementCivilUnitaireListenerTest extends BusinessTest {
 		// Le premier doit passer sans probleme
 		evenementCivilUnitaireMDP.onEvenementCivil(xmlContent);
 		{
-			List<EvenementCivilRegroupe> evenements = evenementCivilRegroupeDAO.getAll();
+			List<EvenementCivilData> evenements = evenementCivilDAO.getAll();
 			assertEquals(1, evenements.size());
 			assertEquals(EtatEvenementCivil.TRAITE, evenements.get(0).getEtat());
 		}
@@ -172,7 +172,7 @@ public class EvenementCivilUnitaireListenerTest extends BusinessTest {
 		// Le deuxieme doit aussi passer mais sans etre inséré
 		evenementCivilUnitaireMDP.onEvenementCivil(xmlContent);
 		{
-			List<EvenementCivilRegroupe> evenements = evenementCivilRegroupeDAO.getAll();
+			List<EvenementCivilData> evenements = evenementCivilDAO.getAll();
 			assertEquals(1, evenements.size());
 			assertEquals(EtatEvenementCivil.TRAITE, evenements.get(0).getEtat());
 

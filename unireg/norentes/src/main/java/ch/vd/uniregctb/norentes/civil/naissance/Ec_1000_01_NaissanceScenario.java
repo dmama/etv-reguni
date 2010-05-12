@@ -75,7 +75,7 @@ public class Ec_1000_01_NaissanceScenario extends EvenementCivilScenario {
 		commitAndStartTransaction();
 
 		// On traite les evenements
-		regroupeEtTraiteEvenements(id);
+		traiteEvenements(id);
 	}
 
 	@Check(id=2, descr="Vérifie que le tiers a été créé")

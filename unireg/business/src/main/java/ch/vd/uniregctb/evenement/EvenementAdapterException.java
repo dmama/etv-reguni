@@ -1,7 +1,7 @@
 package ch.vd.uniregctb.evenement;
 
 /**
- * Cette exception peut être lancée lors de l'initialisation de l'adaptateur avec les données de l'événement civil regroupé.
+ * Cette exception peut être lancée lors de l'initialisation de l'adaptateur avec les données de l'événement civil.
  * 
  * @author Ludovic BERTIN <mailto:ludovic.bertin@vd.ch>
  *

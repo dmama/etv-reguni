@@ -10,7 +10,7 @@
 
 	<!-- Dispatcher des handlers des evenements civil -->
 	<bean id="evenementCivilProcessor" class="ch.vd.uniregctb.evenement.engine.EvenementCivilProcessorImpl">
-		<property name="evenementCivilRegroupeDAO" ref="evenementCivilRegroupeDAO" />
+		<property name="evenementCivilDAO" ref="evenementCivilDAO" />
 		<property name="serviceCivilService" ref="serviceCivilService" />
 		<property name="serviceInfrastructureService" ref="serviceInfrastructureService" />
 		<property name="transactionManager" ref="transactionManager" />

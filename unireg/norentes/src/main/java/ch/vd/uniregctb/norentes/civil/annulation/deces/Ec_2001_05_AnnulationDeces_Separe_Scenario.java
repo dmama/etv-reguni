@@ -9,7 +9,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.civil.model.EnumTypeEtatCivil;
 import ch.vd.registre.civil.model.EnumTypePermis;
 import ch.vd.uniregctb.evenement.EvenementCivilErreur;
-import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
+import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
@@ -128,13 +128,13 @@ public class Ec_2001_05_AnnulationDeces_Separe_Scenario extends EvenementCivilSc
 		commitAndStartTransaction();
 
 		// On traite le nouvel événement
-		regroupeEtTraiteEvenements(evenementId);
+		traiteEvenements(evenementId);
 	}
 
 	@Check(id = 2, descr = "Vérification que l'événement est bien traité et que le for fiscal principal de Jean a été réouvert")
 	public void check2() throws Exception {
 
-		final EvenementCivilRegroupe evenement = evtRegroupeDAO.get(evenementId);
+		final EvenementCivilData evenement = evtDAO.get(evenementId);
 		assertEquals(EtatEvenementCivil.TRAITE, evenement.getEtat(), "L'événement civil devrait être traité.");
 
 		final Set<EvenementCivilErreur> erreurs = evenement.getErreurs();

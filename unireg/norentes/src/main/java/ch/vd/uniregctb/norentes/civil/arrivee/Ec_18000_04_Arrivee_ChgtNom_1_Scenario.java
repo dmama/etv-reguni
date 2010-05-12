@@ -6,7 +6,7 @@ import annotation.Check;
 import annotation.Etape;
 import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
+import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
@@ -82,13 +82,13 @@ public class Ec_18000_04_Arrivee_ChgtNom_1_Scenario extends EvenementCivilScenar
 		commitAndStartTransaction();
 
 		// On traite les evenements
-		regroupeEtTraiteEvenements(id);
+		traiteEvenements(id);
 	}
 	
 	@Check(id=2, descr="Vérifie que l'évènement est en erreur")
 	public void check2() throws Exception {
-		List<EvenementCivilRegroupe> list = evtRegroupeDAO.getAll();
-		for (EvenementCivilRegroupe evt : list) {
+		List<EvenementCivilData> list = evtDAO.getAll();
+		for (EvenementCivilData evt : list) {
 			assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat(), "");
 		}
 	}
@@ -101,7 +101,7 @@ public class Ec_18000_04_Arrivee_ChgtNom_1_Scenario extends EvenementCivilScenar
 		commitAndStartTransaction();
 
 		// On traite les evenements
-		regroupeEtTraiteEvenements(id);
+		traiteEvenements(id);
 	}
 
 	@Check(id=3, descr="Vérifie que l'habitant Alain a été créé et que tous les événements ont été traité")
@@ -109,8 +109,8 @@ public class Ec_18000_04_Arrivee_ChgtNom_1_Scenario extends EvenementCivilScenar
 		PersonnePhysique habAlain = tiersDAO.getHabitantByNumeroIndividu(noIndAlain);
 		assertNotNull(habAlain,"Le tiers Alain n'as pas été créé dans le registre fiscal");
 		{
-			List<EvenementCivilRegroupe> list = evtRegroupeDAO.getAll();
-			for (EvenementCivilRegroupe evt : list) {
+			List<EvenementCivilData> list = evtDAO.getAll();
+			for (EvenementCivilData evt : list) {
 				assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat(), "");
 			}
 		}

@@ -120,7 +120,7 @@ public class Ec_26001_01_AnnulationLeveeTutelle_Scenario extends EvenementCivilS
 	public void step2() throws Exception {
 		long id = addEvenementCivil(TypeEvenementCivil.ANNUL_LEVEE_TUTELLE, noIndMomo, dateLeveeTutelle, commune.getNoOFS());
 		commitAndStartTransaction();
-		regroupeEtTraiteEvenements(id);
+		traiteEvenements(id);
 	}
 
 	@Check(id=2, descr="Vérifie que la levée de tutelle a bien été annulée")

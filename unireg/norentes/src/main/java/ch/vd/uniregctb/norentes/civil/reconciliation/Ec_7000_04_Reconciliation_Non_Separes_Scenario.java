@@ -3,8 +3,8 @@ package ch.vd.uniregctb.norentes.civil.reconciliation;
 import annotation.Check;
 import annotation.Etape;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.evenement.EvenementCivilErreur;
-import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
@@ -131,13 +131,13 @@ public class Ec_7000_04_Reconciliation_Non_Separes_Scenario extends EvenementCiv
 	public void step2() throws Exception {
 		long id = addEvenementCivil(TypeEvenementCivil.RECONCILIATION, noIndBea, dateReconciliation, commune.getNoOFS());
 		commitAndStartTransaction();
-		regroupeEtTraiteEvenements(id);
+		traiteEvenements(id);
 	}
 
 	@Check(id = 2, descr = "Vérifie que l'événement civil est en erreur")
 	public void check2() {
 
-		final EvenementCivilRegroupe evt = getEvenementCivilRegoupeForHabitant(noHabBea);
+		final EvenementCivilData evt = getEvenementCivilRegoupeForHabitant(noHabBea);
 		assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat(),
 				"L'événement de réconciliation devrait être en erreur car le couple n'était pas séparé");
 		assertEquals(1, evt.getErreurs().size(), "Il devrait y avoir exactement une erreur");

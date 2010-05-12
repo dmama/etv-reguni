@@ -14,7 +14,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
 import ch.vd.uniregctb.common.WebParamPagination;
-import ch.vd.uniregctb.evenement.view.EvenementCivilRegroupeView;
+import ch.vd.uniregctb.evenement.view.EvenementCivilView;
 import ch.vd.uniregctb.evenement.view.EvenementCriteriaView;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
@@ -78,13 +78,13 @@ public class EvenementListController extends AbstractEvenementController {
 			// Récupération de la pagination
 			// [UNIREG-1173] tri par défaut: id evt en décroissant (voir aussi evenement/list.jsp pour l'affichage dans la page)
 			final WebParamPagination pagination = new WebParamPagination(request, TABLE_NAME, PAGE_SIZE, DEFAULT_FIELD, false);
-			final List<EvenementCivilRegroupeView> listEvenements = getEvenementManager().find(bean, pagination);
+			final List<EvenementCivilView> listEvenements = getEvenementManager().find(bean, pagination);
 
 			mav.addObject(EVENEMENT_LIST_ATTRIBUTE_NAME, listEvenements);
 			mav.addObject(EVENEMENT_LIST_ATTRIBUTE_SIZE, getEvenementManager().count(bean));
 		}
 		else {
-			mav.addObject(EVENEMENT_LIST_ATTRIBUTE_NAME, new ArrayList<EvenementCivilRegroupe>());
+			mav.addObject(EVENEMENT_LIST_ATTRIBUTE_NAME, new ArrayList<EvenementCivilData>());
 			mav.addObject(EVENEMENT_LIST_ATTRIBUTE_SIZE, 0);
 		}
 

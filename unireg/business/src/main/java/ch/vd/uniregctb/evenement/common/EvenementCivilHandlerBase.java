@@ -572,7 +572,7 @@ public abstract class EvenementCivilHandlerBase implements EvenementCivilHandler
 					 */
 					if (conjointDeIndividu.getNoTechnique() != conjointDeMouvement.getNoTechnique()) {
 						EvenementCivilErreur erreur = new EvenementCivilErreur(
-								"Mauvais regroupement : le conjoint déclaré dans l'événement et celui dans le registre civil diffèrent");
+								"le conjoint déclaré dans l'événement et celui dans le registre civil diffèrent");
 						erreurs.add(erreur);
 					}
 				}

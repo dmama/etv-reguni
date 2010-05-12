@@ -7,7 +7,7 @@ import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.WithoutSpringTest;
-import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
+import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
@@ -32,7 +32,7 @@ public class SeparationAdapterTest extends WithoutSpringTest {
 	public void testGetAncienConjointMariageSeul() throws Exception {
 		PersonnePhysique pierre = new PersonnePhysique(true);
 		pierre.setNumero(INDIVIDU_MARIE_SEUL);
-		EvenementCivilRegroupe evenementsCivils = new EvenementCivilRegroupe(1L, TypeEvenementCivil.MARIAGE, EtatEvenementCivil.A_TRAITER,
+		EvenementCivilData evenementsCivils = new EvenementCivilData(1L, TypeEvenementCivil.MARIAGE, EtatEvenementCivil.A_TRAITER,
 				RegDate.get(2000, 12, 19), INDIVIDU_MARIE_SEUL, pierre, 0L, null, 1234, null );
 		SeparationAdapter adapter = new SeparationAdapter();
 		adapter.init(evenementsCivils, serviceCivil, infrastructureService);
@@ -43,7 +43,7 @@ public class SeparationAdapterTest extends WithoutSpringTest {
 	public void testGetAncienConjointMariage() throws Exception {
 		PersonnePhysique momo = new PersonnePhysique(true);
 		momo.setNumero(INDIVIDU_MARIE);
-		EvenementCivilRegroupe evenementsCivils = new EvenementCivilRegroupe(1L, TypeEvenementCivil.MARIAGE, EtatEvenementCivil.A_TRAITER,
+		EvenementCivilData evenementsCivils = new EvenementCivilData(1L, TypeEvenementCivil.MARIAGE, EtatEvenementCivil.A_TRAITER,
 				RegDate.get(2000, 12, 19), INDIVIDU_MARIE, momo, 0L, null, 1234, null );
 		SeparationAdapter adapter = new SeparationAdapter();
 		adapter.init(evenementsCivils, serviceCivil, infrastructureService);
@@ -54,7 +54,7 @@ public class SeparationAdapterTest extends WithoutSpringTest {
 	public void testGetAncienConjointMariageHomo() throws Exception {
 		PersonnePhysique david = new PersonnePhysique(true);
 		david.setNumero(INDIVIDU_PACSE);
-		EvenementCivilRegroupe evenementsCivils = new EvenementCivilRegroupe(1L, TypeEvenementCivil.MARIAGE, EtatEvenementCivil.A_TRAITER,
+		EvenementCivilData evenementsCivils = new EvenementCivilData(1L, TypeEvenementCivil.MARIAGE, EtatEvenementCivil.A_TRAITER,
 				RegDate.get(2000, 12, 19), INDIVIDU_PACSE, david, 0L, null, 1234, null );
 		SeparationAdapter adapter = new SeparationAdapter();
 		adapter.init(evenementsCivils, serviceCivil, infrastructureService);

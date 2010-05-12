@@ -23,7 +23,7 @@ public class EvenementCivilHandlerJob extends JobDefinition {
 
 		// Validation/Traitement des événements civils
 		status.setMessage("traitement des événements...");
-		processor.traiteEvenementsCivilsRegroupes(status);
+		processor.traiteEvenementsCivils(status);
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})

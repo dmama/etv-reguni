@@ -6,7 +6,7 @@ import org.springframework.util.Assert;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.civil.model.EnumTypePermis;
 import ch.vd.uniregctb.common.WithoutSpringTest;
-import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
+import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.interfaces.model.mock.MockCanton;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
@@ -72,7 +72,7 @@ public class DecesAdapterTest extends WithoutSpringTest {
 		// Cas du célibataire
 		PersonnePhysique habitant = new PersonnePhysique(true);
 		habitant.setNumero(NO_INDIVIDU_DEFUNT_CELIBATAIRE);
-		EvenementCivilRegroupe evenement = new EvenementCivilRegroupe(1L, TypeEvenementCivil.DECES, EtatEvenementCivil.A_TRAITER, DATE_DECES, NO_INDIVIDU_DEFUNT_CELIBATAIRE , habitant, 0L, null, 1234, null);
+		EvenementCivilData evenement = new EvenementCivilData(1L, TypeEvenementCivil.DECES, EtatEvenementCivil.A_TRAITER, DATE_DECES, NO_INDIVIDU_DEFUNT_CELIBATAIRE , habitant, 0L, null, 1234, null);
 		DecesAdapter adapter = new DecesAdapter();
 		adapter.init(evenement, serviceCivilSimple, infrastructureService);
 		Assert.isNull( adapter.getConjointSurvivant(), "le conjoint survivant d'un celibataire ne doit pas exister");
@@ -88,7 +88,7 @@ public class DecesAdapterTest extends WithoutSpringTest {
 		// Cas du marié seul
 		PersonnePhysique habitant = new PersonnePhysique(true);
 		habitant.setNumero(NO_INDIVIDU_DEFUNT_MARIE_SEUL);
-		EvenementCivilRegroupe evenement = new EvenementCivilRegroupe(1L, TypeEvenementCivil.DECES, EtatEvenementCivil.A_TRAITER, DATE_DECES, NO_INDIVIDU_DEFUNT_MARIE_SEUL , habitant, 0L, null, 1234, null);
+		EvenementCivilData evenement = new EvenementCivilData(1L, TypeEvenementCivil.DECES, EtatEvenementCivil.A_TRAITER, DATE_DECES, NO_INDIVIDU_DEFUNT_MARIE_SEUL , habitant, 0L, null, 1234, null);
 		DecesAdapter adapter = new DecesAdapter();
 		adapter.init(evenement, serviceCivilSimple, infrastructureService);
 		Assert.isNull( adapter.getConjointSurvivant(), "le conjoint survivant d'un marié seul ne doit pas exister");
@@ -103,7 +103,7 @@ public class DecesAdapterTest extends WithoutSpringTest {
 		// Cas du marié
 		PersonnePhysique habitant = new PersonnePhysique(true);
 		habitant.setNumero(NO_INDIVIDU_DEFUNT_MARIE);
-		EvenementCivilRegroupe evenement = new EvenementCivilRegroupe(1L, TypeEvenementCivil.DECES, EtatEvenementCivil.A_TRAITER, DATE_DECES, NO_INDIVIDU_DEFUNT_MARIE , habitant, 0L, null, 1234, null);
+		EvenementCivilData evenement = new EvenementCivilData(1L, TypeEvenementCivil.DECES, EtatEvenementCivil.A_TRAITER, DATE_DECES, NO_INDIVIDU_DEFUNT_MARIE , habitant, 0L, null, 1234, null);
 		DecesAdapter adapter = new DecesAdapter();
 		adapter.init(evenement, serviceCivilSimple, infrastructureService);
 		Assert.notNull( adapter.getConjointSurvivant(), "le conjoint survivant d'un marié doit exister");
@@ -119,7 +119,7 @@ public class DecesAdapterTest extends WithoutSpringTest {
 		// Cas du pacsé
 		PersonnePhysique habitant = new PersonnePhysique(true);
 		habitant.setNumero(NO_INDIVIDU_DEFUNT_PACSE);
-		EvenementCivilRegroupe evenement = new EvenementCivilRegroupe(1L, TypeEvenementCivil.DECES, EtatEvenementCivil.A_TRAITER, DATE_DECES, NO_INDIVIDU_DEFUNT_PACSE , habitant, 0L, null, 1234, null);
+		EvenementCivilData evenement = new EvenementCivilData(1L, TypeEvenementCivil.DECES, EtatEvenementCivil.A_TRAITER, DATE_DECES, NO_INDIVIDU_DEFUNT_PACSE , habitant, 0L, null, 1234, null);
 		DecesAdapter adapter = new DecesAdapter();
 		adapter.init(evenement, serviceCivilSimple, infrastructureService);
 		Assert.notNull( adapter.getConjointSurvivant(), "le conjoint survivant d'un pacsé doit pas exister");

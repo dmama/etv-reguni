@@ -2,7 +2,7 @@ package ch.vd.uniregctb.norentes.civil.arrivee;
 
 import annotation.Check;
 import annotation.Etape;
-import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
+import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
 import ch.vd.uniregctb.norentes.common.EvenementCivilScenario;
@@ -55,13 +55,13 @@ public class Ec_18000_11_Arrivee_HS_Habitant_Scenario extends EvenementCivilScen
 		evenementId = addEvenementCivil(TypeEvenementCivil.ARRIVEE_PRINCIPALE_HS, noIndAntoine, date(2008, 11, 13), MockCommune.Renens.getNoOFS());
 		commitAndStartTransaction();
 		// On traite les evenements
-		regroupeEtTraiteEvenements(evenementId);
+		traiteEvenements(evenementId);
 	}
 
 
 	@Check(id = 2, descr = "Vérifie que l'évenement est bien en erreur")
 	public void check1() throws Exception {
-		final EvenementCivilRegroupe evenement = evtRegroupeDAO.get(evenementId);
+		final EvenementCivilData evenement = evtDAO.get(evenementId);
 		assertEquals(EtatEvenementCivil.EN_ERREUR, evenement.getEtat(), "L'événement civil devrait être en erreur.");
 	}
 }

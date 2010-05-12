@@ -12,7 +12,7 @@ import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
-import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
+import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.mock.MockAdresse;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
@@ -147,7 +147,7 @@ public class Ec_18000_15_Arrivee_JIRA1789_Scenario extends EvenementCivilScenari
 
 		final long id = addEvenementCivil(TypeEvenementCivil.ARRIVEE_PRINCIPALE_VAUDOISE, noIndAntonio, dateArriveeLausanne, MockCommune.Lausanne.getNoOFS());
 		commitAndStartTransaction();
-		regroupeEtTraiteEvenements(id);
+		traiteEvenements(id);
 	}
 
 	private void addNouvelleAdresse(MockIndividu individu, MockRue nouvelleRue, RegDate dateArrivee) {
@@ -167,7 +167,7 @@ public class Ec_18000_15_Arrivee_JIRA1789_Scenario extends EvenementCivilScenari
 	@Check(id = 2, descr = "Vérifions maintenant que le couple est bien resté à Bex (un seul des deux conjoints a déménagé pour le moment)")
 	public void check2() throws Exception {
 
-		final EvenementCivilRegroupe evenement = getEvenementCivilRegoupeForHabitant(noHabAntonio);
+		final EvenementCivilData evenement = getEvenementCivilRegoupeForHabitant(noHabAntonio);
 		assertEquals(EtatEvenementCivil.TRAITE, evenement.getEtat(), "L'événement civil devrait être en traité.");
 
 		final MenageCommun menage = (MenageCommun) tiersDAO.get(noMenage);
@@ -193,12 +193,12 @@ public class Ec_18000_15_Arrivee_JIRA1789_Scenario extends EvenementCivilScenari
 
 		final long id = addEvenementCivil(TypeEvenementCivil.ARRIVEE_PRINCIPALE_VAUDOISE, noIndAnneLaure, dateArriveeLausanneMadame, MockCommune.Lausanne.getNoOFS());
 		commitAndStartTransaction();
-		regroupeEtTraiteEvenements(id);
+		traiteEvenements(id);
 	}
 
 	@Check(id = 3, descr = "Vérifions maintenant que le couple est bien passé sur Lausanne (les deux membres ont déménagé, et le principal est maintenant sur Lausanne)")
 	public void check3() throws Exception {
-		final EvenementCivilRegroupe evenement = getEvenementCivilRegoupeForHabitant(noHabAnneLaure);
+		final EvenementCivilData evenement = getEvenementCivilRegoupeForHabitant(noHabAnneLaure);
 		assertNotNull(evenement, "Pas d'événement pour Anne-Laure?");
 		assertEquals(EtatEvenementCivil.TRAITE, evenement.getEtat(), "L'événement civil devrait être en traité.");
 

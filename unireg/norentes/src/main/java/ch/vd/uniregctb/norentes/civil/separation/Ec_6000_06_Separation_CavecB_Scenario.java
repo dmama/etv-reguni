@@ -146,7 +146,7 @@ public class Ec_6000_06_Separation_CavecB_Scenario extends EvenementCivilScenari
 	public void etape2() throws Exception {
 		long id = addEvenementCivil(TypeEvenementCivil.SEPARATION, noIndAida, dateSeparation, commune.getNoOFS());
 		commitAndStartTransaction();
-		regroupeEtTraiteEvenements(id);
+		traiteEvenements(id);
 	}
 
 	@Check(id=2, descr="Vérification des fors commun et individuels")

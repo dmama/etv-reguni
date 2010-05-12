@@ -5,7 +5,7 @@ import annotation.Etape;
 import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.civil.model.EnumTypePermis;
-import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
+import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
@@ -82,7 +82,7 @@ public class Ec_4000_03_Mariage_MarieSeulArriveHorsSuisse_Scenario extends Maria
 	public void step1() throws Exception {
 		long id = addEvenementCivil(TypeEvenementCivil.ARRIVEE_PRINCIPALE_HS, noIndMaria, dateArrivee, communeArrivee.getNoOFS());
 		commitAndStartTransaction();
-		regroupeEtTraiteEvenements(id);
+		traiteEvenements(id);
 	}
 
 	@Check(id=1, descr="Vérifie que l'habitant a bien été créé et qu'il a un for actif")
@@ -98,12 +98,12 @@ public class Ec_4000_03_Mariage_MarieSeulArriveHorsSuisse_Scenario extends Maria
 		// envoi de l'événement de mariage
 		long id = addEvenementCivil(TypeEvenementCivil.MARIAGE, noIndMaria, dateMariage, communeArrivee.getNoOFS());
 		commitAndStartTransaction();
-		regroupeEtTraiteEvenements(id);
+		traiteEvenements(id);
 	}
 
 	@Check(id=2, descr="Vérifie que le for de l'habitant précédemment créé a été annulé, le ménage commun créé et qu'il a un for actif")
 	public void check2() throws Exception {
-		EvenementCivilRegroupe evt = getEvenementCivilRegoupeForHabitant(noHabMaria);
+		EvenementCivilData evt = getEvenementCivilRegoupeForHabitant(noHabMaria);
 
 		assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat(), "L'événement de mariage devrait être traité");
 

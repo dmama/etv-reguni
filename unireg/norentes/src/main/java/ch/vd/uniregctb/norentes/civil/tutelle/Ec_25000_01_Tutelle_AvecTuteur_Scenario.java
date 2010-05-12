@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.norentes.civil.tutelle;
 
-import java.util.Date;
 import java.util.Set;
 
 import annotation.Check;
@@ -119,7 +118,7 @@ public class Ec_25000_01_Tutelle_AvecTuteur_Scenario extends EvenementCivilScena
 	public void step2() throws Exception {
 		long id = addEvenementCivil(TypeEvenementCivil.MESURE_TUTELLE, noIndJulie, dateTutelle, commune.getNoOFS());
 		commitAndStartTransaction();
-		regroupeEtTraiteEvenements(id);
+		traiteEvenements(id);
 	}
 
 	@Check(id=2, descr="Vérifie que le rapport tutelle est clos")
@@ -161,7 +160,7 @@ public class Ec_25000_01_Tutelle_AvecTuteur_Scenario extends EvenementCivilScena
 	public void step3() throws Exception {
 		long id = addEvenementCivil(TypeEvenementCivil.MESURE_TUTELLE, noIndJulie, dateTutelle, commune.getNoOFS());
 		commitAndStartTransaction();
-		regroupeEtTraiteEvenements(id);
+		traiteEvenements(id);
 	}
 
 	@Check(id=3, descr="Tout doit être comme après l'étape 2")

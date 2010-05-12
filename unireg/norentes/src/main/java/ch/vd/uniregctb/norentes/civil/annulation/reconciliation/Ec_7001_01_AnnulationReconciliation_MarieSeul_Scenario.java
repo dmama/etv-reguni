@@ -92,7 +92,7 @@ public class Ec_7001_01_AnnulationReconciliation_MarieSeul_Scenario extends Abst
 	public void step2() throws Exception {
 		long id = addEvenementCivil(TypeEvenementCivil.ANNUL_RECONCILIATION, noIndPierre, dateReconciliation, commune.getNoOFS());
 		commitAndStartTransaction();
-		regroupeEtTraiteEvenements(id);
+		traiteEvenements(id);
 	}
 
 	@Check(id=2, descr="Vérifie que le dernier For principal du ménage a été annulé et celui de Pierre rouvert")

@@ -5,7 +5,7 @@ import annotation.Etape;
 import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.civil.model.EnumTypePermis;
-import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
+import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
@@ -162,13 +162,13 @@ public class Ec_41040_01_CorrectionConjoint_MarieSeul_Scenario extends Evenement
 		internalServiceCivil.prepareMariage();
 		long id = addEvenementCivil(TypeEvenementCivil.CORREC_CONJOINT, noIndRafa, dateMariage, commune.getNoOFS());
 		commitAndStartTransaction();
-		regroupeEtTraiteEvenements(id);
+		traiteEvenements(id);
 	}
 
 	@Check(id=2, descr="Vérifie que le ménage est complet et l'habitant ajouté n'a plus de for ouvert")
 	public void check2() {
 
-		final EvenementCivilRegroupe evt = getEvenementCivilRegoupeForHabitant(noHabRafa);
+		final EvenementCivilData evt = getEvenementCivilRegoupeForHabitant(noHabRafa);
 		assertEquals(EtatEvenementCivil.A_VERIFIER, evt.getEtat(), "L'événement civil devrait être à vérifier");
 		assertEquals(2, evt.getWarnings().size(), "Il devrait y avoir 2 warnings");
 

@@ -40,7 +40,7 @@ public class NaissanceHandler extends EvenementCivilHandlerBase {
 	 */
 	@Override
 	public void checkCompleteness(EvenementCivil target, List<EvenementCivilErreur> erreurs, List<EvenementCivilErreur> warnings) {
-		/* Rien de spécial pour la naissance : pas de regroupement */
+		/* Rien de spécial pour la naissance */
 	}
 
 	/**

@@ -15,7 +15,7 @@ import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
-import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
+import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.general.view.RoleView;
 import ch.vd.uniregctb.general.view.TiersGeneralView;
@@ -101,7 +101,7 @@ public class TiersGeneralManagerImpl implements TiersGeneralManager{
 		tiersGeneralView.setAnnule(tiers.isAnnule());
 		tiersGeneralView.setAnnulationDate(tiers.getAnnulationDate());
 
-		final List<EvenementCivilRegroupe> evtsNonTraites = tiersService.getEvenementsCivilsNonTraites(tiers);
+		final List<EvenementCivilData> evtsNonTraites = tiersService.getEvenementsCivilsNonTraites(tiers);
 		if (evtsNonTraites == null || evtsNonTraites.size() == 0) {
 			tiersGeneralView.setNosIndividusAvecEvenenementCivilNonTraite(null);
 		}
@@ -109,7 +109,7 @@ public class TiersGeneralManagerImpl implements TiersGeneralManager{
 
 			// ensemble de tous les numéros d'individu concernés
 			final Set<Long> nosIndividus = new TreeSet<Long>();
-			for (EvenementCivilRegroupe evt : evtsNonTraites) {
+			for (EvenementCivilData evt : evtsNonTraites) {
 				final Long indPrincipal = evt.getNumeroIndividuPrincipal();
 				if (indPrincipal != null) {
 					nosIndividus.add(indPrincipal);

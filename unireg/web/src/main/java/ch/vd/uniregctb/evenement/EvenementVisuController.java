@@ -67,7 +67,7 @@ public class EvenementVisuController extends AbstractEvenementController {
 		EvenementView bean = (EvenementView) command;
 
 		if (request.getParameter(BOUTON_RECYCLER) != null) {
-			getEvenementManager().traiteEvenementCivilRegroupe(bean.getEvenement().getId());
+			getEvenementManager().traiteEvenementCivil(bean.getEvenement().getId());
 		}
 		else if (request.getParameter(BOUTON_FORCER) != null) {
 			getEvenementManager().forceEtatTraite(bean.getEvenement().getId());

@@ -14,7 +14,7 @@
 
 	<bean id="editiqueCompositionService" class="ch.vd.uniregctb.editique.mock.MockEditiqueCompositionService"/>
 
-	<bean id="evtCivilSender" class="ch.vd.uniregctb.evenement.jms.MockEvenementCivilUnitaireSender" />
+	<bean id="evtCivilSender" class="ch.vd.uniregctb.evenement.jms.MockEvenementCivilSender" />
 
 	<!-- Bean client interfacesService MOCK -->
 	<bean id="serviceInfrastructureServiceRaw" class="ch.vd.uniregctb.interfaces.service.mock.ProxyServiceInfrastructureService"/>

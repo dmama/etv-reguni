@@ -6,7 +6,7 @@ import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.civil.model.EnumTypePermis;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
+import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.interfaces.model.mock.*;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
@@ -115,14 +115,14 @@ public class Ec_4000_10_Mariage_SuisseAvecPermisB_Scenario extends EvenementCivi
 	public void etape2() throws Exception {
 		final long id = addEvenementCivil(TypeEvenementCivil.MARIAGE, noIndRafa, dateMariage, commune.getNoOFS());
 		commitAndStartTransaction();
-		regroupeEtTraiteEvenements(id);
+		traiteEvenements(id);
 	}
 
 	@Check(id=2, descr="Vérifie que l'événement de mariage est passé et que le for du couple est bon")
 	public void check2() {
 
-		final List<EvenementCivilRegroupe> list = evtRegroupeDAO.getAll();
-		for (EvenementCivilRegroupe evt : list) {
+		final List<EvenementCivilData> list = evtDAO.getAll();
+		for (EvenementCivilData evt : list) {
 			if (noIndRafa == evt.getNumeroIndividuPrincipal()) {
 				assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat(), String.valueOf(evt.getId()));
 			}

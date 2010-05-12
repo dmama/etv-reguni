@@ -13,9 +13,9 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.data.DataEventService;
-import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
-import ch.vd.uniregctb.evenement.EvenementCivilRegroupeDAO;
-import ch.vd.uniregctb.evenement.jms.EvenementCivilUnitaireListener;
+import ch.vd.uniregctb.evenement.EvenementCivilData;
+import ch.vd.uniregctb.evenement.EvenementCivilDAO;
+import ch.vd.uniregctb.evenement.jms.EvenementCivilListener;
 import ch.vd.uniregctb.evenement.jms.EvenementCivilUnitaireListenerTest;
 import ch.vd.uniregctb.evenement.jms.MockEsbMessage;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
@@ -41,23 +41,23 @@ import static junit.framework.Assert.assertNotNull;
 @SuppressWarnings({"JavaDoc"})
 public class EvenementCivilTest extends BusinessTest {
 
-	private EvenementCivilRegroupeDAO evenementCivilRegroupeDAO;
+	private EvenementCivilDAO evenementCivilDAO;
 	private EvenementCivilProcessor evenementCivilProcessor;
-	private EvenementCivilUnitaireListener evenementCivilListener;
+	private EvenementCivilListener evenementCivilListener;
 	private GlobalTiersSearcher searcher;
 
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
-		evenementCivilRegroupeDAO = getBean(EvenementCivilRegroupeDAO.class, "evenementCivilRegroupeDAO");
+		evenementCivilDAO = getBean(EvenementCivilDAO.class, "evenementCivilDAO");
 		evenementCivilProcessor = getBean(EvenementCivilProcessor.class, "evenementCivilProcessor");
 		searcher = getBean(GlobalTiersSearcher.class, "globalTiersSearcher");
 
-		evenementCivilListener = new EvenementCivilUnitaireListener();
+		evenementCivilListener = new EvenementCivilListener();
 		evenementCivilListener.setEvenementCivilProcessor(evenementCivilProcessor);
 		evenementCivilListener.setTransactionManager(transactionManager);
 		evenementCivilListener.setDataEventService(getBean(DataEventService.class, "dataEventService"));
-		evenementCivilListener.setEvenementCivilRegroupeDAO(evenementCivilRegroupeDAO);
+		evenementCivilListener.setEvenementCivilDAO(evenementCivilDAO);
 		evenementCivilListener.setTiersDAO(getBean(TiersDAO.class, "tiersDAO"));
 	}
 
@@ -146,7 +146,7 @@ public class EvenementCivilTest extends BusinessTest {
 		doInTransaction(new TransactionCallback() {
 			public Object doInTransaction(TransactionStatus status) {
 
-				final List<EvenementCivilRegroupe> evenements = evenementCivilRegroupeDAO.getAll();
+				final List<EvenementCivilData> evenements = evenementCivilDAO.getAll();
 				assertNotNull(evenements);
 				assertEquals(1, evenements.size());
 				assertEquals(EtatEvenementCivil.TRAITE, evenements.get(0).getEtat());

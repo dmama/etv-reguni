@@ -7,7 +7,7 @@
 
 	<bean id="evenementFiscalSender" class="ch.vd.uniregctb.evenement.fiscal.MockEvenementFiscalSender" />
 
-	<bean id="evtCivilSender" class="ch.vd.uniregctb.evenement.jms.MockEvenementCivilUnitaireSender"/>
+	<bean id="evtCivilSender" class="ch.vd.uniregctb.evenement.jms.MockEvenementCivilSender"/>
 
 	<bean id="servletService" class="ch.vd.uniregctb.servlet.MockServletService"/>
 

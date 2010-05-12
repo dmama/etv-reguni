@@ -9,8 +9,8 @@ import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
+import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.evenement.EvenementCivilErreur;
-import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
@@ -22,7 +22,6 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.Sexe;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 public class Ec_19000_10_Depart_DejaNonHabitantDejaForLoin_Scenario extends DepartScenario {
@@ -138,13 +137,13 @@ public class Ec_19000_10_Depart_DejaNonHabitantDejaForLoin_Scenario extends Depa
 	public void etape3() throws Exception {
 		final long idCharles = addEvenementCivil(TypeEvenementCivil.DEPART_COMMUNE, noIndCharles, dateDepart, communeDepart.getNoOFS());
 		commitAndStartTransaction();
-		regroupeEtTraiteEvenements(idCharles);
+		traiteEvenements(idCharles);
 	}
 
 	@Check(id=3, descr="Vérifie les fors et adresse d'envoi")
 	public void check3() throws Exception {
 
-		final EvenementCivilRegroupe evt = getEvenementCivilRegoupeForHabitant(noHabCharles);
+		final EvenementCivilData evt = getEvenementCivilRegoupeForHabitant(noHabCharles);
 		assertNotNull(evt, "Où est l'événement civil d'arrivée de Charles ?");
 		assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat(), "L'événement civil devrait être en erreur (for déjà HC).");
 

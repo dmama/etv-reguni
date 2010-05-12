@@ -117,7 +117,7 @@ public class Ec_48000_01_CorrectionIdentificationHabitant_Scenario extends Evene
 
 		long id = addEvenementCivil(TypeEvenementCivil.CHGT_CORREC_IDENTIFICATION, noIndMomo, RegDate.get(), commune.getNoOFS());
 		commitAndStartTransaction();
-		regroupeEtTraiteEvenements(id);
+		traiteEvenements(id);
 	}
 
 	@Check(id=2, descr="Vérifie que le numéro AVS a été mise à jour dans l'indexeur")

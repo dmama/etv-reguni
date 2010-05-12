@@ -39,8 +39,8 @@ import ch.vd.uniregctb.type.TypeEvenementErreur;
  * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_53AUYMK6EdydR6r71NY4Vg"
  */
 @Entity
-@Table(name = "EVENEMENT_CIVIL_REGROUPE")
-public class EvenementCivilRegroupe extends HibernateEntity {
+@Table(name = "EVENEMENT_CIVIL")
+public class EvenementCivilData extends HibernateEntity {
 
 	/**
 	 *
@@ -115,10 +115,10 @@ public class EvenementCivilRegroupe extends HibernateEntity {
 	/**
 	 * Constructeur (requis par Hibernate)
 	 */
-	public EvenementCivilRegroupe() {
+	public EvenementCivilData() {
 	}
 
-	public EvenementCivilRegroupe(Long id, TypeEvenementCivil type, EtatEvenementCivil etat, RegDate dateEvenement,
+	public EvenementCivilData(Long id, TypeEvenementCivil type, EtatEvenementCivil etat, RegDate dateEvenement,
 			Long numeroIndividuPrincipal, PersonnePhysique individuPrincipal, Long numeroIndividuConjoint,
 			PersonnePhysique conjoint, Integer numeroOfsCommuneAnnonce, Set<EvenementCivilErreur> erreurs) {
 		this.id = id;
@@ -133,7 +133,7 @@ public class EvenementCivilRegroupe extends HibernateEntity {
 		this.erreurs = erreurs;
 	}
 
-	public EvenementCivilRegroupe(EvtRegCivilDocument.EvtRegCivil bean) {
+	public EvenementCivilData(EvtRegCivilDocument.EvtRegCivil bean) {
 		this.id = (long)bean.getNoTechnique();
 		this.type = TypeEvenementCivil.valueOf(bean.getCode());
 		this.etat = EtatEvenementCivil.A_TRAITER;

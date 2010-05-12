@@ -6,7 +6,7 @@ import annotation.Check;
 import annotation.Etape;
 import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
+import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
@@ -78,15 +78,15 @@ public class Ec_18000_05_Arrivee_RollBack_1_Scenario extends EvenementCivilScena
 		commitAndStartTransaction();
 
 		// On traite les evenements
-		regroupeEtTraiteEvenements(id);
+		traiteEvenements(id);
 	}
 
 	@Check(id=2, descr="Vérifie que l'habitant Alain est inconnu et que l'événements est en erreur")
 	public void check4() throws Exception {
 		PersonnePhysique alain = tiersDAO.getHabitantByNumeroIndividu(noIndAlain);
 		assertNull(alain, "Alain ne devrait pas être dans le registre");
-		List<EvenementCivilRegroupe> list = evtRegroupeDAO.getAll();
-		for (EvenementCivilRegroupe evt : list) {
+		List<EvenementCivilData> list = evtDAO.getAll();
+		for (EvenementCivilData evt : list) {
 			assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat(), "");
 		}
 

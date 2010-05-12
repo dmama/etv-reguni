@@ -2,7 +2,7 @@ package ch.vd.uniregctb.evenement.separation;
 
 import ch.vd.registre.civil.model.EnumAttributeIndividu;
 import ch.vd.uniregctb.evenement.EvenementAdapterException;
-import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
+import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.evenement.GenericEvenementAdapter;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
@@ -21,10 +21,10 @@ public class SeparationAdapter extends GenericEvenementAdapter implements Separa
 	private Individu ancienConjoint;
 	
 	/* (non-Javadoc)
-	 * @see ch.vd.uniregctb.evenement.GenericEvenementAdapter#init(ch.vd.uniregctb.evenement.EvenementCivilRegroupe, ch.vd.uniregctb.interfaces.service.ServiceCivilService, ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService)
+	 * @see ch.vd.uniregctb.evenement.GenericEvenementAdapter#init(ch.vd.uniregctb.evenement.EvenementCivilData, ch.vd.uniregctb.interfaces.service.ServiceCivilService, ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService)
 	 */
 	@Override
-	public void init(EvenementCivilRegroupe evenement, ServiceCivilService serviceCivil, ServiceInfrastructureService infrastructureService) throws EvenementAdapterException {
+	public void init(EvenementCivilData evenement, ServiceCivilService serviceCivil, ServiceInfrastructureService infrastructureService) throws EvenementAdapterException {
 		super.init(evenement, serviceCivil, infrastructureService);
 		
 		/*

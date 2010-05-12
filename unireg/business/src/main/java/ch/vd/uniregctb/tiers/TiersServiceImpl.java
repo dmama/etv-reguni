@@ -5,7 +5,6 @@ import java.util.*;
 
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorValue;
-import javax.persistence.Transient;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -39,8 +38,8 @@ import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.Declaration;
-import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
-import ch.vd.uniregctb.evenement.EvenementCivilRegroupeDAO;
+import ch.vd.uniregctb.evenement.EvenementCivilDAO;
+import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
@@ -84,7 +83,7 @@ public class TiersServiceImpl implements TiersService {
 	private TiersDAO tiersDAO;
 	private EvenementFiscalService evenementFiscalService;
 	private GlobalTiersSearcher tiersSearcher;
-	private EvenementCivilRegroupeDAO evenementCivilRegroupeDAO;
+	private EvenementCivilDAO evenementCivilDAO;
 	private ServiceInfrastructureService serviceInfra;
 	private ServiceCivilService serviceCivilService;
 	private TacheService tacheService;
@@ -1385,8 +1384,8 @@ public class TiersServiceImpl implements TiersService {
 		return null;
 	}
 
-	public void setEvenementCivilRegroupeDAO(EvenementCivilRegroupeDAO evenementCivilRegroupeDAO) {
-		this.evenementCivilRegroupeDAO = evenementCivilRegroupeDAO;
+	public void setEvenementCivilDAO(EvenementCivilDAO evenementCivilDAO) {
+		this.evenementCivilDAO = evenementCivilDAO;
 	}
 
 	private ForFiscalPrincipal reopenForFiscalPrincipal(ForFiscalPrincipal forFiscalPrincipal, boolean changeHabitantFlag) {
@@ -3389,13 +3388,13 @@ public class TiersServiceImpl implements TiersService {
 		return menageCommun;
 	}
 
-	public List<EvenementCivilRegroupe> getEvenementsCivilsNonTraites(Tiers tiers) {
+	public List<EvenementCivilData> getEvenementsCivilsNonTraites(Tiers tiers) {
 		final Set<Long> noTiers = new HashSet<Long>(1);
 		noTiers.add(tiers.getNumero());
 		final List<Long> nosIndividus = tiersDAO.getNumerosIndividu(noTiers, true);
-		final List<EvenementCivilRegroupe> liste;
+		final List<EvenementCivilData> liste;
 		if (nosIndividus.size() > 0) {
-			liste = evenementCivilRegroupeDAO.getEvenementsCivilsNonTraites(nosIndividus);
+			liste = evenementCivilDAO.getEvenementsCivilsNonTraites(nosIndividus);
 		}
 		else {
 			liste = Collections.emptyList();

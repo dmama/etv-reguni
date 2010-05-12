@@ -7,7 +7,7 @@ import org.apache.commons.logging.LogFactory;
 
 import ch.vd.registre.civil.model.EnumTypePermis;
 import ch.vd.uniregctb.evenement.EvenementAdapterException;
-import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
+import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.evenement.GenericEvenementAdapter;
 import ch.vd.uniregctb.interfaces.model.Permis;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
@@ -27,8 +27,8 @@ public class AnnulationPermisAdapter extends GenericEvenementAdapter implements 
 	private Permis permis;
 
 	@Override
-	public void init(EvenementCivilRegroupe evenementCivilRegroupe, ServiceCivilService serviceCivil, ServiceInfrastructureService infrastructureService) throws EvenementAdapterException {
-		super.init(evenementCivilRegroupe, serviceCivil, infrastructureService);
+	public void init(EvenementCivilData evenementCivilData, ServiceCivilService serviceCivil, ServiceInfrastructureService infrastructureService) throws EvenementAdapterException {
+		super.init(evenementCivilData, serviceCivil, infrastructureService);
 
 		try {
 			final Collection<Permis> listePermis = super.getIndividu().getPermis();

@@ -7,7 +7,7 @@ import annotation.Etape;
 import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
+import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.Localite;
@@ -233,8 +233,8 @@ public class Ec_19000_03_Depart_HS_Scenario extends DepartScenario {
 		commitAndStartTransaction();
 
 		// On traite les evenements
-		regroupeEtTraiteEvenements(id1);
-		regroupeEtTraiteEvenements(id2);
+		traiteEvenements(id1);
+		traiteEvenements(id2);
 	}
 
 	@Check(id=3, descr="Vérifie que le couple n'a plus son for sur Bex mais sur Danemark")
@@ -242,7 +242,7 @@ public class Ec_19000_03_Depart_HS_Scenario extends DepartScenario {
 
 		// On check que le couple est parti
 		{
-			final EvenementCivilRegroupe evt = getEvenementCivilRegoupeForHabitant(noHabCedric);
+			final EvenementCivilData evt = getEvenementCivilRegoupeForHabitant(noHabCedric);
 			assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat(), "Etat invalide");
 
 			final PersonnePhysique cedric = (PersonnePhysique) tiersDAO.get(noHabCedric);

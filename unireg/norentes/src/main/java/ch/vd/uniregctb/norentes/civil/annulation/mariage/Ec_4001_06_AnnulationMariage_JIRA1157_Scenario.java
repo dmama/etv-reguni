@@ -5,7 +5,7 @@ import annotation.Etape;
 import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
+import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
@@ -137,7 +137,7 @@ public class Ec_4001_06_AnnulationMariage_JIRA1157_Scenario extends EvenementCiv
 		// envoi de l'événement
 		final long id = addEvenementCivil(TypeEvenementCivil.ARRIVEE_PRINCIPALE_HC, noIndAlexandre, dateArriveeAlexandre, commune.getNoOFS());
 		commitAndStartTransaction();
-		regroupeEtTraiteEvenements(id);
+		traiteEvenements(id);
 	}
 
 	@Check(id=2, descr="Vérifie que l'habitant correspondant à monsieur a bien été créé et possède un for ouvert")
@@ -160,7 +160,7 @@ public class Ec_4001_06_AnnulationMariage_JIRA1157_Scenario extends EvenementCiv
 		// envoi de l'événement
 		final long id = addEvenementCivil(TypeEvenementCivil.MARIAGE, noIndAlexandre, dateMariage, commune.getNoOFS());
 		commitAndStartTransaction();
-		regroupeEtTraiteEvenements(id);
+		traiteEvenements(id);
 	}
 
 	@Check(id=3, descr="Vérifie que le ménage est créé et qu'il possède un for ouvert")
@@ -210,12 +210,12 @@ public class Ec_4001_06_AnnulationMariage_JIRA1157_Scenario extends EvenementCiv
 		// envoi de l'événement
 		final long id = addEvenementCivil(TypeEvenementCivil.ANNUL_MARIAGE, noIndSylvie, dateMariage, commune.getNoOFS());
 		commitAndStartTransaction();
-		regroupeEtTraiteEvenements(id);
+		traiteEvenements(id);
 	}
 
 	@Check(id=4, descr="Vérifie que le mariage a été bien annulé")
 	public void check5() {
-		final EvenementCivilRegroupe evt = getEvenementCivilRegoupeForHabitant(noHabSylvie);
+		final EvenementCivilData evt = getEvenementCivilRegoupeForHabitant(noHabSylvie);
 		assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat(), "L'événement d'annulation de mariage devrait être traité");
 
 		checkHabitantApresAnnulation((PersonnePhysique) tiersDAO.get(noHabSylvie), dateArriveeSylvie, MotifFor.ARRIVEE_HC, null);

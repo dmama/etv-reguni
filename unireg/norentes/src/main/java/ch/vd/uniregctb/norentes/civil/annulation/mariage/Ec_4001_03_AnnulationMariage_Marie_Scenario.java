@@ -123,7 +123,7 @@ public class Ec_4001_03_AnnulationMariage_Marie_Scenario extends EvenementCivilS
 	public void step2() throws Exception {
 		long id = addEvenementCivil(TypeEvenementCivil.ANNUL_MARIAGE, noIndMomo, dateMariage, commune.getNoOFS());
 		commitAndStartTransaction();
-		regroupeEtTraiteEvenements(id);
+		traiteEvenements(id);
 	}
 
 	@Check(id=2, descr="Vérifie que le For principal du ménage a été fermé et celui des habitants rouverts")

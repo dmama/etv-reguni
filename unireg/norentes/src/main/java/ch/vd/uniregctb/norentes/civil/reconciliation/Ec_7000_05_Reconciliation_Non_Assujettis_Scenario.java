@@ -4,7 +4,7 @@ import annotation.Check;
 import annotation.Etape;
 import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
+import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
@@ -153,12 +153,12 @@ public class Ec_7000_05_Reconciliation_Non_Assujettis_Scenario extends Evenement
 	public void step2() throws Exception {
 		long id = addEvenementCivil(TypeEvenementCivil.RECONCILIATION, noIndMomo, dateReconciliation, zurich.getNoOFS());
 		commitAndStartTransaction();
-		regroupeEtTraiteEvenements(id);
+		traiteEvenements(id);
 	}
 
 	@Check(id = 2, descr = "Vérifie que l'événement civil est traité mais qu'aucun for n'a bougé")
 	public void check2() {
-		final EvenementCivilRegroupe evt = getEvenementCivilRegoupeForHabitant(noHabMomo);
+		final EvenementCivilData evt = getEvenementCivilRegoupeForHabitant(noHabMomo);
 		assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat(),
 				"L'événement de réconciliation devrait être traité car le couple est bien séparé");
 		check1();

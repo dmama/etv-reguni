@@ -12,7 +12,7 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
 public interface EvenementCivilHandler {
 
 	/**
-	 * Valide que toutes les événements civils unitaires composant l'événement regroupé sont bien présents.
+	 * Valide que toutes les données nécessaires sur l'événement sont bien présentes.
 	 *
 	 * @param target
 	 * @param erreurs

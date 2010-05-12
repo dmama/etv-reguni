@@ -122,7 +122,7 @@ public class Ec_4001_02_AnnulationMariage_MarieSeul_Scenario extends EvenementCi
 		// envoi de l'événement
 		long id = addEvenementCivil(TypeEvenementCivil.ANNUL_MARIAGE, noIndPierre, dateMariage, commune.getNoOFS());
 		commitAndStartTransaction();
-		regroupeEtTraiteEvenements(id);
+		traiteEvenements(id);
 	}
 
 	@Check(id=2, descr="Vérifie que le For principal du ménage a été fermé et celui de Pierre rouvert")

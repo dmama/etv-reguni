@@ -7,7 +7,7 @@ import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.WithoutSpringTest;
-import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
+import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.interfaces.model.mock.MockCanton;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
@@ -66,7 +66,7 @@ public class MariageAdapterTest extends WithoutSpringTest {
 	public void testGetConjointMariageSeul() throws Exception {
 		PersonnePhysique pierre = new PersonnePhysique(true);
 		pierre.setNumero(INDIVIDU_MARIE_SEUL);
-		EvenementCivilRegroupe evenementsCivils = new EvenementCivilRegroupe(1L, TypeEvenementCivil.MARIAGE, EtatEvenementCivil.A_TRAITER,
+		EvenementCivilData evenementsCivils = new EvenementCivilData(1L, TypeEvenementCivil.MARIAGE, EtatEvenementCivil.A_TRAITER,
 				RegDate.get(2000, 12, 19), INDIVIDU_MARIE_SEUL, pierre, 0L, null, 1234, null );
 		MariageAdapter adapter = new MariageAdapter();
 		adapter.init(evenementsCivils, serviceCivil, infrastructureService);
@@ -79,7 +79,7 @@ public class MariageAdapterTest extends WithoutSpringTest {
 		momo.setNumero(INDIVIDU_MARIE);
 		PersonnePhysique bea = new PersonnePhysique(true);
 		bea.setNumero(INDIVIDU_MARIE_CONJOINT);
-		EvenementCivilRegroupe evenementsCivils = new EvenementCivilRegroupe(1L, TypeEvenementCivil.MARIAGE, EtatEvenementCivil.A_TRAITER,
+		EvenementCivilData evenementsCivils = new EvenementCivilData(1L, TypeEvenementCivil.MARIAGE, EtatEvenementCivil.A_TRAITER,
 				RegDate.get(2000, 12, 19), INDIVIDU_MARIE, momo, INDIVIDU_MARIE_CONJOINT, bea, 1234, null );
 		MariageAdapter adapter = new MariageAdapter();
 		adapter.init(evenementsCivils, serviceCivil, infrastructureService);
@@ -92,7 +92,7 @@ public class MariageAdapterTest extends WithoutSpringTest {
 		david.setNumero(INDIVIDU_PACSE);
 		PersonnePhysique julien = new PersonnePhysique(true);
 		julien.setNumero(INDIVIDU_PACSE_CONJOINT);
-		EvenementCivilRegroupe evenementsCivils = new EvenementCivilRegroupe(1L, TypeEvenementCivil.MARIAGE, EtatEvenementCivil.A_TRAITER,
+		EvenementCivilData evenementsCivils = new EvenementCivilData(1L, TypeEvenementCivil.MARIAGE, EtatEvenementCivil.A_TRAITER,
 				RegDate.get(2000, 12, 19), INDIVIDU_PACSE, david, INDIVIDU_PACSE_CONJOINT, julien, 1234, null );
 		MariageAdapter adapter = new MariageAdapter();
 		adapter.init(evenementsCivils, serviceCivil, infrastructureService);

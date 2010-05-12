@@ -20,30 +20,30 @@ import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 /**
- * DAO des évènements civils regroupés.
+ * DAO des évènements civils.
  *
  * @author Ludovic BERTIN <mailto:ludovic.bertin@vd.ch>
  *
  */
-public class EvenementCivilRegroupeDAOImpl extends GenericDAOImpl<EvenementCivilRegroupe, Long> implements EvenementCivilRegroupeDAO {
+public class EvenementCivilDAOImpl extends GenericDAOImpl<EvenementCivilData, Long> implements EvenementCivilDAO {
 
-	private static final Logger LOGGER = Logger.getLogger(EvenementCivilRegroupeDAOImpl.class);
+	private static final Logger LOGGER = Logger.getLogger(EvenementCivilDAOImpl.class);
 
 	/**
 	 * Constructeur par défaut.
 	 */
-	public EvenementCivilRegroupeDAOImpl() {
-		super(EvenementCivilRegroupe.class);
+	public EvenementCivilDAOImpl() {
+		super(EvenementCivilData.class);
 	}
 
 	/**
 	 * Retourne les evenements d'un individu
-	 * @see ch.vd.uniregctb.evenement.EvenementCivilRegroupeDAO#rechercheEvenementExistant(java.util.Date, java.lang.Long)
+	 * @see EvenementCivilDAO#rechercheEvenementExistant(java.util.Date, java.lang.Long)
 	 */
 	@SuppressWarnings("unchecked")
-	public List<EvenementCivilRegroupe> rechercheEvenementExistantEtTraitable(RegDate dateEvenement, TypeEvenementCivil typeEvenement, Long noIndividu ) {
+	public List<EvenementCivilData> rechercheEvenementExistantEtTraitable(RegDate dateEvenement, TypeEvenementCivil typeEvenement, Long noIndividu ) {
 		StringBuffer sql = new StringBuffer();
-		sql.append("from EvenementCivilRegroupe as ec where ec.dateEvenement = ? ");
+		sql.append("from EvenementCivilData as ec where ec.dateEvenement = ? ");
 		sql.append("and ec.type = ? ");
 		sql.append("and ec.numeroIndividuPrincipal = ? ");
 		sql.append("and not ec.etat in (?,?) ");
@@ -52,9 +52,9 @@ public class EvenementCivilRegroupeDAOImpl extends GenericDAOImpl<EvenementCivil
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<EvenementCivilRegroupe> find(final EvenementCriteria criterion, final ParamPagination paramPagination) {
+	public List<EvenementCivilData> find(final EvenementCriteria criterion, final ParamPagination paramPagination) {
 		if (LOGGER.isTraceEnabled()) {
-			LOGGER.trace("Start of EvenementCivilRegroupeDAO:find");
+			LOGGER.trace("Start of EvenementCivilDAO:find");
 		}
 		Assert.notNull(criterion, "Les critères de recherche peuvent pas être nuls");
 
@@ -72,9 +72,9 @@ public class EvenementCivilRegroupeDAOImpl extends GenericDAOImpl<EvenementCivil
 			queryOrder = queryOrder + " desc" ;
 		}
 
-		final String query = " select evenement from EvenementCivilRegroupe evenement where 1=1 " + queryWhere + queryOrder;
+		final String query = " select evenement from EvenementCivilData evenement where 1=1 " + queryWhere + queryOrder;
 
-		return (List<EvenementCivilRegroupe>) getHibernateTemplate().executeWithNativeSession(new HibernateCallback() {
+		return (List<EvenementCivilData>) getHibernateTemplate().executeWithNativeSession(new HibernateCallback() {
 			public Object doInHibernate(Session session) throws HibernateException, SQLException {
 
 				Query queryObject = session.createQuery(query);
@@ -98,18 +98,18 @@ public class EvenementCivilRegroupeDAOImpl extends GenericDAOImpl<EvenementCivil
 	}
 
 	/**
-	 * @see ch.vd.uniregctb.evenement.EvenementCivilRegroupeDAO#count(ch.vd.uniregctb.evenement.EvenementCriteria)
+	 * @see EvenementCivilDAO#count(ch.vd.uniregctb.evenement.EvenementCriteria)
 	 */
 	public int count(EvenementCriteria criterion){
 		if (LOGGER.isTraceEnabled()) {
-			LOGGER.trace("Start of EvenementCivilRegroupeDAO:count");
+			LOGGER.trace("Start of EvenementCivilDAO:count");
 		}
 		Assert.notNull(criterion, "Les critères de recherche peuvent pas être nuls");
 
 
 		List<Object> criteria = new ArrayList<Object>();
 		String queryWhere = buildCriterion(criteria, criterion);
-		String query = " select count(*) from EvenementCivilRegroupe evenement where 1=1 " + queryWhere;
+		String query = " select count(*) from EvenementCivilData evenement where 1=1 " + queryWhere;
 		int count = DataAccessUtils.intResult(getHibernateTemplate().find(query, criteria.toArray()));
 		return count;
 	}
@@ -191,17 +191,17 @@ public class EvenementCivilRegroupeDAOImpl extends GenericDAOImpl<EvenementCivil
 
 	@SuppressWarnings("unchecked")
 	public List<Long> getEvenementCivilsNonTraites() {
-		return getHibernateTemplate().find("select evtRegroupe.id from EvenementCivilRegroupe evtRegroupe " +
-			"where evtRegroupe.etat = ? OR evtRegroupe.etat = ? order by evtRegroupe.dateTraitement desc",
+		return getHibernateTemplate().find("select evt.id from EvenementCivilData evt " +
+			"where evt.etat = ? OR evt.etat = ? order by evt.dateTraitement desc",
 			new Object[] {EtatEvenementCivil.A_TRAITER.name(), EtatEvenementCivil.EN_ERREUR.name()});
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<EvenementCivilRegroupe> getEvenementsCivilsNonTraites(final List<Long> nosIndividus) {
-		final String s = "SELECT e FROM EvenementCivilRegroupe e WHERE e.etat IN (:etats) AND (e.numeroIndividuPrincipal IN (:col) OR e.numeroIndividuConjoint IN (:col))";
+	public List<EvenementCivilData> getEvenementsCivilsNonTraites(final List<Long> nosIndividus) {
+		final String s = "SELECT e FROM EvenementCivilData e WHERE e.etat IN (:etats) AND (e.numeroIndividuPrincipal IN (:col) OR e.numeroIndividuConjoint IN (:col))";
 		final String[] etatsNonTraites = { EtatEvenementCivil.A_TRAITER.name(), EtatEvenementCivil.EN_ERREUR.name() };
 
-		return (List<EvenementCivilRegroupe>) getHibernateTemplate().execute(new HibernateCallback() {
+		return (List<EvenementCivilData>) getHibernateTemplate().execute(new HibernateCallback() {
 			public Object doInHibernate(Session session) throws HibernateException, SQLException {
 				final Query query = session.createQuery(s);
 				query.setParameterList("etats", etatsNonTraites);
@@ -213,15 +213,15 @@ public class EvenementCivilRegroupeDAOImpl extends GenericDAOImpl<EvenementCivil
 
 	@SuppressWarnings("unchecked")
 	public List<Long> getIdsEvenementCivilsATraites() {
-		return getHibernateTemplate().find("select evtRegroupe.id from EvenementCivilRegroupe evtRegroupe " +
-			"where evtRegroupe.etat = ? order by evtRegroupe.id asc",
+		return getHibernateTemplate().find("select evt.id from EvenementCivilData evt " +
+			"where evt.etat = ? order by evt.id asc",
 			new Object[] {EtatEvenementCivil.A_TRAITER.name()});
 	}
 
 	@SuppressWarnings("unchecked")
 	public List<Long> getIdsEvenementCivilsErreurIndividu(Long numIndividu){
-		return getHibernateTemplate().find("select evtRegroupe.id from EvenementCivilRegroupe evtRegroupe " +
-				"where (evtRegroupe.etat = ? or evtRegroupe.etat = ? ) and evtRegroupe.numeroIndividuPrincipal = ? order by evtRegroupe.id asc",
+		return getHibernateTemplate().find("select evt.id from EvenementCivilData evt " +
+				"where (evt.etat = ? or evt.etat = ? ) and evt.numeroIndividuPrincipal = ? order by evt.id asc",
 				new Object[] {EtatEvenementCivil.EN_ERREUR.name(), EtatEvenementCivil.A_TRAITER, numIndividu});
 	}
 }

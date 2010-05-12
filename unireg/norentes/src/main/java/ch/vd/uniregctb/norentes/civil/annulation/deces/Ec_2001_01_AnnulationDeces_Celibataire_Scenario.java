@@ -77,7 +77,7 @@ public class Ec_2001_01_AnnulationDeces_Celibataire_Scenario extends EvenementCi
 	public void step2() throws Exception {
 		long id = addEvenementCivil(TypeEvenementCivil.ANNUL_DECES, noIndJulie, dateDeces, commune.getNoOFS());
 		commitAndStartTransaction();
-		regroupeEtTraiteEvenements(id);
+		traiteEvenements(id);
 	}
 
 	@Check(id=2, descr="Vérification des fors fiscaux")

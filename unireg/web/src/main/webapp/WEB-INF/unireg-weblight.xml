@@ -12,6 +12,6 @@
 
 	<bean id="editiqueService" class="ch.vd.uniregctb.editique.mock.MockEditiqueService" lazy-init="true"/>
 
-	<bean id="evtCivilSender" class="ch.vd.uniregctb.evenement.jms.MockEvenementCivilUnitaireSender"/>
+	<bean id="evtCivilSender" class="ch.vd.uniregctb.evenement.jms.MockEvenementCivilSender"/>
 
 </beans>

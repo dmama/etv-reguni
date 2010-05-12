@@ -7,7 +7,7 @@ import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.uniregctb.adresse.AdressesCiviles;
 import ch.vd.uniregctb.evenement.EvenementAdapterAvecAdresses;
 import ch.vd.uniregctb.evenement.EvenementAdapterException;
-import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
+import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.CommuneSimple;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -40,8 +40,8 @@ public class DemenagementAdapter extends EvenementAdapterAvecAdresses implements
 	 *      ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService)
 	 */
 	@Override
-	public void init(EvenementCivilRegroupe evenementCivilRegroupe, ServiceCivilService serviceCivil, ServiceInfrastructureService infrastructureService) throws EvenementAdapterException {
-		super.init(evenementCivilRegroupe, serviceCivil, infrastructureService);
+	public void init(EvenementCivilData evenementCivilData, ServiceCivilService serviceCivil, ServiceInfrastructureService infrastructureService) throws EvenementAdapterException {
+		super.init(evenementCivilData, serviceCivil, infrastructureService);
 
 		// il faut récupérer les adresses actuelles, ce seront les nouvelles
 		// adresses
@@ -49,7 +49,7 @@ public class DemenagementAdapter extends EvenementAdapterAvecAdresses implements
 		// Distinction adresse principale et adresse courrier
 		final AdressesCiviles adresses;
 		try {
-			adresses = serviceCivil.getAdresses(super.getIndividu().getNoTechnique(), evenementCivilRegroupe.getDateEvenement().getOneDayBefore(), false);
+			adresses = serviceCivil.getAdresses(super.getIndividu().getNoTechnique(), evenementCivilData.getDateEvenement().getOneDayBefore(), false);
 		}
 		catch (DonneesCivilesException e) {
 			throw new EvenementAdapterException(e);

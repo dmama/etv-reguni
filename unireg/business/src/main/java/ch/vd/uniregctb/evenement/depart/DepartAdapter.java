@@ -7,7 +7,7 @@ import ch.vd.uniregctb.adresse.AdressesCiviles;
 import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.evenement.EvenementAdapterAvecAdresses;
 import ch.vd.uniregctb.evenement.EvenementAdapterException;
-import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
+import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.CommuneSimple;
 import ch.vd.uniregctb.interfaces.model.Pays;
@@ -69,19 +69,19 @@ public class DepartAdapter extends EvenementAdapterAvecAdresses implements Depar
 	 *      ch.vd.uniregctb.interfaces.service.HostCivilService, ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService)
 	 */
 	@Override
-	public void init(EvenementCivilRegroupe evenementCivilRegroupe, ServiceCivilService serviceCivil,
+	public void init(EvenementCivilData evenementCivilData, ServiceCivilService serviceCivil,
 			ServiceInfrastructureService infrastructureService) throws EvenementAdapterException {
 
-		if (evenementCivilRegroupe.getNumeroIndividuConjoint()!=null) {
+		if (evenementCivilData.getNumeroIndividuConjoint()!=null) {
 			isAncienTypeDepart = true;
 		}
 
-		super.init(evenementCivilRegroupe, serviceCivil, infrastructureService);
+		super.init(evenementCivilData, serviceCivil, infrastructureService);
 
 		// on récupère les anciennes adresses (= à la date d'événement)
 		final AdressesCiviles adresses;
 		try {
-			adresses = serviceCivil.getAdresses(super.getIndividu().getNoTechnique(), evenementCivilRegroupe.getDateEvenement(), false);
+			adresses = serviceCivil.getAdresses(super.getIndividu().getNoTechnique(), evenementCivilData.getDateEvenement(), false);
 		}
 		catch (DonneesCivilesException e) {
 			throw new EvenementAdapterException(e);

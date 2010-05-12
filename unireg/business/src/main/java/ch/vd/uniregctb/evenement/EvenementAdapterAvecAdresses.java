@@ -34,7 +34,7 @@ public abstract class EvenementAdapterAvecAdresses extends GenericEvenementAdapt
 	}
 
 	@Override
-	public void init(EvenementCivilRegroupe evenement, ServiceCivilService serviceCivil, ServiceInfrastructureService infrastructureService) throws EvenementAdapterException {
+	public void init(EvenementCivilData evenement, ServiceCivilService serviceCivil, ServiceInfrastructureService infrastructureService) throws EvenementAdapterException {
 		super.init(evenement, serviceCivil, infrastructureService);
 
 		// Distinction adresse principale et adresse courrier

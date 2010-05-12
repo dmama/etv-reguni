@@ -5,7 +5,7 @@ import annotation.Etape;
 import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.civil.model.EnumTypePermis;
-import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
+import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.interfaces.model.mock.*;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
 import ch.vd.uniregctb.norentes.common.EvenementCivilScenario;
@@ -85,14 +85,14 @@ public class Ec_16000_03_ObtentionPermis_NonResident_Scenario extends EvenementC
 	public void etape2() throws Exception {
 		final long id = addEvenementCivil(TypeEvenementCivil.CHGT_CATEGORIE_ETRANGER, noIndMomo, dateObtentionPermisC, MockCommune.Aubonne.getNoOFS());
 		commitAndStartTransaction();
-		regroupeEtTraiteEvenements(id);
+		traiteEvenements(id);
 	}
 
 	@Check(id=2, descr="Vérification de l'état du for courant")
 	public void check2() throws Exception {
 
-		final EvenementCivilRegroupe evt = getEvenementCivilRegoupeForHabitant(noCtbMomo);
-		assertNotNull(evt, "Pas d'événement regroupé");
+		final EvenementCivilData evt = getEvenementCivilRegoupeForHabitant(noCtbMomo);
+		assertNotNull(evt, "L'événement est introuvable.");
 		assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat(), "L'événement aurait dû être traité");
 
 		final PersonnePhysique momo = (PersonnePhysique) tiersDAO.get(noCtbMomo);

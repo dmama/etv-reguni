@@ -7,7 +7,7 @@ import org.apache.log4j.Logger;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.civil.model.EnumTypePermis;
 import ch.vd.uniregctb.evenement.EvenementAdapterException;
-import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
+import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.evenement.GenericEvenementAdapter;
 import ch.vd.uniregctb.interfaces.model.Permis;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
@@ -27,18 +27,18 @@ public class FinPermisAdapter extends GenericEvenementAdapter implements FinPerm
 	private Permis permis;
 
 	@Override
-	public void init(EvenementCivilRegroupe evenementCivilRegroupe, ServiceCivilService serviceCivil, ServiceInfrastructureService infrastructureService) throws EvenementAdapterException {
-		super.init(evenementCivilRegroupe, serviceCivil, infrastructureService);
+	public void init(EvenementCivilData evenementCivilData, ServiceCivilService serviceCivil, ServiceInfrastructureService infrastructureService) throws EvenementAdapterException {
+		super.init(evenementCivilData, serviceCivil, infrastructureService);
 
 		try {
 			// on récupère le permis à partir de sa date de fin (= à la date d'événement)
-			final int anneeCourante = evenementCivilRegroupe.getDateEvenement().year();
+			final int anneeCourante = evenementCivilData.getDateEvenement().year();
 			final Collection<Permis> listePermis = serviceCivil.getPermis(super.getIndividu().getNoTechnique(), anneeCourante);
 			if (listePermis == null) {
 				throw new EvenementAdapterException("Le permis n'a pas été trouvé dans le registre civil");
 			}
 			for (Permis permis : listePermis) {
-				if (RegDateHelper.equals(permis.getDateFinValidite(), evenementCivilRegroupe.getDateEvenement())) {
+				if (RegDateHelper.equals(permis.getDateFinValidite(), evenementCivilData.getDateEvenement())) {
 					this.permis = permis;
 					break;
 				}

@@ -6,7 +6,7 @@ import annotation.Check;
 import annotation.Etape;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.civil.model.EnumTypePermis;
-import ch.vd.uniregctb.evenement.EvenementCivilRegroupe;
+import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
@@ -107,13 +107,13 @@ public class Ec_16010_02_FinPermis_PermisCSansNationaliteSuisse_Scenario extends
 
 		long id = addEvenementCivil(TypeEvenementCivil.FIN_CHANGEMENT_CATEGORIE_ETRANGER, noIndRosa, dateFinPermisC, communePermis.getNoOFSEtendu());
 		commitAndStartTransaction();
-		regroupeEtTraiteEvenements(id);
+		traiteEvenements(id);
 	}
 
 	@Check(id=2, descr="Vérifie que l'événement est bien en erreur (un traitement manuel est requis)")
 	public void check2() {
 		{
-			EvenementCivilRegroupe evt = getEvenementCivilRegoupeForHabitant(noHabRosa);
+			EvenementCivilData evt = getEvenementCivilRegoupeForHabitant(noHabRosa);
 			assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat(), "L'événement devrait être passé en mode manuel");
 
 			final PersonnePhysique roberto = (PersonnePhysique) tiersDAO.get(noHabRosa);
