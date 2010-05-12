@@ -2,11 +2,12 @@ package ch.vd.uniregctb.indexer;
 
 import java.io.Reader;
 
-import org.apache.lucene.analysis.ISOLatin1AccentFilter;
+import org.apache.lucene.analysis.ASCIIFoldingFilter;
 import org.apache.lucene.analysis.LowerCaseFilter;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.standard.StandardFilter;
 import org.apache.lucene.analysis.standard.StandardTokenizer;
+import org.apache.lucene.util.Version;
 
 public class OurOwnStandardAnalyzer extends OurOwnAnalyzer {
 
@@ -26,11 +27,11 @@ public class OurOwnStandardAnalyzer extends OurOwnAnalyzer {
 		TokenStream result = null;
 		try {
 			// The real result
-			result = new StandardTokenizer(reader);
+			result = new StandardTokenizer(Version.LUCENE_29, reader);
 			//dumpTokenizer(result, reader);
 			result = new StandardFilter(result);
 			//dumpTokenizer(result, reader);
-			result = new ISOLatin1AccentFilter(result);
+			result = new ASCIIFoldingFilter(result);
 			//dumpTokenizer(result, reader);
 			result = new LowerCaseFilter(result);
 			//dumpTokenizer(result, reader);

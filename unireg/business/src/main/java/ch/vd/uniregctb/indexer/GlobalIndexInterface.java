@@ -42,9 +42,9 @@ public interface GlobalIndexInterface {
 
 	void removeEntity(Long id, String type) throws IndexerException;
 
-	void search(Query query, SearchCallback callback) throws IndexerException;
+	void search(Query query, int maxHits, SearchCallback callback) throws IndexerException;
 
-	void search(String query, SearchCallback callback) throws IndexerException;
+	void search(String query, int maxHits, SearchCallback callback) throws IndexerException;
 
 	/**
 	 * @return the indexPath

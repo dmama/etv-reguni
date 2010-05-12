@@ -12,6 +12,8 @@ import ch.vd.uniregctb.security.SecurityProvider;
 import ch.vd.uniregctb.tracing.TracingManager;
 import org.apache.log4j.Logger;
 import org.apache.lucene.document.Document;
+import org.apache.lucene.search.ScoreDoc;
+import org.apache.lucene.search.TopDocs;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
@@ -48,6 +50,7 @@ public class GestionIndexationController extends AbstractSimpleFormController {
 
 	public static final String GESTION_INDEXATION_NAME = "gestionIndexation";
 
+	private static final int maxHits = 100;
 
 	/**
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
@@ -106,8 +109,8 @@ public class GestionIndexationController extends AbstractSimpleFormController {
 		if (action.equals(ACTION_SEARCH_VALUE)) {
 			GestionIndexation bean = (GestionIndexation)command;
 			try {
-				globalIndex.search(bean.getRequete(), new SearchCallback() {
-					public void handle(List<DocHit> hits, DocGetter docGetter) throws Exception {
+				globalIndex.search(bean.getRequete(), maxHits, new SearchCallback() {
+					public void handle(TopDocs hits, DocGetter docGetter) throws Exception {
 						// on n'est pas intéressé par les résultats
 					}
 				});
@@ -166,10 +169,10 @@ public class GestionIndexationController extends AbstractSimpleFormController {
 
 		final List<IndexDocument> listIndexDocument = new ArrayList<IndexDocument>();
 
-		globalIndex.search(bean.getRequete(), new SearchCallback() {
-			public void handle(List<DocHit> hits, DocGetter docGetter) throws Exception {
-				for (DocHit h : hits) {
-					Document doc = null;
+		globalIndex.search(bean.getRequete(), maxHits, new SearchCallback() {
+			public void handle(TopDocs hits, DocGetter docGetter) throws Exception {
+				for (ScoreDoc h : hits.scoreDocs) {
+					Document doc;
 					try {
 						doc = docGetter.get(h.doc);
 					}

@@ -149,20 +149,20 @@ public class GlobalIndexTracing implements GlobalIndexInterface, InitializingBea
 		}
 	}
 
-	public void search(Query query, SearchCallback callback) throws IndexerException {
+	public void search(Query query, int maxHits, SearchCallback callback) throws IndexerException {
 		long time = tracing.start();
 		try {
-			target.search(query, callback);
+			target.search(query, maxHits, callback);
 		}
 		finally {
 			tracing.end(time);
 		}
 	}
 
-	public void search(String query, SearchCallback callback) throws IndexerException {
+	public void search(String query, int maxHits, SearchCallback callback) throws IndexerException {
 		long time = tracing.start();
 		try {
-			target.search(query, callback);
+			target.search(query, maxHits, callback);
 		}
 		finally {
 			tracing.end(time);

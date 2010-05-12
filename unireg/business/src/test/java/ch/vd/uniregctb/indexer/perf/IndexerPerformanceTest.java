@@ -1,17 +1,16 @@
 package ch.vd.uniregctb.indexer.perf;
 
 import java.util.Date;
-import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.search.TopDocs;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.indexer.DocGetter;
-import ch.vd.uniregctb.indexer.DocHit;
 import ch.vd.uniregctb.indexer.GlobalIndexInterface;
 import ch.vd.uniregctb.indexer.IndexableData;
 import ch.vd.uniregctb.indexer.SearchCallback;
@@ -23,6 +22,7 @@ public class IndexerPerformanceTest extends BusinessTest {
 	private final Logger LOGGER = Logger.getLogger(IndexerPerformanceTest.class);
 
 	private GlobalIndexInterface globalIndex;
+	private static final int maxHits = 100;
 
 	private static class Data extends IndexableData {
 
@@ -136,8 +136,8 @@ public class IndexerPerformanceTest extends BusinessTest {
 	}
 
 	private void assertHits(final int count, String query) {
-		globalIndex.search(query, new SearchCallback() {
-			public void handle(List<DocHit> hits, DocGetter docGetter) throws Exception {
+		globalIndex.search(query, maxHits, new SearchCallback() {
+			public void handle(TopDocs hits, DocGetter docGetter) throws Exception {
 //				try {
 //					for (DocHit hit : hits) {
 //						Document doc = docGetter.get(hit.doc);
@@ -151,7 +151,7 @@ public class IndexerPerformanceTest extends BusinessTest {
 //				} catch (Exception e) {
 //					e.printStackTrace();
 //				}
-				assertEquals(count, hits.size());
+				assertEquals(count, hits.totalHits);
 			}
 		});
 	}

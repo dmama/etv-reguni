@@ -1,10 +1,9 @@
 package ch.vd.uniregctb.indexer;
 
-import java.util.List;
-
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Query;
+import org.apache.lucene.search.TopDocs;
 import org.junit.Test;
 
 import ch.vd.uniregctb.common.WithoutSpringTest;
@@ -18,6 +17,7 @@ public class SimpleGlobalIndexTest extends WithoutSpringTest {
 
 	private final String path = "tmp/globalIndex";
 	private GlobalIndex globalIndex;
+	private final static int maxHits = 100;
 
 	private MockIndexable data = new MockIndexable(12L, "U", "a good man du", "dardare", "essuies");
 
@@ -39,9 +39,9 @@ public class SimpleGlobalIndexTest extends WithoutSpringTest {
 	}
 
 	private void assertHits(final int count, Query baseQuery) {
-		globalIndex.search(baseQuery, new SearchCallback() {
-			public void handle(List<DocHit> hits, DocGetter docGetter) throws Exception {
-				assertEquals(count, hits.size());
+		globalIndex.search(baseQuery, maxHits, new SearchCallback() {
+			public void handle(TopDocs hits, DocGetter docGetter) throws Exception {
+				assertEquals(count, hits.totalHits);
 			}
 		});
 	}

@@ -3,9 +3,10 @@ package ch.vd.uniregctb.indexer.jdbc;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.common.RequiresNewTransactionDefinition;
 import ch.vd.uniregctb.indexer.*;
-import ch.vd.uniregctb.indexer.DocHit;
+
 import static junit.framework.Assert.assertEquals;
 import org.apache.log4j.Logger;
+import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.junit.Ignore;
@@ -24,6 +25,7 @@ public class IndexerTransactionalTest extends BusinessTest {
 	private GlobalIndexInterface globalIndex;
 	private static final String TYPE = "perfi";
 	private final List<String> fields = new ArrayList<String>();
+	private int maxHits = 100;
 
 	private static class Data extends IndexableData {
 
@@ -178,9 +180,9 @@ public class IndexerTransactionalTest extends BusinessTest {
 	}
 
 	private void assertHits(final int count, String query) {
-		globalIndex.search(query, new SearchCallback() {
-			public void handle(List<DocHit> hits, DocGetter docGetter) throws Exception {
-				assertEquals(count, hits.size());
+		globalIndex.search(query, maxHits, new SearchCallback() {
+			public void handle(TopDocs hits, DocGetter docGetter) throws Exception {
+				assertEquals(count, hits.totalHits);
 			}
 		});
 	}

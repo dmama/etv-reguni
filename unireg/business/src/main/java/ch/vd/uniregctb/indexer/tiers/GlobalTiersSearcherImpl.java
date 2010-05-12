@@ -8,6 +8,9 @@ import org.apache.log4j.Logger;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.search.MatchAllDocsQuery;
 import org.apache.lucene.search.Query;
+import org.apache.lucene.search.ScoreDoc;
+import org.apache.lucene.search.TopDocs;
+import org.springframework.beans.factory.InitializingBean;
 
 import java.io.IOException;
 import java.util.*;
@@ -18,11 +21,12 @@ import java.util.*;
  * @author <a href="mailto:jean-eric.cuendet@vd.ch">Jean-Eric Cuendet</a>
  *
  */
-public class GlobalTiersSearcherImpl implements GlobalTiersSearcher {
+public class GlobalTiersSearcherImpl implements GlobalTiersSearcher, InitializingBean {
 
 	private static final Logger LOGGER = Logger.getLogger(GlobalTiersSearcherImpl.class);
 
 	private ParametreAppService parametreAppService;
+	private int maxHits;
 
 	/**
 	 * Le mysterieux global index.
@@ -32,7 +36,7 @@ public class GlobalTiersSearcherImpl implements GlobalTiersSearcher {
 	/**
 	 * Methode principale de recherche des tiers
 	 *
-	 * @param criteria
+	 * @param criteria les critères de recherche
 	 * @return la liste des tiers repondant aux criteres de recherche
 	 * @throws IndexerException
 	 */
@@ -67,7 +71,7 @@ public class GlobalTiersSearcherImpl implements GlobalTiersSearcher {
 			}
 
 			try {
-				globalIndex.search(query, new Callback(list));
+				globalIndex.search(query, maxHits, new Callback(list));
 				break;
 			}
 			catch (TooManyResultsIndexerException e) {
@@ -92,14 +96,14 @@ public class GlobalTiersSearcherImpl implements GlobalTiersSearcher {
 			this.list = list;
 		}
 
-		public void handle(List<DocHit> hits, DocGetter docGetter) throws Exception {
-			if (hits.size() > parametreAppService.getNbMaxParListe()) {
+		public void handle(TopDocs hits, DocGetter docGetter) throws Exception {
+			if (hits.totalHits > maxHits) {
 				throw new TooManyResultsIndexerException("Le nombre max de résultats ne peut pas excéder "
-						+ parametreAppService.getNbMaxParListe() + ". Hits: " + hits.size(), hits.size());
+						+ maxHits + ". Hits: " + hits.totalHits, hits.totalHits);
 			}
 
 			try {
-				for (DocHit h : hits) {
+				for (ScoreDoc h : hits.scoreDocs) {
 					Document doc = docGetter.get(h.doc);
 					TiersIndexedData data = new TiersIndexedData(doc);
 					list.add(data);
@@ -132,9 +136,9 @@ public class GlobalTiersSearcherImpl implements GlobalTiersSearcher {
 		// Lancement de la recherche
 		Query query = new QueryConstructor(criteria).constructQuery();
 		if (query != null) {
-			globalIndex.search(query, new SearchCallback() {
-				public void handle(List<DocHit> hits, DocGetter docGetter) throws Exception {
-					results.exists = (hits.size() > 0);
+			globalIndex.search(query, maxHits, new SearchCallback() {
+				public void handle(TopDocs hits, DocGetter docGetter) throws Exception {
+					results.exists = (hits.totalHits > 0);
 				}
 			});
 		}
@@ -162,14 +166,14 @@ public class GlobalTiersSearcherImpl implements GlobalTiersSearcher {
 		// Lancement de la recherche
 		Query query = new QueryConstructor(criteria).constructQuery();
 		if (query != null) {
-			globalIndex.search(query, new SearchCallback() {
-				public void handle(List<DocHit> hits, DocGetter docGetter) throws Exception {
+			globalIndex.search(query, maxHits, new SearchCallback() {
+				public void handle(TopDocs hits, DocGetter docGetter) throws Exception {
 					try {
 						/*
 						 * On peut réellement recevoir plusieurs résultats en recherchant sur un seul numéro de contribuable (= cas du ménage
 						 * commun), mais ici on s'intéresse uniquement au contribuable spécifié.
 						 */
-						for (DocHit h : hits) {
+						for (ScoreDoc h : hits.scoreDocs) {
 							Document doc = docGetter.get(h.doc);
 							TiersIndexedData data = new TiersIndexedData(doc);
 							if (data.getNumero().equals(numero)) {
@@ -195,10 +199,10 @@ public class GlobalTiersSearcherImpl implements GlobalTiersSearcher {
 
 		final Set<Long> ids = new HashSet<Long>();
 
-		globalIndex.search(new MatchAllDocsQuery(), new SearchCallback() {
+		globalIndex.search(new MatchAllDocsQuery(), maxHits, new SearchCallback() {
 
-			public void handle(List<DocHit> hits, DocGetter docGetter) throws Exception {
-				for (DocHit h : hits) {
+			public void handle(TopDocs hits, DocGetter docGetter) throws Exception {
+				for (ScoreDoc h : hits.scoreDocs) {
 					final Document doc = docGetter.get(h.doc);
 					final long id = extractTiersId(doc);
 					ids.add(id);
@@ -219,9 +223,9 @@ public class GlobalTiersSearcherImpl implements GlobalTiersSearcher {
 		statusManager.setMessage("Vérification que les données de l'indexeur existent dans la base...", 50);
 
 		// Vérifie la cohérence des tiers indexés
-		globalIndex.search(new MatchAllDocsQuery(), new SearchCallback() {
-			public void handle(List<DocHit> hits, DocGetter docGetter) throws Exception {
-				for (DocHit h : hits) {
+		globalIndex.search(new MatchAllDocsQuery(), maxHits, new SearchCallback() {
+			public void handle(TopDocs hits, DocGetter docGetter) throws Exception {
+				for (ScoreDoc h : hits.scoreDocs) {
 
 					if (statusManager.interrupted()) {
 						break;
@@ -282,5 +286,9 @@ public class GlobalTiersSearcherImpl implements GlobalTiersSearcher {
 
 	public void setParametreAppService(ParametreAppService parametreAppService) {
 		this.parametreAppService = parametreAppService;
+	}
+
+	public void afterPropertiesSet() throws Exception {
+		maxHits = parametreAppService.getNbMaxParListe();
 	}
 }

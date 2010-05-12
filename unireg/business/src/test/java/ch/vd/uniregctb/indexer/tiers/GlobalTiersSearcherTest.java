@@ -215,9 +215,6 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 		}
 	}
 
-	/**
-	 * @throws Exception
-	 */
 	@SuppressWarnings("serial")
 	private void rechercheParTypeTiers(String nom, TypeTiers type, int expected) throws Exception {
 
@@ -263,9 +260,6 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 		}
 	}
 
-	/**
-	 * @throws Exception
-	 */
 	@Test
 	public void testRechercheParAdresse() throws Exception {
 
@@ -275,9 +269,6 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 		assertEquals(1, list.size());
 	}
 
-	/**
-	 * @throws Exception
-	 */
 	@Test
 	public void testRechercheParNpa() throws Exception {
 
@@ -296,9 +287,6 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 		assertTrue(ids.contains(Long.valueOf(7632))); // habitant Duchene Claudine
 	}
 
-	/**
-	 * @throws Exception
-	 */
 	@Test
 	public void testRechercheVideException() throws Exception {
 
@@ -312,9 +300,6 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 		}
 	}
 
-	/**
-	 * @throws Exception
-	 */
 	@Test
 	public void testRechercheParAdresseZeroTrouve() throws Exception {
 
@@ -325,9 +310,6 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 		assertEmpty(list);
 	}
 
-	/**
-	 * @throws Exception
-	 */
 	@Test
 	public void testRechercheParFors() throws Exception {
 
@@ -358,9 +340,6 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 		}
 	}
 
-	/**
-	 * @throws Exception
-	 */
 	@Test
 	public void testRechercheParDateNaissance() throws Exception {
 
@@ -377,8 +356,6 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 
 	/**
 	 * Effectue une recherche complexe basée sur le nom.
-	 *
-	 * @throws Exception
 	 */
 	@Test
 	public void testRechercheNomContient() throws Exception {
@@ -427,8 +404,6 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 
 	/**
 	 * Effectue une recherche complexe basée sur le nom.
-	 *
-	 * @throws Exception
 	 */
 	@Test
 	public void testRechercheNomRessemble() throws Exception {
@@ -455,8 +430,6 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 
 	/**
 	 * Teste la recherche sur un numero.
-	 *
-	 * @throws Exception
 	 */
 	@Test
 	public void testSearchIndividuParPrenom() throws Exception {

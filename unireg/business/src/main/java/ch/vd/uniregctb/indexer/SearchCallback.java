@@ -1,9 +1,6 @@
 package ch.vd.uniregctb.indexer;
 
-import ch.vd.uniregctb.indexer.DocGetter;
-import ch.vd.uniregctb.indexer.DocHit;
-
-import java.util.List;
+import org.apache.lucene.search.TopDocs;
 
 /**
  * Méthode de callback appelée par les méthodes 'search' du global index.
@@ -11,5 +8,5 @@ import java.util.List;
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
 public interface SearchCallback {
-	void handle(List<DocHit> hits, DocGetter docGetter) throws Exception;
+	void handle(TopDocs hits, DocGetter docGetter) throws Exception;
 }

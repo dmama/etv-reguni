@@ -14,6 +14,12 @@ import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
+import org.apache.lucene.search.TopDocs;
+import org.apache.lucene.search.WildcardQuery;
+import org.apache.lucene.search.BooleanClause;
+import org.apache.lucene.search.BooleanQuery;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.WildcardQuery;
 import org.junit.Test;
 import org.springframework.test.annotation.NotTransactional;
@@ -95,9 +101,11 @@ public class GlobalIndexTest extends BusinessTest {
 	private GlobalIndexInterface globalIndex;
 
 	private static final SearchCallback NULL_CALLBACK = new SearchCallback() {
-		public void handle(List<DocHit> hits, DocGetter docGetter) throws Exception {
+		public void handle(TopDocs hits, DocGetter docGetter) throws Exception {
 		}
 	};
+	
+	private final static int maxHits = 100;
 
 	// Deletes all files and subdirectories under dir.
 	// Returns true if all deletions were successful.
@@ -212,10 +220,10 @@ public class GlobalIndexTest extends BusinessTest {
 		assertHits(1, "DESCR:pedagogiques");
 		assertHits(2, "DESCR:Solutions");
 
-		globalIndex.search("DESCR:Solutions AND NOT RAISON:sope", new SearchCallback() {
-			public void handle(List<DocHit> hits, DocGetter docGetter) throws Exception {
-				assertEquals(1, hits.size());
-				final Document document = docGetter.get(hits.get(0).doc);
+		globalIndex.search("DESCR:Solutions AND NOT RAISON:sope", maxHits, new SearchCallback() {
+			public void handle(TopDocs hits, DocGetter docGetter) throws Exception {
+				assertEquals(1, hits.totalHits);
+				final Document document = docGetter.get(hits.scoreDocs[0].doc);
 				assertEquals("Mme Cuendet Sara née Barbie", document.get("NOM"));
 			}
 		});
@@ -227,7 +235,7 @@ public class GlobalIndexTest extends BusinessTest {
 
 		// Empty query => Exception
 		try {
-			globalIndex.search("", NULL_CALLBACK);
+			globalIndex.search("", maxHits, NULL_CALLBACK);
 			fail();
 		}
 		catch (IndexerException e) {
@@ -235,7 +243,7 @@ public class GlobalIndexTest extends BusinessTest {
 
 		// Invalid query => Exception
 		try {
-			globalIndex.search("PRENOM:ali baba", NULL_CALLBACK); // Space is not
+			globalIndex.search("PRENOM:ali baba", maxHits, NULL_CALLBACK); // Space is not
 			// supported
 			fail();
 		}
@@ -244,7 +252,7 @@ public class GlobalIndexTest extends BusinessTest {
 
 		// Invalid query => Exception
 		try {
-			globalIndex.search("PRENOM:*ali*", NULL_CALLBACK); // Etoile au debut
+			globalIndex.search("PRENOM:*ali*", maxHits, NULL_CALLBACK); // Etoile au debut
 			// est non accepte
 			fail();
 		}
@@ -472,17 +480,17 @@ public class GlobalIndexTest extends BusinessTest {
 	}
 
 	private void assertHits(final int count, Query query) {
-		globalIndex.search(query, new SearchCallback() {
-			public void handle(List<DocHit> hits, DocGetter docGetter) throws Exception {
-				assertEquals(count, hits.size());
+		globalIndex.search(query, maxHits, new SearchCallback() {
+			public void handle(TopDocs hits, DocGetter docGetter) throws Exception {
+				assertEquals(count, hits.totalHits);
 			}
 		});
 	}
 
 	private void assertHits(final int count, String query) {
-		globalIndex.search(query, new SearchCallback() {
-			public void handle(List<DocHit> hits, DocGetter docGetter) throws Exception {
-				assertEquals(count, hits.size());
+		globalIndex.search(query, maxHits, new SearchCallback() {
+			public void handle(TopDocs hits, DocGetter docGetter) throws Exception {
+				assertEquals(count, hits.totalHits);
 			}
 		});
 	}
@@ -559,23 +567,22 @@ public class GlobalIndexTest extends BusinessTest {
 		Runnable command = new Runnable() {
 			public void run() {
 
-				for (int i = 1; i < 10; ++i) {
-					for (Data d : data) {
-
-						/*
-						 * on contourne la synchronisation de globalIndex.indexEntity(indexable), de manière simuler plusieurs processus
-						 * utilisant des writers
-						 */
-						LuceneWriter writer = null;
-						try {
-							writer = new LuceneWriter(localIndex.directory.directory, false);
+				LuceneWriter writer = null;
+				try {
+					writer = new LuceneWriter(localIndex.directory.directory, false);
+					for (int i = 1; i < 10; ++i) {
+						for (Data d : data) {
+							/*
+							 * on contourne la synchronisation de globalIndex.indexEntity(indexable), de manière simuler plusieurs processus
+							 * utilisant des writers
+							 */
 							writer.index(d);
 						}
-						finally {
-							if (writer != null) {
-								writer.close();
-							}
-						}
+					}
+				}
+				finally {
+					if (writer != null) {
+						writer.close();
 					}
 				}
 			}

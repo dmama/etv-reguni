@@ -1,10 +1,13 @@
 package ch.vd.uniregctb.indexer.fs;
 
+import java.io.File;
+
+import org.apache.log4j.Logger;
+import org.apache.lucene.store.FSDirectory;
+
 import ch.vd.uniregctb.indexer.Directory;
 import ch.vd.uniregctb.indexer.DirectoryProvider;
 import ch.vd.uniregctb.indexer.IndexerException;
-import org.apache.log4j.Logger;
-import org.apache.lucene.store.FSDirectory;
 
 public class FSDirectoryProvider extends DirectoryProvider {
 
@@ -25,7 +28,7 @@ public class FSDirectoryProvider extends DirectoryProvider {
 
 	@Override
 	public Directory getNewDirectory() throws Exception {
-		FSDirectory dir = FSDirectory.getDirectory(indexPath);
+		final FSDirectory dir = FSDirectory.open(new File(indexPath));
 		return new Directory(dir);
 	}
 

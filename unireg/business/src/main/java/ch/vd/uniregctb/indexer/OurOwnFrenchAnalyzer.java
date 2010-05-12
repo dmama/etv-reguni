@@ -2,19 +2,14 @@ package ch.vd.uniregctb.indexer;
 
 import java.io.Reader;
 
-import org.apache.lucene.analysis.ISOLatin1AccentFilter;
+import org.apache.lucene.analysis.ASCIIFoldingFilter;
 import org.apache.lucene.analysis.LowerCaseFilter;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.standard.StandardFilter;
+import org.apache.lucene.analysis.standard.StandardTokenizer;
+import org.apache.lucene.util.Version;
 
 public class OurOwnFrenchAnalyzer extends OurOwnAnalyzer {
-
-	//private Set stoptable = new HashSet();
-	//private Set excltable = new HashSet();
-
-	public OurOwnFrenchAnalyzer() {
-		//stoptable = StopFilter.makeStopSet(FrenchAnalyzer.FRENCH_STOP_WORDS);
-	}
 
 	@Override
 	public final TokenStream tokenStream(String fieldName, Reader reader) {
@@ -26,23 +21,15 @@ public class OurOwnFrenchAnalyzer extends OurOwnAnalyzer {
 			throw new IllegalArgumentException("reader must not be null");
 		}
 
-		TokenStream result = null;
+		TokenStream result;
 		try {
-			// The real result
-			//BlackListage de certains mots
-			//result = new StandardTokenizer(reader);
-			result = new UniregTokenizer(reader);
-			//dumpTokenizer(result, reader);
+			result = new StandardTokenizer(Version.LUCENE_29, reader);
 			result = new StandardFilter(result);
-			//dumpTokenizer(result, reader);
-			//result = new StopFilter(result, stoptable);
-			//dumpTokenizer(result, reader);
-			result = new ISOLatin1AccentFilter(result);
-			//dumpTokenizer(result, reader);
-			// The FrenchStemFilter needs to get lower case letters to do its binz
+			result = new ASCIIFoldingFilter(result);
 			result = new LowerCaseFilter(result);
-			//dumpTokenizer(result, reader);
-		} catch (Exception e) {
+			result = new UniregBlacklistFilter(result);
+		}
+		catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 		return result;

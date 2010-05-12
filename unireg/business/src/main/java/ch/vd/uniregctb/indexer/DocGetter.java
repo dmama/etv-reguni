@@ -1,8 +1,8 @@
 package ch.vd.uniregctb.indexer;
 
-import org.apache.lucene.document.Document;
-
 import java.io.IOException;
+
+import org.apache.lucene.document.Document;
 
 /**
  * Interface permettant de récupérer un document lucene à partir de son id.
@@ -16,6 +16,7 @@ public interface DocGetter {
 	 *
 	 * @param i l'id du document lucene
 	 * @return un document
+	 * @throws java.io.IOException en cas d'erreur IO sur l'index
 	 */
 	Document get(int i) throws IOException;
 }

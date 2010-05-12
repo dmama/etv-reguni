@@ -7,6 +7,7 @@ import org.apache.log4j.Logger;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.Query;
+import org.apache.lucene.search.TopDocs;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.FileSystemUtils;
@@ -107,7 +108,6 @@ public class GlobalIndex implements InitializingBean, DisposableBean, GlobalInde
 
 		Assert.notNull(directory);
 		try {
-			directory.clearLock();
 			directory.close();
 		}
 		catch (Exception e) {
@@ -355,7 +355,7 @@ public class GlobalIndex implements InitializingBean, DisposableBean, GlobalInde
 	/**
 	 * {@inheritDoc}
 	 */
-	public void search(final Query query, final SearchCallback callback) throws IndexerException {
+	public void search(final Query query, final int maxHits, final SearchCallback callback) throws IndexerException {
 
 		if (LOGGER.isTraceEnabled()) {
 			LOGGER.trace("Searching: " + query);
@@ -369,7 +369,7 @@ public class GlobalIndex implements InitializingBean, DisposableBean, GlobalInde
 		directory.read(new ReadOnlyCallback() {
 			public Object doInReadOnly(final LuceneSearcher searcher) {
 				try {
-					final List<DocHit> hits = searcher.search(query);
+					final TopDocs hits = searcher.search(query, maxHits);
 					callback.handle(hits, searcher.docGetter);
 				}
 				catch (IndexerException e) {
@@ -391,7 +391,7 @@ public class GlobalIndex implements InitializingBean, DisposableBean, GlobalInde
 	/**
 	 * {@inheritDoc}
 	 */
-	public void search(final String query, final SearchCallback callback) throws IndexerException {
+	public void search(final String query, final int maxHits, final SearchCallback callback) throws IndexerException {
 
 		if (LOGGER.isTraceEnabled()) {
 			LOGGER.trace("Searching: " + query);
@@ -405,7 +405,7 @@ public class GlobalIndex implements InitializingBean, DisposableBean, GlobalInde
 		directory.read(new ReadOnlyCallback(){
 			public Object doInReadOnly(LuceneSearcher searcher) {
 				try {
-					final List<DocHit> hits = searcher.search(query);
+					final TopDocs hits = searcher.search(query, maxHits);
 					callback.handle(hits, searcher.docGetter);
 				}
 				catch (IndexerException e) {

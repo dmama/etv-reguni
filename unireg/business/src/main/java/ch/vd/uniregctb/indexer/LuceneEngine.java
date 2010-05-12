@@ -3,8 +3,8 @@ package ch.vd.uniregctb.indexer;
 import java.io.StringReader;
 
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.Token;
 import org.apache.lucene.analysis.TokenStream;
+import org.apache.lucene.analysis.tokenattributes.TermAttribute;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
@@ -99,10 +99,12 @@ public abstract class LuceneEngine {
 	 */
 	public static Term getTerm(String field, String value) throws IndexerException {
 
-		final Token token;
+		final String token;
 		try {
 			final TokenStream stream = getFrenchTokenStream(value);
-			token = stream.next(new Token());
+			stream.incrementToken();
+			TermAttribute att = (TermAttribute) stream.getAttribute(TermAttribute.class);
+			token = att.term();
 		}
 		catch (Exception e) {
 			throw new IndexerException(e);
@@ -114,7 +116,7 @@ public abstract class LuceneEngine {
 
 		}
 		else {
-			term = newTerm(field, token);
+			term = new Term(field, token);
 		}
 
 		return term;
@@ -137,10 +139,11 @@ public abstract class LuceneEngine {
 
 		try {
 			final TokenStream stream = getFrenchTokenStream(value);
-			Token token = stream.next(new Token());
-			while (token != null) {
-				if (minLength == 0 || token.termLength() >= minLength) {
-					final Query q = new WildcardQuery(newTermContient(field, token));
+			final TermAttribute att = (TermAttribute) stream.getAttribute(TermAttribute.class);
+			
+			while (stream.incrementToken()) {
+				if (minLength == 0 || att.termLength() >= minLength) {
+					final Query q = new WildcardQuery(newTermContient(field, att));
 					if (complexQuery == null) {
 						if (simpleQuery == null) {
 							simpleQuery = q;
@@ -156,8 +159,6 @@ public abstract class LuceneEngine {
 						complexQuery.add(q, BooleanClause.Occur.MUST);
 					}
 				}
-				token.clear();
-				token = stream.next(token);
 			}
 		}
 		catch (Exception e) {
@@ -182,9 +183,10 @@ public abstract class LuceneEngine {
 
 		try {
 			final TokenStream stream = getFrenchTokenStream(value);
-			Token token = stream.next(new Token());
-			while (token != null) {
-				final Query q = new WildcardQuery(newTermCommence(field, token));
+			final TermAttribute att = (TermAttribute) stream.getAttribute(TermAttribute.class);
+
+			while (stream.incrementToken()) {
+				final Query q = new WildcardQuery(newTermCommence(field, att));
 				if (complexQuery == null) {
 					if (simpleQuery == null) {
 						simpleQuery = q;
@@ -199,8 +201,6 @@ public abstract class LuceneEngine {
 				else {
 					complexQuery.add(q, BooleanClause.Occur.MUST);
 				}
-				token.clear();
-				token = stream.next(token);
 			}
 		}
 		catch (Exception e) {
@@ -225,9 +225,10 @@ public abstract class LuceneEngine {
 
 		try {
 			final TokenStream stream = getFrenchTokenStream(value);
-			Token token = stream.next(new Token());
-			while (token != null) {
-				final Query q = new TermQuery(newTerm(field, token));
+			final TermAttribute att = (TermAttribute) stream.getAttribute(TermAttribute.class);
+
+			while (stream.incrementToken()) {
+				final Query q = new TermQuery(newTerm(field, att));
 				if (complexQuery == null) {
 					if (simpleQuery == null) {
 						simpleQuery = q;
@@ -242,8 +243,6 @@ public abstract class LuceneEngine {
 				else {
 					complexQuery.add(q, BooleanClause.Occur.MUST);
 				}
-				token.clear();
-				token = stream.next(token);
 			}
 		}
 		catch (Exception e) {
@@ -253,41 +252,23 @@ public abstract class LuceneEngine {
 		return complexQuery == null ? simpleQuery : complexQuery;
 	}
 
-	private static Term newTerm(String field, Token token) {
-		final String txt = new String(token.termBuffer(), 0, token.termLength());
-		return new Term(field, txt);
+	private static Term newTerm(String field, TermAttribute attribute) {
+		return new Term(field, attribute.term());
 	}
 
-	private static Term newTermCommence(String field, Token token) {
-		StringBuilder txt = new StringBuilder(token.termLength() + 1);
-		txt.append(token.termBuffer(), 0, token.termLength());
+	private static Term newTermCommence(String field, TermAttribute attribute) {
+		StringBuilder txt = new StringBuilder(attribute.termLength() + 1);
+		txt.append(attribute.termBuffer(), 0, attribute.termLength());
 		txt.append('*');
 		return new Term(field, txt.toString());
 	}
 
-	private static Term newTermContient(String field, Token token) {
-		StringBuilder txt = new StringBuilder(token.termLength() + 2);
+	private static Term newTermContient(String field, TermAttribute attribute) {
+		StringBuilder txt = new StringBuilder(attribute.termLength() + 2);
 		txt.append('*');
-		txt.append(token.termBuffer(), 0, token.termLength());
+		txt.append(attribute.termBuffer(), 0, attribute.termLength());
 		txt.append('*');
 		return new Term(field, txt.toString());
-	}
-
-	/**
-	 * Cree une BooleanQuery pour la recherche de type phonetique
-	 *
-	 * @param field
-	 * @param value
-	 * @return une BooleanQuery
-	 * @throws IndexerException
-	 */
-	public static BooleanQuery getTermsPhonetique(String field, String value) throws IndexerException {
-
-		// Phonetique
-		BooleanQuery booleanQuery = new BooleanQuery();
-		Query q = new PhonetixQuery(new Term(field, value));
-		booleanQuery.add(q, BooleanClause.Occur.MUST);
-		return booleanQuery;
 	}
 
 	/**
@@ -307,17 +288,17 @@ public abstract class LuceneEngine {
 			// We don't want the tokens to be too much changed by the Analyzer
 			// in Fuzzy
 			TokenStream stream = getTokenStream(value, getStandardAnalyzer());
-			Token token = stream.next(new Token());
-			while (token != null) {
-				Query query = new FuzzyQuery(newTerm(field, token));
-				booleanQuery.add(query, BooleanClause.Occur.MUST);
+			final TermAttribute att = (TermAttribute) stream.getAttribute(TermAttribute.class);
 
-				token.clear();
-				token = stream.next(token);
+			while (stream.incrementToken()) {
+				Query query = new FuzzyQuery(newTerm(field, att));
+				booleanQuery.add(query, BooleanClause.Occur.MUST);
 			}
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			throw new IndexerException(e);
 		}
+
 		return booleanQuery;
 	}
 

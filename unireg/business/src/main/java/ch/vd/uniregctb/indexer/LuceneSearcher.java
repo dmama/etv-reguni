@@ -8,9 +8,9 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.*;
 import org.apache.lucene.store.Directory;
+import org.apache.lucene.util.Version;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -78,7 +78,7 @@ public class LuceneSearcher extends LuceneEngine {
 		return is.doc(i);
 	}
 
-	public List<DocHit> search(Query query) throws IndexerException {
+	public TopDocs search(Query query, int maxHits) throws IndexerException {
 
 		if (query == null) {
 			throw new IndexerException("Received empty query expression!");
@@ -88,16 +88,9 @@ public class LuceneSearcher extends LuceneEngine {
 			LOGGER.trace("Lucene query: '" + query.toString() + "'");
 		}
 
-		final List<DocHit> hits = new ArrayList<DocHit>();
+		final TopDocs topDocs;
 		try {
-			is.search(query, new HitCollector() {
-				@Override
-				public void collect(int doc, float score) {
-					if (score > 0.0f) {
-						hits.add(new DocHit(doc, score));
-					}
-				}
-			});
+			topDocs = is.search(query, maxHits);
 		}
 		catch (BooleanQuery.TooManyClauses e) {
 			throw new TooManyResultsIndexerException(e.getMessage(), -1);
@@ -111,24 +104,25 @@ public class LuceneSearcher extends LuceneEngine {
 		}
 
 		if (LOGGER.isTraceEnabled()) {
-			LOGGER.trace("Found " + hits.size() + " documents matching query");
+			LOGGER.trace("Found " + topDocs.totalHits + " documents matching query");
 		}
-		return hits;
+
+		return topDocs;
 	}
 
-	public List<DocHit> search(String queryString) {
+	public TopDocs search(String queryString, int maxHits) {
 
-		List<DocHit> hits;
 		if (queryString == null || queryString.equals("")) {
 			throw new IndexerException("Received empty query expression!");
 		}
 
+		TopDocs hits;
 		try {
 			Analyzer an = getFrenchAnalyzer();
-			QueryParser queryParser = new QueryParser(null, an);
+			QueryParser queryParser = new QueryParser(Version.LUCENE_29, null, an);
 
 			Query query = queryParser.parse(queryString);
-			hits = search(query);
+			hits = search(query, maxHits);
 		}
 		catch (IndexerException ie) {
 			throw ie;
@@ -139,7 +133,7 @@ public class LuceneSearcher extends LuceneEngine {
 		return hits;
 	}
 
-	public List<DocHit> search(Long id, String type) throws IndexerException {
+	public TopDocs search(Long id, String type, int maxHits) throws IndexerException {
 		// String query = "+" + F_ENTITYID+ ":" + id + " +" + F_DOCTYPE + ":" +
 		// type;
 		BooleanQuery query = new BooleanQuery();
@@ -147,10 +141,10 @@ public class LuceneSearcher extends LuceneEngine {
 		query.add(sub, BooleanClause.Occur.MUST);
 		sub = new TermQuery(new Term(F_DOCTYPE, type));
 		query.add(sub, BooleanClause.Occur.MUST);
-		return search(query);
+		return search(query, maxHits);
 	}
 
-	public List<DocHit> search(String typeName, List<String> fieldNames, List<String> fieldValues) throws IndexerException {
+	public TopDocs search(String typeName, List<String> fieldNames, List<String> fieldValues, int maxHits) throws IndexerException {
 
 		String queryString = "";
 
@@ -164,7 +158,7 @@ public class LuceneSearcher extends LuceneEngine {
 			queryString += fieldNames.get(i).toUpperCase() + ":\"" + fieldValues.get(i) + "\"";
 		}
 
-		return search(queryString);
+		return search(queryString, maxHits);
 	}
 
 	public int numDocs() {

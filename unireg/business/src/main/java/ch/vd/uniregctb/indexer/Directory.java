@@ -3,6 +3,7 @@ package ch.vd.uniregctb.indexer;
 import java.io.IOException;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.index.IndexWriter;
 
 /**
@@ -21,6 +22,10 @@ public class Directory {
 
 	private LuceneSearcher searcher = null;
 	private LuceneWriter writer = null;
+
+	static {
+		TokenStream.setOnlyUseNewAPI(true);
+	}
 
 	public Directory(org.apache.lucene.store.Directory directory) {
 		this.directory = directory;
@@ -116,11 +121,7 @@ public class Directory {
 	public Object write(WriteCallback callback) {
 		acquireWriteLock();
 		try {
-			final Object res = callback.doInWrite(writer);
-			if (writer != null) { // le callback peut avoir fermé le writer (voir GlobalIndex.overwrite(), par exemple)
-				writer.commit();
-			}
-			return res;
+			return callback.doInWrite(writer);
 		}
 		finally {
 			releaseWriteLock();
@@ -141,8 +142,7 @@ public class Directory {
 			// plusieurs threads peuvent obtenir le read-lock en même temps : on doit donc synchroniser nos données
 			synchronized (this) {
 				if (writer != null) {
-					writer.close();
-					writer = null;
+					writer.commit();
 				}
 				if (searcher == null) {
 					searcher = new LuceneSearcher(directory);
