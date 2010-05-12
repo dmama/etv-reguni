@@ -6,7 +6,8 @@ import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
 
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.junit.Test;
@@ -555,9 +556,8 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 				// Charge 2000 personnes dans l'index. Ces 2000 personnes possèdent toutes un nom de famille commençant par "Du Pont".
 				for (int i = 1; i < 2000; ++i) {
 
-					final String nom = "Du Pont" + i; // "Du Pont0".."Du Pont1999"
-					final String prenom = "Michel" + String.valueOf(i % 50); // 40 * (Michel0..Michel49)
-					final Long id = (long) i;
+					final String nom = String.format("Du Pont%4d", i); // "Du Pont0000".."Du Pont1999"
+					final String prenom = String.format("Michel%2d", i % 50); // 40 * (Michel00..Michel49)
 
 					PersonnePhysique pp = addNonHabitant(prenom, nom, date(1970, 1, 1), Sexe.MASCULIN);
 					ids.add(pp.getNumero());
@@ -578,9 +578,16 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 		assertNotNull(list);
 		assertEquals(40, list.size());
 
+		// Trie par ordre des noms croissant
+		Collections.sort(list, new Comparator<TiersIndexedData>() {
+			public int compare(TiersIndexedData o1, TiersIndexedData o2) {
+				return o1.getNom1().compareTo(o2.getNom1());
+			}
+		});
+		
 		int i = 0;
 		for (TiersIndexedData d : list) {
-			assertEquals("Du Pont" + (i++ * 50 + 22) + " Michel22", d.getNom1());
+			assertEquals(String.format("Du Pont%4d Michel22", (i++ * 50 + 22)), d.getNom1());
 		}
 	}
 
