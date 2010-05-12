@@ -20,8 +20,6 @@ public abstract class JobDefinition implements InitializingBean, Comparable<Obje
 
 	private final Logger LOGGER = Logger.getLogger(JobDefinition.class);
 
-	public static final boolean INTERRUPTED = true;
-	public static final boolean UNINTERRUPTED = false;
 	public static final String DATE_TRAITEMENT = "DATE_TRAITEMENT"; // pour le testing uniquement
 
 	public final static String KEY_JOB = "job";

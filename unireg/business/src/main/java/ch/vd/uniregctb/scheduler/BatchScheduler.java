@@ -15,32 +15,26 @@ import org.quartz.SchedulerException;
 import org.quartz.SimpleTrigger;
 import org.quartz.Trigger;
 import org.quartz.UnableToInterruptJobException;
-import org.springframework.beans.factory.DisposableBean;
 
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 
 /**
- * Classe utilitaire pour gérer des batchs
- *
- * @author xcifde
- *
+ * Classe utilitaire pour gérer les batchs.
  */
-public class BatchScheduler implements DisposableBean {
+public class BatchScheduler {
 
 	private static final Logger LOGGER = Logger.getLogger(BatchScheduler.class);
 
 	public static final String IMMEDIATE_TRIGGER = "ImmediateTrigger";
 
+	private int triggerCount = 0;
 	private Scheduler scheduler = null;
 	private final HashMap<String, JobDefinition> jobs = new HashMap<String, JobDefinition>();
 
 	public boolean isStarted() throws Exception {
 		return !scheduler.isShutdown();
-	}
-
-	public void destroy() throws Exception {
 	}
 
 	public void register(JobDefinition job) throws SchedulerException {
@@ -74,16 +68,8 @@ public class BatchScheduler implements DisposableBean {
 
 		AuthenticationHelper.pushPrincipal("[cron]");
 		try {
-			final Authentication auth = AuthenticationHelper.getAuthentication();
-			Assert.notNull(auth);
-
-			final JobDetail jobDetail = new JobDetail(job.getName(), Scheduler.DEFAULT_GROUP, JobStarter.class);
-			jobDetail.getJobDataMap().put(JobDefinition.KEY_JOB, job);
-			jobDetail.getJobDataMap().put(JobDefinition.KEY_AUTH, auth);
-			jobDetail.getJobDataMap().put(JobDefinition.KEY_PARAMS, job.getDefaultParams());
-
 			final Trigger trigger = new CronTrigger("CronTrigger-" + job.getName(), Scheduler.DEFAULT_GROUP, cronExpression);
-			scheduler.scheduleJob(jobDetail, trigger);
+			scheduleJob(job, job.getDefaultParams(), trigger);
 		}
 		finally {
 			AuthenticationHelper.popPrincipal();
@@ -91,13 +77,12 @@ public class BatchScheduler implements DisposableBean {
 	}
 
 	/**
-	 * Execute l'indexation avec les params par défaut
+	 * Démarre l'exécution d'un job avec les paramètres par défaut.
 	 *
-	 * @param jobName
-	 * @param params
-	 * @return
-	 * @throws JobAlreadyStartedException
-	 * @throws SchedulerException
+	 * @param jobName le nom du job à démarrer
+	 * @return la définition du job
+	 * @throws SchedulerException         en cas d'erreur de scheduling Quartz
+	 * @throws JobAlreadyStartedException si le job est déjà démarré
 	 */
 	public JobDefinition startJobWithDefaultParams(String jobName) throws JobAlreadyStartedException, SchedulerException {
 
@@ -109,28 +94,59 @@ public class BatchScheduler implements DisposableBean {
 	}
 
 	/**
-	 * Execute l'indexation des contribuables
+	 * Démarre l'exécution d'un job avec les paramètres spécifiés.
 	 *
-	 * @throws SchedulerException
+	 * @param jobName le nom du job à démarrer
+	 * @param params  les paramètres du job
+	 * @return la définition du job
+	 * @throws SchedulerException         en cas d'erreur de scheduling Quartz
+	 * @throws JobAlreadyStartedException si le job est déjà démarré
 	 */
 	public JobDefinition startJob(String jobName, HashMap<String, Object> params) throws JobAlreadyStartedException, SchedulerException {
 		Assert.notNull(jobName, "Pas de nom de Job défini");
 
 		LOGGER.info("Lancement du job: " + jobName);
 		JobDefinition job = jobs.get(jobName);
-		Assert.notNull(job, "Le job '"+jobName+"' n'existe pas");
+		Assert.notNull(job, "Le job '" + jobName + "' n'existe pas");
 		return startJob(job, params);
 	}
 
-	/**
-	 * Factorisation de code: Permet de démarrer un job en mode immediat de façon standard
-	 *
-	 * @param job
-	 * @param params
-	 * @throws JobAlreadyStartedException
-	 * @throws SchedulerException
-	 */
-	private void setUpAndStartJob(JobDefinition job, HashMap<String, Object> params) throws JobAlreadyStartedException, SchedulerException {
+	private void scheduleJob(JobDefinition job, HashMap<String, Object> params, Trigger trigger) throws SchedulerException {
+
+		// Renseignement de l'authentication
+		final Authentication auth = AuthenticationHelper.getAuthentication();
+		Assert.notNull(auth);
+		trigger.getJobDataMap().put(JobDefinition.KEY_AUTH, auth);
+		trigger.getJobDataMap().put(JobDefinition.KEY_PARAMS, params);
+
+		// Création du lien entre le trigger et le détails du job
+		registerJobDetailsIfNeeded(job);
+		trigger.setJobName(job.getName());
+		trigger.setJobGroup(Scheduler.DEFAULT_GROUP);
+
+		// Ajout du trigger
+		scheduler.scheduleJob(trigger);
+	}
+
+	private void registerJobDetailsIfNeeded(JobDefinition job) throws SchedulerException {
+
+		JobDetail jobDetail = scheduler.getJobDetail(job.getName(), Scheduler.DEFAULT_GROUP);
+		if (jobDetail == null) {
+
+			jobDetail = new JobDetail(job.getName(), Scheduler.DEFAULT_GROUP, JobStarter.class);
+			jobDetail.setDurability(true); // garde les détails du job après exécution
+
+			final Authentication auth = AuthenticationHelper.getAuthentication();
+			Assert.notNull(auth);
+
+			jobDetail.getJobDataMap().put(JobDefinition.KEY_JOB, job);
+			jobDetail.addJobListener(job.getName());
+
+			scheduler.addJob(jobDetail, false);
+		}
+	}
+
+	private JobDefinition startJob(JobDefinition job, HashMap<String, Object> params) throws JobAlreadyStartedException, SchedulerException {
 
 		Assert.notNull(scheduler, "Le scheduler est NULL");
 		Assert.isTrue(!scheduler.isShutdown(), "Le scheduler a été stoppé");
@@ -142,50 +158,21 @@ public class BatchScheduler implements DisposableBean {
 
 		Audit.info("[Scheduler] Démarrage du job " + job.getName());
 
-		JobDetail jobDetail = new JobDetail(job.getName(), Scheduler.DEFAULT_GROUP, JobStarter.class);
-		// Fais en sorte que le job soit supprimé du Scheduler après execution
-		jobDetail.setDurability(false);
-		jobDetail.setVolatility(true);
+		// Construction d'un trigger qui se déclanche tout de suite
+		final SimpleTrigger trigger = new SimpleTrigger(IMMEDIATE_TRIGGER + "-" + job.getName() + "-" + (triggerCount++), Scheduler.DEFAULT_GROUP);
+		scheduleJob(job, params, trigger);
 
-		Authentication auth = AuthenticationHelper.getAuthentication();
-		Assert.notNull(auth);
-
-		jobDetail.getJobDataMap().put(JobDefinition.KEY_JOB, job);
-		jobDetail.getJobDataMap().put(JobDefinition.KEY_AUTH, auth);
-		jobDetail.getJobDataMap().put(JobDefinition.KEY_PARAMS, params);
-
-		// Construction d'un trigger qui est declanche tout de suite
-		SimpleTrigger trigger = new SimpleTrigger(IMMEDIATE_TRIGGER + "-" + job.getName(), Scheduler.DEFAULT_GROUP);
-
-		// Ajout du job au scheduler
-		jobDetail.addJobListener(job.getName());
-
-		while (scheduler.getJobDetail(job.getName(), Scheduler.DEFAULT_GROUP) != null) {
-			// si on arrive ici c'est que le job précédent ne tourne effectivement plus (c'est asserté plus haut) *mais* que - pour des raisons de scheduling
-			// de la JVM - le quartz scheduler n'a pas encore pu supprimer les détails associé au job. On lui laisse donc un peu de temps pour le faire.
-			sleep(50);
+		// Attends que le job soit fini, si on est en mode synchrone
+		if (job.getSynchronousMode() == JobDefinition.JobSynchronousMode.SYNCHRONOUS) {
+			waitForCompletion(job);
 		}
 
-		scheduler.scheduleJob(jobDetail, trigger);
+		return job;
 	}
 
-	private void sleep(int millis) throws SchedulerException {
-		try {
-			Thread.sleep(millis);
-		}
-		catch (InterruptedException e) {
-			throw new SchedulerException(e);
-		}
-	}
-
-	private JobDefinition startJob(JobDefinition job, HashMap<String, Object> params) throws JobAlreadyStartedException, SchedulerException {
-
-		setUpAndStartJob(job, params);
-
-		// Attends que le job soit fini
-		// si on est en mode synchrone
+	private void waitForCompletion(JobDefinition job) {
 		int nbTimes = 0;
-		while (job.getSynchronousMode() == JobDefinition.JobSynchronousMode.SYNCHRONOUS && job.isRunning()) {
+		while (job.isRunning()) {
 
 			nbTimes++;
 			if (nbTimes % 15 == 0) {
@@ -199,24 +186,12 @@ public class BatchScheduler implements DisposableBean {
 				LOGGER.warn("Timer exception ignored = " + ignored.toString());
 			}
 		}
-
-		return job;
 	}
 
-	/**
-	 * Retourne la liste des jobs
-	 *
-	 * @return les jobs
-	 */
 	public HashMap<String, JobDefinition> getJobs() {
 		return jobs;
 	}
 
-	/**
-	 * Retourne la liste des jobs
-	 *
-	 * @return les jobs
-	 */
 	public JobDefinition getJob(String name) {
 		return jobs.get(name);
 	}
@@ -233,10 +208,10 @@ public class BatchScheduler implements DisposableBean {
 	}
 
 	/**
-	 * Stoppe l'indexation des contribuables
+	 * Arrête l'exécution d'un job et ne retourne que lorsque le job est vraiment arrêté.
 	 *
-	 * @return Seulement quand le job est vraiment stoppé
-	 * @throws SchedulerException
+	 * @param name le nom du job à arrêter
+	 * @throws SchedulerException en cas d'erreur de scheduling Quartz
 	 */
 	public void stopJob(String name) throws SchedulerException {
 
@@ -276,12 +251,8 @@ public class BatchScheduler implements DisposableBean {
 		}
 	}
 
-	/**
-	 * @param scheduler
-	 *            the scheduler to set
-	 */
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setScheduler(Scheduler scheduler) {
 		this.scheduler = scheduler;
 	}
-
 }

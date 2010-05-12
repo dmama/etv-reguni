@@ -18,10 +18,6 @@ public class JobStarter implements Job, InterruptableJob {
 
 	private final Logger LOGGER = Logger.getLogger(JobStarter.class);
 
-	public final static String KEY_JOB = "job";
-	public final static String KEY_AUTH = "authentication";
-	public final static String KEY_PARAMS = "params";
-
 	private Authentication authentication;
 	private JobDefinition job;
 
@@ -40,11 +36,12 @@ public class JobStarter implements Job, InterruptableJob {
 	@SuppressWarnings("unchecked")
 	public void execute(JobExecutionContext ctxt) throws JobExecutionException {
 
-		final JobDataMap dataMap = ctxt.getJobDetail().getJobDataMap();
+		final JobDataMap jobData = ctxt.getJobDetail().getJobDataMap();
+		final JobDataMap triggerData = ctxt.getTrigger().getJobDataMap();
 
-		job = (JobDefinition) dataMap.get(KEY_JOB);
-		authentication = (Authentication) dataMap.get(KEY_AUTH);
-		final HashMap<String, Object> params = (HashMap<String, Object>) dataMap.get(KEY_PARAMS);
+		job = (JobDefinition) jobData.get(JobDefinition.KEY_JOB);
+		authentication = (Authentication) triggerData.get(JobDefinition.KEY_AUTH);
+		final HashMap<String, Object> params = (HashMap<String, Object>) triggerData.get(JobDefinition.KEY_PARAMS);
 
 		try {
 			job.initialize();
