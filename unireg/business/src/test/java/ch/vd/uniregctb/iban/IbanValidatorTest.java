@@ -47,10 +47,13 @@ public class IbanValidatorTest extends BusinessTest {
 		LOGGER.debug("Début de testValidate");
 		ibanValidator = getBean(IbanValidator.class, "ibanValidator");
 		try {
-			long startTime = System.currentTimeMillis();
-			ibanValidator.validate("CH9308440717427290198");
-			long time = System.currentTimeMillis() - startTime;
-			LOGGER.info("Temps d'execution: " + time+" ms");
+			for (int i = 0; i <= 5000; i++) {
+				long startTime = System.nanoTime();
+				ibanValidator.validate("CH9308440717427290198");
+				long time = System.nanoTime() - startTime;
+				LOGGER.info("Temps d'execution: " + time/1000000 + " ms");
+			}
+
 		}
 		catch (IbanValidationException e) {
 			LOGGER.error("Impossible de valider l'iban CH9300762011623852957", e);
