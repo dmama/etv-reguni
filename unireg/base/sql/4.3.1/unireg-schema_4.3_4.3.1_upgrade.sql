@@ -12,7 +12,7 @@ from EVENEMENT_CIVIL_UNITAIRE ecu
 where ecu.ETAT != 'TRAITE' and not exists (select ecr.ID from EVENEMENT_CIVIL_REGROUPE ecr where ecr.ID = ecu.ID);
 
 -- suppression du suffixe 'regroupés' de la table des événements civils. La table 'EVENEMENT_CIVIL_UNITAIRE' est gardée pour référence.
-alter table EVENEMENT_CIVIL_REGROUPE rename to EVENEMENT_CIVIL
+alter table EVENEMENT_CIVIL_REGROUPE rename to EVENEMENT_CIVIL;
 
 -- ajout des indexes qui vont bien sur la table evenement civil
 create index IDX_EV_CIV_ETAT on EVENEMENT_CIVIL (ETAT);
