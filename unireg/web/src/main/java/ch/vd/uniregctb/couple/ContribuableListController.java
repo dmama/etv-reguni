@@ -79,43 +79,46 @@ public class ContribuableListController extends AbstractTiersListController {
 	@SuppressWarnings("unchecked")
 	@Override
 	protected ModelAndView showForm(HttpServletRequest request, HttpServletResponse response, BindException errors, Map model) throws Exception {
-		HttpSession session = request.getSession();
-		TiersCriteriaView bean = (TiersCriteriaView) session.getAttribute(CTB_CRITERIA_NAME);
-		ModelAndView mav = super.showForm(request, response, errors, model);
+		final HttpSession session = request.getSession();
+		final TiersCriteriaView bean = (TiersCriteriaView) session.getAttribute(CTB_CRITERIA_NAME);
+		final ModelAndView mav = super.showForm(request, response, errors, model);
 
 		if (errors.getErrorCount() == 0) {
-			String buttonEffacer = request.getParameter(ACTION_PARAMETER_NAME);
-			if(buttonEffacer == null) {
+			final String buttonEffacer = request.getParameter(ACTION_PARAMETER_NAME);
+			if (buttonEffacer == null) {
 				LOGGER.debug("Affichage du formulaire de recherche...");
 				if (bean != null && !bean.isEmpty()) {
 					LOGGER.debug("Critères de recherche=" + bean);
 					try {
-						List<TiersIndexedData> results = searchTiers(bean);
-						List<TiersIndexedData> filtredResults = new ArrayList<TiersIndexedData>();
+						final List<TiersIndexedData> results = searchTiers(bean);
+						final List<TiersIndexedData> filteredResults = new ArrayList<TiersIndexedData>();
 						for (TiersIndexedData tiersIndexedData : results) {
-							Contribuable contribuable = (Contribuable) getTiersSloooow(tiersIndexedData.getNumero());
+							final Contribuable contribuable = (Contribuable) getTiersSloooow(tiersIndexedData.getNumero());
 							if (contribuable instanceof PersonnePhysique) {
 								PersonnePhysique nonHabitant = (PersonnePhysique) contribuable;
 								// seulement les contribuables ouverts et indéterminés doivent être affichés
 								if (nonHabitant.getSexe() == null && nonHabitant.getSituationFamilleActive() == null && nonHabitant.getForFiscalPrincipalAt(null) != null) {
-									filtredResults.add(tiersIndexedData);
+									filteredResults.add(tiersIndexedData);
 								}
 							}
 							else if (contribuable instanceof MenageCommun) {
-								MenageCommun menage = (MenageCommun) contribuable;
-								// seulement les ménages communs annulés du ou des contribuables doivent être affichés
+								final MenageCommun menage = (MenageCommun) contribuable;
+
+								// [UNIREG-1212], [UNIREG-1881] Seuls les ménages communs ne possédant aucun lien d'appartenance ménage non-annulé
+								// peuvent être considérés pour la suite
+								boolean rapportNonAnnuleTrouve = false;
 								for (RapportEntreTiers rapport : menage.getRapportsObjet()) {
-									if (rapport.isAnnule() &&
-											(rapport.getSujetId().equals(bean.getNumeroPremierePersonne()) ||
-													rapport.getSujetId().equals(bean.getNumeroSecondePersonne())) &&
-											/* pour pas repeter 2 fois le même ménage */
-											!filtredResults.contains(tiersIndexedData)) {
-										filtredResults.add(tiersIndexedData);
+									if (!rapport.isAnnule()) {
+										rapportNonAnnuleTrouve = true;
+										break;
 									}
+								}
+								if (!rapportNonAnnuleTrouve && !filteredResults.contains(tiersIndexedData)) {
+									filteredResults.add(tiersIndexedData);
 								}
 							}
 						}
-						mav.addObject(TIERS_LIST_ATTRIBUTE_NAME, filtredResults);
+						mav.addObject(TIERS_LIST_ATTRIBUTE_NAME, filteredResults);
 					}
 					catch (TooManyResultsIndexerException ee) {
 						LOGGER.error("Exception dans l'indexer: " + ee.getMessage(), ee);
