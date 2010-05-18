@@ -14,6 +14,7 @@
 		<property name="serviceCivilService" ref="serviceCivilService" />
 		<property name="serviceInfrastructureService" ref="serviceInfrastructureService" />
 		<property name="transactionManager" ref="transactionManager" />
+		<property name="tiersDAO" ref="tiersDAO" />
 	</bean>
 
 	<!-- Les Handlers d'evt civils -->

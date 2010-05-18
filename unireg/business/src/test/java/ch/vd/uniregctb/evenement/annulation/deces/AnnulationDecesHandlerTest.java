@@ -250,6 +250,7 @@ public class AnnulationDecesHandlerTest extends AbstractEvenementHandlerTest {
 		annulation.setIndividu(individu);
 		annulation.setNumeroOfsCommuneAnnonce(5652);
 		annulation.setDate(DATE_DECES);
+		annulation.init(tiersDAO);
 		return annulation;
 	}
 

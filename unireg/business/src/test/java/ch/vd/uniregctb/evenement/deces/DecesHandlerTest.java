@@ -283,9 +283,9 @@ public class DecesHandlerTest extends AbstractEvenementHandlerTest {
 		MockDeces deces = new MockDeces();
 		deces.setIndividu(individu);
 		deces.setConjointSurvivant(conjoint);
-
 		deces.setNumeroOfsCommuneAnnonce(5652);
 		deces.setDate(DATE_DECES);
+		deces.init(tiersDAO);
 
 		return deces;
 	}

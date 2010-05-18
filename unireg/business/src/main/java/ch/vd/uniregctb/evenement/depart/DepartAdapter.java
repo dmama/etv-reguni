@@ -81,7 +81,7 @@ public class DepartAdapter extends EvenementAdapterAvecAdresses implements Depar
 		// on récupère les anciennes adresses (= à la date d'événement)
 		final AdressesCiviles adresses;
 		try {
-			adresses = serviceCivil.getAdresses(super.getIndividu().getNoTechnique(), evenementCivilData.getDateEvenement(), false);
+			adresses = serviceCivil.getAdresses(super.getNoIndividu(), evenementCivilData.getDateEvenement(), false);
 		}
 		catch (DonneesCivilesException e) {
 			throw new EvenementAdapterException(e);

@@ -16,46 +16,49 @@ import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 /**
  * Implémentation des événement civils en provenance du host.
- *
- * @author <a href="mailto:abenaissi@cross-systems.com">Akram BEN AISSI </a>
  */
 public abstract class GenericEvenementAdapter implements EvenementCivil {
 
-	/**
-	 * L'individu principal.
-	 */
+	// L'individu principal.
+	private Long noIndividu;
+	private Long principalPPId;
 	private Individu individuPrincipal;
 
-	/**
-	 * Le conjoint (mariage ou pacs).
-	 */
+	// Le conjoint (mariage ou pacs).
+	private Long noIndividuConjoint;
+	private Long conjointPPId;
 	private Individu conjoint;
 
-	/**
-	 * Les enfants.
-	 */
-	//private List<Individu> enfants;
-
 	private TypeEvenementCivil type;
-
 	private RegDate date;
-
 	private Long numeroEvenement;
-
 	private Integer numeroOfsCommuneAnnonce;
+
+	// Info pour initialiser les individus de manière lazy
+	private int anneeReference;
+	private EnumAttributeIndividu[] parts;
+	private ServiceCivilService serviceCivil;
 
 	/**
 	 * Initialise l'adresse principale et l'adresse courrier
-	 * 
-	 * @throws EvenementAdapterException
+	 *
+	 * @param evenement             les données brutes de l'événement
+	 * @param serviceCivil          le service civil
+	 * @param infrastructureService le service infrastructure
+	 * @throws EvenementAdapterException si l'événement est suffisemment incohérent pour que tout traitement soit impossible.
 	 */
 	public void init(EvenementCivilData evenement, ServiceCivilService serviceCivil, ServiceInfrastructureService infrastructureService) throws EvenementAdapterException {
+		this.serviceCivil = serviceCivil;
 
 		/* récupération des informations liés à l'événement civil */
 		this.type = evenement.getType();
 		this.date = evenement.getDateEvenement();
 		this.numeroEvenement = evenement.getId();
 		this.numeroOfsCommuneAnnonce = evenement.getNumeroOfsCommuneAnnonce();
+		this.noIndividu = evenement.getNumeroIndividuPrincipal();
+		this.principalPPId = evenement.getHabitantPrincipalId();
+		this.noIndividuConjoint = evenement.getNumeroIndividuConjoint();
+		this.conjointPPId = evenement.getHabitantConjointId();
 
 		/*
 		 * Récupération de l'année de l'événement (on se positionne a la
@@ -63,20 +66,19 @@ public abstract class GenericEvenementAdapter implements EvenementCivil {
 		 */
 		final RegDate veille = date.getOneDayBefore();
 		final int anneeEvenement = date.year();
-		final int anneeVeille = veille.year();
 
 		/*
 		 * Récupération des informations sur l'individu depuis le host. En
 		 * plus des états civils, on veut les adresses, le conjoint et les
 		 * enfants
 		 */
-		int anneeReference = anneeVeille;
+		anneeReference = veille.year();
 
 		switch (this.type) {
-			case NAISSANCE :
-			case CORREC_FILIATION :
-				anneeReference = anneeEvenement;
-				break;
+		case NAISSANCE:
+		case CORREC_FILIATION:
+			anneeReference = anneeEvenement;
+			break;
 		}
 
 		final Set<EnumAttributeIndividu> requiredParts = new HashSet<EnumAttributeIndividu>();
@@ -84,78 +86,59 @@ public abstract class GenericEvenementAdapter implements EvenementCivil {
 			requiredParts.add(EnumAttributeIndividu.CONJOINT);
 		}
 		fillRequiredParts(requiredParts);
-		final EnumAttributeIndividu[] parts = requiredParts.toArray(new EnumAttributeIndividu[requiredParts.size()]);
-
-		final long noIndividu = evenement.getNumeroIndividuPrincipal();
-		this.individuPrincipal = serviceCivil.getIndividu(noIndividu, anneeReference, parts);
-		if (this.individuPrincipal == null) {
-			throw new IndividuNotFoundException(noIndividu);
-		}
-
-		/* Récupération des informations sur le conjoint */
-		if (evenement.getNumeroIndividuConjoint() != null) {
-			long noIndividuConjoint = evenement.getNumeroIndividuConjoint();
-			this.conjoint = serviceCivil.getIndividu(noIndividuConjoint, anneeVeille);
-		}
+		parts = requiredParts.toArray(new EnumAttributeIndividu[requiredParts.size()]);
 	}
 
 	/**
-	 * Doit-être implémenté par les classes dérivées pour savoir quelles parts
-	 * demander au service civil pour l'individu pointé par l'événement civil
+	 * Doit-être implémenté par les classes dérivées pour savoir quelles parts demander au service civil pour l'individu pointé par l'événement civil
+	 *
 	 * @param parts ensemble à remplir
 	 */
 	protected void fillRequiredParts(Set<EnumAttributeIndividu> parts) {
 	}
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see ch.vd.uniregctb.evenement.Evenement#getCode()
-	 */
 	public final TypeEvenementCivil getType() {
 		return type;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see ch.vd.uniregctb.evenement.Evenement#getConjoint()
-	 */
+	public Long getNoIndividuConjoint() {
+		return noIndividuConjoint;
+	}
+
 	public final Individu getConjoint() {
+		if (conjoint == null && noIndividuConjoint != null) { // lazy init
+			conjoint = serviceCivil.getIndividu(noIndividuConjoint, anneeReference);
+		}
 		return conjoint;
 	}
 
+	public Long getConjointPPId() {
+		return conjointPPId;
+	}
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see ch.vd.uniregctb.evenement.Evenement#getDate()
-	 */
 	public RegDate getDate() {
 		return date;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see ch.vd.uniregctb.evenement.Evenement#getIndividu()
-	 */
+	public Long getNoIndividu() {
+		return noIndividu;
+	}
+
 	public Individu getIndividu() {
+		if (individuPrincipal == null && noIndividu != null) { // lazy init
+			individuPrincipal = serviceCivil.getIndividu(noIndividu, anneeReference, parts);
+		}
 		return individuPrincipal;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see ch.vd.uniregctb.evenement.Evenement#getNumeroEvenement()
-	 */
+	public Long getPrincipalPPId() {
+		return principalPPId;
+	}
+
 	public final Long getNumeroEvenement() {
 		return numeroEvenement;
 	}
 
-	/**
-	 * @see java.lang.Object#toString()
-	 */
 	@Override
 	public String toString() {
 		return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);

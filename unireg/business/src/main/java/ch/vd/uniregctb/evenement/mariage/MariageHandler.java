@@ -106,7 +106,7 @@ public class MariageHandler extends EvenementCivilHandlerBase {
 		Mariage mariage = (Mariage) evenement;
 
 		try {
-			final PersonnePhysique contribuable = getPersonnePhysiqueOrThrowException(mariage.getIndividu().getNoTechnique());
+			final PersonnePhysique contribuable = getPersonnePhysiqueOrThrowException(mariage.getNoIndividu());
 			final PersonnePhysique conjointContribuable = (mariage.getNouveauConjoint() == null) ? null : getPersonnePhysiqueOrThrowException(mariage.getNouveauConjoint().getNoTechnique());
 
 			// état civil pour traitement

@@ -42,11 +42,11 @@ public class CorrectionDateNaissanceHandler extends AbstractChangementHandler {
 	@Transactional(propagation = Propagation.MANDATORY, rollbackFor = Throwable.class)
 	public Pair<PersonnePhysique,PersonnePhysique> handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
 
-		LOGGER.debug("Correction de la date de naissance de l'individu : " + evenement.getIndividu().getNoTechnique());
-		Audit.info(evenement.getNumeroEvenement(), "Correction de la date de naissance de l'individu : " + evenement.getIndividu().getNoTechnique());
+		LOGGER.debug("Correction de la date de naissance de l'individu : " + evenement.getNoIndividu());
+		Audit.info(evenement.getNumeroEvenement(), "Correction de la date de naissance de l'individu : " + evenement.getNoIndividu());
 
 		try {
-			final PersonnePhysique habitant = getPersonnePhysiqueOrThrowException(evenement.getIndividu().getNoTechnique());
+			final PersonnePhysique habitant = getPersonnePhysiqueOrThrowException(evenement.getNoIndividu());
 			final RegDate dateNaissance = evenement.getDate();
 
 			// [UNIREG-1114] La date de naissance est cachée au niveau de l'habitant

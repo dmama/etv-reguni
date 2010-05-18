@@ -31,7 +31,7 @@ public class AnnulationVeuvageHandler extends EvenementCivilHandlerBase {
 		
 		AnnulationVeuvage annulation = (AnnulationVeuvage) target;
 		
-		long numeroIndividu = annulation.getIndividu().getNoTechnique();
+		long numeroIndividu = annulation.getNoIndividu();
 		PersonnePhysique veuf = getService().getPersonnePhysiqueByNumeroIndividu(numeroIndividu);
 		
 		/*
@@ -57,7 +57,7 @@ public class AnnulationVeuvageHandler extends EvenementCivilHandlerBase {
 		/*
 		 * Obtention du tiers
 		 */
-		PersonnePhysique veuf = getService().getPersonnePhysiqueByNumeroIndividu(annulation.getIndividu().getNoTechnique());
+		PersonnePhysique veuf = getService().getPersonnePhysiqueByNumeroIndividu(annulation.getNoIndividu());
 		
 		/*
 		 * Traitement de l'événement

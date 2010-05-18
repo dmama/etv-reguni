@@ -177,7 +177,7 @@ public class ArriveeHandler extends EvenementCivilHandlerBase {
 		 * [UNIREG-1457] Ce contrôle ne doit pas se faire sur les adresses secondaires
 		 */
 		if (isDansLeCanton(arrivee.getAncienneCommunePrincipale())) {
-			final PersonnePhysique habitant = getTiersDAO().getPPByNumeroIndividu(arrivee.getIndividu().getNoTechnique());
+			final PersonnePhysique habitant = getTiersDAO().getPPByNumeroIndividu(arrivee.getNoIndividu());
 			if (habitant == null) {
 				final String message = "L'individu est inconnu dans registre fiscal mais possédait déjà une adresse dans le " +
 						"registre civil avant son arrivée (incohérence entre les deux registres)";
@@ -191,7 +191,7 @@ public class ArriveeHandler extends EvenementCivilHandlerBase {
 		final MotifFor motifFor = getMotifOuverture(arrivee);
 		if ( motifFor == MotifFor.ARRIVEE_HC || motifFor == MotifFor.ARRIVEE_HS ) {
 			// Si le motif d'ouverture du for est arrivee HS ou HC alors , l'eventuel for principal actuel ne doit pas être vaudois
-			final PersonnePhysique pp = getTiersDAO().getPPByNumeroIndividu(arrivee.getIndividu().getNoTechnique());
+			final PersonnePhysique pp = getTiersDAO().getPPByNumeroIndividu(arrivee.getNoIndividu());
 			if (pp != null) {
 				final RapportEntreTiers rapportMenage = pp.getRapportSujetValidAt(arrivee.getDate(), TypeRapportEntreTiers.APPARTENANCE_MENAGE);
 
@@ -550,7 +550,7 @@ public class ArriveeHandler extends EvenementCivilHandlerBase {
 
 		final Individu individu = arrivee.getIndividu();
 		Assert.notNull(individu); // prérequis
-		final Individu conjoint = getServiceCivil().getConjoint(arrivee.getIndividu().getNoTechnique(), arrivee.getDate());
+		final Individu conjoint = getServiceCivil().getConjoint(arrivee.getNoIndividu(), arrivee.getDate());
 
 		final RegDate dateEvenement = getDateEvenementPourFor(arrivee);
 		final Long numeroEvenement = arrivee.getNumeroEvenement();

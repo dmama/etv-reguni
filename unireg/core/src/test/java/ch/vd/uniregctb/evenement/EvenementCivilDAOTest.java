@@ -95,13 +95,9 @@ public class EvenementCivilDAOTest extends CoreDAOTest {
 		assertEquals(new Long(23456L), evt.getNumeroIndividuConjoint());
 
 		// Principal
-		PersonnePhysique ind = evt.getHabitantPrincipal();
-		assertEquals(new Long(6789L), ind.getNumero());
-		assertEquals(new Long(12345L), ind.getNumeroIndividu());
+		assertEquals(new Long(6789L), evt.getHabitantPrincipalId());
 		// Conjoint
-		PersonnePhysique conjoint = evt.getHabitantConjoint();
-		assertEquals(new Long(5678L), conjoint.getNumero());
-		assertEquals(new Long(23456L), conjoint.getNumeroIndividu());
+		assertEquals(new Long(5678L), evt.getHabitantConjointId());
 	}
 
 }

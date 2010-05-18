@@ -77,10 +77,10 @@ public class DepartHandler extends EvenementCivilHandlerBase {
 	public Pair<PersonnePhysique,PersonnePhysique> handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
 		final Depart depart = (Depart) evenement;
 
-		final PersonnePhysique pp = getTiersDAO().getPPByNumeroIndividu(depart.getIndividu().getNoTechnique());
+		final PersonnePhysique pp = getTiersDAO().getPPByNumeroIndividu(depart.getNoIndividu());
 		if (pp == null) {
 			// si on ne connaissait pas le gaillard, c'est un problème
-			throw new EvenementCivilHandlerException("Aucun habitant (ou ancien habitant) trouvé avec numéro d'individu " + depart.getIndividu().getNoTechnique());
+			throw new EvenementCivilHandlerException("Aucun habitant (ou ancien habitant) trouvé avec numéro d'individu " + depart.getNoIndividu());
 		}
 
 		//[UNIREG-1996] on traite les deux habitants ensemble conformement à l'ancien fonctionement

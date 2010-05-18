@@ -33,7 +33,7 @@ public class AnnulationReconciliationHandler extends EvenementCivilHandlerBase {
 		// Cas d'annulation de réconciliation
 		AnnulationReconciliation annulation = (AnnulationReconciliation) target;
 		// Obtention du tiers correspondant au conjoint principal.
-		PersonnePhysique principal = getService().getPersonnePhysiqueByNumeroIndividu(annulation.getIndividu().getNoTechnique());
+		PersonnePhysique principal = getService().getPersonnePhysiqueByNumeroIndividu(annulation.getNoIndividu());
 		// Récupération de l'ensemble tiers couple
 		EnsembleTiersCouple menageComplet = getService().getEnsembleTiersCouple(principal, annulation.getDate());
 		// Récupération du tiers MenageCommun
@@ -46,7 +46,7 @@ public class AnnulationReconciliationHandler extends EvenementCivilHandlerBase {
 			throw new EvenementCivilHandlerException("Le tiers ménage commun n'a pu être trouvé");
 		}
 
-		final Individu individuConjoint = getServiceCivil().getConjoint(annulation.getIndividu().getNoTechnique(), target.getDate());
+		final Individu individuConjoint = getServiceCivil().getConjoint(annulation.getNoIndividu(), target.getDate());
 		if (individuConjoint != null) {
 			// Obtention du tiers correspondant au conjoint.
 			PersonnePhysique conjoint = getService().getPersonnePhysiqueByNumeroIndividu(individuConjoint.getNoTechnique());
@@ -62,10 +62,10 @@ public class AnnulationReconciliationHandler extends EvenementCivilHandlerBase {
 		// Cas d'annulation de réconciliation
 		AnnulationReconciliation annulation = (AnnulationReconciliation) evenement;
 		// Récupération du tiers principal.
-		PersonnePhysique principal = getService().getPersonnePhysiqueByNumeroIndividu(annulation.getIndividu().getNoTechnique());
+		PersonnePhysique principal = getService().getPersonnePhysiqueByNumeroIndividu(annulation.getNoIndividu());
 		// Obtention du tiers correspondant au conjoint.
 		PersonnePhysique conjoint = null;
-		final Individu individuConjoint = getServiceCivil().getConjoint(evenement.getIndividu().getNoTechnique(), evenement.getDate());
+		final Individu individuConjoint = getServiceCivil().getConjoint(evenement.getNoIndividu(), evenement.getDate());
 		if (individuConjoint != null) {
 			conjoint = getService().getPersonnePhysiqueByNumeroIndividu(individuConjoint.getNoTechnique());
 		}

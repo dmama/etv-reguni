@@ -166,30 +166,16 @@ public abstract class EvenementCivilHandlerBase implements EvenementCivilHandler
 			 * Il n’existe pas de tiers contribuable correspondant à l’individu, assujetti ou non (mineur, conjoint) correspondant à
 			 * l’individu.
 			 */
-			final Individu individu = evenement.getIndividu();
-			final PersonnePhysique tiers = service.getTiersDAO().getPPByNumeroIndividu(individu.getNoTechnique());
-			if (tiers == null) {
-				erreurs.add(new EvenementCivilErreur("Aucun tiers contribuable ne correspond au numero d'individu "
-						+ individu.getNoTechnique()));
+			if (evenement.getPrincipalPPId() == null) {
+				erreurs.add(new EvenementCivilErreur("Aucun tiers contribuable ne correspond au numero d'individu " + evenement.getNoIndividu()));
 			}
+			
 			/*
 			 * Il n’existe pas de tiers contribuable correspondant au conjoint, assujetti ou non (mineur, conjoint) correspondant à
 			 * l’individu.
 			 */
-			final Individu conjoint = serviceCivil.getConjoint(individu.getNoTechnique(),evenement.getDate());
-			if (conjoint != null) {
-
-				if (evenement.getConjoint() != null && conjoint.getNoTechnique() != evenement.getConjoint().getNoTechnique()) {
-					erreurs.add(new EvenementCivilErreur("Le numero d'individu du conjoint ("+conjoint.getNoTechnique()+") est différent que celui dans l'événement ("+evenement.getConjoint().getNoTechnique()+")"));
-				}
-				else {
-
-					final PersonnePhysique tiersConjoint = service.getTiersDAO().getPPByNumeroIndividu(conjoint.getNoTechnique());
-					if (tiersConjoint == null) {
-						erreurs.add(new EvenementCivilErreur("Aucun tiers contribuable ne correspond au numero d'individu du conjoint "
-								+ conjoint.getNoTechnique()));
-					}
-				}
+			if (evenement.getNoIndividuConjoint() != null && evenement.getConjointPPId() == null) {
+				erreurs.add(new EvenementCivilErreur("Aucun tiers contribuable ne correspond au numero d'individu du conjoint " + evenement.getNoIndividuConjoint()));
 			}
 		}
 	}
@@ -531,7 +517,7 @@ public abstract class EvenementCivilHandlerBase implements EvenementCivilHandler
 			erreurs.add(new EvenementCivilErreur(message));
 		}
 		else {
-			final EtatCivil etatCivil = serviceCivil.getEtatCivilActif(mouvement.getIndividu().getNoTechnique(), mouvement.getDate());
+			final EtatCivil etatCivil = serviceCivil.getEtatCivilActif(mouvement.getNoIndividu(), mouvement.getDate());
 			if (etatCivil == null) {
 				erreurs.add(new EvenementCivilErreur("L'individu principal ne possède pas d'état civil à la date de l'événement"));
 			}
@@ -540,7 +526,7 @@ public abstract class EvenementCivilHandlerBase implements EvenementCivilHandler
 				/*
 				 * si l'individu est marié ou pacsé, on vérifie que le conjoint est spécifié de manière cohérente
 				 */
-				final Individu conjointDeIndividu =serviceCivil.getConjoint(mouvement.getIndividu().getNoTechnique(),mouvement.getDate());
+				final Individu conjointDeIndividu =serviceCivil.getConjoint(mouvement.getNoIndividu(),mouvement.getDate());
 				final Individu conjointDeMouvement = mouvement.getConjoint();
 
 				if (conjointDeIndividu == null && conjointDeMouvement == null) {
@@ -578,18 +564,6 @@ public abstract class EvenementCivilHandlerBase implements EvenementCivilHandler
 				}
 			}
 		}
-	}
-
-	/**
-	 * Permet de faire les verifications standards sur les adresses et les
-	 * individus en cas de départ ou d'arrivée
-	 * 
-	 * @param target
-	 * @param erreurs
-	 * @param warnings
-	 */
-	protected void verifierMouvementIndividu(Mouvement target, List<EvenementCivilErreur> erreurs, List<EvenementCivilErreur> warnings){
-		verifierMouvementIndividu(target, true, erreurs, warnings);
 	}
 
 	/**

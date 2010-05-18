@@ -55,7 +55,7 @@ public class DemenagementHandler extends EvenementCivilHandlerBase {
 		 */
 		Adresse ancienneAdresse = demenagement.getAncienneAdressePrincipale();
 		if (ancienneAdresse == null || ancienneAdresse.getDateFin() == null) {
-			errors.add(new EvenementCivilErreur("L'individu n°" + demenagement.getIndividu().getNoTechnique() + " n'a jamais déménagé"));
+			errors.add(new EvenementCivilErreur("L'individu n°" + demenagement.getNoIndividu() + " n'a jamais déménagé"));
 		}
 		else if (!demenagement.getDate().isAfter(ancienneAdresse.getDateFin())) {
 			errors.add(new EvenementCivilErreur("La date du déménagement est antérieure à la date de fin de l'ancienne adresse"));
@@ -107,7 +107,7 @@ public class DemenagementHandler extends EvenementCivilHandlerBase {
 			Individu individu = demenagement.getIndividu();
 			PersonnePhysique habitant = getPersonnePhysiqueOrThrowException(individu.getNoTechnique());
 			
-			if (demenagement.getConjoint() == null) {
+			if (demenagement.getNoIndividuConjoint() == null) {
 				// Mise à jour des fors fiscaux du contribuable (que
 				// les for principaux)
 				ForFiscalPrincipal forPrincipalHabitant = habitant.getForFiscalPrincipalAt(null);
@@ -158,7 +158,7 @@ public class DemenagementHandler extends EvenementCivilHandlerBase {
 			 * Cas d'un individu avec conjoint, c'est le contibuable ménage qui est impacté
 			 */
 			else {
-				PersonnePhysique conjoint = getPersonnePhysiqueOrThrowException(demenagement.getConjoint().getNoTechnique());
+				PersonnePhysique conjoint = getPersonnePhysiqueOrThrowException(demenagement.getNoIndividuConjoint());
 
 				EnsembleTiersCouple ensembleTiersCouple = getService().getEnsembleTiersCouple(habitant, dateEvenement);
 				if (!ensembleTiersCouple.estComposeDe(habitant, conjoint)) {

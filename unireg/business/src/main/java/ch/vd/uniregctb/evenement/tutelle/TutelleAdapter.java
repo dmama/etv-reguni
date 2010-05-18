@@ -86,7 +86,7 @@ public class TutelleAdapter extends GenericEvenementAdapter implements Tutelle {
 		/*
 		 * Récupération de la tutelle.
 		 */
-		ch.vd.uniregctb.interfaces.model.Tutelle tutelle = serviceCivil.getTutelle(getIndividu().getNoTechnique(), anneeEvenement);
+		ch.vd.uniregctb.interfaces.model.Tutelle tutelle = serviceCivil.getTutelle(getNoIndividu(), anneeEvenement);
 
 		/*
 		 * Initialisation du type de tutelle.

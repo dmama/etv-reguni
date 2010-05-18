@@ -1,24 +1,23 @@
 package ch.vd.uniregctb.evenement;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
+import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
 
 import ch.vd.registre.base.date.RegDate;
@@ -89,14 +88,14 @@ public class EvenementCivilData extends HibernateEntity {
 	 *
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_LzhfwcTpEdyVT_nuj0a-ig"
 	 */
-	private PersonnePhysique habitantPrincipal;
+	private Long habitantPrincipalId;
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 *
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_lrMoYcTpEdyVT_nuj0a-ig"
 	 */
-	private PersonnePhysique habitantConjoint;
+	private Long habitantConjointId;
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -126,9 +125,9 @@ public class EvenementCivilData extends HibernateEntity {
 		this.etat = etat;
 		this.dateEvenement = dateEvenement;
 		this.numeroIndividuPrincipal = numeroIndividuPrincipal;
-		this.habitantPrincipal = individuPrincipal;
+		this.habitantPrincipalId = (individuPrincipal == null ? null : individuPrincipal.getId());
 		this.numeroIndividuConjoint = numeroIndividuConjoint;
-		this.habitantConjoint = conjoint;
+		this.habitantConjointId = (conjoint == null ? null : conjoint.getId());
 		this.numeroOfsCommuneAnnonce = numeroOfsCommuneAnnonce;
 		this.erreurs = erreurs;
 	}
@@ -266,23 +265,22 @@ public class EvenementCivilData extends HibernateEntity {
 	 * @return the individuPrincipal
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_LzhfwcTpEdyVT_nuj0a-ig?GETTER"
 	 */
-	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-	@JoinColumn(name = "HAB_PRINCIPAL")
+	@Column(name = "HAB_PRINCIPAL")
 	@ForeignKey(name = "FK_EV_RGR_TRS_PRC_ID")
-	public PersonnePhysique getHabitantPrincipal() {
+	public Long getHabitantPrincipalId() {
 		// begin-user-code
-		return habitantPrincipal;
+		return habitantPrincipalId;
 		// end-user-code
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @param theIndividuPrincipal the individuPrincipal to set
+	 * @param value the individuPrincipal to set
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_LzhfwcTpEdyVT_nuj0a-ig?SETTER"
 	 */
-	public void setHabitantPrincipal(PersonnePhysique theIndividuPrincipal) {
+	public void setHabitantPrincipalId(Long value) {
 		// begin-user-code
-		habitantPrincipal = theIndividuPrincipal;
+		habitantPrincipalId = value;
 		// end-user-code
 	}
 
@@ -291,23 +289,22 @@ public class EvenementCivilData extends HibernateEntity {
 	 * @return the conjoint
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_lrMoYcTpEdyVT_nuj0a-ig?GETTER"
 	 */
-	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-	@JoinColumn(name = "HAB_CONJOINT")
+	@Column(name = "HAB_CONJOINT")
 	@ForeignKey(name = "FK_EV_RGR_TRS_CJT_ID")
-	public PersonnePhysique getHabitantConjoint() {
+	public Long getHabitantConjointId() {
 		// begin-user-code
-		return habitantConjoint;
+		return habitantConjointId;
 		// end-user-code
 	}
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @param theConjoint the conjoint to set
+	 * @param value the conjoint to set
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_lrMoYcTpEdyVT_nuj0a-ig?SETTER"
 	 */
-	public void setHabitantConjoint(PersonnePhysique theConjoint) {
+	public void setHabitantConjointId(Long value) {
 		// begin-user-code
-		habitantConjoint = theConjoint;
+		habitantConjointId = value;
 		// end-user-code
 	}
 
@@ -344,6 +341,7 @@ public class EvenementCivilData extends HibernateEntity {
 	 */
 	@Column(name = "ETAT", length = LengthConstants.EVTCIVILREG_ETAT)
 	@Type(type = "ch.vd.uniregctb.hibernate.EtatEvenementCivilUserType")
+	@Index(name = "IDX_EV_CIV_ETAT")
 	public EtatEvenementCivil getEtat() {
 		// begin-user-code
 		return etat;
@@ -362,6 +360,7 @@ public class EvenementCivilData extends HibernateEntity {
 	}
 
 	@Column(name = "NO_INDIVIDU_PRINCIPAL")
+	@Index(name = "IDX_EV_CIV_NO_IND_PR")
 	public Long getNumeroIndividuPrincipal() {
 		return numeroIndividuPrincipal;
 	}

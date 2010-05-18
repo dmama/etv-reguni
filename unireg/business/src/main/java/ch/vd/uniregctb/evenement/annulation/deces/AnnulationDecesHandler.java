@@ -35,7 +35,7 @@ public class AnnulationDecesHandler extends EvenementCivilHandlerBase {
 		/*
 		 * Obtention du tiers correspondant à l'ancient defunt.
 		 */
-		PersonnePhysique defunt = getService().getPersonnePhysiqueByNumeroIndividu(annulation.getIndividu().getNoTechnique());
+		PersonnePhysique defunt = getService().getPersonnePhysiqueByNumeroIndividu(annulation.getNoIndividu());
 
 		/*
 		 * Deux cas de figure :
@@ -82,7 +82,7 @@ public class AnnulationDecesHandler extends EvenementCivilHandlerBase {
 		/*
 		 * Obtention du tiers correspondant a l'ancient defunt.
 		 */
-		PersonnePhysique defunt = getService().getPersonnePhysiqueByNumeroIndividu(annulation.getIndividu().getNoTechnique());
+		PersonnePhysique defunt = getService().getPersonnePhysiqueByNumeroIndividu(annulation.getNoIndividu());
 
 		getMetier().annuleDeces(defunt, annulation.getDate());
 		return null;

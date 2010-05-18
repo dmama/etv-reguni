@@ -88,6 +88,10 @@ create index IDX_ET_DI_DI_ID on ETAT_DECLARATION (DECLARATION_ID);
 
 alter table ETAT_DECLARATION add constraint FK_ET_DI_DI_ID foreign key (DECLARATION_ID) references DECLARATION;
 
+create index IDX_EV_CIV_ETAT on EVENEMENT_CIVIL (ETAT);
+
+create index IDX_EV_CIV_NO_IND_PR on EVENEMENT_CIVIL (NO_INDIVIDU_PRINCIPAL);
+
 alter table EVENEMENT_CIVIL add constraint FK_EV_RGR_TRS_PRC_ID foreign key (HAB_PRINCIPAL) references TIERS;
 
 alter table EVENEMENT_CIVIL add constraint FK_EV_RGR_TRS_CJT_ID foreign key (HAB_CONJOINT) references TIERS;

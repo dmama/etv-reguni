@@ -40,7 +40,7 @@ public class ChangementNomHandler extends AbstractChangementHandler {
 	@Transactional(propagation = Propagation.MANDATORY, rollbackFor = Throwable.class)
 	public Pair<PersonnePhysique,PersonnePhysique> handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
 
-		final long noIndividu = evenement.getIndividu().getNoTechnique();
+		final long noIndividu = evenement.getNoIndividu();
 
 		LOGGER.debug("Changement de nom de l'individu : " + noIndividu);
 		Audit.info(evenement.getNumeroEvenement(), "Changement de nom de l'individu : " + noIndividu);

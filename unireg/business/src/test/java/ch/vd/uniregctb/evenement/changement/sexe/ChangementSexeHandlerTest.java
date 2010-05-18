@@ -80,6 +80,7 @@ public class ChangementSexeHandlerTest  extends AbstractEvenementHandlerTest {
 		chgtSexe.setNumeroEvenement(1452L);
 		chgtSexe.setDate(RegDate.get());
 		chgtSexe.setNumeroOfsCommuneAnnonce(4848);
+		chgtSexe.init(tiersDAO);
 
 		List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 		List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();

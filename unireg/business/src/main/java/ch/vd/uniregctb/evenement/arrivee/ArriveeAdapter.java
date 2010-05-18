@@ -80,7 +80,7 @@ public class ArriveeAdapter extends EvenementAdapterAvecAdresses implements Arri
 		final RegDate veilleArrivee = evenementCivilData.getDateEvenement().getOneDayBefore();
 		final AdressesCiviles anciennesAdresses;
 		try {
-			anciennesAdresses = serviceCivil.getAdresses(super.getIndividu().getNoTechnique(), veilleArrivee, false);
+			anciennesAdresses = serviceCivil.getAdresses(super.getNoIndividu(), veilleArrivee, false);
 		}
 		catch (DonneesCivilesException e) {
 			throw new EvenementAdapterException(e);

@@ -348,9 +348,9 @@ public class MariageHandlerTest extends AbstractEvenementHandlerTest {
 		MockMariage mariage = new MockMariage();
 		mariage.setIndividu(individu);
 		mariage.setNouveauConjoint(conjoint);
-
 		mariage.setNumeroOfsCommuneAnnonce(5586);
-		mariage.setDate( dateMariage );
+		mariage.setDate(dateMariage);
+		mariage.init(tiersDAO);
 
 		return mariage;
 	}

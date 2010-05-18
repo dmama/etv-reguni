@@ -12,6 +12,7 @@ import ch.vd.fiscalite.registre.databaseEvent.DatabaseLoadEventDocument;
 import ch.vd.fiscalite.registre.databaseEvent.DatabaseTruncateEventDocument;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
+import ch.vd.technical.esb.EsbMessageImpl;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
 
 /**
@@ -143,7 +144,8 @@ public class DataEventJmsSender implements DataEventListener, InitializingBean {
 			throw new IllegalArgumentException("Type de tiers inconnu = [" + type + "]");
 		}
 
-		final EsbMessage m = esbMessageFactory.createMessage();
+		final EsbMessageImpl m = (EsbMessageImpl) esbMessageFactory.createMessage();
+		m.setValidator(null); // [UNIREG-2399] on ne veut pas valider les événements DB parce que ça prend 60% du temps d'insertion des événements civils
 		m.setBusinessId(String.valueOf(id));
 		m.setBusinessUser(businessUser);
 		m.setServiceDestination(serviceDestination);

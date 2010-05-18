@@ -93,8 +93,8 @@ public class ReconciliationHandler extends EvenementCivilHandlerBase {
 
 		final Reconciliation reconciliation = (Reconciliation) evenement;
 		try {
-			final PersonnePhysique contribuable = getPersonnePhysiqueOrThrowException(reconciliation.getIndividu().getNoTechnique());
-			final Individu individuConjoint = getServiceCivil().getConjoint(reconciliation.getIndividu().getNoTechnique(),reconciliation.getDate());
+			final PersonnePhysique contribuable = getPersonnePhysiqueOrThrowException(reconciliation.getNoIndividu());
+			final Individu individuConjoint = getServiceCivil().getConjoint(reconciliation.getNoIndividu(),reconciliation.getDate());
 			final PersonnePhysique conjoint = (individuConjoint == null) ? null : getPersonnePhysiqueOrThrowException(individuConjoint.getNoTechnique());
 
 			getMetier().reconcilie(contribuable, conjoint, reconciliation.getDateReconciliation(), null, false, reconciliation.getNumeroEvenement());

@@ -36,7 +36,7 @@ public class LeveeTutelleHandler extends AbstractTutelleHandler {
 		/*
 		 * Récupération du tiers habitant correspondant au pupille
 		 */
-		long numeroIndividu = leveeTutelle.getIndividu().getNoTechnique();
+		long numeroIndividu = leveeTutelle.getNoIndividu();
 		PersonnePhysique pupille = getPersonnePhysiqueOrThrowException(numeroIndividu);
 		
 		RapportEntreTiers rapportEntreTiers = getRapportTutelleOuvert(pupille, leveeTutelle.getDate());

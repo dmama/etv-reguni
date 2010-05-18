@@ -126,7 +126,7 @@ public class DemenagementHandlerTest extends AbstractEvenementHandlerTest {
 
 		assertEmpty("Une erreur est survenue lors du traitement de déménagement", erreurs);
 
-		PersonnePhysique sophie = tiersDAO.getHabitantByNumeroIndividu(demenagement.getIndividu().getNoTechnique());
+		PersonnePhysique sophie = tiersDAO.getHabitantByNumeroIndividu(demenagement.getNoIndividu());
 		assertNotNull(sophie);
 		assertEquals("Sophie doit avoir deux fors fiscaux", 2, sophie.getForsFiscaux().size());
 		assertNotNull("Sophie devrait encore avoir un for principal actif après le déménagement", sophie.getForFiscalPrincipalAt(null));
@@ -150,7 +150,7 @@ public class DemenagementHandlerTest extends AbstractEvenementHandlerTest {
 
 		assertEmpty("Une erreur est survenue lors du traitement de déménagement", erreurs);
 
-		PersonnePhysique sophie = tiersDAO.getHabitantByNumeroIndividu(demenagement.getIndividu().getNoTechnique());
+		PersonnePhysique sophie = tiersDAO.getHabitantByNumeroIndividu(demenagement.getNoIndividu());
 		assertTrue(sophie != null);
 		assertEquals("Sophie doit avoir deux fors fiscaux", 2, sophie.getForsFiscaux().size());
 		assertNotNull("Sophie devrait encore avoir un for principal actif après le déménagement", sophie.getForFiscalPrincipalAt(null));
@@ -173,7 +173,7 @@ public class DemenagementHandlerTest extends AbstractEvenementHandlerTest {
 
 		assertEmpty("Une erreur est survenue lors du traitement de déménagement", erreurs);
 
-		PersonnePhysique pierre = tiersDAO.getHabitantByNumeroIndividu(demenagement.getIndividu().getNoTechnique());
+		PersonnePhysique pierre = tiersDAO.getHabitantByNumeroIndividu(demenagement.getNoIndividu());
 		assertNotNull(pierre);
 		assertEquals("Pierre ne doit pas posséder de fors fiscaux", 0, pierre.getForsFiscaux().size());
 		assertNull("Pierre ne devrait pas avoir un for principal actif", pierre.getForFiscalPrincipalAt(null));
@@ -203,6 +203,8 @@ public class DemenagementHandlerTest extends AbstractEvenementHandlerTest {
 		MockDemenagement demenagement = createValidDemenagement(individu, DATE_VALIDE);
 		//conjoint
 		demenagement.setConjoint(individu2);
+		demenagement.init(tiersDAO);
+		
 		List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 		List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
 
@@ -212,7 +214,7 @@ public class DemenagementHandlerTest extends AbstractEvenementHandlerTest {
 
 		assertEmpty("Une erreur est survenue lors du traitement de déménagement", erreurs);
 
-		PersonnePhysique momo = tiersDAO.getHabitantByNumeroIndividu(demenagement.getIndividu().getNoTechnique());
+		PersonnePhysique momo = tiersDAO.getHabitantByNumeroIndividu(demenagement.getNoIndividu());
 		assertNotNull(momo);
 		assertEquals("Maurice ne doit pas posséder de fors fiscaux", 0, momo.getForsFiscaux().size());
 		assertNull("Maurice ne devrait pas avoir un for principal actif", momo.getForFiscalPrincipalAt(null));
@@ -244,7 +246,7 @@ public class DemenagementHandlerTest extends AbstractEvenementHandlerTest {
 
 		int tachesAvant;
 		{
-			PersonnePhysique sophie = tiersDAO.getHabitantByNumeroIndividu(demenagement.getIndividu().getNoTechnique());
+			PersonnePhysique sophie = tiersDAO.getHabitantByNumeroIndividu(demenagement.getNoIndividu());
 			assertNotNull(sophie);
 			tachesAvant = tacheDAO.count(sophie.getNumero());
 		}
@@ -254,7 +256,7 @@ public class DemenagementHandlerTest extends AbstractEvenementHandlerTest {
 
 		assertEmpty("Une erreur est survenue lors du traitement de déménagement", erreurs);
 
-		PersonnePhysique sophie = tiersDAO.getHabitantByNumeroIndividu(demenagement.getIndividu().getNoTechnique());
+		PersonnePhysique sophie = tiersDAO.getHabitantByNumeroIndividu(demenagement.getNoIndividu());
 		assertNotNull(sophie);
 		assertEquals("Sophie doit avoir deux fors fiscaux", 2, sophie.getForsFiscaux().size());
 		assertNotNull("Sophie devrait encore avoir un for principal actif après le déménagement", sophie.getForFiscalPrincipalAt(null));
@@ -276,7 +278,7 @@ public class DemenagementHandlerTest extends AbstractEvenementHandlerTest {
 
 		int tachesAvant;
 		{
-			PersonnePhysique sophie = tiersDAO.getHabitantByNumeroIndividu(demenagement.getIndividu().getNoTechnique());
+			PersonnePhysique sophie = tiersDAO.getHabitantByNumeroIndividu(demenagement.getNoIndividu());
 			assertNotNull(sophie);
 			tachesAvant = tacheDAO.count(sophie.getNumero());
 		}
@@ -286,7 +288,7 @@ public class DemenagementHandlerTest extends AbstractEvenementHandlerTest {
 
 		assertEmpty("Une erreur est survenue lors du traitement de déménagement", erreurs);
 
-		PersonnePhysique sophie = tiersDAO.getHabitantByNumeroIndividu(demenagement.getIndividu().getNoTechnique());
+		PersonnePhysique sophie = tiersDAO.getHabitantByNumeroIndividu(demenagement.getNoIndividu());
 		assertNotNull(sophie);
 		assertEquals("Sophie doit avoir deux fors fiscaux", 2, sophie.getForsFiscaux().size());
 		assertNotNull("Sophie devrait encore avoir un for principal actif après le déménagement", sophie.getForFiscalPrincipalAt(null));
@@ -336,8 +338,9 @@ public class DemenagementHandlerTest extends AbstractEvenementHandlerTest {
 
 		demenagement.setNumeroOfsCommuneAnnonce(commune.getNoOFSEtendu());
 		demenagement.setDate(dateEvenement);
-
 		demenagement.setNumeroEvenement(12345L);
+		demenagement.init(tiersDAO);
+		
 		return demenagement;
 	}
 

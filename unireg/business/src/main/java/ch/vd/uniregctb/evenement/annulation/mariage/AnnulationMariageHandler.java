@@ -43,7 +43,7 @@ public class AnnulationMariageHandler extends EvenementCivilHandlerBase {
 
 		final ServiceCivilService serviceCivil = getService().getServiceCivilService();
 
-		final EtatCivil ec = serviceCivil.getEtatCivilActif(annulation.getIndividu().getNoTechnique(), annulation.getDate());
+		final EtatCivil ec = serviceCivil.getEtatCivilActif(annulation.getNoIndividu(), annulation.getDate());
 		if (EtatCivilHelper.estMarieOuPacse(ec)) {
 			erreurs.add(new EvenementCivilErreur("L'individu est toujours marié ou pacsé dans le civil"));
 		}
@@ -54,7 +54,7 @@ public class AnnulationMariageHandler extends EvenementCivilHandlerBase {
 		// Cas d'annulation de mariage
 		final AnnulationMariage annulation = (AnnulationMariage) evenement;
 		// Obtention du tiers correspondant au conjoint principal.
-		final PersonnePhysique principal = getService().getPersonnePhysiqueByNumeroIndividu(annulation.getIndividu().getNoTechnique());
+		final PersonnePhysique principal = getService().getPersonnePhysiqueByNumeroIndividu(annulation.getNoIndividu());
 
 		// Récupération de l'ensemble tiers couple
 		final EnsembleTiersCouple menageComplet = getService().getEnsembleTiersCouple(principal, annulation.getDate());

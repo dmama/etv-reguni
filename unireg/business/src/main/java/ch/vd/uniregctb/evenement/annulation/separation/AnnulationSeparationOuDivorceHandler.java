@@ -17,7 +17,7 @@ public abstract class AnnulationSeparationOuDivorceHandler extends EvenementCivi
 	@Override
 	protected void validateSpecific(EvenementCivil target, List<EvenementCivilErreur> erreurs, List<EvenementCivilErreur> warnings) {
 		// Obtention du tiers correspondant au conjoint principal.
-		PersonnePhysique principal = getService().getPersonnePhysiqueByNumeroIndividu(target.getIndividu().getNoTechnique());
+		PersonnePhysique principal = getService().getPersonnePhysiqueByNumeroIndividu(target.getNoIndividu());
 		// Récupération de l'ensemble tiers couple
 		EnsembleTiersCouple menageComplet = getService().getEnsembleTiersCouple(principal, target.getDate().getOneDayBefore());
 		// Récupération du tiers MenageCommun
@@ -30,7 +30,7 @@ public abstract class AnnulationSeparationOuDivorceHandler extends EvenementCivi
 			throw new EvenementCivilHandlerException("Le tiers ménage commun n'a pu être trouvé");
 		}
 		PersonnePhysique conjoint = null;
-		final Individu individuConjoint = getServiceCivil().getConjoint(target.getIndividu().getNoTechnique(), target.getDate());
+		final Individu individuConjoint = getServiceCivil().getConjoint(target.getNoIndividu(), target.getDate());
 		if (individuConjoint != null) {
 			// Obtention du tiers correspondant au conjoint.
 			conjoint = getService().getPersonnePhysiqueByNumeroIndividu(individuConjoint.getNoTechnique());
@@ -44,7 +44,7 @@ public abstract class AnnulationSeparationOuDivorceHandler extends EvenementCivi
 	@Override
 	public Pair<PersonnePhysique,PersonnePhysique> handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
 		// Récupération du tiers principal.
-		PersonnePhysique principal = getService().getPersonnePhysiqueByNumeroIndividu(evenement.getIndividu().getNoTechnique());
+		PersonnePhysique principal = getService().getPersonnePhysiqueByNumeroIndividu(evenement.getNoIndividu());
 		// Récupération du menage du tiers
 		MenageCommun menage = getService().getEnsembleTiersCouple(principal, evenement.getDate().getOneDayBefore()).getMenage();
 		// Traitement de l'annulation de séparation

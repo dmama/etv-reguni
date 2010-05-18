@@ -72,7 +72,7 @@ public class ModificationAdresseNotificationHandler extends AbstractChangementHa
 	@Transactional(propagation = Propagation.MANDATORY, rollbackFor = Throwable.class)
 	public Pair<PersonnePhysique,PersonnePhysique> handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
 
-		final long noIndividu = evenement.getIndividu().getNoTechnique();
+		final long noIndividu = evenement.getNoIndividu();
 		Audit.info(evenement.getNumeroEvenement(), String.format("%s de l'individu : %d", evenement.getType().getDescription(), noIndividu));
 
 		final PersonnePhysique pp = getService().getPersonnePhysiqueByNumeroIndividu(noIndividu);
