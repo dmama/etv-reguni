@@ -64,7 +64,7 @@ public class VeuvageHandler extends EvenementCivilHandlerBase {
 		/*
 		 * Obtention du tiers correspondant au veuf.
 		 */
-		PersonnePhysique veuf = getService().getPersonnePhysiqueByNumeroIndividu(veuvage.getIndividu().getNoTechnique());
+		PersonnePhysique veuf = getService().getPersonnePhysiqueByNumeroIndividu(veuvage.getNoIndividu());
 
 		/*
 		 * Traitement de l'événement

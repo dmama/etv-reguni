@@ -167,7 +167,7 @@ public abstract class SeparationOuDivorceHandler extends EvenementCivilHandlerBa
 	@Override
 	public Pair<PersonnePhysique,PersonnePhysique> handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
 
-		long numeroIndividu = evenement.getIndividu().getNoTechnique();
+		long numeroIndividu = evenement.getNoIndividu();
 		RegDate dateEvenement = evenement.getDate();
 
 		// Récupération de l'état civil de l'individu
@@ -186,7 +186,7 @@ public abstract class SeparationOuDivorceHandler extends EvenementCivilHandlerBa
 	private void handleSeparation(EvenementCivil evenement, List<EvenementCivilErreur> warnings) {
 
 		// Obtention du premier tiers.
-		final PersonnePhysique principal = getService().getPersonnePhysiqueByNumeroIndividu(evenement.getIndividu().getNoTechnique());
+		final PersonnePhysique principal = getService().getPersonnePhysiqueByNumeroIndividu(evenement.getNoIndividu());
 
 		final RegDate dateEvt = evenement.getDate();
 

@@ -36,8 +36,8 @@ public class CorrectionOrigineHandler extends AbstractChangementHandler {
 	@Transactional(propagation = Propagation.MANDATORY, rollbackFor = Throwable.class)
 	public Pair<PersonnePhysique,PersonnePhysique> handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
 
-		LOGGER.debug("Traitement correction de origine de l'individu : " + evenement.getIndividu().getNoTechnique() );
-		Audit.info(evenement.getNumeroEvenement(), "Traitement correction de origine de l'individu : " + evenement.getIndividu().getNoTechnique());
+		LOGGER.debug("Traitement correction de origine de l'individu : " + evenement.getNoIndividu() );
+		Audit.info(evenement.getNumeroEvenement(), "Traitement correction de origine de l'individu : " + evenement.getNoIndividu());
 
 		return super.handle(evenement, warnings);
 	}

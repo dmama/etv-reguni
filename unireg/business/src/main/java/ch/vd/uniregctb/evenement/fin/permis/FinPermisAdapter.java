@@ -33,7 +33,7 @@ public class FinPermisAdapter extends GenericEvenementAdapter implements FinPerm
 		try {
 			// on récupère le permis à partir de sa date de fin (= à la date d'événement)
 			final int anneeCourante = evenementCivilData.getDateEvenement().year();
-			final Collection<Permis> listePermis = serviceCivil.getPermis(super.getIndividu().getNoTechnique(), anneeCourante);
+			final Collection<Permis> listePermis = serviceCivil.getPermis(super.getNoIndividu(), anneeCourante);
 			if (listePermis == null) {
 				throw new EvenementAdapterException("Le permis n'a pas été trouvé dans le registre civil");
 			}

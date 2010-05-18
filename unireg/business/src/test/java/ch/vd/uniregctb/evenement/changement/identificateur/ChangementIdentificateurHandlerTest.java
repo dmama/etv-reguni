@@ -80,6 +80,7 @@ public class ChangementIdentificateurHandlerTest  extends AbstractEvenementHandl
 		chgtIdentificateur.setNumeroEvenement(1452L);
 		chgtIdentificateur.setDate(RegDate.get());
 		chgtIdentificateur.setNumeroOfsCommuneAnnonce(4848);
+		chgtIdentificateur.init(tiersDAO);
 
 		List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 		List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();

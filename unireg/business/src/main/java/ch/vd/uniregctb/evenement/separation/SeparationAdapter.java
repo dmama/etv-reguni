@@ -36,7 +36,7 @@ public class SeparationAdapter extends GenericEvenementAdapter implements Separa
 		 * Récupération des informations sur le conjoint de l'individu depuis le host.
 		 */
 		EnumAttributeIndividu[] attributs = { EnumAttributeIndividu.CONJOINT };
-		final long noIndividu = getIndividu().getNoTechnique();
+		final long noIndividu = getNoIndividu();
 		Individu individuPrincipal = serviceCivil.getIndividu(noIndividu, anneeEvenement, attributs);
 		this.ancienConjoint = serviceCivil.getConjoint(individuPrincipal.getNoTechnique(),getDate().getOneDayBefore());
 		

@@ -182,7 +182,7 @@ public class ArriveeHandlerTest extends AbstractEvenementHandlerTest {
 
 		Assert.isTrue(erreurs.isEmpty(), "Une erreur est survenue lors du traitement de l'arrivée");
 
-		PersonnePhysique tiers = tiersDAO.getHabitantByNumeroIndividu(arrivee.getIndividu().getNoTechnique());
+		PersonnePhysique tiers = tiersDAO.getHabitantByNumeroIndividu(arrivee.getNoIndividu());
 		assertTrue(tiers != null);
 
 		Set<AdresseTiers> adresses = tiers.getAdressesTiers();

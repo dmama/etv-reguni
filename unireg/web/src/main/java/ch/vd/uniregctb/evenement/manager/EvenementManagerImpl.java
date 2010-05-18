@@ -259,8 +259,8 @@ public class EvenementManagerImpl implements EvenementManager, MessageSourceAwar
 	}
 
 	private EvenementCivilView buildView(EvenementCivilData evt) throws AdresseException {
-		final EvenementCivilView evtView = new EvenementCivilView(evt);
-		final PersonnePhysique habitantPrincipal = evt.getHabitantPrincipal();
+		final EvenementCivilView evtView = new EvenementCivilView(evt, tiersDAO);
+		final PersonnePhysique habitantPrincipal = evtView.getHabitantPrincipal();
 		try {
 			if (habitantPrincipal != null) {
 				final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(habitantPrincipal, null);

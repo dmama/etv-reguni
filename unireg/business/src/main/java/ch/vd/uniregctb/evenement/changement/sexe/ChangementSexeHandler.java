@@ -32,7 +32,7 @@ public class ChangementSexeHandler extends AbstractChangementHandler {
 	@Transactional(propagation = Propagation.MANDATORY, rollbackFor = Throwable.class)
 	public Pair<PersonnePhysique,PersonnePhysique> handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
 
-		final long noIndividu = evenement.getIndividu().getNoTechnique();
+		final long noIndividu = evenement.getNoIndividu();
 
 		LOGGER.debug("Traitement du changement de sexe de l'individu : " + noIndividu);
 		Audit.info(evenement.getNumeroEvenement(), "Traitement du changement de sexe de l'individu : " + noIndividu);

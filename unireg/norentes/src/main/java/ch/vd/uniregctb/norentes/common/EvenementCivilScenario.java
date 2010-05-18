@@ -8,7 +8,6 @@ import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.evenement.engine.EvenementCivilProcessor;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.SituationFamille;
 import ch.vd.uniregctb.tiers.TacheDAO;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -60,10 +59,10 @@ public abstract class EvenementCivilScenario extends EvenementScenario {
 		evt.setDateEvenement(date);
 		evt.setEtat(EtatEvenementCivil.A_TRAITER);
 		evt.setNumeroIndividuPrincipal(numeroIndividuPrincipal);
-		evt.setHabitantPrincipal(tiersDAO.getPPByNumeroIndividu(numeroIndividuPrincipal));
+		evt.setHabitantPrincipalId(tiersDAO.getNumeroPPByNumeroIndividu(numeroIndividuPrincipal, true));
 		if (numeroIndividuConjoint != null) {
 			evt.setNumeroIndividuConjoint(numeroIndividuConjoint);
-			evt.setHabitantConjoint(tiersDAO.getPPByNumeroIndividu(numeroIndividuConjoint));
+			evt.setHabitantConjointId(tiersDAO.getNumeroPPByNumeroIndividu(numeroIndividuConjoint, true));
 		}
 		evt.setType(type);
 		evt.setNumeroOfsCommuneAnnonce(ofs);
@@ -81,16 +80,16 @@ public abstract class EvenementCivilScenario extends EvenementScenario {
 
 		EvenementCivilData evt = null;
 		for (EvenementCivilData e : list) {
-			PersonnePhysique h1 = e.getHabitantPrincipal();
+			Long h1 = e.getHabitantPrincipalId();
 			if (h1 != null) {
-				if (h1.getNumero().equals(id)) {
+				if (h1.equals(id)) {
 					evt = e;
 					break;
 				}
 			}
-			PersonnePhysique h2 = e.getHabitantConjoint();
+			Long h2 = e.getHabitantConjointId();
 			if (h2 != null) {
-				if (h2.getNumero().equals(id)) {
+				if (h2.equals(id)) {
 					evt = e;
 					break;
 				}

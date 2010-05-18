@@ -286,44 +286,45 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 		});
 	}
 
-	@NotTransactional
-	@Test
-	public void testEvenementsIndividuConjointDifferentQueDansEvenement() throws Exception {
-
-		final long noInd2 = 34567L;
-		final long noInd1 = 78912L;
-		doInNewTransaction(new TxCallback() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique hab1 = new PersonnePhysique(true);
-				hab1.setNumeroIndividu(noInd1);
-				tiersDAO.save(hab1);
-
-				final PersonnePhysique hab2 = new PersonnePhysique(true);
-				hab2.setNumeroIndividu(noInd2);
-				tiersDAO.save(hab2);
-				return null;
-			}
-		});
-
-		saveEvenement(120L, TypeEvenementCivil.EVENEMENT_TESTING, RegDate.get(2007, 10, 25), noInd1, noInd2, 5402);
-
-		traiteEvenements();
-
-		doInTransaction(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
-
-				// Test de l'état des événements;
-				List<EvenementCivilData> list = evenementCivilDAO.getAll();
-				assertEquals(1, list.size());
-				EvenementCivilData e = list.get(0);
-				assertEvtState(EtatEvenementCivil.EN_ERREUR, e);
-				assertErreurs(1, e);
-
-				return null;
-			}
-		});
-	}
+// TODO (msi) : supprimer une fois pour toute ce test lorsque les informations de conjoint auront été supprimées des événements civils
+//	@NotTransactional
+//	@Test
+//	public void testEvenementsIndividuConjointDifferentQueDansEvenement() throws Exception {
+//
+//		final long noInd2 = 34567L;
+//		final long noInd1 = 78912L;
+//		doInNewTransaction(new TxCallback() {
+//			@Override
+//			public Object execute(TransactionStatus status) throws Exception {
+//				final PersonnePhysique hab1 = new PersonnePhysique(true);
+//				hab1.setNumeroIndividu(noInd1);
+//				tiersDAO.save(hab1);
+//
+//				final PersonnePhysique hab2 = new PersonnePhysique(true);
+//				hab2.setNumeroIndividu(noInd2);
+//				tiersDAO.save(hab2);
+//				return null;
+//			}
+//		});
+//
+//		saveEvenement(120L, TypeEvenementCivil.EVENEMENT_TESTING, RegDate.get(2007, 10, 25), noInd1, noInd2, 5402);
+//
+//		traiteEvenements();
+//
+//		doInTransaction(new TransactionCallback() {
+//			public Object doInTransaction(TransactionStatus status) {
+//
+//				// Test de l'état des événements;
+//				List<EvenementCivilData> list = evenementCivilDAO.getAll();
+//				assertEquals(1, list.size());
+//				EvenementCivilData e = list.get(0);
+//				assertEvtState(EtatEvenementCivil.EN_ERREUR, e);
+//				assertErreurs(1, e);
+//
+//				return null;
+//			}
+//		});
+//	}
 
 	@NotTransactional
 	@Test
@@ -535,8 +536,14 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 				evt.setType(type);
 				evt.setDateEvenement(date);
 				evt.setEtat(EtatEvenementCivil.A_TRAITER);
-				evt.setNumeroIndividuPrincipal(indPri);
-				evt.setNumeroIndividuConjoint(indSec);
+				if (indPri != null) {
+					evt.setNumeroIndividuPrincipal(indPri);
+					evt.setHabitantPrincipalId(tiersDAO.getNumeroPPByNumeroIndividu(indPri, true));
+				}
+				if (indSec != null) {
+					evt.setNumeroIndividuConjoint(indSec);
+					evt.setHabitantConjointId(tiersDAO.getNumeroPPByNumeroIndividu(indSec, true));
+				}
 				evt.setNumeroOfsCommuneAnnonce(ofs);
 				evt = evenementCivilDAO.save(evt);
 				return evt;

@@ -61,7 +61,7 @@ public class NaissanceHandler extends EvenementCivilHandlerBase {
 	 */
 	@Override
 	public Pair<PersonnePhysique,PersonnePhysique> handle(EvenementCivil evenementCivil, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
-		LOGGER.debug("Traitement de la naissance de l'individu : " + evenementCivil.getIndividu().getNoTechnique() );
+		LOGGER.debug("Traitement de la naissance de l'individu : " + evenementCivil.getNoIndividu() );
 
 		try {
 			/*

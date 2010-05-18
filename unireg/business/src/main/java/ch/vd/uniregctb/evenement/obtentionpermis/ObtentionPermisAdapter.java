@@ -44,7 +44,7 @@ public class ObtentionPermisAdapter extends EvenementAdapterAvecAdresses impleme
 		try {
 			// on récupère le permis (= à la date d'événement)
 			final int anneeCourante = evenementCivilData.getDateEvenement().year();
-			final Collection<Permis> listePermis = serviceCivil.getPermis(super.getIndividu().getNoTechnique(), anneeCourante);
+			final Collection<Permis> listePermis = serviceCivil.getPermis(super.getNoIndividu(), anneeCourante);
 			if (listePermis == null) {
 				throw new EvenementAdapterException("Aucun permis trouvé dans le registre civil");
 			}

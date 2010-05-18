@@ -100,6 +100,7 @@ public class ChangementNomHandlerTest extends AbstractEvenementHandlerTest {
 				chgtNom.setNumeroEvenement(1452L);
 				chgtNom.setDate(RegDate.get());
 				chgtNom.setNumeroOfsCommuneAnnonce(4848);
+				chgtNom.init(tiersDAO);
 
 				List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 				List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
@@ -199,6 +200,7 @@ public class ChangementNomHandlerTest extends AbstractEvenementHandlerTest {
 				chgtNom.setNumeroEvenement(1453L);
 				chgtNom.setDate(RegDate.get());
 				chgtNom.setNumeroOfsCommuneAnnonce(4848);
+				chgtNom.init(tiersDAO);
 
 				List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 				List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();

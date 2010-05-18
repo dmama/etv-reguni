@@ -184,6 +184,7 @@ public class CorrectionDateNaissanceHandlerTest extends AbstractEvenementHandler
 		correctionDateNaissane.setDate(dateNaissanceCorrigee);
 		correctionDateNaissane.setType(TypeEvenementCivil.CORREC_DATE_NAISSANCE);
 		correctionDateNaissane.setNumeroOfsCommuneAnnonce(5652);
+		correctionDateNaissane.init(tiersDAO);
 
 		return correctionDateNaissane;
 	}

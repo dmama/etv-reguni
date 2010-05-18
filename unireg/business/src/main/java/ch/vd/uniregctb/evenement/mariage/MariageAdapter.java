@@ -44,7 +44,7 @@ public class MariageAdapter extends GenericEvenementAdapter implements Mariage {
 		 * getIndividu().getConjoint() peut être null si mariage le 01.01
 		 */
 		EnumAttributeIndividu[] attributs = { EnumAttributeIndividu.CONJOINT };
-		final long noIndividu = getIndividu().getNoTechnique();
+		final long noIndividu = getNoIndividu();
 		Individu individuPrincipal = serviceCivil.getIndividu(noIndividu, anneeEvenement, attributs);
 		this.nouveauConjoint = getConjointValide(individuPrincipal,serviceCivil);
 		//this.nouveauConjoint = individuPrincipal.getConjoint();

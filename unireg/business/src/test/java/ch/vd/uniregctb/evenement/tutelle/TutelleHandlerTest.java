@@ -201,10 +201,10 @@ public class TutelleHandlerTest extends AbstractEvenementHandlerTest {
 		tutelle.setIndividu(pupille);
 		tutelle.setNumeroOfsCommuneAnnonce(4848);
 		tutelle.setDate(DATE_TUTELLE);
-
 		tutelle.setTypeTutelle(TypeTutelle.TUTELLE);
 		tutelle.setTuteur(tuteur);
 		tutelle.setTuteurGeneral(tuteurGeneral);
+		tutelle.init(tiersDAO);
 		return tutelle;
 	}
 

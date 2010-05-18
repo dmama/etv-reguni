@@ -31,7 +31,6 @@ public class GenericEvenementAdapterTest extends WithoutSpringTest {
 		 */
 		final long noIndividuPrincipal = 1;
 		final long noIndividuConjoint = 2;
-		final Map<String, MockIndividu> map = new HashMap<String, MockIndividu>();
 
 		final ServiceInfrastructureService infrastructureService = new DefaultMockServiceInfrastructureService();
 		final ServiceCivilService serviceCivil = new MockServiceCivil() {
@@ -39,8 +38,6 @@ public class GenericEvenementAdapterTest extends WithoutSpringTest {
 			protected void init() {
 				MockIndividu pierre = addIndividu(noIndividuPrincipal, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
 				MockIndividu julie = addIndividu(noIndividuConjoint, RegDate.get(1957, 4, 19), "Goux", "Julie", false);
-				map.put("pierre", pierre);
-				map.put("julie", julie);
 
 				final RegDate dateArrivee = RegDate.get(1980, 1, 1);	// sans importance
 				addAdresse(pierre, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateArrivee, null);
@@ -73,10 +70,10 @@ public class GenericEvenementAdapterTest extends WithoutSpringTest {
 		 * Test de la méthode init dans ce cas
 		 */
 		assertEquals(TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, adapter.getType());
-		assertNotNull(adapter.getIndividu());
-		assertEquals(map.get("pierre"), adapter.getIndividu());
-		assertNotNull(adapter.getConjoint());
-		assertEquals(map.get("julie"), adapter.getConjoint());
+		assertNotNull(adapter.getNoIndividu());
+		assertEquals(noIndividuPrincipal, adapter.getNoIndividu().longValue());
+		assertNotNull(adapter.getNoIndividuConjoint());
+		assertEquals(noIndividuConjoint, adapter.getNoIndividuConjoint().longValue());
 		assertEquals(dateEvenement, adapter.getDate());
 		assertNotNull(adapter.getNumeroOfsCommuneAnnonce());
 		assertEquals(MockCommune.Lausanne.getNoOFSEtendu(), adapter.getNumeroOfsCommuneAnnonce().intValue());

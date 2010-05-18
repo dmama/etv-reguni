@@ -64,7 +64,9 @@
 		<property name="sources">
 			<list>
 				<value>classpath:xsd/civil/**/*.xsd</value>
-				<value>classpath:xsd/database/**/*.xsd</value>
+				<!-- on ne veut pas valider les événements DB parce que ça prend 60% du temps d'insertion du événement civil
+				 	<value>classpath:xsd/database/**/*.xsd</value>
+				 -->
 				<value>classpath:xsd/editique/**/*.xsd</value>
 				<value>classpath:xsd/fiscal/evenementFiscalMaster-v1.xsd</value>
 				<value>classpath:xsd/fiscal/evenementImpotSource-v1.xsd</value>

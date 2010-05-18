@@ -589,7 +589,7 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 		MockDepart depart = createValidDepart(NUMERO_INDIVIDU_SEUL, DATE_EVENEMENT, true);
 
 		ForFiscalPrincipal forFiscalPrincipal = handleDepart(depart);
-		PersonnePhysique tiers = tiersDAO.getPPByNumeroIndividu(depart.getIndividu().getNoTechnique());
+		PersonnePhysique tiers = tiersDAO.getPPByNumeroIndividu(depart.getNoIndividu());
 		ForFiscalPrincipal forFiscalPrincipalFerme = tiers.getForFiscalPrincipalAt(depart.getDate());
 
 		Assert.assertTrue("Pas de nouveau for fiscal ouvert", forFiscalPrincipal.getDateDebut() == depart.getDate().getOneDayAfter());
@@ -613,7 +613,7 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 		MockDepart depart = createValidDepart(NO_IND_PAUL, DATE_EVENEMENT, true);
 
 		ForFiscalPrincipal forFiscalPrincipal = handleDepart(depart);
-		PersonnePhysique tiers = tiersDAO.getPPByNumeroIndividu(depart.getIndividu().getNoTechnique());
+		PersonnePhysique tiers = tiersDAO.getPPByNumeroIndividu(depart.getNoIndividu());
 		ForFiscalPrincipal forFiscalPrincipalFerme = tiers.getForFiscalPrincipalAt(depart.getDate());
 
 		Assert.assertTrue("Pas de nouveau for fiscal ouvert", forFiscalPrincipal.getDateDebut() == depart.getDate().getOneDayAfter());
@@ -645,7 +645,7 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 
 		ForFiscalPrincipal forFiscalPrincipal = handleDepart(depart);
 
-		PersonnePhysique tiers = tiersDAO.getPPByNumeroIndividu(depart.getIndividu().getNoTechnique());
+		PersonnePhysique tiers = tiersDAO.getPPByNumeroIndividu(depart.getNoIndividu());
 		ForFiscalPrincipal forFiscalPrincipalFerme = tiers.getForFiscalPrincipalAt(depart.getDate());
 		Assert.assertEquals(MotifFor.DEPART_HC, forFiscalPrincipalFerme.getMotifFermeture());
 
@@ -672,7 +672,7 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 
 		final ForFiscalPrincipal forFiscalPrincipal = handleDepart(depart);
 
-		final PersonnePhysique tiers = tiersDAO.getPPByNumeroIndividu(depart.getIndividu().getNoTechnique());
+		final PersonnePhysique tiers = tiersDAO.getPPByNumeroIndividu(depart.getNoIndividu());
 		ForFiscalPrincipal forFiscalPrincipalFerme = tiers.getForFiscalPrincipalAt(depart.getDate());
 		Assert.assertEquals(MotifFor.DEMENAGEMENT_VD, forFiscalPrincipalFerme.getMotifFermeture());
 
@@ -733,7 +733,7 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 		ForFiscalPrincipal forFiscalPrincipal = handleDepart(depart);
 		Assert.assertNotNull(forFiscalPrincipal);
 
-		PersonnePhysique tiers = tiersDAO.getPPByNumeroIndividu(depart.getIndividu().getNoTechnique());
+		PersonnePhysique tiers = tiersDAO.getPPByNumeroIndividu(depart.getNoIndividu());
 		ForFiscalPrincipal forFiscalPrincipalFerme = tiers.getForFiscalPrincipalAt(depart.getDate());
 
 		RegDate dateAttendu = depart.getDate().getLastDayOfTheMonth();
@@ -755,7 +755,7 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 		Assert.assertNotNull(forFiscalPrincipal);
 		RegDate dateAttendu = RegDate.get(2008, 6, 30);
 
-		PersonnePhysique tiers = tiersDAO.getPPByNumeroIndividu(depart.getIndividu().getNoTechnique());
+		PersonnePhysique tiers = tiersDAO.getPPByNumeroIndividu(depart.getNoIndividu());
 		ForFiscalPrincipal forFiscalPrincipalFerme = tiers.getForFiscalPrincipalAt(dateAttendu);
 
 		Assert.assertTrue("La date de fermeture est incorrect:" + forFiscalPrincipalFerme.getDateFin() + " " + dateAttendu, forFiscalPrincipalFerme.getDateFin().equals(dateAttendu));
@@ -777,7 +777,7 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 		ForFiscalPrincipal forFiscalPrincipal = handleDepart(depart);
 		Assert.assertNotNull(forFiscalPrincipal);
 
-		PersonnePhysique tiers = tiersDAO.getPPByNumeroIndividu(depart.getIndividu().getNoTechnique());
+		PersonnePhysique tiers = tiersDAO.getPPByNumeroIndividu(depart.getNoIndividu());
 		ForFiscalPrincipal forFiscalPrincipalFerme = tiers.getForFiscalPrincipalAt(dateAttendu);
 
 		Assert.assertTrue("La date de fermeture est incorrect:" + forFiscalPrincipalFerme.getDateFin() + "" + dateAttendu, forFiscalPrincipalFerme.getDateFin().equals(dateAttendu));
@@ -800,7 +800,7 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 
 		Assert.assertTrue("Une erreur est survenue lors du traitement du départ", erreurs.isEmpty());
 
-		PersonnePhysique tiers = tiersDAO.getPPByNumeroIndividu(depart.getIndividu().getNoTechnique());
+		PersonnePhysique tiers = tiersDAO.getPPByNumeroIndividu(depart.getNoIndividu());
 		Assert.assertNotNull(tiers);
 
 		ForFiscalPrincipal forFiscalPrincipal = tiers.getForFiscalPrincipalAt(depart.getDate().getOneDayAfter());

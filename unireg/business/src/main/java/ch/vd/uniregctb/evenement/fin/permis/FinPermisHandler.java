@@ -34,7 +34,7 @@ public class FinPermisHandler extends EvenementCivilHandlerBase {
 		/* Seulement le permis C est traité */
 		if (finPermis.getTypePermis().equals(EnumTypePermis.ETABLLISSEMENT)) {
 			
-			PersonnePhysique habitant = getPersonnePhysiqueOrFillErrors(finPermis.getIndividu().getNoTechnique(), erreurs);
+			PersonnePhysique habitant = getPersonnePhysiqueOrFillErrors(finPermis.getNoIndividu(), erreurs);
 			if (habitant == null) {
 				return;
 			}

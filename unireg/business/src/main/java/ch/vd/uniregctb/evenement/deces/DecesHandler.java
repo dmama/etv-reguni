@@ -38,7 +38,7 @@ public class DecesHandler extends EvenementCivilHandlerBase {
 		/*
 		 * Obtention du tiers correspondant au defunt.
 		 */
-		PersonnePhysique defunt = getService().getPersonnePhysiqueByNumeroIndividu(deces.getIndividu().getNoTechnique());
+		PersonnePhysique defunt = getService().getPersonnePhysiqueByNumeroIndividu(deces.getNoIndividu());
 
 		/*
 		 * Deux cas de figure :
@@ -99,7 +99,7 @@ public class DecesHandler extends EvenementCivilHandlerBase {
 		/*
 		 * Obtention du tiers correspondant au defunt.
 		 */
-		final PersonnePhysique defunt = getService().getPersonnePhysiqueByNumeroIndividu(deces.getIndividu().getNoTechnique());
+		final PersonnePhysique defunt = getService().getPersonnePhysiqueByNumeroIndividu(deces.getNoIndividu());
 
 		// [UNIREG-775]
 		final RegDate dateDecesUnireg = defunt.getDateDeces();

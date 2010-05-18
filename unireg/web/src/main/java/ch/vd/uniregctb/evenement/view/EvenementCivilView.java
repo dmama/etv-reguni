@@ -7,6 +7,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.evenement.EvenementCivilErreur;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
@@ -29,11 +30,11 @@ public class EvenementCivilView {
 	private String nom1;
 	private String nom2;
 
-	public EvenementCivilView(EvenementCivilData evt) {
+	public EvenementCivilView(EvenementCivilData evt, TiersDAO tiersDAO) {
 		this.id = evt.getId();
 		this.etat = evt.getEtat();
-		this.habitantPrincipal = evt.getHabitantPrincipal();
-		this.habitantConjoint = evt.getHabitantConjoint();
+		this.habitantPrincipal = (PersonnePhysique) tiersDAO.get(evt.getHabitantPrincipalId());
+		this.habitantConjoint = (PersonnePhysique) tiersDAO.get(evt.getHabitantConjointId());
 		this.numeroIndividuPrincipal = evt.getNumeroIndividuPrincipal();
 		this.numeroIndividuConjoint = evt.getNumeroIndividuConjoint();
 		this.type = evt.getType();

@@ -64,22 +64,30 @@ public class EvenementCivilListener extends EsbMessageListener {
 
 	protected void onEvenementCivil(String message) throws EvenementCivilException {
 
-		EvenementCivilData evenement = extractEvenement(message);
+		final long start = System.nanoTime();
+
+		final EvenementCivilData evenement = extractEvenement(message);
 		if (evenement == null) {
 			return; // rien à faire
 		}
+
+		final long extraction = System.nanoTime();
 
 		// on insère l'événement dans la base de données (status = à traiter)
 		if (!insertEvenement(evenement)) {
 			return; // rien de plus à faire
 		}
 
+		final long insertion = System.nanoTime();
+
 		// dans la foulée, on essaie de le traiter, mais on ignore les erreurs pour ne pas bloquer la consommation du message JMS
-		try {
-			traiteEvenement(evenement);
-		}
-		catch (Exception e) {
-			LOGGER.error(e, e);
+		traiteEvenement(evenement);
+
+		final long traitement = System.nanoTime();
+
+		if (LOGGER.isInfoEnabled()) {
+			LOGGER.info(String.format("Evénement traité en %d ms (extraction %d ms, insertion %d ms, traitement %d ms)",
+					(traitement - start) / 1000000, (extraction - start) / 1000000, (insertion - extraction) / 1000000, (traitement - insertion) / 1000000));
 		}
 	}
 
@@ -131,26 +139,22 @@ public class EvenementCivilListener extends EsbMessageListener {
 						Audit.warn(id, String.format("L'événement civil n°%d existe DEJA en DB", id));
 						return false; // rien de plus à faire
 					}
-					else {
 
-						evenement.setHabitantPrincipal(tiersDAO.getPPByNumeroIndividu(evenement.getNumeroIndividuPrincipal()));
-						evenementCivilDAO.save(evenement);
+					evenementCivilDAO.save(evenement);
 
-						final StringBuilder b = new StringBuilder();
-						b.append("L'événement civil ").append(id).append(" est inséré en base de données.");
-						b.append(" ID=").append(id);
-						b.append(" Type=").append(evenement.getType());
-						b.append(" Date=").append(RegDateHelper.dateToDashString(evenement.getDateEvenement()));
-						b.append(" No individu=").append(evenement.getNumeroIndividuPrincipal());
-						b.append(" OFS commune=").append(evenement.getNumeroOfsCommuneAnnonce());
-						Audit.info(id, b.toString());
+					final StringBuilder b = new StringBuilder();
+					b.append("L'événement civil ").append(id).append(" est inséré en base de données {");
+					b.append("id=").append(id);
+					b.append(", type=").append(evenement.getType());
+					b.append(", date=").append(RegDateHelper.dateToDashString(evenement.getDateEvenement()));
+					b.append(", no individu=").append(evenement.getNumeroIndividuPrincipal());
+					b.append(", OFS commune=").append(evenement.getNumeroOfsCommuneAnnonce()).append("}.");
+					Audit.info(id, b.toString());
 
-						return true;
-					}
+					return true;
 				}
 			});
 
-			Audit.info(id, "L'événement civil de type " + evenement.getType().toString() + " a été créé sur l'individu " + noInd);
 			return ok;
 		}
 		catch (TransactionException e) {
@@ -159,7 +163,12 @@ public class EvenementCivilListener extends EsbMessageListener {
 	}
 
 	private void traiteEvenement(EvenementCivilData evenement) {
-		evenementCivilProcessor.traiteEvenementCivil(evenement.getId());
+		try {
+			evenementCivilProcessor.traiteEvenementCivil(evenement.getId());
+		}
+		catch (Exception e) {
+			LOGGER.error(e, e);
+		}
 	}
 
 	public void setEvenementCivilProcessor(EvenementCivilProcessor evenementCivilProcessor) {
