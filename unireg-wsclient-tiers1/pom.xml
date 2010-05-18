@@ -9,7 +9,7 @@
 	<groupId>ch.vd.uniregctb</groupId>
 	<artifactId>uniregctb-wsclient-tiers1</artifactId>
 	<packaging>jar</packaging>
-	<version>1.0.0</version>
+	<version>1.0.1</version>
 
 	<name>Unireg - Client WS Tiers v1</name>
 	<description>Unireg - Client Java pour le web-service Tiers v1 de Unireg</description>
@@ -131,7 +131,7 @@
 		<copyright.year>2009</copyright.year>
 		<amp.genericCore>true</amp.genericCore>
 		<amp.fullSource>false</amp.fullSource>
-		<spring.version>2.5.5</spring.version>
+		<spring.version>2.5.6</spring.version>
 		<cxf.version>2.0.6</cxf.version>
 		<log4j.version>1.2.14</log4j.version>
 		<junit.version>4.4</junit.version>

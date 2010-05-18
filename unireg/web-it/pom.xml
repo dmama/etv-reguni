@@ -37,17 +37,17 @@
 		<dependency>
 			<groupId>${pom.parent.groupId}</groupId>
 			<artifactId>uniregctb-wsclient-tiers1</artifactId>
-			<version>1.0.0</version>
+			<version>1.0.1</version>
 		</dependency>
 		<dependency>
 			<groupId>${pom.parent.groupId}</groupId>
 			<artifactId>uniregctb-wsclient-tiers2</artifactId>
-			<version>2.7</version>
+			<version>2.7.1</version>
 		</dependency>
 		<dependency>
 			<groupId>${pom.parent.groupId}</groupId>
 			<artifactId>uniregctb-wsclient-batch</artifactId>
-			<version>1.0</version>
+			<version>1.0.1</version>
 		</dependency>
 		<dependency>
 			<groupId>${jdbc.groupId}</groupId>
