@@ -16,8 +16,11 @@ import org.springframework.transaction.annotation.Transactional;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.validation.ValidationException;
+import ch.vd.uniregctb.audit.Audit;
+import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.declaration.DeclarationException;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
@@ -781,6 +784,12 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 	public EditiqueResultat envoieImpressionLocalDuplicataLR(ListeRecapDetailView lrEditView) throws EditiqueException {
 		try {
 			final DeclarationImpotSource lr = lrDAO.get(lrEditView.getId());
+
+			Audit.info(String.format("Impression d'un duplicata de LR pour le débiteur %s et la période [%s ; %s]",
+									FormatNumeroHelper.numeroCTBToDisplay(lr.getTiers().getNumero()),
+									RegDateHelper.dateToDashString(lr.getDateDebut()),
+									RegDateHelper.dateToDashString(lr.getDateFin())));
+			
 			return editiqueCompositionService.imprimeLROnline(lr, RegDate.get(), TypeDocument.LISTE_RECAPITULATIVE);
 		}
 		catch (JMSException e) {
