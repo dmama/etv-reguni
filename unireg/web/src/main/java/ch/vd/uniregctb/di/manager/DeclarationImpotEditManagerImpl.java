@@ -490,8 +490,8 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 			}
 		}
 
-		Audit.info(String.format("Impression d'un duplicata de DI pour le contribuable %s et la période [%s ; %s]",
-								FormatNumeroHelper.numeroCTBToDisplay(declaration.getTiers().getNumero()),
+		Audit.info(String.format("Impression d'un duplicata de DI pour le contribuable %d et la période [%s ; %s]",
+								declaration.getTiers().getNumero(),
 								RegDateHelper.dateToDashString(declaration.getDateDebut()),
 								RegDateHelper.dateToDashString(declaration.getDateFin())));
 

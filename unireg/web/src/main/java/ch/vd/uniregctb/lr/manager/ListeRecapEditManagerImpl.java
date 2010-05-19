@@ -785,8 +785,8 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 		try {
 			final DeclarationImpotSource lr = lrDAO.get(lrEditView.getId());
 
-			Audit.info(String.format("Impression d'un duplicata de LR pour le débiteur %s et la période [%s ; %s]",
-									FormatNumeroHelper.numeroCTBToDisplay(lr.getTiers().getNumero()),
+			Audit.info(String.format("Impression d'un duplicata de LR pour le débiteur %d et la période [%s ; %s]",
+									lr.getTiers().getNumero(),
 									RegDateHelper.dateToDashString(lr.getDateDebut()),
 									RegDateHelper.dateToDashString(lr.getDateFin())));
 			
