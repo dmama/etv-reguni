@@ -14,6 +14,7 @@ import javax.xml.ws.BindingProvider;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.cxf.interceptor.Fault;
+import org.apache.cxf.message.Message;
 import org.apache.log4j.Logger;
 import org.springframework.util.ResourceUtils;
 
@@ -161,6 +162,11 @@ public class BatchRunnerClient {
 			context.put(BindingProvider.PASSWORD_PROPERTY, password);
 		}
 		context.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, serviceUrl);
+
+		// Désactive la validation du schéma (= ignore silencieusement les éléments inconnus), de manière à permettre l'évolution ascendante-compatible du WSDL.
+		context.put(Message.SCHEMA_VALIDATION_ENABLED, false);
+		context.put("set-jaxb-validation-event-handler", false);
+		
 		return service;
 	}
 

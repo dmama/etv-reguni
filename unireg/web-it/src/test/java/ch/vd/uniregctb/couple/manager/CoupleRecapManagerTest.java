@@ -50,9 +50,7 @@ public class CoupleRecapManagerTest extends WebitTest {
 
 		// recherche le bouton qui permet de soumettre la forme
 		HtmlInput sauver = null;
-		Iterator iter = page.getAllHtmlChildElements();
-		while (iter.hasNext()) {
-			HtmlElement element = (HtmlElement) iter.next();
+		for (HtmlElement element : page.getHtmlElementDescendants()) {
 			if (element instanceof HtmlInput) {
 				HtmlInput input = (HtmlInput) element;
 				if (input.getValueAttribute().equals("Sauver")) {
@@ -64,8 +62,7 @@ public class CoupleRecapManagerTest extends WebitTest {
 		assertNotNull(sauver);
 
 		// soumet la forme
-		final HtmlForm form = page.getFormByName("formRecapCouple");
-		final HtmlPage pageResultat = (HtmlPage) form.submit(sauver);
+		final HtmlPage pageResultat = (HtmlPage) sauver.click();
 		assertNotNull(pageResultat);
 
 		// on devrait avoir un message d'erreur

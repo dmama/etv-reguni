@@ -8,6 +8,7 @@ import javax.xml.ws.BindingProvider;
 import javax.xml.ws.WebServiceException;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.cxf.message.Message;
 import org.apache.log4j.Logger;
 import org.springframework.util.ResourceUtils;
 
@@ -88,6 +89,10 @@ public class BVRPlusClientImpl implements BVRPlusClient {
 				context.put(BindingProvider.PASSWORD_PROPERTY, this.password);
 			}
 			context.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, this.serviceUrl);
+
+			// Désactive la validation du schéma (= ignore silencieusement les éléments inconnus), de manière à permettre l'évolution ascendante-compatible du WSDL.
+			context.put(Message.SCHEMA_VALIDATION_ENABLED, false);
+			context.put("set-jaxb-validation-event-handler", false);
 		}
 	}
 }

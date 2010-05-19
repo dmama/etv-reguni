@@ -61,16 +61,6 @@
 				<groupId>org.apache.cxf</groupId>
 				<artifactId>cxf-codegen-plugin</artifactId>
 				<version>${cxf.version}</version>
-				<dependencies>
-					<!-- Cette dépendance sur Xerces est nécessaire sinon on a une erreur de méthode not found -->
-					<!-- J'ai pas tout compris, mais je pense que le projet est lié a xerces:2.6.2 -->
-					<!-- Alors que CXF a besoin de la 2.8.1 -->
-					<dependency>
-						<groupId>xerces</groupId>
-						<artifactId>xercesImpl</artifactId>
-						<version>2.8.1</version>
-					</dependency>
-				</dependencies>
 				<executions>
 					<execution>
 						<id>generate-sources-meldwesen-service</id>

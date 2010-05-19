@@ -655,9 +655,7 @@ public class EachWebPageTest extends WebitTest {
 		if (contenu != null) {
 			// vérification du contenu
 			boolean trouve = false;
-			Iterator<HtmlElement> iter = page.getAllHtmlChildElements();
-			while (iter.hasNext()) {
-				HtmlElement element = iter.next();
+			for (HtmlElement element : page.getHtmlElementDescendants()) {
 				if (element.asText().contains(contenu)) {
 					trouve = true;
 					break;

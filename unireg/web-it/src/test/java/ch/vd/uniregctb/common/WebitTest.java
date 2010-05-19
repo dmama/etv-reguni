@@ -3,7 +3,6 @@ package ch.vd.uniregctb.common;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 
@@ -129,7 +128,7 @@ public abstract class WebitTest extends WithoutSpringTest {
 		final HtmlPage page = getHtmlPage("/tiers/visu.do?id=" + tiersId);
 		assertNotNull(page);
 
-		final List<?> list = (List<?>)page.getHtmlElementsByName("debugNatureTiers");
+		final List<?> list = page.getElementsByName("debugNatureTiers");
 		assertNotNull(list);
 		assertEquals(1, list.size());
 
@@ -143,9 +142,7 @@ public abstract class WebitTest extends WithoutSpringTest {
 
 		// vérification du contenu
 		boolean trouve = false;
-		Iterator<HtmlElement> iter = page.getAllHtmlChildElements();
-		while (iter.hasNext()) {
-			HtmlElement element = iter.next();
+		for (HtmlElement element : page.getHtmlElementDescendants()) {
 			if (element.asText().contains(contenu)) {
 				trouve = true;
 				break;

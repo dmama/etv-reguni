@@ -62,6 +62,12 @@
 		<level value="WARN" />
 	</logger>
 
+	<logger name="com.gargoylesoftware.htmlunit.DefaultCssErrorHandler">
+		<!-- pour ne pas se faire spammer par les erreurs de parsing des CSS -->
+		<level value="ERROR" />
+	</logger>
+
+
 	<root>
 		<level value="WARN" />
 		<appender-ref ref="LOGFILE" />

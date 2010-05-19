@@ -99,6 +99,7 @@
 			<artifactId>dbunit</artifactId>
 			<version>${dbunit.version}</version>
 			<exclusions>
+				<!--Exclusion de junit-addon (et par transivitivé de xerces) parce que CXF demande une version plus récente (voir http://www.mail-archive.com/users@cxf.apache.org/msg11429.html) -->
 				<exclusion>
 					<groupId>junit</groupId>
 					<artifactId>junit</artifactId>

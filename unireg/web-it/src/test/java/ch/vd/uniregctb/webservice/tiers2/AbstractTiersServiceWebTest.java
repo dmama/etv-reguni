@@ -1,17 +1,14 @@
 package ch.vd.uniregctb.webservice.tiers2;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.fail;
-
+import javax.xml.ws.BindingProvider;
 import java.net.URL;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import javax.xml.ws.BindingProvider;
-
 import org.apache.commons.lang.StringUtils;
+import org.apache.cxf.message.Message;
 import org.apache.log4j.Logger;
+import org.springframework.util.ResourceUtils;
 
 import ch.vd.uniregctb.common.WebitTest;
 import ch.vd.uniregctb.webservices.tiers2.CompteBancaire;
@@ -19,7 +16,10 @@ import ch.vd.uniregctb.webservices.tiers2.Date;
 import ch.vd.uniregctb.webservices.tiers2.FormatNumeroCompte;
 import ch.vd.uniregctb.webservices.tiers2.TiersPort;
 import ch.vd.uniregctb.webservices.tiers2.TiersService;
-import org.springframework.util.ResourceUtils;
+
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.fail;
 
 public abstract class AbstractTiersServiceWebTest extends WebitTest {
 
@@ -44,6 +44,10 @@ public abstract class AbstractTiersServiceWebTest extends WebitTest {
 				context.put(BindingProvider.PASSWORD_PROPERTY, password);
 			}
 			context.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, tiers2Url);
+
+			// Désactive la validation du schéma (= ignore silencieusement les éléments inconnus), de manière à permettre l'évolution ascendante-compatible du WSDL.
+			context.put(Message.SCHEMA_VALIDATION_ENABLED, false);
+			context.put("set-jaxb-validation-event-handler", false);
 		}
 	}
 

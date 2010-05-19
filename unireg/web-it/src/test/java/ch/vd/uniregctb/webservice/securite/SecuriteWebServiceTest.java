@@ -1,22 +1,14 @@
 package ch.vd.uniregctb.webservice.securite;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
+import javax.xml.ws.BindingProvider;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import javax.xml.ws.BindingProvider;
-
 import net.java.dev.jaxb.array.LongArray;
-
 import org.apache.commons.lang.StringUtils;
+import org.apache.cxf.message.Message;
 import org.apache.log4j.Logger;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import ch.vd.uniregctb.common.WebitTest;
@@ -27,6 +19,12 @@ import ch.vd.uniregctb.webservices.security.SecuritePort;
 import ch.vd.uniregctb.webservices.security.SecuriteService;
 import ch.vd.uniregctb.webservices.security.UserLogin;
 import ch.vd.uniregctb.webservices.security.WebServiceException_Exception;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * Test d'intégration qui vérifie le fonctionnement du web-service 'sécurité'.
@@ -63,6 +61,10 @@ public class SecuriteWebServiceTest extends WebitTest {
 				context.put(BindingProvider.PASSWORD_PROPERTY, password);
 			}
 			context.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, securiteUrl);
+
+			// Désactive la validation du schéma (= ignore silencieusement les éléments inconnus), de manière à permettre l'évolution ascendante-compatible du WSDL.
+			context.put(Message.SCHEMA_VALIDATION_ENABLED, false);
+			context.put("set-jaxb-validation-event-handler", false);
 		}
 
 		if (!alreadySetUp) {
