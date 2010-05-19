@@ -34,7 +34,7 @@
 		<dependency>
 			<groupId>org.dbunit</groupId>
 			<artifactId>dbunit</artifactId>
-			<version>2.2</version>
+			<version>2.2.3</version>
 			<exclusions>
 				<!--Exclusion de junit-addon (et par transivitivé de xerces) parce que CXF demande une version plus récente (voir http://www.mail-archive.com/users@cxf.apache.org/msg11429.html) -->
 				<exclusion>
@@ -44,6 +44,14 @@
 				<exclusion>
 					<groupId>junit-addons</groupId>
 					<artifactId>junit-addons</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-api</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-nop</artifactId>
 				</exclusion>
 			</exclusions>
 		</dependency>
