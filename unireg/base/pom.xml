@@ -203,7 +203,7 @@
         <dependency>
             <groupId>ch.vd.registre</groupId>
             <artifactId>shared-base</artifactId>
-			<version>1.2.6</version>
+			<version>1.2.8</version>
         </dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -277,18 +277,35 @@
 		</dependency>
 		<dependency>
 			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate</artifactId>
-			<version>3.2.6.ga</version>
+			<artifactId>hibernate-core</artifactId>
+			<version>3.3.2.GA</version>
 		</dependency>
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-annotations</artifactId>
-			<version>3.3.1.GA</version>
+			<version>3.4.0.GA</version>
 		</dependency>
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-commons-annotations</artifactId>
 			<version>3.3.0.ga</version>
+			<exclusions>
+				<exclusion>
+					<!--Pour ne pas tirer la version 1.5.3 de asm -->
+					<groupId>org.hibernate</groupId>
+					<artifactId>hibernate</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+		   <groupId>javassist</groupId>
+		   <artifactId>javassist</artifactId>
+		   <version>3.4.GA</version>
+	   </dependency>
+		<dependency>
+			<groupId>cglib</groupId>
+			<artifactId>cglib-nodep</artifactId>
+			<version>2.2</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-lang</groupId>
