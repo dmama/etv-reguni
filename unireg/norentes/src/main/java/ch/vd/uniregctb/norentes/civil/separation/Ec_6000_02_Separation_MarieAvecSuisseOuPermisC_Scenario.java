@@ -2,12 +2,15 @@ package ch.vd.uniregctb.norentes.civil.separation;
 
 import annotation.Check;
 import annotation.Etape;
+
+import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.civil.model.EnumTypePermis;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
+import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
 import ch.vd.uniregctb.norentes.common.EvenementCivilScenario;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
@@ -15,6 +18,7 @@ import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 /**
@@ -77,12 +81,15 @@ public class Ec_6000_02_Separation_MarieAvecSuisseOuPermisC_Scenario extends Eve
 				separeIndividus(indMomo, indBea, dateSeparation);
 				divorceIndividus(indMomo, indBea, dateDivorce);
 
-				addOrigine(indMomo, MockPays.France, null, RegDate.get(1963, 8, 20));
-				addNationalite(indMomo, MockPays.France, RegDate.get(1963, 8, 20), null, 0);
-				addPermis(indMomo, EnumTypePermis.ETABLLISSEMENT, RegDate.get(1963, 8, 20), null, 0, false);
+				addOrigine(indMomo, MockPays.France, null, dateNaissanceMomo);
+				addNationalite(indMomo, MockPays.France, dateNaissanceMomo, null, 0);
+				addPermis(indMomo, EnumTypePermis.ETABLLISSEMENT, dateNaissanceMomo, null, 0, false);
+				addAdresse(indMomo, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.BoulevardGrancy, null, dateMariage, dateSeparation.getOneDayBefore());
+				addAdresse(indMomo, EnumTypeAdresse.PRINCIPALE, MockRue.Chamblon.GrandRue, null, dateSeparation, null);
 
-				addOrigine(indBea, MockPays.Suisse, MockCommune.Lausanne, RegDate.get(1961, 3, 12));
-				addNationalite(indBea, MockPays.Suisse, RegDate.get(1961, 3, 12), null, 0);
+				addOrigine(indBea, MockPays.Suisse, MockCommune.Lausanne, dateNaissanceBea);
+				addNationalite(indBea, MockPays.Suisse, dateNaissanceBea, null, 0);
+				addAdresse(indBea, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.BoulevardGrancy, null, dateNaissanceBea, null);
 			}
 		});
 	}
@@ -160,8 +167,7 @@ public class Ec_6000_02_Separation_MarieAvecSuisseOuPermisC_Scenario extends Eve
 			final ForFiscalPrincipal ffp = mc.getDernierForFiscalPrincipal();
 			assertEquals(dateMariage, ffp.getDateDebut(), "Le for sur Lausanne n'est pas ouvert à la bonne date");
 			assertNotNull(ffp.getDateFin(), "Le for sur Lausanne est ouvert");
-			assertEquals(ffp.getMotifFermeture(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT,
-					"Le motif de fermeture n'est pas SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT");
+			assertEquals(MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, ffp.getMotifFermeture(), "Le motif de fermeture n'est pas SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT");
 		}
 
 		{
@@ -171,9 +177,10 @@ public class Ec_6000_02_Separation_MarieAvecSuisseOuPermisC_Scenario extends Eve
 			assertNull(ffp.getDateFin(), "Le for de l'habitant " + momo.getNumero() + " est fermé");
 			// momo doit passer au mode dépense
 			final ModeImposition expected = ModeImposition.DEPENSE;
-			assertEquals(ffp.getModeImposition(), expected, "Le mode d'imposition n'est pas " + expected.texte());
-			assertEquals(ffp.getMotifOuverture(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT,
-					"Le motif de fermeture n'est pas SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT");
+			assertEquals(expected, ffp.getModeImposition(), "Le mode d'imposition n'est pas " + expected.texte());
+			assertEquals(MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, ffp.getMotifOuverture(), "Le motif de fermeture n'est pas SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT");
+			assertEquals(MockCommune.Chamblon.getNoOFSEtendu(), ffp.getNumeroOfsAutoriteFiscale(), "Mauvaise commune de for");
+			assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale(), "Mauvais type d'autorité fiscale");
 		}
 
 		{
@@ -183,9 +190,10 @@ public class Ec_6000_02_Separation_MarieAvecSuisseOuPermisC_Scenario extends Eve
 			assertNull(ffp.getDateFin(), "Le for de l'habitant " + bea.getNumero() + " est fermé");
 			// bea doit passer au mode dépense
 			final ModeImposition expected = ModeImposition.DEPENSE;
-			assertEquals(ffp.getModeImposition(), expected, "Le mode d'imposition n'est pas " + expected.texte());
-			assertEquals(ffp.getMotifOuverture(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT,
-					"Le motif de fermeture n'est pas SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT");
+			assertEquals(expected, ffp.getModeImposition(), "Le mode d'imposition n'est pas " + expected.texte());
+			assertEquals(MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, ffp.getMotifOuverture(), "Le motif de fermeture n'est pas SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT");
+			assertEquals(MockCommune.Lausanne.getNoOFSEtendu(), ffp.getNumeroOfsAutoriteFiscale(), "Mauvaise commune de for");
+			assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale(), "Mauvais type d'autorité fiscale");
 		}
 
 		// PBM 29.07.2009: UNIREG-1266 -> Blocage des remboursements automatiques sur tous les nouveaux tiers

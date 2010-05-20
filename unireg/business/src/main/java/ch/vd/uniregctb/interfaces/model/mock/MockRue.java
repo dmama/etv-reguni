@@ -52,6 +52,10 @@ public class MockRue implements Rue {
 		public static final MockRue GrandRue = new MockRue(MockLocalite.Vallorbe, "Grand-Rue", 32397);
 	}
 
+	public static class Renens {
+		public static final MockRue QuatorzeAvril = new MockRue(MockLocalite.Renens, "Avenue du 14 avril", 31093);
+	}
+
 	public static class Zurich {
 		public static final MockRue VoltaStrasse = new MockRue(MockLocalite.Zurich, "Volta Strasse", 16);
 		public static final MockRue GloriaStrasse = new MockRue(MockLocalite.Zurich, "Gloria Strasse", 12);

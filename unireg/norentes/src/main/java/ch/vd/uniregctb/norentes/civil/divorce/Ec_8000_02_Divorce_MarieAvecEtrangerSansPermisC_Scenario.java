@@ -2,11 +2,14 @@ package ch.vd.uniregctb.norentes.civil.divorce;
 
 import annotation.Check;
 import annotation.Etape;
+
+import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.civil.model.EnumTypePermis;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
+import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
 import ch.vd.uniregctb.norentes.common.EvenementCivilScenario;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
@@ -76,10 +79,11 @@ public class Ec_8000_02_Divorce_MarieAvecEtrangerSansPermisC_Scenario extends Ev
 				addOrigine(indMomo, MockPays.France, null, RegDate.get(1963, 8, 20));
 				addNationalite(indMomo, MockPays.France, RegDate.get(1963, 8, 20), null, 0);
 				addPermis(indMomo, EnumTypePermis.COURTE_DUREE, RegDate.get(1963, 8, 20), null, 0, false);
+				addAdresse(indMomo, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.PlaceSaintFrancois, null, dateMariage, null);
 
 				addOrigine(indBea, MockPays.Suisse, MockCommune.Lausanne, RegDate.get(1961, 3, 12));
 				addNationalite(indBea, MockPays.Suisse, RegDate.get(1961, 3, 12), null, 0);
-
+				addAdresse(indBea, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.PlaceSaintFrancois, null, dateMariage, null);
 			}
 		});
 	}

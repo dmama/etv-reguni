@@ -262,6 +262,26 @@ public abstract class MockServiceCivil extends ServiceCivilServiceBase {
 	}
 
 	/**
+	 * Crée une nouvelle adresse à l'étranger
+	 */
+	public static Adresse newAdresse(EnumTypeAdresse type, String rue, String casePostale, String npaLocalite, MockPays pays, RegDate debutValidite, RegDate finValidite) {
+		Assert.notNull(pays);
+		Assert.isFalse(pays.getNoOFS() == ServiceInfrastructureService.noOfsSuisse, "Pour la Suisse, il faut utiliser une autre méthode newAdresse");
+
+		final MockAdresse adresse = new MockAdresse();
+		adresse.setTypeAdresse(type);
+
+		adresse.setCasePostale(casePostale);
+		adresse.setCommuneAdresse(null);
+		adresse.setPays(pays);
+		adresse.setRue(rue);
+		adresse.setLieu(npaLocalite);
+		adresse.setDateDebutValidite(debutValidite);
+		adresse.setDateFinValidite(finValidite);
+		return adresse;
+	}
+
+	/**
 	 * Unit les deux individus par le mariage. Si les individus sont du même sexe, l'état-civil est PACS; et dans le cas normal,
 	 * l'état-civil est MARIE.
 	 */

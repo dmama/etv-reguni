@@ -2,11 +2,14 @@ package ch.vd.uniregctb.norentes.civil.divorce;
 
 import annotation.Check;
 import annotation.Etape;
+
+import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
+import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
 import ch.vd.uniregctb.metier.MetierService;
 import ch.vd.uniregctb.norentes.common.EvenementCivilScenario;
@@ -78,9 +81,11 @@ public class Ec_8000_03_Divorce_CivilApresFiscal_Scenario extends EvenementCivil
 
 			addOrigine(indPierre, MockPays.Suisse, MockCommune.Renens, dateNaissancePierre);
 			addNationalite(indPierre, MockPays.Suisse, dateNaissancePierre, null, 0);
+			addAdresse(indPierre, EnumTypeAdresse.PRINCIPALE, MockRue.Vevey.RueDesMoulins, null, dateDemenagement, null);
 
 			addOrigine(indKarina, MockPays.Suisse, MockCommune.Lausanne, dateNaissanceKarina);
 			addNationalite(indKarina, MockPays.Suisse, dateNaissanceKarina, null, 0);
+			addAdresse(indKarina, EnumTypeAdresse.PRINCIPALE, MockRue.Vevey.RueDesMoulins, null, dateDemenagement, null);
 		}
 
 		public void divorceCivil() {
