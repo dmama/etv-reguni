@@ -6,7 +6,6 @@ import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.interfaces.model.Nationalite;
 import ch.vd.uniregctb.interfaces.model.mock.MockCollectiviteAdministrative;
-import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
 import ch.vd.uniregctb.interfaces.model.mock.MockNationalite;
 import ch.vd.uniregctb.type.*;
 import static junit.framework.Assert.assertEquals;
@@ -35,7 +34,6 @@ import ch.vd.registre.civil.model.EnumTypePermis;
 import ch.vd.uniregctb.adresse.AdresseSuisse;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.Permis;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
@@ -2602,7 +2600,7 @@ public class TiersServiceTest extends BusinessTest {
 				ffp1.setModeImposition(ModeImposition.MIXTE_137_1);
 				idCtbMixte1.setValue(nh1.getNumero());
 
-				final PersonnePhysique nh2 = addNonHabitant("Achille", "Talon-2", date(1950, 3, 24), Sexe.MASCULIN);
+				final PersonnePhysique nh2 = addNonHabitant("Achille", "Talon-Deux", date(1950, 3, 24), Sexe.MASCULIN);
 				final ForFiscalPrincipal ffp2 = addForPrincipal(nh2, date(2008, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
 				ffp2.setModeImposition(ModeImposition.MIXTE_137_2);
 				idCtbMixte2.setValue(nh2.getNumero());

@@ -26,4 +26,56 @@ public class PersonnePhysiqueTest extends WithoutSpringTest {
 		pp.setNom("Bob");
 		assertFalse(pp.validate().hasErrors());
 	}
+
+	@Test
+	public void testValidateNomCaracteresSpeciauxNonHabitant() {
+
+		final PersonnePhysique pp = new PersonnePhysique(false);
+
+		pp.setNom("1");
+		assertTrue(pp.validate().hasErrors());
+
+		pp.setNom(".K");
+		assertTrue(pp.validate().hasErrors());
+
+		pp.setNom(" Kulti");
+		assertTrue(pp.validate().hasErrors());
+
+		pp.setNom("ŠǿůžŷķæœŒŭĠĥſ");
+		assertTrue(pp.validate().hasErrors());
+
+		pp.setNom("'AaÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõöøùúûüýþÿŒœŠšŸŽž-O'Hara");
+		assertFalse(pp.validate().hasErrors());
+
+		pp.setNom("AaÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõöøùúûüýþÿŒœŠšŸŽž-O''Hara  ");
+		assertFalse(pp.validate().hasErrors());
+	}
+
+	@Test
+	public void testValidatePrenomCaracteresSpeciauxNonHabitant() {
+
+		final PersonnePhysique pp = new PersonnePhysique(false);
+		pp.setNom("Bob");
+
+		pp.setPrenom("1");
+		assertTrue(pp.validate().hasErrors());
+
+		pp.setPrenom(".K");
+		assertTrue(pp.validate().hasErrors());
+
+		pp.setPrenom(" Kulti");
+		assertTrue(pp.validate().hasErrors());
+
+		pp.setPrenom("ŠǿůžŷķæœŒŭĠĥſ");
+		assertTrue(pp.validate().hasErrors());
+
+		pp.setPrenom("'AaÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõöøùúûüýþÿŒœŠšŸŽž-O'Hara");
+		assertFalse(pp.validate().hasErrors());
+
+		pp.setPrenom("AaÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõöøùúûüýþÿŒœŠšŸŽž-O''Hara  ");
+		assertFalse(pp.validate().hasErrors());
+
+		pp.setPrenom(null);
+		assertFalse(pp.validate().hasErrors());
+	}
 }

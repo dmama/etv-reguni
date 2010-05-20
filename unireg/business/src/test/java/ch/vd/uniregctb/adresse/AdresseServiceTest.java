@@ -4888,8 +4888,8 @@ public class AdresseServiceTest extends BusinessTest {
 	@Test
 	public void testGetFormulePolitesseMenageCommuns() {
 
-		PersonnePhysique pp1 = addNonHabitant(null, "pp1", date(1977, 1, 1), Sexe.MASCULIN);
-		PersonnePhysique pp2 = addNonHabitant(null, "pp2", date(1977, 1, 1), Sexe.MASCULIN);
+		PersonnePhysique pp1 = addNonHabitant(null, "pp-un", date(1977, 1, 1), Sexe.MASCULIN);
+		PersonnePhysique pp2 = addNonHabitant(null, "pp-deux", date(1977, 1, 1), Sexe.MASCULIN);
 		EnsembleTiersCouple ensemble = addEnsembleTiersCouple(pp1, pp2, date(2000, 1, 1), null);
 		MenageCommun mc = ensemble.getMenage();
 
@@ -4942,8 +4942,8 @@ public class AdresseServiceTest extends BusinessTest {
 	@Test
 	public void testGetFormulePolitesseMenageCommunsAvecDecedes() {
 
-		PersonnePhysique pp1 = addNonHabitant(null, "pp1", date(1977, 1, 1), Sexe.MASCULIN);
-		PersonnePhysique pp2 = addNonHabitant(null, "pp2", date(1977, 1, 1), Sexe.MASCULIN);
+		PersonnePhysique pp1 = addNonHabitant(null, "pp-un", date(1977, 1, 1), Sexe.MASCULIN);
+		PersonnePhysique pp2 = addNonHabitant(null, "pp-deux", date(1977, 1, 1), Sexe.MASCULIN);
 		EnsembleTiersCouple ensemble = addEnsembleTiersCouple(pp1, pp2, date(2000, 1, 1), null);
 		MenageCommun mc = ensemble.getMenage();
 
