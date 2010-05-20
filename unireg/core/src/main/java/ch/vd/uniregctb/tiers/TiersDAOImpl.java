@@ -615,4 +615,34 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
         }
         return menages;
     }
+
+	public void updateOids(final Map<Long, Integer> tiersOidsMapping) {
+
+		if (tiersOidsMapping == null || tiersOidsMapping.isEmpty()) {
+			return;
+		}
+
+		// [UNIREG-1024] On met-à-jour les tâches encore ouvertes, à l'exception des tâches de contrôle de dossier
+		getHibernateTemplate().executeWithNativeSession(new HibernateCallback() {
+			public Object doInHibernate(Session session) throws HibernateException, SQLException {
+				final FlushMode mode = session.getFlushMode();
+				try {
+					session.setFlushMode(FlushMode.MANUAL);
+
+					// met-à-jour les tiers concernés
+					final Query update = session.createSQLQuery("update TIERS set OID = :oid where NUMERO = :id");
+					for (Map.Entry<Long, Integer> e : tiersOidsMapping.entrySet()) {
+						update.setParameter("id", e.getKey());
+						update.setParameter("oid", e.getValue());
+						update.executeUpdate();
+					}
+
+					return null;
+				}
+				finally {
+					session.setFlushMode(mode);
+				}
+			}
+		});
+	}
 }

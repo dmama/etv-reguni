@@ -13,6 +13,7 @@ import org.junit.Test;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.TransactionStatus;
 
+import java.util.HashMap;
 import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
@@ -415,7 +416,9 @@ public class TacheDAOTest extends CoreDAOTest {
 				assertCollAdm(ca1, ids.transmissionAnnulee);
 
 				// Changement de collectivité administative assignée
-				dao.updateCollAdmAssignee(ids.ctb, ca2.getNumeroCollectiviteAdministrative());
+				final HashMap<Long, Integer> tiersOidsMapping = new HashMap<Long, Integer>();
+				tiersOidsMapping.put(ids.ctb, ca2.getNumeroCollectiviteAdministrative());
+				dao.updateCollAdmAssignee(tiersOidsMapping);
 				return null;
 			}
 		});

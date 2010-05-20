@@ -1,19 +1,26 @@
 package ch.vd.uniregctb.indexer.tiers;
 
-import ch.vd.infrastructure.service.InfrastructureException;
-import ch.vd.uniregctb.hibernate.interceptor.AbstractLinkedInterceptor;
-import ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.tiers.*;
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+
 import org.apache.log4j.Logger;
 import org.hibernate.CallbackException;
 import org.hibernate.Transaction;
 import org.hibernate.type.Type;
 
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import ch.vd.infrastructure.service.InfrastructureException;
+import ch.vd.registre.base.utils.Assert;
+import ch.vd.uniregctb.hibernate.interceptor.AbstractLinkedInterceptor;
+import ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.tiers.ForFiscal;
+import ch.vd.uniregctb.tiers.ForGestion;
+import ch.vd.uniregctb.tiers.TacheDAO;
+import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.tiers.TiersDAO;
+import ch.vd.uniregctb.tiers.TiersService;
 
 /**
  * Cet intercepteur se charge de tenir à-jour l'id de l'office d'impôt caché au niveau de chaque tiers.
@@ -24,6 +31,7 @@ public class OfficeImpotHibernateInterceptor extends AbstractLinkedInterceptor {
 
 	private TiersService tiersService;
 	private TacheDAO tacheDAO;
+	private TiersDAO tiersDAO;
 	private ServiceInfrastructureService infraService;
 
 	private static class Behavior {
@@ -35,9 +43,14 @@ public class OfficeImpotHibernateInterceptor extends AbstractLinkedInterceptor {
 	private final ThreadLocal<HashMap<Long, Tiers>> dirtyEntities = new ThreadLocal<HashMap<Long, Tiers>>();
 
 	/**
+	 * Les tiers (avec leurs nouveaux OIDs) qui doivent être mis-à-jour
+	 */
+	private final ThreadLocal<HashMap<Long, Integer>> toUpdateOids = new ThreadLocal<HashMap<Long, Integer>>();
+
+	/**
 	 * Une map numéro de tiers -> nouveau numéro d'oid des tiers qui ont été changés.
 	 */
-	private final ThreadLocal<HashMap<Long, Integer>> modifiedOids = new ThreadLocal<HashMap<Long, Integer>>();
+	private final ThreadLocal<HashMap<Long, Integer>> updatedOids = new ThreadLocal<HashMap<Long, Integer>>();
 
 	@Override
 	public void preFlush(Iterator<?> entities) throws CallbackException {
@@ -54,7 +67,7 @@ public class OfficeImpotHibernateInterceptor extends AbstractLinkedInterceptor {
 		 */
 
 		final HashMap<Long, Tiers> dirty = getDirtyEntities();
-		final HashMap<Long, Integer> modifs = getModifiedOids();
+		final HashMap<Long, Integer> modifs = getUpdatedOids();
 		try {
 			// On change la valeur de l'oid sur le tiers. On traitera les tâches dans le post-flush.
 			for (Tiers tiers : dirty.values()) {
@@ -78,22 +91,39 @@ public class OfficeImpotHibernateInterceptor extends AbstractLinkedInterceptor {
 			return false;
 		}
 
-		Tiers tiers = checkEntity(entity);
-		if (tiers != null) {
-			Integer oid = detectNewOfficeID(tiers);
-			if (oid != null) {
-				// Met-à-jour l'OID
-				for (int i = 0; i < propertyNames.length; ++i) {
-					if ("officeImpotId".equals(propertyNames[i])) {
-						currentState[i] = oid;
-						break;
-					}
-				}
-				getModifiedOids().put(tiers.getNumero(), oid);
-				return true;
-			}
+		final Tiers tiers = getRelatedTiers(entity);
+		if (tiers == null) {
+			return false;
 		}
-		return false;
+
+		final Integer oid = detectNewOfficeID(tiers);
+		if (oid == null) {
+			return false;
+		}
+
+		// l'oid doit être mis-à-jour
+		getUpdatedOids().put(tiers.getNumero(), oid);
+
+		if (tiers == entity) {
+			// Si l'entité flushée est le tiers lui-même, on met-à-jour l'oid à la volée
+			boolean found = false;
+			for (int i = 0; i < propertyNames.length; ++i) {
+				if ("officeImpotId".equals(propertyNames[i])) {
+					currentState[i] = oid;
+					found = true;
+					break;
+				}
+			}
+			Assert.isTrue(found);
+			return true; // l'entité a été modifiée
+		}
+		else {
+			// [UNIREG-2386] si l'entité flushée est une autre entité que le tiers (un for fiscal, par exemple), on
+			// ne peut pas la mettre-à-jour maintenant (elle ne serait pas prise en compte par Hibernate) => on mémorise
+			// le nouvel oid pour une mise-à-jour manuelle dans le postFlush.
+			getToUpdateOids().put(tiers.getNumero(), oid);
+			return false; // l'entité n'a pas été modifiée
+		}
 	}
 
 	@Override
@@ -103,7 +133,7 @@ public class OfficeImpotHibernateInterceptor extends AbstractLinkedInterceptor {
 			return false;
 		}
 
-		Tiers tiers = checkEntity(entity);
+		Tiers tiers = getRelatedTiers(entity);
 		if (tiers != null) {
 			// on attend l'événement de pre-flush, car l'entité spécifiée est potentiellement encore incomplète.
 			addDirtyEntity(tiers);
@@ -115,22 +145,30 @@ public class OfficeImpotHibernateInterceptor extends AbstractLinkedInterceptor {
 	public void postFlush(Iterator<?> entities) throws CallbackException {
 		super.postFlush(entities);
 
-		// [UNIREG-2306] maintenant que l'on connait les tiers qui ont été changés, on met-à-jour toutes les tâches impactées en vrac
-		final HashMap<Long, Integer> modifs = getModifiedOids();
-		for (Map.Entry<Long, Integer> e : modifs.entrySet()) {
-			tacheDAO.updateCollAdmAssignee(e.getKey(), e.getValue());
+		// [UNIREG-2386] c'est le moment de mettre-à-jour les oids sur les tiers qui n'ont pas pu être traité au fil-de-l'eau
+		final HashMap<Long, Integer> toUpdate = getToUpdateOids();
+		if (toUpdate != null && !toUpdate.isEmpty()) {
+			tiersDAO.updateOids(toUpdate);
+			toUpdate.clear();
 		}
-		modifs.clear();
+
+		// [UNIREG-2306] maintenant que l'on connait les tiers qui ont été changés, on met-à-jour toutes les tâches impactées en vrac
+		final HashMap<Long, Integer> updated = getUpdatedOids();
+		if (updated != null && !updated.isEmpty()) {
+			tacheDAO.updateCollAdmAssignee(updated);
+			updated.clear();
+		}
 	}
 
 	@Override
 	public void afterTransactionCompletion(Transaction tx) {
 		// comme ça on est sûr de ne pas garder des entités en mémoire
-		getModifiedOids().clear();
+		getToUpdateOids().clear();
+		getUpdatedOids().clear();
 		getDirtyEntities().clear();
 	}
 
-	private Tiers checkEntity(Object entity) {
+	private Tiers getRelatedTiers(Object entity) {
 		if (entity instanceof Tiers) {
 			return (Tiers) entity;
 		}
@@ -158,33 +196,50 @@ public class OfficeImpotHibernateInterceptor extends AbstractLinkedInterceptor {
 		return ent;
 	}
 
-	private HashMap<Long, Integer> getModifiedOids() {
-		HashMap<Long, Integer> ent = modifiedOids.get();
+	private HashMap<Long, Integer> getToUpdateOids() {
+		HashMap<Long, Integer> ent = toUpdateOids.get();
 		if (ent == null) {
 			ent = new HashMap<Long, Integer>();
-			modifiedOids.set(ent);
+			toUpdateOids.set(ent);
+		}
+		return ent;
+	}
+
+	private HashMap<Long, Integer> getUpdatedOids() {
+		HashMap<Long, Integer> ent = updatedOids.get();
+		if (ent == null) {
+			ent = new HashMap<Long, Integer>();
+			updatedOids.set(ent);
 		}
 		return ent;
 	}
 
 	/**
-	 * Détecte et met-à-jour le cas échéant l'office d'impôt du tiers spécifié, et retourne la nouvelle valeur.
+	 * Détecte et met-à-jour le cas échéant l'office d'impôt des tiers spécifiés
 	 *
-	 * @param tiers le tiers à mettre à jour.
-	 * @return la nouvelle valeur de l'OID, ou <b>null</b> si l'office d'impôt n'a pas été changé.
+	 * @param list la liste des numéros de tiers
 	 */
-	public Integer updateOfficeID(Tiers tiers) {
-		Integer oid = detectNewOfficeID(tiers);
-		if (oid != null) {
-			// Met-à-jour l'OID sur le tiers
-			tiers.setOfficeImpotId(oid);
+	public void updateOfficeID(List<Long> list) {
 
-			// [UNIREG-2306] Met-à-jour l'OID sur les éventuelles tâches en instances associé au contribuable
-			if (tiers instanceof Contribuable) {
-				tacheDAO.updateCollAdmAssignee(tiers.getNumero(), oid);
+		final HashMap<Long, Integer> todo = new HashMap<Long, Integer>();
+
+		for (Long id : list) {
+			final Tiers tiers = tiersDAO.get(id);
+			if (tiers == null) {
+				continue;
+			}
+
+			Integer oid = detectNewOfficeID(tiers);
+			if (oid != null) {
+				// Met-à-jour l'OID sur le tiers
+				tiers.setOfficeImpotId(oid);
+
+				todo.put(id, oid);
 			}
 		}
-		return oid;
+
+		// [UNIREG-2306] Met-à-jour l'OID sur les éventuelles tâches en instances associé au contribuable
+		tacheDAO.updateCollAdmAssignee(todo);
 	}
 
 	/**
@@ -247,6 +302,10 @@ public class OfficeImpotHibernateInterceptor extends AbstractLinkedInterceptor {
 
 	public void setTacheDAO(TacheDAO tacheDAO) {
 		this.tacheDAO = tacheDAO;
+	}
+
+	public void setTiersDAO(TiersDAO tiersDAO) {
+		this.tiersDAO = tiersDAO;
 	}
 
 	private Behavior getByThreadBehavior() {

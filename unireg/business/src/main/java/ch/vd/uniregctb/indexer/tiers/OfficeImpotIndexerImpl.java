@@ -128,15 +128,13 @@ public class OfficeImpotIndexerImpl implements OfficeImpotIndexer {
 		TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.execute(new TransactionCallback() {
 			public Object doInTransaction(TransactionStatus s) {
-				for (Long id : ids) {
-					Tiers tiers = (Tiers) hibernateTemplate.get(Tiers.class, id);
-					int percent = (++current * 100) / total;
-					status.setMessage("Calcul de l'office d'impôt du tiers " + current + " sur " + total + " (id=" + id + ")", percent);
-					oidInterceptor.updateOfficeID(tiers);
-					if (status.interrupted()) {
-						break;
-					}
-				}
+
+				current += ids.size();
+
+				final int percent = (current * 100) / total;
+				status.setMessage("Calcul de l'office d'impôt du tiers " + current + " sur " + total + " (id=" + ids.get(0) + ")", percent);
+				
+				oidInterceptor.updateOfficeID(ids);
 				return null;
 			}
 		});

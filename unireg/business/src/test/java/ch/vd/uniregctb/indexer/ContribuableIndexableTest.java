@@ -57,7 +57,6 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
-import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.tiers.TiersServiceImpl;
 import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.GenreImpot;
@@ -981,6 +980,10 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		}
 
 		public long getRowCountResult(AbstractCriteria aCriteria) {
+			throw new NotImplementedException();
+		}
+
+		public void updateOids(Map<Long, Integer> tiersOidsMapping) {
 			throw new NotImplementedException();
 		}
 	}

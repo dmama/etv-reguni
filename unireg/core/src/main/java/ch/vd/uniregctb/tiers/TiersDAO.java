@@ -2,6 +2,7 @@ package ch.vd.uniregctb.tiers;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.springframework.transaction.annotation.Transactional;
@@ -168,4 +169,11 @@ public interface TiersDAO extends GenericDAO<Tiers, Long> {
 	 * @return la liste des ménages communs contenus dans la liste des ids spécifiés.
 	 */
 	List<MenageCommun> getMenagesCommuns(List<Long> ids, Set<Parts> parts);
+
+	/**
+	 * Met-à-jour les oids assignés sur le tiers spécifiés.
+	 *
+	 * @param tiersOidsMapping le mapping numéro de tiers vers numéro d'oid.
+	 */
+	void updateOids(Map<Long,Integer> tiersOidsMapping);
 }

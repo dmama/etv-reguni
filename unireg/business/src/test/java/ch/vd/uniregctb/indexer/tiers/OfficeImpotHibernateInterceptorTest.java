@@ -1,12 +1,5 @@
 package ch.vd.uniregctb.indexer.tiers;
 
-import static junit.framework.Assert.assertNotNull;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.tiers.*;
-import ch.vd.uniregctb.type.*;
 import org.junit.Test;
 import org.springframework.test.annotation.NotTransactional;
 import org.springframework.transaction.TransactionStatus;
@@ -14,13 +7,34 @@ import org.springframework.transaction.TransactionStatus;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockOfficeImpot;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceInfrastructureService;
+import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.tiers.TacheNouveauDossier;
+import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.tiers.TiersDAO;
+import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.type.GenreImpot;
+import ch.vd.uniregctb.type.ModeImposition;
+import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.MotifRattachement;
+import ch.vd.uniregctb.type.Sexe;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.uniregctb.type.TypeEtatTache;
 
+import static junit.framework.Assert.assertNotNull;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+
+@SuppressWarnings({"JavaDoc"})
 public class OfficeImpotHibernateInterceptorTest extends BusinessTest {
 
 	private static final Integer oidLausanne = MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm();
 	private TiersDAO tiersDAO;
+	private TiersService tiersService;
 
 	@Override
 	public void onSetUp() throws Exception {
@@ -28,6 +42,7 @@ public class OfficeImpotHibernateInterceptorTest extends BusinessTest {
 		super.onSetUp();
 
 		tiersDAO = getBean(TiersDAO.class, "tiersDAO");
+		tiersService = getBean(TiersService.class, "tiersService");
 
 		serviceCivil.setUp(new DefaultMockServiceCivil());
 		serviceInfra.setUp(new DefaultMockServiceInfrastructureService());
@@ -198,6 +213,66 @@ public class OfficeImpotHibernateInterceptorTest extends BusinessTest {
 				Tiers nh = tiersDAO.get(id);
 				assertNotNull(nh);
 				assertEquals(oidLausanne, nh.getOfficeImpotId());
+				return null;
+			}
+		});
+	}
+
+	/**
+	 * [UNIREG-2386] Vérifie que l'annulation du dernier for principal provoque bien le recalcul de l'office d'impôt
+	 */
+	@Test
+	public void testOfficeImpotContribuableAnnulationForPrincipal() throws Exception {
+
+		// Crée un contribuable né à Lausanne et ayant déménagé récemment à Orbe
+		final Long id = (Long) doInNewTransaction(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique robin = addNonHabitant("Robin", "DesBois", date(1965, 5, 23), Sexe.MASCULIN);
+				addForPrincipal(robin, date(1985,5,23), MotifFor.MAJORITE, date(2002,12,31), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
+				addForPrincipal(robin, date(2003,1,1), MotifFor.DEMENAGEMENT_VD, MockCommune.Orbe);
+				return robin.getNumero();
+			}
+		});
+
+		// L'oid doit être sur Orbe
+		doInNewTransaction(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique robin = (PersonnePhysique) tiersDAO.get(id);
+				assertNotNull(robin);
+				final Integer oid = robin.getOfficeImpotId();
+				assertNotNull(oid);
+				assertEquals(MockOfficeImpot.OID_ORBE.getNoColAdm(), oid.intValue());
+				return null;
+			}
+		});
+
+		// Annule le dernier for
+		doInNewTransaction(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+
+				final PersonnePhysique robin = (PersonnePhysique) tiersDAO.get(id);
+				assertNotNull(robin);
+
+				final ForFiscalPrincipal ffp = robin.getDernierForFiscalPrincipal();
+				assertNotNull(ffp);
+
+				tiersService.annuleForFiscal(ffp, false);
+				return null;
+			}
+		});
+
+		// L'oid doit maintenant être sur Lausanne
+		doInNewTransaction(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique robin = (PersonnePhysique) tiersDAO.get(id);
+				assertNotNull(robin);
+				final Integer oid = robin.getOfficeImpotId();
+				assertNotNull(oid);
+				assertEquals(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm(), oid.intValue());
 				return null;
 			}
 		});
