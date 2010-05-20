@@ -5,7 +5,9 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Set;
 
+import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.tiers.AnnuleEtRemplace;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -46,6 +48,60 @@ public class ActivationServiceImpl implements ActivationService {
 	public void annuleTiers(Tiers tiers, RegDate dateAnnulation) throws ActivationServiceException {
 
 		// [UNIREG-2340] On ne doit pas pouvoir annuler un tiers s'il possède des déclarations non-annulées qui couvrent des périodes postérieures à l'annulation
+		checkDeclarationsEnConflitAvecAnnulation(tiers, dateAnnulation);
+
+		// [UNIREG-2381] L'existence de certains fors doit également bloquer l'annulation du tiers
+		checkForsEnConflitAvecAnnulation(tiers, dateAnnulation);
+
+		final Date dateOperation = dateAnnulation.asJavaDate();
+		tiers.annulerPourDate(dateOperation);
+
+		if (tiers instanceof Contribuable) {
+			final Contribuable contribuable = (Contribuable) tiers;
+			tiersService.closeAllForsFiscaux(contribuable, dateAnnulation, MotifFor.ANNULATION);
+			final List<Tache> taches = tacheDAO.find(contribuable.getNumero());
+			for (Tache tache : taches) {
+				if (tache.getEtat() != TypeEtatTache.TRAITE && tache.getAnnulationDate() == null) {
+					tache.annulerPourDate(dateOperation);
+				}
+			}
+		}
+
+		if (tiers instanceof DebiteurPrestationImposable) {
+			final DebiteurPrestationImposable debiteur = (DebiteurPrestationImposable) tiers;
+			final ForDebiteurPrestationImposable forDebiteurPrestationImposable =debiteur.getForDebiteurPrestationImposableAt(dateAnnulation);
+			tiersService.closeForDebiteurPrestationImposable(debiteur, forDebiteurPrestationImposable, dateAnnulation);
+		}
+	}
+
+	/**
+	 * [UNIREG-2381] L'existence de certains fors doit bloquer l'annulation du tiers :
+	 * <ul>
+	 * <li>Tout for non-annulé dont la date de début est postérieure à la date d'annulation demandée</li>
+	 * <li>Tout for non-annulé fermé dont la date de fermeture est postérieure à la date d'annulation demandée</li>
+	 * </ul>
+	 * @throws ActivationServiceException en cas d'annulation bloquée par la présence de fors non-annulés
+	 */
+	private static void checkForsEnConflitAvecAnnulation(Tiers tiers, RegDate dateAnnulation) throws ActivationServiceException {
+		final RegDate seuilPourForBloquant = dateAnnulation.getOneDayAfter();
+		final List<ForFiscal> fors = tiers.getForsFiscauxNonAnnules(false);
+		if (fors != null && fors.size() > 0) {
+			for (ForFiscal ff : fors) {
+				if (RegDateHelper.isAfterOrEqual(ff.getDateDebut(), seuilPourForBloquant, NullDateBehavior.EARLIEST) ||
+						(ff.getDateFin() != null && ff.getDateFin().isAfterOrEqual(seuilPourForBloquant))) {
+
+					// problème
+					throw new ActivationServiceException("Il est interdit d'annuler un tiers pour lequel il existe des fors dont la date d'ouverture ou de fermeture est postérieure à la date d'annulation souhaitée.");
+				}
+			}
+		}
+	}
+
+	/**
+	 * [UNIREG-2340] Les déclarations (DI/LR) non-annulées qui couvrent une période postérieure à la date d'annulation doivent empêcher cette annulation
+	 * @throws ActivationServiceException en cas d'annulation bloquée par la présence de DI/LR non-annulée(s)
+	 */
+	private static void checkDeclarationsEnConflitAvecAnnulation(Tiers tiers, RegDate dateAnnulation) throws ActivationServiceException {
 		final RegDate seuilPourDeclarationBloquante = dateAnnulation.getOneDayAfter();
 		final List<Declaration> declarations = tiers.getDeclarationsSorted();
 		if (declarations != null && declarations.size() > 0) {
@@ -69,26 +125,6 @@ public class ActivationServiceImpl implements ActivationService {
 					throw new ActivationServiceException("Il est interdit d'annuler un tiers pour lequel il existe encore des déclarations couvrant une période postérieure à la date d'annulation souhaitée.");
 				}
 			}
-		}
-
-		final Date dateOperation = dateAnnulation.asJavaDate();
-		tiers.annulerPourDate(dateOperation);
-
-		if (tiers instanceof Contribuable) {
-			final Contribuable contribuable = (Contribuable) tiers;
-			tiersService.closeAllForsFiscaux(contribuable, dateAnnulation, MotifFor.ANNULATION);
-			final List<Tache> taches = tacheDAO.find(contribuable.getNumero());
-			for (Tache tache : taches) {
-				if (tache.getEtat() != TypeEtatTache.TRAITE && tache.getAnnulationDate() == null) {
-					tache.annulerPourDate(dateOperation);
-				}
-			}
-		}
-
-		if (tiers instanceof DebiteurPrestationImposable) {
-			final DebiteurPrestationImposable debiteur = (DebiteurPrestationImposable) tiers;
-			final ForDebiteurPrestationImposable forDebiteurPrestationImposable =debiteur.getForDebiteurPrestationImposableAt(dateAnnulation);
-			tiersService.closeForDebiteurPrestationImposable(debiteur, forDebiteurPrestationImposable, dateAnnulation);
 		}
 	}
 
