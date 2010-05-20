@@ -28,9 +28,11 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 
 	private static final int noCaOidRolleAubonne = 2;
 	private static final int noCaOidLausanne = 7;
+	private static final int noCaOidVevey = 18;
 
 	private long noOidRolleAubonne;
 	private long noOidLausanne;
+	private long noOidVevey;
 
 	@Override
 	public void onSetUp() throws Exception {
@@ -51,6 +53,7 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 			public Object execute(TransactionStatus status) throws Exception {
 				noOidRolleAubonne = tiersService.getOrCreateCollectiviteAdministrative(noCaOidRolleAubonne).getNumero();    // OID Rolle-Aubonne
 				noOidLausanne = tiersService.getOrCreateCollectiviteAdministrative(noCaOidLausanne).getNumero();            // OID Lausanne
+				noOidVevey = tiersService.getOrCreateCollectiviteAdministrative(noCaOidVevey).getNumero();                  // OID Vevey
 				return null;
 			}
 		});
@@ -264,6 +267,35 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 		Assert.assertEquals(2, caCache.size());
 		Assert.assertTrue(caCache.containsKey(noCaOidRolleAubonne));
 		Assert.assertTrue(caCache.containsKey(noCaOidLausanne));
+	}
+
+	/**
+	 * C'est le cas décrit dans le cas JIRA UNIREG-2434
+	 */
+	@Test
+	public void testDemenagementIlYADeuxAnsPuisEncoreAnneeDerniere() throws Exception {
+		final DeterminerMouvementsDossiersEnMasseProcessor proc = createProcessor();
+
+		final RegDate dateTraitement = RegDate.get();
+		final DeterminerMouvementsDossiersEnMasseProcessor.RangesUtiles ranges = new DeterminerMouvementsDossiersEnMasseProcessor.RangesUtiles(dateTraitement);
+		final DeterminerMouvementsDossiersEnMasseResults results = new DeterminerMouvementsDossiersEnMasseResults(dateTraitement);
+
+		final Contribuable ctb = addHabitant(noIndMarieParlotte);
+		final RegDate datePremierDemenagement = RegDate.get(dateTraitement.year() - 2, 6, 30);
+		final RegDate dateDeuxiemeDemenagement = RegDate.get(dateTraitement.year() - 1, 3, 1);
+		addForPrincipal(ctb, dateMajorite, MotifFor.MAJORITE, datePremierDemenagement, MotifFor.DEMENAGEMENT_VD, MockCommune.Aubonne);
+		addForPrincipal(ctb, datePremierDemenagement.addDays(1), MotifFor.DEMENAGEMENT_VD, dateDeuxiemeDemenagement, MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
+		addForPrincipal(ctb, dateDeuxiemeDemenagement.addDays(1), MotifFor.DEMENAGEMENT_VD, MockCommune.Vevey);
+
+		final Map<Integer, CollectiviteAdministrative> caCache = new HashMap<Integer, CollectiviteAdministrative>();
+		proc.traiterContribuable(ctb, ranges, caCache, results);
+
+		// mouvement d'envoi de Lausanne à Vevey
+		assertMouvementEnvoiEntreOid(results, ctb, noOidLausanne, noOidVevey);
+		Assert.assertEquals(2, caCache.size());
+		Assert.assertTrue(caCache.containsKey(noCaOidVevey));
+		Assert.assertTrue(caCache.containsKey(noCaOidLausanne));
+
 	}
 
 	private void assertPasDeMouvement(Contribuable ctb, DeterminerMouvementsDossiersEnMasseResults results) {

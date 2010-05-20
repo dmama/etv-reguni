@@ -143,7 +143,7 @@ public class DeterminerMouvementsDossiersEnMasseProcessor {
 		// que dit la spec ?
 		// 1. si assujettissement année n-1
 		// 1.1 si pas d'assujettissement au premier janvier de l'année n -> rien à faire
-		// 1.2 sinon, si assujettissement année n-2, alors mouvement à générer si changement d'OID entre début n-2 et fin n-1
+		// 1.2 sinon, si assujettissement année n-2, alors mouvement à générer si changement d'OID entre fin n-2 et fin n-1
 		// 1.3 sinon (assujettissement n mais pas n-2), alors mouvement à générer si changement d'OID entre début n-1 et fin n-1
 		// 2. sinon (pas d'assujettissement n-1) si pas d'assujettissement n-2 non plus -> rien à faire
 		// 3. sinon (assujettissement n-2 mais pas n-1 ni n), mouvement vers les archives sauf si dernier mouvement déjà comme ça
@@ -167,10 +167,12 @@ public class DeterminerMouvementsDossiersEnMasseProcessor {
 					final RegDate avant;
 					final List<DateRange> intersectionAnneeNMoinsDeux = DateRangeHelper.intersections(rangesUtiles.rangeAnneeNMoinsDeux, assujettissements);
 					if (intersectionAnneeNMoinsDeux != null) {
-						// assujettissement n-2 -> "avant" est la date de début de la période d'assujettissement sur n-2
-						avant = intersectionAnneeNMoinsDeux.get(0).getDateDebut();
+						// assujettissement n-2 -> "avant" est la date de fin de la dernière période d'assujettissement sur n-2
+						final int idxDernierePeriode = intersectionAnneeNMoinsDeux.size() - 1;
+						avant = intersectionAnneeNMoinsDeux.get(idxDernierePeriode).getDateFin();
 					}
 					else {
+						// pas d'assujettissement n-2 -> "avant" est la date de début de la première période d'assujettissement sur n-1
 						avant = intersectionAnneeNMoinsUn.get(0).getDateDebut();
 					}
 
