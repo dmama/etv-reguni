@@ -513,6 +513,22 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 	}
 
 	/**
+	 * Encode les 0-9 en A-J pour éviter de mettre des chiffres dans les noms/prénoms des personnes physiques
+	 */
+	private static String encodeDigitsInName(String originalName) {
+		final StringBuilder b = new StringBuilder();
+		for (char c : originalName.toCharArray()) {
+			if (Character.isDigit(c)) {
+				b.append((char) (c - '0' + 'A'));
+			}
+			else {
+				b.append(c);
+			}
+		}
+		return b.toString();
+	}
+
+	/**
 	 * [UNIREG-1386] Vérifie que le moteur de recherche supprime automatiquement les termes trop communs lorsqu'une exception
 	 * BooleanQuery.TooManyClause est levée par lucene.
 	 */
@@ -520,10 +536,10 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 	@Test
 	public void testRechercheCriteresTropCommuns() throws Exception {
 
-		List<Long> ids = (List<Long>) doInNewTransactionAndSession(new TransactionCallback() {
+		final List<Long> ids = (List<Long>) doInNewTransactionAndSession(new TransactionCallback() {
 			public Object doInTransaction(TransactionStatus status) {
 
-				List<Long> ids = new ArrayList<Long>(2000);
+				final List<Long> ids = new ArrayList<Long>(2000);
 
 				// Charge 2000 personnes dans l'index. Ces 2000 personnes possèdent toutes un nom de famille commençant par "Du Pont".
 				for (int i = 1; i < 2000; ++i) {
@@ -531,7 +547,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 					final String nom = String.format("Du Pont%4d", i); // "Du Pont0000".."Du Pont1999"
 					final String prenom = String.format("Michel%2d", i % 50); // 40 * (Michel00..Michel49)
 
-					PersonnePhysique pp = addNonHabitant(prenom, nom, date(1970, 1, 1), Sexe.MASCULIN);
+					final PersonnePhysique pp = addNonHabitant(encodeDigitsInName(prenom), encodeDigitsInName(nom), date(1970, 1, 1), Sexe.MASCULIN);
 					ids.add(pp.getNumero());
 				}
 				return ids;
@@ -541,9 +557,9 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 		globalTiersIndexer.schedule(ids);
 		globalTiersIndexer.sync();
 
-		// Recherche les 40 personnes nommées "Michel22 Du Pont*"
+		// Recherche les 40 personnes nommées "MichelCC Du Pont*"
 		final TiersCriteria criteria = new TiersCriteria();
-		criteria.setNomRaison("Michel22 Du Pont");
+		criteria.setNomRaison("MichelCC Du Pont");
 		criteria.setTypeRechercheDuNom(TypeRecherche.CONTIENT);
 
 		final List<TiersIndexedData> list = globalTiersSearcher.search(criteria);
@@ -559,7 +575,8 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 		
 		int i = 0;
 		for (TiersIndexedData d : list) {
-			assertEquals(String.format("Du Pont%4d Michel22", (i++ * 50 + 22)), d.getNom1());
+			final String nomAttendu = encodeDigitsInName(String.format("Du Pont%4d MichelCC", (i++ * 50 + 22)));
+			assertEquals(nomAttendu, d.getNom1());
 		}
 	}
 

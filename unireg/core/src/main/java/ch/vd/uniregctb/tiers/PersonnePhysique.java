@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -202,6 +203,8 @@ public class PersonnePhysique extends Contribuable {
 		return "Autre tiers";
 	}
 
+	private static final Pattern NOM_PRENOM_PATTERN = Pattern.compile("[']?[A-Za-zÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõöøùúûüýþÿŒœŠšŸŽž]['A-Za-zÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõöøùúûüýþÿŒœŠšŸŽž. -]*");
+
 	@Override
 	public ValidationResults validate() {
 		final ValidationResults results = super.validate();
@@ -211,8 +214,23 @@ public class PersonnePhysique extends Contribuable {
 		else if (habitant && (numeroIndividu == null || numeroIndividu <= 0L)) {
 			results.addError("Le numero d'individu du registre civil est un attribut obligatoire pour un habitant");
 		}
-		else if (!habitant && StringUtils.isBlank(nom)) {
-			results.addError("Le nom est un attribut obligatoire pour un non-habitant");
+		else if (!habitant) {
+
+			// nom : obligatoire
+			if (StringUtils.isBlank(nom)) {
+				results.addError("Le nom est un attribut obligatoire pour un non-habitant");
+			}
+			else if (!NOM_PRENOM_PATTERN.matcher(nom).matches()) {
+				results.addError("Le nom du non-habitant contient au moins un caractère invalide");
+			}
+
+			// prénom : facultatif, mais pas avec n'importe quoi
+			if (StringUtils.isBlank(prenom)) {
+				prenom = null;
+			}
+			else if (!NOM_PRENOM_PATTERN.matcher(prenom).matches()) {
+				results.addError("Le prénom du non-habitant contient au moins un caractère invalide");
+			}
 		}
 
 		return results;

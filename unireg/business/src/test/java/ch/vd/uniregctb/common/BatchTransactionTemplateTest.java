@@ -73,6 +73,18 @@ public class BatchTransactionTemplateTest extends BusinessTest {
 		});
 	}
 
+	private static String buildNameForPP(List<Long> batchPP) {
+		final StringBuilder b = new StringBuilder("Traitement du batch");
+		for (Long idx : batchPP) {
+			final String str = Long.toString(idx);
+			b.append(" ");
+			for (char c : str.toCharArray()) {
+				b.append((char) (c - '0' + 'A'));
+			}
+		}
+		return b.toString();
+	}
+
 	@NotTransactional
 	@Test
 	public void testSansRepriseSansException() throws Exception {
@@ -92,7 +104,7 @@ public class BatchTransactionTemplateTest extends BusinessTest {
 			@Override
 			public boolean doInTransaction(List<Long> batch, JobResults rapport) throws Exception {
 				assertTrue(batch.size() == 1 || batch.size() == 2);
-				addNonHabitant("Test", "Traitement du batch = " + batch, RegDate.get(), Sexe.MASCULIN);
+				addNonHabitant("Test", buildNameForPP(batch), RegDate.get(), Sexe.MASCULIN);
 				return true;
 			}
 
@@ -115,11 +127,11 @@ public class BatchTransactionTemplateTest extends BusinessTest {
 				assertEquals(3, lines.size());
 
 				final PersonnePhysique tiers0 = (PersonnePhysique) lines.get(0);
-				assertEquals("Traitement du batch = [0, 1]", tiers0.getNom());
+				assertEquals("Traitement du batch A B", tiers0.getNom());
 				final PersonnePhysique tiers1 = (PersonnePhysique) lines.get(1);
-				assertEquals("Traitement du batch = [2, 3]", tiers1.getNom());
+				assertEquals("Traitement du batch C D", tiers1.getNom());
 				final PersonnePhysique tiers2 = (PersonnePhysique) lines.get(2);
-				assertEquals("Traitement du batch = [4]", tiers2.getNom());
+				assertEquals("Traitement du batch E", tiers2.getNom());
 				return null;
 			}
 		});
@@ -149,7 +161,7 @@ public class BatchTransactionTemplateTest extends BusinessTest {
 					throw new RuntimeException("Rollback du deuxième batch");
 				}
 
-				addNonHabitant("Test", "Traitement du batch = " + batch, RegDate.get(), Sexe.MASCULIN);
+				addNonHabitant("Test", buildNameForPP(batch), RegDate.get(), Sexe.MASCULIN);
 				return true;
 			}
 
@@ -172,9 +184,9 @@ public class BatchTransactionTemplateTest extends BusinessTest {
 				assertEquals(2, lines.size());
 
 				final PersonnePhysique tiers0 = (PersonnePhysique) lines.get(0);
-				assertEquals("Traitement du batch = [0, 1]", tiers0.getNom());
+				assertEquals("Traitement du batch A B", tiers0.getNom());
 				final PersonnePhysique tiers1 = (PersonnePhysique) lines.get(1);
-				assertEquals("Traitement du batch = [4]", tiers1.getNom());
+				assertEquals("Traitement du batch E", tiers1.getNom());
 				return null;
 			}
 		});
@@ -200,7 +212,7 @@ public class BatchTransactionTemplateTest extends BusinessTest {
 			@Override
 			public boolean doInTransaction(List<Long> batch, JobResults rapport) throws Exception {
 				assertTrue(batch.size() == 1 || batch.size() == 2);
-				addNonHabitant("Test", "Traitement du batch = " + batch, RegDate.get(), Sexe.MASCULIN);
+				addNonHabitant("Test", buildNameForPP(batch), RegDate.get(), Sexe.MASCULIN);
 				return true;
 			}
 
@@ -223,11 +235,11 @@ public class BatchTransactionTemplateTest extends BusinessTest {
 				assertEquals(3, lines.size());
 
 				final PersonnePhysique tiers0 = (PersonnePhysique) lines.get(0);
-				assertEquals("Traitement du batch = [0, 1]", tiers0.getNom());
+				assertEquals("Traitement du batch A B", tiers0.getNom());
 				final PersonnePhysique tiers1 = (PersonnePhysique) lines.get(1);
-				assertEquals("Traitement du batch = [2, 3]", tiers1.getNom());
+				assertEquals("Traitement du batch C D", tiers1.getNom());
 				final PersonnePhysique tiers2 = (PersonnePhysique) lines.get(2);
-				assertEquals("Traitement du batch = [4]", tiers2.getNom());
+				assertEquals("Traitement du batch E", tiers2.getNom());
 				return null;
 			}
 		});
@@ -260,7 +272,7 @@ public class BatchTransactionTemplateTest extends BusinessTest {
 					throw new RuntimeException("Rollback du deuxième batch");
 				}
 
-				addNonHabitant("Test", "Traitement du batch = " + batch, RegDate.get(), Sexe.MASCULIN);
+				addNonHabitant("Test", buildNameForPP(batch), RegDate.get(), Sexe.MASCULIN);
 				return true;
 			}
 
@@ -296,11 +308,11 @@ public class BatchTransactionTemplateTest extends BusinessTest {
 				assertEquals(3, lines.size());
 
 				final PersonnePhysique tiers0 = (PersonnePhysique) lines.get(0);
-				assertEquals("Traitement du batch = [0, 1]", tiers0.getNom());
+				assertEquals("Traitement du batch A B", tiers0.getNom());
 				final PersonnePhysique tiers1 = (PersonnePhysique) lines.get(1);
-				assertEquals("Traitement du batch = [3]", tiers1.getNom());
+				assertEquals("Traitement du batch D", tiers1.getNom());
 				final PersonnePhysique tiers2 = (PersonnePhysique) lines.get(2);
-				assertEquals("Traitement du batch = [4]", tiers2.getNom());
+				assertEquals("Traitement du batch E", tiers2.getNom());
 
 				return null;
 			}

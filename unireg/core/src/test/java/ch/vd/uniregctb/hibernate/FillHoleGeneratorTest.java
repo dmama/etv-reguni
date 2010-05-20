@@ -147,14 +147,23 @@ public class FillHoleGeneratorTest extends CoreDAOTest {
 		doInNewTransaction(new TransactionCallback() {
 			public Object doInTransaction(TransactionStatus status) {
 				for (Long id : ids) {
-					PersonnePhysique pp = new PersonnePhysique(false);
+					final PersonnePhysique pp = new PersonnePhysique(false);
 					pp.setNumero(id);
-					pp.setNom("PP-" + id);
+					pp.setNom(buildNomTiers(id));
 					hibernateTemplate.save(pp);
 				}
 				return null;
 			}
 		});
+	}
+
+	private static String buildNomTiers(long index) {
+		final StringBuilder b = new StringBuilder("pp-");
+		final String indexStr = Long.toString(index);
+		for (char c : indexStr.toCharArray()) {
+			b.append((char) ((c - '0') + 'A'));
+		}
+		return b.toString();
 	}
 
 	/**

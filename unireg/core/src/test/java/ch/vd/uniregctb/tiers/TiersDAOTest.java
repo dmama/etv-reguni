@@ -956,11 +956,11 @@ public class TiersDAOTest extends CoreDAOTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				PersonnePhysique nh1 = new PersonnePhysique(false);
-				nh1.setNom("nh1");
+				nh1.setNom("nh-un");
 				nh1 = (PersonnePhysique)dao.save(nh1);
 
 				PersonnePhysique nh2 = new PersonnePhysique(false);
-				nh2.setNom("nh2");
+				nh2.setNom("nh-deux");
 				nh2 = (PersonnePhysique)dao.save(nh2);
 
 				MenageCommun mc = new MenageCommun();
@@ -1029,7 +1029,7 @@ public class TiersDAOTest extends CoreDAOTest {
 				Tiers t = l.get(i);
 				if (t instanceof PersonnePhysique) {
 					PersonnePhysique nh = (PersonnePhysique)t;
-					if (nh.getNom().equals("nh2")) {
+					if (nh.getNom().equals("nh-deux")) {
 						nh2 = nh;
 					}
 					else {
@@ -1330,7 +1330,7 @@ public class TiersDAOTest extends CoreDAOTest {
 
 				for (int i = 0; i < size; ++i) {
 					PersonnePhysique pp = new PersonnePhysique(false);
-					pp.setNom("pp" + i);
+					pp.setNom(buildNomSourcier(i));
 					pp.setDateNaissance(RegDate.get(2000, 1, 1));
 					pp = (PersonnePhysique) dao.save(pp);
 
@@ -1355,6 +1355,15 @@ public class TiersDAOTest extends CoreDAOTest {
 		final Set<RapportEntreTiers> rapports = t0.getRapportsObjet();
 		assertNotNull(rapports);
 		assertEquals(size, rapports.size());
+	}
+
+	private static String buildNomSourcier(int index) {
+		final StringBuilder b = new StringBuilder("pp-");
+		final String indexStr = Long.toString(index);
+		for (char c : indexStr.toCharArray()) {
+			b.append((char) ((c - '0') + 'A'));
+		}
+		return b.toString();
 	}
 
 	/**
