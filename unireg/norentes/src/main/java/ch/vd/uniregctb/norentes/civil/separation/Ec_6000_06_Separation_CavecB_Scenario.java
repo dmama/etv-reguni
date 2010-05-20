@@ -2,12 +2,15 @@ package ch.vd.uniregctb.norentes.civil.separation;
 
 import annotation.Check;
 import annotation.Etape;
+
+import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.civil.model.EnumTypePermis;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
+import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
 import ch.vd.uniregctb.norentes.common.EvenementCivilScenario;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
@@ -78,10 +81,12 @@ public class Ec_6000_06_Separation_CavecB_Scenario extends EvenementCivilScenari
 				addOrigine(indEsad, MockPays.Albanie, null, dateNaissanceEsad);
 				addNationalite(indEsad, MockPays.Albanie, dateNaissanceEsad, null, 0);
 				addPermis(indEsad, EnumTypePermis.ETABLLISSEMENT, RegDate.get(2005, 1, 19), null, 0, false);
+				addAdresse(indEsad, EnumTypeAdresse.PRINCIPALE, MockRue.Renens.QuatorzeAvril, null, RegDate.get(2005, 1, 19), null);
 
 				addOrigine(indAida, MockPays.Albanie, null, dateNaissanceAida);
 				addNationalite(indAida, MockPays.Albanie, dateNaissanceAida, null, 0);
 				addPermis(indAida, EnumTypePermis.ANNUEL, RegDate.get(2007, 7, 7), null, 0, false);
+				addAdresse(indAida, EnumTypeAdresse.PRINCIPALE, MockRue.Renens.QuatorzeAvril, null, RegDate.get(2007, 7, 7), null);
 			}
 
 		});

@@ -2,8 +2,11 @@ package ch.vd.uniregctb.norentes.civil.veuvage;
 
 import annotation.Check;
 import annotation.Etape;
+
+import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.civil.model.EnumTypeEtatCivil;
+import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
@@ -69,6 +72,8 @@ public class Ec_10000_02_Veuvage_NonSuisseMarieSeul_Scenario extends EvenementCi
 				addOrigine(indMikkel, MockPays.Danemark, null, RegDate.get(1961, 3, 12));
 				addNationalite(indMikkel, MockPays.Danemark, RegDate.get(1961, 3, 12), null, 0);
 				addEtatCivil(indMikkel, dateVeuvage, EnumTypeEtatCivil.VEUF);
+				addAdresse(indMikkel, EnumTypeAdresse.PRINCIPALE, MockRue.VillarsSousYens.RuelleDuCarroz, null, RegDate.get(1974, 3, 3), avantDateMariage);
+				addAdresse(indMikkel, EnumTypeAdresse.PRINCIPALE, MockRue.Renens.QuatorzeAvril, null, dateMariage, null);
 			}
 		});
 	}

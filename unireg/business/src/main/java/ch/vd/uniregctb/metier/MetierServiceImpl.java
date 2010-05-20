@@ -5,26 +5,28 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import ch.vd.uniregctb.tiers.*;
-
 import org.apache.commons.lang.StringUtils;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 
+import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.uniregctb.adresse.AdresseException;
+import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.adresse.AdresseService;
+import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.EtatCivilHelper;
 import ch.vd.uniregctb.common.FiscalDateHelper;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.evenement.common.EvenementCivilHandlerException;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
+import ch.vd.uniregctb.interfaces.model.CommuneSimple;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -33,10 +35,27 @@ import ch.vd.uniregctb.metier.modeimposition.DivorceModeImpositionResolver;
 import ch.vd.uniregctb.metier.modeimposition.FusionMenagesResolver;
 import ch.vd.uniregctb.metier.modeimposition.MariageModeImpositionResolver;
 import ch.vd.uniregctb.metier.modeimposition.ModeImpositionResolver;
-import ch.vd.uniregctb.metier.modeimposition.ModeImpositionResolverException;
 import ch.vd.uniregctb.metier.modeimposition.ModeImpositionResolver.Imposition;
+import ch.vd.uniregctb.metier.modeimposition.ModeImpositionResolverException;
 import ch.vd.uniregctb.situationfamille.SituationFamilleService;
+import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
+import ch.vd.uniregctb.tiers.ForFiscal;
+import ch.vd.uniregctb.tiers.ForFiscalAutreElementImposable;
+import ch.vd.uniregctb.tiers.ForFiscalAutreImpot;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalRevenuFortune;
+import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
+import ch.vd.uniregctb.tiers.MenageCommun;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.tiers.RapportEntreTiers;
+import ch.vd.uniregctb.tiers.SituationFamille;
+import ch.vd.uniregctb.tiers.SituationFamilleMenageCommun;
+import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.Tiers.ForsParType;
+import ch.vd.uniregctb.tiers.TiersDAO;
+import ch.vd.uniregctb.tiers.TiersException;
+import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
@@ -1229,17 +1248,13 @@ public class MetierServiceImpl implements MetierService {
 
 			// S'il existe un for sur le ménage (non indigents)
 			if (forMenage != null) {
-				final ModeImposition imposition = forMenage.getModeImposition();
-				final Integer noOfsEtendu = forMenage.getNumeroOfsAutoriteFiscale();
-				final TypeAutoriteFiscale typeAutoriteFiscale = forMenage.getTypeAutoriteFiscale();
-
 				final ModeImpositionResolver divorceResolver = new DivorceModeImpositionResolver(tiersService, numeroEvenement);
 
 				// on ouvre un nouveau for fiscal pour chaque tiers
-				createForFiscalPrincipal(date, principal, imposition, noOfsEtendu, typeAutoriteFiscale, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, divorceResolver, changeHabitantFlag);
+				createForFiscalPrincipalApresFermetureMenage(date, principal, forMenage, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, divorceResolver, changeHabitantFlag, numeroEvenement, false);
 				if (conjoint != null) {
 					// null si marié seul
-					createForFiscalPrincipal(date, conjoint, imposition, noOfsEtendu, typeAutoriteFiscale, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, divorceResolver, changeHabitantFlag);
+					createForFiscalPrincipalApresFermetureMenage(date, conjoint, forMenage, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, divorceResolver, changeHabitantFlag, numeroEvenement, false);
 				}
 			}
 
@@ -1447,45 +1462,83 @@ public class MetierServiceImpl implements MetierService {
 	 * @return
 	 */
 	private boolean isSeparesFiscalement(RegDate date, PersonnePhysique principal, PersonnePhysique conjoint) {
-		EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(principal, date);
+		final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(principal, date);
 		return !couple.estComposeDe(principal, conjoint);
 	}
 
 	/**
 	 * Crée un nouveau for fiscal principal pour le tiers en suivant les règles pour divorce/séparation.
 	 *
-	 * @param contribuable
-	 *            le contribuable pour qui on ouvre le nouveau for.
-	 * @param modeImpotCouple
-	 *            ancien mode d'imposition du couple/ménage.
-	 * @param numeroOfsAutoriteFiscale
-	 *            autorité fiscale.
-	 * @param typeAutoriteFiscale
-	 *            le type d'autorité fiscale du for à ouvrir
-	 * @param motifOuverture
-	 *            le motif d'ouverture.
+	 * @param pp le contribuable pour qui on ouvre le nouveau for.
+	 * @param motifOuverture le motif d'ouverture
 	 * @param changeHabitantFlag
+	 * @param numeroEvenement
+	 * @param autoriseSortieDuCantonVersEtranger si <code>true</code>, un for couple vaudois pourra donner naissance à un for individuel HS, si <code>false</code> une erreur est levée dans ce cas
 	 * @return le for créé.
 	 */
-	private ForFiscalPrincipal createForFiscalPrincipal(RegDate date, PersonnePhysique contribuable, ModeImposition modeImpotCouple,
-			Integer numeroOfsAutoriteFiscale, TypeAutoriteFiscale typeAutoriteFiscale, MotifFor motifOuverture,
-			ModeImpositionResolver modeImpositionResolver, boolean changeHabitantFlag) {
+	private ForFiscalPrincipal createForFiscalPrincipalApresFermetureMenage(RegDate date, PersonnePhysique pp, ForFiscalPrincipal forMenage, MotifFor motifOuverture,
+	                                                                        ModeImpositionResolver modeImpositionResolver, boolean changeHabitantFlag, Long numeroEvenement,
+	                                                                        boolean autoriseSortieDuCantonVersEtranger) {
 
-		final Imposition nouveauMode;
 		try {
-			nouveauMode = modeImpositionResolver.resolve(contribuable, date, modeImpotCouple);
+			// [UNIREG-2143] prendre en compte l'adresse de domicile pour établissement du for
+			final AdresseGenerique adresseDomicile = adresseService.getAdresseFiscale(pp, TypeAdresseFiscale.DOMICILE, date, false);
+
+			final Integer noOfsEtendu;
+			final TypeAutoriteFiscale typeAutoriteFiscale;
+			if (adresseDomicile == null) {
+				// pas d'adresse de domicile connue -> on n'ouvre aucun for
+				final String message = String.format("Adresse de domicile du contribuable %s inconnue au %s : pas d'ouverture de for", FormatNumeroHelper.numeroCTBToDisplay(pp.getNumero()), RegDateHelper.dateToDisplayString(date));
+				Audit.warn(numeroEvenement, message);
+
+				noOfsEtendu = null;
+				typeAutoriteFiscale = null;
+			}
+			else if (adresseDomicile.getNoOfsPays() == null || adresseDomicile.getNoOfsPays() == ServiceInfrastructureService.noOfsSuisse) {
+				// en Suisse
+				final CommuneSimple commune = serviceInfra.getCommuneByAdresse(adresseDomicile);
+				if (commune != null) {
+					noOfsEtendu = commune.getNoOFSEtendu();
+					typeAutoriteFiscale = commune.isVaudoise() ? TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD : TypeAutoriteFiscale.COMMUNE_HC;
+				}
+				else {
+					// pas de commune identifiable -> c'est une erreur grave (adresse suisse sans commune...)
+					final String message = String.format("Commune non identifiable pour l'adresse de domicile du contribuable %s au %s", FormatNumeroHelper.numeroCTBToDisplay(pp.getNumero()), RegDateHelper.dateToDisplayString(date));
+					throw new EvenementCivilHandlerException(message);
+				}
+			}
+			else {
+				// à l'étranger
+				noOfsEtendu = adresseDomicile.getNoOfsPays();
+				typeAutoriteFiscale = TypeAutoriteFiscale.PAYS_HS;
+			}
+
+			// erreur si sortie du canton vers l'étranger n'es pas autorisée
+			if (!autoriseSortieDuCantonVersEtranger && forMenage.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD && typeAutoriteFiscale == TypeAutoriteFiscale.PAYS_HS) {
+				final String message = String.format("D'après son adresse de domicile, on devrait ouvrir un for hors-Suisse pour le contribuable %s alors que le for du ménage %s était vaudois",
+													FormatNumeroHelper.numeroCTBToDisplay(pp.getNumero()), FormatNumeroHelper.numeroCTBToDisplay(forMenage.getTiers().getNumero()));
+				throw new EvenementCivilHandlerException(message);
+			}
+
+			if (noOfsEtendu != null) {
+				final Imposition nouveauMode = modeImpositionResolver.resolve(pp, date, forMenage.getModeImposition());
+				return tiersService.openForFiscalPrincipal(pp, nouveauMode.getDateDebut(), MotifRattachement.DOMICILE, noOfsEtendu, typeAutoriteFiscale, nouveauMode.getModeImposition(), motifOuverture, changeHabitantFlag);
+			}
+			else {
+				return null;
+			}
+		}
+		catch (AdresseException e) {
+			final String message = String.format("Impossible de déterminer l'adresse de domicile du contribuable %s : pas d'ouverture de for", FormatNumeroHelper.numeroCTBToDisplay(pp.getNumero()));
+			Audit.warn(message);
+			return null;
 		}
 		catch (ModeImpositionResolverException ex) {
 			throw new EvenementCivilHandlerException(ex.getMessage(), ex);
 		}
-
-		ForFiscalPrincipal forFiscalPrincipal = tiersService.openForFiscalPrincipal(contribuable, date, MotifRattachement.DOMICILE,
-				numeroOfsAutoriteFiscale, typeAutoriteFiscale, ModeImposition.ORDINAIRE, motifOuverture, changeHabitantFlag);
-
-		forFiscalPrincipal.setModeImposition(nouveauMode.getModeImposition());
-		forFiscalPrincipal.setDateDebut(nouveauMode.getDateDebut());
-
-		return forFiscalPrincipal;
+		catch (InfrastructureException ex) {
+			throw new EvenementCivilHandlerException(ex.getMessage(), ex);
+		}
 	}
 
 
@@ -1641,8 +1694,7 @@ public class MetierServiceImpl implements MetierService {
 		ForFiscalPrincipal ffpApresDeces = defunt.getForFiscalPrincipalAt(lendemainDeces);
 		if (ffpApresDeces != null && ffpApresDeces.getDateDebut().equals(lendemainDeces) && MotifFor.VEUVAGE_DECES == ffpApresDeces.getMotifOuverture()) {
 			// si le défunt posède un for le lendemain du décès, lui et son conjoint sont décédés le même jour
-			Audit.info(numeroEvenement, "Les deux conjoints sont décédés le même jour");
-			Audit.info(numeroEvenement, "Annulation du for fiscal du deuxième défunt");
+			Audit.info(numeroEvenement, "Les deux conjoints sont décédés le même jour : annulation du for fiscal du deuxième défunt");
 			tiersService.annuleForFiscal(ffpApresDeces, true);
 
 			defunt.setBlocageRemboursementAutomatique(true);
@@ -1698,24 +1750,19 @@ public class MetierServiceImpl implements MetierService {
 			}
 
 			// vérification de l'assujettissement du ménage
-			if (forMenage != null) {
-				ModeImposition imposition = forMenage.getModeImposition();
-				Integer noOfsEtendu = forMenage.getNumeroOfsAutoriteFiscale();
-				TypeAutoriteFiscale typeAutoriteFiscale = forMenage.getTypeAutoriteFiscale();
+			if (forMenage != null && veuf != null) {
+				// résolution du mode d'imposition du tiers survivant
+				final ModeImpositionResolver decesResolver = new DecesModeImpositionResolver(tiersService, numeroEvenement);
 
-				if (veuf != null) {
+				/*
+				 * on ouvre un nouveau for fiscal sur le tiers survivant
+				 */
+				final ForFiscalPrincipal ffp = createForFiscalPrincipalApresFermetureMenage(lendemainDeces, veuf, forMenage, MotifFor.VEUVAGE_DECES, decesResolver, true, numeroEvenement, true);
 
-					// résolution du mode d'imposition du tiers survivant
-					ModeImpositionResolver decesResolver = new DecesModeImpositionResolver(tiersService, numeroEvenement);
-
-					/*
-					 * on ouvre un nouveau for fiscal sur le tiers survivant
-					 */
-					createForFiscalPrincipal(lendemainDeces, veuf, imposition, noOfsEtendu, typeAutoriteFiscale, MotifFor.VEUVAGE_DECES, decesResolver, true);
-
-					/*
-					 * réouverture des fors secondaires actifs à la date du décès sur le tiers survivant
-					 */
+				/*
+				 * réouverture des fors secondaires actifs à la date du décès sur le tiers survivant
+				 */
+				if (ffp != null) {
 					createForsSecondaires(lendemainDeces, veuf, forsSecondaires, MotifFor.VEUVAGE_DECES);
 					createForsAutreElementImpossable(lendemainDeces, veuf, forsAutreElement, MotifFor.VEUVAGE_DECES);
 				}
@@ -2010,10 +2057,6 @@ public class MetierServiceImpl implements MetierService {
 		}
 
 		if (forMenage != null) {
-			final ModeImposition imposition = forMenage.getModeImposition();
-			final Integer noOfsEtendu = forMenage.getNumeroOfsAutoriteFiscale();
-			final TypeAutoriteFiscale typeAutoriteFiscale = forMenage.getTypeAutoriteFiscale();
-
 			/*
 			 * Résolution du mode d'imposition du veuf
 			 */
@@ -2021,12 +2064,14 @@ public class MetierServiceImpl implements MetierService {
 			/*
 			 * ouverture d'un nouveau for fiscal sur le veuf
 			 */
-			createForFiscalPrincipal(date.getOneDayAfter(), veuf, imposition, noOfsEtendu, typeAutoriteFiscale, MotifFor.VEUVAGE_DECES, decesResolver, true);
+			final ForFiscalPrincipal ffp = createForFiscalPrincipalApresFermetureMenage(date.getOneDayAfter(), veuf, forMenage, MotifFor.VEUVAGE_DECES, decesResolver, true, numeroEvenement, true);
 			/*
 			 * Réouverture des fors secondaire et autre element sur le veuf
 			 */
-			createForsSecondaires(date.getOneDayAfter(), veuf, forsSecondaires, MotifFor.VEUVAGE_DECES);
-			createForsAutreElementImpossable(date.getOneDayAfter(), veuf, forsAutreElement, MotifFor.VEUVAGE_DECES);
+			if (ffp != null) {
+				createForsSecondaires(date.getOneDayAfter(), veuf, forsSecondaires, MotifFor.VEUVAGE_DECES);
+				createForsAutreElementImpossable(date.getOneDayAfter(), veuf, forsAutreElement, MotifFor.VEUVAGE_DECES);
+			}
 		}
 
 		if (!StringUtils.isBlank(remarque)) {

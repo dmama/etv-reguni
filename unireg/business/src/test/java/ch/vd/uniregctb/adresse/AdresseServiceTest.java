@@ -4515,7 +4515,7 @@ public class AdresseServiceTest extends BusinessTest {
 
 		// un contribuable hors-Suisse avec un représentant conventionnel en Suisse (avec extension de l'exécution forcée)
 		final PersonnePhysique ctb = addNonHabitant(noTiers, "Claude-Alain", "Proz", date(1953, 11, 2), Sexe.MASCULIN);
-		addAdresseEtrangere(ctb, TypeAdresseTiers.DOMICILE, date(2000, 1, 1), null, "Izmir", MockPays.Turquie);
+		addAdresseEtrangere(ctb, TypeAdresseTiers.DOMICILE, date(2000, 1, 1), null, null, "Izmir", MockPays.Turquie);
 		final Entreprise representant = addEntreprise(noEntreprise);
 		addRepresentationConventionnelle(ctb, representant, date(2000, 1, 1), true);
 
