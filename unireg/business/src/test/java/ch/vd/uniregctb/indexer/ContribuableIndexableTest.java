@@ -56,7 +56,6 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
-import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.tiers.TiersServiceImpl;
 import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.GenreImpot;
@@ -982,6 +981,10 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		public Contribuable getContribuable(DebiteurPrestationImposable debiteur) {
 			final Long ctbId = debiteur.getContribuableId();
 			return (Contribuable) get(ctbId);
+		}
+
+		public void updateOids(Map<Long, Integer> tiersOidsMapping) {
+			throw new NotImplementedException();
 		}
 	}
 }

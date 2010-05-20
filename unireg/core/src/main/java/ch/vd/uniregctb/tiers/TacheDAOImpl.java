@@ -390,11 +390,12 @@ public class TacheDAOImpl extends GenericDAOImpl<Tache, Long> implements TacheDA
 					"CTB_ID = :ctbId and " +
 					"ANNULATION_DATE is null"; // inutiles de modifier les tâches annulées pour rien
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void updateCollAdmAssignee(final Long ctbId, final Integer newOid) {
+	public void updateCollAdmAssignee(final Map<Long, Integer> tiersOidsMapping) {
 
+		if (tiersOidsMapping == null || tiersOidsMapping.isEmpty()) {
+			return;
+		}
+		
 		// [UNIREG-1024] On met-à-jour les tâches encore ouvertes, à l'exception des tâches de contrôle de dossier
 		getHibernateTemplate().executeWithNativeSession(new HibernateCallback() {
 			public Object doInHibernate(Session session) throws HibernateException, SQLException {
@@ -404,9 +405,11 @@ public class TacheDAOImpl extends GenericDAOImpl<Tache, Long> implements TacheDA
 
 					// met-à-jour les tâches concernées
 					final Query update = session.createSQLQuery(updateCollAdm);
-					update.setParameter("oid", newOid);
-					update.setParameter("ctbId", ctbId);
-					update.executeUpdate();
+					for (Map.Entry<Long, Integer> e : tiersOidsMapping.entrySet()) {
+						update.setParameter("ctbId", e.getKey());
+						update.setParameter("oid", e.getValue());
+						update.executeUpdate();
+					}
 
 					return null;
 				}

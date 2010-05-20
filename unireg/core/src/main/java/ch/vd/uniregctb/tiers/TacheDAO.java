@@ -134,12 +134,11 @@ public interface TacheDAO extends GenericDAO<Tache, Long> {
 	public <T extends Tache> List<T> listTaches(long noCtb, TypeTache type);
 
 	/**
-	 * Met-à-jour les collectivités administratives assignées sur les tâches en instance du tiers spécifié.
+	 * Met-à-jour les collectivités administratives assignées sur les tâches en instance des tiers spécifiés.
 	 *
-	 * @param ctbId le numéro du contribuable
-	 * @param newOid le numéro technique de l'office d'impôt à assigner.
+	 * @param tiersOidsMapping le mapping numéro de tiers vers numéro d'oid.
 	 */
-	void updateCollAdmAssignee(Long ctbId, Integer newOid);
+	void updateCollAdmAssignee(Map<Long, Integer> tiersOidsMapping);
 
 	/**
 	 * Calcul et retourne les statistiques des tâches en instance au moment de l'appel.

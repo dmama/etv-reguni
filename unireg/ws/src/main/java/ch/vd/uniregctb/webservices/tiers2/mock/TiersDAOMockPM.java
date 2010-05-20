@@ -11,6 +11,7 @@ import javax.persistence.NonUniqueResultException;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -201,6 +202,10 @@ public class TiersDAOMockPM implements TiersDAO {
 	}
 
 	public Contribuable getContribuable(DebiteurPrestationImposable debiteur) {
+		throw new NotImplementedException();
+	}
+
+	public void updateOids(Map<Long, Integer> tiersOidsMapping) {
 		throw new NotImplementedException();
 	}
 }
