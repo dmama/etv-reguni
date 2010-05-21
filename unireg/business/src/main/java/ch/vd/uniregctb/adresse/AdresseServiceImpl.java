@@ -101,7 +101,7 @@ public class AdresseServiceImpl implements AdresseService {
 	}
 
 	protected AdresseServiceImpl(TiersService tiersService, TiersDAO tiersDAO, ServiceInfrastructureService serviceInfra,
-			ServicePersonneMoraleService servicePM, ServiceCivilService serviceCivilService) {
+	                             ServicePersonneMoraleService servicePM, ServiceCivilService serviceCivilService) {
 		this.tiersService = tiersService;
 		this.tiersDAO = tiersDAO;
 		this.serviceInfra = serviceInfra;
@@ -137,7 +137,7 @@ public class AdresseServiceImpl implements AdresseService {
 		}
 
 		final AdresseEnvoiDetaillee adresseEnvoi = new AdresseEnvoiDetaillee(source);
-		
+
 		fillDestinataire(adresseEnvoi, envoi.destinataire);
 		fillDestination(adresseEnvoi, adresseDestination, envoi.destination, envoi.avecPourAdresse, date);
 
@@ -199,7 +199,7 @@ public class AdresseServiceImpl implements AdresseService {
 		}
 
 		if (tiers instanceof DebiteurPrestationImposable) {
-			final DebiteurPrestationImposable debiteur=(DebiteurPrestationImposable) tiers;
+			final DebiteurPrestationImposable debiteur = (DebiteurPrestationImposable) tiers;
 
 			// Dans le cas du débiteur, la destination est l'adresse du contribuable associé, sauf si le débiteur possède lui-même une adresse du type considéré
 			final TypeAdresseTiers coreType = type.asCoreType();
@@ -216,7 +216,7 @@ public class AdresseServiceImpl implements AdresseService {
 		}
 
 		if (type == TypeAdresseFiscale.POURSUITE) {
-			
+
 			if (TiersHelper.estSousTutelle(tiers, date)) {
 				// [UNIREG-1808] dans le cas de l'adresse de poursuite d'un contribuable sous tutelle, le destinaire de l'adresse de poursuite est l'autorité tutelaire.
 				final Tiers autoriteTutelaire = getRepresentant(tiers, TypeAdresseRepresentant.AUTORITE_TUTELAIRE, date);
@@ -226,7 +226,7 @@ public class AdresseServiceImpl implements AdresseService {
 				else {
 					// (msi 10.03.2010) Précision de Thierry: dans le cas d'un contribuable sous tutuelle sans autorité tutelaire renseignée, l'adresse de poursuite est simplement
 					// l'adresse de domicile du contribuable. L'office de poursuite sera donc déterminé par SIPF à partir de l'adresse de domicile, ce qui est le meilleure choix
-					// possible sans information plus spécifique.  
+					// possible sans information plus spécifique.
 				}
 			}
 
@@ -438,9 +438,9 @@ public class AdresseServiceImpl implements AdresseService {
 	/**
 	 * Rempli l'adresse de destination associée à une personne physique.
 	 *
-	 * @param adresse  l'adresse d'envoi détaillée à remplir
-	 * @param personne une personne physique
-	 * @param date     la date de validité de l'adresse
+	 * @param adresse            l'adresse d'envoi détaillée à remplir
+	 * @param personne           une personne physique
+	 * @param date               la date de validité de l'adresse
 	 * @param adresseDestination l'adresse générique pré-calculée
 	 */
 	private void fillDestination(AdresseEnvoiDetaillee adresse, PersonnePhysique personne, RegDate date, AdresseGenerique adresseDestination) {
@@ -486,9 +486,9 @@ public class AdresseServiceImpl implements AdresseService {
 	/**
 	 * Rempli l'adresse de destination associée à un ménage commun.
 	 *
-	 * @param adresse      l'adresse d'envoi détaillée à remplir
-	 * @param menageCommun un ménage commun
-	 * @param date         la date de validité de l'adresse
+	 * @param adresse            l'adresse d'envoi détaillée à remplir
+	 * @param menageCommun       un ménage commun
+	 * @param date               la date de validité de l'adresse
 	 * @param adresseDestination l'adresse générique pré-calculée
 	 */
 	private void fillDestination(AdresseEnvoiDetaillee adresse, MenageCommun menageCommun, RegDate date, AdresseGenerique adresseDestination) {
@@ -523,7 +523,7 @@ public class AdresseServiceImpl implements AdresseService {
 	/**
 	 * Rempli l'adresse de destination associée sur un tiers générique
 	 *
-	 * @param adresse      l'adresse d'envoi détaillée à remplir
+	 * @param adresse            l'adresse d'envoi détaillée à remplir
 	 * @param adresseDestination l'adresse générique pré-calculée
 	 */
 	private void fillDestination(AdresseEnvoiDetaillee adresse, AdresseGenerique adresseDestination) {
@@ -614,6 +614,7 @@ public class AdresseServiceImpl implements AdresseService {
 
 	/**
 	 * Voir le document 'ModeleDonnees.doc' v0.1, §4.2 Formats d'adresses
+	 *
 	 * @param ensemble un ensemble tiers-couple
 	 * @return la formule de politesse pour l'adressage des parties d'un ménage commun
 	 */
@@ -735,7 +736,7 @@ public class AdresseServiceImpl implements AdresseService {
 		}
 		else if (tiers instanceof Entreprise) {
 			final Entreprise entreprise = (Entreprise) tiers;
-			line = POUR_ADRESSE + " " +getRaisonSociale(entreprise);
+			line = POUR_ADRESSE + " " + getRaisonSociale(entreprise);
 		}
 		else {
 			throw new NotImplementedException("Type de tiers [" + tiers.getNatureTiers() + "] non-implémenté");
@@ -857,7 +858,7 @@ public class AdresseServiceImpl implements AdresseService {
 			return nomPays;
 		}
 		catch (InfrastructureException e) {
-			throw new RuntimeException("Impossible de trouver le pays avec le numéro Ofs = "+noOfsPays);
+			throw new RuntimeException("Impossible de trouver le pays avec le numéro Ofs = " + noOfsPays);
 		}
 	}
 
@@ -913,8 +914,7 @@ public class AdresseServiceImpl implements AdresseService {
 	/**
 	 * Ajoute un préfixe "p.a." au complément s'il n'en possède pas déjà un.
 	 *
-	 * @param complement
-	 *            le complément à préfixer
+	 * @param complement le complément à préfixer
 	 * @return le complément préfixé
 	 */
 	public static String prefixByPourAdresseIfNeeded(String complement) {
@@ -1033,7 +1033,7 @@ public class AdresseServiceImpl implements AdresseService {
 		final List<AdresseGenerique> adressesAutoriteTutelaire = getAdressesRepresentantHisto(tiers, TypeAdresseRepresentant.AUTORITE_TUTELAIRE, callDepth + 1, strict);
 		adresses.poursuite = AdresseMixer.override(adresses.poursuite, adressesAutoriteTutelaire, null, null);
 
-		// [UNIREG-1808] 
+		// [UNIREG-1808]
 		adresses.poursuiteAutreTiers = surchargeAdressesTiersHisto(tiers, adresses.poursuiteAutreTiers, adressesTiers.poursuite, callDepth + 1, strict);
 		adresses.poursuiteAutreTiers = AdresseMixer.override(adresses.poursuiteAutreTiers, adressesRepresentantExecutionForcee, null, null);
 		adresses.poursuiteAutreTiers = AdresseMixer.override(adresses.poursuiteAutreTiers, adressesConseil, null, null);
@@ -1043,20 +1043,83 @@ public class AdresseServiceImpl implements AdresseService {
 		return adresses;
 	}
 
+
+	public AdressesFiscales getAdressesFiscalesFromTiers(Tiers tiers) throws AdressesResolutionException {
+
+		AdressesFiscales adressesFiscales = new AdressesFiscales();
+		AdressesTiers adressesTiers = TiersHelper.getAdressesTiers(tiers, null);
+
+		if (adressesTiers != null) {
+			adressesFiscales.courrier = adaptAdresseTiers(adressesTiers.courrier);
+			adressesFiscales.domicile = adaptAdresseTiers(adressesTiers.domicile);
+			adressesFiscales.poursuite = adaptAdresseTiers(adressesTiers.poursuite);
+			adressesFiscales.representation = adaptAdresseTiers(adressesTiers.representation);
+
+		}
+
+		return adressesFiscales;
+	}
+
+
+	public AdressesFiscalesHisto getAdressesFiscalesHistoFromTiers(Tiers tiers) throws AdressesResolutionException {
+
+		AdressesFiscalesHisto adressesFiscalesHisto = new AdressesFiscalesHisto();
+		AdressesTiersHisto adressesTiersHisto = TiersHelper.getAdressesTiersHisto(tiers);
+
+		if(adressesTiersHisto!=null) {
+			adressesFiscalesHisto.courrier = adaptAdresseTiersHisto(adressesTiersHisto.courrier);
+			adressesFiscalesHisto.domicile = adaptAdresseTiersHisto(adressesTiersHisto.domicile);
+			adressesFiscalesHisto.poursuite = adaptAdresseTiersHisto(adressesTiersHisto.poursuite);
+			adressesFiscalesHisto.representation = adaptAdresseTiersHisto(adressesTiersHisto.representation);
+
+		}
+
+		return adressesFiscalesHisto;
+	}
+
+	/**
+	 * Transforme une liste d'adresse tiers en adresse generique
+	 *
+	 * @param listeAdressesTiersHisto
+	 * @return la liste transformée
+	 */
+	private List<AdresseGenerique> adaptAdresseTiersHisto(List<AdresseTiers> listeAdressesTiersHisto) {
+
+		List<AdresseGenerique> listAdrGen = new ArrayList<AdresseGenerique>();
+		for (AdresseTiers adresse : listeAdressesTiersHisto) {
+
+			listAdrGen.add(adaptAdresseTiers(adresse));
+
+		}
+		return listAdrGen;
+	}
+
+	/**
+	 * Transforme une adresse supplementaire en adresse générique
+	 *
+	 * @param adresseTiers
+	 * @return l'adresse supplementaire au format adresse generique
+	 */
+	private AdresseGenerique adaptAdresseTiers(AdresseTiers adresseTiers) {
+		if (adresseTiers != null) {
+
+			AdresseSupplementaire a = (AdresseSupplementaire) adresseTiers;
+			return new AdresseSupplementaireAdapter(a, false, serviceInfra);
+		}
+
+		return null;  //To change body of created methods use File | Settings | File Templates.
+	}
+
 	/**
 	 * Applique les règles de gestion des adresses par défaut sur les adresses fiscales historiques spécifiées.
-	 * <p>
-	 * Les règles sont les suivantes:
-	 * <ul>
-	 * <li>Pour les  adresses <i>courrier</i>, les défauts sont : <i>domicile</i>, <i>représentation</i> et <i>poursuite</i> </li>
-	 * <li>Pour les  adresses <i>domicile</i>, les défauts sont : <i>poursuite</i>, <i>courrier</i> et <i>représentation</i> </li>
-	 * <li>Pour les  adresses <i>représentation</i>, les défauts sont : <i>courrier</i>, <i>domicile</i> et <i>poursuite</i> </li>
-	 * <li>Pour les  adresses <i>poursuite</i>, les défauts sont : <i>domicile</i>, <i>courrier</i> et <i>représentation</i> </li>
-	 * </ul>
+	 * <p/>
+	 * Les règles sont les suivantes: <ul> <li>Pour les  adresses <i>courrier</i>, les défauts sont : <i>domicile</i>, <i>représentation</i> et <i>poursuite</i> </li> <li>Pour les  adresses
+	 * <i>domicile</i>, les défauts sont : <i>poursuite</i>, <i>courrier</i> et <i>représentation</i> </li> <li>Pour les  adresses <i>représentation</i>, les défauts sont : <i>courrier</i>,
+	 * <i>domicile</i> et <i>poursuite</i> </li> <li>Pour les  adresses <i>poursuite</i>, les défauts sont : <i>domicile</i>, <i>courrier</i> et <i>représentation</i> </li> </ul>
 	 *
-	 * @param adresses
-	 *            les adresses fiscales
+	 * @param adresses les adresses fiscales
 	 */
+
 	private void appliqueDefautsAdressesFiscalesHisto(AdressesFiscalesHisto adresses) {
 
 		adresses.courrier = appliqueDefautsAdressesFiscalesHisto(adresses.courrier, adresses.domicile);
@@ -1096,17 +1159,12 @@ public class AdresseServiceImpl implements AdresseService {
 
 	/**
 	 * Applique les règles de gestion des adresses par défaut sur les adresses fiscales spécifiées.
-	 * <p>
-	 * Les règles sont les suivantes:
-	 * <ul>
-	 * <li>Pour les  adresses <i>courrier</i>, les défauts sont : <i>domicile</i>, <i>représentation</i> et <i>poursuite</i> </li>
-	 * <li>Pour les  adresses <i>domicile</i>, les défauts sont : <i>poursuite</i>, <i>courrier</i> et <i>représentation</i> </li>
-	 * <li>Pour les  adresses <i>représentation</i>, les défauts sont : <i>courrier</i>, <i>domicile</i> et <i>poursuite</i> </li>
-	 * <li>Pour les  adresses <i>poursuite</i>, les défauts sont : <i>domicile</i>, <i>courrier</i> et <i>représentation</i> </li>
-	 * </ul>
+	 * <p/>
+	 * Les règles sont les suivantes: <ul> <li>Pour les  adresses <i>courrier</i>, les défauts sont : <i>domicile</i>, <i>représentation</i> et <i>poursuite</i> </li> <li>Pour les  adresses
+	 * <i>domicile</i>, les défauts sont : <i>poursuite</i>, <i>courrier</i> et <i>représentation</i> </li> <li>Pour les  adresses <i>représentation</i>, les défauts sont : <i>courrier</i>,
+	 * <i>domicile</i> et <i>poursuite</i> </li> <li>Pour les  adresses <i>poursuite</i>, les défauts sont : <i>domicile</i>, <i>courrier</i> et <i>représentation</i> </li> </ul>
 	 *
-	 * @param adresses
-	 *            les adresses fiscales
+	 * @param adresses les adresses fiscales
 	 */
 	private void appliqueDefautsAdressesFiscales(AdressesFiscales adresses) {
 
@@ -1142,14 +1200,10 @@ public class AdresseServiceImpl implements AdresseService {
 
 	/**
 	 * Applique les règles de gestion des adresses par défaut sur les adresses fiscales spécifiées.
-	 * <p>
-	 * Les règles sont les suivantes:
-	 * <ul>
-	 * <li>Pour les  adresses <i>courrier</i>, les défauts sont : <i>domicile</i>, <i>représentation</i> et <i>poursuite</i> </li>
-	 * <li>Pour les  adresses <i>domicile</i>, les défauts sont : <i>poursuite</i>, <i>courrier</i> et <i>représentation</i> </li>
-	 * <li>Pour les  adresses <i>représentation</i>, les défauts sont : <i>courrier</i>, <i>domicile</i> et <i>poursuite</i> </li>
-	 * <li>Pour les  adresses <i>poursuite</i>, les défauts sont : <i>domicile</i>, <i>courrier</i> et <i>représentation</i> </li>
-	 * </ul>
+	 * <p/>
+	 * Les règles sont les suivantes: <ul> <li>Pour les  adresses <i>courrier</i>, les défauts sont : <i>domicile</i>, <i>représentation</i> et <i>poursuite</i> </li> <li>Pour les  adresses
+	 * <i>domicile</i>, les défauts sont : <i>poursuite</i>, <i>courrier</i> et <i>représentation</i> </li> <li>Pour les  adresses <i>représentation</i>, les défauts sont : <i>courrier</i>,
+	 * <i>domicile</i> et <i>poursuite</i> </li> <li>Pour les  adresses <i>poursuite</i>, les défauts sont : <i>domicile</i>, <i>courrier</i> et <i>représentation</i> </li> </ul>
 	 *
 	 * @param tiers     le tiers à qui appartiennent les adresses
 	 * @param adresse   une adresse générique (nulle ou pas)
@@ -1214,10 +1268,10 @@ public class AdresseServiceImpl implements AdresseService {
 		final Tiers representant;
 
 		if (tiers instanceof MenageCommun) {
-			representant = getRepresentantPourMenage((MenageCommun)tiers, type, date);
+			representant = getRepresentantPourMenage((MenageCommun) tiers, type, date);
 		}
 		else {
-			representant  = getRepresentantPourTiers(tiers, type, date);
+			representant = getRepresentantPourTiers(tiers, type, date);
 		}
 
 		return representant;
@@ -1983,7 +2037,7 @@ public class AdresseServiceImpl implements AdresseService {
 	 * @return l'historique des adresses civiles du tiers spécifié.
 	 * @throws AdresseException en cas de problème dans le traitement
 	 */
-	private AdressesCivilesHisto getAdressesCivilesHisto(Tiers tiers, boolean strict) throws AdresseException {
+	public AdressesCivilesHisto getAdressesCivilesHisto(Tiers tiers, boolean strict) throws AdresseException {
 
 		final AdressesCivilesHisto adressesCiviles;
 
@@ -2023,6 +2077,7 @@ public class AdresseServiceImpl implements AdresseService {
 
 		return adressesCiviles;
 	}
+
 
 	private AdressesCivilesHisto getAdressesCivilesHisto(PersonnePhysique habitant, boolean strict) throws AdresseException {
 		try {
@@ -2088,11 +2143,11 @@ public class AdresseServiceImpl implements AdresseService {
 	/**
 	 * Applique les règles business pour transformer l'adresse surchargée spécifiée en une adresse générique.
 	 *
-	 * @param tiers le tiers associé à l'adresse
+	 * @param tiers             le tiers associé à l'adresse
 	 * @param adresseSurchargee l'adresse de tiers à résoudre
-	 * @param callDepth profondeur d'appel (technique)
-	 * @param strict si <i>vrai</i>, la cohérence des données est vérifiée de manière stricte et en cas d'incohérence, une exception est levée. Si <i>faux</i>, la méthode essaie de corriger les données
-	 *               (dans la mesure du possible) pour ne pas lever d'exception.
+	 * @param callDepth         profondeur d'appel (technique)
+	 * @param strict            si <i>vrai</i>, la cohérence des données est vérifiée de manière stricte et en cas d'incohérence, une exception est levée. Si <i>faux</i>, la méthode essaie de corriger
+	 *                          les données (dans la mesure du possible) pour ne pas lever d'exception.
 	 * @return une adresse générique
 	 * @throws AdresseException en cas de dépendence circulaire
 	 */
@@ -2118,7 +2173,7 @@ public class AdresseServiceImpl implements AdresseService {
 
 			final Adresse adresseCivile = adressesCiviles.ofType(type);
 			try {
-				surcharge = new AdresseCivileAdapter(adresseCivile, debut, fin, Source.FISCALE, false,serviceInfra);
+				surcharge = new AdresseCivileAdapter(adresseCivile, debut, fin, Source.FISCALE, false, serviceInfra);
 			}
 			catch (DonneesCivilesException e) {
 				throw new AdresseDataException(e);
@@ -2229,27 +2284,13 @@ public class AdresseServiceImpl implements AdresseService {
 	private List<AdresseGenerique> initAdressesCivilesHisto(List<Adresse> adressesCiviles, RegDate dateDebutHisto, RegDate dateFinHisto,
 	                                                        List<Adresse> adressesCivilesDefault, boolean strict) throws AdresseException {
 
-		/*
-		 * Adapte la liste des adresses civiles
-		 */
-		List<AdresseGenerique> adresses = new ArrayList<AdresseGenerique>();
 
-		for (Adresse adresse : adressesCiviles) {
-			try {
-				adresses.add(new AdresseCivileAdapter(adresse, false, serviceInfra));
-			}
-			catch (DonneesCivilesException e) {
-				if (strict) {
-					throw new AdresseDataException(e);
-				}
-				// en mode non-strict, on ignore simplement l'adresse en erreur
-			}
-		}
+		List<AdresseGenerique> adresses = adaptAdresseCivilesHisto(adressesCiviles, strict);
 
 
 		/*
-		 * Bouche tous les éventuels trous avec les adresses par défaut
-		 */
+				 * Bouche tous les éventuels trous avec les adresses par défaut
+				 */
 		List<AdresseGenerique> defaults = new ArrayList<AdresseGenerique>();
 
 		if (adresses.size() > 0) {
@@ -2281,6 +2322,43 @@ public class AdresseServiceImpl implements AdresseService {
 		}
 
 		return adresses;
+	}
+
+	public List<AdresseGenerique> adaptAdresseCivilesHisto(List<Adresse> adressesCiviles, boolean strict) throws AdresseDataException {
+		/*
+				 * Adapte la liste des adresses civiles
+				 */
+		List<AdresseGenerique> adresses = new ArrayList<AdresseGenerique>();
+
+		for (Adresse adresse : adressesCiviles) {
+			try {
+				adresses.add(adaptAdresseCivile(adresse));
+			}
+			catch (DonneesCivilesException e) {
+				if (strict) {
+					throw new AdresseDataException(e);
+				}
+				// en mode non-strict, on ignore simplement l'adresse en erreur
+			}
+		}
+		return adresses;
+	}
+
+	private AdresseCivileAdapter adaptAdresseCivile(Adresse adresse) throws DonneesCivilesException {
+		return new AdresseCivileAdapter(adresse, false, serviceInfra);
+	}
+
+	public AdresseGenerique adaptOneAdresseCivile(Adresse adresse) {
+		AdresseCivileAdapter adapter = null;
+		try {
+			adapter = adaptAdresseCivile(adresse);
+		}
+		catch (DonneesCivilesException e) {
+
+			// en mode non-strict, on ignore simplement l'adresse en erreur
+		}
+
+		return adapter;
 	}
 
 	/**
@@ -2475,7 +2553,7 @@ public class AdresseServiceImpl implements AdresseService {
 	}
 
 	public AdresseGenerique getDerniereAdresseVaudoise(Tiers tiers, TypeAdresseFiscale type) throws InfrastructureException, AdresseException {
-		final AdressesFiscalesHisto adressesHistoriques = getAdressesFiscalHisto(tiers,false);
+		final AdressesFiscalesHisto adressesHistoriques = getAdressesFiscalHisto(tiers, false);
 		final List<AdresseGenerique> listeAdresse = adressesHistoriques.ofType(type);
 		if (listeAdresse != null) {
 
@@ -2507,6 +2585,6 @@ public class AdresseServiceImpl implements AdresseService {
 			throw exception;
 		}
 
-		return callDepth+1;
+		return callDepth + 1;
 	}
 }

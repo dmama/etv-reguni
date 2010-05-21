@@ -195,13 +195,47 @@ function selectPeriodeDecompte(name) {
 /**
 * Affichage des adresses actives ou pas
 */ 
-function afficheAdressesHisto(elementId, numero) {
+function afficheAdressesFiscalesHisto(elementId, numero) {
 
 	if (E$(elementId).checked ){
-		document.location.href = 'visu.do?id=' + numero + '&adressesHisto=true' ;
+		document.location.href = 'visu.do?id=' + numero + '&adressesFiscalesHisto=true' ;
 	}
 	else {
-		document.location.href = 'visu.do?id=' + numero + '&adressesHisto=false' ;
+		document.location.href = 'visu.do?id=' + numero + '&adressesFiscaleHisto=false' ;
+	}
+}
+
+/**
+* Affichage des adresses actives ou pas
+*/
+function afficheAdressesHisto(elementIdFiscal,elementIdCivil, numero) {
+
+	if (E$(elementIdFiscal).checked && E$(elementIdCivil).checked ){
+		document.location.href = 'visu.do?id=' + numero + '&adressesFiscalesHisto=true&adressesCivilesHisto=true' ;
+	}
+	if (!E$(elementIdFiscal).checked && !E$(elementIdCivil).checked ){
+		document.location.href = 'visu.do?id=' + numero + '&adressesFiscalesHisto=false&adressesCivilesHisto=false' ;
+	}
+	if (E$(elementIdFiscal).checked && !E$(elementIdCivil).checked ){
+		document.location.href = 'visu.do?id=' + numero + '&adressesFiscalesHisto=true&adressesCivilesHisto=false' ;
+	}
+	if (!E$(elementIdFiscal).checked && E$(elementIdCivil).checked ){
+		document.location.href = 'visu.do?id=' + numero + '&adressesFiscalesHisto=false&adressesCivilesHisto=true' ;
+	}
+
+}
+
+
+/**
+* Affichage des adresses actives ou pas
+*/
+function afficheAdressesCivilesHisto(elementId, numero) {
+
+	if (E$(elementId).checked ){
+		document.location.href = 'visu.do?id=' + numero + '&adressesCivilesHisto=true' ;
+	}
+	else {
+		document.location.href = 'visu.do?id=' + numero + '&adressesCivilesHisto=false' ;
 	}
 }
 

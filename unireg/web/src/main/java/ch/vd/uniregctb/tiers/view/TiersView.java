@@ -38,7 +38,9 @@ public class TiersView {
 
 	private IndividuView individuConjoint;
 
-	private List<AdresseView> historiqueAdresses;
+	private List<AdresseView> historiqueAdressesFiscales;
+
+	private List<AdresseView> historiqueAdressesCiviles;
 
 	private List<AdresseView> adressesEnErreur;
 
@@ -164,12 +166,19 @@ public class TiersView {
 		this.individuConjoint = individuConjoint;
 	}
 
-	public List<AdresseView> getHistoriqueAdresses() {
-		return historiqueAdresses;
+	public List<AdresseView> getHistoriqueAdressesFiscales() {
+		return historiqueAdressesFiscales;
 	}
 
-	public void setHistoriqueAdresses(List<AdresseView> historiqueAdresses) {
-		this.historiqueAdresses = historiqueAdresses;
+	public void setHistoriqueAdressesFiscales(List<AdresseView> historiqueAdressesFiscales) {
+		this.historiqueAdressesFiscales = historiqueAdressesFiscales;
+	}
+		public List<AdresseView> getHistoriqueAdressesCiviles() {
+		return historiqueAdressesCiviles;
+	}
+
+	public void setHistoriqueAdressesCiviles(List<AdresseView> historiqueAdressesCiviles) {
+		this.historiqueAdressesCiviles = historiqueAdressesCiviles;
 	}
 
 	public String getNatureMembrePrincipal() {

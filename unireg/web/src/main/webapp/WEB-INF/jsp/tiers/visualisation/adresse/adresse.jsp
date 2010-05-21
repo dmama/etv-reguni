@@ -13,13 +13,23 @@
 </table>
 </c:if>
 <fieldset>
-	<legend><span><fmt:message key="label.adresse" /></span></legend>
+	<legend><span><fmt:message key="label.adresse.fiscal" /></span></legend>
+	<input name="adrFiscaleHisto" type="checkbox" <c:if test="${command.adressesFiscalesHisto}">checked</c:if> onclick="afficheAdressesFiscalesHisto('isAdrFiscaleHisto', ${command.tiersGeneral.numero});" id="isAdrFiscaleHisto" />
+	<label for="isAdrFiscaleeHisto"><fmt:message key="label.historique" /></label>
 
-	<input name="adrHisto" type="checkbox" <c:if test="${command.adressesHisto}">checked</c:if> onclick="afficheAdressesHisto('isAdrHisto', ${command.tiersGeneral.numero});" id="isAdrHisto" />
-	<label for="isAdrHisto"><fmt:message key="label.historique" /></label>
-
-	<jsp:include page="../../common/adresse/adresse.jsp">
+	<jsp:include page="../../common/adresse/adresseFiscale.jsp">
 		<jsp:param name="page" value="visu"/>
 	</jsp:include>
 </fieldset>
+<c:if test="${not empty command.historiqueAdressesCiviles}">
+	<fieldset>
+		<legend><span><fmt:message key="label.adresse.civil" /></span></legend>
+		<input name="adrCivileHisto" type="checkbox" <c:if test="${command.adressesCivilesHisto}">checked</c:if> onclick="afficheAdressesCivilesHisto('isAdrCivileHisto', ${command.tiersGeneral.numero});" id="isAdrCivileHisto" />
+		<label for="isAdrCivileHisto"><fmt:message key="label.historique" /></label>
+
+		<jsp:include page="../../common/adresse/adresseCivile.jsp">
+			<jsp:param name="page" value="visu"/>
+		</jsp:include>		
+	</fieldset>
+</c:if>
 <!-- Fin Adresse -->
