@@ -572,8 +572,8 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 				// Charge 2000 personnes dans l'index. Ces 2000 personnes possèdent toutes un nom de famille commençant par "Du Pont".
 				for (int i = 1; i < 2000; ++i) {
 
-					final String nom = String.format("Du Pont%4d", i); // "Du Pont0000".."Du Pont1999"
-					final String prenom = String.format("Michel%2d", i % 50); // 40 * (Michel00..Michel49)
+					final String nom = String.format("Du Pont%04d", i); // "Du Pont0000".."Du Pont1999"
+					final String prenom = String.format("Michel%02d", i % 50); // 40 * (Michel00..Michel49)
 
 					final PersonnePhysique pp = addNonHabitant(encodeDigitsInName(prenom), encodeDigitsInName(nom), date(1970, 1, 1), Sexe.MASCULIN);
 					ids.add(pp.getNumero());
@@ -603,7 +603,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 		
 		int i = 0;
 		for (TiersIndexedData d : list) {
-			final String nomAttendu = encodeDigitsInName(String.format("Du Pont%4d MichelCC", (i++ * 50 + 22)));
+			final String nomAttendu = encodeDigitsInName(String.format("Du Pont%04d MichelCC", (i++ * 50 + 22)));
 			assertEquals(nomAttendu, d.getNom1());
 		}
 	}
