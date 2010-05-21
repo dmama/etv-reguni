@@ -694,7 +694,7 @@ public abstract class Assujettissement implements CollatableDateRange {
 		}
 		else {
 			// dans tous les autres cas, l'assujettissement débute au 1er janvier de l'année courante
-			debut = RegDate.get(current.getDateDebut().year(), 1, 1);
+			debut = getDernier1Janvier(current.getDateDebut());
 		}
 
 		return debut;
@@ -742,7 +742,7 @@ public abstract class Assujettissement implements CollatableDateRange {
 			}
 			else {
 				// [UNIREG-1742] le départ hors-Suisse depuis hors-canton ne doit pas fractionner la période d'assujettissement (car le rattachement économique n'est pas interrompu)
-				adebut = RegDate.get(debut.year(), 1, 1);
+				adebut = getDernier1Janvier(debut);
 			}
 		}
 		else if (previous != null && ((roleSourcierPur(previous) && roleSourcierMixte(current)) || (roleSourcierMixte(previous) && roleSourcierPur(current)))) {
@@ -756,7 +756,7 @@ public abstract class Assujettissement implements CollatableDateRange {
 		}
 		else {
 			// dans tous les autres cas, l'assujettissement débute au 1er janvier de l'année courante
-			adebut = RegDate.get(debut.year(), 1, 1);
+			adebut = getDernier1Janvier(debut);
 		}
 
 		return adebut;
@@ -831,6 +831,10 @@ public abstract class Assujettissement implements CollatableDateRange {
 			afin = RegDate.get(date.year() - 1, 12, 31);
 		}
 		return afin;
+	}
+
+	private static RegDate getDernier1Janvier(RegDate date) {
+		return RegDate.get(date.year(), 1, 1);
 	}
 
 	/**
@@ -1102,16 +1106,26 @@ public abstract class Assujettissement implements CollatableDateRange {
 		// [UNIREG-1360] Ce point a été confirmé par Thierry Declercq le 31 août 2009.
 
 		RegDate adebut;
-		if (isHorsSuisse(ffs.getTiers(), debut)) {
+		if (isMariageOuDivorce(ffs.getMotifOuverture())) {
+			// [UNIREG-2432] Exception : si le motif d'ouverture est MARIAGE ou SEPARATION, la date de début est ramenée au 1 janvier de l'année courante.
+			// L'idée est que dans ces cas-là, le rattachement est transféré de la PP vers le ménage (ou inversément) sur l'entier de la période.
+			adebut = getDernier1Janvier(debut);
+		}
+		else if (isHorsSuisse(ffs.getTiers(), debut)) {
 			adebut = debut;
 		}
 		else {
-			adebut = RegDate.get(debut.year(), 1, 1);
+			adebut = getDernier1Janvier(debut);
 		}
 
 		RegDate afin;
 		if (fin == null) {
 			afin = fin;
+		}
+		else if (isMariageOuDivorce(ffs.getMotifFermeture())) {
+			// [UNIREG-2432] Exception : si le motif de fermeture est MARIAGE ou SEPARATION, la date de fin est ramenée au 31 décembre de l'année précédente.
+			// L'idée est que dans ces cas-là, le rattachement est transféré de la PP vers le ménage (ou inversément) sur l'entier de la période.
+			afin = getDernier31Decembre(fin);
 		}
 		else if (isHorsSuisse(ffs.getTiers(), fin)) {
 			afin = fin;
@@ -1133,6 +1147,10 @@ public abstract class Assujettissement implements CollatableDateRange {
 		}
 
 		return new Data(adebut, afin, ffs.getMotifOuverture(), ffs.getMotifFermeture(), null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
+	}
+
+	private static boolean isMariageOuDivorce(MotifFor motif) {
+		return motif == MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT || motif == MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION;
 	}
 
 	private static boolean isHorsSuisse(Tiers tiers, RegDate date) {

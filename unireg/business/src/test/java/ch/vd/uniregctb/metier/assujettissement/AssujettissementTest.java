@@ -7,16 +7,24 @@ import java.util.List;
 import java.util.Set;
 
 import org.junit.Test;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
+import org.springframework.test.context.transaction.TransactionConfiguration;
 
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.webscreenshot.WebScreenshot;
 import ch.vd.registre.webscreenshot.WebScreenshotDoc;
+import ch.vd.registre.webscreenshot.WebScreenshotTestListenerConfig;
+import ch.vd.registre.webscreenshot.WebScreenshotTransactionalTestExecutionListener;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.MenageCommun;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
@@ -26,9 +34,12 @@ import static ch.vd.registre.base.date.DateRangeHelper.Range;
 import static junit.framework.Assert.assertNotNull;
 import static org.junit.Assert.assertEquals;
 
-// Activer les annotations ci-dessous pour générer des screenshots des assujettissements
+// Pour générer des screenshots des assujettissements :
+//  - activer les annotations ci-dessous
+//  - commenter l'appel à 'resetAuthentication' dans AbstractSpringTest.onTearDown()
+//  - démarrer sélenium avec la commande : java -jar ./.m2/repository/org/seleniumhq/selenium/server/selenium-server/1.0.3/selenium-server-1.0.3-standalone.jar
 //@TransactionConfiguration(transactionManager = "transactionManager", defaultRollback = false)
-//@WebScreenshotTestListenerConfig(baseUrl = "http://localhost:8080", browserStartCommand = "*firefox /usr/lib/firefox-3.5.8/firefox", outputDir = "/home/msi/bidon/assujettissements")
+//@WebScreenshotTestListenerConfig(baseUrl = "http://localhost:8080", browserStartCommand = "*firefox /usr/lib/firefox-3.5.9/firefox", outputDir = "/home/msi/bidon/assujettissements")
 //@TestExecutionListeners(value = {DependencyInjectionTestExecutionListener.class,
 //		DirtiesContextTestExecutionListener.class,
 //		WebScreenshotTransactionalTestExecutionListener.class},
@@ -334,6 +345,223 @@ public class AssujettissementTest extends MetierTest {
 		}
 	}
 
+	@Test
+	@WebScreenshot(urls = {"/fiscalite/unireg/tiers/timeline.do?id=10000006&print=true&title=${methodName}&description=Situation%20de%20Monsieur",
+			"/fiscalite/unireg/tiers/timeline.do?id=10000007&print=true&title=${methodName}&description=Situation%20de%20Madame",
+			"/fiscalite/unireg/tiers/timeline.do?id=10000008&print=true&title=${methodName}&description=Situation%20du%20couple"})
+	@WebScreenshotDoc(description = "[UNIREG-2432] Vérifie qu'un contribuable VD avec immeuble qui se marie n'est plus assujetti l'année de son mariage (cas fictif)")
+	public void testDetermineMariageVaudoisAvecImmeuble() throws Exception {
+
+		final EnsembleTiersCouple ensemble = createMenageCommunMariageVDImmeuble(10000006L, 10000007L, 10000008L, date(2009, 11, 1));
+		final PersonnePhysique principal = ensemble.getPrincipal();
+		final PersonnePhysique conjoint = ensemble.getConjoint();
+		final MenageCommun menage = ensemble.getMenage();
+
+		// 2008 : le principal et le conjoint doivent être assujettis normalement
+		{
+			final List<Assujettissement> assujetPrincipal = Assujettissement.determine(principal, 2008);
+			assertNotNull(assujetPrincipal);
+			assertEquals(1, assujetPrincipal.size());
+			assertOrdinaire(date(2008, 1, 1), date(2008, 12, 31), null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, assujetPrincipal.get(0));
+
+			final List<Assujettissement> assujetConjoint = Assujettissement.determine(conjoint, 2008);
+			assertNotNull(assujetConjoint);
+			assertEquals(1, assujetConjoint.size());
+			assertOrdinaire(date(2008, 1, 1), date(2008, 12, 31), null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, assujetConjoint.get(0));
+
+			assertEmpty(Assujettissement.determine(menage, 2008)); // mariage pas encore actif
+		}
+		
+		// 2009 : le principal et le conjoint ne doivent plus être assujettis, mais le ménage doit l'être
+		{
+			assertEmpty(Assujettissement.determine(principal, 2009)); // immeuble transféré sur le ménage
+			assertEmpty(Assujettissement.determine(conjoint, 2009)); // aucun for vaudois
+
+			final List<Assujettissement> assujettissements = Assujettissement.determine(menage, 2009);
+			assertNotNull(assujettissements);
+			assertEquals(1, assujettissements.size());
+			assertOrdinaire(date(2009, 1, 1), date(2009, 12, 31), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null, assujettissements.get(0));
+		}
+	}
+
+	@Test
+	@WebScreenshot(urls = {"/fiscalite/unireg/tiers/timeline.do?id=10000006&print=true&title=${methodName}&description=Situation%20de%20Monsieur",
+			"/fiscalite/unireg/tiers/timeline.do?id=10000007&print=true&title=${methodName}&description=Situation%20de%20Madame",
+			"/fiscalite/unireg/tiers/timeline.do?id=10000008&print=true&title=${methodName}&description=Situation%20du%20couple"})
+	@WebScreenshotDoc(description = "[UNIREG-2432] Vérifie qu'un ménage commun VD avec immeuble qui se divorce n'est plus assujetti l'année du divorce (cas fictif)")
+	public void testDetermineDivorceVaudoisAvecImmeuble() throws Exception {
+
+		final EnsembleTiersCouple ensemble = createMenageCommunDivorceVDImmeuble(10000006L, 10000007L, 10000008L, date(2005, 1, 1), date(2008, 4, 23));
+		final PersonnePhysique principal = ensemble.getPrincipal();
+		final PersonnePhysique conjoint = ensemble.getConjoint();
+		final MenageCommun menage = ensemble.getMenage();
+
+		// 2007 : le ménage doit être assujetti en raison de son immeuble
+		{
+			assertEmpty(Assujettissement.determine(principal, 2007)); // aucun for vaudois
+			assertEmpty(Assujettissement.determine(conjoint, 2007)); // aucun for vaudois
+
+			final List<Assujettissement> assujettissements = Assujettissement.determine(menage, 2007);
+			assertNotNull(assujettissements);
+			assertEquals(1, assujettissements.size());
+			assertOrdinaire(date(2007, 1, 1), date(2007, 12, 31), null, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, assujettissements.get(0));
+		}
+
+		// 2008 : le ménage ne doit plus être assujetti, et le principal et le conjoint doivent l'être normalement
+		{
+			final List<Assujettissement> assujetPrincipal = Assujettissement.determine(principal, 2008);
+			assertNotNull(assujetPrincipal);
+			assertEquals(1, assujetPrincipal.size());
+			assertOrdinaire(date(2008, 1, 1), date(2008, 12, 31), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, null, assujetPrincipal.get(0));
+
+			final List<Assujettissement> assujetConjoint = Assujettissement.determine(conjoint, 2008);
+			assertNotNull(assujetConjoint);
+			assertEquals(1, assujetConjoint.size());
+			assertOrdinaire(date(2008, 1, 1), date(2008, 12, 31), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, null, assujetConjoint.get(0));
+
+			assertEmpty(Assujettissement.determine(menage, 2008)); // mariage plus actif
+		}
+	}	
+	@Test
+	@WebScreenshot(urls = {"/fiscalite/unireg/tiers/timeline.do?id=10000006&print=true&title=${methodName}&description=Situation%20de%20Monsieur",
+			"/fiscalite/unireg/tiers/timeline.do?id=10000007&print=true&title=${methodName}&description=Situation%20de%20Madame",
+			"/fiscalite/unireg/tiers/timeline.do?id=10000008&print=true&title=${methodName}&description=Situation%20du%20couple"})
+	@WebScreenshotDoc(description = "[UNIREG-2432] Vérifie qu'un contribuable HC avec immeuble qui se marie n'est plus assujetti l'année de son mariage (cas du contribuable n°101.033.61)")
+	public void testDetermineMariageHorsCantonAvecImmeuble() throws Exception {
+
+		final EnsembleTiersCouple ensemble = createMenageCommunMariageHCImmeuble(10000006L, 10000007L, 10000008L, date(2009, 11, 1));
+		final PersonnePhysique principal = ensemble.getPrincipal();
+		final PersonnePhysique conjoint = ensemble.getConjoint();
+		final MenageCommun menage = ensemble.getMenage();
+
+		// 2008 : le principal doit être assujetti en raison de son immeuble
+		{
+			final List<Assujettissement> assujettissements = Assujettissement.determine(principal, 2008);
+			assertNotNull(assujettissements);
+			assertEquals(1, assujettissements.size());
+			assertHorsCanton(date(2008, 1, 1), date(2008, 12, 31), null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, assujettissements.get(0));
+
+			assertEmpty(Assujettissement.determine(conjoint, 2008)); // aucun for vaudois
+			assertEmpty(Assujettissement.determine(menage, 2008)); // mariage pas encore actif
+		}
+
+		// 2009 : le principal ne doit plus être assujetti, mais le ménage doit l'être en raison de son immeuble
+		{
+			assertEmpty(Assujettissement.determine(principal, 2009)); // immeuble transféré sur le ménage
+			assertEmpty(Assujettissement.determine(conjoint, 2009)); // aucun for vaudois
+
+			final List<Assujettissement> assujettissements = Assujettissement.determine(menage, 2009);
+			assertNotNull(assujettissements);
+			assertEquals(1, assujettissements.size());
+			assertHorsCanton(date(2009, 1, 1), date(2009, 12, 31), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null, assujettissements.get(0));
+		}
+	}
+
+	@Test
+	@WebScreenshot(urls = {"/fiscalite/unireg/tiers/timeline.do?id=10000006&print=true&title=${methodName}&description=Situation%20de%20Monsieur",
+			"/fiscalite/unireg/tiers/timeline.do?id=10000007&print=true&title=${methodName}&description=Situation%20de%20Madame",
+			"/fiscalite/unireg/tiers/timeline.do?id=10000008&print=true&title=${methodName}&description=Situation%20du%20couple"})
+	@WebScreenshotDoc(description = "[UNIREG-2432] Vérifie qu'un ménage commun HC avec immeuble qui se divorce n'est plus assujetti l'année de son divorce (cas fictif)")
+	public void testDetermineDivorceHorsCantonAvecImmeuble() throws Exception {
+
+		final EnsembleTiersCouple ensemble = createMenageCommunDivorceHCImmeuble(10000006L, 10000007L, 10000008L, date(2005, 1, 1), date(2008, 4, 23));
+		final PersonnePhysique principal = ensemble.getPrincipal();
+		final PersonnePhysique conjoint = ensemble.getConjoint();
+		final MenageCommun menage = ensemble.getMenage();
+
+		// 2007 : le ménage doit être assujetti en raison de son immeuble
+		{
+			assertEmpty(Assujettissement.determine(principal, 2007)); // aucun for vaudois
+			assertEmpty(Assujettissement.determine(conjoint, 2007)); // aucun for vaudois
+
+			final List<Assujettissement> assujettissements = Assujettissement.determine(menage, 2007);
+			assertNotNull(assujettissements);
+			assertEquals(1, assujettissements.size());
+			assertHorsCanton(date(2007, 1, 1), date(2007, 12, 31), null, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, assujettissements.get(0));
+		}
+
+		// 2008 : le ménage ne doit être assujetti, mais le principal doit l'être en raison de son immeuble
+		{
+			final List<Assujettissement> assujettissements = Assujettissement.determine(principal, 2008);
+			assertNotNull(assujettissements);
+			assertEquals(1, assujettissements.size());
+			assertHorsCanton(date(2008, 1, 1), date(2008, 12, 31), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, null, assujettissements.get(0));
+
+			assertEmpty(Assujettissement.determine(conjoint, 2008)); // aucun for vaudois
+			assertEmpty(Assujettissement.determine(menage, 2008)); // mariage plus actif
+		}
+	}
+
+	@Test
+	@WebScreenshot(urls = {"/fiscalite/unireg/tiers/timeline.do?id=10000006&print=true&title=${methodName}&description=Situation%20de%20Monsieur",
+			"/fiscalite/unireg/tiers/timeline.do?id=10000007&print=true&title=${methodName}&description=Situation%20de%20Madame",
+			"/fiscalite/unireg/tiers/timeline.do?id=10000008&print=true&title=${methodName}&description=Situation%20du%20couple"})
+	@WebScreenshotDoc(description = "[UNIREG-2432] Vérifie qu'un contribuable HS avec immeuble qui se marie n'est plus assujetti l'année de son mariage (cas fictif)")
+	public void testDetermineMariageHorsSuisseAvecImmeuble() throws Exception {
+
+		final EnsembleTiersCouple ensemble = createMenageCommunMariageHSImmeuble(10000006L, 10000007L, 10000008L, date(2009, 11, 1));
+		final PersonnePhysique principal = ensemble.getPrincipal();
+		final PersonnePhysique conjoint = ensemble.getConjoint();
+		final MenageCommun menage = ensemble.getMenage();
+
+		// 2008 : le principal doit être assujetti en raison de son immeuble
+		{
+			final List<Assujettissement> assujettissements = Assujettissement.determine(principal, 2008);
+			assertNotNull(assujettissements);
+			assertEquals(1, assujettissements.size());
+			assertHorsSuisse(date(2008, 1, 1), date(2008, 12, 31), null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, assujettissements.get(0));
+
+			assertEmpty(Assujettissement.determine(conjoint, 2008)); // aucun for vaudois
+			assertEmpty(Assujettissement.determine(menage, 2008)); // mariage pas encore actif
+		}
+
+		// 2009 : le principal ne doit plus être assujetti, mais le ménage doit l'être en raison de son immeuble
+		{
+			assertEmpty(Assujettissement.determine(principal, 2009)); // immeuble transféré sur le ménage
+			assertEmpty(Assujettissement.determine(conjoint, 2009)); // aucun for vaudois
+
+			final List<Assujettissement> assujettissements = Assujettissement.determine(menage, 2009);
+			assertNotNull(assujettissements);
+			assertEquals(1, assujettissements.size());
+			assertHorsSuisse(date(2009, 1, 1), date(2009, 12, 31), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null, assujettissements.get(0));
+		}
+	}
+
+	@Test
+	@WebScreenshot(urls = {"/fiscalite/unireg/tiers/timeline.do?id=10000006&print=true&title=${methodName}&description=Situation%20de%20Monsieur",
+			"/fiscalite/unireg/tiers/timeline.do?id=10000007&print=true&title=${methodName}&description=Situation%20de%20Madame",
+			"/fiscalite/unireg/tiers/timeline.do?id=10000008&print=true&title=${methodName}&description=Situation%20du%20couple"})
+	@WebScreenshotDoc(description = "[UNIREG-2432] Vérifie qu'un ménage commun HS avec immeuble qui se divorce n'est plus assujetti l'année de son divorce (cas fictif)")
+	public void testDetermineDivorceHorsSuisseAvecImmeuble() throws Exception {
+
+		final EnsembleTiersCouple ensemble = createMenageCommunDivorceHSImmeuble(10000006L, 10000007L, 10000008L, date(2005, 1, 1), date(2008, 4, 23));
+		final PersonnePhysique principal = ensemble.getPrincipal();
+		final PersonnePhysique conjoint = ensemble.getConjoint();
+		final MenageCommun menage = ensemble.getMenage();
+
+		// 2007 : le ménage doit être assujetti en raison de son immeuble
+		{
+			assertEmpty(Assujettissement.determine(principal, 2007)); // aucun for vaudois
+			assertEmpty(Assujettissement.determine(conjoint, 2007)); // aucun for vaudois
+
+			final List<Assujettissement> assujettissements = Assujettissement.determine(menage, 2007);
+			assertNotNull(assujettissements);
+			assertEquals(1, assujettissements.size());
+			assertHorsSuisse(date(2007, 1, 1), date(2007, 12, 31), null, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, assujettissements.get(0));
+		}
+
+		// 2008 : le ménage ne doit être assujetti, mais le principal doit l'être en raison de son immeuble
+		{
+			final List<Assujettissement> assujettissements = Assujettissement.determine(principal, 2008);
+			assertNotNull(assujettissements);
+			assertEquals(1, assujettissements.size());
+			assertHorsSuisse(date(2008, 1, 1), date(2008, 12, 31), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, null, assujettissements.get(0));
+
+			assertEmpty(Assujettissement.determine(conjoint, 2008)); // aucun for vaudois
+			assertEmpty(Assujettissement.determine(menage, 2008)); // mariage plus actif
+		}
+	}
+	
 	@WebScreenshot(urls = "/fiscalite/unireg/tiers/timeline.do?id=10000018&print=true&title=${methodName}")
 	@Test
 	public void testDetermineDepartHorsCantonDansLAnnee() throws Exception {

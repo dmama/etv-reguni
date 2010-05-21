@@ -125,6 +125,110 @@ public abstract class MetierTest extends BusinessTest {
 		return ensemble;
 	}
 
+	protected EnsembleTiersCouple createMenageCommunMariageVDImmeuble(Long noPrincipal, Long noConjoint, Long noMenage, RegDate dateMariage) {
+
+		final PersonnePhysique paul = addNonHabitant(noPrincipal, "Paul", "Duchêne", date(1965, 4, 13), Sexe.MASCULIN);
+		addForPrincipal(paul, date(1981, 4, 13), MotifFor.MAJORITE, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
+		addForSecondaire(paul, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.LAbbaye.getNoOFS(),
+				MotifRattachement.IMMEUBLE_PRIVE);
+
+		final PersonnePhysique marie = addNonHabitant(noConjoint, "Marie", "Duchêne", date(1970, 6, 3), Sexe.FEMININ);
+		addForPrincipal(marie, date(1988, 6, 3), MotifFor.MAJORITE, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
+
+		final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(noMenage, paul, marie, dateMariage, null);
+		addForPrincipal(ensemble.getMenage(), dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
+		addForSecondaire(ensemble.getMenage(), dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.LAbbaye.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+
+		return ensemble;
+	}
+
+	protected EnsembleTiersCouple createMenageCommunDivorceVDImmeuble(Long noPrincipal, Long noConjoint, Long noMenage, RegDate dateMariage, RegDate dateDivorce) {
+
+		final PersonnePhysique paul = addNonHabitant(noPrincipal, "Paul", "Duchêne", date(1965, 4, 13), Sexe.MASCULIN);
+		addForPrincipal(paul, dateDivorce, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Lausanne);
+		addForSecondaire(paul, dateDivorce, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.LAbbaye.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+
+		final PersonnePhysique marie = addNonHabitant(noConjoint, "Marie", "Duchêne", date(1970, 6, 3), Sexe.FEMININ);
+		addForPrincipal(marie, dateDivorce, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Lausanne);
+
+		final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(noMenage, paul, marie, dateMariage, dateDivorce.getOneDayBefore());
+		addForPrincipal(ensemble.getMenage(), dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, dateDivorce.getOneDayBefore(),
+				MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Lausanne);
+		addForSecondaire(ensemble.getMenage(), dateMariage, MotifFor.ACHAT_IMMOBILIER, dateDivorce.getOneDayBefore(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT,
+				MockCommune.LAbbaye.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+
+		return ensemble;
+	}
+	
+	protected EnsembleTiersCouple createMenageCommunMariageHCImmeuble(Long noPrincipal, Long noConjoint, Long noMenage, RegDate dateMariage) {
+
+		final PersonnePhysique paul = addNonHabitant(noPrincipal, "Paul", "Duchêne", date(1965, 4, 13), Sexe.MASCULIN);
+		addForPrincipal(paul, date(1981, 4, 13), MotifFor.MAJORITE, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Neuchatel);
+		addForSecondaire(paul, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.LAbbaye.getNoOFS(),
+				MotifRattachement.IMMEUBLE_PRIVE);
+
+		final PersonnePhysique marie = addNonHabitant(noConjoint, "Marie", "Duchêne", date(1970, 6, 3), Sexe.FEMININ);
+		addForPrincipal(marie, date(1988, 6, 3), MotifFor.MAJORITE, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Neuchatel);
+
+		final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(noMenage, paul, marie, dateMariage, null);
+		addForPrincipal(ensemble.getMenage(), dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Neuchatel);
+		addForSecondaire(ensemble.getMenage(), dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.LAbbaye.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+
+		return ensemble;
+	}
+
+	protected EnsembleTiersCouple createMenageCommunDivorceHCImmeuble(Long noPrincipal, Long noConjoint, Long noMenage, RegDate dateMariage, RegDate dateDivorce) {
+
+		final PersonnePhysique paul = addNonHabitant(noPrincipal, "Paul", "Duchêne", date(1965, 4, 13), Sexe.MASCULIN);
+		addForPrincipal(paul, dateDivorce, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Neuchatel);
+		addForSecondaire(paul, dateDivorce, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.LAbbaye.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+
+		final PersonnePhysique marie = addNonHabitant(noConjoint, "Marie", "Duchêne", date(1970, 6, 3), Sexe.FEMININ);
+		addForPrincipal(marie, dateDivorce, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Neuchatel);
+
+		final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(noMenage, paul, marie, dateMariage, dateDivorce.getOneDayBefore());
+		addForPrincipal(ensemble.getMenage(), dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, dateDivorce.getOneDayBefore(),
+				MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Neuchatel);
+		addForSecondaire(ensemble.getMenage(), dateMariage, MotifFor.ACHAT_IMMOBILIER, dateDivorce.getOneDayBefore(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT,
+				MockCommune.LAbbaye.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+
+		return ensemble;
+	}
+
+	protected EnsembleTiersCouple createMenageCommunMariageHSImmeuble(Long noPrincipal, Long noConjoint, Long noMenage, RegDate dateMariage) {
+
+		final PersonnePhysique paul = addNonHabitant(noPrincipal, "Paul", "Duchêne", date(1965, 4, 13), Sexe.MASCULIN);
+		addForPrincipal(paul, date(1981, 4, 13), MotifFor.MAJORITE, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockPays.Allemagne);
+		addForSecondaire(paul, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.LAbbaye.getNoOFS(),
+				MotifRattachement.IMMEUBLE_PRIVE);
+
+		final PersonnePhysique marie = addNonHabitant(noConjoint, "Marie", "Duchêne", date(1970, 6, 3), Sexe.FEMININ);
+		addForPrincipal(marie, date(1988, 6, 3), MotifFor.MAJORITE, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockPays.Allemagne);
+
+		final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(noMenage, paul, marie, dateMariage, null);
+		addForPrincipal(ensemble.getMenage(), dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockPays.Allemagne);
+		addForSecondaire(ensemble.getMenage(), dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.LAbbaye.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+
+		return ensemble;
+	}
+
+	protected EnsembleTiersCouple createMenageCommunDivorceHSImmeuble(Long noPrincipal, Long noConjoint, Long noMenage, RegDate dateMariage, RegDate dateDivorce) {
+
+		final PersonnePhysique paul = addNonHabitant(noPrincipal, "Paul", "Duchêne", date(1965, 4, 13), Sexe.MASCULIN);
+		addForPrincipal(paul, dateDivorce, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockPays.Allemagne);
+		addForSecondaire(paul, dateDivorce, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.LAbbaye.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+
+		final PersonnePhysique marie = addNonHabitant(noConjoint, "Marie", "Duchêne", date(1970, 6, 3), Sexe.FEMININ);
+		addForPrincipal(marie, dateDivorce, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockPays.Allemagne);
+
+		final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(noMenage, paul, marie, dateMariage, dateDivorce.getOneDayBefore());
+		addForPrincipal(ensemble.getMenage(), dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, dateDivorce.getOneDayBefore(),
+				MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockPays.Allemagne);
+		addForSecondaire(ensemble.getMenage(), dateMariage, MotifFor.ACHAT_IMMOBILIER, dateDivorce.getOneDayBefore(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT,
+				MockCommune.LAbbaye.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+
+		return ensemble;
+	}	
 	protected Contribuable createDepartHorsCanton(RegDate dateDepart) throws Exception {
 		return createDepartHorsCanton(null, dateDepart);
 	}
