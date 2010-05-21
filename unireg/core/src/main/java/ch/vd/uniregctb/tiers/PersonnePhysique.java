@@ -204,6 +204,7 @@ public class PersonnePhysique extends Contribuable {
 	}
 
 	private static final Pattern NOM_PRENOM_PATTERN = Pattern.compile("[']?[A-Za-zÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõöøùúûüýþÿŒœŠšŸŽž]['A-Za-zÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõöøùúûüýþÿŒœŠšŸŽž. /-]*");
+	private static final Pattern NOM_PRENOM_ESPACES = Pattern.compile("([^ ]+ )*[^ ]+");
 
 	@Override
 	public ValidationResults validate() {
@@ -220,16 +221,23 @@ public class PersonnePhysique extends Contribuable {
 			if (StringUtils.isBlank(nom)) {
 				results.addError("Le nom est un attribut obligatoire pour un non-habitant");
 			}
-			else if (!NOM_PRENOM_PATTERN.matcher(nom).matches()) {
-				results.addError("Le nom du non-habitant contient au moins un caractère invalide");
+			else {
+				if (!NOM_PRENOM_PATTERN.matcher(nom).matches()) {
+					results.addError("Le nom du non-habitant contient au moins un caractère invalide");
+				}
+				if (!NOM_PRENOM_ESPACES.matcher(nom).matches()) {
+					results.addError("Le nom du non-habitant contient un groupe de plusieurs espaces consécutifs ou un espace final");
+				}
 			}
 
-			// prénom : facultatif, mais pas avec n'importe quoi
-			if (StringUtils.isBlank(prenom)) {
-				prenom = null;
-			}
-			else if (!NOM_PRENOM_PATTERN.matcher(prenom).matches()) {
-				results.addError("Le prénom du non-habitant contient au moins un caractère invalide");
+			// prénom : facultatif, donc on laisse passer empty, mais pas des espaces seuls
+			if (!StringUtils.isEmpty(prenom)) {
+				if (!NOM_PRENOM_PATTERN.matcher(prenom).matches()) {
+					results.addError("Le prénom du non-habitant contient au moins un caractère invalide");
+				}
+				if (!NOM_PRENOM_ESPACES.matcher(prenom).matches()) {
+					results.addError("Le prénom du non-habitant contient un groupe de plusieurs espaces consécutifs ou un espace final");
+				}
 			}
 		}
 
