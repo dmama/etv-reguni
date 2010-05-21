@@ -4,6 +4,7 @@ import java.util.List;
 
 import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -67,6 +68,53 @@ public interface AdresseService {
 	 */
 	public abstract AdressesFiscalesHisto getAdressesFiscalHisto(Tiers tiers, boolean strict) throws AdresseException;
 
+
+	/**
+	 * Retourne l'historique des adresses civiles du tiers spécifié. Ou <b>null</b> si le tiers n'en possède pas.
+	 *
+	 * @param tiers  un tiers dont on veut extraite l'historique des adresses civiles.
+	 * @param strict si <b>faux</b> essaie de résoudre silencieusement les problèmes détectés durant le traitement; autrement lève une exception.
+	 * @return l'historique des adresses civiles du tiers spécifié.
+	 * @throws AdresseException en cas de problème dans le traitement
+	 */
+	public AdressesCivilesHisto getAdressesCivilesHisto(Tiers tiers, boolean strict) throws AdresseException;
+
+
+	/**Retourne les adresses fiscales d'un tiers tel que stockées en base, sans surcharge
+	 *
+	 * @param tiers
+	 * @return les adresses fiscales en base du tiers spécifié
+	 * @throws AdressesResolutionException
+	 */
+	public AdressesFiscales getAdressesFiscalesFromTiers(Tiers tiers) throws AdressesResolutionException;
+
+
+	/**Retourne l'historique des adresses fiscales stockées en base
+	 *
+	 * @param tiers
+	 * @return l'historique des adresses fiscales du tiers spécifié
+	 * @throws AdressesResolutionException
+	 */
+	public AdressesFiscalesHisto getAdressesFiscalesHistoFromTiers(Tiers tiers) throws AdressesResolutionException;
+
+
+
+	/**Permet de transformer des adresses civiles (Host) en adresses civiles Unireg 
+	 *
+	 * @param adressesCiviles
+	 * @param strict
+	 * @return la liste des adresses adaptées
+	 * @throws AdresseDataException
+	 */
+
+	public List<AdresseGenerique> adaptAdresseCivilesHisto(List<Adresse> adressesCiviles, boolean strict) throws AdresseDataException;
+
+	/**
+	 * Transforme une adresse civile en adresse générique
+	 * @param adresse
+	 * @return 
+	 */
+	public AdresseGenerique adaptOneAdresseCivile(Adresse adresse);
 	/**
 	 * Retourne l'adresse 'représentation' du représentant du tiers spécifié.
 	 *
@@ -111,7 +159,7 @@ public interface AdresseService {
 	/**
 	 * Créé et retourne l'adresse de courrier à fournir au registre foncier
 	 *
-	 * @param contribuable le contribuable dont on recherche l'adresse
+	 * @param ctb le contribuable dont on recherche l'adresse
 	 * @param date la date de référence, ou null pour obtenir l'adresse existante à ce jour
 	 *
 	 * @return l'adresse structurée pour le RF

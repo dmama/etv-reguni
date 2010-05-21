@@ -9,9 +9,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.uniregctb.adresse.AdressesCiviles;
 import ch.vd.uniregctb.tiers.*;
+
 import org.apache.log4j.Logger;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
@@ -86,7 +89,6 @@ import ch.vd.uniregctb.utils.WebContextUtils;
  * Methodes annexes utilisées par TiersVisuManager et TiersEditManager
  *
  * @author xcifde
- *
  */
 public class TiersManager implements MessageSourceAware {
 
@@ -121,7 +123,7 @@ public class TiersManager implements MessageSourceAware {
 	/**
 	 * Recupere l'individu correspondant au tiers
 	 *
-	 * @param tiers
+	 * @param habitant
 	 * @return
 	 */
 	protected IndividuView getIndividuView(PersonnePhysique habitant) {
@@ -131,7 +133,7 @@ public class TiersManager implements MessageSourceAware {
 		if (noIndividu != null) {
 			individuView = getHostCivilService().getIndividu(noIndividu);
 		}
-		if (habitant.getDateDeces() != null && individuView !=null) {//habitant décédé fiscalement
+		if (habitant.getDateDeces() != null && individuView != null) {//habitant décédé fiscalement
 			individuView.setEtatCivil("DECEDE");
 			individuView.setDateDernierChgtEtatCivil(RegDate.asJavaDate(habitant.getDateDeces()));
 		}
@@ -141,7 +143,7 @@ public class TiersManager implements MessageSourceAware {
 	/**
 	 * Recupere l'entreprise correspondant au tiers
 	 *
-	 * @param tiers
+	 * @param entreprise
 	 * @return
 	 */
 	protected EntrepriseView getEntrepriseView(Entreprise entreprise) {
@@ -194,8 +196,7 @@ public class TiersManager implements MessageSourceAware {
 	/**
 	 * Recupère les rapports de filiation de type PARENT ou ENFANT
 	 *
-	 * @param numeroTiers
-	 * @param sens
+	 * @param habitant
 	 * @return
 	 */
 	protected List<RapportView> getRapportsFiliation(PersonnePhysique habitant) {
@@ -204,7 +205,7 @@ public class TiersManager implements MessageSourceAware {
 
 		final int year = RegDate.get().year();
 
-		final EnumAttributeIndividu[] enumValues = new EnumAttributeIndividu[] { EnumAttributeIndividu.ENFANTS, EnumAttributeIndividu.PARENTS };
+		final EnumAttributeIndividu[] enumValues = new EnumAttributeIndividu[]{EnumAttributeIndividu.ENFANTS, EnumAttributeIndividu.PARENTS};
 		final Individu ind = getServiceCivilService().getIndividu(habitant.getNumeroIndividu(), year, enumValues);
 
 		// enfants
@@ -356,7 +357,7 @@ public class TiersManager implements MessageSourceAware {
 	/**
 	 * Alimente List<RapportView>
 	 *
-	 * @param tiers
+	 * @param debiteur
 	 * @return
 	 * @throws AdresseException
 	 */
@@ -467,7 +468,7 @@ public class TiersManager implements MessageSourceAware {
 	/**
 	 * Alimente Set<ListeRecapitulativeView>
 	 *
-	 * @param debiteur
+	 * @param dpi
 	 * @return
 	 */
 	private List<ListeRecapDetailView> getListesRecapitulatives(DebiteurPrestationImposable dpi) {
@@ -551,7 +552,7 @@ public class TiersManager implements MessageSourceAware {
 	/**
 	 * Met a jour la vue en fonction du menage commun
 	 *
-	 * @param habitant
+	 * @param menageCommun
 	 * @param tiersView
 	 */
 	protected void setMenageCommun(TiersView tiersView, MenageCommun menageCommun) {
@@ -601,7 +602,8 @@ public class TiersManager implements MessageSourceAware {
 	 * @param rapportsPrestationHisto
 	 * @throws AdresseException
 	 */
-	protected void setDebiteurPrestationImposable(TiersView tiersView, DebiteurPrestationImposable dpi, boolean rapportsPrestationHisto, WebParamPagination webParamPagination) throws AdresseException {
+	protected void setDebiteurPrestationImposable(TiersView tiersView, DebiteurPrestationImposable dpi, boolean rapportsPrestationHisto, WebParamPagination webParamPagination) throws
+			AdresseException {
 		tiersView.setTiers(dpi);
 		tiersView.setRapportsPrestation(getRapportsPrestation(dpi, webParamPagination, rapportsPrestationHisto));
 		tiersView.setLrs(getListesRecapitulatives(dpi));
@@ -743,6 +745,7 @@ public class TiersManager implements MessageSourceAware {
 
 	/**
 	 * Met à jour TiersView en fonction de Contribuable
+	 *
 	 * @param tiersView
 	 * @param contribuable
 	 * @throws AdresseException
@@ -787,6 +790,7 @@ public class TiersManager implements MessageSourceAware {
 
 	/**
 	 * gestion des droits d'èdition d'un tiers
+	 *
 	 * @param tiers
 	 * @param allowedOnglet
 	 * @return true si l'utilisateur a le droit d'éditer le tiers
@@ -1008,6 +1012,7 @@ public class TiersManager implements MessageSourceAware {
 
 	/**
 	 * Le type d'autorité fiscale est null en cas d'absence de for fiscal principal actif
+	 *
 	 * @param tiers
 	 * @return
 	 */
@@ -1026,6 +1031,7 @@ public class TiersManager implements MessageSourceAware {
 
 	/**
 	 * enrichi la map de droit d'édition des onglets pour un habitant ou un ménage commun considéré habitant
+	 *
 	 * @param tiers
 	 * @param allowedOnglet
 	 */
@@ -1069,6 +1075,7 @@ public class TiersManager implements MessageSourceAware {
 
 	/**
 	 * enrichi la map de droit d'édition des onglets pour un non habitant ou un ménage commun considéré non habitant
+	 *
 	 * @param tiers
 	 * @param allowedOnglet
 	 */
@@ -1310,8 +1317,7 @@ public class TiersManager implements MessageSourceAware {
 
 	/**
 	 * @param tiers
-	 * @return true sur l'utilisateur connecté à les droits Ifosec et sécurité dossiers de modif le tiers
-	 * retourne tjs false si le tiers n'est pas une PP ou un ménage
+	 * @return true sur l'utilisateur connecté à les droits Ifosec et sécurité dossiers de modif le tiers retourne tjs false si le tiers n'est pas une PP ou un ménage
 	 */
 	protected boolean checkDroitEdit(Tiers tiers) {
 
@@ -1344,8 +1350,8 @@ public class TiersManager implements MessageSourceAware {
 	}
 
 	/**
-	 * Renseigne la liste des adresses actives sur le form backing object. En cas d'erreur dans la résolution des adresses, les adresses en
-	 * erreur et le message de l'erreur sont renseignés en lieu et place.
+	 * Renseigne la liste des adresses actives sur le form backing object. En cas d'erreur dans la résolution des adresses, les adresses en erreur et le message de l'erreur sont renseignés en lieu et
+	 * place.
 	 */
 	protected void setAdressesActives(TiersEditView tiersEditView, final Tiers tiers) {
 
@@ -1399,13 +1405,29 @@ public class TiersManager implements MessageSourceAware {
 	}
 
 	/**
+	 * Remplir la collection des adressesView avec l'adresse civiles du type spécifié.
+	 */
+	protected void fillAdressesCivilesView(List<AdresseView> adressesView, final AdressesCiviles adressesCiviles, EnumTypeAdresse type,
+	                                       Tiers tiers) {
+		if (adressesCiviles.ofType(type) != null) {
+			AdresseGenerique adresse = adresseService.adaptOneAdresseCivile(adressesCiviles.ofType(type));
+			if (adresse != null) {
+				TypeAdresseTiers typeAdresse = convertTypeAdresses(type);
+				AdresseView adresseView = createAdresseView(adresse, typeAdresse, tiers);
+				adressesView.add(adresseView);
+			}
+		}
+
+	}
+
+
+	/**
 	 * Methode annexe de creation d'adresse view pour un type donne
 	 *
 	 * @param addGen
 	 * @param type
 	 * @return
 	 * @throws InfrastructureException
-	 *
 	 */
 	protected AdresseView createAdresseView(AdresseGenerique addGen, TypeAdresseTiers type, Tiers tiers) {
 		AdresseView adresseView = new AdresseView();
@@ -1520,6 +1542,7 @@ public class TiersManager implements MessageSourceAware {
 
 	/**
 	 * Compte le nombre de rapports prestation imposable pour un débiteur
+	 *
 	 * @param numeroDebiteur
 	 * @param rapportsPrestationHisto
 	 * @return
@@ -1627,6 +1650,24 @@ public class TiersManager implements MessageSourceAware {
 
 	public MessageSource getMessageSource() {
 		return messageSource;
+	}
+
+	protected TypeAdresseTiers convertTypeAdresses(EnumTypeAdresse type) {
+		if (EnumTypeAdresse.PRINCIPALE.equals(type)) {
+			return TypeAdresseTiers.DOMICILE;
+		}
+		else if (EnumTypeAdresse.COURRIER.equals(type)) {
+			return TypeAdresseTiers.COURRIER;
+		}
+		else if (EnumTypeAdresse.SECONDAIRE.equals(type)) {
+			return TypeAdresseTiers.SECONDAIRE;
+		}
+		else {
+			Assert.isTrue(EnumTypeAdresse.TUTELLE.equals(type));
+			return TypeAdresseTiers.TUTELLE;
+		}
+
+
 	}
 
 	/**

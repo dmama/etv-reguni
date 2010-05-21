@@ -38,5 +38,9 @@ public enum TypeAdresseTiers {
 	 * 
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_Ugi4ABFNEd2znZ2YYJRJkQ"
 	 */
-	DOMICILE
+	DOMICILE,
+
+	SECONDAIRE,
+
+	TUTELLE
 }
