@@ -2537,6 +2537,93 @@ public class TacheServiceTest extends BusinessTest {
 		}
 	}
 
+	/**
+	 * [UNIREG-2439] Vérifie qu'aucune tâche d'envoi de DIs n'est émise lors du divorce d'un ménage commun de sourciers purs. 
+	 */
+	@Test
+	public void testDivorceMenageCommunSourcePur() throws Exception {
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu ilya = addIndividu(915112, date(1967, 8, 1), "Eigenbrot", "Ilya", true);
+				addAdresse(ilya, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, date(2008, 8, 22), null);
+				final MockIndividu katharine = addIndividu(915113, date(1969, 8, 15), "Darling", "Katharine", false);
+				addAdresse(katharine, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, date(2008, 8, 22), null);
+			}
+		});
+
+		class Ids {
+			long ilya;
+			long katharine;
+			long menage;
+		}
+		final Ids ids = new Ids();
+
+		// Crée un couple de sourciers arrivés de hors-Suisse en 2008
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus transactionStatus) {
+				final PersonnePhysique ilya = addHabitant(915112);
+				ids.ilya = ilya.getNumero();
+
+				final PersonnePhysique katharine = addHabitant(915113);
+				ids.katharine = katharine.getNumero();
+
+				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(ilya, katharine, date(2004, 4, 24), null);
+				final MenageCommun menage = ensemble.getMenage();
+				ids.menage = menage.getNumero();
+
+				final ForFiscalPrincipal ffp = addForPrincipal(menage, date(2008, 8, 22), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+				ffp.setModeImposition(ModeImposition.SOURCE);
+				return null;
+			}
+		});
+
+		// Vérifie qu'il n'y a aucune tâche
+		assertEmpty(tacheDAO.find(ids.ilya));
+		assertEmpty(tacheDAO.find(ids.katharine));
+		assertEmpty(tacheDAO.find(ids.menage));
+
+		// Effectue un divorce
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus transactionStatus) {
+				final MenageCommun menage = (MenageCommun) hibernateTemplate.get(MenageCommun.class, ids.menage);
+				metierService.separe(menage, date(2008, 11, 15), null, EtatCivil.DIVORCE, false, null);
+				return null;
+			}
+		});
+
+		// Vérifie qu'ils sont bien divorcés
+		{
+			final PersonnePhysique ilya = (PersonnePhysique) hibernateTemplate.get(PersonnePhysique.class, ids.ilya);
+			final ForFiscalPrincipal dernier = ilya.getDernierForFiscalPrincipal();
+			assertNotNull(dernier);
+			assertEquals(date(2008, 11, 15), dernier.getDateDebut());
+			assertEquals(MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, dernier.getMotifOuverture());
+		}
+
+		{
+			final PersonnePhysique katharine = (PersonnePhysique) hibernateTemplate.get(PersonnePhysique.class, ids.katharine);
+			final ForFiscalPrincipal dernier = katharine.getDernierForFiscalPrincipal();
+			assertNotNull(dernier);
+			assertEquals(date(2008, 11, 15), dernier.getDateDebut());
+			assertEquals(MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, dernier.getMotifOuverture());
+		}
+
+		{
+			final MenageCommun menage = (MenageCommun) hibernateTemplate.get(MenageCommun.class, ids.menage);
+			final ForFiscalPrincipal dernier = menage.getDernierForFiscalPrincipal();
+			assertNotNull(dernier);
+			assertEquals(date(2008, 11, 14), dernier.getDateFin());
+			assertEquals(MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, dernier.getMotifFermeture());
+		}
+
+		// Vérifie qu'il y a toujours aucune tâche
+		assertEmpty(tacheDAO.find(ids.ilya));
+		assertEmpty(tacheDAO.find(ids.katharine));
+		assertEmpty(tacheDAO.find(ids.menage));
+	}
+
 	private List<Tache> genereChangementImposition(ModeImposition ancienMode, ModeImposition nouveauMode) {
 		PersonnePhysique pp = new PersonnePhysique(false);
 		pp.setNom("Bidule");
