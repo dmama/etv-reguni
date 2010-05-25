@@ -43,7 +43,7 @@
 				<jsp:param name="inputId" value="localiteOuPays" />
 				<jsp:param name="dataValueField" value="nomComplet" />
 				<jsp:param name="dataTextField" value="{nomComplet}" />
-				<jsp:param name="dataSource" value="selectionnerCommuneOuPays" />
+				<jsp:param name="dataSource" value="selectionnerLocaliteOuPays" />
 			</jsp:include>
 		</td>
 		<td>&nbsp;</td>

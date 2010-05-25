@@ -72,8 +72,8 @@ public class AutoCompleteHandler extends AbstractAjaxHandler {
 			}
 			Collections.sort(localites, new Comparator<WrapperLocalite>() {
 				public int compare(WrapperLocalite o1, WrapperLocalite o2) {
-					final String cle1 = String.format("%s (%s)", o1.getNomCompletMinuscule(), o1.getNpa());
-					final String cle2 = String.format("%s (%s)", o2.getNomCompletMinuscule(), o2.getNpa());
+					final String cle1 = String.format("%s (%s)", o1.getNomMinuscule(), o1.getNpa());
+					final String cle2 = String.format("%s (%s)", o2.getNomMinuscule(), o2.getNpa());
 					return compareNullableObjects(cle1, cle2);
 				}
 			});

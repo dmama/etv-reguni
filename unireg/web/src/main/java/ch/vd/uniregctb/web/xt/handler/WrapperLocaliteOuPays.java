@@ -7,20 +7,18 @@ import org.apache.commons.lang.StringEscapeUtils;
 
 
 public class WrapperLocaliteOuPays {
-	private String nomComplet = "???";
-	private String numero ="???";
 
-	public WrapperLocaliteOuPays( Object row) {
-		if (row instanceof Localite) {
-			final Localite localite = (Localite) row;
-			nomComplet = StringEscapeUtils.escapeXml(localite.getNomAbregeMinuscule());
-			numero = String.valueOf(localite.getNoOrdre());
-		}
-		if (row instanceof Pays) {
-			final Pays pays = (Pays) row;
-			nomComplet = StringEscapeUtils.escapeXml(pays.getNomMinuscule());
-			numero = String.valueOf(pays.getNoOFS());
-		}
+	private String nomComplet;
+	private String numero;
+
+	public WrapperLocaliteOuPays(Localite localite) {
+		nomComplet = StringEscapeUtils.escapeXml(localite.getNomAbregeMinuscule());
+		numero = String.valueOf(localite.getNoOrdre());
+	}
+
+	public WrapperLocaliteOuPays(Pays pays) {
+		nomComplet = StringEscapeUtils.escapeXml(pays.getNomMinuscule());
+		numero = String.valueOf(pays.getNoOFS());
 	}
 
 	/**

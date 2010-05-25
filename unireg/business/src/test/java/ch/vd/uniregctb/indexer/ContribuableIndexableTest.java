@@ -39,6 +39,7 @@ import ch.vd.uniregctb.interfaces.model.HistoriqueIndividu;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.mock.MockHistoriqueIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
+import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -792,6 +793,33 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		assertContains("Gladys", values.get(TiersIndexedData.NOM2));
 
 		//assertContains("", values.get(TiersIndexedData.DATE_NAISSANCE));
+	}
+
+	/**
+	 * [UNIREG-2142] vérifie qu'on prend la localité abrégée comme donnée d'indexation
+	 */
+	@Test
+	public void testHabitantRomanelSurLausanne() {
+
+		PersonnePhysique pp = new PersonnePhysique(false);
+		pp.setNumero(1234L);
+		pp.setNom("Ruth");
+		pp.setPrenom("Laurent");
+
+		// Ajout des adresses
+		AdresseSuisse adresse = new AdresseSuisse();
+		adresse.setNumeroOrdrePoste(MockLocalite.RomanelSurLausanne.getNoOrdre());
+		adresse.setUsage(TypeAdresseTiers.COURRIER);
+		adresse.setDateDebut(RegDate.get(2002, 1, 15));
+		adresse.setTiers(pp);
+		pp.addAdresseTiers(adresse);
+
+		final NonHabitantIndexable indexable = new NonHabitantIndexable(adresseService, tiersService, serviceInfra, pp);
+		final HashMap<String, String> values = indexable.getKeyValues();
+		assertEquals("1032", values.get(TiersIndexedData.NPA));
+		assertEquals("Romanel-s-Lausanne Suisse", values.get(TiersSearchFields.LOCALITE_PAYS));
+		assertEquals("Romanel-s-Lausanne", values.get(TiersIndexedData.LOCALITE));
+		assertEquals("Suisse", values.get(TiersIndexedData.PAYS));
 	}
 
 	public RapportEntreTiers addTiers(MenageCommun menage, PersonnePhysique tiers, RegDate dateDebut) {
