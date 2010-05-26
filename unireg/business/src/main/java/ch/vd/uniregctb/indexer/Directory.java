@@ -3,7 +3,6 @@ package ch.vd.uniregctb.indexer;
 import java.io.IOException;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.index.IndexWriter;
 
 /**
@@ -22,10 +21,6 @@ public class Directory {
 
 	private LuceneSearcher searcher = null;
 	private LuceneWriter writer = null;
-
-	static {
-		TokenStream.setOnlyUseNewAPI(true);
-	}
 
 	public Directory(org.apache.lucene.store.Directory directory) {
 		this.directory = directory;
