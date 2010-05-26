@@ -90,7 +90,7 @@ public class FidorServiceImpl implements FidorService {
 					patternTaoPP = getUrl(service, "TAOPP", "synthese");
 					patternTaoBA = getUrl(service, "TAOBA", "dossier");
 					patternTaoIS = getUrl(service, "TAOIS", "default");
-					patternSipf = getUrl(service, "SIPF", "default");
+					patternSipf = getUrl(service, "SIPF", "explorer"); // [UNIREG-2409]
 					LOGGER.info("URLs externes (FiDoR) :\n" +
 							" * TAOPP = " + patternTaoPP + "\n" +
 							" * TAOBA = " + patternTaoBA + "\n" +
