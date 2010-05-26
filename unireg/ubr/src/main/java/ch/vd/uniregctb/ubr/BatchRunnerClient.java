@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.ubr;
 
+import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -13,7 +14,6 @@ import javax.mail.util.ByteArrayDataSource;
 import javax.xml.ws.BindingProvider;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.cxf.interceptor.Fault;
 import org.apache.cxf.message.Message;
 import org.apache.log4j.Logger;
 import org.springframework.util.ResourceUtils;
@@ -94,17 +94,42 @@ public class BatchRunnerClient {
 			catch (InterruptedException e) {
 				throw new RuntimeException(e);
 			}
-			try {			
+			try {
 				JobDefinition def = service.getJobDefinition(pp);
 				status = def.getStatut();
-			} catch (Fault f) {
-				LOGGER.warn("Impossible de récupérer le statut du batch", f);				
+			}
+			catch (RuntimeException e) {
+				if (causedByTimeout(e)) {
+					LOGGER.warn("Timeout lors de la récupération du statut du batch, on va réessayer...");
+					status = JobStatut.JOB_RUNNING; // on suppose que le job tourne toujours
+				}
+				else {
+					LOGGER.error("Impossible de récupérer le statut du batch", e);
+					throw e;
+				}
 			}
 		}
 
 		if (JobStatut.JOB_EXCEPTION.equals(status)) {
 			throw new BatchWSException("Le job a lancé une exception - consulter le log du serveur");
 		}
+	}
+
+	/**
+	 * Détermine si l'exception spécifiée a été levée à cause d'un timeout.
+	 *
+	 * @param exception une exception
+	 * @return <b>vrai</b> si l'exception a été levée à cause d'un timeout; <b>faux</b> autrement.
+	 */
+	private boolean causedByTimeout(Throwable exception) {
+		Throwable e = exception;
+		while (e != null) {
+			if (e instanceof SocketTimeoutException) {
+				return true;
+			}
+			e = e.getCause();
+		}
+		return false;
 	}
 
 	/**
