@@ -23,13 +23,12 @@ public interface SituationFamilleService {
 	 * Assemble les données du registre civil et celles du registre fiscal pour construire une vue cohérente de la situation de famille d'un
 	 * contribuable à une date donnée.
 	 *
-	 * @param contribuable
-	 *            le contribuable dont on veut obtenir la situation de famille
-	 * @param date
-	 *            la date de validité de la situation de famille, ou <b>null</b> pour obtenir la situation de famille la plus à jour.
+	 * @param contribuable le contribuable dont on veut obtenir la situation de famille
+	 * @param date la date de validité de la situation de famille, ou <b>null</b> pour obtenir la situation de famille la plus à jour.
+	 * @param yComprisCivil <code>true</code> si les données civiles sont considérées en plus des données fiscales, <code>false</code> si on ne s'intéresse qu'aux données purement fiscales
 	 * @return une vue de la situation de famille
 	 */
-	VueSituationFamille getVue(Contribuable contribuable, RegDate date);
+	VueSituationFamille getVue(Contribuable contribuable, RegDate date, boolean yComprisCivil);
 
 	/**
 	 * Assemble les données du registre civil et celles du registre fiscal pour construire un historique cohérente de la situation de
@@ -44,12 +43,12 @@ public interface SituationFamilleService {
 	List<VueSituationFamille> getVueHisto(Contribuable contribuable);
 
 	/**
+	 * @param pp la personne physique
+	 * @param date date de référence
+	 * @param takeCivilAsDefault <code>true</code> si on doit prendre en compte le registre civil, <code>false</code> si on ne s'intéresse qu'aux données purement fiscales
 	 * @return l'état civil à la date spécifié d'une personne physique.
-	 * @param pp
-	 * @param dateMariage
-	 * @return la date de naissance
 	 */
-	public EtatCivil getEtatCivil(PersonnePhysique pp, RegDate date);
+	public EtatCivil getEtatCivil(PersonnePhysique pp, RegDate date, boolean takeCivilAsDefault);
 
 	/**
 	 * Annule une situation de famille en réouvrant la précédente si elle existe

@@ -544,14 +544,14 @@ public class MetierServiceImpl implements MetierService {
 
 		EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(menageCommun, date);
 		PersonnePhysique principal = couple.getPrincipal();
-		ch.vd.uniregctb.type.EtatCivil etatCivilPrincipal = situationFamilleService.getEtatCivil(principal, date);
+		ch.vd.uniregctb.type.EtatCivil etatCivilPrincipal = situationFamilleService.getEtatCivil(principal, date, true);
 		if (!principal.isHabitant()) {
 			auMoinsUnNonHabitant = true;
 		}
 		PersonnePhysique conjoint = couple.getConjoint();
 		ch.vd.uniregctb.type.EtatCivil etatCivilConjoint = null;
 		if (conjoint != null) {
-			etatCivilConjoint = situationFamilleService.getEtatCivil(conjoint, date);
+			etatCivilConjoint = situationFamilleService.getEtatCivil(conjoint, date, true);
 			if (!conjoint.isHabitant()) {
 				auMoinsUnNonHabitant = true;
 			}
@@ -1288,7 +1288,7 @@ public class MetierServiceImpl implements MetierService {
 			boolean sansEtatCivil = false;
 			boolean etatCivilDifferent = false;
 
-			ch.vd.uniregctb.type.EtatCivil etatCivilActif = situationFamilleService.getEtatCivil(pp, date);
+			ch.vd.uniregctb.type.EtatCivil etatCivilActif = situationFamilleService.getEtatCivil(pp, date, true);
 
 			if (!pp.isHabitant()) {
 				nonHabitant = true;
@@ -1430,7 +1430,7 @@ public class MetierServiceImpl implements MetierService {
 					auMoinsUnNonHabitant = true;
 				}
 				else {
-					ch.vd.uniregctb.type.EtatCivil etatCivilActif = situationFamilleService.getEtatCivil(pp, date);
+					ch.vd.uniregctb.type.EtatCivil etatCivilActif = situationFamilleService.getEtatCivil(pp, date, true);
 					if (etatCivilActif != etatCivilFamille) {
 						etatsCivilsDifferents = true;
 					}

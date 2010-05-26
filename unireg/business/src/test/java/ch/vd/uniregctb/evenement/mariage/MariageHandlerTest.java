@@ -1,25 +1,29 @@
 package ch.vd.uniregctb.evenement.mariage;
 
-import static junit.framework.Assert.assertEquals;
-
 import java.util.ArrayList;
 import java.util.List;
 
+import junit.framework.Assert;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.util.Assert;
+import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.civil.model.EnumTypeEtatCivil;
 import ch.vd.uniregctb.evenement.AbstractEvenementHandlerTest;
 import ch.vd.uniregctb.evenement.EvenementCivilErreur;
 import ch.vd.uniregctb.interfaces.model.Individu;
+import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
+import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
+import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.MenageCommun;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
+import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
 public class MariageHandlerTest extends AbstractEvenementHandlerTest {
@@ -60,7 +64,77 @@ public class MariageHandlerTest extends AbstractEvenementHandlerTest {
 
 		super.onSetUp();
 		serviceCivil.setUp(new DefaultMockServiceCivil());
-		loadDatabase(DB_UNIT_DATA_FILE);
+	}
+
+	@Test
+	public void testMariageNonHabitantConnuAuCivilSepare() throws Exception {
+
+		final long noIndMonsieur = 1234566L;
+
+		serviceCivil.setUp(new DefaultMockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu monsieur = addIndividu(noIndMonsieur, date(1956, 12, 5), "Talon", "Achille", true);
+				addEtatCivil(monsieur, date(2005, 6, 1), EnumTypeEtatCivil.SEPARE);
+			}
+		});
+
+		final class Ids {
+			long idMonsieur;
+		}
+		final Ids ids = new Ids();
+
+		// mise en place ces contribuables
+		doInNewTransaction(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus transactionStatus) {
+				final PersonnePhysique monsieur = addHabitant(noIndMonsieur);
+				tiersService.changeHabitantenNH(monsieur);
+				addForPrincipal(monsieur, date(2008, 1, 1), MotifFor.DEPART_HS, MockPays.France);
+
+				ids.idMonsieur = monsieur.getNumero();
+				return null;
+			}
+		});
+
+		final class Lists {
+			public final List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
+			public final List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
+		}
+		final Lists lists = new Lists();
+
+		// mariage (devrait fonctionner même si monsieur est connu comme séparé - son divorce n'est pas encore connu du canton...)
+		doInNewTransaction(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus transactionStatus) {
+				final Individu monsieur = serviceCivil.getIndividu(noIndMonsieur, 2009);
+				final Mariage mariage = createValidMariage(monsieur, null, date(2009, 2, 14));
+
+				evenementCivilHandler.checkCompleteness(mariage, lists.erreurs, lists.warnings);
+				evenementCivilHandler.validate(mariage, lists.erreurs, lists.warnings);
+				evenementCivilHandler.handle(mariage, lists.warnings);
+				return null;
+			}
+		});
+
+		if (!lists.erreurs.isEmpty()) {
+			for (EvenementCivilErreur e : lists.erreurs) {
+				LOGGER.error("Trouvé erreur : " + e);
+			}
+			Assert.fail("Il y a des erreurs...");
+		}
+		if (!lists.warnings.isEmpty()) {
+			for (EvenementCivilErreur e : lists.warnings) {
+				LOGGER.error("Trouvé warning : " + e);
+			}
+			Assert.fail("Il y a des warnings...");
+		}
+
+		final PersonnePhysique monsieur = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndMonsieur);
+		final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(monsieur, null);
+		Assert.assertNotNull(couple);
+		Assert.assertNotNull(couple.getMenage());
+		Assert.assertNotNull(couple.getPrincipal());
+		Assert.assertEquals(ids.idMonsieur, (long) couple.getPrincipal().getNumero());
+		Assert.assertNull(couple.getConjoint());
 	}
 
 	/*
@@ -69,6 +143,8 @@ public class MariageHandlerTest extends AbstractEvenementHandlerTest {
 	 */
 	@Test
 	public void testHandleUnionSeulOrdinaire() throws Exception {
+
+		loadDatabase(DB_UNIT_DATA_FILE);
 
 		LOGGER.debug("Test de traitement d'un événement de mariage seul.");
 
@@ -95,22 +171,22 @@ public class MariageHandlerTest extends AbstractEvenementHandlerTest {
 		/*
 		 * Test de la présence d'une erreur
 		 */
-		Assert.isTrue(lists.erreurs.isEmpty(), "Une erreur est survenue lors du traitement du mariage seul");
+		Assert.assertTrue("Une erreur est survenue lors du traitement du mariage seul", lists.erreurs.isEmpty());
 
 		/*
 		 * Test de récupération du Tiers
 		 */
-		PersonnePhysique pierre = tiersDAO.getHabitantByNumeroIndividu(UNI_SEUL);
-		Assert.isTrue(pierre != null, "Plusieurs habitants trouvés avec le même numero individu (ou aucun)");
+		final PersonnePhysique pierre = tiersDAO.getHabitantByNumeroIndividu(UNI_SEUL);
+		Assert.assertNotNull("Plusieurs habitants trouvés avec le même numero individu (ou aucun)", pierre);
 
 		/*
 		 * Vérification des fors fiscaux
 		 */
-		Assert.notNull( pierre.getForsFiscaux(), "Les for fiscaux de Pierre ont disparus" );
-		Assert.isNull( pierre.getForFiscalPrincipalAt(null), "Pierre ne devrait plus avoir de for principal actif après le mariage" );
+		Assert.assertNotNull("Les for fiscaux de Pierre ont disparus", pierre.getForsFiscaux());
+		Assert.assertNull("Pierre ne devrait plus avoir de for principal actif après le mariage", pierre.getForFiscalPrincipalAt(null));
 		for (ForFiscal forFiscal : pierre.getForsFiscaux()) {
 			if (forFiscal instanceof ForFiscalPrincipal)
-				Assert.notNull( forFiscal.getDateFin(), "Un for fiscal principal non fermé a été trouvé" );
+				Assert.assertNotNull("Un for fiscal principal non fermé a été trouvé", forFiscal.getDateFin());
 		}
 
 		/*
@@ -124,23 +200,23 @@ public class MariageHandlerTest extends AbstractEvenementHandlerTest {
 				menageCommun = (MenageCommun) tiersDAO.get(rapport.getObjetId());
 			}
 		}
-		Assert.isTrue( nbMenagesCommuns == 1, "Plusieurs ou aucun tiers MenageCommun ont été trouvés");
+		Assert.assertEquals("Plusieurs ou aucun tiers MenageCommun ont été trouvés", 1, nbMenagesCommuns);
 
 		/*
 		 * Vérification du for principal du tiers MenageCommun
 		 */
 		ForFiscalPrincipal forCommun = menageCommun.getForFiscalPrincipalAt(null);
-		Assert.notNull( forCommun, "Aucun for fiscal principal trouvé sur le tiers MenageCommun" );
-		Assert.isTrue( DATE_UNION_SEUL.equals(forCommun.getDateDebut()), "La date d'ouverture du nouveau for ne correspond pas a la date du mariage" );
+		Assert.assertNotNull("Aucun for fiscal principal trouvé sur le tiers MenageCommun",  forCommun);
+		Assert.assertEquals("La date d'ouverture du nouveau for ne correspond pas a la date du mariage", DATE_UNION_SEUL, forCommun.getDateDebut());
 
 		/*
 		 * Evénements fiscaux devant être générés :
 		 *  - fermeture for fiscal principal sur pierre
 		 *  - ouverture for fiscal principal sur le ménage commun
 		 */
-		assertEquals(2, eventSender.count);
-		assertEquals(1, getEvenementFiscalService().getEvenementFiscals(pierre).size());
-		assertEquals(1, getEvenementFiscalService().getEvenementFiscals(menageCommun).size());
+		Assert.assertEquals(2, eventSender.count);
+		Assert.assertEquals(1, getEvenementFiscalService().getEvenementFiscals(pierre).size());
+		Assert.assertEquals(1, getEvenementFiscalService().getEvenementFiscals(menageCommun).size());
 	}
 
 	/**
@@ -149,6 +225,8 @@ public class MariageHandlerTest extends AbstractEvenementHandlerTest {
 	 */
 	@Test
 	public void testHandleUnionHeteroOrdinaire() throws Exception {
+
+		loadDatabase(DB_UNIT_DATA_FILE);
 
 		LOGGER.debug("Test de traitement d'un événement d'union hétéro.");
 
@@ -176,38 +254,38 @@ public class MariageHandlerTest extends AbstractEvenementHandlerTest {
 		/*
 		 * Test de la présence d'une erreur
 		 */
-		Assert.isTrue(lists.erreurs.isEmpty(), "Une erreur est survenue lors du traitement de l'union hétéro");
+		Assert.assertTrue("Une erreur est survenue lors du traitement de l'union hétéro", lists.erreurs.isEmpty());
 
 		/*
 		 * Test de récupération du Tiers
 		 */
-		PersonnePhysique momo = tiersDAO.getHabitantByNumeroIndividu(UNI_HETERO);
-		Assert.isTrue(momo != null, "Plusieurs habitants trouvés avec le même numero individu (ou aucun)");
+		final PersonnePhysique momo = tiersDAO.getHabitantByNumeroIndividu(UNI_HETERO);
+		Assert.assertNotNull("Plusieurs habitants trouvés avec le même numero individu (ou aucun)", momo);
 
 		/*
 		 * Vérification des fors fiscaux
 		 */
-		Assert.notNull( momo.getForsFiscaux(), "Les for fiscaux de Momo ont disparus" );
-		Assert.isNull( momo.getForFiscalPrincipalAt(null), "Momo ne devrait plus avoir de for principal actif après le mariage" );
+		Assert.assertNotNull("Les for fiscaux de Momo ont disparus",  momo.getForsFiscaux());
+		Assert.assertNull("Momo ne devrait plus avoir de for principal actif après le mariage", momo.getForFiscalPrincipalAt(null));
 		for (ForFiscal forFiscal : momo.getForsFiscaux()) {
 			if (forFiscal instanceof ForFiscalPrincipal)
-				Assert.notNull( forFiscal.getDateFin(), "Un for fiscal principal non fermé a été trouvé" );
+				Assert.assertNotNull("Un for fiscal principal non fermé a été trouvé",  forFiscal.getDateFin());
 		}
 
 		/*
 		 * Test de récupération du Conjoint
 		 */
-		PersonnePhysique bea = tiersDAO.getHabitantByNumeroIndividu(UNI_HETERO_CONJOINT);
-		Assert.isTrue(bea != null, "Plusieurs habitants trouvés avec le même numero individu (ou aucun)");
+		final PersonnePhysique bea = tiersDAO.getHabitantByNumeroIndividu(UNI_HETERO_CONJOINT);
+		Assert.assertNotNull("Plusieurs habitants trouvés avec le même numero individu (ou aucun)", bea);
 
 		/*
 		 * Vérification des fors fiscaux
 		 */
-		Assert.notNull( bea.getForsFiscaux(), "Les for fiscaux de Béa ont disparus" );
-		Assert.isNull( bea.getForFiscalPrincipalAt(null), "Béa ne devrait plus avoir de for principal actif après le mariage" );
+		Assert.assertNotNull("Les for fiscaux de Béa ont disparus", bea.getForsFiscaux());
+		Assert.assertNull("Béa ne devrait plus avoir de for principal actif après le mariage",  bea.getForFiscalPrincipalAt(null));
 		for (ForFiscal forFiscal : bea.getForsFiscaux()) {
 			if (forFiscal instanceof ForFiscalPrincipal)
-				Assert.notNull( forFiscal.getDateFin(), "Un for fiscal principal non fermé a été trouvé" );
+				Assert.assertNotNull("Un for fiscal principal non fermé a été trouvé", forFiscal.getDateFin());
 		}
 
 		/*
@@ -221,16 +299,16 @@ public class MariageHandlerTest extends AbstractEvenementHandlerTest {
 				menageCommun = (MenageCommun) tiersDAO.get(rapport.getObjetId());
 			}
 		}
-		Assert.isTrue( nbMenagesCommuns == 1, "Plusieurs ou aucun tiers MenageCommun ont été trouvés");
+		Assert.assertEquals("Plusieurs ou aucun tiers MenageCommun ont été trouvés", 1, nbMenagesCommuns);
 
 		/*
 		 * Vérification du for principal du tiers MenageCommun
 		 */
-		ForFiscalPrincipal forCommun = menageCommun.getForFiscalPrincipalAt(null);
-		Assert.notNull( forCommun, "Aucun for fiscal principal trouvé sur le tiers MenageCommun" );
-		Assert.isTrue( DATE_UNION_HETERO.equals(forCommun.getDateDebut()), "La date d'ouverture du nouveau for ne correspond pas a la date du mariage" );
+		final ForFiscalPrincipal forCommun = menageCommun.getForFiscalPrincipalAt(null);
+		Assert.assertNotNull("Aucun for fiscal principal trouvé sur le tiers MenageCommun",  forCommun);
+		Assert.assertEquals("La date d'ouverture du nouveau for ne correspond pas a la date du mariage", DATE_UNION_HETERO, forCommun.getDateDebut());
 
-		Assert.isTrue(menageCommun.getForsParType(false).secondaires.size() > 0, "Il aurait dû y avoir au moins un for fiscal secondaire");
+		Assert.assertTrue("Il aurait dû y avoir au moins un for fiscal secondaire", menageCommun.getForsParType(false).secondaires.size() > 0);
 		
 		/*
 		 * Evénements fiscaux devant être générés :
@@ -238,10 +316,10 @@ public class MariageHandlerTest extends AbstractEvenementHandlerTest {
 		 *  - fermeture for fiscal principal sur bea
 		 *  - ouverture for fiscal principal sur le ménage commun
 		 */
-		assertEquals(3, eventSender.count);
-		assertEquals(1, getEvenementFiscalService().getEvenementFiscals(momo).size());
-		assertEquals(1, getEvenementFiscalService().getEvenementFiscals(bea).size());
-		assertEquals(1, getEvenementFiscalService().getEvenementFiscals(menageCommun).size());
+		Assert.assertEquals(3, eventSender.count);
+		Assert.assertEquals(1, getEvenementFiscalService().getEvenementFiscals(momo).size());
+		Assert.assertEquals(1, getEvenementFiscalService().getEvenementFiscals(bea).size());
+		Assert.assertEquals(1, getEvenementFiscalService().getEvenementFiscals(menageCommun).size());
 	}
 
 	/**
@@ -250,6 +328,8 @@ public class MariageHandlerTest extends AbstractEvenementHandlerTest {
 	 */
 	@Test
 	public void testHandleUnionHomoOrdinaire() throws Exception {
+
+		loadDatabase(DB_UNIT_DATA_FILE);
 
 		LOGGER.debug("Test de traitement d'un événement d'union homo.");
 
@@ -277,38 +357,38 @@ public class MariageHandlerTest extends AbstractEvenementHandlerTest {
 		/*
 		 * Test de la présence d'une erreur
 		 */
-		Assert.isTrue(lists.erreurs.isEmpty(), "Une erreur est survenue lors du traitement de l'union homo");
+		Assert.assertTrue("Une erreur est survenue lors du traitement de l'union homo", lists.erreurs.isEmpty());
 
 		/*
 		 * Test de récupération du Tiers
 		 */
-		PersonnePhysique david = tiersDAO.getHabitantByNumeroIndividu(UNI_HOMO);
-		Assert.isTrue(david != null, "Plusieurs habitants trouvés avec le même numero individu (ou aucun)");
+		final PersonnePhysique david = tiersDAO.getHabitantByNumeroIndividu(UNI_HOMO);
+		Assert.assertNotNull("Plusieurs habitants trouvés avec le même numero individu (ou aucun)", david);
 
 		/*
 		 * Vérification des fors fiscaux
 		 */
-		Assert.notNull( david.getForsFiscaux(), "Les for fiscaux de David ont disparus" );
-		Assert.isNull( david.getForFiscalPrincipalAt(null), "David ne devrait plus avoir de for principal actif après le mariage" );
+		Assert.assertNotNull("Les for fiscaux de David ont disparus", david.getForsFiscaux());
+		Assert.assertNull("David ne devrait plus avoir de for principal actif après le mariage", david.getForFiscalPrincipalAt(null));
 		for (ForFiscal forFiscal : david.getForsFiscaux()) {
 			if (forFiscal instanceof ForFiscalPrincipal)
-				Assert.notNull( forFiscal.getDateFin(), "Un for fiscal principal non fermé a été trouvé" );
+				Assert.assertNotNull("Un for fiscal principal non fermé a été trouvé",  forFiscal.getDateFin());
 		}
 
 		/*
 		 * Test de récupération du Conjoint
 		 */
-		PersonnePhysique julien = tiersDAO.getHabitantByNumeroIndividu(UNI_HOMO_CONJOINT);
-		Assert.isTrue(julien != null, "Plusieurs habitants trouvés avec le même numero individu (ou aucun)");
+		final PersonnePhysique julien = tiersDAO.getHabitantByNumeroIndividu(UNI_HOMO_CONJOINT);
+		Assert.assertNotNull("Plusieurs habitants trouvés avec le même numero individu (ou aucun)", julien);
 
 		/*
 		 * Vérification des fors fiscaux
 		 */
-		Assert.notNull( julien.getForsFiscaux(), "Les for fiscaux de Julien ont disparus" );
-		Assert.isNull( julien.getForFiscalPrincipalAt(null), "Julien ne devrait plus avoir de for principal actif après le mariage" );
+		Assert.assertNotNull("Les for fiscaux de Julien ont disparus", julien.getForsFiscaux());
+		Assert.assertNull("Julien ne devrait plus avoir de for principal actif après le mariage", julien.getForFiscalPrincipalAt(null));
 		for (ForFiscal forFiscal : julien.getForsFiscaux()) {
 			if (forFiscal instanceof ForFiscalPrincipal)
-				Assert.notNull( forFiscal.getDateFin(), "Un for fiscal principal non fermé a été trouvé" );
+				Assert.assertNotNull("Un for fiscal principal non fermé a été trouvé", forFiscal.getDateFin());
 		}
 
 		/*
@@ -322,14 +402,14 @@ public class MariageHandlerTest extends AbstractEvenementHandlerTest {
 				menageCommun = (MenageCommun) tiersDAO.get(rapport.getObjetId());
 			}
 		}
-		Assert.isTrue( nbMenagesCommuns == 1, "Plusieurs ou aucun tiers MenageCommun ont été trouvés");
+		Assert.assertEquals("Plusieurs ou aucun tiers MenageCommun ont été trouvés", 1, nbMenagesCommuns);
 
 		/*
 		 * Vérification du for principal du tiers MenageCommun
 		 */
-		ForFiscalPrincipal forCommun = menageCommun.getForFiscalPrincipalAt(null);
-		Assert.notNull( forCommun, "Aucun for fiscal principal trouvé sur le tiers MenageCommun" );
-		Assert.isTrue( DATE_UNION_HOMO.equals(forCommun.getDateDebut()), "La date d'ouverture du nouveau for ne correspond pas a la date du mariage" );
+		final ForFiscalPrincipal forCommun = menageCommun.getForFiscalPrincipalAt(null);
+		Assert.assertNotNull("Aucun for fiscal principal trouvé sur le tiers MenageCommun", forCommun);
+		Assert.assertEquals("La date d'ouverture du nouveau for ne correspond pas a la date du mariage", DATE_UNION_HOMO, forCommun.getDateDebut());
 
 		/*
 		 * Evénements fiscaux devant être générés :
@@ -337,10 +417,10 @@ public class MariageHandlerTest extends AbstractEvenementHandlerTest {
 		 *  - fermeture for fiscal principal sur julien
 		 *  - ouverture for fiscal principal sur le ménage commun
 		 */
-		assertEquals(3, eventSender.count);
-		assertEquals(1, getEvenementFiscalService().getEvenementFiscals(david).size());
-		assertEquals(1, getEvenementFiscalService().getEvenementFiscals(julien).size());
-		assertEquals(1, getEvenementFiscalService().getEvenementFiscals(menageCommun).size());
+		Assert.assertEquals(3, eventSender.count);
+		Assert.assertEquals(1, getEvenementFiscalService().getEvenementFiscals(david).size());
+		Assert.assertEquals(1, getEvenementFiscalService().getEvenementFiscals(julien).size());
+		Assert.assertEquals(1, getEvenementFiscalService().getEvenementFiscals(menageCommun).size());
 	}
 
 	private MockMariage createValidMariage(Individu individu, Individu conjoint, RegDate dateMariage) {

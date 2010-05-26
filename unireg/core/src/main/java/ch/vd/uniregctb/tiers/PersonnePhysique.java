@@ -320,7 +320,7 @@ public class PersonnePhysique extends Contribuable {
 
 	@Transient
 	public boolean isConnuAuCivil() {
-		return numeroIndividu != null;
+		return numeroIndividu != null && numeroIndividu > 0L;
 	}
 
 	/**

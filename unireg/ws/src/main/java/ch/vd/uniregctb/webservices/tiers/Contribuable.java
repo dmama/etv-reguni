@@ -47,7 +47,7 @@ public abstract class Contribuable extends Tiers {
 		super(contribuable, parts, date, context);
 
 		if (parts != null && parts.contains(TiersPart.SITUATIONS_FAMILLE)) {
-			ch.vd.uniregctb.situationfamille.VueSituationFamille situation = context.situationService.getVue(contribuable, date);
+			ch.vd.uniregctb.situationfamille.VueSituationFamille situation = context.situationService.getVue(contribuable, date, true);
 			if (situation != null) {
 				this.situationFamille = new SituationFamille(situation);
 			}

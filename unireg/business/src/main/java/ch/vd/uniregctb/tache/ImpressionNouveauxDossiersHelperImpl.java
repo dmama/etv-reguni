@@ -156,7 +156,7 @@ public class ImpressionNouveauxDossiersHelperImpl implements ImpressionNouveauxD
 			String displayDateNaissance = RegDateHelper.dateToDisplayString(dateNaissance);
 
 			contrib1.setDateNaissance1(displayDateNaissance);
-			EtatCivil etatCivil = situationFamilleService.getEtatCivil(principal, null);
+			EtatCivil etatCivil = situationFamilleService.getEtatCivil(principal, null, true);
 			if (etatCivil != null) {
 				contrib1.setCivil(etatCivil.format());
 			}
@@ -191,7 +191,7 @@ public class ImpressionNouveauxDossiersHelperImpl implements ImpressionNouveauxD
 			RegDate dateNaissance = tiersService.getDateNaissance(pp);
 			String displayDateNaissance = RegDateHelper.dateToDisplayString(dateNaissance);
 			contrib1.setDateNaissance1(displayDateNaissance);
-			EtatCivil etatCivil = situationFamilleService.getEtatCivil(pp, null);
+			EtatCivil etatCivil = situationFamilleService.getEtatCivil(pp, null, true);
 			if (etatCivil != null) {
 				contrib1.setCivil(etatCivil.format());
 			}

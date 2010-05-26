@@ -59,20 +59,25 @@ public class MariageHandler extends EvenementCivilHandlerBase {
 		}
 
 		final ServiceCivilService serviceCivil = getService().getServiceCivilService();
-		final EtatCivil etatCivil = serviceCivil.getEtatCivilActif(individu.getNoTechnique(), mariage.getDate());
-		if (etatCivil == null) {
-			errors.add(new EvenementCivilErreur("L'individu principal ne possède pas d'état civil à la date de l'événement"));
-		}
 
-		if (!EtatCivilHelper.estMarieOuPacse(etatCivil)) {
-			errors.add(new EvenementCivilErreur("L'individu principal n'est ni marié ni pacsé dans le civil"));
+		// [UNIREG-1595] On ne teste l'état civil que si le tiers est habitant (pas ancien habitant...)
+		if (habitant.isHabitant()) {
+
+			final EtatCivil etatCivil = serviceCivil.getEtatCivilActif(individu.getNoTechnique(), mariage.getDate());
+			if (etatCivil == null) {
+				errors.add(new EvenementCivilErreur("L'individu principal ne possède pas d'état civil à la date de l'événement"));
+			}
+
+			if (!EtatCivilHelper.estMarieOuPacse(etatCivil)) {
+				errors.add(new EvenementCivilErreur("L'individu principal n'est ni marié ni pacsé dans le civil"));
+			}
 		}
 
 		/*
 		 * Dans le cas où le conjoint réside dans le canton, il faut que le tiers contribuable existe.
 		 */
 		PersonnePhysique habitantConjoint = null;
-		Individu conjoint = mariage.getNouveauConjoint();
+		final Individu conjoint = mariage.getNouveauConjoint();
 		if (conjoint != null) {
 
 			/*
@@ -83,13 +88,17 @@ public class MariageHandler extends EvenementCivilHandlerBase {
 				return;
 			}
 
-			final EtatCivil etatCivilConjoint = serviceCivil.getEtatCivilActif(conjoint.getNoTechnique(), mariage.getDate());
-			if (etatCivilConjoint == null) {
-				errors.add(new EvenementCivilErreur("Le conjoint ne possède pas d'état civil à la date de l'événement"));
-			}
+			// [UNIREG-1595] On ne teste l'état civil que si le tiers est habitant (pas ancien habitant...)
+			if (habitantConjoint.isHabitant()) {
 
-			if (!EtatCivilHelper.estMarieOuPacse(etatCivilConjoint)) {
-				errors.add(new EvenementCivilErreur("Le conjoint n'est ni marié ni pacsé dans le civil"));
+				final EtatCivil etatCivilConjoint = serviceCivil.getEtatCivilActif(conjoint.getNoTechnique(), mariage.getDate());
+				if (etatCivilConjoint == null) {
+					errors.add(new EvenementCivilErreur("Le conjoint ne possède pas d'état civil à la date de l'événement"));
+				}
+
+				if (!EtatCivilHelper.estMarieOuPacse(etatCivilConjoint)) {
+					errors.add(new EvenementCivilErreur("Le conjoint n'est ni marié ni pacsé dans le civil"));
+				}
 			}
 		}
 

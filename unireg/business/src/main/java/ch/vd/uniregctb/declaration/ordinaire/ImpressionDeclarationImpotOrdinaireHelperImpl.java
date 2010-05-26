@@ -21,7 +21,6 @@ import ch.vd.uniregctb.situationfamille.SituationFamilleService;
 import ch.vd.uniregctb.tiers.*;
 import ch.vd.uniregctb.type.EtatCivil;
 import ch.vd.uniregctb.type.Qualification;
-import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeDocument;
 import noNamespace.CleRgpDocument.CleRgp;
 import noNamespace.*;
@@ -613,7 +612,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 	}
 
 	private EtatCivil calculEtatCivil(PersonnePhysique pp, RegDate date) {
-		EtatCivil etatCivil = situationFamilleService.getEtatCivil(pp, date);
+		EtatCivil etatCivil = situationFamilleService.getEtatCivil(pp, date, true);
 		return etatCivil;
 	}
 

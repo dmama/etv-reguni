@@ -228,7 +228,7 @@ public class ImpressionTaxationOfficeHelperImpl implements ImpressionTaxationOff
 		final String displayDateNaissance = RegDateHelper.dateToDisplayString(dateNaissance);
 
 		contrib1.setDateNaissance1(displayDateNaissance);
-		final EtatCivil etatCivil = situationFamilleService.getEtatCivil(pp, null);
+		final EtatCivil etatCivil = situationFamilleService.getEtatCivil(pp, null, true);
 		if (etatCivil != null) {
 			contrib1.setCivil(etatCivil.format());
 		}
