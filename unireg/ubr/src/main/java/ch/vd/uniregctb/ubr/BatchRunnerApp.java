@@ -137,10 +137,11 @@ public class BatchRunnerApp {
 	 */
 	private static void initLog4j() {
 		Properties properties = new Properties();
+		properties.setProperty("log4j.logger.ch.vd.uniregctb", "WARN");
 		properties.setProperty("log4j.rootLogger", "ERROR, stdout");
 		properties.setProperty("log4j.appender.stdout", "org.apache.log4j.ConsoleAppender");
 		properties.setProperty("log4j.appender.stdout.layout", "org.apache.log4j.PatternLayout");
-		properties.setProperty("log4j.appender.stdout.layout.ConversionPattern", "%r %p [%t] %c - %m%n");
+		properties.setProperty("log4j.appender.stdout.layout.ConversionPattern", "[ubr] %p [%d{yyyy-MM-dd HH:mm:ss.SSS}] %c | %m%n");
 		PropertyConfigurator.configure(properties);
 
 		// Ces deux classes semblent avoir l'oreille un peu dur...
