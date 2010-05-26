@@ -28,10 +28,6 @@ public class AdressesFiscales {
 			return domicile;
 		case POURSUITE:
 			return poursuite;
-		case SECONDAIRE:
-			return null;
-		case TUTELLE:
-			return null;
 		default:
 			throw new IllegalArgumentException("Type d'adresse inconnu = " + type.name());
 		}

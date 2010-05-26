@@ -18,7 +18,6 @@ import org.hibernate.Session;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.transaction.annotation.Transactional;
 
-import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
@@ -66,10 +65,6 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 
 	private MouvementVisuManager mouvementVisuManager;
 
-
-
-	private List<EnumTypeAdresse> listTypeAdresse;
-
 	public void setMouvementVisuManager(MouvementVisuManager mouvementVisuManager) {
 		this.mouvementVisuManager = mouvementVisuManager;
 	}
@@ -78,11 +73,10 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 	 * {@inheritDoc}
 	 */
 	@Transactional(readOnly = true)
-	public TiersVisuView getView(Long numero, boolean adressesFiscalesHisto, boolean adressesCivilesHisto, boolean rapportsPrestationHisto, WebParamPagination webParamPagination) throws AdresseException, InfrastructureException {
+	public TiersVisuView getView(Long numero, boolean adressesHisto, boolean rapportsPrestationHisto, WebParamPagination webParamPagination) throws AdresseException, InfrastructureException {
 
 		TiersVisuView tiersVisuView = new TiersVisuView();
-		tiersVisuView.setAdressesFiscalesHisto(adressesFiscalesHisto);
-		tiersVisuView.setAdressesCivilesHisto(adressesCivilesHisto);
+		tiersVisuView.setAdressesHisto(adressesHisto);
 		tiersVisuView.setRapportsPrestationHisto(rapportsPrestationHisto);
 
 		final Tiers tiers = getTiersDAO().get(numero);
@@ -132,8 +126,7 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 				setSituationsFamille(tiersVisuView, contribuable);
 			}
 
-			tiersVisuView.setHistoriqueAdressesFiscales(getAdressesFiscalesHistoriquesFromTiers(tiers, adressesFiscalesHisto));
-			tiersVisuView.setHistoriqueAdressesCiviles(getAdressesCivilesHistoriques(tiers,adressesCivilesHisto));
+			tiersVisuView.setHistoriqueAdresses(getAdressesHistoriques(tiers, adressesHisto));
 
 			List<RapportView> rapportsView = getRapports(tiers);
 
@@ -184,15 +177,15 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 	 * Recuperation des adresses historiques
 	 *
 	 * @param tiers
-	 * @param adresseFiscaleHisto
+	 * @param adresseActive
 	 * @return List<AdresseView>
 	 * @throws AdressesResolutionException
 	 */
-	private List<AdresseView> getAdressesFiscalesHistoriques(Tiers tiers, boolean adresseFiscaleHisto) throws AdresseException{
+	private List<AdresseView> getAdressesHistoriques(Tiers tiers, boolean adresseHisto) throws AdresseException{
 
 		List<AdresseView> adresses = new ArrayList<AdresseView>();
 
-		if (adresseFiscaleHisto) {
+		if (adresseHisto) {
 			final AdressesFiscalesHisto adressesFiscalHisto = adresseService.getAdressesFiscalHisto(tiers, false);
 			if (adressesFiscalHisto != null) {
 				// rempli tous les types d'adresse
@@ -207,78 +200,6 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 				// rempli tous les types d'adresse
 				for (TypeAdresseTiers type : TypeAdresseTiers.values()) {
 					fillAdressesView(adresses, adressesFiscales, type, tiers);
-				}
-			}
-		}
-
-		Collections.sort(adresses, new AdresseViewComparator());
-
-		return adresses;
-	}
-		/**
-	 * Recuperation des adresses historiques
-	 *
-	 * @param tiers
-	 * @param adresseFiscaleHisto
-	 * @return List<AdresseView>
-	 * @throws AdressesResolutionException
-	 */
-	private List<AdresseView> getAdressesFiscalesHistoriquesFromTiers(Tiers tiers, boolean adresseFiscaleHisto) throws AdresseException{
-
-		List<AdresseView> adresses = new ArrayList<AdresseView>();
-			
-		if (adresseFiscaleHisto) {
-			final AdressesFiscalesHisto adressesFiscalHisto = adresseService.getAdressesFiscalesHistoFromTiers(tiers);
-			if (adressesFiscalHisto != null) {
-				// rempli tous les types d'adresse
-				for (TypeAdresseTiers type : TypeAdresseTiers.values()) {
-					fillAdressesView(adresses, adressesFiscalHisto, type, tiers);
-				}
-			}
-		}
-		else {
-			final AdressesFiscales adressesFiscales = adresseService.getAdressesFiscalesFromTiers(tiers);
-			if (adressesFiscales != null) {
-				// rempli tous les types d'adresse
-				for (TypeAdresseTiers type : TypeAdresseTiers.values()) {
-					fillAdressesView(adresses, adressesFiscales, type, tiers);
-				}
-			}
-		}
-
-		Collections.sort(adresses, new AdresseViewComparator());
-
-		return adresses;
-	}
-
-		/**
-	 * Recuperation des adresses historiques
-	 *
-	 * @param tiers
-	 *
-	 * @param adresseCivileHisto
-		 * @return List<AdresseView>
-	 * @throws AdressesResolutionException
-	 */
-	private List<AdresseView> getAdressesCivilesHistoriques(Tiers tiers, boolean adresseCivileHisto) throws AdresseException{
-
-		List<AdresseView> adresses = new ArrayList<AdresseView>();
-
-		if (adresseCivileHisto) {
-			final AdressesCivilesHisto adressesCivilesHisto = adresseService.getAdressesCivilesHisto(tiers, false);
-			if (adressesCivilesHisto != null) {
-				// rempli tous les types d'adresse
-				for (EnumTypeAdresse type : getListTypeAdresse()) {
-					fillAdressesCivilesView(adresses, adressesCivilesHisto, type, tiers);
-				}
-			}
-		}
-		else {
-			final AdressesCiviles adressesCiviles = adresseService.getAdressesCiviles(tiers, null, false);
-			if (adressesCiviles != null) {
-				// rempli tous les types d'adresse
-				for (EnumTypeAdresse type : getListTypeAdresse()) {
-					fillAdressesCivilesView(adresses, adressesCiviles, type, tiers);
 				}
 			}
 		}
@@ -306,33 +227,10 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 		}
 	}
 
-		/**
-	 * Rempli la collection des adressesView avec les adresses civiles historiques du type spécifié.
-	 */
-	private void fillAdressesCivilesView(List<AdresseView> adressesView, final AdressesCivilesHisto adressesCivilesHisto, EnumTypeAdresse type,
-			Tiers tiers) throws AdresseDataException {
-
-		final Collection<AdresseGenerique> adresses = adresseService.adaptAdresseCivilesHisto(adressesCivilesHisto.ofType(type),false);
-
-		if (adresses.isEmpty()) {
-			// rien à faire
-			return;
-		}
-		TypeAdresseTiers typeAdresse = convertTypeAdresses(type);
-			
-		for (AdresseGenerique adresse : adresses) {
-
-			AdresseView adresseView = createVisuAdresseView(adresse, typeAdresse, tiers);
-			adressesView.add(adresseView);
-		}
-	}
-
-	
-
 	/**
 	 * Methode annexe de creation d'adresse view pour un type donne
 	 *
-	 * @Param adr
+	 * @param addProf
 	 * @param type
 	 * @return
 	 * @throws InfrastructureException
@@ -359,10 +257,10 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 	 * @param contribuable
 	 * @return
 	 */
-	private List<DeclarationImpotDetailView> getDeclarationsImpotOrdinaire(Contribuable contribuable) {
+	private List<DeclarationImpotDetailView> getDeclarationsImpotOrdinaire(Contribuable contribable) {
 
 		List<DeclarationImpotDetailView> disView = new ArrayList<DeclarationImpotDetailView>();
-		Set<Declaration> declarations = contribuable.getDeclarations();
+		Set<Declaration> declarations = contribable.getDeclarations();
 		for (Declaration declaration : declarations) {
 			if (declaration instanceof DeclarationImpotOrdinaire) {
 				DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) declaration;
@@ -594,19 +492,4 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 		}
 		return nomPrenom;
 	}
-
-	public List<EnumTypeAdresse> getListTypeAdresse() {
-		if(listTypeAdresse==null){
-
-			listTypeAdresse = new ArrayList<EnumTypeAdresse>();
-			listTypeAdresse.add(EnumTypeAdresse.COURRIER);
-			listTypeAdresse.add(EnumTypeAdresse.PRINCIPALE);
-			listTypeAdresse.add(EnumTypeAdresse.SECONDAIRE);
-			listTypeAdresse.add(EnumTypeAdresse.TUTELLE);
-
-		}
-
-		return listTypeAdresse;
-	}	
-
 }
