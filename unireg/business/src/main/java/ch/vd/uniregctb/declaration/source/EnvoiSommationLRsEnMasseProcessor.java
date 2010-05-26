@@ -49,21 +49,22 @@ private final Logger LOGGER = Logger.getLogger(EnvoiLRsEnMasseProcessor.class);
 	 * Exécute la sommation des LRs.
 	 *
 	 * @param categorie      la catégorie de débiteurs à traiter; ou <b>null</b> pour traiter tous les catégories de débiteurs
+	 * @param dateFinPeriode paramètre optionnel qui - s'il est renseigné - est utilisé pour restreindre les sommations aux LRs dont la période finit à la date spécifiée. 
 	 * @param dateTraitement la date de traitement
 	 * @param status         un status manager; ou <b>null</b> pour logger la progression dans log4j.
-	 * @return les résultats du traitement
+	 * @return les résultats détaillés du run.
 	 */
-	public EnvoiSommationLRsResults run(final CategorieImpotSource categorie, final RegDate dateTraitement, StatusManager status) {
+	public EnvoiSommationLRsResults run(final CategorieImpotSource categorie, final RegDate dateFinPeriode, final RegDate dateTraitement, StatusManager status) {
 
 		if (status == null) {
 			status = new LoggingStatusManager(LOGGER);
 		}
 		final StatusManager s = status;
 
-		final EnvoiSommationLRsResults rapportFinal = new EnvoiSommationLRsResults(categorie, dateTraitement);
+		final EnvoiSommationLRsResults rapportFinal = new EnvoiSommationLRsResults(categorie, dateFinPeriode, dateTraitement);
 
 		//liste de toutes les LR à passer en revue
-		final List<Long> list = getListIdLRs(dateTraitement, categorie);
+		final List<Long> list = getListIdLRs(dateFinPeriode, dateTraitement, categorie);
 
 		BatchTransactionTemplate<Long, EnvoiSommationLRsResults> template = new BatchTransactionTemplate<Long, EnvoiSommationLRsResults>(list, BATCH_SIZE, Behavior.REPRISE_AUTOMATIQUE,
 				transactionManager, s, hibernateTemplate);
@@ -71,7 +72,7 @@ private final Logger LOGGER = Logger.getLogger(EnvoiLRsEnMasseProcessor.class);
 
 			@Override
 			public EnvoiSommationLRsResults createSubRapport() {
-				return new EnvoiSommationLRsResults(categorie, dateTraitement);
+				return new EnvoiSommationLRsResults(categorie, dateFinPeriode, dateTraitement);
 			}
 
 			@Override
@@ -142,7 +143,7 @@ private final Logger LOGGER = Logger.getLogger(EnvoiLRsEnMasseProcessor.class);
 	}
 
 	@SuppressWarnings({"unchecked", "UnnecessaryLocalVariable"})
-	protected List<Long> getListIdLRs(final RegDate dateLimite, final CategorieImpotSource categorie) {
+	protected List<Long> getListIdLRs(final RegDate dateFinPeriode, final RegDate dateLimite, final CategorieImpotSource categorie) {
 
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
@@ -160,6 +161,9 @@ private final Logger LOGGER = Logger.getLogger(EnvoiLRsEnMasseProcessor.class);
 						String sql = "SELECT lr.id"
 								+ " FROM DeclarationImpotSource AS lr"
 								+ " WHERE lr.annulationDate IS NULL";
+						if (dateFinPeriode != null) {
+							sql += " AND lr.dateFin <= :dateFin";
+						}
 						if (categorie != null) {
 							sql += " AND lr.tiers.categorieImpotSource = :categorie";
 						}
@@ -183,6 +187,9 @@ private final Logger LOGGER = Logger.getLogger(EnvoiLRsEnMasseProcessor.class);
 								+ " )";
 						final Query query = session.createQuery(sql);
 
+						if (dateFinPeriode != null) {
+							query.setParameter("dateFin", dateFinPeriode.index());
+						}
 						if (categorie != null) {
 							query.setParameter("categorie", categorie.name());
 						}

@@ -35,6 +35,9 @@ public class PdfEnvoiSommationsLRsRapport extends PdfRapport {
 			addTableSimple(2, new PdfRapport.TableSimpleCallback() {
 				public void fillTable(PdfTableSimple table) throws DocumentException {
 					table.addLigne("Catégorie de débiteurs:", (results.categorie == null ? "-" : results.categorie.name()));
+					if (results.dateFinPeriode != null) {
+						table.addLigne("Fin de période:", RegDateHelper.dateToDisplayString(results.dateFinPeriode));
+					}
 					table.addLigne("Date de traitement:", RegDateHelper.dateToDisplayString(results.dateTraitement));
 				}
 			});

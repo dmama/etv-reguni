@@ -21,6 +21,7 @@ public class EditiqueSommationLRJob extends JobDefinition {
 
 	public static final String NAME = "EditiqueSommationLRJob";
 	private static final String CATEGORIE = "LR";
+	private static final String FIN_PERIODE = "FIN_PERIODE";
 
 	public static final String CATEGORIE_DEB = "CATEGORIE_DEB";
 
@@ -41,12 +42,18 @@ public class EditiqueSommationLRJob extends JobDefinition {
 		params.add(param0);
 
 		JobParam param1 = new JobParam();
-		param1.setDescription("Date de traitement");
-		param1.setName(DATE_TRAITEMENT);
+		param1.setDescription("Fin de période");
+		param1.setName(FIN_PERIODE);
 		param1.setMandatory(false);
 		param1.setType(new JobParamRegDate());
 		params.add(param1);
 
+		JobParam param2 = new JobParam();
+		param2.setDescription("Date de traitement");
+		param2.setName(DATE_TRAITEMENT);
+		param2.setMandatory(false);
+		param2.setType(new JobParamRegDate());
+		params.add(param2);
 	}
 
 	public EditiqueSommationLRJob(int sortOrder) {
@@ -57,14 +64,16 @@ public class EditiqueSommationLRJob extends JobDefinition {
 	protected void doExecute(HashMap<String, Object> params) throws Exception {
 
 		// Récupération de la date de traitement
-		final RegDate date = getRegDateValue(params, DATE_TRAITEMENT); // [UNIREG-2003] la date de traitement est toujours affichée
-		final RegDate dateTraitement = (date != null ? date : RegDate.get());
+		final RegDate date = getRegDateValue(params, FIN_PERIODE); // [UNIREG-2109]
+		final RegDate dateFinPeriode = (date != null ? endOfMonth(date) : null);
+		final RegDate date2 = getRegDateValue(params, DATE_TRAITEMENT); // [UNIREG-2003] la date de traitement est toujours affichée
+		final RegDate dateTraitement = (date2 != null ? date2 : RegDate.get());
 		final StatusManager status = getStatusManager();
 
 		final CategorieImpotSource categorie = (CategorieImpotSource) params.get(CATEGORIE_DEB);
 
 		// Sommation des LRs
-		final EnvoiSommationLRsResults results = listeRecapService.sommerAllLR(categorie, dateTraitement, status);
+		final EnvoiSommationLRsResults results = listeRecapService.sommerAllLR(categorie, dateFinPeriode, dateTraitement, status);
 		if (results == null) {
 			Audit.error( String.format("L'envoi en masse des sommations de LRs  a échoué"));
 			return;
@@ -74,6 +83,10 @@ public class EditiqueSommationLRJob extends JobDefinition {
 		final EnvoiSommationLRsRapport rapport = rapportService.generateRapport(results, status);
 		setLastRunReport(rapport);
 		Audit.success("L'envoi en masse des sommations LRs est terminé.", rapport);
+	}
+
+	private RegDate endOfMonth(RegDate date) {
+		return RegDate.get(date.year(), date.month(), 1).addMonths(1).addDays(-1);
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
