@@ -58,9 +58,9 @@ public class SituationFamilleServiceTest extends BusinessTest {
 		assertNotNull(vueHisto);
 		assertEmpty(vueHisto);
 
-		final VueSituationFamille vue19700101 = service.getVue(nonhabitant, date(1970, 1, 1));
-		final VueSituationFamille vue20000101 = service.getVue(nonhabitant, date(2000, 1, 1));
-		final VueSituationFamille vue20200101 = service.getVue(nonhabitant, date(2020, 1, 1));
+		final VueSituationFamille vue19700101 = service.getVue(nonhabitant, date(1970, 1, 1), true);
+		final VueSituationFamille vue20000101 = service.getVue(nonhabitant, date(2000, 1, 1), true);
+		final VueSituationFamille vue20200101 = service.getVue(nonhabitant, date(2020, 1, 1), true);
 		assertNull(vue19700101);
 		assertNull(vue20000101);
 		assertNull(vue20200101);
@@ -111,11 +111,11 @@ public class SituationFamilleServiceTest extends BusinessTest {
 		assertVue(date(1950, 1, 1), null, EtatCivil.VEUF, 23, Source.FISCALE_TIERS, vueHisto2);
 
 		final VueSituationFamillePersonnePhysique vue19100101 = (VueSituationFamillePersonnePhysique) service.getVue(nonhabitant, date(
-				1910, 1, 1));
+				1910, 1, 1), true);
 		final VueSituationFamillePersonnePhysique vue19300101 = (VueSituationFamillePersonnePhysique) service.getVue(nonhabitant, date(
-				1930, 1, 1));
+				1930, 1, 1), true);
 		final VueSituationFamillePersonnePhysique vue19800101 = (VueSituationFamillePersonnePhysique) service.getVue(nonhabitant, date(
-				1980, 1, 1));
+				1980, 1, 1), true);
 		assertVue(date(1902, 1, 1), date(1924, 12, 31), EtatCivil.CELIBATAIRE, 0, Source.FISCALE_TIERS, vue19100101);
 		assertVue(date(1925, 1, 1), date(1949, 12, 31), EtatCivil.MARIE, 23, Source.FISCALE_TIERS, vue19300101);
 		assertVue(date(1950, 1, 1), null, EtatCivil.VEUF, 23, Source.FISCALE_TIERS, vue19800101);
@@ -144,9 +144,9 @@ public class SituationFamilleServiceTest extends BusinessTest {
 		assertNotNull(vueHisto);
 		assertEquals(0, vueHisto.size());
 
-		final VueSituationFamille vue19300101 = service.getVue(habitant, date(1930, 1, 1));
-		final VueSituationFamille vue19700101 = service.getVue(habitant, date(1970, 1, 1));
-		final VueSituationFamille vue20200101 = service.getVue(habitant, date(2020, 1, 1));
+		final VueSituationFamille vue19300101 = service.getVue(habitant, date(1930, 1, 1), true);
+		final VueSituationFamille vue19700101 = service.getVue(habitant, date(1970, 1, 1), true);
+		final VueSituationFamille vue20200101 = service.getVue(habitant, date(2020, 1, 1), true);
 		assertNull(vue19300101);
 		assertNull(vue19700101);
 		assertNull(vue20200101);
@@ -188,13 +188,13 @@ public class SituationFamilleServiceTest extends BusinessTest {
 		assertVue(dateDivorce, null, EtatCivil.DIVORCE, null, Source.CIVILE, vueHisto2);
 
 		final VueSituationFamillePersonnePhysique vue19300101 = (VueSituationFamillePersonnePhysique) service.getVue(habitant, date(1930,
-				1, 1));
+				1, 1), true);
 		final VueSituationFamillePersonnePhysique vue19700101 = (VueSituationFamillePersonnePhysique) service.getVue(habitant, date(1970,
-				1, 1));
+				1, 1), true);
 		final VueSituationFamillePersonnePhysique vue19800101 = (VueSituationFamillePersonnePhysique) service.getVue(habitant, date(1980,
-				1, 1));
+				1, 1), true);
 		final VueSituationFamillePersonnePhysique vue20200101 = (VueSituationFamillePersonnePhysique) service.getVue(habitant, date(2020,
-				1, 1));
+				1, 1), true);
 		assertNull(vue19300101);
 		assertVue(dateNaissance, dateMariage.getOneDayBefore(), EtatCivil.CELIBATAIRE, null, Source.CIVILE, vue19700101);
 		assertVue(dateMariage, dateDivorce.getOneDayBefore(), EtatCivil.MARIE, null, Source.CIVILE, vue19800101);
@@ -251,15 +251,15 @@ public class SituationFamilleServiceTest extends BusinessTest {
 		assertVue(dateDivorce, null, EtatCivil.DIVORCE, null, Source.CIVILE, vueHisto3);
 
 		final VueSituationFamillePersonnePhysique vue19300101 = (VueSituationFamillePersonnePhysique) service.getVue(habitant, date(1930,
-				1, 1));
+				1, 1), true);
 		final VueSituationFamillePersonnePhysique vue19700101 = (VueSituationFamillePersonnePhysique) service.getVue(habitant, date(1970,
-				1, 1));
+				1, 1), true);
 		final VueSituationFamillePersonnePhysique vue19800101 = (VueSituationFamillePersonnePhysique) service.getVue(habitant, date(1980,
-				1, 1));
+				1, 1), true);
 		final VueSituationFamillePersonnePhysique vue19900501 = (VueSituationFamillePersonnePhysique) service.getVue(habitant, date(1990,
-				5, 1));
+				5, 1), true);
 		final VueSituationFamillePersonnePhysique vue20200101 = (VueSituationFamillePersonnePhysique) service.getVue(habitant, date(2020,
-				1, 1));
+				1, 1), true);
 		assertNull(vue19300101);
 		assertVue(dateNaissance, dateMariage.getOneDayBefore(), EtatCivil.CELIBATAIRE, null, Source.CIVILE, vue19700101);
 		assertVue(dateMariage, dateSeparationFiscale.getOneDayBefore(), EtatCivil.MARIE, null, Source.CIVILE, vue19800101);
@@ -366,9 +366,9 @@ public class SituationFamilleServiceTest extends BusinessTest {
 		assertNotNull(vueHisto);
 		assertEmpty(vueHisto);
 
-		final VueSituationFamille vue19700101 = service.getVue(menage, date(1970, 1, 1));
-		final VueSituationFamille vue20000101 = service.getVue(menage, date(2000, 1, 1));
-		final VueSituationFamille vue20200101 = service.getVue(menage, date(2020, 1, 1));
+		final VueSituationFamille vue19700101 = service.getVue(menage, date(1970, 1, 1), true);
+		final VueSituationFamille vue20000101 = service.getVue(menage, date(2000, 1, 1), true);
+		final VueSituationFamille vue20200101 = service.getVue(menage, date(2020, 1, 1), true);
 		assertNull(vue19700101);
 		assertNull(vue20000101);
 		assertNull(vue20200101);
@@ -457,11 +457,11 @@ public class SituationFamilleServiceTest extends BusinessTest {
 				Source.FISCALE_TIERS, vueHisto2);
 		assertVue(dateRegimeOrdinaire, null, 2, null, null, Source.FISCALE_TIERS, vueHisto3);
 
-		final VueSituationFamilleMenageCommun vue19700101 = (VueSituationFamilleMenageCommun) service.getVue(menage, date(1970, 1, 1));
-		final VueSituationFamilleMenageCommun vue19900101 = (VueSituationFamilleMenageCommun) service.getVue(menage, date(1990, 1, 1));
-		final VueSituationFamilleMenageCommun vue19930101 = (VueSituationFamilleMenageCommun) service.getVue(menage, date(1993, 1, 1));
-		final VueSituationFamilleMenageCommun vue19980101 = (VueSituationFamilleMenageCommun) service.getVue(menage, date(1998, 1, 1));
-		final VueSituationFamilleMenageCommun vue20020101 = (VueSituationFamilleMenageCommun) service.getVue(menage, date(2002, 1, 1));
+		final VueSituationFamilleMenageCommun vue19700101 = (VueSituationFamilleMenageCommun) service.getVue(menage, date(1970, 1, 1), true);
+		final VueSituationFamilleMenageCommun vue19900101 = (VueSituationFamilleMenageCommun) service.getVue(menage, date(1990, 1, 1), true);
+		final VueSituationFamilleMenageCommun vue19930101 = (VueSituationFamilleMenageCommun) service.getVue(menage, date(1993, 1, 1), true);
+		final VueSituationFamilleMenageCommun vue19980101 = (VueSituationFamilleMenageCommun) service.getVue(menage, date(1998, 1, 1), true);
+		final VueSituationFamilleMenageCommun vue20020101 = (VueSituationFamilleMenageCommun) service.getVue(menage, date(2002, 1, 1), true);
 		assertNull(vue19700101);
 		assertVue(dateMariage, dateNaissance1erEnfant.getOneDayBefore(), 0, TarifImpotSource.DOUBLE_GAIN, madame.getNumero(),
 				Source.FISCALE_TIERS, vue19900101);
@@ -484,9 +484,9 @@ public class SituationFamilleServiceTest extends BusinessTest {
 		assertNotNull(vueHisto);
 		assertEmpty(vueHisto);
 
-		final VueSituationFamille vue19700101 = service.getVue(entreprise, date(1970, 1, 1));
-		final VueSituationFamille vue20000101 = service.getVue(entreprise, date(2000, 1, 1));
-		final VueSituationFamille vue20200101 = service.getVue(entreprise, date(2020, 1, 1));
+		final VueSituationFamille vue19700101 = service.getVue(entreprise, date(1970, 1, 1), true);
+		final VueSituationFamille vue20000101 = service.getVue(entreprise, date(2000, 1, 1), true);
+		final VueSituationFamille vue20200101 = service.getVue(entreprise, date(2020, 1, 1), true);
 		assertNull(vue19700101);
 		assertNull(vue20000101);
 		assertNull(vue20200101);
@@ -589,23 +589,23 @@ public class SituationFamilleServiceTest extends BusinessTest {
 		{
 			final PersonnePhysique pierre = (PersonnePhysique) tiersDAO.get(NO_CTB_PIERRE);
 			assertNotNull(pierre);
-			assertEquals(EtatCivil.CELIBATAIRE, service.getEtatCivil(pierre, null));
+			assertEquals(EtatCivil.CELIBATAIRE, service.getEtatCivil(pierre, null, true));
 
 			final PersonnePhysique momo = (PersonnePhysique) tiersDAO.get(NO_CTB_MOMO);
 			assertNotNull(momo);
-			assertEquals(EtatCivil.MARIE, service.getEtatCivil(momo, null));
+			assertEquals(EtatCivil.MARIE, service.getEtatCivil(momo, null, true));
 
 			final PersonnePhysique arnold = (PersonnePhysique) tiersDAO.get(NO_CTB_ARNOLD);
 			assertNotNull(arnold);
-			assertEquals(EtatCivil.MARIE, service.getEtatCivil(arnold, null));
+			assertEquals(EtatCivil.MARIE, service.getEtatCivil(arnold, null, true));
 
 			final PersonnePhysique nolwen = (PersonnePhysique) tiersDAO.get(NO_CTB_NOLWEN);
 			assertNotNull(nolwen);
-			assertEquals(EtatCivil.CELIBATAIRE, service.getEtatCivil(nolwen, null));
+			assertEquals(EtatCivil.CELIBATAIRE, service.getEtatCivil(nolwen, null, true));
 
 			final PersonnePhysique alf = (PersonnePhysique) tiersDAO.get(NO_CTB_ALF);
 			assertNotNull(alf);
-			assertNull(service.getEtatCivil(alf, null));
+			assertNull(service.getEtatCivil(alf, null, true));
 		}
 	}
 
@@ -691,8 +691,8 @@ public class SituationFamilleServiceTest extends BusinessTest {
 		assertVue(dateMariageFiscale, null, EtatCivil.MARIE, null, Source.CIVILE, vueHisto1);
 
 		// Vérifie la vue ponctuelle
-		final VueSituationFamillePersonnePhysique vue19700101 = (VueSituationFamillePersonnePhysique) service.getVue(habitant, date(1970, 1, 1));
-		final VueSituationFamillePersonnePhysique vue19800101 = (VueSituationFamillePersonnePhysique) service.getVue(habitant, date(1980, 1, 1));
+		final VueSituationFamillePersonnePhysique vue19700101 = (VueSituationFamillePersonnePhysique) service.getVue(habitant, date(1970, 1, 1), true);
+		final VueSituationFamillePersonnePhysique vue19800101 = (VueSituationFamillePersonnePhysique) service.getVue(habitant, date(1980, 1, 1), true);
 		assertVue(dateNaissanceCivile, dateMariageFiscale.getOneDayBefore(), EtatCivil.CELIBATAIRE, null, Source.CIVILE, vue19700101);
 		assertVue(dateMariageFiscale, null, EtatCivil.MARIE, null, Source.CIVILE, vue19800101);
 	}

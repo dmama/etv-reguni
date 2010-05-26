@@ -81,9 +81,9 @@ public class CoupleRecapValidator implements Validator {
 	public void validate(Object obj, Errors errors) {
 
 		Assert.isTrue(obj instanceof CoupleRecapView);
-		CoupleRecapView coupleRecapView = (CoupleRecapView) obj;
+		final CoupleRecapView coupleRecapView = (CoupleRecapView) obj;
 
-		TypeUnion typeUnion = coupleRecapView.getTypeUnion();
+		final TypeUnion typeUnion = coupleRecapView.getTypeUnion();
 		final RegDate dateDebut;
 		final String dateDebutField;
 		if ((typeUnion == TypeUnion.COUPLE || typeUnion == TypeUnion.SEUL) && !coupleRecapView.isNouveauCtb()) {
@@ -108,8 +108,8 @@ public class CoupleRecapValidator implements Validator {
 			}
 
 			//Validation du mariage
-			PersonnePhysique principal = (PersonnePhysique) tiersService.getTiers(coupleRecapView.getPremierePersonne().getNumero());
-			Sexe sexePrincipal = tiersService.getSexe(principal);
+			final PersonnePhysique principal = (PersonnePhysique) tiersService.getTiers(coupleRecapView.getPremierePersonne().getNumero());
+			final Sexe sexePrincipal = tiersService.getSexe(principal);
 			if (principal != null && sexePrincipal == null) {
 				errors.rejectValue("premierePersonne", "error.premiere.personne.sexe.inconnnu");
 			}
@@ -117,29 +117,28 @@ public class CoupleRecapValidator implements Validator {
 			PersonnePhysique conjoint = null;
 			if (coupleRecapView.getSecondePersonne() != null) {
 				conjoint = (PersonnePhysique) tiersService.getTiers(coupleRecapView.getSecondePersonne().getNumero());
-				Sexe sexeConjoint = tiersService.getSexe(conjoint);
+				final Sexe sexeConjoint = tiersService.getSexe(conjoint);
 				if (conjoint != null && sexeConjoint == null) {
 					errors.rejectValue("secondePersonne", "error.seconde.personne.sexe.inconnnu");
 				}
 			}
 			
-			if (!TypeUnion.RECONCILIATION.equals(typeUnion)) {
-				ch.vd.uniregctb.type.EtatCivil etatCivilPrincipal = situationFamilleService.getEtatCivil(principal, dateDebut);
+			if (TypeUnion.RECONCILIATION != typeUnion) {
+				final ch.vd.uniregctb.type.EtatCivil etatCivilPrincipal = situationFamilleService.getEtatCivil(principal, dateDebut, false);
 				if (!estPretPourMariage(etatCivilPrincipal)) {
-					errors.rejectValue("premierePersonne", "error.impossible.marrier.contribuable", new Object[] { FormatNumeroHelper.numeroCTBToDisplay(principal.getNumero()), etatCivilPrincipal.format().toLowerCase() }, "");
+					errors.rejectValue("premierePersonne", "error.impossible.marier.contribuable", new Object[] { FormatNumeroHelper.numeroCTBToDisplay(principal.getNumero()), etatCivilPrincipal.format().toLowerCase() }, "");
 				}
 					
 				// [UNIREG-1076] cas d'un mariage avec conjoint inconnu
 				if (conjoint != null) {
-					ch.vd.uniregctb.type.EtatCivil etatCivilConjoint = situationFamilleService.getEtatCivil(conjoint, dateDebut);
+					final ch.vd.uniregctb.type.EtatCivil etatCivilConjoint = situationFamilleService.getEtatCivil(conjoint, dateDebut, false);
 					if (!estPretPourMariage(etatCivilConjoint)) {
-						errors.rejectValue("secondePersonne", "error.impossible.marrier.contribuable", new Object[] { FormatNumeroHelper.numeroCTBToDisplay(conjoint.getNumero()), etatCivilConjoint.format().toLowerCase() }, "");
+						errors.rejectValue("secondePersonne", "error.impossible.marier.contribuable", new Object[] { FormatNumeroHelper.numeroCTBToDisplay(conjoint.getNumero()), etatCivilConjoint.format().toLowerCase() }, "");
 					}
 				}
 			}
-				
-			
-			ValidationResults validationResults;
+
+			final ValidationResults validationResults;
 			switch (typeUnion) {
 				case SEUL:
 				case COUPLE:
@@ -175,9 +174,8 @@ public class CoupleRecapValidator implements Validator {
 					break;
 			}
 			
-			List<String> validationErrors = validationResults.getErrors();
+			final List<String> validationErrors = validationResults.getErrors();
 			ValidateHelper.rejectErrors(validationErrors, errors);
-
 		}
 	}
 

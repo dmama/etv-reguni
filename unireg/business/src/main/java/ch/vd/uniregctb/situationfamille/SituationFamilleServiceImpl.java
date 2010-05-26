@@ -95,15 +95,15 @@ public class SituationFamilleServiceImpl implements SituationFamilleService {
 	/**
 	 * {@inheritDoc}
 	 */
-	public VueSituationFamille getVue(Contribuable contribuable, RegDate date) {
+	public VueSituationFamille getVue(Contribuable contribuable, RegDate date, boolean yComprisCivil) {
 
 		/*
 		 * Pour l'instant, on va stupidemment extraire la situation à la date demandée dans l'historique complet. On pourra re-écrire cette
 		 * méthode par la suite pour ne faire que le minimum de choses si des problèmes de performances surviennent.
 		 */
-		List<VueSituationFamille> histo = getVueHisto(contribuable, false);
+		final List<VueSituationFamille> histo = getVueHisto(contribuable, false);
 		for (VueSituationFamille v : histo) {
-			if (v.isValidAt(date)) {
+			if (v.isValidAt(date) && (v.getSource() != VueSituationFamille.Source.CIVILE || yComprisCivil)) {
 				return v;
 			}
 		}
@@ -417,7 +417,7 @@ public class SituationFamilleServiceImpl implements SituationFamilleService {
 	/**
 	 * @return l'état civil du point de vue fiscal d'une personne physique.
 	 */
-	public ch.vd.uniregctb.type.EtatCivil getEtatCivil(PersonnePhysique pp, RegDate date) {
+	public ch.vd.uniregctb.type.EtatCivil getEtatCivil(PersonnePhysique pp, RegDate date, boolean takeCivilAsDefault) {
 		Assert.notNull(pp, "la personne physique doit être renseignée");
 
 		/*
@@ -427,21 +427,13 @@ public class SituationFamilleServiceImpl implements SituationFamilleService {
 		 * Avoir un mécanisme de défaut : en l'absence de situation de famille, l'état civil qui prévaut est celui du registre civil - Faire
 		 * en sorte que les automates des événements civils mettent à jour la situation de famille."
 		 */
-		final VueSituationFamille vueSituationFamille = getVue(pp, date);
-		if (vueSituationFamille instanceof VueSituationFamillePersonnePhysique) {
-			VueSituationFamillePersonnePhysique vueSituationFamillePersonnePhysique = (VueSituationFamillePersonnePhysique) vueSituationFamille;
-			if (vueSituationFamille != null) {
-				return vueSituationFamillePersonnePhysique.getEtatCivil();
-			}
+		final VueSituationFamille vueSituationFamille = getVue(pp, date, takeCivilAsDefault);
+		if (vueSituationFamille != null) {
+			return vueSituationFamille.getEtatCivil();
 		}
-		else if (vueSituationFamille instanceof VueSituationFamilleMenageCommun) {
-			VueSituationFamilleMenageCommun vueSituationFamilleMenageCommun = (VueSituationFamilleMenageCommun) vueSituationFamille;
-			if (vueSituationFamilleMenageCommun != null) {
-				return vueSituationFamilleMenageCommun.getEtatCivil();
-			}
-		}
+
 		// Défaut dans le cas d'un habitant: on va chercher son état civil dans le registre civil.
-		if (pp.getNumeroIndividu() != null && pp.getNumeroIndividu() != 0) {
+		if (pp.isConnuAuCivil() && takeCivilAsDefault) {
 			final Individu individu = tiersService.getIndividu(pp);
 			final ch.vd.uniregctb.interfaces.model.EtatCivil etatCivil = serviceCivil.getEtatCivilActif(individu.getNoTechnique(), date);
 			return etatCivil == null ? null : ch.vd.uniregctb.type.EtatCivil.from(etatCivil.getTypeEtatCivil());
