@@ -20,17 +20,17 @@ public interface TiersVisuManager {
 	 * Charge les informations de visualisation d'un tiers
 	 *
 	 * @param numero                  le numéro du tiers dont on veut afficher le détails
-	 * @param adressesFiscalesHisto
-	 *@param adressesCivilesHisto
+	 * @param adressesHisto           <b>vrai</b> s'il faut charger tout l'historique des adresses
 	 * @param rapportsPrestationHisto <b>vrai</b> s'il faut charger tout l'historique des rapports de prestation entre débiteur et sourciers
-	 * @param webParamPagination      les informations de pagination  @return un objet TiersVisuView   @return les informations de visualisation demandées.
+	 * @param webParamPagination      les informations de pagination  @return un objet TiersVisuView
+	 * @return les informations de visualisation demandées.
 	 * @throws ch.vd.infrastructure.service.InfrastructureException
 	 *          en cas de problème de connexion au service d'infrastructure.
 	 * @throws ch.vd.uniregctb.adresse.AdresseException
 	 *          en cas de problème de résolution des adresses
 	 */
 	@Transactional(readOnly = true)
-	public TiersVisuView getView(Long numero, boolean adressesFiscalesHisto, boolean adressesCivilesHisto, boolean rapportsPrestationHisto, WebParamPagination webParamPagination) throws AdresseException, InfrastructureException;
+	public TiersVisuView getView(Long numero, boolean adressesHisto, boolean rapportsPrestationHisto, WebParamPagination webParamPagination) throws AdresseException, InfrastructureException;
 
 	/**
 	 * Annule un tiers

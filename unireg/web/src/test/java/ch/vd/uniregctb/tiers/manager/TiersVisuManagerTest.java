@@ -53,7 +53,7 @@ public class TiersVisuManagerTest extends WebTest {
 	public void testGetViewHabitant() throws Exception{
 
 		WebParamPagination webParamPagination = new WebParamPagination(1, 10, "logCreationDate", true);
-		TiersVisuView view = tiersVisuManager.getView((long) 6789, true, false, false, webParamPagination);
+		TiersVisuView view = tiersVisuManager.getView((long) 6789, true, false, webParamPagination);
 		Tiers tiers = view.getTiers();
 		PersonnePhysique hab = (PersonnePhysique) tiers;
 		assertNotNull(hab);
@@ -63,7 +63,7 @@ public class TiersVisuManagerTest extends WebTest {
 	@Test
 	public void testGetViewNonHabitant() throws Exception {
 		WebParamPagination webParamPagination = new WebParamPagination(1, 10, "logCreationDate", true);
-		TiersVisuView view = tiersVisuManager.getView((long) 12600002, true, false, false, webParamPagination);
+		TiersVisuView view = tiersVisuManager.getView((long) 12600002, true, false, webParamPagination);
 		Tiers tiers = view.getTiers();
 		PersonnePhysique nonHab = (PersonnePhysique) tiers;
 		assertNotNull(nonHab);
@@ -72,31 +72,17 @@ public class TiersVisuManagerTest extends WebTest {
 	}
 
 	@Test
-	public void testGetAdressesFiscalesHistoriques() throws Exception {
+	public void testGetAdressesHistoriques() throws Exception {
 		WebParamPagination webParamPagination = new WebParamPagination(1, 10, "logCreationDate", true);
-		TiersVisuView view = tiersVisuManager.getView((long) 6789, true, false, false, webParamPagination);
-		List<AdresseView> adresses = view.getHistoriqueAdressesFiscales();
-/*
-		 * 1 * courrier
-		 * 1 * representation (
-		 *
-		 */
-		assertEquals(2, adresses.size());
-
-
-	}
-
-	@Test
-	public void testGetAdressesCivilesHistoriques() throws Exception {
-		WebParamPagination webParamPagination = new WebParamPagination(1, 10, "logCreationDate", true);
-		TiersVisuView view = tiersVisuManager.getView((long) 6789, false, true, false, webParamPagination);
-		List<AdresseView> adresses = view.getHistoriqueAdressesCiviles();
+		TiersVisuView view = tiersVisuManager.getView((long) 6789, true, false, webParamPagination);
+		List<AdresseView> adresses = view.getHistoriqueAdresses();
 		/*
-		 * 1 * courrier
-		 * 1 * representation (
-		 * 	
+		 * 2 * courrier
+		 * 2 * representation (1 fiscale + 1 défaut)
+		 * 2 * poursuite (1 défaut)
+		 * 2 * domicile (1 défaut)
 		 */
-		assertEquals(0, adresses.size());
+		assertEquals(8, adresses.size());
 
 	}
 
