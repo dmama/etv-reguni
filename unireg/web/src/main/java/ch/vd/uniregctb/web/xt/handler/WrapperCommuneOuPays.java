@@ -7,20 +7,17 @@ import org.apache.commons.lang.StringEscapeUtils;
 
 public class WrapperCommuneOuPays {
 
-	private String nomComplet = "???";
-	private String numero ="???";
+	private String nomComplet;
+	private String numero;
 
-	public WrapperCommuneOuPays( Object row) {
-		if (row instanceof Commune) {
-			final Commune commune = (Commune) row;
-			nomComplet = StringEscapeUtils.escapeXml(commune.getNomMinuscule());
-			numero = String.valueOf(commune.getNoOFS());
-		}
-		if (row instanceof Pays) {
-			final Pays pays = (Pays) row;
-			nomComplet = StringEscapeUtils.escapeXml(pays.getNomMinuscule());
-			numero = String.valueOf(pays.getNoOFS());
-		}
+	public WrapperCommuneOuPays(Commune commune) {
+		nomComplet = StringEscapeUtils.escapeXml(commune.getNomMinuscule());
+		numero = String.valueOf(commune.getNoOFS());
+	}
+
+	public WrapperCommuneOuPays(Pays pays) {
+		nomComplet = StringEscapeUtils.escapeXml(pays.getNomMinuscule());
+		numero = String.valueOf(pays.getNoOFS());
 	}
 
 	/**

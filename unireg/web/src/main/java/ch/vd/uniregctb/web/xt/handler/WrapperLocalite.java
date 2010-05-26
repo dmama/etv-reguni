@@ -12,14 +12,14 @@ import org.apache.commons.lang.StringEscapeUtils;
  */
 public class WrapperLocalite {
 
-	private final String nomCompletMinuscule;
+	private final String nomMinuscule;
 	private final String nomCommune;
 	private final String noOrdre;
 	private final String npa;
 	private final String numCommune;
 
 	public WrapperLocalite(Localite localite) {
-		this.nomCompletMinuscule = StringEscapeUtils.escapeXml(localite.getNomAbregeMinuscule());
+		this.nomMinuscule = StringEscapeUtils.escapeXml(localite.getNomAbregeMinuscule());
 		this.noOrdre = String.valueOf(localite.getNoOrdre());
 		this.npa = localite.getNPA().toString();
 		this.nomCommune = StringEscapeUtils.escapeXml(localite.getNomAbregeMinuscule());
@@ -29,8 +29,8 @@ public class WrapperLocalite {
 	/**
 	 * @return the nomCompletMinuscule
 	 */
-	public String getNomCompletMinuscule() {
-		return nomCompletMinuscule;
+	public String getNomMinuscule() {
+		return nomMinuscule;
 	}
 
 	/**

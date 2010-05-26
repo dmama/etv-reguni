@@ -27,6 +27,7 @@ public class MockLocalite implements Localite {
 	public static final MockLocalite Bussigny = new MockLocalite(178, 1030, null, "Bussigny-près-Lausanne", MockCommune.Bussigny);
 	public static final MockLocalite Echallens = new MockLocalite(185, 1040, null, "Echallens", MockCommune.Echallens);
 	public static final MockLocalite Lonay = new MockLocalite(174, 1027, null, "Lonay", MockCommune.Lonay);
+	public static final MockLocalite RomanelSurLausanne = new MockLocalite(179, 1032, null, "Romanel-s-Lausanne", "Romanel-sur-Lausanne", MockCommune.RomanelSurLausanne);
 
 	// fractions de communes - L'Abbaye
 	public static final MockLocalite LePont = new MockLocalite(543, 1342, null, "Pont, Le", MockCommune.LAbbaye);
@@ -82,6 +83,18 @@ public class MockLocalite implements Localite {
 		this.noCommune = commune.getNoOFSEtendu();
 		this.nomCompletMinuscule = nomCompletMinuscule;
 		this.nomAbregeMinuscule = nomCompletMinuscule;
+		this.communeLocalite = commune;
+
+		DefaultMockServiceInfrastructureService.addLocalite(this);
+	}
+
+	public MockLocalite(Integer noOrdre, Integer nPA, Integer complementNPA, String nomAbregeMinuscule, String nomCompletMinuscule, MockCommune commune) {
+		this.noOrdre = noOrdre;
+		this.nPA = nPA;
+		this.complementNPA = complementNPA;
+		this.noCommune = commune.getNoOFSEtendu();
+		this.nomCompletMinuscule = nomCompletMinuscule;
+		this.nomAbregeMinuscule = nomAbregeMinuscule;
 		this.communeLocalite = commune;
 
 		DefaultMockServiceInfrastructureService.addLocalite(this);

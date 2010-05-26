@@ -94,7 +94,7 @@ public abstract class TiersIndexable extends AbstractIndexable {
 			if (courrier != null) {
 				rue = courrier.getRue();
 				npa = courrier.getNumeroPostal();
-				localite = courrier.getLocalite();
+				localite = courrier.getLocalite(); // [UNIREG-2142] on prend la localité abrégée
 
 				final Integer noOfsPays = courrier.getNoOfsPays();
 				final Pays p = (noOfsPays == null ? null : serviceInfra.getPays(noOfsPays));
