@@ -42,10 +42,13 @@ public interface ListeRecapService {
 	/**
 	 * Somme toutes LR à sommer
 	 *
-	 * @param categorie
-	 *@param dateTraitement  @throws Exception
+	 * @param categorie      la catégorie de débiteurs à traiter; ou <b>null</b> pour traiter tous les catégories de débiteurs
+	 * @param dateFinPeriode paramètre optionnel qui - s'il est renseigné - est utilisé pour restreindre les sommations aux LRs dont la période finit à la date spécifiée.
+	 * @param dateTraitement la date de traitement
+	 * @param status         un status manager; ou <b>null</b> pour logger la progression dans log4j.
+	 * @return les résultats détaillés du run.
 	 */
-	EnvoiSommationLRsResults sommerAllLR(CategorieImpotSource categorie, RegDate dateTraitement, StatusManager status) throws Exception ;
+	EnvoiSommationLRsResults sommerAllLR(CategorieImpotSource categorie, RegDate dateFinPeriode, RegDate dateTraitement, StatusManager status);
 
 	/**
 	 * création et impression batch d'une LR

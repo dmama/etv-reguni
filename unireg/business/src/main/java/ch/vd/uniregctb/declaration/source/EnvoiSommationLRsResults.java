@@ -61,6 +61,7 @@ public class EnvoiSommationLRsResults extends JobResults<Long, EnvoiSommationLRs
 	}
 
 	public final CategorieImpotSource categorie;
+	public final RegDate dateFinPeriode;
 	public final RegDate dateTraitement;
 	
 	public int nbLRsTotal;//nombre de LR analysé
@@ -68,8 +69,9 @@ public class EnvoiSommationLRsResults extends JobResults<Long, EnvoiSommationLRs
 	public List<Erreur> SommationLREnErrors = new ArrayList<Erreur>();//sommation LR KO
 	public boolean interrompu;
 	
-	public EnvoiSommationLRsResults(CategorieImpotSource categorie, RegDate dateTrait) {
+	public EnvoiSommationLRsResults(CategorieImpotSource categorie, RegDate dateFinPeriode, RegDate dateTrait) {
 		this.categorie = categorie;
+		this.dateFinPeriode = dateFinPeriode;
 		this.dateTraitement = dateTrait;
 	}
 	

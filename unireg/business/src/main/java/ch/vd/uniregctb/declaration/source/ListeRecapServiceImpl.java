@@ -82,14 +82,11 @@ public class ListeRecapServiceImpl implements ListeRecapService, DelegateEditiqu
 	}
 
 	/**
-	 * Somme toutes LR à sommer
-	 *
-	 * @param categorie
-	 *@param dateTraitement  @throws Exception
+	 * {@inheritDoc}
 	 */
-	public EnvoiSommationLRsResults sommerAllLR(CategorieImpotSource categorie, RegDate dateTraitement, StatusManager status) throws Exception {
+	public EnvoiSommationLRsResults sommerAllLR(CategorieImpotSource categorie, RegDate dateFinPeriode, RegDate dateTraitement, StatusManager status) {
 		final EnvoiSommationLRsEnMasseProcessor processor = new EnvoiSommationLRsEnMasseProcessor(transactionManager, hibernateTemplate, this, delaisService);
-		return processor.run(categorie, dateTraitement, status);
+		return processor.run(categorie, dateFinPeriode, dateTraitement, status);
 	}
 
 	/**
