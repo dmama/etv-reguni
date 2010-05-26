@@ -20,10 +20,7 @@ public class TiersVisuView extends TiersView{
 
 	private boolean isAllowed;
 
-	private boolean adressesFiscalesHisto;
-
-
-	private boolean adressesCivilesHisto;
+	private boolean adressesHisto;
 
 	@Override
 	public boolean isAllowed() {
@@ -35,21 +32,12 @@ public class TiersVisuView extends TiersView{
 		this.isAllowed = isAllowed;
 	}
 
-	public boolean isAdressesFiscalesHisto() {
-		return adressesFiscalesHisto;
+	public boolean isAdressesHisto() {
+		return adressesHisto;
 	}
 
-	public void setAdressesFiscalesHisto(boolean adressesFiscalesHisto) {
-		this.adressesFiscalesHisto = adressesFiscalesHisto;
+	public void setAdressesHisto(boolean adressesHisto) {
+		this.adressesHisto = adressesHisto;
 	}
-
-public boolean isAdressesCivilesHisto() {
-		return adressesCivilesHisto;
-	}
-
-	public void setAdressesCivilesHisto(boolean adressesCivilesHisto) {
-		this.adressesCivilesHisto = adressesCivilesHisto;
-	}
-	
 
 }
