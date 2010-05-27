@@ -83,36 +83,38 @@ public class DepartHandler extends EvenementCivilHandlerBase {
 			throw new EvenementCivilHandlerException("Aucun habitant (ou ancien habitant) trouvé avec numéro d'individu " + depart.getNoIndividu());
 		}
 
-		//[UNIREG-1996] on traite les deux habitants ensemble conformement à l'ancien fonctionement
-		if (depart.isAncienTypeDepart()) {
-			traiteHabitantOfAncienDepart(depart, pp);
-		}
-		else {
-
-			// [UNIREG-1691] si la personne physique était déjà notée non-habitante, on ne fait que régulariser une situation bancale
-			if (pp.isHabitant()) {
-				getService().changeHabitantenNH(pp);
-			}
-
-			/*
-			 * [UNIREG-771] : L'événement de départ du premier doit passer l'individu de habitant à non habitant et ne rien faire d'autre
-			 * (notamment au niveau des fors fiscaux)
-			 */
-			if (!isDepartComplet(depart)) {
-				return null;
-			}
-		}
 		final MotifFor motifFermeture = findMotifFermeture(depart);
 		final RegDate dateFermeture = findDateFermeture(depart, pp, motifFermeture == MotifFor.DEMENAGEMENT_VD);
 		final Contribuable contribuable = findContribuable(depart, pp, motifFermeture == MotifFor.DEMENAGEMENT_VD);
-		Audit.info(depart.getNumeroEvenement(), "Traitement du départ");
-
-		/*
-		 * Fermetures des adresses temporaires du fiscal
-		 */
-		fermeAdresseTiersTemporaire(contribuable, evenement.getDate().getOneDayBefore());
 
 		if (depart.getType() == TypeEvenementCivil.DEPART_COMMUNE) {
+
+			//[UNIREG-1996] on traite les deux habitants ensemble conformement à l'ancien fonctionement
+			if (depart.isAncienTypeDepart()) {
+				traiteHabitantOfAncienDepart(depart, pp);
+			}
+			else {
+
+				// [UNIREG-1691] si la personne physique était déjà notée non-habitante, on ne fait que régulariser une situation bancale
+				if (pp.isHabitant()) {
+					getService().changeHabitantenNH(pp);
+				}
+
+				/*
+				 * [UNIREG-771] : L'événement de départ du premier doit passer l'individu de habitant à non habitant et ne rien faire d'autre
+				 * (notamment au niveau des fors fiscaux)
+				 */
+				if (!isDepartComplet(depart)) {
+					return null;
+				}
+			}
+
+			Audit.info(depart.getNumeroEvenement(), "Traitement du départ principal");
+
+			/*
+			 * Fermetures des adresses temporaires du fiscal
+			 */
+			fermeAdresseTiersTemporaire(contribuable, evenement.getDate().getOneDayBefore());
 
 			int numeroOfsAutoriteFiscale = 0;
 			if (motifFermeture == MotifFor.DEPART_HC) {
@@ -137,6 +139,7 @@ public class DepartHandler extends EvenementCivilHandlerBase {
 		}
 		else {
 			Assert.isEqual(TypeEvenementCivil.DEPART_SECONDAIRE, depart.getType());
+			Audit.info(depart.getNumeroEvenement(), "Traitement du départ secondaire");
 			handleDepartResidenceSecondaire(depart, contribuable, dateFermeture, motifFermeture);
 		}
 
@@ -525,13 +528,13 @@ public class DepartHandler extends EvenementCivilHandlerBase {
 		//ce cas d'arrangement fiscal ne sera pas détecté, il faut mettre l'événement en erreur pour
 		//traitement manuel
 
-		if (forPrincipal != null && forPrincipal.getNumeroOfsAutoriteFiscale().intValue() == depart.getNumeroOfsCommuneAnnonce().intValue()) {
+		if (forPrincipal != null && forPrincipal.getNumeroOfsAutoriteFiscale().equals(depart.getNumeroOfsCommuneAnnonce())) {
+
 			final ServiceInfrastructureService serviceInfra = getService().getServiceInfra();
 
-			ForFiscalPrincipal ffp = getService().closeForFiscalPrincipal(contribuable, dateFermeture, motifFermeture);
 			final Adresse adressePrincipale = depart.getNouvelleAdressePrincipale();
 
-			boolean estEnSuisse = false;
+			final boolean estEnSuisse;
 			CommuneSimple commune = null;
 			try {
 				estEnSuisse = serviceInfra.estEnSuisse(adressePrincipale);
@@ -543,26 +546,36 @@ public class DepartHandler extends EvenementCivilHandlerBase {
 				throw new RuntimeException("la nouvelle adresse principale est inconnue", e);
 			}
 
-			// l'individu a sa residence principale en suisse
-			if (estEnSuisse) {
-				if (commune.isVaudoise()) {
-					/*
-					 * passage d'une commune vaudoise ouverte sur une résidence secondaire à une commune vaudoise ouverte sur la résidence
-					 * principale : il s'agit donc d'un déménagement vaudois
-					 */
-					openForFiscalPrincipal(contribuable, dateFermeture.getOneDayAfter(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, commune.getNoOFS(), MotifRattachement.DOMICILE, MotifFor.DEMENAGEMENT_VD, ffp.getModeImposition(), false);
-				}
-				else {
-					final ModeImposition modeImpostion = determineModeImpositionDepartHCHS(contribuable, dateFermeture, ffp);
-					openForFiscalPrincipalHC(contribuable, dateFermeture.getOneDayAfter(), commune.getNoOFS(), modeImpostion, MotifFor.DEPART_HC);
-				}
+			final ForFiscalPrincipal ffp = contribuable.getForFiscalPrincipalAt(null);
+
+			// [UNIREG-1921] si la commune du for principal ne change pas suite au départ secondaire, rien à faire!
+			if (commune != null && ffp.getNumeroOfsAutoriteFiscale() == commune.getNoOFSEtendu() && commune.isVaudoise() && ffp.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
+				// rien à faire sur les fors...
 			}
-			else if (ffp != null) {
-				final ModeImposition modeImposition = determineModeImpositionDepartHCHS(contribuable, dateFermeture, ffp);
-				openForFiscalPrincipalHS(contribuable, dateFermeture.getOneDayAfter(), adressePrincipale.getNoOfsPays(), modeImposition, MotifFor.DEPART_HS);
+			else {
+				// fermeture de l'ancien for principal à la date du départ
+				getService().closeForFiscalPrincipal(ffp, dateFermeture, motifFermeture);
+
+				// l'individu a sa residence principale en suisse
+				if (estEnSuisse) {
+					if (commune.isVaudoise()) {
+						/*
+						 * passage d'une commune vaudoise ouverte sur une résidence secondaire à une commune vaudoise ouverte sur la résidence
+						 * principale : il s'agit donc d'un déménagement vaudois
+						 */
+						openForFiscalPrincipal(contribuable, dateFermeture.getOneDayAfter(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, commune.getNoOFS(), MotifRattachement.DOMICILE, MotifFor.DEMENAGEMENT_VD, ffp.getModeImposition(), false);
+					}
+					else {
+						final ModeImposition modeImpostion = determineModeImpositionDepartHCHS(contribuable, dateFermeture, ffp);
+						openForFiscalPrincipalHC(contribuable, dateFermeture.getOneDayAfter(), commune.getNoOFS(), modeImpostion, MotifFor.DEPART_HC);
+					}
+				}
+				else if (ffp != null) {
+					final ModeImposition modeImposition = determineModeImpositionDepartHCHS(contribuable, dateFermeture, ffp);
+					openForFiscalPrincipalHS(contribuable, dateFermeture.getOneDayAfter(), adressePrincipale.getNoOfsPays(), modeImposition, MotifFor.DEPART_HS);
+				}
 			}
 		}
-
 	}
 
 	private static boolean isPaysInconnu(Depart depart) {
