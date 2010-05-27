@@ -8,6 +8,7 @@ import ch.vd.technical.esb.util.ESBXMLValidator;
 import ch.vd.uniregctb.evenement.EvenementTest;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.commons.io.FileUtils;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -37,6 +38,7 @@ public class EvenementExterneListenerTest extends EvenementTest {
 	private static final String INPUT_QUEUE = "ch.vd.unireg.test.input";
 	private static final String OUTPUT_QUEUE = "ch.vd.unireg.test.output";
 	private EvenementExterneListenerImpl listener;
+	private DefaultMessageListenerContainer container;
 
 	@Before
 	public void setUp() throws Exception {
@@ -71,11 +73,16 @@ public class EvenementExterneListenerTest extends EvenementTest {
 		esbMessageFactory = new EsbMessageFactory();
 		esbMessageFactory.setValidator(esbValidator);
 
-		final DefaultMessageListenerContainer container = new DefaultMessageListenerContainer();
+		container = new DefaultMessageListenerContainer();
 		container.setConnectionFactory(jmsConnectionManager);
 		container.setMessageListener(listener);
 		container.setDestinationName(INPUT_QUEUE);
 		container.afterPropertiesSet();
+	}
+
+	@After
+	public void tearDown() {
+		container.destroy();
 	}
 
 	@Test
