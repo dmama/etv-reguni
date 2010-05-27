@@ -103,7 +103,14 @@
 		<property name="modifInterceptor" ref="modificationLogInterceptor"/>
 		<property name="dataEventService" ref="dataEventService"/>
 	</bean>
-	
+
+	<!-- Section Evenement CEDI -->
+	<bean id="evenementCediService" class="ch.vd.uniregctb.evenement.cedi.EvenementCediServiceImpl">
+		<property name="tiersDAO" ref="tiersDAO"/>
+		<property name="periodeFiscaleDAO" ref="periodeFiscaleDAO"/>
+		<property name="modeleDocumentDAO" ref="modeleDocumentDAO"/>
+	</bean>
+
 	<bean id="rapportService" class="ch.vd.uniregctb.rapport.RapportServiceImpl">
 		<property name="adresseService" ref="adresseService" />
 		<property name="docService" ref="docService" />

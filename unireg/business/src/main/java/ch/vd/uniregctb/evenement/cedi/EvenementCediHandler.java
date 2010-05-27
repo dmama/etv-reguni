@@ -1,0 +1,16 @@
+package ch.vd.uniregctb.evenement.cedi;
+
+/**
+ * Interface de callback pour traiter les événements du CEDI.
+ *
+ * @author Manuel Siggen <manuel.siggen@vd.ch>
+ */
+public interface EvenementCediHandler {
+
+	/**
+	 * Traite l'événement CEDI spécifié.
+	 *
+	 * @param event un événement CEDI (non-persisté).
+	 */
+	public void onEvent(EvenementCedi event) throws EvenementCediException;
+}
