@@ -6,7 +6,7 @@
 
 	<modelVersion>4.0.0</modelVersion>
 
-	<artifactId>uniregctb-xmlbeans</artifactId>
+	<artifactId>uniregctb-xmlbeans-cedi</artifactId>
 	<packaging>jar</packaging>
 
 	<parent>
@@ -18,18 +18,13 @@
 		<relativePath>../base/pom.xml</relativePath>
 	</parent>
 	
-	<name>UniregCTB - XmlBeans</name>
-	<description>UniregCTB - Contient les beans Xml générés à partir des Xsd</description>
+	<name>UniregCTB - XmlBeans - CEDI</name>
+	<description>UniregCTB - Contient les beans Xml pour le CEDI (générés à part pour des raisons de namespace)</description>
 
 	<dependencies>
 		<dependency>
 			<groupId>${pom.parent.groupId}</groupId>
 			<artifactId>uniregctb-xmlbeans-interfaces</artifactId>
-			<version>${pom.parent.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>${pom.parent.groupId}</groupId>
-			<artifactId>uniregctb-xmlbeans-cedi</artifactId>
 			<version>${pom.parent.version}</version>
 		</dependency>
 		<dependency>
@@ -82,27 +77,6 @@
 					<sourceGenerationDirectory>${project.build.directory}/generated</sourceGenerationDirectory>
 					<xmlConfigs>
 						<xmlConfig implementation="java.io.File">src/main/resources/xsdConfig</xmlConfig>
-					</xmlConfigs>
-				</configuration>
-			</plugin>
-
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>xmlbeans-maven-plugin</artifactId>
-				<executions>
-					<execution>
-						<phase>generate-sources</phase>
-						<goals>
-							<goal>xmlbeans</goal>
-						</goals>
-					</execution>
-				</executions>
-				<inherited>true</inherited>
-				<configuration>
-					<schemaDirectory>src/main/resources/xsdCedi</schemaDirectory>
-					<sourceGenerationDirectory>${project.build.directory}/generated-cedi</sourceGenerationDirectory>
-					<xmlConfigs>
-						<xmlConfig implementation="java.io.File">src/main/resources/xsdConfigCedi</xmlConfig>
 					</xmlConfigs>
 				</configuration>
 			</plugin>
