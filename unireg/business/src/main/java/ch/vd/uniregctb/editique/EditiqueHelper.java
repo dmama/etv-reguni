@@ -89,14 +89,14 @@ public interface EditiqueHelper {
 	 * Alimente la partie expéditeur du document
 	 *
 	 * @param infoEnteteDocument
-	 * @param tiers
+	 * @param traitePar
 	 * @return
 	 * @throws InfrastructureException
 	 * @throws RemoteException
 	 * @throws InfrastructureException
 	 * @throws InfrastructureException
 	 */
-	public Expediteur remplitExpediteurACIForIS(Declaration declaration, InfoEnteteDocument infoEnteteDocument) throws InfrastructureException ;
+	public Expediteur remplitExpediteurACIForIS(Declaration declaration, InfoEnteteDocument infoEnteteDocument, String traitePar) throws InfrastructureException ;
 	/**
 	 * Retrouve le nom de la commune à mettre dans le champs OFS des documents de sommation de DI
 	 * et de confirmation de délai.

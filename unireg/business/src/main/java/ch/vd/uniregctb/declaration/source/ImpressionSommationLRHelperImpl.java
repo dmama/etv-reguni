@@ -251,7 +251,7 @@ public class ImpressionSommationLRHelperImpl implements ImpressionSommationLRHel
 		TypAdresse porteAdresse = editiqueHelper.remplitPorteAdresse(declaration.getTiers(), infoEnteteDocument);
 		infoEnteteDocument.setPorteAdresse(porteAdresse);
 
-		Expediteur expediteur = editiqueHelper.remplitExpediteurACIForIS(declaration, infoEnteteDocument);
+		Expediteur expediteur = editiqueHelper.remplitExpediteurACIForIS(declaration, infoEnteteDocument, null);
 		infoEnteteDocument.setExpediteur(expediteur);
 
 		Destinataire destinataire = editiqueHelper.remplitDestinataire(declaration.getTiers(), infoEnteteDocument);

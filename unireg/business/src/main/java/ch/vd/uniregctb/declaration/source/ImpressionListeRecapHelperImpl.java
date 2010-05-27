@@ -112,17 +112,18 @@ public class ImpressionListeRecapHelperImpl implements ImpressionListeRecapHelpe
 	 * Remplit un objet TypFichierImpressionIS
 	 *
 	 * @param lr
+	 * @param traitePar
 	 * @return
 	 * @throws Exception
 	 */
-	public TypFichierImpressionIS remplitListeRecap(DeclarationImpotSource lr) throws EditiqueException {
+	public TypFichierImpressionIS remplitListeRecap(DeclarationImpotSource lr, String traitePar) throws EditiqueException {
 		TypFichierImpressionIS impressionIS = FichierImpressionISDocument.Factory.newInstance().addNewFichierImpressionIS();
 		Document[] documents = new Document[1];
 
 		InfoDocument infoDocument = remplitInfoDocument(lr);
 		InfoEnteteDocument infoEnteteDocument;
 		try {
-			infoEnteteDocument = remplitEnteteDocument(lr);
+			infoEnteteDocument = remplitEnteteDocument(lr, traitePar);
 		}
 		catch (Exception e) {
 			throw new EditiqueException(e);
@@ -223,7 +224,7 @@ public class ImpressionListeRecapHelperImpl implements ImpressionListeRecapHelpe
 	 * @throws AdressesResolutionException
 	 * @throws InfrastructureException
 	 */
-	protected InfoEnteteDocument remplitEnteteDocument(Declaration declaration) throws AdresseException, InfrastructureException {
+	protected InfoEnteteDocument remplitEnteteDocument(Declaration declaration, String traitePar) throws AdresseException, InfrastructureException {
 		InfoEnteteDocument infoEnteteDocument = InfoEnteteDocumentDocument1.Factory.newInstance().addNewInfoEnteteDocument();
 
 		String prefixe = calculPrefixe();
@@ -233,7 +234,7 @@ public class ImpressionListeRecapHelperImpl implements ImpressionListeRecapHelpe
 		TypAdresse porteAdresse = editiqueHelper.remplitPorteAdresse(declaration.getTiers(), infoEnteteDocument);
 		infoEnteteDocument.setPorteAdresse(porteAdresse);
 
-		Expediteur expediteur = editiqueHelper.remplitExpediteurACIForIS(declaration, infoEnteteDocument);
+		Expediteur expediteur = editiqueHelper.remplitExpediteurACIForIS(declaration, infoEnteteDocument, traitePar);
 		infoEnteteDocument.setExpediteur(expediteur);
 
 		Destinataire destinataire = editiqueHelper.remplitDestinataire(declaration.getTiers(), infoEnteteDocument);
