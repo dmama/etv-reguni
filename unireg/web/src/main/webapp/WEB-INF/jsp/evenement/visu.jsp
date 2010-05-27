@@ -19,6 +19,7 @@
 					<td width="25%"><fmt:message key="label.numero.evenement" /> :</td>
 					<td width="25%">
 						${command.evenement.id}
+						<unireg:raccourciConsulter link="../common/consult-log.do?height=200&width=800&nature=Evenement&id=${command.evenement.id}&TB_iframe=true&modal=true" thickbox="true" tooltip="Edition des logs"/>
 					</td>
 					<td width="25%"><fmt:message key="label.date.evenement" /> :</td>
 					<td width="25%"><unireg:regdate regdate="${command.evenement.dateEvenement}"/></td>
