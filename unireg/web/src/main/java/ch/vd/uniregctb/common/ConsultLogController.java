@@ -19,6 +19,9 @@ import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.ListeRecapitulativeDAO;
+import ch.vd.uniregctb.evenement.EvenementCivil;
+import ch.vd.uniregctb.evenement.EvenementCivilDAO;
+import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.mouvement.MouvementDossier;
 import ch.vd.uniregctb.mouvement.MouvementDossierDAO;
 import ch.vd.uniregctb.security.DroitAccesDAO;
@@ -48,6 +51,7 @@ public class ConsultLogController  extends AbstractSimpleFormController {
 	private MouvementDossierDAO mouvementDossierDAO;
 	private TacheDAO tacheDAO;
 	private DroitAccesDAO droitAccesDAO;
+	private EvenementCivilDAO evenementCivilDAO;
 
 	private PlatformTransactionManager transactionManager;
 
@@ -65,7 +69,7 @@ public class ConsultLogController  extends AbstractSimpleFormController {
 	public final static String NATURE_MOUVEMENT_PARAMETER_VALUE = "MouvementDossier";
 	public final static String NATURE_TACHE_PARAMETER_VALUE = "Tache";
 	public final static String NATURE_DROIT_ACCES_PARAMETER_VALUE = "DroitAcces";
-
+	public final static String NATURE_EVENEMENT_PARAMETER_VALUE = "Evenement";
 	/**
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
@@ -126,6 +130,10 @@ public class ConsultLogController  extends AbstractSimpleFormController {
 				else if (nature.equals(NATURE_DROIT_ACCES_PARAMETER_VALUE)) {
 					DroitAcces droitAcces = droitAccesDAO.get(id);
 					return fillConsultLogView(droitAcces);
+				}
+				else if (nature.equals(NATURE_EVENEMENT_PARAMETER_VALUE)) {
+					EvenementCivilData evenementCivilData = evenementCivilDAO.get(id);
+					return fillConsultLogView(evenementCivilData);
 				}
 				return null;
 			}
@@ -200,5 +208,13 @@ public class ConsultLogController  extends AbstractSimpleFormController {
 
 	public void setTransactionManager(PlatformTransactionManager transactionManager) {
 		this.transactionManager = transactionManager;
+	}
+
+	public EvenementCivilDAO getEvenementCivilDAO() {
+		return evenementCivilDAO;
+	}
+
+	public void setEvenementCivilDAO(EvenementCivilDAO evenementCivilDAO) {
+		this.evenementCivilDAO = evenementCivilDAO;
 	}
 }

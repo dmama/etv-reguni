@@ -60,6 +60,11 @@
 			<display:column sortable ="true" titleKey="label.etat.evenement" sortName="etat" >
 				<fmt:message key="option.etat.evenement.${row.etat}" />
 			</display:column>
+			<display:column style="action">
+				<c:if test="${row.id != null}">
+					<unireg:raccourciConsulter link="../common/consult-log.do?height=200&width=800&nature=Evenement&id=${row.id}&TB_iframe=true&modal=true" thickbox="true" tooltip="Edition des logs"/>
+				</c:if>
+		</display:column>
 			
 		</display:table>
 
