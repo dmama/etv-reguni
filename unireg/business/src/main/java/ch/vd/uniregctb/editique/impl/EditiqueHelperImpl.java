@@ -27,7 +27,7 @@ import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.ForGestion;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.type.TypeAdresseTiers;
+
 import org.apache.log4j.Logger;
 
 public class EditiqueHelperImpl implements EditiqueHelper {
@@ -147,7 +147,8 @@ public class EditiqueHelperImpl implements EditiqueHelper {
 		// Apparement la commune de l'aci n'est pas renseignée dans le host ...
 		if (commune == null) {
 			expediteur.setLocaliteExpedition("Lausanne");
-		} else {
+		}
+		else {
 			expediteur.setLocaliteExpedition(StringUtils.capitalize(commune.getNomMinuscule()));
 		}
 		return expediteur;
@@ -207,7 +208,7 @@ public class EditiqueHelperImpl implements EditiqueHelper {
 	/**
 	 * Alimente la partie expéditeur du document
 	 */
-	public Expediteur remplitExpediteurACIForIS(Declaration declaration, InfoEnteteDocument infoEnteteDocument) throws InfrastructureException {
+	public Expediteur remplitExpediteurACIForIS(Declaration declaration, InfoEnteteDocument infoEnteteDocument, String traitePar) throws InfrastructureException {
 		//
 		// Expediteur
 		//
@@ -226,7 +227,10 @@ public class EditiqueHelperImpl implements EditiqueHelper {
 		expediteur.setNumTelephone(aci.getNoTelephone());
 		expediteur.setNumFax(aci.getNoFax());
 		expediteur.setNumCCP(aci.getNoCCP());
-		// expediteur.setTraitePar();
+		if (traitePar != null) {
+			expediteur.setTraitePar(traitePar);
+		}
+		//
 		// expediteur.setSrvExp(srvExp);
 		// expediteur.setIdeUti(ideUti);
 		expediteur.setLocaliteExpedition("Lausanne");

@@ -11,11 +11,12 @@ public interface ImpressionListeRecapHelper {
 	 * Remplit un objet TypFichierImpressionIS
 	 *
 	 * @param lr
+	 * @param traitePar
 	 * @return
 	 * @throws EditiqueException
 	 * @throws InfrastructureException
 	 */
-	public TypFichierImpressionIS remplitListeRecap(DeclarationImpotSource lr) throws EditiqueException ;
+	public TypFichierImpressionIS remplitListeRecap(DeclarationImpotSource lr, String traitePar) throws EditiqueException ;
 
 	/**
 	 * Construit le champ idDocument

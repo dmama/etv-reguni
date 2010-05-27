@@ -137,7 +137,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 	}
 
 	public void imprimeLRForBatch(DeclarationImpotSource lr, RegDate dateEvenement) throws EditiqueException {
-		final TypFichierImpressionIS editiqueLR = impressionLRHelper.remplitListeRecap(lr);
+		final TypFichierImpressionIS editiqueLR = impressionLRHelper.remplitListeRecap(lr, null);
 		String typeDocument = impressionLRHelper.calculPrefixe();
 		editiqueService.creerDocumentParBatch(editiqueLR, typeDocument, false);
 	}
@@ -224,7 +224,8 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 	}
 
 	public EditiqueResultat imprimeLROnline(DeclarationImpotSource lr, RegDate dateEvenement, TypeDocument typeDocument) throws EditiqueException, JMSException {
-		final TypFichierImpressionIS editiqueDI = impressionLRHelper.remplitListeRecap(lr);
+		String[] traitePar = getInfoOperateur();
+		final TypFichierImpressionIS editiqueDI = impressionLRHelper.remplitListeRecap(lr, traitePar[0]);
 		final String typeDocumentMessage = impressionLRHelper.calculPrefixe();
 		final String nomDocument = impressionLRHelper.construitIdDocument(lr);
 		return editiqueService.creerDocumentImmediatement(nomDocument, typeDocumentMessage, TypeFormat.PCL, editiqueDI, false);
