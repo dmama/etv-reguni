@@ -13,7 +13,7 @@ public class RetourDI extends EvenementCedi {
 		VAUDTAX,
 		ORDINAIRE;
 
-		public static TypeDocument fromJms(String code) {
+		public static TypeDocument fromTypeSaisie(String code) {
 			if (StringUtils.isBlank(code)) {
 				return null;
 			}
@@ -25,7 +25,22 @@ public class RetourDI extends EvenementCedi {
 				return VAUDTAX;
 			}
 
-			throw new IllegalArgumentException("Type de document inconnu");
+			throw null;
+		}
+
+		public static TypeDocument fromTypeDocument(String code) {
+			if (StringUtils.isBlank(code)) {
+				return null;
+			}
+
+			if ("100".equals(code)) {
+				return ORDINAIRE;
+			}
+			else if ("109".equals(code)) {
+				return VAUDTAX;
+			}
+
+			throw null;
 		}
 	}
 
