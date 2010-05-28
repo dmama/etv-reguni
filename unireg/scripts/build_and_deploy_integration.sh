@@ -97,7 +97,7 @@ echo "Fin du deploiement de la web-app à: $(date)"
 #
 # Deploiement des web-services
 #
-scp unireg/wa/target/$wsFileDest $user:$upDir/
+scp unireg/ws/target/$wsFileDest $user:$upDir/
 
 ssh $user "rm -rf $upDir/explode"
 ssh $user "mkdir -p $upDir/explode"
