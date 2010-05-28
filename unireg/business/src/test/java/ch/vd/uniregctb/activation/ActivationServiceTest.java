@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.activation;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -8,6 +10,7 @@ import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
+import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.declaration.Declaration;
@@ -18,13 +21,16 @@ import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.tiers.AnnuleEtRemplace;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tache;
 import ch.vd.uniregctb.tiers.TacheDAO;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.Sexe;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
@@ -94,6 +100,7 @@ public class ActivationServiceTest extends BusinessTest {
 		Assert.assertNull(tiersAnnule.getAnnulationUser());
 
 		final ForFiscalPrincipal forFiscalPrincipal = tiersAnnule.getForFiscalPrincipalAt(dateReactivation);
+		Assert.assertNotNull(forFiscalPrincipal);
 		Assert.assertEquals(MotifFor.REACTIVATION, forFiscalPrincipal.getMotifOuverture());
 	}
 
@@ -437,6 +444,172 @@ public class ActivationServiceTest extends BusinessTest {
 				Assert.assertEquals(MotifFor.ANNULATION, ff.getMotifFermeture());
 
 				Assert.assertTrue(pp.isAnnule());
+				return null;
+			}
+		});
+	}
+
+	private static class ForFiscalComparator extends DateRangeComparator<ForFiscal> {
+		@Override
+		public int compare(ForFiscal o1, ForFiscal o2) {
+			final boolean isPrincipal1 = o1 instanceof ForFiscalPrincipal;
+			final boolean isPrincipal2 = o2 instanceof ForFiscalPrincipal;
+			if (isPrincipal1 == isPrincipal2) {
+			    return super.compare(o1, o2);
+			}
+			else if (isPrincipal1) {
+				return -1;
+			}
+			else {
+				return 1;
+			}
+		}
+	}
+
+	@Test
+	public void testReactivationTiersAvecPlusieursFors() throws Exception {
+
+		final RegDate dateAnnulation = date(2009, 2, 22);
+
+		// mise en place
+		final long ppId = (Long) doInNewTransaction(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus transactionStatus) {
+
+				final PersonnePhysique pp = addNonHabitant("Achille", "Talon", date(1948, 1, 26), Sexe.MASCULIN);
+				pp.setAnnulationDate(dateAnnulation.asJavaDate());
+				pp.setAnnulationUser("momo");
+				addForPrincipal(pp, date(1980, 1, 1), MotifFor.ARRIVEE_HS, date(1990, 12, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
+				addForPrincipal(pp, date(1991, 1, 1), MotifFor.DEMENAGEMENT_VD, dateAnnulation, MotifFor.ANNULATION, MockCommune.Lausanne);
+				addForSecondaire(pp, date(1991, 1, 1), MotifFor.ACHAT_IMMOBILIER, dateAnnulation, MotifFor.ANNULATION, MockCommune.Lausanne.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, dateAnnulation, MotifFor.VENTE_IMMOBILIER, MockCommune.Bussigny.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, date(2001, 1, 1), MotifFor.ACHAT_IMMOBILIER, dateAnnulation.addMonths(-1), MotifFor.ANNULATION, MockCommune.Bex.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+				return pp.getNumero();
+			}
+		});
+
+		// vérification de l'état du tiers
+		doInNewTransaction(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus transactionStatus) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
+				Assert.assertTrue(pp.isAnnule());
+				Assert.assertEquals(dateAnnulation.asJavaDate(), pp.getAnnulationDate());
+
+				final Set<ForFiscal> fors = pp.getForsFiscaux();
+				Assert.assertNotNull(fors);
+				Assert.assertEquals(5, fors.size());
+
+				final List<ForFiscal> forsTries = new ArrayList<ForFiscal>(fors);
+				Collections.sort(forsTries, new ForFiscalComparator());
+
+				// ne doit pas être ré-ouvert
+				final ForFiscalPrincipal ffDemenagement = (ForFiscalPrincipal) forsTries.get(0);
+				Assert.assertNotNull(ffDemenagement);
+				Assert.assertEquals(MotifFor.DEMENAGEMENT_VD, ffDemenagement.getMotifFermeture());
+
+				// doit être ré-ouvert
+				final ForFiscalPrincipal ffpAnnulation = (ForFiscalPrincipal) forsTries.get(1);
+				Assert.assertNotNull(ffpAnnulation);
+				Assert.assertEquals(MotifFor.ANNULATION, ffpAnnulation.getMotifFermeture());
+				Assert.assertEquals(dateAnnulation, ffpAnnulation.getDateFin());
+
+				// doit être ré-ouvert
+				final ForFiscalSecondaire ffsAnnulation = (ForFiscalSecondaire) forsTries.get(2);
+				Assert.assertNotNull(ffsAnnulation);
+				Assert.assertEquals(MotifFor.ANNULATION, ffsAnnulation.getMotifFermeture());
+				Assert.assertEquals(dateAnnulation, ffsAnnulation.getDateFin());
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffsAnnulation.getTypeAutoriteFiscale());
+				Assert.assertEquals(MockCommune.Lausanne.getNoOFSEtendu(), (int) ffsAnnulation.getNumeroOfsAutoriteFiscale());
+
+				// ne doit pas être ré-ouvert (pas bon motif de fermeture)
+				final ForFiscalSecondaire ffsVente = (ForFiscalSecondaire) forsTries.get(3);
+				Assert.assertNotNull(ffsVente);
+				Assert.assertEquals(MotifFor.VENTE_IMMOBILIER, ffsVente.getMotifFermeture());
+				Assert.assertEquals(dateAnnulation, ffsVente.getDateFin());
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffsVente.getTypeAutoriteFiscale());
+				Assert.assertEquals(MockCommune.Bussigny.getNoOFSEtendu(), (int) ffsVente.getNumeroOfsAutoriteFiscale());
+
+				// ne doit pas être ré-ouvert (pas bonne date de fermeture)
+				final ForFiscalSecondaire ffsAnnulationPrecedente = (ForFiscalSecondaire) forsTries.get(4);
+				Assert.assertNotNull(ffsAnnulationPrecedente);
+				Assert.assertEquals(MotifFor.ANNULATION, ffsAnnulationPrecedente.getMotifFermeture());
+				Assert.assertEquals(dateAnnulation.addMonths(-1), ffsAnnulationPrecedente.getDateFin());
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffsAnnulationPrecedente.getTypeAutoriteFiscale());
+				Assert.assertEquals(MockCommune.Bex.getNoOFSEtendu(), (int) ffsAnnulationPrecedente.getNumeroOfsAutoriteFiscale());
+
+				return null;
+			}
+		});
+
+		// réactivation et tests
+		doInNewTransaction(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus transactionStatus) {
+
+				final RegDate dateReactivation = dateAnnulation.addMonths(6);
+				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
+				try {
+					activationService.reactiveTiers(pp, dateReactivation);
+				}
+				catch (ActivationServiceException e) {
+					throw new RuntimeException(e);
+				}
+
+				Assert.assertFalse(pp.isAnnule());
+
+				final Set<ForFiscal> fors = pp.getForsFiscaux();
+				Assert.assertNotNull(fors);
+				Assert.assertEquals(7, fors.size());
+
+				final List<ForFiscal> forsTries = new ArrayList<ForFiscal>(fors);
+				Collections.sort(forsTries, new ForFiscalComparator());
+
+				final ForFiscalPrincipal ffDemenagement = (ForFiscalPrincipal) forsTries.get(0);
+				Assert.assertNotNull(ffDemenagement);
+				Assert.assertEquals(MotifFor.DEMENAGEMENT_VD, ffDemenagement.getMotifFermeture());
+
+				final ForFiscalPrincipal ffpAnnulation = (ForFiscalPrincipal) forsTries.get(1);
+				Assert.assertNotNull(ffpAnnulation);
+				Assert.assertEquals(MotifFor.ANNULATION, ffpAnnulation.getMotifFermeture());
+				Assert.assertEquals(dateAnnulation, ffpAnnulation.getDateFin());
+
+				final ForFiscalPrincipal ffpReactivation = (ForFiscalPrincipal) forsTries.get(2);
+				Assert.assertNotNull(ffpReactivation);
+				Assert.assertEquals(MotifFor.REACTIVATION, ffpReactivation.getMotifOuverture());
+				Assert.assertEquals(dateReactivation, ffpReactivation.getDateDebut());
+				Assert.assertNull(ffpReactivation.getMotifFermeture());
+				Assert.assertNull(ffpReactivation.getDateFin());
+
+				final ForFiscalSecondaire ffsAnnulation = (ForFiscalSecondaire) forsTries.get(3);
+				Assert.assertNotNull(ffsAnnulation);
+				Assert.assertEquals(MotifFor.ANNULATION, ffsAnnulation.getMotifFermeture());
+				Assert.assertEquals(dateAnnulation, ffsAnnulation.getDateFin());
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffsAnnulation.getTypeAutoriteFiscale());
+				Assert.assertEquals(MockCommune.Lausanne.getNoOFSEtendu(), (int) ffsAnnulation.getNumeroOfsAutoriteFiscale());
+
+				// ne doit pas être ré-ouvert (pas bon motif de fermeture)
+				final ForFiscalSecondaire ffsVente = (ForFiscalSecondaire) forsTries.get(4);
+				Assert.assertNotNull(ffsVente);
+				Assert.assertEquals(MotifFor.VENTE_IMMOBILIER, ffsVente.getMotifFermeture());
+				Assert.assertEquals(dateAnnulation, ffsVente.getDateFin());
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffsVente.getTypeAutoriteFiscale());
+				Assert.assertEquals(MockCommune.Bussigny.getNoOFSEtendu(), (int) ffsVente.getNumeroOfsAutoriteFiscale());
+
+				// ne doit pas être ré-ouvert (pas bonne date de fermeture)
+				final ForFiscalSecondaire ffsAnnulationPrecedente = (ForFiscalSecondaire) forsTries.get(5);
+				Assert.assertNotNull(ffsAnnulationPrecedente);
+				Assert.assertEquals(MotifFor.ANNULATION, ffsAnnulationPrecedente.getMotifFermeture());
+				Assert.assertEquals(dateAnnulation.addMonths(-1), ffsAnnulationPrecedente.getDateFin());
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffsAnnulationPrecedente.getTypeAutoriteFiscale());
+				Assert.assertEquals(MockCommune.Bex.getNoOFSEtendu(), (int) ffsAnnulationPrecedente.getNumeroOfsAutoriteFiscale());
+
+				final ForFiscalSecondaire ffsReactivation = (ForFiscalSecondaire) forsTries.get(6);
+				Assert.assertNotNull(ffsReactivation);
+				Assert.assertEquals(MotifFor.REACTIVATION, ffsReactivation.getMotifOuverture());
+				Assert.assertEquals(dateReactivation, ffsReactivation.getDateDebut());
+				Assert.assertNull(ffsReactivation.getMotifFermeture());
+				Assert.assertNull(ffsReactivation.getDateFin());
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffsReactivation.getTypeAutoriteFiscale());
+				Assert.assertEquals(MockCommune.Lausanne.getNoOFSEtendu(), (int) ffsReactivation.getNumeroOfsAutoriteFiscale());
+
 				return null;
 			}
 		});

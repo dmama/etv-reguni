@@ -26,5 +26,5 @@ public interface ActivationService {
 	 * @param tiers
 	 * @param dateReactivation
 	 */
-	public void reactiveTiers(Tiers tiers, RegDate dateReactivation);
+	public void reactiveTiers(Tiers tiers, RegDate dateReactivation) throws ActivationServiceException;
 }

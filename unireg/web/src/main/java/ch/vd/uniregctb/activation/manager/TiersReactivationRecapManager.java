@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.activation.manager;
 
-import org.springframework.transaction.annotation.Transactional;
-
+import ch.vd.uniregctb.activation.ActivationServiceException;
 import ch.vd.uniregctb.activation.view.TiersReactivationRecapView;
 
 public interface TiersReactivationRecapManager {
@@ -12,7 +11,6 @@ public interface TiersReactivationRecapManager {
 	 * @param numeroTiers
 	 * @return
 	 */
-	@Transactional(readOnly = true)
 	public TiersReactivationRecapView get(Long numeroTiers);
 
 	/**
@@ -20,7 +18,6 @@ public interface TiersReactivationRecapManager {
 	 *
 	 * @param tiersReactivationRecapView
 	 */
-	@Transactional(rollbackFor = Throwable.class)
-	public void save(TiersReactivationRecapView tiersReactivationRecapView);
+	public void save(TiersReactivationRecapView tiersReactivationRecapView) throws ActivationServiceException;
 
 }

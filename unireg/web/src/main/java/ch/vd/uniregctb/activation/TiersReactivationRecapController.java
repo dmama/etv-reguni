@@ -67,8 +67,7 @@ public class TiersReactivationRecapController  extends AbstractSimpleFormControl
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object, org.springframework.validation.BindException)
 	 */
 	@Override
-	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors)
-		throws Exception {
+	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors) throws Exception {
 
 		TiersReactivationRecapView tiersReactivationRecapView = (TiersReactivationRecapView) command;
 		checkAccesDossierEnEcriture(tiersReactivationRecapView.getTiers().getNumero());
