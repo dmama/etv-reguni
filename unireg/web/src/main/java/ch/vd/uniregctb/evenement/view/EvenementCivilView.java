@@ -33,8 +33,12 @@ public class EvenementCivilView {
 	public EvenementCivilView(EvenementCivilData evt, TiersDAO tiersDAO) {
 		this.id = evt.getId();
 		this.etat = evt.getEtat();
-		this.habitantPrincipal = (PersonnePhysique) tiersDAO.get(evt.getHabitantPrincipalId());
-		this.habitantConjoint = (PersonnePhysique) tiersDAO.get(evt.getHabitantConjointId());
+		if (evt.getHabitantPrincipalId() != null) {
+			this.habitantPrincipal = (PersonnePhysique) tiersDAO.get(evt.getHabitantPrincipalId());
+		}
+		if (evt.getHabitantConjointId() != null) {
+			this.habitantConjoint = (PersonnePhysique) tiersDAO.get(evt.getHabitantConjointId());
+		}
 		this.numeroIndividuPrincipal = evt.getNumeroIndividuPrincipal();
 		this.numeroIndividuConjoint = evt.getNumeroIndividuConjoint();
 		this.type = evt.getType();
