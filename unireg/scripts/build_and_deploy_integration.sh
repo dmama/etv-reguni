@@ -34,15 +34,15 @@ user=dsi_unireg@ssv0309v
 upDir=/ccv/data/dsi_unireg/uploads
 
 configDir=/ccv/data/dsi_unireg/cat_uniregI/app/unireg/config
-deployDir=/ccv/data/dsi_unireg/cat_uniregI/webapps/fiscalite#int-unireg
+deployDir=/ccv/data/dsi_unireg/cat_uniregI/webapps/fiscalite#int-unireg#web
 workDir=/ccv/data/dsi_unireg/cat_uniregI/work/unireg
 
 wsConfigDir=/ccv/data/dsi_unireg/cat_uniregI/app/unireg-ws/config
-wsDeployDir=/ccv/data/dsi_unireg/cat_uniregI/webapps/fiscalite#int-unireg-ws
+wsDeployDir=/ccv/data/dsi_unireg/cat_uniregI/webapps/fiscalite#int-unireg#ws
 wsWorkDir=/ccv/data/dsi_unireg/cat_uniregI/work/unireg-ws
 
-relFileOrig=uniregctb-release.zip
-relFileDest=uniregctb-release-${version}-${DATE}.zip
+relFileOrig=uniregweb-release.zip
+relFileDest=uniregweb-release-${version}-${DATE}.zip
 wsFileOrig=uniregws-release.zip
 wsFileDest=uniregws-release-${version}-${DATE}.zip
 
@@ -90,7 +90,7 @@ ssh $user "cp $upDir/explode/config/$env/* $configDir/"
 # unzip du war
 ssh $user "rm -rf $deployDir $workDir"
 ssh $user "mkdir -p $deployDir"
-ssh $user "cd $deployDir && unzip $upDir/explode/deployment/uniregctb.war"
+ssh $user "cd $deployDir && unzip $upDir/explode/deployment/uniregweb.war"
 
 echo "Fin du deploiement de la web-app à: $(date)"
 

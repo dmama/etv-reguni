@@ -26,9 +26,9 @@ version=$version.$release
 echo "Building version $version ($env)"
 
 user=dsi_unireg@ssv0309v
-relFileOrig=uniregctb-release.zip
-relFileDest=uniregctb-release-${env}-${version}-${DATE}.zip
-wsFileOrig=uniregws-release.zip
+relFileOrig=uniregweb-release.zip
+relFileDest=uniregweb-release-${env}-${version}-${DATE}.zip
+wsFileOrig=uniregws-release.zip	
 wsFileDest=uniregws-release-${env}-${version}-${DATE}.zip
 ubrFileOrig=ubr-release.zip
 ubrFileDest=ubr-release-${env}-${version}-${DATE}.zip
