@@ -7,17 +7,11 @@ import java.util.List;
 import java.util.Set;
 
 import org.junit.Test;
-import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
-import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
-import org.springframework.test.context.transaction.TransactionConfiguration;
 
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.webscreenshot.WebScreenshot;
 import ch.vd.registre.webscreenshot.WebScreenshotDoc;
-import ch.vd.registre.webscreenshot.WebScreenshotTestListenerConfig;
-import ch.vd.registre.webscreenshot.WebScreenshotTransactionalTestExecutionListener;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -1640,6 +1634,79 @@ public class AssujettissementTest extends MetierTest {
 			assertEquals(2, list.size());
 			assertSourcierPur(date(2002, 1, 1), date(2008, 2, 29), null, MotifFor.CHGT_MODE_IMPOSITION, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
 			assertOrdinaire(date(2008, 3, 1), date(2010, 12, 31), MotifFor.CHGT_MODE_IMPOSITION, null, list.get(1));
+		}
+	}
+
+	@WebScreenshot(urls = "/fiscalite/unireg/tiers/timeline.do?id=10000044&print=true&title=${methodName}")
+	@WebScreenshotDoc(description = "Cas limite du passage sourcier pure à ordinaire à la mi-décembre: " +
+			"l'assujettissement sourcier pur est étendu jusqu'à la fin de l'année et l'assujettissement ordinaire ne commence qu'au début de l'année suivante.")
+	@Test
+	public void testDeterminePassageRoleSourceAOrdinaireCasLimiteFinDAnnee() throws Exception {
+
+		final Contribuable paul = createPassageRoleSourceAOrdinaire(10000044L, date(2008, 12, 12));
+
+		// 2008
+		{
+			final List<Assujettissement> list = Assujettissement.determine(paul, 2008);
+			assertNotNull(list);
+			assertEquals(1, list.size());
+			// sourcier pure jusqu'à mi-décembre -> l'assujettissement sourcier pur est étendu jusqu'à la fin de l'année
+			assertSourcierPur(date(2008, 1, 1), date(2008, 12, 31), null, MotifFor.CHGT_MODE_IMPOSITION, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
+		}
+
+		// 2009
+		{
+			final List<Assujettissement> list = Assujettissement.determine(paul, 2009);
+			assertNotNull(list);
+			assertEquals(1, list.size());
+			assertOrdinaire(date(2009, 1, 1), date(2009, 12, 31), MotifFor.CHGT_MODE_IMPOSITION, null, list.get(0));
+		}
+
+		// 2002-2010
+		{
+			List<Assujettissement> list = Assujettissement.determine(paul, RANGE_2002_2010, true);
+			assertNotNull(list);
+			assertEquals(2, list.size());
+			assertSourcierPur(date(2002, 1, 1), date(2008, 12, 31), null, MotifFor.CHGT_MODE_IMPOSITION, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
+			assertOrdinaire(date(2009, 1, 1), date(2010, 12, 31), MotifFor.CHGT_MODE_IMPOSITION, null, list.get(1));
+		}
+	}
+
+	/**
+	 * [UNIREG-2444] Cas du contribuble n°106.846.77
+	 */
+	@WebScreenshot(urls = "/fiscalite/unireg/tiers/timeline.do?id=10684677&print=true&title=${methodName}")
+	@WebScreenshotDoc(description = "Cas du contribuable ce contribuable ne possède qu'un seul for fiscal principal qui commence donc le 12.12.2008 avec le motif d'obtention de permis C. " +
+			"Cela laisse supposer qu'il possédait précédemment un permis B et qu'il était donc sourcier, mais il n'y a aucune trace de cela. " +
+			"En conséquence l'algorithme calcule un assujettissement ordinaire pour toute l'année 2008.")
+	@Test
+	public void testDetermineFauxPassageRoleSourceAOrdinaire() throws Exception {
+
+		final Contribuable paul = createFauxPassageRoleSourceAOrdinaire(10684677L, date(2008, 12, 12));
+
+		// 2008
+		{
+			final List<Assujettissement> list = Assujettissement.determine(paul, 2008);
+			assertNotNull(list);
+			assertEquals(1, list.size());
+			// pas de for source avant le for ordinaire -> assujetti sur toute l'année (malgré le motif qui laisse penser le contraire)
+			assertOrdinaire(date(2008, 1, 1), date(2008, 12, 31), MotifFor.PERMIS_C_SUISSE, null, list.get(0));
+		}
+
+		// 2009
+		{
+			final List<Assujettissement> list = Assujettissement.determine(paul, 2009);
+			assertNotNull(list);
+			assertEquals(1, list.size());
+			assertOrdinaire(date(2009, 1, 1), date(2009, 12, 31), null, null, list.get(0));
+		}
+
+		// 2002-2010
+		{
+			List<Assujettissement> list = Assujettissement.determine(paul, RANGE_2002_2010, true);
+			assertNotNull(list);
+			assertEquals(1, list.size());
+			assertOrdinaire(date(2008, 1, 1), date(2010, 12, 31), MotifFor.PERMIS_C_SUISSE, null, list.get(0));
 		}
 	}
 
