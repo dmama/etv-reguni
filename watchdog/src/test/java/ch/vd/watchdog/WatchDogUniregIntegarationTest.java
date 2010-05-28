@@ -18,7 +18,7 @@ public class WatchDogUniregIntegarationTest extends WatchDogTest {
 
 	public void testIntegration() throws Exception {
 		LOGGER.info("Vérification de Unireg en intégration...");
-		HtmlPage page = (HtmlPage) webClient.getPage(new URL("https://validation.portail.etat-de-vaud.ch/fiscalite/int-unireg/"));
+		HtmlPage page = (HtmlPage) webClient.getPage(new URL("https://validation.portail.etat-de-vaud.ch/fiscalite/int-unireg/web/"));
 		assertNotNull(page);
 		String titre = page.getTitleText();
 		assertTrue(titre.equalsIgnoreCase("Recherche des tiers") || titre.equalsIgnoreCase("Sélection de l'OID de travail"));
@@ -27,7 +27,7 @@ public class WatchDogUniregIntegarationTest extends WatchDogTest {
 	public void testIntegrationConnectivite() throws Exception {
 		LOGGER.info("Vérification de la connectivité de Unireg en intégration...");
 		final HtmlPage page = (HtmlPage) webClient.getPage(new URL(
-				"https://validation.portail.etat-de-vaud.ch/fiscalite/int-unireg/admin/status.do"));
+				"https://validation.portail.etat-de-vaud.ch/fiscalite/int-unireg/web/admin/status.do"));
 		assertNotNull(page);
 		assertStatus("OK", page, "serviceCivilStatus");
 		assertStatus("OK", page, "serviceInfraStatus");
