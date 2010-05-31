@@ -10,7 +10,6 @@ import org.apache.commons.lang.StringUtils;
 
 import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.infrastructure.service.InfrastructureException;
-import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
@@ -2474,7 +2473,7 @@ public class AdresseServiceImpl implements AdresseService {
 		return tiersService.getNomPrenom(individu);
 	}
 
-	public AdresseGenerique getDerniereAdresseVaudoise(Tiers tiers, TypeAdresseFiscale type) throws InfrastructureException, AdresseException {
+	public AdresseGenerique getDerniereAdresseVaudoise(Tiers tiers, TypeAdresseFiscale type) throws AdresseException {
 		final AdressesFiscalesHisto adressesHistoriques = getAdressesFiscalHisto(tiers,false);
 		final List<AdresseGenerique> listeAdresse = adressesHistoriques.ofType(type);
 		if (listeAdresse != null) {
@@ -2485,7 +2484,13 @@ public class AdresseServiceImpl implements AdresseService {
 			final ListIterator<AdresseGenerique> iter = listeAdresse.listIterator(listeAdresse.size());
 			while (iter.hasPrevious()) {
 				final AdresseGenerique adresseGenerique = iter.previous();
-				final CommuneSimple commune = serviceInfra.getCommuneByAdresse(adresseGenerique);
+				final CommuneSimple commune;
+				try {
+					commune = serviceInfra.getCommuneByAdresse(adresseGenerique);
+				}
+				catch (InfrastructureException e) {
+					throw new AdresseDataException(e);
+				}
 				if (commune != null && commune.isVaudoise()) {
 					return adresseGenerique;
 				}
