@@ -27,9 +27,7 @@ public interface EvenementCivil {
 	Integer getNumeroOfsCommuneAnnonce();
 
 	/**
-	 * Renvoie vrai (par défaut) si le contribuable est présent avant le
-	 * traitement Ceci est faux pour le cas d'une naissance par exemple
-	 *
+	 * Renvoie vrai (par défaut) si le contribuable est normalement présent avant le traitement.<br/>Ceci est faux pour le cas d'une naissance par exemple.
 	 * @return boolean
 	 */
 	boolean isContribuablePresentBefore();

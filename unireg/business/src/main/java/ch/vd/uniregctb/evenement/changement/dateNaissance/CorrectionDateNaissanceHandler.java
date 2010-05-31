@@ -1,10 +1,10 @@
 package ch.vd.uniregctb.evenement.changement.dateNaissance;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,8 +26,6 @@ import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 public class CorrectionDateNaissanceHandler extends AbstractChangementHandler {
 
-	private static final Logger LOGGER = Logger.getLogger(CorrectionDateNaissanceHandler.class);
-
 	@Override
 	public void checkCompleteness(EvenementCivil target, List<EvenementCivilErreur> erreurs, List<EvenementCivilErreur> warnings) {
 
@@ -42,32 +40,34 @@ public class CorrectionDateNaissanceHandler extends AbstractChangementHandler {
 	@Transactional(propagation = Propagation.MANDATORY, rollbackFor = Throwable.class)
 	public Pair<PersonnePhysique,PersonnePhysique> handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
 
-		LOGGER.debug("Correction de la date de naissance de l'individu : " + evenement.getNoIndividu());
-		Audit.info(evenement.getNumeroEvenement(), "Correction de la date de naissance de l'individu : " + evenement.getNoIndividu());
+		Audit.info(evenement.getNumeroEvenement(), String.format("Correction de la date de naissance de l'individu : %d", evenement.getNoIndividu()));
 
 		try {
-			final PersonnePhysique habitant = getPersonnePhysiqueOrThrowException(evenement.getNoIndividu());
-			final RegDate dateNaissance = evenement.getDate();
+			final List<EvenementCivilErreur> errors = new ArrayList<EvenementCivilErreur>();
+			final PersonnePhysique pp = getPersonnePhysiqueOrFillErrors(evenement.getNoIndividu(), errors);
+			if (pp != null) {
+				final RegDate dateNaissance = evenement.getDate();
 
-			// [UNIREG-1114] La date de naissance est cachée au niveau de l'habitant
-			habitant.setDateNaissance(dateNaissance);
+				// [UNIREG-1114] La date de naissance est cachée au niveau de l'habitant
+				pp.setDateNaissance(dateNaissance);
 
-			// Vérifier l'existence d'un For principal avec motif d'ouverture MAJORITE
-			ForFiscalPrincipal principal = findForFiscalPrincipalMajorite(habitant);
-			if (principal != null && !principal.isAnnule()) {
-				// Ajout de 18 ans pour atteindre la majorité
-				final RegDate ancienneDateMajorite = principal.getDateDebut();
-				final RegDate nouvelleDateMajorite = dateNaissance.addYears(FiscalDateHelper.AGE_MAJORITE);
+				// Vérifier l'existence d'un For principal avec motif d'ouverture MAJORITE
+				final ForFiscalPrincipal ffp = findForFiscalPrincipalMajorite(pp);
+				if (ffp != null && !ffp.isAnnule()) {
+					// Ajout de 18 ans pour atteindre la majorité
+					final RegDate ancienneDateMajorite = ffp.getDateDebut();
+					final RegDate nouvelleDateMajorite = dateNaissance.addYears(FiscalDateHelper.AGE_MAJORITE);
 
-				// Lève une erreur si la nouvelle date de majorité ne tombe pas sur la même année que l'ancienne (il y a certainement des
-				// DIs et d'autres choses à mettre-à-jour)
-				if (ancienneDateMajorite.year() != nouvelleDateMajorite.year() && !habitant.getDeclarations().isEmpty()) {
-					throw new EvenementCivilHandlerException("L'ancienne (" + RegDateHelper.dateToDisplayString(ancienneDateMajorite)
-							+ ") et la nouvelle date de majorité (" + RegDateHelper.dateToDisplayString(nouvelleDateMajorite)
-							+ ") ne tombent pas sur la même année. Veuillez vérifier les DIs.");
+					// Lève une erreur si la nouvelle date de majorité ne tombe pas sur la même année que l'ancienne (il y a certainement des
+					// DIs et d'autres choses à mettre-à-jour)
+					if (ancienneDateMajorite.year() != nouvelleDateMajorite.year() && !pp.getDeclarations().isEmpty()) {
+						throw new EvenementCivilHandlerException("L'ancienne (" + RegDateHelper.dateToDisplayString(ancienneDateMajorite)
+								+ ") et la nouvelle date de majorité (" + RegDateHelper.dateToDisplayString(nouvelleDateMajorite)
+								+ ") ne tombent pas sur la même année. Veuillez vérifier les DIs.");
+					}
+
+					ffp.setDateDebut(nouvelleDateMajorite);
 				}
-
-				principal.setDateDebut(nouvelleDateMajorite);
 			}
 		}
 		finally {

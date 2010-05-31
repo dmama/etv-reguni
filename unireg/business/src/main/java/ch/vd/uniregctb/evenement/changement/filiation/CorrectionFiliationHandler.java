@@ -4,7 +4,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,8 +19,6 @@ import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 public class CorrectionFiliationHandler extends AbstractChangementHandler {
 
-	private static final Logger LOGGER = Logger.getLogger(CorrectionFiliationHandler.class);
-
 	@Override
 	public void checkCompleteness(EvenementCivil target, List<EvenementCivilErreur> erreurs, List<EvenementCivilErreur> warnings) {
 
@@ -36,8 +33,7 @@ public class CorrectionFiliationHandler extends AbstractChangementHandler {
 	@Transactional(propagation = Propagation.MANDATORY, rollbackFor = Throwable.class)
 	public Pair<PersonnePhysique,PersonnePhysique> handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
 
-		LOGGER.debug("Correction de filiation de l'individu : " + evenement.getNoIndividu());
-		Audit.info(evenement.getNumeroEvenement(), "Correction de filiation de l'individu : " + evenement.getNoIndividu());
+		Audit.info(evenement.getNumeroEvenement(), String.format("Correction de filiation de l'individu : %d", evenement.getNoIndividu()));
 
 		//les événements de correction de filiation n'ont aucun impact sur le fiscal ==> rien à faire
 		return null;
@@ -50,7 +46,7 @@ public class CorrectionFiliationHandler extends AbstractChangementHandler {
 
 	@Override
 	protected Set<TypeEvenementCivil> getHandledType() {
-		Set<TypeEvenementCivil> types = new HashSet<TypeEvenementCivil>();
+		final Set<TypeEvenementCivil> types = new HashSet<TypeEvenementCivil>();
 		types.add(TypeEvenementCivil.CORREC_FILIATION);
 		return types;
 	}

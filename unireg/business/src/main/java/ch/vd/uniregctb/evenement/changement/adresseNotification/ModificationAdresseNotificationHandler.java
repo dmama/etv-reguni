@@ -69,6 +69,11 @@ public class ModificationAdresseNotificationHandler extends AbstractChangementHa
 	}
 
 	@Override
+	protected boolean autoriseIndividuInconnuFiscalement() {
+		return false;
+	}
+
+	@Override
 	@Transactional(propagation = Propagation.MANDATORY, rollbackFor = Throwable.class)
 	public Pair<PersonnePhysique,PersonnePhysique> handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
 
@@ -145,7 +150,7 @@ public class ModificationAdresseNotificationHandler extends AbstractChangementHa
 
 	@Override
 	protected Set<TypeEvenementCivil> getHandledType() {
-		Set<TypeEvenementCivil> types = new HashSet<TypeEvenementCivil>();
+		final Set<TypeEvenementCivil> types = new HashSet<TypeEvenementCivil>();
 		types.add(TypeEvenementCivil.MODIF_ADRESSE_NOTIFICATION);
 		types.add(TypeEvenementCivil.CORREC_ADRESSE);
 		return types;

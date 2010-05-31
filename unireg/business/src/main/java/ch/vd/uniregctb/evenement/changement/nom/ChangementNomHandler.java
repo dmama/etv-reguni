@@ -8,7 +8,6 @@ import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.interfaces.model.HistoriqueIndividu;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
-import org.apache.log4j.Logger;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,8 +20,6 @@ import ch.vd.uniregctb.evenement.common.EvenementCivilHandlerException;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 public class ChangementNomHandler extends AbstractChangementHandler {
-
-	private static final Logger LOGGER = Logger.getLogger(ChangementNomHandler.class);
 
 	@Override
 	public void checkCompleteness(EvenementCivil target, List<EvenementCivilErreur> erreurs, List<EvenementCivilErreur> warnings) {
@@ -42,8 +39,7 @@ public class ChangementNomHandler extends AbstractChangementHandler {
 
 		final long noIndividu = evenement.getNoIndividu();
 
-		LOGGER.debug("Changement de nom de l'individu : " + noIndividu);
-		Audit.info(evenement.getNumeroEvenement(), "Changement de nom de l'individu : " + noIndividu);
+		Audit.info(evenement.getNumeroEvenement(), String.format("Changement de nom de l'individu : %d", noIndividu));
 
 		final PersonnePhysique pp = getTiersDAO().getPPByNumeroIndividu(noIndividu, true);
 		if (pp != null && !pp.isHabitant()) {

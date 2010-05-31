@@ -85,11 +85,11 @@ public class Ec_18000_04_Arrivee_ChgtNom_1_Scenario extends EvenementCivilScenar
 		traiteEvenements(id);
 	}
 	
-	@Check(id=2, descr="Vérifie que l'évènement est en erreur")
+	@Check(id=2, descr="Vérifie que l'événement est traité (la correction de nom sera prise en compte dans l'arrivée directement)")
 	public void check2() throws Exception {
 		List<EvenementCivilData> list = evtDAO.getAll();
 		for (EvenementCivilData evt : list) {
-			assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat(), "");
+			assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat(), "");
 		}
 	}
 	

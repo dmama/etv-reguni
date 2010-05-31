@@ -76,10 +76,10 @@ public class Ec_1000_04_NaissanceAndFiliationScenario extends EvenementCivilScen
 		traiteEvenements(id);
 	}
 
-	@Check(id=2, descr="Vérifie que l'événement est en erreur")
+	@Check(id=2, descr="Vérifie que l'événement est bien traité (aucun impact fiscal cependant)")
 	public void check2() {
-		// On check que l'evenement est en erreur
-		checkEtatEvtCivils(1, EtatEvenementCivil.EN_ERREUR);
+		// On check que l'evenement est passé à "traité"
+		checkEtatEvtCivils(1, EtatEvenementCivil.TRAITE);
 	}
 	
 	@Etape(id=3, descr="Envoi de l'événement de naissance")

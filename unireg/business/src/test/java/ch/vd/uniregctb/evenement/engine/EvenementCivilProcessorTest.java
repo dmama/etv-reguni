@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.evenement.engine;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -87,7 +88,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 	@Test
 	public void testEvenementsSansType() throws Exception {
 
-		saveEvenement(9000L, null, RegDate.get(2007, 10, 25), 983254L, null, 1010);
+		saveEvenement(9000L, null, RegDate.get(2007, 10, 25), 983254L, null, 1010, EtatEvenementCivil.A_TRAITER);
 
 		traiteEvenements();
 
@@ -109,7 +110,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 	@Test
 	public void testNumeroOfsInvalide() throws Exception {
 
-		saveEvenement(9000L, TypeEvenementCivil.EVENEMENT_TESTING, RegDate.get(2007, 10, 25), 983254L, null, 12345678);
+		saveEvenement(9000L, TypeEvenementCivil.EVENEMENT_TESTING, RegDate.get(2007, 10, 25), 983254L, null, 12345678, EtatEvenementCivil.A_TRAITER);
 
 		traiteEvenements();
 
@@ -134,7 +135,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 	@Test
 	public void testEvenementsSansIndividuPrincipal() throws Exception {
 
-		saveEvenement(9000L, TypeEvenementCivil.EVENEMENT_TESTING, RegDate.get(2007, 10, 25), null, null, 5402);
+		saveEvenement(9000L, TypeEvenementCivil.EVENEMENT_TESTING, RegDate.get(2007, 10, 25), null, null, 5402, EtatEvenementCivil.A_TRAITER);
 
 		traiteEvenements();
 
@@ -156,7 +157,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 	@Test
 	public void testEvenementsNaissance() throws Exception {
 
-		saveEvenement(9001L, TypeEvenementCivil.NAISSANCE, RegDate.get(2007, 10, 25), 983254L, null, 0);
+		saveEvenement(9001L, TypeEvenementCivil.NAISSANCE, RegDate.get(2007, 10, 25), 983254L, null, 0, EtatEvenementCivil.A_TRAITER);
 
 		traiteEvenements();
 
@@ -182,7 +183,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 	public void testEvenementsArriveeEnErreur() throws Exception {
 
 		// Le CTB lié a cet individu n'existe pas
-		saveEvenement(9002L, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, RegDate.get(2007, 10, 25), 34567L, null, 5402);
+		saveEvenement(9002L, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, RegDate.get(2007, 10, 25), 34567L, null, 5402, EtatEvenementCivil.A_TRAITER);
 
 		// Lancement du traitement des événements
 		evenementCivilProcessor.traiteEvenementCivil(9002L);
@@ -206,7 +207,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 	public void testEvenementsExceptionDansCheckCompleteness() throws Exception {
 
 		// L'evenement 123L throw une exception lors de la validation
-		saveEvenement(123L, TypeEvenementCivil.EVENEMENT_TESTING, RegDate.get(2007, 10, 25), 78912L, null, 5402);
+		saveEvenement(123L, TypeEvenementCivil.EVENEMENT_TESTING, RegDate.get(2007, 10, 25), 78912L, null, 5402, EtatEvenementCivil.A_TRAITER);
 
 		traiteEvenements();
 
@@ -228,7 +229,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 	@Test
 	public void testEvenementsErreursDansCheckCompleteness() throws Exception {
 
-		saveEvenement(124L, TypeEvenementCivil.EVENEMENT_TESTING, RegDate.get(2007, 10, 25), 78912L, null, 5402);
+		saveEvenement(124L, TypeEvenementCivil.EVENEMENT_TESTING, RegDate.get(2007, 10, 25), 78912L, null, 5402, EtatEvenementCivil.A_TRAITER);
 
 		traiteEvenements();
 
@@ -267,7 +268,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 			}
 		});
 
-		saveEvenement(125L, TypeEvenementCivil.EVENEMENT_TESTING, RegDate.get(2007, 10, 25), noInd1, noInd2, 5402);
+		saveEvenement(125L, TypeEvenementCivil.EVENEMENT_TESTING, RegDate.get(2007, 10, 25), noInd1, noInd2, 5402, EtatEvenementCivil.A_TRAITER);
 
 		traiteEvenements();
 
@@ -331,7 +332,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 	public void testEvenementsPasDeTiersPrincipal() throws Exception {
 
 		long noInd = 6789L;
-		saveEvenement(120L, TypeEvenementCivil.EVENEMENT_TESTING, RegDate.get(2007, 10, 25), noInd, null, 5402);
+		saveEvenement(120L, TypeEvenementCivil.EVENEMENT_TESTING, RegDate.get(2007, 10, 25), noInd, null, 5402, EtatEvenementCivil.A_TRAITER);
 
 		traiteEvenements();
 
@@ -366,7 +367,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 			}
 		});
 
-		saveEvenement(120L, TypeEvenementCivil.EVENEMENT_TESTING, RegDate.get(2007, 10, 25), noInd1, noInd2, 5402);
+		saveEvenement(120L, TypeEvenementCivil.EVENEMENT_TESTING, RegDate.get(2007, 10, 25), noInd1, noInd2, 5402, EtatEvenementCivil.A_TRAITER);
 
 		traiteEvenements();
 
@@ -396,7 +397,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 
 		setUpHabitant();
 		saveEvenement(9105L, TypeEvenementCivil.DEPART_COMMUNE, RegDate.get(2007, 10, 25), 34567L, null, MockCommune.Cossonay
-				.getNoOFS());
+				.getNoOFS(), EtatEvenementCivil.A_TRAITER);
 		traiteEvenements();
 
 		TransactionTemplate template = new TransactionTemplate(transactionManager);
@@ -431,7 +432,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 		historiqueIndividu.setSexe(Sexe.MASCULIN);
 
 		saveEvenement(9106L, TypeEvenementCivil.CHGT_SEXE, RegDate.get(2007, 10, 25), 34567L, null, MockCommune.Cossonay
-				.getNoOFS());
+				.getNoOFS(), EtatEvenementCivil.A_TRAITER);
 
 
 		traiteEvenements();
@@ -474,13 +475,9 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 
 		final long noIndividu = 34567L; // Sophie Dupuis
 
-		// Deux événements de changement de nom sur un individu non arrivée -> ils doivent passer en erreur
-		saveEvenement(9000L, TypeEvenementCivil.CHGT_CORREC_NOM_PRENOM, RegDate.get(2007, 10, 24), noIndividu, null, MockCommune.Lausanne
-				.getNoOFS());
-		saveEvenement(9001L, TypeEvenementCivil.CHGT_CORREC_NOM_PRENOM, RegDate.get(2007, 10, 23), noIndividu, null, MockCommune.Lausanne
-				.getNoOFS());
-
-		evenementCivilProcessor.traiteEvenementsCivils(null);
+		// Deux événements de changement de nom sur un individu sont déjà en erreur
+		saveEvenement(9000L, TypeEvenementCivil.CHGT_CORREC_NOM_PRENOM, RegDate.get(2007, 10, 24), noIndividu, null, MockCommune.Lausanne.getNoOFS(), EtatEvenementCivil.EN_ERREUR);
+		saveEvenement(9001L, TypeEvenementCivil.CHGT_CORREC_NOM_PRENOM, RegDate.get(2007, 10, 23), noIndividu, null, MockCommune.Lausanne.getNoOFS(), EtatEvenementCivil.EN_ERREUR);
 
 		doInTransaction(new TransactionCallback() {
 			public Object doInTransaction(TransactionStatus status) {
@@ -495,8 +492,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 		});
 
 		// Arrivée de l'événement d'arrivée -> ce dernier doit être traité et provoquer le retraitement des événements de changement de nom
-		saveEvenement(9002L, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HS, RegDate.get(1980, 11, 2), noIndividu, null, MockCommune.Lausanne
-				.getNoOFS());
+		saveEvenement(9002L, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HS, RegDate.get(1980, 11, 2), noIndividu, null, MockCommune.Lausanne.getNoOFS(), EtatEvenementCivil.A_TRAITER);
 
 		evenementCivilProcessor.traiteEvenementCivil(9002L);
 
@@ -527,7 +523,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 
 	// ********************************************************************
 
-	private void saveEvenement(final long id, final TypeEvenementCivil type, final RegDate date, final Long indPri, final Long indSec, final int ofs) throws Exception {
+	private void saveEvenement(final long id, final TypeEvenementCivil type, final RegDate date, final Long indPri, final Long indSec, final int ofs, final EtatEvenementCivil etat) throws Exception {
 
 		doInTransaction(new TransactionCallback() {
 			public Object doInTransaction(TransactionStatus status) {
@@ -535,7 +531,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 				evt.setId(id);
 				evt.setType(type);
 				evt.setDateEvenement(date);
-				evt.setEtat(EtatEvenementCivil.A_TRAITER);
+				evt.setEtat(etat);
 				if (indPri != null) {
 					evt.setNumeroIndividuPrincipal(indPri);
 					evt.setHabitantPrincipalId(tiersDAO.getNumeroPPByNumeroIndividu(indPri, true));
@@ -546,6 +542,9 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 				}
 				evt.setNumeroOfsCommuneAnnonce(ofs);
 				evt = evenementCivilDAO.save(evt);
+				if (etat == EtatEvenementCivil.EN_ERREUR) {
+					evt.addErrors(Arrays.asList(new EvenementCivilErreur("Erreur de test")));
+				}
 				return evt;
 			}
 		});

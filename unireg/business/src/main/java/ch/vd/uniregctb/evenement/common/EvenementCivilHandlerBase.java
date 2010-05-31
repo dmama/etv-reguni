@@ -161,7 +161,7 @@ public abstract class EvenementCivilHandlerBase implements EvenementCivilHandler
 		/*
 		 * Cas particulier de l'arrivée ou de la naissance : le ou les contribuables ne sont en principe pas présents.
 		 */
-		if (evenement.isContribuablePresentBefore()) {
+		if (isContribuableObligatoirementConnuAvantTraitement(evenement)) {
 			/*
 			 * Il n’existe pas de tiers contribuable correspondant à l’individu, assujetti ou non (mineur, conjoint) correspondant à
 			 * l’individu.
@@ -178,6 +178,10 @@ public abstract class EvenementCivilHandlerBase implements EvenementCivilHandler
 				erreurs.add(new EvenementCivilErreur("Aucun tiers contribuable ne correspond au numero d'individu du conjoint " + evenement.getNoIndividuConjoint()));
 			}
 		}
+	}
+
+	protected boolean isContribuableObligatoirementConnuAvantTraitement(EvenementCivil evenement) {
+		return evenement.isContribuablePresentBefore();
 	}
 
 	/**

@@ -4,7 +4,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,25 +19,18 @@ import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 public class CorrectionOrigineHandler extends AbstractChangementHandler {
 
-	private static final Logger LOGGER = Logger.getLogger(CorrectionOrigineHandler.class);
-
 	@Override
 	public void checkCompleteness(EvenementCivil target, List<EvenementCivilErreur> erreurs, List<EvenementCivilErreur> warnings) {
-
 	}
 
 	@Override
 	protected void validateSpecific(EvenementCivil target, List<EvenementCivilErreur> erreurs, List<EvenementCivilErreur> warnings) {
-
 	}
 
 	@Override
 	@Transactional(propagation = Propagation.MANDATORY, rollbackFor = Throwable.class)
 	public Pair<PersonnePhysique,PersonnePhysique> handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
-
-		LOGGER.debug("Traitement correction de origine de l'individu : " + evenement.getNoIndividu() );
-		Audit.info(evenement.getNumeroEvenement(), "Traitement correction de origine de l'individu : " + evenement.getNoIndividu());
-
+		Audit.info(evenement.getNumeroEvenement(), String.format("Traitement correction de origine de l'individu : %d", evenement.getNoIndividu()));
 		return super.handle(evenement, warnings);
 	}
 
@@ -49,7 +41,7 @@ public class CorrectionOrigineHandler extends AbstractChangementHandler {
 
 	@Override
 	protected Set<TypeEvenementCivil> getHandledType() {
-		Set<TypeEvenementCivil> types = new HashSet<TypeEvenementCivil>();
+		final Set<TypeEvenementCivil> types = new HashSet<TypeEvenementCivil>();
 		types.add(TypeEvenementCivil.CORREC_ORIGINE);
 		return types;
 	}
