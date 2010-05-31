@@ -77,8 +77,8 @@ testprop.db2.schema=CIIA1
 testprop.hibernate.hbm2ddl.mode=update
 
 # Misc
-testprop.unireg.deploymenturl=/unireg
-testprop.uniregws.deploymenturl=/unireg-ws
+testprop.unireg.deploymenturl=/unireg/web
+testprop.uniregws.deploymenturl=/unireg/ws
 testprop.indexer.globalIndexPath=/projets/tmp/unireg-index-unittests
 testprop.documents.repository=/projets/tmp/unireg-documents-unittests
 #testprop.indexer.globalIndexPath=c:\projets\tmp\unireg-index-unittests

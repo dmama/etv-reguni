@@ -355,7 +355,7 @@
 			        <artifactId>tomcat-maven-plugin</artifactId>
 			        <version>1.0-beta-1</version>
 			        <configuration>
-			        	<path>/unireg</path>
+			        	<path>/unireg/web</path>
 			        	<username>tomcat</username>
 			        	<password>tomcat</password>
 			        </configuration>

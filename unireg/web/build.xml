@@ -99,7 +99,7 @@
 		<!-- END_LVERSION -->
 
 		<!-- BEGIN_LVERSION -->
-		<copy overwrite="true" verbose="true" file="target/uniregctb-web-4.3.1-SNAPSHOT.war" tofile="/opt/apache-tomcat-6.0.16/webapps/unireg.war" />
+		<copy overwrite="true" verbose="true" file="target/uniregctb-web-4.3.1-SNAPSHOT.war" tofile="/opt/apache-tomcat-6.0.16/webapps/unireg#web.war" />
 		<!-- END_LVERSION -->
 
 	</target>
