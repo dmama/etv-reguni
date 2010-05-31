@@ -548,7 +548,7 @@
 			        <artifactId>tomcat-maven-plugin</artifactId>
 			        <version>1.0-beta-1</version>
 			        <configuration>
-			        	<path>/unireg-ws</path>
+			        	<path>/unireg/ws</path>
 			        	<username>tomcat</username>
 			        	<password>tomcat</password>
 			        </configuration>
