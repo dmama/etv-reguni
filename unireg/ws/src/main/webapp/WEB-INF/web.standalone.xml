@@ -59,7 +59,7 @@
 
 	<servlet-mapping>
 		<servlet-name>CXFServlet</servlet-name>
-		<url-pattern>/ws/*</url-pattern>
+		<url-pattern>/*</url-pattern>
 	</servlet-mapping>
 	
 	<!-- Sécurisation des web-services -->
@@ -67,7 +67,7 @@
 	<security-constraint>
 		<web-resource-collection>
 			<web-resource-name>Web-service Tiers v1</web-resource-name>
-			<url-pattern>/ws/tiers</url-pattern>
+			<url-pattern>/tiers</url-pattern>
 			<http-method>GET</http-method>
 			<http-method>POST</http-method>
 		</web-resource-collection>
@@ -79,7 +79,7 @@
 	<security-constraint>
 		<web-resource-collection>
 			<web-resource-name>Web-service Tiers v2</web-resource-name>
-			<url-pattern>/ws/tiers2</url-pattern>
+			<url-pattern>/tiers2</url-pattern>
 			<http-method>GET</http-method>
 			<http-method>POST</http-method>
 		</web-resource-collection>
@@ -91,7 +91,7 @@
 	<security-constraint>
 		<web-resource-collection>
 			<web-resource-name>Web-service Securite</web-resource-name>
-			<url-pattern>/ws/securite</url-pattern>
+			<url-pattern>/securite</url-pattern>
 			<http-method>GET</http-method>
 			<http-method>POST</http-method>
 		</web-resource-collection>
@@ -103,7 +103,7 @@
 	<security-constraint>
 		<web-resource-collection>
 			<web-resource-name>Web-service fiscal</web-resource-name>
-			<url-pattern>/ws/fiscal</url-pattern>
+			<url-pattern>/fiscal</url-pattern>
 			<http-method>GET</http-method>
 			<http-method>POST</http-method>
 		</web-resource-collection>
