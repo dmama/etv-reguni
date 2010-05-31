@@ -980,7 +980,7 @@ public class ArriveeHandler extends EvenementCivilHandlerBase {
 					getService().addTiersToCouple(menageCommun, habitantConjoint, dateEvenement, null);
 				}
 
-				Audit.info(evenementId, "Les arrivants ont appartenu au ménage commun [" + menageCommun.getNumero() + "].");
+				Audit.info(evenementId, String.format("Les arrivants ont appartenu au ménage commun [%d].", menageCommun.getNumero()));
 			}
 			else {
 				/*
@@ -989,8 +989,7 @@ public class ArriveeHandler extends EvenementCivilHandlerBase {
 				 */
 				final EnsembleTiersCouple ensemble = getService().createEnsembleTiersCouple(habitantPrincipal, habitantConjoint, dateDebutMenage, null);
 				menageCommun = ensemble.getMenage();
-				Audit.info(evenementId, "Un nouveau ménage commun [" + menageCommun.getNumero()
-						+ "] a été créé pour l'arrivée des nouveaux arrivants");
+				Audit.info(evenementId, String.format("Un nouveau ménage commun [%d] a été créé pour l'arrivée des nouveaux arrivants", menageCommun.getNumero()));
 			}
 		}
 		else if (menageCommunHabitantPrincipal != null && menageCommunHabitantConjoint != null) {
@@ -1003,7 +1002,7 @@ public class ArriveeHandler extends EvenementCivilHandlerBase {
 			Assert.isTrue(habitantConjoint == null
 					|| habitantPrincipal == getAutrePersonneDuMenage(menageCommunHabitantConjoint, habitantConjoint));
 			menageCommun = menageCommunHabitantPrincipal;
-			Audit.info(evenementId, "Le ménage commun [" + menageCommun.getNumero() + "] des nouveaux arrivants existe déjà.");
+			Audit.info(evenementId, String.format("Le ménage commun [%d] des nouveaux arrivants existe déjà.", menageCommun.getNumero()));
 		}
 		else {
 			if (menageCommunHabitantPrincipal != null) {
@@ -1020,14 +1019,14 @@ public class ArriveeHandler extends EvenementCivilHandlerBase {
 				if (autrePersonne != null) {
 					if (habitantConjoint == null) {
 						// [UNIREG-1184] marié seul dans le civil
-						throw new EvenementCivilHandlerException("L'individu principal [" + habitantPrincipal.getNumero()
-								+ "] est en ménage commun avec une personne [" + autrePersonne.getNumero()
-								+ "] dans le fiscal alors qu'il est marié seul dans le civil");
+						throw new EvenementCivilHandlerException(
+								String.format("L'individu principal [%d] est en ménage commun avec une personne [%d] dans le fiscal alors qu'il est marié seul dans le civil",
+										habitantPrincipal.getNumero(), autrePersonne.getNumero()));
 					}
 					else {
-						throw new EvenementCivilHandlerException("L'individu principal [" + habitantPrincipal.getNumero()
-								+ "] est en ménage commun avec une personne [" + autrePersonne.getNumero() + "] autre que son conjoint ["
-								+ habitantConjoint.getNumero() + "]");
+						throw new EvenementCivilHandlerException(
+								String.format("L'individu principal [%d] est en ménage commun avec une personne [%d] autre que son conjoint [%d]",
+										habitantPrincipal.getNumero(), autrePersonne.getNumero(), habitantConjoint.getNumero()));
 					}
 				}
 
@@ -1038,8 +1037,7 @@ public class ArriveeHandler extends EvenementCivilHandlerBase {
 					final RapportEntreTiers rapport = getService().addTiersToCouple(menage, habitantConjoint, dateDebutMenage, null);
 
 					menageCommun = (MenageCommun) getTiersDAO().get(rapport.getObjetId());
-					Audit.info(evenementId, "L'arrivant [" + habitantConjoint.getNumero() + "] a été attaché au ménage commun ["
-							+ menageCommun.getNumero() + "] déjà existant");
+					Audit.info(evenementId, String.format("L'arrivant [%d] a été attaché au ménage commun [%d] déjà existant", habitantConjoint.getNumero(), menageCommun.getNumero()));
 				}
 				else {
 					menageCommun = menage;
@@ -1061,19 +1059,23 @@ public class ArriveeHandler extends EvenementCivilHandlerBase {
 				 */
 				final PersonnePhysique autrePersonne = getAutrePersonneDuMenage(menage, habitantConjoint);
 				if (autrePersonne != null) {
-					throw new EvenementCivilHandlerException("L'individu conjoint [" + habitantConjoint
-							+ "] est en ménage commun avec une personne [" + autrePersonne + "] autre que son individu principal ["
-							+ habitantPrincipal + "]");
+					final String message = String.format("L'individu conjoint [%s] est en ménage commun avec une personne [%s] autre que son individu principal[%s]",
+														habitantConjoint, autrePersonne, habitantPrincipal);
+					throw new EvenementCivilHandlerException(message);
 				}
 
 				/*
 				 * On ajoute le rapport entre l'habitant principal et le ménage existant
+				 * [UNIREG-1677] La date de début du nouveau rapport entre tiers doit être reprise sur le rapport existant
 				 */
-				final RapportEntreTiers rapport = getService().addTiersToCouple(menage, habitantPrincipal, dateDebutMenage, null);
+				final RapportEntreTiers rapportExistant = habitantConjoint.getRapportSujetValidAt(null, TypeRapportEntreTiers.APPARTENANCE_MENAGE);
+				Assert.notNull(rapportExistant);
+
+				final RapportEntreTiers rapport = getService().addTiersToCouple(menage, habitantPrincipal, rapportExistant.getDateDebut(), null);
 				menageCommun = (MenageCommun) getTiersDAO().get(rapport.getObjetId());
 
-				Audit.info(evenementId, "L'arrivant [" + habitantPrincipal.getNumero() + "] a été attaché au ménage commun ["
-						+ menageCommun.getNumero() + "] déjà existant");
+				final String auditString = String.format("L'arrivant [%d] a été rattaché au ménage commun [%d] dèjà existant", habitantPrincipal.getNumero(), menageCommun.getNumero());
+				Audit.info(evenementId, auditString);
 			}
 		}
 		return menageCommun;
@@ -1123,8 +1125,8 @@ public class ArriveeHandler extends EvenementCivilHandlerBase {
 
 				if (!rapportObjet.getSujetId().equals(personne.getId())) {
 					if (appartenanceAutrePersonne != null) {
-						throw new EvenementCivilHandlerException("Plus d'un conjoint trouvé pour la ménage commun = ["
-								+ menageCommun.toString() + "]");
+						final String message = String.format("Plus d'un conjoint trouvé pour le ménage commun [%s]", menageCommun);
+						throw new EvenementCivilHandlerException(message);
 					}
 					appartenanceAutrePersonne = rapportObjet;
 				}

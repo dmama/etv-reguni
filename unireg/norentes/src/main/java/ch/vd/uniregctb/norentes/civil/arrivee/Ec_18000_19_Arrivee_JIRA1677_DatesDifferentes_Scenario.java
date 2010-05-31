@@ -140,13 +140,11 @@ public class Ec_18000_19_Arrivee_JIRA1677_DatesDifferentes_Scenario extends Even
 		assertNotNull(alex, "L'habitante Alexandra n'existe plus ?");
 		assertTrue(alex.isHabitant(), "Alexandra devrait être habitante!");
 
-		final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(olivier, dateMariage);
-		assertNotNull(couple, "Pas de couple trouvé à la date de mariage");
+		final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(olivier, dateArriveeMonsieur);
+		assertNotNull(couple, "Pas de couple trouvé à la date d'arrivée de monsieur");
 		assertNotNull(couple.getMenage(), "Pas de ménage dans le couple?");
-
-		// comme la date du rapport entre tiers entre madame et le couple était fausse et qu'on ne la rattrappe pas
-		// madame n'appartient pas au couple à la date du mariage, mais seulement plus tard
-		assertNull(couple.getConjoint(), "Le couple est certes complet, mais madame ne doit pas encore en faire partie (les dates ne coïncident pas)");
+		assertNotNull(couple.getConjoint(), "Le couple n'a pas été reconstitué ?");
+		assertEquals(alex.getNumero(), couple.getConjoint().getNumero(), "Le couple n'a pas été reconstitué entre les bons contribuable");
 
 		final EvenementCivilData evenementOlivier = getEvenementCivilRegoupeForHabitant(olivier.getNumero());
 		assertNotNull(evenementOlivier, "Où est l'événement civil d'arrivée d'Olivier ?");
@@ -159,14 +157,16 @@ public class Ec_18000_19_Arrivee_JIRA1677_DatesDifferentes_Scenario extends Even
 		assertNotNull(ffp, "Le for du ménage commun est attendu au " + dateDebutForExistantSurCouple);
 		assertEquals(dateDebutForExistantSurCouple, ffp.getDateDebut(), "Mauvaise date de début pour le for principal");
 
-		final AppartenanceMenage amOlivier = (AppartenanceMenage) olivier.getRapportSujetValidAt(dateMariage, TypeRapportEntreTiers.APPARTENANCE_MENAGE);
-		assertNotNull(amOlivier, "Pas de rapport d'appartenance ménage à la date du mariage");
-		assertEquals(dateMariage, amOlivier.getDateDebut(), "Mauvaise date de début pour le rapport d'appartenance ménage");
-		assertEquals(mc.getNumero(), amOlivier.getObjetId(), "Mauvais ménage commun de l'autre côté du rapport d'appartenance ménage");
-
 		final AppartenanceMenage amAlex = (AppartenanceMenage) alex.getRapportSujetValidAt(dateArriveeMadame, TypeRapportEntreTiers.APPARTENANCE_MENAGE);
 		assertNotNull(amAlex, "Pas de rapport d'appartenance ménage à la date d'arrivée");
 		assertEquals(dateArriveeMadame, amAlex.getDateDebut(), "Mauvaise date de début pour le rapport d'appartenance ménage");
 		assertEquals(mc.getNumero(), amAlex.getObjetId(), "Mauvais ménage commun de l'autre côté du rapport d'appartenance ménage");
+
+		// comme il s'agit d'un rajout à un marié seul, la date du début du rapport entre tiers créé pour monsieur
+		// doit être la même que celle utilisée pour madame, même si ce n'est pas la date du mariage
+		final AppartenanceMenage amOlivier = (AppartenanceMenage) olivier.getRapportSujetValidAt(dateArriveeMonsieur, TypeRapportEntreTiers.APPARTENANCE_MENAGE);
+		assertNotNull(amOlivier, "Pas de rapport d'appartenance ménage à la date d'arrivée");
+		assertEquals(dateArriveeMadame, amOlivier.getDateDebut(), "Mauvaise date de début pour le rapport d'appartenance ménage");
+		assertEquals(mc.getNumero(), amOlivier.getObjetId(), "Mauvais ménage commun de l'autre côté du rapport d'appartenance ménage");
 	}
 }
