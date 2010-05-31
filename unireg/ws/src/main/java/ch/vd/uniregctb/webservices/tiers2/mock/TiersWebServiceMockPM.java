@@ -6,6 +6,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.webservices.tiers2.TiersWebService;
 import ch.vd.uniregctb.webservices.tiers2.data.*;
@@ -49,6 +50,8 @@ public class TiersWebServiceMockPM implements TiersWebService, InitializingBean 
 	private String siegesPMCsvFile;
 	private String evenementsPMCsvFile;
 
+	private ServiceInfrastructureService serviceInfra;
+
 	/**
 	 * Toutes les personnes morales chargées à partir des fichiers CSV
 	 */
@@ -61,6 +64,10 @@ public class TiersWebServiceMockPM implements TiersWebService, InitializingBean 
 
 	public void setTarget(TiersWebService target) {
 		this.target = target;
+	}
+
+	public void setServiceInfra(ServiceInfrastructureService serviceInfra) {
+		this.serviceInfra = serviceInfra;
 	}
 
 	public void setAdressesPMCsvFile(String adressesPMCsvFile) {
@@ -483,7 +490,8 @@ public class TiersWebServiceMockPM implements TiersWebService, InitializingBean 
 			adresse.addNpaEtLocalite(npaLocalite);
 
 			if (adresseFiscale.pays != null) {
-				adresse.addPays(adresseFiscale.pays);
+				final Integer noOfsPays = (adresseFiscale.noPays == null ? ServiceInfrastructureService.noOfsSuisse : adresseFiscale.noPays);
+				adresse.addPays(adresseFiscale.pays, serviceInfra.getTypeAffranchissement(noOfsPays));
 			}
 		}
 
@@ -903,9 +911,13 @@ public class TiersWebServiceMockPM implements TiersWebService, InitializingBean 
 				}
 
 				// le pays
-				final Long noOfsPays = string2Long(row[14]);
+				final Integer noOfsPays = string2Integer(row[14]);
 				if (noOfsPays != null) {
 					adresse.pays = string2String(row[15]);
+					adresse.noPays = noOfsPays;
+				}
+				else {
+					adresse.noPays = ServiceInfrastructureService.noOfsSuisse;
 				}
 
 				final Long idPM = string2Long(row[16]);

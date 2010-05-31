@@ -20,6 +20,7 @@ import ch.vd.uniregctb.webservices.tiers2.data.Sexe;
 import ch.vd.uniregctb.webservices.tiers2.data.TarifImpotSource;
 import ch.vd.uniregctb.webservices.tiers2.data.TiersPart;
 import ch.vd.uniregctb.webservices.tiers2.data.TypeActivite;
+import ch.vd.uniregctb.webservices.tiers2.data.TypeAffranchissement;
 import ch.vd.uniregctb.webservices.tiers2.data.TypeDocument;
 import ch.vd.uniregctb.webservices.tiers2.data.TypeRecherche;
 import ch.vd.uniregctb.webservices.tiers2.data.ForFiscal.MotifFor;
@@ -275,5 +276,15 @@ public abstract class EnumHelper {
 		final Parts part = Parts.fromValue(p.name());
 		Assert.notNull(part);
 		return part;
+	}
+
+	public static TypeAffranchissement coreToWeb(ch.vd.uniregctb.interfaces.model.TypeAffranchissement t) {
+		if (t == null) {
+			return null;
+		}
+
+		final TypeAffranchissement type = TypeAffranchissement.fromValue(t.name());
+		Assert.notNull(type);
+		return type;
 	}
 }

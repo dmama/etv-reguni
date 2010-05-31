@@ -5,6 +5,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
+import ch.vd.uniregctb.webservices.tiers2.impl.EnumHelper;
+
 /**
  * Représente les 6 lignes d'adresses d'un tiers formattées selon les recommandations de la poste suisse.
  *
@@ -12,7 +14,7 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "AdresseEnvoi", propOrder = {
-		"ligne1", "ligne2", "ligne3", "ligne4", "ligne5", "ligne6", "isSuisse", "salutations", "formuleAppel"
+		"ligne1", "ligne2", "ligne3", "ligne4", "ligne5", "ligne6", "isSuisse", "salutations", "formuleAppel", "typeAffranchissement"
 })
 public class AdresseEnvoi {
 
@@ -36,6 +38,10 @@ public class AdresseEnvoi {
 
 	@XmlElement(required = true)
 	public boolean isSuisse;
+
+	/** Le type d'affranchissement demandé par la poste pour envoyer un courrier à cette adresse. */
+	@XmlElement(required = true)
+	public TypeAffranchissement typeAffranchissement;
 
 	/**
 	 * Les salutations selon les us et coutumes de l'ACI. Exemples :
@@ -75,5 +81,6 @@ public class AdresseEnvoi {
 		this.isSuisse = adresse.isSuisse();
 		this.salutations = adresse.getSalutations();
 		this.formuleAppel = adresse.getFormuleAppel();
+		this.typeAffranchissement = EnumHelper.coreToWeb(adresse.getTypeAffranchissement());
 	}
 }

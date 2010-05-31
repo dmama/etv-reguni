@@ -9,6 +9,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -44,6 +45,7 @@ import ch.vd.uniregctb.webservices.tiers2.TiersInfo;
 import ch.vd.uniregctb.webservices.tiers2.TiersInfoArray;
 import ch.vd.uniregctb.webservices.tiers2.TiersPart;
 import ch.vd.uniregctb.webservices.tiers2.TypeActivite;
+import ch.vd.uniregctb.webservices.tiers2.TypeAffranchissement;
 import ch.vd.uniregctb.webservices.tiers2.TypeAutoriteFiscale;
 import ch.vd.uniregctb.webservices.tiers2.TypeRapportEntreTiers;
 import ch.vd.uniregctb.webservices.tiers2.TypeRecherche;
@@ -681,6 +683,7 @@ public class TiersServiceWebTAOISTest extends AbstractTiersServiceWebTest {
 		assertEquals("Avenue de Beaulieu 12", adresseEnvoi.getLigne2());
 		assertEquals("1004 Lausanne", adresseEnvoi.getLigne3());
 		assertNull(adresseEnvoi.getLigne4());
+		assertEquals(TypeAffranchissement.SUISSE, adresseEnvoi.getTypeAffranchissement());
 	}
 
 	@Test
@@ -1018,6 +1021,7 @@ public class TiersServiceWebTAOISTest extends AbstractTiersServiceWebTest {
 		assertEquals("1003 Lausanne", adresseEnvoi.getLigne3());
 		assertNull(adresseEnvoi.getLigne5());
 		assertNull(adresseEnvoi.getLigne6());
+		assertEquals(TypeAffranchissement.SUISSE, adresseEnvoi.getTypeAffranchissement());
 
 		// par contre, la formule d'appel est renseignée
 		assertEquals("Madame, Monsieur", adresseEnvoi.getFormuleAppel());

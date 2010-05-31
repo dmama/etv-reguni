@@ -28,6 +28,7 @@ import ch.vd.uniregctb.interfaces.model.CommuneSimple;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.Pays;
 import ch.vd.uniregctb.interfaces.model.PersonneMorale;
+import ch.vd.uniregctb.interfaces.model.TypeAffranchissement;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleService;
@@ -897,7 +898,8 @@ public class AdresseServiceImpl implements AdresseService {
 
 		final String nomPays = buildPays(adresse, false);
 		if (!StringUtils.isEmpty(nomPays)) {
-			adresseEnvoi.addPays(nomPays);
+			final TypeAffranchissement typeAffranchissement = getTypeAffranchissement(adresse);
+			adresseEnvoi.addPays(nomPays, typeAffranchissement);
 		}
 	}
 
@@ -2513,5 +2515,20 @@ public class AdresseServiceImpl implements AdresseService {
 		}
 
 		return callDepth+1;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public TypeAffranchissement getTypeAffranchissement(AdresseGenerique adresse) {
+		Assert.notNull(adresse);
+
+		final Integer noPays = adresse.getNoOfsPays();
+		if (noPays == null) {
+			// adresse suisse
+			return TypeAffranchissement.SUISSE;
+		}
+
+		return serviceInfra.getTypeAffranchissement(noPays);
 	}
 }

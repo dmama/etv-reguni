@@ -17,6 +17,7 @@ import ch.vd.uniregctb.interfaces.model.Localite;
 import ch.vd.uniregctb.interfaces.model.OfficeImpot;
 import ch.vd.uniregctb.interfaces.model.Pays;
 import ch.vd.uniregctb.interfaces.model.Rue;
+import ch.vd.uniregctb.interfaces.model.TypeAffranchissement;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 
@@ -249,4 +250,7 @@ public class ProxyServiceInfrastructureService implements ServiceInfrastructureS
 		return target.getLocaliteByNPA(npa);
 	}
 
+	public TypeAffranchissement getTypeAffranchissement(int noOfsPays) {
+		return target.getTypeAffranchissement(noOfsPays);
+	}
 }

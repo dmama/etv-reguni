@@ -43,6 +43,7 @@
 	<!-- Mock du Web-service PM -->
 	<bean id="tiersService2Mock" class="ch.vd.uniregctb.webservices.tiers2.mock.TiersWebServiceMockPM">
 		<property name="target" ref="tiersService2Bean" />
+		<property name="serviceInfra" ref="serviceInfrastructureService" />
 		<property name="adressesPMCsvFile" value="classpath:mock/adresses_entreprises.csv" />
 		<property name="assujettissementsPMCsvFile" value="classpath:mock/assujettissements_entreprises.csv" />
 		<property name="capitauxPMCsvFile" value="classpath:mock/capitaux_entreprises.csv" />

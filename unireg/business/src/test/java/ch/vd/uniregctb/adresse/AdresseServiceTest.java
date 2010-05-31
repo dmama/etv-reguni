@@ -5,6 +5,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.pm.model.EnumTypeAdresseEntreprise;
 import ch.vd.uniregctb.adresse.AdresseGenerique.Source;
 import ch.vd.uniregctb.common.BusinessTest;
+import ch.vd.uniregctb.interfaces.model.TypeAffranchissement;
 import ch.vd.uniregctb.interfaces.model.mock.*;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
@@ -5021,5 +5022,23 @@ public class AdresseServiceTest extends BusinessTest {
 		assertAdressesEquals(adresses.representation, adresseService.getAdresseFiscale(tiers, TypeAdresseFiscale.REPRESENTATION, date, false));
 		assertAdressesEquals(adresses.poursuite, adresseService.getAdresseFiscale(tiers, TypeAdresseFiscale.POURSUITE, date, false));
 		assertAdressesEquals(adresses.domicile, adresseService.getAdresseFiscale(tiers, TypeAdresseFiscale.DOMICILE, date, false));
+	}
+
+	@Test
+	public void testGetTypeAffranchissement() throws Exception {
+
+		final PersonnePhysique jean = addNonHabitant("Jean", "Lavanchy", date(1967, 5, 12), Sexe.MASCULIN);
+		addAdresseSuisse(jean, TypeAdresseTiers.REPRESENTATION, date(2000, 1, 1), null, MockRue.Chamblon.GrandRue);
+		addAdresseEtrangere(jean, TypeAdresseTiers.DOMICILE, date(2000, 1, 1), null, "Grand-Rue 23", "23000 Ciboulette", MockPays.France);
+		addAdresseEtrangere(jean, TypeAdresseTiers.COURRIER, date(2000, 1, 1), null, "Rue de la poudre de merlin-pinpin", "4444 Bogotta", MockPays.Colombie);
+
+		final AdressesFiscales adresses = adresseService.getAdressesFiscales(jean, null, true);
+		final AdresseGenerique adresseSuisse = adresses.representation;
+		final AdresseGenerique adresseFrance = adresses.domicile;
+		final AdresseGenerique adresseColombie = adresses.courrier;
+
+		assertEquals(TypeAffranchissement.SUISSE, adresseService.getTypeAffranchissement(adresseSuisse));
+		assertEquals(TypeAffranchissement.EUROPE, adresseService.getTypeAffranchissement(adresseFrance));
+		assertEquals(TypeAffranchissement.MONDE, adresseService.getTypeAffranchissement(adresseColombie));
 	}
 }

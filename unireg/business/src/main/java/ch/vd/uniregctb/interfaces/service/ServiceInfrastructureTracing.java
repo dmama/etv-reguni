@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.interfaces.model.TypeAffranchissement;
 import ch.vd.uniregctb.stats.StatsService;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -702,6 +703,19 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 		long time = tracing.start();
 		try {
 			result = target.getLocaliteByNPA(npa);
+		}
+		finally {
+			tracing.end(time);
+		}
+
+		return result;
+	}
+
+	public TypeAffranchissement getTypeAffranchissement(int noOfsPays) {
+		TypeAffranchissement result;
+		long time = tracing.start();
+		try {
+			result = target.getTypeAffranchissement(noOfsPays);
 		}
 		finally {
 			tracing.end(time);

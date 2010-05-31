@@ -474,6 +474,7 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 		assertNull(adresseEnvoi.getLigne5());
 		assertNull(adresseEnvoi.getLigne6());
 		assertTrue(adresseEnvoi.isIsSuisse());
+		assertEquals(TypeAffranchissement.SUISSE, adresseEnvoi.getTypeAffranchissement());
 	}
 
 	/**
@@ -524,6 +525,7 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 		assertNull(adresseEnvoi.getLigne5());
 		assertNull(adresseEnvoi.getLigne6());
 		assertTrue(adresseEnvoi.isIsSuisse());
+		assertEquals(TypeAffranchissement.SUISSE, adresseEnvoi.getTypeAffranchissement());
 	}
 
 	/**
@@ -553,7 +555,9 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 		assertNull(adresseEnvoi.getLigne5());
 		assertNull(adresseEnvoi.getLigne6());
 		assertTrue(adresseEnvoi.isIsSuisse());
+		assertEquals(TypeAffranchissement.SUISSE, adresseEnvoi.getTypeAffranchissement());
 	}
+
 	@Test
 	public void testFournirAdresseContentieuxPM() throws Exception {
 
@@ -599,6 +603,7 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 		assertNull(adresseDomicileFormattee.getLigne5());
 		assertNull(adresseDomicileFormattee.getLigne6());
 		assertTrue(adresseDomicileFormattee.isIsSuisse());
+		assertEquals(TypeAffranchissement.SUISSE, adresseDomicileFormattee.getTypeAffranchissement());
 
 		// Récupération des adresses de poursuite
 
@@ -626,6 +631,7 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 		assertNull(adressePoursuiteFormattee.getLigne5());
 		assertNull(adressePoursuiteFormattee.getLigne6());
 		assertTrue(adressePoursuiteFormattee.isIsSuisse());
+		assertEquals(TypeAffranchissement.SUISSE, adressePoursuiteFormattee.getTypeAffranchissement());
 
 		// Unireg n'est pas en mesure de déterminer l'adresse de l'OP. Ce travail est de la responsabilité du service infastructure.
 

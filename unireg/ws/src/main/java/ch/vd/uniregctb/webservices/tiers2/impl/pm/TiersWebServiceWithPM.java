@@ -7,6 +7,7 @@ import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.interfaces.model.*;
 import ch.vd.uniregctb.interfaces.model.Etablissement;
+import ch.vd.uniregctb.interfaces.model.TypeAffranchissement;
 import ch.vd.uniregctb.interfaces.service.PartPM;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -791,7 +792,14 @@ public class TiersWebServiceWithPM implements TiersWebService {
 		adresse.numeroPostal = a.getNumeroPostal();
 		adresse.localite = a.getLocaliteAbregeMinuscule();
 		adresse.noOrdrePostal = a.getNumeroOrdrePostal();
-		adresse.pays = (a.getPays() == null ? null : a.getPays().getNomMinuscule());
+		if (a.getPays() == null) {
+			adresse.pays = null;
+			adresse.noPays = ServiceInfrastructureService.noOfsSuisse;
+		}
+		else {
+			adresse.pays = a.getPays().getNomMinuscule();
+			adresse.noPays = a.getPays().getNoOFS();
+		}
 		return adresse;
 	}
 
@@ -880,7 +888,8 @@ public class TiersWebServiceWithPM implements TiersWebService {
 			adresse.addNpaEtLocalite(npaLocalite);
 
 			if (adresseFiscale.pays != null) {
-				adresse.addPays(adresseFiscale.pays);
+				final TypeAffranchissement typeAffranchissement = serviceInfra.getTypeAffranchissement(adresseFiscale.noPays);
+				adresse.addPays(adresseFiscale.pays, typeAffranchissement);
 			}
 		}
 

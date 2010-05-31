@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import ch.vd.uniregctb.interfaces.model.TypeAffranchissement;
 import ch.vd.uniregctb.type.FormulePolitesse;
 
 /**
@@ -21,6 +22,7 @@ public class AdresseEnvoiDetaillee extends AdresseEnvoi {
 	private String casePostale;
 	private String npaEtLocalite;
 	private String pays;
+	private TypeAffranchissement typeAffranchissement = TypeAffranchissement.SUISSE;
 	private AdresseGenerique.Source source;
 
 	public AdresseEnvoiDetaillee(AdresseGenerique.Source source) {
@@ -103,13 +105,15 @@ public class AdresseEnvoiDetaillee extends AdresseEnvoi {
 		addLine(ligne, optionalite);
 	}
 
-	public void addPays(String ligne) {
+	public void addPays(String ligne, TypeAffranchissement typeAffranchissement) {
 		this.pays = ligne;
+		this.typeAffranchissement = typeAffranchissement;
 		addLine(ligne);
 	}
 
-	public void addPays(String ligne, int optionalite) {
+	public void addPays(String ligne, TypeAffranchissement typeAffranchissement, int optionalite) {
 		this.pays = ligne;
+		this.typeAffranchissement = typeAffranchissement;
 		addLine(ligne, optionalite);
 	}
 
@@ -172,6 +176,10 @@ public class AdresseEnvoiDetaillee extends AdresseEnvoi {
 
 	public String getPays() {
 		return pays;
+	}
+
+	public TypeAffranchissement getTypeAffranchissement() {
+		return typeAffranchissement;
 	}
 
 	/**

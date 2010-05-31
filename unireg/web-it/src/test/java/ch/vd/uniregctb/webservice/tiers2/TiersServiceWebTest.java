@@ -290,6 +290,7 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 		assertNull(adresse.getLigne5());
 		assertNull(adresse.getLigne6());
 		assertTrue(adresse.isIsSuisse());
+		assertEquals(TypeAffranchissement.SUISSE, adresse.getTypeAffranchissement());
 		assertEquals("Madame", adresse.getSalutations());
 		assertEquals("Madame", adresse.getFormuleAppel());
 	}
@@ -320,6 +321,7 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 		assertNull(adresse.getLigne5());
 		assertNull(adresse.getLigne6());
 		assertTrue(adresse.isIsSuisse());
+		assertEquals(TypeAffranchissement.SUISSE, adresse.getTypeAffranchissement());
 		assertEquals("Aux héritiers de", adresse.getSalutations());
 		assertEquals("Madame, Monsieur", adresse.getFormuleAppel()); // [UNIREG-1398]
 	}
@@ -952,6 +954,7 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 		assertEquals("4624 Aa Bergem Op Zoom", adresseEnvoi.getLigne5());
 		assertEquals("Pays-Bas", adresseEnvoi.getLigne6());
 		assertFalse(adresseEnvoi.isIsSuisse());
+		assertEquals(TypeAffranchissement.EUROPE, adresseEnvoi.getTypeAffranchissement());
 		assertEquals("Madame, Monsieur", adresseEnvoi.getSalutations());
 		assertEquals("Madame, Monsieur", adresseEnvoi.getFormuleAppel());
 
@@ -1532,6 +1535,7 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 		assertEquals("c/o Mme Hugette Grisel", trimValiPattern(adresse.getLigne2()));
 		assertEquals("Rue du Chêne 9", trimValiPattern(adresse.getLigne3()));
 		assertEquals("1315 La Sarraz", trimValiPattern(adresse.getLigne4()));
+		assertEquals(TypeAffranchissement.SUISSE, adresse.getTypeAffranchissement());
 	}
 
 	/**
@@ -1555,6 +1559,7 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 		assertEquals("pa Fidu. Commerce & Industrie", trimValiPattern(adresse.getLigne2()));
 		assertEquals("Avenue de la Gare 10", trimValiPattern(adresse.getLigne3()));
 		assertEquals("1003 Lausanne", trimValiPattern(adresse.getLigne4()));
+		assertEquals(TypeAffranchissement.SUISSE, adresse.getTypeAffranchissement());
 		assertNull(adresse.getLigne5());
 	}
 }

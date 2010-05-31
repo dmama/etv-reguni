@@ -4,6 +4,7 @@ import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.interfaces.model.Individu;
+import ch.vd.uniregctb.interfaces.model.TypeAffranchissement;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.type.FormulePolitesse;
@@ -164,4 +165,12 @@ public interface AdresseService {
 	 * @throws AdresseException en cas d'erreur dans les adresses (plages se recoupant, cycle infini détecté, ...).
 	 */
 	public AdresseGenerique getDerniereAdresseVaudoise(Tiers tiers, TypeAdresseFiscale type) throws AdresseException;
+
+	/**
+	 * Calcule et retourne le type d'affranchissement demandé par la poste pour envoyer un courrier à une adresse.
+	 *
+	 * @param adresse l'adresse dont on veut connaître le type d'affranchissement nécessaire.
+	 * @return le type d'affranchissement de l'adresse.
+	 */
+	TypeAffranchissement getTypeAffranchissement(AdresseGenerique adresse);
 }

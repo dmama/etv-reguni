@@ -12,14 +12,12 @@ import org.apache.log4j.Logger;
 /**
  * Contient les données métier caractérisant une adresse fiscale d'un tiers.
  *
- * @see #AdresseEnvoi
- * @see #Tiers
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "Adresse", propOrder = {
 		"dateDebut", "dateFin", "titre", "numeroAppartement", "rue", "numeroRue", "casePostale", "localite", "numeroPostal", "pays",
-		"noOrdrePostal", "noRue"
+		"noOrdrePostal", "noRue", "noPays"
 })
 public class Adresse implements Range {
 
@@ -73,6 +71,10 @@ public class Adresse implements Range {
 	@XmlElement(required = false)
 	public Integer noRue;
 
+	/** [Technique] numéro OFS du pays */
+	@XmlElement(required = false)
+	public Integer noPays;
+
 	public Adresse() {
 	}
 
@@ -89,7 +91,7 @@ public class Adresse implements Range {
 
 		final Integer noOfsPays = adresse.getNoOfsPays();
 		if (noOfsPays != null) {
-			ch.vd.uniregctb.interfaces.model.Pays p = null;
+			ch.vd.uniregctb.interfaces.model.Pays p;
 			try {
 				p = serviceInfra.getPays(noOfsPays);
 			}
@@ -104,6 +106,7 @@ public class Adresse implements Range {
 
 		this.noOrdrePostal = adresse.getNumeroOrdrePostal();
 		this.noRue = adresse.getNumeroRue();
+		this.noPays = noOfsPays;
 	}
 
 	public Date getDateDebut() {

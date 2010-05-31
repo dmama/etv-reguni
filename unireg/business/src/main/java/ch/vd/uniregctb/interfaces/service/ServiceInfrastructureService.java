@@ -7,6 +7,7 @@ import ch.vd.infrastructure.model.EnumTypeCollectivite;
 import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
+import ch.vd.uniregctb.interfaces.model.TypeAffranchissement;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.Canton;
 import ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative;
@@ -378,4 +379,12 @@ public interface ServiceInfrastructureService {
      * @throws InfrastructureException
      */
 	public Localite getLocaliteByNPA(int npa) throws InfrastructureException;
+
+	/**
+	 * Calcule et retourne le type d'affranchissement demandé par la poste pour envoyer un courrier dans un pays particulier.
+	 *
+	 * @param noOfsPays le numéro Ofs du pays de destination.
+	 * @return le type d'affranchissement du courrier.
+	 */
+	TypeAffranchissement getTypeAffranchissement(int noOfsPays);
 }
