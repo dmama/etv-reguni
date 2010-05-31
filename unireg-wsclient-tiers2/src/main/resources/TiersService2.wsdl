@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<!-- version 2.7 -->
+<!-- version 2.8 -->
 <wsdl:definitions name="TiersService" targetNamespace="http://www.vd.ch/uniregctb/webservices/tiers2" xmlns:ns1="http://cxf.apache.org/bindings/xformat"
 				  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://www.vd.ch/uniregctb/webservices/tiers2" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
 				  xmlns:xsd="http://www.w3.org/2001/XMLSchema">
@@ -118,6 +118,7 @@
 					<xs:element minOccurs="0" name="pays" type="xs:string" />
 					<xs:element name="noOrdrePostal" type="xs:int" />
 					<xs:element minOccurs="0" name="noRue" type="xs:int" />
+					<xs:element minOccurs="0" name="noPays" type="xs:int" />
 				</xs:sequence>
 			</xs:complexType>
 			<xs:complexType name="AdresseEnvoi">
@@ -131,6 +132,7 @@
 					<xs:element name="isSuisse" type="xs:boolean" />
 					<xs:element minOccurs="0" name="salutations" type="xs:string" />
 					<xs:element minOccurs="0" name="formuleAppel" type="xs:string" />
+					<xs:element name="typeAffranchissement" type="tns:TypeAffranchissement" />
 				</xs:sequence>
 			</xs:complexType>
 			<xs:complexType name="RapportEntreTiers">
@@ -677,6 +679,13 @@
 					<xs:enumeration value="CAPITAUX" />
 					<xs:enumeration value="REGIMES_FISCAUX" />
 					<xs:enumeration value="ETATS_PM" />
+				</xs:restriction>
+			</xs:simpleType>
+			<xs:simpleType name="TypeAffranchissement">
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="SUISSE" />
+					<xs:enumeration value="EUROPE" />
+					<xs:enumeration value="MONDE" />
 				</xs:restriction>
 			</xs:simpleType>
 			<xs:simpleType name="TypeRapportEntreTiers">
@@ -1420,7 +1429,7 @@
 	</wsdl:binding>
 	<wsdl:service name="TiersService">
 		<wsdl:port binding="tns:TiersServiceSoapBinding" name="TiersPortPort">
-			<soap:address location="http://localhost:8080/fiscalite/unireg-ws/ws/tiers2" />
+			<soap:address location="http://localhost:8080/fiscalite/unireg/ws/tiers2" />
 		</wsdl:port>
 	</wsdl:service>
 </wsdl:definitions>
