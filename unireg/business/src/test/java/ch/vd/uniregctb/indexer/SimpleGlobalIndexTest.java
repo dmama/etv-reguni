@@ -72,7 +72,7 @@ public class SimpleGlobalIndexTest extends WithoutSpringTest {
 
 		{
 			BooleanQuery booleanQuery = new BooleanQuery();
-			booleanQuery.add(LuceneEngine.getTermsCommence("NomCourier", "D"), BooleanClause.Occur.MUST);
+			booleanQuery.add(LuceneEngine.getTermsCommence("NomCourier", "D", 0), BooleanClause.Occur.MUST);
 			assertHits(1, booleanQuery);
 		}
 	}
@@ -94,7 +94,7 @@ public class SimpleGlobalIndexTest extends WithoutSpringTest {
 
 		{
 			BooleanQuery booleanQuery = new BooleanQuery();
-			booleanQuery.add(LuceneEngine.getTermsCommence("Nom", "U"), BooleanClause.Occur.MUST);
+			booleanQuery.add(LuceneEngine.getTermsCommence("Nom", "U", 0), BooleanClause.Occur.MUST);
 			assertHits(1, booleanQuery);
 		}
 
@@ -117,7 +117,7 @@ public class SimpleGlobalIndexTest extends WithoutSpringTest {
 
 		{
 			BooleanQuery booleanQuery = new BooleanQuery();
-			booleanQuery.add(LuceneEngine.getTermsCommence("Champ1", "essui"), BooleanClause.Occur.MUST);
+			booleanQuery.add(LuceneEngine.getTermsCommence("Champ1", "essui", 0), BooleanClause.Occur.MUST);
 			assertHits(1, booleanQuery);
 		}
 	}

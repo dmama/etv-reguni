@@ -28,18 +28,18 @@ public class QueryConstructor {
 	private final TiersCriteria criteria;
 
 	/**
-	 * Longueur minimales des tokens sur le critère <i>nom/raison</i>.
+	 * Longueur minimales des tokens sur le critère wildcard (nom/raison, localité, ...).
 	 */
-	private final int nomRaisonMinLength;
+	private final int tokenMinLength;
 
 	public QueryConstructor(TiersCriteria criteria) {
 		this.criteria = criteria;
-		this.nomRaisonMinLength = INTIAL_NAME_LEN;
+		this.tokenMinLength = INTIAL_NAME_LEN;
 	}
 
-	private QueryConstructor(TiersCriteria criteria, int nomRaisonMinLength) {
+	private QueryConstructor(TiersCriteria criteria, int tokenMinLength) {
 		this.criteria = criteria;
-		this.nomRaisonMinLength = nomRaisonMinLength;
+		this.tokenMinLength = tokenMinLength;
 	}
 
 	private void addTypeTiers(BooleanQuery fullQuery) throws IndexerException {
@@ -132,11 +132,11 @@ public class QueryConstructor {
 				break;
 			case CONTIENT:
 			default:
-				final Query subQuery = LuceneEngine.getTermsContient(TiersIndexableData.NOM_RAISON, nomCourrier, nomRaisonMinLength);
+				final Query subQuery = LuceneEngine.getTermsContient(TiersIndexableData.NOM_RAISON, nomCourrier, tokenMinLength);
 				if (subQuery != null) {
 					query.add(subQuery, should);
 				}
-				final Query subQuery2 = LuceneEngine.getTermsContient(TiersIndexableData.AUTRES_NOM, nomCourrier, nomRaisonMinLength);
+				final Query subQuery2 = LuceneEngine.getTermsContient(TiersIndexableData.AUTRES_NOM, nomCourrier, tokenMinLength);
 				if (subQuery2 != null) {
 					query.add(subQuery2, should);
 				}
@@ -176,7 +176,7 @@ public class QueryConstructor {
 		// Localite ou Pays
 		if (!StringUtils.isEmpty(criteria.getLocaliteOuPays())) {
 			final String nomLocaliteOuPays = criteria.getLocaliteOuPays().toLowerCase();
-			final Query q = LuceneEngine.getTermsCommence(TiersIndexableData.LOCALITE_PAYS, nomLocaliteOuPays);
+			final Query q = LuceneEngine.getTermsCommence(TiersIndexableData.LOCALITE_PAYS, nomLocaliteOuPays, tokenMinLength);
 			fullQuery.add(q, must);
 		}
 	}
@@ -186,7 +186,7 @@ public class QueryConstructor {
 		// Localite ou Pays
 		if (!StringUtils.isEmpty(criteria.getNpa())) {
 			final String npa = criteria.getNpa();
-			final Query q = LuceneEngine.getTermsCommence(TiersIndexableData.NPA, npa);
+			final Query q = LuceneEngine.getTermsCommence(TiersIndexableData.NPA, npa, 0);
 			fullQuery.add(q, must);
 		}
 	}
@@ -196,7 +196,7 @@ public class QueryConstructor {
 		// Numero AVS
 		if (!StringUtils.isEmpty(criteria.getNumeroAVS())) {
 			final String noAVS = IndexerFormatHelper.formatNumeroAVS(criteria.getNumeroAVS());
-			final Query q = LuceneEngine.getTermsCommence(TiersIndexableData.NUMERO_ASSURE_SOCIAL, noAVS);
+			final Query q = LuceneEngine.getTermsCommence(TiersIndexableData.NUMERO_ASSURE_SOCIAL, noAVS, 0);
 			fullQuery.add(q, must);
 		}
 	}
@@ -205,7 +205,7 @@ public class QueryConstructor {
 
 		// Date de naissance
 		if (criteria.getDateNaissance() != null) {
-			final Query q = LuceneEngine.getTermsCommence(TiersIndexableData.DATE_NAISSANCE, RegDateHelper.toIndexString(criteria.getDateNaissance()));
+			final Query q = LuceneEngine.getTermsCommence(TiersIndexableData.DATE_NAISSANCE, RegDateHelper.toIndexString(criteria.getDateNaissance()), 0);
 			fullQuery.add(q, must);
 		}
 	}
@@ -334,10 +334,10 @@ public class QueryConstructor {
 	}
 
 	/**
-	 * @return une nouvelle requête avec des critères de recherches sur 'nom/raison' plus large (c'est-à-dire en ayant supprimé les critères
+	 * @return une nouvelle requête avec des critères de recherches sur les critères wildcard plus large (c'est-à-dire en ayant supprimé les critères
 	 *         les plus courts, de manière à éviter une exception de type BooleanQuery.TooManyClause)
 	 */
 	public QueryConstructor constructBroaderQuery() {
-		return new QueryConstructor(this.criteria, this.nomRaisonMinLength + 1);
+		return new QueryConstructor(this.criteria, this.tokenMinLength + 1);
 	}
 }

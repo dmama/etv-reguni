@@ -173,10 +173,12 @@ public abstract class LuceneEngine {
 	 *
 	 * @param field
 	 * @param value
+	 * @param minLength
+	 *            la taille minimale des tokens (en caractères); ou <i>0</i> pour ne pas limiter la taille
 	 * @return une BooleanQuery
 	 * @throws IndexerException
 	 */
-	public static Query getTermsCommence(String field, String value) throws IndexerException {
+	public static Query getTermsCommence(String field, String value, int minLength) throws IndexerException {
 
 		Query simpleQuery = null; // utilisé si un seul token
 		BooleanQuery complexQuery = null; // utilisé si >1 token
@@ -186,6 +188,7 @@ public abstract class LuceneEngine {
 			final TermAttribute att = (TermAttribute) stream.getAttribute(TermAttribute.class);
 
 			while (stream.incrementToken()) {
+				if (minLength == 0 || att.termLength() >= minLength) {
 				final Query q = new WildcardQuery(newTermCommence(field, att));
 				if (complexQuery == null) {
 					if (simpleQuery == null) {
@@ -200,6 +203,7 @@ public abstract class LuceneEngine {
 				}
 				else {
 					complexQuery.add(q, BooleanClause.Occur.MUST);
+				}
 				}
 			}
 		}
