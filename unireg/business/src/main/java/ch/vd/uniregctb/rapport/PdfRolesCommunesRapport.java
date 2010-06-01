@@ -167,7 +167,7 @@ public class PdfRolesCommunesRapport extends PdfRolesRapport<ProduireRolesCommun
 		    // Fichier CVS détaillé
 		    {
 			    final String[] contenu = asCsvFiles(nomsCommunes, infoCommune, status);
-			    writeFichierDetail(results, writer, contenu, totalContribuables, nomCommune);
+			    writeFichierDetail(results, writer, contenu, totalContribuables, Integer.toString(commune.getNoOFSEtendu()));
 		    }
 		}
 	}

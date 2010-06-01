@@ -44,11 +44,11 @@ public abstract class PdfRolesRapport<T extends ProduireRolesResults> extends Pd
 		final String[] filenames = new String[contenu.length];
 		if (filenames.length > 1) {
 			for (int i = 0 ; i < contenu.length ; ++ i) {
-				filenames[i] = String.format("%d_roles_%s_%d.csv", results.annee, human2file(nomEntite), i + 1);
+				filenames[i] = String.format("%s_role_pp_%d-%d.csv", human2file(nomEntite), results.annee, i + 1);
 			}
 		}
 		else if (filenames.length == 1) {
-			filenames[0] = String.format("%d_roles_%s.csv", results.annee, human2file(nomEntite));
+			filenames[0] = String.format("%s_role_pp_%d.csv", human2file(nomEntite), results.annee);
 		}
 		final String titre = "Liste détaillée";
 		final String listVide = "(aucun rôle trouvé)";

@@ -29,6 +29,9 @@
 			<source>src/main/scripts/unireg_batch.sh</source>
 		</file>
 		<file>
+			<source>src/main/scripts/unireg_extract_roles.sh</source>
+		</file>
+		<file>
 			<source>src/main/scripts/unireg_rapport_csv.sh</source>
 		</file>
 	</files>
