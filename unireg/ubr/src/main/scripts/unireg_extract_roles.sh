@@ -36,7 +36,7 @@ TMP_DIR=$(mktemp -d)
 DEST=$(cd "$DEST" && pwd)
 
 # Extraction des fichiers CSV dans ce répertoire temporaire
-"$EXTRACTOR" "$PDF" -command list | xargs -r "$EXTRACTOR" "$PDF" -command extract -outputdir "$TMP_DIR" -csvfiles
+"$EXTRACTOR" "$PDF" -command list | xargs "$EXTRACTOR" "$PDF" -command extract -outputdir "$TMP_DIR" -csvfiles
 NB_CSV=$(ls -1 "$TMP_DIR"/*_role_pp*.csv | wc -l)
 echo "$NB_CSV fichier(s) CSV de rôles ont été extraits du rapport d'exécution $PDF" >&2
 
@@ -48,13 +48,13 @@ if [ "$NB_CSV" -eq 0 ]; then
 fi
 
 # Identification des communes / oid : les noms des fichiers sont de la forme ID_role_pp_AAAA[-X].csv
-(cd "$TMP_DIR" && ls -1 *_role_pp*.csv*) | sed -e 's/_.*$//' | sort -n | uniq | while read ID; do
+(cd "$TMP_DIR" && ls -1 *_role_pp*.csv) | sed -e 's/_.*$//' | sort -n | uniq | while read ID; do
 	FILES=$(cd "$TMP_DIR" && ls -1 *_role_pp_*.csv | grep "^$ID")
-	ZIP_FILE=$(echo "$FILES" | sed -e '2,$ D' -e 's/-[0-9]\+//' -e 's/csv$/zip/')
+	ZIP_FILE=$(echo "$FILES" | sed -e '2,$ D' -e 's/-[0-9]\{1,\}//' -e 's/csv$/zip/')
 	if [ -e "$DEST/$ZIP_FILE" ]; then
 		echo "Le fichier $ZIP_FILE existe déjà dans le répertoire de destination : il NE sera PAS écrasé!" >&2
-	else
-		(cd "$TMP_DIR" && echo "$FILES" | xargs -r zip --quiet "$DEST/$ZIP_FILE")
+	elif [ -n "$FILES" ]; then
+		(cd "$TMP_DIR" && echo "$FILES" | xargs zip -q "$DEST/$ZIP_FILE")
 	fi
 done
 
