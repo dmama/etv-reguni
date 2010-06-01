@@ -17,7 +17,14 @@ import org.hibernate.annotations.Type;
 public class Demande {
 
 	public enum PrioriteEmetteur {
-		NON_PRIORITAIRE, PRIORITAIRE
+		NON_PRIORITAIRE,
+		PRIORITAIRE
+	}
+
+	public enum ModeIdentificationType {
+		SANS_MANUEL,
+		MANUEL_AVEC_ACK,
+		MANUEL_SANS_ACK
 	}
 
 	/**
@@ -26,8 +33,8 @@ public class Demande {
 	private Date date;
 
 	/**
-	 * Chaque demande d’identification faite par un des systèmes utilisateurs, est identifiée de manière unique par un identifiant de ce
-	 * système utilisateur. Le message transitant par l’ESB, l’identifiant du message doit respecter les règles de formatage de celui-ci.
+	 * Chaque demande d’identification faite par un des systèmes utilisateurs, est identifiée de manière unique par un identifiant de ce système utilisateur. Le message transitant par l’ESB,
+	 * l’identifiant du message doit respecter les règles de formatage de celui-ci.
 	 */
 	private String messageId;
 
@@ -51,9 +58,19 @@ public class Demande {
 	 */
 	private PrioriteEmetteur prioriteEmetteur;
 
+
 	/**
-	 * Le système demandeur (utilisateur – par exemple ACICOM) fournit une priorité qui est propre à son besoin. La priorité varie de 0 à 9,
-	 * 0 étant la plus haute priorité.
+	 * SANS_MANUEL: le demandeur ne souhaite pas que sa demande passe en mode manuel si le mode automatique échoue. La réponse sera immédiatement négative, sans autre traitement.
+	 * <p/>
+	 * MANUEL_AVEC_ACK: le demandeur souhaite que sa demande passe en mode manuel si le mode automatique échoue. Cependant, dés l'échec du mode automtique, une sorte d'accusé de réception sera envoyée au
+	 * demandeur avant que le mode manuel n'aboutisse.
+	 * <p/>
+	 * MANUEL_SANS_ACK: le demandeur souhaite que sa demande passe en mode manuel si le mode automatique échoue. Il ne recevra rien tant que le mode manuel n'aura aboutie.
+	 */
+	private ModeIdentificationType modeIdentification;
+
+	/**
+	 * Le système demandeur (utilisateur – par exemple ACICOM) fournit une priorité qui est propre à son besoin. La priorité varie de 0 à 9, 0 étant la plus haute priorité.
 	 */
 	private int prioriteUtilisateur;
 
@@ -116,6 +133,17 @@ public class Demande {
 	public void setPrioriteEmetteur(PrioriteEmetteur prioriteEmetteur) {
 		this.prioriteEmetteur = prioriteEmetteur;
 	}
+
+	@Column(name = "MODE_IDENTIFICATION", nullable = false)
+	@Type(type = "ch.vd.uniregctb.hibernate.ModeIdentificationTypeUserType")
+	public ModeIdentificationType getModeIdentification() {
+		return modeIdentification;
+	}
+
+	public void setModeIdentification(ModeIdentificationType modeIdentification) {
+		this.modeIdentification = modeIdentification;
+	}
+
 
 	@Column(name = "PRIO_UTILISATEUR", nullable = false)
 	public int getPrioriteUtilisateur() {

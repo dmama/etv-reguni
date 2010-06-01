@@ -7,6 +7,7 @@ import java.util.GregorianCalendar;
 import ch.vd.fiscalite.registre.identificationContribuable.DatePartielleType;
 import ch.vd.fiscalite.registre.identificationContribuable.IdentificationCTBDocument;
 import ch.vd.fiscalite.registre.identificationContribuable.InformationAdresseType;
+import ch.vd.fiscalite.registre.identificationContribuable.ModeIdentificationType;
 import ch.vd.fiscalite.registre.identificationContribuable.TypeErreurType;
 import ch.vd.fiscalite.registre.identificationContribuable.IdentificationCTBDocument.IdentificationCTB;
 import ch.vd.fiscalite.registre.identificationContribuable.IdentificationCTBDocument.IdentificationCTB.Reponse;
@@ -205,9 +206,25 @@ public abstract class XmlEntityAdapter {
 		final PrioriteEmetteur prioriteEmetteur = xml.getDemande().getPrioriteEmetteur() ? PrioriteEmetteur.PRIORITAIRE
 				: PrioriteEmetteur.NON_PRIORITAIRE;
 		entity.setPrioriteEmetteur(prioriteEmetteur);
+
+		entity.setModeIdentification(translateModeIdentification(xml.getDemande().getModeIdentification()));
 		entity.setPrioriteUtilisateur(xml.getDemande().getPrioriteUtilisateur());
 		entity.setTypeMessage(xml.getDemande().getTypeMessage());
 		return entity;
+	}
+
+	private static Demande.ModeIdentificationType translateModeIdentification(ModeIdentificationType.Enum modeIdentification) {
+		if(ModeIdentificationType.SANS_MANUEL.equals(modeIdentification)){
+			return Demande.ModeIdentificationType.SANS_MANUEL;
+		}
+		if(ModeIdentificationType.MANUEL_AVEC_ACK.equals(modeIdentification)){
+			return Demande.ModeIdentificationType.MANUEL_AVEC_ACK;
+		}
+		if(ModeIdentificationType.MANUEL_SANS_ACK.equals(modeIdentification)){
+			return Demande.ModeIdentificationType.MANUEL_SANS_ACK;
+		}
+		return null;
+
 	}
 
 	private static CriteresPersonne xml2entity(ch.vd.fiscalite.registre.identificationContribuable.IdentificationCTBDocument.IdentificationCTB.Demande.Personne xml) {

@@ -1245,6 +1245,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		demande.setEmetteurId(emetteurId);
 		demande.setMessageId("1111");
 		demande.setPrioriteEmetteur(PrioriteEmetteur.NON_PRIORITAIRE);
+		demande.setModeIdentification(Demande.ModeIdentificationType.MANUEL_SANS_ACK);
 		demande.setTypeMessage("ssk-3001-000101");
 		demande.setDate(new Date());
 		demande.setPeriodeFiscale(2009);
@@ -1267,6 +1268,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		demande.setEmetteurId("Test");
 		demande.setMessageId("1111");
 		demande.setPrioriteEmetteur(PrioriteEmetteur.NON_PRIORITAIRE);
+		demande.setModeIdentification(Demande.ModeIdentificationType.MANUEL_SANS_ACK);
 		demande.setTypeMessage("ssk-3001-000101");
 		demande.setDate(new Date());
 		demande.setPeriodeFiscale(2009);
