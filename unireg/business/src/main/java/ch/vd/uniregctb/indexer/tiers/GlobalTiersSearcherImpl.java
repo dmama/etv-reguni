@@ -32,7 +32,7 @@ public class GlobalTiersSearcherImpl implements GlobalTiersSearcher {
 	/**
 	 * Methode principale de recherche des tiers
 	 *
-	 * @param criteria
+	 * @param criteria les critères de recherche
 	 * @return la liste des tiers repondant aux criteres de recherche
 	 * @throws IndexerException
 	 */
@@ -53,6 +53,7 @@ public class GlobalTiersSearcherImpl implements GlobalTiersSearcher {
 
 		// [UNIREG-1386] exécute la requête, et si une exception BooleanQuery.TooManyClause est levée par lucene, adapte la requête en
 		// supprimant les termes les plus courts.
+		int essais = 0;
 		while (true) {
 
 			final Query query = contructor.constructQuery();
@@ -67,12 +68,13 @@ public class GlobalTiersSearcherImpl implements GlobalTiersSearcher {
 			}
 
 			try {
+				++essais;
 				globalIndex.search(query, new Callback(list));
 				break;
 			}
 			catch (TooManyResultsIndexerException e) {
-				if (e.getNbResults() > 0) {
-					// il y a bien trop de résultats
+				if (e.getNbResults() > 0 || essais >= 10) {
+					// il y a bien trop de résultats (ou on a essayé 10 fois)
 					throw e;
 				}
 

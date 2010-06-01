@@ -1,16 +1,16 @@
 package ch.vd.uniregctb.indexer;
 
-import ch.vd.uniregctb.common.WithoutSpringTest;
-import ch.vd.uniregctb.indexer.fs.FSDirectoryProvider;
-import ch.vd.uniregctb.indexer.DocGetter;
-import ch.vd.uniregctb.indexer.DocHit;
-import static junit.framework.Assert.assertEquals;
+import java.util.List;
+
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Query;
 import org.junit.Test;
 
-import java.util.List;
+import ch.vd.uniregctb.common.WithoutSpringTest;
+import ch.vd.uniregctb.indexer.fs.FSDirectoryProvider;
+
+import static junit.framework.Assert.assertEquals;
 
 public class SimpleGlobalIndexTest extends WithoutSpringTest {
 
@@ -72,7 +72,7 @@ public class SimpleGlobalIndexTest extends WithoutSpringTest {
 
 		{
 			BooleanQuery booleanQuery = new BooleanQuery();
-			booleanQuery.add(LuceneEngine.getTermsCommence("NomCourier", "D"), BooleanClause.Occur.MUST);
+			booleanQuery.add(LuceneEngine.getTermsCommence("NomCourier", "D", 0), BooleanClause.Occur.MUST);
 			assertHits(1, booleanQuery);
 		}
 	}
@@ -94,7 +94,7 @@ public class SimpleGlobalIndexTest extends WithoutSpringTest {
 
 		{
 			BooleanQuery booleanQuery = new BooleanQuery();
-			booleanQuery.add(LuceneEngine.getTermsCommence("Nom", "U"), BooleanClause.Occur.MUST);
+			booleanQuery.add(LuceneEngine.getTermsCommence("Nom", "U", 0), BooleanClause.Occur.MUST);
 			assertHits(1, booleanQuery);
 		}
 
@@ -117,7 +117,7 @@ public class SimpleGlobalIndexTest extends WithoutSpringTest {
 
 		{
 			BooleanQuery booleanQuery = new BooleanQuery();
-			booleanQuery.add(LuceneEngine.getTermsCommence("Champ1", "essui"), BooleanClause.Occur.MUST);
+			booleanQuery.add(LuceneEngine.getTermsCommence("Champ1", "essui", 0), BooleanClause.Occur.MUST);
 			assertHits(1, booleanQuery);
 		}
 	}

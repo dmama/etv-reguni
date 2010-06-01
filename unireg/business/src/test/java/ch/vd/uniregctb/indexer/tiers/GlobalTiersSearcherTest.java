@@ -20,6 +20,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
+import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServicePM;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
 import ch.vd.uniregctb.parametrage.ParametreEnum;
@@ -28,6 +29,7 @@ import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.tiers.TiersCriteria.TypeRecherche;
 import ch.vd.uniregctb.tiers.TiersCriteria.TypeTiers;
 import ch.vd.uniregctb.type.Sexe;
+import ch.vd.uniregctb.type.TypeAdresseTiers;
 
 /**
  * Classe pour tester la recherche de tiers
@@ -88,14 +90,15 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 				addAdresse(individu, EnumTypeAdresse.COURRIER, null, null, MockLocalite.Renens.getNPA(), MockLocalite.Renens, "5252", RegDate.get(1980, 11, 2), null);
 			}
 		});
+	}
+
+	@Test
+	public void testRechercheParNumeroContribuable() throws Exception {
 
 		loadDatabase(DB_UNIT_DATA_FILE);
 		int c = globalTiersSearcher.getExactDocCount();
 		assertEquals(8, c);
-	}
 
-	@Test
-	public void testRechercheParNumeroContribuable() {
 		{
 			TiersCriteria criteria = new TiersCriteria();
 			criteria.setNumero(5434L);
@@ -123,6 +126,10 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 
 	@Test
 	public void testSearchMenage() throws Exception {
+
+		loadDatabase(DB_UNIT_DATA_FILE);
+		int c = globalTiersSearcher.getExactDocCount();
+		assertEquals(8, c);
 
 		// Recherche le couple par numéro
 		{
@@ -180,7 +187,11 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 	}
 
 	@Test
-	public void testRechercheParNumeroAVS() {
+	public void testRechercheParNumeroAVS() throws Exception {
+
+		loadDatabase(DB_UNIT_DATA_FILE);
+		int c = globalTiersSearcher.getExactDocCount();
+		assertEquals(8, c);
 
 		// Ancien numero
 		{
@@ -215,10 +226,6 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 		}
 	}
 
-	/**
-	 * @throws Exception
-	 */
-	@SuppressWarnings("serial")
 	private void rechercheParTypeTiers(String nom, TypeTiers type, int expected) throws Exception {
 
 		TiersCriteria criteria = new TiersCriteria() {
@@ -240,6 +247,10 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 	@Test
 	public void testRechercheParTypeTiers() throws Exception {
 
+		loadDatabase(DB_UNIT_DATA_FILE);
+		int c = globalTiersSearcher.getExactDocCount();
+		assertEquals(8, c);
+
 		rechercheParTypeTiers("dupont", TypeTiers.HABITANT, 1);
 		rechercheParTypeTiers(null, TypeTiers.NON_HABITANT, 2);
 		rechercheParTypeTiers("du", TypeTiers.PERSONNE_PHYSIQUE, 2); // Dupont Alain et Duchene Claudine
@@ -249,6 +260,10 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 
 	@Test
 	public void testNatureJuridique() throws Exception {
+
+		loadDatabase(DB_UNIT_DATA_FILE);
+		int c = globalTiersSearcher.getExactDocCount();
+		assertEquals(8, c);
 
 		// Tiers par Nature Juridique
 		{
@@ -269,6 +284,10 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 	@Test
 	public void testRechercheParAdresse() throws Exception {
 
+		loadDatabase(DB_UNIT_DATA_FILE);
+		int c = globalTiersSearcher.getExactDocCount();
+		assertEquals(8, c);
+
 		TiersCriteria criteria = new TiersCriteria();
 		criteria.setLocaliteOuPays("Lausanne");
 		List<TiersIndexedData> list = globalTiersSearcher.search(criteria);
@@ -280,6 +299,10 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 	 */
 	@Test
 	public void testRechercheParNpa() throws Exception {
+
+		loadDatabase(DB_UNIT_DATA_FILE);
+		int c = globalTiersSearcher.getExactDocCount();
+		assertEquals(8, c);
 
 		TiersCriteria criteria = new TiersCriteria();
 		criteria.setNpa(String.valueOf(MockLocalite.Renens.getNPA()));
@@ -318,6 +341,10 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 	@Test
 	public void testRechercheParAdresseZeroTrouve() throws Exception {
 
+		loadDatabase(DB_UNIT_DATA_FILE);
+		int c = globalTiersSearcher.getExactDocCount();
+		assertEquals(8, c);
+
 		TiersCriteria criteria = new TiersCriteria();
 
 		criteria.setLocaliteOuPays("Montreux"); // Ne devrait pas etre trouvé!
@@ -330,6 +357,10 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 	 */
 	@Test
 	public void testRechercheParFors() throws Exception {
+
+		loadDatabase(DB_UNIT_DATA_FILE);
+		int c = globalTiersSearcher.getExactDocCount();
+		assertEquals(8, c);
 
 		TiersCriteria criteria = new TiersCriteria();
 
@@ -364,6 +395,10 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 	@Test
 	public void testRechercheParDateNaissance() throws Exception {
 
+		loadDatabase(DB_UNIT_DATA_FILE);
+		int c = globalTiersSearcher.getExactDocCount();
+		assertEquals(8, c);
+
 		// Recherche sur la date de naissance
 		TiersCriteria criteria = new TiersCriteria();
 		criteria.setDateNaissance(RegDateHelper.indexStringToDate("19421207"));
@@ -382,6 +417,11 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 	 */
 	@Test
 	public void testRechercheNomContient() throws Exception {
+
+		loadDatabase(DB_UNIT_DATA_FILE);
+		int c = globalTiersSearcher.getExactDocCount();
+		assertEquals(8, c);
+
 		// Recherche "contient" sur le nom
 		TiersCriteria criteria = new TiersCriteria();
 		criteria.setNomRaison("pon");
@@ -404,6 +444,11 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 
 	@Test
 	public void testRechercheAutresNoms() throws Exception {
+
+		loadDatabase(DB_UNIT_DATA_FILE);
+		int c = globalTiersSearcher.getExactDocCount();
+		assertEquals(8, c);
+
 		// Recherche "contient" sur le nom
 		TiersCriteria criteria = new TiersCriteria();
 		criteria.setNomRaison("pon ain");
@@ -432,6 +477,11 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 	 */
 	@Test
 	public void testRechercheNomRessemble() throws Exception {
+
+		loadDatabase(DB_UNIT_DATA_FILE);
+		int c = globalTiersSearcher.getExactDocCount();
+		assertEquals(8, c);
+
 		// Recherche "phonetique" sur le nom
 		TiersCriteria criteria = new TiersCriteria();
 		criteria = new TiersCriteria();
@@ -462,6 +512,10 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 	@Test
 	public void testSearchIndividuParPrenom() throws Exception {
 
+		loadDatabase(DB_UNIT_DATA_FILE);
+		int c = globalTiersSearcher.getExactDocCount();
+		assertEquals(8, c);
+
 		String prenom = "Richard";
 
 		TiersCriteria criteria = new TiersCriteria();
@@ -483,6 +537,10 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 	@Test
 	public void testSearchEntreprise() throws Exception {
 
+		loadDatabase(DB_UNIT_DATA_FILE);
+		int c = globalTiersSearcher.getExactDocCount();
+		assertEquals(8, c);
+		
 		Long numero = 63427L;
 
 		// Par numero
@@ -557,8 +615,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 	}
 
 	/**
-	 * [UNIREG-1386] Vérifie que le moteur de recherche supprime automatiquement les termes trop communs lorsqu'une exception
-	 * BooleanQuery.TooManyClause est levée par lucene.
+	 * [UNIREG-1386] Vérifie que le moteur de recherche supprime automatiquement les termes trop communs sur le champ 'nom/raison' lorsqu'une exception BooleanQuery.TooManyClause est levée par lucene.
 	 */
 	@SuppressWarnings({"unchecked"})
 	@Test
@@ -570,12 +627,26 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 				final List<Long> ids = new ArrayList<Long>(2000);
 
 				// Charge 2000 personnes dans l'index. Ces 2000 personnes possèdent toutes un nom de famille commençant par "Du Pont".
-				for (int i = 1; i < 2000; ++i) {
+				for (int i = 0; i < 2000; ++i) {
 
-					final String nom = String.format("Du Pont%04d", i); // "Du Pont0000".."Du Pont1999"
-					final String prenom = String.format("Michel%02d", i % 50); // 40 * (Michel00..Michel49)
+					final String nom;
+					final String prenom;
+					final String localite;
+
+					if (i == 0) {
+						// Cas spécial pour le premier
+						nom = "Du Pont";
+						prenom = "Michel";
+						localite = "Romanel-s-Morges";
+					}
+					else {
+						nom = String.format("Du Pont%04d", i); // "Du Pont0001".."Du Pont1999"
+						prenom = String.format("Michel%02d", i % 50); // 40 * (Michel01..Michel49)
+						localite = String.format("Romanel-s%04d-Lausanne", i); // "Romanel-s0001-Lausanne".."Romanel-s1999-Lausanne"
+					}
 
 					final PersonnePhysique pp = addNonHabitant(encodeDigitsInName(prenom), encodeDigitsInName(nom), date(1970, 1, 1), Sexe.MASCULIN);
+					addAdresseEtrangere(pp, TypeAdresseTiers.COURRIER, date(1970,1,1), null, "chemin du devin", encodeDigitsInName(localite), MockPays.Suisse);
 					ids.add(pp.getNumero());
 				}
 				return ids;
@@ -586,25 +657,41 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 		globalTiersIndexer.sync();
 
 		// Recherche les 40 personnes nommées "MichelCC Du Pont*"
-		final TiersCriteria criteria = new TiersCriteria();
-		criteria.setNomRaison("MichelCC Du Pont");
-		criteria.setTypeRechercheDuNom(TypeRecherche.CONTIENT);
+		{
+			final TiersCriteria criteria = new TiersCriteria();
+			criteria.setNomRaison("MichelCC Du Pont");
+			criteria.setTypeRechercheDuNom(TypeRecherche.CONTIENT);
 
-		final List<TiersIndexedData> list = globalTiersSearcher.search(criteria);
-		assertNotNull(list);
-		assertEquals(40, list.size());
+			final List<TiersIndexedData> list = globalTiersSearcher.search(criteria);
+			assertNotNull(list);
+			assertEquals(40, list.size());
 
-		// Trie par ordre des noms croissant
-		Collections.sort(list, new Comparator<TiersIndexedData>() {
-			public int compare(TiersIndexedData o1, TiersIndexedData o2) {
-				return o1.getNom1().compareTo(o2.getNom1());
+			// Trie par ordre des noms croissant
+			Collections.sort(list, new Comparator<TiersIndexedData>() {
+				public int compare(TiersIndexedData o1, TiersIndexedData o2) {
+					return o1.getNom1().compareTo(o2.getNom1());
+				}
+			});
+
+			int i = 0;
+			for (TiersIndexedData d : list) {
+				final String nomAttendu = encodeDigitsInName(String.format("Du Pont%04d MichelCC", (i++ * 50 + 22)));
+				assertEquals(nomAttendu, d.getNom1());
 			}
-		});
-		
-		int i = 0;
-		for (TiersIndexedData d : list) {
-			final String nomAttendu = encodeDigitsInName(String.format("Du Pont%04d MichelCC", (i++ * 50 + 22)));
-			assertEquals(nomAttendu, d.getNom1());
+		}
+
+		{
+			// [UNIREG-2142] teste la recherche sur les localités
+			final TiersCriteria criteria = new TiersCriteria();
+			// le 's' vers s'étendre en 's*' -> lucene va lever une exception parce que le nombre de termes est dépassé. Unireg devrait là-dessus filtrer les termes les plus courts et re-essayer.
+			criteria.setLocaliteOuPays(encodeDigitsInName("Romanel-s-Morges"));
+
+			final List<TiersIndexedData> list = globalTiersSearcher.search(criteria);
+			assertNotNull(list);
+			assertEquals(1, list.size());
+
+			final TiersIndexedData d = list.get(0);
+			assertEquals("Romanel-s-Morges", d.getLocalite());
 		}
 	}
 

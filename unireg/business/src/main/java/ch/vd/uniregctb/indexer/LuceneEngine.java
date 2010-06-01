@@ -172,10 +172,12 @@ public abstract class LuceneEngine {
 	 *
 	 * @param field
 	 * @param value
+	 * @param minLength
+	 *            la taille minimale des tokens (en caractères); ou <i>0</i> pour ne pas limiter la taille
 	 * @return une BooleanQuery
 	 * @throws IndexerException
 	 */
-	public static Query getTermsCommence(String field, String value) throws IndexerException {
+	public static Query getTermsCommence(String field, String value, int minLength) throws IndexerException {
 
 		Query simpleQuery = null; // utilisé si un seul token
 		BooleanQuery complexQuery = null; // utilisé si >1 token
@@ -184,20 +186,22 @@ public abstract class LuceneEngine {
 			final TokenStream stream = getFrenchTokenStream(value);
 			Token token = stream.next(new Token());
 			while (token != null) {
-				final Query q = new WildcardQuery(newTermCommence(field, token));
-				if (complexQuery == null) {
-					if (simpleQuery == null) {
-						simpleQuery = q;
+				if (minLength == 0 || token.termLength() >= minLength) {
+					final Query q = new WildcardQuery(newTermCommence(field, token));
+					if (complexQuery == null) {
+						if (simpleQuery == null) {
+							simpleQuery = q;
+						}
+						else {
+							complexQuery = new BooleanQuery();
+							complexQuery.add(simpleQuery, BooleanClause.Occur.MUST);
+							complexQuery.add(q, BooleanClause.Occur.MUST);
+							simpleQuery = null;
+						}
 					}
 					else {
-						complexQuery = new BooleanQuery();
-						complexQuery.add(simpleQuery, BooleanClause.Occur.MUST);
 						complexQuery.add(q, BooleanClause.Occur.MUST);
-						simpleQuery = null;
 					}
-				}
-				else {
-					complexQuery.add(q, BooleanClause.Occur.MUST);
 				}
 				token.clear();
 				token = stream.next(token);
