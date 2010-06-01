@@ -4,6 +4,7 @@ import java.net.URL;
 
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import org.apache.log4j.Logger;
+import org.junit.Ignore;
 
 /**
  * Teste que les différents déploiements de l'application Unireg dans les différents environnements (intégration, validation, formation,
@@ -13,7 +14,12 @@ public class WatchDogUniregFormationTest extends WatchDogTest {
 
 	private static final Logger LOGGER = Logger.getLogger(WatchDogUniregFormationTest.class);
 
-	public void testFormation() throws Exception {
+	public void testRien() {
+		
+	}
+
+	// Désactivé parce que  - apparemment - la formation n'est plus utilisée pour l'instant
+	public void _testFormation() throws Exception {
 		LOGGER.info("Vérification de Unireg en formation...");
 		HtmlPage page = (HtmlPage) webClient.getPage(new URL("https://validation.portail.etat-de-vaud.ch/fiscalite/form-unireg/"));
 		assertNotNull(page);
@@ -21,7 +27,8 @@ public class WatchDogUniregFormationTest extends WatchDogTest {
 		assertTrue(titre.equalsIgnoreCase("Recherche des tiers") || titre.equalsIgnoreCase("Sélection de l'OID de travail"));
 	}
 
-	public void testFormationConnectivite() throws Exception {
+	// Désactivé parce que  - apparemment - la formation n'est plus utilisée pour l'instant
+	public void _testFormationConnectivite() throws Exception {
 		LOGGER.info("Vérification de la connectivité de Unireg en formation...");
 		final HtmlPage page = (HtmlPage) webClient.getPage(new URL(
 				"https://validation.portail.etat-de-vaud.ch/fiscalite/form-unireg/admin/status.do"));
