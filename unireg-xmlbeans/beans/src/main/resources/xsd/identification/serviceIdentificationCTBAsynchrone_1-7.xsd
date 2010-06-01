@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- edited with XMLSpy v2005 sp1 U (http://www.xmlspy.com) by DSI (Etat de Vaud) -->
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.vd.ch/fiscalite/registre/identificationContribuable-v1.6" targetNamespace="http://www.vd.ch/fiscalite/registre/identificationContribuable-v1.6" elementFormDefault="qualified" attributeFormDefault="unqualified">
+<!-- edited with XMLSpy v2005 sp1 U (http://www.xmlspy.com) by GDL (Etat de Vaud) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.vd.ch/fiscalite/registre/identificationContribuable-v1.7" targetNamespace="http://www.vd.ch/fiscalite/registre/identificationContribuable-v1.7" elementFormDefault="qualified" attributeFormDefault="unqualified">
 	<xs:annotation>
 		<xs:documentation>Question: Déterminer exactement le nom des XSD à utiliser</xs:documentation>
 	</xs:annotation>
@@ -22,6 +22,7 @@
 										<xs:element name="periodeFiscale" type="xs:gYear"/>
 										<xs:element name="prioriteEmetteur" type="xs:boolean"/>
 										<xs:element name="prioriteUtilisateur" type="prioriteUtilisateurType"/>
+										<xs:element name="modeIdentification" type="ModeIdentificationType"/>
 									</xs:sequence>
 								</xs:complexType>
 							</xs:element>
@@ -83,6 +84,11 @@
 											</xs:element>
 										</xs:sequence>
 									</xs:complexType>
+								</xs:element>
+								<xs:element name="etatReponse" type="EtatReponseType">
+									<xs:annotation>
+										<xs:documentation>Si le demandeur a choisit le type de réponse "mode_manuel_avec_ACK", alors  dés que la demande automatique échoue, il reçoit une première réponse avec ce flag, l'informant que l'identification manuelle est en cours. Il recevra une seconde réponse avec le résultat de l'identification manuelle lorsque celle-ci aura eu lieu. </xs:documentation>
+									</xs:annotation>
 								</xs:element>
 							</xs:choice>
 						</xs:sequence>
@@ -163,66 +169,66 @@
 	</xs:complexType>
 	<xs:complexType name="informationAdresseType">
 		<xs:sequence>
-			<xs:element name="ligneAdresse1" type="ligneAdresseType" minOccurs="0"/>
-			<xs:element name="ligneAdresse2" type="ligneAdresseType" minOccurs="0"/>
+			<xs:element name="ligneAdresse1" type="LigneAdresseType" minOccurs="0"/>
+			<xs:element name="ligneAdresse2" type="LigneAdresseType" minOccurs="0"/>
 			<xs:sequence minOccurs="0">
-				<xs:element name="rue" type="rueType" minOccurs="0"/>
-				<xs:element name="noPolice" type="noPoliceType" minOccurs="0"/>
-				<xs:element name="noAppartement" type="noAppartementType" minOccurs="0"/>
+				<xs:element name="rue" type="RueType" minOccurs="0"/>
+				<xs:element name="noPolice" type="NoPoliceType" minOccurs="0"/>
+				<xs:element name="noAppartement" type="NoAppartementType" minOccurs="0"/>
 			</xs:sequence>
 			<xs:sequence minOccurs="0">
-				<xs:element name="numeroCasePostale" type="numeroCasePostaleType" minOccurs="0"/>
-				<xs:element name="texteCasePostale" type="texteCasePostaleType" minOccurs="0"/>
+				<xs:element name="numeroCasePostale" type="NumeroCasePostaleType" minOccurs="0"/>
+				<xs:element name="texteCasePostale" type="TexteCasePostaleType" minOccurs="0"/>
 			</xs:sequence>
-			<xs:element name="localite" type="localiteType" minOccurs="0"/>
-			<xs:element name="lieu" type="lieuType" minOccurs="0"/>
+			<xs:element name="localite" type="LocaliteType" minOccurs="0"/>
+			<xs:element name="lieu" type="LieuType" minOccurs="0"/>
 			<xs:choice>
 				<xs:sequence>
 					<xs:element name="NPASuisse" type="NPASuisseType" minOccurs="0"/>
-					<xs:element name="ChiffreComplementaire" type="chiffreComplementaireType" minOccurs="0"/>
+					<xs:element name="ChiffreComplementaire" type="ChiffreComplementaireType" minOccurs="0"/>
 					<xs:element name="NPASuisseId" type="NPASuisseIdType" minOccurs="0"/>
 				</xs:sequence>
 				<xs:element name="NPAEtranger" type="NPAEtrangerType" minOccurs="0"/>
 			</xs:choice>
-			<xs:element name="pays" type="paysType" minOccurs="0"/>
+			<xs:element name="pays" type="PaysType" minOccurs="0"/>
 		</xs:sequence>
 	</xs:complexType>
-	<xs:simpleType name="ligneAdresseType">
+	<xs:simpleType name="LigneAdresseType">
 		<xs:restriction base="xs:token">
 			<xs:maxLength value="60"/>
 		</xs:restriction>
 	</xs:simpleType>
-	<xs:simpleType name="rueType">
+	<xs:simpleType name="RueType">
 		<xs:restriction base="xs:token">
 			<xs:maxLength value="60"/>
 		</xs:restriction>
 	</xs:simpleType>
-	<xs:simpleType name="noPoliceType">
+	<xs:simpleType name="NoPoliceType">
 		<xs:restriction base="xs:token">
 			<xs:maxLength value="12"/>
 		</xs:restriction>
 	</xs:simpleType>
-	<xs:simpleType name="noAppartementType">
+	<xs:simpleType name="NoAppartementType">
 		<xs:restriction base="xs:token">
 			<xs:maxLength value="10"/>
 		</xs:restriction>
 	</xs:simpleType>
-	<xs:simpleType name="numeroCasePostaleType">
+	<xs:simpleType name="NumeroCasePostaleType">
 		<xs:restriction base="xs:unsignedInt">
 			<xs:maxInclusive value="9999"/>
 		</xs:restriction>
 	</xs:simpleType>
-	<xs:simpleType name="texteCasePostaleType">
+	<xs:simpleType name="TexteCasePostaleType">
 		<xs:restriction base="xs:token">
 			<xs:maxLength value="15"/>
 		</xs:restriction>
 	</xs:simpleType>
-	<xs:simpleType name="localiteType">
+	<xs:simpleType name="LocaliteType">
 		<xs:restriction base="xs:token">
 			<xs:maxLength value="40"/>
 		</xs:restriction>
 	</xs:simpleType>
-	<xs:simpleType name="lieuType">
+	<xs:simpleType name="LieuType">
 		<xs:restriction base="xs:token">
 			<xs:maxLength value="40"/>
 		</xs:restriction>
@@ -236,7 +242,7 @@
 			<xs:maxInclusive value="9999"/>
 		</xs:restriction>
 	</xs:simpleType>
-	<xs:simpleType name="chiffreComplementaireType">
+	<xs:simpleType name="ChiffreComplementaireType">
 		<xs:restriction base="xs:string">
 			<xs:maxLength value="2"/>
 		</xs:restriction>
@@ -246,9 +252,33 @@
 			<xs:maxLength value="15"/>
 		</xs:restriction>
 	</xs:simpleType>
-	<xs:simpleType name="paysType">
+	<xs:simpleType name="PaysType">
 		<xs:restriction base="xs:token">
 			<xs:maxLength value="2"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="EtatReponseType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="EN_ATTENTE_IDENTIF_MANUEL"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="ModeIdentificationType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="SANS_MANUEL">
+				<xs:annotation>
+					<xs:documentation>Si TRUE : le demandeur ne souhaite pas que sa demande passe en mode manuel si le mode automatique échoue. La réponse sera immédiatement négative, sans autre traitement. </xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="MANUEL_AVEC_ACK">
+				<xs:annotation>
+					<xs:documentation>Si TRUE : le demandeur souhaite que sa demande passe en mode manuel si le mode automatique échoue. Cependant, dés l'échec du mode automtique, une sorte d'accusé de réception sera envoyée au demandeur avant que le mode manuel n'aboutisse. </xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="MANUEL_SANS_ACK">
+				<xs:annotation>
+					<xs:documentation>Si TRUE : le demandeur souhaite que sa demande passe en mode manuel si le mode automatique échoue. Il ne recevra rien tant que le mode manuel n'aura aboutie. </xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
 		</xs:restriction>
 	</xs:simpleType>
 </xs:schema>
