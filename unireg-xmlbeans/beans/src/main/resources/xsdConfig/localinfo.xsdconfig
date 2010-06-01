@@ -39,7 +39,7 @@
 	
 
 	<!-- Identification de CTB -->	
-    <xb:namespace uri="http://www.vd.ch/fiscalite/registre/identificationContribuable-v1.6">
+    <xb:namespace uri="http://www.vd.ch/fiscalite/registre/identificationContribuable-v1.7">
         <xb:package>ch.vd.fiscalite.registre.identificationContribuable</xb:package>
     </xb:namespace>
 
