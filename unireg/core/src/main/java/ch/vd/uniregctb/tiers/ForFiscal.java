@@ -297,7 +297,9 @@ public abstract class ForFiscal extends HibernateEntity implements Comparable<Fo
 
 	@Override
 	public String toString() {
-		return getClass().getSimpleName() + " (" + (dateDebut != null ? dateDebut : "?" )  + " - " + (dateFin != null ? dateFin : "?") + ")";
+		final String dateDebutStr = dateDebut != null ? RegDateHelper.dateToDisplayString(dateDebut) : "?";
+		final String dateFinStr = dateFin != null ? RegDateHelper.dateToDisplayString(dateFin) : "?";
+		return String.format("%s (%s - %s)", getClass().getSimpleName(), dateDebutStr, dateFinStr);
 	}
 
 	@ManyToOne(cascade = {
