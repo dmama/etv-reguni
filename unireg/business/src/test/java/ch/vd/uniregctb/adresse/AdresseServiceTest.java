@@ -3869,6 +3869,329 @@ public class AdresseServiceTest extends BusinessTest {
 	}
 
 	/**
+	 * [UNIREG-1341] Vérifie que l'adresse courrier d'un ménage-commun dont le composant principal possède un représentant est bien celle du représentant de ce dernier.
+	 */
+	@Test
+	public void testGetAdressesFiscalesMenageCommunAvecRepresentantSurPrincipal() throws Exception {
+
+		final long noIndividuPrincipal = 2;
+		final long noIndividuConjoint = 4;
+		final long noIndividuRepresentant = 11;
+
+		/*
+		 * Crée les données du mock service civil
+		 */
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu paul = addIndividu(noIndividuPrincipal, date(1953, 11, 2), "Dupont", "Paul", true);
+				addAdresse(paul, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, date(2000, 1, 1), null);
+
+				final MockIndividu virginie = addIndividu(noIndividuConjoint, date(1957, 1, 23), "Dupont", "Virginie", false);
+				addAdresse(virginie, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, date(2002, 2, 2), null);
+
+				marieIndividus(paul, virginie, date(2004, 7, 14));
+
+				final MockIndividu ronald = addIndividu(noIndividuRepresentant, date(1945, 3, 17), "MacDonald", "Ronald", false);
+				addAdresse(ronald, EnumTypeAdresse.PRINCIPALE, MockRue.LeSentier.GrandRue, null, date(1945, 3, 17), null);
+			}
+		});
+
+		// Crée un ménage composé de deux habitants avec un représentant sur l'habitant principal
+		final long noMenageCommun = (Long) doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+
+				PersonnePhysique representant = addHabitant(noIndividuRepresentant);
+
+				PersonnePhysique principal = addHabitant(noIndividuPrincipal);
+				PersonnePhysique conjoint = addHabitant(noIndividuConjoint);
+				EnsembleTiersCouple ensemble = addEnsembleTiersCouple(principal, conjoint, date(2004, 7, 14), null);
+				MenageCommun menage = ensemble.getMenage();
+
+				addRepresentationConventionnelle(principal, representant, date(2007, 1, 1), false);
+
+				return menage.getNumero();
+			}
+		});
+
+		final MenageCommun menage = (MenageCommun) tiersService.getTiers(noMenageCommun);
+
+		// Vérification des adresses
+		final AdressesFiscalesHisto adressesHisto = adresseService.getAdressesFiscalHisto(menage, false);
+		assertNotNull(adressesHisto);
+
+		assertEquals(2, adressesHisto.courrier.size());
+		assertAdresse(date(2000, 1, 1), date(2006, 12, 31), "Lausanne", Source.CIVILE, true, adressesHisto.courrier.get(0));
+		assertAdresse(date(2007, 1, 1), null, "Le Sentier", Source.REPRESENTATION, false, adressesHisto.courrier.get(1));
+
+		assertAdresse(date(2000, 1, 1), null, "Lausanne", Source.CIVILE, false, adressesHisto.domicile.get(0));
+		assertAdresse(date(2000, 1, 1), null, "Lausanne", Source.CIVILE, false, adressesHisto.poursuite.get(0));
+		assertAdresse(date(2000, 1, 1), null, "Lausanne", Source.CIVILE, true, adressesHisto.representation.get(0));
+
+		final AdressesFiscales adresses = adresseService.getAdressesFiscales(menage, null, false);
+		assertNotNull(adresses);
+		assertAdressesEquals(adressesHisto.courrier.get(1), adresses.courrier);
+		assertAdressesEquals(adressesHisto.domicile.get(0), adresses.domicile);
+		assertAdressesEquals(adressesHisto.poursuite.get(0), adresses.poursuite);
+		assertAdressesEquals(adressesHisto.representation.get(0), adresses.representation);
+
+		final AdresseEnvoiDetaillee adresseEnvoi = adresseService.getAdresseEnvoi(menage, null, TypeAdresseFiscale.COURRIER, false);
+		assertNotNull(adresseEnvoi);
+		assertEquals("Monsieur et Madame", adresseEnvoi.getLigne1());
+		assertEquals("Paul Dupont", adresseEnvoi.getLigne2());
+		assertEquals("Virginie Dupont", adresseEnvoi.getLigne3());
+		assertEquals("p.a. Ronald MacDonald", adresseEnvoi.getLigne4());
+		assertEquals("Grande-Rue", adresseEnvoi.getLigne5());
+		assertEquals("1347 Le Sentier", adresseEnvoi.getLigne6());
+	}
+
+	/**
+	 * [UNIREG-1341] Vérifie que l'adresse courrier d'un ménage-commun dont le conjoint possède un représentant reste bien celle du ménage (le représentant du conjoint est ignoré).
+	 */
+	@Test
+	public void testGetAdressesFiscalesMenageCommunAvecRepresentantSurConjoint() throws Exception {
+
+		final long noIndividuPrincipal = 2;
+		final long noIndividuConjoint = 4;
+		final long noIndividuRepresentant = 11;
+
+		/*
+		 * Crée les données du mock service civil
+		 */
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu paul = addIndividu(noIndividuPrincipal, date(1953, 11, 2), "Dupont", "Paul", true);
+				addAdresse(paul, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, date(2000, 1, 1), null);
+
+				final MockIndividu virginie = addIndividu(noIndividuConjoint, date(1957, 1, 23), "Dupont", "Virginie", false);
+				addAdresse(virginie, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, date(2002, 2, 2), null);
+
+				marieIndividus(paul, virginie, date(2004, 7, 14));
+
+				final MockIndividu ronald = addIndividu(noIndividuRepresentant, date(1945, 3, 17), "MacDonald", "Ronald", false);
+				addAdresse(ronald, EnumTypeAdresse.PRINCIPALE, MockRue.LeSentier.GrandRue, null, date(1945, 3, 17), null);
+			}
+		});
+
+		// Crée un ménage composé de deux habitants avec un représentant sur l'habitant principal
+		final long noMenageCommun = (Long) doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+
+				PersonnePhysique representant = addHabitant(noIndividuRepresentant);
+
+				PersonnePhysique principal = addHabitant(noIndividuPrincipal);
+				PersonnePhysique conjoint = addHabitant(noIndividuConjoint);
+				EnsembleTiersCouple ensemble = addEnsembleTiersCouple(principal, conjoint, date(2004, 7, 14), null);
+				MenageCommun menage = ensemble.getMenage();
+
+				addRepresentationConventionnelle(conjoint, representant, date(2007, 1, 1), false);
+
+				return menage.getNumero();
+			}
+		});
+
+		final MenageCommun menage = (MenageCommun) tiersService.getTiers(noMenageCommun);
+
+		// Vérification des adresses
+		final AdressesFiscalesHisto adressesHisto = adresseService.getAdressesFiscalHisto(menage, false);
+		assertNotNull(adressesHisto);
+
+		assertEquals(1, adressesHisto.courrier.size());
+		assertAdresse(date(2000, 1, 1), null, "Lausanne", Source.CIVILE, true, adressesHisto.courrier.get(0));
+		assertAdresse(date(2000, 1, 1), null, "Lausanne", Source.CIVILE, false, adressesHisto.domicile.get(0));
+		assertAdresse(date(2000, 1, 1), null, "Lausanne", Source.CIVILE, false, adressesHisto.poursuite.get(0));
+		assertAdresse(date(2000, 1, 1), null, "Lausanne", Source.CIVILE, true, adressesHisto.representation.get(0));
+
+		final AdressesFiscales adresses = adresseService.getAdressesFiscales(menage, null, false);
+		assertNotNull(adresses);
+		assertAdressesEquals(adressesHisto.courrier.get(0), adresses.courrier);
+		assertAdressesEquals(adressesHisto.domicile.get(0), adresses.domicile);
+		assertAdressesEquals(adressesHisto.poursuite.get(0), adresses.poursuite);
+		assertAdressesEquals(adressesHisto.representation.get(0), adresses.representation);
+
+		final AdresseEnvoiDetaillee adresseEnvoi = adresseService.getAdresseEnvoi(menage, null, TypeAdresseFiscale.COURRIER, false);
+		assertNotNull(adresseEnvoi);
+		assertEquals("Monsieur et Madame", adresseEnvoi.getLigne1());
+		assertEquals("Paul Dupont", adresseEnvoi.getLigne2());
+		assertEquals("Virginie Dupont", adresseEnvoi.getLigne3());
+		assertEquals("Av de Beaulieu", adresseEnvoi.getLigne4());
+		assertEquals("1000 Lausanne", adresseEnvoi.getLigne5());
+		assertNull(adresseEnvoi.getLigne6());
+	}
+
+	/**
+	 * [UNIREG-1341] Vérifie que l'adresse courrier d'un ménage-commun avec un représentant sur lui-même et un autre représentant sur le principal est bien celle du représentant du ménage (le
+	 * représentant du principal est ignoré).
+	 */
+	@Test
+	public void testGetAdressesFiscalesMenageCommunAvecRepresentantSurMenageEtSurPrincipal() throws Exception {
+
+		final long noIndividuPrincipal = 2;
+		final long noIndividuConjoint = 4;
+		final long noIndividuRepresentantMenage = 11;
+		final long noIndividuRepresentantPrincipal = 12;
+
+		/*
+		 * Crée les données du mock service civil
+		 */
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu paul = addIndividu(noIndividuPrincipal, date(1953, 11, 2), "Dupont", "Paul", true);
+				addAdresse(paul, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, date(2000, 1, 1), null);
+
+				final MockIndividu virginie = addIndividu(noIndividuConjoint, date(1957, 1, 23), "Dupont", "Virginie", false);
+				addAdresse(virginie, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, date(2002, 2, 2), null);
+
+				marieIndividus(paul, virginie, date(2004, 7, 14));
+
+				final MockIndividu ronald = addIndividu(noIndividuRepresentantMenage, date(1945, 3, 17), "MacDonald", "Ronald", false);
+				addAdresse(ronald, EnumTypeAdresse.PRINCIPALE, MockRue.LeSentier.GrandRue, null, date(1945, 3, 17), null);
+
+				final MockIndividu wendy = addIndividu(noIndividuRepresentantPrincipal, date(1945, 3, 17), "Wendy", "Lafrite", false);
+				addAdresse(wendy, EnumTypeAdresse.PRINCIPALE, MockRue.Echallens.GrandRue, null, date(1945, 3, 17), null);
+			}
+		});
+
+		// Crée un ménage composé de deux habitants avec un représentant sur l'habitant principal et un autre sur le ménage
+		final long noMenageCommun = (Long) doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+
+				PersonnePhysique representantMenage = addHabitant(noIndividuRepresentantMenage);
+				PersonnePhysique representantPrincipal = addHabitant(noIndividuRepresentantPrincipal);
+
+				PersonnePhysique principal = addHabitant(noIndividuPrincipal);
+				PersonnePhysique conjoint = addHabitant(noIndividuConjoint);
+				EnsembleTiersCouple ensemble = addEnsembleTiersCouple(principal, conjoint, date(2004, 7, 14), null);
+				MenageCommun menage = ensemble.getMenage();
+
+				addRepresentationConventionnelle(menage, representantMenage, date(2007, 1, 1), false);
+				addRepresentationConventionnelle(principal, representantPrincipal, date(2005, 1, 1), false);
+
+				return menage.getNumero();
+			}
+		});
+
+		final MenageCommun menage = (MenageCommun) tiersService.getTiers(noMenageCommun);
+
+		// Vérification des adresses
+		final AdressesFiscalesHisto adressesHisto = adresseService.getAdressesFiscalHisto(menage, false);
+		assertNotNull(adressesHisto);
+
+		assertEquals(3, adressesHisto.courrier.size());
+		assertAdresse(date(2000, 1, 1), date(2004, 12, 31), "Lausanne", Source.CIVILE, true, adressesHisto.courrier.get(0));
+		assertAdresse(date(2005, 1, 1), date(2006, 12, 31), "Echallens", Source.REPRESENTATION, false, adressesHisto.courrier.get(1)); // représentant du principal
+		assertAdresse(date(2007, 1, 1), null, "Le Sentier", Source.REPRESENTATION, false, adressesHisto.courrier.get(2)); // représentant du ménage
+
+		assertAdresse(date(2000, 1, 1), null, "Lausanne", Source.CIVILE, false, adressesHisto.domicile.get(0));
+		assertAdresse(date(2000, 1, 1), null, "Lausanne", Source.CIVILE, false, adressesHisto.poursuite.get(0));
+		assertAdresse(date(2000, 1, 1), null, "Lausanne", Source.CIVILE, true, adressesHisto.representation.get(0));
+
+		final AdressesFiscales adresses = adresseService.getAdressesFiscales(menage, null, false);
+		assertNotNull(adresses);
+		assertAdressesEquals(adressesHisto.courrier.get(2), adresses.courrier);
+		assertAdressesEquals(adressesHisto.domicile.get(0), adresses.domicile);
+		assertAdressesEquals(adressesHisto.poursuite.get(0), adresses.poursuite);
+		assertAdressesEquals(adressesHisto.representation.get(0), adresses.representation);
+
+		final AdresseEnvoiDetaillee adresseEnvoi = adresseService.getAdresseEnvoi(menage, null, TypeAdresseFiscale.COURRIER, false);
+		assertNotNull(adresseEnvoi);
+		assertEquals("Monsieur et Madame", adresseEnvoi.getLigne1());
+		assertEquals("Paul Dupont", adresseEnvoi.getLigne2());
+		assertEquals("Virginie Dupont", adresseEnvoi.getLigne3());
+		assertEquals("p.a. Ronald MacDonald", adresseEnvoi.getLigne4());
+		assertEquals("Grande-Rue", adresseEnvoi.getLigne5());
+		assertEquals("1347 Le Sentier", adresseEnvoi.getLigne6());
+	}
+
+	/**
+	 * [UNIREG-1341] Vérifie que l'adresse courrier d'un ménage-commun dont le conjoint possède un représentant et dont le principal est sous tutelle est bien celle du représentant du conjoint.
+	 */
+	@Test
+	public void testGetAdressesFiscalesMenageCommunAvecRepresentantSurConjointEtPrincipalSousTutelle() throws Exception {
+
+		final long noIndividuPrincipal = 2;
+		final long noIndividuConjoint = 4;
+		final long noIndividuRepresentant = 11;
+		final long noIndividuTuteur = 12;
+
+		/*
+		 * Crée les données du mock service civil
+		 */
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu paul = addIndividu(noIndividuPrincipal, date(1953, 11, 2), "Dupont", "Paul", true);
+				addAdresse(paul, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, date(2000, 1, 1), null);
+
+				final MockIndividu virginie = addIndividu(noIndividuConjoint, date(1957, 1, 23), "Dupont", "Virginie", false);
+				addAdresse(virginie, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, date(2002, 2, 2), null);
+
+				marieIndividus(paul, virginie, date(2004, 7, 14));
+
+				final MockIndividu ronald = addIndividu(noIndividuRepresentant, date(1945, 3, 17), "MacDonald", "Ronald", false);
+				addAdresse(ronald, EnumTypeAdresse.PRINCIPALE, MockRue.LeSentier.GrandRue, null, date(1945, 3, 17), null);
+
+				final MockIndividu julien = addIndividu(noIndividuTuteur, date(1945, 3, 17), "Barouffe", "Julien", false);
+				addAdresse(julien, EnumTypeAdresse.PRINCIPALE, MockRue.Lonay.CheminDuRechoz, null, date(1945, 3, 17), null);
+			}
+		});
+
+		// Crée un ménage composé de deux habitants avec un représentant sur l'habitant principal
+		final long noMenageCommun = (Long) doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+
+				PersonnePhysique representant = addHabitant(noIndividuRepresentant);
+				PersonnePhysique tuteur = addHabitant(noIndividuTuteur);
+
+				PersonnePhysique principal = addHabitant(noIndividuPrincipal);
+				PersonnePhysique conjoint = addHabitant(noIndividuConjoint);
+				EnsembleTiersCouple ensemble = addEnsembleTiersCouple(principal, conjoint, date(2004, 7, 14), null);
+				MenageCommun menage = ensemble.getMenage();
+
+				addRepresentationConventionnelle(conjoint, representant, date(2007, 1, 1), false);
+				addTutelle(principal, tuteur, null, date(2007, 1, 1), null);
+
+				return menage.getNumero();
+			}
+		});
+
+		final MenageCommun menage = (MenageCommun) tiersService.getTiers(noMenageCommun);
+
+		// Vérification des adresses
+		final AdressesFiscalesHisto adressesHisto = adresseService.getAdressesFiscalHisto(menage, false);
+		assertNotNull(adressesHisto);
+
+		assertEquals(2, adressesHisto.courrier.size());
+		assertAdresse(date(2000, 1, 1), date(2006, 12, 31), "Lausanne", Source.CIVILE, true, adressesHisto.courrier.get(0));
+		assertAdresse(date(2007, 1, 1), null, "Le Sentier", Source.REPRESENTATION, false, adressesHisto.courrier.get(1)); // adresse du représentant du conjoint
+		assertAdresse(date(2000, 1, 1), null, "Lausanne", Source.CIVILE, false, adressesHisto.domicile.get(0));
+		assertAdresse(date(2000, 1, 1), null, "Lausanne", Source.CIVILE, false, adressesHisto.poursuite.get(0));
+		assertAdresse(date(2000, 1, 1), null, "Lausanne", Source.CIVILE, true, adressesHisto.representation.get(0));
+
+		final AdressesFiscales adresses = adresseService.getAdressesFiscales(menage, null, false);
+		assertNotNull(adresses);
+		assertAdressesEquals(adressesHisto.courrier.get(1), adresses.courrier);
+		assertAdressesEquals(adressesHisto.domicile.get(0), adresses.domicile);
+		assertAdressesEquals(adressesHisto.poursuite.get(0), adresses.poursuite);
+		assertAdressesEquals(adressesHisto.representation.get(0), adresses.representation);
+
+		final AdresseEnvoiDetaillee adresseEnvoi = adresseService.getAdresseEnvoi(menage, null, TypeAdresseFiscale.COURRIER, false);
+		assertNotNull(adresseEnvoi);
+		assertEquals("Monsieur et Madame", adresseEnvoi.getLigne1());
+		assertEquals("Paul Dupont", adresseEnvoi.getLigne2());
+		assertEquals("Virginie Dupont", adresseEnvoi.getLigne3());
+		assertEquals("p.a. Ronald MacDonald", adresseEnvoi.getLigne4());
+		assertEquals("Grande-Rue", adresseEnvoi.getLigne5());
+		assertEquals("1347 Le Sentier", adresseEnvoi.getLigne6());
+	}
+
+	/**
 	 * [UNIREG-1341] Vérifie que l'adresse courrier d'un ménage-commun avec un conseiller légal est bien celle du conseiller.
 	 */
 	@Test

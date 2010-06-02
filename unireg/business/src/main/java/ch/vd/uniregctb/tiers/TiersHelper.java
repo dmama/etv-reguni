@@ -1,13 +1,10 @@
 package ch.vd.uniregctb.tiers;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.DateRangeHelper.Range;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.adresse.AdressesTiers;
@@ -138,6 +135,35 @@ public class TiersHelper {
 	}
 
 	/**
+	 * @param tiers un tiers dont on veut tester la mise sous curatelle, ou non.
+	 * @param date  la date à laquelle on veut faire le test
+	 * @return <b>vrai</b> si le tiers est sous curatelle à la date donnée; <b>faux</b> autrement.
+	 */
+	public static boolean estSousCuratelle(Tiers tiers, RegDate date) {
+		return getRapportSujetOfType(tiers, TypeRapportEntreTiers.CURATELLE, date) != null;
+	}
+
+	/**
+	 * @param tiers un tiers dont on veut tester la mise sous curatelle/tutelle, ou non.
+	 * @param date  la date à laquelle on veut faire le test
+	 * @return <b>vrai</b> si le tiers est sous curatelle ou tutelle à la date donnée; <b>faux</b> autrement.
+	 */
+	public static boolean estSousCuratelleOuTutelle(Tiers tiers, RegDate date) {
+		final Set<RapportEntreTiers> rapports = tiers.getRapportsSujet();
+		if (rapports != null) {
+			for (RapportEntreTiers rapport : rapports) {
+				if (!rapport.isValidAt(date)) {
+					continue;
+				}
+				if (rapport.getType() == TypeRapportEntreTiers.CURATELLE || rapport.getType() == TypeRapportEntreTiers.TUTELLE) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	/**
 	 * @param tiers un tiers dont on veut tester l'existence d'un représentant avec exécution forcée
 	 * @param date  la date à laquelle on veut faire le test
 	 * @return <b>vrai</b> si le tiers possède un représentant avec exécution forcée à la date donnée; <b>faux</b> autrement.
@@ -168,6 +194,34 @@ public class TiersHelper {
 						results = new ArrayList<RapportEntreTiers>(); // création à la demande
 					}
 					results.add(rapport);
+				}
+			}
+		}
+
+		return results;
+	}
+
+	/**
+	 * Retourne l'historique de tous les rapport-entre-tiers du type spécifiés, et dont le tiers est le sujet.
+	 *
+	 * @param tiers le tiers dont on veut l'historique des rapports.
+	 * @param types les types de rapports voulus
+	 * @return une list des rapport-entre-tiers, ou <b>null</b> si aucun rapport n'existe du type spécifié.
+	 */
+	public static List<RapportEntreTiers> getRapportSujetHistoOfType(Tiers tiers, TypeRapportEntreTiers... types) {
+
+		List<RapportEntreTiers> results = null;
+
+		final Set<RapportEntreTiers> rapports = tiers.getRapportsSujet();
+		if (rapports != null) {
+			for (RapportEntreTiers rapport : rapports) {
+				for (TypeRapportEntreTiers type : types) {
+					if (type == rapport.getType()) {
+						if (results == null) {
+							results = new ArrayList<RapportEntreTiers>(); // création à la demande
+						}
+						results.add(rapport);
+					}
 				}
 			}
 		}

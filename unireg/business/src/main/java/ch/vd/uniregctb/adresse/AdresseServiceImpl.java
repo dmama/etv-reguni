@@ -1262,11 +1262,11 @@ public class AdresseServiceImpl implements AdresseService {
 
 		final RapportEntreTiers rapport;
 
-		if (type == TypeAdresseRepresentant.TUTELLE || type == TypeAdresseRepresentant.CURATELLE) {
+		final EnsembleTiersCouple ensemble = tiersService.getEnsembleTiersCouple(menage, date);
+		final PersonnePhysique principal = getPrincipalPourAdresse(menage);
+		final PersonnePhysique conjoint = ensemble.getConjoint(principal);
 
-			final EnsembleTiersCouple ensemble = tiersService.getEnsembleTiersCouple(menage, date);
-			final PersonnePhysique principal = getPrincipalPourAdresse(menage);
-			final PersonnePhysique conjoint = ensemble.getConjoint(principal);
+		if (type == TypeAdresseRepresentant.TUTELLE || type == TypeAdresseRepresentant.CURATELLE) {
 
 			if (principal == null) {
 				// pas de principal, pas de tuteur
@@ -1286,7 +1286,25 @@ public class AdresseServiceImpl implements AdresseService {
 			}
 		}
 		else {
-			rapport = TiersHelper.getRapportSujetOfType(menage, type.getTypeRapport(), date);
+			// [UNIREG-1341] le représentant du principal doit s'appliquer au ménage commun. Si le ménage commun et le principal possèdent tous les deux des représentants, celui du ménage commun prime.
+			final RapportEntreTiers rapportMenage = TiersHelper.getRapportSujetOfType(menage, type.getTypeRapport(), date);
+			if (rapportMenage == null && principal != null) {
+				// pas de représentant sur le ménage -> on se rabat sur le représentant du principal (qui peut être nul lui aussi)
+				if (TiersHelper.estSousCuratelleOuTutelle(principal, date)) {
+					if (conjoint != null) {
+						rapport = TiersHelper.getRapportSujetOfType(conjoint, type.getTypeRapport(), date);
+					}
+					else {
+						rapport = null;
+					}
+				}
+				else {
+					rapport = TiersHelper.getRapportSujetOfType(principal, type.getTypeRapport(), date);
+				}
+			}
+			else {
+				rapport = rapportMenage;
+			}
 		}
 
 		if (rapport == null) {
@@ -1342,12 +1360,13 @@ public class AdresseServiceImpl implements AdresseService {
 
 		final AdresseGenerique adresse;
 
+		final EnsembleTiersCouple ensemble = tiersService.getEnsembleTiersCouple(menage, date);
+		final PersonnePhysique principal = getPrincipalPourAdresse(menage);
+		final PersonnePhysique conjoint = ensemble.getConjoint(principal);
+
+
 		if (type == TypeAdresseRepresentant.TUTELLE || type == TypeAdresseRepresentant.CURATELLE) {
 			// Un ménage ne peut pas être mis sous tutelle/curatelle, seulement les personnes physiques qui le compose. On va donc chercher le tuteur/curateur sur ces derniers.
-
-			final EnsembleTiersCouple ensemble = tiersService.getEnsembleTiersCouple(menage, date);
-			final PersonnePhysique principal = getPrincipalPourAdresse(menage);
-			final PersonnePhysique conjoint = ensemble.getConjoint(principal);
 
 			if (principal == null) {
 				// pas de principal, pas de tuteur
@@ -1367,7 +1386,8 @@ public class AdresseServiceImpl implements AdresseService {
 				final AdresseGenerique courrierConjoint = getAdresseFiscale(conjoint, TypeAdresseFiscale.COURRIER, date, true, callDepth + 1, strict);
 				if (courrierConjoint != null && courrierConjoint.getSource() != Source.TUTELLE && courrierConjoint.getSource() != Source.CURATELLE) {
 					// si le conjoint n'est pas sous tutelle, on utilise son adresse courrier comme adresse de représentation du ménage
-					adresse = new AdresseGeneriqueAdapter(courrierConjoint, Source.CONJOINT, false);
+					final Source source = determineSourceAdresseConjointQuandPrincipalSousTutelle(courrierConjoint);
+					adresse = new AdresseGeneriqueAdapter(courrierConjoint, source, false);
 				}
 				else {
 					adresse = adresseTuteur;
@@ -1375,8 +1395,16 @@ public class AdresseServiceImpl implements AdresseService {
 			}
 		}
 		else {
-			// On récupère l'adresse de représentant du ménage
-			adresse = getAdresseRepresentantPourTiers(menage, date, type, callDepth + 1, strict);
+			// [UNIREG-1341] le représentant du principal doit s'appliquer au ménage commun. Si le ménage commun et le principal possèdent tous les deux des représentants, celui du ménage commun prime.
+			final AdresseGenerique adresseRepresentantMenage = getAdresseRepresentantPourTiers(menage, date, type, callDepth + 1, strict);
+			if (adresseRepresentantMenage == null && principal != null) {
+				// pas de représentant sur le ménage -> on se rabat sur l'adresse de représentant du principal (qui peut être nulle elle aussi)
+				adresse = getAdresseRepresentantPourTiers(principal, date, type, callDepth + 1, strict);
+			}
+			else {
+				// représentant sur le ménage -> on utilise cette adresse
+				adresse = adresseRepresentantMenage;
+			}
 		}
 
 		return adresse;
@@ -1462,12 +1490,12 @@ public class AdresseServiceImpl implements AdresseService {
 
 		final List<AdresseGenerique> adresses;
 
+		final EnsembleTiersCouple ensemble = tiersService.getEnsembleTiersCouple(menage, null);
+		final PersonnePhysique principal = getPrincipalPourAdresse(menage);
+		final PersonnePhysique conjoint = ensemble.getConjoint(principal);
+
 		if (type == TypeAdresseRepresentant.TUTELLE || type == TypeAdresseRepresentant.CURATELLE) {
 			// Un ménage ne peut pas être mis sous tutelle/curatelle, seulement les personnes physiques qui le compose. On va donc chercher le tuteur/curateur sur ces derniers.
-
-			final EnsembleTiersCouple ensemble = tiersService.getEnsembleTiersCouple(menage, null);
-			final PersonnePhysique principal = getPrincipalPourAdresse(menage);
-			final PersonnePhysique conjoint = ensemble.getConjoint(principal);
 
 			if (principal == null) {
 				// pas de principal, par de tuteur
@@ -1501,7 +1529,8 @@ public class AdresseServiceImpl implements AdresseService {
 					for (AdresseGenerique adresse : adressesRange) {
 						// on ignore toutes les adresses où le conjoint est lui-même sous tutelle
 						if (adresse.getSource() != Source.TUTELLE && adresse.getSource() != Source.CURATELLE) {
-							adressesConjointSansTutelle.add(new AdresseGeneriqueAdapter(adresse, Source.CONJOINT, false));
+							final Source source = determineSourceAdresseConjointQuandPrincipalSousTutelle(adresse);
+							adressesConjointSansTutelle.add(new AdresseGeneriqueAdapter(adresse, source, false));
 						}
 					}
 				}
@@ -1510,11 +1539,41 @@ public class AdresseServiceImpl implements AdresseService {
 			}
 		}
 		else {
-			// On récupère l'historique des adresses du représentant du principal
-			adresses = getAdressesRepresentantHistoPourTiers(menage, type, callDepth + 1, strict);
+			// [UNIREG-1341] le représentant du principal doit s'appliquer au ménage commun. Si le ménage commun et le principal possèdent tous les deux des représentants, celui du ménage commun prime.
+			if (principal == null) {
+				// pas de principal, pas de problème
+				adresses = getAdressesRepresentantHistoPourTiers(menage, type, callDepth + 1, strict);
+			}
+			else {
+				// On récupère les adresses des représentants du principal et du ménage
+				final List<AdresseGenerique> adressesRepresentantPrincipal = getAdressesRepresentantHistoPourTiers(principal, type, callDepth + 1, strict);
+				final List<AdresseGenerique> adressesRepresentantMenage = getAdressesRepresentantHistoPourTiers(menage, type, callDepth + 1, strict);
+
+				// On fusionne ces deux listes
+				adresses = AdresseMixer.override(adressesRepresentantPrincipal, adressesRepresentantMenage, null, null);
+			}
 		}
 
 		return adresses;
+	}
+
+	/**
+	 * [UNIREG-1341] Détermine la source de l'adresse du conjoint utilisée sur le ménage commun quand le principal est sous tutelle.
+	 *
+	 * @param adresseConjoint l'adresse courrier du conjoint utilisée pour le ménage commun
+	 * @return la source à utiliser
+	 */
+	private Source determineSourceAdresseConjointQuandPrincipalSousTutelle(AdresseGenerique adresseConjoint) {
+		final Source source;
+		if (adresseConjoint.getSource() == Source.REPRESENTATION || adresseConjoint.getSource() == Source.CONSEIL_LEGAL) {
+			// s'il s'agit d'un représentant ou d'un conseiller, on garde la source spécifique.
+			source = adresseConjoint.getSource();
+		}
+		else {
+			// dans tous les autres cas, l'adresse du conjoint est la sienne propre, on le mentionne donc spécifiquement
+			source = Source.CONJOINT;
+		}
+		return source;
 	}
 
 	/**
