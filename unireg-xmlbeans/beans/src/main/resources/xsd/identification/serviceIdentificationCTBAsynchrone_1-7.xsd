@@ -85,7 +85,7 @@
 										</xs:sequence>
 									</xs:complexType>
 								</xs:element>
-								<xs:element name="etatReponse" type="EtatReponseType">
+								<xs:element name="enAttenteIdentifManuel" type="EnAttenteIdentifManuelType">
 									<xs:annotation>
 										<xs:documentation>Si le demandeur a choisit le type de réponse "mode_manuel_avec_ACK", alors  dés que la demande automatique échoue, il reçoit une première réponse avec ce flag, l'informant que l'identification manuelle est en cours. Il recevra une seconde réponse avec le résultat de l'identification manuelle lorsque celle-ci aura eu lieu. </xs:documentation>
 									</xs:annotation>
@@ -257,9 +257,9 @@
 			<xs:maxLength value="2"/>
 		</xs:restriction>
 	</xs:simpleType>
-	<xs:simpleType name="EtatReponseType">
+	<xs:simpleType name="EnAttenteIdentifManuelType">
 		<xs:restriction base="xs:string">
-			<xs:enumeration value="EN_ATTENTE_IDENTIF_MANUEL"/>
+			<xs:enumeration value="true"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="ModeIdentificationType">
