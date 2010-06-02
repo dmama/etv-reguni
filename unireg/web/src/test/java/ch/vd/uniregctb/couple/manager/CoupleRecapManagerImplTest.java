@@ -194,7 +194,7 @@ public class CoupleRecapManagerImplTest extends BusinessTest {
 		}
 		catch (Exception e) {
 			assertEquals("ch.vd.registre.base.validation.ValidationException: MenageCommun #" + ids.menage + " - 1 erreur(s) - 0 warning(s):\n" +
-					" [E] Le for fiscal [ForFiscalPrincipal (1988.01.01 - ?)] ne peut pas exister en dehors de la période de validité du ménage-commun numéro [" + ids.menage + "]\n", e.getMessage());
+					" [E] Le for fiscal [ForFiscalPrincipal (01.01.1988 - ?)] ne peut pas exister en dehors de la période de validité du ménage-commun numéro [" + ids.menage + "]\n", e.getMessage());
 		}
 
 		// On s'assure que la transaction a bien été rollée-back, c'est-à-dire que le trois tiers sont toujours des personnes physiques.
