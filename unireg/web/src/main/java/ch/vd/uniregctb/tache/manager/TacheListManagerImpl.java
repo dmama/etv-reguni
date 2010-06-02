@@ -19,7 +19,6 @@ import ch.vd.uniregctb.common.ParamPagination;
 import ch.vd.uniregctb.editique.EditiqueCompositionService;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueResultat;
-import ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServiceSecuriteException;
 import ch.vd.uniregctb.interfaces.service.ServiceSecuriteService;
@@ -29,6 +28,7 @@ import ch.vd.uniregctb.tache.view.NouveauDossierListView;
 import ch.vd.uniregctb.tache.view.TacheCriteriaView;
 import ch.vd.uniregctb.tache.view.TacheCriteriaViewBase;
 import ch.vd.uniregctb.tache.view.TacheListView;
+import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForGestion;
 import ch.vd.uniregctb.tiers.IndividuNotFoundException;
@@ -84,6 +84,17 @@ public class TacheListManagerImpl implements TacheListManager {
 		this.editiqueService = editiqueService;
 	}
 
+	private String getNomCollectiviteAdministrativeAssociee(Tache tache) throws InfrastructureException {
+		final CollectiviteAdministrative caAssignee = tache.getCollectiviteAdministrativeAssignee();
+		if (caAssignee != null) {
+			final ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative ca = serviceInfrastructureService.getCollectivite(caAssignee.getNumeroCollectiviteAdministrative());
+			return ca.getNomCourt();
+		}
+		else {
+			return null;
+		}
+	}
+
 	/**
 	 * Recherche de declarations d'impot suivant certains criteres
 	 *
@@ -94,28 +105,27 @@ public class TacheListManagerImpl implements TacheListManager {
 	 * @throws AdressesResolutionException
 	 */
 	@Transactional(readOnly = true)
-	public List<TacheListView> find(TacheCriteriaView tacheCriteria, ParamPagination paramPagination) throws InfrastructureException,
-			AdressesResolutionException {
-		List<TacheListView> tachesView = new ArrayList<TacheListView>();
+	public List<TacheListView> find(TacheCriteriaView tacheCriteria, ParamPagination paramPagination) throws InfrastructureException, AdressesResolutionException {
+		final List<TacheListView> tachesView = new ArrayList<TacheListView>();
 
-		TacheCriteria coreCriteria = buildCoreCriteria(tacheCriteria);
-		List<Tache> taches = tacheDAO.find(coreCriteria, paramPagination);
+		final TacheCriteria coreCriteria = buildCoreCriteria(tacheCriteria);
+		final List<Tache> taches = tacheDAO.find(coreCriteria, paramPagination);
 
 		for (Tache tache : taches) {
 			final Contribuable contribuable = tache.getContribuable();
 			final ForGestion forGestionActif = tiersService.getDernierForGestionConnu(contribuable, null);
 			final Integer numeroOfsAutoriteFiscale = (forGestionActif == null ? null : forGestionActif.getNoOfsCommune());
-			final Integer oid = contribuable.getOfficeImpotId();
-			final CollectiviteAdministrative officeImpot = (oid == null ? null : serviceInfrastructureService.getCollectivite(oid));
 
 			final TacheListView tacheView = new TacheListView();
 			tacheView.setId(tache.getId());
 			tacheView.setNumero(contribuable.getNumero());
 			tacheView.setNumeroForGestion(numeroOfsAutoriteFiscale);
-			if (officeImpot != null) {
-				tacheView.setOfficeImpot(officeImpot.getNomCourt());
-			}
 
+			final String nomCa = getNomCollectiviteAdministrativeAssociee(tache);
+			if (nomCa != null) {
+				tacheView.setOfficeImpot(nomCa);
+			}
+	
 			try {
 				final List<String> nomPrenom = adresseService.getNomCourrier(contribuable, null, false);
 				tacheView.setNomCourrier(nomPrenom);
@@ -258,24 +268,24 @@ public class TacheListManagerImpl implements TacheListManager {
 	@Transactional(readOnly = true)
 	public List<NouveauDossierListView> find(NouveauDossierCriteriaView dossierCriteria, ParamPagination paramPagination) throws InfrastructureException, AdresseException {
 
-		List<NouveauDossierListView> nouveauxDossiersView = new ArrayList<NouveauDossierListView>();
+		final List<NouveauDossierListView> nouveauxDossiersView = new ArrayList<NouveauDossierListView>();
 		dossierCriteria.setTypeTache(TypeTache.TacheNouveauDossier.toString());
-		TacheCriteria coreCriteria = buildCoreCriteria(dossierCriteria);
-		List<Tache> taches = tacheDAO.find(coreCriteria, paramPagination);
+		final TacheCriteria coreCriteria = buildCoreCriteria(dossierCriteria);
+		final List<Tache> taches = tacheDAO.find(coreCriteria, paramPagination);
 
 		for (Tache tache : taches) {
 			final Contribuable contribuable = tache.getContribuable();
 			final ForGestion forGestionActif = tiersService.getDernierForGestionConnu(contribuable, null);
 			final Integer numeroOfsAutoriteFiscale = (forGestionActif == null ? null : forGestionActif.getNoOfsCommune());
-			final Integer oid = contribuable.getOfficeImpotId();
-			final CollectiviteAdministrative officeImpot = (oid == null ? null : serviceInfrastructureService.getCollectivite(oid));
 
 			final NouveauDossierListView nouveauDossierView = new NouveauDossierListView();
 			nouveauDossierView.setId(tache.getId());
 			nouveauDossierView.setNumero(contribuable.getNumero());
 			nouveauDossierView.setNumeroForGestion(numeroOfsAutoriteFiscale);
-			if (officeImpot != null) {
-				nouveauDossierView.setOfficeImpot(officeImpot.getNomCourt());
+
+			final String nomCa = getNomCollectiviteAdministrativeAssociee(tache);
+			if (nomCa != null) {
+				nouveauDossierView.setOfficeImpot(nomCa);
 			}
 
 			final List<String> nomPrenom = adresseService.getNomCourrier(contribuable, null, false);
