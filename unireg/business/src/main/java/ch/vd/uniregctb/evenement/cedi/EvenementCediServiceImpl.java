@@ -6,6 +6,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.ModeleDocument;
@@ -41,6 +42,11 @@ public class EvenementCediServiceImpl implements EvenementCediService, Evenement
 		final Contribuable ctb = (Contribuable) tiersDAO.get(ctbId);
 		if (ctb == null) {
 			throw new EvenementCediException("Le contribuable n°" + ctbId + " n'existe pas.");
+		}
+
+		final ValidationResults results = ctb.validate();
+		if (results.hasErrors()) {
+			throw new EvenementCediException("Le contribuable n°" + ctbId + " ne valide pas (" + results.toString() + ").");
 		}
 
 		// On s'assure que l'on est bien cohérent avec les données en base
