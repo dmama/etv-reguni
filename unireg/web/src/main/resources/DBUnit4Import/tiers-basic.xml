@@ -2585,6 +2585,7 @@
     <column>BUSINESS_USER</column>
     <column>REPLY_TO</column>
     <column>PERIODE_FISCALE</column>
+	<column>MODE_IDENTIFICATION</column>
     <column>EMETTEUR_ID</column>
     <column>PRIO_EMETTEUR</column>
     <column>DATE_DEMANDE</column>
@@ -2602,6 +2603,7 @@
       <value>Test</value>
       <value>Test</value>
       <value>2008</value>
+	  <value>MANUEL_SANS_ACK</value>
       <value>Test</value>
       <value>NON_PRIORITAIRE</value>
       <value>2008-01-01</value>
@@ -2620,6 +2622,7 @@
       <value>Test</value>
       <value>Test</value>
       <value>2008</value>
+	  <value>MANUEL_SANS_ACK</value>	
       <value>Test</value>
       <value>NON_PRIORITAIRE</value>
       <value>2008-02-21</value>

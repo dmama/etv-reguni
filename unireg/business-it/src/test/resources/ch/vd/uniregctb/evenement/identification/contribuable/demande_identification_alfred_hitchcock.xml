@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<identificationCTB xmlns="http://www.vd.ch/fiscalite/registre/identificationContribuable-v1.6">
+<identificationCTB xmlns="http://www.vd.ch/fiscalite/registre/identificationContribuable-v1.7">
 	<demande>
 		<demande>
 			<messageId>1234</messageId>
@@ -8,6 +8,7 @@
 			<periodeFiscale>2008+01:00</periodeFiscale>
 			<prioriteEmetteur>false</prioriteEmetteur>
 			<prioriteUtilisateur>2</prioriteUtilisateur>
+			<modeIdentification>MANUEL_SANS_ACK</modeIdentification>
 		</demande>
 		<personne>
 			<nom>Hitchcock</nom>
