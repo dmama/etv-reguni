@@ -146,7 +146,7 @@ public class EvenementCivilListener extends EsbMessageListener {
 					b.append("L'événement civil ").append(id).append(" est inséré en base de données {");
 					b.append("id=").append(id);
 					b.append(", type=").append(evenement.getType());
-					b.append(", date=").append(RegDateHelper.dateToDashString(evenement.getDateEvenement()));
+					b.append(", date=").append(RegDateHelper.dateToDisplayString(evenement.getDateEvenement()));
 					b.append(", no individu=").append(evenement.getNumeroIndividuPrincipal());
 					b.append(", OFS commune=").append(evenement.getNumeroOfsCommuneAnnonce()).append("}.");
 					Audit.info(id, b.toString());

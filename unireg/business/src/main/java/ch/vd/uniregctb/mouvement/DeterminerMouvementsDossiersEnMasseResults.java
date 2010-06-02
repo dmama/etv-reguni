@@ -130,7 +130,7 @@ public class DeterminerMouvementsDossiersEnMasseResults extends JobResults<Long,
 	}
 
 	public void addErreurDeterminationOidGestion(long numero, RegDate date) {
-		erreurs.add(new NonTraite(numero, Raison.PAS_OID_GESTION, RegDateHelper.dateToDashString(date)));
+		erreurs.add(new NonTraite(numero, Raison.PAS_OID_GESTION, RegDateHelper.dateToDisplayString(date)));
 	}
 
 	public void addSourcierPurIgnore(long numero, RegDate date) {
@@ -143,12 +143,12 @@ public class DeterminerMouvementsDossiersEnMasseResults extends JobResults<Long,
 			final NonTraite precedent = ignores.get(ignores.size() - 1);
 			dejaConnu = (precedent.noCtb == numero && precedent.type == raison);
 			if (dejaConnu) {
-				final NonTraite nouvelElement = new NonTraite(numero, raison, String.format("%s, %s", precedent.complement, RegDateHelper.dateToDashString(date)));
+				final NonTraite nouvelElement = new NonTraite(numero, raison, String.format("%s, %s", precedent.complement, RegDateHelper.dateToDisplayString(date)));
 				ignores.set(ignores.size() - 1, nouvelElement);
 			}
 		}
 		if (!dejaConnu) {
-			ignores.add(new NonTraite(numero, raison, RegDateHelper.dateToDashString(date)));
+			ignores.add(new NonTraite(numero, raison, RegDateHelper.dateToDisplayString(date)));
 		}
 	}
 
