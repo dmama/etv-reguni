@@ -3,7 +3,7 @@ package ch.vd.uniregctb.evenement.obtentionpermis;
 import ch.vd.uniregctb.evenement.common.MockEvenementCivil;
 
 /**
- * Bouchon pour un événement de typeNaissance
+ * Bouchon pour un événement de obtention de nationalité
  *
  * @author Ludovic Bertin
  */
