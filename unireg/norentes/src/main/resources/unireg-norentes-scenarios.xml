@@ -173,9 +173,12 @@
 		class="ch.vd.uniregctb.norentes.civil.obtention.permis.Ec_16000_03_ObtentionPermis_NonResident_Scenario" />
 
 	<!-- Obtention nationalité suisse -->
-	<bean id="ec_12000_01_NationaliteSuisse_AvecPermisC_Test" parent="evenementCivilScenario"
-		class="ch.vd.uniregctb.norentes.civil.obtention.nationalite.Ec_12000_01_NationaliteSuisse_AvecPermisC_Scenario" />
-	
+	<bean id="ec_12000_01_NationaliteSuisse_AvecPermisC_Test" parent="evenementCivilScenario" class="ch.vd.uniregctb.norentes.civil.obtention.nationalite.Ec_12000_01_NationaliteSuisse_AvecPermisC_Scenario"/>
+	<bean id="ec_12000_02_NationaliteSuisse_DomicileHorsCanton_Test" parent="evenementCivilScenario" class="ch.vd.uniregctb.norentes.civil.obtention.nationalite.Ec_12000_02_NationaliteSuisse_DomicileHorsCanton_Scenario">
+		<property name="evenementFiscalSender" ref="evenementFiscalSender"/>
+		<property name="adresseService" ref="adresseService" />
+	</bean>
+
 	<!-- Arrivées -->
 	<bean id="ec_18000_01_Arrivee_1_2_1_Scenario" parent="evenementCivilScenario" class="ch.vd.uniregctb.norentes.civil.arrivee.Ec_18000_01_Arrivee_1_2_1_Scenario">
 		<property name="serviceInfrastructureService" ref="serviceInfrastructureService"/>

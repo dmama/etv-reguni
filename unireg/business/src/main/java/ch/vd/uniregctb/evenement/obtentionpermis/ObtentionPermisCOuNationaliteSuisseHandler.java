@@ -14,6 +14,7 @@ import ch.vd.uniregctb.common.EtatCivilHelper;
 import ch.vd.uniregctb.common.FiscalDateHelper;
 import ch.vd.uniregctb.evenement.EvenementCivil;
 import ch.vd.uniregctb.evenement.EvenementCivilErreur;
+import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.evenement.common.EvenementCivilHandlerBase;
 import ch.vd.uniregctb.evenement.common.EvenementCivilHandlerException;
@@ -178,7 +179,19 @@ public abstract class ObtentionPermisCOuNationaliteSuisseHandler extends Eveneme
 					throw new EvenementCivilHandlerException("Impossible de récupérer la commune", e);
 				}
 			}
-			
+			else {
+				// on vérifie que la commune principale est bien vaudoise...
+				try {
+					final Commune commune = getService().getServiceInfra().getCommuneByNumeroOfsEtendu(noOfsEtendu, dateEvenement);
+					if (commune == null || !commune.isVaudoise()) {
+						noOfsEtendu = 0;
+					}
+				}
+				catch (InfrastructureException e) {
+					throw new EvenementCivilHandlerException("Impossible de récupérer la commune", e);
+				}
+			}
+
 			// ouverture d'un for si la commune est vaudoise
 			if (noOfsEtendu != 0) {
 				if (noOfsEtendu == NO_OFS_FRACTION_SENTIER) {
@@ -199,6 +212,9 @@ public abstract class ObtentionPermisCOuNationaliteSuisseHandler extends Eveneme
 					openForFiscalPrincipalDomicileVaudoisOrdinaire(habitant, dateEvenement, noOfsEtendu, MotifFor.PERMIS_C_SUISSE, true);
 					Audit.info(evenement.getNumeroEvenement(), "Ouverture du for principal de l'individu au rôle ordinaire");
 				}
+			}
+			else {
+				Audit.info(evenement.getNumeroEvenement(), "Domicile hors du territoire cantonal : pas d'ouverture de for");
 			}
 		}
 		return null;
