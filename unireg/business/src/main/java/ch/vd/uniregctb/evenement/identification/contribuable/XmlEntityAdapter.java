@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 
 import ch.vd.fiscalite.registre.identificationContribuable.DatePartielleType;
+import ch.vd.fiscalite.registre.identificationContribuable.EnAttenteIdentifManuelType;
 import ch.vd.fiscalite.registre.identificationContribuable.IdentificationCTBDocument;
 import ch.vd.fiscalite.registre.identificationContribuable.InformationAdresseType;
 import ch.vd.fiscalite.registre.identificationContribuable.ModeIdentificationType;
@@ -25,7 +26,6 @@ import ch.vd.uniregctb.type.Sexe;
  * Classe qui permet de traduire un {@link IdentificationContribuable} en un {@link IdentificationCTB}, et vice-versa.
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
- *
  */
 public abstract class XmlEntityAdapter {
 
@@ -52,6 +52,9 @@ public abstract class XmlEntityAdapter {
 		xml.setDate(date2xml(entity.getDate()));
 		if (entity.getErreur() != null) {
 			entity2xml(entity.getErreur(), xml.addNewErreur());
+		}
+		if (entity.isEnAttenteIdentifManuel()) {
+			xml.setEnAttenteIdentifManuel(EnAttenteIdentifManuelType.TRUE);
 		}
 	}
 
@@ -98,7 +101,7 @@ public abstract class XmlEntityAdapter {
 	}
 
 	private static void entity2xml(CriteresPersonne entity,
-			IdentificationCTBDocument.IdentificationCTB.Demande.Personne xml) {
+	                               IdentificationCTBDocument.IdentificationCTB.Demande.Personne xml) {
 		if (entity.getAdresse() != null) {
 			entity2xml(entity.getAdresse(), xml.addNewAdresse());
 		}
@@ -214,13 +217,13 @@ public abstract class XmlEntityAdapter {
 	}
 
 	private static Demande.ModeIdentificationType translateModeIdentification(ModeIdentificationType.Enum modeIdentification) {
-		if(ModeIdentificationType.SANS_MANUEL.equals(modeIdentification)){
+		if (ModeIdentificationType.SANS_MANUEL.equals(modeIdentification)) {
 			return Demande.ModeIdentificationType.SANS_MANUEL;
 		}
-		if(ModeIdentificationType.MANUEL_AVEC_ACK.equals(modeIdentification)){
+		if (ModeIdentificationType.MANUEL_AVEC_ACK.equals(modeIdentification)) {
 			return Demande.ModeIdentificationType.MANUEL_AVEC_ACK;
 		}
-		if(ModeIdentificationType.MANUEL_SANS_ACK.equals(modeIdentification)){
+		if (ModeIdentificationType.MANUEL_SANS_ACK.equals(modeIdentification)) {
 			return Demande.ModeIdentificationType.MANUEL_SANS_ACK;
 		}
 		return null;

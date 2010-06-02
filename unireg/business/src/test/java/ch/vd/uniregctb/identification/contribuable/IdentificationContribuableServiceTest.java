@@ -10,12 +10,14 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.test.annotation.NotTransactional;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.common.model.EnumTypeAdresse;
+import ch.vd.fiscalite.registre.identificationContribuable.ModeIdentificationType;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BusinessTest;
@@ -917,6 +919,165 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 	@NotTransactional
 	@Test
+	public void testHandleDemande_SANS_MANUEL() throws Exception {
+
+		// création d'un contribuable
+		final Long id = (Long) doInNewTransaction(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique zora = addNonHabitant("Zora", "Larousse", date(1970, 4, 3), Sexe.FEMININ);
+				addForPrincipal(zora, RegDate.get(2009, 3, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Aubonne);
+				return zora.getNumero();
+			}
+		});
+		assertCountDemandes(0);
+
+		globalTiersIndexer.sync();
+
+		// création et traitement du message d'identification
+		final IdentificationContribuable message = createDemande("Zouzou", "LaVerte",Demande.ModeIdentificationType.SANS_MANUEL);
+		doInTransaction(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				service.handleDemande(message);
+				return null;
+			}
+		});
+
+		doInTransaction(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+
+				// Zora n'est pas trouvée
+				final List<IdentificationContribuable> list = identCtbDAO.getAll();
+				assertEquals(1, list.size());
+
+				final IdentificationContribuable ic = list.get(0);
+				assertNotNull(ic);
+				assertEquals(Etat.NON_IDENTIFIE, ic.getEtat());
+				assertEquals(Integer.valueOf(0), ic.getNbContribuablesTrouves());
+
+				final Reponse reponse = ic.getReponse();
+				assertNotNull(reponse);
+				assertNotNull(reponse.getErreur());
+
+
+				// La demande doit avoir reçu une réponse automatiquement
+				assertEquals(1, messageHandler.getSentMessages().size());
+				final IdentificationContribuable sent = messageHandler.getSentMessages().get(0);
+				assertEquals(ic.getId(), sent.getId());
+
+				return null;
+			}
+		});
+
+	}
+
+	@NotTransactional
+	@Test
+	public void testHandleDemande_MANUEL_AVEC_ACK() throws Exception {
+
+		// création d'un contribuable
+		final Long id = (Long) doInNewTransaction(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique zora = addNonHabitant("Zora", "Larousse", date(1970, 4, 3), Sexe.FEMININ);
+				addForPrincipal(zora, RegDate.get(2009, 3, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Aubonne);
+				return zora.getNumero();
+			}
+		});
+		assertCountDemandes(0);
+
+		globalTiersIndexer.sync();
+
+		// création et traitement du message d'identification
+		final IdentificationContribuable message = createDemande("Zouzou", "LaVerte",Demande.ModeIdentificationType.MANUEL_AVEC_ACK);
+		doInTransaction(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				service.handleDemande(message);
+				return null;
+			}
+		});
+
+		doInTransaction(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+
+				// Zora n'est pas trouvé
+				final List<IdentificationContribuable> list = identCtbDAO.getAll();
+				assertEquals(1, list.size());
+
+				final IdentificationContribuable ic = list.get(0);
+				assertNotNull(ic);
+				assertEquals(Etat.A_TRAITER_MANUELLEMENT, ic.getEtat());
+				assertEquals(Integer.valueOf(0), ic.getNbContribuablesTrouves());
+
+				final Reponse reponse = ic.getReponse();
+				assertNotNull(reponse);
+				Assert.assertTrue(reponse.isEnAttenteIdentifManuel());
+
+
+				// La demande doit avoir reçu une réponse automatiquement
+				assertEquals(1, messageHandler.getSentMessages().size());
+				final IdentificationContribuable sent = messageHandler.getSentMessages().get(0);
+				assertEquals(ic.getId(), sent.getId());
+
+				return null;
+			}
+		});
+
+	}
+
+
+	@NotTransactional
+	@Test
+	public void testHandleDemande_MANUEL_SANS_ACK() throws Exception {
+
+		// création d'un contribuable
+		final Long id = (Long) doInNewTransaction(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique zora = addNonHabitant("Zora", "Larousse", date(1970, 4, 3), Sexe.FEMININ);
+				addForPrincipal(zora, RegDate.get(2009, 3, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Aubonne);
+				return zora.getNumero();
+			}
+		});
+		assertCountDemandes(0);
+
+		globalTiersIndexer.sync();
+
+		// création et traitement du message d'identification
+		final IdentificationContribuable message = createDemande("Zouzou", "LaVerte",Demande.ModeIdentificationType.MANUEL_SANS_ACK);
+		doInTransaction(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				service.handleDemande(message);
+				return null;
+			}
+		});
+
+		doInTransaction(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+
+				// Zora n'est pas trouvé
+				final List<IdentificationContribuable> list = identCtbDAO.getAll();
+				assertEquals(1, list.size());
+
+				final IdentificationContribuable ic = list.get(0);
+				assertNotNull(ic);
+				assertEquals(Etat.A_TRAITER_MANUELLEMENT, ic.getEtat());
+				assertEquals(Integer.valueOf(0), ic.getNbContribuablesTrouves());
+
+				final Reponse reponse = ic.getReponse();
+				assertNull(reponse);
+				// Pas de réponse automatique
+				assertEmpty(messageHandler.getSentMessages());				
+				return null;
+			}
+		});
+
+	}
+	@NotTransactional
+	@Test
 	public void testHandleDemandePlusieursContribuablesTrouves() throws Exception {
 
 		// création de plusieurs contribuables
@@ -1218,11 +1379,16 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 	private static IdentificationContribuable createDemande(final String prenoms, final String nom) {
 
+		return createDemande(prenoms,nom,Demande.ModeIdentificationType.MANUEL_SANS_ACK);
+	}
+
+	private static IdentificationContribuable createDemande(final String prenoms, final String nom, Demande.ModeIdentificationType mode) {
+
 		final CriteresPersonne personne = new CriteresPersonne();
 		personne.setPrenoms(prenoms);
 		personne.setNom(nom);
 
-		return createDemande(personne);
+		return createDemande(personne,mode);
 	}
 
 	private static IdentificationContribuable createDemande(final String prenoms, final String nom, final String noAVS13) {
@@ -1235,6 +1401,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		return createDemande(personne);
 	}
 
+	
 	private static IdentificationContribuable createDemandeFromCanton(CriteresPersonne personne, String emetteurId) {
 		final EsbHeader header = new EsbHeader();
 		header.setBusinessId("123456");
@@ -1259,6 +1426,10 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 	}
 
 	private static IdentificationContribuable createDemande(CriteresPersonne personne) {
+		return createDemande(personne,Demande.ModeIdentificationType.MANUEL_SANS_ACK);
+	}
+
+	private static IdentificationContribuable createDemande(CriteresPersonne personne, Demande.ModeIdentificationType modeIdentification) {
 		final EsbHeader header = new EsbHeader();
 		header.setBusinessId("123456");
 		header.setBusinessUser("Test");
@@ -1268,7 +1439,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		demande.setEmetteurId("Test");
 		demande.setMessageId("1111");
 		demande.setPrioriteEmetteur(PrioriteEmetteur.NON_PRIORITAIRE);
-		demande.setModeIdentification(Demande.ModeIdentificationType.MANUEL_SANS_ACK);
+		demande.setModeIdentification(modeIdentification);
 		demande.setTypeMessage("ssk-3001-000101");
 		demande.setDate(new Date());
 		demande.setPeriodeFiscale(2009);

@@ -94,8 +94,8 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		this.messageHandler = handler;
 	}
 
-	@SuppressWarnings( {
-		"UnusedDeclaration"
+	@SuppressWarnings({
+			"UnusedDeclaration"
 	})
 	private enum Phase {
 
@@ -119,12 +119,12 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		// Recherche dans l'indexeur
 
 		List<TiersIndexedData> indexedData = null;
-		Phase phaseSucces=null;
+		Phase phaseSucces = null;
 
 		// [UNIREG-1636] effectue la recherche en plusieurs phases
 		for (Phase phase : Phase.values()) {
 			final TiersCriteria criteria = asTiersCriteria(criteres, phase);
-			if (!criteria.isEmpty()){
+			if (!criteria.isEmpty()) {
 				indexedData = searcher.search(criteria);
 			}
 
@@ -158,15 +158,12 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		}
 
 
-
-
-
 		return list;
 	}
 
 	/**
-	 * Sauve la demande en base, identifie le ou les contribuables et retourne une réponse immédiatement si un seul contribuable est trouvé.
-	 * Dans tous les autres cas (0, >1 ou en cas d'erreur), la demande est stockée pour traitement manuel.
+	 * Sauve la demande en base, identifie le ou les contribuables et retourne une réponse immédiatement si un seul contribuable est trouvé. Dans tous les autres cas (0, >1 ou en cas d'erreur), la
+	 * demande est stockée pour traitement manuel.
 	 */
 	@Transactional(rollbackFor = Throwable.class)
 	public void handleDemande(IdentificationContribuable message) {
@@ -181,14 +178,10 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	/**
 	 * Envoie une réponse d'identification <b>lorsqu'un contribuable a été identifié formellement</b>.
 	 *
-	 * @param message
-	 *            la requête d'identification initiale
-	 * @param personne
-	 *            la personne physique identifiée
-	 * @param etat
-	 *            le mode d'identification (manuel ou automatique)
-	 * @throws Exception
-	 *             si ça a pas marché
+	 * @param message  la requête d'identification initiale
+	 * @param personne la personne physique identifiée
+	 * @param etat     le mode d'identification (manuel ou automatique)
+	 * @throws Exception si ça a pas marché
 	 */
 	private void identifie(IdentificationContribuable message, PersonnePhysique personne, Etat etat) throws Exception {
 		Assert.notNull(personne);
@@ -245,7 +238,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 
 			if (criteres.getNAVS13() != null) {
 				personne.setNumeroAssureSocial(criteres.getNAVS13());
-			}			
+			}
 		}
 
 	}
@@ -290,16 +283,16 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	}
 
 	private void setUpAdresse(IdentificationContribuable message, CriteresAdresse criteresAdresse, Integer onrp,
-			AdresseSuisse adresseCourrier) {
+	                          AdresseSuisse adresseCourrier) {
 		adresseCourrier.setUsage(TypeAdresseTiers.COURRIER);
 		adresseCourrier.setDateDebut(RegDate.get(message.getLogCreationDate()));
-		String complement =null;
-		if (criteresAdresse.getLigneAdresse1()!=null) {
+		String complement = null;
+		if (criteresAdresse.getLigneAdresse1() != null) {
 			complement = criteresAdresse.getLigneAdresse1();
 
 		}
-		if (criteresAdresse.getLigneAdresse2()!=null) {
-			complement =complement+" "+criteresAdresse.getLigneAdresse2();
+		if (criteresAdresse.getLigneAdresse2() != null) {
+			complement = complement + " " + criteresAdresse.getLigneAdresse2();
 
 		}
 		adresseCourrier.setComplement(complement);
@@ -344,12 +337,9 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	/**
 	 * Envoie une réponse <b>lorsqu'un contribuable n'a définitivement pas été identifié</b>.
 	 *
-	 * @param message
-	 *            la requête d'identification initiale
-	 * @param messageRetour
-	 *            TODO
-	 * @throws Exception
-	 *             si ça a pas marché
+	 * @param message       la requête d'identification initiale
+	 * @param messageRetour TODO
+	 * @throws Exception si ça a pas marché
 	 */
 	private void nonIdentifie(IdentificationContribuable message, Erreur erreur) throws Exception {
 
@@ -377,14 +367,43 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	}
 
 	/**
+	 * Envoie une réponse <b>Permettant de notifier que le message est en attente d'une identification manuelle</b>
+	 *
+	 * @param message
+	 */
+	private void notifieAttenteIdentifManuel(IdentificationContribuable message) throws Exception {
+		final Etat etat = Etat.A_TRAITER_MANUELLEMENT; // par définition
+
+		Reponse reponse = new Reponse();
+		reponse.setDate(new Date());
+		reponse.setEnAttenteIdentifManuel(true);
+		IdentificationContribuable messageReponse = new IdentificationContribuable();
+		messageReponse.setId(message.getId());
+		messageReponse.setHeader(message.getHeader());
+		messageReponse.setReponse(reponse);
+		messageReponse.setEtat(etat);
+
+		message.setNbContribuablesTrouves(0);
+		message.setReponse(reponse);
+		message.setEtat(etat);
+
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Le message n°" + messageReponse.getId() + " est passé dans l'état [" + etat + "], le demandeur va en être notifié.");
+		}
+
+		messageHandler.sendReponse(messageReponse);
+	}
+
+	/**
 	 * Recherche une liste d'IdentificationContribuable en fonction de critères
 	 *
 	 * @param identificationContribuableCriteria
+	 *
 	 * @param paramPagination
 	 * @return
 	 */
 	public List<IdentificationContribuable> find(IdentificationContribuableCriteria identificationContribuableCriteria,
-			ParamPagination paramPagination, boolean nonTraiteOnly, boolean archiveOnly, boolean nonTraiterAndSuspendu) {
+	                                             ParamPagination paramPagination, boolean nonTraiteOnly, boolean archiveOnly, boolean nonTraiterAndSuspendu) {
 		return identCtbDAO.find(identificationContribuableCriteria, paramPagination, nonTraiteOnly, archiveOnly, nonTraiterAndSuspendu);
 	}
 
@@ -392,10 +411,11 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	 * Nombre d'IdentificationContribuable en fonction de critères
 	 *
 	 * @param identificationContribuableCriteria
+	 *
 	 * @return
 	 */
 	public int count(IdentificationContribuableCriteria identificationContribuableCriteria, boolean nonTraiteOnly, boolean archiveOnly,
-			boolean nonTraiterAndSuspendu) {
+	                 boolean nonTraiterAndSuspendu) {
 		return identCtbDAO.count(identificationContribuableCriteria, nonTraiteOnly, archiveOnly, nonTraiterAndSuspendu);
 	}
 
@@ -437,17 +457,31 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 
 			}
 			else {
-				// dans tous les autres cas, on part en traitement manuel
-				message.setNbContribuablesTrouves(list.size());
-				message.setEtat(Etat.A_TRAITER_MANUELLEMENT);
+				//UNIREG 2412 Ajout de possibilités au service d'identification UniReg asynchrone
 
-				if (LOGGER.isDebugEnabled()) {
-					final List<Long> ids = new ArrayList<Long>(list.size());
-					for (PersonnePhysique pp : list) {
-						ids.add(pp.getNumero());
+				if (Demande.ModeIdentificationType.SANS_MANUEL.equals(demande.getModeIdentification())) {
+					String contenuMessage = "Aucun contribuable n’a été trouvé avec l’identification automatique et l’identification manuelle n’a pas été demandée";
+					Erreur erreur = new Erreur(TypeErreur.METIER, "01", contenuMessage);
+					nonIdentifie(message, erreur);
+
+				}
+				else {
+					if (Demande.ModeIdentificationType.MANUEL_AVEC_ACK.equals(demande.getModeIdentification())) {
+						notifieAttenteIdentifManuel(message);
 					}
-					LOGGER.debug("Le message n°" + message.getId() + " doit être traité manuellement. "
-							+ "Nombre de contribuable(s) trouvé(s) = " + list.size() + " (" + ArrayUtils.toString(ids.toArray()) + ")");
+
+					// dans le cas MANUEL_AVEC_ACK et MANUEL_SANS_ACK le message est mis en traitement manuel
+					message.setNbContribuablesTrouves(list.size());
+					message.setEtat(Etat.A_TRAITER_MANUELLEMENT);
+
+					if (LOGGER.isDebugEnabled()) {
+						final List<Long> ids = new ArrayList<Long>(list.size());
+						for (PersonnePhysique pp : list) {
+							ids.add(pp.getNumero());
+						}
+						LOGGER.debug("Le message n°" + message.getId() + " doit être traité manuellement. "
+								+ "Nombre de contribuable(s) trouvé(s) = " + list.size() + " (" + ArrayUtils.toString(ids.toArray()) + ")");
+					}
 				}
 			}
 		}
@@ -478,10 +512,8 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	/**
 	 * Converti le critère sur la personne en un critère compréhensible par l'indexeur.
 	 *
-	 * @param criteres
-	 *            les critères sur la personne
-	 * @param phase
-	 *            la phase courante de recherche
+	 * @param criteres les critères sur la personne
+	 * @param phase    la phase courante de recherche
 	 * @return un critère de recherche compréhensible par le moteur d'indexation
 	 */
 	private TiersCriteria asTiersCriteria(CriteresPersonne criteres, Phase phase) {
@@ -522,10 +554,8 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	/**
 	 * Supprime toutes les personnes de sexe différent de celui spécifié
 	 *
-	 * @param list
-	 *            la liste des personnes à fitrer
-	 * @param criteres
-	 *            les critères de filtre
+	 * @param list     la liste des personnes à fitrer
+	 * @param criteres les critères de filtre
 	 * @return la liste d'entrée filtrée
 	 */
 	private List<PersonnePhysique> filterSexe(List<PersonnePhysique> list, CriteresPersonne criteres) {
@@ -547,10 +577,8 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	/**
 	 * Supprime toutes les personnes dont les adresses ne correspondent pas avec l'adresse spécifiée
 	 *
-	 * @param list
-	 *            la liste des personnes à fitrer
-	 * @param criteres
-	 *            les critères de filtre
+	 * @param list     la liste des personnes à fitrer
+	 * @param criteres les critères de filtre
 	 * @return la liste d'entrée filtrée
 	 */
 	private List<PersonnePhysique> filterAdresse(List<PersonnePhysique> list, CriteresPersonne criteres) {
@@ -569,10 +597,8 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	/**
 	 * Supprime toutes les personnes dont la date de naissances ne correspond pas avec celle spécifié dans le message
 	 *
-	 * @param list
-	 *            la liste des personnes à fitrer
-	 * @param criteres
-	 *            les critères de filtre
+	 * @param list     la liste des personnes à fitrer
+	 * @param criteres les critères de filtre
 	 * @return la liste d'entrée filtrée
 	 */
 	private List<PersonnePhysique> filterDateNaissance(List<PersonnePhysique> list, CriteresPersonne criteres) {
@@ -591,8 +617,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	/**
 	 * verifie si la date de naissance du message et celui de la pp match
 	 *
-	 * @param pp
-	 *            la personne physique dont on veut vérifier la date de naissance.
+	 * @param pp                   la personne physique dont on veut vérifier la date de naissance.
 	 * @param critereDateNaissance
 	 * @return
 	 */
@@ -611,12 +636,9 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	/**
 	 * Vérifie les adresses fiscales d'une personne physique en fonction de critères, et détermine si elles correspondent.
 	 *
-	 * @param pp
-	 *            la personne physique dont on veut vérifier les adresses fiscales.
-	 * @param adresseCritere
-	 *            les critères d'adresse
-	 * @return <b>vrai</b> si une des adresses fiscales (courrier, représentation, domicile, poursuite) correspond aux critères d'adresse
-	 *         spécifié.
+	 * @param pp             la personne physique dont on veut vérifier les adresses fiscales.
+	 * @param adresseCritere les critères d'adresse
+	 * @return <b>vrai</b> si une des adresses fiscales (courrier, représentation, domicile, poursuite) correspond aux critères d'adresse spécifié.
 	 */
 	protected boolean matchAdresses(PersonnePhysique pp, CriteresAdresse adresseCritere) {
 
@@ -635,18 +657,16 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	}
 
 	/**
-	 * @param adresse
-	 *            l'adresse générique à vérifier
-	 * @param adresseCritere
-	 *            les critères de vérification de l'adresse
+	 * @param adresse        l'adresse générique à vérifier
+	 * @param adresseCritere les critères de vérification de l'adresse
 	 * @return <b>vrai</b> si l'adresse générique corresponds aux critères d'adresse spécifié.
 	 */
 	private boolean matchAdresseGenerique(AdresseGenerique adresse, CriteresAdresse adresseCritere) {
 
 		//On ne matche plus que sur le NPA
 		// test des différents critères en commençant par les plus déterminants
-		if (adresse!=null) {
-			return 	matchNpa(adresse, adresseCritere);
+		if (adresse != null) {
+			return matchNpa(adresse, adresseCritere);
 		}
 		return true;
 	}
@@ -668,8 +688,8 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		return casePostale.equalsIgnoreCase(critereCasePostale);
 	}
 
-	@SuppressWarnings( {
-		"SimplifiableIfStatement"
+	@SuppressWarnings({
+			"SimplifiableIfStatement"
 	})
 	private boolean matchRue(AdresseGenerique adresse, CriteresAdresse adresseCritere) {
 
@@ -703,8 +723,8 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		return npa.equalsIgnoreCase(critereNpa);
 	}
 
-	@SuppressWarnings( {
-		"SimplifiableIfStatement"
+	@SuppressWarnings({
+			"SimplifiableIfStatement"
 	})
 	private boolean matchNumeroPolice(AdresseGenerique adresse, CriteresAdresse adresseCritere) {
 
@@ -732,8 +752,8 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		return numero == critereNumero;
 	}
 
-	@SuppressWarnings( {
-		"SimplifiableIfStatement"
+	@SuppressWarnings({
+			"SimplifiableIfStatement"
 	})
 	private boolean matchNumeroAppartement(AdresseGenerique adresse, CriteresAdresse adresseCritere) {
 
@@ -859,14 +879,14 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		String sigle = StringUtils.substring(emetteurId, 2, 4);
 		Canton canton = null;
 
-			try {
-				canton = infraService.getCantonBySigle(sigle);
-			}
-			catch (InfrastructureException e) {
-				// On a pas réussi a resoudre le canton,
-				//on renvoie l'emetteur id telquel
-				canton = null;
-			}
+		try {
+			canton = infraService.getCantonBySigle(sigle);
+		}
+		catch (InfrastructureException e) {
+			// On a pas réussi a resoudre le canton,
+			//on renvoie l'emetteur id telquel
+			canton = null;
+		}
 
 		if (canton != null && canton.getNomMinuscule() != null) {
 			return canton.getNomMinuscule();

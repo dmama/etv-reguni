@@ -18,6 +18,7 @@ public class Reponse {
 	private Long noContribuable;
 	private Long noMenageCommun;
 	private Erreur erreur;
+	private boolean enAttenteIdentifManuel=false;
 
 	@Column(name = "DATE_REPONSE")
 	public Date getDate() {
@@ -53,5 +54,15 @@ public class Reponse {
 
 	public void setErreur(Erreur erreur) {
 		this.erreur = erreur;
+	}
+
+	@Column(name = "ATTENTE_IDENTIF_MANUEL")
+	public boolean isEnAttenteIdentifManuel() {
+		return enAttenteIdentifManuel;
+	}
+
+
+	public void setEnAttenteIdentifManuel(boolean enAttenteIdentifManuel) {
+		this.enAttenteIdentifManuel = enAttenteIdentifManuel;
 	}
 }
