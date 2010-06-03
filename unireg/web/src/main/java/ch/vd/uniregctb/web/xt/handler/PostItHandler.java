@@ -35,7 +35,11 @@ public class PostItHandler extends AbstractAjaxHandler implements ApplicationCon
 
 	/**
 	 * Affiche ou cache le post-it des tâches et dossiers en instance.
+	 *
+	 * @param event l'événement Ajax
+	 * @return une réponse Ajax qui mettra-à-jour le post-it
 	 */
+	@SuppressWarnings({"UnusedDeclaration"})
 	public AjaxResponse updatePostIt(AjaxActionEvent event) {
 
 		/*
@@ -47,7 +51,7 @@ public class PostItHandler extends AbstractAjaxHandler implements ApplicationCon
 			oid = AuthenticationHelper.getCurrentOID();
 		}
 		else {
-			oid = Integer.valueOf(-1);
+			oid = -1;
 		}
 
 		// on récupère les infos concernant les tâches et les dossiers
@@ -70,6 +74,7 @@ public class PostItHandler extends AbstractAjaxHandler implements ApplicationCon
 		this.messageSourceAccessor = new MessageSourceAccessor(applicationContext);
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setTacheService(TacheService tacheService) {
 		this.tacheService = tacheService;
 	}
@@ -89,7 +94,6 @@ public class PostItHandler extends AbstractAjaxHandler implements ApplicationCon
 			{
 				topRow.addAttribute("class", "top");
 				TableData data = new TableData(new SimpleText(""));
-				data.addAttribute("background", "images/postit-top.png");
 				topRow.addTableData(data);
 			}
 			addTableRow(topRow);
@@ -98,7 +102,6 @@ public class PostItHandler extends AbstractAjaxHandler implements ApplicationCon
 			{
 				middleRow.addAttribute("class", "middle");
 				TableData data = new TableData(new PostItBody(tachesEnInstanceCount, dossiersEnInstanceCount));
-				data.addAttribute("background", "images/postit-middle.png");
 				middleRow.addTableData(data);
 			}
 			addTableRow(middleRow);
@@ -107,7 +110,6 @@ public class PostItHandler extends AbstractAjaxHandler implements ApplicationCon
 			{
 				bottomRow.addAttribute("class", "bottom");
 				TableData data = new TableData(new SimpleText(""));
-				data.addAttribute("background", "images/postit-bottom.png");
 				bottomRow.addTableData(data);
 			}
 			addTableRow(bottomRow);
