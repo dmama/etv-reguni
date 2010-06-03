@@ -14,7 +14,8 @@ public class WatchDogUniregPreproductionTest extends WatchDogTest {
 
 	private static final Logger LOGGER = Logger.getLogger(WatchDogUniregPreproductionTest.class);
 
-	public void testPreproduction() throws Exception {
+	// Désactivé temporairement pendant la mise-en-préproduction
+	public void _testPreproduction() throws Exception {
 		LOGGER.info("Vérification de Unireg PP en préproduction...");
 		HtmlPage page = (HtmlPage) webClient.getPage(new URL("https://validation.portail.etat-de-vaud.ch/fiscalite/unireg/"));
 		assertNotNull(page);
