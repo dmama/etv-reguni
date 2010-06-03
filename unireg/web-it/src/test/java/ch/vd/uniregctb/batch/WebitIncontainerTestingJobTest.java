@@ -18,7 +18,7 @@ public class WebitIncontainerTestingJobTest extends WebitTest {
 		webClient.setJavaScriptEnabled(true);
 	}
 
-	@Test(timeout = 20000)
+	@Test(timeout = 30000) // avec le temps d'initialisation d'Unireg (c'est un des premiers tests runnés), on a vu des exécutions qui prenaient 18 secondes.
 	public void testRunBatch() throws Exception {
 
 		final String jobName = "IT-InContainerTestingJob";
