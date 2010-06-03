@@ -161,10 +161,10 @@ public class EvenementExterneServiceImpl implements EvenementExterneService, Ini
 			if (quittance.getDateEvenement() != null) {
 				throw new EvenementExterneException("Pour une annulation la date de retour ne doit pas être renseignée.");
 			}
-			EtatDeclaration etatDeclaration = declarationImpotSource.getEtatDeclarationActif(TypeEtatDeclaration.RETOURNEE);
+			final EtatDeclaration etatDeclaration = declarationImpotSource.getEtatDeclarationActif(TypeEtatDeclaration.RETOURNEE);
 			// S’il s’agit d’une annulation du retour, le retour a déjà été enregistré.
 			if (etatDeclaration == null) {
-				throw new EvenementExterneException("La déclaration impôt source sélectionné ne contient pas de retour à annuler.");
+				throw new EvenementExterneException("La déclaration impôt source sélectionnée ne contient pas de retour à annuler.");
 			}
 		}
 
@@ -178,7 +178,7 @@ public class EvenementExterneServiceImpl implements EvenementExterneService, Ini
 		// ● Si la date de retour est renseignée, elle en y insère la date de retour.
 		// ● S’il s’agit d’une annulation du retour, elle efface la date de retour.
 		if (quittance.getType() == TypeQuittance.QUITTANCEMENT) {
-			EtatDeclaration etatDeclaration = new EtatDeclaration();
+			final EtatDeclaration etatDeclaration = new EtatDeclaration();
 			etatDeclaration.setEtat(TypeEtatDeclaration.RETOURNEE);
 			etatDeclaration.setDateObtention(RegDate.get(quittance.getDateEvenement()));
 			etatDeclaration.setAnnule(false);
