@@ -152,6 +152,72 @@ public class IdentificationContribuableMessageHandlerTest extends EvenementTest 
 		final String texte = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><iden:identificationCTB xmlns:iden=\"http://www.vd.ch/fiscalite/registre/identificationContribuable-v1.7\"><iden:reponse><iden:date>2008-03-23T00:00:00.000+01:00</iden:date><iden:erreur><iden:type>M</iden:type><iden:code>01</iden:code><iden:message>Aucun contribuable ne correspond au message</iden:message></iden:erreur></iden:reponse></iden:identificationCTB>";
 		assertTextMessage(OUTPUT_QUEUE, texte);
 	}
+	@Test
+	public void testSendReponseContribuableSansManuel() throws Exception {
+
+		// Création du message
+		final IdentificationContribuable message = new IdentificationContribuable();
+		final EsbHeader header = new EsbHeader();
+		header.setBusinessUser("IdentificationContribuableTest");
+		header.setBusinessId(String.valueOf(message.hashCode()));
+		header.setReplyTo("ReplyToTest");
+		message.setHeader(header);
+        // demande
+        final CriteresPersonne personne = new CriteresPersonne();
+        personne.setNAVS13("1234567890");
+        final Demande demande = new Demande();
+		demande.setModeIdentification(Demande.ModeIdentificationType.SANS_MANUEL);
+        demande.setPersonne(personne);
+        message.setDemande(demande);
+        // réponse
+		final Reponse reponse = new Reponse();
+		String contenuMessage = "Aucun contribuable n’a été trouvé avec l’identification automatique et l’identification manuelle n’a pas été demandée";
+		Erreur erreur = new Erreur(TypeErreur.METIER, "01", contenuMessage);
+		reponse.setErreur(erreur);
+		reponse.setDate(newUtilDate(2008, 3, 23));
+		reponse.setNoContribuable(null);
+		message.setReponse(reponse);
+
+		// Envoi du message
+		handler.sendReponse(message);
+
+		// On vérifie que l'on a bien envoyé le message et qu'il ne contient pas la demande
+		final String texte = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><iden:identificationCTB xmlns:iden=\"http://www.vd.ch/fiscalite/registre/identificationContribuable-v1.7\"><iden:reponse><iden:date>2008-03-23T00:00:00.000+01:00</iden:date><iden:erreur><iden:type>M</iden:type><iden:code>01</iden:code><iden:message>Aucun contribuable n’a été trouvé avec l’identification automatique et l’identification manuelle n’a pas été demandée</iden:message></iden:erreur></iden:reponse></iden:identificationCTB>";
+		assertTextMessage(OUTPUT_QUEUE, texte);
+	}
+
+
+	@Test
+	public void testSendReponseContribuableManuelAveckAck() throws Exception {
+
+		// Création du message
+		final IdentificationContribuable message = new IdentificationContribuable();
+		final EsbHeader header = new EsbHeader();
+		header.setBusinessUser("IdentificationContribuableTest");
+		header.setBusinessId(String.valueOf(message.hashCode()));
+		header.setReplyTo("ReplyToTest");
+		message.setHeader(header);
+        // demande
+        final CriteresPersonne personne = new CriteresPersonne();
+        personne.setNAVS13("1234567890");
+        final Demande demande = new Demande();
+		demande.setModeIdentification(Demande.ModeIdentificationType.MANUEL_AVEC_ACK);
+        demande.setPersonne(personne);
+        message.setDemande(demande);
+        // réponse
+		final Reponse reponse = new Reponse();
+		reponse.setEnAttenteIdentifManuel(true);
+		reponse.setDate(newUtilDate(2008, 3, 23));
+		reponse.setNoContribuable(null);
+		message.setReponse(reponse);
+
+		// Envoi du message
+		handler.sendReponse(message);
+
+		// On vérifie que l'on a bien envoyé le message et qu'il ne contient pas la demande
+		final String texte = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><iden:identificationCTB xmlns:iden=\"http://www.vd.ch/fiscalite/registre/identificationContribuable-v1.7\"><iden:reponse><iden:date>2008-03-23T00:00:00.000+01:00</iden:date><iden:enAttenteIdentifManuel>true</iden:enAttenteIdentifManuel></iden:reponse></iden:identificationCTB>";
+		assertTextMessage(OUTPUT_QUEUE, texte);
+	}
 
 	@Test
 	public void testSendReponseErreurTechnique() throws Exception {
