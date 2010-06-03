@@ -66,7 +66,7 @@ public class CoupleRecapManagerTest extends WebitTest {
 		assertNotNull(pageResultat);
 
 		// on devrait avoir un message d'erreur
-		assertContains("Le for fiscal [ForFiscalPrincipal (2001.03.05 - 2003.01.06)] ne peut pas exister alors que le tiers [10074118] appartient à un ménage-commun", pageResultat);
+		assertContains("Le for fiscal [ForFiscalPrincipal (05.03.2001 - 06.01.2003)] ne peut pas exister alors que le tiers [10074118] appartient à un ménage-commun", pageResultat);
 
 		// On s'assure que la transaction a bien été rollée-back, c'est-à-dire que le trois tiers sont toujours des personnes physiques.
 		assertNatureTiers("Habitant", jeremy);
