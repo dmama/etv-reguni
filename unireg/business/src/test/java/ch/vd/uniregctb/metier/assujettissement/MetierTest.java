@@ -699,7 +699,7 @@ public abstract class MetierTest extends BusinessTest {
 	/**
 	 * Contribuable avec un for principal qui s'ouvre avec un motif 'obtention permis C' sans for fiscal précédent
 	 */
-	protected Contribuable createFauxPassageRoleSourceAOrdinaire(Long noTiers, RegDate dateChangement) throws Exception {
+	protected Contribuable createPassageRoleSourceAOrdinaireImplicite(Long noTiers, RegDate dateChangement) throws Exception {
 		Contribuable paul = createContribuableSansFor(noTiers);
 		addForPrincipal(paul, dateChangement, MotifFor.PERMIS_C_SUISSE, MockCommune.Lausanne);
 		return paul;

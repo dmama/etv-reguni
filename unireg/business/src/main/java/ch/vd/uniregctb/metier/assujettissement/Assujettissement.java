@@ -142,8 +142,10 @@ public abstract class Assujettissement implements CollatableDateRange {
 		}
 
 		try {
-			// Détermination des données d'assujettissement brutes
 			final Tiers.ForsParType fpt = ctb.getForsParType(true);
+			ajouteForsPrincipauxFictifs(fpt.principaux);
+
+			// Détermination des données d'assujettissement brutes
 			final List<Fraction> fractionnements = new ArrayList<Fraction>();
 			final List<Data> domicile = determineAssujettissementDomicile(fpt.principaux, fractionnements);
 			final List<Data> economique = determineAssujettissementEconomique(fpt.secondaires, fractionnements);
@@ -168,6 +170,49 @@ public abstract class Assujettissement implements CollatableDateRange {
 				// autrement, on propage simplement l'exception
 				throw e;
 			}
+		}
+	}
+
+	/**
+	 * Cette méthode ajoute des fors fiscaux principaux fictifs, c'est-à-dire des fors qui devraient exister en fonction des caractéristiques des fors existants, mais qui manquent.
+	 *
+	 * @param forsPrincipaux les fors principaux (non-fictifs) du contribuable.
+	 */
+	private static void ajouteForsPrincipauxFictifs(List<ForFiscalPrincipal> forsPrincipaux) {
+
+		List<ForFiscalPrincipal> forsFictifs = null;
+
+		// [UNIREG-2444] si un for fiscal principal possède un motif d'ouverture d'obtention de permis C et qu'il n'y a pas de for fiscal principal précédent,
+		// on suppose que le contribuable était sourcier et qu'il y a passage du rôle source pur au rôle ordinaire. Dans les faits pour ne pas casser l'algorithme général,
+		// on ajoute artificiellement un for principal avec le mode d'imposition source.
+		final TripletIterator<ForFiscalPrincipal> iter = new TripletIterator<ForFiscalPrincipal>(forsPrincipaux.iterator());
+		while (iter.hasNext()) {
+			final Triplet<ForFiscalPrincipal> triplet = iter.next();
+			if (triplet.current.getMotifOuverture() == MotifFor.PERMIS_C_SUISSE && (triplet.previous == null || !DateRangeHelper.isCollatable(triplet.previous, triplet.current))) {
+				// On ajoute un for principal source compris entre le début de l'année et la date d'ouverture du for principal courant. Cette période est raccourcie si nécessaire.
+				final RegDate debut;
+				final RegDate fin = triplet.current.getDateDebut().getOneDayBefore();
+				if (triplet.previous == null) {
+					debut = RegDate.get(triplet.current.getDateDebut().year(), 1, 1);
+				}
+				else {
+					debut = RegDateHelper.maximum(RegDate.get(triplet.current.getDateDebut().year(), 1, 1), triplet.previous.getDateFin().getOneDayAfter(), NullDateBehavior.EARLIEST);
+				}
+				final ForFiscalPrincipal forFictif = new ForFiscalPrincipal(debut, fin, triplet.current.getNumeroOfsAutoriteFiscale(),
+						triplet.current.getTypeAutoriteFiscale(), triplet.current.getMotifRattachement(), ModeImposition.SOURCE);
+				//noinspection deprecation
+				forFictif.setMotifOuverture(MotifFor.INDETERMINE);
+				forFictif.setMotifFermeture(MotifFor.PERMIS_C_SUISSE);
+				if (forsFictifs == null) {
+					forsFictifs = new ArrayList<ForFiscalPrincipal>();
+				}
+				forsFictifs.add(forFictif);
+			}
+		}
+		
+		if (forsFictifs != null) {
+			forsPrincipaux.addAll(forsFictifs);
+			Collections.sort(forsPrincipaux, new DateRangeComparator<ForFiscalPrincipal>());
 		}
 	}
 
