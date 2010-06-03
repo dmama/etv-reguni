@@ -14,6 +14,10 @@ public class WatchDogUniregPreproductionTest extends WatchDogTest {
 
 	private static final Logger LOGGER = Logger.getLogger(WatchDogUniregPreproductionTest.class);
 
+	public void testRien() {
+
+	}
+	
 	// Désactivé temporairement pendant la mise-en-préproduction
 	public void _testPreproduction() throws Exception {
 		LOGGER.info("Vérification de Unireg PP en préproduction...");
