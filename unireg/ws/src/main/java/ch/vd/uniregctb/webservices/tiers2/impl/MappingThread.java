@@ -88,7 +88,7 @@ public class MappingThread extends Thread {
 			LOGGER.trace("Préchargement des individus - start");
 			start = System.nanoTime();
 
-			final List<Long> numerosIndividus = context.tiersDAO.getNumerosIndividu(ids, true);
+			final Set<Long> numerosIndividus = context.tiersDAO.getNumerosIndividu(ids, true);
 			if (!numerosIndividus.isEmpty()) { // on peut tomber sur une plage de tiers ne contenant pas d'habitant
 				try {
 					final EnumAttributeIndividu[] attributs;

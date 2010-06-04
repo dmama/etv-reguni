@@ -60,7 +60,7 @@ public class HostCivilServiceImpl implements HostCivilService, MessageSourceAwar
 	public IndividuView getIndividu(Long numeroIndividu) {
 		IndividuView indCible = null;
 
-		Individu indSource = getServiceCivilService().getIndividu(numeroIndividu.longValue(), DateHelper.getCurrentYear());
+		Individu indSource = getServiceCivilService().getIndividu(numeroIndividu.longValue(), null);
 
 		if (indSource == null) {
 			throw new ObjectNotFoundException(this.getMessageSource().getMessage("error.individu.inexistant" , null,  WebContextUtils.getDefaultLocale()));
@@ -212,7 +212,7 @@ public class HostCivilServiceImpl implements HostCivilService, MessageSourceAwar
 
 		final String nomUtilisateur;
 		if (numeroIndividu != null) {
-			final Individu indSource = getServiceCivilService().getIndividu(numeroIndividu.longValue(), DateHelper.getCurrentYear());
+			final Individu indSource = getServiceCivilService().getIndividu(numeroIndividu.longValue(), null);
 			final String nom = indSource.getDernierHistoriqueIndividu().getNom();
 			final String prenom = indSource.getDernierHistoriqueIndividu().getPrenom();
 			final boolean blankNom = StringUtils.isBlank(nom);

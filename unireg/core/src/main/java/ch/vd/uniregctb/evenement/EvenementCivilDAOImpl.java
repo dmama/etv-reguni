@@ -2,6 +2,7 @@ package ch.vd.uniregctb.evenement;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -197,7 +198,7 @@ public class EvenementCivilDAOImpl extends GenericDAOImpl<EvenementCivilData, Lo
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<EvenementCivilData> getEvenementsCivilsNonTraites(final List<Long> nosIndividus) {
+	public List<EvenementCivilData> getEvenementsCivilsNonTraites(final Collection<Long> nosIndividus) {
 		final String s = "SELECT e FROM EvenementCivilData e WHERE e.etat IN (:etats) AND (e.numeroIndividuPrincipal IN (:col) OR e.numeroIndividuConjoint IN (:col))";
 		final String[] etatsNonTraites = { EtatEvenementCivil.A_TRAITER.name(), EtatEvenementCivil.EN_ERREUR.name() };
 

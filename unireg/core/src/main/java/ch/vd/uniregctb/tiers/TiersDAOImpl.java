@@ -28,7 +28,7 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
     private static final Logger LOGGER = Logger.getLogger(TiersDAOImpl.class);
     private static final int MAX_IN_SIZE = 500;
 
-    public TiersDAOImpl() {
+	public TiersDAOImpl() {
         super(Tiers.class);
     }
 
@@ -356,27 +356,43 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
         return (List<Long>) getHibernateTemplate().find("select habitant.numeroIndividu from PersonnePhysique as habitant where habitant.habitant = true");
     }
 
+	private static final String QUERY_GET_NOS_IND =
+			"select h.numeroIndividu " +
+					"from PersonnePhysique h " +
+					"where h.numeroIndividu is not null " +
+					"and h.id in (:ids)";
+	private static final String QUERY_GET_NOS_IND_COMPOSANTS =
+			"select h.numeroIndividu " +
+					"from PersonnePhysique h, AppartenanceMenage am " +
+					"where am.sujetId = h.id " +
+					"and am.annulationDate is null " +
+					"and h.numeroIndividu is not null " +
+					"and am.objetId in (:ids)";
+
     @SuppressWarnings("unchecked")
-    public List<Long> getNumerosIndividu(final Set<Long> tiersIds, final boolean includesComposantsMenage) {
-        return (List<Long>) getHibernateTemplate().executeWithNativeSession(new HibernateCallback() {
+    public Set<Long> getNumerosIndividu(final Set<Long> tiersIds, final boolean includesComposantsMenage) {
+
+	    if (tiersIds.size() > 1000) {
+			throw new IllegalArgumentException("Il n'est pas possible de spécifier plus de 1'000 ids");		    
+	    }
+
+        return (Set<Long>) getHibernateTemplate().executeWithNativeSession(new HibernateCallback() {
             public Object doInHibernate(Session session) throws HibernateException {
 
-	            Set<Long> allIds = tiersIds;
+	            final Set<Long> numeros = new HashSet<Long>(tiersIds.size());
 
 	            if (includesComposantsMenage) {
-					final Query queryComposants = session.createQuery("select am.sujetId from AppartenanceMenage am where am.annulationDate is null and am.objetId in (:ids)");
+		            // on récupère les numéros d'individu des composants des ménages
+					final Query queryComposants = session.createQuery(QUERY_GET_NOS_IND_COMPOSANTS);
 					queryComposants.setParameterList("ids", tiersIds);
-		            final List<Long> idsComposants = queryComposants.list();
-
-		            if (!idsComposants.isEmpty()) {
-						allIds = new HashSet<Long>(allIds);
-						allIds.addAll(idsComposants);
-		            }
+		            numeros.addAll(queryComposants.list());
 	            }
 
-                final Query queryObject = session.createQuery("select h.numeroIndividu from PersonnePhysique as h where h.id in (:ids) and h.numeroIndividu is not null");
-                queryObject.setParameterList("ids", allIds);
-                return queryObject.list();
+                final Query queryObject = session.createQuery(QUERY_GET_NOS_IND);
+                queryObject.setParameterList("ids", tiersIds);
+                numeros.addAll(queryObject.list());
+
+	            return numeros;
             }
         });
     }

@@ -255,7 +255,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		hab.setNumero(1234L);
 		hab.setNumeroIndividu(7643L);
 		tiersDAO.addTiers(hab);
-		Individu ind = serviceCivil.getIndividu(hab.getNumeroIndividu(), DateHelper.getCurrentYear());
+		Individu ind = serviceCivil.getIndividu(hab.getNumeroIndividu(), null);
 		HistoriqueIndividu histo = ind.getDernierHistoriqueIndividu();
 
 		DebiteurPrestationImposable dpi = new DebiteurPrestationImposable();
@@ -873,7 +873,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 			throw new NotImplementedException();
 		}
 
-		public List<Long> getNumerosIndividu(Set<Long> tiersIds, boolean includesComposantsMenage) {
+		public Set<Long> getNumerosIndividu(Set<Long> tiersIds, boolean includesComposantsMenage) {
 			throw new NotImplementedException();
 		}
 
