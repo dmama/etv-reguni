@@ -153,40 +153,22 @@ private final Logger LOGGER = Logger.getLogger(EnvoiLRsEnMasseProcessor.class);
 				return hibernateTemplate.execute(new HibernateCallback() {
 					public Object doInHibernate(Session session) throws HibernateException {
 
-						SQLQuery sqlQuery = session.createSQLQuery("alter session set optimizer_index_caching = 90");
-						sqlQuery.executeUpdate();
-						sqlQuery = session.createSQLQuery("alter session set optimizer_index_cost_adj = 10");
-						sqlQuery.executeUpdate();
-
-						String sql = "SELECT lr.id"
-								+ " FROM DeclarationImpotSource AS lr"
-								+ " WHERE lr.annulationDate IS NULL";
+						final StringBuilder b = new StringBuilder();
+						b.append("SELECT lr.id FROM DeclarationImpotSource AS lr");
+						b.append(" WHERE lr.annulationDate IS NULL");
 						if (dateFinPeriode != null) {
-							sql += " AND lr.dateFin <= :dateFin";
+							b.append(" AND lr.dateFin <= :dateFin");
 						}
 						if (categorie != null) {
-							sql += " AND lr.tiers.categorieImpotSource = :categorie";
+							b.append(" AND lr.tiers.categorieImpotSource = :categorie");
 						}
-						sql += " AND EXISTS ("
-								+ "   SELECT etat1.declaration.id"
-								+ "   FROM EtatDeclaration AS etat1"
-								+ "   WHERE lr.id = etat1.declaration.id"
-								+ "     AND etat1.annulationDate IS NULL"
-								+ "     AND etat1.etat = 'EMISE'"
-								+ "     AND etat1.dateObtention IN ("
-								+ "       SELECT MAX(etat2.dateObtention) "
-								+ "       FROM EtatDeclaration AS etat2 "
-								+ "       WHERE etat1.declaration.id = etat2.declaration.id AND etat2.annulationDate IS NULL))"
-								+ " AND EXISTS ( "
-								+ "   SELECT delai.declaration.id  FROM DelaiDeclaration AS delai"
-								+ "   WHERE delai.declaration.id = lr.id"
-								+ "   AND delai.annulationDate IS NULL"
-								+ "   AND delai.delaiAccordeAu IS NOT NULL"
-								+ "   GROUP BY delai.declaration.id"
-								+ "   HAVING MAX(delai.delaiAccordeAu) < :dateLimite"
-								+ " )";
-						final Query query = session.createQuery(sql);
+						b.append(" AND EXISTS (SELECT etat.declaration.id FROM EtatDeclaration AS etat WHERE lr.id = etat.declaration.id AND etat.annulationDate IS NULL AND etat.etat = 'EMISE')");
+						b.append(" AND NOT EXISTS (SELECT etat.declaration.id FROM EtatDeclaration AS etat WHERE lr.id = etat.declaration.id AND etat.annulationDate IS NULL AND etat.etat IN ('RETOURNEE', 'SOMMEE'))");
+						b.append(" AND EXISTS (SELECT delai.declaration.id FROM DelaiDeclaration AS delai WHERE lr.id = delai.declaration.id AND delai.annulationDate IS NULL AND delai.delaiAccordeAu IS NOT NULL");
+						b.append(" GROUP BY delai.declaration.id HAVING MAX(delai.delaiAccordeAu) < :dateLimite)");
+						final String sql = b.toString();
 
+						final Query query = session.createQuery(sql);
 						if (dateFinPeriode != null) {
 							query.setParameter("dateFin", dateFinPeriode.index());
 						}

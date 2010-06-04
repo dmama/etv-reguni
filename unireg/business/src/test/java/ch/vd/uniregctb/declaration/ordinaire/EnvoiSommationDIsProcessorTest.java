@@ -320,4 +320,93 @@ public class EnvoiSommationDIsProcessorTest extends BusinessTest {
 		Assert.assertEquals(0, results.getTotalSommationsEnErreur());
 		Assert.assertEquals(0, results.getTotalDisOptionnelles());
 	}
+
+	/**
+	 * C'est un cas qui se produit beaucoup avec les LR des débiteurs "web" : ils envoient la LR avant même qu'on leur demande...
+	 * Par acquis de conscience, on fait aussi le test pour les DIs
+	 */
+	@Test
+	public void testNonSommationDiRetourneeAvantEmission() throws Exception {
+		final int anneePf = 2008;
+		final RegDate dateEmission = RegDate.get(2009, 1, 15);
+		final RegDate delaiInitial = RegDate.get(2009, 3, 15);
+
+		final long diId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+			public Long doInTransaction(TransactionStatus status) {
+
+				addCollAdm(MockCollectiviteAdministrative.CEDI);
+
+				final PersonnePhysique pp = addNonHabitant("Jacques", "Cartier", RegDate.get(1980, 1, 5), Sexe.MASCULIN);
+				addForPrincipal(pp, RegDate.get(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, RegDate.get(anneePf, 5, 31), MotifFor.ARRIVEE_HS, MockPays.France);
+				addForPrincipal(pp, RegDate.get(anneePf, 6, 1), MotifFor.ARRIVEE_HS, MockCommune.Aubonne);
+				addForSecondaire(pp, RegDate.get(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Aubonne.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+
+				final PeriodeFiscale periode = addPeriodeFiscale(anneePf);
+				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
+				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(pp, periode, date(anneePf, 1, 1), date(anneePf, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+				declaration.addEtat(new EtatDeclaration(dateEmission, TypeEtatDeclaration.EMISE));
+				declaration.addEtat(new EtatDeclaration(dateEmission.addDays(-5), TypeEtatDeclaration.RETOURNEE));
+
+				final DelaiDeclaration delai = new DelaiDeclaration();
+				delai.setDateDemande(dateEmission);
+				delai.setDelaiAccordeAu(delaiInitial);
+				declaration.addDelai(delai);
+
+				return declaration.getId();
+			}
+		});
+
+		final RegDate dateTraitement = delaiInitial.addYears(1);
+		final EnvoiSommationsDIsResults results = processor.run(dateTraitement, false, 0, null);
+		Assert.assertEquals(0, results.getTotalDisTraitees());
+		Assert.assertEquals(0, results.getTotalDisSommees());
+		Assert.assertEquals(0, results.getTotalSommations(anneePf));
+		Assert.assertEquals(0, results.getTotalIndigent());
+		Assert.assertEquals(0, results.getTotalNonAssujettissement());
+		Assert.assertEquals(0, results.getTotalSommationsEnErreur());
+		Assert.assertEquals(0, results.getTotalDisOptionnelles());
+	}
+
+	@Test
+	public void testNonSommationLrDejaSommee() throws Exception {
+		final int anneePf = 2008;
+		final RegDate dateEmission = RegDate.get(2009, 1, 15);
+		final RegDate delaiInitial = RegDate.get(2009, 3, 15);
+
+		final long diId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+			public Long doInTransaction(TransactionStatus status) {
+
+				addCollAdm(MockCollectiviteAdministrative.CEDI);
+
+				final PersonnePhysique pp = addNonHabitant("Jacques", "Cartier", RegDate.get(1980, 1, 5), Sexe.MASCULIN);
+				addForPrincipal(pp, RegDate.get(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, RegDate.get(anneePf, 5, 31), MotifFor.ARRIVEE_HS, MockPays.France);
+				addForPrincipal(pp, RegDate.get(anneePf, 6, 1), MotifFor.ARRIVEE_HS, MockCommune.Aubonne);
+				addForSecondaire(pp, RegDate.get(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Aubonne.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+
+				final PeriodeFiscale periode = addPeriodeFiscale(anneePf);
+				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
+				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(pp, periode, date(anneePf, 1, 1), date(anneePf, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+				declaration.addEtat(new EtatDeclaration(dateEmission, TypeEtatDeclaration.EMISE));
+				declaration.addEtat(new EtatDeclaration(delaiInitial.addMonths(1), TypeEtatDeclaration.SOMMEE));
+
+				final DelaiDeclaration delai = new DelaiDeclaration();
+				delai.setDateDemande(dateEmission);
+				delai.setDelaiAccordeAu(delaiInitial);
+				declaration.addDelai(delai);
+
+				return declaration.getId();
+			}
+		});
+
+		final RegDate dateTraitement = delaiInitial.addYears(1);
+		final EnvoiSommationsDIsResults results = processor.run(dateTraitement, false, 0, null);
+		Assert.assertEquals(0, results.getTotalDisTraitees());
+		Assert.assertEquals(0, results.getTotalDisSommees());
+		Assert.assertEquals(0, results.getTotalSommations(anneePf));
+		Assert.assertEquals(0, results.getTotalIndigent());
+		Assert.assertEquals(0, results.getTotalNonAssujettissement());
+		Assert.assertEquals(0, results.getTotalSommationsEnErreur());
+		Assert.assertEquals(0, results.getTotalDisOptionnelles());
+	}
+
 }

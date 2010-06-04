@@ -376,22 +376,24 @@ public abstract class Declaration extends HibernateEntity implements DateRange, 
 
 	@Transient
 	public EtatDeclaration getEtatDeclarationActif(TypeEtatDeclaration etatDeclaration) {
-		Assert.notNull(etatDeclaration, "etatDeclaration required.");
-
 		// tri par ordre croissant
 		final List<EtatDeclaration> etatsSorted = getEtatsSorted();
 		if (etatsSorted == null || etatsSorted.isEmpty()) {
 			return null;
 		}
+		return getEtatDeclarationActif(etatDeclaration, etatsSorted);
+	}
+
+	private static EtatDeclaration getEtatDeclarationActif(TypeEtatDeclaration etatRecherche, List<EtatDeclaration> etatsSorted) {
+		Assert.notNull(etatRecherche, "etatDeclaration required.");
 
 		// récupère le dernier état non-annulé du type spécifié
 		for (int i = etatsSorted.size() - 1; i >= 0; --i) {
 			final EtatDeclaration e = etatsSorted.get(i);
-			if (!e.isAnnule() && e.getEtat() == etatDeclaration) {
+			if (!e.isAnnule() && e.getEtat() == etatRecherche) {
 				return e;
 			}
 		}
-
 		return null;
 	}
 
@@ -407,7 +409,13 @@ public abstract class Declaration extends HibernateEntity implements DateRange, 
 			return null;
 		}
 
-		// récupère le dernier état non-annulé
+		// [UNIREG-2489] : si la déclaration a été retournée, alors son état est retourné, même si les dates ne jouent pas
+		final EtatDeclaration retour = getEtatDeclarationActif(TypeEtatDeclaration.RETOURNEE, etatsSorted);
+		if (retour != null) {
+			return retour;
+		}
+
+		// récupère le dernier état non-annulé (qui n'est pas un retour, donc)
 		for (int i = etatsSorted.size() - 1; i >= 0; --i) {
 			final EtatDeclaration e = etatsSorted.get(i);
 			if (!e.isAnnule()) {
@@ -430,7 +438,7 @@ public abstract class Declaration extends HibernateEntity implements DateRange, 
 		}
 
 		// tri par ordre croissant
-		List<EtatDeclaration> list = new ArrayList<EtatDeclaration>(etats);
+		final List<EtatDeclaration> list = new ArrayList<EtatDeclaration>(etats);
 		Collections.sort(list, new EtatDeclaration.Comparator());
 
 		return list;

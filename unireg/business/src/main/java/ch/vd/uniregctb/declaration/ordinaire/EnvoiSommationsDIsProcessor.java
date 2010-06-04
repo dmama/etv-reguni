@@ -7,7 +7,6 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
-import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.HibernateTemplate;
@@ -82,7 +81,7 @@ public class EnvoiSommationsDIsProcessor  {
 				RegDateHelper.dateToDisplayString(dateTraitement))
 		);
 
-		final List<Long> dis = retrieveListIdDIs(dateTraitement, nombreMax);
+		final List<Long> dis = retrieveListIdDIs(dateTraitement);
 
 		final BatchTransactionTemplate<Long, EnvoiSommationsDIsResults> t = new BatchTransactionTemplate<Long, EnvoiSommationsDIsResults>(dis, BATCH_SIZE, Behavior.REPRISE_AUTOMATIQUE, transactionManager, status, hibernateTemplate);
 		t.execute(rapportFinal, new BatchCallback<Long, EnvoiSommationsDIsResults>() {
@@ -275,7 +274,7 @@ public class EnvoiSommationsDIsProcessor  {
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<Long> retrieveListIdDIs(final RegDate dateLimite, final Integer nombreMax) {
+	private List<Long> retrieveListIdDIs(final RegDate dateLimite) {
 
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
@@ -285,42 +284,18 @@ public class EnvoiSommationsDIsProcessor  {
 
 				final List<Long> ids = (List<Long>) hibernateTemplate.execute(new HibernateCallback() {
 					public Object doInHibernate(Session session) throws HibernateException {
-						SQLQuery sqlQuery = session.createSQLQuery("alter session set optimizer_index_caching = 90");
-						sqlQuery.executeUpdate();
-						sqlQuery = session.createSQLQuery("alter session set optimizer_index_cost_adj = 10");
-						sqlQuery.executeUpdate();
-						Query query = session.createQuery(
-							"SELECT di.id"
-							+ " FROM DeclarationImpotOrdinaire AS di"
-							+ " WHERE di.annulationDate IS NULL "
-							+ " AND EXISTS ("
-							+ "   SELECT etat1.declaration.id"
-							+ "   FROM EtatDeclaration AS etat1"
-							+ "   WHERE di.id = etat1.declaration.id"
-							+ "     AND etat1.annulationDate IS NULL"
-							+ "     AND etat1.etat = 'EMISE'"
-							+ "     AND etat1.dateObtention IN ("
-							+ "       SELECT MAX(etat2.dateObtention) "
-							+ "       FROM EtatDeclaration AS etat2 "
-							+ "       WHERE etat1.declaration.id = etat2.declaration.id AND etat2.annulationDate IS NULL))"
-							+ " AND EXISTS ( "
-							+ "   SELECT delai.declaration.id  FROM DelaiDeclaration AS delai"
-							+ "   WHERE delai.declaration.id = di.id"
-							+ "   AND delai.annulationDate IS NULL"
-							+ "   AND delai.delaiAccordeAu IS NOT NULL"
-							+ "   GROUP BY delai.declaration.id"
-							+ "   HAVING MAX(delai.delaiAccordeAu) < :dateLimite"
-							+ " )"
-						);
 
+						final StringBuilder b = new StringBuilder();
+						b.append("SELECT di.id FROM DeclarationImpotOrdinaire AS di");
+						b.append(" WHERE di.annulationDate IS NULL");
+						b.append(" AND EXISTS (SELECT etat.declaration.id FROM EtatDeclaration AS etat WHERE di.id = etat.declaration.id AND etat.annulationDate IS NULL AND etat.etat = 'EMISE')");
+						b.append(" AND NOT EXISTS (SELECT etat.declaration.id FROM EtatDeclaration AS etat WHERE di.id = etat.declaration.id AND etat.annulationDate IS NULL AND etat.etat IN ('RETOURNEE', 'SOMMEE'))");
+						b.append(" AND EXISTS (SELECT delai.declaration.id FROM DelaiDeclaration AS delai WHERE di.id = delai.declaration.id AND delai.annulationDate IS NULL AND delai.delaiAccordeAu IS NOT NULL");
+						b.append(" GROUP BY delai.declaration.id HAVING MAX(delai.delaiAccordeAu) < :dateLimite)");
+						final String sql = b.toString();
+						final Query query = session.createQuery(sql);
 						query.setParameter("dateLimite", dateLimite.index());
-						if (nombreMax > 0) {
-							// On fait une query sur 2 x le nombre max. Pour etre statistiquement sûr
-							// de sommer le nombreMax de DI
-							query.setMaxResults(nombreMax * 2);
-						}
 						return query.list();
-
 					}
 				});
 				return ids;

@@ -3,6 +3,7 @@ package ch.vd.uniregctb.declaration.source;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
+import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
@@ -192,5 +193,35 @@ public class EnvoiSommationLRsEnMasseProcessorTest extends BusinessTest {
 		addEtatDeclaration(lr, fin.addDays(6), TypeEtatDeclaration.EMISE);
 		addDelaiDeclaration(lr, fin.addDays(6), fin.addMonths(1));
 		return lr;
+	}
+
+	/**
+	 * C'est un cas qui se produit beaucoup avec les débiteur "web" : ils envoient la LR avant même qu'on leur demande...
+	 */
+	@Test
+	public void testNonSommationLrRetourneeAvantEmission() throws Exception {
+		final PeriodeFiscale pf = addPeriodeFiscale(2007);
+		final DeclarationImpotSource lr = addLRaSommerAvecDebiteur(pf, date(2007, 1, 1), date(2007, 1, 31), PeriodiciteDecompte.MENSUEL);
+		lr.addEtat(new EtatDeclaration(date(2007, 1, 12), TypeEtatDeclaration.RETOURNEE));
+
+		final RegDate dateEmission = lr.getEtatDeclarationActif(TypeEtatDeclaration.EMISE).getDateObtention();
+		final RegDate dateRetour = lr.getEtatDeclarationActif(TypeEtatDeclaration.RETOURNEE).getDateObtention();
+		assertTrue(dateEmission.isAfter(dateRetour));
+
+		hibernateTemplate.flush();
+
+		final List<Long> allIds = processor.getListIdLRs(null, RegDate.get(), null);
+		assertEquals(0, allIds.size());
+	}
+
+	@Test
+	public void testNonSommationLrDejaSommee() throws Exception {
+		final PeriodeFiscale pf = addPeriodeFiscale(2007);
+		final DeclarationImpotSource lr = addLRaSommerAvecDebiteur(pf, date(2007, 1, 1), date(2007, 1, 31), PeriodiciteDecompte.MENSUEL);
+		lr.addEtat(new EtatDeclaration(date(2007, 3, 12), TypeEtatDeclaration.SOMMEE));
+		hibernateTemplate.flush();
+
+		final List<Long> allIds = processor.getListIdLRs(null, RegDate.get(), null);
+		assertEquals(0, allIds.size());
 	}
 }
