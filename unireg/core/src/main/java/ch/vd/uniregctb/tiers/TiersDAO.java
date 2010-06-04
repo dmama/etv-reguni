@@ -83,7 +83,7 @@ public interface TiersDAO extends GenericDAO<Tiers, Long> {
 	 * @param includesComposantsMenage <b>vrai</b> s'il faut inclure les numéros d'individus des personnes physiques faisant partie des ménages communs
 	 * @return la liste des numéros d'individu correspondants aux numéros de tiers spécifiés.
 	 */
-	List<Long> getNumerosIndividu(Set<Long> tiersIds, boolean includesComposantsMenage);
+	Set<Long> getNumerosIndividu(Set<Long> tiersIds, boolean includesComposantsMenage);
 
 	/**
 	 * Retourne la liste de tous les Numéros d'habitant des tiers en base

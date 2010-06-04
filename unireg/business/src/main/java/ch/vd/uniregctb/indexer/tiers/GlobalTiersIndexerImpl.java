@@ -283,7 +283,7 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 				// une requête par individu); et avec le préchargement on peut charger 500 individus d'un coup.
 				long start = System.nanoTime();
 
-				final List<Long> numerosIndividus = tiersDAO.getNumerosIndividu(ids, true);
+				final Set<Long> numerosIndividus = tiersDAO.getNumerosIndividu(ids, true);
 				if (!numerosIndividus.isEmpty()) { // on peut tomber sur une plage de tiers ne contenant pas d'habitant
 					try {
 						serviceCivilService.getIndividus(numerosIndividus, null, EnumAttributeIndividu.ADRESSES); // chauffe le cache

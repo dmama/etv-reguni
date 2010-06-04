@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.evenement;
 
+import java.util.Collection;
 import java.util.List;
 
 import ch.vd.registre.base.dao.GenericDAO;
@@ -53,7 +54,7 @@ public interface EvenementCivilDAO extends GenericDAO<EvenementCivilData, Long> 
 	 *
 	 * @return une liste d'ids des événements civils
 	 */
-	List<EvenementCivilData> getEvenementsCivilsNonTraites(List<Long> nosIndividus);
+	List<EvenementCivilData> getEvenementsCivilsNonTraites(Collection<Long> nosIndividus);
 
 	/**
 	 * Récupère la liste des ids des événements civils dont le statut est A_TRAITE.

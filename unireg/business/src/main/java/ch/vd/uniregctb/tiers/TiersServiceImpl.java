@@ -3391,7 +3391,7 @@ public class TiersServiceImpl implements TiersService {
 	public List<EvenementCivilData> getEvenementsCivilsNonTraites(Tiers tiers) {
 		final Set<Long> noTiers = new HashSet<Long>(1);
 		noTiers.add(tiers.getNumero());
-		final List<Long> nosIndividus = tiersDAO.getNumerosIndividu(noTiers, true);
+		final Set<Long> nosIndividus = tiersDAO.getNumerosIndividu(noTiers, true);
 		final List<EvenementCivilData> liste;
 		if (nosIndividus.size() > 0) {
 			liste = evenementCivilDAO.getEvenementsCivilsNonTraites(nosIndividus);
