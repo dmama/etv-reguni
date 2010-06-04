@@ -14,17 +14,28 @@ public class LoggingJob extends JobDefinition {
 	private static final String CATEGORIE = "Debug";
 
 	public static final String I_DELAY = "delay";
+	public static final String I_INT_DELAY = "interruption_delay";
 
 	private static List<JobParam> params ;
 
 	static {
 		params = new ArrayList<JobParam>() ;
-		JobParam param = new JobParam();
-		param.setDescription("Délai");
-		param.setName(I_DELAY);
-		param.setMandatory(false);
-		param.setType(new JobParamInteger());
-		params.add(param);
+		{
+			JobParam param = new JobParam();
+			param.setDescription("Délai d'exécution");
+			param.setName(I_DELAY);
+			param.setMandatory(false);
+			param.setType(new JobParamInteger());
+			params.add(param);
+		}
+		{
+			JobParam param = new JobParam();
+			param.setDescription("Délai d'interruption");
+			param.setName(I_INT_DELAY);
+			param.setMandatory(false);
+			param.setType(new JobParamInteger());
+			params.add(param);
+		}
 	}
 
 	public LoggingJob(int sortOrder) {
@@ -40,11 +51,17 @@ public class LoggingJob extends JobDefinition {
 			delay = 1000; // 1 seconde
 		}
 
-		for (int i=0;i<10;i++) {
-			setPercentDone(i*10, 100);
+		Integer intdelay = getIntegerValue(params, I_INT_DELAY);
+		if (intdelay == null) {
+			intdelay = 0; // 0 seconde
+		}
+
+		for (int i = 0; i < 10; i++) {
+			setPercentDone(i * 10, 100);
 			Thread.sleep(delay);
 			if (isInterrupted()) {
 				LOGGER.debug("LoggingJob interrupted!");
+				Thread.sleep(intdelay);
 				return;
 			}
 		}

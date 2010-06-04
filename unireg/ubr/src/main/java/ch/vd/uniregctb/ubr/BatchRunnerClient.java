@@ -1,17 +1,15 @@
 package ch.vd.uniregctb.ubr;
 
+import javax.activation.DataHandler;
+import javax.mail.util.ByteArrayDataSource;
+import javax.xml.ws.BindingProvider;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
-import javax.activation.DataHandler;
-import javax.mail.util.ByteArrayDataSource;
-import javax.xml.ws.BindingProvider;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.cxf.message.Message;
@@ -56,7 +54,6 @@ public class BatchRunnerClient {
 	 *            le nom du batch
 	 * @param params
 	 *            les paramètres à utiliser
-	 *            @return 0
 	 * @throws BatchWSException
 	 *             en cas d'erreur lors du démarrage du batch
 	 */
@@ -77,7 +74,7 @@ public class BatchRunnerClient {
 	 * @throws BatchWSException
 	 *             en cas d'erreur lors du démarrage du batch
 	 */
-	public void runBatch(String name, HashMap<String, Object> params) throws BatchWSException {
+	public void runBatch(String name, Map<String, Object> params) throws BatchWSException {
 		StartBatch p = new StartBatch();
 		p.setName(name);
 		p.setParams(util2web(params));
@@ -87,7 +84,7 @@ public class BatchRunnerClient {
 		pp.setName(name);
 
 		JobStatut status = JobStatut.JOB_READY;
-		while (JobStatut.JOB_RUNNING.equals(status) || JobStatut.JOB_READY.equals(status)) {
+		while (isRunning(status) || JobStatut.JOB_READY.equals(status)) {
 			try {
 				Thread.sleep(2000);
 			}
@@ -113,6 +110,10 @@ public class BatchRunnerClient {
 		if (JobStatut.JOB_EXCEPTION.equals(status)) {
 			throw new BatchWSException("Le job a lancé une exception - consulter le log du serveur");
 		}
+	}
+
+	private boolean isRunning(JobStatut status) {
+		return status == JobStatut.JOB_RUNNING || status == JobStatut.JOB_INTERRUPTING;
 	}
 
 	/**

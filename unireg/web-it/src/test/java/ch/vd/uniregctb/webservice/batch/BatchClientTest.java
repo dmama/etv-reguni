@@ -1,9 +1,5 @@
 package ch.vd.uniregctb.webservice.batch;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.fail;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,8 +14,15 @@ import ch.vd.uniregctb.common.WebitTest;
 import ch.vd.uniregctb.ubr.BatchRunnerClient;
 import ch.vd.uniregctb.webservices.batch.BatchWSException;
 import ch.vd.uniregctb.webservices.batch.JobDefinition;
+import ch.vd.uniregctb.webservices.batch.JobStatut;
 import ch.vd.uniregctb.webservices.batch.Param;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+@SuppressWarnings({"JavaDoc"})
 public class BatchClientTest extends WebitTest {
 
 	private static final Logger LOGGER = Logger.getLogger(BatchClientTest.class);
@@ -145,6 +148,11 @@ public class BatchClientTest extends WebitTest {
 
 		// on attend maintenant la fin du job avant de continuer
 		client.stopBatch(BATCH_NAME);
+
+		// le job doit être dans l'état interrompu
+		final JobDefinition definition = client.getBatchDefinition(BATCH_NAME);
+		assertNotNull(definition);
+		assertEquals(JobStatut.JOB_INTERRUPTED, definition.getStatut());
 	}
 
 	@Test
@@ -157,18 +165,59 @@ public class BatchClientTest extends WebitTest {
 
 		final List<Param> params = definition.getParams();
 		assertNotNull(params);
-		assertEquals(5, params.size());
+		assertEquals(6, params.size());
 		assertParam(params.get(0), "dateDebut", "regdate", aujourdhui);
 		assertParam(params.get(1), "count", "integer", null);
 		assertParam(params.get(2), "duration", "integer", null);
-		assertParam(params.get(3), "salutations", "enum", null);
-		assertParam(params.get(4), "attachement", "byte[]", null);
+		assertParam(params.get(3), "shutdown_duration", "integer", null);
+		assertParam(params.get(4), "salutations", "enum", null);
+		assertParam(params.get(5), "attachement", "byte[]", null);
 
 		List<String> values = new ArrayList<String>(3);
 		values.add("HELLO");
 		values.add("COUCOU");
 		values.add("BONJOUR");
-		assertEnumParam(params.get(3), "salutations", values, null);
+		assertEnumParam(params.get(4), "salutations", values, null);
+	}
+
+	/**
+	 * Vérifie que la commande 'runBatch' ne retourne que lorsque le job est arrêté, même si ce dernier a été interrompu et qu'il prend plusieurs secondes pour s'interrompre.
+	 */
+	@Test
+	public void testRunAndInterruptJob() throws Exception {
+
+		final Map<String, Object> args = new HashMap<String, Object>(2);
+		args.put("dateDebut", "2008-03-20");
+		args.put("duration", "5"); // 5 secondes
+		args.put("shutdown_duration", "20"); // 20 secondes supplémentaires nécessaires en cas d'interruption
+
+		// Démmarre un thread qui va interrompre le job dans 1.0 secondes
+		final Thread async = new Thread() {
+			@Override
+			public void run() {
+				try {
+					Thread.sleep(1000);
+					client.stopBatch(BATCH_NAME);
+				}
+				catch (Exception e) {
+					throw new RuntimeException(e);
+				}
+			}
+		};
+		async.start();
+
+		// Démarre le job
+		final long start = System.nanoTime();
+		client.runBatch(BATCH_NAME, args);
+		final long duration = (System.nanoTime() - start) / 1000000000;
+
+		// La méthode runBatch ne doit pas retourner avant que le job soit complétement arrêté (= il doit attendre pendant que le job est interrupting)
+		assertTrue(duration > 20L);
+
+		// Finalement, le job doit être dans l'état interrompu
+		final JobDefinition definition = client.getBatchDefinition(BATCH_NAME);
+		assertNotNull(definition);
+		assertEquals(JobStatut.JOB_INTERRUPTED, definition.getStatut());
 	}
 
 	private static void assertParam(Param param, final String paramName, final String paramType, final Object paramDefaultValue) {

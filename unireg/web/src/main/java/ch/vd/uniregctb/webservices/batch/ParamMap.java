@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.webservices.batch;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -36,5 +37,12 @@ public class ParamMap {
 
 	public boolean isEmpty() {
 		return entries == null || entries.isEmpty();
+	}
+
+	@Override
+	public String toString() {
+		return "ParamMap{" +
+				"entries=" + Arrays.toString(entries.toArray()) +
+				'}';
 	}
 }

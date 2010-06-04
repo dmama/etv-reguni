@@ -77,7 +77,7 @@ public class BatchSchedulerTest extends BusinessTest {
 		LOGGER.debug("Begin testDoubleStart method.");
 
 		final HashMap<String, Object> map = new HashMap<String, Object>();
-		map.put("delay", 2000); // assez long pour qu'il tourne encore lors du deuxième démarrage et de l'interruption 
+		map.put(LoggingJob.I_DELAY, 2000); // assez long pour qu'il tourne encore lors du deuxième démarrage et de l'interruption 
 		final Date startTime = new Date();
 		final JobDefinition job = batchScheduler.startJob(LoggingJob.NAME, map);
 
@@ -113,7 +113,7 @@ public class BatchSchedulerTest extends BusinessTest {
 		LOGGER.debug("Begin testStartStopStart method.");
 
 		HashMap<String, Object> map = new HashMap<String, Object>();
-		map.put("delay", 200);
+		map.put(LoggingJob.I_DELAY, 200);
 
 		{
 			final Date startTime = new Date();
@@ -233,5 +233,45 @@ public class BatchSchedulerTest extends BusinessTest {
 		}
 
 		assertEquals(JobStatut.JOB_OK, job.getStatut());
+	}
+
+	/**
+	 * Vérifie qu'un job qui a reçu une demande d'interruption reste bien 'running' tant qu'il ne s'est pas réellement interrompu.
+	 */
+	@Test
+	@NotTransactional()
+	public void testStartAndInterruptJob() throws Exception {
+
+		HashMap<String, Object> map = new HashMap<String, Object>();
+		map.put(LoggingJob.I_DELAY, 500); // 10 * 0.5 seconde
+		map.put(LoggingJob.I_INT_DELAY, 2000); // 2 secondes
+
+		// Démarrage du job
+		final Date startTime = new Date();
+		JobDefinition job = batchScheduler.startJob(LoggingJob.NAME, map);
+
+		// Attente du démarrage de l'exécution
+		waitUntilRunning(job, startTime);
+
+		// Interruption du job (il va mettre 2 secondes à terminer son traitement)
+		job.interrupt();
+
+		// On attend que le batch scheduler ait transmis l'événement d'interruption au job
+		while (job.getStatut() == JobStatut.JOB_RUNNING) {
+			Thread.sleep(100); // 100ms
+		}
+
+		// On vérifie que le job est toujours running (car il est entrain de s'interrompre)
+		assertTrue(job.isRunning());
+		assertTrue(job.isInterrupted());
+
+		// Attente de l'arrêt de l'exécution
+		while (job.isRunning()) {
+			Thread.sleep(100); // 100ms
+		}
+
+		// Le job doit être dans l'état interrompu
+		assertNotRunning(job);
+		assertEquals(JobStatut.JOB_INTERRUPTED, job.getStatut());
 	}
 }

@@ -40,4 +40,12 @@ public class ParamMapEntry {
 		key = e.getKey();
 		value = e.getValue();
 	}
+
+	@Override
+	public String toString() {
+		return "ParamMapEntry{" +
+				"key='" + key + '\'' +
+				", value='" + value + '\'' +
+				'}';
+	}
 }

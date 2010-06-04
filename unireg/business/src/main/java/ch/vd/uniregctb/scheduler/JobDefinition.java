@@ -66,6 +66,10 @@ public abstract class JobDefinition implements InitializingBean, Comparable<Obje
 		 */
 		JOB_EXCEPTION,
 		/**
+		 * Le job a reçu une demande d'interruption, et il est entrain d'interrompre son traitement.
+		 */
+		JOB_INTERRUPTING,
+		/**
 		 * JOB_INTERRUPTED est l'état du job terminé par l'utilisateur
 		 */
 		JOB_INTERRUPTED
@@ -135,6 +139,7 @@ public abstract class JobDefinition implements InitializingBean, Comparable<Obje
 		lastStart = new Date();
 		lastEnd = null;
 
+		runningMessage = "";
 		percentProgression = null;
 		currentParameters = params;
 		doExecute(params);
@@ -160,12 +165,12 @@ public abstract class JobDefinition implements InitializingBean, Comparable<Obje
 	protected abstract void doExecute(HashMap<String, Object> params) throws Exception;
 
 	public void interrupt() {
-		setStatut(JobStatut.JOB_INTERRUPTED);
-		LOGGER.info("Job interrupted flag set");
+		setStatut(JobStatut.JOB_INTERRUPTING);
+		LOGGER.info("<" + name + "> interrupted flag set");
 	}
 
 	public void toBeExecuted() {
-		Assert.isTrue(statut != JobStatut.JOB_RUNNING);
+		Assert.isTrue(statut != JobStatut.JOB_INTERRUPTING && statut != JobStatut.JOB_RUNNING);
 		setStatut(JobStatut.JOB_RUNNING);
 	}
 
@@ -175,10 +180,16 @@ public abstract class JobDefinition implements InitializingBean, Comparable<Obje
 			// Si le job s'est terminé correctement, on supprime le message
 			runningMessage = "";
 		}
+		else if (statut == JobStatut.JOB_INTERRUPTING) {
+			setStatut(JobStatut.JOB_INTERRUPTED);
+		}
 	}
 
+	/**
+	 * @return <b>vrai</b> si le job a été interrompu ou s'il est entrain de s'interrompre.
+	 */
 	protected boolean isInterrupted() {
-		return statut == JobStatut.JOB_INTERRUPTED;
+		return statut == JobStatut.JOB_INTERRUPTING || statut == JobStatut.JOB_INTERRUPTED;
 	}
 
 	/**
@@ -213,7 +224,7 @@ public abstract class JobDefinition implements InitializingBean, Comparable<Obje
 	 *            the statut to set
 	 */
 	public void setStatut(JobStatut statut) {
-		LOGGER.debug("Job " + name + ": Statut changed from " + this.statut + " to " + statut);
+		LOGGER.debug("<" + name + "> status changed from " + this.statut + " to " + statut);
 		this.statut = statut;
 	}
 
@@ -234,7 +245,7 @@ public abstract class JobDefinition implements InitializingBean, Comparable<Obje
 	 * @return le status du job
 	 */
 	public boolean isRunning() {
-		return statut == JobStatut.JOB_RUNNING;
+		return statut == JobStatut.JOB_INTERRUPTING || statut == JobStatut.JOB_RUNNING;
 	}
 
 	public String getRunningMessage() {
@@ -434,7 +445,7 @@ public abstract class JobDefinition implements InitializingBean, Comparable<Obje
 		if (params != null) {
 			Boolean b = (Boolean) params.get(key);
 			if (b != null) {
-				value = b.booleanValue();
+				value = b;
 			}
 		}
 		return value;
@@ -495,11 +506,9 @@ public abstract class JobDefinition implements InitializingBean, Comparable<Obje
 			final Object v = params.get(key);
 			if (v instanceof String) {
 				final String s = (String) v;
-				if (s != null) {
-					value = RegDateHelper.dashStringToDate(s);
-					if (value == null) {
-						throw new IllegalArgumentException(String.format("La date spécifiée '%s' n'est pas valide", s));
-					}
+				value = RegDateHelper.dashStringToDate(s);
+				if (value == null) {
+					throw new IllegalArgumentException(String.format("La date spécifiée '%s' n'est pas valide", s));
 				}
 			}
 			else {

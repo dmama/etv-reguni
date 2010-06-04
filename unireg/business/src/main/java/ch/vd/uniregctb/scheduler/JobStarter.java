@@ -47,10 +47,10 @@ public class JobStarter implements Job, InterruptableJob {
 			job.initialize();
 
 			if (params == null || params.isEmpty()) {
-				LOGGER.info("Démarrage du job " + job.getName() + " sans paramètre");
+				LOGGER.info("Démarrage du job <" + job.getName() + "> sans paramètre");
 			}
 			else {
-				LOGGER.info("Démarrage du job " + job.getName() + " avec les paramètres " + params.toString());
+				LOGGER.info("Démarrage du job <" + job.getName() + "> avec les paramètres " + params.toString());
 			}
 			initializeSecurityContext();
 
@@ -61,17 +61,15 @@ public class JobStarter implements Job, InterruptableJob {
 				job.terminate();
 			}
 
-			LOGGER.info("Job " + job.getName() + " finished: " + job.getStatut() + " " + job);
-
 			terminate();
 		}
 		catch (Exception e) {
-			LOGGER.error("Job execution exception: " + e.getMessage(), e);
+			LOGGER.error("Job <" + job.getName() + "> exception: " + e.getMessage(), e);
 			job.setStatut(JobDefinition.JobStatut.JOB_EXCEPTION);
 			job.setRunningMessage(e.getMessage());
 		}
 		catch (Error e) {
-			LOGGER.fatal("Job execution error: " + e.getMessage(), e);
+			LOGGER.fatal("Job <" + job.getName() + "> error: " + e.getMessage(), e);
 			job.setStatut(JobDefinition.JobStatut.JOB_EXCEPTION);
 			job.setRunningMessage(e.getMessage());
 			throw e;

@@ -22,18 +22,18 @@ public class UniregJobListener implements JobListener {
 	}
 
 	public void jobExecutionVetoed(JobExecutionContext context) {
-		LOGGER.info("Listener: Job " + getName() + " was VETOED");
+		LOGGER.info("Job <" + getName() + "> execution is VETOED");
 		job.interrupt();
 	}
 
 	public void jobToBeExecuted(JobExecutionContext context) {
-		LOGGER.info("Listener: Job " + getName() + " is now started");
+		LOGGER.info("Job <" + getName() + "> is to be executed");
 		job.toBeExecuted();
 	}
 
 	public void jobWasExecuted(JobExecutionContext context, JobExecutionException jobException) {
-		LOGGER.info("Listener: Job " + getName() + " is now stopped");
 		job.wasExecuted();
+		LOGGER.info("Job <" + getName() + "> is now stopped with status " + job.getStatut());
 	}
 
 }

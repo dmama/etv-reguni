@@ -45,6 +45,7 @@ public class BatchWebServiceImpl implements BatchWebService {
 			@WebParam(targetNamespace = "http://www.vd.ch/uniregctb/webservices/batch", partName = "params", name = "StartBatch") StartBatch params)
 			throws BatchWSException {
 		try {
+			LOGGER.debug(params);
 			setAuthentication();
 
 			final JobDefinition job = batchScheduler.getJob(params.name);
@@ -144,6 +145,7 @@ public class BatchWebServiceImpl implements BatchWebService {
 			@WebParam(targetNamespace = "http://www.vd.ch/uniregctb/webservices/batch", partName = "params", name = "StopBatch") StopBatch params)
 			throws BatchWSException {
 		try {
+			LOGGER.debug(params);
 			setAuthentication();
 			batchScheduler.stopJob(params.name);
 		}

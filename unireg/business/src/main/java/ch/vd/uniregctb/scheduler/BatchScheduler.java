@@ -3,6 +3,7 @@ package ch.vd.uniregctb.scheduler;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -53,7 +54,7 @@ public class BatchScheduler {
 
 		jobs.put(job.getName(), job);
 		scheduler.addJobListener(new UniregJobListener(job));
-		LOGGER.info("Job added: " + job.getName());
+		LOGGER.info("Job <" + job.getName()+"> added.");
 	}
 
 	/**
@@ -86,7 +87,7 @@ public class BatchScheduler {
 	 */
 	public JobDefinition startJobWithDefaultParams(String jobName) throws JobAlreadyStartedException, SchedulerException {
 
-		LOGGER.info("Lancement du job: " + jobName);
+		LOGGER.info("Lancement du job <" + jobName + ">");
 		JobDefinition job = jobs.get(jobName);
 		Assert.notNull(job);
 		HashMap<String, Object> params = job.getDefaultParams();
@@ -105,9 +106,9 @@ public class BatchScheduler {
 	public JobDefinition startJob(String jobName, HashMap<String, Object> params) throws JobAlreadyStartedException, SchedulerException {
 		Assert.notNull(jobName, "Pas de nom de Job défini");
 
-		LOGGER.info("Lancement du job: " + jobName);
+		LOGGER.info("Lancement du job <" + jobName + ">");
 		JobDefinition job = jobs.get(jobName);
-		Assert.notNull(job, "Le job '" + jobName + "' n'existe pas");
+		Assert.notNull(job, "Le job <" + jobName + "> n'existe pas");
 		return startJob(job, params);
 	}
 
@@ -152,7 +153,7 @@ public class BatchScheduler {
 		Assert.isTrue(!scheduler.isShutdown(), "Le scheduler a été stoppé");
 
 		if (job.isRunning()) {
-			LOGGER.error("The job " + job.getName() + " is already started!");
+			LOGGER.error("The job <" + job.getName() + "> is already started!");
 			throw new JobAlreadyStartedException();
 		}
 
@@ -160,7 +161,13 @@ public class BatchScheduler {
 
 		// Construction d'un trigger qui se déclanche tout de suite
 		final SimpleTrigger trigger = new SimpleTrigger(IMMEDIATE_TRIGGER + "-" + job.getName() + "-" + (triggerCount++), Scheduler.DEFAULT_GROUP);
+		final Date scheduledDate = new Date();
 		scheduleJob(job, params, trigger);
+
+		// Attends que le job soit effectivement démarré
+		while (job.getLastStart() == null || job.getLastStart().before(scheduledDate)) {
+			sleep(50);
+		}
 
 		// Attends que le job soit fini, si on est en mode synchrone
 		if (job.getSynchronousMode() == JobDefinition.JobSynchronousMode.SYNCHRONOUS) {
@@ -168,6 +175,15 @@ public class BatchScheduler {
 		}
 
 		return job;
+	}
+
+	private void sleep(int millisecondes) {
+		try {
+			Thread.sleep(millisecondes);
+		}
+		catch (InterruptedException ignored) {
+			LOGGER.warn("Timer exception ignored = " + ignored.toString());
+		}
 	}
 
 	private void waitForCompletion(JobDefinition job) {
@@ -179,12 +195,7 @@ public class BatchScheduler {
 				LOGGER.debug("[SYNC] Attends que le job soit arrete...");
 			}
 
-			try {
-				Thread.sleep(2000);
-			}
-			catch (InterruptedException ignored) {
-				LOGGER.warn("Timer exception ignored = " + ignored.toString());
-			}
+			sleep(1000);
 		}
 	}
 
@@ -215,39 +226,39 @@ public class BatchScheduler {
 	 */
 	public void stopJob(String name) throws SchedulerException {
 
-		LOGGER.info("Job " + name + " will be interrupted...");
-		try {
-			scheduler.interrupt(name, Scheduler.DEFAULT_GROUP);
-		}
-		catch (UnableToInterruptJobException e) {
-			throw new SchedulerException("Unable to interrup job", e);
+		final JobDefinition job = jobs.get(name);
+		Assert.notNull(job, "Le job <" + name + "> n'existe pas");
+
+		if (job.isRunning()) {
+			LOGGER.info("Job <" + name + "> will be interrupted...");
+			try {
+				scheduler.interrupt(name, Scheduler.DEFAULT_GROUP);
+			}
+			catch (UnableToInterruptJobException e) {
+				throw new SchedulerException("Unable to interrup job", e);
+			}
 		}
 
 		// Attends que le job soit stoppé
 		boolean warningDone = false;
 		int count = 0;
-		boolean exit = false;
-		JobDefinition job = jobs.get(name);
-		while (job.isRunning() && !exit) {
+		while (job.isRunning()) {
 
-			try {
-				Thread.sleep(500);
-			}
-			catch (InterruptedException ignored) {
-				LOGGER.warn("Timer exception ignored = " + ignored.toString());
-			}
+			sleep(500);
+			
 			count++;
 			if (count > 10 && !warningDone) { // 5s
-				LOGGER.warn("Job " + name + " takes looooong (>5s) to stop!");
+				LOGGER.warn("Job <" + name + "> takes looooong (>5s) to stop!");
 				warningDone = true;
 			}
 			if (count > 60) { // 30s
-				LOGGER.error("Job " + name + " takes REALLY too looooong (>5s) to stop. Aborting wait.");
-				exit = true;
+				LOGGER.error("Job <" + name + "> takes REALLY too looooong (>30s) to stop. Aborting wait.");
+				break;
 			}
 		}
+
 		if (!job.isRunning()) {
-			LOGGER.info("Job " + name + " is now stopped.");
+			LOGGER.info("Job <" + name + "> is now stopped with status " + job.getStatut());
 		}
 	}
 

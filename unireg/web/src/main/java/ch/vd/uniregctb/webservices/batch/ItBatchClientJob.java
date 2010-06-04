@@ -24,6 +24,7 @@ public class ItBatchClientJob extends JobDefinition {
 	public static final String PARAM_DATE_DEBUT = "dateDebut";
 	public static final String PARAM_COUNT = "count";
 	public static final String PARAM_DURATION = "duration";
+	public static final String PARAM_SHUTDOWN_DURATION = "shutdown_duration";
 	public static final String PARAM_SALUTATIONS = "salutations"; // paramètre bidon pour tester les enums
 	public static final String PARAM_ATTACHEMENT = "attachement"; // paramètre bidon pour tester les fichiers
 
@@ -62,6 +63,15 @@ public class ItBatchClientJob extends JobDefinition {
 			JobParam param = new JobParam();
 			param.setDescription("Durée minimale (s)");
 			param.setName(PARAM_DURATION);
+			param.setMandatory(false);
+			param.setType(new JobParamInteger());
+			params.add(param);
+		}
+		// Shutdown Duration
+		{
+			JobParam param = new JobParam();
+			param.setDescription("Durée minimale d'arrêt après interruption (s)");
+			param.setName(PARAM_SHUTDOWN_DURATION);
 			param.setMandatory(false);
 			param.setType(new JobParamInteger());
 			params.add(param);
@@ -108,9 +118,21 @@ public class ItBatchClientJob extends JobDefinition {
 			LOGGER.info("Contenu du fichier joint: \n" + new String(attachement) + "\n");
 		}
 
-		Integer duration = (Integer) params.get(PARAM_DURATION);
+		final Integer duration = (Integer) params.get(PARAM_DURATION);
+		final Integer shutdown = (Integer) params.get(PARAM_SHUTDOWN_DURATION);
+
 		if (duration != null) {
-			Thread.sleep(duration * 1000);
+			final long inc = duration * 100;
+			for (int i = 0; i < 10; i++) {
+				Thread.sleep(inc);
+				if (isInterrupted()) {
+					break;
+				}
+			}
+		}
+
+		if (isInterrupted() && shutdown != null) {
+			Thread.sleep(shutdown * 1000);
 		}
 
         LOGGER.info("Date début : "+dateDebut);

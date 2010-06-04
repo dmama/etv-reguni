@@ -25,6 +25,14 @@ public interface BatchWebService {
 
 		@XmlElement(required = true)
 		public ParamMap params;
+
+		@Override
+		public String toString() {
+			return "StartBatch{" +
+					"name='" + name + '\'' +
+					", params=" + params +
+					'}';
+		}
 	}
 
 	@XmlAccessorType(XmlAccessType.FIELD)
@@ -33,6 +41,13 @@ public interface BatchWebService {
 
 		@XmlElement(required = true)
 		public String name;
+
+		@Override
+		public String toString() {
+			return "StopBatch{" +
+					"name='" + name + '\'' +
+					'}';
+		}
 	}
 
 	@XmlAccessorType(XmlAccessType.FIELD)
@@ -41,6 +56,13 @@ public interface BatchWebService {
 
 		@XmlElement(required = true)
 		public String name;
+
+		@Override
+		public String toString() {
+			return "JobDefParam{" +
+					"name='" + name + '\'' +
+					'}';
+		}
 	}
 
 	@XmlAccessorType(XmlAccessType.FIELD)
@@ -49,6 +71,13 @@ public interface BatchWebService {
 
 		@XmlElement(required = true)
 		public String name;
+
+		@Override
+		public String toString() {
+			return "LastReport{" +
+					"name='" + name + '\'' +
+					'}';
+		}
 	}
 
 	@XmlAccessorType(XmlAccessType.FIELD)
