@@ -177,7 +177,7 @@ public class EvenementCivilDAOImpl extends GenericDAOImpl<EvenementCivilData, Lo
 
 		Long numeroCTB = criterion.getNumeroCTB();
 		if (numeroCTB != null) {
-			queryWhere += " and (evenement.habitantPrincipal.numero = ? or evenement.habitantConjoint.numero = ?) ";
+			queryWhere += " and (evenement.habitantPrincipalId = ? or evenement.habitantConjointId = ?) ";
 			criteria.add(numeroCTB);
 			criteria.add(numeroCTB);
 		}
