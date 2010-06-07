@@ -182,7 +182,6 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
     /**
      * {@inheritDoc}
      */
-    @Transactional(rollbackFor = Throwable.class)
     public int indexAllDatabaseAsync(StatusManager statusManager, int nbThreads, Mode mode, boolean prefetchIndividus)
             throws IndexerException {
 
@@ -199,23 +198,7 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
         }
 
         statusManager.setMessage("Récupération des tiers à indexer...");
-        final DeltaIds deltaIds;
-        switch (mode) {
-            case FULL:
-	            deltaIds = new DeltaIds(tiersDAO.getAllIds());
-                break;
-
-            case DIRTY_ONLY:
-                deltaIds = new DeltaIds(tiersDAO.getDirtyIds());
-                break;
-
-            case INCREMENTAL:
-	            deltaIds = getIncrementalIds();
-                break;
-
-            default:
-                throw new ProgrammingException("Mode d'indexation inconnu = " + mode);
-        }
+	    final DeltaIds deltaIds = getIdsToIndex(mode);
 
 	    try {
 		    int nbIndexed = indexMultithreads(deltaIds.toAdd, nbThreads, mode, prefetchIndividus, statusManager);
@@ -227,6 +210,36 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 		    throw new IndexerException(e);
 	    }
     }
+
+	private DeltaIds getIdsToIndex(final Mode mode) {
+
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
+		template.setReadOnly(true);
+
+		return (DeltaIds) template.execute(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				
+				final DeltaIds deltaIds;
+				switch (mode) {
+				case FULL:
+					deltaIds = new DeltaIds(tiersDAO.getAllIds());
+					break;
+
+				case DIRTY_ONLY:
+					deltaIds = new DeltaIds(tiersDAO.getDirtyIds());
+					break;
+
+				case INCREMENTAL:
+					deltaIds = getIncrementalIds();
+					break;
+
+				default:
+					throw new ProgrammingException("Mode d'indexation inconnu = " + mode);
+				}
+				return deltaIds;
+			}
+		});
+	}
 
 	/**
 	 * [UNIREG-1988] Supprime les tiers spécifiés de l'indexeur.
@@ -281,20 +294,7 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 				// Si le service est chauffable, on précharge les individus en vrac pour améliorer les performances.
 				// Sans préchargement, chaque individu est obtenu séparemment à travers host-interface (= au minimum
 				// une requête par individu); et avec le préchargement on peut charger 500 individus d'un coup.
-				long start = System.nanoTime();
-
-				final Set<Long> numerosIndividus = tiersDAO.getNumerosIndividu(ids, true);
-				if (!numerosIndividus.isEmpty()) { // on peut tomber sur une plage de tiers ne contenant pas d'habitant
-					try {
-						serviceCivilService.getIndividus(numerosIndividus, null, EnumAttributeIndividu.ADRESSES); // chauffe le cache
-
-						long nanosecondes = System.nanoTime() - start;
-						LOGGER.info("=> Récupéré " + numerosIndividus.size() + " individus en " + (nanosecondes / 1000000000L) + "s.");
-					}
-					catch (Exception e) {
-						LOGGER.error("Impossible de précharger le lot d'individus [" + numerosIndividus + "]. On continue avec host-interface pour ce lot.", e);
-					}
-				}
+				warmIndividuCache(ids);
 			}
 
 			// Dispatching des tiers à indexer
@@ -328,6 +328,31 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 		}
 
 		return size;
+	}
+
+	@SuppressWarnings({"unchecked"})
+	private void warmIndividuCache(final Set<Long> ids) {
+		long start = System.nanoTime();
+
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
+		template.setReadOnly(true);
+		final Set<Long> numerosIndividus = (Set<Long>) template.execute(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				return tiersDAO.getNumerosIndividu(ids, true);
+			}
+		});
+
+		if (!numerosIndividus.isEmpty()) { // on peut tomber sur une plage de tiers ne contenant pas d'habitant
+			try {
+				serviceCivilService.getIndividus(numerosIndividus, null, EnumAttributeIndividu.ADRESSES); // chauffe le cache
+
+				long nanosecondes = System.nanoTime() - start;
+				LOGGER.info("=> Récupéré " + numerosIndividus.size() + " individus en " + (nanosecondes / 1000000000L) + "s.");
+			}
+			catch (Exception e) {
+				LOGGER.error("Impossible de précharger le lot d'individus [" + numerosIndividus + "]. On continue avec host-interface pour ce lot.", e);
+			}
+		}
 	}
 
 	private static class DeltaIds {
