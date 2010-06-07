@@ -228,14 +228,14 @@ public class EvenementManagerImpl implements EvenementManager, MessageSourceAwar
 
 
 	/**
-	 * Force l'etat de l'evenement à TRAITE
+	 * Force l'etat de l'evenement à TRAITE (en fait : FORCE)
 	 *
 	 * @param id
 	 */
 	@Transactional(rollbackFor = Throwable.class)
 	public void forceEtatTraite(Long id) {
 		EvenementCivilData evenementCivilData = evenementCivilDAO.get(id);
-		evenementCivilData.setEtat(EtatEvenementCivil.TRAITE);
+		evenementCivilData.setEtat(EtatEvenementCivil.FORCE);
 	}
 
 	/**

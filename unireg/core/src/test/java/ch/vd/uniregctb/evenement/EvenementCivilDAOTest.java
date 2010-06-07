@@ -66,12 +66,12 @@ public class EvenementCivilDAOTest extends CoreDAOTest {
 	@Test
 	public void testGetEvenementCivilsNonTraites() throws Exception {
 
-		List<Long> list = dao.getEvenementCivilsNonTraites();
+		final List<Long> list = dao.getEvenementCivilsNonTraites();
 		assertNotNull(list);
 		assertEquals(1, list.size());
 		for (Long id : list) {
-			EvenementCivilData evt = dao.get(id);
-			Assert.isTrue( !EtatEvenementCivil.TRAITE.equals( evt.getEtat() ), "un évenement traité a été récupéré");
+			final EvenementCivilData evt = dao.get(id);
+			Assert.isTrue( !evt.getEtat().isTraite(), "un évenement traité a été récupéré");
 		}
 	}
 

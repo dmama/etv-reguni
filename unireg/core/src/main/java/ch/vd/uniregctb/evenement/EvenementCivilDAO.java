@@ -57,13 +57,6 @@ public interface EvenementCivilDAO extends GenericDAO<EvenementCivilData, Long> 
 	List<EvenementCivilData> getEvenementsCivilsNonTraites(Collection<Long> nosIndividus);
 
 	/**
-	 * Récupère la liste des ids des événements civils dont le statut est A_TRAITE.
-	 *
-	 * @return une liste d'ids des événements civils
-	 */
-	List<Long> getIdsEvenementCivilsATraites();
-
-	/**
 	 * Récupère la liste des ids des événements civils dont le statut est en erreur pour un individu donné
 	 * @param numIndividu le numéro de l'individu principal de l^événement
 	 * @return une liste d'ids des événements civils

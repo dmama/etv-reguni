@@ -117,7 +117,7 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor, Eve
 					final EvenementCivilData evenementCivilData = evenementCivilDAO.get(evenementCivilId);
 					Assert.notNull(evenementCivilData, "l'évènement est null");
 
-					if (evenementCivilData.getEtat() == EtatEvenementCivil.TRAITE || evenementCivilData.getEtat() == EtatEvenementCivil.A_VERIFIER) {
+					if (evenementCivilData.getEtat().isTraite()) {
 						LOGGER.warn("Tentative de traitement de l'événement n°" + evenementCivilId + " qui est déjà traité. Aucune opération effectuée.");
 						return evenementCivilData.getNumeroIndividuPrincipal();
 					}
@@ -128,8 +128,6 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor, Eve
 					Assert.notNull(evenementCivilData.getType(), "le type de l'événement n'est pas renseigné");
 					Assert.notNull(evenementCivilData.getDateEvenement(), "La date de l'événement n'est pas renseigné");
 					Assert.notNull(evenementCivilData.getNumeroOfsCommuneAnnonce(), "Le numero de la commune d'annonce n'est pas renseigné");
-					Assert.isTrue(evenementCivilData.getEtat() != EtatEvenementCivil.TRAITE, "l'évènement est déjà traité");
-					Assert.isTrue(evenementCivilData.getEtat() != EtatEvenementCivil.A_VERIFIER, "l'évènement est déjà traité");
 
 					// Controle la commune OFS
 					int numeroOFS = evenementCivilData.getNumeroOfsCommuneAnnonce();

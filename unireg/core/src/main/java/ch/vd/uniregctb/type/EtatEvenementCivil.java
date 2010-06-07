@@ -14,29 +14,40 @@ package ch.vd.uniregctb.type;
  * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_WqFYYMgEEdyvxsruSlJY5Q"
  */
 public enum EtatEvenementCivil {
-	/** 
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * 
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_Xs3rEMgEEdyvxsruSlJY5Q"
+
+	/**
+	 * Vient d'arriver : n'a pas encore été traité
 	 */
-	A_TRAITER, /** 
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * 
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_cLLpcMgEEdyvxsruSlJY5Q"
+	A_TRAITER(false),
+
+	/**
+	 * Evénement complétement traité sans erreur
 	 */
-	TRAITE, /** 
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * 
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_al7i4MgEEdyvxsruSlJY5Q"
+	TRAITE(true),
+
+	/**
+	 * Evénement dont le traitement (inachevé, donc) a mené à des erreurs
 	 */
-	EN_ERREUR, /** 
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * 
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_opQ0kFNKEd2gUodFsYb4bw"
+	EN_ERREUR(false),
+
+	/**
+	 * Evénement dont le traitement (achevé) mérite qu'on y jette encore un oeil
 	 */
-	A_VERIFIER
+	A_VERIFIER(true),
+
+	/**
+	 * Evénement initialement en erreur mais qu'un opérateur a traité
+	 * manuellement (aucun contrôle du traitement effectif n'est fait)
+	 */
+	FORCE(true);
+
+	private boolean isTraite;
+
+	private EtatEvenementCivil(boolean isTraite) {
+		this.isTraite = isTraite;
+	}
+
+	public final boolean isTraite() {
+		return isTraite;
+	}
 }
