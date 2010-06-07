@@ -66,7 +66,6 @@ public interface GlobalTiersIndexer {
 	 * @throws ch.vd.uniregctb.indexer.IndexerException
 	 *          si l'indexation n'a pas pu être faite.
 	 */
-	@Transactional(rollbackFor = Throwable.class)
 	public int indexAllDatabaseAsync(StatusManager statusManager, int nbThreads, Mode mode, boolean prefetchIndividus) throws IndexerException;
 
 	/**
