@@ -38,7 +38,6 @@ public class GlobalTiersSearcherImpl implements GlobalTiersSearcher, Initializin
 	 *
 	 * @param criteria les critères de recherche
 	 * @return la liste des tiers repondant aux criteres de recherche
-	 * @throws IndexerException
 	 */
 	public List<TiersIndexedData> search(TiersCriteria criteria) {
 
@@ -50,6 +49,26 @@ public class GlobalTiersSearcherImpl implements GlobalTiersSearcher, Initializin
 			throw new IndexerException("Les critères de recherche sont vides");
 		}
 
+		final List<TiersIndexedData> list;
+		try {
+			list = adaptativeSearch(criteria);
+		}
+		catch (RuntimeException e) {
+			LOGGER.error("Problème avec la requête = [" + criteria + "]", e);
+			throw e;
+		}
+
+		return list;
+	}
+
+	/**
+	 * [UNIREG-1386] exécute la requête, et si une exception BooleanQuery.TooManyClause est levée par lucene, adapte la requête en supprimant les termes les plus courts.
+	 *
+	 * @param criteria les critères de recherche
+	 * @return la liste des données trouvées
+	 */
+	private List<TiersIndexedData> adaptativeSearch(TiersCriteria criteria) {
+		
 		final List<TiersIndexedData> list = new ArrayList<TiersIndexedData>();
 
 		QueryConstructor contructor = new QueryConstructor(criteria);
