@@ -66,7 +66,7 @@ public class MotifsForHandler extends AbstractAjaxHandler implements Application
 			motifs = Collections.emptyList();
 		}
 
-		final List<Component> components = asComponents(motifs, motifCourant, false);
+		final List<Component> components = asComponents(motifs, motifCourant, false, true);
 		final AjaxResponse response = new AjaxResponseImpl();
 		response.addAction(new ReplaceContentAction(motifsOuvertureSelectId, components));
 		return response;
@@ -106,7 +106,7 @@ public class MotifsForHandler extends AbstractAjaxHandler implements Application
 			motifs = Collections.emptyList();
 		}
 
-		final List<Component> components = asComponents(motifs, motifCourant, true);
+		final List<Component> components = asComponents(motifs, motifCourant, true, false);
 		final AjaxResponse response = new AjaxResponseImpl();
 		response.addAction(new ReplaceContentAction(motifsFermetureSelectId, components));
 		return response;
@@ -128,7 +128,7 @@ public class MotifsForHandler extends AbstractAjaxHandler implements Application
 		final MotifRattachement rattachement = MotifRattachement.valueOf(rattachementString);
 		final Long numeroCtb = Long.valueOf(numeroCtbString);
 
-		TransactionTemplate template = new TransactionTemplate(transactionManager);
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 
 		final TypeFor typeFor = (TypeFor) template.execute(new TransactionCallback() {
@@ -146,26 +146,28 @@ public class MotifsForHandler extends AbstractAjaxHandler implements Application
 	}
 
 	/**
-	 * Converti une liste de motifs de for en composants 'option' d'une list-box Html.
+	 * Convertir une liste de motifs de for en composants 'option' d'une list-box Html.
 	 *
-	 * @param motifs
-	 *            le liste des motifs
-	 * @param motifCourant
-	 *            le motif couramment sélectionné, ou <b>null</b> si aucun motif ne l'est.
-	 * @param needEmptyOption
-	 *            si <b>vrai</b> ajoute dans tous les cas un motif vide en première position.
-	 * @return une liste de composants 'option' à partir des motifs spécifié.
+	 * @param motifs la liste des motifs
+	 * @param motifCourant le motif couramment sélectionné, ou <b>null</b> si aucun motif ne l'est.
+	 * @param needEmptyOption si <b>vrai</b> ajoute dans tous les cas un motif vide en première position.
+	 * @param ouverture si <b>vrai</b>, les libellés sont les libellés d'ouverture, sinon ce sont les libellés de fermeture
+	 * @return une liste de composants 'option' à partir des motifs spécifiés.
 	 */
-	private List<Component> asComponents(final List<MotifFor> motifs, MotifFor motifCourant, boolean needEmptyOption) {
+	private List<Component> asComponents(final List<MotifFor> motifs, MotifFor motifCourant, boolean needEmptyOption, boolean ouverture) {
 		final int size = motifs.size();
 		final List<Component> components = new ArrayList<Component>(size);
 
-		if (needEmptyOption || motifCourant == null || !motifs.contains(motifCourant)) {
+		// on autorise l'option vide dans le cas où :
+		// 1. elle est explicitement demandée (voir needEmptyOption), ou
+		// 2. elle n'est pas demandée, mais le motif courant (= ancienne valeur) n'est pas mappable sur les nouveaux motifs disponibles (s'il y en a plusieurs)
+		if (needEmptyOption || ((motifCourant == null || !motifs.contains(motifCourant)) && size > 1)) {
 			components.add(new Option("", "")); // motif non-sélectionné
 		}
 		for (MotifFor m : motifs) {
-			String description = messageSourceAccessor.getMessage(ApplicationConfig.masterKeyMotifOuverture + m);
-			Option option = new Option(m.name(), description);
+			final String key = String.format("%s%s", ouverture ? ApplicationConfig.masterKeyMotifOuverture : ApplicationConfig.masterKeyMotifFermeture, m.name());
+			final String description = messageSourceAccessor.getMessage(key);
+			final Option option = new Option(m.name(), description);
 			if (m == motifCourant || (!needEmptyOption && size == 1)) {
 				option.setSelected(true);
 			}

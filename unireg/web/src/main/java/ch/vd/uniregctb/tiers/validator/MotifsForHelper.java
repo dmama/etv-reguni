@@ -44,7 +44,7 @@ public class MotifsForHelper {
 		// motifs.add(MotifFor.VENTE_IMMOBILIER);
 		// motifs.add(MotifFor.FIN_EXPLOITATION);
 
-		List<MotifFor> motifs = new ArrayList<MotifFor>();
+		final List<MotifFor> motifs = new ArrayList<MotifFor>();
 
 		switch (type.rattachement) {
 		case DIPLOMATE_SUISSE:
@@ -73,6 +73,7 @@ public class MotifsForHelper {
 			break;
 
 		case ACTIVITE_INDEPENDANTE:
+		case ETABLISSEMENT_STABLE:
 		case DIRIGEANT_SOCIETE:
 		case ACTIVITE_LUCRATIVE_CAS:
 		case ADMINISTRATEUR:
@@ -109,7 +110,7 @@ public class MotifsForHelper {
 		// motifs.add(MotifFor.DEBUT_EXPLOITATION);
 		// motifs.add(MotifFor.MAJORITE);
 
-		List<MotifFor> motifs = new ArrayList<MotifFor>();
+		final List<MotifFor> motifs = new ArrayList<MotifFor>();
 
 		switch (type.rattachement) {
 		case DIPLOMATE_SUISSE:
@@ -137,12 +138,18 @@ public class MotifsForHelper {
 			break;
 
 		case ACTIVITE_INDEPENDANTE:
+		case ETABLISSEMENT_STABLE:
+		case DIRIGEANT_SOCIETE:
 		case ACTIVITE_LUCRATIVE_CAS:
 		case ADMINISTRATEUR:
 		case CREANCIER_HYPOTHECAIRE:
 		case PRESTATION_PREVOYANCE:
 		case LOI_TRAVAIL_AU_NOIR:
 			motifs.add(MotifFor.FIN_EXPLOITATION);
+			break;
+
+		case SEJOUR_SAISONNIER:
+			motifs.add(MotifFor.SEJOUR_SAISONNIER);
 			break;
 
 		default:
