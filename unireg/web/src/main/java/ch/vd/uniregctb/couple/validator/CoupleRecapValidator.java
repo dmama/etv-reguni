@@ -34,19 +34,10 @@ import ch.vd.uniregctb.utils.ValidateHelper;
  */
 public class CoupleRecapValidator implements Validator {
 
-	private CoupleRecapManager coupleRecapManager;
 	private MetierService metierService;
 	private TiersService tiersService;
 	private CoupleHelper coupleHelper;
 	private SituationFamilleService situationFamilleService;
-
-	public CoupleRecapManager getCoupleRecapManager() {
-		return coupleRecapManager;
-	}
-
-	public void setCoupleRecapManager(CoupleRecapManager coupleRecapManager) {
-		this.coupleRecapManager = coupleRecapManager;
-	}
 
 	public MetierService getMetierService() {
 		return metierService;

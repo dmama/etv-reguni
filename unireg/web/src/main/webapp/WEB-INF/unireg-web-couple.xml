@@ -44,7 +44,6 @@
 	</bean>
 
 	<bean id="coupleRecapValidator" class="ch.vd.uniregctb.couple.validator.CoupleRecapValidator" >
-		<property name="coupleRecapManager" ref="coupleRecapManager" />
 		<property name="tiersService" ref="tiersService" />
 		<property name="metierService" ref="metierService" />
 		<property name="coupleHelper" ref="coupleHelper" />

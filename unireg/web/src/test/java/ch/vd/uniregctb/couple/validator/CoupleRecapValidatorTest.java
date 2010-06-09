@@ -42,11 +42,8 @@ public class CoupleRecapValidatorTest extends BusinessTest {
 		final CoupleHelper coupleHelper = new CoupleHelper();
 		coupleHelper.setTiersService(tiersService);
 
-		final CoupleRecapManager recapManager = new CoupleRecapManagerImpl();
-
 		validator = new CoupleRecapValidator();
 		validator.setCoupleHelper(coupleHelper);
-		validator.setCoupleRecapManager(recapManager);
 		validator.setMetierService(metierService);
 		validator.setSituationFamilleService(situFamilleService);
 		validator.setTiersService(tiersService);

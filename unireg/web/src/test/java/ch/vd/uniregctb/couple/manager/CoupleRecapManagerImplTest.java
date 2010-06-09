@@ -1,5 +1,16 @@
 package ch.vd.uniregctb.couple.manager;
 
+import java.util.Date;
+
+import org.junit.Test;
+import org.springframework.test.annotation.NotTransactional;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.validation.BeanPropertyBindingResult;
+import org.springframework.validation.Errors;
+import org.springframework.validation.Validator;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.couple.view.CoupleRecapView;
@@ -8,6 +19,7 @@ import ch.vd.uniregctb.general.view.TiersGeneralView;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
+import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -15,26 +27,24 @@ import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.Sexe;
-import org.junit.Test;
-import org.springframework.test.annotation.NotTransactional;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.transaction.TransactionStatus;
 
-import java.util.Date;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 @ContextConfiguration(locations = {
 		"classpath:ch/vd/uniregctb/couple/manager/config.xml"
 })
 public class CoupleRecapManagerImplTest extends BusinessTest {
 
-	CoupleRecapManager mngr;
+	private CoupleRecapManager mngr;
+	private Validator validator;
 
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
 		tiersService = getBean(TiersService.class, "tiersService");
+		validator = getBean(Validator.class, "coupleRecapValidator");
 		mngr = getBean(CoupleRecapManager.class, "coupleRecapManager");
 	}
 
@@ -190,7 +200,7 @@ public class CoupleRecapManagerImplTest extends BusinessTest {
 					return null;
 				}
 			});
-			fail("Le ménage-commun ne devrait pas valider à cause de son for principal qui début avant la date du jour.");
+			fail("Le ménage-commun ne devrait pas valider à cause de son for principal qui débute avant la date du jour.");
 		}
 		catch (Exception e) {
 			assertEquals("ch.vd.registre.base.validation.ValidationException: MenageCommun #" + ids.menage + " - 1 erreur(s) - 0 warning(s):\n" +
@@ -218,6 +228,71 @@ public class CoupleRecapManagerImplTest extends BusinessTest {
 				assertEquals(PersonnePhysique.class, mc.getClass());
 				assertEmpty(mc.getRapportsSujet()); // pas associé à un ménage
 				assertEmpty(mc.getRapportsObjet());
+				return null;
+			}
+		});
+	}
+
+	@Test
+	public void testReconciliationDeSeparesAuCivilMariageInconnuAuFiscal() throws Exception {
+
+		final long noMr = 1234567L;
+		final long noMme = 1234568L;
+		final RegDate dateMariage = date(1971, 4, 17);
+		final RegDate dateSeparation = date(2005, 10, 13);
+
+		// civil
+		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+			@Override
+			protected void init() {
+				final MockIndividu mr = addIndividu(noMr, date(1948, 1, 26), "Tartempion", "Robert", true);
+				final MockIndividu mme = addIndividu(noMme, date(1948, 9, 4), "Tartempion", "Martine", false);
+				marieIndividus(mr, mme, dateMariage);
+				separeIndividus(mr, mme, dateSeparation);
+			}
+		});
+
+		final class Ids {
+			long noHabMr;
+			long noHabMme;
+		};
+		final Ids ids = new Ids();
+
+		// fiscal de départ
+		doInNewTransaction(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique mr = addHabitant(noMr);
+				final PersonnePhysique mme = addHabitant(noMme);
+				addForPrincipal(mr, dateSeparation, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Lausanne);
+				addForPrincipal(mme, dateSeparation, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Bussigny);
+				ids.noHabMr = mr.getNumero();
+				ids.noHabMme = mme.getNumero();
+				return null;
+			}
+		});
+
+		// re-création du couple
+		doInNewTransaction(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+
+				final TiersGeneralView viewTiers1 = new TiersGeneralView();
+				viewTiers1.setNumero(ids.noHabMr);
+				final TiersGeneralView viewTiers2 = new TiersGeneralView();
+				viewTiers2.setNumero(ids.noHabMme);
+
+				final CoupleRecapView view = new CoupleRecapView();
+				view.setDateCoupleExistant(RegDate.get());
+				view.setDateDebut(new Date());
+				view.setNouveauCtb(true);
+				view.setPremierePersonne(viewTiers1);
+				view.setSecondePersonne(viewTiers2);
+				view.setTypeUnion(TypeUnion.COUPLE);
+
+				final Errors errors = new BeanPropertyBindingResult(view, "view");
+				validator.validate(view, errors);
+				assertEmpty(errors.getAllErrors());
+
+				mngr.save(view);
 				return null;
 			}
 		});

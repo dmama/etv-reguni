@@ -108,9 +108,9 @@ public class CoupleRecapManagerImpl extends TiersManager implements CoupleRecapM
 		if(secondPP != null) {
 			coupleRecapView.setSecondePersonne(tiersGeneralManager.get(secondPP, true));
 		}
+		coupleRecapView.setNouveauCtb(contribuableCouple == null);
 		if (contribuableCouple != null) {
 			coupleRecapView.setTroisiemeTiers(tiersGeneralManager.get(contribuableCouple));
-			coupleRecapView.setNouveauCtb(false);
 		}
 
 		if (premierPP != null && secondPP != null) {
@@ -133,7 +133,7 @@ public class CoupleRecapManagerImpl extends TiersManager implements CoupleRecapM
 			final EnsembleTiersCouple couplePP1 = tiersService.getEnsembleTiersCouple(premierPP, null);
 			final EnsembleTiersCouple couplePP2 = tiersService.getEnsembleTiersCouple(secondPP, null);
 
-			// Si le ou les contribuables ne font partie d’un ménage commun ouvert...
+			// Si le ou les contribuables ne font pas partie d’un ménage commun ouvert...
 			if (couplePP1 == null && couplePP2 == null) {
 				final RapportEntreTiers dernierRapportPP1 = premierPP.getDernierRapportSujet(TypeRapportEntreTiers.APPARTENANCE_MENAGE);
 				final RapportEntreTiers dernierRapportPP2 = secondPP.getDernierRapportSujet(TypeRapportEntreTiers.APPARTENANCE_MENAGE);
@@ -203,13 +203,16 @@ public class CoupleRecapManagerImpl extends TiersManager implements CoupleRecapM
 	@Transactional(rollbackFor = Throwable.class)
 	public MenageCommun save(CoupleRecapView coupleRecapView) {
 
-		PersonnePhysique premierPP = (PersonnePhysique) tiersService.getTiers(coupleRecapView.getPremierePersonne().getNumero());
-		PersonnePhysique secondPP = null;
+		final PersonnePhysique premierPP = (PersonnePhysique) tiersService.getTiers(coupleRecapView.getPremierePersonne().getNumero());
+		final PersonnePhysique secondPP;
 		if (coupleRecapView.getSecondePersonne() != null) {
 			secondPP = (PersonnePhysique) tiersService.getTiers(coupleRecapView.getSecondePersonne().getNumero());
 		}
+		else {
+			secondPP = null;
+		}
 
-		TypeUnion typeUnion = coupleRecapView.getTypeUnion();
+		final TypeUnion typeUnion = coupleRecapView.getTypeUnion();
 		final RegDate date;
 		if ((typeUnion == TypeUnion.COUPLE || typeUnion == TypeUnion.SEUL) && !coupleRecapView.isNouveauCtb()) {
 			date = coupleRecapView.getDateCoupleExistant();
@@ -223,10 +226,10 @@ public class CoupleRecapManagerImpl extends TiersManager implements CoupleRecapM
 			case COUPLE:
 				if (coupleRecapView.getTroisiemeTiers() != null) {
 					{
-						Tiers tiers = tiersService.getTiers(coupleRecapView.getTroisiemeTiers().getNumero());
+						final Tiers tiers = tiersService.getTiers(coupleRecapView.getTroisiemeTiers().getNumero());
 						if (tiers instanceof PersonnePhysique) {
 							// changement de type de NonHabitant à MenageCommun
-							PersonnePhysique pp = (PersonnePhysique) tiers;
+							final PersonnePhysique pp = (PersonnePhysique) tiers;
 							Assert.isTrue(!pp.isHabitant(), "Le contribuable sélectionné comme couple est un habitant");
 							Assert.isNull(pp.getNumeroIndividu(), "Le contribuable sélectionné comme couple est un ancien habitant");
 							tiersService.changeNHenMenage(pp.getNumero());
@@ -239,7 +242,7 @@ public class CoupleRecapManagerImpl extends TiersManager implements CoupleRecapM
 					}
 					{
 						// rattachement des tiers au ménage
-						MenageCommun menage = (MenageCommun) tiersService.getTiers(coupleRecapView.getTroisiemeTiers().getNumero());
+						final MenageCommun menage = (MenageCommun) tiersService.getTiers(coupleRecapView.getTroisiemeTiers().getNumero());
 						return metierService.rattachToMenage(menage, premierPP, secondPP, date, coupleRecapView.getRemarque(), coupleRecapView.getEtatCivil(), false, null);
 					}
 				}
@@ -252,13 +255,13 @@ public class CoupleRecapManagerImpl extends TiersManager implements CoupleRecapM
 
 			case RECONSTITUTION_MENAGE:
 			{
-				Couple couple = coupleHelper.getCoupleForReconstitution(premierPP, secondPP, date);
+				final Couple couple = coupleHelper.getCoupleForReconstitution(premierPP, secondPP, date);
 				return metierService.reconstitueMenage((MenageCommun) couple.getPremierTiers(), (PersonnePhysique) couple.getSecondTiers(), date, coupleRecapView.getRemarque(), coupleRecapView.getEtatCivil());
 			}
 
 			case FUSION_MENAGES:
 			{
-				Couple couple = coupleHelper.getCoupleForFusion(premierPP, secondPP, null);
+				final Couple couple = coupleHelper.getCoupleForFusion(premierPP, secondPP, null);
 				return metierService.fusionneMenages((MenageCommun) couple.getPremierTiers(), (MenageCommun) couple.getSecondTiers(), coupleRecapView.getRemarque(), coupleRecapView.getEtatCivil());
 			}
 		}
