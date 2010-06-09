@@ -1,7 +1,10 @@
 package ch.vd.uniregctb.tache;
 
+import java.util.List;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.StatusManager;
+import ch.vd.uniregctb.tache.sync.SynchronizeAction;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
@@ -39,6 +42,10 @@ public class MockTacheService implements TacheService {
 	}
 
 	public ListeTachesEnIsntanceParOID produireListeTachesEnIstanceParOID(RegDate dateTraitement, StatusManager status) throws Exception {
+		return null;
+	}
+
+	public List<SynchronizeAction> determineSynchronizeActionsForDIs(Contribuable contribuable) {
 		return null;
 	}
 }

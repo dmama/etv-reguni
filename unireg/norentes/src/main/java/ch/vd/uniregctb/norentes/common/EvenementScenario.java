@@ -51,6 +51,7 @@ import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TarifImpotSource;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 
@@ -165,6 +166,7 @@ public abstract class EvenementScenario extends NorentesScenario {
 		final DeclarationImpotOrdinaire di = new DeclarationImpotOrdinaire();
 		di.setDateDebut(debut);
 		di.setDateFin(fin);
+		di.setTypeContribuable(TypeContribuable.VAUDOIS_ORDINAIRE);
 
 		final EtatDeclaration etat = new EtatDeclaration();
 		etat.setDateObtention(dateEmission);

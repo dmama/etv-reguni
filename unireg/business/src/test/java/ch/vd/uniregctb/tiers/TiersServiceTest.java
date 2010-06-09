@@ -1,24 +1,12 @@
 package ch.vd.uniregctb.tiers;
 
-import ch.vd.common.model.EnumTypeAdresse;
-import ch.vd.uniregctb.declaration.Declaration;
-import ch.vd.uniregctb.declaration.ModeleDocument;
-import ch.vd.uniregctb.declaration.PeriodeFiscale;
-import ch.vd.uniregctb.interfaces.model.Nationalite;
-import ch.vd.uniregctb.interfaces.model.mock.MockCollectiviteAdministrative;
-import ch.vd.uniregctb.interfaces.model.mock.MockNationalite;
-import ch.vd.uniregctb.type.*;
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
-import static junit.framework.Assert.assertSame;
-import static junit.framework.Assert.assertTrue;
-import static junit.framework.Assert.fail;
-
-import java.util.*;
-
-import ch.vd.uniregctb.interfaces.model.mock.MockRue;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 import junit.framework.Assert;
 import org.apache.commons.lang.mutable.MutableLong;
@@ -26,6 +14,7 @@ import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 
+import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationException;
@@ -35,13 +24,32 @@ import ch.vd.uniregctb.adresse.AdresseSuisse;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.interfaces.model.Individu;
+import ch.vd.uniregctb.interfaces.model.Nationalite;
 import ch.vd.uniregctb.interfaces.model.Permis;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
+import ch.vd.uniregctb.interfaces.model.mock.MockNationalite;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
+import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
+import ch.vd.uniregctb.type.GenreImpot;
+import ch.vd.uniregctb.type.ModeImposition;
+import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.MotifRattachement;
+import ch.vd.uniregctb.type.Sexe;
+import ch.vd.uniregctb.type.TypeAdresseTiers;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
+import static junit.framework.Assert.assertSame;
+import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.fail;
+
+@SuppressWarnings({"JavaDoc"})
 public class TiersServiceTest extends BusinessTest {
 
 	private static final Logger LOGGER = Logger.getLogger(TiersServiceTest.class);
@@ -108,7 +116,7 @@ public class TiersServiceTest extends BusinessTest {
 			ForFiscalPrincipal premierForFiscal = new ForFiscalPrincipal();
 			premierForFiscal.setAnnule(false);
 			premierForFiscal.setDateFin(null);
-			premierForFiscal.setDateDebut(RegDate.get(2008, 01, 01));
+			premierForFiscal.setDateDebut(RegDate.get(2008, 1, 1));
 			premierForFiscal.setGenreImpot(GenreImpot.REVENU_FORTUNE);
 			premierForFiscal.setNumeroOfsAutoriteFiscale(MockCommune.Lausanne.getNoOFS());
 			premierForFiscal.setMotifRattachement(MotifRattachement.DOMICILE);
@@ -606,76 +614,6 @@ public class TiersServiceTest extends BusinessTest {
 		assertTrue(pp.isHabitant());
 	}
 
-	@Test
-	public void testFermetureForFiscalPrincipalUNIREG1888() throws Exception {
-		final RegDate dateOuverture = RegDate.get(2006, 7, 1);
-
-		serviceCivil.setUp(new DefaultMockServiceCivil());
-
-		final long noIndividu = 54321L;
-
-		// création des DI 2006 et 2007 avant la notification du départ en 2007
-		doInNewTransaction(new TxCallback() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-
-				addCollAdm(MockCollectiviteAdministrative.CEDI);
-
-				final PeriodeFiscale pf2006 = addPeriodeFiscale(2006);
-				final PeriodeFiscale pf2007 = addPeriodeFiscale(2007);
-				final ModeleDocument modele2006 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf2006);
-				addModeleFeuilleDocument("Déclaration", "210", modele2006);
-				addModeleFeuilleDocument("Annexe 1", "220", modele2006);
-				addModeleFeuilleDocument("Annexe 2-3", "230", modele2006);
-				addModeleFeuilleDocument("Annexe 4-5", "240", modele2006);
-				final ModeleDocument modele2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf2007);
-				addModeleFeuilleDocument("Déclaration", "210", modele2007);
-				addModeleFeuilleDocument("Annexe 1", "220", modele2007);
-				addModeleFeuilleDocument("Annexe 2-3", "230", modele2007);
-				addModeleFeuilleDocument("Annexe 4-5", "240", modele2007);
-
-				// Contribuable vaudois depuis 1998 avec des DIs jusqu'en 2007
-				final Set<ForFiscal> forsFiscaux = new HashSet<ForFiscal>();
-				PersonnePhysique pp = new PersonnePhysique(true);
-				pp.setNumeroIndividu(noIndividu);
-				pp.setForsFiscaux(forsFiscaux);
-				pp.setHabitant(false);
-				pp.setNom("Bolomey");
-				pp = (PersonnePhysique) tiersDAO.save(pp);
-				tiersService.openForFiscalPrincipal(pp, dateOuverture, MotifRattachement.DOMICILE, MockCommune.Cossonay.getNoOFSEtendu(),
-						TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ModeImposition.ORDINAIRE, MotifFor.ARRIVEE_HC, true);
-
-				addDeclarationImpot(pp, pf2006, date(2006, 1, 1), date(2006, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2006);
-				addDeclarationImpot(pp, pf2007, date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2007);
-
-				return null;
-			}
-		});
-
-		// départ en 2007
-		final RegDate depart = date(2007,10,31);
-		doInNewTransaction(new TxCallback() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = tiersDAO.getPPByNumeroIndividu(noIndividu);
-				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
-				tiersService.closeForFiscalPrincipal(ffp, depart, MotifFor.DEPART_HS);
-				return null;
-			}
-		});
-
-		// la DI 2007 doit avoir une durée de validité réduite suite au départ
-		doInNewTransaction(new TxCallback() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final PersonnePhysique pp = tiersDAO.getPPByNumeroIndividu(noIndividu);
-				final Declaration di = pp.getDeclarationActive(date(2007,6,30));
-				assertEquals("La date de fin de la DI 2007 n'a pas été ramené suite au départ HS", depart, di.getDateFin());
-				return null;
-			}
-		});
-	}
-
 	private AppartenanceMenage buildAppartenanceMenage(MenageCommun mc, PersonnePhysique pp, RegDate dateDebut, RegDate dateFin, boolean isAnnule) {
 		final AppartenanceMenage am = new AppartenanceMenage(dateDebut, dateFin, pp, mc);
 		am.setAnnule(isAnnule);
@@ -853,7 +791,7 @@ public class TiersServiceTest extends BusinessTest {
 			public Object execute(TransactionStatus status) throws Exception {
 
 				try {
-					final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
+					tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
 					fail();
 				}
 				catch (PlusieursPersonnesPhysiquesAvecMemeNumeroIndividuException e) {
@@ -1546,7 +1484,7 @@ public class TiersServiceTest extends BusinessTest {
 		// Contribuable avec un for principal ouvert
 		{
 			PersonnePhysique c = new PersonnePhysique(false);
-			addForPrincipal(c, date(2000, 1, 1), null, Integer.valueOf(1234), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+			addForPrincipal(c, date(2000, 1, 1), null, 1234, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 					MotifRattachement.DOMICILE);
 
 			assertNull(tiersService.getForGestionActif(c, date(1950, 1, 1)));
@@ -1563,7 +1501,7 @@ public class TiersServiceTest extends BusinessTest {
 		// Contribuable avec un for principal fermé
 		{
 			PersonnePhysique c = new PersonnePhysique(false);
-			addForPrincipal(c, date(2000, 1, 1), date(2008, 12, 31), Integer.valueOf(1234), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+			addForPrincipal(c, date(2000, 1, 1), date(2008, 12, 31), 1234, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 					MotifRattachement.DOMICILE);
 
 			assertNull(tiersService.getForGestionActif(c, date(1950, 1, 1)));
@@ -1586,7 +1524,7 @@ public class TiersServiceTest extends BusinessTest {
 		// Contribuable avec un for principal ouvert hors-canton
 		{
 			PersonnePhysique c = new PersonnePhysique(false);
-			addForPrincipal(c, date(2000, 1, 1), null, Integer.valueOf(1234), TypeAutoriteFiscale.COMMUNE_HC, MotifRattachement.DOMICILE);
+			addForPrincipal(c, date(2000, 1, 1), null, 1234, TypeAutoriteFiscale.COMMUNE_HC, MotifRattachement.DOMICILE);
 
 			assertNull(tiersService.getForGestionActif(c, date(1950, 1, 1)));
 			assertNull(tiersService.getForGestionActif(c, date(1999, 12, 31)));
@@ -1603,7 +1541,7 @@ public class TiersServiceTest extends BusinessTest {
 		// Contribuable avec un for principal ouvert dans le canton mais sourcier
 		{
 			PersonnePhysique c = new PersonnePhysique(false);
-			ForFiscalPrincipal for0 = addForPrincipal(c, date(2000, 1, 1), null, Integer.valueOf(1234),
+			ForFiscalPrincipal for0 = addForPrincipal(c, date(2000, 1, 1), null, 1234,
 					TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE);
 			for0.setModeImposition(ModeImposition.SOURCE);
 
@@ -1621,9 +1559,9 @@ public class TiersServiceTest extends BusinessTest {
 
 		// Contribuable avec deux fors principaux dans le canton
 		PersonnePhysique c = new PersonnePhysique(false);
-		addForPrincipal(c, date(2000, 1, 1), date(2002, 12, 31), Integer.valueOf(1234), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+		addForPrincipal(c, date(2000, 1, 1), date(2002, 12, 31), 1234, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 				MotifRattachement.DOMICILE);
-		addForPrincipal(c, date(2003, 1, 1), null, Integer.valueOf(4321), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+		addForPrincipal(c, date(2003, 1, 1), null, 4321, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 				MotifRattachement.DOMICILE);
 
 		assertNull(tiersService.getForGestionActif(c, date(1950, 1, 1)));
@@ -1647,7 +1585,7 @@ public class TiersServiceTest extends BusinessTest {
 		// Contribuable avec un for secondaire activite independante
 		{
 			PersonnePhysique c = new PersonnePhysique(false);
-			addForSecondaire(c, date(2000, 1, 1), null, Integer.valueOf(1234), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+			addForSecondaire(c, date(2000, 1, 1), null, 1234, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 					MotifRattachement.ACTIVITE_INDEPENDANTE);
 
 			assertNull(tiersService.getForGestionActif(c, date(1950, 1, 1)));
@@ -1665,7 +1603,7 @@ public class TiersServiceTest extends BusinessTest {
 		// Contribuable avec un for secondaire immeuble
 		{
 			PersonnePhysique c = new PersonnePhysique(false);
-			addForSecondaire(c, date(2000, 1, 1), null, Integer.valueOf(1234), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+			addForSecondaire(c, date(2000, 1, 1), null, 1234, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 					MotifRattachement.IMMEUBLE_PRIVE);
 
 			assertNull(tiersService.getForGestionActif(c, date(1950, 1, 1)));
@@ -1687,7 +1625,7 @@ public class TiersServiceTest extends BusinessTest {
 			for0.setDateDebut(date(2000, 1, 1));
 			for0.setGenreImpot(GenreImpot.REVENU_FORTUNE);
 			for0.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
-			for0.setNumeroOfsAutoriteFiscale(Integer.valueOf(1234));
+			for0.setNumeroOfsAutoriteFiscale(1234);
 			for0.setMotifRattachement(MotifRattachement.ADMINISTRATEUR);
 			c.addForFiscal(for0);
 
@@ -1707,9 +1645,9 @@ public class TiersServiceTest extends BusinessTest {
 
 		// Contribuable avec deux fors secondaires
 		PersonnePhysique c = new PersonnePhysique(false);
-		addForSecondaire(c, date(2000, 1, 1), date(2002, 12, 31), Integer.valueOf(1234), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+		addForSecondaire(c, date(2000, 1, 1), date(2002, 12, 31), 1234, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 				MotifRattachement.IMMEUBLE_PRIVE);
-		addForSecondaire(c, date(2003, 1, 1), null, Integer.valueOf(4321), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+		addForSecondaire(c, date(2003, 1, 1), null, 4321, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 				MotifRattachement.IMMEUBLE_PRIVE);
 
 		assertForGestion(date(2003, 1, 1), null, 4321, tiersService.getDernierForGestionConnu(c, null));
@@ -1733,9 +1671,9 @@ public class TiersServiceTest extends BusinessTest {
 
 		// Contribuable avec deux fors secondaires se recoupant
 		PersonnePhysique c = new PersonnePhysique(false);
-		addForSecondaire(c, date(2000, 1, 1), date(2007, 12, 31), Integer.valueOf(1234), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+		addForSecondaire(c, date(2000, 1, 1), date(2007, 12, 31), 1234, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 				MotifRattachement.IMMEUBLE_PRIVE);
-		addForSecondaire(c, date(2003, 1, 1), null, Integer.valueOf(4321), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+		addForSecondaire(c, date(2003, 1, 1), null, 4321, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 				MotifRattachement.IMMEUBLE_PRIVE);
 
 		assertForGestion(date(2003, 1, 1), null, 4321, tiersService.getDernierForGestionConnu(c, null));
@@ -1759,9 +1697,9 @@ public class TiersServiceTest extends BusinessTest {
 
 		// Contribuable avec un for principal ouvert et un for secondaire ouvert
 		PersonnePhysique c = new PersonnePhysique(false);
-		addForPrincipal(c, date(2000, 1, 1), null, Integer.valueOf(1234), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+		addForPrincipal(c, date(2000, 1, 1), null, 1234, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 				MotifRattachement.DOMICILE);
-		addForSecondaire(c, date(2000, 1, 1), null, Integer.valueOf(4321), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+		addForSecondaire(c, date(2000, 1, 1), null, 4321, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 				MotifRattachement.IMMEUBLE_PRIVE);
 
 		assertNull(tiersService.getForGestionActif(c, date(1950, 1, 1)));
@@ -1781,9 +1719,9 @@ public class TiersServiceTest extends BusinessTest {
 
 		// Contribuable avec un for principal fermé et un for secondaires ouvert
 		PersonnePhysique c = new PersonnePhysique(false);
-		addForPrincipal(c, date(2000, 1, 1), date(2004, 12, 31), Integer.valueOf(1234), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+		addForPrincipal(c, date(2000, 1, 1), date(2004, 12, 31), 1234, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 				MotifRattachement.DOMICILE);
-		addForSecondaire(c, date(2000, 1, 1), null, Integer.valueOf(4321), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+		addForSecondaire(c, date(2000, 1, 1), null, 4321, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 				MotifRattachement.IMMEUBLE_PRIVE);
 		assertNull(tiersService.getForGestionActif(c, date(1950, 1, 1)));
 		assertNull(tiersService.getForGestionActif(c, date(1999, 12, 31)));
@@ -1803,9 +1741,9 @@ public class TiersServiceTest extends BusinessTest {
 
 		// Contribuable avec un for principal ouvert et un for secondaire fermé
 		PersonnePhysique c = new PersonnePhysique(false);
-		addForPrincipal(c, date(2000, 1, 1), null, Integer.valueOf(1234), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+		addForPrincipal(c, date(2000, 1, 1), null, 1234, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 				MotifRattachement.DOMICILE);
-		addForSecondaire(c, date(2000, 1, 1), date(2004, 12, 31), Integer.valueOf(4321), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+		addForSecondaire(c, date(2000, 1, 1), date(2004, 12, 31), 4321, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 				MotifRattachement.IMMEUBLE_PRIVE);
 
 		assertNull(tiersService.getForGestionActif(c, date(1950, 1, 1)));
@@ -1825,8 +1763,8 @@ public class TiersServiceTest extends BusinessTest {
 
 		// Contribuable avec un for principal hors-canton et un for secondaire ouvert dans le canton
 		PersonnePhysique c = new PersonnePhysique(false);
-		addForPrincipal(c, date(2000, 1, 1), null, Integer.valueOf(1234), TypeAutoriteFiscale.COMMUNE_HC, MotifRattachement.DOMICILE);
-		addForSecondaire(c, date(2000, 1, 1), null, Integer.valueOf(4321), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+		addForPrincipal(c, date(2000, 1, 1), null, 1234, TypeAutoriteFiscale.COMMUNE_HC, MotifRattachement.DOMICILE);
+		addForSecondaire(c, date(2000, 1, 1), null, 4321, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 				MotifRattachement.IMMEUBLE_PRIVE);
 
 		assertNull(tiersService.getForGestionActif(c, date(1950, 1, 1)));
@@ -1846,10 +1784,10 @@ public class TiersServiceTest extends BusinessTest {
 
 		// Contribuable avec un for principal hors-canton et deux fors secondaires dans le canton se recoupant
 		PersonnePhysique c = new PersonnePhysique(false);
-		addForPrincipal(c, date(2000, 1, 1), null, Integer.valueOf(1234), TypeAutoriteFiscale.COMMUNE_HC, MotifRattachement.DOMICILE);
-		addForSecondaire(c, date(2002, 1, 1), null, Integer.valueOf(1111), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+		addForPrincipal(c, date(2000, 1, 1), null, 1234, TypeAutoriteFiscale.COMMUNE_HC, MotifRattachement.DOMICILE);
+		addForSecondaire(c, date(2002, 1, 1), null, 1111, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 				MotifRattachement.IMMEUBLE_PRIVE);
-		addForSecondaire(c, date(2000, 1, 1), date(2003, 12, 31), Integer.valueOf(2222), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+		addForSecondaire(c, date(2000, 1, 1), date(2003, 12, 31), 2222, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 				MotifRattachement.IMMEUBLE_PRIVE);
 
 		assertNull(tiersService.getForGestionActif(c, date(1950, 1, 1)));
@@ -1875,13 +1813,13 @@ public class TiersServiceTest extends BusinessTest {
 	public void testGetForGestionContribuableUnForPrincipalCantonFermeUnForPrincipalHorsCantonOuvertEtDeuxForsSecondairesSeRecoupant() {
 
 		PersonnePhysique c = new PersonnePhysique(false);
-		addForPrincipal(c, date(1990, 1, 1), date(2000, 12, 31), Integer.valueOf(1111), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+		addForPrincipal(c, date(1990, 1, 1), date(2000, 12, 31), 1111, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 				MotifRattachement.DOMICILE);
-		addForPrincipal(c, date(2001, 1, 1), date(2001, 1, 1), Integer.valueOf(2222), TypeAutoriteFiscale.COMMUNE_HC,
+		addForPrincipal(c, date(2001, 1, 1), date(2001, 1, 1), 2222, TypeAutoriteFiscale.COMMUNE_HC,
 				MotifRattachement.DOMICILE);
-		addForSecondaire(c, date(2000, 1, 1), date(2003, 12, 31), Integer.valueOf(3333), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+		addForSecondaire(c, date(2000, 1, 1), date(2003, 12, 31), 3333, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 				MotifRattachement.IMMEUBLE_PRIVE);
-		addForSecondaire(c, date(2002, 1, 1), null, Integer.valueOf(4444), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+		addForSecondaire(c, date(2002, 1, 1), null, 4444, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 				MotifRattachement.IMMEUBLE_PRIVE);
 
 		assertNull(tiersService.getForGestionActif(c, date(1950, 1, 1)));
@@ -1917,7 +1855,7 @@ public class TiersServiceTest extends BusinessTest {
 			PersonnePhysique c = new PersonnePhysique(false);
 			addForPrincipal(c, date(1990, 1, 1), date(1998, 12, 31), bex, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 					MotifRattachement.DOMICILE);
-			addForPrincipal(c, date(2001, 1, 1), date(2001, 1, 1), Integer.valueOf(2222), TypeAutoriteFiscale.COMMUNE_HC,
+			addForPrincipal(c, date(2001, 1, 1), date(2001, 1, 1), 2222, TypeAutoriteFiscale.COMMUNE_HC,
 					MotifRattachement.DOMICILE);
 			addForSecondaire(c, date(2000, 1, 1), date(2003, 12, 31), aubonne, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 					MotifRattachement.IMMEUBLE_PRIVE);
@@ -1946,9 +1884,9 @@ public class TiersServiceTest extends BusinessTest {
 		// Cas où aucun for secondaire ne possède du numéro Ofs identique au dernier for principal vaudois
 		{
 			PersonnePhysique c = new PersonnePhysique(false);
-			addForPrincipal(c, date(1990, 1, 1), date(1998, 12, 31), Integer.valueOf(1234), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+			addForPrincipal(c, date(1990, 1, 1), date(1998, 12, 31), 1234, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 					MotifRattachement.DOMICILE);
-			addForPrincipal(c, date(2001, 1, 1), date(2001, 1, 1), Integer.valueOf(2345), TypeAutoriteFiscale.COMMUNE_HC,
+			addForPrincipal(c, date(2001, 1, 1), date(2001, 1, 1), 2345, TypeAutoriteFiscale.COMMUNE_HC,
 					MotifRattachement.DOMICILE);
 			addForSecondaire(c, date(2000, 1, 1), date(2003, 12, 31), bex, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 					MotifRattachement.ACTIVITE_INDEPENDANTE);
@@ -1978,7 +1916,7 @@ public class TiersServiceTest extends BusinessTest {
 		// Cas où il n'y a pas de dernier for principal vaudois
 		{
 			PersonnePhysique c = new PersonnePhysique(false);
-			addForPrincipal(c, date(2001, 1, 1), date(2001, 1, 1), Integer.valueOf(2345), TypeAutoriteFiscale.COMMUNE_HC,
+			addForPrincipal(c, date(2001, 1, 1), date(2001, 1, 1), 2345, TypeAutoriteFiscale.COMMUNE_HC,
 					MotifRattachement.DOMICILE);
 			addForSecondaire(c, date(2000, 1, 1), date(2003, 12, 31), aubonne, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 					MotifRattachement.ACTIVITE_INDEPENDANTE);
@@ -2007,9 +1945,9 @@ public class TiersServiceTest extends BusinessTest {
 
 		// Contribuable avec deux fors principaux dont le plus récent est annulé
 		PersonnePhysique c = new PersonnePhysique(false);
-		addForPrincipal(c, date(2000, 1, 1), date(2002, 12, 31), Integer.valueOf(1234), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+		addForPrincipal(c, date(2000, 1, 1), date(2002, 12, 31), 1234, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 				MotifRattachement.DOMICILE);
-		ForFiscalPrincipal for1 = addForPrincipal(c, date(2005, 1, 1), null, Integer.valueOf(4321),
+		ForFiscalPrincipal for1 = addForPrincipal(c, date(2005, 1, 1), null, 4321,
 				TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE);
 		for1.setAnnulationDate(DateHelper.getDate(2005, 3, 1));
 
@@ -2036,7 +1974,7 @@ public class TiersServiceTest extends BusinessTest {
 
 		// Contribuable avec un for principal
 		PersonnePhysique c2 = new PersonnePhysique(false);
-		addForPrincipal(c2, date(2000, 1, 1), null, Integer.valueOf(1234), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+		addForPrincipal(c2, date(2000, 1, 1), null, 1234, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 				MotifRattachement.DOMICILE);
 		assertNull(tiersService.getDernierForGestionConnu(c2, date(1997, 3, 3)));
 		assertNull(tiersService.getDernierForGestionConnu(c2, date(1999, 12, 31)));
@@ -2046,9 +1984,9 @@ public class TiersServiceTest extends BusinessTest {
 
 		// Contribuable avec deux fors principaux
 		PersonnePhysique c3 = new PersonnePhysique(false);
-		addForPrincipal(c3, date(2000, 1, 1), date(2002, 12, 31), Integer.valueOf(1234), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+		addForPrincipal(c3, date(2000, 1, 1), date(2002, 12, 31), 1234, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 				MotifRattachement.DOMICILE);
-		addForPrincipal(c3, date(2003, 1, 1), null, Integer.valueOf(4321), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+		addForPrincipal(c3, date(2003, 1, 1), null, 4321, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 				MotifRattachement.DOMICILE);
 		assertNull(tiersService.getDernierForGestionConnu(c3, date(1997, 3, 3)));
 		assertNull(tiersService.getDernierForGestionConnu(c3, date(1999, 12, 31)));
@@ -2061,7 +1999,7 @@ public class TiersServiceTest extends BusinessTest {
 
 		// Contribuable avec un for secondaire
 		PersonnePhysique c4 = new PersonnePhysique(false);
-		addForSecondaire(c4, date(2000, 1, 1), null, Integer.valueOf(1234), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+		addForSecondaire(c4, date(2000, 1, 1), null, 1234, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 				MotifRattachement.IMMEUBLE_PRIVE);
 		assertNull(tiersService.getDernierForGestionConnu(c4, date(1997, 3, 3)));
 		assertNull(tiersService.getDernierForGestionConnu(c4, date(1999, 12, 31)));
@@ -2070,9 +2008,9 @@ public class TiersServiceTest extends BusinessTest {
 
 		// Contribuable avec deux fors secondaires
 		PersonnePhysique c5 = new PersonnePhysique(false);
-		addForSecondaire(c5, date(2000, 1, 1), date(2002, 12, 31), Integer.valueOf(1234), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+		addForSecondaire(c5, date(2000, 1, 1), date(2002, 12, 31), 1234, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 				MotifRattachement.IMMEUBLE_PRIVE);
-		addForSecondaire(c5, date(2003, 1, 1), null, Integer.valueOf(4321), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+		addForSecondaire(c5, date(2003, 1, 1), null, 4321, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 				MotifRattachement.IMMEUBLE_PRIVE);
 		assertNull(tiersService.getDernierForGestionConnu(c5, date(1997, 3, 3)));
 		assertNull(tiersService.getDernierForGestionConnu(c5, date(1999, 12, 31)));
@@ -2083,9 +2021,9 @@ public class TiersServiceTest extends BusinessTest {
 
 		// Contribuable avec un for principal et un for secondaire
 		PersonnePhysique c6 = new PersonnePhysique(false);
-		addForPrincipal(c6, date(2000, 1, 1), null, Integer.valueOf(1234), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+		addForPrincipal(c6, date(2000, 1, 1), null, 1234, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 				MotifRattachement.DOMICILE);
-		addForSecondaire(c6, date(2000, 1, 1), null, Integer.valueOf(4321), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+		addForSecondaire(c6, date(2000, 1, 1), null, 4321, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 				MotifRattachement.IMMEUBLE_PRIVE);
 		assertNull(tiersService.getDernierForGestionConnu(c6, date(1999, 12, 31)));
 		assertForGestion(date(2000, 1, 1), null, 1234, tiersService.getDernierForGestionConnu(c6, date(2000, 1, 1)));
@@ -2094,9 +2032,9 @@ public class TiersServiceTest extends BusinessTest {
 
 		// Contribuable avec un for principal fermé et un for secondaires ouvert
 		PersonnePhysique c7 = new PersonnePhysique(false);
-		addForPrincipal(c7, date(2000, 1, 1), date(2004, 12, 31), Integer.valueOf(1234), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+		addForPrincipal(c7, date(2000, 1, 1), date(2004, 12, 31), 1234, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 				MotifRattachement.DOMICILE);
-		addForSecondaire(c7, date(2000, 1, 1), null, Integer.valueOf(4321), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+		addForSecondaire(c7, date(2000, 1, 1), null, 4321, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 				MotifRattachement.IMMEUBLE_PRIVE);
 		assertNull(tiersService.getDernierForGestionConnu(c7, date(1999, 12, 31)));
 		assertForGestion(date(2000, 1, 1), date(2004, 12, 31), 1234, tiersService.getDernierForGestionConnu(c7, date(2000, 1, 1)));
@@ -2107,9 +2045,9 @@ public class TiersServiceTest extends BusinessTest {
 
 		// Contribuable avec un for principal ouvert et un for secondaire fermé
 		PersonnePhysique c8 = new PersonnePhysique(false);
-		addForPrincipal(c8, date(2000, 1, 1), null, Integer.valueOf(1234), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+		addForPrincipal(c8, date(2000, 1, 1), null, 1234, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 				MotifRattachement.DOMICILE);
-		addForSecondaire(c8, date(2000, 1, 1), date(2004, 12, 31), Integer.valueOf(4321), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+		addForSecondaire(c8, date(2000, 1, 1), date(2004, 12, 31), 4321, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 				MotifRattachement.IMMEUBLE_PRIVE);
 		assertNull(tiersService.getDernierForGestionConnu(c8, date(1999, 12, 31)));
 		assertForGestion(date(2000, 1, 1), null, 1234, tiersService.getDernierForGestionConnu(c8, date(2000, 1, 1)));
@@ -2118,9 +2056,9 @@ public class TiersServiceTest extends BusinessTest {
 
 		// Contribuable avec deux fors principaux dont le plus récent est annulé
 		PersonnePhysique c9 = new PersonnePhysique(false);
-		addForPrincipal(c9, date(2000, 1, 1), date(2002, 12, 31), Integer.valueOf(1234), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+		addForPrincipal(c9, date(2000, 1, 1), date(2002, 12, 31), 1234, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 				MotifRattachement.DOMICILE);
-		ForFiscalPrincipal for9_2 = addForPrincipal(c9, date(2005, 1, 1), null, Integer.valueOf(4321),
+		ForFiscalPrincipal for9_2 = addForPrincipal(c9, date(2005, 1, 1), null, 4321,
 				TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE);
 		for9_2.setAnnulationDate(DateHelper.getDate(2005, 3, 1));
 		assertNull(tiersService.getDernierForGestionConnu(c9, date(1999, 12, 31)));
@@ -2132,9 +2070,9 @@ public class TiersServiceTest extends BusinessTest {
 
 		// Contribuable avec deux fors principaux disjoints et fermés
 		PersonnePhysique c10 = new PersonnePhysique(false);
-		addForPrincipal(c10, date(2000, 1, 1), date(2002, 12, 31), Integer.valueOf(1234), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+		addForPrincipal(c10, date(2000, 1, 1), date(2002, 12, 31), 1234, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 				MotifRattachement.DOMICILE);
-		addForPrincipal(c10, date(2005, 1, 1), date(2007, 6, 30), Integer.valueOf(4321), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+		addForPrincipal(c10, date(2005, 1, 1), date(2007, 6, 30), 4321, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 				MotifRattachement.DOMICILE);
 		assertNull(tiersService.getDernierForGestionConnu(c10, date(1999, 12, 31)));
 		assertForGestion(date(2000, 1, 1), date(2002, 12, 31), 1234, tiersService.getDernierForGestionConnu(c10, date(2000, 1, 1)));
@@ -2195,7 +2133,7 @@ public class TiersServiceTest extends BusinessTest {
 		for0.setDateFin(dateFin);
 		for0.setGenreImpot(GenreImpot.CHIENS);
 		for0.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
-		for0.setNumeroOfsAutoriteFiscale(Integer.valueOf(1234));
+		for0.setNumeroOfsAutoriteFiscale(1234);
 		return for0;
 	}
 

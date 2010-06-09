@@ -1,15 +1,5 @@
 package ch.vd.uniregctb.tache;
 
-import ch.vd.uniregctb.common.BusinessTestingConstants;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -27,13 +17,13 @@ import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.uniregctb.common.BusinessTest;
+import ch.vd.uniregctb.common.BusinessTestingConstants;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotCriteria;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
-import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.mock.MockCollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
@@ -41,10 +31,18 @@ import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockOfficeImpot;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
 import ch.vd.uniregctb.metier.MetierService;
+import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
+import ch.vd.uniregctb.tache.sync.AddDI;
+import ch.vd.uniregctb.tache.sync.AnnuleTache;
+import ch.vd.uniregctb.tache.sync.DeleteDI;
+import ch.vd.uniregctb.tache.sync.SynchronizeAction;
+import ch.vd.uniregctb.tache.sync.UpdateDI;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.MenageCommun;
@@ -64,6 +62,7 @@ import ch.vd.uniregctb.type.EtatCivil;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
+import ch.vd.uniregctb.type.Qualification;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseRetour;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
@@ -73,6 +72,14 @@ import ch.vd.uniregctb.type.TypeDocument;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 import ch.vd.uniregctb.type.TypeEtatTache;
 import ch.vd.uniregctb.type.TypeTache;
+
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * Classe de tests pour TacheService
@@ -360,7 +367,7 @@ public class TacheServiceTest extends BusinessTest {
 				final ModeleDocument modele2009 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2009);
 
 				PersonnePhysique pp = addNonHabitant("Hubert", "Duchemole", date(1922, 7, 13), Sexe.MASCULIN);
-				addForPrincipal(pp, date(1970, 9, 21), MotifFor.ARRIVEE_HC, MockCommune.Leysin);
+				addForPrincipal(pp, date(2007, 9, 21), MotifFor.ARRIVEE_HC, MockCommune.Leysin);
 
 				addDeclarationImpot(pp, periode2007, date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2007);
 				addDeclarationImpot(pp, periode2008, date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2008);
@@ -446,7 +453,7 @@ public class TacheServiceTest extends BusinessTest {
 				
 
 				PersonnePhysique pp = addNonHabitant("Hubert", "Duchemole", date(1922, 7, 13), Sexe.MASCULIN);
-				addForPrincipal(pp, date(1970, 9, 21), MotifFor.ARRIVEE_HC, MockCommune.Leysin);
+				addForPrincipal(pp, date(2007, 9, 21), MotifFor.ARRIVEE_HC, MockCommune.Leysin);
 
 				addDeclarationImpot(pp, periode2007, date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2007);
 
@@ -512,7 +519,6 @@ public class TacheServiceTest extends BusinessTest {
 		assertEquals(getNextSunday(RegDate.get()), tacheTransmission.getDateEcheance());
 
 	}
-
 
 	@Test
 	public void testGenereDivorceDepuisOuvertureForPrincipal() throws Exception {
@@ -666,11 +672,6 @@ public class TacheServiceTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
-				PeriodeFiscale pf1998 = addPeriodeFiscale(1998);
-				PeriodeFiscale pf1999 = addPeriodeFiscale(1999);
-				PeriodeFiscale pf2000 = addPeriodeFiscale(2000);
-				PeriodeFiscale pf2001 = addPeriodeFiscale(2001);
-				PeriodeFiscale pf2002 = addPeriodeFiscale(2002);
 				PeriodeFiscale pf2003 = addPeriodeFiscale(2003);
 				PeriodeFiscale pf2004 = addPeriodeFiscale(2004);
 				PeriodeFiscale pf2005 = addPeriodeFiscale(2005);
@@ -678,31 +679,6 @@ public class TacheServiceTest extends BusinessTest {
 				PeriodeFiscale pf2007 = addPeriodeFiscale(2007);
 				PeriodeFiscale pf2008 = addPeriodeFiscale(2008);
 				PeriodeFiscale pf2009 = addPeriodeFiscale(2009);
-				ModeleDocument modele1998 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf1998);
-				addModeleFeuilleDocument("Déclaration", "210", modele1998);
-				addModeleFeuilleDocument("Annexe 1", "220", modele1998);
-				addModeleFeuilleDocument("Annexe 2-3", "230", modele1998);
-				addModeleFeuilleDocument("Annexe 4-5", "240", modele1998);
-				ModeleDocument modele1999 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf1999);
-				addModeleFeuilleDocument("Déclaration", "210", modele1999);
-				addModeleFeuilleDocument("Annexe 1", "220", modele1999);
-				addModeleFeuilleDocument("Annexe 2-3", "230", modele1999);
-				addModeleFeuilleDocument("Annexe 4-5", "240", modele1999);
-				ModeleDocument modele2000 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf2000);
-				addModeleFeuilleDocument("Déclaration", "210", modele2000);
-				addModeleFeuilleDocument("Annexe 1", "220", modele2000);
-				addModeleFeuilleDocument("Annexe 2-3", "230", modele2000);
-				addModeleFeuilleDocument("Annexe 4-5", "240", modele2000);
-				ModeleDocument modele2001 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf2001);
-				addModeleFeuilleDocument("Déclaration", "210", modele2001);
-				addModeleFeuilleDocument("Annexe 1", "220", modele2001);
-				addModeleFeuilleDocument("Annexe 2-3", "230", modele2001);
-				addModeleFeuilleDocument("Annexe 4-5", "240", modele2001);
-				ModeleDocument modele2002 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf2002);
-				addModeleFeuilleDocument("Déclaration", "210", modele2002);
-				addModeleFeuilleDocument("Annexe 1", "220", modele2002);
-				addModeleFeuilleDocument("Annexe 2-3", "230", modele2002);
-				addModeleFeuilleDocument("Annexe 4-5", "240", modele2002);
 				ModeleDocument modele2003 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf2003);
 				addModeleFeuilleDocument("Déclaration", "210", modele2003);
 				addModeleFeuilleDocument("Annexe 1", "220", modele2003);
@@ -745,11 +721,6 @@ public class TacheServiceTest extends BusinessTest {
 				ids.raoulId = raoul.getNumero();
 				addForPrincipal(raoul, date(1998, 1, 1), MotifFor.MAJORITE, MockCommune.Lausanne);
 
-				addDeclarationImpot(raoul, pf1998, date(1998, 1, 1), date(1998, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele1998);
-				addDeclarationImpot(raoul, pf1999, date(1999, 1, 1), date(1999, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele1999);
-				addDeclarationImpot(raoul, pf2000, date(2000, 1, 1), date(2000, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2000);
-				addDeclarationImpot(raoul, pf2001, date(2001, 1, 1), date(2001, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2001);
-				addDeclarationImpot(raoul, pf2002, date(2002, 1, 1), date(2002, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2002);
 				addDeclarationImpot(raoul, pf2003, date(2003, 1, 1), date(2003, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2003);
 				addDeclarationImpot(raoul, pf2004, date(2004, 1, 1), date(2004, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2004);
 				addDeclarationImpot(raoul, pf2005, date(2005, 1, 1), date(2005, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2005);
@@ -761,16 +732,6 @@ public class TacheServiceTest extends BusinessTest {
 				ids.jeanDanielId = jeanDaniel.getNumero();
 				addForPrincipal(jeanDaniel, date(1998, 1, 1), MotifFor.MAJORITE, MockCommune.Lausanne);
 
-				addDeclarationImpot(jeanDaniel, pf1998, date(1998, 1, 1), date(1998, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-						modele1998);
-				addDeclarationImpot(jeanDaniel, pf1999, date(1999, 1, 1), date(1999, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-						modele1999);
-				addDeclarationImpot(jeanDaniel, pf2000, date(2000, 1, 1), date(2000, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-						modele2000);
-				addDeclarationImpot(jeanDaniel, pf2001, date(2001, 1, 1), date(2001, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-						modele2001);
-				addDeclarationImpot(jeanDaniel, pf2002, date(2002, 1, 1), date(2002, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-						modele2002);
 				addDeclarationImpot(jeanDaniel, pf2003, date(2003, 1, 1), date(2003, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
 						modele2003);
 				addDeclarationImpot(jeanDaniel, pf2004, date(2004, 1, 1), date(2004, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
@@ -814,11 +775,21 @@ public class TacheServiceTest extends BusinessTest {
 			assertNotNull(taches);
 			assertEquals(1, taches.size());
 
-			// il doit y avoir 3 tâches d'annulation de DIs
+			// il doit y avoir 2 tâches d'annulation de DIs
 			criterion.setTypeTache(TypeTache.TacheAnnulationDeclarationImpot);
 			taches = tacheDAO.find(criterion);
 			assertNotNull(taches);
 			assertEquals(2, taches.size()); // 2006 et 2007
+
+			// la date de fin de la déclaration 2005 doit avoir été mis-à-jour
+			final List<Declaration> declarations2005 = raoul.getDeclarationForPeriode(2005);
+			assertNotNull(declarations2005);
+			assertEquals(1, declarations2005.size());
+
+			final Declaration declaration2005 = declarations2005.get(0);
+			assertNotNull(declaration2005);
+			assertEquals(date(2005, 1, 1), declaration2005.getDateDebut());
+			assertEquals(date(2005, 6, 30), declaration2005.getDateFin());
 		}
 
 		{
@@ -843,21 +814,43 @@ public class TacheServiceTest extends BusinessTest {
 		}
 	}
 
+	/**
+	 * Vérifie la création des tâches en cas de fermeture tardive du for fiscal principal où le contribuable repart hors-canton la même année de son arrivée.
+	 */
 	@Test
 	public void testGenereTacheDepartHCDepuisFermetureForPrincipal() throws Exception {
 
-		loadDatabase(DB_UNIT_DATA_FILE);
+		final PeriodeFiscale periode2006 = addPeriodeFiscale(2006);
+		final ModeleDocument modele2006 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2006);
+		final PeriodeFiscale periode2007 = addPeriodeFiscale(2007);
+		final ModeleDocument modele2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2007);
 
-		PersonnePhysique hab = (PersonnePhysique) tiersService.getTiers(12300001);
-		ForFiscalPrincipal forFiscalPrincipal = addForPrincipal(hab, date(2004, 6, 12), MotifFor.ARRIVEE_HC, date(2006, 6, 12), MotifFor.DEPART_HC, MockCommune.VillarsSousYens);
+		final PersonnePhysique pp = addNonHabitant("François", "Dardare-style", date(1977, 1, 1), Sexe.MASCULIN);
+		addDeclarationImpot(pp, periode2006, date(2006, 1, 1), date(2006, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2006);
+		addDeclarationImpot(pp, periode2007, date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2007);
 
-		tacheService.genereTacheDepuisFermetureForPrincipal(hab, forFiscalPrincipal);
+		final ForFiscalPrincipal forFiscalPrincipal = addForPrincipal(pp, date(2006, 6, 12), MotifFor.ARRIVEE_HC, date(2006, 6, 12), MotifFor.DEPART_HC, MockCommune.VillarsSousYens);
+
+		// simule la fermeture tardive (= événement de départ reçu en 2010, par exemple)
+		tacheService.genereTacheDepuisFermetureForPrincipal(pp, forFiscalPrincipal);
 
 		TacheCriteria criterion = new TacheCriteria();
-		verifieControleDossier(criterion, 0);
+		criterion.setContribuable(pp);
 
-		verifieTachesAnnulation(criterion, 0, false);
+		// il doit y avoir 0 tâche de contrôle de dossier
+		criterion.setTypeTache(TypeTache.TacheControleDossier);
+		List<Tache> taches = tacheDAO.find(criterion);
+		assertEmpty(taches);
 
+		// il doit y 2 tâches d'annulation de DIs
+		criterion.setTypeTache(TypeTache.TacheAnnulationDeclarationImpot);
+		taches = tacheDAO.find(criterion);
+		assertEquals(2, taches.size()); // 2006 et 2007
+
+		// il doit y avoir 0 tâche de contrôle d'envoi de DI
+		criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpot);
+		taches = tacheDAO.find(criterion);
+		assertEmpty(taches);
 	}
 
 	/**
@@ -965,42 +958,51 @@ public class TacheServiceTest extends BusinessTest {
 
 	}
 
-	@Test
-	public void testGenereTacheDepartHSDepuisFermetureForSecondaire() throws Exception {
-		testClotureDuDernierForSecondaire(MotifFor.DEPART_HS);
-	}
-
 	/**
-	 * [UNIREG-1110] Tâches en instance : fermeture du dernier for secondaire pour un HS / HC dans une période échue Les taches d'annulation de DI n'étaient pas générées si le motif de départ été
+	 * [UNIREG-1110] Tâches en instance : fermeture du dernier for secondaire pour un HS / HC dans une période échue. Les taches d'annulation de DI n'étaient pas générées si le motif de départ été
 	 * different de depart HS ou HC hors elles doivent l'être si le for secondaire est le dernier actif.
 	 */
 	@Test
 	public void testClotureDuDernierForSecondaireUNIREG1110() throws Exception {
-		testClotureDuDernierForSecondaire(MotifFor.FIN_EXPLOITATION);
-	}
 
-	private void testClotureDuDernierForSecondaire(MotifFor motifFermeture) throws Exception {
+		final PeriodeFiscale periode2006 = addPeriodeFiscale(2006);
+		final ModeleDocument modele2006 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2006);
+		final PeriodeFiscale periode2007 = addPeriodeFiscale(2007);
+		final ModeleDocument modele2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2007);
 
-		loadDatabase(DB_UNIT_DATA_FILE);
+		final PersonnePhysique pp = addNonHabitant("François", "Dardare-style", date(1977, 1, 1), Sexe.MASCULIN);
+		addForPrincipal(pp, date(2005, 6, 12), MotifFor.DEBUT_EXPLOITATION, MockPays.Allemagne);
+		addDeclarationImpot(pp, periode2006, date(2006, 1, 1), date(2006, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2006);
+		addDeclarationImpot(pp, periode2007, date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2007);
 
-		PersonnePhysique hab = (PersonnePhysique) tiersService.getTiers(12300001);
+		final ForFiscalSecondaire forFiscalSecondaire =
+				addForSecondaire(pp, date(2005, 6, 12), MotifFor.DEBUT_EXPLOITATION, date(2006, 6, 11), MotifFor.FIN_EXPLOITATION, MockCommune.LeLieu.getNoOFS(), MotifRattachement.ACTIVITE_INDEPENDANTE);
 
-		ForFiscalPrincipal forFiscalPrincipal = new ForFiscalPrincipal(RegDate.get(2005, 6, 12), null,
-				new Integer(8201), TypeAutoriteFiscale.PAYS_HS, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
-		ForFiscalSecondaire forFiscalSecondaire = new ForFiscalSecondaire(RegDate.get(2005, 6, 12), RegDate.get(2006, 6, 11), new Integer(
-				5652), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.ACTIVITE_INDEPENDANTE);
-
-		hab.addForFiscal(forFiscalPrincipal);
-		forFiscalSecondaire.setMotifOuverture(MotifFor.DEBUT_EXPLOITATION);
-		forFiscalSecondaire.setMotifFermeture(motifFermeture);
-		hab.addForFiscal(forFiscalSecondaire);
-
-		tacheService.genereTacheDepuisFermetureForSecondaire(hab, forFiscalSecondaire);
+		tacheService.genereTacheDepuisFermetureForSecondaire(pp, forFiscalSecondaire);
 
 		TacheCriteria criterion = new TacheCriteria();
-		verifieControleDossier(criterion);
-		verifieTachesAnnulation(criterion, 1, false);
+		criterion.setContribuable(pp);
 
+		// il doit y avoir 1 tâche de contrôle de dossier
+		criterion.setTypeTache(TypeTache.TacheControleDossier);
+		List<Tache> taches = tacheDAO.find(criterion);
+		assertEquals(1, taches.size());
+
+		// il doit y 1 tâches d'annulation de DIs
+		criterion.setTypeTache(TypeTache.TacheAnnulationDeclarationImpot);
+		taches = tacheDAO.find(criterion);
+		assertEquals(1, taches.size()); // 2007
+
+		// la date de fin dela déclaration 2006 doit avoir été mise-à-jour
+		final List<Declaration> declarations2006 = pp.getDeclarationForPeriode(2006);
+		assertNotNull(declarations2006);
+		assertEquals(1, declarations2006.size());
+
+		final DeclarationImpotOrdinaire declaration2006 = (DeclarationImpotOrdinaire)declarations2006.get(0);
+		assertNotNull(declaration2006);
+		assertEquals(date(2006, 1, 1), declaration2006.getDateDebut());
+		assertEquals(date(2006, 6, 11), declaration2006.getDateFin());
+		assertEquals(TypeContribuable.VAUDOIS_ORDINAIRE, declaration2006.getTypeContribuable());
 	}
 
 
@@ -1112,10 +1114,18 @@ public class TacheServiceTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
+				final PeriodeFiscale periode2003 = addPeriodeFiscale(2003);
+				final ModeleDocument modele2003 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2003);
+				final PeriodeFiscale periode2004 = addPeriodeFiscale(2004);
+				final ModeleDocument modele2004 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2004);
+
 				// Contribuable français
 				Contribuable raoul = addNonHabitant("Raoul", "Lavanchy", date(1963, 1, 1), Sexe.MASCULIN);
 				addForPrincipal(raoul, date(1990, 5, 1), MotifFor.DEBUT_EXPLOITATION, MockPays.France);
 				ids.raoulId = raoul.getNumero();
+
+				addDeclarationImpot(raoul, periode2003, date(2003, 1, 1), date(2003, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2003);
+				addDeclarationImpot(raoul, periode2004, date(2004, 1, 1), date(2004, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2004);
 
 				// début d'exploitation au 1er mai 1990
 				addForSecondaire(raoul, date(1990, 5, 1), MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne.getNoOFS(),
@@ -1144,9 +1154,27 @@ public class TacheServiceTest extends BusinessTest {
 			}
 		});
 
-		// fin d'activité indépendante ctb HS -> émission du tâches d'émission de DI du 1er janvier à la date de fin
-		final List<Tache> taches = tacheDAO.getAll();
-		assertNotNull(taches);
+		// fin d'activité indépendante ctb HS -> émission de la tâche d'émission de DI du 1er janvier à la date de fermeture + une tâche de contrôle de dossier
+
+		final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ids.raoulId);
+		Assert.notNull(pp);
+
+		final TacheCriteria criterion = new TacheCriteria();
+		criterion.setContribuable(pp);
+
+		// il doit y avoir 1 tâche de contrôle de dossier
+		criterion.setTypeTache(TypeTache.TacheControleDossier);
+		List<Tache> taches = tacheDAO.find(criterion);
+		assertEquals(1, taches.size());
+
+		// il doit y 0 tâches d'annulation de DIs
+		criterion.setTypeTache(TypeTache.TacheAnnulationDeclarationImpot);
+		taches = tacheDAO.find(criterion);
+		assertEmpty(taches);
+
+		// il doit y avoir 1 tâche d'envoi de DI pour 2005
+		criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpot);
+		taches = tacheDAO.find(criterion);
 		assertEquals(1, taches.size());
 
 		final TacheEnvoiDeclarationImpot tache = (TacheEnvoiDeclarationImpot) taches.get(0);
@@ -1639,7 +1667,6 @@ public class TacheServiceTest extends BusinessTest {
 	 * décès reçu en retard).
 	 * <p/>	
 	 */
-
 	@Test
 	public void testGenerateTacheDecesCouplePeriodePassee() throws Exception {
 
@@ -1720,18 +1747,15 @@ public class TacheServiceTest extends BusinessTest {
 		// Ménage
 		{
 
- //[UNIREG-1305]
-				// Vérifie qu'une tâche d'émission de DIs pour 2007 (période partielle) est générée sur le ménage.
-				final List<TacheEnvoiDeclarationImpot> envois = tacheDAO.listTaches(ids.menageId, TypeTache.TacheEnvoiDeclarationImpot);
-				assertNotNull(envois);
+			//[UNIREG-1305]
+			// Vérifie qu'une tâche d'émission de DIs pour 2007 (période partielle) est générée sur le ménage.
+			final List<TacheEnvoiDeclarationImpot> envois = tacheDAO.listTaches(ids.menageId, TypeTache.TacheEnvoiDeclarationImpot);
+			assertNotNull(envois);
 			//La DI 2007 existe, pas de tache d'envoi de déclaration a générer
-				assertEquals(0, envois.size());
-
+			assertEquals(0, envois.size());
 
 
 			// Vérifie qu'une tâche d'annulation de DI est générée sur le ménage pour 2008
-
-
 			final List<TacheAnnulationDeclarationImpot> annulations = tacheDAO.listTaches(ids.menageId, TypeTache.TacheAnnulationDeclarationImpot);
 			assertNotNull(annulations);
 			assertEquals(1, annulations.size());
@@ -1795,7 +1819,7 @@ public class TacheServiceTest extends BusinessTest {
 	}
 
 	/**
-	 * [UNIREG-1327] Vérifie que la tâche générée par l'arrivée de HS tardive (= événement traité en 2009 pour une arrivée en 2008, par exemple) d'un contribuable qui possède déjà un immeuble est
+	 * [UNIREG-1327] Vérifie que la tâche générée par l'arrivée de HS tardive (= événement traité en 2009 pour une arrivée en 2005, par exemple) d'un contribuable qui possède déjà un immeuble est
 	 * correcte. Et tout spécialement que la période d'imposition calculée s'étend bien du 1er janvier (= assujetti par l'immeuble) au 31 décembre (= assujetti comme vaudois).
 	 */
 	@Test
@@ -1828,8 +1852,13 @@ public class TacheServiceTest extends BusinessTest {
 				final Contribuable simon = addHabitant(100000);
 				ids.simonId = simon.getNumero();
 				addForPrincipal(simon, date(1981, 1, 1), MotifFor.MAJORITE, MockPays.Danemark);
-				addForSecondaire(simon, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Cossonay.getNoOFS(),
-						MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(simon, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Cossonay.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+
+				for (int i = 2003; i < RegDate.get().year(); ++i) {
+					PeriodeFiscale periode = addPeriodeFiscale(i);
+					ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
+					addDeclarationImpot(simon, periode, date(i, 1, 1), date(i, 12, 31), TypeContribuable.HORS_SUISSE, modele);
+				}
 				return null;
 			}
 		});
@@ -1841,19 +1870,25 @@ public class TacheServiceTest extends BusinessTest {
 		tiersService.openForFiscalPrincipal(raoul, dateArrivee, MotifRattachement.DOMICILE, MockCommune.Lausanne.getNoOFS(),
 				TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ModeImposition.ORDINAIRE, MotifFor.ARRIVEE_HS, true);
 
-		// Arrivée de hors-Suisse tardive -> une tache d'émission de DIs pour toute l'année 2005 doit être genérée (+ une pour toutes les
-		// autres années échues)
-		final TacheCriteria criterion = new TacheCriteria();
-		criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpot);
-		final List<Tache> taches = tacheDAO.find(criterion);
-		assertEquals(RegDate.get().year() - 2005, taches.size());
-		assertTache(TypeEtatTache.EN_INSTANCE, nextSunday, date(2005, 1, 1), date(2005, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-				TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, TypeAdresseRetour.CEDI, null, (TacheEnvoiDeclarationImpot) taches.get(0));
+		// [UNIREG-2305] Arrivé de hors-Suisse enregistrée tardivement -> l'assujettissement passe de hors-Suisse à ordinaire à partir du 1er janvier 2005,
+		// mais comme le type de document reste le même (déclaration ordinaire), le type de contribuable est simplement mis-à-jour sur les déclarations et
+		// aucune tâche n'est créée.
 
-		for (int annee = 2006; annee < RegDate.get().year(); annee++) {
-			assertTache(TypeEtatTache.EN_INSTANCE, nextSunday, date(annee, 1, 1), date(annee, 12, 31),
-					TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, TypeAdresseRetour.CEDI, null, (TacheEnvoiDeclarationImpot) taches
-							.get(annee - 2005));
+		// aucune tâche de manipulation de DIs ne doit être créée
+		final TacheCriteria criterion = new TacheCriteria();
+		criterion.setContribuable(raoul);
+		criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpot);
+		assertEmpty(tacheDAO.find(criterion));
+		criterion.setTypeTache(TypeTache.TacheAnnulationDeclarationImpot);
+		assertEmpty(tacheDAO.find(criterion));
+
+		// les types de contribuables doivent avoir été mis-à-jour
+		for (int i = 2005; i < RegDate.get().year(); ++i) {
+			final List<Declaration> declarations = raoul.getDeclarationForPeriode(i);
+			assertNotNull(declarations);
+			assertEquals(1, declarations.size());
+			assertDI(date(i, 1, 1), date(i, 12, 31), null, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
+					ServiceInfrastructureService.noCEDI, null, declarations.get(0));
 		}
 	}
 
@@ -1931,10 +1966,12 @@ public class TacheServiceTest extends BusinessTest {
 				});
 				Contribuable raoul = addHabitant(100000);
 				ids.raoulId = raoul.getNumero();
-				PeriodeFiscale pf2008 = addPeriodeFiscale(2008);
-				ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf2008);
-				addDeclarationImpot(raoul, pf2008, date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele).getId();
 				addForPrincipal(raoul, date(1980, 1, 1), MotifFor.MAJORITE, MockCommune.Lausanne);
+				for (int i = 2003; i <= 2008; i++) {
+					PeriodeFiscale periode = addPeriodeFiscale(i);
+					ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
+					addDeclarationImpot(raoul, periode, date(i, 1, 1), date(i, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele).getId();
+				}
 				return null;
 			}
 		});
@@ -1942,7 +1979,8 @@ public class TacheServiceTest extends BusinessTest {
 		final Contribuable raoul = (Contribuable) tiersService.getTiers(ids.raoulId);
 		assertNotNull(raoul);
 		tiersService.closeForFiscalPrincipal(raoul, date(2008, 11, 1), MotifFor.VEUVAGE_DECES);
-		Declaration di2008 = raoul.getDeclarationActive(date(2008, 1, 1));
+
+		final Declaration di2008 = raoul.getDeclarationActive(date(2008, 1, 1));
 		assertEquals(date(2008, 11, 1), di2008.getDateFin());
 		// Annulation du for fiscal -> Une tache d'annulation pour la DI 2008 doit etre generée
 		for (Tache t : tacheDAO.getAll()) {
@@ -2350,7 +2388,9 @@ public class TacheServiceTest extends BusinessTest {
 	public void testChangementModeImpositionMixteVersDepense() {
 		final List<Tache> taches = genereChangementImposition(ModeImposition.MIXTE_137_2, ModeImposition.DEPENSE);
 		assertEquals(0, countTaches(TypeTache.TacheNouveauDossier, taches));
-		assertEquals(0, countTaches(TypeTache.TacheEnvoiDeclarationImpot, taches));
+		// annulation et ré-envoi des DIs 2006..[année précédente] parce que les types de document ont changé
+		assertEquals(RegDate.get().year() - 2006, countTaches(TypeTache.TacheAnnulationDeclarationImpot, taches));
+		assertEquals(RegDate.get().year() - 2006, countTaches(TypeTache.TacheEnvoiDeclarationImpot, taches));
 	}
 
 	@Test
@@ -2624,12 +2664,578 @@ public class TacheServiceTest extends BusinessTest {
 		assertEmpty(tacheDAO.find(ids.menage));
 	}
 
+	// Note: ce test était initialement dans la classe TiersServiceTest
+
+	@Test
+	public void testFermetureForFiscalPrincipalUNIREG1888() throws Exception {
+		final RegDate dateOuverture = RegDate.get(2006, 7, 1);
+
+		// création des DI 2006 et 2007 avant la notification du départ en 2007
+		final Long id = (Long) doInNewTransaction(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+
+				final PeriodeFiscale pf2006 = addPeriodeFiscale(2006);
+				final PeriodeFiscale pf2007 = addPeriodeFiscale(2007);
+				final ModeleDocument modele2006 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf2006);
+				addModeleFeuilleDocument("Déclaration", "210", modele2006);
+				addModeleFeuilleDocument("Annexe 1", "220", modele2006);
+				addModeleFeuilleDocument("Annexe 2-3", "230", modele2006);
+				addModeleFeuilleDocument("Annexe 4-5", "240", modele2006);
+				final ModeleDocument modele2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf2007);
+				addModeleFeuilleDocument("Déclaration", "210", modele2007);
+				addModeleFeuilleDocument("Annexe 1", "220", modele2007);
+				addModeleFeuilleDocument("Annexe 2-3", "230", modele2007);
+				addModeleFeuilleDocument("Annexe 4-5", "240", modele2007);
+
+				// Contribuable vaudois depuis 1998 avec des DIs jusqu'en 2007
+				final PersonnePhysique pp = addNonHabitant("Gérald", "Bolomey", date(1945, 2, 23), Sexe.MASCULIN);
+				addForPrincipal(pp, dateOuverture, MotifFor.ARRIVEE_HC, MockCommune.Cossonay);
+				addDeclarationImpot(pp, pf2006, date(2006, 1, 1), date(2006, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2006);
+				addDeclarationImpot(pp, pf2007, date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2007);
+				return pp.getNumero();
+			}
+		});
+
+		// départ en 2007
+		final RegDate depart = date(2007, 10, 31);
+		doInNewTransaction(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(id);
+				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+				tiersService.closeForFiscalPrincipal(ffp, depart, MotifFor.DEPART_HS);
+				return null;
+			}
+		});
+
+		// la DI 2007 doit avoir une durée de validité réduite suite au départ
+		doInNewTransaction(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(id);
+				final Declaration di = pp.getDeclarationActive(date(2007, 6, 30));
+				assertEquals("La date de fin de la DI 2007 n'a pas été ramené suite au départ HS", depart, di.getDateFin());
+				return null;
+			}
+		});
+	}
+
+	@Test
+	public void testDetermineSynchronizeActionsForDIsOptionnelles() throws Exception {
+
+		// Contribuable hors-Suisse avec un immeuble dans le canton
+		final PersonnePhysique pp = addNonHabitant("Paul", "Ogne", date(1954, 11, 23), Sexe.MASCULIN);
+		addForPrincipal(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockPays.Albanie);
+		addForSecondaire(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Renens.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+
+		// (précondition) La déclaration d'impôt est optionnelle
+		final List<PeriodeImposition> periodes = PeriodeImposition.determine(pp, 2005);
+		assertNotNull(periodes);
+		assertEquals(1, periodes.size());
+
+		final PeriodeImposition periode0 = periodes.get(0);
+		assertNotNull(periode0);
+		assertTrue(periode0.isOptionnelle());
+		assertFalse(periode0.isRemplaceeParNote());
+		assertFalse(periode0.isDiplomateSuisse());
+
+		// On vérifie que même s'il n'y a pas de déclaration, aucune tâche n'est créée (puisque les déclarations sont toutes optionnelles)
+		hibernateTemplate.flush();
+		final List<SynchronizeAction> actions = tacheService.determineSynchronizeActionsForDIs(pp);
+		assertEmpty(actions);
+	}
+
+	@Test
+	public void testDetermineSynchronizeActionsForDIsRemplaceesParNote() throws Exception {
+
+		// Contribuable hors-Canton qui commence une activité indépendante à Renense et décède la même année
+		final PersonnePhysique pp = addNonHabitant("Paul", "Ogne", date(1954, 11, 23), Sexe.MASCULIN);
+		addForPrincipal(pp, date(2005, 1, 1), MotifFor.DEBUT_EXPLOITATION, date(2005, 8, 1), MotifFor.VEUVAGE_DECES, MockCommune.Geneve);
+		addForSecondaire(pp, date(2005, 1, 1), MotifFor.DEBUT_EXPLOITATION, date(2005, 8, 1), MotifFor.VEUVAGE_DECES, MockCommune.Renens.getNoOFS(), MotifRattachement.ACTIVITE_INDEPENDANTE);
+
+		// (précondition) La déclaration d'impôt est remplacée par une note à l'administration fiscale de l'autre canton
+		final List<PeriodeImposition> periodes = PeriodeImposition.determine(pp, 2005);
+		assertNotNull(periodes);
+		assertEquals(1, periodes.size());
+
+		final PeriodeImposition periode0 = periodes.get(0);
+		assertNotNull(periode0);
+		assertFalse(periode0.isOptionnelle());
+		assertTrue(periode0.isRemplaceeParNote());
+		assertFalse(periode0.isDiplomateSuisse());
+
+		// On vérifie que même s'il n'y a pas de déclaration, aucune tâche n'est créée (puisque la déclaration est remplacée par une note)
+		hibernateTemplate.flush();
+		final List<SynchronizeAction> actions = tacheService.determineSynchronizeActionsForDIs(pp);
+		assertEmpty(actions);
+	}
+
+	@Test
+	public void testDetermineSynchronizeActionsForDIsCasDuDiplomateSuisse() throws Exception {
+
+		// Contribuable du diplomate suisse basé à l'étranger
+		final PersonnePhysique pp = addNonHabitant("Paul", "Ogne", date(1954, 11, 23), Sexe.MASCULIN);
+		addForPrincipal(pp, date(2005, 1, 1), MotifFor.DEPART_HS, MockCommune.Lausanne, MotifRattachement.DIPLOMATE_SUISSE);
+
+		// (précondition) La déclaration d'impôt est envoyée par la confédération, ce n'est pas la responsabilité du canton
+		final List<PeriodeImposition> periodes = PeriodeImposition.determine(pp, 2005);
+		assertNotNull(periodes);
+		assertEquals(1, periodes.size());
+
+		final PeriodeImposition periode0 = periodes.get(0);
+		assertNotNull(periode0);
+		assertFalse(periode0.isOptionnelle());
+		assertFalse(periode0.isRemplaceeParNote());
+		assertTrue(periode0.isDiplomateSuisse());
+
+		// On vérifie que même s'il n'y a pas de déclaration, aucune tâche n'est créée (puisque la déclaration ne doit pas être envoyée par le canton)
+		hibernateTemplate.flush();
+		final List<SynchronizeAction> actions = tacheService.determineSynchronizeActionsForDIs(pp);
+		assertEmpty(actions);
+	}
+
+	@Test
+	public void testDetermineSynchronizeActionsForDIsSansDIAvecTacheEnvoiPreexistante() throws Exception {
+
+		final int anneePrecedente = RegDate.get().year() - 1;
+
+		final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(MockCollectiviteAdministrative.CEDI.getNoColAdm());
+		assertNotNull(cedi);
+
+		// Contribuable arrivé de hors-Suisse dans l'année
+		final PersonnePhysique pp = addNonHabitant("Paul", "Ogne", date(1954, 11, 23), Sexe.MASCULIN);
+		addForPrincipal(pp, date(anneePrecedente, 3, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+
+		// une tâche d'envoi en instance qui correspond parfaitement à la déclaration manquante
+		addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(2006, 1, 1), date(anneePrecedente, 3, 1), date(anneePrecedente, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
+				TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pp, Qualification.AUTOMATIQUE, cedi);
+
+		// On vérifie qu'aucune nouvelle tâche n'est créée
+		hibernateTemplate.flush();
+		final List<SynchronizeAction> actions = tacheService.determineSynchronizeActionsForDIs(pp);
+		assertEmpty(actions);
+	}
+
+	@Test
+	public void testDetermineSynchronizeActionsForDIsSansDIAvecTacheEnvoiPreexistanteMaisIncorrecte() throws Exception {
+
+		final int anneePrecedente = RegDate.get().year() - 1;
+
+		final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(MockCollectiviteAdministrative.CEDI.getNoColAdm());
+		assertNotNull(cedi);
+
+		// Contribuable arrivé de hors-Suisse dans l'année
+		final PersonnePhysique pp = addNonHabitant("Paul", "Ogne", date(1954, 11, 23), Sexe.MASCULIN);
+		addForPrincipal(pp, date(anneePrecedente, 3, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+
+		// une tâche d'envoi en instance qui ne possède pas le bon type de contribuable
+		TacheEnvoiDeclarationImpot tache = addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(2006, 1, 1), date(anneePrecedente, 3, 1), date(anneePrecedente, 12, 31), TypeContribuable.VAUDOIS_DEPENSE,
+				TypeDocument.DECLARATION_IMPOT_DEPENSE, pp, Qualification.AUTOMATIQUE, cedi);
+
+		// On vérifie que :
+		// - la tâche incorrecte est annulée
+		// - une nouvelle tâche est créée
+		hibernateTemplate.flush();
+		final List<SynchronizeAction> actions = tacheService.determineSynchronizeActionsForDIs(pp);
+		assertNotNull(actions);
+		assertEquals(2, actions.size());
+		assertAddDI(date(anneePrecedente, 3, 1), date(anneePrecedente, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, actions.get(0));
+		assertAnnuleTache(tache, actions.get(1));
+	}
+
+	@Test
+	public void testDetermineSynchronizeActionsForDIsSansDISansForsAvecTacheEnvoi() throws Exception {
+
+		final int anneePrecedente = RegDate.get().year() - 1;
+
+		final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(MockCollectiviteAdministrative.CEDI.getNoColAdm());
+		assertNotNull(cedi);
+
+		// Contribuable arrivé non-assujetti
+		final PersonnePhysique pp = addNonHabitant("Paul", "Ogne", date(1954, 11, 23), Sexe.MASCULIN);
+
+		// une tâche d'envoi en instance qui est incorrect
+		TacheEnvoiDeclarationImpot tache = addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(2006, 1, 1), date(anneePrecedente, 3, 1), date(anneePrecedente, 12, 31), TypeContribuable.VAUDOIS_DEPENSE,
+				TypeDocument.DECLARATION_IMPOT_DEPENSE, pp, Qualification.AUTOMATIQUE, cedi);
+
+		// On vérifie que la tâche est annulée
+		hibernateTemplate.flush();
+		final List<SynchronizeAction> actions = tacheService.determineSynchronizeActionsForDIs(pp);
+		assertNotNull(actions);
+		assertEquals(1, actions.size());
+		assertAnnuleTache(tache, actions.get(0));
+	}
+
+	@Test
+	public void testDetermineSynchronizeActionsForDIsUneDI() throws Exception {
+
+		final int anneePrecedente = RegDate.get().year() - 1;
+
+		// Contribuable arrivé de hors-Suisse dans l'année
+		final PersonnePhysique pp = addNonHabitant("Paul", "Ogne", date(1954, 11, 23), Sexe.MASCULIN);
+		addForPrincipal(pp, date(anneePrecedente, 3, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+
+		final PeriodeFiscale periode = addPeriodeFiscale(anneePrecedente);
+		final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
+		// une déclaration qui couvre toute l'année (incorrect) avec un type de contribuable HS (incorrect aussi)
+		final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, periode, date(anneePrecedente, 1, 1), date(anneePrecedente, 12, 31), TypeContribuable.HORS_SUISSE, modele);
+
+		// On vérifie que la déclaration est mise-à-jour
+		hibernateTemplate.flush();
+		final List<SynchronizeAction> actions = tacheService.determineSynchronizeActionsForDIs(pp);
+		assertNotNull(actions);
+		assertEquals(1, actions.size());
+		assertUpdateDI(di, date(anneePrecedente, 3, 1), date(anneePrecedente, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, actions.get(0));
+	}
+
+	@Test
+	public void testDetermineSynchronizeActionsForDIsUneDIHorsPeriode() throws Exception {
+
+		final int anneePrecedente = RegDate.get().year() - 1;
+
+		// Contribuable arrivé de hors-Suisse dans l'année
+		final PersonnePhysique pp = addNonHabitant("Paul", "Ogne", date(1954, 11, 23), Sexe.MASCULIN);
+		addForPrincipal(pp, date(anneePrecedente, 3, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+
+		final PeriodeFiscale periode = addPeriodeFiscale(anneePrecedente);
+		final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
+		// une déclaration qui couvre le premier mois de l'année (incorrect) avec un type de contribuable vaudois ordinaire (correct)
+		final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, periode, date(anneePrecedente, 1, 1), date(anneePrecedente, 1, 31), TypeContribuable.HORS_SUISSE, modele);
+
+		// On vérifie que :
+		// - la déclaration est annulée (le dates n'ont rien à voir avec la période d'imposition)
+		// - une nouvelle déclaration est créée
+		hibernateTemplate.flush();
+		final List<SynchronizeAction> actions = tacheService.determineSynchronizeActionsForDIs(pp);
+		assertNotNull(actions);
+		assertEquals(2, actions.size());
+		assertAddDI(date(anneePrecedente, 3, 1), date(anneePrecedente, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, actions.get(0));
+		assertDeleteDI(di, false, actions.get(1));
+	}
+
+	@Test
+	public void testDetermineSynchronizeActionsForDIsUneDITypeContribuableIncompatible() throws Exception {
+
+		final int anneePrecedente = RegDate.get().year() - 1;
+
+		// Contribuable arrivé de hors-Suisse dans l'année
+		final PersonnePhysique pp = addNonHabitant("Paul", "Ogne", date(1954, 11, 23), Sexe.MASCULIN);
+		addForPrincipal(pp, date(anneePrecedente, 3, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+
+		final PeriodeFiscale periode = addPeriodeFiscale(anneePrecedente);
+		final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
+		// une déclaration qui couvre tout l'année (incorrect) avec un type de contribuable vaudois dépense (incorrect)
+		final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, periode, date(anneePrecedente, 1, 1), date(anneePrecedente, 12, 31), TypeContribuable.VAUDOIS_DEPENSE, modele);
+
+		// On vérifie que :
+		// - la déclaration est annulée (le type de contribuable/document n'est pas compatible)
+		// - une nouvelle déclaration est créée
+		hibernateTemplate.flush();
+		final List<SynchronizeAction> actions = tacheService.determineSynchronizeActionsForDIs(pp);
+		assertNotNull(actions);
+		assertEquals(2, actions.size());
+		assertAddDI(date(anneePrecedente, 3, 1), date(anneePrecedente, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, actions.get(0));
+		assertDeleteDI(di, false, actions.get(1));
+	}
+
+	@Test
+	public void testDetermineSynchronizeActionsForDIsUneDIAvecTacheAnnulationIncorrecte() throws Exception {
+
+		final int anneePrecedente = RegDate.get().year() - 1;
+
+		final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(MockCollectiviteAdministrative.CEDI.getNoColAdm());
+		assertNotNull(cedi);
+
+		// Contribuable arrivé de hors-Suisse dans l'année
+		final PersonnePhysique pp = addNonHabitant("Paul", "Ogne", date(1954, 11, 23), Sexe.MASCULIN);
+		addForPrincipal(pp, date(anneePrecedente, 3, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+
+		final PeriodeFiscale periode = addPeriodeFiscale(anneePrecedente);
+		final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
+		// une déclaration qui est correcte
+		final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, periode, date(anneePrecedente, 3, 1), date(anneePrecedente, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+
+		// une tâche d'annulation de la déclaration (incorrecte car la déclaration correspond bien à la période d'imposition)
+		final TacheAnnulationDeclarationImpot tache = addTacheAnnulDI(TypeEtatTache.EN_INSTANCE, RegDate.get(), di, pp, cedi);
+
+		// On vérifie que :
+		// - la tache incorrecte est annulée
+		hibernateTemplate.flush();
+		final List<SynchronizeAction> actions = tacheService.determineSynchronizeActionsForDIs(pp);
+		assertNotNull(actions);
+		assertEquals(1, actions.size());
+		assertAnnuleTache(tache, actions.get(0));
+	}
+
+	@Test
+	public void testDetermineSynchronizeActionsForDIsUneDIAvecTacheAnnulationCorrecte() throws Exception {
+
+		final int anneePrecedente = RegDate.get().year() - 1;
+
+		final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(MockCollectiviteAdministrative.CEDI.getNoColAdm());
+		assertNotNull(cedi);
+
+		// Contribuable arrivé de hors-Suisse dans l'année
+		final PersonnePhysique pp = addNonHabitant("Paul", "Ogne", date(1954, 11, 23), Sexe.MASCULIN);
+		addForPrincipal(pp, date(anneePrecedente, 3, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+
+		final PeriodeFiscale periode = addPeriodeFiscale(anneePrecedente);
+		final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
+		// une déclaration qui est incorrecte car le type de contribuable/document est faux
+		final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, periode, date(anneePrecedente, 3, 1), date(anneePrecedente, 12, 31), TypeContribuable.VAUDOIS_DEPENSE, modele);
+
+		// une tâche d'annulation de la déclaration (correcte car le type de contribuable de la déclaration ne correspond pas à la période d'imposition)
+		final TacheAnnulationDeclarationImpot tache = addTacheAnnulDI(TypeEtatTache.EN_INSTANCE, RegDate.get(), di, pp, cedi);
+
+		// On vérifie que :
+		// - la tache correcte n'est pas annulée
+		// - une tâche de création de DI est créée
+		hibernateTemplate.flush();
+		final List<SynchronizeAction> actions = tacheService.determineSynchronizeActionsForDIs(pp);
+		assertNotNull(actions);
+		assertEquals(1, actions.size());
+		assertAddDI(date(anneePrecedente, 3, 1), date(anneePrecedente, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, actions.get(0));
+	}
+
+	@Test
+	public void testDetermineSynchronizeActionsForDIsUneDISansForFiscal() throws Exception {
+
+		final int anneePrecedente = RegDate.get().year() - 1;
+
+		// Contribuable non-assujetti
+		final PersonnePhysique pp = addNonHabitant("Paul", "Ogne", date(1954, 11, 23), Sexe.MASCULIN);
+
+		final PeriodeFiscale periode = addPeriodeFiscale(anneePrecedente);
+		final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
+		// une déclaration émise seulement
+		final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, periode, date(anneePrecedente, 1, 1), date(anneePrecedente, 12, 31), TypeContribuable.HORS_SUISSE, modele);
+		addEtatDeclaration(di, date(anneePrecedente + 1, 1, 15), TypeEtatDeclaration.EMISE);
+
+		// On vérifie que la déclaration est bien annulée
+		hibernateTemplate.flush();
+		final List<SynchronizeAction> actions = tacheService.determineSynchronizeActionsForDIs(pp);
+		assertNotNull(actions);
+		assertEquals(1, actions.size());
+		assertDeleteDI(di, true, actions.get(0)); // direct=true -> parce que la déclaration est seulement émise
+	}
+
+	@Test
+	public void testDetermineSynchronizeActionsForDIsUneDISansForFiscalAvecTacheAnnulation() throws Exception {
+
+		final int anneePrecedente = RegDate.get().year() - 1;
+
+		final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(MockCollectiviteAdministrative.CEDI.getNoColAdm());
+		assertNotNull(cedi);
+
+		// Contribuable non-assujetti
+		final PersonnePhysique pp = addNonHabitant("Paul", "Ogne", date(1954, 11, 23), Sexe.MASCULIN);
+
+		final PeriodeFiscale periode = addPeriodeFiscale(anneePrecedente);
+		final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
+		// une déclaration
+		final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, periode, date(anneePrecedente, 1, 1), date(anneePrecedente, 12, 31), TypeContribuable.HORS_SUISSE, modele);
+
+		// une tâche d'annulation de la déclaration qui va bien
+		addTacheAnnulDI(TypeEtatTache.EN_INSTANCE, RegDate.get(), di, pp, cedi);
+
+		// On vérifie qu'aucune nouvelle tâche n'est créée
+		hibernateTemplate.flush();
+		final List<SynchronizeAction> actions = tacheService.determineSynchronizeActionsForDIs(pp);
+		assertEmpty(actions);
+	}
+
+	@Test
+	public void testDetermineSynchronizeActionsForDIsUneDIDejaAnnuleeSansForFiscalAvecTacheAnnulation() throws Exception {
+
+		final int anneePrecedente = RegDate.get().year() - 1;
+
+		final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(MockCollectiviteAdministrative.CEDI.getNoColAdm());
+		assertNotNull(cedi);
+
+		// Contribuable non-assujetti
+		final PersonnePhysique pp = addNonHabitant("Paul", "Ogne", date(1954, 11, 23), Sexe.MASCULIN);
+
+		final PeriodeFiscale periode = addPeriodeFiscale(anneePrecedente);
+		final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
+		// une déclaration déjà annulée
+		final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, periode, date(anneePrecedente, 1, 1), date(anneePrecedente, 12, 31), TypeContribuable.HORS_SUISSE, modele);
+		di.setAnnule(true);
+
+		// une tâche d'annulation de la déclaration (obsolète car la déclaration est déjà annulée)
+		final TacheAnnulationDeclarationImpot tache = addTacheAnnulDI(TypeEtatTache.EN_INSTANCE, RegDate.get(), di, pp, cedi);
+
+		// On vérifie que :
+		// - la tache obsolète est annulée
+		hibernateTemplate.flush();
+		final List<SynchronizeAction> actions = tacheService.determineSynchronizeActionsForDIs(pp);
+		assertNotNull(actions);
+		assertEquals(1, actions.size());
+		assertAnnuleTache(tache, actions.get(0));
+	}
+
+	@Test
+	public void testDetermineSynchronizeActionsForDIsDeuxDIsQuiSeChevauchent() throws Exception {
+
+		final int anneePrecedente = RegDate.get().year() - 1;
+
+		// Contribuable arrivé de hors-Suisse dans l'année, avec deux DIs se chevauchant pour cette période
+		final PersonnePhysique pp = addNonHabitant("Paul", "Ogne", date(1954, 11, 23), Sexe.MASCULIN);
+		addForPrincipal(pp, date(anneePrecedente, 3, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+
+		final PeriodeFiscale periode = addPeriodeFiscale(anneePrecedente);
+		final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
+		// une première déclaration qui couvre toute l'année (incorrect) avec un type de contribuable HS (incorrect aussi)
+		final DeclarationImpotOrdinaire di0 = addDeclarationImpot(pp, periode, date(anneePrecedente, 1, 1), date(anneePrecedente, 12, 31), TypeContribuable.HORS_SUISSE, modele);
+		// une seconde déclaration qui couvre la période en Suisse (correct) avec un type de contribuable HS (incorrect)
+		final DeclarationImpotOrdinaire di1 = addDeclarationImpot(pp, periode, date(anneePrecedente, 3, 1), date(anneePrecedente, 12, 31), TypeContribuable.HORS_SUISSE, modele);
+
+		// On vérifie que :
+		// - la première déclaration est annulée
+		// - le type de contribuable de la deuxième déclaration est mise-à-jour (car elle correspond parfaitement aux dates de la période)
+		final List<SynchronizeAction> actions = tacheService.determineSynchronizeActionsForDIs(pp);
+		assertNotNull(actions);
+		assertEquals(2, actions.size());
+		assertUpdateDI(di1, date(anneePrecedente, 3, 1), date(anneePrecedente, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, actions.get(0));
+		assertDeleteDI(di0, false, actions.get(1));
+	}
+
+	@Test
+	public void testDetermineSynchronizeActionsForDIsDeuxDIsQuiSeChevauchentEtTypeContribuableIncompatible() throws Exception {
+
+		final int anneePrecedente = RegDate.get().year() - 1;
+
+		// Contribuable arrivé de hors-Suisse dans l'année, avec deux DIs se chevauchant pour cette période
+		final PersonnePhysique pp = addNonHabitant("Paul", "Ogne", date(1954, 11, 23), Sexe.MASCULIN);
+		addForPrincipal(pp, date(anneePrecedente, 3, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+
+		final PeriodeFiscale periode = addPeriodeFiscale(anneePrecedente);
+		final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
+		// une première déclaration qui couvre toute l'année (incorrect) avec un type de contribuable HS (incorrect aussi)
+		final DeclarationImpotOrdinaire di0 = addDeclarationImpot(pp, periode, date(anneePrecedente, 1, 1), date(anneePrecedente, 12, 31), TypeContribuable.HORS_SUISSE, modele);
+		// une seconde déclaration qui couvre la période en Suisse (correct) avec un type de contribuable dépense (incorrect)
+		final DeclarationImpotOrdinaire di1 = addDeclarationImpot(pp, periode, date(anneePrecedente, 3, 1), date(anneePrecedente, 12, 31), TypeContribuable.VAUDOIS_DEPENSE, modele);
+
+		// On vérifie que :
+		// - la première déclaration est mise-à-jour (dates + type)
+		// - la deuxième déclaration est annulée (malgré le fait que les dates correspondnt parfaitement : parce le type de contribuable n'est pas compatible avec le type théorique)
+		final List<SynchronizeAction> actions = tacheService.determineSynchronizeActionsForDIs(pp);
+		assertNotNull(actions);
+		assertEquals(2, actions.size());
+		assertUpdateDI(di0, date(anneePrecedente, 3, 1), date(anneePrecedente, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, actions.get(0));
+		assertDeleteDI(di1, false, actions.get(1));
+	}
+
+	@Test
+	public void testDetermineSynchronizeActionsForDIsDeuxDIsQuiSeChevauchentSansCorrespondanceParfaiteDesDates() throws Exception {
+
+		final int anneePrecedente = RegDate.get().year() - 1;
+
+		// Contribuable arrivé de hors-Suisse dans l'année, avec deux DIs se chevauchant pour cette période
+		final PersonnePhysique pp = addNonHabitant("Paul", "Ogne", date(1954, 11, 23), Sexe.MASCULIN);
+		addForPrincipal(pp, date(anneePrecedente, 3, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+
+		final PeriodeFiscale periode = addPeriodeFiscale(anneePrecedente);
+		final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
+		// une première déclaration qui couvre toute l'année (incorrect) avec un type de contribuable HS (incorrect aussi)
+		final DeclarationImpotOrdinaire di0 = addDeclarationImpot(pp, periode, date(anneePrecedente, 1, 1), date(anneePrecedente, 12, 31), TypeContribuable.HORS_SUISSE, modele);
+		// une seconde déclaration qui couvre une période de trois mois (incorrect) avec un type de contribuable HS (incorrect aussi)
+		final DeclarationImpotOrdinaire di1 = addDeclarationImpot(pp, periode, date(anneePrecedente, 3, 1), date(anneePrecedente, 5, 31), TypeContribuable.HORS_SUISSE, modele);
+
+		// On vérifie que :
+		// - la première déclaration est mise-à-jour (parce qu'elle est simplement la première et que les dates de la deuxième ne correspondent pas parfaitement avec les dates théoriques)
+		// - la deuxième déclaration est annulée
+		final List<SynchronizeAction> actions = tacheService.determineSynchronizeActionsForDIs(pp);
+		assertNotNull(actions);
+		assertEquals(2, actions.size());
+		assertUpdateDI(di0, date(anneePrecedente, 3, 1), date(anneePrecedente, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, actions.get(0));
+		assertDeleteDI(di1, false, actions.get(1));
+	}
+
+	@Test
+	public void testDetermineSynchronizeActionsForDIsDeuxDIsSansForFiscalAvecUneTacheAnnulation() throws Exception {
+
+		final int anneePrecedente = RegDate.get().year() - 1;
+
+		final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(MockCollectiviteAdministrative.CEDI.getNoColAdm());
+		assertNotNull(cedi);
+
+		// Contribuable non-assujetti
+		final PersonnePhysique pp = addNonHabitant("Paul", "Ogne", date(1954, 11, 23), Sexe.MASCULIN);
+
+		final PeriodeFiscale periode = addPeriodeFiscale(anneePrecedente);
+		final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
+		// une première déclaration
+		final DeclarationImpotOrdinaire di0 = addDeclarationImpot(pp, periode, date(anneePrecedente, 1, 1), date(anneePrecedente, 6, 30), TypeContribuable.HORS_SUISSE, modele);
+		// une seconde déclaration
+		final DeclarationImpotOrdinaire di1 = addDeclarationImpot(pp, periode, date(anneePrecedente, 7, 1), date(anneePrecedente, 12, 31), TypeContribuable.HORS_SUISSE, modele);
+
+		// une tâche d'annulation de la première déclaration
+		addTacheAnnulDI(TypeEtatTache.EN_INSTANCE, RegDate.get(), di0, pp, cedi);
+
+		// On vérifie que :
+		//  - aucune tâche n'a été créée pour la première déclaration
+		//  - une tâche d'annulation a éét créée pour la deuxième déclaration
+		hibernateTemplate.flush();
+		final List<SynchronizeAction> actions = tacheService.determineSynchronizeActionsForDIs(pp);
+		assertNotNull(actions);
+		assertEquals(1, actions.size());
+		assertDeleteDI(di1, false, actions.get(0));
+	}
+
+	private static void assertAddDI(RegDate debut, RegDate fin, TypeContribuable typeContribuable, SynchronizeAction action) {
+		assertNotNull(action);
+		assertInstanceOf(AddDI.class, action);
+
+		final AddDI add = (AddDI) action;
+		assertEquals(debut, add.periodeImposition.getDateDebut());
+		assertEquals(fin, add.periodeImposition.getDateFin());
+		assertEquals(typeContribuable, add.periodeImposition.getTypeContribuable());
+	}
+
+	private static void assertUpdateDI(DeclarationImpotOrdinaire di, RegDate debut, RegDate fin, TypeContribuable typeContribuable, SynchronizeAction action) {
+		assertNotNull(action);
+		assertInstanceOf(UpdateDI.class, action);
+
+		final UpdateDI update = (UpdateDI) action;
+		assertSame(di, update.declaration);
+		assertEquals(debut, update.periodeImposition.getDateDebut());
+		assertEquals(fin, update.periodeImposition.getDateFin());
+		assertEquals(typeContribuable, update.periodeImposition.getTypeContribuable());
+	}
+
+	private static void assertDeleteDI(DeclarationImpotOrdinaire di, boolean direct, SynchronizeAction action) {
+		assertNotNull(action);
+		assertInstanceOf(DeleteDI.class, action);
+
+		final DeleteDI delete = (DeleteDI) action;
+		assertSame(di, delete.declaration);
+		assertEquals(direct, delete.directAnnulation);
+	}
+
+	private static void assertAnnuleTache(Tache tache, SynchronizeAction action) {
+		assertNotNull(action);
+		assertInstanceOf(AnnuleTache.class, action);
+
+		final AnnuleTache annule = (AnnuleTache) action;
+		assertSame(tache, annule.tache);
+	}
+
 	private List<Tache> genereChangementImposition(ModeImposition ancienMode, ModeImposition nouveauMode) {
-		PersonnePhysique pp = new PersonnePhysique(false);
-		pp.setNom("Bidule");
+		final PersonnePhysique pp = addNonHabitant("Léo", "Bidule", date(1960, 1, 1), Sexe.MASCULIN);
 		final ForFiscalPrincipal ffp = addForPrincipal(pp, date(2000, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
 		ffp.setModeImposition(ancienMode);
-		pp = (PersonnePhysique) ffp.getTiers();
+
+		if (ancienMode != ModeImposition.SOURCE) {
+			final int anneeCourante = RegDate.get().year();
+			final TypeDocument typeD = (ancienMode == ModeImposition.DEPENSE ? TypeDocument.DECLARATION_IMPOT_DEPENSE : TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH);
+			final TypeContribuable typeC = (ancienMode == ModeImposition.DEPENSE ? TypeContribuable.VAUDOIS_DEPENSE : TypeContribuable.VAUDOIS_ORDINAIRE);
+			for (int i = 2003; i < anneeCourante; i++) {
+				PeriodeFiscale periode = addPeriodeFiscale(i);
+				ModeleDocument modele = addModeleDocument(typeD, periode);
+				addDeclarationImpot(pp, periode, date(i, 1, 1), date(i, 12, 31), typeC, modele);
+			}
+		}
 
 		final RegDate dateChangement = date(2006, 1, 1);
 		final ForFiscalPrincipal nffp = tiersService.changeModeImposition(pp, dateChangement, nouveauMode, MotifFor.CHGT_MODE_IMPOSITION);

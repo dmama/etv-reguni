@@ -6,6 +6,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.quartz.CronTrigger;
@@ -25,25 +26,30 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.DateRange;
+import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.FiscalDateHelper;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.Declaration;
-import ch.vd.uniregctb.declaration.DeclarationImpotCriteria;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
-import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.uniregctb.interfaces.model.OfficeImpot;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
+import ch.vd.uniregctb.metier.assujettissement.TypeContribuableDI;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
+import ch.vd.uniregctb.tache.sync.AddDI;
+import ch.vd.uniregctb.tache.sync.AnnuleTache;
+import ch.vd.uniregctb.tache.sync.Context;
+import ch.vd.uniregctb.tache.sync.DeleteDI;
+import ch.vd.uniregctb.tache.sync.SynchronizeAction;
+import ch.vd.uniregctb.tache.sync.UpdateDI;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscal;
@@ -58,27 +64,18 @@ import ch.vd.uniregctb.tiers.TacheDAO.TacheStats;
 import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpot;
 import ch.vd.uniregctb.tiers.TacheNouveauDossier;
 import ch.vd.uniregctb.tiers.TacheTransmissionDossier;
-import ch.vd.uniregctb.tiers.Tiers.ForsParType;
 import ch.vd.uniregctb.tiers.Tiers.ForsParTypeAt;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
-import ch.vd.uniregctb.type.Qualification;
-import ch.vd.uniregctb.type.TypeAdresseRetour;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeContribuable;
-import ch.vd.uniregctb.type.TypeDocument;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
 import ch.vd.uniregctb.type.TypeEtatTache;
 import ch.vd.uniregctb.type.TypeTache;
 
 /**
- * Service permettant la génération de tâches à la suite
- * d'événements fiscaux
- *
- * @author xcifde
- *
+ * Service permettant la génération de tâches à la suite d'événements fiscaux
  */
 public class TacheServiceImpl implements TacheService, InitializingBean {
 
@@ -104,22 +101,27 @@ public class TacheServiceImpl implements TacheService, InitializingBean {
 
 	private Map<Integer, TacheStats> tacheStatsPerOid = new HashMap<Integer, TacheStats>();
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setTacheDAO(TacheDAO tacheDAO) {
 		this.tacheDAO = tacheDAO;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setDiDAO(DeclarationImpotOrdinaireDAO diDAO) {
 		this.diDAO = diDAO;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setDiService(DeclarationImpotService diService) {
 		this.diService = diService;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setParametres(ParametreAppService parametres) {
 		this.parametres = parametres;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setScheduler(Scheduler scheduler) {
 		this.scheduler = scheduler;
 	}
@@ -198,14 +200,13 @@ public class TacheServiceImpl implements TacheService, InitializingBean {
 	/**
 	 * Genere une tache à partir de la fermeture d'un for principal
 	 *
-	 * @param contribuable
-	 * @param forPrincipal
+	 * @param contribuable le contribuable sur lequel un for principal a été fermé
+	 * @param forPrincipal le for fiscal principal qui vient d'être fermé
 	 */
 	@Transactional(rollbackFor = Throwable.class)
 	public void genereTacheDepuisFermetureForPrincipal(Contribuable contribuable, ForFiscalPrincipal forPrincipal) {
 
 		final RegDate dateFermeture = forPrincipal.getDateFin();
-		final RegDate dateFinAnnee = RegDate.get(dateFermeture.year(),12,31);
 		final MotifFor motifFermeture = forPrincipal.getMotifFermeture();
 
 		if (motifFermeture == null) { // les for HC et HS peuvent ne pas avoir de motif de fermeture
@@ -233,14 +234,10 @@ public class TacheServiceImpl implements TacheService, InitializingBean {
 			}
 			if (dernierForFerme) {
 				genereTacheControleDossier(contribuable);
-
-				final Declaration declaration = contribuable.getDeclarationActive(dateFermeture);
-				if (declaration == null) {
-					genereTacheDepartHorsSuisse(contribuable, dateFermeture);
-				}
-				genereTachesAnnulationDI(contribuable, dateFermeture.year() + 1);
 			}
+			synchronizeTachesDIs(contribuable, null, null);
 			break;
+
 		case DEPART_HC:
 			/*
 			 * Si ce départ a lieu lors de la période courante, une tâche de contrôle du dossier est engendrée,
@@ -250,21 +247,16 @@ public class TacheServiceImpl implements TacheService, InitializingBean {
 				genereTacheControleDossier(contribuable);
 			}
 			// [UNIREG-1262] La génération de tâches d'annulation de DI doit se faire aussi sur l'année du départ
-			// [UNIREG-2031] La génération de tâches d'annulation de DI n'est valable quepour un départ avant le
-			//31.12 de la période fiscale courante.
-			if (dateFermeture.isBefore(dateFinAnnee)) {
-				genereTachesAnnulationDIDepartHC(contribuable, dateFermeture.year());
-			}
-
-
+			// [UNIREG-2031] La génération de tâches d'annulation de DI n'est valable quepour un départ avant le 31.12 de la période fiscale courante.
+			synchronizeTachesDIs(contribuable, null, null);
 			break;
+
 		case VEUVAGE_DECES:
 			generateTacheTransmissionDossier(contribuable);
 			// [UNIREG-1112] Annule toutes les déclarations d'impôt à partir de l'année de décès (car elles n'ont pas lieu d'être)
-			genereTachesAnnulationDI(contribuable, dateFermeture.year() + 1);
-			//[UNIREG-2104] Génère la tache d'envoi de DI assigné à l'ACI
+			// [UNIREG-2104] Génère la tache d'envoi de DI assigné à l'ACI
 			CollectiviteAdministrative aciSuccessions = tiersService.getCollectiviteAdministrative(ServiceInfrastructureService.noACISuccessions);
-			genereTacheEnvoiDISuiteFinAssujettissement(contribuable,dateFermeture,dateFermeture.addDays(30),aciSuccessions);
+			synchronizeTachesDIs(contribuable, aciSuccessions, dateFermeture.addDays(30));
 
 			break;
 		case SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT:
@@ -273,12 +265,11 @@ public class TacheServiceImpl implements TacheService, InitializingBean {
 				genereTacheControleDossier(contribuable);
 			}
 			// [UNIREG-1112] Annule toutes les déclarations d'impôt à partir de l'année de séparation (car elles n'ont pas lieu d'être)
-			genereTachesAnnulationDI(contribuable, dateFermeture.year());
 			// [UNIREG-1111] Génère une tâche d'émission de DI
-			genereTacheEnvoiDISuiteFinAssujettissement(contribuable, dateFermeture, dateFermeture);
+			synchronizeTachesDIs(contribuable, null, null);
 			break;
 		case MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION:
-			genereTachesAnnulationDI(contribuable, dateFermeture.year());
+			synchronizeTachesDIs(contribuable, null, null);
 			break;
 		}
 	}
@@ -293,8 +284,8 @@ public class TacheServiceImpl implements TacheService, InitializingBean {
 	/**
 	 * Génère une tâche à partir de la fermeture d'un for secondaire
 	 *
-	 * @param contribuable
-	 * @param forSecondaire
+	 * @param contribuable le contribuable sur lequel un for secondaire a été fermé.
+	 * @param forSecondaire le for secondaire qui vient d'être fermé.
 	 */
 	@Transactional(rollbackFor = Throwable.class)
 	public void genereTacheDepuisFermetureForSecondaire(Contribuable contribuable, ForFiscalSecondaire forSecondaire) {
@@ -312,210 +303,19 @@ public class TacheServiceImpl implements TacheService, InitializingBean {
 			return;
 		}
 
-		// S'il s'agit du dernier for ouvert dans le canton, on génère les tâches qui vont bien
+		// S'il s'agit du dernier for secondaire existant, on génère une tâche de contrôle de dossier
 		if (forsAt.secondaires.size() == 1) {
 			Assert.isEqual(forSecondaire, forsAt.secondaires.get(0));
-
-			MotifFor motifFermeture = forSecondaire.getMotifFermeture();
-			switch (motifFermeture) {
-			case DEPART_HS:
-			case DEPART_HC:
-				genereTacheControleDossier(contribuable);
-			case FIN_EXPLOITATION:
-				if (MotifRattachement.ACTIVITE_INDEPENDANTE.equals(forSecondaire.getMotifRattachement())
-						&& TypeAutoriteFiscale.PAYS_HS.equals(forsAt.principal.getTypeAutoriteFiscale())) {
-					genereTacheFinActiviteIndependante(contribuable, dateFermeture);
-				}
-			}
-			genereTachesAnnulationDI(contribuable, dateFermeture.year());
-		}
-
-	}
-
-	/**
-	 * Génère une tache d'envoi de DI suite à la fin de l'activité indépendante d'un contribuable hors-Suisse.
-	 *
-	 * @param contribuable
-	 *            le contribuable concerné
-	 * @param dateFinActivite
-	 *            la date de fin de l'activité indépendante
-	 */
-	private void genereTacheFinActiviteIndependante(Contribuable contribuable, RegDate dateFinActivite) {
-		genereTacheEnvoiDISuiteFinAssujettissement(contribuable, dateFinActivite, null);
-	}
-
-	/**
-	 * Génère une tache d'envoi de DI suite à la fin de l'assujettissement d'un contribuable et la rattache à une collectivité administrative
-	 *
-	 * @param contribuable
-	 *            le contribuable concerné
-	 * @param dateFinAssujettissement
-*            la date de fin d'assujettissement.
-	 * @param dateEcheance
-	 *
-	 * @param collectivite
-	 *         la collectvite a laquel on veut rattacher la tache a creer peut être null
-	 */
-	private void genereTacheEnvoiDISuiteFinAssujettissement(Contribuable contribuable, RegDate dateFinAssujettissement, RegDate dateEcheance, CollectiviteAdministrative collectivite) {
-
-		final int year = dateFinAssujettissement.year();
-		if (year < getPremierePeriodeFiscale()) {
-			return;
-		}
-
-		// [UNIREG-1102] Calcul de la période d'imposition précise
-		RegDate dateDebut;
-		RegDate dateFin;
-		TypeContribuable typeContribuable;
-		TypeDocument typeDocument;
-		Qualification qualification;
-		TypeAdresseRetour adresseRetour;
-
-		try {
-			final List<PeriodeImposition> periodes = PeriodeImposition.determine(contribuable, year);
-			if (periodes == null || periodes.isEmpty()) {
-				// pas de DI à envoyer
-				return;
-			}
-
-			PeriodeImposition periode = null;
-			for (PeriodeImposition p : periodes) {
-				if (p.isValidAt(dateFinAssujettissement)) {
-					periode = p;
-					break;
-				}
-			}
-			if (periode == null) {
-				return;
-			}
-
-			dateDebut = periode.getDateDebut();
-			dateFin = periode.getDateFin();
-			typeContribuable = periode.getTypeContribuable();
-			typeDocument = periode.getTypeDocument();
-			qualification = periode.getQualification();
-			adresseRetour = periode.getAdresseRetour();
-		}
-		catch (AssujettissementException e) {
-			// impossible de calculer la période d'imposition théorique, on ne prend pas de risque et on prend la période maximale,
-			// c'est-à-dire l'année complète.
-			Audit.warn("Impossible de calculer la période d'imposition théorique du contribuable n°" + contribuable.getNumero()
-					+ " pour l'année " + year + " lors de la création d'une tâche d'envoi de déclaration d'impôt:"
-					+ " la période d'imposition de la DI s'étendra sur toute l'année.");
-			dateDebut = RegDate.get(year, 1, 1);
-			dateFin = RegDate.get(year, 12, 31);
-			typeContribuable = TypeContribuable.VAUDOIS_ORDINAIRE;
-			typeDocument = TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH;
-			qualification = null;
-			adresseRetour = TypeAdresseRetour.CEDI;
-		}
-
-		genereTacheEnvoiDeclarationImpot(contribuable, dateDebut, dateFin, typeContribuable, typeDocument, dateEcheance, qualification, adresseRetour,collectivite);
-	}
-
-
-
-	/**
-	 * Génère une tache d'envoi de DI suite à la fin de l'assujettissement d'un contribuable
-	 *
-	 * @param contribuable
-	 *            le contribuable concerné
-	 * @param dateFinAssujettissement
-*            la date de fin d'assujettissement.
-	 * @param dateEcheance
-	 */
-	private void genereTacheEnvoiDISuiteFinAssujettissement(Contribuable contribuable, RegDate dateFinAssujettissement, RegDate dateEcheance) {
-		       genereTacheEnvoiDISuiteFinAssujettissement(contribuable, dateFinAssujettissement, dateEcheance,null);
-	}
-
-	/**
-	 * @param dateEcheance
-	 * @param adresseRetour
-	 */
-	private void genereTacheEnvoiDeclarationImpot(Contribuable contribuable, RegDate dateDebut, RegDate dateFin, TypeContribuable typeContribuable, TypeDocument typeDocument, RegDate dateEcheance,
-	                                              Qualification qualification, TypeAdresseRetour adresseRetour, CollectiviteAdministrative collectivite) {
-
-		// d'abord il faut vérifier qu'il n'y a pas de DI du même type déjà émise et non-annulée pour la période considérée
-		boolean envoiDejaFait = false;
-		boolean demandeControle = false;
-		final DeclarationImpotCriteria criteria = new DeclarationImpotCriteria();
-		criteria.setContribuable(contribuable.getId());
-		criteria.setAnnee(dateDebut.year());
-
-		List<DateRange> rangesEnConflit = null;
-		final List<DeclarationImpotOrdinaire> diExistantes = diDAO.find(criteria, true); // pas de flush de la session automatique
-		if (diExistantes != null && diExistantes.size() > 0) {
-
-			final DateRangeHelper.Range range = new DateRangeHelper.Range(dateDebut, dateFin);
-
-			// toutes les DI sont renvoyées, même les DI annulées...
-			for (DeclarationImpotOrdinaire di : diExistantes) {
-				if (!di.isAnnule()) {
-					if (DateRangeHelper.equals(range, di)) {
-						// les périodes sont les mêmes: la DI a déjà été émise
-						envoiDejaFait = true;
-					}
-					else if (DateRangeHelper.intersect(range, di)) {
-						// les périodes s'intersectent, mais ne sont pas égales
-						if (tacheDAO.existsTacheAnnulationEnInstanceOuEnCours(contribuable.getNumero(), di.getId())) {
-							// ... mais la DI en question doit être annulée -> ok
-							continue;
-						}
-						demandeControle = true;
-						if (rangesEnConflit == null) {
-							rangesEnConflit = new ArrayList<DateRange>();
-						}
-						rangesEnConflit.add(di);
-
-						// TODO (jde) point ouvert: faut-il prendre en compte la période globale couverte par les périodes des DI d'une année fiscale?
-					}
-				}
-			}
-		}
-
-		if (demandeControle) {
-			Assert.notNull(rangesEnConflit);
-			Assert.notEmpty(rangesEnConflit);
-
-			final StringBuilder builder = new StringBuilder("La DI émise pour le contribuable ");
-			builder.append(contribuable.getNumero());
-			builder.append(" pour chacune des périodes suivantes ne correspond pas à la période d'assujettissement attendue : ");
-			for (int i = 0 ; i < rangesEnConflit.size() ; ++i) {
-				final DateRange range = rangesEnConflit.get(i);
-				if (i > 0) {
-					builder.append(", ");
-				}
-				builder.append(DateRangeHelper.toString(range));
-			}
-			Audit.warn(builder.toString());
-
 			genereTacheControleDossier(contribuable);
 		}
-		else if (!envoiDejaFait) {
-			// [UNIREG-1105] on évite de créer des tâches dupliquées
-			if (!tacheDAO.existsTacheEnvoiEnInstanceOuEnCours(contribuable.getNumero(), dateDebut, dateFin)) {
-				if (collectivite == null) {
-					collectivite = tiersService.getOfficeImpotAt(contribuable, null);
-					Assert.notNull(collectivite);
-				}
-				final TacheEnvoiDeclarationImpot tache = new TacheEnvoiDeclarationImpot(TypeEtatTache.EN_INSTANCE, dateEcheance,
-					contribuable, dateDebut, dateFin, typeContribuable, typeDocument, qualification, adresseRetour,collectivite);
-				tacheDAO.save(tache);
-			}
-		}
+		
+		synchronizeTachesDIs(contribuable, null, null);
 	}
-
-	private void genereTacheEnvoiDeclarationImpot(Contribuable contribuable, RegDate dateDebut, RegDate dateFin, TypeContribuable typeContribuable, TypeDocument typeDocument, RegDate dateEcheance,
-	                                              Qualification qualification, TypeAdresseRetour adresseRetour){
-          genereTacheEnvoiDeclarationImpot(contribuable, dateDebut, dateFin, typeContribuable, typeDocument, dateEcheance, qualification, adresseRetour,null);		
-
-	}
-
 
 	/**
 	 * Génère une tache de contrôle de dossier sur un contribuable, en prenant bien soin de vérifier qu'il n'y en a pas déjà une non-traitée
 	 *
-	 * @param contribuable
+	 * @param contribuable le contribuable sur lequel un tâche de contrôle de dossier doit être générée.
 	 */
 	private void genereTacheControleDossier(Contribuable contribuable) {
 		genereTacheControleDossier(contribuable,null);
@@ -523,41 +323,28 @@ public class TacheServiceImpl implements TacheService, InitializingBean {
 
 
 	/**
-	 * Génère une tache de contrôle de dossier sur un contribuable et la lie à une collectivitéAdministrative
-	 * en prenant bien soin de vérifier qu'il n'y en a pas déjà une non-traitée
+	 * Génère une tache de contrôle de dossier sur un contribuable et la lie à une collectivitéAdministrative en prenant bien soin de vérifier qu'il n'y en a pas déjà une non-traitée
 	 *
-	 * @param contribuable
-	 * @param collectivite
+	 * @param contribuable le contribuable sur lequel un tâche de contrôle de dossier doit être générée.
+	 * @param collectivite la collectivité administrative assignée aux tâches nouvellement créées.
 	 */
-	private void genereTacheControleDossier(Contribuable contribuable,CollectiviteAdministrative collectivite) {
+	private void genereTacheControleDossier(Contribuable contribuable, CollectiviteAdministrative collectivite) {
 
 		if (!tacheDAO.existsTacheEnInstanceOuEnCours(contribuable.getNumero(), TypeTache.TacheControleDossier)) {
 			//UNIREG-1024 "la tâche de contrôle du dossier doit être engendrée pour l'ancien office d'impôt"
 			if (collectivite == null) {
-				collectivite = tiersService.getOfficeImpotAt(contribuable, null);
-				Assert.notNull(collectivite);
+				collectivite = getOfficeImpot(contribuable);
 			}
 			final TacheControleDossier tache = new TacheControleDossier(TypeEtatTache.EN_INSTANCE, null, contribuable, collectivite);
 			tacheDAO.save(tache);
 		}
 	}
-	/**
-	 * Génère une tache d'envoi de DI suite au départ hors-Suisse d'un contribuable.
-	 *
-	 * @param contribuable
-	 *            le contribuable concerné
-	 * @param dateDepart
-	 *            la date de départ
-	 */
-	private void genereTacheDepartHorsSuisse(Contribuable contribuable, RegDate dateDepart) {
-		genereTacheEnvoiDISuiteFinAssujettissement(contribuable, dateDepart, null);
-	}
 
 	/**
 	 * Genere une tache à partir de l'ouverture d'un for principal
 	 *
-	 * @param contribuable
-	 * @param forFiscal
+	 * @param contribuable         le contribuable sur lequel un un for principal a été ouvert
+	 * @param forFiscal            le for fiscal principal qui vient d'être ouvert
 	 * @param ancienModeImposition nécessaire en cas d'ouverture de for pour motif "CHGT_MODE_IMPOSITION"
 	 */
 	@Transactional(rollbackFor = Throwable.class)
@@ -582,27 +369,44 @@ public class TacheServiceImpl implements TacheService, InitializingBean {
 
 		switch (motifOuverture) {
 		case ARRIVEE_HC:
+			try {
+				final List<Assujettissement> assujettissements = Assujettissement.determine(contribuable, forFiscal.getDateDebut().year());
+				final int size = (assujettissements == null ? 0 : assujettissements.size());
+				if (size > 1) {
+					if (assujettissements.get(size-1).getMotifFractDebut() == MotifFor.ARRIVEE_HC && assujettissements.get(size-2).getMotifFractFin()== MotifFor.DEPART_HS) {
+						// si on est en présence d'une arrivée de hors-Canton précédée d'un départ hors-Suisse, on génère une tâche de contrôle de dossier
+						genereTacheControleDossier(contribuable);
+					}
+				}
+			}
+			catch (AssujettissementException e) {
+				// on ignore joyeusement cette erreur, au pire il manquera une tâche de contrôle de dossier
+			}
+			
 		case MAJORITE:
 		case PERMIS_C_SUISSE:
 		case ARRIVEE_HS:
 		case MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION:
 		case SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT:
 			generateTacheNouveauDossier(contribuable);
-			genereTachesEnvoiDI(contribuable, forFiscal.getDateDebut());
+			synchronizeTachesDIs(contribuable, null, null);
 			break;
+
 		case CHGT_MODE_IMPOSITION:
 			if (!ancienModeImposition.isAuRole() && modeImposition.isAuRole()) {
 				generateTacheNouveauDossier(contribuable);
-				genereTachesEnvoiDI(contribuable, forFiscal.getDateDebut());
 			}
+			synchronizeTachesDIs(contribuable, null, null);
 			break;
+
 		case VEUVAGE_DECES:
 			generateTacheNouveauDossier(contribuable);
 			// [UNIREG-1112] il faut générer les tâches d'envoi de DIs sur le tiers survivant
 			// [UNIREG-1265] Plus de création de tâche de génération de DI pour les décès
-			  //[UNIREG-1198] assignation de la tache au service succession mis en place
-			genereTachesEnvoiDI(contribuable, forFiscal.getDateDebut());
+			// [UNIREG-1198] assignation de la tache au service succession mis en place
+			synchronizeTachesDIs(contribuable, null, null);
 			break;
+
 		case DEMENAGEMENT_VD:
 			// si le demenagement arrive dans une periode fiscale échue, une tâche de contrôle
 			// du dossier est engendrée pour l’ancien office d’impôt gérant
@@ -622,9 +426,9 @@ public class TacheServiceImpl implements TacheService, InitializingBean {
 					throw new RuntimeException(e);
 				}
 				//UNIREG-1886 si l'office nest pas trouvé (cas hors canton, hors suisse) on ne génère pas de tâche
-				if (office!=null) {
+				if (office != null) {
 					CollectiviteAdministrative collectivite = tiersService.getCollectiviteAdministrative(office.getNoColAdm());
-					genereTacheControleDossier(contribuable,collectivite);
+					genereTacheControleDossier(contribuable, collectivite);
 				}
 
 			}
@@ -637,28 +441,8 @@ public class TacheServiceImpl implements TacheService, InitializingBean {
 	 */
 	@Transactional(rollbackFor = Throwable.class)
 	public void genereTachesDepuisAnnulationDeFor(Contribuable contribuable) {
-
 		final CollectiviteAdministrative oid = tiersService.getOfficeImpotAt(contribuable, null);
-
-		final DeclarationImpotCriteria criterion = new DeclarationImpotCriteria();
-		criterion.setContribuable(contribuable.getNumero());
-
-		final List<DeclarationImpotOrdinaire> declarations = diDAO.find(criterion, true); // pas de flush de la session automatique
-		for (DeclarationImpotOrdinaire di : declarations) {
-			try {
-				final List<Assujettissement> assuj = Assujettissement.determine(contribuable, di, false);
-				if (assuj == null || assuj.isEmpty()) {
-					if (!tacheDAO.existsTacheAnnulationEnInstanceOuEnCours(contribuable.getNumero(), di.getId())) {
-						Assert.notNull(oid);
-						final TacheAnnulationDeclarationImpot tacheAnnulationDI = new TacheAnnulationDeclarationImpot(TypeEtatTache.EN_INSTANCE, null, contribuable, di, oid);
-						tacheDAO.save(tacheAnnulationDI);
-					}
-				}
-			} catch (AssujettissementException e) {
-				throw new RuntimeException(e);
-			}
-
-		}
+		synchronizeTachesDIs(contribuable, oid, null);
 	}
 
 	private void generateTacheNouveauDossier(Contribuable contribuable) {
@@ -669,152 +453,393 @@ public class TacheServiceImpl implements TacheService, InitializingBean {
 	}
 
 	/**
-	 * Génère les tâches d'envoi DI de rattrapage dans le cas où un événement d'ouverture de for fiscal arrive tardivement (ex: en 2008,
-	 * alors que le for s'est ouvert en 2005).
+	 * [UNIREG-2305] Cette méthode génére les tâches d'envoi de DIs ou les tâches d'annulation de DIs qui conviennent suite à la modification des fors fiscaux d'un contribuable. Les tâches de
+	 * manipulation de DIs en instance sont inspectées et annulées si nécessaire. Toutes les périodes fiscales sont traitées automatiquement.
 	 *
-	 * @param contribuable
-	 *            le contribuable concerné
-	 * @param dateDebut
-	 *            la date d'ouverture du for fiscal
+	 * @param contribuable le contribuable sur lequel les tâches relatives aux DIs doivent être générées.
+	 * @param collectivite la collectivité administrative qui sera associée aux tâches nouvellement créées.
+	 * @param dateEcheance la date d'échéance pour les tâches d'envoi de DIs. Si <b>null</b> le délai standard est appliqué.
 	 */
-	private void genereTachesEnvoiDI(Contribuable contribuable, RegDate dateDebut) {
+	private void synchronizeTachesDIs(Contribuable contribuable, CollectiviteAdministrative collectivite, RegDate dateEcheance) {
 
-		final RegDate dateCourante = RegDate.get();
-		final int anneeCourante = dateCourante.year();
-		final int anneeDebut = Math.max(dateDebut.year(), getPremierePeriodeFiscale());
+		// On détermine les actions nécessaires pour synchroniser les déclarations d'impôt du contribuable avec ses fors fiscaux.
+		final List<SynchronizeAction> actions;
+		try {
+			actions = determineSynchronizeActionsForDIs(contribuable);
+		}
+		catch (AssujettissementException e) {
+			Audit.warn("Impossible de calculer les périodes d'imposition théoriques du contribuable n°" + contribuable.getNumero()
+					+ " lors de la mise-à-jour des tâches d'envoi et d'annulation des déclarations d'impôt:"
+					+ " aucune action n'est effectuée.");
+			LOGGER.warn(e, e);
+			return;
+		}
+		if (actions == null || actions.isEmpty()) {
+			return;
+		}
 
-		for (int annee = anneeDebut; annee < anneeCourante; ++annee) {
-			try {
-				final List<PeriodeImposition> periodes = PeriodeImposition.determine(contribuable, annee);
-				if (periodes != null) {
-					for (PeriodeImposition p : periodes) {
-						genereTacheEnvoiDeclarationImpot(contribuable, p.getDateDebut(), p.getDateFin(), p.getTypeContribuable(), p
-								.getTypeDocument(), null, p.getQualification(), p.getAdresseRetour());
-
-					}
-				}
-			}
-			catch (AssujettissementException e) {
-				// impossible de calculer la période d'imposition théorique, on ne prend pas de risque et on prend la période maximale,
-				// c'est-à-dire l'année complète.
-				Audit.warn("Impossible de calculer la période d'imposition théorique du contribuable n°" + contribuable.getNumero()
-						+ " pour l'année " + annee + " lors de la création d'une tâche d'envoi de déclaration d'impôt:"
-						+ " la période d'imposition de la DI s'étendra sur toute l'année.");
-				genereTacheEnvoiDeclarationImpot(contribuable, RegDate.get(annee, 1, 1), RegDate.get(annee, 12, 31),
-						TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, null, null, TypeAdresseRetour.CEDI);
-			}
+		// On effectue toutes les actions nécessaires
+		if (collectivite == null) {
+			collectivite = getOfficeImpot(contribuable);
+		}
+		final Context context = new Context(contribuable, collectivite, dateEcheance, tacheDAO, diService);
+		
+		for (SynchronizeAction action : actions) {
+			action.execute(context);
 		}
 	}
 
-	/**
-	 * Génère les tâches d'annulation DI pour les DIs comprises entre l'année spécifiée et l'année courante (non-comprise)
-	 *
-	 * @param contribuable
-	 * @param forFiscal
-	 */
-	private void genereTachesAnnulationDI(Contribuable contribuable, final int anneeDebut) {
+	public List<SynchronizeAction> determineSynchronizeActionsForDIs(Contribuable contribuable) throws AssujettissementException {
 
-		final RegDate aujourdhui = RegDate.get();
-		final int anneeCourante = aujourdhui.year();
+		// On récupère les données brutes
+		final List<PeriodeImposition> periodes = getPeriodesImpositionHisto(contribuable);
+		final List<DeclarationImpotOrdinaire> declarations = getDeclarationsActives(contribuable);
+		final List<TacheEnvoiDeclarationImpot> tachesEnvoi = getTachesEnvoiEnInstance(contribuable);
+		final List<TacheAnnulationDeclarationImpot> tachesAnnulation = getTachesAnnulationEnInstance(contribuable);
 
-		final CollectiviteAdministrative oid = tiersService.getOfficeImpotAt(contribuable, null);
+		final List<AddDI> addActions = new ArrayList<AddDI>();
+		final List<UpdateDI> updateActions = new ArrayList<UpdateDI>();
+		final List<DeleteDI> deleteActions = new ArrayList<DeleteDI>();
+		final List<AnnuleTache> annuleActions = new ArrayList<AnnuleTache>();
 
-		final DeclarationImpotCriteria criterion = new DeclarationImpotCriteria();
-		criterion.setContribuable(contribuable.getNumero());
-		criterion.setAnneeRange(new Pair<Integer, Integer>(anneeDebut, anneeCourante - 1));
+		//
+		// On détermine les périodes d'imposition qui n'ont pas de déclaration d'impôt valide correspondante
+		//
 
-		final int premierePeriodeFiscale = getPremierePeriodeFiscale();
-		final List<DeclarationImpotOrdinaire> declarations = diDAO.find(criterion, true); // pas de flush de la session automatique
-		for (DeclarationImpotOrdinaire di : declarations) {
-			if (di.getPeriode().getAnnee() >= premierePeriodeFiscale) {
-				// [UNIREG-1105] on évite de créer des tâches dupliquées
-				if (!tacheDAO.existsTacheAnnulationEnInstanceOuEnCours(contribuable.getNumero(), di.getId())) {
-					Assert.notNull(oid);
-					final TacheAnnulationDeclarationImpot tacheAnnulationDI = new TacheAnnulationDeclarationImpot(TypeEtatTache.EN_INSTANCE, null, contribuable, di, oid);
-					tacheDAO.save(tacheAnnulationDI);
+		for (PeriodeImposition periode : periodes) {
+			final List<DeclarationImpotOrdinaire> dis = getIntersectingRangeAt(declarations, periode);
+			if (dis == null) {
+				// il n'y a pas de déclaration pour la période
+				if (!periode.isOptionnelle() && !periode.isRemplaceeParNote() && !periode.isDiplomateSuisse()) {
+					// on ajoute une DI si elle est obligatoire
+					addActions.add(new AddDI(periode));
+				}
+			}
+			else {
+				Assert.isFalse(dis.isEmpty());
+				DeclarationImpotOrdinaire toUpdate = null;
+				PeriodeImposition toAdd = null;
+
+				for (DeclarationImpotOrdinaire di : dis) {
+					if (DateRangeHelper.equals(di, periode)) {
+						// la durée de la déclaration et de la période d'imposition correspondent parfaitement
+						if (di.getTypeContribuable() == periode.getTypeContribuable()) {
+							// les types correspondent, rien à faire
+						}
+						else {
+							// les types ne correspondent pas
+							if (areTypeContribuableCompatibles(di.getTypeContribuable(), periode.getTypeContribuable())) {
+								// le type de contribuable peut être mis-à-jour
+								if (toUpdate != null) {
+									deleteActions.add(new DeleteDI(toUpdate));
+								}
+								toUpdate = di;
+								toAdd = null;
+							}
+							else {
+								// le type de contribuable ne peut pas être mis-à-jour : la déclaration doit être annulée
+								deleteActions.add(new DeleteDI(di));
+								if (toUpdate == null) {
+									// on prévoit de recréer la déclaration
+									toAdd = periode;
+								}
+							}
+						}
+					}
+					else {
+						// la durée de la déclaration et de la période d'imposition ne correspondent pas
+						if (toUpdate != null) {
+							// il y a déjà une déclaration compatible pouvant être mise-à-jour, inutile de chercher plus loin
+							deleteActions.add(new DeleteDI(di));
+						}
+						else {
+							if (areTypeContribuableCompatibles(di.getTypeContribuable(), periode.getTypeContribuable())) {
+								// si les types sont compatibles, on adapte la déclaration
+								toUpdate = di;
+								toAdd = null;
+							}
+							else {
+								// si les types sont incompatibles, on annule et on prévoit de recréer la déclaration
+								deleteActions.add(new DeleteDI(di));
+								toAdd = periode;
+							}
+						}
+					}
+				}
+				if (toUpdate != null) {
+					updateActions.add(new UpdateDI(periode, toUpdate));
+				}
+				else if (toAdd != null) {
+					addActions.add(new AddDI(toAdd));
 				}
 			}
 		}
-	}
 
-
-	/**
-	 * Pour un départ HC, génère les tâches d'annulation DI pour les DIs déposées ou échues comprises entre l'année spécifiée et l'année courante (non-comprise)
-	 *
-	 * @param contribuable
-	 * @param anneeDebut
-	 * @param etatDeclaration
-	 */
-	private void genereTachesAnnulationDIDepartHC(Contribuable contribuable, final int anneeDebut) {
-
-		final RegDate aujourdhui = RegDate.get();
-		final int anneeCourante = aujourdhui.year();
-
-		final CollectiviteAdministrative oid = tiersService.getOfficeImpotAt(contribuable, null);
-
-		final DeclarationImpotCriteria criterion = new DeclarationImpotCriteria();
-		criterion.setContribuable(contribuable.getNumero());
-		criterion.setAnneeRange(new Pair<Integer, Integer>(anneeDebut, anneeCourante - 1));
-
-		final int premierePeriodeFiscale = getPremierePeriodeFiscale();
-		final List<DeclarationImpotOrdinaire> declarations = diDAO.find(criterion, true); // pas de flush de la session automatique
-
-		final ForsParType forsParType = contribuable.getForsParType(false);
-
-		for (DeclarationImpotOrdinaire di : declarations) {
-			boolean diEchue = false;
-			final EtatDeclaration dernierEtat = di.getDernierEtat();
-			if (dernierEtat != null) {
-				// génération de tache d'annulation si la DI est déposée ou échue
-				if (TypeEtatDeclaration.ECHUE.equals(dernierEtat.getEtat()) ||
-						TypeEtatDeclaration.RETOURNEE.equals(dernierEtat.getEtat()) ||
-						TypeEtatDeclaration.SOMMEE.equals(dernierEtat.getEtat())) {
-					diEchue = true;
+		// on retranche les actions d'ajout de DI pour lesquelles il existe déjà une tâche d'envoi de DI
+		if (!addActions.isEmpty()) {
+			for (int i = addActions.size() - 1; i >= 0; i--) {
+				final PeriodeImposition periode = addActions.get(i).periodeImposition;
+				final TacheEnvoiDeclarationImpot envoi = getMatchingRangeAt(tachesEnvoi, periode);
+				if (envoi != null && envoi.getTypeContribuable() == periode.getTypeContribuable()) {
+					addActions.remove(i);
 				}
 			}
+		}
 
-			// S'il ne subsiste pas de for secondaire ouvert:
-			if (di.getPeriode().getAnnee() >= premierePeriodeFiscale && !DateRangeHelper.intersect(di, forsParType.secondaires)) {
-				// Si la déclaration d’impôt est déposée ou échue, une tâche d’annulation de la déclaration
-				// d’impôt est engendrée pour que l’utilisateur puisse traiter le cas manuellement.
-				if (diEchue) {
-					// [UNIREG-1105] on évite de créer des tâches dupliquées
-					if (!tacheDAO.existsTacheAnnulationEnInstanceOuEnCours(contribuable.getNumero(), di.getId())) {
-						Assert.notNull(oid);
-						final TacheAnnulationDeclarationImpot tacheAnnulationDI = new TacheAnnulationDeclarationImpot(TypeEtatTache.EN_INSTANCE, null, contribuable, di, oid);
-						tacheDAO.save(tacheAnnulationDI);
+		//
+		// On détermine toutes les déclarations qui ne sont pas valides vis-à-vis des périodes d'imposition
+		//
+
+		for (DeclarationImpotOrdinaire declaration : declarations) {
+			final List<PeriodeImposition> ps = getIntersectingRangeAt(periodes, declaration);
+			if (ps == null) {
+				// il n'y a pas de période correspondante
+				deleteActions.add(new DeleteDI(declaration));
+			}
+			else {
+				Assert.isFalse(ps.isEmpty());
+				// s'il y a une intersection entre la déclaration et une période d'imposition, le cas a déjà été traité à partir des périodes d'imposition -> rien d'autre à faire
+			}
+		}
+
+		// on retrange les déclarations pour lesquelles il existe déjà une tâche d'annulation
+		if (!deleteActions.isEmpty()) {
+			for (int i = deleteActions.size() - 1; i >= 0; i--) {
+				final DeclarationImpotOrdinaire di = deleteActions.get(i).declaration;
+				for (TacheAnnulationDeclarationImpot annulation : tachesAnnulation) {
+					if (annulation.getDeclarationImpotOrdinaire() == di) {
+						deleteActions.remove(i);
 					}
+				}
+			}
+		}
+
+		//
+		//  On détermine la liste des tâches qui ne sont plus valides vis-à-vis des périodes d'imposition et des déclarations existantes
+		//
+
+		for (TacheEnvoiDeclarationImpot envoi : tachesEnvoi) {
+			final PeriodeImposition periode = getMatchingRangeAt(periodes, envoi);
+			if (periode == null) {
+				// pas de période correspondante -> la tâche n'est plus valable
+				annuleActions.add(new AnnuleTache(envoi));
+			}
+			else {
+				if (envoi.getTypeContribuable() != periode.getTypeContribuable()) {
+					// il y a une période correspondante, mais le type ne correspond pas -> la tâche n'est plus valable
+					annuleActions.add(new AnnuleTache(envoi));
 				}
 				else {
-					// Sinon, la déclaration d’impôt est annulée automatiquement
-					diService.annulationDI(contribuable, di, RegDate.get());
+					// la tâche est valide
 				}
 			}
 		}
+
+		for (TacheAnnulationDeclarationImpot annulation : tachesAnnulation) {
+			final DeclarationImpotOrdinaire declaration = annulation.getDeclarationImpotOrdinaire();
+			if (declaration.isAnnule()) {
+				// la déclaration est déjà annulée
+				annuleActions.add(new AnnuleTache(annulation));
+			}
+			else {
+				final PeriodeImposition periode = getMatchingRangeAt(periodes, declaration);
+				if (periode == null) {
+					// il n'y a pas de période d'imposition correspondante, la tâche d'annulation est donc valide
+				}
+				else {
+					if (periode.getTypeContribuable() != declaration.getTypeContribuable()) {
+						// la période et le type de contribuable ne correspondantes pas, la tâche d'annulation est donc valide
+					}
+					else {
+						// la tâche est invalide
+						annuleActions.add(new AnnuleTache(annulation));
+					}
+				}
+			}
+		}
+
+		final int size = addActions.size() + updateActions.size() + deleteActions.size() + annuleActions.size();
+		if (size == 0) {
+			return Collections.emptyList();
+		}
+		else {
+			final List<SynchronizeAction> actions = new ArrayList<SynchronizeAction>(size);
+			actions.addAll(addActions);
+			actions.addAll(updateActions);
+			actions.addAll(deleteActions);
+			actions.addAll(annuleActions);
+			return actions;
+		}
+	}
+
+	/**
+	 * Détermine si les deux types de contribuables sont compatibles pour permettre une mise-à-jour d'une éventuelle déclaration d'impôt. S'ils ne sont pas compatibles, il sera nécessaire d'annuler et de
+	 * rémettre une nouvelle déclaration.
+	 *
+	 * @param left  un type de contribuable
+	 * @param right un autre type de contribuable
+	 * @return <b>true</b> si les deux types sont compatibles; <b>false</b> autrement.
+	 */
+	private boolean areTypeContribuableCompatibles(TypeContribuable left, TypeContribuable right) {
+
+		// cas trivial : les deux types sont identiques
+		if (left == right) {
+			return true;
+		}
+
+		// cas spécial : certains types, bien que différents, génèrent malgré tout des déclarations identiques
+		final TypeContribuableDI diLeft = TypeContribuableDI.fromTypeContribuable(left);
+		final TypeContribuableDI diRight = TypeContribuableDI.fromTypeContribuable(right);
+
+		if (diLeft.getTypeDocument().isOrdinaire() && diRight.getTypeDocument().isOrdinaire()) {
+			return true;
+		}
+
+		// cas général : les deux types ne sont pas compatibles
+		return false;
+	}
+
+	/**
+	 * Retourne l'office d'impôt courant du contribuable. Si le contribuable ne possède logiquement pas d'office d'impôt assigné (cas du sourcier pur), la collectivité de l'ACI est retournée. Ceci permet
+	 * de résoudre les d'incohérence des données (par exemple lorsqu'un sourcier pur possède des déclarations qui doivent être annulées).
+	 *
+	 * @param contribuable un contribuable
+	 * @return l'office d'impôt du contribuable, ou <b>l'ACI</b> si le contribuable n'en possède pas.
+	 */
+	private CollectiviteAdministrative getOfficeImpot(Contribuable contribuable) {
+		CollectiviteAdministrative collectivite = tiersService.getOfficeImpotAt(contribuable, null);
+		if (collectivite == null) {
+			collectivite = tiersService.getCollectiviteAdministrative(ServiceInfrastructureService.noACI);
+		}
+		Assert.notNull(collectivite);
+		return collectivite;
+	}
+
+	private List<PeriodeImposition> getPeriodesImpositionHisto(Contribuable contribuable) throws AssujettissementException {
+		
+		final RegDate dateCourante = RegDate.get();
+		final int anneeCourante = dateCourante.year();
+		final int anneeDebut = getPremierePeriodeFiscale();
+
+		final List<PeriodeImposition> periodes = new ArrayList<PeriodeImposition>();
+		for (int annee = anneeDebut; annee < anneeCourante; ++annee) {
+			final List<PeriodeImposition> list = PeriodeImposition.determine(contribuable, annee);
+			if (list != null) {
+				periodes.addAll(list);
+			}
+		}
+		return periodes;
+	}
+
+	@SuppressWarnings({"unchecked"})
+	private List<DeclarationImpotOrdinaire> getDeclarationsActives(Contribuable contribuable) {
+		final Set<Declaration> declarations = contribuable.getDeclarations();
+		if (declarations == null || declarations.isEmpty()) {
+			return Collections.emptyList();
+		}
+		final List<DeclarationImpotOrdinaire> list = new ArrayList<DeclarationImpotOrdinaire>(declarations.size());
+		for (Declaration d : declarations) {
+			if (d.isAnnule()) {
+				continue;
+			}
+			list.add((DeclarationImpotOrdinaire) d);
+		}
+		Collections.sort(list, new DateRangeComparator<DeclarationImpotOrdinaire>());
+		return list;
+	}
+
+	private List<TacheAnnulationDeclarationImpot> getTachesAnnulationEnInstance(Contribuable contribuable) {
+		final List<TacheAnnulationDeclarationImpot> tachesAnnulation;
+		{
+			final TacheCriteria criterion = new TacheCriteria();
+			criterion.setContribuable(contribuable);
+			criterion.setEtatTache(TypeEtatTache.EN_INSTANCE);
+			criterion.setTypeTache(TypeTache.TacheAnnulationDeclarationImpot);
+
+			final List<Tache> list = tacheDAO.find(criterion, true);
+			if (list.isEmpty()) {
+				tachesAnnulation = Collections.emptyList();
+			}
+			else {
+				tachesAnnulation = new ArrayList<TacheAnnulationDeclarationImpot>(list.size());
+				for (Tache t : list) {
+					tachesAnnulation.add((TacheAnnulationDeclarationImpot) t);
+				}
+			}
+		}
+		return tachesAnnulation;
+	}
+
+	private List<TacheEnvoiDeclarationImpot> getTachesEnvoiEnInstance(Contribuable contribuable) {
+		final List<TacheEnvoiDeclarationImpot> tachesEnvoi;
+		{
+			final TacheCriteria criterion = new TacheCriteria();
+			criterion.setContribuable(contribuable);
+			criterion.setEtatTache(TypeEtatTache.EN_INSTANCE);
+			criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpot);
+
+			final List<Tache> list = tacheDAO.find(criterion, true);
+			if (list.isEmpty()) {
+				tachesEnvoi = Collections.emptyList();
+			}
+			else {
+				tachesEnvoi = new ArrayList<TacheEnvoiDeclarationImpot>(list.size());
+				for (Tache t : list) {
+					tachesEnvoi.add((TacheEnvoiDeclarationImpot) t);
+				}
+			}
+		}
+		return tachesEnvoi;
+	}
+
+	private <T extends DateRange> T getMatchingRangeAt(List<T> dis, DateRange range) {
+		if (dis == null) {
+			return null;
+		}
+		for (T t : dis) {
+			if (DateRangeHelper.equals(t, range)) {
+				return t;
+			}
+		}
+		return null;
+	}
+
+	private <T extends DateRange> List<T> getIntersectingRangeAt(List<T> dis, DateRange range) {
+		if (dis == null) {
+			return null;
+		}
+		List<T> result = null;
+		for (T t : dis) {
+			if (DateRangeHelper.intersect(t, range)) {
+				if (result == null) {
+					result = new ArrayList<T>();
+				}
+				result.add(t);
+			}
+		}
+		return result;
 	}
 
 	/**
 	 * Genere une tache à partir de la overture d'un for secondaire
 	 *
-	 * @param contribuable
-	 * @param forFiscal
+	 * @param contribuable le contribuable sur lequel un for secondaire a été ouvert
+	 * @param forFiscal    le for fiscal secondaire qui vient d'être ouvert
 	 */
 	@Transactional(rollbackFor = Throwable.class)
 	public void genereTacheDepuisOuvertureForSecondaire(Contribuable contribuable, ForFiscalSecondaire forFiscal) {
+
 		ForFiscalPrincipal forPrincipal = contribuable.getForFiscalPrincipalAt(null);
 
 		// [UNIREG-1888] Aucune tâche générée pour les contribuables dont le mode d'imposition est "SOURCE"
 		if (forPrincipal != null && forPrincipal.getTypeAutoriteFiscale() != TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD && forPrincipal.getModeImposition() != ModeImposition.SOURCE) {
-
 			final MotifRattachement motifRattachement = forFiscal.getMotifRattachement();
 			if (motifRattachement == MotifRattachement.ACTIVITE_INDEPENDANTE || motifRattachement == MotifRattachement.IMMEUBLE_PRIVE) {
-
 				generateTacheNouveauDossier(contribuable);
-				if (forFiscal.getMotifRattachement().equals(MotifRattachement.ACTIVITE_INDEPENDANTE) ) {
-					genereTachesEnvoiDI(contribuable, forFiscal.getDateDebut());
-				}
 			}
 		}
+
+		synchronizeTachesDIs(contribuable, null, null);
 	}
 
 	/**

@@ -2018,25 +2018,9 @@ public class TiersServiceImpl implements TiersService {
 			contribuable.setBlocageRemboursementAutomatique(true);
 		}
 
-		corrigeDateFinDeclarationEnCoursSuiteAFinAssujettissement(contribuable, motifFermeture, dateFermeture);
-
 		this.tacheService.genereTacheDepuisFermetureForPrincipal(contribuable, forFiscalPrincipal);
 
 		return forFiscalPrincipal;
-	}
-
-	private void corrigeDateFinDeclarationEnCoursSuiteAFinAssujettissement(Contribuable contribuable, MotifFor motifFermeture, RegDate dateFermeture) {
-		// [UNIREG-1303] Ramene la période d'imposition à la date du décés si une DI a déjà été émise pour la période en cours
-		if (motifFermeture == MotifFor.DEPART_HS || motifFermeture == MotifFor.VEUVAGE_DECES) {
-			final List<ForFiscal> forsFiscaux = contribuable.getForsFiscauxValidAt(dateFermeture);
-			final boolean dernierForFerme = forsFiscaux.size() < 2;
-			if (dernierForFerme) {
-				final Declaration declaration = contribuable.getDeclarationActive(dateFermeture);
-				if (declaration != null) {
-					declaration.setDateFin(dateFermeture);
-				}
-			}
-		}
 	}
 
 	/**
@@ -2106,7 +2090,6 @@ public class TiersServiceImpl implements TiersService {
 			}
 			forFiscalPrincipal.setDateFin(dateChangementModeImposition.getOneDayBefore());
 			forFiscalPrincipal.setMotifFermeture(motifFor);
-			corrigeDateFinDeclarationEnCoursSuiteAFinAssujettissement(contribuable, motifFor, dateChangementModeImposition);
 			this.tacheService.genereTacheDepuisFermetureForPrincipal(contribuable, forFiscalPrincipal);
 		}
 		//Ouverture d'un nouveau for principal

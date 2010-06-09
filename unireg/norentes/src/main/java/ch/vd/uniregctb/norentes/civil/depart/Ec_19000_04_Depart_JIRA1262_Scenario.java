@@ -5,9 +5,10 @@ import java.util.Set;
 
 import annotation.Check;
 import annotation.Etape;
+
 import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Pair;
+import ch.vd.uniregctb.adresse.AdressesCiviles;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotCriteria;
@@ -68,8 +69,8 @@ public class Ec_19000_04_Depart_JIRA1262_Scenario extends DepartScenario {
 
 	private long noHabSebastien;
 
-	private final RegDate dateSeparation = RegDate.get(2008, 6, 29);
-	final RegDate dateDepart = RegDate.get(2008, 6, 30);
+	private final RegDate dateSeparation = date(2008, 6, 29);
+	final RegDate dateDepart = date(2008, 6, 30);
 	final RegDate dateArrivee = dateDepart.getOneDayAfter();
 	private final MockCommune communeDepart = MockCommune.Bex;
 	private final MockCommune communeArrivee = MockCommune.Zurich;
@@ -81,7 +82,7 @@ public class Ec_19000_04_Depart_JIRA1262_Scenario extends DepartScenario {
 			@Override
 			protected void init() {
 
-				final RegDate dateNaissanceSebastien = RegDate.get(1971, 6, 27);
+				final RegDate dateNaissanceSebastien = date(1971, 6, 27);
 				indSebastien = addIndividu(noIndSebastien, dateNaissanceSebastien, "Fournier", "Sebastien", true);
 				addOrigine(indSebastien, MockPays.Suisse, MockCommune.Neuchatel, dateNaissanceSebastien);
 				addNationalite(indSebastien, MockPays.Suisse, dateNaissanceSebastien, null, 1);
@@ -103,12 +104,12 @@ public class Ec_19000_04_Depart_JIRA1262_Scenario extends DepartScenario {
 
 		addForFiscalPrincipal(sebastien, communeDepart, dateSeparation, null, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, null);
 
-		final DeclarationImpotOrdinaire di2007 = addDeclarationImpot(sebastien, RegDate.get(2007, 1, 1), RegDate.get(2007, 12, 31), RegDate.get(2008, 1, 13), 90);
+		final DeclarationImpotOrdinaire di2007 = addDeclarationImpot(sebastien, date(2007, 1, 1), date(2007, 12, 31), date(2008, 1, 13), 90);
 		{
 			addEtat(di2007, di2007.getDernierEtat().getDateObtention().addMonths(2), TypeEtatDeclaration.RETOURNEE);
 		}
 
-		addDeclarationImpot(sebastien, RegDate.get(2008, 1, 1), RegDate.get(2008, 12, 31), RegDate.get(2009, 1, 13), 90);
+		addDeclarationImpot(sebastien, date(2008, 1, 1), date(2008, 12, 31), date(2009, 1, 13), 90);
 	}
 
 	private void addEtat(DeclarationImpotOrdinaire di, RegDate dateObtention, TypeEtatDeclaration typeEtat) {
@@ -137,9 +138,8 @@ public class Ec_19000_04_Depart_JIRA1262_Scenario extends DepartScenario {
 			assertTrue(declarations.size() > 0, "Mauvais nombre de déclarations");
 
 			// vérification que les adresses civiles sont à Bex
-			assertEquals(communeDepart.getNomMinuscule(),
-					serviceCivilService.getAdresses(noIndSebastien, RegDate.get(), false).principale.getLocalite(),
-					"L'adresse principale n'est pas à " + communeDepart.getNomMinuscule());
+			final AdressesCiviles adresses = serviceCivilService.getAdresses(noIndSebastien, RegDate.get(), false);
+			assertEquals(communeDepart.getNomMinuscule(), adresses.principale.getLocalite(), "L'adresse principale n'est pas à " + communeDepart.getNomMinuscule());
 		}
 
 		// PBM 29.07.2009: UNIREG-1266 -> Blocage des remboursements automatiques sur tous les nouveaux tiers
@@ -165,9 +165,8 @@ public class Ec_19000_04_Depart_JIRA1262_Scenario extends DepartScenario {
 			assertEquals(communeDepart.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale(), "For pas attaché à la bonne commune");
 
 			// vérification que les adresses civiles sont à Zurich
-			assertEquals(communeArrivee.getNomMinuscule(),
-					serviceCivilService.getAdresses(noIndSebastien, dateDepart.addDays(1), false).principale.getLocalite(),
-					"L'adresse principale n'est pas à " + communeArrivee.getNomMinuscule());
+			final AdressesCiviles adresses = serviceCivilService.getAdresses(noIndSebastien, dateDepart.addDays(1), false);
+			assertEquals(communeArrivee.getNomMinuscule(), adresses.principale.getLocalite(), "L'adresse principale n'est pas à " + communeArrivee.getNomMinuscule());
 		}
 
 		// PBM 29.07.2009: UNIREG-1266 -> Blocage des remboursements automatiques sur tous les nouveaux tiers
@@ -185,7 +184,7 @@ public class Ec_19000_04_Depart_JIRA1262_Scenario extends DepartScenario {
 	@Check(id=3, descr="Vérifie que l'habitant n'a plus son for sur Bex mais sur Zurich")
 	public void check3() throws Exception {
 
-		// On check que le couple est parti
+		// On check que le contribuable est parti
 		{
 			final EvenementCivilData evt = getEvenementCivilRegoupeForHabitant(noHabSebastien);
 			assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat(), "Etat invalide");
@@ -209,7 +208,6 @@ public class Ec_19000_04_Depart_JIRA1262_Scenario extends DepartScenario {
 
 			final DeclarationImpotCriteria diCriteria = new DeclarationImpotCriteria();
 			diCriteria.setContribuable(sebastien.getNumero());
-			diCriteria.setAnneeRange(new Pair<Integer, Integer>(dateDepart.year(), RegDate.get().year()));
 			final List<DeclarationImpotOrdinaire> dis = diDAO.find(diCriteria);
 			assertNotNull(dis, "Liste des DI nulle");
 			assertTrue(dis.size() > 0, "Mauvais nombre de déclarations");

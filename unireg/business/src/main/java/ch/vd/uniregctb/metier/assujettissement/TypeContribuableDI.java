@@ -42,4 +42,19 @@ public enum TypeContribuableDI {
 	public String getDescription() {
 		return description;
 	}
+
+	public static TypeContribuableDI fromTypeContribuable(TypeContribuable type) {
+		switch (type) {
+		case VAUDOIS_ORDINAIRE:
+			return VAUDOIS_ORDINAIRE_VAUD_TAX;
+		case VAUDOIS_DEPENSE:
+			return VAUDOIS_DEPENSE;
+		case HORS_CANTON:
+			return HORS_CANTON;
+		case HORS_SUISSE:
+			return HORS_SUISSE;
+		default:
+			throw new IllegalArgumentException("Type de contribuable inconnu = [" + type + "]");
+		}
+	}
 }
