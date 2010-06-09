@@ -3,6 +3,8 @@ package ch.vd.uniregctb.dbutils;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -19,8 +21,11 @@ public class DebugDataSource implements DataSource {
 
 	private static final Logger LOGGER = Logger.getLogger(DebugDataSource.class);
 
+	private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
+
 	private DataSource target;
 	private int maxConnections;
+	private Date lastDump;
 	private boolean enabled;
 
 	private final Set<DebugConnection> connections = new HashSet<DebugConnection>();
@@ -41,6 +46,7 @@ public class DebugDataSource implements DataSource {
 		this.enabled = enabled;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setMaxConnections(int maxConnections) {
 		this.maxConnections = maxConnections;
 	}
@@ -81,6 +87,8 @@ public class DebugDataSource implements DataSource {
 
 	/**
 	 * Méthode appelée par les connexions de debug lors de l'ouverture de la connexion.
+	 *
+	 * @param c la connection à enregister
 	 */
 	protected void register(DebugConnection c) {
 		synchronized (connections) {
@@ -90,6 +98,8 @@ public class DebugDataSource implements DataSource {
 
 	/**
 	 * Méthode appelée par les connexions de debug lors de la fermeture de la connexion.
+	 *
+	 * @param c la connection à désenregister
 	 */
 	protected void unregister(DebugConnection c) {
 		synchronized (connections) {
@@ -101,19 +111,28 @@ public class DebugDataSource implements DataSource {
 	 * Affiche toutes les connexions ouvertes en imprimant la callstack de l'appel d'ouverture des connexions.
 	 */
 	private void dumpConnections() {
-		StringBuilder s = new StringBuilder();
-		s.append("Le nombre maximal (").append(maxConnections).append(
-				") de connexions est atteint. Les connexions ont été allouées aux endroits suivants :\n");
-		int i = 0;
-		for (DebugConnection c : connections) {
-			if (c == null) {
-				continue;
+		final Date now = new Date();
+		if (lastDump == null || now.getTime() - lastDump.getTime() > 300000) { // on log au maximum toutes les 5 minutes
+			StringBuilder s = new StringBuilder();
+			s.append("Le nombre maximal (").append(maxConnections).append(
+					") de connexions est atteint. Les connexions ont été allouées aux endroits suivants :\n");
+			int i = 0;
+			for (DebugConnection c : connections) {
+				if (c == null) {
+					continue;
+				}
+				final String openingDate = DATE_FORMAT.format(c.getOpeningDate());
+				final long openDuration = (now.getTime() - c.getOpeningDate().getTime()) / 1000; // en secondes
+				s.append(String.format(" --- connection #%d (%d) opened at %s (%d seconds ago) ---\n", i++, c.hashCode(), openingDate, openDuration));
+				s.append(c.getCallerTrace()).append("\n");
 			}
-			s.append(" --- connection #").append(i++).append(" (").append(c.hashCode()).append(") ---\n");
-			s.append(c.getCallerTrace()).append("\n");
+			s.append(" ---------------------------");
+			LOGGER.warn(s.toString());
+			lastDump = now;
 		}
-		s.append(" ---------------------------");
-		LOGGER.error(s.toString());
+		else {
+			LOGGER.warn("Nombre maximal de connexions atteint.");
+		}
 	}
 
 	/**
