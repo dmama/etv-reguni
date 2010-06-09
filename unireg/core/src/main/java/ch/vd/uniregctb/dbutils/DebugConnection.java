@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.sql.Savepoint;
 import java.sql.Statement;
+import java.util.Date;
 import java.util.Map;
 
 import ch.vd.uniregctb.common.ExceptionUtils;
@@ -22,6 +23,7 @@ public class DebugConnection implements Connection {
 	private final DebugDataSource dataSource;
 	private final Connection target;
 	private String callerTrace;
+	private final Date openingDate = new Date();
 
 	public DebugConnection(DebugDataSource dataSource, Connection target) {
 		this.dataSource = dataSource;
@@ -38,14 +40,22 @@ public class DebugConnection implements Connection {
 		return callerTrace;
 	}
 
+	public Date getOpeningDate() {
+		return openingDate;
+	}
+
 	public void clearWarnings() throws SQLException {
 		target.clearWarnings();
 	}
 
 	public void close() throws SQLException {
-		target.close();
-		dataSource.unregister(this);
-		callerTrace = null;
+		try {
+			target.close();
+		}
+		finally {
+			dataSource.unregister(this);
+			callerTrace = null;
+		}
 	}
 
 	public void commit() throws SQLException {
