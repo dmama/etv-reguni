@@ -13,7 +13,6 @@ import ch.vd.uniregctb.rapport.RapportService;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.scheduler.JobParam;
 import ch.vd.uniregctb.scheduler.JobParamInteger;
-import ch.vd.uniregctb.scheduler.JobParamRegDate;
 
 public class IdentifierContribuableJob extends JobDefinition{
 
@@ -93,7 +92,7 @@ public class IdentifierContribuableJob extends JobDefinition{
 
 		// Exécution du job dans une transaction.
 		final StatusManager status = getStatusManager();
-		final IdentifierContribuableResults results = identificationService.RelancerIdentificationAutomatique(dateTraitement, nbThreads, status);
+		final IdentifierContribuableResults results = identificationService.relancerIdentificationAutomatique(dateTraitement, nbThreads, status);
 		final IdentifierContribuableRapport rapport = rapportService.generateRapport(results, status);
 
 		setLastRunReport(rapport);

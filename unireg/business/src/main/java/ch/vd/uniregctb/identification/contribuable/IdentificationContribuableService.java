@@ -109,5 +109,5 @@ public interface IdentificationContribuableService {
 	 * @return
 	 */
 
-	IdentifierContribuableResults RelancerIdentificationAutomatique(RegDate dateTraitement, int nbThreads, StatusManager status);
+	IdentifierContribuableResults relancerIdentificationAutomatique(RegDate dateTraitement, int nbThreads, StatusManager status);
 }
