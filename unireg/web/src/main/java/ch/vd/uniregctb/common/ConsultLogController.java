@@ -22,6 +22,8 @@ import ch.vd.uniregctb.declaration.ListeRecapitulativeDAO;
 import ch.vd.uniregctb.evenement.EvenementCivil;
 import ch.vd.uniregctb.evenement.EvenementCivilDAO;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
+import ch.vd.uniregctb.evenement.identification.contribuable.IdentCtbDAO;
+import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable;
 import ch.vd.uniregctb.mouvement.MouvementDossier;
 import ch.vd.uniregctb.mouvement.MouvementDossierDAO;
 import ch.vd.uniregctb.security.DroitAccesDAO;
@@ -52,6 +54,7 @@ public class ConsultLogController  extends AbstractSimpleFormController {
 	private TacheDAO tacheDAO;
 	private DroitAccesDAO droitAccesDAO;
 	private EvenementCivilDAO evenementCivilDAO;
+	private IdentCtbDAO identCtbDAO;
 
 	private PlatformTransactionManager transactionManager;
 
@@ -70,6 +73,7 @@ public class ConsultLogController  extends AbstractSimpleFormController {
 	public final static String NATURE_TACHE_PARAMETER_VALUE = "Tache";
 	public final static String NATURE_DROIT_ACCES_PARAMETER_VALUE = "DroitAcces";
 	public final static String NATURE_EVENEMENT_PARAMETER_VALUE = "Evenement";
+	public final static String NATURE_IDENTIFICATION_PARAMETER_VALUE = "identification";
 	/**
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
@@ -134,6 +138,10 @@ public class ConsultLogController  extends AbstractSimpleFormController {
 				else if (nature.equals(NATURE_EVENEMENT_PARAMETER_VALUE)) {
 					EvenementCivilData evenementCivilData = evenementCivilDAO.get(id);
 					return fillConsultLogView(evenementCivilData);
+				}
+				else if (nature.equals(NATURE_IDENTIFICATION_PARAMETER_VALUE)) {
+					IdentificationContribuable message  = identCtbDAO.get(id);
+					return fillConsultLogView(message);
 				}
 				return null;
 			}
@@ -216,5 +224,13 @@ public class ConsultLogController  extends AbstractSimpleFormController {
 
 	public void setEvenementCivilDAO(EvenementCivilDAO evenementCivilDAO) {
 		this.evenementCivilDAO = evenementCivilDAO;
+	}
+
+	public IdentCtbDAO getIdentCtbDAO() {
+		return identCtbDAO;
+	}
+
+	public void setIdentCtbDAO(IdentCtbDAO identCtbDAO) {
+		this.identCtbDAO = identCtbDAO;
 	}
 }

@@ -157,6 +157,7 @@
 		<property name="formView" value="common/consult-log" />
 		<property name="successView" value="common/refresh-parent" />
 		<property name="transactionManager" ref="transactionManager" />
+		<property name="identCtbDAO" ref="identCtbDAO" />
 	</bean>
 
 	<bean id="mouvementVisuController" class="ch.vd.uniregctb.tiers.MouvementVisuController" parent="abstractTiersController">
