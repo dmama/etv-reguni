@@ -95,6 +95,13 @@
         <constructor-arg value="200"/>
         <property name="evenementCivilProcessor" ref="evenementCivilProcessor"/>
     </bean>
+	 <!-- Job qui relance le traitement sur les messages d'identification -->
+    <bean id="identifierContribuableJob" parent="schedulerJob" class="ch.vd.uniregctb.identification.contribuable.IdentifierContribuableJob">
+        <constructor-arg value="201"/>
+		<constructor-arg value="Relancer le traitement automatique des messages d'identification"/>
+		<property name="rapportService" ref="rapportService"/>
+        <property name="identificationService" ref="identCtbService"/>
+    </bean>
 
     <bean id="editiqueListeRecapJob" parent="schedulerJob" class="ch.vd.uniregctb.editique.batch.EditiqueListeRecapJob">
         <constructor-arg value="300"/>

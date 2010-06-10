@@ -12,6 +12,7 @@ import ch.vd.uniregctb.declaration.source.EnvoiLRsResults;
 import ch.vd.uniregctb.declaration.source.EnvoiSommationLRsResults;
 import ch.vd.uniregctb.document.*;
 import ch.vd.uniregctb.document.ListeDIsNonEmisesRapport;
+import ch.vd.uniregctb.identification.contribuable.IdentifierContribuableResults;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.listes.listesnominatives.ListesNominativesResults;
 import ch.vd.uniregctb.listes.suisseoupermiscresident.ListeContribuablesResidentsSansForVaudoisResults;
@@ -655,6 +656,27 @@ public class RapportServiceImpl implements RapportService {
 		catch (Exception e) {
 			throw new RuntimeException(e);
 		}
+
+	}
+
+	public IdentifierContribuableRapport generateRapport(final IdentifierContribuableResults results, StatusManager s) {
+		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
+
+			final String nom = "RapportRelanceIdentification";
+			final String description = "Rapport d'exécution du job de relance de l'indentification des contribuables. Date de traitement = " + results.getDateTraitement();
+			final Date dateGeneration = new Date();
+
+			try {
+				return docService.newDoc(IdentifierContribuableRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<IdentifierContribuableRapport>() {
+					public void writeDoc(IdentifierContribuableRapport doc, OutputStream os) throws Exception {
+						final PdfIdentifierContribuableRapport document = new PdfIdentifierContribuableRapport();
+						document.write(results, nom, description, dateGeneration, os, status);
+					}
+				});
+			}
+			catch (Exception e) {
+				throw new RuntimeException(e);
+			}
 
 	}
 }

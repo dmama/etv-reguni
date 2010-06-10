@@ -4,7 +4,9 @@ import java.util.List;
 import java.util.Map;
 
 import ch.vd.infrastructure.service.InfrastructureException;
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.ParamPagination;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.evenement.identification.contribuable.CriteresPersonne;
 import ch.vd.uniregctb.evenement.identification.contribuable.Erreur;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable;
@@ -89,4 +91,23 @@ public interface IdentificationContribuableService {
 	 * @throws InfrastructureException
 	 */
 	public String getNomCantonFromEmetteurId(String emetteurId) throws InfrastructureException;
+
+	/**Retente une identification automatique sur les messages present en base
+	 *
+	 * @param message
+	 * @return 1 si l 'identification a réussi, 0 Sinon
+	 * @throws Exception
+	 */
+
+	public int tenterIdentificationAutomatiqueContribuable(IdentificationContribuable message) throws Exception;
+
+	/**
+	 * Relance l'identification automatique sur les messages en etat intermediaire: A TRAITER, A EXPERTISER, SUSPENDU
+	 * @param dateTraitement
+	 * @param nbThreads
+	 * @param status
+	 * @return
+	 */
+
+	IdentifierContribuableResults RelancerIdentificationAutomatique(RegDate dateTraitement, int nbThreads, StatusManager status);
 }

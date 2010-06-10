@@ -18,6 +18,7 @@ import ch.vd.uniregctb.declaration.source.EnvoiLRsResults;
 import ch.vd.uniregctb.declaration.source.EnvoiSommationLRsResults;
 import ch.vd.uniregctb.document.*;
 import ch.vd.uniregctb.document.ListeDIsNonEmisesRapport;
+import ch.vd.uniregctb.identification.contribuable.IdentifierContribuableResults;
 import ch.vd.uniregctb.listes.listesnominatives.ListesNominativesResults;
 import ch.vd.uniregctb.listes.suisseoupermiscresident.ListeContribuablesResidentsSansForVaudoisResults;
 import ch.vd.uniregctb.metier.FusionDeCommunesResults;
@@ -281,4 +282,12 @@ public interface RapportService {
 	 * @return le rapport
 	 */
 	DeterminerLRsEchuesRapport generateRapport(DeterminerLRsEchuesResults results, StatusManager status);
+
+	/**
+	 * Génère le rapport suite à l'execution du job de relance de l'identifcation
+	 * @param results
+	 * @param status
+	 * @return
+	 */
+	IdentifierContribuableRapport generateRapport(IdentifierContribuableResults results,StatusManager status);
 }

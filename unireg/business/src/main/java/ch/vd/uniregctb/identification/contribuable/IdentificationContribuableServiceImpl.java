@@ -12,6 +12,7 @@ import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
@@ -23,6 +24,7 @@ import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.AdresseSuisse;
 import ch.vd.uniregctb.adresse.AdressesFiscales;
 import ch.vd.uniregctb.common.ParamPagination;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.evenement.identification.contribuable.CriteresAdresse;
 import ch.vd.uniregctb.evenement.identification.contribuable.CriteresPersonne;
 import ch.vd.uniregctb.evenement.identification.contribuable.Demande;
@@ -64,7 +66,16 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	private AdresseService adresseService;
 	private ServiceInfrastructureService infraService;
 	private IdentificationContribuableMessageHandler messageHandler;
+		private PlatformTransactionManager transactionManager;
 	private static String REPARTITION_INTERCANTONALE = "ssk-3001-000101";
+
+		public PlatformTransactionManager getTransactionManager() {
+		return transactionManager;
+	}
+
+	public void setTransactionManager(PlatformTransactionManager transactionManager) {
+		this.transactionManager = transactionManager;
+	}
 
 	public void setSearcher(GlobalTiersSearcher searcher) {
 		this.searcher = searcher;
@@ -499,6 +510,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		}
 	}
 
+
 	/**
 	 * Impossible à identifier
 	 *
@@ -895,5 +907,35 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 			return emetteurId;
 		}
 
+	}
+
+	public int tenterIdentificationAutomatiqueContribuable(IdentificationContribuable message) throws Exception {
+		// Ensuite : effectuer l'identification
+
+		final Demande demande = message.getDemande();
+		Assert.notNull(demande, "Le message ne contient aucune demande.");
+
+		final CriteresPersonne criteresPersonne = demande.getPersonne();
+		Assert.notNull(demande, "Le message ne contient aucune critère sur la personne à identifier.");
+
+		final List<PersonnePhysique> list = identifie(criteresPersonne);
+		if (list.size() == 1) {
+			// on a trouvé un et un seul contribuable:
+			PersonnePhysique personne = list.get(0);
+
+			// on peut répondre immédiatement
+			identifie(message, personne, Etat.TRAITE_AUTOMATIQUEMENT);
+			return 1;
+
+		}
+		else {
+			return 0;
+		}
+
+	}
+
+	public IdentifierContribuableResults RelancerIdentificationAutomatique(RegDate dateTraitement, int nbThreads, StatusManager status) {
+		IdentifierContribuableProcessor processor = new IdentifierContribuableProcessor(this,identCtbDAO,transactionManager);
+		return processor.run(dateTraitement,nbThreads,status);
 	}
 }
