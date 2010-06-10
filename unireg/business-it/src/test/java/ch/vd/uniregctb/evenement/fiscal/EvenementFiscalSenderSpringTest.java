@@ -12,7 +12,6 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.technical.esb.EsbMessage;
-import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.BusinessItTest;
@@ -31,21 +30,15 @@ public class EvenementFiscalSenderSpringTest extends BusinessItTest {
 	public static final Logger LOGGER = Logger.getLogger(EvenementFiscalSenderSpringTest.class);
 
 	private EsbJmsTemplate esbTemplate;
-	private EvenementFiscalSenderImpl sender;
-	private final String OUTPUT_QUEUE = "ch.vd.unireg.test.output";
+	private EvenementFiscalSender sender;
+	private final String OUTPUT_QUEUE = "ch.vd.unireg.test.output";         // doit-être identique au nom donné dans le fichier Spring!
 
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
 
 		esbTemplate = getBean(EsbJmsTemplate.class, "esbJmsTemplate");
-		final EsbMessageFactory esbMsgFactory = getBean(EsbMessageFactory.class, "esbMessageFactory");
-
-		sender = new EvenementFiscalSenderImpl();
-		sender.setEsbMessageFactory(esbMsgFactory);
-		sender.setEnabled(true);
-		sender.setEsbTemplate(esbTemplate);
-		sender.setOutputQueue(OUTPUT_QUEUE);
+		sender = getBean(EvenementFiscalSender.class, "evenementFiscalSenderPourTest");
 
 		clearQueue(OUTPUT_QUEUE);
 

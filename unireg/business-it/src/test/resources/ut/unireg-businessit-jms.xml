@@ -44,4 +44,11 @@
 
 	<bean id="esbMessageFactory" class="ch.vd.technical.esb.EsbMessageFactory"/>
 
+	<bean id="evenementFiscalSenderPourTest" class="ch.vd.uniregctb.evenement.fiscal.EvenementFiscalSenderImpl">
+		<property name="esbTemplate" ref="esbJmsTemplate" />
+		<property name="esbMessageFactory" ref="esbMessageFactory"/>
+		<property name="serviceDestination" value="ch.vd.unireg.test.output" />
+		<property name="enabled" value="true" />
+	</bean>
+
 </beans>
