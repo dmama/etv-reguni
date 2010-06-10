@@ -3,6 +3,8 @@ package ch.vd.uniregctb.scheduler;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.uniregctb.audit.Audit;
+import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.document.Document;
 import ch.vd.uniregctb.utils.UniregModeHelper;
@@ -142,7 +144,17 @@ public abstract class JobDefinition implements InitializingBean, Comparable<Obje
 		runningMessage = "";
 		percentProgression = null;
 		currentParameters = params;
-		doExecute(params);
+
+		// le batch tournera avec le nom d'utilisateur égal au nom du batch
+		Audit.info(String.format("Démarrage du job %s", name));
+		AuthenticationHelper.pushPrincipal(name);
+		try {
+			doExecute(params);
+		}
+		finally {
+			AuthenticationHelper.popPrincipal();
+			Audit.info(String.format("Arrêt du job %s", name));
+		}
 	}
 
 	/**
