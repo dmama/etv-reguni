@@ -795,7 +795,7 @@
 		<host-interfaces.version-short>1.9</host-interfaces.version-short>
 		<host-interfaces.version-long>1.9.27</host-interfaces.version-long>
 		<host-interfaces.factory>weblogic.jndi.WLInitialContextFactory</host-interfaces.factory>
-		<host-interfaces.ejb-proxy-class>org.springframework.ejb.access.SimpleRemoteStatelessSessionProxyFactoryBean</host-interfaces.ejb-proxy-class>
+		<host-interfaces.ejb-proxy-class>ch.vd.uniregctb.ejb.GentilRemoteStatelessSessionProxyFactoryBean</host-interfaces.ejb-proxy-class>
 
 		<!-- Parametres de Testing -->
 		<surefire.useFile>false</surefire.useFile>
