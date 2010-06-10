@@ -3244,6 +3244,36 @@ public class TacheServiceTest extends BusinessTest {
 		}
 	}
 
+	/**
+	 * [UNIREG-1653] Vérifie que l'ouverture dans une période passée d'un for fiscal pour motif veuvage génère bien une tâche d'envoi de DI.
+	 */
+	@Test
+	public void testDetermineSynchronizeActionsForDIsVeuvageTraiteTardivement() throws Exception {
+
+		final RegDate aujourdhui = RegDate.get();
+		final int anneePrecedente = aujourdhui.year() - 1;
+
+		// Veuvage traité tardivement
+		final PersonnePhysique pp = addNonHabitant("Michelle", "Mabelle", date(1972, 1, 3), Sexe.FEMININ);
+		final ForFiscalPrincipal ffp = addForPrincipal(pp, date(anneePrecedente, 11, 2), MotifFor.VEUVAGE_DECES, MockCommune.Cossonay);
+		tacheService.genereTacheDepuisOuvertureForPrincipal(pp, ffp, null);
+		hibernateTemplate.flush();
+
+		// Il devrait maintenant y avoir une tâche d'envoi de DI
+		final TacheCriteria criterion = new TacheCriteria();
+		criterion.setContribuable(pp);
+		criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpot);
+		criterion.setInclureTachesAnnulees(true);
+
+		final List<Tache> taches = tacheDAO.find(criterion);
+		assertNotNull(taches);
+		assertEquals(1, taches.size());
+
+		final TacheEnvoiDeclarationImpot tache0 = (TacheEnvoiDeclarationImpot) taches.get(0);
+		assertTache(TypeEtatTache.EN_INSTANCE, getNextSunday(aujourdhui), date(anneePrecedente, 11, 2), date(anneePrecedente, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
+				TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.CEDI, tache0);
+	}
+
 	private static void assertAddDI(RegDate debut, RegDate fin, TypeContribuable typeContribuable, SynchronizeAction action) {
 		assertNotNull(action);
 		assertInstanceOf(AddDI.class, action);
