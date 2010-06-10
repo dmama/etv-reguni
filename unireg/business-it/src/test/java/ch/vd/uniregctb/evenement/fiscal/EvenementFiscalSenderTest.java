@@ -36,7 +36,6 @@ public class EvenementFiscalSenderTest extends EvenementTest {
 	private static final String OUTPUT_QUEUE = "ch.vd.unireg.test.output";
 	private EvenementFiscalSenderImpl sender;
 
-
 	@Before
 	public void setUp() throws Exception {
 

@@ -23,7 +23,6 @@ import java.util.ArrayList;
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
-@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 public final class EvenementFiscalSenderImpl implements EvenementFiscalSender {
 
 	private static final Logger LOGGER = Logger.getLogger(EvenementFiscalSenderImpl.class);
