@@ -191,7 +191,7 @@ public class BatchScheduler {
 		while (job.isRunning()) {
 
 			nbTimes++;
-			if (nbTimes % 15 == 0) {
+			if (LOGGER.isDebugEnabled() && nbTimes % 15 == 0) {
 				LOGGER.debug("[SYNC] Attends que le job soit arrete...");
 			}
 
