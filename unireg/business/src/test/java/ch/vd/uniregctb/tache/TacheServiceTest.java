@@ -3183,6 +3183,67 @@ public class TacheServiceTest extends BusinessTest {
 		assertDeleteDI(di1, false, actions.get(0));
 	}
 
+	/**
+	 * [UNIREG-1456] Cas du contribuable qui arrive de HS et repart HS la même année et dont on reçoit les événements par après : l'arrivée provoque la création d'une tâche d'envoi de DI sur la période
+	 * [date arrivée; 31 décembre]. Le départ provoque la création d'une nouvelle tâche d'envoi de DI sur la période [date arrivée; date départ]. Ce test vérifie que le première tâche d'envoi est bien annulée automatiquement.
+	 */
+	@Test
+	public void testDetermineSynchronizeActionsForDIsArriveeHSEtDepartHSMemeAnnee() throws Exception {
+
+		final RegDate aujourdhui = RegDate.get();
+		final int anneePrecedente = aujourdhui.year() - 1;
+
+		// Arrivée de hors-Suisse traitée tardivement
+		final PersonnePhysique pp = addNonHabitant("Gédéon", "Glincarnés", date(1972, 1, 3), Sexe.MASCULIN);
+		final ForFiscalPrincipal ffp = addForPrincipal(pp, date(anneePrecedente, 3, 12), MotifFor.ARRIVEE_HS, MockCommune.Bussigny);
+		tacheService.genereTacheDepuisOuvertureForPrincipal(pp, ffp, null);
+		hibernateTemplate.flush();
+
+		// Il devrait maintenant y avoir une tâche d'envoi de DI
+		{
+			final TacheCriteria criterion = new TacheCriteria();
+			criterion.setContribuable(pp);
+			criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpot);
+			criterion.setInclureTachesAnnulees(true);
+
+			final List<Tache> taches = tacheDAO.find(criterion);
+			assertNotNull(taches);
+			assertEquals(1, taches.size());
+
+			final TacheEnvoiDeclarationImpot tache0 = (TacheEnvoiDeclarationImpot) taches.get(0);
+			assertTache(TypeEtatTache.EN_INSTANCE, getNextSunday(aujourdhui), date(anneePrecedente, 3, 12), date(anneePrecedente, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
+					TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.CEDI, tache0);
+		}
+
+		// Départ de hors-Suisse traité tardivement
+		ffp.setDateFin(date(anneePrecedente, 7, 23));
+		ffp.setMotifFermeture(MotifFor.DEPART_HS);
+		tacheService.genereTacheDepuisFermetureForPrincipal(pp, ffp);
+		hibernateTemplate.flush();
+
+		// Il devrait maintenant y avoir deux tâches d'envoi de DI : le première annulée et une nouvelle avec la bonne période
+		{
+			final TacheCriteria criterion = new TacheCriteria();
+			criterion.setContribuable(pp);
+			criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpot);
+			criterion.setInclureTachesAnnulees(true);
+
+			final List<Tache> taches = tacheDAO.find(criterion);
+			assertNotNull(taches);
+			assertEquals(2, taches.size());
+
+			final TacheEnvoiDeclarationImpot tache0 = (TacheEnvoiDeclarationImpot) taches.get(0);
+			assertTache(TypeEtatTache.EN_INSTANCE, getNextSunday(aujourdhui), date(anneePrecedente, 3, 12), date(anneePrecedente, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
+					TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.CEDI, tache0);
+			assertTrue(tache0.isAnnule());
+
+			final TacheEnvoiDeclarationImpot tache1 = (TacheEnvoiDeclarationImpot) taches.get(1);
+			assertTache(TypeEtatTache.EN_INSTANCE, getNextSunday(aujourdhui), date(anneePrecedente, 3, 12), date(anneePrecedente, 7, 23), TypeContribuable.VAUDOIS_ORDINAIRE,
+					TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.CEDI, tache1);
+			assertFalse(tache1.isAnnule());
+		}
+	}
+
 	private static void assertAddDI(RegDate debut, RegDate fin, TypeContribuable typeContribuable, SynchronizeAction action) {
 		assertNotNull(action);
 		assertInstanceOf(AddDI.class, action);
