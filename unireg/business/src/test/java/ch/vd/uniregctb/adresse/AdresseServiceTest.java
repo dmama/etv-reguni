@@ -3869,7 +3869,7 @@ public class AdresseServiceTest extends BusinessTest {
 	}
 
 	/**
-	 * [UNIREG-1341] Vérifie que l'adresse courrier d'un ménage-commun dont le composant principal possède un représentant est bien celle du représentant de ce dernier.
+	 * [UNIREG-1341] Vérifie que l'adresse courrier d'un ménage-commun dont le composant principal possède un représentant n'est *pas* celle du représentant de ce dernier.
 	 */
 	@Test
 	public void testGetAdressesFiscalesMenageCommunAvecRepresentantSurPrincipal() throws Exception {
@@ -3921,17 +3921,15 @@ public class AdresseServiceTest extends BusinessTest {
 		final AdressesFiscalesHisto adressesHisto = adresseService.getAdressesFiscalHisto(menage, false);
 		assertNotNull(adressesHisto);
 
-		assertEquals(2, adressesHisto.courrier.size());
-		assertAdresse(date(2000, 1, 1), date(2006, 12, 31), "Lausanne", Source.CIVILE, true, adressesHisto.courrier.get(0));
-		assertAdresse(date(2007, 1, 1), null, "Le Sentier", Source.REPRESENTATION, false, adressesHisto.courrier.get(1));
-
+		assertEquals(1, adressesHisto.courrier.size());
+		assertAdresse(date(2000, 1, 1), null, "Lausanne", Source.CIVILE, true, adressesHisto.courrier.get(0));
 		assertAdresse(date(2000, 1, 1), null, "Lausanne", Source.CIVILE, false, adressesHisto.domicile.get(0));
 		assertAdresse(date(2000, 1, 1), null, "Lausanne", Source.CIVILE, false, adressesHisto.poursuite.get(0));
 		assertAdresse(date(2000, 1, 1), null, "Lausanne", Source.CIVILE, true, adressesHisto.representation.get(0));
 
 		final AdressesFiscales adresses = adresseService.getAdressesFiscales(menage, null, false);
 		assertNotNull(adresses);
-		assertAdressesEquals(adressesHisto.courrier.get(1), adresses.courrier);
+		assertAdressesEquals(adressesHisto.courrier.get(0), adresses.courrier);
 		assertAdressesEquals(adressesHisto.domicile.get(0), adresses.domicile);
 		assertAdressesEquals(adressesHisto.poursuite.get(0), adresses.poursuite);
 		assertAdressesEquals(adressesHisto.representation.get(0), adresses.representation);
@@ -3941,9 +3939,9 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("Monsieur et Madame", adresseEnvoi.getLigne1());
 		assertEquals("Paul Dupont", adresseEnvoi.getLigne2());
 		assertEquals("Virginie Dupont", adresseEnvoi.getLigne3());
-		assertEquals("p.a. Ronald MacDonald", adresseEnvoi.getLigne4());
-		assertEquals("Grande-Rue", adresseEnvoi.getLigne5());
-		assertEquals("1347 Le Sentier", adresseEnvoi.getLigne6());
+		assertEquals("Av de Beaulieu", adresseEnvoi.getLigne4());
+		assertEquals("1000 Lausanne", adresseEnvoi.getLigne5());
+		assertNull(adresseEnvoi.getLigne6());
 	}
 
 	/**
@@ -4082,10 +4080,9 @@ public class AdresseServiceTest extends BusinessTest {
 		final AdressesFiscalesHisto adressesHisto = adresseService.getAdressesFiscalHisto(menage, false);
 		assertNotNull(adressesHisto);
 
-		assertEquals(3, adressesHisto.courrier.size());
-		assertAdresse(date(2000, 1, 1), date(2004, 12, 31), "Lausanne", Source.CIVILE, true, adressesHisto.courrier.get(0));
-		assertAdresse(date(2005, 1, 1), date(2006, 12, 31), "Echallens", Source.REPRESENTATION, false, adressesHisto.courrier.get(1)); // représentant du principal
-		assertAdresse(date(2007, 1, 1), null, "Le Sentier", Source.REPRESENTATION, false, adressesHisto.courrier.get(2)); // représentant du ménage
+		assertEquals(2, adressesHisto.courrier.size());
+		assertAdresse(date(2000, 1, 1), date(2006, 12, 31), "Lausanne", Source.CIVILE, true, adressesHisto.courrier.get(0));
+		assertAdresse(date(2007, 1, 1), null, "Le Sentier", Source.REPRESENTATION, false, adressesHisto.courrier.get(1)); // représentant du ménage
 
 		assertAdresse(date(2000, 1, 1), null, "Lausanne", Source.CIVILE, false, adressesHisto.domicile.get(0));
 		assertAdresse(date(2000, 1, 1), null, "Lausanne", Source.CIVILE, false, adressesHisto.poursuite.get(0));
@@ -4093,7 +4090,7 @@ public class AdresseServiceTest extends BusinessTest {
 
 		final AdressesFiscales adresses = adresseService.getAdressesFiscales(menage, null, false);
 		assertNotNull(adresses);
-		assertAdressesEquals(adressesHisto.courrier.get(2), adresses.courrier);
+		assertAdressesEquals(adressesHisto.courrier.get(1), adresses.courrier);
 		assertAdressesEquals(adressesHisto.domicile.get(0), adresses.domicile);
 		assertAdressesEquals(adressesHisto.poursuite.get(0), adresses.poursuite);
 		assertAdressesEquals(adressesHisto.representation.get(0), adresses.representation);
@@ -4109,7 +4106,8 @@ public class AdresseServiceTest extends BusinessTest {
 	}
 
 	/**
-	 * [UNIREG-1341] Vérifie que l'adresse courrier d'un ménage-commun dont le conjoint possède un représentant et dont le principal est sous tutelle est bien celle du représentant du conjoint.
+	 * [UNIREG-1341] Vérifie que l'adresse courrier d'un ménage-commun dont le conjoint possède un représentant et dont le principal est sous tutelle est l'adresse courrier du conjoint (et pas celle du
+	 * son représentant).
 	 */
 	@Test
 	public void testGetAdressesFiscalesMenageCommunAvecRepresentantSurConjointEtPrincipalSousTutelle() throws Exception {
@@ -4169,14 +4167,16 @@ public class AdresseServiceTest extends BusinessTest {
 
 		assertEquals(2, adressesHisto.courrier.size());
 		assertAdresse(date(2000, 1, 1), date(2006, 12, 31), "Lausanne", Source.CIVILE, true, adressesHisto.courrier.get(0));
-		assertAdresse(date(2007, 1, 1), null, "Le Sentier", Source.REPRESENTATION, false, adressesHisto.courrier.get(1)); // adresse du représentant du conjoint
+		assertAdresse(date(2007, 1, 1), null, "Lausanne", Source.CONJOINT, false, adressesHisto.courrier.get(1)); // adresse du courrier du conjoint
 		assertAdresse(date(2000, 1, 1), null, "Lausanne", Source.CIVILE, false, adressesHisto.domicile.get(0));
 		assertAdresse(date(2000, 1, 1), null, "Lausanne", Source.CIVILE, false, adressesHisto.poursuite.get(0));
 		assertAdresse(date(2000, 1, 1), null, "Lausanne", Source.CIVILE, true, adressesHisto.representation.get(0));
 
 		final AdressesFiscales adresses = adresseService.getAdressesFiscales(menage, null, false);
 		assertNotNull(adresses);
-		assertAdressesEquals(adressesHisto.courrier.get(1), adresses.courrier);
+		// TODO (msi) l'adresse de début devrait correspondre au début de la tutelle
+		assertAdresse(date(2002, 2, 2), null, "Lausanne", Source.CONJOINT, false, adresses.courrier); // adresse du courrier du conjoint
+		// //assertAdressesEquals(adressesHisto.courrier.get(1), adresses.courrier);
 		assertAdressesEquals(adressesHisto.domicile.get(0), adresses.domicile);
 		assertAdressesEquals(adressesHisto.poursuite.get(0), adresses.poursuite);
 		assertAdressesEquals(adressesHisto.representation.get(0), adresses.representation);
@@ -4186,9 +4186,9 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("Monsieur et Madame", adresseEnvoi.getLigne1());
 		assertEquals("Paul Dupont", adresseEnvoi.getLigne2());
 		assertEquals("Virginie Dupont", adresseEnvoi.getLigne3());
-		assertEquals("p.a. Ronald MacDonald", adresseEnvoi.getLigne4());
-		assertEquals("Grande-Rue", adresseEnvoi.getLigne5());
-		assertEquals("1347 Le Sentier", adresseEnvoi.getLigne6());
+		assertEquals("Av de Marcelin", adresseEnvoi.getLigne4());
+		assertEquals("1000 Lausanne", adresseEnvoi.getLigne5());
+		assertNull(adresseEnvoi.getLigne6());
 	}
 
 	/**
