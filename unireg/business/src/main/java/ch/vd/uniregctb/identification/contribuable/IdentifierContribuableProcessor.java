@@ -35,7 +35,7 @@ public class IdentifierContribuableProcessor {
 	private int batchSize = BATCH_SIZE;
 	private final ThreadLocal<IdentifierContribuableResults> rapport = new ThreadLocal<IdentifierContribuableResults>();
 
-	public IdentifierContribuableProcessor( IdentificationContribuableService identService, IdentCtbDAO identCtbDAO, PlatformTransactionManager transactionManager) {
+	public IdentifierContribuableProcessor(IdentificationContribuableService identService, IdentCtbDAO identCtbDAO, PlatformTransactionManager transactionManager) {
 
 		this.identCtbDAO = identCtbDAO;
 		this.transactionManager = transactionManager;
@@ -58,7 +58,7 @@ public class IdentifierContribuableProcessor {
 
 			@Override
 			public IdentifierContribuableResults createSubRapport() {
-				return new IdentifierContribuableResults( dateTraitement);
+				return new IdentifierContribuableResults(dateTraitement);
 			}
 
 			@Override
@@ -81,7 +81,7 @@ public class IdentifierContribuableProcessor {
 		}
 		else {
 			status.setMessage("la relance de l'identification des messages est terminée."
-					+ " Nombre de massages identifiés = " + count + ". Nombre d'erreurs = " + rapportFinal.erreurs.size());
+					+"Nombre de messages traités = "+rapportFinal.nbMessagesTotal+". Nombre de massages identifiés = " + count + ". Nombre d'erreurs = " + rapportFinal.erreurs.size());
 		}
 
 		rapportFinal.end();
@@ -90,7 +90,7 @@ public class IdentifierContribuableProcessor {
 
 	}
 
-	private void traiterBatch(final List<Long> batch) {
+	private void traiterBatch(final List<Long> batch) throws Exception {
 		//Chargement des messages d'identification
 		// On charge tous les contribuables en vrac (avec préchargement des déclarations)
         final List<IdentificationContribuable> list = (List<IdentificationContribuable>) identCtbDAO.getHibernateTemplate().executeWithNativeSession(new HibernateCallback() {
@@ -103,7 +103,7 @@ public class IdentifierContribuableProcessor {
         });
 		for (IdentificationContribuable identificationContribuable : list) {
 			rapport.get().nbMessagesTotal++;
-			try {
+			
 				int resultat = identService.tenterIdentificationAutomatiqueContribuable(identificationContribuable);
 				if(resultat==1){
 					rapport.get().addIdentifies(identificationContribuable);
@@ -112,10 +112,8 @@ public class IdentifierContribuableProcessor {
 					rapport.get().addNonIdentifies(identificationContribuable);
 				}
 			}
-			catch (Exception e) {
-				rapport.get().addErrorException(identificationContribuable.getId(),e);
-			}
-		}
+
+	
 
 	}
 
@@ -143,7 +141,7 @@ public class IdentifierContribuableProcessor {
 						etats.add(IdentificationContribuable.Etat.A_TRAITER_MANUELLEMENT.name());
 						etats.add(IdentificationContribuable.Etat.A_TRAITER_MAN_SUSPENDU.name());
 						etats.add(IdentificationContribuable.Etat.EXCEPTION.name());
-						queryObject.setParameterList("etats",etats);						
+						queryObject.setParameterList("etats", etats);
 						return queryObject.list();
 					}
 				});
@@ -152,6 +150,6 @@ public class IdentifierContribuableProcessor {
 			}
 
 		});
-		return ids;		
+		return ids;
 	}
 }
