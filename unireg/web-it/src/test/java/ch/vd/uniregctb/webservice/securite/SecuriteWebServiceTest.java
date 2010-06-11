@@ -31,6 +31,7 @@ import static org.junit.Assert.fail;
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
+@SuppressWarnings({"JavaDoc"})
 public class SecuriteWebServiceTest extends WebitTest {
 
 	private static final Logger LOGGER = Logger.getLogger(SecuriteWebServiceTest.class);
@@ -173,7 +174,7 @@ public class SecuriteWebServiceTest extends WebitTest {
 		assertEquals(NiveauAutorisation.ECRITURE, service.getAutorisationSurDossier(params)); // ok -> pas d'interdiction sur Christine Schmidt
 
 		params.setNumeroTiers(12300002L); // Laurent Schmid
-		assertNull(service.getAutorisationSurDossier(params));
+		assertNull("Vérifier si l'événement JMS de chargement de la DB a bien été reçu par le web-service", service.getAutorisationSurDossier(params));
 
 		params.setNumeroTiers(86006202L); // Christine et Laurent Schmid
 		assertNull(service.getAutorisationSurDossier(params)); // ok -> interdiction de Laurent étendu au couple
