@@ -126,9 +126,8 @@ public class IFOSecAuthenticationProcessingFilter  extends AuthenticationProcess
 					throw e;
 				}
 				catch (Exception e) {
-					LOGGER.error("impossible de récupérer les collectivités de l'opérateur");
-					throw new AuthenticationFailedException("Authentification échouée : " +
-							"impossible de récupérer les collectivités de l'opérateur", e);
+					LOGGER.error("impossible de récupérer les collectivités de l'opérateur", e);
+					throw new AuthenticationFailedException("Authentification échouée : impossible de récupérer les collectivités de l'opérateur", e);
 				}
     		}
     	}
