@@ -256,31 +256,6 @@ function selectRattachement(name) {
 }
 
 /*
-* Selection du mode d'imposition
-*/
-function selectModeImposition(name, oldName) {
-	var divDateChangementLabel = E$('date_changement_label');
-	var divDateChangementInput = E$('date_changement_input');
-	var divMotifForPeriodique = E$('motif_for_periodique');
-	var divMotifChangement = E$('motif_changement');
-	var form = document.getElementById('formFor');
-	
-	if (name != oldName){
-		divDateChangementLabel.style.display = '';
-		divDateChangementInput.style.display = '';
-		divMotifChangement.style.display = '';
-		divMotifForPeriodique.style.display = 'none';
-		form.changementModeImposition.value = "true";
-	} else {
-		divDateChangementLabel.style.display = 'none';
-		divDateChangementInput.style.display = 'none';
-		divMotifChangement.style.display = 'none';
-		divMotifForPeriodique.style.display = '';
-		form.changementModeImposition.value = "false";
-	} 
-}
-
-/*
 * Annuler un for
 */
 function annulerFor(idFor) {
