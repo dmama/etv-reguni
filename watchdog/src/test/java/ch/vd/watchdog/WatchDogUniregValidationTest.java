@@ -14,6 +14,10 @@ public class WatchDogUniregValidationTest extends WatchDogTest {
 
 	private static final Logger LOGGER = Logger.getLogger(WatchDogUniregValidationTest.class);
 
+	public void testRien() {
+
+	}
+	
 	// Désactivé parce que y en a marre de se faire spammer par la validation qui est down tous les lundis matins
 	public void _testValidation() throws Exception {
 		LOGGER.info("Vérification de Unireg en validation...");
