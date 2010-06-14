@@ -3,6 +3,7 @@
 <c:set var="index" value="${param.index}" />
 
 <c:if test="${index == ''}">
+	<%-- Ajout d'un nouveau for --%>
 	<c:choose>
 		<c:when test="${command.natureForFiscal == 'ForDebiteurPrestationImposable'}">
 			<jsp:include page="for-ajout-debiteur.jsp"/>
@@ -12,7 +13,14 @@
 		</c:when>
 	</c:choose>
 </c:if>
-<c:if test="${index != ''}">
+
+<c:if test="${index == 'modeimposition'}">
+	<%-- Modification du mode d'imposition du for principal courant --%>
+	<jsp:include page="for-modif-mode-imposition.jsp"/>
+</c:if>
+
+<c:if test="${index != '' && index != 'modeimposition'}">
+	<%-- Modification d'un for fiscal existant --%>
 	<c:choose>
 		<c:when test="${command.natureForFiscal == 'ForDebiteurPrestationImposable'}">
 			<jsp:include page="for-modif-debiteur.jsp"/>

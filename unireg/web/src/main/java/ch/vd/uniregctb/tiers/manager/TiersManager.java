@@ -620,69 +620,29 @@ public class TiersManager implements MessageSourceAware {
 	 * @param contribuable
 	 */
 	protected void setForsFiscaux(TiersView tiersView, Contribuable contribuable) {
-		ForGestion forGestion = tiersService.getDernierForGestionConnu(tiersView.getTiers(), null);
-		List<ForFiscalView> forsFiscauxView = new ArrayList<ForFiscalView>();
-		Set<ForFiscal> forsFiscaux = contribuable.getForsFiscaux();
+		final ForGestion forGestion = tiersService.getDernierForGestionConnu(contribuable, null);
+		final ForFiscalPrincipal dernierForPrincipal = contribuable.getDernierForFiscalPrincipal();
+		final ForFiscal forPrincipalActif = contribuable.getForFiscalPrincipalAt(null);
+		final List<ForFiscal> forsFiscaux = contribuable.getForsFiscauxSorted();
+		
+		final List<ForFiscalView> forsFiscauxView = new ArrayList<ForFiscalView>();
 		if (forsFiscaux != null) {
+			ForFiscalView forPrincipalViewActif = null;
 			for (ForFiscal forFiscal : forsFiscaux) {
-				ForFiscalView forFiscalView = new ForFiscalView();
-				if (contribuable.getDernierForFiscalPrincipal() != null) {
-					if (contribuable.getDernierForFiscalPrincipal().getId().longValue() == forFiscal.getId().longValue()) {
-						forFiscalView.setDernierForPrincipal(true);
-					}
-					else {
-						forFiscalView.setDernierForPrincipal(false);
-					}
-				}
-				forFiscalView.setId(forFiscal.getId());
-				forFiscalView.setNumeroCtb(forFiscal.getTiers().getNumero());
-				forFiscalView.setGenreImpot(forFiscal.getGenreImpot());
-				forFiscalView.setAnnule(forFiscal.isAnnule());
-				if (forFiscal instanceof ForFiscalAutreImpot) {
-					forFiscalView.setDateEvenement(forFiscal.getDateDebut());
-				}
-				else {
-					forFiscalView.setDateOuverture(forFiscal.getDateDebut());
-					forFiscalView.setDateFermeture(forFiscal.getDateFin());
-				}
-				TypeAutoriteFiscale typeForFiscal = forFiscal.getTypeAutoriteFiscale();
-				forFiscalView.setTypeAutoriteFiscale(typeForFiscal);
-				switch (typeForFiscal) {
-				case COMMUNE_OU_FRACTION_VD:
-					forFiscalView.setNumeroForFiscalCommune(forFiscal.getNumeroOfsAutoriteFiscale());
-					break;
-				case COMMUNE_HC:
-					forFiscalView.setNumeroForFiscalCommuneHorsCanton(forFiscal.getNumeroOfsAutoriteFiscale());
-					break;
-				case PAYS_HS:
-					forFiscalView.setNumeroForFiscalPays(forFiscal.getNumeroOfsAutoriteFiscale());
-					break;
-				default:
-					break;
-				}
-				if (forFiscal instanceof ForFiscalRevenuFortune) {
-					ForFiscalRevenuFortune forFiscalRevenuFortune = (ForFiscalRevenuFortune) forFiscal;
-					forFiscalView.setMotifOuverture(forFiscalRevenuFortune.getMotifOuverture());
-					forFiscalView.setMotifFermeture(forFiscalRevenuFortune.getMotifFermeture());
-					forFiscalView.setMotifRattachement(forFiscalRevenuFortune.getMotifRattachement());
-					if (forGestion != null) {
-						long idForGestion = forGestion.getSousjacent().getId();
-						long idFor = forFiscalView.getId();
-						forFiscalView.setForGestion(idForGestion == idFor);
-					}
-					else {
-						forFiscalView.setForGestion(Boolean.FALSE);
-					}
-				}
-				if (forFiscal instanceof ForFiscalPrincipal) {
-					ForFiscalPrincipal forFiscalPrincipal = (ForFiscalPrincipal) forFiscal;
-					forFiscalView.setModeImposition(forFiscalPrincipal.getModeImposition());
+
+				final boolean isForGestion = forGestion != null && forGestion.getSousjacent() == forFiscal;
+				final boolean isDernierForPrincipal = (dernierForPrincipal == forFiscal);
+
+				final ForFiscalView forFiscalView = new ForFiscalView(forFiscal, isForGestion, isDernierForPrincipal);
+
+				if (forPrincipalActif == forFiscal) {
+					forPrincipalViewActif = forFiscalView;
 				}
 
-				forFiscalView.setNatureForFiscal(forFiscal.getClass().getSimpleName());
 				forsFiscauxView.add(forFiscalView);
 			}
 			Collections.sort(forsFiscauxView, new ForFiscalViewComparator());
+			tiersView.setForsPrincipalActif(forPrincipalViewActif);
 			tiersView.setForsFiscaux(forsFiscauxView);
 		}
 	}

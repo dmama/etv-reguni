@@ -3,6 +3,10 @@ package ch.vd.uniregctb.tiers.view;
 import java.util.Date;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.tiers.ForFiscal;
+import ch.vd.uniregctb.tiers.ForFiscalAutreImpot;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalRevenuFortune;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
@@ -57,9 +61,59 @@ public class ForFiscalView implements Comparable<ForFiscalView> {
 
 	private boolean dernierForPrincipal;
 
-	private String changementModeImposition;
+	private boolean changementModeImposition;
 
 	private Boolean forGestion;
+
+	public ForFiscalView() {
+
+	}
+
+	public ForFiscalView(ForFiscal forFiscal, boolean isForGestion, boolean dernierForPrincipal) {
+		this.id = forFiscal.getId();
+		this.numeroCtb = forFiscal.getTiers().getNumero();
+		this.genreImpot = forFiscal.getGenreImpot();
+		this.annule = forFiscal.isAnnule();
+		
+		if (forFiscal instanceof ForFiscalAutreImpot) {
+			this.dateEvenement = forFiscal.getDateDebut();
+		}
+		else {
+			this.dateOuverture = forFiscal.getDateDebut();
+			this.dateFermeture = forFiscal.getDateFin();
+		}
+
+		this.typeAutoriteFiscale = forFiscal.getTypeAutoriteFiscale();
+		switch (typeAutoriteFiscale) {
+		case COMMUNE_OU_FRACTION_VD:
+			this.numeroForFiscalCommune = forFiscal.getNumeroOfsAutoriteFiscale();
+			break;
+		case COMMUNE_HC:
+			this.numeroForFiscalCommuneHorsCanton = forFiscal.getNumeroOfsAutoriteFiscale();
+			break;
+		case PAYS_HS:
+			this.numeroForFiscalPays = forFiscal.getNumeroOfsAutoriteFiscale();
+			break;
+		default:
+			break;
+		}
+
+		if (forFiscal instanceof ForFiscalRevenuFortune) {
+			final ForFiscalRevenuFortune forFiscalRevenuFortune = (ForFiscalRevenuFortune) forFiscal;
+			this.motifOuverture = forFiscalRevenuFortune.getMotifOuverture();
+			this.motifFermeture = forFiscalRevenuFortune.getMotifFermeture();
+			this.motifRattachement = forFiscalRevenuFortune.getMotifRattachement();
+			this.forGestion = isForGestion;
+		}
+
+		if (forFiscal instanceof ForFiscalPrincipal) {
+			final ForFiscalPrincipal forFiscalPrincipal = (ForFiscalPrincipal) forFiscal;
+			this.modeImposition = forFiscalPrincipal.getModeImposition();
+			this.dernierForPrincipal = dernierForPrincipal;
+		}
+
+		this.natureForFiscal = forFiscal.getClass().getSimpleName();
+	}
 
 	/**
 	 * @return the genreImpot
@@ -365,11 +419,11 @@ public class ForFiscalView implements Comparable<ForFiscalView> {
 		this.dernierForPrincipal = dernierForPrincipal;
 	}
 
-	public String getChangementModeImposition() {
+	public boolean isChangementModeImposition() {
 		return changementModeImposition;
 	}
 
-	public void setChangementModeImposition(String changementModeImposition) {
+	public void setChangementModeImposition(boolean changementModeImposition) {
 		this.changementModeImposition = changementModeImposition;
 	}
 

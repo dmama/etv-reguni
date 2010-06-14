@@ -58,6 +58,7 @@ public class TiersView {
 
 	private List<DeclarationImpotDetailView> dis;
 
+	private ForFiscalView forsPrincipalActif;
 	private List<ForFiscalView> forsFiscaux;
 
 	private List<SituationFamilleView> situationsFamille;
@@ -279,6 +280,14 @@ public class TiersView {
 
 	public void setEntreprise(EntrepriseView entreprise) {
 		this.entreprise = entreprise;
+	}
+
+	public ForFiscalView getForsPrincipalActif() {
+		return forsPrincipalActif;
+	}
+
+	public void setForsPrincipalActif(ForFiscalView forsPrincipalActif) {
+		this.forsPrincipalActif = forsPrincipalActif;
 	}
 
 	public List<ForFiscalView> getForsFiscaux() {

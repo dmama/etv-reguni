@@ -47,7 +47,7 @@ public class ForFiscalValidator implements Validator {
 		ForFiscalView forFiscalView = (ForFiscalView) obj;
 		TypeForFiscal typeFor = TypeForFiscal.getType(forFiscalView.getGenreImpot(), forFiscalView.getMotifRattachement());
 		Tiers tiers = this.tiersService.getTiers(forFiscalView.getNumeroCtb());
-		if (forFiscalView.getChangementModeImposition().equals("true")) {
+		if (forFiscalView.isChangementModeImposition()) {
 			if (forFiscalView.getDateChangement() == null) {
 				errors.rejectValue("dateChangement", "error.date.changement.vide");
 				return;
@@ -306,7 +306,7 @@ public class ForFiscalValidator implements Validator {
 
 				final PersonnePhysique pp = (PersonnePhysique) tiers;
 				final RegDate date;
-				if (forFiscalView.getChangementModeImposition().equals("true")) {
+				if (forFiscalView.isChangementModeImposition()) {
 					date = RegDate.get(forFiscalView.getDateChangement());
 				} else {
 					date = RegDate.get(forFiscalView.getDateOuverture());

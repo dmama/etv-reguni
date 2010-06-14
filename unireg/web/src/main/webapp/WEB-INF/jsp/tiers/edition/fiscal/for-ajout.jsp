@@ -1,10 +1,13 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
 <c:set var="index" value="${param.index}" />
-<tiles:insert template="/WEB-INF/jsp/templates/templateIFrame.jsp">
-	<tiles:put name="head"></tiles:put>
 
-	<tiles:put name="title"></tiles:put>
+<tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
+  	<tiles:put name="title">
+  		<fmt:message key="title.creation.fors">
+  			<fmt:param><unireg:numCTB numero="${command.numeroCtb}"/></fmt:param>
+  		</fmt:message>
+  	</tiles:put>
 	<tiles:put name="body">
 		<form:form name="formFor" id="formFor">
 		<fieldset><legend><span><fmt:message key="label.for.fiscal" /></span></legend>		
@@ -94,7 +97,7 @@
 		<tr>
 			<td width="25%">&nbsp;</td>
 			<td width="25%"><input type="submit" id="ajouter" value="<fmt:message key="label.bouton.ajouter" />"></td>
-			<td width="25%"><input type="button" id="annuler" value="<fmt:message key="label.bouton.annuler" />" onclick="self.parent.tb_remove()"></td>
+			<td width="25%"><input type="button" value="<fmt:message key="label.bouton.retour" />" onClick="document.location.href='../fiscal/edit.do?id=' + ${command.numeroCtb}" /></td>
 			<td width="25%">&nbsp;</td>
 		</tr>
 	</table>

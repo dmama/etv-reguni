@@ -3,6 +3,7 @@ package ch.vd.uniregctb.tiers.manager;
 import java.util.HashMap;
 import java.util.Map;
 
+import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.adresse.AdresseException;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -144,7 +145,7 @@ public class ForFiscalManagerImpl extends TiersManager implements ForFiscalManag
 		Tiers tiers = forFiscal.getTiers();
 
 		ForFiscalView forFiscalView = new ForFiscalView();
-		forFiscalView.setChangementModeImposition("false");
+		forFiscalView.setChangementModeImposition(false);
 		forFiscalView.setId(forFiscal.getId());
 		forFiscalView.setNumeroCtb(tiers.getNumero());
 		forFiscalView.setGenreImpot(forFiscal.getGenreImpot());
@@ -220,7 +221,7 @@ public class ForFiscalManagerImpl extends TiersManager implements ForFiscalManag
 	@Transactional(readOnly = true)
 	public ForFiscalView create(Long numeroCtb, boolean dpi) {
 		ForFiscalView forFiscalView = new ForFiscalView();
-		forFiscalView.setChangementModeImposition("false");
+		forFiscalView.setChangementModeImposition(false);
 		forFiscalView.setNumeroCtb(numeroCtb);
 		Tiers tiers = tiersDAO.get(numeroCtb);
 		if(Tiers.NATURE_MENAGECOMMUN.equals(tiers.getNatureTiers())){
@@ -444,8 +445,9 @@ public class ForFiscalManagerImpl extends TiersManager implements ForFiscalManag
 		}
 		else {
 
-			if (forFiscalView.getRegDateChangement() != null) {
-				ForFiscalPrincipal forFiscalPrincipal = new ForFiscalPrincipal();
+			if (forFiscalView.isChangementModeImposition()) {
+				Assert.notNull(forFiscalView.getRegDateChangement());
+				final ForFiscalPrincipal forFiscalPrincipal = new ForFiscalPrincipal();
 				Contribuable contribuable = (Contribuable) tiersDAO.get(forFiscalView.getNumeroCtb());
 				enrichiFor(forFiscalPrincipal, forFiscalView);
 				enrichiForRevenuFortune(forFiscalPrincipal, forFiscalView);

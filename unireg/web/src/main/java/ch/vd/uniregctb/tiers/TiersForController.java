@@ -94,7 +94,7 @@ public class TiersForController extends AbstractTiersController {
 		checkAccesDossierEnEcriture(forFiscalView.getNumeroCtb());
 
 		forFiscalManager.save(forFiscalView);
-		return mav;
+		return new ModelAndView("redirect:../fiscal/edit.do?id=" + forFiscalView.getNumeroCtb());
 	}
 
 	public ForFiscalManager getForFiscalManager() {

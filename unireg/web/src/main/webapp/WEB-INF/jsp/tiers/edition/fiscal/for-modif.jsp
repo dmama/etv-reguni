@@ -1,13 +1,16 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ include file="/WEB-INF/jsp/include/common.jsp" %>
-<c:set var="index" value="${param.index}" />
-<tiles:insert template="/WEB-INF/jsp/templates/templateIFrame.jsp">
-	<tiles:put name="head"></tiles:put>
+<%@ include file="/WEB-INF/jsp/include/common.jsp"%>
 
-	<tiles:put name="title"></tiles:put>
+<tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
+  	<tiles:put name="title">
+  		<fmt:message key="title.edition.fors">
+  			<fmt:param><unireg:numCTB numero="${command.numeroCtb}"/></fmt:param>
+  		</fmt:message>
+  	</tiles:put>
+
 	<tiles:put name="body">
 		<form:form name="formFor" id="formFor">
-		<fieldset><legend><span><fmt:message key="label.for.fiscal" /></span></legend>		
+		<fieldset><legend><span><fmt:message key="label.for.fiscal" /></span></legend>
 		<!-- Debut For -->
 		<table border="0">
 		
@@ -80,77 +83,11 @@
 				</tr>
 			</c:if>
 
-			<c:if test="${command.natureForFiscal == 'ForFiscalPrincipal'}">
-				<form:hidden path="changementModeImposition" />
-				<tr><td colspan="4"><hr/></td></tr>
-
-				<tr class="<unireg:nextRowClass/>" >
-
-					<%-- Mode d'imposition --%>
-					<td><fmt:message key="label.mode.imposition"/>&nbsp;:</td>
-					<td>
-						<form:select path="modeImposition" items="${modesImposition}" onchange="selectModeImposition(this.options[this.selectedIndex].value, '${command.modeImposition}');" />
-						<form:errors path="modeImposition" cssClass="error" />
-					</td>
-
-					<%-- Date de changement --%>
-					<td>
-						<div id="date_changement_label"  <c:if test="${!command.changementModeImposition}">style="display:none;"</c:if>>
-							<fmt:message key="label.date.changement"/>&nbsp;:
-						</div>
-					</td>
-					<td>
-						<div id="date_changement_input"  <c:if test="${!command.changementModeImposition}">style="display:none;"</c:if>>
-							<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
-								<jsp:param name="path" value="dateChangement" />
-								<jsp:param name="id" value="dateChangement" />
-							</jsp:include>
-						</div>
-					</td>
-				</tr>
-
-				<tr class="<unireg:nextRowClass/>" id="motif_changement" <c:if test="${!command.changementModeImposition}">style="display:none;"</c:if> >
-
-					<%-- Motif de changement --%>
-					<td><fmt:message key="label.motif.mode.imposition"/>&nbsp;:</td>
-					<td>
-						<form:select path="motifImposition" >
-							<form:option value="PERMIS_C_SUISSE" ><fmt:message key="option.motif.ouverture.PERMIS_C_SUISSE" /></form:option>
-							<form:option value="CHGT_MODE_IMPOSITION" ><fmt:message key="option.motif.ouverture.CHGT_MODE_IMPOSITION" /></form:option>
-						</form:select>
-					</td>
-				</tr>
-			</c:if>
 		</table>
 
 		<script type="text/javascript">
 			// on met-à-jour les motifs de fermeture au chargement de la page (genre impôt et rattachement sont fixés)
 			updateMotifsFermeture(E$('motifFermeture'), 'motifFermeture', '${command.numeroCtb}', '${command.genreImpot}', '${command.motifRattachement}', '${command.motifFermeture}');
-
-			/*
-			 * Selection du mode d'imposition
-			 */
-			function selectModeImposition(name, oldName) {
-				var divDateChangementLabel = E$('date_changement_label');
-				var divDateChangementInput = E$('date_changement_input');
-				var divMotifForPeriodique = E$('motif_for_periodique');
-				var divMotifChangement = E$('motif_changement');
-				var form = document.getElementById('formFor');
-
-				if (name != oldName){
-					divDateChangementLabel.style.display = '';
-					divDateChangementInput.style.display = '';
-					divMotifChangement.style.display = '';
-					divMotifForPeriodique.style.display = 'none';
-					form.changementModeImposition.value = "true";
-				} else {
-					divDateChangementLabel.style.display = 'none';
-					divDateChangementInput.style.display = 'none';
-					divMotifChangement.style.display = 'none';
-					divMotifForPeriodique.style.display = '';
-					form.changementModeImposition.value = "false";
-				}
-			}
 		</script>
 		
 		</fieldset>
@@ -160,17 +97,11 @@
 			<tr>
 				<td width="25%">&nbsp;</td>
 				<td width="25%"><input type="submit" id="maj" value="<fmt:message key="label.bouton.mettre.a.jour" />"></td>
-				<td width="25%"><input type="button" id="annuler" value="<fmt:message key="label.bouton.annuler" />" onclick="self.parent.tb_remove()"></td>
+				<td width="25%"><input type="button" value="<fmt:message key="label.bouton.retour" />" onClick="document.location.href='../fiscal/edit.do?id=' + ${command.numeroCtb}" /></td>
 				<td width="25%">&nbsp;</td>
 			</tr>
 		</table>
 
-		<c:if test="${command.natureForFiscal == 'ForFiscalPrincipal'}">
-			<script type="text/javascript">
-				selectForFiscal('${command.typeAutoriteFiscale}');
-			</script>
-		</c:if>
-	
 	</form:form>
 	</tiles:put>
 </tiles:insert>

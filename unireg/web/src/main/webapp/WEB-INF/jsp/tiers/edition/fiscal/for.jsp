@@ -7,9 +7,13 @@
 	<table border="0">
 		<tr>
 			<td>
-				<a href="for.do?numero=<c:out value="${command.tiers.numero}"></c:out>&height=250&width=900&index=&TB_iframe=true&modal=true" 
-				class="add thickbox" title="Ajouter for">&nbsp;<fmt:message key="label.bouton.ajouter" /></a>
+				<a href="for.do?numero=<c:out value="${command.tiers.numero}"></c:out>&index=" class="add" title="Ajouter for">&nbsp;<fmt:message key="label.bouton.ajouter" /></a>
 			</td>
+			<c:if test="${command.forsPrincipalActif != null}">
+				<td>
+					<a href="for.do?idFor=<c:out value="${command.forsPrincipalActif.id}"/>&index=modeimposition" class="add" title="Changer le mode d'imposition">&nbsp;<fmt:message key="label.changer.mode.imposition" /></a>
+				</td>
+			</c:if>
 		</tr>
 	</table>
 	
