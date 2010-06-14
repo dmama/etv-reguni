@@ -129,9 +129,9 @@ public class TiersImportControllerTest extends WebTest {
 			public Object doInTransaction(TransactionStatus status) {
 				
 				int nbTiers = tiersDAO.getCount(Tiers.class);
-				assertEquals(21, nbTiers);
+				assertEquals(22, nbTiers);
 				int nbInIndex = globalTiersSearcher.getExactDocCount();
-				assertEquals(18, nbInIndex); // => les individus 325631 et 325740 n'existent pas
+				assertEquals(19, nbInIndex); // => les individus 325631 et 325740 n'existent pas
 
 				return null;
 			}
