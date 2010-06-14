@@ -45,7 +45,7 @@ public class DeclarationImpotEditController extends AbstractDeclarationImpotCont
 	public final static String ACTION_SELECT_DI = "selectdi";
 
 
-	public final static String BUTTON_SAVE_DI = "save";
+	public final static String BUTTON_SAVE_DI = "__confirmed_save";
 	public final static String BUTTON_SOMMER_DI = "sommer";
 	public final static String BUTTON_COPIE_SOMMATION_DI = "copierSommation";
 	public final static String BUTTON_AJOUTER_DI = "ajouterDI";

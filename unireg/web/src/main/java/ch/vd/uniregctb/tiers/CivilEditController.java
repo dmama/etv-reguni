@@ -14,7 +14,7 @@ public class CivilEditController extends AbstractTiersController {
 
 	//protected final Logger LOGGER = Logger.getLogger(CivilEditController.class);
 
-	public final static String BUTTON_SAVE = "save";
+	public final static String BUTTON_SAVE = "__confirmed_save";
 
 	private TiersEditManager tiersEditManager;
 

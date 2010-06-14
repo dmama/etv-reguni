@@ -256,7 +256,7 @@ public abstract class AbstractTiersController extends AbstractSimpleFormControll
 
 	public final static String BUTTON_BACK_TO_VISU = "retourVisualisation";
 
-	public final static String BUTTON_SAVE = "save";
+	public final static String BUTTON_SAVE = "__confirmed_save";
 
 	private GlobalTiersIndexer indexer;
 	private TiersService service;

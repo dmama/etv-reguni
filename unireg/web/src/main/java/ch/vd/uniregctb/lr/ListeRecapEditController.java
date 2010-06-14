@@ -30,7 +30,7 @@ public class ListeRecapEditController extends AbstractListeRecapController {
 	public final static String DELAI_ID_PARAMETER_NAME = "idDelai";
 	public final static String DEBITEUR_ID_PARAMETER_NAME = "numero";
 
-	public final static String BUTTON_SAUVER = "save";
+	public final static String BUTTON_SAUVER = "__confirmed_save";
 	public final static String BUTTON_IMPRIMER_LR = "imprimerLR";
 	public final static String BUTTON_SOMMER_LR = "sommerLR";
 	public final static String BUTTON_DUPLICATA_LR = "duplicataLR";

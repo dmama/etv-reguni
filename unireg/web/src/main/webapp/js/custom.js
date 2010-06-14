@@ -733,9 +733,29 @@ var Modifier = {
  
  
 	submitSaveConfirmation : function(submit) {
-	  	if ( this.isModified)
-	  		return confirm(this.messageSaveSubmitConfirmation);
-	  	return true; 	
+		var shouldSave = true;
+	  	if (this.isModified) {
+	  		shouldSave = confirm(this.messageSaveSubmitConfirmation);
+	  	}
+	  	if (shouldSave) {
+			var form = F$(this.formName);
+			var saveSubmit = form.elements[this.submitSaveName];
+			if (saveSubmit) {
+				saveSubmit.disabled = true;
+			}
+
+			// d'où le "__confirmed_save" que l'on voit ensuite dans les contrôleurs...
+			var elementName = "__confirmed_" + this.submitSaveName;
+			var confirmedSave = form.elements[elementName];
+			if (confirmedSave == null) {
+				confirmedSave = document.createElement("INPUT");
+				confirmedSave.type = "hidden";
+				confirmedSave.name = elementName;
+				form.appendChild(confirmedSave);
+			}
+			confirmedSave.value = "yes";
+	  	}
+	  	return shouldSave;
 	},
  
 	overConfirmation : function(link) {

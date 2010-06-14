@@ -23,7 +23,7 @@ import ch.vd.uniregctb.tiers.view.TiersEditView;
  */
 public class TiersEditController extends AbstractTiersController {
 
-	public final static String BUTTON_SAVE = "save";
+	public final static String BUTTON_SAVE = "__confirmed_save";
 	public final static String BUTTON_ANNULER_TIERS = "annulerTiers";
 
 	public final static String NUMERO_CTB_ASSOCIE_PARAMETER_NAME = "numeroCtbAss";
