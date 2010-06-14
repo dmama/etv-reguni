@@ -2,14 +2,12 @@
 <%@ include file="/WEB-INF/jsp/include/common.jsp"%>
 <%@page import="ch.vd.uniregctb.common.LengthConstants"%>
 <fieldset class="information">
-<legend><span><fmt:message
-	key="label.nonHabitant" /></span></legend> <c:set var="ligneTableau" value="${1}"
-	scope="request" />
+<legend><span><fmt:message key="label.nonHabitant" /></span></legend>
+<unireg:nextRowClass reset="1"/>
 <table border="0">
 
-	<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
 	<c:set var="lengthnom" value="<%=LengthConstants.TIERS_NOM%>" scope="request" />
-	<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>">
+	<tr class="<unireg:nextRowClass/>">
 		<td width="50%"><fmt:message key="label.nom" />&nbsp;:</td>
 		<td width="50%">
 			<form:input path="tiers.nom" tabindex="1" id="tiers_nom" cssErrorClass="input-with-errors" 
@@ -22,8 +20,7 @@
 		</td>
 	</tr>
 
-	<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-	<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>">
+	<tr class="<unireg:nextRowClass/>">
 		<td width="50%"><fmt:message key="label.prenom" />&nbsp;:</td>
 		<td width="50%">
 			<form:input path="tiers.prenom" tabindex="2" id="tiers_prenom" cssErrorClass="input-with-errors" 
@@ -35,8 +32,7 @@
 		</td>
 	</tr>
 
-	<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-	<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>">
+	<tr class="<unireg:nextRowClass/>">
 		<td width="50%"><fmt:message key="label.nouveau.numero.avs" />&nbsp;:</td>
 		<td width="50%">
 			<form:input path="tiers.numeroAssureSocial" id="tiers_numeroAssureSocial" tabindex="3"  
@@ -48,8 +44,7 @@
 		</td>
 	</tr>
 
-	<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-	<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>">
+	<tr class="<unireg:nextRowClass/>">
 		<td width="50%"><fmt:message key="label.ancien.numero.avs" />&nbsp;:</td>
 		<td width="50%">
 			<form:input path="identificationPersonne.ancienNumAVS" id="tiers_ancienNumAVS" tabindex="4"  
@@ -61,8 +56,7 @@
 		</td>
 	</tr>
 
-	<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-	<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>">
+	<tr class="<unireg:nextRowClass/>">
 		<td width="50%"><fmt:message key="label.sexe" />&nbsp;:</td>
 		<td width="50%">
 			<form:select path="tiers.sexe" tabindex="5" >
@@ -72,9 +66,8 @@
 		</td>
 	</tr>
 	
-	<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
 	<tr
-		class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>">
+		class="<unireg:nextRowClass/>">
 		<td width="50%"><fmt:message key="label.date.naissance" />&nbsp;:</td>
 		<td width="50%">
 			<script type="text/javascript">
@@ -92,9 +85,8 @@
 		</td>
 	</tr>
 	
-	<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
 	<tr
-		class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>">
+		class="<unireg:nextRowClass/>">
 		<td width="50%"><fmt:message key="label.date.deces" />&nbsp;:</td>
 		<td width="50%">
 			<script type="text/javascript">
@@ -112,9 +104,8 @@
 		</td>
 	</tr>
 
-	<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
 	<tr
-		class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>">
+		class="<unireg:nextRowClass/>">
 		<td width="50%"><fmt:message key="label.numero.registre.etranger" />&nbsp;:</td>
 		<td width="50%">
 			<form:input path="identificationPersonne.numRegistreEtranger" tabindex="11" id="tiers_numRegistreEtranger" 
@@ -124,9 +115,8 @@
 		</td>
 	</tr>
 	
-	<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
 		<tr
-		class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>">
+		class="<unireg:nextRowClass/>">
 		<td width="50%"><fmt:message key="label.categorie.etranger" />&nbsp;:</td>
 		<td width="50%">
 			<form:select path="tiers.categorieEtranger" tabindex="12" >
@@ -136,9 +126,8 @@
 		</td>
 	</tr>
 	
-	<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
 	<tr
-		class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>">
+		class="<unireg:nextRowClass/>">
 		<td width="50%"><fmt:message key="label.date.debut.validite.autorisation" />&nbsp;:</td>
 		<td width="50%">
 			<script type="text/javascript">
@@ -156,9 +145,8 @@
 		</td>
 	</tr>
 	
-	<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
 	<tr
-		class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>">
+		class="<unireg:nextRowClass/>">
 		<td width="50%"><fmt:message key="label.nationalite" />&nbsp;:</td>
 		<td width="50%"><form:hidden
 			path="tiers.numeroOfsNationalite" id="tiers_numeroOfsNationalite" />
@@ -179,9 +167,8 @@
 			<form:errors path="tiers.numeroOfsNationalite" cssClass="error" /></td>
 	</tr>
 	
-	<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
 	<tr
-		class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>">
+		class="<unireg:nextRowClass/>">
 		<td width="50%"><fmt:message key="label.commune.origine" />&nbsp;:</td>
 		<td width="50%"><form:hidden
 			path="tiers.numeroOfsCommuneOrigine" id="tiers_numeroOfsCommuneOrigine" />

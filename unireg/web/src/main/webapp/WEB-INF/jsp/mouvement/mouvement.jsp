@@ -5,8 +5,7 @@
 	<legend><span><fmt:message key="caracteristiques.mouvement.dossier" /></span></legend>
 
 	<table>
-		<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-		<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+		<tr class="<unireg:nextRowClass/>" >
 			<td width="25%"><fmt:message key="label.type.mouvement" />&nbsp;:</td>
 			<td width="25%">
 				<form:select path="typeMouvement" items="${typesMouvement}" 
@@ -29,8 +28,7 @@
 	
 	<div id="envoi">
 	<table>
-		<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-		<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+		<tr class="<unireg:nextRowClass/>" >
 			<td width="25%"><fmt:message key="label.destination" />&nbsp;:</td>
 			<td width="25%">
 				<form:radiobutton path="destinationEnvoi" value="utilisateurEnvoi" onclick="selectEnvoi('utilisateurEnvoi');" /><label for="utilisateur"><fmt:message key="label.utilisateur" /></label>
@@ -56,8 +54,7 @@
 					</jsp:include>
 				</div>
 			</td>
-		<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-		<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >		
+		<tr class="<unireg:nextRowClass/>" >
 			<td width="25%">&nbsp;</td>
 			<td width="25%">
 				<form:radiobutton path="destinationEnvoi" value="collectivite" onclick="selectEnvoi('collectivite');" /><label for="collectivite"><fmt:message key="label.collectivite.administrative" /></label>
@@ -87,8 +84,7 @@
 		
 	<div id="reception" style="display:none;">
 	<table>
-		<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-		<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+		<tr class="<unireg:nextRowClass/>" >
 			<td width="25%"><fmt:message key="label.destination" />&nbsp;:</td>
 			<td width="25%">
 				<form:radiobutton path="localisation"  value="PERSONNE" onclick="selectReception('PERSONNE');" /><label for="PERSONNE"><fmt:message key="label.utilisateur" /></label>
@@ -114,24 +110,21 @@
 					</jsp:include>
 				</div>
 			</td>
-		<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-		<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >		
+		<tr class="<unireg:nextRowClass/>" >
 			<td width="25%">&nbsp;</td>
 			<td width="25%">
 				<form:radiobutton path="localisation" value="CLASSEMENT_GENERAL" onclick="selectReception('CLASSEMENT_GENERAL');" /><label for="CLASSEMENT_GENERAL"><fmt:message key="option.localisation.CLASSEMENT_GENERAL" /></label>
 			</td>
 			<td width="50%" colspan="2">&nbsp;</td>
 		</tr>
-		<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-		<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >		
+		<tr class="<unireg:nextRowClass/>" >
 			<td width="25%">&nbsp;</td>
 			<td width="25%">
 				<form:radiobutton path="localisation" value="CLASSEMENT_INDEPENDANTS" onclick="selectReception('CLASSEMENT_INDEPENDANTS');" /><label for="CLASSEMENT_INDEPENDANTS"><fmt:message key="option.localisation.CLASSEMENT_INDEPENDANTS" /></label>
 			</td>
 			<td width="50%" colspan="2">&nbsp;</td>
 		</tr>
-		<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-		<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >		
+		<tr class="<unireg:nextRowClass/>" >
 			<td width="25%">&nbsp;</td>
 			<td width="25%">
 				<form:radiobutton path="localisation" value="ARCHIVES" onclick="selectReception('ARCHIVES');" /><label for="ARCHIVES"><fmt:message key="option.localisation.ARCHIVES" /></label>

@@ -14,8 +14,7 @@
 			<jsp:param name="path" value="nonHabitant" />
   		</jsp:include>
 
-		<c:set var="ligneTableau" value="${1}" scope="request" />
-	    <c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
+		<unireg:nextRowClass reset="1"/>
 	    <form:form method="post" id="formRechercheTiers">
 			<fieldset>
 				<legend><span><fmt:message key="label.criteres.recherche"/></span></legend>

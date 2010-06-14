@@ -11,8 +11,7 @@
 
 		<!-- Debut For -->
 		<table border="0">
-			<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-			<tr id="date_for_periodique"  class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+			<tr id="date_for_periodique"  class="<unireg:nextRowClass/>" >
 				<td><fmt:message key="label.date.ouverture" />&nbsp;:</td>
 				<td>
 					<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
@@ -28,8 +27,7 @@
 					</jsp:include>
 				</td>
 			</tr>
-			<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-			<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+			<tr class="<unireg:nextRowClass/>" >
 				
 				<td><fmt:message key="label.type.for.fiscal"/>&nbsp;:</td>
 				<td id="select_type_for" >

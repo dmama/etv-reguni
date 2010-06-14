@@ -19,7 +19,7 @@
 			
 			<!-- Debut affichage du tiers -->
 			<c:if test="${command.tiers != null}">
-				<c:set var="ligneTableau" value="${1}" scope="request" />
+				<unireg:nextRowClass reset="1"/>
 				<!-- Debut Caracteristiques generales -->
 				<c:if test="${command.tiers.numero != null}">
 					<jsp:include page="../../../general/tiers.jsp">

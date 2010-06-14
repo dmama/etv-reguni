@@ -2,8 +2,7 @@
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
 <c:set var="typeRecherche" value="${param.typeRecherche}" />
 <table>
-	<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-	<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+	<tr class="<unireg:nextRowClass/>" >
 		<td><fmt:message key="label.numero.tiers" />&nbsp;:</td>
 		<td colspan="2">
 			<form:input  path="numeroFormatte" id="numeroFormatte" cssClass="number"/>
@@ -11,8 +10,7 @@
 		</td>
 		<td>&nbsp;</td>
 	</tr>
-	<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-	<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+	<tr class="<unireg:nextRowClass/>" >
 		<td>
 			<c:if test="${typeRecherche == 'principale' || typeRecherche == 'rt-debiteur' || typeRecherche == 'activation'}">
 				<fmt:message key="label.nom.raison" />&nbsp;:
@@ -34,8 +32,7 @@
 			<form:errors path="nomRaison" cssClass="error"/>
 		</td>
 	</tr>
-	<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-	<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+	<tr class="<unireg:nextRowClass/>" >
 		<td><fmt:message key="label.localite.postale.suisse" /> / <fmt:message key="label.pays.etranger" />&nbsp;:</td>
 		<td>
 			<form:input path="localiteOuPays" id="localiteOuPays" />
@@ -51,8 +48,7 @@
 	</tr>
 	<c:if test="${	(typeRecherche == 'principale') || (typeRecherche == 'rt-sourcier') || (typeRecherche == 'rt-debiteur') 
 				|| 	(typeRecherche == 'rapport') || (typeRecherche == 'activation') || (typeRecherche == 'identification')}">
-		<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-		<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+		<tr class="<unireg:nextRowClass/>" >
 			<td><fmt:message key="label.for"/></td>
 			<td>
 				<script type="text/javascript">
@@ -79,8 +75,7 @@
 		</tr>
 	</c:if>
 	<c:if test="${typeRecherche != 'couple'}">
-	<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-	<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+	<tr class="<unireg:nextRowClass/>" >
 		<td width="25%"><fmt:message key="label.date.naissance" />&nbsp;:</td>
 		<td width="25%">
 			<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
@@ -94,8 +89,7 @@
 	</tr>
 	</c:if>
 	<c:if test="${typeRecherche == 'principale' }">
-		<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-		<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+		<tr class="<unireg:nextRowClass/>" >
 			<td width="25%"><fmt:message key="label.type.tiers" />&nbsp;:</td>
 			<td width="25%">
 				<form:select path="typeTiers">
@@ -113,8 +107,7 @@
 				</form:select>
 			</td>
 		</tr>
-		<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-		<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+		<tr class="<unireg:nextRowClass/>" >
 			<td width="25%"><fmt:message key="label.numero.symic" />&nbsp;:</td>
 			<td width="25%">
 				<form:input  path="noSymic" id="noSymic" />
@@ -122,8 +115,7 @@
 			<td width="25%">&nbsp;</td>
 			<td width="25%">&nbsp;</td>
 		</tr>
-		<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-		<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+		<tr class="<unireg:nextRowClass/>" >
 			<authz:authorize ifAnyGranted="ROLE_VISU_ALL">
 			<td width="25%"><fmt:message key="label.origine.i107" />&nbsp;:</td>
 			<td width="25%"><form:checkbox path="inclureI107" /></td>
@@ -139,8 +131,7 @@
 </table>
 <!-- Debut Boutons -->
 <table border="0">
-	<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-	<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+	<tr class="<unireg:nextRowClass/>" >
 		<td width="25%">&nbsp;</td>
 		<td width="25%">
 			<div class="navigation-action"><input type="submit" value="<fmt:message key="label.bouton.rechercher"/>" name="rechercher"/></div>

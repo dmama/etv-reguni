@@ -18,8 +18,8 @@
 
 		<!-- Debut For -->
 		<table border="0">
-			<c:set var="ligneTableau" value="${0}" scope="request" />
-			<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+			<unireg:nextRowClass reset="0"/>
+			<tr class="<unireg:nextRowClass/>" >
 				<td><fmt:message key="label.genre.impot"/>&nbsp;:</td>
 				<td>
 					<form:select path="genreImpot" items="${genresImpot}" id="genre_impot"
@@ -32,8 +32,7 @@
 							onchange="updateMotifsFors(this); selectRattachement(this.options[this.selectedIndex].value);"/>
 				</td>
 			</tr>
-			<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-			<tr id="date_for_periodique"  class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+			<tr id="date_for_periodique"  class="<unireg:nextRowClass/>" >
 				<td><fmt:message key="label.date.ouverture" />&nbsp;:</td>
 				<td>
 					<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
@@ -49,8 +48,7 @@
 					</jsp:include>
 				</td>
 			</tr>
-			<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-			<tr id="motif_for_periodique"  class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+			<tr id="motif_for_periodique"  class="<unireg:nextRowClass/>" >
 				<td><fmt:message key="label.motif.ouverture" />&nbsp;:</td>
 				<td>
 					<form:select path="motifOuverture" cssStyle="width:30ex" />
@@ -62,7 +60,7 @@
 					<form:errors path="motifFermeture" cssClass="error" />
 				</td>
 			</tr>
-			<tr id="for_unique" style="display:none;" class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+			<tr id="for_unique" style="display:none;" class="<unireg:nextRowClass/>" >
 				<td><fmt:message key="label.date.evenement" />&nbsp;:</td>
 				<td>
 					<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
@@ -75,8 +73,7 @@
 			</tr>
 			<jsp:include page="for-lieu.jsp"/>
 			
-			<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-			<tr id="mode_imposition"  class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+			<tr id="mode_imposition"  class="<unireg:nextRowClass/>" >
 				<td><fmt:message key="label.mode.imposition"/>&nbsp;:</td>
 				<td>
 					<form:select path="modeImposition" items="${modesImposition}" />

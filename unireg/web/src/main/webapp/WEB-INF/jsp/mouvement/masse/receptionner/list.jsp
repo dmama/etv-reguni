@@ -8,8 +8,7 @@
 		<a href="#" onClick="javascript:ouvrirAide('<c:url value='/docs/reception-dossierenvoye.pdf'/>');" title="AccessKey: a" accesskey="e">Aide</a>
 	</tiles:put>
   	<tiles:put name="body">
-		<c:set var="ligneTableau" value="${1}" scope="request" />
-	    <c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
+		<unireg:nextRowClass reset="1"/>
 
         <display:table name="command.bordereaux" id="bordereau" pagesize="25" requestURI="/mouvement/receptionner-bordereaux.do" class="display_table" sort="list">
 

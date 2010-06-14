@@ -14,10 +14,9 @@
 		</table>
 	</c:if>
 	<table>
-		<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
 		<c:choose>
 			<c:when test="${(command.typeUnion != 'FUSION_MENAGES' && command.typeUnion != 'RECONSTITUTION_MENAGE') || command.dateDebut == null}">
-				<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>">
+				<tr class="<unireg:nextRowClass/>">
 					<td width="25%"><fmt:message key="label.date.debut" />&nbsp;:</td>
 					<td width="75%">
 						<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
@@ -29,8 +28,7 @@
 				</tr>
 			</c:when>
 			<c:otherwise>
-				<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-				<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+				<tr class="<unireg:nextRowClass/>" >
 					<td width="25%"><fmt:message key="label.date.debut" />&nbsp;:</td>
 					<td width="75%">
 						<fmt:formatDate value="${command.dateDebut}" pattern="dd.MM.yyyy"/>
@@ -39,8 +37,7 @@
 				</tr>
 			</c:otherwise>
 		</c:choose>
-		<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-		<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>">
+		<tr class="<unireg:nextRowClass/>">
 			<td width="25%"><fmt:message key="label.commentaire" />&nbsp;:</td>
 			<td width="75%">
 				<form:textarea path="remarque" id="remarque" cols="80" rows="5"/>

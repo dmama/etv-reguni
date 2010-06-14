@@ -14,7 +14,7 @@
 		<input type="hidden"  name="__EVENT_ARGUMENT__" value="">
 	
 		<c:if test="${command.errorMessage == null}">
-			<c:set var="ligneTableau" value="${1}" scope="request" />
+			<unireg:nextRowClass reset="1"/>
 			<!-- Debut Caracteristiques generales -->
 			<jsp:include page="../../general/contribuable.jsp">
 				<jsp:param name="page" value="di" />

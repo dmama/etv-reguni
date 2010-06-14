@@ -11,14 +11,13 @@
 		<!-- Debut For -->
 		<table border="0">
 		
-			<!-- Motif de rattachement pour les fors ForFiscalRevenuFortune 
-					ForFiscalPrincipal - ForFiscalSecondaire - ForFiscalAutreElementImposable -->
-			<c:set var="ligneTableau" value="${0}" scope="request" />
-			<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+			<tr class="<unireg:nextRowClass/>" >
+
+				<%-- Genre d'impôt --%>
 				<td><fmt:message key="label.genre.impot"/>&nbsp;:</td>
-				<td>
-					<fmt:message key="option.genre.impot.${command.genreImpot}" />
-				</td>
+				<td><fmt:message key="option.genre.impot.${command.genreImpot}" /></td>
+
+				<%-- Motif de rattachement --%>
 				<c:if test="${command.natureForFiscal != 'ForFiscalAutreImpot'}">
 					<td id="div_rattachement_label"><fmt:message key="label.rattachement"/>&nbsp;:</td>
 					<td id="div_rattachement"><fmt:message key="option.rattachement.${command.motifRattachement}" /></td>
@@ -31,15 +30,13 @@
 			<!-- Date et motif d'ouverture et de fermeture  pour les fors ForFiscalRevenuFortune 
 					ForFiscalPrincipal - ForFiscalSecondaire - ForFiscalAutreElementImposable -->
 			<c:if test="${command.natureForFiscal != 'ForFiscalAutreImpot'}">
-			<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-			<tr id="date_for_periodique" class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+			<tr id="date_for_periodique" class="<unireg:nextRowClass/>" >
 				<td><fmt:message key="label.date.ouverture" />&nbsp;:</td>
 				<td><fmt:formatDate value="${command.dateOuverture}" pattern="dd.MM.yyyy"/></td>
 				<td><fmt:message key="label.motif.ouverture" />&nbsp;:</td>
 				<td><fmt:message key="option.motif.ouverture.${command.motifOuverture}" /></td>
 			</tr>
-			<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-			<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+			<tr class="<unireg:nextRowClass/>" >
 				<td><fmt:message key="label.type.for.fiscal"/>&nbsp;:</td>
 				<td><fmt:message key="option.type.for.fiscal.${command.typeAutoriteFiscale}" /></td>
 				<td>
@@ -63,8 +60,7 @@
 					</c:choose>
 				</td>
 			</tr>	
-			<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-			<tr id="motif_for_periodique" class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+			<tr id="motif_for_periodique" class="<unireg:nextRowClass/>" >
 				<td><fmt:message key="label.date.fermeture" />&nbsp;:</td>
 				<td>
 					<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
@@ -84,8 +80,7 @@
 			<tr>
 				<td colspan="4"><hr /></td>
 			</tr>
-			<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-			<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+			<tr class="<unireg:nextRowClass/>" >
 				<td><fmt:message key="label.mode.imposition"/>&nbsp;:</td>
 				<td>
 					<form:select path="modeImposition" items="${modesImposition}" 
@@ -106,8 +101,7 @@
 					</div>
 				</td>
 			</tr>
-			<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-			<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" id="motif_changement" <c:if test="${!command.changementModeImposition}">style="display:none;"</c:if> >
+			<tr class="<unireg:nextRowClass/>" id="motif_changement" <c:if test="${!command.changementModeImposition}">style="display:none;"</c:if> >
 				<td><fmt:message key="label.motif.mode.imposition"/>&nbsp;:</td>
 				<td>
 					<form:select path="motifImposition" >
@@ -123,6 +117,7 @@
 			// on met-à-jour les motifs de fermeture au chargement de la page (genre impôt et rattachement sont fixés)
 			updateMotifsFermeture(E$('motifFermeture'), 'motifFermeture', '${command.numeroCtb}', '${command.genreImpot}', '${command.motifRattachement}', '${command.motifFermeture}');
 		</script>
+		
 	</fieldset>
 	<form:errors cssClass="error" />
 	<table border="0">

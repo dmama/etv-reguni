@@ -1,8 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
 <table>
-	<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-	<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+	<tr class="<unireg:nextRowClass/>" >
 		<td width="25%"><fmt:message key="label.type.evenement" />&nbsp;:</td>
 		<td width="75%" colspan ="3">
 			<form:select path="typeEvenement">
@@ -11,8 +10,7 @@
 			</form:select>	
 		</td>
 	</tr>
-	<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-	<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+	<tr class="<unireg:nextRowClass/>" >
 		<td width="25%"><fmt:message key="label.etat.evenement" />&nbsp;:</td>
 		<td width="25%">
 			<form:select path="etatEvenement" >
@@ -23,8 +21,7 @@
 		<td width="25%">&nbsp;</td>
 		<td width="25%">&nbsp;</td>
 	</tr>
-	<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-	<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+	<tr class="<unireg:nextRowClass/>" >
 		<td width="25%"><fmt:message key="label.date.evenement.debut" />&nbsp;:</td>
 		<td width="25%">
 			<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
@@ -40,8 +37,7 @@
 			</jsp:include>
 		</td>
 	</tr>
-	<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-	<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+	<tr class="<unireg:nextRowClass/>" >
 		<td width="25%"><fmt:message key="label.date.traitement.debut" />&nbsp;:</td>
 		<td width="25%">
 			<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
@@ -57,8 +53,7 @@
 			</jsp:include>
 		</td>
 	</tr>
-	<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-	<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+	<tr class="<unireg:nextRowClass/>" >
 		<td><fmt:message key="label.numero.individu" />&nbsp;:</td>
 		<td>
 			<form:input  path="numeroIndividuFormatte" id="numeroIndividuFormatte" cssClass="number"/>
@@ -73,8 +68,7 @@
 </table>
 <!-- Debut Boutons -->
 <table border="0">
-	<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-	<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+	<tr class="<unireg:nextRowClass/>" >
 		<td width="25%">&nbsp;</td>
 		<td width="25%">
 			<div class="navigation-action"><input type="submit" value="<fmt:message key="label.bouton.rechercher"/>" name="rechercher" /></div>

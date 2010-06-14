@@ -11,8 +11,7 @@
 		<fmt:message key="caracteristiques.message.identification" />
 	</span></legend>
 	<table cellspacing="0" cellpadding="0" border="0">
-		<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-		<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+		<tr class="<unireg:nextRowClass/>" >
 			<td><fmt:message key="label.type.message" />&nbsp;:</td>
 			<td>
 				<c:if test="${message.typeMessage != null }">
@@ -22,22 +21,19 @@
 			<td><fmt:message key="label.navs13" />&nbsp;:</td>
 			<td>${message.navs13}</td>
 		</tr>
-		<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-		<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+		<tr class="<unireg:nextRowClass/>" >
 			<td><fmt:message key="label.periode.fiscale" />&nbsp;:</td>
 			<td>${message.periodeFiscale}</td>
 			<td><fmt:message key="label.nom" />&nbsp;:</td>
 			<td>${message.nom}</td>
 		</tr>
-		<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-		<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+		<tr class="<unireg:nextRowClass/>" >
 			<td><fmt:message key="label.emetteur" />&nbsp;:</td>
 			<td>${message.emetteurId}</td>
 			<td><fmt:message key="label.prenoms" />&nbsp;:</td>
 			<td>${message.prenoms}</td>
 		</tr>
-		<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-		<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+		<tr class="<unireg:nextRowClass/>" >
 			<td><fmt:message key="label.date.message" />&nbsp;:</td>
 			<td>
 				<c:if test="${message.dateMessage != null }">
@@ -51,8 +47,7 @@
 				</c:if>
 			</td>
 		</tr>
-		<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-		<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+		<tr class="<unireg:nextRowClass/>" >
 			<td><fmt:message key="label.etat.message" />&nbsp;:</td>
 			<td>
 				<c:if test="${message.etatMessage != null }">
@@ -66,15 +61,13 @@
 				</c:if>
 			</td>
 		</tr>
-		<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-		<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+		<tr class="<unireg:nextRowClass/>" >
 			<td></td>
 			<td></td>
 			<td></td>
 			<td></td>
 		</tr>
-		<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-		<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+		<tr class="<unireg:nextRowClass/>" >
 			<td><input type="submit" name="fichier_acicom" value="<fmt:message key="label.bouton.identification.acicom" />" /></td>
 			<td></td>
 			<td><fmt:message key="label.adresse" />&nbsp;:</td>
@@ -85,8 +78,7 @@
 			</td>
 		</tr>
 		<c:if test="${message.npa != null }">
-			<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-			<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+			<tr class="<unireg:nextRowClass/>" >
 				<td></td>
 				<td></td>
 				<td></td>
@@ -94,8 +86,7 @@
 			</tr>
 		</c:if>
 		<c:if test="${message.npaEtranger != null }">
-			<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-			<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+			<tr class="<unireg:nextRowClass/>" >
 				<td></td>
 				<td></td>
 				<td></td>
@@ -103,8 +94,7 @@
 			</tr>
 		</c:if>
 		<c:if test="${message.lieu != null }">
-			<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-			<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+			<tr class="<unireg:nextRowClass/>" >
 				<td></td>
 				<td></td>
 				<td></td>
@@ -112,8 +102,7 @@
 			</tr>
 		</c:if>
 		<c:if test="${message.pays != null }">
-			<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-			<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+			<tr class="<unireg:nextRowClass/>" >
 				<td></td>
 				<td></td>
 				<td></td>

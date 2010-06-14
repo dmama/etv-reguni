@@ -8,9 +8,8 @@
 		<a href="#" onClick="javascript:ouvrirAide('<c:url value='/docs/gestion-debiteurIS.pdf'/>');" title="AccessKey: a" accesskey="e">Aide</a>
 	</tiles:put>
   	<tiles:put name="body">
-		<c:set var="ligneTableau" value="${1}" scope="request" />
-	    <c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-	    
+		<unireg:nextRowClass reset="1"/>
+
 	   	<jsp:include page="../../../../general/pp.jsp" >
 			<jsp:param name="page" value="rt" />
 			<jsp:param name="path" value="sourcier" />

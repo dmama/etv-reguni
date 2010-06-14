@@ -10,8 +10,7 @@
 		<fieldset>
 			<legend><span><fmt:message key="label.gestion.performance" /></span></legend>
 			<table>
-		    	<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-				<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+				<tr class="<unireg:nextRowClass/>" >
 					<td width="50%"><fmt:message key="label.gestion.performance.actif" />&nbsp;:</td>
 					<td width="50%"><form:checkbox path="gestionPerfActif" onclick="submitIndex('performance');" /></td>
 				</tr>
@@ -21,8 +20,7 @@
 		<fieldset>
 			<legend><span><fmt:message key="label.force.reindexation" /></span></legend>
 			<table>
-		    	<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-				<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+				<tr class="<unireg:nextRowClass/>" >
 					<td><fmt:message key="label.numero.tiers"/>&nbsp;:</td>
 					<td>
 						<form:input path="id" size ="15" cssErrorClass="input-with-errors"/>
@@ -38,13 +36,11 @@
 		<fieldset>
 			<legend><span><fmt:message key="label.effacement.index" /></span></legend>
 			<table>
-		    	<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-				<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+				<tr class="<unireg:nextRowClass/>" >
 					<td width="50%"><fmt:message key="label.chemin.index" />&nbsp;:</td>
 					<td width="50%">${command.chemin}</td>
 				</tr>
-				<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-				<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+				<tr class="<unireg:nextRowClass/>" >
 					<td width="50%"><fmt:message key="label.nombre.documents.indexes" />&nbsp;:</td>
 					<td width="50%">${command.nombreDocumentsIndexes}</td>
 				</tr>
@@ -53,19 +49,17 @@
 	
 		<fieldset>
 			<legend><span><fmt:message key="label.gestion.indexation" /></span></legend>
-		    <c:set var="ligneTableau" value="${1}" scope="request" />
+		    <unireg:nextRowClass reset="1"/>
 
 		    <table>
-				<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-				<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+				<tr class="<unireg:nextRowClass/>" >
 					<td width="50%"><fmt:message key="label.requete.lucene" />&nbsp;:</td>
 					<td>
 						<form:input path="requete" id="requete"  size ="65" cssErrorClass="input-with-errors"/>
 						<form:errors path="requete" cssClass="error"/>
 					</td>
 				</tr>
-				<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-				<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+				<tr class="<unireg:nextRowClass/>" >
 					<td colspan ="2">
 						<input type="button" value="<fmt:message key="label.bouton.retour"/>" onclick="document.location='index.do';"/>
 						<input type="button" value="<fmt:message key="label.bouton.rechercher"/>" onclick="submitIndex('search');"/>

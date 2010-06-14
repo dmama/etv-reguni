@@ -10,8 +10,7 @@
 <fieldset class="${className}">
 	<legend><span><fmt:message key="caracteristiques.contribuable" /></span></legend>
 	<table cellspacing="0" cellpadding="5">
-		<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-		<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+		<tr class="<unireg:nextRowClass/>" >
 			<td width="25%"><fmt:message key="label.numero.contribuable" />&nbsp;:</td>
 			<jsp:include page="numero.jsp">
 				<jsp:param name="page" value="${page}" />
@@ -19,8 +18,7 @@
 			</jsp:include>
 			<td width="25%">&nbsp;</td>
 		</tr>
-		<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-		<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+		<tr class="<unireg:nextRowClass/>" >
 			<td width="25%"><fmt:message key="label.role" />&nbsp;:</td>
 			<td width="50%">
 				<jsp:include page="role.jsp">

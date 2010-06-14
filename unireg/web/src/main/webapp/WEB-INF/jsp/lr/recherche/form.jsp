@@ -1,8 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
 <table>
-	<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-	<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+	<tr class="<unireg:nextRowClass/>" >
 		<td width="25%"><fmt:message key="label.periodicite" />&nbsp;:</td>
 		<td width="25%">
 			<form:select path="periodicite">
@@ -17,8 +16,7 @@
 				<jsp:param name="id" value="periode" />
 			</jsp:include></td>
 	</tr>
-	<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-	<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+	<tr class="<unireg:nextRowClass/>" >
 		<td><fmt:message key="label.categorie.impot.source" />&nbsp;:</td>
 		<td>
 			<form:select path="categorie">
@@ -34,8 +32,7 @@
 			</form:select>	
 		</td>
 	</tr>
-	<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-	<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+	<tr class="<unireg:nextRowClass/>" >
 		<td><fmt:message key="label.mode.communication" />&nbsp;:</td>
 		<td>
 			<form:select path="modeCommunication">
@@ -49,8 +46,7 @@
 </table>
 <!-- Debut Boutons -->
 <table border="0">
-	<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-	<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+	<tr class="<unireg:nextRowClass/>" >
 		<td width="25%">&nbsp;</td>
 		<td width="25%">
 			<div class="navigation-action"><input type="submit" value="<fmt:message key="label.bouton.rechercher"/>"/></div>

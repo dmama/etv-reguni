@@ -4,8 +4,7 @@
 <fieldset>
 	<legend><span><fmt:message key="label.caracteristiques.deces" /></span></legend>
 	<table>
-		<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-		<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+		<tr class="<unireg:nextRowClass/>" >
 			<td width="25%"><fmt:message key="label.date.deces" />&nbsp;:</td>
 			<td width="75%">
 				<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
@@ -16,11 +15,10 @@
 			</td>
 		</tr>
 		<c:if test="${command.marieSeul}">
-			<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-			<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+			<tr class="<unireg:nextRowClass/>" >
 				<td width="100%" colspan="2"><fmt:message key="label.deces.nature.marie.seul"/>&nbsp;:</td>
 			</tr>
-			<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+			<tr class="<unireg:nextRowClass/>" >
 				<td width="25%">&nbsp;</td>
 				<td width="75%">
 					<form:radiobutton path="veuf" id="nature-decede" value="false"/>
@@ -31,8 +29,7 @@
 				</td>
 			</tr>
 		</c:if>
-		<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-		<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>">
+		<tr class="<unireg:nextRowClass/>">
 			<td width="25%"><fmt:message key="label.commentaire" />&nbsp;:</td>
 			<td width="75%">
 				<form:textarea path="remarque" id="remarque" cols="80" rows="5"/>

@@ -73,8 +73,7 @@
 				</script>
 			</td></tr>
 		</c:if>
-		<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-		<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+		<tr class="<unireg:nextRowClass/>" >
 			<td width="25%"><fmt:message key="label.numero.tiers" />&nbsp;:</td>
 			<jsp:include page="numero.jsp">
 				<jsp:param name="page" value="${page}" />	
@@ -90,8 +89,7 @@
 				</c:if>
 			</td>
 		</tr>
-		<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-		<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+		<tr class="<unireg:nextRowClass/>" >
 			<td width="25%"><fmt:message key="label.role" />&nbsp;:</td>
 			<td width="50%">
 				<jsp:include page="role.jsp">

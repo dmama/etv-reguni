@@ -15,7 +15,7 @@
 	</tiles:put>
 	<tiles:put name="body">
 	<form:form method="post" id="formEditRestriction"  name="theForm">
-		<c:set var="ligneTableau" value="${1}" scope="request" />
+		<unireg:nextRowClass reset="1"/>
 		<!-- Debut Caracteristiques generales -->
 		<jsp:include page="../../general/utilisateur.jsp">
 			<jsp:param name="path" value="utilisateurReferenceView" />

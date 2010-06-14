@@ -5,8 +5,7 @@
 
   	<tiles:put name="title"><fmt:message key="title.mouvements.dossiers.masse.receptionner.full"/></tiles:put>
   	<tiles:put name="body">
-		<c:set var="ligneTableau" value="${1}" scope="request" />
-	    <c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
+		<unireg:nextRowClass reset="1"/>
 
         <form:form method="post" id="formReceptionnerMouvements" action="detail-reception-bordereau.do">
 

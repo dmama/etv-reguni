@@ -7,15 +7,13 @@
 	<legend><span><fmt:message key="caracteristiques.di" /></span></legend>
 
 	<table border="0">
-		<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-		<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+		<tr class="<unireg:nextRowClass/>" >
 			<td width="25%"><fmt:message key="label.periode.fiscale" />&nbsp;:</td>
 			<td width="25%">${command.periodeFiscale}</td>
 			<td width="25%">&nbsp;</td>
 			<td width="25%">&nbsp;</td>
 		</tr>
-		<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-		<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+		<tr class="<unireg:nextRowClass/>" >
 			<td width="25%"><fmt:message key="label.date.debut.periode.imposition" />&nbsp;:</td>
 			<td width="25%">
 				<c:if test="${not command.ouverte}">
@@ -42,15 +40,13 @@
 			</td>
 		</tr>
 		<c:if test="${command.id != null }">
-		<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-		<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+		<tr class="<unireg:nextRowClass/>" >
 			<td width="25%"><fmt:message key="label.type.declaration" />&nbsp;:</td>
 			<td width="25%"><fmt:message key="option.type.document.${command.typeDeclarationImpot}" /></td>
 			<td width="25%">&nbsp;</td>
 			<td width="25%">&nbsp;</td>
 		</tr>
-		<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-		<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+		<tr class="<unireg:nextRowClass/>" >
 			<td width="25%"><fmt:message key="label.date.retour" />&nbsp;:</td>
 			<c:if test="${command.allowedQuittancement}">
 				<td width="25%">
@@ -74,8 +70,7 @@
 		</tr>
 		</c:if>
 		<c:if test="${command.id == null }">
-		<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-		<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+		<tr class="<unireg:nextRowClass/>" >
 			<td width="25%"><fmt:message key="label.type.declaration" />&nbsp;:</td>
 			<td width="25%">
 				<form:select path="typeDeclarationImpot" items="${typesDeclarationImpot}" />
@@ -89,8 +84,7 @@
 					<FONT COLOR="#FF0000">*</FONT>
 				</td>
 		</tr>
-		<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-		<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+		<tr class="<unireg:nextRowClass/>" >
 			<td width="25%"><fmt:message key="label.type.adresse.retour" />&nbsp;:</td>
 			<td width="25%">
 				<form:select path="typeAdresseRetour" items="${typesAdresseRetour}" />

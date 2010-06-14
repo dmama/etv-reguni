@@ -11,8 +11,8 @@
 		<!-- Debut Rapport -->
 		<c:if test="${command.allowed}">
 		<table border="0">
-			<c:set var="ligneTableau" value="${0}" scope="request" />
-			<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+			<unireg:nextRowClass reset="0"/>
+			<tr class="<unireg:nextRowClass/>" >
 				<td width="25%"><fmt:message key="label.rapport.tiers"/>&nbsp;:</td>
 				<td width="25%">
 					<fmt:message key="option.rapport.entre.tiers.${command.sensRapportEntreTiers}.${command.typeRapportEntreTiers}" />
@@ -22,8 +22,8 @@
 					<fmt:formatDate value="${command.dateDebut}" pattern="dd.MM.yyyy"/>
 				</td>
 			</tr>
-			<c:set var="ligneTableau" value="${0}" scope="request" />
-			<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+			<unireg:nextRowClass reset="0"/>
+			<tr class="<unireg:nextRowClass/>" >
 				<td width="25%"><fmt:message key="label.numero.tiers"/>&nbsp;:</td>
 				<td width="25%">
 					<unireg:numCTB numero="${command.numero}" />
@@ -38,8 +38,8 @@
 					</c:if>
 				</td>
 			</tr>
-			<c:set var="ligneTableau" value="${0}" scope="request" />
-			<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+			<unireg:nextRowClass reset="0"/>
+			<tr class="<unireg:nextRowClass/>" >
 				<td width="25%"><fmt:message key="label.date.fin"/>&nbsp;:</td>
 				<td width="75%" colspan="3">
 					<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
@@ -49,8 +49,7 @@
 				</td>
 			</tr>
 			<c:if test="${command.natureRapportEntreTiers == 'RapportPrestationImposable'}">
-				<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-				<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+				<tr class="<unireg:nextRowClass/>" >
 					<td width="25%"><fmt:message key="label.type.activite" />&nbsp;:</td>
 					<td width="25%">
 						<form:select path="typeActivite"  items="${typesActivite}"
@@ -66,8 +65,7 @@
 				</tr>
 			</c:if>
 			<c:if test="${command.natureRapportEntreTiers == 'RepresentationConventionnelle'}">
-				<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-				<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+				<tr class="<unireg:nextRowClass/>" >
 					<td width="25%" />
 					<td width="75%" colspan="3">
 						<form:checkbox path="extensionExecutionForcee" label="Extension de l'exécution forcée" />

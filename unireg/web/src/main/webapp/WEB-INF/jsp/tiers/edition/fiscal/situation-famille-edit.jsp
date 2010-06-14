@@ -8,8 +8,7 @@
 		<form:form name="formSituationFamille" id="formSituationFamille">
 		<fieldset><legend><span><fmt:message key="label.situation.famille.fiscale" /></span></legend>		
 		<table border="0">
-			<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-			<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+			<tr class="<unireg:nextRowClass/>" >
 				<td width="25%"><fmt:message key="label.date.debut" />&nbsp;:</td>
 				<td width="75%" colspan="3">
 					<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
@@ -18,8 +17,7 @@
 					</jsp:include>
 				</td>
 			</tr>
-			<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-			<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+			<tr class="<unireg:nextRowClass/>" >
 				<td width="25%"><fmt:message key="label.etat.civil" />&nbsp;:</td>
 				<td width="25%">
 					<c:if test="${command.natureSituationFamille == 'SituationFamilleMenageCommun'}">
@@ -42,8 +40,7 @@
 				</td>
 			</tr>
 			<c:if test="${command.natureSituationFamille == 'SituationFamilleMenageCommun'}">
-				<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-				<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+				<tr class="<unireg:nextRowClass/>" >
 					<td width="25%"><fmt:message key="label.bareme.is.applicable" />&nbsp;:</td>
 					<td width="25%">
 						<form:select path="tarifImpotSource" items="${tarifsImpotSource}" />
@@ -51,8 +48,8 @@
 					<td width="25%">&nbsp;</td>
 					<td width="25%">&nbsp;</td>
 				</tr>
-				<c:set var="ligneTableau" value="${0}" scope="request" />
-				<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+				<unireg:nextRowClass reset="0"/>
+				<tr class="<unireg:nextRowClass/>" >
 					<td width="25%"><fmt:message key="label.revenu.plus.eleve" />&nbsp;:</td>
 					<td width="25%">
 						<form:radiobutton path="numeroTiersRevenuPlusEleve" value="${command.numeroTiers1}"/>${command.nomCourrier1Tiers1}

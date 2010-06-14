@@ -18,9 +18,8 @@
 
 
 	<table id="tableTypeRapport">
-		<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
 		<tr
-			class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>">
+			class="<unireg:nextRowClass/>">
 			<td width="25%"><input name="rapport_actif" type="checkbox"
 				id="isRapportHisto"
 				onclick="toggleRowsIsHisto('dossierApparente','isRapportHisto', 2)" />
@@ -28,10 +27,9 @@
 				</td>
 			<td width="75%">&nbsp;</td>
 		</tr>
-		<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
 		<form name="form" id="form">
 		<tr
-			class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>">
+			class="<unireg:nextRowClass/>">
 			<td width="25%"><fmt:message key="label.type.rapport.entre.tiers" />&nbsp;:</td>
 			<td width="75%"><select name="typeRapport" id="typeRapportId"
 				onchange="toggleRowsIsHisto('dossierApparente','isRapportHisto', 2)">

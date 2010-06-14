@@ -9,8 +9,8 @@
 		<form:form name="formAddDelai" id="formAddDelai">
 		<fieldset><legend><span><fmt:message key="label.delais" /></span></legend>
 		<table border="0">
-			<c:set var="ligneTableau" value="${0}" scope="request" />
-			<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+			<unireg:nextRowClass reset="0"/>
+			<tr class="<unireg:nextRowClass/>" >
 				<td><fmt:message key="label.date.demande"/>&nbsp;:</td>
 				<td>
 					<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
@@ -28,8 +28,8 @@
 					<FONT COLOR="#FF0000">*</FONT>
 				</td>
 			</tr>
-			<c:set var="ligneTableau" value="${0}" scope="request" />
-			<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+			<unireg:nextRowClass reset="0"/>
+			<tr class="<unireg:nextRowClass/>" >
 				<td><fmt:message key="label.confirmation.ecrite"/>&nbsp;:</td>
 				<td>
 					<form:checkbox path="confirmationEcrite" />

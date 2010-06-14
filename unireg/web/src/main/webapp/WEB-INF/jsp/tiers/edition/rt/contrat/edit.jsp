@@ -8,7 +8,7 @@
 	</tiles:put>
 	<tiles:put name="body">
 	<form:form method="post" id="formRT">
-		<c:set var="ligneTableau" value="${1}" scope="request" />
+		<unireg:nextRowClass reset="1"/>
 
 		<table>
 		<tr>

@@ -6,7 +6,7 @@
 		<a href="#" onClick="javascript:ouvrirAide('<c:url value='/docs/maj-di.pdf'/>');" title="AccessKey: a" accesskey="e">Aide</a>
 	</tiles:put>
 	<tiles:put name="body">
-		<c:set var="ligneTableau" value="${1}" scope="request" />
+		<unireg:nextRowClass reset="1"/>
 		<!-- Debut Caracteristiques generales -->
 		<jsp:include page="../../general/contribuable.jsp">
 			<jsp:param name="page" value="di" />

@@ -5,14 +5,12 @@
 <spring:bind path="${bind}" >
 	<c:set var="tiersGeneral" value="${status.value}"  scope="request"/>
 </spring:bind>
-<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+<tr class="<unireg:nextRowClass/>" >
 	<td width="25%"><fmt:message key="label.debiteur.is" />&nbsp;:</td>
 	<td width="50%"><fmt:message key="option.categorie.impot.source.${tiersGeneral.categorie}" /></td>
 	<td width="25%">&nbsp;</td>
 </tr>
-<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+<tr class="<unireg:nextRowClass/>" >
 	<td width="25%"><fmt:message key="label.periodicite" />&nbsp;:</td>
 	<td width="50%">
 		<fmt:message key="option.periodicite.decompte.${tiersGeneral.periodicite}" />
@@ -22,20 +20,17 @@
 	</td>
 	<td width="25%">&nbsp;</td>
 </tr>
-<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+<tr class="<unireg:nextRowClass/>" >
 	<td width="25%"><fmt:message key="label.mode.communication" />&nbsp;:</td>
 	<td width="50%"><fmt:message key="option.mode.communication.${tiersGeneral.modeCommunication}" /></td>
 	<td width="25%">&nbsp;</td>
 </tr>
-<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+<tr class="<unireg:nextRowClass/>" >
 	<td width="25%"><fmt:message key="label.personne.contact" />&nbsp;:</td>
 	<td width="50%">${tiersGeneral.personneContact}</td>
 	<td width="25%">&nbsp;</td>	
 </tr>
-<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+<tr class="<unireg:nextRowClass/>" >
 	<td width="25%"><fmt:message key="label.numero.telephone.fixe" />&nbsp;:</td>
 	<td width="50%">${tiersGeneral.numeroTelephone}</td>
 	<td width="25%">&nbsp;</td>

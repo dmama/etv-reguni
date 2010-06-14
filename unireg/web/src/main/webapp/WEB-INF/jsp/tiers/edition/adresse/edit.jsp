@@ -17,7 +17,7 @@
 			<input type="hidden"  name="__EVENT_ARGUMENT__" value="">
 			<!-- Debut affichage du tier -->
 			<c:if test="${command.tiers != null}">
-				<c:set var="ligneTableau" value="${1}" scope="request" />
+				<unireg:nextRowClass reset="1"/>
 				<!-- Debut Caracteristiques generales -->
 				<c:if test="${command.tiers.numero != null}">
 			

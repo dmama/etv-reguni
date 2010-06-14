@@ -9,13 +9,12 @@
 	</tiles:put>
   	<tiles:put name="body">
 	  	<form:form method="post" id="formVisuEvenements">
-	  	<c:set var="ligneTableau" value="${1}" scope="request" />
+	  	<unireg:nextRowClass reset="1"/>
 		<!-- Debut Caracteristiques generales -->
 		<fieldset>
 			<legend><span><fmt:message key="label.caracteristiques.evenement" /></span></legend>
 			<table>
-				<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-				<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+				<tr class="<unireg:nextRowClass/>" >
 					<td width="25%"><fmt:message key="label.numero.evenement" /> :</td>
 					<td width="25%">
 						${command.evenement.id}
@@ -25,15 +24,13 @@
 					<td width="25%"><unireg:regdate regdate="${command.evenement.dateEvenement}"/></td>
 				
 				</tr>
-				<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-				<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+				<tr class="<unireg:nextRowClass/>" >
 					<td width="25%"><fmt:message key="label.type.evenement" /> :</td>
 					<td width="25%"><fmt:message key="option.type.evenement.${command.evenement.type}" /></td>
 					<td width="25%"><fmt:message key="label.date.traitement" /> :</td>
 					<td width="25%"><fmt:formatDate value="${command.evenement.dateTraitement}" pattern="dd.MM.yyyy HH:mm:ss" /></td>
 				</tr>
-				<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-				<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+				<tr class="<unireg:nextRowClass/>" >
 					<td width="25%"><fmt:message key="label.etat.evenement" /> :</td>
 					<td width="25%"><fmt:message key="option.etat.evenement.${command.evenement.etat}" /></td>
 					<td width="25%"><fmt:message key="label.commune.evenement" /> :</td>
@@ -61,60 +58,51 @@
 		<fieldset>
 			<legend><span><fmt:message key="label.individu" /></span></legend>
 			<table>
-				<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-				<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+				<tr class="<unireg:nextRowClass/>" >
 					<td width="50%"><fmt:message key="label.numero.registre.habitant" /> :</td>
 					<td width="50%">${command.individuPrincipal.numeroIndividu}</td>
 				</tr>
-				<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-				<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+				<tr class="<unireg:nextRowClass/>" >
 					<td width="50%"><fmt:message key="label.nom.prenom" /> :</td>
 					<td width="50%">${command.individuPrincipal.nom}&nbsp;${command.individuPrincipal.prenom}</td>
 				</tr>
 				<c:if test="${command.adressePrincipal.ligne1 != null}">
-				<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-				<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+				<tr class="<unireg:nextRowClass/>" >
 					<td><fmt:message key="label.adresse.courrier.active" />&nbsp;:</td>
 					<td>${command.adressePrincipal.ligne1}</td>
 				</tr>
 				</c:if>
 				<c:if test="${command.adressePrincipal.ligne2 != null }">
-					<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />	
-					<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+					<tr class="<unireg:nextRowClass/>" >
 						<td>&nbsp;</td>
 						<td>${command.adressePrincipal.ligne2}</td>
 					</tr>
 				</c:if>
 				<c:if test="${command.adressePrincipal.ligne3 != null }">
-					<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-					<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+					<tr class="<unireg:nextRowClass/>" >
 						<td>&nbsp;</td>
 						<td>${command.adressePrincipal.ligne3}</td>
 					</tr>
 				</c:if>
 				<c:if test="${command.adressePrincipal.ligne4 != null }">
-					<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-					<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+					<tr class="<unireg:nextRowClass/>" >
 						<td>&nbsp;</td>
 						<td>${command.adressePrincipal.ligne4}</td>
 					</tr>
 				</c:if>
 				<c:if test="${command.adressePrincipal.ligne5 != null}" >
-					<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-					<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+					<tr class="<unireg:nextRowClass/>" >
 						<td>&nbsp;</td>
 						<td>${command.adressePrincipal.ligne5}</td>
 					</tr>
 				</c:if>
 				<c:if test="${command.adressePrincipal.ligne6 != null}" >
-					<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-					<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+					<tr class="<unireg:nextRowClass/>" >
 						<td>&nbsp;</td>
 						<td>${command.adressePrincipal.ligne6}</td>
 					</tr>
 				</c:if>
-				<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-				<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+				<tr class="<unireg:nextRowClass/>" >
 					<td><fmt:message key="label.date.naissance" />&nbsp;:</td>
 					<td><fmt:formatDate value="${command.individuPrincipal.dateNaissance}" pattern="dd.MM.yyyy"/></td>
 				</tr>
@@ -127,60 +115,51 @@
 			<fieldset>
 				<legend><span><fmt:message key="label.conjoint" /></span></legend>
 				<table>
-					<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-					<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+					<tr class="<unireg:nextRowClass/>" >
 						<td width="50%"><fmt:message key="label.numero.registre.habitant" /> :</td>
 						<td width="50%">${command.individuConjoint.numeroIndividu}</td>
 					</tr>
-					<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-					<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+					<tr class="<unireg:nextRowClass/>" >
 						<td width="50%"><fmt:message key="label.nom.prenom" /> :</td>
 						<td width="50%">${command.individuConjoint.nom}&nbsp;${command.individuConjoint.prenom}</td>
 					</tr>
 					<c:if test="${command.adresseConjoint.ligne1 != null}">
-					<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-					<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+					<tr class="<unireg:nextRowClass/>" >
 						<td><fmt:message key="label.adresse.courrier.active" />&nbsp;:</td>
 						<td>${command.adresseConjoint.ligne1}</td>
 					</tr>
 					</c:if>
 					<c:if test="${command.adresseConjoint.ligne2 != null }">
-						<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />	
-						<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+						<tr class="<unireg:nextRowClass/>" >
 							<td>&nbsp;</td>
 							<td>${command.adresseConjoint.ligne2}</td>
 						</tr>
 					</c:if>
 					<c:if test="${command.adresseConjoint.ligne3 != null }">
-						<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-						<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+						<tr class="<unireg:nextRowClass/>" >
 							<td>&nbsp;</td>
 							<td>${command.adresseConjoint.ligne3}</td>
 						</tr>
 					</c:if>
 					<c:if test="${command.adresseConjoint.ligne4 != null }">
-						<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-						<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+						<tr class="<unireg:nextRowClass/>" >
 							<td>&nbsp;</td>
 							<td>${command.adresseConjoint.ligne4}</td>
 						</tr>
 					</c:if>
 					<c:if test="${command.adresseConjoint.ligne5 != null}" >
-						<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-						<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+						<tr class="<unireg:nextRowClass/>" >
 							<td>&nbsp;</td>
 							<td>${command.adresseConjoint.ligne5}</td>
 						</tr>
 					</c:if>
 					<c:if test="${command.adresseConjoint.ligne6 != null}" >
-						<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-						<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+						<tr class="<unireg:nextRowClass/>" >
 							<td>&nbsp;</td>
 							<td>${command.adresseConjoint.ligne6}</td>
 						</tr>
 					</c:if>
-					<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-					<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+					<tr class="<unireg:nextRowClass/>" >
 						<td><fmt:message key="label.date.naissance" />&nbsp;:</td>
 						<td><fmt:formatDate value="${command.individuConjoint.dateNaissance}" pattern="dd.MM.yyyy"/></td>
 					</tr>

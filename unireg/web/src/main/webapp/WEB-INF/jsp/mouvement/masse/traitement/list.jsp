@@ -8,8 +8,7 @@
 		<a href="#" onClick="javascript:ouvrirAide('<c:url value='/docs/traiter-mouvement-dossiermasse.pdf'/>');" title="AccessKey: a" accesskey="e">Aide</a>
 	</tiles:put>
   	<tiles:put name="body">
-		<c:set var="ligneTableau" value="${1}" scope="request" />
-	    <c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
+		<unireg:nextRowClass reset="1"/>
 	    <form:form method="post" id="formRechercherMouvementsMasse" action="traiter.do">
 			<fieldset>
 				<legend><span><fmt:message key="label.criteres.recherche"/></span></legend>
@@ -133,8 +132,7 @@
 			</display:table>
 
             <table border="0">
-                <c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-                <tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+                <tr class="<unireg:nextRowClass/>" >
                     <td width="25%">&nbsp;</td>
                     <td width="50%">
                         <div id="boutonInclusion" class="navigation-action">

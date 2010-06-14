@@ -6,14 +6,13 @@
 <c:if test="${command.allowedOnglet.CPLT_COM}">
 <fieldset>
 	<legend><span><fmt:message key="label.complement.pointCommunication" /></span></legend>
-	<c:set var="ligneTableau" value="${1}" scope="request" />
+	<unireg:nextRowClass reset="1"/>
 	<c:set var="lengthnumTel" value="<%=LengthConstants.TIERS_NUMTEL%>" scope="request" />
 	<c:set var="lengthnom" value="<%=LengthConstants.TIERS_NOM%>" scope="request" />
 	<c:set var="lengthemail" value="<%=LengthConstants.TIERS_EMAIL%>" scope="request" />
 	<table border="0">
 		<c:if test="${command.natureTiers == 'DebiteurPrestationImposable' && command.addContactISAllowed == true}">
-			<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-			<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+			<tr class="<unireg:nextRowClass/>" >
 				<td width="30%"><fmt:message key="label.nom1" />&nbsp;:</td>
 				<td width="70%">
 				<form:input path="tiers.nom1" id="tiers_nom1" cssErrorClass="input-with-errors" 
@@ -21,8 +20,7 @@
 					<span class="formInfo"><a href="<c:url value="/htm/nom1.htm?width=375"/>" class="jTip" id="tipNom1">?</a></span>
 				</td>
 			</tr>
-			<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-			<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+			<tr class="<unireg:nextRowClass/>" >
 				<td width="30%"><fmt:message key="label.nom2" />&nbsp;:</td>
 				<td width="70%">
 				<form:input path="tiers.nom2" id="tiers_nom2" cssErrorClass="input-with-errors" 
@@ -31,8 +29,7 @@
 				</td>
 			</tr>
 		</c:if>
-		<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-		<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+		<tr class="<unireg:nextRowClass/>" >
 			<td width="30%"><fmt:message key="label.complement.contact" />&nbsp;:</td>
 			<td width="70%">
 			<form:input path="tiers.personneContact" id="tiers_personneContact" cssErrorClass="input-with-errors" 
@@ -41,8 +38,7 @@
 				<form:errors path="tiers.personneContact" cssClass="error"/>
 			</td>
 		</tr>
-		<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-		<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+		<tr class="<unireg:nextRowClass/>" >
 			<td width="30%"><fmt:message key="label.complement" />&nbsp;:</td>
 			<td width="70%">
 				<form:input path="tiers.complementNom" id="tiers_complementNom" cssErrorClass="input-with-errors" 
@@ -51,8 +47,7 @@
 				<form:errors path="tiers.complementNom" cssClass="error"/>
 			</td>
 		</tr>
-		<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-		<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+		<tr class="<unireg:nextRowClass/>" >
 			<td width="30%"><fmt:message key="label.complement.numeroTelFixe" />&nbsp;:</td>
 			<td width="70%">
 				<form:input path="tiers.numeroTelephonePrive" tabindex="5" id="tiers_numeroTelephonePrive" 
@@ -61,8 +56,7 @@
 				<form:errors path="tiers.numeroTelephonePrive" cssClass="error"/>
 			</td>
 		</tr>
-		<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-		<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+		<tr class="<unireg:nextRowClass/>" >
 			<td width="30%"><fmt:message key="label.complement.numeroTelPortable" />&nbsp;:</td>
 			<td width="70%">
 				<form:input path="tiers.numeroTelephonePortable" tabindex="6" id="tiers_numeroTelephonePortable" 
@@ -71,8 +65,7 @@
 				<form:errors path="tiers.numeroTelephonePortable" cssClass="error"/>
 			</td>
 		</tr>			
-		<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-		<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+		<tr class="<unireg:nextRowClass/>" >
 			<td width="30%"><fmt:message key="label.complement.numeroTelProfessionnel" />&nbsp;:</td>
 			<td width="70%">
 				<form:input path="tiers.numeroTelephoneProfessionnel" tabindex="7" id="tiers_numeroTelephoneProfessionnel" 
@@ -81,8 +74,7 @@
 				<form:errors path="tiers.numeroTelephoneProfessionnel" cssClass="error"/>
 			</td>
 		</tr>
-		<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-		<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+		<tr class="<unireg:nextRowClass/>" >
 			<td width="30%"><fmt:message key="label.complement.numeroFax" />&nbsp;:</td>
 			<td width="70%">
 				<form:input path="tiers.numeroTelecopie" id="tiers_numeroTelecopie" tabindex="8" 
@@ -91,8 +83,7 @@
 				<form:errors path="tiers.numeroTelecopie" cssClass="error"/>
 			</td>
 		</tr>
-		<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-		<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+		<tr class="<unireg:nextRowClass/>" >
 			<td width="30%"><fmt:message key="label.complement.email" />&nbsp;:</td>
 			<td width="70%">
 				<form:input path="tiers.adresseCourrierElectronique" tabindex="9" id="tiers_adresseCourrierElectronique" 
@@ -107,12 +98,11 @@
 <c:if test="${command.allowedOnglet.CPLT_COOR_FIN}">
 <fieldset>
 	<legend><span><fmt:message key="label.complement.coordFinancieres" /></span></legend>
-	<c:set var="ligneTableau" value="${1}" scope="request" />
+	<unireg:nextRowClass reset="1"/>
 	<table>
 	
-		<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
 		<c:set var="lengthnumcompte" value="<%=LengthConstants.TIERS_NUMCOMPTE%>" scope="request" />
-		<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+		<tr class="<unireg:nextRowClass/>" >
 			<td width="30%"><fmt:message key="label.complement.numeroCompteBancaire" />&nbsp;:</td>
 			<td width="70%">
 				<form:input path="tiers.numeroCompteBancaire" tabindex="10"  id="tiers_numeroCompteBancaire" cssErrorClass="input-with-errors" 
@@ -121,8 +111,7 @@
 				<form:errors path="tiers.numeroCompteBancaire" cssClass="error"/>
 			</td>
 		</tr>
-		<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-		<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+		<tr class="<unireg:nextRowClass/>" >
 			<td width="30%"><fmt:message key="label.complement.titulaireCompte" />&nbsp;:</td>
 			<td width="70%">
 				<form:input path="tiers.titulaireCompteBancaire" tabindex="11" id="tiers_titulaireCompteBancaire" 
@@ -131,9 +120,8 @@
 				<form:errors path="tiers.titulaireCompteBancaire" cssClass="error"/>
 			</td>
 		</tr>
-		<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
 		<c:set var="lengthbic" value="<%=LengthConstants.TIERS_ADRESSEBICSWIFT%>" scope="request" />
-		<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+		<tr class="<unireg:nextRowClass/>" >
 			<td width="30%"><fmt:message key="label.complement.bicSwift" />&nbsp;:</td>
 			<td width="70%">
 				<form:input path="tiers.adresseBicSwift" tabindex="12"  id="tiers_adresseBicSwift" cssErrorClass="input-with-errors" 
@@ -148,10 +136,9 @@
 <c:if test="${command.allowedOnglet.CPLT_COM}">
 <fieldset>
 	<legend><span><fmt:message key="label.complement.divers" /></span></legend>
-	<c:set var="ligneTableau" value="${1}" scope="request" />
+	<unireg:nextRowClass reset="1"/>
 	<table>
-		<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-		<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+		<tr class="<unireg:nextRowClass/>" >
 			<td width="30%"><fmt:message key="label.complement.remarque" />&nbsp;:</td>
 			<td width="70%">
 				<form:textarea path="tiers.remarque" id="tiers_remarque" tabindex="13" rows="3" cols="80" />

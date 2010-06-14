@@ -27,8 +27,7 @@
 			</jsp:include>
 		</c:if>
 		
-		<c:set var="ligneTableau" value="${1}" scope="request" />
-	    <c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
+		<unireg:nextRowClass reset="1"/>
 	    <form:form method="post" id="formRecherchePP">
 		  	<c:if test="${numeroPP1 != null}">
 		  		<form:checkbox path="conjointInconnu" id="conjointInconnu" value="true" onclick="conjointInconnuHandle()"/><label for="conjointInconnu">&nbsp;<fmt:message key="label.conjoint.inconnu"/></label>

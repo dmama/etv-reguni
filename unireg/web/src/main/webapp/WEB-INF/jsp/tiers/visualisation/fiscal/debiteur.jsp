@@ -3,8 +3,7 @@
 <!-- Debut Fiscal pour debiteurs impot a la source -->
 <fieldset><legend><span><fmt:message key="label.fiscal" /></span></legend>
 	<table border="0">
-		<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-		<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+		<tr class="<unireg:nextRowClass/>" >
 			<td width="25%"><fmt:message key="label.mode.communication"/>&nbsp;:</td>
 			<td width="25%">
 				<fmt:message key="option.mode.communication.${command.tiers.modeCommunication}" />
@@ -17,8 +16,7 @@
 				</c:if>
 			</td>
 		</tr>
-		<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-		<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+		<tr class="<unireg:nextRowClass/>" >
 			<td width="25%"><fmt:message key="label.sans.sommation"/>&nbsp;:</td>
 			<td width="25%">
 				<input type="checkbox" name="sansRappel" value="True"   

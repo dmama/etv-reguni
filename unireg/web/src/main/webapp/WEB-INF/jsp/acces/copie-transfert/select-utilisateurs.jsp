@@ -10,8 +10,7 @@
 
 		<fieldset class="information">		
 			<table>
-				<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-				<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+				<tr class="<unireg:nextRowClass/>" >
 					<td width="25%"><fmt:message key="label.utilisateur.reference" />&nbsp;:</td>
 					<td width="75%">
 						<div id="utilisateurs">
@@ -35,8 +34,7 @@
 						</div>
 					</td>
 				</tr>
-				<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-				<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+				<tr class="<unireg:nextRowClass/>" >
 					<td width="25%"><fmt:message key="label.utilisateur.destination" />&nbsp;:</td>
 					<td width="75%">
 						<div id="utilisateurs">
@@ -60,8 +58,7 @@
 						</div>
 					</td>
 				</tr>
-				<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-				<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+				<tr class="<unireg:nextRowClass/>" >
 					<td width="25%"><fmt:message key="label.type.operation" />&nbsp;:</td>
 					<td width="75%">
 						<form:radiobuttons path="typeOperation" items="${typesOperation}" />

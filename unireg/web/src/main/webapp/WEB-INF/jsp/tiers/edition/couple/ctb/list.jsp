@@ -13,8 +13,7 @@
 			</jsp:include>
 		</c:if>
 		
-		<c:set var="ligneTableau" value="${1}" scope="request" />
-	    <c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
+		<unireg:nextRowClass reset="1"/>
 	    <form:form method="post" id="formRechercheCTB">
 			<fieldset>
 				<legend><span><fmt:message key="label.criteres.recherche"/></span></legend>

@@ -10,7 +10,7 @@
 <fieldset class="${className}">
 	<legend><span><fmt:message key="label.caracteristiques.${param.path}" /></span></legend>
 	<table cellspacing="0" cellpadding="5">
-		<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+		<tr class="<unireg:nextRowClass/>" >
 			<td width="25%"><fmt:message key="label.numero.contribuable" />&nbsp;:</td>
 			<jsp:include page="numero.jsp">
 				<jsp:param name="page" value="${page}" />	

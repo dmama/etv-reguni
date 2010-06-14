@@ -5,8 +5,7 @@
 	<legend><span><fmt:message key="caracteristiques.lr" /></span></legend>
 	
 	<table>
-		<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-		<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+		<tr class="<unireg:nextRowClass/>" >
 			<td width="25%"><fmt:message key="label.date.debut.periode" />&nbsp;:</td>
 			<td width="25%"><fmt:formatDate value="${command.dateDebutPeriode}" pattern="dd.MM.yyyy"/></td>
 			<td width="25%"><fmt:message key="label.date.fin.periode" />&nbsp;:</td>
@@ -14,8 +13,7 @@
 		</tr>
 		<c:if test="${command.id != null }">
 			<c:if test="${command.dateRetour != null }">
-			<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-			<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+			<tr class="<unireg:nextRowClass/>" >
 				<td width="25%"><fmt:message key="label.date.retour" />&nbsp;:</td>
 				<td width="25%"><fmt:formatDate value="${command.dateRetour}" pattern="dd.MM.yyyy"/></td>
 				<td width="25%">&nbsp;</td>
@@ -24,8 +22,7 @@
 			</c:if>
 		</c:if>
 		<c:if test="${command.id == null }">
-		<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-		<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+		<tr class="<unireg:nextRowClass/>" >
 			<td width="25%"><fmt:message key="label.sans.sommation" />&nbsp;:</td>
 			<td width="25%">
 				<form:checkbox path="sansSommation" />

@@ -3,8 +3,7 @@
 <!-- Debut Fiscal pour debiteurs impot a la source -->
 <fieldset><legend><span><fmt:message key="label.fiscal" /></span></legend>
 	<table border="0">
-		<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-		<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+		<tr class="<unireg:nextRowClass/>" >
 			<td width="25%"><fmt:message key="label.mode.communication"/>&nbsp;:</td>
 			<td width="25%"><form:select path="tiers.modeCommunication" items="${modesCommunication}" /></td>
 			<td width="25%"><fmt:message key="label.categorie.impot.source"/>&nbsp;:</td>
@@ -12,8 +11,7 @@
 				<form:select path="tiers.categorieImpotSource" items="${categoriesImpotSource}" /> 
 			</td>
 		</tr>
-		<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-		<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+		<tr class="<unireg:nextRowClass/>" >
 			<td width="25%"><fmt:message key="label.periodicite.decompte"/>&nbsp;:</td>
 			<td width="25%">
 				<form:select 	path="tiers.periodiciteDecompte" items="${periodicitesDecompte}" 
@@ -26,7 +24,7 @@
 				<div id="div_periodeDecompte_input" style="display:none;" ><form:select path="tiers.periodeDecompte" items="${periodeDecomptes}" /></div>
 			</td>
 		</tr>
-		<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+		<tr class="<unireg:nextRowClass/>" >
 			<td width="25%"><fmt:message key="label.sans.sommation"/>&nbsp;:</td>
 			<td width="25%"><form:checkbox path="tiers.sansRappel" /></td>
 			<td width="25%"><fmt:message key="label.sans.lr"/>&nbsp;:</td>

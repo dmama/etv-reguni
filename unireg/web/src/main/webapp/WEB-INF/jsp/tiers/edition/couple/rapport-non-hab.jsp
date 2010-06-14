@@ -77,7 +77,7 @@
 						</spring:hasBindErrors>
 						
 						<c:if test="${not empty command.troisiemeTiers}">
-							<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+							<tr class="<unireg:nextRowClass/>" >
 								<td width="10%">&nbsp;</td>
 								<td>
 									<table>

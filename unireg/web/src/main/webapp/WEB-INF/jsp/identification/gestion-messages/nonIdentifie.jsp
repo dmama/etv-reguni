@@ -7,8 +7,7 @@
   	<tiles:put name="fichierAide">
 	</tiles:put>
   	<tiles:put name="body">
-		<c:set var="ligneTableau" value="${1}" scope="request" />
-	    <c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
+		<unireg:nextRowClass reset="1"/>
 	    <form:form method="post" id="formNonIdentifie" name="formNonIdentifie" action="edit.do">
 	    	<input type="hidden"  name="__TARGET__" value="">
 			<input type="hidden"  name="__EVENT_ARGUMENT__" value="">

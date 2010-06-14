@@ -6,7 +6,7 @@
 <fieldset>
 	<legend><span><fmt:message key="caracteristiques.debiteur.is" /></span></legend>
 	<table>
-		<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+		<tr class="<unireg:nextRowClass/>" >
 			<td width="25%"><fmt:message key="label.numero.debiteur" />&nbsp;:</td>
 			<jsp:include page="numero.jsp">
 				<jsp:param name="page" value="${page}" />

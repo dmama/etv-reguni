@@ -1,8 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
 <table>
-	<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-	<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+	<tr class="<unireg:nextRowClass/>" >
 		<td width="25%">
 			<b><fmt:message key="label.message" /></b>
 		</td>
@@ -12,8 +11,7 @@
 		</td>
 		<td width="25%">&nbsp;</td>
 	</tr>
-	<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-	<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+	<tr class="<unireg:nextRowClass/>" >
 		<td width="25%">
 			<fmt:message key="label.type.message" />&nbsp;:
 		</td>
@@ -31,8 +29,7 @@
 			<form:errors path="nom" cssClass="error"/>
 		</td>
 	</tr>
-	<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-	<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+	<tr class="<unireg:nextRowClass/>" >
 		<td width="25%">
 			<fmt:message key="label.periode.fiscale" />&nbsp;:
 		</td>
@@ -50,8 +47,7 @@
 			<form:errors path="prenoms" cssClass="error"/>
 		</td>
 	</tr>
-	<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-	<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+	<tr class="<unireg:nextRowClass/>" >
 		<td width="25%">
 			<fmt:message key="label.emetteur" />&nbsp;:
 		</td>
@@ -69,8 +65,7 @@
 			<form:errors path="NAVS13" cssClass="error"/>
 		</td>
 	</tr>
-	<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-	<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+	<tr class="<unireg:nextRowClass/>" >
 		<td width="25%">
 			<fmt:message key="label.priorite" />&nbsp;:
 		</td>
@@ -90,8 +85,7 @@
 			</jsp:include>
 		</td>
 	</tr>
-	<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-	<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+	<tr class="<unireg:nextRowClass/>" >
 		<td width="25%">
 			<fmt:message key="label.date.message" />&nbsp;:
 		</td>
@@ -115,9 +109,8 @@
 			<c:when test="${messageEnCours}">
 				<authz:authorize ifAnyGranted="ROLE_MW_IDENT_CTB_GEST_BO,ROLE_MW_IDENT_CTB_ADMIN,ROLE_MW_IDENT_CTB_VISU">
 		
-				<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-								
-				<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+
+				<tr class="<unireg:nextRowClass/>" >
 					<td width="25%">
 						<fmt:message key="label.etat.message" />&nbsp;:
 					</td>
@@ -135,9 +128,7 @@
 			</c:when>		
 		
 			<c:otherwise>
-					<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-									
-					<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+					<tr class="<unireg:nextRowClass/>" >
 						<td width="25%">
 							<fmt:message key="label.etat.message" />&nbsp;:
 						</td>
@@ -158,8 +149,7 @@
 </table>
 <!-- Debut Boutons -->
 <table border="0">
-	<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-	<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+	<tr class="<unireg:nextRowClass/>" >
 		<td width="25%">&nbsp;</td>
 		<td width="25%">
 			<div class="navigation-action"><input type="submit" value="<fmt:message key="label.bouton.rechercher"/>" name="rechercher"/></div>

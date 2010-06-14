@@ -7,7 +7,7 @@
 	<form:form method="post" id="formEditLR" name="theForm">
 		<input type="hidden"  name="__TARGET__" value="">
 		<input type="hidden"  name="__EVENT_ARGUMENT__" value="">
-		<c:set var="ligneTableau" value="${1}" scope="request" />
+		<unireg:nextRowClass reset="1"/>
 		<!-- Debut Caracteristiques generales -->
 		<jsp:include page="../../general/debiteur.jsp">
 			<jsp:param name="page" value="lr" />

@@ -4,7 +4,7 @@
 	<tiles:put name="title"><fmt:message key="title.edition.di.periode.selection" /></tiles:put>
 
 	<tiles:put name="body">
-		<c:set var="ligneTableau" value="${1}" scope="request" />
+		<unireg:nextRowClass reset="1"/>
 		
 		<form:form name="theForm">
 			<input type="hidden"  name="__TARGET__" value="">

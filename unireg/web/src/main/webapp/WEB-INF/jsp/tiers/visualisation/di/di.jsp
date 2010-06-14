@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
-<c:set var="ligneTableau" value="${1}" scope="request" />
+<unireg:nextRowClass reset="1"/>
 <tiles:insert template="/WEB-INF/jsp/templates/templateIFrame.jsp">
 	<tiles:put name="head"></tiles:put>
 
@@ -18,15 +18,13 @@
 	<fieldset class="information">
 	<legend><span><fmt:message key="label.caracteristiques.di" /></span></legend>
 		<table>
-			<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-			<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+			<tr class="<unireg:nextRowClass/>" >
 				<td width="25%"><fmt:message key="label.periode.fiscale" />&nbsp;:</td>
 				<td width="25%">${command.periodeFiscale}</td>
 				<td width="25%">&nbsp;</td>
 				<td width="25%">&nbsp;</td>
 			</tr>
-			<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-			<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+			<tr class="<unireg:nextRowClass/>" >
 				<td width="25%"><fmt:message key="label.debut.periode.imposition" />&nbsp;:</td>
 				<td width="25%">
 					<fmt:formatDate value="${command.dateDebutPeriodeImposition}" pattern="dd.MM.yyyy"/>
@@ -36,8 +34,7 @@
 					<fmt:formatDate value="${command.dateFinPeriodeImposition}" pattern="dd.MM.yyyy"/>
 				</td>
 			</tr>
-			<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-			<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+			<tr class="<unireg:nextRowClass/>" >
 				<td width="25%"><fmt:message key="label.type.declaration" />&nbsp;:</td>
 				<td width="25%">
 					<fmt:message key="option.type.document.${command.typeDeclarationImpot}" />

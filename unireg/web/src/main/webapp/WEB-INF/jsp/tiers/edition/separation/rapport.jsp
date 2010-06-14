@@ -4,8 +4,7 @@
 <fieldset>
 	<legend><span><fmt:message key="label.rapport.separation" /></span></legend>
 	<table>
-		<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-		<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+		<tr class="<unireg:nextRowClass/>" >
 			<td width="25%"><fmt:message key="label.date.separation" />&nbsp;:</td>
 			<td width="75%">
 				<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
@@ -15,8 +14,7 @@
 				<FONT COLOR="#FF0000">*</FONT>
 			</td>
 		</tr>
-		<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-		<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+		<tr class="<unireg:nextRowClass/>" >
 			<td width="25%" style="vertical-align: top"><fmt:message key="label.type.separation" />&nbsp;:</td>
 			<td width="75%">
 				<form:radiobutton path="etatCivil" id="type-divorce" value="DIVORCE"/>
@@ -32,8 +30,7 @@
 				-->
 			</td>
 		</tr>
-		<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-		<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>">
+		<tr class="<unireg:nextRowClass/>">
 			<td width="25%"><fmt:message key="label.commentaire" />&nbsp;:</td>
 			<td width="75%">
 				<form:textarea path="remarque" id="remarque" cols="80" rows="5"/>

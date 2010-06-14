@@ -8,12 +8,11 @@
 	<tiles:put name="body">
 		<form:form name="formImpression" id="formImpression">
 		<fieldset><legend><span><fmt:message key="label.impression.di" /></span></legend>
-		<c:set var="ligneTableau" value="${0}" scope="request" />
+		<unireg:nextRowClass reset="0"/>
 		<table border="0">
 
 			<c:forEach items="${command.modelesDocumentView}" var="modele" varStatus="statusModele">
-				<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-				<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+				<tr class="<unireg:nextRowClass/>" >
 					<td width="50%">	
 						<form:radiobutton path="selectedTypeDocument" value="${modele.typeDocument}" onclick="javascript:changeTypeDocument(${command.idDI}, '${modele.typeDocument}');" />
 						<b><fmt:message key="option.type.document.${modele.typeDocument}"/>&nbsp;:</b>
@@ -24,8 +23,7 @@
 				</tr>
 
 				<c:forEach items="${modele.modelesFeuilles}" var="feuille" varStatus="statusFeuille">
-				<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-				<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+				<tr class="<unireg:nextRowClass/>" >
 					<td width="50%">${feuille.intituleFeuille}&nbsp;:</td>
 					<td width="50%">	
 					<c:if test="${command.selectedTypeDocument != modele.typeDocument}">

@@ -9,7 +9,7 @@
 	<form:form method="post" id="formEditMvt" name="theForm">
 		<input type="hidden"  name="__TARGET__" value="">
 		<input type="hidden"  name="__EVENT_ARGUMENT__" value="">
-		<c:set var="ligneTableau" value="${1}" scope="request" />
+		<unireg:nextRowClass reset="1"/>
 		<!-- Debut Caracteristiques generales -->
 		<jsp:include page="../general/contribuable.jsp">
 			<jsp:param name="page" value="mouvement" />

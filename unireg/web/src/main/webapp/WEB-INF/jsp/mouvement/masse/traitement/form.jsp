@@ -3,8 +3,7 @@
 
 <table>
 
-	<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-	<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+	<tr class="<unireg:nextRowClass/>" >
 		<td><fmt:message key="label.numero.tiers" />&nbsp;:</td>
 		<td colspan="2">
 			<form:input  path="noCtbFormatte" id="noCtbFormatte" cssClass="number"/>
@@ -13,8 +12,7 @@
 		<td>&nbsp;</td>
 	</tr>
 
-	<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-	<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+	<tr class="<unireg:nextRowClass/>" >
         <td width="25%"><fmt:message key="label.envoi.colladm.destinataire"/>&nbsp;:</td>
         <td width="25%">
             <form:input path="collAdmDestinataire" id="collAdmDestinataire" />
@@ -38,8 +36,7 @@
         </td>
 	</tr>
 
-	<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-	<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+	<tr class="<unireg:nextRowClass/>" >
 		<td width="25%"><fmt:message key="label.etat.mouvement"/>&nbsp;:</td>
         <td width="50%" colspan=2>
             <form:checkbox path="wantATraiter"/>&nbsp;<fmt:message key="option.etat.mouvement.A_TRAITER"/>&nbsp;&nbsp;&nbsp;
@@ -53,8 +50,7 @@
 
 <!-- pour finir, les boutons -->
 <table border="0">
-	<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-	<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+	<tr class="<unireg:nextRowClass/>" >
 		<td width="25%">&nbsp;</td>
 		<td width="25%">
 			<div class="navigation-action"><input type="submit" value="<fmt:message key="label.bouton.rechercher"/>" name="rechercher"/></div>

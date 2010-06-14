@@ -1,9 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
-<c:set var="ligneTableau" value="${1}" scope="request" />
+<unireg:nextRowClass reset="1"/>
 <table>
-	<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-	<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+	<tr class="<unireg:nextRowClass/>" >
 		<td width="50%"><fmt:message key="label.numero.registre.habitant" />&nbsp;:</td>
 		<td>
 			<c:set var="bind" value="command.${param.path}.numeroIndividuFormatte" scope="request"/>
@@ -12,8 +11,7 @@
 			</spring:bind>
 		</td>
 	</tr>
-	<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-	<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+	<tr class="<unireg:nextRowClass/>" >
 		<td><fmt:message key="label.nom" />&nbsp;:</td>
 		<td>
 			<c:set var="bind" value="command.${param.path}.nom" scope="request"/>
@@ -22,8 +20,7 @@
 			</spring:bind>
 		</td>
 	</tr>
-	<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-	<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+	<tr class="<unireg:nextRowClass/>" >
 		<td><fmt:message key="label.nom.naissance" />&nbsp;:</td>
 		<td>
 			<c:set var="bind" value="command.${param.path}.nomNaissance" scope="request"/>
@@ -32,8 +29,7 @@
 			</spring:bind>
 		</td>
 	</tr>
-	<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-	<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+	<tr class="<unireg:nextRowClass/>" >
 		<td><fmt:message key="label.prenom" />&nbsp;:</td>
 		<td>
 			<c:set var="bind" value="command.${param.path}.prenom" scope="request"/>
@@ -42,8 +38,7 @@
 			</spring:bind>
 		</td>
 	</tr>
-	<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-	<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+	<tr class="<unireg:nextRowClass/>" >
 		<td><fmt:message key="label.autres.prenoms" />&nbsp;:</td>
 		<td>
 			<c:set var="bind" value="command.${param.path}.autresPrenoms" scope="request"/>
@@ -52,8 +47,7 @@
 			</spring:bind>
 		</td>
 	</tr> 
-	<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-	<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+	<tr class="<unireg:nextRowClass/>" >
 		<td><fmt:message key="label.sexe" />&nbsp;:</td>
 		<td>
 			<c:set var="bind" value="command.${param.path}.sexe" scope="request"/>
@@ -63,8 +57,7 @@
 			<fmt:message key="option.sexe.${sexe}" />
 		</td>
 	</tr>
-	<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-	<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+	<tr class="<unireg:nextRowClass/>" >
 		<td><fmt:message key="label.date.naissance" />&nbsp;:</td>
 		<td>
 			<c:set var="bind" value="command.${param.path}.dateNaissance" scope="request"/>
@@ -73,8 +66,7 @@
 			</spring:bind>
 		</td>
 	</tr>
-	<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-	<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+	<tr class="<unireg:nextRowClass/>" >
 			<td><fmt:message key="label.etat.civil" />&nbsp;:</td>
 			<td>
 				<c:set var="bind" value="command.${param.path}.etatCivil" scope="request"/>
@@ -86,8 +78,7 @@
 				</c:if>
 			</td>
 	</tr>
-	<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-	<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+	<tr class="<unireg:nextRowClass/>" >
 		<td><fmt:message key="label.date.dernier.changement.etat.civil" />&nbsp;:</td>
 		<td>
 			<c:set var="bind" value="command.${param.path}.dateDernierChgtEtatCivil" scope="request"/>
@@ -96,8 +87,7 @@
 			</spring:bind>
 		</td>
 	</tr>
-	<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-	<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+	<tr class="<unireg:nextRowClass/>" >
 		<td><fmt:message key="label.nouveau.numero.avs" />&nbsp;:</td>
 		<td>
 			<c:set var="bind" value="command.${param.path}.numeroAssureSocial" scope="request"/>
@@ -106,8 +96,7 @@
 			</spring:bind>
 		</td>
 	</tr>
-	<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-	<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+	<tr class="<unireg:nextRowClass/>" >
 		<td><fmt:message key="label.ancien.numero.avs" />&nbsp;:</td>
 		<td>
 			<c:set var="bind" value="command.${param.path}.ancienNumeroAVS" scope="request"/>
@@ -116,8 +105,7 @@
 			</spring:bind> 
 		</td>
 	</tr>
-	<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-	<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+	<tr class="<unireg:nextRowClass/>" >
 		<td><fmt:message key="label.origine" />&nbsp;:</td>
 		<td>
 			<c:set var="bind" value="command.${param.path}.origine" scope="request"/>
@@ -126,8 +114,7 @@
 			</spring:bind>
 		</td>
 	</tr>
-	<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-	<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+	<tr class="<unireg:nextRowClass/>" >
 		<td><fmt:message key="label.nationalite" />&nbsp;:</td>
 		<td>
 			<c:set var="bind" value="command.${param.path}.nationalite" scope="request"/>
@@ -136,8 +123,7 @@
 			</spring:bind>
 		</td>
 	</tr>
-	<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-	<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+	<tr class="<unireg:nextRowClass/>" >
 		<td><fmt:message key="label.permis.travail" />&nbsp;:</td>
 		<td>
 			<c:set var="bind" value="command.${param.path}.permisView" scope="request"/>
@@ -166,8 +152,7 @@
 			</spring:bind>
 		</td>
 	</tr>
-	<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-	<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+	<tr class="<unireg:nextRowClass/>" >
 		<td><fmt:message key="label.numero.registre.etranger" />&nbsp;:</td>
 		<td>
 			<c:set var="bind" value="command.${param.path}.numeroRCE" scope="request"/>

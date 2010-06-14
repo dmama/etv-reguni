@@ -19,8 +19,7 @@ function submitTrace() {
 		<fieldset>
 			<legend><span><fmt:message key="label.gestion.performance" /></span></legend>
 			<table>
-		    	<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-				<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">even</c:if>" >
+				<tr class="<unireg:nextRowClass/>" >
 					<td width="50%"><fmt:message key="label.gestion.performance.actif" />&nbsp;:</td>
 					<td width="50%"><form:checkbox path="gestionPerfActif" onclick="submitTrace();" /></td>
 				</tr>

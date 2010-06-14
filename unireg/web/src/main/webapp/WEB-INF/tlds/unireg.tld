@@ -157,7 +157,20 @@
 			<description>la propriété de l'entité à afficher (nomMinuscule/dateDebutValidite/...)</description>
 		</attribute>
 	</tag>
-	
+
+	<tag>
+		<name>nextRowClass</name>
+		<tag-class>ch.vd.uniregctb.taglibs.JspTagNextRowClass</tag-class>
+		<body-content>JSP</body-content>
+		<description>Tag qui retourne alternativement les classes 'odd' et 'even' à chaque appel.</description>
+		<attribute>
+			<name>reset</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Si renseigné, reset le compteur de lignes interne à la valeur spécifiée et ne retourne rien</description>
+		</attribute>
+	</tag>
+
 	<tag>
 		<name>testMode</name>
 		<tag-class>ch.vd.uniregctb.taglibs.JspTagTestMode</tag-class>

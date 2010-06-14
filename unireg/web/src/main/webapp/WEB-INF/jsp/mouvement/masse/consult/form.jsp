@@ -3,8 +3,7 @@
 
 <table>
 
-	<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-	<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+	<tr class="<unireg:nextRowClass/>" >
 		<td><fmt:message key="label.numero.tiers" />&nbsp;:</td>
 		<td colspan="2">
 			<form:input  path="noCtbFormatte" id="noCtbFormatte" cssClass="number"/>
@@ -13,8 +12,7 @@
 		<td>&nbsp;</td>
 	</tr>
 
-	<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-	<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+	<tr class="<unireg:nextRowClass/>" >
 		<td width="25%"><fmt:message key="label.date.mouvement.du"/>&nbsp;:</td>
         <td width="25%">
 			<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
@@ -31,8 +29,7 @@
         </td>
     </tr>
 
-	<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-	<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+	<tr class="<unireg:nextRowClass/>" >
 		<td width="25%"><fmt:message key="label.type.mouvement"/>&nbsp;:</td>
         <td width="25%">
             <form:select id="typeMouvement" path="typeMouvement" onchange="onChangeTypeMouvement(this)">
@@ -53,8 +50,7 @@
         </td>
     </tr>
 
-	<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-	<tr id="choixDestinataireEnvoi" class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+	<tr id="choixDestinataireEnvoi" class="<unireg:nextRowClass/>" >
         <td><fmt:message key="label.envoi.colladm.destinataire"/>&nbsp;:</td>
         <td>
             <form:input path="collAdmDestinataire" id="collAdmDestinataire" />
@@ -96,13 +92,12 @@
 
     <!-- On ne fait pas cet incrément du numéro de ligne car cette ligne et la ligne
          du dessus sont mutuellement exclusives (ou pas là du tout -->
-	<!--c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" /-->
 
-	<tr id="ligneVide" class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>">
+	<tr id="ligneVide" class="<unireg:nextRowClass/>">
 	    <td colspan=4>&nbsp;</td>
 	</tr>
 
-	<tr id="choixLocalisationReception" class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+	<tr id="choixLocalisationReception" class="<unireg:nextRowClass/>" >
 	    <td width="25%"><fmt:message key="label.reception.type"/>&nbsp;:</td>
 	    <td width="25%">
             <form:select id="localisationReception" path="localisationReception" onchange="onChangeLocalisationReception(this)">
@@ -175,8 +170,7 @@
         onChangeLocalisationReception(document.getElementById("localisationReception"));
     </script>
 
-	<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-	<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+	<tr class="<unireg:nextRowClass/>" >
 	    <td><fmt:message key="label.inclure.mouvements.annules"/>&nbsp;:</td>
         <td width="25%"><form:checkbox path="mouvementsAnnulesInclus"/></td>
         <td colspan=2>&nbsp;<td>
@@ -186,8 +180,7 @@
 
 <!-- pour finir, les boutons -->
 <table border="0">
-	<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-	<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+	<tr class="<unireg:nextRowClass/>" >
 		<td width="25%">&nbsp;</td>
 		<td width="25%">
 			<div class="navigation-action"><input type="submit" value="<fmt:message key="label.bouton.rechercher"/>" name="rechercher"/></div>

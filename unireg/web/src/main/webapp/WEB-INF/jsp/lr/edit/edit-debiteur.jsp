@@ -8,7 +8,7 @@
 	
 	<tiles:put name="body">
 	<form:form method="post" id="formEditLR" >
-		<c:set var="ligneTableau" value="${1}" scope="request" />
+		<unireg:nextRowClass reset="1"/>
 		<!-- Debut Caracteristiques generales -->
 		<jsp:include page="../../general/debiteur.jsp">
 			<jsp:param name="page" value="lr" />

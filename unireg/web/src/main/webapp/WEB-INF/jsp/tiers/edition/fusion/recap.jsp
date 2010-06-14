@@ -12,8 +12,7 @@
 		<fieldset>
 			<legend><span><fmt:message key="label.recapitulatif.fusion" /></span></legend>
 			<table>
-				<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-				<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+				<tr class="<unireg:nextRowClass/>" >
 					<td width="20%">&nbsp;</td>
 					<td width="40%">
 						<fmt:message key="title.inconnu.controle.habitants" />
@@ -22,8 +21,7 @@
 						<fmt:message key="title.reference.controle.habitants" />
 					</td>
 				</tr>
-				<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-				<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+				<tr class="<unireg:nextRowClass/>" >
 					<td width="20%"><fmt:message key="label.numero.contribuable" />&nbsp;:</td>
 					<td width="40%">
 						<unireg:numCTB numero="${command.nonHabitant.numero}"></unireg:numCTB>
@@ -32,8 +30,7 @@
 						<unireg:numCTB numero="${command.habitant.numero}"></unireg:numCTB>
 					</td>
 				</tr>
-				<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-				<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+				<tr class="<unireg:nextRowClass/>" >
 					<td width="20%"><fmt:message key="label.adresse" />&nbsp;:</td>
 					<td width="40%">
 						<c:if test="${command.nonHabitant.adresseEnvoi.ligne1 != null}">${command.nonHabitant.adresseEnvoi.ligne1}</c:if>
@@ -52,8 +49,7 @@
 						<c:if test="${command.habitant.adresseEnvoi.ligne6 != null}"><br />${command.habitant.adresseEnvoi.ligne6}</c:if>
 					</td>
 				</tr>
-				<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-				<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+				<tr class="<unireg:nextRowClass/>" >
 					<td width="20%"><fmt:message key="label.date.naissance" />&nbsp;:</td>
 					<td width="40%">
 						<unireg:date date="${command.nonHabitant.dateNaissance}"></unireg:date>
@@ -62,8 +58,7 @@
 						<unireg:date date="${command.habitant.dateNaissance}"></unireg:date>
 					</td>
 				</tr>
-				<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-				<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+				<tr class="<unireg:nextRowClass/>" >
 					<td width="20%"><fmt:message key="label.nouveau.numero.avs" />&nbsp;:</td>
 					<td width="40%">
 						<unireg:numAVS numeroAssureSocial="${command.nonHabitant.numeroAssureSocial}"></unireg:numAVS>	
@@ -72,8 +67,7 @@
 						<unireg:numAVS numeroAssureSocial="${command.habitant.numeroAssureSocial}"></unireg:numAVS>	
 					</td>
 				</tr>
-				<c:set var="ligneTableau" value="${ligneTableau + 1}" scope="request" />
-				<tr class="<c:if test="${(ligneTableau % 2) == 0 }">even</c:if><c:if test="${ligneTableau % 2 == 1}">odd</c:if>" >
+				<tr class="<unireg:nextRowClass/>" >
 					<td width="20%"><fmt:message key="label.ancien.numero.avs" />&nbsp;:</td>
 					<td width="40%">
 						<unireg:ancienNumeroAVS ancienNumeroAVS="${command.nonHabitant.ancienNumeroAVS}"></unireg:ancienNumeroAVS>	
