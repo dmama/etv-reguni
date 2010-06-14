@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Pair;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.evenement.EvenementCivil;
@@ -43,7 +44,7 @@ public class CorrectionConjointHandler extends EvenementCivilHandlerBase {
 
 		final Individu individuConjoint = getServiceCivil().getConjoint(individu.getNoTechnique(), evenement.getDate());
 		if (individuConjoint == null) {
-			errors.add(new EvenementCivilErreur("L'individu n'a pas de conjoint en date du "+evenement.getDate().toString()+" dans le civil"));
+			errors.add(new EvenementCivilErreur(String.format("L'individu n'a pas de conjoint en date du %s dans le civil", RegDateHelper.dateToDisplayString(evenement.getDate()))));
 			return;
 		}
 		final PersonnePhysique conjoint = getPersonnePhysiqueOrFillErrors(individuConjoint.getNoTechnique(), errors);

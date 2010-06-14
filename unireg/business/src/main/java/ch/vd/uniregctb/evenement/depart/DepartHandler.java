@@ -6,6 +6,7 @@ import java.util.Set;
 
 import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.audit.Audit;
@@ -443,16 +444,14 @@ public class DepartHandler extends EvenementCivilHandlerBase {
 	 */
 	private void handleDepartResidencePrincipale(Depart depart, Contribuable contribuable, RegDate dateFermeture, MotifFor motifFermeture, int numeroOfsAutoriteFiscale) {
 
-		Audit.info(depart.getNumeroEvenement(), "Fermeture du for principal d'un contribuable au " + dateFermeture.toString()
-				+ " pour motif suivant: " + motifFermeture);
+		Audit.info(depart.getNumeroEvenement(), String.format("Fermeture du for principal d'un contribuable au %s pour motif suivant: %s", RegDateHelper.dateToDisplayString(dateFermeture), motifFermeture));
 
 		final ForFiscalPrincipal ffp = getService().closeForFiscalPrincipal(contribuable, dateFermeture, motifFermeture);
 		if (ffp != null && ffp.getTypeAutoriteFiscale() != TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
 			throw new RuntimeException("Le for du contribuable est déjà hors du canton");
 		}
 
-		Audit.info(depart.getNumeroEvenement(), "ouverture du for principal d'un contribuable au "
-				+ dateFermeture.getOneDayAfter().toString() + " pour motif suivant: " + motifFermeture);
+		Audit.info(depart.getNumeroEvenement(), String.format("Ouverture du for principal d'un contribuable au %s pour motif suivant: %s", RegDateHelper.dateToDisplayString(dateFermeture.getOneDayAfter()), motifFermeture));
 
 		if (ffp != null) {
 			final ModeImposition modeImposition = determineModeImpositionDepartHCHS(contribuable, dateFermeture, ffp);

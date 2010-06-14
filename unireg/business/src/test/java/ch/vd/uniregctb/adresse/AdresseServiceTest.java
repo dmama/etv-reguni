@@ -1326,7 +1326,7 @@ public class AdresseServiceTest extends BusinessTest {
 				fail();
 			}
 			catch (AdresseException e) {
-				assertEquals("adresse civile courrier :\nLa date de début [2020.01.01] ne peut pas être après la date de fin [2000.03.19].", e.getMessage());
+				assertEquals("adresse civile courrier :\nLa date de début [01.01.2020] ne peut pas être après la date de fin [19.03.2000].", e.getMessage());
 			}
 		}
 	}

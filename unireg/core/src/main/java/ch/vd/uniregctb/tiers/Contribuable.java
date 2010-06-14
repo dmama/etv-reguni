@@ -22,6 +22,7 @@ import org.springframework.util.Assert;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.mouvement.MouvementDossier;
 
@@ -304,8 +305,7 @@ public abstract class Contribuable extends Tiers {
 		ForFiscalPrincipal lastFor = null;
 		for (ForFiscalPrincipal ffp : fors.principaux) {
 			if (lastFor != null && DateRangeHelper.intersect(lastFor, ffp)) {
-				results.addError("Le for principal qui commence le " + ffp.getDateDebut()
-						+ " chevauche le for précédent");
+				results.addError(String.format("Le for principal qui commence le %s chevauche le for précédent", RegDateHelper.dateToDisplayString(ffp.getDateDebut())));
 			}
 			lastFor = ffp;
 		}
@@ -313,9 +313,9 @@ public abstract class Contribuable extends Tiers {
 		// Pour chaque for secondaire il doit exister un for principal valide
 		for (ForFiscalSecondaire fs : fors.secondaires) {
 			if (!existForPrincipal(fors.principaux, fs.getDateDebut(), fs.getDateFin())) {
-				String msg = "Il n'y a pas de for principal pour accompagner le for secondaire qui commence le " + fs.getDateDebut();
+				String msg = String.format("Il n'y a pas de for principal pour accompagner le for secondaire qui commence le %s", RegDateHelper.dateToDisplayString(fs.getDateDebut()));
 				if (fs.getDateFin() != null) {
-					msg += " et se termine le " + fs.getDateFin();
+					msg += String.format(" et se termine le %s", RegDateHelper.dateToDisplayString(fs.getDateFin()));
 				}
 				results.addError(msg);
 			}
@@ -324,10 +324,9 @@ public abstract class Contribuable extends Tiers {
 		// Pour chaque for autre élément imposable il doit exister un for principal valide
 		for (ForFiscalAutreElementImposable fs : fors.autreElementImpot) {
 			if (!existForPrincipal(fors.principaux, fs.getDateDebut(), fs.getDateFin())) {
-				String msg = "Il n'y a pas de for principal pour accompagner le for autre élément imposable qui commence le "
-					+ fs.getDateDebut();
+				String msg = String.format("Il n'y a pas de for principal pour accompagner le for autre élément imposable qui commence le %s", RegDateHelper.dateToDisplayString(fs.getDateDebut()));
 				if (fs.getDateFin() != null) {
-					msg += " et se termine le " + fs.getDateFin();
+					msg += String.format(" et se termine le %s", RegDateHelper.dateToDisplayString(fs.getDateFin()));
 				}
 				results.addError(msg);
 			}
@@ -357,8 +356,7 @@ public abstract class Contribuable extends Tiers {
 			SituationFamille lastSituation = null;
 			for (SituationFamille situation : situationsSorted) {
 				if (lastSituation != null && DateRangeHelper.intersect(lastSituation, situation)) {
-					results.addError("La situation de famille qui commence le " + situation.getDateDebut()
-							+ " chevauche la situation précédente");
+					results.addError(String.format("La situation de famille qui commence le %s chevauche la situation précédente", RegDateHelper.dateToDisplayString(situation.getDateDebut())));
 				}
 				lastSituation = situation;
 			}

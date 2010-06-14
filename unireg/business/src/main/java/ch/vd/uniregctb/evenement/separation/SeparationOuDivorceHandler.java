@@ -3,6 +3,7 @@ package ch.vd.uniregctb.evenement.separation;
 import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.utils.Pair;
 import ch.vd.registre.base.validation.ValidationResults;
@@ -155,7 +156,7 @@ public abstract class SeparationOuDivorceHandler extends EvenementCivilHandlerBa
 				}
 			}
 			else {
-				throw new EvenementCivilHandlerException("Le ménage commun [" + menage + "] ne possède pas de for principal le " + date.toString());
+				throw new EvenementCivilHandlerException(String.format("Le ménage commun [%s] ne possède pas de for principal le %s", menage, RegDateHelper.dateToDisplayString(date)));
 			}
 
 			return false;
