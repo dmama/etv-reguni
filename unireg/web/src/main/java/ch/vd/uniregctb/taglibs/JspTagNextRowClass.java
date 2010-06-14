@@ -16,32 +16,23 @@ public class JspTagNextRowClass extends BodyTagSupport {
 	private static final ThreadLocal<MutableInt> count = new ThreadLocal<MutableInt>();
 	private static final ThreadLocal<Boolean> justReset = new ThreadLocal<Boolean>();
 
-	public JspTagNextRowClass() {
-		if (count.get() == null) {
-			count.set(new MutableInt(0));
-		}
-		if (justReset.get() == null) {
-			justReset.set(false);
-		}
-	}
-
 	@Override
 	public int doStartTag() throws JspTagException {
 
-		if (justReset.get()) {
-			justReset.set(false);
+		if (justReset()) {
+			setJustReset(false);
 			return SKIP_BODY;
 		}
 
 		try {
 			final JspWriter out = pageContext.getOut();
-			if (count.get().intValue() % 2 == 0) {
+			if (getCount() % 2 == 0) {
 				out.print("even");
 			}
 			else {
 				out.print("odd");
 			}
-			count.get().increment();
+			incCount();
 			// Skips the body.
 			return SKIP_BODY;
 		}
@@ -50,8 +41,36 @@ public class JspTagNextRowClass extends BodyTagSupport {
 		}
 	}
 
+	private void setJustReset(boolean value) {
+		justReset.set(value);
+	}
+
 	public void setReset(int value) {
-		count.get().setValue(value);
-		justReset.set(true);
+		setCount(value);
+		setJustReset(true);
+	}
+
+	private void setCount(int value) {
+		if (count.get() == null) {
+			count.set(new MutableInt(value));
+		}
+		else {
+			count.get().setValue(value);
+		}
+	}
+
+	private int getCount() {
+		if (count.get() == null) {
+			count.set(new MutableInt(0));
+		}
+		return count.get().intValue();
+	}
+
+	private void incCount() {
+		count.get().increment();
+	}
+
+	private boolean justReset() {
+		return justReset.get() != null && justReset.get();
 	}
 }
