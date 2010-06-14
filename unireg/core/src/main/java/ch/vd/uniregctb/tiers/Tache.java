@@ -253,7 +253,7 @@ public Tache(TypeEtatTache etat, RegDate dateEcheance, Contribuable contribuable
 	public ValidationResults validate() {
 
 		final ValidationResults results = new ValidationResults();
-		if (collectiviteAdministrativeAssignee == null && etat != TypeEtatTache.TRAITE) {
+		if (collectiviteAdministrativeAssignee == null && etat != TypeEtatTache.TRAITE && !isAnnule()) {
 			results.addError("La collectivité assignée doit être renseignée.");
 		}
 
