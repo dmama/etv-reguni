@@ -820,6 +820,43 @@
 	  <null/>
 	  <value>1013</value>
     </row>
+	  <row>
+		<value>2008-01-01</value>
+		<value>2008-01-01</value>
+		<value>32100002</value>
+		<value>CollectiviteAdministrative</value>
+		<value>0</value>
+		<null/>
+		<null/>
+		<null/>
+		<null/>
+		<null/>
+		<null/>
+		<null/>
+		<null/>
+		<null/>
+		<null/>
+		<null/>
+		<null/>
+		<null/>
+		<null/>
+		<null/>
+		<null/>
+		<null/>
+		<null/>
+		<null/>
+		<null/>
+		<null/>
+		<null/>
+		<null/>
+		<null/>
+		<null/>
+		<null/>
+		<null/>
+		<null/>
+		<null/>
+		<value>10</value>
+	  </row>
   </table>
   <table name="IDENTIFICATION_PERSONNE">
     <column>LOG_MDATE</column>
