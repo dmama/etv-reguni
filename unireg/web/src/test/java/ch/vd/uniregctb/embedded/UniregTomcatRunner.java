@@ -77,7 +77,7 @@ public class UniregTomcatRunner {
 		 * <li>3. Le fichier context.xml pour la définition des data sources</li>
 		 * </ul>
 		 */
-		TomcatRunner runner = new TomcatRunner("/fiscalite/unireg", "src/main/webapp", null);
+		TomcatRunner runner = new TomcatRunner("/fiscalite/unireg/web", "src/main/webapp", null);
 		runner.start();
 	}
 }
