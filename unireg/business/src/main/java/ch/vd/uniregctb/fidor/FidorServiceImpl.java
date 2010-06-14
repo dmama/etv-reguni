@@ -84,17 +84,22 @@ public class FidorServiceImpl implements FidorService {
 	private void lazyInit() {
 		if (patternSipf == null) {
 			synchronized (this) {
-				if (patternSipf == null) {
-					final FidorPortType service = initWebService(serviceUrl, username, password);
-					patternTaoPP = getUrl(service, "TAOPP", "synthese");
-					patternTaoBA = getUrl(service, "TAOBA", "dossier");
-					patternTaoIS = getUrl(service, "TAOIS", "default");
-					patternSipf = getUrl(service, "SIPF", "explorer"); // [UNIREG-2409]
-					LOGGER.info("URLs externes (FiDoR) :\n" +
-							" * TAOPP = " + patternTaoPP + "\n" +
-							" * TAOBA = " + patternTaoBA + "\n" +
-							" * TAOIS = " + patternTaoIS + "\n" +
-							" * SIPF = " + patternSipf);
+				try {
+					if (patternSipf == null) {
+						final FidorPortType service = initWebService(serviceUrl, username, password);
+						patternTaoPP = getUrl(service, "TAOPP", "synthese");
+						patternTaoBA = getUrl(service, "TAOBA", "dossier");
+						patternTaoIS = getUrl(service, "TAOIS", "default");
+						patternSipf = getUrl(service, "SIPF", "explorer"); // [UNIREG-2409]
+						LOGGER.info("URLs externes (FiDoR) :\n" +
+								" * TAOPP = " + patternTaoPP + "\n" +
+								" * TAOBA = " + patternTaoBA + "\n" +
+								" * TAOIS = " + patternTaoIS + "\n" +
+								" * SIPF = " + patternSipf);
+					}
+				}
+				catch (Exception e) {
+					LOGGER.error("Impossible de contacter FiDoR : allez lui donner un coup de pied !", e);
 				}
 			}
 		}
