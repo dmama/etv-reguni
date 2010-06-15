@@ -127,7 +127,7 @@ public class EachWebPageTest extends WebitTest {
 	// Page de visualisation d'un for
 	@Test
 	public void testTiersEditFor() throws Exception {
-		assertPage("/fiscal/for.do?idFor=7", "");
+		assertPage("/fiscal/for.do?idFor=7", "Edition d'un for fiscal du tiers 129.000.01");
 	}
 
 	@Test
