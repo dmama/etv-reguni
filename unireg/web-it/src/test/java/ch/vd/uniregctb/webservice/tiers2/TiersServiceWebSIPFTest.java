@@ -147,7 +147,7 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 
 		final List<EvenementPM> events = service.searchEvenementsPM(params).getItem();
 		assertNotNull(events);
-		assertEquals(16, events.size());
+		assertEquals(17, events.size());
 
 		final EvenementPM ev0 = events.get(0);
 		assertNotNull(ev0);
@@ -163,9 +163,9 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 
 		final EvenementPM ev2 = events.get(2);
 		assertNotNull(ev2);
-		assertSameDay(newDate(1992, 1, 1), ev2.getDateEvenement());
-		assertEquals("001", ev2.getCodeEvenement());
+		assertSameDay(newDate(1980, 1, 1), ev2.getDateEvenement());
 		assertEquals(Long.valueOf(222), ev2.getTiersNumber());
+		assertEquals("003", ev2.getCodeEvenement());
 
 		final EvenementPM ev3 = events.get(3);
 		assertNotNull(ev3);
@@ -175,45 +175,45 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 
 		final EvenementPM ev4 = events.get(4);
 		assertNotNull(ev4);
-		assertSameDay(newDate(1992, 11, 6), ev4.getDateEvenement());
-		assertEquals("021", ev4.getCodeEvenement());
+		assertSameDay(newDate(1992, 1, 1), ev4.getDateEvenement());
+		assertEquals("001", ev4.getCodeEvenement());
 		assertEquals(Long.valueOf(222), ev4.getTiersNumber());
-		
+
 		final EvenementPM ev5 = events.get(5);
 		assertNotNull(ev5);
-		assertSameDay(newDate(1996, 10, 24), ev5.getDateEvenement());
+		assertSameDay(newDate(1992, 11, 6), ev5.getDateEvenement());
+		assertEquals("021", ev5.getCodeEvenement());
 		assertEquals(Long.valueOf(222), ev5.getTiersNumber());
-		assertEquals("020", ev5.getCodeEvenement());
-
+		
 		final EvenementPM ev6 = events.get(6);
 		assertNotNull(ev6);
-		assertSameDay(newDate(1997, 7, 10), ev6.getDateEvenement());
+		assertSameDay(newDate(1996, 10, 24), ev6.getDateEvenement());
 		assertEquals(Long.valueOf(222), ev6.getTiersNumber());
-		assertEquals("008", ev6.getCodeEvenement());
+		assertEquals("020", ev6.getCodeEvenement());
 
 		final EvenementPM ev7 = events.get(7);
 		assertNotNull(ev7);
-		assertSameDay(newDate(1997, 12, 1), ev7.getDateEvenement());
+		assertSameDay(newDate(1997, 7, 10), ev7.getDateEvenement());
 		assertEquals(Long.valueOf(222), ev7.getTiersNumber());
-		assertEquals("020", ev7.getCodeEvenement());
+		assertEquals("008", ev7.getCodeEvenement());
 
 		final EvenementPM ev8 = events.get(8);
 		assertNotNull(ev8);
-		assertSameDay(newDate(2000, 1, 1), ev8.getDateEvenement());
+		assertSameDay(newDate(1997, 12, 1), ev8.getDateEvenement());
 		assertEquals(Long.valueOf(222), ev8.getTiersNumber());
 		assertEquals("020", ev8.getCodeEvenement());
 
 		final EvenementPM ev9 = events.get(9);
 		assertNotNull(ev9);
-		assertSameDay(newDate(2001, 9, 6), ev9.getDateEvenement());
+		assertSameDay(newDate(2000, 1, 1), ev9.getDateEvenement());
 		assertEquals(Long.valueOf(222), ev9.getTiersNumber());
-		assertEquals("037", ev9.getCodeEvenement());
+		assertEquals("020", ev9.getCodeEvenement());
 
 		final EvenementPM ev10 = events.get(10);
 		assertNotNull(ev10);
-		assertSameDay(newDate(2003, 4, 3), ev10.getDateEvenement());
+		assertSameDay(newDate(2001, 9, 6), ev10.getDateEvenement());
 		assertEquals(Long.valueOf(222), ev10.getTiersNumber());
-		assertEquals("003", ev10.getCodeEvenement());
+		assertEquals("037", ev10.getCodeEvenement());
 
 		final EvenementPM ev11 = events.get(11);
 		assertNotNull(ev11);
@@ -225,25 +225,31 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 		assertNotNull(ev12);
 		assertSameDay(newDate(2003, 4, 3), ev12.getDateEvenement());
 		assertEquals(Long.valueOf(222), ev12.getTiersNumber());
-		assertEquals("016", ev12.getCodeEvenement());
+		assertEquals("003", ev12.getCodeEvenement());
 
 		final EvenementPM ev13 = events.get(13);
 		assertNotNull(ev13);
 		assertSameDay(newDate(2003, 4, 3), ev13.getDateEvenement());
 		assertEquals(Long.valueOf(222), ev13.getTiersNumber());
-		assertEquals("023", ev13.getCodeEvenement());
+		assertEquals("016", ev13.getCodeEvenement());
 
 		final EvenementPM ev14 = events.get(14);
 		assertNotNull(ev14);
-		assertSameDay(newDate(2003, 11, 6), ev14.getDateEvenement());
+		assertSameDay(newDate(2003, 4, 3), ev14.getDateEvenement());
 		assertEquals(Long.valueOf(222), ev14.getTiersNumber());
-		assertEquals("002", ev14.getCodeEvenement());
+		assertEquals("023", ev14.getCodeEvenement());
 
 		final EvenementPM ev15 = events.get(15);
 		assertNotNull(ev15);
 		assertSameDay(newDate(2003, 11, 6), ev15.getDateEvenement());
 		assertEquals(Long.valueOf(222), ev15.getTiersNumber());
 		assertEquals("002", ev15.getCodeEvenement());
+
+		final EvenementPM ev16 = events.get(16);
+		assertNotNull(ev16);
+		assertSameDay(newDate(2003, 11, 6), ev16.getDateEvenement());
+		assertEquals(Long.valueOf(222), ev16.getTiersNumber());
+		assertEquals("002", ev16.getCodeEvenement());
 	}
 
 	@Test
@@ -559,17 +565,17 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 
 		final GetTiers params = new GetTiers();
 		params.setLogin(login);
-		params.setTiersNumber(222);
+		params.setTiersNumber(37); // passé de la PM 222 à la PM 37 parce quelqu'un s'est amusé à entrer des valeurs bidon en développement...
 		params.setDate(newDate(2009, 10, 14));
 		params.getParts().add(TiersPart.ADRESSES);
 		params.getParts().add(TiersPart.ADRESSES_ENVOI);
 
 		final PersonneMorale pm = (PersonneMorale) service.getTiers(params);
 		assertNotNull(pm);
-		assertEquals(222L, pm.getNumero());
-		assertEquals("Fiduciaire Turrian SA", trimValiPattern(pm.getPersonneContact()));
-		assertEquals("KALESA", trimValiPattern(pm.getDesignationAbregee()));
-		assertEquals("Kalesa S.A.", trimValiPattern(pm.getRaisonSociale1()));
+		assertEquals(37L, pm.getNumero());
+		assertEquals("Fiduciaire Pierre Terrier", trimValiPattern(pm.getPersonneContact()));
+		assertEquals("FIBER SEAL ROMANDIE", trimValiPattern(pm.getDesignationAbregee()));
+		assertEquals("Fiber Seal (Romandie)", trimValiPattern(pm.getRaisonSociale1()));
 		assertEquals("", trimValiPattern(pm.getRaisonSociale2()));
 		assertEquals("en liquidation", trimValiPattern(pm.getRaisonSociale3()));
 
@@ -577,24 +583,24 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 
 		final Adresse adresseDomicile = pm.getAdresseDomicile();
 		assertNotNull(adresseDomicile);
-		assertSameDay(newDate(1979,8,7), adresseDomicile.getDateDebut());
+		assertSameDay(newDate(1996, 4, 11), adresseDomicile.getDateDebut());
 		assertNull(adresseDomicile.getDateFin());
 		assertNull(adresseDomicile.getTitre());
 		assertNull(adresseDomicile.getCasePostale());
 		assertNull(adresseDomicile.getNumeroAppartement());
-		assertEquals("La Coche", adresseDomicile.getRue());
-		assertNull(adresseDomicile.getNumeroRue());
-		assertEquals("1852", adresseDomicile.getNumeroPostal());
-		assertEquals("Roche VD", adresseDomicile.getLocalite());
+		assertEquals("Quai du Seujet", adresseDomicile.getRue());
+		assertEquals("28A", adresseDomicile.getNumeroRue());
+		assertEquals("1201", adresseDomicile.getNumeroPostal());
+		assertEquals("Genève", adresseDomicile.getLocalite());
 		assertNull(adresseDomicile.getPays());
-		assertEquals(1094, adresseDomicile.getNoOrdrePostal());
-		assertNull(adresseDomicile.getNoRue());
+		assertEquals(367, adresseDomicile.getNoOrdrePostal());
+		assertEquals(Integer.valueOf(46421), adresseDomicile.getNoRue());
 
 		final AdresseEnvoi adresseDomicileFormattee = pm.getAdresseDomicileFormattee();
 		assertNotNull(adresseDomicileFormattee);
-		assertEquals("KALESA", trimValiPattern(adresseDomicileFormattee.getLigne1()));
-		assertEquals("La Coche", trimValiPattern(adresseDomicileFormattee.getLigne2()));
-		assertEquals("1852 Roche VD", trimValiPattern(adresseDomicileFormattee.getLigne3()));
+		assertEquals("FIBER SEAL ROMANDIE", trimValiPattern(adresseDomicileFormattee.getLigne1()));
+		assertEquals("Quai du Seujet 28A", trimValiPattern(adresseDomicileFormattee.getLigne2()));
+		assertEquals("1201 Genève", trimValiPattern(adresseDomicileFormattee.getLigne3()));
 		assertNull(adresseDomicileFormattee.getLigne4());
 		assertNull(adresseDomicileFormattee.getLigne5());
 		assertNull(adresseDomicileFormattee.getLigne6());
@@ -604,24 +610,24 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 
 		final Adresse adressePoursuite = pm.getAdressePoursuite();
 		assertNotNull(adressePoursuite);
-		assertSameDay(newDate(1979,8,7), adressePoursuite.getDateDebut());
+		assertSameDay(newDate(1996, 4, 11), adressePoursuite.getDateDebut());
 		assertNull(adressePoursuite.getDateFin());
 		assertNull(adressePoursuite.getTitre());
 		assertNull(adressePoursuite.getCasePostale());
 		assertNull(adressePoursuite.getNumeroAppartement());
-		assertEquals("La Coche", adressePoursuite.getRue());
-		assertNull(adressePoursuite.getNumeroRue());
-		assertEquals("1852", adressePoursuite.getNumeroPostal());
-		assertEquals("Roche VD", adressePoursuite.getLocalite());
+		assertEquals("Quai du Seujet", adressePoursuite.getRue());
+		assertEquals("28A", adressePoursuite.getNumeroRue());
+		assertEquals("1201", adressePoursuite.getNumeroPostal());
+		assertEquals("Genève", adressePoursuite.getLocalite());
 		assertNull(adressePoursuite.getPays());
-		assertEquals(1094, adressePoursuite.getNoOrdrePostal());
-		assertNull(adressePoursuite.getNoRue());
+		assertEquals(367, adressePoursuite.getNoOrdrePostal());
+		assertEquals(Integer.valueOf(46421), adressePoursuite.getNoRue());
 
 		final AdresseEnvoi adressePoursuiteFormattee = pm.getAdressePoursuiteFormattee();
 		assertNotNull(adressePoursuiteFormattee);
-		assertEquals("KALESA", trimValiPattern(adressePoursuiteFormattee.getLigne1()));
-		assertEquals("La Coche", trimValiPattern(adressePoursuiteFormattee.getLigne2()));
-		assertEquals("1852 Roche VD", trimValiPattern(adressePoursuiteFormattee.getLigne3()));
+		assertEquals("FIBER SEAL ROMANDIE", trimValiPattern(adressePoursuiteFormattee.getLigne1()));
+		assertEquals("Quai du Seujet 28A", trimValiPattern(adressePoursuiteFormattee.getLigne2()));
+		assertEquals("1201 Genève", trimValiPattern(adressePoursuiteFormattee.getLigne3()));
 		assertNull(adressePoursuiteFormattee.getLigne4());
 		assertNull(adressePoursuiteFormattee.getLigne5());
 		assertNull(adressePoursuiteFormattee.getLigne6());
