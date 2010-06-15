@@ -102,6 +102,12 @@
 		<property name="rapportService" ref="rapportService"/>
         <property name="identificationService" ref="identCtbService"/>
     </bean>
+	<bean id="evenementExterneHandlerJob" parent="schedulerJob" class="ch.vd.uniregctb.evenement.externe.EvenementExterneHandlerJob">
+		 <constructor-arg value="202"/>
+		<constructor-arg value="Relancer le traitement automatique des évènements externes"/>
+		<property name="evenementExterneProcessor" ref="evenementExterneProcessor"/>
+		<property name="rapportService" ref="rapportService"/>
+	</bean>
 
     <bean id="editiqueListeRecapJob" parent="schedulerJob" class="ch.vd.uniregctb.editique.batch.EditiqueListeRecapJob">
         <constructor-arg value="300"/>

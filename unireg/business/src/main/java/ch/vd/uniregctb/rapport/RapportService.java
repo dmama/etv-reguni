@@ -18,6 +18,7 @@ import ch.vd.uniregctb.declaration.source.EnvoiLRsResults;
 import ch.vd.uniregctb.declaration.source.EnvoiSommationLRsResults;
 import ch.vd.uniregctb.document.*;
 import ch.vd.uniregctb.document.ListeDIsNonEmisesRapport;
+import ch.vd.uniregctb.evenement.externe.TraiterEvenementExterneResult;
 import ch.vd.uniregctb.identification.contribuable.IdentifierContribuableResults;
 import ch.vd.uniregctb.listes.listesnominatives.ListesNominativesResults;
 import ch.vd.uniregctb.listes.suisseoupermiscresident.ListeContribuablesResidentsSansForVaudoisResults;
@@ -290,4 +291,13 @@ public interface RapportService {
 	 * @return
 	 */
 	IdentifierContribuableRapport generateRapport(IdentifierContribuableResults results,StatusManager status);
+
+	/**
+	 * Génère le rapport suite à l'execution du job de relance des evenement externe
+	 * @param results
+	 * @param status
+	 * @return
+	 */
+
+	TraiterEvenementExterneRapport generateRapport(TraiterEvenementExterneResult results, StatusManager status);
 }

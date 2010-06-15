@@ -27,6 +27,7 @@ import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.hibernate.interceptor.ModificationLogInterceptor;
+import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
@@ -79,11 +80,12 @@ public class EvenementExterneServiceImpl implements EvenementExterneService, Ini
 	 * {@inheritDoc}
 	 */
 	public void sendEvent(String businessId, EvenementImpotSourceQuittanceDocument document) throws Exception {
-		sender.sendEvent(businessId, document);		
+		sender.sendEvent(businessId, document);
 	}
 
 	/**
 	 * {@inheritDoc}
+	 *
 	 * @param event
 	 */
 	@Transactional(rollbackFor = Throwable.class)
@@ -95,11 +97,90 @@ public class EvenementExterneServiceImpl implements EvenementExterneService, Ini
 		}
 
 		if (event instanceof QuittanceLR) {
-			onQuittance((QuittanceLR)event);
+			onQuittance((QuittanceLR) event);
 		}
 		else {
 			throw new EvenementExterneException("Type d'événement inconnu = " + event.getClass());
 		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @param event
+	 */
+	@Transactional(rollbackFor = Throwable.class)
+	public int traiterEvenementExterne(EvenementExterne event) throws EvenementExterneException {
+		int resultat = 0;
+		if (event instanceof QuittanceLR) {
+			resultat = traiterQuittanceLR((QuittanceLR) event);
+		}
+		else {
+			throw new EvenementExterneException("Type d'événement inconnu = " + event.getClass());
+		}
+		return resultat;
+	}
+
+	private int traiterQuittanceLR(QuittanceLR event) throws EvenementExterneException {
+		final Long tiersId = event.getTiersId();
+		int resultat = 0;
+		// On recherche le débiteur correspondant
+		final Tiers tiers = tiersDAO.get(tiersId);
+		if (tiers == null) {
+			throw new EvenementExterneException("Tiers n'existe pas " + tiersId);
+		}
+
+		// Si la cible de l'evenement(la LR) est déjà traitée, on ne fait rien
+		if (lrDejaTraitee(event, tiers)) {
+			resultat = 0;
+		}
+		else {
+			// On quittance la LR
+			quittancementLr(event);
+			// Tout s'est bien passé
+			event.setEtat(EtatEvenementExterne.TRAITE);
+			event.setErrorMessage(null);
+			resultat = 1;
+		}
+		return resultat;
+
+
+	}
+
+	/**
+	 * teste si la lr a u etat conforme pour le type de quittancement que l'evenement demande:
+	 * si la LR a un etat retourne et que l'on a une demande de quittancement
+	 * ou si la lr a un etat non retourne et
+	 * * que l'on a une demande d'annulation de quittancement la lr est déja traité, donc on est sensé ne rien faire
+	 *
+	 * @param event
+	 * @param tiers
+	 * @return
+	 * @throws EvenementExterneException
+	 */
+	//
+	private boolean lrDejaTraitee(QuittanceLR event, Tiers tiers) throws EvenementExterneException {
+		boolean etatConforme = true;
+		final RegDate dateValidite = event.getDateFin().getOneDayBefore();
+		Declaration lr = tiers.getDeclarationActive(dateValidite);
+		if (lr != null) {
+			if (TypeEtatDeclaration.RETOURNEE.equals(lr.getDernierEtat()) && TypeQuittance.QUITTANCEMENT.equals(event.getType()) ||
+					isNonQuittancee(lr) && TypeQuittance.ANNULATION.equals(event.getType())) {
+				etatConforme = false;
+			}
+		}
+		else {
+			throw new EvenementExterneException("la LR " + event.getDateDebut() + "-" + event.getDateFin() + " du debiteur " + tiers.getNumero() + " n'existe pas");
+		}
+
+		return etatConforme;
+	}
+
+	private boolean isNonQuittancee(Declaration lr) {
+		if (TypeEtatDeclaration.RETOURNEE.equals(lr.getDernierEtat())) {
+			return false;
+		}
+		return true;
 	}
 
 	private void onQuittance(QuittanceLR event) {
@@ -197,8 +278,8 @@ public class EvenementExterneServiceImpl implements EvenementExterneService, Ini
 	}
 
 	public EvenementImpotSourceQuittanceDocument createEvenementQuittancement(EvenementImpotSourceQuittanceType.TypeQuittance.Enum quitancement, Long numeroCtb, RegDate dateDebut,
-			RegDate dateFin, RegDate dateQuittance) {
-		
+	                                                                          RegDate dateFin, RegDate dateQuittance) {
+
 		Assert.notNull(quitancement, "le type de quittancement est obligation");
 		Assert.notNull(numeroCtb, "Le numero du débiteur est obligatoire");
 		Assert.notNull(dateDebut, "la date du début du récapitulatif est obligatoire");
@@ -223,7 +304,7 @@ public class EvenementExterneServiceImpl implements EvenementExterneService, Ini
 		return doc;
 	}
 
-	private static class MigrationResults implements BatchResults<Long,MigrationResults> {
+	private static class MigrationResults implements BatchResults<Long, MigrationResults> {
 
 		public final Map<Long, String> erreurs = new HashMap<Long, String>();
 

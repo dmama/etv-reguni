@@ -117,6 +117,7 @@
 				<value>ch.vd.uniregctb.document.StatistiquesEvenementsRapport</value>
 				<value>ch.vd.uniregctb.document.DeterminerMouvementsDossiersEnMasseRapport</value>
 				<value>ch.vd.uniregctb.document.IdentifierContribuableRapport</value>
+				<value>ch.vd.uniregctb.document.TraiterEvenementExterneRapport</value>
 				<value>ch.vd.uniregctb.parametrage.ParametreApp</value>
 			</list>
 		</property>

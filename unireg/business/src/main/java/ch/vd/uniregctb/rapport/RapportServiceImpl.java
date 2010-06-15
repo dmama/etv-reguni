@@ -12,6 +12,7 @@ import ch.vd.uniregctb.declaration.source.EnvoiLRsResults;
 import ch.vd.uniregctb.declaration.source.EnvoiSommationLRsResults;
 import ch.vd.uniregctb.document.*;
 import ch.vd.uniregctb.document.ListeDIsNonEmisesRapport;
+import ch.vd.uniregctb.evenement.externe.TraiterEvenementExterneResult;
 import ch.vd.uniregctb.identification.contribuable.IdentifierContribuableResults;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.listes.listesnominatives.ListesNominativesResults;
@@ -678,5 +679,25 @@ public class RapportServiceImpl implements RapportService {
 				throw new RuntimeException(e);
 			}
 
+	}
+
+	public TraiterEvenementExterneRapport generateRapport(final TraiterEvenementExterneResult results, StatusManager s) {
+			final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
+
+			final String nom = "RapportRelanceEvenementExterne";
+			final String description = "Rapport d'exécution du job de relance des evenements externes. Date de traitement = " + results.getDateTraitement();
+			final Date dateGeneration = new Date();
+
+			try {
+				return docService.newDoc(TraiterEvenementExterneRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<TraiterEvenementExterneRapport>() {
+					public void writeDoc(TraiterEvenementExterneRapport doc, OutputStream os) throws Exception {
+						final PdfTraiterEvenementExterneRapport document = new PdfTraiterEvenementExterneRapport();
+						document.write(results, nom, description, dateGeneration, os, status);
+					}
+				});
+			}
+			catch (Exception e) {
+				throw new RuntimeException(e);
+			}
 	}
 }
