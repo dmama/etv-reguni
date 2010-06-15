@@ -48,7 +48,7 @@ public class EvenementCediListenerTest extends EvenementTest {
 		Log4jConfigurer.initLogging("classpath:ut/log4j.xml");
 
 		final ActiveMQConnectionFactory jmsConnectionManager = new ActiveMQConnectionFactory();
-		jmsConnectionManager.setBrokerURL("tcp://grominet:4500");
+		jmsConnectionManager.setBrokerURL("tcp://ssv0309v:50900");
 		jmsConnectionManager.setUserName("smx");
 		jmsConnectionManager.setPassword("smx");
 
