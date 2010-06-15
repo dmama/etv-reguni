@@ -155,12 +155,12 @@ public abstract class Contribuable extends Tiers {
 	}
 
 	/**
-	 * Retourne les situations de famille actives triées par - La date d'ouverture
+	 * Retourne les situations de famille non-annulées triées par - La date d'ouverture
 	 *
 	 * @return
 	 */
 	@Transient
-	public List<SituationFamille> getSituationFamilleActiveSorted() {
+	public List<SituationFamille> getSituationsFamilleSorted() {
 		List<SituationFamille> situations = null;
 		if (situationsFamille != null) {
 			situations = new ArrayList<SituationFamille>();
@@ -342,13 +342,13 @@ public abstract class Contribuable extends Tiers {
 
 	private ValidationResults validateSituationsFamille() {
 
-		ValidationResults results = new ValidationResults();
+		final ValidationResults results = new ValidationResults();
 
-		final List<SituationFamille> situationsSorted = getSituationFamilleActiveSorted();
+		final List<SituationFamille> situationsSorted = getSituationsFamilleSorted();
 		if (situationsSorted != null) {
 
 			// On valide toutes les situations de familles pour elles-mêmes
-			for (SituationFamille s : situationsFamille) {
+			for (SituationFamille s : situationsSorted) {
 				results.merge(s.validate());
 			}
 
