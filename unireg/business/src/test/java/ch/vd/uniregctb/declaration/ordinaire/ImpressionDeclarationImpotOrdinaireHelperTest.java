@@ -18,6 +18,8 @@ import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.*;
+
+import noNamespace.DIBase;
 import noNamespace.DIDocument.DI;
 import noNamespace.DIRetour;
 import noNamespace.InfoEnteteDocumentDocument1.InfoEnteteDocument;
@@ -229,6 +231,10 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 
 		final DI di = impressionDIHelper.remplitSpecifiqueDI(declaration2008, null);
 		assertNotNull(di);
+
+		final DIBase.InfoDI infoDi = di.getInfoDI();
+		assertNotNull(infoDi);
+		assertEquals("22", infoDi.getNOOID()); // [UNIREG-1741] le numéro d'OID doit être renseignée en cas de retour au CEDI-22
 
 		final DIRetour.AdresseRetour retour = di.getAdresseRetour();
 		assertNotNull(retour);
