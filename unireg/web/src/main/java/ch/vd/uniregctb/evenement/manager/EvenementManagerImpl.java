@@ -112,45 +112,50 @@ public class EvenementManagerImpl implements EvenementManager, MessageSourceAwar
 			evtView.setAdresseConjoint(adresseConjoint);
 		}
 
-		final List<TiersAssocieView> tiersAssocies = new ArrayList<TiersAssocieView>();
+		try {
+			final List<TiersAssocieView> tiersAssocies = new ArrayList<TiersAssocieView>();
 
-		final PersonnePhysique habitantPrincipal = tiersDAO.getPPByNumeroIndividu(evtView.getEvenement().getNumeroIndividuPrincipal());
-		if (habitantPrincipal != null) {
-			final TiersAssocieView tiersAssocie = setTiersAssocieView (habitantPrincipal);
-			tiersAssocie.setLocaliteOuPays(getLocaliteOuPays(habitantPrincipal));
-			final ForFiscalPrincipal forFiscalPrincipal = habitantPrincipal.getDernierForFiscalPrincipal();
-			if (forFiscalPrincipal != null) {
-				final Integer numeroOfsAutoriteFiscale = forFiscalPrincipal.getNumeroOfsAutoriteFiscale();
-				final Commune commune = serviceInfrastructureService.getCommuneByNumeroOfsEtendu(numeroOfsAutoriteFiscale, forFiscalPrincipal.getDateFin());
-				if (commune != null) {
-					tiersAssocie.setForPrincipal(commune.getNomMinuscule());
+			final PersonnePhysique habitantPrincipal = tiersDAO.getPPByNumeroIndividu(evtView.getEvenement().getNumeroIndividuPrincipal());
+			if (habitantPrincipal != null) {
+				final TiersAssocieView tiersAssocie = setTiersAssocieView (habitantPrincipal);
+				tiersAssocie.setLocaliteOuPays(getLocaliteOuPays(habitantPrincipal));
+				final ForFiscalPrincipal forFiscalPrincipal = habitantPrincipal.getDernierForFiscalPrincipal();
+				if (forFiscalPrincipal != null) {
+					final Integer numeroOfsAutoriteFiscale = forFiscalPrincipal.getNumeroOfsAutoriteFiscale();
+					final Commune commune = serviceInfrastructureService.getCommuneByNumeroOfsEtendu(numeroOfsAutoriteFiscale, forFiscalPrincipal.getDateFin());
+					if (commune != null) {
+						tiersAssocie.setForPrincipal(commune.getNomMinuscule());
+					}
+					tiersAssocie.setDateOuvertureFor(forFiscalPrincipal.getDateDebut());
+					tiersAssocie.setDateFermetureFor(forFiscalPrincipal.getDateFin());
 				}
-				tiersAssocie.setDateOuvertureFor(forFiscalPrincipal.getDateDebut());
-				tiersAssocie.setDateFermetureFor(forFiscalPrincipal.getDateFin());
-			}
-			tiersAssocies.add(tiersAssocie);
-		}
-
-
-		if (evtView.getEvenement().getNumeroIndividuConjoint() != null) {
-			final PersonnePhysique habitantConjoint = tiersDAO.getPPByNumeroIndividu(evtView.getEvenement().getNumeroIndividuConjoint());
-			if (habitantConjoint != null) {
-				TiersAssocieView tiersAssocie = setTiersAssocieView(habitantConjoint);
 				tiersAssocies.add(tiersAssocie);
 			}
-		}
 
-		final EnsembleTiersCouple ensembleTiersCouple = tiersService.getEnsembleTiersCouple(habitantPrincipal, RegDate.get());
-		if (ensembleTiersCouple != null) {
-			final MenageCommun menageCommun = ensembleTiersCouple.getMenage();
-			if (menageCommun != null) {
-				final TiersAssocieView tiersAssocie = setTiersAssocieView(menageCommun);
-				tiersAssocies.add(tiersAssocie);
+
+			if (evtView.getEvenement().getNumeroIndividuConjoint() != null) {
+				final PersonnePhysique habitantConjoint = tiersDAO.getPPByNumeroIndividu(evtView.getEvenement().getNumeroIndividuConjoint());
+				if (habitantConjoint != null) {
+					TiersAssocieView tiersAssocie = setTiersAssocieView(habitantConjoint);
+					tiersAssocies.add(tiersAssocie);
+				}
+			}
+
+			final EnsembleTiersCouple ensembleTiersCouple = tiersService.getEnsembleTiersCouple(habitantPrincipal, RegDate.get());
+			if (ensembleTiersCouple != null) {
+				final MenageCommun menageCommun = ensembleTiersCouple.getMenage();
+				if (menageCommun != null) {
+					final TiersAssocieView tiersAssocie = setTiersAssocieView(menageCommun);
+					tiersAssocies.add(tiersAssocie);
+				}
+			}
+
+			if (tiersAssocies.size() != 0) {
+				evtView.setTiersAssocies(tiersAssocies);
 			}
 		}
-
-		if (tiersAssocies.size() != 0) {
-			evtView.setTiersAssocies(tiersAssocies);
+		catch (PlusieursPersonnesPhysiquesAvecMemeNumeroIndividuException e) {
+			LOGGER.warn(String.format("Détermination impossible des tiers associés à l'événement civil %d : %s", id, e.getMessage()));
 		}
 
 		return evtView;
