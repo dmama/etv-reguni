@@ -516,9 +516,17 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 		infoDI.setNOCANT(FormatNumeroHelper.numeroCTBToDisplay(tiers.getNumero()));
 		infoDI.setDESCOM(commune.getNomMinuscule());
 
-		if (collectiviteAdministrative != null && collectiviteAdministrative.getNumeroCollectiviteAdministrative() == ServiceInfrastructureService.noCEDI) {
-			final String nooid = calculNooid(declaration, tiers);
-			infoDI.setNOOID(nooid);
+		final Integer numeroCA = (collectiviteAdministrative == null ? null : collectiviteAdministrative.getNumeroCollectiviteAdministrative());
+		// [UNIREG-1741] le numéro d'OID doit être renseignée en cas de retour au CEDI *ou* au CEDI-22
+		if (numeroCA != null) {
+			if (numeroCA == ServiceInfrastructureService.noCEDI) {
+				final String nooid = calculNooid(declaration, tiers);
+				infoDI.setNOOID(nooid);
+			}
+			else if (numeroCA == ServiceInfrastructureService.noACI) {
+				// [UNIREG-1741] Cas des décédés, les déclarations sont adressées au CEDI pour scannage avec le numéro de l'ACI
+				infoDI.setNOOID(String.valueOf(ServiceInfrastructureService.noACI));
+			}
 		}
 	}
 
