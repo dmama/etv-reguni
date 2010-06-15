@@ -103,7 +103,7 @@ public class FiscalEditControllerTest extends WebTest {
 		final List<?> errors = exception.getAllErrors();
 		final ObjectError error = (ObjectError) errors.get(0);
 		assertNotNull(error);
-		assertEquals("Il n'y a pas de for principal pour accompagner le for secondaire qui commence le 2000.01.01", error
+		assertEquals("Il n'y a pas de for principal pour accompagner le for secondaire qui commence le 01.01.2000", error
 				.getDefaultMessage());
 	}
 
