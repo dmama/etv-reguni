@@ -461,7 +461,7 @@ public class SituationFamilleServiceImpl implements SituationFamilleService {
 		Assert.notNull(contribuable);
 
 		// Annulation de la situation de famille
-		final List<SituationFamille> situations = contribuable.getSituationFamilleActiveSorted();
+		final List<SituationFamille> situations = contribuable.getSituationsFamilleSorted();
 		// la situation de famille doit être la dernière non annulee
 		Assert.notEmpty(situations);
 

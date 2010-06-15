@@ -1269,8 +1269,8 @@ public class MetierServiceImpl implements MetierService {
 	}
 
 	private void updateSituationFamilleSeparation(MenageCommun menageCommun, RegDate date, ch.vd.uniregctb.type.EtatCivil etatCivil) {
-		if (menageCommun.getSituationFamilleActiveSorted() != null) {
-			for (SituationFamille sf : menageCommun.getSituationFamilleActiveSorted()) {
+		if (menageCommun.getSituationsFamilleSorted() != null) {
+			for (SituationFamille sf : menageCommun.getSituationsFamilleSorted()) {
 				if (sf.getDateDebut().isAfter(date)) {
 					throw new EvenementCivilHandlerException("Des situations famille actives existent après la date de séparation. Veuillez les annuler manuellement.");
 				}
