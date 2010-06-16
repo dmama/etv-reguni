@@ -16,15 +16,19 @@ public class PersonnePhysiqueTest extends WithoutSpringTest {
 
 		pp.setNom(null);
 		assertTrue(pp.validate().hasErrors());
+		assertFalse(pp.validate().hasWarnings());
 
 		pp.setNom("");
 		assertTrue(pp.validate().hasErrors());
+		assertFalse(pp.validate().hasWarnings());
 
 		pp.setNom("  ");
 		assertTrue(pp.validate().hasErrors());
+		assertFalse(pp.validate().hasWarnings());
 
 		pp.setNom("Bob");
 		assertFalse(pp.validate().hasErrors());
+		assertFalse(pp.validate().hasWarnings());
 	}
 
 	@Test
@@ -33,34 +37,44 @@ public class PersonnePhysiqueTest extends WithoutSpringTest {
 		final PersonnePhysique pp = new PersonnePhysique(false);
 
 		pp.setNom("1");
-		assertTrue(pp.validate().hasErrors());
+		assertFalse(pp.validate().hasErrors());
+		assertTrue(pp.validate().hasWarnings());
 
 		pp.setNom(".K");
-		assertTrue(pp.validate().hasErrors());
+		assertFalse(pp.validate().hasErrors());
+		assertTrue(pp.validate().hasWarnings());
 
 		pp.setNom(" Kulti");
-		assertTrue(pp.validate().hasErrors());
+		assertFalse(pp.validate().hasErrors());
+		assertTrue(pp.validate().hasWarnings());
 
 		pp.setNom("ŠǿůžŷķæœŒŭĠĥſ");
-		assertTrue(pp.validate().hasErrors());
+		assertFalse(pp.validate().hasErrors());
+		assertTrue(pp.validate().hasWarnings());
 
 		pp.setNom("'AaÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõöøùúûüýþÿŒœŠšŸŽž-O'Hara.//");
 		assertFalse(pp.validate().hasErrors());
+		assertFalse(pp.validate().hasWarnings());
 
 		pp.setNom("AaÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõöøùúûüýþÿŒœŠšŸŽž-O'Hara.//");
 		assertFalse(pp.validate().hasErrors());
+		assertFalse(pp.validate().hasWarnings());
 
 		pp.setNom("'AaÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõöøùúûüýþÿŒœŠšŸŽž - O'Hara.//");
 		assertFalse(pp.validate().hasErrors());
+		assertFalse(pp.validate().hasWarnings());
 
 		pp.setNom("''AaÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõöøùúûüýþÿŒœŠšŸŽž-O'Hara.//");   // double guillemet en tête
-		assertTrue(pp.validate().hasErrors());
+		assertFalse(pp.validate().hasErrors());
+		assertTrue(pp.validate().hasWarnings());
 
 		pp.setNom("'AaÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõöøùúûüýþÿŒœŠšŸŽž -  O'Hara.//"); // double espace
-		assertTrue(pp.validate().hasErrors());
+		assertFalse(pp.validate().hasErrors());
+		assertTrue(pp.validate().hasWarnings());
 
 		pp.setNom("AaÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõöøùúûüýþÿŒœŠšŸŽž - O''Hara.// "); // espace final
-		assertTrue(pp.validate().hasErrors());
+		assertFalse(pp.validate().hasErrors());
+		assertTrue(pp.validate().hasWarnings());
 	}
 
 	@Test
@@ -70,36 +84,47 @@ public class PersonnePhysiqueTest extends WithoutSpringTest {
 		pp.setNom("Bob");
 
 		pp.setPrenom("1");
-		assertTrue(pp.validate().hasErrors());
+		assertFalse(pp.validate().hasErrors());
+		assertTrue(pp.validate().hasWarnings());
 
 		pp.setPrenom(".K");
-		assertTrue(pp.validate().hasErrors());
+		assertFalse(pp.validate().hasErrors());
+		assertTrue(pp.validate().hasWarnings());
 
 		pp.setPrenom(" Kulti");
-		assertTrue(pp.validate().hasErrors());
+		assertFalse(pp.validate().hasErrors());
+		assertTrue(pp.validate().hasWarnings());
 
 		pp.setPrenom("ŠǿůžŷķæœŒŭĠĥſ");
-		assertTrue(pp.validate().hasErrors());
+		assertFalse(pp.validate().hasErrors());
+		assertTrue(pp.validate().hasWarnings());
 
 		pp.setPrenom("AaÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõöøùúûüýþÿŒœŠšŸŽž-O'Hara.//");
 		assertFalse(pp.validate().hasErrors());
+		assertFalse(pp.validate().hasWarnings());
 
 		pp.setPrenom("'AaÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõöøùúûüýþÿŒœŠšŸŽž-O'Hara.//");
 		assertFalse(pp.validate().hasErrors());
+		assertFalse(pp.validate().hasWarnings());
 
 		pp.setPrenom("'AaÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõöøùúûüýþÿŒœŠšŸŽž - O'Hara.//");
 		assertFalse(pp.validate().hasErrors());
+		assertFalse(pp.validate().hasWarnings());
 
 		pp.setPrenom("''AaÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõöøùúûüýþÿŒœŠšŸŽž - O'Hara.//");  // double guillemet en tête
-		assertTrue(pp.validate().hasErrors());
+		assertFalse(pp.validate().hasErrors());
+		assertTrue(pp.validate().hasWarnings());
 
 		pp.setPrenom("'AaÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõöøùúûüýþÿŒœŠšŸŽž -  O'Hara.//");  // double espace
-		assertTrue(pp.validate().hasErrors());
+		assertFalse(pp.validate().hasErrors());
+		assertTrue(pp.validate().hasWarnings());
 
 		pp.setPrenom("AaÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõöøùúûüýþÿŒœŠšŸŽž - O''Hara.// ");  // espace final
-		assertTrue(pp.validate().hasErrors());
+		assertFalse(pp.validate().hasErrors());
+		assertTrue(pp.validate().hasWarnings());
 
 		pp.setPrenom(null);
 		assertFalse(pp.validate().hasErrors());
+		assertFalse(pp.validate().hasWarnings());
 	}
 }
