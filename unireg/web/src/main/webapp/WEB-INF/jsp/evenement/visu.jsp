@@ -200,8 +200,8 @@
 		<c:if test="${(command.evenement.etat == 'A_TRAITER') || (command.evenement.etat == 'EN_ERREUR')}">
 			<input type="submit" name="recycler" value="<fmt:message key="label.bouton.recycler" />" />	
 		</c:if>
-		<c:if test="${(command.evenement.etat != 'TRAITE')}">
-			<input type="submit" name="forcer" value="<fmt:message key="label.bouton.forcer" />" />	
+		<c:if test="${command.evenement.etat != 'TRAITE' && command.evenement.etat != 'FORCE'}">
+			<input type="submit" name="forcer" value="<fmt:message key="label.bouton.forcer" />" onclick="return confirm('Voulez-vous réellement forcer l\'état de cet événement civil ?');"/>	
 		</c:if>
 		<!-- Fin Boutons -->
 		</form:form>
