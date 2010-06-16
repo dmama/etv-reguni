@@ -223,20 +223,20 @@ public class PersonnePhysique extends Contribuable {
 			}
 			else {
 				if (!NOM_PRENOM_PATTERN.matcher(nom).matches()) {
-					results.addError("Le nom du non-habitant contient au moins un caractère invalide");
+					results.addWarning("Le nom du non-habitant contient au moins un caractère invalide");
 				}
 				if (!NOM_PRENOM_ESPACES.matcher(nom).matches()) {
-					results.addError("Le nom du non-habitant contient un groupe de plusieurs espaces consécutifs ou un espace final");
+					results.addWarning("Le nom du non-habitant contient un groupe de plusieurs espaces consécutifs ou un espace final");
 				}
 			}
 
 			// prénom : facultatif, donc on laisse passer empty, mais pas des espaces seuls
 			if (!StringUtils.isEmpty(prenom)) {
 				if (!NOM_PRENOM_PATTERN.matcher(prenom).matches()) {
-					results.addError("Le prénom du non-habitant contient au moins un caractère invalide");
+					results.addWarning("Le prénom du non-habitant contient au moins un caractère invalide");
 				}
 				if (!NOM_PRENOM_ESPACES.matcher(prenom).matches()) {
-					results.addError("Le prénom du non-habitant contient un groupe de plusieurs espaces consécutifs ou un espace final");
+					results.addWarning("Le prénom du non-habitant contient un groupe de plusieurs espaces consécutifs ou un espace final");
 				}
 			}
 		}
