@@ -19,5 +19,6 @@
 	<bean id="editiqueCompositionService" class="ch.vd.uniregctb.editique.mock.MockEditiqueCompositionService"/>
 	<bean id="impressionDIHelper" class="ch.vd.uniregctb.declaration.ordinaire.MockImpressionDeclarationImpotOrdinaireHelper" />
 	<bean id="impressionSommationDIHelper" class="ch.vd.uniregctb.declaration.ordinaire.MockImpressionSommationDIHelper" />
+	<bean id="impressionSommationLRHelper" class="ch.vd.uniregctb.declaration.source.MockImpressionSommationLRHelper" />
 
 </beans>
