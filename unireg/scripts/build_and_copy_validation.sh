@@ -33,7 +33,7 @@ wsFileDest=uniregws-release-${env}-${version}-${DATE}.zip
 ubrFileOrig=ubr-release.zip
 ubrFileDest=ubr-release-${env}-${version}-${DATE}.zip
 release_dir=/mnt/adacv/Unireg/Releases/
-MVN_OPTS="-Pnot,env.valid,build.source,oracle,all"
+MVN_OPTS="-Pnot,build.source,oracle,all"
 
 # on vérifie que l'on ne dépend pas de librairies SNAPSHOT
 IGNORE_SNAPSHOT="org.apache.activemq.protobuf:activemq-protobuf:jar:1.0-SNAPSHOT"
