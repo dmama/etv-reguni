@@ -9,6 +9,7 @@ import org.apache.log4j.Logger;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 
+import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.tiers.manager.ForFiscalManager;
 import ch.vd.uniregctb.tiers.view.ForFiscalView;
 
@@ -93,7 +94,17 @@ public class TiersForController extends AbstractTiersController {
 		ForFiscalView forFiscalView = (ForFiscalView) command;
 		checkAccesDossierEnEcriture(forFiscalView.getNumeroCtb());
 
-		forFiscalManager.save(forFiscalView);
+		if (forFiscalView.getId() == null) {
+			forFiscalManager.addFor(forFiscalView);
+		}
+		else if (forFiscalView.isChangementModeImposition()) {
+			forFiscalManager.updateModeImposition(forFiscalView);
+		}
+		else {
+			Assert.notNull(forFiscalView.getRegDateFermeture());
+			forFiscalManager.closeFor(forFiscalView);
+		}
+
 		return new ModelAndView("redirect:../fiscal/edit.do?id=" + forFiscalView.getNumeroCtb());
 	}
 

@@ -323,16 +323,12 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 		assertNotNull(fors);
 		assertEquals(1, fors.principaux.size());
 		assertEmpty(fors.secondaires);
-		assertEquals(2, fors.autresImpots.size());
+		assertEquals(1, fors.autresImpots.size()); // les fors autres impôts représentent des impositions ponctuelles valable une seule journée
 		assertEquals(2, fors.autreElementImpot.size());
 
 		final ForFiscalAutreImpot fai0 = fors.autresImpots.get(0);
 		assertNotNull(fai0);
-		assertForAutreImpot(date(1983, 4, 6), dateFusion.getOneDayBefore(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Vaulion, GenreImpot.CHIENS, fai0);
-
-		final ForFiscalAutreImpot fai1 = fors.autresImpots.get(1);
-		assertNotNull(fai1);
-		assertForAutreImpot(dateFusion, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.RomainmotierEnvy, GenreImpot.CHIENS, fai1);
+		assertForAutreImpot(date(1983, 4, 6), null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Vaulion, GenreImpot.CHIENS, fai0);
 
 		final ForFiscalAutreElementImposable faei0 = fors.autreElementImpot.get(0);
 		assertNotNull(faei0);

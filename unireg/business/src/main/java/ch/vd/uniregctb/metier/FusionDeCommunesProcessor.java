@@ -229,7 +229,7 @@ public class FusionDeCommunesProcessor {
 				final RegDate dateFinExistante = secondaire.getDateFin();
 				final MotifFor motifFermetureExistant = secondaire.getMotifFermeture();
 				tiersService.closeForFiscalSecondaire(contribuable, secondaire, dateFusion.getOneDayBefore(), MotifFor.FUSION_COMMUNES);
-				tiersService.openForFiscalSecondaire(contribuable, secondaire.getGenreImpot(), dateFusion, dateFinExistante, secondaire.getMotifRattachement(),
+				tiersService.addForSecondaire(contribuable, dateFusion, dateFinExistante, secondaire.getMotifRattachement(),
 						nouveauNoOfs, secondaire.getTypeAutoriteFiscale(), MotifFor.FUSION_COMMUNES, motifFermetureExistant);
 			}
 		}
@@ -274,9 +274,7 @@ public class FusionDeCommunesProcessor {
 				autre.setNumeroOfsAutoriteFiscale(nouveauNoOfs);
 			}
 			else {
-				final RegDate dateFinExistante = autre.getDateFin();
-				tiersService.closeForAutreImpot(autre, dateFusion.getOneDayBefore());
-				tiersService.openForAutreImpot(autre.getTiers(), dateFusion, dateFinExistante, nouveauNoOfs, autre.getTypeAutoriteFiscale(), autre.getGenreImpot());
+				// dans tous les autres cas, les fors autres impôt ont une validité maximal de 1 jour (= impôt ponctuel) => rien à faire
 			}
 		}
 	}

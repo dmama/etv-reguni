@@ -1218,8 +1218,8 @@ public class TiersServiceTest extends BusinessTest {
 
 		// Un for secondaire (associé a son unique for principal) lui est ajouté à posteriori
 		Tiers eric = tiersService.getTiers(id.idEric);
-		ForFiscalSecondaire ffs = tiersService.openForFiscalSecondaire(
-				(Contribuable)eric, GenreImpot.REVENU_FORTUNE,
+		ForFiscalSecondaire ffs = tiersService.addForSecondaire(
+				(Contribuable)eric, 
 				date(2004,10,5), date(2006,3,15),
 				MotifRattachement.IMMEUBLE_PRIVE, MockCommune.Lausanne.getNoOFS(),
 				TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,

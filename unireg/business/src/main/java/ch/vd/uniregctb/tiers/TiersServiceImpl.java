@@ -1663,50 +1663,12 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 	/**
-	 * Ouvre un nouveau for fiscal secondaire sur un contribuable.
-	 *
-	 * @param contribuable
-	 *            le contribuable sur lequel le nouveau for est ouvert
-	 * @param genreImpot
-	 *            le genre d'impot
-	 * @param dateOuverture
-	 *            la date à laquelle le nouveau for est ouvert
-	 * @param dateFermeture
-	 *            Si la date de fermeture est connue au moment de l'ouverture du for (null sinon)
-	 * @param motifRattachement
-	 *            le motif de rattachement du nouveau for
-	 * @param numeroOfsAutoriteFiscale
-	 *            le numéro OFS de l'autorité fiscale sur laquelle est ouverte le nouveau fort.
-	 * @param typeAutoriteFiscale
-	 *            le type d'autorité fiscale
-	 * @param motifOuverture
-	 *            le motif d'ouverture
-	 * @param motifFermeture
-	 *            le motif de fermeture si celui-ci est connu (null sinon)
-	 *
-	 * @return le nouveau for fiscal secondaire
+	 * {@inheritDoc}
 	 */
-	public ForFiscalSecondaire openForFiscalSecondaire(Contribuable contribuable, GenreImpot genreImpot, final RegDate dateOuverture,
-			final RegDate dateFermeture, MotifRattachement motifRattachement, int numeroOfsAutoriteFiscale, TypeAutoriteFiscale typeAutoriteFiscale,
-			MotifFor motifOuverture, MotifFor motifFermeture) {
-
-		// Ouvre un nouveau for à la date d'événement
-		ForFiscalSecondaire nouveauForFiscal = new ForFiscalSecondaire();
-		nouveauForFiscal.setDateDebut(dateOuverture);
-		nouveauForFiscal.setDateFin(dateFermeture);
-		nouveauForFiscal.setMotifRattachement(motifRattachement);
-		nouveauForFiscal.setNumeroOfsAutoriteFiscale(numeroOfsAutoriteFiscale);
-		nouveauForFiscal.setTypeAutoriteFiscale(typeAutoriteFiscale);
-		nouveauForFiscal.setMotifOuverture(motifOuverture);
-		nouveauForFiscal.setMotifFermeture(motifFermeture);
-		nouveauForFiscal = (ForFiscalSecondaire) addAndSave(contribuable, nouveauForFiscal);
-
-		if (contribuable.validate().errorsCount() == 0) {
-			afterForFiscalSecondaireAdded(contribuable, nouveauForFiscal);
-		}
-
-		Assert.notNull(nouveauForFiscal);
-		return nouveauForFiscal;
+	public ForFiscalSecondaire openForFiscalSecondaire(Contribuable contribuable, final RegDate dateOuverture,
+	                                                   MotifRattachement motifRattachement, int numeroOfsAutoriteFiscale, TypeAutoriteFiscale typeAutoriteFiscale,
+	                                                   MotifFor motifOuverture) {
+		return addForSecondaire(contribuable, dateOuverture, null, motifRattachement, numeroOfsAutoriteFiscale, typeAutoriteFiscale, motifOuverture, null);
 	}
 
 	private void afterForFiscalSecondaireAdded(Contribuable contribuable, ForFiscalSecondaire forFiscalSecondaire) {
@@ -1772,50 +1734,33 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 	/**
-	 * Ouvre un nouveau for fiscal autre impot sur un contribuable.
-	 *
-	 * @param contribuable
-	 *            le contribuable sur lequel le nouveau for est ouvert
-	 * @param genreImpot
-	 *            le genre d'impot
-	 * @param dateOuverture
-	 *            la date à laquelle le nouveau for est ouvert
-	 * @param numeroOfsAutoriteFiscale
-	 *            le numéro OFS de l'autorité fiscale sur laquelle est ouverte le nouveau fort.
-	 * @param typeAutoriteFiscale
-	 *            le type d'autorité fiscale.
-	 * @return le nouveau for autre impot
+	 * {@inheritDoc}
 	 */
-	public ForFiscalAutreImpot openForFiscalAutreImpot(Contribuable contribuable, GenreImpot genreImpot, final RegDate dateOuverture,
-			int numeroOfsAutoriteFiscale, TypeAutoriteFiscale typeAutoriteFiscale) {
+	public ForFiscalAutreImpot openForFiscalAutreImpot(Contribuable contribuable, GenreImpot genreImpot, final RegDate dateImpot, int numeroOfsAutoriteFiscale,
+	                                                   TypeAutoriteFiscale typeAutoriteFiscale) {
 
 		// Ouvre un nouveau for à la date d'événement
 		ForFiscalAutreImpot nouveauForFiscal = new ForFiscalAutreImpot();
 		nouveauForFiscal.setGenreImpot(genreImpot);
-		nouveauForFiscal.setDateDebut(dateOuverture);
+		nouveauForFiscal.setDateDebut(dateImpot);
+		nouveauForFiscal.setDateFin(dateImpot);
 		nouveauForFiscal.setNumeroOfsAutoriteFiscale(numeroOfsAutoriteFiscale);
 		nouveauForFiscal.setTypeAutoriteFiscale(typeAutoriteFiscale);
 		nouveauForFiscal = (ForFiscalAutreImpot) addAndSave(contribuable, nouveauForFiscal);
+
+		if (contribuable.validate().errorsCount() == 0) {
+			afterForAutreImportAdded(contribuable, nouveauForFiscal);
+		}
 
 		Assert.notNull(nouveauForFiscal);
 		return nouveauForFiscal;
 	}
 
 	/**
-	 * Ouvre un nouveau for fiscal debiteur sur un contribuable.
-	 *
-	 * @param contribuable
-	 *            le contribuable sur lequel le nouveau for est ouvert
-	 * @param dateOuverture
-	 *            la date à laquelle le nouveau for est ouvert
-	 * @param numeroOfsAutoriteFiscale
-	 *            le numéro OFS de l'autorité fiscale sur laquelle est ouverte le nouveau fort.
-	 * @param typeAutoriteFiscale
-	 *            le type d'autorité fiscale.
-	 * @return le nouveau for debiteur
+	 * {@inheritDoc}
 	 */
-	public ForDebiteurPrestationImposable openForDebiteurPrestationImposable(DebiteurPrestationImposable debiteur,
-			final RegDate dateOuverture, int numeroOfsAutoriteFiscale, TypeAutoriteFiscale typeAutoriteFiscale) {
+	public ForDebiteurPrestationImposable openForDebiteurPrestationImposable(DebiteurPrestationImposable debiteur, RegDate dateOuverture, int numeroOfsAutoriteFiscale,
+	                                                                         TypeAutoriteFiscale typeAutoriteFiscale) {
 
 		// Ouvre un nouveau for à la date d'événement
 		ForDebiteurPrestationImposable nouveauForFiscal = new ForDebiteurPrestationImposable();
@@ -1837,23 +1782,6 @@ public class TiersServiceImpl implements TiersService {
 		RegDate dateOuverture = forDebiteur.getDateDebut();
 		this.evenementFiscalService.publierEvenementFiscalOuvertureFor(debiteur, dateOuverture, null, forDebiteur.getId());
 
-	}
-
-	public ForFiscalAutreImpot openForAutreImpot(Tiers tiers, RegDate dateOuverture, RegDate dateFermeutre, int noOfs, TypeAutoriteFiscale typeAutoriteFiscale, GenreImpot genreImpot) {
-
-		ForFiscalAutreImpot autre = new ForFiscalAutreImpot();
-		autre.setGenreImpot(genreImpot);
-		autre.setDateDebut(dateOuverture);
-		autre.setNumeroOfsAutoriteFiscale(noOfs);
-		autre.setTypeAutoriteFiscale(typeAutoriteFiscale);
-		autre = (ForFiscalAutreImpot) addAndSave(tiers, autre);
-
-		if (tiers.validate().errorsCount() == 0) {
-			afterForAutreImportAdded(tiers, autre);
-		}
-
-		Assert.notNull(autre);
-		return autre;
 	}
 
 	private void afterForAutreImportAdded(Tiers tiers , ForFiscalAutreImpot forFiscal) {
@@ -2044,54 +1972,54 @@ public class TiersServiceImpl implements TiersService {
 			}
 			forFiscalSecondaire.setDateFin(dateFermeture);
 			forFiscalSecondaire.setMotifFermeture(motifFermeture);
-			if (!contribuable.getForFiscalPrincipalAt(forFiscalSecondaire.getDateFin()).getTypeAutoriteFiscale().equals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD)) {
-				boolean isLast = true;
-				List<ForFiscal> fors = contribuable.getForsFiscauxValidAt(forFiscalSecondaire.getDateFin());
-				for (ForFiscal forFiscal : fors) {
-					if (forFiscal instanceof ForFiscalSecondaire) {
-						ForFiscalSecondaire forSec = (ForFiscalSecondaire)forFiscal;
-						if (forSec.getMotifRattachement().equals(forFiscalSecondaire.getMotifRattachement())) {
-							isLast = false;
-							break;
-						}
-					}
-				}
-				if (isLast) {
-					this.evenementFiscalService.publierEvenementFiscalFermetureFor(contribuable, dateFermeture,
-							motifFermeture, forFiscalSecondaire.getId());
-				}
-			}
-			this.tacheService.genereTacheDepuisFermetureForSecondaire(contribuable, forFiscalSecondaire);
+			afterForFiscalSecondaireClosed(contribuable, forFiscalSecondaire, dateFermeture, motifFermeture);
 		}
 
 		return forFiscalSecondaire;
 	}
 
+	private void afterForFiscalSecondaireClosed(Contribuable contribuable, ForFiscalSecondaire forFiscalSecondaire, RegDate dateFermeture, MotifFor motifFermeture) {
+		if (contribuable.getForFiscalPrincipalAt(forFiscalSecondaire.getDateFin()).getTypeAutoriteFiscale() != TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
+			boolean isLast = true;
+			List<ForFiscal> fors = contribuable.getForsFiscauxValidAt(forFiscalSecondaire.getDateFin());
+			for (ForFiscal forFiscal : fors) {
+				if (forFiscal instanceof ForFiscalSecondaire) {
+					ForFiscalSecondaire forSec = (ForFiscalSecondaire) forFiscal;
+					if (forSec.getMotifRattachement().equals(forFiscalSecondaire.getMotifRattachement())) {
+						isLast = false;
+						break;
+					}
+				}
+			}
+			if (isLast) {
+				this.evenementFiscalService.publierEvenementFiscalFermetureFor(contribuable, dateFermeture,
+						motifFermeture, forFiscalSecondaire.getId());
+			}
+		}
+		this.tacheService.genereTacheDepuisFermetureForSecondaire(contribuable, forFiscalSecondaire);
+	}
+
 
 	/**
-	 * Change le mode d'imposition
-	 *
-	 * @param contribuable
-	 * @param dateChangementModeImposition
-	 * @param modeImposition
-	 * @param motifFor
-	 * @return
+	 *  {@inheritDoc} 
 	 */
-	public ForFiscalPrincipal changeModeImposition(Contribuable contribuable, RegDate dateChangementModeImposition,
-													ModeImposition modeImposition, MotifFor motifFor) {
-		ForFiscalPrincipal forFiscalPrincipal = contribuable.getForFiscalPrincipalAt(null);
+	public ForFiscalPrincipal changeModeImposition(Contribuable contribuable, RegDate dateChangementModeImposition, ModeImposition modeImposition, MotifFor motifFor) {
+
+		final ForFiscalPrincipal forFiscalPrincipal = contribuable.getForFiscalPrincipalAt(null);
+		Assert.notNull(forFiscalPrincipal);
+
 		//Fermeture du for principal précédent
-		if (forFiscalPrincipal != null) {
-			if (forFiscalPrincipal.getDateDebut().isAfter(dateChangementModeImposition.getOneDayBefore())) {
-				throw new ValidationException(forFiscalPrincipal, "La date de changement de mode d'imposition ("
-						+ RegDateHelper.dateToDisplayString(dateChangementModeImposition.getOneDayBefore())
-						+ ") est avant la date de début (" + RegDateHelper.dateToDisplayString(forFiscalPrincipal.getDateDebut())
-						+ ") du for fiscal actif");
-			}
-			forFiscalPrincipal.setDateFin(dateChangementModeImposition.getOneDayBefore());
-			forFiscalPrincipal.setMotifFermeture(motifFor);
-			this.tacheService.genereTacheDepuisFermetureForPrincipal(contribuable, forFiscalPrincipal);
+		if (forFiscalPrincipal.getDateDebut().isAfter(dateChangementModeImposition.getOneDayBefore())) {
+			throw new ValidationException(forFiscalPrincipal, "La date de changement de mode d'imposition ("
+					+ RegDateHelper.dateToDisplayString(dateChangementModeImposition.getOneDayBefore())
+					+ ") est avant la date de début (" + RegDateHelper.dateToDisplayString(forFiscalPrincipal.getDateDebut())
+					+ ") du for fiscal actif");
 		}
+
+		forFiscalPrincipal.setDateFin(dateChangementModeImposition.getOneDayBefore());
+		forFiscalPrincipal.setMotifFermeture(motifFor);
+		this.tacheService.genereTacheDepuisFermetureForPrincipal(contribuable, forFiscalPrincipal);
+
 		//Ouverture d'un nouveau for principal
 		ForFiscalPrincipal nouveauForFiscal = new ForFiscalPrincipal();
 		nouveauForFiscal.setDateDebut(dateChangementModeImposition);
@@ -2109,10 +2037,88 @@ public class TiersServiceImpl implements TiersService {
 				evenementFiscalService.publierEvenementFiscalChangementModeImposition(contribuable, dateChangementModeImposition, modeImposition, nouveauForFiscal.getId());
 			}
 		}
+		
 		return nouveauForFiscal;
-
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	public ForFiscalPrincipal addForPrincipal(Contribuable contribuable, RegDate dateDebut, MotifFor motifOuverture, RegDate dateFin, MotifFor motifFermeture, MotifRattachement motifRattachement,
+	                                          int autoriteFiscale, TypeAutoriteFiscale typeAutoriteFiscale, ModeImposition modeImposition) {
+		final ForFiscalPrincipal dernierForPrincipal = contribuable.getDernierForFiscalPrincipal();
+		if (dernierForPrincipal != null && dernierForPrincipal.getDateFin() == null) {
+			if (dateFin == null || dateFin.isAfter(dernierForPrincipal.getDateDebut())) {
+				closeForFiscalPrincipal(contribuable, dateDebut.getOneDayBefore(), motifOuverture);
+			}
+		}
+
+		final ForFiscalPrincipal forRtr;
+		if (dateFin == null) {
+			forRtr = openForFiscalPrincipal(contribuable, dateDebut, motifRattachement, autoriteFiscale, typeAutoriteFiscale, modeImposition, motifOuverture, true);
+		}
+		else {
+			forRtr = openAndCloseForFiscalPrincipal(contribuable, dateDebut, motifRattachement, autoriteFiscale, typeAutoriteFiscale, modeImposition, motifOuverture, dateFin, motifFermeture, true);
+		}
+		return forRtr;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public ForFiscalSecondaire addForSecondaire(Contribuable contribuable, RegDate dateOuverture, RegDate dateFermeture, MotifRattachement motifRattachement,
+	                                            int numeroOfsAutoriteFiscale, TypeAutoriteFiscale typeAutoriteFiscale, MotifFor motifOuverture, MotifFor motifFermeture) {
+
+		// Ouvre un nouveau for à la date d'événement
+		ForFiscalSecondaire nouveauForFiscal = new ForFiscalSecondaire();
+		nouveauForFiscal.setDateDebut(dateOuverture);
+		nouveauForFiscal.setDateFin(dateFermeture);
+		nouveauForFiscal.setMotifRattachement(motifRattachement);
+		nouveauForFiscal.setNumeroOfsAutoriteFiscale(numeroOfsAutoriteFiscale);
+		nouveauForFiscal.setTypeAutoriteFiscale(typeAutoriteFiscale);
+		nouveauForFiscal.setMotifOuverture(motifOuverture);
+		nouveauForFiscal.setMotifFermeture(motifFermeture);
+		nouveauForFiscal = (ForFiscalSecondaire) addAndSave(contribuable, nouveauForFiscal);
+
+		if (contribuable.validate().errorsCount() == 0) {
+			afterForFiscalSecondaireAdded(contribuable, nouveauForFiscal);
+		}
+
+		if (dateFermeture != null) {
+			afterForFiscalSecondaireClosed(contribuable, nouveauForFiscal, dateFermeture, motifFermeture);
+		}
+
+		Assert.notNull(nouveauForFiscal);
+		return nouveauForFiscal;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public ForFiscalAutreElementImposable addForAutreElementImposable(Contribuable contribuable, RegDate dateDebut, MotifFor motifOuverture, RegDate dateFin, MotifFor motifFermeture,
+	                                                                  MotifRattachement motifRattachement, TypeAutoriteFiscale typeAutoriteFiscale, int autoriteFiscale) {
+		final ForFiscalAutreElementImposable forRtr =
+				openForFiscalAutreElementImposable(contribuable, GenreImpot.REVENU_FORTUNE, dateDebut, motifRattachement, autoriteFiscale, typeAutoriteFiscale, motifOuverture);
+		if (dateFin != null) {
+			closeForFiscalAutreElementImposable(contribuable, forRtr, dateFin, motifFermeture);
+		}
+		return forRtr;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public ForDebiteurPrestationImposable addForDebiteur(DebiteurPrestationImposable debiteur, RegDate dateDebut, RegDate dateFin, int autoriteFiscale) {
+		final ForDebiteurPrestationImposable dernierForDebiteur = debiteur.getDernierForDebiteur();
+		if (dernierForDebiteur != null && dernierForDebiteur.getDateFin() == null) {
+			closeForDebiteurPrestationImposable(debiteur, dernierForDebiteur, dateDebut.getOneDayBefore());
+		}
+		ForDebiteurPrestationImposable forRtr = openForDebiteurPrestationImposable(debiteur, dateDebut, autoriteFiscale, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
+		if (dateFin != null) {
+			forRtr = closeForDebiteurPrestationImposable(debiteur, forRtr, dateFin);
+		}
+		return forRtr;
+	}
 
 	/**
 	 * Ferme le for fiscal autre élément imposable d'un contribuable.

@@ -199,7 +199,7 @@ public class ActivationServiceImpl implements ActivationService {
 						}
 						if (forFiscal instanceof ForFiscalSecondaire) {
 							final ForFiscalSecondaire forFiscalSecondaire = (ForFiscalSecondaire) forFiscal;
-							tiersService.openForFiscalSecondaire(contribuable, forFiscalSecondaire.getGenreImpot(), dateReactivation, null, forFiscalSecondaire.getMotifRattachement(), forFiscalSecondaire.getNumeroOfsAutoriteFiscale(), forFiscalSecondaire.getTypeAutoriteFiscale(), MotifFor.REACTIVATION, null);
+							tiersService.openForFiscalSecondaire(contribuable, dateReactivation, forFiscalSecondaire.getMotifRattachement(), forFiscalSecondaire.getNumeroOfsAutoriteFiscale(), forFiscalSecondaire.getTypeAutoriteFiscale(), MotifFor.REACTIVATION);
 						}
 					}
 					else if (forFiscal instanceof ForFiscalAutreImpot) {

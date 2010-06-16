@@ -39,6 +39,7 @@ import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
 import ch.vd.uniregctb.type.TypeEtatTache;
 
+@SuppressWarnings({"JavaDoc"})
 public class ForFiscalManagerTest extends WebTest {
 
 	private ForFiscalManager manager;
@@ -135,7 +136,7 @@ public class ForFiscalManagerTest extends WebTest {
 		view.setNumeroForFiscalPays(MockPays.France.getNoOFS());
 		view.setTypeAutoriteFiscale(TypeAutoriteFiscale.PAYS_HS);
 
-		manager.save(view);
+		manager.addFor(view);
 
 		// Vérifie que le ménage commun possède bien deux fors fiscaux
 
@@ -258,7 +259,7 @@ public class ForFiscalManagerTest extends WebTest {
 		view.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
 		view.setNumeroForFiscalCommune(MockCommune.VillarsSousYens.getNoOFS());
 
-		manager.save(view);
+		manager.addFor(view);
 
 		// Vérifie que le ménage commun possède bien deux fors fiscaux
 

@@ -1551,10 +1551,10 @@ public class MetierServiceImpl implements MetierService {
 	private void createForsSecondaires(RegDate date, Contribuable contribuable, List<ForFiscalSecondaire> forsSecondaires, MotifFor motifOverture) {
 		for (ForFiscalSecondaire forFiscalSecondaire : forsSecondaires) {
 			if (forFiscalSecondaire.isValidAt(date.getOneDayBefore())) {
-				tiersService.openForFiscalSecondaire(contribuable, forFiscalSecondaire.getGenreImpot(),
-						date, null, forFiscalSecondaire.getMotifRattachement(),
+				tiersService.openForFiscalSecondaire(contribuable,
+						date, forFiscalSecondaire.getMotifRattachement(),
 						forFiscalSecondaire.getNumeroOfsAutoriteFiscale(),
-						forFiscalSecondaire.getTypeAutoriteFiscale(), motifOverture, null);
+						forFiscalSecondaire.getTypeAutoriteFiscale(), motifOverture);
 			}
 		}
 	}

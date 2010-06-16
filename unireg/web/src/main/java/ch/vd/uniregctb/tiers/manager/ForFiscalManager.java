@@ -38,15 +38,6 @@ public interface ForFiscalManager {
 	public abstract ForFiscalView create(Long numeroCtb, boolean dpi);
 
 	/**
-	 * Sauvegarde du for
-	 *
-	 * @param forFiscalView
-	 * @return
-	 */
-	@Transactional(rollbackFor = Throwable.class)
-	public abstract ForFiscal save(ForFiscalView forFiscalView);
-
-	/**
 	 * Annulation du for
 	 *
 	 * @param idFor
@@ -64,4 +55,32 @@ public interface ForFiscalManager {
 	 */
 	@Transactional(readOnly = true)
 	public TiersEditView getView(Long numero) throws AdresseException, InfrastructureException;
+
+	/**
+	 * Ajoute un nouveau for fiscal.
+	 *
+	 * @param forFiscalView le form-backing object de l'écran d'ajout de for fiscal
+	 * @return le for fiscal créé
+	 */
+	@Transactional(rollbackFor = Throwable.class)
+	ForFiscal addFor(ForFiscalView forFiscalView);
+
+	/**
+	 * Ferme un for fiscal préexistant.
+	 *
+	 * @param forFiscalView le form-backing object de l'écran de fermeture du for fiscal
+	 * @return le for fiscal fermé
+	 */
+	@Transactional(rollbackFor = Throwable.class)
+	ForFiscal closeFor(ForFiscalView forFiscalView);
+
+	/**
+	 * Change le mode d'imposition d'un contribuable à partir d'une certaine date. Cette méthode ferme le for principal courant à la date de la veille du changement, et ouvre un nouveau for fiscal
+	 * principal avec le mode d'imposition voulu.
+	 *
+	 * @param forFiscalView le form-backing object de l'écran de mise-à-jour du mode d'imposition
+	 * @return le nouveau for fiscal créé avec le nouveau mode d'imposition.
+	 */
+	@Transactional(rollbackFor = Throwable.class)
+	ForFiscal updateModeImposition(ForFiscalView forFiscalView);
 }
