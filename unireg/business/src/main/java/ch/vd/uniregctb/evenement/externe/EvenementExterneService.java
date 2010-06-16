@@ -23,8 +23,8 @@ public interface EvenementExterneService extends EvenementExterneHandler {
 	/**Permet de traiter les evenements externes depuis un batch de relance
 	 *
  	 * @param event
-	 * @return 1 si levenement est traité 0 si l'evenement n'a pas besoin d'être traité
+	 * @return true si levenement est traité false si l'evenement n'a pas besoin d'être traité
 	 * @throws EvenementExterneException 
 	 */
-	public int traiterEvenementExterne(EvenementExterne event) throws EvenementExterneException;
+	public boolean traiterEvenementExterne(EvenementExterne event) throws EvenementExterneException;
 }

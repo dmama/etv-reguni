@@ -19,6 +19,7 @@ import ch.vd.fiscalite.registre.evenementImpotSourceV1.EvenementImpotSourceQuitt
 import ch.vd.infrastructure.model.impl.DateUtils;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.BatchResults;
 import ch.vd.uniregctb.common.BatchTransactionTemplate;
@@ -27,7 +28,6 @@ import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.hibernate.interceptor.ModificationLogInterceptor;
-import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
@@ -107,11 +107,10 @@ public class EvenementExterneServiceImpl implements EvenementExterneService, Ini
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @param event
-	 */
-	@Transactional(rollbackFor = Throwable.class)
-	public int traiterEvenementExterne(EvenementExterne event) throws EvenementExterneException {
-		int resultat = 0;
+	 * @param event	 */
+
+	public boolean traiterEvenementExterne(EvenementExterne event) throws EvenementExterneException {
+		boolean resultat;
 		if (event instanceof QuittanceLR) {
 			resultat = traiterQuittanceLR((QuittanceLR) event);
 		}
@@ -121,18 +120,20 @@ public class EvenementExterneServiceImpl implements EvenementExterneService, Ini
 		return resultat;
 	}
 
-	private int traiterQuittanceLR(QuittanceLR event) throws EvenementExterneException {
+	private boolean traiterQuittanceLR(QuittanceLR event) throws EvenementExterneException {
 		final Long tiersId = event.getTiersId();
-		int resultat = 0;
+		boolean resultat;
 		// On recherche le débiteur correspondant
 		final Tiers tiers = tiersDAO.get(tiersId);
 		if (tiers == null) {
 			throw new EvenementExterneException("Tiers n'existe pas " + tiersId);
 		}
 
-		// Si la cible de l'evenement(la LR) est déjà traitée, on ne fait rien
+		// Si la cible de l'evenement(la LR) est déjà traitée, on met juste l'evenement à l'etat traite
 		if (lrDejaTraitee(event, tiers)) {
-			resultat = 0;
+			event.setEtat(EtatEvenementExterne.TRAITE);
+			event.setErrorMessage(null);
+			resultat = false;
 		}
 		else {
 			// On quittance la LR
@@ -140,7 +141,7 @@ public class EvenementExterneServiceImpl implements EvenementExterneService, Ini
 			// Tout s'est bien passé
 			event.setEtat(EtatEvenementExterne.TRAITE);
 			event.setErrorMessage(null);
-			resultat = 1;
+			resultat = true;
 		}
 		return resultat;
 
@@ -170,7 +171,7 @@ public class EvenementExterneServiceImpl implements EvenementExterneService, Ini
 			}
 		}
 		else {
-			throw new EvenementExterneException("la LR " + event.getDateDebut() + "-" + event.getDateFin() + " du debiteur " + tiers.getNumero() + " n'existe pas");
+			throw new EvenementExterneException("la LR " + RegDateHelper.dateToDisplayString(event.getDateDebut()) + "-" +  RegDateHelper.dateToDisplayString(event.getDateFin()) + " du debiteur " + tiers.getNumero() + " n'existe pas");
 		}
 
 		return etatConforme;

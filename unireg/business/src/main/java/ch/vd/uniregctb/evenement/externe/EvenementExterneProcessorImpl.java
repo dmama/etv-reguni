@@ -71,7 +71,8 @@ public class EvenementExterneProcessorImpl implements EvenementExterneProcessor 
 		}
 		else {
 			status.setMessage("la relance  relance du traitement des evenements externes est terminée."
-					+ "Nombre d'evenement total parcouru = " + rapportFinal.nbEvenementTotal + ". Nombre d'evenement traites = " + rapportFinal.traites.size() + ". Nombre d'erreurs = " + rapportFinal.erreurs.size());
+					+ "Nombre d'evenement total parcouru = " + rapportFinal.nbEvenementTotal + ". Nombre d'evenement traites = " + rapportFinal.traites.size() + ". Nombre d'erreurs = " +
+					rapportFinal.erreurs.size());
 		}
 
 		rapportFinal.end();
@@ -80,37 +81,32 @@ public class EvenementExterneProcessorImpl implements EvenementExterneProcessor 
 	}
 
 	private void traiterBatch(final List<Long> batch) throws EvenementExterneException {
-		//Chargement des messages d'identification
-			// On charge tous les contribuables en vrac (avec préchargement des déclarations)
-	        final List<EvenementExterne> list = (List<EvenementExterne>) evenementExterneDAO.getHibernateTemplate().executeWithNativeSession(new HibernateCallback() {
-	            public Object doInHibernate(Session session) throws HibernateException {
-	                Criteria crit = session.createCriteria(EvenementExterne.class);
-	                crit.add(Restrictions.in("id", batch));
-	                crit.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
-	                return crit.list();
-	            }
-	        });
-			for (EvenementExterne evenementExterne : list) {
-				rapport.get().nbEvenementTotal++;
+		//Chargement des evenement externes		
+		final List<EvenementExterne> list = (List<EvenementExterne>) evenementExterneDAO.getHibernateTemplate().executeWithNativeSession(new HibernateCallback() {
+			public Object doInHibernate(Session session) throws HibernateException {
+				Criteria crit = session.createCriteria(EvenementExterne.class);
+				crit.add(Restrictions.in("id", batch));
+				crit.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+				return crit.list();
+			}
+		});
+		for (EvenementExterne evenementExterne : list) {
+			rapport.get().nbEvenementTotal++;
 
-					int resultat = evenementExterneService.traiterEvenementExterne(evenementExterne);
-					if(resultat==1){
-						rapport.get().addTraite(evenementExterne);
-					}
-					else{
-						rapport.get().addIgnores(evenementExterne);
-					}
-				}
-
+			boolean estTraite = evenementExterneService.traiterEvenementExterne(evenementExterne);
+			if (estTraite) {
+				rapport.get().addTraite(evenementExterne);
+			}
+			else {
+				rapport.get().addIgnores(evenementExterne);
+			}
+		}
 
 
 	}
 
 	private List<Long> recupererEvenementATraiter() {
-			final String queryMessage =//----------------------------------
-				"select distinct evenementExterne.id                        " +
-						"from EvenementExterne evenementExterne   " +
-						" where evenementExterne.etat =:etat              ";
+		final String queryMessage ="select distinct evenementExterne.id from EvenementExterne evenementExterne where evenementExterne.etat =:etat";
 
 
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
@@ -133,6 +129,7 @@ public class EvenementExterneProcessorImpl implements EvenementExterneProcessor 
 		});
 		return ids;
 	}
+
 	public void setEvenementExterneDAO(EvenementExterneDAO evenementExterneDAO) {
 		this.evenementExterneDAO = evenementExterneDAO;
 	}
