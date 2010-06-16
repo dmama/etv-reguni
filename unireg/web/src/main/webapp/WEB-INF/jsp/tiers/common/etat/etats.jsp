@@ -14,6 +14,9 @@
 	 		<c:if test="${etat.annule}"><strike></c:if>
 				<fmt:message key="option.etat.avancement.${etat.etat}" />
 			<c:if test="${etat.annule}"></strike></c:if>
+			<c:if test="${!etat.annule && etat.etat == 'SOMMEE'}">
+				&nbsp;<a href="../declaration/copie-sommation.do?idEtat=${etat.id}" class="pdf"><img src="${pageContext.request.contextPath}/images/pdf_icon.png" align="top"/></a>
+			</c:if>
 		</display:column>
 		<display:column style="action">
 			<c:if test="${!etat.annule}">

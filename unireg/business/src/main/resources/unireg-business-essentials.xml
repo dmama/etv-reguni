@@ -88,12 +88,14 @@
 		<property name="delaisService" ref="delaisService" />
 		<property name="transactionManager" ref="transactionManager" />
 		<property name="hibernateTemplate" ref="hibernateTemplate" />
+		<property name="helperSommationLR" ref="impressionSommationLRHelper" />
 	</bean>
 
 	<bean id="diService" class="ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotServiceImpl">
 		<property name="hibernateTemplate" ref="hibernateTemplate" />
 		<property name="transactionManager" ref="transactionManager" />
-		<property name="editiqueService" ref="editiqueCompositionService" />
+		<property name="editiqueCompositionService" ref="editiqueCompositionService" />
+		<property name="editiqueService" ref="editiqueService" />
 		<property name="impressionDIHelper" ref="impressionDIHelper" />
 		<property name="impressionSommationDIHelper" ref="impressionSommationDIHelper" />
 		<property name="periodeDAO" ref="periodeFiscaleDAO" />

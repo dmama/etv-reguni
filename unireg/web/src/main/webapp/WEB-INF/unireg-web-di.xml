@@ -35,7 +35,6 @@
 		<property name="tiersService" ref="tiersService" />
 		<property name="diService" ref="diService" />
 		<property name="editiqueCompositionService" ref="editiqueCompositionService" />
-		<property name="editiqueService" ref="editiqueService" />
 		<property name="evenementFiscalService" ref="evenementFiscalService" />
 		<property name="modeleDocumentDAO" ref="modeleDocumentDAO" />
 		<property name="delaisService" ref="delaisService" />
@@ -72,5 +71,18 @@
 	</bean>
 	
 	<bean id="diEditDelaiValidator" class="ch.vd.uniregctb.di.validator.DeclarationImpotEditDelaiValidator" />
+
+	<bean id="declarationCopieConfomeController" class="ch.vd.uniregctb.declaration.CopieConformeController">
+		<property name="sessionForm" value="true" />
+		<property name="servletService" ref="servletService" />
+		<property name="copieConformeManager" ref="copieConformeManager" />
+		<property name="successView" value="../admin/tiersImport.do" /> <!-- msi: temp hack -->
+	</bean>
+
+	<bean id="copieConformeManager" class="ch.vd.uniregctb.declaration.CopieConformeManagerImpl">
+		<property name="hibernateTemplate" ref="hibernateTemplate"/>
+		<property name="diService" ref="diService"/>
+		<property name="lrService" ref="lrService"/>
+	</bean>
 
 </beans>

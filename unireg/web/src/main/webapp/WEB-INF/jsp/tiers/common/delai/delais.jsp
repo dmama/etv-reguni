@@ -44,7 +44,7 @@
 							<unireg:raccourciAnnuler onClick="javascript:Page_AnnulerDelai(${delai.id});"/>
 						</c:if>
 					</c:if>
-				</c:if>	
+				</c:if>
 			</c:if>
 		</display:column>
 

@@ -227,15 +227,5 @@ public interface DeclarationImpotEditManager {
 	@Transactional(rollbackFor = Throwable.class)
 	EditiqueResultat envoieImpressionLocalDuplicataDI(DeclarationImpotImpressionView diImpressionView) throws DeclarationException;
 
-
-	/**
-	 * Récupère la copie conforme de la sommation
-	 * @param diEditView
-	 * @return
-	 * @throws EditiqueException
-	 */
-	@Transactional(rollbackFor = Throwable.class)
-	byte[] getCopieConformeSommation(DeclarationImpotDetailView diEditView) throws EditiqueException ;
-
 }
 

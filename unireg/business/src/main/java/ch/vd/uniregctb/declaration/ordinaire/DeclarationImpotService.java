@@ -6,6 +6,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.DeclarationException;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
+import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueResultat;
 import ch.vd.uniregctb.metier.assujettissement.TypeContribuableDI;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -211,31 +212,14 @@ public interface DeclarationImpotService {
 	 */
 	public EnvoiSommationsDIsResults envoyerSommations(RegDate dateTraitement, final boolean miseSousPliImpossible, final Integer nombreMax, StatusManager status);
 
-	/**
-	 * Construit l'ID du document pour l'archivage
-	 *
-	 * @param declaration
-	 * @return
-	 */
-	public String construitIdArchivageSommationDI(DeclarationImpotOrdinaire declaration) ;
-
 
 	/**
-	 * Construit l'ID du document pour l'archivage (avant octobre 2009)
-	 *
-	 * @param declaration
+	 * Récupère la copie conforme de la sommation éditée pour la DI donnée
+	 * @param di
 	 * @return
+	 * @throws EditiqueException
 	 */
-	public String construitAncienIdArchivageSommationDI(DeclarationImpotOrdinaire declaration) ;
-
-	/**
-	 * Construit l'ID du document pour l'archivage pour les on-line(avant octobre 2009)
-	 *
-	 * @param declaration
-	 * @return
-	 */
-	public String construitAncienIdArchivageSommationDIPourOnLine(DeclarationImpotOrdinaire declaration) ;
-
+	public byte[] getCopieConformeSommationDI(DeclarationImpotOrdinaire di) throws EditiqueException;
 
 	/**
 	 * Imprime les chemises TO pour les DIs échues pour lesquelle ces chemises

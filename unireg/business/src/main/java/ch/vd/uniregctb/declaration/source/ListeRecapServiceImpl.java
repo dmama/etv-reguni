@@ -59,6 +59,8 @@ public class ListeRecapServiceImpl implements ListeRecapService, DelegateEditiqu
 
 	private HibernateTemplate hibernateTemplate;
 
+	private ImpressionSommationLRHelper helperSommationLR;
+
 	/**
 	 * Recupere à l'éditique un document pour afficher une copie conforme (duplicata)
 	 *
@@ -68,6 +70,11 @@ public class ListeRecapServiceImpl implements ListeRecapService, DelegateEditiqu
 	 */
 	public byte[] getCopieConformeLR(DeclarationImpotSource lr) throws EditiqueException {
 		return editiqueService.getPDFDeDocumentDepuisArchive(lr.getTiers().getNumero(), TYPE_DOCUMENT_LR, lr.getId().toString());
+	}
+
+	public byte[] getCopieConformeSommationLR(DeclarationImpotSource lr) throws EditiqueException {
+		final String nomDocument = helperSommationLR.construitIdArchivageDocument(lr);
+		return editiqueService.getPDFDeDocumentDepuisArchive(lr.getTiers().getNumero(), ImpressionSommationLRHelperImpl.TYPE_DOCUMENT_SOMMATION_LR, nomDocument);
 	}
 
 	/**
@@ -360,5 +367,9 @@ public class ListeRecapServiceImpl implements ListeRecapService, DelegateEditiqu
 
 	public void setModeleDocumentDAO(ModeleDocumentDAO modeleDocumentDAO) {
 		this.modeleDocumentDAO = modeleDocumentDAO;
+	}
+
+	public void setHelperSommationLR(ImpressionSommationLRHelper helperSommationLR) {
+		this.helperSommationLR = helperSommationLR;
 	}
 }

@@ -48,10 +48,6 @@
 						<input type="submit" id="boutonSommerActif" name="sommer" value="<fmt:message key="label.bouton.sommer" />"  onclick="javascript:return Page_SommerDI(event || window.event);" />
 						<input type="submit" id="boutonSommerNonActif" style="display:none;" name="sommer" disabled="disabled"  value="<fmt:message key="label.bouton.sommer" />"  onclick="javascript:return Page_SommerDI(event || window.event);" />
 					</c:if>
-					<c:if test="${command.wasSommee}">
-						<input type="submit" name="copierSommation" value="<fmt:message key="label.bouton.copie.conforme.sommation" />"  onclick="javascript:return Page_CopierSommationDI(event || window.event);" />
-					</c:if>
-					<input type="submit" id="boutonCopieConformeActif" style="display:none;" name="copierSommation" value="<fmt:message key="label.bouton.copie.conforme.sommation" />"  onclick="javascript:return Page_CopierSommationDI(event || window.event);" />
 				</c:if>
 	
 				<!-- Duplicata DI -->
@@ -107,16 +103,9 @@
 				}
 				Element.hide('boutonSommerActif');
 				Element.show('boutonSommerNonActif');
-				Element.show('boutonCopieConformeActif');
 				return true;
 		 	}
 
-			function Page_CopierSommationDI(ev) {
-				if(!confirm('Voulez-vous vraiment imprimer cette copie conforme de sommation de déclaration d\'impôt ?'))
-					return Event.stop(ev);
-				return true;
-		 	}
-		 	
 		 	function Page_AnnulerDI(ev) {
 				if(!confirm('Voulez-vous vraiment annuler cette déclaration d\'impôt ?'))
 					return Event.stop(ev);

@@ -47,7 +47,6 @@ public class DeclarationImpotEditController extends AbstractDeclarationImpotCont
 
 	public final static String BUTTON_SAVE_DI = "__confirmed_save";
 	public final static String BUTTON_SOMMER_DI = "sommer";
-	public final static String BUTTON_COPIE_SOMMATION_DI = "copierSommation";
 	public final static String BUTTON_AJOUTER_DI = "ajouterDI";
 	public final static String BUTTON_ANNULER_DI = "annulerDI";
 	public final static String TARGET_IMPRIMER_DI = "imprimerDI";
@@ -94,7 +93,6 @@ public class DeclarationImpotEditController extends AbstractDeclarationImpotCont
 	protected boolean suppressValidation(HttpServletRequest request, Object command, BindException errors) {
 		if (getTarget() != null ||
 				request.getParameter(BUTTON_SOMMER_DI) != null ||
-				request.getParameter(BUTTON_COPIE_SOMMATION_DI) != null ||
 				request.getParameter(BUTTON_ANNULER_DI) != null ||
 				request.getParameter(BUTTON_MAINTENIR_DI) != null) {
 			return true;
@@ -192,9 +190,6 @@ public class DeclarationImpotEditController extends AbstractDeclarationImpotCont
 			}
 			else if (request.getParameter(BUTTON_SOMMER_DI) != null) {
 				mav = sommerDI(request, response, command, errors);
-			}
-			else if (request.getParameter(BUTTON_COPIE_SOMMATION_DI) != null) {
-				mav = imprimerCopieConformeSommationDI(request, response, command, errors);
 			}
 			else if (request.getParameter(BUTTON_ANNULER_DI) != null) {
 				mav = annulerDI(request, response, command, errors);
@@ -497,23 +492,6 @@ public class DeclarationImpotEditController extends AbstractDeclarationImpotCont
 			diEditManager.refresh(bean);
 		}
 
-		return null;
-	}
-
-	private ModelAndView imprimerCopieConformeSommationDI(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors) throws Exception {
-		final DeclarationImpotDetailView bean = (DeclarationImpotDetailView) command;
-		checkAccesDossierEnEcriture(bean.getContribuable().getNumero());
-
-		final byte[] pdf = diEditManager.getCopieConformeSommation(bean);
-		if (pdf == null) {
-			errors.reject("global.error.aucune.copie.conforme.editique");
-		}
-		else {
-			getServletService().downloadAsFile("copieSommationDi.pdf", pdf, response);
-		}
-		if (bean.getId() != null) {
-			diEditManager.refresh(bean);
-		}
 		return null;
 	}
 

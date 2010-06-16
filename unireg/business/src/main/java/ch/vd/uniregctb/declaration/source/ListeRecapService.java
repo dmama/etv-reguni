@@ -22,6 +22,15 @@ public interface ListeRecapService {
 	byte[] getCopieConformeLR(DeclarationImpotSource lr) throws EditiqueException;
 
 	/**
+	 * Recupere à l'éditique un document pour afficher
+	 * une copie conforme (duplicata)
+	 *
+	 * @param lr
+	 * @return le document pdf
+	 */
+	byte[] getCopieConformeSommationLR(DeclarationImpotSource lr) throws EditiqueException;
+
+	/**
 	 * Impression d'une sommation LR
 	 * 		- Alimentation de l'objet EditiqueListeRecap
 	 * 		- Envoi des informations nécessaires à l'éditique

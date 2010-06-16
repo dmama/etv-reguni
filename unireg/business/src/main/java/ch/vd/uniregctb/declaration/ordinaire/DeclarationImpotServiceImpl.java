@@ -18,6 +18,7 @@ import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
 import ch.vd.uniregctb.editique.EditiqueCompositionService;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueResultat;
+import ch.vd.uniregctb.editique.EditiqueService;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.metier.assujettissement.TypeContribuableDI;
@@ -35,7 +36,9 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 
 	private EvenementFiscalService evenementFiscalService;
 
-	private EditiqueCompositionService editiqueService;
+	private EditiqueCompositionService editiqueCompositionService;
+
+	private EditiqueService editiqueService;
 
 	private HibernateTemplate hibernateTemplate;
 
@@ -66,11 +69,11 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	public DeclarationImpotServiceImpl() {
 	}
 
-	public DeclarationImpotServiceImpl(EditiqueCompositionService editiqueService, HibernateTemplate hibernateTemplate, PeriodeFiscaleDAO periodeDAO,
+	public DeclarationImpotServiceImpl(EditiqueCompositionService editiqueCompositionService, HibernateTemplate hibernateTemplate, PeriodeFiscaleDAO periodeDAO,
 			TacheDAO tacheDAO, ModeleDocumentDAO modeleDAO, DelaisService delaisService, ServiceInfrastructureService infraService,
 			TiersService tiersService, ImpressionDeclarationImpotOrdinaireHelper impressionDIHelper, PlatformTransactionManager transactionManager,
 			ParametreAppService parametres) {
-		this.editiqueService = editiqueService;
+		this.editiqueCompositionService = editiqueCompositionService;
 		this.hibernateTemplate = hibernateTemplate;
 		this.periodeDAO = periodeDAO;
 		this.tacheDAO = tacheDAO;
@@ -83,7 +86,11 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 		this.parametres = parametres;
 	}
 
-	public void setEditiqueService(EditiqueCompositionService editiqueService) {
+	public void setEditiqueCompositionService(EditiqueCompositionService editiqueCompositionService) {
+		this.editiqueCompositionService = editiqueCompositionService;
+	}
+
+	public void setEditiqueService(EditiqueService editiqueService) {
 		this.editiqueService = editiqueService;
 	}
 
@@ -211,7 +218,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	public EditiqueResultat envoiDIOnline(DeclarationImpotOrdinaire declaration, RegDate dateEvenement) throws DeclarationException {
 		EditiqueResultat resultat;
 		try {
-			resultat = editiqueService.imprimeDIOnline(declaration, dateEvenement);
+			resultat = editiqueCompositionService.imprimeDIOnline(declaration, dateEvenement);
 		}
 		catch (EditiqueException e) {
 			throw new DeclarationException(e);
@@ -230,7 +237,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 			List<ModeleFeuilleDocumentEditique> annexes) throws DeclarationException {
 		EditiqueResultat resultat;
 		try {
-			resultat = editiqueService.imprimeDIOnline(declaration, dateEvenement, typeDocument, annexes, true);
+			resultat = editiqueCompositionService.imprimeDIOnline(declaration, dateEvenement, typeDocument, annexes, true);
 		}
 		catch (EditiqueException e) {
 			throw new DeclarationException(e);
@@ -247,7 +254,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	 */
 	public void envoiDIForBatch(DeclarationImpotOrdinaire declaration, RegDate dateEvenement) throws DeclarationException {
 		try {
-			editiqueService.imprimeDIForBatch(declaration, dateEvenement);
+			editiqueCompositionService.imprimeDIForBatch(declaration, dateEvenement);
 		}
 		catch (EditiqueException e) {
 			throw new DeclarationException(e);
@@ -260,7 +267,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	 */
 	public void envoiSommationDIForBatch(DeclarationImpotOrdinaire declaration, boolean miseSousPliImpossible, RegDate dateEvenement) throws DeclarationException {
 		try {
-			editiqueService.imprimeSommationDIForBatch(declaration,miseSousPliImpossible, dateEvenement);
+			editiqueCompositionService.imprimeSommationDIForBatch(declaration,miseSousPliImpossible, dateEvenement);
 		}
 		catch (EditiqueException e) {
 			throw new DeclarationException(e);
@@ -357,12 +364,26 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 
 	}
 
+	public byte[] getCopieConformeSommationDI(DeclarationImpotOrdinaire di) throws EditiqueException {
+		String nomDocument = construitIdArchivageSommationDI(di);
+		byte[] pdf = editiqueService.getPDFDeDocumentDepuisArchive(di.getTiers().getNumero(), ImpressionSommationDIHelperImpl.TYPE_DOCUMENT_SOMMATION_DI, nomDocument);
+		if (pdf == null) {
+			nomDocument = construitAncienIdArchivageSommationDI(di);
+			pdf = editiqueService.getPDFDeDocumentDepuisArchive(di.getTiers().getNumero(), ImpressionSommationDIHelperImpl.TYPE_DOCUMENT_SOMMATION_DI, nomDocument);
+		}
+		if (pdf == null) {
+			nomDocument = construitAncienIdArchivageSommationDIPourOnLine(di);
+			pdf = editiqueService.getPDFDeDocumentDepuisArchive(di.getTiers().getNumero(), ImpressionSommationDIHelperImpl.TYPE_DOCUMENT_SOMMATION_DI, nomDocument);
+		}
+		return pdf;
+	}
+
 	/**
 	 * Imprime les chemises TO pour les DIs échues pour lesquelle ces chemises
 	 * n'ont pas encore été imprimées
 	 */
 	public ImpressionChemisesTOResults envoiChemisesTaxationOffice(int nombreMax, Integer noColOid, StatusManager status) {
-		final ImpressionChemisesTOProcessor processor = new ImpressionChemisesTOProcessor(hibernateTemplate, diDAO, transactionManager, editiqueService, infraService);
+		final ImpressionChemisesTOProcessor processor = new ImpressionChemisesTOProcessor(hibernateTemplate, diDAO, transactionManager, editiqueCompositionService, infraService);
 		return processor.run(nombreMax, noColOid, status);
 	}
 
@@ -372,7 +393,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	 * @param declaration
 	 * @return
 	 */
-	public String construitIdArchivageSommationDI(DeclarationImpotOrdinaire declaration) {
+	private String construitIdArchivageSommationDI(DeclarationImpotOrdinaire declaration) {
 		return impressionSommationDIHelper.construitIdArchivageDocument(declaration);
 	}
 
@@ -382,7 +403,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	 * @param declaration
 	 * @return
 	 */
-	public String construitAncienIdArchivageSommationDI(DeclarationImpotOrdinaire declaration) {
+	private String construitAncienIdArchivageSommationDI(DeclarationImpotOrdinaire declaration) {
 		return impressionSommationDIHelper.construitAncienIdArchivageDocument(declaration);
 	}
 
@@ -393,7 +414,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	 * @param declaration
 	 * @return
 	 */
-	public String construitAncienIdArchivageSommationDIPourOnLine(DeclarationImpotOrdinaire declaration) {
+	private String construitAncienIdArchivageSommationDIPourOnLine(DeclarationImpotOrdinaire declaration) {
 		return impressionSommationDIHelper.construitAncienIdArchivageDocumentPourOnLine(declaration);
 	}
 

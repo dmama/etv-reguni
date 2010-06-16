@@ -150,6 +150,10 @@
 				<entry key="/debiteurs/edit.do" value-ref="debiteursEditController" />
 				<entry key="/contribuable-associe/list.do" value-ref="contribuableAssocieListController" />
 				<entry key="/contribuable-associe/edit.do" value-ref="contribuableAssocieEditController" />
+
+				<!-- Impression de copie conforme de sommation de DI/LR -->
+				<entry key="/declaration/copie-sommation.do" value-ref="declarationCopieConfomeController" />
+
 				<!-- Tiers - edit -->
 				<entry key="/tiers/edit.do" value-ref="tiersEditController" />
 				<!-- Evenements -->

@@ -24,7 +24,6 @@ import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.ActionException;
-import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationException;
@@ -39,7 +38,6 @@ import ch.vd.uniregctb.declaration.ModeleFeuilleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
-import ch.vd.uniregctb.declaration.ordinaire.ImpressionSommationDIHelperImpl;
 import ch.vd.uniregctb.declaration.ordinaire.ModeleFeuilleDocumentEditique;
 import ch.vd.uniregctb.delai.DelaiDeclarationView;
 import ch.vd.uniregctb.di.view.DeclarationImpotDetailComparator;
@@ -57,7 +55,6 @@ import ch.vd.uniregctb.general.view.TiersGeneralView;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
-import ch.vd.uniregctb.metier.assujettissement.DecompositionForsAnneeComplete;
 import ch.vd.uniregctb.metier.assujettissement.HorsCanton;
 import ch.vd.uniregctb.metier.assujettissement.HorsSuisse;
 import ch.vd.uniregctb.metier.assujettissement.Indigent;
@@ -118,8 +115,6 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	private TacheDAO tacheDAO;
 
 	private EditiqueCompositionService editiqueCompositionService;
-
-	private EditiqueService editiqueService;
 
 	private MessageSource messageSource;
 
@@ -1041,10 +1036,6 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 		this.editiqueCompositionService = editiqueCompositionService;
 	}
 
-	public void setEditiqueService(EditiqueService editiqueService) {
-		this.editiqueService = editiqueService;
-	}
-
 	public void setDelaisService(DelaisService delaisService) {
 		this.delaisService = delaisService;
 	}
@@ -1055,22 +1046,6 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 
 	public void setDelaiDeclarationDAO(DelaiDeclarationDAO delaiDeclarationDAO) {
 		this.delaiDeclarationDAO = delaiDeclarationDAO;
-	}
-
-	@Transactional(rollbackFor = Throwable.class)
-	public byte[] getCopieConformeSommation(DeclarationImpotDetailView diEditView) throws EditiqueException {
-		final DeclarationImpotOrdinaire di = diDAO.get(diEditView.getId());
-		String nomDocument = diService.construitIdArchivageSommationDI(di);
-		byte[] pdf = editiqueService.getPDFDeDocumentDepuisArchive(di.getTiers().getNumero(), ImpressionSommationDIHelperImpl.TYPE_DOCUMENT_SOMMATION_DI, nomDocument);
-		if (pdf == null) {
-			nomDocument = diService.construitAncienIdArchivageSommationDI(di);
-			pdf = editiqueService.getPDFDeDocumentDepuisArchive(di.getTiers().getNumero(), ImpressionSommationDIHelperImpl.TYPE_DOCUMENT_SOMMATION_DI, nomDocument);
-		}
-		if (pdf == null) {
-			nomDocument = diService.construitAncienIdArchivageSommationDIPourOnLine(di);
-			pdf = editiqueService.getPDFDeDocumentDepuisArchive(di.getTiers().getNumero(), ImpressionSommationDIHelperImpl.TYPE_DOCUMENT_SOMMATION_DI, nomDocument);
-		}
-		return pdf;
 	}
 
 	@Transactional(rollbackFor = Throwable.class)
