@@ -54,10 +54,19 @@ public class AutoCompleteHandler extends AbstractAjaxHandler {
 		return o1 == o2 ? 0 : (o1 == null ? -1 : (o2 == null ? 1 : o1.compareTo(o2)));
 	}
 
+	private static String extractFilter(AjaxActionEvent event) throws UnsupportedEncodingException {
+		final String filter = event.getParameters().get(AutoCompleteAction.PARAM_SELECTED_VALUE);
+
+		// allez savoir pourquoi (je n'ai pas trouvé...), on dirait que cette chaîne qui
+		// vient de la requête ajax est mal interprétée
+		final byte[] bytes = filter.getBytes("ISO-8859-1");
+
+		return new String(bytes, "UTF-8");
+	}
+
 	@SuppressWarnings("unchecked")
 	public AjaxResponse selectionnerLocalite(AjaxActionEvent event) throws InfrastructureException, UnsupportedEncodingException {
-		String filter = event.getParameters().get(AutoCompleteAction.PARAM_SELECTED_VALUE);
-		filter = new String(filter.getBytes(), "UTF-8");
+		final String filter = extractFilter(event);
 		List<WrapperLocalite> localites = null;
 		if (filter.length() >= MIN_SIZE_FILTER) {
 			Collection<Localite> colLocalites = serviceInfrastructureService.getLocalites();
@@ -103,8 +112,7 @@ public class AutoCompleteHandler extends AbstractAjaxHandler {
 
 	@SuppressWarnings("unchecked")
 	public AjaxResponse selectionnerCommuneSuisse(AjaxActionEvent event) throws Exception {
-		String filter = event.getParameters().get(AutoCompleteAction.PARAM_SELECTED_VALUE);
-		filter = new String(filter.getBytes(), "UTF-8");
+		final String filter = extractFilter(event);
 		List<WrapperCommune> communes = null;
 		if (filter.length() >= MIN_SIZE_FILTER) {
 			Collection<Commune> colCommunes = null;
@@ -145,8 +153,7 @@ public class AutoCompleteHandler extends AbstractAjaxHandler {
 	 */
 	@SuppressWarnings("unchecked")
 	protected AjaxResponse selectionnerCommune(AjaxActionEvent event, TypeAutoriteFiscale typeAutoriteFiscale) throws Exception {
-		String filter = event.getParameters().get(AutoCompleteAction.PARAM_SELECTED_VALUE);
-		filter = new String(filter.getBytes(), "UTF-8");
+		final String filter = extractFilter(event);
 		List<WrapperCommune> communes = null;
 		if (filter.length() >= MIN_SIZE_FILTER) {
 			Collection<Commune> colCommunes = null;
@@ -190,8 +197,7 @@ public class AutoCompleteHandler extends AbstractAjaxHandler {
 		// Create a concrete ajax response:
 		AjaxResponse response = new AjaxResponseImpl();
 
-		String filter = event.getParameters().get(AutoCompleteAction.PARAM_SELECTED_VALUE);
-		filter = new String(filter.getBytes(), "UTF-8");
+		final String filter = extractFilter(event);
 		String commune = event.getHttpRequest().getParameter(NUM_COMMUNE);
 		if (commune == null || "".equals(commune)) {
 			response.addAction(new ExecuteJavascriptFunctionAction("alert('Le champ Localité  doit être renseigné.')", MapUtils.EMPTY_MAP));
@@ -236,8 +242,7 @@ public class AutoCompleteHandler extends AbstractAjaxHandler {
 
 	@SuppressWarnings("unchecked")
 	public AjaxResponse selectionnerPays(AjaxActionEvent event) throws InfrastructureException, UnsupportedEncodingException {
-		String filter = event.getParameters().get(AutoCompleteAction.PARAM_SELECTED_VALUE);
-		filter = new String(filter.getBytes(), "UTF-8");
+		final String filter = extractFilter(event);
 		List<WrapperPays> pays = null;
 		if (filter.length() >= MIN_SIZE_FILTER) {
 			Collection<Pays> colPays = serviceInfrastructureService.getPays();
@@ -277,9 +282,7 @@ public class AutoCompleteHandler extends AbstractAjaxHandler {
 	 */
 	@SuppressWarnings("unchecked")
 	public AjaxResponse selectionnerLocaliteOuPays(AjaxActionEvent event) throws InfrastructureException, UnsupportedEncodingException {
-		String filter = event.getParameters().get(AutoCompleteAction.PARAM_SELECTED_VALUE);
-		filter = new String(filter.getBytes(), "UTF-8");
-
+		final String filter = extractFilter(event);
 		Collection<Localite> localites = null;
 		List<WrapperLocaliteOuPays> paysOuLocalite = null;
 		if (filter.length() >= MIN_SIZE_FILTER) {
@@ -332,9 +335,7 @@ public class AutoCompleteHandler extends AbstractAjaxHandler {
 	 */
 	@SuppressWarnings("unchecked")
 	public AjaxResponse selectionnerCommuneOuPays(AjaxActionEvent event) throws Exception {
-		String filter = event.getParameters().get(AutoCompleteAction.PARAM_SELECTED_VALUE);
-		filter = new String(filter.getBytes(), "UTF-8");
-
+		final String filter = extractFilter(event);
 		final List<WrapperCommuneOuPays> communeOuPays;
 		if (filter.length() >= MIN_SIZE_FILTER) {
 
@@ -394,8 +395,7 @@ public class AutoCompleteHandler extends AbstractAjaxHandler {
 	@SuppressWarnings("unchecked")
 	public AjaxResponse selectionnerOfficeImpotDistrict(AjaxActionEvent event) throws InfrastructureException, UnsupportedEncodingException {
 
-		String filter = event.getParameters().get(AutoCompleteAction.PARAM_SELECTED_VALUE);
-		filter = new String(filter.getBytes(), "UTF-8");
+		final String filter = extractFilter(event);
 		List<WrapperCollectivite> selection = null;
 
 		if (filter.length() >= MIN_SIZE_FILTER) {
@@ -431,8 +431,7 @@ public class AutoCompleteHandler extends AbstractAjaxHandler {
 
 	@SuppressWarnings("unchecked")
 	public AjaxResponse selectionnerCollectiviteAdministrative(AjaxActionEvent event) throws InfrastructureException, UnsupportedEncodingException {
-		String filter = event.getParameters().get(AutoCompleteAction.PARAM_SELECTED_VALUE);
-		filter = new String(filter.getBytes(), "UTF-8");
+		final String filter = extractFilter(event);
 		List<WrapperCollectivite> collectivites = null;
 		if (filter.length() >= MIN_SIZE_FILTER) {
 			List<EnumTypeCollectivite> typesCollectivite = new ArrayList<EnumTypeCollectivite>();
@@ -474,8 +473,7 @@ public class AutoCompleteHandler extends AbstractAjaxHandler {
 	@SuppressWarnings("unchecked")
 	public AjaxResponse selectionnerUtilisateur(AjaxActionEvent event) throws UnsupportedEncodingException {
 
-		String filter = event.getParameters().get(AutoCompleteAction.PARAM_SELECTED_VALUE);
-		filter = new String(filter.getBytes(), "UTF-8");
+		final String filter = extractFilter(event);
 		List<WrapperUtilisateur> utilisateurs = null;
 
 		if (filter.length() >= MIN_SIZE_FILTER) {

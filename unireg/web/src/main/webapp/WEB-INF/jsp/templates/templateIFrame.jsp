@@ -4,7 +4,7 @@
 <html>
 	<head>
 		<title><tiles:getAsString name='title' ignore='true'/></title>
-		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 		<link rel="SHORTCUT ICON" href="<c:url value="/images/favicon.ico"/>">
 		<link media="screen" href="<c:url value="/css/x/layout.css"/>" rel="stylesheet" type="text/css">
 		<link media="screen" href="<c:url value="/css/x/tabs.css"/>" rel="stylesheet" type="text/css">

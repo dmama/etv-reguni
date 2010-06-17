@@ -57,7 +57,7 @@ public abstract class AbstractEnhancedSimpleFormController extends EnhancedSimpl
 
 	private static final String ERRORS_PREFIX = DefaultValidationHandler.class.getName() + " - ";
 
-	public static final String DEFAULT_ENCODING = "ISO-8859-1";
+	public static final String DEFAULT_ENCODING = "UTF-8";
 
 	private String ajaxResponseEncoding = DEFAULT_ENCODING;
 
