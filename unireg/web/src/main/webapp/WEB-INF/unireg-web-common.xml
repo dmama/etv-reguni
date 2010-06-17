@@ -57,6 +57,7 @@
         <property name="handlerMappings">
             <props>
                 <prop key="/**/*.do">ajaxAutoCompleteHandler,ajaxToolTipHandler,ajaxTabulationHandler,ajaxMotifsForHandler,ajaxPostItHandler,ajaxCivilDataHandler,ajaxAdresseDataHandler</prop>
+				<prop key="/fiscal/for.do">tiersForController</prop>
                 <prop key="/admin/evenementExterne/main.do">evenementExterneController</prop>
                 <prop key="/admin/evenementExterne/quittancement.do">quittancementController</prop>                              
                 <prop key="/admin/evenementExterne/rapporttravail.do">rapportTravailController</prop>

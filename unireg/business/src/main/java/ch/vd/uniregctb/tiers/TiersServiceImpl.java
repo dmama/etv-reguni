@@ -5,6 +5,9 @@ import java.util.*;
 
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorValue;
+import javax.transaction.SystemException;
+import javax.transaction.Transaction;
+import javax.transaction.TransactionManager;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -15,6 +18,7 @@ import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.DateHelper;
@@ -1930,13 +1934,20 @@ public class TiersServiceImpl implements TiersService {
 		forFiscalPrincipal.setDateFin(dateFermeture);
 		forFiscalPrincipal.setMotifFermeture(motifFermeture);
 
-		if (forFiscalPrincipal.getTypeAutoriteFiscale().equals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD)) {
+		afterForFiscalPrincipalClosed(contribuable, forFiscalPrincipal, dateFermeture, motifFermeture);
+
+		return forFiscalPrincipal;
+	}
+
+	private void afterForFiscalPrincipalClosed(Contribuable contribuable, ForFiscalPrincipal forFiscalPrincipal, RegDate dateFermeture, MotifFor motifFermeture) {
+
+		if (forFiscalPrincipal.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
 			if (motifFermeture.equals(MotifFor.DEPART_HC) ||
 					motifFermeture.equals(MotifFor.DEPART_HS) ||
 					motifFermeture.equals(MotifFor.VEUVAGE_DECES) ||
 					motifFermeture.equals(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION) ||
 					motifFermeture.equals(MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT)) {
-				this.evenementFiscalService.publierEvenementFiscalFermetureFor(contribuable, dateFermeture, motifFermeture, forFiscalPrincipal.getId());
+				evenementFiscalService.publierEvenementFiscalFermetureFor(contribuable, dateFermeture, motifFermeture, forFiscalPrincipal.getId());
 			}
 		}
 		if (MotifFor.DEPART_HC.equals(motifFermeture) ||
@@ -1946,9 +1957,7 @@ public class TiersServiceImpl implements TiersService {
 			contribuable.setBlocageRemboursementAutomatique(true);
 		}
 
-		this.tacheService.genereTacheDepuisFermetureForPrincipal(contribuable, forFiscalPrincipal);
-
-		return forFiscalPrincipal;
+		tacheService.genereTacheDepuisFermetureForPrincipal(contribuable, forFiscalPrincipal);
 	}
 
 	/**

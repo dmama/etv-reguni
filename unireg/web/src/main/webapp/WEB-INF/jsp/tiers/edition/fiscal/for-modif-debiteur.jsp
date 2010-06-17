@@ -55,11 +55,6 @@
 			<td width="25%">&nbsp;</td>
 		</tr>
 	</table>
-	<c:if test="${command.natureForFiscal == 'ForFiscalPrincipal'}">
-		<script type="text/javascript">
-			selectForFiscal('${command.typeAutoriteFiscale}');
-		</script>
-	</c:if>
 	</form:form>
 	</tiles:put>
 </tiles:insert>

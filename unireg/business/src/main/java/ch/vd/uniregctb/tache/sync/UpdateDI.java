@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.tache.sync;
 
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
 
@@ -22,5 +23,13 @@ public class UpdateDI extends SynchronizeAction {
 		declaration.setDateDebut(periodeImposition.getDateDebut());
 		declaration.setDateFin(periodeImposition.getDateFin());
 		declaration.setTypeContribuable(periodeImposition.getTypeContribuable());
+	}
+
+	@Override
+	public String toString() {
+		return String.format("mise-à-jour de la déclaration d'impôt %s existante couvrant la période du %s au %s pour qu'elle devienne %s et qu'elle couvre la période du %s au %s",
+				declaration.getTypeContribuable().description(), RegDateHelper.dateToDisplayString(declaration.getDateDebut()), RegDateHelper.dateToDisplayString(declaration.getDateFin()),
+				periodeImposition.getTypeContribuable().description(), RegDateHelper.dateToDisplayString(periodeImposition.getDateDebut()),
+				RegDateHelper.dateToDisplayString(periodeImposition.getDateFin()));
 	}
 }

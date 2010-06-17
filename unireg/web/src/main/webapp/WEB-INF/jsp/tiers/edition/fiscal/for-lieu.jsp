@@ -64,4 +64,7 @@
 			<jsp:param name="onChange" value="libPays_onChange" />
 		</jsp:include>
 	</td>
+	<script type="text/javascript">
+		selectForFiscal('${typeAutoriteFiscale}');
+	</script>
 </tr>

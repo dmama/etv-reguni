@@ -28,6 +28,11 @@
 		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="tiersService" ref="tiersService" />
 		<property name="serviceInfra" ref="serviceInfrastructureService" />
+		<property name="tacheManager" ref="tacheManager" />
+	</bean>
+
+	<bean id="tacheManager" class="ch.vd.uniregctb.tiers.manager.TacheManagerImpl">
+		<property name="tacheService" ref="tacheService" />
 	</bean>
 
 	<bean id="forFiscalValidator" class="ch.vd.uniregctb.tiers.validator.ForFiscalValidator" >

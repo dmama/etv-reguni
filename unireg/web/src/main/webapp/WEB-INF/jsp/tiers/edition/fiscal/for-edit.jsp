@@ -37,7 +37,4 @@
 			selectGenreImpot('${command.genreImpot}');
 		</script>
 	</c:if>
-	<script type="text/javascript">
-		selectForFiscal('${command.typeAutoriteFiscale}');
-	</script>
 </c:if>

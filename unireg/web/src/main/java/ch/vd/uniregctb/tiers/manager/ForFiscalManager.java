@@ -1,7 +1,11 @@
 package ch.vd.uniregctb.tiers.manager;
 
+import java.util.List;
+
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseException;
 import org.springframework.transaction.annotation.Transactional;
+import org.springmodules.xt.ajax.component.Component;
 
 import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
@@ -10,6 +14,8 @@ import ch.vd.uniregctb.tiers.ForFiscalDAO;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.view.ForFiscalView;
 import ch.vd.uniregctb.tiers.view.TiersEditView;
+import ch.vd.uniregctb.type.ModeImposition;
+import ch.vd.uniregctb.type.MotifFor;
 
 /**
  * Service à disposition du controller pour gérer un for fiscal
@@ -83,4 +89,25 @@ public interface ForFiscalManager {
 	 */
 	@Transactional(rollbackFor = Throwable.class)
 	ForFiscal updateModeImposition(ForFiscalView forFiscalView);
+
+	/**
+	 * Construite le composant Ajax contenant les actions de synchronisation qui seront générées si le for fiscal spécifié est fermé.
+	 *
+	 * @param forId          l'id d'un for fiscal
+	 * @param dateFermeture  la date de fermeture du for fiscal
+	 * @param motifFermeture le motif de fermeture du for fiscal
+	 * @return un composant Ajax ou <b>null</b> si aucune action ne sera générée.
+	 */
+	Component buildSynchronizeActionsTableSurFermetureDeFor(long forId, RegDate dateFermeture, MotifFor motifFermeture);
+
+	/**
+	 * Construite le composant Ajax contenant les actions de synchronisation qui seront générées si le mode d'imposition d'un contribuable est changé.
+	 *
+	 * @param forId           l'id du for fiscal principal actif d'un contribuable
+	 * @param dateChangement  la date du changement du mode d'imposition
+	 * @param modeImposition  le nouveau mode d'imposition
+	 * @param motifChangement le motif de changement du mode d'imposition
+	 * @return un composant Ajax ou <b>null</b> si aucune action ne sera générée.
+	 */
+	Component buildSynchronizeActionsTableSurModificationDuModeImposition(long forId, RegDate dateChangement, ModeImposition modeImposition, MotifFor motifChangement);
 }

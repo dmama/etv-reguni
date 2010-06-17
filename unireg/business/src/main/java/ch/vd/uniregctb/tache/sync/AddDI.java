@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.tache.sync;
 
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
 import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpot;
 import ch.vd.uniregctb.type.TypeEtatTache;
@@ -20,5 +21,11 @@ public class AddDI extends SynchronizeAction {
 				new TacheEnvoiDeclarationImpot(TypeEtatTache.EN_INSTANCE, context.dateEcheance, context.contribuable, periodeImposition.getDateDebut(), periodeImposition.getDateFin(),
 						periodeImposition.getTypeContribuable(), periodeImposition.getTypeDocument(), periodeImposition.getQualification(), periodeImposition.getAdresseRetour(), context.collectivite);
 		context.tacheDAO.save(tache);
+	}
+
+	@Override
+	public String toString() {
+		return String.format("création d'une tâche d'émission de déclaration d'impôt %s couvrant la période du %s au %s", periodeImposition.getTypeContribuable().description(),
+				RegDateHelper.dateToDisplayString(periodeImposition.getDateDebut()), RegDateHelper.dateToDisplayString(periodeImposition.getDateFin()));
 	}
 }

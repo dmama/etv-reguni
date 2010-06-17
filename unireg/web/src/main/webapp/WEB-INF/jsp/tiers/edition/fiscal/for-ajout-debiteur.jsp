@@ -86,5 +86,9 @@
 	</table>
 	</form:form>	
 
+	<script type="text/javascript">
+		selectForFiscalDPI('${typeAutoriteFiscale}');
+	</script>
+
 	</tiles:put>
 </tiles:insert>

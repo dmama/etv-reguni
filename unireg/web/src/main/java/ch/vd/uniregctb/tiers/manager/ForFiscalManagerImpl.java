@@ -6,6 +6,7 @@ import java.util.Map;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.adresse.AdresseException;
 import org.springframework.transaction.annotation.Transactional;
+import org.springmodules.xt.ajax.component.Component;
 
 import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.RegDate;
@@ -13,6 +14,7 @@ import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.metier.FusionDeCommunesProcessor;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.ForDebiteurPrestationImposable;
@@ -45,21 +47,12 @@ import ch.vd.uniregctb.utils.WebContextUtils;
 public class ForFiscalManagerImpl extends TiersManager implements ForFiscalManager {
 
 	private ForFiscalDAO forFiscalDAO;
-
 	private EvenementFiscalService evenementFiscalService;
-
 	private ServiceInfrastructureService serviceInfra;
-
-	public EvenementFiscalService getEvenementFiscalService() {
-		return evenementFiscalService;
-	}
+	private TacheManager tacheManager;
 
 	public void setEvenementFiscalService(EvenementFiscalService evenementFiscalService) {
 		this.evenementFiscalService = evenementFiscalService;
-	}
-
-	public ForFiscalDAO getForFiscalDAO() {
-		return forFiscalDAO;
 	}
 
 	public void setForFiscalDAO(ForFiscalDAO forFiscalDAO) {
@@ -68,6 +61,10 @@ public class ForFiscalManagerImpl extends TiersManager implements ForFiscalManag
 
 	public void setServiceInfra(ServiceInfrastructureService service) {
 		serviceInfra = service;
+	}
+
+	public void setTacheManager(TacheManager tacheManager) {
+		this.tacheManager = tacheManager;
 	}
 
 	/**
@@ -524,5 +521,55 @@ public class ForFiscalManagerImpl extends TiersManager implements ForFiscalManag
 			throw new ObjectNotFoundException("Le for fiscal n°" + idFor + " n'existe pas.");
 		}
 		tiersService.annuleForFiscal(forFiscal, true);
+	}
+
+	@Transactional(readOnly = true, rollbackFor = Throwable.class)
+	public Component buildSynchronizeActionsTableSurFermetureDeFor(long forId, RegDate dateFermeture, MotifFor motifFermeture) {
+
+		final ForFiscal ff = forFiscalDAO.get(forId);
+		final Tiers tiers = ff.getTiers();
+		if (!(tiers instanceof Contribuable)) {
+			return null;
+		}
+		final Contribuable ctb =(Contribuable) tiers;
+
+		// simule la fermeture du for fiscal		
+		if (ff instanceof ForFiscalPrincipal) {
+			ForFiscalPrincipal ffp=(ForFiscalPrincipal) ff;
+			tiersService.closeForFiscalPrincipal(ffp, dateFermeture, motifFermeture);
+		}
+		else if (ff instanceof ForFiscalSecondaire) {
+			ForFiscalSecondaire ffs=(ForFiscalSecondaire) ff;
+			tiersService.closeForFiscalSecondaire(ctb, ffs, dateFermeture, motifFermeture);
+		}
+		else if (ff instanceof ForFiscalAutreElementImposable) {
+			ForFiscalAutreElementImposable ffaei=(ForFiscalAutreElementImposable) ff;
+			tiersService.closeForFiscalAutreElementImposable(ctb, ffaei, dateFermeture, motifFermeture);
+		}
+		else {
+			// les autres types de fors ne sont pas pris en compte pour l'instant
+			return null;
+		}
+
+		return tacheManager.buildSynchronizeActionsTable(ctb, "Les actions suivantes seront exécutées si vous confirmez les changements");
+	}
+
+	@Transactional(readOnly = true, rollbackFor = Throwable.class)
+	public Component buildSynchronizeActionsTableSurModificationDuModeImposition(long forId, RegDate dateChangement, ModeImposition modeImposition, MotifFor motifChangement) {
+
+		final ForFiscal ff = forFiscalDAO.get(forId);
+		if (!(ff instanceof ForFiscalPrincipal)) {
+			return null;
+		}
+		final Tiers tiers = ff.getTiers();
+		if (!(tiers instanceof Contribuable)) {
+			return null;
+		}
+		final Contribuable ctb =(Contribuable) tiers;
+
+		// applique le changement du mode d'imposition (transaction read-only)
+		tiersService.changeModeImposition(ctb, dateChangement, modeImposition, motifChangement);
+		
+		return tacheManager.buildSynchronizeActionsTable(ctb, "Les actions suivantes seront exécutées si vous confirmez les changements");
 	}
 }

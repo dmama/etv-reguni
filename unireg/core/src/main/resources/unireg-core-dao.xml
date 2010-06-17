@@ -17,6 +17,7 @@
 		<property name="sessionFactory" ref="sessionFactory" />
 		<property name="cacheQueries" value="true" />
 		<property name="allowCreate" value="false" />
+		<property name="checkWriteOperations" value="false" /> <!-- parce qu'autrement il n'est pas possible de simuler des opérations de write dans une transaction read-only -->
 	</bean>
 
 	<!-- Definition des DAOs -->

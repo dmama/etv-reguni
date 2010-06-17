@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.tache.sync;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.tiers.TacheAnnulationDeclarationImpot;
@@ -39,5 +40,11 @@ public class DeleteDI extends SynchronizeAction {
 			final TacheAnnulationDeclarationImpot tache = new TacheAnnulationDeclarationImpot(TypeEtatTache.EN_INSTANCE, null, context.contribuable, declaration, context.collectivite);
 			context.tacheDAO.save(tache);
 		}
+	}
+
+	@Override
+	public String toString() {
+		return String.format("création d'une tâche d'annulation la déclaration d'impôt %s couvrant la période du %s au %s", declaration.getTypeContribuable().description(),
+				RegDateHelper.dateToDisplayString(declaration.getDateDebut()), RegDateHelper.dateToDisplayString(declaration.getDateFin()));
 	}
 }

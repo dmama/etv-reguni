@@ -140,3 +140,44 @@ fieldset.individu + fieldset.individu {
 	font-weight:bold;
 	font-size:xx-small;
 }
+
+#actions_column {
+	width: 20em;
+	padding-top: 1em;
+	padding-left: 1em;
+}
+
+#actions_list table {
+	width: auto;
+	background-color: white;
+	border-collapse: collapse;
+	color: gray;
+}
+
+#actions_list tr.header {
+	background-color: wheat;
+	color: black;
+}
+
+#actions_list td {
+	border-color: black;
+	border-width: 1px;
+	border-style: dotted;
+	padding : 0.8em;
+}
+
+#actions_list td.rowheader {
+	border-right: 0px;
+	padding-right: 0px;
+	vertical-align: top;
+}
+
+#actions_list td.action {
+	border-left: 0px;
+	text-align: left;
+}
+
+#actions_list td.error {
+	border-left: 0px;
+	text-align: left;
+}

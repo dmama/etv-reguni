@@ -1,17 +1,30 @@
 package ch.vd.uniregctb.tiers;
 
+import java.text.ParseException;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
+import org.springmodules.xt.ajax.AjaxActionEvent;
+import org.springmodules.xt.ajax.AjaxResponse;
+import org.springmodules.xt.ajax.AjaxResponseImpl;
+import org.springmodules.xt.ajax.action.ReplaceContentAction;
+import org.springmodules.xt.ajax.action.prototype.HideElement;
+import org.springmodules.xt.ajax.action.prototype.ShowElement;
+import org.springmodules.xt.ajax.component.Component;
 
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.tiers.manager.ForFiscalManager;
 import ch.vd.uniregctb.tiers.view.ForFiscalView;
+import ch.vd.uniregctb.type.ModeImposition;
+import ch.vd.uniregctb.type.MotifFor;
 
 /**
  * Controller spring permettant la visualisation ou la saisie d'une objet metier donne.
@@ -117,4 +130,75 @@ public class TiersForController extends AbstractTiersController {
 	}
 
 
+	@SuppressWarnings({"UnusedDeclaration"})
+	public AjaxResponse buildSynchronizeActionsTableSurFermetureDeFor(AjaxActionEvent event) throws ParseException {
+
+		Component component;
+		try {
+			final Map<String, String> parameters = event.getParameters();
+			final String motifFermetureAsString = parameters.get("motifFermeture");
+			final String dateFermetureAsString = parameters.get("dateFermeture");
+
+			if (StringUtils.isBlank(motifFermetureAsString) || StringUtils.isBlank(dateFermetureAsString)) {
+				return null;
+			}
+
+			final Long forId = Long.valueOf(parameters.get("forId"));
+			final RegDate dateFermeture = RegDateHelper.displayStringToRegDate(dateFermetureAsString, false);
+			final MotifFor motifFermeture = MotifFor.valueOf(motifFermetureAsString);
+
+			component = forFiscalManager.buildSynchronizeActionsTableSurFermetureDeFor(forId, dateFermeture, motifFermeture);
+		}
+		catch (Exception e) {
+			LOGGER.error(e, e);
+			component = null;
+		}
+
+		final AjaxResponse response = new AjaxResponseImpl();
+		if (component == null) {
+			response.addAction(new HideElement("actions_column"));
+		}
+		else {
+			response.addAction(new ReplaceContentAction("actions_list", component));
+			response.addAction(new ShowElement("actions_column"));
+		}
+		return response;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public AjaxResponse updateActionListSurModificationDuModeImposition(AjaxActionEvent event) throws ParseException {
+
+		Component component;
+		try {
+			final Map<String, String> parameters = event.getParameters();
+			final String modeImpositionAsString = parameters.get("modeImposition");
+			final String motifChangementAsString = parameters.get("motifChangement");
+			final String dateChangementAsString = parameters.get("dateChangement");
+
+			if (StringUtils.isBlank(modeImpositionAsString) || StringUtils.isBlank(motifChangementAsString) || StringUtils.isBlank(dateChangementAsString)) {
+				return null;
+			}
+
+			final Long forId = Long.valueOf(parameters.get("forId"));
+			final RegDate dateChangement = RegDateHelper.displayStringToRegDate(dateChangementAsString, false);
+			final ModeImposition modeImposition = ModeImposition.valueOf(modeImpositionAsString);
+			final MotifFor motifChangement = MotifFor.valueOf(motifChangementAsString);
+
+			component = forFiscalManager.buildSynchronizeActionsTableSurModificationDuModeImposition(forId, dateChangement, modeImposition, motifChangement);
+		}
+		catch (Exception e) {
+			LOGGER.error(e, e);
+			component = null;
+		}
+
+		final AjaxResponse response = new AjaxResponseImpl();
+		if (component == null) {
+			response.addAction(new HideElement("actions_column"));
+		}
+		else {
+			response.addAction(new ReplaceContentAction("actions_list", component));
+			response.addAction(new ShowElement("actions_column"));
+		}
+		return response;
+	}
 }

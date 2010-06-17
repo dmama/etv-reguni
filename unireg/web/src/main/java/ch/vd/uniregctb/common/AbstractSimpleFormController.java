@@ -138,7 +138,7 @@ public abstract class AbstractSimpleFormController extends SimpleFormController 
 		try {
 			Method m = this.getMatchingMethod(event);
 			if (m != null) {
-				logger.info(new StringBuilder("Invoking method: ").append(m));
+				logger.debug(new StringBuilder("Invoking method: ").append(m));
 				response = (AjaxResponse) m.invoke(this, event);
 			}
 			else {
