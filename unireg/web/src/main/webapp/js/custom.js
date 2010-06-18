@@ -665,7 +665,7 @@ var Modifier = {
 	            var type = element.type;
 	            if ((type == "text" || type == "hidden" || type == "password" ||
 	                ((type == "checkbox" || type == "radio")))) {
-	                Element.addObserver( element, "change" , function() {
+	                Element.addObserver( element, "click" , function() {
 	                	self.setIsModified( true);
 	                	return true;
 	                } , false);        
