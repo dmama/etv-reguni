@@ -674,7 +674,8 @@ public class TacheServiceImpl implements TacheService, InitializingBean {
 	private boolean areTypeContribuableCompatibles(TypeContribuable left, TypeContribuable right) {
 
 		// cas trivial : les deux types sont identiques
-		if (left == right) {
+		// (dans la migration initiale de juillet 2009, le type de contribuable n'était pas toujours attribué à la DI - apparemment pas pour les mixtes)
+		if (left == right || left == null || right == null) {
 			return true;
 		}
 

@@ -3274,6 +3274,57 @@ public class TacheServiceTest extends BusinessTest {
 				TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.CEDI, tache0);
 	}
 
+	@Test
+	@NotTransactional
+	public void testRecalculTachesAvecDiSansTypeContribuable() throws Exception {
+
+		final long noInd = 333908L;
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu ind = addIndividu(noInd, RegDate.get(1974, 3, 22), "Cuendet", "Adrienne", false);
+				addAdresse(ind, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate.get(1980, 1, 1), null);
+				addNationalite(ind, MockPays.Suisse, RegDate.get(1974, 3, 22), null, 1);
+			}
+		});
+
+		// mise en place
+		final long ppId = (Long) doInNewTransaction(new TransactionCallback() {
+			public Long doInTransaction(TransactionStatus transactionStatus) {
+				final PersonnePhysique pp = addHabitant(noInd);
+				final int anneeDerniere = RegDate.get().year() - 1;
+
+				final ForFiscalPrincipal ffp = addForPrincipal(pp, RegDate.get(anneeDerniere, 1, 1), MotifFor.ARRIVEE_HS, RegDate.get(), MotifFor.DEPART_HS, MockCommune.Lausanne);
+
+				final PeriodeFiscale pf = addPeriodeFiscale(anneeDerniere);
+				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
+				addDeclarationImpot(pp, pf, RegDate.get(anneeDerniere, 1, 1), RegDate.get(anneeDerniere, 12, 31), null, modele);
+
+				tacheService.genereTacheDepuisFermetureForPrincipal(pp, ffp);
+				return pp.getId();
+			}
+		});
+
+		// test
+		doInNewTransaction(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus transactionStatus) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
+				assertNotNull(pp);
+
+				// Il ne devrait maintenant y avoir aucune nouvelle tâche...
+				final TacheCriteria criterion = new TacheCriteria();
+				criterion.setContribuable(pp);
+				criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpot);
+				criterion.setInclureTachesAnnulees(true);
+
+				final List<Tache> taches = tacheDAO.find(criterion);
+				assertNotNull(taches);
+				assertEquals(0, taches.size());
+				return null;
+			}
+		});
+	}
+
 	/**
 	 * [UNIREG-2305] Vérifie que le décès d'un contribuable génère bien une tâche d'envoi de DI assignée à l'OID des successions <b>mais</b> que les tâches d'envoi de DIs des années précédentes
 	 * (rattrapage) sont assignées à l'OID courant.
