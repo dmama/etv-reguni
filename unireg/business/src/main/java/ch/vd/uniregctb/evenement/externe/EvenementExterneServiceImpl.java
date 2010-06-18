@@ -161,24 +161,24 @@ public class EvenementExterneServiceImpl implements EvenementExterneService, Ini
 	 */
 	//
 	private boolean lrDejaTraitee(QuittanceLR event, Tiers tiers) throws EvenementExterneException {
-		boolean etatConforme = true;
+		boolean dejaTraite = false;
 		final RegDate dateValidite = event.getDateFin().getOneDayBefore();
 		Declaration lr = tiers.getDeclarationActive(dateValidite);
 		if (lr != null) {
-			if (TypeEtatDeclaration.RETOURNEE.equals(lr.getDernierEtat()) && TypeQuittance.QUITTANCEMENT.equals(event.getType()) ||
+			if (TypeEtatDeclaration.RETOURNEE.equals(lr.getDernierEtat().getEtat()) && TypeQuittance.QUITTANCEMENT.equals(event.getType()) ||
 					isNonQuittancee(lr) && TypeQuittance.ANNULATION.equals(event.getType())) {
-				etatConforme = false;
+				dejaTraite = true;
 			}
 		}
 		else {
 			throw new EvenementExterneException("la LR " + RegDateHelper.dateToDisplayString(event.getDateDebut()) + "-" +  RegDateHelper.dateToDisplayString(event.getDateFin()) + " du debiteur " + tiers.getNumero() + " n'existe pas");
 		}
 
-		return etatConforme;
+		return dejaTraite;
 	}
 
 	private boolean isNonQuittancee(Declaration lr) {
-		if (TypeEtatDeclaration.RETOURNEE.equals(lr.getDernierEtat())) {
+		if (TypeEtatDeclaration.RETOURNEE.equals(lr.getDernierEtat().getEtat())) {
 			return false;
 		}
 		return true;

@@ -52,8 +52,9 @@ public class PdfTraiterEvenementExterneRapport extends PdfRapport {
 
 			addTableSimple(new float[]{70f, 30f}, new TableSimpleCallback() {
 				public void fillTable(PdfTableSimple table) throws DocumentException {
+					table.addLigne("Nombre d'évènement en erreur à examiner :", String.valueOf(results.nbEvenementTotalProcesses));
 					table.addLigne("Nombre d'évènement traites :", String.valueOf(results.traites.size()));
-					table.addLigne("Nombre d'évènements ignorés :", String.valueOf(results.ignores.size()));
+					table.addLigne("Nombre d'évènements ignorés car déjà traités :", String.valueOf(results.ignores.size()));
 					table.addLigne("Nombre d'erreurs :", String.valueOf(results.erreurs.size()));
 					table.addLigne("Durée d'exécution du job :", formatDureeExecution(results));
 					table.addLigne("Date de génération du rapport :", formatTimestamp(dateGeneration));
@@ -89,7 +90,7 @@ public class PdfTraiterEvenementExterneRapport extends PdfRapport {
 		if (liste != null && liste.size() > 0) {
 
 			final StringBuilder b = new StringBuilder(liste.size() * 100);
-			b.append("Evenement Id").append(COMMA).append("Numero Tiers").append(COMMA).append("Action\n");
+			b.append("Evenement Id").append(COMMA).append("Numero Tiers").append(COMMA).append("Date Debut LR").append(COMMA).append("Date Fin LR").append(COMMA).append("Action\n");
 
 			final GentilIterator<T> iter = new GentilIterator<T>(liste);
 			while (iter.hasNext()) {
@@ -101,6 +102,8 @@ public class PdfTraiterEvenementExterneRapport extends PdfRapport {
 				final T info = iter.next();
 				b.append(info.id).append(COMMA);
 				b.append(info.numeroTiers).append(COMMA);
+				b.append(RegDateHelper.dateToDashString(info.debut)).append(COMMA);
+				b.append(RegDateHelper.dateToDashString(info.fin)).append(COMMA);
 				b.append(info.action).append(COMMA);
 				b.append("\n");
 			}

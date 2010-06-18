@@ -48,12 +48,18 @@ public class TraiterEvenementExterneResult  extends JobResults<Long, TraiterEven
 	}
 
 	public static class Traite extends InfoEvenement {
+		//Specifique aux LR, a générifier au besoin dans le futur
+
+		public RegDate debut;
+		public RegDate fin;
 		public final String action;
 
 
-		public Traite(Long id, Long numeroTiers, String s) {
+		public Traite(Long id, Long numeroTiers, String s, RegDate dateDebut, RegDate fdateFin) {
 			super(id, numeroTiers);
 			this.action = s;
+			this.debut = dateDebut;
+			this.fin = fdateFin;
 		}
 
 
@@ -69,6 +75,7 @@ public class TraiterEvenementExterneResult  extends JobResults<Long, TraiterEven
 
 	public final RegDate dateTraitement;
 	public int nbEvenementTotal;
+	public int nbEvenementTotalProcesses;
 	public List<Traite> traites = new ArrayList<Traite>();
 	public List<Ignores> ignores = new ArrayList<Ignores>();
 	public List<Erreur> erreurs = new ArrayList<Erreur>();
@@ -90,7 +97,14 @@ public class TraiterEvenementExterneResult  extends JobResults<Long, TraiterEven
 	}
 
 	public void addTraite(EvenementExterne event){
-		traites.add(new Traite(event.getId(),event.getTiers().getNumero(),event.getMessage()));
+		if (event instanceof QuittanceLR){
+			QuittanceLR quittance = (QuittanceLR)event;
+			traites.add(new Traite(quittance.getId(),quittance.getTiers().getNumero(),quittance.getType().name(),quittance.getDateDebut(),quittance.getDateFin()));
+		}
+		else{
+			traites.add(new Traite(event.getId(),event.getTiers().getNumero(),event.getMessage(),null, null));
+		}
+
 	}
 	public void addIgnores(EvenementExterne event){
 		ignores.add(new Ignores(event.getId(),event.getTiers().getNumero()));

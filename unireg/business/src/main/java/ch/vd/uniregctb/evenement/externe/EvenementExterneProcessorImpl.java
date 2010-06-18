@@ -39,6 +39,10 @@ public class EvenementExterneProcessorImpl implements EvenementExterneProcessor 
 		final TraiterEvenementExterneResult rapportFinal = new TraiterEvenementExterneResult(dateTraitement);
 		status.setMessage("Récupération des evenements externes à traiter...");
 		final List<Long> ids = recupererEvenementATraiter();
+		if(ids!=null){
+			rapportFinal.nbEvenementTotalProcesses = ids.size();	
+		}
+
 
 		// Reussi les messages par lots
 		final ParallelBatchTransactionTemplate<Long, TraiterEvenementExterneResult>
@@ -71,7 +75,7 @@ public class EvenementExterneProcessorImpl implements EvenementExterneProcessor 
 		}
 		else {
 			status.setMessage("la relance  relance du traitement des evenements externes est terminée."
-					+ "Nombre d'evenement total parcouru = " + rapportFinal.nbEvenementTotal + ". Nombre d'evenement traites = " + rapportFinal.traites.size() + ". Nombre d'erreurs = " +
+					+ "Nombre d'evenement total parcouru = " + rapportFinal.nbEvenementTotalProcesses + ". Nombre d'evenement traites = " + rapportFinal.traites.size() + ". Nombre d'erreurs = " +
 					rapportFinal.erreurs.size());
 		}
 
@@ -106,7 +110,7 @@ public class EvenementExterneProcessorImpl implements EvenementExterneProcessor 
 	}
 
 	private List<Long> recupererEvenementATraiter() {
-		final String queryMessage ="select distinct evenementExterne.id from EvenementExterne evenementExterne where evenementExterne.etat =:etat";
+		final String queryMessage ="select evenementExterne.id from EvenementExterne evenementExterne where evenementExterne.etat =:etat ORDER BY evenementExterne.id";
 
 
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
@@ -122,7 +126,7 @@ public class EvenementExterneProcessorImpl implements EvenementExterneProcessor 
 						return queryObject.list();
 					}
 				});
-				Collections.sort(idsEvenement);
+			
 				return idsEvenement;
 			}
 
