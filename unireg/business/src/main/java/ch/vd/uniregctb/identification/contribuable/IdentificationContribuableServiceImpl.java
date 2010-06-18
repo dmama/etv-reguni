@@ -909,7 +909,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 
 	}
 
-	public int tenterIdentificationAutomatiqueContribuable(IdentificationContribuable message) throws Exception {
+	public boolean tenterIdentificationAutomatiqueContribuable(IdentificationContribuable message) throws Exception {
 		// Ensuite : effectuer l'identification
 
 		final Demande demande = message.getDemande();
@@ -925,11 +925,11 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 
 			// on peut répondre immédiatement
 			identifie(message, personne, Etat.TRAITE_AUTOMATIQUEMENT);
-			return 1;
+			return true;
 
 		}
 		else {
-			return 0;
+			return false;
 		}
 
 	}

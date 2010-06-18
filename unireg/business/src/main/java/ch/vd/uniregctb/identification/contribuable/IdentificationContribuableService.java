@@ -99,7 +99,7 @@ public interface IdentificationContribuableService {
 	 * @throws Exception
 	 */
 
-	public int tenterIdentificationAutomatiqueContribuable(IdentificationContribuable message) throws Exception;
+	public boolean tenterIdentificationAutomatiqueContribuable(IdentificationContribuable message) throws Exception;
 
 	/**
 	 * Relance l'identification automatique sur les messages en etat intermediaire: A TRAITER, A EXPERTISER, SUSPENDU

@@ -104,8 +104,8 @@ public class IdentifierContribuableProcessor {
 		for (IdentificationContribuable identificationContribuable : list) {
 			rapport.get().nbMessagesTotal++;
 			
-				int resultat = identService.tenterIdentificationAutomatiqueContribuable(identificationContribuable);
-				if(resultat==1){
+				boolean isIdentifie = identService.tenterIdentificationAutomatiqueContribuable(identificationContribuable);
+				if(isIdentifie){
 					rapport.get().addIdentifies(identificationContribuable);
 				}
 				else{
