@@ -82,7 +82,8 @@ public class Ec_18000_08_Depart_HS_Arrivee_HC_Meme_Periode_Scenario extends Even
 	public void etape1() throws Exception {
 
 		addColAdm(MockOfficeImpot.OID_LAUSANNE_OUEST);
-		
+		addColAdm(MockOfficeImpot.ACISUCCESSIONS);
+
 		final PersonnePhysique alain = addHabitant(noIndAlain);
 		addForFiscalPrincipal(alain, MockCommune.Lausanne, dateMajorite, dateDepartHS.getOneDayBefore(), MotifFor.MAJORITE, MotifFor.DEPART_HS);
 		tiersService.openForFiscalPrincipal(alain, dateDepartHS, MotifRattachement.DOMICILE, MockPays.PaysInconnu.getNoOFS(), TypeAutoriteFiscale.PAYS_HS, ModeImposition.ORDINAIRE, MotifFor.DEPART_HS, true);

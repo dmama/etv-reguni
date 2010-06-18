@@ -235,7 +235,7 @@ public class TacheServiceImpl implements TacheService, InitializingBean {
 			if (dernierForFerme) {
 				genereTacheControleDossier(contribuable);
 			}
-			synchronizeTachesDIs(contribuable, null, null);
+			synchronizeTachesDIs(contribuable);
 			break;
 
 		case DEPART_HC:
@@ -248,15 +248,14 @@ public class TacheServiceImpl implements TacheService, InitializingBean {
 			}
 			// [UNIREG-1262] La génération de tâches d'annulation de DI doit se faire aussi sur l'année du départ
 			// [UNIREG-2031] La génération de tâches d'annulation de DI n'est valable quepour un départ avant le 31.12 de la période fiscale courante.
-			synchronizeTachesDIs(contribuable, null, null);
+			synchronizeTachesDIs(contribuable);
 			break;
 
 		case VEUVAGE_DECES:
 			generateTacheTransmissionDossier(contribuable);
 			// [UNIREG-1112] Annule toutes les déclarations d'impôt à partir de l'année de décès (car elles n'ont pas lieu d'être)
 			// [UNIREG-2104] Génère la tache d'envoi de DI assigné à l'ACI
-			CollectiviteAdministrative aciSuccessions = tiersService.getCollectiviteAdministrative(ServiceInfrastructureService.noACISuccessions);
-			synchronizeTachesDIs(contribuable, aciSuccessions, dateFermeture.addDays(30));
+			synchronizeTachesDIs(contribuable);
 
 			break;
 		case SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT:
@@ -266,10 +265,10 @@ public class TacheServiceImpl implements TacheService, InitializingBean {
 			}
 			// [UNIREG-1112] Annule toutes les déclarations d'impôt à partir de l'année de séparation (car elles n'ont pas lieu d'être)
 			// [UNIREG-1111] Génère une tâche d'émission de DI
-			synchronizeTachesDIs(contribuable, null, null);
+			synchronizeTachesDIs(contribuable);
 			break;
 		case MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION:
-			synchronizeTachesDIs(contribuable, null, null);
+			synchronizeTachesDIs(contribuable);
 			break;
 		}
 	}
@@ -309,7 +308,7 @@ public class TacheServiceImpl implements TacheService, InitializingBean {
 			genereTacheControleDossier(contribuable);
 		}
 		
-		synchronizeTachesDIs(contribuable, null, null);
+		synchronizeTachesDIs(contribuable);
 	}
 
 	/**
@@ -389,14 +388,14 @@ public class TacheServiceImpl implements TacheService, InitializingBean {
 		case MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION:
 		case SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT:
 			generateTacheNouveauDossier(contribuable);
-			synchronizeTachesDIs(contribuable, null, null);
+			synchronizeTachesDIs(contribuable);
 			break;
 
 		case CHGT_MODE_IMPOSITION:
 			if (!ancienModeImposition.isAuRole() && modeImposition.isAuRole()) {
 				generateTacheNouveauDossier(contribuable);
 			}
-			synchronizeTachesDIs(contribuable, null, null);
+			synchronizeTachesDIs(contribuable);
 			break;
 
 		case VEUVAGE_DECES:
@@ -404,7 +403,7 @@ public class TacheServiceImpl implements TacheService, InitializingBean {
 			// [UNIREG-1112] il faut générer les tâches d'envoi de DIs sur le tiers survivant
 			// [UNIREG-1265] Plus de création de tâche de génération de DI pour les décès
 			// [UNIREG-1198] assignation de la tache au service succession mis en place
-			synchronizeTachesDIs(contribuable, null, null);
+			synchronizeTachesDIs(contribuable);
 			break;
 
 		case DEMENAGEMENT_VD:
@@ -441,8 +440,7 @@ public class TacheServiceImpl implements TacheService, InitializingBean {
 	 */
 	@Transactional(rollbackFor = Throwable.class)
 	public void genereTachesDepuisAnnulationDeFor(Contribuable contribuable) {
-		final CollectiviteAdministrative oid = tiersService.getOfficeImpotAt(contribuable, null);
-		synchronizeTachesDIs(contribuable, oid, null);
+		synchronizeTachesDIs(contribuable);
 	}
 
 	private void generateTacheNouveauDossier(Contribuable contribuable) {
@@ -452,15 +450,7 @@ public class TacheServiceImpl implements TacheService, InitializingBean {
 		tacheDAO.save(tacheNouveauDossier);
 	}
 
-	/**
-	 * [UNIREG-2305] Cette méthode génére les tâches d'envoi de DIs ou les tâches d'annulation de DIs qui conviennent suite à la modification des fors fiscaux d'un contribuable. Les tâches de
-	 * manipulation de DIs en instance sont inspectées et annulées si nécessaire. Toutes les périodes fiscales sont traitées automatiquement.
-	 *
-	 * @param contribuable le contribuable sur lequel les tâches relatives aux DIs doivent être générées.
-	 * @param collectivite la collectivité administrative qui sera associée aux tâches nouvellement créées.
-	 * @param dateEcheance la date d'échéance pour les tâches d'envoi de DIs. Si <b>null</b> le délai standard est appliqué.
-	 */
-	private void synchronizeTachesDIs(Contribuable contribuable, CollectiviteAdministrative collectivite, RegDate dateEcheance) {
+	public void synchronizeTachesDIs(Contribuable contribuable) {
 
 		// On détermine les actions nécessaires pour synchroniser les déclarations d'impôt du contribuable avec ses fors fiscaux.
 		final List<SynchronizeAction> actions;
@@ -479,10 +469,11 @@ public class TacheServiceImpl implements TacheService, InitializingBean {
 		}
 
 		// On effectue toutes les actions nécessaires
-		if (collectivite == null) {
-			collectivite = getOfficeImpot(contribuable);
-		}
-		final Context context = new Context(contribuable, collectivite, dateEcheance, tacheDAO, diService);
+		final CollectiviteAdministrative collectivite = getOfficeImpot(contribuable);
+		final CollectiviteAdministrative officeSuccessions = tiersService.getCollectiviteAdministrative(ServiceInfrastructureService.noACISuccessions, true);
+		Assert.notNull(officeSuccessions, "Impossible de trouver l'office des successions !");
+		
+		final Context context = new Context(contribuable, collectivite, tacheDAO, diService, officeSuccessions);
 		
 		for (SynchronizeAction action : actions) {
 			action.execute(context);
@@ -839,7 +830,7 @@ public class TacheServiceImpl implements TacheService, InitializingBean {
 			}
 		}
 
-		synchronizeTachesDIs(contribuable, null, null);
+		synchronizeTachesDIs(contribuable);
 	}
 
 	/**

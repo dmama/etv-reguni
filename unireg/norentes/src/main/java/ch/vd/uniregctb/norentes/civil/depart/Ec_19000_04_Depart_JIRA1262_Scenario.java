@@ -98,6 +98,7 @@ public class Ec_19000_04_Depart_JIRA1262_Scenario extends DepartScenario {
 	public void etape1() throws Exception {
 
 		addColAdm(MockOfficeImpot.OID_AIGLE);
+		addColAdm(MockOfficeImpot.ACISUCCESSIONS);
 
 		final PersonnePhysique sebastien = addHabitant(noIndSebastien);
 		noHabSebastien = sebastien.getNumero();

@@ -3274,6 +3274,48 @@ public class TacheServiceTest extends BusinessTest {
 				TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.CEDI, tache0);
 	}
 
+	/**
+	 * [UNIREG-2305] Vérifie que le décès d'un contribuable génère bien une tâche d'envoi de DI assignée à l'OID des successions <b>mais</b> que les tâches d'envoi de DIs des années précédentes
+	 * (rattrapage) sont assignées à l'OID courant.
+	 */
+	@Test
+	public void testDetermineSynchronizeActionsForDIsDecesAvecRattrapage() throws Exception {
+
+		final RegDate aujourdhui = RegDate.get();
+		final int anneePrecedente = aujourdhui.year() - 1;
+		final RegDate dateDeces = date(anneePrecedente, 11, 2);
+
+		// Décès
+		final PersonnePhysique pp = addNonHabitant("Michelle", "Mabelle", date(1972, 1, 3), Sexe.FEMININ);
+		final ForFiscalPrincipal ffp = addForPrincipal(pp, date(anneePrecedente - 2, 6, 12), MotifFor.ARRIVEE_HC, dateDeces, MotifFor.VEUVAGE_DECES, MockCommune.Cossonay);
+		tacheService.genereTacheDepuisFermetureForPrincipal(pp, ffp);
+		hibernateTemplate.flush();
+
+		// Il devrait maintenant y avoir :
+		//  - deux tâches d'envoi de DIs assignées à l'OID de Cossonay pour les années (anneePrecedente - 2) et (anneePrecedente - 1)
+		//  - une tâche d'envoi de DI assignées à l'OID des successions pour les années pour (anneePrecedente) 
+		final TacheCriteria criterion = new TacheCriteria();
+		criterion.setContribuable(pp);
+		criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpot);
+		criterion.setInclureTachesAnnulees(true);
+
+		final List<Tache> taches = tacheDAO.find(criterion);
+		assertNotNull(taches);
+		assertEquals(3, taches.size());
+
+		final TacheEnvoiDeclarationImpot tache0 = (TacheEnvoiDeclarationImpot) taches.get(0);
+		assertTache(TypeEtatTache.EN_INSTANCE, getNextSunday(aujourdhui), date(anneePrecedente - 2, 1, 1), date(anneePrecedente - 2, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
+				TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.CEDI, tache0);
+
+		final TacheEnvoiDeclarationImpot tache1 = (TacheEnvoiDeclarationImpot) taches.get(1);
+		assertTache(TypeEtatTache.EN_INSTANCE, getNextSunday(aujourdhui), date(anneePrecedente - 1, 1, 1), date(anneePrecedente - 1, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
+				TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.CEDI, tache1);
+
+		final TacheEnvoiDeclarationImpot tache2 = (TacheEnvoiDeclarationImpot) taches.get(2);
+		assertTache(TypeEtatTache.EN_INSTANCE, dateDeces.addDays(30), date(anneePrecedente, 1, 1), dateDeces, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
+				TypeAdresseRetour.ACI, tache2);
+	}
+
 	private static void assertAddDI(RegDate debut, RegDate fin, TypeContribuable typeContribuable, SynchronizeAction action) {
 		assertNotNull(action);
 		assertInstanceOf(AddDI.class, action);

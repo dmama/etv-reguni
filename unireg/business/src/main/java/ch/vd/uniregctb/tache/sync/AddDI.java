@@ -1,7 +1,9 @@
 package ch.vd.uniregctb.tache.sync;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
+import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpot;
 import ch.vd.uniregctb.type.TypeEtatTache;
 
@@ -17,9 +19,24 @@ public class AddDI extends SynchronizeAction {
 
 	@Override
 	public void execute(Context context) {
+
+		final RegDate dateEcheance;
+		final CollectiviteAdministrative collectivite;
+		if (periodeImposition.isFermetureCauseDeces()) {
+			// [UNIREG-2305] En cas de décès, l'échéance de la tâche est poussée 30 jours plus tard et on assigne la tâche à l'office des successions
+			dateEcheance = periodeImposition.getDateFin().addDays(30);
+			collectivite = context.officeSuccessions;
+		}
+		else {
+			// autrement, on prend les valeurs par défaut
+			dateEcheance = null;
+			collectivite = context.collectivite;
+		}
+
 		final TacheEnvoiDeclarationImpot tache =
-				new TacheEnvoiDeclarationImpot(TypeEtatTache.EN_INSTANCE, context.dateEcheance, context.contribuable, periodeImposition.getDateDebut(), periodeImposition.getDateFin(),
-						periodeImposition.getTypeContribuable(), periodeImposition.getTypeDocument(), periodeImposition.getQualification(), periodeImposition.getAdresseRetour(), context.collectivite);
+				new TacheEnvoiDeclarationImpot(TypeEtatTache.EN_INSTANCE, dateEcheance, context.contribuable, periodeImposition.getDateDebut(), periodeImposition.getDateFin(),
+						periodeImposition.getTypeContribuable(), periodeImposition.getTypeDocument(), periodeImposition.getQualification(), periodeImposition.getAdresseRetour(),
+						collectivite);
 		context.tacheDAO.save(tache);
 	}
 

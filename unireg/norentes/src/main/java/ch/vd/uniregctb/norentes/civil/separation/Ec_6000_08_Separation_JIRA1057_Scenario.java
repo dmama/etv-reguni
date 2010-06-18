@@ -76,7 +76,8 @@ public class Ec_6000_08_Separation_JIRA1057_Scenario extends EvenementCivilScena
 	public void step1() {
 
 		addColAdm(MockOfficeImpot.OID_LAUSANNE_OUEST);
-		
+		addColAdm(MockOfficeImpot.ACISUCCESSIONS);
+
 		// Maurice
 		final PersonnePhysique momo = addHabitant(noIndMomo);
 		noHabMomo = momo.getNumero();

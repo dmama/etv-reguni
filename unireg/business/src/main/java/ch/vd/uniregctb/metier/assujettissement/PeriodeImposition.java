@@ -56,6 +56,11 @@ public class PeriodeImposition implements CollatableDateRange {
 	private final boolean remplaceeParNote;
 
 	/**
+	 * <code>vrai</code> si la période d'imposition se termine à cause d'un décès (ou d'un veuvage).
+	 */
+	private final boolean fermetureCauseDeces;
+
+	/**
 	 * Détermine la liste des périodes d'imposition durant l'année spécifiée.
 	 * <p>
 	 * Cette méthode appelle la méthode {@link Assujettissement#determine(Contribuable, int)} et applique les règles métier pour en déduire
@@ -148,7 +153,7 @@ public class PeriodeImposition implements CollatableDateRange {
 	/**
 	 * Détermine la liste des périodes d'imposition durant l'année spécifiée.
 	 * <p>
-	 * Cette méthode appelle la méthode {@link Assujettissement#determine(DecompositionForsAnneeComplete)} et applique les règles métier
+	 * Cette méthode appelle la méthode {@link Assujettissement#determine(ch.vd.uniregctb.tiers.Contribuable, int)} et applique les règles métier
 	 * pour en déduire les périodes d'imposition.
 	 *
 	 * @param fors
@@ -211,6 +216,7 @@ public class PeriodeImposition implements CollatableDateRange {
 	public static PeriodeImposition determinePeriodeImposition(DecompositionForsAnneeComplete fors, Assujettissement assujettissement) {
 
 		final Contribuable contribuable = assujettissement.getContribuable();
+		final boolean fermetureCauseDeces = assujettissement.getMotifFractFin() == MotifFor.VEUVAGE_DECES;
 
 		/*
 		 * Diplomate Suisse
@@ -218,7 +224,7 @@ public class PeriodeImposition implements CollatableDateRange {
 		if (assujettissement instanceof DiplomateSuisse) {
 			// Les diplomates Suisses basés à l'étranger ne reçoivent pas de déclaration, mais la période d'imposition existe bel et bien.
 			return new PeriodeImposition(assujettissement.getDateDebut(), assujettissement.getDateFin(), TypeContribuableDI.DIPLOMATE_SUISSE, assujettissement.getContribuable(), null, null, false,
-					false);
+					false, fermetureCauseDeces);
 		}
 
 		/*
@@ -269,13 +275,14 @@ public class PeriodeImposition implements CollatableDateRange {
 			if (mixte.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_HC && !forsPeriode.secondairesDansLaPeriode.contains(MotifRattachement.ACTIVITE_INDEPENDANTE)) {
 				// Cas des sourciers mixtes hors-canton avec immeuble -> ils doivent recevoir une déclaration HC immeuble (pour autant qu'il n'aient pas d'activité indépendante)
 				return new PeriodeImposition(assujettissement.getDateDebut(), assujettissement.getDateFin(), TypeContribuableDI.HORS_CANTON, assujettissement.getContribuable(), qualification,
-						TypeAdresseRetour.ACI);
+						TypeAdresseRetour.ACI, fermetureCauseDeces);
 			}
 
 			// [UNIREG-1824] faut déterminer aussi le type de DI dans le cas des contribuables mixte
 			final TypeContribuableDI type = determineTypeDI(contribuable, assujettissement.getDateFin().year());
 
-			return new PeriodeImposition(assujettissement.getDateDebut(), assujettissement.getDateFin(), type, assujettissement.getContribuable(), qualification, adresseRetour, optionnelle, remplaceeParNote);
+			return new PeriodeImposition(assujettissement.getDateDebut(), assujettissement.getDateFin(), type, assujettissement.getContribuable(), qualification, adresseRetour, optionnelle,
+					remplaceeParNote, fermetureCauseDeces);
 		}
 
 		/*
@@ -283,7 +290,7 @@ public class PeriodeImposition implements CollatableDateRange {
 		 */
 		if (assujettissement instanceof VaudoisDepense) {
 			return new PeriodeImposition(assujettissement.getDateDebut(), assujettissement.getDateFin(), TypeContribuableDI.VAUDOIS_DEPENSE, assujettissement.getContribuable(), qualification,
-					adresseRetour);
+					adresseRetour, fermetureCauseDeces);
 		}
 
 		/*
@@ -298,7 +305,7 @@ public class PeriodeImposition implements CollatableDateRange {
 
 			TypeContribuableDI type = determineTypeDI(contribuable, assujettissement.getDateFin().year());
 
-			return new PeriodeImposition(assujettissement.getDateDebut(), assujettissement.getDateFin(), type, assujettissement.getContribuable(), qualification, adresseRetour);
+			return new PeriodeImposition(assujettissement.getDateDebut(), assujettissement.getDateFin(), type, assujettissement.getContribuable(), qualification, adresseRetour, fermetureCauseDeces);
 		}
 
 		/*
@@ -309,7 +316,7 @@ public class PeriodeImposition implements CollatableDateRange {
 			boolean remplaceeParNote = false;
 
 			if (assujettissement.getMotifFractFin() == MotifFor.VENTE_IMMOBILIER || assujettissement.getMotifFractFin() == MotifFor.FIN_EXPLOITATION ||
-					assujettissement.getMotifFractFin() == MotifFor.VEUVAGE_DECES) {
+					fermetureCauseDeces) {
 				// [UNIREG-1742] dans le cas des contribuables domiciliés dans un autre canton dont le rattachement économique (activité indépendante ou immeuble)
 				// s’est terminé au cours de la période fiscale, la déclaration est remplacée par une note à l'administration fiscale de l'autre canton.
 				remplaceeParNote = true;
@@ -327,10 +334,11 @@ public class PeriodeImposition implements CollatableDateRange {
 				// [UNIREG-1824] les contribuables hors-canton ne seront plus vaudois ordinaires par défaut, il faut déterminer le type de DI en se basant sur les précédentes
 				TypeContribuableDI type = determineTypeDI(contribuable, assujettissement.getDateFin().year());
 
-				return new PeriodeImposition(dateDebut, dateFin, type, assujettissement.getContribuable(), qualification, adresseRetour, false, remplaceeParNote);
+				return new PeriodeImposition(dateDebut, dateFin, type, assujettissement.getContribuable(), qualification, adresseRetour, false, remplaceeParNote, fermetureCauseDeces);
 			}
 
-			return new PeriodeImposition(dateDebut, dateFin, TypeContribuableDI.HORS_CANTON, assujettissement.getContribuable(), qualification, adresseRetour, false, remplaceeParNote);
+			return new PeriodeImposition(dateDebut, dateFin, TypeContribuableDI.HORS_CANTON, assujettissement.getContribuable(), qualification, adresseRetour, false, remplaceeParNote,
+					fermetureCauseDeces);
 		}
 
 		/*
@@ -349,7 +357,7 @@ public class PeriodeImposition implements CollatableDateRange {
 				//               il faut déterminer le type de DI en se basant sur les précédentes
 				TypeContribuableDI type = determineTypeDI(contribuable, assujettissement.getDateFin().year());
 				
-				return new PeriodeImposition(dateDebut, dateFin, type, assujettissement.getContribuable(), qualification, adresseRetour);
+				return new PeriodeImposition(dateDebut, dateFin, type, assujettissement.getContribuable(), qualification, adresseRetour, fermetureCauseDeces);
 			}
 
 			final ForFiscalPrincipal dernierPrincipal = assujettissement.getFors().principauxDansLaPeriode.last();
@@ -359,7 +367,7 @@ public class PeriodeImposition implements CollatableDateRange {
 				// [UNIREG-1824] les contribuables hors-canton diplomates étrangers, il faut déterminer le type de DI en se basant sur les précédentes
 				TypeContribuableDI type = determineTypeDI(contribuable, assujettissement.getDateFin().year());
 				
-				return new PeriodeImposition(dateDebut, dateFin, type, assujettissement.getContribuable(), qualification, adresseRetour);
+				return new PeriodeImposition(dateDebut, dateFin, type, assujettissement.getContribuable(), qualification, adresseRetour, fermetureCauseDeces);
 			}
 
 			if (assujettissement.getFors().secondairesDansLaPeriode.contains(MotifRattachement.IMMEUBLE_PRIVE)) {
@@ -367,7 +375,8 @@ public class PeriodeImposition implements CollatableDateRange {
 				// selon un mode forfaitaire et *peuvent* recevoir une déclaration d'impôt à leur demande (dès l’année d’acquisition du 1er immeuble),
 				// mais n’en bénéficient *plus* l’année de la vente du dernier immeuble ou du décès.
 				final boolean optionnelle = (assujettissement.getMotifFractFin() != MotifFor.VENTE_IMMOBILIER && assujettissement.getMotifFractFin() != MotifFor.VEUVAGE_DECES);
-				return new PeriodeImposition(dateDebut, dateFin, TypeContribuableDI.HORS_SUISSE, assujettissement.getContribuable(), qualification, adresseRetour, optionnelle, false);
+				return new PeriodeImposition(dateDebut, dateFin, TypeContribuableDI.HORS_SUISSE, assujettissement.getContribuable(), qualification, adresseRetour, optionnelle, false,
+						fermetureCauseDeces);
 			}
 
 			return null; // pas d'envoi de DI dans ce cas
@@ -451,7 +460,8 @@ public class PeriodeImposition implements CollatableDateRange {
 		return type;
 	}
 
-	private PeriodeImposition(RegDate dateDebut, RegDate dateFin, TypeContribuableDI typeCtbDoc, Contribuable contribuable, Qualification qualification, TypeAdresseRetour adresseRetour) {
+	private PeriodeImposition(RegDate dateDebut, RegDate dateFin, TypeContribuableDI typeCtbDoc, Contribuable contribuable, Qualification qualification, TypeAdresseRetour adresseRetour,
+	                          boolean fermetureCauseDeces) {
 		DateRangeHelper.assertValidRange(dateDebut, dateFin);
 		this.debut = dateDebut;
 		this.fin = dateFin;
@@ -461,10 +471,11 @@ public class PeriodeImposition implements CollatableDateRange {
 		this.adresseRetour = adresseRetour;
 		this.optionnelle = false;
 		this.remplaceeParNote = false;
+		this.fermetureCauseDeces = fermetureCauseDeces;
 	}
 
 	private PeriodeImposition(RegDate dateDebut, RegDate dateFin, TypeContribuableDI typeCtbDoc, Contribuable contribuable, Qualification qualification, TypeAdresseRetour adresseRetour,
-	                          boolean optionnelle, boolean remplaceeParNote) {
+	                          boolean optionnelle, boolean remplaceeParNote, boolean fermetureCauseDeces) {
 		DateRangeHelper.assertValidRange(dateDebut, dateFin);
 		this.debut = dateDebut;
 		this.fin = dateFin;
@@ -474,6 +485,7 @@ public class PeriodeImposition implements CollatableDateRange {
 		this.adresseRetour = adresseRetour;
 		this.optionnelle = optionnelle;
 		this.remplaceeParNote = remplaceeParNote;
+		this.fermetureCauseDeces = fermetureCauseDeces;
 	}
 
 	public RegDate getDateDebut() {
@@ -508,6 +520,10 @@ public class PeriodeImposition implements CollatableDateRange {
 		return typeContribuableDI == TypeContribuableDI.DIPLOMATE_SUISSE;
 	}
 
+	public boolean isFermetureCauseDeces() {
+		return fermetureCauseDeces;
+	}
+
 	public Contribuable getContribuable() {
 		return contribuable;
 	}
@@ -525,7 +541,7 @@ public class PeriodeImposition implements CollatableDateRange {
 		final TypeAdresseRetour adresseRetour = next.adresseRetour; // [UNIREG-1741] en prenant le second type, on est aussi correct en cas de décès. 
 		Assert.isTrue(isCollatable(next));
 		return new PeriodeImposition(debut, next.getDateFin(), collateTypeCtbDoc(typeContribuableDI, next.typeContribuableDI), contribuable, qualification, adresseRetour, optionnelle && next.optionnelle,
-				remplaceeParNote && next.remplaceeParNote);
+				remplaceeParNote && next.remplaceeParNote, next.fermetureCauseDeces);
 	}
 
 	public boolean isCollatable(DateRange n) {

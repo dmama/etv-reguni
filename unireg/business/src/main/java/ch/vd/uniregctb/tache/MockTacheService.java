@@ -48,4 +48,7 @@ public class MockTacheService implements TacheService {
 	public List<SynchronizeAction> determineSynchronizeActionsForDIs(Contribuable contribuable) {
 		return null;
 	}
+
+	public void synchronizeTachesDIs(Contribuable contribuable) {
+	}
 }

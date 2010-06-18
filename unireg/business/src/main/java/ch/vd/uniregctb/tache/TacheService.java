@@ -101,4 +101,12 @@ public interface TacheService {
 	 * @throws ch.vd.uniregctb.metier.assujettissement.AssujettissementException en cas d'incohérence des données sur les fors fiscaux qui empêche de calculer l'assujettissement.
 	 */
 	List<SynchronizeAction> determineSynchronizeActionsForDIs(Contribuable contribuable) throws AssujettissementException;
+
+	/**
+	 * [UNIREG-2305] Cette méthode génére les tâches d'envoi de DIs ou les tâches d'annulation de DIs qui conviennent suite à la modification des fors fiscaux d'un contribuable. Les tâches de
+	 * manipulation de DIs en instance sont inspectées et annulées si nécessaire. Toutes les périodes fiscales sont traitées automatiquement.
+	 *
+	 * @param contribuable le contribuable sur lequel les tâches relatives aux DIs doivent être générées.
+	 */
+	void synchronizeTachesDIs(Contribuable contribuable);
 }
