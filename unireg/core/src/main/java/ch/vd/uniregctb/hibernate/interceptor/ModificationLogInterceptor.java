@@ -64,4 +64,16 @@ public class ModificationLogInterceptor implements ModificationSubInterceptor, I
 	public void postFlush() throws CallbackException {
 		// rien à faire ici
 	}
+
+	public void preTransactionCommit() {
+		// rien à faire ici
+	}
+
+	public void postTransactionCommit() {
+		// rien à faire ici
+	}
+
+	public void postTransactionRollback() {
+		// rien à faire ici
+	}
 }

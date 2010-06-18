@@ -85,6 +85,18 @@ public class DatabaseChangeInterceptor implements ModificationSubInterceptor, In
 		// rien à faire ici
 	}
 
+	public void preTransactionCommit() {
+		// rien à faire ici
+	}
+
+	public void postTransactionCommit() {
+		// rien à faire ici
+	}
+
+	public void postTransactionRollback() {
+		// rien à faire ici
+	}
+
 	public void afterPropertiesSet() throws Exception {
 		parent.register(this);
 	}

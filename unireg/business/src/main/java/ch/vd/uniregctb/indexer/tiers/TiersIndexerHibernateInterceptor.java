@@ -1,13 +1,10 @@
 package ch.vd.uniregctb.indexer.tiers;
 
-import ch.vd.uniregctb.adresse.AdresseTiers;
-import ch.vd.uniregctb.common.HibernateEntity;
-import ch.vd.uniregctb.hibernate.interceptor.HibernateFakeInterceptor;
-import ch.vd.uniregctb.hibernate.interceptor.ModificationInterceptor;
-import ch.vd.uniregctb.hibernate.interceptor.ModificationSubInterceptor;
-import ch.vd.uniregctb.tiers.ForFiscal;
-import ch.vd.uniregctb.tiers.RapportEntreTiers;
-import ch.vd.uniregctb.tiers.Tiers;
+import javax.transaction.TransactionManager;
+import java.io.Serializable;
+import java.util.Arrays;
+import java.util.HashSet;
+
 import org.apache.log4j.Logger;
 import org.hibernate.CallbackException;
 import org.hibernate.SQLQuery;
@@ -20,15 +17,15 @@ import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
-import org.springframework.util.Assert;
 
-import javax.transaction.Status;
-import javax.transaction.Synchronization;
-import javax.transaction.Transaction;
-import javax.transaction.TransactionManager;
-import java.io.Serializable;
-import java.util.Arrays;
-import java.util.HashSet;
+import ch.vd.uniregctb.adresse.AdresseTiers;
+import ch.vd.uniregctb.common.HibernateEntity;
+import ch.vd.uniregctb.hibernate.interceptor.HibernateFakeInterceptor;
+import ch.vd.uniregctb.hibernate.interceptor.ModificationInterceptor;
+import ch.vd.uniregctb.hibernate.interceptor.ModificationSubInterceptor;
+import ch.vd.uniregctb.tiers.ForFiscal;
+import ch.vd.uniregctb.tiers.RapportEntreTiers;
+import ch.vd.uniregctb.tiers.Tiers;
 
 public class TiersIndexerHibernateInterceptor implements ModificationSubInterceptor, InitializingBean {
 
@@ -40,7 +37,6 @@ public class TiersIndexerHibernateInterceptor implements ModificationSubIntercep
 	private TransactionManager transactionManager;
 
 	private final ThreadLocal<HashSet<Long>> modifiedEntities = new ThreadLocal<HashSet<Long>>();
-	private final ThreadLocal<HashSet<Transaction>> registeredTransactions = new ThreadLocal<HashSet<Transaction>>();
 
 	/**
 	 * Cette méthode est appelé lorsque une entité hibernate est modifié/sauvé.
@@ -70,11 +66,28 @@ public class TiersIndexerHibernateInterceptor implements ModificationSubIntercep
 			addModifiedTiers(tiersId2);
 		}
 
-		return false; // encore tiers n'a été immédiatement modifié
+		return false; // aucun tiers n'a été immédiatement modifié
 	}
 
 	public void postFlush() throws CallbackException {
 		// rien à faire ici
+	}
+
+	public void preTransactionCommit() {
+		// rien à faire ici
+	}
+
+	public void postTransactionCommit() {
+		if (indexer.isOnTheFlyIndexation()) {
+			indexModifiedTiers();
+		}
+		else {
+			setDirtyModifiedTiers();
+		}
+	}
+
+	public void postTransactionRollback() {
+		getModifiedTiersIds().clear();
 	}
 
 	/**
@@ -83,7 +96,6 @@ public class TiersIndexerHibernateInterceptor implements ModificationSubIntercep
 	 * @param tiers le tiers en question.
 	 */
 	private void addModifiedTiers(Tiers tiers) {
-		registerTxInterceptor();
 		if (tiers != null) {
 			getModifiedTiersIds().add(tiers.getNumero());
 		}
@@ -95,7 +107,6 @@ public class TiersIndexerHibernateInterceptor implements ModificationSubIntercep
 	 * @param tiersId l'id du tiers en question.
 	 */
 	private void addModifiedTiers(Long tiersId) {
-		registerTxInterceptor();
 		if (tiersId != null) {
 			getModifiedTiersIds().add(tiersId);
 		}
@@ -108,15 +119,6 @@ public class TiersIndexerHibernateInterceptor implements ModificationSubIntercep
 			modifiedEntities.set(ent);
 		}
 		return ent;
-	}
-
-	protected void postCommit() {
-		if (indexer.isOnTheFlyIndexation()) {
-			indexModifiedTiers();
-		}
-		else {
-			setDirtyModifiedTiers();
-		}
 	}
 
 	/**
@@ -179,58 +181,6 @@ public class TiersIndexerHibernateInterceptor implements ModificationSubIntercep
 		}
 	}
 
-	private HashSet<Transaction> getRegisteredTransactionsSet() {
-		HashSet<Transaction> set = registeredTransactions.get();
-		if (set == null) {
-			set = new HashSet<Transaction>();
-			registeredTransactions.set(set);
-		}
-		return set;
-	}
-
-	private void registerTxInterceptor() {
-		try {
-			final Transaction transaction = transactionManager.getTransaction();
-			if (!getRegisteredTransactionsSet().contains(transaction)) {
-				transaction.registerSynchronization(new TxInterceptor(transaction));
-			}
-		}
-		catch (Exception e) {
-			final String message = "Impossible d'enregistrer l'intercepteur de transaction, les tiers modifiés ne seront pas réindéxés.";
-			LOGGER.error(message, e);
-			throw new RuntimeException(message, e);
-		}
-	}
-
-	protected void unregisterTxInterceptor(Transaction transaction) {
-		registeredTransactions.get().remove(transaction);
-	}
-
-	private class TxInterceptor implements Synchronization {
-
-		private Transaction transaction;
-
-		public TxInterceptor(Transaction transaction) {
-			this.transaction = transaction;
-		}
-
-		public void beforeCompletion() {
-			// rien de spécial à faire
-		}
-
-		public void afterCompletion(int status) {
-
-			Assert.isTrue(status == Status.STATUS_COMMITTED || status == Status.STATUS_ROLLEDBACK); // il me semble que tous les autres status n'ont pas de sens ici
-
-			// on se désenregistre soi-même
-			unregisterTxInterceptor(transaction);
-
-			if (status == Status.STATUS_COMMITTED) {
-				postCommit();
-			}
-		}
-	}
-	
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setIndexer(GlobalTiersIndexer indexer) {
 		this.indexer = indexer;

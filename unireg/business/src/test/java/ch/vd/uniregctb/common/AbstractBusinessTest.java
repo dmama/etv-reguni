@@ -53,10 +53,6 @@ import ch.vd.uniregctb.type.TypeContribuable;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
 
-/**
- * @author
- *
- */
 // Surcharge des fichiers de config Spring. Il faut mettre les fichiers
 // UT a la fin
 @ContextConfiguration(locations = {
@@ -142,10 +138,6 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 		}
 	}
 
-	protected Object executeInSession(TestHibernateCallback action) {
-		return hibernateTemplate.executeWithNativeSession(action);
-	}
-
 	protected Object executeInNewSession(TestHibernateCallback action) {
 		return hibernateTemplate.executeWithNewSession(action);
 	}
@@ -155,16 +147,6 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 			@Override
 			public Object testInHibernate(Session session) throws Exception {
 				return doInNewTransaction(action);
-			}
-		});
-	}
-
-	protected void flushAndClearSession() {
-		hibernateTemplate.execute(new HibernateCallback() {
-			public Object doInHibernate(Session session) throws HibernateException, SQLException {
-				session.flush();
-				session.clear();
-				return null;
 			}
 		});
 	}

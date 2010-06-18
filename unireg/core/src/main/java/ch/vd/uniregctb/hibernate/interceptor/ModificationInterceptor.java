@@ -1,25 +1,41 @@
 package ch.vd.uniregctb.hibernate.interceptor;
 
+import javax.transaction.RollbackException;
+import javax.transaction.Status;
+import javax.transaction.Synchronization;
+import javax.transaction.Transaction;
+import javax.transaction.TransactionManager;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.hibernate.CallbackException;
 import org.hibernate.collection.AbstractPersistentCollection;
 import org.hibernate.type.Type;
+import org.springframework.util.Assert;
 
 import ch.vd.uniregctb.common.HibernateEntity;
 
 /**
  * Intercepteur hibernate qui détecte lorsqu'une entité hibernate (HibernateEntity) est ajoutée ou modifiée dans la base de données, et
- * notifie du changements une liste de sous-intercepteurs.
+ * notifie du changements une liste de sous-intercepteurs. Cette intercepteur notifie également des phases de commit des transactions.
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
 public class ModificationInterceptor extends AbstractLinkedInterceptor {
 
+	private static final Logger LOGGER = Logger.getLogger(ModificationInterceptor.class);
+
+	private TransactionManager transactionManager;
+	private final ThreadLocal<HashSet<Transaction>> registeredTransactions = new ThreadLocal<HashSet<Transaction>>();
 	private final List<ModificationSubInterceptor> subInterceptors = new ArrayList<ModificationSubInterceptor>();
+
+	public void setTransactionManager(TransactionManager transactionManager) {
+		this.transactionManager = transactionManager;
+	}
 
 	public void register(ModificationSubInterceptor sub) {
 		subInterceptors.add(sub);
@@ -67,6 +83,8 @@ public class ModificationInterceptor extends AbstractLinkedInterceptor {
 	public boolean onFlushDirty(Object entity, Serializable id, Object[] currentState, Object[] previousState, String[] propertyNames,
 			Type[] types) throws CallbackException {
 
+		registerTxInterceptor();
+
 		boolean modified = false;
 
 		if (entity instanceof HibernateEntity && entityChanged(propertyNames, currentState, previousState)) {
@@ -80,6 +98,8 @@ public class ModificationInterceptor extends AbstractLinkedInterceptor {
 	public boolean onSave(Object entity, Serializable id, Object[] currentState, String[] propertyNames, Type[] types)
 			throws CallbackException {
 
+		registerTxInterceptor();
+
 		boolean modified = false;
 
 		if (entity instanceof HibernateEntity) {
@@ -91,6 +111,9 @@ public class ModificationInterceptor extends AbstractLinkedInterceptor {
 
 	@Override
 	public void postFlush(Iterator<?> entities) throws CallbackException {
+
+		registerTxInterceptor();
+		
 		for (ModificationSubInterceptor s : subInterceptors) {
 			s.postFlush();
 		}
@@ -106,5 +129,84 @@ public class ModificationInterceptor extends AbstractLinkedInterceptor {
 		}
 
 		return modified;
+	}
+
+	private void preTransactionCommit() {
+		for (ModificationSubInterceptor s : subInterceptors) {
+			s.preTransactionCommit();
+		}
+	}
+
+	private void postTransactionCommit() {
+		for (ModificationSubInterceptor s : subInterceptors) {
+			s.postTransactionCommit();
+		}
+	}
+
+	private void postTransactionRollback() {
+		for (ModificationSubInterceptor s : subInterceptors) {
+			s.postTransactionRollback();
+		}
+	}
+
+	private HashSet<Transaction> getRegisteredTransactionsSet() {
+		HashSet<Transaction> set = registeredTransactions.get();
+		if (set == null) {
+			set = new HashSet<Transaction>();
+			registeredTransactions.set(set);
+		}
+		return set;
+	}
+
+	/**
+	 * Enregistre un callback sur la transaction de manière à être notifier du commit ou du rollback
+	 */
+	private void registerTxInterceptor() {
+		try {
+			final Transaction transaction = transactionManager.getTransaction();
+			if (!getRegisteredTransactionsSet().contains(transaction)) {
+				transaction.registerSynchronization(new TxInterceptor(transaction));
+			}
+		}
+		catch (RollbackException e) {
+			LOGGER.debug("Impossible d'engistrer l'intercepteur de transaction car la transaction est marquée rollback-only. Tant pis, on l'ignore.", e);
+		}
+		catch (Exception e) {
+			final String message = "Impossible d'enregistrer l'intercepteur de transaction : y a-t-il une transaction d'ouverte ?";
+			LOGGER.error(message, e);
+			throw new RuntimeException(message, e);
+		}
+	}
+
+	protected void unregisterTxInterceptor(Transaction transaction) {
+		registeredTransactions.get().remove(transaction);
+	}
+
+	private class TxInterceptor implements Synchronization {
+
+		private Transaction transaction;
+
+		public TxInterceptor(Transaction transaction) {
+			this.transaction = transaction;
+		}
+
+		public void beforeCompletion() {
+			preTransactionCommit();
+		}
+
+		public void afterCompletion(int status) {
+
+			Assert.isTrue(status == Status.STATUS_COMMITTED || status == Status.STATUS_ROLLEDBACK); // il me semble que tous les autres status n'ont pas de sens ici
+
+			// on se désenregistre soi-même
+			unregisterTxInterceptor(transaction);
+
+			if (status == Status.STATUS_COMMITTED) {
+				postTransactionCommit();
+			}
+			else {
+				postTransactionRollback();
+			}
+		}
 	}
 }
