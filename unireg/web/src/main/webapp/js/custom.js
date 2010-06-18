@@ -663,19 +663,23 @@ var Modifier = {
 	        var tagName = element.tagName.toLowerCase();
 	        if (tagName == "input") {
 	            var type = element.type;
-	            if ((type == "text" || type == "hidden" || type == "password" ||
-	                ((type == "checkbox" || type == "radio")))) {
-	                Element.addObserver( element, "click" , function() {
+	            if ((type == "text" || type == "hidden" || type == "password")) {
+	                Element.addObserver( element, "change" , function() {
 	                	self.setIsModified( true);
 	                	return true;
-	                } , false);        
+	                } , false);
 	                if ( type == "text") {
 	                	  Element.addObserver( element, "keyup" , function(event) {
 	                	  		event = event || window.event;
 			                	return self.onkeyup( event);
 			                } , false); 
 	                }        
-	            } else if ( type== "submit") {
+	            }else if((type == "checkbox" || type == "radio")){
+					 Element.addObserver( element, "click" , function() {
+	                	self.setIsModified( true);
+	                	return true;
+	                } , false);
+	            }else if ( type== "submit") {
 	            	if ( element.name === this.submitSaveName) {
 	            		element.disabled = true;
 		            	 Element.addObserver( element, "click" , function(ev) {
