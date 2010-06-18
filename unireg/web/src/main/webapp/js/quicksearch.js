@@ -34,12 +34,16 @@ function quickSearchShowCtb(input) {
 	}
 }
 
-function quickSearchFocus(input) {
-	input.value = "";
+function quickSearchFocus(input, invite) {
+	if (input.value == invite) {
+		input.value = "";
+	}
 	input.style.color = "black";
 }
 
 function quickSearchBlur(input, invite) {
-	input.value = invite;
-	input.style.color = "gray";
+	if (input.value == "") {
+		input.value = invite;
+		input.style.color = "gray";
+	}
 }

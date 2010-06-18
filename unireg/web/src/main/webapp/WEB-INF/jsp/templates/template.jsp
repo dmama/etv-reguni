@@ -236,7 +236,7 @@ function ouvrirAide(url) {
 					<fmt:message key="label.acces.rapide"/>&nbsp;
 					<input class="quicksearch" size="15" type="text" 
 						onKeyPress="javascript:quickSearch(this, event)" 
-						onfocus="javascript:quickSearchFocus(this)" 
+						onfocus="javascript:quickSearchFocus(this, '<fmt:message key="label.acces.rapide.invite"/>')"
 						onblur="javascript:quickSearchBlur(this, '<fmt:message key="label.acces.rapide.invite"/>')" 
 						value="<fmt:message key="label.acces.rapide.invite"/>"/> 
 				</div>
