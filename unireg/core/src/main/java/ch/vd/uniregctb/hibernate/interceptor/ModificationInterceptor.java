@@ -164,8 +164,10 @@ public class ModificationInterceptor extends AbstractLinkedInterceptor {
 	private void registerTxInterceptor() {
 		try {
 			final Transaction transaction = transactionManager.getTransaction();
-			if (!getRegisteredTransactionsSet().contains(transaction)) {
+			final HashSet<Transaction> set = getRegisteredTransactionsSet();
+			if (!set.contains(transaction)) {
 				transaction.registerSynchronization(new TxInterceptor(transaction));
+				set.add(transaction);
 			}
 		}
 		catch (RollbackException e) {
