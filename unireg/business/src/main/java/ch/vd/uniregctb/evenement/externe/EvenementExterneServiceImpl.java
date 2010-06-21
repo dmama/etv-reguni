@@ -11,7 +11,10 @@ import org.apache.xmlbeans.XmlException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.Assert;
 
 import ch.vd.fiscalite.registre.evenementImpotSourceV1.EvenementImpotSourceQuittanceDocument;
@@ -319,7 +322,13 @@ public class EvenementExterneServiceImpl implements EvenementExterneService, Ini
 	}
 
 	public void afterPropertiesSet() throws Exception {
-		migrateAllQuittancesLR();
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
+		template.execute(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				migrateAllQuittancesLR();
+				return null;
+			}
+		});
 	}
 
 	/**

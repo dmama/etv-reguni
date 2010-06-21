@@ -59,7 +59,7 @@ public class EvenementExterneDAOImpl extends GenericDAOImpl<EvenementExterne, Lo
 
 	@SuppressWarnings({"unchecked"})
 	public List<Long> getIdsQuittancesLRToMigrate() {
-		return (List<Long>) getHibernateTemplate().executeWithNewSession(new HibernateCallback() {
+		return (List<Long>) getHibernateTemplate().execute(new HibernateCallback() {
 			public Object doInHibernate(Session session) throws HibernateException, SQLException {
 				Query q = session.createQuery("select q.id from QuittanceLR q where q.type is null");
 				return q.list();
