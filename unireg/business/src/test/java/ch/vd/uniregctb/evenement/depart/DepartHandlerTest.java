@@ -839,6 +839,56 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 	}
 
 	/**
+	 * [UNIREG-1921] En cas de départ secondaire d'une commune vaudoise alors que l'adresse de domicile est hors-canton,
+	 * le for vaudois doit se fermer...
+	 */
+	@Test
+	public void testDepartSecondaireAvecResidencePrincipaleHC() throws Exception {
+
+		final long noIndividu = 123456L;
+		final RegDate dateDepart = date(2008, 12, 4);
+
+		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+			@Override
+			protected void init() {
+				final MockIndividu ind = addIndividu(noIndividu, date(1956, 4, 30), "Talon", "Achille", true);
+				addAdresse(ind, EnumTypeAdresse.COURRIER, MockRue.Echallens.GrandRue, null, date(2000, 1, 1), null);
+				addAdresse(ind, EnumTypeAdresse.SECONDAIRE, MockRue.Echallens.GrandRue, null, date(2000, 1, 1), dateDepart);
+				addAdresse(ind, EnumTypeAdresse.PRINCIPALE, MockRue.Geneve.AvenueGuiseppeMotta, null, date(2000, 1, 1), null);
+			}
+		});
+
+		// mise en place des fors
+		doInNewTransaction(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus transactionStatus) {
+				final PersonnePhysique pp = addHabitant(noIndividu);
+				addForPrincipal(pp, date(2000, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Echallens);
+				return null;
+			}
+		});
+
+		// résumons-nous :
+		// 1. nous allons maintenant recevoir un événement de départ secondaire depuis Echallens
+		// 2. il faudrait que le for principal soit fermé et passe à Genève
+		final Depart depart = createValidDepart(noIndividu, dateDepart, false);
+		handleDepartSimple(depart);
+
+		final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
+		Assert.assertNotNull(pp);
+
+		final Set<ForFiscal> ff = pp.getForsFiscaux();
+		Assert.assertNotNull(ff);
+		Assert.assertEquals(2, ff.size());
+
+		final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+		Assert.assertNotNull(ffp);
+		Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_HC, ffp.getTypeAutoriteFiscale());
+		Assert.assertEquals(MockCommune.Geneve.getNoOFSEtendu(), (int) ffp.getNumeroOfsAutoriteFiscale());
+		Assert.assertEquals(MotifFor.DEPART_HC, ffp.getMotifOuverture());
+		Assert.assertEquals(dateDepart.getOneDayAfter(), ffp.getDateDebut());
+	}
+
+	/**
 	 * vérifie et traite un depart
 	 *
 	 * @param depart
