@@ -35,6 +35,7 @@ import org.dbunit.dataset.xml.XmlDataSetWriter;
 import org.dbunit.dataset.xml.XmlProducer;
 import org.dbunit.ext.oracle.OracleDataTypeFactory;
 import org.dbunit.operation.DatabaseOperation;
+import org.hibernate.dialect.Dialect;
 import org.hibernate.mapping.ForeignKey;
 import org.hibernate.mapping.Table;
 import org.junit.Assert;
@@ -85,6 +86,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	protected SimpleJdbcTemplate simpleJdbcTemplate;
 	protected LocalSessionFactoryBean localSessionFactoryBean;
 	protected HibernateTemplate hibernateTemplate;
+	protected Dialect dialect;
 
 	public static enum ProducerType {
 		Flat,
@@ -102,6 +104,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		localSessionFactoryBean = getBean(LocalSessionFactoryBean.class, "&sessionFactory");
 		setDataSource(getBean(DataSource.class, "dataSource"));
 		hibernateTemplate = getBean(HibernateTemplate.class, "hibernateTemplate");
+		dialect = getBean(Dialect.class, "hibernateDialect");
 
 		truncateDatabase();
 	}

@@ -343,7 +343,7 @@ public class TiersServiceImpl implements TiersService {
 		// effacement des liens d'identification (qui ne concernent qu'une personne physique, pas un ménage commun)
 		hibernateTemplate.execute(new HibernateCallback() {
 			public Object doInHibernate(Session session) throws HibernateException, SQLException {
-				final String deleteQuery = "DELETE IDENTIFICATION_PERSONNE WHERE NON_HABITANT_ID=?";
+				final String deleteQuery = "DELETE FROM IDENTIFICATION_PERSONNE WHERE NON_HABITANT_ID=?";
 				final SQLQuery query = session.createSQLQuery(deleteQuery);
 				query.setLong(0, numeroTiers);
 				query.executeUpdate();

@@ -3,11 +3,12 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:util="http://www.springframework.org/schema/util" 
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd">
 
-	<bean id="jdbcManagedConnectionFactory" class="ch.vd.uniregctb.database.InMemoryDataSourceMCF">
-		<property name="driverName" value="${jdbc.driverClassName}" />
-		<property name="url" value="${testprop.jdbc.url}" />
-		<property name="user" value="${testprop.jdbc.username}" />
+	<bean id="jdbcManagedConnectionFactory" class="org.tranql.connector.postgresql.PGXAMCF">
+		<property name="serverName" value="${testprop.jdbc.server}" />
+		<property name="portNumber" value="${testprop.jdbc.port}" />
+		<property name="databaseName" value="${testprop.jdbc.instance}" />
+		<property name="userName" value="${testprop.jdbc.username}" />
 		<property name="password" value="${testprop.jdbc.password}" />
-	</bean>	
+	</bean>
 
 </beans>

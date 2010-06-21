@@ -64,7 +64,7 @@ public class MassTiersIndexerTest extends BusinessTest {
 		gti.setTiersService(tiersService);
 		gti.setTransactionManager(transactionManager);
 
-		indexer = new MassTiersIndexer(gti, transactionManager, sessionFactory, 4, 10, Mode.FULL);
+		indexer = new MassTiersIndexer(gti, transactionManager, sessionFactory, 4, 10, Mode.FULL, dialect);
 
 		loadDatabase(DBUNIT_FILENAME);
 	}

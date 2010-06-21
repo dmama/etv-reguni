@@ -138,7 +138,7 @@ public class TacheDAOImpl extends GenericDAOImpl<Tache, Long> implements TacheDA
 	 * {@inheritDoc}
 	 */
 	public int count(long noContribuable) {
-		final String query = "select count(*) from Tache t where t.contribuable.id=" + noContribuable + " order by t.id asc";
+		final String query = "select count(*) from Tache t where t.contribuable.id=" + noContribuable;
 		return DataAccessUtils.intResult(getHibernateTemplate().find(query));
 	}
 

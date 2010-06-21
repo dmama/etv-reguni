@@ -14,10 +14,10 @@ testprop.jdbc.instance=ORCL
 testprop.jdbc.url=jdbc:oracle:thin:@${testprop.jdbc.server}:${testprop.jdbc.port}:${testprop.jdbc.instance}
 
 # Postgresql
-#testprop.jdbc.server=grominet
-#testprop.jdbc.port=
-#testprop.jdbc.instance=
-#testprop.jdbc.url=jdbc:postgresql://${testprop.jdbc.server}/${database.username}
+#testprop.jdbc.server=localhost
+#testprop.jdbc.port=5432
+#testprop.jdbc.instance=${testprop.jdbc.username}
+#testprop.jdbc.url=jdbc:postgresql://${testprop.jdbc.server}/${testprop.jdbc.instance}
 
 # Hsql
 #testprop.jdbc.server=mem

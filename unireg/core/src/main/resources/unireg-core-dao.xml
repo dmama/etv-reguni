@@ -20,6 +20,8 @@
 		<property name="checkWriteOperations" value="false" /> <!-- parce qu'autrement il n'est pas possible de simuler des opérations de write dans une transaction read-only -->
 	</bean>
 
+	<bean id="hibernateDialect" class="${hibernate.dialect}"/>
+	
 	<!-- Definition des DAOs -->
 	<bean id="tiersDAO" class="ch.vd.uniregctb.tiers.TiersDAOImpl" parent="hibernateDaoSupport">
 	</bean>

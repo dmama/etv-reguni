@@ -166,7 +166,7 @@ public class ChangementNomHandlerTest extends AbstractEvenementHandlerTest {
 				Connection con = dataSource.getConnection();
 				try {
 					Statement st = con.createStatement();
-					st.execute("update TIERS set INDEX_DIRTY=1 where NUMERO = 6792");
+					st.execute("update TIERS set INDEX_DIRTY=" + dialect.toBooleanValueString(true) + " where NUMERO = 6792");
 				}
 				finally {
 					con.close();

@@ -344,16 +344,16 @@ public class MouvementDossierDAOImpl extends GenericDAOImpl<MouvementDossier, Lo
 					final List<ProtoBordereauMouvementDossier> liste = new ArrayList<ProtoBordereauMouvementDossier>(rows.size());
 					for (Object[] row : rows) {
 						final String typeStr = (String) row[0];
-						final long idCollAdminInitiatrice = ((BigDecimal) row[1]).longValue();
-						final int noCollAdminInitiatrice = ((BigDecimal) row[2]).intValue();
-						final int countMvt = ((BigDecimal) row[5]).intValue();
+						final long idCollAdminInitiatrice = ((Number) row[1]).longValue();
+						final int noCollAdminInitiatrice = ((Number) row[2]).intValue();
+						final int countMvt = ((Number) row[5]).intValue();
 
 						// filtrage pour n'afficher que les proto-bordereaux émis par la collectivité administrative logguée
 						if (noCollAdmInitiatricePourFiltrage == null || noCollAdminInitiatrice == noCollAdmInitiatricePourFiltrage) {
 							final ProtoBordereauMouvementDossier proto;
 							if ("EnvoiVersCollAdm".equals(typeStr)) {
-								final long idCollAdminDest = ((BigDecimal) row[3]).longValue();
-								final int noCollAdminDest = ((BigDecimal) row[4]).intValue();
+								final long idCollAdminDest = ((Number) row[3]).longValue();
+								final int noCollAdminDest = ((Number) row[4]).intValue();
 								proto = ProtoBordereauMouvementDossier.createEnvoi(idCollAdminInitiatrice, noCollAdminInitiatrice, idCollAdminDest, noCollAdminDest, countMvt);
 							}
 							else if ("ReceptionArchives".equals(typeStr)) {

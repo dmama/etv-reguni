@@ -10,6 +10,7 @@ import org.hibernate.CallbackException;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.dialect.Dialect;
 import org.hibernate.type.Type;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -35,6 +36,7 @@ public class TiersIndexerHibernateInterceptor implements ModificationSubIntercep
 	private SessionFactory sessionFactory;
 	private GlobalTiersIndexer indexer;
 	private TransactionManager transactionManager;
+	private Dialect dialect;
 
 	private final ThreadLocal<HashSet<Long>> modifiedEntities = new ThreadLocal<HashSet<Long>>();
 
@@ -162,7 +164,7 @@ public class TiersIndexerHibernateInterceptor implements ModificationSubIntercep
 			public Object doInTransaction(TransactionStatus status) {
 				Session session = sessionFactory.openSession(new HibernateFakeInterceptor());
 				try {
-					final SQLQuery query = session.createSQLQuery("update TIERS set INDEX_DIRTY = 1 where NUMERO in (:ids)");
+					final SQLQuery query = session.createSQLQuery("update TIERS set INDEX_DIRTY = " + dialect.toBooleanValueString(true) + " where NUMERO in (:ids)");
 					query.setParameterList("ids", ids);
 					query.executeUpdate();
 					session.flush();
@@ -198,6 +200,11 @@ public class TiersIndexerHibernateInterceptor implements ModificationSubIntercep
 
 	public void setTransactionManager(TransactionManager transactionManager) {
 		this.transactionManager = transactionManager;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setDialect(Dialect dialect) {
+		this.dialect = dialect;
 	}
 
 	public void afterPropertiesSet() throws Exception {

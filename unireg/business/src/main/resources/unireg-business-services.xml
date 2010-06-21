@@ -15,6 +15,7 @@
 		<property name="transactionManager" ref="transactionManager" />
 		<property name="sessionFactory"  ref="sessionFactory"/>
 		<property name="statsService" ref="statsService" />
+		<property name="dialect" ref="hibernateDialect" />
 	</bean>
 
 	<bean id="globalTiersSearcher" class="ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcherImpl">

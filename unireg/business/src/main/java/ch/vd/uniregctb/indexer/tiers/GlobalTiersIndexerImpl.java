@@ -21,12 +21,12 @@ import org.hibernate.HibernateException;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.dialect.Dialect;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
@@ -57,6 +57,7 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
     private SessionFactory sessionFactory;
     private ServiceInfrastructureService serviceInfra;
     private ServiceCivilService serviceCivilService;
+	private Dialect dialect;
 	private StatsService statsService;
 
 	private OnTheFlyTiersIndexer onTheFlyTiersIndexer;
@@ -270,7 +271,7 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 		timeLog.start();
 
 		final int queueSizeByThread = CIVIL_BATCH_SIZE / nbThreads;
-		MassTiersIndexer asyncIndexer = new MassTiersIndexer(this, transactionManager, sessionFactory, nbThreads, queueSizeByThread, mode);
+		MassTiersIndexer asyncIndexer = new MassTiersIndexer(this, transactionManager, sessionFactory, nbThreads, queueSizeByThread, mode, dialect);
 
 		int size = list.size();
 
@@ -634,7 +635,7 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 	private void setIndexDirty(final Tiers tiers) {
 		tiersDAO.getHibernateTemplate().execute(new HibernateCallback() {
 			public Object doInHibernate(Session session) throws HibernateException, SQLException {
-				final SQLQuery query = session.createSQLQuery("update TIERS set INDEX_DIRTY = 1 where NUMERO = :id");
+				final SQLQuery query = session.createSQLQuery("update TIERS set INDEX_DIRTY = " + dialect.toBooleanValueString(true) + " where NUMERO = :id");
 				query.setParameter("id", tiers.getNumero());
 				query.executeUpdate();
 				return null;
@@ -673,7 +674,7 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 	}
 
 	public void afterPropertiesSet() throws Exception {
-		onTheFlyTiersIndexer = new OnTheFlyTiersIndexer(this, transactionManager, sessionFactory);
+		onTheFlyTiersIndexer = new OnTheFlyTiersIndexer(this, transactionManager, sessionFactory, dialect);
 	}
 
 	public void destroy() throws Exception {
@@ -747,5 +748,10 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 
 	public void setStatsService(StatsService statsService) {
 		this.statsService = statsService;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setDialect(Dialect dialect) {
+		this.dialect = dialect;
 	}
 }

@@ -10,6 +10,7 @@ import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.dialect.Dialect;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -34,6 +35,8 @@ public class AsyncTiersIndexerThread extends Thread {
 	private final PlatformTransactionManager transactionManager;
 	private final GlobalTiersIndexerImpl indexer;
 	private final SessionFactory sessionFactory;
+	private final Dialect dialect;
+
 	private final GlobalTiersIndexer.Mode mode;
 	private boolean shutdown = false;
 	private final BlockingQueue<Long> queue;
@@ -50,14 +53,16 @@ public class AsyncTiersIndexerThread extends Thread {
 	 * @param globalTiersIndexer l'indexer des tiers
 	 * @param sessionFactory     la session factory hibernate
 	 * @param transactionManager le transaction manager
+	 * @param dialect
 	 */
 	public AsyncTiersIndexerThread(BlockingQueue<Long> queue, GlobalTiersIndexer.Mode mode, GlobalTiersIndexerImpl globalTiersIndexer, SessionFactory sessionFactory,
-	                               PlatformTransactionManager transactionManager) {
+	                               PlatformTransactionManager transactionManager, Dialect dialect) {
 		this.indexer = globalTiersIndexer;
 		this.queue = queue;
 		this.transactionManager = transactionManager;
 		this.sessionFactory = sessionFactory;
 		this.mode = mode;
+		this.dialect = dialect;
 		Assert.notNull(this.indexer);
 		Assert.notNull(this.queue);
 		Assert.notNull(this.transactionManager);
@@ -279,7 +284,7 @@ public class AsyncTiersIndexerThread extends Thread {
 			return;
 		}
 
-		final SQLQuery query = session.createSQLQuery("update TIERS set INDEX_DIRTY = " + (flag ? "1" : "0") + " where NUMERO in (:ids)");
+		final SQLQuery query = session.createSQLQuery("update TIERS set INDEX_DIRTY = " + dialect.toBooleanValueString(flag) + " where NUMERO in (:ids)");
 		query.setParameterList("ids", ids);
 		query.executeUpdate();
 	}

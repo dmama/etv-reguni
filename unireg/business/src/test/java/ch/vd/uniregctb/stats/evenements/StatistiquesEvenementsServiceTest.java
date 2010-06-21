@@ -2,16 +2,21 @@ package ch.vd.uniregctb.stats.evenements;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.BusinessTest;
+
+import org.hibernate.dialect.Oracle10gDialect;
 import org.junit.Test;
 
 public class StatistiquesEvenementsServiceTest extends BusinessTest {
 
 	private StatistiquesEvenementsService statService;
 
+	private boolean dbOracle;
+
 	@Override
 	protected void runOnSetUp() throws Exception {
 		super.runOnSetUp();
 		statService = getBean(StatistiquesEvenementsService.class, "statistiquesEvenementsService");
+		dbOracle = dialect instanceof Oracle10gDialect;
 	}
 
 	@Test
@@ -22,7 +27,9 @@ public class StatistiquesEvenementsServiceTest extends BusinessTest {
 	 * plus le cas, une exception sera lancée de tout en bas...)
 	 */
 	public void testEvenementsCivils() {
-		statService.getStatistiquesEvenementsCivils(RegDate.get());
+		if (dbOracle) {
+			statService.getStatistiquesEvenementsCivils(RegDate.get());
+		}
 	}
 
 	@Test
@@ -33,6 +40,8 @@ public class StatistiquesEvenementsServiceTest extends BusinessTest {
 	 * plus le cas, une exception sera lancée de tout en bas...)
 	 */
 	public void testEvenementsExternes() {
-		statService.getStatistiquesEvenementsExternes();
+		if (dbOracle) {
+			statService.getStatistiquesEvenementsExternes();
+		}
 	}
 }

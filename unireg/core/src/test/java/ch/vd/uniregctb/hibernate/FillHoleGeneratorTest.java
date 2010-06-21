@@ -1,15 +1,11 @@
 package ch.vd.uniregctb.hibernate;
 
-import static junit.framework.Assert.assertEquals;
-
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.util.Properties;
 
-import javax.sql.DataSource;
-
 import org.hibernate.Hibernate;
-import org.hibernate.dialect.Oracle10gDialect;
 import org.hibernate.impl.AbstractSessionImpl;
 import org.junit.Test;
 import org.springframework.orm.hibernate3.HibernateTemplate;
@@ -20,6 +16,8 @@ import ch.vd.uniregctb.common.CoreDAOTest;
 import ch.vd.uniregctb.migreg.MigrationError;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
+
+import static junit.framework.Assert.assertEquals;
 
 public class FillHoleGeneratorTest extends CoreDAOTest {
 
@@ -36,15 +34,15 @@ public class FillHoleGeneratorTest extends CoreDAOTest {
 		rawDataSource = getBean(DataSource.class, "rawDataSource");
 
 		generator = new FillHoleGenerator("TIERS", "S_CTB", Contribuable.CTB_GEN_FIRST_ID, Contribuable.CTB_GEN_LAST_ID);
-		generator.configure(Hibernate.LONG, new Properties(), new Oracle10gDialect());
+		generator.configure(Hibernate.LONG, new Properties(), dialect);
 
 		resetSequence();
 	}
 
 	private void resetSequence() throws Exception {
 
-		String[] drops = generator.sqlDropStrings(new Oracle10gDialect());
-		String[] creates = generator.sqlCreateStrings(new Oracle10gDialect());
+		String[] drops = generator.sqlDropStrings(dialect);
+		String[] creates = generator.sqlCreateStrings(dialect);
 
 		Connection con = null;
 		try {

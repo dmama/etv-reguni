@@ -9,6 +9,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 import org.hibernate.SessionFactory;
+import org.hibernate.dialect.Dialect;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import ch.vd.registre.base.utils.Assert;
@@ -32,7 +33,8 @@ public class MassTiersIndexer {
 	private long totalUserTime;
 	private long totalExecTime;
 
-	public MassTiersIndexer(GlobalTiersIndexerImpl indexer, PlatformTransactionManager transactionManager, SessionFactory sessionFactory, int nbThreads, int queueByThreadSize, Mode mode) {
+	public MassTiersIndexer(GlobalTiersIndexerImpl indexer, PlatformTransactionManager transactionManager, SessionFactory sessionFactory, int nbThreads, int queueByThreadSize, Mode mode,
+	                        Dialect dialect) {
 
 		// Le flag doit etre setté avant le démarrage des threads sinon elles se terminent tout de suite...
 		isInit = true;
@@ -41,7 +43,7 @@ public class MassTiersIndexer {
 		queue = new ArrayBlockingQueue<Long>(queueByThreadSize * nbThreads);
 
 		for (int i = 0; i < nbThreads; i++) {
-			AsyncTiersIndexerThread t = new AsyncTiersIndexerThread(queue, mode, indexer, sessionFactory, transactionManager);
+			AsyncTiersIndexerThread t = new AsyncTiersIndexerThread(queue, mode, indexer, sessionFactory, transactionManager, dialect);
 			threads.add(t);
 			t.setName("Async-" + i);
 			t.start();

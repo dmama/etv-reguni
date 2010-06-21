@@ -178,20 +178,20 @@ public class DeterminerLRsEchuesProcessor {
 						if (rows != null && rows.size() > 0) {
 							final Map<Long, DeterminerLRsEchuesResults.InfoDebiteurAvecLrEchue> infos = new HashMap<Long, DeterminerLRsEchuesResults.InfoDebiteurAvecLrEchue>(rows.size());
 							for (Object[] row : rows) {
-								final int indexSommation = ((BigDecimal) row[4]).intValue();
+								final int indexSommation = ((Number) row[4]).intValue();
 								final RegDate sommation = RegDate.fromIndex(indexSommation, false);
 								final RegDate echeanceReelle = getSeuilEcheanceSommation(sommation);
 								if (dateTraitement.isAfter(echeanceReelle)) {
-									final long idDebiteur = ((BigDecimal) row[1]).longValue();
+									final long idDebiteur = ((Number) row[1]).longValue();
 									DeterminerLRsEchuesResults.InfoDebiteurAvecLrEchue infoDebiteur = infos.get(idDebiteur);
 									if (infoDebiteur == null) {
 										infoDebiteur = new DeterminerLRsEchuesResults.InfoDebiteurAvecLrEchue(idDebiteur);
 										infos.put(idDebiteur, infoDebiteur);
 									}
 
-									final long id = ((BigDecimal) row[0]).longValue();
-									final int indexDebut = ((BigDecimal) row[2]).intValue();
-									final BigDecimal indexFin = ((BigDecimal) row[3]);
+									final long id = ((Number) row[0]).longValue();
+									final int indexDebut = ((Number) row[2]).intValue();
+									final Number indexFin = ((Number) row[3]);
 
 									final RegDate debut = RegDate.fromIndex(indexDebut, false);
 									final RegDate fin = indexFin != null ? RegDate.fromIndex(indexFin.intValue(), false) : null;

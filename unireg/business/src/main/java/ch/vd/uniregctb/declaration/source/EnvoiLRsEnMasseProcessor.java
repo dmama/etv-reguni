@@ -154,10 +154,9 @@ public class EnvoiLRsEnMasseProcessor {
 				return hibernateTemplate.execute(new HibernateCallback() {
 					public Object doInHibernate(Session session) throws HibernateException {
 						final String queryDPI =
-								"SELECT dpi.id FROM DebiteurPrestationImposable AS dpi WHERE dpi.annulationDate IS NULL AND dpi.periodiciteDecompte != :periodicite AND dpi.sansListeRecapitulative <> :sansLr";
+								"SELECT dpi.id FROM DebiteurPrestationImposable AS dpi " +
+										"WHERE dpi.annulationDate IS NULL AND dpi.periodiciteDecompte != 'UNIQUE' AND dpi.sansListeRecapitulative = false";
 						final Query queryObject = session.createQuery(queryDPI);
-						queryObject.setParameter("periodicite", PeriodiciteDecompte.UNIQUE);
-						queryObject.setParameter("sansLr", Boolean.TRUE);
 						return queryObject.list();
 					}
 				});

@@ -41,8 +41,8 @@ public class CorrectionFlagHabitantProcessor {
 						 + " where ff.dateFin is null and ff.annulationDate is null"
 						 + " and ff.tiers.class = PersonnePhysique"
 						 + " and ff.tiers.annulationDate is null"
-						 + " and ((ff.tiers.habitant = 0 and ff.typeAutoriteFiscale = 'COMMUNE_OU_FRACTION_VD')"
-						 + " or (ff.tiers.habitant = 1 and ff.typeAutoriteFiscale != 'COMMUNE_OU_FRACTION_VD'))";
+						 + " and ((ff.tiers.habitant = false and ff.typeAutoriteFiscale = 'COMMUNE_OU_FRACTION_VD')"
+						 + " or (ff.tiers.habitant = true and ff.typeAutoriteFiscale != 'COMMUNE_OU_FRACTION_VD'))";
 
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);

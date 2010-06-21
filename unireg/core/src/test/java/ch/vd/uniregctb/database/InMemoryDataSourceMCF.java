@@ -15,7 +15,7 @@ import org.tranql.connector.jdbc.AbstractXADataSourceMCF;
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
-public class InMemoryDataSourceMCF extends AbstractXADataSourceMCF {
+public class InMemoryDataSourceMCF extends AbstractXADataSourceMCF<StandardXADataSource> {
 
 	private static final long serialVersionUID = -6861985984667770096L;
 
@@ -40,6 +40,10 @@ public class InMemoryDataSourceMCF extends AbstractXADataSourceMCF {
 				fatal = false;
 			}
 			return fatal;
+		}
+
+		public boolean rollbackOnFatalException() {
+			return true;
 		}
 	};
 

@@ -9,6 +9,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import org.apache.log4j.Logger;
 import org.hibernate.SessionFactory;
+import org.hibernate.dialect.Dialect;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import ch.vd.uniregctb.indexer.IndexerException;
@@ -31,6 +32,7 @@ public class OnTheFlyTiersIndexer {
 	private final GlobalTiersIndexerImpl indexer;
 	private final PlatformTransactionManager transactionManager;
 	private final SessionFactory sessionFactory;
+	private final Dialect dialect;
 
 	private int count = 0;
 	private final ArrayList<AsyncTiersIndexerThread> threads = new ArrayList<AsyncTiersIndexerThread>();
@@ -44,11 +46,12 @@ public class OnTheFlyTiersIndexer {
 		}
 	};
 
-	public OnTheFlyTiersIndexer(GlobalTiersIndexerImpl indexer, PlatformTransactionManager transactionManager, SessionFactory sessionFactory) {
+	public OnTheFlyTiersIndexer(GlobalTiersIndexerImpl indexer, PlatformTransactionManager transactionManager, SessionFactory sessionFactory, Dialect dialect) {
 
 		this.indexer = indexer;
 		this.transactionManager = transactionManager;
 		this.sessionFactory = sessionFactory;
+		this.dialect = dialect;
 
 		// Un queue bloquante de longueur illimitée
 		this.queue = new LinkedBlockingQueue<Long>();
@@ -56,7 +59,7 @@ public class OnTheFlyTiersIndexer {
 		// Crée le nombre minimal de threads
 		this.count = 0;
 		for (; count < MIN_THREADS; count++) {
-			final AsyncTiersIndexerThread t = new AsyncTiersIndexerThread(queue, null, indexer, sessionFactory, transactionManager);
+			final AsyncTiersIndexerThread t = new AsyncTiersIndexerThread(queue, null, indexer, sessionFactory, transactionManager, dialect);
 			t.setName("OnTheFly-" + count);
 			t.start();
 			this.threads.add(t);
@@ -174,7 +177,7 @@ public class OnTheFlyTiersIndexer {
 
 			if (queueSize > HIGH_LEVEL && threadSize < MAX_THREADS) {
 				// on ajoute un thread
-				final AsyncTiersIndexerThread t = new AsyncTiersIndexerThread(queue, null, indexer, sessionFactory, transactionManager);
+				final AsyncTiersIndexerThread t = new AsyncTiersIndexerThread(queue, null, indexer, sessionFactory, transactionManager, dialect);
 				t.setName("OnTheFly-" + (count++));
 
 				LOGGER.info("Ajout d'un thread d'indexation " + t.getName() + " (threadSize=" + (threadSize + 1) + ", queueSize=" + queueSize + ")");

@@ -231,7 +231,7 @@ public class CorrectionDateNaissanceHandlerTest extends AbstractEvenementHandler
 				try {
 
 					Statement stat = con.createStatement();
-					stat.execute("update TIERS set INDEX_DIRTY = 1 where NUMERO = " + ids.jean);
+					stat.execute("update TIERS set INDEX_DIRTY = " + dialect.toBooleanValueString(true) + " where NUMERO = " + ids.jean);
 				}
 				finally {
 					con.close();
