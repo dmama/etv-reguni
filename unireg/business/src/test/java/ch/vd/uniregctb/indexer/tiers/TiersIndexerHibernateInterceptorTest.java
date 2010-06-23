@@ -544,7 +544,7 @@ public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
 			fail("Le tiers qui ne valide pas aurait dû lever une exception");
 		}
 		catch (Exception e) {
-			assertEquals("ch.vd.registre.base.validation.ValidationException: PersonnePhysique #" + ids.pp + " - 1 erreur(s) - 0 warning(s):\n" +
+			assertContains("PersonnePhysique #" + ids.pp + " - 1 erreur(s) - 0 warning(s):\n" +
 					" [E] Le for principal qui commence le 01.01.1990 chevauche le for précédent\n", e.getMessage());
 		}
 

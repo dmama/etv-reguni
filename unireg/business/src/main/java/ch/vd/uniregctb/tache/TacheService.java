@@ -105,6 +105,8 @@ public interface TacheService {
 	/**
 	 * [UNIREG-2305] Cette méthode génére les tâches d'envoi de DIs ou les tâches d'annulation de DIs qui conviennent suite à la modification des fors fiscaux d'un contribuable. Les tâches de
 	 * manipulation de DIs en instance sont inspectées et annulées si nécessaire. Toutes les périodes fiscales sont traitées automatiquement.
+	 * <p>
+	 * <b>Attention !</b> Ne pas appeler cette méthode manuellement : elle est appelée automatiquement depuis un intercepteur après le commit de la transaction.
 	 *
 	 * @param contribuable le contribuable sur lequel les tâches relatives aux DIs doivent être générées.
 	 */

@@ -31,6 +31,7 @@ public class ModificationInterceptor extends AbstractLinkedInterceptor {
 
 	private TransactionManager transactionManager;
 	private final ThreadLocal<HashSet<Transaction>> registeredTransactions = new ThreadLocal<HashSet<Transaction>>();
+	private final ThreadLocal<Boolean> disabled = new ThreadLocal<Boolean>();
 	private final List<ModificationSubInterceptor> subInterceptors = new ArrayList<ModificationSubInterceptor>();
 
 	public void setTransactionManager(TransactionManager transactionManager) {
@@ -39,6 +40,15 @@ public class ModificationInterceptor extends AbstractLinkedInterceptor {
 
 	public void register(ModificationSubInterceptor sub) {
 		subInterceptors.add(sub);
+	}
+
+	/**
+	 * Désactive ou réactive l'intercepteur pour le thread courant.
+	 *
+	 * @param value l'intercepteur doit être actif ou non
+	 */
+	public void setEnabledForThread(boolean value) {
+		disabled.set(!value);
 	}
 
 	/**
@@ -162,6 +172,9 @@ public class ModificationInterceptor extends AbstractLinkedInterceptor {
 	 * Enregistre un callback sur la transaction de manière à être notifier du commit ou du rollback
 	 */
 	private void registerTxInterceptor() {
+		if (disabled.get() != null && disabled.get()) {
+			return;
+		}
 		try {
 			final Transaction transaction = transactionManager.getTransaction();
 			final HashSet<Transaction> set = getRegisteredTransactionsSet();

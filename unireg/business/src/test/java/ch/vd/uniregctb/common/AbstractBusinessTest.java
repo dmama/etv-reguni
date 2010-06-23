@@ -7,6 +7,7 @@ import org.hibernate.Session;
 import org.junit.Assert;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
@@ -24,6 +25,7 @@ import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.tache.TacheSynchronizerInterceptor;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
@@ -75,9 +77,11 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 	// private static final Logger LOGGER = Logger.getLogger(AbstractBusinessTest.class);
 
 	private boolean wantIndexation = false;
+	private boolean wantSynchroTache = false;
 	protected TiersService tiersService;
 	protected GlobalTiersIndexer globalTiersIndexer;
 	protected GlobalTiersSearcher globalTiersSearcher;
+	private TacheSynchronizerInterceptor tacheSynchronizer;
 
 	@Override
 	protected void runOnSetUp() throws Exception {
@@ -85,6 +89,8 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 		globalTiersIndexer = getBean(GlobalTiersIndexer.class, "globalTiersIndexer");
 		globalTiersSearcher = getBean(GlobalTiersSearcher.class, "globalTiersSearcher");
 		globalTiersIndexer.setOnTheFlyIndexation(wantIndexation);
+		tacheSynchronizer = getBean(TacheSynchronizerInterceptor.class, "tacheSynchronizerInterceptor");
+		tacheSynchronizer.setOnTheFlySynchronization(wantSynchroTache);
 		super.runOnSetUp();
 	}
 
@@ -114,6 +120,14 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 		}
 	}
 
+	public void setWantSynchroTache(boolean wantSynchroTache) {
+		this.wantSynchroTache = wantSynchroTache;
+
+		if (tacheSynchronizer != null) {
+			tacheSynchronizer.setOnTheFlySynchronization(wantSynchroTache);
+		}
+	}
+
 	protected void indexData() throws Exception {
 		// globalTiersIndexer.indexAllDatabase();
 		// Si on Index en ASYNC (on créée des Threads) tout va bien
@@ -138,15 +152,26 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 		}
 	}
 
-	protected Object executeInNewSession(TestHibernateCallback action) {
-		return hibernateTemplate.executeWithNewSession(action);
+	protected Object doInTransactionAndSession(final TransactionCallback action) throws Exception {
+		return doInTransaction(new TransactionCallback() {
+			public Object doInTransaction(final TransactionStatus status) {
+				return hibernateTemplate.executeWithNewSession(new HibernateCallback() {
+					public Object doInHibernate(Session session) throws HibernateException, SQLException {
+						return action.doInTransaction(status);
+					}
+				});
+			}
+		});
 	}
 
 	protected Object doInNewTransactionAndSession(final TransactionCallback action) throws Exception {
-		return executeInNewSession(new TestHibernateCallback() {
-			@Override
-			public Object testInHibernate(Session session) throws Exception {
-				return doInNewTransaction(action);
+		return doInNewTransaction(new TransactionCallback() {
+			public Object doInTransaction(final TransactionStatus status) {
+				return hibernateTemplate.executeWithNewSession(new HibernateCallback() {
+					public Object doInHibernate(Session session) throws HibernateException, SQLException {
+						return action.doInTransaction(status);
+					}
+				});
 			}
 		});
 	}

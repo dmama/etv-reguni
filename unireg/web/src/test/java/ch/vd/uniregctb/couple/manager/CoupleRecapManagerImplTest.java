@@ -203,7 +203,7 @@ public class CoupleRecapManagerImplTest extends BusinessTest {
 			fail("Le ménage-commun ne devrait pas valider à cause de son for principal qui débute avant la date du jour.");
 		}
 		catch (Exception e) {
-			assertEquals("ch.vd.registre.base.validation.ValidationException: MenageCommun #" + ids.menage + " - 1 erreur(s) - 0 warning(s):\n" +
+			assertContains("MenageCommun #" + ids.menage + " - 1 erreur(s) - 0 warning(s):\n" +
 					" [E] Le for fiscal [ForFiscalPrincipal (01.01.1988 - ?)] ne peut pas exister en dehors de la période de validité du ménage-commun numéro [" + ids.menage + "]\n", e.getMessage());
 		}
 

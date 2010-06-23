@@ -136,6 +136,11 @@ public abstract class Assujettissement implements CollatableDateRange {
 	 */
 	public static List<Assujettissement> determine(Contribuable ctb) throws AssujettissementException {
 
+		if (ctb.isAnnule()) {
+			// un contribuable annulé n'est évidemment pas assujetti
+			return null;
+		}
+
 		final Set<ForFiscal> set = ctb.getForsFiscaux();
 		if (set == null || set.isEmpty()) {
 			return null;

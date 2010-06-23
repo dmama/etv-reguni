@@ -158,20 +158,28 @@ public class TacheServiceTest extends BusinessTest {
 				return null;
 			}
 		});
+
+		setWantSynchroTache(true);
 	}
 
 	@Test
-	public void testGenereArriveeHSDepuisOuvertureForPrincipal() {
-		PersonnePhysique hab = new PersonnePhysique(true);
-		hab.setNumero(11111111L);
-		hab.setNumeroIndividu(333908L);
-		hab = (PersonnePhysique) hibernateTemplate.merge(hab);
+	public void testGenereArriveeHSDepuisOuvertureForPrincipal() throws Exception {
 
-		ForFiscalPrincipal forFiscalPrincipal = new ForFiscalPrincipal(RegDate.get(2006, 6, 12), null, 5652,
-				TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
-		hab.addForFiscal(forFiscalPrincipal);
-		forFiscalPrincipal.setMotifOuverture(MotifFor.ARRIVEE_HS);
-		tacheService.genereTacheDepuisOuvertureForPrincipal(hab, forFiscalPrincipal, null);
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				PersonnePhysique hab = new PersonnePhysique(true);
+				hab.setNumero(11111111L);
+				hab.setNumeroIndividu(333908L);
+				hab = (PersonnePhysique) hibernateTemplate.merge(hab);
+
+				ForFiscalPrincipal forFiscalPrincipal = new ForFiscalPrincipal(RegDate.get(2006, 6, 12), null, 5652,
+						TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
+				hab.addForFiscal(forFiscalPrincipal);
+				forFiscalPrincipal.setMotifOuverture(MotifFor.ARRIVEE_HS);
+				tacheService.genereTacheDepuisOuvertureForPrincipal(hab, forFiscalPrincipal, null);
+				return null;
+			}
+		});
 
 		TacheCriteria criterion = new TacheCriteria();
 		verifieTacheNouveauDossier(criterion, 1);
@@ -180,32 +188,45 @@ public class TacheServiceTest extends BusinessTest {
 	}
 
 	@Test
-	public void testGenereArriveeHSDepuisOuvertureForPrincipalSourceUNIREG1888() {
-		PersonnePhysique hab = new PersonnePhysique(true);
-		hab.setNumero(11111111L);
-		hab.setNumeroIndividu(333908L);
-		hab = (PersonnePhysique) hibernateTemplate.merge(hab);
+	public void testGenereArriveeHSDepuisOuvertureForPrincipalSourceUNIREG1888() throws Exception {
 
-		ForFiscalPrincipal forFiscalPrincipal = new ForFiscalPrincipal(RegDate.get(2006, 6, 12), null, 5652,
-				TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
-		hab.addForFiscal(forFiscalPrincipal);
-		forFiscalPrincipal.setMotifOuverture(MotifFor.ARRIVEE_HS);
-		tacheService.genereTacheDepuisOuvertureForPrincipal(hab, forFiscalPrincipal, null);
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				PersonnePhysique hab = new PersonnePhysique(true);
+				hab.setNumero(11111111L);
+				hab.setNumeroIndividu(333908L);
+				hab = (PersonnePhysique) hibernateTemplate.merge(hab);
+
+				ForFiscalPrincipal forFiscalPrincipal = new ForFiscalPrincipal(RegDate.get(2006, 6, 12), null, 5652,
+						TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
+				hab.addForFiscal(forFiscalPrincipal);
+				forFiscalPrincipal.setMotifOuverture(MotifFor.ARRIVEE_HS);
+				tacheService.genereTacheDepuisOuvertureForPrincipal(hab, forFiscalPrincipal, null);
+				return null;
+			}
+		});
+
 		assertEmpty(tacheDAO.getAll());
 	}
 
 	@Test
-	public void testGenereArriveeHCDepuisOuvertureForPrincipal() {
-		PersonnePhysique hab = new PersonnePhysique(true);
-		hab.setNumero(11111111L);
-		hab.setNumeroIndividu(333908L);
-		hab = (PersonnePhysique) hibernateTemplate.merge(hab);
+	public void testGenereArriveeHCDepuisOuvertureForPrincipal() throws Exception {
 
-		ForFiscalPrincipal forFiscalPrincipal = new ForFiscalPrincipal(RegDate.get(2006, 6, 12), null, 5652,
-				TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
-		hab.addForFiscal(forFiscalPrincipal);
-		forFiscalPrincipal.setMotifOuverture(MotifFor.ARRIVEE_HC);
-		tacheService.genereTacheDepuisOuvertureForPrincipal(hab, forFiscalPrincipal, null);
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				PersonnePhysique hab = new PersonnePhysique(true);
+				hab.setNumero(11111111L);
+				hab.setNumeroIndividu(333908L);
+				hab = (PersonnePhysique) hibernateTemplate.merge(hab);
+
+				ForFiscalPrincipal forFiscalPrincipal = new ForFiscalPrincipal(RegDate.get(2006, 6, 12), null, 5652,
+						TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
+				hab.addForFiscal(forFiscalPrincipal);
+				forFiscalPrincipal.setMotifOuverture(MotifFor.ARRIVEE_HC);
+				tacheService.genereTacheDepuisOuvertureForPrincipal(hab, forFiscalPrincipal, null);
+				return null;
+			}
+		});
 
 		TacheCriteria criterion = new TacheCriteria();
 		verifieTacheNouveauDossier(criterion, 1);
@@ -216,48 +237,56 @@ public class TacheServiceTest extends BusinessTest {
 
 
 	@Test
-	public void testGenereDemenagementVDDepuisOuvertureForPrincipal() {
-		PersonnePhysique hab = new PersonnePhysique(true);
-		hab.setNumero(11111111L);
-		hab.setNumeroIndividu(333908L);
-		hab = (PersonnePhysique) hibernateTemplate.merge(hab);
+	public void testGenereDemenagementVDDepuisOuvertureForPrincipal() throws Exception {
 
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				PersonnePhysique hab = new PersonnePhysique(true);
+				hab.setNumero(11111111L);
+				hab.setNumeroIndividu(333908L);
+				hab = (PersonnePhysique) hibernateTemplate.merge(hab);
 
+				ForFiscalPrincipal forFiscalPrincipalDepart = new ForFiscalPrincipal(RegDate.get(2008, 6, 12), RegDate.get(2009, 6, 11), 5586,
+						TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
+				forFiscalPrincipalDepart.setMotifOuverture(MotifFor.ARRIVEE_HC);
+				forFiscalPrincipalDepart.setMotifFermeture(MotifFor.DEMENAGEMENT_VD);
+				hab.addForFiscal(forFiscalPrincipalDepart);
 
+				ForFiscalPrincipal forFiscalPrincipal = new ForFiscalPrincipal(RegDate.get(2009, 6, 12), null, 5652,
+						TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
+				forFiscalPrincipal.setMotifOuverture(MotifFor.DEMENAGEMENT_VD);
+				hab.addForFiscal(forFiscalPrincipal);
 
-		ForFiscalPrincipal forFiscalPrincipalDepart = new ForFiscalPrincipal(RegDate.get(2008, 6, 12), RegDate.get(2009, 6, 11), 5586,
-				TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
-		forFiscalPrincipalDepart.setMotifOuverture(MotifFor.ARRIVEE_HC);
-		forFiscalPrincipalDepart.setMotifFermeture(MotifFor.DEMENAGEMENT_VD);
-		hab.addForFiscal(forFiscalPrincipalDepart);
-
-		ForFiscalPrincipal forFiscalPrincipal = new ForFiscalPrincipal(RegDate.get(2009, 6, 12), null, 5652,
-				TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
-		forFiscalPrincipal.setMotifOuverture(MotifFor.DEMENAGEMENT_VD);
-		hab.addForFiscal(forFiscalPrincipal);
-		
-		tacheService.genereTacheDepuisOuvertureForPrincipal(hab, forFiscalPrincipal, null);
+				tacheService.genereTacheDepuisOuvertureForPrincipal(hab, forFiscalPrincipal, null);
+				return null;
+			}
+		});
 
 		TacheCriteria criterion = new TacheCriteria();
 		verifierTacheControleDossier(criterion, 0);
 
-		PersonnePhysique hab2 = new PersonnePhysique(true);
-		hab2.setNumero(11111112L);
-		hab2.setNumeroIndividu(333904L);
-		hab2 = (PersonnePhysique) hibernateTemplate.merge(hab2);
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				PersonnePhysique hab2 = new PersonnePhysique(true);
+				hab2.setNumero(11111112L);
+				hab2.setNumeroIndividu(333904L);
+				hab2 = (PersonnePhysique) hibernateTemplate.merge(hab2);
 
-		ForFiscalPrincipal forFiscalPrincipalDepart2 = new ForFiscalPrincipal(RegDate.get(2007, 6, 12), RegDate.get(2008, 6, 11), 5586,
-				TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
-		forFiscalPrincipalDepart2.setMotifOuverture(MotifFor.ARRIVEE_HC);
-		forFiscalPrincipalDepart2.setMotifFermeture(MotifFor.DEMENAGEMENT_VD);
-		hab2.addForFiscal(forFiscalPrincipalDepart2);
+				ForFiscalPrincipal forFiscalPrincipalDepart2 = new ForFiscalPrincipal(RegDate.get(2007, 6, 12), RegDate.get(2008, 6, 11), 5586,
+						TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
+				forFiscalPrincipalDepart2.setMotifOuverture(MotifFor.ARRIVEE_HC);
+				forFiscalPrincipalDepart2.setMotifFermeture(MotifFor.DEMENAGEMENT_VD);
+				hab2.addForFiscal(forFiscalPrincipalDepart2);
 
-		ForFiscalPrincipal forFiscalPrincipal2 = new ForFiscalPrincipal(RegDate.get(2008, 6, 12), null, 5652,
-				TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
-		forFiscalPrincipal2.setMotifOuverture(MotifFor.DEMENAGEMENT_VD);
-		hab2.addForFiscal(forFiscalPrincipal2);
+				ForFiscalPrincipal forFiscalPrincipal2 = new ForFiscalPrincipal(RegDate.get(2008, 6, 12), null, 5652,
+						TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
+				forFiscalPrincipal2.setMotifOuverture(MotifFor.DEMENAGEMENT_VD);
+				hab2.addForFiscal(forFiscalPrincipal2);
 
-		tacheService.genereTacheDepuisOuvertureForPrincipal(hab2, forFiscalPrincipal2, null);
+				tacheService.genereTacheDepuisOuvertureForPrincipal(hab2, forFiscalPrincipal2, null);
+				return null;
+			}
+		});
 
 		TacheCriteria criterion2 = new TacheCriteria();
 		verifierTacheControleDossier(criterion2, 1);
@@ -269,18 +298,23 @@ public class TacheServiceTest extends BusinessTest {
 
 		loadDatabase(DB_UNIT_DATA_FILE);
 
-		PersonnePhysique hab1 = (PersonnePhysique) tiersService.getTiers(12300001);
-		PersonnePhysique hab2 = (PersonnePhysique) tiersService.getTiers(12300002);
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				PersonnePhysique hab1 = (PersonnePhysique) tiersService.getTiers(12300001);
+				PersonnePhysique hab2 = (PersonnePhysique) tiersService.getTiers(12300002);
 
-		EnsembleTiersCouple ensemble = tiersService.createEnsembleTiersCouple(hab1, hab2, RegDate.get(2006, 6, 12), null);
-		MenageCommun menage = ensemble.getMenage();
+				EnsembleTiersCouple ensemble = tiersService.createEnsembleTiersCouple(hab1, hab2, RegDate.get(2006, 6, 12), null);
+				MenageCommun menage = ensemble.getMenage();
 
-		ForFiscalPrincipal forFiscalPrincipal = new ForFiscalPrincipal(RegDate.get(2006, 6, 12), null, new Integer(5652),
-				TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
-		menage.addForFiscal(forFiscalPrincipal);
+				ForFiscalPrincipal forFiscalPrincipal = new ForFiscalPrincipal(RegDate.get(2006, 6, 12), null, 5652,
+						TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
+				menage.addForFiscal(forFiscalPrincipal);
 
-		forFiscalPrincipal.setMotifOuverture(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
-		tacheService.genereTacheDepuisOuvertureForPrincipal(menage, forFiscalPrincipal, null);
+				forFiscalPrincipal.setMotifOuverture(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
+				tacheService.genereTacheDepuisOuvertureForPrincipal(menage, forFiscalPrincipal, null);
+				return null;
+			}
+		});
 
 		TacheCriteria criterion = new TacheCriteria();
 		verifieTacheNouveauDossier(criterion, 1);
@@ -441,6 +475,16 @@ public class TacheServiceTest extends BusinessTest {
 	@Test
 	public void testGenereTacheEmissionDiApresDeces() throws Exception {
 
+		// [UNIREG-1956] date de décès explicitement déplacée de 2009 à 2008 pour vérifier que la DI 2009 (et pas la 2008) est annulée
+		final RegDate dateDeces = date(2008, 12, 5);
+
+		final CollectiviteAdministrative aciSuccessions = (CollectiviteAdministrative) doInNewTransaction(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				return  tiersService.getOrCreateCollectiviteAdministrative(serviceInfra.getACISuccessions().getNoColAdm());
+			}
+		});
+
 		// Etat 2010
 		final Long id = (Long) doInNewTransaction(new TxCallback() {
 			@Override
@@ -449,37 +493,16 @@ public class TacheServiceTest extends BusinessTest {
 				final PeriodeFiscale periode2007 = addPeriodeFiscale(2007);
 				final ModeleDocument modele2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2007);
 				final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);
-				final ModeleDocument modele2008 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2008);
-				
+				addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2008);
 
-				PersonnePhysique pp = addNonHabitant("Hubert", "Duchemole", date(1922, 7, 13), Sexe.MASCULIN);
+				final PersonnePhysique pp = addNonHabitant("Hubert", "Duchemole", date(1922, 7, 13), Sexe.MASCULIN);
 				addForPrincipal(pp, date(2007, 9, 21), MotifFor.ARRIVEE_HC, MockCommune.Leysin);
-
 				addDeclarationImpot(pp, periode2007, date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2007);
 
+				// Evénement de décès
+				tiersService.closeForFiscalPrincipal(pp, dateDeces, MotifFor.VEUVAGE_DECES);
 
 				return pp.getNumero();
-			}
-		});
-
-		final CollectiviteAdministrative aciSuccessions = (CollectiviteAdministrative) doInNewTransaction(new TxCallback() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				return  tiersService.getOrCreateCollectiviteAdministrative(serviceInfra.getACISuccessions().getNoColAdm());
-
-			}
-		});
-
-		// [UNIREG-1956] date de décès explicitement déplacée de 2009 à 2008 pour vérifier que la DI 2009 (et pas la 2008) est annulée
-		final RegDate dateDeces = date(2008, 12, 5);
-
-		// Evénement de décès
-		doInNewTransaction(new TxCallback() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(id);
-				tiersService.closeForFiscalPrincipal(pp, dateDeces, MotifFor.VEUVAGE_DECES);
-				return null;
 			}
 		});
 
@@ -591,21 +614,26 @@ public class TacheServiceTest extends BusinessTest {
 	@Test
 	public void testGenereTacheDepuisOuvertureForSecondaireActivite() throws Exception {
 
-		PersonnePhysique hab = new PersonnePhysique(true);
-		hab.setNumero(new Long(11111111));
-		hab.setNumeroIndividu(new Long(333908));
-		hab = (PersonnePhysique) hibernateTemplate.merge(hab);
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				PersonnePhysique hab = new PersonnePhysique(true);
+				hab.setNumero((long) 11111111);
+				hab.setNumeroIndividu((long) 333908);
+				hab = (PersonnePhysique) hibernateTemplate.merge(hab);
 
-		ForFiscalPrincipal forFiscalPrincipal = new ForFiscalPrincipal(RegDate.get(2006, 6, 12), null, new Integer(8201),
-				TypeAutoriteFiscale.PAYS_HS, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
-		ForFiscalSecondaire forFiscalSecondaire = new ForFiscalSecondaire(RegDate.get(2006, 6, 12), null, new Integer(5652),
-				TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.ACTIVITE_INDEPENDANTE);
+				ForFiscalPrincipal forFiscalPrincipal = new ForFiscalPrincipal(RegDate.get(2006, 6, 12), null, 8201,
+						TypeAutoriteFiscale.PAYS_HS, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
+				ForFiscalSecondaire forFiscalSecondaire = new ForFiscalSecondaire(RegDate.get(2006, 6, 12), null, 5652,
+						TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.ACTIVITE_INDEPENDANTE);
 
-		hab.addForFiscal(forFiscalPrincipal);
-		forFiscalSecondaire.setMotifOuverture(MotifFor.DEBUT_EXPLOITATION);
-		hab.addForFiscal(forFiscalSecondaire);
+				hab.addForFiscal(forFiscalPrincipal);
+				forFiscalSecondaire.setMotifOuverture(MotifFor.DEBUT_EXPLOITATION);
+				hab.addForFiscal(forFiscalSecondaire);
 
-		tacheService.genereTacheDepuisOuvertureForSecondaire(hab, forFiscalSecondaire);
+				tacheService.genereTacheDepuisOuvertureForSecondaire(hab, forFiscalSecondaire);
+				return null;
+			}
+		});
 
 		TacheCriteria criterion = new TacheCriteria();
 		verifieTacheNouveauDossier(criterion, 1);
@@ -618,13 +646,13 @@ public class TacheServiceTest extends BusinessTest {
 	public void testGenereTacheDepuisOuvertureForSecondaireImmeuble() throws Exception {
 
 		PersonnePhysique hab = new PersonnePhysique(true);
-		hab.setNumero(new Long(11111111));
-		hab.setNumeroIndividu(new Long(333908));
+		hab.setNumero((long) 11111111);
+		hab.setNumeroIndividu((long) 333908);
 		hab = (PersonnePhysique) hibernateTemplate.merge(hab);
 
-		ForFiscalPrincipal forFiscalPrincipal = new ForFiscalPrincipal(RegDate.get(2006, 6, 12), null, new Integer(8201),
+		ForFiscalPrincipal forFiscalPrincipal = new ForFiscalPrincipal(RegDate.get(2006, 6, 12), null, 8201,
 				TypeAutoriteFiscale.PAYS_HS, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
-		ForFiscalSecondaire forFiscalSecondaire = new ForFiscalSecondaire(RegDate.get(2006, 6, 12), null, new Integer(5652),
+		ForFiscalSecondaire forFiscalSecondaire = new ForFiscalSecondaire(RegDate.get(2006, 6, 12), null, 5652,
 				TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.IMMEUBLE_PRIVE);
 
 		hab.addForFiscal(forFiscalPrincipal);
@@ -642,18 +670,28 @@ public class TacheServiceTest extends BusinessTest {
 	@Test
 	public void testGenereTacheDepartHSDepuisFermetureForPrincipal() throws Exception {
 
-		loadDatabase(DB_UNIT_DATA_FILE);
+		final Long id = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final PeriodeFiscale periode2006 = addPeriodeFiscale(2006);
+				final ModeleDocument modele2006 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2006);
+				final PeriodeFiscale periode2007 = addPeriodeFiscale(2007);
+				final ModeleDocument modele2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2007);
 
-		PersonnePhysique hab = (PersonnePhysique) tiersService.getTiers(12300001);
-		ForFiscalPrincipal forFiscalPrincipal = addForPrincipal(hab, date(2004, 6, 12), MotifFor.ARRIVEE_HC, date(2006, 6, 12), MotifFor.DEPART_HS, MockCommune.VillarsSousYens);
+				final PersonnePhysique pp = addNonHabitant("François", "Dardare-style", date(1977, 1, 1), Sexe.MASCULIN);
+				addDeclarationImpot(pp, periode2006, date(2006, 1, 1), date(2006, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2006);
+				addDeclarationImpot(pp, periode2007, date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2007);
 
-		tacheService.genereTacheDepuisFermetureForPrincipal(hab, forFiscalPrincipal);
+				final ForFiscalPrincipal forFiscalPrincipal = addForPrincipal(pp, date(2004, 6, 12), MotifFor.ARRIVEE_HC, date(2006, 6, 12), MotifFor.DEPART_HS, MockCommune.VillarsSousYens);
+
+				tacheService.genereTacheDepuisFermetureForPrincipal(pp, forFiscalPrincipal);
+				
+				return pp.getNumero();
+			}
+		});
 
 		TacheCriteria criterion = new TacheCriteria();
 		verifieControleDossier(criterion);
-
 		verifieTachesAnnulation(criterion, 1, false);
-
 	}
 
 	/**
@@ -820,19 +858,27 @@ public class TacheServiceTest extends BusinessTest {
 	@Test
 	public void testGenereTacheDepartHCDepuisFermetureForPrincipal() throws Exception {
 
-		final PeriodeFiscale periode2006 = addPeriodeFiscale(2006);
-		final ModeleDocument modele2006 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2006);
-		final PeriodeFiscale periode2007 = addPeriodeFiscale(2007);
-		final ModeleDocument modele2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2007);
+		final Long id =(Long) doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final PeriodeFiscale periode2006 = addPeriodeFiscale(2006);
+				final ModeleDocument modele2006 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2006);
+				final PeriodeFiscale periode2007 = addPeriodeFiscale(2007);
+				final ModeleDocument modele2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2007);
 
-		final PersonnePhysique pp = addNonHabitant("François", "Dardare-style", date(1977, 1, 1), Sexe.MASCULIN);
-		addDeclarationImpot(pp, periode2006, date(2006, 1, 1), date(2006, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2006);
-		addDeclarationImpot(pp, periode2007, date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2007);
+				final PersonnePhysique pp = addNonHabitant("François", "Dardare-style", date(1977, 1, 1), Sexe.MASCULIN);
+				addDeclarationImpot(pp, periode2006, date(2006, 1, 1), date(2006, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2006);
+				addDeclarationImpot(pp, periode2007, date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2007);
 
-		final ForFiscalPrincipal forFiscalPrincipal = addForPrincipal(pp, date(2006, 6, 12), MotifFor.ARRIVEE_HC, date(2006, 6, 12), MotifFor.DEPART_HC, MockCommune.VillarsSousYens);
+				final ForFiscalPrincipal forFiscalPrincipal = addForPrincipal(pp, date(2006, 6, 12), MotifFor.ARRIVEE_HC, date(2006, 6, 12), MotifFor.DEPART_HC, MockCommune.VillarsSousYens);
 
-		// simule la fermeture tardive (= événement de départ reçu en 2010, par exemple)
-		tacheService.genereTacheDepuisFermetureForPrincipal(pp, forFiscalPrincipal);
+				// simule la fermeture tardive (= événement de départ reçu en 2010, par exemple)
+				tacheService.genereTacheDepuisFermetureForPrincipal(pp, forFiscalPrincipal);
+				return pp.getNumero();
+			}
+		});
+
+		final Contribuable pp = (Contribuable) hibernateTemplate.get(Contribuable.class, id);
+		assertNotNull(pp);
 
 		TacheCriteria criterion = new TacheCriteria();
 		criterion.setContribuable(pp);
@@ -939,14 +985,14 @@ public class TacheServiceTest extends BusinessTest {
 		doInNewTransaction(new TxCallback() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-		PersonnePhysique hab = (PersonnePhysique) tiersService.getTiers(12300001);
+				PersonnePhysique hab = (PersonnePhysique) tiersService.getTiers(12300001);
 
-		ForFiscalPrincipal forFiscalPrincipal = new ForFiscalPrincipal(RegDate.get(2007, 6, 12), RegDate.get(2007, 12, 31),
-				new Integer(5652), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
-		forFiscalPrincipal.setMotifFermeture(MotifFor.DEPART_HC);
+				ForFiscalPrincipal forFiscalPrincipal = new ForFiscalPrincipal(RegDate.get(2007, 6, 12), RegDate.get(2007, 12, 31),
+						5652, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
+				forFiscalPrincipal.setMotifFermeture(MotifFor.DEPART_HC);
 
-		tacheService.genereTacheDepuisFermetureForPrincipal(hab, forFiscalPrincipal);
-		return null;
+				tacheService.genereTacheDepuisFermetureForPrincipal(hab, forFiscalPrincipal);
+				return null;
 			}
 		});
 
@@ -965,20 +1011,28 @@ public class TacheServiceTest extends BusinessTest {
 	@Test
 	public void testClotureDuDernierForSecondaireUNIREG1110() throws Exception {
 
-		final PeriodeFiscale periode2006 = addPeriodeFiscale(2006);
-		final ModeleDocument modele2006 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2006);
-		final PeriodeFiscale periode2007 = addPeriodeFiscale(2007);
-		final ModeleDocument modele2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2007);
+		final Long id =(Long) doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final PeriodeFiscale periode2006 = addPeriodeFiscale(2006);
+				final ModeleDocument modele2006 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2006);
+				final PeriodeFiscale periode2007 = addPeriodeFiscale(2007);
+				final ModeleDocument modele2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2007);
 
-		final PersonnePhysique pp = addNonHabitant("François", "Dardare-style", date(1977, 1, 1), Sexe.MASCULIN);
-		addForPrincipal(pp, date(2005, 6, 12), MotifFor.DEBUT_EXPLOITATION, MockPays.Allemagne);
-		addDeclarationImpot(pp, periode2006, date(2006, 1, 1), date(2006, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2006);
-		addDeclarationImpot(pp, periode2007, date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2007);
+				final PersonnePhysique pp = addNonHabitant("François", "Dardare-style", date(1977, 1, 1), Sexe.MASCULIN);
+				addForPrincipal(pp, date(2005, 6, 12), MotifFor.DEBUT_EXPLOITATION, MockPays.Allemagne);
+				addDeclarationImpot(pp, periode2006, date(2006, 1, 1), date(2006, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2006);
+				addDeclarationImpot(pp, periode2007, date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2007);
 
-		final ForFiscalSecondaire forFiscalSecondaire =
-				addForSecondaire(pp, date(2005, 6, 12), MotifFor.DEBUT_EXPLOITATION, date(2006, 6, 11), MotifFor.FIN_EXPLOITATION, MockCommune.LeLieu.getNoOFS(), MotifRattachement.ACTIVITE_INDEPENDANTE);
+				final ForFiscalSecondaire forFiscalSecondaire =
+						addForSecondaire(pp, date(2005, 6, 12), MotifFor.DEBUT_EXPLOITATION, date(2006, 6, 11), MotifFor.FIN_EXPLOITATION, MockCommune.LeLieu.getNoOFS(), MotifRattachement.ACTIVITE_INDEPENDANTE);
 
-		tacheService.genereTacheDepuisFermetureForSecondaire(pp, forFiscalSecondaire);
+				tacheService.genereTacheDepuisFermetureForSecondaire(pp, forFiscalSecondaire);
+				return pp.getNumero();
+			}
+		});
+
+		final Contribuable pp = (Contribuable) hibernateTemplate.get(Contribuable.class, id);
+		assertNotNull(pp);
 
 		TacheCriteria criterion = new TacheCriteria();
 		criterion.setContribuable(pp);
@@ -1010,7 +1064,7 @@ public class TacheServiceTest extends BusinessTest {
 	 * L'ouverture d'un for principal sur un contribuable ordinaire doit générer un envoi de DIs et l'ouverture d'un dossier
 	 */
 	@Test
-	public void testOuvertureForPrincipalImpositionOrdinaire() {
+	public void testOuvertureForPrincipalImpositionOrdinaire() throws Exception {
 		ouvreForPrincipal(ModeImposition.ORDINAIRE, MotifFor.ARRIVEE_HS, RegDate.get(2006, 6, 12));
 		assertEquals(1, getNouveauDossierCount());
 		assertEquals(RegDate.get().year() - 2006, getTacheCount());
@@ -1020,7 +1074,7 @@ public class TacheServiceTest extends BusinessTest {
 	 * L'ouverture d'un for principal sur un contribuable sourcier ne doit pas générer d'envoi de DIs, ni d'ouverture de dossier
 	 */
 	@Test
-	public void testOuvertureForPrincipalImpositionSourcier() {
+	public void testOuvertureForPrincipalImpositionSourcier() throws Exception {
 		ouvreForPrincipal(ModeImposition.SOURCE, MotifFor.ARRIVEE_HS, RegDate.get(2006, 6, 12));
 		assertEquals(0, getNouveauDossierCount());
 		assertEquals(0, getTacheCount());
@@ -1372,19 +1426,9 @@ public class TacheServiceTest extends BusinessTest {
 					addDeclarationImpot(menage, periode, date(i, 1, 1), date(i, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
 				}
 
-				return null;
-			}
-		});
-
-		doInNewTransaction(new TxCallback() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-
-				MenageCommun menage = (MenageCommun) tiersService.getTiers(ids.menageId);
-				assertNotNull(menage);
-
-				// divorce au 11 novembre 2007
+				// Divorce au 11 novembre 2007
 				metierService.separe(menage, dateDivorce, "", EtatCivil.DIVORCE, true, null);
+
 				return null;
 			}
 		});
@@ -1548,19 +1592,9 @@ public class TacheServiceTest extends BusinessTest {
 					addDeclarationImpot(menage, periode, date(i, 1, 1), date(i, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
 				}
 
-				return null;
-			}
-		});
-
-		doInNewTransaction(new TxCallback() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-
-				MenageCommun menage = (MenageCommun) tiersService.getTiers(ids.menageId);
-				assertNotNull(menage);
-
-				// divorce au 11 novembre 2007
+				// Divorce au 11 novembre 2007
 				metierService.separe(menage, dateDivorce, "", EtatCivil.DIVORCE, true, null);
+
 				return null;
 			}
 		});
@@ -1727,19 +1761,9 @@ public class TacheServiceTest extends BusinessTest {
 					addDeclarationImpot(menage, periode, date(i, 1, 1), date(i, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
 				}
 
-				return null;
-			}
-		});
-
-		doInNewTransaction(new TxCallback() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-
-				PersonnePhysique monsieur = (PersonnePhysique) tiersService.getTiers(ids.monsieurId);
-				assertNotNull(monsieur);
-
-				// décès de monsieur au 11 novembre 2007
+				// Décès de monsieur au 11 novembre 2007
 				metierService.deces(monsieur, dateDeces, "", null);
+
 				return null;
 			}
 		});
@@ -1859,16 +1883,17 @@ public class TacheServiceTest extends BusinessTest {
 					ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
 					addDeclarationImpot(simon, periode, date(i, 1, 1), date(i, 12, 31), TypeContribuable.HORS_SUISSE, modele);
 				}
+
+				// Arrivée de hors-Suisse traitée tardivement
+				tiersService.closeForFiscalPrincipal(simon, dateArrivee.getOneDayBefore(), MotifFor.ARRIVEE_HS);
+				tiersService.openForFiscalPrincipal(simon, dateArrivee, MotifRattachement.DOMICILE, MockCommune.Lausanne.getNoOFS(),
+						TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ModeImposition.ORDINAIRE, MotifFor.ARRIVEE_HS, true);
 				return null;
 			}
 		});
 
-		// Arrivée de hors-Suisse traitée tardivement
-		final Contribuable raoul = (Contribuable) tiersService.getTiers(ids.simonId);
-		assertNotNull(raoul);
-		tiersService.closeForFiscalPrincipal(raoul, dateArrivee.getOneDayBefore(), MotifFor.ARRIVEE_HS);
-		tiersService.openForFiscalPrincipal(raoul, dateArrivee, MotifRattachement.DOMICILE, MockCommune.Lausanne.getNoOFS(),
-				TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ModeImposition.ORDINAIRE, MotifFor.ARRIVEE_HS, true);
+		final Contribuable simon = (Contribuable) tiersService.getTiers(ids.simonId);
+		assertNotNull(simon);
 
 		// [UNIREG-2305] Arrivé de hors-Suisse enregistrée tardivement -> l'assujettissement passe de hors-Suisse à ordinaire à partir du 1er janvier 2005,
 		// mais comme le type de document reste le même (déclaration ordinaire), le type de contribuable est simplement mis-à-jour sur les déclarations et
@@ -1876,7 +1901,7 @@ public class TacheServiceTest extends BusinessTest {
 
 		// aucune tâche de manipulation de DIs ne doit être créée
 		final TacheCriteria criterion = new TacheCriteria();
-		criterion.setContribuable(raoul);
+		criterion.setContribuable(simon);
 		criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpot);
 		assertEmpty(tacheDAO.find(criterion));
 		criterion.setTypeTache(TypeTache.TacheAnnulationDeclarationImpot);
@@ -1884,7 +1909,7 @@ public class TacheServiceTest extends BusinessTest {
 
 		// les types de contribuables doivent avoir été mis-à-jour
 		for (int i = 2005; i < RegDate.get().year(); ++i) {
-			final List<Declaration> declarations = raoul.getDeclarationForPeriode(i);
+			final List<Declaration> declarations = simon.getDeclarationForPeriode(i);
 			assertNotNull(declarations);
 			assertEquals(1, declarations.size());
 			assertDI(date(i, 1, 1), date(i, 12, 31), null, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
@@ -1924,14 +1949,11 @@ public class TacheServiceTest extends BusinessTest {
 				PeriodeFiscale pf2008 = addPeriodeFiscale(2008);
 				ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf2008);
 				addDeclarationImpot(raoul, pf2008, date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
-				return null;
 
+				tiersService.annuleForFiscal(raoul.getForFiscalPrincipalAt(date(2008, 1, 1)), true);
+				return null;
 			}
 		});
-
-		final Contribuable raoul = (Contribuable) tiersService.getTiers(ids.raoulId);
-		assertNotNull(raoul);
-		tiersService.annuleForFiscal(raoul.getForFiscalPrincipalAt(date(2008, 1, 1)), true);
 
 		// Annulation du for fiscal -> Une tache d'annulation pour la DI 2008 doit etre generée
 		List<Tache> taches = tacheDAO.getAll();
@@ -1941,9 +1963,9 @@ public class TacheServiceTest extends BusinessTest {
 	}
 
 	@Test
-	public void testgenereTacheDepuisFermetureForPrincipalUNIREG1303() throws Exception {
+	public void testGenereTacheDepuisFermetureForPrincipalUNIREG1303() throws Exception {
 
-		// 1 Contribuable qui décéde avec 1 déclarartion active : la période de la DI doit etre ajusté
+		// 1 Contribuable qui décéde avec 1 déclaration active : la période de la DI doit etre ajusté
 		// et aucune tache d'émission de DI ne doit être émise.
 
 		class Ids {
@@ -1972,13 +1994,14 @@ public class TacheServiceTest extends BusinessTest {
 					ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
 					addDeclarationImpot(raoul, periode, date(i, 1, 1), date(i, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele).getId();
 				}
+
+				tiersService.closeForFiscalPrincipal(raoul, date(2008, 11, 1), MotifFor.VEUVAGE_DECES);
 				return null;
 			}
 		});
 
 		final Contribuable raoul = (Contribuable) tiersService.getTiers(ids.raoulId);
 		assertNotNull(raoul);
-		tiersService.closeForFiscalPrincipal(raoul, date(2008, 11, 1), MotifFor.VEUVAGE_DECES);
 
 		final Declaration di2008 = raoul.getDeclarationActive(date(2008, 1, 1));
 		assertEquals(date(2008, 11, 1), di2008.getDateFin());
@@ -2064,15 +2087,12 @@ public class TacheServiceTest extends BusinessTest {
 				Contribuable raoul = addHabitant(100000);
 				ids.raoulId = raoul.getNumero();
 				addForPrincipal(raoul, date(1980, 1, 1), MotifFor.MAJORITE, MockCommune.Lausanne);
+
+				// annulation du tiers
+				tiersService.annuleTiers(raoul);
 				return null;
 			}
 		});
-
-		final Tiers raoul = tiersService.getTiers(ids.raoulId);
-		assertNotNull(raoul);
-
-		// annulation du tiers
-		tiersService.annuleTiers(raoul);
 
 		final List<Tache> taches = tacheDAO.find(ids.raoulId);
 		assertEmpty(taches);
@@ -2135,15 +2155,12 @@ public class TacheServiceTest extends BusinessTest {
 						date(2005, 1, 1), date(2005, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
 						raoul, null, colAdm);
 				ids.tacheEnvoi = tacheEnvoi.getId();
+
+				// annulation du tiers
+				tiersService.annuleTiers(raoul);
 				return null;
 			}
 		});
-
-		final Tiers raoul = tiersService.getTiers(ids.raoulId);
-		assertNotNull(raoul);
-
-		// annulation du tiers
-		tiersService.annuleTiers(raoul);
 
 		final List<Tache> taches = tacheDAO.find(ids.raoulId);
 		assertNotNull(taches);
@@ -2178,17 +2195,22 @@ public class TacheServiceTest extends BusinessTest {
 		});
 	}
 
-	private void ouvreForPrincipal(ModeImposition modeImposition, MotifFor motifOuverture, RegDate dateOuverture) {
-		PersonnePhysique hab = new PersonnePhysique(true);
-		hab.setNumero(new Long(11111111));
-		hab.setNumeroIndividu(new Long(333908));
-		hab = (PersonnePhysique) hibernateTemplate.merge(hab);
+	private void ouvreForPrincipal(final ModeImposition modeImposition, final MotifFor motifOuverture, final RegDate dateOuverture) throws Exception {
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				PersonnePhysique hab = new PersonnePhysique(true);
+				hab.setNumero((long) 11111111);
+				hab.setNumeroIndividu((long) 333908);
+				hab = (PersonnePhysique) hibernateTemplate.merge(hab);
 
-		ForFiscalPrincipal f = new ForFiscalPrincipal(dateOuverture, null, new Integer(5652), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
-				MotifRattachement.DOMICILE, modeImposition);
-		f.setMotifOuverture(motifOuverture);
-		hab.addForFiscal(f);
-		tacheService.genereTacheDepuisOuvertureForPrincipal(hab, f, null);
+				ForFiscalPrincipal f = new ForFiscalPrincipal(dateOuverture, null, 5652, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+						MotifRattachement.DOMICILE, modeImposition);
+				f.setMotifOuverture(motifOuverture);
+				hab.addForFiscal(f);
+				tacheService.genereTacheDepuisOuvertureForPrincipal(hab, f, null);
+				return null;
+			}
+		});
 	}
 
 	/**
@@ -2350,42 +2372,42 @@ public class TacheServiceTest extends BusinessTest {
 	}
 
 	@Test
-	public void testChangementModeImpositionQuitteSourceVersMixte() {
+	public void testChangementModeImpositionQuitteSourceVersMixte() throws Exception {
 		final List<Tache> taches = genereChangementImposition(ModeImposition.SOURCE, ModeImposition.MIXTE_137_2);
 		assertEquals(1, countTaches(TypeTache.TacheNouveauDossier, taches));
 		assertEquals(RegDate.get().year() - 2006, countTaches(TypeTache.TacheEnvoiDeclarationImpot, taches));
 	}
 
 	@Test
-	public void testChangementModeImpositionQuitteSourceVersDepense() {
+	public void testChangementModeImpositionQuitteSourceVersDepense() throws Exception {
 		final List<Tache> taches = genereChangementImposition(ModeImposition.SOURCE, ModeImposition.DEPENSE);
 		assertEquals(1, countTaches(TypeTache.TacheNouveauDossier, taches));
 		assertEquals(RegDate.get().year() - 2006, countTaches(TypeTache.TacheEnvoiDeclarationImpot, taches));
 	}
 
 	@Test
-	public void testChangementModeImpositionOrdinaireVersIndigent() {
+	public void testChangementModeImpositionOrdinaireVersIndigent() throws Exception {
 		final List<Tache> taches = genereChangementImposition(ModeImposition.ORDINAIRE, ModeImposition.INDIGENT);
 		assertEquals(0, countTaches(TypeTache.TacheNouveauDossier, taches));
 		assertEquals(0, countTaches(TypeTache.TacheEnvoiDeclarationImpot, taches));
 	}
 
 	@Test
-	public void testChangementModeImpositionIndigentVersOrdinaire() {
+	public void testChangementModeImpositionIndigentVersOrdinaire() throws Exception {
 		final List<Tache> taches = genereChangementImposition(ModeImposition.INDIGENT, ModeImposition.ORDINAIRE);
 		assertEquals(0, countTaches(TypeTache.TacheNouveauDossier, taches));
 		assertEquals(0, countTaches(TypeTache.TacheEnvoiDeclarationImpot, taches));
 	}
 
 	@Test
-	public void testChangementModeImpositionMixteVersOrdinaire() {
+	public void testChangementModeImpositionMixteVersOrdinaire() throws Exception {
 		final List<Tache> taches = genereChangementImposition(ModeImposition.MIXTE_137_2, ModeImposition.ORDINAIRE);
 		assertEquals(0, countTaches(TypeTache.TacheNouveauDossier, taches));
 		assertEquals(0, countTaches(TypeTache.TacheEnvoiDeclarationImpot, taches));
 	}
 
 	@Test
-	public void testChangementModeImpositionMixteVersDepense() {
+	public void testChangementModeImpositionMixteVersDepense() throws Exception {
 		final List<Tache> taches = genereChangementImposition(ModeImposition.MIXTE_137_2, ModeImposition.DEPENSE);
 		assertEquals(0, countTaches(TypeTache.TacheNouveauDossier, taches));
 		// annulation et ré-envoi des DIs 2006..[année précédente] parce que les types de document ont changé
@@ -3194,37 +3216,50 @@ public class TacheServiceTest extends BusinessTest {
 		final int anneePrecedente = aujourdhui.year() - 1;
 
 		// Arrivée de hors-Suisse traitée tardivement
-		final PersonnePhysique pp = addNonHabitant("Gédéon", "Glincarnés", date(1972, 1, 3), Sexe.MASCULIN);
-		final ForFiscalPrincipal ffp = addForPrincipal(pp, date(anneePrecedente, 3, 12), MotifFor.ARRIVEE_HS, MockCommune.Bussigny);
-		tacheService.genereTacheDepuisOuvertureForPrincipal(pp, ffp, null);
-		hibernateTemplate.flush();
+		final Long id =(Long) doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Gédéon", "Glincarnés", date(1972, 1, 3), Sexe.MASCULIN);
+				final ForFiscalPrincipal ffp = addForPrincipal(pp, date(anneePrecedente, 3, 12), MotifFor.ARRIVEE_HS, MockCommune.Bussigny);
+				tacheService.genereTacheDepuisOuvertureForPrincipal(pp, ffp, null);
+				return pp.getNumero();
+			}
+		});
 
 		// Il devrait maintenant y avoir une tâche d'envoi de DI
-		{
-			final TacheCriteria criterion = new TacheCriteria();
-			criterion.setContribuable(pp);
-			criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpot);
-			criterion.setInclureTachesAnnulees(true);
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final TacheCriteria criterion = new TacheCriteria();
+				criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpot);
+				criterion.setInclureTachesAnnulees(true);
 
-			final List<Tache> taches = tacheDAO.find(criterion);
-			assertNotNull(taches);
-			assertEquals(1, taches.size());
+				final List<Tache> taches = tacheDAO.find(criterion);
+				assertNotNull(taches);
+				assertEquals(1, taches.size());
 
-			final TacheEnvoiDeclarationImpot tache0 = (TacheEnvoiDeclarationImpot) taches.get(0);
-			assertTache(TypeEtatTache.EN_INSTANCE, getNextSunday(aujourdhui), date(anneePrecedente, 3, 12), date(anneePrecedente, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-					TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.CEDI, tache0);
-		}
+				final TacheEnvoiDeclarationImpot tache0 = (TacheEnvoiDeclarationImpot) taches.get(0);
+				assertTache(TypeEtatTache.EN_INSTANCE, getNextSunday(aujourdhui), date(anneePrecedente, 3, 12), date(anneePrecedente, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
+						TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.CEDI, tache0);
+				return null;
+			}
+		});
 
 		// Départ de hors-Suisse traité tardivement
-		ffp.setDateFin(date(anneePrecedente, 7, 23));
-		ffp.setMotifFermeture(MotifFor.DEPART_HS);
-		tacheService.genereTacheDepuisFermetureForPrincipal(pp, ffp);
-		hibernateTemplate.flush();
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+
+				final PersonnePhysique pp = (PersonnePhysique) hibernateTemplate.get(PersonnePhysique.class, id);
+				final ForFiscalPrincipal ffp = pp.getForFiscalPrincipalAt(null);
+
+				ffp.setDateFin(date(anneePrecedente, 7, 23));
+				ffp.setMotifFermeture(MotifFor.DEPART_HS);
+				tacheService.genereTacheDepuisFermetureForPrincipal(pp, ffp);
+				return null;
+			}
+		});
 
 		// Il devrait maintenant y avoir deux tâches d'envoi de DI : le première annulée et une nouvelle avec la bonne période
 		{
 			final TacheCriteria criterion = new TacheCriteria();
-			criterion.setContribuable(pp);
 			criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpot);
 			criterion.setInclureTachesAnnulees(true);
 
@@ -3254,14 +3289,17 @@ public class TacheServiceTest extends BusinessTest {
 		final int anneePrecedente = aujourdhui.year() - 1;
 
 		// Veuvage traité tardivement
-		final PersonnePhysique pp = addNonHabitant("Michelle", "Mabelle", date(1972, 1, 3), Sexe.FEMININ);
-		final ForFiscalPrincipal ffp = addForPrincipal(pp, date(anneePrecedente, 11, 2), MotifFor.VEUVAGE_DECES, MockCommune.Cossonay);
-		tacheService.genereTacheDepuisOuvertureForPrincipal(pp, ffp, null);
-		hibernateTemplate.flush();
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Michelle", "Mabelle", date(1972, 1, 3), Sexe.FEMININ);
+				final ForFiscalPrincipal ffp = addForPrincipal(pp, date(anneePrecedente, 11, 2), MotifFor.VEUVAGE_DECES, MockCommune.Cossonay);
+				tacheService.genereTacheDepuisOuvertureForPrincipal(pp, ffp, null);
+				return null;
+			}
+		});
 
 		// Il devrait maintenant y avoir une tâche d'envoi de DI
 		final TacheCriteria criterion = new TacheCriteria();
-		criterion.setContribuable(pp);
 		criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpot);
 		criterion.setInclureTachesAnnulees(true);
 
@@ -3337,16 +3375,19 @@ public class TacheServiceTest extends BusinessTest {
 		final RegDate dateDeces = date(anneePrecedente, 11, 2);
 
 		// Décès
-		final PersonnePhysique pp = addNonHabitant("Michelle", "Mabelle", date(1972, 1, 3), Sexe.FEMININ);
-		final ForFiscalPrincipal ffp = addForPrincipal(pp, date(anneePrecedente - 2, 6, 12), MotifFor.ARRIVEE_HC, dateDeces, MotifFor.VEUVAGE_DECES, MockCommune.Cossonay);
-		tacheService.genereTacheDepuisFermetureForPrincipal(pp, ffp);
-		hibernateTemplate.flush();
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Michelle", "Mabelle", date(1972, 1, 3), Sexe.FEMININ);
+				final ForFiscalPrincipal ffp = addForPrincipal(pp, date(anneePrecedente - 2, 6, 12), MotifFor.ARRIVEE_HC, dateDeces, MotifFor.VEUVAGE_DECES, MockCommune.Cossonay);
+				tacheService.genereTacheDepuisFermetureForPrincipal(pp, ffp);
+				return null;
+			}
+		});
 
 		// Il devrait maintenant y avoir :
 		//  - deux tâches d'envoi de DIs assignées à l'OID de Cossonay pour les années (anneePrecedente - 2) et (anneePrecedente - 1)
 		//  - une tâche d'envoi de DI assignées à l'OID des successions pour les années pour (anneePrecedente) 
 		final TacheCriteria criterion = new TacheCriteria();
-		criterion.setContribuable(pp);
 		criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpot);
 		criterion.setInclureTachesAnnulees(true);
 
@@ -3405,29 +3446,36 @@ public class TacheServiceTest extends BusinessTest {
 		assertSame(tache, annule.tache);
 	}
 
-	private List<Tache> genereChangementImposition(ModeImposition ancienMode, ModeImposition nouveauMode) {
-		final PersonnePhysique pp = addNonHabitant("Léo", "Bidule", date(1960, 1, 1), Sexe.MASCULIN);
-		final ForFiscalPrincipal ffp = addForPrincipal(pp, date(2000, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
-		ffp.setModeImposition(ancienMode);
+	private List<Tache> genereChangementImposition(final ModeImposition ancienMode, final ModeImposition nouveauMode) throws Exception {
 
-		if (ancienMode != ModeImposition.SOURCE) {
-			final int anneeCourante = RegDate.get().year();
-			final TypeDocument typeD = (ancienMode == ModeImposition.DEPENSE ? TypeDocument.DECLARATION_IMPOT_DEPENSE : TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH);
-			final TypeContribuable typeC = (ancienMode == ModeImposition.DEPENSE ? TypeContribuable.VAUDOIS_DEPENSE : TypeContribuable.VAUDOIS_ORDINAIRE);
-			for (int i = 2003; i < anneeCourante; i++) {
-				PeriodeFiscale periode = addPeriodeFiscale(i);
-				ModeleDocument modele = addModeleDocument(typeD, periode);
-				addDeclarationImpot(pp, periode, date(i, 1, 1), date(i, 12, 31), typeC, modele);
+		final Long id =(Long) doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Léo", "Bidule", date(1960, 1, 1), Sexe.MASCULIN);
+				final ForFiscalPrincipal ffp = addForPrincipal(pp, date(2000, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+				ffp.setModeImposition(ancienMode);
+
+				if (ancienMode != ModeImposition.SOURCE) {
+					final int anneeCourante = RegDate.get().year();
+					final TypeDocument typeD = (ancienMode == ModeImposition.DEPENSE ? TypeDocument.DECLARATION_IMPOT_DEPENSE : TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH);
+					final TypeContribuable typeC = (ancienMode == ModeImposition.DEPENSE ? TypeContribuable.VAUDOIS_DEPENSE : TypeContribuable.VAUDOIS_ORDINAIRE);
+					for (int i = 2003; i < anneeCourante; i++) {
+						PeriodeFiscale periode = addPeriodeFiscale(i);
+						ModeleDocument modele = addModeleDocument(typeD, periode);
+						addDeclarationImpot(pp, periode, date(i, 1, 1), date(i, 12, 31), typeC, modele);
+					}
+				}
+
+				final RegDate dateChangement = date(2006, 1, 1);
+				final ForFiscalPrincipal nffp = tiersService.changeModeImposition(pp, dateChangement, nouveauMode, MotifFor.CHGT_MODE_IMPOSITION);
+				assertNotNull(nffp);
+				assertEquals(nouveauMode, nffp.getModeImposition());
+				assertEquals(dateChangement, nffp.getDateDebut());
+
+				return pp.getNumero();
 			}
-		}
+		});
 
-		final RegDate dateChangement = date(2006, 1, 1);
-		final ForFiscalPrincipal nffp = tiersService.changeModeImposition(pp, dateChangement, nouveauMode, MotifFor.CHGT_MODE_IMPOSITION);
-		assertNotNull(nffp);
-		assertEquals(nouveauMode, nffp.getModeImposition());
-		assertEquals(dateChangement, nffp.getDateDebut());
-
-		return tacheDAO.find(pp.getNumero());
+		return tacheDAO.find(id);
 	}
 
 	private static int countTaches(TypeTache type, List<Tache> taches) {

@@ -16,9 +16,12 @@ import ch.vd.uniregctb.norentes.civil.depart.Ec_19000_04_Depart_JIRA1262_Scenari
 })
 public class Ec_19000_04_Depart_JIRA1262_Test extends NorentesTest {
 
+	public Ec_19000_04_Depart_JIRA1262_Test() {
+		setWantSynchroTache(true);
+	}
+
 	@Override
 	protected String getScenarioName() {
-
 		return Ec_19000_04_Depart_JIRA1262_Scenario.NAME;
 	}
 
