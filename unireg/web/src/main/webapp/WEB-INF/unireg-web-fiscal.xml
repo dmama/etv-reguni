@@ -21,7 +21,6 @@
 		<property name="forFiscalManager" ref="forFiscalManager" />
 	</bean>
 
-
 	<bean id="forFiscalManager" class="ch.vd.uniregctb.tiers.manager.ForFiscalManagerImpl"  parent="tiersManager">
 		<property name="forFiscalDAO" ref="forFiscalDAO" />
 		<property name="evenementFiscalService" ref="evenementFiscalService" />
@@ -29,6 +28,7 @@
 		<property name="tiersService" ref="tiersService" />
 		<property name="serviceInfra" ref="serviceInfrastructureService" />
 		<property name="tacheManager" ref="tacheManager" />
+		<property name="transactionManager" ref="transactionManager"/>
 	</bean>
 
 	<bean id="tacheManager" class="ch.vd.uniregctb.tiers.manager.TacheManagerImpl">

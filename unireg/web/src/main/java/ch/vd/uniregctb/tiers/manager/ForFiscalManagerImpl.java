@@ -3,18 +3,21 @@ package ch.vd.uniregctb.tiers.manager;
 import java.util.HashMap;
 import java.util.Map;
 
-import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.adresse.AdresseException;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springmodules.xt.ajax.component.Component;
 
 import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.utils.Assert;
+import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.metier.FusionDeCommunesProcessor;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.ForDebiteurPrestationImposable;
@@ -50,6 +53,7 @@ public class ForFiscalManagerImpl extends TiersManager implements ForFiscalManag
 	private EvenementFiscalService evenementFiscalService;
 	private ServiceInfrastructureService serviceInfra;
 	private TacheManager tacheManager;
+	private PlatformTransactionManager transactionManager;
 
 	public void setEvenementFiscalService(EvenementFiscalService evenementFiscalService) {
 		this.evenementFiscalService = evenementFiscalService;
@@ -65,6 +69,10 @@ public class ForFiscalManagerImpl extends TiersManager implements ForFiscalManag
 
 	public void setTacheManager(TacheManager tacheManager) {
 		this.tacheManager = tacheManager;
+	}
+
+	public void setTransactionManager(PlatformTransactionManager transactionManager) {
+		this.transactionManager = transactionManager;
 	}
 
 	/**
@@ -523,53 +531,73 @@ public class ForFiscalManagerImpl extends TiersManager implements ForFiscalManag
 		tiersService.annuleForFiscal(forFiscal, true);
 	}
 
-	@Transactional(readOnly = true, rollbackFor = Throwable.class)
-	public Component buildSynchronizeActionsTableSurFermetureDeFor(long forId, RegDate dateFermeture, MotifFor motifFermeture) {
+	public Component buildSynchronizeActionsTableSurFermetureDeFor(final long forId, final RegDate dateFermeture, final MotifFor motifFermeture) {
 
-		final ForFiscal ff = forFiscalDAO.get(forId);
-		final Tiers tiers = ff.getTiers();
-		if (!(tiers instanceof Contribuable)) {
-			return null;
-		}
-		final Contribuable ctb =(Contribuable) tiers;
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
+		template.setReadOnly(true);
 
-		// simule la fermeture du for fiscal		
-		if (ff instanceof ForFiscalPrincipal) {
-			ForFiscalPrincipal ffp=(ForFiscalPrincipal) ff;
-			tiersService.closeForFiscalPrincipal(ffp, dateFermeture, motifFermeture);
-		}
-		else if (ff instanceof ForFiscalSecondaire) {
-			ForFiscalSecondaire ffs=(ForFiscalSecondaire) ff;
-			tiersService.closeForFiscalSecondaire(ctb, ffs, dateFermeture, motifFermeture);
-		}
-		else if (ff instanceof ForFiscalAutreElementImposable) {
-			ForFiscalAutreElementImposable ffaei=(ForFiscalAutreElementImposable) ff;
-			tiersService.closeForFiscalAutreElementImposable(ctb, ffaei, dateFermeture, motifFermeture);
-		}
-		else {
-			// les autres types de fors ne sont pas pris en compte pour l'instant
-			return null;
-		}
+		return (Component) template.execute(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
 
-		return tacheManager.buildSynchronizeActionsTable(ctb, "Les actions suivantes seront exécutées si vous confirmez les changements");
+				// on veut simuler les changements, mais surtout pas les committer ni envoyer d'événement
+				status.setRollbackOnly();
+
+				final ForFiscal ff = forFiscalDAO.get(forId);
+				final Tiers tiers = ff.getTiers();
+				if (!(tiers instanceof Contribuable)) {
+					return null;
+				}
+				final Contribuable ctb = (Contribuable) tiers;
+
+				// simule la fermeture du for fiscal
+				if (ff instanceof ForFiscalPrincipal) {
+					ForFiscalPrincipal ffp = (ForFiscalPrincipal) ff;
+					tiersService.closeForFiscalPrincipal(ffp, dateFermeture, motifFermeture);
+				}
+				else if (ff instanceof ForFiscalSecondaire) {
+					ForFiscalSecondaire ffs = (ForFiscalSecondaire) ff;
+					tiersService.closeForFiscalSecondaire(ctb, ffs, dateFermeture, motifFermeture);
+				}
+				else if (ff instanceof ForFiscalAutreElementImposable) {
+					ForFiscalAutreElementImposable ffaei = (ForFiscalAutreElementImposable) ff;
+					tiersService.closeForFiscalAutreElementImposable(ctb, ffaei, dateFermeture, motifFermeture);
+				}
+				else {
+					// les autres types de fors ne sont pas pris en compte pour l'instant
+					return null;
+				}
+
+				return tacheManager.buildSynchronizeActionsTable(ctb, "Les actions suivantes seront exécutées si vous confirmez les changements");
+			}
+		});
 	}
 
-	@Transactional(readOnly = true, rollbackFor = Throwable.class)
-	public Component buildSynchronizeActionsTableSurModificationDuModeImposition(long forId, RegDate dateChangement, ModeImposition modeImposition, MotifFor motifChangement) {
+	public Component buildSynchronizeActionsTableSurModificationDuModeImposition(final long forId, final RegDate dateChangement, final ModeImposition modeImposition, final MotifFor motifChangement) {
 
-		final ForFiscal ff = forFiscalDAO.get(forId);
-		if (!(ff instanceof ForFiscalPrincipal)) {
-			return null;
-		}
-		final Tiers tiers = ff.getTiers();
-		if (!(tiers instanceof Contribuable)) {
-			return null;
-		}
-		final Contribuable ctb =(Contribuable) tiers;
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
+		template.setReadOnly(true);
 
-		// applique le changement du mode d'imposition (transaction read-only)
-		tiersService.changeModeImposition(ctb, dateChangement, modeImposition, motifChangement);
-		
-		return tacheManager.buildSynchronizeActionsTable(ctb, "Les actions suivantes seront exécutées si vous confirmez les changements");
+		return (Component) template.execute(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+
+				// on veut simuler les changements, mais surtout pas les committer ni envoyer d'événement
+				status.setRollbackOnly();
+
+				final ForFiscal ff = forFiscalDAO.get(forId);
+				if (!(ff instanceof ForFiscalPrincipal)) {
+					return null;
+				}
+				final Tiers tiers = ff.getTiers();
+				if (!(tiers instanceof Contribuable)) {
+					return null;
+				}
+				final Contribuable ctb = (Contribuable) tiers;
+
+				// applique le changement du mode d'imposition (transaction read-only)
+				tiersService.changeModeImposition(ctb, dateChangement, modeImposition, motifChangement);
+
+				return tacheManager.buildSynchronizeActionsTable(ctb, "Les actions suivantes seront exécutées si vous confirmez les changements");
+			}
+		});
 	}
 }

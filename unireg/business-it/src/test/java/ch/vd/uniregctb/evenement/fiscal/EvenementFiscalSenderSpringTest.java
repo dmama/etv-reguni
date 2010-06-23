@@ -22,6 +22,10 @@ import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeEvenementFiscal;
 
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
+@SuppressWarnings({"JavaDoc"})
 @ContextConfiguration(locations = {
 		"classpath:ut/unireg-businessit-jms.xml"
 })
@@ -123,4 +127,64 @@ public class EvenementFiscalSenderSpringTest extends BusinessItTest {
 			}
 		});
 	}
-}
+
+	/**
+	 * Vérifie qu'aucun événement n'est envoyé dans une transaction marquée comme rollback-only (voir utilisation de la méthode ForFiscalManagerImpl#buildSynchronizeActionsTableSurFermetureDeFor)
+	 */
+	@Test
+	@NotTransactional
+	public void testSendEvenementInRollbackOnlyTransaction() throws Exception {
+
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
+
+		// Premier essai avec une transaction normale
+		template.setReadOnly(false);
+		template.execute(new SendEventCallback(false));
+
+		// On vérifie que le message a été envoyé et bien reçu
+		esbTemplate.setReceiveTimeout(3000);        // On attend le message jusqu'à 3 secondes
+		EsbMessage msg = esbTemplate.receive(OUTPUT_QUEUE);
+		assertNotNull(msg);
+
+		clearQueue(OUTPUT_QUEUE);
+
+		// Second essai avec une transaction rollback-only
+		template.setReadOnly(true);
+		template.execute(new SendEventCallback(true));
+
+		// On vérifie que le message n'a *pas* été envoyé
+		esbTemplate.setReceiveTimeout(3000);        // On attend le message jusqu'à 3 secondes
+		msg = esbTemplate.receive(OUTPUT_QUEUE);
+		assertNull(msg);
+	}
+
+	private class SendEventCallback implements TransactionCallback {
+		private final boolean simul;
+
+		public SendEventCallback(boolean simul) {
+			this.simul = simul;
+		}
+
+		public Object doInTransaction(TransactionStatus status) {
+
+			if (simul) {
+				status.setRollbackOnly();
+			}
+
+			// Création du message
+			final Tiers tiers = new PersonnePhysique(false);
+			tiers.setNumero(10001111L);
+			final EvenementFiscalFor event = new EvenementFiscalFor(tiers, RegDate.get(2009, 12, 9), TypeEvenementFiscal.OUVERTURE_FOR, MotifFor.ARRIVEE_HS, ModeImposition.ORDINAIRE, (long) 1);
+			event.setId(1234L);
+
+			// Envoi du message
+			try {
+				sender.sendEvent(event);
+			}
+			catch (EvenementFiscalException e) {
+				throw new RuntimeException(e);
+			}
+
+			return null;
+		}
+	}}
