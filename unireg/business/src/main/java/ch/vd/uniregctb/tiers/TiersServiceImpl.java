@@ -2598,6 +2598,10 @@ public class TiersServiceImpl implements TiersService {
 		return ca;
 	}
 
+	public Integer getOfficeImpotId(ForGestion forGestion) {
+		return getOfficeImpot(forGestion.getNoOfsCommune());
+	}
+
 	/**
 	 * Calcul l'office d'impôt responsable d'une commune
 	 *

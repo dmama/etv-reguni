@@ -298,6 +298,35 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 
 	}
 
+	/**
+	 * C'est le cas décrit dans le cas JIRA UNIREG-2555
+	 */
+	@Test
+	public void testSeparationPuisDemenagementAnneeDerniere() throws Exception {
+
+		final RegDate dateTraitement = RegDate.get();
+		final DeterminerMouvementsDossiersEnMasseProcessor.RangesUtiles ranges = new DeterminerMouvementsDossiersEnMasseProcessor.RangesUtiles(dateTraitement);
+		final DeterminerMouvementsDossiersEnMasseResults results = new DeterminerMouvementsDossiersEnMasseResults(dateTraitement);
+
+		final Contribuable ctb = addHabitant(noIndMarieParlotte);
+		final RegDate dateSeparation = RegDate.get(dateTraitement.year() - 1, 6, 25);
+		final RegDate dateDemenagement = RegDate.get(dateTraitement.year() - 1, 7, 1);
+
+		addForPrincipal(ctb, dateSeparation, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, dateDemenagement.getOneDayBefore(), MotifFor.DEMENAGEMENT_VD, MockCommune.Aubonne);
+		addForPrincipal(ctb, dateDemenagement, MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
+
+		final DeterminerMouvementsDossiersEnMasseProcessor proc = createProcessor();
+		final Map<Integer, CollectiviteAdministrative> caCache = new HashMap<Integer, CollectiviteAdministrative>();
+		proc.traiterContribuable(ctb, ranges, caCache, results);
+
+		// mouvement d'envoi de Lausanne à Vevey
+		assertMouvementEnvoiEntreOid(results, ctb, noOidRolleAubonne, noOidLausanne);
+		Assert.assertEquals(2, caCache.size());
+		Assert.assertTrue(caCache.containsKey(noCaOidRolleAubonne));
+		Assert.assertTrue(caCache.containsKey(noCaOidLausanne));
+
+	}
+
 	private void assertPasDeMouvement(Contribuable ctb, DeterminerMouvementsDossiersEnMasseResults results) {
 
 		// dans le rapport

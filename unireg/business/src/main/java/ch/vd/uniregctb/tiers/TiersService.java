@@ -823,6 +823,13 @@ public interface TiersService {
 	public Integer getOfficeImpotIdAt(Tiers tiers, RegDate date);
 
 	/**
+	 * Calcule l'id de l'office d'impôt responsable d'un for de gestion donné
+	 * @param forGestion le for de gestion dont on veut connaître l'office d'impôt
+	 * @return un id d'office d'impôt
+	 */
+	public Integer getOfficeImpotId(ForGestion forGestion);
+
+	/**
 	 * Calcule et retourne l'office d'impôt responsable d'un tiers à une date donnée.
 	 *
 	 * @param tiers le tiers dont on veut connaître l'office d'impôt
