@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2005 rel. 3 U (http://www.altova.com) by zciedt (Etat de Vaud) -->
+<!-- Schéma Evénement  registre version 1.0 11.09.07-->
+<!-- Schéma Evénement  registre version 1.1 14.09.07 : changement du type de l'élément Date de xs:date à xs:dateTime-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" attributeFormDefault="unqualified" version="1.0">
+	<xs:element name="EvenementRegistre">
+		<xs:annotation>
+			<xs:documentation>Evénement provenant du registre</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="Code" type="xs:string">
+					<xs:annotation>
+						<xs:documentation>Code de l'événement</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="NumeroCtb">
+					<xs:annotation>
+						<xs:documentation>Numéro de contribuable concerné par l'événement</xs:documentation>
+					</xs:annotation>
+					<xs:simpleType>
+						<xs:restriction base="xs:token">
+							<xs:pattern value="([0-9])+"/>
+						</xs:restriction>
+					</xs:simpleType>
+				</xs:element>
+				<xs:element name="Date" type="xs:dateTime">
+					<xs:annotation>
+						<xs:documentation>Date de l'événement (aaaa-mm-jj) </xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:sequence>
+			<xs:attribute name="schemaVersion" type="xs:string" use="required"/>
+			<xs:attribute name="schemaLocation" type="xs:string" use="required"/>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

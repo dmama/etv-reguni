@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+	<bean 	id="abstractTacheController"
+			parent="abstractSimpleFormController"
+			abstract="true"
+			class="ch.vd.uniregctb.tache.AbstractTacheController">
+		<property name="tiersMapHelper" ref="tiersMapHelper" />
+		<property name="tacheMapHelper" ref="tacheMapHelper" />
+		<property name="servletService" ref="servletService" />
+	</bean>
+
+	<bean id="tacheListManager" class="ch.vd.uniregctb.tache.manager.TacheListManagerImpl" >
+		<property name="tacheDAO" ref="tacheDAO" />
+		<property name="serviceInfrastructureService" ref="serviceInfrastructureService" />
+		<property name="adresseService" ref="adresseService" />
+		<property name="tiersService" ref="tiersService" />
+		<property name="serviceSecurite" ref="serviceSecuriteService" />
+		<property name="editiqueService" ref="editiqueCompositionService" />
+	</bean>	
+
+	<bean 	id="tacheListController"
+			class="ch.vd.uniregctb.tache.TacheListController"
+			parent="abstractTacheController">
+		<property name="sessionForm" value="true" />
+		<property name="commandClass" value="ch.vd.uniregctb.tache.view.TacheCriteriaView" />
+		<property name="commandName" value="command" />
+		<property name="tacheListManager" ref="tacheListManager" />
+		<property name="formView" value="tache/list" />
+		<property name="successView" value="list.do" />
+		<property name="validator" ref="tacheListValidator" />
+	</bean>
+	
+	<bean id="tacheListValidator" class="ch.vd.uniregctb.tache.validator.TacheListValidator" />
+	
+	<bean id="tacheMapHelper" class="ch.vd.uniregctb.tache.TacheMapHelper">
+		<property name="periodeFiscaleDAO" ref="periodeFiscaleDAO" />
+		<property name="serviceSecurite" ref="serviceSecuriteService" />
+		<property name="transactionManager" ref="transactionManager" />
+	</bean>
+	
+	<bean 	id="nouveauDossierListController"
+			class="ch.vd.uniregctb.tache.NouveauDossierListController"
+			parent="abstractTacheController">
+		<property name="sessionForm" value="true" />
+		<property name="commandClass" value="ch.vd.uniregctb.tache.view.NouveauDossierCriteriaView" />
+		<property name="commandName" value="command" />
+		<property name="formView" value="nouveau-dossier/list" />
+		<property name="successView" value="list-nouveau-dossier.do" />
+		<property name="tacheListManager" ref="tacheListManager" />
+	</bean>
+	
+</beans>

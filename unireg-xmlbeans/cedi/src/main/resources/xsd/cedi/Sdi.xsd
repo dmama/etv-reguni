@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- edited with XMLSpy v2005 rel. 3 U (http://www.altova.com) by Liardet Etienne (Etat de Vaud) -->
+<!-- edited with XMLSPY v5 rel. 4 U (http://www.xmlspy.com) by xciccd (Etat De Vaud) -->
+<!-- Etat de Vaud, UID-DFIN, schéma TAO PP post, version 2.1.1 du 29.10.03/mbn -->
+<!--
+Modification apportée dans la version 2.0.8/26.09.03
+		La valeur par défaut "false" a été retirée de l'atribut "retourPiece" de l'élément "DossierElectronique".
+
+Modification apportée dans la version 2.0.2/27.06.03
+		Les type DateType et AVSType ont été placés dans ce fichier  SDI.xsd et
+		supprimés dans les fichiers inclus (DeclarationImpot, Annexe01, Annexe03, Annexe04 et Annexe05)
+-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+	<!--v2007.1.0 - 30.05.2007 : pour moteur 2007-2 - Création par copie du schéma 2005-->
+	<!--v2007.1.1 - 30.05.2007 : tous les types sont transférés dans docidentification-->
+	<!--v2007.1.1 - 19.6.2007 : ajout include sur CertificatSalaireHarmonise2007.xsd et CertificatRenteHarmonise2007.xsd-->
+	<!--v2007.1.5 - 3.12.2007 : ajout pièces justificatives-->
+	<xs:include schemaLocation="DeclarationImpot.xsd"/>
+	<xs:include schemaLocation="Annexe01.xsd"/>
+	<xs:include schemaLocation="Annexe02.xsd"/>
+	<xs:include schemaLocation="Annexe03.xsd"/>
+	<xs:include schemaLocation="Annexe04.xsd"/>
+	<xs:include schemaLocation="Annexe05.xsd"/>
+	<xs:include schemaLocation="AnnexeUSA.xsd"/>
+	<xs:include schemaLocation="ImputationForfaitaire.xsd"/>
+	<xs:include schemaLocation="CertificatSalaire.xsd"/>
+	<xs:include schemaLocation="CS_AR_Harmonise2007.xsd"/>
+	<xs:include schemaLocation="PieceJustificative.xsd"/>
+	<xs:element name="DossierElectronique">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="Operation">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="DateReception" type="xs:string"/>
+							<xs:element name="OperateurScan" type="xs:string"/>
+							<xs:element name="DateScan" type="xs:string"/>
+							<xs:element name="LieuScan" type="xs:string"/>
+							<xs:element name="TypeSaisie" type="xs:string" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Permet de définir si la DI est scannée, saisie entièrement manuellement ou, dans le futut, provient d'une saisie Internet ou autre.</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="DeclarationImpot" type="DeclarationImpotType" minOccurs="0"/>
+				<xs:element name="EtatDesTitres" type="EtatDesTitresType" minOccurs="0"/>
+				<xs:element name="CertificatSalaire" type="CertificatSalaireType" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element name="CS_AR" type="CS_AR_Harmonise2007Type" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element name="AnnexeUSA" type="AnnexeUSAType" minOccurs="0"/>
+				<xs:element name="ImputationForfaitaireImpot" type="ImputationForfaitaireImpotType" minOccurs="0"/>
+				<xs:element name="EtatDesDettes" type="EtatDesDettesType" minOccurs="0"/>
+				<xs:element name="AnnexeImmeubles" type="AnnexeImmeubleType" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element name="FraisAcquisitionRevenu" type="FraisAcquisitionRevenuType" minOccurs="0"/>
+				<xs:element name="Annexe05" minOccurs="0">
+					<xs:complexType>
+						<xs:complexContent>
+							<xs:extension base="Annexe05Type"/>
+						</xs:complexContent>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="PieceJustificative" type="PieceJustificativeType" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+			<xs:attribute name="periode" type="xs:string" use="required"/>
+			<xs:attribute name="noContribuable" type="xs:string" use="required"/>
+			<xs:attribute name="noSequenceDI" type="xs:string" use="required"/>
+			<xs:attribute name="versionSchema" type="xs:string" use="required"/>
+			<xs:attribute name="retourPiece" type="xs:boolean" use="optional"/>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

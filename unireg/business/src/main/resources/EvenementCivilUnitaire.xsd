@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.vd.ch/schema/registreCivil/20070914/EvtRegCivil"
+		elementFormDefault="qualified"
+		xmlns="http://www.w3.org/2001/XMLSchema"
+		xmlns:tns="http://www.vd.ch/schema/registreCivil/20070914/EvtRegCivil">
+    <element name="EvtRegCivil">
+    	<complexType>
+    		<sequence>
+    			<element name="NoTechnique" type="int"></element>
+    			<element name="Code" type="int"></element>
+    			<element name="NoIndividu" type="int"></element>
+    			<element name="DateEvenement" type="date"></element>
+    			<element name="DateTraitement" type="date"></element>
+    			<element name="NumeroOFS" type="int"></element>
+    		</sequence>
+    	</complexType>
+    </element>
+</schema>

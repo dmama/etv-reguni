@@ -1,0 +1,250 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- version 1.1 -->
+<wsdl:definitions name="BatchService" targetNamespace="http://www.vd.ch/uniregctb/webservices/batch" xmlns:ns1="http://cxf.apache.org/bindings/xformat"
+				  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://www.vd.ch/uniregctb/webservices/batch" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+				  xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+	<wsdl:types>
+		<xs:schema attributeFormDefault="unqualified" elementFormDefault="unqualified" targetNamespace="http://www.vd.ch/uniregctb/webservices/batch"
+				   xmlns:tns="http://www.vd.ch/uniregctb/webservices/batch" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+			<xs:complexType name="StopBatch">
+				<xs:sequence>
+					<xs:element name="name" type="xs:string" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="LastReport">
+				<xs:sequence>
+					<xs:element name="name" type="xs:string" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="Report">
+				<xs:sequence>
+					<xs:element name="name" type="xs:string" />
+					<xs:element minOccurs="0" name="description" type="xs:string" />
+					<xs:element name="fileName" type="xs:string" />
+					<xs:element name="fileExtension" type="xs:string" />
+					<xs:element minOccurs="0" name="contentByteStream" ns1:expectedContentTypes="application/octet-stream" type="xs:base64Binary" xmlns:ns1="http://www.w3.org/2005/05/xmlmime" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="JobName">
+				<xs:sequence>
+					<xs:element name="name" type="xs:string" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="JobDefParam">
+				<xs:sequence>
+					<xs:element name="name" type="xs:string" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="jobDefinition">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="lastEnd" type="xs:dateTime" />
+					<xs:element minOccurs="0" name="lastStart" type="xs:dateTime" />
+					<xs:element minOccurs="0" name="runningMessage" type="xs:string" />
+					<xs:element name="sortOrder" type="xs:int" />
+					<xs:element name="statut" type="tns:jobStatut" />
+					<xs:element name="name" type="xs:string" />
+					<xs:element minOccurs="0" name="description" type="xs:string" />
+					<xs:element minOccurs="0" name="synchronousMode" type="tns:jobSynchronousMode" />
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="params" type="tns:param" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="param">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="name" type="xs:string" />
+					<xs:element minOccurs="0" name="type" type="xs:string" />
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="enumValues" type="xs:string" />
+					<xs:element name="isMandatory" type="xs:boolean" />
+					<xs:element minOccurs="0" name="defaultValue" type="xs:string" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="StartBatch">
+				<xs:sequence>
+					<xs:element name="name" type="xs:string" />
+					<xs:element name="params" type="tns:ParamMap" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="ParamMap">
+				<xs:sequence>
+					<xs:element maxOccurs="unbounded" name="entries" type="tns:ParamMapEntry" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="ParamMapEntry">
+				<xs:sequence>
+					<xs:element name="key" type="xs:string" />
+					<xs:element minOccurs="0" name="value" type="xs:string" />
+					<xs:element minOccurs="0" name="bytesValue" ns2:expectedContentTypes="application/octet-stream" type="xs:base64Binary" xmlns:ns2="http://www.w3.org/2005/05/xmlmime" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:simpleType name="jobStatut">
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="JOB_EXCEPTION" />
+					<xs:enumeration value="JOB_INTERRUPTING" />
+					<xs:enumeration value="JOB_INTERRUPTED" />
+					<xs:enumeration value="JOB_OK" />
+					<xs:enumeration value="JOB_READY" />
+					<xs:enumeration value="JOB_RUNNING" />
+				</xs:restriction>
+			</xs:simpleType>
+			<xs:simpleType name="jobSynchronousMode">
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="SYNCHRONOUS" />
+					<xs:enumeration value="ASYNCHRONOUS" />
+				</xs:restriction>
+			</xs:simpleType>
+			<xs:complexType final="#all" name="JobNameArray">
+				<xs:sequence>
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="item" nillable="true" type="tns:JobName" />
+				</xs:sequence>
+			</xs:complexType>
+			<xs:element name="ServiceFault" type="tns:ServiceFault" />
+			<xs:complexType name="ServiceFault">
+				<xs:sequence />
+			</xs:complexType>
+			<xs:element name="StopBatch" nillable="true" type="tns:StopBatch" />
+			<xs:element name="LastReport" nillable="true" type="tns:LastReport" />
+			<xs:element name="getLastReportResponse" nillable="true" type="tns:Report" />
+			<xs:element name="getListJobsResponse" nillable="true" type="tns:JobNameArray" />
+			<xs:element name="JobDefParam" nillable="true" type="tns:JobDefParam" />
+			<xs:element name="getJobDefinitionResponse" nillable="true" type="tns:jobDefinition" />
+			<xs:element name="StartBatch" nillable="true" type="tns:StartBatch" />
+		</xs:schema>
+	</wsdl:types>
+	<wsdl:message name="getLastReport">
+		<wsdl:part element="tns:LastReport" name="params">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="getListJobs">
+	</wsdl:message>
+	<wsdl:message name="startResponse">
+	</wsdl:message>
+	<wsdl:message name="getJobDefinition">
+		<wsdl:part element="tns:JobDefParam" name="params">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="stop">
+		<wsdl:part element="tns:StopBatch" name="params">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="BatchWSException">
+		<wsdl:part element="tns:ServiceFault" name="BatchWSException">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="getListJobsResponse">
+		<wsdl:part element="tns:getListJobsResponse" name="getListJobsResponse">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="start">
+		<wsdl:part element="tns:StartBatch" name="params">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="getLastReportResponse">
+		<wsdl:part element="tns:getLastReportResponse" name="getLastReportResponse">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="getJobDefinitionResponse">
+		<wsdl:part element="tns:getJobDefinitionResponse" name="getJobDefinitionResponse">
+		</wsdl:part>
+	</wsdl:message>
+	<wsdl:message name="stopResponse">
+	</wsdl:message>
+	<wsdl:portType name="BatchPort">
+		<wsdl:operation name="stop">
+			<wsdl:input message="tns:stop" name="stop">
+			</wsdl:input>
+			<wsdl:output message="tns:stopResponse" name="stopResponse">
+			</wsdl:output>
+			<wsdl:fault message="tns:BatchWSException" name="BatchWSException">
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="getLastReport">
+			<wsdl:input message="tns:getLastReport" name="getLastReport">
+			</wsdl:input>
+			<wsdl:output message="tns:getLastReportResponse" name="getLastReportResponse">
+			</wsdl:output>
+			<wsdl:fault message="tns:BatchWSException" name="BatchWSException">
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="getListJobs">
+			<wsdl:input message="tns:getListJobs" name="getListJobs">
+			</wsdl:input>
+			<wsdl:output message="tns:getListJobsResponse" name="getListJobsResponse">
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="getJobDefinition">
+			<wsdl:input message="tns:getJobDefinition" name="getJobDefinition">
+			</wsdl:input>
+			<wsdl:output message="tns:getJobDefinitionResponse" name="getJobDefinitionResponse">
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="start">
+			<wsdl:input message="tns:start" name="start">
+			</wsdl:input>
+			<wsdl:output message="tns:startResponse" name="startResponse">
+			</wsdl:output>
+			<wsdl:fault message="tns:BatchWSException" name="BatchWSException">
+			</wsdl:fault>
+		</wsdl:operation>
+	</wsdl:portType>
+	<wsdl:binding name="BatchServiceSoapBinding" type="tns:BatchPort">
+		<soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http" />
+		<wsdl:operation name="getLastReport">
+			<soap:operation soapAction="" style="document" />
+			<wsdl:input name="getLastReport">
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output name="getLastReportResponse">
+				<soap:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="BatchWSException">
+				<soap:fault name="BatchWSException" use="literal" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="stop">
+			<soap:operation soapAction="" style="document" />
+			<wsdl:input name="stop">
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output name="stopResponse">
+				<soap:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="BatchWSException">
+				<soap:fault name="BatchWSException" use="literal" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="getJobDefinition">
+			<soap:operation soapAction="" style="document" />
+			<wsdl:input name="getJobDefinition">
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output name="getJobDefinitionResponse">
+				<soap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="getListJobs">
+			<soap:operation soapAction="" style="document" />
+			<wsdl:input name="getListJobs">
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output name="getListJobsResponse">
+				<soap:body use="literal" />
+			</wsdl:output>
+		</wsdl:operation>
+		<wsdl:operation name="start">
+			<soap:operation soapAction="" style="document" />
+			<wsdl:input name="start">
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output name="startResponse">
+				<soap:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="BatchWSException">
+				<soap:fault name="BatchWSException" use="literal" />
+			</wsdl:fault>
+		</wsdl:operation>
+	</wsdl:binding>
+	<wsdl:service name="BatchService">
+		<wsdl:port binding="tns:BatchServiceSoapBinding" name="BatchPortPort">
+			<soap:address location="http://localhost:8080/fiscalite/unireg/web/ws/batch" />
+		</wsdl:port>
+	</wsdl:service>
+</wsdl:definitions>
