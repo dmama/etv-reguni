@@ -57,7 +57,7 @@ public class ListeContribuablesResidentsSansForVaudoisProcessor extends ListesPr
 		return doRun(dateTraitement, nbThreads, status, hibernateTemplate, new Customizer<ListeContribuablesResidentsSansForVaudoisResults, ListeContribuablesResidentsSansForVaudoisThread>() {
 
 		    public ListeContribuablesResidentsSansForVaudoisResults createResults(RegDate dateTraitement) {
-		        return new ListeContribuablesResidentsSansForVaudoisResults(dateTraitement, nbThreads, tiersService, adresseService);
+		        return new ListeContribuablesResidentsSansForVaudoisResults(dateTraitement, nbThreads, tiersService);
 		    }
 
 		    public ListeContribuablesResidentsSansForVaudoisThread createThread(LinkedBlockingQueue<List<Long>> queue, RegDate dateTraitement, StatusManager status,

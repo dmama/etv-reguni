@@ -434,6 +434,19 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 		return result;
 	}
 
+	public CommuneSimple getCommuneFaitiere(CommuneSimple commune, RegDate dateReference) throws InfrastructureException {
+		CommuneSimple result;
+		long time = tracing.start();
+		try {
+			result = target.getCommuneFaitiere(commune, dateReference);
+		}
+		finally {
+			tracing.end(time);
+		}
+
+		return result;
+	}
+
 	public List<Localite> getLocaliteByCommune(int commune) throws InfrastructureException {
 		List<Localite> result;
 		long time = tracing.start();

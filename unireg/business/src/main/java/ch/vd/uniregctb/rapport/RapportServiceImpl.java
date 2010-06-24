@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.rapport;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.acomptes.AcomptesResults;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.LoggingStatusManager;
@@ -15,6 +16,7 @@ import ch.vd.uniregctb.document.ListeDIsNonEmisesRapport;
 import ch.vd.uniregctb.evenement.externe.TraiterEvenementExterneResult;
 import ch.vd.uniregctb.identification.contribuable.IdentifierContribuableResults;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.listes.afc.ExtractionAfcResults;
 import ch.vd.uniregctb.listes.listesnominatives.ListesNominativesResults;
 import ch.vd.uniregctb.listes.suisseoupermiscresident.ListeContribuablesResidentsSansForVaudoisResults;
 import ch.vd.uniregctb.metier.FusionDeCommunesResults;
@@ -366,7 +368,7 @@ public class RapportServiceImpl implements RapportService {
 		try {
 			return docService.newDoc(ListesNominativesRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<ListesNominativesRapport>() {
 				public void writeDoc(ListesNominativesRapport doc, OutputStream os) throws Exception {
-					PdfListesNominativesRapport document = new PdfListesNominativesRapport();
+					final PdfListesNominativesRapport document = new PdfListesNominativesRapport();
 					document.write(results, nom, description, dateGeneration, os, statusManager);
 				}
 			});
@@ -384,7 +386,7 @@ public class RapportServiceImpl implements RapportService {
 		try {
 			return docService.newDoc(AcomptesRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<AcomptesRapport>() {
 				public void writeDoc(AcomptesRapport doc, OutputStream os) throws Exception {
-					PdfAcomptesRapport document = new PdfAcomptesRapport();
+					final PdfAcomptesRapport document = new PdfAcomptesRapport();
 					document.write(results, nom, description, dateGeneration, os, statusManager);
 				}
 			});
@@ -392,6 +394,29 @@ public class RapportServiceImpl implements RapportService {
 		catch (Exception e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	/**
+	 * Genère le rapport (PDF) pour les extractions AFC
+	 * @param results le résultat de l'exécution du job
+	 * @return le rapport
+	 */
+	public ExtractionAfcRapport generateRapport(final ExtractionAfcResults results, final StatusManager statusManager) {
+		final String nom = "RapportExtractionAfc" + results.getDateTraitement().index();
+		final String description = String.format("Rapport de l'extraction de la liste AFC au %s.", RegDateHelper.dateToDisplayString(results.getDateTraitement()));
+		final Date dateGeneration = new Date();
+		try {
+			return docService.newDoc(ExtractionAfcRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<ExtractionAfcRapport>() {
+				public void writeDoc(ExtractionAfcRapport doc, OutputStream os) throws Exception {
+					final PdfExtractionAfcRapport document = new PdfExtractionAfcRapport();
+					document.write(results, nom, description, dateGeneration, os, statusManager);
+				}
+			});
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+
 	}
 
 	/**

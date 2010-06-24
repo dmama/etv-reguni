@@ -46,8 +46,8 @@ public class ListeContribuablesResidentsSansForVaudoisResults extends ListesResu
 		}
 	}
 
-	public ListeContribuablesResidentsSansForVaudoisResults(RegDate dateTraitement, int nombreThreads, TiersService tiersService, AdresseService adresseService) {
-		super(dateTraitement, nombreThreads, tiersService, adresseService);
+	public ListeContribuablesResidentsSansForVaudoisResults(RegDate dateTraitement, int nombreThreads, TiersService tiersService) {
+		super(dateTraitement, nombreThreads, tiersService);
 	}
 
 	@Override
@@ -65,6 +65,7 @@ public class ListeContribuablesResidentsSansForVaudoisResults extends ListesResu
 	}
 
 	public void addAll(ListeContribuablesResidentsSansForVaudoisResults sources) {
+		super.addAll(sources);
 		contribuablesIdentifies.addAll(sources.contribuablesIdentifies);
 		contribuablesIgnores.addAll(sources.contribuablesIgnores);
 	}

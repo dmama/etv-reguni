@@ -117,8 +117,8 @@ public class AcomptesResults extends ListesResults<AcomptesResults> {
 		}
 	}
 
-    public AcomptesResults(RegDate dateTraitement, int nombreThreads, Integer anneeFiscale, TiersService tiersService, AdresseService adresseService) {
-        super(dateTraitement, nombreThreads, tiersService, adresseService);
+    public AcomptesResults(RegDate dateTraitement, int nombreThreads, Integer anneeFiscale, TiersService tiersService) {
+        super(dateTraitement, nombreThreads, tiersService);
         this.anneeFiscale = anneeFiscale;
     }
 
@@ -257,9 +257,9 @@ public class AcomptesResults extends ListesResults<AcomptesResults> {
     }
 
     public void addAll(AcomptesResults source) {
+	    super.addAll(source);
         this.contribuablesAssujettis.addAll(source.contribuablesAssujettis);
 	    this.contribuablesIgnores.addAll(source.contribuablesIgnores);
-        this.tiersErreur.addAll(source.tiersErreur);
     }
 
     @Override

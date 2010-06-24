@@ -94,6 +94,15 @@
 		<property name="serviceCivilService" ref="serviceCivilService" />
 	</bean>
 
+	<bean id="extractionAfcService" class="ch.vd.uniregctb.listes.afc.ExtractionAfcServiceImpl">
+		<property name="hibernateTemplate" ref="hibernateTemplate"/>
+		<property name="tiersService" ref="tiersService"/>
+		<property name="transactionManager" ref="transactionManager"/>
+		<property name="tiersDAO" ref="tiersDAO"/>
+		<property name="serviceCivilService" ref="serviceCivilService" />
+		<property name="infraService" ref="serviceInfrastructureService"/>
+	</bean>
+
 	<!-- Section Evenement Externe -->
 	<bean id="evenementExterneService" class="ch.vd.uniregctb.evenement.externe.EvenementExterneServiceImpl">
 		<property name="sender" ref="evenementExterneSender" />

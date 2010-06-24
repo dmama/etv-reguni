@@ -91,6 +91,10 @@ public class ProxyServiceInfrastructureService implements ServiceInfrastructureS
 		return target.getListeCommunesByOID(oid);
 	}
 
+	public CommuneSimple getCommuneFaitiere(CommuneSimple commune, RegDate dateReference) throws InfrastructureException {
+		return target.getCommuneFaitiere(commune, dateReference);
+	}
+
 	public Localite getLocaliteByONRP(int onrp) throws InfrastructureException {
 		return target.getLocaliteByONRP(onrp);
 	}
@@ -221,7 +225,6 @@ public class ProxyServiceInfrastructureService implements ServiceInfrastructureS
 	}
 
 	public Pays getPaysInconnu() throws InfrastructureException {
-
 		return target.getPays(8999);
 	}
 

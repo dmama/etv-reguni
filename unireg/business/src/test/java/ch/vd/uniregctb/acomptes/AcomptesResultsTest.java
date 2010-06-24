@@ -23,7 +23,7 @@ public class AcomptesResultsTest extends BusinessTest {
 	public void testCalculerInfoAssujettissementHC() {
 
 		final int annee = dateTraitement.year();
-		final AcomptesResults results = new AcomptesResults(dateTraitement, 1, annee, tiersService, null);
+		final AcomptesResults results = new AcomptesResults(dateTraitement, 1, annee, tiersService);
 
 		final PersonnePhysique pp = new PersonnePhysique(false);
 		pp.setNumero(12345678L);
@@ -38,7 +38,7 @@ public class AcomptesResultsTest extends BusinessTest {
 	public void testCalculerInfoAssujettissementHS() {
 
 		final int annee = dateTraitement.year();
-		final AcomptesResults results = new AcomptesResults(dateTraitement, 1, annee, tiersService, null);
+		final AcomptesResults results = new AcomptesResults(dateTraitement, 1, annee, tiersService);
 
 		final PersonnePhysique pp = new PersonnePhysique(false);
 		pp.setNumero(12345678L);

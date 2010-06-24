@@ -35,7 +35,7 @@ public class ListesNominativesThread extends ListesThread<ListesNominativesResul
                                    TiersDAO tiersDAO, HibernateTemplate hibernateTemplate) {
 
         super(queue, status, compteur, serviceCivilService, tiersService, transactionManager, tiersDAO, hibernateTemplate,
-                new ListesNominativesResults(dateTraitement, nombreThreads, adressesIncluses, avecContribuables, avecDebiteurs, tiersService, adresseService, serviceCivilService));
+                new ListesNominativesResults(dateTraitement, nombreThreads, adressesIncluses, avecContribuables, avecDebiteurs, tiersService, adresseService));
 
 	    this.adressesIncluses = adressesIncluses;
 	    if (adressesIncluses == TypeAdresse.AUCUNE) {

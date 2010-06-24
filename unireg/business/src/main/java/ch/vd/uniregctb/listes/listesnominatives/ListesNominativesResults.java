@@ -28,19 +28,18 @@ public class ListesNominativesResults extends ListesResults<ListesNominativesRes
 
     private final TypeAdresse typeAdressesIncluses;
 
-	private final ServiceCivilService serviceCivilService;
+	private final AdresseService adresseService;
 
 	private final boolean avecContribuables;
 
 	private final boolean avecDebiteurs;
 
-	public ListesNominativesResults(RegDate dateTraitement, int nombreThreads, TypeAdresse typeAdressesIncluses, boolean avecContribuables, boolean avecDebiteurs, TiersService tiersService,
-	                                AdresseService adresseService, ServiceCivilService serviceCivilService) {
-        super(dateTraitement, nombreThreads, tiersService, adresseService);
+	public ListesNominativesResults(RegDate dateTraitement, int nombreThreads, TypeAdresse typeAdressesIncluses, boolean avecContribuables, boolean avecDebiteurs, TiersService tiersService, AdresseService adresseService) {
+        super(dateTraitement, nombreThreads, tiersService);
         this.typeAdressesIncluses = typeAdressesIncluses;
 	    this.avecContribuables = avecContribuables;
 	    this.avecDebiteurs = avecDebiteurs;
-		this.serviceCivilService = serviceCivilService;
+		this.adresseService = adresseService;
 	}
 
 	public static class InfoTiers {
@@ -240,8 +239,8 @@ public class ListesNominativesResults extends ListesResults<ListesNominativesRes
     }
 
     public void addAll(ListesNominativesResults source) {
+	    super.addAll(source);
         this.tiers.addAll(source.tiers);
-        this.tiersErreur.addAll(source.tiersErreur);
     }
 
     @Override

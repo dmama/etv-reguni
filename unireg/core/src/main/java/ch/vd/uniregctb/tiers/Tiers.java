@@ -1262,6 +1262,23 @@ public abstract class Tiers extends HibernateEntity implements Validateable, Bus
 		return null;
 	}
 
+	// ***********************************************
+	@Transient
+	public ForFiscalPrincipal getDernierForFiscalPrincipalAvant(RegDate date) {
+
+		final List<ForFiscal> list = getForsFiscauxSorted();
+		if (list != null) {
+			for (int i = list.size() - 1; i >= 0; i--) {
+				final ForFiscal forFiscal = list.get(i);
+				if (!forFiscal.isAnnule() && forFiscal.isPrincipal() && RegDateHelper.isBeforeOrEqual(forFiscal.getDateDebut(), date, NullDateBehavior.LATEST)) {
+					return (ForFiscalPrincipal) forFiscal;
+				}
+			}
+		}
+		return null;
+	}
+
+	// ***********************************************
 	@Transient
 	public ForFiscalPrincipal getDernierForFiscalPrincipalVaudois() {
 

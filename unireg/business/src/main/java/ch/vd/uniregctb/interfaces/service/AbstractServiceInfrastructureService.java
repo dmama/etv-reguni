@@ -283,6 +283,19 @@ public abstract class AbstractServiceInfrastructureService implements ServiceInf
 		}
 	}
 
+	public CommuneSimple getCommuneFaitiere(CommuneSimple commune, RegDate dateReference) throws InfrastructureException {
+		if (commune == null || !commune.isFraction()) {
+			return commune;
+		}
+
+		//
+		// C'est bidon ici !! on confond idTechnique et numéro OFS, mais on a de la chance : pour les communes
+		// faîtières des fractions vaudoises, c'est la même chose...
+		//
+		final int idCommuneMere = commune.getNumTechMere();
+		return getCommuneByNumeroOfsEtendu(idCommuneMere, dateReference);
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */

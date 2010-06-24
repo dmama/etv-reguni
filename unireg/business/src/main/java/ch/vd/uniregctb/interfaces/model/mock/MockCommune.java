@@ -63,26 +63,28 @@ public class MockCommune extends MockEntityOFS implements Commune, CommuneSimple
 
 	public static class Fraction extends MockCommune {
 		// commune de l'Abbaye
-		public static final MockCommune LePont = new Fraction(8010, "Le Pont", VAUD, MockOfficeImpot.OID_LA_VALLEE);
-		public static final MockCommune LAbbaye = new Fraction(8011, "L'Abbaye", VAUD, MockOfficeImpot.OID_LA_VALLEE);
-		public static final MockCommune LesBioux = new Fraction(8012, "Les Bioux", VAUD, MockOfficeImpot.OID_LA_VALLEE);
+		public static final MockCommune LePont = new Fraction(8010, "Le Pont", VAUD, MockOfficeImpot.OID_LA_VALLEE, MockCommune.LAbbaye.getNoOFSEtendu());
+		public static final MockCommune LAbbaye = new Fraction(8011, "L'Abbaye", VAUD, MockOfficeImpot.OID_LA_VALLEE, MockCommune.LAbbaye.getNoOFSEtendu());
+		public static final MockCommune LesBioux = new Fraction(8012, "Les Bioux", VAUD, MockOfficeImpot.OID_LA_VALLEE, MockCommune.LAbbaye.getNoOFSEtendu());
 
 		// commune du Chenit
-		public static final MockCommune LeSentier = new Fraction(8000, "Le Sentier", VAUD, MockOfficeImpot.OID_LA_VALLEE);
-		public static final MockCommune LeBrassus = new Fraction(8001, "Le Brassus", VAUD, MockOfficeImpot.OID_LA_VALLEE);
-		public static final MockCommune LOrient = new Fraction(8002, "L'Orient", VAUD, MockOfficeImpot.OID_LA_VALLEE);
-		public static final MockCommune LeSolliat = new Fraction(8003, "Le Solliat", VAUD, MockOfficeImpot.OID_LA_VALLEE);
+		public static final MockCommune LeSentier = new Fraction(8000, "Le Sentier", VAUD, MockOfficeImpot.OID_LA_VALLEE, MockCommune.LeChenit.getNoOFSEtendu());
+		public static final MockCommune LeBrassus = new Fraction(8001, "Le Brassus", VAUD, MockOfficeImpot.OID_LA_VALLEE, MockCommune.LeChenit.getNoOFSEtendu());
+		public static final MockCommune LOrient = new Fraction(8002, "L'Orient", VAUD, MockOfficeImpot.OID_LA_VALLEE, MockCommune.LeChenit.getNoOFSEtendu());
+		public static final MockCommune LeSolliat = new Fraction(8003, "Le Solliat", VAUD, MockOfficeImpot.OID_LA_VALLEE, MockCommune.LeChenit.getNoOFSEtendu());
 
 		// commune du Lieu
-		public static final MockCommune LeLieu = new Fraction(8020, "Le Lieu", VAUD, MockOfficeImpot.OID_LA_VALLEE);
-		public static final MockCommune LeSechey = new Fraction(8021, "Le Séchey", VAUD, MockOfficeImpot.OID_LA_VALLEE);
-		public static final MockCommune LesCharbonnieres = new Fraction(8022, "Les Charbonnières", VAUD, MockOfficeImpot.OID_LA_VALLEE);
+		public static final MockCommune LeLieu = new Fraction(8020, "Le Lieu", VAUD, MockOfficeImpot.OID_LA_VALLEE, MockCommune.LeLieu.getNoOFSEtendu());
+		public static final MockCommune LeSechey = new Fraction(8021, "Le Séchey", VAUD, MockOfficeImpot.OID_LA_VALLEE, MockCommune.LeLieu.getNoOFSEtendu());
+		public static final MockCommune LesCharbonnieres = new Fraction(8022, "Les Charbonnières", VAUD, MockOfficeImpot.OID_LA_VALLEE, MockCommune.LeLieu.getNoOFSEtendu());
 
 		private final int noOFSetendu;
+		private final int noTechniqueCommuneMere;
 
-		private Fraction(int noOFSetendu, String nomMinuscule, String sigleCanton, OfficeImpot oid) {
+		private Fraction(int noOFSetendu, String nomMinuscule, String sigleCanton, OfficeImpot oid, int noTechniqueCommuneMere) {
 			super(0, nomMinuscule, sigleCanton, oid);
 			this.noOFSetendu = noOFSetendu;
+			this.noTechniqueCommuneMere = noTechniqueCommuneMere;
 		}
 
 		@Override
@@ -93,6 +95,11 @@ public class MockCommune extends MockEntityOFS implements Commune, CommuneSimple
 		@Override
 		public int getNoOFSEtendu() {
 			return noOFSetendu;
+		}
+
+		@Override
+		public int getNumTechMere() {
+			return noTechniqueCommuneMere;
 		}
 	}
 
@@ -113,7 +120,6 @@ public class MockCommune extends MockEntityOFS implements Commune, CommuneSimple
 	private String noACI;
 	private String noCantonal;
 	private String nomAbrege;
-	private int numTechMere;
 	private final String sigleCanton;
 	private boolean valide;
 	private final OfficeImpot officeImpot;
@@ -167,7 +173,7 @@ public class MockCommune extends MockEntityOFS implements Commune, CommuneSimple
 	}
 
 	public int getNumTechMere() {
-		return numTechMere;
+		throw new RuntimeException("Not implemented!");
 	}
 
 	public String getSigleCanton() {

@@ -198,7 +198,7 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 	 */
 	protected ForFiscalPrincipal addForPrincipal(Contribuable contribuable, RegDate ouverture, MotifFor motifOuverture, MockCommune commune) {
 		TypeAutoriteFiscale type = commune.isVaudoise() ? TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD : TypeAutoriteFiscale.COMMUNE_HC;
-		return addForPrincipal(contribuable, ouverture, motifOuverture, null, null, commune.getNoOFS(), type, MotifRattachement.DOMICILE);
+		return addForPrincipal(contribuable, ouverture, motifOuverture, null, null, commune.getNoOFSEtendu(), type, MotifRattachement.DOMICILE);
 	}
 
 	/**
@@ -220,7 +220,7 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 	 */
 	protected ForFiscalPrincipal addForPrincipal(Contribuable contribuable, RegDate ouverture, MotifFor motifOuverture, RegDate fermeture, MotifFor motifFermeture, MockCommune commune, MotifRattachement motifRattachement) {
 		final TypeAutoriteFiscale type = (commune.isVaudoise() ? TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD : TypeAutoriteFiscale.COMMUNE_HC);
-		return addForPrincipal(contribuable, ouverture, motifOuverture, fermeture, motifFermeture, commune.getNoOFS(), type, motifRattachement);
+		return addForPrincipal(contribuable, ouverture, motifOuverture, fermeture, motifFermeture, commune.getNoOFSEtendu(), type, motifRattachement);
 	}
 
 	/**
@@ -376,7 +376,7 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 	protected ForDebiteurPrestationImposable addForDebiteur(DebiteurPrestationImposable dpi, RegDate dateDebut, RegDate dateFin, TypeAutoriteFiscale typeAutorite, MockCommune commune) {
 		ForDebiteurPrestationImposable f = new ForDebiteurPrestationImposable();
 		f.setTypeAutoriteFiscale(typeAutorite);
-		f.setNumeroOfsAutoriteFiscale(commune.getNoOFS());
+		f.setNumeroOfsAutoriteFiscale(commune.getNoOFSEtendu());
 		f.setDateDebut(dateDebut);
 		f.setDateFin(dateFin);
 		return (ForDebiteurPrestationImposable)tiersService.addAndSave(dpi, f);

@@ -17,11 +17,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class AcomptesThread extends ListesThread<AcomptesResults> {
 
     public AcomptesThread(BlockingQueue<List<Long>> queue, RegDate dateTraitement, int nombreThreads, Integer anneeFiscale, ServiceCivilService serviceCivilService,
-                          TiersService tiersService, AdresseService adresseService, StatusManager status, AtomicInteger compteur, PlatformTransactionManager transactionManager,
+                          TiersService tiersService, StatusManager status, AtomicInteger compteur, PlatformTransactionManager transactionManager,
                           TiersDAO tiersDAO, HibernateTemplate hibernateTemplate) {
 
         super(queue, status, compteur, serviceCivilService, tiersService, transactionManager, tiersDAO, hibernateTemplate,
-                new AcomptesResults(dateTraitement, nombreThreads, anneeFiscale, tiersService, adresseService));
+                new AcomptesResults(dateTraitement, nombreThreads, anneeFiscale, tiersService));
     }
 
 }

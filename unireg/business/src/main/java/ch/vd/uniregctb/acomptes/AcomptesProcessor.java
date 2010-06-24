@@ -32,8 +32,6 @@ public class AcomptesProcessor extends ListesProcessor<AcomptesResults, Acomptes
 
 	private final TiersDAO tiersDAO;
 
-	private final AdresseService adresseService;
-
 	private final ServiceCivilService serviceCivilService;
 
 	public AcomptesProcessor(HibernateTemplate hibernateTemplate,
@@ -44,7 +42,6 @@ public class AcomptesProcessor extends ListesProcessor<AcomptesResults, Acomptes
 	                         TiersDAO tiersDAO) {
 		this.hibernateTemplate = hibernateTemplate;
 		this.tiersService = tiersService;
-		this.adresseService = adresseService;
 		this.serviceCivilService = serviceCivilService;
 		this.transactionManager = transactionManager;
 		this.tiersDAO = tiersDAO;
@@ -61,12 +58,12 @@ public class AcomptesProcessor extends ListesProcessor<AcomptesResults, Acomptes
 		return doRun(dateTraitement, nbThreads, status, hibernateTemplate, new Customizer<AcomptesResults, AcomptesThread>() {
 
 			public AcomptesResults createResults(RegDate dateTraitement) {
-				return new AcomptesResults(dateTraitement, nbThreads, annee, tiersService, adresseService);
+				return new AcomptesResults(dateTraitement, nbThreads, annee, tiersService);
 			}
 
 			public AcomptesThread createThread(LinkedBlockingQueue<List<Long>> queue, RegDate dateTraitement, StatusManager status, AtomicInteger compteur, HibernateTemplate hibernateTemplate) {
-				return new AcomptesThread(queue, dateTraitement, nbThreads, annee, serviceCivilService, tiersService, adresseService,
-											status, compteur, transactionManager, tiersDAO, hibernateTemplate);
+				return new AcomptesThread(queue, dateTraitement, nbThreads, annee, serviceCivilService, tiersService,
+						status, compteur, transactionManager, tiersDAO, hibernateTemplate);
 			}
 
 			public Iterator<Long> getIdIterator(Session session) {

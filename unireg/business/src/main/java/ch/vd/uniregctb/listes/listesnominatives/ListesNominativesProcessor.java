@@ -64,7 +64,7 @@ public class ListesNominativesProcessor extends ListesProcessor<ListesNominative
         return doRun(dateTraitement, nbThreads, status, hibernateTemplate, new Customizer<ListesNominativesResults, ListesNominativesThread>() {
 
             public ListesNominativesResults createResults(RegDate dateTraitement) {
-                return new ListesNominativesResults(dateTraitement, nbThreads, adressesIncluses, avecContribuables, avecDebiteurs, tiersService, adresseService, serviceCivilService);
+                return new ListesNominativesResults(dateTraitement, nbThreads, adressesIncluses, avecContribuables, avecDebiteurs, tiersService, adresseService);
             }
 
             public ListesNominativesThread createThread(LinkedBlockingQueue<List<Long>> queue, RegDate dateTraitement, StatusManager status,

@@ -20,6 +20,7 @@ import ch.vd.uniregctb.document.*;
 import ch.vd.uniregctb.document.ListeDIsNonEmisesRapport;
 import ch.vd.uniregctb.evenement.externe.TraiterEvenementExterneResult;
 import ch.vd.uniregctb.identification.contribuable.IdentifierContribuableResults;
+import ch.vd.uniregctb.listes.afc.ExtractionAfcResults;
 import ch.vd.uniregctb.listes.listesnominatives.ListesNominativesResults;
 import ch.vd.uniregctb.listes.suisseoupermiscresident.ListeContribuablesResidentsSansForVaudoisResults;
 import ch.vd.uniregctb.metier.FusionDeCommunesResults;
@@ -184,6 +185,13 @@ public interface RapportService {
 	 * @return le rapport
 	 */
 	AcomptesRapport generateRapport(AcomptesResults results, StatusManager statusManager);
+
+	/**
+	 * Genère le rapport (PDF) pour les extractions AFC
+	 * @param results le résultat de l'exécution du job
+	 * @return le rapport
+	 */
+	ExtractionAfcRapport generateRapport(ExtractionAfcResults results, StatusManager statusManager);
 
 	/**
 	 * Genère le rapport (PDF) pour les déclarations ayant été passées à l'état échues.

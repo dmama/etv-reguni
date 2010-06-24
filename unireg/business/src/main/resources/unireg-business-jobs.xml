@@ -285,8 +285,16 @@
         <property name="transactionManager" ref="transactionManager"/>
     </bean>
 
+	<bean id="extractionAfcJob" parent="schedulerJob" class="ch.vd.uniregctb.listes.afc.ExtractionAfcJob">
+		<constructor-arg value="606"/>
+		<constructor-arg value="Extraire les listes AFC"/>
+		<property name="service" ref="extractionAfcService"/>
+		<property name="rapportService" ref="rapportService"/>
+		<property name="transactionManager" ref="transactionManager"/>
+	</bean>
+
     <bean id="validationJob" parent="schedulerJob" class="ch.vd.uniregctb.validation.ValidationJob">
-        <constructor-arg value="606"/>
+        <constructor-arg value="607"/>
         <constructor-arg
                 value="Valider tous les contribuables et générer un rapport d'erreurs pour ceux qui ne conviennent pas"/>
         <property name="tiersDAO" ref="tiersDAO"/>
@@ -298,7 +306,7 @@
     </bean>
     <bean id="listeTachesEnIstanceParOIDJob" parent="schedulerJob"
           class="ch.vd.uniregctb.tache.ListeTachesEnIstanceParOIDJob">
-        <constructor-arg value="607"/>
+        <constructor-arg value="608"/>
         <constructor-arg value="Générer la liste des tâche en instance par OID"/>
         <property name="service" ref="tacheService"/>
         <property name="rapportService" ref="rapportService"/>
@@ -306,7 +314,7 @@
     </bean>
 	<bean id="listeSuissesOuPermisCResidentSansForVaudoisJob" parent="schedulerJob"
 		  class="ch.vd.uniregctb.listes.suisseoupermiscresident.ListeContribuablesResidentsSansForVaudoisJob">
-		<constructor-arg value="608"/>
+		<constructor-arg value="609"/>
 		<constructor-arg
 				value="Produire la liste des contribuables suisses ou titulaires d'un permis C, résidents mais sans for vaudois"/>
 		<property name="service" ref="listesTiersService"/>
@@ -314,7 +322,7 @@
 		<property name="transactionManager" ref="transactionManager"/>
 	</bean>
 	<bean id="statistiquesEvenementsJob" parent="schedulerJob" class="ch.vd.uniregctb.stats.evenements.StatistiquesEvenementsJob">
-		<constructor-arg value="609"/>
+		<constructor-arg value="610"/>
 		<constructor-arg value="Fournir quelques statistiques sur les événements reçus par Unireg"/>
 		<property name="service" ref="statistiquesEvenementsService"/>
 		<property name="rapportService" ref="rapportService"/>

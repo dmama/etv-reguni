@@ -266,6 +266,15 @@ public interface ServiceInfrastructureService {
 	public CommuneSimple getCommuneByAdresse(AdresseGenerique adresse) throws InfrastructureException;
 
 	/**
+	 * Résoud la commune faîtière d'une fraction de commune (renvoie la commune elle-même si ce n'est pas une fraction)
+	 * @param commune fraction de commune
+	 * @param dateReference date de référence (au cas où...)
+	 * @return la commune faîtière de la fraction donnée à la date donnée
+	 * @throws InfrastructureException en cas de problème
+	 */
+	public CommuneSimple getCommuneFaitiere(CommuneSimple commune, RegDate dateReference) throws InfrastructureException;
+
+	/**
 	 * @return l'office d'impôt à partir de son numéro de collectivité.
 	 */
 	public OfficeImpot getOfficeImpot(int noColAdm) throws InfrastructureException;
