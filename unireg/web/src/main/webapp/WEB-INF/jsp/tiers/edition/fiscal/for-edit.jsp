@@ -30,11 +30,3 @@
 		</c:when>
 	</c:choose>
 </c:if>
-
-<c:if test="${command.natureForFiscal != 'ForDebiteurPrestationImposable'}">
-	<c:if test="${index == ''}">
-		<script type="text/javascript">
-			selectGenreImpot('${command.genreImpot}');
-		</script>
-	</c:if>
-</c:if>

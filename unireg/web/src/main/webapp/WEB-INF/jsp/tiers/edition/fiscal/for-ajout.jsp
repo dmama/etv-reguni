@@ -91,6 +91,8 @@
 			// on initialise les motifs au chargement de la page
 			updateMotifsFor(E$('motifFermeture'), 'motifOuverture', 'motifFermeture', '${command.numeroCtb}', 
 					'genre_impot', 'rattachement', '${command.motifOuverture}', '${command.motifFermeture}');
+
+			selectGenreImpot('${command.genreImpot}');
 		</script>
 	</fieldset>
 	<table border="0">

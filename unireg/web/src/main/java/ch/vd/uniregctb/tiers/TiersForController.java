@@ -20,7 +20,6 @@ import org.springmodules.xt.ajax.component.Component;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.tiers.manager.ForFiscalManager;
 import ch.vd.uniregctb.tiers.view.ForFiscalView;
 import ch.vd.uniregctb.type.ModeImposition;
@@ -114,8 +113,7 @@ public class TiersForController extends AbstractTiersController {
 			forFiscalManager.updateModeImposition(forFiscalView);
 		}
 		else {
-			Assert.notNull(forFiscalView.getRegDateFermeture());
-			forFiscalManager.closeFor(forFiscalView);
+			forFiscalManager.updateFor(forFiscalView);
 		}
 
 		return new ModelAndView("redirect:../fiscal/edit.do?id=" + forFiscalView.getNumeroCtb());
@@ -131,23 +129,37 @@ public class TiersForController extends AbstractTiersController {
 
 
 	@SuppressWarnings({"UnusedDeclaration"})
-	public AjaxResponse buildSynchronizeActionsTableSurFermetureDeFor(AjaxActionEvent event) throws ParseException {
+	public AjaxResponse buildSynchronizeActionsTableSurModificationDeFor(AjaxActionEvent event) throws ParseException {
 
 		Component component;
 		try {
 			final Map<String, String> parameters = event.getParameters();
+			final String motifOuvertureAsString = parameters.get("motifOuverture");
+			final String dateOuvertureAsString = parameters.get("dateOuverture");
 			final String motifFermetureAsString = parameters.get("motifFermeture");
 			final String dateFermetureAsString = parameters.get("dateFermeture");
+			final String noOfsAutoriteAsString = parameters.get("nOfsAutoriteFiscale").replaceAll("[^0-9]", "");
 
-			if (StringUtils.isBlank(motifFermetureAsString) || StringUtils.isBlank(dateFermetureAsString)) {
+			if (StringUtils.isBlank(dateOuvertureAsString) || StringUtils.isBlank(motifOuvertureAsString) || StringUtils.isBlank(noOfsAutoriteAsString)) {
 				return null;
 			}
 
 			final Long forId = Long.valueOf(parameters.get("forId"));
-			final RegDate dateFermeture = RegDateHelper.displayStringToRegDate(dateFermetureAsString, false);
-			final MotifFor motifFermeture = MotifFor.valueOf(motifFermetureAsString);
+			final RegDate dateOuverture = RegDateHelper.displayStringToRegDate(dateOuvertureAsString, false);
+			final MotifFor motifOuverture = MotifFor.valueOf(motifOuvertureAsString);
+			final RegDate dateFermeture;
+			final MotifFor motifFermeture;
+			if (StringUtils.isNotBlank(dateFermetureAsString) && StringUtils.isNotBlank(motifFermetureAsString)) {
+				dateFermeture = RegDateHelper.displayStringToRegDate(dateFermetureAsString, false);
+				motifFermeture = MotifFor.valueOf(motifFermetureAsString);
+			}
+			else {
+				dateFermeture = null;
+				motifFermeture = null;
+			}
+			final int noOfsAutoriteFiscale = Integer.parseInt(noOfsAutoriteAsString);
 
-			component = forFiscalManager.buildSynchronizeActionsTableSurFermetureDeFor(forId, dateFermeture, motifFermeture);
+			component = forFiscalManager.buildSynchronizeActionsTableSurModificationDeFor(forId, dateOuverture, motifOuverture, dateFermeture, motifFermeture, noOfsAutoriteFiscale);
 		}
 		catch (Exception e) {
 			LOGGER.error(e, e);

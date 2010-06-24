@@ -55,6 +55,39 @@ function updateMotifsFor(element, motifsOuvertureSelectId, motifsFermetureSelect
 }
 
 /**
+ * Cette fonction met-à-jour la liste des motifs d'ouverture en fonction des
+ * valeurs de genre d'impôt et motif de rattachement spécifiés.
+ * 
+ * @param element
+ *            l'élément qui vient d'être changé
+ * @param motifsOuvertureSelectId
+ *            l'id du select contenant les motifs d'ouverture à mettre-à-jour
+ * @param genreImpot
+ *            le genre d'impôt courant
+ * @param rattachement
+ *            le motif de rattachement courant
+ * @param defaultMotifOuverture
+ *            (optionel) la valeur par défaut du motif de ouverture
+ *            lorsqu'aucune valeur n'est sélectionné dans la liste
+ *            'motifsOuvertureSelectId'
+ */
+function updateMotifsOuverture(element, motifsOuvertureSelectId, numeroCtb, genreImpot, rattachement, defaultMotifOuverture) {
+	
+	var motifsOuvertureSelect = E$(motifsOuvertureSelectId);
+	var motifsOuverture = (motifsOuvertureSelect.selectedIndex < 0 ? null : motifsOuvertureSelect.options[motifsOuvertureSelect.selectedIndex].value);
+	if (motifsOuverture == null) motifsOuverture = defaultMotifOuverture;
+	 
+	// appels ajax pour mettre-à-jour les motifs de ouverture
+	XT.doAjaxAction('updateMotifsOuverture', element, {
+		'motifsOuvertureSelectId' : motifsOuvertureSelectId,
+		'numeroCtb' : numeroCtb,
+		'genreImpot' : genreImpot,
+		'rattachement' : rattachement,
+		'motifCourant' : motifsOuverture
+	});
+}
+
+/**
  * Cette fonction met-à-jour la liste des motifs de fermeture en fonction des
  * valeurs de genre d'impôt et motif de rattachement spécifiés.
  * 

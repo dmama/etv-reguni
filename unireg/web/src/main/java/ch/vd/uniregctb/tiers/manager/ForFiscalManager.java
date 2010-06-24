@@ -1,7 +1,5 @@
 package ch.vd.uniregctb.tiers.manager;
 
-import java.util.List;
-
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseException;
 import org.springframework.transaction.annotation.Transactional;
@@ -10,8 +8,6 @@ import org.springmodules.xt.ajax.component.Component;
 import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.tiers.ForFiscal;
-import ch.vd.uniregctb.tiers.ForFiscalDAO;
-import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.view.ForFiscalView;
 import ch.vd.uniregctb.tiers.view.TiersEditView;
 import ch.vd.uniregctb.type.ModeImposition;
@@ -72,13 +68,13 @@ public interface ForFiscalManager {
 	ForFiscal addFor(ForFiscalView forFiscalView);
 
 	/**
-	 * Ferme un for fiscal préexistant.
+	 * Met-à-jour un for fiscal préexistant.
 	 *
 	 * @param forFiscalView le form-backing object de l'écran de fermeture du for fiscal
-	 * @return le for fiscal fermé
+	 * @return le for fiscal mis-à-jour ou <b>null</b> si aucun changement n'était nécessaire
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	ForFiscal closeFor(ForFiscalView forFiscalView);
+	ForFiscal updateFor(ForFiscalView forFiscalView);
 
 	/**
 	 * Change le mode d'imposition d'un contribuable à partir d'une certaine date. Cette méthode ferme le for principal courant à la date de la veille du changement, et ouvre un nouveau for fiscal
@@ -93,12 +89,15 @@ public interface ForFiscalManager {
 	/**
 	 * Construite le composant Ajax contenant les actions de synchronisation qui seront générées si le for fiscal spécifié est fermé.
 	 *
-	 * @param forId          l'id d'un for fiscal
-	 * @param dateFermeture  la date de fermeture du for fiscal
-	 * @param motifFermeture le motif de fermeture du for fiscal
-	 * @return un composant Ajax ou <b>null</b> si aucune action ne sera générée.
+	 * @param forId                l'id d'un for fiscal
+	 * @param dateOuverture        la date d'ouverture du for fiscal
+	 * @param motifOuverture       le motif d'ouverture du for fiscal
+	 * @param dateFermeture        la date de fermeture du for fiscal
+	 * @param motifFermeture       le motif de fermeture du for fiscal
+	 * @param noOfsAutoriteFiscale @return un composant Ajax ou <b>null</b> si aucune action ne sera générée.
+	 * @return le composant Ajax qui représente les tâches de synchronisation; ou <b>null</b> si aucune tâche n'est générée.
 	 */
-	Component buildSynchronizeActionsTableSurFermetureDeFor(long forId, RegDate dateFermeture, MotifFor motifFermeture);
+	Component buildSynchronizeActionsTableSurModificationDeFor(long forId, RegDate dateOuverture, MotifFor motifOuverture, RegDate dateFermeture, MotifFor motifFermeture, int noOfsAutoriteFiscale);
 
 	/**
 	 * Construite le composant Ajax contenant les actions de synchronisation qui seront générées si le mode d'imposition d'un contribuable est changé.

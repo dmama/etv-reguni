@@ -12,16 +12,18 @@ public class TacheManagerImpl implements TacheManager {
 
 	private TacheService tacheService;
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setTacheService(TacheService tacheService) {
 		this.tacheService = tacheService;
 	}
 
-	public SynchronizeActionsTable buildSynchronizeActionsTable(Contribuable ctb, String titre) {
+	public SynchronizeActionsTable buildSynchronizeActionsTable(Contribuable ctb, String titre, String titreErreurValidation) {
 
-		final SynchronizeActionsTable table = new SynchronizeActionsTable(titre);
+		final SynchronizeActionsTable table;
 
 		final ValidationResults vr = ctb.validate();
 		if (vr.hasErrors()) {
+			table = new SynchronizeActionsTable(titreErreurValidation);
 			table.addErrors(vr.getErrors());			
 		}
 		else {
@@ -35,6 +37,7 @@ public class TacheManagerImpl implements TacheManager {
 				exception = e;
 			}
 
+			table = new SynchronizeActionsTable(titre);
 			if (exception != null) {
 				table.addException(exception);
 			}

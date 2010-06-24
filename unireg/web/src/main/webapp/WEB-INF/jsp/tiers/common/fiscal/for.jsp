@@ -92,7 +92,7 @@
 					((forFiscal.natureForFiscal == 'ForFiscalSecondaire') && (command.allowedOnglet.FOR_SEC)) ||
 					((forFiscal.natureForFiscal == 'ForFiscalAutreImpot') && (command.allowedOnglet.FOR_AUTRE)) ||
 					((forFiscal.natureForFiscal == 'ForFiscalAutreElementImposable') && (command.allowedOnglet.FOR_AUTRE))}">
-					<c:if test="${(forFiscal.natureForFiscal != 'ForFiscalAutreImpot') && (forFiscal.dateFermeture == null)}">
+					<c:if test="${forFiscal.natureForFiscal != 'ForFiscalAutreImpot'}">
 						<unireg:raccourciModifier link="for.do?idFor=${forFiscal.id}" tooltip="Edition de for"/>
 					</c:if>
 					<c:if test="${forFiscal.natureForFiscal != 'ForFiscalPrincipal' || forFiscal.dernierForPrincipal}">

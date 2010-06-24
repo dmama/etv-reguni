@@ -649,6 +649,30 @@ public interface TiersService {
 	                                               ModeImposition modeImposition, MotifFor motifFor);
 
 	/**
+	 * Corrige l'autorité fiscale du for fiscal spécifié. Le for fiscal est annulé et un nouveau for fiscal avec l'autorité fiscale corrigée est ajouté au tiers [UNIREG-2322].
+	 * <p/>
+	 * <b>Note:</b> Le type de l'autorité fiscale ne peut pas changer.
+	 *
+	 * @param forFiscal            le for fiscal à corriger
+	 * @param noOfsAutoriteFiscale le mouveau numéro Ofs de l'autorité fiscale
+	 * @return le nouveau for fiscal corrigé
+	 */
+	ForFiscal corrigerAutoriteFiscale(ForFiscal forFiscal, int noOfsAutoriteFiscale);
+
+	/**
+	 * Corrige la période de validité (date de début et date de fin) d'un for fiscal secondaire. Le for fiscal est annulé et un nouveau for fiscal avec la période de validité corrigée est
+	 * ajouté au tiers [UNIREG-2322].
+	 *
+	 * @param ffs            le for fiscal secondaire à corriger
+	 * @param dateOuverture  la nouvelle date d'ouverture
+	 * @param motifOuverture le nouveau motif d'ouverture
+	 * @param dateFermeture  la nouvelle date de fermeture
+	 * @param motifFermeture le nouveau motif de fermeture
+	 * @return le nouveau for fiscal corrigé
+	 */
+	ForFiscalSecondaire corrigerPeriodeValidite(ForFiscalSecondaire ffs, RegDate dateOuverture, MotifFor motifOuverture, RegDate dateFermeture, MotifFor motifFermeture);
+
+	/**
 	 * Ajoute un for fiscal principal sur un contribuable. Le for fiscal principal courant est fermé si nécessaire.
 	 *
 	 * @param contribuable        un contribuable

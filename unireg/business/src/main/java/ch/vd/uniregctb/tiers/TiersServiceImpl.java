@@ -5,9 +5,6 @@ import java.util.*;
 
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorValue;
-import javax.transaction.SystemException;
-import javax.transaction.Transaction;
-import javax.transaction.TransactionManager;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -18,7 +15,6 @@ import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.DateHelper;
@@ -1663,7 +1659,7 @@ public class TiersServiceImpl implements TiersService {
 			ancienModeImposition = null;
 		}
 
-		this.tacheService.genereTacheDepuisOuvertureForPrincipal(contribuable, forFiscalPrincipal, ancienModeImposition);
+		tacheService.genereTacheDepuisOuvertureForPrincipal(contribuable, forFiscalPrincipal, ancienModeImposition);
 	}
 
 	/**
@@ -1697,7 +1693,7 @@ public class TiersServiceImpl implements TiersService {
 				this.evenementFiscalService.publierEvenementFiscalOuvertureFor(contribuable, dateOuverture, motifOuverture, forFiscalSecondaire.getId());
 			}
 		}
-		this.tacheService.genereTacheDepuisOuvertureForSecondaire(contribuable, forFiscalSecondaire);
+		tacheService.genereTacheDepuisOuvertureForSecondaire(contribuable, forFiscalSecondaire);
 	}
 
 	/**
@@ -2005,7 +2001,7 @@ public class TiersServiceImpl implements TiersService {
 						motifFermeture, forFiscalSecondaire.getId());
 			}
 		}
-		this.tacheService.genereTacheDepuisFermetureForSecondaire(contribuable, forFiscalSecondaire);
+		tacheService.genereTacheDepuisFermetureForSecondaire(contribuable, forFiscalSecondaire);
 	}
 
 
@@ -2027,7 +2023,7 @@ public class TiersServiceImpl implements TiersService {
 
 		forFiscalPrincipal.setDateFin(dateChangementModeImposition.getOneDayBefore());
 		forFiscalPrincipal.setMotifFermeture(motifFor);
-		this.tacheService.genereTacheDepuisFermetureForPrincipal(contribuable, forFiscalPrincipal);
+		tacheService.genereTacheDepuisFermetureForPrincipal(contribuable, forFiscalPrincipal);
 
 		//Ouverture d'un nouveau for principal
 		ForFiscalPrincipal nouveauForFiscal = new ForFiscalPrincipal();
@@ -2040,7 +2036,7 @@ public class TiersServiceImpl implements TiersService {
 		nouveauForFiscal = (ForFiscalPrincipal) addAndSave(contribuable, nouveauForFiscal);
 
 		if (contribuable.validate().errorsCount() == 0) {
-			this.tacheService.genereTacheDepuisOuvertureForPrincipal(contribuable, nouveauForFiscal, forFiscalPrincipal.getModeImposition());
+			tacheService.genereTacheDepuisOuvertureForPrincipal(contribuable, nouveauForFiscal, forFiscalPrincipal.getModeImposition());
 			//Envoi d'un événement fiscal
 			if (TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD.equals(nouveauForFiscal.getTypeAutoriteFiscale())) {
 				evenementFiscalService.publierEvenementFiscalChangementModeImposition(contribuable, dateChangementModeImposition, modeImposition, nouveauForFiscal.getId());
@@ -2048,6 +2044,70 @@ public class TiersServiceImpl implements TiersService {
 		}
 		
 		return nouveauForFiscal;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public ForFiscal corrigerAutoriteFiscale(ForFiscal forFiscal, int noOfsAutoriteFiscale) {
+		Assert.notNull(forFiscal);
+
+		if (forFiscal.getNumeroOfsAutoriteFiscale().equals(noOfsAutoriteFiscale)) {
+			// rien à faire
+			return null;
+		}
+
+		final Tiers tiers = forFiscal.getTiers();
+		Assert.notNull(tiers);
+
+		// [UNIREG-2322] toutes les corrections doivent s'effectuer par une annulation du for suivi de la création d'un nouveau for avec la valeur corrigée.
+		ForFiscal forCorrige = forFiscal.duplicate();
+		forFiscal.setAnnule(true);
+		forCorrige.setNumeroOfsAutoriteFiscale(noOfsAutoriteFiscale);
+		forCorrige = addAndSave(tiers, forCorrige);
+
+		// notifie le reste du monde
+		if (forFiscal.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
+			evenementFiscalService.publierEvenementFiscalAnnulationFor(forFiscal, RegDate.get());
+			final MotifFor motifFor = (forFiscal instanceof ForFiscalRevenuFortune ? ((ForFiscalRevenuFortune)forFiscal).getMotifOuverture() : null);
+			evenementFiscalService.publierEvenementFiscalOuvertureFor(tiers, RegDate.get(), motifFor, forCorrige.getId());
+		}
+
+		return forCorrige;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public ForFiscalSecondaire corrigerPeriodeValidite(ForFiscalSecondaire ffs, RegDate dateOuverture, MotifFor motifOuverture, RegDate dateFermeture, MotifFor motifFermeture) {
+		Assert.notNull(ffs);
+
+		if (ffs.getDateDebut() == dateOuverture && ffs.getDateFin() == dateFermeture
+				&& ffs.getMotifOuverture() == motifOuverture && ffs.getMotifFermeture() == motifFermeture) {
+			// rien à faire
+			return null;
+		}
+
+		final Tiers tiers = ffs.getTiers();
+		Assert.notNull(tiers);
+
+		// [UNIREG-2322] toutes les corrections doivent s'effectuer par une annulation du for suivi de la création d'un nouveau for avec la valeur corrigée.
+		ForFiscalSecondaire forCorrige = (ForFiscalSecondaire) ffs.duplicate();
+		ffs.setAnnule(true);
+		forCorrige.setDateDebut(dateOuverture);
+		forCorrige.setMotifOuverture(motifOuverture);
+		forCorrige.setDateFin(dateFermeture);
+		forCorrige.setMotifFermeture(motifFermeture);
+		forCorrige = (ForFiscalSecondaire) addAndSave(tiers, forCorrige);
+
+		// notifie le reste du monde
+		evenementFiscalService.publierEvenementFiscalAnnulationFor(ffs, RegDate.get());
+		evenementFiscalService.publierEvenementFiscalOuvertureFor(tiers, RegDate.get(), null, forCorrige.getId());
+		if (dateFermeture != null) {
+			evenementFiscalService.publierEvenementFiscalFermetureFor(tiers, RegDate.get(), null, forCorrige.getId());
+		}
+
+		return forCorrige;
 	}
 
 	/**
@@ -2631,7 +2691,7 @@ public class TiersServiceImpl implements TiersService {
 			}
 		}
 		if (envoi) {
-			evenementFiscalService.publierEvenementFiscalAnnulationFor(tiers, forFiscal.getDateDebut(), forFiscal.getDateFin(), forFiscal.getId());
+			evenementFiscalService.publierEvenementFiscalAnnulationFor(forFiscal, forFiscal.getDateDebut());
 		}
 
 		//

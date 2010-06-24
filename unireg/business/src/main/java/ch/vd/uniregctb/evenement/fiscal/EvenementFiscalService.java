@@ -11,6 +11,7 @@ import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.evenement.EvenementFiscal;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
+import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
@@ -60,13 +61,12 @@ public interface EvenementFiscalService {
 
 	/**
 	 * Publie un événement fiscal de type 'Annulation de for'
-	 * @param tiers
-	 * @param dateDebut
-	 * @param dateFin
-	 * @param id du for
+	 *
+	 * @param forFiscal      le for fiscal qui vient d'être annulé
+	 * @param dateAnnulation la date d'annulation effective
 	 */
 	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
-	public void publierEvenementFiscalAnnulationFor(Tiers tiers, RegDate dateDebut, RegDate dateFin, Long id) ;
+	public void publierEvenementFiscalAnnulationFor(ForFiscal forFiscal, RegDate dateAnnulation);
 
 	/**
 	 * Publie un événement fiscal de type 'Changement de mode d'imposition'

@@ -7,6 +7,7 @@ import ch.vd.uniregctb.evenement.*;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
+import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
@@ -101,10 +102,11 @@ public class EvenementFiscalServiceImpl implements EvenementFiscalService {
 	 * {@inheritDoc}
 	 */
 	@Transactional(propagation = Propagation.REQUIRED, rollbackFor = Throwable.class)
-	public void publierEvenementFiscalAnnulationFor(Tiers tiers, RegDate dateDebut, RegDate dateFin, Long id) {
+	public void publierEvenementFiscalAnnulationFor(ForFiscal forFiscal, RegDate dateAnnulation) {
 		// on ne bloque l'envoi des événements fiscaux d'annulation que pour les fors fermés avant 2003
+		final RegDate dateFin = forFiscal.getDateFin();
 		if (dateFin == null || peutPublierEvenementFiscal(dateFin)) {
-			final EvenementFiscal evenementFiscal = new EvenementFiscalFor(tiers, dateDebut, TypeEvenementFiscal.ANNULATION_FOR, null, null, id);
+			final EvenementFiscal evenementFiscal = new EvenementFiscalFor(forFiscal.getTiers(), dateAnnulation, TypeEvenementFiscal.ANNULATION_FOR, null, null, forFiscal.getId());
 			publierEvenementFiscal(evenementFiscal);
 		}
 	}

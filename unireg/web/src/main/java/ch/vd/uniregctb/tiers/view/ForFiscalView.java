@@ -158,6 +158,22 @@ public class ForFiscalView implements Comparable<ForFiscalView> {
 	}
 
 	/**
+	 * @return le numéro d'autorité fiscale
+	 */
+	public Integer getNumeroAutoriteFiscale() {
+		switch (typeAutoriteFiscale) {
+		case COMMUNE_OU_FRACTION_VD:
+			return numeroForFiscalCommune;
+		case COMMUNE_HC:
+			return numeroForFiscalCommuneHorsCanton;
+		case PAYS_HS:
+			return numeroForFiscalPays;
+		default:
+			throw new IllegalArgumentException("Type d'autorité fiscale inconnu =[" + typeAutoriteFiscale + "]");
+		}
+	}
+
+	/**
 	 * @return the numeroForFiscalCommune
 	 */
 	public Integer getNumeroForFiscalCommune() {

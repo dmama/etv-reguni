@@ -13,6 +13,7 @@ import org.springmodules.xt.ajax.component.Component;
 import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
@@ -54,6 +55,9 @@ public class ForFiscalManagerImpl extends TiersManager implements ForFiscalManag
 	private ServiceInfrastructureService serviceInfra;
 	private TacheManager tacheManager;
 	private PlatformTransactionManager transactionManager;
+
+	private static final String TITRE_SYNC_ACTIONS = "Les actions suivantes seront exécutées si vous confirmez les changements";
+	private static final String TITRE_SYNC_ACTIONS_INVALIDES = "Les erreurs de validation suivantes seront levées si vous confirmez les changements";
 
 	public void setEvenementFiscalService(EvenementFiscalService evenementFiscalService) {
 		this.evenementFiscalService = evenementFiscalService;
@@ -347,38 +351,94 @@ public class ForFiscalManagerImpl extends TiersManager implements ForFiscalManag
 		forFiscalPrincipal.setModeImposition(forFiscalView.getModeImposition());
 	}
 
-	public ForFiscal closeFor(ForFiscalView forFiscalView) {
-		ForFiscal forFiscal = forFiscalDAO.get(forFiscalView.getId());
-		ForFiscal forRtr = null;
-		if (forFiscalView.getGenreImpot().equals(GenreImpot.REVENU_FORTUNE)){
-			if(forFiscalView.getMotifRattachement().equals(MotifRattachement.DOMICILE) ||
-					forFiscalView.getMotifRattachement().equals(MotifRattachement.DIPLOMATE_SUISSE) ||
-					forFiscalView.getMotifRattachement().equals(MotifRattachement.DIPLOMATE_ETRANGER)) {
-				forRtr = tiersService.closeForFiscalPrincipal((ForFiscalPrincipal) forFiscal,
-						forFiscalView.getRegDateFermeture(), forFiscalView.getMotifFermeture());
-			}
-			else if (forFiscalView.getMotifRattachement().equals(MotifRattachement.ACTIVITE_INDEPENDANTE) ||
-					forFiscalView.getMotifRattachement().equals(MotifRattachement.IMMEUBLE_PRIVE) ||
-					forFiscalView.getMotifRattachement().equals(MotifRattachement.SEJOUR_SAISONNIER) ||
-					forFiscalView.getMotifRattachement().equals(MotifRattachement.DIRIGEANT_SOCIETE)) {
-				forRtr = tiersService.closeForFiscalSecondaire((Contribuable)forFiscal.getTiers(),
-						(ForFiscalSecondaire) forFiscal,
-						forFiscalView.getRegDateFermeture(), forFiscalView.getMotifFermeture());
-			}
-			else {
-				forRtr = tiersService.closeForFiscalAutreElementImposable((Contribuable)forFiscal.getTiers(),
-						(ForFiscalAutreElementImposable) forFiscal,
-						forFiscalView.getRegDateFermeture(), forFiscalView.getMotifFermeture());
-			}
+	public ForFiscal updateFor(ForFiscalView view) {
+
+		final ForFiscal forFiscal = forFiscalDAO.get(view.getId());
+		ForFiscal updated = null;
+
+		if (forFiscal instanceof ForFiscalPrincipal) {
+			updated = updateForPrincipal((ForFiscalPrincipal) forFiscal, view.getRegDateFermeture(), view.getMotifFermeture(), view.getNumeroAutoriteFiscale());
 		}
-		else if (forFiscalView.getGenreImpot().equals(GenreImpot.DEBITEUR_PRESTATION_IMPOSABLE)) {
-			forRtr = tiersService.closeForDebiteurPrestationImposable((DebiteurPrestationImposable) forFiscal.getTiers() , (ForDebiteurPrestationImposable) forFiscal, forFiscalView.getRegDateFermeture());
+		else if (forFiscal instanceof ForFiscalSecondaire) {
+			updated = updateForSecondaire((ForFiscalSecondaire) forFiscal, view.getRegDateOuverture(), view.getMotifOuverture(), view.getRegDateFermeture(), view.getMotifFermeture(),
+					view.getNumeroAutoriteFiscale());
+		}
+		else if (forFiscal instanceof ForFiscalAutreElementImposable) {
+			updated = updateForAutreElementImposable((ForFiscalAutreElementImposable) forFiscal, view.getRegDateFermeture(), view.getMotifFermeture());
+		}
+		else if (forFiscal instanceof ForDebiteurPrestationImposable) {
+			updated = updateForDebiteur((ForDebiteurPrestationImposable) forFiscal, view.getRegDateFermeture());
 		}
 		//else les fors autreimpot ne sont éditables
-		return forRtr;
+		
+		return updated;
 	}
 
-	public ForFiscal updateModeImposition(ForFiscalView forFiscalView) {
+	private ForDebiteurPrestationImposable updateForDebiteur(ForDebiteurPrestationImposable fdpi, RegDate dateFermeture) {
+
+		ForDebiteurPrestationImposable updated = null;
+
+		if (fdpi.getDateFin() == null && dateFermeture != null) {
+			// le for a été fermé
+			updated = tiersService.closeForDebiteurPrestationImposable((DebiteurPrestationImposable) fdpi.getTiers(), fdpi, dateFermeture);
+		}
+
+		return updated;
+	}
+
+	private ForFiscalAutreElementImposable updateForAutreElementImposable(ForFiscalAutreElementImposable ffaei, RegDate dateFermeture, MotifFor motifFermeture) {
+
+		ForFiscalAutreElementImposable updated = null;
+
+		if (ffaei.getDateFin() == null && dateFermeture != null) {
+			// le for a été fermé
+			updated = tiersService.closeForFiscalAutreElementImposable((Contribuable) ffaei.getTiers(), ffaei, dateFermeture, motifFermeture);
+		}
+
+		return updated;
+	}
+
+	private ForFiscalSecondaire updateForSecondaire(ForFiscalSecondaire ffs, RegDate dateOuverture, MotifFor motifOuverture, RegDate dateFermeture, MotifFor motifFermeture,
+	                                 int noOfsAutoriteFiscale) {
+
+		ForFiscalSecondaire updated = null;
+
+		if (ffs.getDateDebut() == dateOuverture && ffs.getDateFin() == null && dateFermeture != null) {
+			// le for a été fermé
+			updated = tiersService.closeForFiscalSecondaire((Contribuable) ffs.getTiers(), ffs, dateFermeture, motifFermeture);
+		}
+
+		if (dateOuverture != ffs.getDateDebut() || dateFermeture != ffs.getDateFin()) {
+			// les dates de début ou de fin ont été changées
+			updated = tiersService.corrigerPeriodeValidite(ffs, dateOuverture, motifOuverture, dateFermeture, motifFermeture);
+		}
+
+		if (!ffs.getNumeroOfsAutoriteFiscale().equals(noOfsAutoriteFiscale)) {
+			// l'autorité fiscale a été changée
+			updated = (ForFiscalSecondaire) tiersService.corrigerAutoriteFiscale((updated == null ? ffs : updated), noOfsAutoriteFiscale);
+		}
+
+		return updated;
+	}
+
+	private ForFiscalPrincipal updateForPrincipal(ForFiscalPrincipal ffp, RegDate dateFermeture, MotifFor motifFermeture, int noOfsAutoriteFiscale) {
+
+		ForFiscalPrincipal updated = null;
+
+		if (ffp.getDateFin() == null && dateFermeture != null) {
+			// le for a été fermé
+			updated = tiersService.closeForFiscalPrincipal(ffp, dateFermeture, motifFermeture);
+		}
+
+		if (ffp.getNumeroOfsAutoriteFiscale() != noOfsAutoriteFiscale) {
+			// l'autorité fiscale a été changée
+			updated = (ForFiscalPrincipal) tiersService.corrigerAutoriteFiscale(ffp, noOfsAutoriteFiscale);
+		}
+
+		return updated;
+	}
+
+	public ForFiscalPrincipal updateModeImposition(ForFiscalView forFiscalView) {
 		Assert.notNull(forFiscalView.getRegDateChangement());
 		Contribuable contribuable = (Contribuable) tiersDAO.get(forFiscalView.getNumeroCtb());
 		return tiersService.changeModeImposition(contribuable, forFiscalView.getRegDateChangement(), forFiscalView.getModeImposition(), forFiscalView.getMotifImposition());
@@ -419,7 +479,7 @@ public class ForFiscalManagerImpl extends TiersManager implements ForFiscalManag
 		final GenreImpot genreImpot = forFiscalView.getGenreImpot();
 		final RegDate dateImpot = forFiscalView.getRegDateOuverture();
 		final TypeAutoriteFiscale typeAutoriteFiscale = forFiscalView.getTypeAutoriteFiscale();
-		final int autoriteFiscale = getNumeroAutoriteFiscale(forFiscalView);
+		final int autoriteFiscale = forFiscalView.getNumeroAutoriteFiscale();
 
 		return tiersService.openForFiscalAutreImpot(contribuable, genreImpot, dateImpot, autoriteFiscale, typeAutoriteFiscale);
 	}
@@ -435,7 +495,7 @@ public class ForFiscalManagerImpl extends TiersManager implements ForFiscalManag
 		Assert.isEqual(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, forFiscalView.getTypeAutoriteFiscale());
 		final RegDate dateDebut = forFiscalView.getRegDateOuverture();
 		final RegDate dateFin = forFiscalView.getRegDateFermeture();
-		final int autoriteFiscale = getNumeroAutoriteFiscale(forFiscalView);
+		final int autoriteFiscale = forFiscalView.getNumeroAutoriteFiscale();
 
 		return tiersService.addForDebiteur(debiteur, dateDebut, dateFin, autoriteFiscale);
 	}
@@ -454,7 +514,7 @@ public class ForFiscalManagerImpl extends TiersManager implements ForFiscalManag
 		final MotifFor motifFermeture = forFiscalView.getMotifFermeture();
 		final MotifRattachement motifRattachement = forFiscalView.getMotifRattachement();
 		final TypeAutoriteFiscale typeAutoriteFiscale = forFiscalView.getTypeAutoriteFiscale();
-		final int autoriteFiscale = getNumeroAutoriteFiscale(forFiscalView);
+		final int autoriteFiscale = forFiscalView.getNumeroAutoriteFiscale();
 
 		return tiersService.addForAutreElementImposable(contribuable, dateDebut, motifOuverture, dateFin, motifFermeture, motifRattachement, typeAutoriteFiscale, autoriteFiscale);
 	}
@@ -473,7 +533,7 @@ public class ForFiscalManagerImpl extends TiersManager implements ForFiscalManag
 		final MotifFor motifFermeture = forFiscalView.getMotifFermeture();
 		final MotifRattachement motifRattachement = forFiscalView.getMotifRattachement();
 		final TypeAutoriteFiscale typeAutoriteFiscale = forFiscalView.getTypeAutoriteFiscale();
-		final int autoriteFiscale = getNumeroAutoriteFiscale(forFiscalView);
+		final int autoriteFiscale = forFiscalView.getNumeroAutoriteFiscale();
 
 		return tiersService.addForSecondaire(contribuable, dateDebut, dateFin, motifRattachement, autoriteFiscale, typeAutoriteFiscale, motifOuverture, motifFermeture);
 	}
@@ -492,29 +552,10 @@ public class ForFiscalManagerImpl extends TiersManager implements ForFiscalManag
 		final MotifFor motifFermeture = forFiscalView.getMotifFermeture();
 		final MotifRattachement motifRattachement = forFiscalView.getMotifRattachement();
 		final TypeAutoriteFiscale typeAutoriteFiscale = forFiscalView.getTypeAutoriteFiscale();
-		final int autoriteFiscale = getNumeroAutoriteFiscale(forFiscalView);
+		final int autoriteFiscale = forFiscalView.getNumeroAutoriteFiscale();
 		final ModeImposition modeImposition = forFiscalView.getModeImposition();
 
 		return tiersService.addForPrincipal(contribuable, dateDebut, motifOuverture, dateFin, motifFermeture, motifRattachement, autoriteFiscale, typeAutoriteFiscale, modeImposition);
-	}
-
-	private static int getNumeroAutoriteFiscale(ForFiscalView forFiscalView) {
-		final TypeAutoriteFiscale typeAutoriteFiscale = forFiscalView.getTypeAutoriteFiscale();
-		final int autoriteFiscale;
-		switch (typeAutoriteFiscale) {
-		case COMMUNE_OU_FRACTION_VD:
-			autoriteFiscale = forFiscalView.getNumeroForFiscalCommune();
-			break;
-		case COMMUNE_HC:
-			autoriteFiscale = forFiscalView.getNumeroForFiscalCommuneHorsCanton();
-			break;
-		case PAYS_HS:
-			autoriteFiscale = forFiscalView.getNumeroForFiscalPays();
-			break;
-		default:
-			throw new IllegalArgumentException("Type d'autorité fiscale inconnu =[" + typeAutoriteFiscale + "]");
-		}
-		return autoriteFiscale;
 	}
 
 	/**
@@ -531,7 +572,7 @@ public class ForFiscalManagerImpl extends TiersManager implements ForFiscalManag
 		tiersService.annuleForFiscal(forFiscal, true);
 	}
 
-	public Component buildSynchronizeActionsTableSurFermetureDeFor(final long forId, final RegDate dateFermeture, final MotifFor motifFermeture) {
+	public Component buildSynchronizeActionsTableSurModificationDeFor(final long forId, final RegDate dateOuverture, final MotifFor motifOuverture, final RegDate dateFermeture, final MotifFor motifFermeture, final int noOfsAutoriteFiscale) {
 
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
@@ -547,27 +588,33 @@ public class ForFiscalManagerImpl extends TiersManager implements ForFiscalManag
 				if (!(tiers instanceof Contribuable)) {
 					return null;
 				}
-				final Contribuable ctb = (Contribuable) tiers;
+				final Contribuable ctb =(Contribuable) tiers;
 
-				// simule la fermeture du for fiscal
-				if (ff instanceof ForFiscalPrincipal) {
-					ForFiscalPrincipal ffp = (ForFiscalPrincipal) ff;
-					tiersService.closeForFiscalPrincipal(ffp, dateFermeture, motifFermeture);
+				SynchronizeActionsTable table;
+				try {
+					// simule la mise-à-jour du for fiscal
+					if (ff instanceof ForFiscalPrincipal) {
+						updateForPrincipal((ForFiscalPrincipal) ff, dateFermeture, motifFermeture, noOfsAutoriteFiscale);
+					}
+					else if (ff instanceof ForFiscalSecondaire) {
+						updateForSecondaire((ForFiscalSecondaire) ff, dateOuverture, motifOuverture, dateFermeture, motifFermeture, noOfsAutoriteFiscale);
+					}
+					else if (ff instanceof ForFiscalAutreElementImposable) {
+						updateForAutreElementImposable((ForFiscalAutreElementImposable) ff, dateFermeture, motifFermeture);
+					}
+					else {
+						// les autres types de fors ne sont pas pris en compte pour l'instant
+						return null;
+					}
+
+					table = tacheManager.buildSynchronizeActionsTable(ctb, TITRE_SYNC_ACTIONS, TITRE_SYNC_ACTIONS_INVALIDES);
 				}
-				else if (ff instanceof ForFiscalSecondaire) {
-					ForFiscalSecondaire ffs = (ForFiscalSecondaire) ff;
-					tiersService.closeForFiscalSecondaire(ctb, ffs, dateFermeture, motifFermeture);
-				}
-				else if (ff instanceof ForFiscalAutreElementImposable) {
-					ForFiscalAutreElementImposable ffaei = (ForFiscalAutreElementImposable) ff;
-					tiersService.closeForFiscalAutreElementImposable(ctb, ffaei, dateFermeture, motifFermeture);
-				}
-				else {
-					// les autres types de fors ne sont pas pris en compte pour l'instant
-					return null;
+				catch (ValidationException e) {
+					table = new SynchronizeActionsTable(TITRE_SYNC_ACTIONS_INVALIDES);
+					table.addErrors(e.getErrors());
 				}
 
-				return tacheManager.buildSynchronizeActionsTable(ctb, "Les actions suivantes seront exécutées si vous confirmez les changements");
+				return table;
 			}
 		});
 	}
@@ -593,10 +640,19 @@ public class ForFiscalManagerImpl extends TiersManager implements ForFiscalManag
 				}
 				final Contribuable ctb = (Contribuable) tiers;
 
-				// applique le changement du mode d'imposition (transaction read-only)
-				tiersService.changeModeImposition(ctb, dateChangement, modeImposition, motifChangement);
+				SynchronizeActionsTable table;
+				try {
+					// applique le changement du mode d'imposition (transaction rollback-only)
+					tiersService.changeModeImposition(ctb, dateChangement, modeImposition, motifChangement);
 
-				return tacheManager.buildSynchronizeActionsTable(ctb, "Les actions suivantes seront exécutées si vous confirmez les changements");
+					table = tacheManager.buildSynchronizeActionsTable(ctb, TITRE_SYNC_ACTIONS, TITRE_SYNC_ACTIONS_INVALIDES);
+				}
+				catch (ValidationException e) {
+					table = new SynchronizeActionsTable(TITRE_SYNC_ACTIONS_INVALIDES);
+					table.addErrors(e.getErrors());
+				}
+
+				return table;
 			}
 		});
 	}

@@ -2,12 +2,21 @@
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
 <tr class="<unireg:nextRowClass/>" >
 	<td><fmt:message key="label.type.for.fiscal"/>&nbsp;:</td>
-	<td id="select_type_for" >
-		<form:select path="typeAutoriteFiscale" items="${typesForFiscal}" id="optionTypeAutoriteFiscale" 
-					 onchange="selectForFiscal(this.options[this.selectedIndex].value);" />
-	</td> 
-	<td id="type_for_fraction" style="display:none;"><fmt:message key="option.type.for.fiscal.COMMUNE_OU_FRACTION_VD" /></td>
-	<td id="type_for_hs" style="display:none;"><fmt:message key="option.type.for.fiscal.PAYS_HS" /></td>
+
+	<c:if test="${param['limited'] != null}">
+		<%-- modification du type d'autorité fiscale interdit --%>
+		<td><fmt:message key="option.type.for.fiscal.${command.typeAutoriteFiscale}"/></td>
+	</c:if>
+	<c:if test="${param['limited'] == null}">
+		<%-- modification du type d'autorité fiscale autorisé --%>
+		<td id="select_type_for" >
+			<form:select path="typeAutoriteFiscale" items="${typesForFiscal}" id="optionTypeAutoriteFiscale"
+						 onchange="selectForFiscal(this.options[this.selectedIndex].value);" />
+		</td>
+		<td id="type_for_fraction" style="display:none;"><fmt:message key="option.type.for.fiscal.COMMUNE_OU_FRACTION_VD" /></td>
+		<td id="type_for_hs" style="display:none;"><fmt:message key="option.type.for.fiscal.PAYS_HS" /></td>
+	</c:if>
+
 	<td id="for_fraction_commune_label"><fmt:message key="label.commune.fraction"/>&nbsp;:</td>
 	<td id="for_fraction_commune">
 		<form:input path="libFractionCommune" id="libFractionCommune" size="25" />
@@ -16,6 +25,9 @@
 		<script type="text/javascript">
 					function libCommune_onChange(row) {
 						document.forms["formFor"].numeroForFiscalCommune.value = (row ? row.noTechnique : "");
+						<c:if test="${param['onChange'] != null}">
+						${param['onChange']}();
+						</c:if>
 					}
 			</script>
 		<jsp:include page="/WEB-INF/jsp/include/autocomplete.jsp">
@@ -35,6 +47,9 @@
 		<script type="text/javascript">
 					function libCommuneHorsCanton_onChange(row) {
 						document.forms["formFor"].numeroForFiscalCommuneHorsCanton.value = (row ? row.noOFS : "");
+						<c:if test="${param['onChange'] != null}">
+						${param['onChange']}();
+						</c:if>
 					}
 		</script>
 		<jsp:include page="/WEB-INF/jsp/include/autocomplete.jsp">
@@ -54,6 +69,9 @@
 		<script type="text/javascript">
 					function libPays_onChange(row) {
 						document.forms["formFor"].numeroForFiscalPays.value = (row ? row.noOFS : "");
+						<c:if test="${param['onChange'] != null}">
+						${param['onChange']}();
+						</c:if>
 					}
 		</script>
 		<jsp:include page="/WEB-INF/jsp/include/autocomplete.jsp">
