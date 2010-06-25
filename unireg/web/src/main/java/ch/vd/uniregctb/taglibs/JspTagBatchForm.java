@@ -131,6 +131,12 @@ public class JspTagBatchForm extends BodyTagSupport {
 		return b.toString();
 	}
 
+	private static String getBatchParamAnchorInForm(JobParam param) {
+		final StringBuilder b = new StringBuilder();
+		b.append("startParams_").append(param.getName()).append("_Anchor");
+		return b.toString();
+	}
+
 	private static String getBatchParamId(GestionJob job, JobParam param) {
 		final StringBuilder b = new StringBuilder();
 		b.append(job.getName()).append("_").append(param.getName());
@@ -199,6 +205,7 @@ public class JspTagBatchForm extends BodyTagSupport {
 
 		final StringBuilder b = new StringBuilder();
 		final String name = getBatchParamNameInForm(param);
+		final String anchor = getBatchParamAnchorInForm(param);
 		final String id = getBatchParamId(job, param);
 
 		// input
@@ -209,9 +216,9 @@ public class JspTagBatchForm extends BodyTagSupport {
 		b.append(" id=\"").append(id).append("\" size=\"10\" maxlength =\"10\" class=\"date\" />");
 
 		// calendar
-		b.append("<a href=\"#\" name=\"").append(name).append("_Anchor\" id=\"").append(name).append(
-				"_Anchor\" tabindex=\"9999\" class=\"calendar\" onclick=\"calendar(document.forms['").append(job.getName()).append("']['").append(name).append("'], '")
-				.append(name).append("_Anchor');\">&nbsp;</a>");
+		b.append("<a href=\"#\" name=\"").append(anchor).append("\" id=\"").append(anchor).append(
+				"\" tabindex=\"9999\" class=\"calendar\" onclick=\"calendar(document.forms['").append(job.getName()).append("']['").append(name).append("'], '")
+				.append(anchor).append("');\">&nbsp;</a>");
 
 		return b.toString();
 	}
