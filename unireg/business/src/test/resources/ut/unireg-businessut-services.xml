@@ -4,12 +4,30 @@
 
 	<bean id="propertiesLogger" class="ch.vd.uniregctb.common.SpringPropertiesLogger">
 		<constructor-arg value="Business - Properties provenant de la config Maven" />
+		<property name="hibernateDialect" ref="hibernateDialect"/>
+		<property name="jdbcDriverClassName">
+			<bean class="ch.vd.uniregctb.datasource.DynamicString">
+				<property name="jdbcProfile" value="${testprop.jdbc.profile}" />
+				<property name="oracleProperty" value="${oracle.jdbc.driverClassName}" />
+				<property name="postgresqlProperty" value="${postgresql.jdbc.driverClassName}" />
+			</bean>
+		</property>
+		<property name="jdbcUrl">
+			<bean class="ch.vd.uniregctb.datasource.DynamicString">
+				<property name="jdbcProfile" value="${testprop.jdbc.profile}" />
+				<property name="oracleProperty" value="${testprop.oracle.jdbc.url}" />
+				<property name="postgresqlProperty" value="${testprop.postgresql.jdbc.url}" />
+			</bean>
+		</property>
+		<property name="jdbcUsername">
+			<bean class="ch.vd.uniregctb.datasource.DynamicString">
+				<property name="jdbcProfile" value="${testprop.jdbc.profile}" />
+				<property name="oracleProperty" value="${testprop.oracle.jdbc.username}" />
+				<property name="postgresqlProperty" value="${testprop.postgresql.jdbc.username}" />
+			</bean>
+		</property>
 		<property name="properties"
 			value="
-                | Hibernate dialect       : ${hibernate.dialect}
-                | JDBC driver             : ${jdbc.driverClassName}
-                | JDBC url                : ${testprop.jdbc.url}
-                | UniregCTB DB user       : ${testprop.jdbc.username}
                 | DB2 proxy               : ${testprop.db2.proxy}
                 | DB2 user                : ${testprop.db2.username}
                 | DB2 schema              : ${testprop.db2.schema}

@@ -52,11 +52,6 @@
 			<version>${host-interfaces.version-long}</version>
 		</dependency>
 		<dependency>
-			<groupId>${jdbc.groupId}</groupId>
-			<artifactId>${jdbc.artifactId}</artifactId>
-			<version>${jdbc.version}</version>
-		</dependency>
-		<dependency>
 			<groupId>com.ibm.db2</groupId>
 			<artifactId>db2jcc</artifactId>
 			<version>9.5-3.50.152</version>

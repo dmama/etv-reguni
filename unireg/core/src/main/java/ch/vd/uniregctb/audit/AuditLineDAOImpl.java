@@ -31,7 +31,7 @@ public class AuditLineDAOImpl extends GenericDAOImpl<AuditLine, Long> implements
 
 	private static final Logger LOGGER = Logger.getLogger(AuditLineDAOImpl.class);
 
-	private String dialectName;
+	private Dialect dialect;
 	private DataSource dataSource;
 	private String nextValSql;
 
@@ -187,18 +187,19 @@ public class AuditLineDAOImpl extends GenericDAOImpl<AuditLine, Long> implements
 		return id;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setDataSource(DataSource dataSource) {
 		this.dataSource = dataSource;
 	}
 
-	public void setDialectName(String dialectName) {
-		this.dialectName = dialectName;
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setDialect(Dialect dialect) {
+		this.dialect = dialect;
 	}
 
 	@Override
 	protected void initDao() throws Exception {
 		super.initDao();
-		Dialect dialect = (Dialect) ReflectHelper.classForName(dialectName).newInstance();
 		nextValSql = dialect.getSequenceNextValString("hibernate_sequence");
 	}
 }

@@ -4,32 +4,33 @@
 #
 # Configuration DB d'Unireg
 #
+testprop.jdbc.profile=oracle
 testprop.jdbc.username=<username here>
 testprop.jdbc.password=unireg
 
 # Oracle
-testprop.jdbc.server=grominet
-testprop.jdbc.port=1521
-testprop.jdbc.instance=ORCL
-testprop.jdbc.url=jdbc:oracle:thin:@${testprop.jdbc.server}:${testprop.jdbc.port}:${testprop.jdbc.instance}
+testprop.oracle.jdbc.username=${testprop.jdbc.username}
+testprop.oracle.jdbc.password=${testprop.jdbc.password}
+testprop.oracle.jdbc.server=grominet
+testprop.oracle.jdbc.port=1521
+testprop.oracle.jdbc.instance=ORCL
+testprop.oracle.jdbc.url=jdbc:oracle:thin:@${testprop.oracle.jdbc.server}:${testprop.oracle.jdbc.port}:${testprop.oracle.jdbc.instance}
 
 # Postgresql
-#testprop.jdbc.server=localhost
-#testprop.jdbc.port=5432
-#testprop.jdbc.instance=${testprop.jdbc.username}
-#testprop.jdbc.url=jdbc:postgresql://${testprop.jdbc.server}/${testprop.jdbc.instance}
+testprop.postgresql.jdbc.username=${testprop.jdbc.username}
+testprop.postgresql.jdbc.password=${testprop.jdbc.password}
+testprop.postgresql.jdbc.server=localhost
+testprop.postgresql.jdbc.port=5432
+testprop.postgresql.jdbc.instance=${testprop.jdbc.username}
+testprop.postgresql.jdbc.url=jdbc:postgresql://${testprop.postgresql.jdbc.server}/${testprop.postgresql.jdbc.instance}
 
 # Hsql
-#testprop.jdbc.server=mem
-#testprop.jdbc.port=
-#testprop.jdbc.instance=aname
-#testprop.jdbc.url=jdbc:hsqldb:${testprop.jdbc.server}:${testprop.jdbc.instance}
-
-# Mysql
-#testprop.jdbc.server=localhost
-#testprop.jdbc.port=
-#testprop.jdbc.instance=unireg
-#testprop.jdbc.url=jdbc:mysql://${testprop.jdbc.server}/${testprop.jdbc.instance}
+#testprop.hsql.jdbc.username=${testprop.jdbc.username}
+#testprop.hsql.jdbc.password=${testprop.jdbc.password}
+#testprop.hsql.jdbc.server=mem
+#testprop.hsql.jdbc.port=
+#testprop.hsql.jdbc.instance=aname
+#testprop.hsql.jdbc.url=jdbc:hsqldb:${testprop.hsql.jdbc.server}:${testprop.hsql.jdbc.instance}
 
 #
 # Configuration du Host

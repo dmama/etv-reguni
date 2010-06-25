@@ -35,19 +35,19 @@
 	<!-- Datasource -->
 	<bean id="jdbcManagedConnectionFactory" class="ch.vd.uniregctb.datasource.UniregXAMCF">
 		<property name="driverType" value="thin" />
-		<property name="serverName" value="${testprop.jdbc.server}" />
-		<property name="portNumber" value="${testprop.jdbc.port}" />
-		<property name="databaseName" value="${testprop.jdbc.instance}" />
-		<property name="userName" value="${testprop.jdbc.username}" />
-		<property name="password" value="${testprop.jdbc.password}" />
+		<property name="serverName" value="${testprop.oracle.jdbc.server}" />
+		<property name="portNumber" value="${testprop.oracle.jdbc.port}" />
+		<property name="databaseName" value="${testprop.oracle.jdbc.instance}" />
+		<property name="userName" value="${testprop.oracle.jdbc.username}" />
+		<property name="password" value="${testprop.oracle.jdbc.password}" />
 	</bean>
 
 	<!-- Datasource -->
 	<bean id="rawDataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
-		<property name="driverClassName" value="${jdbc.driverClassName}" />
-		<property name="url" value="${testprop.jdbc.url}" />
-		<property name="username" value="${testprop.jdbc.username}" />
-		<property name="password" value="${testprop.jdbc.password}" />
+		<property name="driverClassName" value="${oracle.jdbc.driverClassName}" />
+		<property name="url" value="${testprop.oracle.jdbc.url}" />
+		<property name="username" value="${testprop.oracle.jdbc.username}" />
+		<property name="password" value="${testprop.oracle.jdbc.password}" />
 	</bean>
 
 </beans>
