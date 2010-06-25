@@ -319,7 +319,7 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 		final Map<Integer, CollectiviteAdministrative> caCache = new HashMap<Integer, CollectiviteAdministrative>();
 		proc.traiterContribuable(ctb, ranges, caCache, results);
 
-		// mouvement d'envoi de Lausanne à Vevey
+		// mouvement d'envoi de Rollo-Aubonne à Lausanne
 		assertMouvementEnvoiEntreOid(results, ctb, noOidRolleAubonne, noOidLausanne);
 		Assert.assertEquals(2, caCache.size());
 		Assert.assertTrue(caCache.containsKey(noCaOidRolleAubonne));
