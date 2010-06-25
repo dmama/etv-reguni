@@ -1321,6 +1321,7 @@ public class TiersManager implements MessageSourceAware {
 				Collections.sort(adresses, new AdresseViewComparator());
 			}
 
+			adresses = removeAdresseFromCivil(adresses);			
 			tiersEditView.setAdressesActives(adresses);
 		}
 		catch (AdresseException exception) {
@@ -1455,6 +1456,20 @@ public class TiersManager implements MessageSourceAware {
 		adresseView.setComplements(addGen.getComplement());
 
 		return adresseView;
+	}
+
+	protected List<AdresseView> removeAdresseFromCivil(List<AdresseView> adresses) {
+		List<AdresseView> resultat = new ArrayList<AdresseView>();
+		for (AdresseView view : adresses) {
+			//UNIREG-1813 L'adresse domicile est retiré du bloc fiscal
+			if(!TypeAdresseTiers.DOMICILE.equals(view.getUsage())){
+				if(view.getDateFin()==null || !AdresseGenerique.Source.CIVILE.equals(view.getSource())){
+					resultat.add(view);
+				}
+
+			}
+		}
+		return resultat;  //To change body of created methods use File | Settings | File Templates.
 	}
 
 	/**

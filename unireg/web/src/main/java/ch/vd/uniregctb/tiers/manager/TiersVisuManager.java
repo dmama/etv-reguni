@@ -21,6 +21,8 @@ public interface TiersVisuManager {
 	 *
 	 * @param numero                  le numéro du tiers dont on veut afficher le détails
 	 * @param adressesHisto           <b>vrai</b> s'il faut charger tout l'historique des adresses
+	 * @param adressesHistoCiviles
+	 * @param adressesHistoCivilesConjoint
 	 * @param rapportsPrestationHisto <b>vrai</b> s'il faut charger tout l'historique des rapports de prestation entre débiteur et sourciers
 	 * @param webParamPagination      les informations de pagination  @return un objet TiersVisuView
 	 * @return les informations de visualisation demandées.
@@ -30,7 +32,9 @@ public interface TiersVisuManager {
 	 *          en cas de problème de résolution des adresses
 	 */
 	@Transactional(readOnly = true)
-	public TiersVisuView getView(Long numero, boolean adressesHisto, boolean rapportsPrestationHisto, WebParamPagination webParamPagination) throws AdresseException, InfrastructureException;
+	public TiersVisuView getView(Long numero, boolean adressesHisto, boolean adressesHistoCiviles, boolean adressesHistoCivilesConjoint, boolean rapportsPrestationHisto,
+	                          WebParamPagination webParamPagination
+	) throws AdresseException, InfrastructureException;
 
 	/**
 	 * Annule un tiers

@@ -3,6 +3,7 @@ package ch.vd.uniregctb.tiers.view;
 import java.util.Date;
 import java.util.List;
 
+import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.type.TexteCasePostale;
@@ -56,6 +57,8 @@ public class AdresseView  implements Comparable<AdresseView> {
 	private String typeLocalite ;
 
 	private TypeAdresseTiers usage;
+
+	private String usageCivil;
 
 	private List<AdresseView> adressesList;
 
@@ -457,4 +460,11 @@ public class AdresseView  implements Comparable<AdresseView> {
 		this.active = active;
 	}
 
+	public String getUsageCivil() {
+		return usageCivil;
+	}
+
+	public void setUsageCivil(String usageCivil) {
+		this.usageCivil = usageCivil;
+	}
 }

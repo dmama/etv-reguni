@@ -223,6 +223,19 @@ public class JspTagRaccourci extends BodyTagSupport implements MessageSourceAwar
 		}
 	}
 
+		/**
+	 * Raccourci d'alerte
+	 */
+	public static class Alerter extends JspTagRaccourci {
+
+		private static final long serialVersionUID = 4834725890031639757L;
+
+		@Override
+		protected String getCssClass() {
+			return "alert";
+		}
+	}
+
 	/**
 	 * Raccourci de démarrage
 	 */

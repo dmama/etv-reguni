@@ -18,10 +18,12 @@ import org.hibernate.Session;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.transaction.annotation.Transactional;
 
+import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.adresse.*;
+import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.StandardBatchIterator;
@@ -31,6 +33,7 @@ import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.di.view.DeclarationImpotDetailComparator;
 import ch.vd.uniregctb.di.view.DeclarationImpotDetailView;
+import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.mouvement.MouvementDossier;
 import ch.vd.uniregctb.mouvement.view.MouvementDetailView;
@@ -59,11 +62,13 @@ import ch.vd.uniregctb.utils.WebContextUtils;
  * Service qui fournit les methodes pour visualiser un tiers
  *
  * @author xcifde
- *
  */
 public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManager {
 
 	private MouvementVisuManager mouvementVisuManager;
+
+
+	private List<EnumTypeAdresse> typesAdressesCiviles = new ArrayList<EnumTypeAdresse>();
 
 	public void setMouvementVisuManager(MouvementVisuManager mouvementVisuManager) {
 		this.mouvementVisuManager = mouvementVisuManager;
@@ -73,15 +78,20 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 	 * {@inheritDoc}
 	 */
 	@Transactional(readOnly = true)
-	public TiersVisuView getView(Long numero, boolean adressesHisto, boolean rapportsPrestationHisto, WebParamPagination webParamPagination) throws AdresseException, InfrastructureException {
+	public TiersVisuView getView(Long numero, boolean adressesHisto, boolean adressesHistoCiviles, boolean adressesHistoCivilesConjoint, boolean rapportsPrestationHisto,
+	                             WebParamPagination webParamPagination
+	) throws AdresseException,
+			InfrastructureException {
 
 		TiersVisuView tiersVisuView = new TiersVisuView();
 		tiersVisuView.setAdressesHisto(adressesHisto);
+		tiersVisuView.setAdressesHistoCiviles(adressesHistoCiviles);
 		tiersVisuView.setRapportsPrestationHisto(rapportsPrestationHisto);
+		tiersVisuView.setAdressesHistoCivilesConjoint(adressesHistoCivilesConjoint);
 
 		final Tiers tiers = getTiersDAO().get(numero);
 		if (tiers == null) {
-			throw new ObjectNotFoundException(this.getMessageSource().getMessage("error.tiers.inexistant" , null,  WebContextUtils.getDefaultLocale()));
+			throw new ObjectNotFoundException(this.getMessageSource().getMessage("error.tiers.inexistant", null, WebContextUtils.getDefaultLocale()));
 		}
 
 		setTiersGeneralView(tiersVisuView, tiers);
@@ -90,7 +100,8 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 			PersonnePhysique pp = (PersonnePhysique) tiers;
 			if (pp.isHabitant()) {
 				setHabitant(tiersVisuView, pp);
-			} else {
+			}
+			else {
 				tiersVisuView.setTiers(pp);
 			}
 		}
@@ -116,7 +127,7 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 			tiersVisuView.setTiers(tiers);
 		}
 
-		if(tiersVisuView.getTiers() != null){
+		if (tiersVisuView.getTiers() != null) {
 			if (tiers instanceof Contribuable) {
 				Contribuable contribuable = (Contribuable) tiers;
 				tiersVisuView.setDebiteurs(getDebiteurs(contribuable));
@@ -128,12 +139,23 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 
 			tiersVisuView.setHistoriqueAdresses(getAdressesHistoriques(tiers, adressesHisto));
 
+			//Les entreprises et les etablissement ne sont pas pris en charge par l'adresseService
+			if (!Tiers.NATURE_ENTREPRISE.equals(tiersVisuView.getNatureTiers()) &&
+					!Tiers.NATURE_ETABLISSEMENT.equals(tiersVisuView.getNatureTiers())) {
+				tiersVisuView.setHistoriqueAdressesCiviles(getAdressesHistoriquesCiviles(tiers, adressesHistoCiviles));
+				final Tiers conjoint = tiersVisuView.getTiersConjoint();
+				if (conjoint != null) {
+					tiersVisuView.setHistoriqueAdressesCivilesConjoint(getAdressesHistoriquesCiviles(conjoint, adressesHistoCivilesConjoint));
+				}
+			}
+
+
 			List<RapportView> rapportsView = getRapports(tiers);
 
 			// filtrer les rapports entre tiers si l'utiliateur a des droits en visu limitée
 			if (SecurityProvider.isGranted(Role.VISU_LIMITE)) {
 				for (RapportView rv : rapportsView) {
-					if (!TypeRapportEntreTiers.APPARTENANCE_MENAGE.equals(rv.getTypeRapportEntreTiers())){
+					if (!TypeRapportEntreTiers.APPARTENANCE_MENAGE.equals(rv.getTypeRapportEntreTiers())) {
 
 					}
 				}
@@ -156,9 +178,10 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 
 	/**
 	 * initialise les droits d'édition des onglets du tiers
+	 *
 	 * @return la map de droit d'édition des onglets
 	 */
-	private Map<String, Boolean> initAllowedModif(){
+	private Map<String, Boolean> initAllowedModif() {
 		Map<String, Boolean> allowedModif = new HashMap<String, Boolean>();
 		allowedModif.put(TiersVisuView.MODIF_FISCAL, Boolean.FALSE);
 		allowedModif.put(TiersVisuView.MODIF_ADRESSE, Boolean.FALSE);
@@ -181,7 +204,7 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 	 * @return List<AdresseView>
 	 * @throws AdressesResolutionException
 	 */
-	private List<AdresseView> getAdressesHistoriques(Tiers tiers, boolean adresseHisto) throws AdresseException{
+	private List<AdresseView> getAdressesHistoriques(Tiers tiers, boolean adresseHisto) throws AdresseException {
 
 		List<AdresseView> adresses = new ArrayList<AdresseView>();
 
@@ -206,14 +229,52 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 
 		Collections.sort(adresses, new AdresseViewComparator());
 
+		List<AdresseView> adressesResultat = removeAdresseFromCivil(adresses);
+		return adressesResultat;
+	}
+
+
+	/**
+	 * recuperation des adresses civiles historiques
+	 *
+	 * @param tiers
+	 * @param adressesHistoCiviles
+	 * @return
+	 */
+	private List<AdresseView> getAdressesHistoriquesCiviles(Tiers tiers, boolean adressesHistoCiviles) throws AdresseException {
+		List<AdresseView> adresses = new ArrayList<AdresseView>();
+		List<EnumTypeAdresse> listeTypeCivil = getTypesAdressesCiviles();
+		if (adressesHistoCiviles) {
+			final AdressesCivilesHisto adressesCivilesHisto = adresseService.getAdressesCivilesHisto(tiers, false);
+
+			if (adressesCivilesHisto != null) {
+				// rempli tous les types d'adresse
+				for (EnumTypeAdresse type : listeTypeCivil) {
+					fillAdressesHistoCivilesView(adresses, adressesCivilesHisto, type, tiers);
+				}
+			}
+		}
+		else {
+			final AdressesCiviles adressesCiviles = adresseService.getAdressesCiviles(tiers, null, false);
+			if (adressesCiviles != null) {
+				// rempli tous les types d'adresse
+				for (EnumTypeAdresse type : listeTypeCivil) {
+					fillAdressesCivilesView(adresses, adressesCiviles, type, tiers);
+				}
+			}
+		}
+
+		Collections.sort(adresses, new AdresseViewComparator());
+
 		return adresses;
 	}
+
 
 	/**
 	 * Rempli la collection des adressesView avec les adresses fiscales historiques du type spécifié.
 	 */
 	private void fillAdressesView(List<AdresseView> adressesView, final AdressesFiscalesHisto adressesFiscalHisto, TypeAdresseTiers type,
-			Tiers tiers) {
+	                              Tiers tiers) {
 
 		final Collection<AdresseGenerique> adresses = adressesFiscalHisto.ofType(type);
 		if (adresses == null) {
@@ -227,6 +288,46 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 		}
 	}
 
+	private void fillAdressesHistoCivilesView(List<AdresseView> adressesView, AdressesCivilesHisto adressesCivilesHisto, EnumTypeAdresse type, Tiers tiers) throws AdresseDataException {
+		final List<Adresse> adresses = adressesCivilesHisto.ofType(type);
+		if (adresses == null) {
+			// rien à faire
+			return;
+		}
+
+		for (Adresse adresse : adresses) {
+
+			AdaptAdresseCivileToAdresseView(adressesView, type, tiers, adresse);
+
+		}
+	}
+
+	private void AdaptAdresseCivileToAdresseView(List<AdresseView> adressesView, EnumTypeAdresse type, Tiers tiers, Adresse adresse) throws AdresseDataException {
+		try {
+			AdresseGenerique adrGen = new AdresseCivileAdapter(adresse, false, getServiceInfrastructureService());
+			AdresseView adresseView = createVisuAdresseView(adrGen, null, tiers);
+			adresseView.setUsageCivil(type.getName());
+			adressesView.add(adresseView);
+
+		}
+		catch (DonneesCivilesException e) {
+			throw new AdresseDataException(e.getMessage());
+		}
+	}
+
+	/**
+	 * Remplir la collection des adressesView avec l'adresse civile du type spécifié.
+	 */
+	protected void fillAdressesCivilesView(List<AdresseView> adressesView, final AdressesCiviles adressesCiviles, EnumTypeAdresse type,
+	                                       Tiers tiers) throws AdresseDataException {
+		Adresse adresse = adressesCiviles.ofType(type);
+		if (adresse == null) {
+			// rien à faire
+			return;
+		}
+		AdaptAdresseCivileToAdresseView(adressesView, type, tiers, adresse);
+	}
+
 	/**
 	 * Methode annexe de creation d'adresse view pour un type donne
 	 *
@@ -235,15 +336,16 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 	 * @return
 	 * @throws InfrastructureException
 	 */
-	private AdresseView createVisuAdresseView(	AdresseGenerique adr, TypeAdresseTiers type,
-											Tiers tiers) {
+	private AdresseView createVisuAdresseView(AdresseGenerique adr, TypeAdresseTiers type,
+	                                          Tiers tiers) {
 		AdresseView adresseView = createAdresseView(adr, type, tiers);
 
 		RegDate dateJour = RegDate.get();
-		if (		((adr.getDateDebut() == null) || (adr.getDateDebut().isBeforeOrEqual(dateJour)))
-				&& 	((adr.getDateFin() == null) || (adr.getDateFin().isAfterOrEqual(dateJour))) ) {
+		if (((adr.getDateDebut() == null) || (adr.getDateDebut().isBeforeOrEqual(dateJour)))
+				&& ((adr.getDateFin() == null) || (adr.getDateFin().isAfterOrEqual(dateJour)))) {
 			adresseView.setActive(true);
-		} else {
+		}
+		else {
 			adresseView.setActive(false);
 		}
 
@@ -287,7 +389,7 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 	 * @param contribuable
 	 * @return
 	 */
-	private List<MouvementDetailView> getMouvements(Contribuable contribuable) throws InfrastructureException{
+	private List<MouvementDetailView> getMouvements(Contribuable contribuable) throws InfrastructureException {
 
 		final List<MouvementDetailView> mvtsView = new ArrayList<MouvementDetailView>();
 		final Set<MouvementDossier> mvts = contribuable.getMouvementsDossier();
@@ -323,7 +425,7 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 				continue;
 			}
 
-			final RapportPrestationImposable rpi =(RapportPrestationImposable) r;
+			final RapportPrestationImposable rpi = (RapportPrestationImposable) r;
 
 			final RapportsPrestationView.Rapport rapport = new RapportsPrestationView.Rapport();
 			rapport.id = r.getId();
@@ -418,7 +520,7 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 		final Map<Long, List<RapportsPrestationView.Rapport>> rapportsByNumeroIndividu = new HashMap<Long, List<RapportsPrestationView.Rapport>>();
 
 		final List infoHabitants = tiersDAO.getHibernateTemplate().find("select pp.numero, pp.numeroIndividu from PersonnePhysique pp, RapportPrestationImposable rpi " +
-						"where pp.habitant = true and pp.numero = rpi.sujetId and rpi.objetId =  " + noDebiteur);
+				"where pp.habitant = true and pp.numero = rpi.sujetId and rpi.objetId =  " + noDebiteur);
 		for (Object o : infoHabitants) {
 			final Object line[] = (Object[]) o;
 			final Long numero = (Long) line[0];
@@ -491,5 +593,17 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 			nomPrenom = "";
 		}
 		return nomPrenom;
+	}
+
+	public List<EnumTypeAdresse> getTypesAdressesCiviles() {
+		if (typesAdressesCiviles.isEmpty()) {
+			typesAdressesCiviles.add(EnumTypeAdresse.COURRIER);
+			typesAdressesCiviles.add(EnumTypeAdresse.PRINCIPALE);
+			typesAdressesCiviles.add(EnumTypeAdresse.SECONDAIRE);
+			typesAdressesCiviles.add(EnumTypeAdresse.TUTELLE);
+
+		}
+
+		return typesAdressesCiviles;
 	}
 }

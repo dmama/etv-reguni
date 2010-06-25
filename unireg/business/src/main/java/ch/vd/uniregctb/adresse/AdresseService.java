@@ -64,6 +64,15 @@ public interface AdresseService {
 	public abstract AdressesFiscalesHisto getAdressesFiscalHisto(Tiers tiers, boolean strict) throws AdresseException;
 
 	/**
+	 * Retourne l'historique des adresses civiles du tiers spécifié. Ou <b>null</b> si le tiers n'en possède pas.
+	 *
+	 * @param tiers  un tiers dont on veut extraite l'historique des adresses civiles.
+	 * @param strict si <b>faux</b> essaie de résoudre silencieusement les problèmes détectés durant le traitement; autrement lève une exception.
+	 * @return l'historique des adresses civiles du tiers spécifié.
+	 * @throws AdresseException en cas de problème dans le traitement
+	 */
+	public AdressesCivilesHisto getAdressesCivilesHisto(Tiers tiers, boolean strict) throws AdresseException;
+	/**
 	 * Retourne l'adresse 'représentation' du représentant du tiers spécifié.
 	 *
 	 * @param tiers  le tiers dont on recherche l'adresse du représentant

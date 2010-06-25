@@ -13,13 +13,52 @@
 </table>
 </c:if>
 <fieldset>
-	<legend><span><fmt:message key="label.adresse" /></span></legend>
+	<legend><span><fmt:message key="label.adresse.fiscales" /></span></legend>
 
-	<input name="adrHisto" type="checkbox" <c:if test="${command.adressesHisto}">checked</c:if> onclick="afficheAdressesHisto('isAdrHisto', ${command.tiersGeneral.numero});" id="isAdrHisto" />
+	<input name="adrHistoFiscales" type="checkbox" <c:if test="${command.adressesHisto}">checked</c:if> onclick="afficheAdressesHisto('isAdrHisto','isAdrHistoCiviles','isAdrHistoCivilesConjoint', ${command.tiersGeneral.numero});" id="isAdrHisto" />
 	<label for="isAdrHisto"><fmt:message key="label.historique" /></label>
 
-	<jsp:include page="../../common/adresse/adresse.jsp">
+	<jsp:include page="../../common/adresse/adresseFiscale.jsp">
 		<jsp:param name="page" value="visu"/>
 	</jsp:include>
 </fieldset>
+<fieldset>
+	<legend>
+		<span>
+			<c:choose>
+				<c:when test="${command.natureTiers != 'MenageCommun'}" >
+					<fmt:message key="label.adresse.civiles" />
+				</c:when>
+				<c:when test="${command.natureTiers == 'MenageCommun'}" >
+					<fmt:message key="label.adresse.civiles.principal" />
+				</c:when>
+			</c:choose>
+		</span>
+	</legend>
+
+	<input name="adrHistoCiviles" type="checkbox" <c:if test="${command.adressesHistoCiviles}">checked</c:if> onclick="afficheAdressesHisto('isAdrHisto','isAdrHistoCiviles','isAdrHistoCivilesConjoint', ${command.tiersGeneral.numero});" id="isAdrHistoCiviles" />
+	<label for="isAdrHistoCiviles"><fmt:message key="label.historique" /></label>
+
+	<jsp:include page="../../common/adresse/adresseCivile.jsp">
+		<jsp:param name="page" value="visu"/>
+		<jsp:param name="membre" value="principal"/>
+	</jsp:include>
+</fieldset>
+
+<fieldset <c:if test="${command.tiersConjoint == null}">style="display:none"</c:if> >
+	<legend><span><fmt:message key="label.adresse.civiles.conjoint" /></span></legend>
+
+	<input name="adrHistoCivilesConjoint" type="checkbox" <c:if test="${command.adressesHistoCivilesConjoint}">checked</c:if> onclick="afficheAdressesHisto('isAdrHisto','isAdrHistoCiviles','isAdrHistoCivilesConjoint', ${command.tiersGeneral.numero});" id="isAdrHistoCivilesConjoint" />
+	<label for="isAdrHistoCivilesConjoint"><fmt:message key="label.historique" /></label>
+
+	<jsp:include page="../../common/adresse/adresseCivile.jsp">
+		<jsp:param name="page" value="visu"/>
+		<jsp:param name="membre" value="conjoint"/>
+	</jsp:include>
+</fieldset>
+
+
+
+
+
 <!-- Fin Adresse -->

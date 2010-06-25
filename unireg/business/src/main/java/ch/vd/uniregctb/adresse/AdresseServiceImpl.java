@@ -2060,7 +2060,7 @@ public class AdresseServiceImpl implements AdresseService {
 	 * @return l'historique des adresses civiles du tiers spécifié.
 	 * @throws AdresseException en cas de problème dans le traitement
 	 */
-	private AdressesCivilesHisto getAdressesCivilesHisto(Tiers tiers, boolean strict) throws AdresseException {
+	public AdressesCivilesHisto getAdressesCivilesHisto(Tiers tiers, boolean strict) throws AdresseException {
 
 		final AdressesCivilesHisto adressesCiviles;
 

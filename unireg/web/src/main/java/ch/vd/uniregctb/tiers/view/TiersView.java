@@ -40,6 +40,10 @@ public class TiersView {
 
 	private List<AdresseView> historiqueAdresses;
 
+	private List<AdresseView> historiqueAdressesCiviles;
+
+	private List<AdresseView> historiqueAdressesCivilesConjoint;
+
 	private List<AdresseView> adressesEnErreur;
 
 	private String adressesEnErreurMessage;
@@ -392,5 +396,21 @@ public class TiersView {
 
 	public void setAddContactISAllowed(boolean addContactISAllowed) {
 		this.addContactISAllowed = addContactISAllowed;
+	}
+
+	public void setHistoriqueAdressesCiviles(List<AdresseView> historiqueAdressesCiviles) {
+		this.historiqueAdressesCiviles = historiqueAdressesCiviles;
+	}
+
+	public List<AdresseView> getHistoriqueAdressesCiviles() {
+		return historiqueAdressesCiviles;
+	}
+
+	public void setHistoriqueAdressesCivilesConjoint(List<AdresseView> historiqueAdressesCivilesConjoint) {
+		this.historiqueAdressesCivilesConjoint = historiqueAdressesCivilesConjoint;
+	}
+
+	public List<AdresseView> getHistoriqueAdressesCivilesConjoint() {
+		return historiqueAdressesCivilesConjoint;
 	}
 }

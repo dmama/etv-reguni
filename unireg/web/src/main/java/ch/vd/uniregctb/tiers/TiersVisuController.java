@@ -34,6 +34,8 @@ public class TiersVisuController extends AbstractTiersController {
 
 	public final static String BUTTON_ANNULER_TIERS = "annulerTiers";
 	private final static String ADRESSES_HISTO_PARAM = "adressesHisto";
+	private final static String ADRESSES_CIVILES_HISTO_PARAM = "adressesHistoCiviles";
+	private final static String ADRESSES_CIVILES_HISTO_CONJ_PARAM = "adressesHistoCivilesConjoint";
 	private final static String TACHE_ID_TRAITE_PARAM = "idTacheTraite";
 	private final static String RAPPORTS_PREST_HISTO_PARAM = "rapportsPrestationHisto";
 
@@ -63,6 +65,8 @@ public class TiersVisuController extends AbstractTiersController {
 
 		final String idParam = request.getParameter(TIERS_ID_PARAMETER_NAME);
 		final boolean adrHistoParam = getBooleanParam(request, ADRESSES_HISTO_PARAM);
+		final boolean adrCivileHistoParam = getBooleanParam(request, ADRESSES_CIVILES_HISTO_PARAM);
+		final boolean adrCivileHistoConjParam = getBooleanParam(request, ADRESSES_CIVILES_HISTO_CONJ_PARAM);
 		final String idTacheTraiteParam = request.getParameter(TACHE_ID_TRAITE_PARAM);
 		final boolean rapportsPrestationHisto = getBooleanParam(request, RAPPORTS_PREST_HISTO_PARAM);
 
@@ -73,7 +77,7 @@ public class TiersVisuController extends AbstractTiersController {
 			checkAccesDossierEnLecture(id);
 
 			WebParamPagination pagination = new WebParamPagination(request, TABLE_NAME, PAGE_SIZE);
-			tiersVisuView = tiersVisuManager.getView(id, adrHistoParam, rapportsPrestationHisto, pagination);
+			tiersVisuView = tiersVisuManager.getView(id, adrHistoParam, adrCivileHistoParam, adrCivileHistoConjParam, rapportsPrestationHisto, pagination);
 			tiersVisuView.setUrlTaoPP(fidorService.getUrlTaoPP(id));
 			tiersVisuView.setUrlTaoBA(fidorService.getUrlTaoBA(id));
 			tiersVisuView.setUrlTaoIS(fidorService.getUrlTaoIS(id));

@@ -195,14 +195,31 @@ function selectPeriodeDecompte(name) {
 /**
 * Affichage des adresses actives ou pas
 */ 
-function afficheAdressesHisto(elementId, numero) {
+function afficheAdressesHisto(elementId,elementIdCiviles,elementIdCivilesConjoint, numero) {
+	var histo;
+	var histoCiviles;
+	var histoCivilesConjoint;
 
 	if (E$(elementId).checked ){
-		document.location.href = 'visu.do?id=' + numero + '&adressesHisto=true' ;
+		histo = '&adressesHisto=true';
 	}
 	else {
-		document.location.href = 'visu.do?id=' + numero + '&adressesHisto=false' ;
+		histo =  '&adressesHisto=false';
 	}
+
+	if (E$(elementIdCiviles).checked ){
+		histoCiviles = '&adressesHistoCiviles=true';
+	}
+	else {
+		histoCiviles =  '&adressesHistoCiviles=false';
+	}
+	if (E$(elementIdCivilesConjoint).checked ){
+		histoCivilesConjoint = '&adressesHistoCivilesConjoint=true';
+	}
+	else {
+		histoCivilesConjoint =  '&adressesHistoCivilesConjoint=false';
+	}
+	document.location.href = 'visu.do?id=' + numero + histo + histoCiviles + histoCivilesConjoint;
 }
 
 /**
