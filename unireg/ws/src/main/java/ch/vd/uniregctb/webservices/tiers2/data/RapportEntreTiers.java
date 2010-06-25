@@ -29,7 +29,15 @@ public class RapportEntreTiers {
 		CONSEIL_LEGAL,
 		PRESTATION_IMPOSABLE,
 		APPARTENANCE_MENAGE,
-		REPRESENTATION;
+		REPRESENTATION,
+		/**
+		 * Rapport qui existe entre un débiteur et son contribuable lié.
+		 */
+		CONTACT_IMPOT_SOURCE,
+		/**
+		 * Rapport qui existe lorsqu'un tiers à été annulé et remplacé par un autre tiers (correction de doublons)
+		 */
+		ANNULE_ET_REMPLACE;
 
 		public static Type fromValue(String v) {
 			return valueOf(v);
@@ -59,13 +67,12 @@ public class RapportEntreTiers {
 	 * <ul>
 	 * <li>Tutelle : Personne physique <=> Personne physique</li>
 	 * <li>Curatelle : Personne physique <=> Personne physique</li>
-	 * <li>Conseil légal : ?</li>
+	 * <li>Conseil légal : Personne physique <=> Personne physique</li>
 	 * <li>Prestations imposables : Personne physique <=> Débiteur prestation imposable</li>
 	 * <li>Appartenance ménage : Personne physique <=> Ménage</li>
-	 * <li>Division : ?</li>
-	 * <li>Chef raison individuelle : ?</li>
-	 * <li>Associé : ?</li>
-	 * <li>Associé gérant : ?</li>
+	 * <li>Représentation : Personne physique <=> Personne physique</li>
+	 * <li>Contact impôt source : Débiteur prestation imposable <=> Contribuable</li>
+	 * <li>Annule et remplace : Tiers <=> Tiers</li>
 	 * </ul>
 	 */
 	@XmlElement(required = true)
