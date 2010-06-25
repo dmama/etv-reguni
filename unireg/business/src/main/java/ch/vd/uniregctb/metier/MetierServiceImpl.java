@@ -1510,13 +1510,19 @@ public class MetierServiceImpl implements MetierService {
 				// à l'étranger
 				noOfsEtendu = adresseDomicile.getNoOfsPays();
 				typeAutoriteFiscale = TypeAutoriteFiscale.PAYS_HS;
-			}
 
-			// erreur si sortie du canton vers l'étranger n'es pas autorisée
-			if (!autoriseSortieDuCantonVersEtranger && forMenage.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD && typeAutoriteFiscale == TypeAutoriteFiscale.PAYS_HS) {
-				final String message = String.format("D'après son adresse de domicile, on devrait ouvrir un for hors-Suisse pour le contribuable %s alors que le for du ménage %s était vaudois",
-													FormatNumeroHelper.numeroCTBToDisplay(pp.getNumero()), FormatNumeroHelper.numeroCTBToDisplay(forMenage.getTiers().getNumero()));
-				throw new EvenementCivilHandlerException(message);
+				// erreur si sortie du canton vers l'étranger n'est pas autorisée
+				if (!autoriseSortieDuCantonVersEtranger && forMenage.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
+
+					// [UNIREG-2143] le départ vers l'étranger n'est interdit que si l'adresse de domicile étrangère a une date de début de validité dans la même année
+					// que la date de l'événement (et avant)
+					final RegDate dateDebutDomicileHS = adresseDomicile.getDateDebut();
+					if (dateDebutDomicileHS != null && dateDebutDomicileHS.year() == date.year()) {
+						final String message = String.format("D'après son adresse de domicile, on devrait ouvrir un for hors-Suisse pour le contribuable %s (apparemment parti avant la clôture du ménage, mais dans la même période fiscale) alors que le for du ménage %s était vaudois",
+															FormatNumeroHelper.numeroCTBToDisplay(pp.getNumero()), FormatNumeroHelper.numeroCTBToDisplay(forMenage.getTiers().getNumero()));
+						throw new EvenementCivilHandlerException(message);
+					}
+				}
 			}
 
 			if (noOfsEtendu != null) {
