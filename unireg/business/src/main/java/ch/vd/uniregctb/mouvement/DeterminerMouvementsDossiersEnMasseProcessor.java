@@ -315,7 +315,7 @@ public class DeterminerMouvementsDossiersEnMasseProcessor {
 			public List<Long> doInTransaction(TransactionStatus status) {
 				return (List<Long>) hibernateTemplate.execute(new HibernateCallback() {
 					public List<Long> doInHibernate(Session session) throws HibernateException {
-						final String hql = "SELECT ctb.id FROM Contribuable ctb WHERE ctb.annulationDate IS NULL AND EXISTS (SELECT ff.id FROM ForFiscal ff WHERE ff.tiers=ctb AND ff.annulationDate IS NULL) AND ctb.id > 10600000 ORDER BY ctb.id ASC";
+						final String hql = "SELECT ctb.id FROM Contribuable ctb WHERE ctb.annulationDate IS NULL AND EXISTS (SELECT ff.id FROM ForFiscal ff WHERE ff.tiers=ctb AND ff.annulationDate IS NULL) ORDER BY ctb.id ASC";
 						final Query query = session.createQuery(hql);
 						return query.list();
 					}
