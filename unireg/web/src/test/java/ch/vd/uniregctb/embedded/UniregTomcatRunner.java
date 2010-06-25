@@ -63,8 +63,8 @@ public class UniregTomcatRunner {
 
 		System.setProperty("editique.locale.attente.timeout", "30");
 
-		System.setProperty("hibernate.dialect", "ch.vd.uniregctb.hibernate.dialect.Oracle10gDialectWithNVarChar");
-		System.setProperty("hibernate.query.substitutions", "true 1, false 0");
+		System.setProperty("oracle.hibernate.dialect", "ch.vd.uniregctb.hibernate.dialect.Oracle10gDialectWithNVarChar");
+		System.setProperty("oracle.hibernate.query.substitutions", "true 1, false 0");
 
 		System.setProperty("extprop.hibernate.hbm2ddl.mode", "update");
 		
