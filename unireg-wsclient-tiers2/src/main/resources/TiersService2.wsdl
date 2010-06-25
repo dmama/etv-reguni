@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<!-- version 2.8 -->
+<!-- version 2.9 -->
 <wsdl:definitions name="TiersService" targetNamespace="http://www.vd.ch/uniregctb/webservices/tiers2" xmlns:ns1="http://cxf.apache.org/bindings/xformat"
 				  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://www.vd.ch/uniregctb/webservices/tiers2" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
 				  xmlns:xsd="http://www.w3.org/2001/XMLSchema">
@@ -696,6 +696,8 @@
 					<xs:enumeration value="PRESTATION_IMPOSABLE" />
 					<xs:enumeration value="APPARTENANCE_MENAGE" />
 					<xs:enumeration value="REPRESENTATION" />
+					<xs:enumeration value="CONTACT_IMPOT_SOURCE" />
+					<xs:enumeration value="ANNULE_ET_REMPLACE" />
 				</xs:restriction>
 			</xs:simpleType>
 			<xs:simpleType name="TypeActivite">
