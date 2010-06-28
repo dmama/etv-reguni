@@ -1531,10 +1531,12 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 		final AdresseEnvoi adresse = pm.getAdresseEnvoi();
 		assertNotNull(adresse);
 
-		assertEquals("PLACE CENTRALE", trimValiPattern(adresse.getLigne1()));
-		assertEquals("c/o Mme Hugette Grisel", trimValiPattern(adresse.getLigne2()));
-		assertEquals("Rue du Chêne 9", trimValiPattern(adresse.getLigne3()));
-		assertEquals("1315 La Sarraz", trimValiPattern(adresse.getLigne4()));
+		assertEquals("Société immobilière de", trimValiPattern(adresse.getLigne1()));
+		assertEquals("Place centrale S.A. Pe", trimValiPattern(adresse.getLigne2()));
+		assertEquals("en liquidation", trimValiPattern(adresse.getLigne3()));
+		assertEquals("c/o Mme Hugette Grisel", trimValiPattern(adresse.getLigne4()));
+		assertEquals("Rue du Chêne 9", trimValiPattern(adresse.getLigne5()));
+		assertEquals("1315 La Sarraz", trimValiPattern(adresse.getLigne6()));
 		assertEquals(TypeAffranchissement.SUISSE, adresse.getTypeAffranchissement());
 	}
 
@@ -1555,11 +1557,12 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 		final AdresseEnvoi adresse = pm.getAdresseEnvoi();
 		assertNotNull(adresse);
 
-		assertEquals("JAL HOLDING", trimValiPattern(adresse.getLigne1()));
-		assertEquals("pa Fidu. Commerce & Industrie", trimValiPattern(adresse.getLigne2()));
-		assertEquals("Avenue de la Gare 10", trimValiPattern(adresse.getLigne3()));
-		assertEquals("1003 Lausanne", trimValiPattern(adresse.getLigne4()));
+		assertEquals("Jal holding S.A.", trimValiPattern(adresse.getLigne1()));
+		assertEquals("", trimValiPattern(adresse.getLigne2()));
+		assertEquals("en liquidation", trimValiPattern(adresse.getLigne3()));
+		assertEquals("pa Fidu. Commerce & Industrie", trimValiPattern(adresse.getLigne4()));
+		assertEquals("Avenue de la Gare 10", trimValiPattern(adresse.getLigne5()));
+		assertEquals("1003 Lausanne", trimValiPattern(adresse.getLigne6()));
 		assertEquals(TypeAffranchissement.SUISSE, adresse.getTypeAffranchissement());
-		assertNull(adresse.getLigne5());
 	}
 }

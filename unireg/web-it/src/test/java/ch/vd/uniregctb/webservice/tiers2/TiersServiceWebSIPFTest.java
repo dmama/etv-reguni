@@ -473,11 +473,11 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 
 		final AdresseEnvoi adresseEnvoi = pm.getAdresseEnvoi();
 		assertNotNull(adresseEnvoi);
-		assertEquals("KALESA", trimValiPattern(adresseEnvoi.getLigne1()));
-		assertEquals("p.a. Office des faillites", trimValiPattern(adresseEnvoi.getLigne2()));
-		assertEquals("1860 Aigle", trimValiPattern(adresseEnvoi.getLigne3()));
-		assertNull(adresseEnvoi.getLigne4());
-		assertNull(adresseEnvoi.getLigne5());
+		assertEquals("Kalesa S.A.", trimValiPattern(adresseEnvoi.getLigne1()));
+		assertEquals("", trimValiPattern(adresseEnvoi.getLigne2()));
+		assertEquals("en liquidation", trimValiPattern(adresseEnvoi.getLigne3()));
+		assertEquals("p.a. Office des faillites", trimValiPattern(adresseEnvoi.getLigne4()));
+		assertEquals("1860 Aigle", trimValiPattern(adresseEnvoi.getLigne5()));
 		assertNull(adresseEnvoi.getLigne6());
 		assertTrue(adresseEnvoi.isIsSuisse());
 		assertEquals(TypeAffranchissement.SUISSE, adresseEnvoi.getTypeAffranchissement());
@@ -524,12 +524,12 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 
 		final AdresseEnvoi adresseEnvoi = pm.getAdresseEnvoi();
 		assertNotNull(adresseEnvoi);
-		assertEquals("JAL HOLDING", trimValiPattern(adresseEnvoi.getLigne1()));
-		assertEquals("pa Fidu. Commerce & Industrie", trimValiPattern(adresseEnvoi.getLigne2()));
-		assertEquals("Avenue de la Gare 10", trimValiPattern(adresseEnvoi.getLigne3()));
-		assertEquals("1003 Lausanne", trimValiPattern(adresseEnvoi.getLigne4()));
-		assertNull(adresseEnvoi.getLigne5());
-		assertNull(adresseEnvoi.getLigne6());
+		assertEquals("Jal holding S.A.", trimValiPattern(adresseEnvoi.getLigne1()));
+		assertEquals("", trimValiPattern(adresseEnvoi.getLigne2()));
+		assertEquals("en liquidation", trimValiPattern(adresseEnvoi.getLigne3()));
+		assertEquals("pa Fidu. Commerce & Industrie", trimValiPattern(adresseEnvoi.getLigne4()));
+		assertEquals("Avenue de la Gare 10", trimValiPattern(adresseEnvoi.getLigne5()));
+		assertEquals("1003 Lausanne", trimValiPattern(adresseEnvoi.getLigne6()));
 		assertTrue(adresseEnvoi.isIsSuisse());
 		assertEquals(TypeAffranchissement.SUISSE, adresseEnvoi.getTypeAffranchissement());
 	}
@@ -554,11 +554,11 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 
 		final AdresseEnvoi adresseEnvoi = pm.getAdresseEnvoi();
 		assertNotNull(adresseEnvoi);
-		assertEquals("ELECTRIQUE INTERCOMMUN", trimValiPattern(adresseEnvoi.getLigne1()));
-		assertEquals("Rte des Avouillons 2 / CP 321", trimValiPattern(adresseEnvoi.getLigne2()));
-		assertEquals("1196 Gland", trimValiPattern(adresseEnvoi.getLigne3()));
-		assertNull(adresseEnvoi.getLigne4());
-		assertNull(adresseEnvoi.getLigne5());
+		assertEquals("Fonds prévoyance en fa", trimValiPattern(adresseEnvoi.getLigne1()));
+		assertEquals("personnel Sté électriq", trimValiPattern(adresseEnvoi.getLigne2()));
+		assertEquals("intercommunale de la C", trimValiPattern(adresseEnvoi.getLigne3()));
+		assertEquals("Rte des Avouillons 2 / CP 321", trimValiPattern(adresseEnvoi.getLigne4()));
+		assertEquals("1196 Gland", trimValiPattern(adresseEnvoi.getLigne5()));
 		assertNull(adresseEnvoi.getLigne6());
 		assertTrue(adresseEnvoi.isIsSuisse());
 		assertEquals(TypeAffranchissement.SUISSE, adresseEnvoi.getTypeAffranchissement());
@@ -602,11 +602,11 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 
 		final AdresseEnvoi adresseDomicileFormattee = pm.getAdresseDomicileFormattee();
 		assertNotNull(adresseDomicileFormattee);
-		assertEquals("FIBER SEAL ROMANDIE", trimValiPattern(adresseDomicileFormattee.getLigne1()));
-		assertEquals("Quai du Seujet 28A", trimValiPattern(adresseDomicileFormattee.getLigne2()));
-		assertEquals("1201 Genève", trimValiPattern(adresseDomicileFormattee.getLigne3()));
-		assertNull(adresseDomicileFormattee.getLigne4());
-		assertNull(adresseDomicileFormattee.getLigne5());
+		assertEquals("Fiber Seal (Romandie)", trimValiPattern(adresseDomicileFormattee.getLigne1()));
+		assertEquals("", trimValiPattern(adresseDomicileFormattee.getLigne2()));
+		assertEquals("en liquidation", trimValiPattern(adresseDomicileFormattee.getLigne3()));
+		assertEquals("Quai du Seujet 28A", trimValiPattern(adresseDomicileFormattee.getLigne4()));
+		assertEquals("1201 Genève", trimValiPattern(adresseDomicileFormattee.getLigne5()));
 		assertNull(adresseDomicileFormattee.getLigne6());
 		assertTrue(adresseDomicileFormattee.isIsSuisse());
 		assertEquals(TypeAffranchissement.SUISSE, adresseDomicileFormattee.getTypeAffranchissement());
@@ -630,11 +630,11 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 
 		final AdresseEnvoi adressePoursuiteFormattee = pm.getAdressePoursuiteFormattee();
 		assertNotNull(adressePoursuiteFormattee);
-		assertEquals("FIBER SEAL ROMANDIE", trimValiPattern(adressePoursuiteFormattee.getLigne1()));
-		assertEquals("Quai du Seujet 28A", trimValiPattern(adressePoursuiteFormattee.getLigne2()));
-		assertEquals("1201 Genève", trimValiPattern(adressePoursuiteFormattee.getLigne3()));
-		assertNull(adressePoursuiteFormattee.getLigne4());
-		assertNull(adressePoursuiteFormattee.getLigne5());
+		assertEquals("Fiber Seal (Romandie)", trimValiPattern(adressePoursuiteFormattee.getLigne1()));
+		assertEquals("", trimValiPattern(adressePoursuiteFormattee.getLigne2()));
+		assertEquals("en liquidation", trimValiPattern(adressePoursuiteFormattee.getLigne3()));
+		assertEquals("Quai du Seujet 28A", trimValiPattern(adressePoursuiteFormattee.getLigne4()));
+		assertEquals("1201 Genève", trimValiPattern(adressePoursuiteFormattee.getLigne5()));
 		assertNull(adressePoursuiteFormattee.getLigne6());
 		assertTrue(adressePoursuiteFormattee.isIsSuisse());
 		assertEquals(TypeAffranchissement.SUISSE, adressePoursuiteFormattee.getTypeAffranchissement());
