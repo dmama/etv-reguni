@@ -35,6 +35,10 @@ public class TiersView {
 
 	private Tiers tiersConjoint;
 
+	private String nomPrenomPrincipal;
+
+	private String nomPrenomConjoint;
+
 	private IndividuView individu;
 
 	private IndividuView individuConjoint;
@@ -412,46 +416,22 @@ public class TiersView {
 	}
 
 	public List<AdresseView> getHistoriqueAdressesCivilesConjoint() {
-		return historiqueAdressesCivilesConjoint;
+		return historiqueAdressesCivilesConjoint;	}
+
+
+	public String getNomPrenomPrincipal() {
+		return nomPrenomPrincipal;
 	}
 
-	public String getNomPrincipal(){
-
-		return getNom(individu,tiersPrincipal);
-	}
-		public String getNomConjoint(){
-		return getNom(individuConjoint,tiersConjoint);
-	}
-	public String getPrenomPrincipal(){
-		return getPrenom(individu,tiersPrincipal);
-	}
-		public String getPrenomConjoint(){
-		return getPrenom(individuConjoint,tiersConjoint);
+	public void setNomPrenomPrincipal(String nomPrenomPrincipal) {
+		this.nomPrenomPrincipal = nomPrenomPrincipal;
 	}
 
-	private String getNom(IndividuView individu, Tiers tiers) {
-		if (individu != null) {
-			return individu.getNom();
-
-		}
-		else if (tiers != null && tiers instanceof PersonnePhysique) {
-			PersonnePhysique personne = (PersonnePhysique) tiers;
-			return personne.getNom();
-		}
-		return "";
-
+	public String getNomPrenomConjoint() {
+		return nomPrenomConjoint;
 	}
 
-	private String getPrenom(IndividuView individu, Tiers tiers){
-		if(individu!=null){
-		return individu.getPrenom();
-
-		}
-		else if(tiers !=null && tiers instanceof PersonnePhysique){
-			PersonnePhysique personne = (PersonnePhysique)tiers;
-			return personne.getPrenom();
-		}
-		return "";
+	public void setNomPrenomConjoint(String nomPrenomConjoint) {
+		this.nomPrenomConjoint = nomPrenomConjoint;
 	}
-
 }
