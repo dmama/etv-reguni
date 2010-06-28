@@ -387,7 +387,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 	}
 
 	/**
-	 * Test l'integration de lévènement départ dans le moteur d'évenement
+	 * Test l'intégration de l'événement départ dans le moteur d'événements
 	 *
 	 * @throws Exception
 	 */

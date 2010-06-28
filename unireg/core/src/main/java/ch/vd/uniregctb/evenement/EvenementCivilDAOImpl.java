@@ -22,7 +22,7 @@ import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 /**
- * DAO des évènements civils.
+ * DAO des événements civils.
  *
  * @author Ludovic BERTIN <mailto:ludovic.bertin@vd.ch>
  *

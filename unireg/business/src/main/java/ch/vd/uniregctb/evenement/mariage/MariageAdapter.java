@@ -60,7 +60,7 @@ public class MariageAdapter extends GenericEvenementAdapter implements Mariage {
 
 	/**UNIREG-2055
 	 * Cette méthode permet de vérifier que le conjoint trouvé pour l'individu principal a bien
-	 * un état civil cohérent avec l'évènement de mariage traité
+	 * un état civil cohérent avec l'événement de mariage traité
 	 *
 	 * @param individuPrincipal
 	 * @return le conjoint correct ou null si le conjoint trouvé n'a pas le bon état civil

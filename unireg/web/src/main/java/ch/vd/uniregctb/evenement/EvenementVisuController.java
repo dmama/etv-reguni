@@ -31,7 +31,7 @@ public class EvenementVisuController extends AbstractEvenementController {
 	@Override
 	protected Object formBackingObject(HttpServletRequest request) throws Exception {
 		if (!SecurityProvider.isGranted(Role.EVEN)) {
-			throw new AccessDeniedException("vous ne possédez aucun droit IfoSec de gestion des évènements civils");
+			throw new AccessDeniedException("Vous ne possédez aucun droit IfoSec de gestion des événements civils");
 		}
 
 		EvenementView evtView = null;

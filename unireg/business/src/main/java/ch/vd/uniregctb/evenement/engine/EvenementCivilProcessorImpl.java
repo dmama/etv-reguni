@@ -115,7 +115,7 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor, Eve
 
 					// Charge l'événement
 					final EvenementCivilData evenementCivilData = evenementCivilDAO.get(evenementCivilId);
-					Assert.notNull(evenementCivilData, "l'évènement est null");
+					Assert.notNull(evenementCivilData, "l'événement est null");
 
 					if (evenementCivilData.getEtat().isTraite()) {
 						LOGGER.warn("Tentative de traitement de l'événement n°" + evenementCivilId + " qui est déjà traité. Aucune opération effectuée.");

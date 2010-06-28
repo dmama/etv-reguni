@@ -104,7 +104,7 @@
     </bean>
 	<bean id="evenementExterneHandlerJob" parent="schedulerJob" class="ch.vd.uniregctb.evenement.externe.EvenementExterneHandlerJob">
 		 <constructor-arg value="202"/>
-		<constructor-arg value="Relancer le traitement automatique des évènements externes"/>
+		<constructor-arg value="Relancer le traitement automatique des événements externes"/>
 		<property name="evenementExterneProcessor" ref="evenementExterneProcessor"/>
 		<property name="rapportService" ref="rapportService"/>
 	</bean>

@@ -30,7 +30,7 @@ public class PdfTraiterEvenementExterneRapport extends PdfRapport {
 		addEnteteUnireg();
 
 		// Titre
-		addTitrePrincipal("Rapport d'exécution de la relance du traitement des evenements externes ");
+		addTitrePrincipal("Rapport d'exécution de la relance du traitement des événements externes ");
 
 		// Paramètres
 		addEntete1("Paramètres");
@@ -52,9 +52,9 @@ public class PdfTraiterEvenementExterneRapport extends PdfRapport {
 
 			addTableSimple(new float[]{70f, 30f}, new TableSimpleCallback() {
 				public void fillTable(PdfTableSimple table) throws DocumentException {
-					table.addLigne("Nombre d'évènement en erreur à examiner :", String.valueOf(results.nbEvenementTotalProcesses));
-					table.addLigne("Nombre d'évènement traites :", String.valueOf(results.traites.size()));
-					table.addLigne("Nombre d'évènements ignorés car déjà traités :", String.valueOf(results.ignores.size()));
+					table.addLigne("Nombre d'événements en erreur à examiner :", String.valueOf(results.nbEvenementTotalProcesses));
+					table.addLigne("Nombre d'événements traites :", String.valueOf(results.traites.size()));
+					table.addLigne("Nombre d'événements ignorés car déjà traités :", String.valueOf(results.ignores.size()));
 					table.addLigne("Nombre d'erreurs :", String.valueOf(results.erreurs.size()));
 					table.addLigne("Durée d'exécution du job :", formatDureeExecution(results));
 					table.addLigne("Date de génération du rapport :", formatTimestamp(dateGeneration));
@@ -66,7 +66,7 @@ public class PdfTraiterEvenementExterneRapport extends PdfRapport {
 		{
 			final String filename = "EvenementExterneTraites.csv";
 			final String contenu = getCsvEvenementTraite(results.traites, filename, status);
-			final String titre = "Liste des evenements externes traités";
+			final String titre = "Liste des événements externes traités";
 			final String listVide = "(aucun)";
 			addListeDetaillee(writer, results.traites.size(), titre, listVide, filename, contenu);
 		}

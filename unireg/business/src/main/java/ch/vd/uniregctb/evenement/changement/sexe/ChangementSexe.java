@@ -3,7 +3,7 @@ package ch.vd.uniregctb.evenement.changement.sexe;
 import ch.vd.uniregctb.evenement.EvenementCivil;
 import ch.vd.uniregctb.type.Sexe;
 /**
- * Modèlise un évènement de changement de sexe
+ * Modèlise un événement de changement de sexe
  * @author <a href="mailto:baba-issa.ngom@vd.ch">Baba Issa NGOM </a>
  *
  */

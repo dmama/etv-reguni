@@ -88,11 +88,11 @@ public class ArriveeHandlerTest extends AbstractEvenementHandlerTest {
 		List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 		List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
 
-		// 1er test : évènement avec une date dans le futur
+		// 1er test : événement avec une date dans le futur
 		MockArrivee arrivee = createValidArrivee((MockIndividu) serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, 2000));
 		arrivee.setDate(DATE_FUTURE);
 		evenementCivilHandler.validate(arrivee, erreurs, warnings);
-		Assert.notEmpty(erreurs, "Une date future pour l'évènement aurait du renvoyer une erreur");
+		Assert.notEmpty(erreurs, "Une date future pour l'événement aurait dû renvoyer une erreur");
 
 		// 2ème test : arrivée antérieur à la date de début de validité de
 		// l'ancienne adresse
@@ -140,7 +140,7 @@ public class ArriveeHandlerTest extends AbstractEvenementHandlerTest {
 		List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
 
 		/*
-		 * 1er test : évènement avec le tiers correspondant à l'individu manquant
+		 * 1er test : événement avec le tiers correspondant à l'individu manquant
 		 */
 		MockIndividu inconnu = new MockIndividu();
 		inconnu.setDateNaissance(RegDate.get(1953, 11, 2));
@@ -152,7 +152,7 @@ public class ArriveeHandlerTest extends AbstractEvenementHandlerTest {
 		Assert.isTrue(erreurs.isEmpty(), "Le tiers rattaché à l'individu n'existe pas, mais ceci est un cas valide et aucune erreur n'aurait dû être déclenchée");
 
 		/*
-		 * 2ème test : évènement avec le tiers correspondant au conjoint manquant
+		 * 2ème test : événement avec le tiers correspondant au conjoint manquant
 		 */
 		erreurs.clear();
 		warnings.clear();

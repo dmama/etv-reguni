@@ -1167,7 +1167,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 				assertFalse(lesEvenementsdeJean.isEmpty());
 				Collection<EvenementFiscal> lesEvenementsdeJacques = evenementFiscalService.getEvenementFiscals(tiersService
 						.getTiers(ids.jacquesId));
-				assertEmpty("évènement fiscales engendrés", lesEvenementsdeJacques);
+				assertEmpty("Evénements fiscaux engendrés", lesEvenementsdeJacques);
 				Collection<EvenementFiscal> lesEvenementsdePierre = evenementFiscalService.getEvenementFiscals(tiersService
 						.getTiers(ids.pierreId));
 				assertFalse(lesEvenementsdePierre.isEmpty());

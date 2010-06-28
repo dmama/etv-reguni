@@ -249,7 +249,7 @@ public class DepartHandler extends EvenementCivilHandlerBase {
 					// la date de fermeture est au dernier jour du mois précédent
 					dateFermeture = RegDate.get(dateEvenement.year(), dateEvenement.month(), 1).getOneDayBefore();
 				}
-				// la date de l'évènement se situe après le 15 du mois courant
+				// la date de l'événement se situe après le 15 du mois courant
 				else if (dateEvenement.isAfter(RegDate.get(dateEvenement.year(), dateEvenement.month(), 15))) {
 					// la date de fermeture est au dernier jour du mois
 					dateFermeture = dateEvenement.getLastDayOfTheMonth();

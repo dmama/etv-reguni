@@ -363,8 +363,8 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 
 
 		Collection<EvenementFiscal> lesEvenements = evenementFiscalService.getEvenementFiscals(tiers);
-		Assert.assertNotNull("Pas d'évènement fiscales engendrés", lesEvenements);
-		Assert.assertTrue("Absence d'evenement de type femeture de for", MockDepart.findEvenementFermetureFor(lesEvenements, departCharles));
+		Assert.assertNotNull("Pas d'événement fiscal engendré", lesEvenements);
+		Assert.assertTrue("Absence d'événement de type femeture de for", MockDepart.findEvenementFermetureFor(lesEvenements, departCharles));
 
 	}
 
@@ -601,8 +601,8 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 		LOGGER.debug("Test de traitement d'un événement de départ vaudois OK");
 
 		Collection<EvenementFiscal> lesEvenements = evenementFiscalService.getEvenementFiscals(forFiscalPrincipalFerme.getTiers());
-		Assert.assertNotNull("Pas d'évènement fiscales engendrés", lesEvenements);
-		Assert.assertTrue("Absence d'evenement de type femeture de for", MockDepart.findEvenementFermetureFor(lesEvenements, depart));
+		Assert.assertNotNull("Pas d'événement fiscal engendré", lesEvenements);
+		Assert.assertTrue("Absence d'événement de type femeture de for", MockDepart.findEvenementFermetureFor(lesEvenements, depart));
 
 	}
 	/**
@@ -625,7 +625,7 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 		LOGGER.debug("Test de traitement d'un événement de départ vaudois OK");
 
 		Collection<EvenementFiscal> lesEvenements = evenementFiscalService.getEvenementFiscals(forFiscalPrincipalFerme.getTiers());
-		Assert.assertNotNull("Pas d'évènement fiscales engendrés", lesEvenements);
+		Assert.assertNotNull("Pas d'événement fiscal engendré", lesEvenements);
 		Assert.assertTrue("Absence d'evenement de type femeture de for", MockDepart.findEvenementFermetureFor(lesEvenements, depart));
 	}
 
@@ -660,7 +660,7 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 		LOGGER.debug("Test de traitement d'un événement de départ residence secondaire vaudois OK");
 
 		Collection<EvenementFiscal> lesEvenements = evenementFiscalService.getEvenementFiscals(forFiscalPrincipalFerme.getTiers());
-		Assert.assertNotNull("Pas d'évènement fiscales engendrés", lesEvenements);
+		Assert.assertNotNull("Pas d'événement fiscal engendré", lesEvenements);
 		Assert.assertTrue("Absence d'evenement de type femeture de for", MockDepart.findEvenementFermetureFor(lesEvenements, depart));
 
 	}
@@ -687,7 +687,7 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 		LOGGER.debug("Test de traitement d'un événement de départ residence secondaire vaudois OK");
 
 		Collection<EvenementFiscal> lesEvenements = evenementFiscalService.getEvenementFiscals(forFiscalPrincipalFerme.getTiers());
-		Assert.assertNotNull("Pas d'évènement fiscales engendrés", lesEvenements);
+		Assert.assertNotNull("Pas d'événement fiscal engendré", lesEvenements);
 		Assert.assertFalse("Absence d'evenement de type femeture de for", MockDepart.findEvenementFermetureFor(lesEvenements, depart));
 	}
 
