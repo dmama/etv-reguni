@@ -13,6 +13,8 @@ public class MockRue implements Rue {
 		public static final MockRue CheminDeMornex = new MockRue(MockLocalite.Lausanne, "Chemin de Mornex", 30350);
 		public static final MockRue CheminPrazBerthoud = new MockRue(MockLocalite.Lausanne, "Chemin de Praz-Berthoud", 30933);
 		public static final MockRue PlaceSaintFrancois = new MockRue(MockLocalite.Lausanne, "Place Saint-François", 30370);
+		public static final MockRue AvenueDeLaGare = new MockRue(MockLocalite.Lausanne, "Avenue de la Gare", 30317);
+		public static final MockRue CheminMessidor = new MockRue(MockLocalite.Lausanne, "Chemin Messidor", 30593);
 	}
 
 	public static class CossonayVille {

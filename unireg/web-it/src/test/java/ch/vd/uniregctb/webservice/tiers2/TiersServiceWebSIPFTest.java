@@ -775,4 +775,47 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 		assertSameDay(newDate(2003, 12, 31), lifd0.getDateFin());
 		assertEquals(TypeAssujettissement.ILLIMITE, lifd0.getType());
 	}
+
+	/**
+	 * [UNIREG-1974] Vérifie que l'adresse de la fiduciaire Jal Holding utilise bien les trois lignes de la raison sociale et non pas la raison sociale abbrégée.
+	 */
+	@Test
+	public void testGetAdresseEnvoiPM() throws Exception {
+
+		final GetTiers params = new GetTiers();
+		params.setLogin(login);
+		params.setTiersNumber(1314); // Jal Holding
+		params.getParts().add(TiersPart.ADRESSES_ENVOI);
+
+		final PersonneMorale pm = (PersonneMorale) service.getTiers(params);
+		assertNotNull(pm);
+		assertEquals(1314L, pm.getNumero());
+
+		final AdresseEnvoi adresseCourrier = pm.getAdresseEnvoi();
+		assertNotNull(adresseCourrier);
+		assertEquals("Jal holding S.A.", trimValiPattern(adresseCourrier.getLigne1())); // <-- raison sociale ligne 1
+		assertEquals("", trimValiPattern(adresseCourrier.getLigne2())); // <-- raison sociale ligne 2 (qui ne contient que la pattern de validation)
+		assertEquals("en liquidation", trimValiPattern(adresseCourrier.getLigne3())); // <-- raison sociale ligne 3
+		assertEquals("pa Fidu. Commerce & Industrie", adresseCourrier.getLigne4());
+		assertEquals("Avenue de la Gare 10", adresseCourrier.getLigne5());
+		assertEquals("1003 Lausanne", adresseCourrier.getLigne6());
+		assertNull(adresseCourrier.getLigne7());
+		assertTrue(adresseCourrier.isIsSuisse());
+		assertEquals(TypeAffranchissement.SUISSE, adresseCourrier.getTypeAffranchissement());
+		assertNull(adresseCourrier.getSalutations());
+		assertEquals("Madame, Monsieur", adresseCourrier.getFormuleAppel());
+
+		final AdresseEnvoi adresseDomicile = pm.getAdresseDomicileFormattee();
+		assertNotNull(adresseDomicile);
+		assertEquals("Jal holding S.A.", trimValiPattern(adresseDomicile.getLigne1())); // <-- raison sociale ligne 1
+		assertEquals("", trimValiPattern(adresseDomicile.getLigne2())); // <-- raison sociale ligne 2 (qui ne contient que la pattern de validation)
+		assertEquals("en liquidation", trimValiPattern(adresseDomicile.getLigne3())); // <-- raison sociale ligne 3
+		assertEquals("Fid.Commerce & Industrie S.A.", adresseDomicile.getLigne4());
+		assertEquals("Chemin Messidor 5", adresseDomicile.getLigne5());
+		assertEquals("1006 Lausanne", adresseDomicile.getLigne6());
+		assertNull(adresseDomicile.getLigne7());
+		assertTrue(adresseDomicile.isIsSuisse());
+		assertNull(adresseDomicile.getSalutations());
+		assertEquals("Madame, Monsieur", adresseDomicile.getFormuleAppel());
+	}
 }

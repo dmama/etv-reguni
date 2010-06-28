@@ -4,6 +4,7 @@ import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.interfaces.model.mock.*;
+import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServicePM;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.mock.MockServicePM;
@@ -1547,6 +1548,45 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 		final AdresseEnvoiDetaillee adresseEnvoi = adresseService.getAdresseEnvoi(mc, null, TypeAdresseFiscale.COURRIER, true);
 		assertNotNull(adresseEnvoi);
 		assertEquals("Pierre Dupont est le curateur de Madame, seule habitante du couple", "p.a. Pierre Dupont", adresseEnvoi.getPourAdresse());
+	}
+
+	/**
+	 * [UNIREG-1974] Vérifie que l'adresse de la fiduciaire Jal Holding utilise bien les trois lignes de la raison sociale et non pas la raison sociale abbrégée.
+	 */
+	@Test
+	public void testGetAdresseEnvoiJalHolding() throws Exception {
+
+		servicePM.setUp(new DefaultMockServicePM());
+
+		final Entreprise jal = new Entreprise();
+		jal.setNumero(MockPersonneMorale.JalHolding.getNumeroEntreprise());
+		jal.setNumeroEntreprise(MockPersonneMorale.JalHolding.getNumeroEntreprise());
+
+		final AdresseEnvoiDetaillee adresseCourrier = adresseService.getAdresseEnvoi(jal, null, TypeAdresseFiscale.COURRIER, true);
+		assertNotNull(adresseCourrier);
+		assertEquals("Jal holding S.A.", adresseCourrier.getLigne1()); // <-- raison sociale ligne 1
+		assertEquals("en liquidation", adresseCourrier.getLigne2()); // <-- raison sociale ligne 3 (la ligne 2 est vide)
+		assertEquals("pa Fidu. Commerce & Industrie", adresseCourrier.getLigne3());
+		assertEquals("Avenue de la Gare 10", adresseCourrier.getLigne4());
+		assertEquals("1003 Lausanne", adresseCourrier.getLigne5());
+		assertNull(adresseCourrier.getLigne6());
+		assertFalse(adresseCourrier.isHorsSuisse());
+		assertTrue(adresseCourrier.isSuisse());
+		assertNull(adresseCourrier.getSalutations());
+		assertNull(adresseCourrier.getFormuleAppel());
+
+		final AdresseEnvoiDetaillee adresseDomicile = adresseService.getAdresseEnvoi(jal, null, TypeAdresseFiscale.DOMICILE, true);
+		assertNotNull(adresseDomicile);
+		assertEquals("Jal holding S.A.", adresseDomicile.getLigne1()); // <-- raison sociale ligne 1
+		assertEquals("en liquidation", adresseDomicile.getLigne2()); // <-- raison sociale ligne 3 (la ligne 2 est vide)
+		assertEquals("Fid.Commerce & Industrie S.A.", adresseDomicile.getLigne3());
+		assertEquals("Chemin Messidor 5", adresseDomicile.getLigne4());
+		assertEquals("1006 Lausanne", adresseDomicile.getLigne5());
+		assertNull(adresseDomicile.getLigne6());
+		assertFalse(adresseDomicile.isHorsSuisse());
+		assertTrue(adresseDomicile.isSuisse());
+		assertNull(adresseDomicile.getSalutations());
+		assertNull(adresseDomicile.getFormuleAppel());
 	}
 
 	private static void assertAdressesEquals(AdresseEnvoiDetaillee expected, AdresseEnvoiDetaillee actual) {

@@ -5,6 +5,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
+import org.apache.commons.lang.StringUtils;
+
 /**
  * Représente les 6 lignes d'adresses d'un tiers formattées selon les recommandations de la poste suisse.
  *
@@ -57,6 +59,13 @@ public class AdresseEnvoi {
 		this.ligne4 = adresse.getLigne4();
 		this.ligne5 = adresse.getLigne5();
 		this.ligne6 = adresse.getLigne6();
+
+		// [UNIREG-1974] Hack pour faire tenir 7 lignes dans seulement 6 strings : si nécessaire la dernière string contient deux valeurs séparées par un retour de ligne. 
+		final String ligne7 = adresse.getLigne7();
+		if (StringUtils.isNotBlank(ligne7)) {
+			this.ligne6 = this.ligne6 + '\n' + ligne7;
+		}
+
 		this.isSuisse = adresse.isSuisse();
 	}
 }

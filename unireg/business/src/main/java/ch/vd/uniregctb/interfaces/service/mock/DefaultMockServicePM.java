@@ -10,6 +10,7 @@ public class DefaultMockServicePM extends MockServicePM {
 		addPM(MockPersonneMorale.BCV);
 		addPM(MockPersonneMorale.KPMG);
 		addPM(MockPersonneMorale.CuriaTreuhand);
+		addPM(MockPersonneMorale.JalHolding);
 	}
 
 }

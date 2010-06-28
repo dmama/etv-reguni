@@ -847,11 +847,20 @@ public class TiersWebServiceWithPM implements TiersWebService {
 		// [UNIREG-2302]
 		adresse.addFormulePolitesse(FormulePolitesse.PERSONNE_MORALE);
 
-		if (pm.designationAbregee != null) {
-			adresse.addNomPrenom(pm.designationAbregee);
+		// [UNIREG-1974] On doit utiliser la raison sociale sur 3 lignes dans les adresses d'envoi des PMs (et ne pas prendre la raison sociale abbrégée)
+		if (pm.raisonSociale1 != null) {
+			adresse.addNomPrenom(pm.raisonSociale1);
 		}
 
-// [UNIREG-1973] il ne faut pas utiliser la personne de contact dans les adresses		
+		if (pm.raisonSociale2 != null) {
+			adresse.addNomPrenom(pm.raisonSociale2);
+		}
+
+		if (pm.raisonSociale3 != null) {
+			adresse.addNomPrenom(pm.raisonSociale3);
+		}
+
+// [UNIREG-1973] il ne faut pas utiliser la personne de contact dans les adresses
 //		if (pm.personneContact != null) {
 //			adresse.addPourAdresse(pm.personneContact);
 //		}

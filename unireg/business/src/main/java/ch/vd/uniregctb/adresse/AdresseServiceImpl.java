@@ -735,7 +735,7 @@ public class AdresseServiceImpl implements AdresseService {
 		}
 		else if (tiers instanceof Entreprise) {
 			final Entreprise entreprise = (Entreprise) tiers;
-			line = POUR_ADRESSE + " " +getRaisonSociale(entreprise);
+			line = POUR_ADRESSE + " " + getRaisonSociale(entreprise);
 		}
 		else {
 			throw new NotImplementedException("Type de tiers [" + tiers.getNatureTiers() + "] non-implémenté");
@@ -769,13 +769,13 @@ public class AdresseServiceImpl implements AdresseService {
 					.getNumeroCollectiviteAdministrative());
 
 			final List<String> nomsComplets = new ArrayList<String>(3);
-			if (!StringUtils.isEmpty(c.getNomComplet1())) {
+			if (StringUtils.isNotBlank(c.getNomComplet1())) {
 				nomsComplets.add(c.getNomComplet1());
 			}
-			if (!StringUtils.isEmpty(c.getNomComplet2())) {
+			if (StringUtils.isNotBlank(c.getNomComplet2())) {
 				nomsComplets.add(c.getNomComplet2());
 			}
-			if (!StringUtils.isEmpty(c.getNomComplet3())) {
+			if (StringUtils.isNotBlank(c.getNomComplet3())) {
 				nomsComplets.add(c.getNomComplet3());
 			}
 			return nomsComplets;
@@ -812,13 +812,13 @@ public class AdresseServiceImpl implements AdresseService {
 		final PersonneMorale pm = servicePM.getPersonneMorale(numeroEntreprise);
 
 		final List<String> nomsComplets = new ArrayList<String>(3);
-		if (!StringUtils.isEmpty(pm.getRaisonSociale1())) {
+		if (StringUtils.isNotBlank(pm.getRaisonSociale1())) {
 			nomsComplets.add(pm.getRaisonSociale1());
 		}
-		if (!StringUtils.isEmpty(pm.getRaisonSociale2())) {
+		if (StringUtils.isNotBlank(pm.getRaisonSociale2())) {
 			nomsComplets.add(pm.getRaisonSociale2());
 		}
-		if (!StringUtils.isEmpty(pm.getRaisonSociale3())) {
+		if (StringUtils.isNotBlank(pm.getRaisonSociale3())) {
 			nomsComplets.add(pm.getRaisonSociale3());
 		}
 
@@ -876,7 +876,7 @@ public class AdresseServiceImpl implements AdresseService {
 		}
 
 		final String rueEtNumero = buildRueEtNumero(adresse);
-		if (!StringUtils.isEmpty(rueEtNumero)) {
+		if (StringUtils.isNotBlank(rueEtNumero)) {
 			adresseEnvoi.addRueEtNumero(rueEtNumero);
 		}
 
@@ -897,7 +897,7 @@ public class AdresseServiceImpl implements AdresseService {
 		}
 
 		final String nomPays = buildPays(adresse, false);
-		if (!StringUtils.isEmpty(nomPays)) {
+		if (StringUtils.isNotBlank(nomPays)) {
 			final TypeAffranchissement typeAffranchissement = getTypeAffranchissement(adresse);
 			adresseEnvoi.addPays(nomPays, typeAffranchissement);
 		}

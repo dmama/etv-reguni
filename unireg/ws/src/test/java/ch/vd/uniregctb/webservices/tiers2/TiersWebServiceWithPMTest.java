@@ -165,7 +165,7 @@ public class TiersWebServiceWithPMTest extends WebserviceTest {
 
 			// l'adresse d'envoi n'a pas de salutations
 			assertNull(bcv.adresseEnvoi.salutations);
-			assertEquals("BCV", bcv.adresseEnvoi.ligne1);
+			assertEquals("Banque Cantonale Vaudoise", bcv.adresseEnvoi.ligne1);
 			assertEquals("pa Comptabilité financière", bcv.adresseEnvoi.ligne2);
 			assertEquals("Saint-François, place 14", bcv.adresseEnvoi.ligne3);
 			assertEquals("1003 Lausanne Secteur de dist.", bcv.adresseEnvoi.ligne4);
@@ -174,6 +174,48 @@ public class TiersWebServiceWithPMTest extends WebserviceTest {
 
 			// par contre, la formule d'appel est renseignée
 			assertEquals("Madame, Monsieur", bcv.adresseEnvoi.formuleAppel);
+		}
+	}
+
+	/**
+	 * [UNIREG-1974] Vérifie que l'adresse de la fiduciaire Jal Holding utilise bien les trois lignes de la raison sociale et non pas la raison sociale abbrégée.
+	 */
+	@Test
+	public void testGetAdresseEnvoiPersonneMorale2() throws Exception {
+
+		final long noJal = MockPersonneMorale.JalHolding.getNumeroEntreprise();
+
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				addEntreprise(noJal);
+				return null;
+			}
+		});
+
+		final GetTiers params = new GetTiers();
+		params.date = null;
+		params.login = login;
+		params.tiersNumber = noJal;
+		params.parts = new HashSet<TiersPart>();
+		params.parts.add(TiersPart.ADRESSES_ENVOI);
+
+		// on s'assure que la formule d'appel d'une PM est bien renseignée
+		{
+			final PersonneMorale jal = (PersonneMorale) service.getTiers(params);
+			assertNotNull(jal);
+			assertNotNull(jal.adresseEnvoi);
+
+			// l'adresse d'envoi n'a pas de salutations
+			assertNull(jal.adresseEnvoi.salutations);
+			assertEquals("Jal holding S.A.", jal.adresseEnvoi.ligne1);
+			assertEquals("en liquidation", jal.adresseEnvoi.ligne2);
+			assertEquals("pa Fidu. Commerce & Industrie", jal.adresseEnvoi.ligne3);
+			assertEquals("Avenue de la Gare 10", jal.adresseEnvoi.ligne4);
+			assertEquals("1003 Lausanne", jal.adresseEnvoi.ligne5);
+			assertNull(jal.adresseEnvoi.ligne6);
+
+			// par contre, la formule d'appel est renseignée
+			assertEquals("Madame, Monsieur", jal.adresseEnvoi.formuleAppel);
 		}
 	}
 }

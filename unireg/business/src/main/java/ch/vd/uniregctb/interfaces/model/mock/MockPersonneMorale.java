@@ -43,6 +43,7 @@ public class MockPersonneMorale implements PersonneMorale {
 	public static MockPersonneMorale BCV = new MockPersonneMorale(20222, "Banque Cantonale Vaudoise", "S.A.", "Daniel Kuffer", RegDate.get(1901, 1, 1), null);
 	public static MockPersonneMorale KPMG = new MockPersonneMorale(2058, "KPMG SA", "S.A.", null, RegDate.get(1901, 1, 1), null);
 	public static MockPersonneMorale CuriaTreuhand = new MockPersonneMorale(21038, "Curia Treuhand AG", "S.A.", null, RegDate.get(1901, 1, 1), null);
+	public static MockPersonneMorale JalHolding = new MockPersonneMorale(1314, "JAL HOLDING", "Jal holding S.A.", null, "en liquidation", "S.A.", "R. Borgo", RegDate.get(1975, 12, 24), null);
 
 	static {
 		{
@@ -154,6 +155,44 @@ public class MockPersonneMorale implements PersonneMorale {
 			siege.setNumeroOrdrePostal(3970);
 			CuriaTreuhand.addAdresse(siege);
 		}
+
+		{
+			MockAdresseEntreprise courrier = new MockAdresseEntreprise();
+			courrier.setComplement("pa Fidu. Commerce & Industrie ");
+			courrier.setRue("Avenue de la Gare");
+			courrier.setNumeroMaison("10");
+			courrier.setNumeroTechniqueRue(30317);
+			courrier.setNumeroPostal("1003");
+			courrier.setLocalite("Lausanne");
+			courrier.setType(EnumTypeAdresseEntreprise.COURRIER);
+			courrier.setDateDebutValidite(RegDate.get(2007, 6, 11));
+			courrier.setDateFinValidite(null);
+			JalHolding.addAdresse(courrier);
+
+			MockAdresseEntreprise facturation = new MockAdresseEntreprise();
+			facturation.setComplement("pa Fidu. Commerce & Industrie ");
+			facturation.setRue("Avenue de la Gare");
+			facturation.setNumeroMaison("10");
+			facturation.setNumeroTechniqueRue(30317);
+			facturation.setNumeroPostal("1003");
+			facturation.setLocalite("Lausanne");
+			facturation.setType(EnumTypeAdresseEntreprise.FACTURATION);
+			facturation.setDateDebutValidite(RegDate.get(2007, 6, 11));
+			facturation.setDateFinValidite(null);
+			JalHolding.addAdresse(facturation);
+			
+			MockAdresseEntreprise siege = new MockAdresseEntreprise();
+			siege.setComplement("Fid.Commerce & Industrie S.A. ");
+			siege.setRue("Chemin Messidor");
+			siege.setNumeroMaison("5");
+			siege.setNumeroTechniqueRue(30593);
+			siege.setNumeroPostal("1006");
+			siege.setLocalite("Lausanne");
+			siege.setType(EnumTypeAdresseEntreprise.SIEGE);
+			siege.setDateDebutValidite(RegDate.get(1997, 5, 14));
+			siege.setDateFinValidite(null);
+			JalHolding.addAdresse(siege);
+		}
 	}
 
 	public MockPersonneMorale() {
@@ -163,6 +202,19 @@ public class MockPersonneMorale implements PersonneMorale {
 		this.numeroEntreprise = numeroEntreprise;
 		this.raisonSociale = raisonSociale;
 		this.raisonSociale1 = raisonSociale;
+		this.formesJuridiques.add(new MockFormeJuridique(null, null, codeFormeJuridique));
+		this.nomContact = nomContact;
+		this.debut = debut;
+		this.fin = fin;
+	}
+
+	public MockPersonneMorale(long numeroEntreprise, String raisonSociale, String raisonSociale1, String raisonSociale2, String raisonSociale3, String codeFormeJuridique, String nomContact,
+	                          RegDate debut, RegDate fin) {
+		this.numeroEntreprise = numeroEntreprise;
+		this.raisonSociale = raisonSociale;
+		this.raisonSociale1 = raisonSociale1;
+		this.raisonSociale2 = raisonSociale2;
+		this.raisonSociale3 = raisonSociale3;
 		this.formesJuridiques.add(new MockFormeJuridique(null, null, codeFormeJuridique));
 		this.nomContact = nomContact;
 		this.debut = debut;
