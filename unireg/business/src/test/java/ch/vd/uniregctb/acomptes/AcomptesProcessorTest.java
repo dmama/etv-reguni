@@ -15,8 +15,6 @@ import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.adresse.AdresseServiceImpl;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.tiers.TiersDAO;
@@ -40,11 +38,10 @@ public class AcomptesProcessorTest extends BusinessTest {
 		transactionManager = getBean(PlatformTransactionManager.class, "transactionManager");
 		final TiersService tiersService = getBean(TiersServiceImpl.class, "tiersService");
 		final TiersDAO tiersDAO = getBean(TiersDAOImpl.class, "tiersDAO");
-		final AdresseService adresseService = getBean(AdresseServiceImpl.class, "adresseService");
 		final ServiceCivilService serviceCivilService = getBean(ServiceCivilService.class, "serviceCivilService");
 
 		// création du processeur à la main de manière à pouvoir appeler les méthodes protégées
-		service = new AcomptesProcessor(hibernateTemplate, tiersService, adresseService, serviceCivilService, transactionManager, tiersDAO);
+		service = new AcomptesProcessor(hibernateTemplate, tiersService, serviceCivilService, transactionManager, tiersDAO);
 
 		// évite de logger plein d'erreurs pendant qu'on teste le comportement du processor
 		final Logger serviceLogger = Logger.getLogger(AcomptesServiceImpl.class);

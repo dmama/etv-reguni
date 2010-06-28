@@ -88,7 +88,6 @@
 	<bean id="acomptesService" class="ch.vd.uniregctb.acomptes.AcomptesServiceImpl">
 		<property name="hibernateTemplate" ref="hibernateTemplate"/>
 		<property name="tiersService" ref="tiersService"/>
-		<property name="adresseService" ref="adresseService"/>
 		<property name="transactionManager" ref="transactionManager"/>
 		<property name="tiersDAO" ref="tiersDAO"/>
 		<property name="serviceCivilService" ref="serviceCivilService" />

@@ -14,8 +14,6 @@ public class AcomptesServiceImpl implements AcomptesService {
 
 	private TiersService tiersService;
 
-	private AdresseService adresseService;
-
 	private ServiceCivilService serviceCivilService;
 
 	private HibernateTemplate hibernateTemplate;
@@ -40,16 +38,12 @@ public class AcomptesServiceImpl implements AcomptesService {
 		this.tiersDAO = tiersDAO;
 	}
 
-	public void setAdresseService(AdresseService adresseService) {
-		this.adresseService = adresseService;
-	}
-
 	public void setServiceCivilService(ServiceCivilService serviceCivilService) {
 		this.serviceCivilService = serviceCivilService;
 	}
 
 	public AcomptesResults produireAcomptes(RegDate dateTraitement, int nbThreads, Integer annee, StatusManager statusManager) {
-		final AcomptesProcessor processor = new AcomptesProcessor(hibernateTemplate, tiersService, adresseService, serviceCivilService, transactionManager, tiersDAO);
+		final AcomptesProcessor processor = new AcomptesProcessor(hibernateTemplate, tiersService, serviceCivilService, transactionManager, tiersDAO);
 		return processor.run(dateTraitement, nbThreads, annee, statusManager);
 	}
 

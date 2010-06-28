@@ -12,7 +12,6 @@ import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.ListesProcessor;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.StatusManager;
@@ -36,7 +35,6 @@ public class AcomptesProcessor extends ListesProcessor<AcomptesResults, Acomptes
 
 	public AcomptesProcessor(HibernateTemplate hibernateTemplate,
 	                         TiersService tiersService,
-	                         AdresseService adresseService,
 	                         ServiceCivilService serviceCivilService,
 	                         PlatformTransactionManager transactionManager,
 	                         TiersDAO tiersDAO) {
