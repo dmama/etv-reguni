@@ -30,7 +30,7 @@
 					<fmt:message key="label.adresse.civiles" />
 				</c:when>
 				<c:when test="${command.natureTiers == 'MenageCommun'}" >
-					<fmt:message key="label.adresse.civiles.principal" />
+					<fmt:message key="label.adresse.civiles.membre.couple" /> ${command.prenomPrincipal} ${command.nomPrincipal}
 				</c:when>
 			</c:choose>
 		</span>
@@ -38,7 +38,6 @@
 
 	<input name="adrHistoCiviles" type="checkbox" <c:if test="${command.adressesHistoCiviles}">checked</c:if> onclick="afficheAdressesHisto('isAdrHisto','isAdrHistoCiviles','isAdrHistoCivilesConjoint', ${command.tiersGeneral.numero});" id="isAdrHistoCiviles" />
 	<label for="isAdrHistoCiviles"><fmt:message key="label.historique" /></label>
-
 	<jsp:include page="../../common/adresse/adresseCivile.jsp">
 		<jsp:param name="page" value="visu"/>
 		<jsp:param name="membre" value="principal"/>
@@ -46,7 +45,7 @@
 </fieldset>
 
 <fieldset <c:if test="${command.tiersConjoint == null}">style="display:none"</c:if> >
-	<legend><span><fmt:message key="label.adresse.civiles.conjoint" /></span></legend>
+	<legend><span><fmt:message key="label.adresse.civiles.membre.couple" />${command.prenomConjoint} ${command.nomConjoint}</span></legend> 
 
 	<input name="adrHistoCivilesConjoint" type="checkbox" <c:if test="${command.adressesHistoCivilesConjoint}">checked</c:if> onclick="afficheAdressesHisto('isAdrHisto','isAdrHistoCiviles','isAdrHistoCivilesConjoint', ${command.tiersGeneral.numero});" id="isAdrHistoCivilesConjoint" />
 	<label for="isAdrHistoCivilesConjoint"><fmt:message key="label.historique" /></label>

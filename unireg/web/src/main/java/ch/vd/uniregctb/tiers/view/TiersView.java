@@ -14,6 +14,7 @@ import ch.vd.uniregctb.rapport.view.RapportView;
 import ch.vd.uniregctb.rt.view.RapportPrestationView;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
@@ -413,4 +414,44 @@ public class TiersView {
 	public List<AdresseView> getHistoriqueAdressesCivilesConjoint() {
 		return historiqueAdressesCivilesConjoint;
 	}
+
+	public String getNomPrincipal(){
+
+		return getNom(individu,tiersPrincipal);
+	}
+		public String getNomConjoint(){
+		return getNom(individuConjoint,tiersConjoint);
+	}
+	public String getPrenomPrincipal(){
+		return getPrenom(individu,tiersPrincipal);
+	}
+		public String getPrenomConjoint(){
+		return getPrenom(individuConjoint,tiersConjoint);
+	}
+
+	private String getNom(IndividuView individu, Tiers tiers) {
+		if (individu != null) {
+			return individu.getNom();
+
+		}
+		else if (tiers != null && tiers instanceof PersonnePhysique) {
+			PersonnePhysique personne = (PersonnePhysique) tiers;
+			return personne.getNom();
+		}
+		return "";
+
+	}
+
+	private String getPrenom(IndividuView individu, Tiers tiers){
+		if(individu!=null){
+		return individu.getPrenom();
+
+		}
+		else if(tiers !=null && tiers instanceof PersonnePhysique){
+			PersonnePhysique personne = (PersonnePhysique)tiers;
+			return personne.getPrenom();
+		}
+		return "";
+	}
+
 }
