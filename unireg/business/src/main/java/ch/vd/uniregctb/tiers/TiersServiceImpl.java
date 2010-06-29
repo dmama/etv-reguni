@@ -57,6 +57,7 @@ import ch.vd.uniregctb.situationfamille.SituationFamilleService;
 import ch.vd.uniregctb.situationfamille.VueSituationFamille;
 import ch.vd.uniregctb.tache.TacheService;
 import ch.vd.uniregctb.tiers.Contribuable.FirstForsList;
+import ch.vd.uniregctb.tiers.dao.RemarqueDAO;
 import ch.vd.uniregctb.tiers.rattrapage.flaghabitant.CorrectionFlagHabitantProcessor;
 import ch.vd.uniregctb.tiers.rattrapage.flaghabitant.CorrectionFlagHabitantSurMenagesResults;
 import ch.vd.uniregctb.tiers.rattrapage.flaghabitant.CorrectionFlagHabitantSurPersonnesPhysiquesResults;
@@ -90,6 +91,7 @@ public class TiersServiceImpl implements TiersService {
 	private TacheDAO tacheDAO;
 	private SituationFamilleService situationFamilleService;
 	private AdresseService adresseService;
+	private RemarqueDAO remarqueDAO;
 	
 	private HibernateTemplate hibernateTemplate;
 	private PlatformTransactionManager transactionManager;
@@ -151,6 +153,10 @@ public class TiersServiceImpl implements TiersService {
 
 	public void setAdresseService(AdresseService adresseService) {
 		this.adresseService = adresseService;
+	}
+
+	public void setRemarqueDAO(RemarqueDAO remarqueDAO) {
+		this.remarqueDAO = remarqueDAO;
 	}
 
 	/**
@@ -2309,6 +2315,8 @@ public class TiersServiceImpl implements TiersService {
 	public void fusionne(PersonnePhysique habitant, PersonnePhysique nonHabitant) {
 		// Onglet Complements
 		copieComplements(nonHabitant, habitant);
+		copieRemarques(nonHabitant, habitant);
+
 		// Onglet Fiscal
 		Set<ForFiscal> forsCible = new HashSet<ForFiscal>();
 		for (ForFiscal forFiscalSource : nonHabitant.getForsFiscaux()) {
@@ -2335,6 +2343,19 @@ public class TiersServiceImpl implements TiersService {
 		annuleTiers(nonHabitant);
 	}
 
+	private void copieRemarques(Tiers tiersSource, Tiers tiersCible) {
+
+		final List<Remarque> list = remarqueDAO.getRemarques(tiersSource.getNumero());
+		for (Remarque r: list) {
+			Remarque c = new Remarque();
+			c.setLogCreationDate(r.getLogCreationDate());
+			c.setLogCreationUser(r.getLogCreationUser());
+			c.setTexte(r.getTexte());
+			c.setTiers(tiersCible);
+			remarqueDAO.save(c);
+		}
+	}
+
 	/**
 	 * Copie les informations Complements
 	 *
@@ -2349,7 +2370,6 @@ public class TiersServiceImpl implements TiersService {
 		tiersCible.setNumeroTelephonePrive(tiersSource.getNumeroTelephonePrive());
 		tiersCible.setNumeroTelephoneProfessionnel(tiersSource.getNumeroTelephoneProfessionnel());
 		tiersCible.setBlocageRemboursementAutomatique(tiersSource.getBlocageRemboursementAutomatique());
-		tiersCible.setRemarque(tiersSource.getRemarque());
 		tiersCible.setTitulaireCompteBancaire(tiersSource.getTitulaireCompteBancaire());
 		tiersCible.setAdresseBicSwift(tiersSource.getAdresseBicSwift());
 	}

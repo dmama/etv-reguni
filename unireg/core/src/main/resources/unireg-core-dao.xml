@@ -65,7 +65,8 @@
 	</bean>
 	<bean id="identCtbDAO" class="ch.vd.uniregctb.evenement.identification.contribuable.IdentCtbDAOImpl" parent="hibernateDaoSupport">
 	</bean>
-	
+	<bean id="remarqueDAO" class="ch.vd.uniregctb.tiers.dao.RemarqueDAOImpl" parent="hibernateDaoSupport"/>
+
 
 	<!-- Audit -->
 	<bean id="auditLineDAO" class="ch.vd.uniregctb.audit.AuditLineDAOImpl" parent="hibernateDaoSupport">

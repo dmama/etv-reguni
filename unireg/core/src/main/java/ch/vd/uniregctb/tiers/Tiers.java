@@ -163,13 +163,6 @@ public abstract class Tiers extends HibernateEntity implements Validateable, Bus
 	private String adresseBicSwift;
 
 	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc --> Texte libre en rapport avec le tiers Doit être suffisamment long (2000 caractères)
-	 *
-	 * @generated "UML to Java V5.0 (com.ibm.xtools.transform.uml2.java5.internal.UML2JavaTransform)"
-	 */
-	private String remarque;
-
-	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 *
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_stv7YEE7Ed2XrapGHNAWZw"
@@ -469,27 +462,6 @@ public abstract class Tiers extends HibernateEntity implements Validateable, Bus
 	public void setNumeroCompteBancaire(String theNumeroCompteBancaire) {
 		// begin-user-code
 		numeroCompteBancaire = theNumeroCompteBancaire;
-		// end-user-code
-	}
-
-	/**
-	 * @return Returns the remarque.
-	 */
-	@Column(name = "REMARQUE", length = LengthConstants.TIERS_REMARQUE)
-	public String getRemarque() {
-		return remarque;
-	}
-
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @param theRemarque
-	 *            the remarque to set
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nLi8KFx9Edygsbnw9h5bVw?SETTER"
-	 */
-	public void setRemarque(String theRemarque) {
-		// begin-user-code
-		remarque = theRemarque;
 		// end-user-code
 	}
 
@@ -1936,12 +1908,6 @@ public abstract class Tiers extends HibernateEntity implements Validateable, Bus
 				return false;
 		}
 		else if (!rapportsSujet.equals(other.rapportsSujet))
-			return false;
-		if (remarque == null) {
-			if (other.remarque != null)
-				return false;
-		}
-		else if (!remarque.equals(other.remarque))
 			return false;
 		if (titulaireCompteBancaire == null) {
 			if (other.titulaireCompteBancaire != null)

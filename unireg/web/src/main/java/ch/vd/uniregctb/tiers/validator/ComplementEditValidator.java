@@ -106,10 +106,6 @@ public class ComplementEditValidator implements Validator {
 
 				}
 
-				if (tiers.getRemarque() != null && tiers.getRemarque().length() > LengthConstants.TIERS_REMARQUE) {
-					errors.rejectValue("tiers.remarque", "error.remarque");
-				}
-
 				//Validation du tiers
 				ValidationResults results = tiers.validate();
 				List<String> erreurs = results.getErrors();

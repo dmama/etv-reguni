@@ -71,19 +71,22 @@
 						</li>
 					</c:if>
 				</authz:authorize>
-					<c:if test="${command.natureTiers != 'DebiteurPrestationImposable'}">
-						<li id="dossiersApparentesTab">
-							<a href="#" onclick="javascript:Tabulation.show(this);"><fmt:message key="label.dossiers.apparentes" /></a>
-						</li>
-						<authz:authorize ifAnyGranted="ROLE_VISU_ALL">
-						<li id="diTab">
-							<a href="#" onclick="javascript:Tabulation.show(this);""><fmt:message key="label.di" /></a>
-						</li>
-						<li id="mouvementTab">
-							<a href="#" onclick="javascript:Tabulation.show(this);""><fmt:message key="label.mouvement" /></a>
-						</li>
-						</authz:authorize>
-					</c:if>	
+				<c:if test="${command.natureTiers != 'DebiteurPrestationImposable'}">
+					<li id="dossiersApparentesTab">
+						<a href="#" onclick="javascript:Tabulation.show(this);"><fmt:message key="label.dossiers.apparentes" /></a>
+					</li>
+					<authz:authorize ifAnyGranted="ROLE_VISU_ALL">
+					<li id="diTab">
+						<a href="#" onclick="javascript:Tabulation.show(this);""><fmt:message key="label.di" /></a>
+					</li>
+					<li id="mouvementTab">
+						<a href="#" onclick="javascript:Tabulation.show(this);""><fmt:message key="label.mouvement" /></a>
+					</li>
+					</authz:authorize>
+				</c:if>
+				<li id="remarqueTab">
+					<a id="remarqueTabAnchor" href="#" onclick="javascript:Tabulation.show(this);""><fmt:message key="label.remarques" /></a>
+				</li>
 			</ul>
 		</div>
 		<!-- Fin onglets -->
@@ -130,6 +133,12 @@
 				<jsp:include page="mouvement/mouvements.jsp"/>
 			</div>
 		</authz:authorize>
+
+		<div id="tabContent_remarqueTab" class="visuTiers" style="display:none">
+				<jsp:include page="../common/remarque/remarques.jsp">
+					<jsp:param name="tiersId" value="${command.tiersGeneral.numero}" />
+				</jsp:include>
+		</div>
 		
 		<!-- Debut Boutons -->
 		<form:form>

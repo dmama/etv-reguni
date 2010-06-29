@@ -32,6 +32,8 @@
 		<property name="connectionManager" ref="jdbcConnectionManager"/>
 	</bean>
 
+	<bean id="hibernateDialect" class="${oracle.hibernate.dialect}"/>
+	
 	<!-- Datasource -->
 	<bean id="jdbcManagedConnectionFactory" class="ch.vd.uniregctb.datasource.UniregXAMCF">
 		<property name="driverType" value="thin" />

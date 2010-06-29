@@ -133,19 +133,4 @@
 	</table>
 </fieldset>
 </c:if>
-<c:if test="${command.allowedOnglet.CPLT_COM}">
-<fieldset>
-	<legend><span><fmt:message key="label.complement.divers" /></span></legend>
-	<unireg:nextRowClass reset="1"/>
-	<table>
-		<tr class="<unireg:nextRowClass/>" >
-			<td width="30%"><fmt:message key="label.complement.remarque" />&nbsp;:</td>
-			<td width="70%">
-				<form:textarea path="tiers.remarque" id="tiers_remarque" tabindex="13" rows="3" cols="80" />
-				<form:errors path="tiers.remarque" cssClass="error"/>
-			</td>
-		</tr>
-	</table>
-</fieldset>
-</c:if>
 <!-- Fin Complements -->

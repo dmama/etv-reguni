@@ -75,6 +75,7 @@
 				<value>ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpot</value>
 				<value>ch.vd.uniregctb.tiers.TacheNouveauDossier</value>
 				<value>ch.vd.uniregctb.tiers.DroitAcces</value>
+				<value>ch.vd.uniregctb.tiers.Remarque</value>
 				<value>ch.vd.uniregctb.evenement.externe.EvenementExterne</value>
 				<value>ch.vd.uniregctb.evenement.externe.QuittanceLR</value>
 				<value>ch.vd.uniregctb.mouvement.MouvementDossier</value>

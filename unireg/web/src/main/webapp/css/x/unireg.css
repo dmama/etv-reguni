@@ -141,6 +141,10 @@ fieldset.individu + fieldset.individu {
 	font-size:xx-small;
 }
 
+/**
+ * Table d'action de synchronisation
+ */
+
 #actions_column {
 	width: 20em;
 	padding-top: 1em;
@@ -180,4 +184,42 @@ fieldset.individu + fieldset.individu {
 #actions_list td.error {
 	border-left: 0px;
 	text-align: left;
+}
+
+/**
+ * Table des remarques
+ */
+
+#remarques {
+	margin: 0.5em;
+}
+
+#remarques .new_remarque * {
+	margin: 0.2em;
+}
+
+#remarques .new_remarque button {
+	padding: 0.2em;
+}
+
+#remarques table.remarques {
+	margin-top: 0.5em;
+	color: gray;
+	background-color:transparent;
+	background-image:url("bgpannelinner.jpg");
+	background-repeat:repeat;
+}
+
+#remarques td {
+	vertical-align: top;
+	padding: 0.2em;
+}
+
+#remarques td.entete {
+	width: 20%;
+	font-size:10px;
+}
+
+#remarques td.texte {
+	color: black;
 }

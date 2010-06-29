@@ -49,6 +49,7 @@ import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
+import ch.vd.uniregctb.tiers.Remarque;
 import ch.vd.uniregctb.tiers.SituationFamille;
 import ch.vd.uniregctb.tiers.SituationFamilleMenageCommun;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -56,6 +57,7 @@ import ch.vd.uniregctb.tiers.Tiers.ForsParType;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersException;
 import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.tiers.dao.RemarqueDAO;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
@@ -74,6 +76,7 @@ public class MetierServiceImpl implements MetierService {
 	private AdresseService adresseService;
 	private SituationFamilleService situationFamilleService;
 	private GlobalTiersSearcher tiersSearcher;
+	private RemarqueDAO remarqueDAO;
 
 	public void setTransactionManager(PlatformTransactionManager transactionManager) {
 		this.transactionManager = transactionManager;
@@ -105,6 +108,10 @@ public class MetierServiceImpl implements MetierService {
 
 	public void setTiersDAO(TiersDAO tiersDAO) {
 		this.tiersDAO = tiersDAO;
+	}
+
+	public void setRemarqueDAO(RemarqueDAO remarqueDAO) {
+		this.remarqueDAO = remarqueDAO;
 	}
 
 	/**
@@ -442,11 +449,11 @@ public class MetierServiceImpl implements MetierService {
 		}
 
 		if (!StringUtils.isBlank(remarque)) {
-			principal.setRemarque((principal.getRemarque() != null ? principal.getRemarque() : "") + remarque);
+			addRemarque(principal, remarque);
 			if (conjoint != null) {
-				conjoint.setRemarque((conjoint.getRemarque() != null ? conjoint.getRemarque() : "") + remarque);
+				addRemarque(conjoint, remarque);
 			}
-			menageCommun.setRemarque((menageCommun.getRemarque() != null ? menageCommun.getRemarque() : "") + remarque);
+			addRemarque(menageCommun, remarque);
 		}
 
 		updateSituationFamilleMariage(menageCommun, dateEffective, etatCivilFamille);
@@ -788,9 +795,10 @@ public class MetierServiceImpl implements MetierService {
 		updateSituationFamilleMariage(menage, date, etatCivilFamille);
 
 		if (!StringUtils.isBlank(remarque)) {
-			menage.setRemarque((menage.getRemarque() != null ? menage.getRemarque() : "") + remarque);
-			pp.setRemarque((pp.getRemarque() != null ? pp.getRemarque() : "") + remarque);
+			addRemarque(menage, remarque);
+			addRemarque(pp, remarque);
 		}
+
 		return menage;
 	}
 
@@ -915,12 +923,12 @@ public class MetierServiceImpl implements MetierService {
 
 		// ajout de la remarque aux tiers mis à jour
 		if (!StringUtils.isBlank(remarque)) {
-			principal.setRemarque((principal.getRemarque() != null ? principal.getRemarque() : "") + remarque);
+			addRemarque(principal, remarque);
 			if (conjoint != null) {
-				conjoint.setRemarque((conjoint.getRemarque() != null ? conjoint.getRemarque() : "") + remarque);
+				addRemarque(conjoint, remarque);
 			}
-			menageChoisi.setRemarque((menageChoisi.getRemarque() != null ? menageChoisi.getRemarque() : "") + remarque);
-			autreMenage.setRemarque((autreMenage.getRemarque() != null ? autreMenage.getRemarque() : "") + remarque);
+			addRemarque(menageChoisi, remarque);
+			addRemarque(autreMenage, remarque);
 		}
 
 		return menageChoisi;
@@ -1258,12 +1266,13 @@ public class MetierServiceImpl implements MetierService {
 			}
 
 			if (!StringUtils.isBlank(remarque)) {
-				principal.setRemarque((principal.getRemarque() != null ? principal.getRemarque() : "") + remarque);
+				addRemarque(principal, remarque);
 				if (conjoint != null) {
-					conjoint.setRemarque((conjoint.getRemarque() != null ? conjoint.getRemarque() : "") + remarque);
+					addRemarque(conjoint, remarque);
 				}
-				menage.setRemarque((menage.getRemarque() != null ? menage.getRemarque() : "") + remarque);
+				addRemarque(menage, remarque);
 			}
+
 			updateSituationFamilleSeparation(menage, date, etatCivilFamille);
 		}
 	}
@@ -1779,16 +1788,25 @@ public class MetierServiceImpl implements MetierService {
 		}
 
 		if (!StringUtils.isBlank(remarque)) {
-			defunt.setRemarque((defunt.getRemarque() != null ? defunt.getRemarque() : "") + remarque);
+			addRemarque(defunt, remarque);
 			if (veuf != null) {
-				veuf.setRemarque((veuf.getRemarque() != null ? veuf.getRemarque() : "") + remarque);
+				addRemarque(veuf, remarque);
 			}
 			if (menage != null) {
-				menage.setRemarque((menage.getRemarque() != null ? menage.getRemarque() : "") + remarque);
+				addRemarque(menage, remarque);
 			}
 		}
 
 		updateSituationFamilleDeces(defunt, date);
+	}
+
+	private void addRemarque(Tiers tiers, String remarque) {
+
+		final Remarque r = new Remarque();
+		r.setTexte(remarque);
+		r.setTiers(tiers);
+		
+		remarqueDAO.save(r);
 	}
 
 	private void doUpdateSituationFamilleDeces(PersonnePhysique defunt, PersonnePhysique veuf, MenageCommun menage, RegDate dateDeces) {
@@ -2080,8 +2098,8 @@ public class MetierServiceImpl implements MetierService {
 		}
 
 		if (!StringUtils.isBlank(remarque)) {
-			veuf.setRemarque((veuf.getRemarque() != null ? veuf.getRemarque() : "") + remarque);
-			menage.setRemarque((menage.getRemarque() != null ? menage.getRemarque() : "") + remarque);
+			addRemarque(veuf, remarque);
+			addRemarque(menage, remarque);
 		}
 
 		if (!isVeuvageApresDeces(veuf, menage, date)) {

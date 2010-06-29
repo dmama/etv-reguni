@@ -46,7 +46,8 @@ public class DbUnitFileEditor {
 
 		// supprime la colonne CTB_DPI_ID sur le table TIERS
 		//IDataSet outputDataSet = new DropColumnDataSet(inputDataSet, "CTB_DPI_ID");
-		IDataSet outputDataSet = new ModifPPDataSet(inputDataSet);
+		//IDataSet outputDataSet = new ModifPPDataSet(inputDataSet);
+		IDataSet outputDataSet = new DropColumnDataSet(inputDataSet, "REMARQUE");
 
 		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -60,41 +61,69 @@ public class DbUnitFileEditor {
 	}
 	
 	public static void main(String[] args) throws Exception {
-		String repBase = "C:/projets/registre/branches/UniregCTB/2.7/04-Implementation/unireg/";
-		String endPath = "/src/test/resources/ch/vd/uniregctb/";
-		String repbus = repBase + "business" + endPath;
-		String repbusit = repBase + "business-it" + endPath;
-		String repcore = repBase + "core" + endPath;
-		String repnorentes = repBase + "norentes" + endPath;
-		String reptesting = repBase + "testing" + endPath;
-		String repweb = repBase + "web" + endPath;
-		String repwebit = repBase + "web-it" + endPath;
-		
-		List<String> listeRep = new ArrayList<String>();
-		listeRep.add(repbus);
-		listeRep.add(repbusit);
-		listeRep.add(repcore);
-		listeRep.add(repnorentes);
-		listeRep.add(reptesting);
-		listeRep.add(repweb);
-		listeRep.add(repwebit);
-		
-		for(String rep :listeRep){
-			File repertoire = new File(rep);
-			List<String> listFile = findFile(repertoire);
-			for (String file : listFile) {
-				try {
-					traiteFichier(file);
-				} catch (Exception e) {
-					System.out.println("erreur exception : " + e.getMessage());
-				}
-			}
-		}
-		try {
-			traiteFichier(repBase + "web/src/main/resources/DBUnit4Import/tiers-basic.xml");
-		} catch (Exception e) {
-			System.out.println("erreur exception : " + e.getMessage());
-		}
+
+		traiteFichier("core/src/test/resources/ch/vd/uniregctb/declaration/DeclarationImpotOrdinaireDAOTest.xml");
+		traiteFichier("business/src/test/resources/ch/vd/uniregctb/activation/ActivationServiceTest.xml");
+		traiteFichier("business/src/test/resources/ch/vd/uniregctb/indexer/jobs/DatabaseIndexerJobTest.xml");
+		traiteFichier("business/src/test/resources/ch/vd/uniregctb/indexer/async/MassTiersIndexerTest.xml");
+		traiteFichier("business/src/test/resources/ch/vd/uniregctb/indexer/tiers/GlobalTiersSearcherTest.xml");
+		traiteFichier("business/src/test/resources/ch/vd/uniregctb/evenement/depart/deparHC26012004.xml");
+		traiteFichier("business/src/test/resources/ch/vd/uniregctb/declaration/ordinaire/TestDetermineDIsAEmettreContribuableNonValideTest.xml");
+		traiteFichier("business/src/test/resources/ch/vd/uniregctb/declaration/ordinaire/DetermineDIsJobTest.xml");
+		traiteFichier("business/src/test/resources/ch/vd/uniregctb/declaration/ordinaire/TestDetermineDetailsEnvoiProblemeIncoherenceDonnees.xml");
+		traiteFichier("business/src/test/resources/ch/vd/uniregctb/declaration/ordinaire/ImpressionDeclarationImpotOrdinaireHelperTest.xml");
+		traiteFichier("business/src/test/resources/ch/vd/uniregctb/declaration/ordinaire/EnvoiDIsJobTest.xml");
+		traiteFichier("business/src/test/resources/ch/vd/uniregctb/declaration/ordinaire/ImpressionDeclarationImpotOrdinaireHelperTest2.xml");
+		traiteFichier("business/src/test/resources/ch/vd/uniregctb/acomptes/AcomptesProcessorTest.xml");
+		traiteFichier("business/src/test/resources/ch/vd/uniregctb/adresse/TiersAvecDeuxAdressesFiscalesAvecDatesFinNulles.xml");
+		traiteFichier("business-it/src/test/resources/ch/vd/uniregctb/declaration/ordinaire/DetermineDIsAEmettreTestAppSmall.xml");
+		traiteFichier("web/src/test/resources/ch/vd/uniregctb/tiers/TiersRapportControllerTest.xml");
+		traiteFichier("web/src/test/resources/ch/vd/uniregctb/tiers/TiersForControllerTest.xml");
+		traiteFichier("web/src/main/resources/DBUnit4Import/tiers-basic.xml");
+		traiteFichier("web-it/src/test/resources/ch/vd/uniregctb/couple/manager/UNIREG-1521.xml");
+		traiteFichier("web-it/src/test/resources/ch/vd/uniregctb/webservice/tiers2/TiersServiceWebCEDITest.xml");
+		traiteFichier("web-it/src/test/resources/ch/vd/uniregctb/webservice/tiers2/TiersServiceWebPoursuiteTest.xml");
+		traiteFichier("web-it/src/test/resources/ch/vd/uniregctb/webservice/tiers2/TiersServiceWebTest.xml");
+		traiteFichier("web-it/src/test/resources/ch/vd/uniregctb/webservice/tiers2/TiersServiceWebTAOISTest.xml");
+		traiteFichier("web-it/src/test/resources/ch/vd/uniregctb/webservice/tiers/TiersServiceWebTest.xml");
+		traiteFichier("web-it/src/test/resources/ch/vd/uniregctb/webservice/tiers/TiersServiceWebTAOISTest.xml");
+		traiteFichier("web-it/src/test/resources/ch/vd/uniregctb/pages/EachWebPageTest.xml");
+
+//		String repBase = "C:/projets/registre/branches/UniregCTB/2.7/04-Implementation/unireg/";
+//		String endPath = "/src/test/resources/ch/vd/uniregctb/";
+//		String repbus = repBase + "business" + endPath;
+//		String repbusit = repBase + "business-it" + endPath;
+//		String repcore = repBase + "core" + endPath;
+//		String repnorentes = repBase + "norentes" + endPath;
+//		String reptesting = repBase + "testing" + endPath;
+//		String repweb = repBase + "web" + endPath;
+//		String repwebit = repBase + "web-it" + endPath;
+//
+//		List<String> listeRep = new ArrayList<String>();
+//		listeRep.add(repbus);
+//		listeRep.add(repbusit);
+//		listeRep.add(repcore);
+//		listeRep.add(repnorentes);
+//		listeRep.add(reptesting);
+//		listeRep.add(repweb);
+//		listeRep.add(repwebit);
+//
+//		for(String rep :listeRep){
+//			File repertoire = new File(rep);
+//			List<String> listFile = findFile(repertoire);
+//			for (String file : listFile) {
+//				try {
+//					traiteFichier(file);
+//				} catch (Exception e) {
+//					System.out.println("erreur exception : " + e.getMessage());
+//				}
+//			}
+//		}
+//		try {
+//			traiteFichier(repBase + "web/src/main/resources/DBUnit4Import/tiers-basic.xml");
+//		} catch (Exception e) {
+//			System.out.println("erreur exception : " + e.getMessage());
+//		}
 	}
 	
 	static private List<String> findFile(File rep){

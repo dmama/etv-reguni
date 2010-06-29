@@ -63,7 +63,13 @@ XT.doAjaxSubmit = function(eventId, sourceElement, serverParams, clientParams) {
     if (! clientParams.errorHandler) {
         clientParams.errorHandler = this.defaultErrorHandler;
     }
-    
+
+    var url = document.URL;
+	if (url.indexOf("#") > 0) {
+		// msi (2010.06.29) on va faire du POST : tous les éléments après le # n'ont aucun sens.
+		url = url.substring(0, url.indexOf("#"));
+	}
+
     var ajaxClient = null;
     // devacrfr correct bug : # in URL
     // BEGIN
@@ -72,9 +78,9 @@ XT.doAjaxSubmit = function(eventId, sourceElement, serverParams, clientParams) {
     }
     // END
     else if (clientParams.clearQueryString && clientParams.clearQueryString == true && document.URL.indexOf("?") != -1) {
-        ajaxClient = new XT.ajax.Client(document.URL.substring(0, document.URL.indexOf("?")));
+        ajaxClient = new XT.ajax.Client(url.substring(0, url.indexOf("?")));
     } else {
-        ajaxClient = new XT.ajax.Client(document.URL);
+        ajaxClient = new XT.ajax.Client(url);
     }
     
     if (clientParams.formName) {
@@ -137,7 +143,12 @@ XT.ajax.Client = function(url) {
             configureRequest(ajaxRequest, clientParams);
             
             ajaxRequest.addFormElements(sourceForm);
-            ajaxRequest.setQueryString(ajaxRequest.getQueryString() + "&" + queryString);
+
+	        if (ajaxRequest.getQueryString() !== "") {
+				queryString = ajaxRequest.getQueryString() + "&" + queryString;
+			}
+			ajaxRequest.setQueryString(queryString);
+
             ajaxRequest.setUsePOST();
             
             ajaxRequest.sendRequest();

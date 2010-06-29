@@ -54,6 +54,7 @@
 		<property name="hibernateTemplate" ref="hibernateTemplate" />
 		<property name="transactionManager" ref="transactionManager" />
 		<property name="adresseService" ref="adresseService" />
+		<property name="remarqueDAO" ref="remarqueDAO" />
 	</bean>
 
 	<bean id="metierService" class="ch.vd.uniregctb.metier.MetierServiceImpl">
@@ -66,6 +67,7 @@
 		<property name="hibernateTemplate" ref="hibernateTemplate" />
 		<property name="situationFamilleService" ref="situationFamilleService" />
 		<property name="tiersSearcher" ref="globalTiersSearcher" />
+		<property name="remarqueDAO" ref="remarqueDAO" />
 	</bean>
 
 	<bean id="adresseService" class="ch.vd.uniregctb.adresse.AdresseServiceImpl">

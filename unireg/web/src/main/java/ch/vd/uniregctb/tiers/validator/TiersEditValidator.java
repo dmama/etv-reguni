@@ -213,10 +213,6 @@ public class TiersEditValidator implements Validator {
 					}
 				}
 
-				if (tiers.getRemarque() != null && tiers.getRemarque().length() > LengthConstants.TIERS_REMARQUE) {
-					errors.rejectValue("tiers.remarque", "error.remarque");
-					errors.reject("onglet.error.complements");
-				}
 				//Validation du tiers
 				ValidationResults results = tiers.validate();
 				List<String> erreurs = results.getErrors();

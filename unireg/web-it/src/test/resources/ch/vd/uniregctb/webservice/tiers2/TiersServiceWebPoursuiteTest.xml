@@ -22,7 +22,6 @@
     <column>NUMERO_TEL_PROF</column>
     <column>OID</column>
     <column>PERSONNE_CONTACT</column>
-    <column>REMARQUE</column>
     <column>TITULAIRE_COMPTE_BANCAIRE</column>
     <column>DATE_LIMITE_EXCLUSION</column>
     <column>AC_FORME_JURIDIQUE</column>
@@ -67,7 +66,6 @@
       <null/>
       <value>0</value>
       <value>1</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -140,7 +138,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
       <value>21038</value>
       <null/>
       <null/>
@@ -173,7 +170,6 @@
       <null/>
       <value>0</value>
       <value>1</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -226,7 +222,6 @@
       <null/>
       <value>0</value>
       <value>1</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -315,7 +310,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
     </row>
     <row>
       <value>PersonnePhysique</value>
@@ -332,7 +326,6 @@
       <null/>
       <value>0</value>
       <value>1</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -412,7 +405,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
       <value>1</value>
       <null/>
       <null/>
@@ -438,7 +430,6 @@
       <null/>
       <value>0</value>
       <value>1</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -518,7 +509,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
       <value>1</value>
       <null/>
       <null/>
@@ -544,7 +534,6 @@
       <null/>
       <value>0</value>
       <value>1</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -624,7 +613,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
       <value>1</value>
       <null/>
       <null/>
@@ -650,7 +638,6 @@
       <null/>
       <value>0</value>
       <value>1</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -730,7 +717,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
       <value>1</value>
       <null/>
       <null/>
@@ -756,7 +742,6 @@
       <null/>
       <value>0</value>
       <value>1</value>
-      <null/>
       <null/>
       <null/>
       <null/>

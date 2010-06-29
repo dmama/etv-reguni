@@ -27,7 +27,6 @@
     <column>NUMERO_TELECOPIE</column>
     <column>ADRESSE_EMAIL</column>
     <column>NUMERO_COMPTE_BANCAIRE</column>
-    <column>REMARQUE</column>
     <column>ADRESSE_BIC_SWIFT</column>
     <column>BLOC_REMB_AUTO</column>
     <column>TITULAIRE_COMPTE_BANCAIRE</column>
@@ -54,7 +53,6 @@
       <null/>
       <value>19650923</value>
       <value>MASCULIN</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -105,7 +103,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
       <value>2009-03-04</value>
       <null/>
       <value>0</value>
@@ -139,7 +136,6 @@
       <value>CH1900767000U01234567</value>
       <null/>
       <null/>
-      <null/>
       <value><![CDATA[Emery Lyah]]></value>
       <null/>
       <null/>
@@ -153,7 +149,6 @@
       <value>PersonnePhysique</value>
       <value>0</value>
       <value>674417</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -218,7 +213,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
       <value>1</value>
     </row>
     <row>
@@ -227,7 +221,6 @@
       <value>PersonnePhysique</value>
       <value>0</value>
       <value>333908</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -293,7 +286,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -324,7 +316,6 @@
       <value>CH1900767000U01234567</value>
       <null/>
       <null/>
-      <null/>
       <value><![CDATA[PME Duchemolle]]></value>
       <null/>
       <value><![CDATA[Employeur personnel menage]]></value>
@@ -339,7 +330,6 @@
       <value>0</value>
       <null/>
       <value>27769</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -396,7 +386,6 @@
       <value>0219663629</value>
       <value>dupont@etat-vaud.ch</value>
       <value>N1141414CH</value>
-      <value><![CDATA[Mauvais Payeur]]></value>
       <value>CCBPFRPPBDX</value>
       <value>0</value>
       <value><![CDATA[ERIC MONTAGNY]]></value>
@@ -436,7 +425,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
       <value>Chopard</value>
       <null/>
       <none/>
@@ -456,7 +444,7 @@
       <null/>
       <null/>
       <null/>
-      <value>Tummers-De Wit Wouter</value>
+      <value><![CDATA[Tummers-De Wit Wouter]]></value>
       <null/>
       <null/>
       <null/>
@@ -474,8 +462,7 @@
       <null/>
       <null/>
       <null/>
-      <null/>
-      <value>De Wit Tummers Elisabeth</value>
+      <value><![CDATA[De Wit Tummers Elisabeth]]></value>
       <null/>
       <null/>
       <value>0</value>
@@ -486,7 +473,6 @@
       <value>PersonnePhysique</value>
       <value>0</value>
       <value>212620</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -794,17 +780,17 @@
       <null/>
       <null/>
       <null/>
-      <value>Olympialaan 17</value>
+      <value><![CDATA[Olympialaan 17]]></value>
       <null/>
       <null/>
       <null/>
       <null/>
       <null/>
-      <value>4624 Aa Bergem Op Zoom</value>
+      <value><![CDATA[4624 Aa Bergem Op Zoom]]></value>
       <value>8227</value>
       <null/>
       <value>0</value>
-      <value>De Wit Tummers Elisabeth</value>
+      <value><![CDATA[De Wit Tummers Elisabeth]]></value>
     </row>
   </table>
   <table name="FOR_FISCAL">
@@ -835,6 +821,8 @@
       <value>COMMUNE_OU_FRACTION_VD</value>
       <value>5586</value>
       <null/>
+      <none/>
+      <none/>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -849,6 +837,8 @@
       <value>COMMUNE_OU_FRACTION_VD</value>
       <value>5586</value>
       <null/>
+      <none/>
+      <none/>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -863,6 +853,8 @@
       <value>COMMUNE_OU_FRACTION_VD</value>
       <value>5586</value>
       <null/>
+      <none/>
+      <none/>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -877,6 +869,8 @@
       <value>COMMUNE_OU_FRACTION_VD</value>
       <value>5652</value>
       <null/>
+      <none/>
+      <none/>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -891,6 +885,8 @@
       <value>COMMUNE_OU_FRACTION_VD</value>
       <value>5652</value>
       <null/>
+      <none/>
+      <none/>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -905,6 +901,8 @@
       <value>COMMUNE_OU_FRACTION_VD</value>
       <value>5652</value>
       <value>2009-03-04</value>
+      <none/>
+      <none/>
     </row>
     <row>
       <value>2005-01-01</value>
@@ -919,6 +917,8 @@
       <value>PAYS_HS</value>
       <value>8227</value>
       <null/>
+      <none/>
+      <none/>
     </row>
     <row>
       <value>2005-01-01</value>
@@ -933,6 +933,8 @@
       <value>COMMUNE_OU_FRACTION_VD</value>
       <value>5405</value>
       <null/>
+      <none/>
+      <none/>
     </row>
     <row>
       <value>2008-01-01</value>

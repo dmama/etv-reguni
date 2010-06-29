@@ -38,7 +38,13 @@
     	<property name="tiersDAO" ref="tiersDAO" />
 		<property name="transactionManager" ref="transactionManager" />
     </bean>
-    
+
+	<bean id="ajaxRemarqueHandler" class="ch.vd.uniregctb.web.xt.handler.remarque.RemarqueHandler" >
+		<property name="transactionManager" ref="transactionManager" />
+		<property name="tiersDAO" ref="tiersDAO" />
+		<property name="remarqueDAO" ref="remarqueDAO" />
+	</bean>
+
     <bean id="ajaxPostItHandler" class="ch.vd.uniregctb.web.xt.handler.PostItHandler" >
 		<property name="tacheService" ref="tacheService" />
     </bean>
@@ -58,6 +64,7 @@
             <props>
                 <prop key="/**/*.do">ajaxAutoCompleteHandler,ajaxToolTipHandler,ajaxTabulationHandler,ajaxMotifsForHandler,ajaxPostItHandler,ajaxCivilDataHandler,ajaxAdresseDataHandler</prop>
 				<prop key="/fiscal/for.do">tiersForController</prop>
+				<prop key="/tiers/*.do">ajaxRemarqueHandler</prop>
                 <prop key="/admin/evenementExterne/main.do">evenementExterneController</prop>
                 <prop key="/admin/evenementExterne/quittancement.do">quittancementController</prop>                              
                 <prop key="/admin/evenementExterne/rapporttravail.do">rapportTravailController</prop>

@@ -23,7 +23,6 @@
     <column>NUMERO_TELECOPIE</column>
     <column>ADRESSE_EMAIL</column>
     <column>NUMERO_COMPTE_BANCAIRE</column>
-    <column>REMARQUE</column>
     <column>ADRESSE_BIC_SWIFT</column>
     <column>BLOC_REMB_AUTO</column>
     <column>TITULAIRE_COMPTE_BANCAIRE</column>
@@ -54,7 +53,6 @@
       <value>0219663629</value>
       <value>dupont@etat-vaud.ch</value>
       <value>CH9308440717427290198</value>
-      <value><![CDATA[Mauvais Payeur]]></value>
       <value>CCBPFRPPBDX</value>
       <value>0</value>
       <value><![CDATA[ERIC MONTAGNY]]></value>
