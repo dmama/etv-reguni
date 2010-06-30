@@ -734,14 +734,10 @@ var Modifier = {
 	    theForm.appendChild( this.inputTarget);
 	    this.setIsModified( this.isModifiedSending);
 	 },
- 
- 
+
+
 	submitSaveConfirmation : function(submit) {
-		var shouldSave = true;
-	  	if (this.isModified) {
-	  		shouldSave = confirm(this.messageSaveSubmitConfirmation);
-	  	}
-	  	if (shouldSave) {
+	  	if (!this.isModified || confirm(this.messageSaveSubmitConfirmation)) {
 			var form = F$(this.formName);
 			var saveSubmit = form.elements[this.submitSaveName];
 			if (saveSubmit) {
@@ -758,10 +754,14 @@ var Modifier = {
 				form.appendChild(confirmedSave);
 			}
 			confirmedSave.value = "yes";
+			form.submit();
+			return true;
 	  	}
-	  	return shouldSave;
+	  	else {
+	  		return false;
+	  	}
 	},
- 
+
 	overConfirmation : function(link) {
 	  	if ( this.isModified)
 	  		return confirm(this.messageOverConfirmation);
