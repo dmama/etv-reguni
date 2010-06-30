@@ -254,7 +254,7 @@ public class TiersImportController extends AbstractSimpleFormController {
 					try {
 						nomsPrenoms = adresseService.getNomCourrier(t, null, false);
 					}
-					catch (AdresseException e) {
+					catch (Exception e) {
 						nomsPrenoms = Arrays.asList("Exception: " + e.getMessage());
 					}
 
