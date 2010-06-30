@@ -121,6 +121,10 @@ public class TiersDAOMockPM implements TiersDAO {
 		throw new NotImplementedException();
 	}
 
+	public List<Tiers> getFirst(int count) {
+		throw new NotImplementedException();
+	}
+
 	public List<Tiers> getBatch(Collection<Long> ids, Set<Parts> parts) {
 		throw new NotImplementedException();
 	}

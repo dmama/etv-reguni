@@ -48,7 +48,18 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
         }
     }
 
-    private interface TiersIdGetter<T extends HibernateEntity> {
+	@SuppressWarnings({"unchecked"})
+	public List<Tiers> getFirst(final int count) {
+		return getHibernateTemplate().executeFind(new HibernateCallback() {
+			public Object doInHibernate(Session session) throws HibernateException, SQLException {
+				final Query query = session.createQuery("from Tiers");
+				query.setMaxResults(count);
+				return query.list();
+			}
+		});
+	}
+
+	private interface TiersIdGetter<T extends HibernateEntity> {
         public Long getTiersId(T entity);
     }
 

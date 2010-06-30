@@ -10,6 +10,7 @@
 		<property name="successView" value="admin/tiersImportConfirmation" />
 		<property name="globalIndexer" ref="globalTiersIndexer" />
 		<property name="tiersDAO" ref="tiersDAO" />
+		<property name="adresseService" ref="adresseService" />
 		<property name="docService" ref="docService" />
 		<property name="dbService" ref="databaseService" />
 		<property name="transactionManager" ref="transactionManager" />

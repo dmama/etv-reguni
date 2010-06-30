@@ -22,6 +22,16 @@ public interface TiersDAO extends GenericDAO<Tiers, Long> {
 	Tiers get(long id, boolean doNotAutoFlush);
 
 	/**
+	 * Retourne les <i>count</i> premiers tiers de la base de données.
+	 * <p/>
+	 * <b>Note:</b> aucune garantie n'est faite sur le contenu des tiers retournés dans le cas où la base contient plus de tiers que le nombre spécifié.
+	 *
+	 * @param count le nombre maximal de tiers à retourner
+	 * @return une liste de tiers
+	 */
+	List<Tiers> getFirst(int count);
+
+	/**
 	 * Liste des collections associées à un tiers.
 	 */
 	public enum Parts {

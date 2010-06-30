@@ -1,5 +1,8 @@
 package ch.vd.uniregctb.admin;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -7,13 +10,10 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
 import org.dbunit.DatabaseUnitException;
@@ -30,6 +30,8 @@ import org.springframework.web.servlet.view.RedirectView;
 
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.admin.ScriptBean.DBUnitMode;
+import ch.vd.uniregctb.adresse.AdresseException;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.AbstractSimpleFormController;
 import ch.vd.uniregctb.database.DatabaseService;
@@ -64,6 +66,7 @@ public class TiersImportController extends AbstractSimpleFormController {
 	private static final String SCRIPTS_LIST_FILES = SCRIPTS_FOLDER_PATH+"/files-list.txt";
 
 	private TiersDAO dao;
+	private AdresseService adresseService;
 	private DocumentService docService;
 	private DatabaseService dbService;
 
@@ -202,6 +205,9 @@ public class TiersImportController extends AbstractSimpleFormController {
 				launchDbUnit(inputXML, script.getMode(), filename);
 
 				successView.addObject("scriptResult", "success");
+
+				final List<InfoTiers> infoTiers = buildInfoTiers();
+				successView.addObject("infoTiers", infoTiers);
 			}
 			catch (IndexerException e) {
 				successView.addObject("scriptResult", "IndexerException");
@@ -227,19 +233,84 @@ public class TiersImportController extends AbstractSimpleFormController {
 	}
 
 	/**
-	 * Lancement du script DBUnit. Attention a bien configurer le transaction
-	 * manager dans Spring pour que cette méthode se fasse dans une transaction.
+	 * Construit la liste des numéros, type et noms courrier des 100 premiers tiers de la base de données.
 	 *
-	 * @param inputXML
-	 *            le flux d'entrée contenant le script DBUnit
-	 * @param mode
-	 *            le mode de lancement
-	 * @throws DataSetException
-	 *             si le script XML n'est pas syntaxiquement correct
-	 * @throws SQLException
-	 *             s'il y a un problème de connection à la base de données
-	 * @throws DatabaseUnitException
-	 *             s'il y a une erreur lors de l'exécution du script
+	 * @return une liste contenant des informaitons de tiers
+	 */
+	private List<InfoTiers> buildInfoTiers() {
+
+		final List<InfoTiers> infoTiers = new ArrayList<InfoTiers>();
+
+		TransactionTemplate template = new TransactionTemplate(transactionManager);
+		template.setReadOnly(true);
+		template.execute(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final List<Tiers> list = dao.getFirst(100);
+				for (Tiers t : list) {
+					
+					final Long numero = t.getNumero();
+					final String type = t.getNatureTiers();
+					List<String> nomsPrenoms;
+					try {
+						nomsPrenoms = adresseService.getNomCourrier(t, null, false);
+					}
+					catch (AdresseException e) {
+						nomsPrenoms = Arrays.asList("Exception: " + e.getMessage());
+					}
+
+					InfoTiers info = new InfoTiers(numero, type, nomsPrenoms);
+					infoTiers.add(info);
+				}
+				return null;
+			}
+		});
+
+		return infoTiers;
+	}
+
+	public static class InfoTiers {
+		
+		private final long numero;
+		private final String type;
+		private final String nomsPrenoms;
+
+		public InfoTiers(long numero, String type, List<String> nomsPrenoms) {
+			this.numero = numero;
+			this.type = type;
+
+			StringBuilder b = new StringBuilder();
+			for (String n : nomsPrenoms) {
+				if (b.length() != 0) {
+					b.append(" / ");
+				}
+				b.append(n);
+			}
+			this.nomsPrenoms = b.toString();
+		}
+
+		public long getNumero() {
+			return numero;
+		}
+
+		public String getType() {
+			return type;
+		}
+
+		@SuppressWarnings({"UnusedDeclaration"})
+		public String getNomsPrenoms() {
+			return nomsPrenoms;
+		}
+	}
+
+	/**
+	 * Lancement du script DBUnit. Attention a bien configurer le transaction manager dans Spring pour que cette méthode se fasse dans une transaction.
+	 *
+	 * @param inputXML le flux d'entrée contenant le script DBUnit
+	 * @param mode     le mode de lancement
+	 * @param filename le nom fichier à charger
+	 * @throws DataSetException      si le script XML n'est pas syntaxiquement correct
+	 * @throws SQLException          s'il y a un problème de connection à la base de données
+	 * @throws DatabaseUnitException s'il y a une erreur lors de l'exécution du script
 	 */
 	private void launchDbUnit(InputStream inputXML, DBUnitMode mode, String filename) throws Exception {
 
@@ -247,24 +318,22 @@ public class TiersImportController extends AbstractSimpleFormController {
 
 		// D'abord vide la base
 		switch (mode) {
-			case DELETE_ALL:
-			case CLEAN_INSERT:
-			{
-				dbService.truncateDatabase();
-				globalIndexer.overwriteIndex();
-				Audit.success("La base de données est vidée");
-			}
-			break;
+		case DELETE_ALL:
+		case CLEAN_INSERT: {
+			dbService.truncateDatabase();
+			globalIndexer.overwriteIndex();
+			Audit.success("La base de données est vidée");
+		}
+		break;
 		}
 
 		switch (mode) {
-			case INSERT_APPEND:
-			case CLEAN_INSERT:
-			{
-				dbService.loadFromDbunitFile(inputXML, null);
-				Audit.success("La base de données a été chargée avec le fichier " + filename);
-			}
-			break;
+		case INSERT_APPEND:
+		case CLEAN_INSERT: {
+			dbService.loadFromDbunitFile(inputXML, null);
+			Audit.success("La base de données a été chargée avec le fichier " + filename);
+		}
+		break;
 		}
 
 		// Tout s'est bien passé => Re-Indexation des données
@@ -272,11 +341,7 @@ public class TiersImportController extends AbstractSimpleFormController {
 		Audit.success("La base de données a été réindexée. Elle contient " + count + " entrées");
 	}
 
-	/**
-	 * L'indexer pour indexer la DB apres le load
-	 *
-	 * @param globalIndexer
-	 */
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setGlobalIndexer(GlobalTiersIndexer globalIndexer) {
 		this.globalIndexer = globalIndexer;
 	}
@@ -285,10 +350,16 @@ public class TiersImportController extends AbstractSimpleFormController {
 		this.dao = dao;
 	}
 
+	public void setAdresseService(AdresseService adresseService) {
+		this.adresseService = adresseService;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setDocService(DocumentService docService) {
 		this.docService = docService;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setDbService(DatabaseService dbService) {
 		this.dbService = dbService;
 	}

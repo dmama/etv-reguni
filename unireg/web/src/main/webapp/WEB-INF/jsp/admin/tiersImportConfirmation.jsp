@@ -13,6 +13,19 @@
 	<c:choose>
 		<c:when test="${scriptResult eq 'success'}">
 			<fmt:message key="label.admin.import.script.successful" />
+			<br/>
+			<p>
+			Les tiers suivants sont présents dans la base de données (100 premiers tiers uniquement) :
+			<table>
+				<c:forEach items="${infoTiers}" var="i">
+				<tr class="<unireg:nextRowClass/>" >
+					<td><a href="../tiers/visu.do?id=${i.numero}"><unireg:numCTB numero="${i.numero}"/></a></td>
+					<td><c:out value="${i.nomsPrenoms}"/></td>
+					<td><c:out value="${i.type}"/></td>
+				</tr>
+				</c:forEach>
+			</table>
+			</p>
 		</c:when>
 	
 		<c:when test="${scriptResult eq 'noInputStream'}">
