@@ -3,7 +3,7 @@
 
 <c:set var="tiersId" value="${param.tiersId}"/>
 
-<div id="remarques"></div>
+<div id="remarques"><img src="<c:url value="/images/loading.gif"/>"/>Chargement des remarques...</div>
 
 <script type="text/javascript">
 	// appels ajax pour charger les remarques
