@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.metier;
 
 import java.util.Arrays;
+import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -9,7 +10,9 @@ import static org.junit.Assert.fail;
 
 import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.registre.civil.model.EnumAttributeIndividu;
+import ch.vd.registre.civil.model.EnumTypeEtatCivil;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.evenement.common.EvenementCivilHandlerException;
 import ch.vd.uniregctb.interfaces.model.Nationalite;
@@ -21,12 +24,16 @@ import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
+
+import junit.framework.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
+import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -1215,6 +1222,162 @@ public class MetiersServiceTest extends BusinessTest {
 			assertEquals(MotifFor.VEUVAGE_DECES, ffp.getMotifOuverture());
 			assertEquals(MockPays.France.getNoOFS(), (int) ffp.getNumeroOfsAutoriteFiscale());
 			assertEquals(TypeAutoriteFiscale.PAYS_HS, ffp.getTypeAutoriteFiscale());
+		}
+	}
+
+	/**
+	 * C'est le cas du cas JIRA UNIREG-1623
+	 */
+	@Test
+	public void testVeuvageCivilSurCoupleSepareDepuisTellementLongtempsQueLeCoupleEstAbsentDUnireg() throws Exception {
+
+		final long noIndFabrice = 12541L;
+		final RegDate dateNaissance = date(1970, 1, 1);
+		final RegDate dateMariage = date(1995, 1, 1);
+		final RegDate dateSeparation = date(2000, 5, 13);
+		final RegDate dateVeuvage = date(2009, 9, 16);
+
+		// mise en place civile
+		serviceCivil.setUp(new DefaultMockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu fabrice = addIndividu(noIndFabrice, dateNaissance, "Dutrou", "Fabrice", true);
+				addEtatCivil(fabrice, dateNaissance, EnumTypeEtatCivil.CELIBATAIRE);
+				addEtatCivil(fabrice, dateMariage, EnumTypeEtatCivil.MARIE);
+				addEtatCivil(fabrice, dateSeparation, EnumTypeEtatCivil.SEPARE);
+				addEtatCivil(fabrice, dateVeuvage, EnumTypeEtatCivil.VEUF);
+			}
+		});
+
+		// mise en place fiscale
+		final long ppId = (Long) doInNewTransaction(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus transactionStatus) {
+				final PersonnePhysique fabrice = addHabitant(noIndFabrice);
+				addForPrincipal(fabrice, dateSeparation, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Lausanne);
+				return fabrice.getNumero();
+			}
+		});
+
+		// vérification/application du veuvage
+		{
+			final PersonnePhysique fabrice = (PersonnePhysique) tiersDAO.get(ppId);
+			final ValidationResults resultatValidation = metierService.validateVeuvage(fabrice, dateVeuvage);
+			Assert.assertNotNull(resultatValidation);
+			Assert.assertEquals(0, resultatValidation.errorsCount());
+
+			metierService.veuvage(fabrice, dateVeuvage, "Test pour cas UNIREG-1623", null);
+
+			final Set<ForFiscal> ff = fabrice.getForsFiscaux();
+			Assert.assertEquals(1, ff.size());
+
+			final ForFiscalPrincipal ffp = (ForFiscalPrincipal) ff.iterator().next();
+			Assert.assertNotNull(ffp);
+			Assert.assertNull(ffp.getAnnulationDate());
+			Assert.assertNull(ffp.getDateFin());
+		}
+	}
+
+	/**
+	 * C'est un cas dérivé du cas JIRA UNIREG-1623
+	 */
+	@Test
+	public void testVeuvageSurSepare() throws Exception {
+
+		final long noIndFabrice = 12541L;
+		final RegDate dateNaissance = date(1970, 1, 1);
+		final RegDate dateMariage = date(1995, 1, 1);
+		final RegDate dateSeparation = date(2000, 5, 13);
+		final RegDate dateVeuvage = date(2009, 9, 16);
+
+		// mise en place civile
+		serviceCivil.setUp(new DefaultMockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu fabrice = addIndividu(noIndFabrice, dateNaissance, "Dutrou", "Fabrice", true);
+				addEtatCivil(fabrice, dateNaissance, EnumTypeEtatCivil.CELIBATAIRE);
+				addEtatCivil(fabrice, dateMariage, EnumTypeEtatCivil.MARIE);
+				addEtatCivil(fabrice, dateSeparation, EnumTypeEtatCivil.SEPARE);
+				addEtatCivil(fabrice, dateVeuvage, EnumTypeEtatCivil.VEUF);
+			}
+		});
+
+		// mise en place fiscale
+		final long ppId = (Long) doInNewTransaction(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus transactionStatus) {
+				final PersonnePhysique fabrice = addHabitant(noIndFabrice);
+				final PersonnePhysique patricia = addNonHabitant("Patricia", "Dutrou", date(1969, 4, 12), Sexe.FEMININ);
+				final EnsembleTiersCouple couple = addEnsembleTiersCouple(fabrice, patricia, dateMariage, dateSeparation.getOneDayBefore());
+				final MenageCommun menage = couple.getMenage();
+				addForPrincipal(menage, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, dateSeparation.getOneDayBefore(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Lausanne);
+				addForPrincipal(fabrice, dateSeparation, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Lausanne);
+				return fabrice.getNumero();
+			}
+		});
+
+		// vérification/application du veuvage
+		{
+			final PersonnePhysique fabrice = (PersonnePhysique) tiersDAO.get(ppId);
+			final ValidationResults resultatValidation = metierService.validateVeuvage(fabrice, dateVeuvage);
+			Assert.assertNotNull(resultatValidation);
+			Assert.assertEquals(0, resultatValidation.errorsCount());
+
+			metierService.veuvage(fabrice, dateVeuvage, null, null);
+
+			final Set<ForFiscal> ff = fabrice.getForsFiscaux();
+			Assert.assertEquals(1, ff.size());
+
+			final ForFiscalPrincipal ffp = (ForFiscalPrincipal) ff.iterator().next();
+			Assert.assertNotNull(ffp);
+			Assert.assertNull(ffp.getAnnulationDate());
+			Assert.assertNull(ffp.getDateFin());
+		}
+	}
+
+	/**
+	 * C'est un cas dérivé du cas JIRA UNIREG-1623
+	 */
+	@Test
+	public void testVeuvageSurSepareSansFor() throws Exception {
+
+		final long noIndFabrice = 12541L;
+		final RegDate dateNaissance = date(1970, 1, 1);
+		final RegDate dateMariage = date(1995, 1, 1);
+		final RegDate dateSeparation = date(2000, 5, 13);
+		final RegDate dateVeuvage = date(2009, 9, 16);
+
+		// mise en place civile
+		serviceCivil.setUp(new DefaultMockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu fabrice = addIndividu(noIndFabrice, dateNaissance, "Dutrou", "Fabrice", true);
+				addEtatCivil(fabrice, dateNaissance, EnumTypeEtatCivil.CELIBATAIRE);
+				addEtatCivil(fabrice, dateMariage, EnumTypeEtatCivil.MARIE);
+				addEtatCivil(fabrice, dateSeparation, EnumTypeEtatCivil.SEPARE);
+				addEtatCivil(fabrice, dateVeuvage, EnumTypeEtatCivil.VEUF);
+			}
+		});
+
+		// mise en place fiscale
+		final long ppId = (Long) doInNewTransaction(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus transactionStatus) {
+				final PersonnePhysique fabrice = addHabitant(noIndFabrice);
+				final PersonnePhysique patricia = addNonHabitant("Patricia", "Dutrou", date(1969, 4, 12), Sexe.FEMININ);
+				final EnsembleTiersCouple couple = addEnsembleTiersCouple(fabrice, patricia, dateMariage, dateSeparation.getOneDayBefore());
+				final MenageCommun menage = couple.getMenage();
+				addForPrincipal(menage, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, dateSeparation.getOneDayBefore(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Lausanne);
+				return fabrice.getNumero();
+			}
+		});
+
+		// vérification/application du veuvage
+		{
+			final PersonnePhysique fabrice = (PersonnePhysique) tiersDAO.get(ppId);
+			final ValidationResults resultatValidation = metierService.validateVeuvage(fabrice, dateVeuvage);
+			Assert.assertNotNull(resultatValidation);
+			Assert.assertEquals(1, resultatValidation.errorsCount());
+
+			final String erreur = resultatValidation.getErrors().get(0);
+			Assert.assertEquals("L'individu veuf n'a ni couple connu ni for valide à la date de veuvage : problème d'assujettissement ?", erreur);
 		}
 	}
 }
