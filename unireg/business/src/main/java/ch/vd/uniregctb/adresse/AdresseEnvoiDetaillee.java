@@ -25,11 +25,6 @@ public class AdresseEnvoiDetaillee extends AdresseEnvoi {
 	private TypeAffranchissement typeAffranchissement = TypeAffranchissement.SUISSE;
 	private AdresseGenerique.Source source;
 
-	/**
-	 * Construit une adresse d'envoi détaillée pour une adresse située en Suisse
-	 *
-	 * @param source la source de l'adresse
-	 */
 	public AdresseEnvoiDetaillee(AdresseGenerique.Source source) {
 		this.source = source;
 	}
@@ -113,14 +108,12 @@ public class AdresseEnvoiDetaillee extends AdresseEnvoi {
 	public void addPays(String ligne, TypeAffranchissement typeAffranchissement) {
 		this.pays = ligne;
 		this.typeAffranchissement = typeAffranchissement;
-		setHorsSuisse(typeAffranchissement != TypeAffranchissement.SUISSE);
 		addLine(ligne);
 	}
 
 	public void addPays(String ligne, TypeAffranchissement typeAffranchissement, int optionalite) {
 		this.pays = ligne;
 		this.typeAffranchissement = typeAffranchissement;
-		setHorsSuisse(typeAffranchissement != TypeAffranchissement.SUISSE);
 		addLine(ligne, optionalite);
 	}
 

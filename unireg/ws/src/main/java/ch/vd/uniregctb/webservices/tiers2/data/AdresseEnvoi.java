@@ -14,7 +14,7 @@ import ch.vd.uniregctb.webservices.tiers2.impl.EnumHelper;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "AdresseEnvoi", propOrder = {
-		"ligne1", "ligne2", "ligne3", "ligne4", "ligne5", "ligne6", "ligne7", "isSuisse", "salutations", "formuleAppel", "typeAffranchissement"
+		"ligne1", "ligne2", "ligne3", "ligne4", "ligne5", "ligne6", "isSuisse", "salutations", "formuleAppel", "typeAffranchissement"
 })
 public class AdresseEnvoi {
 
@@ -36,19 +36,8 @@ public class AdresseEnvoi {
 	@XmlElement(required = false)
 	public String ligne6;
 
-	/**
-	 * [UNIREG-1974] La poste suisse accepte :
-	 * <ul>
-	 * <li>au maximum 6 lignes pour les adresses en Suisse, et</li>
-	 * <li>au maximum 7 lignes pour les adresses hors Suisse.</li>
-	 * </ul>
-	 * Cette septième ligne ne sera donc renseigné qu'avec des adresses étrangères (pour autant qu'elles tiennent sur sept lignes, évidemment).  
-	 */
-	@XmlElement(required = false)
-	public String ligne7;
-
 	@XmlElement(required = true)
-	public boolean isSuisse; // TODO (msi) pour la version 3 : à supprimer (remplacé par le type d'affranchissement)
+	public boolean isSuisse;
 
 	/** Le type d'affranchissement demandé par la poste pour envoyer un courrier à cette adresse. */
 	@XmlElement(required = true)
@@ -89,7 +78,6 @@ public class AdresseEnvoi {
 		this.ligne4 = adresse.getLigne4();
 		this.ligne5 = adresse.getLigne5();
 		this.ligne6 = adresse.getLigne6();
-		this.ligne7 = adresse.getLigne7();
 		this.isSuisse = adresse.isSuisse();
 		this.salutations = adresse.getSalutations();
 		this.formuleAppel = adresse.getFormuleAppel();

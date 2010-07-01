@@ -1570,7 +1570,6 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 		assertEquals("Avenue de la Gare 10", adresseCourrier.getLigne4());
 		assertEquals("1003 Lausanne", adresseCourrier.getLigne5());
 		assertNull(adresseCourrier.getLigne6());
-		assertFalse(adresseCourrier.isHorsSuisse());
 		assertTrue(adresseCourrier.isSuisse());
 		assertNull(adresseCourrier.getSalutations());
 		assertNull(adresseCourrier.getFormuleAppel());
@@ -1583,10 +1582,38 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 		assertEquals("Chemin Messidor 5", adresseDomicile.getLigne4());
 		assertEquals("1006 Lausanne", adresseDomicile.getLigne5());
 		assertNull(adresseDomicile.getLigne6());
-		assertFalse(adresseDomicile.isHorsSuisse());
 		assertTrue(adresseDomicile.isSuisse());
 		assertNull(adresseDomicile.getSalutations());
 		assertNull(adresseDomicile.getFormuleAppel());
+	}
+
+	/**
+	 * [UNIREG-1974] Vérifie que l'adresse de la PM Evian-Russie tient bien sur 6 lignes et que le complément d'adresse est ignoré
+	 */
+	@Test
+	public void testGetAdresseEnvoiEvianRussie() throws Exception {
+
+		servicePM.setUp(new DefaultMockServicePM());
+
+		final Entreprise evian = new Entreprise();
+		evian.setNumero(MockPersonneMorale.EvianRussie.getNumeroEntreprise());
+		evian.setNumeroEntreprise(MockPersonneMorale.EvianRussie.getNumeroEntreprise());
+
+		final AdresseEnvoiDetaillee adresseCourrier = adresseService.getAdresseEnvoi(evian, null, TypeAdresseFiscale.COURRIER, true);
+		assertNotNull(adresseCourrier);
+		assertEquals("Distributor (Evian Water)", adresseCourrier.getLigne1()); // <-- raison sociale ligne 1
+		assertEquals("LLC PepsiCo Holdings", adresseCourrier.getLigne2()); // <-- raison sociale ligne 2
+		assertEquals("Free Economic Zone Sherrizone", adresseCourrier.getLigne3()); // <-- raison sociale ligne 3
+
+		// [UNIREG-1974] le complément est ignoré pour que l'adresse tienne sur 6 lignes
+		// assertEquals("p.a. Aleksey Fyodorovich Karamazov", adresseCourrier.getLigneXXX());
+
+		assertEquals("Solnechnogorsk Dist.", adresseCourrier.getLigne4()); // <-- rue
+		assertEquals("141580 Moscow region", adresseCourrier.getLigne5()); // <-- npa + lieu
+		assertEquals("Russie", adresseCourrier.getLigne6()); // <-- pays
+		assertFalse(adresseCourrier.isSuisse());
+		assertNull(adresseCourrier.getSalutations());
+		assertNull(adresseCourrier.getFormuleAppel());
 	}
 
 	private static void assertAdressesEquals(AdresseEnvoiDetaillee expected, AdresseEnvoiDetaillee actual) {

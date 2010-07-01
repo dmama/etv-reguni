@@ -2,6 +2,10 @@ package ch.vd.uniregctb.webservices.tiers2;
 
 import java.util.HashSet;
 
+import org.junit.Test;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+
 import ch.vd.uniregctb.common.WebserviceTest;
 import ch.vd.uniregctb.interfaces.model.mock.MockPersonneMorale;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
@@ -15,14 +19,12 @@ import ch.vd.uniregctb.webservices.tiers2.data.TiersPart;
 import ch.vd.uniregctb.webservices.tiers2.impl.pm.TiersWebServiceWithPM;
 import ch.vd.uniregctb.webservices.tiers2.params.GetTiers;
 import ch.vd.uniregctb.webservices.tiers2.params.SetTiersBlocRembAuto;
-import org.junit.Test;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNull;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Manuel Siggen <manuel.siggen@vd.ch>
@@ -44,6 +46,7 @@ public class TiersWebServiceWithPMTest extends WebserviceTest {
 
 		service = new TiersWebServiceWithPM();
 		service.setServicePM(servicePM);
+		service.setServiceInfra(serviceInfra);
 		service.setTarget(bean);
 		service.setTiersDAO(tiersDAO);
 		service.setNoOfsTranslator(new NoOfsTranslatorImpl());
@@ -218,4 +221,51 @@ public class TiersWebServiceWithPMTest extends WebserviceTest {
 			assertEquals("Madame, Monsieur", jal.adresseEnvoi.formuleAppel);
 		}
 	}
+
+	/**
+	 * [UNIREG-1974] Vérifie que l'adresse de la PM Evian-Russie tient bien sur 6 lignes et que le complément d'adresse est ignoré
+	 */
+	@Test
+	public void testGetAdresseEnvoiPersonneMoraleOptionnaliteComplement() throws Exception {
+
+		final long noEvian = MockPersonneMorale.EvianRussie.getNumeroEntreprise();
+
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				addEntreprise(noEvian);
+				return null;
+			}
+		});
+
+		final GetTiers params = new GetTiers();
+		params.date = null;
+		params.login = login;
+		params.tiersNumber = noEvian;
+		params.parts = new HashSet<TiersPart>();
+		params.parts.add(TiersPart.ADRESSES_ENVOI);
+
+		// on s'assure que la formule d'appel d'une PM est bien renseignée
+		{
+			final PersonneMorale evian = (PersonneMorale) service.getTiers(params);
+			assertNotNull(evian);
+			assertNotNull(evian.adresseEnvoi);
+
+			// l'adresse d'envoi n'a pas de salutations
+			assertNull(evian.adresseEnvoi.salutations);
+			assertEquals("Distributor (Evian Water)", evian.adresseEnvoi.ligne1);
+			assertEquals("LLC PepsiCo Holdings", evian.adresseEnvoi.ligne2);
+			assertEquals("Free Economic Zone Sherrizone", evian.adresseEnvoi.ligne3);
+
+			// [UNIREG-1974] le complément est ignoré pour que l'adresse tienne sur 6 lignes
+			// assertEquals("p.a. Aleksey Fyodorovich Karamazov", evian.adresseEnvoi.ligneXXX);
+
+			assertEquals("Solnechnogorsk Dist.", evian.adresseEnvoi.ligne4);
+			assertEquals("141580 Moscow region", evian.adresseEnvoi.ligne5);
+			assertEquals("Russie", evian.adresseEnvoi.ligne6);
+
+			// par contre, la formule d'appel est renseignée
+			assertEquals("Madame, Monsieur", evian.adresseEnvoi.formuleAppel);
+		}
+	}
 }
+

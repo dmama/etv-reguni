@@ -44,6 +44,7 @@ public class MockPersonneMorale implements PersonneMorale {
 	public static MockPersonneMorale KPMG = new MockPersonneMorale(2058, "KPMG SA", "S.A.", null, RegDate.get(1901, 1, 1), null);
 	public static MockPersonneMorale CuriaTreuhand = new MockPersonneMorale(21038, "Curia Treuhand AG", "S.A.", null, RegDate.get(1901, 1, 1), null);
 	public static MockPersonneMorale JalHolding = new MockPersonneMorale(1314, "JAL HOLDING", "Jal holding S.A.", null, "en liquidation", "S.A.", "R. Borgo", RegDate.get(1975, 12, 24), null);
+	public static MockPersonneMorale EvianRussie = new MockPersonneMorale(7777, "Evian Water Russia", "Distributor (Evian Water)", "LLC PepsiCo Holdings", "Free Economic Zone Sherrizone", "S.A.", "Dimitri Vokda", RegDate.get(1966, 11, 10), null);
 
 	static {
 		{
@@ -192,6 +193,19 @@ public class MockPersonneMorale implements PersonneMorale {
 			siege.setDateDebutValidite(RegDate.get(1997, 5, 14));
 			siege.setDateFinValidite(null);
 			JalHolding.addAdresse(siege);
+		}
+
+		{
+			MockAdresseEntreprise courrier = new MockAdresseEntreprise();
+			courrier.setComplement("p.a. Aleksey Fyodorovich Karamazov");
+			courrier.setRue("Solnechnogorsk Dist.");
+			courrier.setNumeroPostal("141580");
+			courrier.setLocalite("Moscow region");
+			courrier.setPays(MockPays.Russie);
+			courrier.setType(EnumTypeAdresseEntreprise.COURRIER);
+			courrier.setDateDebutValidite(RegDate.get(1966, 11, 10));
+			courrier.setDateFinValidite(null);
+			EvianRussie.addAdresse(courrier);
 		}
 	}
 

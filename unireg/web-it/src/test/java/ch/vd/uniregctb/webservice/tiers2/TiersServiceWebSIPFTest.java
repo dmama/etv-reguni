@@ -799,7 +799,6 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 		assertEquals("pa Fidu. Commerce & Industrie", adresseCourrier.getLigne4());
 		assertEquals("Avenue de la Gare 10", adresseCourrier.getLigne5());
 		assertEquals("1003 Lausanne", adresseCourrier.getLigne6());
-		assertNull(adresseCourrier.getLigne7());
 		assertTrue(adresseCourrier.isIsSuisse());
 		assertEquals(TypeAffranchissement.SUISSE, adresseCourrier.getTypeAffranchissement());
 		assertNull(adresseCourrier.getSalutations());
@@ -813,7 +812,6 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 		assertEquals("Fid.Commerce & Industrie S.A.", adresseDomicile.getLigne4());
 		assertEquals("Chemin Messidor 5", adresseDomicile.getLigne5());
 		assertEquals("1006 Lausanne", adresseDomicile.getLigne6());
-		assertNull(adresseDomicile.getLigne7());
 		assertTrue(adresseDomicile.isIsSuisse());
 		assertNull(adresseDomicile.getSalutations());
 		assertEquals("Madame, Monsieur", adresseDomicile.getFormuleAppel());

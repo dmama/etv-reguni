@@ -95,7 +95,7 @@ public class AdressePMAdapter implements AdresseGenerique {
 	}
 
 	public Integer getNoOfsPays() {
-		return ServiceInfrastructureService.noOfsSuisse; // par définition toutes les PM sont en Suisse
+		return adresse.getPays() == null ? ServiceInfrastructureService.noOfsSuisse : adresse.getPays().getNoOFS();
 	}
 
 	public String getRue() {

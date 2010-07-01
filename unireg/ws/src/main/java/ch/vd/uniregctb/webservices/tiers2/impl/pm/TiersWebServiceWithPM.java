@@ -49,6 +49,8 @@ import org.springframework.transaction.annotation.Transactional;
 @SuppressWarnings({"UnusedDeclaration"})
 public class TiersWebServiceWithPM implements TiersWebService {
 
+	private static final int OPTIONALITE_COMPLEMENT = 1;
+
 	private TiersDAO tiersDAO;
 	private TiersWebService target;
 	private ServicePersonneMoraleService servicePM;
@@ -865,15 +867,12 @@ public class TiersWebServiceWithPM implements TiersWebService {
 //			adresse.addPourAdresse(pm.personneContact);
 //		}
 
-		if (pm.complementNom != null) {
-			adresse.addComplement(pm.complementNom);
-		}
-
 		final Adresse adresseFiscale = getAt(adresses, null);
 		if (adresseFiscale != null) {
 
 			if (adresseFiscale.titre != null) {
-				adresse.addPourAdresse(adresseFiscale.titre);
+				// [UNIREG-1974] Le complément est optionnel
+				adresse.addComplement(adresseFiscale.titre, OPTIONALITE_COMPLEMENT);
 			}
 
 			if (adresseFiscale.rue != null) {
