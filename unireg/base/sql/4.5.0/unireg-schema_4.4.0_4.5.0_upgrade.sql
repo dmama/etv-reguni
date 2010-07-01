@@ -8,7 +8,7 @@ create table REMARQUE (id number(19,0) not null, ANNULATION_DATE timestamp, ANNU
 alter table REMARQUE add constraint FK_REMARQUE_TRS_ID foreign key (TIERS_ID) references TIERS;
 
 insert into REMARQUE(ID, LOG_CDATE, LOG_CUSER, LOG_MDATE, LOG_MUSER, TEXTE, TIERS_ID)
-select hibernate_sequence.nextval, CURRENT_DATE, "[reprise initiale]", CURRENT_DATE, "[reprise initiale]", t.REMARQUE, t.NUMERO from TIERS t where t.REMARQUE is not null;
+select hibernate_sequence.nextval, CURRENT_DATE, '[reprise initiale]', CURRENT_DATE, '[reprise initiale]', t.REMARQUE, t.NUMERO from TIERS t where t.REMARQUE is not null;
 
 create index IDX_REMARQUE_TIERS_ID on REMARQUE (TIERS_ID);
 
