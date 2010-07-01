@@ -80,7 +80,7 @@ public class ImpressionListeRecapHelperImpl implements ImpressionListeRecapHelpe
 	private static final String ADM_MAJ = "ADMINISTRATEURS";
 
 	private static final String VERSION = "1.0";
-	private static final String POPULATIONS_PP = "PP";
+	private static final String POPULATIONS_IS = "IS";
 	private static final String LOGO_CANT = "CANT";
 
 	private static final String DOCUM = "DOCUM";
@@ -200,7 +200,7 @@ public class ImpressionListeRecapHelperImpl implements ImpressionListeRecapHelpe
 
 		infoDocument.setVersion(VERSION);
 		infoDocument.setLogo(LOGO_CANT);
-		infoDocument.setPopulations(POPULATIONS_PP);
+		infoDocument.setPopulations(POPULATIONS_IS);
 		return infoDocument;
 	}
 

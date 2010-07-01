@@ -57,7 +57,7 @@ public class ImpressionSommationLRHelperImpl implements ImpressionSommationLRHel
 
 	private static final String ORGINAL = "ORG";
 	private static final String VERSION = "1.0";
-	private static final String POPULATIONS_PP = "PP";
+	private static final String POPULATIONS_IS = "IS";
 	private static final String LOGO_CANT = "CANT";
 	private static final String PREFIXE_SOMMATION_LR = "ISPS0801";
 	private static final String TYPE_DOC_SOMMATION_LR = "SL";
@@ -227,7 +227,7 @@ public class ImpressionSommationLRHelperImpl implements ImpressionSommationLRHel
 		infoDocument.setCodDoc(codeDoc);
 		infoDocument.setVersion(VERSION);
 		infoDocument.setLogo(LOGO_CANT);
-		infoDocument.setPopulations(POPULATIONS_PP);
+		infoDocument.setPopulations(POPULATIONS_IS);
 		return infoDocument;
 	}
 
