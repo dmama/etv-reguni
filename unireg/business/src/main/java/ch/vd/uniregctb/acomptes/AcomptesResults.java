@@ -135,8 +135,19 @@ public class AcomptesResults extends ListesResults<AcomptesResults> {
 
         } else if (ctb instanceof MenageCommun) {
             final MenageCommun menage = (MenageCommun) ctb;
-            final EnsembleTiersCouple ensembleTiersCouple = tiersService.getEnsembleTiersCouple(menage, dateTraitement.year());
-            final PersonnePhysique principal = ensembleTiersCouple.getPrincipal();
+            final EnsembleTiersCouple ensembleTiersCouple = tiersService.getEnsembleTiersCouple(menage, anneeFiscale);
+
+	        // si le ménage a été fermé l'année d'avant, il n'apparaîtra pas dans cet ensemble, mais
+	        // aura pu être sélectionné quand même dans la requête de départ en raison de la présence
+	        // d'un for fiscal cette année là.
+	        final PersonnePhysique principal;
+	        if (ensembleTiersCouple.getPrincipal() == null) {
+		        final EnsembleTiersCouple ensembleAnneePrecedente = tiersService.getEnsembleTiersCouple(menage, anneeFiscale - 1);
+		        principal = ensembleAnneePrecedente.getPrincipal();
+	        }
+	        else {
+		        principal = ensembleTiersCouple.getPrincipal();
+	        }
             if (principal != null) {
                 final String nom = tiersService.getNom(principal);
                 final String prenom = tiersService.getPrenom(principal);
