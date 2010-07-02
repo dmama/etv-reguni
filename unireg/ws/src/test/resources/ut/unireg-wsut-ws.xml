@@ -30,6 +30,12 @@
 		<property name="uniregCacheManager" ref="uniregCacheManager" />
 	</bean>
 
+	<bean id="tiersServiceCacheManager" class="ch.vd.uniregctb.webservices.tiers.cache.TiersWebServiceCacheManager">
+		<property name="dataEventService" ref="dataEventService" />
+		<property name="cache" ref="tiersServiceCache" />
+		<property name="tiersDAO" ref="tiersDAO" />
+	</bean>
+
 	<!-- Beans du web-service Tiers v2 mais sans le end-point jaxws -->
 
 	<bean id="tiersService2EndPoint" class="ch.vd.uniregctb.webservices.tiers2.impl.TiersWebServiceEndPoint">
@@ -58,6 +64,12 @@
 		<property name="cacheManager" ref="ehCacheManager" />
 		<property name="cacheName" value="webServiceTiers2" />
 		<property name="uniregCacheManager" ref="uniregCacheManager" />
+	</bean>
+
+	<bean id="tiersService2CacheManager" class="ch.vd.uniregctb.webservices.tiers2.cache.TiersWebServiceCacheManager">
+		<property name="dataEventService" ref="dataEventService" />
+		<property name="cache" ref="tiersService2Cache" />
+		<property name="tiersDAO" ref="tiersDAO" />
 	</bean>
 
 </beans>

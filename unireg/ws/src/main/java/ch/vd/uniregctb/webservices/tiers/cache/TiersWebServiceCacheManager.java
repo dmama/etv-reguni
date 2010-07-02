@@ -1,10 +1,16 @@
 package ch.vd.uniregctb.webservices.tiers.cache;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.uniregctb.data.DataEventListener;
 import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.tiers.RapportEntreTiers;
+import ch.vd.uniregctb.tiers.RapportPrestationImposable;
+import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 
 /**
@@ -31,7 +37,50 @@ public class TiersWebServiceCacheManager implements DataEventListener, Initializ
 	}
 
 	public void onTiersChange(long id) {
-		cache.evictTiers(id);
+
+		// on récupère tous les ids des tiers impactés par le changement sur le tiers passé en paramètre
+		final Set<Long> ids = new HashSet<Long>();
+		fillRelatedIds(id, ids, 0);
+
+		// on les évicte tous, sans rémission possible
+		for (Long i : ids) {
+			cache.evictTiers(i);
+		}
+	}
+
+	private void fillRelatedIds(long id, Set<Long> ids, int callDepth) {
+
+		if (!ids.add(id)) {
+			// l'id existe déjà, pas besoin d'aller plus loin
+			return;
+		}
+
+		if (callDepth > 2) {
+			// on ne va pas plus loin que deux niveaux de rapports : il ne devrait pas y avoir de situation où c'est nécessaire
+			return;
+		}
+
+		final Tiers tiers = tiersDAO.get(id);
+		if (tiers != null) {
+			final Set<RapportEntreTiers> rapportsObjet = tiers.getRapportsObjet();
+			if (rapportsObjet != null) {
+				for (RapportEntreTiers r : rapportsObjet) {
+					if (r instanceof RapportPrestationImposable) {
+						continue;
+					}
+					fillRelatedIds(r.getSujetId(), ids, callDepth + 1);
+				}
+			}
+			final Set<RapportEntreTiers> rapportsSujet = tiers.getRapportsSujet();
+			if (rapportsSujet != null) {
+				for (RapportEntreTiers r : rapportsSujet) {
+					if (r instanceof RapportPrestationImposable) {
+						continue;
+					}
+					fillRelatedIds(r.getObjetId(), ids, callDepth + 1);
+				}
+			}
+		}
 	}
 
 	public void onDroitAccessChange(long tiersId) {
@@ -49,7 +98,7 @@ public class TiersWebServiceCacheManager implements DataEventListener, Initializ
 	public void onIndividuChange(long numero) {
 		final PersonnePhysique pp = tiersDAO.getPPByNumeroIndividu(numero, true);
 		if (pp != null) {
-			cache.evictTiers(pp.getNumero());
+			onTiersChange(pp.getNumero());
 		}
 	}
 
