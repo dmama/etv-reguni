@@ -975,6 +975,14 @@ public interface TiersService {
 	AdresseTiers addAndSave(Tiers tiers, AdresseTiers adresse);
 
 	/**
+	 * Ajoute une nouvelle identifiant de personne à une personne physique
+	 * @param pp une personne physique
+	 * @param ident l'identifiant à ajouter
+	 * @return une nouvelle instande de l'identificant avec son id renseigné.
+	 */
+	IdentificationPersonne addAndSave(PersonnePhysique pp, IdentificationPersonne ident);
+
+	/**
 	 * Défini la date limite d'exclusion sur les contribuables spécifiés par leur numéros.
 	 *
 	 * @param ctbIds     les numéros des contribuables

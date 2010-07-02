@@ -1328,6 +1328,7 @@ public abstract class Tiers extends HibernateEntity implements Validateable, Bus
 		if (adressesTiers == null) {
 			adressesTiers = new HashSet<AdresseTiers>();
 		}
+		adresse.setTiers(this);
 		adressesTiers.add(adresse);
 	}
 

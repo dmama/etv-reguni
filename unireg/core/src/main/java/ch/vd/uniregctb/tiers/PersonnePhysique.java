@@ -2,6 +2,7 @@ package ch.vd.uniregctb.tiers;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -656,12 +657,23 @@ public class PersonnePhysique extends Contribuable {
 		if (identificationsPersonnes == null) {
 			identificationsPersonnes = theIdentificationsPersonnes;
 		}
+		else if (identificationsPersonnes == theIdentificationsPersonnes) {
+			// rien à faire
+		}
 		else {
 			identificationsPersonnes.clear();
 			if (theIdentificationsPersonnes != null) {
 				identificationsPersonnes.addAll(theIdentificationsPersonnes);
 			}
 		}
+	}
+
+	public void addIdentificationsPersonnes(IdentificationPersonne ident) {
+		if (identificationsPersonnes == null) {
+			identificationsPersonnes = new HashSet<IdentificationPersonne>();
+		}
+		ident.setPersonnePhysique(this);
+		identificationsPersonnes.add(ident);
 	}
 
 	@Column(name = "MAJORITE_TRAITEE")

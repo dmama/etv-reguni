@@ -34,12 +34,14 @@ import ch.vd.uniregctb.tiers.ForFiscalAutreElementImposable;
 import ch.vd.uniregctb.tiers.ForFiscalAutreImpot;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
+import ch.vd.uniregctb.tiers.IdentificationPersonne;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.SituationFamille;
 import ch.vd.uniregctb.tiers.SituationFamilleMenageCommun;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.type.CategorieIdentifiant;
 import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.ModeCommunication;
@@ -425,5 +427,12 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 		situation.setNombreEnfants(nombreEnfants);
 		situation.setTarifApplicable(tarif);
 		return (SituationFamilleMenageCommun) tiersService.addAndSave(menage, situation);
+	}
+
+	protected IdentificationPersonne addIdentificationPersonne(PersonnePhysique pp, CategorieIdentifiant categorie, String identifiant) {
+		IdentificationPersonne ident = new IdentificationPersonne();
+		ident.setCategorieIdentifiant(categorie);
+		ident.setIdentifiant(identifiant);
+		return tiersService.addAndSave(pp, ident);
 	}
 }

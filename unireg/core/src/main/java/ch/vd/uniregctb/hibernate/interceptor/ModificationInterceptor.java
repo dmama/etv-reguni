@@ -42,6 +42,10 @@ public class ModificationInterceptor extends AbstractLinkedInterceptor {
 		subInterceptors.add(sub);
 	}
 
+	public void unregister(ModificationSubInterceptor sub) {
+		subInterceptors.remove(sub);
+	}
+
 	/**
 	 * Désactive ou réactive l'intercepteur pour le thread courant.
 	 *

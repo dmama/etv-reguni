@@ -3178,6 +3178,51 @@ public class TiersServiceImpl implements TiersService {
 		return adresse;
 	}
 
+	public IdentificationPersonne addAndSave(PersonnePhysique pp, IdentificationPersonne ident) {
+
+		if (ident.getId() == null) { // l'identifiant n'a jamais été persisté
+
+			// on mémorise les ids des identifiants existants
+			final Set<Long> ids;
+			Set<IdentificationPersonne> identifiants = pp.getIdentificationsPersonnes();
+			if (identifiants == null || identifiants.isEmpty()) {
+				ids = Collections.emptySet();
+			}
+			else {
+				ids = new HashSet<Long>(identifiants.size());
+				for (IdentificationPersonne i : identifiants) {
+					final Long id = i.getId();
+					Assert.notNull(id, "Les identifiants existants doivent être persistés.");
+					ids.add(id);
+				}
+			}
+
+			// on ajoute l'identifiant et sauve le tout
+			pp.addIdentificationsPersonnes(ident);
+			pp = (PersonnePhysique) tiersDAO.save(pp);
+
+			// on recherche l'identifiant nouvellement ajouté
+			IdentificationPersonne nouvelIdent = null;
+			for (IdentificationPersonne i : pp.getIdentificationsPersonnes()) {
+				if (!ids.contains(i.getId())) {
+					nouvelIdent = i;
+					break;
+				}
+			}
+
+			Assert.notNull(nouvelIdent);
+			Assert.isSame(ident.getCategorieIdentifiant(), nouvelIdent.getCategorieIdentifiant());
+			Assert.isSame(ident.getIdentifiant(), nouvelIdent.getIdentifiant());
+			ident = nouvelIdent;
+		}
+		else {
+			pp.addIdentificationsPersonnes(ident);
+		}
+
+		Assert.notNull(ident.getId());
+		return ident;
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
