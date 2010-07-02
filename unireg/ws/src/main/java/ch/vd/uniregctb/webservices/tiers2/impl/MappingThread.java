@@ -55,6 +55,7 @@ public class MappingThread extends Thread {
 
 		template.execute(new TransactionCallback() {
 			public Object doInTransaction(TransactionStatus status) {
+				status.setRollbackOnly(); // on ne veut vraiment pas modifier la base
 				return context.hibernateTemplate.execute(new HibernateCallback() {
 					public Object doInHibernate(Session session) throws HibernateException, SQLException {
 						session.setFlushMode(FlushMode.MANUAL); // on ne veut vraiment pas modifier la base
