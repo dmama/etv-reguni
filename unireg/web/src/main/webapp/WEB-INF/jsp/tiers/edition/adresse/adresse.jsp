@@ -18,7 +18,7 @@
 		</table>
 	</c:if>
 	
-	<jsp:include page="../../common/adresse/adresse.jsp">
+	<jsp:include page="../../common/adresse/adresseFiscale.jsp">
 		<jsp:param name="page" value="edit"/>
 	</jsp:include>
 	

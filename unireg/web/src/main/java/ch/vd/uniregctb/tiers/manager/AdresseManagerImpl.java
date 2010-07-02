@@ -70,6 +70,16 @@ public class AdresseManagerImpl extends TiersManager implements AdresseManager {
 		return adresseView;
 	}
 
+	public AdresseView getAdresseView(TiersEditView tiers, Long numero) {
+		List<AdresseView> adresses = tiers.getHistoriqueAdresses();
+		for (AdresseView adresseView : adresses) {
+			if(numero.equals(adresseView.getId())){
+				return adresseView;
+			}
+		}
+		return null;  //To change body of implemented methods use File | Settings | File Templates.
+	}
+
 	/**
 	 * Cree une nouvelle vue AdresseView pour une nouvelle adresse
 	 *
@@ -379,6 +389,13 @@ public class AdresseManagerImpl extends TiersManager implements AdresseManager {
 		AdresseTiers adresseTiers = getAdresseTiersDAO().get(idAdresse);
 		if (adresseTiers != null) {
 			getAdresseService().annulerAdresse(adresseTiers);
+		}
+	}
+
+	public void fermerAdresse(AdresseView bean){
+		AdresseTiers adresseTiers = getAdresseTiersDAO().get(bean.getId());
+		if (adresseTiers != null) {
+			getAdresseService().fermerAdresse(adresseTiers,bean.getRegDateFin());
 		}
 	}
 

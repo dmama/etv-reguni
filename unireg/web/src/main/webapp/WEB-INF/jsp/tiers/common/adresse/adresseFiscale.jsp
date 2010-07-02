@@ -75,6 +75,7 @@
 					((adresse.usage == 'REPRESENTATION') && (command.allowedOnglet.ADR_B)) ||
 					((adresse.usage == 'DOMICILE') && (command.allowedOnglet.ADR_D))}">
 						<!-- <a href="adresse.do?height=530&width=850&idAdresse=${adresse.id}&numero=<c:out value="${command.tiers.numero}"></c:out>&TB_iframe=true&modal=true" class="thickbox edit" title="Edition d'adresse">&nbsp;</a> -->
+						<unireg:raccourciModifier link="adresse-close.do?idAdresse=${adresse.id}" tooltip="Fermeture de l'adresse"/>
 						<unireg:raccourciAnnuler onClick="javascript:annulerAdresse(${adresse.id});"/>
 					</c:if>
 				</c:if>

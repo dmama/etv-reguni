@@ -11,10 +11,25 @@
 		<property name="adresseManager" ref="adresseManager" />
 	</bean>
 
+	<bean id="closeAdressesController" class="ch.vd.uniregctb.tiers.CloseAdressesController" parent="abstractTiersController">
+		<property name="sessionForm" value="true" />
+		<property name="commandClass" value="ch.vd.uniregctb.tiers.view.AdresseView" />
+		<property name="service" ref="tiersService" />
+		<property name="formView" value="tiers/edition/adresse/adresse-close" />
+		<property name="tiersEditManager" ref="tiersEditManager" />
+		<property name="adresseManager" ref="adresseManager" />
+		<property name="validator" ref="closeAdresseValidator" />
+	</bean>
+
+
 	<bean id="tiersAdresseValidator" class="ch.vd.uniregctb.tiers.validator.TiersAdresseValidator" >
 		<property name="adresseService" ref="adresseService" />
 		<property name="tiersService" ref="tiersService" />
 		<property name="serviceInfra" ref="serviceInfrastructureService" />
+	</bean>
+
+	<bean id="closeAdresseValidator" class="ch.vd.uniregctb.tiers.validator.CloseAdresseValidator" >
+		<property name="tiersService" ref="tiersService" />
 	</bean>
 	
 	<bean id="tiersAdresseController" class="ch.vd.uniregctb.tiers.TiersAdresseController" parent="abstractTiersController">
@@ -26,6 +41,8 @@
 		<property name="adresseManager" ref="adresseManager" />
 		<property name="validator" ref="tiersAdresseValidator" />
 	</bean>
+
+
 	
 	<bean id="adresseManager" class="ch.vd.uniregctb.tiers.manager.AdresseManagerImpl" parent="tiersManager">
 	</bean>

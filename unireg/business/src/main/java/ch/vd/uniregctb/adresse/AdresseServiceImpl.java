@@ -2513,6 +2513,17 @@ public class AdresseServiceImpl implements AdresseService {
 		adresse.setAnnule(true);
 	}
 
+	/**Ferme une adresse fiscale a une date donnée
+	 *
+	 * @param adresse l'adresse à fermer
+	 *
+	 * @param dateFin date de fermeture de l'adresse.
+	 * @throws AdressesResolutionException
+	 */
+	public void fermerAdresse(AdresseTiers adresse, RegDate dateFin){
+		adresse.setDateFin(dateFin);
+	}
+
 	private static boolean notEmpty(final String string) {
 		return string != null && string.trim().length() > 0;
 	}

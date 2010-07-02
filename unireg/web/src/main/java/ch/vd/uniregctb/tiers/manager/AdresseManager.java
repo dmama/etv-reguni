@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.tiers.manager;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseException;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +28,11 @@ public interface AdresseManager {
 	@Transactional(readOnly = true)
 	public abstract AdresseView getAdresseView(Long id);
 
+
+	public AdresseView getAdresseView(TiersEditView tiers,Long numero);
+
+
+
 	/**
 	 * Cree une nouvelle vue AdresseView pour une nouvelle adresse
 	 *
@@ -51,6 +57,15 @@ public interface AdresseManager {
 	 */
 	@Transactional(rollbackFor = Throwable.class)
 	public void annulerAdresse(Long idAdresse);
+
+
+/**
+	 * ferme une adresse
+	 *
+	 * @param bean
+	 */
+	@Transactional(rollbackFor = Throwable.class)
+	public void fermerAdresse(AdresseView bean);
 
 	/**
 	 * Sauvegarde d'une reprise d'adresse

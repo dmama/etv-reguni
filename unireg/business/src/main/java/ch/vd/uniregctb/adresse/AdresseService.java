@@ -137,6 +137,15 @@ public interface AdresseService {
 	 */
 	public void annulerAdresse(AdresseTiers adresse);
 
+
+	/**Ferme une adresse fiscale a une date donnée
+	 *
+	 * @param adresse l'adresse à fermer
+	 *	 * @param dateFin date de fermeture de l'adresse.
+
+	 */
+	public void fermerAdresse(AdresseTiers adresse,RegDate dateFin);
+
 	/**
 	 * Retourne le nom utilisé dans l'adresse courrier du tiers spécifié. En fonction du type de tiers, ce nom peut prendre 1 ou deux lignes.
 	 *

@@ -150,6 +150,7 @@
 				<entry key="/fiscal/edit.do" value-ref="fiscalEditController" />
 				<entry key="/fiscal/edit-for-debiteur.do" value-ref="fiscalEditForDebiteurController" />
 				<entry key="/adresses/edit.do" value-ref="adressesEditController" />
+				<entry key="/adresses/adresse-close.do" value-ref="closeAdressesController" />
 				<entry key="/complement/edit.do" value-ref="complementEditController" />
 				<entry key="/civil/edit.do" value-ref="civilEditController" />
 				<entry key="/dossiers-apparentes/edit.do" value-ref="dossiersApparentesEditController" />
