@@ -16,3 +16,8 @@ create index IDX_REMARQUE_TIERS_ID on REMARQUE (TIERS_ID);
 -- [UNIREG-2399] Fusion des événements civils unitaires et regroupés - cleanup
 --
 drop table EVENEMENT_CIVIL_UNITAIRE;
+
+--
+-- [UNIREG-1979] Ajout de la fonctionnalité de schedule de réindexation dans le futur
+--
+ALTER TABLE TIERS add (REINDEX_ON number(10,0));
