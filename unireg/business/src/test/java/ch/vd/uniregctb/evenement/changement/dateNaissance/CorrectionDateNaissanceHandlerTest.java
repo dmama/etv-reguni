@@ -84,6 +84,8 @@ public class CorrectionDateNaissanceHandlerTest extends AbstractEvenementHandler
 
 		LOGGER.debug("Test de traitement d'un événement de changement de date de naissance.");
 
+		indexer.sync();
+
 		// Rech du tiers avant modif
 		TiersCriteria criteria = new TiersCriteria();
 		criteria.setNumero(NUMERO_CONTRIBUABLE);
@@ -138,6 +140,8 @@ public class CorrectionDateNaissanceHandlerTest extends AbstractEvenementHandler
 		loadDatabase(DB_UNIT_DATA_FILE);
 
 		LOGGER.debug("Test de traitement d'un événement de changement de date de naissance (avec erreurs).");
+
+		indexer.sync();
 
 		// Rech du tiers avant modif
 		TiersCriteria criteria = new TiersCriteria();
