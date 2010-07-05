@@ -87,16 +87,4 @@ public class DatabaseIndexerJob extends JobDefinition {
 	public void setGlobalTiersIndexer(GlobalTiersIndexer globalTiersIndexer) {
 		this.globalTiersIndexer = globalTiersIndexer;
 	}
-
-	@Override
-	public void afterPropertiesSet() throws Exception {
-		super.afterPropertiesSet();
-
-		final HashMap<String, Object> p = new HashMap<String, Object>();
-		p.put(I_NB_THREADS, 4);
-		p.put(MODE, Mode.DIRTY_ONLY);
-		p.put(PREFETCH, true);
-
-		batchScheduler.registerCron(this, p, "0 0 2 * * ?"); // schedule l'indexation des dirties tous les jours, à 2 heures du matin
-	}
 }
