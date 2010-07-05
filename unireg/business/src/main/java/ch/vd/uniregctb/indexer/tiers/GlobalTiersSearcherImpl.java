@@ -53,6 +53,10 @@ public class GlobalTiersSearcherImpl implements GlobalTiersSearcher, Initializin
 		try {
 			list = adaptativeSearch(criteria);
 		}
+		catch (TooManyResultsIndexerException e) {
+			LOGGER.warn("Trop de résultats retournés avec la requête = [" + criteria + "] : " + e.getMessage());
+			throw e;
+		}
 		catch (RuntimeException e) {
 			LOGGER.error("Problème avec la requête = [" + criteria + "]", e);
 			throw e;
