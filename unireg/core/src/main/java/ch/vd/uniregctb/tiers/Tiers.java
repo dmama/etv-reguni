@@ -27,6 +27,7 @@ import javax.persistence.Transient;
 import org.apache.log4j.Logger;
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Type;
 
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
@@ -174,6 +175,11 @@ public abstract class Tiers extends HibernateEntity implements Validateable, Bus
 	 * le plus courant
 	 */
 	private Boolean indexDirty;
+
+	/**
+	 * [UNIREG-1979] Date à partir de laquelle le tiers devra être réindexé, si elle est renseignée.
+	 */
+	private RegDate reindexOn;
 
 	/**
 	 * <!-- begin-user-doc --> L'office d'impôt qui gère le tiers. Cette valeur est automatiquement renseignée par un intercepteur
@@ -1393,6 +1399,38 @@ public abstract class Tiers extends HibernateEntity implements Validateable, Bus
 	// protected -> mise-à-jour réservée à Hibernate
 	protected void setIndexDirty(Boolean dirty) {
 		this.indexDirty = dirty;
+	}
+
+	/**
+	 * @return la date à partir de laquelle le tiers devra être réindexé; ou <b>null</b> si le tiers n'a pas besoin d'être réindexé dans le futur.
+	 */
+	@Column(name = "REINDEX_ON")
+	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
+	public RegDate getReindexOn() {
+		return reindexOn;
+	}
+
+	public void setReindexOn(RegDate reindexOn) {
+		this.reindexOn = reindexOn;
+	}
+
+	/**
+	 * Agende une réindexation du tiers dans le futur.
+	 * <p/>
+	 * En cas de collision entre deux dates futures de réindexation, la date la plus éloignée dans le futur sera choisie. L'idée est de s'assurer que
+	 * l'indexation du tiers soit cohérente à partir d'une certaine date dans le futur, même s'il pour cela elle risque d'être temporairement incohérente
+	 * entre aujourd'hui et cette date.
+	 *
+	 * @param reindexOn la date à partir de laquelle le tiers devra être réindexé.
+	 */
+	public void scheduleReindexationOn(RegDate reindexOn) {
+		Assert.notNull(reindexOn);
+		if (this.reindexOn == null) {
+			this.reindexOn = reindexOn;
+		}
+		else {
+			this.reindexOn = RegDateHelper.maximum(this.reindexOn, reindexOn, NullDateBehavior.EARLIEST);
+		}
 	}
 
 	/**

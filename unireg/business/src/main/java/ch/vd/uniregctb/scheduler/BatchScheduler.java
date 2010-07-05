@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.acegisecurity.Authentication;
 import org.apache.log4j.Logger;
@@ -66,11 +67,24 @@ public class BatchScheduler {
 	 * @throws ParseException     en cas d'erreur dans la syntaxe de l'expression cron
 	 */
 	public void registerCron(JobDefinition job, String cronExpression) throws SchedulerException, ParseException {
+		registerCron(job, job.getDefaultParams(), cronExpression);
+	}
+
+	/**
+	 * Enregistre un job comme devant être exécuté comme un cron.
+	 *
+	 * @param job            un job
+	 * @param params         les paramètres de démarrage du job
+	 * @param cronExpression l'expression cron (par exemple: "0 0/5 6-20 * * ?" pour exécuter le job toutes les 5 minutes, de 6h à 20h tous les jours)
+	 * @throws SchedulerException en cas d'exception dans le scheduler
+	 * @throws ParseException     en cas d'erreur dans la syntaxe de l'expression cron
+	 */
+	public void registerCron(JobDefinition job, Map<String, Object> params, String cronExpression) throws SchedulerException, ParseException {
 
 		AuthenticationHelper.pushPrincipal("[cron]");
 		try {
 			final Trigger trigger = new CronTrigger("CronTrigger-" + job.getName(), Scheduler.DEFAULT_GROUP, cronExpression);
-			scheduleJob(job, job.getDefaultParams(), trigger);
+			scheduleJob(job, params, trigger);
 		}
 		finally {
 			AuthenticationHelper.popPrincipal();
@@ -103,7 +117,7 @@ public class BatchScheduler {
 	 * @throws SchedulerException         en cas d'erreur de scheduling Quartz
 	 * @throws JobAlreadyStartedException si le job est déjà démarré
 	 */
-	public JobDefinition startJob(String jobName, HashMap<String, Object> params) throws JobAlreadyStartedException, SchedulerException {
+	public JobDefinition startJob(String jobName, Map<String, Object> params) throws JobAlreadyStartedException, SchedulerException {
 		Assert.notNull(jobName, "Pas de nom de Job défini");
 
 		LOGGER.info("Lancement du job <" + jobName + ">");
@@ -112,7 +126,7 @@ public class BatchScheduler {
 		return startJob(job, params);
 	}
 
-	private void scheduleJob(JobDefinition job, HashMap<String, Object> params, Trigger trigger) throws SchedulerException {
+	private void scheduleJob(JobDefinition job, Map<String, Object> params, Trigger trigger) throws SchedulerException {
 
 		// Renseignement de l'authentication
 		final Authentication auth = AuthenticationHelper.getAuthentication();
@@ -147,7 +161,7 @@ public class BatchScheduler {
 		}
 	}
 
-	private JobDefinition startJob(JobDefinition job, HashMap<String, Object> params) throws JobAlreadyStartedException, SchedulerException {
+	private JobDefinition startJob(JobDefinition job, Map<String, Object> params) throws JobAlreadyStartedException, SchedulerException {
 
 		Assert.notNull(scheduler, "Le scheduler est NULL");
 		Assert.isTrue(!scheduler.isShutdown(), "Le scheduler a été stoppé");

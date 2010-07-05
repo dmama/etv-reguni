@@ -48,6 +48,6 @@ public class OptimizeIndexJob extends JobDefinition {
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		super.afterPropertiesSet();
-		batchScheduler.registerCron(this, "0 0 2 * * ?"); // tous les jours, à 2 heures du matin
+		batchScheduler.registerCron(this, "0 0 4 * * ?"); // tous les jours, à 4 heures du matin
 	}
 }

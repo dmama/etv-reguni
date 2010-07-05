@@ -1,7 +1,10 @@
 package ch.vd.uniregctb.indexer.async;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
@@ -16,6 +19,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.common.AuthenticationHelper;
@@ -53,7 +57,7 @@ public class AsyncTiersIndexerThread extends Thread {
 	 * @param globalTiersIndexer l'indexer des tiers
 	 * @param sessionFactory     la session factory hibernate
 	 * @param transactionManager le transaction manager
-	 * @param dialect
+	 * @param dialect            le dialect hibernate utilisé
 	 */
 	public AsyncTiersIndexerThread(BlockingQueue<Long> queue, GlobalTiersIndexer.Mode mode, GlobalTiersIndexerImpl globalTiersIndexer, SessionFactory sessionFactory,
 	                               PlatformTransactionManager transactionManager, Dialect dialect) {
@@ -156,7 +160,7 @@ public class AsyncTiersIndexerThread extends Thread {
 				Session session = sessionFactory.openSession(new HibernateFakeInterceptor());
 				try {
 					final List<Tiers> list;
-					
+
 					if (batch.size() == 1) {
 						final Tiers tiers = (Tiers) session.get(Tiers.class, batch.get(0));
 						if (tiers != null) {
@@ -254,18 +258,21 @@ public class AsyncTiersIndexerThread extends Thread {
 			}
 
 			// la plupart des tiers ont pu être indexés...
-			setDirtyFlag(extractIds(tiers), false, session);
+			final Set<Long> indexedIds = new HashSet<Long>(extractIds(tiers));
 
 			// ...sauf ceux-ci
+			final Set<Long> inErrorIds = new HashSet<Long>();
 			final List<Pair<Tiers, Exception>> list = e.getExceptions();
-			final List<Long> ids = new ArrayList<Long>();
 			for (Pair<Tiers, Exception> p : list) {
-				Tiers t = p.getFirst();
+				final Tiers t = p.getFirst();
 				if (t != null && !t.isDirty()) {
-					ids.add(t.getNumero());
+					inErrorIds.add(t.getNumero());
 				}
 			}
-			setDirtyFlag(ids, true, session);
+			indexedIds.removeAll(inErrorIds);
+
+			setDirtyFlag(indexedIds, false, session); // reset le flag dirty de tous les tiers qui ont été indexés
+			setDirtyFlag(inErrorIds, true, session); // flag tous les tiers qui n'ont pas pu être indexés comme dirty, notamment ceux qui ne l'étaient pas avant
 		}
 		catch (Exception e) {
 			// potentiellement aucun des tiers n'a pu être indexés
@@ -278,7 +285,7 @@ public class AsyncTiersIndexerThread extends Thread {
 		}
 	}
 
-	private void setDirtyFlag(List<Long> ids, boolean flag, Session session) {
+	private void setDirtyFlag(Collection<Long> ids, boolean flag, Session session) {
 
 		if (ids == null || ids.isEmpty()) {
 			return;
@@ -287,6 +294,14 @@ public class AsyncTiersIndexerThread extends Thread {
 		final SQLQuery query = session.createSQLQuery("update TIERS set INDEX_DIRTY = " + dialect.toBooleanValueString(flag) + " where NUMERO in (:ids)");
 		query.setParameterList("ids", ids);
 		query.executeUpdate();
+
+		if (!flag) {
+			// [UNIREG-1979] On remet aussi à zéro tous les tiers dont la date 'reindex_on' est atteinte aujourd'hui
+			final SQLQuery q = session.createSQLQuery("update TIERS set REINDEX_ON = null where REINDEX_ON is not null and REINDEX_ON <= :today and NUMERO in (:ids)");
+			q.setParameter("today", RegDate.get().index());
+			q.setParameterList("ids", ids);
+			q.executeUpdate();
+		}
 	}
 
 	private List<Long> extractIds(List<Tiers> tiers) {

@@ -354,12 +354,16 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
         return (List<Long>) getHibernateTemplate().find("select tiers.numero from Tiers as tiers");
     }
 
-    @SuppressWarnings("unchecked")
-    public List<Long> getDirtyIds() {
-        return (List<Long>) getHibernateTemplate().find("select tiers.numero from Tiers as tiers where tiers.indexDirty = true");
-    }
+	@SuppressWarnings("unchecked")
+	public List<Long> getDirtyIds() {
+		// [UNIREG-1979] ajouté les tiers devant être réindexés dans le futur (note : on les réindexe systématiquement parce que :
+		//      1) en cas de deux demandes réindexations dans le futur, celle plus éloignée gagne : on compense donc 
+		//         cette limitation en réindexant automatiquement les tiers flaggés comme tels
+		//      2) ça ne mange pas de pain
+		return (List<Long>) getHibernateTemplate().find("select tiers.numero from Tiers as tiers where tiers.indexDirty = true or tiers.reindexOn is not null");
+	}
 
-    /**
+	/**
      * ne retourne que le numero des PP de type habitant
      */
     @SuppressWarnings("unchecked")

@@ -77,7 +77,7 @@ public interface TiersDAO extends GenericDAO<Tiers, Long> {
 	List<Long> getAllIds();
 
 	/**
-	 * @return la liste des IDs des tiers flaggé comme "dirty".
+	 * @return la liste des IDs des tiers flaggé comme "dirty" ou flaggés comme devant être réindexés dans le futur.
 	 */
 	List<Long> getDirtyIds();
 

@@ -15,7 +15,7 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 /**
- * Règles métiers permettant de traiter les événements de démangement vaudois.
+ * Règles métiers permettant de traiter les événements d'obtention de permis.
  *
  * @author Ludovic BERTIN <mailto:ludovic.bertin@oosphere.com>
  *
@@ -29,35 +29,29 @@ public class ObtentionPermisHandler extends ObtentionPermisCOuNationaliteSuisseH
 		// Obsolète dans cet handler, l'obtention de permis est un événement ne concernant qu'un seul individu.
 	}
 
-	/**
-	 * @see ch.vd.uniregctb.evenement.EvenementCivilHandler#validate(java.lang.Object,
-	 *      java.util.List)
-	 */
 	@Override
 	public void validateSpecific(EvenementCivil evenementCivil, List<EvenementCivilErreur> erreurs, List<EvenementCivilErreur> warnings) {
 
 		ObtentionPermis obtentionPermis = (ObtentionPermis) evenementCivil;
 
 		/* Seul le permis C a une influence */
-		if (!obtentionPermis.getTypePermis().equals(EnumTypePermis.ETABLLISSEMENT)) {
+		if (obtentionPermis.getTypePermis() != EnumTypePermis.ETABLLISSEMENT) {
 			Audit.info(obtentionPermis.getNumeroEvenement(), "Permis non C : ignoré");
 			return;
 		}
 
-		else
-			super.validateSpecific(evenementCivil, erreurs, warnings);
+		super.validateSpecific(evenementCivil, erreurs, warnings);
 	}
 
 	/**
 	 * Traite l'événement passé en paramètre.
-	 *
 	 */
 	@Override
 	public Pair<PersonnePhysique,PersonnePhysique> handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
 		ObtentionPermis obtentionPermis = (ObtentionPermis) evenement;
 
 		/* Seul le permis C a une influence */
-		if (!obtentionPermis.getTypePermis().equals(EnumTypePermis.ETABLLISSEMENT)) {
+		if (obtentionPermis.getTypePermis() != EnumTypePermis.ETABLLISSEMENT) {
 			Audit.info(obtentionPermis.getNumeroEvenement(), "Permis non C : ignoré");
 			return null;
 		}

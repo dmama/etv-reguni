@@ -77,6 +77,10 @@ public abstract class ObtentionPermisCOuNationaliteSuisseHandler extends Eveneme
 	                                                            MotifFor motifOuverture,
 	                                                            ModeImposition nouveauModeImposition,
 	                                                            boolean changeHabitantFlag) {
+		// [UNIREG-1979] On schedule un réindexation pour le début du mois suivant (les changements d'assujettissement source->ordinaire sont décalés en fin de mois)
+		final RegDate debutMoisProchain = RegDate.get(dateOuverture.year(), dateOuverture.month(), 1).addMonths(1);
+		contribuable.scheduleReindexationOn(debutMoisProchain);
+		
 		openForFiscalPrincipal(contribuable, dateOuverture, reference.getTypeAutoriteFiscale(), reference.getNumeroOfsAutoriteFiscale(), reference.getMotifRattachement(), motifOuverture, nouveauModeImposition, changeHabitantFlag);
 	}
 
@@ -116,7 +120,7 @@ public abstract class ObtentionPermisCOuNationaliteSuisseHandler extends Eveneme
 						(MotifFor.ARRIVEE_HC == forPrincipalHabitant.getMotifOuverture() || MotifFor.ARRIVEE_HS == forPrincipalHabitant.getMotifOuverture())) {
 					getService().annuleForFiscal(forPrincipalHabitant, true);
 					openForFiscalPrincipalChangementModeImposition(habitant, forPrincipalHabitant, forPrincipalHabitant.getDateDebut(), forPrincipalHabitant.getMotifOuverture(), ModeImposition.ORDINAIRE, true);
-					Audit.info(evenement.getNumeroEvenement(), "Mise au role ordinaire de l'individu");
+					Audit.info(evenement.getNumeroEvenement(), "Mise au rôle ordinaire de l'individu");
 				} else {
 					closeForFiscalPrincipal(habitant, dateEvenement.getOneDayBefore(), MotifFor.PERMIS_C_SUISSE);
 					openForFiscalPrincipalChangementModeImposition(habitant, forPrincipalHabitant, dateEvenement, MotifFor.PERMIS_C_SUISSE, ModeImposition.ORDINAIRE, true);

@@ -101,6 +101,8 @@ public class ObtentionPermisHandlerTest extends AbstractEvenementHandlerTest {
 		Assert.notNull( julie.getForsFiscaux(), "Les for fiscaux de Julie ont disparus" );
 		Assert.notNull( julie.getForFiscalPrincipalAt(null), "Julie devrait encore avoir un for principal actif après l'obtention de permis" );
 		Assert.isTrue( julie.getForFiscalPrincipalAt(null).getModeImposition().equals(ModeImposition.ORDINAIRE));
+
+		assertEquals(date(1986, 5, 1), julie.getReindexOn()); // [UNIREG-1979] permis C -> réindexation au début du mois suivant l'obtention
 	}
 
 	/**
@@ -138,6 +140,8 @@ public class ObtentionPermisHandlerTest extends AbstractEvenementHandlerTest {
 		Assert.notNull( julie.getForFiscalPrincipalAt(null), "Julie devrait encore avoir un for principal actif après l'obtention de permis" );
 		Assert.isTrue( ! julie.getForFiscalPrincipalAt(null).getModeImposition().equals(ModeImposition.ORDINAIRE)
 						, "Julie devrait encore son for principal actif inchangé après l'obtention de permis autre que C");
+
+		assertNull(julie.getReindexOn()); // [UNIREG-1979] pas de permis C, pas de réindexation dans le futur
 	}
 
 	/**
@@ -200,6 +204,8 @@ public class ObtentionPermisHandlerTest extends AbstractEvenementHandlerTest {
 		assertEquals("La date d'ouverture du nouveau for ne correspond pas a la date de l'obtention du permis",
 				DATE_OBTENTION_PERMIS, forCommun.getDateDebut());
 		assertEquals(ModeImposition.ORDINAIRE, forCommun.getModeImposition());
+
+		assertEquals(date(1986, 5, 1), menageCommun.getReindexOn()); // [UNIREG-1979] permis C -> réindexation au début du mois suivant l'obtention
 	}
 
 	/**
@@ -275,6 +281,8 @@ public class ObtentionPermisHandlerTest extends AbstractEvenementHandlerTest {
 		// 25-06-2009 (PBO) : selon la spéc la date d'ouverture du nouveau for doit être faite le 1er jour du mois qui suit l'événement
 		Assert.isTrue( DATE_OBTENTION_PERMIS.equals(forCommun.getDateDebut()), "La date d'ouverture du nouveau for ne correspond pas a la date de l'obtention du permis" );
 		Assert.isTrue( forCommun.getModeImposition().equals(ModeImposition.ORDINAIRE));
+
+		assertEquals(date(1986, 5, 1), menageCommun.getReindexOn()); // [UNIREG-1979] permis C -> réindexation au début du mois suivant l'obtention
 	}
 
 	/**
