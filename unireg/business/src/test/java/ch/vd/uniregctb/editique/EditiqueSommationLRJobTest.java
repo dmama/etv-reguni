@@ -34,7 +34,7 @@ public class EditiqueSommationLRJobTest extends BusinessTest {
 		tiersDAO = getBean(TiersDAO.class, "tiersDAO");
 	}
 
-	@Test(timeout = 10000)
+	@Test(timeout = 30000)
 	public void testEditiqueSommationLRJob() throws Exception {
 
 		loadDatabase(DB_UNIT_DATA_FILE);
