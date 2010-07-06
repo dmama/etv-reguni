@@ -169,6 +169,16 @@ public class GlobalIndexTracing implements GlobalIndexInterface, InitializingBea
 		}
 	}
 
+	public void searchAll(Query query, SearchAllCallback callback) throws IndexerException {
+		long time = tracing.start();
+		try {
+			target.searchAll(query, callback);
+		}
+		finally {
+			tracing.end(time);
+		}
+	}
+
 	public void afterPropertiesSet() throws Exception {
 		if (statsService != null) {
 			statsService.registerService(SERVICE_NAME, tracing);
