@@ -3,6 +3,7 @@ package ch.vd.uniregctb.webservices.batch;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 
@@ -140,7 +141,7 @@ public class ItBatchClientJob extends JobDefinition {
 	}
 
 	@Override
-	public HashMap<String, Object> getDefaultParams() {
+	public Map<String,Object> getDefaultParams() {
 		return defaultParams;
 	}
 

@@ -90,6 +90,13 @@
 		<property name="transactionManager" ref="transactionManager"/>
     </bean>
 
+	<!-- Job qui met-à-jour les statistiques des tâches -->
+	<bean id="updateTacheStatsJob" parent="schedulerJob" class="ch.vd.uniregctb.tache.UpdateTacheStatsJob">
+		<constructor-arg value="106"/>
+		<constructor-arg value="Met-à-jour les statistiques des tâches"/>
+		<property name="tacheService" ref="tacheService"/>
+	</bean>
+
     <!-- Job qui traite les evenements civils -->
     <bean id="evenementHandlerJob" parent="schedulerJob" class="ch.vd.uniregctb.evenement.engine.EvenementCivilHandlerJob">
         <constructor-arg value="200"/>

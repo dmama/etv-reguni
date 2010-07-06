@@ -111,4 +111,9 @@ public interface TacheService {
 	 * @param contribuable le contribuable sur lequel les tâches relatives aux DIs doivent être générées.
 	 */
 	void synchronizeTachesDIs(Contribuable contribuable);
+
+	/**
+	 * Cette méthode met-à-jour les statistiques des tâches et des mouvements de dossier en instance
+	 */
+	void updateStats();
 }

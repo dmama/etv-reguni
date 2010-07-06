@@ -104,7 +104,7 @@ public class BatchScheduler {
 		LOGGER.info("Lancement du job <" + jobName + ">");
 		JobDefinition job = jobs.get(jobName);
 		Assert.notNull(job);
-		HashMap<String, Object> params = job.getDefaultParams();
+		Map<String, Object> params = job.getDefaultParams();
 		return startJob(jobName, params);
 	}
 

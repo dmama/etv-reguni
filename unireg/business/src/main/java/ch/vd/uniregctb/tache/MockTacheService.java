@@ -51,4 +51,7 @@ public class MockTacheService implements TacheService {
 
 	public void synchronizeTachesDIs(Contribuable contribuable) {
 	}
+
+	public void updateStats() {
+	}
 }

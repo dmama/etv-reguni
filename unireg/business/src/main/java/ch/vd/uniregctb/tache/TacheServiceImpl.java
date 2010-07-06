@@ -9,14 +9,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
-import org.quartz.CronTrigger;
-import org.quartz.Job;
-import org.quartz.JobDetail;
-import org.quartz.JobExecutionContext;
-import org.quartz.JobExecutionException;
 import org.quartz.Scheduler;
-import org.quartz.Trigger;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
@@ -77,7 +70,7 @@ import ch.vd.uniregctb.type.TypeTache;
 /**
  * Service permettant la génération de tâches à la suite d'événements fiscaux
  */
-public class TacheServiceImpl implements TacheService, InitializingBean {
+public class TacheServiceImpl implements TacheService {
 
 	private static final Logger LOGGER = Logger.getLogger(TacheServiceImpl.class);
 
@@ -126,28 +119,8 @@ public class TacheServiceImpl implements TacheService, InitializingBean {
 		this.scheduler = scheduler;
 	}
 
-	public void afterPropertiesSet() throws Exception {
-
-		// Enregistre le job sous un cron qui va mettre-à-jour les stats des tâches toutes les 5 minutes
-		final JobDetail job = new JobDetail("UpdateTacheStats", Scheduler.DEFAULT_GROUP, UpdateStatsJob.class);
-		job.getJobDataMap().put("TacheService", this);
-
-		final Trigger trigger = new CronTrigger("UpdateTacheStatsCron", Scheduler.DEFAULT_GROUP, "0 0/5 6-20 * * ?"); // toutes les 5 minutes, de 6h à 20h tous les jours
-		scheduler.scheduleJob(job, trigger);
-	}
-
-	public static class UpdateStatsJob implements Job {
-		public void execute(JobExecutionContext context) throws JobExecutionException {
-			final TacheServiceImpl service = (TacheServiceImpl) context.getJobDetail().getJobDataMap().get("TacheService");
-			service.updateStats();
-		}
-	}
-
-	/**
-	 * Cette méthode met-à-jour les statistiques des tâches et des mouvements de dossier en instance
-	 */
 	@SuppressWarnings({"unchecked", "UnnecessaryLocalVariable"})
-	private void updateStats() {
+	public void updateStats() {
 
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);

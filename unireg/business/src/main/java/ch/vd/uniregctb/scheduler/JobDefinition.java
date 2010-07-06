@@ -40,7 +40,7 @@ public abstract class JobDefinition implements InitializingBean, Comparable<Obje
 	// Params static
 	private String name;
 	private String categorie;
-	private HashMap<String, Object> defaultParams = null;
+	private Map<String, Object> defaultParams = null;
 	private JobSynchronousMode synchronousMode;
 	private int sortOrder;
 	private String description;
@@ -98,7 +98,7 @@ public abstract class JobDefinition implements InitializingBean, Comparable<Obje
 	}
 
 	public JobDefinition(String name, String categorie, int sortOrder, String description, List<JobParam> paramsDef,
-			HashMap<String, Object> defaultParams) {
+			Map<String, Object> defaultParams) {
 		this(name, categorie, sortOrder, description, paramsDef);
 		this.defaultParams = defaultParams;
 	}
@@ -213,7 +213,7 @@ public abstract class JobDefinition implements InitializingBean, Comparable<Obje
 	 *            paramètres additionnels
 	 * @return la nouvelle HashMap contenant la combinaison de paramètres
 	 */
-	protected static HashMap<String, Object> combineDefaultParams(HashMap<String, Object> defaultParams, HashMap<String, Object> additionalParams) {
+	protected static HashMap<String, Object> combineDefaultParams(Map<String, Object> defaultParams, Map<String, Object> additionalParams) {
 		HashMap<String, Object> result = new HashMap<String, Object>();
 		if (defaultParams != null) {
 			result.putAll(defaultParams);
@@ -289,7 +289,7 @@ public abstract class JobDefinition implements InitializingBean, Comparable<Obje
 		this.lastRunReport = runReport;
 	}
 
-	public HashMap<String, Object> getDefaultParams() {
+	public Map<String, Object> getDefaultParams() {
 		return defaultParams;
 	}
 
