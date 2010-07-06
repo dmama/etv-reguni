@@ -3,7 +3,9 @@ package ch.vd.uniregctb.indexer.tiers;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
@@ -545,7 +547,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 		final int nbMaxParListe = new Integer(ParametreEnum.nbMaxParListe.getDefaut());
 		final int nbDocs = nbMaxParListe + 20;
 
-		List<Long> ids = (List<Long>) doInNewTransactionAndSession(new TransactionCallback() {
+		final List<Long> ids = (List<Long>) doInNewTransactionAndSession(new TransactionCallback() {
 			public Object doInTransaction(TransactionStatus status) {
 
 				List<Long> ids = new ArrayList<Long>(2000);
@@ -571,6 +573,39 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 			assertContains("Le nombre max de résultats ne peut pas excéder " +
 				ParametreEnum.nbMaxParListe.getDefaut() + ". Hits: " + nbDocs, e.getMessage());
 		}
+	}
+
+	/**
+	 * [UNIREG-2597] Vérifie que la recherche de tous les ids n'est pas limité par le paramètre maxHits.
+	 */
+	@SuppressWarnings({"unchecked"})
+	@Test
+	public void testGetAllIds() throws Exception {
+
+		globalTiersIndexer.overwriteIndex();
+
+		// Le nombre de resultats est limité dans la recherche
+		final int nbMaxParListe = new Integer(ParametreEnum.nbMaxParListe.getDefaut());
+		final int nbDocs = nbMaxParListe + 20;
+
+		final Set<Long> idsDb = (Set<Long>) doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final Set<Long> ids = new HashSet<Long>();
+				for (long i = 0; i < nbDocs; i++) {
+					PersonnePhysique pp = addNonHabitant("Alfred", "Fodor", date(1970, 1, 1), Sexe.MASCULIN);
+					ids.add(pp.getNumero());
+				}
+				return ids;
+			}
+		});
+
+		globalTiersIndexer.sync();
+
+		// La méthode 'getAllIds' ne devrait pas être limitée par le paramètre maxHists, donc les deux ensembles d'ids devraient être égaux
+		final Set<Long> idsIndexer = globalTiersSearcher.getAllIds();
+		assertNotNull(idsIndexer);
+		assertEquals(idsDb.size(), idsIndexer.size());
+		assertEquals(idsDb, idsIndexer);
 	}
 
 	/**

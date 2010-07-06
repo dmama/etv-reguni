@@ -6,6 +6,7 @@ import ch.vd.uniregctb.indexer.Directory.WriteCallback;
 import org.apache.log4j.Logger;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.Term;
+import org.apache.lucene.search.Collector;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TopDocs;
 import org.springframework.beans.factory.DisposableBean;
@@ -407,6 +408,39 @@ public class GlobalIndex implements InitializingBean, DisposableBean, GlobalInde
 				try {
 					final TopDocs hits = searcher.search(query, maxHits);
 					callback.handle(hits, searcher.docGetter);
+				}
+				catch (IndexerException e) {
+					// pour ne pas transformer une TooManyException en IndexerException
+					throw e;
+				}
+				catch (Exception e) {
+					throw new IndexerException(e);
+				}
+				return null;
+			}
+		});
+
+		if (LOGGER.isTraceEnabled()) {
+			LOGGER.trace("Searching done: " + query);
+		}
+	}
+
+	public void searchAll(final Query query, final SearchAllCallback callback) throws IndexerException {
+
+		if (LOGGER.isTraceEnabled()) {
+			LOGGER.trace("Searching: " + query);
+		}
+
+		if (directory == null) {
+			LOGGER.warn("L'indexeur n'est pas initialisé" + hashCode());
+			return;
+		}
+
+		directory.read(new ReadOnlyCallback() {
+			public Object doInReadOnly(final LuceneSearcher searcher) {
+				try {
+					final Collector collector = new AllDocsCollector(callback, searcher.docGetter);
+					searcher.searchAll(query, collector);
 				}
 				catch (IndexerException e) {
 					// pour ne pas transformer une TooManyException en IndexerException

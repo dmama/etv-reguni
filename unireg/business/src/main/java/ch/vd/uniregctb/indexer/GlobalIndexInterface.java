@@ -46,6 +46,8 @@ public interface GlobalIndexInterface {
 
 	void search(String query, int maxHits, SearchCallback callback) throws IndexerException;
 
+	void searchAll(Query query, SearchAllCallback callback) throws IndexerException;
+
 	/**
 	 * @return the indexPath
 	 */

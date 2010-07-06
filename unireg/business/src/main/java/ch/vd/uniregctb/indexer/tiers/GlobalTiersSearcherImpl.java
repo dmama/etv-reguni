@@ -220,14 +220,12 @@ public class GlobalTiersSearcherImpl implements GlobalTiersSearcher, Initializin
 
 		final Set<Long> ids = new HashSet<Long>();
 
-		globalIndex.search(new MatchAllDocsQuery(), maxHits, new SearchCallback() {
-
-			public void handle(TopDocs hits, DocGetter docGetter) throws Exception {
-				for (ScoreDoc h : hits.scoreDocs) {
-					final Document doc = docGetter.get(h.doc);
-					final long id = extractTiersId(doc);
-					ids.add(id);
-				}
+		// [UNIREG-2597] on veut explicitement tous les ids, sans limite de recherche
+		globalIndex.searchAll(new MatchAllDocsQuery(), new SearchAllCallback() {
+			public void handle(int docId, DocGetter docGetter) throws Exception {
+				final Document doc = docGetter.get(docId);
+				final long id = extractTiersId(doc);
+				ids.add(id);
 			}
 		});
 

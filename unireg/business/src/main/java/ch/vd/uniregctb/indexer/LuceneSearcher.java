@@ -78,6 +78,31 @@ public class LuceneSearcher extends LuceneEngine {
 		return is.doc(i);
 	}
 
+	public void searchAll(Query query, Collector collector) throws IndexerException {
+
+		if (query == null) {
+			throw new IndexerException("Received empty query expression!");
+		}
+
+		if (LOGGER.isTraceEnabled()) {
+			LOGGER.trace("Lucene query: '" + query.toString() + "'");
+		}
+
+		try {
+			is.search(query, collector);
+		}
+		catch (BooleanQuery.TooManyClauses e) {
+			throw new TooManyResultsIndexerException(e.getMessage(), -1);
+		}
+		catch (IndexerException e) {
+			throw e;
+		}
+		catch (Exception e) {
+			LOGGER.info("Error in query: " + query.toString());
+			throw new IndexerException(e);
+		}
+	}
+
 	public TopDocs search(Query query, int maxHits) throws IndexerException {
 
 		if (query == null) {
