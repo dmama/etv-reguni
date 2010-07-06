@@ -32,6 +32,10 @@
 		<level value="DEBUG" />
 	</logger>
 
+	<logger name="ch.vd.uniregctb.ejb.GentilRemoteStatelessSessionProxyFactoryBean">
+		<level value="INFO" />
+	</logger>
+
 	<logger name="net.sf.ehcache">
 		<level value="ERROR" />
 	</logger>
