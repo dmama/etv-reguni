@@ -1,0 +1,15 @@
+<projectDescription>
+  <name>uniregctb-xmlbeans</name>
+  <comment>UniregCTB - Contient les beans Xml générés à partir des Xsd</comment>
+  <projects>
+    <project>uniregctb-xmlbeans-interfaces</project>
+  </projects>
+  <buildSpec>
+    <buildCommand>
+      <name>org.eclipse.jdt.core.javabuilder</name>
+    </buildCommand>
+  </buildSpec>
+  <natures>
+    <nature>org.eclipse.jdt.core.javanature</nature>
+  </natures>
+</projectDescription>

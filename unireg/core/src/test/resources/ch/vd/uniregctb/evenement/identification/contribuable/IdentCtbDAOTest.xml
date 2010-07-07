@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataset>
+  <table name="EVENEMENT_IDENTIFICATION_CTB">
+    <column>ID</column>
+    <column>MESSAGE_ID</column>
+    <column>TYPE_MESSAGE</column>
+    <column>PRIO_UTILISATEUR</column>
+    <column>BUSINESS_ID</column>
+    <column>BUSINESS_USER</column>
+    <column>REPLY_TO</column>
+    <column>PERIODE_FISCALE</column>
+	<column>MODE_IDENTIFICATION</column>
+    <column>EMETTEUR_ID</column>
+    <column>PRIO_EMETTEUR</column>
+    <column>DATE_DEMANDE</column>
+    <column>ETAT</column>
+    <column>NOM</column>
+    <column>PRENOMS</column>
+    <column>NAVS13</column>
+    <column>DATE_NAISSANCE</column>
+    <row>
+      <value>1</value>
+      <value>1</value>
+      <value>ssk-3001-000101</value>
+      <value>0</value>
+      <value>123456</value>
+      <value>Test</value>
+      <value>Test</value>
+      <value>2008</value>
+	  <value>MANUEL_SANS_ACK</value>
+      <value>Test</value>
+      <value>NON_PRIORITAIRE</value>
+      <value>2008-01-01</value>
+      <value>EXCEPTION</value>
+      <value>Larousse</value>
+      <value>Lora</value>
+      <value>1234567890123</value>
+      <value>19730711</value>
+    </row>
+  </table>
+</dataset>

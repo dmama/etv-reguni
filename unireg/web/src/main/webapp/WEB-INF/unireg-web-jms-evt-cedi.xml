@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:jee="http://www.springframework.org/schema/jee" xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+							http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+							http://www.springframework.org/schema/jee
+							http://www.springframework.org/schema/jee/spring-jee-2.0.xsd
+							http://www.springframework.org/schema/util
+							http://www.springframework.org/schema/util/spring-util-2.0.xsd">
+
+	<bean id="evenementCediListener" class="ch.vd.uniregctb.evenement.cedi.EvenementCediListenerImpl" parent="esbMessageListener">
+		<property name="handler" ref="evenementCediService" />
+	</bean>
+
+	<bean id="evenementCediListenerContainer" class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+		<property name="connectionFactory" ref="jmsConnectionFactory" />
+		<property name="destinationName" value="${extprop.jms.queue.evtCedi}" />
+		<property name="messageListener" ref="evenementCediListener" />
+		<!-- Workaround pour le bug qui fait qu'un message JMS rejeté (exception) est renvoyé indéfiniment et provoque une boucle infinie -->
+		<property name="sessionTransacted" value="true" />
+		<!-- <property name="transactionManager" ref="transactionManager" />  -->
+		<property name="autoStartup" value="${extprop.jms.queue.evtCedi.enabled}" />
+		<property name="cacheLevel" value="3"/>
+	</bean>
+
+</beans>

@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions name="MeldewesenConsultationServiceImpl" targetNamespace="http://impl.meldewesen.services.web.acicom.dfin.vd.ch/" xmlns:tns="http://impl.meldewesen.services.web.acicom.dfin.vd.ch/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://impl.meldewesen.services.web.acicom.dfin.vd.ch/" attributeFormDefault="unqualified" elementFormDefault="unqualified" targetNamespace="http://impl.meldewesen.services.web.acicom.dfin.vd.ch/">
+<xs:complexType final="extension restriction" name="contenuMessage">
+<xs:sequence>
+<xs:element minOccurs="0" name="content" type="xs:base64Binary"/>
+<xs:element minOccurs="0" name="extension" type="xs:string"/>
+<xs:element minOccurs="0" name="mimeType" type="xs:string"/>
+</xs:sequence>
+</xs:complexType>
+<xs:element name="DocumentNotFoundException" type="DocumentNotFoundException"/>
+<xs:complexType name="DocumentNotFoundException">
+<xs:sequence/>
+</xs:complexType>
+<xs:element name="AciComException" type="AciComException"/>
+<xs:complexType name="AciComException">
+<xs:sequence/>
+</xs:complexType>
+<xs:element name="recupererContenuMessage" type="recupererContenuMessage"/>
+<xs:complexType name="recupererContenuMessage">
+<xs:sequence>
+<xs:element minOccurs="0" name="messageId" type="xs:string"/>
+</xs:sequence>
+</xs:complexType>
+<xs:element name="recupererContenuMessageResponse" type="recupererContenuMessageResponse"/>
+<xs:complexType name="recupererContenuMessageResponse">
+<xs:sequence>
+<xs:element minOccurs="0" name="return" type="contenuMessage"/>
+</xs:sequence>
+</xs:complexType>
+<xs:element name="setMeldewesenService" type="setMeldewesenService"/>
+<xs:complexType name="setMeldewesenService">
+<xs:sequence>
+<xs:element minOccurs="0" name="meldewesenService"/>
+</xs:sequence>
+</xs:complexType>
+<xs:element name="setMeldewesenServiceResponse" type="setMeldewesenServiceResponse"/>
+<xs:complexType name="setMeldewesenServiceResponse">
+<xs:sequence/>
+</xs:complexType>
+</xs:schema>
+  </wsdl:types>
+  <wsdl:message name="recupererContenuMessageResponse">
+    <wsdl:part name="parameters" element="tns:recupererContenuMessageResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="recupererContenuMessage">
+    <wsdl:part name="parameters" element="tns:recupererContenuMessage">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="AciComException">
+    <wsdl:part name="AciComException" element="tns:AciComException">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="DocumentNotFoundException">
+    <wsdl:part name="DocumentNotFoundException" element="tns:DocumentNotFoundException">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="setMeldewesenServiceResponse">
+    <wsdl:part name="parameters" element="tns:setMeldewesenServiceResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="setMeldewesenService">
+    <wsdl:part name="parameters" element="tns:setMeldewesenService">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:portType name="MeldewesenConsultationServiceImplPortType">
+    <wsdl:operation name="recupererContenuMessage">
+      <wsdl:input name="recupererContenuMessage" message="tns:recupererContenuMessage">
+    </wsdl:input>
+      <wsdl:output name="recupererContenuMessageResponse" message="tns:recupererContenuMessageResponse">
+    </wsdl:output>
+      <wsdl:fault name="AciComException" message="tns:AciComException">
+    </wsdl:fault>
+      <wsdl:fault name="DocumentNotFoundException" message="tns:DocumentNotFoundException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="setMeldewesenService">
+      <wsdl:input name="setMeldewesenService" message="tns:setMeldewesenService">
+    </wsdl:input>
+      <wsdl:output name="setMeldewesenServiceResponse" message="tns:setMeldewesenServiceResponse">
+    </wsdl:output>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="MeldewesenConsultationServiceImplSoapBinding" type="tns:MeldewesenConsultationServiceImplPortType">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="recupererContenuMessage">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="recupererContenuMessage">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="recupererContenuMessageResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="AciComException">
+        <soap:fault name="AciComException" use="literal"/>
+      </wsdl:fault>
+      <wsdl:fault name="DocumentNotFoundException">
+        <soap:fault name="DocumentNotFoundException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="setMeldewesenService">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="setMeldewesenService">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="setMeldewesenServiceResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="MeldewesenConsultationServiceImpl">
+    <wsdl:port name="MeldewesenConsultationServiceImplPort" binding="tns:MeldewesenConsultationServiceImplSoapBinding">
+      <soap:address location="http://localhost:9090/MeldewesenConsultationServiceImplPort"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

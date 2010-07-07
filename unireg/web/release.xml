@@ -1,0 +1,64 @@
+<assembly>
+	<id>release</id>
+	<formats>
+		<format>zip</format>
+	</formats>
+	<includeBaseDirectory>false</includeBaseDirectory>
+	<fileSets>
+		<!-- Documentation -->
+		<fileSet>
+			<directory>../base/doc</directory>
+			<outputDirectory>docs</outputDirectory>
+			<useDefaultExcludes>true</useDefaultExcludes>
+			<includes>
+				<include>INSTALL.doc</include>
+			</includes>
+			<excludes>
+				<exclude>~*.doc</exclude>
+			</excludes>
+		</fileSet>
+		<!-- Fichier properties -->
+		<fileSet>
+			<directory>config/integration</directory>
+			<outputDirectory>config/integration</outputDirectory>
+			<useDefaultExcludes>true</useDefaultExcludes>
+		</fileSet>
+		<fileSet>
+			<directory>config/validation</directory>
+			<outputDirectory>config/validation</outputDirectory>
+			<useDefaultExcludes>true</useDefaultExcludes>
+		</fileSet>
+		<!-- Fichier unireg-log4j.xml et ehcache.xml -->
+		<fileSet>
+			<directory>config/</directory>
+			<includes>
+				<include>unireg-log4j.xml</include>
+				<include>ehcache.xml</include>
+			</includes>
+			<outputDirectory>config/integration</outputDirectory>
+		</fileSet>
+		<fileSet>
+			<directory>config/</directory>
+			<includes>
+				<include>unireg-log4j.xml</include>
+				<include>ehcache.xml</include>
+			</includes>
+			<outputDirectory>config/validation</outputDirectory>
+		</fileSet>
+		<!-- Fichiers SQL -->
+		<fileSet>
+			<directory>../base/sql</directory>
+			<outputDirectory>sql</outputDirectory>
+			<useDefaultExcludes>true</useDefaultExcludes>
+		</fileSet>
+	</fileSets>
+	<files>
+		<file>
+			<!-- BEGIN_LVERSION -->
+			<source>target/uniregctb-web-4.4.0.war</source>
+			<!-- END_LVERSION -->
+			<outputDirectory>deployment</outputDirectory>
+			<destName>uniregweb.war</destName>
+		</file>
+	</files>
+</assembly>
