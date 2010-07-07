@@ -69,7 +69,7 @@
 		<dependency>
 			<groupId>ch.vd.registre</groupId>
 			<artifactId>shared-web</artifactId>
-			<version>1.2-SNAPSHOT</version>
+			<version>1.2.1</version>
 		</dependency>
 		<dependency>
 			<groupId>${pom.parent.groupId}</groupId>
