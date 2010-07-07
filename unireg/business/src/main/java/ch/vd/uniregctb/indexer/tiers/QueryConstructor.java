@@ -115,7 +115,7 @@ public class QueryConstructor {
 	private void addNomRaison(BooleanQuery fullQuery) throws IndexerException {
 
 		// Nom courrier
-		if (!StringUtils.isEmpty(criteria.getNomRaison())) {
+		if (StringUtils.isNotBlank(criteria.getNomRaison())) {
 
 			BooleanQuery query = new BooleanQuery();
 			TiersCriteria.TypeRecherche typeRecherche = criteria.getTypeRechercheDuNom();
@@ -174,7 +174,7 @@ public class QueryConstructor {
 	private void addLocalitePays(BooleanQuery fullQuery) throws IndexerException {
 
 		// Localite ou Pays
-		if (!StringUtils.isEmpty(criteria.getLocaliteOuPays())) {
+		if (StringUtils.isNotBlank(criteria.getLocaliteOuPays())) {
 			final String nomLocaliteOuPays = criteria.getLocaliteOuPays().toLowerCase();
 			final Query q = LuceneEngine.getTermsCommence(TiersIndexableData.LOCALITE_PAYS, nomLocaliteOuPays, tokenMinLength);
 			fullQuery.add(q, must);
@@ -184,7 +184,7 @@ public class QueryConstructor {
 	private void addNpa(BooleanQuery fullQuery) throws IndexerException {
 
 		// Localite ou Pays
-		if (!StringUtils.isEmpty(criteria.getNpa())) {
+		if (StringUtils.isNotBlank(criteria.getNpa())) {
 			final String npa = criteria.getNpa();
 			final Query q = LuceneEngine.getTermsCommence(TiersIndexableData.NPA, npa, 0);
 			fullQuery.add(q, must);
@@ -194,7 +194,7 @@ public class QueryConstructor {
 	private void addNumeroAVS(BooleanQuery fullQuery) throws IndexerException {
 
 		// Numero AVS
-		if (!StringUtils.isEmpty(criteria.getNumeroAVS())) {
+		if (StringUtils.isNotBlank(criteria.getNumeroAVS())) {
 			final String noAVS = IndexerFormatHelper.formatNumeroAVS(criteria.getNumeroAVS());
 			final Query q = LuceneEngine.getTermsCommence(TiersIndexableData.NUMERO_ASSURE_SOCIAL, noAVS, 0);
 			fullQuery.add(q, must);
@@ -212,7 +212,7 @@ public class QueryConstructor {
 
 	private void addNatureJuridique(BooleanQuery fullQuery) throws IndexerException {
 
-		if (!StringUtils.isEmpty(criteria.getNatureJuridique())) {
+		if (StringUtils.isNotBlank(criteria.getNatureJuridique())) {
 			final Query q = new TermQuery(new Term(TiersIndexableData.NATURE_JURIDIQUE, criteria.getNatureJuridique().toLowerCase()));
 			fullQuery.add(q, must);
 		}
@@ -271,7 +271,7 @@ public class QueryConstructor {
 
 	private void addNumeroSymic(BooleanQuery fullQuery) throws IndexerException {
 
-		if (!StringUtils.isEmpty(criteria.getNoSymic())) {
+		if (StringUtils.isNotBlank(criteria.getNoSymic())) {
 			final Query q = new TermQuery(new Term(TiersIndexableData.NO_SYMIC, criteria.getNoSymic().toLowerCase()));
 			fullQuery.add(q, must);
 		}
