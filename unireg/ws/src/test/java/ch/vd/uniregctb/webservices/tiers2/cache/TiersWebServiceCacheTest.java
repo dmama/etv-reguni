@@ -34,6 +34,7 @@ import ch.vd.uniregctb.webservices.tiers2.TiersWebService;
 import ch.vd.uniregctb.webservices.tiers2.data.Contribuable;
 import ch.vd.uniregctb.webservices.tiers2.data.ContribuableHisto;
 import ch.vd.uniregctb.webservices.tiers2.data.Date;
+import ch.vd.uniregctb.webservices.tiers2.data.ForFiscal;
 import ch.vd.uniregctb.webservices.tiers2.data.MenageCommun;
 import ch.vd.uniregctb.webservices.tiers2.data.MenageCommunHisto;
 import ch.vd.uniregctb.webservices.tiers2.data.PersonneMorale;
@@ -56,8 +57,15 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 	private TiersWebServiceCache service;
 	private TiersWebServiceCacheManager wsCacheManager;
 
-	private Long ericId;
-	private Long menageId;
+	private static class Ids {
+		public Long eric;
+
+		public Long monsieur;
+		public Long madame;
+		public Long menage;
+	}
+
+	private final Ids ids = new Ids();
 
 	@Override
 	public void onSetUp() throws Exception {
@@ -75,7 +83,7 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 		wsCacheManager.setCache(service);
 
 		// Un tiers avec une adresse et un fors fiscal
-		ericId = (Long) doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
@@ -83,20 +91,21 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 				addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
 				addForSecondaire(eric, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFSEtendu(),
 						MotifRattachement.IMMEUBLE_PRIVE);
-				return eric.getNumero();
+				ids.eric = eric.getNumero();
+				return null;
 			}
 		});
 
 		// Un ménage commun avec toutes les parties renseignées
-		menageId = (Long) doInNewTransaction(new TxCallback() {
+		doInNewTransaction(new TxCallback() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
 				addCollAdm(MockCollectiviteAdministrative.CEDI);
 
-				PersonnePhysique eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
-				PersonnePhysique monique = addNonHabitant("Monique", "Bolomey", date(1969, 12, 3), Sexe.FEMININ);
-				EnsembleTiersCouple ensemble = addEnsembleTiersCouple(eric, monique, date(1989, 5, 1), null);
+				PersonnePhysique monsieur = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+				PersonnePhysique madame = addNonHabitant("Monique", "Bolomey", date(1969, 12, 3), Sexe.FEMININ);
+				EnsembleTiersCouple ensemble = addEnsembleTiersCouple(monsieur, madame, date(1989, 5, 1), null);
 				ch.vd.uniregctb.tiers.MenageCommun mc = ensemble.getMenage();
 				mc.setNumeroCompteBancaire("CH9308440717427290198");
 
@@ -114,7 +123,11 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 				addForPrincipal(mc, date(1989, 5, 1), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
 				addForSecondaire(mc, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFSEtendu(),
 						MotifRattachement.IMMEUBLE_PRIVE);
-				return mc.getNumero();
+
+				ids.monsieur = monsieur.getNumero();
+				ids.madame = madame.getNumero();
+				ids.menage = mc.getNumero();
+				return null;
 			}
 		});
 
@@ -132,7 +145,7 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 		GetTiers paramsNoPart = new GetTiers();
 		paramsNoPart.login = new UserLogin("[TiersWebServiceCacheTest]", 21);
 		paramsNoPart.date = new Date(2008, 12, 31);
-		paramsNoPart.tiersNumber = ericId;
+		paramsNoPart.tiersNumber = ids.eric;
 		paramsNoPart.parts = null;
 
 		final Set<TiersPart> adressesPart = new HashSet<TiersPart>();
@@ -186,7 +199,7 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 		GetTiers paramsNoPart = new GetTiers();
 		paramsNoPart.login = new UserLogin("[TiersWebServiceCacheTest]", 21);
 		paramsNoPart.date = new Date(2003, 7, 1);
-		paramsNoPart.tiersNumber = menageId;
+		paramsNoPart.tiersNumber = ids.menage;
 		paramsNoPart.parts = null;
 
 		// on demande tour-à-tour les parties et on vérifie que 1) on les reçoit bien; et 2) qu'on ne reçoit qu'elles.
@@ -211,7 +224,7 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 
 		GetTiersHisto paramsNoPart = new GetTiersHisto();
 		paramsNoPart.login = new UserLogin("[TiersWebServiceCacheTest]", 21);
-		paramsNoPart.tiersNumber = ericId;
+		paramsNoPart.tiersNumber = ids.eric;
 		paramsNoPart.parts = null;
 
 		final Set<TiersPart> adressesPart = new HashSet<TiersPart>();
@@ -264,7 +277,7 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 
 		GetTiersHisto paramsNoPart = new GetTiersHisto();
 		paramsNoPart.login = new UserLogin("[TiersWebServiceCacheTest]", 21);
-		paramsNoPart.tiersNumber = menageId;
+		paramsNoPart.tiersNumber = ids.menage;
 		paramsNoPart.parts = null;
 
 		// on demande tour-à-tour les parties et on vérifie que 1) on les reçoit bien; et 2) qu'on ne reçoit qu'elles.
@@ -291,7 +304,7 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 
 		GetTiers params = new GetTiers();
 		params.login = new UserLogin("[TiersWebServiceCacheTest]", 21);
-		params.tiersNumber = ericId;
+		params.tiersNumber = ids.eric;
 		params.date = new Date(2008, 1, 1);
 		params.parts = null;
 
@@ -300,7 +313,7 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 
 		GetTiersHisto paramsHisto = new GetTiersHisto();
 		paramsHisto.login = new UserLogin("[TiersWebServiceCacheTest]", 21);
-		paramsHisto.tiersNumber = ericId;
+		paramsHisto.tiersNumber = ids.eric;
 		paramsHisto.parts = null;
 
 		assertNotNull(service.getTiersHisto(paramsHisto));
@@ -308,7 +321,7 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 
 		// On evicte les tiers
 
-		service.evictTiers(ericId);
+		service.evictTiers(ids.eric);
 
 		// On vérifie que le cache est vide
 
@@ -326,7 +339,7 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 		// On charge le cache avec le ménage commun
 		GetTiers params = new GetTiers();
 		params.login = new UserLogin("[TiersWebServiceCacheTest]", 21);
-		params.tiersNumber = menageId;
+		params.tiersNumber = ids.menage;
 		params.date = new Date(2008, 1, 1);
 		params.parts = new HashSet<TiersPart>();
 		params.parts.add(TiersPart.ADRESSES_ENVOI);
@@ -347,7 +360,7 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
-				final ch.vd.uniregctb.tiers.MenageCommun mc = (ch.vd.uniregctb.tiers.MenageCommun) hibernateTemplate.get(ch.vd.uniregctb.tiers.MenageCommun.class, menageId);
+				final ch.vd.uniregctb.tiers.MenageCommun mc = (ch.vd.uniregctb.tiers.MenageCommun) hibernateTemplate.get(ch.vd.uniregctb.tiers.MenageCommun.class, ids.menage);
 				assertNotNull(mc);
 
 				final Set<RapportEntreTiers> rapports = mc.getRapportsObjet();
@@ -425,6 +438,116 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 		params.parts = adressesPart;
 		assertNull(service.getTiersHisto(params));
 		assertNotNull(getCacheValue(params));
+	}
+
+	/**
+	 * [UNIREG-2587] Vérifie que le cache fonctionne correctement lorsqu'un tiers est demandé successivement
+	 * <ol>
+	 * <li>avec ses fors fiscaux virtuels, puis</li>
+	 * <li>juste avec ses fors fiscaux, et</li>
+	 * <li>finalement de nouveau avec ses fors fiscaux virtuels.</li>
+	 * </ol>
+	 */
+	@Test
+	public void testGetTiersCasSpecialForFiscauxVirtuels() throws Exception {
+
+		final GetTiers params = new GetTiers();
+		params.login = new UserLogin("[TiersWebServiceCacheTest]", 21);
+		params.tiersNumber = ids.monsieur;
+		params.parts = new HashSet<TiersPart>();
+
+		// 1. on demande le tiers avec les fors fiscaux virtuels
+		{
+			params.parts.add(TiersPart.FORS_FISCAUX_VIRTUELS);
+
+			final Tiers tiers = service.getTiers(params);
+			assertNotNull(tiers);
+			assertNotNull(tiers.forFiscalPrincipal);
+
+			final ForFiscal ffp = tiers.forFiscalPrincipal;
+			assertEquals(new Date(1989, 5, 1), ffp.dateOuverture);
+			assertNull(ffp.dateFermeture);
+		}
+
+		// 2. on demande le tiers *sans* les fors fiscaux virtuels
+		{
+			params.parts.clear();
+			params.parts.add(TiersPart.FORS_FISCAUX);
+
+			final Tiers tiers = service.getTiers(params);
+			assertNotNull(tiers);
+			assertNull(tiers.forFiscalPrincipal);
+		}
+
+		// 3. on demande de nouveau le tiers avec les fors fiscaux virtuels => le résultat doit être identique à la demande du point 1.
+		{
+			params.parts.clear();
+			params.parts.add(TiersPart.FORS_FISCAUX_VIRTUELS);
+
+			final Tiers tiers = service.getTiers(params);
+			assertNotNull(tiers);
+			assertNotNull(tiers.forFiscalPrincipal);
+
+			final ForFiscal ffp = tiers.forFiscalPrincipal;
+			assertEquals(new Date(1989, 5, 1), ffp.dateOuverture);
+			assertNull(ffp.dateFermeture);
+		}
+	}
+	
+	/**
+	 * [UNIREG-2587] Vérifie que le cache fonctionne correctement lorsqu'un tiers est demandé successivement
+	 * <ol>
+	 * <li>avec ses fors fiscaux virtuels, puis</li>
+	 * <li>juste avec ses fors fiscaux, et</li>
+	 * <li>finalement de nouveau avec ses fors fiscaux virtuels.</li>
+	 * </ol>
+	 */
+	@Test
+	public void testGetTiersHistoCasSpecialForFiscauxVirtuels() throws Exception {
+
+		final GetTiersHisto params = new GetTiersHisto();
+		params.login = new UserLogin("[TiersWebServiceCacheTest]", 21);
+		params.tiersNumber = ids.monsieur;
+		params.parts = new HashSet<TiersPart>();
+
+		// 1. on demande le tiers avec les fors fiscaux virtuels
+		{
+			params.parts.add(TiersPart.FORS_FISCAUX_VIRTUELS);
+
+			final TiersHisto tiers = service.getTiersHisto(params);
+			assertNotNull(tiers);
+			assertNotNull(tiers.forsFiscauxPrincipaux);
+			assertEquals(1, tiers.forsFiscauxPrincipaux.size());
+
+			final ForFiscal ffp = tiers.forsFiscauxPrincipaux.get(0);
+			assertEquals(new Date(1989, 5, 1), ffp.dateOuverture);
+			assertNull(ffp.dateFermeture);
+		}
+
+		// 2. on demande le tiers *sans* les fors fiscaux virtuels
+		{
+			params.parts.clear();
+			params.parts.add(TiersPart.FORS_FISCAUX);
+
+			final TiersHisto tiers = service.getTiersHisto(params);
+			assertNotNull(tiers);
+			assertEmpty(tiers.forsFiscauxPrincipaux);
+		}
+
+		// 3. on demande de nouveau le tiers avec les fors fiscaux virtuels => le résultat doit être identique à la demande du point 1.
+		{
+			params.parts.clear();
+			params.parts.add(TiersPart.FORS_FISCAUX_VIRTUELS);
+
+			final TiersHisto tiers = service.getTiersHisto(params);
+			assertNotNull(tiers);
+			assertNotNull(tiers.forsFiscauxPrincipaux);
+			assertEquals(1, tiers.forsFiscauxPrincipaux.size());
+
+			final ForFiscal ffp = tiers.forsFiscauxPrincipaux.get(0);
+			assertEquals(new Date(1989, 5, 1), ffp.dateOuverture);
+			assertNull(ffp.dateFermeture);
+		}
 	}
 
 	private GetTiersValue getCacheValue(final GetTiers paramsNoPart) {

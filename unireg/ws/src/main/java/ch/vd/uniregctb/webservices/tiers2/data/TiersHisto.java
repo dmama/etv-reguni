@@ -10,6 +10,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
+import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 
@@ -20,6 +21,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.DateRangeHelper.Range;
 import ch.vd.uniregctb.webservices.tiers2.exception.BusinessException;
 import ch.vd.uniregctb.webservices.tiers2.impl.Context;
+import ch.vd.uniregctb.webservices.tiers2.impl.CopyMode;
 import ch.vd.uniregctb.webservices.tiers2.impl.DataHelper;
 import ch.vd.uniregctb.webservices.tiers2.impl.ForFiscalComparator;
 
@@ -208,7 +210,7 @@ public abstract class TiersHisto {
 		this.blocageRemboursementAutomatique = tiers.blocageRemboursementAutomatique;
 		this.isDebiteurInactif = tiers.isDebiteurInactif;
 
-		copyParts(tiers, parts);
+		copyParts(tiers, parts, CopyMode.EXCLUSIF);
 	}
 
 	/**
@@ -220,7 +222,7 @@ public abstract class TiersHisto {
 	 *            les parts à copier
 	 */
 	public void copyPartsFrom(TiersHisto tiers, Set<TiersPart> parts) {
-		copyParts(tiers, parts);
+		copyParts(tiers, parts, CopyMode.ADDITIF);
 	}
 
 	/**
@@ -407,7 +409,7 @@ public abstract class TiersHisto {
 		}
 	}
 
-	private void copyParts(TiersHisto tiers, Set<TiersPart> parts) {
+	private void copyParts(TiersHisto tiers, Set<TiersPart> parts, CopyMode mode) {
 
 		if (parts != null && parts.contains(TiersPart.COMPTES_BANCAIRES)) {
 			this.comptesBancaires = tiers.comptesBancaires;
@@ -434,22 +436,36 @@ public abstract class TiersHisto {
 		}
 
 		if (parts != null && (parts.contains(TiersPart.FORS_FISCAUX) || parts.contains(TiersPart.FORS_FISCAUX_VIRTUELS))) {
-			if (parts.contains(TiersPart.FORS_FISCAUX_VIRTUELS)) {
-				this.forsFiscauxPrincipaux = tiers.forsFiscauxPrincipaux;
+			/**
+			 * [UNIREG-2587] Les fors fiscaux non-virtuels et les fors fiscaux virtuels représentent deux ensembles qui se recoupent.
+			 * Plus précisemment, les fors fiscaux non-virtuels sont entièrement contenus dans les fors fiscaux virtuels. En fonction
+			 * du mode de copie, il est donc nécessaire de compléter ou de filtrer les fors fiscaux. 
+			 */
+			if (mode == CopyMode.ADDITIF) {
+				if (parts.contains(TiersPart.FORS_FISCAUX_VIRTUELS) || this.forsFiscauxPrincipaux == null) {
+					this.forsFiscauxPrincipaux = tiers.forsFiscauxPrincipaux;
+				}
 			}
 			else {
-				// supprime les éventuels fors virtuels s'ils ne sont pas demandés
-				if (tiers.forsFiscauxPrincipaux != null) {
-					this.forsFiscauxPrincipaux = new ArrayList<ForFiscal>();
-					for (ForFiscal f : tiers.forsFiscauxPrincipaux) {
-						if (!f.virtuel) {
-							this.forsFiscauxPrincipaux.add(f);
-						}
-					}
+				Assert.isEqual(CopyMode.EXCLUSIF, mode);
+				if (parts.contains(TiersPart.FORS_FISCAUX_VIRTUELS)) {
+					this.forsFiscauxPrincipaux = tiers.forsFiscauxPrincipaux;
 				}
 				else {
-					this.forsFiscauxPrincipaux = null;
+					// supprime les éventuels fors virtuels s'ils ne sont pas demandés
+					if (tiers.forsFiscauxPrincipaux != null) {
+						this.forsFiscauxPrincipaux = new ArrayList<ForFiscal>();
+						for (ForFiscal f : tiers.forsFiscauxPrincipaux) {
+							if (!f.virtuel) {
+								this.forsFiscauxPrincipaux.add(f);
+							}
+						}
+					}
+					else {
+						this.forsFiscauxPrincipaux = null;
+					}
 				}
+
 			}
 			this.autresForsFiscaux = tiers.autresForsFiscaux;
 		}

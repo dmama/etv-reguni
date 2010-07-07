@@ -18,6 +18,7 @@ import org.apache.log4j.Logger;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.webservices.tiers2.exception.BusinessException;
 import ch.vd.uniregctb.webservices.tiers2.impl.Context;
+import ch.vd.uniregctb.webservices.tiers2.impl.CopyMode;
 import ch.vd.uniregctb.webservices.tiers2.impl.DataHelper;
 
 /**
@@ -311,7 +312,7 @@ public abstract class Tiers {
 		this.blocageRemboursementAutomatique = tiers.blocageRemboursementAutomatique;
 		this.isDebiteurInactif = tiers.isDebiteurInactif;
 
-		copyParts(tiers, parts);
+		copyParts(tiers, parts, CopyMode.EXCLUSIF);
 	}
 
 	/**
@@ -323,7 +324,7 @@ public abstract class Tiers {
 	 *            les parts à copier
 	 */
 	public void copyPartsFrom(Tiers tiers, Set<TiersPart> parts) {
-		copyParts(tiers, parts);
+		copyParts(tiers, parts, CopyMode.ADDITIF);
 	}
 
 	/**
@@ -332,7 +333,7 @@ public abstract class Tiers {
 	 */
 	public abstract Tiers clone(Set<TiersPart> parts);
 
-	private void copyParts(Tiers tiers, Set<TiersPart> parts) {
+	private void copyParts(Tiers tiers, Set<TiersPart> parts, CopyMode mode) {
 
 		if (parts != null && parts.contains(TiersPart.COMPTES_BANCAIRES)) {
 			this.comptesBancaires = tiers.comptesBancaires;
@@ -359,16 +360,29 @@ public abstract class Tiers {
 		}
 
 		if (parts != null && (parts.contains(TiersPart.FORS_FISCAUX) || parts.contains(TiersPart.FORS_FISCAUX_VIRTUELS))) {
-			if (parts.contains(TiersPart.FORS_FISCAUX_VIRTUELS)) {
-				this.forFiscalPrincipal = tiers.forFiscalPrincipal;
+			/**
+			 * [UNIREG-2587] Les fors fiscaux non-virtuels et les fors fiscaux virtuels représentent deux ensembles qui se recoupent.
+			 * Plus précisemment, les fors fiscaux non-virtuels sont entièrement contenus dans les fors fiscaux virtuels. En fonction
+			 * du mode de copie, il est donc nécessaire de compléter ou de filtrer les fors fiscaux.
+			 */
+			if (mode == CopyMode.ADDITIF) {
+				if (parts.contains(TiersPart.FORS_FISCAUX_VIRTUELS) || this.forFiscalPrincipal == null) {
+					this.forFiscalPrincipal = tiers.forFiscalPrincipal;
+				}
 			}
 			else {
-				// supprime les éventuels fors virtuels s'ils ne sont pas demandés
-				if (tiers.forFiscalPrincipal != null && !tiers.forFiscalPrincipal.virtuel) {
+				Assert.isEqual(CopyMode.EXCLUSIF, mode);
+				if (parts.contains(TiersPart.FORS_FISCAUX_VIRTUELS)) {
 					this.forFiscalPrincipal = tiers.forFiscalPrincipal;
 				}
 				else {
-					this.forFiscalPrincipal = null;
+					// supprime les éventuels fors virtuels s'ils ne sont pas demandés
+					if (tiers.forFiscalPrincipal != null && !tiers.forFiscalPrincipal.virtuel) {
+						this.forFiscalPrincipal = tiers.forFiscalPrincipal;
+					}
+					else {
+						this.forFiscalPrincipal = null;
+					}
 				}
 			}
 			this.autresForsFiscaux = tiers.autresForsFiscaux;
