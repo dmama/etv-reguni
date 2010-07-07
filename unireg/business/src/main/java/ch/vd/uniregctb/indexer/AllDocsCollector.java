@@ -13,6 +13,7 @@ public class AllDocsCollector extends Collector {
 
 	private final SearchAllCallback callback;
 	private final DocGetter docGetter;
+	private int docBase;
 
 	public AllDocsCollector(SearchAllCallback callback, DocGetter docGetter) {
 		this.callback = callback;
@@ -26,7 +27,8 @@ public class AllDocsCollector extends Collector {
 	@Override
 	public void collect(int doc) throws IOException {
 		try {
-			callback.handle(doc, docGetter);
+			// [UNIREG-2597] l'index du document est relatif à l'index reader : il faut ajouter docBase pour avoir l'index de document global
+			callback.handle(docBase + doc, docGetter);
 		}
 		catch (Exception e) {
 			throw new RuntimeException(e);
@@ -35,6 +37,7 @@ public class AllDocsCollector extends Collector {
 
 	@Override
 	public void setNextReader(IndexReader reader, int docBase) throws IOException {
+		this.docBase = docBase;
 	}
 
 	@Override
