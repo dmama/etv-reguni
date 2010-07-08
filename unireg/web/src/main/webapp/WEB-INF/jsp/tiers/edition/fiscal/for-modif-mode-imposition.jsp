@@ -58,6 +58,7 @@
 							</c:when>
 							<c:when test="${command.typeAutoriteFiscale == 'COMMUNE_HC' }">
 								<unireg:infra entityId="${command.numeroForFiscalCommuneHorsCanton}" entityType="commune" entityPropertyName="nomMinuscule"></unireg:infra>
+								(<unireg:infra entityId="${command.numeroForFiscalCommuneHorsCanton}" entityType="commune" entityPropertyName="sigleCanton"></unireg:infra>)
 							</c:when>
 							<c:when test="${command.typeAutoriteFiscale == 'PAYS_HS' }">
 								<unireg:infra entityId="${command.numeroForFiscalPays}" entityType="pays" entityPropertyName="nomMinuscule"></unireg:infra>

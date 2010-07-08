@@ -99,6 +99,7 @@
 									<td class="principal_hc" rowspan="<c:out value="${ligne.forPrincipal.longueurAffichage}" />">
 									    <a href="#tooltip" class="staticTip" id="ffp-${fp.id}">
     										<unireg:infra entityId="${fp.numeroOfsAutoriteFiscale}" entityType="commune" entityPropertyName="nomMinuscule"></unireg:infra>
+    										(<unireg:infra entityId="${fp.numeroOfsAutoriteFiscale}" entityType="commune" entityPropertyName="sigleCanton"></unireg:infra>)
 										</a>
 										<div id="ffp-${fp.id}-tooltip" style="display:none;">
 										    For fiscal principal <b>#${fp.id}</b><br/>
