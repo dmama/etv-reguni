@@ -1,5 +1,15 @@
 package ch.vd.uniregctb.scheduler;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.InitializingBean;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
@@ -8,11 +18,6 @@ import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.document.Document;
 import ch.vd.uniregctb.utils.UniregModeHelper;
-import org.apache.log4j.Logger;
-import org.quartz.UnableToInterruptJobException;
-import org.springframework.beans.factory.InitializingBean;
-
-import java.util.*;
 
 /**
  * Classe regroupant les informations d'affichage du job quartz
@@ -45,6 +50,8 @@ public abstract class JobDefinition implements InitializingBean, Comparable<Obje
 	private int sortOrder;
 	private String description;
 	private List<JobParam> paramDefinition = Collections.emptyList();
+
+	private boolean logDisabled = false;
 
 	protected BatchScheduler batchScheduler;
 
@@ -146,14 +153,18 @@ public abstract class JobDefinition implements InitializingBean, Comparable<Obje
 		currentParameters = params;
 
 		// le batch tournera avec le nom d'utilisateur égal au nom du batch
-		Audit.info(String.format("Démarrage du job %s", name));
+		if (!logDisabled) {
+			Audit.info(String.format("Démarrage du job %s", name));
+		}
 		AuthenticationHelper.pushPrincipal(name);
 		try {
 			doExecute(params);
 		}
 		finally {
 			AuthenticationHelper.popPrincipal();
-			Audit.info(String.format("Arrêt du job %s", name));
+			if (!logDisabled) {
+				Audit.info(String.format("Arrêt du job %s", name));
+			}
 		}
 	}
 
@@ -178,7 +189,9 @@ public abstract class JobDefinition implements InitializingBean, Comparable<Obje
 
 	public void interrupt() {
 		setStatut(JobStatut.JOB_INTERRUPTING);
-		LOGGER.info("<" + name + "> interrupted flag set");
+		if (!logDisabled) {
+			LOGGER.info("<" + name + "> interrupted flag set");
+		}
 	}
 
 	public void toBeExecuted() {
@@ -236,7 +249,9 @@ public abstract class JobDefinition implements InitializingBean, Comparable<Obje
 	 *            the statut to set
 	 */
 	public void setStatut(JobStatut statut) {
-		LOGGER.debug("<" + name + "> status changed from " + this.statut + " to " + statut);
+		if (!logDisabled) {
+			LOGGER.debug("<" + name + "> status changed from " + this.statut + " to " + statut);
+		}
 		this.statut = statut;
 	}
 
@@ -581,4 +596,11 @@ public abstract class JobDefinition implements InitializingBean, Comparable<Obje
 		return ids;
 	}
 
+	public void setLogDisabled(boolean logDisabled) {
+		this.logDisabled = logDisabled;
+	}
+
+	public boolean isLogDisabled() {
+		return logDisabled;
+	}
 }

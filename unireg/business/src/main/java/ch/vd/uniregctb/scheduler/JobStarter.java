@@ -46,11 +46,13 @@ public class JobStarter implements Job, InterruptableJob {
 		try {
 			job.initialize();
 
-			if (params == null || params.isEmpty()) {
-				LOGGER.info("Démarrage du job <" + job.getName() + "> sans paramètre");
-			}
-			else {
-				LOGGER.info("Démarrage du job <" + job.getName() + "> avec les paramètres " + params.toString());
+			if (!job.isLogDisabled()) {
+				if (params == null || params.isEmpty()) {
+					LOGGER.info("Démarrage du job <" + job.getName() + "> sans paramètre");
+				}
+				else {
+					LOGGER.info("Démarrage du job <" + job.getName() + "> avec les paramètres " + params.toString());
+				}
 			}
 			initializeSecurityContext();
 

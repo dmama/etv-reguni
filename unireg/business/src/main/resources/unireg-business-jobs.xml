@@ -95,6 +95,7 @@
 		<constructor-arg value="106"/>
 		<constructor-arg value="Met-à-jour les statistiques des tâches"/>
 		<property name="tacheService" ref="tacheService"/>
+		<property name="logDisabled" value="true"/>
 	</bean>
 
     <!-- Job qui traite les evenements civils -->

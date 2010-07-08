@@ -171,8 +171,6 @@ public class BatchScheduler {
 			throw new JobAlreadyStartedException();
 		}
 
-		Audit.info("[Scheduler] Démarrage du job " + job.getName());
-
 		// Construction d'un trigger qui se déclanche tout de suite
 		final SimpleTrigger trigger = new SimpleTrigger(IMMEDIATE_TRIGGER + "-" + job.getName() + "-" + (triggerCount++), Scheduler.DEFAULT_GROUP);
 		final Date scheduledDate = new Date();
