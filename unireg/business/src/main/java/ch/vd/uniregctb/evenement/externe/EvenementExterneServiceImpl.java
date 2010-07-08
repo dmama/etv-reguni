@@ -322,13 +322,7 @@ public class EvenementExterneServiceImpl implements EvenementExterneService, Ini
 	}
 
 	public void afterPropertiesSet() throws Exception {
-		final TransactionTemplate template = new TransactionTemplate(transactionManager);
-		template.execute(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
-				migrateAllQuittancesLR();
-				return null;
-			}
-		});
+		migrateAllQuittancesLR();
 	}
 
 	/**
@@ -337,8 +331,16 @@ public class EvenementExterneServiceImpl implements EvenementExterneService, Ini
 	 * Précisemment, les colonnes <i>date début</i>, <i>date fin</i> et <i>type</i> n'étaient pas renseignées sur les anciennes quittances LR. Par contre, le message xml d'origine (= le contenu du
 	 * message JMS) était toujours stocké. La migration ci-dessous reprend donc ces messages, interpète le message xml d'origine et renseigne les colonnes qui vont bien.
 	 */
+	@SuppressWarnings({"unchecked"})
 	private void migrateAllQuittancesLR() {
-		final List<Long> ids = evenementExterneDAO.getIdsQuittancesLRToMigrate();
+
+		final TransactionTemplate t = new TransactionTemplate(transactionManager);
+		final List<Long> ids = (List<Long>) t.execute(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				return evenementExterneDAO.getIdsQuittancesLRToMigrate();
+			}
+		});
+
 		if (!ids.isEmpty()) {
 
 			LOGGER.warn("--- Début de la migration du format de stockage des quittances LR ---");
