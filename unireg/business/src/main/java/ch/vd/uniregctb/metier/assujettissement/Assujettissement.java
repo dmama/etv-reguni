@@ -1196,7 +1196,13 @@ public abstract class Assujettissement implements CollatableDateRange {
 			}
 		}
 
-		return new Data(adebut, afin, ffs.getMotifOuverture(), ffs.getMotifFermeture(), null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
+		if (RegDateHelper.isBeforeOrEqual(adebut, afin, NullDateBehavior.LATEST)) { // [UNIREG-2559]
+			return new Data(adebut, afin, ffs.getMotifOuverture(), ffs.getMotifFermeture(), null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
+		}
+		else {
+			// pas d'assujettissement
+			return null;
+		}
 	}
 
 	private static boolean isMariageOuDivorce(MotifFor motif) {

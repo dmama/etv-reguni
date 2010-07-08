@@ -2722,6 +2722,23 @@ public class AssujettissementTest extends MetierTest {
 		assertOrdinaire(date(2009, 8, 19), date(2009, 12, 13), MotifFor.ARRIVEE_HS, MotifFor.DEPART_HS, list.get(1));
 	}
 
+	@WebScreenshot(urls = "/fiscalite/unireg/tiers/timeline.do?id=17907715&print=true&title=${methodName}&description=${docDescription}")
+	@WebScreenshotDoc(description = "[UNIREG-2559] Cas du contribuable n°17907715 (vérifie que l'algo ne crashe pas en cas d'achat d'immeuble et mariage dans la même année)")
+	@Test
+	public void testDetermineAchatImmeubleEtMariageDansLAnnee() throws Exception {
+
+		final Contribuable ctb = createContribuableSansFor(17907715L);
+		addForPrincipal(ctb, date(1993, 1, 6), MotifFor.INDETERMINE, date(2008, 2, 29), MotifFor.DEPART_HC, MockCommune.Lausanne);
+		addForPrincipal(ctb, date(2008, 3, 1), MotifFor.DEMENAGEMENT_VD, date(2009, 8, 31), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Neuchatel);
+		addForSecondaire(ctb, date(2009, 8, 31), MotifFor.ACHAT_IMMOBILIER, date(2009, 8, 31), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Renens.getNoOFS(),
+				MotifRattachement.IMMEUBLE_PRIVE);
+
+		final List<Assujettissement> list = Assujettissement.determine(ctb);
+		assertNotNull(list);
+		assertEquals(1, list.size());
+		assertOrdinaire(date(1993, 1, 1), date(2007, 12, 31), MotifFor.INDETERMINE, MotifFor.DEPART_HC, list.get(0));
+	}
+
 	@Test
 	public void testCommuneActiveForPrincipal() throws Exception {
 		final Contribuable ctb = createUnForSimple();
