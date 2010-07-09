@@ -4,14 +4,23 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
 						http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd">
 
-	<bean id="infoController" class="ch.vd.uniregctb.admin.InfoController">
-		<property name="viewName" value="status" />
-		<property name="uniregProperties" ref="uniregExternalProperties" />
+	<bean id="applicationChecker" class="ch.vd.uniregctb.checker.ApplicationChecker">
+		<property name="version" value="${pom.version}" />
+		<property name="serviceCivilChecker" ref="serviceCivilChecker" />
+		<property name="serviceInfraChecker" ref="serviceInfraChecker" />
+		<property name="serviceSecuriteChecker" ref="serviceSecuriteChecker" />
+	</bean>
+
+	<bean id="serviceCivilChecker" class="ch.vd.uniregctb.checker.ServiceCivilChecker">
 		<property name="serviceCivilRaw" ref="serviceCivilServiceRaw" />
+	</bean>
+
+	<bean id="serviceInfraChecker" class="ch.vd.uniregctb.checker.ServiceInfraChecker">
 		<property name="serviceInfraRaw" ref="serviceInfrastructureServiceRaw" />
+	</bean>
+
+	<bean id="serviceSecuriteChecker" class="ch.vd.uniregctb.checker.ServiceSecuriteChecker">
 		<property name="serviceSecuriteRaw" ref="serviceSecuriteServiceRaw" />
-		<property name="cacheManager" ref="ehCacheManager" />
-		<property name="statsService" ref="statsService" />
 	</bean>
 
 </beans>
