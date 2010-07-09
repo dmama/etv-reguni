@@ -10,6 +10,7 @@ import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.registre.civil.model.EnumAttributeIndividu;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.common.StatusManager;
+import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.evenement.EvenementCivilDAO;
 import ch.vd.uniregctb.indexer.IndexerException;
@@ -23,6 +24,7 @@ import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
+import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeActivite;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
@@ -689,6 +691,16 @@ public interface TiersService {
 	ForFiscalPrincipal addForPrincipal(Contribuable contribuable, RegDate dateDebut, MotifFor motifOuverture, RegDate dateFin, MotifFor motifFermeture, MotifRattachement motifRattachement,
 	                                   int autoriteFiscale, TypeAutoriteFiscale typeAutoriteFiscale, ModeImposition modeImposition);
 
+	/**Permet de rajouter une nouvelle périodicité sur un débiteur
+	 * verifie si il en existe une pour la même période, et l'annule avant d'ajouter la nouvelle
+	 *
+	 * @param debiteur
+	 * @param periodiciteDecompte
+	 * @param dateDebut
+	 * @param dateFin
+	 * @return la periodicité ajoutés
+	 */
+	Periodicite addPeriodicite(DebiteurPrestationImposable debiteur, PeriodiciteDecompte periodiciteDecompte, RegDate dateDebut,RegDate dateFin);
 	/**
 	 * Ajoute un for fiscal secondaire sur un contribuable.
 	 *

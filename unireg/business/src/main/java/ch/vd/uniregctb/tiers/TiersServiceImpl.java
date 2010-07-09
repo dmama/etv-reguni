@@ -38,6 +38,7 @@ import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.Declaration;
+import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.evenement.EvenementCivilDAO;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
@@ -69,6 +70,7 @@ import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
+import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeActivite;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
@@ -2136,6 +2138,19 @@ public class TiersServiceImpl implements TiersService {
 			forRtr = openAndCloseForFiscalPrincipal(contribuable, dateDebut, motifRattachement, autoriteFiscale, typeAutoriteFiscale, modeImposition, motifOuverture, dateFin, motifFermeture, true);
 		}
 		return forRtr;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public Periodicite addPeriodicite(DebiteurPrestationImposable debiteur, PeriodiciteDecompte periodiciteDecompte, RegDate dateDebut, RegDate dateFin) {
+		Periodicite periodicitePotentiel = debiteur.getPeriodiciteAt(dateDebut);
+		if(periodicitePotentiel!=null){
+			periodicitePotentiel.setAnnule(true);
+		}
+		Periodicite nouvellePeriodicite = new Periodicite(periodiciteDecompte,dateDebut,dateFin);
+		debiteur.addPeriodicite(nouvellePeriodicite);
+		return nouvellePeriodicite;  
 	}
 
 	/**
