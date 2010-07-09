@@ -10,12 +10,15 @@ import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.CoreDAOTest;
+import ch.vd.uniregctb.declaration.Mensuel;
+import ch.vd.uniregctb.declaration.PeriodiciteDAO;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 public class DebiteurPrestationImposableTest extends CoreDAOTest {
 
 	private TiersDAO dao;
+	private PeriodiciteDAO periodiciteDAO;
 
 	@Override
 	public void onSetUp() throws Exception {
@@ -220,5 +223,36 @@ public class DebiteurPrestationImposableTest extends CoreDAOTest {
 		}
 
 		assertEquals(1, debiteur.validate().errorsCount());
+	}
+
+	@Test
+	public void testAjoutPeriodicite() throws Exception {
+	doInNewTransaction(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				{
+
+					DebiteurPrestationImposable dpi = new DebiteurPrestationImposable();
+					Mensuel mensuel = new Mensuel();
+					mensuel.setDateDebut(date(2010,1,1));
+					dpi.addPeriodicite(mensuel);
+					dpi = (DebiteurPrestationImposable) dao.save(dpi);
+
+
+					
+				}
+				return null;
+			}
+		});
+
+		{
+			List<Tiers> l = dao.getAll();
+			assertEquals(1, l.size());
+
+			AutreCommunaute ent = null;
+			DebiteurPrestationImposable dpi = (DebiteurPrestationImposable)l.get(0);
+			assertNotNull(dpi.getPeriodiciteAt(null));
+			
+		}
 	}
 }

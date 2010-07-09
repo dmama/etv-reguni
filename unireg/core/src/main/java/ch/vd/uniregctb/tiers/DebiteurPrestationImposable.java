@@ -1,20 +1,33 @@
 package ch.vd.uniregctb.tiers;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Type;
 
+import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.adresse.AdresseCivile;
 import ch.vd.uniregctb.adresse.AdressePM;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.common.LengthConstants;
+import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.ModeCommunication;
 import ch.vd.uniregctb.type.PeriodeDecompte;
@@ -83,6 +96,9 @@ public class DebiteurPrestationImposable extends Tiers {
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_kUiSsOuREdyoJZZczGWapw"
 	 */
 	private Boolean sansListeRecapitulative;
+
+
+	private Set<Periodicite> periodicites;
 
 
 	@Column(name = "DPI_NOM1", length = LengthConstants.DPI_NOM1)
@@ -293,6 +309,17 @@ public class DebiteurPrestationImposable extends Tiers {
 		return DebiteurPrestationImposable.class.getSimpleName();
 	}
 
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@JoinColumn(name = "DEBITEUR_ID", nullable = false)
+	@ForeignKey(name = "FK_PERIODICITE_DB_ID")
+	public Set<Periodicite> getPeriodicites() {
+		return periodicites;
+	}
+
+	public void setPeriodicites(Set<Periodicite> periodicites) {
+		this.periodicites = periodicites;
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -326,6 +353,8 @@ public class DebiteurPrestationImposable extends Tiers {
 		return results;
 	}
 
+
+
 	@Override
 	protected ValidationResults validateTypeAdresses() {
 
@@ -349,6 +378,100 @@ public class DebiteurPrestationImposable extends Tiers {
 		}
 
 		return results;
+	}
+
+
+	@Override
+	public ValidationResults validate() {
+		final ValidationResults validation = super.validate();
+		if(periodicites == null || periodicites.isEmpty()){
+			validation.addWarning("ce débiteur n'a aucune périodicité");
+		}
+		return validation;
+	}
+
+	/**
+	 * Retourne les Periodicités triées par - La date d'ouverture
+	 *
+	 * @return
+	 */
+	@Transient
+	public List<Periodicite> getPeriodicitesSorted() {
+		List<Periodicite> periodicitesTriees = null;
+		if (periodicites != null) {
+			periodicitesTriees = new ArrayList<Periodicite>();
+			periodicitesTriees.addAll(periodicites);
+			Collections.sort(periodicitesTriees, new DateRangeComparator<Periodicite>() {
+				@Override
+				public int compare(Periodicite o1, Periodicite o2) {
+					return super.compare(o1, o2);
+
+				}
+			});
+		}
+		return periodicitesTriees;
+	}
+
+	/**
+	 * @param sort
+	 *            <code>true</code> si les periodicites doivent être triées; <code>false</code> autrement.
+	 * @return les périodicités non annulés
+	 */
+	@Transient
+	public List<Periodicite> getPeriodicitesNonAnnules(boolean sort) {
+		List<Periodicite> periodicitesNonAnnulees = new ArrayList<Periodicite>();
+		if (periodicites != null) {
+			for (Periodicite p :periodicites ) {
+				if (!p.isAnnule()) {
+					periodicitesNonAnnulees.add(p);
+				}
+			}
+		}
+		if (sort) {
+			Collections.sort(periodicitesNonAnnulees, new DateRangeComparator<Periodicite>());
+		}
+		return periodicitesNonAnnulees;
+	}
+
+	/**
+	 * Ajoute une periodicite
+	 *
+	 * @param nouvellePeriodicite
+	 *            la periodicité à ajouter
+	 */
+	public void addPeriodicite(Periodicite nouvellePeriodicite) {
+		if (this.periodicites == null) {
+			this.periodicites = new HashSet<Periodicite>();
+		}
+
+		this.periodicites.add(nouvellePeriodicite);
+		Assert.isTrue(nouvellePeriodicite.getDebiteur() == null || nouvellePeriodicite.getDebiteur() == this);
+		nouvellePeriodicite.setDebiteur(this);
+		
+	}
+
+	/**
+	 * Retourne la periodicite active à une date donnée.
+	 *
+	 * @param date
+	 *            la date à laquelle la periodicite est active, ou <b>null</b> pour obtenir la periodicite courante
+	 *
+	 * @return la periodicite correspondante, ou nulle si aucune periodicite ne correspond aux critères.
+	 */
+	@Transient
+	public Periodicite getPeriodiciteAt(RegDate date) {
+
+		if (periodicites == null) {
+			return null;
+		}
+
+		for (Periodicite p : periodicites) {
+			if (p.isValidAt(date)) {
+				return p;
+			}
+		}
+
+		return null;
 	}
 
 	/**

@@ -46,6 +46,8 @@ create table PARAMETRE_PERIODE_FISCALE (id number(19,0) not null, ANNULATION_DAT
 
 create table PERIODE_FISCALE (id number(19,0) not null, ANNULATION_DATE timestamp, ANNULATION_USER nvarchar2(65), LOG_CDATE timestamp, LOG_CUSER nvarchar2(65), LOG_MDATE timestamp, LOG_MUSER nvarchar2(65), ANNEE number(10,0) not null unique, primary key (id));
 
+create table PERIODICITE (PERIODICITE_TYPE nvarchar2(31) not null,id number(19,0) not null, ANNULATION_DATE timestamp, ANNULATION_USER nvarchar2(65), LOG_CDATE timestamp, LOG_CUSER nvarchar2(65), LOG_MDATE timestamp, LOG_MUSER nvarchar2(65),DATE_DEBUT number(10,0) not null, DATE_FIN number(10,0) ,DEBITEUR_ID number(19,0) not null, primary key (id));
+
 create table RAPPORT_ENTRE_TIERS (RAPPORT_ENTRE_TIERS_TYPE nvarchar2(31) not null, id number(19,0) not null, ANNULATION_DATE timestamp, ANNULATION_USER nvarchar2(65), LOG_CDATE timestamp, LOG_CUSER nvarchar2(65), LOG_MDATE timestamp, LOG_MUSER nvarchar2(65), DATE_DEBUT number(10,0), DATE_FIN number(10,0), TIERS_OBJET_ID number(19,0) not null, TIERS_SUJET_ID number(19,0) not null, DATE_FIN_DER_ELE_IMP number(10,0), TAUX_ACTIVITE number(10,0), TYPE_ACTIVITE nvarchar2(14), EXTENSION_EXECUTION_FORCEE number(1,0), TIERS_TUTEUR_ID number(19,0), primary key (id));
 
 create table REMARQUE (id number(19,0) not null, ANNULATION_DATE timestamp, ANNULATION_USER nvarchar2(65), LOG_CDATE timestamp, LOG_CUSER nvarchar2(65), LOG_MDATE timestamp, LOG_MUSER nvarchar2(65), TEXTE nvarchar2(2000), TIERS_ID number(19,0) not null, primary key (id));
@@ -129,6 +131,10 @@ alter table MOUVEMENT_DOSSIER add constraint FK_MVT_DOSSIER_BORD_ID foreign key 
 alter table MOUVEMENT_DOSSIER add constraint FK_ENV_DOS_CA_DEST_ID foreign key (COLL_ADMIN_DEST_ID) references TIERS;
 
 alter table PARAMETRE_PERIODE_FISCALE add constraint FK_PARAM_PF_ID foreign key (PERIODE_ID) references PERIODE_FISCALE;
+
+alter table PERIODICITE add constraint FK_PERIODICITE_DB_ID foreign key (DEBITEUR_ID) references TIERS;
+
+create index IDX_P_DEBITEUR_ID on PERIODICITE (DEBITEUR_ID);
 
 create index IDX_RET_TRS_TUT_ID on RAPPORT_ENTRE_TIERS (TIERS_TUTEUR_ID);
 

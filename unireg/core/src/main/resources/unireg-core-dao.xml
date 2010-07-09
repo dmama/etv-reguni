@@ -67,6 +67,8 @@
 	</bean>
 	<bean id="remarqueDAO" class="ch.vd.uniregctb.tiers.dao.RemarqueDAOImpl" parent="hibernateDaoSupport"/>
 
+	<bean id="periodiciteDAO" class="ch.vd.uniregctb.declaration.PeriodiciteDAOImpl" parent="hibernateDaoSupport"/>
+
 
 	<!-- Audit -->
 	<bean id="auditLineDAO" class="ch.vd.uniregctb.audit.AuditLineDAOImpl" parent="hibernateDaoSupport">

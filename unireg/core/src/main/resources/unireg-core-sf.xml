@@ -31,6 +31,12 @@
 				<value>ch.vd.uniregctb.declaration.ParametrePeriodeFiscale</value>
 				<value>ch.vd.uniregctb.declaration.ModeleDocument</value>
 				<value>ch.vd.uniregctb.declaration.ModeleFeuilleDocument</value>
+				<value>ch.vd.uniregctb.declaration.Periodicite</value>
+				<value>ch.vd.uniregctb.declaration.Mensuel</value>
+				<value>ch.vd.uniregctb.declaration.Trimestriel</value>
+				<value>ch.vd.uniregctb.declaration.Semestriel</value>
+				<value>ch.vd.uniregctb.declaration.Annuel</value>
+				<value>ch.vd.uniregctb.declaration.Unique</value>
 				<value>ch.vd.uniregctb.evenement.EvenementFiscal</value>
 				<value>ch.vd.uniregctb.evenement.EvenementFiscalFor</value>
 				<value>ch.vd.uniregctb.evenement.EvenementFiscalSituationFamille</value>
