@@ -10,9 +10,10 @@ import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.CoreDAOTest;
-import ch.vd.uniregctb.declaration.Mensuel;
+import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.declaration.PeriodiciteDAO;
 import ch.vd.uniregctb.type.GenreImpot;
+import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 public class DebiteurPrestationImposableTest extends CoreDAOTest {
@@ -233,9 +234,9 @@ public class DebiteurPrestationImposableTest extends CoreDAOTest {
 				{
 
 					DebiteurPrestationImposable dpi = new DebiteurPrestationImposable();
-					Mensuel mensuel = new Mensuel();
-					mensuel.setDateDebut(date(2010,1,1));
-					dpi.addPeriodicite(mensuel);
+					Periodicite periodicite = new Periodicite(PeriodiciteDecompte.TRIMESTRIEL);
+					periodicite.setDateDebut(date(2010,1,1));
+					dpi.addPeriodicite(periodicite);
 					dpi = (DebiteurPrestationImposable) dao.save(dpi);
 
 

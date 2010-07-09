@@ -2,9 +2,6 @@ package ch.vd.uniregctb.declaration;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
-import javax.persistence.DiscriminatorColumn;
-import javax.persistence.DiscriminatorType;
-import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -17,7 +14,6 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.apache.log4j.Logger;
-import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
 
@@ -26,22 +22,18 @@ import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.HibernateEntity;
+import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
-import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.type.PeriodiciteDecompte;
+//TODO(BNM) Reflechir a une implementation plus simple:
+// ajouter une propriété PeriodicitéDecompte et supprimer toutes la hierarchie de classe
 
 @Entity
 @Table(name = "PERIODICITE")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name = "PERIODICITE_TYPE", discriminatorType = DiscriminatorType.STRING)
-@DiscriminatorValue("Periodicite")
-public abstract class Periodicite  extends HibernateEntity implements DateRange {
+public  class Periodicite  extends HibernateEntity implements DateRange {
 
-	public static final String MENSUEL = "Mensuel";
-	public static final String TRIMESTRIEL = "Trimestriel";
-	public static final String SEMESTRIEL = "Semestriel";
-	public static final String ANNUEL = "Annuel";
-	public static final String UNIQUE = "Unique";
-
+	
 	private static final Logger LOGGER = Logger.getLogger(Periodicite.class);
 
 
@@ -63,11 +55,12 @@ public abstract class Periodicite  extends HibernateEntity implements DateRange 
 	private RegDate dateFin;
 
 
+	private PeriodiciteDecompte periodiciteDecompte;
+
 	/**
 	 * Le debiteur
 	 */
 	private DebiteurPrestationImposable debiteur;
-
 
 
 	@Column(name = "DATE_DEBUT", nullable = false)
@@ -108,17 +101,22 @@ public abstract class Periodicite  extends HibernateEntity implements DateRange 
 		// end-user-code
 	}
 
-	public Periodicite(){
-
+	public Periodicite(PeriodiciteDecompte periodiciteDecompte){
+		this.periodiciteDecompte = periodiciteDecompte;
 	}
 
-	public Periodicite(RegDate dateDebut, RegDate dateFin) {
+	public Periodicite(PeriodiciteDecompte periodiciteDecompte, RegDate dateDebut, RegDate dateFin) {
+		this.periodiciteDecompte = periodiciteDecompte;
 		this.dateDebut = dateDebut;
 		this.dateFin = dateFin;
 	}
 
+	public Periodicite(){
+		
+	}
+
 	public Periodicite(Periodicite periodicite){
-		this(periodicite.getDateDebut(),periodicite.getDateFin());
+		this(periodicite.getPeriodiciteDecompte(), periodicite.getDateDebut(),periodicite.getDateFin());
 	}
 
 
@@ -157,7 +155,9 @@ public abstract class Periodicite  extends HibernateEntity implements DateRange 
 	 *            la date de référence contenue dans la période considérée
 	 * @return le début de la période
 	 */
-	public abstract RegDate getDebutPeriode(RegDate reference);
+	public  RegDate getDebutPeriode(RegDate reference){
+		return periodiciteDecompte.getDebutPeriode(reference);
+	}
 
 	/**
 	 * Calcule la date de fin de la période. La période est déterminée par une date de référence située n'importe quand dans la période
@@ -168,8 +168,9 @@ public abstract class Periodicite  extends HibernateEntity implements DateRange 
 	 * @return la fin de la période
 	 */
 	public final RegDate getFinPeriode(RegDate reference) {
-		return getDebutPeriodeSuivante(reference).addDays(-1);
+		return periodiciteDecompte.getFinPeriode(reference);
 	}
+
 
 	/**
 	 * Calcule la date de début de la période suivant la période indiquée par la date de référence (c'est le lendemain de la fin
@@ -177,15 +178,19 @@ public abstract class Periodicite  extends HibernateEntity implements DateRange 
 	 * @param reference
 	 * @return le début de la période suivante
 	 */
-	public abstract RegDate getDebutPeriodeSuivante(RegDate reference);
+	public  RegDate getDebutPeriodeSuivante(RegDate reference){
+		return periodiciteDecompte.getDebutPeriodeSuivante(reference);
+	}
 
+	@Column(name = "PERIODICITE_TYPE", nullable = false)
+	@Type(type = "ch.vd.uniregctb.hibernate.PeriodiciteDecompteUserType")
+	public PeriodiciteDecompte getPeriodiciteDecompte() {
+		return periodiciteDecompte;
+	}
 
-		/**
-	 * return le nom de la classe du tiers
-	 */
-	@Transient
-	public abstract String getTypePeriodicite();
-
+	public void setPeriodiciteDecompte(PeriodiciteDecompte periodiciteDecompte) {
+		this.periodiciteDecompte = periodiciteDecompte;
+	}
 
 	@Override
 	public String toString() {
