@@ -32,7 +32,7 @@
 		<property name="connectionManager" ref="jdbcConnectionManager"/>
 	</bean>
 
-	<bean id="dataSource" class="ch.vd.uniregctb.dbutils.DebugDataSource">
+	<bean id="dataSource" class="ch.vd.registre.base.dbutils.DebugDataSource">
 		<property name="target" ref="realDataSource" />
 		<property name="maxConnections" value="${extprop.jdbc.poolMaxSize}" />
 		<property name="enabled" value="${extprop.jdbc.datasource.debug}" />

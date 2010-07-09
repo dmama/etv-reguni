@@ -6,7 +6,7 @@ import javax.servlet.jsp.tagext.BodyTagSupport;
 
 import org.springframework.web.util.HtmlUtils;
 
-import ch.vd.uniregctb.common.ExceptionUtils;
+import ch.vd.registre.base.utils.ExceptionUtils;
 import ch.vd.uniregctb.common.HtmlHelper;
 
 /**

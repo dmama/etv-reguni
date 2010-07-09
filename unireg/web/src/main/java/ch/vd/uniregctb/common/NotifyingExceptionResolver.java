@@ -12,6 +12,7 @@ import org.apache.log4j.Logger;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.SimpleMappingExceptionResolver;
 
+import ch.vd.registre.base.utils.ExceptionUtils;
 import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.uniregctb.security.AccessDeniedException;
 

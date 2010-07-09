@@ -57,6 +57,11 @@
 			<version>1.0.1</version>
 		</dependency>
 		<dependency>
+			<artifactId>shared-jmx</artifactId>
+			<groupId>ch.vd.registre</groupId>
+			<version>1.2-java1.5-SNAPSHOT</version>
+		</dependency>
+		<dependency>
 			<groupId>ch.vd.editique</groupId>
 			<artifactId>editique-client</artifactId>
 			<version>4.1</version>

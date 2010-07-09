@@ -11,10 +11,10 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import ch.vd.uniregctb.common.ExceptionUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.annotations.Type;
 
+import ch.vd.registre.base.utils.ExceptionUtils;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.type.TypeEvenementErreur;

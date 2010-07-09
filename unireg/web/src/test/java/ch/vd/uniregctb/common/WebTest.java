@@ -49,6 +49,7 @@ import ch.vd.uniregctb.security.Role;
 		"classpath:WEB-INF/unireg-web-acces.xml",
 		"classpath:WEB-INF/unireg-web-activation.xml",
 		"classpath:WEB-INF/unireg-web-identification.xml",
+		"classpath:WEB-INF/unireg-web-checker.xml",
 		WebTestingConstants.UNIREG_WEBUT_SERVICES,
 		WebTestingConstants.UNIREG_WEBUT_SECURITY
 })

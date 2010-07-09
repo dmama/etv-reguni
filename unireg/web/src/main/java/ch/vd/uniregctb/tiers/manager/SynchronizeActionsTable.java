@@ -6,7 +6,7 @@ import org.springmodules.xt.ajax.component.Table;
 import org.springmodules.xt.ajax.component.TableData;
 import org.springmodules.xt.ajax.component.TableRow;
 
-import ch.vd.uniregctb.common.ExceptionUtils;
+import ch.vd.registre.base.utils.ExceptionUtils;
 import ch.vd.uniregctb.tache.sync.SynchronizeAction;
 import ch.vd.uniregctb.web.xt.component.SimpleText;
 

@@ -12,16 +12,14 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.ParameterizableViewController;
 
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.registre.base.utils.ExceptionUtils;
 import ch.vd.securite.model.Operateur;
-import ch.vd.uniregctb.common.ExceptionUtils;
 import ch.vd.uniregctb.common.HtmlHelper;
 import ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServiceSecuriteService;
-import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityProvider;
 import ch.vd.uniregctb.stats.StatsService;
 import ch.vd.uniregctb.utils.UniregProperties;
 

@@ -1,25 +1,10 @@
 package ch.vd.uniregctb.admin;
 
-import ch.vd.registre.base.utils.Assert;
-import ch.vd.securite.model.Operateur;
-import ch.vd.service.sipf.wsdl.sipfbvrplus_v1.BvrDemande;
-import ch.vd.service.sipf.wsdl.sipfbvrplus_v1.BvrReponse;
-import ch.vd.uniregctb.common.ExceptionUtils;
-import ch.vd.uniregctb.common.HtmlHelper;
-import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
-import ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative;
-import ch.vd.uniregctb.interfaces.model.Individu;
-import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.interfaces.service.ServiceSecuriteService;
-import ch.vd.uniregctb.log.RollingInMemoryAppender;
-import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityProvider;
-import ch.vd.uniregctb.stats.StatsService;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TiersDAO;
-import ch.vd.uniregctb.utils.UniregProperties;
-import ch.vd.uniregctb.webservice.sipf.BVRPlusClient;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.List;
+
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Statistics;
@@ -32,17 +17,31 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.ParameterizableViewController;
-import org.springmodules.xt.ajax.*;
+import org.springmodules.xt.ajax.AjaxActionEvent;
+import org.springmodules.xt.ajax.AjaxEvent;
+import org.springmodules.xt.ajax.AjaxHandler;
+import org.springmodules.xt.ajax.AjaxResponse;
+import org.springmodules.xt.ajax.AjaxResponseImpl;
 import org.springmodules.xt.ajax.action.ReplaceContentAction;
 import org.springmodules.xt.ajax.component.Component;
 import org.springmodules.xt.ajax.component.SimpleText;
 import org.springmodules.xt.ajax.support.UnsupportedEventException;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
+import ch.vd.registre.base.utils.ExceptionUtils;
+import ch.vd.uniregctb.checker.ServiceBVRChecker;
+import ch.vd.uniregctb.checker.ServiceCivilChecker;
+import ch.vd.uniregctb.checker.ServiceInfraChecker;
+import ch.vd.uniregctb.checker.ServiceSecuriteChecker;
+import ch.vd.uniregctb.checker.Status;
+import ch.vd.uniregctb.common.HtmlHelper;
+import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
+import ch.vd.uniregctb.log.RollingInMemoryAppender;
+import ch.vd.uniregctb.security.Role;
+import ch.vd.uniregctb.security.SecurityProvider;
+import ch.vd.uniregctb.stats.StatsService;
+import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.tiers.TiersDAO;
+import ch.vd.uniregctb.utils.UniregProperties;
 
 /**
  * Ce contrôleur affiche des informations sur le status de l'application. Il est donc en read-only.
@@ -56,13 +55,14 @@ public class InfoController extends ParameterizableViewController implements Aja
 	private TiersDAO dao;
 	private GlobalTiersSearcher globalSearcher;
 	private UniregProperties uniregProperties;
-	private ServiceCivilService serviceCivilRaw;
-	private ServiceInfrastructureService serviceInfraRaw;
-	private ServiceSecuriteService serviceSecuriteRaw;
 	private CacheManager cacheManager;
 	private GestionBatchController batchController;
 	private StatsService statsService;
-	private BVRPlusClient bvrClient;
+
+	private ServiceCivilChecker serviceCivilChecker;
+	private ServiceInfraChecker serviceInfraChecker;
+	private ServiceSecuriteChecker serviceSecuriteChecker;
+	private ServiceBVRChecker serviceBVRChecker;
 
 	private PlatformTransactionManager transactionManager;
 
@@ -80,18 +80,6 @@ public class InfoController extends ParameterizableViewController implements Aja
 		this.uniregProperties = uniregProperties;
 	}
 
-	public void setServiceCivilRaw(ServiceCivilService serviceCivilRaw) {
-		this.serviceCivilRaw = serviceCivilRaw;
-	}
-
-	public void setServiceInfraRaw(ServiceInfrastructureService serviceInfraRaw) {
-		this.serviceInfraRaw = serviceInfraRaw;
-	}
-
-	public void setServiceSecuriteRaw(ServiceSecuriteService serviceSecuriteRaw) {
-		this.serviceSecuriteRaw = serviceSecuriteRaw;
-	}
-
 	public void setCacheManager(CacheManager cacheManager) {
 		this.cacheManager = cacheManager;
 	}
@@ -104,12 +92,24 @@ public class InfoController extends ParameterizableViewController implements Aja
 		this.statsService = statsService;
 	}
 
-	public void setBvrClient(BVRPlusClient bvrClient) {
-		this.bvrClient = bvrClient;
-	}
-
 	public void setTransactionManager(PlatformTransactionManager transactionManager) {
 		this.transactionManager = transactionManager;
+	}
+
+	public void setServiceCivilChecker(ServiceCivilChecker serviceCivilChecker) {
+		this.serviceCivilChecker = serviceCivilChecker;
+	}
+
+	public void setServiceInfraChecker(ServiceInfraChecker serviceInfraChecker) {
+		this.serviceInfraChecker = serviceInfraChecker;
+	}
+
+	public void setServiceSecuriteChecker(ServiceSecuriteChecker serviceSecuriteChecker) {
+		this.serviceSecuriteChecker = serviceSecuriteChecker;
+	}
+
+	public void setServiceBVRChecker(ServiceBVRChecker serviceBVRChecker) {
+		this.serviceBVRChecker = serviceBVRChecker;
 	}
 
 	@Override
@@ -214,41 +214,26 @@ public class InfoController extends ParameterizableViewController implements Aja
 	}
 
 	private void fillServiceCivilInfo(ModelAndView mav) {
-		try {
-			Individu individu = serviceCivilRaw.getIndividu(611836, 2400); // Francis Perroset
-			Assert.isEqual(611836L, individu.getNoTechnique());
-			mav.addObject("serviceCivilStatus", "OK");
-		}
-		catch (Exception e) {
-			String callstack = ExceptionUtils.extractCallStack(e);
-			mav.addObject("serviceCivilStatus", "NOK");
-			mav.addObject("serviceCivilException",HtmlHelper.renderMultilines(callstack));
+		final Status status = serviceCivilChecker.getStatus();
+		mav.addObject("serviceCivilStatus", status.name());
+		if (status == Status.KO) {
+			mav.addObject("serviceCivilException", HtmlHelper.renderMultilines(serviceCivilChecker.getStatusDetails()));
 		}
 	}
 
 	private void fillServiceInfraInfo(ModelAndView mav) {
-		try {
-			CollectiviteAdministrative aci = serviceInfraRaw.getCollectivite(ServiceInfrastructureService.noACI);
-			Assert.isEqual(ServiceInfrastructureService.noACI, aci.getNoColAdm());
-			mav.addObject("serviceInfraStatus", "OK");
-		}
-		catch (Exception e) {
-			String callstack = ExceptionUtils.extractCallStack(e);
-			mav.addObject("serviceInfraStatus", "NOK");
-			mav.addObject("serviceInfraException",HtmlHelper.renderMultilines(callstack));
+		final Status status = serviceInfraChecker.getStatus();
+		mav.addObject("serviceInfraStatus", status.name());
+		if (status == Status.KO) {
+			mav.addObject("serviceInfraException", HtmlHelper.renderMultilines(serviceInfraChecker.getStatusDetails()));
 		}
 	}
 
 	private void fillServiceSecuriteInfo(ModelAndView mav) {
-		try {
-			Operateur op = serviceSecuriteRaw.getOperateur("zaiptf");
-			Assert.isTrue("zaiptf".equalsIgnoreCase(op.getCode()));
-			mav.addObject("serviceSecuriteStatus", "OK");
-		}
-		catch (Exception e) {
-			String callstack = ExceptionUtils.extractCallStack(e);
-			mav.addObject("serviceSecuriteStatus", "NOK");
-			mav.addObject("serviceSecuriteException",HtmlHelper.renderMultilines(callstack));
+		final Status status = serviceSecuriteChecker.getStatus();
+		mav.addObject("serviceSecuriteStatus", status.name());
+		if (status == Status.KO) {
+			mav.addObject("serviceSecuriteException", HtmlHelper.renderMultilines(serviceSecuriteChecker.getStatusDetails()));
 		}
 	}
 
@@ -258,21 +243,12 @@ public class InfoController extends ParameterizableViewController implements Aja
 	}
 
 	private void fillBvrClientInfo(ModelAndView mav) {
-		try {
-			final BvrDemande demande = new BvrDemande();
-			demande.setNdc("0");
-			demande.setAnneeTaxation(BigInteger.valueOf(2009));
-			demande.setTypeDebiteurIS("REGULIER");
-			
-			final BvrReponse reponse = bvrClient.getBVRDemande(demande);
-			// on essaie avec le débiteur 0 qui n'existe pas pour ne pas générer de nouveau numéro de BVR, la seule chose qui nous intéresse, c'est de recevoir une réponse
-			Assert.isTrue(reponse.getMessage().contains("CONTRIB_ABSENT"));
-			mav.addObject("bvrPlusStatus", "OK");
+		final Status status = serviceBVRChecker.getStatus();
+		String s = status.name();
+		if (status == Status.KO) {
+			s += " \n\n" + HtmlHelper.renderMultilines(serviceBVRChecker.getStatusDetails());
 		}
-		catch (Exception e) {
-			String callstack = ExceptionUtils.extractCallStack(e);
-			mav.addObject("bvrPlusStatus", "NOK\n\n" + HtmlHelper.renderMultilines(callstack));
-		}
+		mav.addObject("bvrPlusStatus", s);
 	}
 
 	private String getCacheStatus() {

@@ -13,6 +13,9 @@ import org.apache.commons.configuration.reloading.FileChangedReloadingStrategy;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 
+import ch.vd.registre.jmx.properties.PropertiesAdapterFactoryBean;
+import ch.vd.registre.jmx.properties.UnsupportedPropertiesAdapter;
+
 public class UniregProperties implements InitializingBean {
 
 	private static final Logger LOGGER = Logger.getLogger(UniregProperties.class);
@@ -101,5 +104,15 @@ public class UniregProperties implements InitializingBean {
 	 */
 	protected void setProperties(PropertiesConfiguration p) {
 		properties = p;
+	}
+
+	public static class UniregPropertiesAdapterFactoryBean extends PropertiesAdapterFactoryBean {
+		@Override
+		public UnsupportedPropertiesAdapter createInstance(Object obj) {
+			if (obj instanceof UniregProperties) {
+				obj = ((UniregProperties)obj).getAllProperties();
+			}
+			return super.createInstance(obj);
+		}
 	}
 }

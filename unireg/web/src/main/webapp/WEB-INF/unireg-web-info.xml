@@ -9,14 +9,14 @@
 		<property name="globalSearcher" ref="globalTiersSearcher" />
 		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="uniregProperties" ref="uniregExternalProperties" />
-		<property name="serviceCivilRaw" ref="serviceCivilServiceRaw" />
-		<property name="serviceInfraRaw" ref="serviceInfrastructureServiceRaw" />
-		<property name="serviceSecuriteRaw" ref="serviceSecuriteServiceRaw" />
 		<property name="cacheManager" ref="ehCacheManager" />
 		<property name="batchController" ref="gestionBatchController" />
 		<property name="statsService" ref="statsService" />
-		<property name="bvrClient" ref="bvrPlusClient" />
 		<property name="transactionManager" ref="transactionManager" />
+		<property name="serviceCivilChecker" ref="serviceCivilChecker" />
+		<property name="serviceInfraChecker" ref="serviceInfraChecker" />
+		<property name="serviceSecuriteChecker" ref="serviceSecuriteChecker" />
+		<property name="serviceBVRChecker" ref="serviceBVRChecker" />
 	</bean>
 
 	<bean id="infoIFOSecController" class="ch.vd.uniregctb.admin.InfoIFOSecController">

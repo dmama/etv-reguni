@@ -8,6 +8,8 @@ import org.springframework.mail.MailException;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
 
+import ch.vd.registre.base.utils.ExceptionUtils;
+
 /**
  * Service de notification d'exceptions par email.
  *
