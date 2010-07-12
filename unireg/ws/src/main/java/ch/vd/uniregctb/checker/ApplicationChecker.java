@@ -1,11 +1,5 @@
 package ch.vd.uniregctb.checker;
 
-import ch.vd.uniregctb.checker.ServiceBVRChecker;
-import ch.vd.uniregctb.checker.ServiceCivilChecker;
-import ch.vd.uniregctb.checker.ServiceInfraChecker;
-import ch.vd.uniregctb.checker.ServiceSecuriteChecker;
-import ch.vd.uniregctb.checker.Status;
-
 public class ApplicationChecker {
 
 	private static final long startupTime = System.nanoTime();
@@ -14,10 +8,12 @@ public class ApplicationChecker {
 	private ServiceCivilChecker serviceCivilChecker;
 	private ServiceInfraChecker serviceInfraChecker;
 	private ServiceSecuriteChecker serviceSecuriteChecker;
+	private TiersSearcherChecker tiersSearcherChecker;
 
 	public String getStatus() {
 		final Status status;
-		if (serviceCivilChecker.getStatus() == Status.OK && serviceInfraChecker.getStatus() == Status.OK && serviceSecuriteChecker.getStatus() == Status.OK) {
+		if (serviceCivilChecker.getStatus() == Status.OK && serviceInfraChecker.getStatus() == Status.OK && serviceSecuriteChecker.getStatus() == Status.OK &&
+				tiersSearcherChecker.getStatus() == Status.OK) {
 			status = Status.OK;
 		}
 		else {
@@ -29,7 +25,8 @@ public class ApplicationChecker {
 	public String getStatusJSON() {
 		return "{'serviceCivil' : '" + serviceCivilChecker.getStatus().name() + "', " +
 				"'serviceInfra' : '" + serviceInfraChecker.getStatus().name() + "', " +
-				"'serviceSecurite' : '" + serviceSecuriteChecker.getStatus().name() + "'}";
+				"'serviceSecurite' : '" + serviceSecuriteChecker.getStatus().name() + "', " +
+				"'globalTiersSearcher' : '" + tiersSearcherChecker.getStatus().name() + "'}";
 	}
 
 	public static long getUptimeSeconds() {
@@ -75,19 +72,28 @@ public class ApplicationChecker {
 		return str.toString();
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setVersion(String version) {
 		this.version = version;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setServiceCivilChecker(ServiceCivilChecker serviceCivilChecker) {
 		this.serviceCivilChecker = serviceCivilChecker;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setServiceInfraChecker(ServiceInfraChecker serviceInfraChecker) {
 		this.serviceInfraChecker = serviceInfraChecker;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setServiceSecuriteChecker(ServiceSecuriteChecker serviceSecuriteChecker) {
 		this.serviceSecuriteChecker = serviceSecuriteChecker;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setTiersSearcherChecker(TiersSearcherChecker tiersSearcherChecker) {
+		this.tiersSearcherChecker = tiersSearcherChecker;
 	}
 }

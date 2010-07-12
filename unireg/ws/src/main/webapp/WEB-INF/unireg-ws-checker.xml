@@ -9,6 +9,7 @@
 		<property name="serviceCivilChecker" ref="serviceCivilChecker" />
 		<property name="serviceInfraChecker" ref="serviceInfraChecker" />
 		<property name="serviceSecuriteChecker" ref="serviceSecuriteChecker" />
+		<property name="tiersSearcherChecker" ref="tiersSearcherChecker" />
 	</bean>
 
 	<bean id="serviceCivilChecker" class="ch.vd.uniregctb.checker.ServiceCivilChecker">
@@ -21,6 +22,10 @@
 
 	<bean id="serviceSecuriteChecker" class="ch.vd.uniregctb.checker.ServiceSecuriteChecker">
 		<property name="serviceSecuriteRaw" ref="serviceSecuriteServiceRaw" />
+	</bean>
+
+	<bean id="tiersSearcherChecker" class="ch.vd.uniregctb.checker.TiersSearcherChecker">
+		<property name="searcher" ref="globalTiersSearcher" />
 	</bean>
 
 </beans>
