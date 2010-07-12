@@ -63,6 +63,10 @@ public class ServiceInfrastructureCache extends AbstractServiceInfrastructureSer
 		this.statsService = statsService;
 	}
 
+	public Ehcache getEhCache() {
+		return cache;
+	}
+
 	private void initCache() {
 		if (cacheManager != null && cacheName != null) {
 			cache = cacheManager.getCache(cacheName);

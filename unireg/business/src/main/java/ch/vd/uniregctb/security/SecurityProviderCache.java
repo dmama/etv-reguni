@@ -93,6 +93,10 @@ public class SecurityProviderCache implements UniregCacheInterface, SecurityProv
 		this.transactionManager = transactionManager;
 	}
 
+	public Ehcache getEhCache() {
+		return cache;
+	}
+
 	private static class KeyGetDroitAcces {
 		String visaOperateur;
 		long tiersId;

@@ -76,4 +76,14 @@ public class CacheStats {
 	public int getMaxElements() {
 		return maxElements;
 	}
+
+	@Override
+	public String toString() {
+		return "hitsPercent=" + hitsPercent +
+				", hitsCount=" + hitsCount +
+				", totalCount=" + totalCount +
+				", timeToIdle=" + timeToIdle +
+				", timeToLive=" + timeToLive +
+				", maxElements=" + maxElements;
+	}
 }

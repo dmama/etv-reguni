@@ -62,6 +62,10 @@ public class ServiceCivilCache extends ServiceCivilServiceBase implements Unireg
 		this.dataEventService = dataEventService;
 	}
 
+	public Ehcache getEhCache() {
+		return cache;
+	}
+
 	private void initCache() {
 		if (cacheManager != null && cacheName != null) {
 			cache = cacheManager.getCache(cacheName);

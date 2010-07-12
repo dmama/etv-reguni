@@ -57,6 +57,10 @@ public class ServicePersonneMoraleCache implements ServicePersonneMoraleService,
 		this.statsService = statsService;
 	}
 
+	public Ehcache getEhCache() {
+		return cache;
+	}
+
 	private void initCache() {
 		if (cacheManager != null && cacheName != null) {
 			cache = cacheManager.getCache(cacheName);

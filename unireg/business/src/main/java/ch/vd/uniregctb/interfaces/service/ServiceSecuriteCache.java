@@ -53,6 +53,10 @@ public class ServiceSecuriteCache implements UniregCacheInterface, ServiceSecuri
 		this.statsService = statsService;
 	}
 
+	public Ehcache getEhCache() {
+		return cache;
+	}
+
 	private void initCache() {
 		if (cacheManager != null && cacheName != null) {
 			cache = cacheManager.getCache(cacheName);

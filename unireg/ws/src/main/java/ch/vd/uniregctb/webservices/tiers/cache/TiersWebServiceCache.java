@@ -65,8 +65,7 @@ public class TiersWebServiceCache implements UniregCacheInterface, TiersWebServi
 		this.statsService = statsService;
 	}
 
-	/** for testing purposes only ! */
-	protected Ehcache getEhCache() {
+	public Ehcache getEhCache() {
 		return cache;
 	}
 
