@@ -2149,7 +2149,8 @@ public class TiersServiceImpl implements TiersService {
 			periodicitePotentiel.setAnnule(true);
 		}
 		Periodicite nouvellePeriodicite = new Periodicite(periodiciteDecompte,dateDebut,dateFin);
-		debiteur.addPeriodicite(nouvellePeriodicite);
+		nouvellePeriodicite = addAndSave(debiteur,nouvellePeriodicite);
+		Assert.notNull(nouvellePeriodicite);
 		return nouvellePeriodicite;  
 	}
 
@@ -3097,6 +3098,49 @@ public class TiersServiceImpl implements TiersService {
 
 		Assert.notNull(forFiscal.getId());
 		return forFiscal;
+	}
+
+	public Periodicite addAndSave(DebiteurPrestationImposable debiteur, Periodicite periodicite) {
+		if (periodicite.getId() == null) { // le for n'a jamais été persisté
+
+			// on mémorise les ids des periodicites existantes
+			final Set<Long> ids;
+			final Set<Periodicite> periodicites = debiteur.getPeriodicites();
+			if (periodicites == null || periodicites.isEmpty()) {
+				ids = Collections.emptySet();
+			}
+			else {
+				ids = new HashSet<Long>(periodicites.size());
+				for (Periodicite p : periodicites) {
+					final Long id = p.getId();
+					Assert.notNull(id, "Les periodicites existants doivent être persistés.");
+					ids.add(id);
+				}
+			}
+
+			// on ajoute la periodicite et on sauve le tout
+			debiteur.addPeriodicite(periodicite);
+			debiteur = (DebiteurPrestationImposable)tiersDAO.save(debiteur);
+
+			// on recherche la periodicite nouvellement ajoutée
+			Periodicite nouvellePeriodicite = null;
+			for (Periodicite p : debiteur.getPeriodicites()) {
+				if (!ids.contains(p.getId())) {
+					nouvellePeriodicite = p;
+					break;
+				}
+			}
+
+			Assert.isSame(periodicite.getDateDebut(), nouvellePeriodicite.getDateDebut());
+			Assert.isSame(periodicite.getDateFin(), nouvellePeriodicite.getDateFin());
+		periodicite = nouvellePeriodicite;
+		}
+		else {
+			debiteur.addPeriodicite(periodicite);
+		}
+
+		Assert.notNull(periodicite.getId());
+		return periodicite;
 	}
 
 	/**

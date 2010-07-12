@@ -700,7 +700,7 @@ public interface TiersService {
 	 * @param dateFin
 	 * @return la periodicité ajoutés
 	 */
-	Periodicite addPeriodicite(DebiteurPrestationImposable debiteur, PeriodiciteDecompte periodiciteDecompte, RegDate dateDebut,RegDate dateFin);
+	public Periodicite addPeriodicite(DebiteurPrestationImposable debiteur, PeriodiciteDecompte periodiciteDecompte, RegDate dateDebut,RegDate dateFin);
 	/**
 	 * Ajoute un for fiscal secondaire sur un contribuable.
 	 *
@@ -963,6 +963,17 @@ public interface TiersService {
 	 * @return une nouvelle instance du for fiscal avec son id renseigné.
 	 */
 	ForFiscal addAndSave(Tiers tiers, ForFiscal forFiscal);
+
+	/**
+	 * Ajoute une nouvelle periodicite à un debiteur.
+	 *
+	 * @param debiteur
+	 *           le debiteur sur lequel on va ajouter la periodicite
+	 * @param periodicite
+	 *            la nouvelle periodicite
+	 * @return une nouvelle instance de la periodicite avec son id renseigné.
+	 */
+	Periodicite addAndSave(DebiteurPrestationImposable debiteur, Periodicite periodicite);
 
 	/**
 	 * Ajoute une nouvelle situation de famille à un contribuable.
