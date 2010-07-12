@@ -12,7 +12,6 @@
 			/WEB-INF/unireg-ws-cache.xml,
 			/WEB-INF/unireg-ws-config.xml,
 			/WEB-INF/unireg-ws-database.xml,
-			/WEB-INF/unireg-ws-info.xml,
 			/WEB-INF/unireg-ws-properties.xml,
 			/WEB-INF/unireg-ws-security.xml,
 			/WEB-INF/unireg-ws-services.xml,

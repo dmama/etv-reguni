@@ -26,7 +26,6 @@ import ch.vd.uniregctb.security.Role;
  */
 @ContextConfiguration(locations = {
 		"classpath:WEB-INF/unireg-ws-config.xml",
-		"classpath:WEB-INF/unireg-ws-info.xml",
 		"classpath:ut/unireg-wsut-ws.xml",
 		"classpath:ut/unireg-wsut-mock.xml",
 		"classpath:ut/unireg-wsut-security.xml"
