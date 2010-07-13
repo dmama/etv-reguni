@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.adresse;
 
+import java.sql.Timestamp;
 import java.util.Date;
 
 import ch.vd.infrastructure.service.InfrastructureException;
@@ -255,7 +256,7 @@ public class AdresseSupplementaireAdapter extends AdresseAdapter {
 		return adresse.getLogCreationUser();
 	}
 
-	public Date getLogModifDate() {
+	public Timestamp getLogModifDate() {
 		return adresse.getLogModifDate();
 	}
 

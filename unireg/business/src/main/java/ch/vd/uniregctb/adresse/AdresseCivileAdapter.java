@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.adresse;
 
+import java.sql.Timestamp;
 import java.util.Date;
 
 import ch.vd.common.model.EnumTypeAdresse;
@@ -307,7 +308,7 @@ public class AdresseCivileAdapter extends AdresseAdapter {
 		return null;
 	}
 
-	public Date getLogModifDate() {
+	public Timestamp getLogModifDate() {
 		return null;
 	}
 

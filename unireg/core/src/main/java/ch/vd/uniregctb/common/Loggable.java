@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.common;
 
+import java.sql.Timestamp;
 import java.util.Date;
 
 public interface Loggable {
@@ -10,7 +11,7 @@ public interface Loggable {
 
 	public String getLogModifUser();
 
-	public Date getLogModifDate();
+	public Timestamp getLogModifDate();
 
 	public Date getAnnulationDate();
 

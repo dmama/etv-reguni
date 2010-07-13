@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.adresse;
 
+import java.sql.Timestamp;
 import java.util.Date;
 
 import ch.vd.registre.base.date.DateRangeHelper;
@@ -140,7 +141,7 @@ public class AdressePMAdapter implements AdresseGenerique {
 		return null;
 	}
 
-	public Date getLogModifDate() {
+	public Timestamp getLogModifDate() {
 		return null;
 	}
 
