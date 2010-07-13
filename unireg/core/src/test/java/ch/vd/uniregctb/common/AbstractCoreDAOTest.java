@@ -87,6 +87,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	protected LocalSessionFactoryBean localSessionFactoryBean;
 	protected HibernateTemplate hibernateTemplate;
 	protected Dialect dialect;
+	protected TiersDAO tiersDAO;
 
 	public static enum ProducerType {
 		Flat,
@@ -105,6 +106,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		setDataSource(getBean(DataSource.class, "dataSource"));
 		hibernateTemplate = getBean(HibernateTemplate.class, "hibernateTemplate");
 		dialect = getBean(Dialect.class, "hibernateDialect");
+		tiersDAO = getBean(TiersDAO.class, "tiersDAO");
 
 		truncateDatabase();
 	}
@@ -923,6 +925,71 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 
 		da = (DroitAcces) hibernateTemplate.merge(da);
 		return da;
+	}
+
+	/**
+	 * Ajoute un for principal sur le contribuable spécifié.
+	 */
+	protected ForFiscalPrincipal addForPrincipal(Contribuable contribuable, RegDate ouverture, MotifFor motifOuverture, RegDate fermeture,
+			MotifFor motifFermeture, Integer noOFS, TypeAutoriteFiscale type, MotifRattachement motif) {
+		ForFiscalPrincipal f = new ForFiscalPrincipal();
+		f.setDateDebut(ouverture);
+		f.setMotifOuverture(motifOuverture);
+		f.setDateFin(fermeture);
+		f.setMotifFermeture(motifFermeture);
+		f.setGenreImpot(GenreImpot.REVENU_FORTUNE);
+		f.setTypeAutoriteFiscale(type);
+		f.setNumeroOfsAutoriteFiscale(noOFS);
+		f.setMotifRattachement(motif);
+		f.setModeImposition(ModeImposition.ORDINAIRE);
+		f = (ForFiscalPrincipal) tiersDAO.addAndSave(contribuable, f);
+		return f;
+	}
+
+	/**
+	 * Ajoute un for fiscal secondaire ouvert.
+	 */
+	protected ForFiscalSecondaire addForSecondaire(Contribuable tiers, RegDate ouverture, MotifFor motifOuverture, Integer noOFS,
+			MotifRattachement motif) {
+		ForFiscalSecondaire f = new ForFiscalSecondaire();
+		f.setDateDebut(ouverture);
+		f.setMotifOuverture(motifOuverture);
+		f.setGenreImpot(GenreImpot.REVENU_FORTUNE);
+		f.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
+		f.setNumeroOfsAutoriteFiscale(noOFS);
+		f.setMotifRattachement(motif);
+		f = (ForFiscalSecondaire) tiersDAO.addAndSave(tiers, f);
+		return f;
+	}
+
+	/**
+	 * Ajoute un for fiscal secondaire fermé.
+	 */
+	protected ForFiscalSecondaire addForSecondaire(Contribuable tiers, RegDate ouverture, MotifFor motifOuverture, RegDate fermeture,
+			MotifFor motifFermeture, Integer noOFS, MotifRattachement motif) {
+		ForFiscalSecondaire f = new ForFiscalSecondaire();
+		f.setDateDebut(ouverture);
+		f.setMotifOuverture(motifOuverture);
+		f.setDateFin(fermeture);
+		f.setMotifFermeture(motifFermeture);
+		f.setGenreImpot(GenreImpot.REVENU_FORTUNE);
+		f.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
+		f.setNumeroOfsAutoriteFiscale(noOFS);
+		f.setMotifRattachement(motif);
+		f = (ForFiscalSecondaire) tiersDAO.addAndSave(tiers, f);
+		return f;
+	}
+
+	protected ForFiscalAutreImpot addForAutreImpot(Contribuable tiers, RegDate ouverture, RegDate fermeture, Integer noOFS,
+			TypeAutoriteFiscale type, GenreImpot genre) {
+		ForFiscalAutreImpot f = new ForFiscalAutreImpot();
+		f.setDateDebut(ouverture);
+		f.setDateFin(fermeture);
+		f.setGenreImpot(genre);
+		f.setTypeAutoriteFiscale(type);
+		f.setNumeroOfsAutoriteFiscale(noOFS);
+		f = (ForFiscalAutreImpot) tiersDAO.addAndSave(tiers, f);
+		return f;
 	}
 
 	/**

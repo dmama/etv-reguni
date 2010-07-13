@@ -193,12 +193,22 @@ public interface TiersDAO extends GenericDAO<Tiers, Long> {
 	 */
 	void updateOids(Map<Long,Integer> tiersOidsMapping);
 
-
-	/**Retourne la liste de débiteurs qui n'on pas de périodicité
+	/**
+	 * Retourne la liste de débiteurs qui n'on pas de périodicité
 	 * utilisée dans la création de l'historique des périodicités pour chaque debiteur
 	 *
 	 * @return la liste des debiteurs pour qui on devra construire l'historique de periodicite
 	 */
 	public List<Long> getListeDebiteursSansPeriodicites();
 	
+	/**
+	 * Ajoute un nouveau for fiscal à un tiers.
+	 *
+	 * @param tiers
+	 *            le tiers sur lequel on veut ajouter un for fiscal
+	 * @param forFiscal
+	 *            le nouveau for fiscal
+	 * @return une nouvelle instance du for fiscal avec son id renseigné.
+	 */
+	ForFiscal addAndSave(Tiers tiers, ForFiscal forFiscal);
 }

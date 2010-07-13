@@ -50,6 +50,7 @@ import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.ContactImpotSource;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
+import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.MenageCommun;
@@ -1020,7 +1021,11 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		}
 
 		public List<Long> getListeDebiteursSansPeriodicites() {
-			return null;  //To change body of implemented methods use File | Settings | File Templates.
+			throw new NotImplementedException();
+		}
+
+		public ForFiscal addAndSave(Tiers tiers, ForFiscal forFiscal) {
+			throw new NotImplementedException();
 		}
 	}
 }

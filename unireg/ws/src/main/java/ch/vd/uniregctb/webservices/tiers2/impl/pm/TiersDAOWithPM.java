@@ -215,6 +215,10 @@ public class TiersDAOWithPM implements TiersDAO {
 	}
 
 	public List<Long> getListeDebiteursSansPeriodicites() {
-		return null;  //To change body of implemented methods use File | Settings | File Templates.
+		throw new NotImplementedException();
+	}
+
+	public ForFiscal addAndSave(Tiers tiers, ForFiscal forFiscal) {
+		throw new NotImplementedException();
 	}
 }

@@ -15,15 +15,12 @@ public abstract class AbstractFusionControllerTest extends WebTest {
 	 */
 	private final static String DB_UNIT_FILE = "AbstractFusionControllerTest.xml";
 
-	protected TiersDAO tiersDAO;
-
 	protected Long numeroNonHab = 32100002L;
 	protected Long numeroHab = 12300002L;
 
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
-		tiersDAO = getBean(TiersDAO.class, "tiersDAO");
 
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override

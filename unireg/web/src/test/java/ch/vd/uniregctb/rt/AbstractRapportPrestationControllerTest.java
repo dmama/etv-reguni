@@ -10,8 +10,6 @@ public abstract class AbstractRapportPrestationControllerTest extends WebTest {
 	 */
 	private final static String DB_UNIT_FILE = "AbstractRapportPrestationControllerTest.xml";
 
-	protected TiersDAO tiersDAO;
-
 	protected Long numeroSrc = 12300003L;
 	protected Long numeroDpi = 12500001L;
 
@@ -21,7 +19,6 @@ public abstract class AbstractRapportPrestationControllerTest extends WebTest {
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
-		tiersDAO = getBean(TiersDAO.class, "tiersDAO");
 
 		loadDatabase(DB_UNIT_FILE);
 	}

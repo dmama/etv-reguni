@@ -15,12 +15,9 @@ public abstract class AbstractEvenementControllerTest extends WebTest {
 	 */
 	private final static String DB_UNIT_FILE = "AbstractEvenementControllerTest.xml";
 
-	protected TiersDAO tiersDAO;
-
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
-		tiersDAO = getBean(TiersDAO.class, "tiersDAO");
 
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override

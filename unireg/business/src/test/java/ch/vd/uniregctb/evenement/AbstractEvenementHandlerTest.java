@@ -18,7 +18,6 @@ public abstract class AbstractEvenementHandlerTest extends BusinessTest {
 	 */
 	protected EvenementCivilHandler evenementCivilHandler;
 
-	protected TiersDAO tiersDAO;
 	protected ProxyServiceCivil serviceCivil;
 	protected GlobalTiersIndexer indexer;
 	protected MockEvenementFiscalSender eventSender;
@@ -27,7 +26,6 @@ public abstract class AbstractEvenementHandlerTest extends BusinessTest {
 	public void onSetUp() throws Exception {
 		super.onSetUp();
 
-		tiersDAO = getBean(TiersDAO.class, "tiersDAO");
 		evenementCivilHandler = getBean(EvenementCivilHandler.class, getHandlerBeanName());
 		serviceCivil = getBean(ProxyServiceCivil.class, "serviceCivilService");
 		indexer = getBean(GlobalTiersIndexer.class, "globalTiersIndexer");

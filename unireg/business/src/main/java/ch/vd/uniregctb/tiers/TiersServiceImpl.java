@@ -3069,47 +3069,7 @@ public class TiersServiceImpl implements TiersService {
 	 * {@inheritDoc}
 	 */
 	public ForFiscal addAndSave(Tiers tiers, ForFiscal forFiscal) {
-
-		if (forFiscal.getId() == null) { // le for n'a jamais été persisté
-
-			// on mémorise les ids des fors existant
-			final Set<Long> ids;
-			final Set<ForFiscal> forsFiscaux = tiers.getForsFiscaux();
-			if (forsFiscaux == null || forsFiscaux.isEmpty()) {
-				ids = Collections.emptySet();
-			}
-			else {
-				ids = new HashSet<Long>(forsFiscaux.size());
-				for (ForFiscal f : forsFiscaux) {
-					final Long id = f.getId();
-					Assert.notNull(id, "Les fors existants doivent être persistés.");
-					ids.add(id);
-				}
-			}
-
-			// on ajoute le for et sauve le tout
-			tiers.addForFiscal(forFiscal);
-			tiers = tiersDAO.save(tiers);
-
-			// on recherche le for nouvellement ajouté
-			ForFiscal nouveauFor = null;
-			for (ForFiscal f : tiers.getForsFiscaux()) {
-				if (!ids.contains(f.getId())) {
-					nouveauFor = f;
-					break;
-				}
-			}
-
-			Assert.isSame(forFiscal.getDateDebut(), nouveauFor.getDateDebut());
-			Assert.isSame(forFiscal.getDateFin(), nouveauFor.getDateFin());
-			forFiscal = nouveauFor;
-		}
-		else {
-			tiers.addForFiscal(forFiscal);
-		}
-
-		Assert.notNull(forFiscal.getId());
-		return forFiscal;
+		return tiersDAO.addAndSave(tiers, forFiscal);
 	}
 
 	public Periodicite addAndSave(DebiteurPrestationImposable debiteur, Periodicite periodicite) {
