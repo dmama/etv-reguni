@@ -13,11 +13,15 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import java.util.List;
+
 import org.apache.log4j.Logger;
 import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
 
+import ch.vd.registre.base.date.CollatableDateRange;
 import ch.vd.registre.base.date.DateRange;
+import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
@@ -31,7 +35,7 @@ import ch.vd.uniregctb.type.PeriodiciteDecompte;
 @Entity
 @Table(name = "PERIODICITE")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-public  class Periodicite  extends HibernateEntity implements DateRange {
+public  class Periodicite  extends HibernateEntity implements CollatableDateRange {
 
 	
 	private static final Logger LOGGER = Logger.getLogger(Periodicite.class);
@@ -210,5 +214,35 @@ public  class Periodicite  extends HibernateEntity implements DateRange {
 
 	public void setDebiteur(DebiteurPrestationImposable debiteur) {
 		this.debiteur = debiteur;
+	}
+
+	public boolean isCollatable(DateRange next) {
+
+		return  DateRangeHelper.isCollatable(this, next) && periodiciteDecompte.equals(((Periodicite)next).getPeriodiciteDecompte());
+	}
+
+	public DateRange collate(DateRange next) {
+		return new Periodicite(periodiciteDecompte,dateDebut,next.getDateFin());
+	}
+
+	public static  List<Periodicite> comblerVidesPeriodicites(List<Periodicite> periodicites) {
+		// la périodicité actuelle doit avoir une date de fin null
+		final int lastIndex = periodicites.size() - 1;
+		if (lastIndex >= 0) {
+			Periodicite periodiciteActive = periodicites.get(lastIndex);
+			periodiciteActive.setDateFin(null);
+		}
+
+		for (int i = periodicites.size() - 1; i > 0; --i) {
+			Periodicite periodiciteCourante = periodicites.get(i);
+			Periodicite periodicitePrecedente = periodicites.get(i - 1);
+			final RegDate debut = periodiciteCourante.getDateDebut();
+			final RegDate finPrecedent = periodicitePrecedente.getDateFin();
+			if (debut != null && NullDateBehavior.EARLIEST.compare(debut.getOneDayBefore(), finPrecedent) > 0) {
+				periodicitePrecedente.setDateFin(debut.getOneDayBefore());
+			}
+		}
+
+		return periodicites;
 	}
 }

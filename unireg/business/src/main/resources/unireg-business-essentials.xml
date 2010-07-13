@@ -99,6 +99,7 @@
 		<property name="transactionManager" ref="transactionManager" />
 		<property name="hibernateTemplate" ref="hibernateTemplate" />
 		<property name="helperSommationLR" ref="impressionSommationLRHelper" />
+		<property name="tiersService" ref="tiersService" />
 	</bean>
 
 	<bean id="diService" class="ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotServiceImpl">

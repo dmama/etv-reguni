@@ -1128,5 +1128,7 @@ public interface TiersService {
 	 * @return les événements civils encore non-traités (en erreur, ou pas encore traités) sur ce tiers
 	 */
 	List<EvenementCivilData> getEvenementsCivilsNonTraites(Tiers tiers);
+
+
 }
 

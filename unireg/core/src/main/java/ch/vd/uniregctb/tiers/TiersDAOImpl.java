@@ -693,4 +693,13 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 			}
 		});
 	}
+
+	public List<Long> getListeDebiteursSansPeriodicites() {
+		return (List<Long>) getHibernateTemplate().execute(new HibernateCallback() {
+			public Object doInHibernate(Session session) throws HibernateException, SQLException {
+				Query q = session.createQuery("select d.numero from DebiteurPrestationImposable d where size(d.periodicites) = 0");
+				return q.list();
+			}
+		});
+	}
 }

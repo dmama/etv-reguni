@@ -68,7 +68,10 @@ public class TiersView {
 	private List<DeclarationImpotDetailView> dis;
 
 	private ForFiscalView forsPrincipalActif;
+
 	private List<ForFiscalView> forsFiscaux;
+
+	private List<PeriodiciteView> periodicites;
 
 	private List<SituationFamilleView> situationsFamille;
 
@@ -433,5 +436,13 @@ public class TiersView {
 
 	public void setNomPrenomConjoint(String nomPrenomConjoint) {
 		this.nomPrenomConjoint = nomPrenomConjoint;
+	}
+
+	public List<PeriodiciteView> getPeriodicites() {
+		return periodicites;
+	}
+
+	public void setPeriodicites(List<PeriodiciteView> periodicites) {
+		this.periodicites = periodicites;
 	}
 }

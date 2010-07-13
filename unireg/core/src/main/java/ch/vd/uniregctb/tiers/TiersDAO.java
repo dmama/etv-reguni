@@ -192,4 +192,13 @@ public interface TiersDAO extends GenericDAO<Tiers, Long> {
 	 * @param tiersOidsMapping le mapping numéro de tiers vers numéro d'oid.
 	 */
 	void updateOids(Map<Long,Integer> tiersOidsMapping);
+
+
+	/**Retourne la liste de débiteurs qui n'on pas de périodicité
+	 * utilisée dans la création de l'historique des périodicités pour chaque debiteur
+	 *
+	 * @return la liste des debiteurs pour qui on devra construire l'historique de periodicite
+	 */
+	public List<Long> getListeDebiteursSansPeriodicites();
+	
 }

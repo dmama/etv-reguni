@@ -158,6 +158,7 @@
 		<property name="successView" value="common/refresh-parent" />
 		<property name="transactionManager" ref="transactionManager" />
 		<property name="identCtbDAO" ref="identCtbDAO" />
+		<property name="periodiciteDAO" ref="periodiciteDAO" />
 	</bean>
 
 	<bean id="mouvementVisuController" class="ch.vd.uniregctb.tiers.MouvementVisuController" parent="abstractTiersController">

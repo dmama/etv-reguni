@@ -1,11 +1,26 @@
 package ch.vd.uniregctb.declaration.source;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import ch.vd.registre.base.date.NullDateBehavior;
+import ch.vd.uniregctb.common.AuthenticationHelper;
+import ch.vd.uniregctb.common.BatchResults;
+import ch.vd.uniregctb.common.BatchTransactionTemplate;
+import ch.vd.uniregctb.declaration.Declaration;
+import ch.vd.uniregctb.declaration.Periodicite;
+import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.CategorieImpotSource;
+
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.DateRange;
@@ -34,9 +49,13 @@ import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.type.TypeDocument;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 
-public class ListeRecapServiceImpl implements ListeRecapService, DelegateEditique {
+public class ListeRecapServiceImpl implements ListeRecapService, DelegateEditique, InitializingBean {
 
-	/** Le type de document à transmettre au service pour les LR */
+	private static final Logger LOGGER = Logger.getLogger(ListeRecapServiceImpl.class);
+
+	/**
+	 * Le type de document à transmettre au service pour les LR
+	 */
 	private static final String TYPE_DOCUMENT_LR = "03";
 
 	private DelaisService delaisService;
@@ -60,6 +79,9 @@ public class ListeRecapServiceImpl implements ListeRecapService, DelegateEditiqu
 	private HibernateTemplate hibernateTemplate;
 
 	private ImpressionSommationLRHelper helperSommationLR;
+
+	private TiersService tiersService;
+
 
 	/**
 	 * Recupere à l'éditique un document pour afficher une copie conforme (duplicata)
@@ -97,8 +119,7 @@ public class ListeRecapServiceImpl implements ListeRecapService, DelegateEditiqu
 	}
 
 	/**
-	 * Impression d'une LR - Creation en base de donnée de la LR avec calcul de son nom de document - Alimentation de l'objet
-	 * EditiqueListeRecap - Envoi des informations nécessaires à l'éditique
+	 * Impression d'une LR - Creation en base de donnée de la LR avec calcul de son nom de document - Alimentation de l'objet EditiqueListeRecap - Envoi des informations nécessaires à l'éditique
 	 *
 	 * @param dpi
 	 * @param dateDebutPeriode
@@ -260,9 +281,9 @@ public class ListeRecapServiceImpl implements ListeRecapService, DelegateEditiqu
 	}
 
 	/**
-	 * Pour chacun des débiteurs à qui on a envoyé toutes les LR de la période fiscale donnée, et pour lesquels il existe au
-	 * moins une LR échue (dont le délai de retour de la sommation a été bien dépassé à la date de traitement),
-	 * envoie un événement fiscal "liste récapitulative manquante"
+	 * Pour chacun des débiteurs à qui on a envoyé toutes les LR de la période fiscale donnée, et pour lesquels il existe au moins une LR échue (dont le délai de retour de la sommation a été bien dépassé
+	 * à la date de traitement), envoie un événement fiscal "liste récapitulative manquante"
+	 *
 	 * @param periodeFiscale période fiscale sur laquelle les LR sont inspectées
 	 * @param dateTraitement date déterminante pour savoir si un délai a été dépassé
 	 */
@@ -272,7 +293,6 @@ public class ListeRecapServiceImpl implements ListeRecapService, DelegateEditiqu
 	}
 
 	/**
-	 *
 	 * @param periodicite
 	 * @param lrManquantes
 	 * @return
@@ -297,6 +317,7 @@ public class ListeRecapServiceImpl implements ListeRecapService, DelegateEditiqu
 
 	/**
 	 * Renvoie les ranges compris dans "source" mais pas dans "toRemove"
+	 *
 	 * @param source
 	 * @param toRemove supposé trié, composé de ranges non-adjacents
 	 * @return
@@ -327,6 +348,111 @@ public class ListeRecapServiceImpl implements ListeRecapService, DelegateEditiqu
 	}
 
 	public void surDocumentRecu(EditiqueResultat resultat) {
+	}
+
+	/**
+	 * Permet de reconstruire l'historique des periodicités a partir des LR de chaque debiteurs.
+	 */
+	public void afterPropertiesSet() throws Exception {
+		createAllPeriodicites();
+	}
+
+	@SuppressWarnings({"unchecked"})
+	private void createAllPeriodicites() {
+
+		final TransactionTemplate t = new TransactionTemplate(transactionManager);
+		final List<Long> ids = (List<Long>) t.execute(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				return tiersDAO.getListeDebiteursSansPeriodicites();
+			}
+		});
+
+		//	final List<Long> ids = new ArrayList<Long>();
+		//	ids.add(1295052L);
+		if (!ids.isEmpty()) {
+
+			LOGGER.warn("--- Début de la création de l'historique des périodicités---");
+			MigrationResults rapportFinal = new MigrationResults();
+
+			AuthenticationHelper.pushPrincipal(AuthenticationHelper.SYSTEM_USER);
+
+			try {
+
+				BatchTransactionTemplate<Long, MigrationResults> template =
+						new BatchTransactionTemplate<Long, MigrationResults>(ids, 100, BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE, transactionManager, null, hibernateTemplate);
+				template.execute(rapportFinal, new BatchTransactionTemplate.BatchCallback<Long, MigrationResults>() {
+
+					@Override
+					public MigrationResults createSubRapport() {
+						return new MigrationResults();
+					}
+
+					@Override
+					public boolean doInTransaction(List<Long> batch, MigrationResults rapport) throws Exception {
+						createHistoriquePeriodicite(batch);
+						return true;
+					}
+				});
+
+			}
+			finally {
+
+				AuthenticationHelper.popPrincipal();
+			}
+
+			for (Map.Entry<Long, String> s : rapportFinal.erreurs.entrySet()) {
+				LOGGER.error("Impossible de crééer l'historique des périodicités pour le debiteur =" + s.getKey() + " Erreur=" + s.getValue());
+			}
+
+			LOGGER.warn(
+					"--- Fin de la création des Périodicités (Nombre de débiteurs impactés=" + (ids.size() - rapportFinal.erreurs.size()) + ", en erreur=" + rapportFinal.erreurs.size() + ") ---");
+		}
+	}
+
+	private void createHistoriquePeriodicite(List<Long> batch) {
+		for (Long debiteurId : batch) {
+			DebiteurPrestationImposable debiteur = tiersDAO.getDebiteurPrestationImposableByNumero(debiteurId);
+			List<Declaration> listeLR = debiteur.getDeclarationsSorted();
+			List<Periodicite> listePeriodiciteACreer = construirePeriodiciteFromLR(listeLR);
+			for (Periodicite periodicite : listePeriodiciteACreer) {
+				tiersService.addPeriodicite(debiteur, periodicite.getPeriodiciteDecompte(), periodicite.getDateDebut(), periodicite.getDateFin());
+			}
+
+
+		}
+	}
+
+	private List<Periodicite> construirePeriodiciteFromLR(List<Declaration> listeLR) {
+
+		List<Periodicite> listePeriodiciteIntermediaire = new ArrayList<Periodicite>();
+		//Transformation en lilste de periodicite
+		for (Declaration declaration : listeLR) {
+			if (!declaration.isAnnule()) {
+				DeclarationImpotSource lr = (DeclarationImpotSource) declaration;
+				Periodicite periodicite = new Periodicite(lr.getPeriodicite(), lr.getDateDebut(), lr.getDateFin());
+				listePeriodiciteIntermediaire.add(periodicite);
+			}
+
+		}
+		listePeriodiciteIntermediaire = Periodicite.comblerVidesPeriodicites(listePeriodiciteIntermediaire);
+
+
+		return DateRangeHelper.collate(listePeriodiciteIntermediaire);  //To change body of created methods use File | Settings | File Templates.
+	}
+
+	
+
+	private static class MigrationResults implements BatchResults<Long, MigrationResults> {
+
+		public final Map<Long, String> erreurs = new HashMap<Long, String>();
+
+		public void addErrorException(Long element, Exception e) {
+			erreurs.put(element, e.getMessage());
+		}
+
+		public void addAll(MigrationResults right) {
+			erreurs.putAll(right.erreurs);
+		}
 	}
 
 	public void setEditiqueCompositionService(EditiqueCompositionService editiqueCompositionService) {
@@ -371,5 +497,13 @@ public class ListeRecapServiceImpl implements ListeRecapService, DelegateEditiqu
 
 	public void setHelperSommationLR(ImpressionSommationLRHelper helperSommationLR) {
 		this.helperSommationLR = helperSommationLR;
+	}
+
+	public TiersService getTiersService() {
+		return tiersService;
+	}
+
+	public void setTiersService(TiersService tiersService) {
+		this.tiersService = tiersService;
 	}
 }

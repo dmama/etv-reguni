@@ -11,7 +11,9 @@ import java.util.Set;
 
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.tiers.*;
+
 import org.apache.log4j.Logger;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
@@ -67,6 +69,8 @@ import ch.vd.uniregctb.tiers.view.DebiteurView;
 import ch.vd.uniregctb.tiers.view.ForDebiteurViewComparator;
 import ch.vd.uniregctb.tiers.view.ForFiscalView;
 import ch.vd.uniregctb.tiers.view.ForFiscalViewComparator;
+import ch.vd.uniregctb.tiers.view.PeriodiciteView;
+import ch.vd.uniregctb.tiers.view.PeriodiciteViewComparator;
 import ch.vd.uniregctb.tiers.view.SituationFamilleView;
 import ch.vd.uniregctb.tiers.view.TiersCriteriaView;
 import ch.vd.uniregctb.tiers.view.TiersEditView;
@@ -86,7 +90,6 @@ import ch.vd.uniregctb.utils.WebContextUtils;
  * Methodes annexes utilisées par TiersVisuManager et TiersEditManager
  *
  * @author xcifde
- *
  */
 public class TiersManager implements MessageSourceAware {
 
@@ -131,7 +134,7 @@ public class TiersManager implements MessageSourceAware {
 		if (noIndividu != null) {
 			individuView = getHostCivilService().getIndividu(noIndividu);
 		}
-		if (habitant.getDateDeces() != null && individuView !=null) {//habitant décédé fiscalement
+		if (habitant.getDateDeces() != null && individuView != null) {//habitant décédé fiscalement
 			individuView.setEtatCivil("DECEDE");
 			individuView.setDateDernierChgtEtatCivil(RegDate.asJavaDate(habitant.getDateDeces()));
 		}
@@ -204,7 +207,7 @@ public class TiersManager implements MessageSourceAware {
 
 		final int year = RegDate.get().year();
 
-		final EnumAttributeIndividu[] enumValues = new EnumAttributeIndividu[] { EnumAttributeIndividu.ENFANTS, EnumAttributeIndividu.PARENTS };
+		final EnumAttributeIndividu[] enumValues = new EnumAttributeIndividu[]{EnumAttributeIndividu.ENFANTS, EnumAttributeIndividu.PARENTS};
 		final Individu ind = getServiceCivilService().getIndividu(habitant.getNumeroIndividu(), year, enumValues);
 
 		// enfants
@@ -603,7 +606,8 @@ public class TiersManager implements MessageSourceAware {
 	 * @param rapportsPrestationHisto
 	 * @throws AdresseException
 	 */
-	protected void setDebiteurPrestationImposable(TiersView tiersView, DebiteurPrestationImposable dpi, boolean rapportsPrestationHisto, WebParamPagination webParamPagination) throws AdresseException {
+	protected void setDebiteurPrestationImposable(TiersView tiersView, DebiteurPrestationImposable dpi, boolean rapportsPrestationHisto, WebParamPagination webParamPagination) throws
+			AdresseException {
 		tiersView.setTiers(dpi);
 		tiersView.setRapportsPrestation(getRapportsPrestation(dpi, webParamPagination, rapportsPrestationHisto));
 		tiersView.setLrs(getListesRecapitulatives(dpi));
@@ -626,7 +630,7 @@ public class TiersManager implements MessageSourceAware {
 		final ForFiscalPrincipal dernierForPrincipal = contribuable.getDernierForFiscalPrincipal();
 		final ForFiscal forPrincipalActif = contribuable.getForFiscalPrincipalAt(null);
 		final List<ForFiscal> forsFiscaux = contribuable.getForsFiscauxSorted();
-		
+
 		final List<ForFiscalView> forsFiscauxView = new ArrayList<ForFiscalView>();
 		if (forsFiscaux != null) {
 			ForFiscalView forPrincipalViewActif = null;
@@ -678,6 +682,31 @@ public class TiersManager implements MessageSourceAware {
 	}
 
 	/**
+	 * Met a jour la vue periodicite avec la periodicites du debiteur
+	 */
+	protected void setPeriodicitesView(TiersView tiersView, DebiteurPrestationImposable dpi) {
+		List<PeriodiciteView> listePeriodicitesView = new ArrayList<PeriodiciteView>();
+		Set<Periodicite> setPeriodicites = dpi.getPeriodicites();
+		if (setPeriodicites != null) {
+			for (Periodicite periodicite : setPeriodicites) {
+				PeriodiciteView periodiciteView = new PeriodiciteView();
+				periodiciteView.setDateDebut(periodicite.getDateDebut());
+				periodiciteView.setDateFin(periodicite.getDateFin());
+				periodiciteView.setDebiteurId(periodicite.getDebiteur().getNumero());
+				periodiciteView.setId(periodicite.getId());
+				periodiciteView.setAnnule(periodicite.isAnnule());
+				periodiciteView.setPeriodiciteDecompte(periodicite.getPeriodiciteDecompte());
+				listePeriodicitesView.add(periodiciteView);
+			}
+			Collections.sort(listePeriodicitesView,new PeriodiciteViewComparator());
+			tiersView.setPeriodicites(listePeriodicitesView);
+			
+		}
+
+
+	}
+
+	/**
 	 * Indique si l'on a le droit ou non de saisir une nouvelle situation de famille
 	 *
 	 * @param contribuable
@@ -705,6 +734,7 @@ public class TiersManager implements MessageSourceAware {
 
 	/**
 	 * Met à jour TiersView en fonction de Contribuable
+	 *
 	 * @param tiersView
 	 * @param contribuable
 	 * @throws AdresseException
@@ -749,6 +779,7 @@ public class TiersManager implements MessageSourceAware {
 
 	/**
 	 * gestion des droits d'èdition d'un tiers
+	 *
 	 * @param tiers
 	 * @param allowedOnglet
 	 * @return true si l'utilisateur a le droit d'éditer le tiers
@@ -970,6 +1001,7 @@ public class TiersManager implements MessageSourceAware {
 
 	/**
 	 * Le type d'autorité fiscale est null en cas d'absence de for fiscal principal actif
+	 *
 	 * @param tiers
 	 * @return
 	 */
@@ -988,6 +1020,7 @@ public class TiersManager implements MessageSourceAware {
 
 	/**
 	 * enrichi la map de droit d'édition des onglets pour un habitant ou un ménage commun considéré habitant
+	 *
 	 * @param tiers
 	 * @param allowedOnglet
 	 */
@@ -1031,6 +1064,7 @@ public class TiersManager implements MessageSourceAware {
 
 	/**
 	 * enrichi la map de droit d'édition des onglets pour un non habitant ou un ménage commun considéré non habitant
+	 *
 	 * @param tiers
 	 * @param allowedOnglet
 	 */
@@ -1272,8 +1306,7 @@ public class TiersManager implements MessageSourceAware {
 
 	/**
 	 * @param tiers
-	 * @return true sur l'utilisateur connecté à les droits Ifosec et sécurité dossiers de modif le tiers
-	 * retourne tjs false si le tiers n'est pas une PP ou un ménage
+	 * @return true sur l'utilisateur connecté à les droits Ifosec et sécurité dossiers de modif le tiers retourne tjs false si le tiers n'est pas une PP ou un ménage
 	 */
 	protected boolean checkDroitEdit(Tiers tiers) {
 
@@ -1306,8 +1339,8 @@ public class TiersManager implements MessageSourceAware {
 	}
 
 	/**
-	 * Renseigne la liste des adresses actives sur le form backing object. En cas d'erreur dans la résolution des adresses, les adresses en
-	 * erreur et le message de l'erreur sont renseignés en lieu et place.
+	 * Renseigne la liste des adresses actives sur le form backing object. En cas d'erreur dans la résolution des adresses, les adresses en erreur et le message de l'erreur sont renseignés en lieu et
+	 * place.
 	 */
 	protected void setAdressesActives(TiersEditView tiersEditView, final Tiers tiers) {
 
@@ -1323,7 +1356,7 @@ public class TiersManager implements MessageSourceAware {
 				Collections.sort(adresses, new AdresseViewComparator());
 			}
 
-			adresses = removeAdresseFromCivil(adresses);			
+			adresses = removeAdresseFromCivil(adresses);
 			tiersEditView.setAdressesActives(adresses);
 		}
 		catch (AdresseException exception) {
@@ -1368,7 +1401,6 @@ public class TiersManager implements MessageSourceAware {
 	 * @param type
 	 * @return
 	 * @throws InfrastructureException
-	 *
 	 */
 	protected AdresseView createAdresseView(AdresseGenerique addGen, TypeAdresseTiers type, Tiers tiers) {
 		AdresseView adresseView = new AdresseView();
@@ -1464,8 +1496,8 @@ public class TiersManager implements MessageSourceAware {
 		List<AdresseView> resultat = new ArrayList<AdresseView>();
 		for (AdresseView view : adresses) {
 			//UNIREG-1813 L'adresse domicile est retiré du bloc fiscal
-			if(!TypeAdresseTiers.DOMICILE.equals(view.getUsage())){
-				if(view.getDateFin()==null || !AdresseGenerique.Source.CIVILE.equals(view.getSource())){
+			if (!TypeAdresseTiers.DOMICILE.equals(view.getUsage())) {
+				if (view.getDateFin() == null || !AdresseGenerique.Source.CIVILE.equals(view.getSource())) {
 					resultat.add(view);
 				}
 
@@ -1497,6 +1529,7 @@ public class TiersManager implements MessageSourceAware {
 
 	/**
 	 * Compte le nombre de rapports prestation imposable pour un débiteur
+	 *
 	 * @param numeroDebiteur
 	 * @param rapportsPrestationHisto
 	 * @return

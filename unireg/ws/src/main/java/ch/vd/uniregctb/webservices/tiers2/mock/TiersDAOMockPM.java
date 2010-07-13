@@ -212,4 +212,8 @@ public class TiersDAOMockPM implements TiersDAO {
 	public void updateOids(Map<Long, Integer> tiersOidsMapping) {
 		throw new NotImplementedException();
 	}
+
+	public List<Long> getListeDebiteursSansPeriodicites() {
+		return null;  //To change body of implemented methods use File | Settings | File Templates.
+	}
 }

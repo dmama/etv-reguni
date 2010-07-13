@@ -2144,13 +2144,25 @@ public class TiersServiceImpl implements TiersService {
 	 * {@inheritDoc}
 	 */
 	public Periodicite addPeriodicite(DebiteurPrestationImposable debiteur, PeriodiciteDecompte periodiciteDecompte, RegDate dateDebut, RegDate dateFin) {
+		boolean aAjouter=true;
 		Periodicite periodicitePotentiel = debiteur.getPeriodiciteAt(dateDebut);
 		if(periodicitePotentiel!=null){
-			periodicitePotentiel.setAnnule(true);
+			if(periodicitePotentiel.getPeriodiciteDecompte().equals(periodiciteDecompte)){
+				//Le rajout d'une périodicité identique sur la mêmme période n'a pas de sens
+				aAjouter = false;
+			}
+			else{
+				periodicitePotentiel.setAnnule(true);	
+			}
+
 		}
 		Periodicite nouvellePeriodicite = new Periodicite(periodiciteDecompte,dateDebut,dateFin);
-		nouvellePeriodicite = addAndSave(debiteur,nouvellePeriodicite);
-		Assert.notNull(nouvellePeriodicite);
+		if(aAjouter){
+			nouvellePeriodicite = addAndSave(debiteur,nouvellePeriodicite);
+			Assert.notNull(nouvellePeriodicite);
+		}
+
+
 		return nouvellePeriodicite;  
 	}
 

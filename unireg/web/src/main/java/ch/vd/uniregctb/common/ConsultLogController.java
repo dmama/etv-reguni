@@ -19,6 +19,8 @@ import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.ListeRecapitulativeDAO;
+import ch.vd.uniregctb.declaration.Periodicite;
+import ch.vd.uniregctb.declaration.PeriodiciteDAO;
 import ch.vd.uniregctb.evenement.EvenementCivil;
 import ch.vd.uniregctb.evenement.EvenementCivilDAO;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
@@ -55,7 +57,7 @@ public class ConsultLogController  extends AbstractSimpleFormController {
 	private DroitAccesDAO droitAccesDAO;
 	private EvenementCivilDAO evenementCivilDAO;
 	private IdentCtbDAO identCtbDAO;
-
+	private PeriodiciteDAO periodiciteDAO;
 	private PlatformTransactionManager transactionManager;
 
 	public final static String ID_PARAMETER_NAME = "id";
@@ -74,6 +76,7 @@ public class ConsultLogController  extends AbstractSimpleFormController {
 	public final static String NATURE_DROIT_ACCES_PARAMETER_VALUE = "DroitAcces";
 	public final static String NATURE_EVENEMENT_PARAMETER_VALUE = "Evenement";
 	public final static String NATURE_IDENTIFICATION_PARAMETER_VALUE = "identification";
+	public final static String NATURE_PERIODICITE_PARAMETER_VALUE = "periodicite";
 	/**
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */
@@ -142,6 +145,10 @@ public class ConsultLogController  extends AbstractSimpleFormController {
 				else if (nature.equals(NATURE_IDENTIFICATION_PARAMETER_VALUE)) {
 					IdentificationContribuable message  = identCtbDAO.get(id);
 					return fillConsultLogView(message);
+				}
+				else if (nature.equals(NATURE_PERIODICITE_PARAMETER_VALUE)) {
+					Periodicite periodicite= periodiciteDAO.get(id);
+					return fillConsultLogView(periodicite);
 				}
 				return null;
 			}
@@ -232,5 +239,13 @@ public class ConsultLogController  extends AbstractSimpleFormController {
 
 	public void setIdentCtbDAO(IdentCtbDAO identCtbDAO) {
 		this.identCtbDAO = identCtbDAO;
+	}
+
+	public PeriodiciteDAO getPeriodiciteDAO() {
+		return periodiciteDAO;
+	}
+
+	public void setPeriodiciteDAO(PeriodiciteDAO periodiciteDAO) {
+		this.periodiciteDAO = periodiciteDAO;
 	}
 }
