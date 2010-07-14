@@ -68,6 +68,7 @@
 				<value>ch.vd.uniregctb.tiers.AnnuleEtRemplace</value>
 				<value>ch.vd.uniregctb.tiers.SituationFamille</value>
 				<value>ch.vd.uniregctb.tiers.SituationFamilleMenageCommun</value>
+				<value>ch.vd.uniregctb.tiers.SituationFamillePersonnePhysique</value>
 				<value>ch.vd.uniregctb.tiers.Tiers</value>
 				<value>ch.vd.uniregctb.tiers.Tache</value>
 				<value>ch.vd.uniregctb.tiers.TacheAnnulationDeclarationImpot</value>

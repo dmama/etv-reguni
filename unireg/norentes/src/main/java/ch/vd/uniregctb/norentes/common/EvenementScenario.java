@@ -40,6 +40,7 @@ import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.SituationFamille;
 import ch.vd.uniregctb.tiers.SituationFamilleMenageCommun;
+import ch.vd.uniregctb.tiers.SituationFamillePersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
@@ -224,7 +225,7 @@ public abstract class EvenementScenario extends NorentesScenario {
 
 	protected void addSituationFamille(final PersonnePhysique personne, RegDate debut, RegDate fin, EtatCivil etatCivil,
 			int nbEnfants) {
-		SituationFamille sit = new SituationFamille();
+		SituationFamille sit = new SituationFamillePersonnePhysique();
 		sit.setDateDebut(debut);
 		sit.setDateFin(fin);
 		sit.setEtatCivil(etatCivil);

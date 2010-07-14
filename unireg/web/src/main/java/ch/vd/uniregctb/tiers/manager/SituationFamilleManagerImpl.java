@@ -122,7 +122,7 @@ public class SituationFamilleManagerImpl extends TiersManager implements Situati
 
 		}
 		else {
-			SituationFamille situationFamille = new SituationFamille();
+			SituationFamille situationFamille = new SituationFamillePersonnePhysique();
 			situationFamille.setAnnule(situationFamilleView.isAnnule());
 			RegDate dateDebut = RegDate.get(situationFamilleView.getDateDebut());
 			situationFamille.setDateDebut(dateDebut);

@@ -110,7 +110,6 @@ public class SituationFamilleMenageCommun extends SituationFamille {
 		// end-user-code
 	}
 
-	@Override
 	public SituationFamille duplicate() {
 		return new SituationFamilleMenageCommun(this);
 	}

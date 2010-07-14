@@ -52,6 +52,7 @@ import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.Remarque;
 import ch.vd.uniregctb.tiers.SituationFamille;
 import ch.vd.uniregctb.tiers.SituationFamilleMenageCommun;
+import ch.vd.uniregctb.tiers.SituationFamillePersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.Tiers.ForsParType;
 import ch.vd.uniregctb.tiers.TiersDAO;
@@ -1316,7 +1317,7 @@ public class MetierServiceImpl implements MetierService {
 					nombreEnfants = situationFamilleActive.getNombreEnfants();
 				}
 
-				SituationFamille situationFamille = new SituationFamille();
+				SituationFamille situationFamille = new SituationFamillePersonnePhysique();
 				situationFamille.setContribuable(pp);
 				situationFamille.setDateDebut(date);
 				situationFamille.setEtatCivil(etatCivil);
@@ -1847,7 +1848,7 @@ public class MetierServiceImpl implements MetierService {
 					situationFamilleService.closeSituationFamille(veuf, dateDeces);
 
 					// ajout de la nouvelle situation 'veuf' de famille sur le conjoint survivant
-					SituationFamille situationFamille = new SituationFamille();
+					SituationFamille situationFamille = new SituationFamillePersonnePhysique();
 					situationFamille.setDateDebut(lendemainDeces);
 					situationFamille.setEtatCivil(ch.vd.uniregctb.type.EtatCivil.VEUF);
 					situationFamille.setNombreEnfants(nombreEnfants);

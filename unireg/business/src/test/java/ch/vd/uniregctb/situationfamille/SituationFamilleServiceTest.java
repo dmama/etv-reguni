@@ -74,7 +74,7 @@ public class SituationFamilleServiceTest extends BusinessTest {
 		nonhabitant.setPrenom("Gengis");
 
 		{
-			SituationFamille situation = new SituationFamille();
+			SituationFamille situation = new SituationFamillePersonnePhysique();
 			situation.setDateDebut(date(1902, 1, 1));
 			situation.setDateFin(date(1924, 12, 31));
 			situation.setEtatCivil(EtatCivil.CELIBATAIRE);
@@ -82,7 +82,7 @@ public class SituationFamilleServiceTest extends BusinessTest {
 			nonhabitant.addSituationFamille(situation);
 		}
 		{
-			SituationFamille situation = new SituationFamille();
+			SituationFamille situation = new SituationFamillePersonnePhysique();
 			situation.setDateDebut(date(1925, 1, 1));
 			situation.setDateFin(date(1949, 12, 31));
 			situation.setEtatCivil(EtatCivil.MARIE);
@@ -90,7 +90,7 @@ public class SituationFamilleServiceTest extends BusinessTest {
 			nonhabitant.addSituationFamille(situation);
 		}
 		{
-			SituationFamille situation = new SituationFamille();
+			SituationFamille situation = new SituationFamillePersonnePhysique();
 			situation.setDateDebut(date(1950, 1, 1));
 			situation.setEtatCivil(EtatCivil.VEUF);
 			situation.setNombreEnfants(Integer.valueOf(23));
@@ -227,7 +227,7 @@ public class SituationFamilleServiceTest extends BusinessTest {
 
 		// ajout d'une séparation fiscale (décidée par l'ACI) qui surcharge l'état civil
 		{
-			SituationFamille situation = new SituationFamille();
+			SituationFamille situation = new SituationFamillePersonnePhysique();
 			situation.setDateDebut(dateSeparationFiscale);
 			situation.setDateFin(dateDivorce.getOneDayBefore());
 			situation.setEtatCivil(EtatCivil.SEPARE);
@@ -295,7 +295,7 @@ public class SituationFamilleServiceTest extends BusinessTest {
 
 		// ajout d'une séparation fiscale (décidée par l'ACI) qui surcharge l'état civil
 		{
-			SituationFamille situation = new SituationFamille();
+			SituationFamille situation = new SituationFamillePersonnePhysique();
 			situation.setDateDebut(dateSeparationFiscale);
 			situation.setDateFin(dateDivorce.getOneDayBefore());
 			situation.setEtatCivil(EtatCivil.SEPARE);
@@ -306,7 +306,7 @@ public class SituationFamilleServiceTest extends BusinessTest {
 
 		// ajout d'un PACS (décidée par l'ACI) que nous allons annuler par la suite gnark gnark !!!
 		{
-			SituationFamille situation = new SituationFamille();
+			SituationFamille situation = new SituationFamillePersonnePhysique();
 			situation.setDateDebut(datePacs);
 			situation.setEtatCivil(EtatCivil.LIE_PARTENARIAT_ENREGISTRE);
 			situation.setNombreEnfants(Integer.valueOf(0));
@@ -556,7 +556,7 @@ public class SituationFamilleServiceTest extends BusinessTest {
 			arnold.setPrenom("Arnold");
 			arnold.setNom("Schwarzie");
 			arnold.setSexe(Sexe.MASCULIN);
-			SituationFamille situation = new SituationFamille();
+			SituationFamille situation = new SituationFamillePersonnePhysique();
 			situation.setDateDebut(RegDate.get(1990, 1, 1));
 			situation.setNombreEnfants(0);
 			situation.setEtatCivil(EtatCivil.MARIE);
@@ -569,7 +569,7 @@ public class SituationFamilleServiceTest extends BusinessTest {
 			nolwen.setPrenom("Nowlen");
 			nolwen.setNom("Raflss");
 			nolwen.setSexe(Sexe.FEMININ);
-			situation = new SituationFamille();
+			situation = new SituationFamillePersonnePhysique();
 			situation.setDateDebut(RegDate.get(1990, 1, 1));
 			situation.setNombreEnfants(0);
 			situation.setEtatCivil(EtatCivil.CELIBATAIRE);

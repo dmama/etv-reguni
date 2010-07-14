@@ -4,7 +4,6 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorType;
-import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -45,8 +44,7 @@ import ch.vd.uniregctb.type.EtatCivil;
 @Table(name = "SITUATION_FAMILLE")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "SITUATION_FAMILLE_TYPE", discriminatorType = DiscriminatorType.STRING)
-@DiscriminatorValue("SituationFamille")
-public class SituationFamille extends HibernateEntity implements DateRange, SubValidateable, Duplicable<SituationFamille> {
+public abstract class SituationFamille extends HibernateEntity implements DateRange, SubValidateable, Duplicable<SituationFamille> {
 
 	private static final long serialVersionUID = 2322061257210000162L;
 
@@ -218,13 +216,6 @@ public class SituationFamille extends HibernateEntity implements DateRange, SubV
 	 */
 	public boolean isValidAt(RegDate date) {
 		return !isAnnule() && RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
-	}
-
-	/* (non-Javadoc)
-	 * @see ch.vd.uniregctb.common.Duplicable#duplicate()
-	 */
-	public SituationFamille duplicate() {
-		return new SituationFamille(this);
 	}
 
 	/**

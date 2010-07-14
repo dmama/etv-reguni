@@ -39,6 +39,7 @@ import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.SituationFamille;
 import ch.vd.uniregctb.tiers.SituationFamilleMenageCommun;
+import ch.vd.uniregctb.tiers.SituationFamillePersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.CategorieIdentifiant;
@@ -347,7 +348,7 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 	}
 
 	protected SituationFamille addSituation(PersonnePhysique pp, RegDate debut, RegDate fin, Integer nombreEnfants) {
-		SituationFamille situation = new SituationFamille();
+		SituationFamille situation = new SituationFamillePersonnePhysique();
 		situation.setDateDebut(debut);
 		situation.setDateFin(fin);
 		situation.setNombreEnfants(nombreEnfants);

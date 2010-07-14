@@ -16,7 +16,7 @@ public class SituationFamilleTest extends WithoutSpringTest {
 	@Test
 	public void testIsValid() {
 
-		final SituationFamille situation = new SituationFamille();
+		final SituationFamille situation = new SituationFamillePersonnePhysique();
 		situation.setDateDebut(RegDate.get(2000, 1, 1));
 		situation.setDateFin(RegDate.get(2009, 12, 31));
 
