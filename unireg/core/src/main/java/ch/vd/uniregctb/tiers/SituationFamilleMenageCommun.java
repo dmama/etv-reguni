@@ -45,7 +45,7 @@ public class SituationFamilleMenageCommun extends SituationFamille {
 	 *
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_94tjkfYxEdyw0I40oDFBsg"
 	 */
-	private Contribuable contribuablePrincipal;
+	private Long contribuablePrincipalId;
 
 	public SituationFamilleMenageCommun() {
 	}
@@ -53,7 +53,7 @@ public class SituationFamilleMenageCommun extends SituationFamille {
 	public SituationFamilleMenageCommun(SituationFamilleMenageCommun situationFamilleMenageCommun) {
 		super(situationFamilleMenageCommun);
 		
-		this.contribuablePrincipal = situationFamilleMenageCommun.contribuablePrincipal;
+		this.contribuablePrincipalId = situationFamilleMenageCommun.contribuablePrincipalId;
 		this.tarifApplicable = situationFamilleMenageCommun.tarifApplicable;
 	}
 
@@ -63,13 +63,12 @@ public class SituationFamilleMenageCommun extends SituationFamille {
 	 * @return the contribuablePrincipal
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_94tjkfYxEdyw0I40oDFBsg?GETTER"
 	 */
-	@ManyToOne()
-	@JoinColumn(name = "TIERS_PRINCIPAL_ID")
+	@Column(name = "TIERS_PRINCIPAL_ID")
 	@Index(name = "IDX_SIT_FAM_MC_CTB_ID", columnNames = "TIERS_PRINCIPAL_ID")
 	@ForeignKey(name = "FK_SIT_FAM_MC_CTB_ID")
-	public Contribuable getContribuablePrincipal() {
+	public Long getContribuablePrincipalId() {
 		// begin-user-code
-		return contribuablePrincipal;
+		return contribuablePrincipalId;
 		// end-user-code
 	}
 
@@ -79,9 +78,9 @@ public class SituationFamilleMenageCommun extends SituationFamille {
 	 * @param theContribuablePrincipal the contribuablePrincipal to set
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_94tjkfYxEdyw0I40oDFBsg?SETTER"
 	 */
-	public void setContribuablePrincipal(Contribuable theContribuablePrincipal) {
+	public void setContribuablePrincipalId(Long theContribuablePrincipal) {
 		// begin-user-code
-		contribuablePrincipal = theContribuablePrincipal;
+		contribuablePrincipalId = theContribuablePrincipal;
 		// end-user-code
 	}
 

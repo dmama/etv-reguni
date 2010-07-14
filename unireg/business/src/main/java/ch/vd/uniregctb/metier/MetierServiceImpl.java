@@ -583,7 +583,7 @@ public class MetierServiceImpl implements MetierService {
 			 * Création de la nouvelle situation de famille pour le ménage
 			 */
 			SituationFamilleMenageCommun situationFamilleMenage = new SituationFamilleMenageCommun();
-			situationFamilleMenage.setContribuablePrincipal(principal);
+			situationFamilleMenage.setContribuablePrincipalId(principal.getId());
 			situationFamilleMenage.setDateDebut(date);
 			situationFamilleMenage.setEtatCivil(etatCivilFamille);
 			situationFamilleMenage.setNombreEnfants(0);
@@ -1451,7 +1451,7 @@ public class MetierServiceImpl implements MetierService {
 				 * Création de la nouvelle situation de famille pour le ménage
 				 */
 				SituationFamilleMenageCommun situationFamilleMenage = new SituationFamilleMenageCommun();
-				situationFamilleMenage.setContribuablePrincipal(tiersService.getPrincipal(menage));
+				situationFamilleMenage.setContribuablePrincipalId(tiersService.getPrincipal(menage).getId());
 				situationFamilleMenage.setDateDebut(date);
 				situationFamilleMenage.setEtatCivil(etatCivilFamille);
 				situationFamilleMenage.setNombreEnfants(0);

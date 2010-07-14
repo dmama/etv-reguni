@@ -399,7 +399,7 @@ public class SituationFamilleServiceTest extends BusinessTest {
 			situation.setEtatCivil(EtatCivil.MARIE);
 			situation.setNombreEnfants(Integer.valueOf(0));
 			situation.setTarifApplicable(TarifImpotSource.DOUBLE_GAIN);
-			situation.setContribuablePrincipal(madame);
+			situation.setContribuablePrincipalId(madame.getId());
 			menage.addSituationFamille(situation);
 		}
 
@@ -411,7 +411,7 @@ public class SituationFamilleServiceTest extends BusinessTest {
 			situation.setEtatCivil(EtatCivil.MARIE);
 			situation.setNombreEnfants(Integer.valueOf(1));
 			situation.setTarifApplicable(TarifImpotSource.NORMAL);
-			situation.setContribuablePrincipal(monsieur);
+			situation.setContribuablePrincipalId(monsieur.getId());
 			menage.addSituationFamille(situation);
 		}
 
@@ -423,7 +423,7 @@ public class SituationFamilleServiceTest extends BusinessTest {
 			situation.setEtatCivil(EtatCivil.MARIE);
 			situation.setNombreEnfants(Integer.valueOf(2));
 			situation.setTarifApplicable(TarifImpotSource.NORMAL);
-			situation.setContribuablePrincipal(monsieur);
+			situation.setContribuablePrincipalId(monsieur.getId());
 			menage.addSituationFamille(situation);
 		}
 
@@ -435,7 +435,7 @@ public class SituationFamilleServiceTest extends BusinessTest {
 			situation.setEtatCivil(EtatCivil.MARIE);
 			situation.setNombreEnfants(Integer.valueOf(2));
 			situation.setTarifApplicable(null);
-			situation.setContribuablePrincipal(null);
+			situation.setContribuablePrincipalId(null);
 			menage.addSituationFamille(situation);
 		}
 		menage = (MenageCommun) tiersDAO.save(menage);

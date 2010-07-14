@@ -18,8 +18,7 @@ public class VueSituationFamilleMenageCommunFiscalAdapter extends VueSituationFa
 	}
 
 	public Long getNumeroContribuablePrincipal() {
-		final Contribuable contribuable = situation.getContribuablePrincipal();
-		return contribuable == null ? null : contribuable.getNumero();
+		return situation.getContribuablePrincipalId();
 	}
 
 	public TarifImpotSource getTarifApplicable() {

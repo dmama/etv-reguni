@@ -241,7 +241,7 @@ public abstract class EvenementScenario extends NorentesScenario {
 		sit.setDateFin(fin);
 		sit.setNombreEnfants(nbEnfants);
 		sit.setTarifApplicable(tarifApplicable);
-		sit.setContribuablePrincipal(contribuablePrincipal);
+		sit.setContribuablePrincipalId(contribuablePrincipal == null ? null : contribuablePrincipal.getId());
 		sit.setEtatCivil(etatCivil);
 
 		tiersService.addAndSave(menage, sit);

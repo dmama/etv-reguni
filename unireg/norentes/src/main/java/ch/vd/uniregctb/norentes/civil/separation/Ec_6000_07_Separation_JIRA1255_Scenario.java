@@ -131,7 +131,7 @@ public class Ec_6000_07_Separation_JIRA1255_Scenario extends EvenementCivilScena
 			sf.setNombreEnfants(0);
 			sf.setTarifApplicable(TarifImpotSource.NORMAL);
 			sf.setEtatCivil(EtatCivil.MARIE);
-			sf.setContribuablePrincipal(patrick);
+			sf.setContribuablePrincipalId(patrick.getId());
 			menage.addSituationFamille(sf);
 		}
 	}

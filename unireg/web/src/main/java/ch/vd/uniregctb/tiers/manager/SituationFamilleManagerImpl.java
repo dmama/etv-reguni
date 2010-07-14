@@ -114,8 +114,7 @@ public class SituationFamilleManagerImpl extends TiersManager implements Situati
 			situationFamilleMenageCommun.setEtatCivil(situationFamilleView.getEtatCivil());
 			situationFamilleMenageCommun.setNombreEnfants(situationFamilleView.getNombreEnfants());
 			situationFamilleMenageCommun.setTarifApplicable(situationFamilleView.getTarifImpotSource());
-			Contribuable contribuablePrincipal = (Contribuable) tiersService.getTiers(situationFamilleView.getNumeroTiersRevenuPlusEleve());
-			situationFamilleMenageCommun.setContribuablePrincipal(contribuablePrincipal);
+			situationFamilleMenageCommun.setContribuablePrincipalId(situationFamilleView.getNumeroTiersRevenuPlusEleve());
 			contribuable.closeSituationFamilleActive(dateDebut.addDays(-1));
 			contribuable.addSituationFamille(situationFamilleMenageCommun);
 			evenementFiscalService.publierEvenementFiscalChangementSituation(contribuable, dateDebut, new Long(1));

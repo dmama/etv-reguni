@@ -983,14 +983,14 @@ public class TiersDAOTest extends CoreDAOTest {
 					s.setDateFin(RegDate.get(2005, 1, 31));
 					s.setNombreEnfants(2);
 					s.setTarifApplicable(TarifImpotSource.NORMAL);
-					s.setContribuablePrincipal(nh2);
+					s.setContribuablePrincipalId(nh2.getId());
 					sit.add(s);
 					s = new SituationFamilleMenageCommun();
 					s.setDateDebut(RegDate.get(2005, 2, 20));
 					s.setDateFin(RegDate.get(2007, 12, 31));
 					s.setNombreEnfants(3);
 					s.setTarifApplicable(TarifImpotSource.DOUBLE_GAIN);
-					s.setContribuablePrincipal(nh2);
+					s.setContribuablePrincipalId(nh2.getId());
 					sit.add(s);
 
 					nh1.setSituationsFamille(sit);
@@ -1003,14 +1003,14 @@ public class TiersDAOTest extends CoreDAOTest {
 					s.setDateFin(RegDate.get(2005, 1, 31));
 					s.setNombreEnfants(2);
 					s.setTarifApplicable(TarifImpotSource.NORMAL);
-					s.setContribuablePrincipal(nh2);
+					s.setContribuablePrincipalId(nh2.getId());
 					sit.add(s);
 					s = new SituationFamilleMenageCommun();
 					s.setDateDebut(RegDate.get(2005, 2, 20));
 					s.setDateFin(RegDate.get(2007, 12, 31));
 					s.setNombreEnfants(3);
 					s.setTarifApplicable(TarifImpotSource.DOUBLE_GAIN);
-					s.setContribuablePrincipal(nh2);
+					s.setContribuablePrincipalId(nh2.getId());
 					sit.add(s);
 
 					nh2.setSituationsFamille(sit);
@@ -1055,8 +1055,8 @@ public class TiersDAOTest extends CoreDAOTest {
 				assertEquals(2, sf2.getNombreEnfants());
 				assertEquals(RegDate.get(2002, 11, 1), sf2.getDateDebut());
 
-				assertEquals(nh2, sf1.getContribuablePrincipal());
-				assertEquals(nh2, sf2.getContribuablePrincipal());
+				assertEquals(nh2.getId(), sf1.getContribuablePrincipalId());
+				assertEquals(nh2.getId(), sf2.getContribuablePrincipalId());
 			}
 			{
 				Set<SituationFamille> sfs = nh2.getSituationsFamille();
@@ -1075,8 +1075,8 @@ public class TiersDAOTest extends CoreDAOTest {
 				assertEquals(2, sf2.getNombreEnfants());
 				assertEquals(RegDate.get(2002, 11, 1), sf2.getDateDebut());
 
-				assertEquals(nh2, sf1.getContribuablePrincipal());
-				assertEquals(nh2, sf2.getContribuablePrincipal());
+				assertEquals(nh2.getId(), sf1.getContribuablePrincipalId());
+				assertEquals(nh2.getId(), sf2.getContribuablePrincipalId());
 			}
 		}
 	}
