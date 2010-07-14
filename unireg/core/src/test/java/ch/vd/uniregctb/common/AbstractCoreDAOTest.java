@@ -484,12 +484,12 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	 * @param etat               l'état courant de la déclaration
 	 * @param typeContribuable   le type de contribuable de la déclaration
 	 * @param typeDocument       le type de document de la déclaration
-	 * @param idCollRetour       l'id de la collectivité administrative de l'adresse de retour de la déclaration
+	 * @param idCollRetour       l'id (pas le numéro) de la collectivité administrative (CEDI/ACI) de l'adresse de retour de la déclaration
 	 * @param dateRetourImprimee le délai de retour imprimé sur la déclaration
 	 * @param declarations       la collection de déclarations à asserter.
 	 */
 	protected static void assertDI(RegDate debut, RegDate fin, TypeEtatDeclaration etat, TypeContribuable typeContribuable,
-	                               TypeDocument typeDocument, int idCollRetour, RegDate dateRetourImprimee, List<Declaration> declarations) {
+	                               TypeDocument typeDocument, Long idCollRetour, RegDate dateRetourImprimee, List<Declaration> declarations) {
 		assertNotNull(declarations);
 		assertEquals(declarations.size(), 1);
 		assertDI(debut, fin, etat, typeContribuable, typeDocument, idCollRetour, dateRetourImprimee, declarations.get(0));
@@ -503,12 +503,12 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	 * @param etat               l'état courant de la déclaration
 	 * @param typeContribuable   le type de contribuable de la déclaration
 	 * @param typeDocument       le type de document de la déclaration
-	 * @param idCollRetour       le numéro de la collectivité administrative (CEDI=1012/ACI=22) de l'adresse de retour de la déclaration
+	 * @param idCollRetour       l'id (pas le numéro) de la collectivité administrative (CEDI/ACI) de l'adresse de retour de la déclaration
 	 * @param delaiRetourImprime le délai de retour imprimé sur la déclaration
 	 * @param declaration        la déclaration à asserter.
 	 */
 	protected static void assertDI(RegDate debut, RegDate fin, TypeEtatDeclaration etat, TypeContribuable typeContribuable,
-	                               TypeDocument typeDocument, int idCollRetour, RegDate delaiRetourImprime, Declaration declaration) {
+	                               TypeDocument typeDocument, Long idCollRetour, RegDate delaiRetourImprime, Declaration declaration) {
 		assertNotNull(declaration);
 		DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) declaration;
 		assertEquals(debut, di.getDateDebut());
@@ -517,9 +517,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		assertEquals(etat, (e == null ? null : e.getEtat()));
 		assertEquals(typeContribuable, di.getTypeContribuable());
 		assertEquals(typeDocument, di.getModeleDocument().getTypeDocument());
-		final CollectiviteAdministrative coll = di.getRetourCollectiviteAdministrative();
-		assertNotNull(coll);
-		assertEquals(idCollRetour, coll.getNumeroCollectiviteAdministrative().intValue());
+		assertEquals(idCollRetour, di.getRetourCollectiviteAdministrativeId());
 		assertEquals(delaiRetourImprime, di.getDelaiRetourImprime());
 	}
 
@@ -660,7 +658,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		d.setDateFin(fin);
 		d.setTypeContribuable(typeC);
 		d.setModeleDocument(modele);
-		d.setRetourCollectiviteAdministrative(retourCollectiviteAdministrative);
+		d.setRetourCollectiviteAdministrativeId(retourCollectiviteAdministrative == null ? null : retourCollectiviteAdministrative.getId());
 
 		int numero = 0;
 		final int annee = periode.getAnnee();

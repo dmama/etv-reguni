@@ -1,19 +1,10 @@
 package ch.vd.uniregctb.declaration.ordinaire;
 
-import ch.vd.uniregctb.declaration.*;
-import ch.vd.uniregctb.interfaces.model.mock.MockCollectiviteAdministrative;
-import ch.vd.uniregctb.interfaces.model.mock.MockOfficeImpot;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
-import ch.vd.uniregctb.type.*;
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -22,20 +13,45 @@ import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 
-import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.DateRangeHelper.Range;
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.BusinessTest;
+import ch.vd.uniregctb.declaration.DeclarationException;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
+import ch.vd.uniregctb.declaration.EtatDeclaration;
+import ch.vd.uniregctb.declaration.ModeleDocument;
+import ch.vd.uniregctb.declaration.ModeleDocumentDAO;
+import ch.vd.uniregctb.declaration.PeriodeFiscale;
+import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
 import ch.vd.uniregctb.declaration.ordinaire.EnvoiDIsEnMasseProcessor.DeclarationsCache;
 import ch.vd.uniregctb.declaration.ordinaire.EnvoiDIsResults.Ignore;
 import ch.vd.uniregctb.declaration.ordinaire.EnvoiDIsResults.IgnoreType;
+import ch.vd.uniregctb.interfaces.model.mock.MockCollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
+import ch.vd.uniregctb.interfaces.model.mock.MockOfficeImpot;
 import ch.vd.uniregctb.metier.assujettissement.TypeContribuableDI;
 import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
+import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpot;
 import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.type.ModeImposition;
+import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.Sexe;
+import ch.vd.uniregctb.type.TypeAdresseRetour;
+import ch.vd.uniregctb.type.TypeContribuable;
+import ch.vd.uniregctb.type.TypeDocument;
+import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.TypeEtatTache;
+
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 
 @SuppressWarnings({"JavaDoc"})
 public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
@@ -246,6 +262,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 			Long jeanId;
 			Long jacquesId;
 			Long pierreId;
+			Long oidCedi;
 		}
 		final Ids ids = new Ids();
 
@@ -253,7 +270,8 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
-				addCollAdm(MockCollectiviteAdministrative.CEDI);
+				final CollectiviteAdministrative cedi = addCollAdm(MockCollectiviteAdministrative.CEDI);
+				ids.oidCedi = cedi.getId();
 
 				PeriodeFiscale periode2007 = addPeriodeFiscale(2007);
 				ModeleDocument declarationComplete = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2007);
@@ -308,7 +326,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 					31)));
 			assertEquals(1, jeanDIs.size());
 			assertDI(date(2007, 1, 1), date(2007, 12, 31), null, TypeContribuable.VAUDOIS_ORDINAIRE,
-					TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, ServiceInfrastructureService.noCEDI, null, jeanDIs.get(0));
+					TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, ids.oidCedi, null, jeanDIs.get(0));
 
 			final Contribuable jacques = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.jacquesId);
 			assertNotNull(jacques);
@@ -316,7 +334,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 					12, 31)));
 			assertEquals(1, jacquesDIs.size());
 			assertDI(date(2007, 7, 1), date(2007, 12, 31), null, TypeContribuable.VAUDOIS_ORDINAIRE,
-					TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, ServiceInfrastructureService.noCEDI, null, jacquesDIs.get(0));
+					TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, ids.oidCedi, null, jacquesDIs.get(0));
 
 			final Contribuable pierre = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.pierreId);
 			assertNotNull(pierre);
@@ -324,9 +342,9 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 					12, 31)));
 			assertEquals(2, pierreDIs.size());
 			assertDI(date(2007, 1, 1), date(2007, 6, 30), null, TypeContribuable.VAUDOIS_ORDINAIRE,
-					TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, ServiceInfrastructureService.noCEDI, null, pierreDIs.get(0));
+					TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, ids.oidCedi, null, pierreDIs.get(0));
 			assertDI(date(2007, 7, 1), date(2007, 12, 31), null, TypeContribuable.VAUDOIS_ORDINAIRE,
-					TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, ServiceInfrastructureService.noCEDI, null, pierreDIs.get(1));
+					TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, ids.oidCedi, null, pierreDIs.get(1));
 		}
 	}
 
@@ -506,6 +524,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 			Long marcId;
 			Long premiereTacheId;
 			Long secondeTacheId;
+			Long oidCedi;
 		}
 		final Ids ids = new Ids();
 
@@ -514,6 +533,8 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 			public Object execute(TransactionStatus status) throws Exception {
 
 				final CollectiviteAdministrative colAdm = addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST);
+				final CollectiviteAdministrative cedi = addCollAdm(MockCollectiviteAdministrative.CEDI);
+				ids.oidCedi = cedi.getId();
 
 				final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);
 				final ModeleDocument declarationComplete = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2008);
@@ -578,7 +599,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 		assertEquals(1, declarations.size());
 
 		final DeclarationImpotOrdinaire decl = declarations.get(0);
-		assertDI(date(2008, 1, 1), dateDeces, TypeEtatDeclaration.EMISE, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, ServiceInfrastructureService.noCEDI,
+		assertDI(date(2008, 1, 1), dateDeces, TypeEtatDeclaration.EMISE, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, ids.oidCedi,
 				dateTraitement.addDays(60), decl);
 	}
 
@@ -595,6 +616,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 			Long marcId;
 			Long premiereTacheId;
 			Long secondeTacheId;
+			Long oidCedi;
 		}
 		final Ids ids = new Ids();
 
@@ -603,6 +625,8 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 			public Object execute(TransactionStatus status) throws Exception {
 
 				final CollectiviteAdministrative colAdm = addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST);
+				final CollectiviteAdministrative cedi = addCollAdm(MockCollectiviteAdministrative.CEDI);
+				ids.oidCedi = cedi.getId();
 
 				final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);
 				final ModeleDocument declarationComplete = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2008);
@@ -669,7 +693,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 
 		final DeclarationImpotOrdinaire decl = declarations.get(0);
 		assertDI(date(2008, 1, 1), date(2008, 12, 31), TypeEtatDeclaration.EMISE, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
-				ServiceInfrastructureService.noCEDI, date(2009, 3, 31), decl);
+				ids.oidCedi, date(2009, 3, 31), decl);
 	}
 
 	/**
@@ -683,6 +707,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 
 		class Ids {
 			Long marcId;
+			Long oidCedi;
 		}
 		final Ids ids = new Ids();
 
@@ -691,6 +716,8 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 			public Object execute(TransactionStatus status) throws Exception {
 
 				final CollectiviteAdministrative colAdm = addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST);
+				final CollectiviteAdministrative cedi = addCollAdm(MockCollectiviteAdministrative.CEDI);
+				ids.oidCedi = cedi.getId();
 
 				final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);
 				final ModeleDocument declarationComplete = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2008);
@@ -730,7 +757,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 		// le délai de retour imprimé doit être dateTraitement + 60 jours
 		final DeclarationImpotOrdinaire decl = declarations.get(0);
 		assertDI(date(2008, 1, 1), dateDeces, TypeEtatDeclaration.EMISE, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
-				ServiceInfrastructureService.noCEDI, dateTraitement.addDays(60), decl);
+				ids.oidCedi, dateTraitement.addDays(60), decl);
 	}
 
 	/**
@@ -742,6 +769,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 
 		class Ids {
 			Long marcId;
+			Long oidCedi;
 		}
 		final Ids ids = new Ids();
 
@@ -750,6 +778,8 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 			public Object execute(TransactionStatus status) throws Exception {
 
 				final CollectiviteAdministrative colAdm = addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST);
+				final CollectiviteAdministrative cedi = addCollAdm(MockCollectiviteAdministrative.CEDI);
+				ids.oidCedi = cedi.getId();
 
 				final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);
 				final ModeleDocument declarationComplete = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2008);
@@ -789,7 +819,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 		// le délai de retour imprimé est le délai réglementaire
 		final DeclarationImpotOrdinaire decl = declarations.get(0);
 		assertDI(date(2008, 1, 1), date(2008, 12, 31), TypeEtatDeclaration.EMISE, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
-				ServiceInfrastructureService.noCEDI, date(2009, 3, 31), decl);
+				ids.oidCedi, date(2009, 3, 31), decl);
 	}
 
 	/**
@@ -803,6 +833,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 
 		class Ids {
 			Long marcId;
+			Long aci;
 		}
 		final Ids ids = new Ids();
 
@@ -811,6 +842,8 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 			public Object execute(TransactionStatus status) throws Exception {
 
 				final CollectiviteAdministrative colAdm = addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST);
+				final CollectiviteAdministrative aci = addCollAdm(MockOfficeImpot.ACI);
+				ids.aci = aci.getId();
 
 				final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);
 				final ModeleDocument declarationComplete = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2008);
@@ -852,7 +885,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 		// [UNIREG-1852] la déclaration doit être émise (et non-retournée immédiatement comme pour les indigents non-décédés) avec la cellule registre comme adresse de retour
 		final DeclarationImpotOrdinaire decl = declarations.get(0);
 		assertDI(date(2008, 1, 1), dateDeces, TypeEtatDeclaration.EMISE, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
-				ServiceInfrastructureService.noACI, dateTraitement.addDays(60), decl);
+				ids.aci, dateTraitement.addDays(60), decl);
 	}
 
 	/**
@@ -864,6 +897,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 
 		class Ids {
 			Long marcId;
+			Long oidCedi;
 		}
 		final Ids ids = new Ids();
 
@@ -872,7 +906,9 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 			public Object execute(TransactionStatus status) throws Exception {
 
 				final CollectiviteAdministrative colAdm = addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST);
-				
+				final CollectiviteAdministrative cedi = addCollAdm(MockCollectiviteAdministrative.CEDI);
+				ids.oidCedi = cedi.getId();
+
 				final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);
 				final ModeleDocument declarationComplete = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2008);
 				addModeleFeuilleDocument("Déclaration", "210", declarationComplete);
@@ -927,6 +963,6 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 		assertEquals(dateTraitement, etat1.getDateObtention());
 
 		assertDI(date(2008, 1, 1), date(2008, 12, 31), TypeEtatDeclaration.RETOURNEE, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
-				ServiceInfrastructureService.noCEDI, null, decl);
+				ids.oidCedi, null, decl);
 	}
 }

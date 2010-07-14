@@ -80,17 +80,16 @@ public class DeclarationImpotOrdinaire extends Declaration {
 
 	private RegDate delaiRetourImprime;
 
-	private CollectiviteAdministrative retourCollectiviteAdministrative;
+	private Long retourCollectiviteAdministrativeId;
 
-	@ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH}, fetch=FetchType.LAZY)
-	@JoinColumn(name = "RETOUR_COLL_ADMIN_ID")
+	@Column(name = "RETOUR_COLL_ADMIN_ID")
 	@ForeignKey(name = "FK_DECL_RET_COLL_ADMIN_ID")
-	public CollectiviteAdministrative getRetourCollectiviteAdministrative() {
-		return retourCollectiviteAdministrative;
+	public Long getRetourCollectiviteAdministrativeId() {
+		return retourCollectiviteAdministrativeId;
 	}
 
-	public void setRetourCollectiviteAdministrative(CollectiviteAdministrative retourCollectiviteAdministrative) {
-		this.retourCollectiviteAdministrative = retourCollectiviteAdministrative;
+	public void setRetourCollectiviteAdministrativeId(Long retourCollectiviteAdministrativeId) {
+		this.retourCollectiviteAdministrativeId = retourCollectiviteAdministrativeId;
 	}
 
 	/**

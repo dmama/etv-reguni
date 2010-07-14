@@ -703,12 +703,16 @@ public class TacheServiceTest extends BusinessTest {
 		class Ids {
 			Long raoulId;
 			Long jeanDanielId;
+			Long oidCedi;
 		}
 		final Ids ids = new Ids();
 
 		doInNewTransaction(new TxCallback() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
+
+				final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(MockCollectiviteAdministrative.CEDI.getNoColAdm());
+				ids.oidCedi = cedi.getId();
 
 				PeriodeFiscale pf2003 = addPeriodeFiscale(2003);
 				PeriodeFiscale pf2004 = addPeriodeFiscale(2004);
@@ -848,7 +852,7 @@ public class TacheServiceTest extends BusinessTest {
 			// la déclaration 2005 doit avoir une période inchangée
 			Declaration declaration = jeanDaniel.getDeclarationActive(date(2005, 6, 30));
 			assertDI(date(2005, 1, 1), date(2005, 12, 31), null, TypeContribuable.VAUDOIS_ORDINAIRE,
-					TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, ServiceInfrastructureService.noCEDI, null, declaration);
+					TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, ids.oidCedi, null, declaration);
 		}
 	}
 
@@ -1864,6 +1868,7 @@ public class TacheServiceTest extends BusinessTest {
 
 		class Ids {
 			Long simonId;
+			Long oidCedi;
 		}
 		final Ids ids = new Ids();
 
@@ -1873,6 +1878,10 @@ public class TacheServiceTest extends BusinessTest {
 		doInNewTransaction(new TxCallback() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
+
+				final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(MockCollectiviteAdministrative.CEDI.getNoColAdm());
+				ids.oidCedi = cedi.getId();
+
 				final Contribuable simon = addHabitant(100000);
 				ids.simonId = simon.getNumero();
 				addForPrincipal(simon, date(1981, 1, 1), MotifFor.MAJORITE, MockPays.Danemark);
@@ -1913,7 +1922,7 @@ public class TacheServiceTest extends BusinessTest {
 			assertNotNull(declarations);
 			assertEquals(1, declarations.size());
 			assertDI(date(i, 1, 1), date(i, 12, 31), null, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
-					ServiceInfrastructureService.noCEDI, null, declarations.get(0));
+					ids.oidCedi, null, declarations.get(0));
 		}
 	}
 

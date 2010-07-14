@@ -104,10 +104,10 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 		final ModeleDocument modele2008 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL, periode2008);
 		final DeclarationImpotOrdinaire declaration2007 = addDeclarationImpot(pp, periode2007, date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2007);
 		declaration2007.setNumeroOfsForGestion(MockCommune.Vallorbe.getNoOFSEtendu());
-		declaration2007.setRetourCollectiviteAdministrative(cedi);
+		declaration2007.setRetourCollectiviteAdministrativeId(cedi.getId());
 		final DeclarationImpotOrdinaire declaration2008 = addDeclarationImpot(pp, periode2008, date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2008);
 		declaration2008.setNumeroOfsForGestion(MockCommune.Bex.getNoOFSEtendu());
-		declaration2008.setRetourCollectiviteAdministrative(cedi);
+		declaration2008.setRetourCollectiviteAdministrativeId(cedi.getId());
 
 		// L'expéditeur de la déclaration 2007 doit être Orbe (= OID responsable de Vallorbe)
 		{
@@ -196,7 +196,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 		final ModeleDocument modele2008 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_DEPENSE, periode2008);
 		final DeclarationImpotOrdinaire declaration2008 = addDeclarationImpot(pp, periode2008, date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.VAUDOIS_DEPENSE, modele2008);
 		declaration2008.setNumeroOfsForGestion(MockCommune.Vevey.getNoOFSEtendu());
-		declaration2008.setRetourCollectiviteAdministrative(vevey);
+		declaration2008.setRetourCollectiviteAdministrativeId(vevey.getId());
 
 		final DI di = impressionDIHelper.remplitSpecifiqueDI(declaration2008, null);
 		assertNotNull(di);
@@ -227,7 +227,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 		final ModeleDocument modele2008 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_DEPENSE, periode2008);
 		final DeclarationImpotOrdinaire declaration2008 = addDeclarationImpot(pp, periode2008, date(2008, 1, 1), date(2008, 4, 23), TypeContribuable.VAUDOIS_DEPENSE, modele2008);
 		declaration2008.setNumeroOfsForGestion(MockCommune.Vevey.getNoOFSEtendu());
-		declaration2008.setRetourCollectiviteAdministrative(aci);
+		declaration2008.setRetourCollectiviteAdministrativeId(aci.getId());
 
 		final DI di = impressionDIHelper.remplitSpecifiqueDI(declaration2008, null);
 		assertNotNull(di);

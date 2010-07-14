@@ -429,7 +429,7 @@ public class EnvoiDIsEnMasseProcessor {
 		if (di == null) {
 			return false;
 		}
-		di.setRetourCollectiviteAdministrative(cache.cedi);
+		di.setRetourCollectiviteAdministrativeId(cache.cedi.getId());
 
 		// [UNIREG-1980] l'état 'émis' doit aussi être présent sur les DIs des indigents
 		EtatDeclaration etat = new EtatDeclaration();
@@ -619,10 +619,10 @@ public class EnvoiDIsEnMasseProcessor {
 		final TypeAdresseRetour adresseRetour = tache.getAdresseRetour();
 		if (adresseRetour == null || adresseRetour == TypeAdresseRetour.CEDI) {
 			// par défaut, les DIs envoyées par batch doivent retournée au CEDI
-			di.setRetourCollectiviteAdministrative(cache.cedi);
+			di.setRetourCollectiviteAdministrativeId(cache.cedi.getId());
 		}
 		else if (adresseRetour == TypeAdresseRetour.ACI) {
-			di.setRetourCollectiviteAdministrative(cache.aci);
+			di.setRetourCollectiviteAdministrativeId(cache.aci.getId());
 		}
 		else {
 			Assert.isEqual(TypeAdresseRetour.OID, adresseRetour);
@@ -633,7 +633,7 @@ public class EnvoiDIsEnMasseProcessor {
 				throw new IllegalArgumentException("Impossible de trouver l'office d'impôt à la date de fin de la déclaration.");
 			}
 
-			di.setRetourCollectiviteAdministrative(coll);
+			di.setRetourCollectiviteAdministrativeId(coll.getId());
 		}
 	}
 

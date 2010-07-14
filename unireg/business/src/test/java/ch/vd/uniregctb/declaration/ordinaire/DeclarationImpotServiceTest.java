@@ -59,6 +59,9 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 	private ImpressionDeclarationImpotOrdinaireHelper impressionDIHelper;
 	private PeriodeFiscaleDAO periodeDAO;
 	private ParametreAppService parametres;
+	private Long idCedi;
+	private Long idOidLausanne;
+	private Long idAci;
 
 	@Override
 	public void onSetUp() throws Exception {
@@ -93,8 +96,12 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		doInNewTransactionAndSession(new TxCallback(){
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				addCollAdm(MockCollectiviteAdministrative.CEDI);
-				addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST);
+				CollectiviteAdministrative cedi = addCollAdm(MockCollectiviteAdministrative.CEDI);
+				idCedi = cedi.getId();
+				CollectiviteAdministrative oidLausanne = addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST);
+				idOidLausanne = oidLausanne.getId();
+				CollectiviteAdministrative aci = addCollAdm(MockOfficeImpot.ACI);
+				idAci = aci.getId();
 				return null;
 			}
 		});
@@ -663,7 +670,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		{
 			final Contribuable paul = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.paulId); // depense
 			assertDI(date(2007, 1, 1), date(2007, 12, 31), TypeEtatDeclaration.EMISE, TypeContribuable.VAUDOIS_DEPENSE,
-					TypeDocument.DECLARATION_IMPOT_DEPENSE, MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm(), date(2008, 3, 31), paul.getDeclarationForPeriode(2007));
+					TypeDocument.DECLARATION_IMPOT_DEPENSE, idOidLausanne, date(2008, 3, 31), paul.getDeclarationForPeriode(2007));
 		}
 
 		/*
@@ -679,7 +686,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		{
 			final Contribuable guillaume = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.guillaumeId); // vaudtax
 			assertDI(date(2007, 1, 1), date(2007, 12, 31), TypeEtatDeclaration.EMISE, TypeContribuable.VAUDOIS_ORDINAIRE,
-					TypeDocument.DECLARATION_IMPOT_VAUDTAX, ServiceInfrastructureService.noCEDI, date(2008, 3, 31), guillaume.getDeclarationForPeriode(2007));
+					TypeDocument.DECLARATION_IMPOT_VAUDTAX, idCedi, date(2008, 3, 31), guillaume.getDeclarationForPeriode(2007));
 		}
 
 		/*
@@ -695,7 +702,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		{
 			final Contribuable georges = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.georgesId); // hors canton
 			assertDI(date(2007, 1, 1), date(2007, 12, 31), TypeEtatDeclaration.EMISE, TypeContribuable.HORS_CANTON,
-					TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm(), date(2008, 3, 31), georges.getDeclarationForPeriode(2007));
+					TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, idOidLausanne, date(2008, 3, 31), georges.getDeclarationForPeriode(2007));
 		}
 
 		/*
@@ -715,7 +722,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 			assertEmpty(lionel.getDeclarationForPeriode(2007));
 			final Contribuable bruno = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.brunoId); // hors suisse
 			assertDI(date(2007, 1, 1), date(2007, 12, 31), TypeEtatDeclaration.EMISE, TypeContribuable.HORS_SUISSE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
-					ServiceInfrastructureService.noCEDI, date(2008, 3, 31), bruno.getDeclarationForPeriode(2007));
+					idCedi, date(2008, 3, 31), bruno.getDeclarationForPeriode(2007));
 		}
 
 		/*
@@ -747,21 +754,21 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 			final Contribuable ramon = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.ramonId); // diplomate étranger
 
 			assertDI(date(2007, 1, 1), date(2007, 12, 31), TypeEtatDeclaration.EMISE, TypeContribuable.VAUDOIS_ORDINAIRE,
-					TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, ServiceInfrastructureService.noCEDI, date(2008, 3, 31), eric.getDeclarationForPeriode(2007));
+					TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, idCedi, date(2008, 3, 31), eric.getDeclarationForPeriode(2007));
 			assertDI(date(2007, 1, 1), date(2007, 12, 31), TypeEtatDeclaration.EMISE, TypeContribuable.VAUDOIS_ORDINAIRE,
-					TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, ServiceInfrastructureService.noCEDI, date(2008, 3, 31), olrik.getDeclarationForPeriode(2007));
+					TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, idCedi, date(2008, 3, 31), olrik.getDeclarationForPeriode(2007));
 			assertDI(date(2007, 1, 1), date(2007, 12, 31), TypeEtatDeclaration.EMISE, TypeContribuable.VAUDOIS_ORDINAIRE,
-					TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, ServiceInfrastructureService.noCEDI, date(2008, 3, 31), jean.getDeclarationForPeriode(2007));
+					TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, idCedi, date(2008, 3, 31), jean.getDeclarationForPeriode(2007));
 			assertDI(date(2007, 1, 1), date(2007, 12, 31), TypeEtatDeclaration.EMISE, TypeContribuable.VAUDOIS_ORDINAIRE,
-					TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, ServiceInfrastructureService.noCEDI, date(2008, 3, 31), jacques.getDeclarationForPeriode(2007));
+					TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, idCedi, date(2008, 3, 31), jacques.getDeclarationForPeriode(2007));
 			assertDI(date(2007, 1, 1), date(2007, 12, 31), TypeEtatDeclaration.EMISE, TypeContribuable.VAUDOIS_ORDINAIRE,
-					TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, ServiceInfrastructureService.noCEDI, date(2008, 3, 31), mitt.getDeclarationForPeriode(2007));
+					TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, idCedi, date(2008, 3, 31), mitt.getDeclarationForPeriode(2007));
 			assertDI(date(2007, 1, 1), date(2007, 12, 31), TypeEtatDeclaration.EMISE, TypeContribuable.HORS_CANTON,
-					TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm(), date(2008, 3, 31), georges.getDeclarationForPeriode(2007));
+					TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, idOidLausanne, date(2008, 3, 31), georges.getDeclarationForPeriode(2007));
 			assertDI(date(2007, 1, 1), date(2007, 12, 31), TypeEtatDeclaration.EMISE, TypeContribuable.VAUDOIS_ORDINAIRE,
-					TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, ServiceInfrastructureService.noCEDI, date(2008, 3, 31), ramon.getDeclarationForPeriode(2007));
+					TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, idCedi, date(2008, 3, 31), ramon.getDeclarationForPeriode(2007));
 			assertDI(date(2007, 1, 1), date(2007, 12, 31), TypeEtatDeclaration.EMISE, TypeContribuable.HORS_SUISSE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
-					ServiceInfrastructureService.noCEDI, date(2008, 3, 31), bruno.getDeclarationForPeriode(2007));
+					idCedi, date(2008, 3, 31), bruno.getDeclarationForPeriode(2007));
 
 			assertEmpty(lionel.getDeclarationForPeriode(2007)); // [UNIREG-1742] hors suisse avec immeuble première : déclaration optionnelle
 			assertEmpty(jacky.getDeclarationForPeriode(2007)); // hors suisse depuis toujours: ne reçoit pas de déclaration
@@ -851,7 +858,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 				final Contribuable john = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.johnId);
 
 				assertDI(date(2007, 1, 1), date(2007, 12, 31), TypeEtatDeclaration.EMISE, TypeContribuable.VAUDOIS_ORDINAIRE,
-						TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, ServiceInfrastructureService.noCEDI, date(2008, 3, 31), eric.getDeclarationForPeriode(2007));
+						TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, idCedi, date(2008, 3, 31), eric.getDeclarationForPeriode(2007));
 				assertEmpty(john.getDeclarationForPeriode(2007));
 				return null;
 			}
@@ -1256,9 +1263,9 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 				assertEmpty(john.getDeclarationForPeriode(2007));
 				assertEmpty(ours.getDeclarationForPeriode(2007));
 				assertDI(date(2007, 1, 1), date(2007, 12, 31), null, TypeContribuable.VAUDOIS_ORDINAIRE,
-						TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, ServiceInfrastructureService.noCEDI, null, ramon.getDeclarationForPeriode(2007));
+						TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, idCedi, null, ramon.getDeclarationForPeriode(2007));
 				assertDI(date(2007, 1, 1), date(2007, 6, 30), null, TypeContribuable.VAUDOIS_ORDINAIRE,
-						TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, ServiceInfrastructureService.noCEDI, null, totor.getDeclarationForPeriode(2007));
+						TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, idCedi, null, totor.getDeclarationForPeriode(2007));
 				assertOneTache(TypeEtatTache.EN_INSTANCE, date(2008, 2, 1), date(2007, 1, 1), date(2007, 12, 31),
 						TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, TypeAdresseRetour.CEDI, getTachesEnvoiDeclarationImpot(eric,
 								2007));
@@ -1294,15 +1301,15 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 				final Contribuable ramon = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.ramonId);
 				final Contribuable totor = (Contribuable) hibernateTemplate.get(Contribuable.class, ids.totorId);
 				assertDI(date(2007, 1, 1), date(2007, 12, 31), TypeEtatDeclaration.EMISE, TypeContribuable.VAUDOIS_ORDINAIRE,
-						TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, ServiceInfrastructureService.noCEDI, date(2008, 3, 31), eric.getDeclarationForPeriode(2007));
+						TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, idCedi, date(2008, 3, 31), eric.getDeclarationForPeriode(2007));
 				assertDI(date(2007, 1, 1), date(2007, 12, 31), TypeEtatDeclaration.RETOURNEE, TypeContribuable.VAUDOIS_ORDINAIRE,
-						TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, ServiceInfrastructureService.noCEDI, null, john.getDeclarationForPeriode(2007));
+						TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, idCedi, null, john.getDeclarationForPeriode(2007));
 				assertDI(date(2007, 1, 1), date(2007, 5, 23), TypeEtatDeclaration.EMISE, TypeContribuable.VAUDOIS_ORDINAIRE,
-						TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, ServiceInfrastructureService.noACI, date(2008, 3, 20), ours.getDeclarationForPeriode(2007)); // [UNIREG-1852]
+						TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, idAci, date(2008, 3, 20), ours.getDeclarationForPeriode(2007)); // [UNIREG-1852]
 				assertDI(date(2007, 1, 1), date(2007, 12, 31), null, TypeContribuable.VAUDOIS_ORDINAIRE,
-						TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, ServiceInfrastructureService.noCEDI, null, ramon.getDeclarationForPeriode(2007));
+						TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, idCedi, null, ramon.getDeclarationForPeriode(2007));
 				assertDI(date(2007, 1, 1), date(2007, 6, 30), null, TypeContribuable.VAUDOIS_ORDINAIRE,
-						TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, ServiceInfrastructureService.noCEDI, null, totor.getDeclarationForPeriode(2007));
+						TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, idCedi, null, totor.getDeclarationForPeriode(2007));
 				assertOneTache(TypeEtatTache.TRAITE, date(2008, 2, 1), date(2007, 1, 1), date(2007, 12, 31),
 						TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, TypeAdresseRetour.CEDI, getTachesEnvoiDeclarationImpot(eric,
 								2007));

@@ -48,7 +48,6 @@ import ch.vd.uniregctb.di.view.ModeleDocumentView;
 import ch.vd.uniregctb.editique.EditiqueCompositionService;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueResultat;
-import ch.vd.uniregctb.editique.EditiqueService;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.general.manager.TiersGeneralManager;
 import ch.vd.uniregctb.general.view.TiersGeneralView;
@@ -758,7 +757,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 				}
 				collectiviteAdministrative = tiersService.getOrCreateCollectiviteAdministrative(officeImpot.intValue());
 			}
-			di.setRetourCollectiviteAdministrative(collectiviteAdministrative);
+			di.setRetourCollectiviteAdministrativeId(collectiviteAdministrative.getId());
 
 			Qualification derniereQualification = PeriodeImposition.determineQualification(ctb, diEditView.getRegDateFinPeriodeImposition().year());
 			di.setQualification(derniereQualification);

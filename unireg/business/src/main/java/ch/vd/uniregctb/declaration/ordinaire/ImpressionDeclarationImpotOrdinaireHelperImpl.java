@@ -412,7 +412,8 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 
 	private CollectiviteAdministrative getRetourCollectiviteAdministrative(DeclarationImpotOrdinaire declaration) throws EditiqueException {
 
-		CollectiviteAdministrative collAdm = declaration.getRetourCollectiviteAdministrative();
+		final Long collId = declaration.getRetourCollectiviteAdministrativeId();
+		CollectiviteAdministrative collAdm = (collId == null ? null : (CollectiviteAdministrative) tiersService.getTiers(collId));
 		if (collAdm == null) {
 			// valeur par défaut
 			collAdm = tiersService.getOrCreateCollectiviteAdministrative(ServiceInfrastructureService.noCEDI);
@@ -499,7 +500,8 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 		final noNamespace.DIBase.InfoDI infoDI = di.addNewInfoDI();
 		final String codbarr = calculCodeBarre(declaration);
 		final String delaiRetour = determineDelaiRetourImprime(declaration);
-		final CollectiviteAdministrative collectiviteAdministrative = declaration.getRetourCollectiviteAdministrative();
+		final Long collId = declaration.getRetourCollectiviteAdministrativeId();
+		final CollectiviteAdministrative collectiviteAdministrative = (collId == null ? null : (CollectiviteAdministrative) tiersService.getTiers(collId));
 
 		final Commune commune;
 		try {
