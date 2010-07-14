@@ -1110,7 +1110,7 @@ public class TiersDAOTest extends CoreDAOTest {
 					adresse.setDateFin(null);
 					adresse.setUsage(TypeAdresseTiers.COURRIER);
 					adresse.setType(TypeAdresseTiers.COURRIER);
-					adresse.setAutreTiers(ctb2);
+					adresse.setAutreTiersId(ctb2.getId());
 					ctb1.addAdresseTiers(adresse);
 				}
 				return tierss;
@@ -1135,7 +1135,7 @@ public class TiersDAOTest extends CoreDAOTest {
 			final AdresseAutreTiers adresseAutreTiers = (AdresseAutreTiers) adresses.iterator().next();
 			assertNotNull(adresseAutreTiers);
 			assertEquals(tiers1, adresseAutreTiers.getTiers());
-			assertEquals(tiers2, adresseAutreTiers.getAutreTiers());
+			assertEquals(tiers2.getId(), adresseAutreTiers.getAutreTiersId());
 		}
 	}
 

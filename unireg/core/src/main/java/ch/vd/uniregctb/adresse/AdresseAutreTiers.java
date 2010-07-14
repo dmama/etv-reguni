@@ -6,8 +6,6 @@ package ch.vd.uniregctb.adresse;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
@@ -48,7 +46,7 @@ public class AdresseAutreTiers extends AdresseTiers {
 	 *
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_sB3BIenYEdyry7KVEl1EMw"
 	 */
-	private Tiers autreTiers;
+	private Long autreTiersId;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -82,25 +80,24 @@ public class AdresseAutreTiers extends AdresseTiers {
 	 * @return the autreTiers
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_sB3BIenYEdyry7KVEl1EMw?GETTER"
 	 */
-	@ManyToOne
-	@JoinColumn(name = "AUTRE_TIERS_ID")
+	@Column(name = "AUTRE_TIERS_ID")
 	@ForeignKey(name = "FK_ADR_AT_TRS_ID")
 	@Index(name = "IDX_ADR_AT_TRS_ID", columnNames = "AUTRE_TIERS_ID")
-	public Tiers getAutreTiers() {
+	public Long getAutreTiersId() {
 		// begin-user-code
-		return autreTiers;
+		return autreTiersId;
 		// end-user-code
 	}
 
 	/**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 * @param theAutreTiers the autreTiers to set
+	 * @param id the autreTiers to set
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_sB3BIenYEdyry7KVEl1EMw?SETTER"
 	 */
-	public void setAutreTiers(Tiers theAutreTiers) {
+	public void setAutreTiersId(Long id) {
 		// begin-user-code
-		autreTiers = theAutreTiers;
+		autreTiersId = id;
 		// end-user-code
 	}
 

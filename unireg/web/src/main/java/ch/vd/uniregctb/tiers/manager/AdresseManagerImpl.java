@@ -202,7 +202,7 @@ public class AdresseManagerImpl extends TiersManager implements AdresseManager {
 			// Recuperer Tiers Representant
 
 			Tiers representant = getTiersService().getTiers(addDisponibleView.getNumeroTiers());
-			addAutreTiers.setAutreTiers(representant);
+			addAutreTiers.setAutreTiersId(representant.getId());
 			adresseService.addAdresse(tiers, addAutreTiers);
 
 		}

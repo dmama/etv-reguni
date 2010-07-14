@@ -284,7 +284,8 @@ public class AdresseServiceImpl implements AdresseService {
 			final AdresseTiers adresseCourrier = tiers.getAdresseActive(coreType, date);
 			if (adresseCourrier != null && adresseCourrier instanceof AdresseAutreTiers) {
 				final AdresseAutreTiers adresseAutreTiers = (AdresseAutreTiers) adresseCourrier;
-				autreTiers = adresseAutreTiers.getAutreTiers();
+				final Long id = adresseAutreTiers.getAutreTiersId();
+				autreTiers = tiersDAO.get(id, true);
 			}
 		}
 
@@ -2206,7 +2207,8 @@ public class AdresseServiceImpl implements AdresseService {
 			final AdresseAutreTiers a = (AdresseAutreTiers) adresseSurchargee;
 			final RegDate debut = a.getDateDebut();
 			final RegDate fin = a.getDateFin();
-			final Tiers autreTiers = a.getAutreTiers();
+			final Long id = a.getAutreTiersId();
+			final Tiers autreTiers = tiersDAO.get(id, true);
 			final TypeAdresseFiscale type = TypeAdresseFiscale.fromCore(a.getType());
 			Assert.notNull(autreTiers);
 

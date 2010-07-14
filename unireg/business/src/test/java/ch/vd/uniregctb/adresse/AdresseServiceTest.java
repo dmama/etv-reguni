@@ -807,11 +807,12 @@ public class AdresseServiceTest extends BusinessTest {
 			adresse.setDateFin(date(2001, 12, 31));
 			adresse.setUsage(TypeAdresseTiers.COURRIER);
 			adresse.setType(TypeAdresseTiers.COURRIER);
-			adresse.setAutreTiers(autreHabitant);
+			adresse.setAutreTiersId(autreHabitant.getId());
 			habitant.addAdresseTiers(adresse);
 		}
 
 		tiersDAO.save(habitant);
+		hibernateTemplate.flush();
 
 		// Vérification des adresses
 		final AdressesFiscalesHisto adresses = adresseService.getAdressesFiscalHisto(habitant, false);
@@ -2386,7 +2387,7 @@ public class AdresseServiceTest extends BusinessTest {
 				adresse.setDateDebut(date(2000, 1, 1));
 				adresse.setDateFin(null);
 				adresse.setUsage(TypeAdresseTiers.REPRESENTATION);
-				adresse.setAutreTiers(pupille);
+				adresse.setAutreTiersId(pupille.getId());
 				adresse.setType(TypeAdresseTiers.COURRIER);
 				tuteur.addAdresseTiers(adresse);
 				tuteur = (PersonnePhysique) tiersDAO.save(tuteur);
