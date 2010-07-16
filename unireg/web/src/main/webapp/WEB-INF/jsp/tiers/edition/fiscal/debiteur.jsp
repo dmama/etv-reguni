@@ -14,14 +14,14 @@
 		<tr class="<unireg:nextRowClass/>" >
 			<td width="25%"><fmt:message key="label.periodicite.decompte"/>&nbsp;:</td>
 			<td width="25%">
-				<form:select 	path="tiers.periodiciteDecompte" items="${periodicitesDecompte}" 
+				<form:select 	path="periodicite.periodiciteDecompte" items="${periodicitesDecompte}"
 								onchange="selectPeriodeDecompte(this.options[this.selectedIndex].value);"/> 
 			</td>
 			<td width="25%">
 				<div id="div_periodeDecompte_label" style="display:none;" ><fmt:message key="label.periode.decompte"/>&nbsp;:</div>
 			</td>
 			<td width="25%">
-				<div id="div_periodeDecompte_input" style="display:none;" ><form:select path="tiers.periodeDecompte" items="${periodeDecomptes}" /></div>
+				<div id="div_periodeDecompte_input" style="display:none;" ><form:select path="periodicite.periodeDecompte" items="${periodeDecomptes}" /></div>
 			</td>
 		</tr>
 		<tr class="<unireg:nextRowClass/>" >

@@ -24,6 +24,7 @@ import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
+import ch.vd.uniregctb.type.PeriodeDecompte;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeActivite;
@@ -696,11 +697,12 @@ public interface TiersService {
 	 *
 	 * @param debiteur
 	 * @param periodiciteDecompte
+	 * @param periodeDecompte
 	 * @param dateDebut
 	 * @param dateFin
 	 * @return la periodicité ajoutés
 	 */
-	public Periodicite addPeriodicite(DebiteurPrestationImposable debiteur, PeriodiciteDecompte periodiciteDecompte, RegDate dateDebut,RegDate dateFin);
+	public Periodicite addPeriodicite(DebiteurPrestationImposable debiteur, PeriodiciteDecompte periodiciteDecompte, PeriodeDecompte periodeDecompte, RegDate dateDebut,RegDate dateFin);
 	/**
 	 * Ajoute un for fiscal secondaire sur un contribuable.
 	 *

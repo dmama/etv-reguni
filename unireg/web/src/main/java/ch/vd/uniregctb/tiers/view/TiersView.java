@@ -14,7 +14,6 @@ import ch.vd.uniregctb.rapport.view.RapportView;
 import ch.vd.uniregctb.rt.view.RapportPrestationView;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
@@ -72,6 +71,8 @@ public class TiersView {
 	private List<ForFiscalView> forsFiscaux;
 
 	private List<PeriodiciteView> periodicites;
+
+	private PeriodiciteView periodicite;
 
 	private List<SituationFamilleView> situationsFamille;
 
@@ -444,5 +445,13 @@ public class TiersView {
 
 	public void setPeriodicites(List<PeriodiciteView> periodicites) {
 		this.periodicites = periodicites;
+	}
+
+	public PeriodiciteView getPeriodicite() {
+		return periodicite;
+	}
+
+	public void setPeriodicite(PeriodiciteView periodicite) {
+		this.periodicite = periodicite;
 	}
 }

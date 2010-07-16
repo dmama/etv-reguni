@@ -70,6 +70,7 @@ import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
+import ch.vd.uniregctb.type.PeriodeDecompte;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeActivite;
@@ -2143,7 +2144,7 @@ public class TiersServiceImpl implements TiersService {
 	/**
 	 * {@inheritDoc}
 	 */
-	public Periodicite addPeriodicite(DebiteurPrestationImposable debiteur, PeriodiciteDecompte periodiciteDecompte, RegDate dateDebut, RegDate dateFin) {
+	public Periodicite addPeriodicite(DebiteurPrestationImposable debiteur, PeriodiciteDecompte periodiciteDecompte, PeriodeDecompte periodeDecompte, RegDate dateDebut, RegDate dateFin) {
 		boolean aAjouter=true;
 		Periodicite periodicitePotentiel = debiteur.getPeriodiciteAt(dateDebut);
 		if(periodicitePotentiel!=null){
@@ -2152,12 +2153,31 @@ public class TiersServiceImpl implements TiersService {
 				aAjouter = false;
 			}
 			else{
-				periodicitePotentiel.setAnnule(true);	
+				//periodicites differentes sur la même période, on annule la precedente
+				if(periodicitePotentiel.getDateDebut().equals(dateDebut)){
+					periodicitePotentiel.setAnnule(true);
+					//on recherche une eventuelle periodicite presente avant celle qui vient d'être annulée
+					final RegDate dateBeforePotentiel = periodicitePotentiel.getDateDebut().getOneDayBefore();
+					Periodicite periodiciteBeforePotentiel = debiteur.getPeriodiciteAt(dateBeforePotentiel);
+					if(periodiciteBeforePotentiel!=null && periodiciteBeforePotentiel.getPeriodiciteDecompte().equals(periodiciteDecompte) ){
+						//on reactive cette periodicite, et on empêche l'ajout de la nouvelle
+						periodiciteBeforePotentiel.setDateFin(null);
+						aAjouter=false;
+
+					}
+				}
+
 			}
 
 		}
-		Periodicite nouvellePeriodicite = new Periodicite(periodiciteDecompte,dateDebut,dateFin);
+		Periodicite nouvellePeriodicite = new Periodicite(periodiciteDecompte,periodeDecompte,dateDebut,dateFin);
 		if(aAjouter){
+			final Periodicite dernierePeriodicite = debiteur.getPeriodiciteAt(null);
+		if (dernierePeriodicite != null && dernierePeriodicite.getDateFin() == null) {
+			if (dateFin == null || dateFin.isAfter(dernierePeriodicite.getDateDebut())) {
+			dernierePeriodicite.setDateFin(dateDebut.getOneDayBefore());
+			}
+		}
 			nouvellePeriodicite = addAndSave(debiteur,nouvellePeriodicite);
 			Assert.notNull(nouvellePeriodicite);
 		}

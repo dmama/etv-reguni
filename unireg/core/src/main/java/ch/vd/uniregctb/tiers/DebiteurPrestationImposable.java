@@ -35,8 +35,7 @@ import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 /**
- * <!-- begin-user-doc --> <!-- end-user-doc --> Tiers ayant l'obligation de retenir et de verser périodiquement l'impôt dû sur les
- * prestations imposables à la source
+ * <!-- begin-user-doc --> <!-- end-user-doc --> Tiers ayant l'obligation de retenir et de verser périodiquement l'impôt dû sur les prestations imposables à la source
  *
  * @uml.annotations derived_abstraction="platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nLi8kFx9Edygsbnw9h5bVw"
  * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nLi8kFx9Edygsbnw9h5bVw"
@@ -136,8 +135,7 @@ public class DebiteurPrestationImposable extends Tiers {
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 *
-	 * @param theCategorieImpotSource
-	 *            the categorieImpotSource to set
+	 * @param theCategorieImpotSource the categorieImpotSource to set
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nLi8k1x9Edygsbnw9h5bVw?SETTER"
 	 */
 	public void setCategorieImpotSource(CategorieImpotSource theCategorieImpotSource) {
@@ -163,8 +161,7 @@ public class DebiteurPrestationImposable extends Tiers {
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 *
-	 * @param thePeriodiciteDecompte
-	 *            the periodiciteDecompte to set
+	 * @param thePeriodiciteDecompte the periodiciteDecompte to set
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nLi8lFx9Edygsbnw9h5bVw?SETTER"
 	 */
 	public void setPeriodiciteDecompte(PeriodiciteDecompte thePeriodiciteDecompte) {
@@ -175,6 +172,7 @@ public class DebiteurPrestationImposable extends Tiers {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 *
 	 * @return the periodeDecompte
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_b-4YMPZ6EdyDE6gdiHo60A?GETTER"
 	 */
@@ -188,6 +186,7 @@ public class DebiteurPrestationImposable extends Tiers {
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
+	 *
 	 * @param thePeriodeDecompte the periodeDecompte to set
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_b-4YMPZ6EdyDE6gdiHo60A?SETTER"
 	 */
@@ -214,8 +213,7 @@ public class DebiteurPrestationImposable extends Tiers {
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 *
-	 * @param theModeCommunication
-	 *            the modeCommunication to set
+	 * @param theModeCommunication the modeCommunication to set
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nLi8lVx9Edygsbnw9h5bVw?SETTER"
 	 */
 	public void setModeCommunication(ModeCommunication theModeCommunication) {
@@ -240,8 +238,7 @@ public class DebiteurPrestationImposable extends Tiers {
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 *
-	 * @param theSansRappel
-	 *            the sansRappel to set
+	 * @param theSansRappel the sansRappel to set
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_diY2cOOvEdyN8MKJ3LhMnw?SETTER"
 	 */
 	public void setSansRappel(Boolean theSansRappel) {
@@ -287,8 +284,7 @@ public class DebiteurPrestationImposable extends Tiers {
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 *
-	 * @param theSansListeRecapitulative
-	 *            the sansListeRecapitulative to set
+	 * @param theSansListeRecapitulative the sansListeRecapitulative to set
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_kUiSsOuREdyoJZZczGWapw?SETTER"
 	 */
 	public void setSansListeRecapitulative(Boolean theSansListeRecapitulative) {
@@ -354,7 +350,6 @@ public class DebiteurPrestationImposable extends Tiers {
 	}
 
 
-
 	@Override
 	protected ValidationResults validateTypeAdresses() {
 
@@ -384,7 +379,7 @@ public class DebiteurPrestationImposable extends Tiers {
 	@Override
 	public ValidationResults validate() {
 		final ValidationResults validation = super.validate();
-		if(periodicites == null || periodicites.isEmpty()){
+		if (periodicites == null || periodicites.isEmpty()) {
 			validation.addWarning("ce débiteur n'a aucune périodicité");
 		}
 		return validation;
@@ -412,16 +407,30 @@ public class DebiteurPrestationImposable extends Tiers {
 		return periodicitesTriees;
 	}
 
+	@Transient
+	public Periodicite getDernierePeriodicte() {
+
+		List<Periodicite> list = getPeriodicitesSorted();
+		if (list != null) {
+			for (int i = list.size() - 1; i >= 0; i--) {
+				Periodicite periodicite = list.get(i);
+				if (!periodicite.isAnnule()) {
+					return periodicite;
+				}
+			}
+		}
+		return null;
+	}
+
 	/**
-	 * @param sort
-	 *            <code>true</code> si les periodicites doivent être triées; <code>false</code> autrement.
+	 * @param sort <code>true</code> si les periodicites doivent être triées; <code>false</code> autrement.
 	 * @return les périodicités non annulés
 	 */
 	@Transient
 	public List<Periodicite> getPeriodicitesNonAnnules(boolean sort) {
 		List<Periodicite> periodicitesNonAnnulees = new ArrayList<Periodicite>();
 		if (periodicites != null) {
-			for (Periodicite p :periodicites ) {
+			for (Periodicite p : periodicites) {
 				if (!p.isAnnule()) {
 					periodicitesNonAnnulees.add(p);
 				}
@@ -436,8 +445,7 @@ public class DebiteurPrestationImposable extends Tiers {
 	/**
 	 * Ajoute une periodicite
 	 *
-	 * @param nouvellePeriodicite
-	 *            la periodicité à ajouter
+	 * @param nouvellePeriodicite la periodicité à ajouter
 	 */
 	public void addPeriodicite(Periodicite nouvellePeriodicite) {
 		if (this.periodicites == null) {
@@ -447,15 +455,13 @@ public class DebiteurPrestationImposable extends Tiers {
 		this.periodicites.add(nouvellePeriodicite);
 		Assert.isTrue(nouvellePeriodicite.getDebiteur() == null || nouvellePeriodicite.getDebiteur() == this);
 		nouvellePeriodicite.setDebiteur(this);
-		
+
 	}
 
 	/**
 	 * Retourne la periodicite active à une date donnée.
 	 *
-	 * @param date
-	 *            la date à laquelle la periodicite est active, ou <b>null</b> pour obtenir la periodicite courante
-	 *
+	 * @param date la date à laquelle la periodicite est active, ou <b>null</b> pour obtenir la periodicite courante
 	 * @return la periodicite correspondante, ou nulle si aucune periodicite ne correspond aux critères.
 	 */
 	@Transient

@@ -2,22 +2,29 @@ package ch.vd.uniregctb.tiers.view;
 
 import java.util.Date;
 
+import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.uniregctb.type.PeriodeDecompte;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
 
 public class PeriodiciteView implements Comparable<PeriodiciteView> {
 
 	Long id;
 
-	PeriodiciteDecompte periodiciteDecompte;
+	private PeriodiciteDecompte periodiciteDecompte;
 
-	RegDate dateDebut;
+	private PeriodeDecompte periodeDecompte;
 
-	RegDate dateFin;
+	private RegDate dateDebut;
 
-	Long debiteurId;
+	private RegDate dateFin;
+
+	private Long debiteurId;
 
 	private boolean annule;
+
+	private boolean active;
 
 	public Long getId() {
 		return id;
@@ -67,8 +74,28 @@ public class PeriodiciteView implements Comparable<PeriodiciteView> {
 		this.annule = annule;
 	}
 
+	public PeriodeDecompte getPeriodeDecompte() {
+		return periodeDecompte;
+	}
+
+	public void setPeriodeDecompte(PeriodeDecompte periodeDecompte) {
+		this.periodeDecompte = periodeDecompte;
+	}
+
 	public int compareTo(PeriodiciteView periodiciteView) {
 		int value = - dateDebut.asJavaDate().compareTo(periodiciteView.getDateDebut());
 		return value;
+	}
+
+	public boolean isValidAt(RegDate date) {
+		return !isAnnule() && RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
+	}
+
+	public boolean isActive() {
+		return active;
+	}
+
+	public void setActive(boolean active) {
+		this.active = active;
 	}
 }

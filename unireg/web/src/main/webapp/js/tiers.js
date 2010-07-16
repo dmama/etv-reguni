@@ -35,6 +35,31 @@ function toggleRowsIsHisto(tableName,elementId, numCol){
 	}
 }	
 
+
+/*
+* Toggle rows is actif
+*/
+function toggleRowsIsHistoPeriodicite(tableName,elementId, numCol,numColActive){
+
+	var tbl = E$(tableName);
+	if (tbl != null) {
+		var len = tbl.rows.length;
+
+		for (i=1 ; i< len; i++){
+			if (!E$(elementId).checked ){
+				var x = tbl.rows[i].cells;
+				if (((trim(x[numCol].innerHTML) == '') && (x[numCol].innerHTML.indexOf('strike')== -1))||(x[numColActive].innerHTML.match('Active'))){
+					tbl.rows[i].style.display = '';
+				}else {
+					tbl.rows[i].style.display = 'none';
+				}
+			 }  else {
+			 	tbl.rows[i].style.display = '';
+			 }
+		}
+
+	}
+}
 /*
 * Toggle rows is actif
 */

@@ -29,7 +29,7 @@
 		<legend><span><fmt:message key="label.periodicites" /></span></legend>
 		<c:if test="${not empty command.periodicites}">
 			<input name="periodicites_histo"  id="isPeriodiciteHisto"
-				type="checkbox" onClick="toggleRowsIsHisto('periodicite','isPeriodiciteHisto', 2);"/>
+				type="checkbox" onClick="toggleRowsIsHistoPeriodicite('periodicite','isPeriodiciteHisto', 2,3);"/>
 			<label for="isPeriodiciteHisto"><fmt:message key="label.historique" /></label>
 
 			<jsp:include page="../../common/fiscal/periodicites.jsp">

@@ -110,6 +110,7 @@ public class ForFiscalManagerImpl extends TiersManager implements ForFiscalManag
 			if (tiers instanceof DebiteurPrestationImposable) {
 				DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiers;
 				setForsFiscauxDebiteur(tiersEditView, dpi);
+				setPeriodiciteCourante(tiersEditView,dpi);
 			}
 		}
 		Map<String, Boolean> allowedOnglet = initAllowedOnglet();

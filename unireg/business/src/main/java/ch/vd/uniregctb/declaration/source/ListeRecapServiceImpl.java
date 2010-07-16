@@ -45,6 +45,7 @@ import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.TiersDAO;
+import ch.vd.uniregctb.type.PeriodeDecompte;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.type.TypeDocument;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
@@ -367,8 +368,8 @@ public class ListeRecapServiceImpl implements ListeRecapService, DelegateEditiqu
 			}
 		});
 
-		//	final List<Long> ids = new ArrayList<Long>();
-		//	ids.add(1295052L);
+		//final List<Long> ids = new ArrayList<Long>();
+		//ids.add(1277926L);
 		if (!ids.isEmpty()) {
 
 			LOGGER.warn("--- Début de la création de l'historique des périodicités---");
@@ -412,24 +413,34 @@ public class ListeRecapServiceImpl implements ListeRecapService, DelegateEditiqu
 	private void createHistoriquePeriodicite(List<Long> batch) {
 		for (Long debiteurId : batch) {
 			DebiteurPrestationImposable debiteur = tiersDAO.getDebiteurPrestationImposableByNumero(debiteurId);
-			List<Declaration> listeLR = debiteur.getDeclarationsSorted();
-			List<Periodicite> listePeriodiciteACreer = construirePeriodiciteFromLR(listeLR);
+			List<Periodicite> listePeriodiciteACreer = construirePeriodiciteFromLR(debiteur);
 			for (Periodicite periodicite : listePeriodiciteACreer) {
-				tiersService.addPeriodicite(debiteur, periodicite.getPeriodiciteDecompte(), periodicite.getDateDebut(), periodicite.getDateFin());
+				tiersService.addPeriodicite(debiteur, periodicite.getPeriodiciteDecompte(),periodicite.getPeriodeDecompte(), periodicite.getDateDebut(), periodicite.getDateFin());
 			}
 
 
 		}
 	}
 
-	private List<Periodicite> construirePeriodiciteFromLR(List<Declaration> listeLR) {
-
+	private List<Periodicite> construirePeriodiciteFromLR(DebiteurPrestationImposable debiteur) {
+		List<Declaration> listeLR = debiteur.getDeclarationsSorted();
 		List<Periodicite> listePeriodiciteIntermediaire = new ArrayList<Periodicite>();
+
+
+		
 		//Transformation en lilste de periodicite
 		for (Declaration declaration : listeLR) {
+			PeriodeDecompte periodeDecompte = null;
 			if (!declaration.isAnnule()) {
 				DeclarationImpotSource lr = (DeclarationImpotSource) declaration;
-				Periodicite periodicite = new Periodicite(lr.getPeriodicite(), lr.getDateDebut(), lr.getDateFin());
+				//Pour la periodicite de type UNIQUE, on doit egalement creer la periode decompte associé,
+				//Cette dernière est une propriété du tiers et non de la LR
+
+				if(PeriodiciteDecompte.UNIQUE.equals(lr.getPeriodicite())){
+					periodeDecompte = debiteur.getPeriodeDecompte();
+				}
+
+				Periodicite periodicite = new Periodicite(lr.getPeriodicite(),periodeDecompte, lr.getDateDebut(), lr.getDateFin());
 				listePeriodiciteIntermediaire.add(periodicite);
 			}
 

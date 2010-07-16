@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseException;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -218,6 +219,7 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 			tiersEditView.setTiers(dpi);
 			setForsFiscauxDebiteur(tiersEditView, dpi);
 			setContribuablesAssocies(tiersEditView, dpi);
+			setPeriodiciteCourante(tiersEditView,dpi);
 			if (dpi.getContribuableId() == null) {
 				tiersEditView.setAddContactISAllowed(true);
 			}
@@ -454,8 +456,30 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 			}
 		}
 		else if (tiers instanceof DebiteurPrestationImposable) {
+
+			final DebiteurPrestationImposable dpi = tiersDAO.getDebiteurPrestationImposableByNumero(tiers.getNumero());
+			//On recopie les données du tiers de la session dans le tiers que l'on vient de recuperer
+			//c'est pas jolie, ca devrait venir du TiersEditView mais c'est la solution retenue historiquement
+			dpi.setCategorieImpotSource(((DebiteurPrestationImposable)tiers).getCategorieImpotSource());
+			dpi.setModeCommunication(((DebiteurPrestationImposable)tiers).getModeCommunication());
+			dpi.setSansListeRecapitulative(((DebiteurPrestationImposable)tiers).getSansListeRecapitulative());
+			dpi.setSansRappel(((DebiteurPrestationImposable)tiers).getSansRappel());
+
+			//la nouvelle periodicité a une debut de validité au 01.01.annee +1
+			final int anneeDebut = RegDate.get().year()+1;
+			RegDate debutValidite = RegDate.get(anneeDebut,1,1);
+			PeriodeDecompte periodeDecompte = null;
+			final PeriodiciteDecompte periodiciteDecompte = tiersView.getPeriodicite().getPeriodiciteDecompte();
+			if(PeriodiciteDecompte.UNIQUE.equals(periodiciteDecompte)){
+				periodeDecompte = tiersView.getPeriodicite().getPeriodeDecompte();
+			}
+
+			tiersService.addPeriodicite(dpi, periodiciteDecompte,periodeDecompte,debutValidite,null);
+			Assert.notNull(dpi.getDernierePeriodicte().getId());
+			
+
 			if(tiersView.getNumeroCtbAssocie() != null) { //ajout d'un débiteur IS au contribuable
-				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiers;
+
 				final Contribuable ctbAss = (Contribuable) getTiersDAO().get(tiersView.getNumeroCtbAssocie());
 
 				//ContactImpotSource contact = new ContactImpotSource(RegDate.get(), null, ctbAss, dpi);
@@ -467,7 +491,7 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 				return dpiRtr;
 			}
 			else { //mise à jour du debiteur IS
-				return getTiersDAO().save(tiers);
+				return getTiersDAO().save(dpi);
 			}
 		}
 

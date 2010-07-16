@@ -17,7 +17,7 @@
 		<c:if test="${periodicite.annule}"><strike></c:if>
 			<fmt:message key="option.periodicite.decompte.${periodicite.periodiciteDecompte}" />
 				<c:if test="${periodicite.periodiciteDecompte == 'UNIQUE'}">
-					&nbsp;(<fmt:message key="option.periode.decompte.${command.tiers.periodeDecompte}" />)
+					&nbsp;(<fmt:message key="option.periode.decompte.${periodicite.periodeDecompte}" />)
 				</c:if>
 		<c:if test="${periodicite.annule}"></strike></c:if>
 	</display:column>
@@ -32,11 +32,17 @@
 			<fmt:formatDate value="${periodicite.dateFin}" pattern="dd.MM.yyyy"/>
 		<c:if test="${periodicite.annule}"></strike></c:if>
 	</display:column>
-		<display:column style="action">
-		<c:if test="${page == 'visu' }">
-			<unireg:raccourciConsulter link="../common/consult-log.do?height=200&width=800&nature=periodicite&id=${periodicite.id}&TB_iframe=true&modal=true" thickbox="true" tooltip="Edition des logs"/>
-		</c:if>
+
+	<display:column  titleKey="label.periodicite.statut" >
+		<fmt:message key="option.periodicite.statut.${periodicite.active}" />		
 	</display:column>
+
+	<display:column style="action">
+			<unireg:raccourciConsulter link="../common/consult-log.do?height=200&width=800&nature=periodicite&id=${periodicite.id}&TB_iframe=true&modal=true" thickbox="true" tooltip="Edition des logs"/>
+	</display:column>
+
+
+
 	<display:setProperty name="paging.banner.all_items_found" value=""/>
 	<display:setProperty name="paging.banner.one_item_found" value=""/>
 	

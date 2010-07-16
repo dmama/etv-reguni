@@ -28,9 +28,9 @@ public class PeriodiciteTest extends WithoutSpringTest {
 	@Test
 	public void testCreerHistoriquePeriodiciteNormal() throws Exception {
 
-		Periodicite periodicite1 = new Periodicite(PeriodiciteDecompte.TRIMESTRIEL,date(2009,1,1),date(2009,05,31));
-		Periodicite periodicite2 = new Periodicite(PeriodiciteDecompte.MENSUEL,date(2009,6,1),date(2009,6,30));
-		Periodicite periodicite3 = new Periodicite(PeriodiciteDecompte.TRIMESTRIEL,date(2009,7,1),null);
+		Periodicite periodicite1 = new Periodicite(PeriodiciteDecompte.TRIMESTRIEL,null,date(2009,1,1),date(2009,05,31));
+		Periodicite periodicite2 = new Periodicite(PeriodiciteDecompte.MENSUEL,null,date(2009,6,1),date(2009,6,30));
+		Periodicite periodicite3 = new Periodicite(PeriodiciteDecompte.TRIMESTRIEL,null,date(2009,7,1),null);
 
 		List<Periodicite> listePeriodicite = new ArrayList<Periodicite>();
 		listePeriodicite.add(periodicite1);
@@ -49,9 +49,9 @@ public class PeriodiciteTest extends WithoutSpringTest {
 	@Test
 	public void testComblerVidePeriodicite() throws Exception {
 
-		Periodicite periodicite1 = new Periodicite(PeriodiciteDecompte.TRIMESTRIEL,date(2009,1,1),date(2009,05,31));
-		Periodicite periodicite2 = new Periodicite(PeriodiciteDecompte.MENSUEL,date(2009,7,1),date(2009,7,31));
-		Periodicite periodicite3 = new Periodicite(PeriodiciteDecompte.TRIMESTRIEL,date(2009,8,1),null);
+		Periodicite periodicite1 = new Periodicite(PeriodiciteDecompte.TRIMESTRIEL,null,date(2009,1,1),date(2009,05,31));
+		Periodicite periodicite2 = new Periodicite(PeriodiciteDecompte.MENSUEL,null,date(2009,7,1),date(2009,7,31));
+		Periodicite periodicite3 = new Periodicite(PeriodiciteDecompte.TRIMESTRIEL,null,date(2009,8,1),null);
 
 		List<Periodicite> listePeriodicite = new ArrayList<Periodicite>();
 		listePeriodicite.add(periodicite1);

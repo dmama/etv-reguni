@@ -28,6 +28,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
+import ch.vd.uniregctb.type.PeriodeDecompte;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
 //TODO(BNM) Reflechir a une implementation plus simple:
 // ajouter une propriété PeriodicitéDecompte et supprimer toutes la hierarchie de classe
@@ -60,6 +61,9 @@ public  class Periodicite  extends HibernateEntity implements CollatableDateRang
 
 
 	private PeriodiciteDecompte periodiciteDecompte;
+
+
+	private PeriodeDecompte periodeDecompte;
 
 	/**
 	 * Le debiteur
@@ -109,8 +113,9 @@ public  class Periodicite  extends HibernateEntity implements CollatableDateRang
 		this.periodiciteDecompte = periodiciteDecompte;
 	}
 
-	public Periodicite(PeriodiciteDecompte periodiciteDecompte, RegDate dateDebut, RegDate dateFin) {
+	public Periodicite(PeriodiciteDecompte periodiciteDecompte,PeriodeDecompte periodeDecompte, RegDate dateDebut, RegDate dateFin) {
 		this.periodiciteDecompte = periodiciteDecompte;
+		this.periodeDecompte = periodeDecompte;
 		this.dateDebut = dateDebut;
 		this.dateFin = dateFin;
 	}
@@ -120,7 +125,7 @@ public  class Periodicite  extends HibernateEntity implements CollatableDateRang
 	}
 
 	public Periodicite(Periodicite periodicite){
-		this(periodicite.getPeriodiciteDecompte(), periodicite.getDateDebut(),periodicite.getDateFin());
+		this(periodicite.getPeriodiciteDecompte(),periodicite.getPeriodeDecompte(), periodicite.getDateDebut(),periodicite.getDateFin());
 	}
 
 
@@ -222,7 +227,7 @@ public  class Periodicite  extends HibernateEntity implements CollatableDateRang
 	}
 
 	public DateRange collate(DateRange next) {
-		return new Periodicite(periodiciteDecompte,dateDebut,next.getDateFin());
+		return new Periodicite(periodiciteDecompte,periodeDecompte,dateDebut,next.getDateFin());
 	}
 
 	public static  List<Periodicite> comblerVidesPeriodicites(List<Periodicite> periodicites) {
@@ -244,5 +249,15 @@ public  class Periodicite  extends HibernateEntity implements CollatableDateRang
 		}
 
 		return periodicites;
+	}
+
+	@Column(name = "PERIODE_DECOMPTE", length = LengthConstants.DPI_PERIODE_DECOMPTE)
+	@Type(type = "ch.vd.uniregctb.hibernate.PeriodeDecompteUserType")
+	public PeriodeDecompte getPeriodeDecompte() {
+		return periodeDecompte;
+	}
+
+	public void setPeriodeDecompte(PeriodeDecompte periodeDecompte) {
+		this.periodeDecompte = periodeDecompte;
 	}
 }

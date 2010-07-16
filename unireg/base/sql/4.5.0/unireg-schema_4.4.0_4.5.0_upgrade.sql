@@ -15,7 +15,7 @@ create index IDX_REMARQUE_TIERS_ID on REMARQUE (TIERS_ID);
 --
 --[UNIREG-2138] Historisation de la periodicite du débiteur
 --
-create table PERIODICITE (PERIODICITE_TYPE nvarchar2(31) not null,id number(19,0) not null, ANNULATION_DATE timestamp, ANNULATION_USER nvarchar2(65), LOG_CDATE timestamp, LOG_CUSER nvarchar2(65), LOG_MDATE timestamp, LOG_MUSER nvarchar2(65),DATE_DEBUT number(10,0) not null, DATE_FIN number(10,0) ,DEBITEUR_ID number(19,0) not null, primary key (id));
+create table PERIODICITE (PERIODICITE_TYPE nvarchar2(31) not null,id number(19,0) not null, ANNULATION_DATE timestamp, ANNULATION_USER nvarchar2(65), LOG_CDATE timestamp, LOG_CUSER nvarchar2(65), LOG_MDATE timestamp, LOG_MUSER nvarchar2(65),DATE_DEBUT number(10,0) not null, DATE_FIN number(10,0) ,PERIODE_DECOMPTE nvarchar2(3), DEBITEUR_ID number(19,0) not null, primary key (id));
 
 alter table PERIODICITE add constraint FK_PERIODICITE_DB_ID foreign key (DEBITEUR_ID) references TIERS;
 

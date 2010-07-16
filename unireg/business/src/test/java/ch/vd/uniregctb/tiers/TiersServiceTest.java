@@ -2735,7 +2735,7 @@ public class TiersServiceTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(1234L);
-				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.TRIMESTRIEL, date(2011, 01, 01), null);
+				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.TRIMESTRIEL,null, date(2011, 01, 01), null);
 				return null;
 			}
 		});
@@ -2756,7 +2756,7 @@ public class TiersServiceTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(1234L);
-				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.MENSUEL, date(2011, 01, 01), null);
+				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.MENSUEL,null, date(2011, 01, 01), null);
 				return null;
 			}
 		});
@@ -2768,6 +2768,90 @@ public class TiersServiceTest extends BusinessTest {
 				Periodicite periodicite = dpi.getPeriodiciteAt(date(2011, 01, 01));
 				assertNotNull(periodicite);
 				assertEquals(PeriodiciteDecompte.MENSUEL, periodicite.getPeriodiciteDecompte());
+				return null;
+			}
+		});
+
+		//Ajout d'une nouvelle périodicité mensuel mais nous sommes en 2012 !!!!
+
+		doInNewTransaction(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(1234L);
+				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.MENSUEL,null, date(2012, 01, 01), null);
+				return null;
+			}
+		});
+
+		doInNewTransaction(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(1234L);
+				Periodicite periodicite = dpi.getPeriodiciteAt(date(2012, 01, 01));
+				assertNotNull(periodicite);
+				assertEquals(periodicite.getDateDebut(),date(2011, 01, 01));
+				assertEquals(PeriodiciteDecompte.MENSUEL, periodicite.getPeriodiciteDecompte());
+				return null;
+			}
+		});
+
+		//Ajout d'une nouvelle périodicité trimestriel mais nous sommes en 2012 !!!!
+
+		doInNewTransaction(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(1234L);
+				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.TRIMESTRIEL,null, date(2012, 01, 01), null);
+				return null;
+			}
+		});
+
+		doInNewTransaction(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(1234L);
+				Periodicite periodicite = dpi.getPeriodiciteAt(date(2011, 01, 01));
+				assertNotNull(periodicite);
+				assertEquals(periodicite.getDateDebut(),date(2011, 01, 01));
+				assertEquals(periodicite.getDateFin(),date(2011,12, 31));
+				assertEquals(PeriodiciteDecompte.MENSUEL, periodicite.getPeriodiciteDecompte());
+
+				Periodicite periodiciteTri = dpi.getPeriodiciteAt(date(2012, 01, 01));
+				assertNotNull(periodiciteTri);
+				assertEquals(periodiciteTri.getDateDebut(),date(2012, 01, 01));
+				assertEquals(periodiciteTri.getDateFin(),null);
+				assertEquals(PeriodiciteDecompte.TRIMESTRIEL, periodiciteTri.getPeriodiciteDecompte());
+				return null;
+			}
+		});
+
+			//(Je ne sais definitivement pas ce que je veux !!!!)
+			// Ajout d'une nouvelle périodicité Mensuel mais nous sommes en 2012 !!!!
+			//Situation: On a une mensuel avec une date de fin suivi d'une trimestriel, on decide de remplacer la trimestriel
+			//par une mensuel.
+			//Resultat: On doit se retrouver avec une periode mensuel qui debute en 2011
+			//
+
+		doInNewTransaction(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(1234L);
+				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.MENSUEL,null, date(2012, 01, 01), null);
+				return null;
+			}
+		});
+
+		doInNewTransaction(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(1234L);
+				Periodicite periodicite = dpi.getPeriodiciteAt(date(2011, 01, 01));
+				assertNotNull(periodicite);
+				assertEquals(periodicite.getDateDebut(),date(2011, 01, 01));
+				assertEquals(null,periodicite.getDateFin());
+				assertEquals(PeriodiciteDecompte.MENSUEL, periodicite.getPeriodiciteDecompte());
+
+
 				return null;
 			}
 		});

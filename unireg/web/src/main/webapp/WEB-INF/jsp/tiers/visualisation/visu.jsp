@@ -213,7 +213,7 @@
 	<c:if test="${command.natureTiers == 'DebiteurPrestationImposable'}">
 		<script type="text/javascript" language="Javascript1.3">
 			toggleRowsIsHisto('forFiscal', 'isForDebHisto', 2);
-			toggleRowsIsHisto('periodicite','isPeriodiciteHisto', 2)
+			toggleRowsIsHistoPeriodicite('periodicite','isPeriodiciteHisto', 2,3)
 		</script>
 	</c:if>
 		

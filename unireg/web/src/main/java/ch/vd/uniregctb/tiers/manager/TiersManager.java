@@ -689,13 +689,7 @@ public class TiersManager implements MessageSourceAware {
 		Set<Periodicite> setPeriodicites = dpi.getPeriodicites();
 		if (setPeriodicites != null) {
 			for (Periodicite periodicite : setPeriodicites) {
-				PeriodiciteView periodiciteView = new PeriodiciteView();
-				periodiciteView.setDateDebut(periodicite.getDateDebut());
-				periodiciteView.setDateFin(periodicite.getDateFin());
-				periodiciteView.setDebiteurId(periodicite.getDebiteur().getNumero());
-				periodiciteView.setId(periodicite.getId());
-				periodiciteView.setAnnule(periodicite.isAnnule());
-				periodiciteView.setPeriodiciteDecompte(periodicite.getPeriodiciteDecompte());
+				PeriodiciteView periodiciteView = readFromPeriodicite(periodicite);
 				listePeriodicitesView.add(periodiciteView);
 			}
 			Collections.sort(listePeriodicitesView,new PeriodiciteViewComparator());
@@ -705,6 +699,30 @@ public class TiersManager implements MessageSourceAware {
 
 
 	}
+
+	private PeriodiciteView readFromPeriodicite(Periodicite periodicite) {
+		PeriodiciteView periodiciteView = new PeriodiciteView();
+		periodiciteView.setDateDebut(periodicite.getDateDebut());
+		periodiciteView.setDateFin(periodicite.getDateFin());
+		periodiciteView.setDebiteurId(periodicite.getDebiteur().getNumero());
+		periodiciteView.setId(periodicite.getId());
+		periodiciteView.setAnnule(periodicite.isAnnule());
+		periodiciteView.setPeriodiciteDecompte(periodicite.getPeriodiciteDecompte());
+		periodiciteView.setPeriodeDecompte(periodicite.getPeriodeDecompte());
+		if(periodicite.isValidAt(RegDate.get()) && !periodicite.isAnnule()){
+			periodiciteView.setActive(true);
+		}
+		else{
+			periodiciteView.setActive(false);
+		}
+		return periodiciteView;
+	}
+
+	protected void	setPeriodiciteCourante(TiersView tiersView,DebiteurPrestationImposable dpi){
+		Periodicite periodiciteCourante = dpi.getDernierePeriodicte();
+		tiersView.setPeriodicite(readFromPeriodicite(periodiciteCourante));
+		
+	};
 
 	/**
 	 * Indique si l'on a le droit ou non de saisir une nouvelle situation de famille
