@@ -56,7 +56,7 @@ public class EvenementExterneListenerTest extends BusinessTest {
 
 		final long dpiId = (Long) doInNewTransaction(new TransactionCallback() {
 			public Object doInTransaction(TransactionStatus status) {
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL);
+				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, dateDebut);
 				dpi.setNom1("DebiteurTest");
 				addForDebiteur(dpi, dateDebut, null, MockCommune.Lausanne);
 
@@ -118,7 +118,7 @@ public class EvenementExterneListenerTest extends BusinessTest {
 
 		final long dpiId = (Long) doInNewTransaction(new TransactionCallback() {
 			public Object doInTransaction(TransactionStatus status) {
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL);
+				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, dateDebut);
 				dpi.setNom1("DebiteurTest");
 				addForDebiteur(dpi, dateDebut, null, MockCommune.Lausanne);
 
@@ -177,7 +177,7 @@ public class EvenementExterneListenerTest extends BusinessTest {
 
 		final long dpiId = (Long) doInNewTransaction(new TransactionCallback() {
 			public Object doInTransaction(TransactionStatus status) {
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL);
+				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, dateDebut);
 				dpi.setNom1("DebiteurTest");
 				addForDebiteur(dpi, dateDebut, null, MockCommune.Lausanne);
 
@@ -229,7 +229,7 @@ public class EvenementExterneListenerTest extends BusinessTest {
 
 		final long dpiId = (Long) doInNewTransaction(new TransactionCallback() {
 			public Object doInTransaction(TransactionStatus status) {
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL);
+				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, dateDebut);
 				dpi.setNom1("DebiteurTest");
 				addForDebiteur(dpi, dateDebut, null, MockCommune.Lausanne);
 
@@ -295,7 +295,7 @@ public class EvenementExterneListenerTest extends BusinessTest {
 
 		final long dpiId = (Long) doInNewTransaction(new TransactionCallback() {
 			public Object doInTransaction(TransactionStatus status) {
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL);
+				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, dateDebut);
 				dpi.setNom1("DebiteurTest");
 				addForDebiteur(dpi, dateDebut, null, MockCommune.Lausanne);
 
@@ -362,7 +362,7 @@ public class EvenementExterneListenerTest extends BusinessTest {
 
 		final long dpiId = (Long) doInNewTransaction(new TransactionCallback() {
 			public Object doInTransaction(TransactionStatus status) {
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL);
+				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, dateDebut);
 				dpi.setNom1("DebiteurTest");
 				addForDebiteur(dpi, dateDebut, null, MockCommune.Lausanne);
 

@@ -42,7 +42,7 @@ public class DeterminerLRsEchuesProcessorTest extends BusinessTest {
 
 		doInNewTransactionAndSession(new TransactionCallback() {
 			public Object doInTransaction(TransactionStatus status) {
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL);
+				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, date(2009, 1, 1));
 				addForDebiteur(dpi, date(2009, 1, 1), null, MockCommune.Bussigny);
 
 				final PeriodeFiscale pf = addPeriodeFiscale(2009);
@@ -68,7 +68,7 @@ public class DeterminerLRsEchuesProcessorTest extends BusinessTest {
 
 		doInNewTransactionAndSession(new TransactionCallback() {
 			public Object doInTransaction(TransactionStatus status) {
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL);
+				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, date(2009, 1, 1));
 				addForDebiteur(dpi, date(2009, 1, 1), null, MockCommune.Bussigny);
 
 				final PeriodeFiscale pf = addPeriodeFiscale(2009);
@@ -97,7 +97,7 @@ public class DeterminerLRsEchuesProcessorTest extends BusinessTest {
 
 		doInNewTransactionAndSession(new TransactionCallback() {
 			public Object doInTransaction(TransactionStatus status) {
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL);
+				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, date(2009, 1, 1));
 				addForDebiteur(dpi, date(2009, 1, 1), null, MockCommune.Bussigny);
 
 				final PeriodeFiscale pf = addPeriodeFiscale(2009);
@@ -129,7 +129,7 @@ public class DeterminerLRsEchuesProcessorTest extends BusinessTest {
 
 		doInNewTransactionAndSession(new TransactionCallback() {
 			public Object doInTransaction(TransactionStatus status) {
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL);
+				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, date(2009, 1, 1));
 				addForDebiteur(dpi, date(2009, 1, 1), null, MockCommune.Bussigny);
 
 				final PeriodeFiscale pf = addPeriodeFiscale(2009);
@@ -157,7 +157,7 @@ public class DeterminerLRsEchuesProcessorTest extends BusinessTest {
 
 		doInNewTransactionAndSession(new TransactionCallback() {
 			public Object doInTransaction(TransactionStatus status) {
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL);
+				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, date(2009, 1, 1));
 				addForDebiteur(dpi, date(2009, 1, 1), null, MockCommune.Bussigny);
 
 				final PeriodeFiscale pf = addPeriodeFiscale(2009);
@@ -186,7 +186,7 @@ public class DeterminerLRsEchuesProcessorTest extends BusinessTest {
 
 		doInNewTransactionAndSession(new TransactionCallback() {
 			public Object doInTransaction(TransactionStatus status) {
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL);
+				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, date(2009, 1, 1));
 				addForDebiteur(dpi, date(2009, 1, 1), null, MockCommune.Bussigny);
 
 				final PeriodeFiscale pf = addPeriodeFiscale(2009);
@@ -223,7 +223,7 @@ public class DeterminerLRsEchuesProcessorTest extends BusinessTest {
 
 		doInNewTransactionAndSession(new TransactionCallback() {
 			public Object doInTransaction(TransactionStatus status) {
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL);
+				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, date(2009, 1, 1));
 				addForDebiteur(dpi, date(2009, 1, 1), null, MockCommune.Bussigny);
 
 				final PeriodeFiscale pf = addPeriodeFiscale(2009);
@@ -254,7 +254,7 @@ public class DeterminerLRsEchuesProcessorTest extends BusinessTest {
 
 		doInNewTransactionAndSession(new TransactionCallback() {
 			public Object doInTransaction(TransactionStatus status) {
-				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL);
+				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, date(2009, 1, 1));
 				addForDebiteur(dpi, date(2009, 1, 1), null, MockCommune.Bussigny);
 
 				final PeriodeFiscale pf = addPeriodeFiscale(2009);

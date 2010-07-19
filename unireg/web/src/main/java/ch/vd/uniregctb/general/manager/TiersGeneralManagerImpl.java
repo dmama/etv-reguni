@@ -273,8 +273,8 @@ public class TiersGeneralManagerImpl implements TiersGeneralManager{
 		setRole(tiersGeneralView, dpi);
 		if (etendu) {
 			tiersGeneralView.setCategorie(dpi.getCategorieImpotSource());
-			tiersGeneralView.setPeriodicite(dpi.getPeriodiciteDecompte());
-			tiersGeneralView.setPeriode(dpi.getPeriodeDecompte());
+			tiersGeneralView.setPeriodicite(dpi.getPeriodiciteAt(RegDate.get()).getPeriodiciteDecompte());
+			tiersGeneralView.setPeriode(dpi.getPeriodiciteAt(RegDate.get()).getPeriodeDecompte());
 			tiersGeneralView.setModeCommunication(dpi.getModeCommunication());
 			tiersGeneralView.setPersonneContact(dpi.getPersonneContact());
 			tiersGeneralView.setNumeroTelephone(dpi.getNumeroTelephonePrive());

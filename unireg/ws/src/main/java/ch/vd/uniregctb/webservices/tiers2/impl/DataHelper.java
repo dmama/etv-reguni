@@ -362,6 +362,9 @@ public class DataHelper {
 			case SITUATIONS_FAMILLE:
 				results.add(Parts.SITUATIONS_FAMILLE);
 				break;
+			case PERIODICITES:
+				results.add(Parts.PERIODICITES);
+				break;
 			case COMPTES_BANCAIRES:
 			case CAPITAUX:
 			case ETATS_PM:

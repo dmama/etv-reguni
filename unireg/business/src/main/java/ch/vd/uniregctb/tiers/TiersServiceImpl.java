@@ -2146,7 +2146,7 @@ public class TiersServiceImpl implements TiersService {
 	 */
 	public Periodicite addPeriodicite(DebiteurPrestationImposable debiteur, PeriodiciteDecompte periodiciteDecompte, PeriodeDecompte periodeDecompte, RegDate dateDebut, RegDate dateFin) {
 		boolean aAjouter=true;
-		Periodicite periodicitePotentiel = debiteur.getPeriodiciteAt(dateDebut);
+		Periodicite periodicitePotentiel = getPeriodiciteFromListe(debiteur,dateDebut);
 		if(periodicitePotentiel!=null){
 			if(periodicitePotentiel.getPeriodiciteDecompte().equals(periodiciteDecompte)){
 				//Le rajout d'une périodicité identique sur la mêmme période n'a pas de sens
@@ -2172,7 +2172,7 @@ public class TiersServiceImpl implements TiersService {
 		}
 		Periodicite nouvellePeriodicite = new Periodicite(periodiciteDecompte,periodeDecompte,dateDebut,dateFin);
 		if(aAjouter){
-			final Periodicite dernierePeriodicite = debiteur.getPeriodiciteAt(null);
+			final Periodicite dernierePeriodicite = getPeriodiciteFromListe(debiteur,null);
 		if (dernierePeriodicite != null && dernierePeriodicite.getDateFin() == null) {
 			if (dateFin == null || dateFin.isAfter(dernierePeriodicite.getDateDebut())) {
 			dernierePeriodicite.setDateFin(dateDebut.getOneDayBefore());
@@ -2184,6 +2184,19 @@ public class TiersServiceImpl implements TiersService {
 
 
 		return nouvellePeriodicite;  
+	}
+
+	private Periodicite getPeriodiciteFromListe(DebiteurPrestationImposable debiteur, RegDate dateDebut) {
+		List<Periodicite> periodicites = debiteur.getPeriodicitesSorted();
+		if(periodicites!=null){
+			for (Periodicite p : periodicites) {
+				if (p.isValidAt(dateDebut)) {
+					return p;
+				}
+			}
+		}
+
+		return null;  //To change body of created methods use File | Settings | File Templates.
 	}
 
 	/**

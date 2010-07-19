@@ -6,6 +6,7 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.declaration.Declaration;
+import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.tracing.TracePoint;
 import ch.vd.uniregctb.tracing.TracingManager;
 import org.apache.log4j.Logger;
@@ -296,6 +297,25 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 			});
 		}
 
+		if (parts != null && parts.contains(Parts.PERIODICITES)) {
+			// on charge toutes les périodicités en vrac
+			Query q = session.createQuery("from Periodicite as p where p.debiteur.id in (:ids)");
+			q.setParameterList("ids", idsDemandes);
+			List<Periodicite> periodicites = q.list();
+
+			// on associe les périodicités avec les tiers à la main
+			associate(session, periodicites, tiers, new TiersIdGetter<Periodicite>() {
+				public Long getTiersId(Periodicite entity) {
+					return entity.getDebiteur().getId();
+				}
+			}, new EntitySetSetter<Periodicite>() {
+				public void setEntitySet(Tiers tiers, Set<Periodicite> set) {
+					if (tiers instanceof DebiteurPrestationImposable) {
+						((DebiteurPrestationImposable) tiers).setPeriodicites(set);
+					}
+				}
+			});
+		}
 		return tiers;
 	}
 

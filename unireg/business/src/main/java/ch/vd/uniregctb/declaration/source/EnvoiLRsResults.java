@@ -88,7 +88,7 @@ public class EnvoiLRsResults extends JobResults<Long, EnvoiLRsResults> {
 	}
 
 	public void addLrTraitee(DebiteurPrestationImposable dpi, RegDate dateDebut, RegDate dateFin) {
-		final PeriodiciteDecompte periodicite = dpi.getPeriodiciteDecompte();
+		final PeriodiciteDecompte periodicite = dpi.getPeriodiciteAt(dateDebut).getPeriodiciteDecompte();
 		switch (periodicite) {
 			case MENSUEL :
 				++ nbLrMensuellesTraitees;

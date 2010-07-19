@@ -14,6 +14,7 @@ import org.springframework.transaction.TransactionStatus;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.BusinessTest;
+import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.tiers.AutreCommunaute;
@@ -56,7 +57,7 @@ public class DebiteurPrestationImposableIndexableTest extends BusinessTest {
 			public Object execute(TransactionStatus status) throws Exception {
 
 				DebiteurPrestationImposable dpi = new DebiteurPrestationImposable();
-				dpi.setPeriodiciteDecompte(PeriodiciteDecompte.MENSUEL);
+				dpi.addPeriodicite(new Periodicite(PeriodiciteDecompte.MENSUEL,null,date(2000,1,1),null));
 				dpi = (DebiteurPrestationImposable) dao.save(dpi);
 				numeros.noCtbDpi = dpi.getNumero();
 
@@ -80,7 +81,7 @@ public class DebiteurPrestationImposableIndexableTest extends BusinessTest {
 		{
 			final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) dao.get(numeros.noCtbDpi);
 			assertNotNull(dpi);
-			assertEquals(PeriodiciteDecompte.MENSUEL, dpi.getPeriodiciteDecompte());
+			assertEquals(PeriodiciteDecompte.MENSUEL, dpi.getPeriodiciteAt(RegDate.get()).getPeriodiciteDecompte());
 			assertNotNull(tiersService.getContribuable(dpi));
 
 			final PersonnePhysique nh = (PersonnePhysique) dao.get(numeros.noCtbNh);
@@ -140,7 +141,7 @@ public class DebiteurPrestationImposableIndexableTest extends BusinessTest {
 			public Object execute(TransactionStatus status) throws Exception {
 
 				DebiteurPrestationImposable dpi = new DebiteurPrestationImposable();
-				dpi.setPeriodiciteDecompte(PeriodiciteDecompte.MENSUEL);
+				dpi.addPeriodicite(new Periodicite(PeriodiciteDecompte.MENSUEL,null,date(2000,1,1),null));
 				dpi = (DebiteurPrestationImposable) dao.save(dpi);
 				numeros.noCtbDpi = dpi.getNumero();
 
@@ -159,8 +160,8 @@ public class DebiteurPrestationImposableIndexableTest extends BusinessTest {
 
 		{
 			final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) dao.get(numeros.noCtbDpi);
-			assertNotNull(dpi);
-			assertEquals(PeriodiciteDecompte.MENSUEL, dpi.getPeriodiciteDecompte());
+			assertNotNull(dpi);		
+			assertEquals(PeriodiciteDecompte.MENSUEL, dpi.getPeriodiciteAt(RegDate.get()).getPeriodiciteDecompte());
 			assertNotNull(tiersService.getContribuable(dpi));
 
 			final AutreCommunaute ac = (AutreCommunaute) dao.get(numeros.noCtbEnt);

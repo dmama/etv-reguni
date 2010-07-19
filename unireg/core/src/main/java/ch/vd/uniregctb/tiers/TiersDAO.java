@@ -39,7 +39,8 @@ public interface TiersDAO extends GenericDAO<Tiers, Long> {
 		RAPPORTS_ENTRE_TIERS,
 		ADRESSES,
 		SITUATIONS_FAMILLE,
-		DECLARATIONS;
+		DECLARATIONS,
+		PERIODICITES;
 
 		public static Parts fromValue(String v) {
 			return valueOf(v);

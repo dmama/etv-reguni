@@ -142,8 +142,8 @@ public class ListeRecapServiceImpl implements ListeRecapService, DelegateEditiqu
 	private DeclarationImpotSource saveLR(DebiteurPrestationImposable dpi, RegDate dateDebutPeriode) throws Exception {
 		DeclarationImpotSource lr = new DeclarationImpotSource();
 		lr.setDateDebut(dateDebutPeriode);
-		lr.setDateFin(dpi.getPeriodiciteDecompte().getFinPeriode(dateDebutPeriode));
-		lr.setPeriodicite(dpi.getPeriodiciteDecompte());
+		lr.setDateFin(dpi.getPeriodiciteAt(dateDebutPeriode).getFinPeriode(dateDebutPeriode));
+		lr.setPeriodicite(dpi.getPeriodiciteAt(dateDebutPeriode).getPeriodiciteDecompte());
 		lr.setModeCommunication(dpi.getModeCommunication());
 
 		final PeriodeFiscale periodeFiscale = periodeDAO.getPeriodeFiscaleByYear(dateDebutPeriode.year());
@@ -271,7 +271,7 @@ public class ListeRecapServiceImpl implements ListeRecapService, DelegateEditiqu
 				// il faut extraire les périodes de LR
 				if (lrManquantes.size() > 0) {
 					final PeriodiciteDecompte periodicite = dpi.getPeriodiciteDecompte();
-					lrPeriodiquesManquantes = extrairePeriodesDapresPeriodicite(periodicite, lrManquantes);
+					lrPeriodiquesManquantes = extrairePeriodesDapresPeriodicite(dpi, lrManquantes);
 				}
 			}
 		}
@@ -298,15 +298,16 @@ public class ListeRecapServiceImpl implements ListeRecapService, DelegateEditiqu
 	 * @param lrManquantes
 	 * @return
 	 */
-	private static List<DateRange> extrairePeriodesDapresPeriodicite(PeriodiciteDecompte periodicite, List<DateRange> lrManquantes) {
+	private static List<DateRange> extrairePeriodesDapresPeriodicite(DebiteurPrestationImposable debiteur, List<DateRange> lrManquantes) {
 		final List<DateRange> lr = new ArrayList<DateRange>();
 		for (DateRange manquante : lrManquantes) {
 			RegDate date = manquante.getDateDebut();
+			Periodicite periodiciteCourante = debiteur.getPeriodiciteAt(date);
 
 			// on fait des bonds de la bonne périodicité tant que l'on reste dans la période à couvrir
 			do {
-				final RegDate debut = periodicite.getDebutPeriode(date);
-				final RegDate fin = periodicite.getFinPeriode(date);
+				final RegDate debut = periodiciteCourante.getDebutPeriode(date);
+				final RegDate fin = periodiciteCourante.getFinPeriode(date);
 				lr.add(new DateRangeHelper.Range(debut, fin));
 
 				date = fin.addDays(1);
@@ -368,8 +369,8 @@ public class ListeRecapServiceImpl implements ListeRecapService, DelegateEditiqu
 			}
 		});
 
-		//final List<Long> ids = new ArrayList<Long>();
-		//ids.add(1277926L);
+		/*final List<Long> ids = new ArrayList<Long>();
+		ids.add(1500592L);*/
 		if (!ids.isEmpty()) {
 
 			LOGGER.warn("--- Début de la création de l'historique des périodicités---");
@@ -414,8 +415,13 @@ public class ListeRecapServiceImpl implements ListeRecapService, DelegateEditiqu
 		for (Long debiteurId : batch) {
 			DebiteurPrestationImposable debiteur = tiersDAO.getDebiteurPrestationImposableByNumero(debiteurId);
 			List<Periodicite> listePeriodiciteACreer = construirePeriodiciteFromLR(debiteur);
-			for (Periodicite periodicite : listePeriodiciteACreer) {
-				tiersService.addPeriodicite(debiteur, periodicite.getPeriodiciteDecompte(),periodicite.getPeriodeDecompte(), periodicite.getDateDebut(), periodicite.getDateFin());
+			if (listePeriodiciteACreer.isEmpty()) {
+				tiersService.addPeriodicite(debiteur, debiteur.getPeriodiciteDecompte(), debiteur.getPeriodeDecompte(), RegDate.get(debiteur.getLogCreationDate()), null);
+			}
+			else {
+				for (Periodicite periodicite : listePeriodiciteACreer) {
+					tiersService.addPeriodicite(debiteur, periodicite.getPeriodiciteDecompte(), periodicite.getPeriodeDecompte(), periodicite.getDateDebut(), periodicite.getDateFin());
+				}
 			}
 
 
@@ -427,7 +433,6 @@ public class ListeRecapServiceImpl implements ListeRecapService, DelegateEditiqu
 		List<Periodicite> listePeriodiciteIntermediaire = new ArrayList<Periodicite>();
 
 
-		
 		//Transformation en lilste de periodicite
 		for (Declaration declaration : listeLR) {
 			PeriodeDecompte periodeDecompte = null;
@@ -436,11 +441,11 @@ public class ListeRecapServiceImpl implements ListeRecapService, DelegateEditiqu
 				//Pour la periodicite de type UNIQUE, on doit egalement creer la periode decompte associé,
 				//Cette dernière est une propriété du tiers et non de la LR
 
-				if(PeriodiciteDecompte.UNIQUE.equals(lr.getPeriodicite())){
+				if (PeriodiciteDecompte.UNIQUE.equals(lr.getPeriodicite())) {
 					periodeDecompte = debiteur.getPeriodeDecompte();
 				}
 
-				Periodicite periodicite = new Periodicite(lr.getPeriodicite(),periodeDecompte, lr.getDateDebut(), lr.getDateFin());
+				Periodicite periodicite = new Periodicite(lr.getPeriodicite(), periodeDecompte, lr.getDateDebut(), lr.getDateFin());
 				listePeriodiciteIntermediaire.add(periodicite);
 			}
 
@@ -451,7 +456,6 @@ public class ListeRecapServiceImpl implements ListeRecapService, DelegateEditiqu
 		return DateRangeHelper.collate(listePeriodiciteIntermediaire);  //To change body of created methods use File | Settings | File Templates.
 	}
 
-	
 
 	private static class MigrationResults implements BatchResults<Long, MigrationResults> {
 

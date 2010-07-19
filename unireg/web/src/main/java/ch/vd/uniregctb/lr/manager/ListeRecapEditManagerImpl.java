@@ -313,7 +313,7 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 		if (etatPeriode != null) {
 			final DeclarationImpotSource lr = (DeclarationImpotSource) etatPeriode.getDeclaration();
 			dpi = (DebiteurPrestationImposable) lr.getTiers();
-			if  (PeriodiciteDecompte.UNIQUE == dpi.getPeriodiciteDecompte()) {
+			if  (PeriodiciteDecompte.UNIQUE == dpi.getPeriodiciteAt(lr.getDateDebut()).getPeriodiciteDecompte()) {
 				setLRViewPeriodiciteUnique(lrEditView, lr, dpi);
 			}
 			else {
@@ -323,7 +323,7 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 				if (lrManquantes != null && lrManquantes.size() > 0 && periodeInteressante.isValidAt(lrManquantes.get(0).getDateFin()) &&  !DateRangeHelper.intersect(lrManquantes.get(0), lrTrouvees)) {
 					lrEditView.setDateDebutPeriode(lrManquantes.get(0).getDateDebut());
 					lrEditView.setDateFinPeriode(lrManquantes.get(0).getDateFin());
-					lrEditView.setPeriodicite(dpi.getPeriodiciteDecompte());
+					lrEditView.setPeriodicite(dpi.getPeriodiciteAt(lrManquantes.get(0).getDateDebut()).getPeriodiciteDecompte());
 				}
 				else {
 					final PeriodiciteDecompte periodicite = getPeriodicite(lr, lr.getDateDebut());
@@ -336,7 +336,7 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 		}
 		// Créée une premiere LR sur ce debiteur
 		else {
-			final PeriodiciteDecompte periodicite = dpi.getPeriodiciteDecompte();
+			final PeriodiciteDecompte periodicite = dpi.getPeriodiciteAt(RegDate.get()).getPeriodiciteDecompte();
 			if (PeriodiciteDecompte.UNIQUE == periodicite) {
 				setLRViewPeriodiciteUnique(lrEditView, null, dpi);
 			}
@@ -370,11 +370,11 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 		}
 		int precMoisFin = precDateFin.month();
 		int precAnneeFin = precDateFin.year();
-		if (dpi.getPeriodeDecompte().equals(PeriodeDecompte.M01)) {
+		if (dpi.getPeriodiciteAt(precDateFin).getPeriodeDecompte().equals(PeriodeDecompte.M01)) {
 			nouvDateDebut = RegDate.get(precAnneeFin + 1, 1, 1);
 			nouvDateFin = RegDate.get(precAnneeFin + 1, 1, 31);
 		}
-		else if (dpi.getPeriodeDecompte().equals(PeriodeDecompte.M02)) {
+		else if (dpi.getPeriodiciteAt(precDateFin).getPeriodeDecompte().equals(PeriodeDecompte.M02)) {
 			if (precMoisFin >= 2) {
 				nouvDateDebut = RegDate.get(precAnneeFin + 1, 2, 1);
 				nouvDateFin = RegDate.get(precAnneeFin + 1, 3, 1);
@@ -386,7 +386,7 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 				nouvDateFin = nouvDateFin.addDays(-1);
 			}
 		}
-		else if (dpi.getPeriodeDecompte().equals(PeriodeDecompte.M03)) {
+		else if (dpi.getPeriodiciteAt(precDateFin).getPeriodeDecompte().equals(PeriodeDecompte.M03)) {
 			if (precMoisFin >= 3) {
 				nouvDateDebut = RegDate.get(precAnneeFin + 1, 3, 1);
 				nouvDateFin = RegDate.get(precAnneeFin + 1, 3, 31);
@@ -396,7 +396,7 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 				nouvDateFin = RegDate.get(precAnneeFin, 3, 31);
 			}
 		}
-		else if (dpi.getPeriodeDecompte().equals(PeriodeDecompte.M04)) {
+		else if (dpi.getPeriodiciteAt(precDateFin).getPeriodeDecompte().equals(PeriodeDecompte.M04)) {
 			if (precMoisFin >= 4) {
 				nouvDateDebut = RegDate.get(precAnneeFin + 1, 4, 1);
 				nouvDateFin = RegDate.get(precAnneeFin + 1, 4, 30);
@@ -406,7 +406,7 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 				nouvDateFin = RegDate.get(precAnneeFin, 4, 30);
 			}
 		}
-		else if (dpi.getPeriodeDecompte().equals(PeriodeDecompte.M05)) {
+		else if (dpi.getPeriodiciteAt(precDateFin).getPeriodeDecompte().equals(PeriodeDecompte.M05)) {
 			if (precMoisFin >= 5) {
 				nouvDateDebut = RegDate.get(precAnneeFin + 1, 5, 1);
 				nouvDateFin = RegDate.get(precAnneeFin + 1, 5, 31);
@@ -416,7 +416,7 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 				nouvDateFin = RegDate.get(precAnneeFin, 5, 31);
 			}
 		}
-		else if (dpi.getPeriodeDecompte().equals(PeriodeDecompte.M06)) {
+		else if (dpi.getPeriodiciteAt(precDateFin).getPeriodeDecompte().equals(PeriodeDecompte.M06)) {
 			if (precMoisFin >= 6) {
 				nouvDateDebut = RegDate.get(precAnneeFin + 1, 6, 1);
 				nouvDateFin = RegDate.get(precAnneeFin + 1, 6, 30);
@@ -426,7 +426,7 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 				nouvDateFin = RegDate.get(precAnneeFin, 6, 30);
 			}
 		}
-		else if (dpi.getPeriodeDecompte().equals(PeriodeDecompte.M07)) {
+		else if (dpi.getPeriodiciteAt(precDateFin).getPeriodeDecompte().equals(PeriodeDecompte.M07)) {
 			if (precMoisFin >= 7) {
 				nouvDateDebut = RegDate.get(precAnneeFin + 1, 7, 1);
 				nouvDateFin = RegDate.get(precAnneeFin + 1, 7, 31);
@@ -436,7 +436,7 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 				nouvDateFin = RegDate.get(precAnneeFin, 7, 31);
 			}
 		}
-		else if (dpi.getPeriodeDecompte().equals(PeriodeDecompte.M08)) {
+		else if (dpi.getPeriodiciteAt(precDateFin).getPeriodeDecompte().equals(PeriodeDecompte.M08)) {
 			if (precMoisFin >= 8) {
 				nouvDateDebut = RegDate.get(precAnneeFin + 1, 8, 1);
 				nouvDateFin = RegDate.get(precAnneeFin + 1, 8, 31);
@@ -446,7 +446,7 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 				nouvDateFin = RegDate.get(precAnneeFin, 8, 31);
 			}
 		}
-		else if (dpi.getPeriodeDecompte().equals(PeriodeDecompte.M09)) {
+		else if (dpi.getPeriodiciteAt(precDateFin).getPeriodeDecompte().equals(PeriodeDecompte.M09)) {
 			if (precMoisFin >= 9) {
 				nouvDateDebut = RegDate.get(precAnneeFin + 1, 9, 1);
 				nouvDateFin = RegDate.get(precAnneeFin + 1, 9, 30);
@@ -456,7 +456,7 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 				nouvDateFin = RegDate.get(precAnneeFin, 9, 30);
 			}
 		}
-		else if (dpi.getPeriodeDecompte().equals(PeriodeDecompte.M10)) {
+		else if (dpi.getPeriodiciteAt(precDateFin).getPeriodeDecompte().equals(PeriodeDecompte.M10)) {
 			if (precMoisFin >= 10) {
 				nouvDateDebut = RegDate.get(precAnneeFin + 1, 10, 1);
 				nouvDateFin = RegDate.get(precAnneeFin + 1, 10, 31);
@@ -466,7 +466,7 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 				nouvDateFin = RegDate.get(precAnneeFin, 10, 31);
 			}
 		}
-		else if (dpi.getPeriodeDecompte().equals(PeriodeDecompte.M11)) {
+		else if (dpi.getPeriodiciteAt(precDateFin).getPeriodeDecompte().equals(PeriodeDecompte.M11)) {
 			if (precMoisFin >= 11) {
 				nouvDateDebut = RegDate.get(precAnneeFin + 1, 11, 1);
 				nouvDateFin = RegDate.get(precAnneeFin + 1, 11, 30);
@@ -476,7 +476,7 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 				nouvDateFin = RegDate.get(precAnneeFin, 11, 30);
 			}
 		}
-		else if (dpi.getPeriodeDecompte().equals(PeriodeDecompte.M12)) {
+		else if (dpi.getPeriodiciteAt(precDateFin).getPeriodeDecompte().equals(PeriodeDecompte.M12)) {
 			if (precMoisFin == 12) {
 				nouvDateDebut = RegDate.get(precAnneeFin + 1, 12, 1);
 				nouvDateFin = RegDate.get(precAnneeFin + 1, 12, 31);
@@ -486,11 +486,11 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 				nouvDateFin = RegDate.get(precAnneeFin, 12, 31);
 			}
 		}
-		else if (dpi.getPeriodeDecompte().equals(PeriodeDecompte.T1)) {
+		else if (dpi.getPeriodiciteAt(precDateFin).getPeriodeDecompte().equals(PeriodeDecompte.T1)) {
 			nouvDateDebut = RegDate.get(precAnneeFin + 1, 1, 1);
 			nouvDateFin = RegDate.get(precAnneeFin + 1, 3, 31);
 		}
-		else if (dpi.getPeriodeDecompte().equals(PeriodeDecompte.T2)) {
+		else if (dpi.getPeriodiciteAt(precDateFin).getPeriodeDecompte().equals(PeriodeDecompte.T2)) {
 			if (precMoisFin >= 3) {
 				nouvDateDebut = RegDate.get(precAnneeFin + 1, 4, 1);
 				nouvDateFin = RegDate.get(precAnneeFin + 1, 6, 30);
@@ -500,7 +500,7 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 				nouvDateFin = RegDate.get(precAnneeFin, 6, 31);
 			}
 		}
-		else if (dpi.getPeriodeDecompte().equals(PeriodeDecompte.T3)) {
+		else if (dpi.getPeriodiciteAt(precDateFin).getPeriodeDecompte().equals(PeriodeDecompte.T3)) {
 			if (precMoisFin >= 6) {
 				nouvDateDebut = RegDate.get(precAnneeFin + 1, 7, 1);
 				nouvDateFin = RegDate.get(precAnneeFin + 1, 9, 30);
@@ -510,7 +510,7 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 				nouvDateFin = RegDate.get(precAnneeFin, 9, 30);
 			}
 		}
-		else if (dpi.getPeriodeDecompte().equals(PeriodeDecompte.T4)) {
+		else if (dpi.getPeriodiciteAt(precDateFin).getPeriodeDecompte().equals(PeriodeDecompte.T4)) {
 			if (precMoisFin >= 9) {
 				nouvDateDebut = RegDate.get(precAnneeFin + 1, 10, 1);
 				nouvDateFin = RegDate.get(precAnneeFin + 1, 12, 31);
@@ -520,11 +520,11 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 				nouvDateFin = RegDate.get(precAnneeFin, 10, 31);
 			}
 		}
-		else if (dpi.getPeriodeDecompte().equals(PeriodeDecompte.S1)) {
+		else if (dpi.getPeriodiciteAt(precDateFin).getPeriodeDecompte().equals(PeriodeDecompte.S1)) {
 			nouvDateDebut = RegDate.get(precAnneeFin + 1, 1, 1);
 			nouvDateFin = RegDate.get(precAnneeFin + 1, 6, 30);
 		}
-		else if (dpi.getPeriodeDecompte().equals(PeriodeDecompte.S2)) {
+		else if (dpi.getPeriodiciteAt(precDateFin).getPeriodeDecompte().equals(PeriodeDecompte.S2)) {
 			if (precMoisFin >= 6) {
 				nouvDateDebut = RegDate.get(precAnneeFin + 1, 7, 1);
 				nouvDateFin = RegDate.get(precAnneeFin + 1, 12, 31);
@@ -534,7 +534,7 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 				nouvDateFin = RegDate.get(precAnneeFin, 12, 31);
 			}
 		}
-		else if (dpi.getPeriodeDecompte().equals(PeriodeDecompte.A)) {
+		else if (dpi.getPeriodiciteAt(precDateFin).getPeriodeDecompte().equals(PeriodeDecompte.A)) {
 			nouvDateDebut = RegDate.get(precAnneeFin + 1, 1, 1);
 			nouvDateFin = RegDate.get(precAnneeFin + 1, 12, 31);
 		}
@@ -553,7 +553,7 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 	private PeriodiciteDecompte getPeriodicite(DeclarationImpotSource lr, RegDate dateDebut) {
 
 		DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) lr.getTiers();
-		PeriodiciteDecompte periodiciteDPI = dpi.getPeriodiciteDecompte();
+		PeriodiciteDecompte periodiciteDPI = dpi.getPeriodiciteAt(lr.getDateDebut()).getPeriodiciteDecompte();
 		PeriodiciteDecompte periodiciteLR = lr.getPeriodicite();
 		Assert.notNull(periodiciteLR);
 

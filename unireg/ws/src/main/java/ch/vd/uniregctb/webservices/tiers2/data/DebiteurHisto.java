@@ -7,6 +7,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.webservices.tiers2.exception.BusinessException;
 import ch.vd.uniregctb.webservices.tiers2.impl.BusinessHelper;
@@ -74,8 +75,8 @@ public class DebiteurHisto extends TiersHisto {
 	private void setBase(Context context, ch.vd.uniregctb.tiers.DebiteurPrestationImposable debiteur) {
 		this.raisonSociale = BusinessHelper.getRaisonSociale(debiteur, null, context.adresseService);
 		this.categorie = EnumHelper.coreToWeb(debiteur.getCategorieImpotSource());
-		this.periodiciteDecompte = EnumHelper.coreToWeb(debiteur.getPeriodiciteDecompte());
-		this.periodeDecompte = EnumHelper.coreToWeb(debiteur.getPeriodeDecompte());
+		this.periodiciteDecompte = EnumHelper.coreToWeb(debiteur.getPeriodiciteAt(RegDate.get()).getPeriodiciteDecompte());
+		this.periodeDecompte = EnumHelper.coreToWeb(debiteur.getPeriodiciteAt(RegDate.get()).getPeriodeDecompte());
 		this.modeCommunication = EnumHelper.coreToWeb(debiteur.getModeCommunication());
 		this.sansRappel = DataHelper.coreToWeb(debiteur.getSansRappel());
 		this.sansListRecapitulative = DataHelper.coreToWeb(debiteur.getSansListeRecapitulative());

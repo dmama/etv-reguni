@@ -85,7 +85,11 @@ public enum TiersPart {
 	/**
 	 * Renseigne les états pour les personnes morales.
 	 */
-	ETATS_PM;
+	ETATS_PM,
+	/**
+	 * Renseigne l'historique des périodicités pour le débiteur
+	 */
+	PERIODICITES;
 
 	public static TiersPart fromValue(String v) {
 		return valueOf(v);

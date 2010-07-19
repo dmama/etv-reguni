@@ -259,4 +259,22 @@
 			<value>0</value>
 		</row>
 	</table>
+		<table name="PERIODICITE">
+		<column>LOG_MDATE</column>
+		<column>ID</column>
+		<column>DEBITEUR_ID</column>
+		<column>PERIODE_DECOMPTE</column>
+		<column>DATE_DEBUT</column>
+		<column>DATE_FIN</column>
+		<column>PERIODICITE_TYPE</column>
+		<row>
+			<value>2008-01-01</value>
+			<value>1</value>
+			<value>12500001</value>
+			<null />
+			<value>20070101</value>
+			<null />
+			<value>TRIMESTRIEL</value>
+		</row>
+	</table>
 </dataset>

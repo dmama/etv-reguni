@@ -592,11 +592,12 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 		boolean checkFormeJuridique = TiersPart.FORMES_JURIDIQUES.equals(p);
 		boolean checkRegimesFiscaux = TiersPart.REGIMES_FISCAUX.equals(p);
 		boolean checkSiege = TiersPart.SIEGES.equals(p);
+		boolean checkPeriodicite = TiersPart.PERIODICITES.equals(p);
 
 		Assert.isTrue(checkAdresses || checkAdressesEnvoi || checkAssujettissement || checkComposantsMenage || checkComptesBancaires
 				|| checkDeclarations || checkForsFiscaux || checkForsFiscauxVirtuels || checkForsGestion || checkPeriodeImposition
 				|| checkRapportEntreTiers || checkSituationFamille || checkCapital || checkEtatPM || checkFormeJuridique
-				|| checkRegimesFiscaux || checkSiege, "La partie [" + p + "] est inconnue");
+				|| checkRegimesFiscaux || checkSiege || checkPeriodicite, "La partie [" + p + "] est inconnue");
 
 		assertNullOrNotNull(checkAdresses, tiers.adresseCourrier, "adresseCourrier");
 		assertNullOrNotNull(checkAdresses, tiers.adresseDomicile, "adresseDomicile");
@@ -660,11 +661,11 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 		boolean checkFormesJuridiques = TiersPart.FORMES_JURIDIQUES.equals(p);
 		boolean checkRegimesFiscaux = TiersPart.REGIMES_FISCAUX.equals(p);
 		boolean checkSieges = TiersPart.SIEGES.equals(p);
-
+		boolean checkPeriodicite = TiersPart.PERIODICITES.equals(p);
 		Assert.isTrue(checkAdresses || checkAdressesEnvoi || checkAssujettissement || checkComposantsMenage || checkComptesBancaires
 				|| checkDeclarations || checkForsFiscaux || checkForsFiscauxVirtuels || checkForsGestion || checkPeriodeImposition
 				|| checkRapportEntreTiers || checkSituationFamille || checkCapitaux || checkEtatsPM || checkFormesJuridiques
-				|| checkRegimesFiscaux || checkSieges, "La partie [" + p + "] est inconnue");
+				|| checkRegimesFiscaux || checkSieges || checkPeriodicite, "La partie [" + p + "] est inconnue");
 
 		assertNullOrNotNull(checkAdresses, tiers.adressesCourrier, "adressesCourrier");
 		assertNullOrNotNull(checkAdresses, tiers.adressesDomicile, "adressesDomicile");

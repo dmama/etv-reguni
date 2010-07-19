@@ -419,6 +419,9 @@ public class DebiteurPrestationImposable extends Tiers {
 				}
 			}
 		}
+		else {
+			return new Periodicite(periodiciteDecompte, periodeDecompte, RegDate.get(getLogCreationDate()), null);
+		}
 		return null;
 	}
 
@@ -467,17 +470,23 @@ public class DebiteurPrestationImposable extends Tiers {
 	@Transient
 	public Periodicite getPeriodiciteAt(RegDate date) {
 
-		if (periodicites == null) {
-			return null;
+		if (periodicites == null || periodicites.isEmpty()) {
+			//On retourne la periodicite presente sur le debiteur
+			//ce mecanisme est temporaire, il permet d'eviter les nullPointeurExceptiosn
+			//pour les tiers n'ayant pas encore d'historique de périodicités.
+			return new Periodicite(periodiciteDecompte, periodeDecompte, RegDate.get(getLogCreationDate()), null);
 		}
+		else {
 
-		for (Periodicite p : periodicites) {
-			if (p.isValidAt(date)) {
-				return p;
+			for (Periodicite p : periodicites) {
+				if (p.isValidAt(date)) {
+					return p;
+				}
 			}
+			//Si aucune périodicité n'est trouvé à la date spécifié, on renvoie la dernière connue$
+			return getDernierePeriodicte();
 		}
 
-		return null;
 	}
 
 	/**

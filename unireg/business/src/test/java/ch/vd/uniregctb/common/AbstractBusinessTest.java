@@ -17,6 +17,7 @@ import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
+import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.uniregctb.interfaces.model.Pays;
@@ -297,17 +298,20 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 		lr.setDateFin(fin);
 		lr.setPeriode(periode);
 		lr.setModeCommunication(ModeCommunication.PAPIER);
-		lr.setPeriodicite(debiteur.getPeriodiciteDecompte());
+		lr.setPeriodicite(debiteur.getPeriodiciteAt(debut).getPeriodiciteDecompte());
 		lr.setTiers(debiteur);
 		lr = (DeclarationImpotSource) hibernateTemplate.merge(lr);
 		debiteur.addDeclaration(lr);
 		return lr;
 	}
 
-	protected DebiteurPrestationImposable addDebiteur(CategorieImpotSource categorie, PeriodiciteDecompte periodicite) {
+	protected DebiteurPrestationImposable addDebiteur(CategorieImpotSource categorie, PeriodiciteDecompte periodicite, RegDate debutValiditePeriodicite) {
 		DebiteurPrestationImposable debiteur = addDebiteur();
 		debiteur.setCategorieImpotSource(categorie);
+		//A supprimer une fois que ListeRecapServiceImpl sera adapté a l'historique des périodicité
 		debiteur.setPeriodiciteDecompte(periodicite);
+
+		debiteur.addPeriodicite(new Periodicite(periodicite,null,debutValiditePeriodicite,null));
 		return debiteur;
 	}
 
