@@ -12,9 +12,11 @@ import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.uniregctb.perfs.PerfsAccessFileIterator;
 import ch.vd.uniregctb.webservices.tiers2.AccessDeniedException_Exception;
 import ch.vd.uniregctb.webservices.tiers2.BatchTiers;
+import ch.vd.uniregctb.webservices.tiers2.BatchTiersHisto;
 import ch.vd.uniregctb.webservices.tiers2.BusinessException_Exception;
 import ch.vd.uniregctb.webservices.tiers2.Date;
 import ch.vd.uniregctb.webservices.tiers2.GetBatchTiers;
+import ch.vd.uniregctb.webservices.tiers2.GetBatchTiersHisto;
 import ch.vd.uniregctb.webservices.tiers2.GetTiers;
 import ch.vd.uniregctb.webservices.tiers2.GetTiersHisto;
 import ch.vd.uniregctb.webservices.tiers2.GetTiersPeriode;
@@ -23,7 +25,6 @@ import ch.vd.uniregctb.webservices.tiers2.PersonnePhysique;
 import ch.vd.uniregctb.webservices.tiers2.SearchTiers;
 import ch.vd.uniregctb.webservices.tiers2.TechnicalException_Exception;
 import ch.vd.uniregctb.webservices.tiers2.Tiers;
-import ch.vd.uniregctb.webservices.tiers2.TiersHisto;
 import ch.vd.uniregctb.webservices.tiers2.TiersPart;
 import ch.vd.uniregctb.webservices.tiers2.TiersPort;
 import ch.vd.uniregctb.webservices.tiers2.TypeRecherche;
@@ -115,8 +116,7 @@ public class PerfsThread extends Thread {
 				params.getParts().addAll(parts);
 			}
 
-			Tiers tiers = port.getTiers(params);
-			return tiers;
+			return port.getTiers(params);
 		}
 
 		@Override
@@ -162,8 +162,7 @@ public class PerfsThread extends Thread {
 				params.getParts().addAll(parts);
 			}
 
-			TiersHisto tiers = port.getTiersPeriode(params);
-			return tiers;
+			return port.getTiersPeriode(params);
 		}
 
 		@Override
@@ -194,13 +193,21 @@ public class PerfsThread extends Thread {
 				params.getParts().addAll(parts);
 			}
 
-			TiersHisto tiers = port.getTiersHisto(params);
-			return tiers;
+			return port.getTiersHisto(params);
 		}
 
 		@Override
-		public List<?> executeBatch(TiersPort port, Collection<Long> ids) {
-			throw new NotImplementedException();
+		public List<?> executeBatch(TiersPort port, Collection<Long> ids) throws TechnicalException_Exception, AccessDeniedException_Exception, BusinessException_Exception {
+			GetBatchTiersHisto params = new GetBatchTiersHisto();
+			params.setLogin(login);
+			params.getTiersNumbers().addAll(ids);
+
+			if (parts != null) {
+				params.getParts().addAll(parts);
+			}
+
+			BatchTiersHisto batch = port.getBatchTiersHisto(params);
+			return batch.getEntries();
 		}
 
 		@Override
@@ -283,11 +290,11 @@ public class PerfsThread extends Thread {
 	@Override
 	public void run() {
 
-		if (batch == null || batch.intValue() < 2) {
+		if (batch == null || batch < 2) {
 			runNormal();
 		}
 		else {
-			runBatch(batch.intValue());
+			runBatch(batch);
 		}
 	}
 
