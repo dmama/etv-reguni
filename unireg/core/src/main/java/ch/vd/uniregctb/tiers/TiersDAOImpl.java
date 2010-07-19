@@ -147,6 +147,7 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 
 		// on charge les tiers en vrac
 		// idsFull -> les tiers liés sont nécessaires pour charger les rapport-entre-tiers sans sous-requêtes
+		// TODO (msi) cette étape n'est plus nécessaire depuis que les rapport-entre-tiers ne font que stocker les ids des tiers liés. A supprimer donc.
 		final List<Tiers> full = queryObjectsByIds("from Tiers as t where t.id in (:ids)", idsFull, session);
 		for (Tiers t : full) {
 			session.setReadOnly(t, true);

@@ -53,7 +53,6 @@ import ch.vd.uniregctb.type.TypeEtatDeclaration;
 @Table(name = "DECLARATION")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "DOCUMENT_TYPE", discriminatorType = DiscriminatorType.STRING)
-@DiscriminatorValue("Document")
 public abstract class Declaration extends HibernateEntity implements DateRange, Validateable {
 
 	private static final long serialVersionUID = 5952424159981114355L;

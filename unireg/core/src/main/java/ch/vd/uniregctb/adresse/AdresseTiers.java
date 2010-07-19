@@ -37,7 +37,6 @@ import ch.vd.uniregctb.type.TypeAdresseTiers;
 @Table(name = "ADRESSE_TIERS")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "ADR_TYPE", discriminatorType = DiscriminatorType.STRING)
-@DiscriminatorValue("AdresseTiers")
 public abstract class AdresseTiers extends HibernateEntity implements Comparable<AdresseTiers>, DateRange, Serializable, Cloneable, SubValidateable {
 
 	//private final Logger LOGGER = Logger.getLogger(AdresseTiers.class);

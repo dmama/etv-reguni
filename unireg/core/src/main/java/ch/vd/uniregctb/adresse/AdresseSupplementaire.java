@@ -21,7 +21,6 @@ import ch.vd.uniregctb.type.TexteCasePostale;
  * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nLi9wFx9Edygsbnw9h5bVw"
  */
 @Entity
-@DiscriminatorValue("ADRESSE_SUPPLEMENTAIRE")
 public abstract class AdresseSupplementaire extends AdresseTiers {
 	/**
 	 *

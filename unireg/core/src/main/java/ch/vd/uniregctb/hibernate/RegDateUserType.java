@@ -107,4 +107,8 @@ public class RegDateUserType extends GenericUserType implements UserType, Parame
 			allowPartial = false;
 		}
 	}
+
+	public boolean isAllowPartial() {
+		return allowPartial;
+	}
 }

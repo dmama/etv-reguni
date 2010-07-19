@@ -1,0 +1,126 @@
+package ch.vd.uniregctb.dao.jdbc;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.springframework.dao.support.DataAccessUtils;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.utils.Pair;
+import ch.vd.uniregctb.common.CollectionsUtils;
+import ch.vd.uniregctb.tiers.AnnuleEtRemplace;
+import ch.vd.uniregctb.tiers.AppartenanceMenage;
+import ch.vd.uniregctb.tiers.ConseilLegal;
+import ch.vd.uniregctb.tiers.ContactImpotSource;
+import ch.vd.uniregctb.tiers.Curatelle;
+import ch.vd.uniregctb.tiers.RapportEntreTiers;
+import ch.vd.uniregctb.tiers.RapportPrestationImposable;
+import ch.vd.uniregctb.tiers.RepresentationConventionnelle;
+import ch.vd.uniregctb.tiers.Tutelle;
+import ch.vd.uniregctb.type.TypeActivite;
+
+public class JdbcRapportEntreTiersDaoImpl implements JdbcRapportEntreTiersDao {
+
+	private static final RapportEntreTiersMapper ROW_MAPPER = new RapportEntreTiersMapper();
+
+	@SuppressWarnings({"unchecked"})
+	public RapportEntreTiers get(long forId, JdbcTemplate template) {
+		final Pair<Long, RapportEntreTiers> pair = (Pair<Long, RapportEntreTiers>) DataAccessUtils.uniqueResult(template.query(RapportEntreTiersMapper.selectById(), new Object[]{forId}, ROW_MAPPER));
+		return pair.getSecond();
+	}
+
+	@SuppressWarnings({"unchecked"})
+	public Set<RapportEntreTiers> getForTiersSujet(long tiersId, JdbcTemplate template) {
+		final List<RapportEntreTiers> list = template.query(RapportEntreTiersMapper.selectByTiersSujetId(), new Object[]{tiersId}, ROW_MAPPER);
+		return new HashSet<RapportEntreTiers>(list);
+	}
+
+	@SuppressWarnings({"unchecked"})
+	public Set<RapportEntreTiers> getForTiersObjet(long tiersId, JdbcTemplate template) {
+		final List<RapportEntreTiers> list = template.query(RapportEntreTiersMapper.selectByTiersObjetId(), new Object[]{tiersId}, ROW_MAPPER);
+		return new HashSet<RapportEntreTiers>(list);
+	}
+
+	@SuppressWarnings({"unchecked"})
+	public Map<Long, Set<RapportEntreTiers>> getForTiersSujet(Collection<Long> tiersId, final JdbcTemplate template) {
+
+		// Découpe la requête en sous-requêtes si nécessaire
+		final List<RapportEntreTiers> list = CollectionsUtils.splitAndProcess(tiersId, JdbcDaoUtils.MAX_IN_SIZE, new CollectionsUtils.SplitCallback<Long, RapportEntreTiers>() {
+			public List<RapportEntreTiers> process(List<Long> ids) {
+				return template.query(RapportEntreTiersMapper.selectByTiersSujetIds(ids), ROW_MAPPER);
+			}
+		});
+
+		final HashMap<Long, Set<RapportEntreTiers>> map = new HashMap<Long, Set<RapportEntreTiers>>();
+		for (RapportEntreTiers ret : list) {
+			Set<RapportEntreTiers> set = map.get(ret.getSujetId());
+			if (set == null) {
+				set = new HashSet<RapportEntreTiers>();
+				map.put(ret.getSujetId(), set);
+			}
+			set.add(ret);
+		}
+		return map;
+	}
+
+	@SuppressWarnings({"unchecked"})
+	public Map<Long, Set<RapportEntreTiers>> getForTiersObjet(Collection<Long> tiersId, final JdbcTemplate template) {
+
+		// Découpe la requête en sous-requêtes si nécessaire
+		final List<RapportEntreTiers> list = CollectionsUtils.splitAndProcess(tiersId, JdbcDaoUtils.MAX_IN_SIZE, new CollectionsUtils.SplitCallback<Long, RapportEntreTiers>() {
+			public List<RapportEntreTiers> process(List<Long> ids) {
+				return template.query(RapportEntreTiersMapper.selectByTiersObjetIds(ids), ROW_MAPPER);
+			}
+		});
+
+		final HashMap<Long, Set<RapportEntreTiers>> map = new HashMap<Long, Set<RapportEntreTiers>>();
+		for (RapportEntreTiers ret : list) {
+			Set<RapportEntreTiers> set = map.get(ret.getObjetId());
+			if (set == null) {
+				set = new HashSet<RapportEntreTiers>();
+				map.put(ret.getObjetId(), set);
+			}
+			set.add(ret);
+		}
+		return map;
+	}
+
+	private static class RapportEntreTiersMapper implements RowMapper {
+		private static final String BASE_SELECT = "select " +
+				${BASE_SELECT};
+
+		public static String selectById() {
+			return BASE_SELECT + " where ${PRIMARY_KEY} = ?";
+		}
+
+		public static String selectByTiersSujetId() {
+			return BASE_SELECT + " where TIERS_SUJET_ID = ?";
+		}
+
+		public static String selectByTiersObjetId() {
+			return BASE_SELECT + " where TIERS_OBJET_ID = ?";
+		}
+
+		public static String selectByTiersSujetIds(Collection<Long> tiersId) {
+			return BASE_SELECT + " where TIERS_SUJET_ID in " + JdbcDaoUtils.buildInClause(tiersId);
+		}
+
+		public static String selectByTiersObjetIds(Collection<Long> tiersId) {
+			return BASE_SELECT + " where TIERS_OBJET_ID in " + JdbcDaoUtils.buildInClause(tiersId);
+		}
+
+		public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
+			${MAPPING_CODE}
+		}
+	}
+}

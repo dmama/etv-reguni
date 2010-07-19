@@ -25,7 +25,6 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
  * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_IJGfIF-hEdyCxumqfWBxMQ"
  */
 @Entity
-@DiscriminatorValue("ForFiscalRevenuFortune")
 public abstract class ForFiscalRevenuFortune extends ForFiscal {
 
 	private static final long serialVersionUID = 6699182098456063372L;

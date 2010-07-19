@@ -35,7 +35,6 @@ import ch.vd.uniregctb.mouvement.MouvementDossier;
  * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nLi8i1x9Edygsbnw9h5bVw"
  */
 @Entity
-@DiscriminatorValue("Contribuable")
 public abstract class Contribuable extends Tiers {
 
 	public static final int CTB_GEN_FIRST_ID = 10000000;

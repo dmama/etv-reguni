@@ -60,7 +60,6 @@ import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 @Table(name = "TIERS")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "TIERS_TYPE", discriminatorType = DiscriminatorType.STRING)
-@DiscriminatorValue("Tiers")
 public abstract class Tiers extends HibernateEntity implements Validateable, BusinessComparable<Tiers> {
 
 	public static final String NATURE_HABITANT = "Habitant";
@@ -660,7 +659,7 @@ public abstract class Tiers extends HibernateEntity implements Validateable, Bus
 	 *            the rapportsObjet to set
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_ON1FcZNZEdygKK6Oe0tVlw?SETTER"
 	 */
-	protected void setRapportsObjet(Set<RapportEntreTiers> theRapportsObjet) {
+	public void setRapportsObjet(Set<RapportEntreTiers> theRapportsObjet) {
 		// begin-user-code
 		rapportsObjet = theRapportsObjet;
 		// end-user-code
@@ -713,7 +712,7 @@ public abstract class Tiers extends HibernateEntity implements Validateable, Bus
 	 *            the rapportsSujet to set
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_BeZlcpNZEdygKK6Oe0tVlw?SETTER"
 	 */
-	protected void setRapportsSujet(Set<RapportEntreTiers> theRapportsSujet) {
+	public void setRapportsSujet(Set<RapportEntreTiers> theRapportsSujet) {
 		// begin-user-code
 		rapportsSujet = theRapportsSujet;
 		// end-user-code
@@ -948,7 +947,7 @@ public abstract class Tiers extends HibernateEntity implements Validateable, Bus
 	 *            the declarations to set
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_ZtOEseqfEdySTq6PFlf9jQ?SETTER"
 	 */
-	protected void setDeclarations(Set<Declaration> theDeclarations) {
+	public void setDeclarations(Set<Declaration> theDeclarations) {
 		// begin-user-code
 		declarations = theDeclarations;
 		// end-user-code
@@ -1297,7 +1296,7 @@ public abstract class Tiers extends HibernateEntity implements Validateable, Bus
 	 *            the forsFiscaux to set
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_7ofwMV-eEdyCxumqfWBxMQ?SETTER"
 	 */
-	protected void setForsFiscaux(Set<ForFiscal> theForsFiscaux) {
+	public void setForsFiscaux(Set<ForFiscal> theForsFiscaux) {
 		// begin-user-code
 		forsFiscaux = theForsFiscaux;
 		// end-user-code
@@ -1397,7 +1396,7 @@ public abstract class Tiers extends HibernateEntity implements Validateable, Bus
 	}
 
 	// protected -> mise-à-jour réservée à Hibernate
-	protected void setIndexDirty(Boolean dirty) {
+	public void setIndexDirty(Boolean dirty) {
 		this.indexDirty = dirty;
 	}
 

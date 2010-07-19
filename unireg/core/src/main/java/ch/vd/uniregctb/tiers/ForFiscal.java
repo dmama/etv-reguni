@@ -61,7 +61,6 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 @Table(name = "FOR_FISCAL")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "FOR_TYPE", discriminatorType = DiscriminatorType.STRING)
-@DiscriminatorValue("ForFiscal")
 public abstract class ForFiscal extends HibernateEntity implements Comparable<ForFiscal>, DateRange, SubValidateable, Duplicable<ForFiscal> {
 
 	private static final long serialVersionUID = -4147759696434131389L;

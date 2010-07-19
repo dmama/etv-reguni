@@ -65,7 +65,14 @@ public abstract class BusinessItTestApplication {
 				DOMConfigurator.configure("src/test/resources/ut/log4j.xml");
 			}
 			else {
-				Assert.fail("Pas de fichier Log4j");
+				// Dans IDEA
+				file = new File("business-it/src/test/resources/ut/log4j.xml");
+				if (file.exists()) {
+					DOMConfigurator.configure("business-it/src/test/resources/ut/log4j.xml");
+				}
+				else {
+					Assert.fail("Pas de fichier Log4j");
+				}
 			}
 		}
 	}
