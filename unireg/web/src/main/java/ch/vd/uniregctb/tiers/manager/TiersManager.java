@@ -158,12 +158,18 @@ public class TiersManager implements MessageSourceAware {
 	}
 
 	private RapportView createRapportViewPourFilliation(Individu reference, Individu autre, SensRapportEntreTiers sens) {
-		final PersonnePhysique habitant = tiersDAO.getPPByNumeroIndividu(autre.getNoTechnique());
 		final RapportView rapportView = new RapportView();
 		rapportView.setSensRapportEntreTiers(sens);
 		rapportView.setTypeRapportEntreTiers(TypeRapportEntreTiersWeb.FILIATION);
-		if (habitant != null) {
-			rapportView.setNumero(habitant.getNumero());
+
+		try {
+			final PersonnePhysique habitant = tiersDAO.getPPByNumeroIndividu(autre.getNoTechnique());
+			if (habitant != null) {
+				rapportView.setNumero(habitant.getNumero());
+			}
+		}
+		catch (PlusieursPersonnesPhysiquesAvecMemeNumeroIndividuException e) {
+			LOGGER.warn(String.format("Détermination impossible du tiers associé à l'individu %d : %s", autre.getNoTechnique(), e.getMessage()));
 		}
 
 		final String nomBrut = tiersService.getNomPrenom(autre);
