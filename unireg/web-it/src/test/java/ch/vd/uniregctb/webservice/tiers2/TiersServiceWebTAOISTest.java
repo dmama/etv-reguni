@@ -1016,11 +1016,11 @@ public class TiersServiceWebTAOISTest extends AbstractTiersServiceWebTest {
 
 		// l'adresse d'envoi n'a pas de salutations
 		assertNull(adresseEnvoi.getSalutations());
-		assertEquals("Banque Cantonale Vaudo", trimValiPattern(adresseEnvoi.getLigne1()));
-		assertEquals("", trimValiPattern(adresseEnvoi.getLigne2()));
-		assertEquals("", trimValiPattern(adresseEnvoi.getLigne3()));
-		assertEquals("Place Saint-François", adresseEnvoi.getLigne4());
-		assertEquals("1003 Lausanne", adresseEnvoi.getLigne5());
+		assertEquals("Banque Cantonale Vaudoise", trimValiPattern(adresseEnvoi.getLigne1()));
+		assertEquals("pa Comptabilité financière", trimValiPattern(adresseEnvoi.getLigne2()));
+		assertEquals("Mme B. Zingrich Ebibi / CP 300", trimValiPattern(adresseEnvoi.getLigne3()));
+		assertEquals("1001 Lausanne", adresseEnvoi.getLigne4());
+		assertNull(adresseEnvoi.getLigne5());
 		assertNull(adresseEnvoi.getLigne6());
 		assertEquals(TypeAffranchissement.SUISSE, adresseEnvoi.getTypeAffranchissement());
 
