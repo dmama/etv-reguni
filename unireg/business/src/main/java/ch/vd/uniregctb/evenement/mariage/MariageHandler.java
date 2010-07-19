@@ -61,7 +61,7 @@ public class MariageHandler extends EvenementCivilHandlerBase {
 		final ServiceCivilService serviceCivil = getService().getServiceCivilService();
 
 		// [UNIREG-1595] On ne teste l'état civil que si le tiers est habitant (pas ancien habitant...)
-		if (habitant.isHabitant()) {
+		if (habitant.isHabitantVD()) {
 
 			final EtatCivil etatCivil = serviceCivil.getEtatCivilActif(individu.getNoTechnique(), mariage.getDate());
 			if (etatCivil == null) {
@@ -89,7 +89,7 @@ public class MariageHandler extends EvenementCivilHandlerBase {
 			}
 
 			// [UNIREG-1595] On ne teste l'état civil que si le tiers est habitant (pas ancien habitant...)
-			if (habitantConjoint.isHabitant()) {
+			if (habitantConjoint.isHabitantVD()) {
 
 				final EtatCivil etatCivilConjoint = serviceCivil.getEtatCivilActif(conjoint.getNoTechnique(), mariage.getDate());
 				if (etatCivilConjoint == null) {

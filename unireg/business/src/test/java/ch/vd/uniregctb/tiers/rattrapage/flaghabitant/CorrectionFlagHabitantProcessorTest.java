@@ -87,7 +87,7 @@ public class CorrectionFlagHabitantProcessorTest extends BusinessTest {
 				Assert.assertEquals("Mauvais contribuable ?", id, info.getNoCtb());
 			}
 			final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(id);
-			Assert.assertEquals(nouvelHabitant, pp.isHabitant());
+			Assert.assertEquals(nouvelHabitant, pp.isHabitantVD());
 		}
 		else {
 			// ignoré !

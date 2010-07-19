@@ -5,14 +5,12 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Errors;
-import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.iban.IbanValidationException;
 import ch.vd.uniregctb.iban.IbanValidator;
 import ch.vd.uniregctb.tiers.AutreCommunaute;
@@ -74,7 +72,7 @@ public class TiersEditValidator implements Validator {
 				// --------- --------------Onglets Civil-----------------------------
 				if (tiers instanceof PersonnePhysique) {
 					PersonnePhysique nonHabitant = (PersonnePhysique) tiers;
-					if (!nonHabitant.isHabitant()) {
+					if (!nonHabitant.isHabitantVD()) {
 
 						if (StringUtils.isBlank(nonHabitant.getNom())) {
 							errors.rejectValue("tiers.nom", "error.tiers.nom.vide");

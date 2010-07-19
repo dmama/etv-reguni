@@ -93,7 +93,7 @@ public class PersonnePhysiqueHisto extends ContribuableHisto {
 	}
 
 	private void initBase(ch.vd.uniregctb.tiers.PersonnePhysique personne, Context context) throws BusinessException {
-		if (!personne.isHabitant()) {
+		if (!personne.isHabitantVD()) {
 			this.nom = personne.getNom();
 			this.prenom = personne.getPrenom();
 			this.dateNaissance = DataHelper.coreToWeb(personne.getDateNaissance());

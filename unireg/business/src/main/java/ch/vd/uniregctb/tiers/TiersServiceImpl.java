@@ -180,7 +180,7 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 	public PersonnePhysique changeNHenHabitant(PersonnePhysique nonHabitant, Long numInd, RegDate date) {
-		Assert.isFalse(nonHabitant.isHabitant(), "changeNHenHabitant : la PP fourni est habitant");
+		Assert.isFalse(nonHabitant.isHabitantVD(), "changeNHenHabitant : la PP fourni est habitant");
 		nonHabitant.setNumeroIndividu(numInd);
 		nonHabitant.setNumeroAssureSocial(null);
 		nonHabitant.setNom(null);
@@ -243,7 +243,7 @@ public class TiersServiceImpl implements TiersService {
 	 */
 	public PersonnePhysique changeHabitantenNH(PersonnePhysique habitant) {
 
-		Assert.isTrue(habitant.isHabitant(), "changeHabitantenNH : la PP fourni n'est pas habitant");
+		Assert.isTrue(habitant.isHabitantVD(), "changeHabitantenNH : la PP fourni n'est pas habitant");
 		final Individu ind = getIndividu(habitant);
 		final HistoriqueIndividu indHisto = ind.getDernierHistoriqueIndividu();
 		Assert.notNull(indHisto);
@@ -461,7 +461,7 @@ public class TiersServiceImpl implements TiersService {
 		}
 
 		final Sexe sexe;
-		if (pp.isHabitant()) {
+		if (pp.isHabitantVD()) {
 			final Individu individu = indProvider.getIndividu(pp);
 			if (individu == null) {
 				throw new IndividuNotFoundException(pp);
@@ -681,7 +681,7 @@ public class TiersServiceImpl implements TiersService {
 	 */
 	public boolean isSuisse(PersonnePhysique pp, RegDate date) throws TiersException {
 
-		if (pp.isHabitant()) {
+		if (pp.isHabitantVD()) {
 			long numeroIndividu = pp.getNumeroIndividu();
 			final Collection<Nationalite> nationalites = getServiceCivilService().getNationalites(numeroIndividu, date.year());
 			if (nationalites != null) {
@@ -747,7 +747,7 @@ public class TiersServiceImpl implements TiersService {
 	 */
 	public boolean isEtrangerSansPermisC(PersonnePhysique pp, RegDate date) throws TiersException {
 		if (date == null) date = RegDate.get();
-		if (pp.isHabitant()) {
+		if (pp.isHabitantVD()) {
 			return isHabitantEtrangerSansPermisC(pp, date);
 		}
 		else {
@@ -1318,7 +1318,7 @@ public class TiersServiceImpl implements TiersService {
 	public String getNom(PersonnePhysique personne) {
 
 		final String nom;
-		if (personne.isHabitant()) {
+		if (personne.isHabitantVD()) {
 			final Individu individu = getIndividu(personne);
 			nom = individu.getDernierHistoriqueIndividu().getNom();
 		}
@@ -1337,7 +1337,7 @@ public class TiersServiceImpl implements TiersService {
 	public String getPrenom(PersonnePhysique personne) {
 
 		final String prenom;
-		if (personne.isHabitant()) {
+		if (personne.isHabitantVD()) {
 			final Individu individu = getIndividu(personne);
 			prenom = individu.getDernierHistoriqueIndividu().getPrenom();
 		}
@@ -1378,7 +1378,7 @@ public class TiersServiceImpl implements TiersService {
 	 */
 	public Individu getIndividu(PersonnePhysique personne, int annee, EnumAttributeIndividu[] attributes) {
 
-		if(personne.isHabitant()) {
+		if(personne.isHabitantVD()) {
 			Individu individu = null;
 			Long noIndividu = personne.getNumeroIndividu();
 			if (annee <= 0) {
@@ -1517,11 +1517,11 @@ public class TiersServiceImpl implements TiersService {
 			return forFP;
 		}
 		
-		//si (re)ouverture d'un for non vaudois et PP.isHabitant faire devenir la PP non habitant
+		//si (re)ouverture d'un for non vaudois et PP.isHabitantVD faire devenir la PP non habitant
 		if (!forFP.getTypeAutoriteFiscale().equals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD)) {
 			if (forFP.getTiers() instanceof PersonnePhysique) {
 				PersonnePhysique pp = (PersonnePhysique) forFP.getTiers();
-				if (pp.isHabitant()) {
+				if (pp.isHabitantVD()) {
 					changeHabitantenNH(pp);
 				}
 			}
@@ -1529,20 +1529,20 @@ public class TiersServiceImpl implements TiersService {
 				MenageCommun menage = (MenageCommun) forFP.getTiers();
 				EnsembleTiersCouple ensemble = getEnsembleTiersCouple(menage, null);
 				PersonnePhysique principal = (ensemble == null) ? null : ensemble.getPrincipal();
-				if (principal != null && principal.isHabitant()) {
+				if (principal != null && principal.isHabitantVD()) {
 					changeHabitantEnNHSiDomicilieHorsDuCanton(principal);
 				}
 				PersonnePhysique second = (ensemble == null) ? null : ensemble.getConjoint();
-				if (second != null && second.isHabitant()) {
+				if (second != null && second.isHabitantVD()) {
 					changeHabitantEnNHSiDomicilieHorsDuCanton(second);
 				}
 			}
 		}
-		//Si (re)ouverture d'un for vaudois et !PP.isHabitant et PP.numInd not null refaire devenir la PP habitante
+		//Si (re)ouverture d'un for vaudois et !PP.isHabitantVD et PP.numInd not null refaire devenir la PP habitante
 		if (forFP.getTypeAutoriteFiscale().equals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD)) {
 			if (forFP.getTiers() instanceof PersonnePhysique) {
 				final PersonnePhysique pp = (PersonnePhysique) forFP.getTiers();
-				if (!pp.isHabitant() && pp.getNumeroIndividu() != null && pp.getNumeroIndividu() != 0) {
+				if (!pp.isHabitantVD() && pp.getNumeroIndividu() != null && pp.getNumeroIndividu() != 0) {
 					changeNHenHabitant(pp, pp.getNumeroIndividu(), forFP.getDateDebut());
 				}
 			}
@@ -1561,7 +1561,7 @@ public class TiersServiceImpl implements TiersService {
 
 	public boolean changeHabitantEnNHSiDomicilieHorsDuCanton(PersonnePhysique pp) {
 		boolean change = false;
-		if (pp != null && pp.isHabitant() && !isDecede(pp)) {
+		if (pp != null && pp.isHabitantVD() && !isDecede(pp)) {
 			// on doit vérifier l'adresse de domicile du contribuable,
 			// et ne le passer en non-habitant que si cette adresse n'est pas vaudoise...
 			try {
@@ -1589,7 +1589,7 @@ public class TiersServiceImpl implements TiersService {
 
 	public boolean changeNHEnHabitantSiDomicilieDansLeCanton(PersonnePhysique pp, RegDate dateArrivee) {
 		boolean change = false;
-		if (pp != null && !pp.isHabitant() && !isDecede(pp) && pp.getNumeroIndividu() != null && pp.getNumeroIndividu() != 0) {
+		if (pp != null && !pp.isHabitantVD() && !isDecede(pp) && pp.getNumeroIndividu() != null && pp.getNumeroIndividu() != 0) {
 			// on doit vérifier l'adresse de domicile du contribuable,
 			// et ne le passer en habitant que si cette adresse est vaudoise...
 			try {
@@ -2509,7 +2509,7 @@ public class TiersServiceImpl implements TiersService {
 		Assert.notNull(personne);
 
 		final String nomPrenom;
-		if (personne.isHabitant()) {
+		if (personne.isHabitantVD()) {
 			final Individu individu = getIndividu(personne);
 			if (individu != null) {
 				nomPrenom = getNomPrenom(individu);
@@ -2549,7 +2549,7 @@ public class TiersServiceImpl implements TiersService {
 	 * {@inheritDoc}
 	 */
 	public RegDate getDateNaissance(PersonnePhysique pp) {
-		if (pp.isHabitant()) {
+		if (pp.isHabitantVD()) {
 			final Individu individu = getIndividu(pp);
 			return individu.getDateNaissance();
 		}
@@ -2565,7 +2565,7 @@ public class TiersServiceImpl implements TiersService {
 		if (pp == null)
 			return null;
 
-		if (pp.isHabitant()) {
+		if (pp.isHabitantVD()) {
 			if (pp.getDateDeces() != null) {
 				return pp.getDateDeces();
 			}
@@ -2588,7 +2588,7 @@ public class TiersServiceImpl implements TiersService {
 	 * {@inheritDoc}
 	 */
 	public String getNumeroAssureSocial(PersonnePhysique pp) {
-		if (pp.isHabitant()) {
+		if (pp.isHabitantVD()) {
 			final Individu individu = getIndividu(pp);
 			return individu.getNouveauNoAVS();
 		}
@@ -2601,7 +2601,7 @@ public class TiersServiceImpl implements TiersService {
 	 * {@inheritDoc}
 	 */
 	public String getAncienNumeroAssureSocial(PersonnePhysique pp) {
-		if (pp.isHabitant()) {
+		if (pp.isHabitantVD()) {
 			final Individu individu = getIndividu(pp);
 			return individu.getDernierHistoriqueIndividu().getNoAVS();
 		}

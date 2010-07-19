@@ -39,7 +39,7 @@ public class DebiteurPrestationImposableIndexable extends TiersIndexable {
 		if (ctb != null) {
 			if (ctb instanceof PersonnePhysique) {
 				PersonnePhysique pp = (PersonnePhysique) ctb;
-				if (pp.isHabitant()) {
+				if (pp.isHabitantVD()) {
 					final Individu ind = serviceCivil.getIndividu(pp.getNumeroIndividu(), null, EnumAttributeIndividu.ADRESSES);
 					if (ind == null) {
 						throw new IndividuNotFoundException(pp);

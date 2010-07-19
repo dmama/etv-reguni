@@ -85,7 +85,7 @@ public class AnnulationMariageHandler extends EvenementCivilHandlerBase {
 		getMetier().annuleMariage(principal, conjoint, annulation.getDate(), annulation.getNumeroEvenement());
 
 		// On signale que le conjoint a changé dans le registre civil (=> va rafraîchir le cache des individus)
-		if (conjoint != null && conjoint.isHabitant()) {
+		if (conjoint != null && conjoint.isHabitantVD()) {
 			dataEventService.onIndividuChange(conjoint.getNumeroIndividu());
 		}
 		return null;

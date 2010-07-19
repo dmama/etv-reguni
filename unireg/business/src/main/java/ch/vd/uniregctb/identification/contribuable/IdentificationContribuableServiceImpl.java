@@ -243,7 +243,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 
 	private void verifierEtMettreAJourContribuable(IdentificationContribuable message, PersonnePhysique personne)
 			throws InfrastructureException {
-		if (!personne.isHabitant() && REPARTITION_INTERCANTONALE.equals(message.getDemande().getTypeMessage())
+		if (!personne.isHabitantVD() && REPARTITION_INTERCANTONALE.equals(message.getDemande().getTypeMessage())
 				&& messageFromCanton(message)) {
 			CriteresPersonne criteres = message.getDemande().getPersonne();
 

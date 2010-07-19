@@ -607,13 +607,13 @@ public class TiersServiceTest extends BusinessTest {
 		pp = (PersonnePhysique) tiersDAO.save(pp);
 		ForFiscalPrincipal forVD = tiersService.openForFiscalPrincipal(pp, dateOuverture, MotifRattachement.DOMICILE, MockCommune.Cossonay.getNoOFSEtendu(),
 				TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ModeImposition.ORDINAIRE, MotifFor.ARRIVEE_HC, true);
-		assertTrue(pp.isHabitant());
+		assertTrue(pp.isHabitantVD());
 		tiersService.closeForFiscalPrincipal(forVD, date(2007, 12, 31), MotifFor.DEPART_HS);
 		ForFiscalPrincipal forHS = tiersService.openForFiscalPrincipal(pp, date(2008, 1, 1), MotifRattachement.DOMICILE, MockPays.France.getNoOFS(),
 				TypeAutoriteFiscale.PAYS_HS, ModeImposition.ORDINAIRE, MotifFor.DEPART_HS, true);
-		assertTrue(!pp.isHabitant());
+		assertTrue(!pp.isHabitantVD());
 		tiersService.annuleForFiscal(forHS, true);
-		assertTrue(pp.isHabitant());
+		assertTrue(pp.isHabitantVD());
 	}
 
 	private AppartenanceMenage buildAppartenanceMenage(MenageCommun mc, PersonnePhysique pp, RegDate dateDebut, RegDate dateFin, boolean isAnnule) {
@@ -2351,8 +2351,8 @@ public class TiersServiceTest extends BusinessTest {
 				Assert.assertNotNull(madame);
 				Assert.assertEquals(noIndMonsieur, (long) monsieur.getNumeroIndividu());
 				Assert.assertEquals(noIndMadame, (long) madame.getNumeroIndividu());
-				Assert.assertTrue(madame.isHabitant());
-				Assert.assertFalse(monsieur.isHabitant());
+				Assert.assertTrue(madame.isHabitantVD());
+				Assert.assertFalse(monsieur.isHabitantVD());
 				return null;
 			}
 		});
@@ -2426,8 +2426,8 @@ public class TiersServiceTest extends BusinessTest {
 				Assert.assertNotNull(madame);
 				Assert.assertEquals(noIndMonsieur, (long) monsieur.getNumeroIndividu());
 				Assert.assertEquals(noIndMadame, (long) madame.getNumeroIndividu());
-				Assert.assertTrue(madame.isHabitant());
-				Assert.assertFalse(monsieur.isHabitant());
+				Assert.assertTrue(madame.isHabitantVD());
+				Assert.assertFalse(monsieur.isHabitantVD());
 				return null;
 			}
 		});

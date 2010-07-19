@@ -146,7 +146,7 @@ public class ListeContribuablesResidentsSansForVaudoisThread extends ListesThrea
 			}
 		}
 		else if (!okAvecMajorite) {
-			if (pp.isHabitant() && pp.getDateNaissance() == null) {
+			if (pp.isHabitantVD() && pp.getDateNaissance() == null) {
 				final Individu individu = tiersService.getIndividu(pp);
 				okAvecMajorite = FiscalDateHelper.isMajeurAt(individu, dateTraitement);
 			}

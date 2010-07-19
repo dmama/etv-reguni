@@ -97,7 +97,7 @@ public class DepartHandler extends EvenementCivilHandlerBase {
 			else {
 
 				// [UNIREG-1691] si la personne physique était déjà notée non-habitante, on ne fait que régulariser une situation bancale
-				if (pp.isHabitant()) {
+				if (pp.isHabitantVD()) {
 					getService().changeHabitantenNH(pp);
 				}
 
@@ -183,7 +183,7 @@ public class DepartHandler extends EvenementCivilHandlerBase {
 			conjoint = null;
 		}
 
-		return !(conjoint != null && conjoint.isHabitant());
+		return !(conjoint != null && conjoint.isHabitantVD());
 
 	}
 

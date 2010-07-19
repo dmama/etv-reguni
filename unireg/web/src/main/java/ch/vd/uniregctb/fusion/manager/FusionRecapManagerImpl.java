@@ -80,7 +80,7 @@ public class FusionRecapManagerImpl implements FusionRecapManager, MessageSource
 
 
 		PersonnePhysique nonHabitant = (PersonnePhysique) tiersService.getTiers(numeroNonHabitant);
-		if (nonHabitant == null || nonHabitant.isHabitant()) {
+		if (nonHabitant == null || nonHabitant.isHabitantVD()) {
 			throw new ObjectNotFoundException(this.getMessageSource().getMessage("error.non.habitant.inexistant" , null,  WebContextUtils.getDefaultLocale()));
 		}
 
@@ -88,7 +88,7 @@ public class FusionRecapManagerImpl implements FusionRecapManager, MessageSource
 		fusionRecapView.setNonHabitant(nonHabitantView);
 
 		PersonnePhysique habitant = (PersonnePhysique) tiersService.getTiers(numeroHabitant);
-		if (habitant == null || !habitant.isHabitant()) {
+		if (habitant == null || !habitant.isHabitantVD()) {
 			throw new ObjectNotFoundException(this.getMessageSource().getMessage("error.habitant.inexistant" , null,  WebContextUtils.getDefaultLocale()));
 		}
 

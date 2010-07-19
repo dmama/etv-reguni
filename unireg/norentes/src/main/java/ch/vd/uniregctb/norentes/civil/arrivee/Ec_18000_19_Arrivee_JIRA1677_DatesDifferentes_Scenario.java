@@ -102,7 +102,7 @@ public class Ec_18000_19_Arrivee_JIRA1677_DatesDifferentes_Scenario extends Even
 		assertNotNull(couple, "Pas de couple trouvé à la date d'arrivée de Madame");
 		assertNotNull(couple.getMenage(), "Pas de ménage dans le couple?");
 		assertNull(couple.getConjoint(), "Il devrait être marié seul");
-		assertEquals(true, pp.isHabitant(), "Alex est habitante!");
+		assertEquals(true, pp.isHabitantVD(), "Alex est habitante!");
 
 		final MenageCommun mc = couple.getMenage();
 		final ForFiscalPrincipal ffpDateMariage = mc.getForFiscalPrincipalAt(dateMariage);
@@ -134,11 +134,11 @@ public class Ec_18000_19_Arrivee_JIRA1677_DatesDifferentes_Scenario extends Even
 
 		final PersonnePhysique olivier = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndOlivier);
 		assertNotNull(olivier, "L'habitant Olivier n'a pas été créé");
-		assertTrue(olivier.isHabitant(), "Olivier devrait être habitant!");
+		assertTrue(olivier.isHabitantVD(), "Olivier devrait être habitant!");
 
 		final PersonnePhysique alex = (PersonnePhysique) tiersDAO.get(noCtbAlex);
 		assertNotNull(alex, "L'habitante Alexandra n'existe plus ?");
-		assertTrue(alex.isHabitant(), "Alexandra devrait être habitante!");
+		assertTrue(alex.isHabitantVD(), "Alexandra devrait être habitante!");
 
 		final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(olivier, dateArriveeMonsieur);
 		assertNotNull(couple, "Pas de couple trouvé à la date d'arrivée de monsieur");

@@ -230,7 +230,7 @@ public class TiersGeneralManagerImpl implements TiersGeneralManager{
 	private void setErreursFiliation(Tiers tiers, ValidationResults validationResults) {
 		if (tiers instanceof PersonnePhysique) {
 			final PersonnePhysique pp = (PersonnePhysique) tiers;
-			if (pp.isHabitant()) {
+			if (pp.isHabitantVD()) {
 				final int year = RegDate.get().year();
 				final Individu ind = serviceCivilService.getIndividu(pp.getNumeroIndividu(), year);
 				for (EtatCivil etatCivil : ind.getEtatsCivils()) {

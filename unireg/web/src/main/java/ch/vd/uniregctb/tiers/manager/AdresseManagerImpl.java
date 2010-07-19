@@ -473,7 +473,7 @@ public class AdresseManagerImpl extends TiersManager implements AdresseManager {
 
 		if ( tiers instanceof PersonnePhysique) {
 			PersonnePhysique pp = (PersonnePhysique) tiers;
-			if (pp.isHabitant()) {
+			if (pp.isHabitantVD()) {
 				final AdressesCiviles adressesIndividu;
 				try {
 					adressesIndividu = getAdresseService().getAdressesCiviles(pp, null, false);

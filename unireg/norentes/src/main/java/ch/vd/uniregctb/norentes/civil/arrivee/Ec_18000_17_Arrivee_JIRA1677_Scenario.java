@@ -104,7 +104,7 @@ public class Ec_18000_17_Arrivee_JIRA1677_Scenario extends EvenementCivilScenari
 		assertNotNull(couple, "Pas de couple trouvé à la date de mariage");
 		assertNotNull(couple.getMenage(), "Pas de ménage dans le couple?");
 		assertNull(couple.getConjoint(), "Il devrait être marié seul");
-		assertEquals(false, pp.isHabitant(), "Olivier n'est pas habitant!");
+		assertEquals(false, pp.isHabitantVD(), "Olivier n'est pas habitant!");
 		assertNull(pp.getNumeroIndividu(), "Olivier n'est pas encore connu du registre civil!");
 
 		final MenageCommun mc = couple.getMenage();
@@ -138,7 +138,7 @@ public class Ec_18000_17_Arrivee_JIRA1677_Scenario extends EvenementCivilScenari
 
 		final PersonnePhysique alex = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndAlexandra);
 		assertNotNull(alex, "L'habitante Alexandra n'a pas été créée");
-		assertTrue(alex.isHabitant(), "Alexandra devrait être habitante!");
+		assertTrue(alex.isHabitantVD(), "Alexandra devrait être habitante!");
 
 		final PersonnePhysique olivier = (PersonnePhysique) tiersDAO.get(noCtbOlivier);
 		final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(olivier, dateMariage);
@@ -146,7 +146,7 @@ public class Ec_18000_17_Arrivee_JIRA1677_Scenario extends EvenementCivilScenari
 		assertNotNull(couple.getMenage(), "Pas de ménage dans le couple?");
 		assertNotNull(couple.getConjoint(), "Madame est maintenant connue!");
 		assertEquals(alex.getNumero(), couple.getConjoint().getNumero(), "Pas marié avec Madame?");
-		assertTrue(olivier.isHabitant(), "Olivier est maintenant arrivé!");
+		assertTrue(olivier.isHabitantVD(), "Olivier est maintenant arrivé!");
 		assertEquals(noIndOlivier, olivier.getNumeroIndividu(), "Olivier est maintenant connu du registre civil!");
 
 		final EvenementCivilData evenementOlivier = getEvenementCivilRegoupeForHabitant(olivier.getNumero());

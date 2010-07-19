@@ -204,11 +204,11 @@ public class Ec_19000_06_Depart_JIRA771_Scenario extends DepartScenario {
 	public void check3() throws Exception {
 		
 		final PersonnePhysique sebastien = (PersonnePhysique) tiersDAO.get(noHabSebastien);
-		assertFalse(sebastien.isHabitant(), "Le contribuable" + FormatNumeroHelper.numeroCTBToDisplay(noHabSebastien) + " aurait dû devenir non-habitant");
+		assertFalse(sebastien.isHabitantVD(), "Le contribuable" + FormatNumeroHelper.numeroCTBToDisplay(noHabSebastien) + " aurait dû devenir non-habitant");
 		assertAdressesFiscales(sebastien, communeArrivee);
 		
 		final PersonnePhysique gloria = (PersonnePhysique) tiersDAO.get(noHabGloria);
-		assertTrue(gloria.isHabitant(), "Le contribuable " + FormatNumeroHelper.numeroCTBToDisplay(noHabGloria) + " devrait toujours être habitant");
+		assertTrue(gloria.isHabitantVD(), "Le contribuable " + FormatNumeroHelper.numeroCTBToDisplay(noHabGloria) + " devrait toujours être habitant");
 		assertAdressesFiscales(gloria, communeDepart);
 		
 		final MenageCommun menageCommun = (MenageCommun) tiersDAO.get(noMenage);

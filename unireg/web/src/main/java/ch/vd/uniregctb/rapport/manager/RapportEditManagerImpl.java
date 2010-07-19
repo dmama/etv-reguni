@@ -200,7 +200,7 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 	}
 
 	private void validateRepresentationConventionnelle(RapportView rapportView, Tiers sujet) {
-		if (rapportView.isExtensionExecutionForcee() && sujet instanceof PersonnePhysique && ((PersonnePhysique)sujet).isHabitant()) {
+		if (rapportView.isExtensionExecutionForcee() && sujet instanceof PersonnePhysique && ((PersonnePhysique)sujet).isHabitantVD()) {
 			// [UNIREG-1341]
 			throw new ValidationException(sujet, "L'extension de l'exécution forcée est uniquement autorisée pour les tiers domiciliés à l'étranger");
 		}

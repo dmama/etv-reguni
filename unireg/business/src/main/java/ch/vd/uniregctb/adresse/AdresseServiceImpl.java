@@ -564,7 +564,7 @@ public class AdresseServiceImpl implements AdresseService {
 
 		FormulePolitesse salutations;
 
-		if (personne.isHabitant()) {
+		if (personne.isHabitantVD()) {
 			if (!tiersService.isDecede(personne)) {
 				if (tiersService.getSexe(personne).equals(Sexe.MASCULIN))
 					salutations = FormulePolitesse.MONSIEUR;
@@ -1859,9 +1859,9 @@ public class AdresseServiceImpl implements AdresseService {
 		 *  [UNIREG-771] : dans le cas d’un contribuable couple, l’adresse de domicile et l’adresse de courrier sont celles de l’individu principal
 		 *  sauf si le contribuable principal quitte le canton ou la Suisse alors que le contribuable secondaire reste dans le canton.
 		 */
-		if (principal != null && !principal.isHabitant()) {
+		if (principal != null && !principal.isHabitantVD()) {
 			final PersonnePhysique conjoint = ensemble.getConjoint(principal);
-			if (conjoint != null && conjoint.isHabitant()) {
+			if (conjoint != null && conjoint.isHabitantVD()) {
 				principalOuVaudois = conjoint;
 			}
 		}

@@ -553,14 +553,14 @@ public class MetierServiceImpl implements MetierService {
 		EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(menageCommun, date);
 		PersonnePhysique principal = couple.getPrincipal();
 		ch.vd.uniregctb.type.EtatCivil etatCivilPrincipal = situationFamilleService.getEtatCivil(principal, date, true);
-		if (!principal.isHabitant()) {
+		if (!principal.isHabitantVD()) {
 			auMoinsUnNonHabitant = true;
 		}
 		PersonnePhysique conjoint = couple.getConjoint();
 		ch.vd.uniregctb.type.EtatCivil etatCivilConjoint = null;
 		if (conjoint != null) {
 			etatCivilConjoint = situationFamilleService.getEtatCivil(conjoint, date, true);
-			if (!conjoint.isHabitant()) {
+			if (!conjoint.isHabitantVD()) {
 				auMoinsUnNonHabitant = true;
 			}
 		}
@@ -1300,7 +1300,7 @@ public class MetierServiceImpl implements MetierService {
 
 			ch.vd.uniregctb.type.EtatCivil etatCivilActif = situationFamilleService.getEtatCivil(pp, date, true);
 
-			if (!pp.isHabitant()) {
+			if (!pp.isHabitantVD()) {
 				nonHabitant = true;
 			}
 
@@ -1436,7 +1436,7 @@ public class MetierServiceImpl implements MetierService {
 			boolean auMoinsUnNonHabitant = false;
 			boolean etatsCivilsDifferents = false;
 			for (PersonnePhysique pp : tiersService.getPersonnesPhysiques(menage)) {
-				if (!pp.isHabitant()) {
+				if (!pp.isHabitantVD()) {
 					auMoinsUnNonHabitant = true;
 				}
 				else {
@@ -1700,7 +1700,7 @@ public class MetierServiceImpl implements MetierService {
 			menage = menageComplet.getMenage();
 		}
 
-		if (!defunt.isHabitant() ||
+		if (!defunt.isHabitantVD() ||
 				numeroEvenement == null) {//si décès via IHM on surcharge la date de décès du civil
 			defunt.setDateDeces(date);
 		}
@@ -1828,7 +1828,7 @@ public class MetierServiceImpl implements MetierService {
 			if (veuf != null) {
 
 				EtatCivil etatCivilActif = null;
-				if (veuf.isHabitant()) {
+				if (veuf.isHabitantVD()) {
 					etatCivilActif = serviceCivilService.getEtatCivilActif(veuf.getNumeroIndividu(), lendemainDeces);
 				}
 
@@ -2086,7 +2086,7 @@ public class MetierServiceImpl implements MetierService {
 				tiersService.closeAppartenanceMenage(conjointDecede, menage, date);
 
 				// on ne renseigne la date de décès que si elle n'est pas renseignée du tout
-				if (!conjointDecede.isHabitant() && conjointDecede.getDateDeces() == null) {
+				if (!conjointDecede.isHabitantVD() && conjointDecede.getDateDeces() == null) {
 					conjointDecede.setDateDeces(date);
 				}
 			}
@@ -2179,7 +2179,7 @@ public class MetierServiceImpl implements MetierService {
 				final RapportEntreTiers nouveauRapportDecede = reopenRapportEntreTiers(rapportDecede);
 				tiersService.addRapport(nouveauRapportDecede, conjointDecede, menageCommun);
 
-				if (!conjointDecede.isHabitant() && conjointDecede.getDateDeces() != null) {
+				if (!conjointDecede.isHabitantVD() && conjointDecede.getDateDeces() != null) {
 					conjointDecede.setDateDeces(null);
 				}
 			}

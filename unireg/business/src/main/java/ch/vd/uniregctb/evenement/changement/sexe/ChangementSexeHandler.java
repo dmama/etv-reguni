@@ -35,7 +35,7 @@ public class ChangementSexeHandler extends AbstractChangementHandler {
 		Audit.info(evenement.getNumeroEvenement(), String.format("Traitement du changement de sexe de l'individu : %d", noIndividu));
 
 		final PersonnePhysique pp = getTiersDAO().getPPByNumeroIndividu(noIndividu, true);
-		if (pp != null && !pp.isHabitant()) {
+		if (pp != null && !pp.isHabitantVD()) {
 			// pour les non-habitants, il faut recharger les données, non?
 			// quelles sont les données à recharger ? sexe !
 			final Individu individu = getService().getIndividu(pp);

@@ -136,7 +136,7 @@ public class MenageCommunIndexable extends ContribuableIndexable {
 	private static PersonnePhysiqueIndexable getPPIndexable(AdresseService adresseService, TiersService tiersService, ServiceCivilService serviceCivil, ServiceInfrastructureService serviceInfra,
 	                                                        PersonnePhysique pp) {
 		PersonnePhysiqueIndexable ppIndexable = null;
-		if (pp != null && !pp.isHabitant()) {
+		if (pp != null && !pp.isHabitantVD()) {
 			ppIndexable = new NonHabitantIndexable(adresseService, tiersService, serviceInfra, pp);
 		}
 		else if (pp != null) {

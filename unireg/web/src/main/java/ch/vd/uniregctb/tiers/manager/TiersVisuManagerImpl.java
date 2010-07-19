@@ -98,7 +98,7 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 
 		if (tiers instanceof PersonnePhysique) {
 			PersonnePhysique pp = (PersonnePhysique) tiers;
-			if (pp.isHabitant()) {
+			if (pp.isHabitantVD()) {
 				setHabitant(tiersVisuView, pp);
 			}
 			else {

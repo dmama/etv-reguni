@@ -347,7 +347,7 @@ public class TiersDAOTest extends CoreDAOTest {
 		assertEquals(new Long(1111L), nonHab.getNumero());
 		assertEquals("Conchita", nonHab.getNom());
 		assertEquals("Andrea", nonHab.getPrenom());
-		assertFalse(nonHab.isHabitant());
+		assertFalse(nonHab.isHabitantVD());
 	}
 
 	/**
@@ -377,7 +377,7 @@ public class TiersDAOTest extends CoreDAOTest {
 			assertEquals(new Long(id), nonHab.getNumero());
 			assertEquals("Bla", nonHab.getNom());
 			assertEquals("Bli", nonHab.getPrenom());
-			assertFalse(nonHab.isHabitant());
+			assertFalse(nonHab.isHabitantVD());
 		}
 	}
 

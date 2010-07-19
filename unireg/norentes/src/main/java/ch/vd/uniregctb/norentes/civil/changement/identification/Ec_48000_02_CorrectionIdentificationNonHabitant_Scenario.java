@@ -91,7 +91,7 @@ public class Ec_48000_02_CorrectionIdentificationNonHabitant_Scenario extends Ev
 		globalIndexer.sync();
 		{
 			final PersonnePhysique momo = tiersDAO.getPPByNumeroIndividu(noIndMomo);
-			Assert.isTrue(!momo.isHabitant(), "Maurice devrait être non-habitant");
+			Assert.isTrue(!momo.isHabitantVD(), "Maurice devrait être non-habitant");
 		}
 		{
 			final TiersCriteria criteria = new TiersCriteria();

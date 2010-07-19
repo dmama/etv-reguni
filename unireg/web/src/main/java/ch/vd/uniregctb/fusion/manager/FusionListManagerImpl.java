@@ -69,7 +69,7 @@ public class FusionListManagerImpl implements FusionListManager, MessageSourceAw
 	@Transactional(readOnly = true)
 	public FusionListView get(Long numeroNonHab) {
 		PersonnePhysique nonHab = (PersonnePhysique) tiersDAO.get(numeroNonHab);
-		if (nonHab == null || nonHab.isHabitant()) {
+		if (nonHab == null || nonHab.isHabitantVD()) {
 			throw new ObjectNotFoundException(this.getMessageSource().getMessage("error.non.habitant.inexistant" , null,  WebContextUtils.getDefaultLocale()));
 		}
 

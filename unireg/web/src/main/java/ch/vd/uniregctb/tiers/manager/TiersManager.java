@@ -569,7 +569,7 @@ public class TiersManager implements MessageSourceAware {
 			tiersView.setTiersPrincipal(tiersPrincipal);
 			tiersView.setNomPrenomPrincipal(tiersService.getNomPrenom(tiersPrincipal));
 
-			if (tiersPrincipal.isHabitant()) {
+			if (tiersPrincipal.isHabitantVD()) {
 				IndividuView individu = getIndividuView(tiersPrincipal);
 				tiersView.setIndividu(individu);
 			}
@@ -580,7 +580,7 @@ public class TiersManager implements MessageSourceAware {
 			tiersView.setTiersConjoint(tiersConjoint);
 			tiersView.setNomPrenomConjoint(tiersService.getNomPrenom(tiersConjoint));
 
-			if (tiersConjoint.isHabitant()) {
+			if (tiersConjoint.isHabitantVD()) {
 				IndividuView individu = getIndividuView(tiersConjoint);
 				tiersView.setIndividuConjoint(individu);
 			}
@@ -882,7 +882,7 @@ public class TiersManager implements MessageSourceAware {
 					boolean civilOK = true;
 					if (tiers instanceof PersonnePhysique) {
 						PersonnePhysique pp = (PersonnePhysique) tiers;
-						if (pp.isHabitant()) {
+						if (pp.isHabitantVD()) {
 							Individu ind = serviceCivilService.getIndividu(pp.getNumeroIndividu(), null);
 							for (EtatCivil etatCivil : ind.getEtatsCivils()) {
 								if (etatCivil.getDateDebutValidite() == null) {
@@ -908,7 +908,7 @@ public class TiersManager implements MessageSourceAware {
 
 		if (tiers instanceof PersonnePhysique) {
 			PersonnePhysique pp = (PersonnePhysique) tiers;
-			if (pp.isHabitant()) {
+			if (pp.isHabitantVD()) {
 				isEditable = setDroitHabitant(tiers, allowedOnglet) || isEditable;
 			}
 			else {
@@ -920,7 +920,7 @@ public class TiersManager implements MessageSourceAware {
 			MenageCommun menageCommun = (MenageCommun) tiers;
 			boolean isHabitant = false;
 			for (PersonnePhysique pp : tiersService.getPersonnesPhysiques(menageCommun)) {
-				if (pp.isHabitant()) {
+				if (pp.isHabitantVD()) {
 					isHabitant = true;
 					break;
 				}
@@ -1262,7 +1262,7 @@ public class TiersManager implements MessageSourceAware {
 				tiersAssujetti = menage;
 			}
 			else tiersAssujetti = tiers;
-			if (pp.isHabitant()) {
+			if (pp.isHabitantVD()) {
 				isHabitant = true;
 			}
 		}
@@ -1272,7 +1272,7 @@ public class TiersManager implements MessageSourceAware {
 			//les ménages n'ont jamais les onglets civil et rapport prestation
 			MenageCommun menageCommun = (MenageCommun) tiers;
 			for (PersonnePhysique pp : tiersService.getPersonnesPhysiques(menageCommun)) {
-				if (pp.isHabitant()) {
+				if (pp.isHabitantVD()) {
 					isHabitant = true;
 					break;
 				}

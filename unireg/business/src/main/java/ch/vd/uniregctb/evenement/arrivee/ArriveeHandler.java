@@ -41,7 +41,6 @@ import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
-import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.tiers.TiersException;
 import ch.vd.uniregctb.tiers.TiersCriteria.TypeRecherche;
@@ -479,7 +478,7 @@ public class ArriveeHandler extends EvenementCivilHandlerBase {
 		final PersonnePhysique pp = getTiersDAO().getPPByNumeroIndividu(individu.getNoTechnique());
 		final PersonnePhysique habitant;
 		if (pp != null) {
-			if (pp.isHabitant()) {
+			if (pp.isHabitantVD()) {
 				nouveau.setValue(false);
 				habitant = pp;
 			}

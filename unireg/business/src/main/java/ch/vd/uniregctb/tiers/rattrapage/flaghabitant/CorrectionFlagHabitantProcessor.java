@@ -79,11 +79,11 @@ public class CorrectionFlagHabitantProcessor {
 					for (Long id : batch) {
 						final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(id);
 						final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
-						if (pp.isHabitant() && ffp.getTypeAutoriteFiscale() != TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
+						if (pp.isHabitantVD() && ffp.getTypeAutoriteFiscale() != TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
 							tiersService.changeHabitantenNH(pp);
 							rapport.addHabitantChangeEnNonHabitant(pp);
 						}
-						else if (!pp.isHabitant() && ffp.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
+						else if (!pp.isHabitantVD() && ffp.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
 							if (pp.getNumeroIndividu() != null) {
 								tiersService.changeNHenHabitant(pp, pp.getNumeroIndividu(), null);
 								rapport.addNonHabitantChangeEnHabitant(pp);

@@ -324,17 +324,23 @@ public class PersonnePhysique extends Contribuable {
 		return numeroIndividu != null && numeroIndividu > 0L;
 	}
 
-	/**
-	 * @retrun true si habitant, false si non habitant
-	 */
 	@Column(name = "PP_HABITANT")
-	public Boolean isHabitant() {
+	public Boolean getHabitant() { // le préfixe 'is' sur le type Boolean (avec une grand B) n'est pas compris par la classe java.beans.Introspector
 		return habitant;
 	}
 
 	public void setHabitant(Boolean theHabitant) {
 		habitant = theHabitant;
 	}
+
+	/**
+	 * @return <b>true</b> si la personne habite le canton; <b>false</b> autrement.
+	 */
+	@Transient
+	public boolean isHabitantVD() {
+		return habitant;
+	}
+
 	/**
 	 * @return Returns the numeroIndividu.
 	 * Peut ne pas etre unique! , unique = true)

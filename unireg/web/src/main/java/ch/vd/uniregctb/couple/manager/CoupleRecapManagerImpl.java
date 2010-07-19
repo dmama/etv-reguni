@@ -230,7 +230,7 @@ public class CoupleRecapManagerImpl extends TiersManager implements CoupleRecapM
 						if (tiers instanceof PersonnePhysique) {
 							// changement de type de NonHabitant à MenageCommun
 							final PersonnePhysique pp = (PersonnePhysique) tiers;
-							Assert.isTrue(!pp.isHabitant(), "Le contribuable sélectionné comme couple est un habitant");
+							Assert.isTrue(!pp.isHabitantVD(), "Le contribuable sélectionné comme couple est un habitant");
 							Assert.isNull(pp.getNumeroIndividu(), "Le contribuable sélectionné comme couple est un ancien habitant");
 							tiersService.changeNHenMenage(pp.getNumero());
 							tiersService.getTiersDAO().evict(tiers);

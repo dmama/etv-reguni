@@ -546,7 +546,7 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
         } else if (tiers instanceof PersonnePhysique) {
             PersonnePhysique pp = (PersonnePhysique) tiers;
             // Habitant
-            if (pp.isHabitant()) {
+            if (pp.isHabitantVD()) {
                 Long numeroIndividu = pp.getNumeroIndividu();
                 Assert.notNull(numeroIndividu);
                 // Recuperation de l'individu

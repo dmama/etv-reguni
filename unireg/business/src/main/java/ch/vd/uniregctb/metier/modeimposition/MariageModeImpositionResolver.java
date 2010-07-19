@@ -76,7 +76,7 @@ public class MariageModeImpositionResolver extends TiersModeImpositionResolver {
 		}
 		else {
 			// s'il est suisse, titulaire d'un permis C ou a obtenu le statut de réfugié => ordianire
-			if (!getTiersService().isEtrangerSansPermisC(pp, date) || (pp.isHabitant() && getTiersService().isHabitantRefugie(pp, date))) {
+			if (!getTiersService().isEtrangerSansPermisC(pp, date) || (pp.isHabitantVD() && getTiersService().isHabitantRefugie(pp, date))) {
 				modeImposition = ModeImposition.ORDINAIRE;
 			}
 			else {

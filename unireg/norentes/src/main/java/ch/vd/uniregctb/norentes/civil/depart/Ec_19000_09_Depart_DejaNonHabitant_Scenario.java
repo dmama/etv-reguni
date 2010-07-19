@@ -137,7 +137,7 @@ public class Ec_19000_09_Depart_DejaNonHabitant_Scenario extends DepartScenario 
 		assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat(), "L'événement civil devrait être en traité.");
 
 		final PersonnePhysique charles = (PersonnePhysique) tiersDAO.get(noHabCharles);
-		assertFalse(charles.isHabitant(),"Charles aurait dû rester non Habitant");
+		assertFalse(charles.isHabitantVD(),"Charles aurait dû rester non Habitant");
 
 		final ForFiscalPrincipal ffp = charles.getForFiscalPrincipalAt(null);
 		assertNotNull(ffp, "Charles n'a plus de for fiscal principal");

@@ -218,8 +218,8 @@ public class Ec_19000_08_Depart_JIRA1996_Scenario extends DepartScenario {
 		final PersonnePhysique charles = (PersonnePhysique)tiersDAO.get(noHabCharles);
 		final PersonnePhysique georgette = (PersonnePhysique)tiersDAO.get(noHabGeorgette);
 
-		assertFalse(charles.isHabitant(),"Charles aurait du passé non Habitant");
-		assertFalse(georgette.isHabitant(),"georgette aurait du passé non Habitant");
+		assertFalse(charles.isHabitantVD(),"Charles aurait du passé non Habitant");
+		assertFalse(georgette.isHabitantVD(),"georgette aurait du passé non Habitant");
 
 		final MenageCommun menageCommun = (MenageCommun) tiersDAO.get(noMenage);
 		final ForFiscalPrincipal ffp = menageCommun.getForFiscalPrincipalAt(null);

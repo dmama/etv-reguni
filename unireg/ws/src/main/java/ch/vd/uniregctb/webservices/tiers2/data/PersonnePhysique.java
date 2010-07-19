@@ -100,7 +100,7 @@ public class PersonnePhysique extends Contribuable {
 			Context context) throws BusinessException {
 		super(personne, setParts, date, context);
 
-		if (!personne.isHabitant()) {
+		if (!personne.isHabitantVD()) {
 			this.nom = personne.getNom();
 			this.prenom = personne.getPrenom();
 			this.dateNaissance = DataHelper.coreToWeb(personne.getDateNaissance());

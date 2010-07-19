@@ -48,7 +48,7 @@ public class CivilEditValidator implements Validator {
 				if (tiers instanceof PersonnePhysique) {
 					PersonnePhysique nonHabitant = (PersonnePhysique) tiers;
 
-					if (!nonHabitant.isHabitant()) {
+					if (!nonHabitant.isHabitantVD()) {
 						// --------- --------------Onglets Civil-----------------------------
 
 						ValidationUtils.rejectIfEmptyOrWhitespace(errors, "tiers.nom", "error.tiers.nom.vide");

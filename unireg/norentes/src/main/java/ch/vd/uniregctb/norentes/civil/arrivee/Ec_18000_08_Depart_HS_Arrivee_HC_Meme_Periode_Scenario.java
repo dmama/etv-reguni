@@ -94,7 +94,7 @@ public class Ec_18000_08_Depart_HS_Arrivee_HC_Meme_Periode_Scenario extends Even
 	public void check1() throws Exception {
 
 		final PersonnePhysique alain = tiersDAO.getPPByNumeroIndividu(noIndAlain);
-		assertFalse(alain.isHabitant(),"Alain aurait dû devenir non-habitant suite à son départ HS");
+		assertFalse(alain.isHabitantVD(),"Alain aurait dû devenir non-habitant suite à son départ HS");
 
 		final ForFiscalPrincipal f = alain.getDernierForFiscalPrincipal();
 		assertNotNull(f, "For fiscal principal null");

@@ -66,7 +66,7 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 			setTiersGeneralView(tiersEditView, tiers);
 			if (tiers instanceof PersonnePhysique) {
 				PersonnePhysique pp = (PersonnePhysique) tiers;
-				if (pp.isHabitant()) {
+				if (pp.isHabitantVD()) {
 					setHabitant(tiersEditView, pp);
 				} else {
 					setNonHabitant(tiersEditView, pp);
@@ -195,7 +195,7 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 
 		if (tiers instanceof PersonnePhysique) {
 			PersonnePhysique pp = (PersonnePhysique) tiers;
-			if (pp.isHabitant()) {
+			if (pp.isHabitantVD()) {
 				setHabitant(tiersEditView, pp);
 			} else {
 				setNonHabitant(tiersEditView, pp);
@@ -440,7 +440,7 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 
 		if (tiers instanceof PersonnePhysique) {
 			final PersonnePhysique pp = (PersonnePhysique) tiers;
-			if (pp.isHabitant()) {
+			if (pp.isHabitantVD()) {
 				return pp;
 			} else {
 				// MAJ num AVS

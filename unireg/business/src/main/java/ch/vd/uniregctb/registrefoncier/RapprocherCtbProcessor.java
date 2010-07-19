@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.Set;
 
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
-import ch.vd.uniregctb.type.TypeAdresseTiers;
+
 import org.apache.log4j.Logger;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -186,7 +186,7 @@ public class RapprocherCtbProcessor {
 
 	public void traiterIndividu(ProprietaireRapproche proprietaireRapproche, PersonnePhysique personne) {
 
-		if (personne.isHabitant()) {
+		if (personne.isHabitantVD()) {
 			Long numeroCtb = personne.getNumero();
 			String nom = tiersService.getNom(personne);
 			String prenom = tiersService.getPrenom(personne);
@@ -243,17 +243,17 @@ public class RapprocherCtbProcessor {
 	}
 
 	public void traiterMembresMenageCommun(ProprietaireRapproche proprietaireRapproche, PersonnePhysique principal, PersonnePhysique conjoint){
-		if (!principal.isHabitant() && !conjoint.isHabitant()) {
+		if (!principal.isHabitantVD() && !conjoint.isHabitantVD()) {
 			proprietaireRapproche.setResultat(INDIVIDU_NON_TROUVE);
 			rapport.incrementNbIndviduInconnu();
 		}
-		else if(principal.isHabitant() && !conjoint.isHabitant()) {
+		else if(principal.isHabitantVD() && !conjoint.isHabitantVD()) {
 			traiterIndividu(proprietaireRapproche, principal);
 		}
-		else if(!principal.isHabitant() && conjoint.isHabitant()){
+		else if(!principal.isHabitantVD() && conjoint.isHabitantVD()){
 			traiterIndividu(proprietaireRapproche, conjoint);
 		}
-		else if (principal.isHabitant() && conjoint.isHabitant()){
+		else if (principal.isHabitantVD() && conjoint.isHabitantVD()){
 
 			Long numeroCtbPrincipal = principal.getNumero();
 			String nomPrincipal = tiersService.getNom(principal);

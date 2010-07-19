@@ -2264,7 +2264,7 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 		{
 			PersonnePhysique habitant = tiersDAO.getPPByNumeroIndividu(numeroIndividu);
 			assertNotNull(habitant);
-			assertTrue(habitant.isHabitant());
+			assertTrue(habitant.isHabitantVD());
 			assertEquals(new Long(numeroIndividu), habitant.getNumeroIndividu());
 			assertEquals(new Long(numeroCTB), habitant.getNumero());
 
@@ -2442,13 +2442,13 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 		{
 			PersonnePhysique habitantPrincipal = tiersDAO.getPPByNumeroIndividu(noIndividuPrincipal);
 			assertNotNull(habitantPrincipal);
-			assertTrue(habitantPrincipal.isHabitant());
+			assertTrue(habitantPrincipal.isHabitantVD());
 			assertEquals(new Long(noIndividuPrincipal), habitantPrincipal.getNumeroIndividu());
 			assertEquals(new Long(noCTBPrincipal), habitantPrincipal.getNumero());
 
 			PersonnePhysique habitantConjoint = tiersDAO.getPPByNumeroIndividu(noIndividuConjoint);
 			assertNotNull(habitantConjoint);
-			assertTrue(habitantConjoint.isHabitant());
+			assertTrue(habitantConjoint.isHabitantVD());
 			assertEquals(new Long(noIndividuConjoint), habitantConjoint.getNumeroIndividu());
 			assertEquals(new Long(noCTBConjoint), habitantConjoint.getNumero());
 			
