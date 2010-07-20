@@ -54,7 +54,8 @@
 	
 		<tr class="<unireg:nextRowClass/>" >
 			<td  width="25%"><fmt:message key="label.complement.numeroCompteBancaire" />&nbsp;:</td>
-			<td>${command.tiers.numeroCompteBancaire}</td>
+			<td>${command.tiers.numeroCompteBancaire}
+				<c:if test="${!command.ibanValide}"> <span  class="global-error" ><fmt:message key="error.iban" /> </span></c:if> </td>
 		</tr>
 		<tr class="<unireg:nextRowClass/>" >
 			<td><fmt:message key="label.complement.titulaireCompte" />&nbsp;:</td>

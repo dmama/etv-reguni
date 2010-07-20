@@ -67,10 +67,17 @@ public class IbanValidator {
 		}
 
 		iban = FormatNumeroHelper.removeSpaceAndDash(iban);
+		validateUpperCase(iban);
 		validateLength(iban);
 		validateFormat(iban);
 		validatePlausability(iban);
 		validateClearing(iban);
+	}
+
+	private void validateUpperCase(String iban) throws IbanUpperCaseException {
+		if(!iban.toUpperCase().equals(iban)){
+			throw new IbanUpperCaseException();
+		}
 	}
 
 	public boolean isValidIban(String iban){

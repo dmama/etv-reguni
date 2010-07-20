@@ -101,6 +101,7 @@
 
 	<bean id="tiersVisuManager" class="ch.vd.uniregctb.tiers.manager.TiersVisuManagerImpl" parent="tiersManager">
 		<property name="mouvementVisuManager" ref="mouvementVisuManager"/>
+		<property name="ibanValidator" ref="ibanValidator" />
 	</bean>
 	
 	<bean id="tiersListManager" class="ch.vd.uniregctb.tiers.manager.TiersListManagerImpl">

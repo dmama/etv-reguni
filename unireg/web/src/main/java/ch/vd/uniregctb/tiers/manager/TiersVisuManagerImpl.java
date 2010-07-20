@@ -33,6 +33,7 @@ import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.di.view.DeclarationImpotDetailComparator;
 import ch.vd.uniregctb.di.view.DeclarationImpotDetailView;
+import ch.vd.uniregctb.iban.IbanValidator;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.mouvement.MouvementDossier;
@@ -67,11 +68,18 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 
 	private MouvementVisuManager mouvementVisuManager;
 
+	private IbanValidator ibanValidator;
+
+
 
 	private List<EnumTypeAdresse> typesAdressesCiviles = new ArrayList<EnumTypeAdresse>();
 
 	public void setMouvementVisuManager(MouvementVisuManager mouvementVisuManager) {
 		this.mouvementVisuManager = mouvementVisuManager;
+	}
+
+	public void setIbanValidator(IbanValidator ibanValidator) {
+		this.ibanValidator = ibanValidator;
 	}
 
 	/**
@@ -88,6 +96,7 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 		tiersVisuView.setAdressesHistoCiviles(adressesHistoCiviles);
 		tiersVisuView.setRapportsPrestationHisto(rapportsPrestationHisto);
 		tiersVisuView.setAdressesHistoCivilesConjoint(adressesHistoCivilesConjoint);
+
 
 		final Tiers tiers = getTiersDAO().get(numero);
 		if (tiers == null) {
@@ -173,8 +182,26 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 			setDroitEdition(tiers, allowedOnglet);
 			tiersVisuView.setAllowedOnglet(allowedOnglet);
 		}
-
+		//[UNIREG-2582]
+		tiersVisuView.setIbanValide(verifierIban(tiers));
 		return tiersVisuView;
+	}
+
+	/**
+	 * Permet renseigner la view sur le fait que l'iban du tiers associé est valide ou pas
+	 * @param tiersVisuView
+	 * @param tiers
+	 */
+	private boolean verifierIban(Tiers tiers) {
+		if(tiers !=null){
+			String iban = tiers.getNumeroCompteBancaire();
+			if(iban!=null){
+
+				return ibanValidator.isValidIban(iban);
+			}
+
+		}
+		return true;
 	}
 
 	/**

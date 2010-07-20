@@ -42,5 +42,20 @@ public class IbanValidatorTest extends BusinessTest {
 		Assert.assertEquals("00762", clearingCh);
 	}
 
+	@Test
+	public void testValidateAvecMinuscule() {
+
+		LOGGER.debug("Début de testValidate");
+		ibanValidator = getBean(IbanValidator.class, "ibanValidator");
+		try {
+
+			ibanValidator.validate("CH630025525577788840w");
+
+		}
+		catch (IbanValidationException e) {
+		Assert.assertEquals("ch.vd.uniregctb.iban.IbanUpperCaseException",e.getClass().getName());
+		}
+	}
+
 
 }

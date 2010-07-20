@@ -98,6 +98,8 @@ public class TiersView {
 
 	private Map<String, Boolean> allowedOnglet;
 
+	private boolean ibanValide;
+
 	/**
 	 * @return the tiers
 	 */
@@ -453,5 +455,13 @@ public class TiersView {
 
 	public void setPeriodicite(PeriodiciteView periodicite) {
 		this.periodicite = periodicite;
+	}
+
+	public boolean isIbanValide() {
+		return ibanValide;
+	}
+
+	public void setIbanValide(boolean ibanValide) {
+		this.ibanValide = ibanValide;
 	}
 }
