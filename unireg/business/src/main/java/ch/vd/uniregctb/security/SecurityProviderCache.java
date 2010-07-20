@@ -369,32 +369,32 @@ public class SecurityProviderCache implements UniregCacheInterface, SecurityProv
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 
-		final List<Long> ids = (List<Long>) template.execute(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
-				if (preloadTiersIds) {
-					LOGGER.info("Préchargement du cache des tiers existants...");
+		if (preloadTiersIds) {
+
+			LOGGER.info("Préchargement du cache des tiers existants...");
+			final List<Long> ids = (List<Long>) template.execute(new TransactionCallback() {
+				public Object doInTransaction(TransactionStatus status) {
 					return tiersDAO.getAllIds();
 				}
-				return null;
-			}
-		});
+			});
 
-		if (ids != null) {
 			Map<Long, Boolean> newCache = new HashMap<Long, Boolean>(ids.size());
 			for (Long id : ids) {
 				newCache.put(id, Boolean.TRUE);
 			}
 			tiersExistenceCache = newCache; // l'assignement est atomique en java, pas besoin de locking
+			LOGGER.info("Préchargement du cache des tiers existant terminé.");
 		}
 
+		LOGGER.info("Préchargement du cache des dossiers contrôlés...");
 		final Set<Long> idsControles = (Set<Long>) template.execute(new TransactionCallback() {
 			public Object doInTransaction(TransactionStatus status) {
-				LOGGER.info("Préchargement du cache des dossiers contrôlés...");
 				return droitAccesDAO.getContribuablesControles();
 			}
 		});
 
 		dossiersControles = idsControles; // l'assignement est atomique en java, pas besoin de locking
+		LOGGER.info("Préchargement du cache des dossiers contrôlés terminé.");
 	}
 
 	/**
