@@ -106,10 +106,16 @@ public class DataEventJmsListener extends EsbMessageListener {
 	}
 
 	private void onDatabaseLoad() {
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Réception d'un événement de chargement de la database");
+		}
 		dataEventService.onLoadDatabase();
 	}
 
 	private void onDatabaseTruncate() {
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Réception d'un événement de truncate de la database");
+		}
 		dataEventService.onTruncateDatabase();
 	}
 }
