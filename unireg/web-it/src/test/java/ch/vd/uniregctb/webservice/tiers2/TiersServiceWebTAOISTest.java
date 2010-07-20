@@ -31,6 +31,7 @@ import ch.vd.uniregctb.webservices.tiers2.MenageCommunHisto;
 import ch.vd.uniregctb.webservices.tiers2.ModeCommunication;
 import ch.vd.uniregctb.webservices.tiers2.ModeImposition;
 import ch.vd.uniregctb.webservices.tiers2.PeriodeImposition;
+import ch.vd.uniregctb.webservices.tiers2.Periodicite;
 import ch.vd.uniregctb.webservices.tiers2.PeriodiciteDecompte;
 import ch.vd.uniregctb.webservices.tiers2.PersonneMorale;
 import ch.vd.uniregctb.webservices.tiers2.PersonnePhysique;
@@ -393,6 +394,23 @@ public class TiersServiceWebTAOISTest extends AbstractTiersServiceWebTest {
 		assertEquals(5586, for1.getNoOfsAutoriteFiscale()); // Lausanne
 		assertSameDay(newDate(2003, 3, 1), for1.getDateOuverture());
 		assertNull(for1.getDateFermeture());
+	}
+
+	public void testGetPeriodiciteDebiteur() throws Exception {
+		final GetTiersHisto params = new GetTiersHisto();
+		params.setLogin(login);
+		params.setTiersNumber(1678432); // Café du Commerce
+		params.getParts().add(TiersPart.PERIODICITES);
+
+		final DebiteurHisto debiteur = (DebiteurHisto) service.getTiersHisto(params);
+		assertNotNull(debiteur);
+
+		final List<Periodicite> periodicites = debiteur.getPeriodicites();
+		assertNotNull(periodicites);
+		assertEquals(1, periodicites.size());
+		Periodicite p1 = periodicites.get(0);
+		assertSameDay(newDate(2008, 1, 1), p1.getDateDebut());
+		assertEquals(PeriodiciteDecompte.TRIMESTRIEL, p1.getPeriodiciteDecompte());
 	}
 
 	private static int index(Date date) {

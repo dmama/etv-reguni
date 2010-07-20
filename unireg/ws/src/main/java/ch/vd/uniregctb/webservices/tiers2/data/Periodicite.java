@@ -10,18 +10,14 @@ import ch.vd.uniregctb.webservices.tiers2.impl.DataHelper;
 import ch.vd.uniregctb.webservices.tiers2.impl.EnumHelper;
 
 /**
- * La Periodicite permet de determiner à quel frequence les liste récapitulatives sont envoyées au débiteurs. Il n'y a qu'une périodicité par période fiscale
+ * La Periodicite permet de determiner à quel frequence les listes récapitulatives sont envoyées au débiteurs. Il n'y a qu'une périodicité par période fiscale
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "Periodicite", propOrder = {
-		"id", "dateDebut", "dateFin", "dateAnnulation", "periodiciteDecompte", "periodeDecompte"})
+		 "dateDebut", "dateFin", "dateAnnulation", "periodiciteDecompte", "periodeDecompte"})
 public class Periodicite {
 
-	/**
-	 * L'id technique (= clé primaire)
-	 */
-	@XmlElement(required = true)
-	public Long id;
+
 
 	/**
 	 * La date de début de validité de la periodicité.
@@ -57,7 +53,7 @@ public class Periodicite {
 	}
 
 	public Periodicite(ch.vd.uniregctb.declaration.Periodicite periodicite) {
-		id = periodicite.getId();
+	
 		dateDebut = DataHelper.coreToWeb(periodicite.getDateDebut());
 		dateFin = DataHelper.coreToWeb(periodicite.getDateFin());
 		dateAnnulation = DataHelper.coreToWeb(periodicite.getAnnulationDate());
@@ -66,19 +62,4 @@ public class Periodicite {
 
 	}
 
-	public Date getDateDebut() {
-		return dateDebut;
-	}
-
-	public void setDateDebut(Date dateDebut) {
-		this.dateDebut = dateDebut;
-	}
-
-	public Date getDateFin() {
-		return dateFin;
-	}
-
-	public void setDateFin(Date dateFin) {
-		this.dateFin = dateFin;
-	}
 }
