@@ -122,4 +122,45 @@ public class EvenementCediListenerTest extends EvenementTest {
 		assertEquals("0797654321", q.getNoMobile());
 		assertEquals("Toto le rigolo", q.getTitulaireCompte());
 	}
+
+	/**
+	 * [UNIREG-2603] Vérifie qu'on ne crashe pas quand on reçoit un retour de DI presque vide.
+	 */
+	@SuppressWarnings({"JavaDoc"})
+	@Test
+	public void testReceiveRetourDIPresqueVide() throws Exception {
+
+		final List<EvenementCedi> events = new ArrayList<EvenementCedi>();
+
+		listener.setHandler(new EvenementCediHandler() {
+			public void onEvent(EvenementCedi event) {
+				events.add(event);
+			}
+		});
+
+		// Lit le message sous format texte
+		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/evenement/cedi/retour_di_presque_vide.xml");
+		final String texte = FileUtils.readFileToString(file);
+
+		// Envoie le message
+		sendTexteMessage(INPUT_QUEUE, texte);
+
+		// On attend le message jusqu'à 3 secondes
+		for (int i = 0; events.isEmpty() && i < 30; i++) {
+			Thread.sleep(100);
+		}
+		Assert.assertEquals(1, events.size());
+
+		final RetourDI q = (RetourDI) events.get(0);
+		assertNotNull(q);
+		assertEquals(12500001L, q.getNoContribuable());
+		assertEquals(2009, q.getPeriodeFiscale());
+		assertEquals(1, q.getNoSequenceDI());
+		assertEquals(RetourDI.TypeDocument.ORDINAIRE, q.getTypeDocument());
+		assertNull(q.getEmail());
+		assertNull(q.getIban());
+		assertNull(q.getNoTelephone());
+		assertNull(q.getNoMobile());
+		assertNull(q.getTitulaireCompte());
+	}
 }
