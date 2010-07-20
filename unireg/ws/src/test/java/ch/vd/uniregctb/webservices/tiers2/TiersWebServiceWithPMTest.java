@@ -49,6 +49,7 @@ public class TiersWebServiceWithPMTest extends WebserviceTest {
 		service.setServicePM(servicePM);
 		service.setTarget(bean);
 		service.setTiersDAO(tiersDAO);
+		service.setServiceInfra(serviceInfra);
 		service.setNoOfsTranslator(new NoOfsTranslatorImpl());
 
 		login = new UserLogin("iamtestuser", 22);
