@@ -43,6 +43,8 @@ public class MockPersonneMorale implements PersonneMorale {
 	public static MockPersonneMorale BCV = new MockPersonneMorale(20222, "Banque Cantonale Vaudoise", "S.A.", "Daniel Kuffer", RegDate.get(1901, 1, 1), null);
 	public static MockPersonneMorale KPMG = new MockPersonneMorale(2058, "KPMG SA", "S.A.", null, RegDate.get(1901, 1, 1), null);
 	public static MockPersonneMorale CuriaTreuhand = new MockPersonneMorale(21038, "Curia Treuhand AG", "S.A.", null, RegDate.get(1901, 1, 1), null);
+	public static MockPersonneMorale BanqueCoopBale = new MockPersonneMorale(15489, "BANQUE COOP", "S.A.", "H. Roller", null, null);
+	public static MockPersonneMorale KhatAnstalt = new MockPersonneMorale(13433, "KHAT ANSTALT", "S.A.", null, null, null);
 
 	static {
 		{
@@ -79,6 +81,14 @@ public class MockPersonneMorale implements PersonneMorale {
 
 		{
 			BCV.setDesignationAbregee("BCV");
+
+			final MockForPM ffp = new MockForPM();
+//			ffp.setDateDebut(RegDate.get(1883, 1, 6));
+			ffp.setDateDebut(null); // TODO (msi) remettre la date correcte quand on autorisera les dates < 1900
+			ffp.setDateFin(null);
+			ffp.setNoOfsAutoriteFiscale(MockCommune.Lausanne.getNoOFS());
+			ffp.setTypeAutoriteFiscale(TypeNoOfs.COMMUNE_CH);
+			BCV.addForsFiscalPrincipal(ffp);
 
 			MockAdresseEntreprise siege = new MockAdresseEntreprise();
 			siege.setComplement(null);
@@ -153,6 +163,26 @@ public class MockPersonneMorale implements PersonneMorale {
 			siege.setNumeroTechniqueRue(39838);
 			siege.setNumeroOrdrePostal(3970);
 			CuriaTreuhand.addAdresse(siege);
+		}
+
+		{
+			final MockForPM ffp = new MockForPM();
+			ffp.setDateDebut(RegDate.get(1971, 3,23));
+			ffp.setDateFin(null);
+			ffp.setNoOfsAutoriteFiscale(MockCommune.Bale.getNoOFS());
+			ffp.setTypeAutoriteFiscale(TypeNoOfs.COMMUNE_CH);
+
+			BanqueCoopBale.addForsFiscalPrincipal(ffp);
+		}
+
+		{
+			final MockForPM ffp = new MockForPM();
+			ffp.setDateDebut(RegDate.get(1992, 1, 1));
+			ffp.setDateFin(null);
+			ffp.setNoOfsAutoriteFiscale(MockPays.Liechtenstein.getNoOFS());
+			ffp.setTypeAutoriteFiscale(TypeNoOfs.PAYS_HS);
+
+			KhatAnstalt.addForsFiscalPrincipal(ffp);
 		}
 	}
 
@@ -368,6 +398,13 @@ public class MockPersonneMorale implements PersonneMorale {
 
 	public void setForsFiscauxPrincipaux(List<ForPM> forsFiscauxPrincipaux) {
 		this.forsFiscauxPrincipaux = forsFiscauxPrincipaux;
+	}
+
+	public void addForsFiscalPrincipal(ForPM ffp) {
+		if (this.forsFiscauxPrincipaux == null) {
+			this.forsFiscauxPrincipaux = new ArrayList<ForPM>();
+		}
+		this.forsFiscauxPrincipaux.add(ffp);
 	}
 
 	public void setForsFiscauxSecondaires(List<ForPM> forsFiscauxSecondaires) {

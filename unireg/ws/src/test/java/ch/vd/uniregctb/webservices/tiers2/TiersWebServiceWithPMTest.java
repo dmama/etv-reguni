@@ -3,6 +3,8 @@ package ch.vd.uniregctb.webservices.tiers2;
 import java.util.HashSet;
 
 import ch.vd.uniregctb.common.WebserviceTest;
+import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
+import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.model.mock.MockPersonneMorale;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServicePM;
@@ -10,6 +12,7 @@ import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.webservices.common.NoOfsTranslatorImpl;
 import ch.vd.uniregctb.webservices.common.UserLogin;
+import ch.vd.uniregctb.webservices.tiers2.data.ForFiscal;
 import ch.vd.uniregctb.webservices.tiers2.data.PersonneMorale;
 import ch.vd.uniregctb.webservices.tiers2.data.TiersPart;
 import ch.vd.uniregctb.webservices.tiers2.impl.pm.TiersWebServiceWithPM;
@@ -174,6 +177,108 @@ public class TiersWebServiceWithPMTest extends WebserviceTest {
 
 			// par contre, la formule d'appel est renseignée
 			assertEquals("Madame, Monsieur", bcv.adresseEnvoi.formuleAppel);
+		}
+	}
+
+	/**
+	 * [UNIREG-2641] Vérifie que les fors fiscaux des PMs vaudoides possèdent bien le type d'autorité 'commune vaudoise'.
+	 */
+	@Test
+	public void testGetForFiscauxPMVaudoise() throws Exception {
+
+		final long noPM = MockPersonneMorale.BCV.getNumeroEntreprise();
+
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				addEntreprise(noPM);
+				return null;
+			}
+		});
+
+		final GetTiers params = new GetTiers();
+		params.date = null;
+		params.login = login;
+		params.tiersNumber = noPM;
+		params.parts = new HashSet<TiersPart>();
+		params.parts.add(TiersPart.FORS_FISCAUX);
+
+		// on s'assure que le type d'autorité fiscale sur le for fiscal est bien hors-canton
+		{
+			final PersonneMorale pm = (PersonneMorale) service.getTiers(params);
+			assertNotNull(pm);
+
+			final ForFiscal ffp = pm.forFiscalPrincipal;
+			assertNotNull(ffp);
+			assertEquals(MockCommune.Lausanne.getNoOFS(), ffp.noOfsAutoriteFiscale);
+			assertEquals(ForFiscal.TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.typeAutoriteFiscale);
+		}
+	}
+
+	/**
+	 * [UNIREG-2641] Vérifie que les fors fiscaux des PMs hors-canton possèdent bien le type d'autorité 'commune hors-canton'.
+	 */
+	@Test
+	public void testGetForFiscauxPMHorsCanton() throws Exception {
+
+		final long noPM = MockPersonneMorale.BanqueCoopBale.getNumeroEntreprise();
+
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				addEntreprise(noPM);
+				return null;
+			}
+		});
+
+		final GetTiers params = new GetTiers();
+		params.date = null;
+		params.login = login;
+		params.tiersNumber = noPM;
+		params.parts = new HashSet<TiersPart>();
+		params.parts.add(TiersPart.FORS_FISCAUX);
+
+		// on s'assure que le type d'autorité fiscale sur le for fiscal est bien hors-canton
+		{
+			final PersonneMorale pm = (PersonneMorale) service.getTiers(params);
+			assertNotNull(pm);
+
+			final ForFiscal ffp = pm.forFiscalPrincipal;
+			assertNotNull(ffp);
+			assertEquals(MockCommune.Bale.getNoOFS(), ffp.noOfsAutoriteFiscale);
+			assertEquals(ForFiscal.TypeAutoriteFiscale.COMMUNE_HC, ffp.typeAutoriteFiscale);
+		}
+	}
+
+	/**
+	 * [UNIREG-2641] Vérifie que les fors fiscaux des PMs hors-Suisse possèdent bien le type d'autorité 'pays hors-Suisse'.
+	 */
+	@Test
+	public void testGetForFiscauxPMHorsSuisse() throws Exception {
+
+		final long noPM = MockPersonneMorale.KhatAnstalt.getNumeroEntreprise();
+
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				addEntreprise(noPM);
+				return null;
+			}
+		});
+
+		final GetTiers params = new GetTiers();
+		params.date = null;
+		params.login = login;
+		params.tiersNumber = noPM;
+		params.parts = new HashSet<TiersPart>();
+		params.parts.add(TiersPart.FORS_FISCAUX);
+
+		// on s'assure que le type d'autorité fiscale sur le for fiscal est bien hors-canton
+		{
+			final PersonneMorale pm = (PersonneMorale) service.getTiers(params);
+			assertNotNull(pm);
+
+			final ForFiscal ffp = pm.forFiscalPrincipal;
+			assertNotNull(ffp);
+			assertEquals(MockPays.Liechtenstein.getNoOFS(), ffp.noOfsAutoriteFiscale);
+			assertEquals(ForFiscal.TypeAutoriteFiscale.PAYS_HS, ffp.typeAutoriteFiscale);
 		}
 	}
 }
