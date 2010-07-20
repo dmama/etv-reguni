@@ -1,18 +1,10 @@
 package ch.vd.uniregctb.webservice.tiers;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
-import static junit.framework.Assert.assertTrue;
-import static junit.framework.Assert.fail;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
@@ -62,6 +54,13 @@ import ch.vd.uniregctb.webservices.tiers1.TypeRapportEntreTiers;
 import ch.vd.uniregctb.webservices.tiers1.TypeRecherche;
 import ch.vd.uniregctb.webservices.tiers1.TypeTiers;
 import ch.vd.uniregctb.webservices.tiers1.UserLogin;
+
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
+import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.fail;
 
 /**
  * Test unitaire pour le web service de la recherche.
@@ -516,7 +515,7 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 		assertEquals("1162", info.getNpa());
 		assertEquals("St-Prex", info.getLocalite());
 		assertEquals("Suisse", info.getPays());
-		assertEquals("Rue Couvaloup 2", info.getRue());
+		assertEquals("Chemin du Riau 2A", info.getRue());
 		assertEquals(TypeTiers.PERSONNE_PHYSIQUE, info.getType());
 	}
 
@@ -580,7 +579,7 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 		assertEquals("1162", info.getNpa());
 		assertEquals("St-Prex", info.getLocalite());
 		assertEquals("Suisse", info.getPays());
-		assertEquals("Rue Couvaloup 2", info.getRue());
+		assertEquals("Chemin du Riau 2A", info.getRue());
 		assertEquals(TypeTiers.PERSONNE_PHYSIQUE, info.getType());
 	}
 

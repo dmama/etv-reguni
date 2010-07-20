@@ -61,7 +61,7 @@ public class TiersServiceWebPoursuiteTest extends AbstractTiersServiceWebTest {
 
 		// Teste les adresses formattées
 		final AdresseEnvoi domicile = tiers.getAdresseDomicileFormattee();
-		assertAdresseEnvoi(domicile, "Monsieur", "Philippe Galley", "Ch. Sous le Bois", "1523 Granges-Marnand");
+		assertAdresseEnvoi(domicile, "Monsieur", "Philippe Galley", "Chemin Sous le Bois 22", "1523 Granges-Marnand");
 		assertAdresseEquals(domicile, tiers.getAdresseEnvoi());
 		assertAdresseEquals(domicile, tiers.getAdressePoursuiteFormattee());
 		assertNull(tiers.getAdressePoursuiteAutreTiersFormattee());
@@ -252,7 +252,7 @@ public class TiersServiceWebPoursuiteTest extends AbstractTiersServiceWebTest {
 
 		// Teste les adresses formattées
 		final AdresseEnvoi domicile = tiers.getAdresseDomicileFormattee();
-		assertAdresseEnvoi(domicile, "Monsieur", "Philippe Galley", "Ch. Sous le Bois", "1523 Granges-Marnand");
+		assertAdresseEnvoi(domicile, "Monsieur", "Philippe Galley", "Chemin Sous le Bois 22", "1523 Granges-Marnand");
 		assertAdresseEquals(domicile, tiers.getAdresseEnvoi());
 
 		assertAdresseEnvoi(tiers.getAdressePoursuiteFormattee(), "Monsieur", "Philippe Galley", "Chemin de Praz-Berthoud", "1010 Lausanne");

@@ -43,7 +43,7 @@ public class ServicePersonneMoraleTest extends BusinessItTest {
 		assertEquals(5192L, etablissement.getNoEtablissement());
 		assertNull(etablissement.getDateDebut());
 		assertNull(etablissement.getDateFin());
-		assertEquals("Boulangerie Durussel S", trimValiPatternToNull(etablissement.getRaisonSociale1()));
+		assertEquals("Boulangerie Durussel S.A.", trimValiPatternToNull(etablissement.getRaisonSociale1()));
 		assertNull(trimValiPatternToNull(etablissement.getRaisonSociale2()));
 		assertNull(trimValiPatternToNull(etablissement.getRaisonSociale3()));
 		assertEquals("DURUSSEL BOULANGERIE", trimValiPatternToNull(etablissement.getEnseigne()));
