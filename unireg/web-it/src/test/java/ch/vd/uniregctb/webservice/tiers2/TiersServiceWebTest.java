@@ -1,12 +1,5 @@
 package ch.vd.uniregctb.webservice.tiers2;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
-import static junit.framework.Assert.assertTrue;
-import static junit.framework.Assert.fail;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -14,12 +7,17 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import ch.vd.uniregctb.webservices.tiers2.*;
-
-import org.junit.Ignore;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.webservices.tiers2.*;
+
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
+import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.fail;
 
 /**
  * Test unitaire pour le web service de la recherche.
@@ -285,7 +283,7 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 
 		assertEquals("Madame", adresse.getLigne1());
 		assertEquals("Lyah Emery", trimValiPattern(adresse.getLigne2()));
-		assertEquals("Chemin du Riau 2A", adresse.getLigne3());
+		assertEquals("Rue Couvaloup 2", adresse.getLigne3());
 		assertEquals("1162 St-Prex", adresse.getLigne4());
 		assertNull(adresse.getLigne5());
 		assertNull(adresse.getLigne6());
@@ -1531,8 +1529,8 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 		final AdresseEnvoi adresse = pm.getAdresseEnvoi();
 		assertNotNull(adresse);
 
-		assertEquals("Société immobilière de", trimValiPattern(adresse.getLigne1()));
-		assertEquals("Place centrale S.A. Pe", trimValiPattern(adresse.getLigne2()));
+		assertEquals("Société immobilière de la", trimValiPattern(adresse.getLigne1()));
+		assertEquals("Place centrale S.A. Penthalaz", trimValiPattern(adresse.getLigne2()));
 		assertEquals("en liquidation", trimValiPattern(adresse.getLigne3()));
 		assertEquals("c/o Mme Hugette Grisel", trimValiPattern(adresse.getLigne4()));
 		assertEquals("Rue du Chêne 9", trimValiPattern(adresse.getLigne5()));
@@ -1558,11 +1556,11 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 		assertNotNull(adresse);
 
 		assertEquals("Jal holding S.A.", trimValiPattern(adresse.getLigne1()));
-		assertEquals("", trimValiPattern(adresse.getLigne2()));
-		assertEquals("en liquidation", trimValiPattern(adresse.getLigne3()));
-		assertEquals("pa Fidu. Commerce & Industrie", trimValiPattern(adresse.getLigne4()));
-		assertEquals("Avenue de la Gare 10", trimValiPattern(adresse.getLigne5()));
-		assertEquals("1003 Lausanne", trimValiPattern(adresse.getLigne6()));
+		assertEquals("en liquidation", trimValiPattern(adresse.getLigne2()));
+		assertEquals("pa Fidu. Commerce & Industrie", trimValiPattern(adresse.getLigne3()));
+		assertEquals("Avenue de la Gare 10", trimValiPattern(adresse.getLigne4()));
+		assertEquals("1003 Lausanne", trimValiPattern(adresse.getLigne5()));
+		assertNull(adresse.getLigne6());
 		assertEquals(TypeAffranchissement.SUISSE, adresse.getTypeAffranchissement());
 	}
 }
