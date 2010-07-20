@@ -670,7 +670,7 @@ public class TiersWebServiceWithPM implements TiersWebService {
 		ffp.dateFermeture = DataHelper.coreToWeb(f.getDateFin());
 		ffp.genreImpot = ForFiscal.GenreImpot.BENEFICE_CAPITAL;
 		ffp.motifRattachement = ForFiscal.MotifRattachement.DOMICILE;
-		ffp.typeAutoriteFiscale = host2web(f.getTypeAutoriteFiscale());
+		ffp.typeAutoriteFiscale = host2web(f.getTypeAutoriteFiscale(), f.getNoOfsAutoriteFiscale());
 		if (ffp.typeAutoriteFiscale != ForFiscal.TypeAutoriteFiscale.PAYS_HS) {
 			ffp.noOfsAutoriteFiscale = noOfsTranslator.translateCommune(f.getNoOfsAutoriteFiscale());
 		}
@@ -680,11 +680,26 @@ public class TiersWebServiceWithPM implements TiersWebService {
 		return ffp;
 	}
 
-	private static ForFiscal.TypeAutoriteFiscale host2web(TypeNoOfs type) {
+	private ForFiscal.TypeAutoriteFiscale host2web(TypeNoOfs type, int noOfs) {
 		switch (type) {
 		case COMMUNE_CH:
-			// comment distinguer une commune VD d'une commune hors-canton ?
-			return ForFiscal.TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD;
+			final Commune commune;
+			try {
+				commune = serviceInfra.getCommuneByNumeroOfsEtendu(noOfs, null);
+			}
+			catch (InfrastructureException e) {
+				throw new RuntimeException("Impossible de récupérer la commune avec le numéro Ofs = [" + noOfs + "]", e);
+			}
+			if (commune == null) {
+				throw new RuntimeException("La commune avec le numéro Ofs = [" + noOfs + "] n'existe pas.");
+			}
+			// [UNIREG-2641] on doit différencier les communes hors-canton des communes vaudoises
+			if (ServiceInfrastructureService.SIGLE_CANTON_VD.equals(commune.getSigleCanton())) {
+				return ForFiscal.TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD;
+			}
+			else {
+				return ForFiscal.TypeAutoriteFiscale.COMMUNE_HC;
+			}
 		case PAYS_HS:
 			return ForFiscal.TypeAutoriteFiscale.PAYS_HS;
 		default:

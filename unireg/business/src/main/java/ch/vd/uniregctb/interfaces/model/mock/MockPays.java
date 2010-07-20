@@ -10,6 +10,7 @@ public class MockPays extends MockEntityOFS implements Pays {
 	private static final long serialVersionUID = 8913326410895875642L;
 
 	public static final MockPays Suisse = new MockPays(ServiceInfrastructureService.noOfsSuisse, "Suisse", "CH");
+	public static final MockPays Liechtenstein = new MockPays(8222, "Liechtenstein", "LI");
 	public static final MockPays France = new MockPays(8212, "France", "FR");
 	public static final MockPays Danemark = new MockPays(8206, "Danemark", "DK");
 	public static final MockPays Allemagne = new MockPays(8207, "Allemagne", "DE");
