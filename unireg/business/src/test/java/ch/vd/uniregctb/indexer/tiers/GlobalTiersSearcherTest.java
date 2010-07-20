@@ -599,6 +599,17 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 	}
 
 	/**
+	 * [UNIREG-2592] Vérifie qu'une recherche avec un nom de raison égal à un espace (" ") ne plante pas.
+	 */
+	@Test
+	public void testRechercheNomRaisonUnEspace() throws Exception {
+
+		final TiersCriteria criteria = new TiersCriteria();
+		criteria.setNomRaison(" ");
+		globalTiersSearcher.search(criteria);
+	}
+
+	/**
 	 * Encode les 0-9 en A-J pour éviter de mettre des chiffres dans les noms/prénoms des personnes physiques
 	 */
 	private static String encodeDigitsInName(String originalName) {

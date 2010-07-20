@@ -13,6 +13,8 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.WildcardQuery;
 
+import ch.vd.registre.base.utils.Assert;
+
 /**
  * Classe aidant a transformer les criteres de recherche en Lucene Query
  *
@@ -164,6 +166,7 @@ public abstract class LuceneEngine {
 			throw new IndexerException(e);
 		}
 
+		Assert.isTrue(simpleQuery != null || complexQuery != null);
 		return complexQuery == null ? simpleQuery : complexQuery;
 	}
 
@@ -211,6 +214,7 @@ public abstract class LuceneEngine {
 			throw new IndexerException(e);
 		}
 
+		Assert.isTrue(simpleQuery != null || complexQuery != null);
 		return complexQuery == null ? simpleQuery : complexQuery;
 	}
 
@@ -254,6 +258,7 @@ public abstract class LuceneEngine {
 			throw new IndexerException(e);
 		}
 
+		Assert.isTrue(simpleQuery != null || complexQuery != null);
 		return complexQuery == null ? simpleQuery : complexQuery;
 	}
 
