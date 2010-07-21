@@ -4,25 +4,27 @@ public class Column implements Comparable<Column> {
 	private boolean discriminator;
 	private boolean primaryKey;
 	private boolean parentForeignKey;
+	private int index;
 	private String name;
 	private ColumnType type;
 	private String property;
 
-	public Column(String name, ColumnType type, String property) {
-		this.name = name;
-		this.type = type;
-		this.property = property;
-		this.discriminator = false;
-		this.primaryKey = false;
-	}
-
 	public Column(String name, ColumnType type, String property, boolean discriminator, boolean primaryKey, boolean parentForeignKey) {
+		this.index = 0;
 		this.name = name;
 		this.type = type;
 		this.property = property;
 		this.discriminator = discriminator;
 		this.primaryKey = primaryKey;
 		this.parentForeignKey = parentForeignKey;
+	}
+
+	public int getIndex() {
+		return index;
+	}
+
+	public void setIndex(int index) {
+		this.index = index;
 	}
 
 	public String getName() {

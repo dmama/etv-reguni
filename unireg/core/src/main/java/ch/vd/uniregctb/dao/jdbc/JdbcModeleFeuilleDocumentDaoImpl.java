@@ -88,28 +88,22 @@ public class JdbcModeleFeuilleDocumentDaoImpl implements JdbcModeleFeuilleDocume
 		}
 
 		public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
-			final Long temp1 = rs.getLong(1);
-			final Long id = (rs.wasNull() ? null : temp1);
-			final Timestamp temp2 = rs.getTimestamp(2);
-			final Date annulationDate = (rs.wasNull() ? null : temp2);
-			final String temp3 = rs.getString(3);
-			final String annulationUser = (rs.wasNull() ? null : temp3);
-			final String temp4 = rs.getString(4);
-			final String intituleFeuille = (rs.wasNull() ? null : temp4);
-			final Timestamp temp5 = rs.getTimestamp(5);
-			final Date logCdate = (rs.wasNull() ? null : temp5);
-			final String temp6 = rs.getString(6);
-			final String logCuser = (rs.wasNull() ? null : temp6);
-			final Timestamp temp7 = rs.getTimestamp(7);
-			final Timestamp logMdate = (rs.wasNull() ? null : temp7);
-			final String temp8 = rs.getString(8);
-			final String logMuser = (rs.wasNull() ? null : temp8);
-			final Long temp9 = rs.getLong(9);
-			final Long modeleId = (rs.wasNull() ? null : temp9);
-			final String temp10 = rs.getString(10);
-			final String noFormulaire = (rs.wasNull() ? null : temp10);
 			
+			final long temp9 = rs.getLong(9);
+			final Long modeleId = (rs.wasNull() ? null : temp9);
 			final ModeleFeuilleDocument res;
+			
+			
+			final long temp1 = rs.getLong(1);
+			final Long id = (rs.wasNull() ? null : temp1);
+			final Date annulationDate = rs.getTimestamp(2);
+			final String annulationUser = rs.getString(3);
+			final String intituleFeuille = rs.getString(4);
+			final Date logCdate = rs.getTimestamp(5);
+			final String logCuser = rs.getString(6);
+			final Timestamp logMdate = rs.getTimestamp(7);
+			final String logMuser = rs.getString(8);
+			final String noFormulaire = rs.getString(10);
 			
 			ModeleFeuilleDocument o = new ModeleFeuilleDocument();
 			o.setId(id);

@@ -23,10 +23,10 @@ public abstract class ColumnType {
 		Class<?> clazz;
 		switch (sqlType) {
 		case Types.INTEGER:
-			clazz = Integer.class;
+			clazz = Integer.TYPE;
 			break;
 		case Types.BIGINT:
-			clazz = Long.class;
+			clazz = Long.TYPE;
 			break;
 		case Types.VARCHAR:
 			clazz = String.class;
@@ -38,7 +38,7 @@ public abstract class ColumnType {
 			clazz = Timestamp.class;
 			break;
 		case Types.BOOLEAN:
-			clazz = Boolean.class;
+			clazz = Boolean.TYPE;
 			break;
 		default:
 			throw new NotImplementedException("Le type SQL = " + sqlType + " n'est pas enregistré");
@@ -71,5 +71,32 @@ public abstract class ColumnType {
 			throw new NotImplementedException("Le type SQL = " + sqlType + " n'est pas enregistré");
 		}
 		return getter;
+	}
+
+	public boolean needNullCheck() {
+		boolean check;
+		switch (sqlType) {
+		case Types.INTEGER:
+			check = true;
+			break;
+		case Types.BIGINT:
+			check = true;
+			break;
+		case Types.VARCHAR:
+			check = false;
+			break;
+		case Types.DATE:
+			check = false;
+			break;
+		case Types.TIMESTAMP:
+			check = false;
+			break;
+		case Types.BOOLEAN:
+			check = true;
+			break;
+		default:
+			throw new NotImplementedException("Le type SQL = " + sqlType + " n'est pas enregistré");
+		}
+		return check;
 	}
 }

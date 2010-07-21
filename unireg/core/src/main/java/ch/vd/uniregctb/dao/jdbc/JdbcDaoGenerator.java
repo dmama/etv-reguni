@@ -55,8 +55,8 @@ public class JdbcDaoGenerator {
 				CollectiviteAdministrative.class, Etablissement.class, DebiteurPrestationImposable.class);
 		tg.generate("classpath:ch/vd/uniregctb/dao/jdbc/JdbcTiersDaoImpl.java.template", jdbcDaoPath + "/JdbcTiersDaoImpl.java");
 
-//		JdbcHibernateEntityDaoGenerator atg = new JdbcHibernateEntityDaoGenerator("tiers", AdresseSuisse.class, AdresseEtrangere.class, AdresseCivile.class, AdressePM.class, AdresseAutreTiers.class);
-//		atg.generate("classpath:ch/vd/uniregctb/dao/jdbc/JdbcAdresseTiersDaoImpl.java.template", jdbcDaoPath + "/JdbcAdresseTiersDaoImpl.java");
+		JdbcHibernateEntityDaoGenerator atg = new JdbcHibernateEntityDaoGenerator("tiers", AdresseSuisse.class, AdresseEtrangere.class, AdresseCivile.class, AdressePM.class, AdresseAutreTiers.class);
+		atg.generate("classpath:ch/vd/uniregctb/dao/jdbc/JdbcAdresseTiersDaoImpl.java.template", jdbcDaoPath + "/JdbcAdresseTiersDaoImpl.java");
 
 		JdbcHibernateEntityDaoGenerator dg = new JdbcHibernateEntityDaoGenerator("tiers", DeclarationImpotOrdinaire.class, DeclarationImpotSource.class);
 		dg.generate("classpath:ch/vd/uniregctb/dao/jdbc/JdbcDeclarationDaoImpl.java.template", jdbcDaoPath + "/JdbcDeclarationDaoImpl.java");

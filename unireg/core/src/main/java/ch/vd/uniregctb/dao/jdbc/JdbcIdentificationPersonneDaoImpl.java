@@ -89,28 +89,23 @@ public class JdbcIdentificationPersonneDaoImpl implements JdbcIdentificationPers
 		}
 
 		public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
-			final Long temp1 = rs.getLong(1);
+			
+			final long temp10 = rs.getLong(10);
+			final Long nonHabitantId = (rs.wasNull() ? null : temp10);
+			final IdentificationPersonne res;
+			
+			
+			final long temp1 = rs.getLong(1);
 			final Long id = (rs.wasNull() ? null : temp1);
-			final Timestamp temp2 = rs.getTimestamp(2);
-			final Date annulationDate = (rs.wasNull() ? null : temp2);
-			final String temp3 = rs.getString(3);
-			final String annulationUser = (rs.wasNull() ? null : temp3);
+			final Date annulationDate = rs.getTimestamp(2);
+			final String annulationUser = rs.getString(3);
 			final String temp4 = rs.getString(4);
 			final CategorieIdentifiant categorie = (rs.wasNull() ? null : Enum.valueOf(CategorieIdentifiant.class, temp4));
-			final String temp5 = rs.getString(5);
-			final String identifiant = (rs.wasNull() ? null : temp5);
-			final Timestamp temp6 = rs.getTimestamp(6);
-			final Date logCdate = (rs.wasNull() ? null : temp6);
-			final String temp7 = rs.getString(7);
-			final String logCuser = (rs.wasNull() ? null : temp7);
-			final Timestamp temp8 = rs.getTimestamp(8);
-			final Timestamp logMdate = (rs.wasNull() ? null : temp8);
-			final String temp9 = rs.getString(9);
-			final String logMuser = (rs.wasNull() ? null : temp9);
-			final Long temp10 = rs.getLong(10);
-			final Long nonHabitantId = (rs.wasNull() ? null : temp10);
-			
-			final IdentificationPersonne res;
+			final String identifiant = rs.getString(5);
+			final Date logCdate = rs.getTimestamp(6);
+			final String logCuser = rs.getString(7);
+			final Timestamp logMdate = rs.getTimestamp(8);
+			final String logMuser = rs.getString(9);
 			
 			IdentificationPersonne o = new IdentificationPersonne();
 			o.setId(id);

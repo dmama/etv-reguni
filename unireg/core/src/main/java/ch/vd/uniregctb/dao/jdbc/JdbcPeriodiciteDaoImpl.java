@@ -19,6 +19,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.declaration.Periodicite;
+import ch.vd.uniregctb.type.PeriodeDecompte;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
 
 public class JdbcPeriodiciteDaoImpl implements JdbcPeriodiciteDao {
@@ -75,7 +76,8 @@ public class JdbcPeriodiciteDaoImpl implements JdbcPeriodiciteDao {
 				"LOG_CUSER, " + // 8
 				"LOG_MDATE, " + // 9
 				"LOG_MUSER, " + // 10
-				"PERIODICITE_TYPE " + // 11
+				"PERIODE_DECOMPTE, " + // 11
+				"PERIODICITE_TYPE " + // 12
 				"from PERIODICITE";
 
 		public static String selectById() {
@@ -91,30 +93,28 @@ public class JdbcPeriodiciteDaoImpl implements JdbcPeriodiciteDao {
 		}
 
 		public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
-			final Long temp1 = rs.getLong(1);
-			final Long id = (rs.wasNull() ? null : temp1);
-			final Timestamp temp2 = rs.getTimestamp(2);
-			final Date annulationDate = (rs.wasNull() ? null : temp2);
-			final String temp3 = rs.getString(3);
-			final String annulationUser = (rs.wasNull() ? null : temp3);
-			final Integer temp4 = rs.getInt(4);
-			final RegDate dateDebut = (rs.wasNull() ? null : RegDate.fromIndex(temp4, false));
-			final Integer temp5 = rs.getInt(5);
-			final RegDate dateFin = (rs.wasNull() ? null : RegDate.fromIndex(temp5, false));
-			final Long temp6 = rs.getLong(6);
-			final Long debiteurId = (rs.wasNull() ? null : temp6);
-			final Timestamp temp7 = rs.getTimestamp(7);
-			final Date logCdate = (rs.wasNull() ? null : temp7);
-			final String temp8 = rs.getString(8);
-			final String logCuser = (rs.wasNull() ? null : temp8);
-			final Timestamp temp9 = rs.getTimestamp(9);
-			final Timestamp logMdate = (rs.wasNull() ? null : temp9);
-			final String temp10 = rs.getString(10);
-			final String logMuser = (rs.wasNull() ? null : temp10);
-			final String temp11 = rs.getString(11);
-			final PeriodiciteDecompte periodiciteType = (rs.wasNull() ? null : Enum.valueOf(PeriodiciteDecompte.class, temp11));
 			
+			final long temp6 = rs.getLong(6);
+			final Long debiteurId = (rs.wasNull() ? null : temp6);
 			final Periodicite res;
+			
+			
+			final long temp1 = rs.getLong(1);
+			final Long id = (rs.wasNull() ? null : temp1);
+			final Date annulationDate = rs.getTimestamp(2);
+			final String annulationUser = rs.getString(3);
+			final int temp4 = rs.getInt(4);
+			final RegDate dateDebut = (rs.wasNull() ? null : RegDate.fromIndex(temp4, false));
+			final int temp5 = rs.getInt(5);
+			final RegDate dateFin = (rs.wasNull() ? null : RegDate.fromIndex(temp5, false));
+			final Date logCdate = rs.getTimestamp(7);
+			final String logCuser = rs.getString(8);
+			final Timestamp logMdate = rs.getTimestamp(9);
+			final String logMuser = rs.getString(10);
+			final String temp11 = rs.getString(11);
+			final PeriodeDecompte periodeDecompte = (rs.wasNull() ? null : Enum.valueOf(PeriodeDecompte.class, temp11));
+			final String temp12 = rs.getString(12);
+			final PeriodiciteDecompte periodiciteType = (rs.wasNull() ? null : Enum.valueOf(PeriodiciteDecompte.class, temp12));
 			
 			Periodicite o = new Periodicite();
 			o.setId(id);
@@ -126,6 +126,7 @@ public class JdbcPeriodiciteDaoImpl implements JdbcPeriodiciteDao {
 			o.setLogCreationUser(logCuser);
 			o.setLogModifDate(logMdate);
 			o.setLogModifUser(logMuser);
+			o.setPeriodeDecompte(periodeDecompte);
 			o.setPeriodiciteDecompte(periodiciteType);
 			res = o;
 			

@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.webservices.tiers2.impl;
 
 import ch.vd.uniregctb.adresse.AdresseService;
+import ch.vd.uniregctb.dao.jdbc.JdbcTiersDao;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.uniregctb.declaration.source.ListeRecapService;
 import ch.vd.uniregctb.iban.IbanValidator;
@@ -44,4 +45,8 @@ public class Context {
 	public ListeRecapService lrService;
 
 	public DeclarationImpotService diService;
+
+	public JdbcTiersDao jdbcTiersDao;
+
+	public boolean useJdbc;
 }

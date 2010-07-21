@@ -98,40 +98,31 @@ public class JdbcSituationFamilleDaoImpl implements JdbcSituationFamilleDao {
 		}
 
 		public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
-			final String temp1 = rs.getString(1);
-			final String situationFamilleType = (rs.wasNull() ? null : temp1);
-			final Long temp2 = rs.getLong(2);
-			final Long id = (rs.wasNull() ? null : temp2);
-			final Timestamp temp3 = rs.getTimestamp(3);
-			final Date annulationDate = (rs.wasNull() ? null : temp3);
-			final String temp4 = rs.getString(4);
-			final String annulationUser = (rs.wasNull() ? null : temp4);
-			final Long temp5 = rs.getLong(5);
-			final Long ctbId = (rs.wasNull() ? null : temp5);
-			final Integer temp6 = rs.getInt(6);
-			final RegDate dateDebut = (rs.wasNull() ? null : RegDate.fromIndex(temp6, false));
-			final Integer temp7 = rs.getInt(7);
-			final RegDate dateFin = (rs.wasNull() ? null : RegDate.fromIndex(temp7, false));
-			final String temp8 = rs.getString(8);
-			final EtatCivil etatCivil = (rs.wasNull() ? null : Enum.valueOf(EtatCivil.class, temp8));
-			final Timestamp temp9 = rs.getTimestamp(9);
-			final Date logCdate = (rs.wasNull() ? null : temp9);
-			final String temp10 = rs.getString(10);
-			final String logCuser = (rs.wasNull() ? null : temp10);
-			final Timestamp temp11 = rs.getTimestamp(11);
-			final Timestamp logMdate = (rs.wasNull() ? null : temp11);
-			final String temp12 = rs.getString(12);
-			final String logMuser = (rs.wasNull() ? null : temp12);
-			final Integer temp13 = rs.getInt(13);
-			final Integer nombreEnfants = (rs.wasNull() ? null : temp13);
-			final String temp14 = rs.getString(14);
-			final TarifImpotSource tarifApplicable = (rs.wasNull() ? null : Enum.valueOf(TarifImpotSource.class, temp14));
-			final Long temp15 = rs.getLong(15);
-			final Long tiersPrincipalId = (rs.wasNull() ? null : temp15);
 			
+			final String situationFamilleType = rs.getString(1);
+			final long temp5 = rs.getLong(5);
+			final Long ctbId = (rs.wasNull() ? null : temp5);
 			final SituationFamille res;
 			
 			if (situationFamilleType.equals("SituationFamille")) {
+			
+				final long temp2 = rs.getLong(2);
+				final Long id = (rs.wasNull() ? null : temp2);
+				final Date annulationDate = rs.getTimestamp(3);
+				final String annulationUser = rs.getString(4);
+				final int temp6 = rs.getInt(6);
+				final RegDate dateDebut = (rs.wasNull() ? null : RegDate.fromIndex(temp6, false));
+				final int temp7 = rs.getInt(7);
+				final RegDate dateFin = (rs.wasNull() ? null : RegDate.fromIndex(temp7, false));
+				final String temp8 = rs.getString(8);
+				final EtatCivil etatCivil = (rs.wasNull() ? null : Enum.valueOf(EtatCivil.class, temp8));
+				final Date logCdate = rs.getTimestamp(9);
+				final String logCuser = rs.getString(10);
+				final Timestamp logMdate = rs.getTimestamp(11);
+				final String logMuser = rs.getString(12);
+				final int temp13 = rs.getInt(13);
+				final Integer nombreEnfants = (rs.wasNull() ? null : temp13);
+			
 				SituationFamillePersonnePhysique o = new SituationFamillePersonnePhysique();
 				o.setId(id);
 				o.setAnnulationDate(annulationDate);
@@ -147,6 +138,28 @@ public class JdbcSituationFamilleDaoImpl implements JdbcSituationFamilleDao {
 				res = o;
 			}
 			else if (situationFamilleType.equals("SituationFamilleMenageCommun")) {
+			
+				final long temp2 = rs.getLong(2);
+				final Long id = (rs.wasNull() ? null : temp2);
+				final Date annulationDate = rs.getTimestamp(3);
+				final String annulationUser = rs.getString(4);
+				final int temp6 = rs.getInt(6);
+				final RegDate dateDebut = (rs.wasNull() ? null : RegDate.fromIndex(temp6, false));
+				final int temp7 = rs.getInt(7);
+				final RegDate dateFin = (rs.wasNull() ? null : RegDate.fromIndex(temp7, false));
+				final String temp8 = rs.getString(8);
+				final EtatCivil etatCivil = (rs.wasNull() ? null : Enum.valueOf(EtatCivil.class, temp8));
+				final Date logCdate = rs.getTimestamp(9);
+				final String logCuser = rs.getString(10);
+				final Timestamp logMdate = rs.getTimestamp(11);
+				final String logMuser = rs.getString(12);
+				final int temp13 = rs.getInt(13);
+				final Integer nombreEnfants = (rs.wasNull() ? null : temp13);
+				final String temp14 = rs.getString(14);
+				final TarifImpotSource tarifApplicable = (rs.wasNull() ? null : Enum.valueOf(TarifImpotSource.class, temp14));
+				final long temp15 = rs.getLong(15);
+				final Long tiersPrincipalId = (rs.wasNull() ? null : temp15);
+			
 				SituationFamilleMenageCommun o = new SituationFamilleMenageCommun();
 				o.setId(id);
 				o.setAnnulationDate(annulationDate);

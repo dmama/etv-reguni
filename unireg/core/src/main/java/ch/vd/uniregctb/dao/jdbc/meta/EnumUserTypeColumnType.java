@@ -11,4 +11,9 @@ public class EnumUserTypeColumnType extends UserTypeColumnType {
 	public String getConvertMethod(String value) {
 		return "Enum.valueOf(" + javaType.getSimpleName() + ".class, " + value + ")";
 	}
+
+	@Override
+	public boolean needNullCheck() {
+		return true; // nécessaire parce que le cast string -> enum ne supporte pas les strings nulles.
+	}
 }

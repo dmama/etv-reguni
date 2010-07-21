@@ -90,28 +90,24 @@ public class JdbcEtatDeclarationDaoImpl implements JdbcEtatDeclarationDao {
 		}
 
 		public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
-			final Long temp1 = rs.getLong(1);
-			final Long id = (rs.wasNull() ? null : temp1);
-			final Timestamp temp2 = rs.getTimestamp(2);
-			final Date annulationDate = (rs.wasNull() ? null : temp2);
-			final String temp3 = rs.getString(3);
-			final String annulationUser = (rs.wasNull() ? null : temp3);
-			final Integer temp4 = rs.getInt(4);
-			final RegDate dateObtention = (rs.wasNull() ? null : RegDate.fromIndex(temp4, false));
-			final Long temp5 = rs.getLong(5);
+			
+			final long temp5 = rs.getLong(5);
 			final Long declarationId = (rs.wasNull() ? null : temp5);
-			final Timestamp temp6 = rs.getTimestamp(6);
-			final Date logCdate = (rs.wasNull() ? null : temp6);
-			final String temp7 = rs.getString(7);
-			final String logCuser = (rs.wasNull() ? null : temp7);
-			final Timestamp temp8 = rs.getTimestamp(8);
-			final Timestamp logMdate = (rs.wasNull() ? null : temp8);
-			final String temp9 = rs.getString(9);
-			final String logMuser = (rs.wasNull() ? null : temp9);
+			final EtatDeclaration res;
+			
+			
+			final long temp1 = rs.getLong(1);
+			final Long id = (rs.wasNull() ? null : temp1);
+			final Date annulationDate = rs.getTimestamp(2);
+			final String annulationUser = rs.getString(3);
+			final int temp4 = rs.getInt(4);
+			final RegDate dateObtention = (rs.wasNull() ? null : RegDate.fromIndex(temp4, false));
+			final Date logCdate = rs.getTimestamp(6);
+			final String logCuser = rs.getString(7);
+			final Timestamp logMdate = rs.getTimestamp(8);
+			final String logMuser = rs.getString(9);
 			final String temp10 = rs.getString(10);
 			final TypeEtatDeclaration type = (rs.wasNull() ? null : Enum.valueOf(TypeEtatDeclaration.class, temp10));
-			
-			final EtatDeclaration res;
 			
 			EtatDeclaration o = new EtatDeclaration();
 			o.setId(id);

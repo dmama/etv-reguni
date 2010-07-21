@@ -137,44 +137,31 @@ public class JdbcRapportEntreTiersDaoImpl implements JdbcRapportEntreTiersDao {
 		}
 
 		public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
-			final String temp1 = rs.getString(1);
-			final String rapportEntreTiersType = (rs.wasNull() ? null : temp1);
-			final Long temp2 = rs.getLong(2);
-			final Long id = (rs.wasNull() ? null : temp2);
-			final Timestamp temp3 = rs.getTimestamp(3);
-			final Date annulationDate = (rs.wasNull() ? null : temp3);
-			final String temp4 = rs.getString(4);
-			final String annulationUser = (rs.wasNull() ? null : temp4);
-			final Integer temp5 = rs.getInt(5);
-			final RegDate dateDebut = (rs.wasNull() ? null : RegDate.fromIndex(temp5, false));
-			final Integer temp6 = rs.getInt(6);
-			final RegDate dateFin = (rs.wasNull() ? null : RegDate.fromIndex(temp6, false));
-			final Integer temp7 = rs.getInt(7);
-			final RegDate dateFinDerEleImp = (rs.wasNull() ? null : RegDate.fromIndex(temp7, false));
-			final Boolean temp8 = rs.getBoolean(8);
-			final Boolean extensionExecutionForcee = (rs.wasNull() ? null : temp8);
-			final Timestamp temp9 = rs.getTimestamp(9);
-			final Date logCdate = (rs.wasNull() ? null : temp9);
-			final String temp10 = rs.getString(10);
-			final String logCuser = (rs.wasNull() ? null : temp10);
-			final Timestamp temp11 = rs.getTimestamp(11);
-			final Timestamp logMdate = (rs.wasNull() ? null : temp11);
-			final String temp12 = rs.getString(12);
-			final String logMuser = (rs.wasNull() ? null : temp12);
-			final Integer temp13 = rs.getInt(13);
-			final Integer tauxActivite = (rs.wasNull() ? null : temp13);
-			final Long temp14 = rs.getLong(14);
-			final Long tiersObjetId = (rs.wasNull() ? null : temp14);
-			final Long temp15 = rs.getLong(15);
-			final Long tiersSujetId = (rs.wasNull() ? null : temp15);
-			final Long temp16 = rs.getLong(16);
-			final Long tiersTuteurId = (rs.wasNull() ? null : temp16);
-			final String temp17 = rs.getString(17);
-			final TypeActivite typeActivite = (rs.wasNull() ? null : Enum.valueOf(TypeActivite.class, temp17));
 			
+			final String rapportEntreTiersType = rs.getString(1);
 			final RapportEntreTiers res;
 			
 			if (rapportEntreTiersType.equals("Tutelle")) {
+			
+				final long temp2 = rs.getLong(2);
+				final Long id = (rs.wasNull() ? null : temp2);
+				final Date annulationDate = rs.getTimestamp(3);
+				final String annulationUser = rs.getString(4);
+				final int temp5 = rs.getInt(5);
+				final RegDate dateDebut = (rs.wasNull() ? null : RegDate.fromIndex(temp5, false));
+				final int temp6 = rs.getInt(6);
+				final RegDate dateFin = (rs.wasNull() ? null : RegDate.fromIndex(temp6, false));
+				final Date logCdate = rs.getTimestamp(9);
+				final String logCuser = rs.getString(10);
+				final Timestamp logMdate = rs.getTimestamp(11);
+				final String logMuser = rs.getString(12);
+				final long temp14 = rs.getLong(14);
+				final Long tiersObjetId = (rs.wasNull() ? null : temp14);
+				final long temp15 = rs.getLong(15);
+				final Long tiersSujetId = (rs.wasNull() ? null : temp15);
+				final long temp16 = rs.getLong(16);
+				final Long tiersTuteurId = (rs.wasNull() ? null : temp16);
+			
 				Tutelle o = new Tutelle();
 				o.setId(id);
 				o.setAnnulationDate(annulationDate);
@@ -191,6 +178,26 @@ public class JdbcRapportEntreTiersDaoImpl implements JdbcRapportEntreTiersDao {
 				res = o;
 			}
 			else if (rapportEntreTiersType.equals("Curatelle")) {
+			
+				final long temp2 = rs.getLong(2);
+				final Long id = (rs.wasNull() ? null : temp2);
+				final Date annulationDate = rs.getTimestamp(3);
+				final String annulationUser = rs.getString(4);
+				final int temp5 = rs.getInt(5);
+				final RegDate dateDebut = (rs.wasNull() ? null : RegDate.fromIndex(temp5, false));
+				final int temp6 = rs.getInt(6);
+				final RegDate dateFin = (rs.wasNull() ? null : RegDate.fromIndex(temp6, false));
+				final Date logCdate = rs.getTimestamp(9);
+				final String logCuser = rs.getString(10);
+				final Timestamp logMdate = rs.getTimestamp(11);
+				final String logMuser = rs.getString(12);
+				final long temp14 = rs.getLong(14);
+				final Long tiersObjetId = (rs.wasNull() ? null : temp14);
+				final long temp15 = rs.getLong(15);
+				final Long tiersSujetId = (rs.wasNull() ? null : temp15);
+				final long temp16 = rs.getLong(16);
+				final Long tiersTuteurId = (rs.wasNull() ? null : temp16);
+			
 				Curatelle o = new Curatelle();
 				o.setId(id);
 				o.setAnnulationDate(annulationDate);
@@ -207,6 +214,26 @@ public class JdbcRapportEntreTiersDaoImpl implements JdbcRapportEntreTiersDao {
 				res = o;
 			}
 			else if (rapportEntreTiersType.equals("ConseilLegal")) {
+			
+				final long temp2 = rs.getLong(2);
+				final Long id = (rs.wasNull() ? null : temp2);
+				final Date annulationDate = rs.getTimestamp(3);
+				final String annulationUser = rs.getString(4);
+				final int temp5 = rs.getInt(5);
+				final RegDate dateDebut = (rs.wasNull() ? null : RegDate.fromIndex(temp5, false));
+				final int temp6 = rs.getInt(6);
+				final RegDate dateFin = (rs.wasNull() ? null : RegDate.fromIndex(temp6, false));
+				final Date logCdate = rs.getTimestamp(9);
+				final String logCuser = rs.getString(10);
+				final Timestamp logMdate = rs.getTimestamp(11);
+				final String logMuser = rs.getString(12);
+				final long temp14 = rs.getLong(14);
+				final Long tiersObjetId = (rs.wasNull() ? null : temp14);
+				final long temp15 = rs.getLong(15);
+				final Long tiersSujetId = (rs.wasNull() ? null : temp15);
+				final long temp16 = rs.getLong(16);
+				final Long tiersTuteurId = (rs.wasNull() ? null : temp16);
+			
 				ConseilLegal o = new ConseilLegal();
 				o.setId(id);
 				o.setAnnulationDate(annulationDate);
@@ -223,6 +250,24 @@ public class JdbcRapportEntreTiersDaoImpl implements JdbcRapportEntreTiersDao {
 				res = o;
 			}
 			else if (rapportEntreTiersType.equals("AnnuleEtRemplace")) {
+			
+				final long temp2 = rs.getLong(2);
+				final Long id = (rs.wasNull() ? null : temp2);
+				final Date annulationDate = rs.getTimestamp(3);
+				final String annulationUser = rs.getString(4);
+				final int temp5 = rs.getInt(5);
+				final RegDate dateDebut = (rs.wasNull() ? null : RegDate.fromIndex(temp5, false));
+				final int temp6 = rs.getInt(6);
+				final RegDate dateFin = (rs.wasNull() ? null : RegDate.fromIndex(temp6, false));
+				final Date logCdate = rs.getTimestamp(9);
+				final String logCuser = rs.getString(10);
+				final Timestamp logMdate = rs.getTimestamp(11);
+				final String logMuser = rs.getString(12);
+				final long temp14 = rs.getLong(14);
+				final Long tiersObjetId = (rs.wasNull() ? null : temp14);
+				final long temp15 = rs.getLong(15);
+				final Long tiersSujetId = (rs.wasNull() ? null : temp15);
+			
 				AnnuleEtRemplace o = new AnnuleEtRemplace();
 				o.setId(id);
 				o.setAnnulationDate(annulationDate);
@@ -238,6 +283,24 @@ public class JdbcRapportEntreTiersDaoImpl implements JdbcRapportEntreTiersDao {
 				res = o;
 			}
 			else if (rapportEntreTiersType.equals("AppartenanceMenage")) {
+			
+				final long temp2 = rs.getLong(2);
+				final Long id = (rs.wasNull() ? null : temp2);
+				final Date annulationDate = rs.getTimestamp(3);
+				final String annulationUser = rs.getString(4);
+				final int temp5 = rs.getInt(5);
+				final RegDate dateDebut = (rs.wasNull() ? null : RegDate.fromIndex(temp5, false));
+				final int temp6 = rs.getInt(6);
+				final RegDate dateFin = (rs.wasNull() ? null : RegDate.fromIndex(temp6, false));
+				final Date logCdate = rs.getTimestamp(9);
+				final String logCuser = rs.getString(10);
+				final Timestamp logMdate = rs.getTimestamp(11);
+				final String logMuser = rs.getString(12);
+				final long temp14 = rs.getLong(14);
+				final Long tiersObjetId = (rs.wasNull() ? null : temp14);
+				final long temp15 = rs.getLong(15);
+				final Long tiersSujetId = (rs.wasNull() ? null : temp15);
+			
 				AppartenanceMenage o = new AppartenanceMenage();
 				o.setId(id);
 				o.setAnnulationDate(annulationDate);
@@ -253,6 +316,30 @@ public class JdbcRapportEntreTiersDaoImpl implements JdbcRapportEntreTiersDao {
 				res = o;
 			}
 			else if (rapportEntreTiersType.equals("RapportPrestationImposable")) {
+			
+				final long temp2 = rs.getLong(2);
+				final Long id = (rs.wasNull() ? null : temp2);
+				final Date annulationDate = rs.getTimestamp(3);
+				final String annulationUser = rs.getString(4);
+				final int temp5 = rs.getInt(5);
+				final RegDate dateDebut = (rs.wasNull() ? null : RegDate.fromIndex(temp5, false));
+				final int temp6 = rs.getInt(6);
+				final RegDate dateFin = (rs.wasNull() ? null : RegDate.fromIndex(temp6, false));
+				final int temp7 = rs.getInt(7);
+				final RegDate dateFinDerEleImp = (rs.wasNull() ? null : RegDate.fromIndex(temp7, false));
+				final Date logCdate = rs.getTimestamp(9);
+				final String logCuser = rs.getString(10);
+				final Timestamp logMdate = rs.getTimestamp(11);
+				final String logMuser = rs.getString(12);
+				final int temp13 = rs.getInt(13);
+				final Integer tauxActivite = (rs.wasNull() ? null : temp13);
+				final long temp14 = rs.getLong(14);
+				final Long tiersObjetId = (rs.wasNull() ? null : temp14);
+				final long temp15 = rs.getLong(15);
+				final Long tiersSujetId = (rs.wasNull() ? null : temp15);
+				final String temp17 = rs.getString(17);
+				final TypeActivite typeActivite = (rs.wasNull() ? null : Enum.valueOf(TypeActivite.class, temp17));
+			
 				RapportPrestationImposable o = new RapportPrestationImposable();
 				o.setId(id);
 				o.setAnnulationDate(annulationDate);
@@ -271,6 +358,26 @@ public class JdbcRapportEntreTiersDaoImpl implements JdbcRapportEntreTiersDao {
 				res = o;
 			}
 			else if (rapportEntreTiersType.equals("RepresentationConventionnelle")) {
+			
+				final long temp2 = rs.getLong(2);
+				final Long id = (rs.wasNull() ? null : temp2);
+				final Date annulationDate = rs.getTimestamp(3);
+				final String annulationUser = rs.getString(4);
+				final int temp5 = rs.getInt(5);
+				final RegDate dateDebut = (rs.wasNull() ? null : RegDate.fromIndex(temp5, false));
+				final int temp6 = rs.getInt(6);
+				final RegDate dateFin = (rs.wasNull() ? null : RegDate.fromIndex(temp6, false));
+				final boolean temp8 = rs.getBoolean(8);
+				final Boolean extensionExecutionForcee = (rs.wasNull() ? null : temp8);
+				final Date logCdate = rs.getTimestamp(9);
+				final String logCuser = rs.getString(10);
+				final Timestamp logMdate = rs.getTimestamp(11);
+				final String logMuser = rs.getString(12);
+				final long temp14 = rs.getLong(14);
+				final Long tiersObjetId = (rs.wasNull() ? null : temp14);
+				final long temp15 = rs.getLong(15);
+				final Long tiersSujetId = (rs.wasNull() ? null : temp15);
+			
 				RepresentationConventionnelle o = new RepresentationConventionnelle();
 				o.setId(id);
 				o.setAnnulationDate(annulationDate);
@@ -287,6 +394,24 @@ public class JdbcRapportEntreTiersDaoImpl implements JdbcRapportEntreTiersDao {
 				res = o;
 			}
 			else if (rapportEntreTiersType.equals("ContactImpotSource")) {
+			
+				final long temp2 = rs.getLong(2);
+				final Long id = (rs.wasNull() ? null : temp2);
+				final Date annulationDate = rs.getTimestamp(3);
+				final String annulationUser = rs.getString(4);
+				final int temp5 = rs.getInt(5);
+				final RegDate dateDebut = (rs.wasNull() ? null : RegDate.fromIndex(temp5, false));
+				final int temp6 = rs.getInt(6);
+				final RegDate dateFin = (rs.wasNull() ? null : RegDate.fromIndex(temp6, false));
+				final Date logCdate = rs.getTimestamp(9);
+				final String logCuser = rs.getString(10);
+				final Timestamp logMdate = rs.getTimestamp(11);
+				final String logMuser = rs.getString(12);
+				final long temp14 = rs.getLong(14);
+				final Long tiersObjetId = (rs.wasNull() ? null : temp14);
+				final long temp15 = rs.getLong(15);
+				final Long tiersSujetId = (rs.wasNull() ? null : temp15);
+			
 				ContactImpotSource o = new ContactImpotSource();
 				o.setId(id);
 				o.setAnnulationDate(annulationDate);

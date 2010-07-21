@@ -107,46 +107,39 @@ public class JdbcForFiscalDaoImpl implements JdbcForFiscalDao {
 		}
 
 		public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
-			final String temp1 = rs.getString(1);
-			final String forType = (rs.wasNull() ? null : temp1);
-			final Long temp2 = rs.getLong(2);
-			final Long id = (rs.wasNull() ? null : temp2);
-			final Timestamp temp3 = rs.getTimestamp(3);
-			final Date annulationDate = (rs.wasNull() ? null : temp3);
-			final String temp4 = rs.getString(4);
-			final String annulationUser = (rs.wasNull() ? null : temp4);
-			final Integer temp5 = rs.getInt(5);
-			final RegDate dateFermeture = (rs.wasNull() ? null : RegDate.fromIndex(temp5, false));
-			final Integer temp6 = rs.getInt(6);
-			final RegDate dateOuverture = (rs.wasNull() ? null : RegDate.fromIndex(temp6, false));
-			final String temp7 = rs.getString(7);
-			final GenreImpot genreImpot = (rs.wasNull() ? null : Enum.valueOf(GenreImpot.class, temp7));
-			final Timestamp temp8 = rs.getTimestamp(8);
-			final Date logCdate = (rs.wasNull() ? null : temp8);
-			final String temp9 = rs.getString(9);
-			final String logCuser = (rs.wasNull() ? null : temp9);
-			final Timestamp temp10 = rs.getTimestamp(10);
-			final Timestamp logMdate = (rs.wasNull() ? null : temp10);
-			final String temp11 = rs.getString(11);
-			final String logMuser = (rs.wasNull() ? null : temp11);
-			final String temp12 = rs.getString(12);
-			final ModeImposition modeImposition = (rs.wasNull() ? null : Enum.valueOf(ModeImposition.class, temp12));
-			final String temp13 = rs.getString(13);
-			final MotifFor motifFermeture = (rs.wasNull() ? null : Enum.valueOf(MotifFor.class, temp13));
-			final String temp14 = rs.getString(14);
-			final MotifFor motifOuverture = (rs.wasNull() ? null : Enum.valueOf(MotifFor.class, temp14));
-			final String temp15 = rs.getString(15);
-			final MotifRattachement motifRattachement = (rs.wasNull() ? null : Enum.valueOf(MotifRattachement.class, temp15));
-			final Integer temp16 = rs.getInt(16);
-			final Integer numeroOfs = (rs.wasNull() ? null : temp16);
-			final Long temp17 = rs.getLong(17);
-			final Long tiersId = (rs.wasNull() ? null : temp17);
-			final String temp18 = rs.getString(18);
-			final TypeAutoriteFiscale typeAutFisc = (rs.wasNull() ? null : Enum.valueOf(TypeAutoriteFiscale.class, temp18));
 			
+			final String forType = rs.getString(1);
+			final long temp17 = rs.getLong(17);
+			final Long tiersId = (rs.wasNull() ? null : temp17);
 			final ForFiscal res;
 			
 			if (forType.equals("ForFiscalPrincipal")) {
+			
+				final long temp2 = rs.getLong(2);
+				final Long id = (rs.wasNull() ? null : temp2);
+				final Date annulationDate = rs.getTimestamp(3);
+				final String annulationUser = rs.getString(4);
+				final int temp5 = rs.getInt(5);
+				final RegDate dateFermeture = (rs.wasNull() ? null : RegDate.fromIndex(temp5, false));
+				final int temp6 = rs.getInt(6);
+				final RegDate dateOuverture = (rs.wasNull() ? null : RegDate.fromIndex(temp6, false));
+				final Date logCdate = rs.getTimestamp(8);
+				final String logCuser = rs.getString(9);
+				final Timestamp logMdate = rs.getTimestamp(10);
+				final String logMuser = rs.getString(11);
+				final String temp12 = rs.getString(12);
+				final ModeImposition modeImposition = (rs.wasNull() ? null : Enum.valueOf(ModeImposition.class, temp12));
+				final String temp13 = rs.getString(13);
+				final MotifFor motifFermeture = (rs.wasNull() ? null : Enum.valueOf(MotifFor.class, temp13));
+				final String temp14 = rs.getString(14);
+				final MotifFor motifOuverture = (rs.wasNull() ? null : Enum.valueOf(MotifFor.class, temp14));
+				final String temp15 = rs.getString(15);
+				final MotifRattachement motifRattachement = (rs.wasNull() ? null : Enum.valueOf(MotifRattachement.class, temp15));
+				final int temp16 = rs.getInt(16);
+				final Integer numeroOfs = (rs.wasNull() ? null : temp16);
+				final String temp18 = rs.getString(18);
+				final TypeAutoriteFiscale typeAutFisc = (rs.wasNull() ? null : Enum.valueOf(TypeAutoriteFiscale.class, temp18));
+			
 				ForFiscalPrincipal o = new ForFiscalPrincipal();
 				o.setId(id);
 				o.setAnnulationDate(annulationDate);
@@ -166,6 +159,28 @@ public class JdbcForFiscalDaoImpl implements JdbcForFiscalDao {
 				res = o;
 			}
 			else if (forType.equals("ForFiscalSecondaire")) {
+			
+				final long temp2 = rs.getLong(2);
+				final Long id = (rs.wasNull() ? null : temp2);
+				final Date annulationDate = rs.getTimestamp(3);
+				final String annulationUser = rs.getString(4);
+				final int temp5 = rs.getInt(5);
+				final RegDate dateFermeture = (rs.wasNull() ? null : RegDate.fromIndex(temp5, false));
+				final int temp6 = rs.getInt(6);
+				final RegDate dateOuverture = (rs.wasNull() ? null : RegDate.fromIndex(temp6, false));
+				final Date logCdate = rs.getTimestamp(8);
+				final String logCuser = rs.getString(9);
+				final Timestamp logMdate = rs.getTimestamp(10);
+				final String logMuser = rs.getString(11);
+				final String temp13 = rs.getString(13);
+				final MotifFor motifFermeture = (rs.wasNull() ? null : Enum.valueOf(MotifFor.class, temp13));
+				final String temp14 = rs.getString(14);
+				final MotifFor motifOuverture = (rs.wasNull() ? null : Enum.valueOf(MotifFor.class, temp14));
+				final String temp15 = rs.getString(15);
+				final MotifRattachement motifRattachement = (rs.wasNull() ? null : Enum.valueOf(MotifRattachement.class, temp15));
+				final int temp16 = rs.getInt(16);
+				final Integer numeroOfs = (rs.wasNull() ? null : temp16);
+			
 				ForFiscalSecondaire o = new ForFiscalSecondaire();
 				o.setId(id);
 				o.setAnnulationDate(annulationDate);
@@ -183,6 +198,28 @@ public class JdbcForFiscalDaoImpl implements JdbcForFiscalDao {
 				res = o;
 			}
 			else if (forType.equals("ForFiscalAutreElementImposable")) {
+			
+				final long temp2 = rs.getLong(2);
+				final Long id = (rs.wasNull() ? null : temp2);
+				final Date annulationDate = rs.getTimestamp(3);
+				final String annulationUser = rs.getString(4);
+				final int temp5 = rs.getInt(5);
+				final RegDate dateFermeture = (rs.wasNull() ? null : RegDate.fromIndex(temp5, false));
+				final int temp6 = rs.getInt(6);
+				final RegDate dateOuverture = (rs.wasNull() ? null : RegDate.fromIndex(temp6, false));
+				final Date logCdate = rs.getTimestamp(8);
+				final String logCuser = rs.getString(9);
+				final Timestamp logMdate = rs.getTimestamp(10);
+				final String logMuser = rs.getString(11);
+				final String temp13 = rs.getString(13);
+				final MotifFor motifFermeture = (rs.wasNull() ? null : Enum.valueOf(MotifFor.class, temp13));
+				final String temp14 = rs.getString(14);
+				final MotifFor motifOuverture = (rs.wasNull() ? null : Enum.valueOf(MotifFor.class, temp14));
+				final String temp15 = rs.getString(15);
+				final MotifRattachement motifRattachement = (rs.wasNull() ? null : Enum.valueOf(MotifRattachement.class, temp15));
+				final int temp16 = rs.getInt(16);
+				final Integer numeroOfs = (rs.wasNull() ? null : temp16);
+			
 				ForFiscalAutreElementImposable o = new ForFiscalAutreElementImposable();
 				o.setId(id);
 				o.setAnnulationDate(annulationDate);
@@ -200,6 +237,24 @@ public class JdbcForFiscalDaoImpl implements JdbcForFiscalDao {
 				res = o;
 			}
 			else if (forType.equals("ForFiscalAutreImpot")) {
+			
+				final long temp2 = rs.getLong(2);
+				final Long id = (rs.wasNull() ? null : temp2);
+				final Date annulationDate = rs.getTimestamp(3);
+				final String annulationUser = rs.getString(4);
+				final int temp5 = rs.getInt(5);
+				final RegDate dateFermeture = (rs.wasNull() ? null : RegDate.fromIndex(temp5, false));
+				final int temp6 = rs.getInt(6);
+				final RegDate dateOuverture = (rs.wasNull() ? null : RegDate.fromIndex(temp6, false));
+				final String temp7 = rs.getString(7);
+				final GenreImpot genreImpot = (rs.wasNull() ? null : Enum.valueOf(GenreImpot.class, temp7));
+				final Date logCdate = rs.getTimestamp(8);
+				final String logCuser = rs.getString(9);
+				final Timestamp logMdate = rs.getTimestamp(10);
+				final String logMuser = rs.getString(11);
+				final int temp16 = rs.getInt(16);
+				final Integer numeroOfs = (rs.wasNull() ? null : temp16);
+			
 				ForFiscalAutreImpot o = new ForFiscalAutreImpot();
 				o.setId(id);
 				o.setAnnulationDate(annulationDate);
@@ -215,6 +270,24 @@ public class JdbcForFiscalDaoImpl implements JdbcForFiscalDao {
 				res = o;
 			}
 			else if (forType.equals("ForDebiteurPrestationImposable")) {
+			
+				final long temp2 = rs.getLong(2);
+				final Long id = (rs.wasNull() ? null : temp2);
+				final Date annulationDate = rs.getTimestamp(3);
+				final String annulationUser = rs.getString(4);
+				final int temp5 = rs.getInt(5);
+				final RegDate dateFermeture = (rs.wasNull() ? null : RegDate.fromIndex(temp5, false));
+				final int temp6 = rs.getInt(6);
+				final RegDate dateOuverture = (rs.wasNull() ? null : RegDate.fromIndex(temp6, false));
+				final Date logCdate = rs.getTimestamp(8);
+				final String logCuser = rs.getString(9);
+				final Timestamp logMdate = rs.getTimestamp(10);
+				final String logMuser = rs.getString(11);
+				final int temp16 = rs.getInt(16);
+				final Integer numeroOfs = (rs.wasNull() ? null : temp16);
+				final String temp18 = rs.getString(18);
+				final TypeAutoriteFiscale typeAutFisc = (rs.wasNull() ? null : Enum.valueOf(TypeAutoriteFiscale.class, temp18));
+			
 				ForDebiteurPrestationImposable o = new ForDebiteurPrestationImposable();
 				o.setId(id);
 				o.setAnnulationDate(annulationDate);

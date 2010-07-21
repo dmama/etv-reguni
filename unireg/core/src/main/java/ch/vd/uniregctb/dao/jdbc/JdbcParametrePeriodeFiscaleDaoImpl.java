@@ -92,32 +92,28 @@ public class JdbcParametrePeriodeFiscaleDaoImpl implements JdbcParametrePeriodeF
 		}
 
 		public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
-			final Long temp1 = rs.getLong(1);
-			final Long id = (rs.wasNull() ? null : temp1);
-			final Timestamp temp2 = rs.getTimestamp(2);
-			final Date annulationDate = (rs.wasNull() ? null : temp2);
-			final String temp3 = rs.getString(3);
-			final String annulationUser = (rs.wasNull() ? null : temp3);
-			final Integer temp4 = rs.getInt(4);
-			final RegDate dateFinEnvoiMasse = (rs.wasNull() ? null : RegDate.fromIndex(temp4, false));
-			final Timestamp temp5 = rs.getTimestamp(5);
-			final Date logCdate = (rs.wasNull() ? null : temp5);
-			final String temp6 = rs.getString(6);
-			final String logCuser = (rs.wasNull() ? null : temp6);
-			final Timestamp temp7 = rs.getTimestamp(7);
-			final Timestamp logMdate = (rs.wasNull() ? null : temp7);
-			final String temp8 = rs.getString(8);
-			final String logMuser = (rs.wasNull() ? null : temp8);
-			final Long temp9 = rs.getLong(9);
+			
+			final long temp9 = rs.getLong(9);
 			final Long periodeId = (rs.wasNull() ? null : temp9);
-			final Integer temp10 = rs.getInt(10);
+			final ParametrePeriodeFiscale res;
+			
+			
+			final long temp1 = rs.getLong(1);
+			final Long id = (rs.wasNull() ? null : temp1);
+			final Date annulationDate = rs.getTimestamp(2);
+			final String annulationUser = rs.getString(3);
+			final int temp4 = rs.getInt(4);
+			final RegDate dateFinEnvoiMasse = (rs.wasNull() ? null : RegDate.fromIndex(temp4, false));
+			final Date logCdate = rs.getTimestamp(5);
+			final String logCuser = rs.getString(6);
+			final Timestamp logMdate = rs.getTimestamp(7);
+			final String logMuser = rs.getString(8);
+			final int temp10 = rs.getInt(10);
 			final RegDate termeGenSommEffect = (rs.wasNull() ? null : RegDate.fromIndex(temp10, false));
-			final Integer temp11 = rs.getInt(11);
+			final int temp11 = rs.getInt(11);
 			final RegDate termeGenSommRegl = (rs.wasNull() ? null : RegDate.fromIndex(temp11, false));
 			final String temp12 = rs.getString(12);
 			final TypeContribuable typeCtb = (rs.wasNull() ? null : Enum.valueOf(TypeContribuable.class, temp12));
-			
-			final ParametrePeriodeFiscale res;
 			
 			ParametrePeriodeFiscale o = new ParametrePeriodeFiscale();
 			o.setId(id);

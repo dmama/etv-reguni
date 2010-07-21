@@ -7,6 +7,7 @@ import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -312,6 +313,66 @@ public class JdbcTiersDaoImpl implements JdbcTiersDao {
 		}
 	}
 
+    @SuppressWarnings("unchecked")
+    public Set<Long> getNumerosIndividu(final Set<Long> tiersIds, final boolean includesComposantsMenage) {
+
+	    final JdbcTemplate template = new JdbcTemplate(dataSource);
+
+	    final Set<Long> numeros = new HashSet<Long>(tiersIds.size());
+
+	    if (includesComposantsMenage) {
+			// Découpe la requête en sous-requêtes si nécessaire
+			numeros.addAll(CollectionsUtils.splitAndProcess(tiersIds, JdbcDaoUtils.MAX_IN_SIZE, new CollectionsUtils.SplitCallback<Long, Long>() {
+				public List<Long> process(List<Long> ids) {
+					return template.query(NumerosComposantsMapper.selectByIds(ids), new NumerosComposantsMapper());
+				}
+			}));
+	    }
+
+	    numeros.addAll(CollectionsUtils.splitAndProcess(tiersIds, JdbcDaoUtils.MAX_IN_SIZE, new CollectionsUtils.SplitCallback<Long, Long>() {
+		    public List<Long> process(List<Long> ids) {
+			    return template.query(NumerosIndividusMapper.selectByIds(ids), new NumerosIndividusMapper());
+		    }
+	    }));
+
+	    return numeros;
+    }
+
+	private static class NumerosComposantsMapper implements RowMapper {
+
+		private static final String BASE_SELECT = "select " +
+				"t.NUMERO_INDIVIDU " +
+				"from TIERS t, RAPPORT_ENTRE_TIERS r " +
+				"where t.NUMERO = r.TIERS_SUJET_ID " +
+				"and r.ANNULATION_DATE is null " +
+				"and r.RAPPORT_ENTRE_TIERS_TYPE = 'AppartenanceMenage' " +
+				"and t.NUMERO_INDIVIDU is not null";
+
+		public static String selectByIds(Collection<Long> tiersId) {
+			return BASE_SELECT + " and r.TIERS_OBJET_ID in " + JdbcDaoUtils.buildInClause(tiersId);
+		}
+
+		public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
+			return rs.getLong(1);
+		}
+	}
+
+	private static class NumerosIndividusMapper implements RowMapper {
+
+		private static final String BASE_SELECT = "select " +
+				"t.NUMERO_INDIVIDU " +
+				"from TIERS t " +
+				"where t.NUMERO_INDIVIDU is not null";
+
+		public static String selectByIds(Collection<Long> tiersId) {
+			return BASE_SELECT + " and t.NUMERO in " + JdbcDaoUtils.buildInClause(tiersId);
+		}
+
+		public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
+			return rs.getLong(1);
+		}
+	}
+	
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setDataSource(DataSource dataSource) {
 		this.dataSource = dataSource;

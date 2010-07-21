@@ -7,6 +7,7 @@ import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -359,112 +360,68 @@ public class JdbcTiersDaoImpl implements JdbcTiersDao {
 		}
 
 		public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
-			final String temp1 = rs.getString(1);
-			final String tiersType = (rs.wasNull() ? null : temp1);
-			final Long temp2 = rs.getLong(2);
-			final Long numero = (rs.wasNull() ? null : temp2);
-			final String temp3 = rs.getString(3);
-			final FormeJuridique acFormeJuridique = (rs.wasNull() ? null : Enum.valueOf(FormeJuridique.class, temp3));
-			final String temp4 = rs.getString(4);
-			final String acNom = (rs.wasNull() ? null : temp4);
-			final String temp5 = rs.getString(5);
-			final String adresseBicSwift = (rs.wasNull() ? null : temp5);
-			final String temp6 = rs.getString(6);
-			final String adresseEmail = (rs.wasNull() ? null : temp6);
-			final Long temp7 = rs.getLong(7);
-			final Long ancienNumeroSourcier = (rs.wasNull() ? null : temp7);
-			final Timestamp temp8 = rs.getTimestamp(8);
-			final Date annulationDate = (rs.wasNull() ? null : temp8);
-			final String temp9 = rs.getString(9);
-			final String annulationUser = (rs.wasNull() ? null : temp9);
-			final Boolean temp10 = rs.getBoolean(10);
-			final Boolean blocRembAuto = (rs.wasNull() ? null : temp10);
-			final String temp11 = rs.getString(11);
-			final CategorieImpotSource categorieImpotSource = (rs.wasNull() ? null : Enum.valueOf(CategorieImpotSource.class, temp11));
-			final String temp12 = rs.getString(12);
-			final String complementNom = (rs.wasNull() ? null : temp12);
-			final Integer temp13 = rs.getInt(13);
-			final RegDate dateDeces = (rs.wasNull() ? null : RegDate.fromIndex(temp13, false));
-			final Integer temp14 = rs.getInt(14);
-			final RegDate dateLimiteExclusion = (rs.wasNull() ? null : RegDate.fromIndex(temp14, false));
-			final Boolean temp15 = rs.getBoolean(15);
-			final Boolean debiteurInactif = (rs.wasNull() ? null : temp15);
-			final String temp16 = rs.getString(16);
-			final String dpiNom1 = (rs.wasNull() ? null : temp16);
-			final String temp17 = rs.getString(17);
-			final String dpiNom2 = (rs.wasNull() ? null : temp17);
-			final Boolean temp18 = rs.getBoolean(18);
-			final Boolean indexDirty = (rs.wasNull() ? null : temp18);
-			final Timestamp temp19 = rs.getTimestamp(19);
-			final Date logCdate = (rs.wasNull() ? null : temp19);
-			final String temp20 = rs.getString(20);
-			final String logCuser = (rs.wasNull() ? null : temp20);
-			final Timestamp temp21 = rs.getTimestamp(21);
-			final Timestamp logMdate = (rs.wasNull() ? null : temp21);
-			final String temp22 = rs.getString(22);
-			final String logMuser = (rs.wasNull() ? null : temp22);
-			final Boolean temp23 = rs.getBoolean(23);
-			final Boolean majoriteTraitee = (rs.wasNull() ? null : temp23);
-			final String temp24 = rs.getString(24);
-			final ModeCommunication modeCom = (rs.wasNull() ? null : Enum.valueOf(ModeCommunication.class, temp24));
-			final String temp25 = rs.getString(25);
-			final CategorieEtranger nhCatEtranger = (rs.wasNull() ? null : Enum.valueOf(CategorieEtranger.class, temp25));
-			final Integer temp26 = rs.getInt(26);
-			final RegDate nhDateDebutValidAutoris = (rs.wasNull() ? null : RegDate.fromIndex(temp26, false));
-			final Integer temp27 = rs.getInt(27);
-			final RegDate nhDateNaissance = (rs.wasNull() ? null : RegDate.fromIndex(temp27, false));
-			final String temp28 = rs.getString(28);
-			final String nhNom = (rs.wasNull() ? null : temp28);
-			final Integer temp29 = rs.getInt(29);
-			final Integer nhNoOfsCommuneOrigine = (rs.wasNull() ? null : temp29);
-			final Integer temp30 = rs.getInt(30);
-			final Integer nhNoOfsNationalite = (rs.wasNull() ? null : temp30);
-			final String temp31 = rs.getString(31);
-			final String nhNumeroAssureSocial = (rs.wasNull() ? null : temp31);
-			final String temp32 = rs.getString(32);
-			final String nhPrenom = (rs.wasNull() ? null : temp32);
-			final String temp33 = rs.getString(33);
-			final Sexe nhSexe = (rs.wasNull() ? null : Enum.valueOf(Sexe.class, temp33));
-			final Integer temp34 = rs.getInt(34);
-			final Integer numeroCa = (rs.wasNull() ? null : temp34);
-			final String temp35 = rs.getString(35);
-			final String numeroCompteBancaire = (rs.wasNull() ? null : temp35);
-			final Long temp36 = rs.getLong(36);
-			final Long numeroEtablissement = (rs.wasNull() ? null : temp36);
-			final Long temp37 = rs.getLong(37);
-			final Long numeroIndividu = (rs.wasNull() ? null : temp37);
-			final Long temp38 = rs.getLong(38);
-			final Long numeroPm = (rs.wasNull() ? null : temp38);
-			final String temp39 = rs.getString(39);
-			final String numeroTelecopie = (rs.wasNull() ? null : temp39);
-			final String temp40 = rs.getString(40);
-			final String numeroTelPortable = (rs.wasNull() ? null : temp40);
-			final String temp41 = rs.getString(41);
-			final String numeroTelPrive = (rs.wasNull() ? null : temp41);
-			final String temp42 = rs.getString(42);
-			final String numeroTelProf = (rs.wasNull() ? null : temp42);
-			final Integer temp43 = rs.getInt(43);
-			final Integer oid = (rs.wasNull() ? null : temp43);
-			final String temp44 = rs.getString(44);
-			final PeriodeDecompte periodeDecompte = (rs.wasNull() ? null : Enum.valueOf(PeriodeDecompte.class, temp44));
-			final String temp45 = rs.getString(45);
-			final PeriodiciteDecompte periodiciteDecompte = (rs.wasNull() ? null : Enum.valueOf(PeriodiciteDecompte.class, temp45));
-			final String temp46 = rs.getString(46);
-			final String personneContact = (rs.wasNull() ? null : temp46);
-			final Boolean temp47 = rs.getBoolean(47);
-			final Boolean ppHabitant = (rs.wasNull() ? null : temp47);
-			final Integer temp48 = rs.getInt(48);
-			final RegDate reindexOn = (rs.wasNull() ? null : RegDate.fromIndex(temp48, false));
-			final Boolean temp49 = rs.getBoolean(49);
-			final Boolean sansListeRecap = (rs.wasNull() ? null : temp49);
-			final Boolean temp50 = rs.getBoolean(50);
-			final Boolean sansRappel = (rs.wasNull() ? null : temp50);
-			final String temp51 = rs.getString(51);
-			final String titulaireCompteBancaire = (rs.wasNull() ? null : temp51);
 			
+			final String tiersType = rs.getString(1);
 			final Tiers res;
 			
 			if (tiersType.equals("PersonnePhysique")) {
+			
+				final long temp2 = rs.getLong(2);
+				final Long numero = (rs.wasNull() ? null : temp2);
+				final String adresseBicSwift = rs.getString(5);
+				final String adresseEmail = rs.getString(6);
+				final long temp7 = rs.getLong(7);
+				final Long ancienNumeroSourcier = (rs.wasNull() ? null : temp7);
+				final Date annulationDate = rs.getTimestamp(8);
+				final String annulationUser = rs.getString(9);
+				final boolean temp10 = rs.getBoolean(10);
+				final Boolean blocRembAuto = (rs.wasNull() ? null : temp10);
+				final String complementNom = rs.getString(12);
+				final int temp13 = rs.getInt(13);
+				final RegDate dateDeces = (rs.wasNull() ? null : RegDate.fromIndex(temp13, false));
+				final int temp14 = rs.getInt(14);
+				final RegDate dateLimiteExclusion = (rs.wasNull() ? null : RegDate.fromIndex(temp14, false));
+				final boolean temp15 = rs.getBoolean(15);
+				final Boolean debiteurInactif = (rs.wasNull() ? null : temp15);
+				final boolean temp18 = rs.getBoolean(18);
+				final Boolean indexDirty = (rs.wasNull() ? null : temp18);
+				final Date logCdate = rs.getTimestamp(19);
+				final String logCuser = rs.getString(20);
+				final Timestamp logMdate = rs.getTimestamp(21);
+				final String logMuser = rs.getString(22);
+				final boolean temp23 = rs.getBoolean(23);
+				final Boolean majoriteTraitee = (rs.wasNull() ? null : temp23);
+				final String temp25 = rs.getString(25);
+				final CategorieEtranger nhCatEtranger = (rs.wasNull() ? null : Enum.valueOf(CategorieEtranger.class, temp25));
+				final int temp26 = rs.getInt(26);
+				final RegDate nhDateDebutValidAutoris = (rs.wasNull() ? null : RegDate.fromIndex(temp26, false));
+				final int temp27 = rs.getInt(27);
+				final RegDate nhDateNaissance = (rs.wasNull() ? null : RegDate.fromIndex(temp27, false));
+				final String nhNom = rs.getString(28);
+				final int temp29 = rs.getInt(29);
+				final Integer nhNoOfsCommuneOrigine = (rs.wasNull() ? null : temp29);
+				final int temp30 = rs.getInt(30);
+				final Integer nhNoOfsNationalite = (rs.wasNull() ? null : temp30);
+				final String nhNumeroAssureSocial = rs.getString(31);
+				final String nhPrenom = rs.getString(32);
+				final String temp33 = rs.getString(33);
+				final Sexe nhSexe = (rs.wasNull() ? null : Enum.valueOf(Sexe.class, temp33));
+				final String numeroCompteBancaire = rs.getString(35);
+				final long temp37 = rs.getLong(37);
+				final Long numeroIndividu = (rs.wasNull() ? null : temp37);
+				final String numeroTelecopie = rs.getString(39);
+				final String numeroTelPortable = rs.getString(40);
+				final String numeroTelPrive = rs.getString(41);
+				final String numeroTelProf = rs.getString(42);
+				final int temp43 = rs.getInt(43);
+				final Integer oid = (rs.wasNull() ? null : temp43);
+				final String personneContact = rs.getString(46);
+				final boolean temp47 = rs.getBoolean(47);
+				final Boolean ppHabitant = (rs.wasNull() ? null : temp47);
+				final int temp48 = rs.getInt(48);
+				final RegDate reindexOn = (rs.wasNull() ? null : RegDate.fromIndex(temp48, false));
+				final String titulaireCompteBancaire = rs.getString(51);
+			
 				PersonnePhysique o = new PersonnePhysique();
 				o.setNumero(numero);
 				o.setAdresseBicSwift(adresseBicSwift);
@@ -506,6 +463,41 @@ public class JdbcTiersDaoImpl implements JdbcTiersDao {
 				res = o;
 			}
 			else if (tiersType.equals("AutreCommunaute")) {
+			
+				final long temp2 = rs.getLong(2);
+				final Long numero = (rs.wasNull() ? null : temp2);
+				final String temp3 = rs.getString(3);
+				final FormeJuridique acFormeJuridique = (rs.wasNull() ? null : Enum.valueOf(FormeJuridique.class, temp3));
+				final String acNom = rs.getString(4);
+				final String adresseBicSwift = rs.getString(5);
+				final String adresseEmail = rs.getString(6);
+				final Date annulationDate = rs.getTimestamp(8);
+				final String annulationUser = rs.getString(9);
+				final boolean temp10 = rs.getBoolean(10);
+				final Boolean blocRembAuto = (rs.wasNull() ? null : temp10);
+				final String complementNom = rs.getString(12);
+				final int temp14 = rs.getInt(14);
+				final RegDate dateLimiteExclusion = (rs.wasNull() ? null : RegDate.fromIndex(temp14, false));
+				final boolean temp15 = rs.getBoolean(15);
+				final Boolean debiteurInactif = (rs.wasNull() ? null : temp15);
+				final boolean temp18 = rs.getBoolean(18);
+				final Boolean indexDirty = (rs.wasNull() ? null : temp18);
+				final Date logCdate = rs.getTimestamp(19);
+				final String logCuser = rs.getString(20);
+				final Timestamp logMdate = rs.getTimestamp(21);
+				final String logMuser = rs.getString(22);
+				final String numeroCompteBancaire = rs.getString(35);
+				final String numeroTelecopie = rs.getString(39);
+				final String numeroTelPortable = rs.getString(40);
+				final String numeroTelPrive = rs.getString(41);
+				final String numeroTelProf = rs.getString(42);
+				final int temp43 = rs.getInt(43);
+				final Integer oid = (rs.wasNull() ? null : temp43);
+				final String personneContact = rs.getString(46);
+				final int temp48 = rs.getInt(48);
+				final RegDate reindexOn = (rs.wasNull() ? null : RegDate.fromIndex(temp48, false));
+				final String titulaireCompteBancaire = rs.getString(51);
+			
 				AutreCommunaute o = new AutreCommunaute();
 				o.setNumero(numero);
 				o.setFormeJuridique(acFormeJuridique);
@@ -535,6 +527,40 @@ public class JdbcTiersDaoImpl implements JdbcTiersDao {
 				res = o;
 			}
 			else if (tiersType.equals("Entreprise")) {
+			
+				final long temp2 = rs.getLong(2);
+				final Long numero = (rs.wasNull() ? null : temp2);
+				final String adresseBicSwift = rs.getString(5);
+				final String adresseEmail = rs.getString(6);
+				final Date annulationDate = rs.getTimestamp(8);
+				final String annulationUser = rs.getString(9);
+				final boolean temp10 = rs.getBoolean(10);
+				final Boolean blocRembAuto = (rs.wasNull() ? null : temp10);
+				final String complementNom = rs.getString(12);
+				final int temp14 = rs.getInt(14);
+				final RegDate dateLimiteExclusion = (rs.wasNull() ? null : RegDate.fromIndex(temp14, false));
+				final boolean temp15 = rs.getBoolean(15);
+				final Boolean debiteurInactif = (rs.wasNull() ? null : temp15);
+				final boolean temp18 = rs.getBoolean(18);
+				final Boolean indexDirty = (rs.wasNull() ? null : temp18);
+				final Date logCdate = rs.getTimestamp(19);
+				final String logCuser = rs.getString(20);
+				final Timestamp logMdate = rs.getTimestamp(21);
+				final String logMuser = rs.getString(22);
+				final String numeroCompteBancaire = rs.getString(35);
+				final long temp38 = rs.getLong(38);
+				final Long numeroPm = (rs.wasNull() ? null : temp38);
+				final String numeroTelecopie = rs.getString(39);
+				final String numeroTelPortable = rs.getString(40);
+				final String numeroTelPrive = rs.getString(41);
+				final String numeroTelProf = rs.getString(42);
+				final int temp43 = rs.getInt(43);
+				final Integer oid = (rs.wasNull() ? null : temp43);
+				final String personneContact = rs.getString(46);
+				final int temp48 = rs.getInt(48);
+				final RegDate reindexOn = (rs.wasNull() ? null : RegDate.fromIndex(temp48, false));
+				final String titulaireCompteBancaire = rs.getString(51);
+			
 				Entreprise o = new Entreprise();
 				o.setNumero(numero);
 				o.setAdresseBicSwift(adresseBicSwift);
@@ -563,6 +589,38 @@ public class JdbcTiersDaoImpl implements JdbcTiersDao {
 				res = o;
 			}
 			else if (tiersType.equals("MenageCommun")) {
+			
+				final long temp2 = rs.getLong(2);
+				final Long numero = (rs.wasNull() ? null : temp2);
+				final String adresseBicSwift = rs.getString(5);
+				final String adresseEmail = rs.getString(6);
+				final Date annulationDate = rs.getTimestamp(8);
+				final String annulationUser = rs.getString(9);
+				final boolean temp10 = rs.getBoolean(10);
+				final Boolean blocRembAuto = (rs.wasNull() ? null : temp10);
+				final String complementNom = rs.getString(12);
+				final int temp14 = rs.getInt(14);
+				final RegDate dateLimiteExclusion = (rs.wasNull() ? null : RegDate.fromIndex(temp14, false));
+				final boolean temp15 = rs.getBoolean(15);
+				final Boolean debiteurInactif = (rs.wasNull() ? null : temp15);
+				final boolean temp18 = rs.getBoolean(18);
+				final Boolean indexDirty = (rs.wasNull() ? null : temp18);
+				final Date logCdate = rs.getTimestamp(19);
+				final String logCuser = rs.getString(20);
+				final Timestamp logMdate = rs.getTimestamp(21);
+				final String logMuser = rs.getString(22);
+				final String numeroCompteBancaire = rs.getString(35);
+				final String numeroTelecopie = rs.getString(39);
+				final String numeroTelPortable = rs.getString(40);
+				final String numeroTelPrive = rs.getString(41);
+				final String numeroTelProf = rs.getString(42);
+				final int temp43 = rs.getInt(43);
+				final Integer oid = (rs.wasNull() ? null : temp43);
+				final String personneContact = rs.getString(46);
+				final int temp48 = rs.getInt(48);
+				final RegDate reindexOn = (rs.wasNull() ? null : RegDate.fromIndex(temp48, false));
+				final String titulaireCompteBancaire = rs.getString(51);
+			
 				MenageCommun o = new MenageCommun();
 				o.setNumero(numero);
 				o.setAdresseBicSwift(adresseBicSwift);
@@ -590,6 +648,40 @@ public class JdbcTiersDaoImpl implements JdbcTiersDao {
 				res = o;
 			}
 			else if (tiersType.equals("CollectiviteAdministrative")) {
+			
+				final long temp2 = rs.getLong(2);
+				final Long numero = (rs.wasNull() ? null : temp2);
+				final String adresseBicSwift = rs.getString(5);
+				final String adresseEmail = rs.getString(6);
+				final Date annulationDate = rs.getTimestamp(8);
+				final String annulationUser = rs.getString(9);
+				final boolean temp10 = rs.getBoolean(10);
+				final Boolean blocRembAuto = (rs.wasNull() ? null : temp10);
+				final String complementNom = rs.getString(12);
+				final int temp14 = rs.getInt(14);
+				final RegDate dateLimiteExclusion = (rs.wasNull() ? null : RegDate.fromIndex(temp14, false));
+				final boolean temp15 = rs.getBoolean(15);
+				final Boolean debiteurInactif = (rs.wasNull() ? null : temp15);
+				final boolean temp18 = rs.getBoolean(18);
+				final Boolean indexDirty = (rs.wasNull() ? null : temp18);
+				final Date logCdate = rs.getTimestamp(19);
+				final String logCuser = rs.getString(20);
+				final Timestamp logMdate = rs.getTimestamp(21);
+				final String logMuser = rs.getString(22);
+				final int temp34 = rs.getInt(34);
+				final Integer numeroCa = (rs.wasNull() ? null : temp34);
+				final String numeroCompteBancaire = rs.getString(35);
+				final String numeroTelecopie = rs.getString(39);
+				final String numeroTelPortable = rs.getString(40);
+				final String numeroTelPrive = rs.getString(41);
+				final String numeroTelProf = rs.getString(42);
+				final int temp43 = rs.getInt(43);
+				final Integer oid = (rs.wasNull() ? null : temp43);
+				final String personneContact = rs.getString(46);
+				final int temp48 = rs.getInt(48);
+				final RegDate reindexOn = (rs.wasNull() ? null : RegDate.fromIndex(temp48, false));
+				final String titulaireCompteBancaire = rs.getString(51);
+			
 				CollectiviteAdministrative o = new CollectiviteAdministrative();
 				o.setNumero(numero);
 				o.setAdresseBicSwift(adresseBicSwift);
@@ -618,6 +710,40 @@ public class JdbcTiersDaoImpl implements JdbcTiersDao {
 				res = o;
 			}
 			else if (tiersType.equals("Etablissement")) {
+			
+				final long temp2 = rs.getLong(2);
+				final Long numero = (rs.wasNull() ? null : temp2);
+				final String adresseBicSwift = rs.getString(5);
+				final String adresseEmail = rs.getString(6);
+				final Date annulationDate = rs.getTimestamp(8);
+				final String annulationUser = rs.getString(9);
+				final boolean temp10 = rs.getBoolean(10);
+				final Boolean blocRembAuto = (rs.wasNull() ? null : temp10);
+				final String complementNom = rs.getString(12);
+				final int temp14 = rs.getInt(14);
+				final RegDate dateLimiteExclusion = (rs.wasNull() ? null : RegDate.fromIndex(temp14, false));
+				final boolean temp15 = rs.getBoolean(15);
+				final Boolean debiteurInactif = (rs.wasNull() ? null : temp15);
+				final boolean temp18 = rs.getBoolean(18);
+				final Boolean indexDirty = (rs.wasNull() ? null : temp18);
+				final Date logCdate = rs.getTimestamp(19);
+				final String logCuser = rs.getString(20);
+				final Timestamp logMdate = rs.getTimestamp(21);
+				final String logMuser = rs.getString(22);
+				final String numeroCompteBancaire = rs.getString(35);
+				final long temp36 = rs.getLong(36);
+				final Long numeroEtablissement = (rs.wasNull() ? null : temp36);
+				final String numeroTelecopie = rs.getString(39);
+				final String numeroTelPortable = rs.getString(40);
+				final String numeroTelPrive = rs.getString(41);
+				final String numeroTelProf = rs.getString(42);
+				final int temp43 = rs.getInt(43);
+				final Integer oid = (rs.wasNull() ? null : temp43);
+				final String personneContact = rs.getString(46);
+				final int temp48 = rs.getInt(48);
+				final RegDate reindexOn = (rs.wasNull() ? null : RegDate.fromIndex(temp48, false));
+				final String titulaireCompteBancaire = rs.getString(51);
+			
 				Etablissement o = new Etablissement();
 				o.setNumero(numero);
 				o.setAdresseBicSwift(adresseBicSwift);
@@ -646,6 +772,50 @@ public class JdbcTiersDaoImpl implements JdbcTiersDao {
 				res = o;
 			}
 			else if (tiersType.equals("DebiteurPrestationImposable")) {
+			
+				final long temp2 = rs.getLong(2);
+				final Long numero = (rs.wasNull() ? null : temp2);
+				final String adresseBicSwift = rs.getString(5);
+				final String adresseEmail = rs.getString(6);
+				final Date annulationDate = rs.getTimestamp(8);
+				final String annulationUser = rs.getString(9);
+				final boolean temp10 = rs.getBoolean(10);
+				final Boolean blocRembAuto = (rs.wasNull() ? null : temp10);
+				final String temp11 = rs.getString(11);
+				final CategorieImpotSource categorieImpotSource = (rs.wasNull() ? null : Enum.valueOf(CategorieImpotSource.class, temp11));
+				final String complementNom = rs.getString(12);
+				final boolean temp15 = rs.getBoolean(15);
+				final Boolean debiteurInactif = (rs.wasNull() ? null : temp15);
+				final String dpiNom1 = rs.getString(16);
+				final String dpiNom2 = rs.getString(17);
+				final boolean temp18 = rs.getBoolean(18);
+				final Boolean indexDirty = (rs.wasNull() ? null : temp18);
+				final Date logCdate = rs.getTimestamp(19);
+				final String logCuser = rs.getString(20);
+				final Timestamp logMdate = rs.getTimestamp(21);
+				final String logMuser = rs.getString(22);
+				final String temp24 = rs.getString(24);
+				final ModeCommunication modeCom = (rs.wasNull() ? null : Enum.valueOf(ModeCommunication.class, temp24));
+				final String numeroCompteBancaire = rs.getString(35);
+				final String numeroTelecopie = rs.getString(39);
+				final String numeroTelPortable = rs.getString(40);
+				final String numeroTelPrive = rs.getString(41);
+				final String numeroTelProf = rs.getString(42);
+				final int temp43 = rs.getInt(43);
+				final Integer oid = (rs.wasNull() ? null : temp43);
+				final String temp44 = rs.getString(44);
+				final PeriodeDecompte periodeDecompte = (rs.wasNull() ? null : Enum.valueOf(PeriodeDecompte.class, temp44));
+				final String temp45 = rs.getString(45);
+				final PeriodiciteDecompte periodiciteDecompte = (rs.wasNull() ? null : Enum.valueOf(PeriodiciteDecompte.class, temp45));
+				final String personneContact = rs.getString(46);
+				final int temp48 = rs.getInt(48);
+				final RegDate reindexOn = (rs.wasNull() ? null : RegDate.fromIndex(temp48, false));
+				final boolean temp49 = rs.getBoolean(49);
+				final Boolean sansListeRecap = (rs.wasNull() ? null : temp49);
+				final boolean temp50 = rs.getBoolean(50);
+				final Boolean sansRappel = (rs.wasNull() ? null : temp50);
+				final String titulaireCompteBancaire = rs.getString(51);
+			
 				DebiteurPrestationImposable o = new DebiteurPrestationImposable();
 				o.setNumero(numero);
 				o.setAdresseBicSwift(adresseBicSwift);
@@ -687,6 +857,66 @@ public class JdbcTiersDaoImpl implements JdbcTiersDao {
 		}
 	}
 
+    @SuppressWarnings("unchecked")
+    public Set<Long> getNumerosIndividu(final Set<Long> tiersIds, final boolean includesComposantsMenage) {
+
+	    final JdbcTemplate template = new JdbcTemplate(dataSource);
+
+	    final Set<Long> numeros = new HashSet<Long>(tiersIds.size());
+
+	    if (includesComposantsMenage) {
+			// Découpe la requête en sous-requêtes si nécessaire
+			numeros.addAll(CollectionsUtils.splitAndProcess(tiersIds, JdbcDaoUtils.MAX_IN_SIZE, new CollectionsUtils.SplitCallback<Long, Long>() {
+				public List<Long> process(List<Long> ids) {
+					return template.query(NumerosComposantsMapper.selectByIds(ids), new NumerosComposantsMapper());
+				}
+			}));
+	    }
+
+	    numeros.addAll(CollectionsUtils.splitAndProcess(tiersIds, JdbcDaoUtils.MAX_IN_SIZE, new CollectionsUtils.SplitCallback<Long, Long>() {
+		    public List<Long> process(List<Long> ids) {
+			    return template.query(NumerosIndividusMapper.selectByIds(ids), new NumerosIndividusMapper());
+		    }
+	    }));
+
+	    return numeros;
+    }
+
+	private static class NumerosComposantsMapper implements RowMapper {
+
+		private static final String BASE_SELECT = "select " +
+				"t.NUMERO_INDIVIDU " +
+				"from TIERS t, RAPPORT_ENTRE_TIERS r " +
+				"where t.NUMERO = r.TIERS_SUJET_ID " +
+				"and r.ANNULATION_DATE is null " +
+				"and r.RAPPORT_ENTRE_TIERS_TYPE = 'AppartenanceMenage' " +
+				"and t.NUMERO_INDIVIDU is not null";
+
+		public static String selectByIds(Collection<Long> tiersId) {
+			return BASE_SELECT + " and r.TIERS_OBJET_ID in " + JdbcDaoUtils.buildInClause(tiersId);
+		}
+
+		public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
+			return rs.getLong(1);
+		}
+	}
+
+	private static class NumerosIndividusMapper implements RowMapper {
+
+		private static final String BASE_SELECT = "select " +
+				"t.NUMERO_INDIVIDU " +
+				"from TIERS t " +
+				"where t.NUMERO_INDIVIDU is not null";
+
+		public static String selectByIds(Collection<Long> tiersId) {
+			return BASE_SELECT + " and t.NUMERO in " + JdbcDaoUtils.buildInClause(tiersId);
+		}
+
+		public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
+			return rs.getLong(1);
+		}
+	}
+	
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setDataSource(DataSource dataSource) {
 		this.dataSource = dataSource;

@@ -34,5 +34,12 @@ public interface JdbcTiersDao {
 	Tiers get(long tiersId, JdbcTemplate template);
 
 	List<Tiers> getList(Collection<Long> tiersId, JdbcTemplate template);
+
+	/**
+	 * @param tiersIds                 des numéros de tiers
+	 * @param includesComposantsMenage <b>vrai</b> s'il faut inclure les numéros d'individus des personnes physiques faisant partie des ménages communs
+	 * @return la liste des numéros d'individu correspondants aux numéros de tiers spécifiés.
+	 */
+	Set<Long> getNumerosIndividu(Set<Long> tiersIds, boolean includesComposantsMenage);
 }
 

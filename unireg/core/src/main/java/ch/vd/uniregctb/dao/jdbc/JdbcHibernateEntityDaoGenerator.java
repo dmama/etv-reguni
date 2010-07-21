@@ -85,7 +85,7 @@ public class JdbcHibernateEntityDaoGenerator {
 	private String table;
 	private Class<?> baseClass;
 	private List<Entity> entities = new ArrayList<Entity>();
-	private Set<Column> allColumns = new HashSet<Column>();
+	private Map<String, Column> allColumns = new HashMap<String, Column>();
 
 	public JdbcHibernateEntityDaoGenerator(String parentForeignKeyName, Class... hibernateEntities) throws Exception {
 
@@ -107,7 +107,7 @@ public class JdbcHibernateEntityDaoGenerator {
 				}
 				else if (a instanceof DiscriminatorColumn) {
 					final DiscriminatorColumn d = (DiscriminatorColumn) a;
-					columns.add(new Column(d.name(), stringColumnType, null, true, false, false));
+					columns.add(newColumn(d.name(), stringColumnType, null, true, false, false));
 				}
 				else if (a instanceof Table) {
 					final Table t = (Table) a;
@@ -225,14 +225,28 @@ public class JdbcHibernateEntityDaoGenerator {
 					Assert.notNull(columnType, "Type java non-enregistré [" + returnType.getName() + "] (propriété = [" + descriptor.getName() + "] de la classe [" + clazz.getSimpleName() + "])");
 				}
 
-				columns.add(new Column(columnName, columnType, descriptor.getName(), false, primaryKey, parentForeignKey));
+				columns.add(newColumn(columnName, columnType, descriptor.getName(), false, primaryKey, parentForeignKey));
 			}
 
 			Collections.sort(columns);
 			entity.setColumns(columns);
 			entities.add(entity);
-			allColumns.addAll(columns);
+			for (Column c : columns) {
+				allColumns.put(c.getName(), c);
+			}
 		}
+	}
+
+	private Column newColumn(String name, ColumnType columnType, String property, boolean discriminator, boolean primaryKey, boolean parentForeignKey) {
+		Column c = allColumns.get(name);
+		if (c == null) {
+			c = new Column(name, columnType, property, discriminator, primaryKey, parentForeignKey);
+			allColumns.put(name, c);
+		}
+		else {
+			Assert.isEqual(c.getType().getSqlType(), columnType.getSqlType());
+		}
+		return c;
 	}
 
 	private Class<?> getBaseClass(Class<?> clazz) {
@@ -282,11 +296,12 @@ public class JdbcHibernateEntityDaoGenerator {
 
 		// Construction des portions de code dynamiques
 
-		final List<Column> columns = new ArrayList<Column>(allColumns);
+		final List<Column> columns = new ArrayList<Column>(allColumns.values());
 		Collections.sort(columns);
 
 		String primaryKey = null;
-		String foreignKey = null;
+		Column foreignKey = null;
+		Column discriminant = null;
 		String discriminantVar = null;
 
 		String baseSelect = "";
@@ -294,22 +309,9 @@ public class JdbcHibernateEntityDaoGenerator {
 
 		for (int i = 0, columnsSize = columns.size(); i < columnsSize; i++) {
 			final Column c = columns.get(i);
-			final ColumnType colType = c.getType();
+			c.setIndex(i + 1);
 			final boolean last = (i == columnsSize - 1);
 			baseSelect += "\"" + c.getName() + (last ? "" : ",") + " \" + // " + (i + 1) + "\n";
-
-			mappingCode += "final " + colType.getSqlType().getSimpleName() + " temp" + (i + 1) + " = rs." + colType.getResultGetter() + "(" + (i + 1) + ");\n";
-			if (colType instanceof UserTypeColumnType) {
-				final UserTypeColumnType userType = (UserTypeColumnType) colType;
-				mappingCode += "final " + colType.getJavaType().getSimpleName() + " " + toVar(c.getName()) + " = (rs.wasNull() ? null : " + userType.getConvertMethod("temp" + (i + 1)) + ");\n";
-			}
-			else if (colType instanceof JoinColumnType) {
-				final JoinColumnType joinType = (JoinColumnType) colType;
-				mappingCode += "final " + colType.getJavaType().getSimpleName() + " " + toVar(c.getName()) + " = (rs.wasNull() ? null : " + joinType.getConvertMethod("temp" + (i + 1)) + ");\n";
-			}
-			else {
-				mappingCode += "final " + colType.getJavaType().getSimpleName() + " " + toVar(c.getName()) + " = (rs.wasNull() ? null : temp" + (i + 1) + ");\n";
-			}
 
 			if (c.isPrimaryKey()) {
 				Assert.isNull(primaryKey);
@@ -317,17 +319,31 @@ public class JdbcHibernateEntityDaoGenerator {
 			}
 			if (c.isParentForeignKey()) {
 				Assert.isNull(foreignKey, "Duplicated foreign key found = [" + foreignKey + ", " + c.getName() + "]");
-				foreignKey = c.getName();
+				foreignKey = c;
 			}
 			if (c.isDiscriminator()) {
-				Assert.isNull(discriminantVar);
+				Assert.isNull(discriminant);
+				discriminant = c;
 				discriminantVar = toVar(c.getName());
 			}
 		}
 		baseSelect += "\"from " + table + "\"";
 		Assert.notNull(primaryKey);
 
-		mappingCode += "\nfinal " + baseClass.getSimpleName() + " res;\n\n";
+		mappingCode += "\n";
+
+		// le discriminant
+		if (discriminant != null) {
+			mappingCode += generateDeclareAndGetValue("", discriminant);
+		}
+
+		// la foreign key
+		if (foreignKey != null) {
+			mappingCode += generateDeclareAndGetValue("", foreignKey);
+		}
+
+		// l'objet retourné
+		mappingCode += "final " + baseClass.getSimpleName() + " res;\n\n";
 
 		// création et remplissage des objets
 		boolean hierarchy = false;
@@ -342,7 +358,16 @@ public class JdbcHibernateEntityDaoGenerator {
 				hierarchy = true;
 			}
 
-			mappingCode += tab + e.getType().getSimpleName() + " o = new " + e.getType().getSimpleName() + "();\n";
+			mappingCode += "\n";
+			
+			for (Column c : e.getColumns()) {
+				if (!c.isDiscriminator() && !c.isParentForeignKey()) {
+					mappingCode += generateDeclareAndGetValue(tab, c);
+				}
+			}
+
+			mappingCode += "\n" + tab + e.getType().getSimpleName() + " o = new " + e.getType().getSimpleName() + "();\n";
+
 			for (Column c : e.getColumns()) {
 				if (!c.isDiscriminator() && !c.isParentForeignKey()) {
 					mappingCode += tab + "o." + toSetter(c.getProperty()) + "(" + toVar(c.getName()) + ");\n";
@@ -364,7 +389,7 @@ public class JdbcHibernateEntityDaoGenerator {
 
 		if (foreignKey != null) {
 			mappingCode += "final Pair<Long, " + baseClass.getSimpleName() + "> pair = new Pair<Long, " + baseClass.getSimpleName() + ">();\n";
-			mappingCode += "pair.setFirst(" + toVar(foreignKey) + ");\n";
+			mappingCode += "pair.setFirst(" + toVar(foreignKey.getName()) + ");\n";
 			mappingCode += "pair.setSecond(res);\n\n";
 			mappingCode += "return pair;";
 		}
@@ -379,7 +404,7 @@ public class JdbcHibernateEntityDaoGenerator {
 			line = replace(line, "PRIMARY_KEY", primaryKey);
 			line = replace(line, "MAPPING_CODE", mappingCode);
 			if (foreignKey != null) {
-				line = replace(line, "FOREIGN_KEY", foreignKey);
+				line = replace(line, "FOREIGN_KEY", foreignKey.getName());
 			}
 			writer.write(line);
 			writer.newLine();
@@ -388,6 +413,57 @@ public class JdbcHibernateEntityDaoGenerator {
 
 		input.close();
 		writer.close();
+	}
+
+	private String generateDeclareAndGetValue(String tab, Column c) {
+		final ColumnType colType = c.getType();
+
+		String mappingCode = "";
+		
+		if (colType.needNullCheck()) {
+
+			mappingCode += tab + "final " + colType.getSqlType().getSimpleName() + " " + toTempVar(c) + " = " + generateGetValue(c) + ";\n";
+			if (colType instanceof UserTypeColumnType) {
+				final UserTypeColumnType userType = (UserTypeColumnType) colType;
+				mappingCode +=
+						tab + "final " + colType.getJavaType().getSimpleName() + " " + toVar(c.getName()) + " = (rs.wasNull() ? null : " + userType.getConvertMethod(toTempVar(c)) + ");\n";
+			}
+			else if (colType instanceof JoinColumnType) {
+				final JoinColumnType joinType = (JoinColumnType) colType;
+				mappingCode +=
+						tab + "final " + colType.getJavaType().getSimpleName() + " " + toVar(c.getName()) + " = (rs.wasNull() ? null : " + joinType.getConvertMethod(toTempVar(c)) + ");\n";
+			}
+			else {
+				mappingCode += tab + "final " + colType.getJavaType().getSimpleName() + " " + toVar(c.getName()) + " = (rs.wasNull() ? null : " + toTempVar(c) + ");\n";
+			}
+		}
+		else {
+			if (colType instanceof UserTypeColumnType) {
+				final UserTypeColumnType userType = (UserTypeColumnType) colType;
+				mappingCode +=
+						tab + "final " + colType.getJavaType().getSimpleName() + " " + toVar(c.getName()) + " = " + userType.getConvertMethod(generateGetValue(c)) + ";\n";
+			}
+			else if (colType instanceof JoinColumnType) {
+				final JoinColumnType joinType = (JoinColumnType) colType;
+				mappingCode +=
+						tab + "final " + colType.getJavaType().getSimpleName() + " " + toVar(c.getName()) + " = " + joinType.getConvertMethod(generateGetValue(c)) + ";\n";
+			}
+			else {
+				mappingCode += tab + "final " + colType.getJavaType().getSimpleName() + " " + toVar(c.getName()) + " = " + generateGetValue(c) + ";\n";
+			}
+
+		}
+		return mappingCode;
+	}
+
+	private static String toTempVar(Column c) {
+		return "temp" + c.getIndex();
+	}
+
+	private String generateGetValue(Column c) {
+		final int index = c.getIndex();
+		Assert.isTrue(index > 0);
+		return "rs." + c.getType().getResultGetter() + "(" + index + ")";
 	}
 
 	private String toSetter(String property) {

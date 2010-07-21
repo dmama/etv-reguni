@@ -91,26 +91,22 @@ public class JdbcModeleDocumentDaoImpl implements JdbcModeleDocumentDao {
 		}
 
 		public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
-			final Long temp1 = rs.getLong(1);
+			
+			final ModeleDocument res;
+			
+			
+			final long temp1 = rs.getLong(1);
 			final Long id = (rs.wasNull() ? null : temp1);
-			final Timestamp temp2 = rs.getTimestamp(2);
-			final Date annulationDate = (rs.wasNull() ? null : temp2);
-			final String temp3 = rs.getString(3);
-			final String annulationUser = (rs.wasNull() ? null : temp3);
-			final Timestamp temp4 = rs.getTimestamp(4);
-			final Date logCdate = (rs.wasNull() ? null : temp4);
-			final String temp5 = rs.getString(5);
-			final String logCuser = (rs.wasNull() ? null : temp5);
-			final Timestamp temp6 = rs.getTimestamp(6);
-			final Timestamp logMdate = (rs.wasNull() ? null : temp6);
-			final String temp7 = rs.getString(7);
-			final String logMuser = (rs.wasNull() ? null : temp7);
-			final Long temp8 = rs.getLong(8);
+			final Date annulationDate = rs.getTimestamp(2);
+			final String annulationUser = rs.getString(3);
+			final Date logCdate = rs.getTimestamp(4);
+			final String logCuser = rs.getString(5);
+			final Timestamp logMdate = rs.getTimestamp(6);
+			final String logMuser = rs.getString(7);
+			final long temp8 = rs.getLong(8);
 			final PeriodeFiscale periodeId = (rs.wasNull() ? null : getPeriodeFiscale(temp8));
 			final String temp9 = rs.getString(9);
 			final TypeDocument typeDocument = (rs.wasNull() ? null : Enum.valueOf(TypeDocument.class, temp9));
-			
-			final ModeleDocument res;
 			
 			ModeleDocument o = new ModeleDocument();
 			o.setId(id);
