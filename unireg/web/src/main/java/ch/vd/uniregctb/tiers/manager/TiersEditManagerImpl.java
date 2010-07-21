@@ -14,6 +14,7 @@ import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.entreprise.EntrepriseView;
+import ch.vd.uniregctb.iban.IbanHelper;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityProvider;
@@ -435,7 +436,10 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 		tiers.setNumeroTelephonePortable(tiers.getNumeroTelephonePortable());
 		tiers.setNumeroTelephonePrive(tiers.getNumeroTelephonePrive());
 		tiers.setNumeroTelephoneProfessionnel(tiers.getNumeroTelephoneProfessionnel());
-		tiers.setNumeroCompteBancaire(FormatNumeroHelper.removeSpaceAndDash(tiers.getNumeroCompteBancaire()));
+		String ibanSaisi = FormatNumeroHelper.removeSpaceAndDash(tiers.getNumeroCompteBancaire());
+		if(ibanSaisi!=null){
+		tiers.setNumeroCompteBancaire(ibanSaisi.toUpperCase());	
+		}
 		tiers.setAdresseBicSwift(FormatNumeroHelper.removeSpaceAndDash(tiers.getAdresseBicSwift()));
 
 		if (tiers instanceof PersonnePhysique) {

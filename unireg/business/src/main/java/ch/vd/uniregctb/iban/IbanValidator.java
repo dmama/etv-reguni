@@ -67,7 +67,7 @@ public class IbanValidator {
 		}
 
 		iban = FormatNumeroHelper.removeSpaceAndDash(iban);
-		validateUpperCase(iban);
+		iban = iban.toUpperCase();		
 		validateLength(iban);
 		validateFormat(iban);
 		validatePlausability(iban);
