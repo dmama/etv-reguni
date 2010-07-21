@@ -1039,10 +1039,29 @@ public class AdresseServiceImpl implements AdresseService {
 		adresses.poursuiteAutreTiers = surchargeAdressesTiersHisto(tiers, adresses.poursuiteAutreTiers, adressesTiers.poursuite, callDepth + 1, strict);
 		adresses.poursuiteAutreTiers = AdresseMixer.override(adresses.poursuiteAutreTiers, adressesRepresentantExecutionForcee, null, null);
 		adresses.poursuiteAutreTiers = AdresseMixer.override(adresses.poursuiteAutreTiers, adressesConseil, null, null);
-		adresses.poursuiteAutreTiers = AdresseMixer.override(adresses.poursuiteAutreTiers, adressesCuratelle, null, null);
-		adresses.poursuiteAutreTiers = AdresseMixer.override(adresses.poursuiteAutreTiers, adressesTuteur, null, null);
+		adresses.poursuiteAutreTiers = AdresseMixer.override(adresses.poursuiteAutreTiers, removeSourceConjoint(adressesCuratelle), null, null);
+		adresses.poursuiteAutreTiers = AdresseMixer.override(adresses.poursuiteAutreTiers, removeSourceConjoint(adressesTuteur), null, null);
 
 		return adresses;
+	}
+
+	/**
+	 * [UNIREG-2227] retourne une collection (nouvelle si nécessaire) sans aucune adresse de type = 'CONJOINT'.
+	 *
+	 * @param adresses une liste d'adresses
+	 * @return la liste d'adresse d'entrée si aucune adresse n'a été supprimée, ou une nouvelle liste autrement.
+	 */
+	private List<AdresseGenerique> removeSourceConjoint(List<AdresseGenerique> adresses) {
+		if (adresses == null || adresses.isEmpty()) {
+			return adresses;
+		}
+		final List<AdresseGenerique> list = new ArrayList<AdresseGenerique>(adresses.size());
+		for (AdresseGenerique a : adresses) {
+			if (a.getSource() != Source.CONJOINT) {
+				list.add(a);
+			}
+		}
+		return list;
 	}
 
 	/**
@@ -1763,14 +1782,24 @@ public class AdresseServiceImpl implements AdresseService {
 			// [UNIREG-1808] 1er choix, l'adresse du tuteur
 			final AdresseGenerique adresseTuteur = getAdresseRepresentant(tiers, date, TypeAdresseRepresentant.TUTELLE, callDepth + 1, strict);
 			if (adresseTuteur != null) {
-				adresse = adresseTuteur;
+				if (adresseTuteur.getSource() == Source.CONJOINT) {
+					// [UNIREG-2227] le principal du ménage est sous tutelle, mais le conjoint prend la relève => pas d'adresse autre tiers dans ce cas là.
+				}
+				else {
+					adresse = adresseTuteur;
+				}
 			}
 
 			// [UNIREG-1808] 2ème choix : l'adresse du curateur
 			if (adresse == null) {
 				final AdresseGenerique adresseCurateur = getAdresseRepresentant(tiers, date, TypeAdresseRepresentant.CURATELLE, callDepth + 1, strict);
 				if (adresseCurateur != null) {
-					adresse = adresseCurateur;
+					if (adresseCurateur.getSource() == Source.CONJOINT) {
+						// [UNIREG-2227] le principal du ménage est sous curatelle, mais le conjoint prend la relève => pas d'adresse autre tiers dans ce cas là.
+					}
+					else { 
+						adresse = adresseCurateur;
+					}
 				}
 			}
 
