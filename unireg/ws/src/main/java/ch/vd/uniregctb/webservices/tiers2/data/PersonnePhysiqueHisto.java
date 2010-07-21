@@ -123,7 +123,7 @@ public class PersonnePhysiqueHisto extends ContribuableHisto {
 			this.nom = data.getNom();
 			this.prenom = data.getPrenom();
 			this.dateNaissance = DataHelper.coreToWeb(individu.getDateNaissance());
-			this.sexe = EnumHelper.coreToWeb(context.tiersService.getSexe(personne, annee));
+			this.sexe = (individu.isSexeMasculin() ? Sexe.MASCULIN : Sexe.FEMININ);
 			if (personne.getDateDeces() != null) {
 				this.dateDeces =  DataHelper.coreToWeb(personne.getDateDeces());
 			} else {
