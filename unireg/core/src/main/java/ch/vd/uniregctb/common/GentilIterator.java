@@ -24,11 +24,15 @@ public class GentilIterator<T> implements Iterator<T> {
 	private final Iterator<T> iter;
 
 	public GentilIterator(Collection<T> collection) {
-		this.size = collection.size();
+		this(collection.iterator(), collection.size());
+	}
+
+	public GentilIterator(Iterator<T> iterator, int size) {
+		this.size = size;
 		this.previous_percent = -1;
 		this.current_percent = -1;
 		this.i = -1;
-		this.iter = collection.iterator();
+		this.iter = iterator;
 	}
 
 	public boolean hasNext() {

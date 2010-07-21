@@ -1,7 +1,9 @@
 package ch.vd.uniregctb.rapport;
 
 import java.io.OutputStream;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 import com.lowagie.text.DocumentException;
@@ -10,6 +12,7 @@ import com.lowagie.text.pdf.PdfWriter;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.GentilIterator;
+import ch.vd.uniregctb.common.ListMergerIterator;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.listes.afc.ExtractionAfcResults;
 import ch.vd.uniregctb.listes.afc.TypeExtractionAfc;
@@ -72,22 +75,36 @@ public class PdfExtractionAfcRapport extends PdfRapport {
 			});
 		}
 
-		// Contribuables de la liste principale
-		{
-			final String filename = String.format("contribuables_afc_%d%s.csv", results.periodeFiscale, results.mode == TypeExtractionAfc.FORTUNE ? "_illimités" : "");
-			final String contenu = genererListe(results, true, filename, status);
-			final String titre = (results.mode == TypeExtractionAfc.FORTUNE ? "Liste des 'illimités'" : "Listes des contribuables");
-			final String listVide = "(aucun)";
-			addListeDetaillee(writer, results.getListePrincipale().size(), titre, listVide, filename, contenu);
-		}
+		// cas REVENU : une seule liste reprenant la liste principale
+		// cas FORTUNE : une seule liste reprenant les listes principales et secondaires
+		if (results.mode == TypeExtractionAfc.FORTUNE) {
 
-		// Contribuables de la liste secondaire
-		if (results.getListeSecondaire().size() > 0) {
-			final String filename = String.format("contribuables_afc_%d%s.csv", results.periodeFiscale, results.mode == TypeExtractionAfc.FORTUNE ? "_HC_HS" : "_bis");
-			final String contenu = genererListe(results, false, filename, status);
-			final String titre = (results.mode == TypeExtractionAfc.FORTUNE ? "Liste des 'HC/HS'" : "Listes bis des contribuables");
-			final String listVide = "(aucun)";
-			addListeDetaillee(writer, results.getListeSecondaire().size(), titre, listVide, filename, contenu);
+			final String filename = String.format("contribuables_afc_fortune_%d.csv", results.periodeFiscale);
+			final String contenu = genererListeCombineeFortune(results, filename, status);
+			final String titre = "Liste des contribuables";
+			final String listeVide = "(aucun)";
+			final int taille = results.getListePrincipale().size() + results.getListeSecondaire().size();
+			addListeDetaillee(writer, taille, titre, listeVide, filename, contenu);
+		}
+		else {
+
+			// Contribuables de la liste principale
+			{
+				final String filename = String.format("contribuables_afc_revenu_%d.csv", results.periodeFiscale);
+				final String contenu = genererListe(results, true, filename, status);
+				final String titre = "Listes des contribuables";
+				final String listVide = "(aucun)";
+				addListeDetaillee(writer, results.getListePrincipale().size(), titre, listVide, filename, contenu);
+			}
+
+			// Contribuables de la liste secondaire (au cas où...)
+			if (results.getListeSecondaire().size() > 0) {
+				final String filename = String.format("contribuables_afc_revenu_%d_bis.csv", results.periodeFiscale);
+				final String contenu = genererListe(results, false, filename, status);
+				final String titre = "Listes bis des contribuables";
+				final String listVide = "(aucun)";
+				addListeDetaillee(writer, results.getListeSecondaire().size(), titre, listVide, filename, contenu);
+			}
 		}
 
 		// Contribuables en erreurs
@@ -161,6 +178,42 @@ public class PdfExtractionAfcRapport extends PdfRapport {
 				b.append(erreur.noCtb).append(COMMA);
 				b.append(escapeChars(erreur.getDescriptionRaison())).append(COMMA);
 				b.append(escapeChars(erreur.details)).append("\n");
+			}
+
+			contenu = b.toString();
+		}
+		return contenu;
+	}
+
+	private String genererListeCombineeFortune(ExtractionAfcResults results, String filename, StatusManager status) {
+
+		Assert.isTrue(results.mode == TypeExtractionAfc.FORTUNE);
+
+		String contenu = null;
+		final List<ExtractionAfcResults.InfoCtbListe> listeDesIllimites = results.getListePrincipale();
+		final List<ExtractionAfcResults.InfoCtbListe> listeDesLimites = results.getListeSecondaire();
+		final int taille = listeDesIllimites.size() + listeDesLimites.size();
+		if (taille > 0) {
+
+			final String message = String.format("Génération du fichier %s", filename);
+			status.setMessage(message, 0);
+
+			final StringBuilder b = new StringBuilder();
+			b.append("NUMERO_CTB").append(COMMA).append("NOM_CTB_PRINCIPAL").append(COMMA).append("OFS_FOR_GESTION").append(COMMA).append("CODE_ASSUJETTISSEMENT").append("\n");
+
+			// comparateur exclusivement sur le numéro de contribuable
+			final Comparator<ExtractionAfcResults.InfoCtbListe> comparator = new ExtractionAfcResults.InfoComparator<ExtractionAfcResults.InfoCtbListe>();
+			final Iterator<ExtractionAfcResults.InfoCtbListe> mergerIterator = new ListMergerIterator<ExtractionAfcResults.InfoCtbListe>(listeDesIllimites, listeDesLimites, comparator);
+			final GentilIterator<ExtractionAfcResults.InfoCtbListe> iter = new GentilIterator<ExtractionAfcResults.InfoCtbListe>(mergerIterator, taille);
+			while (iter.hasNext()) {
+				if (iter.isAtNewPercent()) {
+					status.setMessage(message, iter.getPercent());
+				}
+				final ExtractionAfcResults.InfoCtbListe info = iter.next();
+				b.append(info.noCtb).append(COMMA);
+				b.append(escapeChars(info.nomPrenom)).append(COMMA);
+				b.append(info.ofsCommuneForGestion).append(COMMA);
+				b.append(info.assujettissementIllimite ? "I" : "L").append("\n");
 			}
 
 			contenu = b.toString();
