@@ -1,9 +1,5 @@
 package ch.vd.uniregctb.evenement.deces;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -12,6 +8,7 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.evenement.AbstractEvenementHandlerTest;
@@ -22,6 +19,12 @@ import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.type.ModeImposition;
+
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
+import static junit.framework.Assert.assertTrue;
 
 /**
  * Tests unitaires du handler du décès.
@@ -91,8 +94,17 @@ public class DecesHandlerTest extends AbstractEvenementHandlerTest {
 	public void testDecesPersonneSeule() throws Exception {
 
 		LOGGER.debug("Test de traitement d'un événement de décès d'un personne seule.");
-		Individu celibataire = serviceCivil.getIndividu(NO_INDIVIDU_DEFUNT_CELIBATAIRE, 2008);
-		Deces deces = createValidDeces(celibataire, null);
+
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus transactionStatus) {
+				final PersonnePhysique defunt = tiersDAO.getPPByNumeroIndividu(NO_INDIVIDU_DEFUNT_CELIBATAIRE);
+				assertTrue("le futur défunt n'est déjà plus habitant ?", defunt.isHabitantVD());
+				return null;
+			}
+		});
+
+		final Individu celibataire = serviceCivil.getIndividu(NO_INDIVIDU_DEFUNT_CELIBATAIRE, 2008);
+		final Deces deces = createValidDeces(celibataire, null);
 
 		List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 		List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
@@ -104,9 +116,10 @@ public class DecesHandlerTest extends AbstractEvenementHandlerTest {
 		assertEmpty("Une erreur est survenue lors du traitement du deces", erreurs);
 
 		{
-			PersonnePhysique defunt = tiersDAO.getHabitantByNumeroIndividu(NO_INDIVIDU_DEFUNT_CELIBATAIRE);
+			final PersonnePhysique defunt = tiersDAO.getPPByNumeroIndividu(NO_INDIVIDU_DEFUNT_CELIBATAIRE);
 			assertNotNull("le tiers correspondant au défunt n'a pas été trouvé", defunt);
 			assertNull("le for principal du defunt n'a pas été fermé", defunt.getForFiscalPrincipalAt(null));
+			assertFalse("le tiers décédé aurait dû passer non-habitant", defunt.isHabitantVD());
 
 			/*
 			 * Evénements fiscaux devant être générés :
@@ -123,15 +136,23 @@ public class DecesHandlerTest extends AbstractEvenementHandlerTest {
 
 		LOGGER.debug("Test de traitement d'un événement de décès d'un personne mariée avec un suisse ou étranger avec permis C.");
 
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus transactionStatus) {
+				final PersonnePhysique defunt = tiersDAO.getPPByNumeroIndividu(NO_INDIVIDU_DEFUNT_MARIE);
+				assertTrue("le futur défunt n'est déjà plus habitant ?", defunt.isHabitantVD());
+				return null;
+			}
+		});
+
 		doInNewTransaction(new TxCallback() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				Individu marie = serviceCivil.getIndividu(NO_INDIVIDU_DEFUNT_MARIE, 2008);
-				Individu conjoint = serviceCivil.getIndividu(NO_INDIVIDU_VEUF, 2008);
-				Deces deces = createValidDeces(marie, conjoint);
+				final Individu marie = serviceCivil.getIndividu(NO_INDIVIDU_DEFUNT_MARIE, 2008);
+				final Individu conjoint = serviceCivil.getIndividu(NO_INDIVIDU_VEUF, 2008);
+				final Deces deces = createValidDeces(marie, conjoint);
 
-				List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
-				List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
+				final List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
+				final List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
 
 				evenementCivilHandler.checkCompleteness(deces, erreurs, warnings);
 				evenementCivilHandler.validate(deces, erreurs, warnings);
@@ -145,8 +166,13 @@ public class DecesHandlerTest extends AbstractEvenementHandlerTest {
 		/*
 		 * Test de récupération du tiers defunt
 		 */
-		PersonnePhysique defunt = tiersDAO.getHabitantByNumeroIndividu(NO_INDIVIDU_DEFUNT_MARIE);
+		final PersonnePhysique defunt = tiersDAO.getPPByNumeroIndividu(NO_INDIVIDU_DEFUNT_MARIE);
 		assertNotNull("le tiers correspondant au défunt n'a pas été trouvé", defunt);
+
+		/*
+		 * Il doit être passé non-habitant
+		 */
+		assertFalse("Le tiers défunt aurait dû devenir non-habitant", defunt.isHabitantVD());
 
 		/*
 		 * Ses for principaux actifs doivent avoir été fermés
@@ -158,7 +184,7 @@ public class DecesHandlerTest extends AbstractEvenementHandlerTest {
 		/*
 		 * Test de récupération du tiers veuf
 		 */
-		PersonnePhysique veuf = tiersDAO.getHabitantByNumeroIndividu(NO_INDIVIDU_VEUF);
+		final PersonnePhysique veuf = tiersDAO.getHabitantByNumeroIndividu(NO_INDIVIDU_VEUF);
 		assertNotNull("le tiers correspondant au veuf n'a pas été trouvé", veuf);
 
 		/*
@@ -171,7 +197,7 @@ public class DecesHandlerTest extends AbstractEvenementHandlerTest {
 		/*
 		 * Test de récupération du tiers menageCommun
 		 */
-		Contribuable menageCommun = tiersDAO.getContribuableByNumero(NO_TIERS_MENAGE_COMMUN);
+		final Contribuable menageCommun = tiersDAO.getContribuableByNumero(NO_TIERS_MENAGE_COMMUN);
 		assertNotNull("le tiers correspondant au menagecommun n'a pas été trouvé", menageCommun);
 
 		/*
@@ -205,15 +231,23 @@ public class DecesHandlerTest extends AbstractEvenementHandlerTest {
 
 		LOGGER.debug("Test de traitement d'un événement de décès d'un personne mariée avec un étranger sans permis C.");
 
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus transactionStatus) {
+				final PersonnePhysique defunt = tiersDAO.getPPByNumeroIndividu(NO_INDIVIDU_DEFUNT_MARIE_AVEC_ETRANGER);
+				assertTrue("le futur défunt n'est déjà plus habitant ?", defunt.isHabitantVD());
+				return null;
+			}
+		});
+
 		doInNewTransaction(new TxCallback() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				Individu marie = serviceCivil.getIndividu(NO_INDIVIDU_DEFUNT_MARIE_AVEC_ETRANGER, 2008);
-				Individu conjoint = serviceCivil.getIndividu(NO_INDIVIDU_VEUF_ETRANGER, 2008);
-				Deces deces = createValidDeces(marie, conjoint);
+				final Individu marie = serviceCivil.getIndividu(NO_INDIVIDU_DEFUNT_MARIE_AVEC_ETRANGER, 2008);
+				final Individu conjoint = serviceCivil.getIndividu(NO_INDIVIDU_VEUF_ETRANGER, 2008);
+				final Deces deces = createValidDeces(marie, conjoint);
 
-				List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
-				List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
+				final List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
+				final List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
 
 				evenementCivilHandler.checkCompleteness(deces, erreurs, warnings);
 				evenementCivilHandler.validate(deces, erreurs, warnings);
@@ -227,8 +261,13 @@ public class DecesHandlerTest extends AbstractEvenementHandlerTest {
 		/*
 		 * Test de récupération du tiers defunt
 		 */
-		PersonnePhysique defunt = tiersDAO.getHabitantByNumeroIndividu(NO_INDIVIDU_DEFUNT_MARIE_AVEC_ETRANGER);
+		final PersonnePhysique defunt = tiersDAO.getPPByNumeroIndividu(NO_INDIVIDU_DEFUNT_MARIE_AVEC_ETRANGER);
 		assertNotNull("le tiers correspondant au défunt n'a pas été trouvé", defunt);
+
+		/*
+		 * Il doit être passé non-habitant
+		 */
+		assertFalse("Le tiers défunt aurait dû devenir non-habitant", defunt.isHabitantVD());
 
 		/*
 		 * Ses for principaux actifs doivent avoir été fermés
@@ -238,7 +277,7 @@ public class DecesHandlerTest extends AbstractEvenementHandlerTest {
 		/*
 		 * Test de récupération du tiers menageCommun
 		 */
-		Contribuable menageCommun = tiersDAO.getContribuableByNumero(NO_TIERS_MENAGE_COMMUN_ETRANGER);
+		final Contribuable menageCommun = tiersDAO.getContribuableByNumero(NO_TIERS_MENAGE_COMMUN_ETRANGER);
 		assertNotNull("le tiers correspondant au menagecommun n'a pas été trouvé", menageCommun);
 
 		/*
@@ -258,7 +297,7 @@ public class DecesHandlerTest extends AbstractEvenementHandlerTest {
 		/*
 		 * Test de récupération du tiers veuf
 		 */
-		PersonnePhysique veuf = tiersDAO.getHabitantByNumeroIndividu(NO_INDIVIDU_VEUF_ETRANGER);
+		final PersonnePhysique veuf = tiersDAO.getHabitantByNumeroIndividu(NO_INDIVIDU_VEUF_ETRANGER);
 		assertNotNull("le tiers correspondant au veuf n'a pas été trouvé", veuf);
 
 		/*
@@ -280,7 +319,7 @@ public class DecesHandlerTest extends AbstractEvenementHandlerTest {
 
 	private Deces createValidDeces(Individu individu, Individu conjoint) {
 
-		MockDeces deces = new MockDeces();
+		final MockDeces deces = new MockDeces();
 		deces.setIndividu(individu);
 		deces.setConjointSurvivant(conjoint);
 		deces.setNumeroOfsCommuneAnnonce(5652);

@@ -1700,8 +1700,13 @@ public class MetierServiceImpl implements MetierService {
 			menage = menageComplet.getMenage();
 		}
 
-		if (!defunt.isHabitantVD() ||
-				numeroEvenement == null) {//si décès via IHM on surcharge la date de décès du civil
+		// [UNIREG-2653] un habitant décédé doit passer non-habitant
+		final boolean wasHabitantVD = defunt.isHabitantVD();
+		if (wasHabitantVD) {
+			tiersService.changeHabitantenNH(defunt);
+		}
+
+		if (!wasHabitantVD || numeroEvenement == null) {//si décès via IHM on surcharge la date de décès du civil
 			defunt.setDateDeces(date);
 		}
 
