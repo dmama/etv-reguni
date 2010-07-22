@@ -20,6 +20,7 @@ import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.common.EtatCivilHelper;
 import ch.vd.uniregctb.common.FiscalDateHelper;
+import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.evenement.EvenementCivil;
 import ch.vd.uniregctb.evenement.EvenementCivilErreur;
 import ch.vd.uniregctb.evenement.GenericEvenementAdapter;
@@ -504,7 +505,19 @@ public class ArriveeHandler extends EvenementCivilHandlerBase {
 				nouveau.setValue(true);
 			}
 			else {
-				throw new EvenementCivilHandlerException("Plusieurs tiers non-habitants assujettis potentiels trouvés");
+				// [UNIREG-2650] Message d'erreur un peu plus explicite...
+				final StringBuilder b = new StringBuilder();
+				boolean first = true;
+				for (PersonnePhysique candidat : nonHabitants) {
+					if (!first) {
+						b.append(", ");
+					}
+					b.append(FormatNumeroHelper.numeroCTBToDisplay(candidat.getNumero()));
+					first = false;
+				}
+
+				final String message = String.format("Plusieurs tiers non-habitants assujettis potentiels trouvés (%s)", b.toString());
+				throw new EvenementCivilHandlerException(message);
 			}
 		}
 
