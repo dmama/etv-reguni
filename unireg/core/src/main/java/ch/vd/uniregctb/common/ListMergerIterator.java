@@ -4,8 +4,6 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
-import ch.vd.registre.base.utils.NotImplementedException;
-
 /**
  * Itérateur qui itère sur les éléments de deux listes (supposées triées selon le comparateur fourni) en utilisant
  * toujours le "plus petit" élément (au sens du comparateur fourni) venant de l'une ou l'autre des listes
@@ -74,6 +72,6 @@ public final class ListMergerIterator<T> implements Iterator<T> {
 	}
 
 	public void remove() {
-		throw new NotImplementedException();
+		throw new UnsupportedOperationException();
 	}
 }
