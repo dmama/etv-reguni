@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
@@ -56,8 +57,8 @@ public class TiersListController extends AbstractTiersListController {
 		String noOfsForParam = request.getParameter(NO_OFS_FOR_PARAMETER_NAME);
 		String dateNaissanceParam = request.getParameter(DATE_NAISSANCE_PARAMETER_NAME);
 		RegDate dateNaissance = null;
-		if (dateNaissanceParam != null && !"".equals(dateNaissanceParam)) {
-			dateNaissance = RegDateHelper.displayStringToRegDate(dateNaissanceParam, true);
+		if (!StringUtils.isBlank(dateNaissanceParam)) {
+			dateNaissance = RegDateHelper.displayStringToRegDate(dateNaissanceParam.trim(), true);
 		}
 		String numeroAssureSocialParam = request.getParameter(NUMERO_ASSURE_SOCIAL_PARAMETER_NAME);
 
@@ -65,7 +66,7 @@ public class TiersListController extends AbstractTiersListController {
 		String urlRetourParam = request.getParameter(URL_RETOUR_PARAMETER_NAME);
 		String typeRechercheParam = request.getParameter(TYPE_RECHERCHE_PARAMETER_NAME);
 		TypeTiers typeTiers = null;
-		if ((typeRechercheParam != null) && (!"".equals(typeRechercheParam))) {
+		if (!StringUtils.isBlank(typeRechercheParam)) {
 			typeTiers = TypeTiers.valueOf(typeRechercheParam);
 		}
 
