@@ -5012,6 +5012,28 @@ public class AdresseServiceTest extends BusinessTest {
 		assertAdresse(date(1923, 3, 2), null, "Granges-près-Marnand", Source.FISCALE, false, adressesHisto.courrier.get(0));
 	}
 
+	/**
+	 * [UNIREG-2654] Vérifie que la surcharge des adresses fonctionne correctement lorsqu'une adresse poursuite fermée existe en même temps qu'une adresse courrier valide sur toute la période.
+	 */
+	@Test
+	public void testGetAdressesFiscalesAvecAdressePoursuiteFermee() throws Exception {
+
+		final DebiteurPrestationImposable debiteur = addDebiteur();
+		addAdresseSuisse(debiteur, TypeAdresseTiers.COURRIER, date(2010, 1, 1), null, MockRue.Lausanne.BoulevardGrancy);
+		addAdresseSuisse(debiteur, TypeAdresseTiers.POURSUITE, date(2010, 5, 1), date(2010, 5, 22), MockRue.Echallens.GrandRue);
+
+		final AdressesFiscalesHisto adresses = adresseService.getAdressesFiscalHisto(debiteur, true);
+		assertNotNull(adresses);
+
+		assertEquals(1, adresses.courrier.size());
+		assertAdresse(date(2010, 1, 1), null, "Lausanne", Source.FISCALE, false, adresses.courrier.get(0));
+
+		assertEquals(3, adresses.poursuite.size());
+		assertAdresse(date(2010, 1, 1), date(2010, 4, 30), "Lausanne", Source.FISCALE, true, adresses.poursuite.get(0));
+		assertAdresse(date(2010, 5, 1), date(2010, 5, 22), "Echallens", Source.FISCALE, false, adresses.poursuite.get(1));
+		assertAdresse(date(2010, 5, 23), null, "Lausanne", Source.FISCALE, true, adresses.poursuite.get(2));
+	}
+
 	@Test
 	public void testIsPrefixedByPourAdresse() {
 
