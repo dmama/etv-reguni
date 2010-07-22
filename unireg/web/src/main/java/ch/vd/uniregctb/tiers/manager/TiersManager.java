@@ -980,6 +980,11 @@ public class TiersManager implements MessageSourceAware {
 				allowedOnglet.put(TiersVisuView.MODIF_RAPPORT, Boolean.TRUE);
 				isEditable = true;
 			}
+			if (SecurityProvider.isGranted(Role.ADR_P)) {
+				allowedOnglet.put(TiersVisuView.MODIF_ADRESSE, Boolean.TRUE);
+				allowedOnglet.put(TiersEditView.ADR_P, Boolean.TRUE);
+				isEditable = true;
+			}
 		}
 		else {//Entreprise, Etablissement ou CollectiviteAdministrative non éditables pour le moment
 			isEditable = false;

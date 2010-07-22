@@ -186,9 +186,13 @@ public class TiersAdresseValidator implements Validator {
 					break;
 			}
 		}
-		else if(tiers.getNatureTiers().equals(Tiers.NATURE_DPI)){
-			if(SecurityProvider.isGranted(Role.CREATE_DPI))
+		else if(tiers.getNatureTiers().equals(Tiers.NATURE_DPI)) {
+			if(SecurityProvider.isGranted(Role.CREATE_DPI)) {
 				isAllowed = true;
+			}
+			if (SecurityProvider.isGranted(Role.ADR_P) && usage == TypeAdresseTiers.POURSUITE) {
+				isAllowed = true;
+			}
 		}
 		else {
 			//PM

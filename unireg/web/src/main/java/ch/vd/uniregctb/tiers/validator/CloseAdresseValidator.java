@@ -124,8 +124,12 @@ public class CloseAdresseValidator implements Validator {
 			}
 		}
 		else if(tiers.getNatureTiers().equals(Tiers.NATURE_DPI)){
-			if(SecurityProvider.isGranted(Role.CREATE_DPI))
+			if(SecurityProvider.isGranted(Role.CREATE_DPI)) {
 				isAllowed = true;
+			}
+			if (SecurityProvider.isGranted(Role.ADR_P) && usage == TypeAdresseTiers.POURSUITE) {
+				isAllowed = true;
+			}
 		}
 		else {
 			//PM
