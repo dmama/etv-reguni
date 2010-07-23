@@ -2719,6 +2719,13 @@ public class TiersServiceImpl implements TiersService {
 			ForFiscalPrincipal forPrincipal = (ForFiscalPrincipal) forFiscal;
 			final List<ForFiscalPrincipal> fors = tiers.getForsFiscauxPrincipauxActifsSorted();
 
+			// [UNIREG-2607] Apparemment, quelqu'un a réussi à arriver dans un cas où cette collection
+			// était vide... le seul scénario auquel je pense est si cette méthode est appelée deux fois
+			// (double-click sur le bouton d'annulation, concurrence entre deux sessions...)
+			if (fors.size() == 0) {
+				throw new ValidationException(forPrincipal, "Tous les fors principaux sont déjà annulés.");
+			}
+
 			// le for principal doit être le plus récent
 			final ForFiscalPrincipal dernierFor = fors.get(fors.size() - 1);
 			if (forPrincipal != dernierFor) {

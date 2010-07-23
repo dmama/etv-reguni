@@ -13,6 +13,7 @@ import org.apache.commons.lang.mutable.MutableLong;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.DateHelper;
@@ -2428,6 +2429,50 @@ public class TiersServiceTest extends BusinessTest {
 				Assert.assertEquals(noIndMadame, (long) madame.getNumeroIndividu());
 				Assert.assertTrue(madame.isHabitantVD());
 				Assert.assertFalse(monsieur.isHabitantVD());
+				return null;
+			}
+		});
+	}
+
+	@Test
+	public void testAnnuleDernierForFiscalPrincipalDeuxFois() throws Exception {
+
+		final long ffpId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+			public Long doInTransaction(TransactionStatus transactionStatus) {
+				final PersonnePhysique pp = addNonHabitant("Albert", "Simon", date(1930, 4, 3), Sexe.MASCULIN);
+				final ForFiscalPrincipal ffp = addForPrincipal(pp, date(2000, 5, 2), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+				return ffp.getId();
+			}
+		});
+
+		// première annulation
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus transactionStatus) {
+				final ForFiscalPrincipal ffp = (ForFiscalPrincipal) hibernateTemplate.get(ForFiscalPrincipal.class, ffpId);
+				assertNotNull(ffp);
+				assertFalse(ffp.isAnnule());
+				tiersService.annuleForFiscal(ffp, true);
+				return null;
+			}
+		});
+
+		// deuxième annulation
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus transactionStatus) {
+				final ForFiscalPrincipal ffp = (ForFiscalPrincipal) hibernateTemplate.get(ForFiscalPrincipal.class, ffpId);
+				assertNotNull(ffp);
+				assertTrue(ffp.isAnnule());
+				try {
+					tiersService.annuleForFiscal(ffp, true);
+					fail("La deuxième annulation du for fiscal aurait dû être refusée !");
+				}
+				catch (ValidationException e) {
+					assertEmpty(e.getWarnings());
+					assertEquals(1, e.getErrors().size());
+
+					final String erreur = e.getErrors().get(0);
+					assertEquals("Tous les fors principaux sont déjà annulés.", erreur);
+				}
 				return null;
 			}
 		});
