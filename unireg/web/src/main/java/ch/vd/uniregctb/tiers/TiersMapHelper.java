@@ -144,7 +144,7 @@ public class TiersMapHelper extends CommonMapHelper {
 	 */
 	public Map<MotifRattachement, String> getMapRattachement() {
 		if (mapRattachement == null) {
-			mapRattachement = initMapEnum(ApplicationConfig.masterKeyRattachement, MotifRattachement.class);
+			mapRattachement = initMapEnum(ApplicationConfig.masterKeyRattachement, MotifRattachement.class, MotifRattachement.ETABLISSEMENT_STABLE);
 		}
 		return mapRattachement;
 	}
