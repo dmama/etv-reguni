@@ -2,7 +2,9 @@ package ch.vd.uniregctb.declaration;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
@@ -153,6 +155,44 @@ public class ListeRecapitulativeDAOImpl extends GenericDAOImpl< DeclarationImpot
 		if (periode != null) {
 			builder.append(" and lr.dateDebut = ? ");
 			parameters.add(periode.index());
+		}
+
+		if (!criterion.getEtat().equals(TOUS)) {
+			final TypeEtatDeclaration etat = TypeEtatDeclaration.valueOf(criterion.getEtat());
+			if (etat != TypeEtatDeclaration.EMISE) {
+				builder.append(" and exists (select etat.id from EtatDeclaration etat where etat.declaration.id = lr.id and etat.etat = ? and etat.annulationDate is null)");
+				parameters.add(etat.name());
+			}
+
+			if (etat != TypeEtatDeclaration.RETOURNEE) {
+				final Set<TypeEtatDeclaration> etatsInterdits = new HashSet<TypeEtatDeclaration>(3);
+				etatsInterdits.add(TypeEtatDeclaration.RETOURNEE);
+				switch (etat) {
+					case EMISE:
+						etatsInterdits.add(TypeEtatDeclaration.SOMMEE);
+						etatsInterdits.add(TypeEtatDeclaration.ECHUE);
+						break;
+					case SOMMEE:
+						etatsInterdits.add(TypeEtatDeclaration.ECHUE);
+						break;
+					case ECHUE:
+						break;
+					default:
+						throw new IllegalArgumentException("Valeur de l'état non-supportée : " + etat);
+				}
+
+				builder.append(" and not exists (select etat.id from EtatDeclaration etat where etat.declaration.id = lr.id and etat.etat in (");
+				boolean first = true;
+				for (TypeEtatDeclaration etatInterdit : etatsInterdits) {
+					if (!first) {
+						builder.append(",");
+					}
+					builder.append("?");
+					parameters.add(etatInterdit.name());
+					first = false;
+				}
+				builder.append(") and etat.annulationDate is null)");
+			}
 		}
 
 		return builder.toString();
