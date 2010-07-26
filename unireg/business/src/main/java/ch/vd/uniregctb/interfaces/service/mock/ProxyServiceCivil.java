@@ -11,6 +11,7 @@ import ch.vd.uniregctb.adresse.AdressesCiviles;
 import ch.vd.uniregctb.adresse.AdressesCivilesHisto;
 import ch.vd.uniregctb.adresse.HistoriqueCommune;
 import ch.vd.uniregctb.common.DonneesCivilesException;
+import ch.vd.uniregctb.common.NomPrenom;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
 import ch.vd.uniregctb.interfaces.model.Individu;
@@ -114,6 +115,11 @@ public class ProxyServiceCivil implements ServiceCivilService {
 	public String getNomPrenom(Individu individu) {
 		assertTargetNotNull();
 		return target.getNomPrenom(individu);
+	}
+
+	public NomPrenom getDecompositionNomPrenom(Individu individu) {
+		assertTargetNotNull();
+		return target.getDecompositionNomPrenom(individu);
 	}
 
 	private void assertTargetNotNull() {

@@ -9,8 +9,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
-import ch.vd.uniregctb.type.TypeAdresseTiers;
 import org.apache.log4j.Logger;
 
 import ch.vd.registre.base.date.DateRange;
@@ -22,8 +20,10 @@ import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseService;
+import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.common.GentilComparator;
 import ch.vd.uniregctb.common.JobResults;
+import ch.vd.uniregctb.common.NomPrenom;
 import ch.vd.uniregctb.role.ProduireRolesResults.InfoContribuable.TypeContribuable;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
@@ -186,7 +186,7 @@ public abstract class ProduireRolesResults extends JobResults<Long, ProduireRole
 		}
 
 		public final long noCtb;
-		private final List<String> nomsPrenoms;
+		private final List<NomPrenom> nomsPrenoms;
 		private final List<String> nosAvs;
 		private final String[] adresseEnvoi;
 		private final List<InfoFor> fors = new ArrayList<InfoFor>();
@@ -210,7 +210,7 @@ public abstract class ProduireRolesResults extends JobResults<Long, ProduireRole
 				this.adresseEnvoi = null;
 			}
 
-			nomsPrenoms = new ArrayList<String>(2);
+			nomsPrenoms = new ArrayList<NomPrenom>(2);
 			nosAvs = new ArrayList<String>(2);
 			fillNomsPrenomsEtNosAvs(ctb, annee, tiersService, nomsPrenoms, nosAvs);
 		}
@@ -228,10 +228,10 @@ public abstract class ProduireRolesResults extends JobResults<Long, ProduireRole
 			fors.addAll(original.fors);
 		}
 		
-		private static void fillNomsPrenomsEtNosAvs(Contribuable ctb, int annee, TiersService tiersService, List<String> nomsPrenoms, List<String> nosAvs) {
+		private static void fillNomsPrenomsEtNosAvs(Contribuable ctb, int annee, TiersService tiersService, List<NomPrenom> nomsPrenoms, List<String> nosAvs) {
 			if (ctb instanceof PersonnePhysique) {
 				final PersonnePhysique pp = (PersonnePhysique) ctb;
-				final String nomPrenom = tiersService.getNomPrenom(pp);
+				final NomPrenom nomPrenom = tiersService.getDecompositionNomPrenom(pp);
 				final String noAvs = tiersService.getNumeroAssureSocial(pp);
 				nomsPrenoms.add(nomPrenom);
 				nosAvs.add(noAvs);
@@ -241,11 +241,11 @@ public abstract class ProduireRolesResults extends JobResults<Long, ProduireRole
 				final PersonnePhysique principal = ensemble.getPrincipal();
 				final PersonnePhysique conjoint = ensemble.getConjoint();
 				if (principal != null) {
-					nomsPrenoms.add(tiersService.getNomPrenom(principal));
+					nomsPrenoms.add(tiersService.getDecompositionNomPrenom(principal));
 					nosAvs.add(tiersService.getNumeroAssureSocial(principal));
 				}
 				if (conjoint != null) {
-					nomsPrenoms.add(tiersService.getNomPrenom(conjoint));
+					nomsPrenoms.add(tiersService.getDecompositionNomPrenom(conjoint));
 					nosAvs.add(tiersService.getNumeroAssureSocial(conjoint));
 				}
 			}
@@ -403,7 +403,7 @@ public abstract class ProduireRolesResults extends JobResults<Long, ProduireRole
 			return getPremierForSelonComparateur(COMPARATOR_GESTION);
 		}
 
-		public List<String> getNomsPrenoms() {
+		public List<NomPrenom> getNomsPrenoms() {
 			return nomsPrenoms;
 		}
 

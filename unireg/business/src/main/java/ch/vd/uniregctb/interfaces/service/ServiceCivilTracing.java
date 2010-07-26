@@ -7,6 +7,7 @@ import java.util.Map;
 import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.uniregctb.adresse.HistoriqueCommune;
 import ch.vd.uniregctb.common.DonneesCivilesException;
+import ch.vd.uniregctb.common.NomPrenom;
 import ch.vd.uniregctb.stats.StatsService;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -261,6 +262,18 @@ public class ServiceCivilTracing implements ServiceCivilService, InitializingBea
 			tracing.end(time, "getNomPrenom");
 		}
 
+		return result;
+	}
+
+	public NomPrenom getDecompositionNomPrenom(Individu individu) {
+		NomPrenom result;
+		long time = tracing.start();
+		try {
+			result = target.getDecompositionNomPrenom(individu);
+		}
+		finally {
+			tracing.end(time, "getDecompositionNomPrenom");
+		}
 		return result;
 	}
 

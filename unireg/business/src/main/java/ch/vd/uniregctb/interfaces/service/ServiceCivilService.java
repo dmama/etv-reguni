@@ -10,6 +10,7 @@ import ch.vd.uniregctb.adresse.AdressesCiviles;
 import ch.vd.uniregctb.adresse.AdressesCivilesHisto;
 import ch.vd.uniregctb.adresse.HistoriqueCommune;
 import ch.vd.uniregctb.common.DonneesCivilesException;
+import ch.vd.uniregctb.common.NomPrenom;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
 import ch.vd.uniregctb.interfaces.model.Individu;
@@ -222,6 +223,13 @@ public interface ServiceCivilService {
 	 * @return le prénom + le nom du l'individu
 	 */
 	public String getNomPrenom(Individu individu);
+
+	/**
+	 * Retourne les nom et prénoms de l'individu spécifié, dans deux champs distincts
+	 * @param individu un individu
+	 * @return une pair composée du (ou des) prénom(s) (premier élément) et du nom (deuxième élément) de l'individu (ou {@link NomPrenom.VIDE} si l'individu est inconnu)
+	 */
+	public NomPrenom getDecompositionNomPrenom(Individu individu);
 
 	/**
 	 * Utile pour la sous-classe Proxy

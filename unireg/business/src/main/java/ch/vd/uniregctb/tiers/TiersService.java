@@ -9,10 +9,10 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.registre.civil.model.EnumAttributeIndividu;
 import ch.vd.uniregctb.adresse.AdresseTiers;
+import ch.vd.uniregctb.common.NomPrenom;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
-import ch.vd.uniregctb.evenement.EvenementCivilDAO;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
 import ch.vd.uniregctb.interfaces.model.Individu;
@@ -763,21 +763,11 @@ public interface TiersService {
 	public String getNomPrenom(Individu individu);
 
 	/**
-	 * Retourne le nom de la personne physique spécifiée.
-	 *
-	 * @param personne une personne physique
-	 * @return le nom de la personne
+	 * Retourne les nom et prénoms de la personne physique spécifiée
+	 * @param pp personne physique dont on veut le nom
+	 * @return une pair composée du (ou des) prénom(s) (premier élément) et du nom (deuxième élément) de la personne physique ( ou {@link NomPrenom.VIDE} si la donnée est inconnue)
 	 */
-	public String getNom(PersonnePhysique personne) ;
-
-	/**
-	 * Retourne le prenom de la personne physique spécifiée.
-	 *
-	 * @param personne une personne physique
-	 * @return le prénom de la personne
-	 */
-	public String getPrenom(PersonnePhysique personne) ;
-
+	public NomPrenom getDecompositionNomPrenom(PersonnePhysique pp);
 
 	/**
 	 * Retourne les nom et prénoms pour l'adressage de la personne physique spécifiée.

@@ -18,6 +18,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
+import ch.vd.uniregctb.common.NomPrenom;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueHelper;
 import ch.vd.uniregctb.interfaces.model.Commune;
@@ -104,21 +105,24 @@ public class ImpressionBordereauMouvementDossierHelperImpl implements Impression
 			dossier.setNumCTB(FormatNumeroHelper.numeroCTBToDisplay(ctb.getNumero()));
 			if (ctb instanceof PersonnePhysique) {
 				final PersonnePhysique pp = (PersonnePhysique) ctb;
-				dossier.setNom1(tiersService.getNom(pp));
-				dossier.setPrenom1(tiersService.getPrenom(pp));
+				final NomPrenom nomPrenom = tiersService.getDecompositionNomPrenom(pp);
+				dossier.setNom1(nomPrenom.getNom());
+				dossier.setPrenom1(nomPrenom.getPrenom());
 			}
 			else if (ctb instanceof MenageCommun) {
 				final EnsembleTiersCouple ensemble = tiersService.getEnsembleTiersCouple((MenageCommun) ctb, null);
 				final PersonnePhysique principal = ensemble.getPrincipal();
 				if (principal != null) {
-					dossier.setNom1(tiersService.getNom(principal));
-					dossier.setPrenom1(tiersService.getPrenom(principal));
+					final NomPrenom nomPrenom = tiersService.getDecompositionNomPrenom(principal);
+					dossier.setNom1(nomPrenom.getNom());
+					dossier.setPrenom1(nomPrenom.getPrenom());
 				}
 
 				final PersonnePhysique conjoint = ensemble.getConjoint(principal);
 				if (conjoint != null) {
-					dossier.setNom2(tiersService.getNom(conjoint));
-					dossier.setPrenom2(tiersService.getPrenom(conjoint));
+					final NomPrenom nomPrenom = tiersService.getDecompositionNomPrenom(conjoint);
+					dossier.setNom2(nomPrenom.getNom());
+					dossier.setPrenom2(nomPrenom.getPrenom());
 				}
 			}
 			else {

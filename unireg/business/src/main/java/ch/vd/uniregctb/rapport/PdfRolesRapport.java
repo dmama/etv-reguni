@@ -10,6 +10,7 @@ import java.util.Map;
 
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.PdfWriter;
+import org.apache.commons.lang.StringUtils;
 
 import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.RegDate;
@@ -17,6 +18,7 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
+import ch.vd.uniregctb.common.NomPrenom;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.OfficeImpot;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -164,7 +166,9 @@ public abstract class PdfRolesRapport<T extends ProduireRolesResults> extends Pd
 				"Complément type contribuable" + COMMA + // --------------------------------------------------
 		        "Numéro de contribuable" + COMMA + // --------------------------------------------------------
 		        "Nom du contribuable 1" + COMMA + // -----------------------------------------------------------
+		        "Prénom du contribuable 1" + COMMA + // -----------------------------------------------------------
 		        "Nom du contribuable 2" + COMMA + // ------------------------------------------------
+		        "Prénom du contribuable 2" + COMMA + // ------------------------------------------------
 		        "Adresse courrier" + COMMA + // --------------------------------------------------------------
 		        "Date d'ouverture" + COMMA + // --------------------------------------------------------
 				"Motif d'ouverture" + COMMA + // ------------------------------------------------------------
@@ -200,6 +204,10 @@ public abstract class PdfRolesRapport<T extends ProduireRolesResults> extends Pd
 		int getNoOfsCommune(ProduireRolesResults.InfoContribuable infoContribuable);
 	}
 
+	private static String emptyInsteadNull(String str) {
+		return StringUtils.isBlank(str) ? "" : str;
+	}
+
 	protected final String[] traiteListeContribuable(final List<ProduireRolesResults.InfoContribuable> infos, Map<Integer, String> nomsCommunes, final AccesCommune accesCommune) {
 
 		final List<String> fichiers = new ArrayList<String>();
@@ -212,7 +220,7 @@ public abstract class PdfRolesRapport<T extends ProduireRolesResults> extends Pd
 					b = getBuilderWithHeader();
 				}
 				final long noCtb = info.noCtb;
-				final List<String> noms = info.getNomsPrenoms();
+				final List<NomPrenom> noms = info.getNomsPrenoms();
 				final List<String> nosAvs = info.getNosAvs();
 				final String[] adresse = info.getAdresseEnvoi();
 
@@ -220,8 +228,10 @@ public abstract class PdfRolesRapport<T extends ProduireRolesResults> extends Pd
 				Assert.isEqual(sizeNoms, nosAvs.size());
 
 				// ajout des infos au fichier
-				final String nom1 = sizeNoms > 0 ? noms.get(0) : "";                // au cas où on n'arrive pas à trouver les noms...
-				final String nom2 = sizeNoms > 1 ? noms.get(1) : "";
+				final String nom1 = emptyInsteadNull(sizeNoms > 0 ? noms.get(0).getNom() : null);
+				final String prenom1 = emptyInsteadNull(sizeNoms > 0 ? noms.get(0).getPrenom() : null);
+				final String nom2 = emptyInsteadNull(sizeNoms > 1 ? noms.get(1).getNom() : null);
+				final String prenom2 = emptyInsteadNull(sizeNoms > 1 ? noms.get(1).getPrenom() : null);
 				final String adresseCourrier = asCsvField(adresse);
 				final String typeCtb = asCvsField(info.getTypeCtb());
 				final String complTypeCtb = getComplementTypeContribuable(info);
@@ -231,7 +241,7 @@ public abstract class PdfRolesRapport<T extends ProduireRolesResults> extends Pd
 				final String motifOuverture;
 				if (infosOuverture != null) {
 					debut = infosOuverture.getFirst().toString();
-					motifOuverture = infosOuverture.getSecond() != null ? getDescriptionMotif(infosOuverture.getSecond(), true) : "";
+					motifOuverture = emptyInsteadNull(infosOuverture.getSecond() != null ? getDescriptionMotif(infosOuverture.getSecond(), true) : null);
 				}
 				else {
 					debut = "";
@@ -243,7 +253,7 @@ public abstract class PdfRolesRapport<T extends ProduireRolesResults> extends Pd
 				final String motifFermeture;
 				if (infosFermeture != null) {
 					fin = infosFermeture.getFirst().toString();
-					motifFermeture = infosFermeture.getSecond() != null ? getDescriptionMotif(infosFermeture.getSecond(), false) : "";
+					motifFermeture = emptyInsteadNull(infosFermeture.getSecond() != null ? getDescriptionMotif(infosFermeture.getSecond(), false) : null);
 				}
 				else {
 					fin = "";
@@ -251,8 +261,8 @@ public abstract class PdfRolesRapport<T extends ProduireRolesResults> extends Pd
 				}
 
 				final String assujettissement = info.getTypeAssujettissementAgrege().description();
-				final String numeroAvs1 = sizeNoms > 0 ? FormatNumeroHelper.formatNumAVS(nosAvs.get(0)) : "";
-				final String numeroAvs2 = sizeNoms > 1 ? FormatNumeroHelper.formatNumAVS(nosAvs.get(1)) : "";
+				final String numeroAvs1 = emptyInsteadNull(sizeNoms > 0 ? FormatNumeroHelper.formatNumAVS(nosAvs.get(0)) : null);
+				final String numeroAvs2 = emptyInsteadNull(sizeNoms > 1 ? FormatNumeroHelper.formatNumAVS(nosAvs.get(1)) : null);
 
 				final int noOfsCommune = accesCommune.getNoOfsCommune(info);
 				final String nomCommune = nomsCommunes.get(noOfsCommune);
@@ -263,7 +273,9 @@ public abstract class PdfRolesRapport<T extends ProduireRolesResults> extends Pd
 				b.append(complTypeCtb).append(COMMA);
 				b.append(noCtb).append(COMMA);
 				b.append(nom1).append(COMMA);
+				b.append(prenom1).append(COMMA);
 				b.append(nom2).append(COMMA);
+				b.append(prenom2).append(COMMA);
 				b.append(adresseCourrier).append(COMMA);
 				b.append(debut).append(COMMA);
 				b.append(motifOuverture).append(COMMA);

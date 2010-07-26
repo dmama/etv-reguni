@@ -16,6 +16,7 @@ import ch.vd.uniregctb.adresse.AdressesCiviles;
 import ch.vd.uniregctb.adresse.AdressesCivilesHisto;
 import ch.vd.uniregctb.adresse.HistoriqueCommune;
 import ch.vd.uniregctb.common.DonneesCivilesException;
+import ch.vd.uniregctb.common.NomPrenom;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.CommuneSimple;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
@@ -183,6 +184,23 @@ public abstract class ServiceCivilServiceBase implements ServiceCivilService {
 	}
 
 	public String getNomPrenom(Individu individu) {
+		final String resultat;
+		final NomPrenom nomPrenom = getDecompositionNomPrenom(individu);
+		if (nomPrenom != null) {
+			resultat = nomPrenom.getNomPrenom();
+		}
+		else {
+			resultat = "";
+		}
+		return resultat;
+	}
+
+	/**
+	 * Retourne les nom et prénoms de l'individu spécifié, dans deux champs distincts
+	 * @param individu un individu
+	 * @return une pair composée du (ou des) prénom(s) (premier élément) et du nom (deuxième élément) de l'individu
+	 */
+	public NomPrenom getDecompositionNomPrenom(Individu individu) {
 
 		if (individu == null) {
 			return null;
@@ -190,28 +208,10 @@ public abstract class ServiceCivilServiceBase implements ServiceCivilService {
 
 		final HistoriqueIndividu individuHisto = individu.getDernierHistoriqueIndividu();
 		if (individuHisto == null) {
-			return "";
+			return NomPrenom.VIDE;
 		}
 
-		final String nomPrenom;
-
-		final String prenom = StringUtils.trimToNull(individuHisto.getPrenom());
-		final String nom = StringUtils.trimToNull(individuHisto.getNom());
-
-		if (nom != null && prenom != null) {
-			nomPrenom = String.format("%s %s", prenom, nom);
-		}
-		else if (nom != null) {
-			nomPrenom = nom;
-		}
-		else if (prenom != null) {
-			nomPrenom = prenom;
-		}
-		else {
-			nomPrenom = "";
-		}
-
-		return nomPrenom;
+		return new NomPrenom(individuHisto.getNom(), individuHisto.getPrenom());
 	}
 
 	/**

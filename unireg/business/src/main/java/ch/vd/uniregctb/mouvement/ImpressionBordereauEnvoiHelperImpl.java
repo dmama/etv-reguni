@@ -30,6 +30,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
+import ch.vd.uniregctb.common.NomPrenom;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueHelper;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
@@ -126,14 +127,9 @@ public class ImpressionBordereauEnvoiHelperImpl implements ImpressionBordereauEn
 			EnsembleTiersCouple ensembleTiersCouple = tiersService.getEnsembleTiersCouple(menage, null);
 			pp = ensembleTiersCouple.getPrincipal();
 		}
-		String nom = tiersService.getNom(pp);
-		String prenom = tiersService.getPrenom(pp);
-		String nomPrenom = nom;
-		if (prenom != null) {
-			nomPrenom = nomPrenom + " " + prenom;
-		}
-		dossier.setPrenom1(prenom);
-		dossier.setNom1(nom);
+		final NomPrenom nomPrenom = tiersService.getDecompositionNomPrenom(pp);
+		dossier.setPrenom1(nomPrenom.getPrenom());
+		dossier.setNom1(nomPrenom.getNom());
 		// ?? dossier.setNum("1");
 		dossier.setNumCTB(FormatNumeroHelper.numeroCTBToDisplay(contribuable.getNumero()));
 		RegDate dateFinExerciceDepart = RegDate.get(anneeFiscale.intValue() - 2, 12, 31);

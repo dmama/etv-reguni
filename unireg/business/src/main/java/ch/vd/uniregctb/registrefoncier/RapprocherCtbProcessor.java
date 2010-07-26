@@ -8,8 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
-
 import org.apache.log4j.Logger;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -18,18 +16,20 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseService;
+import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.common.BatchTransactionTemplate;
-import ch.vd.uniregctb.common.LoggingStatusManager;
-import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.common.BatchTransactionTemplate.BatchCallback;
 import ch.vd.uniregctb.common.BatchTransactionTemplate.Behavior;
+import ch.vd.uniregctb.common.LoggingStatusManager;
+import ch.vd.uniregctb.common.NomPrenom;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
-import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.tiers.TiersDAO.Parts;
+import ch.vd.uniregctb.tiers.TiersService;
 
 /**
  * Processor qui rapproche les contribuables des propriétaires fonciers
@@ -187,14 +187,13 @@ public class RapprocherCtbProcessor {
 	public void traiterIndividu(ProprietaireRapproche proprietaireRapproche, PersonnePhysique personne) {
 
 		if (personne.isHabitantVD()) {
-			Long numeroCtb = personne.getNumero();
-			String nom = tiersService.getNom(personne);
-			String prenom = tiersService.getPrenom(personne);
-			RegDate dateNaissance = tiersService.getDateNaissance(personne);
-			String resultat = determineResultat(proprietaireRapproche, numeroCtb, nom, prenom, dateNaissance);
-
-			setValuesProprietaireRapproche(proprietaireRapproche, numeroCtb, nom, prenom,
-					dateNaissance, resultat, true);
+			final Long numeroCtb = personne.getNumero();
+			final NomPrenom nomPrenom = tiersService.getDecompositionNomPrenom(personne);
+			final String nom = nomPrenom.getNom();
+			final String prenom = nomPrenom.getPrenom();
+			final RegDate dateNaissance = tiersService.getDateNaissance(personne);
+			final String resultat = determineResultat(proprietaireRapproche, numeroCtb, nom, prenom, dateNaissance);
+			setValuesProprietaireRapproche(proprietaireRapproche, numeroCtb, nom, prenom, dateNaissance, resultat, true);
 
 			//increment des valeurs de processing
 			if (INDIVIDU_TROUVE_EXACT.equals(resultat)) {
@@ -255,20 +254,21 @@ public class RapprocherCtbProcessor {
 		}
 		else if (principal.isHabitantVD() && conjoint.isHabitantVD()){
 
-			Long numeroCtbPrincipal = principal.getNumero();
-			String nomPrincipal = tiersService.getNom(principal);
-			String prenomPrincipal = tiersService.getPrenom(principal);
-			RegDate dateNaissancePrincipal = tiersService.getDateNaissance(principal);
+			final Long numeroCtbPrincipal = principal.getNumero();
+			final NomPrenom nomPrenomPrincipal = tiersService.getDecompositionNomPrenom(principal);
+			final String nomPrincipal = nomPrenomPrincipal.getNom();
+			final String prenomPrincipal = nomPrenomPrincipal.getPrenom();
+			final RegDate dateNaissancePrincipal = tiersService.getDateNaissance(principal);
 
-			Long numeroCtbConjoint = conjoint.getNumero();
-			String nomConjoint = tiersService.getNom(conjoint);
-			String prenomConjoint = tiersService.getPrenom(conjoint);
-			RegDate dateNaissanceConjoint = tiersService.getDateNaissance(conjoint);
+			final Long numeroCtbConjoint = conjoint.getNumero();
 
-			String resultatPrincipal = determineResultat(proprietaireRapproche, numeroCtbPrincipal, nomPrincipal, prenomPrincipal,
-					dateNaissancePrincipal);
-			String resultatConjoint = determineResultat(proprietaireRapproche, numeroCtbConjoint, nomConjoint, prenomConjoint,
-					dateNaissanceConjoint);
+			final NomPrenom nomPrenomConjoint = tiersService.getDecompositionNomPrenom(conjoint);
+			final String nomConjoint = nomPrenomConjoint.getNom();
+			final String prenomConjoint = nomPrenomConjoint.getPrenom();
+			final RegDate dateNaissanceConjoint = tiersService.getDateNaissance(conjoint);
+
+			final String resultatPrincipal = determineResultat(proprietaireRapproche, numeroCtbPrincipal, nomPrincipal, prenomPrincipal, dateNaissancePrincipal);
+			final String resultatConjoint = determineResultat(proprietaireRapproche, numeroCtbConjoint, nomConjoint, prenomConjoint, dateNaissanceConjoint);
 
 			if (INDIVIDU_TROUVE_EXACT.equals(resultatPrincipal)) {
 				setValuesProprietaireRapproche(proprietaireRapproche, numeroCtbPrincipal, nomPrincipal, prenomPrincipal,

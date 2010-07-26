@@ -27,6 +27,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
+import ch.vd.uniregctb.common.NomPrenom;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.editique.EditiqueException;
@@ -198,10 +199,9 @@ public class ImpressionTaxationOfficeHelperImpl implements ImpressionTaxationOff
 			final PersonnePhysique conjoint = ensembleTiersCouple.getConjoint();
 			if (conjoint != null) {
 				final Contrib2 contrib2 = chemiseTO.addNewContrib2();
-				final String nom = tiersService.getNom(conjoint);
-				contrib2.setNom2(nom);
-				final String prenom = tiersService.getPrenom(conjoint);
-				contrib2.setPrenom2(prenom);
+				final NomPrenom nomPrenom = tiersService.getDecompositionNomPrenom(conjoint);
+				contrib2.setNom2(nomPrenom.getNom());
+				contrib2.setPrenom2(nomPrenom.getPrenom());
 				final RegDate dateNaissance = tiersService.getDateNaissance(conjoint);
 				final String displayDateNaissance = RegDateHelper.dateToDisplayString(dateNaissance);
 				contrib2.setDateNaissance2(displayDateNaissance);
@@ -220,10 +220,9 @@ public class ImpressionTaxationOfficeHelperImpl implements ImpressionTaxationOff
 	}
 
 	private void fillCtb1(Contrib1 contrib1, PersonnePhysique pp) {
-		final String nom = tiersService.getNom(pp);
-		contrib1.setNom1(nom);
-		final String prenom = tiersService.getPrenom(pp);
-		contrib1.setPrenom1(prenom);
+		final NomPrenom nomPrenom = tiersService.getDecompositionNomPrenom(pp);
+		contrib1.setNom1(nomPrenom.getNom());
+		contrib1.setPrenom1(nomPrenom.getPrenom());
 		final RegDate dateNaissance = tiersService.getDateNaissance(pp);
 		final String displayDateNaissance = RegDateHelper.dateToDisplayString(dateNaissance);
 

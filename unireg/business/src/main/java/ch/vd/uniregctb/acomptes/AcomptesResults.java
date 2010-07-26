@@ -1,8 +1,8 @@
 package ch.vd.uniregctb.acomptes;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.ListesResults;
+import ch.vd.uniregctb.common.NomPrenom;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.metier.assujettissement.*;
 import ch.vd.uniregctb.tiers.*;
@@ -129,9 +129,8 @@ public class AcomptesResults extends ListesResults<AcomptesResults> {
     public void addContribuable(Contribuable ctb) {
 
         if (ctb instanceof PersonnePhysique) {
-            final String nom = tiersService.getNom((PersonnePhysique) ctb);
-            final String prenom = tiersService.getPrenom((PersonnePhysique) ctb);
-            addContribuable(ctb, nom, prenom);
+	        final NomPrenom nomPrenom = tiersService.getDecompositionNomPrenom((PersonnePhysique) ctb);
+            addContribuable(ctb, nomPrenom.getNom(), nomPrenom.getPrenom());
 
         } else if (ctb instanceof MenageCommun) {
             final MenageCommun menage = (MenageCommun) ctb;
@@ -149,9 +148,8 @@ public class AcomptesResults extends ListesResults<AcomptesResults> {
 		        principal = ensembleTiersCouple.getPrincipal();
 	        }
             if (principal != null) {
-                final String nom = tiersService.getNom(principal);
-                final String prenom = tiersService.getPrenom(principal);
-                addContribuable(ctb, nom, prenom);
+	            final NomPrenom nomPrenom = tiersService.getDecompositionNomPrenom(principal);
+                addContribuable(ctb, nomPrenom.getNom(), nomPrenom.getNomPrenom());
             } else {
                 addErrorManqueLiensMenage(menage);
             }

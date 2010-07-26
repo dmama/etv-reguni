@@ -30,6 +30,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
+import ch.vd.uniregctb.common.NomPrenom;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueHelper;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
@@ -103,18 +104,18 @@ public class ImpressionNouveauxDossiersHelperImpl implements ImpressionNouveauxD
 	 */
 	private FicheOuvertureDossier remplitSpecifiqueNouveauDossier(Contribuable contribuable) throws EditiqueException {
 
-		FicheOuvertureDossier ficheOuvertureDossier = FicheOuvertureDossierDocument.Factory.newInstance().addNewFicheOuvertureDossier();
-		Dossier dossier =ficheOuvertureDossier.addNewDossier();
+		final FicheOuvertureDossier ficheOuvertureDossier = FicheOuvertureDossierDocument.Factory.newInstance().addNewFicheOuvertureDossier();
+		final Dossier dossier =ficheOuvertureDossier.addNewDossier();
 
-		ForGestion forGestion = tiersService.getDernierForGestionConnu(contribuable, null);
+		final ForGestion forGestion = tiersService.getDernierForGestionConnu(contribuable, null);
 		if (forGestion == null) {
-			String message = "Le contribuable " + contribuable.getNumero() + " n'a pas de for de gestion. Il s'agit peut-être d'un contribuable annulé.";
+			final String message = String.format("Le contribuable %d n'a pas de for de gestion. Il s'agit peut-être d'un contribuable annulé.", contribuable.getNumero());
 			throw new EditiqueException(message);
 		}
 
-		ForFiscalRevenuFortune forFiscalGestion = forGestion.getSousjacent();
+		final ForFiscalRevenuFortune forFiscalGestion = forGestion.getSousjacent();
 		if (forFiscalGestion == null) {
-			String message = "Le contribuable " + contribuable.getNumero() + " n'a pas de for de gestion. Il s'agit peut-être d'un contribuable annulé.";
+			final String message = String.format("Le contribuable %d n'a pas de for de gestion. Il s'agit peut-être d'un contribuable annulé.", contribuable.getNumero());
 			throw new EditiqueException(message);
 		}
 
@@ -123,10 +124,10 @@ public class ImpressionNouveauxDossiersHelperImpl implements ImpressionNouveauxD
 			dossier.setMotif(motifFor.getDescription(true));
 		}
 
-		RegDate dateDebutFor = forFiscalGestion.getDateDebut();
-		String displayDateDebutFor = String.valueOf(dateDebutFor.index());
+		final RegDate dateDebutFor = forFiscalGestion.getDateDebut();
+		final String displayDateDebutFor = String.valueOf(dateDebutFor.index());
 		dossier.setDateEvenement(displayDateDebutFor);
-		Integer numeroOfsAutoriteFiscale = forFiscalGestion.getNumeroOfsAutoriteFiscale();
+		final Integer numeroOfsAutoriteFiscale = forFiscalGestion.getNumeroOfsAutoriteFiscale();
 		dossier.setNumOffice(numeroOfsAutoriteFiscale.toString());
 		Commune commune;
 		try {
@@ -136,70 +137,53 @@ public class ImpressionNouveauxDossiersHelperImpl implements ImpressionNouveauxD
 			commune = null;
 		}
 		if (commune == null) {
-			String message = "La commune correspondant au numéro " + numeroOfsAutoriteFiscale + " n'a pas pu être déterminée";
+			final String message = String.format("La commune correspondant au numéro %d n'a pas pu être déterminée", numeroOfsAutoriteFiscale);
 			throw new EditiqueException(message);
 		}
 
-		String communeLabel = commune.getNomMinuscule();
+		final String communeLabel = commune.getNomMinuscule();
 		dossier.setCommune(communeLabel);
 
-		Contrib1 contrib1 = ficheOuvertureDossier.addNewContrib1();
+		final Contrib1 contrib1 = ficheOuvertureDossier.addNewContrib1();
 		if (contribuable instanceof MenageCommun) {
-			MenageCommun menage = (MenageCommun) contribuable;
-			EnsembleTiersCouple ensembleTiersCouple = tiersService.getEnsembleTiersCouple(menage, null);
-			PersonnePhysique principal = ensembleTiersCouple.getPrincipal();
-			String nom = tiersService.getNom(principal);
-			contrib1.setNom1(nom);
-			String prenom = tiersService.getPrenom(principal);
-			contrib1.setPrenom1(prenom);
-			RegDate dateNaissance = tiersService.getDateNaissance(principal);
-			String displayDateNaissance = RegDateHelper.dateToDisplayString(dateNaissance);
+			final MenageCommun menage = (MenageCommun) contribuable;
+			final EnsembleTiersCouple ensembleTiersCouple = tiersService.getEnsembleTiersCouple(menage, null);
+			final PersonnePhysique principal = ensembleTiersCouple.getPrincipal();
+			final NomPrenom nomPrenomPrincipal = tiersService.getDecompositionNomPrenom(principal);
+			contrib1.setNom1(nomPrenomPrincipal.getNom());
+			contrib1.setPrenom1(nomPrenomPrincipal.getPrenom());
+			contrib1.setDateNaissance1(RegDateHelper.dateToDisplayString(tiersService.getDateNaissance(principal)));
 
-			contrib1.setDateNaissance1(displayDateNaissance);
-			EtatCivil etatCivil = situationFamilleService.getEtatCivil(principal, null, true);
+			final EtatCivil etatCivil = situationFamilleService.getEtatCivil(principal, null, true);
 			if (etatCivil != null) {
 				contrib1.setCivil(etatCivil.format());
 			}
-			String numeroFormate = FormatNumeroHelper.numeroCTBToDisplay(principal.getNumero());
-			contrib1.setNumCTB1(numeroFormate);
-			String navs13 = tiersService.getNumeroAssureSocial(principal);
-			navs13 = FormatNumeroHelper.formatNumAVS(navs13);
-			contrib1.setNumAVS131(navs13);
+			contrib1.setNumCTB1(FormatNumeroHelper.numeroCTBToDisplay(principal.getNumero()));
+			contrib1.setNumAVS131(FormatNumeroHelper.formatNumAVS(tiersService.getNumeroAssureSocial(principal)));
 
-			PersonnePhysique conjoint = ensembleTiersCouple.getConjoint();
+			final PersonnePhysique conjoint = ensembleTiersCouple.getConjoint();
 			if (conjoint != null) {
-				Contrib2 contrib2 = ficheOuvertureDossier.addNewContrib2();
-				nom = tiersService.getNom(conjoint);
-				contrib2.setNom2(nom);
-				prenom = tiersService.getPrenom(conjoint);
-				contrib2.setPrenom2(prenom);
-				dateNaissance = tiersService.getDateNaissance(conjoint);
-				displayDateNaissance = RegDateHelper.dateToDisplayString(dateNaissance);
-				contrib2.setDateNaissance2(displayDateNaissance);
-				numeroFormate = FormatNumeroHelper.numeroCTBToDisplay(conjoint.getNumero());
-				contrib2.setNumCTB2(numeroFormate);
-				navs13 = FormatNumeroHelper.formatNumAVS(tiersService.getNumeroAssureSocial(conjoint));
-				contrib2.setNumAVS132(navs13);
+				final Contrib2 contrib2 = ficheOuvertureDossier.addNewContrib2();
+				final NomPrenom nomPrenomConjoint = tiersService.getDecompositionNomPrenom(conjoint);
+				contrib2.setNom2(nomPrenomConjoint.getNom());
+				contrib2.setPrenom2(nomPrenomConjoint.getPrenom());
+				contrib2.setDateNaissance2(RegDateHelper.dateToDisplayString(tiersService.getDateNaissance(conjoint)));
+				contrib2.setNumCTB2(FormatNumeroHelper.numeroCTBToDisplay(conjoint.getNumero()));
+				contrib2.setNumAVS132(FormatNumeroHelper.formatNumAVS(tiersService.getNumeroAssureSocial(conjoint)));
 			}
 		}
 		else if (contribuable instanceof PersonnePhysique) {
-			PersonnePhysique pp = (PersonnePhysique) contribuable;
-			String nom = tiersService.getNom(pp);
-			contrib1.setNom1(nom);
-			String prenom = tiersService.getPrenom(pp);
-			contrib1.setPrenom1(prenom);
-			RegDate dateNaissance = tiersService.getDateNaissance(pp);
-			String displayDateNaissance = RegDateHelper.dateToDisplayString(dateNaissance);
-			contrib1.setDateNaissance1(displayDateNaissance);
-			EtatCivil etatCivil = situationFamilleService.getEtatCivil(pp, null, true);
+			final PersonnePhysique pp = (PersonnePhysique) contribuable;
+			final NomPrenom nomPrenom = tiersService.getDecompositionNomPrenom(pp);
+			contrib1.setNom1(nomPrenom.getNom());
+			contrib1.setPrenom1(nomPrenom.getPrenom());
+			contrib1.setDateNaissance1(RegDateHelper.dateToDisplayString(tiersService.getDateNaissance(pp)));
+			final EtatCivil etatCivil = situationFamilleService.getEtatCivil(pp, null, true);
 			if (etatCivil != null) {
 				contrib1.setCivil(etatCivil.format());
 			}
-			String numeroFormate = FormatNumeroHelper.numeroCTBToDisplay(pp.getNumero());
-			contrib1.setNumCTB1(numeroFormate);
-			String navs13 = tiersService.getNumeroAssureSocial(pp);
-			navs13 = FormatNumeroHelper.formatNumAVS(navs13);
-			contrib1.setNumAVS131(navs13);
+			contrib1.setNumCTB1(FormatNumeroHelper.numeroCTBToDisplay(pp.getNumero()));
+			contrib1.setNumAVS131(FormatNumeroHelper.formatNumAVS(tiersService.getNumeroAssureSocial(pp)));
 		}
 
 		RegDate dateEdition = RegDate.get();

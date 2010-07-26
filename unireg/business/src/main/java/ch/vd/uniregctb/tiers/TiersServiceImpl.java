@@ -36,6 +36,7 @@ import ch.vd.uniregctb.adresse.AdresseSupplementaire;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
+import ch.vd.uniregctb.common.NomPrenom;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.Periodicite;
@@ -913,7 +914,7 @@ public class TiersServiceImpl implements TiersService {
 			final String nom1 = getNom(tiers1);
 			final String nom2 = getNom(tiers2);
 
-			if (nom1.compareTo(nom2) < 0) {
+			if (nom1 != null && nom1.compareTo(nom2) < 0) {
 				return tiers1;
 			}
 			else {
@@ -1310,43 +1311,19 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 	/**
-	 * Retourne le nom de la personne physique spécifiée.
-	 *
-	 * @param personne
-	 * @return
+	 * Retourne les nom et prénoms de la personne physique spécifiée
+	 * @param pp personne physique dont on veut le nom
+	 * @return une pair composée du (ou des) prénom(s) (premier élément) et du nom (deuxième élément) de la personne physique ( ou {@link NomPrenom.VIDE} si la donnée est inconnue)
 	 */
-	public String getNom(PersonnePhysique personne) {
-
-		final String nom;
-		if (personne.isHabitantVD()) {
-			final Individu individu = getIndividu(personne);
-			nom = individu.getDernierHistoriqueIndividu().getNom();
+	public NomPrenom getDecompositionNomPrenom(PersonnePhysique pp) {
+		if (pp.isHabitantVD()) {
+			final Individu individu = getIndividu(pp);
+			return serviceCivilService.getDecompositionNomPrenom(individu);
 		}
 		else {
-			nom = personne.getNom();
+			return new NomPrenom(pp.getNom(), pp.getPrenom());
 		}
-		return nom != null ? nom.trim() : null;
 	}
-
-	/**
-	 * Retourne le prenom de la personne physique spécifiée.
-	 *
-	 * @param personne
-	 * @return
-	 */
-	public String getPrenom(PersonnePhysique personne) {
-
-		final String prenom;
-		if (personne.isHabitantVD()) {
-			final Individu individu = getIndividu(personne);
-			prenom = individu.getDernierHistoriqueIndividu().getPrenom();
-		}
-		else {
-			prenom = personne.getPrenom();
-		}
-		return prenom != null ? prenom.trim() : null;
-	}
-
 
 	/**
 	 * Récupère l'individu correspondant au tiers spécifié.
@@ -2520,36 +2497,14 @@ public class TiersServiceImpl implements TiersService {
 	 */
 	public String getNomPrenom(PersonnePhysique personne) {
 		Assert.notNull(personne);
-
-		final String nomPrenom;
-		if (personne.isHabitantVD()) {
-			final Individu individu = getIndividu(personne);
-			if (individu != null) {
-				nomPrenom = getNomPrenom(individu);
-			}
-			else {
-				nomPrenom = null;
-			}
-		}
-		else {
-			final String nom = StringUtils.isBlank(personne.getNom()) ? null : personne.getNom().trim();
-			final String prenom = StringUtils.isBlank(personne.getPrenom()) ? null : personne.getPrenom().trim();
-			if (nom != null && prenom != null) {
-				nomPrenom = String.format("%s %s", prenom, nom);
-			}
-			else if (nom != null) {
-				nomPrenom = nom;
-			}
-			else if (prenom != null) {
-				nomPrenom = prenom;
-			}
-			else {
-				nomPrenom = null;
-			}
-		}
-		return nomPrenom != null ? nomPrenom.trim() : null;
+		final NomPrenom nomPrenom = getDecompositionNomPrenom(personne);
+		return nomPrenom.getNomPrenom();
 	}
 
+	private String getNom(PersonnePhysique personne) {
+		final NomPrenom nomPrenom = getDecompositionNomPrenom(personne);
+		return nomPrenom.getNom();
+	}
 
 	/**
 	 * {@inheritDoc}
