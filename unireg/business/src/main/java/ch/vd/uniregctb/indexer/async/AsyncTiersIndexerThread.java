@@ -262,11 +262,11 @@ public class AsyncTiersIndexerThread extends Thread {
 
 			// ...sauf ceux-ci
 			final Set<Long> inErrorIds = new HashSet<Long>();
-			final List<Pair<Tiers, Exception>> list = e.getExceptions();
-			for (Pair<Tiers, Exception> p : list) {
-				final Tiers t = p.getFirst();
-				if (t != null && !t.isDirty()) {
-					inErrorIds.add(t.getNumero());
+			final List<Pair<Long, Exception>> list = e.getExceptions();
+			for (Pair<Long, Exception> p : list) {
+				final Long tiersId = p.getFirst();
+				if (tiersId != null) {
+					inErrorIds.add(tiersId);
 				}
 			}
 			indexedIds.removeAll(inErrorIds);

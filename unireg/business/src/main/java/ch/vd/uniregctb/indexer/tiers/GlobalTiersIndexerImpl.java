@@ -371,31 +371,31 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 		}
 	}
 
-    /**
-     * @return la liste des ids non-indexés, ainsi que ceux indexés à tord
-     */
-    private DeltaIds getIncrementalIds() {
+	/**
+	 * @return la liste des ids non-indexés, ainsi que ceux indexés à tord
+	 */
+	private DeltaIds getIncrementalIds() {
 
-        final Set<Long> idsDb = new HashSet<Long>(tiersDAO.getAllIds());
-        final Set<Long> idsIndex = tiersSearcher.getAllIds();
+		final Set<Long> idsDb = new HashSet<Long>(tiersDAO.getAllIds());
+		final Set<Long> idsIndex = tiersSearcher.getAllIds();
 
-	    DeltaIds ids = new DeltaIds();
+		DeltaIds ids = new DeltaIds();
 
-        for (Long id : idsDb) {
-            if (!idsIndex.contains(id)) {
-                ids.toAdd.add(id);
-            }
-        }
-	    for (Long id : idsIndex) {
-		    if (!idsDb.contains(id)) {
-			    ids.toRemove.add(id);
-		    }
-	    }
+		for (Long id : idsDb) {
+			if (!idsIndex.contains(id)) {
+				ids.toAdd.add(id);
+			}
+		}
+		for (Long id : idsIndex) {
+			if (!idsDb.contains(id)) {
+				ids.toRemove.add(id);
+			}
+		}
 
-        return ids;
-    }
+		return ids;
+	}
 
-    public int indexAllDatabase(boolean assertSameNumber, StatusManager statusManager) throws IndexerException {
+	public int indexAllDatabase(boolean assertSameNumber, StatusManager statusManager) throws IndexerException {
 
         overwriteIndex();
         Assert.isTrue(globalIndex.getApproxDocCount() == 0);
@@ -419,7 +419,12 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
         }
 
         final List<TiersIndexable> indexables = buildIndexables(tiers, followDependents);
-        indexIndexable(indexables, removeBefore);
+	    final List<IndexableData> data = new ArrayList<IndexableData>(indexables.size());
+	    for (TiersIndexable i : indexables) {
+	        data.add(i.getIndexableData());
+	    }
+
+        indexBatch(data, removeBefore);
 
         if (LOGGER.isTraceEnabled()) {
             LOGGER.trace("Indexation du Tiers #" + tiers.getNumero() + " successful. " + globalIndex.getApproxDocCount()
@@ -444,11 +449,13 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 
         // construit la liste des indexables
 
-        final List<TiersIndexable> indexables = new ArrayList<TiersIndexable>(tiers.size());
+		final List<IndexableData> data = new ArrayList<IndexableData>();
         for (Tiers t : tiers) {
             try {
-                final List<TiersIndexable> i = buildIndexables(t, followDependents);
-                indexables.addAll(i);
+                final List<TiersIndexable> indexables = buildIndexables(t, followDependents);
+	            for (TiersIndexable i : indexables) {
+	                data.add(i.getIndexableData()); // [UNIREG-2390] on construit les datas ici, de manière à catcher l'exception pour le tiers et pas pour le batch complet (comme c'était fait avant)
+	            }
             }
             catch (Exception e) {
                 if (exception == null) {
@@ -458,21 +465,27 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
             }
         }
 
-        // process les indexables
         try {
-            indexIndexable(indexables, removeBefore);
+	        // process les indexables
+	        indexBatch(data, removeBefore);
         }
-        catch (IndexerException e) {
+        catch (IndexerBatchException e) {
+	        // un ou plusieurs tiers n'ont pas pu être réindexés
             if (exception == null) {
-                exception = new IndexerBatchException();
+                exception = e;
             }
-            exception.addException(e.getTiers(), e);
+	        else {
+	            exception.add(e);
+            }
         }
         catch (Exception e) {
+	        // potentiellement aucun des tiers n'a pu être réindexé
             if (exception == null) {
                 exception = new IndexerBatchException();
             }
-            exception.addException(null, e);
+	        for (Tiers t : tiers) {
+		        exception.addException(t, e);
+	        }
         }
 
         if (exception != null) {
@@ -643,18 +656,38 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 		});
 	}
 
-    private void indexIndexable(List<TiersIndexable> indexables, boolean removeBefore) throws IndexerException {
+    private void indexBatch(List<IndexableData> data, boolean removeBefore) throws IndexerBatchException {
 
-        final List<IndexableData> data = new ArrayList<IndexableData>(indexables.size());
-        for (TiersIndexable i : indexables) {
-            data.add(i.getIndexableData());
-        }
+	    // Note : en cas d'exception, on continue le processing, on stocke les exceptions et on les lèves d'un seul coup à la fin
+	    IndexerBatchException exception = null;
 
-        if (removeBefore) {
-            globalIndex.removeThenIndexEntities(data);
-        } else {
-            globalIndex.indexEntities(data);
-        }
+	    try {
+		    // on essaie d'indexer tous les données en vrac
+		    if (removeBefore) {
+			    globalIndex.removeThenIndexEntities(data);
+		    }
+		    else {
+			    globalIndex.indexEntities(data);
+		    }
+	    }
+	    catch (Exception e) {
+		    // [UNIREG-2390] en cas d'erreur, on reprend les datas un à un de manière à lancer une exception aussi précise que possible
+		    for (IndexableData d : data) {
+			    try {
+					globalIndex.removeThenIndexEntity(d);
+			    }
+			    catch (Exception ee) {
+				    if (exception == null) {
+				        exception = new IndexerBatchException();
+				    }
+				    exception.addException(d.getId(), e);
+			    }
+		    }
+	    }
+
+	    if (exception != null) {
+	        throw exception;
+	    }
     }
 
     public void removeEntity(Long id, String type) {

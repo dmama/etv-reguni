@@ -17,7 +17,7 @@ public class IndexerBatchException extends RuntimeException {
 
 	private static final long serialVersionUID = -4334630426885016881L;
 
-	private final List<Pair<Tiers, Exception>> exceptions = new ArrayList<Pair<Tiers, Exception>>();
+	private final List<Pair<Long, Exception>> exceptions = new ArrayList<Pair<Long, Exception>>();
 
 	public IndexerBatchException() {
 	}
@@ -27,13 +27,17 @@ public class IndexerBatchException extends RuntimeException {
 	}
 
 	public void addException(Tiers tiers, Exception first) {
-		exceptions.add(new Pair<Tiers, Exception>(tiers, first));
+		exceptions.add(new Pair<Long, Exception>(tiers.getId(), first));
+	}
+
+	public void addException(Long tiersId, Exception first) {
+		exceptions.add(new Pair<Long, Exception>(tiersId, first));
 	}
 
 	/**
 	 * @return la liste des tiers en erreur et des exceptions associées.
 	 */
-	public List<Pair<Tiers, Exception>> getExceptions() {
+	public List<Pair<Long, Exception>> getExceptions() {
 		return exceptions;
 	}
 
@@ -42,7 +46,7 @@ public class IndexerBatchException extends RuntimeException {
 		super.printStackTrace(s);
 		final int size = exceptions.size();
 		for (int i = 0; i < size; ++i) {
-			final Pair<Tiers, Exception> p = exceptions.get(i);
+			final Pair<Long, Exception> p = exceptions.get(i);
 			s.println("---- Batch Sub-Exception #" + i + " ------------");
 			p.getSecond().printStackTrace(s);
 		}
@@ -53,7 +57,7 @@ public class IndexerBatchException extends RuntimeException {
 		super.printStackTrace(s);
 		final int size = exceptions.size();
 		for (int i = 0; i < size; ++i) {
-			final Pair<Tiers, Exception> p = exceptions.get(i);
+			final Pair<Long, Exception> p = exceptions.get(i);
 			s.println("---- Batch Sub-Exception #" + i + " ------------");
 			p.getSecond().printStackTrace(s);
 		}
@@ -72,12 +76,12 @@ public class IndexerBatchException extends RuntimeException {
 		if (exceptions.size() == 1) {
 
 			// Entête
-			final Pair<Tiers, Exception> p = exceptions.get(0);
-			final Tiers tiers = p.getFirst();
+			final Pair<Long, Exception> p = exceptions.get(0);
+			final Long tiersId = p.getFirst();
 			final Exception e = p.getSecond();
 
-			if (tiers != null) {
-				message.append("Impossible d'indexer le tiers n°").append(tiers.getNumero()).append(": ");
+			if (tiersId != null) {
+				message.append("Impossible d'indexer le tiers n°").append(tiersId).append(": ");
 			}
 			else {
 				message.append("Impossible d'indexer un tiers inconnu: ");
@@ -92,12 +96,12 @@ public class IndexerBatchException extends RuntimeException {
 			// Message des sous-exceptions
 			final int size = exceptions.size();
 			for (int i = 0; i < size; ++i) {
-				final Pair<Tiers, Exception> p = exceptions.get(i);
-				final Tiers tiers = p.getFirst();
+				final Pair<Long, Exception> p = exceptions.get(i);
+				final Long tiersId = p.getFirst();
 				final Exception e = p.getSecond();
 				message.append("\n  ");
-				if (tiers != null) {
-					message.append(tiers.getNumero());
+				if (tiersId != null) {
+					message.append(tiersId);
 				}
 				else {
 					message.append("<unknown>");
@@ -113,17 +117,21 @@ public class IndexerBatchException extends RuntimeException {
 		StringBuilder builder = new StringBuilder("{");
 		final int size = exceptions.size();
 		for (int i = 0; i < size; ++i) {
-			final Pair<Tiers, Exception> p = exceptions.get(i);
-			final Tiers tiers = p.getFirst();
-			if (tiers == null) {
+			final Pair<Long, Exception> p = exceptions.get(i);
+			final Long tiersId = p.getFirst();
+			if (tiersId == null) {
 				continue;
 			}
-			builder.append(tiers.getNumero());
+			builder.append(tiersId);
 			if (i < size - 1) {
 				builder.append(", ");
 			}
 		}
 		builder.append("}");
 		return builder.toString();
+	}
+
+	public void add(IndexerBatchException e) {
+		exceptions.addAll(e.exceptions);
 	}
 }
