@@ -4,13 +4,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import ch.vd.uniregctb.security.UniregSecurityDetails;
 import org.acegisecurity.providers.AbstractAuthenticationToken;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 
 import ch.vd.ati.security.AcegiUtil;
+import ch.vd.uniregctb.security.UniregSecurityDetails;
 import ch.vd.uniregctb.utils.UniregProperties;
 
 /**
@@ -42,7 +43,12 @@ public class LogoutController implements Controller {
 		if (session != null) {
 			session.invalidate();
 		}
-		final String url = uniregProperties.getProperty("iam.logout.url");
+
+		final String host = request.getHeader("host");
+		String url = uniregProperties.getProperty("iam.logout.url");
+		if (!StringUtils.isBlank(url) && !StringUtils.isBlank(host)) {
+			url = url.replace("{HOST}", host);
+		}
 		response.sendRedirect(url);
 		return null;
 	}
