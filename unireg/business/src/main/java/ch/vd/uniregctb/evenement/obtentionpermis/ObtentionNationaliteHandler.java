@@ -7,6 +7,7 @@ import java.util.Set;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.audit.Audit;
+import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.evenement.EvenementCivil;
 import ch.vd.uniregctb.evenement.EvenementCivilErreur;
 import ch.vd.uniregctb.evenement.GenericEvenementAdapter;
@@ -66,7 +67,8 @@ public class ObtentionNationaliteHandler extends ObtentionPermisCOuNationaliteSu
 				for (Nationalite nationalite : evenement.getIndividu().getNationalites()) {
 					if (evenement.getDate().equals(nationalite.getDateDebutValidite())) {
 						pp.setNumeroOfsNationalite(nationalite.getPays().getNoOFS());
-						Audit.info(evenement.getNumeroEvenement(), String.format("L'individu %d a maintenant la nationalité du pays '%s'", evenement.getNoIndividu(), nationalite.getPays().getNomMinuscule()));
+						Audit.info(evenement.getNumeroEvenement(), String.format("L'individu %d (tiers non-habitant %s) a maintenant la nationalité du pays '%s'",
+																				evenement.getNoIndividu(), FormatNumeroHelper.numeroCTBToDisplay(pp.getNumero()), nationalite.getPays().getNomMinuscule()));
 						break;
 					}
 				}
@@ -79,7 +81,7 @@ public class ObtentionNationaliteHandler extends ObtentionPermisCOuNationaliteSu
 
 			case NATIONALITE_NON_SUISSE:
 				/* Seul l'obtention de nationalité suisse est traitée */
-				Audit.info(obtentionNationalite.getNumeroEvenement(), "Nationalité non suisse : ignorée");
+				Audit.info(obtentionNationalite.getNumeroEvenement(), "Nationalité non suisse : ignorée fiscalement");
 				break;
 
 			default:
