@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.evenement.separation;
 
 import ch.vd.registre.civil.model.EnumAttributeIndividu;
+import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.evenement.EvenementAdapterException;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.evenement.GenericEvenementAdapter;
@@ -24,8 +25,8 @@ public class SeparationAdapter extends GenericEvenementAdapter implements Separa
 	 * @see ch.vd.uniregctb.evenement.GenericEvenementAdapter#init(ch.vd.uniregctb.evenement.EvenementCivilData, ch.vd.uniregctb.interfaces.service.ServiceCivilService, ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService)
 	 */
 	@Override
-	public void init(EvenementCivilData evenement, ServiceCivilService serviceCivil, ServiceInfrastructureService infrastructureService) throws EvenementAdapterException {
-		super.init(evenement, serviceCivil, infrastructureService);
+	public void init(EvenementCivilData evenement, ServiceCivilService serviceCivil, ServiceInfrastructureService infrastructureService, DataEventService dataEventService) throws EvenementAdapterException {
+		super.init(evenement, serviceCivil, infrastructureService, dataEventService);
 		
 		/*
 		 * Calcul de l'année où a eu lieu l'événement
@@ -46,4 +47,8 @@ public class SeparationAdapter extends GenericEvenementAdapter implements Separa
 		return ancienConjoint;
 	}
 
+	@Override
+	protected boolean forceRefreshCacheConjoint() {
+		return true;
+	}
 }

@@ -41,7 +41,7 @@ public class IcEvtCivilNaissanceTest extends InContainerTest {
 			}
 		});
 
-		evenementCivilProcessor.traiteEvenementCivil(9006L);
+		evenementCivilProcessor.traiteEvenementCivil(9006L, true);
 
 		tmpl.execute(new TransactionCallback() {
 			public Object doInTransaction(TransactionStatus status) {

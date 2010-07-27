@@ -8,10 +8,11 @@ import org.apache.commons.lang.builder.ToStringStyle;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.civil.model.EnumAttributeIndividu;
+import ch.vd.uniregctb.data.DataEventService;
+import ch.vd.uniregctb.interfaces.model.EtatCivil;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.tiers.IndividuNotFoundException;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 /**
@@ -45,9 +46,10 @@ public abstract class GenericEvenementAdapter implements EvenementCivil {
 	 * @param evenement             les données brutes de l'événement
 	 * @param serviceCivil          le service civil
 	 * @param infrastructureService le service infrastructure
+	 * @param dataEventService      non null si le cache des individus doit être rafraîchi, null si ce n'est pas la peine
 	 * @throws EvenementAdapterException si l'événement est suffisemment incohérent pour que tout traitement soit impossible.
 	 */
-	public void init(EvenementCivilData evenement, ServiceCivilService serviceCivil, ServiceInfrastructureService infrastructureService) throws EvenementAdapterException {
+	public void init(EvenementCivilData evenement, ServiceCivilService serviceCivil, ServiceInfrastructureService infrastructureService, DataEventService dataEventService) throws EvenementAdapterException {
 		this.serviceCivil = serviceCivil;
 
 		/* récupération des informations liés à l'événement civil */
@@ -82,11 +84,40 @@ public abstract class GenericEvenementAdapter implements EvenementCivil {
 		}
 
 		final Set<EnumAttributeIndividu> requiredParts = new HashSet<EnumAttributeIndividu>();
-		if (evenement.getNumeroIndividuConjoint() != null) {
+		if (evenement.getNumeroIndividuConjoint() != null || (dataEventService != null && forceRefreshCacheConjoint())) {
 			requiredParts.add(EnumAttributeIndividu.CONJOINT);
 		}
 		fillRequiredParts(requiredParts);
 		parts = requiredParts.toArray(new EnumAttributeIndividu[requiredParts.size()]);
+
+		if (dataEventService != null) {
+
+			// on doit d'abord invalider le cache de l'individu de l'événement afin que l'appel à getIndividu() soit pertinent
+			dataEventService.onIndividuChange(noIndividu);
+
+			// si demandé par le type d'événement, le cache des invididus conjoints doit être rafraîchi lui-aussi
+			if (forceRefreshCacheConjoint()) {
+
+				// récupération du numéro de l'individu conjoint (en fait, on va prendre tous les conjoints connus)
+				final Set<Long> conjoints = new HashSet<Long>();
+				final Individu individu = getIndividu();
+				for (EtatCivil etatCivil : individu.getEtatsCivils()) {
+					final Long numeroConjoint = etatCivil.getNumeroConjoint();
+					if (numeroConjoint != null) {
+						conjoints.add(numeroConjoint);
+					}
+				}
+
+				// nettoyage du cache pour tous ces individus
+				for (Long noInd : conjoints) {
+					dataEventService.onIndividuChange(noInd);
+				}
+			}
+		}
+	}
+
+	protected boolean forceRefreshCacheConjoint() {
+		return false;
 	}
 
 	/**

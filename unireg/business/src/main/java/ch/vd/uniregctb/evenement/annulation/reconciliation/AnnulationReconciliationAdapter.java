@@ -10,4 +10,8 @@ import ch.vd.uniregctb.evenement.GenericEvenementAdapter;
  */
 public class AnnulationReconciliationAdapter extends GenericEvenementAdapter implements AnnulationReconciliation {
 
+	@Override
+	protected boolean forceRefreshCacheConjoint() {
+		return true;
+	}
 }

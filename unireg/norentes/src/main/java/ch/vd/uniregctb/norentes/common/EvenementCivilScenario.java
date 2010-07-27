@@ -46,7 +46,7 @@ public abstract class EvenementCivilScenario extends EvenementScenario {
 	}
 
 	protected void traiteEvenements(long id) throws Exception {
-		evenementCivilProcessor.traiteEvenementCivil(id);
+		evenementCivilProcessor.traiteEvenementCivil(id, true);
 	}
 
 	protected long addEvenementCivil(TypeEvenementCivil type, long numeroIndividu, RegDate date, int ofs) {
@@ -170,7 +170,7 @@ public abstract class EvenementCivilScenario extends EvenementScenario {
 	}
 
 	protected void traiteEvenementsAnciens(long id) throws Exception {
-		evenementCivilProcessor.traiteEvenementCivil(id);
+		evenementCivilProcessor.traiteEvenementCivil(id, true);
 	}
 
 }

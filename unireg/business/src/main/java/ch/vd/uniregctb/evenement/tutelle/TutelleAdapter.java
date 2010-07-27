@@ -3,6 +3,7 @@ package ch.vd.uniregctb.evenement.tutelle;
 import org.apache.log4j.Logger;
 
 import ch.vd.registre.civil.model.EnumTypeTutelle;
+import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.evenement.EvenementAdapterException;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.evenement.GenericEvenementAdapter;
@@ -75,8 +76,8 @@ public class TutelleAdapter extends GenericEvenementAdapter implements Tutelle {
 	 *      ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService)
 	 */
 	@Override
-	public void init(EvenementCivilData evenementCivilData, ServiceCivilService serviceCivil, ServiceInfrastructureService infrastructureService) throws EvenementAdapterException {
-		super.init(evenementCivilData, serviceCivil, infrastructureService);
+	public void init(EvenementCivilData evenementCivilData, ServiceCivilService serviceCivil, ServiceInfrastructureService infrastructureService, DataEventService dataEventService) throws EvenementAdapterException {
+		super.init(evenementCivilData, serviceCivil, infrastructureService, dataEventService);
 
 		/*
 		 * Récupération de l'année de l'événement

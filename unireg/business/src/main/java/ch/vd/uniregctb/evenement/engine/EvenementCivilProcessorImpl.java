@@ -21,6 +21,7 @@ import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.StatusManager;
+import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.evenement.EvenementAdapterException;
 import ch.vd.uniregctb.evenement.EvenementCivilDAO;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
@@ -50,6 +51,7 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor, Eve
 	private ServiceInfrastructureService serviceInfrastructureService;
 	private EvenementCivilDAO evenementCivilDAO;
 	private TiersDAO tiersDAO;
+	private DataEventService dataEventService;
 
 	/**
 	 * Liste de EvenementCivilHandler capables de gérer des événements recus par le moteur de règles.
@@ -71,14 +73,14 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor, Eve
 			}
 		});
 
-		traiteEvenements(ids, false, status);
+		traiteEvenements(ids, false, false, status);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public Long traiteEvenementCivil(final Long evenementCivilId) {
-		traiteEvenements(Arrays.asList(evenementCivilId), true, null);
+	public Long traiteEvenementCivil(final Long evenementCivilId, boolean refreshCache) {
+		traiteEvenements(Arrays.asList(evenementCivilId), true, refreshCache, null);
 		return 0L;
 	}
 
@@ -86,7 +88,7 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor, Eve
 	 * {@inheritDoc}
 	 */
 	public Long recycleEvenementCivil(final Long evenementCivilId) {
-		traiteEvenements(Arrays.asList(evenementCivilId), false, null);
+		traiteEvenements(Arrays.asList(evenementCivilId), false, false, null);
 		return 0L;
 	}
 
@@ -94,9 +96,10 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor, Eve
 	 * Lance le traitement de l'événement civil.
 	 *
 	 * @param evenementCivilId l'id de l'événement civil à traiter
+	 * @param refreshCache   si <i>vrai</i> le cache individu des personnes concernées par l'événement doit être rafraîchi avant le traitement
 	 * @return le numéro d'individu traité, ou <i>-1</i> en cas d'erreur.
 	 */
-	private long traiteUnEvenementCivil(final Long evenementCivilId) {
+	private long traiteUnEvenementCivil(final Long evenementCivilId, final boolean refreshCache) {
 
 		Long result;
 
@@ -148,7 +151,7 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor, Eve
 
 					// Traitement de l'événement
 					Audit.info(evenementCivilData.getId(), String.format("Début du traitement de l'événement civil %d de type %s", evenementCivilData.getId(), evenementCivilData.getType().name()));
-					traiteEvenement(evenementCivilData, erreurs, warnings);
+					traiteEvenement(evenementCivilData, refreshCache, erreurs, warnings);
 
 					return traiteErreurs(evenementCivilData, erreurs, warnings);
 				}
@@ -212,7 +215,7 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor, Eve
 		return result;
 	}
 
-	private void traiteEvenement(final EvenementCivilData evenementCivilData,final List<EvenementCivilErreur> erreurs,final List<EvenementCivilErreur> warnings){
+	private void traiteEvenement(final EvenementCivilData evenementCivilData, boolean refreshCache, final List<EvenementCivilErreur> erreurs, final List<EvenementCivilErreur> warnings) {
 		try {
 //			LOGGER.debug("evenementCivilData.getNumeroIndividuPrincipal()");
 
@@ -238,7 +241,7 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor, Eve
 
 			final GenericEvenementAdapter adapter = evenementCivilHandler.createAdapter();
 
-			adapter.init(evenementCivilData, serviceCivilService, serviceInfrastructureService);
+			adapter.init(evenementCivilData, serviceCivilService, serviceInfrastructureService, refreshCache ? dataEventService : null);
 
 			/* 2.1 - lancement de la validation par le handler */
 			evenementCivilHandler.checkCompleteness(adapter, erreurs, warnings);
@@ -298,7 +301,7 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor, Eve
 		});
 
 		/* 2 - Iteration sur les ids des événements civils */
-		traiteEvenements(ids, false, null);
+		traiteEvenements(ids, false, false, null);
 	}
 
 	/**
@@ -306,16 +309,17 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor, Eve
 	 *
 	 * @param ids            les ids des événements civils à traiter
 	 * @param forceRecyclage si <i>vrai</i>, force le recyclage de tous les événements en erreur associé aux individus traités
+	 * @param refreshCache   si <i>vrai</i> le cache individu des personnes concernées par l'événement doit être rafraîchi avant le traitement
 	 * @param status         un status manager (optionel, peut être nul)
 	 */
-	private void traiteEvenements(final List<Long> ids, boolean forceRecyclage, StatusManager status) {
-		Set<Long> individusTraites = new HashSet<Long>();
+	private void traiteEvenements(final List<Long> ids, boolean forceRecyclage, boolean refreshCache, StatusManager status) {
+		final Set<Long> individusTraites = new HashSet<Long>();
 		// Traite les événements spécifiées
 		for (final Long id : ids) {
 			if (status != null && status.interrupted()) {
 				break;
 			}
-			final Long numInd = traiteUnEvenementCivil(id);
+			final Long numInd = traiteUnEvenementCivil(id, refreshCache);
 			if (numInd != null && numInd > 0L) {
 				individusTraites.add(numInd);
 			}
@@ -364,7 +368,6 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor, Eve
 	}
 
 	public void register(TypeEvenementCivil type, EvenementCivilHandler handler) {
-
 		eventsHandlers.put(type, handler);
 	}
 
@@ -381,4 +384,7 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor, Eve
 		this.serviceInfrastructureService = serviceInfrastructureService;
 	}
 
+	public void setDataEventService(DataEventService dataEventService) {
+		this.dataEventService = dataEventService;
+	}
 }

@@ -6,6 +6,7 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.civil.model.EnumAttributeIndividu;
 import ch.vd.uniregctb.adresse.AdressesCiviles;
 import ch.vd.uniregctb.common.DonneesCivilesException;
+import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -34,8 +35,8 @@ public abstract class EvenementAdapterAvecAdresses extends GenericEvenementAdapt
 	}
 
 	@Override
-	public void init(EvenementCivilData evenement, ServiceCivilService serviceCivil, ServiceInfrastructureService infrastructureService) throws EvenementAdapterException {
-		super.init(evenement, serviceCivil, infrastructureService);
+	public void init(EvenementCivilData evenement, ServiceCivilService serviceCivil, ServiceInfrastructureService infrastructureService, DataEventService dataEventService) throws EvenementAdapterException {
+		super.init(evenement, serviceCivil, infrastructureService, dataEventService);
 
 		// Distinction adresse principale et adresse courrier
 		// On recupère les adresses à la date de l'événement plus 1 jour

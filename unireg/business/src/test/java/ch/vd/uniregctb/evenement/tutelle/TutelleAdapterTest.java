@@ -51,7 +51,7 @@ public class TutelleAdapterTest extends WithoutSpringTest {
 		EvenementCivilData
 				evenement = new EvenementCivilData(1L, TypeEvenementCivil.MESURE_TUTELLE, EtatEvenementCivil.A_TRAITER, DATE_TUTELLE, NO_INDIVIDU_PUPILLE_AVEC_TUTEUR , habitant, 0L, null, 1234, null);
 		TutelleAdapter adapter = new  TutelleAdapter();
-		adapter.init(evenement, serviceCivilSimple, infrastructureService);
+		adapter.init(evenement, serviceCivilSimple, infrastructureService, null);
 		Assert.notNull( adapter.getTuteur(), "le tuteur n'a pas pu être récupéré");
 		Assert.isNull( adapter.getTuteurGeneral(), "le tuteur general ne devrait pas exister");
 		Assert.isTrue( adapter.getTypeTutelle().equals(TypeTutelle.CONSEIL_LEGAL_CODE), "le type de tutelle n'a pas été correctement récupéré");
@@ -68,7 +68,7 @@ public class TutelleAdapterTest extends WithoutSpringTest {
 		EvenementCivilData
 				evenement = new EvenementCivilData(1L, TypeEvenementCivil.MESURE_TUTELLE, EtatEvenementCivil.A_TRAITER, DATE_TUTELLE, NO_INDIVIDU_PUPILLE_AVEC_TUTEUR_GENERAL , habitant, 0L, null, 1234, null);
 		TutelleAdapter adapter = new  TutelleAdapter();
-		adapter.init(evenement, serviceCivilSimple, infrastructureService);
+		adapter.init(evenement, serviceCivilSimple, infrastructureService, null);
 		Assert.isNull( adapter.getTuteur(), "le tuteur ne devrait pas exister");
 		Assert.notNull( adapter.getTuteurGeneral(), "le tuteur general n'a pas pu être récupéré");
 		Assert.isTrue( adapter.getTypeTutelle().equals(TypeTutelle.TUTELLE), "le type de tutelle n'a pas été correctement récupéré");
@@ -85,7 +85,7 @@ public class TutelleAdapterTest extends WithoutSpringTest {
 		EvenementCivilData
 				evenement = new EvenementCivilData(1L, TypeEvenementCivil.MESURE_TUTELLE, EtatEvenementCivil.A_TRAITER, DATE_TUTELLE, NO_INDIVIDU_PUPILLE_SOUS_TUTELLE , habitant, 0L, null, 1234, null);
 		TutelleAdapter adapter = new  TutelleAdapter();
-		adapter.init(evenement, serviceCivilSimple, infrastructureService);
+		adapter.init(evenement, serviceCivilSimple, infrastructureService, null);
 		Assert.isTrue( adapter.getTypeTutelle().equals(TypeTutelle.TUTELLE), "le type de tutelle n'a pas été correctement récupéré");
 	}
 
@@ -100,7 +100,7 @@ public class TutelleAdapterTest extends WithoutSpringTest {
 		EvenementCivilData
 				evenement = new EvenementCivilData(1L, TypeEvenementCivil.MESURE_TUTELLE, EtatEvenementCivil.A_TRAITER, DATE_TUTELLE, NO_INDIVIDU_PUPILLE_SOUS_CURATELLE , habitant, 0L, null, 1234, null);
 		TutelleAdapter adapter = new  TutelleAdapter();
-		adapter.init(evenement, serviceCivilSimple, infrastructureService);
+		adapter.init(evenement, serviceCivilSimple, infrastructureService, null);
 		Assert.isTrue( adapter.getTypeTutelle().equals(TypeTutelle.CURATELLE), "le type de tutelle n'a pas été correctement récupéré");
 	}
 
@@ -115,7 +115,7 @@ public class TutelleAdapterTest extends WithoutSpringTest {
 		EvenementCivilData
 				evenement = new EvenementCivilData(1L, TypeEvenementCivil.MESURE_TUTELLE, EtatEvenementCivil.A_TRAITER, DATE_TUTELLE, NO_INDIVIDU_PUPILLE_SOUS_CONSEIL_LEGAL , habitant, 0L, null, 1234, null);
 		TutelleAdapter adapter = new  TutelleAdapter();
-		adapter.init(evenement, serviceCivilSimple, infrastructureService);
+		adapter.init(evenement, serviceCivilSimple, infrastructureService, null);
 		Assert.isTrue( adapter.getTypeTutelle().equals(TypeTutelle.CONSEIL_LEGAL_CODE), "le type de tutelle n'a pas été correctement récupéré");
 	}
 

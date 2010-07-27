@@ -8,6 +8,7 @@ import org.apache.log4j.Logger;
 import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.civil.model.EnumAttributeIndividu;
 import ch.vd.registre.civil.model.EnumTypePermis;
+import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.evenement.EvenementAdapterAvecAdresses;
 import ch.vd.uniregctb.evenement.EvenementAdapterException;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
@@ -38,8 +39,8 @@ public class ObtentionPermisAdapter extends EvenementAdapterAvecAdresses impleme
 	private Integer numeroOfsEtenduCommunePrincipale;
 
 	@Override
-	public void init(EvenementCivilData evenementCivilData, ServiceCivilService serviceCivil, ServiceInfrastructureService infrastructureService) throws EvenementAdapterException {
-		super.init(evenementCivilData, serviceCivil, infrastructureService);
+	public void init(EvenementCivilData evenementCivilData, ServiceCivilService serviceCivil, ServiceInfrastructureService infrastructureService, DataEventService dataEventService) throws EvenementAdapterException {
+		super.init(evenementCivilData, serviceCivil, infrastructureService, dataEventService);
 
 		try {
 			// on récupère le permis (= à la date d'événement)

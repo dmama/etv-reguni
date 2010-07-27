@@ -10,4 +10,8 @@ import ch.vd.uniregctb.evenement.GenericEvenementAdapter;
  */
 public class AnnulationMariageAdapter extends GenericEvenementAdapter implements AnnulationMariage {
 
+	@Override
+	protected boolean forceRefreshCacheConjoint() {
+		return true;
+	}
 }

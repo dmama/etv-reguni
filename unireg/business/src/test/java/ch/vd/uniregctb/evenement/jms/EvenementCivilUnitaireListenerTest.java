@@ -11,7 +11,6 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.audit.AuditLine;
 import ch.vd.uniregctb.audit.AuditLineDAO;
 import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.evenement.EvenementCivilDAO;
 import ch.vd.uniregctb.evenement.engine.EvenementCivilProcessor;
@@ -19,7 +18,6 @@ import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
-import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
@@ -66,9 +64,7 @@ public class EvenementCivilUnitaireListenerTest extends BusinessTest {
 		evenementCivilUnitaireMDP = new EvenementCivilListener();
 		evenementCivilUnitaireMDP.setEvenementCivilProcessor(getBean(EvenementCivilProcessor.class, "evenementCivilProcessor"));
 		evenementCivilUnitaireMDP.setTransactionManager(transactionManager);
-		evenementCivilUnitaireMDP.setDataEventService(getBean(DataEventService.class, "dataEventService"));
 		evenementCivilUnitaireMDP.setEvenementCivilDAO(evenementCivilDAO);
-		evenementCivilUnitaireMDP.setTiersDAO(getBean(TiersDAO.class, "tiersDAO"));
 	}
 
 	public static String createMessage(int id, int type, long noInd, RegDate dateEvt, int ofs) throws Exception {

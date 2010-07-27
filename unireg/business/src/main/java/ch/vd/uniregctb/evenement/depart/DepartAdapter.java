@@ -5,6 +5,7 @@ import org.apache.log4j.Logger;
 import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.uniregctb.adresse.AdressesCiviles;
 import ch.vd.uniregctb.common.DonneesCivilesException;
+import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.evenement.EvenementAdapterAvecAdresses;
 import ch.vd.uniregctb.evenement.EvenementAdapterException;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
@@ -69,14 +70,13 @@ public class DepartAdapter extends EvenementAdapterAvecAdresses implements Depar
 	 *      ch.vd.uniregctb.interfaces.service.HostCivilService, ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService)
 	 */
 	@Override
-	public void init(EvenementCivilData evenementCivilData, ServiceCivilService serviceCivil,
-			ServiceInfrastructureService infrastructureService) throws EvenementAdapterException {
+	public void init(EvenementCivilData evenementCivilData, ServiceCivilService serviceCivil, ServiceInfrastructureService infrastructureService, DataEventService dataEventService) throws EvenementAdapterException {
 
 		if (evenementCivilData.getNumeroIndividuConjoint()!=null) {
 			isAncienTypeDepart = true;
 		}
 
-		super.init(evenementCivilData, serviceCivil, infrastructureService);
+		super.init(evenementCivilData, serviceCivil, infrastructureService, dataEventService);
 
 		// on récupère les anciennes adresses (= à la date d'événement)
 		final AdressesCiviles adresses;

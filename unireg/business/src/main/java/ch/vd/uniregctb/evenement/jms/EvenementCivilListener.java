@@ -17,11 +17,9 @@ import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.jms.EsbMessageListener;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.evenement.EvenementCivilDAO;
 import ch.vd.uniregctb.evenement.engine.EvenementCivilProcessor;
-import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 /**
@@ -31,9 +29,7 @@ public class EvenementCivilListener extends EsbMessageListener {
 
 	private static final Logger LOGGER = Logger.getLogger(EvenementCivilListener.class);
 
-	private TiersDAO tiersDAO;
 	private EvenementCivilDAO evenementCivilDAO;
-	private DataEventService dataEventService;
 	private EvenementCivilProcessor evenementCivilProcessor;
 	private PlatformTransactionManager transactionManager;
 
@@ -124,10 +120,6 @@ public class EvenementCivilListener extends EsbMessageListener {
 		final Long id = evenement.getId();
 		Audit.info(id, "Arrivée du message JMS avec l'id " + id);
 
-		// on signale que l'individu à changé dans le registre civil (=> va rafraîchir le cache des individus)
-		final Long noInd = evenement.getNumeroIndividuPrincipal();
-		dataEventService.onIndividuChange(noInd);
-
 		try {
 			final TransactionTemplate template = new TransactionTemplate(transactionManager);
 			template.setPropagationBehavior(TransactionTemplate.PROPAGATION_REQUIRES_NEW);
@@ -164,7 +156,7 @@ public class EvenementCivilListener extends EsbMessageListener {
 
 	private void traiteEvenement(EvenementCivilData evenement) {
 		try {
-			evenementCivilProcessor.traiteEvenementCivil(evenement.getId());
+			evenementCivilProcessor.traiteEvenementCivil(evenement.getId(), true);
 		}
 		catch (Exception e) {
 			LOGGER.error(e, e);
@@ -179,15 +171,8 @@ public class EvenementCivilListener extends EsbMessageListener {
 		this.transactionManager = transactionManager;
 	}
 
-	public void setDataEventService(DataEventService dataEventService) {
-		this.dataEventService = dataEventService;
-	}
-
 	public void setEvenementCivilDAO(EvenementCivilDAO evenementCivilDAO) {
 		this.evenementCivilDAO = evenementCivilDAO;
 	}
 
-	public void setTiersDAO(TiersDAO tiersDAO) {
-		this.tiersDAO = tiersDAO;
-	}
 }

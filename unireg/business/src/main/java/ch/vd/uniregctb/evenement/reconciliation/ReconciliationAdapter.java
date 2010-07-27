@@ -9,4 +9,8 @@ public class ReconciliationAdapter extends GenericEvenementAdapter implements Re
 		return getDate();
 	}
 
+	@Override
+	protected boolean forceRefreshCacheConjoint() {
+		return true;
+	}
 }

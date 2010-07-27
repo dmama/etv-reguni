@@ -186,7 +186,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 		saveEvenement(9002L, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE, RegDate.get(2007, 10, 25), 34567L, null, 5402, EtatEvenementCivil.A_TRAITER);
 
 		// Lancement du traitement des événements
-		evenementCivilProcessor.traiteEvenementCivil(9002L);
+		evenementCivilProcessor.traiteEvenementCivil(9002L, true);
 
 		doInTransaction(new TransactionCallback() {
 			public Object doInTransaction(TransactionStatus status) {
@@ -494,7 +494,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 		// Arrivée de l'événement d'arrivée -> ce dernier doit être traité et provoquer le retraitement des événements de changement de nom
 		saveEvenement(9002L, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HS, RegDate.get(1980, 11, 2), noIndividu, null, MockCommune.Lausanne.getNoOFS(), EtatEvenementCivil.A_TRAITER);
 
-		evenementCivilProcessor.traiteEvenementCivil(9002L);
+		evenementCivilProcessor.traiteEvenementCivil(9002L, true);
 
 		doInTransaction(new TransactionCallback() {
 			public Object doInTransaction(TransactionStatus status) {

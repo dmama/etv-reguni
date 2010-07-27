@@ -94,7 +94,7 @@ public class AnnulationPermisAdapterTest extends WithoutSpringTest {
 				EtatEvenementCivil.A_TRAITER, DATE_OBTENTION_PERMIS, NUMERO_INDIVIDU, habitant, 0L, null, 1234, null);
 		// Teste l'adapter
 		AnnulationPermisAdapter adapter = new AnnulationPermisAdapter();
-		adapter.init(evenement, serviceCivil, infrastructureService);
+		adapter.init(evenement, serviceCivil, infrastructureService, null);
 		assertEquals(EnumTypePermis.ETABLLISSEMENT, adapter.getTypePermis());
 	}
 
@@ -110,7 +110,7 @@ public class AnnulationPermisAdapterTest extends WithoutSpringTest {
 				EtatEvenementCivil.A_TRAITER, DATE_OBTENTION_PERMIS, NUMERO_INDIVIDU_2, habitant, 0L, null, 1234, null);
 		// Teste l'adapter
 		AnnulationPermisAdapter adapter = new AnnulationPermisAdapter();
-		adapter.init(evenement, serviceCivil, infrastructureService);
+		adapter.init(evenement, serviceCivil, infrastructureService, null);
 		assertEquals(EnumTypePermis.FONCTIONNAIRE_INTERNATIONAL, adapter.getTypePermis());
 	}
 

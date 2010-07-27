@@ -4,6 +4,7 @@ import org.apache.log4j.Logger;
 
 import ch.vd.registre.civil.model.EnumAttributeIndividu;
 import ch.vd.registre.civil.model.EnumTypeEtatCivil;
+import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.evenement.EvenementAdapterException;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.evenement.GenericEvenementAdapter;
@@ -31,8 +32,8 @@ public class MariageAdapter extends GenericEvenementAdapter implements Mariage {
 	 * @throws EvenementAdapterException
 	 */
 	@Override
-	public void init(EvenementCivilData evenementCivil, ServiceCivilService serviceCivil, ServiceInfrastructureService infrastructureService) throws EvenementAdapterException {
-		super.init(evenementCivil, serviceCivil, infrastructureService);
+	public void init(EvenementCivilData evenementCivil, ServiceCivilService serviceCivil, ServiceInfrastructureService infrastructureService, DataEventService dataEventService) throws EvenementAdapterException {
+		super.init(evenementCivil, serviceCivil, infrastructureService, dataEventService);
 
 		/*
 		 * Calcul de l'année où a eu lieu l'événement
@@ -48,6 +49,11 @@ public class MariageAdapter extends GenericEvenementAdapter implements Mariage {
 		Individu individuPrincipal = serviceCivil.getIndividu(noIndividu, anneeEvenement, attributs);
 		this.nouveauConjoint = getConjointValide(individuPrincipal,serviceCivil);
 		//this.nouveauConjoint = individuPrincipal.getConjoint();
+	}
+
+	@Override
+	protected boolean forceRefreshCacheConjoint() {
+		return true;
 	}
 
 	/*l

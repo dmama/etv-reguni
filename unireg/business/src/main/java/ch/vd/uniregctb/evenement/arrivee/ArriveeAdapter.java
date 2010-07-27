@@ -7,6 +7,7 @@ import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.adresse.AdressesCiviles;
+import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.evenement.EvenementAdapterAvecAdresses;
 import ch.vd.uniregctb.evenement.EvenementAdapterException;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
@@ -70,11 +71,10 @@ public class ArriveeAdapter extends EvenementAdapterAvecAdresses implements Arri
 	}
 
 	@Override
-	public void init(EvenementCivilData evenementCivilData, ServiceCivilService serviceCivil,
-			ServiceInfrastructureService infrastructureService) throws EvenementAdapterException {
+	public void init(EvenementCivilData evenementCivilData, ServiceCivilService serviceCivil, ServiceInfrastructureService infrastructureService, DataEventService dataEventService) throws EvenementAdapterException {
 		Assert.isTrue(isEvenementArrivee(evenementCivilData.getType()));
 
-		super.init(evenementCivilData, serviceCivil, infrastructureService);
+		super.init(evenementCivilData, serviceCivil, infrastructureService, dataEventService);
 
 		// on récupère les nouvelles adresses (= à la date d'événement)
 		final RegDate veilleArrivee = evenementCivilData.getDateEvenement().getOneDayBefore();

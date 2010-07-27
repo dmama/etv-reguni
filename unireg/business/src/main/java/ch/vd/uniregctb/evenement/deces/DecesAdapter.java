@@ -3,6 +3,7 @@ package ch.vd.uniregctb.evenement.deces;
 import org.apache.log4j.Logger;
 
 import ch.vd.registre.civil.model.EnumTypeEtatCivil;
+import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.evenement.EvenementAdapterException;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.evenement.GenericEvenementAdapter;
@@ -26,9 +27,8 @@ public class DecesAdapter extends GenericEvenementAdapter implements Deces {
 
 
 	@Override
-	public void init(EvenementCivilData evenement, ServiceCivilService serviceCivil, ServiceInfrastructureService infrastructureService)
-			throws EvenementAdapterException {
-		super.init(evenement, serviceCivil, infrastructureService);
+	public void init(EvenementCivilData evenement, ServiceCivilService serviceCivil, ServiceInfrastructureService infrastructureService, DataEventService dataEventService) throws EvenementAdapterException {
+		super.init(evenement, serviceCivil, infrastructureService, dataEventService);
 		 conjointSurvivant = serviceCivil.getConjoint(evenement.getNumeroIndividuPrincipal(),evenement.getDateEvenement().getOneDayBefore());
 
 	}
@@ -45,5 +45,10 @@ public class DecesAdapter extends GenericEvenementAdapter implements Deces {
 		}
 
 		return conjointSurvivant;
+	}
+
+	@Override
+	protected boolean forceRefreshCacheConjoint() {
+		return true;
 	}
 }

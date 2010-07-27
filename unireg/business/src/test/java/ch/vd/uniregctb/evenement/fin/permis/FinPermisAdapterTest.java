@@ -85,7 +85,7 @@ public class FinPermisAdapterTest extends WithoutSpringTest {
 		EvenementCivilData evenementsCivils = new EvenementCivilData(1L, TypeEvenementCivil.FIN_CHANGEMENT_CATEGORIE_ETRANGER,
 				EtatEvenementCivil.A_TRAITER, DATE_FIN_PERMIS, NUMERO_INDIVIDU, roberto, 0L, null, 1234, null);
 		FinPermisAdapter adapter = new FinPermisAdapter();
-		adapter.init(evenementsCivils, serviceCivil, infrastructureService);
+		adapter.init(evenementsCivils, serviceCivil, infrastructureService, null);
 	}
 
 	@Test
@@ -95,6 +95,6 @@ public class FinPermisAdapterTest extends WithoutSpringTest {
 		EvenementCivilData evenementsCivils = new EvenementCivilData(1L, TypeEvenementCivil.FIN_CHANGEMENT_CATEGORIE_ETRANGER,
 				EtatEvenementCivil.A_TRAITER, DATE_FIN_PERMIS, NUMERO_INDIVIDU_2, rosa, 0L, null, 1234, null);
 		FinPermisAdapter adapter = new FinPermisAdapter();
-		adapter.init(evenementsCivils, serviceCivil, infrastructureService);
+		adapter.init(evenementsCivils, serviceCivil, infrastructureService, null);
 	}
 }

@@ -81,7 +81,7 @@ public class ArriveeAdapterTest extends WithoutSpringTest {
 		};
 
 		ArriveeAdapter adapter = new ArriveeAdapter();
-		adapter.init(evenement, serviceCivil, infrastructureService);
+		adapter.init(evenement, serviceCivil, infrastructureService, null);
 
 		assertEquals(MockLocalite.Lausanne.getNomAbregeMinuscule(), adapter.getAncienneAdressePrincipale().getLocalite());
 		assertEquals(MockCommune.Cossonay.getNomMinuscule(), adapter.getNouvelleCommunePrincipale().getNomMinuscule());

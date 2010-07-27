@@ -35,7 +35,7 @@ public class SeparationAdapterTest extends WithoutSpringTest {
 		EvenementCivilData evenementsCivils = new EvenementCivilData(1L, TypeEvenementCivil.MARIAGE, EtatEvenementCivil.A_TRAITER,
 				RegDate.get(2000, 12, 19), INDIVIDU_MARIE_SEUL, pierre, 0L, null, 1234, null );
 		SeparationAdapter adapter = new SeparationAdapter();
-		adapter.init(evenementsCivils, serviceCivil, infrastructureService);
+		adapter.init(evenementsCivils, serviceCivil, infrastructureService, null);
 		assertNull("le conjoint d'un marié seul ne doit pas exister", adapter.getAncienConjoint());
 	}
 	
@@ -46,7 +46,7 @@ public class SeparationAdapterTest extends WithoutSpringTest {
 		EvenementCivilData evenementsCivils = new EvenementCivilData(1L, TypeEvenementCivil.MARIAGE, EtatEvenementCivil.A_TRAITER,
 				RegDate.get(2000, 12, 19), INDIVIDU_MARIE, momo, 0L, null, 1234, null );
 		SeparationAdapter adapter = new SeparationAdapter();
-		adapter.init(evenementsCivils, serviceCivil, infrastructureService);
+		adapter.init(evenementsCivils, serviceCivil, infrastructureService, null);
 		assertNotNull("le conjoint d'un marié doit exister", adapter.getAncienConjoint());		
 	}
 	
@@ -57,7 +57,7 @@ public class SeparationAdapterTest extends WithoutSpringTest {
 		EvenementCivilData evenementsCivils = new EvenementCivilData(1L, TypeEvenementCivil.MARIAGE, EtatEvenementCivil.A_TRAITER,
 				RegDate.get(2000, 12, 19), INDIVIDU_PACSE, david, 0L, null, 1234, null );
 		SeparationAdapter adapter = new SeparationAdapter();
-		adapter.init(evenementsCivils, serviceCivil, infrastructureService);
+		adapter.init(evenementsCivils, serviceCivil, infrastructureService, null);
 		assertNotNull("le conjoint d'un pacsé doit exister", adapter.getAncienConjoint());		
 	}
 }

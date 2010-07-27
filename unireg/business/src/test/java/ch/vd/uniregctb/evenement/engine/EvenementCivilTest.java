@@ -12,7 +12,6 @@ import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.evenement.EvenementCivilDAO;
 import ch.vd.uniregctb.evenement.jms.EvenementCivilListener;
@@ -30,7 +29,6 @@ import ch.vd.uniregctb.interfaces.service.ServiceCivilCache;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersCriteria;
-import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
@@ -56,9 +54,7 @@ public class EvenementCivilTest extends BusinessTest {
 		evenementCivilListener = new EvenementCivilListener();
 		evenementCivilListener.setEvenementCivilProcessor(evenementCivilProcessor);
 		evenementCivilListener.setTransactionManager(transactionManager);
-		evenementCivilListener.setDataEventService(getBean(DataEventService.class, "dataEventService"));
 		evenementCivilListener.setEvenementCivilDAO(evenementCivilDAO);
-		evenementCivilListener.setTiersDAO(getBean(TiersDAO.class, "tiersDAO"));
 	}
 
 	/**

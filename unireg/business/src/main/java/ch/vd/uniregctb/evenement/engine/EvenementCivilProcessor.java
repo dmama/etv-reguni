@@ -22,9 +22,10 @@ public interface EvenementCivilProcessor {
 	 * Traite un événement civil désigné par l'id et recycle tous les événements de l'individu
 	 *
 	 * @param id l'id de l'événement civil
+	 * @param refreshCache <code>true</code> s'il faut rafraîchir les caches des individus (première tentative de traitement), <code>false</code> sinon
 	 * @return 0 dans tous les cas
 	 */
-	public Long traiteEvenementCivil(Long id);
+	public Long traiteEvenementCivil(Long id, boolean refreshCache);
 
 	/**
 	 * Traite un événement civil désigné par l'id et recycle les événements en erreur de l'individu

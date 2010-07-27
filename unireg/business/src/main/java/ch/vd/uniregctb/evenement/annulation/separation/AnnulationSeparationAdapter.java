@@ -10,4 +10,8 @@ import ch.vd.uniregctb.evenement.GenericEvenementAdapter;
  */
 public class AnnulationSeparationAdapter extends GenericEvenementAdapter implements AnnulationSeparation {
 
+	@Override
+	protected boolean forceRefreshCacheConjoint() {
+		return true;
+	}
 }

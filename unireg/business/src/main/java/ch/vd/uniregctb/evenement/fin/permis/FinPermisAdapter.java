@@ -6,6 +6,7 @@ import org.apache.log4j.Logger;
 
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.civil.model.EnumTypePermis;
+import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.evenement.EvenementAdapterException;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.evenement.GenericEvenementAdapter;
@@ -27,8 +28,8 @@ public class FinPermisAdapter extends GenericEvenementAdapter implements FinPerm
 	private Permis permis;
 
 	@Override
-	public void init(EvenementCivilData evenementCivilData, ServiceCivilService serviceCivil, ServiceInfrastructureService infrastructureService) throws EvenementAdapterException {
-		super.init(evenementCivilData, serviceCivil, infrastructureService);
+	public void init(EvenementCivilData evenementCivilData, ServiceCivilService serviceCivil, ServiceInfrastructureService infrastructureService, DataEventService dataEventService) throws EvenementAdapterException {
+		super.init(evenementCivilData, serviceCivil, infrastructureService, dataEventService);
 
 		try {
 			// on récupère le permis à partir de sa date de fin (= à la date d'événement)

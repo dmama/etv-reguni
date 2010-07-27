@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 
 import ch.vd.registre.civil.model.EnumAttributeIndividu;
+import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.evenement.EvenementAdapterException;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.evenement.GenericEvenementAdapter;
@@ -27,9 +28,8 @@ public class NaissanceAdapter extends GenericEvenementAdapter implements Naissan
 	 * @see ch.vd.uniregctb.evenement.GenericEvenementAdapter#init(ch.vd.uniregctb.evenement.EvenementCivilData, ch.vd.registre.civil.service.ServiceCivil, ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService)
 	 */
 	@Override
-	public void init(EvenementCivilData evenement, ServiceCivilService serviceCivil, ServiceInfrastructureService infrastructureService)
-			throws EvenementAdapterException {
-		super.init(evenement, serviceCivil, infrastructureService);
+	public void init(EvenementCivilData evenement, ServiceCivilService serviceCivil, ServiceInfrastructureService infrastructureService, DataEventService dataEventService) throws EvenementAdapterException {
+		super.init(evenement, serviceCivil, infrastructureService, dataEventService);
 
 		/* Récupération des parents du nouveau né */
 		if ( getIndividu().getPere() != null )

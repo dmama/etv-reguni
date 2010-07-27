@@ -74,7 +74,7 @@ public class DecesAdapterTest extends WithoutSpringTest {
 		habitant.setNumero(NO_INDIVIDU_DEFUNT_CELIBATAIRE);
 		EvenementCivilData evenement = new EvenementCivilData(1L, TypeEvenementCivil.DECES, EtatEvenementCivil.A_TRAITER, DATE_DECES, NO_INDIVIDU_DEFUNT_CELIBATAIRE , habitant, 0L, null, 1234, null);
 		DecesAdapter adapter = new DecesAdapter();
-		adapter.init(evenement, serviceCivilSimple, infrastructureService);
+		adapter.init(evenement, serviceCivilSimple, infrastructureService, null);
 		Assert.isNull( adapter.getConjointSurvivant(), "le conjoint survivant d'un celibataire ne doit pas exister");
 	}
 
@@ -90,7 +90,7 @@ public class DecesAdapterTest extends WithoutSpringTest {
 		habitant.setNumero(NO_INDIVIDU_DEFUNT_MARIE_SEUL);
 		EvenementCivilData evenement = new EvenementCivilData(1L, TypeEvenementCivil.DECES, EtatEvenementCivil.A_TRAITER, DATE_DECES, NO_INDIVIDU_DEFUNT_MARIE_SEUL , habitant, 0L, null, 1234, null);
 		DecesAdapter adapter = new DecesAdapter();
-		adapter.init(evenement, serviceCivilSimple, infrastructureService);
+		adapter.init(evenement, serviceCivilSimple, infrastructureService, null);
 		Assert.isNull( adapter.getConjointSurvivant(), "le conjoint survivant d'un marié seul ne doit pas exister");
 	}
 
@@ -105,7 +105,7 @@ public class DecesAdapterTest extends WithoutSpringTest {
 		habitant.setNumero(NO_INDIVIDU_DEFUNT_MARIE);
 		EvenementCivilData evenement = new EvenementCivilData(1L, TypeEvenementCivil.DECES, EtatEvenementCivil.A_TRAITER, DATE_DECES, NO_INDIVIDU_DEFUNT_MARIE , habitant, 0L, null, 1234, null);
 		DecesAdapter adapter = new DecesAdapter();
-		adapter.init(evenement, serviceCivilSimple, infrastructureService);
+		adapter.init(evenement, serviceCivilSimple, infrastructureService, null);
 		Assert.notNull( adapter.getConjointSurvivant(), "le conjoint survivant d'un marié doit exister");
 		Assert.isTrue( adapter.getConjointSurvivant().getNoTechnique() == NO_INDIVIDU_VEUF_MARIE, "le conjoint survivant n'est pas celui attendu");
 	}
@@ -121,7 +121,7 @@ public class DecesAdapterTest extends WithoutSpringTest {
 		habitant.setNumero(NO_INDIVIDU_DEFUNT_PACSE);
 		EvenementCivilData evenement = new EvenementCivilData(1L, TypeEvenementCivil.DECES, EtatEvenementCivil.A_TRAITER, DATE_DECES, NO_INDIVIDU_DEFUNT_PACSE , habitant, 0L, null, 1234, null);
 		DecesAdapter adapter = new DecesAdapter();
-		adapter.init(evenement, serviceCivilSimple, infrastructureService);
+		adapter.init(evenement, serviceCivilSimple, infrastructureService, null);
 		Assert.notNull( adapter.getConjointSurvivant(), "le conjoint survivant d'un pacsé doit pas exister");
 		Assert.isTrue( adapter.getConjointSurvivant().getNoTechnique() == NO_INDIVIDU_VEUF_PACSE, "le conjoint survivant n'est pas celui attendu");
 	}
