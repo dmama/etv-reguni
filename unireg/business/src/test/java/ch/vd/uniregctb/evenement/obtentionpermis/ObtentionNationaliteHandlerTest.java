@@ -8,14 +8,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.junit.Assert;
 import org.junit.Test;
+import org.springframework.test.annotation.NotTransactional;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.util.Assert;
+import org.springframework.transaction.support.TransactionCallback;
 
+import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.evenement.AbstractEvenementHandlerTest;
 import ch.vd.uniregctb.evenement.EvenementCivilErreur;
 import ch.vd.uniregctb.interfaces.model.Individu;
+import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
+import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
+import ch.vd.uniregctb.interfaces.model.mock.MockPays;
+import ch.vd.uniregctb.interfaces.model.mock.MockRue;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
@@ -23,6 +31,7 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.type.ModeImposition;
+import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
@@ -62,10 +71,7 @@ public class ObtentionNationaliteHandlerTest extends AbstractEvenementHandlerTes
 	 */
 	private static final String DB_UNIT_DATA_FILE = "ObtentionPermisTest.xml";
 
-	@Override
-	public void onSetUp() throws Exception {
-
-		super.onSetUp();
+	private void setupServiceCivilAndLoadDb() throws Exception {
 		serviceCivil.setUp(new DefaultMockServiceCivil());
 		loadDatabase(DB_UNIT_DATA_FILE);
 	}
@@ -76,9 +82,11 @@ public class ObtentionNationaliteHandlerTest extends AbstractEvenementHandlerTes
 	@Test
 	public void testObtentionNationaliteHandlerSourcierCelibataire() throws Exception {
 
+		setupServiceCivilAndLoadDb();
+
 		LOGGER.debug("Test de traitement d'un événement d'obtention de nationalité de célibataire.");
 		Individu celibataire = serviceCivil.getIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE, 2007);
-		ObtentionNationalite obtentionNationalite = createValidObtentionNationalite(celibataire, DATE_OBTENTION_NATIONALITE);
+		ObtentionNationalite obtentionNationalite = createValidObtentionNationalite(celibataire, DATE_OBTENTION_NATIONALITE, 5586);
 
 		List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 		List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
@@ -90,20 +98,20 @@ public class ObtentionNationaliteHandlerTest extends AbstractEvenementHandlerTes
 		/*
 		 * Test de la présence d'une erreur
 		 */
-		Assert.isTrue(erreurs.isEmpty(), "Une erreur est survenue lors du traitement d'obtention de nationalité de célibataire.");
+		Assert.assertTrue("Une erreur est survenue lors du traitement d'obtention de nationalité de célibataire.", erreurs.isEmpty());
 
 		/*
 		 * Test de récupération du Tiers
 		 */
-		PersonnePhysique julie = tiersDAO.getPPByNumeroIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE);
-		Assert.isTrue(julie != null, "Plusieurs habitants trouvés avec le même numéro individu (ou aucun)");
+		final PersonnePhysique julie = tiersDAO.getPPByNumeroIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE);
+		Assert.assertTrue("Plusieurs habitants trouvés avec le même numéro individu (ou aucun)", julie != null);
 
 		/*
 		 * Vérification des fors fiscaux
 		 */
-		Assert.notNull(julie.getForsFiscaux(), "Les for fiscaux de Julie ont disparus");
-		Assert.notNull(julie.getForFiscalPrincipalAt(null), "Julie devrait encore avoir un for principal actif après l'obtention de nationalité suisse");
-		Assert.isTrue(julie.getForFiscalPrincipalAt(null).getModeImposition().equals(ModeImposition.ORDINAIRE));
+		Assert.assertNotNull("Les for fiscaux de Julie ont disparu", julie.getForsFiscaux());
+		Assert.assertNotNull("Julie devrait encore avoir un for principal actif après l'obtention de nationalité suisse", julie.getForFiscalPrincipalAt(null));
+		Assert.assertEquals(ModeImposition.ORDINAIRE, julie.getForFiscalPrincipalAt(null).getModeImposition());
 	}
 
 	/**
@@ -112,9 +120,11 @@ public class ObtentionNationaliteHandlerTest extends AbstractEvenementHandlerTes
 	@Test
 	public void testObtentionNationaliteHandlerSourcierCelibataireMaisNationaliteNonSuisse() throws Exception {
 
+		setupServiceCivilAndLoadDb();
+
 		LOGGER.debug("Test de traitement d'un événement d'obtention de nationalité non suisse de célibataire.");
 		Individu celibataire = serviceCivil.getIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE, 2007);
-		ObtentionNationalite obtentionNationalite = createValidObtentionNationaliteNonSuisse(celibataire, DATE_OBTENTION_NATIONALITE);
+		ObtentionNationalite obtentionNationalite = createValidObtentionNationaliteNonSuisse(celibataire, DATE_OBTENTION_NATIONALITE, 5586);
 
 		List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 		List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
@@ -126,21 +136,20 @@ public class ObtentionNationaliteHandlerTest extends AbstractEvenementHandlerTes
 		/*
 		 * Test de la présence d'une erreur
 		 */
-		Assert.isTrue(erreurs.isEmpty(), "Une erreur est survenue lors du traitement d'obtention de nationalité de célibataire.");
+		Assert.assertTrue("Une erreur est survenue lors du traitement d'obtention de nationalité de célibataire.", erreurs.isEmpty());
 
 		/*
 		 * Test de récupération du Tiers
 		 */
-		PersonnePhysique julie = tiersDAO.getHabitantByNumeroIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE);
-		Assert.isTrue(julie != null, "Plusieurs habitants trouvés avec le même numéro individu (ou aucun)");
+		final PersonnePhysique julie = tiersDAO.getHabitantByNumeroIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE);
+		Assert.assertNotNull("Plusieurs habitants trouvés avec le même numéro individu (ou aucun)", julie);
 
 		/*
 		 * Vérification des fors fiscaux
 		 */
-		Assert.notNull(julie.getForsFiscaux(), "Les for fiscaux de Julie ont disparus");
-		Assert.notNull(julie.getForFiscalPrincipalAt(null), "Julie devrait encore avoir un for principal actif après l'obtention de nationalité non suisse");
-		Assert.isTrue(!julie.getForFiscalPrincipalAt(null).getModeImposition().equals(ModeImposition.ORDINAIRE),
-				"Julie devrait encore avoir son for principal actif inchangé après l'obtention de nationalité autre que suisse");
+		Assert.assertNotNull("Les for fiscaux de Julie ont disparu", julie.getForsFiscaux());
+		Assert.assertNotNull("Julie devrait encore avoir un for principal actif après l'obtention de nationalité non suisse", julie.getForFiscalPrincipalAt(null));
+		Assert.assertEquals("Julie devrait encore avoir son for principal actif inchangé après l'obtention de nationalité autre que suisse", ModeImposition.SOURCE, julie.getForFiscalPrincipalAt(null).getModeImposition());
 	}
 
 	/**
@@ -148,6 +157,8 @@ public class ObtentionNationaliteHandlerTest extends AbstractEvenementHandlerTes
 	 */
 	@Test
 	public void testObtentionNationaliteHandlerSourcierMarieSeul() throws Exception {
+
+		setupServiceCivilAndLoadDb();
 
 		LOGGER.debug("Test de traitement d'un événement d'obtention de nationalité de marié seul.");
 		final List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
@@ -158,7 +169,7 @@ public class ObtentionNationaliteHandlerTest extends AbstractEvenementHandlerTes
 			public Object execute(TransactionStatus status) throws Exception {
 
 				Individu marieSeul = serviceCivil.getIndividu(NO_INDIVIDU_SOURCIER_MARIE_SEUL, 2007);
-				ObtentionNationalite obtentionNationalite = createValidObtentionNationalite(marieSeul, DATE_OBTENTION_NATIONALITE);
+				ObtentionNationalite obtentionNationalite = createValidObtentionNationalite(marieSeul, DATE_OBTENTION_NATIONALITE, 5586);
 
 				evenementCivilHandler.checkCompleteness(obtentionNationalite, erreurs, warnings);
 				evenementCivilHandler.validate(obtentionNationalite, erreurs, warnings);
@@ -217,9 +228,11 @@ public class ObtentionNationaliteHandlerTest extends AbstractEvenementHandlerTes
 	@Test
 	public void testObtentionNationaliteHandlerSourcierMarieADeux() throws Exception {
 
+		setupServiceCivilAndLoadDb();
+
 		LOGGER.debug("Test de traitement d'un événement d'obtention de nationalité de marié à deux.");
 		Individu marieADeux = serviceCivil.getIndividu(NO_INDIVIDU_SOURCIER_MARIE, 2007);
-		ObtentionNationalite obtentionNationalite = createValidObtentionNationalite(marieADeux, DATE_OBTENTION_NATIONALITE);
+		ObtentionNationalite obtentionNationalite = createValidObtentionNationalite(marieADeux, DATE_OBTENTION_NATIONALITE, 5586);
 
 		List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 		List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
@@ -231,36 +244,36 @@ public class ObtentionNationaliteHandlerTest extends AbstractEvenementHandlerTes
 		/*
 		 * Test de la présence d'une erreur
 		 */
-		Assert.isTrue(erreurs.isEmpty(), "Une erreur est survenue lors du traitement d'obtention de nationalité de marié seul.");
+		Assert.assertTrue("Une erreur est survenue lors du traitement d'obtention de nationalité de marié seul.", erreurs.isEmpty());
 
 		/*
 		 * Test de récupération du Tiers
 		 */
-		PersonnePhysique momo = tiersDAO.getPPByNumeroIndividu(NO_INDIVIDU_SOURCIER_MARIE);
-		Assert.isTrue(momo != null, "Plusieurs habitants trouvés avec le même numéro individu (ou aucun)");
+		final PersonnePhysique momo = tiersDAO.getPPByNumeroIndividu(NO_INDIVIDU_SOURCIER_MARIE);
+		Assert.assertNotNull("Plusieurs habitants trouvés avec le même numéro individu (ou aucun)", momo);
 
 		/*
 		 * Vérification des fors fiscaux
 		 */
-		Assert.isNull(momo.getForFiscalPrincipalAt(null), "Momo ne doit toujours pas avoir de for principal actif après l'obtention de nationalité suisse");
+		Assert.assertNull("Momo ne doit toujours pas avoir de for principal actif après l'obtention de nationalité suisse", momo.getForFiscalPrincipalAt(null));
 		for (ForFiscal forFiscal : momo.getForsFiscaux()) {
 			if (forFiscal instanceof ForFiscalPrincipal)
-				Assert.notNull(forFiscal.getDateFin(), "Un for fiscal principal non fermé a été trouvé");
+				Assert.assertNotNull("Un for fiscal principal non-fermé a été trouvé", forFiscal.getDateFin());
 		}
 
 		/*
 		 * Test de récupération du Conjoint
 		 */
-		PersonnePhysique bea = tiersDAO.getPPByNumeroIndividu(NO_INDIVIDU_SOURCIER_MARIE_CONJOINT);
-		Assert.isTrue(bea != null, "Plusieurs habitants trouvés avec le même numéro individu (ou aucun)");
+		final PersonnePhysique bea = tiersDAO.getPPByNumeroIndividu(NO_INDIVIDU_SOURCIER_MARIE_CONJOINT);
+		Assert.assertNotNull("Plusieurs habitants trouvés avec le même numéro individu (ou aucun)", bea);
 
 		/*
 		 * Vérification des fors fiscaux
 		 */
-		Assert.isNull(bea.getForFiscalPrincipalAt(null), "Béa ne doit toujours pas avoir de for principal actif après  l'obtention de nationalité suisse");
+		Assert.assertNull("Béa ne doit toujours pas avoir de for principal actif après  l'obtention de nationalité suisse", bea.getForFiscalPrincipalAt(null));
 		for (ForFiscal forFiscal : bea.getForsFiscaux()) {
 			if (forFiscal instanceof ForFiscalPrincipal)
-				Assert.notNull(forFiscal.getDateFin(), "Un for fiscal principal non fermé a été trouvé");
+				Assert.assertNotNull("Un for fiscal principal non fermé a été trouvé", forFiscal.getDateFin());
 		}
 
 		/*
@@ -274,31 +287,31 @@ public class ObtentionNationaliteHandlerTest extends AbstractEvenementHandlerTes
 				menageCommun = (MenageCommun) tiersDAO.get(rapport.getObjetId());
 			}
 		}
-		Assert.isTrue(nbMenagesCommuns == 1, "Plusieurs ou aucun tiers MenageCommun ont été trouvés");
+		Assert.assertEquals("Plusieurs ou aucun tiers MenageCommun ont été trouvés", 1, nbMenagesCommuns);
 
 		/*
 		 * Vérification du for principal du tiers MenageCommun
 		 */
-		ForFiscalPrincipal forCommun = menageCommun.getForFiscalPrincipalAt(null);
-		Assert.notNull(forCommun, "Aucun for fiscal principal trouvé sur le tiers MenageCommun");
-		Assert.isTrue(DATE_OBTENTION_NATIONALITE.equals(forCommun.getDateDebut()),
-				"La date d'ouverture du nouveau for ne correspond pas a la date de l'obtention de la nationalité suisse");
-		Assert.isTrue(forCommun.getModeImposition().equals(ModeImposition.ORDINAIRE));
+		final ForFiscalPrincipal forCommun = menageCommun.getForFiscalPrincipalAt(null);
+		Assert.assertNotNull("Aucun for fiscal principal trouvé sur le tiers MenageCommun", forCommun);
+		Assert.assertEquals("La date d'ouverture du nouveau for ne correspond pas a la date de l'obtention de la nationalité suisse", DATE_OBTENTION_NATIONALITE, forCommun.getDateDebut());
+		Assert.assertEquals(ModeImposition.ORDINAIRE, forCommun.getModeImposition());
 	}
 
 	/**
 	 *
+	 * @param numeroOfsCommunePrincipale
 	 * @param individu
 	 * @param dateobtentionNationalite
 	 * @return
 	 */
-	private ObtentionNationalite createValidObtentionNationalite(Individu individu, RegDate dateObtentionNationalite) {
+	private ObtentionNationalite createValidObtentionNationalite(Individu individu, RegDate dateObtentionNationalite, int numeroOfsCommunePrincipale) {
 
-		MockObtentionNationalite obtentionNationalite = new MockObtentionNationalite();
+		final MockObtentionNationalite obtentionNationalite = new MockObtentionNationalite();
 		obtentionNationalite.setIndividu(individu);
 
 		obtentionNationalite.setNumeroOfsCommuneAnnonce(5586);
-		obtentionNationalite.setNumeroOfsEtenduCommunePrincipale(5586);
+		obtentionNationalite.setNumeroOfsEtenduCommunePrincipale(numeroOfsCommunePrincipale);
 		obtentionNationalite.setDate(dateObtentionNationalite);
 		obtentionNationalite.setType(TypeEvenementCivil.NATIONALITE_SUISSE);
 
@@ -307,20 +320,142 @@ public class ObtentionNationaliteHandlerTest extends AbstractEvenementHandlerTes
 
 	/**
 	 *
+	 * @param numeroOfsCommunePrincipale
 	 * @param individu
 	 * @param dateobtentionNationalite
 	 * @return
 	 */
-	private ObtentionNationalite createValidObtentionNationaliteNonSuisse(Individu individu, RegDate dateObtentionNationalite) {
-		MockObtentionNationalite obtentionNationalite = new MockObtentionNationalite();
+	private ObtentionNationalite createValidObtentionNationaliteNonSuisse(Individu individu, RegDate dateObtentionNationalite, int numeroOfsCommunePrincipale) {
+
+		final MockObtentionNationalite obtentionNationalite = new MockObtentionNationalite();
 		obtentionNationalite.setIndividu(individu);
 
 		obtentionNationalite.setNumeroOfsCommuneAnnonce(5586);
-		obtentionNationalite.setNumeroOfsEtenduCommunePrincipale(5586);
+		obtentionNationalite.setNumeroOfsEtenduCommunePrincipale(numeroOfsCommunePrincipale);
 		obtentionNationalite.setDate(dateObtentionNationalite);
 		obtentionNationalite.setType(TypeEvenementCivil.NATIONALITE_NON_SUISSE);
 
 		return obtentionNationalite;
+	}
+
+	@Test
+	@NotTransactional
+	public void testObtentionNationaliteSuisseSurAncienHabitant() throws Exception {
+
+		final RegDate dateNaissance = date(1977, 4, 19);
+		final RegDate dateObtentionNationalite = date(2006, 6, 1);
+
+		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+			@Override
+			protected void init() {
+				final MockIndividu julie = addIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE, dateNaissance, "Goux", "Julie", false);
+				addNationalite(julie, MockPays.France, dateNaissance, dateObtentionNationalite.getOneDayBefore(), 1);
+				addNationalite(julie, MockPays.Suisse, dateObtentionNationalite, null, 2);
+				addAdresse(julie, EnumTypeAdresse.PRINCIPALE, MockRue.Geneve.AvenueGuiseppeMotta, null, date(2000, 1, 1), null);
+			}
+		});
+
+		final long ppId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Julie", "Goux", RegDate.get(1977, 4, 19), Sexe.FEMININ);
+				pp.setNumeroIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE);
+				Assert.assertNull(pp.getNumeroOfsNationalite());
+				return pp.getNumero();
+			}
+		});
+
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final Individu julie = serviceCivil.getIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE, 2007);
+				final ObtentionNationalite obtentionNationalite = createValidObtentionNationalite(julie, dateObtentionNationalite, MockCommune.Geneve.getNoOFS());
+
+				final List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
+				final List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
+
+				evenementCivilHandler.checkCompleteness(obtentionNationalite, erreurs, warnings);
+				Assert.assertTrue(erreurs.isEmpty());
+				Assert.assertTrue(warnings.isEmpty());
+
+				evenementCivilHandler.validate(obtentionNationalite, erreurs, warnings);
+				Assert.assertTrue(erreurs.isEmpty());
+				Assert.assertTrue(warnings.isEmpty());
+
+				evenementCivilHandler.handle(obtentionNationalite, warnings);
+				Assert.assertTrue(warnings.isEmpty());
+
+				return null;
+			}
+		});
+
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				Assert.assertNotNull(pp);
+				Assert.assertFalse(pp.isHabitantVD());
+				Assert.assertEquals(Integer.valueOf(ServiceInfrastructureService.noOfsSuisse), pp.getNumeroOfsNationalite());
+				return null;
+			}
+		});
+	}
+
+	@Test
+	@NotTransactional
+	public void testObtentionNationaliteNonSuisseSurAncienHabitant() throws Exception {
+
+		final RegDate dateNaissance = date(1977, 4, 19);
+		final RegDate dateObtentionNationalite = date(2006, 6, 1);
+
+		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+			@Override
+			protected void init() {
+				final MockIndividu julie = addIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE, dateNaissance, "Goux", "Julie", false);
+				addNationalite(julie, MockPays.France, dateNaissance, dateObtentionNationalite.getOneDayBefore(), 1);
+				addNationalite(julie, MockPays.Allemagne, dateObtentionNationalite, null, 2);
+				addAdresse(julie, EnumTypeAdresse.PRINCIPALE, MockRue.Geneve.AvenueGuiseppeMotta, null, date(2000, 1, 1), null);
+			}
+		});
+
+		final long ppId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Julie", "Goux", RegDate.get(1977, 4, 19), Sexe.FEMININ);
+				pp.setNumeroIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE);
+				Assert.assertNull(pp.getNumeroOfsNationalite());
+				return pp.getNumero();
+			}
+		});
+
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final Individu julie = serviceCivil.getIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE, 2007);
+				final ObtentionNationalite obtentionNationalite = createValidObtentionNationaliteNonSuisse(julie, dateObtentionNationalite, MockCommune.Geneve.getNoOFS());
+
+				final List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
+				final List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
+
+				evenementCivilHandler.checkCompleteness(obtentionNationalite, erreurs, warnings);
+				Assert.assertTrue(erreurs.isEmpty());
+				Assert.assertTrue(warnings.isEmpty());
+
+				evenementCivilHandler.validate(obtentionNationalite, erreurs, warnings);
+				Assert.assertTrue(erreurs.isEmpty());
+				Assert.assertTrue(warnings.isEmpty());
+
+				evenementCivilHandler.handle(obtentionNationalite, warnings);
+				Assert.assertTrue(warnings.isEmpty());
+
+				return null;
+			}
+		});
+
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				Assert.assertNotNull(pp);
+				Assert.assertFalse(pp.isHabitantVD());
+				Assert.assertEquals(Integer.valueOf(MockPays.Allemagne.getNoOFS()), pp.getNumeroOfsNationalite());
+				return null;
+			}
+		});
 	}
 
 }

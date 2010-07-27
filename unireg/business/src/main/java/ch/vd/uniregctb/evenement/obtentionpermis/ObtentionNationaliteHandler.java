@@ -11,6 +11,8 @@ import ch.vd.uniregctb.evenement.EvenementCivil;
 import ch.vd.uniregctb.evenement.EvenementCivilErreur;
 import ch.vd.uniregctb.evenement.GenericEvenementAdapter;
 import ch.vd.uniregctb.evenement.common.EvenementCivilHandlerException;
+import ch.vd.uniregctb.interfaces.model.Nationalite;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
@@ -38,13 +40,10 @@ public class ObtentionNationaliteHandler extends ObtentionPermisCOuNationaliteSu
 	@Override
 	public void validateSpecific(EvenementCivil evenementCivil, List<EvenementCivilErreur> erreurs, List<EvenementCivilErreur> warnings) {
 
-		ObtentionNationalite obtentionNationalite = (ObtentionNationalite) evenementCivil;
+		final ObtentionNationalite obtentionNationalite = (ObtentionNationalite) evenementCivil;
 
-		if (TypeEvenementCivil.NATIONALITE_SUISSE.equals(obtentionNationalite.getType())) {
+		if (TypeEvenementCivil.NATIONALITE_SUISSE == obtentionNationalite.getType()) {
 			super.validateSpecific(obtentionNationalite, erreurs, warnings);
-		}
-		else {
-			Audit.info(obtentionNationalite.getNumeroEvenement(), "Nationalité non suisse : ignorée");
 		}
 	}
 
@@ -55,6 +54,24 @@ public class ObtentionNationaliteHandler extends ObtentionPermisCOuNationaliteSu
 	@Override
 	public Pair<PersonnePhysique,PersonnePhysique> handle(EvenementCivil evenement, List<EvenementCivilErreur> warnings) throws EvenementCivilHandlerException {
 		final ObtentionNationalite obtentionNationalite = (ObtentionNationalite) evenement;
+
+		// quelque soit la nationalité, si l'individu correspond à un non-habitant (= ancien habitant)
+		// il faut mettre à jour la nationalité chez nous
+		final PersonnePhysique pp = getService().getPersonnePhysiqueByNumeroIndividu(evenement.getNoIndividu());
+		if (pp != null && !pp.isHabitantVD()) {
+			if (obtentionNationalite.getType() == TypeEvenementCivil.NATIONALITE_SUISSE) {
+				pp.setNumeroOfsNationalite(ServiceInfrastructureService.noOfsSuisse);
+			}
+			else {
+				for (Nationalite nationalite : evenement.getIndividu().getNationalites()) {
+					if (evenement.getDate().equals(nationalite.getDateDebutValidite())) {
+						pp.setNumeroOfsNationalite(nationalite.getPays().getNoOFS());
+						Audit.info(evenement.getNumeroEvenement(), String.format("L'individu %d a maintenant la nationalité du pays '%s'", evenement.getNoIndividu(), nationalite.getPays().getNomMinuscule()));
+						break;
+					}
+				}
+			}
+		}
 
 		switch (obtentionNationalite.getType()) {
 			case NATIONALITE_SUISSE:
@@ -68,6 +85,7 @@ public class ObtentionNationaliteHandler extends ObtentionPermisCOuNationaliteSu
 			default:
 				Assert.fail();
 		}
+
 		return null;
 	}
 
