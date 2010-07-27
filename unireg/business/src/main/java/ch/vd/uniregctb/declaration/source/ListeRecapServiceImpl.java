@@ -5,15 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import ch.vd.registre.base.date.NullDateBehavior;
-import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.common.BatchResults;
-import ch.vd.uniregctb.common.BatchTransactionTemplate;
-import ch.vd.uniregctb.declaration.Declaration;
-import ch.vd.uniregctb.declaration.Periodicite;
-import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.type.CategorieImpotSource;
-
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.orm.hibernate3.HibernateTemplate;
@@ -26,7 +17,11 @@ import org.springframework.util.Assert;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.common.AuthenticationHelper;
+import ch.vd.uniregctb.common.BatchResults;
+import ch.vd.uniregctb.common.BatchTransactionTemplate;
 import ch.vd.uniregctb.common.StatusManager;
+import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
@@ -35,20 +30,24 @@ import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.ModeleDocumentDAO;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
+import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.editique.DelegateEditique;
+import ch.vd.uniregctb.editique.EditiqueCompositionService;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueResultat;
-import ch.vd.uniregctb.editique.EditiqueCompositionService;
 import ch.vd.uniregctb.editique.EditiqueService;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.TiersDAO;
+import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.PeriodeDecompte;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.type.TypeDocument;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.validation.ValidationInterceptor;
 
 public class ListeRecapServiceImpl implements ListeRecapService, DelegateEditique, InitializingBean {
 
@@ -82,6 +81,8 @@ public class ListeRecapServiceImpl implements ListeRecapService, DelegateEditiqu
 	private ImpressionSommationLRHelper helperSommationLR;
 
 	private TiersService tiersService;
+
+	private ValidationInterceptor validationInterceptor;
 
 
 	/**
@@ -356,7 +357,17 @@ public class ListeRecapServiceImpl implements ListeRecapService, DelegateEditiqu
 	 * Permet de reconstruire l'historique des periodicités a partir des LR de chaque debiteurs.
 	 */
 	public void afterPropertiesSet() throws Exception {
-		createAllPeriodicites();
+
+		// on désactive la validation des tiers pendant le calcul des périodicités des débiteurs qui n'ont
+		// encore aucun historique
+		final boolean enabled = validationInterceptor.isEnabled();
+		validationInterceptor.setEnabled(false);
+		try {
+			createAllPeriodicites();
+		}
+		finally {
+			validationInterceptor.setEnabled(enabled);
+		}
 	}
 
 	@SuppressWarnings({"unchecked"})
@@ -369,8 +380,6 @@ public class ListeRecapServiceImpl implements ListeRecapService, DelegateEditiqu
 			}
 		});
 
-		/*final List<Long> ids = new ArrayList<Long>();
-		ids.add(1500592L);*/
 		if (!ids.isEmpty()) {
 
 			LOGGER.warn("--- Début de la création de l'historique des périodicités---");
@@ -406,8 +415,7 @@ public class ListeRecapServiceImpl implements ListeRecapService, DelegateEditiqu
 				LOGGER.error("Impossible de crééer l'historique des périodicités pour le debiteur =" + s.getKey() + " Erreur=" + s.getValue());
 			}
 
-			LOGGER.warn(
-					"--- Fin de la création des Périodicités (Nombre de débiteurs impactés=" + (ids.size() - rapportFinal.erreurs.size()) + ", en erreur=" + rapportFinal.erreurs.size() + ") ---");
+			LOGGER.warn("--- Fin de la création des Périodicités (Nombre de débiteurs impactés=" + (ids.size() - rapportFinal.erreurs.size()) + ", en erreur=" + rapportFinal.erreurs.size() + ") ---");
 		}
 	}
 
@@ -520,5 +528,9 @@ public class ListeRecapServiceImpl implements ListeRecapService, DelegateEditiqu
 
 	public void setTiersService(TiersService tiersService) {
 		this.tiersService = tiersService;
+	}
+
+	public void setValidationInterceptor(ValidationInterceptor validationInterceptor) {
+		this.validationInterceptor = validationInterceptor;
 	}
 }
