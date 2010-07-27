@@ -25,19 +25,23 @@
 		<property name="businessInterface" value="ch.vd.uniregctb.editique.impl.FoldersService" />
 	</bean>
 
-	<bean id="noTxConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
-		<property name="brokerURL" value="${extprop.jms.esb.url}" />
-		<property name="userName" value="${extprop.jms.esb.username}" />
-		<property name="password" value="${extprop.jms.esb.password}" />
+	<bean id="evenementEditiqueSender" class="ch.vd.uniregctb.editique.impl.EvenementEditiqueSenderImpl" >
+		<property name="serviceDestination" value="${extprop.jms.queue.editique.output}" />
+		<property name="serviceReplyTo" value="${extprop.jms.queue.editique.input}" />
+		<property name="esbTemplate" ref="esbJmsTemplate" />
+		<property name="noTxEsbTemplate" ref="noTxEsbJmsTemplate" />
+		<property name="esbMessageFactory" ref="esbMessageFactoryForEditique" />
+	</bean>
+
+	<bean id="evenementEditiqueReceiver" class="ch.vd.uniregctb.editique.impl.EvenementEditiqueReceiverImpl" >
+		<property name="destinationName" value="${extprop.jms.queue.editique.input}" />
+		<property name="noTxEsbTemplate" ref="noTxEsbJmsTemplate" />
+		<property name="receiveTimeout" value="${editique.locale.attente.timeout}" />
 	</bean>
 
 	<bean id="editiqueService" class="ch.vd.uniregctb.editique.impl.EditiqueServiceImpl" lazy-init="true">
-		<property name="txConnectionFactory" ref="jmsConnectionFactory" />
-		<property name="noTxConnectionFactory" ref="noTxConnectionFactory" />
-		<property name="jmsStatsService" ref="jmsStatsService" />
-		<property name="queueEditiqueOutput" value="${extprop.jms.queue.editique.output}" />
-		<property name="queueEditiqueInput" value="${extprop.jms.queue.editique.input}" />
-		<property name="receiveTimeout" value="${editique.locale.attente.timeout}" />
+		<property name="sender" ref="evenementEditiqueSender" />
+		<property name="receiver" ref="evenementEditiqueReceiver" />
 		<property name="foldersService" ref="externeFoldersService" />
 	</bean>
 

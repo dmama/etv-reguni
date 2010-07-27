@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.editique.mock;
 
-import javax.jms.JMSException;
+import org.apache.xmlbeans.XmlObject;
 
 import ch.vd.editique.service.enumeration.TypeFormat;
 import ch.vd.uniregctb.editique.EditiqueException;
@@ -9,11 +9,11 @@ import ch.vd.uniregctb.editique.EditiqueService;
 
 public class MockEditiqueService implements EditiqueService {
 
-	public EditiqueResultat creerDocumentImmediatement(String nomDocument, String typeDocument, TypeFormat typeFormat, Object object, boolean archive) throws EditiqueException, JMSException {
+	public EditiqueResultat creerDocumentImmediatement(String nomDocument, String typeDocument, TypeFormat typeFormat, XmlObject document, boolean archive) throws EditiqueException {
 		return null;
 	}
 
-	public void creerDocumentParBatch(Object object, String typeDocument, boolean archive) throws EditiqueException {
+	public void creerDocumentParBatch(XmlObject document, String typeDocument, boolean archive) throws EditiqueException {
 	}
 
 	public byte[] getPDFDeDocumentDepuisArchive(Long noContribuable, String typeDocument, String nomDocument) throws EditiqueException {

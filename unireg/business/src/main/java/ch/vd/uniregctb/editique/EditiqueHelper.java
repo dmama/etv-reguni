@@ -15,6 +15,8 @@ import ch.vd.uniregctb.tiers.Tiers;
 
 public interface EditiqueHelper {
 
+	public static final String DI_ID = "DI_ID";
+
 	/**
 	 * Alimente la partie PorteAdresse du document
 	 *

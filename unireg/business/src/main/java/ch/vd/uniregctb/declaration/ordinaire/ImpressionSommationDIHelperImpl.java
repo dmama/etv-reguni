@@ -3,7 +3,7 @@ package ch.vd.uniregctb.declaration.ordinaire;
 import java.text.SimpleDateFormat;
 
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
-import ch.vd.uniregctb.type.TypeAdresseTiers;
+
 import noNamespace.FichierImpressionDocument;
 import noNamespace.InfoArchivageDocument;
 import noNamespace.InfoDocumentDocument1;
@@ -85,8 +85,9 @@ public class ImpressionSommationDIHelperImpl implements ImpressionSommationDIHel
 		return "RGPS0801";
 	}
 
-	public TypFichierImpression  remplitSommationDI(ImpressionSommationDIHelperParams params) throws EditiqueException {
-		TypFichierImpression typeFichierImpression = FichierImpressionDocument.Factory.newInstance().addNewFichierImpression();
+	public FichierImpressionDocument remplitSommationDI(ImpressionSommationDIHelperParams params) throws EditiqueException {
+		final FichierImpressionDocument mainDocument = FichierImpressionDocument.Factory.newInstance();
+		TypFichierImpression typeFichierImpression = mainDocument.addNewFichierImpression();
 		InfoDocument infoDocument = remplitInfoDocument(params);
 		InfoArchivage infoArchivage = remplitInfoArchivage(params);
 		InfoEnteteDocument infoEnteteDocument;
@@ -102,7 +103,7 @@ public class ImpressionSommationDIHelperImpl implements ImpressionSommationDIHel
 		document.setInfoDocument(infoDocument);
 		document.setInfoArchivage(infoArchivage);
 		typeFichierImpression.setDocumentArray(new Document[]{ document });
-		return typeFichierImpression;
+		return mainDocument;
 	}
 
 	private InfoEnteteDocument remplitEnteteDocument(ImpressionSommationDIHelperParams params) throws EditiqueException {

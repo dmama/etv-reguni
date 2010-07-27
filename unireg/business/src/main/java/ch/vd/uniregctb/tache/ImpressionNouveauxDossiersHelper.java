@@ -2,7 +2,7 @@ package ch.vd.uniregctb.tache;
 
 import java.util.List;
 
-import noNamespace.TypFichierImpression;
+import noNamespace.FichierImpressionDocument;
 import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -16,7 +16,7 @@ public interface ImpressionNouveauxDossiersHelper {
 	 * @return
 	 * @throws InfrastructureException
 	 */
-	public TypFichierImpression remplitNouveauDossier(List<Contribuable> contribuables) throws EditiqueException ;
+	public FichierImpressionDocument remplitNouveauDossier(List<Contribuable> contribuables) throws EditiqueException ;
 
 	/**
 	 * Calcul le prefixe

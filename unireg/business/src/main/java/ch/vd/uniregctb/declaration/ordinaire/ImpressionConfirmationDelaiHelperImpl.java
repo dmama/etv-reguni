@@ -44,9 +44,10 @@ public class ImpressionConfirmationDelaiHelperImpl implements
 		return "RGPC0801";
 	}
 
-	public TypFichierImpression remplitConfirmationDelai(ImpressionConfirmationDelaiHelperParams params) throws EditiqueException {
+	public FichierImpressionDocument remplitConfirmationDelai(ImpressionConfirmationDelaiHelperParams params) throws EditiqueException {
 		try {
-			TypFichierImpression typeFichierImpression = FichierImpressionDocument.Factory.newInstance().addNewFichierImpression();
+			final FichierImpressionDocument mainDocument = FichierImpressionDocument.Factory.newInstance();
+			TypFichierImpression typeFichierImpression = mainDocument.addNewFichierImpression();
 			InfoDocument infoDocument = remplitInfoDocument(params);
 			InfoEnteteDocument infoEnteteDocument;
 			infoEnteteDocument = remplitEnteteDocument(params);
@@ -55,7 +56,7 @@ public class ImpressionConfirmationDelaiHelperImpl implements
 			document.setInfoEnteteDocument(infoEnteteDocument);
 			document.setInfoDocument(infoDocument);
 			typeFichierImpression.setDocumentArray(new Document[]{ document });
-			return typeFichierImpression;
+			return mainDocument;
 		}
 		catch (Exception e) {
 			throw new EditiqueException(e);

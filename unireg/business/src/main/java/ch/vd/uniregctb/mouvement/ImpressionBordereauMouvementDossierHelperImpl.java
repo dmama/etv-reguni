@@ -68,10 +68,11 @@ public class ImpressionBordereauMouvementDossierHelperImpl implements Impression
 		return PREFIXE;
 	}
 
-	public TypFichierImpression remplitBordereau(ImpressionBordereauMouvementDossierHelperParams params) throws EditiqueException {
+	public FichierImpressionDocument remplitBordereau(ImpressionBordereauMouvementDossierHelperParams params) throws EditiqueException {
 
 		try {
-			final TypFichierImpression typeFichierImpression = FichierImpressionDocument.Factory.newInstance().addNewFichierImpression();
+			final FichierImpressionDocument mainDocument = FichierImpressionDocument.Factory.newInstance();
+			final TypFichierImpression typeFichierImpression = mainDocument.addNewFichierImpression();
 			final InfoDocumentDocument1.InfoDocument infoDocument = remplitInfoDocument();
 			final InfoEnteteDocumentDocument1.InfoEnteteDocument infoEnteteDocument = remplitEnteteDocument(params);
 
@@ -81,7 +82,7 @@ public class ImpressionBordereauMouvementDossierHelperImpl implements Impression
 			document.setInfoDocument(infoDocument);
 			typeFichierImpression.setDocumentArray(new TypFichierImpression.Document[]{ document });
 
-			return typeFichierImpression;
+			return mainDocument;
 		}
 		catch (RuntimeException e) {
 			throw e;

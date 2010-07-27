@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.declaration.ordinaire;
 
-import noNamespace.TypFichierImpression;
+import noNamespace.FichierImpressionDocument;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.editique.EditiqueException;
 
@@ -9,7 +9,7 @@ public interface ImpressionTaxationOfficeHelper {
 
 	String calculPrefixe();
 
-	TypFichierImpression remplitTaxationOffice(DeclarationImpotOrdinaire declaration) throws EditiqueException;
+	FichierImpressionDocument remplitTaxationOffice(DeclarationImpotOrdinaire declaration) throws EditiqueException;
 
 	/**
 	 * Construit le champ idDocument

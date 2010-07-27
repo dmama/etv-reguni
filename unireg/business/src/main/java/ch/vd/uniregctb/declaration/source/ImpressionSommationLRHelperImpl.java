@@ -146,8 +146,9 @@ public class ImpressionSommationLRHelperImpl implements ImpressionSommationLRHel
 	 * @return
 	 * @throws EditiqueException
 	 */
-	public TypFichierImpressionIS remplitSommationLR(DeclarationImpotSource lr, RegDate dateTraitement) throws EditiqueException {
-		TypFichierImpressionIS impressionIS = FichierImpressionISDocument.Factory.newInstance().addNewFichierImpressionIS();
+	public FichierImpressionISDocument remplitSommationLR(DeclarationImpotSource lr, RegDate dateTraitement) throws EditiqueException {
+		final FichierImpressionISDocument mainDocument = FichierImpressionISDocument.Factory.newInstance();
+		TypFichierImpressionIS impressionIS = mainDocument.addNewFichierImpressionIS();
 		Document[] documents = new Document[1];
 
 		InfoDocument infoDocument = remplitInfoDocument(lr);
@@ -171,7 +172,7 @@ public class ImpressionSommationLRHelperImpl implements ImpressionSommationLRHel
 
 		impressionIS.setDocumentArray(documents);
 
-		return impressionIS;
+		return mainDocument;
 	}
 
 

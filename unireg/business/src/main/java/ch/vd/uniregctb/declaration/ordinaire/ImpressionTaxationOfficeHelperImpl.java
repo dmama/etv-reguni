@@ -96,10 +96,11 @@ public class ImpressionTaxationOfficeHelperImpl implements ImpressionTaxationOff
 		);
 	}
 
-	public TypFichierImpression remplitTaxationOffice(DeclarationImpotOrdinaire declaration) throws EditiqueException {
+	public FichierImpressionDocument remplitTaxationOffice(DeclarationImpotOrdinaire declaration) throws EditiqueException {
 
 		final Contribuable contribuable = (Contribuable) declaration.getTiers();
-		final TypFichierImpression typFichierImpression = FichierImpressionDocument.Factory.newInstance().addNewFichierImpression();
+		final FichierImpressionDocument mainDocument = FichierImpressionDocument.Factory.newInstance();
+		final TypFichierImpression typFichierImpression = mainDocument.addNewFichierImpression();
 		final Document[] documents = new Document[1];
 		final InfoDocument infoDocument = remplitInfoDocument(declaration, contribuable);
 		InfoEnteteDocument infoEnteteDocument;
@@ -119,7 +120,7 @@ public class ImpressionTaxationOfficeHelperImpl implements ImpressionTaxationOff
 
 		typFichierImpression.setDocumentArray(documents);
 
-		return typFichierImpression;
+		return mainDocument;
 	}
 
 	/**

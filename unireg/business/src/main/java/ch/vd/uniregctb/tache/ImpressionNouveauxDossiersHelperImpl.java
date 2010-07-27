@@ -213,7 +213,7 @@ public class ImpressionNouveauxDossiersHelperImpl implements ImpressionNouveauxD
 	 *
 	 * @return
 	 */
-	private InfoDocument remplitInfoDocument(Contribuable contribuable) {
+	private InfoDocument remplitInfoDocument() {
 		InfoDocument infoDocument = InfoDocumentDocument1.Factory.newInstance().addNewInfoDocument();
 		String prefixe = calculPrefixe();
 		prefixe += DOCUM;
@@ -262,17 +262,16 @@ public class ImpressionNouveauxDossiersHelperImpl implements ImpressionNouveauxD
 	/**
 	 * Alimente un objet Document pour l'impression des nouveaux dossiers
 	 *
-	 * @param declaration
-	 * @param annexes
 	 * @return
 	 * @throws InfrastructureException
 	 */
-	public TypFichierImpression remplitNouveauDossier(List<Contribuable> contribuables) throws EditiqueException {
-		TypFichierImpression typFichierImpression = FichierImpressionDocument.Factory.newInstance().addNewFichierImpression();
+	public FichierImpressionDocument remplitNouveauDossier(List<Contribuable> contribuables) throws EditiqueException {
+		final FichierImpressionDocument mainDocument = FichierImpressionDocument.Factory.newInstance();
+		TypFichierImpression typFichierImpression = mainDocument.addNewFichierImpression();
 		Document[] documents = new Document[contribuables.size()];
 		int i = 0;
 		for (Contribuable contribuable : contribuables) {
-			InfoDocument infoDocument = remplitInfoDocument(contribuable);
+			InfoDocument infoDocument = remplitInfoDocument();
 			InfoEnteteDocument infoEnteteDocument;
 			try {
 				infoEnteteDocument = remplitEnteteDocument(contribuable);
@@ -291,7 +290,7 @@ public class ImpressionNouveauxDossiersHelperImpl implements ImpressionNouveauxD
 		}
 		typFichierImpression.setDocumentArray(documents);
 
-		return typFichierImpression;
+		return mainDocument;
 	}
 
 

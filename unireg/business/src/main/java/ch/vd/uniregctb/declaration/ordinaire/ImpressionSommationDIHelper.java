@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.declaration.ordinaire;
 
-import noNamespace.TypFichierImpression;
+import noNamespace.FichierImpressionDocument;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.editique.EditiqueException;
 
@@ -9,7 +9,7 @@ public interface ImpressionSommationDIHelper {
 
 	String calculPrefixe();
 
-	TypFichierImpression remplitSommationDI(ImpressionSommationDIHelperParams params) throws EditiqueException;
+	FichierImpressionDocument remplitSommationDI(ImpressionSommationDIHelperParams params) throws EditiqueException;
 
 	/**
 	 * Construit le champ idDocument

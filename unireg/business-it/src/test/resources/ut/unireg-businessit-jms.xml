@@ -38,6 +38,22 @@
 	  </property>
 	</bean>
 
+	<!-- Versions 'hors-transaction' de l'ESB template + JMS template -->
+	<bean id="noTxConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
+		<property name="brokerURL" value="${testprop.jms.esb.url}" />
+		<property name="userName" value="${testprop.jms.esb.username}" />
+		<property name="password" value="${testprop.jms.esb.password}" />
+	</bean>
+
+	<bean id="noTxEsbJmsTemplate" class="ch.vd.uniregctb.jms.EsbTemplateTracing" lazy-init="true">
+		<property name="connectionFactory" ref="noTxConnectionFactory" />
+		<property name="esbStore" ref="raftEsbStore" />
+		<property name="receiveTimeout" value="1000" />
+		<property name="statsService" ref="jmsStatsService" />
+		<property name="application" value="unireg" />
+		<property name="domain" value="fiscalite"/>
+	</bean>
+
 	<bean id="raftEsbStore" class="ch.vd.technical.esb.store.raft.RaftEsbStore">
 		<property name="endpoint" value="${testprop.jms.esb.raft.store}" />
 	</bean>

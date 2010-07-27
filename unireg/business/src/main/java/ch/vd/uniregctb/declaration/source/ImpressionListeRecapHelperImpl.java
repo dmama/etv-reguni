@@ -116,8 +116,9 @@ public class ImpressionListeRecapHelperImpl implements ImpressionListeRecapHelpe
 	 * @return
 	 * @throws Exception
 	 */
-	public TypFichierImpressionIS remplitListeRecap(DeclarationImpotSource lr, String traitePar) throws EditiqueException {
-		TypFichierImpressionIS impressionIS = FichierImpressionISDocument.Factory.newInstance().addNewFichierImpressionIS();
+	public FichierImpressionISDocument remplitListeRecap(DeclarationImpotSource lr, String traitePar) throws EditiqueException {
+		final FichierImpressionISDocument mainDocument = FichierImpressionISDocument.Factory.newInstance();
+		TypFichierImpressionIS impressionIS = mainDocument.addNewFichierImpressionIS();
 		Document[] documents = new Document[1];
 
 		InfoDocument infoDocument = remplitInfoDocument(lr);
@@ -139,7 +140,7 @@ public class ImpressionListeRecapHelperImpl implements ImpressionListeRecapHelpe
 
 		impressionIS.setDocumentArray(documents);
 
-		return impressionIS;
+		return mainDocument;
 	}
 
 

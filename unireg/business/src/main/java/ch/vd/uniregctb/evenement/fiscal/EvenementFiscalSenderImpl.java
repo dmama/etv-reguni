@@ -57,7 +57,7 @@ public final class EvenementFiscalSenderImpl implements EvenementFiscalSender {
 		final String principal = AuthenticationHelper.getCurrentPrincipal();
 		Assert.notNull(principal);
 		
-		// Crée la représenation XML de l'événement
+		// Crée la représentation XML de l'événement
 		final XmlObject document = core2xml(evenement);
 		validateXml(document);
 

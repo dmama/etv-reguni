@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.declaration.ordinaire;
 
-import noNamespace.TypFichierImpression;
+import noNamespace.FichierImpressionDocument;
 
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.editique.EditiqueException;
@@ -10,7 +10,7 @@ public class MockImpressionSommationDIHelper implements ImpressionSommationDIHel
 		throw new IllegalArgumentException("no meant to be called");
 	}
 
-	public TypFichierImpression remplitSommationDI(ImpressionSommationDIHelperParams params) throws EditiqueException {
+	public FichierImpressionDocument remplitSommationDI(ImpressionSommationDIHelperParams params) throws EditiqueException {
 		throw new IllegalArgumentException("no meant to be called");
 	}
 
