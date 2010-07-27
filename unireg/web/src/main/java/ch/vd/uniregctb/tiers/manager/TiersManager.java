@@ -724,11 +724,11 @@ public class TiersManager implements MessageSourceAware {
 		return periodiciteView;
 	}
 
-	protected void	setPeriodiciteCourante(TiersView tiersView,DebiteurPrestationImposable dpi){
-		Periodicite periodiciteCourante = dpi.getDernierePeriodicte();
+	protected void	setPeriodiciteCourante(TiersView tiersView,DebiteurPrestationImposable dpi) {
+		final Periodicite periodiciteCourante = dpi.getDernierePeriodicite();
 		tiersView.setPeriodicite(readFromPeriodicite(periodiciteCourante));
 		
-	};
+	}
 
 	/**
 	 * Indique si l'on a le droit ou non de saisir une nouvelle situation de famille

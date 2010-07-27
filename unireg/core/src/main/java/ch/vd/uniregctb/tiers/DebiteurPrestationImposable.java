@@ -408,7 +408,7 @@ public class DebiteurPrestationImposable extends Tiers {
 	}
 
 	@Transient
-	public Periodicite getDernierePeriodicte() {
+	public Periodicite getDernierePeriodicite() {
 
 		List<Periodicite> list = getPeriodicitesSorted();
 		if (list != null) {
@@ -484,7 +484,7 @@ public class DebiteurPrestationImposable extends Tiers {
 				}
 			}
 			//Si aucune périodicité n'est trouvé à la date spécifié, on renvoie la dernière connue$
-			return getDernierePeriodicte();
+			return getDernierePeriodicite();
 		}
 
 	}

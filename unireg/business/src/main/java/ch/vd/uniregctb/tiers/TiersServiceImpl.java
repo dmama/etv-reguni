@@ -2147,18 +2147,17 @@ public class TiersServiceImpl implements TiersService {
 			}
 
 		}
-		Periodicite nouvellePeriodicite = new Periodicite(periodiciteDecompte,periodeDecompte,dateDebut,dateFin);
-		if(aAjouter){
-			final Periodicite dernierePeriodicite = getPeriodiciteFromListe(debiteur,null);
-		if (dernierePeriodicite != null && dernierePeriodicite.getDateFin() == null) {
-			if (dateFin == null || dateFin.isAfter(dernierePeriodicite.getDateDebut())) {
-			dernierePeriodicite.setDateFin(dateDebut.getOneDayBefore());
+		Periodicite nouvellePeriodicite = new Periodicite(periodiciteDecompte, periodeDecompte, dateDebut, dateFin);
+		if (aAjouter) {
+			final Periodicite dernierePeriodicite = getPeriodiciteFromListe(debiteur, null);
+			if (dernierePeriodicite != null && dernierePeriodicite.getDateFin() == null) {
+				if (dateFin == null || dateFin.isAfter(dernierePeriodicite.getDateDebut())) {
+					dernierePeriodicite.setDateFin(dateDebut.getOneDayBefore());
+				}
 			}
-		}
-			nouvellePeriodicite = addAndSave(debiteur,nouvellePeriodicite);
+			nouvellePeriodicite = addAndSave(debiteur, nouvellePeriodicite);
 			Assert.notNull(nouvellePeriodicite);
 		}
-
 
 		return nouvellePeriodicite;  
 	}

@@ -14,7 +14,6 @@ import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.entreprise.EntrepriseView;
-import ch.vd.uniregctb.iban.IbanHelper;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityProvider;
@@ -479,7 +478,7 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 			}
 
 			tiersService.addPeriodicite(dpi, periodiciteDecompte,periodeDecompte,debutValidite,null);
-			Assert.notNull(dpi.getDernierePeriodicte().getId());
+			Assert.notNull(dpi.getDernierePeriodicite().getId());
 			
 
 			if(tiersView.getNumeroCtbAssocie() != null) { //ajout d'un débiteur IS au contribuable

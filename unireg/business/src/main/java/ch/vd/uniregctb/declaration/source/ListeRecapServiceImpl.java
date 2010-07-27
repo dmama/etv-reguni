@@ -271,8 +271,7 @@ public class ListeRecapServiceImpl implements ListeRecapService, DelegateEditiqu
 				// maintenant, à partir de cette liste de ranges où il devrait y avoir une LR mais il n'y en a pas
 				// il faut extraire les périodes de LR
 				if (lrManquantes.size() > 0) {
-					final PeriodiciteDecompte periodicite = dpi.getPeriodiciteDecompte();
-					lrPeriodiquesManquantes = extrairePeriodesDapresPeriodicite(dpi, lrManquantes);
+					lrPeriodiquesManquantes = extrairePeriodesAvecPeriodicites(dpi, lrManquantes);
 				}
 			}
 		}
@@ -299,14 +298,14 @@ public class ListeRecapServiceImpl implements ListeRecapService, DelegateEditiqu
 	 * @param lrManquantes
 	 * @return
 	 */
-	private static List<DateRange> extrairePeriodesDapresPeriodicite(DebiteurPrestationImposable debiteur, List<DateRange> lrManquantes) {
+	protected static List<DateRange> extrairePeriodesAvecPeriodicites(DebiteurPrestationImposable debiteur, List<DateRange> lrManquantes) {
 		final List<DateRange> lr = new ArrayList<DateRange>();
 		for (DateRange manquante : lrManquantes) {
 			RegDate date = manquante.getDateDebut();
-			Periodicite periodiciteCourante = debiteur.getPeriodiciteAt(date);
 
 			// on fait des bonds de la bonne périodicité tant que l'on reste dans la période à couvrir
 			do {
+				final Periodicite periodiciteCourante = debiteur.getPeriodiciteAt(date);
 				final RegDate debut = periodiciteCourante.getDebutPeriode(date);
 				final RegDate fin = periodiciteCourante.getFinPeriode(date);
 				lr.add(new DateRangeHelper.Range(debut, fin));

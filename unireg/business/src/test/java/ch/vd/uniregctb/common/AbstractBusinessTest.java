@@ -306,11 +306,8 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 	}
 
 	protected DebiteurPrestationImposable addDebiteur(CategorieImpotSource categorie, PeriodiciteDecompte periodicite, RegDate debutValiditePeriodicite) {
-		DebiteurPrestationImposable debiteur = addDebiteur();
+		final DebiteurPrestationImposable debiteur = addDebiteur();
 		debiteur.setCategorieImpotSource(categorie);
-		//A supprimer une fois que ListeRecapServiceImpl sera adapté a l'historique des périodicité
-		debiteur.setPeriodiciteDecompte(periodicite);
-
 		debiteur.addPeriodicite(new Periodicite(periodicite,null,debutValiditePeriodicite,null));
 		return debiteur;
 	}
