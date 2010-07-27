@@ -30,6 +30,7 @@
 		<property name="beans">
 			<map>
 				<entry key="ch.vd.uniregctb-web:type=Monitoring,name=Application" value="applicationMonitoringJmxBean" />
+				<entry key="ch.vd.uniregctb-web:type=Monitoring,name=Caches" value="uniregCacheManager" />
 				<entry key="ch.vd.uniregctb-web:type=Connections,name=Oracle" value="oracleConnectionJmxBean" />
 				<!--<entry key="ch.vd.regcdh:type=Connections,name=DB2" value="db2ConnectionJmxBean" />-->
 				<!--<entry key="ch.vd.regcdh:type=Connections,name=HostInterface" value="hostInterfaceConnectionJmxBean" />-->
