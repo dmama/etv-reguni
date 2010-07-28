@@ -10,8 +10,6 @@ import java.util.Set;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.log4j.Logger;
-import org.springframework.context.MessageSource;
-import org.springframework.context.MessageSourceAware;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
@@ -30,14 +28,13 @@ import ch.vd.uniregctb.type.Niveau;
 import ch.vd.uniregctb.type.TypeDroitAcces;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
-public class SecuriteDossierServiceImpl implements SecuriteDossierService, MessageSourceAware {
+public class SecuriteDossierServiceImpl implements SecuriteDossierService {
 
 	private static final Logger LOGGER = Logger.getLogger(SecuriteDossierServiceImpl.class);
 
 	private ServiceSecuriteService serviceSecurite;
 	private TiersDAO tiersDAO;
 	private DroitAccesDAO droitAccesDAO;
-	private MessageSource messageSource;
 
 	/**
 	 * {@inheritDoc}
@@ -438,20 +435,19 @@ public class SecuriteDossierServiceImpl implements SecuriteDossierService, Messa
 		return Niveau.ECRITURE;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setServiceSecurite(ServiceSecuriteService serviceSecurite) {
 		this.serviceSecurite = serviceSecurite;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setTiersDAO(TiersDAO tiersDAO) {
 		this.tiersDAO = tiersDAO;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setDroitAccesDAO(DroitAccesDAO droitAccesDAO) {
 		this.droitAccesDAO = droitAccesDAO;
-	}
-
-	public void setMessageSource(MessageSource messageSource) {
-		this.messageSource = messageSource;
 	}
 }
 
