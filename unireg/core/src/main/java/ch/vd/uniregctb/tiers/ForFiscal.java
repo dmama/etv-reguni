@@ -4,7 +4,6 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorType;
-import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -61,7 +60,7 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 @Table(name = "FOR_FISCAL")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "FOR_TYPE", discriminatorType = DiscriminatorType.STRING)
-public abstract class ForFiscal extends HibernateEntity implements Comparable<ForFiscal>, DateRange, SubValidateable, Duplicable<ForFiscal> {
+public abstract class ForFiscal extends HibernateEntity implements Comparable<ForFiscal>, DateRange, SubValidateable, Duplicable<ForFiscal>, TiersSubEntity {
 
 	private static final long serialVersionUID = -4147759696434131389L;
 
@@ -395,5 +394,10 @@ public abstract class ForFiscal extends HibernateEntity implements Comparable<Fo
 		} else if (!typeAutoriteFiscale.equals(other.typeAutoriteFiscale))
 			return false;
 		return isAnnule() == other.isAnnule();
+	}
+
+	@Transient
+	public Tiers getTiersParent() {
+		return tiers;
 	}
 }

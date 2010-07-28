@@ -12,10 +12,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
 
@@ -28,6 +26,8 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
+import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.tiers.TiersSubEntity;
 import ch.vd.uniregctb.type.PeriodeDecompte;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
 //TODO(BNM) Reflechir a une implementation plus simple:
@@ -36,11 +36,9 @@ import ch.vd.uniregctb.type.PeriodiciteDecompte;
 @Entity
 @Table(name = "PERIODICITE")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-public  class Periodicite  extends HibernateEntity implements CollatableDateRange {
+public class Periodicite extends HibernateEntity implements CollatableDateRange, TiersSubEntity {
 
-	
-	private static final Logger LOGGER = Logger.getLogger(Periodicite.class);
-
+	//private static final Logger LOGGER = Logger.getLogger(Periodicite.class);
 
 	private static final long serialVersionUID = 956376828051331469L;
 
@@ -55,7 +53,7 @@ public  class Periodicite  extends HibernateEntity implements CollatableDateRang
 	private RegDate dateDebut;
 
 	/**
-	 Date de fin de la périodicité
+	 * Date de fin de la périodicité
 	 */
 	private RegDate dateFin;
 
@@ -81,7 +79,6 @@ public  class Periodicite  extends HibernateEntity implements CollatableDateRang
 
 	/**
 	 * @param theDateDebut the dateDebut to set
-
 	 */
 	public void setDateDebut(RegDate theDateDebut) {
 		// begin-user-code
@@ -109,31 +106,30 @@ public  class Periodicite  extends HibernateEntity implements CollatableDateRang
 		// end-user-code
 	}
 
-	public Periodicite(PeriodiciteDecompte periodiciteDecompte){
+	public Periodicite(PeriodiciteDecompte periodiciteDecompte) {
 		this.periodiciteDecompte = periodiciteDecompte;
 	}
 
-	public Periodicite(PeriodiciteDecompte periodiciteDecompte,PeriodeDecompte periodeDecompte, RegDate dateDebut, RegDate dateFin) {
+	public Periodicite(PeriodiciteDecompte periodiciteDecompte, PeriodeDecompte periodeDecompte, RegDate dateDebut, RegDate dateFin) {
 		this.periodiciteDecompte = periodiciteDecompte;
 		this.periodeDecompte = periodeDecompte;
 		this.dateDebut = dateDebut;
 		this.dateFin = dateFin;
 	}
 
-	public Periodicite(){
-		
+	public Periodicite() {
 	}
 
-	public Periodicite(Periodicite periodicite){
-		this(periodicite.getPeriodiciteDecompte(),periodicite.getPeriodeDecompte(), periodicite.getDateDebut(),periodicite.getDateFin());
+	public Periodicite(Periodicite periodicite) {
+		this(periodicite.getPeriodiciteDecompte(), periodicite.getPeriodeDecompte(), periodicite.getDateDebut(), periodicite.getDateFin());
 	}
-
 
 	@Transient
 	@Override
 	public Object getKey() {
 		return id;
 	}
+
 	/**
 	 * @return the id
 	 */
@@ -142,6 +138,7 @@ public  class Periodicite  extends HibernateEntity implements CollatableDateRang
 	public Long getId() {
 		return id;
 	}
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -150,30 +147,26 @@ public  class Periodicite  extends HibernateEntity implements CollatableDateRang
 	}
 
 	/**
-	 * @param id
-	 *            the id to set
+	 * @param id the id to set
 	 */
 	public void setId(Long theId) {
 		this.id = theId;
 	}
 
-	/* Calcule la date de début de la période. La période est déterminée par une date de référence située n'importe quand dans la période
-	 * considérée.
+	/**
+	 * Calcule la date de début de la période. La période est déterminée par une date de référence située n'importe quand dans la période considérée.
 	 *
-	 * @param reference
-	 *            la date de référence contenue dans la période considérée
+	 * @param reference la date de référence contenue dans la période considérée
 	 * @return le début de la période
 	 */
-	public  RegDate getDebutPeriode(RegDate reference){
+	public RegDate getDebutPeriode(RegDate reference) {
 		return periodiciteDecompte.getDebutPeriode(reference);
 	}
 
 	/**
-	 * Calcule la date de fin de la période. La période est déterminée par une date de référence située n'importe quand dans la période
-	 * considérée.
+	 * Calcule la date de fin de la période. La période est déterminée par une date de référence située n'importe quand dans la période considérée.
 	 *
-	 * @param reference
-	 *            la date de référence contenue dans la période considérée
+	 * @param reference la date de référence contenue dans la période considérée
 	 * @return la fin de la période
 	 */
 	public final RegDate getFinPeriode(RegDate reference) {
@@ -182,12 +175,12 @@ public  class Periodicite  extends HibernateEntity implements CollatableDateRang
 
 
 	/**
-	 * Calcule la date de début de la période suivant la période indiquée par la date de référence (c'est le lendemain de la fin
-	 * de la période indiquée)
+	 * Calcule la date de début de la période suivant la période indiquée par la date de référence (c'est le lendemain de la fin de la période indiquée)
+	 *
 	 * @param reference
 	 * @return le début de la période suivante
 	 */
-	public  RegDate getDebutPeriodeSuivante(RegDate reference){
+	public RegDate getDebutPeriodeSuivante(RegDate reference) {
 		return periodiciteDecompte.getDebutPeriodeSuivante(reference);
 	}
 
@@ -212,7 +205,7 @@ public  class Periodicite  extends HibernateEntity implements CollatableDateRang
 			CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH
 	})
 	@JoinColumn(name = "DEBITEUR_ID", insertable = false, updatable = false, nullable = false)
-	@Index(name = "IDX_P_DEBITEUR_ID", columnNames = "DEBITEUR_ID")	
+	@Index(name = "IDX_P_DEBITEUR_ID", columnNames = "DEBITEUR_ID")
 	public DebiteurPrestationImposable getDebiteur() {
 		return debiteur;
 	}
@@ -222,14 +215,14 @@ public  class Periodicite  extends HibernateEntity implements CollatableDateRang
 	}
 
 	public boolean isCollatable(DateRange next) {
-		return DateRangeHelper.isCollatable(this, next) && periodiciteDecompte.equals(((Periodicite)next).getPeriodiciteDecompte());
+		return DateRangeHelper.isCollatable(this, next) && periodiciteDecompte.equals(((Periodicite) next).getPeriodiciteDecompte());
 	}
 
 	public DateRange collate(DateRange next) {
 		return new Periodicite(periodiciteDecompte, periodeDecompte, dateDebut, next.getDateFin());
 	}
 
-	public static  List<Periodicite> comblerVidesPeriodicites(List<Periodicite> periodicites) {
+	public static List<Periodicite> comblerVidesPeriodicites(List<Periodicite> periodicites) {
 		// la périodicité actuelle doit avoir une date de fin null
 		final int lastIndex = periodicites.size() - 1;
 		if (lastIndex >= 0) {
@@ -258,5 +251,10 @@ public  class Periodicite  extends HibernateEntity implements CollatableDateRang
 
 	public void setPeriodeDecompte(PeriodeDecompte periodeDecompte) {
 		this.periodeDecompte = periodeDecompte;
+	}
+
+	@Transient
+	public Tiers getTiersParent() {
+		return debiteur;
 	}
 }

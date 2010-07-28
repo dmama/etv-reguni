@@ -29,7 +29,7 @@ import ch.vd.uniregctb.type.CategorieIdentifiant;
  */
 @Entity
 @Table(name = "IDENTIFICATION_PERSONNE")
-public class IdentificationPersonne extends HibernateEntity {
+public class IdentificationPersonne extends HibernateEntity implements TiersSubEntity {
 
 	private static final long serialVersionUID = -2912407089876896897L;
 
@@ -133,5 +133,10 @@ public class IdentificationPersonne extends HibernateEntity {
 		// begin-user-code
 		identifiant = theIdentifiant;
 		// end-user-code
+	}
+
+	@Transient
+	public Tiers getTiersParent() {
+		return personnePhysique;
 	}
 }

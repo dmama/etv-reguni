@@ -6,7 +6,6 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorType;
-import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -28,6 +27,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.validation.SubValidateable;
 import ch.vd.registre.base.validation.Validateable;
+import ch.vd.uniregctb.tiers.TiersSubEntity;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -37,7 +37,7 @@ import ch.vd.uniregctb.type.TypeAdresseTiers;
 @Table(name = "ADRESSE_TIERS")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "ADR_TYPE", discriminatorType = DiscriminatorType.STRING)
-public abstract class AdresseTiers extends HibernateEntity implements Comparable<AdresseTiers>, DateRange, Serializable, Cloneable, SubValidateable {
+public abstract class AdresseTiers extends HibernateEntity implements Comparable<AdresseTiers>, DateRange, Serializable, Cloneable, SubValidateable, TiersSubEntity {
 
 	//private final Logger LOGGER = Logger.getLogger(AdresseTiers.class);
 
@@ -223,6 +223,11 @@ public abstract class AdresseTiers extends HibernateEntity implements Comparable
 	 */
 	@Transient
 	public Validateable getMaster() {
+		return tiers;
+	}
+
+	@Transient
+	public Tiers getTiersParent() {
 		return tiers;
 	}
 }

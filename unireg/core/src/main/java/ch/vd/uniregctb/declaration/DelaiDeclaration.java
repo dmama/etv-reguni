@@ -16,6 +16,8 @@ import org.hibernate.annotations.Type;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.HibernateEntity;
+import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.tiers.TiersSubEntity;
 
 /**
  * <!-- begin-user-doc -->
@@ -28,7 +30,7 @@ import ch.vd.uniregctb.common.HibernateEntity;
  */
 @Entity
 @Table(name = "DELAI_DECLARATION")
-public class DelaiDeclaration extends HibernateEntity implements Comparable<DelaiDeclaration> {
+public class DelaiDeclaration extends HibernateEntity implements Comparable<DelaiDeclaration>, TiersSubEntity {
 
 	/**
 	 *
@@ -244,4 +246,8 @@ public class DelaiDeclaration extends HibernateEntity implements Comparable<Dela
 		// end-user-code
 	}
 
+	@Transient
+	public Tiers getTiersParent() {
+		return declaration.getTiers();
+	}
 }

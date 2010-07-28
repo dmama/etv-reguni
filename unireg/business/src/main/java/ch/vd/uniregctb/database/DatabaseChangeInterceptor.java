@@ -7,18 +7,14 @@ import org.hibernate.CallbackException;
 import org.hibernate.type.Type;
 import org.springframework.beans.factory.InitializingBean;
 
-import ch.vd.uniregctb.adresse.AdresseTiers;
+import ch.vd.uniregctb.tiers.TiersSubEntity;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.data.DataEventService;
-import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.hibernate.interceptor.ModificationInterceptor;
 import ch.vd.uniregctb.hibernate.interceptor.ModificationSubInterceptor;
 import ch.vd.uniregctb.tiers.DroitAcces;
-import ch.vd.uniregctb.tiers.ForFiscal;
-import ch.vd.uniregctb.tiers.IdentificationPersonne;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
-import ch.vd.uniregctb.tiers.SituationFamille;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
@@ -52,25 +48,11 @@ public class DatabaseChangeInterceptor implements ModificationSubInterceptor, In
 				dataEventService.onTiersChange(numero);
 			}
 		}
-		else if (entity instanceof Declaration) {
-			final Declaration declaration = (Declaration) entity;
-			final Long numero = declaration.getTiers().getNumero();
-			if (numero != null) {
-				dataEventService.onTiersChange(numero);
-			}
-		}
-		else if (entity instanceof ForFiscal) { // [UNIREG-2581] on doit remonter sur le tiers en cas de changement sur les classes satellites
-			final ForFiscal ff = (ForFiscal) entity;
-			final Long numero = ff.getTiers().getNumero();
-			if (numero != null) {
-				dataEventService.onTiersChange(numero);
-			}
-		}
-		else if (entity instanceof AdresseTiers) {
-			final AdresseTiers adresse = (AdresseTiers) entity;
-			final Long numero = adresse.getTiers().getNumero();
-			if (numero != null) {
-				dataEventService.onTiersChange(numero);
+		else if (entity instanceof TiersSubEntity) { // [UNIREG-2581] on doit remonter sur le tiers en cas de changement sur les classes satellites
+			final TiersSubEntity child = (TiersSubEntity) entity;
+			final Tiers tiers = child.getTiersParent();
+			if (tiers != null) {
+				dataEventService.onTiersChange(tiers.getId());
 			}
 		}
 		else if (entity instanceof RapportEntreTiers) {
@@ -82,20 +64,6 @@ public class DatabaseChangeInterceptor implements ModificationSubInterceptor, In
 			final Long objetId = rapport.getObjetId();
 			if (objetId != null) {
 				dataEventService.onTiersChange(objetId);
-			}
-		}
-		else if (entity instanceof SituationFamille) {
-			final SituationFamille sit = (SituationFamille) entity;
-			final Long numero = sit.getContribuable().getNumero();
-			if (numero != null) {
-				dataEventService.onTiersChange(numero);
-			}
-		}
-		else if (entity instanceof IdentificationPersonne) {
-			final IdentificationPersonne ident = (IdentificationPersonne) entity;
-			final Long numero = ident.getPersonnePhysique().getNumero();
-			if (numero != null) {
-				dataEventService.onTiersChange(numero);
 			}
 		}
 		else if (entity instanceof DroitAcces) {

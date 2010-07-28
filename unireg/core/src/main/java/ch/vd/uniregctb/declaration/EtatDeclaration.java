@@ -20,6 +20,8 @@ import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.LengthConstants;
+import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.tiers.TiersSubEntity;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 
 /**
@@ -33,7 +35,7 @@ import ch.vd.uniregctb.type.TypeEtatDeclaration;
  */
 @Entity
 @Table(name = "ETAT_DECLARATION")
-public class EtatDeclaration extends HibernateEntity implements DateRange, Comparable<EtatDeclaration> {
+public class EtatDeclaration extends HibernateEntity implements DateRange, Comparable<EtatDeclaration>, TiersSubEntity {
 
 	/**
 	 * Permet de trier les états d'une déclaration du plus ancien au plus récent. En cas de plusieurs états tombant le même jour, des règles
@@ -243,4 +245,8 @@ public class EtatDeclaration extends HibernateEntity implements DateRange, Compa
 		return true;
 	}
 
+	@Transient
+	public Tiers getTiersParent() {
+		return declaration.getTiers();
+	}
 }

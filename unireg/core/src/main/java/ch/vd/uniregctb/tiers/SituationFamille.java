@@ -44,7 +44,7 @@ import ch.vd.uniregctb.type.EtatCivil;
 @Table(name = "SITUATION_FAMILLE")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "SITUATION_FAMILLE_TYPE", discriminatorType = DiscriminatorType.STRING)
-public abstract class SituationFamille extends HibernateEntity implements DateRange, SubValidateable, Duplicable<SituationFamille> {
+public abstract class SituationFamille extends HibernateEntity implements DateRange, SubValidateable, Duplicable<SituationFamille>, TiersSubEntity {
 
 	private static final long serialVersionUID = 2322061257210000162L;
 
@@ -231,5 +231,10 @@ public abstract class SituationFamille extends HibernateEntity implements DateRa
 	 */
 	public ValidationResults validate() {
 		return DateRangeHelper.validate(this, false, true);
+	}
+
+	@Transient
+	public Tiers getTiersParent() {
+		return contribuable;
 	}
 }

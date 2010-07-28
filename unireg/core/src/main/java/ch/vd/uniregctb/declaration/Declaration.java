@@ -1,16 +1,9 @@
 package ch.vd.uniregctb.declaration;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorType;
-import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -23,6 +16,11 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
@@ -36,6 +34,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.validation.Validateable;
 import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.uniregctb.tiers.TiersSubEntity;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
@@ -53,7 +52,7 @@ import ch.vd.uniregctb.type.TypeEtatDeclaration;
 @Table(name = "DECLARATION")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "DOCUMENT_TYPE", discriminatorType = DiscriminatorType.STRING)
-public abstract class Declaration extends HibernateEntity implements DateRange, Validateable {
+public abstract class Declaration extends HibernateEntity implements DateRange, Validateable, TiersSubEntity {
 
 	private static final long serialVersionUID = 5952424159981114355L;
 
@@ -487,6 +486,7 @@ public abstract class Declaration extends HibernateEntity implements DateRange, 
 			etats = new HashSet<EtatDeclaration>();
 		}
 
+		etat.setDeclaration(this);
 		etats.add(etat);
 	}
 
@@ -495,6 +495,8 @@ public abstract class Declaration extends HibernateEntity implements DateRange, 
 		if (delais == null) {
 			delais = new HashSet<DelaiDeclaration>();
 		}
+
+		delai.setDeclaration(this);
 		delais.add(delai);
 	}
 
@@ -523,5 +525,10 @@ public abstract class Declaration extends HibernateEntity implements DateRange, 
 		}
 
 		return results;
+	}
+
+	@Transient
+	public Tiers getTiersParent() {
+		return tiers;
 	}
 }
