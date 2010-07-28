@@ -880,10 +880,14 @@ public class ArriveeHandler extends EvenementCivilHandlerBase {
 
 			// pour un couple, le for principal est toujours sur le ménage commun
 			if (ffpHabitantPrincipal != null) {
-				throw new EvenementCivilHandlerException("Le contribuable principal du ménage [" + menageCommun + "] possède un for fiscal principal individuel");
+				throw new EvenementCivilHandlerException(String.format("Le contribuable principal [%s] du ménage [%s] possède un for fiscal principal individuel",
+						FormatNumeroHelper.numeroCTBToDisplay(principal.getNumero()),
+						FormatNumeroHelper.numeroCTBToDisplay(menageCommun.getNumero())));
 			}
 			if (ffpHabitantConjoint != null) {
-				throw new EvenementCivilHandlerException("Le conjoint du ménage [" + menageCommun + "] possède un for fiscal principal individuel");
+				throw new EvenementCivilHandlerException(String.format("Le conjoint [%s] du ménage [%s] possède un for fiscal principal individuel",
+						FormatNumeroHelper.numeroCTBToDisplay(conjoint.getNumero()),
+						FormatNumeroHelper.numeroCTBToDisplay(menageCommun.getNumero())));
 			}
 
 			MotifFor motifOuverture = getMotifOuverture(arrivee);
