@@ -24,7 +24,7 @@
 		<script type="text/javascript" language="Javascript">
 			function Page_RetourRecapAnnulation(numero) {
 				if(confirm('Voulez-vous vraiment quitter cette page sans sauver ?')) {
-					document.location.href='list.do?activation=annulation' ;
+					document.location.href='../list.do?activation=annulation' ;
 				}
 			}
 			function Page_SauverAnnulation(event) {
