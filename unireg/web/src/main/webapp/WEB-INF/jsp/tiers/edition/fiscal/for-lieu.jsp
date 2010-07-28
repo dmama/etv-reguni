@@ -83,6 +83,6 @@
 		</jsp:include>
 	</td>
 	<script type="text/javascript">
-		selectForFiscal('${typeAutoriteFiscale}');
+		selectForFiscal('${command.typeAutoriteFiscale}');
 	</script>
 </tr>
