@@ -2,8 +2,7 @@ package ch.vd.uniregctb.tiers;
 
 import java.util.Date;
 
-import org.apache.lucene.document.Document;
-
+import ch.vd.uniregctb.indexer.tiers.MenageCommunIndexable;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
 
 public class TiersIndexedDataView {
@@ -43,6 +42,10 @@ public class TiersIndexedDataView {
 	}
 
 	public String getDateNaissance() {
+		if (data.getTiersType().equals(MenageCommunIndexable.SUB_TYPE)) {
+			// [UNIREG-2633] on n'affiche pas de dates de naissance sur les ménages communs
+			return null;
+		}
 		return data.getDateNaissance();
 	}
 

@@ -149,7 +149,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		// Search
 		//assertContains(numCtb1.toString(), values.get(TiersIndexableData.NUMEROS));
 		assertContains("Maillard", values.getNomRaison());
-		assertNull(values.getDateNaissance()); // un ménage-commun ne possède pas de date de naissance
+		assertEquals("19560121", values.getDateNaissance()); // [UNIREG-2633]
 		assertContains(FormatNumeroHelper.formatAncienNumAVS("123.45.678"), values.getNumeroAssureSocial());
 		// Display
 		assertContains("Maillard", values.getNom1());
@@ -728,7 +728,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		//assertContains(numCtb2.toString(), values.getNumeros());
 		assertContains("Maillard", values.getNomRaison());
 		assertContains("Gallet", values.getNomRaison());
-		assertNull(values.getDateNaissance()); // un ménage-commun ne possède pas de date de naissance
+		assertEquals("19560121 19671203", values.getDateNaissance()); // [UNIREG-2633]
 		assertContains(FormatNumeroHelper.formatAncienNumAVS("123.45.678"), values.getNumeroAssureSocial());
 		assertContains(FormatNumeroHelper.formatAncienNumAVS("987.65.432"), values.getNumeroAssureSocial());
 		// Display
@@ -779,7 +779,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		//assertContains(numCtb2.toString(), values.getNumeros());
 		assertContains("Maillard", values.getNomRaison());
 		assertContains("Gallet", values.getNomRaison());
-		assertNull(values.getDateNaissance()); // un ménage-commun ne possède pas de date de naissance
+		assertEquals(dateN1.index() + " " + dateN2.index(), values.getDateNaissance()); // [UNIREG-2633]
 		assertContains(FormatNumeroHelper.formatAncienNumAVS(noAVS1), values.getNumeroAssureSocial());
 		assertContains(FormatNumeroHelper.formatAncienNumAVS(noAVS2), values.getNumeroAssureSocial());
 		// Display

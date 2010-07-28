@@ -89,7 +89,7 @@ public class MenageCommunIndexableTest extends BusinessTest {
 
 		assertIndexData("Maillard Philippe", "", dateN1, ids.idHab1);
 		assertIndexData("Maillard-Gallet Gladys", "", dateN2, ids.idHab2);
-		assertIndexData("Maillard Philippe", "Maillard-Gallet Gladys", null, ids.idMc);
+		assertIndexData("Maillard Philippe", "Maillard-Gallet Gladys", dateN1.index() + " " + dateN2.index(), ids.idMc);
 	}
 
 	/**
@@ -150,7 +150,7 @@ public class MenageCommunIndexableTest extends BusinessTest {
 
 		assertIndexData("Maillard Philippe", "", dateN1, ids.idHab1);
 		assertIndexData("Casanova Giacomo", "", dateN3, ids.idHab3);
-		assertIndexData("Maillard Philippe", "", null, ids.idMc);
+		assertIndexData("Maillard Philippe", "", dateN1, ids.idMc);
 	}
 
 	/**
@@ -232,7 +232,7 @@ public class MenageCommunIndexableTest extends BusinessTest {
 		assertIndexData("Maillard Philippe", "", dateN1, ids.idHab1);
 		assertIndexData("Maillard-Gallet Gladys", "", dateN2, ids.idHab2);
 		assertIndexData("Casanova Giacomo", "", dateN3, ids.idHab3);
-		assertIndexData("Maillard Philippe", "Maillard-Gallet Gladys", null, ids.idMc);
+		assertIndexData("Maillard Philippe", "Maillard-Gallet Gladys", dateN1.index() + " " + dateN2.index(), ids.idMc);
 	}
 
 	/**
@@ -317,10 +317,14 @@ public class MenageCommunIndexableTest extends BusinessTest {
 		assertIndexData("Maillard Philippe", "", dateN1, ids.idHab1);
 		assertIndexData("Maillard-Gallet Gladys", "", dateN2, ids.idHab2);
 		assertIndexData("Casanova Giacomo", "", dateN3, ids.idHab3);
-		assertIndexData("Casanova Giacomo", "Maillard-Gallet Gladys", null, ids.idMc);
+		assertIndexData("Casanova Giacomo", "Maillard-Gallet Gladys", dateN3.index() + " " + dateN2.index(), ids.idMc);
 	}
 
 	private void assertIndexData(String nom1, String nom2, RegDate dateNaissance, long ctbId) {
+		assertIndexData(nom1, nom2, IndexerFormatHelper.objectToString(dateNaissance), ctbId);
+	}
+
+	private void assertIndexData(String nom1, String nom2, String dateNaissance, long ctbId) {
 		TiersCriteria criteria = new TiersCriteria();
 		criteria.setNumero(ctbId);
 		final List<TiersIndexedData> resultats = globalTiersSearcher.search(criteria);
@@ -330,6 +334,6 @@ public class MenageCommunIndexableTest extends BusinessTest {
 		final TiersIndexedData data = resultats.get(0);
 		assertEquals(nom1, data.getNom1());
 		assertEquals(nom2, data.getNom2());
-		assertEquals(IndexerFormatHelper.objectToString(dateNaissance), data.getDateNaissance());
+		assertEquals(dateNaissance, data.getDateNaissance());
 	}
 }
