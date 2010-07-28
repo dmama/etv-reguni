@@ -264,7 +264,7 @@ public class ListeRecapServiceImpl implements ListeRecapService, DelegateEditiqu
 				else {
 					lrManquantes = new ArrayList<DateRange>();
 					for (DateRange periodeActivite : periodesActivite) {
-						lrManquantes.addAll(subtract(periodeActivite, lrTrouveesIn));
+						lrManquantes.addAll(DateRangeHelper.subtract(periodeActivite, lrTrouveesIn));
 					}
 				}
 
@@ -315,38 +315,6 @@ public class ListeRecapServiceImpl implements ListeRecapService, DelegateEditiqu
 			while (manquante.isValidAt(date));
 		}
 		return lr;
-	}
-
-	/**
-	 * Renvoie les ranges compris dans "source" mais pas dans "toRemove"
-	 *
-	 * @param source
-	 * @param toRemove supposé trié, composé de ranges non-adjacents
-	 * @return
-	 */
-	private static List<DateRange> subtract(DateRange source, List<DateRange> toRemove) {
-		final List<DateRange> result = new ArrayList<DateRange>(toRemove.size() + 1);
-		RegDate debutProchain = source.getDateDebut();
-		for (DateRange trou : toRemove) {
-			if (DateRangeHelper.intersect(source, trou)) {
-				if (trou.getDateDebut().isAfter(debutProchain)) {
-					result.add(new DateRangeHelper.Range(debutProchain, trou.getDateDebut().addDays(-1)));
-				}
-				debutProchain = trou.getDateFin().addDays(1);
-				if (trou.getDateFin().isAfterOrEqual(source.getDateFin())) {
-					// le trou dépasse la zone complète, et les trous sont triés, donc c'est fini
-					break;
-				}
-			}
-		}
-		if (debutProchain.equals(source.getDateDebut())) {
-			Assert.isTrue(result.size() == 0);
-			result.add(source);
-		}
-		else if (debutProchain.isBeforeOrEqual(source.getDateFin())) {
-			result.add(new DateRangeHelper.Range(debutProchain, source.getDateFin()));
-		}
-		return result;
 	}
 
 	public void surDocumentRecu(EditiqueResultat resultat) {
