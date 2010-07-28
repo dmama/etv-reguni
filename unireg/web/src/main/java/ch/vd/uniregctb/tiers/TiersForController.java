@@ -53,7 +53,7 @@ public class TiersForController extends AbstractTiersController {
 
 	@Override
 	protected Map<String, Object> referenceData(HttpServletRequest request) throws Exception {
-		final Map<String, Object> referenceData = new HashMap<String, Object>();
+		final Map<String, Object> referenceData = super.referenceData(request);
 		referenceData.put(ParametreEnum.anneeMinimaleForDebiteur.name(), paramService.getAnneeMinimaleForDebiteur());
 		return referenceData;
 	}
