@@ -1,11 +1,5 @@
 package ch.vd.uniregctb.tiers;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
@@ -14,6 +8,11 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Type;
@@ -53,50 +52,12 @@ public class DebiteurPrestationImposable extends Tiers {
 
 	private String nom1;
 	private String nom2;
-
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nLi8k1x9Edygsbnw9h5bVw"
-	 */
 	private CategorieImpotSource categorieImpotSource;
-
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nLi8lFx9Edygsbnw9h5bVw"
-	 */
 	private PeriodiciteDecompte periodiciteDecompte;
-
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_b-4YMPZ6EdyDE6gdiHo60A"
-	 */
 	private PeriodeDecompte periodeDecompte;
-
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nLi8lVx9Edygsbnw9h5bVw"
-	 */
 	private ModeCommunication modeCommunication;
-
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_diY2cOOvEdyN8MKJ3LhMnw"
-	 */
 	private Boolean sansRappel;
-
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_kUiSsOuREdyoJZZczGWapw"
-	 */
 	private Boolean sansListeRecapitulative;
-
-
 	private Set<Periodicite> periodicites;
 
 
@@ -118,133 +79,53 @@ public class DebiteurPrestationImposable extends Tiers {
 		this.nom2 = nom2;
 	}
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @return the categorieImpotSource
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nLi8k1x9Edygsbnw9h5bVw?GETTER"
-	 */
 	@Column(name = "CATEGORIE_IMPOT_SOURCE", length = LengthConstants.DPI_CATEGORIEIS)
 	@Type(type = "ch.vd.uniregctb.hibernate.CategorieImpotSourceUserType")
 	public CategorieImpotSource getCategorieImpotSource() {
-		// begin-user-code
 		return categorieImpotSource;
-		// end-user-code
 	}
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @param theCategorieImpotSource the categorieImpotSource to set
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nLi8k1x9Edygsbnw9h5bVw?SETTER"
-	 */
 	public void setCategorieImpotSource(CategorieImpotSource theCategorieImpotSource) {
-		// begin-user-code
 		categorieImpotSource = theCategorieImpotSource;
-		// end-user-code
 	}
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @return the periodiciteDecompte
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nLi8lFx9Edygsbnw9h5bVw?GETTER"
-	 */
 	@Column(name = "PERIODICITE_DECOMPTE", length = LengthConstants.DPI_PERIODICITE)
 	@Type(type = "ch.vd.uniregctb.hibernate.PeriodiciteDecompteUserType")
 	public PeriodiciteDecompte getPeriodiciteDecompte() {
-		// begin-user-code
 		return periodiciteDecompte;
-		// end-user-code
 	}
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @param thePeriodiciteDecompte the periodiciteDecompte to set
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nLi8lFx9Edygsbnw9h5bVw?SETTER"
-	 */
 	public void setPeriodiciteDecompte(PeriodiciteDecompte thePeriodiciteDecompte) {
-		// begin-user-code
 		periodiciteDecompte = thePeriodiciteDecompte;
-		// end-user-code
 	}
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @return the periodeDecompte
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_b-4YMPZ6EdyDE6gdiHo60A?GETTER"
-	 */
 	@Column(name = "PERIODE_DECOMPTE", length = LengthConstants.DPI_PERIODE_DECOMPTE)
 	@Type(type = "ch.vd.uniregctb.hibernate.PeriodeDecompteUserType")
 	public PeriodeDecompte getPeriodeDecompte() {
-		// begin-user-code
 		return periodeDecompte;
-		// end-user-code
 	}
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @param thePeriodeDecompte the periodeDecompte to set
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_b-4YMPZ6EdyDE6gdiHo60A?SETTER"
-	 */
 	public void setPeriodeDecompte(PeriodeDecompte thePeriodeDecompte) {
-		// begin-user-code
 		periodeDecompte = thePeriodeDecompte;
-		// end-user-code
 	}
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @return the modeCommunication
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nLi8lVx9Edygsbnw9h5bVw?GETTER"
-	 */
 	@Column(name = "MODE_COM", length = LengthConstants.DPI_MODECOM)
 	@Type(type = "ch.vd.uniregctb.hibernate.ModeCommunicationUserType")
 	public ModeCommunication getModeCommunication() {
-		// begin-user-code
 		return modeCommunication;
-		// end-user-code
 	}
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @param theModeCommunication the modeCommunication to set
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nLi8lVx9Edygsbnw9h5bVw?SETTER"
-	 */
 	public void setModeCommunication(ModeCommunication theModeCommunication) {
-		// begin-user-code
 		modeCommunication = theModeCommunication;
-		// end-user-code
 	}
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @return the sansRappel
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_diY2cOOvEdyN8MKJ3LhMnw?GETTER"
-	 */
 	@Column(name = "SANS_RAPPEL")
 	public Boolean getSansRappel() {
-		// begin-user-code
 		return sansRappel;
-		// end-user-code
 	}
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @param theSansRappel the sansRappel to set
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_diY2cOOvEdyN8MKJ3LhMnw?SETTER"
-	 */
 	public void setSansRappel(Boolean theSansRappel) {
-		// begin-user-code
 		sansRappel = theSansRappel;
-		// end-user-code
 	}
 
 	/**
@@ -268,29 +149,13 @@ public class DebiteurPrestationImposable extends Tiers {
 		return ctbId;
 	}
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @return the sansListeRecapitulative
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_kUiSsOuREdyoJZZczGWapw?GETTER"
-	 */
 	@Column(name = "SANS_LISTE_RECAP")
 	public Boolean getSansListeRecapitulative() {
-		// begin-user-code
 		return sansListeRecapitulative;
-		// end-user-code
 	}
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @param theSansListeRecapitulative the sansListeRecapitulative to set
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_kUiSsOuREdyoJZZczGWapw?SETTER"
-	 */
 	public void setSansListeRecapitulative(Boolean theSansListeRecapitulative) {
-		// begin-user-code
 		sansListeRecapitulative = theSansListeRecapitulative;
-		// end-user-code
 	}
 
 	@Transient
@@ -375,36 +240,46 @@ public class DebiteurPrestationImposable extends Tiers {
 		return results;
 	}
 
-
 	@Override
 	public ValidationResults validate() {
-		final ValidationResults validation = super.validate();
+		final ValidationResults results = super.validate();
+		results.merge(validatePeriodicites());
+		return results;
+	}
+
+	private ValidationResults validatePeriodicites() {
+		final ValidationResults results = new ValidationResults();
 		if (periodicites == null || periodicites.isEmpty()) {
-			validation.addWarning("ce débiteur n'a aucune périodicité");
+			results.addWarning("ce débiteur n'a aucune périodicité");
 		}
-		return validation;
+		else {
+			// Les plages de validité des fors ne doivent pas se chevaucher
+			Periodicite lastPeriodicite = null;
+			for (Periodicite p : getPeriodicitesSorted()) {
+				if (p.isAnnule()) {
+					continue;
+				}
+				if (lastPeriodicite != null && DateRangeHelper.intersect(lastPeriodicite, p)) {
+					results.addError("La périodicité qui commence le " + p.getDateDebut() + " et se termine le " + p.getDateFin() + " chevauche la périodicité précédente");
+				}
+				lastPeriodicite = p;
+			}
+
+		}
+		return results;
 	}
 
 	/**
-	 * Retourne les Periodicités triées par - La date d'ouverture
-	 *
-	 * @return
+	 * @return Retourne les Periodicités triées par - La date d'ouverture
 	 */
 	@Transient
 	public List<Periodicite> getPeriodicitesSorted() {
-		List<Periodicite> periodicitesTriees = null;
-		if (periodicites != null) {
-			periodicitesTriees = new ArrayList<Periodicite>();
-			periodicitesTriees.addAll(periodicites);
-			Collections.sort(periodicitesTriees, new DateRangeComparator<Periodicite>() {
-				@Override
-				public int compare(Periodicite o1, Periodicite o2) {
-					return super.compare(o1, o2);
-
-				}
-			});
+		if (periodicites == null) {
+			return null;
 		}
-		return periodicitesTriees;
+		final List<Periodicite> list = new ArrayList<Periodicite>(periodicites);
+		Collections.sort(list, new DateRangeComparator<Periodicite>());
+		return list;
 	}
 
 	@Transient
@@ -551,4 +426,6 @@ public class DebiteurPrestationImposable extends Tiers {
 			return false;
 		return true;
 	}
+
+
 }

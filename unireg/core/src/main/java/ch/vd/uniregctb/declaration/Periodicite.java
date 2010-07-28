@@ -23,6 +23,9 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.registre.base.validation.SubValidateable;
+import ch.vd.registre.base.validation.Validateable;
+import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
@@ -36,7 +39,7 @@ import ch.vd.uniregctb.type.PeriodiciteDecompte;
 @Entity
 @Table(name = "PERIODICITE")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-public class Periodicite extends HibernateEntity implements CollatableDateRange, TiersSubEntity {
+public class Periodicite extends HibernateEntity implements CollatableDateRange, SubValidateable, TiersSubEntity {
 
 	//private static final Logger LOGGER = Logger.getLogger(Periodicite.class);
 
@@ -251,6 +254,22 @@ public class Periodicite extends HibernateEntity implements CollatableDateRange,
 
 	public void setPeriodeDecompte(PeriodeDecompte periodeDecompte) {
 		this.periodeDecompte = periodeDecompte;
+	}
+
+	public ValidationResults validate() {
+		final ValidationResults results = DateRangeHelper.validate(this, false, true);
+		if (periodiciteDecompte == null) {
+			results.addError("La périodicité de décompte doit être renseignée.");
+		}
+		if (periodiciteDecompte == PeriodiciteDecompte.UNIQUE && periodeDecompte == null) {
+			results.addError("La période de décompte doit être renseignée lorsque la périodicité de décompte est UNIQUE.");
+		}
+		return results;
+	}
+
+	@Transient
+	public Validateable getMaster() {
+		return debiteur;
 	}
 
 	@Transient

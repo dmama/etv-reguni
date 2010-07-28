@@ -2122,57 +2122,40 @@ public class TiersServiceImpl implements TiersService {
 	 * {@inheritDoc}
 	 */
 	public Periodicite addPeriodicite(DebiteurPrestationImposable debiteur, PeriodiciteDecompte periodiciteDecompte, PeriodeDecompte periodeDecompte, RegDate dateDebut, RegDate dateFin) {
-		boolean aAjouter=true;
-		Periodicite periodicitePotentiel = getPeriodiciteFromListe(debiteur,dateDebut);
-		if(periodicitePotentiel!=null){
-			if(periodicitePotentiel.getPeriodiciteDecompte().equals(periodiciteDecompte)){
-				//Le rajout d'une périodicité identique sur la mêmme période n'a pas de sens
-				aAjouter = false;
+
+		while (true) { // cette boucle permet de fusionner - si nécessaire - la nouvelle périodicité avec celles existantes
+			final Periodicite courante = debiteur.getPeriodiciteAt(dateDebut);
+			if (courante == null) {
+				// pas de périodicité, on continue
+				break;
 			}
-			else{
-				//periodicites differentes sur la même période, on annule la precedente
-				if(periodicitePotentiel.getDateDebut().equals(dateDebut)){
-					periodicitePotentiel.setAnnule(true);
-					//on recherche une eventuelle periodicite presente avant celle qui vient d'être annulée
-					final RegDate dateBeforePotentiel = periodicitePotentiel.getDateDebut().getOneDayBefore();
-					Periodicite periodiciteBeforePotentiel = debiteur.getPeriodiciteAt(dateBeforePotentiel);
-					if(periodiciteBeforePotentiel!=null && periodiciteBeforePotentiel.getPeriodiciteDecompte().equals(periodiciteDecompte) ){
-						//on reactive cette periodicite, et on empêche l'ajout de la nouvelle
-						periodiciteBeforePotentiel.setDateFin(null);
-						aAjouter=false;
-
-					}
-				}
-
+			if (courante.getId() == null) {
+				// l'implémentation de getPeriodiciteAt() crée une périodicité transiente à la volée lorsqu'aucun périodicité n'existe => on l'ignore gaiment
+				break;
 			}
 
-		}
-		Periodicite nouvellePeriodicite = new Periodicite(periodiciteDecompte, periodeDecompte, dateDebut, dateFin);
-		if (aAjouter) {
-			final Periodicite dernierePeriodicite = getPeriodiciteFromListe(debiteur, null);
-			if (dernierePeriodicite != null && dernierePeriodicite.getDateFin() == null) {
-				if (dateFin == null || dateFin.isAfter(dernierePeriodicite.getDateDebut())) {
-					dernierePeriodicite.setDateFin(dateDebut.getOneDayBefore());
-				}
+			if (courante.getPeriodiciteDecompte() == periodiciteDecompte && courante.getPeriodeDecompte() == periodeDecompte &&
+					RegDateHelper.isBetween(courante.getDateFin(), dateDebut.getOneDayBefore(), dateFin, NullDateBehavior.LATEST)) {
+				Assert.isTrue(courante.getDateDebut().isBeforeOrEqual(dateDebut));
+				// la nouvelle périodicité est identique à la périodicité courante (ou ne fait que la prolonger), on adapte donc la périodicité courante
+				courante.setDateFin(RegDateHelper.maximum(courante.getDateFin(), dateFin, NullDateBehavior.LATEST));
+				return courante;
 			}
-			nouvellePeriodicite = addAndSave(debiteur, nouvellePeriodicite);
-			Assert.notNull(nouvellePeriodicite);
-		}
 
-		return nouvellePeriodicite;  
-	}
-
-	private Periodicite getPeriodiciteFromListe(DebiteurPrestationImposable debiteur, RegDate dateDebut) {
-		List<Periodicite> periodicites = debiteur.getPeriodicitesSorted();
-		if(periodicites!=null){
-			for (Periodicite p : periodicites) {
-				if (p.isValidAt(dateDebut)) {
-					return p;
-				}
+			final RegDate veilleDebut = dateDebut.getOneDayBefore();
+			if (courante.getDateDebut() != null && courante.getDateDebut().isAfter(veilleDebut)) {
+				// la périodicité courante est masquée par le nouvelle périodicité, on l'annule (et on continue de boucler)
+				courante.setAnnule(true);
+			}
+			else {
+				// autrement, on adapte la date fin
+				courante.setDateFin(veilleDebut);
+				break;
 			}
 		}
 
-		return null;  //To change body of created methods use File | Settings | File Templates.
+		final Periodicite nouvelle = new Periodicite(periodiciteDecompte, periodeDecompte, dateDebut, dateFin);
+		return addAndSave(debiteur, nouvelle);
 	}
 
 	/**
@@ -3067,9 +3050,9 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 	public Periodicite addAndSave(DebiteurPrestationImposable debiteur, Periodicite periodicite) {
-		if (periodicite.getId() == null) { // le for n'a jamais été persisté
+		if (periodicite.getId() == null) { // la périodicité n'a jamais été persistée
 
-			// on mémorise les ids des periodicites existantes
+			// on mémorise les ids des périodicités existantes
 			final Set<Long> ids;
 			final Set<Periodicite> periodicites = debiteur.getPeriodicites();
 			if (periodicites == null || periodicites.isEmpty()) {
@@ -3084,11 +3067,11 @@ public class TiersServiceImpl implements TiersService {
 				}
 			}
 
-			// on ajoute la periodicite et on sauve le tout
+			// on ajoute la périodicité et on sauve le tout
 			debiteur.addPeriodicite(periodicite);
-			debiteur = (DebiteurPrestationImposable)tiersDAO.save(debiteur);
+			debiteur = (DebiteurPrestationImposable) tiersDAO.save(debiteur);
 
-			// on recherche la periodicite nouvellement ajoutée
+			// on recherche la périodicité nouvellement ajoutée
 			Periodicite nouvellePeriodicite = null;
 			for (Periodicite p : debiteur.getPeriodicites()) {
 				if (!ids.contains(p.getId())) {
@@ -3099,7 +3082,7 @@ public class TiersServiceImpl implements TiersService {
 
 			Assert.isSame(periodicite.getDateDebut(), nouvellePeriodicite.getDateDebut());
 			Assert.isSame(periodicite.getDateFin(), nouvellePeriodicite.getDateFin());
-		periodicite = nouvellePeriodicite;
+			periodicite = nouvellePeriodicite;
 		}
 		else {
 			debiteur.addPeriodicite(periodicite);
