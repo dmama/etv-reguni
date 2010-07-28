@@ -183,25 +183,23 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 			tiersVisuView.setAllowedOnglet(allowedOnglet);
 		}
 		//[UNIREG-2582]
-		tiersVisuView.setIbanValide(verifierIban(tiers));
+		tiersVisuView.setIbanValidationMessage(verifierIban(tiers));
 		return tiersVisuView;
 	}
 
 	/**
 	 * Permet renseigner la view sur le fait que l'iban du tiers associé est valide ou pas
-	 * @param tiersVisuView
-	 * @param tiers
+	 * @param tiers le tiers dont l'IBAN doit être vérifié
+	 * @return <code>null</code> si l'IBAN est valide, explication textuelle de l'erreur sinon
 	 */
-	private boolean verifierIban(Tiers tiers) {
-		if(tiers !=null){
-			String iban = tiers.getNumeroCompteBancaire();
-			if(iban!=null){
-
-				return ibanValidator.isValidIban(iban);
+	private String verifierIban(Tiers tiers) {
+		if (tiers != null) {
+			final String iban = tiers.getNumeroCompteBancaire();
+			if (iban != null) {
+				return ibanValidator.getIbanValidationError(iban);
 			}
-
 		}
-		return true;
+		return null;
 	}
 
 	/**

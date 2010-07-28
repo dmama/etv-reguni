@@ -100,10 +100,14 @@ public class ComplementEditValidator implements Validator {
 							ibanValidator.validate(tiers.getNumeroCompteBancaire());
 						}
 						catch (IbanValidationException e) {
-							errors.rejectValue("tiers.numeroCompteBancaire", "error.iban");
+							if (StringUtils.isBlank(e.getMessage())) {
+								errors.rejectValue("tiers.numeroCompteBancaire", "error.iban");
+							}
+							else {
+								errors.rejectValue("tiers.numeroCompteBancaire", "error.iban.detail", new Object[] { e.getMessage() }, "IBAN invalide");
+							}
 						}
 					}
-
 				}
 
 				//Validation du tiers

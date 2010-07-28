@@ -98,7 +98,7 @@ public class TiersView {
 
 	private Map<String, Boolean> allowedOnglet;
 
-	private boolean ibanValide;
+	private String ibanValidationMessage;
 
 	/**
 	 * @return the tiers
@@ -457,11 +457,11 @@ public class TiersView {
 		this.periodicite = periodicite;
 	}
 
-	public boolean isIbanValide() {
-		return ibanValide;
+	public String getIbanValidationMessage() {
+		return ibanValidationMessage;
 	}
 
-	public void setIbanValide(boolean ibanValide) {
-		this.ibanValide = ibanValide;
+	public void setIbanValidationMessage(String ibanValidationMessage) {
+		this.ibanValidationMessage = ibanValidationMessage;
 	}
 }

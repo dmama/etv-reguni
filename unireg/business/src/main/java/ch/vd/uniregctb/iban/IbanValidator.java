@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.math.BigInteger;
 import java.util.Properties;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import ch.vd.uniregctb.common.FormatNumeroHelper;
@@ -71,23 +72,30 @@ public class IbanValidator {
 		validateLength(iban);
 		validateFormat(iban);
 		validatePlausability(iban);
-		validateClearing(iban);
-	}
-
-	private void validateUpperCase(String iban) throws IbanUpperCaseException {
-		if(!iban.toUpperCase().equals(iban)){
-			throw new IbanUpperCaseException();
-		}
+		validateClearing(iban, clearingDao);
 	}
 
 	public boolean isValidIban(String iban){
-		try{
+		final String msgErreur = getIbanValidationError(iban);
+		return msgErreur == null;
+	}
+
+	/**
+	 * @param iban numéro IBAN à valider
+	 * @return <code>null</code> si l'IBAN est valide, explication textuelle de l'erreur sinon
+	 */
+	public String getIbanValidationError(String iban) {
+		String msg = null;
+		try {
 			validate(iban);
 		}
-		catch(IbanValidationException e){
-			return false;
+		catch (IbanValidationException e) {
+			msg = e.getMessage();
+			if (StringUtils.isBlank(msg)) {
+				msg = "erreur générique";
+			}
 		}
-		return true;
+		return msg;
 	}
 
 	/**
@@ -101,22 +109,25 @@ public class IbanValidator {
 	 * @throws IbanUnknownCountryException
 	 *             si le code pays est inconnu
 	 */
-	private void validateLength(String iban) throws IbanBadLengthException, IbanUnknownCountryException {
+	private static void validateLength(String iban) throws IbanBadLengthException, IbanUnknownCountryException {
 		// longueur < 2
-		if ( iban.length() < 2)
+		if (iban.length() < 2) {
 			throw new IbanBadLengthException();
+		}
 
 		// recherche de la longueur attendue
-		String codePays = extractCodePays(iban);
-		int longueurAttendue = Integer.parseInt( longueursValides.getProperty(codePays, "-1") );
+		final String codePays = extractCodePays(iban);
+		final int longueurAttendue = Integer.parseInt(longueursValides.getProperty(codePays, "-1"));
 
 		// code pays non trouvé
-		if (longueurAttendue == -1)
+		if (longueurAttendue == -1) {
 			throw new IbanUnknownCountryException();
+		}
 
 		// longueur incorrecte
-		if ( iban.length() != longueurAttendue )
+		if (iban.length() != longueurAttendue) {
 			throw new IbanBadLengthException();
+		}
 	}
 
 	/**
@@ -129,19 +140,21 @@ public class IbanValidator {
 	 * @throws IbanBadFormatException
 	 *             si le format est incorrect.
 	 */
-	private void validateFormat(String iban) throws IbanBadFormatException {
+	private static void validateFormat(String iban) throws IbanBadFormatException {
 
 		// Tous les caractères doivent être alphanumériques
-		String ibanMinuscule = iban.toLowerCase();
-		for (int i=0; i<ibanMinuscule.length(); i++) {
-			if ( !Character.isLetterOrDigit( ibanMinuscule.charAt(i) ) )
-				throw new IbanBadFormatException("les caractères doivent être alpha numériques");
+		final String ibanMajuscules = iban.toUpperCase();
+		for (int i=0; i<ibanMajuscules.length(); i++) {
+			if (!Character.isLetterOrDigit(ibanMajuscules.charAt(i))) {
+				throw new IbanBadFormatException("les caractères doivent être alpha-numériques");
+			}
 		}
 
 		// cas spécial de la Suisse : les positions 3 à 9 doivent être numériques
 		for (int i=2; i<9; i++) {
-			if ( !Character.isDigit( ibanMinuscule.charAt(i) ) )
+			if (!Character.isDigit(ibanMajuscules.charAt(i))) {
 				throw new IbanBadFormatException("pour la Suisse, les caractères de la 3ème à la 9ème position doivent être numériques");
+			}
 		}
 	}
 
@@ -154,49 +167,54 @@ public class IbanValidator {
 	 * @throws IbanNonPlausibleException
 	 *             si l'iban n'est pas plausible.
 	 */
-	private void validatePlausability(String iban) throws IbanNonPlausibleException {
+	private static void validatePlausability(String iban) throws IbanNonPlausibleException {
 		// on déplace les 4 premiers caractères à la fin de la chaine
-        String ibanPermute = iban.substring(4) + iban.substring(0, 4);
+        final String ibanPermute = iban.substring(4) + iban.substring(0, 4);
 
         // on convertit le code IBAN en valeur numérique
-        StringBuffer ibanNumeriqueStr = new StringBuffer();
+        final StringBuilder ibanNumeriqueStr = new StringBuilder();
         for (int i = 0; i < ibanPermute.length(); i++) {
-            if (Character.isDigit(ibanPermute.charAt(i))) {
-            	ibanNumeriqueStr.append(ibanPermute.charAt(i));
-            } else {
-            	ibanNumeriqueStr.append(10 + getAlphabetPosition(ibanPermute.charAt(i)));
+	        final char c = ibanPermute.charAt(i);
+	        if (Character.isDigit(c)) {
+            	ibanNumeriqueStr.append(c);
+            }
+	        else {
+            	ibanNumeriqueStr.append(10 + getAlphabetPosition(c));
             }
         }
 
         // on teste si le modulo 97 est égal à 1
-        BigInteger ibanNumerique = new BigInteger(ibanNumeriqueStr.toString());
-        if ( ibanNumerique.mod(new BigInteger("97")).intValue() != 1)
+        final BigInteger ibanNumerique = new BigInteger(ibanNumeriqueStr.toString());
+        if ( ibanNumerique.mod(new BigInteger("97")).intValue() != 1) {
 			throw new IbanNonPlausibleException();
+        }
+	}
+
+	private static boolean isSuisse(String iban) {
+		final String codePays = extractCodePays(iban);
+		return "CH".equals(codePays);
 	}
 
 	/**
-	 * Valide le numéro de clearing bancaire de l'IBAN.
+	 * Valide le numéro de clearing bancaire de l'IBAN (suisse seulement).
 	 *
-	 * @param iban
-	 *            le code IBAN à tester
-	 * @throws IbanBadClearingNumberException
-	 *             si le numéro de clearing bancaire ne correspond à aucun établissement.
+	 * @param iban le code IBAN à tester
+	 * @param clearingDao
+	 * @throws IbanBadClearingNumberException si le numéro de clearing bancaire ne correspond à aucun établissement
 	 */
-	private void validateClearing(String iban) throws IbanBadClearingNumberException {
-		String codePays = extractCodePays(iban);
+	private static void validateClearing(String iban, ClearingDao clearingDao) throws IbanBadClearingNumberException {
 
 		// on ne fait le contrôle que pour la suisse
-		if ("CH".equals(codePays)) {
-			if ( ! clearingDao.isNumeroClearingValid( extractClearing(iban) ) )
-				throw new IbanBadClearingNumberException();
+		if (isSuisse(iban) && !clearingDao.isNumeroClearingValid(extractClearing(iban))) {
+			throw new IbanBadClearingNumberException();
 		}
 	}
 
-	private String extractCodePays(String iban) {
+	private static String extractCodePays(String iban) {
 		return iban != null && iban.length() > 1 ? iban.substring(0, 2) : null;
 	}
 
-	private String extractClearing(String iban) {
+	private static String extractClearing(String iban) {
 		if (iban != null && iban.length() > 8) {
 			return iban.substring(4,9);
 		}
@@ -208,8 +226,8 @@ public class IbanValidator {
 	 * @param letter la lettre
 	 * @return la position
 	 */
-	private int getAlphabetPosition(char letter) {
-        return Character.valueOf(Character.toUpperCase(letter)).compareTo(Character.valueOf('A'));
+	private static int getAlphabetPosition(char letter) {
+		return Character.toUpperCase(letter) - 'A';
     }
 
 	/**
@@ -220,18 +238,15 @@ public class IbanValidator {
 	 *             si l'IBAN n'est pas valide.
 	 */
 	public String getClearing(String iban) {
-		iban = FormatNumeroHelper.removeSpaceAndDash(iban);
 
-		final String codePays = extractCodePays(iban);
-		if ("CH".equals(codePays)) {
-			String c = extractClearing(iban);
-			return c;
+		iban = FormatNumeroHelper.removeSpaceAndDash(iban);
+        if (isSuisse(iban)) {
+			return extractClearing(iban);
 		}
 		else {
 			return null;
 		}
 	}
-
 
 	/**
 	 * @param clearingDao the clearingDao to set
@@ -239,5 +254,4 @@ public class IbanValidator {
 	public void setClearingDao(ClearingDao clearingDao) {
 		this.clearingDao = clearingDao;
 	}
-
 }

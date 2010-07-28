@@ -200,12 +200,16 @@ public class TiersEditValidator implements Validator {
 					Tiers tiersInBase = tiersService.getTiers(tiers.getNumero());
 					if (!tiers.getNumeroCompteBancaire().equals(tiersInBase.getNumeroCompteBancaire())) {
 
-
 						try {
 							ibanValidator.validate(tiers.getNumeroCompteBancaire());
 						}
 						catch (IbanValidationException e) {
-							errors.rejectValue("tiers.numeroCompteBancaire", "error.iban");
+							if (StringUtils.isBlank(e.getMessage())) {
+								errors.rejectValue("tiers.numeroCompteBancaire", "error.iban");
+							}
+							else {
+								errors.rejectValue("tiers.numeroCompteBancaire", "error.iban.detail", new Object[] { e.getMessage() }, "IBAN invalide");
+							}
 							errors.reject("onglet.error.complements");
 						}
 					}
