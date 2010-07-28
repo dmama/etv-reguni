@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.tiers;
 
 import java.text.ParseException;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -20,6 +21,8 @@ import org.springmodules.xt.ajax.component.Component;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.uniregctb.parametrage.ParametreAppService;
+import ch.vd.uniregctb.parametrage.ParametreEnum;
 import ch.vd.uniregctb.tiers.manager.ForFiscalManager;
 import ch.vd.uniregctb.tiers.view.ForFiscalView;
 import ch.vd.uniregctb.type.ModeImposition;
@@ -46,6 +49,14 @@ public class TiersForController extends AbstractTiersController {
 	protected final Logger LOGGER = Logger.getLogger(TiersForController.class);
 
 	private ForFiscalManager forFiscalManager;
+	private ParametreAppService paramService;
+
+	@Override
+	protected Map<String, Object> referenceData(HttpServletRequest request) throws Exception {
+		final Map<String, Object> referenceData = new HashMap<String, Object>();
+		referenceData.put(ParametreEnum.anneeMinimaleForDebiteur.name(), paramService.getAnneeMinimaleForDebiteur());
+		return referenceData;
+	}
 
 	/**
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
@@ -119,14 +130,15 @@ public class TiersForController extends AbstractTiersController {
 		return new ModelAndView("redirect:../fiscal/edit.do?id=" + forFiscalView.getNumeroCtb());
 	}
 
-	public ForFiscalManager getForFiscalManager() {
-		return forFiscalManager;
-	}
-
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setForFiscalManager(ForFiscalManager forFiscalManager) {
 		this.forFiscalManager = forFiscalManager;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setParamService(ParametreAppService paramService) {
+		this.paramService = paramService;
+	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
 	public AjaxResponse buildSynchronizeActionsTableSurModificationDeFor(AjaxActionEvent event) throws ParseException {

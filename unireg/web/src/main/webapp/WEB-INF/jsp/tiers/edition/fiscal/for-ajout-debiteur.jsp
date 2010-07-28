@@ -14,10 +14,45 @@
 			<tr id="date_for_periodique"  class="<unireg:nextRowClass/>" >
 				<td><fmt:message key="label.date.ouverture" />&nbsp;:</td>
 				<td>
+					<script type="text/javascript">
+						// [UNIREG-2507] si la date de début du for est avant 2009, on affiche un warning non-bloquant
+						var anneeMinimaleForDebiteur = <c:out value="${anneeMinimaleForDebiteur}"/>;
+						function dateOuverture_OnChange(element) {
+							if (element) {
+								var m = element.value.match(/\d{1,2}\.\d{1,2}\.(\d{4})/);
+								if (m) {
+									var annee = parseInt(m[1]);
+									if (annee < anneeMinimaleForDebiteur) {
+										Element.show('dateOuverture.warning');
+									}
+									else {
+										Element.hide('dateOuverture.warning');
+									}
+								}
+								else {
+									Element.hide('dateOuverture.warning');
+								}
+							}
+						}
+					</script>
+
 					<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
 						<jsp:param name="path" value="dateOuverture" />
 						<jsp:param name="id" value="dateOuverture" />
+						<jsp:param name="onChange" value="dateOuverture_OnChange"/>
 					</jsp:include>
+
+					<span class="error" style="display:none" id="dateOuverture.warning">
+						<fmt:message key="warning.for.debiteur.ouvert.avant.date">
+							<fmt:param><c:out value="${anneeMinimaleForDebiteur}"/></fmt:param>
+						</fmt:message>
+					</span>
+
+					<script type="text/javascript">
+						// pour forcer la validation au chargement
+						dateOuverture_OnChange(E$('dateOuverture'));
+					</script>
+
 				</td>
 				<td><fmt:message key="label.date.fermeture" />&nbsp;:</td>
 				<td>

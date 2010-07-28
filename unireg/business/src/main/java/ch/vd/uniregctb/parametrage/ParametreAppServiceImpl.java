@@ -1,29 +1,8 @@
 package ch.vd.uniregctb.parametrage;
 
-import static ch.vd.uniregctb.parametrage.ParametreEnum.delaiAttenteDeclarationImpotPersonneDecedee;
-import static ch.vd.uniregctb.parametrage.ParametreEnum.delaiCadevImpressionDeclarationImpot;
-import static ch.vd.uniregctb.parametrage.ParametreEnum.delaiCadevImpressionListesRecapitulatives;
-import static ch.vd.uniregctb.parametrage.ParametreEnum.delaiEcheanceSommationDeclarationImpot;
-import static ch.vd.uniregctb.parametrage.ParametreEnum.delaiEcheanceSommationListeRecapitualtive;
-import static ch.vd.uniregctb.parametrage.ParametreEnum.delaiEnvoiSommationDeclarationImpot;
-import static ch.vd.uniregctb.parametrage.ParametreEnum.delaiEnvoiSommationListeRecapitulative;
-import static ch.vd.uniregctb.parametrage.ParametreEnum.delaiRetentionRapportTravailInactif;
-import static ch.vd.uniregctb.parametrage.ParametreEnum.delaiRetourDeclarationImpotEmiseManuellement;
-import static ch.vd.uniregctb.parametrage.ParametreEnum.delaiRetourListeRecapitulative;
-import static ch.vd.uniregctb.parametrage.ParametreEnum.delaiRetourSommationListeRecapitulative;
-import static ch.vd.uniregctb.parametrage.ParametreEnum.feteNationale;
-import static ch.vd.uniregctb.parametrage.ParametreEnum.jourDuMoisEnvoiListesRecapitulatives;
-import static ch.vd.uniregctb.parametrage.ParametreEnum.lendemainNouvelAn;
-import static ch.vd.uniregctb.parametrage.ParametreEnum.nbMaxParListe;
-import static ch.vd.uniregctb.parametrage.ParametreEnum.nbMaxParPage;
-import static ch.vd.uniregctb.parametrage.ParametreEnum.noel;
-import static ch.vd.uniregctb.parametrage.ParametreEnum.nouvelAn;
-import static ch.vd.uniregctb.parametrage.ParametreEnum.premierePeriodeFiscale;
-
 import java.util.HashMap;
 import java.util.Map;
 
-import org.acegisecurity.providers.AbstractAuthenticationToken;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -32,15 +11,13 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.parametrage.ParametreApp;
-import ch.vd.uniregctb.parametrage.ParametreAppDAO;
-import ch.vd.uniregctb.parametrage.ParametreEnum;
+
+import static ch.vd.uniregctb.parametrage.ParametreEnum.*;
 
 /**
  * Classe métier representant les paramètres de l'application.
  *
  * @author xsifnr
- *
  */
 public class ParametreAppServiceImpl implements ParametreAppService, InitializingBean {
 
@@ -48,18 +25,6 @@ public class ParametreAppServiceImpl implements ParametreAppService, Initializin
 	 * Un logger pour {@link ParametreAppServiceImpl}
 	 */
 	private static final Logger LOGGER = Logger.getLogger(ParametreAppServiceImpl.class);
-
-	static {
-		/*
-		 * Verification de l'adéquation de la classe avec ParametreEnum. Cette classe doit définir une propriété JavaBean pour chaque valeur
-		 * possible de ParametreEnum
-		 */
-		assert
-			ParametreEnum.isClassCompatible(ParametreAppServiceImpl.class) :
-			ParametreEnum.getMissingPropertiesMessage(ParametreAppServiceImpl.class)
-		;
-		LOGGER.debug(ParametreAppServiceImpl.class.getName() + " est en adequation avec " + ParametreEnum.class.getName());
-	}
 
 	private ParametreAppDAO dao;
 	private PlatformTransactionManager transactionManager;
@@ -106,15 +71,12 @@ public class ParametreAppServiceImpl implements ParametreAppService, Initializin
 		}
 	}
 
-	public ParametreAppDAO getDao() {
-		return dao;
-	}
-
 	/*
 	 * (non-Javadoc)
 	 *
 	 * @see ch.vd.uniregctb.parametrage.ParametreAppService#getDefaut(ch.vd.uniregctb.parametrage.ParametreEnum)
 	 */
+
 	public String getDefaut(ParametreEnum param) {
 		return param.getDefaut();
 	}
@@ -199,17 +161,21 @@ public class ParametreAppServiceImpl implements ParametreAppService, Initializin
 		return Integer.parseInt(parametres.get(premierePeriodeFiscale).getValeur());
 	}
 
+	public Integer getAnneeMinimaleForDebiteur() {
+		return Integer.parseInt(parametres.get(ParametreEnum.anneeMinimaleForDebiteur).getValeur());
+	}
+
 	public String getValeur(ParametreEnum param) {
 		return parametres.get(param).getValeur();
 	}
 
 	private Integer[] getValeurPourParametreDeTypeJoursDansAnnee(ParametreEnum p) {
-		return (Integer[])p.convertirStringVersValeurTypee(parametres.get(p).getValeur());
+		return (Integer[]) p.convertirStringVersValeurTypee(parametres.get(p).getValeur());
 	}
 
 	public void reset() {
 		for (ParametreEnum p : ParametreEnum.values()) {
-			if(p.isResetable()) {
+			if (p.isResetable()) {
 				setValeur(p, getDefaut(p));
 			}
 		}
@@ -241,14 +207,10 @@ public class ParametreAppServiceImpl implements ParametreAppService, Initializin
 
 	public void setDelaiCadevImpressionDeclarationImpot(Integer val) {
 		setValeur(delaiCadevImpressionDeclarationImpot, val.toString());
-		{
-		}
 	}
 
 	public void setDelaiCadevImpressionListesRecapitulatives(Integer val) {
 		setValeur(delaiCadevImpressionListesRecapitulatives, val.toString());
-		{
-		}
 	}
 
 	public void setDelaiEcheanceSommationDeclarationImpot(Integer val) {
@@ -315,13 +277,12 @@ public class ParametreAppServiceImpl implements ParametreAppService, Initializin
 		setValeur(premierePeriodeFiscale, val.toString());
 	}
 
+	public void setAnneeMinimaleForDebiteur(Integer val) {
+		setValeur(ParametreEnum.anneeMinimaleForDebiteur, val.toString());
+	}
+
 	public void setValeur(ParametreEnum param, String valeur) {
 		// La validité de la valeur est verifiée dans formaterValeur()
 		parametres.get(param).setValeur(param.formaterValeur(valeur));
 	}
-
-	public static void main(String[] args) {
-
-	}
-
 }

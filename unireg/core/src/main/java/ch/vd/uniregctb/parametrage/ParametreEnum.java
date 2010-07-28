@@ -1,12 +1,7 @@
 package ch.vd.uniregctb.parametrage;
 
-import java.beans.PropertyDescriptor;
 import java.text.MessageFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
-
-import org.springframework.beans.BeanUtils;
 
 /**
  * Enumeration des differents paramètres de l'application
@@ -39,7 +34,9 @@ public enum ParametreEnum {
 	delaiRetourSommationListeRecapitulative("10", Type.delaisEnJour, true),
 	delaiEcheanceSommationListeRecapitualtive("15", Type.delaisEnJour, true),
 
-	delaiRetentionRapportTravailInactif ("24", Type.delaisEnMois, true);
+	delaiRetentionRapportTravailInactif ("24", Type.delaisEnMois, true),
+
+	anneeMinimaleForDebiteur("2009", Type.annee, true); // [UNIREG-2507]
 
 	/**
 	 * Les differents type de paramétres possibles
@@ -55,10 +52,10 @@ public enum ParametreEnum {
 	private String defaut;
 	private boolean resetable;
 
-	private ParametreEnum(String d, Type t, boolean r) {
+	private ParametreEnum(String d, Type t, boolean resetable) {
 		defaut = d;
 		type = t;
-		resetable = r;
+		this.resetable = resetable;
 	}
 
 	/**
@@ -233,128 +230,6 @@ public enum ParametreEnum {
 	}
 
 	/**
-	 * Copie les propriétés dont le nom est défini dans l'enum
-	 *
-	 * @param beanSrc
-	 *            Le bean source
-	 * @param beanDest
-	 *            Le bean destination
-	 */
-	public static void copyProperties(Object beanSrc, Object beanDest) {
-
-		for (ParametreEnum p : ParametreEnum.values()) {
-			PropertyDescriptor pdSrc = BeanUtils.getPropertyDescriptor(beanSrc.getClass(), p.name());
-			PropertyDescriptor pdDest = BeanUtils.getPropertyDescriptor(beanDest.getClass(), p.name());
-			try {
-				if (pdDest.getPropertyType().equals(pdSrc.getPropertyType())) {
-					pdDest.getWriteMethod().invoke(beanDest, pdSrc.getReadMethod().invoke(beanSrc));
-				} else if (pdDest.getPropertyType().equals(Integer.class) && pdSrc.getPropertyType().equals(String.class)) {
-					pdDest.getWriteMethod().invoke(beanDest, p.convertirStringVersValeurTypee((String)pdSrc.getReadMethod().invoke(beanSrc)));
-				} else if (pdDest.getPropertyType().equals(Integer[].class) && pdSrc.getPropertyType().equals(String.class)) {
-					pdDest.getWriteMethod().invoke(beanDest, p.convertirStringVersValeurTypee((String)pdSrc.getReadMethod().invoke(beanSrc)));
-				} else if (pdDest.getPropertyType().equals(String.class) && pdSrc.getPropertyType().equals(Integer.class)) {
-					pdDest.getWriteMethod().invoke(beanDest, p.convertirValeurTypeeVersString(pdSrc.getReadMethod().invoke(beanSrc)));
-				} else if (pdDest.getPropertyType().equals(String.class) && pdSrc.getPropertyType().equals(Integer[].class)) {
-					pdDest.getWriteMethod().invoke(beanDest, p.convertirValeurTypeeVersString(pdSrc.getReadMethod().invoke(beanSrc)));
-				} else {
-					throw new IllegalArgumentException(
-							"Impossible de copier une proriété du type "
-							+ pdSrc.getPropertyType().getName()
-							+ " vers du "
-							+ pdDest.getPropertyType().getName());
-				}
-			}
-			catch (Exception e) {
-				throw new IllegalArgumentException("Erreur lors de la copie des propriétés relatives a ParametreEnum. "
-						+ "Vérifiez que le bean source et le bean destination déclarent toutes les propriétés présentes dans l'enum.", e);
-			}
-		}
-	}
-
-	/**
-	 * Verifie si la classe passée en argument définie une propriété JavaBeans
-	 * pour chacune des valeurs possibles de {@link ParametreEnum}.
-	 *
-	 * @param clazz
-	 * @return Liste des noms des propriétés manquantes.
-	 *
-	 */
-	@SuppressWarnings("unchecked")
-	public static List<String> getMissingProperties (Class clazz) {
-		// Verifie l'integrité de la classe.
-		// Cette classe doit avoir une propriété JavaBean pour toute les ParametreEnum défini.
-		List<String> missingProp = new ArrayList<String>();
-		for(ParametreEnum p : ParametreEnum.values()) {
-			PropertyDescriptor pd = BeanUtils.getPropertyDescriptor(clazz, p.name());
-			if (pd == null) {
-				missingProp.add(p.name());
-			}
-		}
-		return missingProp;
-	}
-
-	/**
-	 * Détermine si la {@link Class} passée en argument définie une propriété JavaBean
-	 * pour chaque valeur possible de {@link ParametreEnum}.
-	 *
-	 * @param clazz la classe à tester
-	 *
-	 * @return true true si la classe définie toutes les propriétés
-	 */
-	@SuppressWarnings("unchecked")
-	public static boolean isClassCompatible (Class clazz) {
-		return getMissingProperties(clazz).size() == 0;
-	}
-
-	/**
-	 * Construit une {@link String} message repertoriant les propriétés manquantes de
-	 * la classe passée en paramètre
-	 *
-	 * @param clazz la classe à tester
-	 *
-	 * @return le message
-	 */
-	@SuppressWarnings("unchecked")
-	public static String getMissingPropertiesMessage (Class clazz) {
-		return getMissingPropertiesMessage(clazz.getName(), getMissingProperties(clazz));
-	}
-
-	/**
-	 * Construit une {@link String} message repertoriant les propriétés manquantes (renseignées dans la liste passée en argument)
-	 *
-	 * @param className         nom de la classe
-	 * @param missingProperties une liste de {@link String} contenant le nom des propriétés manquantes
-	 * @return le message
-	 */
-	public static String getMissingPropertiesMessage(String className, List<String> missingProperties) {
-		if (missingProperties.size() > 0) {
-			StringBuilder sb = new StringBuilder();
-			for (String s : missingProperties) {
-				if (sb.length() == 0) {
-					sb = new StringBuilder("Les propriétés suivantes sont manquantes pour la classe " + className + ": [" + s);
-				}
-				else {
-					sb.append(", ").append(s);
-				}
-			}
-			sb.append("]");
-			return sb.toString();
-		}
-		else {
-			return "";
-		}
-	}
-
-	/**
-	 * tests rapides ...
-	 *
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		copyProperties(new Object(), new Object());
-	}
-
-	/**
 	 * Convertit la valeur d'un type de parametre de {@link String} vers sa valeur typée.
 	 *
 	 * <ul>
@@ -372,7 +247,7 @@ public enum ParametreEnum {
 					Integer.parseInt(valeur.split("\\.")[1])
 			};
 		} else {
-			return new Integer(Integer.parseInt(valeur));
+			return Integer.parseInt(valeur);
 		}
 	}
 

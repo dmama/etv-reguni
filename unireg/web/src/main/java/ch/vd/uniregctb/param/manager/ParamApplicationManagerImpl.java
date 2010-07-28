@@ -24,9 +24,7 @@ public class ParamApplicationManagerImpl implements ParamApplicationManager{
 	 */
 	@Transactional(readOnly = true)
 	public ParamApplicationView getForm() {
-		ParamApplicationView form = new ParamApplicationView();
-		ParametreEnum.copyProperties(service, form);
-		return form;
+		return new ParamApplicationView(service);
 	}
 
 
@@ -45,7 +43,7 @@ public class ParamApplicationManagerImpl implements ParamApplicationManager{
 	@Transactional(rollbackFor = Throwable.class)
 	public void save(ParamApplicationView form) {
 		assert this.service != null;
-		ParametreEnum.copyProperties(form, service);
+		form.saveTo(service);
 		service.save();
 	}
 
@@ -57,24 +55,8 @@ public class ParamApplicationManagerImpl implements ParamApplicationManager{
 		return service.getDefaut(param);
 	}
 
-	public ParametreAppService getService() {
-		return service;
-	}
-
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setService(ParametreAppService service) {
 		this.service = service;
 	}
-
-	/**
-	 * tests rapides ...
-	 *
-	 * @param args
-	 * @throws IllegalArgumentException
-	 * @throws IllegalAccessException
-	 * @throws InvocationTargetException
-	 */
-	public static void main(String[] args) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
-
-	}
-
 }

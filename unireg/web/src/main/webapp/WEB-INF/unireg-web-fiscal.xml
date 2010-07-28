@@ -46,6 +46,7 @@
 		<property name="formView" value="tiers/edition/fiscal/for-edit" />
 		<property name="successView" value="common/refresh-parent" />
 		<property name="forFiscalManager" ref="forFiscalManager" />
+		<property name="paramService" ref="parametreAppService" />
 		<property name="validator" ref="forFiscalValidator" />
 	</bean>
 

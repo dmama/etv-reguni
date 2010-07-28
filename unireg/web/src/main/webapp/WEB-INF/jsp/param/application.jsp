@@ -328,6 +328,20 @@
 						</td>
 			 		</tr><tr class="separator"><th colspan="4" ></th></tr>
 		 		</spring:bind>
+				<spring:bind path="anneeMinimaleForDebiteur">
+			 		<tr class="odd">
+			 			<td><fmt:message key="label.param.anneeMinimaleForDebiteur"/></td>
+			 			<td class="nombre">${anneeMinimaleForDebiteurParDefaut}</td>
+			 			<td class="valeur">
+			 				<form:input path="anneeMinimaleForDebiteur" cssClass="valeur nombre" cssErrorClass="valeur input-with-errors nombre" maxlength="4"/>
+			 			</td>
+						<td>
+							<c:if test="${status.error}">
+			 					&nbsp;<span class="erreur">${status.errorMessage}</span>
+			 				</c:if>
+						</td>
+			 		</tr><tr class="separator"><th colspan="4" ></th></tr>
+		 		</spring:bind>
  			</table>
  			<input type="hidden" name="action" id="action" value="" />
  			<input type="submit" id="save" value="<fmt:message key="label.param.action.save"/>"/>

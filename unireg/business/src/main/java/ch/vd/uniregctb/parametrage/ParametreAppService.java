@@ -1,14 +1,11 @@
 package ch.vd.uniregctb.parametrage;
 
-import ch.vd.uniregctb.parametrage.ParametreEnum;
-
-
 public interface ParametreAppService {
 
 	public String getDefaut(ParametreEnum param);
 
 	public Integer getDelaiAttenteDeclarationImpotPersonneDecedee();
-	
+
 	public Integer getDelaiRetourDeclarationImpotEmiseManuellement();
 
 	public Integer getDelaiCadevImpressionDeclarationImpot();
@@ -47,6 +44,13 @@ public interface ParametreAppService {
 
 	public Integer getPremierePeriodeFiscale();
 
+	/**
+	 * [UNIREG-2507]
+	 *
+	 * @return l'année minimale acceptée lors de la création de nouveaux fors débiteur.
+	 */
+	public Integer getAnneeMinimaleForDebiteur();
+
 	public String getValeur(ParametreEnum param);
 
 	public void reset();
@@ -54,7 +58,7 @@ public interface ParametreAppService {
 	public void save();
 
 	public void setDelaiAttenteDeclarationImpotPersonneDecedee(Integer val);
-	
+
 	public void setDelaiRetourDeclarationImpotEmiseManuellement(Integer val);
 
 	public void setDelaiCadevImpressionDeclarationImpot(Integer val);
@@ -90,6 +94,8 @@ public interface ParametreAppService {
 	public void setNouvelAn(Integer[] val);
 
 	public void setPremierePeriodeFiscale(Integer val);
+
+	public void setAnneeMinimaleForDebiteur(Integer val);
 
 	public void setValeur(ParametreEnum param, String valeur);
 

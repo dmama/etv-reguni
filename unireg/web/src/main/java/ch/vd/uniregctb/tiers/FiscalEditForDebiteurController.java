@@ -21,21 +21,14 @@ public class FiscalEditForDebiteurController extends AbstractTiersController {
 	public final static String TARGET_ANNULER_FOR = "annulerFor";
 
 	private TiersEditManager tiersEditManager;
-
 	private ForFiscalManager forFiscalManager;
 
-	public TiersEditManager getTiersEditManager() {
-		return tiersEditManager;
-	}
-
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setTiersEditManager(TiersEditManager tiersEditManager) {
 		this.tiersEditManager = tiersEditManager;
 	}
 
-	public ForFiscalManager getForFiscalManager() {
-		return forFiscalManager;
-	}
-
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setForFiscalManager(ForFiscalManager forFiscalManager) {
 		this.forFiscalManager = forFiscalManager;
 	}
