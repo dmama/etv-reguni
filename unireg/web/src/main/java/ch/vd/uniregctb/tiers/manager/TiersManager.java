@@ -971,7 +971,6 @@ public class TiersManager implements MessageSourceAware {
 				allowedOnglet.put(TiersEditView.ADR_B, Boolean.TRUE);
 				allowedOnglet.put(TiersEditView.ADR_C, Boolean.TRUE);
 				allowedOnglet.put(TiersEditView.ADR_D, Boolean.TRUE);
-				allowedOnglet.put(TiersEditView.ADR_P, Boolean.TRUE);
 				allowedOnglet.put(TiersVisuView.MODIF_COMPLEMENT, Boolean.TRUE);
 				allowedOnglet.put(TiersEditView.COMPLEMENT_COMMUNICATION, Boolean.TRUE);
 				isEditable = true;
