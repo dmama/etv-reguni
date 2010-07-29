@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.utils;
 
-import java.util.Enumeration;
+import java.util.Map;
 import java.util.Properties;
 
 import org.apache.log4j.Logger;
@@ -23,16 +23,23 @@ public class UniregJndiTemplate extends JndiTemplate {
 
 		LOGGER.info("JNDI Properties");
 
-		Properties newEnv = new Properties();
+		final Properties newEnv = new Properties();
 
-		Enumeration<?> iter = environment.keys();
-		while (iter.hasMoreElements()) {
-			String key = (String)iter.nextElement();
-			String value = environment.getProperty(key);
+		for (Map.Entry<Object, Object> entry : environment.entrySet()) {
+			final String key = (String) entry.getKey();
+			final String value = (String) entry.getValue();
 
 			if (!value.equals("")) {
 				newEnv.setProperty(key, value);
-				LOGGER.info(" * "+key+" => "+value);
+
+				final String valueToDisplay;
+				if (key.contains("password") || key.contains("credentials")) {
+					valueToDisplay = "*******";
+				}
+				else {
+					valueToDisplay = value;
+				}
+				LOGGER.info(String.format(" * %s => %s", key, valueToDisplay));
 			}
 			else {
 				LOGGER.info(" Suppression de la propriété "+key);
