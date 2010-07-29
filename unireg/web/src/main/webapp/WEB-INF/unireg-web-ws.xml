@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns:util="http://www.springframework.org/schema/util"
+		xmlns:jaxws="http://cxf.apache.org/jaxws"
+		xsi:schemaLocation="http://www.springframework.org/schema/beans
+							http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+							http://cxf.apache.org/jaxws
+							http://cxf.apache.org/schemas/jaxws.xsd
+							http://www.springframework.org/schema/util
+							http://www.springframework.org/schema/util/spring-util-2.0.xsd">
+
+	<import resource="classpath:META-INF/cxf/cxf.xml" />
+	<import resource="classpath:META-INF/cxf/cxf-extension-soap.xml" />
+	<import resource="classpath:META-INF/cxf/cxf-servlet.xml" />
+
+	<!-- WS - Batch Service -->
+	<jaxws:endpoint implementor="#batchServiceBean"
+					address="/batch" />
+
+	<bean id="batchServiceBean" class="ch.vd.uniregctb.webservices.batch.BatchWebServiceImpl">
+		<property name="batchScheduler" ref="batchScheduler" />
+		<property name="documentService" ref="docService" />
+	</bean>
+	
+	<!-- Job pour le testing du BatchClient -->
+	<bean id="itBatchClientJob" parent="schedulerJob" class="ch.vd.uniregctb.webservices.batch.ItBatchClientJob" >
+		<constructor-arg value="1" />
+		<constructor-arg>
+			<map>
+				<entry>
+					<key>
+						<util:constant static-field="ch.vd.uniregctb.webservices.batch.ItBatchClientJob.PARAM_COUNT" />
+					</key>
+					<value type="java.lang.Integer">42</value>
+				</entry>
+			</map>
+		</constructor-arg>
+	</bean>
+
+</beans>

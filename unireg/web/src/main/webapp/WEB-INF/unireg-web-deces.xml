@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+	<bean id="decesListController" class="ch.vd.uniregctb.deces.DecesListController" parent="abstractTiersListController">
+		<property name="sessionForm" value="true" />
+		<property name="commandClass" value="ch.vd.uniregctb.tiers.view.TiersCriteriaView" />
+		<property name="commandName" value="command" />
+		<property name="formView" value="tiers/edition/deces/list" />
+		<property name="successView" value="list.do" />
+		<property name="validator" ref="tiersCriteriaValidator" />
+	</bean>
+
+	<bean id="decesRecapController" class="ch.vd.uniregctb.deces.DecesRecapController" parent="abstractSimpleFormController">
+		<property name="sessionForm" value="true" />
+		<property name="commandClass" value="ch.vd.uniregctb.deces.view.DecesRecapView" />
+		<property name="commandName" value="command" />
+		<property name="formView" value="tiers/edition/deces/recap" />
+		<property name="successView" value="/tiers/edit.do" />
+		<property name="decesRecapManager" ref="decesRecapManager" />
+		<property name="validator" ref="decesRecapValidator" />
+	</bean>
+	
+	<bean id="decesRecapManager" class="ch.vd.uniregctb.deces.manager.DecesRecapManagerImpl"  >
+		<property name="tiersService" ref="tiersService" />
+		<property name="metierService" ref="metierService" />
+		<property name="tiersGeneralManager" ref="tiersGeneralManager" />
+	</bean>
+
+	<bean id="decesRecapValidator" class="ch.vd.uniregctb.deces.validator.DecesRecapValidator" >
+		<property name="tiersService" ref="tiersService" />
+		<property name="metierService" ref="metierService" />
+	</bean>
+
+	<bean id="annulationDecesListController" class="ch.vd.uniregctb.annulation.deces.AnnulationDecesListController" parent="abstractTiersListController">
+		<property name="sessionForm" value="true" />
+		<property name="commandClass" value="ch.vd.uniregctb.tiers.view.TiersCriteriaView" />
+		<property name="commandName" value="command" />
+		<property name="formView" value="annulation/deces/list" />
+		<property name="successView" value="list.do" />
+		<property name="validator" ref="tiersCriteriaValidator" />
+	</bean>
+
+	<bean id="annulationDecesRecapController" class="ch.vd.uniregctb.annulation.deces.AnnulationDecesRecapController" parent="abstractSimpleFormController">
+		<property name="sessionForm" value="true" />
+		<property name="commandClass" value="ch.vd.uniregctb.annulation.deces.view.AnnulationDecesRecapView" />
+		<property name="commandName" value="command" />
+		<property name="annulationDecesRecapManager" ref="annulationDecesRecapManager" />
+		<property name="formView" value="annulation/deces/recap" />
+		<property name="successView" value="/tiers/edit.do" />
+	</bean>
+	
+	<bean id="annulationDecesRecapManager" class="ch.vd.uniregctb.annulation.deces.manager.AnnulationDecesRecapManagerImpl"  >
+		<property name="metierService" ref="metierService" />
+		<property name="tiersService" ref="tiersService" />
+		<property name="tiersGeneralManager" ref="tiersGeneralManager" />
+	</bean>
+
+</beans>

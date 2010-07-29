@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2005 rel. 3 U (http://www.altova.com) by zciedt (Etat de Vaud) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.vd.ch/fiscalite/registre/evenementImpotSource-v1" targetNamespace="http://www.vd.ch/fiscalite/registre/evenementImpotSource-v1" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1">
+	<xs:include schemaLocation="evenementImpotSourceCommun-v1.xsd"/>
+	<xs:element name="evenementImpotSourceQuittance" type="EvenementImpotSourceQuittanceType">
+		<xs:annotation>
+			<xs:documentation>Evénement provenant du Impot Source pour Unireg</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:complexType name="EvenementImpotSourceQuittanceType">
+		<xs:complexContent>
+			<xs:extension base="EvenementImpotSourceType">
+				<xs:sequence>
+					<xs:element name="dateQuittance" type="xs:date" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>date de quittancement (aaaa-mm-jj)</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="dateDebutPeriode" type="xs:date">
+						<xs:annotation>
+							<xs:documentation>date debut periode de declaration (aaaa-mm-jj)</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="dateFinPeriode" type="xs:date">
+						<xs:annotation>
+							<xs:documentation>date fin periode de declaration (aaaa-mm-jj)</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="typeQuittance">
+						<xs:annotation>
+							<xs:documentation>Enum indiquant le quittancement ou l'annulation du quittancement de la LR</xs:documentation>
+						</xs:annotation>
+						<xs:simpleType>
+							<xs:restriction base="xs:token">
+								<xs:enumeration value="QUITTANCEMENT"/>
+								<xs:enumeration value="ANNULATION"/>
+							</xs:restriction>
+						</xs:simpleType>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+</xs:schema>
