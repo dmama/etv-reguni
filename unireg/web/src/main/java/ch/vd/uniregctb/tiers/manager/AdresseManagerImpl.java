@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.tiers.manager;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +20,7 @@ import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.Localite;
 import ch.vd.uniregctb.interfaces.model.Pays;
 import ch.vd.uniregctb.interfaces.model.Rue;
+import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -487,53 +489,23 @@ public class AdresseManagerImpl extends TiersManager implements AdresseManager {
 			}
 		}
 
-		AdresseGenerique adressesGenTypeConseilLegal;
-		try {
-			adressesGenTypeConseilLegal = getAdresseService().getAdresseRepresentant(tiers,
-					TypeAdresseRepresentant.CONSEIL_LEGAL, null, false);
+		if (!(tiers instanceof MenageCommun)) { // [UNIREG-2645] un ménage commun ne peut pas être sous tutelle/curatelle/conseil légal
+
+			final List<TypeAdresseRepresentant> typesRepresentation = Arrays.asList(TypeAdresseRepresentant.CONSEIL_LEGAL, TypeAdresseRepresentant.TUTELLE, TypeAdresseRepresentant.CURATELLE);
+			for (TypeAdresseRepresentant type : typesRepresentation) {
+				AdresseGenerique adresse;
+				try {
+					adresse = adresseService.getAdresseRepresentant(tiers, type, null, false);
+				}
+				catch (AdresseException e) {
+					adresse = null;
+				}
+
+				if (adresse != null) {
+					adresses.add(createAdresseDisponibleViewFromAddGenerique(adresse, tiers, type));
+				}
+			}
 		}
-		catch (AdresseException e) {
-			adressesGenTypeConseilLegal = null;
-		}
-
-		if (adressesGenTypeConseilLegal != null) {
-
-			fillAdressesDisponibleViewFromAddGenerique(adresses, adressesGenTypeConseilLegal, tiers, TypeAdresseRepresentant.CONSEIL_LEGAL);
-
-			// Collections.sort(adresses, new AdresseViewComparator());
-		}
-
-		AdresseGenerique adressesGenTypeConseilTutelle;
-		try {
-			adressesGenTypeConseilTutelle = getAdresseService().getAdresseRepresentant(tiers,
-					TypeAdresseRepresentant.TUTELLE, null, false);
-		}
-		catch (AdresseException e) {
-			adressesGenTypeConseilTutelle = null;
-		}
-
-		if (adressesGenTypeConseilTutelle != null) {
-
-			fillAdressesDisponibleViewFromAddGenerique(adresses, adressesGenTypeConseilTutelle, tiers, TypeAdresseRepresentant.TUTELLE);
-
-			// Collections.sort(adresses, new AdresseViewComparator());
-		}
-		
-		AdresseGenerique adressesGenTypeCuratelle;
-		try {
-			adressesGenTypeCuratelle = getAdresseService().getAdresseRepresentant(tiers,
-					TypeAdresseRepresentant.CURATELLE, null, false);
-		}
-		catch (AdresseException e) {
-			adressesGenTypeCuratelle = null;
-		}
-
-		if (adressesGenTypeCuratelle != null) {
-
-			fillAdressesDisponibleViewFromAddGenerique(adresses, adressesGenTypeCuratelle, tiers, TypeAdresseRepresentant.CURATELLE);
-
-			// Collections.sort(adresses, new AdresseViewComparator());
-		}		
 
 		return adresses;
 	}
@@ -561,16 +533,6 @@ public class AdresseManagerImpl extends TiersManager implements AdresseManager {
 				addDispoView.setTypeAdresse(EnumTypeAdresse.PRINCIPALE);
 				adressesDisponibleView.add(addDispoView);
 			}
-			/*
-			 * if (adressesIndividu.secondaire != null) {
-			 *
-			 * AdresseDisponibleView addDispoView = createAdresseDisponibleViewFromAdresseCivil(adressesIndividu.secondaire);
-			 * adressesDisponibleView.add(addDispoView); } if (adressesIndividu.tutelle != null) {
-			 *
-			 * AdresseDisponibleView addDispoView = createAdresseDisponibleViewFromAdresseCivil(adressesIndividu.tutelle);
-			 * adressesDisponibleView.add(addDispoView); }
-			 */
-
 		}
 	}
 
@@ -606,35 +568,18 @@ public class AdresseManagerImpl extends TiersManager implements AdresseManager {
 	}
 
 	/**
-	 * Remplit la collection des adressesView avec l'adresse fiscale du type spécifié.
+	 * Crée et retourne la vue qui représente une adresse de reprise disponible.
 	 *
-	 * @param adressesDisponibleView
-	 * @param adressesGen
-	 * @param tiers
-	 * @param type
+	 * @param adresse l'adresse générique sur laquelle la vue sera construite
+	 * @param tiers le tiers possédant l'adresse spécifiée
+	 * @param type le type de 
+	 * @return une nouvelle instance de type 'AdresseDisponibleView'
 	 */
-	private void fillAdressesDisponibleViewFromAddGenerique(List<AdresseDisponibleView> adressesDisponibleView,
-			final AdresseGenerique adressesGen, Tiers tiers, TypeAdresseRepresentant type) {
-		if (adressesGen != null) {
-			AdresseDisponibleView addDispoView = createAdresseDisponibleViewFromAddGenerique(adressesGen, tiers, type);
-
-			adressesDisponibleView.add(addDispoView);
-		}
-	}
-
-	/**
-	 * Remplit AdresseDisponibleView
-	 *
-	 * @param addIndividu
-	 * @param tiers
-	 * @param type
-	 * @return
-	 */
-	private AdresseDisponibleView createAdresseDisponibleViewFromAddGenerique(AdresseGenerique addIndividu, Tiers tiers,
-			TypeAdresseRepresentant type) {
+	private AdresseDisponibleView createAdresseDisponibleViewFromAddGenerique(AdresseGenerique adresse, Tiers tiers, TypeAdresseRepresentant type) {
 		AdresseDisponibleView addDispoView = new AdresseDisponibleView();
 
 		if (type == TypeAdresseRepresentant.CONSEIL_LEGAL || type == TypeAdresseRepresentant.TUTELLE || type == TypeAdresseRepresentant.CURATELLE) {
+			Assert.isFalse(tiers instanceof MenageCommun);
 			final RapportEntreTiers rapport = TiersHelper.getRapportSujetOfType(tiers, type.getTypeRapport(), null);
 			final Tiers conseiller = tiersDAO.get(rapport.getObjetId());
 			
@@ -642,11 +587,11 @@ public class AdresseManagerImpl extends TiersManager implements AdresseManager {
 			addDispoView.setRepresentantLegal(getNomCourrier(conseiller));
 		}
 
-		addDispoView.setLocalite(addIndividu.getLocalite());
-		addDispoView.setNumeroCasePostale(addIndividu.getNumeroOrdrePostal());
+		addDispoView.setLocalite(adresse.getLocalite());
+		addDispoView.setNumeroCasePostale(adresse.getNumeroOrdrePostal());
 		addDispoView.setNumeroTiers(tiers.getNumero());
 
-		Integer noOfsPays = addIndividu.getNoOfsPays();
+		Integer noOfsPays = adresse.getNoOfsPays();
 		if (noOfsPays != null) {
 			try {
 				Pays pays = getServiceInfrastructureService().getPays(noOfsPays);
@@ -659,7 +604,7 @@ public class AdresseManagerImpl extends TiersManager implements AdresseManager {
 			}
 		}
 
-		addDispoView.setRue(addIndividu.getRue());
+		addDispoView.setRue(adresse.getRue());
 		return addDispoView;
 	}
 

@@ -8,25 +8,16 @@ import ch.vd.uniregctb.adresse.AdresseGenerique;
 
 /**
  * @author xsikce
- *
  */
 public class AdresseDisponibleView {
 
-
 	private EnumTypeAdresse typeAdresse;
-
-	private String representantLegal ;
-
+	private String representantLegal;
 	private Integer numeroCasePostale;
-
 	private String rue;
-
 	private String localite;
-
 	private String paysNpa;
-
 	private AdresseGenerique.Source source;
-
 	private Long numeroTiers;
 
 	public AdresseGenerique.Source getSource() {
@@ -36,7 +27,6 @@ public class AdresseDisponibleView {
 	public void setSource(AdresseGenerique.Source source) {
 		this.source = source;
 	}
-
 
 	public EnumTypeAdresse getTypeAdresse() {
 		return typeAdresse;
@@ -95,12 +85,11 @@ public class AdresseDisponibleView {
 	}
 
 	public String getTypeAdresseToString() {
-
-		if(getTypeAdresse()!= null){
-				return getTypeAdresse().getName();
-
-		}else {
-			return null ;
+		if (typeAdresse == null) {
+			return null;
+		}
+		else {
+			return typeAdresse.getName();
 		}
 	}
 }
