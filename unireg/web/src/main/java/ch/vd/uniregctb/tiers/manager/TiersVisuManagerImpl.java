@@ -38,6 +38,7 @@ import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.mouvement.MouvementDossier;
 import ch.vd.uniregctb.mouvement.view.MouvementDetailView;
+import ch.vd.uniregctb.rapport.TypeRapportEntreTiersWeb;
 import ch.vd.uniregctb.rapport.view.RapportView;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityProvider;
@@ -87,11 +88,9 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 	 */
 	@Transactional(readOnly = true)
 	public TiersVisuView getView(Long numero, boolean adressesHisto, boolean adressesHistoCiviles, boolean adressesHistoCivilesConjoint, boolean rapportsPrestationHisto,
-	                             WebParamPagination webParamPagination
-	) throws AdresseException,
-			InfrastructureException {
+	                             WebParamPagination webParamPagination) throws AdresseException, InfrastructureException {
 
-		TiersVisuView tiersVisuView = new TiersVisuView();
+		final TiersVisuView tiersVisuView = new TiersVisuView();
 		tiersVisuView.setAdressesHisto(adressesHisto);
 		tiersVisuView.setAdressesHistoCiviles(adressesHistoCiviles);
 		tiersVisuView.setRapportsPrestationHisto(rapportsPrestationHisto);
@@ -106,7 +105,7 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 		setTiersGeneralView(tiersVisuView, tiers);
 
 		if (tiers instanceof PersonnePhysique) {
-			PersonnePhysique pp = (PersonnePhysique) tiers;
+			final PersonnePhysique pp = (PersonnePhysique) tiers;
 			if (pp.isHabitantVD()) {
 				setHabitant(tiersVisuView, pp);
 			}
@@ -115,19 +114,19 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 			}
 		}
 		else if (tiers instanceof MenageCommun) {
-			MenageCommun menageCommun = (MenageCommun) tiers;
+			final MenageCommun menageCommun = (MenageCommun) tiers;
 			setMenageCommun(tiersVisuView, menageCommun);
 		}
 		else if (tiers instanceof Entreprise) {
-			Entreprise entreprise = (Entreprise) tiers;
+			final Entreprise entreprise = (Entreprise) tiers;
 			setEntreprise(tiersVisuView, entreprise);
 		}
 		else if (tiers instanceof AutreCommunaute) {
-			AutreCommunaute autreCommunaute = (AutreCommunaute) tiers;
+			final AutreCommunaute autreCommunaute = (AutreCommunaute) tiers;
 			tiersVisuView.setTiers(autreCommunaute);
 		}
 		else if (tiers instanceof DebiteurPrestationImposable) {
-			DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiers;
+			final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiers;
 			setDebiteurPrestationImposable(tiersVisuView, dpi, rapportsPrestationHisto, webParamPagination);
 			setContribuablesAssocies(tiersVisuView, dpi);
 			setForsFiscauxDebiteur(tiersVisuView, dpi);
@@ -139,7 +138,7 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 
 		if (tiersVisuView.getTiers() != null) {
 			if (tiers instanceof Contribuable) {
-				Contribuable contribuable = (Contribuable) tiers;
+				final Contribuable contribuable = (Contribuable) tiers;
 				tiersVisuView.setDebiteurs(getDebiteurs(contribuable));
 				tiersVisuView.setDis(getDeclarationsImpotOrdinaire(contribuable));
 				tiersVisuView.setMouvements(getMouvements(contribuable));
@@ -159,26 +158,28 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 				}
 			}
 
+			final List<RapportView> rapportsView = getRapports(tiers);
 
-			List<RapportView> rapportsView = getRapports(tiers);
-
-			// filtrer les rapports entre tiers si l'utiliateur a des droits en visu limitée
-			if (SecurityProvider.isGranted(Role.VISU_LIMITE)) {
-				for (RapportView rv : rapportsView) {
-					if (!TypeRapportEntreTiers.APPARTENANCE_MENAGE.equals(rv.getTypeRapportEntreTiers())) {
-
+			// filtrer les rapports entre tiers si l'utilisateur a des droits en visu limitée
+			if (SecurityProvider.isGranted(Role.VISU_LIMITE) && !SecurityProvider.isGranted(Role.VISU_ALL)) {
+				final Iterator<RapportView> iter = rapportsView.iterator();
+				while (iter.hasNext()) {
+					final RapportView rv = iter.next();
+					if (rv.getTypeRapportEntreTiers() != TypeRapportEntreTiersWeb.APPARTENANCE_MENAGE) {
+						iter.remove();
 					}
 				}
 			}
 			if (tiers instanceof PersonnePhysique) {
-				PersonnePhysique pp = (PersonnePhysique) tiers;
+				final PersonnePhysique pp = (PersonnePhysique) tiers;
 				if (pp.getNumeroIndividu() != null && pp.getNumeroIndividu() != 0) {
-					List<RapportView> rapportsFiliationView = getRapportsFiliation(pp);
+					final List<RapportView> rapportsFiliationView = getRapportsFiliation(pp);
 					rapportsView.addAll(rapportsFiliationView);
 				}
 			}
 			tiersVisuView.setDossiersApparentes(rapportsView);
-			Map<String, Boolean> allowedOnglet = initAllowedModif();
+
+			final Map<String, Boolean> allowedOnglet = initAllowedModif();
 			setDroitEdition(tiers, allowedOnglet);
 			tiersVisuView.setAllowedOnglet(allowedOnglet);
 		}

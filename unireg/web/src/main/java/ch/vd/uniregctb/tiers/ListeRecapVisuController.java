@@ -35,13 +35,12 @@ public class ListeRecapVisuController extends AbstractTiersController {
 
 		ListeRecapDetailView lrView = null;
 
-		String idLrParam = request.getParameter(ID_LR_PARAM);
-		if (idLrParam != null&& !"".equals(idLrParam)) {
-			if(SecurityProvider.isGranted(Role.VISU_LIMITE)){
-				throw new AccessDeniedException("vous n'avez pas le droit de consulter un " +
-					"débiteur de prestation imposable pour l'application Unireg");
+		final String idLrParam = request.getParameter(ID_LR_PARAM);
+		if (idLrParam != null && !"".equals(idLrParam)) {
+			if (SecurityProvider.isGranted(Role.VISU_LIMITE) && !SecurityProvider.isGranted(Role.VISU_ALL)) {
+				throw new AccessDeniedException("vous n'avez pas le droit de consulter un débiteur de prestation imposable pour l'application Unireg");
 			}
-			Long id = Long.parseLong(idLrParam);
+			final Long id = Long.parseLong(idLrParam);
 			lrView = lrVisuManager.get(id);
 			checkAccesDossierEnLecture(lrView.getDpi().getNumero());
 		}
