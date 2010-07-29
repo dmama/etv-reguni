@@ -1,1 +1,4 @@
 - supprimer les ids techniques sur les fors fiscaux et les situations de famille
+- ajouter les motifs d'ouverture début/fin d'activité diplomatique (UNIREG-911)
+- ne renseigner les dates de début/fin de validité que lorsque les fors fiscaux sont demandés (+ documentation)
+- nouveau motif de rattachement 'activité lucrative' (UNIREG-1780)
