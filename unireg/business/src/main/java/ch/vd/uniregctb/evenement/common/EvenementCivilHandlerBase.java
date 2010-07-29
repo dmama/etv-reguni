@@ -36,6 +36,7 @@ import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
+import ch.vd.uniregctb.type.TypeEvenementErreur;
 
 /**
  * Interface commune aux classes capables de traiter un événement d'état civil.
@@ -494,10 +495,10 @@ public abstract class EvenementCivilHandlerBase implements EvenementCivilHandler
 		 */
 		if (mouvement.getNouvelleAdressePrincipale() == null) {
 			if (target instanceof Depart) {
-				warnings.add(new EvenementCivilErreur("La nouvelle adresse principal de l'individu est vide"));
+				warnings.add(new EvenementCivilErreur("La nouvelle adresse principale de l'individu est vide", TypeEvenementErreur.WARNING));
 			}
 			else if (target instanceof Arrivee) {
-				erreurs.add(new EvenementCivilErreur("La nouvelle adresse principal de l'individu est vide"));
+				erreurs.add(new EvenementCivilErreur("La nouvelle adresse principale de l'individu est vide"));
 			}
 
 		}
