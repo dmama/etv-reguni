@@ -14,6 +14,7 @@ import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 
+import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.ModeleFeuilleDocument;
@@ -26,9 +27,11 @@ public class JdbcModeleDocumentDaoImpl implements JdbcModeleDocumentDao {
 
 	private JdbcModeleFeuilleDocumentDao ppfDao = new JdbcModeleFeuilleDocumentDaoImpl();
 
+	@SuppressWarnings({"unchecked"})
 	public ModeleDocument get(long periodeId, JdbcTemplate template) {
 
-		final ModeleDocument modele = (ModeleDocument) DataAccessUtils.uniqueResult(template.query(ModeleDocumentMapper.selectById(), new Object[]{periodeId}, ROW_MAPPER));
+		final Pair<Long, ModeleDocument> pair = (Pair<Long, ModeleDocument>) DataAccessUtils.uniqueResult(template.query(ModeleDocumentMapper.selectById(), new Object[]{periodeId}, ROW_MAPPER));
+		final ModeleDocument modele = pair.getSecond();
 		if (modele == null) {
 			return null;
 		}
@@ -92,6 +95,8 @@ public class JdbcModeleDocumentDaoImpl implements JdbcModeleDocumentDao {
 
 		public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
 			
+			final long temp8 = rs.getLong(8);
+			final Long periodeId = (rs.wasNull() ? null : temp8);
 			final ModeleDocument res;
 			
 			
@@ -103,8 +108,6 @@ public class JdbcModeleDocumentDaoImpl implements JdbcModeleDocumentDao {
 			final String logCuser = rs.getString(5);
 			final Timestamp logMdate = rs.getTimestamp(6);
 			final String logMuser = rs.getString(7);
-			final long temp8 = rs.getLong(8);
-			final PeriodeFiscale periodeId = (rs.wasNull() ? null : getPeriodeFiscale(temp8));
 			final String temp9 = rs.getString(9);
 			final TypeDocument typeDocument = (rs.wasNull() ? null : Enum.valueOf(TypeDocument.class, temp9));
 			
@@ -116,11 +119,14 @@ public class JdbcModeleDocumentDaoImpl implements JdbcModeleDocumentDao {
 			o.setLogCreationUser(logCuser);
 			o.setLogModifDate(logMdate);
 			o.setLogModifUser(logMuser);
-			o.setPeriodeFiscale(periodeId);
 			o.setTypeDocument(typeDocument);
 			res = o;
 			
-			return res;
+			final Pair<Long, ModeleDocument> pair = new Pair<Long, ModeleDocument>();
+			pair.setFirst(periodeId);
+			pair.setSecond(res);
+			
+			return pair;
 		}
 		
 		private PeriodeFiscale getPeriodeFiscale(Long periodeId) {

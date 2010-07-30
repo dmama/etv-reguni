@@ -14,6 +14,7 @@ import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 
+import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.common.CollectionsUtils;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.ModeleFeuilleDocument;
@@ -26,9 +27,11 @@ public class JdbcModeleDocumentDaoImpl implements JdbcModeleDocumentDao {
 
 	private JdbcModeleFeuilleDocumentDao ppfDao = new JdbcModeleFeuilleDocumentDaoImpl();
 
+	@SuppressWarnings({"unchecked"})
 	public ModeleDocument get(long periodeId, JdbcTemplate template) {
 
-		final ModeleDocument modele = (ModeleDocument) DataAccessUtils.uniqueResult(template.query(ModeleDocumentMapper.selectById(), new Object[]{periodeId}, ROW_MAPPER));
+		final Pair<Long, ModeleDocument> pair = (Pair<Long, ModeleDocument>) DataAccessUtils.uniqueResult(template.query(ModeleDocumentMapper.selectById(), new Object[]{periodeId}, ROW_MAPPER));
+		final ModeleDocument modele = pair.getSecond();
 		if (modele == null) {
 			return null;
 		}

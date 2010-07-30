@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.common;
 
+import javax.persistence.Table;
 import javax.persistence.Transient;
 import java.beans.BeanInfo;
 import java.beans.Introspector;
@@ -237,4 +238,26 @@ public abstract class HibernateEntityUtils {
 			return result;
 		}
 	}
+
+	/**
+	 * Détermine la classe de base (celle possédant l'annotation @Table) à partir d'une classe quelconque de la hiérarchie.
+	 *
+	 * @param clazz une classe faisant partie d'une hiérarchie de classes Hibernate
+	 * @return la classe de base
+	 */
+	public static Class<?> getBaseClass(Class<?> clazz) {
+		while (clazz != null) {
+			final Annotation[] as = clazz.getAnnotations();
+			if (as != null) {
+				for (Annotation a : as) {
+					if (a instanceof Table) {
+						return clazz;
+					}
+				}
+			}
+			clazz = clazz.getSuperclass();
+		}
+		return null;
+	}
 }
+

@@ -51,46 +51,46 @@ public class JdbcDaoGenerator {
 
 		final String jdbcDaoPath = corePath + "/src/main/java/ch/vd/uniregctb/dao/jdbc";
 
-		JdbcHibernateEntityDaoGenerator tg = new JdbcHibernateEntityDaoGenerator(null, PersonnePhysique.class, AutreCommunaute.class, Entreprise.class, MenageCommun.class,
+		JdbcHibernateEntityDaoGenerator tg = new JdbcHibernateEntityDaoGenerator(PersonnePhysique.class, AutreCommunaute.class, Entreprise.class, MenageCommun.class,
 				CollectiviteAdministrative.class, Etablissement.class, DebiteurPrestationImposable.class);
 		tg.generate("classpath:ch/vd/uniregctb/dao/jdbc/JdbcTiersDaoImpl.java.template", jdbcDaoPath + "/JdbcTiersDaoImpl.java");
 
-		JdbcHibernateEntityDaoGenerator atg = new JdbcHibernateEntityDaoGenerator("tiers", AdresseSuisse.class, AdresseEtrangere.class, AdresseCivile.class, AdressePM.class, AdresseAutreTiers.class);
+		JdbcHibernateEntityDaoGenerator atg = new JdbcHibernateEntityDaoGenerator(AdresseSuisse.class, AdresseEtrangere.class, AdresseCivile.class, AdressePM.class, AdresseAutreTiers.class);
 		atg.generate("classpath:ch/vd/uniregctb/dao/jdbc/JdbcAdresseTiersDaoImpl.java.template", jdbcDaoPath + "/JdbcAdresseTiersDaoImpl.java");
 
-		JdbcHibernateEntityDaoGenerator dg = new JdbcHibernateEntityDaoGenerator("tiers", DeclarationImpotOrdinaire.class, DeclarationImpotSource.class);
+		JdbcHibernateEntityDaoGenerator dg = new JdbcHibernateEntityDaoGenerator(DeclarationImpotOrdinaire.class, DeclarationImpotSource.class);
 		dg.generate("classpath:ch/vd/uniregctb/dao/jdbc/JdbcDeclarationDaoImpl.java.template", jdbcDaoPath + "/JdbcDeclarationDaoImpl.java");
 
-		JdbcHibernateEntityDaoGenerator edg = new JdbcHibernateEntityDaoGenerator("declaration", EtatDeclaration.class);
+		JdbcHibernateEntityDaoGenerator edg = new JdbcHibernateEntityDaoGenerator(EtatDeclaration.class);
 		edg.generate("classpath:ch/vd/uniregctb/dao/jdbc/JdbcEtatDeclarationDaoImpl.java.template", jdbcDaoPath + "/JdbcEtatDeclarationDaoImpl.java");
 
-		JdbcHibernateEntityDaoGenerator ffg = new JdbcHibernateEntityDaoGenerator("tiers", ForFiscalPrincipal.class, ForFiscalSecondaire.class,
+		JdbcHibernateEntityDaoGenerator ffg = new JdbcHibernateEntityDaoGenerator(ForFiscalPrincipal.class, ForFiscalSecondaire.class,
 				ForFiscalAutreElementImposable.class, ForFiscalAutreImpot.class, ForDebiteurPrestationImposable.class);
 		ffg.generate("classpath:ch/vd/uniregctb/dao/jdbc/JdbcForFiscalDaoImpl.java.template", jdbcDaoPath + "/JdbcForFiscalDaoImpl.java");
 
-		JdbcHibernateEntityDaoGenerator retg = new JdbcHibernateEntityDaoGenerator("tiers", Tutelle.class, Curatelle.class, ConseilLegal.class, AnnuleEtRemplace.class, AppartenanceMenage.class,
+		JdbcHibernateEntityDaoGenerator retg = new JdbcHibernateEntityDaoGenerator(Tutelle.class, Curatelle.class, ConseilLegal.class, AnnuleEtRemplace.class, AppartenanceMenage.class,
 				RapportPrestationImposable.class, RepresentationConventionnelle.class, ContactImpotSource.class);
 		retg.generate("classpath:ch/vd/uniregctb/dao/jdbc/JdbcRapportEntreTiersDaoImpl.java.template", jdbcDaoPath + "/JdbcRapportEntreTiersDaoImpl.java");
 
-		JdbcHibernateEntityDaoGenerator sfg = new JdbcHibernateEntityDaoGenerator("contribuable", SituationFamillePersonnePhysique.class, SituationFamilleMenageCommun.class);
+		JdbcHibernateEntityDaoGenerator sfg = new JdbcHibernateEntityDaoGenerator(SituationFamillePersonnePhysique.class, SituationFamilleMenageCommun.class);
 		sfg.generate("classpath:ch/vd/uniregctb/dao/jdbc/JdbcSituationFamilleDaoImpl.java.template", jdbcDaoPath + "/JdbcSituationFamilleDaoImpl.java");
 
-		JdbcHibernateEntityDaoGenerator ipg = new JdbcHibernateEntityDaoGenerator("personnePhysique", IdentificationPersonne.class);
+		JdbcHibernateEntityDaoGenerator ipg = new JdbcHibernateEntityDaoGenerator(IdentificationPersonne.class);
 		ipg.generate("classpath:ch/vd/uniregctb/dao/jdbc/JdbcIdentificationPersonneDaoImpl.java.template", jdbcDaoPath + "/JdbcIdentificationPersonneDaoImpl.java");
 
-		JdbcHibernateEntityDaoGenerator pg = new JdbcHibernateEntityDaoGenerator("debiteur", Periodicite.class);
+		JdbcHibernateEntityDaoGenerator pg = new JdbcHibernateEntityDaoGenerator(Periodicite.class);
 		pg.generate("classpath:ch/vd/uniregctb/dao/jdbc/JdbcPeriodiciteDaoImpl.java.template", jdbcDaoPath + "/JdbcPeriodiciteDaoImpl.java");
 
-		JdbcHibernateEntityDaoGenerator pfg = new JdbcHibernateEntityDaoGenerator(null, PeriodeFiscale.class);
+		JdbcHibernateEntityDaoGenerator pfg = new JdbcHibernateEntityDaoGenerator(PeriodeFiscale.class);
 		pfg.generate("classpath:ch/vd/uniregctb/dao/jdbc/JdbcPeriodeFiscaleDaoImpl.java.template", jdbcDaoPath + "/JdbcPeriodeFiscaleDaoImpl.java");
 
-		JdbcHibernateEntityDaoGenerator ppfg = new JdbcHibernateEntityDaoGenerator("periodefiscale", ParametrePeriodeFiscale.class);
+		JdbcHibernateEntityDaoGenerator ppfg = new JdbcHibernateEntityDaoGenerator(ParametrePeriodeFiscale.class);
 		ppfg.generate("classpath:ch/vd/uniregctb/dao/jdbc/JdbcParametrePeriodeFiscaleDaoImpl.java.template", jdbcDaoPath + "/JdbcParametrePeriodeFiscaleDaoImpl.java");
 
-		JdbcHibernateEntityDaoGenerator mdg = new JdbcHibernateEntityDaoGenerator(null, ModeleDocument.class);
+		JdbcHibernateEntityDaoGenerator mdg = new JdbcHibernateEntityDaoGenerator(ModeleDocument.class);
 		mdg.generate("classpath:ch/vd/uniregctb/dao/jdbc/JdbcModeleDocumentDaoImpl.java.template", jdbcDaoPath + "/JdbcModeleDocumentDaoImpl.java");
 
-		JdbcHibernateEntityDaoGenerator mfdg = new JdbcHibernateEntityDaoGenerator("modeleDocument", ModeleFeuilleDocument.class);
+		JdbcHibernateEntityDaoGenerator mfdg = new JdbcHibernateEntityDaoGenerator(ModeleFeuilleDocument.class);
 		mfdg.generate("classpath:ch/vd/uniregctb/dao/jdbc/JdbcModeleFeuilleDocumentDaoImpl.java.template", jdbcDaoPath + "/JdbcModeleFeuilleDocumentDaoImpl.java");
 	}
 
