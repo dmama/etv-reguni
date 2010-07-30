@@ -34,7 +34,7 @@ public class JdbcHibernateEntityDaoGenerator {
 	private String table;
 	private Class<?> baseClass;
 	private List<MetaEntity> entities = new ArrayList<MetaEntity>();
-	private Map<String, Property> allColumns = new HashMap<String, Property>();
+	private Map<String, Property> allProperties = new HashMap<String, Property>();
 
 	public JdbcHibernateEntityDaoGenerator(Class... hibernateEntities) throws Exception {
 
@@ -52,15 +52,15 @@ public class JdbcHibernateEntityDaoGenerator {
 
 			entities.add(entity);
 
-			final List<Property> properties = entity.getColumns();
-			for (int i = 0, columnsSize = properties.size(); i < columnsSize; i++) {
-				final Property c = properties.get(i);
-				final Property existing = allColumns.get(c.getColumnName());
+			final List<Property> properties = entity.getProperties();
+			for (int i = 0, propSize = properties.size(); i < propSize; i++) {
+				final Property p = properties.get(i);
+				final Property existing = allProperties.get(p.getColumnName());
 				if (existing == null) {
-					allColumns.put(c.getColumnName(), c);
+					allProperties.put(p.getColumnName(), p);
 				}
 				else {
-					Assert.isEqual(c.getType().getSqlType(), existing.getType().getSqlType());
+					Assert.isEqual(p.getType().getSqlType(), existing.getType().getSqlType());
 					// si la colonne existe déjà (possible car les getters des classes de base sont processés plusieurs fois lors de hiérarchie d'entités),
 					// on remplace celle de l'entité par la colonne existante, de manière à n'importe qu'une instance par colonne réelle.
 					properties.set(i, existing);
@@ -76,7 +76,7 @@ public class JdbcHibernateEntityDaoGenerator {
 
 		// Construction des portions de code dynamiques
 
-		final List<Property> properties = new ArrayList<Property>(allColumns.values());
+		final List<Property> properties = new ArrayList<Property>(allProperties.values());
 		Collections.sort(properties);
 
 		String primaryKey = null;
@@ -87,24 +87,24 @@ public class JdbcHibernateEntityDaoGenerator {
 		String baseSelect = "";
 		String mappingCode = "";
 
-		for (int i = 0, columnsSize = properties.size(); i < columnsSize; i++) {
-			final Property c = properties.get(i);
-			c.setIndex(i + 1);
-			final boolean last = (i == columnsSize - 1);
-			baseSelect += "\"" + c.getColumnName() + (last ? "" : ",") + " \" + // " + (i + 1) + "\n";
+		for (int i = 0, propSize = properties.size(); i < propSize; i++) {
+			final Property p = properties.get(i);
+			p.setIndex(i + 1);
+			final boolean last = (i == propSize - 1);
+			baseSelect += "\"" + p.getColumnName() + (last ? "" : ",") + " \" + // " + (i + 1) + "\n";
 
-			if (c.isPrimaryKey()) {
+			if (p.isPrimaryKey()) {
 				Assert.isNull(primaryKey);
-				primaryKey = c.getColumnName();
+				primaryKey = p.getColumnName();
 			}
-			if (c.isParentForeignKey()) {
-				Assert.isNull(foreignKey, "Duplicated foreign key found = [" + foreignKey + ", " + c.getColumnName() + "]");
-				foreignKey = c;
+			if (p.isParentForeignKey()) {
+				Assert.isNull(foreignKey, "Duplicated foreign key found = [" + foreignKey + ", " + p.getColumnName() + "]");
+				foreignKey = p;
 			}
-			if (c.isDiscriminator()) {
+			if (p.isDiscriminator()) {
 				Assert.isNull(discriminant);
-				discriminant = c;
-				discriminantVar = toVar(c.getColumnName());
+				discriminant = p;
+				discriminantVar = toVar(p.getColumnName());
 			}
 		}
 		baseSelect += "\"from " + table + "\"";
@@ -140,17 +140,17 @@ public class JdbcHibernateEntityDaoGenerator {
 
 			mappingCode += "\n";
 			
-			for (Property c : e.getColumns()) {
-				if (!c.isDiscriminator() && !c.isParentForeignKey()) {
-					mappingCode += generateDeclareAndGetValue(tab, c);
+			for (Property p : e.getProperties()) {
+				if (!p.isDiscriminator() && !p.isParentForeignKey()) {
+					mappingCode += generateDeclareAndGetValue(tab, p);
 				}
 			}
 
 			mappingCode += "\n" + tab + e.getType().getSimpleName() + " o = new " + e.getType().getSimpleName() + "();\n";
 
-			for (Property c : e.getColumns()) {
-				if (!c.isDiscriminator() && !c.isParentForeignKey()) {
-					mappingCode += tab + "o." + toSetter(c.getName()) + "(" + toVar(c.getColumnName()) + ");\n";
+			for (Property p : e.getProperties()) {
+				if (!p.isDiscriminator() && !p.isParentForeignKey()) {
+					mappingCode += tab + "o." + toSetter(p.getName()) + "(" + toVar(p.getColumnName()) + ");\n";
 				}
 			}
 
@@ -195,55 +195,55 @@ public class JdbcHibernateEntityDaoGenerator {
 		writer.close();
 	}
 
-	private String generateDeclareAndGetValue(String tab, Property c) {
-		final PropertyType colType = c.getType();
+	private String generateDeclareAndGetValue(String tab, Property p) {
+		final PropertyType colType = p.getType();
 
 		String mappingCode = "";
 		
 		if (colType.needNullCheck()) {
 
-			mappingCode += tab + "final " + colType.getSqlType().getSimpleName() + " " + toTempVar(c) + " = " + generateGetValue(c) + ";\n";
+			mappingCode += tab + "final " + colType.getSqlType().getSimpleName() + " " + toTempVar(p) + " = " + generateGetValue(p) + ";\n";
 			if (colType instanceof UserTypePropertyType) {
 				final UserTypePropertyType userType = (UserTypePropertyType) colType;
 				mappingCode +=
-						tab + "final " + colType.getJavaType().getSimpleName() + " " + toVar(c.getColumnName()) + " = (rs.wasNull() ? null : " + userType.getConvertMethod(toTempVar(c)) + ");\n";
+						tab + "final " + colType.getJavaType().getSimpleName() + " " + toVar(p.getColumnName()) + " = (rs.wasNull() ? null : " + userType.getConvertMethod(toTempVar(p)) + ");\n";
 			}
 			else if (colType instanceof JoinPropertyType) {
 				final JoinPropertyType joinType = (JoinPropertyType) colType;
 				mappingCode +=
-						tab + "final " + colType.getJavaType().getSimpleName() + " " + toVar(c.getColumnName()) + " = (rs.wasNull() ? null : " + joinType.getConvertMethod(toTempVar(c)) + ");\n";
+						tab + "final " + colType.getJavaType().getSimpleName() + " " + toVar(p.getColumnName()) + " = (rs.wasNull() ? null : " + joinType.getConvertMethod(toTempVar(p)) + ");\n";
 			}
 			else {
-				mappingCode += tab + "final " + colType.getJavaType().getSimpleName() + " " + toVar(c.getColumnName()) + " = (rs.wasNull() ? null : " + toTempVar(c) + ");\n";
+				mappingCode += tab + "final " + colType.getJavaType().getSimpleName() + " " + toVar(p.getColumnName()) + " = (rs.wasNull() ? null : " + toTempVar(p) + ");\n";
 			}
 		}
 		else {
 			if (colType instanceof UserTypePropertyType) {
 				final UserTypePropertyType userType = (UserTypePropertyType) colType;
 				mappingCode +=
-						tab + "final " + colType.getJavaType().getSimpleName() + " " + toVar(c.getColumnName()) + " = " + userType.getConvertMethod(generateGetValue(c)) + ";\n";
+						tab + "final " + colType.getJavaType().getSimpleName() + " " + toVar(p.getColumnName()) + " = " + userType.getConvertMethod(generateGetValue(p)) + ";\n";
 			}
 			else if (colType instanceof JoinPropertyType) {
 				final JoinPropertyType joinType = (JoinPropertyType) colType;
 				mappingCode +=
-						tab + "final " + colType.getJavaType().getSimpleName() + " " + toVar(c.getColumnName()) + " = " + joinType.getConvertMethod(generateGetValue(c)) + ";\n";
+						tab + "final " + colType.getJavaType().getSimpleName() + " " + toVar(p.getColumnName()) + " = " + joinType.getConvertMethod(generateGetValue(p)) + ";\n";
 			}
 			else {
-				mappingCode += tab + "final " + colType.getJavaType().getSimpleName() + " " + toVar(c.getColumnName()) + " = " + generateGetValue(c) + ";\n";
+				mappingCode += tab + "final " + colType.getJavaType().getSimpleName() + " " + toVar(p.getColumnName()) + " = " + generateGetValue(p) + ";\n";
 			}
 
 		}
 		return mappingCode;
 	}
 
-	private static String toTempVar(Property c) {
-		return "temp" + c.getIndex();
+	private static String toTempVar(Property p) {
+		return "temp" + p.getIndex();
 	}
 
-	private String generateGetValue(Property c) {
-		final int index = c.getIndex();
+	private String generateGetValue(Property p) {
+		final int index = p.getIndex();
 		Assert.isTrue(index > 0);
-		return "rs." + c.getType().getResultGetter() + "(" + index + ")";
+		return "rs." + p.getType().getResultGetter() + "(" + index + ")";
 	}
 
 	private String toSetter(String property) {

@@ -72,11 +72,11 @@ public class MetaEntity {
 	/**
 	 * @return la liste des colonnes (= propriétés) déclarées sur l'entité Hibernate.
 	 */
-	public List<Property> getColumns() {
+	public List<Property> getProperties() {
 		return properties;
 	}
 
-	private void setColumns(List<Property> properties) {
+	private void setProperties(List<Property> properties) {
 		this.properties = properties;
 	}
 
@@ -224,7 +224,7 @@ public class MetaEntity {
 		}
 
 		Collections.sort(properties);
-		entity.setColumns(properties);
+		entity.setProperties(properties);
 		return entity;
 	}
 
