@@ -11,7 +11,7 @@ import java.io.OutputStream;
 import java.util.Date;
 
 /**
- * Rapport PDF contenant les résultats du rapprochement des ctb et des propriétaires fonciers.
+ * Rapport PDF contenant les résultats de la génération des listes nominatives.
  */
 public class PdfEnvoiLRsRapport extends PdfRapport {
 

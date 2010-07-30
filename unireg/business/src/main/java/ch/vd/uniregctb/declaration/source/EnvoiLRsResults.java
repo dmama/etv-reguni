@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.JobResults;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
@@ -43,7 +44,7 @@ public class EnvoiLRsResults extends JobResults<Long, EnvoiLRsResults> {
 
 		@Override
 		public String getDescriptionRaison() {
-			return String.format("%s - %s (%s)", dateDebut, dateFin, periodicite);
+			return String.format("%s - %s (%s)", RegDateHelper.dateToDisplayString(dateDebut), RegDateHelper.dateToDisplayString(dateFin), periodicite);
 		}
 	}
 
@@ -119,7 +120,7 @@ public class EnvoiLRsResults extends JobResults<Long, EnvoiLRsResults> {
 	}
 
 	public String getMoisFinPeriode() {
-		return dateFinPeriode.month() + "." + dateFinPeriode.year();
+		return String.format("%02d.%04d", dateFinPeriode.month(), dateFinPeriode.year());
 	}
 
 	public void addErrorException(Long element, Exception e) {

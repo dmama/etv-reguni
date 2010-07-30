@@ -17,7 +17,9 @@ import org.springframework.transaction.support.TransactionTemplate;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.BatchTransactionTemplate;
+import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.common.BatchTransactionTemplate.BatchCallback;
@@ -61,7 +63,6 @@ public class EnvoiLRsEnMasseProcessor {
 		final BatchTransactionTemplate<Long, EnvoiLRsResults> template = new BatchTransactionTemplate<Long, EnvoiLRsResults>(list, BATCH_SIZE, Behavior.REPRISE_AUTOMATIQUE, transactionManager, s, hibernateTemplate);
 		template.execute(rapportFinal, new BatchCallback<Long, EnvoiLRsResults>() {
 
-			private List<Long> batchCourant;
 			private EnvoiLRsResults rapport;
 
 			@Override
@@ -72,7 +73,6 @@ public class EnvoiLRsEnMasseProcessor {
 			@Override
 			public boolean doInTransaction(List<Long> batch, EnvoiLRsResults r) throws Exception {
 				rapport = r;
-				batchCourant = batch;
 				traiteBatch(batch, dateFinPeriode, s, this.rapport);
 				return !s.interrupted();
 			}
@@ -125,7 +125,9 @@ public class EnvoiLRsEnMasseProcessor {
 				if (periodeInteressante.isValidAt(lrPourCreation.getDateFin())) {
 					if (DateRangeHelper.intersect(lrPourCreation, lrTrouvees)) {
 						final String message = String.format("Le débiteur %s possède déjà une LR qui intersecte la période du %s au %s.",
-															dpi.getNumero(), lrPourCreation.getDateDebut(), lrPourCreation.getDateFin());
+															FormatNumeroHelper.numeroCTBToDisplay(dpi.getNumero()),
+															RegDateHelper.dateToDisplayString(lrPourCreation.getDateDebut()),
+															RegDateHelper.dateToDisplayString(lrPourCreation.getDateFin()));
 						rapport.addErrorLRCollision(dpi, message);
 					}
 					else {
