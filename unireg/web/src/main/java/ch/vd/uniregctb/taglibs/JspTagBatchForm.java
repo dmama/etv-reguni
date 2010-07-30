@@ -22,6 +22,8 @@ import ch.vd.uniregctb.scheduler.JobParamEnum;
 import ch.vd.uniregctb.scheduler.JobParamFile;
 import ch.vd.uniregctb.scheduler.JobParamOfficeImpot;
 import ch.vd.uniregctb.scheduler.JobParamRegDate;
+import ch.vd.uniregctb.security.Role;
+import ch.vd.uniregctb.security.SecurityProvider;
 
 /**
  * Tag jsp permettant d'afficher le nom d'un batch et le formulaire permettant de saisir les paramètres et de démarrer le batch.
@@ -87,9 +89,14 @@ public class JspTagBatchForm extends BodyTagSupport {
 			if (displayedCount == 0) {
 				b.append("<tr><td>(ce batch ne possède pas de paramètre)</td></tr>");
 			}
-			b.append("<tr><td class=\"command\" colspan=\"4\" align=\"right\"><input id=\"start").append(job.getName()).append(
-					"\" type=\"button\" value=\"Démarrer le batch\" onclick=\"startJob('").append(job.getName())
-					.append("');\"/></td></tr>");
+			if (SecurityProvider.isGranted(Role.ADMIN) || SecurityProvider.isGranted(Role.TESTER)) {
+				b.append("<tr><td class=\"command\" colspan=\"4\" align=\"right\"><input id=\"start").append(job.getName()).append(
+						"\" type=\"button\" value=\"Démarrer le batch\" onclick=\"startJob('").append(job.getName())
+						.append("');\"/></td></tr>");
+			}
+			else {
+				b.append("<tr><td colspan=\"4\" align=\"right\"><i>Droits insuffisants pour lancer le batch</i></td></tr>");
+			}
 			b.append("</tr>\n");
 			b.append("</table>\n");
 
