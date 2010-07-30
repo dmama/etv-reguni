@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+	<!-- Override du tache service défini dans unireg-businessut-service.xml pour quand même avec une implémentation complète du service -->
+	<bean id="tacheService" class="ch.vd.uniregctb.tache.TacheServiceImpl">
+		<property name="tacheDAO" ref="tacheDAO" />
+		<property name="diDAO" ref="diDAO" />
+		<property name="diService" ref="diService" />
+		<property name="parametres" ref="parametreAppService" />
+		<property name="serviceInfra" ref="serviceInfrastructureService" />
+		<property name="hibernateTemplate" ref="hibernateTemplate" />
+		<property name="transactionManager" ref="transactionManager" />
+		<property name="tiersService" ref="tiersService" />
+		<property name="scheduler" ref="scheduler" />
+	</bean>
+
+</beans>

@@ -1,0 +1,9 @@
+<classpath>
+  <classpathentry kind="src" path="src/main/resources" including="**/*.xml|**/*.properties" excluding="**/*.java"/>
+  <classpathentry kind="src" path="target/generated"/>
+  <classpathentry kind="output" path="target/classes"/>
+  <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+  <classpathentry kind="var" path="M2_REPO/stax/stax-api/1.0.1/stax-api-1.0.1.jar"/>
+  <classpathentry kind="src" path="/uniregctb-xmlbeans-interfaces"/>
+  <classpathentry kind="var" path="M2_REPO/org/apache/xmlbeans/xmlbeans/2.4.0/xmlbeans-2.4.0.jar"/>
+</classpath>

@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- edited with XMLSpy v2005 rel. 3 U (http://www.altova.com) by Liardet Etienne (Etat de Vaud) -->
+<!-- edited with XMLSPY v5 rel. 4 U (http://www.xmlspy.com) by xciccd (Etat De Vaud) -->
+<!-- Etat de Vaud, UID-DFIN, schéma TAO PP post -->
+<!--
+Modification apportée dans la version 2.1/28.10.03 CCD
+	- L'inclusion du schéma DocIdentification.XSD est supprimée : Il reste uniquement dans SDI.XSD.
+
+Modification apportée dans la version 2.0.6/14.06.03
+		L'élément ParTire_Pourcent et renommé en ParTitre_Pourcent.
+-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<!--v2007.1.0 - 30.05.2007 : pour moteur 2007-2 - Création par copie du schéma 2005-->
+	<!--v2007.1.1 - 11.6.2007 : Include DocIdentification (avant était inclu au niveau SDI.xsd)-->
+	<xs:include schemaLocation="DocIdentification.xsd"/>
+	<xs:complexType name="ImputationForfaitaireImpotType">
+		<xs:annotation>
+			<xs:documentation>Schéma XSD de l'IFI</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="DocIdentificationType">
+				<xs:sequence>
+					<xs:element name="Placements" minOccurs="0">
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element name="Placement" minOccurs="0" maxOccurs="unbounded">
+									<xs:complexType>
+										<xs:sequence>
+											<xs:element name="NombreOuValeurNominale" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id713</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="Designation" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id714</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="Etat" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id715</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="ValeurImposable" minOccurs="0">
+												<xs:complexType>
+													<xs:sequence>
+														<xs:element name="ParTitre_Pourcent" type="xs:string" minOccurs="0">
+															<xs:annotation>
+																<xs:documentation>id716</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+														<xs:element name="TotalFrancs" type="xs:string" minOccurs="0">
+															<xs:annotation>
+																<xs:documentation>id717</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+													</xs:sequence>
+												</xs:complexType>
+											</xs:element>
+											<xs:element name="Rendement" type="xs:string" minOccurs="0">
+												<xs:annotation>
+													<xs:documentation>id718</xs:documentation>
+												</xs:annotation>
+											</xs:element>
+											<xs:element name="ImpotNonRecuperable" minOccurs="0">
+												<xs:complexType>
+													<xs:sequence>
+														<xs:element name="Pourcent" type="xs:string" minOccurs="0">
+															<xs:annotation>
+																<xs:documentation>id719</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+														<xs:element name="Francs" type="xs:string" minOccurs="0">
+															<xs:annotation>
+																<xs:documentation>id720</xs:documentation>
+															</xs:annotation>
+														</xs:element>
+													</xs:sequence>
+												</xs:complexType>
+											</xs:element>
+										</xs:sequence>
+									</xs:complexType>
+								</xs:element>
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+					<xs:element name="DividendesUSA" minOccurs="0">
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element name="TotalFrancs" type="xs:string" minOccurs="0">
+									<xs:annotation>
+										<xs:documentation>id711</xs:documentation>
+									</xs:annotation>
+								</xs:element>
+								<xs:element name="Rendement" type="xs:string" minOccurs="0">
+									<xs:annotation>
+										<xs:documentation>id712</xs:documentation>
+									</xs:annotation>
+								</xs:element>
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+</xs:schema>

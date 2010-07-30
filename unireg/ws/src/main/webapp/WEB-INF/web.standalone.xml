@@ -1,0 +1,127 @@
+<web-app version="2.4" xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+
+	<display-name>Unireg - Le registre fiscal de l'Etat de Vaud</display-name>
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>
+			classpath*:/unireg-core-dao.xml,
+			classpath*:/unireg-core-sf.xml,
+			classpath*:/unireg-business-essentials.xml;
+			classpath*:/unireg-business-evtfiscal.xml,
+			/WEB-INF/unireg-ws-cache.xml,
+			/WEB-INF/unireg-ws-config.xml,
+			/WEB-INF/unireg-ws-database.xml,
+			/WEB-INF/unireg-ws-properties.xml,
+			/WEB-INF/unireg-ws-security.xml,
+			/WEB-INF/unireg-ws-services.xml,
+			/WEB-INF/unireg-ws-ws.xml,
+			/WEB-INF/unireg-standalone-mocks.xml
+		</param-value>
+	</context-param>
+	
+	<context-param>
+		<param-name>log4jConfigLocation</param-name>
+		<param-value>${unireg-ws.log4j.location}</param-value>
+	</context-param>
+	<context-param>
+		<!-- On ne peut pas exposer le webapp root si le war est pas exapndé -->
+		<param-name>log4jExposeWebAppRoot</param-name>
+		<param-value>false</param-value>
+	</context-param>
+	
+	<!--  Les servlets de notre application -->
+	<servlet>
+		<servlet-name>CXFServlet</servlet-name>
+		<servlet-class>org.apache.cxf.transport.servlet.CXFServlet</servlet-class>
+		<load-on-startup>2</load-on-startup>
+	</servlet>
+	
+	<!--  Mapping entre les servlets et les URLs qu'elles servent -->
+	<servlet-mapping>
+		<servlet-name>CXFServlet</servlet-name>
+		<url-pattern>/*</url-pattern>
+	</servlet-mapping>
+	
+	<!-- Sécurisation des web-services -->
+
+	<security-constraint>
+		<web-resource-collection>
+			<web-resource-name>Web-service Tiers v1</web-resource-name>
+			<url-pattern>/tiers</url-pattern>
+			<http-method>GET</http-method>
+			<http-method>POST</http-method>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>ws-tiers-role</role-name>
+		</auth-constraint>
+	</security-constraint>
+
+	<security-constraint>
+		<web-resource-collection>
+			<web-resource-name>Web-service Tiers v2</web-resource-name>
+			<url-pattern>/tiers2</url-pattern>
+			<http-method>GET</http-method>
+			<http-method>POST</http-method>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>ws-tiers-role</role-name>
+		</auth-constraint>
+	</security-constraint>
+
+	<security-constraint>
+		<web-resource-collection>
+			<web-resource-name>Web-service Securite</web-resource-name>
+			<url-pattern>/securite</url-pattern>
+			<http-method>GET</http-method>
+			<http-method>POST</http-method>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>ws-securite-role</role-name>
+		</auth-constraint>
+	</security-constraint>
+
+	<security-constraint>
+		<web-resource-collection>
+			<web-resource-name>Web-service fiscal</web-resource-name>
+			<url-pattern>/fiscal</url-pattern>
+			<http-method>GET</http-method>
+			<http-method>POST</http-method>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>ws-fiscal-role</role-name>
+		</auth-constraint>
+	</security-constraint>
+
+	<login-config>
+		<auth-method>BASIC</auth-method>
+		<realm-name>security</realm-name>
+	</login-config>
+	<security-role>
+		<role-name>ws-tiers-role</role-name>
+	</security-role>
+	<security-role>
+		<role-name>ws-securite-role</role-name>
+	</security-role>
+	<security-role>
+		<role-name>ws-fiscal-role</role-name>
+	</security-role>
+
+	
+	<!-- Les listener de notre application -->
+	<listener>
+ 		<listener-class>org.springframework.web.util.Log4jConfigListener</listener-class>
+	</listener>
+	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
+	<listener>
+		<listener-class>org.springframework.web.util.IntrospectorCleanupListener</listener-class>
+	</listener>
+	<listener>
+		<!-- permet de redéployer unireg dans Tomcat sans obtenir une erreur de lecture sur ehcache.xml -->
+		<!-- voir http://ehcache.sourceforge.net/documentation/shutdown.html -->
+		<listener-class>net.sf.ehcache.constructs.web.ShutdownListener</listener-class>
+	</listener>	
+
+</web-app>

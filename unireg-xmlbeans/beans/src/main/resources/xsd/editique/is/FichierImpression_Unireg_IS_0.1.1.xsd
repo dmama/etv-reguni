@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- edited with XMLSpy v2005 rel. 3 U (http://www.altova.com) by Etat de Vaud (Etat de Vaud) -->
+<!--Version 0. 0. 1  - 08.10.08 : JVO - Première version avec la nouvelle structures FichierImpression->TypDocuments_SIPF->typDocumentMétier-->
+<!--Version 0. 0. 2  - 08.10.08 : JVO - New -> -->
+<!--Version 0. 0. 2  - 30.01.09 : JVO - New -> Ajout des balises DT/Liste de retenu modifier/Detail sourcier -> FDG -->
+<!--Version 0. 0. 3  - 11.02.09 : JVO - New -> <TypDocuments_IS_0.0.3.xsd>-->
+<!--Version 0. 1. 0 - 18.02.09 : JVO -ATTENTION - Uniquement traitement de la LRLCBVR(Unireg)-->
+<!--Version 0. 1. 1 - 27.05.09 : JVO -Ajout de Sommation LR-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:include schemaLocation="TypDocuments_Unireg_IS_0.1.1.xsd"/>
+	<xs:element name="FichierImpressionIS" type="typFichierImpressionIS"/>
+	<xs:complexType name="typFichierImpressionIS">
+		<xs:sequence>
+			<xs:element ref="infoTechnique" minOccurs="0"/>
+			<xs:element name="Document" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>Description des types de documents version 1.2, 18.04.07</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element ref="infoDocument" minOccurs="0"/>
+						<xs:element ref="infoArchivage" minOccurs="0"/>
+						<xs:element ref="infoEnteteDocument" minOccurs="0"/>
+						<xs:group ref="typDocumentIS"/>
+						<xs:element ref="infoPiedDePage" minOccurs="0"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element ref="infoRoutage" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>

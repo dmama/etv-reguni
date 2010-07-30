@@ -1,0 +1,225 @@
+a.filename {
+	display: inline;
+	float: left;
+}
+
+
+
+
+legend span.delete {
+	display: none;
+	color: #00FF00;
+}
+
+legend a.delete {
+	display: inline;
+	float: left;
+}
+
+.complements, .civil, .adresses, .fiscal, .tiers, .menage, entreprises,
+.adresse, .for_fiscal, .prestations_imposables, .information, .autres_roles,
+.categorie, .situation_fiscale, .rechercheTiers, .rechercheEvenement, .visuTiers, .visuEvenement, .editTiers {
+	border: 1px solid #bcbcbc;
+	margin-right: 0px;
+	margin-bottom: 10px;
+	margin-left: 0px;
+	background-image: url(bgpannelouter.jpg);
+	background-repeat: repeat;
+}
+
+.individu {
+	float: left;
+}
+
+fieldset.individu + fieldset.individu {
+	float: none;
+}
+
+.individu, .imposition, .entreprise
+	{
+	border: 1px solid #cdcdcd;
+	padding: 10px;
+	margin: 10px;
+	position: relative;
+	top: 10px;
+	z-index: 1;
+	display: inherit;
+	width: 45%;
+	background-image: url(bgpannelinner.jpg);
+	background-repeat: repeat;
+}
+
+.individu tr.even, .entreprise tr.even, .adresse tr.even, .information tr.even,.imposition tr.even,
+.prestations_imposables tr.even, .for_fiscal tr.even, .categorie tr.even, .situation_fiscale tr.even,
+ .autres_roles tr.even, .rechercheTiers tr.even, .rechercheEvenement tr.even, .editTiers tr.even,
+.seulPP tr.even, .couplePremierePP tr.even, .coupleSecondePP tr.even {
+	background-color: #ddd;
+}
+
+.individu tr.odd, .entreprise tr.odd, .adresse tr.odd, .information tr.odd, .imposition tr.odd,
+.prestations_imposables tr.odd, .for_fiscal tr.odd, .categorie tr.odd, .situation_fiscale tr.odd,
+ .autres_roles tr.odd, .rechercheTiers tr.odd, .rechercheEvenement tr.odd, .editTiers tr.odd {
+}
+
+
+.couplePremierePP, .coupleSecondePP {
+	width: 49%;
+}
+
+.couplePremierePP {
+	margin-right: 5px;
+	display:inline;
+	float: left;
+}
+
+.coupleSecondePP {
+	float: left;
+}
+
+.seulPP {
+	
+}
+
+.coupleMenageCommun {
+	width: 99%;
+	float: left;
+}
+
+.coupleMenageCommun + div#buttons {
+	float: left;
+}
+	
+.coupleContribuableOuvert {
+	width: 60%;
+}
+
+.display table {
+	border: 1px solid #666;
+	width: 80%;
+	margin: 20px 0 20px 0;
+}
+
+.display  th, .display  td {
+	padding: 2px 4px 2px 4px !important;
+	text-align: left;
+	vertical-align: top;
+}
+
+.display thead tr {
+	background-color: #fc0;
+}
+
+
+.display  th a,.display  th a:visited {
+	color: black;
+}
+
+.display th a:hover {
+	text-decoration: underline;
+	color: black;
+}
+
+.display  th.sorted a,.display th.sortable a {
+	background-position: right;
+	display: block;
+	width: 99%; 
+}
+
+.display tr.odd {
+	background-color: #fff
+}
+
+.information tr.inactif {
+	background-color: #ffff00;
+	font-weight:bold;
+	font-size:xx-small;
+}
+
+.information tr.evts-civils-non-traites {
+	background-color: #ffc4a7;
+	font-weight:bold;
+	font-size:xx-small;
+}
+
+/**
+ * Table d'action de synchronisation
+ */
+
+#actions_column {
+	width: 20em;
+	padding-top: 1em;
+	padding-left: 1em;
+}
+
+#actions_list table {
+	width: auto;
+	background-color: white;
+	border-collapse: collapse;
+	color: gray;
+}
+
+#actions_list tr.header {
+	background-color: wheat;
+	color: black;
+}
+
+#actions_list td {
+	border-color: black;
+	border-width: 1px;
+	border-style: dotted;
+	padding : 0.8em;
+}
+
+#actions_list td.rowheader {
+	border-right: 0px;
+	padding-right: 0px;
+	vertical-align: top;
+}
+
+#actions_list td.action {
+	border-left: 0px;
+	text-align: left;
+}
+
+#actions_list td.error {
+	border-left: 0px;
+	text-align: left;
+}
+
+/**
+ * Table des remarques
+ */
+
+#remarques {
+	margin: 0.5em;
+}
+
+#remarques .new_remarque * {
+	margin: 0.2em;
+}
+
+#remarques .new_remarque button {
+	padding: 0.2em;
+}
+
+#remarques table.remarques {
+	margin-top: 0.5em;
+	color: gray;
+	background-color:transparent;
+	background-image:url("bgpannelinner.jpg");
+	background-repeat:repeat;
+}
+
+#remarques td {
+	vertical-align: top;
+	padding: 0.2em;
+}
+
+#remarques td.entete {
+	width: 20%;
+	font-size:10px;
+}
+
+#remarques td.texte {
+	color: black;
+}

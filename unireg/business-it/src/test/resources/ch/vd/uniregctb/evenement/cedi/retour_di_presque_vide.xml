@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<DossierElectronique noContribuable="12500001" noSequenceDI="01" periode="2009"
+  retourPiece="false" versionSchema="2.1.1"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="SDI.xsd">
+  <Operation>
+    <DateReception>2010-05-26</DateReception>
+    <OperateurScan>zaisyd</OperateurScan>
+    <DateScan>2010-05-26</DateScan>
+    <LieuScan>CEDI</LieuScan>
+    <TypeSaisie>M</TypeSaisie>
+  </Operation>
+  <DeclarationImpot identifiant="2009_21010_01_20100526160731564"
+    noContribuable="12500001" noSequenceDI="01" periode="2009"
+    typeDocument="100" versionDocument="2.1.1">
+    <ExcluTaxationAutomatique>false</ExcluTaxationAutomatique>
+  </DeclarationImpot>
+</DossierElectronique>

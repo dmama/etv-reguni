@@ -1,0 +1,5229 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+  <table name="PERIODE_FISCALE">
+    <column>ID</column>
+    <column>ANNULATION_DATE</column>
+    <column>ANNULATION_USER</column>
+    <column>LOG_CDATE</column>
+    <column>LOG_CUSER</column>
+    <column>LOG_MDATE</column>
+    <column>LOG_MUSER</column>
+    <column>ANNEE</column>
+    <row>
+      <value>3</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.009]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.305]]></value>
+      <value>[HostMigrationMain]</value>
+      <value>2000</value>
+    </row>
+    <row>
+      <value>8</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.016]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.365]]></value>
+      <value>[HostMigrationMain]</value>
+      <value>2001</value>
+    </row>
+    <row>
+      <value>13</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.022]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.431]]></value>
+      <value>[HostMigrationMain]</value>
+      <value>2002</value>
+    </row>
+    <row>
+      <value>18</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.027]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.495]]></value>
+      <value>[HostMigrationMain]</value>
+      <value>2003</value>
+    </row>
+    <row>
+      <value>23</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.034]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.552]]></value>
+      <value>[HostMigrationMain]</value>
+      <value>2004</value>
+    </row>
+    <row>
+      <value>28</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.039]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.622]]></value>
+      <value>[HostMigrationMain]</value>
+      <value>2005</value>
+    </row>
+    <row>
+      <value>33</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.045]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.684]]></value>
+      <value>[HostMigrationMain]</value>
+      <value>2006</value>
+    </row>
+    <row>
+      <value>38</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.05]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.753]]></value>
+      <value>[HostMigrationMain]</value>
+      <value>2007</value>
+    </row>
+    <row>
+      <value>43</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.057]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.819]]></value>
+      <value>[HostMigrationMain]</value>
+      <value>2008</value>
+    </row>
+    <row>
+      <value>48</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.061]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2010-01-09 01:53:36.752]]></value>
+      <value><![CDATA[[Batch WS]]]></value>
+      <value>2009</value>
+    </row>
+    <row>
+      <value>53</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.066]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-11-30 14:06:59.643]]></value>
+      <value>zaiptf</value>
+      <value>2010</value>
+    </row>
+  </table>
+  <table name="PARAMETRE_PERIODE_FISCALE">
+    <column>ID</column>
+    <column>ANNULATION_DATE</column>
+    <column>ANNULATION_USER</column>
+    <column>LOG_CDATE</column>
+    <column>LOG_CUSER</column>
+    <column>LOG_MDATE</column>
+    <column>LOG_MUSER</column>
+    <column>DATE_FIN_ENVOI_MASSE</column>
+    <column>TERME_GEN_SOMM_EFFECT</column>
+    <column>TERME_GEN_SOMM_REGL</column>
+    <column>TYPE_CTB</column>
+    <column>PERIODE_ID</column>
+    <row>
+      <value>4</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.01]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.01]]></value>
+      <value>[HostMigrationMain]</value>
+      <value>20010131</value>
+      <value>20010430</value>
+      <value>20010331</value>
+      <value>VAUDOIS_ORDINAIRE</value>
+      <value>3</value>
+    </row>
+    <row>
+      <value>5</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.011]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.011]]></value>
+      <value>[HostMigrationMain]</value>
+      <value>20010131</value>
+      <value>20010430</value>
+      <value>20010331</value>
+      <value>VAUDOIS_DEPENSE</value>
+      <value>3</value>
+    </row>
+    <row>
+      <value>6</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.012]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.012]]></value>
+      <value>[HostMigrationMain]</value>
+      <value>20010131</value>
+      <value>20010430</value>
+      <value>20010331</value>
+      <value>HORS_SUISSE</value>
+      <value>3</value>
+    </row>
+    <row>
+      <value>7</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.014]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.014]]></value>
+      <value>[HostMigrationMain]</value>
+      <value>20010131</value>
+      <value>20010430</value>
+      <value>20010331</value>
+      <value>HORS_CANTON</value>
+      <value>3</value>
+    </row>
+    <row>
+      <value>9</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.016]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.016]]></value>
+      <value>[HostMigrationMain]</value>
+      <value>20020131</value>
+      <value>20020430</value>
+      <value>20020331</value>
+      <value>VAUDOIS_DEPENSE</value>
+      <value>8</value>
+    </row>
+    <row>
+      <value>10</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.019]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.019]]></value>
+      <value>[HostMigrationMain]</value>
+      <value>20020131</value>
+      <value>20020430</value>
+      <value>20020331</value>
+      <value>HORS_CANTON</value>
+      <value>8</value>
+    </row>
+    <row>
+      <value>11</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.02]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.02]]></value>
+      <value>[HostMigrationMain]</value>
+      <value>20020131</value>
+      <value>20020430</value>
+      <value>20020331</value>
+      <value>HORS_SUISSE</value>
+      <value>8</value>
+    </row>
+    <row>
+      <value>12</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.02]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.02]]></value>
+      <value>[HostMigrationMain]</value>
+      <value>20020131</value>
+      <value>20020430</value>
+      <value>20020331</value>
+      <value>VAUDOIS_ORDINAIRE</value>
+      <value>8</value>
+    </row>
+    <row>
+      <value>14</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.023]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.023]]></value>
+      <value>[HostMigrationMain]</value>
+      <value>20030131</value>
+      <value>20030430</value>
+      <value>20030331</value>
+      <value>VAUDOIS_DEPENSE</value>
+      <value>13</value>
+    </row>
+    <row>
+      <value>15</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.024]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.024]]></value>
+      <value>[HostMigrationMain]</value>
+      <value>20030131</value>
+      <value>20030430</value>
+      <value>20030331</value>
+      <value>VAUDOIS_ORDINAIRE</value>
+      <value>13</value>
+    </row>
+    <row>
+      <value>16</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.025]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.025]]></value>
+      <value>[HostMigrationMain]</value>
+      <value>20030131</value>
+      <value>20030430</value>
+      <value>20030331</value>
+      <value>HORS_CANTON</value>
+      <value>13</value>
+    </row>
+    <row>
+      <value>17</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.025]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.026]]></value>
+      <value>[HostMigrationMain]</value>
+      <value>20030131</value>
+      <value>20030430</value>
+      <value>20030331</value>
+      <value>HORS_SUISSE</value>
+      <value>13</value>
+    </row>
+    <row>
+      <value>19</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.028]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.028]]></value>
+      <value>[HostMigrationMain]</value>
+      <value>20040131</value>
+      <value>20040430</value>
+      <value>20040331</value>
+      <value>VAUDOIS_ORDINAIRE</value>
+      <value>18</value>
+    </row>
+    <row>
+      <value>20</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.029]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.029]]></value>
+      <value>[HostMigrationMain]</value>
+      <value>20040131</value>
+      <value>20040430</value>
+      <value>20040331</value>
+      <value>HORS_SUISSE</value>
+      <value>18</value>
+    </row>
+    <row>
+      <value>21</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.031]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.031]]></value>
+      <value>[HostMigrationMain]</value>
+      <value>20040131</value>
+      <value>20040430</value>
+      <value>20040331</value>
+      <value>VAUDOIS_DEPENSE</value>
+      <value>18</value>
+    </row>
+    <row>
+      <value>22</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.033]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.033]]></value>
+      <value>[HostMigrationMain]</value>
+      <value>20040131</value>
+      <value>20040430</value>
+      <value>20040331</value>
+      <value>HORS_CANTON</value>
+      <value>18</value>
+    </row>
+    <row>
+      <value>24</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.035]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.035]]></value>
+      <value>[HostMigrationMain]</value>
+      <value>20050131</value>
+      <value>20050430</value>
+      <value>20050331</value>
+      <value>VAUDOIS_ORDINAIRE</value>
+      <value>23</value>
+    </row>
+    <row>
+      <value>25</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.036]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.036]]></value>
+      <value>[HostMigrationMain]</value>
+      <value>20050131</value>
+      <value>20050430</value>
+      <value>20050331</value>
+      <value>HORS_CANTON</value>
+      <value>23</value>
+    </row>
+    <row>
+      <value>26</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.036]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.036]]></value>
+      <value>[HostMigrationMain]</value>
+      <value>20050131</value>
+      <value>20050430</value>
+      <value>20050331</value>
+      <value>HORS_SUISSE</value>
+      <value>23</value>
+    </row>
+    <row>
+      <value>27</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.037]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.037]]></value>
+      <value>[HostMigrationMain]</value>
+      <value>20050131</value>
+      <value>20050430</value>
+      <value>20050331</value>
+      <value>VAUDOIS_DEPENSE</value>
+      <value>23</value>
+    </row>
+    <row>
+      <value>29</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.04]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.04]]></value>
+      <value>[HostMigrationMain]</value>
+      <value>20060131</value>
+      <value>20060430</value>
+      <value>20060331</value>
+      <value>VAUDOIS_DEPENSE</value>
+      <value>28</value>
+    </row>
+    <row>
+      <value>30</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.041]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.041]]></value>
+      <value>[HostMigrationMain]</value>
+      <value>20060131</value>
+      <value>20060430</value>
+      <value>20060331</value>
+      <value>HORS_SUISSE</value>
+      <value>28</value>
+    </row>
+    <row>
+      <value>31</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.042]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.042]]></value>
+      <value>[HostMigrationMain]</value>
+      <value>20060131</value>
+      <value>20060430</value>
+      <value>20060331</value>
+      <value>HORS_CANTON</value>
+      <value>28</value>
+    </row>
+    <row>
+      <value>32</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.043]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.043]]></value>
+      <value>[HostMigrationMain]</value>
+      <value>20060131</value>
+      <value>20060430</value>
+      <value>20060331</value>
+      <value>VAUDOIS_ORDINAIRE</value>
+      <value>28</value>
+    </row>
+    <row>
+      <value>34</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.046]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.046]]></value>
+      <value>[HostMigrationMain]</value>
+      <value>20070131</value>
+      <value>20070430</value>
+      <value>20070331</value>
+      <value>VAUDOIS_ORDINAIRE</value>
+      <value>33</value>
+    </row>
+    <row>
+      <value>35</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.046]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.046]]></value>
+      <value>[HostMigrationMain]</value>
+      <value>20070131</value>
+      <value>20070430</value>
+      <value>20070331</value>
+      <value>VAUDOIS_DEPENSE</value>
+      <value>33</value>
+    </row>
+    <row>
+      <value>36</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.047]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.047]]></value>
+      <value>[HostMigrationMain]</value>
+      <value>20070131</value>
+      <value>20070430</value>
+      <value>20070331</value>
+      <value>HORS_SUISSE</value>
+      <value>33</value>
+    </row>
+    <row>
+      <value>37</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.048]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.048]]></value>
+      <value>[HostMigrationMain]</value>
+      <value>20070131</value>
+      <value>20070430</value>
+      <value>20070331</value>
+      <value>HORS_CANTON</value>
+      <value>33</value>
+    </row>
+    <row>
+      <value>39</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.05]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.05]]></value>
+      <value>[HostMigrationMain]</value>
+      <value>20080131</value>
+      <value>20080430</value>
+      <value>20080331</value>
+      <value>VAUDOIS_ORDINAIRE</value>
+      <value>38</value>
+    </row>
+    <row>
+      <value>40</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.051]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.051]]></value>
+      <value>[HostMigrationMain]</value>
+      <value>20080131</value>
+      <value>20080430</value>
+      <value>20080331</value>
+      <value>VAUDOIS_DEPENSE</value>
+      <value>38</value>
+    </row>
+    <row>
+      <value>41</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.054]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.054]]></value>
+      <value>[HostMigrationMain]</value>
+      <value>20080131</value>
+      <value>20080430</value>
+      <value>20080331</value>
+      <value>HORS_CANTON</value>
+      <value>38</value>
+    </row>
+    <row>
+      <value>42</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.055]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.055]]></value>
+      <value>[HostMigrationMain]</value>
+      <value>20080131</value>
+      <value>20080430</value>
+      <value>20080331</value>
+      <value>HORS_SUISSE</value>
+      <value>38</value>
+    </row>
+    <row>
+      <value>44</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.057]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.057]]></value>
+      <value>[HostMigrationMain]</value>
+      <value>20090131</value>
+      <value>20090430</value>
+      <value>20090331</value>
+      <value>VAUDOIS_DEPENSE</value>
+      <value>43</value>
+    </row>
+    <row>
+      <value>45</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.058]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.058]]></value>
+      <value>[HostMigrationMain]</value>
+      <value>20090131</value>
+      <value>20090430</value>
+      <value>20090331</value>
+      <value>HORS_SUISSE</value>
+      <value>43</value>
+    </row>
+    <row>
+      <value>46</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.059]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.059]]></value>
+      <value>[HostMigrationMain]</value>
+      <value>20090131</value>
+      <value>20090430</value>
+      <value>20090331</value>
+      <value>HORS_CANTON</value>
+      <value>43</value>
+    </row>
+    <row>
+      <value>47</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.06]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.06]]></value>
+      <value>[HostMigrationMain]</value>
+      <value>20090131</value>
+      <value>20090430</value>
+      <value>20090331</value>
+      <value>VAUDOIS_ORDINAIRE</value>
+      <value>43</value>
+    </row>
+    <row>
+      <value>49</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.062]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-11-30 14:04:52.987]]></value>
+      <value>zaiptf</value>
+      <value>20100215</value>
+      <value>20101130</value>
+      <value>20100930</value>
+      <value>HORS_CANTON</value>
+      <value>48</value>
+    </row>
+    <row>
+      <value>50</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.063]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-11-30 12:30:41.75]]></value>
+      <value>zaiptf</value>
+      <value>20100215</value>
+      <value>20100630</value>
+      <value>20100315</value>
+      <value>VAUDOIS_ORDINAIRE</value>
+      <value>48</value>
+    </row>
+    <row>
+      <value>51</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.064]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-11-30 14:04:52.987]]></value>
+      <value>zaiptf</value>
+      <value>20100228</value>
+      <value>20100630</value>
+      <value>20100331</value>
+      <value>VAUDOIS_DEPENSE</value>
+      <value>48</value>
+    </row>
+    <row>
+      <value>52</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.064]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-11-30 14:04:52.987]]></value>
+      <value>zaiptf</value>
+      <value>20100215</value>
+      <value>20101130</value>
+      <value>20100930</value>
+      <value>HORS_SUISSE</value>
+      <value>48</value>
+    </row>
+    <row>
+      <value>54</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.067]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-11-30 14:06:59.643]]></value>
+      <value>zaiptf</value>
+      <value>20110215</value>
+      <value>20110630</value>
+      <value>20110315</value>
+      <value>VAUDOIS_ORDINAIRE</value>
+      <value>53</value>
+    </row>
+    <row>
+      <value>55</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.068]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-11-30 14:06:59.643]]></value>
+      <value>zaiptf</value>
+      <value>20110215</value>
+      <value>20111130</value>
+      <value>20110930</value>
+      <value>HORS_CANTON</value>
+      <value>53</value>
+    </row>
+    <row>
+      <value>56</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.068]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-11-30 14:06:59.644]]></value>
+      <value>zaiptf</value>
+      <value>20110228</value>
+      <value>20110630</value>
+      <value>20110331</value>
+      <value>VAUDOIS_DEPENSE</value>
+      <value>53</value>
+    </row>
+    <row>
+      <value>57</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.069]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-11-30 14:06:59.644]]></value>
+      <value>zaiptf</value>
+      <value>20110215</value>
+      <value>20111130</value>
+      <value>20110930</value>
+      <value>HORS_SUISSE</value>
+      <value>53</value>
+    </row>
+  </table>
+  <table name="PARAMETRE">
+    <column>NOM</column>
+    <column>ANNULATION_DATE</column>
+    <column>ANNULATION_USER</column>
+    <column>LOG_CDATE</column>
+    <column>LOG_CUSER</column>
+    <column>LOG_MDATE</column>
+    <column>LOG_MUSER</column>
+    <column>VALEUR</column>
+    <row>
+      <value>delaiAttenteDeclarationImpotPersonneDecedee</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:23.309]]></value>
+      <value>[system]</value>
+      <value><![CDATA[2009-07-08 17:37:23.309]]></value>
+      <value>[system]</value>
+      <value>30</value>
+    </row>
+    <row>
+      <value>delaiCadevImpressionDeclarationImpot</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:23.317]]></value>
+      <value>[system]</value>
+      <value><![CDATA[2009-07-08 17:37:23.317]]></value>
+      <value>[system]</value>
+      <value>3</value>
+    </row>
+    <row>
+      <value>delaiCadevImpressionListesRecapitulatives</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:23.325]]></value>
+      <value>[system]</value>
+      <value><![CDATA[2009-07-08 17:37:23.326]]></value>
+      <value>[system]</value>
+      <value>3</value>
+    </row>
+    <row>
+      <value>delaiEcheanceSommationDeclarationImpot</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:23.321]]></value>
+      <value>[system]</value>
+      <value><![CDATA[2009-07-08 17:37:23.321]]></value>
+      <value>[system]</value>
+      <value>30</value>
+    </row>
+    <row>
+      <value>delaiEcheanceSommationListeRecapitualtive</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:23.336]]></value>
+      <value>[system]</value>
+      <value><![CDATA[2009-07-08 17:37:23.336]]></value>
+      <value>[system]</value>
+      <value>15</value>
+    </row>
+    <row>
+      <value>delaiEnvoiSommationDeclarationImpot</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:23.319]]></value>
+      <value>[system]</value>
+      <value><![CDATA[2009-07-08 17:37:23.319]]></value>
+      <value>[system]</value>
+      <value>15</value>
+    </row>
+    <row>
+      <value>delaiEnvoiSommationListeRecapitulative</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:23.331]]></value>
+      <value>[system]</value>
+      <value><![CDATA[2009-07-08 17:37:23.331]]></value>
+      <value>[system]</value>
+      <value>15</value>
+    </row>
+    <row>
+      <value>delaiRetentionRapportTravailInactif</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:23.338]]></value>
+      <value>[system]</value>
+      <value><![CDATA[2009-07-08 17:37:23.338]]></value>
+      <value>[system]</value>
+      <value>24</value>
+    </row>
+    <row>
+      <value>delaiRetourDeclarationImpotEmiseManuellement</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:23.314]]></value>
+      <value>[system]</value>
+      <value><![CDATA[2009-07-08 17:37:23.314]]></value>
+      <value>[system]</value>
+      <value>60</value>
+    </row>
+    <row>
+      <value>delaiRetourListeRecapitulative</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:23.328]]></value>
+      <value>[system]</value>
+      <value><![CDATA[2009-07-08 17:37:23.328]]></value>
+      <value>[system]</value>
+      <value>30</value>
+    </row>
+    <row>
+      <value>delaiRetourSommationListeRecapitulative</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:23.334]]></value>
+      <value>[system]</value>
+      <value><![CDATA[2009-07-08 17:37:23.334]]></value>
+      <value>[system]</value>
+      <value>10</value>
+    </row>
+    <row>
+      <value>feteNationale</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:23.301]]></value>
+      <value>[system]</value>
+      <value><![CDATA[2009-07-08 17:37:23.301]]></value>
+      <value>[system]</value>
+      <value>01.08</value>
+    </row>
+    <row>
+      <value>jourDuMoisEnvoiListesRecapitulatives</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:23.323]]></value>
+      <value>[system]</value>
+      <value><![CDATA[2009-07-08 17:37:23.323]]></value>
+      <value>[system]</value>
+      <value>20</value>
+    </row>
+    <row>
+      <value>lendemainNouvelAn</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:23.298]]></value>
+      <value>[system]</value>
+      <value><![CDATA[2009-07-08 17:37:23.298]]></value>
+      <value>[system]</value>
+      <value>02.01</value>
+    </row>
+    <row>
+      <value>nbMaxParListe</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:23.304]]></value>
+      <value>[system]</value>
+      <value><![CDATA[2009-07-08 17:37:23.304]]></value>
+      <value>[system]</value>
+      <value>100</value>
+    </row>
+    <row>
+      <value>nbMaxParPage</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:23.307]]></value>
+      <value>[system]</value>
+      <value><![CDATA[2009-07-08 17:37:23.307]]></value>
+      <value>[system]</value>
+      <value>10</value>
+    </row>
+    <row>
+      <value>noel</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:23.29]]></value>
+      <value>[system]</value>
+      <value><![CDATA[2009-07-08 17:37:23.29]]></value>
+      <value>[system]</value>
+      <value>25.12</value>
+    </row>
+    <row>
+      <value>nouvelAn</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:23.293]]></value>
+      <value>[system]</value>
+      <value><![CDATA[2009-07-08 17:37:23.293]]></value>
+      <value>[system]</value>
+      <value>01.01</value>
+    </row>
+    <row>
+      <value>premierePeriodeFiscale</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:23.271]]></value>
+      <value>[system]</value>
+      <value><![CDATA[2009-07-08 17:37:23.271]]></value>
+      <value>[system]</value>
+      <value>2003</value>
+    </row>
+  </table>
+  <table name="MODELE_DOCUMENT">
+    <column>ID</column>
+    <column>ANNULATION_DATE</column>
+    <column>ANNULATION_USER</column>
+    <column>LOG_CDATE</column>
+    <column>LOG_CUSER</column>
+    <column>LOG_MDATE</column>
+    <column>LOG_MUSER</column>
+    <column>TYPE_DOCUMENT</column>
+    <column>PERIODE_ID</column>
+    <row>
+      <value>58</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.231]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.244]]></value>
+      <value>[HostMigrationMain]</value>
+      <value>DECLARATION_IMPOT_COMPLETE_BATCH</value>
+      <value>3</value>
+    </row>
+    <row>
+      <value>63</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.269]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.27]]></value>
+      <value>[HostMigrationMain]</value>
+      <value>DECLARATION_IMPOT_VAUDTAX</value>
+      <value>3</value>
+    </row>
+    <row>
+      <value>65</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.28]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.282]]></value>
+      <value>[HostMigrationMain]</value>
+      <value>DECLARATION_IMPOT_DEPENSE</value>
+      <value>3</value>
+    </row>
+    <row>
+      <value>67</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.292]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.293]]></value>
+      <value>[HostMigrationMain]</value>
+      <value>DECLARATION_IMPOT_HC_IMMEUBLE</value>
+      <value>3</value>
+    </row>
+    <row>
+      <value>69</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.304]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.304]]></value>
+      <value>[HostMigrationMain]</value>
+      <value>LISTE_RECAPITULATIVE</value>
+      <value>3</value>
+    </row>
+    <row>
+      <value>70</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.31]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.316]]></value>
+      <value>[HostMigrationMain]</value>
+      <value>DECLARATION_IMPOT_COMPLETE_BATCH</value>
+      <value>8</value>
+    </row>
+    <row>
+      <value>75</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.331]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.332]]></value>
+      <value>[HostMigrationMain]</value>
+      <value>DECLARATION_IMPOT_VAUDTAX</value>
+      <value>8</value>
+    </row>
+    <row>
+      <value>77</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.343]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.344]]></value>
+      <value>[HostMigrationMain]</value>
+      <value>DECLARATION_IMPOT_DEPENSE</value>
+      <value>8</value>
+    </row>
+    <row>
+      <value>79</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.352]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.353]]></value>
+      <value>[HostMigrationMain]</value>
+      <value>DECLARATION_IMPOT_HC_IMMEUBLE</value>
+      <value>8</value>
+    </row>
+    <row>
+      <value>81</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.363]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.363]]></value>
+      <value>[HostMigrationMain]</value>
+      <value>LISTE_RECAPITULATIVE</value>
+      <value>8</value>
+    </row>
+    <row>
+      <value>82</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.369]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.376]]></value>
+      <value>[HostMigrationMain]</value>
+      <value>DECLARATION_IMPOT_COMPLETE_BATCH</value>
+      <value>13</value>
+    </row>
+    <row>
+      <value>87</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.39]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.392]]></value>
+      <value>[HostMigrationMain]</value>
+      <value>DECLARATION_IMPOT_VAUDTAX</value>
+      <value>13</value>
+    </row>
+    <row>
+      <value>89</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.403]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.404]]></value>
+      <value>[HostMigrationMain]</value>
+      <value>DECLARATION_IMPOT_DEPENSE</value>
+      <value>13</value>
+    </row>
+    <row>
+      <value>91</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.413]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.414]]></value>
+      <value>[HostMigrationMain]</value>
+      <value>DECLARATION_IMPOT_HC_IMMEUBLE</value>
+      <value>13</value>
+    </row>
+    <row>
+      <value>93</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.429]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.429]]></value>
+      <value>[HostMigrationMain]</value>
+      <value>LISTE_RECAPITULATIVE</value>
+      <value>13</value>
+    </row>
+    <row>
+      <value>94</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.437]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.443]]></value>
+      <value>[HostMigrationMain]</value>
+      <value>DECLARATION_IMPOT_COMPLETE_BATCH</value>
+      <value>18</value>
+    </row>
+    <row>
+      <value>99</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.458]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.46]]></value>
+      <value>[HostMigrationMain]</value>
+      <value>DECLARATION_IMPOT_VAUDTAX</value>
+      <value>18</value>
+    </row>
+    <row>
+      <value>101</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.472]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.475]]></value>
+      <value>[HostMigrationMain]</value>
+      <value>DECLARATION_IMPOT_DEPENSE</value>
+      <value>18</value>
+    </row>
+    <row>
+      <value>103</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.484]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.485]]></value>
+      <value>[HostMigrationMain]</value>
+      <value>DECLARATION_IMPOT_HC_IMMEUBLE</value>
+      <value>18</value>
+    </row>
+    <row>
+      <value>105</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.493]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.493]]></value>
+      <value>[HostMigrationMain]</value>
+      <value>LISTE_RECAPITULATIVE</value>
+      <value>18</value>
+    </row>
+    <row>
+      <value>106</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.5]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.506]]></value>
+      <value>[HostMigrationMain]</value>
+      <value>DECLARATION_IMPOT_COMPLETE_BATCH</value>
+      <value>23</value>
+    </row>
+    <row>
+      <value>111</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.521]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.523]]></value>
+      <value>[HostMigrationMain]</value>
+      <value>DECLARATION_IMPOT_VAUDTAX</value>
+      <value>23</value>
+    </row>
+    <row>
+      <value>113</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.53]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.532]]></value>
+      <value>[HostMigrationMain]</value>
+      <value>DECLARATION_IMPOT_DEPENSE</value>
+      <value>23</value>
+    </row>
+    <row>
+      <value>115</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.541]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.542]]></value>
+      <value>[HostMigrationMain]</value>
+      <value>DECLARATION_IMPOT_HC_IMMEUBLE</value>
+      <value>23</value>
+    </row>
+    <row>
+      <value>117</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.55]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.55]]></value>
+      <value>[HostMigrationMain]</value>
+      <value>LISTE_RECAPITULATIVE</value>
+      <value>23</value>
+    </row>
+    <row>
+      <value>118</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.557]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.563]]></value>
+      <value>[HostMigrationMain]</value>
+      <value>DECLARATION_IMPOT_COMPLETE_BATCH</value>
+      <value>28</value>
+    </row>
+    <row>
+      <value>123</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.58]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.582]]></value>
+      <value>[HostMigrationMain]</value>
+      <value>DECLARATION_IMPOT_VAUDTAX</value>
+      <value>28</value>
+    </row>
+    <row>
+      <value>125</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.593]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.595]]></value>
+      <value>[HostMigrationMain]</value>
+      <value>DECLARATION_IMPOT_DEPENSE</value>
+      <value>28</value>
+    </row>
+    <row>
+      <value>127</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.609]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.611]]></value>
+      <value>[HostMigrationMain]</value>
+      <value>DECLARATION_IMPOT_HC_IMMEUBLE</value>
+      <value>28</value>
+    </row>
+    <row>
+      <value>129</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.62]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.62]]></value>
+      <value>[HostMigrationMain]</value>
+      <value>LISTE_RECAPITULATIVE</value>
+      <value>28</value>
+    </row>
+    <row>
+      <value>130</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.628]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.634]]></value>
+      <value>[HostMigrationMain]</value>
+      <value>DECLARATION_IMPOT_COMPLETE_BATCH</value>
+      <value>33</value>
+    </row>
+    <row>
+      <value>135</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.649]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.651]]></value>
+      <value>[HostMigrationMain]</value>
+      <value>DECLARATION_IMPOT_VAUDTAX</value>
+      <value>33</value>
+    </row>
+    <row>
+      <value>137</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.659]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.661]]></value>
+      <value>[HostMigrationMain]</value>
+      <value>DECLARATION_IMPOT_DEPENSE</value>
+      <value>33</value>
+    </row>
+    <row>
+      <value>139</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.671]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.673]]></value>
+      <value>[HostMigrationMain]</value>
+      <value>DECLARATION_IMPOT_HC_IMMEUBLE</value>
+      <value>33</value>
+    </row>
+    <row>
+      <value>141</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.682]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.682]]></value>
+      <value>[HostMigrationMain]</value>
+      <value>LISTE_RECAPITULATIVE</value>
+      <value>33</value>
+    </row>
+    <row>
+      <value>142</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.691]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-20 09:00:00.0]]></value>
+      <value><![CDATA[SQL Patch]]></value>
+      <value>DECLARATION_IMPOT_COMPLETE_BATCH</value>
+      <value>38</value>
+    </row>
+    <row>
+      <value>147</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.716]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.718]]></value>
+      <value>[HostMigrationMain]</value>
+      <value>DECLARATION_IMPOT_VAUDTAX</value>
+      <value>38</value>
+    </row>
+    <row>
+      <value>149</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.728]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.73]]></value>
+      <value>[HostMigrationMain]</value>
+      <value>DECLARATION_IMPOT_DEPENSE</value>
+      <value>38</value>
+    </row>
+    <row>
+      <value>151</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.74]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.742]]></value>
+      <value>[HostMigrationMain]</value>
+      <value>DECLARATION_IMPOT_HC_IMMEUBLE</value>
+      <value>38</value>
+    </row>
+    <row>
+      <value>153</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.75]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.75]]></value>
+      <value>[HostMigrationMain]</value>
+      <value>LISTE_RECAPITULATIVE</value>
+      <value>38</value>
+    </row>
+    <row>
+      <value>154</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.759]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-20 09:00:00.0]]></value>
+      <value><![CDATA[SQL Patch]]></value>
+      <value>DECLARATION_IMPOT_COMPLETE_BATCH</value>
+      <value>43</value>
+    </row>
+    <row>
+      <value>159</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.782]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-20 09:00:00.0]]></value>
+      <value><![CDATA[SQL Patch]]></value>
+      <value>DECLARATION_IMPOT_VAUDTAX</value>
+      <value>43</value>
+    </row>
+    <row>
+      <value>161</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.795]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.797]]></value>
+      <value>[HostMigrationMain]</value>
+      <value>DECLARATION_IMPOT_DEPENSE</value>
+      <value>43</value>
+    </row>
+    <row>
+      <value>163</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.806]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.808]]></value>
+      <value>[HostMigrationMain]</value>
+      <value>DECLARATION_IMPOT_HC_IMMEUBLE</value>
+      <value>43</value>
+    </row>
+    <row>
+      <value>165</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.817]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.817]]></value>
+      <value>[HostMigrationMain]</value>
+      <value>LISTE_RECAPITULATIVE</value>
+      <value>43</value>
+    </row>
+    <row>
+      <value>166</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.824]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2010-01-09 01:53:36.752]]></value>
+      <value><![CDATA[[Batch WS]]]></value>
+      <value>DECLARATION_IMPOT_COMPLETE_BATCH</value>
+      <value>48</value>
+    </row>
+    <row>
+      <value>172</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.848]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.85]]></value>
+      <value>[HostMigrationMain]</value>
+      <value>DECLARATION_IMPOT_VAUDTAX</value>
+      <value>48</value>
+    </row>
+    <row>
+      <value>174</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.86]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.862]]></value>
+      <value>[HostMigrationMain]</value>
+      <value>DECLARATION_IMPOT_DEPENSE</value>
+      <value>48</value>
+    </row>
+    <row>
+      <value>176</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.87]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.872]]></value>
+      <value>[HostMigrationMain]</value>
+      <value>DECLARATION_IMPOT_HC_IMMEUBLE</value>
+      <value>48</value>
+    </row>
+    <row>
+      <value>178</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.882]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.882]]></value>
+      <value>[HostMigrationMain]</value>
+      <value>LISTE_RECAPITULATIVE</value>
+      <value>48</value>
+    </row>
+    <row>
+      <value>179</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.892]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.9]]></value>
+      <value>[HostMigrationMain]</value>
+      <value>DECLARATION_IMPOT_COMPLETE_BATCH</value>
+      <value>53</value>
+    </row>
+    <row>
+      <value>185</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.922]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.925]]></value>
+      <value>[HostMigrationMain]</value>
+      <value>DECLARATION_IMPOT_VAUDTAX</value>
+      <value>53</value>
+    </row>
+    <row>
+      <value>187</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.935]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.937]]></value>
+      <value>[HostMigrationMain]</value>
+      <value>DECLARATION_IMPOT_DEPENSE</value>
+      <value>53</value>
+    </row>
+    <row>
+      <value>189</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.947]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.949]]></value>
+      <value>[HostMigrationMain]</value>
+      <value>DECLARATION_IMPOT_HC_IMMEUBLE</value>
+      <value>53</value>
+    </row>
+    <row>
+      <value>191</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.958]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.958]]></value>
+      <value>[HostMigrationMain]</value>
+      <value>LISTE_RECAPITULATIVE</value>
+      <value>53</value>
+    </row>
+    <row>
+      <value>19876967</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value>DECLARATION_IMPOT_COMPLETE_LOCAL</value>
+      <value>3</value>
+    </row>
+    <row>
+      <value>19876968</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value>DECLARATION_IMPOT_COMPLETE_LOCAL</value>
+      <value>8</value>
+    </row>
+    <row>
+      <value>19876969</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value>DECLARATION_IMPOT_COMPLETE_LOCAL</value>
+      <value>13</value>
+    </row>
+    <row>
+      <value>19876970</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value>DECLARATION_IMPOT_COMPLETE_LOCAL</value>
+      <value>18</value>
+    </row>
+    <row>
+      <value>19876971</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value>DECLARATION_IMPOT_COMPLETE_LOCAL</value>
+      <value>28</value>
+    </row>
+    <row>
+      <value>19876972</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value>DECLARATION_IMPOT_COMPLETE_LOCAL</value>
+      <value>33</value>
+    </row>
+    <row>
+      <value>19876973</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value>DECLARATION_IMPOT_COMPLETE_LOCAL</value>
+      <value>43</value>
+    </row>
+    <row>
+      <value>19876974</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value>DECLARATION_IMPOT_COMPLETE_LOCAL</value>
+      <value>53</value>
+    </row>
+    <row>
+      <value>19876975</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value>DECLARATION_IMPOT_COMPLETE_LOCAL</value>
+      <value>23</value>
+    </row>
+    <row>
+      <value>19876976</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value>DECLARATION_IMPOT_COMPLETE_LOCAL</value>
+      <value>48</value>
+    </row>
+    <row>
+      <value>19876977</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value>DECLARATION_IMPOT_COMPLETE_LOCAL</value>
+      <value>38</value>
+    </row>
+  </table>
+  <table name="MODELE_FEUILLE_DOC">
+    <column>ID</column>
+    <column>ANNULATION_DATE</column>
+    <column>ANNULATION_USER</column>
+    <column>LOG_CDATE</column>
+    <column>LOG_CUSER</column>
+    <column>LOG_MDATE</column>
+    <column>LOG_MUSER</column>
+    <column>INTITULE_FEUILLE</column>
+    <column>NO_FORMULAIRE</column>
+    <column>MODELE_ID</column>
+    <row>
+      <value>59</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.24]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.24]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[Annexe 4 et 5]]></value>
+      <value>240</value>
+      <value>58</value>
+    </row>
+    <row>
+      <value>60</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.241]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.241]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[Déclaration complète]]></value>
+      <value>210</value>
+      <value>58</value>
+    </row>
+    <row>
+      <value>61</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.243]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.243]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[Annexe 2 et 3]]></value>
+      <value>230</value>
+      <value>58</value>
+    </row>
+    <row>
+      <value>62</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.244]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.244]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[Annexe 1]]></value>
+      <value>220</value>
+      <value>58</value>
+    </row>
+    <row>
+      <value>64</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.27]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.27]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[Déclaration Vaud Tax]]></value>
+      <value>250</value>
+      <value>63</value>
+    </row>
+    <row>
+      <value>66</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.281]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.281]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[Déclaration Dépense]]></value>
+      <value>270</value>
+      <value>65</value>
+    </row>
+    <row>
+      <value>68</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.293]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.293]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[Déclaration Hors canton immeuble]]></value>
+      <value>200</value>
+      <value>67</value>
+    </row>
+    <row>
+      <value>71</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.313]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.313]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[Annexe 4 et 5]]></value>
+      <value>240</value>
+      <value>70</value>
+    </row>
+    <row>
+      <value>72</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.314]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.314]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[Annexe 2 et 3]]></value>
+      <value>230</value>
+      <value>70</value>
+    </row>
+    <row>
+      <value>73</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.315]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.315]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[Déclaration complète]]></value>
+      <value>210</value>
+      <value>70</value>
+    </row>
+    <row>
+      <value>74</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.315]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.315]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[Annexe 1]]></value>
+      <value>220</value>
+      <value>70</value>
+    </row>
+    <row>
+      <value>76</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.332]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.332]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[Déclaration Vaud Tax]]></value>
+      <value>250</value>
+      <value>75</value>
+    </row>
+    <row>
+      <value>78</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.344]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.344]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[Déclaration Dépense]]></value>
+      <value>270</value>
+      <value>77</value>
+    </row>
+    <row>
+      <value>80</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.353]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.353]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[Déclaration Hors canton immeuble]]></value>
+      <value>200</value>
+      <value>79</value>
+    </row>
+    <row>
+      <value>83</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.373]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.373]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[Annexe 2 et 3]]></value>
+      <value>230</value>
+      <value>82</value>
+    </row>
+    <row>
+      <value>84</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.374]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.374]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[Déclaration complète]]></value>
+      <value>210</value>
+      <value>82</value>
+    </row>
+    <row>
+      <value>85</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.375]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.375]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[Annexe 4 et 5]]></value>
+      <value>240</value>
+      <value>82</value>
+    </row>
+    <row>
+      <value>86</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.376]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.376]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[Annexe 1]]></value>
+      <value>220</value>
+      <value>82</value>
+    </row>
+    <row>
+      <value>88</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.392]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.392]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[Déclaration Vaud Tax]]></value>
+      <value>250</value>
+      <value>87</value>
+    </row>
+    <row>
+      <value>90</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.404]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.404]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[Déclaration Dépense]]></value>
+      <value>270</value>
+      <value>89</value>
+    </row>
+    <row>
+      <value>92</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.414]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.414]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[Déclaration Hors canton immeuble]]></value>
+      <value>200</value>
+      <value>91</value>
+    </row>
+    <row>
+      <value>95</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.441]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.441]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[Annexe 2 et 3]]></value>
+      <value>230</value>
+      <value>94</value>
+    </row>
+    <row>
+      <value>96</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.442]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.442]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[Annexe 4 et 5]]></value>
+      <value>240</value>
+      <value>94</value>
+    </row>
+    <row>
+      <value>97</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.442]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.442]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[Annexe 1]]></value>
+      <value>220</value>
+      <value>94</value>
+    </row>
+    <row>
+      <value>98</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.443]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.443]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[Déclaration complète]]></value>
+      <value>210</value>
+      <value>94</value>
+    </row>
+    <row>
+      <value>100</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.46]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.46]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[Déclaration Vaud Tax]]></value>
+      <value>250</value>
+      <value>99</value>
+    </row>
+    <row>
+      <value>102</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.474]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.474]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[Déclaration Dépense]]></value>
+      <value>270</value>
+      <value>101</value>
+    </row>
+    <row>
+      <value>104</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.485]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.485]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[Déclaration Hors canton immeuble]]></value>
+      <value>200</value>
+      <value>103</value>
+    </row>
+    <row>
+      <value>107</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.504]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.504]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[Annexe 2 et 3]]></value>
+      <value>230</value>
+      <value>106</value>
+    </row>
+    <row>
+      <value>108</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.504]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.504]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[Déclaration complète]]></value>
+      <value>210</value>
+      <value>106</value>
+    </row>
+    <row>
+      <value>109</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.505]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.505]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[Annexe 1]]></value>
+      <value>220</value>
+      <value>106</value>
+    </row>
+    <row>
+      <value>110</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.506]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.506]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[Annexe 4 et 5]]></value>
+      <value>240</value>
+      <value>106</value>
+    </row>
+    <row>
+      <value>112</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.522]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.522]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[Déclaration Vaud Tax]]></value>
+      <value>250</value>
+      <value>111</value>
+    </row>
+    <row>
+      <value>114</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.532]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.532]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[Déclaration Dépense]]></value>
+      <value>270</value>
+      <value>113</value>
+    </row>
+    <row>
+      <value>116</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.542]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.542]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[Déclaration Hors canton immeuble]]></value>
+      <value>200</value>
+      <value>115</value>
+    </row>
+    <row>
+      <value>119</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.56]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.56]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[Déclaration complète]]></value>
+      <value>210</value>
+      <value>118</value>
+    </row>
+    <row>
+      <value>120</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.56]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.56]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[Annexe 2 et 3]]></value>
+      <value>230</value>
+      <value>118</value>
+    </row>
+    <row>
+      <value>121</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.562]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.562]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[Annexe 4 et 5]]></value>
+      <value>240</value>
+      <value>118</value>
+    </row>
+    <row>
+      <value>122</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.563]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.563]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[Annexe 1]]></value>
+      <value>220</value>
+      <value>118</value>
+    </row>
+    <row>
+      <value>124</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.582]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.582]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[Déclaration Vaud Tax]]></value>
+      <value>250</value>
+      <value>123</value>
+    </row>
+    <row>
+      <value>126</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.595]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.595]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[Déclaration Dépense]]></value>
+      <value>270</value>
+      <value>125</value>
+    </row>
+    <row>
+      <value>128</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.61]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.61]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[Déclaration Hors canton immeuble]]></value>
+      <value>200</value>
+      <value>127</value>
+    </row>
+    <row>
+      <value>131</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.631]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.631]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[Annexe 4 et 5]]></value>
+      <value>240</value>
+      <value>130</value>
+    </row>
+    <row>
+      <value>132</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.632]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.632]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[Annexe 1]]></value>
+      <value>220</value>
+      <value>130</value>
+    </row>
+    <row>
+      <value>133</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.632]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.632]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[Déclaration complète]]></value>
+      <value>210</value>
+      <value>130</value>
+    </row>
+    <row>
+      <value>134</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.633]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.633]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[Annexe 2 et 3]]></value>
+      <value>230</value>
+      <value>130</value>
+    </row>
+    <row>
+      <value>136</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.65]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.65]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[Déclaration Vaud Tax]]></value>
+      <value>250</value>
+      <value>135</value>
+    </row>
+    <row>
+      <value>138</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.66]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.66]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[Déclaration Dépense]]></value>
+      <value>270</value>
+      <value>137</value>
+    </row>
+    <row>
+      <value>140</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.672]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.672]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[Déclaration Hors canton immeuble]]></value>
+      <value>200</value>
+      <value>139</value>
+    </row>
+    <row>
+      <value>143</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.695]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.695]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[Annexe 1]]></value>
+      <value>220</value>
+      <value>142</value>
+    </row>
+    <row>
+      <value>144</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.696]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.696]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[Annexe 2 et 3]]></value>
+      <value>230</value>
+      <value>142</value>
+    </row>
+    <row>
+      <value>145</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.697]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.697]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[Déclaration complète]]></value>
+      <value>210</value>
+      <value>142</value>
+    </row>
+    <row>
+      <value>146</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.697]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.697]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[Annexe 4 et 5]]></value>
+      <value>240</value>
+      <value>142</value>
+    </row>
+    <row>
+      <value>148</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.717]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.717]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[Déclaration Vaud Tax]]></value>
+      <value>250</value>
+      <value>147</value>
+    </row>
+    <row>
+      <value>150</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.729]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.729]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[Déclaration Dépense]]></value>
+      <value>270</value>
+      <value>149</value>
+    </row>
+    <row>
+      <value>152</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.742]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.742]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[Déclaration Hors canton immeuble]]></value>
+      <value>200</value>
+      <value>151</value>
+    </row>
+    <row>
+      <value>155</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.762]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.762]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[Annexe 1]]></value>
+      <value>220</value>
+      <value>154</value>
+    </row>
+    <row>
+      <value>156</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.763]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.763]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[Déclaration complète]]></value>
+      <value>210</value>
+      <value>154</value>
+    </row>
+    <row>
+      <value>157</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.763]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.763]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[Annexe 4 et 5]]></value>
+      <value>240</value>
+      <value>154</value>
+    </row>
+    <row>
+      <value>158</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.764]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.764]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[Annexe 2 et 3]]></value>
+      <value>230</value>
+      <value>154</value>
+    </row>
+    <row>
+      <value>160</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.784]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.784]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[Déclaration Vaud Tax]]></value>
+      <value>250</value>
+      <value>159</value>
+    </row>
+    <row>
+      <value>162</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.797]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.797]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[Déclaration Dépense]]></value>
+      <value>270</value>
+      <value>161</value>
+    </row>
+    <row>
+      <value>164</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.808]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.808]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[Déclaration Hors canton immeuble]]></value>
+      <value>200</value>
+      <value>163</value>
+    </row>
+    <row>
+      <value>167</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.828]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.828]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[Annexe 1]]></value>
+      <value>220</value>
+      <value>166</value>
+    </row>
+    <row>
+      <value>168</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.828]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.828]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[Déclaration complète]]></value>
+      <value>210</value>
+      <value>166</value>
+    </row>
+    <row>
+      <value>169</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.829]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.829]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[Annexe 4 et 5]]></value>
+      <value>240</value>
+      <value>166</value>
+    </row>
+    <row>
+      <value>171</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.83]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.83]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[Annexe 2 et 3]]></value>
+      <value>230</value>
+      <value>166</value>
+    </row>
+    <row>
+      <value>173</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.849]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.849]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[Déclaration Vaud Tax]]></value>
+      <value>250</value>
+      <value>172</value>
+    </row>
+    <row>
+      <value>175</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.861]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.861]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[Déclaration Dépense]]></value>
+      <value>270</value>
+      <value>174</value>
+    </row>
+    <row>
+      <value>177</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.871]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.871]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[Déclaration Hors canton immeuble]]></value>
+      <value>200</value>
+      <value>176</value>
+    </row>
+    <row>
+      <value>181</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.897]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.897]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[Annexe 2 et 3]]></value>
+      <value>230</value>
+      <value>179</value>
+    </row>
+    <row>
+      <value>182</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.898]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.898]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[Annexe 1]]></value>
+      <value>220</value>
+      <value>179</value>
+    </row>
+    <row>
+      <value>183</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.899]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.899]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[Annexe 4 et 5]]></value>
+      <value>240</value>
+      <value>179</value>
+    </row>
+    <row>
+      <value>184</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.899]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.899]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[Déclaration complète]]></value>
+      <value>210</value>
+      <value>179</value>
+    </row>
+    <row>
+      <value>186</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.924]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.924]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[Déclaration Vaud Tax]]></value>
+      <value>250</value>
+      <value>185</value>
+    </row>
+    <row>
+      <value>188</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.937]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.937]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[Déclaration Dépense]]></value>
+      <value>270</value>
+      <value>187</value>
+    </row>
+    <row>
+      <value>190</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:37.949]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-08 17:37:37.949]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[Déclaration Hors canton immeuble]]></value>
+      <value>200</value>
+      <value>189</value>
+    </row>
+    <row>
+      <value>19876978</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[Annexe 2 et 3]]></value>
+      <value>230</value>
+      <value>19876967</value>
+    </row>
+    <row>
+      <value>19876979</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[Annexe 4 et 5]]></value>
+      <value>240</value>
+      <value>19876967</value>
+    </row>
+    <row>
+      <value>19876980</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[Déclaration complète]]></value>
+      <value>210</value>
+      <value>19876967</value>
+    </row>
+    <row>
+      <value>19876981</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[Annexe 1]]></value>
+      <value>220</value>
+      <value>19876967</value>
+    </row>
+    <row>
+      <value>19876982</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[Annexe 2 et 3]]></value>
+      <value>230</value>
+      <value>19876968</value>
+    </row>
+    <row>
+      <value>19876983</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[Annexe 4 et 5]]></value>
+      <value>240</value>
+      <value>19876968</value>
+    </row>
+    <row>
+      <value>19876984</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[Déclaration complète]]></value>
+      <value>210</value>
+      <value>19876968</value>
+    </row>
+    <row>
+      <value>19876985</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[Annexe 1]]></value>
+      <value>220</value>
+      <value>19876968</value>
+    </row>
+    <row>
+      <value>19876986</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[Annexe 2 et 3]]></value>
+      <value>230</value>
+      <value>19876969</value>
+    </row>
+    <row>
+      <value>19876987</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[Déclaration complète]]></value>
+      <value>210</value>
+      <value>19876969</value>
+    </row>
+    <row>
+      <value>19876988</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[Annexe 4 et 5]]></value>
+      <value>240</value>
+      <value>19876969</value>
+    </row>
+    <row>
+      <value>19876989</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[Annexe 1]]></value>
+      <value>220</value>
+      <value>19876969</value>
+    </row>
+    <row>
+      <value>19876990</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[Déclaration complète]]></value>
+      <value>210</value>
+      <value>19876970</value>
+    </row>
+    <row>
+      <value>19876991</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[Annexe 1]]></value>
+      <value>220</value>
+      <value>19876970</value>
+    </row>
+    <row>
+      <value>19876992</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[Annexe 2 et 3]]></value>
+      <value>230</value>
+      <value>19876970</value>
+    </row>
+    <row>
+      <value>19876993</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[Annexe 4 et 5]]></value>
+      <value>240</value>
+      <value>19876970</value>
+    </row>
+    <row>
+      <value>19876994</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[Annexe 4 et 5]]></value>
+      <value>240</value>
+      <value>19876971</value>
+    </row>
+    <row>
+      <value>19876995</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[Déclaration complète]]></value>
+      <value>210</value>
+      <value>19876971</value>
+    </row>
+    <row>
+      <value>19876996</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[Annexe 2 et 3]]></value>
+      <value>230</value>
+      <value>19876971</value>
+    </row>
+    <row>
+      <value>19876997</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[Annexe 1]]></value>
+      <value>220</value>
+      <value>19876971</value>
+    </row>
+    <row>
+      <value>19876998</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[Annexe 2 et 3]]></value>
+      <value>230</value>
+      <value>19876972</value>
+    </row>
+    <row>
+      <value>19876999</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[Déclaration complète]]></value>
+      <value>210</value>
+      <value>19876972</value>
+    </row>
+    <row>
+      <value>19877000</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[Annexe 1]]></value>
+      <value>220</value>
+      <value>19876972</value>
+    </row>
+    <row>
+      <value>19877001</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[Annexe 4 et 5]]></value>
+      <value>240</value>
+      <value>19876972</value>
+    </row>
+    <row>
+      <value>19877002</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[Annexe 1]]></value>
+      <value>220</value>
+      <value>19876973</value>
+    </row>
+    <row>
+      <value>19877003</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[Annexe 2 et 3]]></value>
+      <value>230</value>
+      <value>19876973</value>
+    </row>
+    <row>
+      <value>19877004</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[Annexe 4 et 5]]></value>
+      <value>240</value>
+      <value>19876973</value>
+    </row>
+    <row>
+      <value>19877005</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[Déclaration complète]]></value>
+      <value>210</value>
+      <value>19876973</value>
+    </row>
+    <row>
+      <value>19877006</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[Déclaration complète]]></value>
+      <value>210</value>
+      <value>19876974</value>
+    </row>
+    <row>
+      <value>19877007</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[Annexe 4 et 5]]></value>
+      <value>240</value>
+      <value>19876974</value>
+    </row>
+    <row>
+      <value>19877008</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[Annexe 1]]></value>
+      <value>220</value>
+      <value>19876974</value>
+    </row>
+    <row>
+      <value>19877009</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[Annexe 2 et 3]]></value>
+      <value>230</value>
+      <value>19876974</value>
+    </row>
+    <row>
+      <value>19877010</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[Annexe 1-1]]></value>
+      <value>310</value>
+      <value>19876974</value>
+    </row>
+    <row>
+      <value>19877011</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[Annexe 1]]></value>
+      <value>220</value>
+      <value>19876975</value>
+    </row>
+    <row>
+      <value>19877012</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[Annexe 4 et 5]]></value>
+      <value>240</value>
+      <value>19876975</value>
+    </row>
+    <row>
+      <value>19877013</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[Déclaration complète]]></value>
+      <value>210</value>
+      <value>19876975</value>
+    </row>
+    <row>
+      <value>19877014</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[Annexe 2 et 3]]></value>
+      <value>230</value>
+      <value>19876975</value>
+    </row>
+    <row>
+      <value>19877015</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[Annexe 4 et 5]]></value>
+      <value>240</value>
+      <value>19876976</value>
+    </row>
+    <row>
+      <value>19877016</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[Annexe 2 et 3]]></value>
+      <value>230</value>
+      <value>19876976</value>
+    </row>
+    <row>
+      <value>19877017</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[Déclaration complète]]></value>
+      <value>210</value>
+      <value>19876976</value>
+    </row>
+    <row>
+      <value>19877018</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[Annexe 1-1]]></value>
+      <value>310</value>
+      <value>19876976</value>
+    </row>
+    <row>
+      <value>19877019</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[Annexe 1]]></value>
+      <value>220</value>
+      <value>19876976</value>
+    </row>
+    <row>
+      <value>19877020</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[Annexe 1]]></value>
+      <value>220</value>
+      <value>19876977</value>
+    </row>
+    <row>
+      <value>19877021</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[Annexe 4 et 5]]></value>
+      <value>240</value>
+      <value>19876977</value>
+    </row>
+    <row>
+      <value>19877022</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[Déclaration complète]]></value>
+      <value>210</value>
+      <value>19876977</value>
+    </row>
+    <row>
+      <value>19877023</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[2009-11-27 15:51:39.0]]></value>
+      <value>schema-3.4</value>
+      <value><![CDATA[Annexe 2 et 3]]></value>
+      <value>230</value>
+      <value>19876977</value>
+    </row>
+  </table>
+  <table name="TIERS">
+    <column>TIERS_TYPE</column>
+    <column>NUMERO</column>
+    <column>ANNULATION_DATE</column>
+    <column>ANNULATION_USER</column>
+    <column>LOG_CDATE</column>
+    <column>LOG_CUSER</column>
+    <column>LOG_MDATE</column>
+    <column>LOG_MUSER</column>
+    <column>ADRESSE_BIC_SWIFT</column>
+    <column>ADRESSE_EMAIL</column>
+    <column>BLOC_REMB_AUTO</column>
+    <column>COMPLEMENT_NOM</column>
+    <column>DEBITEUR_INACTIF</column>
+    <column>INDEX_DIRTY</column>
+    <column>NUMERO_COMPTE_BANCAIRE</column>
+    <column>NUMERO_TELECOPIE</column>
+    <column>NUMERO_TEL_PORTABLE</column>
+    <column>NUMERO_TEL_PRIVE</column>
+    <column>NUMERO_TEL_PROF</column>
+    <column>OID</column>
+    <column>PERSONNE_CONTACT</column>
+    <column>TITULAIRE_COMPTE_BANCAIRE</column>
+    <column>AC_FORME_JURIDIQUE</column>
+    <column>AC_NOM</column>
+    <column>NUMERO_CA</column>
+    <column>CATEGORIE_IMPOT_SOURCE</column>
+    <column>MODE_COM</column>
+    <column>DPI_NOM1</column>
+    <column>DPI_NOM2</column>
+    <column>PERIODE_DECOMPTE</column>
+    <column>PERIODICITE_DECOMPTE</column>
+    <column>SANS_LISTE_RECAP</column>
+    <column>SANS_RAPPEL</column>
+    <column>NUMERO_PM</column>
+    <column>NUMERO_ETABLISSEMENT</column>
+    <column>ANCIEN_NUMERO_SOURCIER</column>
+    <column>NH_CAT_ETRANGER</column>
+    <column>NH_DATE_DEBUT_VALID_AUTORIS</column>
+    <column>DATE_DECES</column>
+    <column>NH_DATE_NAISSANCE</column>
+    <column>PP_HABITANT</column>
+    <column>NH_NOM</column>
+    <column>NH_NUMERO_ASSURE_SOCIAL</column>
+    <column>NUMERO_INDIVIDU</column>
+    <column>NH_NO_OFS_NATIONALITE</column>
+    <column>NH_PRENOM</column>
+    <column>NH_SEXE</column>
+    <column>MAJORITE_TRAITEE</column>
+    <column>NH_NO_OFS_COMMUNE_ORIGINE</column>
+    <column>DATE_LIMITE_EXCLUSION</column>
+    <row>
+      <value>CollectiviteAdministrative</value>
+      <value>2001011</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 17:37:33.173]]></value>
+      <value>[HostMigrationMain]</value>
+      <value><![CDATA[2009-07-24 18:07:38.052]]></value>
+      <value>[HostMigrationMain]</value>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <value>0</value>
+      <value>0</value>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <value>1012</value>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+    </row>
+    <row>
+      <value>PersonnePhysique</value>
+      <value>28014710</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2008-11-25 00:00:00.0]]></value>
+      <value>W#ASIZP1</value>
+      <value><![CDATA[2009-10-03 21:05:21.95]]></value>
+      <value>unireg-interfaces</value>
+      <null/>
+      <null/>
+      <value>1</value>
+      <null/>
+      <value>0</value>
+      <value>0</value>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <value>11</value>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <value>1</value>
+      <null/>
+      <null/>
+      <value>337357</value>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+    </row>
+    <row>
+      <value>PersonnePhysique</value>
+      <value>38005301</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-04-27 00:00:00.0]]></value>
+      <value><![CDATA[ZAIYDY  ]]></value>
+      <value><![CDATA[2010-02-09 13:57:21.966]]></value>
+      <value>usrfis06</value>
+      <null/>
+      <null/>
+      <value>1</value>
+      <null/>
+      <value>0</value>
+      <value>0</value>
+      <null/>
+      <null/>
+      <value>0787693456</value>
+      <null/>
+      <null/>
+      <value>17</value>
+      <null/>
+      <value><![CDATA[Durand Jean-Luc]]></value>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <value>1</value>
+      <null/>
+      <null/>
+      <value>130364</value>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+    </row>
+    <row>
+      <value>PersonnePhysique</value>
+      <value>38005401</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2008-11-26 00:00:00.0]]></value>
+      <value>W#ASIZP1</value>
+      <value><![CDATA[2009-11-05 17:55:18.745]]></value>
+      <value>EvtCivil-142640</value>
+      <null/>
+      <null/>
+      <value>1</value>
+      <null/>
+      <value>0</value>
+      <value>0</value>
+      <null/>
+      <null/>
+      <null/>
+      <value>0244453720</value>
+      <null/>
+      <value>19</value>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <value>1</value>
+      <null/>
+      <null/>
+      <value>782568</value>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+    </row>
+    <row>
+      <value>PersonnePhysique</value>
+      <value>10501047</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2008-10-19 00:00:00.0]]></value>
+      <value>IL08667Z</value>
+      <value><![CDATA[2009-07-25 07:22:15.222]]></value>
+      <value>IL08667Z</value>
+      <null/>
+      <null/>
+      <value>1</value>
+      <null/>
+      <value>0</value>
+      <value>0</value>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <value>1</value>
+      <null/>
+      <null/>
+      <value>791022</value>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+    </row>
+    <row>
+      <value>PersonnePhysique</value>
+      <value>10582592</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-06-02 00:00:00.0]]></value>
+      <value><![CDATA[IL08529 ]]></value>
+      <value><![CDATA[2009-10-04 05:19:09.202]]></value>
+      <value><![CDATA[IL08529 ]]></value>
+      <null/>
+      <null/>
+      <value>1</value>
+      <value><![CDATA[                                        ]]></value>
+      <value>1</value>
+      <value>0</value>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <value>0</value>
+      <value><![CDATA[Trachsel/doublon Christelle             ]]></value>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+      <null/>
+    </row>
+  </table>
+  <table name="FOR_FISCAL">
+    <column>FOR_TYPE</column>
+    <column>ID</column>
+    <column>ANNULATION_DATE</column>
+    <column>ANNULATION_USER</column>
+    <column>LOG_CDATE</column>
+    <column>LOG_CUSER</column>
+    <column>LOG_MDATE</column>
+    <column>LOG_MUSER</column>
+    <column>DATE_OUVERTURE</column>
+    <column>DATE_FERMETURE</column>
+    <column>GENRE_IMPOT</column>
+    <column>NUMERO_OFS</column>
+    <column>TYPE_AUT_FISC</column>
+    <column>MOTIF_FERMETURE</column>
+    <column>MOTIF_OUVERTURE</column>
+    <column>MOTIF_RATTACHEMENT</column>
+    <column>MODE_IMPOSITION</column>
+    <column>TIERS_ID</column>
+    <row>
+      <value>ForFiscalPrincipal</value>
+      <value>8839554</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2003-08-30 00:00:00.0]]></value>
+      <value><![CDATA[IL08426 ]]></value>
+      <value><![CDATA[2003-08-30 00:00:00.0]]></value>
+      <value><![CDATA[IL08426 ]]></value>
+      <value>19760107</value>
+      <null/>
+      <value>REVENU_FORTUNE</value>
+      <value>5675</value>
+      <value>COMMUNE_OU_FRACTION_VD</value>
+      <null/>
+      <value>INDETERMINE</value>
+      <value>DOMICILE</value>
+      <value>ORDINAIRE</value>
+      <value>28014710</value>
+    </row>
+    <row>
+      <value>ForFiscalPrincipal</value>
+      <value>3342699</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2005-08-30 00:00:00.0]]></value>
+      <value><![CDATA[ZAIVSC  ]]></value>
+      <value><![CDATA[2005-08-30 00:00:00.0]]></value>
+      <value><![CDATA[ZAIVSC  ]]></value>
+      <value>20040801</value>
+      <value>20050530</value>
+      <value>REVENU_FORTUNE</value>
+      <value>5401</value>
+      <value>COMMUNE_OU_FRACTION_VD</value>
+      <value>DEMENAGEMENT_VD</value>
+      <value>DEMENAGEMENT_VD</value>
+      <value>DOMICILE</value>
+      <value>ORDINAIRE</value>
+      <value>38005301</value>
+    </row>
+    <row>
+      <value>ForFiscalPrincipal</value>
+      <value>3342707</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2003-08-30 00:00:00.0]]></value>
+      <value><![CDATA[IL08426 ]]></value>
+      <value><![CDATA[2003-08-30 00:00:00.0]]></value>
+      <value><![CDATA[IL08426 ]]></value>
+      <value>19860723</value>
+      <value>19870204</value>
+      <value>REVENU_FORTUNE</value>
+      <value>8999</value>
+      <value>PAYS_HS</value>
+      <value>DEMENAGEMENT_VD</value>
+      <value>DEMENAGEMENT_VD</value>
+      <value>DOMICILE</value>
+      <value>ORDINAIRE</value>
+      <value>38005301</value>
+    </row>
+    <row>
+      <value>ForFiscalPrincipal</value>
+      <value>3342713</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2004-08-25 00:00:00.0]]></value>
+      <value><![CDATA[ZAIJDA  ]]></value>
+      <value><![CDATA[2004-08-25 00:00:00.0]]></value>
+      <value><![CDATA[ZAIJDA  ]]></value>
+      <value>20000201</value>
+      <value>20040731</value>
+      <value>REVENU_FORTUNE</value>
+      <value>5435</value>
+      <value>COMMUNE_OU_FRACTION_VD</value>
+      <value>DEMENAGEMENT_VD</value>
+      <value>DEMENAGEMENT_VD</value>
+      <value>DOMICILE</value>
+      <value>ORDINAIRE</value>
+      <value>38005301</value>
+    </row>
+    <row>
+      <value>ForFiscalPrincipal</value>
+      <value>3342719</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2003-08-30 00:00:00.0]]></value>
+      <value><![CDATA[IL08426 ]]></value>
+      <value><![CDATA[2003-08-30 00:00:00.0]]></value>
+      <value><![CDATA[IL08426 ]]></value>
+      <value>19810106</value>
+      <value>19860722</value>
+      <value>REVENU_FORTUNE</value>
+      <value>5435</value>
+      <value>COMMUNE_OU_FRACTION_VD</value>
+      <value>DEPART_HS</value>
+      <value>INDETERMINE</value>
+      <value>DOMICILE</value>
+      <value>ORDINAIRE</value>
+      <value>38005301</value>
+    </row>
+    <row>
+      <value>ForFiscalPrincipal</value>
+      <value>3342727</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2003-08-30 00:00:00.0]]></value>
+      <value><![CDATA[IL08426 ]]></value>
+      <value><![CDATA[2003-08-30 00:00:00.0]]></value>
+      <value><![CDATA[IL08426 ]]></value>
+      <value>19990201</value>
+      <value>20000131</value>
+      <value>REVENU_FORTUNE</value>
+      <value>5425</value>
+      <value>COMMUNE_OU_FRACTION_VD</value>
+      <value>DEMENAGEMENT_VD</value>
+      <value>DEMENAGEMENT_VD</value>
+      <value>DOMICILE</value>
+      <value>ORDINAIRE</value>
+      <value>38005301</value>
+    </row>
+    <row>
+      <value>ForFiscalPrincipal</value>
+      <value>3342733</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-04-27 00:00:00.0]]></value>
+      <value><![CDATA[ZAIYDY  ]]></value>
+      <value><![CDATA[2009-04-27 00:00:00.0]]></value>
+      <value><![CDATA[ZAIYDY  ]]></value>
+      <value>20051231</value>
+      <value>20080831</value>
+      <value>REVENU_FORTUNE</value>
+      <value>5401</value>
+      <value>COMMUNE_OU_FRACTION_VD</value>
+      <value>DEMENAGEMENT_VD</value>
+      <value>DEMENAGEMENT_VD</value>
+      <value>DOMICILE</value>
+      <value>ORDINAIRE</value>
+      <value>38005301</value>
+    </row>
+    <row>
+      <value>ForFiscalPrincipal</value>
+      <value>3342740</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2003-08-30 00:00:00.0]]></value>
+      <value><![CDATA[IL08426 ]]></value>
+      <value><![CDATA[2003-08-30 00:00:00.0]]></value>
+      <value><![CDATA[IL08426 ]]></value>
+      <value>19970201</value>
+      <value>19990131</value>
+      <value>REVENU_FORTUNE</value>
+      <value>5642</value>
+      <value>COMMUNE_OU_FRACTION_VD</value>
+      <value>DEMENAGEMENT_VD</value>
+      <value>DEMENAGEMENT_VD</value>
+      <value>DOMICILE</value>
+      <value>ORDINAIRE</value>
+      <value>38005301</value>
+    </row>
+    <row>
+      <value>ForFiscalPrincipal</value>
+      <value>3342748</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2003-08-30 00:00:00.0]]></value>
+      <value><![CDATA[IL08426 ]]></value>
+      <value><![CDATA[2003-08-30 00:00:00.0]]></value>
+      <value><![CDATA[IL08426 ]]></value>
+      <value>19940201</value>
+      <value>19950131</value>
+      <value>REVENU_FORTUNE</value>
+      <value>5646</value>
+      <value>COMMUNE_OU_FRACTION_VD</value>
+      <value>DEMENAGEMENT_VD</value>
+      <value>DEMENAGEMENT_VD</value>
+      <value>DOMICILE</value>
+      <value>ORDINAIRE</value>
+      <value>38005301</value>
+    </row>
+    <row>
+      <value>ForFiscalPrincipal</value>
+      <value>3342753</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2003-08-30 00:00:00.0]]></value>
+      <value><![CDATA[IL08426 ]]></value>
+      <value><![CDATA[2003-08-30 00:00:00.0]]></value>
+      <value><![CDATA[IL08426 ]]></value>
+      <value>19870205</value>
+      <value>19880131</value>
+      <value>REVENU_FORTUNE</value>
+      <value>5435</value>
+      <value>COMMUNE_OU_FRACTION_VD</value>
+      <value>DEMENAGEMENT_VD</value>
+      <value>ARRIVEE_HS</value>
+      <value>DOMICILE</value>
+      <value>ORDINAIRE</value>
+      <value>38005301</value>
+    </row>
+    <row>
+      <value>ForFiscalPrincipal</value>
+      <value>3342758</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2003-08-30 00:00:00.0]]></value>
+      <value><![CDATA[IL08426 ]]></value>
+      <value><![CDATA[2003-08-30 00:00:00.0]]></value>
+      <value><![CDATA[IL08426 ]]></value>
+      <value>19880201</value>
+      <value>19940131</value>
+      <value>REVENU_FORTUNE</value>
+      <value>5425</value>
+      <value>COMMUNE_OU_FRACTION_VD</value>
+      <value>DEMENAGEMENT_VD</value>
+      <value>DEMENAGEMENT_VD</value>
+      <value>DOMICILE</value>
+      <value>ORDINAIRE</value>
+      <value>38005301</value>
+    </row>
+    <row>
+      <value>ForFiscalPrincipal</value>
+      <value>3342766</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2003-08-30 00:00:00.0]]></value>
+      <value><![CDATA[IL08426 ]]></value>
+      <value><![CDATA[2003-08-30 00:00:00.0]]></value>
+      <value><![CDATA[IL08426 ]]></value>
+      <value>19950201</value>
+      <value>19970131</value>
+      <value>REVENU_FORTUNE</value>
+      <value>5435</value>
+      <value>COMMUNE_OU_FRACTION_VD</value>
+      <value>DEMENAGEMENT_VD</value>
+      <value>DEMENAGEMENT_VD</value>
+      <value>DOMICILE</value>
+      <value>ORDINAIRE</value>
+      <value>38005301</value>
+    </row>
+    <row>
+      <value>ForFiscalPrincipal</value>
+      <value>3342773</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-04-27 00:00:00.0]]></value>
+      <value><![CDATA[ZAIYDY  ]]></value>
+      <value><![CDATA[2009-04-27 00:00:00.0]]></value>
+      <value><![CDATA[ZAIYDY  ]]></value>
+      <value>20080901</value>
+      <null/>
+      <value>REVENU_FORTUNE</value>
+      <value>5435</value>
+      <value>COMMUNE_OU_FRACTION_VD</value>
+      <null/>
+      <value>DEMENAGEMENT_VD</value>
+      <value>DOMICILE</value>
+      <value>ORDINAIRE</value>
+      <value>38005301</value>
+    </row>
+    <row>
+      <value>ForFiscalPrincipal</value>
+      <value>3342780</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2006-04-05 00:00:00.0]]></value>
+      <value><![CDATA[ZAIVSC  ]]></value>
+      <value><![CDATA[2006-04-05 00:00:00.0]]></value>
+      <value><![CDATA[ZAIVSC  ]]></value>
+      <value>20050531</value>
+      <value>20051230</value>
+      <value>REVENU_FORTUNE</value>
+      <value>5435</value>
+      <value>COMMUNE_OU_FRACTION_VD</value>
+      <value>DEMENAGEMENT_VD</value>
+      <value>DEMENAGEMENT_VD</value>
+      <value>DOMICILE</value>
+      <value>ORDINAIRE</value>
+      <value>38005301</value>
+    </row>
+    <row>
+      <value>ForFiscalPrincipal</value>
+      <value>3342959</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2003-08-30 00:00:00.0]]></value>
+      <value><![CDATA[IL08426 ]]></value>
+      <value><![CDATA[2003-08-30 00:00:00.0]]></value>
+      <value><![CDATA[IL08426 ]]></value>
+      <value>19860201</value>
+      <null/>
+      <value>REVENU_FORTUNE</value>
+      <value>5904</value>
+      <value>COMMUNE_OU_FRACTION_VD</value>
+      <null/>
+      <value>DEMENAGEMENT_VD</value>
+      <value>DOMICILE</value>
+      <value>ORDINAIRE</value>
+      <value>38005401</value>
+    </row>
+    <row>
+      <value>ForFiscalPrincipal</value>
+      <value>3342966</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2003-08-30 00:00:00.0]]></value>
+      <value><![CDATA[IL08426 ]]></value>
+      <value><![CDATA[2003-08-30 00:00:00.0]]></value>
+      <value><![CDATA[IL08426 ]]></value>
+      <value>19830201</value>
+      <value>19860131</value>
+      <value>REVENU_FORTUNE</value>
+      <value>5938</value>
+      <value>COMMUNE_OU_FRACTION_VD</value>
+      <value>DEMENAGEMENT_VD</value>
+      <value>DEMENAGEMENT_VD</value>
+      <value>DOMICILE</value>
+      <value>ORDINAIRE</value>
+      <value>38005401</value>
+    </row>
+    <row>
+      <value>ForFiscalPrincipal</value>
+      <value>3342968</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2003-08-30 00:00:00.0]]></value>
+      <value><![CDATA[IL08426 ]]></value>
+      <value><![CDATA[2003-08-30 00:00:00.0]]></value>
+      <value><![CDATA[IL08426 ]]></value>
+      <value>19760107</value>
+      <value>19790131</value>
+      <value>REVENU_FORTUNE</value>
+      <value>5938</value>
+      <value>COMMUNE_OU_FRACTION_VD</value>
+      <value>DEMENAGEMENT_VD</value>
+      <value>INDETERMINE</value>
+      <value>DOMICILE</value>
+      <value>ORDINAIRE</value>
+      <value>38005401</value>
+    </row>
+    <row>
+      <value>ForFiscalPrincipal</value>
+      <value>3342972</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2003-08-30 00:00:00.0]]></value>
+      <value><![CDATA[IL08426 ]]></value>
+      <value><![CDATA[2003-08-30 00:00:00.0]]></value>
+      <value><![CDATA[IL08426 ]]></value>
+      <value>19790201</value>
+      <value>19830131</value>
+      <value>REVENU_FORTUNE</value>
+      <value>5561</value>
+      <value>COMMUNE_OU_FRACTION_VD</value>
+      <value>DEMENAGEMENT_VD</value>
+      <value>DEMENAGEMENT_VD</value>
+      <value>DOMICILE</value>
+      <value>ORDINAIRE</value>
+      <value>38005401</value>
+    </row>
+    <row>
+      <value>ForFiscalPrincipal</value>
+      <value>1565758</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-03-11 00:00:00.0]]></value>
+      <value><![CDATA[ZAISGP  ]]></value>
+      <value><![CDATA[2009-03-11 00:00:00.0]]></value>
+      <value><![CDATA[ZAISGP  ]]></value>
+      <value>20050401</value>
+      <null/>
+      <value>REVENU_FORTUNE</value>
+      <value>5817</value>
+      <value>COMMUNE_OU_FRACTION_VD</value>
+      <null/>
+      <value>ARRIVEE_HC</value>
+      <value>DOMICILE</value>
+      <value>ORDINAIRE</value>
+      <value>10582592</value>
+    </row>
+  </table>
+  <table name="ADRESSE_TIERS">
+    <column>ADR_TYPE</column>
+    <column>ID</column>
+    <column>ANNULATION_DATE</column>
+    <column>ANNULATION_USER</column>
+    <column>LOG_CDATE</column>
+    <column>LOG_CUSER</column>
+    <column>LOG_MDATE</column>
+    <column>LOG_MUSER</column>
+    <column>DATE_DEBUT</column>
+    <column>DATE_FIN</column>
+    <column>USAGE_TYPE</column>
+    <column>TYPE</column>
+    <column>STYPE</column>
+    <column>COMPLEMENT</column>
+    <column>NUMERO_APPARTEMENT</column>
+    <column>NUMERO_CASE_POSTALE</column>
+    <column>NUMERO_MAISON</column>
+    <column>PERMANENTE</column>
+    <column>RUE</column>
+    <column>TEXTE_CASE_POSTALE</column>
+    <column>COMPLEMENT_LOCALITE</column>
+    <column>NUMERO_OFS_PAYS</column>
+    <column>NUMERO_POSTAL_LOCALITE</column>
+    <column>NUMERO_ORDRE_POSTE</column>
+    <column>NUMERO_RUE</column>
+    <column>AUTRE_TIERS_ID</column>
+    <column>TIERS_ID</column>
+  </table>
+  <table name="DECLARATION">
+    <column>DOCUMENT_TYPE</column>
+    <column>ID</column>
+    <column>ANNULATION_DATE</column>
+    <column>ANNULATION_USER</column>
+    <column>LOG_CDATE</column>
+    <column>LOG_CUSER</column>
+    <column>LOG_MDATE</column>
+    <column>LOG_MUSER</column>
+    <column>DATE_DEBUT</column>
+    <column>DATE_FIN</column>
+    <column>NOM_DOCUMENT</column>
+    <column>DATE_IMPR_CHEMISE_TO</column>
+    <column>NUMERO</column>
+    <column>NO_OFS_FOR_GESTION</column>
+    <column>QUALIFICATION</column>
+    <column>TYPE_CTB</column>
+    <column>MODE_COM</column>
+    <column>PERIODICITE</column>
+    <column>RETOUR_COLL_ADMIN_ID</column>
+    <column>PERIODE_ID</column>
+    <column>TIERS_ID</column>
+    <column>MODELE_DOC_ID</column>
+    <column>SANS_RAPPEL</column>
+    <column>DELAI_RETOUR_IMPRIME</column>
+    <row>
+      <value>DI</value>
+      <value>8839528</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2007-01-11 00:00:00.0]]></value>
+      <value><![CDATA[BATCH   ]]></value>
+      <value><![CDATA[2007-01-11 00:00:00.0]]></value>
+      <value><![CDATA[BATCH   ]]></value>
+      <value>20050101</value>
+      <value>20051231</value>
+      <null/>
+      <null/>
+      <value>1</value>
+      <value>5675</value>
+      <null/>
+      <value>VAUDOIS_ORDINAIRE</value>
+      <null/>
+      <null/>
+      <value>2001011</value>
+      <value>28</value>
+      <value>28014710</value>
+      <value>123</value>
+      <null/>
+      <null/>
+    </row>
+    <row>
+      <value>DI</value>
+      <value>8839532</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-01-06 00:00:00.0]]></value>
+      <value><![CDATA[BATCH   ]]></value>
+      <value><![CDATA[2009-01-06 00:00:00.0]]></value>
+      <value><![CDATA[BATCH   ]]></value>
+      <value>20070101</value>
+      <value>20071231</value>
+      <null/>
+      <null/>
+      <value>1</value>
+      <value>5675</value>
+      <value>COMPLEXE_2</value>
+      <value>VAUDOIS_ORDINAIRE</value>
+      <null/>
+      <null/>
+      <value>2001011</value>
+      <value>38</value>
+      <value>28014710</value>
+      <value>147</value>
+      <null/>
+      <null/>
+    </row>
+    <row>
+      <value>DI</value>
+      <value>8839537</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2006-01-12 00:00:00.0]]></value>
+      <value><![CDATA[BATCH   ]]></value>
+      <value><![CDATA[2006-01-12 00:00:00.0]]></value>
+      <value><![CDATA[BATCH   ]]></value>
+      <value>20040101</value>
+      <value>20041231</value>
+      <null/>
+      <null/>
+      <value>1</value>
+      <value>5675</value>
+      <null/>
+      <value>VAUDOIS_ORDINAIRE</value>
+      <null/>
+      <null/>
+      <value>2001011</value>
+      <value>23</value>
+      <value>28014710</value>
+      <value>106</value>
+      <null/>
+      <null/>
+    </row>
+    <row>
+      <value>DI</value>
+      <value>8839541</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2008-01-16 00:00:00.0]]></value>
+      <value><![CDATA[BATCH   ]]></value>
+      <value><![CDATA[2008-01-16 00:00:00.0]]></value>
+      <value><![CDATA[BATCH   ]]></value>
+      <value>20060101</value>
+      <value>20061231</value>
+      <null/>
+      <null/>
+      <value>1</value>
+      <value>5675</value>
+      <null/>
+      <value>VAUDOIS_ORDINAIRE</value>
+      <null/>
+      <null/>
+      <value>2001011</value>
+      <value>33</value>
+      <value>28014710</value>
+      <value>135</value>
+      <null/>
+      <null/>
+    </row>
+    <row>
+      <value>DI</value>
+      <value>8839546</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-06-27 00:00:00.0]]></value>
+      <value><![CDATA[DELAI_B ]]></value>
+      <value><![CDATA[2009-12-11 08:39:55.0]]></value>
+      <value>[Rattrapage-qualif-di]</value>
+      <value>20080101</value>
+      <value>20081231</value>
+      <null/>
+      <null/>
+      <value>1</value>
+      <value>5675</value>
+      <value>COMPLEXE_2</value>
+      <value>VAUDOIS_ORDINAIRE</value>
+      <null/>
+      <null/>
+      <value>2001011</value>
+      <value>43</value>
+      <value>28014710</value>
+      <value>159</value>
+      <null/>
+      <null/>
+    </row>
+    <row>
+      <value>DI</value>
+      <value>8839550</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2004-06-14 00:00:00.0]]></value>
+      <value><![CDATA[ZAINYP  ]]></value>
+      <value><![CDATA[2004-06-14 00:00:00.0]]></value>
+      <value><![CDATA[ZAINYP  ]]></value>
+      <value>20030101</value>
+      <value>20031231</value>
+      <null/>
+      <null/>
+      <value>1</value>
+      <value>5675</value>
+      <null/>
+      <value>VAUDOIS_ORDINAIRE</value>
+      <null/>
+      <null/>
+      <value>2001011</value>
+      <value>18</value>
+      <value>28014710</value>
+      <value>94</value>
+      <null/>
+      <null/>
+    </row>
+    <row>
+      <value>DI</value>
+      <value>3342518</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2006-09-15 00:00:00.0]]></value>
+      <value><![CDATA[BATCH   ]]></value>
+      <value><![CDATA[2009-09-04 12:14:56.0]]></value>
+      <value>Rattrapage-TO</value>
+      <value>20050101</value>
+      <value>20051231</value>
+      <null/>
+      <value><![CDATA[2009-07-13 00:00:00.0]]></value>
+      <value>1</value>
+      <value>5435</value>
+      <null/>
+      <value>VAUDOIS_ORDINAIRE</value>
+      <null/>
+      <null/>
+      <value>2001011</value>
+      <value>28</value>
+      <value>38005301</value>
+      <value>118</value>
+      <null/>
+      <null/>
+    </row>
+    <row>
+      <value>DI</value>
+      <value>3342584</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2008-09-08 00:00:00.0]]></value>
+      <value><![CDATA[BATCH   ]]></value>
+      <value><![CDATA[2009-09-04 12:14:56.0]]></value>
+      <value>Rattrapage-TO</value>
+      <value>20070101</value>
+      <value>20071231</value>
+      <null/>
+      <value><![CDATA[2009-07-13 00:00:00.0]]></value>
+      <value>1</value>
+      <value>5401</value>
+      <null/>
+      <value>VAUDOIS_ORDINAIRE</value>
+      <null/>
+      <null/>
+      <value>2001011</value>
+      <value>38</value>
+      <value>38005301</value>
+      <value>142</value>
+      <null/>
+      <null/>
+    </row>
+    <row>
+      <value>DI</value>
+      <value>3342615</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2004-05-25 00:00:00.0]]></value>
+      <value><![CDATA[ZAIRMC  ]]></value>
+      <value><![CDATA[2004-05-25 00:00:00.0]]></value>
+      <value><![CDATA[ZAIRMC  ]]></value>
+      <value>20030101</value>
+      <value>20031231</value>
+      <null/>
+      <null/>
+      <value>1</value>
+      <value>5435</value>
+      <null/>
+      <value>VAUDOIS_ORDINAIRE</value>
+      <null/>
+      <null/>
+      <value>2001011</value>
+      <value>18</value>
+      <value>38005301</value>
+      <value>94</value>
+      <null/>
+      <null/>
+    </row>
+    <row>
+      <value>DI</value>
+      <value>3342643</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2006-01-12 00:00:00.0]]></value>
+      <value><![CDATA[BATCH   ]]></value>
+      <value><![CDATA[2006-01-12 00:00:00.0]]></value>
+      <value><![CDATA[BATCH   ]]></value>
+      <value>20040101</value>
+      <value>20041231</value>
+      <null/>
+      <null/>
+      <value>1</value>
+      <value>5401</value>
+      <null/>
+      <value>VAUDOIS_ORDINAIRE</value>
+      <null/>
+      <null/>
+      <value>2001011</value>
+      <value>23</value>
+      <value>38005301</value>
+      <value>106</value>
+      <null/>
+      <null/>
+    </row>
+    <row>
+      <value>DI</value>
+      <value>3342669</value>
+      <value><![CDATA[2009-12-11 08:40:39.0]]></value>
+      <null/>
+      <value><![CDATA[2009-06-25 00:00:00.0]]></value>
+      <value><![CDATA[CEDI    ]]></value>
+      <value><![CDATA[2009-12-11 08:40:39.0]]></value>
+      <value>[Rattrapage-qualif-di]</value>
+      <value>20080101</value>
+      <value>20081231</value>
+      <null/>
+      <null/>
+      <value>1</value>
+      <value>5401</value>
+      <value>SEMI_MANUEL</value>
+      <value>VAUDOIS_ORDINAIRE</value>
+      <null/>
+      <null/>
+      <value>2001011</value>
+      <value>43</value>
+      <value>38005301</value>
+      <value>159</value>
+      <null/>
+      <null/>
+    </row>
+    <row>
+      <value>DI</value>
+      <value>3342552</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2007-08-06 00:00:00.0]]></value>
+      <value><![CDATA[BATCH   ]]></value>
+      <value><![CDATA[2009-09-04 12:14:56.0]]></value>
+      <value>Rattrapage-TO</value>
+      <value>20060101</value>
+      <value>20061231</value>
+      <null/>
+      <value><![CDATA[2009-07-13 00:00:00.0]]></value>
+      <value>1</value>
+      <value>5401</value>
+      <null/>
+      <value>VAUDOIS_ORDINAIRE</value>
+      <null/>
+      <null/>
+      <value>2001011</value>
+      <value>33</value>
+      <value>38005301</value>
+      <value>130</value>
+      <null/>
+      <null/>
+    </row>
+    <row>
+      <value>DI</value>
+      <value>3342786</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-01-06 00:00:00.0]]></value>
+      <value><![CDATA[BATCH   ]]></value>
+      <value><![CDATA[2009-01-06 00:00:00.0]]></value>
+      <value><![CDATA[BATCH   ]]></value>
+      <value>20070101</value>
+      <value>20071231</value>
+      <null/>
+      <null/>
+      <value>1</value>
+      <value>5904</value>
+      <value>SEMI_MANUEL</value>
+      <value>VAUDOIS_ORDINAIRE</value>
+      <null/>
+      <null/>
+      <value>2001011</value>
+      <value>38</value>
+      <value>38005401</value>
+      <value>147</value>
+      <null/>
+      <null/>
+    </row>
+    <row>
+      <value>DI</value>
+      <value>3342815</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2006-01-12 00:00:00.0]]></value>
+      <value><![CDATA[BATCH   ]]></value>
+      <value><![CDATA[2006-01-12 00:00:00.0]]></value>
+      <value><![CDATA[BATCH   ]]></value>
+      <value>20040101</value>
+      <value>20041231</value>
+      <null/>
+      <null/>
+      <value>1</value>
+      <value>5904</value>
+      <null/>
+      <value>VAUDOIS_ORDINAIRE</value>
+      <null/>
+      <null/>
+      <value>2001011</value>
+      <value>23</value>
+      <value>38005401</value>
+      <value>106</value>
+      <null/>
+      <null/>
+    </row>
+    <row>
+      <value>DI</value>
+      <value>3342849</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-06-26 00:00:00.0]]></value>
+      <value><![CDATA[CEDI    ]]></value>
+      <value><![CDATA[2009-12-11 08:40:39.0]]></value>
+      <value>[Rattrapage-qualif-di]</value>
+      <value>20080101</value>
+      <value>20081231</value>
+      <null/>
+      <null/>
+      <value>1</value>
+      <value>5904</value>
+      <value>SEMI_MANUEL</value>
+      <value>VAUDOIS_ORDINAIRE</value>
+      <null/>
+      <null/>
+      <value>2001011</value>
+      <value>43</value>
+      <value>38005401</value>
+      <value>159</value>
+      <null/>
+      <null/>
+    </row>
+    <row>
+      <value>DI</value>
+      <value>3342875</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2008-01-16 00:00:00.0]]></value>
+      <value><![CDATA[BATCH   ]]></value>
+      <value><![CDATA[2008-01-16 00:00:00.0]]></value>
+      <value><![CDATA[BATCH   ]]></value>
+      <value>20060101</value>
+      <value>20061231</value>
+      <null/>
+      <null/>
+      <value>1</value>
+      <value>5904</value>
+      <null/>
+      <value>VAUDOIS_ORDINAIRE</value>
+      <null/>
+      <null/>
+      <value>2001011</value>
+      <value>33</value>
+      <value>38005401</value>
+      <value>135</value>
+      <null/>
+      <null/>
+    </row>
+    <row>
+      <value>DI</value>
+      <value>3342914</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2004-05-19 00:00:00.0]]></value>
+      <value><![CDATA[ZAIMZC  ]]></value>
+      <value><![CDATA[2004-05-19 00:00:00.0]]></value>
+      <value><![CDATA[ZAIMZC  ]]></value>
+      <value>20030101</value>
+      <value>20031231</value>
+      <null/>
+      <null/>
+      <value>1</value>
+      <value>5904</value>
+      <null/>
+      <value>VAUDOIS_ORDINAIRE</value>
+      <null/>
+      <null/>
+      <value>2001011</value>
+      <value>18</value>
+      <value>38005401</value>
+      <value>94</value>
+      <null/>
+      <null/>
+    </row>
+    <row>
+      <value>DI</value>
+      <value>3342935</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2007-01-11 00:00:00.0]]></value>
+      <value><![CDATA[BATCH   ]]></value>
+      <value><![CDATA[2007-01-11 00:00:00.0]]></value>
+      <value><![CDATA[BATCH   ]]></value>
+      <value>20050101</value>
+      <value>20051231</value>
+      <null/>
+      <null/>
+      <value>1</value>
+      <value>5904</value>
+      <null/>
+      <value>VAUDOIS_ORDINAIRE</value>
+      <null/>
+      <null/>
+      <value>2001011</value>
+      <value>28</value>
+      <value>38005401</value>
+      <value>123</value>
+      <null/>
+      <null/>
+    </row>
+  </table>
+  <table name="ETAT_DECLARATION">
+    <column>ID</column>
+    <column>ANNULATION_DATE</column>
+    <column>ANNULATION_USER</column>
+    <column>LOG_CDATE</column>
+    <column>LOG_CUSER</column>
+    <column>LOG_MDATE</column>
+    <column>LOG_MUSER</column>
+    <column>DATE_OBTENTION</column>
+    <column>TYPE</column>
+    <column>DECLARATION_ID</column>
+    <row>
+      <value>8839530</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2006-05-09 00:00:00.0]]></value>
+      <value><![CDATA[CEDI    ]]></value>
+      <value><![CDATA[2006-05-09 00:00:00.0]]></value>
+      <value><![CDATA[CEDI    ]]></value>
+      <value>20060509</value>
+      <value>RETOURNEE</value>
+      <value>8839528</value>
+    </row>
+    <row>
+      <value>8839531</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2006-01-25 00:00:00.0]]></value>
+      <value><![CDATA[BATCH   ]]></value>
+      <value><![CDATA[2006-01-25 00:00:00.0]]></value>
+      <value><![CDATA[BATCH   ]]></value>
+      <value>20060125</value>
+      <value>EMISE</value>
+      <value>8839528</value>
+    </row>
+    <row>
+      <value>8839535</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2008-08-29 00:00:00.0]]></value>
+      <value><![CDATA[CEDI    ]]></value>
+      <value><![CDATA[2008-08-29 00:00:00.0]]></value>
+      <value><![CDATA[CEDI    ]]></value>
+      <value>20080829</value>
+      <value>RETOURNEE</value>
+      <value>8839532</value>
+    </row>
+    <row>
+      <value>8839536</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2008-01-25 00:00:00.0]]></value>
+      <value><![CDATA[BATCH   ]]></value>
+      <value><![CDATA[2008-01-25 00:00:00.0]]></value>
+      <value><![CDATA[BATCH   ]]></value>
+      <value>20080125</value>
+      <value>EMISE</value>
+      <value>8839532</value>
+    </row>
+    <row>
+      <value>8839539</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2005-01-13 00:00:00.0]]></value>
+      <value><![CDATA[BATCH   ]]></value>
+      <value><![CDATA[2005-01-13 00:00:00.0]]></value>
+      <value><![CDATA[BATCH   ]]></value>
+      <value>20050113</value>
+      <value>EMISE</value>
+      <value>8839537</value>
+    </row>
+    <row>
+      <value>8839540</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2005-07-05 00:00:00.0]]></value>
+      <value><![CDATA[CEDI    ]]></value>
+      <value><![CDATA[2005-07-05 00:00:00.0]]></value>
+      <value><![CDATA[CEDI    ]]></value>
+      <value>20050705</value>
+      <value>RETOURNEE</value>
+      <value>8839537</value>
+    </row>
+    <row>
+      <value>8839544</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2007-01-20 00:00:00.0]]></value>
+      <value><![CDATA[BATCH   ]]></value>
+      <value><![CDATA[2007-01-20 00:00:00.0]]></value>
+      <value><![CDATA[BATCH   ]]></value>
+      <value>20070120</value>
+      <value>EMISE</value>
+      <value>8839541</value>
+    </row>
+    <row>
+      <value>8839545</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2007-06-06 00:00:00.0]]></value>
+      <value><![CDATA[CEDI    ]]></value>
+      <value><![CDATA[2007-06-06 00:00:00.0]]></value>
+      <value><![CDATA[CEDI    ]]></value>
+      <value>20070606</value>
+      <value>RETOURNEE</value>
+      <value>8839541</value>
+    </row>
+    <row>
+      <value>8839549</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-01-28 00:00:00.0]]></value>
+      <value><![CDATA[BATCH   ]]></value>
+      <value><![CDATA[2009-01-28 00:00:00.0]]></value>
+      <value><![CDATA[BATCH   ]]></value>
+      <value>20090128</value>
+      <value>EMISE</value>
+      <value>8839546</value>
+    </row>
+    <row>
+      <value>8839552</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2004-01-17 00:00:00.0]]></value>
+      <value><![CDATA[BATCH   ]]></value>
+      <value><![CDATA[2004-01-17 00:00:00.0]]></value>
+      <value><![CDATA[BATCH   ]]></value>
+      <value>20040117</value>
+      <value>EMISE</value>
+      <value>8839550</value>
+    </row>
+    <row>
+      <value>8839553</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2004-06-14 00:00:00.0]]></value>
+      <value><![CDATA[ZAINYP  ]]></value>
+      <value><![CDATA[2004-06-14 00:00:00.0]]></value>
+      <value><![CDATA[ZAINYP  ]]></value>
+      <value>20040614</value>
+      <value>RETOURNEE</value>
+      <value>8839550</value>
+    </row>
+    <row>
+      <value>3342531</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2006-01-13 00:00:00.0]]></value>
+      <value><![CDATA[BATCH   ]]></value>
+      <value><![CDATA[2006-01-13 00:00:00.0]]></value>
+      <value><![CDATA[BATCH   ]]></value>
+      <value>20060113</value>
+      <value>EMISE</value>
+      <value>3342518</value>
+    </row>
+    <row>
+      <value>3342537</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2006-08-14 00:00:00.0]]></value>
+      <value><![CDATA[BATCH   ]]></value>
+      <value><![CDATA[2006-08-14 00:00:00.0]]></value>
+      <value><![CDATA[BATCH   ]]></value>
+      <value>20060814</value>
+      <value>SOMMEE</value>
+      <value>3342518</value>
+    </row>
+    <row>
+      <value>3342547</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2006-09-15 00:00:00.0]]></value>
+      <value><![CDATA[BATCH   ]]></value>
+      <value><![CDATA[2006-09-15 00:00:00.0]]></value>
+      <value><![CDATA[BATCH   ]]></value>
+      <value>20060915</value>
+      <value>ECHUE</value>
+      <value>3342518</value>
+    </row>
+    <row>
+      <value>3342595</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2008-01-25 00:00:00.0]]></value>
+      <value><![CDATA[BATCH   ]]></value>
+      <value><![CDATA[2008-01-25 00:00:00.0]]></value>
+      <value><![CDATA[BATCH   ]]></value>
+      <value>20080125</value>
+      <value>EMISE</value>
+      <value>3342584</value>
+    </row>
+    <row>
+      <value>3342603</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2008-08-05 00:00:00.0]]></value>
+      <value><![CDATA[BATCH   ]]></value>
+      <value><![CDATA[2008-08-05 00:00:00.0]]></value>
+      <value><![CDATA[BATCH   ]]></value>
+      <value>20080805</value>
+      <value>SOMMEE</value>
+      <value>3342584</value>
+    </row>
+    <row>
+      <value>3342609</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2008-09-08 00:00:00.0]]></value>
+      <value><![CDATA[BATCH   ]]></value>
+      <value><![CDATA[2008-09-08 00:00:00.0]]></value>
+      <value><![CDATA[BATCH   ]]></value>
+      <value>20080908</value>
+      <value>ECHUE</value>
+      <value>3342584</value>
+    </row>
+    <row>
+      <value>3342629</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2004-01-21 00:00:00.0]]></value>
+      <value><![CDATA[BATCH   ]]></value>
+      <value><![CDATA[2004-01-21 00:00:00.0]]></value>
+      <value><![CDATA[BATCH   ]]></value>
+      <value>20040121</value>
+      <value>EMISE</value>
+      <value>3342615</value>
+    </row>
+    <row>
+      <value>3342636</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2004-05-25 00:00:00.0]]></value>
+      <value><![CDATA[ZAIRMC  ]]></value>
+      <value><![CDATA[2004-05-25 00:00:00.0]]></value>
+      <value><![CDATA[ZAIRMC  ]]></value>
+      <value>20040525</value>
+      <value>RETOURNEE</value>
+      <value>3342615</value>
+    </row>
+    <row>
+      <value>3342657</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2005-01-14 00:00:00.0]]></value>
+      <value><![CDATA[BATCH   ]]></value>
+      <value><![CDATA[2005-01-14 00:00:00.0]]></value>
+      <value><![CDATA[BATCH   ]]></value>
+      <value>20050114</value>
+      <value>EMISE</value>
+      <value>3342643</value>
+    </row>
+    <row>
+      <value>3342664</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2005-02-25 00:00:00.0]]></value>
+      <value><![CDATA[CEDI    ]]></value>
+      <value><![CDATA[2005-02-25 00:00:00.0]]></value>
+      <value><![CDATA[CEDI    ]]></value>
+      <value>20050225</value>
+      <value>RETOURNEE</value>
+      <value>3342643</value>
+    </row>
+    <row>
+      <value>3342684</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-01-16 00:00:00.0]]></value>
+      <value><![CDATA[BATCH   ]]></value>
+      <value><![CDATA[2009-01-16 00:00:00.0]]></value>
+      <value><![CDATA[BATCH   ]]></value>
+      <value>20090116</value>
+      <value>EMISE</value>
+      <value>3342669</value>
+    </row>
+    <row>
+      <value>3342564</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2007-01-15 00:00:00.0]]></value>
+      <value><![CDATA[BATCH   ]]></value>
+      <value><![CDATA[2007-01-15 00:00:00.0]]></value>
+      <value><![CDATA[BATCH   ]]></value>
+      <value>20070115</value>
+      <value>EMISE</value>
+      <value>3342552</value>
+    </row>
+    <row>
+      <value>3342569</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2007-08-06 00:00:00.0]]></value>
+      <value><![CDATA[BATCH   ]]></value>
+      <value><![CDATA[2007-08-06 00:00:00.0]]></value>
+      <value><![CDATA[BATCH   ]]></value>
+      <value>20070806</value>
+      <value>ECHUE</value>
+      <value>3342552</value>
+    </row>
+    <row>
+      <value>3342577</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2007-07-03 00:00:00.0]]></value>
+      <value><![CDATA[BATCH   ]]></value>
+      <value><![CDATA[2007-07-03 00:00:00.0]]></value>
+      <value><![CDATA[BATCH   ]]></value>
+      <value>20070703</value>
+      <value>SOMMEE</value>
+      <value>3342552</value>
+    </row>
+    <row>
+      <value>3342802</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2008-07-10 00:00:00.0]]></value>
+      <value><![CDATA[CEDI    ]]></value>
+      <value><![CDATA[2008-07-10 00:00:00.0]]></value>
+      <value><![CDATA[CEDI    ]]></value>
+      <value>20080710</value>
+      <value>RETOURNEE</value>
+      <value>3342786</value>
+    </row>
+    <row>
+      <value>3342807</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2008-01-25 00:00:00.0]]></value>
+      <value><![CDATA[BATCH   ]]></value>
+      <value><![CDATA[2008-01-25 00:00:00.0]]></value>
+      <value><![CDATA[BATCH   ]]></value>
+      <value>20080125</value>
+      <value>EMISE</value>
+      <value>3342786</value>
+    </row>
+    <row>
+      <value>3342834</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2005-06-27 00:00:00.0]]></value>
+      <value><![CDATA[CEDI    ]]></value>
+      <value><![CDATA[2005-06-27 00:00:00.0]]></value>
+      <value><![CDATA[CEDI    ]]></value>
+      <value>20050627</value>
+      <value>RETOURNEE</value>
+      <value>3342815</value>
+    </row>
+    <row>
+      <value>3342842</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2005-01-14 00:00:00.0]]></value>
+      <value><![CDATA[BATCH   ]]></value>
+      <value><![CDATA[2005-01-14 00:00:00.0]]></value>
+      <value><![CDATA[BATCH   ]]></value>
+      <value>20050114</value>
+      <value>EMISE</value>
+      <value>3342815</value>
+    </row>
+    <row>
+      <value>3342862</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-06-26 00:00:00.0]]></value>
+      <value><![CDATA[CEDI    ]]></value>
+      <value><![CDATA[2009-06-26 00:00:00.0]]></value>
+      <value><![CDATA[CEDI    ]]></value>
+      <value>20090630</value>
+      <value>SOMMEE</value>
+      <value>3342849</value>
+    </row>
+    <row>
+      <value>3342868</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-01-28 00:00:00.0]]></value>
+      <value><![CDATA[BATCH   ]]></value>
+      <value><![CDATA[2009-01-28 00:00:00.0]]></value>
+      <value><![CDATA[BATCH   ]]></value>
+      <value>20090128</value>
+      <value>EMISE</value>
+      <value>3342849</value>
+    </row>
+    <row>
+      <value>3342904</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2007-01-20 00:00:00.0]]></value>
+      <value><![CDATA[BATCH   ]]></value>
+      <value><![CDATA[2007-01-20 00:00:00.0]]></value>
+      <value><![CDATA[BATCH   ]]></value>
+      <value>20070120</value>
+      <value>EMISE</value>
+      <value>3342875</value>
+    </row>
+    <row>
+      <value>3342909</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2007-06-12 00:00:00.0]]></value>
+      <value><![CDATA[CEDI    ]]></value>
+      <value><![CDATA[2007-06-12 00:00:00.0]]></value>
+      <value><![CDATA[CEDI    ]]></value>
+      <value>20070612</value>
+      <value>RETOURNEE</value>
+      <value>3342875</value>
+    </row>
+    <row>
+      <value>3342926</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2004-01-21 00:00:00.0]]></value>
+      <value><![CDATA[BATCH   ]]></value>
+      <value><![CDATA[2004-01-21 00:00:00.0]]></value>
+      <value><![CDATA[BATCH   ]]></value>
+      <value>20040121</value>
+      <value>EMISE</value>
+      <value>3342914</value>
+    </row>
+    <row>
+      <value>3342929</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2004-05-19 00:00:00.0]]></value>
+      <value><![CDATA[ZAIMZC  ]]></value>
+      <value><![CDATA[2004-05-19 00:00:00.0]]></value>
+      <value><![CDATA[ZAIMZC  ]]></value>
+      <value>20040519</value>
+      <value>RETOURNEE</value>
+      <value>3342914</value>
+    </row>
+    <row>
+      <value>3342948</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2006-01-25 00:00:00.0]]></value>
+      <value><![CDATA[BATCH   ]]></value>
+      <value><![CDATA[2006-01-25 00:00:00.0]]></value>
+      <value><![CDATA[BATCH   ]]></value>
+      <value>20060125</value>
+      <value>EMISE</value>
+      <value>3342935</value>
+    </row>
+    <row>
+      <value>3342953</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2006-07-12 00:00:00.0]]></value>
+      <value><![CDATA[CEDI    ]]></value>
+      <value><![CDATA[2006-07-12 00:00:00.0]]></value>
+      <value><![CDATA[CEDI    ]]></value>
+      <value>20060712</value>
+      <value>RETOURNEE</value>
+      <value>3342935</value>
+    </row>
+  </table>
+  <table name="DELAI_DECLARATION">
+    <column>ID</column>
+    <column>ANNULATION_DATE</column>
+    <column>ANNULATION_USER</column>
+    <column>LOG_CDATE</column>
+    <column>LOG_CUSER</column>
+    <column>LOG_MDATE</column>
+    <column>LOG_MUSER</column>
+    <column>CONFIRMATION_ECRITE</column>
+    <column>DATE_DEMANDE</column>
+    <column>DATE_TRAITEMENT</column>
+    <column>DELAI_ACCORDE_AU</column>
+    <column>DECLARATION_ID</column>
+    <row>
+      <value>8839529</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 19:46:31.235]]></value>
+      <value><![CDATA[[HostContribuableMigrator thread]]]></value>
+      <value><![CDATA[2009-07-08 19:46:31.235]]></value>
+      <value><![CDATA[[HostContribuableMigrator thread]]]></value>
+      <null/>
+      <value>20060125</value>
+      <value>20060125</value>
+      <value>20060315</value>
+      <value>8839528</value>
+    </row>
+    <row>
+      <value>8839533</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 19:46:31.239]]></value>
+      <value><![CDATA[[HostContribuableMigrator thread]]]></value>
+      <value><![CDATA[2009-07-08 19:46:31.239]]></value>
+      <value><![CDATA[[HostContribuableMigrator thread]]]></value>
+      <null/>
+      <value>20080125</value>
+      <value>20080125</value>
+      <value>20080930</value>
+      <value>8839532</value>
+    </row>
+    <row>
+      <value>8839534</value>
+      <value><![CDATA[2009-07-08 19:46:31.089]]></value>
+      <value><![CDATA[[HostContribuableMigrator thread]]]></value>
+      <value><![CDATA[2008-08-29 00:00:00.0]]></value>
+      <value><![CDATA[CEDI    ]]></value>
+      <value><![CDATA[2008-08-29 00:00:00.0]]></value>
+      <value><![CDATA[CEDI    ]]></value>
+      <null/>
+      <value>20080513</value>
+      <value>20080513</value>
+      <value>20080930</value>
+      <value>8839532</value>
+    </row>
+    <row>
+      <value>8839538</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 19:46:31.244]]></value>
+      <value><![CDATA[[HostContribuableMigrator thread]]]></value>
+      <value><![CDATA[2009-07-08 19:46:31.244]]></value>
+      <value><![CDATA[[HostContribuableMigrator thread]]]></value>
+      <null/>
+      <value>20050113</value>
+      <value>20050113</value>
+      <value>20050315</value>
+      <value>8839537</value>
+    </row>
+    <row>
+      <value>8839542</value>
+      <value><![CDATA[2009-07-08 19:46:31.086]]></value>
+      <value><![CDATA[[HostContribuableMigrator thread]]]></value>
+      <value><![CDATA[2007-06-06 00:00:00.0]]></value>
+      <value><![CDATA[CEDI    ]]></value>
+      <value><![CDATA[2007-06-06 00:00:00.0]]></value>
+      <value><![CDATA[CEDI    ]]></value>
+      <null/>
+      <value>20070220</value>
+      <value>20070220</value>
+      <value>20070915</value>
+      <value>8839541</value>
+    </row>
+    <row>
+      <value>8839543</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 19:46:31.253]]></value>
+      <value><![CDATA[[HostContribuableMigrator thread]]]></value>
+      <value><![CDATA[2009-07-08 19:46:31.253]]></value>
+      <value><![CDATA[[HostContribuableMigrator thread]]]></value>
+      <null/>
+      <value>20070120</value>
+      <value>20070120</value>
+      <value>20070915</value>
+      <value>8839541</value>
+    </row>
+    <row>
+      <value>8839547</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-06-27 00:00:00.0]]></value>
+      <value><![CDATA[DELAI_B ]]></value>
+      <value><![CDATA[2009-06-27 00:00:00.0]]></value>
+      <value><![CDATA[DELAI_B ]]></value>
+      <null/>
+      <value>20090627</value>
+      <value>20090626</value>
+      <value>20090930</value>
+      <value>8839546</value>
+    </row>
+    <row>
+      <value>8839548</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 19:46:31.257]]></value>
+      <value><![CDATA[[HostContribuableMigrator thread]]]></value>
+      <value><![CDATA[2009-07-08 19:46:31.257]]></value>
+      <value><![CDATA[[HostContribuableMigrator thread]]]></value>
+      <null/>
+      <value>20090128</value>
+      <value>20090128</value>
+      <value>20090930</value>
+      <value>8839546</value>
+    </row>
+    <row>
+      <value>8839551</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 19:46:31.261]]></value>
+      <value><![CDATA[[HostContribuableMigrator thread]]]></value>
+      <value><![CDATA[2009-07-08 19:46:31.261]]></value>
+      <value><![CDATA[[HostContribuableMigrator thread]]]></value>
+      <null/>
+      <value>20040117</value>
+      <value>20040117</value>
+      <value>20040315</value>
+      <value>8839550</value>
+    </row>
+    <row>
+      <value>3342524</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 18:14:39.38]]></value>
+      <value><![CDATA[[HostContribuableMigrator thread]]]></value>
+      <value><![CDATA[2009-07-08 18:14:39.38]]></value>
+      <value><![CDATA[[HostContribuableMigrator thread]]]></value>
+      <null/>
+      <value>20060113</value>
+      <value>20060113</value>
+      <value>20060315</value>
+      <value>3342518</value>
+    </row>
+    <row>
+      <value>3342590</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 18:14:39.4]]></value>
+      <value><![CDATA[[HostContribuableMigrator thread]]]></value>
+      <value><![CDATA[2009-07-08 18:14:39.4]]></value>
+      <value><![CDATA[[HostContribuableMigrator thread]]]></value>
+      <null/>
+      <value>20080125</value>
+      <value>20080125</value>
+      <value>20080315</value>
+      <value>3342584</value>
+    </row>
+    <row>
+      <value>3342624</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 18:14:39.406]]></value>
+      <value><![CDATA[[HostContribuableMigrator thread]]]></value>
+      <value><![CDATA[2009-07-08 18:14:39.406]]></value>
+      <value><![CDATA[[HostContribuableMigrator thread]]]></value>
+      <null/>
+      <value>20040121</value>
+      <value>20040121</value>
+      <value>20040315</value>
+      <value>3342615</value>
+    </row>
+    <row>
+      <value>3342651</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 18:14:39.41]]></value>
+      <value><![CDATA[[HostContribuableMigrator thread]]]></value>
+      <value><![CDATA[2009-07-08 18:14:39.41]]></value>
+      <value><![CDATA[[HostContribuableMigrator thread]]]></value>
+      <null/>
+      <value>20050114</value>
+      <value>20050114</value>
+      <value>20050315</value>
+      <value>3342643</value>
+    </row>
+    <row>
+      <value>3342676</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 18:14:39.413]]></value>
+      <value><![CDATA[[HostContribuableMigrator thread]]]></value>
+      <value><![CDATA[2009-07-08 18:14:39.413]]></value>
+      <value><![CDATA[[HostContribuableMigrator thread]]]></value>
+      <null/>
+      <value>20090116</value>
+      <value>20090116</value>
+      <value>20090315</value>
+      <value>3342669</value>
+    </row>
+    <row>
+      <value>3342557</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 18:14:39.385]]></value>
+      <value><![CDATA[[HostContribuableMigrator thread]]]></value>
+      <value><![CDATA[2009-07-08 18:14:39.385]]></value>
+      <value><![CDATA[[HostContribuableMigrator thread]]]></value>
+      <null/>
+      <value>20070115</value>
+      <value>20070115</value>
+      <value>20070315</value>
+      <value>3342552</value>
+    </row>
+    <row>
+      <value>3342795</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 18:14:39.432]]></value>
+      <value><![CDATA[[HostContribuableMigrator thread]]]></value>
+      <value><![CDATA[2009-07-08 18:14:39.432]]></value>
+      <value><![CDATA[[HostContribuableMigrator thread]]]></value>
+      <null/>
+      <value>20080125</value>
+      <value>20080125</value>
+      <value>20080315</value>
+      <value>3342786</value>
+    </row>
+    <row>
+      <value>3342821</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 18:14:39.437]]></value>
+      <value><![CDATA[[HostContribuableMigrator thread]]]></value>
+      <value><![CDATA[2009-07-08 18:14:39.437]]></value>
+      <value><![CDATA[[HostContribuableMigrator thread]]]></value>
+      <null/>
+      <value>20050114</value>
+      <value>20050114</value>
+      <value>20050315</value>
+      <value>3342815</value>
+    </row>
+    <row>
+      <value>3342856</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 18:14:39.441]]></value>
+      <value><![CDATA[[HostContribuableMigrator thread]]]></value>
+      <value><![CDATA[2009-07-08 18:14:39.441]]></value>
+      <value><![CDATA[[HostContribuableMigrator thread]]]></value>
+      <null/>
+      <value>20090128</value>
+      <value>20090128</value>
+      <value>20090315</value>
+      <value>3342849</value>
+    </row>
+    <row>
+      <value>3342881</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 18:14:39.447]]></value>
+      <value><![CDATA[[HostContribuableMigrator thread]]]></value>
+      <value><![CDATA[2009-07-08 18:14:39.447]]></value>
+      <value><![CDATA[[HostContribuableMigrator thread]]]></value>
+      <null/>
+      <value>20070120</value>
+      <value>20070120</value>
+      <value>20070315</value>
+      <value>3342875</value>
+    </row>
+    <row>
+      <value>3342920</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 18:14:39.452]]></value>
+      <value><![CDATA[[HostContribuableMigrator thread]]]></value>
+      <value><![CDATA[2009-07-08 18:14:39.452]]></value>
+      <value><![CDATA[[HostContribuableMigrator thread]]]></value>
+      <null/>
+      <value>20040121</value>
+      <value>20040121</value>
+      <value>20040315</value>
+      <value>3342914</value>
+    </row>
+    <row>
+      <value>3342942</value>
+      <null/>
+      <null/>
+      <value><![CDATA[2009-07-08 18:14:39.456]]></value>
+      <value><![CDATA[[HostContribuableMigrator thread]]]></value>
+      <value><![CDATA[2009-07-08 18:14:39.456]]></value>
+      <value><![CDATA[[HostContribuableMigrator thread]]]></value>
+      <null/>
+      <value>20060125</value>
+      <value>20060125</value>
+      <value>20060315</value>
+      <value>3342935</value>
+    </row>
+  </table>
+</dataset>
