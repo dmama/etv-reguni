@@ -13,7 +13,7 @@ public class MockEditiqueService implements EditiqueService {
 		return null;
 	}
 
-	public void creerDocumentParBatch(XmlObject document, String typeDocument, boolean archive) throws EditiqueException {
+	public void creerDocumentParBatch(String nomDocument, String typeDocument, XmlObject document, boolean archive) throws EditiqueException {
 	}
 
 	public byte[] getPDFDeDocumentDepuisArchive(Long noContribuable, String typeDocument, String nomDocument) throws EditiqueException {
