@@ -27,11 +27,12 @@ public interface EditiqueService {
 	/**
 	 * Sérialise au format XML et transmet l'object en paramètre au service Editique JMS d'impression de masse.
 	 *
+	 * @param nomDocument
+	 * @param typeDocument le type de document
 	 * @param document
-	 *@param typeDocument le type de document
 	 * @param archive      indicateur d'archivage   @throws EditiqueException si un problème survient durant la génération du XML ou durant la transmission du message au serveur JMS.
 	 */
-	void creerDocumentParBatch(XmlObject document, String typeDocument, boolean archive) throws EditiqueException;
+	void creerDocumentParBatch(String nomDocument, String typeDocument, XmlObject document, boolean archive) throws EditiqueException;
 
 	/**
 	 * Obitent un document pdf, sous forme binaire, identifié par les différents paramètres.

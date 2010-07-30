@@ -78,8 +78,8 @@ public final class EditiqueServiceImpl implements EditiqueService {
 	/**
 	 * {@inheritDoc}
 	 */
-	public void creerDocumentParBatch(XmlObject document, String typeDocument, boolean archive) throws EditiqueException {
-		sender.envoyerDocument(null, typeDocument, document, TypeImpression.BATCH, null, archive);
+	public void creerDocumentParBatch(String nomDocument, String typeDocument, XmlObject document, boolean archive) throws EditiqueException {
+		sender.envoyerDocument(nomDocument, typeDocument, document, TypeImpression.BATCH, null, archive);
 	}
 
 	/**
