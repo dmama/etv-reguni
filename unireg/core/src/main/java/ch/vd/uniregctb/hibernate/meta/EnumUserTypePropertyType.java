@@ -1,10 +1,10 @@
-package ch.vd.uniregctb.dao.jdbc.meta;
+package ch.vd.uniregctb.hibernate.meta;
 
-import ch.vd.uniregctb.dao.jdbc.meta.UserTypeColumnType;
+import ch.vd.uniregctb.hibernate.meta.UserTypePropertyType;
 import ch.vd.uniregctb.hibernate.EnumUserType;
 
-public class EnumUserTypeColumnType extends UserTypeColumnType {
-	public EnumUserTypeColumnType(Class<?> javaType, EnumUserType enumUserType) {
+public class EnumUserTypePropertyType extends UserTypePropertyType {
+	public EnumUserTypePropertyType(Class<?> javaType, EnumUserType enumUserType) {
 		super(javaType, enumUserType);
 	}
 

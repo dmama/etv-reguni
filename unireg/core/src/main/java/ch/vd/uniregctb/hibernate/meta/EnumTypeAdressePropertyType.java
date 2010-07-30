@@ -1,15 +1,11 @@
-package ch.vd.uniregctb.dao.jdbc.meta;
-
-import java.sql.Types;
-
-import org.hibernate.usertype.UserType;
+package ch.vd.uniregctb.hibernate.meta;
 
 import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.uniregctb.hibernate.EnumTypeAdresseUserType;
 
-public class EnumTypeAdresseColumnType extends UserTypeColumnType {
+public class EnumTypeAdressePropertyType extends UserTypePropertyType {
 
-	public EnumTypeAdresseColumnType(EnumTypeAdresseUserType userType) {
+	public EnumTypeAdressePropertyType(EnumTypeAdresseUserType userType) {
 		super(EnumTypeAdresse.class, userType);
 	}
 

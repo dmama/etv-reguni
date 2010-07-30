@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.dao.jdbc.meta;
+package ch.vd.uniregctb.hibernate.meta;
 
 import java.sql.Timestamp;
 import java.sql.Types;
@@ -8,40 +8,49 @@ import java.util.Map;
 
 import ch.vd.registre.base.utils.NotImplementedException;
 
-public abstract class ColumnType {
+/**
+ * Classe qui expose de manière pratique les méta-informations d'un type de propriété d'une entité Hibernate.
+ */
+public abstract class PropertyType {
 
-	public static final LongColumnType longColumnType = new LongColumnType();
-	public static final IntegerColumnType integerColumnType = new IntegerColumnType();
-	public static final StringColumnType stringColumnType = new StringColumnType();
-	public static final DateColumnType dateColumnType = new DateColumnType();
-	public static final BooleanColumnType booleanColumnType = new BooleanColumnType();
-	public static final TimestampColumnType timestampColumnType = new TimestampColumnType();
+	public static final LongPropertyType longPropType = new LongPropertyType();
+	public static final IntegerPropertyType integerPropType = new IntegerPropertyType();
+	public static final StringPropertyType stringPropType = new StringPropertyType();
+	public static final DatePropertyType datePropType = new DatePropertyType();
+	public static final BooleanPropertyType booleanPropType = new BooleanPropertyType();
+	public static final TimestampPropertyType timestampPropType = new TimestampPropertyType();
 
-	public static final Map<Class<?>, ColumnType> byJavaType = new HashMap<Class<?>, ColumnType>();
+	public static final Map<Class<?>, PropertyType> byJavaType = new HashMap<Class<?>, PropertyType>();
 
 	static {
-		byJavaType.put(longColumnType.getJavaType(), longColumnType);
-		byJavaType.put(integerColumnType.getJavaType(), integerColumnType);
-		byJavaType.put(Integer.TYPE, integerColumnType);
-		byJavaType.put(stringColumnType.getJavaType(), stringColumnType);
-		byJavaType.put(dateColumnType.getJavaType(), dateColumnType);
-		byJavaType.put(booleanColumnType.getJavaType(), booleanColumnType);
-		byJavaType.put(Boolean.TYPE, booleanColumnType);
-		byJavaType.put(timestampColumnType.getJavaType(), timestampColumnType);
+		byJavaType.put(longPropType.getJavaType(), longPropType);
+		byJavaType.put(integerPropType.getJavaType(), integerPropType);
+		byJavaType.put(Integer.TYPE, integerPropType);
+		byJavaType.put(stringPropType.getJavaType(), stringPropType);
+		byJavaType.put(datePropType.getJavaType(), datePropType);
+		byJavaType.put(booleanPropType.getJavaType(), booleanPropType);
+		byJavaType.put(Boolean.TYPE, booleanPropType);
+		byJavaType.put(timestampPropType.getJavaType(), timestampPropType);
 	}
 
 	protected Class<?> javaType;
 	private int sqlType;
 
-	ColumnType(Class<?> javaType, int sqlType) {
+	PropertyType(Class<?> javaType, int sqlType) {
 		this.javaType = javaType;
 		this.sqlType = sqlType;
 	}
 
+	/**
+	 * @return le type java de la propriété
+	 */
 	public Class<?> getJavaType() {
 		return javaType;
 	}
 
+	/**
+	 * @return le type simple utilisé pour stocker les valeurs dans la base de données
+	 */
 	public Class<?> getSqlType() {
 		Class<?> clazz;
 		switch (sqlType) {
@@ -69,6 +78,9 @@ public abstract class ColumnType {
 		return clazz;
 	}
 
+	/**
+	 * @return le nom du getter utilisé pour extraire la valeur du result set.
+	 */
 	public String getResultGetter() {
 		String getter;
 		switch (sqlType) {
@@ -96,6 +108,9 @@ public abstract class ColumnType {
 		return getter;
 	}
 
+	/**
+	 * @return <i>vrai</i> s'il est nécessaire de vérifier la nullité après l'extraction de la valeur du results set
+	 */
 	public boolean needNullCheck() {
 		boolean check;
 		switch (sqlType) {

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.dao.jdbc.meta;
+package ch.vd.uniregctb.hibernate.meta;
 
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorValue;
@@ -30,53 +30,68 @@ import ch.vd.uniregctb.hibernate.EnumTypeAdresseUserType;
 import ch.vd.uniregctb.hibernate.EnumUserType;
 import ch.vd.uniregctb.hibernate.RegDateUserType;
 
-public class Entity {
+/**
+ * Classe qui expose de manière pratique les méta-informations (colonnes, nom de table, discriminant, ...) d'une entité Hibernate.
+ */
+public class MetaEntity {
 
-	protected static final Logger LOGGER = Logger.getLogger(Entity.class);
+	protected static final Logger LOGGER = Logger.getLogger(MetaEntity.class);
 
 	private String table;
 	private String discriminant;
 	private Class<?> type;
-	private List<Column> columns;
+	private List<Property> properties;
 
-	public Entity(String table, String discriminant, Class<?> type) {
+	public MetaEntity(String table, String discriminant, Class<?> type) {
 		this.table = table;
 		this.discriminant = discriminant;
 		this.type = type;
 	}
 
+	/**
+	 * @return le nom de la table dans laquelle les données sont stockées
+	 */
 	public String getTable() {
 		return table;
 	}
 
+	/**
+	 * @return la valeur du discriminant lorsque l'entité Hibernate fait partir d'une hiérarchie de classes stockée à plat dans une table; ou <b>null</b> lorsque ce n'est pas le cas.
+	 */
 	public String getDiscriminant() {
 		return discriminant;
 	}
 
+	/**
+	 * @return la classe de l'entité Hibernate considérée.
+	 */
 	public Class<?> getType() {
 		return type;
 	}
 
-	public List<Column> getColumns() {
-		return columns;
+	/**
+	 * @return la liste des colonnes (= propriétés) déclarées sur l'entité Hibernate.
+	 */
+	public List<Property> getColumns() {
+		return properties;
 	}
 
-	public void setColumns(List<Column> columns) {
-		this.columns = columns;
+	private void setColumns(List<Property> properties) {
+		this.properties = properties;
 	}
 
 	/**
-	 * Analyse la class (qui doit être une entité hibernate) spécifiée, et retourne toute la méta-information trouvée.
+	 * Analyse la classe (qui doit être une entité hibernate) spécifiée, et crée une instance de la méta-entité.
 	 *
 	 * @param clazz la classe d'une entité hibernate
-	 * @return une nouvelle instance de la classe 'Entity' avec les méta-information hibernate trouvée
+	 * @return une nouvelle instance de la classe 'MetaEntity' avec les méta-informations trouvées
 	 * @throws Exception en cas d'erreur inattendue
 	 */
-	public static Entity determine(Class clazz) throws Exception {
+	public static MetaEntity determine(Class clazz) throws Exception {
 
 		String table = null;
 		String discriminant = null;
-		final List<Column> columns = new ArrayList<Column>();
+		final List<Property> properties = new ArrayList<Property>();
 
 		final List<Annotation> annotations = ReflexionUtils.getAllAnnotations(clazz);
 		for (Annotation a : annotations) {
@@ -89,7 +104,7 @@ public class Entity {
 			}
 			else if (a instanceof DiscriminatorColumn) {
 				final DiscriminatorColumn d = (DiscriminatorColumn) a;
-				columns.add(new Column(d.name(), ColumnType.stringColumnType, null, true, false, false));
+				properties.add(new Property(null, PropertyType.stringPropType, d.name(), true, false, false));
 			}
 			else if (a instanceof Table) {
 				final Table t = (Table) a;
@@ -97,7 +112,7 @@ public class Entity {
 			}
 		}
 
-		Entity entity = new Entity(table, discriminant, clazz);
+		MetaEntity entity = new MetaEntity(table, discriminant, clazz);
 
 		final Map<String, PropertyDescriptor> descriptors = ReflexionUtils.getPropertyDescriptors(clazz);
 		for (PropertyDescriptor descriptor : descriptors.values()) {
@@ -107,13 +122,13 @@ public class Entity {
 
 			final Method readMethod = descriptor.getReadMethod();
 			if (readMethod == null) {
-//					LOGGER.debug("Ignoring descriptor [" + descriptor.getName() + "] from class [" + clazz.getName() + "] without read method");
+				// LOGGER.debug("Ignoring descriptor [" + descriptor.getName() + "] from class [" + clazz.getName() + "] without read method");
 				continue;
 			}
 
 			final Method writeMethod = descriptor.getWriteMethod();
 			if (writeMethod == null) {
-//					LOGGER.debug("Ignoring descriptor [" + descriptor.getName() + "] from class [" + clazz.getName() + "] without write method");
+				// LOGGER.debug("Ignoring descriptor [" + descriptor.getName() + "] from class [" + clazz.getName() + "] without write method");
 				continue;
 			}
 			if (!Modifier.isPublic(writeMethod.getModifiers())) {
@@ -181,16 +196,16 @@ public class Entity {
 				continue;
 			}
 
-			final ColumnType columnType;
+			final PropertyType propertyType;
 			if (userType != null) {
 				if (userType instanceof RegDateUserType) {
-					columnType = new RegDateColumnType((RegDateUserType) userType);
+					propertyType = new RegDatePropertyType((RegDateUserType) userType);
 				}
 				else if (userType instanceof EnumUserType) {
-					columnType = new EnumUserTypeColumnType(returnType, (EnumUserType) userType);
+					propertyType = new EnumUserTypePropertyType(returnType, (EnumUserType) userType);
 				}
 				else if (userType instanceof EnumTypeAdresseUserType) {
-					columnType = new EnumTypeAdresseColumnType((EnumTypeAdresseUserType) userType);
+					propertyType = new EnumTypeAdressePropertyType((EnumTypeAdresseUserType) userType);
 				}
 				else {
 					throw new NotImplementedException("Type de user-type inconnu = [" + userType.getClass().getName() + "]");
@@ -198,18 +213,18 @@ public class Entity {
 
 			}
 			else if (otherForeignKey) {
-				columnType = new JoinColumnType(returnType);
+				propertyType = new JoinPropertyType(returnType);
 			}
 			else {
-				columnType = ColumnType.byJavaType.get(returnType);
-				Assert.notNull(columnType, "Type java non-enregistré [" + returnType.getName() + "] (propriété = [" + descriptor.getName() + "] de la classe [" + clazz.getSimpleName() + "])");
+				propertyType = PropertyType.byJavaType.get(returnType);
+				Assert.notNull(propertyType, "Type java non-enregistré [" + returnType.getName() + "] (propriété = [" + descriptor.getName() + "] de la classe [" + clazz.getSimpleName() + "])");
 			}
 
-			columns.add(new Column(columnName, columnType, descriptor.getName(), false, primaryKey, parentForeignKey));
+			properties.add(new Property(descriptor.getName(), propertyType, columnName, false, primaryKey, parentForeignKey));
 		}
 
-		Collections.sort(columns);
-		entity.setColumns(columns);
+		Collections.sort(properties);
+		entity.setColumns(properties);
 		return entity;
 	}
 

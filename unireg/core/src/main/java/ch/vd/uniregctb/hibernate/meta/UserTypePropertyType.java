@@ -1,14 +1,14 @@
-package ch.vd.uniregctb.dao.jdbc.meta;
+package ch.vd.uniregctb.hibernate.meta;
 
 import org.hibernate.usertype.UserType;
 
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.dao.jdbc.meta.ColumnType;
+import ch.vd.uniregctb.hibernate.meta.PropertyType;
 
-public abstract class UserTypeColumnType extends ColumnType {
+public abstract class UserTypePropertyType extends PropertyType {
 	private final UserType userType;
 
-	public UserTypeColumnType(Class<?> javaType, UserType userType) {
+	public UserTypePropertyType(Class<?> javaType, UserType userType) {
 		super(javaType, extractSqlType(userType));
 		this.userType = userType;
 	}

@@ -1,12 +1,12 @@
-package ch.vd.uniregctb.dao.jdbc.meta;
+package ch.vd.uniregctb.hibernate.meta;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.hibernate.RegDateUserType;
 
-public class RegDateColumnType extends UserTypeColumnType {
+public class RegDatePropertyType extends UserTypePropertyType {
 	private final RegDateUserType regDateUserType;
 
-	public RegDateColumnType(RegDateUserType regDateUserType) {
+	public RegDatePropertyType(RegDateUserType regDateUserType) {
 		super(RegDate.class, regDateUserType);
 		this.regDateUserType = regDateUserType;
 	}

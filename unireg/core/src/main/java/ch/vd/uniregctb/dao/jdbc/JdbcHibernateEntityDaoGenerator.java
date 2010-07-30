@@ -21,11 +21,11 @@ import org.springframework.util.ResourceUtils;
 
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.HibernateEntityUtils;
-import ch.vd.uniregctb.dao.jdbc.meta.Column;
-import ch.vd.uniregctb.dao.jdbc.meta.ColumnType;
-import ch.vd.uniregctb.dao.jdbc.meta.Entity;
-import ch.vd.uniregctb.dao.jdbc.meta.JoinColumnType;
-import ch.vd.uniregctb.dao.jdbc.meta.UserTypeColumnType;
+import ch.vd.uniregctb.hibernate.meta.JoinPropertyType;
+import ch.vd.uniregctb.hibernate.meta.Property;
+import ch.vd.uniregctb.hibernate.meta.PropertyType;
+import ch.vd.uniregctb.hibernate.meta.MetaEntity;
+import ch.vd.uniregctb.hibernate.meta.UserTypePropertyType;
 
 public class JdbcHibernateEntityDaoGenerator {
 
@@ -33,15 +33,15 @@ public class JdbcHibernateEntityDaoGenerator {
 
 	private String table;
 	private Class<?> baseClass;
-	private List<Entity> entities = new ArrayList<Entity>();
-	private Map<String, Column> allColumns = new HashMap<String, Column>();
+	private List<MetaEntity> entities = new ArrayList<MetaEntity>();
+	private Map<String, Property> allColumns = new HashMap<String, Property>();
 
 	public JdbcHibernateEntityDaoGenerator(Class... hibernateEntities) throws Exception {
 
 		this.baseClass = HibernateEntityUtils.getBaseClass(hibernateEntities[0]);
 
 		for (Class clazz : hibernateEntities) {
-			final Entity entity = Entity.determine(clazz);
+			final MetaEntity entity = MetaEntity.determine(clazz);
 
 			if (table == null) {
 				table = entity.getTable();
@@ -52,18 +52,18 @@ public class JdbcHibernateEntityDaoGenerator {
 
 			entities.add(entity);
 
-			final List<Column> columns = entity.getColumns();
-			for (int i = 0, columnsSize = columns.size(); i < columnsSize; i++) {
-				final Column c = columns.get(i);
-				final Column existing = allColumns.get(c.getName());
+			final List<Property> properties = entity.getColumns();
+			for (int i = 0, columnsSize = properties.size(); i < columnsSize; i++) {
+				final Property c = properties.get(i);
+				final Property existing = allColumns.get(c.getColumnName());
 				if (existing == null) {
-					allColumns.put(c.getName(), c);
+					allColumns.put(c.getColumnName(), c);
 				}
 				else {
 					Assert.isEqual(c.getType().getSqlType(), existing.getType().getSqlType());
 					// si la colonne existe déjà (possible car les getters des classes de base sont processés plusieurs fois lors de hiérarchie d'entités),
 					// on remplace celle de l'entité par la colonne existante, de manière à n'importe qu'une instance par colonne réelle.
-					columns.set(i, existing);
+					properties.set(i, existing);
 				}
 			}
 		}
@@ -76,35 +76,35 @@ public class JdbcHibernateEntityDaoGenerator {
 
 		// Construction des portions de code dynamiques
 
-		final List<Column> columns = new ArrayList<Column>(allColumns.values());
-		Collections.sort(columns);
+		final List<Property> properties = new ArrayList<Property>(allColumns.values());
+		Collections.sort(properties);
 
 		String primaryKey = null;
-		Column foreignKey = null;
-		Column discriminant = null;
+		Property foreignKey = null;
+		Property discriminant = null;
 		String discriminantVar = null;
 
 		String baseSelect = "";
 		String mappingCode = "";
 
-		for (int i = 0, columnsSize = columns.size(); i < columnsSize; i++) {
-			final Column c = columns.get(i);
+		for (int i = 0, columnsSize = properties.size(); i < columnsSize; i++) {
+			final Property c = properties.get(i);
 			c.setIndex(i + 1);
 			final boolean last = (i == columnsSize - 1);
-			baseSelect += "\"" + c.getName() + (last ? "" : ",") + " \" + // " + (i + 1) + "\n";
+			baseSelect += "\"" + c.getColumnName() + (last ? "" : ",") + " \" + // " + (i + 1) + "\n";
 
 			if (c.isPrimaryKey()) {
 				Assert.isNull(primaryKey);
-				primaryKey = c.getName();
+				primaryKey = c.getColumnName();
 			}
 			if (c.isParentForeignKey()) {
-				Assert.isNull(foreignKey, "Duplicated foreign key found = [" + foreignKey + ", " + c.getName() + "]");
+				Assert.isNull(foreignKey, "Duplicated foreign key found = [" + foreignKey + ", " + c.getColumnName() + "]");
 				foreignKey = c;
 			}
 			if (c.isDiscriminator()) {
 				Assert.isNull(discriminant);
 				discriminant = c;
-				discriminantVar = toVar(c.getName());
+				discriminantVar = toVar(c.getColumnName());
 			}
 		}
 		baseSelect += "\"from " + table + "\"";
@@ -128,7 +128,7 @@ public class JdbcHibernateEntityDaoGenerator {
 		// création et remplissage des objets
 		boolean hierarchy = false;
 		for (int i = 0, entitiesSize = entities.size(); i < entitiesSize; i++) {
-			final Entity e = entities.get(i);
+			final MetaEntity e = entities.get(i);
 			final boolean first = (i == 0);
 
 			String tab = "";
@@ -140,7 +140,7 @@ public class JdbcHibernateEntityDaoGenerator {
 
 			mappingCode += "\n";
 			
-			for (Column c : e.getColumns()) {
+			for (Property c : e.getColumns()) {
 				if (!c.isDiscriminator() && !c.isParentForeignKey()) {
 					mappingCode += generateDeclareAndGetValue(tab, c);
 				}
@@ -148,9 +148,9 @@ public class JdbcHibernateEntityDaoGenerator {
 
 			mappingCode += "\n" + tab + e.getType().getSimpleName() + " o = new " + e.getType().getSimpleName() + "();\n";
 
-			for (Column c : e.getColumns()) {
+			for (Property c : e.getColumns()) {
 				if (!c.isDiscriminator() && !c.isParentForeignKey()) {
-					mappingCode += tab + "o." + toSetter(c.getProperty()) + "(" + toVar(c.getName()) + ");\n";
+					mappingCode += tab + "o." + toSetter(c.getName()) + "(" + toVar(c.getColumnName()) + ");\n";
 				}
 			}
 
@@ -169,7 +169,7 @@ public class JdbcHibernateEntityDaoGenerator {
 
 		if (foreignKey != null) {
 			mappingCode += "final Pair<Long, " + baseClass.getSimpleName() + "> pair = new Pair<Long, " + baseClass.getSimpleName() + ">();\n";
-			mappingCode += "pair.setFirst(" + toVar(foreignKey.getName()) + ");\n";
+			mappingCode += "pair.setFirst(" + toVar(foreignKey.getColumnName()) + ");\n";
 			mappingCode += "pair.setSecond(res);\n\n";
 			mappingCode += "return pair;";
 		}
@@ -184,7 +184,7 @@ public class JdbcHibernateEntityDaoGenerator {
 			line = replace(line, "PRIMARY_KEY", primaryKey);
 			line = replace(line, "MAPPING_CODE", mappingCode);
 			if (foreignKey != null) {
-				line = replace(line, "FOREIGN_KEY", foreignKey.getName());
+				line = replace(line, "FOREIGN_KEY", foreignKey.getColumnName());
 			}
 			writer.write(line);
 			writer.newLine();
@@ -195,52 +195,52 @@ public class JdbcHibernateEntityDaoGenerator {
 		writer.close();
 	}
 
-	private String generateDeclareAndGetValue(String tab, Column c) {
-		final ColumnType colType = c.getType();
+	private String generateDeclareAndGetValue(String tab, Property c) {
+		final PropertyType colType = c.getType();
 
 		String mappingCode = "";
 		
 		if (colType.needNullCheck()) {
 
 			mappingCode += tab + "final " + colType.getSqlType().getSimpleName() + " " + toTempVar(c) + " = " + generateGetValue(c) + ";\n";
-			if (colType instanceof UserTypeColumnType) {
-				final UserTypeColumnType userType = (UserTypeColumnType) colType;
+			if (colType instanceof UserTypePropertyType) {
+				final UserTypePropertyType userType = (UserTypePropertyType) colType;
 				mappingCode +=
-						tab + "final " + colType.getJavaType().getSimpleName() + " " + toVar(c.getName()) + " = (rs.wasNull() ? null : " + userType.getConvertMethod(toTempVar(c)) + ");\n";
+						tab + "final " + colType.getJavaType().getSimpleName() + " " + toVar(c.getColumnName()) + " = (rs.wasNull() ? null : " + userType.getConvertMethod(toTempVar(c)) + ");\n";
 			}
-			else if (colType instanceof JoinColumnType) {
-				final JoinColumnType joinType = (JoinColumnType) colType;
+			else if (colType instanceof JoinPropertyType) {
+				final JoinPropertyType joinType = (JoinPropertyType) colType;
 				mappingCode +=
-						tab + "final " + colType.getJavaType().getSimpleName() + " " + toVar(c.getName()) + " = (rs.wasNull() ? null : " + joinType.getConvertMethod(toTempVar(c)) + ");\n";
+						tab + "final " + colType.getJavaType().getSimpleName() + " " + toVar(c.getColumnName()) + " = (rs.wasNull() ? null : " + joinType.getConvertMethod(toTempVar(c)) + ");\n";
 			}
 			else {
-				mappingCode += tab + "final " + colType.getJavaType().getSimpleName() + " " + toVar(c.getName()) + " = (rs.wasNull() ? null : " + toTempVar(c) + ");\n";
+				mappingCode += tab + "final " + colType.getJavaType().getSimpleName() + " " + toVar(c.getColumnName()) + " = (rs.wasNull() ? null : " + toTempVar(c) + ");\n";
 			}
 		}
 		else {
-			if (colType instanceof UserTypeColumnType) {
-				final UserTypeColumnType userType = (UserTypeColumnType) colType;
+			if (colType instanceof UserTypePropertyType) {
+				final UserTypePropertyType userType = (UserTypePropertyType) colType;
 				mappingCode +=
-						tab + "final " + colType.getJavaType().getSimpleName() + " " + toVar(c.getName()) + " = " + userType.getConvertMethod(generateGetValue(c)) + ";\n";
+						tab + "final " + colType.getJavaType().getSimpleName() + " " + toVar(c.getColumnName()) + " = " + userType.getConvertMethod(generateGetValue(c)) + ";\n";
 			}
-			else if (colType instanceof JoinColumnType) {
-				final JoinColumnType joinType = (JoinColumnType) colType;
+			else if (colType instanceof JoinPropertyType) {
+				final JoinPropertyType joinType = (JoinPropertyType) colType;
 				mappingCode +=
-						tab + "final " + colType.getJavaType().getSimpleName() + " " + toVar(c.getName()) + " = " + joinType.getConvertMethod(generateGetValue(c)) + ";\n";
+						tab + "final " + colType.getJavaType().getSimpleName() + " " + toVar(c.getColumnName()) + " = " + joinType.getConvertMethod(generateGetValue(c)) + ";\n";
 			}
 			else {
-				mappingCode += tab + "final " + colType.getJavaType().getSimpleName() + " " + toVar(c.getName()) + " = " + generateGetValue(c) + ";\n";
+				mappingCode += tab + "final " + colType.getJavaType().getSimpleName() + " " + toVar(c.getColumnName()) + " = " + generateGetValue(c) + ";\n";
 			}
 
 		}
 		return mappingCode;
 	}
 
-	private static String toTempVar(Column c) {
+	private static String toTempVar(Property c) {
 		return "temp" + c.getIndex();
 	}
 
-	private String generateGetValue(Column c) {
+	private String generateGetValue(Property c) {
 		final int index = c.getIndex();
 		Assert.isTrue(index > 0);
 		return "rs." + c.getType().getResultGetter() + "(" + index + ")";

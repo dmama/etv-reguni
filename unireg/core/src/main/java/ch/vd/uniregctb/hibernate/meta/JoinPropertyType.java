@@ -1,9 +1,9 @@
-package ch.vd.uniregctb.dao.jdbc.meta;
+package ch.vd.uniregctb.hibernate.meta;
 
 import java.sql.Types;
 
-public class JoinColumnType extends ColumnType {
-	public JoinColumnType(Class<?> objectClass) {
+public class JoinPropertyType extends PropertyType {
+	public JoinPropertyType(Class<?> objectClass) {
 		super(objectClass, Types.BIGINT);
 	}
 
