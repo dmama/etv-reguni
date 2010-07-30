@@ -143,13 +143,15 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 			documents[1] = document;
 		}
 		editiqueDI.setDocumentArray(documents);
-		editiqueService.creerDocumentParBatch(mainDocument, typeDocument, false);
+		final String nomDocument = impressionDIHelper.construitIdDocument(declaration);
+		editiqueService.creerDocumentParBatch(nomDocument, typeDocument, mainDocument, false);
 	}
 
 	public void imprimeLRForBatch(DeclarationImpotSource lr, RegDate dateEvenement) throws EditiqueException {
 		final FichierImpressionISDocument document = impressionLRHelper.remplitListeRecap(lr, null);
 		final String typeDocument = impressionLRHelper.calculPrefixe();
-		editiqueService.creerDocumentParBatch(document, typeDocument, false);
+		final String nomDocument = impressionLRHelper.construitIdDocument(lr);
+		editiqueService.creerDocumentParBatch(nomDocument, typeDocument, document, false);
 	}
 
 	public EditiqueResultat imprimeNouveauxDossiers(List<Contribuable> contribuables) throws EditiqueException, JMSException {
@@ -163,13 +165,15 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		final String typeDocument = impressionSommationDIHelper.calculPrefixe();
 		final ImpressionSommationDIHelperParams params = ImpressionSommationDIHelperParams.createBatchParams(declaration, miseSousPliImpossible, dateEvenement);
 		final FichierImpressionDocument document = impressionSommationDIHelper.remplitSommationDI(params);
-		editiqueService.creerDocumentParBatch(document, typeDocument, true);
+		final String nomDocument = impressionSommationDIHelper.construitIdDocument(declaration);
+		editiqueService.creerDocumentParBatch(nomDocument, typeDocument, document, true);
 	}
 
 	public void imprimeSommationLRForBatch(DeclarationImpotSource lr, RegDate dateEvenement) throws EditiqueException {
 		final String typeDocument = impressionSommationLRHelper.calculPrefixe();
 		final FichierImpressionISDocument document = impressionSommationLRHelper.remplitSommationLR(lr, dateEvenement);
-		editiqueService.creerDocumentParBatch(document, typeDocument, true);
+		final String nomDocument = impressionSommationLRHelper.construitIdDocument(lr);
+		editiqueService.creerDocumentParBatch(nomDocument, typeDocument, document, true);
 	}
 
 	public EditiqueResultat imprimeSommationDIOnline(DeclarationImpotOrdinaire declaration, RegDate dateEvenement) throws EditiqueException, JMSException {
@@ -251,7 +255,8 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 	public void imprimeTaxationOfficeBatch(DeclarationImpotOrdinaire declaration) throws EditiqueException {
 		final String typeDocument = impressionTaxationOfficeHelper.calculPrefixe();
 		final FichierImpressionDocument document = impressionTaxationOfficeHelper.remplitTaxationOffice(declaration);
-		editiqueService.creerDocumentParBatch(document, typeDocument, false);
+		final String nomDocument = impressionTaxationOfficeHelper.construitIdDocument(declaration);
+		editiqueService.creerDocumentParBatch(nomDocument, typeDocument, document, false);
 	}
 
 	public EditiqueResultat envoyerImpressionLocaleBordereau(BordereauMouvementDossier bordereau) throws EditiqueException, JMSException {
