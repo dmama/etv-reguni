@@ -2692,7 +2692,7 @@ public class TiersServiceImpl implements TiersService {
 			envoi = true;
 		}
 		else if (forFiscal instanceof ForFiscalPrincipal) {
-			if (TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD.equals(forFiscal.getTypeAutoriteFiscale())) {
+			if (TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD == forFiscal.getTypeAutoriteFiscale()) {
 				envoi = true;
 			}
 		}
@@ -2704,14 +2704,14 @@ public class TiersServiceImpl implements TiersService {
 			final ForFiscalPrincipal forPrincipalCourant = forFiscal.getTiers().getDernierForFiscalPrincipal();
 			Assert.notNull(forPrincipalCourant);
 
-			if (!TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD.equals(forPrincipalCourant.getTypeAutoriteFiscale())) {
+			if (TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD != forPrincipalCourant.getTypeAutoriteFiscale()) {
 				envoi = true;
 				final List<ForFiscal> fors = forFiscal.getTiers().getForsFiscauxValidAt(null);
 				final MotifRattachement motifRattachement = ((ForFiscalSecondaire) forFiscal).getMotifRattachement();
 				for (ForFiscal f : fors) {
 					if (f instanceof ForFiscalSecondaire) {
-						ForFiscalSecondaire fs = (ForFiscalSecondaire) f;
-						if (fs.getMotifRattachement().equals(motifRattachement)) {
+						final ForFiscalSecondaire fs = (ForFiscalSecondaire) f;
+						if (fs.getMotifRattachement() == motifRattachement) {
 							envoi = false;
 							break;
 						}
