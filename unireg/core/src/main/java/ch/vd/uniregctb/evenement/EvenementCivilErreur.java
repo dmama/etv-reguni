@@ -56,9 +56,7 @@ public class EvenementCivilErreur extends HibernateEntity {
 	}
 
 	public EvenementCivilErreur(String m) {
-		this.message = m;
-		type = TypeEvenementErreur.ERROR;
-		validateMessage();
+		this(m, TypeEvenementErreur.ERROR);
 	}
 
 	public EvenementCivilErreur(String m,TypeEvenementErreur t) {

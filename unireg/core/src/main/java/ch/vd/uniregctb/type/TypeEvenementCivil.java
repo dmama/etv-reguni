@@ -69,7 +69,7 @@ public enum TypeEvenementCivil {
 	CORREC_DEBUT_VALIDITE_PERMIS(41060, "Correction début valité permis"),	// classes crées (exception remontrée dans le handle)
 	CORREC_ORIGINE(41070, "Correction origine"),							// TRAITE
 	CORREC_FIN_VALIDITE_PERMIS(41080, "Correction fin validité permis"),	// classes crées (exception remontrée dans le handle)
-	CORREC_DATE_ARRIVEE(42010, "Correction date arrivée"),					// classes crées (exception remontrée dans le handle)
+	CORREC_DATE_ARRIVEE(42010, "Correction date arrivée"),					// TRAITE
 	CORREC_DATE_DEPART(42020, "Correction date départ"),					// classes crées (exception remontrée dans le handle)
 	CORREC_ADRESSE(43000, "Correction adresse"),							// même que MODIFICATION_ADRESSE_DE_NOTIFICATION
 	CORREC_FILIATION(44000, "Correction filiation"), // TRAITE reconnaissance, désaveu ou adoption si enfant connu du registre civil
