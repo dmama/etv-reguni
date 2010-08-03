@@ -28,6 +28,8 @@ public class MockLocalite implements Localite {
 	public static final MockLocalite Echallens = new MockLocalite(185, 1040, null, "Echallens", MockCommune.Echallens);
 	public static final MockLocalite Lonay = new MockLocalite(174, 1027, null, "Lonay", MockCommune.Lonay);
 	public static final MockLocalite RomanelSurLausanne = new MockLocalite(179, 1032, null, "Romanel-s-Lausanne", "Romanel-sur-Lausanne", MockCommune.RomanelSurLausanne);
+	public static final MockLocalite Moudon = new MockLocalite(700, 1510, null, "Moudon", MockCommune.Moudon);
+	public static final MockLocalite Pully = new MockLocalite(157, 1009, null, "Pully", MockCommune.Pully);
 
 	// fractions de communes - L'Abbaye
 	public static final MockLocalite LePont = new MockLocalite(543, 1342, null, "Pont, Le", MockCommune.LAbbaye);

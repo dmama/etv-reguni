@@ -104,6 +104,13 @@ public class MockRue implements Rue {
 		public static final MockRue AvenueGuiseppeMotta = new MockRue(MockLocalite.GeneveSecteurDist, "Avenue Guiseppe-Motta", 46491);
 	}
 
+	public static class Moudon {
+		public static final MockRue LeBourg = new MockRue(MockLocalite.Moudon, "Rue du Bourg", 33050);
+	}
+
+	public static class Pully {
+		public static final MockRue CheminDesRoches = new MockRue(MockLocalite.Pully, "Chemin des Roches", 30887);
+	}
 
 	private final MockLocalite localite;
 	private String designationCourrier;

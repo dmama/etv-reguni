@@ -18,6 +18,7 @@ import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
 
 import java.util.List;
 
@@ -5032,6 +5033,98 @@ public class AdresseServiceTest extends BusinessTest {
 		assertAdresse(date(2010, 1, 1), date(2010, 4, 30), "Lausanne", Source.FISCALE, true, adresses.poursuite.get(0));
 		assertAdresse(date(2010, 5, 1), date(2010, 5, 22), "Echallens", Source.FISCALE, false, adresses.poursuite.get(1));
 		assertAdresse(date(2010, 5, 23), null, "Lausanne", Source.FISCALE, true, adresses.poursuite.get(2));
+	}
+
+	/**
+	 * [UNIREG-2688] On s'assure que la source de l'adresse 'poursuite autre tiers' est bien CURATELLE dans le cas d'une curatelle dont les adresses de début et de fin sont nulles.
+	 */
+	@Test
+	public void testGetAdressesFiscalesPersonnePhysiqueAvecCuratelleDatesDebutFinNulles() throws Exception {
+
+		final long noIndividuTiia = 339619;
+		final long noIndividuSylvie = 339618;
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				MockIndividu tiia = addIndividu(noIndividuTiia, date(1989, 12, 21), "Tauxe", "Tiia", false);
+				addAdresse(tiia, EnumTypeAdresse.PRINCIPALE, MockRue.Moudon.LeBourg, null, null, date(2006, 9, 24));
+				addAdresse(tiia, EnumTypeAdresse.COURRIER, MockRue.Moudon.LeBourg, null, null, date(2006, 9, 24));
+				addAdresse(tiia, EnumTypeAdresse.PRINCIPALE, MockRue.Pully.CheminDesRoches, null, date(2006, 9, 25), date(2009, 1, 31));
+				addAdresse(tiia, EnumTypeAdresse.COURRIER, MockRue.Pully.CheminDesRoches, null, date(2006, 9, 25), date(2009, 1, 31));
+				addAdresse(tiia, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.PlaceSaintFrancois, null, date(2009, 2, 1), null);
+				addAdresse(tiia, EnumTypeAdresse.COURRIER, MockRue.Lausanne.PlaceSaintFrancois, null, date(2009, 2, 1), null);
+
+				MockIndividu sylvie = addIndividu(noIndividuSylvie, date(1955, 9, 19), "Tauxe", "Sylvie", false);
+				addAdresse(sylvie, EnumTypeAdresse.PRINCIPALE, MockRue.Moudon.LeBourg, null, null, date(2006, 9, 24));
+				addAdresse(sylvie, EnumTypeAdresse.COURRIER, MockRue.Moudon.LeBourg, null, null, date(2006, 9, 24));
+				addAdresse(sylvie, EnumTypeAdresse.PRINCIPALE, MockRue.Pully.CheminDesRoches, null, date(2006, 9, 25), date(2009, 1, 31));
+				addAdresse(sylvie, EnumTypeAdresse.COURRIER, MockRue.Pully.CheminDesRoches, null, date(2006, 9, 25), date(2009, 1, 31));
+				addAdresse(sylvie, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.PlaceSaintFrancois, null, date(2009, 2, 1), null);
+				addAdresse(sylvie, EnumTypeAdresse.COURRIER, MockRue.Lausanne.PlaceSaintFrancois, null, date(2009, 2, 1), null);
+			}
+		});
+
+		class Ids {
+			long tiia;
+			long sylvie;
+		}
+		final Ids ids = new Ids();
+
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				PersonnePhysique tiia = addHabitant(noIndividuTiia);
+				addAdresseSuisse(tiia, TypeAdresseTiers.COURRIER, date(2009, 7, 8), null, MockRue.Lausanne.PlaceSaintFrancois);
+				ids.tiia = tiia.getId();
+				PersonnePhysique sylvie = addHabitant(noIndividuSylvie);
+				ids.sylvie = sylvie.getId();
+				addCuratelle(tiia, sylvie, null, null);
+				return null;
+			}
+		});
+
+		final PersonnePhysique tiia = (PersonnePhysique) tiersDAO.get(ids.tiia);
+		assertNotNull(tiia);
+
+		{
+			final AdressesFiscales adresses = adresseService.getAdressesFiscales(tiia, null, true);
+			assertNotNull(adresses);
+			assertAdresse(date(2009, 2, 1), null, "Lausanne", Source.CURATELLE, false, adresses.courrier);
+			assertAdresse(date(2009, 2, 1), null, "Lausanne", Source.CIVILE, false, adresses.representation);
+			assertAdresse(date(2009, 2, 1), null, "Lausanne", Source.CIVILE, false, adresses.domicile);
+			assertAdresse(date(2009, 2, 1), null, "Lausanne", Source.CIVILE, false, adresses.poursuite);
+			assertAdresse(date(2009, 2, 1), null, "Lausanne", Source.CURATELLE, false, adresses.poursuiteAutreTiers);
+		}
+
+		{
+			final AdressesFiscalesHisto adressesHisto = adresseService.getAdressesFiscalHisto(tiia, true);
+			assertNotNull(adressesHisto);
+
+			assertEquals(3, adressesHisto.courrier.size());
+			assertAdresse(null, date(2006, 9, 24), "Moudon", Source.CURATELLE, false, adressesHisto.courrier.get(0));
+			assertAdresse(date(2006, 9, 25), date(2009, 1, 31), "Pully", Source.CURATELLE, false, adressesHisto.courrier.get(1));
+			assertAdresse(date(2009, 2, 1), null, "Lausanne", Source.CURATELLE, false, adressesHisto.courrier.get(2));
+
+			assertEquals(3, adressesHisto.representation.size());
+			assertAdresse(null, date(2006, 9, 24), "Moudon", Source.CIVILE, false, adressesHisto.representation.get(0));
+			assertAdresse(date(2006, 9, 25), date(2009, 1, 31), "Pully", Source.CIVILE, false, adressesHisto.representation.get(1));
+			assertAdresse(date(2009, 2, 1), null, "Lausanne", Source.CIVILE, false, adressesHisto.representation.get(2));
+
+			assertEquals(3, adressesHisto.domicile.size());
+			assertAdresse(null, date(2006, 9, 24), "Moudon", Source.CIVILE, false, adressesHisto.domicile.get(0));
+			assertAdresse(date(2006, 9, 25), date(2009, 1, 31), "Pully", Source.CIVILE, false, adressesHisto.domicile.get(1));
+			assertAdresse(date(2009, 2, 1), null, "Lausanne", Source.CIVILE, false, adressesHisto.domicile.get(2));
+
+			assertEquals(3, adressesHisto.poursuite.size());
+			assertAdresse(null, date(2006, 9, 24), "Moudon", Source.CIVILE, false, adressesHisto.poursuite.get(0));
+			assertAdresse(date(2006, 9, 25), date(2009, 1, 31), "Pully", Source.CIVILE, false, adressesHisto.poursuite.get(1));
+			assertAdresse(date(2009, 2, 1), null, "Lausanne", Source.CIVILE, false, adressesHisto.poursuite.get(2));
+
+			assertEquals(3, adressesHisto.poursuiteAutreTiers.size());
+			assertAdresse(null, date(2006, 9, 24), "Moudon", Source.CURATELLE, false, adressesHisto.poursuiteAutreTiers.get(0));
+			assertAdresse(date(2006, 9, 25), date(2009, 1, 31), "Pully", Source.CURATELLE, false, adressesHisto.poursuiteAutreTiers.get(1));
+			assertAdresse(date(2009, 2, 1), null, "Lausanne", Source.CURATELLE, false, adressesHisto.poursuiteAutreTiers.get(2));
+		}
 	}
 
 	@Test
