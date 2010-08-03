@@ -7,12 +7,16 @@ import java.util.HashSet;
 
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
 
+import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.WebserviceTest;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
+import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
+import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.MotifFor;
@@ -28,6 +32,7 @@ import ch.vd.uniregctb.webservices.tiers2.data.MenageCommun;
 import ch.vd.uniregctb.webservices.tiers2.data.MenageCommunHisto;
 import ch.vd.uniregctb.webservices.tiers2.data.PersonnePhysiqueHisto;
 import ch.vd.uniregctb.webservices.tiers2.data.TiersPart;
+import ch.vd.uniregctb.webservices.tiers2.data.TypeAdresseAutreTiers;
 import ch.vd.uniregctb.webservices.tiers2.params.GetBatchTiersHisto;
 import ch.vd.uniregctb.webservices.tiers2.params.GetTiers;
 import ch.vd.uniregctb.webservices.tiers2.params.GetTiersHisto;
@@ -209,6 +214,153 @@ public class TiersWebServiceTest extends WebserviceTest {
 			assertAdresse(new Date(1947, 1, 1), null, "Av de Beaulieu", "Lausanne", menage.adressesPoursuite.get(0)); // adresse de monsieur (non-impacté par la tutelle, car pas d'autorité tutelaire renseignée)
 
 			assertEmpty(menage.adressesPoursuiteAutreTiers); // [UNIREG-2227] pas d'adresse autre tiers car madame remplace monsieur dans la gestion du ménage
+		}
+	}
+
+	/**
+	 * [UNIREG-2227] Cas du contribuable n°100.864.90 : on s'assure que la source de l'adresse 'poursuite autre tiers' est bien CURATELLE
+	 * dans le cas d'une curatelle dont les adresses de début et de fin sont nulles.
+	 */
+	@Test
+	public void testGetAdressesTiersAvecCurateur() throws Exception {
+
+		final long noIndividuTiia = 339619;
+		final long noIndividuSylvie = 339618;
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				MockIndividu tiia = addIndividu(noIndividuTiia, date(1989, 12, 21), "Tauxe", "Tiia", false);
+				addAdresse(tiia, EnumTypeAdresse.PRINCIPALE, MockRue.Moudon.LeBourg, null, null, date(2006, 9, 24));
+				addAdresse(tiia, EnumTypeAdresse.COURRIER, MockRue.Moudon.LeBourg, null, null, date(2006, 9, 24));
+				addAdresse(tiia, EnumTypeAdresse.PRINCIPALE, MockRue.Pully.CheminDesRoches, null, date(2006, 9, 25), date(2009, 1, 31));
+				addAdresse(tiia, EnumTypeAdresse.COURRIER, MockRue.Pully.CheminDesRoches, null, date(2006, 9, 25), date(2009, 1, 31));
+				addAdresse(tiia, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.PlaceSaintFrancois, null, date(2009, 2, 1), null);
+				addAdresse(tiia, EnumTypeAdresse.COURRIER, MockRue.Lausanne.PlaceSaintFrancois, null, date(2009, 2, 1), null);
+
+				MockIndividu sylvie = addIndividu(noIndividuSylvie, date(1955, 9, 19), "Tauxe", "Sylvie", false);
+				addAdresse(sylvie, EnumTypeAdresse.PRINCIPALE, MockRue.Moudon.LeBourg, null, null, date(2006, 9, 24));
+				addAdresse(sylvie, EnumTypeAdresse.COURRIER, MockRue.Moudon.LeBourg, null, null, date(2006, 9, 24));
+				addAdresse(sylvie, EnumTypeAdresse.PRINCIPALE, MockRue.Pully.CheminDesRoches, null, date(2006, 9, 25), date(2009, 1, 31));
+				addAdresse(sylvie, EnumTypeAdresse.COURRIER, MockRue.Pully.CheminDesRoches, null, date(2006, 9, 25), date(2009, 1, 31));
+				addAdresse(sylvie, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.PlaceSaintFrancois, null, date(2009, 2, 1), null);
+				addAdresse(sylvie, EnumTypeAdresse.COURRIER, MockRue.Lausanne.PlaceSaintFrancois, null, date(2009, 2, 1), null);
+			}
+		});
+
+		class Ids {
+			long tiia;
+			long sylvie;
+		}
+		final Ids ids = new Ids();
+
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				PersonnePhysique tiia = addHabitant(noIndividuTiia);
+				addAdresseSuisse(tiia, TypeAdresseTiers.COURRIER, date(2009, 7, 8), null, MockRue.Lausanne.PlaceSaintFrancois);
+				ids.tiia = tiia.getId();
+				PersonnePhysique sylvie = addHabitant(noIndividuSylvie);
+				ids.sylvie = sylvie.getId();
+				addCuratelle(tiia, sylvie, null, null);
+				return null;
+			}
+		});
+
+		{
+			final GetTiers params = new GetTiers();
+			params.login = login;
+			params.tiersNumber = ids.tiia;
+			params.parts = new HashSet<TiersPart>(Arrays.asList(TiersPart.ADRESSES, TiersPart.ADRESSES_ENVOI));
+
+			final ch.vd.uniregctb.webservices.tiers2.data.PersonnePhysique tiia = (ch.vd.uniregctb.webservices.tiers2.data.PersonnePhysique) service.getTiers(params);
+			assertNotNull(tiia);
+
+			assertNotNull(tiia.adresseCourrier);
+			assertAdresse(new Date(2009, 2, 1), null, "Place Saint-François", "Lausanne", tiia.adresseCourrier);
+			assertAdresse(new Date(2009, 2, 1), null, "Place Saint-François", "Lausanne", tiia.adresseRepresentation);
+			assertAdresse(new Date(2009, 2, 1), null, "Place Saint-François", "Lausanne", tiia.adresseDomicile);
+			assertAdresse(new Date(2009, 2, 1), null, "Place Saint-François", "Lausanne", tiia.adressePoursuite);
+			assertAdresse(new Date(2009, 2, 1), null, "Place Saint-François", "Lausanne", tiia.adressePoursuiteAutreTiers);
+			assertEquals(TypeAdresseAutreTiers.CURATELLE, tiia.adressePoursuiteAutreTiers.type);
+
+			assertEquals("Madame", tiia.adresseEnvoi.ligne1);
+			assertEquals("Tiia Tauxe", tiia.adresseEnvoi.ligne2);
+			assertEquals("p.a. Sylvie Tauxe", tiia.adresseEnvoi.ligne3);
+			assertEquals("Place Saint-François", tiia.adresseEnvoi.ligne4);
+			assertEquals("1000 Lausanne", tiia.adresseEnvoi.ligne5);
+			assertNull(tiia.adresseEnvoi.ligne6);
+
+			assertEquals("Madame", tiia.adresseRepresentationFormattee.ligne1);
+			assertEquals("Tiia Tauxe", tiia.adresseRepresentationFormattee.ligne2);
+			assertEquals("Place Saint-François", tiia.adresseRepresentationFormattee.ligne3);
+			assertEquals("1000 Lausanne", tiia.adresseRepresentationFormattee.ligne4);
+			assertNull(tiia.adresseRepresentationFormattee.ligne5);
+			assertNull(tiia.adresseRepresentationFormattee.ligne6);
+
+			assertEquals("Madame", tiia.adresseDomicileFormattee.ligne1);
+			assertEquals("Tiia Tauxe", tiia.adresseDomicileFormattee.ligne2);
+			assertEquals("Place Saint-François", tiia.adresseDomicileFormattee.ligne3);
+			assertEquals("1000 Lausanne", tiia.adresseDomicileFormattee.ligne4);
+			assertNull(tiia.adresseDomicileFormattee.ligne5);
+			assertNull(tiia.adresseDomicileFormattee.ligne6);
+
+			assertEquals("Madame", tiia.adressePoursuiteFormattee.ligne1);
+			assertEquals("Tiia Tauxe", tiia.adressePoursuiteFormattee.ligne2);
+			assertEquals("Place Saint-François", tiia.adressePoursuiteFormattee.ligne3);
+			assertEquals("1000 Lausanne", tiia.adressePoursuiteFormattee.ligne4);
+			assertNull(tiia.adressePoursuiteFormattee.ligne5);
+			assertNull(tiia.adressePoursuiteFormattee.ligne6);
+
+			assertEquals("Madame", tiia.adressePoursuiteAutreTiersFormattee.ligne1);
+			assertEquals("Sylvie Tauxe", tiia.adressePoursuiteAutreTiersFormattee.ligne2);
+			assertEquals("Place Saint-François", tiia.adressePoursuiteAutreTiersFormattee.ligne3);
+			assertEquals("1000 Lausanne", tiia.adressePoursuiteAutreTiersFormattee.ligne4);
+			assertNull(tiia.adressePoursuiteAutreTiersFormattee.ligne5);
+			assertNull(tiia.adressePoursuiteAutreTiersFormattee.ligne6);
+			assertEquals(TypeAdresseAutreTiers.CURATELLE, tiia.adressePoursuiteAutreTiersFormattee.type);
+		}
+
+		{
+			final GetTiersHisto params = new GetTiersHisto();
+			params.login = login;
+			params.tiersNumber = ids.tiia;
+			params.parts = new HashSet<TiersPart>(Arrays.asList(TiersPart.ADRESSES, TiersPart.ADRESSES_ENVOI));
+
+			final PersonnePhysiqueHisto tiia = (PersonnePhysiqueHisto) service.getTiersHisto(params);
+			assertNotNull(tiia);
+
+			assertNotNull(tiia.adressesCourrier);
+			assertEquals(3, tiia.adressesCourrier.size());
+			assertAdresse(null, new Date(2006, 9, 24), "Rue du Bourg", "Moudon", tiia.adressesCourrier.get(0));
+			assertAdresse(new Date(2006, 9, 25), new Date(2009, 1, 31), "Chemin des Roches", "Pully", tiia.adressesCourrier.get(1));
+			assertAdresse(new Date(2009, 2, 1), null, "Place Saint-François", "Lausanne", tiia.adressesCourrier.get(2));
+
+			assertNotNull(tiia.adressesRepresentation);
+			assertEquals(3, tiia.adressesRepresentation.size());
+			assertAdresse(null, new Date(2006, 9, 24), "Rue du Bourg", "Moudon", tiia.adressesRepresentation.get(0));
+			assertAdresse(new Date(2006, 9, 25), new Date(2009, 1, 31), "Chemin des Roches", "Pully", tiia.adressesRepresentation.get(1));
+			assertAdresse(new Date(2009, 2, 1), null, "Place Saint-François", "Lausanne", tiia.adressesRepresentation.get(2));
+
+			assertNotNull(tiia.adressesDomicile);
+			assertEquals(3, tiia.adressesDomicile.size());
+			assertAdresse(null, new Date(2006, 9, 24), "Rue du Bourg", "Moudon", tiia.adressesDomicile.get(0));
+			assertAdresse(new Date(2006, 9, 25), new Date(2009, 1, 31), "Chemin des Roches", "Pully", tiia.adressesDomicile.get(1));
+			assertAdresse(new Date(2009, 2, 1), null, "Place Saint-François", "Lausanne", tiia.adressesDomicile.get(2));
+
+			assertNotNull(tiia.adressesPoursuite);
+			assertEquals(3, tiia.adressesPoursuite.size());
+			assertAdresse(null, new Date(2006, 9, 24), "Rue du Bourg", "Moudon", tiia.adressesPoursuite.get(0));
+			assertAdresse(new Date(2006, 9, 25), new Date(2009, 1, 31), "Chemin des Roches", "Pully", tiia.adressesPoursuite.get(1));
+			assertAdresse(new Date(2009, 2, 1), null, "Place Saint-François", "Lausanne", tiia.adressesPoursuite.get(2));
+
+			assertNotNull(tiia.adressesPoursuiteAutreTiers);
+			assertEquals(3, tiia.adressesPoursuiteAutreTiers.size());
+			assertAdresse(null, new Date(2006, 9, 24), "Rue du Bourg", "Moudon", tiia.adressesPoursuiteAutreTiers.get(0));
+			assertEquals(TypeAdresseAutreTiers.CURATELLE, tiia.adressesPoursuiteAutreTiers.get(0).type);
+			assertAdresse(new Date(2006, 9, 25), new Date(2009, 1, 31), "Chemin des Roches", "Pully", tiia.adressesPoursuiteAutreTiers.get(1));
+			assertEquals(TypeAdresseAutreTiers.CURATELLE, tiia.adressesPoursuiteAutreTiers.get(1).type);
+			assertAdresse(new Date(2009, 2, 1), null, "Place Saint-François", "Lausanne", tiia.adressesPoursuiteAutreTiers.get(2));
+			assertEquals(TypeAdresseAutreTiers.CURATELLE, tiia.adressesPoursuiteAutreTiers.get(2).type);
 		}
 	}
 
