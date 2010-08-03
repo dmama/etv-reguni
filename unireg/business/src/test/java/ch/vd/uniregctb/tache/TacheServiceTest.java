@@ -3321,6 +3321,26 @@ public class TacheServiceTest extends BusinessTest {
 				TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.CEDI, tache0);
 	}
 
+	/**
+	 * [UNIREG-2685] Vérifique que les déclarations valides pour l'année courante (= DIs libres) ne sont pas annulées automatiquement.
+	 */
+	@Test
+	public void testDetermineSynchronizeActionsForDIsLibres() throws Exception {
+
+		final int anneeCourante = RegDate.get().year();
+
+		// Un contribuable assujetti depuis le début de l'année avec déjà une déclaration
+		final PersonnePhysique pp = addNonHabitant("Michelle", "Mabelle", date(1972, 1, 3), Sexe.FEMININ);
+		addForPrincipal(pp, date(anneeCourante, 1, 12), MotifFor.ARRIVEE_HC, MockCommune.Cossonay);
+
+		final PeriodeFiscale periode = addPeriodeFiscale(anneeCourante);
+		final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL, periode);
+		addDeclarationImpot(pp, periode, date(anneeCourante, 1, 1), date(anneeCourante, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+
+		final List<SynchronizeAction> actions = tacheService.determineSynchronizeActionsForDIs(pp);
+		assertEmpty(actions); // pas d'annulation de la déclaration courante
+	}
+
 	@Test
 	@NotTransactional
 	public void testRecalculTachesAvecDiSansTypeContribuable() throws Exception {
