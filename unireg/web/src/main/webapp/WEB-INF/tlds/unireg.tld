@@ -586,5 +586,23 @@
 			<description>le texte du bouton ('Fermer' par défaut)</description>
 		</attribute>
 	</tag>
+	<tag>
+		<name>RetourButton</name>
+		<tag-class>ch.vd.uniregctb.taglibs.JspTagRetourButton</tag-class>
+		<body-content>JSP</body-content>
+		<description>Permet de quitter la page d'edition et de retourner à la page de visualisation</description>
+		<attribute>
+			<name>link</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>lien de retour</description>
+		</attribute>
+		<attribute>
+			<name>text</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>le texte du bouton ('Retour' par défaut)</description>
+		</attribute>
+	</tag>
 
 </taglib>
