@@ -559,7 +559,13 @@ public class TacheServiceImpl implements TacheService {
 		// On détermine toutes les déclarations qui ne sont pas valides vis-à-vis des périodes d'imposition
 		//
 
+		final int anneeCourante = RegDate.get().year();
+
 		for (DeclarationImpotOrdinaire declaration : declarations) {
+			if (declaration.getDateDebut().year() >= anneeCourante) {
+				// [UNIREG-2685] on n'annule pas les DIs valides pour l'année courante (DIs libres) : elles seront validées l'année prochaine
+				continue;
+			}
 			final List<PeriodeImposition> ps = getIntersectingRangeAt(periodes, declaration);
 			if (ps == null) {
 				// il n'y a pas de période correspondante
