@@ -115,10 +115,10 @@ public class PdfAcomptesRapport extends PdfRapport {
 				// ICC
 				if (assujettissementIcc != null) {
 					fillLigneBuffer(b, ligne.getNumeroCtb(), nom, prenom, assujettissementIcc, TYPE_IMPOT_ICC);
-				}
 
-				if (!iter.isLast() || assujettissementIfd != null) {
-					b.append("\n");
+					if (!iter.isLast() || assujettissementIfd != null) {
+						b.append("\n");
+					}
 				}
 
 				// IFD
