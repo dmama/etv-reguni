@@ -121,10 +121,10 @@
 			<!-- Debut Boutons -->
 			<c:choose>
 				<c:when test="${command.tiers.numero != null}">
-					<input type="submit" name="retourVisualisation" value="<fmt:message key="label.bouton.retour" />" onClick="javascript:return Page_RetourToVisualisation(event || window.event);" />
+					<unireg:RetourButton link="visu.do?id=${command.tiers.numero}"/>					
 				</c:when>
 				<c:otherwise>
-					<input type="submit" name="retourList"  value="<fmt:message key="label.bouton.retour" />" onClick="javascript:return Page_RetourListe(event || window.event);" />
+					<unireg:RetourButton link="../tiers/list.do"/>
 				</c:otherwise>
 			</c:choose>
 
@@ -190,12 +190,6 @@
 				return true;
 			}
 
-			function Page_RetourToVisualisation(ev) {
-				if ( Modifier.isModified)
-					if(!confirm(Modifier.messageOverConfirmation))
-						return Event.stop(ev);
-				return true;
-			}
 
 			function Page_AnnulerTiers(ev) {
 				if(!confirm('Voulez-vous vraiment annuler ce tiers ?'))

@@ -22,6 +22,7 @@
 			</jsp:include>
 			<!-- Debut Boutons -->
 			<input type="button" value="<fmt:message key="label.bouton.retour" />" onClick="javascript:Page_RetourRecapContactIS(${command.debiteur.numero});" />
+			<unireg:RetourButton link="list.do?numeroDpi=${command.tiers.numero}"/>
 			<input type="submit" value="<fmt:message key="label.bouton.sauver"/>" onClick="javascript:return Page_sauverContactIS(event || window.event);" />	
 			<!-- Fin Boutons -->
 		</form:form>

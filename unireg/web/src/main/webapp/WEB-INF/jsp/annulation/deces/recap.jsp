@@ -25,7 +25,7 @@
 				</table>
 			</fieldset>
 			<!-- Debut Boutons -->
-			<input type="button" value="<fmt:message key="label.bouton.retour" />" onClick="javascript:Page_RetourRecapAnnulDeces(${command.personne.numero});" />
+			<unireg:RetourButton link="list.do" message="Voulez-vous vraiment quitter cette page sans sauver ?"/>
 			<input type="submit" value="<fmt:message key="label.bouton.sauver"/>" onClick="javascript:return Page_sauverAnnulDeces(event || window.event);" />	
 			<!-- Fin Boutons -->
 		</form:form>

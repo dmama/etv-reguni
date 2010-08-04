@@ -15,7 +15,7 @@ public class JspTagRetourButton extends BodyTagSupport {
 
 	private String text;
 	private String link;
-
+	private String message;
 
 
 	public void setText(String text) {
@@ -26,6 +26,9 @@ public class JspTagRetourButton extends BodyTagSupport {
 		this.link = link;
 	}
 
+	public void setMessage(String message) {
+		this.message = message;
+	}
 
 	@Override
 	public int doStartTag() throws JspTagException {
@@ -34,11 +37,14 @@ public class JspTagRetourButton extends BodyTagSupport {
 
 			final String libelleBouton = (text == null ? "Retour" : text);
 
+			final String libelleMessage = (message == null ? "Voulez-vous vraiment quitter cette page sans sauver le tiers ?" : message);
 
-			out.print("<input id=\"retourButton\" type=\"button\" value=\"" + libelleBouton + "\" onClick=\"javascript:Page_RetourToVisualisation('"+link+"');\"/>");
+
+
+			out.print("<input id=\"retourButton\" type=\"button\" value=\"" + libelleBouton + "\" onClick=\"javascript:Page_RetourToVisualisation('"+link+"','"+libelleMessage+"');\"/>");
 			out.print("<script type=\"text/javascript\" language=\"Javascript1.3\">");
-			out.print("function Page_RetourToVisualisation(lien) {");		
-			out.print("    if(confirm(\"Voulez-vous vraiment quitter cette page sans sauver le tiers ?\")) {");
+			out.print("function Page_RetourToVisualisation(lien,message) {");
+			out.print("    if(confirm(message)) {");
 			out.print("        document.location.href=lien;");
 			out.print("  }");
 			out.print(" }");	

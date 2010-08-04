@@ -29,7 +29,7 @@
 				</table>
 			</fieldset>
 			<!-- Debut Boutons -->
-			<input type="button" value="<fmt:message key="label.bouton.retour" />" onClick="javascript:Page_RetourRecapAnnulSeparation(${command.premierePersonne.numero});" />
+			<unireg:RetourButton link="list.do" message="Voulez-vous vraiment quitter cette page sans sauver ?"/>
 			<input type="submit" value="<fmt:message key="label.bouton.sauver"/>" onClick="javascript:return Page_sauverAnnulSeparation(event || window.event);" />	
 			<!-- Fin Boutons -->
 		</form:form>

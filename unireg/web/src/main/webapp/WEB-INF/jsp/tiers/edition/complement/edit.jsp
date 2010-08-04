@@ -41,7 +41,7 @@
 						<unireg:RetourButton link="../tiers/visu.do?id=${command.tiers.numero}"/>
 					</c:when>
 					<c:otherwise>
-						<unireg:RetourButton link="../tiers/list.do"/>						
+						<unireg:RetourButton link="../tiers/list.do"/>
 					</c:otherwise>
 				</c:choose>
 		

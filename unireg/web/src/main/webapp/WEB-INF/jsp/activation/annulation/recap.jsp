@@ -17,7 +17,7 @@
 			<jsp:include page="remplacement.jsp" />
 			<jsp:include page="rapport.jsp" />
 			<!-- Debut Boutons -->
-			<input type="button" value="<fmt:message key="label.bouton.retour" />" onClick="javascript:Page_RetourRecapAnnulation(${command.tiers.numero});" />
+			<unireg:RetourButton link="../list.do?activation=annulation" message="Voulez-vous vraiment quitter cette page sans sauver ?"/>
 			<input type="submit" value="<fmt:message key="label.bouton.sauver"/>" onClick="javascript:return Page_SauverAnnulation(event || window.event);" />	
 			<!-- Fin Boutons -->
 		</form:form>

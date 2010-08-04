@@ -90,7 +90,7 @@
 			</display:table>
 		
 		<!-- Debut Boutons -->
-		<input type="button" value="<fmt:message key="label.bouton.retour" />" onClick="javascript:Page_RetourIdentification();" />
+		<unireg:RetourButton link="edit.do?unlock=true" message="Voulez-vous vraiment quitter cette page sans sauver ?"/>
 		
 		<authz:authorize ifAnyGranted="ROLE_MW_IDENT_CTB_CELLULE_BO,ROLE_MW_IDENT_CTB_ADMIN">
 			&nbsp;<input type="button" name="expertiser" value="<fmt:message key="label.bouton.expertiser" />" onClick="javascript:confirmeExpertise();" />		
