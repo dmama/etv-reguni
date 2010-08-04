@@ -63,7 +63,6 @@ public class DbUnitFileEditor {
 	public static void main(String[] args) throws Exception {
 
 		traiteFichier("core/src/test/resources/ch/vd/uniregctb/declaration/DeclarationImpotOrdinaireDAOTest.xml");
-		traiteFichier("business/src/test/resources/ch/vd/uniregctb/activation/ActivationServiceTest.xml");
 		traiteFichier("business/src/test/resources/ch/vd/uniregctb/indexer/jobs/DatabaseIndexerJobTest.xml");
 		traiteFichier("business/src/test/resources/ch/vd/uniregctb/indexer/async/MassTiersIndexerTest.xml");
 		traiteFichier("business/src/test/resources/ch/vd/uniregctb/indexer/tiers/GlobalTiersSearcherTest.xml");

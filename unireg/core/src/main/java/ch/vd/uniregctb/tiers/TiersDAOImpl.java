@@ -509,7 +509,7 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 	public Long getNumeroPPByNumeroIndividu(Long numeroIndividu, boolean doNotAutoFlush) {
 
 		final Object[] criteria = {numeroIndividu};
-		final String query = "select pp.id from PersonnePhysique pp where pp.numeroIndividu = ? and pp.annulationDate is null order by pp.numero asc";
+		final String query = String.format("select pp.id %s", buildHqlForPPByNumeroIndividu(false));
 
 		final FlushMode mode = (doNotAutoFlush ? FlushMode.MANUAL : null);
 		final List<?> list = find(query, criteria, mode);
@@ -529,15 +529,22 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 		return (Long) list.get(0);
 	}
 
+	private static String buildHqlForPPByNumeroIndividu(boolean seulementHabitant) {
+		final StringBuilder b = new StringBuilder();
+		b.append("from PersonnePhysique pp where pp.numeroIndividu = ? and pp.annulationDate is null");
+		if (seulementHabitant) {
+			b.append(" and pp.habitant = true");
+		}
+		b.append(" and (select coalesce(max(ff.dateFin), 0) from pp.forsFiscaux ff where ff.annulationDate is null and ff.motifFermeture='ANNULATION')");
+		b.append(" < (select coalesce(max(ff.dateDebut), 1) from pp.forsFiscaux ff where ff.annulationDate is null and ff.motifOuverture='REACTIVATION')");
+		b.append(" order by pp.numero asc");
+		return b.toString();
+	}
+
 	private PersonnePhysique getPPByNumeroIndividu(Long numeroIndividu, boolean habitantSeulement, boolean doNotAutoFlush) {
 
 		final Object[] criteria = {numeroIndividu};
-		final StringBuilder b = new StringBuilder("from PersonnePhysique pp where pp.numeroIndividu = ? and pp.annulationDate is null");
-		if (habitantSeulement) {
-			b.append(" and pp.habitant = true");
-		}
-		b.append(" order by pp.numero asc");
-		final String query = b.toString();
+		final String query = buildHqlForPPByNumeroIndividu(habitantSeulement);
 
 		final FlushMode mode = (doNotAutoFlush ? FlushMode.MANUAL : null);
 		final List<?> list = find(query, criteria, mode);

@@ -6,14 +6,14 @@ import ch.vd.uniregctb.tiers.Tiers;
 public interface ActivationService {
 
 	/**
-	 * Annule un tiers
+	 * Désactive un tiers à partir du lendemain de la date donnée
 	 * @param tiers
 	 * @param dateAnnulation
 	 */
-	public void annuleTiers(Tiers tiers, RegDate dateAnnulation) throws ActivationServiceException;
+	public void desactiveTiers(Tiers tiers, RegDate dateAnnulation) throws ActivationServiceException;
 
 	/**
-	 * Annule un tiers
+	 * Remplace un tiers par un autre (désactive le premier et ajoute un lien entre les deux)
 	 * @param tiersRemplace
 	 * @param tiersRemplacant
 	 * @param dateRemplacement
@@ -22,7 +22,7 @@ public interface ActivationService {
 
 
 	/**
-	 * Réactive un tiers annulé
+	 * Réactive un tiers précédemment désactivé
 	 * @param tiers
 	 * @param dateReactivation
 	 */

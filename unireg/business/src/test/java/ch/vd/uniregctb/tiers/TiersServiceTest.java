@@ -808,6 +808,165 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 	@Test
+	public void testGetByNumeroIndividuSurContribuableDesactive() throws Exception {
+
+		final long noIndividu = 3244521L;
+
+		// registre civil
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				addIndividu(noIndividu, RegDate.get(1963, 4, 12), "Dupont", "Albert", true);
+			}
+		});
+
+		class Ids {
+			public Long noCtbPourDesactivation = null;
+			public Long noCtbAutre = null;
+			public Long noCtbDoublonNonAnnule = null;
+		}
+
+		// création d'un tiers sur cet individu
+		final Ids ids = new Ids();
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique habitant = addHabitant(noIndividu);
+				addForPrincipal(habitant, date(2001, 9, 11), MotifFor.ARRIVEE_HS, MockCommune.Renens);
+
+				ids.noCtbPourDesactivation = habitant.getNumero();
+				return null;
+			}
+		});
+
+		assertNotNull(ids.noCtbPourDesactivation);
+
+		// premier essai, le "get par numéro d'individu" doit fonctionner
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
+				assertNotNull(pp);
+				assertEquals(ids.noCtbPourDesactivation, pp.getNumero());
+
+				// et on le désactive maintenant
+				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+				ffp.setMotifFermeture(MotifFor.ANNULATION);
+				ffp.setDateFin(date(2009, 9, 12));
+				return null;
+			}
+		});
+
+		// deuxième essai, maintenant que le tiers a été désactivé, le "get par numéro d'individu" ne doit plus fonctionner
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
+				assertNull(pp);
+				return null;
+			}
+		});
+
+		// création d'un deuxième tiers avec le même numéro d'individu -> il devait alors sortir du "get par numéro d'individu"
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique habitant = addHabitant(noIndividu);
+				addForPrincipal(habitant, date(2001, 9, 11), MotifFor.ARRIVEE_HS, MockCommune.Echallens);
+
+				ids.noCtbAutre = habitant.getNumero();
+				return null;
+			}
+		});
+
+		assertNotNull(ids.noCtbAutre);
+		assertTrue(ids.noCtbAutre.longValue() != ids.noCtbPourDesactivation.longValue());
+
+		// le "get par numéro d'individu" doit maintenant retourner le deuxième tiers
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
+				assertNotNull(pp);
+				assertEquals(ids.noCtbAutre, pp.getNumero());
+
+				// rajoutons encore un tiers avec ce même numéro d'individu...
+				ids.noCtbDoublonNonAnnule = addHabitant(noIndividu).getNumero();
+				return null;
+			}
+		});
+
+		assertNotNull(ids.noCtbDoublonNonAnnule);
+		assertTrue(ids.noCtbAutre.longValue() != ids.noCtbDoublonNonAnnule.longValue());
+		assertTrue(ids.noCtbDoublonNonAnnule.longValue() != ids.noCtbPourDesactivation.longValue());
+
+		// le "get par numéro d'individu" doit maintenant exploser avec une exception bien précise...
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+
+				try {
+					tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
+					fail();
+				}
+				catch (PlusieursPersonnesPhysiquesAvecMemeNumeroIndividuException e) {
+					final long[] noCtbDoublons = new long[]{ids.noCtbAutre, ids.noCtbDoublonNonAnnule};
+					final String msg = String.format("Plusieurs tiers non-annulés partagent le même numéro d'individu %d (%s)", noIndividu, Arrays.toString(noCtbDoublons));
+					assertEquals(msg, e.getMessage());
+				}
+				return null;
+			}
+		});
+
+		// si on annule maintenant un des deux, le "get par numéro individu" devrait fonctionner à nouveau
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ids.noCtbAutre);
+				assertNotNull(pp);
+				pp.setAnnule(true);
+				return null;
+			}
+		});
+
+		// le "get par numéro d'individu" doit maintenant retourner le deuxième tiers
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
+				assertNotNull(pp);
+				assertEquals(ids.noCtbDoublonNonAnnule, pp.getNumero());
+
+				// réactivons maintenant le tout premier tiers désactivé
+				final PersonnePhysique reactive = (PersonnePhysique) tiersService.getTiers(ids.noCtbPourDesactivation);
+				assertNotNull(reactive);
+
+				addForPrincipal(reactive, date(2010, 3, 24), MotifFor.REACTIVATION, MockCommune.Bussigny);
+				return null;
+			}
+		});
+
+		// le "get par numéro d'individu" doit maintenant exploser avec une exception bien précise...
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+
+				try {
+					tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
+					fail();
+				}
+				catch (PlusieursPersonnesPhysiquesAvecMemeNumeroIndividuException e) {
+					final long[] noCtbDoublons = new long[]{ids.noCtbPourDesactivation, ids.noCtbDoublonNonAnnule};
+					final String msg = String.format("Plusieurs tiers non-annulés partagent le même numéro d'individu %d (%s)", noIndividu, Arrays.toString(noCtbDoublons));
+					assertEquals(msg, e.getMessage());
+				}
+				return null;
+			}
+		});
+
+	}
+
+	@Test
 	public void testGetEnsembleTiersCouple() throws Exception {
 
 		final long NO_PIERRE = 1;

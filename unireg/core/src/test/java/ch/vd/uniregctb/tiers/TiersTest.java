@@ -1,7 +1,9 @@
 package ch.vd.uniregctb.tiers;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNull;
+import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertSame;
 
 import org.junit.Test;
@@ -128,6 +130,29 @@ public class TiersTest extends WithoutSpringTest {
 			}
 			assertEquals(RegDate.get(1990, 1, 1), tiers.getDateDebutActivite());
 			assertEquals(RegDate.get(2005, 12, 31), tiers.getDateFinActivite());
+		}
+	}
+
+	@Test
+	public void testEtatDesactive() throws Exception {
+
+		// sans aucun for -> jamais désactivé
+		{
+			final PersonnePhysique pp = new PersonnePhysique(true);
+			for (int i = -50 ; i < 50 ; ++ i) {
+				final RegDate testDate = RegDate.get().addMonths(i);
+				assertFalse("Date : " + testDate, pp.isDesactive(testDate));
+			}
+		}
+
+		// tiers annulé -> toujours désactivé
+		{
+			final PersonnePhysique pp = new PersonnePhysique(true);
+			pp.setAnnule(true);
+			for (int i = -50 ; i < 50 ; ++ i) {
+				final RegDate testDate = RegDate.get().addMonths(i);
+				assertTrue("Date : " + testDate, pp.isDesactive(testDate));
+			}
 		}
 	}
 

@@ -847,7 +847,7 @@ public class TiersManager implements MessageSourceAware {
 			allowedOnglet.put(TiersVisuView.MODIF_MOUVEMENT, Boolean.TRUE);
 			isEditable = true;
 		}
-		if (tiers.isAnnule()) {
+		if (tiers.isDesactive(null)) {
 			//droit pour un tiers annulé
 			if (SecurityProvider.isGranted(Role.MODIF_NONHAB_INACTIF)) {
 				allowedOnglet.put(TiersVisuView.MODIF_COMPLEMENT, Boolean.TRUE);

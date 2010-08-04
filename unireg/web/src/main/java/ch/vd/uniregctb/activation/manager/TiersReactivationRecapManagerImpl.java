@@ -44,7 +44,8 @@ public class TiersReactivationRecapManagerImpl implements TiersReactivationRecap
 
 		final TiersGeneralView tiersGeneralView = tiersGeneralManager.get(tiers);
 		tiersReactivationRecapView.setTiers(tiersGeneralView);
-		tiersReactivationRecapView.setDateReactivation(RegDate.get(tiers.getAnnulationDate()));
+		final RegDate dateDesactivation = tiers.getDateDesactivation();
+		tiersReactivationRecapView.setDateReactivation(dateDesactivation != null ? dateDesactivation.getOneDayAfter() : null);
 
 		return tiersReactivationRecapView;
 	}

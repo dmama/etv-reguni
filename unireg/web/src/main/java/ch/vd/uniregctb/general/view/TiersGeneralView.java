@@ -85,7 +85,9 @@ public class TiersGeneralView {
 
 	private Set<Long> nosIndividusAvecEvenenementCivilNonTraite;
 
-	private Date annulationDate;
+	private boolean desactive;
+
+	private RegDate dateDesactivation;
 
 	private ValidationResults validationResults;
 
@@ -250,11 +252,19 @@ public class TiersGeneralView {
 		return numero == null ? null : numero.toString();
 	}
 
-	public Date getAnnulationDate() {
-		return annulationDate;
+	public boolean isDesactive() {
+		return desactive;
 	}
 
-	public void setAnnulationDate(Date annulationDate) {
-		this.annulationDate = annulationDate;
+	public void setDesactive(boolean desactive) {
+		this.desactive = desactive;
+	}
+
+	public RegDate getDateDesactivation() {
+		return dateDesactivation;
+	}
+
+	public void setDateDesactivation(RegDate dateDesactivation) {
+		this.dateDesactivation = dateDesactivation;
 	}
 }

@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.activation;
 
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.ListIterator;
 
@@ -35,37 +34,44 @@ public class ActivationServiceImpl implements ActivationService {
 
 	private TacheDAO tacheDAO;
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setTiersService(TiersService tiersService) {
 		this.tiersService = tiersService;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setTacheDAO(TacheDAO tacheDAO) {
 		this.tacheDAO = tacheDAO;
 	}
 
 	/**
-	 * Annule un tiers
-	 * @param tiers
-	 * @param dateAnnulation
+	 * Désactive un tiers à partir de la date donnée (= dernier jour d'activité)
+	 * @param tiers le tiers à désactiver
+	 * @param dateAnnulation dernier jour d'activité souhaitée pour le tiers
 	 */
-	public void annuleTiers(Tiers tiers, RegDate dateAnnulation) throws ActivationServiceException {
+	public void desactiveTiers(Tiers tiers, RegDate dateAnnulation) throws ActivationServiceException {
 
-		// [UNIREG-2340] On ne doit pas pouvoir annuler un tiers s'il possède des déclarations non-annulées qui couvrent des périodes postérieures à l'annulation
-		checkDeclarationsEnConflitAvecAnnulation(tiers, dateAnnulation);
+		// [UNIREG-2340] On ne doit pas pouvoir désactiver un tiers s'il possède des déclarations non-annulées qui couvrent des périodes postérieures à la désactivation
+		checkDeclarationsEnConflitAvecDesactivation(tiers, dateAnnulation);
 
-		// [UNIREG-2381] L'existence de certains fors doit également bloquer l'annulation du tiers
-		checkForsEnConflitAvecAnnulation(tiers, dateAnnulation);
-
-		final Date dateOperation = dateAnnulation.asJavaDate();
-		tiers.annulerPourDate(dateOperation);
+		// [UNIREG-2381] L'existence de certains fors doit également bloquer la désactivation du tiers
+		checkForsEnConflitAvecDesactivation(tiers, dateAnnulation);
 
 		if (tiers instanceof Contribuable) {
 			final Contribuable contribuable = (Contribuable) tiers;
 			tiersService.closeAllForsFiscaux(contribuable, dateAnnulation, MotifFor.ANNULATION);
+
+			// s'il existe un for fiscal principal fermé justement à la date d'annulation pour
+			// un autre motif, alors on change son motif de fermeture !
+			final ForFiscalPrincipal ffp = tiers.getForFiscalPrincipalAt(dateAnnulation);
+			if (ffp != null && ffp.getMotifFermeture() != MotifFor.ANNULATION && RegDateHelper.equals(ffp.getDateFin(), dateAnnulation)) {
+				ffp.setMotifFermeture(MotifFor.ANNULATION);
+			}
+
 			final List<Tache> taches = tacheDAO.find(contribuable.getNumero());
 			for (Tache tache : taches) {
 				if (tache.getEtat() != TypeEtatTache.TRAITE && tache.getAnnulationDate() == null) {
-					tache.annulerPourDate(dateOperation);
+					tache.setAnnule(true);
 				}
 			}
 		}
@@ -75,18 +81,24 @@ public class ActivationServiceImpl implements ActivationService {
 			final ForDebiteurPrestationImposable forDebiteurPrestationImposable = debiteur.getForDebiteurPrestationImposableAt(dateAnnulation);
 			tiersService.closeForDebiteurPrestationImposable(debiteur, forDebiteurPrestationImposable, dateAnnulation);
 		}
+
+		// s'il n'y a pas de for actif à la date de désactivation, il faut carrément annuler le tiers complètement
+		final List<ForFiscal> forsFiscauxValides = tiers.getForsFiscauxValidAt(dateAnnulation);
+		if (forsFiscauxValides == null || forsFiscauxValides.size() == 0) {
+			tiers.setAnnule(true);
+		}
 	}
 
 	/**
-	 * [UNIREG-2381] L'existence de certains fors doit bloquer l'annulation du tiers :
+	 * [UNIREG-2381] L'existence de certains fors doit bloquer la désactivation du tiers :
 	 * <ul>
 	 * <li>Tout for non-annulé dont la date de début est postérieure à la date d'annulation demandée</li>
 	 * <li>Tout for non-annulé fermé dont la date de fermeture est postérieure à la date d'annulation demandée</li>
 	 * </ul>
 	 * @throws ActivationServiceException en cas d'annulation bloquée par la présence de fors non-annulés
 	 */
-	private static void checkForsEnConflitAvecAnnulation(Tiers tiers, RegDate dateAnnulation) throws ActivationServiceException {
-		final RegDate seuilPourForBloquant = dateAnnulation.getOneDayAfter();
+	private static void checkForsEnConflitAvecDesactivation(Tiers tiers, RegDate dateDesactivation) throws ActivationServiceException {
+		final RegDate seuilPourForBloquant = dateDesactivation.getOneDayAfter();
 		final List<ForFiscal> fors = tiers.getForsFiscauxNonAnnules(false);
 		if (fors != null && fors.size() > 0) {
 			for (ForFiscal ff : fors) {
@@ -104,7 +116,7 @@ public class ActivationServiceImpl implements ActivationService {
 	 * [UNIREG-2340] Les déclarations (DI/LR) non-annulées qui couvrent une période postérieure à la date d'annulation doivent empêcher cette annulation
 	 * @throws ActivationServiceException en cas d'annulation bloquée par la présence de DI/LR non-annulée(s)
 	 */
-	private static void checkDeclarationsEnConflitAvecAnnulation(Tiers tiers, RegDate dateAnnulation) throws ActivationServiceException {
+	private static void checkDeclarationsEnConflitAvecDesactivation(Tiers tiers, RegDate dateAnnulation) throws ActivationServiceException {
 		final RegDate seuilPourDeclarationBloquante = dateAnnulation.getOneDayAfter();
 		final List<Declaration> declarations = tiers.getDeclarationsSorted();
 		if (declarations != null && declarations.size() > 0) {
@@ -138,9 +150,9 @@ public class ActivationServiceImpl implements ActivationService {
 	 * @param dateRemplacement
 	 */
 	public void remplaceTiers(Tiers tiersRemplace, Tiers tiersRemplacant, RegDate dateRemplacement) throws ActivationServiceException {
-		annuleTiers(tiersRemplace, dateRemplacement);
+		desactiveTiers(tiersRemplace, dateRemplacement);
 
-		final AnnuleEtRemplace annuleEtRemplace = new AnnuleEtRemplace(dateRemplacement, null, tiersRemplace, tiersRemplacant);
+		final AnnuleEtRemplace annuleEtRemplace = new AnnuleEtRemplace(dateRemplacement.getOneDayAfter(), null, tiersRemplace, tiersRemplacant);
 		tiersService.addRapport(annuleEtRemplace, tiersRemplace, tiersRemplacant);
 	}
 
@@ -153,57 +165,64 @@ public class ActivationServiceImpl implements ActivationService {
 	public void reactiveTiers(Tiers tiers, RegDate dateReactivation) throws ActivationServiceException {
 		Assert.notNull(dateReactivation);
 
-		final RegDate dateAnnulationPrecedente = RegDate.get(tiers.getAnnulationDate());
-		if (dateAnnulationPrecedente == null) {
-			throw new ActivationServiceException("Le tiers n'est pas annulé");
+		final RegDate derniereDateDesactivation = tiers.getDateDesactivation();
+		if (tiers.isAnnule()) {
+			// il faut dés-annuler...
+			tiers.setAnnule(false);
 		}
-		tiers.setAnnule(false);
+		else if (derniereDateDesactivation == null) {
+			throw new ActivationServiceException("Le tiers n'est pas désactivé");
+		}
 
-		// on ne demande pas le tri, car on va les trier nous-mêmes ici
-		final List<ForFiscal> forsFiscaux = tiers.getForsFiscauxNonAnnules(false);
+		// Peut-être y a-t-il des fors à réveiller...
+		if (derniereDateDesactivation != null) {
 
-		// le tri s'effectue maintenant, en faisant passer les fors principaux devant (toujours!)
-		Collections.sort(forsFiscaux, new DateRangeComparator<ForFiscal>() {
-			@Override
-			public int compare(ForFiscal o1, ForFiscal o2) {
-				final boolean isPrincipal1 = o1 instanceof ForFiscalPrincipal;
-				final boolean isPrincipal2 = o2 instanceof ForFiscalPrincipal;
-				if (isPrincipal1 == isPrincipal2) {
-					return super.compare(o1, o2);
-				}
-				else if (isPrincipal1) {
-					return -1;
-				}
-				else {
-					return 1;
-				}
-			}
-		});
+			// on ne demande pas le tri, car on va les trier nous-mêmes ici
+			final List<ForFiscal> forsFiscaux = tiers.getForsFiscauxNonAnnules(false);
 
-		for (ForFiscal forFiscal : forsFiscaux) {
-			if (dateAnnulationPrecedente.equals(forFiscal.getDateFin())) {
-				if (tiers instanceof DebiteurPrestationImposable) {
-					final DebiteurPrestationImposable debiteur = (DebiteurPrestationImposable) tiers;
-					tiersService.openForDebiteurPrestationImposable(debiteur, dateReactivation, forFiscal.getNumeroOfsAutoriteFiscale(), forFiscal.getTypeAutoriteFiscale());
-				}
-				if (tiers instanceof Contribuable) {
-					final Contribuable contribuable = (Contribuable) tiers;
-					if (forFiscal instanceof ForFiscalRevenuFortune && ((ForFiscalRevenuFortune) forFiscal).getMotifFermeture() == MotifFor.ANNULATION) {
-						if (forFiscal instanceof ForFiscalAutreElementImposable) {
-							final ForFiscalAutreElementImposable forFiscalAutreElementImposable = (ForFiscalAutreElementImposable) forFiscal;
-							tiersService.openForFiscalAutreElementImposable(contribuable, forFiscalAutreElementImposable.getGenreImpot(), dateReactivation, forFiscalAutreElementImposable.getMotifRattachement(), forFiscalAutreElementImposable.getNumeroOfsAutoriteFiscale(), forFiscalAutreElementImposable.getTypeAutoriteFiscale(), MotifFor.REACTIVATION);
-						}
-						if (forFiscal instanceof ForFiscalPrincipal) {
-							final ForFiscalPrincipal forFiscalPrincipal = (ForFiscalPrincipal) forFiscal;
-							tiersService.openForFiscalPrincipal(contribuable, dateReactivation, forFiscalPrincipal.getMotifRattachement(), forFiscalPrincipal.getNumeroOfsAutoriteFiscale(), forFiscalPrincipal.getTypeAutoriteFiscale(), forFiscalPrincipal.getModeImposition(), MotifFor.REACTIVATION, true);
-						}
-						if (forFiscal instanceof ForFiscalSecondaire) {
-							final ForFiscalSecondaire forFiscalSecondaire = (ForFiscalSecondaire) forFiscal;
-							tiersService.openForFiscalSecondaire(contribuable, dateReactivation, forFiscalSecondaire.getMotifRattachement(), forFiscalSecondaire.getNumeroOfsAutoriteFiscale(), forFiscalSecondaire.getTypeAutoriteFiscale(), MotifFor.REACTIVATION);
-						}
+			// le tri s'effectue maintenant, en faisant passer les fors principaux devant (toujours!)
+			Collections.sort(forsFiscaux, new DateRangeComparator<ForFiscal>() {
+				@Override
+				public int compare(ForFiscal o1, ForFiscal o2) {
+					final boolean isPrincipal1 = o1 instanceof ForFiscalPrincipal;
+					final boolean isPrincipal2 = o2 instanceof ForFiscalPrincipal;
+					if (isPrincipal1 == isPrincipal2) {
+						return super.compare(o1, o2);
 					}
-					else if (forFiscal instanceof ForFiscalAutreImpot) {
-						tiersService.openForFiscalAutreImpot(contribuable, forFiscal.getGenreImpot(), dateReactivation, forFiscal.getNumeroOfsAutoriteFiscale(), forFiscal.getTypeAutoriteFiscale());
+					else if (isPrincipal1) {
+						return -1;
+					}
+					else {
+						return 1;
+					}
+				}
+			});
+
+			for (ForFiscal forFiscal : forsFiscaux) {
+				if (derniereDateDesactivation.equals(forFiscal.getDateFin())) {
+					if (tiers instanceof DebiteurPrestationImposable) {
+						final DebiteurPrestationImposable debiteur = (DebiteurPrestationImposable) tiers;
+						tiersService.openForDebiteurPrestationImposable(debiteur, dateReactivation, forFiscal.getNumeroOfsAutoriteFiscale(), forFiscal.getTypeAutoriteFiscale());
+					}
+					if (tiers instanceof Contribuable) {
+						final Contribuable contribuable = (Contribuable) tiers;
+						if (forFiscal instanceof ForFiscalRevenuFortune && ((ForFiscalRevenuFortune) forFiscal).getMotifFermeture() == MotifFor.ANNULATION) {
+							if (forFiscal instanceof ForFiscalAutreElementImposable) {
+								final ForFiscalAutreElementImposable forFiscalAutreElementImposable = (ForFiscalAutreElementImposable) forFiscal;
+								tiersService.openForFiscalAutreElementImposable(contribuable, forFiscalAutreElementImposable.getGenreImpot(), dateReactivation, forFiscalAutreElementImposable.getMotifRattachement(), forFiscalAutreElementImposable.getNumeroOfsAutoriteFiscale(), forFiscalAutreElementImposable.getTypeAutoriteFiscale(), MotifFor.REACTIVATION);
+							}
+							if (forFiscal instanceof ForFiscalPrincipal) {
+								final ForFiscalPrincipal forFiscalPrincipal = (ForFiscalPrincipal) forFiscal;
+								tiersService.openForFiscalPrincipal(contribuable, dateReactivation, forFiscalPrincipal.getMotifRattachement(), forFiscalPrincipal.getNumeroOfsAutoriteFiscale(), forFiscalPrincipal.getTypeAutoriteFiscale(), forFiscalPrincipal.getModeImposition(), MotifFor.REACTIVATION, true);
+							}
+							if (forFiscal instanceof ForFiscalSecondaire) {
+								final ForFiscalSecondaire forFiscalSecondaire = (ForFiscalSecondaire) forFiscal;
+								tiersService.openForFiscalSecondaire(contribuable, dateReactivation, forFiscalSecondaire.getMotifRattachement(), forFiscalSecondaire.getNumeroOfsAutoriteFiscale(), forFiscalSecondaire.getTypeAutoriteFiscale(), MotifFor.REACTIVATION);
+							}
+						}
+						else if (forFiscal instanceof ForFiscalAutreImpot) {
+							tiersService.openForFiscalAutreImpot(contribuable, forFiscal.getGenreImpot(), dateReactivation, forFiscal.getNumeroOfsAutoriteFiscale(), forFiscal.getTypeAutoriteFiscale());
+						}
 					}
 				}
 			}
@@ -211,7 +230,13 @@ public class ActivationServiceImpl implements ActivationService {
 
 		final AnnuleEtRemplace annuleEtRemplace = (AnnuleEtRemplace) tiers.getRapportObjetValidAt(dateReactivation, TypeRapportEntreTiers.ANNULE_ET_REMPLACE);
 		if (annuleEtRemplace != null) {
-			annuleEtRemplace.setDateFin(dateReactivation.getOneDayBefore());
+			final RegDate finRemplacement = dateReactivation.getOneDayBefore();
+			if (!RegDateHelper.isAfterOrEqual(finRemplacement, annuleEtRemplace.getDateDebut(), NullDateBehavior.LATEST)) {
+				annuleEtRemplace.setAnnule(true);
+			}
+			else {
+				annuleEtRemplace.setDateFin(finRemplacement);
+			}
 		}
 	}
 }

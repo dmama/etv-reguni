@@ -99,7 +99,10 @@ public class TiersGeneralManagerImpl implements TiersGeneralManager{
 		}
 		tiersGeneralView.setNatureTiers(tiers.getNatureTiers());
 		tiersGeneralView.setAnnule(tiers.isAnnule());
-		tiersGeneralView.setAnnulationDate(tiers.getAnnulationDate());
+		tiersGeneralView.setDesactive(tiers.isDesactive(null));
+		if (tiersGeneralView.isDesactive()) {
+			tiersGeneralView.setDateDesactivation(tiers.getDateDesactivation());
+		}
 
 		final List<EvenementCivilData> evtsNonTraites = tiersService.getEvenementsCivilsNonTraites(tiers);
 		if (evtsNonTraites == null || evtsNonTraites.size() == 0) {

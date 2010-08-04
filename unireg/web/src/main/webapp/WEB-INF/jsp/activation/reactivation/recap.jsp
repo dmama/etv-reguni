@@ -23,7 +23,7 @@
 		<script type="text/javascript" language="Javascript">
 			function Page_RetourRecapReactivation(numero) {
 				if(confirm('Voulez-vous vraiment quitter cette page sans sauver ?')) {
-					document.location.href='list.do' ;
+					document.location.href='../list.do?activation=reactivation' ;
 				}
 			}
 			function Page_SauverReactivation(event) {
