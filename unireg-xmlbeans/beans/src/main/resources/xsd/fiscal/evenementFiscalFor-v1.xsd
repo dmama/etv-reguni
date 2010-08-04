@@ -33,6 +33,7 @@
 			<xs:enumeration value="DEPART_HS"/>
 			<xs:enumeration value="DEPART_HC"/>
 			<xs:enumeration value="INDETERMINE"/>
+			<xs:enumeration value="SEJOUR_SAISONNIER"/>
 			<xs:enumeration value="CHGT_MODE_IMPOSITION"/>
 			<xs:enumeration value="ANNULATION"/>
 			<xs:enumeration value="REACTIVATION"/>
