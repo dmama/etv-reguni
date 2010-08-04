@@ -18,6 +18,7 @@ import ch.vd.uniregctb.adresse.AdressesCiviles;
 import ch.vd.uniregctb.evenement.AbstractEvenementHandlerTest;
 import ch.vd.uniregctb.evenement.EvenementCivilErreur;
 import ch.vd.uniregctb.evenement.EvenementFiscal;
+import ch.vd.uniregctb.evenement.common.EvenementCivilHandlerException;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.mock.MockAdresse;
@@ -30,8 +31,10 @@ import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.type.GenreImpot;
@@ -41,6 +44,7 @@ import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
+@SuppressWarnings({"JavaDoc"})
 public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 
 	private static final Logger LOGGER = Logger.getLogger(DepartHandlerTest.class);
@@ -67,14 +71,9 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 	private MockIndividu indCharles;
 	private MockIndividu indGorgette;
 
-	private long noHabCharles;
-	private long noHabGeorgette;
-	private long noMenage;
 	private final RegDate dateMariage = RegDate.get(1977, 1, 6);
-	private final RegDate dateDebutForChamblon = RegDate.get(1981,2, 1);
 	private final RegDate dateDepart = RegDate.get(2009, 8, 31);
 	private final RegDate dateArrivee = dateDepart.getOneDayAfter();
-	private final MockCommune communeDepart = MockCommune.Chamblon;
 	private final MockCommune communeArrivee = MockCommune.Enney;
 
 	/**
@@ -468,7 +467,7 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 		final AdressesCiviles adresseVaud = serviceCivil.getAdresses(noIndividu, dateEvenement, false);
 
 		final MockAdresse adressePrincipale = (MockAdresse) adresseVaud.principale;
-		if (principale) {
+		if (principale && adressePrincipale != null) {
 			// Initialisation d'une date de fin de validité pour la résidence principale
 			adressePrincipale.setDateFinValidite(dateEvenement);
 		}
@@ -480,6 +479,13 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 		// Commune dans vd
 		final MockCommune communeVd = (MockCommune) serviceInfra.getCommuneByAdresse(adressePrincipale);
 		depart.setAncienneCommunePrincipale(communeVd);
+		if (communeVd != null) {
+			depart.setNumeroOfsCommuneAnnonce(communeVd.getNoOFS());
+		}
+		else {
+			// j'ai mis "Croy", j'aurais pu mettre autre chose...
+			depart.setNumeroOfsCommuneAnnonce(MockCommune.Croy.getNoOFSEtendu());
+		}
 
 		// Nouvelles adresses
 		final AdressesCiviles adresseHorsVaud = serviceCivil.getAdresses(noIndividu, dateEvenement.getOneDayAfter(), false);
@@ -490,7 +496,6 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 		// Commune hors vd
 		final MockCommune communeHorsVd = (MockCommune) serviceInfra.getCommuneByAdresse(nouvelleAdresse);
 		depart.setNouvelleCommunePrincipale(communeHorsVd);
-		depart.setNumeroOfsCommuneAnnonce(communeVd.getNoOFS());
 		depart.setDate(dateEvenement);
 
 		// En cas de depart d'une residence secondaire
@@ -510,7 +515,7 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 
 		PersonnePhysique habitant = new PersonnePhysique(true);
 		habitant.setNumeroIndividu(noIndividu);
-		habitant.setNumero(new Long(numHabitant));
+		habitant.setNumero((long) numHabitant);
 		habitant = (PersonnePhysique) tiersDAO.save(habitant);
 
 		addForPrincipal(habitant, RegDate.get(1980, 1, 1), numOfs, modeImposition);
@@ -836,6 +841,332 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 		Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
 		Assert.assertEquals(MockCommune.Echallens.getNoOFSEtendu(), (int) ffp.getNumeroOfsAutoriteFiscale());
 		Assert.assertEquals(dateDepart, ffp.getDateDebut());
+	}
+
+	/**
+	 * [UNIREG-2701] En cas de départ principal sur un individu dont l'ancienne commune est inconnue, on traite quand-même l'événement si
+	 * le contribuable (ou son ménage actif à la date de l'événement de départ) n'a aucun for non-annulé
+	 */
+	@Test
+	public void testDepartCommuneSansAncienneCommuneConnue_AucunFor() throws Exception {
+
+		final long noIndividu = 123456L;
+		final RegDate dateDepart = date(2008, 12, 4);
+
+		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+			@Override
+			protected void init() {
+				final MockIndividu ind = addIndividu(noIndividu, date(1956, 4, 30), "Talon", "Achille", true);
+				addAdresse(ind, EnumTypeAdresse.PRINCIPALE, "Diagon Alley", "12b", 99999, null, "London", MockPays.RoyaumeUni, date(2000, 1, 1), dateDepart);
+				addAdresse(ind, EnumTypeAdresse.PRINCIPALE, MockRue.Geneve.AvenueGuiseppeMotta, null, dateDepart.getOneDayAfter(), null);
+			}
+		});
+
+		// mise en place des habitants et de leurs fors (ici : aucun for)
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				addHabitant(noIndividu);
+				return null;
+			}
+		});
+
+		// envoi de l'événement de départ
+		final Depart depart = createValidDepart(noIndividu, dateDepart, true);
+		handleDepartSimple(depart);
+
+		final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
+		Assert.assertNotNull(pp);
+
+		final Set<ForFiscal> ff = pp.getForsFiscaux();
+		Assert.assertNotNull(ff);
+		Assert.assertEquals(0, ff.size());
+	}
+
+	/**
+	 * [UNIREG-2701] En cas de départ principal sur un individu dont l'ancienne commune est inconnue, on traite quand-même l'événement si
+	 * le contribuable (ou son ménage actif à la date de l'événement de départ) n'a aucun for non-annulé
+	 */
+	@Test
+	public void testDepartCommuneSansAncienneCommuneConnue_ForAnnule() throws Exception {
+
+		final long noIndividu = 123456L;
+		final RegDate dateDepart = date(2008, 12, 4);
+
+		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+			@Override
+			protected void init() {
+				final MockIndividu ind = addIndividu(noIndividu, date(1956, 4, 30), "Talon", "Achille", true);
+				addAdresse(ind, EnumTypeAdresse.PRINCIPALE, "Diagon Alley", "12b", 99999, null, "London", MockPays.RoyaumeUni, date(2000, 1, 1), dateDepart);
+				addAdresse(ind, EnumTypeAdresse.PRINCIPALE, MockRue.Geneve.AvenueGuiseppeMotta, null, dateDepart.getOneDayAfter(), null);
+			}
+		});
+
+		// mise en place des habitants et de leurs fors (ici : aucun for)
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addHabitant(noIndividu);
+				final ForFiscalPrincipal ffp = addForPrincipal(pp, date(2006, 1, 5), MotifFor.ARRIVEE_HS, MockCommune.Bex);
+				ffp.setAnnule(true);
+				return null;
+			}
+		});
+
+		// envoi de l'événement de départ
+		final Depart depart = createValidDepart(noIndividu, dateDepart, true);
+		handleDepartSimple(depart);
+
+		final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
+		Assert.assertNotNull(pp);
+
+		final Set<ForFiscal> ff = pp.getForsFiscaux();
+		Assert.assertNotNull(ff);
+		Assert.assertEquals(1, ff.size());
+
+		final ForFiscal ffp = ff.iterator().next();
+		Assert.assertNotNull(ffp);
+		Assert.assertTrue("Class " + ffp.getClass(), ffp instanceof ForFiscalPrincipal);
+		Assert.assertTrue(ffp.isAnnule());
+	}
+
+	/**
+	 * [UNIREG-2701] En cas de départ principal sur un individu dont l'ancienne commune est inconnue, on traite quand-même l'événement si
+	 * le contribuable (ou son ménage actif à la date de l'événement de départ) n'a aucun for non-annulé
+	 */
+	@Test
+	public void testDepartCommuneSansAncienneCommuneConnue_ForFerme() throws Exception {
+
+		final long noIndividu = 123456L;
+		final RegDate dateDepart = date(2008, 12, 4);
+
+		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+			@Override
+			protected void init() {
+				final MockIndividu ind = addIndividu(noIndividu, date(1956, 4, 30), "Talon", "Achille", true);
+				addAdresse(ind, EnumTypeAdresse.PRINCIPALE, "Diagon Alley", "12b", 99999, null, "London", MockPays.RoyaumeUni, date(2000, 1, 1), dateDepart);
+				addAdresse(ind, EnumTypeAdresse.PRINCIPALE, MockRue.Geneve.AvenueGuiseppeMotta, null, dateDepart.getOneDayAfter(), null);
+			}
+		});
+
+		// mise en place des habitants et de leurs fors (ici : aucun for)
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addHabitant(noIndividu);
+				addForPrincipal(pp, date(2006, 1, 5), MotifFor.ARRIVEE_HS, date(2007, 12, 31), MotifFor.DEPART_HS, MockCommune.Bex);
+				return null;
+			}
+		});
+
+		// envoi de l'événement de départ
+		final Depart depart = createValidDepart(noIndividu, dateDepart, true);
+		final List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
+		final List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
+		try {
+			handleDepart(depart, erreurs, warnings);
+			Assert.fail("On attendait une exception parce que la commune de départ n'a pas pu être trouvée");
+		}
+		catch (EvenementCivilHandlerException e) {
+			Assert.assertEquals("La commune de départ n'a pas été trouvée", e.getMessage());
+		}
+
+		final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
+		Assert.assertNotNull(pp);
+
+		final Set<ForFiscal> ff = pp.getForsFiscaux();
+		Assert.assertNotNull(ff);
+		Assert.assertEquals(1, ff.size());
+
+		final ForFiscal ffp = ff.iterator().next();
+		Assert.assertNotNull(ffp);
+		Assert.assertTrue("Class " + ffp.getClass(), ffp instanceof ForFiscalPrincipal);
+		Assert.assertFalse(ffp.isAnnule());
+		Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
+		Assert.assertEquals(MockCommune.Bex.getNoOFSEtendu(), (int) ffp.getNumeroOfsAutoriteFiscale());
+		Assert.assertEquals(date(2007, 12, 31), ffp.getDateFin());
+	}
+
+	/**
+	 * [UNIREG-2701] En cas de départ principal sur un individu dont l'ancienne commune est inconnue, on traite quand-même l'événement si
+	 * le contribuable (ou son ménage actif à la date de l'événement de départ) n'a aucun for non-annulé
+	 */
+	@Test
+	public void testDepartCommuneSansAncienneCommuneConnue_ForOuvert() throws Exception {
+
+		final long noIndividu = 123456L;
+		final RegDate dateDepart = date(2008, 12, 4);
+
+		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+			@Override
+			protected void init() {
+				final MockIndividu ind = addIndividu(noIndividu, date(1956, 4, 30), "Talon", "Achille", true);
+				addAdresse(ind, EnumTypeAdresse.PRINCIPALE, "Diagon Alley", "12b", 99999, null, "London", MockPays.RoyaumeUni, date(2000, 1, 1), dateDepart);
+				addAdresse(ind, EnumTypeAdresse.PRINCIPALE, MockRue.Geneve.AvenueGuiseppeMotta, null, dateDepart.getOneDayAfter(), null);
+			}
+		});
+
+		// mise en place des habitants et de leurs fors (ici : aucun for)
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addHabitant(noIndividu);
+				addForPrincipal(pp, date(2006, 1, 5), MotifFor.ARRIVEE_HS, MockCommune.Bex);
+				return null;
+			}
+		});
+
+		// envoi de l'événement de départ
+		final Depart depart = createValidDepart(noIndividu, dateDepart, true);
+		final List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
+		final List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
+		try {
+			handleDepart(depart, erreurs, warnings);
+			Assert.fail("On attendait une exception parce que la commune de départ n'a pas pu être trouvée");
+		}
+		catch (EvenementCivilHandlerException e) {
+			Assert.assertEquals("La commune de départ n'a pas été trouvée", e.getMessage());
+		}
+
+		final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
+		Assert.assertNotNull(pp);
+
+		final Set<ForFiscal> ff = pp.getForsFiscaux();
+		Assert.assertNotNull(ff);
+		Assert.assertEquals(1, ff.size());
+
+		final ForFiscal ffp = ff.iterator().next();
+		Assert.assertNotNull(ffp);
+		Assert.assertTrue("Class " + ffp.getClass(), ffp instanceof ForFiscalPrincipal);
+		Assert.assertFalse(ffp.isAnnule());
+		Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
+		Assert.assertEquals(MockCommune.Bex.getNoOFSEtendu(), (int) ffp.getNumeroOfsAutoriteFiscale());
+		Assert.assertNull(ffp.getDateFin());
+	}
+
+	/**
+	 * [UNIREG-2701] En cas de départ principal sur un individu dont l'ancienne commune est inconnue, on traite quand-même l'événement si
+	 * le contribuable (ou son ménage actif à la date de l'événement de départ) n'a aucun for non-annulé
+	 */
+	@Test
+	public void testDepartCommuneSansAncienneCommuneConnue_MenageAvecFor() throws Exception {
+
+		final long noIndividu = 123456L;
+		final RegDate dateDepart = date(2008, 12, 4);
+
+		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+			@Override
+			protected void init() {
+				final MockIndividu ind = addIndividu(noIndividu, date(1956, 4, 30), "Talon", "Achille", true);
+				addAdresse(ind, EnumTypeAdresse.PRINCIPALE, "Diagon Alley", "12b", 99999, null, "London", MockPays.RoyaumeUni, date(2000, 1, 1), dateDepart);
+				addAdresse(ind, EnumTypeAdresse.PRINCIPALE, MockRue.Geneve.AvenueGuiseppeMotta, null, dateDepart.getOneDayAfter(), null);
+				marieIndividu(ind, date(1971, 5, 1));
+			}
+		});
+
+		// mise en place des habitants et de leurs fors (ici : aucun for)
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addHabitant(noIndividu);
+				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(pp, null, date(1974, 5, 1), null);
+				final MenageCommun mc = ensemble.getMenage();
+				addForPrincipal(mc, date(2006, 1, 5), MotifFor.ARRIVEE_HS, MockCommune.Bex);
+				return null;
+			}
+		});
+
+		// envoi de l'événement de départ
+		final Depart depart = createValidDepart(noIndividu, dateDepart, true);
+		final List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
+		final List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
+		try {
+			handleDepart(depart, erreurs, warnings);
+			Assert.fail("On attendait une exception parce que la commune de départ n'a pas pu être trouvée");
+		}
+		catch (EvenementCivilHandlerException e) {
+			Assert.assertEquals("La commune de départ n'a pas été trouvée", e.getMessage());
+		}
+
+		final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
+		Assert.assertNotNull(pp);
+
+		final Set<ForFiscal> ff = pp.getForsFiscaux();
+		Assert.assertNotNull(ff);
+		Assert.assertEquals(0, ff.size());
+
+		final EnsembleTiersCouple ensemble = tiersService.getEnsembleTiersCouple(pp, null);
+		final MenageCommun mc = ensemble.getMenage();
+		Assert.assertNotNull(mc);
+
+		final Set<ForFiscal> ffmc = mc.getForsFiscaux();
+		Assert.assertNotNull(ffmc);
+		Assert.assertEquals(1, ffmc.size());
+
+		final ForFiscal ffp = ffmc.iterator().next();
+		Assert.assertNotNull(ffp);
+		Assert.assertTrue("Class " + ffp.getClass(), ffp instanceof ForFiscalPrincipal);
+		Assert.assertFalse(ffp.isAnnule());
+		Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
+		Assert.assertEquals(MockCommune.Bex.getNoOFSEtendu(), (int) ffp.getNumeroOfsAutoriteFiscale());
+		Assert.assertNull(ffp.getDateFin());
+	}
+
+	/**
+	 * [UNIREG-2701] En cas de départ principal sur un individu dont l'ancienne commune est inconnue, on traite quand-même l'événement si
+	 * le contribuable (ou son ménage actif à la date de l'événement de départ) n'a aucun for non-annulé
+	 */
+	@Test
+	public void testDepartCommuneSansAncienneCommuneConnue_MenageSansFor() throws Exception {
+
+		final long noIndividu = 123456L;
+		final RegDate dateDepart = date(2008, 12, 4);
+
+		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+			@Override
+			protected void init() {
+				final MockIndividu ind = addIndividu(noIndividu, date(1956, 4, 30), "Talon", "Achille", true);
+				addAdresse(ind, EnumTypeAdresse.PRINCIPALE, "Diagon Alley", "12b", 99999, null, "London", MockPays.RoyaumeUni, date(2000, 1, 1), dateDepart);
+				addAdresse(ind, EnumTypeAdresse.PRINCIPALE, MockRue.Geneve.AvenueGuiseppeMotta, null, dateDepart.getOneDayAfter(), null);
+				marieIndividu(ind, date(1971, 5, 1));
+			}
+		});
+
+		final RegDate dateMariage = date(1981, 5, 1);
+
+		// mise en place des habitants et de leurs fors (ici : aucun for)
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addHabitant(noIndividu);
+
+				// on crée un for sur le tiers pour pimenter la chose, mais pas sur le couple
+				addForPrincipal(pp, date(1974, 4, 30), MotifFor.MAJORITE, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Leysin);
+				addEnsembleTiersCouple(pp, null, dateMariage, null);
+				
+				return null;
+			}
+		});
+
+		// envoi de l'événement de départ
+		final Depart depart = createValidDepart(noIndividu, dateDepart, true);
+		handleDepartSimple(depart);
+
+		final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
+		Assert.assertNotNull(pp);
+
+		final Set<ForFiscal> ff = pp.getForsFiscaux();
+		Assert.assertNotNull(ff);
+		Assert.assertEquals(1, ff.size());
+
+		final ForFiscal ffp = ff.iterator().next();
+		Assert.assertNotNull(ffp);
+		Assert.assertTrue("Class " + ffp.getClass(), ffp instanceof ForFiscalPrincipal);
+		Assert.assertFalse(ffp.isAnnule());
+		Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
+		Assert.assertEquals(MockCommune.Leysin.getNoOFSEtendu(), (int) ffp.getNumeroOfsAutoriteFiscale());
+		Assert.assertEquals(dateMariage.getOneDayBefore(), ffp.getDateFin());
+
+		final EnsembleTiersCouple ensemble = tiersService.getEnsembleTiersCouple(pp, null);
+		final MenageCommun mc = ensemble.getMenage();
+		Assert.assertNotNull(mc);
+		final Set<ForFiscal> ffmc = mc.getForsFiscaux();
+		Assert.assertNotNull(ffmc);
+		Assert.assertEquals(0, ffmc.size());
 	}
 
 	/**

@@ -65,13 +65,7 @@ public class DepartHandler extends EvenementCivilHandlerBase {
 						"La nouvelle commune principale n'a pas été trouvée : veuillez vérifier le motif de fermeture du for principal",
 						TypeEvenementErreur.WARNING));
 			}
-			// Verification de la commune de départ
-			if (depart.getAncienneCommunePrincipale() == null) {
-				erreurs.add(new EvenementCivilErreur("La commune de départ n'a pas été trouvée"));
-			}
 		}
-		// else { depart.getType() == TypeEvenementCivil.DEPART_SECONDAIRE
-
 	}
 
 	@Override
@@ -89,6 +83,21 @@ public class DepartHandler extends EvenementCivilHandlerBase {
 		final Contribuable contribuable = findContribuable(depart, pp, motifFermeture == MotifFor.DEMENAGEMENT_VD);
 
 		if (depart.getType() == TypeEvenementCivil.DEPART_COMMUNE) {
+
+			// [UNIREG-2701] si l'ancienne adresse est inconnue, et que le tiers n'a aucun for non-annulé -> on laisse passer
+			if (depart.getAncienneCommunePrincipale() == null) {
+
+				// fors non-annulés sur le contribuable actif à la date de l'événement
+				final List<ForFiscal> tousFors = contribuable.getForsFiscauxNonAnnules(false);
+				if (tousFors == null || tousFors.size() == 0) {
+					// pas de fors non-annulés -> tout va bien, on accepte l'événement sans autre
+					Audit.info(evenement.getNumeroEvenement(), "Commune de départ inconnue mais contribuable sans for, départ traité sans autre");
+					return null;
+				}
+				else {
+					throw new EvenementCivilHandlerException("La commune de départ n'a pas été trouvée");
+				}
+			}
 
 			//[UNIREG-1996] on traite les deux habitants ensemble conformement à l'ancien fonctionement
 			if (depart.isAncienTypeDepart()) {
@@ -348,10 +357,10 @@ public class DepartHandler extends EvenementCivilHandlerBase {
 	}
 
 	protected final void validateDepartAdressePrincipale(Depart depart, List<EvenementCivilErreur> erreurs) {
-		final Adresse adressePrincipal = depart.getAncienneAdressePrincipale();
+		final Adresse adressePrincipale = depart.getAncienneAdressePrincipale();
 		final CommuneSimple commune = depart.getAncienneCommunePrincipale();
 
-		validateCoherenceAdresse(adressePrincipal, commune, depart, erreurs);
+		validateCoherenceAdresse(adressePrincipale, commune, depart, erreurs);
 
 		// la nouvelle commune est toujours dans le canton de vaud
 		final CommuneSimple nouvelleCommune = depart.getNouvelleCommunePrincipale();
@@ -398,10 +407,6 @@ public class DepartHandler extends EvenementCivilHandlerBase {
 					(commune.isFraction() && commune.getNumTechMere() != depart.getNumeroOfsCommuneAnnonce())) {
 				erreurs.add(new EvenementCivilErreur("La commune d'annonce est differente de la dernière commune de résidence"));
 			}
-		} else if (adresse != null) {
-			// si l'adresse est nulle, il y a déjà eu une erreur, donc on ne rajoute une erreur que
-			// si l'adresse n'est pas nulle, justement...
-			erreurs.add(new EvenementCivilErreur("Commune de résidence avant départ inconnue"));
 		}
 	}
 
