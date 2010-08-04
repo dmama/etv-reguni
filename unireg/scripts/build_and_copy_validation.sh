@@ -37,8 +37,9 @@ MVN_OPTS="-Pnot,build.source,oracle,all"
 
 # on vérifie que l'on ne dépend pas de librairies SNAPSHOT
 IGNORE_SNAPSHOT="org.apache.activemq.protobuf:activemq-protobuf:jar:1.0-SNAPSHOT"
-(cd unireg/base && mvn $MVN_OPTS dependency:list) | grep -v ":test$" | grep SNAPSHOT | grep -v $IGNORE_SNAPSHOT | grep -v "checking for updates from"
-if [ $? == 0 ]; then
+SNAPSHOT_PRESENT=$((cd unireg/base && mvn $MVN_OPTS dependency:list) | grep -v ":test$" | grep SNAPSHOT | grep -v $IGNORE_SNAPSHOT | grep -v "checking for updates from" | sort -u)
+if [ -n "$SNAPSHOT_PRESENT" ]; then
+	echo "$SNAPSHOT_PRESENT"
 	echo "!!! Erreur : l'application dépend de librairies SNAPSHOT (voir liste ci-dessus). Veuillez modifier la configuration maven pour utiliser des versions fixes."
 	exit 1
 fi
