@@ -45,10 +45,10 @@
 			<!-- Debut Boutons -->
 			<c:choose>
 				<c:when test="${command.tiers.numero != null}">
-					<input type="submit" name="retourVisualisation" value="<fmt:message key="label.bouton.retour" />" onClick="javascript:return Page_RetourToVisualisation(event || window.event);" />
+					<unireg:RetourButton link="../tiers/visu.do?id=${command.tiers.numero}"/>
 				</c:when>
 				<c:otherwise>
-					<input type="submit" name="retourList"  value="<fmt:message key="label.bouton.retour" />" onClick="javascript:return Page_RetourListe(event || window.event);" />
+					<unireg:RetourButton link="../tiers/list.do"/>
 				</c:otherwise>
 			</c:choose>
 			<c:if test="${command.natureTiers == 'DebiteurPrestationImposable'}">
@@ -79,19 +79,7 @@
 			Modifier.messageSaveSubmitConfirmation = 'Voulez-vous vraiment sauver ce tiers ?';
 			Modifier.messageOverConfirmation = "Voulez-vous vraiment quitter cette page sans sauver le tiers ?";
 
-			function Page_RetourListe(ev) {
-				if ( Modifier.isModified)
-					if (!confirm(Modifier.messageOverConfirmation))
-						return Event.stop(ev);
-				return true;
-			}
-
-			function Page_RetourToVisualisation(ev) {
-				if ( Modifier.isModified)
-					if(!confirm(Modifier.messageOverConfirmation))
-						return Event.stop(ev);
-				return true;
-			}
+			
 
 	</script>					
 	</tiles:put>

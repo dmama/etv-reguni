@@ -603,6 +603,12 @@
 			<rtexprvalue>true</rtexprvalue>
 			<description>le texte du bouton ('Retour' par défaut)</description>
 		</attribute>
+		<attribute>
+			<name>message</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>le texte à afficher dans la boite de dialogue</description>
+		</attribute>
 	</tag>
 
 </taglib>
