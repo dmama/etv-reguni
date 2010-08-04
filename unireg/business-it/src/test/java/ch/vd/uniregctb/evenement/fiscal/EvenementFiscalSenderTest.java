@@ -7,6 +7,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.internal.runners.JUnit4ClassRunner;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.util.Log4jConfigurer;
@@ -56,7 +57,9 @@ public class EvenementFiscalSenderTest extends EvenementTest {
 		esbTemplate.setReceiveTimeout(200);
 		esbTemplate.setApplication("unireg");
 		esbTemplate.setDomain("fiscalite");
-//		esbTemplate.afterPropertiesSet();       // la méthode n'existe plus en 2.1
+		if (esbTemplate instanceof InitializingBean) {
+			((InitializingBean) esbTemplate).afterPropertiesSet();
+		}
 
 		clearQueue(OUTPUT_QUEUE);
 		clearQueue(INPUT_QUEUE);

@@ -1,5 +1,25 @@
 package ch.vd.uniregctb.evenement.identification.contribuable;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.activemq.ActiveMQConnectionFactory;
+import org.apache.commons.io.FileUtils;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.internal.runners.JUnit4ClassRunner;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.dao.DataAccessException;
+import org.springframework.jms.listener.DefaultMessageListenerContainer;
+import org.springframework.orm.hibernate3.HibernateTemplate;
+import org.springframework.util.Log4jConfigurer;
+import org.springframework.util.ResourceUtils;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
@@ -9,26 +29,10 @@ import ch.vd.uniregctb.evenement.EvenementTest;
 import ch.vd.uniregctb.evenement.identification.contribuable.Demande.PrioriteEmetteur;
 import ch.vd.uniregctb.evenement.identification.contribuable.Erreur.TypeErreur;
 import ch.vd.uniregctb.type.Sexe;
-import org.apache.activemq.ActiveMQConnectionFactory;
-import org.apache.commons.io.FileUtils;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.internal.runners.JUnit4ClassRunner;
-import org.junit.runner.RunWith;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
-import org.springframework.dao.DataAccessException;
-import org.springframework.jms.listener.DefaultMessageListenerContainer;
-import org.springframework.orm.hibernate3.HibernateTemplate;
-import org.springframework.util.Log4jConfigurer;
-import org.springframework.util.ResourceUtils;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 /**
  * Classe de test du handler de messages d'identification de contribuables. Cette classe nécessite une connexion à l'ESB de développement
@@ -63,7 +67,9 @@ public class IdentificationContribuableMessageHandlerTest extends EvenementTest 
 		esbTemplate.setReceiveTimeout(200);
 		esbTemplate.setApplication("unireg");
 		esbTemplate.setDomain("fiscalite");
-//		esbTemplate.afterPropertiesSet();       // la méthode n'existe plus en 2.1
+		if (esbTemplate instanceof InitializingBean) {
+			((InitializingBean) esbTemplate).afterPropertiesSet();
+		}
 
 		clearQueue(OUTPUT_QUEUE);
 		clearQueue(INPUT_QUEUE);

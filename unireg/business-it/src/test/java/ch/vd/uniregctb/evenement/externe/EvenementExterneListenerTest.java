@@ -1,11 +1,9 @@
 package ch.vd.uniregctb.evenement.externe;
 
-import ch.vd.registre.base.date.RegDate;
-import ch.vd.technical.esb.EsbMessageFactory;
-import ch.vd.technical.esb.jms.EsbJmsTemplate;
-import ch.vd.technical.esb.store.raft.RaftEsbStore;
-import ch.vd.technical.esb.util.ESBXMLValidator;
-import ch.vd.uniregctb.evenement.EvenementTest;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
@@ -14,15 +12,19 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.internal.runners.JUnit4ClassRunner;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
 import org.springframework.util.Log4jConfigurer;
 import org.springframework.util.ResourceUtils;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.technical.esb.EsbMessageFactory;
+import ch.vd.technical.esb.jms.EsbJmsTemplate;
+import ch.vd.technical.esb.store.raft.RaftEsbStore;
+import ch.vd.technical.esb.util.ESBXMLValidator;
+import ch.vd.uniregctb.evenement.EvenementTest;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -59,7 +61,9 @@ public class EvenementExterneListenerTest extends EvenementTest {
 		esbTemplate.setReceiveTimeout(200);
 		esbTemplate.setApplication("unireg");
 		esbTemplate.setDomain("fiscalite");
-//		esbTemplate.afterPropertiesSet();       // la méthode n'existe plus en 2.1
+		if (esbTemplate instanceof InitializingBean) {
+			((InitializingBean) esbTemplate).afterPropertiesSet();
+		}
 
 		clearQueue(OUTPUT_QUEUE);
 		clearQueue(INPUT_QUEUE);
