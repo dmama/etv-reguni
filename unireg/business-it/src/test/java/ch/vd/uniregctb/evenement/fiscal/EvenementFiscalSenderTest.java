@@ -1,5 +1,18 @@
 package ch.vd.uniregctb.evenement.fiscal;
 
+import junit.framework.Assert;
+import org.apache.activemq.ActiveMQConnectionFactory;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.internal.runners.JUnit4ClassRunner;
+import org.junit.runner.RunWith;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.util.Log4jConfigurer;
+
+import ch.vd.fiscalite.registre.evenementFiscalV1.ModeImpositionEnumType;
+import ch.vd.fiscalite.registre.evenementFiscalV1.MotifForEnumType;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
@@ -14,18 +27,6 @@ import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeEvenementFiscal;
-import org.apache.activemq.ActiveMQConnectionFactory;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.internal.runners.JUnit4ClassRunner;
-import org.junit.runner.RunWith;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
-import org.springframework.util.Log4jConfigurer;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 
 @RunWith(JUnit4ClassRunner.class)
 public class EvenementFiscalSenderTest extends EvenementTest {
@@ -84,10 +85,10 @@ public class EvenementFiscalSenderTest extends EvenementTest {
 	public void publierEvenementArgumentNull() throws Exception {
 		try {
 			sender.sendEvent(null);
-			fail();
+			Assert.fail();
 		}
 		catch (IllegalArgumentException e) {
-			assertEquals("Argument evenement ne peut être null.", e.getMessage());
+			Assert.assertEquals("Argument evenement ne peut être null.", e.getMessage());
 		}
 	}
 	
@@ -123,5 +124,21 @@ public class EvenementFiscalSenderTest extends EvenementTest {
 		// On vérifie que l'on a bien envoyé le message
 		final String texte = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><even:evenementFiscalFor xmlns:even=\"http://www.vd.ch/fiscalite/registre/evenementFiscal-v1\"><even:dateEvenement>2009-12-09+01:00</even:dateEvenement><even:numeroTiers>12300002</even:numeroTiers><even:numeroTechnique>1234</even:numeroTechnique><even:codeEvenement>OUVERTURE_FOR</even:codeEvenement><even:motifFor>ARRIVEE_HS</even:motifFor></even:evenementFiscalFor>";
 		assertTextMessage(OUTPUT_QUEUE, texte);
+	}
+
+	@Test
+	public void testMotifsFors() throws Exception {
+		// on doit vérifier que tous les motifs de fors connus dans unireg sont acceptés par l'XSD des événements fiscaux
+		for (MotifFor motif : MotifFor.values()) {
+			Assert.assertNotNull("Motif " + motif + " inconnu dans l'XSD des événements fiscaux", MotifForEnumType.Enum.forString(motif.toString()));
+		}
+	}
+
+	@Test
+	public void testModesImposition() throws Exception {
+		// on doit vérifier que tous les modes d'imposition connus dans unireg sont acceptés par l'XSD des événements fiscaux
+		for (ModeImposition mode : ModeImposition.values()) {
+			Assert.assertNotNull("Mode d'imposition " + mode + " inconnu dans l'XSD des événements fiscaux", ModeImpositionEnumType.Enum.forString(mode.toString()));
+		}
 	}
 }

@@ -1,12 +1,7 @@
 package ch.vd.uniregctb.evenement.fiscal;
 
-import ch.vd.fiscalite.registre.evenementFiscalV1.*;
-import ch.vd.infrastructure.model.impl.DateUtils;
-import ch.vd.registre.base.utils.Assert;
-import ch.vd.technical.esb.EsbMessage;
-import ch.vd.technical.esb.EsbMessageFactory;
-import ch.vd.technical.esb.jms.EsbJmsTemplate;
-import ch.vd.uniregctb.common.AuthenticationHelper;import ch.vd.uniregctb.evenement.*;
+import java.util.ArrayList;
+
 import org.apache.log4j.Logger;
 import org.apache.xmlbeans.XmlError;
 import org.apache.xmlbeans.XmlObject;
@@ -16,7 +11,31 @@ import org.springframework.transaction.annotation.Transactional;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
-import java.util.ArrayList;
+import ch.vd.fiscalite.registre.evenementFiscalV1.EvenementFiscalDIDocument;
+import ch.vd.fiscalite.registre.evenementFiscalV1.EvenementFiscalDIEnumType;
+import ch.vd.fiscalite.registre.evenementFiscalV1.EvenementFiscalDIType;
+import ch.vd.fiscalite.registre.evenementFiscalV1.EvenementFiscalForDocument;
+import ch.vd.fiscalite.registre.evenementFiscalV1.EvenementFiscalForEnumType;
+import ch.vd.fiscalite.registre.evenementFiscalV1.EvenementFiscalForType;
+import ch.vd.fiscalite.registre.evenementFiscalV1.EvenementFiscalLRDocument;
+import ch.vd.fiscalite.registre.evenementFiscalV1.EvenementFiscalLREnumType;
+import ch.vd.fiscalite.registre.evenementFiscalV1.EvenementFiscalLRType;
+import ch.vd.fiscalite.registre.evenementFiscalV1.EvenementFiscalSituationFamilleDocument;
+import ch.vd.fiscalite.registre.evenementFiscalV1.EvenementFiscalSituationFamilleEnumType;
+import ch.vd.fiscalite.registre.evenementFiscalV1.EvenementFiscalSituationFamilleType;
+import ch.vd.fiscalite.registre.evenementFiscalV1.ModeImpositionEnumType;
+import ch.vd.fiscalite.registre.evenementFiscalV1.MotifForEnumType;
+import ch.vd.infrastructure.model.impl.DateUtils;
+import ch.vd.registre.base.utils.Assert;
+import ch.vd.technical.esb.EsbMessage;
+import ch.vd.technical.esb.EsbMessageFactory;
+import ch.vd.technical.esb.jms.EsbJmsTemplate;
+import ch.vd.uniregctb.common.AuthenticationHelper;
+import ch.vd.uniregctb.evenement.EvenementFiscal;
+import ch.vd.uniregctb.evenement.EvenementFiscalDI;
+import ch.vd.uniregctb.evenement.EvenementFiscalFor;
+import ch.vd.uniregctb.evenement.EvenementFiscalLR;
+import ch.vd.uniregctb.evenement.EvenementFiscalSituationFamille;
 
 /**
  * Bean qui permet d'envoyer des événements externes.
