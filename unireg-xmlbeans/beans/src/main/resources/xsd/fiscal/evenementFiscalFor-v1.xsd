@@ -3,6 +3,7 @@
 	<xs:annotation>
   		<xs:documentation>17.12.2008: Remplacement de MotifEnumType par MotifForEnumType</xs:documentation> 
   		<xs:documentation>17.12.2008: MotifFor rendu optionnel suite au mail de Céline Grand du 15.12.2008</xs:documentation> 
+  		<xs:documentation>04.08.2010: Ajouté les motifs de fors ANNULATION et REACTIVATION</xs:documentation> 
   	</xs:annotation>
 	<xs:include schemaLocation="evenementFiscalCommun-v1.xsd"/>
 	<xs:element name="evenementFiscalFor" type="EvenementFiscalForType"/>
@@ -33,6 +34,8 @@
 			<xs:enumeration value="DEPART_HC"/>
 			<xs:enumeration value="INDETERMINE"/>
 			<xs:enumeration value="CHGT_MODE_IMPOSITION"/>
+			<xs:enumeration value="ANNULATION"/>
+			<xs:enumeration value="REACTIVATION"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="ModeImpositionEnumType">
