@@ -2,6 +2,7 @@ package ch.vd.uniregctb.tiers;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
 
 import java.util.List;
 
@@ -255,5 +256,43 @@ public class DebiteurPrestationImposableTest extends CoreDAOTest {
 			assertNotNull(dpi.getPeriodiciteAt(null));
 			
 		}
+	}
+
+	@Test
+	public void testDateDesactivation() throws Exception {
+
+		// pas de for -> pas désactivé
+		final DebiteurPrestationImposable dpi = new DebiteurPrestationImposable();
+		assertNull(dpi.getDateDesactivation());
+
+		// un for créé et ouvert -> toujours pas désactivé
+		final ForDebiteurPrestationImposable f1 = new ForDebiteurPrestationImposable();
+		f1.setDateDebut(date(2000, 4, 12));
+		f1.setNumeroOfsAutoriteFiscale(1234);
+		f1.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
+		dpi.addForFiscal(f1);
+		assertNull(dpi.getDateDesactivation());
+
+		// for fermé -> désactivé
+		final RegDate dateFin1 = date(2002, 8, 15);
+		f1.setDateFin(dateFin1);
+		assertEquals(dateFin1, dpi.getDateDesactivation());
+
+		// nouvelle ouverture de for -> ré-activé
+		final ForDebiteurPrestationImposable f2 = new ForDebiteurPrestationImposable();
+		f2.setDateDebut(date(2003, 4, 12));
+		f2.setNumeroOfsAutoriteFiscale(1234);
+		f2.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
+		dpi.addForFiscal(f2);
+		assertNull(dpi.getDateDesactivation());
+
+		// for fermé -> désactivé
+		final RegDate dateFin2 = date(2004, 12, 1);
+		f2.setDateFin(dateFin2);
+		assertEquals(dateFin2, dpi.getDateDesactivation());
+
+		// annulation du dernier for -> désactivation re-devient sur la fin du premier
+		f2.setAnnule(true);
+		assertEquals(dateFin1, dpi.getDateDesactivation());
 	}
 }

@@ -25,6 +25,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.mouvement.MouvementDossier;
+import ch.vd.uniregctb.type.MotifFor;
 
 /**
  * <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -383,5 +384,39 @@ public abstract class Contribuable extends Tiers {
 		else if (!situationsFamille.equals(other.situationsFamille))
 			return false;
 		return true;
+	}
+
+	@Override
+	@Transient
+	protected boolean isDesactiveSelonFors(RegDate date) {
+		// pour un contribuable, on dira qu'il est désactivé à une date donnée s'il n'y a pas de for
+		// principal actif à la date donnée et que le dernier for fiscal principal a été fermé
+		// pour un motif "ANNULATION"
+
+		final boolean desactive;
+		final ForFiscalPrincipal ffpCourant = getForFiscalPrincipalAt(date);
+		if (ffpCourant == null) {
+			final ForFiscalPrincipal ffpPrecedent = getDernierForFiscalPrincipalAvant(date);
+			desactive = ffpPrecedent != null && ffpPrecedent.getMotifFermeture() == MotifFor.ANNULATION;
+		}
+		else {
+			desactive = false;
+		}
+		return desactive;
+	}
+
+	@Override
+	@Transient
+	public RegDate getDateDesactivation() {
+		final RegDate date;
+		final ForFiscalPrincipal ffpCourant = getForFiscalPrincipalAt(null);
+		if (ffpCourant == null) {
+			final ForFiscalPrincipal dernier = getDernierForFiscalPrincipal();
+			date = dernier != null && dernier.getMotifFermeture() == MotifFor.ANNULATION ? dernier.getDateFin() : null;
+		}
+		else {
+			date = null;
+		}
+		return date;
 	}
 }

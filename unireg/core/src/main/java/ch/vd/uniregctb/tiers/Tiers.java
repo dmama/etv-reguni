@@ -1668,13 +1668,23 @@ public abstract class Tiers extends HibernateEntity implements Validateable, Bus
 	}
 
 	/**
-	 * Vérifie l'activité du tiers.
-	 *
-	 * @return vrai si le tiers est actif, faux autrement
+	 * Un tiers "annulé" (au sens technique de la date d'annulation) est dit "désactivé" pour toute date ;
+	 * sinon, cela dépend de ses fors
+	 * @param date date de référencce
 	 */
 	@Transient
-	public boolean isActif() {
-		return isActif(new Date());
+	public final boolean isDesactive(RegDate date) {
+		return isAnnule() || isDesactiveSelonFors(date);
+	}
+
+	@Transient
+	protected boolean isDesactiveSelonFors(RegDate date) {
+		return false;
+	}
+
+	@Transient
+	public RegDate getDateDesactivation() {
+		return null;
 	}
 
 	/**
@@ -1690,6 +1700,7 @@ public abstract class Tiers extends HibernateEntity implements Validateable, Bus
 	 *            la date donnée, ou null pour vérifier si le tiers est actif.
 	 * @return vrai si le tiers est actif, faux autrement
 	 */
+	@Deprecated
 	public boolean isActif(Date date) {
 		return !isAnnule()
 				&& RegDateHelper.isBetween(RegDate.get(date), getDateDebutActivite(), getDateFinActivite(), NullDateBehavior.LATEST);

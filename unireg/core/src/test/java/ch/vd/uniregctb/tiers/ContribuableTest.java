@@ -2,6 +2,7 @@ package ch.vd.uniregctb.tiers;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
@@ -11,6 +12,9 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.WithoutSpringTest;
 import ch.vd.uniregctb.tiers.Contribuable.FirstForsList;
 import ch.vd.uniregctb.type.GenreImpot;
+import ch.vd.uniregctb.type.ModeImposition;
+import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 public class ContribuableTest extends WithoutSpringTest {
@@ -79,4 +83,54 @@ public class ContribuableTest extends WithoutSpringTest {
 	private RegDate date(int year, int month, int day) {
 		return RegDate.get(year, month, day);
 	}
+
+	@Test
+	public void testDateDesactivation() throws Exception {
+
+		// pas de for
+		final PersonnePhysique pp = new PersonnePhysique(true);
+		assertNull(pp.getDateDesactivation());
+
+		// un for ouvert
+		final ForFiscalPrincipal ffp = new ForFiscalPrincipal(date(2000, 1, 1), null, 1234, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
+		ffp.setMotifOuverture(MotifFor.ARRIVEE_HS);
+		pp.addForFiscal(ffp);
+		assertNull(pp.getDateDesactivation());
+
+		// fermeture du for principal pour motif annulation
+		final RegDate dateDesactivation = date(2005, 5, 12);
+		ffp.setMotifFermeture(MotifFor.ANNULATION);
+		ffp.setDateFin(dateDesactivation);
+		assertEquals(dateDesactivation, pp.getDateDesactivation());
+
+		// ouverture d'un autre for plus tard
+		final RegDate dateReactivation = dateDesactivation.addYears(1);
+		final ForFiscalPrincipal nouveauFfp = new ForFiscalPrincipal(dateReactivation, null, 1234, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
+		nouveauFfp.setMotifOuverture(MotifFor.REACTIVATION);
+		pp.addForFiscal(nouveauFfp);
+		assertNull(pp.getDateDesactivation());
+
+		// et refermeture du for
+		final RegDate dateReDesactivation = dateReactivation.addMonths(7);
+		nouveauFfp.setDateFin(dateReDesactivation);
+		nouveauFfp.setMotifFermeture(MotifFor.ANNULATION);
+		assertEquals(dateReDesactivation, pp.getDateDesactivation());
+
+		// ré-ouverture
+		final RegDate dateDeuxiemeReactivation = dateReDesactivation.addYears(1);
+		final ForFiscalPrincipal dernierFfp = new ForFiscalPrincipal(dateDeuxiemeReactivation, null, 1245, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
+		dernierFfp.setMotifOuverture(MotifFor.REACTIVATION);
+		pp.addForFiscal(dernierFfp);
+		assertNull(pp.getDateDesactivation());
+
+		// et fermeture sans annulation
+		dernierFfp.setMotifFermeture(MotifFor.DEPART_HS);
+		dernierFfp.setDateFin(dateDeuxiemeReactivation.addMonths(6));
+		assertNull(pp.getDateDesactivation());
+
+		// annulation du dernier for -> l'annulation devrait redevenir active
+		dernierFfp.setAnnule(true);
+		assertEquals(dateReDesactivation, pp.getDateDesactivation());
+	}
+
 }

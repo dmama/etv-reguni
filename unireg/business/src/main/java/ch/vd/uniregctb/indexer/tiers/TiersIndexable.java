@@ -68,7 +68,7 @@ public abstract class TiersIndexable extends AbstractIndexable {
 	protected void fillBaseData(TiersIndexableData data) {
 
 		data.setDebiteurInactif(IndexerFormatHelper.objectToString(tiers.isDebiteurInactif()));
-		data.setAnnule(IndexerFormatHelper.objectToString(tiers.isAnnule()));
+		data.setAnnule(IndexerFormatHelper.objectToString(tiers.isDesactive(null)));
 		data.setRoleLigne1(tiers.getRoleLigne1());
 		data.setRoleLigne2(tiersService.getRoleAssujettissement(tiers, RegDate.get()));
 

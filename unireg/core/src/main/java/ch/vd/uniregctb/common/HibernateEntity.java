@@ -288,7 +288,7 @@ public abstract class HibernateEntity implements Serializable, Loggable {
 		}
 	}
 
-	public void annulerPourDate(Date dateAnnulation) {
+	private void annulerPourDate(Date dateAnnulation) {
 		if (dateAnnulation == null) {
 			throw new RuntimeException("Une annulation doit se faire avec une date donnée.");
 		}

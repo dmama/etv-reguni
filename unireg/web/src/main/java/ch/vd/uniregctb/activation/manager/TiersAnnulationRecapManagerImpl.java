@@ -42,10 +42,11 @@ public class TiersAnnulationRecapManagerImpl implements TiersAnnulationRecapMana
 	 */
 	@Transactional(readOnly = true)
 	public TiersAnnulationRecapView get(Long numeroTiers)  {
-		TiersAnnulationRecapView tiersAnnulationRecapView = new TiersAnnulationRecapView();
-		Tiers tiers = tiersService.getTiers(numeroTiers);
 
-		TiersGeneralView tiersGeneralView = tiersGeneralManager.get(tiers);
+		final TiersAnnulationRecapView tiersAnnulationRecapView = new TiersAnnulationRecapView();
+		final Tiers tiers = tiersService.getTiers(numeroTiers);
+
+		final TiersGeneralView tiersGeneralView = tiersGeneralManager.get(tiers);
 		tiersAnnulationRecapView.setTiers(tiersGeneralView);
 		tiersAnnulationRecapView.setNouveauTiers(true);
 
@@ -61,12 +62,14 @@ public class TiersAnnulationRecapManagerImpl implements TiersAnnulationRecapMana
 	 */
 	@Transactional(readOnly = true)
 	public TiersAnnulationRecapView get(Long numeroTiers, Long numeroTiersRemplacant)  {
-		TiersAnnulationRecapView tiersAnnulationRecapView = new TiersAnnulationRecapView();
-		Tiers tiers = tiersService.getTiers(numeroTiers);
-		TiersGeneralView tiersGeneralView = tiersGeneralManager.get(tiers);
+
+		final TiersAnnulationRecapView tiersAnnulationRecapView = new TiersAnnulationRecapView();
+		final Tiers tiers = tiersService.getTiers(numeroTiers);
+		final TiersGeneralView tiersGeneralView = tiersGeneralManager.get(tiers);
 		tiersAnnulationRecapView.setTiers(tiersGeneralView);
-		Tiers tiersRemplacant = tiersService.getTiers(numeroTiersRemplacant);
-		TiersGeneralView tiersRemplacantGeneralView = tiersGeneralManager.get(tiersRemplacant);
+
+		final Tiers tiersRemplacant = tiersService.getTiers(numeroTiersRemplacant);
+		final TiersGeneralView tiersRemplacantGeneralView = tiersGeneralManager.get(tiersRemplacant);
 		tiersAnnulationRecapView.setTiersRemplacant(tiersRemplacantGeneralView);
 		tiersAnnulationRecapView.setNouveauTiers(false);
 		return tiersAnnulationRecapView;
@@ -88,7 +91,7 @@ public class TiersAnnulationRecapManagerImpl implements TiersAnnulationRecapMana
 				activationService.remplaceTiers(tiers, tiersRemplacant, tiersAnnulationRecapView.getDateAnnulation());
 			}
 			else {
-				activationService.annuleTiers(tiers, tiersAnnulationRecapView.getDateAnnulation());
+				activationService.desactiveTiers(tiers, tiersAnnulationRecapView.getDateAnnulation());
 			}
 		}
 		catch (ActivationServiceException e) {
@@ -96,5 +99,4 @@ public class TiersAnnulationRecapManagerImpl implements TiersAnnulationRecapMana
 			throw new ActionException(e.getMessage());
 		}
 	}
-
 }
