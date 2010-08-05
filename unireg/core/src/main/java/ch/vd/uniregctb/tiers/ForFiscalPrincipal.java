@@ -61,14 +61,6 @@ public class ForFiscalPrincipal extends ForFiscalRevenuFortune {
 		this.modeImposition = ffp.getModeImposition();
 	}
 
-	@Transient
-	@Override
-	public void setMotifRattachement(MotifRattachement motifRattachement) {
-		Assert.isTrue(isRattachementCoherent(motifRattachement),
-				"Par définition, le motif de rattachement d'un for fiscal principal est limité à DOMICILE et DIPLOMATE.");
-		super.setMotifRattachement(motifRattachement);
-	}
-
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 *

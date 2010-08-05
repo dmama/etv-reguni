@@ -2,9 +2,8 @@ package ch.vd.uniregctb.tiers;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
-import javax.persistence.Transient;
 
-import ch.vd.registre.base.utils.Assert;
+import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
@@ -29,27 +28,6 @@ public class ForFiscalAutreElementImposable extends ForFiscalRevenuFortune {
 		super(ffaei);
 	}
 
-	@Transient
-	@Override
-	public void setMotifRattachement(MotifRattachement motifRattachement) {
-		Assert.isTrue(isRattachementCoherent(motifRattachement),
-				"Par définition, le motif de rattachement d'un for fiscal 'autre élément imposable' est limité à ACTIVITE_LUCRATIVE_CAS, ADMINISTRATEUR, CREANCIER_HYPOTHECAIRE et BENEFICIAIRE_PRESTATION_PREVOYANCE.");
-		super.setMotifRattachement(motifRattachement);
-	}
-
-	@Transient
-	@Override
-	public TypeAutoriteFiscale getTypeAutoriteFiscale() {
-		// Par définition
-		return TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD;
-	}
-
-	@Transient
-	@Override
-	public void setTypeAutoriteFiscale(TypeAutoriteFiscale theTypeAutoriteFiscaleFiscale) {
-		Assert.isEqual(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, theTypeAutoriteFiscaleFiscale, "Par définition, le type d'autorité fiscale d'un for fiscal 'autre élément imposable' est limité à COMMUNE_OU_FRACTION_VD");
-	}
-
 	@Override
 	public boolean isRattachementCoherent(MotifRattachement motif) {
 		boolean valid = MotifRattachement.ACTIVITE_LUCRATIVE_CAS.equals(motif)
@@ -58,6 +36,17 @@ public class ForFiscalAutreElementImposable extends ForFiscalRevenuFortune {
 		|| MotifRattachement.PRESTATION_PREVOYANCE.equals(motif)
 		|| MotifRattachement.LOI_TRAVAIL_AU_NOIR.equals(motif);
 		return valid;
+	}
+
+	@Override
+	public ValidationResults validate() {
+		final ValidationResults results = super.validate();
+
+		if (getTypeAutoriteFiscale() != TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
+			results.addError("Par définition, le type d'autorité fiscale d'un for fiscal 'autre élément imposable' est limité à COMMUNE_OU_FRACTION_VD");
+		}
+
+		return results;
 	}
 
 	public ForFiscal duplicate() {

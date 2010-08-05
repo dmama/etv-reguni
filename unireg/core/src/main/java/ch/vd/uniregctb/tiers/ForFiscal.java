@@ -114,9 +114,9 @@ public abstract class ForFiscal extends HibernateEntity implements Comparable<Fo
 			TypeAutoriteFiscale typeAutoriteFiscale) {
 		this.dateDebut = ouverture;
 		this.dateFin = fermeture;
-		setGenreImpot(genreImpot); // virtual
+		this.genreImpot = genreImpot;
 		this.numeroOfsAutoriteFiscale = numeroOfsAutoriteFiscale;
-		setTypeAutoriteFiscale(typeAutoriteFiscale); // virtual
+		this.typeAutoriteFiscale = typeAutoriteFiscale;
 	}
 
 	public ForFiscal(ForFiscal ff) {

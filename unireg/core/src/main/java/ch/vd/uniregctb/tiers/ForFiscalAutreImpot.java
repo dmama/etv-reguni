@@ -2,9 +2,8 @@ package ch.vd.uniregctb.tiers;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
-import javax.persistence.Transient;
 
-import ch.vd.registre.base.utils.Assert;
+import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
@@ -29,27 +28,24 @@ public class ForFiscalAutreImpot extends ForFiscal {
 		super(ffai);
 	}
 
-	@Transient
 	@Override
-	public void setGenreImpot(GenreImpot theGenreImpot) {
-		Assert.isTrue(!GenreImpot.REVENU_FORTUNE.equals(theGenreImpot),
-			"Par définition, le genre d'impôt d'un for fiscal 'autre impôt' doit être différent de REVENU_FORTUNE.");
-		Assert.isTrue(!GenreImpot.DEBITEUR_PRESTATION_IMPOSABLE.equals(theGenreImpot),
-			"Par définition, le genre d'impôt d'un for fiscal 'autre impôt' doit être différent de DEBITEUR_PRESTATION_IMPOSABLE.");
-		super.setGenreImpot(theGenreImpot);
-	}
+	public ValidationResults validate() {
 
-	@Transient
-	@Override
-	public TypeAutoriteFiscale getTypeAutoriteFiscale() {
-		// Par définition
-		return TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD;
-	}
+		ValidationResults results = super.validate();
 
-	@Transient
-	@Override
-	public void setTypeAutoriteFiscale(TypeAutoriteFiscale theTypeAutoriteFiscaleFiscale) {
-		Assert.isEqual(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, theTypeAutoriteFiscaleFiscale, "Par définition, le type d'autorité fiscale d'un for fiscal 'autre impôt' est limité à COMMUNE_OU_FRACTION_VD");
+		if (getGenreImpot() == GenreImpot.REVENU_FORTUNE) {
+			results.addError("Par définition, le genre d'impôt d'un for fiscal 'autre impôt' doit être différent de REVENU_FORTUNE.");
+		}
+
+		if (getGenreImpot() == GenreImpot.DEBITEUR_PRESTATION_IMPOSABLE) {
+			results.addError("Par définition, le genre d'impôt d'un for fiscal 'autre impôt' doit être différent de DEBITEUR_PRESTATION_IMPOSABLE.");
+		}
+
+		if (getTypeAutoriteFiscale() != TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
+			results.addError("Par définition, le type d'autorité fiscale d'un for fiscal 'autre impôt' est limité à COMMUNE_OU_FRACTION_VD");
+		}
+
+		return results;
 	}
 
 	public ForFiscal duplicate() {

@@ -2,10 +2,9 @@ package ch.vd.uniregctb.tiers;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
-import javax.persistence.Transient;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Assert;
+import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
@@ -36,40 +35,26 @@ public class ForFiscalSecondaire extends ForFiscalRevenuFortune {
 		super(ffs);
 	}
 
-
-	@Transient
-	@Override
-	public void setMotifRattachement(MotifRattachement motifRattachement) {
-		Assert.isTrue(isRattachementCoherent(motifRattachement),
-				"Par définition, le motif de rattachement d'un for fiscal secondaire est limité à " +
-				"ACTIVITE_INDEPENDANTE, IMMEUBLE_PRIVE, SEJOUR_SAISONNIER et DIRIGEANT_SOCIETE.");
-		super.setMotifRattachement(motifRattachement);
-	}
-
-	@Transient
-	@Override
-	public TypeAutoriteFiscale getTypeAutoriteFiscale() {
-		// Par définition
-		return TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD;
-	}
-
-	@Transient
-	@Override
-	public void setTypeAutoriteFiscale(TypeAutoriteFiscale theTypeAutoriteFiscaleFiscale) {
-		Assert.isEqual(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, theTypeAutoriteFiscaleFiscale,
-				"Par définition, le type d'autorité fiscale d'un for fiscal secondaire est limité à COMMUNE_OU_FRACTION_VD");
-		super.setTypeAutoriteFiscale(theTypeAutoriteFiscaleFiscale);
-	}
-
 	@Override
 	public boolean isRattachementCoherent(MotifRattachement motif) {
 		return MotifRattachement.ACTIVITE_INDEPENDANTE.equals(motif) || MotifRattachement.IMMEUBLE_PRIVE.equals(motif)
 			|| MotifRattachement.SEJOUR_SAISONNIER.equals(motif) || MotifRattachement.DIRIGEANT_SOCIETE.equals(motif);
 	}
 
+	@Override
+	public ValidationResults validate() {
+		final ValidationResults results = super.validate();
+
+		if (getTypeAutoriteFiscale() != TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
+			results.addError("Par définition, le type d'autorité fiscale d'un for fiscal secondaire est limité à COMMUNE_OU_FRACTION_VD");
+		}
+
+		return results;
+	}
+
 	/* (non-Javadoc)
-	 * @see ch.vd.uniregctb.common.Duplicable#duplicate()
-	 */
+		 * @see ch.vd.uniregctb.common.Duplicable#duplicate()
+		 */
 	public ForFiscal duplicate() {
 		return new ForFiscalSecondaire(this);
 	}

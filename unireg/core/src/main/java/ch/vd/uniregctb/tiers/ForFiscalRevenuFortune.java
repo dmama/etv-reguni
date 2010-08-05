@@ -1,14 +1,11 @@
 package ch.vd.uniregctb.tiers;
 
 import javax.persistence.Column;
-import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
-import javax.persistence.Transient;
 
 import org.hibernate.annotations.Type;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.type.GenreImpot;
@@ -58,7 +55,7 @@ public abstract class ForFiscalRevenuFortune extends ForFiscal {
 	private Boolean forGestion;
 
 	public ForFiscalRevenuFortune() {
-		// rien à faire
+		setGenreImpot(GenreImpot.REVENU_FORTUNE);
 	}
 
 	public ForFiscalRevenuFortune(RegDate ouverture, RegDate fermeture, Integer numeroOfsAutoriteFiscale,
@@ -71,20 +68,6 @@ public abstract class ForFiscalRevenuFortune extends ForFiscal {
 		this(ffrf.getDateDebut(), ffrf.getDateFin(), ffrf.getNumeroOfsAutoriteFiscale(), ffrf.getTypeAutoriteFiscale(), ffrf.getMotifRattachement());
 		this.setMotifOuverture(ffrf.getMotifOuverture());
 		this.setMotifFermeture(ffrf.getMotifFermeture());
-	}
-
-	@Transient
-	@Override
-	public GenreImpot getGenreImpot() {
-		// Par définition
-		return GenreImpot.REVENU_FORTUNE;
-	}
-
-	@Transient
-	@Override
-	public void setGenreImpot(GenreImpot theGenreImpot) {
-		Assert.isEqual(GenreImpot.REVENU_FORTUNE, theGenreImpot,
-				"Par définition, le genre d'impôt d'un for fiscal 'revenu-fortune' doit être REVENU_FORTUNE.");
 	}
 
 	/**
@@ -183,6 +166,10 @@ public abstract class ForFiscalRevenuFortune extends ForFiscal {
 	public ValidationResults validate() {
 
 		ValidationResults results = super.validate();
+
+		if (getGenreImpot() != GenreImpot.REVENU_FORTUNE) {
+			results.addError("Par définition, le genre d'impôt d'un for fiscal 'revenu-fortune' doit être REVENU_FORTUNE.");
+		}
 
 		if (!isRattachementCoherent(motifRattachement)){
 			results.addError("Le for " + toString() + " avec motif de rattachement = " + motifRattachement + " est invalide");

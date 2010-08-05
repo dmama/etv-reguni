@@ -123,6 +123,8 @@ public class JdbcForFiscalDaoImpl implements JdbcForFiscalDao {
 				final RegDate dateFermeture = (rs.wasNull() ? null : RegDate.fromIndex(temp5, false));
 				final int temp6 = rs.getInt(6);
 				final RegDate dateOuverture = (rs.wasNull() ? null : RegDate.fromIndex(temp6, false));
+				final String temp7 = rs.getString(7);
+				final GenreImpot genreImpot = (rs.wasNull() ? null : Enum.valueOf(GenreImpot.class, temp7));
 				final Date logCdate = rs.getTimestamp(8);
 				final String logCuser = rs.getString(9);
 				final Timestamp logMdate = rs.getTimestamp(10);
@@ -146,6 +148,7 @@ public class JdbcForFiscalDaoImpl implements JdbcForFiscalDao {
 				o.setAnnulationUser(annulationUser);
 				o.setDateFin(dateFermeture);
 				o.setDateDebut(dateOuverture);
+				o.setGenreImpot(genreImpot);
 				o.setLogCreationDate(logCdate);
 				o.setLogCreationUser(logCuser);
 				o.setLogModifDate(logMdate);
@@ -168,6 +171,8 @@ public class JdbcForFiscalDaoImpl implements JdbcForFiscalDao {
 				final RegDate dateFermeture = (rs.wasNull() ? null : RegDate.fromIndex(temp5, false));
 				final int temp6 = rs.getInt(6);
 				final RegDate dateOuverture = (rs.wasNull() ? null : RegDate.fromIndex(temp6, false));
+				final String temp7 = rs.getString(7);
+				final GenreImpot genreImpot = (rs.wasNull() ? null : Enum.valueOf(GenreImpot.class, temp7));
 				final Date logCdate = rs.getTimestamp(8);
 				final String logCuser = rs.getString(9);
 				final Timestamp logMdate = rs.getTimestamp(10);
@@ -180,6 +185,8 @@ public class JdbcForFiscalDaoImpl implements JdbcForFiscalDao {
 				final MotifRattachement motifRattachement = (rs.wasNull() ? null : Enum.valueOf(MotifRattachement.class, temp15));
 				final int temp16 = rs.getInt(16);
 				final Integer numeroOfs = (rs.wasNull() ? null : temp16);
+				final String temp18 = rs.getString(18);
+				final TypeAutoriteFiscale typeAutFisc = (rs.wasNull() ? null : Enum.valueOf(TypeAutoriteFiscale.class, temp18));
 			
 				ForFiscalSecondaire o = new ForFiscalSecondaire();
 				o.setId(id);
@@ -187,6 +194,7 @@ public class JdbcForFiscalDaoImpl implements JdbcForFiscalDao {
 				o.setAnnulationUser(annulationUser);
 				o.setDateFin(dateFermeture);
 				o.setDateDebut(dateOuverture);
+				o.setGenreImpot(genreImpot);
 				o.setLogCreationDate(logCdate);
 				o.setLogCreationUser(logCuser);
 				o.setLogModifDate(logMdate);
@@ -195,6 +203,7 @@ public class JdbcForFiscalDaoImpl implements JdbcForFiscalDao {
 				o.setMotifOuverture(motifOuverture);
 				o.setMotifRattachement(motifRattachement);
 				o.setNumeroOfsAutoriteFiscale(numeroOfs);
+				o.setTypeAutoriteFiscale(typeAutFisc);
 				res = o;
 			}
 			else if (forType.equals("ForFiscalAutreElementImposable")) {
@@ -207,6 +216,8 @@ public class JdbcForFiscalDaoImpl implements JdbcForFiscalDao {
 				final RegDate dateFermeture = (rs.wasNull() ? null : RegDate.fromIndex(temp5, false));
 				final int temp6 = rs.getInt(6);
 				final RegDate dateOuverture = (rs.wasNull() ? null : RegDate.fromIndex(temp6, false));
+				final String temp7 = rs.getString(7);
+				final GenreImpot genreImpot = (rs.wasNull() ? null : Enum.valueOf(GenreImpot.class, temp7));
 				final Date logCdate = rs.getTimestamp(8);
 				final String logCuser = rs.getString(9);
 				final Timestamp logMdate = rs.getTimestamp(10);
@@ -219,6 +230,8 @@ public class JdbcForFiscalDaoImpl implements JdbcForFiscalDao {
 				final MotifRattachement motifRattachement = (rs.wasNull() ? null : Enum.valueOf(MotifRattachement.class, temp15));
 				final int temp16 = rs.getInt(16);
 				final Integer numeroOfs = (rs.wasNull() ? null : temp16);
+				final String temp18 = rs.getString(18);
+				final TypeAutoriteFiscale typeAutFisc = (rs.wasNull() ? null : Enum.valueOf(TypeAutoriteFiscale.class, temp18));
 			
 				ForFiscalAutreElementImposable o = new ForFiscalAutreElementImposable();
 				o.setId(id);
@@ -226,6 +239,7 @@ public class JdbcForFiscalDaoImpl implements JdbcForFiscalDao {
 				o.setAnnulationUser(annulationUser);
 				o.setDateFin(dateFermeture);
 				o.setDateDebut(dateOuverture);
+				o.setGenreImpot(genreImpot);
 				o.setLogCreationDate(logCdate);
 				o.setLogCreationUser(logCuser);
 				o.setLogModifDate(logMdate);
@@ -234,6 +248,7 @@ public class JdbcForFiscalDaoImpl implements JdbcForFiscalDao {
 				o.setMotifOuverture(motifOuverture);
 				o.setMotifRattachement(motifRattachement);
 				o.setNumeroOfsAutoriteFiscale(numeroOfs);
+				o.setTypeAutoriteFiscale(typeAutFisc);
 				res = o;
 			}
 			else if (forType.equals("ForFiscalAutreImpot")) {
@@ -254,6 +269,8 @@ public class JdbcForFiscalDaoImpl implements JdbcForFiscalDao {
 				final String logMuser = rs.getString(11);
 				final int temp16 = rs.getInt(16);
 				final Integer numeroOfs = (rs.wasNull() ? null : temp16);
+				final String temp18 = rs.getString(18);
+				final TypeAutoriteFiscale typeAutFisc = (rs.wasNull() ? null : Enum.valueOf(TypeAutoriteFiscale.class, temp18));
 			
 				ForFiscalAutreImpot o = new ForFiscalAutreImpot();
 				o.setId(id);
@@ -267,6 +284,7 @@ public class JdbcForFiscalDaoImpl implements JdbcForFiscalDao {
 				o.setLogModifDate(logMdate);
 				o.setLogModifUser(logMuser);
 				o.setNumeroOfsAutoriteFiscale(numeroOfs);
+				o.setTypeAutoriteFiscale(typeAutFisc);
 				res = o;
 			}
 			else if (forType.equals("ForDebiteurPrestationImposable")) {
@@ -279,6 +297,8 @@ public class JdbcForFiscalDaoImpl implements JdbcForFiscalDao {
 				final RegDate dateFermeture = (rs.wasNull() ? null : RegDate.fromIndex(temp5, false));
 				final int temp6 = rs.getInt(6);
 				final RegDate dateOuverture = (rs.wasNull() ? null : RegDate.fromIndex(temp6, false));
+				final String temp7 = rs.getString(7);
+				final GenreImpot genreImpot = (rs.wasNull() ? null : Enum.valueOf(GenreImpot.class, temp7));
 				final Date logCdate = rs.getTimestamp(8);
 				final String logCuser = rs.getString(9);
 				final Timestamp logMdate = rs.getTimestamp(10);
@@ -294,6 +314,7 @@ public class JdbcForFiscalDaoImpl implements JdbcForFiscalDao {
 				o.setAnnulationUser(annulationUser);
 				o.setDateFin(dateFermeture);
 				o.setDateDebut(dateOuverture);
+				o.setGenreImpot(genreImpot);
 				o.setLogCreationDate(logCdate);
 				o.setLogCreationUser(logCuser);
 				o.setLogModifDate(logMdate);
