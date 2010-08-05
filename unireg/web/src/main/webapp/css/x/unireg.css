@@ -154,30 +154,29 @@ fieldset.individu + fieldset.individu {
 #actions_list table {
 	width: auto;
 	background-color: white;
-	border-collapse: collapse;
 	color: gray;
 }
 
-#actions_list tr.header {
+#actions_list tr.header td {
 	background-color: wheat;
 	color: black;
+	border: 1px black dotted;
 }
 
 #actions_list td {
-	border-color: black;
-	border-width: 1px;
-	border-style: dotted;
 	padding : 0.8em;
 }
 
 #actions_list td.rowheader {
-	border-right: 0px;
+	border-left: 1px black dotted;
+	border-bottom: 1px black dotted;
 	padding-right: 0px;
 	vertical-align: top;
 }
 
 #actions_list td.action {
-	border-left: 0px;
+	border-right: 1px black dotted;
+	border-bottom: 1px black dotted;
 	text-align: left;
 }
 
