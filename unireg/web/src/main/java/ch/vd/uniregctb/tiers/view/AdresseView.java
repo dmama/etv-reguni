@@ -6,10 +6,11 @@ import java.util.List;
 import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
+import ch.vd.uniregctb.common.Annulable;
 import ch.vd.uniregctb.type.TexteCasePostale;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 
-public class AdresseView  implements Comparable<AdresseView> {
+public class AdresseView  implements Comparable<AdresseView>, Annulable{
 
 	private Long id;
 
@@ -83,6 +84,8 @@ public class AdresseView  implements Comparable<AdresseView> {
 	private String index ;
 
 	private String nature ;
+
+	private boolean surVaud;
 
 	public String getIndex() {
 		return index;
@@ -466,5 +469,13 @@ public class AdresseView  implements Comparable<AdresseView> {
 
 	public void setUsageCivil(String usageCivil) {
 		this.usageCivil = usageCivil;
+	}
+
+	public boolean isSurVaud() {
+		return surVaud;
+	}
+
+	public void setSurVaud(boolean surVaud) {
+		this.surVaud = surVaud;
 	}
 }

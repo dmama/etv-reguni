@@ -932,7 +932,9 @@ public class AdresseServiceImpl implements AdresseService {
 	 * {@inheritDoc}
 	 */
 	public AdressesFiscalesHisto getAdressesFiscalHisto(Tiers tiers, boolean strict) throws AdresseException {
+		
 		return getAdressesFiscalHisto(tiers, 0, strict);
+
 	}
 
 	private AdressesFiscalesHisto getAdressesFiscalHisto(Tiers tiers, int callDepth, boolean strict) throws AdresseException {

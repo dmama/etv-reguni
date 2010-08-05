@@ -78,3 +78,13 @@ tr.even {
 td.action {
 	text-align: center;
 }
+
+.strike {
+	text-decoration: line-through;
+}
+
+.horscanton {
+	color: #000080;
+	font-weight: bold;
+	font-style: italic;
+}

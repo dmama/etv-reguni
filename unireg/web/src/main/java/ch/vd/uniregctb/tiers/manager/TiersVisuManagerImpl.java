@@ -231,7 +231,7 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 	 * @return List<AdresseView>
 	 * @throws AdressesResolutionException
 	 */
-	private List<AdresseView> getAdressesHistoriques(Tiers tiers, boolean adresseHisto) throws AdresseException {
+	private List<AdresseView> getAdressesHistoriques(Tiers tiers, boolean adresseHisto) throws AdresseException, InfrastructureException {
 
 		List<AdresseView> adresses = new ArrayList<AdresseView>();
 
@@ -268,7 +268,7 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 	 * @param adressesHistoCiviles
 	 * @return
 	 */
-	private List<AdresseView> getAdressesHistoriquesCiviles(Tiers tiers, boolean adressesHistoCiviles) throws AdresseException {
+	private List<AdresseView> getAdressesHistoriquesCiviles(Tiers tiers, boolean adressesHistoCiviles) throws AdresseException, InfrastructureException {
 		List<AdresseView> adresses = new ArrayList<AdresseView>();
 		List<EnumTypeAdresse> listeTypeCivil = getTypesAdressesCiviles();
 		if (adressesHistoCiviles) {
@@ -301,7 +301,7 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 	 * Rempli la collection des adressesView avec les adresses fiscales historiques du type spécifié.
 	 */
 	private void fillAdressesView(List<AdresseView> adressesView, final AdressesFiscalesHisto adressesFiscalHisto, TypeAdresseTiers type,
-	                              Tiers tiers) {
+	                              Tiers tiers) throws InfrastructureException {
 
 		final Collection<AdresseGenerique> adresses = adressesFiscalHisto.ofType(type);
 		if (adresses == null) {
@@ -315,7 +315,8 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 		}
 	}
 
-	private void fillAdressesHistoCivilesView(List<AdresseView> adressesView, AdressesCivilesHisto adressesCivilesHisto, EnumTypeAdresse type, Tiers tiers) throws AdresseDataException {
+	private void fillAdressesHistoCivilesView(List<AdresseView> adressesView, AdressesCivilesHisto adressesCivilesHisto, EnumTypeAdresse type, Tiers tiers) throws AdresseDataException,
+			InfrastructureException {
 		final List<Adresse> adresses = adressesCivilesHisto.ofType(type);
 		if (adresses == null) {
 			// rien à faire
@@ -329,7 +330,7 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 		}
 	}
 
-	private void AdaptAdresseCivileToAdresseView(List<AdresseView> adressesView, EnumTypeAdresse type, Tiers tiers, Adresse adresse) throws AdresseDataException {
+	private void AdaptAdresseCivileToAdresseView(List<AdresseView> adressesView, EnumTypeAdresse type, Tiers tiers, Adresse adresse) throws AdresseDataException, InfrastructureException {
 		try {
 			AdresseGenerique adrGen = new AdresseCivileAdapter(adresse, false, getServiceInfrastructureService());
 			AdresseView adresseView = createVisuAdresseView(adrGen, null, tiers);
@@ -346,7 +347,7 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 	 * Remplir la collection des adressesView avec l'adresse civile du type spécifié.
 	 */
 	protected void fillAdressesCivilesView(List<AdresseView> adressesView, final AdressesCiviles adressesCiviles, EnumTypeAdresse type,
-	                                       Tiers tiers) throws AdresseDataException {
+	                                       Tiers tiers) throws AdresseDataException, InfrastructureException {
 		Adresse adresse = adressesCiviles.ofType(type);
 		if (adresse == null) {
 			// rien à faire
@@ -364,7 +365,7 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 	 * @throws InfrastructureException
 	 */
 	private AdresseView createVisuAdresseView(AdresseGenerique adr, TypeAdresseTiers type,
-	                                          Tiers tiers) {
+	                                          Tiers tiers) throws InfrastructureException {
 		AdresseView adresseView = createAdresseView(adr, type, tiers);
 
 		RegDate dateJour = RegDate.get();
@@ -375,6 +376,8 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 		else {
 			adresseView.setActive(false);
 		}
+
+		adresseView.setSurVaud(getServiceInfrastructureService().estDansLeCanton(adr));
 
 
 		return adresseView;
