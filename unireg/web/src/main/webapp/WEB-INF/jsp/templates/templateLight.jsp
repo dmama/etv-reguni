@@ -43,7 +43,7 @@
 		<td valign="top"  width="99%">
 			<div id="header" >
 				<span class="departement"><a href="http://www.aci.vd.ch" target="_blank"><fmt:message key="label.aci" /></a></span>
-				<div class="application"><span class="label"><fmt:message key="application.name" /></span></div>
+				<div class="application"></div>
 			</div>
 		</td>
 	</tr>

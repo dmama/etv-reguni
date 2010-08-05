@@ -222,3 +222,39 @@ fieldset.individu + fieldset.individu {
 #remarques td.texte {
 	color: black;
 }
+
+/**
+ * Flash
+ */
+
+div.flash {
+	text-align: center;
+	width: 50%;
+	margin-left: auto;
+	margin-right: auto;
+	border: 1px gray solid;
+	padding: 0.5em;
+	background-color: GreenYellow;
+}
+
+div.flash-warning {
+	text-align: center;
+	width: 50%;
+	margin-left: auto;
+	margin-right: auto;
+	border: 1px gray solid;
+	padding: 0.5em;
+	background-color: Orange;
+}
+
+div.flash-error {
+	text-align: center;
+	width: 50%;
+	margin-left: auto;
+	margin-right: auto;
+	border: 1px gray solid;
+	padding: 0.5em;
+	font-weight:bold;
+	color: white;
+	background-color: Red;
+}

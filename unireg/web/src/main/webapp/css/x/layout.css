@@ -8,6 +8,11 @@
 	min-width: 800px;
 }
 
+#header.supergra {
+	background-image: url(fond_header_1_120_supergra.gif);
+	background-repeat: repeat-x;
+}
+
 #header a {
 	color: white;
 	font-size: 22px;
@@ -27,6 +32,14 @@
 
 #header .application {
 	background-image: url(unireg_header.png);
+	background-repeat: no-repeat;
+	width: 500px;
+	height: 120px;
+	position: absolute;
+}
+
+#header .application_supergra {
+	background-image: url(supergra_header.png);
 	background-repeat: no-repeat;
 	width: 500px;
 	height: 120px;

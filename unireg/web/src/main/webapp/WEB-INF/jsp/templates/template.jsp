@@ -230,7 +230,7 @@ function ouvrirAide(url) {
 				<unireg:norentes>
 					<div style="left:170px; top:100px; color:white; position:absolute; font-size:12pt"><unireg:norentesScenarioName/></div>
 				</unireg:norentes>
-				<div class="application"><span class="label"><fmt:message key="application.name" /></span></div>
+				<div class="application"></div>
 				<%-- le champ d'accès rapide dans l'entête de l'application --%>
 				<div class="quicksearch">
 					<fmt:message key="label.acces.rapide"/>&nbsp;

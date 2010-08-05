@@ -250,6 +250,10 @@
 				<entry key="/identification/gestion-messages/listTraite.do" value-ref="identificationMessagesListTraiteController" />
 				<entry key="/identification/gestion-messages/nonIdentifie.do" value-ref="identificationMessagesNonIdentifieController" />
 
+				<!-- SuperGra -->
+				<entry key="/supergra/entity.do" value-ref="superGraEntityController"/>
+				<entry key="/supergra/coll.do" value-ref="superGraCollectionController"/>
+
 				<!-- Mapping des beans de remoting -->
 				<entry key="/tiersSearcher.remoting" value-ref="remoteTiersSearch" />
 			</map>
