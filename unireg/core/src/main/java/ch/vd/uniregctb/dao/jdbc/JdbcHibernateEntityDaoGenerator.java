@@ -55,6 +55,9 @@ public class JdbcHibernateEntityDaoGenerator {
 			final List<Property> properties = entity.getProperties();
 			for (int i = 0, propSize = properties.size(); i < propSize; i++) {
 				final Property p = properties.get(i);
+				if (p.isCollection()) {
+					continue;
+				}
 				final Property existing = allProperties.get(p.getColumnName());
 				if (existing == null) {
 					allProperties.put(p.getColumnName(), p);
@@ -141,7 +144,7 @@ public class JdbcHibernateEntityDaoGenerator {
 			mappingCode += "\n";
 			
 			for (Property p : e.getProperties()) {
-				if (!p.isDiscriminator() && !p.isParentForeignKey()) {
+				if (!p.isDiscriminator() && !p.isParentForeignKey() && !p.isCollection()) {
 					mappingCode += generateDeclareAndGetValue(tab, p);
 				}
 			}
@@ -149,7 +152,7 @@ public class JdbcHibernateEntityDaoGenerator {
 			mappingCode += "\n" + tab + e.getType().getSimpleName() + " o = new " + e.getType().getSimpleName() + "();\n";
 
 			for (Property p : e.getProperties()) {
-				if (!p.isDiscriminator() && !p.isParentForeignKey()) {
+				if (!p.isDiscriminator() && !p.isParentForeignKey() && !p.isCollection()) {
 					mappingCode += tab + "o." + toSetter(p.getName()) + "(" + toVar(p.getColumnName()) + ");\n";
 				}
 			}

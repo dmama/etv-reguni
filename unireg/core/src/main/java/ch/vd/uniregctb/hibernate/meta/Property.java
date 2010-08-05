@@ -8,18 +8,20 @@ public class Property implements Comparable<Property> {
 	private String name;
 	private PropertyType type;
 	private String columnName;
-	private boolean discriminator;
+	private String discriminatorValue;
 	private boolean primaryKey;
 	private boolean parentForeignKey;
+	private boolean collection;
 	private int index;
 
-	public Property(String name, PropertyType type, String columnName, boolean discriminator, boolean primaryKey, boolean parentForeignKey) {
+	public Property(String name, PropertyType type, String columnName, String discriminatorValue, boolean primaryKey, boolean parentForeignKey, boolean collection) {
 		this.name = name;
 		this.type = type;
 		this.columnName = columnName;
-		this.discriminator = discriminator;
+		this.discriminatorValue = discriminatorValue;
 		this.primaryKey = primaryKey;
 		this.parentForeignKey = parentForeignKey;
+		this.collection = collection;
 		this.index = 0;
 	}
 
@@ -48,7 +50,11 @@ public class Property implements Comparable<Property> {
 	 * @return <i>vrai</i> si la propriété est le discriminant d'une entité Hibernate faisant partie d'une hiérarchie de classes stockées à plat dans une seule table.
 	 */
 	public boolean isDiscriminator() {
-		return discriminator;
+		return discriminatorValue != null;
+	}
+
+	public String getDiscriminatorValue() {
+		return discriminatorValue;
 	}
 
 	/**
@@ -65,6 +71,13 @@ public class Property implements Comparable<Property> {
 		return parentForeignKey;
 	}
 
+	/**
+	 * @return <i>vrai</i> si la propriété est une collection.
+	 */
+	public boolean isCollection() {
+		return collection;
+	}
+
 	public int getIndex() {
 		return index;
 	}
@@ -74,10 +87,10 @@ public class Property implements Comparable<Property> {
 	}
 
 	public int compareTo(Property o) {
-		if (discriminator) {
+		if (discriminatorValue != null) {
 			return -1;
 		}
-		else if (o.discriminator) {
+		else if (o.discriminatorValue != null) {
 			return 1;
 		}
 		else if (primaryKey) {

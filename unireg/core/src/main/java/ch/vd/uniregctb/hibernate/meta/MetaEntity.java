@@ -2,6 +2,8 @@ package ch.vd.uniregctb.hibernate.meta;
 
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorValue;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
@@ -19,7 +21,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 import org.hibernate.usertype.UserType;
 
@@ -40,6 +44,7 @@ public class MetaEntity {
 	private String table;
 	private String discriminant;
 	private Class<?> type;
+	private Sequence sequence;
 	private List<Property> properties;
 
 	public MetaEntity(String table, String discriminant, Class<?> type) {
@@ -80,6 +85,14 @@ public class MetaEntity {
 		this.properties = properties;
 	}
 
+	public Sequence getSequence() {
+		return sequence;
+	}
+
+	public void setSequence(Sequence sequence) {
+		this.sequence = sequence;
+	}
+
 	/**
 	 * Analyse la classe (qui doit être une entité hibernate) spécifiée, et crée une instance de la méta-entité.
 	 *
@@ -87,24 +100,26 @@ public class MetaEntity {
 	 * @return une nouvelle instance de la classe 'MetaEntity' avec les méta-informations trouvées
 	 * @throws Exception en cas d'erreur inattendue
 	 */
+	@SuppressWarnings({"unchecked"})
 	public static MetaEntity determine(Class clazz) throws Exception {
 
 		String table = null;
-		String discriminant = null;
+		String discriminatorValue = null;
+		String discriminatorColumn = null;
 		final List<Property> properties = new ArrayList<Property>();
 
 		final List<Annotation> annotations = ReflexionUtils.getAllAnnotations(clazz);
 		for (Annotation a : annotations) {
 			if (a instanceof DiscriminatorValue) {
 				final DiscriminatorValue d = (DiscriminatorValue) a;
-				if (discriminant != null) {
-					throw new IllegalArgumentException("Duplicated discriminator = [" + discriminant + ", " + d.value() + "]) on class [" + clazz.getSimpleName() + "]");
+				if (discriminatorValue != null) {
+					throw new IllegalArgumentException("Duplicated discriminator = [" + discriminatorValue + ", " + d.value() + "]) on class [" + clazz.getSimpleName() + "]");
 				}
-				discriminant = d.value();
+				discriminatorValue = d.value();
 			}
 			else if (a instanceof DiscriminatorColumn) {
 				final DiscriminatorColumn d = (DiscriminatorColumn) a;
-				properties.add(new Property(null, PropertyType.stringPropType, d.name(), true, false, false));
+				discriminatorColumn = d.name();
 			}
 			else if (a instanceof Table) {
 				final Table t = (Table) a;
@@ -112,7 +127,11 @@ public class MetaEntity {
 			}
 		}
 
-		MetaEntity entity = new MetaEntity(table, discriminant, clazz);
+		if (discriminatorValue != null) {
+			properties.add(new Property(null, PropertyType.stringPropType, discriminatorColumn, discriminatorValue, false, false, false));
+		}
+
+		MetaEntity entity = new MetaEntity(table, discriminatorValue, clazz);
 
 		final Map<String, PropertyDescriptor> descriptors = ReflexionUtils.getPropertyDescriptors(clazz);
 		for (PropertyDescriptor descriptor : descriptors.values()) {
@@ -145,6 +164,8 @@ public class MetaEntity {
 			boolean primaryKey = false;
 			boolean parentForeignKey = false;
 			boolean otherForeignKey = false;
+			String sequenceName = null;
+			String generatorClassname = null;
 
 			final Annotation[] fieldAnnotations = readMethod.getAnnotations();
 			for (Annotation a : fieldAnnotations) {
@@ -175,6 +196,11 @@ public class MetaEntity {
 				}
 				else if (a instanceof OneToMany) {
 					estCollection = true;
+					final OneToMany otm = (OneToMany) a;
+					if (StringUtils.isNotBlank(otm.mappedBy())) {
+						estColonne = true;
+						columnName = getMappedColumnName(readMethod, otm);
+					}
 				}
 				else if (a instanceof Type) {
 					final Type t = (Type) a;
@@ -185,19 +211,44 @@ public class MetaEntity {
 				else if (a instanceof Transient) {
 					estTransient = true;
 				}
+				else if (a instanceof GeneratedValue) {
+					final GeneratedValue g =(GeneratedValue) a;
+					if (g.strategy() == GenerationType.AUTO) {
+						sequenceName = "hibernate_sequence";
+					}
+				}
+				else if (a instanceof GenericGenerator) {
+					final GenericGenerator gg =(GenericGenerator) a;
+					generatorClassname = gg.strategy();
+				}
 			}
 
+			if (sequenceName != null) {
+				entity.setSequence(new Sequence(sequenceName));
+			}
+			else if (generatorClassname != null) {
+				Class generatorClass = Class.forName(generatorClassname);
+				entity.setSequence(new Sequence(generatorClass));
+			}
 
-			if (estTransient || estCollection) { // on ignore les collections, elles seront chargées indépendemment
+			if (estTransient) {
 				continue;
 			}
+
 			if (!estColonne) {
 				LOGGER.warn("No @Transient nor @Column annotation found on descriptor [" + descriptor.getName() + "] from class [" + clazz.getName() + "]");
 				continue;
 			}
 
+
 			final PropertyType propertyType;
-			if (userType != null) {
+			if (estCollection) {
+				// dans le cas de collections, on va stocker le type générique de la collection comme valeur de retour
+				final Class genericType = getGenericParamReturnType(readMethod);
+				Assert.notNull(genericType);
+				propertyType = new CollectionPropertyType(genericType);
+			}
+			else if (userType != null) {
 				if (userType instanceof RegDateUserType) {
 					propertyType = new RegDatePropertyType((RegDateUserType) userType);
 				}
@@ -220,12 +271,19 @@ public class MetaEntity {
 				Assert.notNull(propertyType, "Type java non-enregistré [" + returnType.getName() + "] (propriété = [" + descriptor.getName() + "] de la classe [" + clazz.getSimpleName() + "])");
 			}
 
-			properties.add(new Property(descriptor.getName(), propertyType, columnName, false, primaryKey, parentForeignKey));
+			properties.add(new Property(descriptor.getName(), propertyType, columnName, null, primaryKey, parentForeignKey, estCollection));
 		}
 
 		Collections.sort(properties);
 		entity.setProperties(properties);
 		return entity;
+	}
+
+	private static String getMappedColumnName(Method readMethod, OneToMany otm) throws IntrospectionException {
+		final Class elementType = getGenericParamReturnType(readMethod);
+		final PropertyDescriptor descr = new PropertyDescriptor(otm.mappedBy(), elementType);
+		final JoinColumn j = descr.getReadMethod().getAnnotation(JoinColumn.class);
+		return j.name();
 	}
 
 	/**
@@ -274,20 +332,34 @@ public class MetaEntity {
 			//  - il possède une annotation JoinColumn avec la même colonne de jointure
 			//  - son type de retour est une collection générique dont le type est celui voulu
 			if (hasOneToMany && (joinColumn.equals(joinColumnName) || otherGetter.equals(mappedByName)) && Collection.class.isAssignableFrom(readMethod.getReturnType())) {
-				if (readMethod.getGenericReturnType() instanceof ParameterizedType) { // le type de return est une collection parametrisée
-					final ParameterizedType returnType = (ParameterizedType) readMethod.getGenericReturnType();
-					for (java.lang.reflect.Type typeArgument : returnType.getActualTypeArguments()) {
-						if (typeArgument instanceof Class) {
-							final Class typeClass = (Class) typeArgument;
-							if (typeClass.isAssignableFrom(other)) { // le type générique est celui voulu
-								return true;
-							}
-						}
-					}
+				final Class genericType = getGenericParamReturnType(readMethod);
+				if (genericType != null && genericType.isAssignableFrom(other)) {
+					// le type de retour est une collection parametrisée et le type paramétrisé est celui voulu
+					return true;
 				}
 			}
 		}
 
 		return false;
+	}
+
+	/**
+	 * Retourne le type paramétrisé de la valeur de retour d'une méthode (par exemple <i>Long</i> pour la méthode avec la signature: <i>Collection&lt;Long&gt; getList()</i>).
+	 *
+	 * @param readMethod une méthode qui retourne une valeur
+	 * @return le type paramétrisé de la valeur de retour; ou <i>null</i> si la valeur de retour n'est pas paramétrisé
+	 */
+	public static Class getGenericParamReturnType(Method readMethod) {
+		final java.lang.reflect.Type returnType = readMethod.getGenericReturnType();
+		if (returnType instanceof ParameterizedType) { // le type de return est une collection parametrisée
+			final ParameterizedType parameterizedType = (ParameterizedType) returnType;
+			final java.lang.reflect.Type[] types = parameterizedType.getActualTypeArguments();
+			for (java.lang.reflect.Type typeArgument : types) {
+				if (typeArgument instanceof Class) {
+					return (Class) typeArgument;
+				}
+			}
+		}
+		return null;
 	}
 }
