@@ -26,10 +26,10 @@
 }
 
 #header .application {
-	background-image: url(header_500_120.jpg);
+	background-image: url(unireg_header.png);
 	background-repeat: no-repeat;
 	width: 500px;
-	height: 100px;
+	height: 120px;
 	position: absolute;
 }
 
