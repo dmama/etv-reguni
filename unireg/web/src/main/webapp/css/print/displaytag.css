@@ -71,3 +71,12 @@ tr.even {
 .json {
 	visibility: hidden;
 }
+
+.strike {
+	text-decoration: line-through;
+}
+
+.horscanton {
+	color: blue;
+	font-weight: bold;
+}

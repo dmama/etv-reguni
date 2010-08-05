@@ -11,43 +11,30 @@
 </c:if>
 
 <c:if test="${not empty adresses}">	
-<display:table name="${adresses}" id="adresse" pagesize="10" requestURI="${url}" class="display">
+<display:table name="${adresses}" id="adresse" pagesize="10" requestURI="${url}" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
 		<display:column  sortable ="true" titleKey="label.utilisationAdresse">
-			<c:if test="${adresse.annule}"><strike></c:if>
 				<fmt:message key="option.usage.${adresse.usage}" />
-			<c:if test="${adresse.annule}"></strike></c:if>
 		</display:column>
 		<display:column sortable ="true" titleKey="label.date.debut" sortProperty="dateDebut">
-			<c:if test="${adresse.annule}"><strike></c:if>
 				<fmt:formatDate value="${adresse.dateDebut}" pattern="dd.MM.yyyy"/>
-			<c:if test="${adresse.annule}"></strike></c:if>
 		</display:column>
 		<display:column sortable ="true" titleKey="label.date.fin" sortProperty="dateFin">
-			<c:if test="${adresse.annule}"><strike></c:if>
 				<fmt:formatDate value="${adresse.dateFin}" pattern="dd.MM.yyyy"/>
-			<c:if test="${adresse.annule}"></strike></c:if>
 		</display:column>
 		<display:column sortable="true" titleKey="label.adresse.complement">
-			<c:if test="${adresse.annule}"><strike></c:if>
 			${adresse.complements}
-			<c:if test="${adresse.annule}"></strike></c:if>
 		</display:column>
 		<display:column sortable ="true" titleKey="label.rueCasePostale">
-			<c:if test="${adresse.annule}"><strike></c:if>
 				${adresse.rue}
-			<c:if test="${adresse.annule}"></strike></c:if>
 		</display:column>
 		<display:column sortable ="true" titleKey="label.localite" >
-			<c:if test="${adresse.annule}"><strike></c:if>
 				${adresse.localite}
-			<c:if test="${adresse.annule}"></strike></c:if>
 		</display:column>
 		<display:column sortable ="true" titleKey="label.pays" >
-			<c:if test="${adresse.annule}"><strike></c:if>
 				<c:if test="${adresse.paysOFS != null }">
 					<unireg:infra entityId="${adresse.paysOFS}" entityType="pays" entityPropertyName="nomMinuscule"></unireg:infra>
 				</c:if>
-			<c:if test="${adresse.annule}"></strike></c:if>
+		
 		</display:column>
 		<display:column sortable ="true" titleKey="label.adresse.permanente" >
 			<c:if test="${!adresse.annule}">	
@@ -57,10 +44,8 @@
 			</c:if>
 		</display:column>
 		<display:column sortable ="true" titleKey="label.adresse.source">
-			<c:if test="${adresse.annule}"><strike></c:if>
 				<fmt:message key="option.source.${adresse.source}" />
 				<c:if test="${adresse.default}">(<fmt:message key="option.source.default.tag" />)</c:if>
-			<c:if test="${adresse.annule}"></strike></c:if>
 		</display:column>
 		<display:column style="action">
 			<c:if test="${page == 'visu' }">
