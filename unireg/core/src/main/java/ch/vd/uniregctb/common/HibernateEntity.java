@@ -22,7 +22,7 @@ import ch.vd.registre.base.utils.ObjectGetterHelper;
  *
  */
 @MappedSuperclass
-public abstract class HibernateEntity implements Serializable, Loggable {
+public abstract class HibernateEntity implements Serializable, Loggable, Annulable {
 
 	private static final long serialVersionUID = 2184891500198493924L;
 

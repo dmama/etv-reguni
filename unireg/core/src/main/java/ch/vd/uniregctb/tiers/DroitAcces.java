@@ -48,7 +48,7 @@ import ch.vd.uniregctb.type.TypeDroitAcces;
  */
 @Entity
 @Table(name = "DROIT_ACCES")
-public class DroitAcces extends HibernateEntity implements DateRange, Duplicable<DroitAcces>, Annulable {
+public class DroitAcces extends HibernateEntity implements DateRange, Duplicable<DroitAcces> {
 
 	private static final long serialVersionUID = 5947849643843925215L;
 
