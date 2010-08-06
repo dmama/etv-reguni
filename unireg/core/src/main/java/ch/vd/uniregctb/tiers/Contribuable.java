@@ -176,9 +176,14 @@ public abstract class Contribuable extends Tiers {
 	// ***********************************************
 	@Transient
 	public void closeSituationFamilleActive(RegDate dateFin) {
-		SituationFamille situation = getSituationFamilleActive();
+		final SituationFamille situation = getSituationFamilleActive();
 		if (situation != null) {
-			situation.setDateFin(dateFin);
+			if (situation.getDateDebut() != null && situation.getDateDebut().isAfter(dateFin)) {
+				situation.setAnnule(true);
+			}
+			else {
+				situation.setDateFin(dateFin);
+			}
 		}
 	}
 

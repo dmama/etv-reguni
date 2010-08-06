@@ -187,4 +187,8 @@ public class EvenementFiscal extends HibernateEntity {
 		// end-user-code
 	}
 
+	@Override
+	public String toString() {
+		return String.format("EvenementFiscal{id=%d, dateEvenement=%s, tiers=%d, type=%s, numeroTechnique=%d}", id, dateEvenement, tiers.getNumero(), type, numeroTechnique);
+	}
 }
