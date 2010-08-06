@@ -443,10 +443,10 @@ public class MetierServiceImpl implements MetierService {
 			/*
 			 * réouverture des autres fors
 			 */
-			createForsSecondaires(dateEffective, menageCommun, ffsPrincipal, motifOuverture);
-			createForsAutreElementImpossable(dateEffective, menageCommun, ffaeiPrincipal, motifOuverture);
-			createForsSecondaires(dateEffective, menageCommun, ffsConjoint, motifOuverture);
-			createForsAutreElementImpossable(dateEffective, menageCommun, ffaeiConjoint, motifOuverture);
+			createForsSecondaires(dateEffective, menageCommun, ffsPrincipal, motifOuverture, null, null);
+			createForsAutreElementImpossable(dateEffective, menageCommun, ffaeiPrincipal, motifOuverture, null, null);
+			createForsSecondaires(dateEffective, menageCommun, ffsConjoint, motifOuverture, null, null);
+			createForsAutreElementImpossable(dateEffective, menageCommun, ffaeiConjoint, motifOuverture, null, null);
 		}
 
 		if (!StringUtils.isBlank(remarque)) {
@@ -770,8 +770,8 @@ public class MetierServiceImpl implements MetierService {
 		/*
 		 * Réouverture des fors secondaires et autre élément imposable
 		 */
-		createForsSecondaires(date, menage, ffsPP, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
-		createForsAutreElementImpossable(date, menage, ffaeiPP, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
+		createForsSecondaires(date, menage, ffsPP, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null, null);
+		createForsAutreElementImpossable(date, menage, ffaeiPP, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null, null);
 
 		/*
 		 * Pas de calcul du mode d'imposition pour l'instant
@@ -909,8 +909,8 @@ public class MetierServiceImpl implements MetierService {
 		/*
 		 * Réouverture des fors secondaires et autre élément imposable sur le ménage commun choisi
 		 */
-		createForsSecondaires(dateDebut, menageChoisi, ffsAutreMenage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
-		createForsAutreElementImpossable(dateDebut, menageChoisi, ffaeiAutreMenage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
+		createForsSecondaires(dateDebut, menageChoisi, ffsAutreMenage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null, null);
+		createForsAutreElementImpossable(dateDebut, menageChoisi, ffaeiAutreMenage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null, null);
 
 		// si le nouveau mode d'imposition a pu être déterminé et n'est pas le même
 		if (imposition != null && imposition.getModeImposition() != impositionMenage) {
@@ -1559,36 +1559,46 @@ public class MetierServiceImpl implements MetierService {
 
 	/**
 	 * Ouvre les fors secondaires sur le contribuable.
-	 * @param date la date des nouveaux fors secondaires.
+	 * @param date la date d'ouverture des nouveaux fors secondaires.
 	 * @param contribuable le contribuable.
-	 * @param forsSecondaires liste de fors secondaires à créer.
-	 * @param motifOverture motif d'ouverture assigner aux nouveaux fors.
+	 * @param forsSecondaires liste de fors secondaires à recopier (ceux qui sont valides à la veille de la date donnée)
+	 * @param motifOuverture motif d'ouverture à assigner aux nouveaux fors.
+	 * @param dateFermeture (nullable) si les fors secondaires doivent être créés fermés, date de fermeture
+	 * @param motifFermeture (nullable) si les fors secondaires doivent être créés fermés, motif de fermeture
 	 */
-	private void createForsSecondaires(RegDate date, Contribuable contribuable, List<ForFiscalSecondaire> forsSecondaires, MotifFor motifOverture) {
+	private void createForsSecondaires(RegDate date, Contribuable contribuable, List<ForFiscalSecondaire> forsSecondaires, MotifFor motifOuverture, RegDate dateFermeture, MotifFor motifFermeture) {
 		for (ForFiscalSecondaire forFiscalSecondaire : forsSecondaires) {
 			if (forFiscalSecondaire.isValidAt(date.getOneDayBefore())) {
-				tiersService.openForFiscalSecondaire(contribuable,
-						date, forFiscalSecondaire.getMotifRattachement(),
-						forFiscalSecondaire.getNumeroOfsAutoriteFiscale(),
-						forFiscalSecondaire.getTypeAutoriteFiscale(), motifOverture);
+				final ForFiscalSecondaire ffs = tiersService.openForFiscalSecondaire(contribuable,
+																					date, forFiscalSecondaire.getMotifRattachement(),
+																					forFiscalSecondaire.getNumeroOfsAutoriteFiscale(),
+																					forFiscalSecondaire.getTypeAutoriteFiscale(), motifOuverture);
+				if (ffs != null && dateFermeture != null && motifFermeture != null) {
+					tiersService.closeForFiscalSecondaire(contribuable, ffs, dateFermeture, motifFermeture);
+				}
 			}
 		}
 	}
 
 	/**
 	 * Ouvre les fors de type autre élément imposable sur le contribuable.
-	 * @param date la date des nouveaux fors secondaires.
+	 * @param date la date d'ouverture des nouveaux fors secondaires.
 	 * @param contribuable le contribuable.
-	 * @param fors liste de fors autre élément imposable à créer.
+	 * @param fors liste de fors autre élément imposable à recopier (ceux qui sont valides à la veille de la date donnée)
 	 * @param motifOuverture motif d'ouverture assigner aux nouveaux fors.
+	 * @param dateFermeture (nullable) si les fors secondaires doivent être créés fermés, date de fermeture
+	 * @param motifFermeture (nullable) si les fors secondaires doivent être créés fermés, motif de fermeture
 	 */
-	private void createForsAutreElementImpossable(RegDate date, Contribuable contribuable, List<ForFiscalAutreElementImposable> fors, MotifFor motifOuverture) {
+	private void createForsAutreElementImpossable(RegDate date, Contribuable contribuable, List<ForFiscalAutreElementImposable> fors, MotifFor motifOuverture, RegDate dateFermeture, MotifFor motifFermeture) {
 		for (ForFiscalAutreElementImposable forFiscalAutreElementImposable : fors) {
 			if (forFiscalAutreElementImposable.isValidAt(date.getOneDayBefore())) {
-				tiersService.openForFiscalAutreElementImposable(contribuable, forFiscalAutreElementImposable.getGenreImpot(),
-						date, forFiscalAutreElementImposable.getMotifRattachement(),
-						forFiscalAutreElementImposable.getNumeroOfsAutoriteFiscale(),
-						forFiscalAutreElementImposable.getTypeAutoriteFiscale(), motifOuverture);
+				final ForFiscalAutreElementImposable ffaei = tiersService.openForFiscalAutreElementImposable(contribuable, forFiscalAutreElementImposable.getGenreImpot(),
+																											date, forFiscalAutreElementImposable.getMotifRattachement(),
+																											forFiscalAutreElementImposable.getNumeroOfsAutoriteFiscale(),
+																											forFiscalAutreElementImposable.getTypeAutoriteFiscale(), motifOuverture);
+				if (ffaei != null && dateFermeture != null && motifFermeture != null) {
+					tiersService.closeForFiscalAutreElementImposable(contribuable, ffaei, dateFermeture, motifFermeture);
+				}
 			}
 		}
 	}
@@ -1687,123 +1697,7 @@ public class MetierServiceImpl implements MetierService {
 	}
 
 	public void deces(PersonnePhysique defunt, RegDate date, String remarque, Long numeroEvenement) {
-
-		/*
-		 * Récupération de l'ensemble decede-veuf-menageCommun
-		 */
-		EnsembleTiersCouple menageComplet = tiersService.getEnsembleTiersCouple(defunt, date);
-
-		MenageCommun menage = null;
-
-		if (menageComplet != null) {
-			// On récupère le tiers MenageCommun
-			menage = menageComplet.getMenage();
-		}
-
-		// [UNIREG-2653] un habitant décédé doit passer non-habitant
-		final boolean wasHabitantVD = defunt.isHabitantVD();
-		if (wasHabitantVD) {
-			tiersService.changeHabitantenNH(defunt);
-		}
-
-		if (!wasHabitantVD || numeroEvenement == null) {//si décès via IHM on surcharge la date de décès du civil
-			defunt.setDateDeces(date);
-		}
-
-		RegDate lendemainDeces = date.getOneDayAfter();
-		ForFiscalPrincipal ffpApresDeces = defunt.getForFiscalPrincipalAt(lendemainDeces);
-		if (ffpApresDeces != null && ffpApresDeces.getDateDebut().equals(lendemainDeces) && MotifFor.VEUVAGE_DECES == ffpApresDeces.getMotifOuverture()) {
-			// si le défunt posède un for le lendemain du décès, lui et son conjoint sont décédés le même jour
-			Audit.info(numeroEvenement, "Les deux conjoints sont décédés le même jour : annulation du for fiscal du deuxième défunt");
-			tiersService.annuleForFiscal(ffpApresDeces, true);
-
-			defunt.setBlocageRemboursementAutomatique(true);
-
-			// le deuxième défunt doit avoir une situation de famille VEUF
-			SituationFamille sf = defunt.getSituationFamilleAt(lendemainDeces);
-			if (sf != null) {
-				situationFamilleService.annulerSituationFamilleSansRouvrirPrecedente(sf.getId());
-			}
-			return;
-		}
-
-		/*
-		 * Fermeture de tous les fors du defunt au jour du décès.
-		 */
-		Audit.info(numeroEvenement, "Fermeture des fors fiscaux du défunt");
-		tiersService.closeAllForsFiscaux(defunt, date, MotifFor.VEUVAGE_DECES);
-
-		PersonnePhysique veuf = null;
-		/*
-		 * Deux cas de figure :
-		 * - le défunt vivait en couple
-		 * - le défunt était célibataire
-		 */
-		if (menage != null) {
-
-			// On récupère le conjoint s'il existe
-			veuf = menageComplet.getConjoint(defunt);
-
-			/*
-			 * Sauvegarde des fors secondaires du ménage pour réouverture sur le tiers survivant
-			 */
-			final ForsParType forsParType = menage.getForsParType(false);
-			List<ForFiscalSecondaire> forsSecondaires = forsParType.secondaires;
-			List<ForFiscalAutreElementImposable> forsAutreElement = forsParType.autreElementImpot;
-
-			ForFiscalPrincipal forMenage = menage.getForFiscalPrincipalAt(null);
-
-			// Fermeture des fors du MenageCommun
-			tiersService.closeAllForsFiscaux(menage, date, MotifFor.VEUVAGE_DECES);
-
-			// le blocage des remboursements automatiques se fait normalement à la fermeture du For principal,
-			// ce qui est correct en ce qui concerne le ménage, dont les remboursements automatiques doivent
-			// être bloqués ; en ce qui concerne le défunt, qui ne possédait pas de For actif, aucun For
-			// ne sera fermé ici et le blocage des remboursements automatiques n'aura pas été fait : il faut
-			// donc le faire explicitement ici
-			defunt.setBlocageRemboursementAutomatique(true);
-
-			// Fermeture des RapportEntreTiers du menage
-			tiersService.closeAllRapports(defunt, date);
-			if (veuf != null) {// null si marié seul
-				tiersService.closeAppartenanceMenage(veuf, menage, date);
-			}
-
-			// vérification de l'assujettissement du ménage
-			if (forMenage != null && veuf != null) {
-				// résolution du mode d'imposition du tiers survivant
-				final ModeImpositionResolver decesResolver = new DecesModeImpositionResolver(tiersService, numeroEvenement);
-
-				/*
-				 * on ouvre un nouveau for fiscal sur le tiers survivant
-				 */
-				final ForFiscalPrincipal ffp = createForFiscalPrincipalApresFermetureMenage(lendemainDeces, veuf, forMenage, MotifFor.VEUVAGE_DECES, decesResolver, true, numeroEvenement, true);
-
-				/*
-				 * réouverture des fors secondaires actifs à la date du décès sur le tiers survivant
-				 */
-				if (ffp != null) {
-					createForsSecondaires(lendemainDeces, veuf, forsSecondaires, MotifFor.VEUVAGE_DECES);
-					createForsAutreElementImpossable(lendemainDeces, veuf, forsAutreElement, MotifFor.VEUVAGE_DECES);
-				}
-			}
-		}
-		else {
-			// Fermeture de tous les rapports
-			tiersService.closeAllRapports(defunt, date);
-		}
-
-		if (!StringUtils.isBlank(remarque)) {
-			addRemarque(defunt, remarque);
-			if (veuf != null) {
-				addRemarque(veuf, remarque);
-			}
-			if (menage != null) {
-				addRemarque(menage, remarque);
-			}
-		}
-
-		updateSituationFamilleDeces(defunt, date);
+		veuvageDeces(null, defunt, date, remarque, numeroEvenement);
 	}
 
 	private void addRemarque(Tiers tiers, String remarque) {
@@ -1853,25 +1747,19 @@ public class MetierServiceImpl implements MetierService {
 					situationFamilleService.closeSituationFamille(veuf, dateDeces);
 
 					// ajout de la nouvelle situation 'veuf' de famille sur le conjoint survivant
-					SituationFamille situationFamille = new SituationFamillePersonnePhysique();
-					situationFamille.setDateDebut(lendemainDeces);
-					situationFamille.setEtatCivil(ch.vd.uniregctb.type.EtatCivil.VEUF);
-					situationFamille.setNombreEnfants(nombreEnfants);
-					situationFamilleService.addSituationFamille(situationFamille, veuf);
+					// (à condition qu'il soit bien survivant !)
+					final RegDate dateDecesVeuf = tiersService.getDateDeces(veuf);
+					if (dateDecesVeuf == null || dateDecesVeuf.isAfterOrEqual(lendemainDeces)) {
+						final SituationFamille situationFamille = new SituationFamillePersonnePhysique();
+						situationFamille.setDateDebut(lendemainDeces);
+						situationFamille.setDateFin(dateDecesVeuf);
+						situationFamille.setEtatCivil(ch.vd.uniregctb.type.EtatCivil.VEUF);
+						situationFamille.setNombreEnfants(nombreEnfants);
+						situationFamilleService.addSituationFamille(situationFamille, veuf);
+					}
 				}
 			}
 		}
-	}
-
-	private void updateSituationFamilleDeces(PersonnePhysique defunt, RegDate date) {
-		EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(defunt, date);
-		PersonnePhysique veuf = null;
-		MenageCommun menage = null;
-		if (couple != null && couple.getMenage() != null) {
-			menage = couple.getMenage();
-			veuf = couple.getConjoint(defunt);
-		}
-		doUpdateSituationFamilleDeces(defunt, veuf, menage, date);
 	}
 
 	public void annuleDeces(PersonnePhysique tiers, RegDate date) {
@@ -2060,70 +1948,176 @@ public class MetierServiceImpl implements MetierService {
 		return results;
 	}
 
-	public void veuvage(PersonnePhysique veuf, RegDate date, String remarque, Long numeroEvenement) {
+	/**
+	 * Un veuvage et un décès sont conceptuellement la même chose, ce n'est juste pas le même conjoint que l'on met en avant :
+	 * le veuf d'un côté, le défunt de l'autre...
+	 * @param veuf (nullable) la personne physique survivante
+	 * @param defunt (nullable) la personne physique décédée
+	 * @param date date du décès / veuvage
+	 * @param remarque (nullable) remarque à ajouter aux tiers couple et personnes physiques
+	 * @param numeroEvenement (nullable) numéro d'événement si le traitement fait suite à l'arrivée d'un événement civil
+	 */
+	private void veuvageDeces(PersonnePhysique veuf, PersonnePhysique defunt, RegDate date, String remarque, Long numeroEvenement) {
 
-		/*
-		 * Récupération de l'ensemble veuf-menageCommun
-		 */
-		final EnsembleTiersCouple menageComplet = tiersService.getEnsembleTiersCouple(veuf, date);
+		//
+		// on récupère d'abord le ménage commun et ses éléments constitutifs qui nous manqueraient encore
+		//
+		final EnsembleTiersCouple menageComplet;
+		if (defunt != null) {
+			menageComplet = tiersService.getEnsembleTiersCouple(defunt, date);
+			if (menageComplet != null) {
+				if (veuf != null) {
+					// on vérifie que c'est le bon couple...
+					final PersonnePhysique conjointDuDefunt = menageComplet.getConjoint(defunt);
+					if (veuf != conjointDuDefunt) {
+						final String msg = String.format("Le ménage courant (%s) du défunt (%s) ne fait pas référence au veuf (%s)",
+														FormatNumeroHelper.numeroCTBToDisplay(menageComplet.getMenage().getNumero()),
+														FormatNumeroHelper.numeroCTBToDisplay(defunt.getNumero()),
+														FormatNumeroHelper.numeroCTBToDisplay(veuf.getNumero()));
+						throw new EvenementCivilHandlerException(msg);
+					}
+				}
+				else {
+					veuf = menageComplet.getConjoint(defunt);
+				}
+			}
+		}
+		else {
+			menageComplet = tiersService.getEnsembleTiersCouple(veuf, date);
+			if (menageComplet != null) {
+				defunt = menageComplet.getConjoint(veuf);
+			}
+		}
+
+		// si le défunt avait déjà un for qui s'ouvre au lendemain de sa date de décès pour le motif VEUVAGE,
+		// alors c'est que son conjoint est également décédé le même jour que lui, mais on ne le savait pas
+		// encore au moment où on a traité son décès à lui...
+		if (defunt != null) {
+			final RegDate lendemainDeces = date.getOneDayAfter();
+			final ForFiscalPrincipal ffp = defunt.getForFiscalPrincipalAt(lendemainDeces);
+			if (ffp != null && RegDateHelper.equals(lendemainDeces, ffp.getDateDebut()) && ffp.getMotifOuverture() == MotifFor.VEUVAGE_DECES) {
+
+				// il faut alors simplement annuler le for fiscal principal
+				Audit.info(numeroEvenement, "Les deux conjoints sont décédés le même jour : annulation du for fiscal du deuxième défunt");
+				tiersService.annuleForFiscal(ffp, true);
+
+				defunt.setBlocageRemboursementAutomatique(true);
+
+				// le deuxième défunt doit avoir une situation de famille VEUF
+				final SituationFamille sf = defunt.getSituationFamilleAt(lendemainDeces);
+				if (sf != null) {
+					situationFamilleService.annulerSituationFamilleSansRouvrirPrecedente(sf.getId());
+				}
+				return;
+			}
+		}
+
+		final boolean wasDefuntHabitant = defunt != null && defunt.isHabitantVD();
+		final boolean wasVeufHabitant = veuf != null && veuf.isHabitantVD();
+
+		// [UNIREG-2653] un habitant décédé doit passer non-habitant
+		if (wasDefuntHabitant) {
+			tiersService.changeHabitantenNH(defunt);
+		}
+		if (defunt != null && (!wasDefuntHabitant || numeroEvenement == null)) {
+			// si décès via IHM on surcharge la date de décès du civil
+			defunt.setDateDeces(date);
+		}
+
+		// ajout des remarques
+		if (!StringUtils.isBlank(remarque)) {
+			if (defunt != null) {
+				addRemarque(defunt, remarque);
+			}
+			if (veuf != null) {
+				addRemarque(veuf, remarque);
+			}
+			if (menageComplet != null) {
+				addRemarque(menageComplet.getMenage(), remarque);
+			}
+		}
+
 		if (menageComplet != null) {
 			final MenageCommun menage = menageComplet.getMenage();
-			final PersonnePhysique conjointDecede = menageComplet.getConjoint(veuf);
-
 			final ForFiscalPrincipal forMenage = menage.getForFiscalPrincipalAt(null);
 
-			/*
-			 * Sauvegarde des fors secondaires et autre élément imposable du ménage pour réouverture sur le veuf
-			 */
+			//
+			// Sauvegarde des fors secondaires et autres éléments imposables du ménage
+			// pour ré-ouverture potentielle sur le veuf
+			//
 			final ForsParType forsParType = menage.getForsParType(false);
 			final List<ForFiscalSecondaire> forsSecondaires = forsParType.secondaires;
 			final List<ForFiscalAutreElementImposable> forsAutreElement = forsParType.autreElementImpot;
 
-			// Fermeture des fors du MenageCommun
+			// fermeture des fors sur le ménage
+			Audit.info(numeroEvenement, String.format("Fermeture des fors fiscaux du ménage commun (%d)", menage.getNumero()));
 			tiersService.closeAllForsFiscaux(menage, date, MotifFor.VEUVAGE_DECES);
 
-			// Fermeture des RapportEntreTiers du menage
-			tiersService.closeAppartenanceMenage(veuf, menage, date);
+			// fermeture des liens d'appartenance ménage des personnes impliquées
+			if (defunt != null) {
+				tiersService.closeAllRapports(defunt, date);
 
-			// [UNIREG-2242] Il peut y avoir un conjoint (non-habitant) pour lequel le civil nous aurait envoyé un événement
-			// de veuvage (car le non-habitant ne serait pas connu dans le civil)
-			if (conjointDecede != null) {
-				tiersService.closeAppartenanceMenage(conjointDecede, menage, date);
+				// le blocage des remboursements automatiques se fait normalement à la fermeture du For principal,
+				// ce qui est correct en ce qui concerne le ménage, dont les remboursements automatiques doivent
+				// être bloqués ; en ce qui concerne le défunt, qui ne possédait pas de For actif, aucun For
+				// ne sera fermé ici et le blocage des remboursements automatiques n'aura pas été fait : il faut
+				// donc le faire explicitement ici
+				defunt.setBlocageRemboursementAutomatique(true);
+			}
+			if (veuf != null) {
+				tiersService.closeAppartenanceMenage(veuf, menage, date);
+			}
 
-				// on ne renseigne la date de décès que si elle n'est pas renseignée du tout
-				if (!conjointDecede.isHabitantVD() && conjointDecede.getDateDeces() == null) {
-					conjointDecede.setDateDeces(date);
+			// ouverture du for sur le survivant (= le veuf)
+			if (veuf != null) {
+
+				// ... sauf évidemment si le veuf est déjà décédé lui-aussi
+				final RegDate dateDecesVeuf = tiersService.getDateDeces(veuf);
+				if (dateDecesVeuf == null || dateDecesVeuf.isAfter(date)) {
+
+					if (forMenage != null) {
+
+						Audit.info(numeroEvenement, String.format("Ouverture du for fiscal sur le tiers survivant (%d)", veuf.getNumero()));
+
+						final ModeImpositionResolver decesResolver = new DecesModeImpositionResolver(tiersService, numeroEvenement);
+
+						// d'abord le for fiscal principal
+						final ForFiscalPrincipal ffp = createForFiscalPrincipalApresFermetureMenage(date.getOneDayAfter(), veuf, forMenage, MotifFor.VEUVAGE_DECES, decesResolver, true, numeroEvenement, true);
+						final MotifFor motifFermeture;
+						if (dateDecesVeuf != null) {
+							motifFermeture = MotifFor.VEUVAGE_DECES;
+							tiersService.closeForFiscalPrincipal(ffp, dateDecesVeuf, motifFermeture);
+						}
+						else {
+							motifFermeture = null;
+						}
+
+						// puis les fors secondaires et autres...
+						if (ffp != null) {
+							createForsSecondaires(date.getOneDayAfter(), veuf, forsSecondaires, MotifFor.VEUVAGE_DECES, dateDecesVeuf, motifFermeture);
+							createForsAutreElementImpossable(date.getOneDayAfter(), veuf, forsAutreElement, MotifFor.VEUVAGE_DECES, dateDecesVeuf, motifFermeture);
+						}
+					}
+					else {
+						// ok, pas de for sur le ménage, mais peut-être faut-il quand-même en ouvrir un sur le veuf...
+						Audit.info(numeroEvenement, String.format("Il n'y avait pas de for sur le ménage, aucun for ne sera donc ouvert sur le survivant (%d)", veuf.getNumero()));
+					}
 				}
-			}
-
-			if (forMenage != null) {
-				/*
-				 * Résolution du mode d'imposition du veuf
-				 */
-				final ModeImpositionResolver decesResolver = new DecesModeImpositionResolver(tiersService, numeroEvenement);
-				/*
-				 * ouverture d'un nouveau for fiscal sur le veuf
-				 */
-				final ForFiscalPrincipal ffp = createForFiscalPrincipalApresFermetureMenage(date.getOneDayAfter(), veuf, forMenage, MotifFor.VEUVAGE_DECES, decesResolver, true, numeroEvenement, true);
-				/*
-				 * Réouverture des fors secondaire et autre element sur le veuf
-				 */
-				if (ffp != null) {
-					createForsSecondaires(date.getOneDayAfter(), veuf, forsSecondaires, MotifFor.VEUVAGE_DECES);
-					createForsAutreElementImpossable(date.getOneDayAfter(), veuf, forsAutreElement, MotifFor.VEUVAGE_DECES);
-				}
-			}
-
-			if (!StringUtils.isBlank(remarque)) {
-				addRemarque(veuf, remarque);
-				addRemarque(menage, remarque);
-			}
-
-			if (!isVeuvageApresDeces(veuf, menage, date)) {
-				// pas besoin de mettre à jour la situation de famille si le veuvage arrive apres décès
-				updateSituationFamilleVeuvage(veuf, date);
 			}
 		}
+		else {
+			if (defunt != null) {
+				Audit.info(numeroEvenement, "Fermeture des fors fiscaux du défunt");
+				tiersService.closeAllForsFiscaux(defunt, date, MotifFor.VEUVAGE_DECES);
+				tiersService.closeAllRapports(defunt, date);
+			}
+		}
+
+		doUpdateSituationFamilleDeces(defunt, veuf, menageComplet != null ? menageComplet.getMenage() : null, date);
+	}
+
+	public void veuvage(PersonnePhysique veuf, RegDate date, String remarque, Long numeroEvenement) {
+		veuvageDeces(veuf, null, date, remarque, numeroEvenement);
 	}
 
 	private boolean isVeuvageApresDeces(PersonnePhysique veuf, MenageCommun menage, RegDate date) {
@@ -2140,12 +2134,6 @@ public class MetierServiceImpl implements MetierService {
 		}
 
 		return false;
-	}
-
-	private void updateSituationFamilleVeuvage(PersonnePhysique veuf, RegDate date) {
-		final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(veuf, date);
-		final MenageCommun menage = couple.getMenage();
-		doUpdateSituationFamilleDeces(null, veuf, menage, date);
 	}
 
 	public void annuleVeuvage(PersonnePhysique tiers, RegDate date, Long numeroEvenement) {

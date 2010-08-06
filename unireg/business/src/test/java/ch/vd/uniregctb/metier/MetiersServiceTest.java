@@ -27,6 +27,7 @@ import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 
 import junit.framework.Assert;
 import org.junit.Test;
+import org.springframework.test.annotation.NotTransactional;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
@@ -1379,5 +1380,99 @@ public class MetiersServiceTest extends BusinessTest {
 			final String erreur = resultatValidation.getErrors().get(0);
 			Assert.assertEquals("L'individu veuf n'a ni couple connu ni for valide à la date de veuvage : problème d'assujettissement ?", erreur);
 		}
+	}
+
+	@Test
+	@NotTransactional
+	public void testDecesDansCoupleNonAssujetti() throws Exception {
+
+		final long noIndMr = 124578L;
+		final long noIndMme = 235689L;
+
+		final RegDate dateDeces = date(2010, 4, 12);
+
+		// mise en place civile
+		serviceCivil.setUp(new DefaultMockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu mr = addIndividu(noIndMr, date(1948, 1, 26), "Dupetipont", "Martin", true);
+				final MockIndividu mme = addIndividu(noIndMme, date(1948, 9, 4), "Dupetipont", "Martine", false);
+				addNationalite(mr, MockPays.Suisse, date(1948, 1, 26), null, 1);
+				addNationalite(mme, MockPays.Suisse, date(1948, 9, 4), null, 1);
+				marieIndividus(mr, mme, date(1971, 4, 17));
+				addEtatCivil(mme, dateDeces, EnumTypeEtatCivil.VEUF);
+				mr.setDateDeces(dateDeces);
+			}
+		});
+
+		class Ids {
+			long mrId;
+			long mmeId;
+			long mcId;
+		}
+
+		// mise en place fiscale : couple non-assujetti
+		final Ids ids = (Ids) doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique mr = addHabitant(noIndMr);
+				final PersonnePhysique mme = addHabitant(noIndMme);
+				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(mr, mme, date(1971, 4, 17), null);
+
+				final Ids ids = new Ids();
+				ids.mrId = mr.getNumero();
+				ids.mmeId = mme.getNumero();
+				ids.mcId = ensemble.getMenage().getNumero();
+				return ids;
+			}
+		});
+
+		// traitement du décès de monsieur
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique mr = (PersonnePhysique) tiersService.getTiers(ids.mrId);
+				metierService.deces(mr, dateDeces, "Décès de Monsieur", 1L);
+				return null;
+			}
+		});
+
+		// vérification du résultat
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique mr = (PersonnePhysique) tiersService.getTiers(ids.mrId);
+				final PersonnePhysique mme = (PersonnePhysique) tiersService.getTiers(ids.mmeId);
+				final MenageCommun mc = (MenageCommun) tiersService.getTiers(ids.mcId);
+
+				// jour du décès : le couple est toujours là
+				{
+					final EnsembleTiersCouple ensemble = tiersService.getEnsembleTiersCouple(mc, dateDeces);
+					Assert.assertNotNull(ensemble);
+					Assert.assertTrue(ensemble.estComposeDe(mr, mme));
+				}
+				// lendemain du décès : le couple est maintenant vide (donc les rapports entre tiers ont bien été fermés)
+				{
+					final EnsembleTiersCouple ensemble = tiersService.getEnsembleTiersCouple(mc, dateDeces.getOneDayAfter());
+					Assert.assertNotNull(ensemble);
+					Assert.assertNull(ensemble.getPrincipal());
+					Assert.assertNull(ensemble.getConjoint());
+				}
+
+				// tests des fors :
+				//
+				// dans l'état actuel de l'implémentation, aucun for n'est créé sur le survivant si
+				// le couple n'avait pas de for
+				//
+				final Set<ForFiscal> forsMc = mc.getForsFiscaux();
+				Assert.assertNotNull(forsMc);
+				Assert.assertEquals(0, forsMc.size());
+				final Set<ForFiscal> forsMr = mr.getForsFiscaux();
+				Assert.assertNotNull(forsMr);
+				Assert.assertEquals(0, forsMr.size());
+				final Set<ForFiscal> forsMme = mme.getForsFiscaux();
+				Assert.assertNotNull(forsMme);
+				Assert.assertEquals(0, forsMme.size());
+
+				return null;
+			}
+		});
 	}
 }

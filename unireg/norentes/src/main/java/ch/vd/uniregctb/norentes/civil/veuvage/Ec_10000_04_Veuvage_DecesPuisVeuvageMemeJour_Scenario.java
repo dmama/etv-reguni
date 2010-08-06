@@ -133,7 +133,10 @@ public class Ec_10000_04_Veuvage_DecesPuisVeuvageMemeJour_Scenario extends Evene
 
 	@Etape(id=2, descr="Envoi de l'événement Décès")
 	public void step2() throws Exception {
-		long id = addEvenementCivil(TypeEvenementCivil.DECES, noIndPierre, dateDeces, communeMariage.getNoOFS());
+
+		indPierre.setDateDeces(dateDeces);
+
+		final long id = addEvenementCivil(TypeEvenementCivil.DECES, noIndPierre, dateDeces, communeMariage.getNoOFS());
 		commitAndStartTransaction();
 		traiteEvenements(id);
 	}
