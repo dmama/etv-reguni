@@ -22,67 +22,48 @@
 				</jsp:include>
 			</fieldset>
 		
-			<display:table name="list" id="personne" pagesize="${parametresApp.nbMaxParPage}" requestURI="edit.do" class="display_table" sort="list">
+			<display:table name="list" id="personne" pagesize="${parametresApp.nbMaxParPage}" requestURI="edit.do" class="display_table" sort="list" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
 				<display:setProperty name="paging.banner.no_items_found"><span class="pagebanner"><fmt:message key="banner.auncune.personne.trouvee" /></span></display:setProperty>
 				<display:setProperty name="paging.banner.one_item_found"><span class="pagebanner">1 <fmt:message key="banner.personne.trouvee" /></span></display:setProperty>
 				<display:setProperty name="paging.banner.some_items_found"><span class="pagebanner">{0} <fmt:message key="banner.personnes.trouvees" /></span></display:setProperty>
 				<display:setProperty name="paging.banner.all_items_found"><span class="pagebanner">{0} <fmt:message key="banner.personnes.trouvees" /></span></display:setProperty>
 				
 				<display:column sortable ="true" titleKey="label.numero.contribuable" sortProperty="numero" >
-					<c:if test="${personne.annule}"><strike></c:if>
 						<a href="../../tiers/visu.do?id=${personne.numero}&message=${command.demandeIdentificationView.id}"><unireg:numCTB numero="${personne.numero}" /></a>
-					<c:if test="${personne.annule}"></strike></c:if>
 				</display:column>
 				<display:column sortable ="true" titleKey="label.role" >
-					<c:if test="${personne.annule}"><strike></c:if>
 						<c:out value="${personne.roleLigne1}" />
 						<c:if test="${personne.roleLigne2 != null}">
 							<br><c:out value="${personne.roleLigne2}" />
 						</c:if>
-					<c:if test="${personne.annule}"></strike></c:if>
 				</display:column>
 				<display:column sortable ="true" titleKey="label.nom.prenom" >
-					<c:if test="${personne.annule}"><strike></c:if>
-					 
 					 <a href="${personne.numero}" class="civTip" id="civildata" name="${personne.numero}">
 						<c:out value="${personne.nom1}" />
 						<c:if test="${personne.nom2 != null}">
 							<br><c:out value="${personne.nom2}" />
 						</c:if>
 						</a>
-					<c:if test="${personne.annule}"></strike></c:if>
 				</display:column>
 				<display:column titleKey="label.date.naissance" sortable="true" sortName="dateNaissance" sortProperty="dateNaissance">
-					<c:if test="${personne.annule}"><strike></c:if>
 						<unireg:date date="${personne.dateNaissance}"></unireg:date>
-					<c:if test="${personne.annule}"></strike></c:if>
 				</display:column>
 				<display:column sortable ="true" titleKey="label.npa" >
-					<c:if test="${personne.annule}"><strike></c:if>
 						<c:out value="${personne.npa}" />
-					<c:if test="${personne.annule}"></strike></c:if>
 				</display:column>
 				<display:column sortable ="true" titleKey="label.localitePays" >
-					<c:if test="${personne.annule}"><strike></c:if>
 					 <a href="${personne.numero}" class="adrTip" id="adressedata" name="${personne.numero}">
 						<c:out value="${personne.localiteOuPays}" />
-					</a>	
-					<c:if test="${personne.annule}"></strike></c:if>
+					</a>
 				</display:column>
 				<display:column sortable ="true" titleKey="label.for.principal" >
-					<c:if test="${personne.annule}"><strike></c:if>
 						<c:out value="${personne.forPrincipal}" />
-					<c:if test="${personne.annule}"></strike></c:if>
 				</display:column>
 				<display:column sortable ="true" titleKey="label.date.ouverture.for" sortProperty="dateOuvertureFor">
-					<c:if test="${personne.annule}"><strike></c:if>
 						<fmt:formatDate value="${personne.dateOuvertureFor}" pattern="dd.MM.yyyy"/>
-					<c:if test="${personne.annule}"></strike></c:if>
 				</display:column>
 				<display:column sortable ="true" titleKey="label.date.fermeture.for" sortProperty="dateFermetureFor">
-					<c:if test="${personne.annule}"><strike></c:if>
 						<fmt:formatDate value="${personne.dateFermetureFor}" pattern="dd.MM.yyyy"/>
-					<c:if test="${personne.annule}"></strike></c:if>
 				</display:column>
 				<display:column>
 					<unireg:raccourciIdentifier onClick="javascript:Page_Identifier(${personne.numero});" tooltip="Identifier" />

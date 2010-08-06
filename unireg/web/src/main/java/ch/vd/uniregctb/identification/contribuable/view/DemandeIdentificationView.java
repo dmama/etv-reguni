@@ -3,10 +3,11 @@ package ch.vd.uniregctb.identification.contribuable.view;
 import java.util.Date;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.common.Annulable;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable.Etat;
 import ch.vd.uniregctb.type.Sexe;
 
-public class DemandeIdentificationView {
+public class DemandeIdentificationView implements Annulable{
 
 	private Long id;
 	private String typeMessage;
@@ -26,6 +27,7 @@ public class DemandeIdentificationView {
 	private String pays;
 	private String npaEtranger;
 	private String noPolice;
+	private boolean annule;
 
 	public Long getId() {
 		return id;
@@ -136,5 +138,13 @@ public class DemandeIdentificationView {
 
 	public void setBusinessId(String businessId) {
 		this.businessId = businessId;
+	}
+
+	public boolean isAnnule() {
+		return annule;
+	}
+
+	public void setAnnule(boolean annule) {
+		this.annule = annule;
 	}
 }

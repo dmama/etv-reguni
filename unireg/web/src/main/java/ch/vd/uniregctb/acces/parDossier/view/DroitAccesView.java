@@ -1,8 +1,9 @@
 package ch.vd.uniregctb.acces.parDossier.view;
 
+import ch.vd.uniregctb.common.Annulable;
 import ch.vd.uniregctb.tiers.DroitAcces;
 
-public class DroitAccesView extends DroitAcces{
+public class DroitAccesView extends DroitAcces implements Annulable{
 
 	private static final long serialVersionUID = -2346891502349854834L;
 
