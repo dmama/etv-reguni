@@ -130,7 +130,12 @@ public class AcomptesResults extends ListesResults<AcomptesResults> {
 
         if (ctb instanceof PersonnePhysique) {
 	        final NomPrenom nomPrenom = tiersService.getDecompositionNomPrenom((PersonnePhysique) ctb);
-            addContribuable(ctb, nomPrenom.getNom(), nomPrenom.getPrenom());
+	        if (nomPrenom != null) {
+                addContribuable(ctb, nomPrenom.getNom(), nomPrenom.getPrenom());
+	        }
+	        else {
+		        addContribuable(ctb, NOM_INCONNU, null);
+	        }
 
         } else if (ctb instanceof MenageCommun) {
             final MenageCommun menage = (MenageCommun) ctb;
@@ -149,7 +154,12 @@ public class AcomptesResults extends ListesResults<AcomptesResults> {
 	        }
             if (principal != null) {
 	            final NomPrenom nomPrenom = tiersService.getDecompositionNomPrenom(principal);
-                addContribuable(ctb, nomPrenom.getNom(), nomPrenom.getNomPrenom());
+	            if (nomPrenom != null) {
+                    addContribuable(ctb, nomPrenom.getNom(), nomPrenom.getNomPrenom());
+	            }
+	            else {
+		            addContribuable(ctb, NOM_INCONNU, null);
+	            }
             } else {
                 addErrorManqueLiensMenage(menage);
             }
