@@ -2,10 +2,11 @@ package ch.vd.uniregctb.tiers;
 
 import java.util.Date;
 
+import ch.vd.uniregctb.common.Annulable;
 import ch.vd.uniregctb.indexer.tiers.MenageCommunIndexable;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
 
-public class TiersIndexedDataView {
+public class TiersIndexedDataView implements Annulable {
 
 	private TiersIndexedData data;
 	private String urlTaoPP;

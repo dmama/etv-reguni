@@ -101,6 +101,7 @@ public class IdentificationMessagesEditManagerImpl implements IdentificationMess
 				demandeIdentificationView.setNavs13(FormatNumeroHelper.formatNumAVS(identificationContribuable.getDemande().getPersonne().getNAVS13()));
 				demandeIdentificationView.setDateNaissance(identificationContribuable.getDemande().getPersonne().getDateNaissance());
 				demandeIdentificationView.setSexe(identificationContribuable.getDemande().getPersonne().getSexe());
+				demandeIdentificationView.setAnnule(identificationContribuable.isAnnule());
 				if (identificationContribuable.getDemande().getPersonne().getAdresse()!=null) {
 					CriteresAdresse adresse = identificationContribuable.getDemande().getPersonne().getAdresse();
 					demandeIdentificationView.setRue(adresse.getRue());

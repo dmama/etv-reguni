@@ -33,28 +33,19 @@
 			<display:table
 					name="command.restrictions" id="restriction" pagesize="10" 
 					requestURI="${url}"
-					class="display">
+					class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
 			
 				<display:column sortable ="true" titleKey="label.type.restriction">
-					<c:if test="${restriction.annule}"><strike></c:if>
 						<fmt:message key="option.type.droit.acces.${restriction.type}"  />
-					<c:if test="${restriction.annule}"></strike></c:if>
 				</display:column>
-				
 				<display:column sortable ="true" titleKey="label.visa.operateur" >
-					<c:if test="${restriction.annule}"><strike></c:if>
 						${restriction.visaOperateur}
-					<c:if test="${restriction.annule}"></strike></c:if>
 				</display:column>
 				<display:column sortable ="true" titleKey="label.prenom.nom">
-					<c:if test="${restriction.annule}"><strike></c:if>
 						<c:out value="${restriction.prenomNom}" />
-					<c:if test="${restriction.annule}"></strike></c:if>
 				</display:column>
 				<display:column sortable ="true" titleKey="label.office.impot">
-					<c:if test="${restriction.annule}"><strike></c:if>
 						<c:out value="${restriction.officeImpot}" />
-					<c:if test="${restriction.annule}"></strike></c:if>
 				</display:column>
 				<display:column sortable ="true" titleKey="label.lecture.seule">
 					<input type="checkbox" name="lectureSeule" value="True"   

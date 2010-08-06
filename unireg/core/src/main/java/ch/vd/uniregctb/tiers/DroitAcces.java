@@ -17,6 +17,7 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.uniregctb.common.Annulable;
 import ch.vd.uniregctb.common.Duplicable;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.type.Niveau;
@@ -47,7 +48,7 @@ import ch.vd.uniregctb.type.TypeDroitAcces;
  */
 @Entity
 @Table(name = "DROIT_ACCES")
-public class DroitAcces extends HibernateEntity implements DateRange, Duplicable<DroitAcces> {
+public class DroitAcces extends HibernateEntity implements DateRange, Duplicable<DroitAcces>, Annulable {
 
 	private static final long serialVersionUID = 5947849643843925215L;
 

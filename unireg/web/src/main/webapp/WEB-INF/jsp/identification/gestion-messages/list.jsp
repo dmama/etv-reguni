@@ -38,7 +38,8 @@
 				<FONT COLOR="#FF0000">Attention la recherche est désynchronisée après la suspension ou la soumission de messages</FONT>
 			</div>
 		
-			<display:table name="identifications" id="message" pagesize="25" size="identificationsSize" requestURI="/identification/gestion-messages/${myAction}" class="display_table" sort="external" partialList="true">
+			<display:table name="identifications" id="message" pagesize="25" size="identificationsSize" requestURI="/identification/gestion-messages/${myAction}"
+			class="display_table" sort="external" partialList="true" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator" >
 				<display:setProperty name="paging.banner.no_items_found"><span class="pagebanner"><fmt:message key="banner.auncun.message.trouve" /></span></display:setProperty>
 				<display:setProperty name="paging.banner.one_item_found"><span class="pagebanner">1 <fmt:message key="banner.message.trouve" /></span></display:setProperty>
 				<display:setProperty name="paging.banner.some_items_found"><span class="pagebanner">{0} <fmt:message key="banner.messages.trouves" /></span></display:setProperty>
@@ -54,62 +55,40 @@
 				</authz:authorize>
 				</c:if>
 				<display:column sortable ="true" titleKey="label.type.message" sortName="demande.typeMessage">
-					<c:if test="${message.annule}"><strike></c:if>
 						<fmt:message key="option.type.message.${message.typeMessage}" />
-					<c:if test="${message.annule}"></strike></c:if>
 				</display:column>
 				<display:column sortable ="true" titleKey="label.periode.fiscale" sortName="demande.periodeFiscale" >
-					<c:if test="${message.annule}"><strike></c:if>
 						${message.periodeFiscale}
-					<c:if test="${message.annule}"></strike></c:if>
 				</display:column>
 				<display:column sortable ="true" titleKey="label.emetteur" sortName="demande.emetteurId">
-					<c:if test="${message.annule}"><strike></c:if>
 						${message.emetteurId}
-					<c:if test="${message.annule}"></strike></c:if>
 				</display:column>
 				<display:column sortable ="true" titleKey="label.date.message" sortName="demande.date">
-					<c:if test="${message.annule}"><strike></c:if>
 						<fmt:formatDate value="${message.dateMessage}" pattern="dd.MM.yyyy"/>
-					<c:if test="${message.annule}"></strike></c:if>
 				</display:column>
 				<display:column titleKey="label.etat.message">
-					<c:if test="${message.annule}"><strike></c:if>
 						<fmt:message key="option.etat.message.${message.etatMessage}"  />
-					<c:if test="${message.annule}"></strike></c:if>
 				</display:column>
 				<display:column sortable ="true" titleKey="label.nom" sortName="demande.personne.nom">
-					<c:if test="${message.annule}"><strike></c:if>
 						<c:out value="${message.nom}" />
-					<c:if test="${message.annule}"></strike></c:if>
 				</display:column>
 				<display:column sortable ="true" titleKey="label.prenom"  sortName="demande.personne.prenoms">
-					<c:if test="${message.annule}"><strike></c:if>
 						<c:out value="${message.prenoms}" />
-					<c:if test="${message.annule}"></strike></c:if>
 				</display:column>
 				<c:if test="${messageTraite}">
 					<display:column sortable ="true" titleKey="label.numero.contribuable"  sortName="reponse.noContribuable">
 						 <c:if test="${(message.etatMessage != 'NON_IDENTIFIE')}">
-							<c:if test="${message.annule}"><strike></c:if>
 								<a href="../../tiers/visu.do?id=${message.numeroContribuable}&retour=traite"><unireg:numCTB numero="${message.numeroContribuable}" /></a>
-							<c:if test="${message.annule}"></strike></c:if>
 						</c:if>	
 					</display:column>
-				
 				</c:if>
 				
 				<display:column sortable ="true" titleKey="label.date.naissance" sortName="demande.personne.dateNaissance">
-					<c:if test="${message.annule}"><strike></c:if>
 						<unireg:date date="${message.dateNaissance}" />
-					<c:if test="${message.annule}"></strike></c:if>
 				</display:column>
 				<display:column sortable ="true" titleKey="label.navs13" sortName="demande.personne.NAVS13">
-					<c:if test="${message.annule}"><strike></c:if>
 						<c:out value="${message.navs13}" />
-					<c:if test="${message.annule}"></strike></c:if>
 				</display:column>
-				
 				<authz:authorize ifAnyGranted="ROLE_MW_IDENT_CTB_GEST_BO,ROLE_MW_IDENT_CTB_ADMIN,ROLE_MW_IDENT_CTB_CELLULE_BO">
 				<display:column>
 				 <c:if test="${(message.etatMessage == 'A_TRAITER_MANUELLEMENT') || (message.etatMessage == 'EXCEPTION') ||
