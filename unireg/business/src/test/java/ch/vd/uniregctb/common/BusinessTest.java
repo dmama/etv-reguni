@@ -4,6 +4,8 @@ import java.util.Date;
 
 import org.springframework.test.context.ContextConfiguration;
 
+import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
+import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
 import ch.vd.uniregctb.interfaces.service.mock.ProxyServiceCivil;
 import ch.vd.uniregctb.interfaces.service.mock.ProxyServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.mock.ProxyServicePM;
@@ -76,5 +78,14 @@ public abstract class BusinessTest extends AbstractBusinessTest {
 		while (job.getLastStart() == null || job.getLastStart().before(startTime)) {
 			Thread.sleep(100); // 100ms
 		}
+	}
+
+	protected static interface IndividuModification {
+		void modifyIndividu(MockIndividu individu);
+	}
+
+	protected void doModificationIndividu(long noIndividu, IndividuModification modifier) {
+		final MockIndividu ind = ((MockServiceCivil) serviceCivil.getTarget()).getIndividu(noIndividu);
+		modifier.modifyIndividu(ind);
 	}
 }

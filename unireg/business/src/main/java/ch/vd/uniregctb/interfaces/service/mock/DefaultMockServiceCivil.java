@@ -8,7 +8,6 @@ import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.civil.model.EnumTypePermis;
 import ch.vd.uniregctb.interfaces.model.Adresse;
-import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.mock.MockAdresse;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
@@ -55,6 +54,7 @@ public class DefaultMockServiceCivil extends MockServiceCivil {
 		addDefaultAdressesTo(david);
 		addDefaultAdressesTo(julien);
 		addDefaultAdressesTo(victor);
+		addDefaultAdressesTo(helene);
 
 		marieIndividus(momo, bea, RegDate.get(1986, 4, 8));
 		marieIndividus(david, julien, RegDate.get(1986, 4, 8));
@@ -89,7 +89,7 @@ public class DefaultMockServiceCivil extends MockServiceCivil {
 		addNationalite(victor, MockPays.Espagne, RegDate.get(1956, 5, 12), null, 0);
 	}
 
-	protected void addDefaultAdressesTo(Individu individu) {
+	protected void addDefaultAdressesTo(MockIndividu individu) {
 		addAdresse(individu, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate.get(1980, 11, 2), null);
 		addAdresse(individu, EnumTypeAdresse.COURRIER, MockRue.CossonayVille.AvenueDuFuniculaire, null, RegDate.get(1980, 11, 2), null);
 	}

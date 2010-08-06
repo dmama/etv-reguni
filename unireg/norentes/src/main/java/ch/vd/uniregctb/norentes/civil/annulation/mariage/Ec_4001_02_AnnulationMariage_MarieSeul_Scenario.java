@@ -44,7 +44,7 @@ public class Ec_4001_02_AnnulationMariage_MarieSeul_Scenario extends EvenementCi
 	private final class LocalMockServiceCivil extends DefaultMockServiceCivil {
 
 		public void annuleMariage(final MockIndividu individu) {
-			final MockIndividu conjoint = (MockIndividu) individu.getConjoint();
+			final MockIndividu conjoint = individu.getConjoint();
 
 			final ch.vd.uniregctb.interfaces.model.EtatCivil etatCivilIndividu = individu.getEtatCivilCourant();
 			individu.getEtatsCivils().remove(etatCivilIndividu);
@@ -118,7 +118,7 @@ public class Ec_4001_02_AnnulationMariage_MarieSeul_Scenario extends EvenementCi
 	@Etape(id=2, descr="Envoi de l'événement Annulation de Mariage")
 	public void step2() throws Exception {
 		// annulation dans le civil
-		localMockServiceCivil.annuleMariage((MockIndividu) localMockServiceCivil.getIndividu(noIndPierre));
+		localMockServiceCivil.annuleMariage(localMockServiceCivil.getIndividu(noIndPierre));
 		// envoi de l'événement
 		long id = addEvenementCivil(TypeEvenementCivil.ANNUL_MARIAGE, noIndPierre, dateMariage, commune.getNoOFS());
 		commitAndStartTransaction();

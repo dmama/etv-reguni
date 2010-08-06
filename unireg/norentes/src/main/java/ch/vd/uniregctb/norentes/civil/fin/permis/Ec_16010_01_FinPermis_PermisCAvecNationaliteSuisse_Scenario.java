@@ -71,7 +71,7 @@ public class Ec_16010_01_FinPermis_PermisCAvecNationaliteSuisse_Scenario extends
 
 		public void setupForTest() {
 			((MockPermis) getPermisActif(noIndRoberto, dateFinPermisC)).setDateFinValidite(dateFinPermisC);
-			MockIndividu roberto = (MockIndividu) getIndividu(noIndRoberto, 2008);
+			MockIndividu roberto = getIndividu(noIndRoberto);
 			addNationalite(roberto, MockPays.Suisse, dateObtentionNationalite, null, 1);
 		}
 

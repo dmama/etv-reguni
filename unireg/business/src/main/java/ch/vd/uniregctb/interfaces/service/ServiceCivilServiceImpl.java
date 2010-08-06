@@ -87,14 +87,6 @@ public class ServiceCivilServiceImpl extends ServiceCivilServiceBase {
 		}
 	}
 
-	public void setUp(ServiceCivilService target) {
-		throw new NotImplementedException();
-	}
-
-	public void tearDown() {
-		throw new NotImplementedException();
-	}
-
 	public boolean isWarmable() {
 		return false;
 	}

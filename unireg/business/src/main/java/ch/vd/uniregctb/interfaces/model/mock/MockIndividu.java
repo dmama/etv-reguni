@@ -2,11 +2,14 @@ package ch.vd.uniregctb.interfaces.model.mock;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.civil.model.EnumAttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.AdoptionReconnaissance;
+import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
 import ch.vd.uniregctb.interfaces.model.EtatCivilList;
 import ch.vd.uniregctb.interfaces.model.HistoriqueIndividu;
@@ -20,7 +23,7 @@ import ch.vd.uniregctb.interfaces.model.helper.IndividuHelper;
 public class MockIndividu extends MockEntiteCivile implements Individu {
 
 	private Collection<AdoptionReconnaissance> adoptionsReconnaissances;
-	private Individu conjoint;
+	private MockIndividu conjoint;
 	private RegDate dateDeces;
 	private RegDate dateNaissance;
 	private HistoriqueIndividu dernierHistoriqueIndividu;
@@ -41,7 +44,7 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 	public MockIndividu() {
 	}
 
-	public MockIndividu(MockIndividu right, Set<EnumAttributeIndividu> parts) {
+	public MockIndividu(MockIndividu right, Set<EnumAttributeIndividu> parts, int annee) {
 		super(right, parts);
 		this.dateDeces = right.dateDeces;
 		this.dateNaissance = right.dateNaissance;
@@ -52,34 +55,10 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 		this.nouveauNoAVS = right.nouveauNoAVS;
 		this.numeroRCE = right.numeroRCE;
 		this.sexeMasculin = right.sexeMasculin;
-		
-		if (parts != null && parts.contains(EnumAttributeIndividu.ADOPTIONS)) {
-			adoptionsReconnaissances = right.adoptionsReconnaissances;
-		}
-		if (parts != null && parts.contains(EnumAttributeIndividu.CONJOINT)) {
-			conjoint = right.conjoint;
-		}
-		if (parts != null && parts.contains(EnumAttributeIndividu.ENFANTS)) {
-			enfants = right.enfants;
-		}
-		if (parts != null && parts.contains(EnumAttributeIndividu.NATIONALITE)) {
-			nationalites = right.nationalites;
-		}
-		if (parts != null && parts.contains(EnumAttributeIndividu.ORIGINE)) {
-			origine = right.origine;
-		}
-		if (parts != null && parts.contains(EnumAttributeIndividu.PARENTS)) {
-			pere = right.pere;
-			mere = right.mere;
-		}
-		if (parts != null && parts.contains(EnumAttributeIndividu.PERMIS)) {
-			permis = right.permis;
-		}
-		if (parts != null && parts.contains(EnumAttributeIndividu.TUTELLE)) {
-			tutelle = right.tutelle;
-		}
-	}
 
+		copyPartsFrom(right, parts);
+		limitPartsToBeforeYear(annee, parts);
+	}
 
 	public Collection<AdoptionReconnaissance> getAdoptionsReconnaissances() {
 		return adoptionsReconnaissances;
@@ -89,11 +68,11 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 		this.adoptionsReconnaissances = adoptionsReconnaissances;
 	}
 
-	public Individu getConjoint() {
+	public MockIndividu getConjoint() {
 		return conjoint;
 	}
 
-	public void setConjoint(Individu conjoint) {
+	public void setConjoint(MockIndividu conjoint) {
 		this.conjoint = conjoint;
 	}
 
@@ -274,7 +253,7 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 			adoptionsReconnaissances = individu.getAdoptionsReconnaissances();
 		}
 		if (parts != null && parts.contains(EnumAttributeIndividu.CONJOINT)) {
-		//	conjoint = individu.getConjoint();
+			conjoint = ((MockIndividu) individu).getConjoint();
 		}
 		if (parts != null && parts.contains(EnumAttributeIndividu.ENFANTS)) {
 			enfants = individu.getEnfants();
@@ -297,11 +276,99 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 		}
 	}
 
-	public Individu clone(Set<EnumAttributeIndividu> parts) {
-		return new MockIndividu(this, parts);
+	public MockIndividu clone(Set<EnumAttributeIndividu> parts) {
+		return cloneUntil(parts, RegDate.getLateDate().year());
+	}
+
+	public MockIndividu cloneUntil(Set<EnumAttributeIndividu> parts, int annee) {
+		return new MockIndividu(this, parts, annee);
 	}
 
 	public Permis getPermisActif(RegDate date) {
 		return IndividuHelper.getPermisActif(this, date);
+	}
+
+	private static interface Limitator<T> {
+		boolean keep(T element, int annee);
+	}
+
+	private static final Limitator<AdoptionReconnaissance> ADOPTION_LIMITATOR = new Limitator<AdoptionReconnaissance>() {
+		public boolean keep(AdoptionReconnaissance element, int annee) {
+			return (element.getDateAdoption() != null && element.getDateAdoption().year() <= annee)
+					|| (element.getDateReconnaissance() != null && element.getDateReconnaissance().year() <= annee);
+		}
+	};
+	private static final Limitator<Individu> ENFANT_LIMITATOR = new Limitator<Individu>() {
+		public boolean keep(Individu element, int annee) {
+			return element.getDateNaissance() == null || element.getDateNaissance().year() <= annee;
+		}
+	};
+	private static final Limitator<HistoriqueIndividu> HISTORIQUE_LIMITATOR = new Limitator<HistoriqueIndividu>() {
+		public boolean keep(HistoriqueIndividu element, int annee) {
+			return element.getDateDebutValidite() == null || element.getDateDebutValidite().year() <= annee;
+		}
+	};
+	private static final Limitator<Nationalite> NATIONALITE_LIMITATOR = new Limitator<Nationalite>() {
+		public boolean keep(Nationalite element, int annee) {
+			return element.getDateDebutValidite() == null || element.getDateDebutValidite().year() <= annee;
+		}
+	};
+	private static final Limitator<Permis> PERMIS_LIMITATOR = new Limitator<Permis>() {
+		public boolean keep(Permis element, int annee) {
+			return element.getDateDebutValidite() == null || element.getDateDebutValidite().year() <= annee;
+		}
+	};
+	private static final Limitator<Adresse> ADRESSE_LIMITATOR = new Limitator<Adresse>() {
+		public boolean keep(Adresse element, int annee) {
+			return element.getDateDebut() == null || element.getDateDebut().year() <= annee;
+		}
+	};
+
+	private static <T> Collection<T> buildLimitedCollectionBeforeYear(Collection<T> original, int annee, Limitator<T> limitator) {
+		if (original == null || original.size() == 0) {
+			return original;
+		}
+		else {
+			final List<T> limited = new ArrayList<T>(original);
+			final Iterator<T> iter = limited.iterator();
+			while (iter.hasNext()) {
+				final T element = iter.next();
+				if (!limitator.keep(element, annee)) {
+					iter.remove();
+				}
+			}
+			return limited.size() == original.size() ? original : limited;
+		}
+	}
+
+	private void limitPartsToBeforeYear(int annee, Set<EnumAttributeIndividu> parts) {
+		if (parts != null && parts.contains(EnumAttributeIndividu.ADOPTIONS)) {
+			adoptionsReconnaissances = buildLimitedCollectionBeforeYear(adoptionsReconnaissances, annee, ADOPTION_LIMITATOR);
+		}
+		if (parts != null && parts.contains(EnumAttributeIndividu.ENFANTS)) {
+			enfants = buildLimitedCollectionBeforeYear(enfants, annee, ENFANT_LIMITATOR);
+		}
+		if (etatsCivils != null && etatsCivils.size() > 0) {
+			etatsCivils = new EtatCivilList(etatsCivils.getNumeroIndividu(), etatsCivils);
+			final Iterator<EtatCivil> iterator = etatsCivils.iterator();
+			while (iterator.hasNext()) {
+				final EtatCivil etatCivil = iterator.next();
+				if (etatCivil.getDateDebutValidite() != null && etatCivil.getDateDebutValidite().year() > annee) {
+					iterator.remove();
+				}
+			}
+		}
+		historiqueIndividu = buildLimitedCollectionBeforeYear(historiqueIndividu, annee, HISTORIQUE_LIMITATOR);
+		dernierHistoriqueIndividu = historiqueIndividu == null || historiqueIndividu.size() == 0 ? null : (HistoriqueIndividu) historiqueIndividu.toArray()[historiqueIndividu.size() - 1];
+
+		if (parts != null && parts.contains(EnumAttributeIndividu.NATIONALITE)) {
+			nationalites = buildLimitedCollectionBeforeYear(nationalites, annee, NATIONALITE_LIMITATOR);
+		}
+		if (parts != null && parts.contains(EnumAttributeIndividu.PERMIS)) {
+			permis = buildLimitedCollectionBeforeYear(permis, annee, PERMIS_LIMITATOR);
+		}
+		if (parts != null && parts.contains(EnumAttributeIndividu.ADRESSES)) {
+			setAdresses(buildLimitedCollectionBeforeYear(getAdresses(), annee, ADRESSE_LIMITATOR));
+		}
 	}
 }

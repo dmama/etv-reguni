@@ -15,7 +15,7 @@ public abstract class MockEntiteCivile implements EntiteCivile {
 	protected MockEntiteCivile() {
 	}
 
-	public MockEntiteCivile(MockEntiteCivile right, Set<EnumAttributeIndividu> parts) {
+	protected MockEntiteCivile(MockEntiteCivile right, Set<EnumAttributeIndividu> parts) {
 		if (parts != null && parts.contains(EnumAttributeIndividu.ADRESSES)) {
 			adresses = right.adresses;
 		}

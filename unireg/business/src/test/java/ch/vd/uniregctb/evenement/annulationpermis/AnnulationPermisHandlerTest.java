@@ -75,7 +75,7 @@ public class AnnulationPermisHandlerTest extends AbstractEvenementHandlerTest {
 				super.init();
 
 				// Complement d'informations sur Julie pour ces tests
-				MockIndividu julie = (MockIndividu) getIndividu(NO_INDIVIDU_CELIBATAIRE);
+				MockIndividu julie = getIndividu(NO_INDIVIDU_CELIBATAIRE);
 				addOrigine(julie, MockPays.France, null, RegDate.get(1976, 4, 19));
 				addNationalite(julie, MockPays.France, RegDate.get(1976, 4, 19), null, 0);
 				addPermis(julie, EnumTypePermis.SUISSE_SOURCIER, DATE_OBTENTION_PERMIS, null, 0, false);

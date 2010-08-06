@@ -92,20 +92,20 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 			@Override
 			protected void init() {
 
-				MockIndividu charlesPoncet = addIndividu(7643L, RegDate.get(1965, 3, 12), "Charles", "Poncet", true);
+				final MockIndividu charlesPoncet = addIndividu(7643L, RegDate.get(1965, 3, 12), "Charles", "Poncet", true);
 				addFieldsIndividu(charlesPoncet, "01234567", "123.43.765.543", "");
 
-				Individu marcelMeignier = addIndividu(1234L, RegDate.get(1972, 1, 27), "Marcel", "MEIGNIER", true);
+				final MockIndividu marcelMeignier = addIndividu(1234L, RegDate.get(1972, 1, 27), "Marcel", "MEIGNIER", true);
 				addAdresse(marcelMeignier, EnumTypeAdresse.COURRIER, MockRue.Bex.RouteDuBoet, null, RegDate.get(1964, 12, 2), null);
 				addAdresse(marcelMeignier, EnumTypeAdresse.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, RegDate.get(1964, 12, 2), null);
 
-				MockIndividu philippeMaillard = addIndividu(noIndPhilippeMaillard, RegDate.get(1956, 1, 21), "Maillard", "Philippe", true);
+				final MockIndividu philippeMaillard = addIndividu(noIndPhilippeMaillard, RegDate.get(1956, 1, 21), "Maillard", "Philippe", true);
 				{
 					MockHistoriqueIndividu histo = (MockHistoriqueIndividu) philippeMaillard.getDernierHistoriqueIndividu();
 					histo.setNoAVS("123.45.678");
 				}
 
-				MockIndividu gladysMaillard = addIndividu(noIndGladysMaillard, RegDate.get(1967, 12, 3), "Maillard-Gallet", "Gladys", false);
+				final MockIndividu gladysMaillard = addIndividu(noIndGladysMaillard, RegDate.get(1967, 12, 3), "Maillard-Gallet", "Gladys", false);
 				{
 					MockHistoriqueIndividu histo = (MockHistoriqueIndividu) gladysMaillard.getDernierHistoriqueIndividu();
 					histo.setNoAVS("987.65.432");
@@ -670,7 +670,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 	@Test
 	public void testContribuableAvecAdressesCivile() throws Exception {
 
-		MockIndividu individu = (MockIndividu)serviceCivil.getIndividu(1234L, 2007);
+		Individu individu = serviceCivil.getIndividu(1234L, 2007);
 		//HistoriqueIndividu histo = individu.getDernierHistoriqueIndividu();
 
 		PersonnePhysique hab = new PersonnePhysique(true);

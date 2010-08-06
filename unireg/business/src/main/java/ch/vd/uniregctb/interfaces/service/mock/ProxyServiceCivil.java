@@ -143,4 +143,8 @@ public class ProxyServiceCivil implements ServiceCivilService {
 	public List<HistoriqueCommune> getCommunesDomicileHisto(RegDate depuis, long noIndividu, boolean strict, boolean seulementVaud) throws DonneesCivilesException, InfrastructureException {
 		return target.getCommunesDomicileHisto(depuis, noIndividu, strict, seulementVaud);
 	}
+
+	public ServiceCivilService getTarget() {
+		return target;
+	}
 }

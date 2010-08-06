@@ -181,4 +181,8 @@ public class EtatCivilList implements List<EtatCivil> {
 		}
 		return etat;
 	}
+
+	public long getNumeroIndividu() {
+		return numeroIndividu;
+	}
 }

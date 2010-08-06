@@ -116,7 +116,7 @@ public class Ec_19000_03_Depart_HS_Scenario extends DepartScenario {
 			return adresse;
 		}
 
-		public Adresse addAdresse(Individu individu, EnumTypeAdresse type, Rue rue, String casePostale, Localite localite, MockCommune commune, Pays pays, RegDate debutValidite, RegDate finValidite) {
+		public Adresse addAdresse(MockIndividu individu, EnumTypeAdresse type, Rue rue, String casePostale, Localite localite, MockCommune commune, Pays pays, RegDate debutValidite, RegDate finValidite) {
 
 			final Adresse adresse = createAdresse(individu, type, rue, casePostale, localite, commune, pays, debutValidite, finValidite);
 			add(individu, adresse);

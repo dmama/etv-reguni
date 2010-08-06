@@ -11,6 +11,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.civil.model.EnumAttributeIndividu;
 import ch.vd.uniregctb.evenement.AbstractEvenementHandlerTest;
 import ch.vd.uniregctb.evenement.EvenementCivilErreur;
 import ch.vd.uniregctb.interfaces.model.Individu;
@@ -86,7 +87,7 @@ public class DecesHandlerTest extends AbstractEvenementHandlerTest {
 	public void onSetUp() throws Exception {
 		super.onSetUp();
 
-		serviceCivil.setUp(new DefaultMockServiceCivil());
+		serviceCivil.setUp(new DefaultMockServiceCivil(false));
 		loadDatabase(DB_UNIT_DATA_FILE);
 	}
 
@@ -243,7 +244,7 @@ public class DecesHandlerTest extends AbstractEvenementHandlerTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final Individu marie = serviceCivil.getIndividu(NO_INDIVIDU_DEFUNT_MARIE_AVEC_ETRANGER, 2008);
-				final Individu conjoint = serviceCivil.getIndividu(NO_INDIVIDU_VEUF_ETRANGER, 2008);
+				final Individu conjoint = serviceCivil.getIndividu(NO_INDIVIDU_VEUF_ETRANGER, 2008, EnumAttributeIndividu.ADRESSES);
 				final Deces deces = createValidDeces(marie, conjoint);
 
 				final List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();

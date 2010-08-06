@@ -227,20 +227,6 @@ public class ServiceCivilCache extends ServiceCivilServiceBase implements Unireg
 	/**
 	 * {@inheritDoc}
 	 */
-	public void setUp(ServiceCivilService target) {
-		throw new NotImplementedException();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public void tearDown() {
-		throw new NotImplementedException();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
 	public boolean isWarmable() {
 		return true;
 	}

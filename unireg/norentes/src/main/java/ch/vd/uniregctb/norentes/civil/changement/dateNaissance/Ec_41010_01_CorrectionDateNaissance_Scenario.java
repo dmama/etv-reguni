@@ -2,14 +2,13 @@ package ch.vd.uniregctb.norentes.civil.changement.dateNaissance;
 
 import java.util.List;
 
-import org.springframework.util.Assert;
-
 import annotation.Check;
 import annotation.Etape;
+import org.springframework.util.Assert;
+
 import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
-import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
@@ -63,7 +62,7 @@ public class Ec_41010_01_CorrectionDateNaissance_Scenario extends EvenementCivil
 			}
 
 			@SuppressWarnings("deprecation")
-			protected void addDefaultAdressesTo(Individu individu) {
+			protected void addDefaultAdressesTo(MockIndividu individu) {
 				addAdresse(individu, EnumTypeAdresse.PRINCIPALE, null, null, MockLocalite.Bex.getNPA(), MockLocalite.Bex, "4848", RegDate.get(1980, 11, 2), null);
 				addAdresse(individu, EnumTypeAdresse.COURRIER, null, null, MockLocalite.Renens.getNPA(), MockLocalite.Renens, "5252", RegDate.get(1980, 11, 2), null);
 			}
@@ -100,10 +99,14 @@ public class Ec_41010_01_CorrectionDateNaissance_Scenario extends EvenementCivil
 
 	@Etape(id=2, descr="Envoi de l'événement de correction de date de naissance")
 	public void step2() throws Exception {
-		final MockIndividu individu = (MockIndividu) serviceCivilService.getIndividu(noIndMomo, 2008);
-		individu.setDateNaissance(dateNaissanceCorrigee);
 
-		long id = addEvenementCivil(TypeEvenementCivil.CORREC_DATE_NAISSANCE, noIndMomo, dateNaissanceCorrigee, commune.getNoOFS());
+		doModificationIndividu(noIndMomo, new IndividuModification() {
+			public void modifyIndividu(MockIndividu individu) {
+				individu.setDateNaissance(dateNaissanceCorrigee);
+			}
+		});
+
+		final long id = addEvenementCivil(TypeEvenementCivil.CORREC_DATE_NAISSANCE, noIndMomo, dateNaissanceCorrigee, commune.getNoOFS());
 		commitAndStartTransaction();
 		traiteEvenements(id);
 	}

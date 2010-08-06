@@ -17,6 +17,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.BusinessTestingConstants;
 import ch.vd.uniregctb.evenement.AbstractEvenementHandlerTest;
 import ch.vd.uniregctb.evenement.EvenementCivilErreur;
+import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.mock.MockAdresse;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
@@ -115,7 +116,7 @@ public class DemenagementHandlerTest extends AbstractEvenementHandlerTest {
 	public void testIndividuSeulHandle() throws Exception {
 
 		LOGGER.debug("Test de traitement d'un événement de déménagement individu seul.");
-		final MockIndividu individu = (MockIndividu) serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, 2000);
+		final Individu individu = serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, 2000);
 		MockDemenagement demenagement = createValidDemenagement(individu, DATE_VALIDE);
 		List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 		List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
@@ -139,7 +140,7 @@ public class DemenagementHandlerTest extends AbstractEvenementHandlerTest {
 	public void testIndividuSeulFinDecembreHandle() throws Exception {
 
 		LOGGER.debug("Test de traitement d'un événement de déménagement fin décembre individu seul.");
-		final MockIndividu individu = (MockIndividu) serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, 2000);
+		final Individu individu = serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, 2000);
 		MockDemenagement demenagement = createValidDemenagement(individu, DATE_LIMITE);
 		List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 		List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
@@ -162,7 +163,7 @@ public class DemenagementHandlerTest extends AbstractEvenementHandlerTest {
 	@Test
 	public void testIndividuMarieSeulHandle() throws Exception {
 		LOGGER.debug("Test de traitement d'un événement de déménagement individu marié seul.");
-		final MockIndividu individu = (MockIndividu) serviceCivil.getIndividu(NUMERO_INDIVIDU_MARIE_SEUL, 2000);
+		final Individu individu = serviceCivil.getIndividu(NUMERO_INDIVIDU_MARIE_SEUL, 2000);
 		MockDemenagement demenagement = createValidDemenagement(individu, DATE_VALIDE);
 		List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 		List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
@@ -198,8 +199,8 @@ public class DemenagementHandlerTest extends AbstractEvenementHandlerTest {
 	@Test
 	public void testIndividuMarieHandle() throws Exception {
 		LOGGER.debug("Test de traitement d'un événement de déménagement individu marié .");
-		final MockIndividu individu = (MockIndividu) serviceCivil.getIndividu(NUMERO_INDIVIDU_MARIE1, 2000);
-		final MockIndividu individu2 = (MockIndividu) serviceCivil.getIndividu(NUMERO_INDIVIDU_MARIE2, 2000);
+		final Individu individu = serviceCivil.getIndividu(NUMERO_INDIVIDU_MARIE1, 2000);
+		final Individu individu2 = serviceCivil.getIndividu(NUMERO_INDIVIDU_MARIE2, 2000);
 		MockDemenagement demenagement = createValidDemenagement(individu, DATE_VALIDE);
 		//conjoint
 		demenagement.setConjoint(individu2);
@@ -239,7 +240,7 @@ public class DemenagementHandlerTest extends AbstractEvenementHandlerTest {
 	@Test
 	public void testDemenagementVaudoisSansChangementOfficeImpot() {
 		LOGGER.debug("Test de traitement d'un événement de déménagement vaudois sans changement d'office d'impot.");
-		final MockIndividu individu = (MockIndividu) serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, 2000);
+		final Individu individu = serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, 2000);
 		MockDemenagement demenagement = createValidDemenagement(individu, DATE_VALIDE);
 		List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 		List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
@@ -271,7 +272,7 @@ public class DemenagementHandlerTest extends AbstractEvenementHandlerTest {
 @Test
 	public void testDemenagementVaudoisAvecChangementOfficeImpot() {
 		LOGGER.debug("Test de traitement d'un événement de déménagement vaudois sans changement d'office d'impot.");
-		final MockIndividu individu = (MockIndividu) serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, 2000);
+		final Individu individu = serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, 2000);
 		MockDemenagement demenagement = createValidDemenagement(individu, DATE_VALIDE);
 		List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 		List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
@@ -306,13 +307,10 @@ public class DemenagementHandlerTest extends AbstractEvenementHandlerTest {
 	}
 
 
-	private MockDemenagement createValidDemenagement(MockIndividu individu, RegDate dateEvenement) {
+	private MockDemenagement createValidDemenagement(Individu individu, RegDate dateEvenement) {
 
 		MockDemenagement demenagement = new MockDemenagement();
 		demenagement.setType(TypeEvenementCivil.DEMENAGEMENT_DANS_COMMUNE);
-		if (individu.getNoTechnique() == 0) {
-			individu.setNoTechnique(NUMERO_INDIVIDU_SEUL);
-		}
 		demenagement.setIndividu(individu);
 
 		// Anciennes adresses

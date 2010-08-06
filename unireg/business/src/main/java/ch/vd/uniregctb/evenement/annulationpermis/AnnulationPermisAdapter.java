@@ -1,10 +1,12 @@
 package ch.vd.uniregctb.evenement.annulationpermis;
 
 import java.util.Collection;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import ch.vd.registre.civil.model.EnumAttributeIndividu;
 import ch.vd.registre.civil.model.EnumTypePermis;
 import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.evenement.EvenementAdapterException;
@@ -58,5 +60,9 @@ public class AnnulationPermisAdapter extends GenericEvenementAdapter implements 
 		return permis.getTypePermis();
 	}
 
-	
+	@Override
+	protected void fillRequiredParts(Set<EnumAttributeIndividu> parts) {
+		super.fillRequiredParts(parts);
+		parts.add(EnumAttributeIndividu.PERMIS);
+	}
 }

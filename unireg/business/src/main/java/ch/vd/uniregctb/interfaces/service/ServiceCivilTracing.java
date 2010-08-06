@@ -289,14 +289,6 @@ public class ServiceCivilTracing implements ServiceCivilService, InitializingBea
 		return result;
 	}
 
-	public void setUp(ServiceCivilService target) {
-		throw new ProgrammingException();
-	}
-
-	public void tearDown() {
-		throw new ProgrammingException();
-	}
-
 	public boolean isWarmable() {
 		long time = tracing.start();
 		try {

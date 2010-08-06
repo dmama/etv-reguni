@@ -48,8 +48,8 @@ public class Ec_4001_03_AnnulationMariage_Marie_Scenario extends EvenementCivilS
 			protected void init() {
 				super.init();
 
-				MockIndividu momo = (MockIndividu) getIndividu(noIndMomo);
-				MockIndividu bea = (MockIndividu) getIndividu(noIndBea);
+				MockIndividu momo = getIndividu(noIndMomo);
+				MockIndividu bea = getIndividu(noIndBea);
 				separeIndividus(momo, bea, dateMariage);
 			}
 		});

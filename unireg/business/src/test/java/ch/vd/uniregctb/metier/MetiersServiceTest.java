@@ -15,6 +15,7 @@ import ch.vd.registre.civil.model.EnumAttributeIndividu;
 import ch.vd.registre.civil.model.EnumTypeEtatCivil;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.evenement.common.EvenementCivilHandlerException;
+import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.Nationalite;
 import ch.vd.uniregctb.interfaces.model.mock.MockAdresse;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
@@ -493,37 +494,39 @@ public class MetiersServiceTest extends BusinessTest {
 			public Object execute(TransactionStatus status) throws Exception {
 
 				// changement d'adresse de Fabrice
-				{
-					final MockIndividu individu = (MockIndividu) serviceCivil.getIndividu(noIndFabrice, null, EnumAttributeIndividu.ADRESSES);
-					assertNotNull(individu);
-					assertNotNull(individu.getAdresses());
-					assertEquals(1, individu.getAdresses().size());
+				doModificationIndividu(noIndFabrice, new IndividuModification() {
+					public void modifyIndividu(MockIndividu individu) {
+						assertNotNull(individu);
+						assertNotNull(individu.getAdresses());
+						assertEquals(1, individu.getAdresses().size());
 
-					final MockAdresse adresse = (MockAdresse) individu.getAdresses().iterator().next();
-					assertNull(adresse.getDateFin());
-					assertEquals(dateMariage, adresse.getDateDebut());
-					adresse.setDateFinValidite(dateSeparation.getOneDayBefore());
+						final MockAdresse adresse = (MockAdresse) individu.getAdresses().iterator().next();
+						assertNull(adresse.getDateFin());
+						assertEquals(dateMariage, adresse.getDateDebut());
+						adresse.setDateFinValidite(dateSeparation.getOneDayBefore());
 
-					// domicile passe à Bex -> le for devra s'ouvrir là
-					individu.getAdresses().add(MockServiceCivil.newAdresse(EnumTypeAdresse.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, dateSeparation, null));
-					individu.getAdresses().add(MockServiceCivil.newAdresse(EnumTypeAdresse.COURRIER, MockRue.Bussigny.RueDeLIndustrie, null, dateSeparation, null));
-				}
+						// domicile passe à Bex -> le for devra s'ouvrir là
+						individu.getAdresses().add(MockServiceCivil.newAdresse(EnumTypeAdresse.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, dateSeparation, null));
+						individu.getAdresses().add(MockServiceCivil.newAdresse(EnumTypeAdresse.COURRIER, MockRue.Bussigny.RueDeLIndustrie, null, dateSeparation, null));
+					}
+				});
 
 				 // changement d'adresse de Georgette, mais seulement sur l'adresse COURRIER
-				{
-					final MockIndividu individu = (MockIndividu) serviceCivil.getIndividu(noIndGeorgette, null, EnumAttributeIndividu.ADRESSES);
-					assertNotNull(individu);
-					assertNotNull(individu.getAdresses());
-					assertEquals(1, individu.getAdresses().size());
+				doModificationIndividu(noIndGeorgette, new IndividuModification() {
+					public void modifyIndividu(MockIndividu individu) {
+						assertNotNull(individu);
+						assertNotNull(individu.getAdresses());
+						assertEquals(1, individu.getAdresses().size());
 
-					final MockAdresse adresse = (MockAdresse) individu.getAdresses().iterator().next();
-					assertNull(adresse.getDateFin());
-					assertEquals(dateMariage, adresse.getDateDebut());
-					adresse.setDateFinValidite(dateSeparation.getOneDayBefore());
+						final MockAdresse adresse = (MockAdresse) individu.getAdresses().iterator().next();
+						assertNull(adresse.getDateFin());
+						assertEquals(dateMariage, adresse.getDateDebut());
+						adresse.setDateFinValidite(dateSeparation.getOneDayBefore());
 
-					// on ne connait que l'adresse courrier sur Genève (= prise par défaut pour l'adresse de domicile)
-					individu.getAdresses().add(MockServiceCivil.newAdresse(EnumTypeAdresse.COURRIER, MockRue.Geneve.AvenueGuiseppeMotta, null, dateSeparation, null));
-				}
+						// on ne connait que l'adresse courrier sur Genève (= prise par défaut pour l'adresse de domicile)
+						individu.getAdresses().add(MockServiceCivil.newAdresse(EnumTypeAdresse.COURRIER, MockRue.Geneve.AvenueGuiseppeMotta, null, dateSeparation, null));
+					}
+				});
 
 				final MenageCommun mc = (MenageCommun) tiersDAO.get(ids.menage);
 				assertNotNull(mc);
@@ -639,38 +642,40 @@ public class MetiersServiceTest extends BusinessTest {
 			public Object execute(TransactionStatus status) throws Exception {
 
 				// changement d'adresse de Fabrice
-				{
-					final MockIndividu individu = (MockIndividu) serviceCivil.getIndividu(noIndFabrice, null, EnumAttributeIndividu.ADRESSES);
-					assertNotNull(individu);
-					assertNotNull(individu.getAdresses());
-					assertEquals(1, individu.getAdresses().size());
+				doModificationIndividu(noIndFabrice, new IndividuModification() {
+					public void modifyIndividu(MockIndividu individu) {
+						assertNotNull(individu);
+						assertNotNull(individu.getAdresses());
+						assertEquals(1, individu.getAdresses().size());
 
-					final MockAdresse adresse = (MockAdresse) individu.getAdresses().iterator().next();
-					assertNull(adresse.getDateFin());
-					assertEquals(dateMariage, adresse.getDateDebut());
-					adresse.setDateFinValidite(dateSeparation.getOneDayBefore());
+						final MockAdresse adresse = (MockAdresse) individu.getAdresses().iterator().next();
+						assertNull(adresse.getDateFin());
+						assertEquals(dateMariage, adresse.getDateDebut());
+						adresse.setDateFinValidite(dateSeparation.getOneDayBefore());
 
-					// domicile passe à Bex -> le for devra s'ouvrir là
-					individu.getAdresses().add(MockServiceCivil.newAdresse(EnumTypeAdresse.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, dateSeparation, null));
-					individu.getAdresses().add(MockServiceCivil.newAdresse(EnumTypeAdresse.COURRIER, MockRue.Bussigny.RueDeLIndustrie, null, dateSeparation, null));
-				}
+						// domicile passe à Bex -> le for devra s'ouvrir là
+						individu.getAdresses().add(MockServiceCivil.newAdresse(EnumTypeAdresse.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, dateSeparation, null));
+						individu.getAdresses().add(MockServiceCivil.newAdresse(EnumTypeAdresse.COURRIER, MockRue.Bussigny.RueDeLIndustrie, null, dateSeparation, null));
+					}
+				});
 
 				 // changement d'adresse de Georgette, mais seulement sur l'adresse COURRIER
-				{
-					final MockIndividu individu = (MockIndividu) serviceCivil.getIndividu(noIndGeorgette, null, EnumAttributeIndividu.ADRESSES);
-					assertNotNull(individu);
-					assertNotNull(individu.getAdresses());
-					assertEquals(1, individu.getAdresses().size());
+				doModificationIndividu(noIndGeorgette, new IndividuModification() {
+					public void modifyIndividu(MockIndividu individu) {
+						assertNotNull(individu);
+						assertNotNull(individu.getAdresses());
+						assertEquals(1, individu.getAdresses().size());
 
-					final RegDate dateDepart = dateSeparation.addDays(-20);
-					final MockAdresse adresse = (MockAdresse) individu.getAdresses().iterator().next();
-					assertNull(adresse.getDateFin());
-					assertEquals(dateMariage, adresse.getDateDebut());
-					adresse.setDateFinValidite(dateDepart);
+						final RegDate dateDepart = dateSeparation.addDays(-20);
+						final MockAdresse adresse = (MockAdresse) individu.getAdresses().iterator().next();
+						assertNull(adresse.getDateFin());
+						assertEquals(dateMariage, adresse.getDateDebut());
+						adresse.setDateFinValidite(dateDepart);
 
-					// on ne connait que l'adresse courrier à Paris (= prise par défaut pour l'adresse de domicile)
-					individu.getAdresses().add(MockServiceCivil.newAdresse(EnumTypeAdresse.COURRIER, "5 Avenue des Champs-Elysées", null, "75017 Paris", MockPays.France, dateDepart.addDays(1), null));
-				}
+						// on ne connait que l'adresse courrier à Paris (= prise par défaut pour l'adresse de domicile)
+						individu.getAdresses().add(MockServiceCivil.newAdresse(EnumTypeAdresse.COURRIER, "5 Avenue des Champs-Elysées", null, "75017 Paris", MockPays.France, dateDepart.addDays(1), null));
+					}
+				});
 
 				final MenageCommun mc = (MenageCommun) tiersDAO.get(ids.menage);
 				assertNotNull(mc);
@@ -752,37 +757,39 @@ public class MetiersServiceTest extends BusinessTest {
 			public Object execute(TransactionStatus status) throws Exception {
 
 				// changement d'adresse de Fabrice
-				{
-					final MockIndividu individu = (MockIndividu) serviceCivil.getIndividu(noIndFabrice, null, EnumAttributeIndividu.ADRESSES);
-					assertNotNull(individu);
-					assertNotNull(individu.getAdresses());
-					assertEquals(1, individu.getAdresses().size());
+				doModificationIndividu(noIndFabrice, new IndividuModification() {
+					public void modifyIndividu(MockIndividu individu) {
+						assertNotNull(individu);
+						assertNotNull(individu.getAdresses());
+						assertEquals(1, individu.getAdresses().size());
 
-					final MockAdresse adresse = (MockAdresse) individu.getAdresses().iterator().next();
-					assertNull(adresse.getDateFin());
-					assertEquals(dateMariage, adresse.getDateDebut());
-					adresse.setDateFinValidite(dateSeparation.getOneDayBefore());
+						final MockAdresse adresse = (MockAdresse) individu.getAdresses().iterator().next();
+						assertNull(adresse.getDateFin());
+						assertEquals(dateMariage, adresse.getDateDebut());
+						adresse.setDateFinValidite(dateSeparation.getOneDayBefore());
 
-					// domicile passe à Bex -> le for devra s'ouvrir là
-					individu.getAdresses().add(MockServiceCivil.newAdresse(EnumTypeAdresse.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, dateSeparation, null));
-					individu.getAdresses().add(MockServiceCivil.newAdresse(EnumTypeAdresse.COURRIER, MockRue.Bussigny.RueDeLIndustrie, null, dateSeparation, null));
-				}
+						// domicile passe à Bex -> le for devra s'ouvrir là
+						individu.getAdresses().add(MockServiceCivil.newAdresse(EnumTypeAdresse.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, dateSeparation, null));
+						individu.getAdresses().add(MockServiceCivil.newAdresse(EnumTypeAdresse.COURRIER, MockRue.Bussigny.RueDeLIndustrie, null, dateSeparation, null));
+					}
+				});
 
 				 // changement d'adresse de Georgette, mais seulement sur l'adresse COURRIER (et ce depuis un an déjà au moment de la séparation -> période fiscale différente)
-				{
-					final MockIndividu individu = (MockIndividu) serviceCivil.getIndividu(noIndGeorgette, null, EnumAttributeIndividu.ADRESSES);
-					assertNotNull(individu);
-					assertNotNull(individu.getAdresses());
-					assertEquals(1, individu.getAdresses().size());
+				doModificationIndividu(noIndGeorgette, new IndividuModification() {
+					public void modifyIndividu(MockIndividu individu) {
+						assertNotNull(individu);
+						assertNotNull(individu.getAdresses());
+						assertEquals(1, individu.getAdresses().size());
 
-					final MockAdresse adresse = (MockAdresse) individu.getAdresses().iterator().next();
-					assertNull(adresse.getDateFin());
-					assertEquals(dateMariage, adresse.getDateDebut());
-					adresse.setDateFinValidite(dateSeparation.addYears(-1).getOneDayBefore());
+						final MockAdresse adresse = (MockAdresse) individu.getAdresses().iterator().next();
+						assertNull(adresse.getDateFin());
+						assertEquals(dateMariage, adresse.getDateDebut());
+						adresse.setDateFinValidite(dateSeparation.addYears(-1).getOneDayBefore());
 
-					// on ne connait que l'adresse courrier à Paris (= prise par défaut pour l'adresse de domicile)
-					individu.getAdresses().add(MockServiceCivil.newAdresse(EnumTypeAdresse.COURRIER, "5 Avenue des Champs-Elysées", null, "75017 Paris", MockPays.France, dateSeparation.addYears(-1), null));
-				}
+						// on ne connait que l'adresse courrier à Paris (= prise par défaut pour l'adresse de domicile)
+						individu.getAdresses().add(MockServiceCivil.newAdresse(EnumTypeAdresse.COURRIER, "5 Avenue des Champs-Elysées", null, "75017 Paris", MockPays.France, dateSeparation.addYears(-1), null));
+					}
+				});
 
 				final MenageCommun mc = (MenageCommun) tiersDAO.get(ids.menage);
 				assertNotNull(mc);
@@ -899,25 +906,26 @@ public class MetiersServiceTest extends BusinessTest {
 			public Object execute(TransactionStatus status) throws Exception {
 
 				// changement d'adresse de Fabrice
-				{
-					final MockIndividu individu = (MockIndividu) serviceCivil.getIndividu(noIndFabrice, null, EnumAttributeIndividu.ADRESSES);
-					assertNotNull(individu);
-					assertNotNull(individu.getAdresses());
-					assertEquals(1, individu.getAdresses().size());
+				doModificationIndividu(noIndFabrice, new IndividuModification() {
+					public void modifyIndividu(MockIndividu individu) {
+						assertNotNull(individu);
+						assertNotNull(individu.getAdresses());
+						assertEquals(1, individu.getAdresses().size());
 
-					final MockAdresse adresse = (MockAdresse) individu.getAdresses().iterator().next();
-					assertNull(adresse.getDateFin());
-					assertEquals(dateMariage, adresse.getDateDebut());
-					adresse.setDateFinValidite(dateSeparation.getOneDayBefore());
+						final MockAdresse adresse = (MockAdresse) individu.getAdresses().iterator().next();
+						assertNull(adresse.getDateFin());
+						assertEquals(dateMariage, adresse.getDateDebut());
+						adresse.setDateFinValidite(dateSeparation.getOneDayBefore());
 
-					// domicile passe à Bex -> le for devra s'ouvrir là
-					individu.getAdresses().add(MockServiceCivil.newAdresse(EnumTypeAdresse.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, dateSeparation, null));
-					individu.getAdresses().add(MockServiceCivil.newAdresse(EnumTypeAdresse.COURRIER, MockRue.Bussigny.RueDeLIndustrie, null, dateSeparation, null));
-				}
+						// domicile passe à Bex -> le for devra s'ouvrir là
+						individu.getAdresses().add(MockServiceCivil.newAdresse(EnumTypeAdresse.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, dateSeparation, null));
+						individu.getAdresses().add(MockServiceCivil.newAdresse(EnumTypeAdresse.COURRIER, MockRue.Bussigny.RueDeLIndustrie, null, dateSeparation, null));
+					}
+				});
 
 				 // vérification de l'absence d'adresse sur Georgette
 				{
-					final MockIndividu individu = (MockIndividu) serviceCivil.getIndividu(noIndGeorgette, null, EnumAttributeIndividu.ADRESSES);
+					final Individu individu = serviceCivil.getIndividu(noIndGeorgette, null, EnumAttributeIndividu.ADRESSES);
 					assertNotNull(individu);
 					assertNotNull(individu.getAdresses());
 					assertEquals(0, individu.getAdresses().size());
@@ -1037,19 +1045,20 @@ public class MetiersServiceTest extends BusinessTest {
 			public Object execute(TransactionStatus status) throws Exception {
 
 				// changement d'adresse de Fabrice
-				{
-					final MockIndividu individu = (MockIndividu) serviceCivil.getIndividu(noIndFabrice, null, EnumAttributeIndividu.ADRESSES);
-					assertNotNull(individu);
-					assertNotNull(individu.getAdresses());
-					assertEquals(1, individu.getAdresses().size());
+				doModificationIndividu(noIndFabrice, new IndividuModification() {
+					public void modifyIndividu(MockIndividu individu) {
+						assertNotNull(individu);
+						assertNotNull(individu.getAdresses());
+						assertEquals(1, individu.getAdresses().size());
 
-					final MockAdresse adresse = (MockAdresse) individu.getAdresses().iterator().next();
-					assertNull(adresse.getDateFin());
-					assertEquals(dateMariage, adresse.getDateDebut());
-					adresse.setDateFinValidite(dateDeces);
+						final MockAdresse adresse = (MockAdresse) individu.getAdresses().iterator().next();
+						assertNull(adresse.getDateFin());
+						assertEquals(dateMariage, adresse.getDateDebut());
+						adresse.setDateFinValidite(dateDeces);
 
-					individu.setDateDeces(dateDeces);
-				}
+						individu.setDateDeces(dateDeces);
+					}
+				});
 
 				final PersonnePhysique fabrice = (PersonnePhysique) tiersDAO.get(ids.fabrice);
 				assertNotNull(fabrice);
@@ -1165,19 +1174,20 @@ public class MetiersServiceTest extends BusinessTest {
 			public Object execute(TransactionStatus status) throws Exception {
 
 				// changement d'adresse de Fabrice
-				{
-					final MockIndividu individu = (MockIndividu) serviceCivil.getIndividu(noIndFabrice, null, EnumAttributeIndividu.ADRESSES);
-					assertNotNull(individu);
-					assertNotNull(individu.getAdresses());
-					assertEquals(1, individu.getAdresses().size());
+				doModificationIndividu(noIndFabrice, new IndividuModification() {
+					public void modifyIndividu(MockIndividu individu) {
+						assertNotNull(individu);
+						assertNotNull(individu.getAdresses());
+						assertEquals(1, individu.getAdresses().size());
 
-					final MockAdresse adresse = (MockAdresse) individu.getAdresses().iterator().next();
-					assertNull(adresse.getDateFin());
-					assertEquals(dateMariage, adresse.getDateDebut());
-					adresse.setDateFinValidite(dateDeces);
+						final MockAdresse adresse = (MockAdresse) individu.getAdresses().iterator().next();
+						assertNull(adresse.getDateFin());
+						assertEquals(dateMariage, adresse.getDateDebut());
+						adresse.setDateFinValidite(dateDeces);
 
-					individu.setDateDeces(dateDeces);
-				}
+						individu.setDateDeces(dateDeces);
+					}
+				});
 
 				final PersonnePhysique fabrice = (PersonnePhysique) tiersDAO.get(ids.fabrice);
 				assertNotNull(fabrice);

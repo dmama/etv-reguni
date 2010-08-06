@@ -232,15 +232,6 @@ public interface ServiceCivilService {
 	public NomPrenom getDecompositionNomPrenom(Individu individu);
 
 	/**
-	 * Utile pour la sous-classe Proxy
-	 *
-	 * @param target
-	 */
-	public void setUp(ServiceCivilService target);
-
-	public void tearDown();
-
-	/**
 	 * @return <b>vrai</b> si l'implémentation courante du service civil possède un cache et que ce cache est susceptible d'être chauffé avec un appel à getIndividus().
 	 */
 	boolean isWarmable();

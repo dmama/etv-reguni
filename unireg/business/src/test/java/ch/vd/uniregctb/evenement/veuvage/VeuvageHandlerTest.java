@@ -96,7 +96,7 @@ public class VeuvageHandlerTest extends AbstractEvenementHandlerTest {
 				addNationalite(ryan, MockPays.Suisse, dateNaissanceRyan, null, 0);
 				addEtatCivil(ryan, DATE_VEUVAGE, EnumTypeEtatCivil.VEUF);
 
-				final MockIndividu pierre = (MockIndividu) getIndividu(NO_INDIVIDU_VEUF);
+				final MockIndividu pierre = getIndividu(NO_INDIVIDU_VEUF);
 				addEtatCivil(pierre, DATE_VEUVAGE, EnumTypeEtatCivil.VEUF);
 			}
 		});
