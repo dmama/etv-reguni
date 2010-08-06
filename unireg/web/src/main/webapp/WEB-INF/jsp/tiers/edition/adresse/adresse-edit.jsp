@@ -20,10 +20,10 @@
 				<td width="75%">
 				<c:choose>
 						<c:when test="${command.id !=null}">
-						<form:select disabled="true" path="usage"  items="${typeAdresseTiers}"  />
+						<form:select disabled="true" path="usage"  items="${typeAdresseFiscaleTiers}"  />
 						</c:when>
 						<c:otherwise>
-						<form:select  path="usage"  items="${typeAdresseTiers}"  />
+						<form:select  path="usage"  items="${typeAdresseFiscaleTiers}"  />
 						<form:errors path="usage" cssClass="error"/>
 						</c:otherwise>
 				</c:choose>

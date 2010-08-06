@@ -41,6 +41,7 @@ public class TiersMapHelper extends CommonMapHelper {
 	private Map<TypeEtatDeclaration, String> mapTypeEtatDeclaration;
 	private Map<EtatCivil, String> mapEtatsCivil;
 	private Map<TypeAdresseTiers, String> mapTypeAdresse;
+	private Map<TypeAdresseTiers, String> mapTypeAdresseFiscale;
 	private Map<TypeActivite, String> mapTypeActivite;
 	private Map<TypeDocument, String> mapTypesDeclarationImpot;
 	private Map<TypeDocument, String> mapTypesDeclarationImpotPourParam;
@@ -328,6 +329,18 @@ public class TiersMapHelper extends CommonMapHelper {
 			mapTypeAdresse = initMapEnum(ApplicationConfig.masterKeyTypeAdresseTiers, TypeAdresseTiers.class);
 		}
 		return mapTypeAdresse;
+	}
+
+		/**
+	 * Initialise la map de etats des types autorisés pour une adresse fiscale
+	 *
+	 * @return une map
+	 */
+	public Map<TypeAdresseTiers, String> getMapTypeAdresseFiscale() {
+		if (mapTypeAdresseFiscale == null) {
+			mapTypeAdresseFiscale = initMapEnum(ApplicationConfig.masterKeyTypeAdresseTiers, TypeAdresseTiers.class, TypeAdresseTiers.DOMICILE);
+		}
+		return mapTypeAdresseFiscale;
 	}
 
 	/**

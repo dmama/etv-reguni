@@ -55,6 +55,7 @@ public abstract class AbstractTiersController extends AbstractSimpleFormControll
 		data.put(TYPE_RAPPORT_TIERS_MAP_NAME, tiersMapHelper.getMapTypeRapportEntreTiers());
 		data.put(ETAT_CIVIL, tiersMapHelper.getMapEtatsCivil());
 		data.put(TYPE_ADRESSE_TIERS, tiersMapHelper.getMapTypeAdresse());
+		data.put(TYPE_ADRESSE_FISCALE_TIERS,tiersMapHelper.getMapTypeAdresseFiscale());
 		data.put(TARIF_IMPOT_SOURCE_MAP_NAME, tiersMapHelper.getTarifsImpotSource());
 		data.put(PERIODE_DECOMPTE_MAP_NAME, tiersMapHelper.getPeriodeDecomptes());
 
@@ -251,6 +252,11 @@ public abstract class AbstractTiersController extends AbstractSimpleFormControll
 	 * Type Adresse Tiers
 	 */
 	public static final String TYPE_ADRESSE_TIERS = "typeAdresseTiers";
+
+		/**
+	 * Type Adresse Fiscale autorisé pour les Tiers
+	 */
+	public static final String TYPE_ADRESSE_FISCALE_TIERS = "typeAdresseFiscaleTiers";
 
 	public final static String BUTTON_BACK_TO_LIST = "retourList";
 
