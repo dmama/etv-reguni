@@ -126,7 +126,7 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 				setUpJira2161();
 			}
 
-			protected void setUpIndividuAdresseHC(Individu individu, RegDate dateDebut, RegDate dateEvenement) {
+			protected void setUpIndividuAdresseHC(MockIndividu individu, RegDate dateDebut, RegDate dateEvenement) {
 
 				MockAdresse adresse = new MockAdresse();
 				adresse.setTypeAdresse(EnumTypeAdresse.PRINCIPALE);
@@ -170,7 +170,7 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 				add(individu, adresse);
 			}
 
-			protected void setUpIndividuNouvelleAdresseInconnue(Individu individu, RegDate dateDebut, RegDate dateEvenement) {
+			protected void setUpIndividuNouvelleAdresseInconnue(MockIndividu individu, RegDate dateDebut, RegDate dateEvenement) {
 
 				MockAdresse adresse = new MockAdresse();
 				adresse.setTypeAdresse(EnumTypeAdresse.PRINCIPALE);
@@ -201,7 +201,7 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 				add(individu, adresse);
 			}
 
-			protected void setUpIndividuAdresseSecondaire(Individu individu, RegDate dateDebut, RegDate dateEvenement, boolean residencePrincipaleHorsCanton) {
+			protected void setUpIndividuAdresseSecondaire(MockIndividu individu, RegDate dateDebut, RegDate dateEvenement, boolean residencePrincipaleHorsCanton) {
 
 				final MockCommune cossonay = MockCommune.Cossonay;
 				MockAdresse adresse = new MockAdresse();
@@ -259,7 +259,7 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 				add(individu, adresse);
 			}
 
-			protected void setUpIndividuAdresseHS(Individu individu, RegDate dateDebut, RegDate dateEvenement) {
+			protected void setUpIndividuAdresseHS(MockIndividu individu, RegDate dateDebut, RegDate dateEvenement) {
 
 				MockAdresse adresse = new MockAdresse();
 				adresse.setTypeAdresse(EnumTypeAdresse.PRINCIPALE);
@@ -451,7 +451,7 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 	 */
 	private MockDepart createValidDepart(long noIndividu, RegDate dateEvenement, boolean principale) throws Exception {
 
-		final MockIndividu individu = (MockIndividu) serviceCivil.getIndividu(noIndividu, 0);
+		final Individu individu = serviceCivil.getIndividu(noIndividu, 0);
 
 		final MockDepart depart = new MockDepart();
 		if (principale) {

@@ -73,7 +73,7 @@ public class SuppressionNationaliteHandlerTest extends AbstractEvenementHandlerT
 			protected void init() {
 				super.init();
 
-				MockIndividu julie = (MockIndividu) getIndividu(NO_INDIVIDU_CELIBATAIRE);
+				MockIndividu julie = getIndividu(NO_INDIVIDU_CELIBATAIRE);
 				addOrigine(julie, MockPays.France, null, RegDate.get(1976, 4, 19));
 				addNationalite(julie, MockPays.France, RegDate.get(1976, 4, 19), null, 0);
 				addNationalite(julie, MockPays.Suisse, DATE_OBTENTION_NATIONALITE, null, 0);

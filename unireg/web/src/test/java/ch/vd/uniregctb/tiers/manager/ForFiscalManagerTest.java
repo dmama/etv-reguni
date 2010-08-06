@@ -1,9 +1,5 @@
 package ch.vd.uniregctb.tiers.manager;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-
 import java.util.List;
 
 import org.junit.Test;
@@ -16,15 +12,15 @@ import ch.vd.uniregctb.common.WebTest;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
-import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
-import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.mock.MockCollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
+import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockOfficeImpot;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
+import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.MenageCommun;
@@ -38,6 +34,10 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
 import ch.vd.uniregctb.type.TypeEtatTache;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 @SuppressWarnings({"JavaDoc"})
 public class ForFiscalManagerTest extends WebTest {
@@ -66,8 +66,8 @@ public class ForFiscalManagerTest extends WebTest {
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
-				Individu laurent = addIndividu(noIndLaurent, RegDate.get(1961, 2, 9), "Laurent", "Schmidt", true);
-				Individu christine = addIndividu(noIndChristine, RegDate.get(1960, 10, 20), "Christine", "Schmidt", false);
+				final MockIndividu laurent = addIndividu(noIndLaurent, RegDate.get(1961, 2, 9), "Laurent", "Schmidt", true);
+				final MockIndividu christine = addIndividu(noIndChristine, RegDate.get(1960, 10, 20), "Christine", "Schmidt", false);
 				addAdresse(laurent, EnumTypeAdresse.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, date(1978, 10, 20), date(
 						1985, 2, 14));
 				addAdresse(laurent, EnumTypeAdresse.PRINCIPALE, MockRue.VillarsSousYens.RouteDeStPrex, null,
@@ -188,8 +188,8 @@ public class ForFiscalManagerTest extends WebTest {
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
-				Individu laurent = addIndividu(noIndLaurent, RegDate.get(1961, 2, 9), "Laurent", "Schmidt", true);
-				Individu christine = addIndividu(noIndChristine, RegDate.get(1960, 10, 20), "Christine", "Schmidt", false);
+				final MockIndividu laurent = addIndividu(noIndLaurent, RegDate.get(1961, 2, 9), "Laurent", "Schmidt", true);
+				final MockIndividu christine = addIndividu(noIndChristine, RegDate.get(1960, 10, 20), "Christine", "Schmidt", false);
 				addAdresse(laurent, EnumTypeAdresse.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, date(1978, 10, 20), date(
 						1985, 2, 14));
 				addAdresse(laurent, EnumTypeAdresse.PRINCIPALE, MockRue.VillarsSousYens.RouteDeStPrex, null,

@@ -62,8 +62,7 @@ public class AnnulationMariageHandlerTest extends AbstractEvenementHandlerTest {
 		LOGGER.debug("Test de traitement d'un événement d'annulation de mariage d'une personne non mariée (cas d'erreur).");
 		
 		final RegDate dateFictive = RegDate.get(2008, 1, 1);
-		Individu individu = serviceCivil.getIndividu(NO_INDIVIDU_CELIBATAIRE, 2008);
-		AnnulationMariage annulation = createAnnulationMariage(individu, dateFictive);
+		AnnulationMariage annulation = createAnnulationMariage(NO_INDIVIDU_CELIBATAIRE, dateFictive);
 
 		List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 		List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
@@ -90,8 +89,7 @@ public class AnnulationMariageHandlerTest extends AbstractEvenementHandlerTest {
 		LOGGER.debug("Test de traitement d'un événement d'annulation de mariage d'un marié seul.");
 		
 		final RegDate dateMariage = RegDate.get(1986, 4, 8);
-		Individu individu = serviceCivil.getIndividu(NO_INDIVIDU_MARIE_SEUL, 2008);
-		AnnulationMariage annulation = createAnnulationMariage(individu, dateMariage);
+		AnnulationMariage annulation = createAnnulationMariage(NO_INDIVIDU_MARIE_SEUL, dateMariage);
 
 		List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 		List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
@@ -139,9 +137,7 @@ public class AnnulationMariageHandlerTest extends AbstractEvenementHandlerTest {
 		LOGGER.debug("Test de traitement d'un événement d'annulation de mariage d'une personne mariée.");
 		
 		final RegDate dateMariage = RegDate.get(1986, 4, 8);
-		Individu individu = serviceCivil.getIndividu(NO_INDIVIDU_MARIE, 2008); // momo
-		Individu conjoint = serviceCivil.getIndividu(23456, 2008); // béa
-		AnnulationMariage annulation = createAnnulationMariage(individu, conjoint, dateMariage);
+		final AnnulationMariage annulation = createAnnulationMariage(NO_INDIVIDU_MARIE, NO_INDIVIDU_MARIE_CONJOINT, dateMariage);
 
 		List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 		List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
@@ -195,29 +191,37 @@ public class AnnulationMariageHandlerTest extends AbstractEvenementHandlerTest {
 		assertEquals(1, getEvenementFiscalService().getEvenementFiscals(bea).size());
 	}
 
-	private MockAnnulationMariage createAnnulationMariage(Individu individu, RegDate date) {
-		MockAnnulationMariage annulation = new MockAnnulationMariage();
+	private MockAnnulationMariage createAnnulationMariage(long noIndividu, RegDate date) {
+
+		// il faut modifier l'individu directement dans le registre civil
+		final Individu individu = annuleMariage(noIndividu);
+
+		final MockAnnulationMariage annulation = new MockAnnulationMariage();
 		annulation.setIndividu(individu);
 		annulation.setNumeroOfsCommuneAnnonce(5652);
 		annulation.setDate(date);
-
-		annuleMariage(individu);
-		
 		return annulation;
 	}
 
-	private AnnulationMariage createAnnulationMariage(Individu individu, Individu conjoint, RegDate dateMariage) {
-		MockAnnulationMariage annulation = createAnnulationMariage(individu, dateMariage);
-
-		annuleMariage(conjoint);
-		
-		return annulation;
+	private AnnulationMariage createAnnulationMariage(long noIndividu, long noConjoint, RegDate dateMariage) {
+		annuleMariage(noConjoint);
+		return createAnnulationMariage(noIndividu, dateMariage);
 	}
-	
-	private void annuleMariage(Individu individu) {
-		ch.vd.uniregctb.interfaces.model.EtatCivil etatCivilAlexandre = individu.getEtatCivilCourant();
-		individu.getEtatsCivils().remove(etatCivilAlexandre);
-		((MockIndividu) individu).setConjoint(null);
+
+	/**
+	 * Annule le mariage sur l'individu donné par son numéro dans le registre civil (i.e. supprime l'état civil marié et le lien vers le conjoint)
+	 * @param noIndividu numéro d'individu de la personne dont le mariage doit être annulé
+	 * @return l'individu tel que retourné par le registre civil suite à cette annulation
+	 */
+	private Individu annuleMariage(long noIndividu) {
+		doModificationIndividu(noIndividu, new IndividuModification() {
+			public void modifyIndividu(MockIndividu individu) {
+				final ch.vd.uniregctb.interfaces.model.EtatCivil etatCivil = individu.getEtatCivilCourant();
+				individu.getEtatsCivils().remove(etatCivil);
+				individu.setConjoint(null);
+			}
+		});
+		return serviceCivil.getIndividu(noIndividu, 2008);
 	}
 
 }

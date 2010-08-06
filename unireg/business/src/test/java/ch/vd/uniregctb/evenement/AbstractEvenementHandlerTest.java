@@ -5,9 +5,6 @@ import ch.vd.uniregctb.evenement.common.EvenementCivilHandler;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.evenement.fiscal.MockEvenementFiscalSender;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
-import ch.vd.uniregctb.interfaces.service.mock.ProxyServiceCivil;
-import ch.vd.uniregctb.tiers.TiersDAO;
-import ch.vd.uniregctb.tiers.TiersService;
 
 public abstract class AbstractEvenementHandlerTest extends BusinessTest {
 
@@ -18,7 +15,6 @@ public abstract class AbstractEvenementHandlerTest extends BusinessTest {
 	 */
 	protected EvenementCivilHandler evenementCivilHandler;
 
-	protected ProxyServiceCivil serviceCivil;
 	protected GlobalTiersIndexer indexer;
 	protected MockEvenementFiscalSender eventSender;
 
@@ -27,7 +23,6 @@ public abstract class AbstractEvenementHandlerTest extends BusinessTest {
 		super.onSetUp();
 
 		evenementCivilHandler = getBean(EvenementCivilHandler.class, getHandlerBeanName());
-		serviceCivil = getBean(ProxyServiceCivil.class, "serviceCivilService");
 		indexer = getBean(GlobalTiersIndexer.class, "globalTiersIndexer");
 		eventSender = getBean(MockEvenementFiscalSender.class, "evenementFiscalSender");
 		eventSender.count = 0;

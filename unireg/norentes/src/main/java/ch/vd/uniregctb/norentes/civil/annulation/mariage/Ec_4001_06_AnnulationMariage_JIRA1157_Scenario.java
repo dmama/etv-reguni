@@ -67,19 +67,19 @@ public class Ec_4001_06_AnnulationMariage_JIRA1157_Scenario extends EvenementCiv
 		}
 
 		public void marionsLes() {
-			MockIndividu sylvie = (MockIndividu) getIndividu(noIndSylvie);
-			MockIndividu alexandre = (MockIndividu) getIndividu(noIndAlexandre);
+			MockIndividu sylvie = getIndividu(noIndSylvie);
+			MockIndividu alexandre = getIndividu(noIndAlexandre);
 			marieIndividus(alexandre, sylvie, dateMariage);
 		}
 
 		public void annuleMariage() {
 			// pour Alexandre
-			MockIndividu alexandre = (MockIndividu) getIndividu(noIndAlexandre);
+			MockIndividu alexandre = getIndividu(noIndAlexandre);
 			ch.vd.uniregctb.interfaces.model.EtatCivil etatCivilAlexandre = alexandre.getEtatCivilCourant();
 			alexandre.getEtatsCivils().remove(etatCivilAlexandre);
 			alexandre.setConjoint(null);
 			// pour Sylvie
-			MockIndividu sylvie = (MockIndividu) getIndividu(noIndSylvie);
+			MockIndividu sylvie = getIndividu(noIndSylvie);
 			ch.vd.uniregctb.interfaces.model.EtatCivil etatCivilSylvie = sylvie.getEtatCivilCourant();
 			sylvie.getEtatsCivils().remove(etatCivilSylvie);
 			sylvie.setConjoint(null);

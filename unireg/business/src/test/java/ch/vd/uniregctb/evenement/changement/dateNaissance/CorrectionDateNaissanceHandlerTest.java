@@ -95,14 +95,18 @@ public class CorrectionDateNaissanceHandlerTest extends AbstractEvenementHandler
 		Assert.isTrue(tiers.getNumero().equals(NUMERO_CONTRIBUABLE), "Le numéro du tiers est incorrect");
 
 		// changement de la date de naissance dans le registre civil
-		final MockIndividu individu = (MockIndividu) serviceCivil.getIndividu(NO_INDIVIDU, 2008);
-		individu.setDateNaissance(DATE_NAISSANCE_CORRIGEE);
+		doModificationIndividu(NO_INDIVIDU, new IndividuModification() {
+			public void modifyIndividu(MockIndividu individu) {
+				individu.setDateNaissance(DATE_NAISSANCE_CORRIGEE);
+			}
+		});
 
 		doInNewTransaction(new TxCallback() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				// déclenchement de l'événement
-				MockCorrectionDateNaissance correctionDateNaissane = createValidCorrectionDateNaissane(individu, DATE_NAISSANCE_CORRIGEE);
+				final Individu individu = serviceCivil.getIndividu(NO_INDIVIDU, 2008);
+				final MockCorrectionDateNaissance correctionDateNaissane = createValidCorrectionDateNaissane(individu, DATE_NAISSANCE_CORRIGEE);
 
 				final List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 				final List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
@@ -152,15 +156,19 @@ public class CorrectionDateNaissanceHandlerTest extends AbstractEvenementHandler
 		Assert.isTrue(tiers.getNumero().equals(NUMERO_CONTRIBUABLE_ERREUR), "Le numéro du tiers est incorrect");
 
 		// changement de la date de naissance dans le registre civil
-		final MockIndividu individu = (MockIndividu) serviceCivil.getIndividu(NO_INDIVIDU_ERREUR, 2008);
-		individu.setDateNaissance(DATE_NAISSANCE_CORRIGEE_ERREUR);
+		doModificationIndividu(NO_INDIVIDU_ERREUR, new IndividuModification() {
+			public void modifyIndividu(MockIndividu individu) {
+				individu.setDateNaissance(DATE_NAISSANCE_CORRIGEE_ERREUR);
+			}
+		});
+
 		try {
 			doInNewTransaction(new TxCallback() {
 				@Override
 				public Object execute(TransactionStatus status) throws Exception {
 					// déclenchement de l'événement
-					MockCorrectionDateNaissance correctionDateNaissane = createValidCorrectionDateNaissane(individu,
-							DATE_NAISSANCE_CORRIGEE_ERREUR);
+					final Individu individu = serviceCivil.getIndividu(NO_INDIVIDU_ERREUR, 2008);
+					MockCorrectionDateNaissance correctionDateNaissane = createValidCorrectionDateNaissane(individu, DATE_NAISSANCE_CORRIGEE_ERREUR);
 
 					final List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 					final List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
@@ -249,7 +257,7 @@ public class CorrectionDateNaissanceHandlerTest extends AbstractEvenementHandler
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
-				final MockIndividu individu = (MockIndividu) serviceCivil.getIndividu(noIndJean, 2008);
+				final Individu individu = serviceCivil.getIndividu(noIndJean, 2008);
 				MockCorrectionDateNaissance correctionDateNaissane = createValidCorrectionDateNaissane(individu, dateNaissance);
 
 				final List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
@@ -317,7 +325,7 @@ public class CorrectionDateNaissanceHandlerTest extends AbstractEvenementHandler
 				@Override
 				public Object execute(TransactionStatus status) throws Exception {
 
-					final MockIndividu individu = (MockIndividu) serviceCivil.getIndividu(noIndHuguette, 2008);
+					final Individu individu = serviceCivil.getIndividu(noIndHuguette, 2008);
 					MockCorrectionDateNaissance correctionDateNaissane = createValidCorrectionDateNaissane(individu, dateNaissance);
 
 					final List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();

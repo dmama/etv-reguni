@@ -73,12 +73,12 @@ public class Ec_4001_07_AnnulationMariage_JIRA1086_Scenario extends EvenementCiv
 
 		public void annuleMariage() {
 			// pour Jaime
-			MockIndividu jaime = (MockIndividu) getIndividu(noIndJaime);
+			MockIndividu jaime = getIndividu(noIndJaime);
 			ch.vd.uniregctb.interfaces.model.EtatCivil etatCivilAlexandre = jaime.getEtatCivilCourant();
 			jaime.getEtatsCivils().remove(etatCivilAlexandre);
 			jaime.setConjoint(null);
 			// pour Deborah
-			MockIndividu deborah = (MockIndividu) getIndividu(noIndDeborah);
+			MockIndividu deborah = getIndividu(noIndDeborah);
 			ch.vd.uniregctb.interfaces.model.EtatCivil etatCivilSylvie = deborah.getEtatCivilCourant();
 			deborah.getEtatsCivils().remove(etatCivilSylvie);
 			deborah.setConjoint(null);

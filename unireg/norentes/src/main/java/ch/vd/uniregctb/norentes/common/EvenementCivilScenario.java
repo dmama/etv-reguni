@@ -7,8 +7,10 @@ import ch.vd.uniregctb.evenement.EvenementCivilDAO;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.evenement.EvenementCriteria;
 import ch.vd.uniregctb.evenement.engine.EvenementCivilProcessor;
-import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
+import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
+import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
+import ch.vd.uniregctb.interfaces.service.mock.ProxyServiceCivil;
 import ch.vd.uniregctb.tiers.SituationFamille;
 import ch.vd.uniregctb.tiers.TacheDAO;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -18,7 +20,7 @@ import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 public abstract class EvenementCivilScenario extends EvenementScenario {
 
-	protected ServiceCivilService serviceCivilService;
+	protected ProxyServiceCivil serviceCivilService;
 
 	protected EvenementCivilProcessor evenementCivilProcessor;
 
@@ -128,7 +130,7 @@ public abstract class EvenementCivilScenario extends EvenementScenario {
 		this.tacheDAO = tacheDAO;
 	}
 
-	public void setServiceCivilService(ServiceCivilService serviceCivilService) {
+	public void setServiceCivilService(ProxyServiceCivil serviceCivilService) {
 		this.serviceCivilService = serviceCivilService;
 	}
 
@@ -173,4 +175,12 @@ public abstract class EvenementCivilScenario extends EvenementScenario {
 		evenementCivilProcessor.traiteEvenementCivil(id, true);
 	}
 
+	protected static interface IndividuModification {
+		void modifyIndividu(MockIndividu individu);
+	}
+
+	protected void doModificationIndividu(long noIndividu, IndividuModification modifier) {
+		final MockIndividu ind = ((MockServiceCivil) serviceCivilService.getTarget()).getIndividu(noIndividu);
+		modifier.modifyIndividu(ind);
+	}
 }

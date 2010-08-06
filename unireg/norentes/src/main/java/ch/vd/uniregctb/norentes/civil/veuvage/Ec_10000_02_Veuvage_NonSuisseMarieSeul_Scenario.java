@@ -6,6 +6,8 @@ import annotation.Etape;
 import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.civil.model.EnumTypeEtatCivil;
+import ch.vd.uniregctb.interfaces.model.EtatCivilList;
+import ch.vd.uniregctb.interfaces.model.mock.MockEtatCivil;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.interfaces.model.Commune;
@@ -125,7 +127,19 @@ public class Ec_10000_02_Veuvage_NonSuisseMarieSeul_Scenario extends EvenementCi
 
 	@Etape(id=2, descr="Envoi de l'événenent Veuvage")
 	public void step2() throws Exception {
-		long id = addEvenementCivil(TypeEvenementCivil.VEUVAGE, noIndMikkel, dateVeuvage, communeMariage.getNoOFS());
+
+		doModificationIndividu(noIndMikkel, new IndividuModification() {
+			public void modifyIndividu(MockIndividu individu) {
+				final EtatCivilList etatsCivils = individu.getEtatsCivils();
+				final MockEtatCivil etatCivil = new MockEtatCivil();
+				etatCivil.setDateDebutValidite(dateVeuvage);
+				etatCivil.setNoSequence(etatsCivils.size());
+				etatCivil.setTypeEtatCivil(EnumTypeEtatCivil.VEUF);
+				etatsCivils.add(etatCivil);
+			}
+		});
+
+		final long id = addEvenementCivil(TypeEvenementCivil.VEUVAGE, noIndMikkel, dateVeuvage, communeMariage.getNoOFS());
 		commitAndStartTransaction();
 		traiteEvenements(id);
 	}

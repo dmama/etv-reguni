@@ -68,15 +68,15 @@ public class SeparationHandlerTest extends AbstractEvenementHandlerTest {
 			protected void init() {
 				super.init();
 				
-				MockIndividu pierre = (MockIndividu) getIndividu(INDIVIDU_MARIE_SEUL);
+				MockIndividu pierre = getIndividu(INDIVIDU_MARIE_SEUL);
 				separeIndividu(pierre, null, DATE_SEPARATION);
 				
-				MockIndividu momo = (MockIndividu) getIndividu(INDIVIDU_MARIE);
-				MockIndividu bea = (MockIndividu) getIndividu(INDIVIDU_MARIE_CONJOINT);
+				MockIndividu momo = getIndividu(INDIVIDU_MARIE);
+				MockIndividu bea = getIndividu(INDIVIDU_MARIE_CONJOINT);
 				separeIndividus(momo, bea, DATE_SEPARATION);
 				
-				MockIndividu leon = (MockIndividu) getIndividu(INDIVIDU_MARIE2);
-				MockIndividu helene = (MockIndividu) getIndividu(INDIVIDU_MARIE2_CONJOINT);
+				MockIndividu leon = getIndividu(INDIVIDU_MARIE2);
+				MockIndividu helene = getIndividu(INDIVIDU_MARIE2_CONJOINT);
 				separeIndividus(leon, helene, DATE_SEPARATION);
 			}
 		});
@@ -233,8 +233,8 @@ public class SeparationHandlerTest extends AbstractEvenementHandlerTest {
 			protected void init() {
 				super.init();
 
-				final MockIndividu leon = (MockIndividu) getIndividu(INDIVIDU_MARIE2);
-				final MockIndividu helene = (MockIndividu) getIndividu(INDIVIDU_MARIE2_CONJOINT);
+				final MockIndividu leon = getIndividu(INDIVIDU_MARIE2);
+				final MockIndividu helene = getIndividu(INDIVIDU_MARIE2_CONJOINT);
 				separeIndividus(leon, helene, DATE_SEPARATION);
 			}
 		});

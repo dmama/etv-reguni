@@ -71,17 +71,17 @@ public class DivorceHandlerTest extends AbstractEvenementHandlerTest {
 			protected void init() {
 				super.init();
 				
-				MockIndividu pierre = (MockIndividu) getIndividu(INDIVIDU_MARIE_SEUL);
+				MockIndividu pierre = getIndividu(INDIVIDU_MARIE_SEUL);
 				separeIndividu(pierre, null, DATE_SEPARATION);
 				separeIndividu(pierre, null, DATE_DIVORCE);
 				
-				MockIndividu momo = (MockIndividu) getIndividu(INDIVIDU_MARIE);
-				MockIndividu bea = (MockIndividu) getIndividu(INDIVIDU_MARIE_CONJOINT);
+				MockIndividu momo = getIndividu(INDIVIDU_MARIE);
+				MockIndividu bea = getIndividu(INDIVIDU_MARIE_CONJOINT);
 				separeIndividus(momo, bea, DATE_SEPARATION);
 				divorceIndividus(momo, bea, DATE_DIVORCE);
 				
 				MockIndividu patrice = addIndividu(INDIVIDU_SEPARE_CONJOINT, RegDate.get(1961, 3, 12), "Hubert", "Patrice", true);
-				MockIndividu julie = (MockIndividu) getIndividu(INDIVIDU_SEPARE);
+				MockIndividu julie = getIndividu(INDIVIDU_SEPARE);
 				
 				marieIndividus(patrice, julie, RegDate.get(2001, 3, 22));
 				separeIndividus(patrice, julie, DATE_SEPARATION);

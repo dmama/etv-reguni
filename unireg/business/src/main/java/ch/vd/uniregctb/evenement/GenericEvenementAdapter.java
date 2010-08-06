@@ -79,6 +79,8 @@ public abstract class GenericEvenementAdapter implements EvenementCivil {
 		switch (this.type) {
 		case NAISSANCE:
 		case CORREC_FILIATION:
+		case VEUVAGE:
+		case DECES:
 			anneeReference = anneeEvenement;
 			break;
 		}

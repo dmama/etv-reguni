@@ -69,7 +69,7 @@ public class ReconciliationHandlerTest extends AbstractEvenementHandlerTest {
 	public void testReconciliationMarieSeul() throws Exception {
 
 		LOGGER.debug("Test de traitement d'un événement de réconciliation d'un individu marié seul.");
-		MockIndividu individu = (MockIndividu) serviceCivil.getIndividu(NO_INDIVIDU_SEPARE_SEUL, 2008);
+		Individu individu = serviceCivil.getIndividu(NO_INDIVIDU_SEPARE_SEUL, 2008);
 		final Reconciliation reconciliation = createReconciliation(individu, null, DATE_RECONCILIATION);
 
 		final List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
@@ -126,8 +126,8 @@ public class ReconciliationHandlerTest extends AbstractEvenementHandlerTest {
 	public void testReconciliationMariesADeux() throws Exception {
 
 		LOGGER.debug("Test de traitement d'un événement de réconciliation d'un couple.");
-		MockIndividu individu = (MockIndividu) serviceCivil.getIndividu(NO_INDIVIDU_SEPARE_MARIE, 2008);
-		MockIndividu conjoint = (MockIndividu) serviceCivil.getIndividu(NO_INDIVIDU_SEPARE_MARIE_CONJOINT, 2008);
+		Individu individu = serviceCivil.getIndividu(NO_INDIVIDU_SEPARE_MARIE, 2008);
+		Individu conjoint = serviceCivil.getIndividu(NO_INDIVIDU_SEPARE_MARIE_CONJOINT, 2008);
 		final Reconciliation reconciliation = createReconciliation(individu, conjoint, DATE_RECONCILIATION);
 
 		final List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
@@ -190,8 +190,8 @@ public class ReconciliationHandlerTest extends AbstractEvenementHandlerTest {
 
 		RegDate DATE_RECONCILIATION_FUTURE = RegDate.get(2080, 1, 1);
 		LOGGER.debug("Test de traitement d'un événement de réconciliation d'un couple.");
-		MockIndividu individu = (MockIndividu) serviceCivil.getIndividu(NO_INDIVIDU_SEPARE_MARIE, 2008);
-		MockIndividu conjoint = (MockIndividu) serviceCivil.getIndividu(NO_INDIVIDU_SEPARE_MARIE_CONJOINT, 2008);
+		Individu individu = serviceCivil.getIndividu(NO_INDIVIDU_SEPARE_MARIE, 2008);
+		Individu conjoint = serviceCivil.getIndividu(NO_INDIVIDU_SEPARE_MARIE_CONJOINT, 2008);
 		final Reconciliation reconciliation = createReconciliation(individu, conjoint, DATE_RECONCILIATION_FUTURE);
 
 		final List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();

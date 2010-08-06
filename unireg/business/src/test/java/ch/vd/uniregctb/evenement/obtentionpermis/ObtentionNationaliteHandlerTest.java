@@ -16,6 +16,7 @@ import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.civil.model.EnumAttributeIndividu;
 import ch.vd.uniregctb.evenement.AbstractEvenementHandlerTest;
 import ch.vd.uniregctb.evenement.EvenementCivilErreur;
 import ch.vd.uniregctb.interfaces.model.Individu;
@@ -426,7 +427,7 @@ public class ObtentionNationaliteHandlerTest extends AbstractEvenementHandlerTes
 
 		doInNewTransactionAndSession(new TransactionCallback() {
 			public Object doInTransaction(TransactionStatus status) {
-				final Individu julie = serviceCivil.getIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE, 2007);
+				final Individu julie = serviceCivil.getIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE, 2007, EnumAttributeIndividu.NATIONALITE);
 				final ObtentionNationalite obtentionNationalite = createValidObtentionNationaliteNonSuisse(julie, dateObtentionNationalite, MockCommune.Geneve.getNoOFS());
 
 				final List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();

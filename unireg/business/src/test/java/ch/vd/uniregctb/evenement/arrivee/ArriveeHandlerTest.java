@@ -12,6 +12,7 @@ import ch.vd.uniregctb.adresse.AdresseCivile;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.evenement.AbstractEvenementHandlerTest;
 import ch.vd.uniregctb.evenement.EvenementCivilErreur;
+import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.mock.MockAdresse;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
@@ -67,13 +68,13 @@ public class ArriveeHandlerTest extends AbstractEvenementHandlerTest {
 		List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
 
 		// 1er test : individu seul
-		MockIndividu individuSeul = (MockIndividu) serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, 2000);
+		final Individu individuSeul = serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, 2000);
 		MockArrivee arrivee = createValidArrivee(individuSeul);
 		evenementCivilHandler.checkCompleteness(arrivee, erreurs, warnings);
 		Assert.isTrue(erreurs.isEmpty(), "individu célibataire : ca n'aurait pas du causer une erreur");
 
 		// 2ème test : individu marié seul
-		MockIndividu individuMarieSeul = (MockIndividu) serviceCivil.getIndividu(NUMERO_INDIVIDU_MARIE_SEUL, 2000);
+		final Individu individuMarieSeul = serviceCivil.getIndividu(NUMERO_INDIVIDU_MARIE_SEUL, 2000);
 		arrivee = createValidArrivee(individuMarieSeul);
 		evenementCivilHandler.checkCompleteness(arrivee, erreurs, warnings);
 		Assert.isTrue(erreurs.isEmpty(), "individu célibataire marié seul : ca n'aurait pas du causer une erreur");
@@ -89,7 +90,7 @@ public class ArriveeHandlerTest extends AbstractEvenementHandlerTest {
 		List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
 
 		// 1er test : événement avec une date dans le futur
-		MockArrivee arrivee = createValidArrivee((MockIndividu) serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, 2000));
+		MockArrivee arrivee = createValidArrivee(serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, 2000));
 		arrivee.setDate(DATE_FUTURE);
 		evenementCivilHandler.validate(arrivee, erreurs, warnings);
 		Assert.notEmpty(erreurs, "Une date future pour l'événement aurait dû renvoyer une erreur");
@@ -98,7 +99,7 @@ public class ArriveeHandlerTest extends AbstractEvenementHandlerTest {
 		// l'ancienne adresse
 		erreurs.clear();
 		warnings.clear();
-		arrivee = createValidArrivee((MockIndividu) serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, 2000));
+		arrivee = createValidArrivee(serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, 2000));
 		MockAdresse ancienneAdresse = new MockAdresse();
 		ancienneAdresse.setDateDebutValidite(DATE_ANCIENNE_ADRESSE);
 		ancienneAdresse.setPays(MockPays.Suisse);
@@ -114,7 +115,7 @@ public class ArriveeHandlerTest extends AbstractEvenementHandlerTest {
 		// 3ème test : arrivée hors canton
 		erreurs.clear();
 		warnings.clear();
-		arrivee = createValidArrivee((MockIndividu) serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, 2000));
+		arrivee = createValidArrivee(serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, 2000));
 		arrivee.setNouvelleCommunePrincipale(MockCommune.Neuchatel);
 		arrivee.setNumeroOfsCommuneAnnonce(MockCommune.Neuchatel.getNoOFSEtendu());
 		evenementCivilHandler.validate(arrivee, erreurs, warnings);
@@ -123,7 +124,7 @@ public class ArriveeHandlerTest extends AbstractEvenementHandlerTest {
 		// 4ème test : commune du Sentier -> traitement manuel dans tous les cas
 		erreurs.clear();
 		warnings.clear();
-		arrivee = createValidArrivee((MockIndividu) serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, 2000));
+		arrivee = createValidArrivee(serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, 2000));
 		arrivee.setNouvelleCommunePrincipale(MockCommune.Fraction.LeSentier);
 		arrivee.setNumeroOfsCommuneAnnonce(MockCommune.LeChenit.getNoOFSEtendu());
 		evenementCivilHandler.validate(arrivee, erreurs, warnings);
@@ -170,8 +171,7 @@ public class ArriveeHandlerTest extends AbstractEvenementHandlerTest {
 	@Test
 	public void testHandle() throws Exception {
 
-
-		final MockIndividu individu = (MockIndividu) serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, 2000);
+		final Individu individu = serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, 2000);
 		Arrivee arrivee = createValidArrivee(individu);
 		List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 		List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
@@ -206,13 +206,10 @@ public class ArriveeHandlerTest extends AbstractEvenementHandlerTest {
 		assertEquals(1, getEvenementFiscalService().getEvenementFiscals(tiers).size());
 	}
 
-	private MockArrivee createValidArrivee(MockIndividu individu) {
+	private MockArrivee createValidArrivee(Individu individu) {
 
 		MockArrivee arrivee = new MockArrivee();
 		arrivee.setType(TypeEvenementCivil.ARRIVEE_DANS_COMMUNE);
-		if (individu.getNoTechnique() == 0) {
-			individu.setNoTechnique(NUMERO_INDIVIDU);
-		}
 		arrivee.setIndividu(individu);
 
 		// Anciennes adresses
