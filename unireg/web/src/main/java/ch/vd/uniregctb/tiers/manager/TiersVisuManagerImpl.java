@@ -297,23 +297,7 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 	}
 
 
-	/**
-	 * Rempli la collection des adressesView avec les adresses fiscales historiques du type spécifié.
-	 */
-	private void fillAdressesView(List<AdresseView> adressesView, final AdressesFiscalesHisto adressesFiscalHisto, TypeAdresseTiers type,
-	                              Tiers tiers) throws InfrastructureException {
 
-		final Collection<AdresseGenerique> adresses = adressesFiscalHisto.ofType(type);
-		if (adresses == null) {
-			// rien à faire
-			return;
-		}
-
-		for (AdresseGenerique adresse : adresses) {
-			AdresseView adresseView = createVisuAdresseView(adresse, type, tiers);
-			adressesView.add(adresseView);
-		}
-	}
 
 	private void fillAdressesHistoCivilesView(List<AdresseView> adressesView, AdressesCivilesHisto adressesCivilesHisto, EnumTypeAdresse type, Tiers tiers) throws AdresseDataException,
 			InfrastructureException {
@@ -356,32 +340,6 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 		AdaptAdresseCivileToAdresseView(adressesView, type, tiers, adresse);
 	}
 
-	/**
-	 * Methode annexe de creation d'adresse view pour un type donne
-	 *
-	 * @param addProf
-	 * @param type
-	 * @return
-	 * @throws InfrastructureException
-	 */
-	private AdresseView createVisuAdresseView(AdresseGenerique adr, TypeAdresseTiers type,
-	                                          Tiers tiers) throws InfrastructureException {
-		AdresseView adresseView = createAdresseView(adr, type, tiers);
-
-		RegDate dateJour = RegDate.get();
-		if (((adr.getDateDebut() == null) || (adr.getDateDebut().isBeforeOrEqual(dateJour)))
-				&& ((adr.getDateFin() == null) || (adr.getDateFin().isAfterOrEqual(dateJour)))) {
-			adresseView.setActive(true);
-		}
-		else {
-			adresseView.setActive(false);
-		}
-
-		adresseView.setSurVaud(getServiceInfrastructureService().estDansLeCanton(adr));
-
-
-		return adresseView;
-	}
 
 	/**
 	 * Mise à jour de la vue Declaration Impot Ordinaire
