@@ -267,7 +267,7 @@
 	</fieldset>	
 	</div>
 	
-	<form:errors cssClass="error" />
+
 	<div id="adresse_add">
 		<table border="0">
 		<tr>	
