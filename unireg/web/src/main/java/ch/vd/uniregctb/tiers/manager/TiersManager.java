@@ -11,6 +11,7 @@ import java.util.Set;
 
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.uniregctb.adresse.AdressesFiscalesHisto;
 import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.tiers.*;
 
@@ -698,9 +699,9 @@ public class TiersManager implements MessageSourceAware {
 				PeriodiciteView periodiciteView = readFromPeriodicite(periodicite);
 				listePeriodicitesView.add(periodiciteView);
 			}
-			Collections.sort(listePeriodicitesView,new PeriodiciteViewComparator());
+			Collections.sort(listePeriodicitesView, new PeriodiciteViewComparator());
 			tiersView.setPeriodicites(listePeriodicitesView);
-			
+
 		}
 
 
@@ -715,19 +716,19 @@ public class TiersManager implements MessageSourceAware {
 		periodiciteView.setAnnule(periodicite.isAnnule());
 		periodiciteView.setPeriodiciteDecompte(periodicite.getPeriodiciteDecompte());
 		periodiciteView.setPeriodeDecompte(periodicite.getPeriodeDecompte());
-		if(periodicite.isValidAt(RegDate.get()) && !periodicite.isAnnule()){
+		if (periodicite.isValidAt(RegDate.get()) && !periodicite.isAnnule()) {
 			periodiciteView.setActive(true);
 		}
-		else{
+		else {
 			periodiciteView.setActive(false);
 		}
 		return periodiciteView;
 	}
 
-	protected void	setPeriodiciteCourante(TiersView tiersView,DebiteurPrestationImposable dpi) {
+	protected void setPeriodiciteCourante(TiersView tiersView, DebiteurPrestationImposable dpi) {
 		final Periodicite periodiciteCourante = dpi.getDernierePeriodicite();
 		tiersView.setPeriodicite(readFromPeriodicite(periodiciteCourante));
-		
+
 	}
 
 	/**
@@ -1370,21 +1371,23 @@ public class TiersManager implements MessageSourceAware {
 	 * Renseigne la liste des adresses actives sur le form backing object. En cas d'erreur dans la résolution des adresses, les adresses en erreur et le message de l'erreur sont renseignés en lieu et
 	 * place.
 	 */
-	protected void setAdressesActives(TiersEditView tiersEditView, final Tiers tiers) {
+	protected void setAdressesActives(TiersEditView tiersEditView, final Tiers tiers) throws InfrastructureException {
 
 		try {
 			List<AdresseView> adresses = new ArrayList<AdresseView>();
 
-			final AdressesFiscales adressesFiscales = getAdresseService().getAdressesFiscales(tiers, null, false);
-			if (adressesFiscales != null) {
+			final AdressesFiscalesHisto adressesFiscalesHisto = getAdresseService().getAdressesFiscalHisto(tiers, false);
+			if (adressesFiscalesHisto != null) {
 				// rempli tous les types d'adresse
 				for (TypeAdresseTiers type : TypeAdresseTiers.values()) {
-					fillAdressesView(adresses, adressesFiscales, type, tiers);
+					fillAdressesView(adresses, adressesFiscalesHisto, type, tiers);
 				}
 				Collections.sort(adresses, new AdresseViewComparator());
 			}
 
 			adresses = removeAdresseFromCivil(adresses);
+			//[UNIREG2717] les adresses fiscales retournées doivent aussi contenir les adresses fermées afin que celles ci puissent être annulées
+			adresses = removeAdresseAnnulee(adresses);
 			tiersEditView.setAdressesActives(adresses);
 		}
 		catch (AdresseException exception) {
@@ -1421,6 +1424,52 @@ public class TiersManager implements MessageSourceAware {
 			adressesView.add(adresseView);
 		}
 	}
+
+	/**
+	 * Rempli la collection des adressesView avec les adresses fiscales historiques du type spécifié.
+	 */
+	protected void fillAdressesView(List<AdresseView> adressesView, final AdressesFiscalesHisto adressesFiscalHisto, TypeAdresseTiers type,
+	                                Tiers tiers) throws InfrastructureException {
+
+		final Collection<AdresseGenerique> adresses = adressesFiscalHisto.ofType(type);
+		if (adresses == null) {
+			// rien à faire
+			return;
+		}
+
+		for (AdresseGenerique adresse : adresses) {
+			AdresseView adresseView = createVisuAdresseView(adresse, type, tiers);
+			adressesView.add(adresseView);
+		}
+	}
+
+	/**
+	 * Methode annexe de creation d'adresse view pour un type donne
+	 *
+	 * @param addProf
+	 * @param type
+	 * @return
+	 * @throws InfrastructureException
+	 */
+	protected AdresseView createVisuAdresseView(AdresseGenerique adr, TypeAdresseTiers type,
+	                                            Tiers tiers) throws InfrastructureException {
+		AdresseView adresseView = createAdresseView(adr, type, tiers);
+
+		RegDate dateJour = RegDate.get();
+		if (((adr.getDateDebut() == null) || (adr.getDateDebut().isBeforeOrEqual(dateJour)))
+				&& ((adr.getDateFin() == null) || (adr.getDateFin().isAfterOrEqual(dateJour)))) {
+			adresseView.setActive(true);
+		}
+		else {
+			adresseView.setActive(false);
+		}
+
+		adresseView.setSurVaud(getServiceInfrastructureService().estDansLeCanton(adr));
+
+
+		return adresseView;
+	}
+
 
 	/**
 	 * Methode annexe de creation d'adresse view pour un type donne
@@ -1529,6 +1578,16 @@ public class TiersManager implements MessageSourceAware {
 					resultat.add(view);
 				}
 
+			}
+		}
+		return resultat;  //To change body of created methods use File | Settings | File Templates.
+	}
+
+	protected List<AdresseView> removeAdresseAnnulee(List<AdresseView> adresses) {
+		List<AdresseView> resultat = new ArrayList<AdresseView>();
+		for (AdresseView view : adresses) {
+			if (!view.isAnnule()) {
+				resultat.add(view);
 			}
 		}
 		return resultat;  //To change body of created methods use File | Settings | File Templates.
