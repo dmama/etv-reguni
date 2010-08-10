@@ -2,6 +2,8 @@ package ch.vd.uniregctb.tiers;
 
 import java.util.Date;
 
+import org.apache.commons.lang.StringUtils;
+
 import ch.vd.uniregctb.common.Annulable;
 import ch.vd.uniregctb.indexer.tiers.MenageCommunIndexable;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
@@ -55,7 +57,16 @@ public class TiersIndexedDataView implements Annulable {
 	}
 
 	public String getLocaliteOuPays() {
-		return data.getLocaliteOuPays();
+		final String localiteOuPays;
+		final String localite = data.getLocalite();
+		final String pays = data.getPays();
+		if (StringUtils.isBlank(localite)) {
+			localiteOuPays = pays;
+		}
+		else {
+			localiteOuPays = localite;
+		}
+		return localiteOuPays;
 	}
 
 	public String getForPrincipal() {
