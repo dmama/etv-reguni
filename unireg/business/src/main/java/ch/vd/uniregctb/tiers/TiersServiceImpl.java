@@ -1541,27 +1541,49 @@ public class TiersServiceImpl implements TiersService {
 		if (pp != null && pp.isHabitantVD() && !isDecede(pp)) {
 			// on doit vérifier l'adresse de domicile du contribuable,
 			// et ne le passer en non-habitant que si cette adresse n'est pas vaudoise...
-			try {
-				final AdresseGenerique adresseDomicile = adresseService.getAdresseFiscale(pp, TypeAdresseFiscale.DOMICILE, null, false);
-				if (adresseDomicile != null) {
-					final boolean hs = adresseDomicile.getNoOfsPays() != null && adresseDomicile.getNoOfsPays() != ServiceInfrastructureService.noOfsSuisse;
-					final CommuneSimple commune = serviceInfra.getCommuneByAdresse(adresseDomicile);
-					if (hs || (commune != null && !commune.isVaudoise())) {
-						changeHabitantenNH(pp);
-						change = true;
-					}
-				}
-			}
-			catch (AdresseException e) {
-				// rien à faire...
-				LOGGER.warn("Impossible de déterminer l'adresse de domicile du tiers " + pp.getNumero(), e);
-			}
-			catch (InfrastructureException e) {
-				// rien à faire...
-				LOGGER.warn("Impossible de déterminer la commune de l'adresse de domicile du tiers " + pp.getNumero(), e);
+			final Boolean isDomicileVaudois = isDomicileDansLeCanton(pp, null);
+			if (isDomicileVaudois != null && !isDomicileVaudois) {
+				changeHabitantenNH(pp);
+				change = true;
 			}
 		}
 		return change;
+	}
+
+	public boolean isDomicileVaudois(PersonnePhysique pp, RegDate date) {
+		final Boolean isVaudois = isDomicileDansLeCanton(pp, date);
+		return isVaudois != null && isVaudois;
+	}
+
+	/**
+	 * Renvoie {@link Boolean#TRUE} si l'adresse de domicile de la personne donnée à la date donnée est dans le canton,
+	 * {@link Boolean#FALSE} si elle est hors-canton où hors-Suisse, et <code>null</code> si on ne sait pas répondre
+	 * de manière définitive (pas d'adresse de domicile connue, erreurs...)
+	 */
+	private Boolean isDomicileDansLeCanton(PersonnePhysique pp, RegDate date) {
+
+		try {
+			final AdresseGenerique adresseDomicile = adresseService.getAdresseFiscale(pp, TypeAdresseFiscale.DOMICILE, date, false);
+			if (adresseDomicile != null) {
+				final CommuneSimple commune = serviceInfra.getCommuneByAdresse(adresseDomicile);
+				if (commune != null && commune.isVaudoise()) {
+					return Boolean.TRUE;
+				}
+				else {
+					return Boolean.FALSE;
+				}
+			}
+		}
+		catch (AdresseException e) {
+			// rien à faire...
+			LOGGER.warn("Impossible de déterminer l'adresse de domicile du tiers " + pp.getNumero(), e);
+		}
+		catch (InfrastructureException e) {
+			// rien à faire...
+			LOGGER.warn("Impossible de déterminer la commune de l'adresse de domicile du tiers " + pp.getNumero(), e);
+		}
+
+		return null;
 	}
 
 	public boolean changeNHEnHabitantSiDomicilieDansLeCanton(PersonnePhysique pp, RegDate dateArrivee) {
@@ -1569,23 +1591,9 @@ public class TiersServiceImpl implements TiersService {
 		if (pp != null && !pp.isHabitantVD() && !isDecede(pp) && pp.getNumeroIndividu() != null && pp.getNumeroIndividu() != 0) {
 			// on doit vérifier l'adresse de domicile du contribuable,
 			// et ne le passer en habitant que si cette adresse est vaudoise...
-			try {
-				final AdresseGenerique adresseDomicile = adresseService.getAdresseFiscale(pp, TypeAdresseFiscale.DOMICILE, null, false);
-				if (adresseDomicile != null) {
-					final CommuneSimple commune = serviceInfra.getCommuneByAdresse(adresseDomicile);
-					if (commune != null && commune.isVaudoise()) {
-						changeNHenHabitant(pp, pp.getNumeroIndividu(), dateArrivee);
-						change = true;
-					}
-				}
-			}
-			catch (AdresseException e) {
-				// rien à faire...
-				LOGGER.warn("Impossible de déterminer l'adresse de domicile du tiers " + pp.getNumero(), e);
-			}
-			catch (InfrastructureException e) {
-				// rien à faire...
-				LOGGER.warn("Impossible de déterminer la commune de l'adresse de domicile du tiers " + pp.getNumero(), e);
+			if (isDomicileVaudois(pp, null)) {
+				changeNHenHabitant(pp, pp.getNumeroIndividu(), dateArrivee);
+				change = true;
 			}
 		}
 		return change;
