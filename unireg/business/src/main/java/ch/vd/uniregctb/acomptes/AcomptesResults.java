@@ -155,7 +155,7 @@ public class AcomptesResults extends ListesResults<AcomptesResults> {
             if (principal != null) {
 	            final NomPrenom nomPrenom = tiersService.getDecompositionNomPrenom(principal);
 	            if (nomPrenom != null) {
-                    addContribuable(ctb, nomPrenom.getNom(), nomPrenom.getNomPrenom());
+                    addContribuable(ctb, nomPrenom.getNom(), nomPrenom.getPrenom());
 	            }
 	            else {
 		            addContribuable(ctb, NOM_INCONNU, null);
