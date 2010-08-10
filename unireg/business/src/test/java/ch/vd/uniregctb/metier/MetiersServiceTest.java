@@ -56,6 +56,7 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
+@SuppressWarnings({"JavaDoc"})
 public class MetiersServiceTest extends BusinessTest {
 
 	private TiersDAO tiersDAO;
@@ -1481,6 +1482,237 @@ public class MetiersServiceTest extends BusinessTest {
 				Assert.assertNotNull(forsMme);
 				Assert.assertEquals(0, forsMme.size());
 
+				return null;
+			}
+		});
+	}
+
+	/**
+	 * UNIREG-2653 une annulation de décès dans le civil doit repasser la personne physique en habitant
+	 */
+	@Test
+	public void testAnnulationDecesCivil() throws Exception {
+
+		final long noIndDecede = 1234524L;
+		final RegDate dateDeces = date(2010, 7, 24);
+
+		// mise en place civile
+		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+			@Override
+			protected void init() {
+				final MockIndividu individu = addIndividu(noIndDecede, date(1958, 4, 12), "Moutarde", "Colonel", true);
+				addAdresse(individu, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.BoulevardGrancy, null, date(2000, 1, 1), null);
+			}
+		});
+
+		// mise en place fiscale
+		final long ppId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addHabitant(noIndDecede);
+				return pp.getNumero();
+			}
+		});
+
+		// décès au civil
+		doModificationIndividu(noIndDecede, new IndividuModification() {
+			public void modifyIndividu(MockIndividu individu) {
+				individu.setDateDeces(dateDeces);
+			}
+		});
+
+		// impact fiscal du décès
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				Assert.assertTrue(pp.isHabitantVD());
+
+				metierService.deces(pp, dateDeces, "Décédé", 1L);
+				return null;
+			}
+		});
+
+		// vérification de l'impact fiscal
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				Assert.assertFalse(pp.isHabitantVD());
+				Assert.assertEquals(dateDeces, tiersService.getDateDeces(pp));
+				return null;
+			}
+		});
+
+		// annulation du décès dans le civil déjà
+		doModificationIndividu(noIndDecede, new IndividuModification() {
+			public void modifyIndividu(MockIndividu individu) {
+				individu.setDateDeces(null);
+			}
+		});
+
+		// impact fiscal de l'annulation de décès
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				metierService.annuleDeces(pp, dateDeces);
+				return null;
+			}
+		});
+
+		// vérification de l'impact fiscal de l'annulation du décès
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				Assert.assertTrue(pp.isHabitantVD());
+				Assert.assertNull(tiersService.getDateDeces(pp));
+				return null;
+			}
+		});
+	}
+
+	/**
+	 * UNIREG-2653 une annulation de décès dans le civil doit repasser la personne physique en habitant
+	 * (sauf s'il n'est pas résident sur le canton...)
+	 */
+	@Test
+	public void testAnnulationDecesCivilResidentHorsCanton() throws Exception {
+
+		final long noIndDecede = 1234524L;
+		final RegDate dateDeces = date(2010, 7, 24);
+
+		// mise en place civile
+		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+			@Override
+			protected void init() {
+				final MockIndividu individu = addIndividu(noIndDecede, date(1958, 4, 12), "Moutarde", "Colonel", true);
+				addAdresse(individu, EnumTypeAdresse.PRINCIPALE, MockRue.Geneve.AvenueGuiseppeMotta, null, date(2000, 1, 1), null);
+			}
+		});
+
+		// mise en place fiscale
+		final long ppId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addHabitant(noIndDecede);
+				tiersService.changeHabitantenNH(pp);
+				return pp.getNumero();
+			}
+		});
+
+		// décès au civil
+		doModificationIndividu(noIndDecede, new IndividuModification() {
+			public void modifyIndividu(MockIndividu individu) {
+				individu.setDateDeces(dateDeces);
+			}
+		});
+
+		// impact fiscal du décès
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				Assert.assertFalse(pp.isHabitantVD());
+
+				metierService.deces(pp, dateDeces, "Décédé", 1L);
+				return null;
+			}
+		});
+
+		// vérification de l'impact fiscal
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				Assert.assertFalse(pp.isHabitantVD());
+				Assert.assertEquals(dateDeces, tiersService.getDateDeces(pp));
+				return null;
+			}
+		});
+
+		// annulation du décès dans le civil déjà
+		doModificationIndividu(noIndDecede, new IndividuModification() {
+			public void modifyIndividu(MockIndividu individu) {
+				individu.setDateDeces(null);
+			}
+		});
+
+		// impact fiscal de l'annulation de décès
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				metierService.annuleDeces(pp, dateDeces);
+				return null;
+			}
+		});
+
+		// vérification de l'impact fiscal de l'annulation du décès (la personne habite hors-canton, elle ne doit donc pas passer habitante!)
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				Assert.assertFalse(pp.isHabitantVD());
+				Assert.assertNull(tiersService.getDateDeces(pp));
+				return null;
+			}
+		});
+	}
+
+	/**
+	 * UNIREG-2653 une annulation de décès seulement fiscale ne doit pas repasser la personne physique en habitant
+	 */
+	@Test
+	public void testAnnulationDecesFiscalSeulement() throws Exception {
+
+		final long noIndDecede = 1234524L;
+		final RegDate dateDeces = date(2010, 7, 24);
+
+		// mise en place civile
+		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+			@Override
+			protected void init() {
+				final MockIndividu individu = addIndividu(noIndDecede, date(1958, 4, 12), "Moutarde", "Colonel", true);
+				addAdresse(individu, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.BoulevardGrancy, null, date(2000, 1, 1), null);
+			}
+		});
+
+		// mise en place fiscale
+		final long ppId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addHabitant(noIndDecede);
+				return pp.getNumero();
+			}
+		});
+
+		// décès au civil
+		doModificationIndividu(noIndDecede, new IndividuModification() {
+			public void modifyIndividu(MockIndividu individu) {
+				individu.setDateDeces(dateDeces);
+			}
+		});
+
+		// impact fiscal du décès
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				Assert.assertTrue(pp.isHabitantVD());
+
+				metierService.deces(pp, dateDeces, "Décédé", 1L);
+				return null;
+			}
+		});
+
+		// vérification de l'impact fiscal et annulation fiscale du décès
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				Assert.assertFalse(pp.isHabitantVD());
+				Assert.assertEquals(dateDeces, tiersService.getDateDeces(pp));
+
+				metierService.annuleDeces(pp, dateDeces);
+				return null;
+			}
+		});
+
+		// vérification de l'impact fiscal de l'annulation du décès
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				Assert.assertFalse(pp.isHabitantVD());
+				Assert.assertNull(tiersService.getDateDeces(pp));
 				return null;
 			}
 		});

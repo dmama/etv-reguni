@@ -28,6 +28,7 @@ import ch.vd.uniregctb.evenement.common.EvenementCivilHandlerException;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.uniregctb.interfaces.model.CommuneSimple;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
+import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.metier.modeimposition.DecesModeImpositionResolver;
@@ -1796,6 +1797,16 @@ public class MetierServiceImpl implements MetierService {
 			}
 		}
 
+		// [UNIREG-2653] en cas d'annulation de décès, l'ancien décédé peut
+		// repasser habitant s'il n'est pas décédé dans le civil (et qu'il réside dans le canton, évidemment)
+		if (tiers.isConnuAuCivil() && !tiers.isHabitantVD()) {
+			final Individu individu = serviceCivilService.getIndividu(tiers.getNumeroIndividu(), date.year());
+			if (individu.getDateDeces() == null && tiersService.isDomicileVaudois(tiers, null)) {
+				// il n'est pas mort au civil et réside dans le canton -> retour à la case "habitant"
+				tiersService.changeNHenHabitant(tiers, individu.getNoTechnique(), date);
+			}
+		}
+
 		tiers.setDateDeces(null);
 
 		/*
@@ -2013,7 +2024,6 @@ public class MetierServiceImpl implements MetierService {
 		}
 
 		final boolean wasDefuntHabitant = defunt != null && defunt.isHabitantVD();
-		final boolean wasVeufHabitant = veuf != null && veuf.isHabitantVD();
 
 		// [UNIREG-2653] un habitant décédé doit passer non-habitant
 		if (wasDefuntHabitant) {

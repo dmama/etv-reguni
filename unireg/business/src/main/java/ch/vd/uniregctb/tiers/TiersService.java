@@ -105,6 +105,13 @@ public interface TiersService {
 	public PersonnePhysique changeHabitantenNH(PersonnePhysique habitant);
 
 	/**
+	 * @param pp personne physique dont on veut connaître la localisation du domicile
+	 * @param date date de référence pour le domicile du contribuable
+	 * @return <code>true</code> si l'adresse de domicile associée à la personne physique donnée est sur le canton de vaud, false sinon
+	 */
+	public boolean isDomicileVaudois(PersonnePhysique pp, RegDate date);
+
+	/**
 	 * Change un habitant en non-habitant s'il est actuellement domicilié hors du canton de Vaud
 	 * @param pp la personne physique
 	 * @return <code>true</code> si un changement de flag habitant a eu lieu
