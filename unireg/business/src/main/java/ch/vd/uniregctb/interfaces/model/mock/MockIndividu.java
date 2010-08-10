@@ -2,8 +2,10 @@ package ch.vd.uniregctb.interfaces.model.mock;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Set;
 
 import ch.vd.registre.base.date.RegDate;
@@ -325,8 +327,11 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 	};
 
 	private static <T> Collection<T> buildLimitedCollectionBeforeYear(Collection<T> original, int annee, Limitator<T> limitator) {
-		if (original == null || original.size() == 0) {
-			return original;
+		if (original == null) {
+			return null;
+		}
+		else if (original.size() == 0) {
+			return Collections.emptyList();
 		}
 		else {
 			final List<T> limited = new ArrayList<T>(original);
@@ -337,7 +342,161 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 					iter.remove();
 				}
 			}
-			return limited.size() == original.size() ? original : limited;
+			return Collections.unmodifiableCollection(limited.size() == original.size() ? original : limited);
+		}
+	}
+
+	private static final class FreezableEtatCivilList extends EtatCivilList {
+
+		private boolean frozen;
+
+		private class FreezableIterator<T extends Iterator<EtatCivil>> implements Iterator<EtatCivil> {
+
+			protected final T iterator;
+
+			protected FreezableIterator(T iterator) {
+				this.iterator = iterator;
+			}
+
+			public boolean hasNext() {
+				return iterator.hasNext();
+			}
+
+			public EtatCivil next() {
+				return iterator.next();
+			}
+
+			public void remove() {
+				checkNotFrozen();
+				iterator.remove();
+			}
+		}
+
+		private class FreezableListIterator extends FreezableIterator<ListIterator<EtatCivil>> implements ListIterator<EtatCivil> {
+
+			protected FreezableListIterator(ListIterator<EtatCivil> iterator) {
+				super(iterator);
+			}
+
+			public boolean hasPrevious() {
+				return iterator.hasPrevious();
+			}
+
+			public EtatCivil previous() {
+				return iterator.previous();
+			}
+
+			public int nextIndex() {
+				return iterator.nextIndex();
+			}
+
+			public int previousIndex() {
+				return iterator.previousIndex();
+			}
+
+			public void set(EtatCivil o) {
+				checkNotFrozen();
+				iterator.set(o);
+			}
+
+			public void add(EtatCivil o) {
+				checkNotFrozen();
+				iterator.add(o);
+			}
+		}
+
+		public FreezableEtatCivilList(long numeroIndividu, Collection<EtatCivil> listHost, boolean frozen) {
+			super(numeroIndividu, listHost);
+			this.frozen = frozen;
+		}
+
+		public void freeze() {
+			frozen = true;
+		}
+
+		public boolean isFrozen() {
+			return frozen;
+		}
+
+		private void checkNotFrozen() {
+			if (frozen) {
+				throw new UnsupportedOperationException("List is frozen!");
+			}
+		}
+
+		@Override
+		public boolean add(EtatCivil o) {
+			checkNotFrozen();
+			return super.add(o);
+		}
+
+		@Override
+		public void add(int index, EtatCivil element) {
+			checkNotFrozen();
+			super.add(index, element);
+		}
+
+		@Override
+		public boolean addAll(Collection<? extends EtatCivil> c) {
+			checkNotFrozen();
+			return super.addAll(c);
+		}
+
+		@Override
+		public boolean addAll(int index, Collection<? extends EtatCivil> c) {
+			checkNotFrozen();
+			return super.addAll(index, c);
+		}
+
+		@Override
+		public void clear() {
+			checkNotFrozen();
+			super.clear();
+		}
+
+		@Override
+		public boolean remove(Object o) {
+			checkNotFrozen();
+			return super.remove(o);
+		}
+
+		@Override
+		public EtatCivil remove(int index) {
+			checkNotFrozen();
+			return super.remove(index);
+		}
+
+		@Override
+		public boolean removeAll(Collection<?> c) {
+			checkNotFrozen();
+			return super.removeAll(c);
+		}
+
+		@Override
+		public boolean retainAll(Collection<?> c) {
+			checkNotFrozen();
+			return super.retainAll(c);
+		}
+
+		@Override
+		public EtatCivil set(int index, EtatCivil element) {
+			checkNotFrozen();
+			return super.set(index, element);
+		}
+
+		@Override
+		public Iterator<EtatCivil> iterator() {
+			return new FreezableIterator<Iterator<EtatCivil>>(super.iterator());
+		}
+
+		@Override
+		public ListIterator<EtatCivil> listIterator() {
+			return new FreezableListIterator(super.listIterator());
+		}
+
+		@Override
+		public ListIterator<EtatCivil> listIterator(int index) {
+			return new FreezableListIterator(super.listIterator(index));
 		}
 	}
 
@@ -349,14 +508,16 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 			enfants = buildLimitedCollectionBeforeYear(enfants, annee, ENFANT_LIMITATOR);
 		}
 		if (etatsCivils != null && etatsCivils.size() > 0) {
-			etatsCivils = new EtatCivilList(etatsCivils.getNumeroIndividu(), etatsCivils);
-			final Iterator<EtatCivil> iterator = etatsCivils.iterator();
+			final FreezableEtatCivilList etatsCivilsTemp = new FreezableEtatCivilList(etatsCivils.getNumeroIndividu(), etatsCivils, false);
+			final Iterator<EtatCivil> iterator = etatsCivilsTemp.iterator();
 			while (iterator.hasNext()) {
 				final EtatCivil etatCivil = iterator.next();
 				if (etatCivil.getDateDebutValidite() != null && etatCivil.getDateDebutValidite().year() > annee) {
 					iterator.remove();
 				}
 			}
+			etatsCivilsTemp.freeze();
+			etatsCivils = etatsCivilsTemp;
 		}
 		historiqueIndividu = buildLimitedCollectionBeforeYear(historiqueIndividu, annee, HISTORIQUE_LIMITATOR);
 		dernierHistoriqueIndividu = historiqueIndividu == null || historiqueIndividu.size() == 0 ? null : (HistoriqueIndividu) historiqueIndividu.toArray()[historiqueIndividu.size() - 1];

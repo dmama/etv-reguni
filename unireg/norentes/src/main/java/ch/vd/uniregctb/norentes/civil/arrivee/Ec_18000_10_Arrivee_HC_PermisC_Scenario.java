@@ -119,12 +119,16 @@ public class Ec_18000_10_Arrivee_HC_PermisC_Scenario extends EvenementCivilScena
 	
 	@Etape(id = 3, descr = "Obtention permis C d'Antoine")
 	public void etape3() throws Exception {
-		MockPermis permis = new MockPermis();
-		permis.setTypePermis(EnumTypePermis.ETABLLISSEMENT);
-		permis.setDateDebutValidite(dateArriveeBex);
-		permis.setDateFinValidite(null);
-		permis.setNoSequence(1);
-		serviceCivilService.getPermis(noIndAntoine, dateArriveeBex.year()).add(permis);
+		doModificationIndividu(noIndAntoine, new IndividuModification() {
+			public void modifyIndividu(MockIndividu individu) {
+				final MockPermis permis = new MockPermis();
+				permis.setTypePermis(EnumTypePermis.ETABLLISSEMENT);
+				permis.setDateDebutValidite(dateArriveeBex);
+				permis.setDateFinValidite(null);
+				permis.setNoSequence(1);
+				individu.getPermis().add(permis);
+			}
+		});
 	}
 
 	@Check(id = 3, descr = "Vérifie qu'Antoine a le permis C")
