@@ -69,8 +69,7 @@ public class ReconciliationHandlerTest extends AbstractEvenementHandlerTest {
 	public void testReconciliationMarieSeul() throws Exception {
 
 		LOGGER.debug("Test de traitement d'un événement de réconciliation d'un individu marié seul.");
-		Individu individu = serviceCivil.getIndividu(NO_INDIVIDU_SEPARE_SEUL, 2008);
-		final Reconciliation reconciliation = createReconciliation(individu, null, DATE_RECONCILIATION);
+		final Reconciliation reconciliation = createReconciliation(NO_INDIVIDU_SEPARE_SEUL, null, DATE_RECONCILIATION);
 
 		final List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 		final List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
@@ -126,9 +125,7 @@ public class ReconciliationHandlerTest extends AbstractEvenementHandlerTest {
 	public void testReconciliationMariesADeux() throws Exception {
 
 		LOGGER.debug("Test de traitement d'un événement de réconciliation d'un couple.");
-		Individu individu = serviceCivil.getIndividu(NO_INDIVIDU_SEPARE_MARIE, 2008);
-		Individu conjoint = serviceCivil.getIndividu(NO_INDIVIDU_SEPARE_MARIE_CONJOINT, 2008);
-		final Reconciliation reconciliation = createReconciliation(individu, conjoint, DATE_RECONCILIATION);
+		final Reconciliation reconciliation = createReconciliation(NO_INDIVIDU_SEPARE_MARIE, NO_INDIVIDU_SEPARE_MARIE_CONJOINT, DATE_RECONCILIATION);
 
 		final List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 		final List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
@@ -190,9 +187,7 @@ public class ReconciliationHandlerTest extends AbstractEvenementHandlerTest {
 
 		RegDate DATE_RECONCILIATION_FUTURE = RegDate.get(2080, 1, 1);
 		LOGGER.debug("Test de traitement d'un événement de réconciliation d'un couple.");
-		Individu individu = serviceCivil.getIndividu(NO_INDIVIDU_SEPARE_MARIE, 2008);
-		Individu conjoint = serviceCivil.getIndividu(NO_INDIVIDU_SEPARE_MARIE_CONJOINT, 2008);
-		final Reconciliation reconciliation = createReconciliation(individu, conjoint, DATE_RECONCILIATION_FUTURE);
+		final Reconciliation reconciliation = createReconciliation(NO_INDIVIDU_SEPARE_MARIE, NO_INDIVIDU_SEPARE_MARIE_CONJOINT, DATE_RECONCILIATION_FUTURE);
 
 		final List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 		final List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
@@ -215,45 +210,54 @@ public class ReconciliationHandlerTest extends AbstractEvenementHandlerTest {
 		assertEquals("L'erreur n'est pas la bonne", "La date de l'événement est dans le futur", erreur.getMessage());
 	}
 
-	private Reconciliation createReconciliation(Individu individu, Individu conjoint, RegDate date) {
+	private Reconciliation createReconciliation(final Long noIndividu, final Long noIndividuConjoint, final RegDate date) {
 		/*
 		 * Simulation de séparation
 		 */
-		individu.getEtatsCivils().add(createEtatCivilSeparation(individu, conjoint, DATE_SEPARATION));
-		individu.getEtatsCivils().add(createEtatCivilReconciliation(individu, conjoint, DATE_RECONCILIATION));
-		if (conjoint != null) {
-			conjoint.getEtatsCivils().add(createEtatCivilSeparation(conjoint, individu, DATE_SEPARATION));
-			conjoint.getEtatsCivils().add(createEtatCivilReconciliation(conjoint, individu, DATE_RECONCILIATION));
+		doModificationIndividu(noIndividu, new IndividuModification() {
+			public void modifyIndividu(MockIndividu individu) {
+				individu.getEtatsCivils().add(createEtatCivilSeparation(individu, noIndividuConjoint, DATE_SEPARATION));
+				individu.getEtatsCivils().add(createEtatCivilReconciliation(individu, noIndividuConjoint, DATE_RECONCILIATION));
+			}
+		});
+		if (noIndividuConjoint != null) {
+			doModificationIndividu(noIndividuConjoint, new IndividuModification() {
+				public void modifyIndividu(MockIndividu individu) {
+					individu.getEtatsCivils().add(createEtatCivilSeparation(individu, noIndividu, DATE_SEPARATION));
+					individu.getEtatsCivils().add(createEtatCivilReconciliation(individu, noIndividu, DATE_RECONCILIATION));
+				}
+			});
 		}
 
-
-		MockReconciliation reconciliation = new MockReconciliation();
+		final MockReconciliation reconciliation = new MockReconciliation();
 		reconciliation.setType(TypeEvenementCivil.RECONCILIATION);
-		reconciliation.setIndividu(individu);
-		reconciliation.setConjoint(conjoint);
+		reconciliation.setIndividu(serviceCivil.getIndividu(noIndividu, date.year()));
+		if (noIndividuConjoint != null) {
+			reconciliation.setConjoint(serviceCivil.getIndividu(noIndividuConjoint, date.year()));
+		}
 		reconciliation.setNumeroOfsCommuneAnnonce(5586);
 		reconciliation.setDate(date);
 		return reconciliation;
 	}
 
-	private EtatCivil createEtatCivilSeparation(Individu individu, Individu conjoint, RegDate dateSeparation) {
-		MockEtatCivil separation = new MockEtatCivil();
+	private EtatCivil createEtatCivilSeparation(Individu individu, Long noIndConjoint, RegDate dateSeparation) {
+		final MockEtatCivil separation = new MockEtatCivil();
 		separation.setDateDebutValidite(dateSeparation);
 		separation.setNoSequence(individu.getEtatsCivils().size());
 		separation.setTypeEtatCivil(EnumTypeEtatCivil.SEPARE);
-		if(conjoint!=null){
-		  separation.setNumeroConjoint(conjoint.getNoTechnique());	
+		if (noIndConjoint != null) {
+		    separation.setNumeroConjoint(noIndConjoint);
 		}
 		return separation;
 	}
 
-	private EtatCivil createEtatCivilReconciliation(Individu individu, Individu conjoint, RegDate dateReconciliation) {
-		MockEtatCivil marie = new MockEtatCivil();
+	private EtatCivil createEtatCivilReconciliation(Individu individu, Long noIndConjoint, RegDate dateReconciliation) {
+		final MockEtatCivil marie = new MockEtatCivil();
 		marie.setDateDebutValidite(dateReconciliation);
 		marie.setNoSequence(individu.getEtatsCivils().size());
 		marie.setTypeEtatCivil(EnumTypeEtatCivil.MARIE);
-		if(conjoint!=null){
-		  marie.setNumeroConjoint(conjoint.getNoTechnique());
+		if (noIndConjoint != null) {
+		    marie.setNumeroConjoint(noIndConjoint);
 		}
 		return marie;
 	}
