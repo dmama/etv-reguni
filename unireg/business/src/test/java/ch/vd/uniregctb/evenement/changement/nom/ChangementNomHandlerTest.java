@@ -124,7 +124,7 @@ public class ChangementNomHandlerTest extends AbstractEvenementHandlerTest {
 			Assert.isTrue(l.size() == 1, "L'indexation n'a pas fonctionné");
 
 			// on verifie que le changement a bien été effectué
-			Assert.isTrue(l.get(0).getNom1().startsWith("Dupuid"), "le nouveau nom n'a pas été indexé");
+			Assert.isTrue(l.get(0).getNom1().endsWith("Dupuid"), "le nouveau nom n'a pas été indexé");
 		}
 
 		// le tiers ne doit pas être dirty (postcondition)
@@ -224,7 +224,7 @@ public class ChangementNomHandlerTest extends AbstractEvenementHandlerTest {
 			Assert.isTrue(l.size() == 1, "L'indexation n'a pas fonctionné");
 
 			// on verifie que le changement a bien été effectué
-			assertEquals("le nouveau nom n'a pas été indexé", "Woux Julie", l.get(0).getNom1());
+			assertEquals("le nouveau nom n'a pas été indexé", "Julie Woux", l.get(0).getNom1());
 		}
 
 		// le tiers ne doit plus être dirty (postcondition)

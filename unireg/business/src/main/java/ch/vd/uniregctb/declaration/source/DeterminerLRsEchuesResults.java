@@ -13,6 +13,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.JobResults;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
+import ch.vd.uniregctb.tiers.TiersService;
 
 public class DeterminerLRsEchuesResults extends JobResults<DeterminerLRsEchuesResults.InfoDebiteurAvecLrEchue, DeterminerLRsEchuesResults> {
 
@@ -182,38 +183,40 @@ public class DeterminerLRsEchuesResults extends JobResults<DeterminerLRsEchuesRe
 		}
 	}
 
-	private static String getNomDebiteur(DebiteurPrestationImposable dpi) {
-		final String nom1 = dpi.getNom1();
-		final String nom2 = dpi.getNom2();
-		final boolean nom1Vide = StringUtils.isBlank(nom1);
-		final boolean nom2Vide = StringUtils.isBlank(nom2);
-		final String nom;
-		if (!nom1Vide && !nom2Vide) {
-			nom = String.format("%s %s", nom1.trim(), nom2.trim());
+	/**
+	 * Concatène toutes les chaînes de la liste en une seule chaîne, en utilisant le séparateur donné entre chacune d'entre elles
+	 */
+	private static String concat(List<String> elts, String separator) {
+		final StringBuilder b = new StringBuilder();
+		boolean first = true;
+		for (String elt : elts) {
+			if (!first) {
+				b.append(separator);
+			}
+			b.append(elt);
+			first = false;
 		}
-		else if (!nom2Vide) {
-			nom = nom2.trim();
-		}
-		else if (!nom1Vide) {
-			nom = nom1.trim();
-		}
-		else {
-			nom = "?";
-		}
-		return nom;
+		return b.toString();
+	}
+
+	private String getNomDebiteur(DebiteurPrestationImposable dpi) {
+		final List<String> raisonSociale = tiersService.getRaisonSociale(dpi);
+		return concat(raisonSociale, " ");
 	}
 
 	private final int periodeFiscale;
 	private final RegDate dateTraitement;
+	private final TiersService tiersService;
 
 	private boolean interrompu;
 	public final List<ResultLrEchue> lrEchues = new ArrayList<ResultLrEchue>();
 	public final List<ResultDebiteurNonTraite> ignores = new ArrayList<ResultDebiteurNonTraite>();
 	public final List<ResultErreurDebiteur> erreurs = new ArrayList<ResultErreurDebiteur>();
 
-	public DeterminerLRsEchuesResults(int periodeFiscale, RegDate dateTraitement) {
+	public DeterminerLRsEchuesResults(int periodeFiscale, RegDate dateTraitement, TiersService tiersService) {
 		this.periodeFiscale = periodeFiscale;
 		this.dateTraitement = dateTraitement;
+		this.tiersService = tiersService;
 	}
 
 	public void addErrorException(InfoDebiteurAvecLrEchue element, Exception e) {

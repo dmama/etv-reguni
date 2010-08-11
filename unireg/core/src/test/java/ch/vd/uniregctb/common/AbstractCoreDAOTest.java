@@ -855,6 +855,12 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		return rapport;
 	}
 
+	protected AutreCommunaute addAutreCommunaute(String nom) {
+		final AutreCommunaute communaute = new AutreCommunaute();
+		communaute.setNom(nom);
+		return (AutreCommunaute) hibernateTemplate.merge(communaute);
+	}
+
 	protected DebiteurPrestationImposable addDebiteur() {
 		DebiteurPrestationImposable dpi = new DebiteurPrestationImposable();
 		dpi = (DebiteurPrestationImposable) hibernateTemplate.merge(dpi);

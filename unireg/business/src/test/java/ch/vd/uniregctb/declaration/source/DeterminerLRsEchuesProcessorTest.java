@@ -34,7 +34,7 @@ public class DeterminerLRsEchuesProcessorTest extends BusinessTest {
 		final ListeRecapitulativeDAO lrDAO = getBean(ListeRecapitulativeDAO.class, "lrDAO");
 		final EvenementFiscalService evenementFiscalService = getBean(EvenementFiscalService.class, "evenementFiscalService");
 
-		processor = new DeterminerLRsEchuesProcessor(transactionManager, hibernateTemplate, lrService, delaisService, tiersDAO, lrDAO, evenementFiscalService);
+		processor = new DeterminerLRsEchuesProcessor(transactionManager, hibernateTemplate, lrService, delaisService, tiersDAO, lrDAO, evenementFiscalService, tiersService);
 	}
 
 	@Test

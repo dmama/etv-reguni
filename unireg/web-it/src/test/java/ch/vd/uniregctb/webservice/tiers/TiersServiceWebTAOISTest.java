@@ -677,10 +677,12 @@ public class TiersServiceWebTAOISTest extends AbstractTiersServiceWebTest {
 		 */
 		final AdresseEnvoi adresseEnvoi = debiteur.getAdresseEnvoi();
 		assertNotNull(adresseEnvoi);
-		assertEquals("Café du Commerce", adresseEnvoi.getLigne1());
-		assertEquals("Avenue de Beaulieu 12", adresseEnvoi.getLigne2());
-		assertEquals("1004 Lausanne", adresseEnvoi.getLigne3());
-		assertNull(adresseEnvoi.getLigne4());
+		assertEquals("Sabri Inanç Ertem", adresseEnvoi.getLigne1());
+		assertEquals("Café du Commerce", adresseEnvoi.getLigne2());
+		assertEquals("Avenue de Beaulieu 12", adresseEnvoi.getLigne3());
+		assertEquals("1004 Lausanne", adresseEnvoi.getLigne4());
+		assertNull(adresseEnvoi.getLigne5());
+		assertNull(adresseEnvoi.getLigne6());
 	}
 
 	@Test

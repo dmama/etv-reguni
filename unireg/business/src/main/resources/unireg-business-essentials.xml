@@ -43,7 +43,6 @@
 
 	<bean id="tiersService" class="ch.vd.uniregctb.tiers.TiersServiceImpl">
 		<property name="tiersDAO" ref="tiersDAO" />
-		<property name="tacheDAO" ref="tacheDAO" />
 		<property name="evenementCivilDAO" ref="evenementCivilDAO" />
 		<property name="tiersSearcher" ref="globalTiersSearcher" />
 		<property name="serviceCivilService" ref="serviceCivilService" />
@@ -55,6 +54,7 @@
 		<property name="transactionManager" ref="transactionManager" />
 		<property name="adresseService" ref="adresseService" />
 		<property name="remarqueDAO" ref="remarqueDAO" />
+		<property name="servicePM" ref="servicePersonneMoraleService" />
 	</bean>
 
 	<bean id="metierService" class="ch.vd.uniregctb.metier.MetierServiceImpl">

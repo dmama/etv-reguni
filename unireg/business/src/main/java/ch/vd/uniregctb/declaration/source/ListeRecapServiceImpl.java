@@ -289,7 +289,7 @@ public class ListeRecapServiceImpl implements ListeRecapService, DelegateEditiqu
 	 * @param dateTraitement date déterminante pour savoir si un délai a été dépassé
 	 */
 	public DeterminerLRsEchuesResults determineLRsEchues(int periodeFiscale, RegDate dateTraitement, StatusManager status) throws Exception {
-		final DeterminerLRsEchuesProcessor processor = new DeterminerLRsEchuesProcessor(transactionManager, hibernateTemplate, this, delaisService, tiersDAO, listeRecapDAO, evenementFiscalService);
+		final DeterminerLRsEchuesProcessor processor = new DeterminerLRsEchuesProcessor(transactionManager, hibernateTemplate, this, delaisService, tiersDAO, listeRecapDAO, evenementFiscalService, tiersService);
 		return processor.run(periodeFiscale, dateTraitement, status);
 	}
 

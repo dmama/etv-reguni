@@ -135,9 +135,19 @@ public class ListesNominativesResults extends ListesResults<ListesNominativesRes
 	}
 
 	public void addDebiteurPrestationImposable(DebiteurPrestationImposable debiteur) throws Exception {
-        String nom1 = debiteur.getNom1();
-        String nom2 = debiteur.getNom2();
-        if ((nom1 == null || nom1.trim().length() == 0) && (nom2 == null || nom2.trim().length() == 0)) {
+		final List<String> raisonSociale = tiersService.getRaisonSociale(debiteur);
+		final String nom1;
+		final String nom2;
+		if (raisonSociale.size() > 0) {
+			nom1 = raisonSociale.get(0);
+			if (raisonSociale.size() > 1) {
+				nom2 = raisonSociale.get(1);
+			}
+			else {
+				nom2 = null;
+			}
+		}
+		else {
             nom1 = debiteur.getComplementNom();
             nom2 = null;
         }

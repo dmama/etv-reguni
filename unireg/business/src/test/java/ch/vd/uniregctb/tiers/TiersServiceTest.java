@@ -12,6 +12,7 @@ import junit.framework.Assert;
 import org.apache.commons.lang.mutable.MutableLong;
 import org.apache.log4j.Logger;
 import org.junit.Test;
+import org.springframework.test.annotation.NotTransactional;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
@@ -28,13 +29,17 @@ import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.Nationalite;
 import ch.vd.uniregctb.interfaces.model.Permis;
+import ch.vd.uniregctb.interfaces.model.mock.MockCollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockNationalite;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
+import ch.vd.uniregctb.interfaces.model.mock.MockPersonneMorale;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
+import ch.vd.uniregctb.interfaces.service.mock.MockServicePM;
+import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
@@ -3071,5 +3076,214 @@ public class TiersServiceTest extends BusinessTest {
 			}
 		});
 
+	}
+
+	@NotTransactional
+	@Test
+	public void testGetRaisonSocialeDebiteurSansTiersReferent() throws Exception {
+
+		// mise en place des données fiscales
+		final long dpiId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, date(2009, 1, 1));
+				dpi.setNom1("Tartempion");
+				dpi.setNom2("Toto");
+				dpi.setComplementNom("Titi");
+				return dpi.getNumero();
+			}
+		});
+
+		// vérification de la raison sociale d'un débiteur sans tiers référent
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
+				final List<String> raisonSociale = tiersService.getRaisonSociale(dpi);
+				Assert.assertNotNull(raisonSociale);
+				Assert.assertEquals(2, raisonSociale.size());
+				Assert.assertEquals("Tartempion", raisonSociale.get(0));
+				Assert.assertEquals("Toto", raisonSociale.get(1));
+				return null;
+			}
+		});
+	}
+
+	@NotTransactional
+	@Test
+	public void testGetRaisonSocialeDebiteurAvecTiersReferentPM() throws Exception {
+
+		// mise en place du service PM
+		servicePM.setUp(new MockServicePM() {
+			@Override
+			protected void init() {
+				addPM(MockPersonneMorale.NestleSuisse);
+			}
+		});
+
+		// mise en place des données fiscales
+		final long dpiId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, date(2009, 1, 1));
+				dpi.setNom1("Tartempion");
+				dpi.setNom2("Toto");
+				dpi.setComplementNom("Titi");
+
+				// on indique le tiers référent
+				final Entreprise pm = addEntreprise(MockPersonneMorale.NestleSuisse.getNumeroEntreprise());
+				tiersService.addContactImpotSource(dpi, pm, date(2009, 1, 1));
+
+				return dpi.getNumero();
+			}
+		});
+
+		// vérification de la raison sociale d'un débiteur avec tiers référent
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
+				final List<String> raisonSociale = tiersService.getRaisonSociale(dpi);
+				Assert.assertNotNull(raisonSociale);
+				Assert.assertEquals(1, raisonSociale.size());
+				Assert.assertEquals(MockPersonneMorale.NestleSuisse.getRaisonSociale1(), raisonSociale.get(0));
+				Assert.assertNull(MockPersonneMorale.NestleSuisse.getRaisonSociale2());
+				Assert.assertNull(MockPersonneMorale.NestleSuisse.getRaisonSociale3());
+				return null;
+			}
+		});
+	}
+
+	@NotTransactional
+	@Test
+	public void testGetRaisonSocialeDebiteurAvecTiersReferentPersonnePhysique() throws Exception {
+
+		// mise en place des données fiscales
+		final long dpiId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, date(2009, 1, 1));
+				dpi.setNom1("Tartempion");
+				dpi.setNom2("Toto");
+				dpi.setComplementNom("Titi");
+
+				// on indique le tiers référent
+				final PersonnePhysique pp = addNonHabitant("Albus", "Dumbledore", date(1956, 7, 4), Sexe.MASCULIN);
+				tiersService.addContactImpotSource(dpi, pp, date(2009, 1, 1));
+
+				return dpi.getNumero();
+			}
+		});
+
+		// vérification de la raison sociale d'un débiteur avec tiers référent
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
+				final List<String> raisonSociale = tiersService.getRaisonSociale(dpi);
+				Assert.assertNotNull(raisonSociale);
+				Assert.assertEquals(1, raisonSociale.size());
+				Assert.assertEquals("Albus Dumbledore", raisonSociale.get(0));
+				return null;
+			}
+		});
+	}
+
+	@NotTransactional
+	@Test
+	public void testGetRaisonSocialeDebiteurAvecTiersReferentMenageCommun() throws Exception {
+
+		// mise en place des données fiscales
+		final long dpiId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, date(2009, 1, 1));
+				dpi.setNom1("Tartempion");
+				dpi.setNom2("Toto");
+				dpi.setComplementNom("Titi");
+
+				// on indique le tiers référent
+				final PersonnePhysique m = addNonHabitant("Vernon", "Dursley", date(1956, 7, 4), Sexe.MASCULIN);
+				final PersonnePhysique mme = addNonHabitant("Petunia", "Dursley", date(1956, 2, 4), Sexe.FEMININ);
+				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(m, mme, date(2001, 9, 11), null);
+				tiersService.addContactImpotSource(dpi, ensemble.getMenage(), date(2009, 1, 1));
+
+				return dpi.getNumero();
+			}
+		});
+
+		// vérification de la raison sociale d'un débiteur avec tiers référent
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
+				final List<String> raisonSociale = tiersService.getRaisonSociale(dpi);
+				Assert.assertNotNull(raisonSociale);
+				Assert.assertEquals(2, raisonSociale.size());
+				Assert.assertEquals("Vernon Dursley", raisonSociale.get(0));
+				Assert.assertEquals("Petunia Dursley", raisonSociale.get(1));
+				return null;
+			}
+		});
+	}
+
+	@NotTransactional
+	@Test
+	public void testGetRaisonSocialeDebiteurAvecTiersReferentAutreCommunaute() throws Exception {
+
+		// mise en place des données fiscales
+		final long dpiId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, date(2009, 1, 1));
+				dpi.setNom1("Tartempion");
+				dpi.setNom2("Toto");
+				dpi.setComplementNom("Titi");
+
+				// on indique le tiers référent
+				final AutreCommunaute ac = addAutreCommunaute("Hogwards college");
+				tiersService.addContactImpotSource(dpi, ac, date(2009, 1, 1));
+
+				return dpi.getNumero();
+			}
+		});
+
+		// vérification de la raison sociale d'un débiteur avec tiers référent
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
+				final List<String> raisonSociale = tiersService.getRaisonSociale(dpi);
+				Assert.assertNotNull(raisonSociale);
+				Assert.assertEquals(1, raisonSociale.size());
+				Assert.assertEquals("Hogwards college", raisonSociale.get(0));
+				return null;
+			}
+		});
+	}
+
+	@NotTransactional
+	@Test
+	public void testGetRaisonSocialeDebiteurAvecTiersReferentCollectiviteAdministrative() throws Exception {
+
+		// mise en place des données fiscales
+		final long dpiId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, date(2009, 1, 1));
+				dpi.setNom1("Tartempion");
+				dpi.setNom2("Toto");
+				dpi.setComplementNom("Titi");
+
+				// on indique le tiers référent
+				final CollectiviteAdministrative ca = addCollAdm(MockCollectiviteAdministrative.JusticePaix.DistrictsJuraNordVaudoisEtGrosDeVaud);
+				tiersService.addContactImpotSource(dpi, ca, date(2009, 1, 1));
+
+				return dpi.getNumero();
+			}
+		});
+
+		// vérification de la raison sociale d'un débiteur avec tiers référent
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
+				final List<String> raisonSociale = tiersService.getRaisonSociale(dpi);
+				Assert.assertNotNull(raisonSociale);
+				Assert.assertEquals(2, raisonSociale.size());
+				Assert.assertEquals(MockCollectiviteAdministrative.JusticePaix.DistrictsJuraNordVaudoisEtGrosDeVaud.getNomComplet1(), raisonSociale.get(0));
+				Assert.assertEquals(MockCollectiviteAdministrative.JusticePaix.DistrictsJuraNordVaudoisEtGrosDeVaud.getNomComplet2(), raisonSociale.get(1));
+				Assert.assertNull(MockCollectiviteAdministrative.JusticePaix.DistrictsJuraNordVaudoisEtGrosDeVaud.getNomComplet3());
+				return null;
+			}
+		});
 	}
 }

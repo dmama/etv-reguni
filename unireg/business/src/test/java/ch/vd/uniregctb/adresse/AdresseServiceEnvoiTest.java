@@ -507,10 +507,11 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 
 			AdresseEnvoiDetaillee adresse = adresseService.getAdresseEnvoi(debiteur, null, TypeAdresseFiscale.COURRIER, false);
 			assertNotNull(adresse);
-			assertEquals("Ma petite entreprise", adresse.getLigne1());
-			assertEquals("Av de Beaulieu 3bis", adresse.getLigne2());
-			assertEquals("1000 Lausanne", adresse.getLigne3());
-			assertNull(adresse.getLigne4());
+			assertEquals("Pierre Dupont", adresse.getLigne1());
+			assertEquals("Ma petite entreprise", adresse.getLigne2());
+			assertEquals("Av de Beaulieu 3bis", adresse.getLigne3());
+			assertEquals("1000 Lausanne", adresse.getLigne4());
+			assertNull(adresse.getLigne5());
 			assertTrue(adresse.isSuisse());
 			assertNull(adresse.getSalutations());
 			assertNull(adresse.getFormuleAppel());
@@ -521,8 +522,9 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 
 			List<String> nomCourrier = adresseService.getNomCourrier(debiteur, null, false);
 			assertNotNull(nomCourrier);
-			assertEquals(1, nomCourrier.size());
-			assertEquals("Ma petite entreprise", nomCourrier.get(0));
+			assertEquals(2, nomCourrier.size());
+			assertEquals("Pierre Dupont", nomCourrier.get(0));
+			assertEquals("Ma petite entreprise", nomCourrier.get(1));
 		}
 	}
 
@@ -582,20 +584,22 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 
 			AdresseEnvoiDetaillee adresseCourrier = adresseService.getAdresseEnvoi(debiteur, null, TypeAdresseFiscale.COURRIER, false);
 			assertNotNull(adresseCourrier);
-			assertEquals("Ma petite entreprise", adresseCourrier.getLigne1());
-			assertEquals("Chemin de Riondmorcel 2bis", adresseCourrier.getLigne2());
-			assertEquals("1304 Cossonay-Ville", adresseCourrier.getLigne3());
-			assertNull(adresseCourrier.getLigne4());
+			assertEquals("Pierre Dupont", adresseCourrier.getLigne1());
+			assertEquals("Ma petite entreprise", adresseCourrier.getLigne2());
+			assertEquals("Chemin de Riondmorcel 2bis", adresseCourrier.getLigne3());
+			assertEquals("1304 Cossonay-Ville", adresseCourrier.getLigne4());
+			assertNull(adresseCourrier.getLigne5());
 			assertTrue(adresseCourrier.isSuisse());
 			assertNull(adresseCourrier.getSalutations());
 			assertNull(adresseCourrier.getFormuleAppel());
 
 			AdresseEnvoiDetaillee adresseDomicile = adresseService.getAdresseEnvoi(debiteur, null, TypeAdresseFiscale.DOMICILE, false);
 			assertNotNull(adresseDomicile);
-			assertEquals("Ma petite entreprise", adresseDomicile.getLigne1());
-			assertEquals("Av de Beaulieu 3bis", adresseDomicile.getLigne2());
-			assertEquals("1000 Lausanne", adresseDomicile.getLigne3());
-			assertNull(adresseDomicile.getLigne4());
+			assertEquals("Pierre Dupont", adresseDomicile.getLigne1());
+			assertEquals("Ma petite entreprise", adresseDomicile.getLigne2());
+			assertEquals("Av de Beaulieu 3bis", adresseDomicile.getLigne3());
+			assertEquals("1000 Lausanne", adresseDomicile.getLigne4());
+			assertNull(adresseDomicile.getLigne5());
 			assertTrue(adresseDomicile.isSuisse());
 			assertNull(adresseDomicile.getSalutations());
 			assertNull(adresseDomicile.getFormuleAppel());
@@ -605,8 +609,9 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 
 			List<String> nomCourrier = adresseService.getNomCourrier(debiteur, null, false);
 			assertNotNull(nomCourrier);
-			assertEquals(1, nomCourrier.size());
-			assertEquals("Ma petite entreprise", nomCourrier.get(0));
+			assertEquals(2, nomCourrier.size());
+			assertEquals("Pierre Dupont", nomCourrier.get(0));
+			assertEquals("Ma petite entreprise", nomCourrier.get(1));
 		}
 	}
 
@@ -668,10 +673,12 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 
 			AdresseEnvoiDetaillee adresse = adresseService.getAdresseEnvoi(tribunal, null, TypeAdresseFiscale.COURRIER, false);
 			assertNotNull(adresse);
-			assertEquals("Service du Personnel", adresse.getLigne1());
-			assertEquals("Route du Signal 8", adresse.getLigne2());
-			assertEquals("1014 Lausanne", adresse.getLigne3());
-			assertNull(adresse.getLigne4());
+			assertEquals("Tribunal cantonal", adresse.getLigne1());
+			assertEquals("Palais de justice de l'Hermitage", adresse.getLigne2());
+			assertEquals("Service du Personnel", adresse.getLigne3());
+			assertEquals("Route du Signal 8", adresse.getLigne4());
+			assertEquals("1014 Lausanne", adresse.getLigne5());
+			assertNull(adresse.getLigne6());
 			assertTrue(adresse.isSuisse());
 			assertNull(adresse.getSalutations());
 			assertNull(adresse.getFormuleAppel());
@@ -682,8 +689,10 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 
 			List<String> nomCourrier = adresseService.getNomCourrier(tribunal, null, false);
 			assertNotNull(nomCourrier);
-			assertEquals(1, nomCourrier.size());
-			assertEquals("Service du Personnel", nomCourrier.get(0));
+			assertEquals(3, nomCourrier.size());
+			assertEquals("Tribunal cantonal", nomCourrier.get(0));
+			assertEquals("Palais de justice de l'Hermitage", nomCourrier.get(1));
+			assertEquals("Service du Personnel", nomCourrier.get(2));
 		}
 	}
 
@@ -724,22 +733,24 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 
 			AdresseEnvoiDetaillee adresseCourrier = adresseService.getAdresseEnvoi(debiteur, null, TypeAdresseFiscale.COURRIER, false);
 			assertNotNull(adresseCourrier);
-			assertEquals("Usine d'Orbe", adresseCourrier.getLigne1());
-			assertEquals("Finance et Audit", adresseCourrier.getLigne2());
-			assertEquals("pa Myriam Steiner / CP 352", adresseCourrier.getLigne3()); // il s'agit de la rue, cette adresse est très mal définie dans la base, en fait.
-			assertEquals("1800 Vevey", adresseCourrier.getLigne4());
-			assertNull(adresseCourrier.getLigne5());
+			assertEquals("Nestlé Suisse S.A.", adresseCourrier.getLigne1());
+			assertEquals("Usine d'Orbe", adresseCourrier.getLigne2());
+			assertEquals("Finance et Audit", adresseCourrier.getLigne3());
+			assertEquals("pa Myriam Steiner / CP 352", adresseCourrier.getLigne4()); // il s'agit de la rue, cette adresse est très mal définie dans la base, en fait.
+			assertEquals("1800 Vevey", adresseCourrier.getLigne5());
+			assertNull(adresseCourrier.getLigne6());
 			assertTrue(adresseCourrier.isSuisse());
 			assertNull(adresseCourrier.getSalutations());
 			assertNull(adresseCourrier.getFormuleAppel());
 
 			AdresseEnvoiDetaillee adresseDomicile = adresseService.getAdresseEnvoi(debiteur, null, TypeAdresseFiscale.DOMICILE, false);
 			assertNotNull(adresseDomicile);
-			assertEquals("Usine d'Orbe", adresseDomicile.getLigne1());
-			assertEquals("Entre-Deux-Villes", adresseDomicile.getLigne2());
-			assertEquals("1800 Vevey", adresseDomicile.getLigne3());
-			assertNull(adresseDomicile.getLigne4());
+			assertEquals("Nestlé Suisse S.A.", adresseDomicile.getLigne1());
+			assertEquals("Usine d'Orbe", adresseDomicile.getLigne2());
+			assertEquals("Entre-Deux-Villes", adresseDomicile.getLigne3());
+			assertEquals("1800 Vevey", adresseDomicile.getLigne4());
 			assertNull(adresseDomicile.getLigne5());
+			assertNull(adresseDomicile.getLigne6());
 			assertTrue(adresseDomicile.isSuisse());
 			assertNull(adresseDomicile.getSalutations());
 			assertNull(adresseDomicile.getFormuleAppel());
@@ -749,8 +760,9 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 
 			List<String> nomCourrier = adresseService.getNomCourrier(debiteur, null, false);
 			assertNotNull(nomCourrier);
-			assertEquals(1, nomCourrier.size());
-			assertEquals("Usine d'Orbe", nomCourrier.get(0));
+			assertEquals(2, nomCourrier.size());
+			assertEquals("Nestlé Suisse S.A.", nomCourrier.get(0));
+			assertEquals("Usine d'Orbe", nomCourrier.get(1));
 		}
 	}
 
@@ -809,31 +821,33 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 
 			AdresseEnvoiDetaillee adresseCourrier = adresseService.getAdresseEnvoi(debiteur, null, TypeAdresseFiscale.COURRIER, false);
 			assertNotNull(adresseCourrier);
-			assertEquals("Usine d'Orbe", adresseCourrier.getLigne1());
-			assertEquals("La plaine", adresseCourrier.getLigne2());
-			assertEquals("1350 Orbe", adresseCourrier.getLigne3());
-			assertNull(adresseCourrier.getLigne4());
+			assertEquals("Nestlé Suisse S.A.", adresseCourrier.getLigne1());
+			assertEquals("Usine d'Orbe", adresseCourrier.getLigne2());
+			assertEquals("La plaine", adresseCourrier.getLigne3());
+			assertEquals("1350 Orbe", adresseCourrier.getLigne4());
+			assertNull(adresseCourrier.getLigne5());
 			assertTrue(adresseCourrier.isSuisse());
 			assertNull(adresseCourrier.getSalutations());
 			assertNull(adresseCourrier.getFormuleAppel());
 
 			AdresseEnvoiDetaillee adresseDomicile = adresseService.getAdresseEnvoi(debiteur, null, TypeAdresseFiscale.DOMICILE, false);
 			assertNotNull(adresseDomicile);
-			assertEquals("Usine d'Orbe", adresseDomicile.getLigne1());
-			assertEquals("Entre-Deux-Villes", adresseDomicile.getLigne2());
-			assertEquals("1800 Vevey", adresseDomicile.getLigne3());
-			assertNull(adresseDomicile.getLigne4());
+			assertEquals("Nestlé Suisse S.A.", adresseDomicile.getLigne1());
+			assertEquals("Usine d'Orbe", adresseDomicile.getLigne2());
+			assertEquals("Entre-Deux-Villes", adresseDomicile.getLigne3());
+			assertEquals("1800 Vevey", adresseDomicile.getLigne4());
+			assertNull(adresseDomicile.getLigne5());
 			assertTrue(adresseDomicile.isSuisse());
 			assertNull(adresseDomicile.getSalutations());
 			assertNull(adresseDomicile.getFormuleAppel());
 
 			AdresseEnvoiDetaillee adresseRepresentation = adresseService.getAdresseEnvoi(debiteur, null, TypeAdresseFiscale.REPRESENTATION, false);
 			assertNotNull(adresseRepresentation);
-			assertEquals("Usine d'Orbe", adresseRepresentation.getLigne1());
-			assertEquals("Finance et Audit", adresseRepresentation.getLigne2());
-			assertEquals("pa Myriam Steiner / CP 352", adresseRepresentation.getLigne3());
-			assertEquals("1800 Vevey", adresseRepresentation.getLigne4());
-			assertNull(adresseRepresentation.getLigne5());
+			assertEquals("Nestlé Suisse S.A.", adresseRepresentation.getLigne1());
+			assertEquals("Usine d'Orbe", adresseRepresentation.getLigne2());
+			assertEquals("Finance et Audit", adresseRepresentation.getLigne3());
+			assertEquals("pa Myriam Steiner / CP 352", adresseRepresentation.getLigne4());
+			assertEquals("1800 Vevey", adresseRepresentation.getLigne5());
 			assertNull(adresseRepresentation.getLigne6());
 			assertTrue(adresseRepresentation.isSuisse());
 			assertNull(adresseRepresentation.getSalutations());
@@ -843,8 +857,9 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 
 			List<String> nomCourrier = adresseService.getNomCourrier(debiteur, null, false);
 			assertNotNull(nomCourrier);
-			assertEquals(1, nomCourrier.size());
-			assertEquals("Usine d'Orbe", nomCourrier.get(0));
+			assertEquals(2, nomCourrier.size());
+			assertEquals("Nestlé Suisse S.A.", nomCourrier.get(0));
+			assertEquals("Usine d'Orbe", nomCourrier.get(1));
 		}
 	}
 

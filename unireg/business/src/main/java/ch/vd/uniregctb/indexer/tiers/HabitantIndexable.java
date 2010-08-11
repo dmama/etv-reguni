@@ -39,16 +39,16 @@ public class HabitantIndexable extends PersonnePhysiqueIndexable {
 		final HistoriqueIndividu histo = individu.getDernierHistoriqueIndividu();
 
 		data.setNumeros(IndexerFormatHelper.objectToString(tiers.getNumero()));
-		data.addAutresNom(histo.getNom());
 		data.addAutresNom(histo.getPrenom());
+		data.addAutresNom(histo.getNom());
 		data.addAutresNom(histo.getNomNaissance());
 		data.setDateNaissance(IndexerFormatHelper.objectToString(individu.getDateNaissance()));
 		data.setNomRaison(histo.getNom());
 		data.addNumeroAssureSocial(individu.getNouveauNoAVS());
 		data.addNumeroAssureSocial(histo.getNoAVS());
 		data.setNoSymic(individu.getNumeroRCE());
-		data.addNom1(histo.getNom());
 		data.addNom1(histo.getPrenom());
+		data.addNom1(histo.getNom());
 
 		if (pp.getDateDeces() != null) { //surcharge de la date de décès
 			data.setDateDeces(IndexerFormatHelper.objectToString(pp.getDateDeces()));
