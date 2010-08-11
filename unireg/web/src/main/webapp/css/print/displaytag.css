@@ -29,11 +29,20 @@ th.order2 {
 }
 
 tr.odd {
-	
+
 }
 
 tr.even {
 	background-color: #eff3fe;
+}
+
+tr.strike td {
+	text-decoration:line-through;
+}
+
+tr.horscanton {
+	color: blue;
+	font-weight: bold;
 }
 
 .pagebanner {
@@ -72,11 +81,4 @@ tr.even {
 	visibility: hidden;
 }
 
-.strike {
-	text-decoration: line-through;
-}
 
-.horscanton {
-	color: blue;
-	font-weight: bold;
-}

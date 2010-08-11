@@ -48,7 +48,7 @@ function toggleRowsIsHistoPeriodicite(tableName,elementId, numCol,numColActive){
 		for (i=1 ; i< len; i++){
 			if (!E$(elementId).checked ){
 				var x = tbl.rows[i].cells;
-				if (((trim(x[numCol].innerHTML) == '') && (x[numCol].innerHTML.indexOf('strike')== -1))||(x[numColActive].innerHTML.match('Active'))){
+				if ((trim(x[numCol].innerHTML) == '') && (!hasClassName(tbl.rows[i], 'strike'))||(x[numColActive].innerHTML.match('Active'))){
 					tbl.rows[i].style.display = '';
 				}else {
 					tbl.rows[i].style.display = 'none';
@@ -64,15 +64,15 @@ function toggleRowsIsHistoPeriodicite(tableName,elementId, numCol,numColActive){
 * Toggle rows is actif
 */
 function toggleRowsIsActif(tableName, elementId, numCol){
-	
+
 	var tbl = E$(tableName);
 	if (tbl != null) {
 		var len = tbl.rows.length;
-		
+
 		for (i=1 ; i< len; i++){
-			if (!E$(elementId).checked ){		
+			if (!E$(elementId).checked ){
 				var x = tbl.rows[i].cells;
-				if (x[numCol].innerHTML.indexOf('strike')== -1){
+				if ((x[numCol].innerHTML.indexOf('strike')== -1) && (!hasClassName(tbl.rows[i], 'strike'))){
 					tbl.rows[i].style.display = '';
 				}else {
 					tbl.rows[i].style.display = 'none';
@@ -260,3 +260,51 @@ function togglePanels(elementId, element1, element2) {
 		Element.hide(element2);
 	}
 }
+
+	// ----------------------------------------------------------------------------
+// HasClassName
+//
+// Description : returns boolean indicating whether the object has the class name
+//    built with the understanding that there may be multiple classes
+//
+// Arguments:
+//    objElement              - element to manipulate
+//    strClass                - class name to find
+//
+function hasClassName(objElement, strClass)
+   {
+
+   // if there is a class
+   if ( objElement.className )
+      {
+
+      // the classes are just a space separated list, so first get the list
+      var arrList = objElement.className.split(' ');
+
+      // get uppercase class for comparison purposes
+      var strClassUpper = strClass.toUpperCase();
+
+      // find all instances and remove them
+      for ( var i = 0; i < arrList.length; i++ )
+         {
+
+         // if class found
+         if ( arrList[i].toUpperCase() == strClassUpper )
+            {
+
+            // we found it
+            return true;
+
+            }
+
+         }
+
+      }
+
+   // if we got here then the class name is not there
+   return false;
+
+   }
+//
+// HasClassName
+// ----------------------------------------------------------------------------

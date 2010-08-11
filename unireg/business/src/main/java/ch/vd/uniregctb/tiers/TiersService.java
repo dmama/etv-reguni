@@ -1069,6 +1069,14 @@ public interface TiersService {
 
 	Set<DebiteurPrestationImposable> getDebiteursPrestationImposable(Contribuable contribuable);
 
+
+	/**Retourne la date de début de validité pour une nouvelle périodicité calculé en fonction
+	 * de la dernière LR émise
+	 * @param debiteur
+	 * @return ladate de debut de validite calculée
+	 */
+	public RegDate getDateDebutNouvellePeriodicite(DebiteurPrestationImposable debiteur);
+
 	/**
 	 * @param menage un ménage commun
 	 * @return l'ensemble des personnes physiques ayant fait ou faisant partie du ménage commun (0, 1 ou 2 personnes max, par définition) en ignorant les rapports annulés

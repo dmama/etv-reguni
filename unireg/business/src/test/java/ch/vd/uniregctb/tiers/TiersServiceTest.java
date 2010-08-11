@@ -3058,4 +3058,18 @@ public class TiersServiceTest extends BusinessTest {
 			}
 		});
 	}
+
+	@Test
+	public void testGetDateDebutValiditeNouvellePeriodicite() throws Exception {
+		loadDatabase("TiersServiceTest.xml");
+		doInNewTransaction(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(1234L);
+				assertEquals(RegDate.get(2009,01,01),tiersService.getDateDebutNouvellePeriodicite(dpi));
+				return null;
+			}
+		});
+
+	}
 }
