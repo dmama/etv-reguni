@@ -63,28 +63,14 @@ public abstract class GenericEvenementAdapter implements EvenementCivil {
 		this.conjointPPId = evenement.getHabitantConjointId();
 
 		/*
-		 * Récupération de l'année de l'événement (on se positionne a la
-		 * veille de l'événement)
+		 * Récupération de l'année de l'événement (on s'intéresse à tout ce qui s'est passé avant)
 		 */
-		final RegDate veille = date.getOneDayBefore();
-		final int anneeEvenement = date.year();
+		anneeReference = date.year();
 
 		/*
-		 * Récupération des informations sur l'individu depuis le host. En
-		 * plus des états civils, on veut les adresses, le conjoint et les
-		 * enfants
+		 * Récupération des informations sur l'individu depuis le host. En plus des états civils, on peut vouloir les adresses, le conjoint,
+		 * les enfants... (enfin, chaque adapteur d'événement sait ce dont il a besoin en plus...)
 		 */
-		anneeReference = veille.year();
-
-		switch (this.type) {
-		case NAISSANCE:
-		case CORREC_FILIATION:
-		case VEUVAGE:
-		case DECES:
-			anneeReference = anneeEvenement;
-			break;
-		}
-
 		final Set<EnumAttributeIndividu> requiredParts = new HashSet<EnumAttributeIndividu>();
 		if (evenement.getNumeroIndividuConjoint() != null || (dataEventService != null && forceRefreshCacheConjoint())) {
 			requiredParts.add(EnumAttributeIndividu.CONJOINT);
