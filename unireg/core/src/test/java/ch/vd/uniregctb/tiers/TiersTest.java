@@ -257,4 +257,35 @@ public class TiersTest extends WithoutSpringTest {
 		tiers.addDeclaration(d5);
 		assertEquals(Integer.valueOf(2), d5.getNumero());
 	}
+
+	@Test
+	public void testGetDerniereDeclaration(){
+		final PeriodeFiscale periode2008 = new PeriodeFiscale();
+		periode2008.setAnnee(2008);
+
+		final PeriodeFiscale periode2009 = new PeriodeFiscale();
+		periode2009.setAnnee(2009);
+
+		final PersonnePhysique tiers = new PersonnePhysique(true);
+		assertEmpty(tiers.getDeclarations());
+
+		// 2008
+
+		DeclarationImpotOrdinaire d1 = new DeclarationImpotOrdinaire();
+		d1.setPeriode(periode2008);
+		tiers.addDeclaration(d1);
+
+		 // 2009
+		DeclarationImpotOrdinaire d2 = new DeclarationImpotOrdinaire();
+		d2.setPeriode(periode2009);
+		tiers.addDeclaration(d2);
+		assertEquals(d2.getId(),tiers.getDerniereDeclaration().getId());
+		DeclarationImpotOrdinaire d3 = new DeclarationImpotOrdinaire();
+		d3.setPeriode(periode2009);
+		tiers.addDeclaration(d3);
+		d3.setAnnule(true);
+		assertEquals(d2.getId(),tiers.getDerniereDeclaration().getId());
+
+
+	}
 }

@@ -5,10 +5,11 @@ import java.util.Date;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.uniregctb.common.Annulable;
 import ch.vd.uniregctb.type.PeriodeDecompte;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
 
-public class PeriodiciteView implements Comparable<PeriodiciteView> {
+public class PeriodiciteView implements Comparable<PeriodiciteView>, Annulable {
 
 	Long id;
 

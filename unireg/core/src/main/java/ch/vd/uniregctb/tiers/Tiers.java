@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -916,6 +917,25 @@ public abstract class Tiers extends HibernateEntity implements Validateable, Bus
 		}
 
 		return result;
+	}
+
+	/**Retourne la dernière declaration non annulée du tiers
+	 *
+	 * @return  la derniere declaration ou null si le tiers n'a aucune déclaration
+	 */
+	@Transient
+	public Declaration getDerniereDeclaration(){
+		List<Declaration> listeTriees = getDeclarationsSorted();
+		 final ListIterator<Declaration> iterator = listeTriees.listIterator(listeTriees.size());
+			while (iterator.hasPrevious()) {
+				final Declaration candidate = iterator.previous();
+				if (!candidate.isAnnule()) {
+					return candidate;
+
+				}
+			}
+		return null;
+
 	}
 
 	/**

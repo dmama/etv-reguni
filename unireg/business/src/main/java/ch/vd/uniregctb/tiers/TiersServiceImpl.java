@@ -2150,6 +2150,13 @@ public class TiersServiceImpl implements TiersService {
 				return courante;
 			}
 
+			//[UNIREG-2683]dans le cas d'une périodicité UNIQUE, la période de décompte ne doit pas être historisée le changemnt doit être immediat
+			if (courante.getPeriodiciteDecompte() == PeriodiciteDecompte.UNIQUE && courante.getPeriodeDecompte() != periodeDecompte){
+				// la periodicité est toujours de type UNIQUE, seule la période change, on met à jour la périodicité courante
+				courante.setPeriodeDecompte(periodeDecompte);
+				return courante;
+			}
+
 			final RegDate veilleDebut = dateDebut.getOneDayBefore();
 			if (courante.getDateDebut() != null && courante.getDateDebut().isAfter(veilleDebut)) {
 				// la périodicité courante est masquée par le nouvelle périodicité, on l'annule (et on continue de boucler)
@@ -3303,6 +3310,17 @@ public class TiersServiceImpl implements TiersService {
 		}
 
 		return debiteurs;
+	}
+
+	public RegDate getDateDebutNouvellePeriodicite(DebiteurPrestationImposable debiteur) {
+		RegDate debutValidite = null;
+		int anneeDebut = RegDate.get().year()+1;
+		Declaration derniereDeclaration = debiteur.getDerniereDeclaration();
+		if(derniereDeclaration !=null){
+			anneeDebut = derniereDeclaration.getPeriode().getAnnee() +1;
+		}
+		debutValidite = RegDate.get(anneeDebut,1,1);
+		return debutValidite;
 	}
 
 	private static boolean isForVaudoisSource(ForFiscalPrincipal ffp) {

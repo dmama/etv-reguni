@@ -468,9 +468,9 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 			dpi.setSansListeRecapitulative(((DebiteurPrestationImposable)tiers).getSansListeRecapitulative());
 			dpi.setSansRappel(((DebiteurPrestationImposable)tiers).getSansRappel());
 
-			//la nouvelle periodicité a une debut de validité au 01.01.annee +1
-			final int anneeDebut = RegDate.get().year()+1;
-			RegDate debutValidite = RegDate.get(anneeDebut,1,1);
+			//Calcul de la date de début de validité de la nouvelle périodicité
+
+			RegDate debutValidite = tiersService.getDateDebutNouvellePeriodicite(dpi);
 			PeriodeDecompte periodeDecompte = null;
 			final PeriodiciteDecompte periodiciteDecompte = tiersView.getPeriodicite().getPeriodiciteDecompte();
 			if(PeriodiciteDecompte.UNIQUE.equals(periodiciteDecompte)){
