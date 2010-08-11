@@ -7,11 +7,9 @@
 <c:if test="${page == 'edit' }">
 	<c:set var="url" value="edit.do" />
 </c:if>
+
 <c:if test="${not empty command.dossiersApparentes}">
-<display:table name="command.dossiersApparentes" id="dossierApparente"
-		pagesize="10"
-		requestURI="${url}"
-		class="display">
+<display:table name="command.dossiersApparentes" id="dossierApparente" pagesize="10" requestURI="${url}" class="display">
 	<display:column sortable ="true" titleKey="label.rapport.tiers">
 		<c:if test="${dossierApparente.annule}"><strike></c:if>
 			<fmt:message key="option.rapport.entre.tiers.${dossierApparente.sensRapportEntreTiers}.${dossierApparente.typeRapportEntreTiers}" />
@@ -36,15 +34,18 @@
 			<a href="../tiers/visu.do?id=${dossierApparente.numero}&rid=${tiersGeneral.numero}"><unireg:numCTB numero="${dossierApparente.numero}"></unireg:numCTB></a>
 			<c:if test="${dossierApparente.annule}"></strike></c:if>
 		</c:if>
+		<c:if test="${dossierApparente.numero == null && dossierApparente.messageNumeroAbsent != null}">
+			<div class="flash-warning"><c:out value="${dossierApparente.messageNumeroAbsent}"/></div>
+		</c:if>
 	</display:column>
 	
 	<display:column sortable ="true" titleKey="label.nom.raison">
 		<c:if test="${dossierApparente.annule}"><strike></c:if>
 		<c:if test="${dossierApparente.nomCourrier1 != null }">
-			${dossierApparente.nomCourrier1}
+			<c:out value="${dossierApparente.nomCourrier1}"/>
 		</c:if>
 		<c:if test="${dossierApparente.nomCourrier2 != null }">
-			<br />${dossierApparente.nomCourrier2}
+			<br/><c:out value="${dossierApparente.nomCourrier2}"/>
 		</c:if>
 		<c:if test="${dossierApparente.annule}"></strike></c:if>
 	</display:column>
