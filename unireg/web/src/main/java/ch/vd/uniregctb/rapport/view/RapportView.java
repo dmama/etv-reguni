@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.common.Annulable;
 import ch.vd.uniregctb.common.BaseComparator;
 import ch.vd.uniregctb.common.NomCourrierViewPart;
 import ch.vd.uniregctb.general.view.TiersGeneralView;
@@ -17,7 +18,7 @@ import ch.vd.uniregctb.type.TypeActivite;
  * @author xcifde
  *
  */
-public class RapportView implements Comparable<RapportView> {
+public class RapportView implements Comparable<RapportView>, Annulable {
 
 	private static BaseComparator<RapportView> comparator = new BaseComparator<RapportView>(new String[] {
 			"annule", "dateDebut"
