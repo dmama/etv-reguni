@@ -127,7 +127,7 @@ public abstract class EvenementScenario extends NorentesScenario {
 		return addForFiscalPrincipal(tiers, commune.getNoOFSEtendu(), typeAutoriteFiscale, debut, fin, motifDebut, motifFin);
 	}
 
-	protected ForFiscalPrincipal addForFiscalprincipal(Tiers tiers, Pays pays, RegDate debut, RegDate fin, MotifFor motifDebut, MotifFor motifFin) {
+	protected ForFiscalPrincipal addForFiscalPrincipal(Tiers tiers, Pays pays, RegDate debut, RegDate fin, MotifFor motifDebut, MotifFor motifFin) {
 		Assert.notNull(pays);
 		Assert.isFalse(pays.isSuisse());
 		return addForFiscalPrincipal(tiers, pays.getNoOFS(), TypeAutoriteFiscale.PAYS_HS, debut, fin, motifDebut, motifFin);
