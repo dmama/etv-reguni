@@ -9,22 +9,22 @@
 </c:if>
 <c:if test="${not empty command.contribuablesAssocies}">
 	<display:table 	name="command.contribuablesAssocies" id="contribuableAssocie" pagesize="10" 
-					requestURI="${url}" class="display">
+					requestURI="${url}" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
 		<display:column sortable ="true" titleKey="label.numero.contribuable" sortProperty="numero" >
-			<c:if test="${contribuableAssocie.annule}"><strike></c:if>
+
 			<a href="../tiers/visu.do?id=${contribuableAssocie.numero}"><unireg:numCTB
 				numero="${contribuableAssocie.numero}"></unireg:numCTB></a>
 			<c:if test="${contribuableAssocie.annule}"></strike></c:if>
 		</display:column>
 		<display:column sortable ="true" titleKey="label.nom.raison">
-			<c:if test="${contribuableAssocie.annule}"><strike></c:if>
+
 			<c:if test="${contribuableAssocie.nomCourrier1 != null }">
 				${contribuableAssocie.nomCourrier1}
 			</c:if>
 			<c:if test="${contribuableAssocie.nomCourrier2 != null }">
 				<br />${contribuableAssocie.nomCourrier2}
 			</c:if>
-			<c:if test="${contribuableAssocie.annule}"></strike></c:if>
+
 		</display:column>
 		<display:column style="action">
 			<c:if test="${page == 'visu' }">
