@@ -171,6 +171,7 @@ public class TiersManager implements MessageSourceAware {
 		}
 		catch (PlusieursPersonnesPhysiquesAvecMemeNumeroIndividuException e) {
 			LOGGER.warn(String.format("Détermination impossible du tiers associé à l'individu %d : %s", autre.getNoTechnique(), e.getMessage()));
+			rapportView.setMessageNumeroAbsent(String.format("Doublon détecté pour individu %d", autre.getNoTechnique()));
 		}
 
 		final String nomBrut = tiersService.getNomPrenom(autre);
@@ -305,7 +306,7 @@ public class TiersManager implements MessageSourceAware {
 	 * @throws AdresseException
 	 */
 	protected List<RapportView> getRapports(Tiers tiers) throws AdresseException {
-		List<RapportView> rapportsView = new ArrayList<RapportView>();
+		final List<RapportView> rapportsView = new ArrayList<RapportView>();
 
 		// Rapport entre tiers Objet
 		for (RapportEntreTiers rapportEntreTiers : tiers.getRapportsObjet()) {
@@ -371,18 +372,18 @@ public class TiersManager implements MessageSourceAware {
 	 * @throws AdresseException
 	 */
 	protected void setContribuablesAssocies(TiersView tiersView, DebiteurPrestationImposable debiteur) throws AdresseException {
-		List<RapportView> rapportsView = new ArrayList<RapportView>();
+		final List<RapportView> rapportsView = new ArrayList<RapportView>();
 
 		// Rapport entre tiers Objet
-		Set<RapportEntreTiers> rapports = debiteur.getRapportsObjet();
+		final Set<RapportEntreTiers> rapports = debiteur.getRapportsObjet();
 		for (RapportEntreTiers rapportEntreTiers : rapports) {
 			if (rapportEntreTiers.getType().equals(TypeRapportEntreTiers.CONTACT_IMPOT_SOURCE)) {
-				RapportView rapportView = new RapportView();
+				final RapportView rapportView = new RapportView();
 				rapportView.setId(rapportEntreTiers.getId());
 				rapportView.setAnnule(rapportEntreTiers.isAnnule());
-				Tiers tiersSujet = tiersDAO.get(rapportEntreTiers.getSujetId());
+				final Tiers tiersSujet = tiersDAO.get(rapportEntreTiers.getSujetId());
 				rapportView.setNumero(tiersSujet.getNumero());
-				List<String> nomCourrier = getAdresseService().getNomCourrier(tiersSujet, null, false);
+				final List<String> nomCourrier = getAdresseService().getNomCourrier(tiersSujet, null, false);
 				rapportView.setNomCourrier(nomCourrier);
 				rapportsView.add(rapportView);
 			}

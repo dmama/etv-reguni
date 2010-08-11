@@ -99,14 +99,20 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 
 		rapportView.setSensRapportEntreTiers(sensRapportEntreTiers);
 		rapportView.setTypeRapportEntreTiers(TypeRapportEntreTiersWeb.fromCore(rapportEntreTiers.getType()));
-		Long numero = null;
-		if (sensRapportEntreTiers.equals(SensRapportEntreTiers.OBJET)) {
-			numero = rapportEntreTiers.getSujetId();
-		}
-		if (sensRapportEntreTiers.equals(SensRapportEntreTiers.SUJET)) {
-			numero = rapportEntreTiers.getObjetId();
+		final Long numero;
+		switch (sensRapportEntreTiers) {
+			case OBJET:
+				numero = rapportEntreTiers.getSujetId();
+				break;
+			case SUJET:
+				numero = rapportEntreTiers.getObjetId();
+				break;
+			default:
+				numero = null;
+				break;
 		}
 		rapportView.setNumero(numero);
+
 		final Tiers tiers = getTiersService().getTiers(numero);
 		//récupération nomCourrier1 et nomCourrier2
 		List<String> nomCourrier = getAdresseService().getNomCourrier(tiers, null, false);

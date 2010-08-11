@@ -43,6 +43,11 @@ public class RapportView implements Comparable<RapportView> {
 
 	private Long numero;
 
+	/**
+	 * Message à afficher en lieu et place du numéro de contribuable si celui-ci est absent
+	 */
+	private String messageNumeroAbsent;
+
 	private final NomCourrierViewPart nomCourrier = new NomCourrierViewPart();
 
 	private String natureRapportEntreTiers;
@@ -135,6 +140,14 @@ public class RapportView implements Comparable<RapportView> {
 
 	public void setNumero(Long numero) {
 		this.numero = numero;
+	}
+
+	public String getMessageNumeroAbsent() {
+		return messageNumeroAbsent;
+	}
+
+	public void setMessageNumeroAbsent(String messageNumeroAbsent) {
+		this.messageNumeroAbsent = messageNumeroAbsent;
 	}
 
 	public void setNomCourrier(List<String> nomCourrier) {
