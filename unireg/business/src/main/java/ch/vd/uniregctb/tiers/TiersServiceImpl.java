@@ -52,8 +52,10 @@ import ch.vd.uniregctb.interfaces.model.HistoriqueIndividu;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.Nationalite;
 import ch.vd.uniregctb.interfaces.model.Permis;
+import ch.vd.uniregctb.interfaces.model.PersonneMorale;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleService;
 import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
 import ch.vd.uniregctb.situationfamille.SituationFamilleService;
 import ch.vd.uniregctb.situationfamille.VueSituationFamille;
@@ -92,10 +94,10 @@ public class TiersServiceImpl implements TiersService {
 	private ServiceInfrastructureService serviceInfra;
 	private ServiceCivilService serviceCivilService;
 	private TacheService tacheService;
-	private TacheDAO tacheDAO;
 	private SituationFamilleService situationFamilleService;
 	private AdresseService adresseService;
 	private RemarqueDAO remarqueDAO;
+	private ServicePersonneMoraleService servicePM;
 	
 	private HibernateTemplate hibernateTemplate;
 	private PlatformTransactionManager transactionManager;
@@ -121,10 +123,6 @@ public class TiersServiceImpl implements TiersService {
 
 	public void setTiersDAO(TiersDAO tiersDAO) {
 		this.tiersDAO = tiersDAO;
-	}
-
-	public void setTacheDAO(TacheDAO tacheDAO) {
-		this.tacheDAO = tacheDAO;
 	}
 
 	public ServiceInfrastructureService getServiceInfra() {
@@ -161,6 +159,10 @@ public class TiersServiceImpl implements TiersService {
 
 	public void setRemarqueDAO(RemarqueDAO remarqueDAO) {
 		this.remarqueDAO = remarqueDAO;
+	}
+
+	public void setServicePM(ServicePersonneMoraleService servicePM) {
+		this.servicePM = servicePM;
 	}
 
 	/**
@@ -3299,7 +3301,7 @@ public class TiersServiceImpl implements TiersService {
 		if (rapports != null) {
 			for (RapportEntreTiers r : rapports) {
 				if (r.isValidAt(null) && r instanceof ContactImpotSource) {
-					final Long debiteurId = (Long) r.getObjetId();
+					final Long debiteurId = r.getObjetId();
 					final DebiteurPrestationImposable d = (DebiteurPrestationImposable) tiersDAO.get(debiteurId);
 					if (debiteurs == null) {
 						debiteurs = new HashSet<DebiteurPrestationImposable>(); // création à la demande
@@ -3443,6 +3445,92 @@ public class TiersServiceImpl implements TiersService {
 	 */
 	public Contribuable getContribuable(DebiteurPrestationImposable debiteur) {
 		return tiersDAO.getContribuable(debiteur);
+	}
+
+	public List<String> getRaisonSociale(DebiteurPrestationImposable debiteur) {
+
+		// si le débiteur a un tiers référent, c'est là qu'il faut chercher
+		// sinon, les champs nom1 et nom2 dans le débiteur lui-même sont utilisés
+		final List<String> raisonSociale;
+		if (debiteur.getContribuableId() != null) {
+			final Contribuable referent = getContribuable(debiteur);
+			if (referent instanceof PersonnePhysique) {
+				raisonSociale = Arrays.asList(getNomPrenom((PersonnePhysique) referent));
+			}
+			else if (referent instanceof MenageCommun) {
+				raisonSociale = new ArrayList<String>(2);
+				final EnsembleTiersCouple couple = getEnsembleTiersCouple((MenageCommun) referent, null);
+				final PersonnePhysique principal = couple.getPrincipal();
+				final PersonnePhysique conjoint = couple.getConjoint();
+				final String nomPrenomPrincipal = principal != null ? getNomPrenom(principal) : null;
+				final String nomPrenomConjoint = conjoint != null ? getNomPrenom(conjoint) : null;
+				if (StringUtils.isNotBlank(nomPrenomPrincipal)) {
+					raisonSociale.add(nomPrenomPrincipal);
+				}
+				if (StringUtils.isNotBlank(nomPrenomConjoint)) {
+					raisonSociale.add(nomPrenomConjoint);
+				}
+			}
+			else if (referent instanceof AutreCommunaute) {
+				raisonSociale = Arrays.asList(((AutreCommunaute) referent).getNom());
+			}
+			else if (referent instanceof Entreprise) {
+				final PersonneMorale pm = servicePM.getPersonneMorale(((Entreprise) referent).getNumeroEntreprise());
+				raisonSociale = new ArrayList<String>(3);
+				if (pm != null) {
+					final String ligne1 = pm.getRaisonSociale1();
+					if (StringUtils.isNotBlank(ligne1)) {
+						raisonSociale.add(ligne1.trim());
+					}
+					final String ligne2 = pm.getRaisonSociale2();
+					if (StringUtils.isNotBlank(ligne2)) {
+						raisonSociale.add(ligne2.trim());
+					}
+					final String ligne3 = pm.getRaisonSociale3();
+					if (StringUtils.isNotBlank(ligne3)) {
+						raisonSociale.add(ligne3.trim());
+					}
+				}
+			}
+			else if (referent instanceof CollectiviteAdministrative) {
+				try {
+					final ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative ca = serviceInfra.getCollectivite(((CollectiviteAdministrative) referent).getNumeroCollectiviteAdministrative());
+					raisonSociale = new ArrayList<String>(3);
+					if (ca != null) {
+						final String ligne1 = ca.getNomComplet1();
+						if (StringUtils.isNotBlank(ligne1)) {
+							raisonSociale.add(ligne1.trim());
+						}
+						final String ligne2 = ca.getNomComplet2();
+						if (StringUtils.isNotBlank(ligne2)) {
+							raisonSociale.add(ligne2.trim());
+						}
+						final String ligne3 = ca.getNomComplet3();
+						if (StringUtils.isNotBlank(ligne3)) {
+							raisonSociale.add(ligne3.trim());
+						}
+					}
+				}
+				catch (InfrastructureException e) {
+					throw new RuntimeException("Impossible d'accéder à la collectivité administrative " + ((CollectiviteAdministrative) referent).getNumeroCollectiviteAdministrative());
+				}
+			}
+			else {
+				throw new IllegalArgumentException("Type de contribuable référent non supporté : " + referent.getClass().getName());
+			}
+		}
+		else {
+			// pas de tiers référent : on se sert des données connues sur le débiteur
+			raisonSociale = new ArrayList<String>(2);
+			if (StringUtils.isNotBlank(debiteur.getNom1())) {
+				raisonSociale.add(debiteur.getNom1().trim());
+			}
+			if (StringUtils.isNotBlank(debiteur.getNom2())) {
+				raisonSociale.add(debiteur.getNom2().trim());
+			}
+		}
+
+		return raisonSociale;
 	}
 
 	public Set<PersonnePhysique> getComposantsMenage(MenageCommun menageCommun, RegDate date) {

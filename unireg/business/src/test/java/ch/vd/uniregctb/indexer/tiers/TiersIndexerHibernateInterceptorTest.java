@@ -414,7 +414,7 @@ public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
 				criteria.setNomRaison("Bla");
 				final List<TiersIndexedData> list = searcher.search(criteria);
 				assertEquals(1, list.size());
-				assertEquals("Bla Blo", list.get(0).getNom1());
+				assertEquals("Blo Bla", list.get(0).getNom1());
 
 				final PersonnePhysique hab = (PersonnePhysique) tiersDAO.get(id);
 				assertFalse(hab.isDirty());
@@ -444,7 +444,7 @@ public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
 				criteria.setNomRaison("Bla");
 				final List<TiersIndexedData> list = searcher.search(criteria);
 				assertEquals(1, list.size());
-				assertEquals("Bla Blo", list.get(0).getNom1());
+				assertEquals("Blo Bla", list.get(0).getNom1());
 
 				final PersonnePhysique hab = (PersonnePhysique) tiersDAO.get(id);
 				assertTrue(hab.isDirty());
@@ -503,7 +503,7 @@ public class TiersIndexerHibernateInterceptorTest extends BusinessTest {
 			criteria.setNomRaison("Bla");
 			final List<TiersIndexedData> list = searcher.search(criteria);
 			assertEquals(1, list.size());
-			assertEquals("Bla Marcel", list.get(0).getNom1());
+			assertEquals("Marcel Bla", list.get(0).getNom1());
 
 			final PersonnePhysique hab = (PersonnePhysique) tiersDAO.get(id);
 			assertFalse(hab.isDirty());

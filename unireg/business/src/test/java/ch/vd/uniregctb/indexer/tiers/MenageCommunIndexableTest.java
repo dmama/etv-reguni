@@ -87,9 +87,9 @@ public class MenageCommunIndexableTest extends BusinessTest {
 
 		globalTiersIndexer.sync();
 
-		assertIndexData("Maillard Philippe", "", dateN1, ids.idHab1);
-		assertIndexData("Maillard-Gallet Gladys", "", dateN2, ids.idHab2);
-		assertIndexData("Maillard Philippe", "Maillard-Gallet Gladys", dateN1.index() + " " + dateN2.index(), ids.idMc);
+		assertIndexData("Philippe Maillard", "", dateN1, ids.idHab1);
+		assertIndexData("Gladys Maillard-Gallet", "", dateN2, ids.idHab2);
+		assertIndexData("Philippe Maillard", "Gladys Maillard-Gallet", dateN1.index() + " " + dateN2.index(), ids.idMc);
 	}
 
 	/**
@@ -148,9 +148,9 @@ public class MenageCommunIndexableTest extends BusinessTest {
 
 		globalTiersIndexer.sync();
 
-		assertIndexData("Maillard Philippe", "", dateN1, ids.idHab1);
-		assertIndexData("Casanova Giacomo", "", dateN3, ids.idHab3);
-		assertIndexData("Maillard Philippe", "", dateN1, ids.idMc);
+		assertIndexData("Philippe Maillard", "", dateN1, ids.idHab1);
+		assertIndexData("Giacomo Casanova", "", dateN3, ids.idHab3);
+		assertIndexData("Philippe Maillard", "", dateN1, ids.idMc);
 	}
 
 	/**
@@ -229,10 +229,10 @@ public class MenageCommunIndexableTest extends BusinessTest {
 
 		globalTiersIndexer.sync();
 
-		assertIndexData("Maillard Philippe", "", dateN1, ids.idHab1);
-		assertIndexData("Maillard-Gallet Gladys", "", dateN2, ids.idHab2);
-		assertIndexData("Casanova Giacomo", "", dateN3, ids.idHab3);
-		assertIndexData("Maillard Philippe", "Maillard-Gallet Gladys", dateN1.index() + " " + dateN2.index(), ids.idMc);
+		assertIndexData("Philippe Maillard", "", dateN1, ids.idHab1);
+		assertIndexData("Gladys Maillard-Gallet", "", dateN2, ids.idHab2);
+		assertIndexData("Giacomo Casanova", "", dateN3, ids.idHab3);
+		assertIndexData("Philippe Maillard", "Gladys Maillard-Gallet", dateN1.index() + " " + dateN2.index(), ids.idMc);
 	}
 
 	/**
@@ -314,10 +314,10 @@ public class MenageCommunIndexableTest extends BusinessTest {
 
 		globalTiersIndexer.sync();
 
-		assertIndexData("Maillard Philippe", "", dateN1, ids.idHab1);
-		assertIndexData("Maillard-Gallet Gladys", "", dateN2, ids.idHab2);
-		assertIndexData("Casanova Giacomo", "", dateN3, ids.idHab3);
-		assertIndexData("Casanova Giacomo", "Maillard-Gallet Gladys", dateN3.index() + " " + dateN2.index(), ids.idMc);
+		assertIndexData("Philippe Maillard", "", dateN1, ids.idHab1);
+		assertIndexData("Gladys Maillard-Gallet", "", dateN2, ids.idHab2);
+		assertIndexData("Giacomo Casanova", "", dateN3, ids.idHab3);
+		assertIndexData("Giacomo Casanova", "Gladys Maillard-Gallet", dateN3.index() + " " + dateN2.index(), ids.idMc);
 	}
 
 	private void assertIndexData(String nom1, String nom2, RegDate dateNaissance, long ctbId) {

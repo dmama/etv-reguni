@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.indexer.tiers;
 
+import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
@@ -72,6 +73,22 @@ public class DebiteurPrestationImposableIndexable extends TiersIndexable {
 		return SUB_TYPE;
 	}
 
+	/**
+	 * Concatène toutes les chaînes de la liste en une seule chaîne, en utilisant le séparateur donné entre chacune d'entre elles
+	 */
+	private static String concat(List<String> elts, String separator) {
+		final StringBuilder b = new StringBuilder();
+		boolean first = true;
+		for (String elt : elts) {
+			if (!first) {
+				b.append(separator);
+			}
+			b.append(elt);
+			first = false;
+		}
+		return b.toString();
+	}
+
 	@Override
 	protected void fillBaseData(TiersIndexableData data) {
 		super.fillBaseData(data);
@@ -79,14 +96,19 @@ public class DebiteurPrestationImposableIndexable extends TiersIndexable {
 		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiers;
 
 		data.setNumeros(IndexerFormatHelper.objectToString(tiers.getNumero()));
-		data.setNomRaison(dpi.getNom1());
+
+		final List<String> raisonSociale = tiersService.getRaisonSociale(dpi);
+		data.setNomRaison(concat(raisonSociale, " "));
 		data.setCategorieDebiteurIs(IndexerFormatHelper.objectToString(dpi.getCategorieImpotSource()));
 
 		if (ctbIndexable == null) {
+
+			// dans ce cas, la raison sociale vue plus haut est nom1 et nom2
+
 			data.addNomRaison(dpi.getComplementNom());
-			data.setAutresNom(dpi.getNom2());
-			data.setNom1(dpi.getNom1());
-			data.setNom2(dpi.getNom2());
+			data.setAutresNom(raisonSociale.size() > 1 ? raisonSociale.get(1) : null);
+			data.setNom1(raisonSociale.size() > 0 ? raisonSociale.get(0) : null);
+			data.setNom2(raisonSociale.size() > 1 ? raisonSociale.get(1) : null);
 		}
 		else {
 			final TiersIndexableData ctbData = (TiersIndexableData) ctbIndexable.getIndexableData();
@@ -94,16 +116,8 @@ public class DebiteurPrestationImposableIndexable extends TiersIndexable {
 			data.setAutresNom(ctbData.getAutresNom());
 			data.addLocaliteEtPays(ctbData.getLocaliteEtPays());
 			data.setNatureJuridique(ctbData.getNatureJuridique());
-
-			if (StringUtils.isBlank(dpi.getNom1())) {
-				// [UNIREG-1376] on va chercher les infos sur le contribuable si elles n'existent pas sur le débiteur
-				data.setNom1(ctbData.getNom1());
-				data.setNom2(ctbData.getNom2());
-			}
-			else {
-				data.setNom1(dpi.getNom1());
-				data.setNom2(dpi.getNom2());
-			}
+			data.setNom1(ctbData.getNom1());
+			data.setNom2(ctbData.getNom2());
 		}
 
 		final ForDebiteurPrestationImposable fdpi = dpi.getDernierForDebiteur();

@@ -181,10 +181,10 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 			}
 
 			assertEquals(Long.valueOf(7823L), marcel.getNumero());
-			assertEquals("Bolomido Marcel", marcel.getNom1());
+			assertEquals("Marcel Bolomido", marcel.getNom1());
 			assertEquals(Long.valueOf(8901L), couple.getNumero());
-			assertEquals("Bolomido Marcel", couple.getNom1());
-			assertEquals("Duchene Claudine", couple.getNom2());
+			assertEquals("Marcel Bolomido", couple.getNom1());
+			assertEquals("Claudine Duchene", couple.getNom2());
 		}
 	}
 
@@ -419,9 +419,9 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 			tiers2 = list.get(0);
 		}
 		assertEquals(Long.valueOf(5434L), tiers1.getNumero());
-		assertEquals("Dupont Alain", tiers1.getNom1());
+		assertEquals("Alain Dupont", tiers1.getNom1());
 		assertEquals(Long.valueOf(1234L), tiers2.getNumero());
-		assertEquals("Dupont Alain", tiers2.getNom1()); // [UNIREG-1376] on va chercher les infos sur le contribuable si elles n'existent pas sur le débiteur
+		assertEquals("Alain Dupont", tiers2.getNom1()); // [UNIREG-1376] on va chercher les infos sur le contribuable si elles n'existent pas sur le débiteur
 	}
 
 	@Test
@@ -448,7 +448,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 			debiteur = (contribuable == premier ? deuxieme : premier);
 		}
 		assertEquals(Long.valueOf(5434), contribuable.getNumero());
-		assertEquals("Dupont Alain", contribuable.getNom1());
+		assertEquals("Alain Dupont", contribuable.getNom1());
 		assertEquals(Long.valueOf(1234), debiteur.getNumero());
 	}
 
@@ -696,7 +696,7 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 
 			int i = 0;
 			for (TiersIndexedData d : list) {
-				final String nomAttendu = encodeDigitsInName(String.format("Du Pont%04d MichelCC", (i++ * 50 + 22)));
+				final String nomAttendu = encodeDigitsInName(String.format("MichelCC Du Pont%04d", (i++ * 50 + 22)));
 				assertEquals(nomAttendu, d.getNom1());
 			}
 		}

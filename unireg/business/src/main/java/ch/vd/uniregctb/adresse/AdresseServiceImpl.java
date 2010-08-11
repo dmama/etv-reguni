@@ -371,13 +371,9 @@ public class AdresseServiceImpl implements AdresseService {
 		}
 		else if (tiers instanceof DebiteurPrestationImposable) {
 			final DebiteurPrestationImposable debiteur = (DebiteurPrestationImposable) tiers;
-			final String nom1 = debiteur.getNom1();
-			if (nom1 != null) {
-				adresse.addNomPrenom(nom1);
-			}
-			final String nom2 = debiteur.getNom2();
-			if (nom2 != null) {
-				adresse.addNomPrenom(nom2);
+			final List<String> raisonSociale = tiersService.getRaisonSociale(debiteur);
+			for (String ligne : raisonSociale) {
+				adresse.addNomPrenom(ligne);
 			}
 			if (debiteur.getComplementNom() != null) {
 				adresse.addPourAdresse(debiteur.getComplementNom());

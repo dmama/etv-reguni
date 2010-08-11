@@ -71,7 +71,7 @@ public class TiersWebServiceEndPointTest extends WebserviceTest {
 
 		final TiersInfo info = results.get(0);
 		assertNotNull(info);
-		assertEquals("Leproux Jojo", info.nom1);
+		assertEquals("Jojo Leproux", info.nom1);
 	}
 
 }

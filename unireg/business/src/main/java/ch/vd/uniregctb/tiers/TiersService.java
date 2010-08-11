@@ -538,7 +538,7 @@ public interface TiersService {
 	 *            le motif d'ouverture
 	 * @return le nouveau for fiscal autre élément imposable
 	 */
-	public ForFiscalAutreElementImposable openForFiscalAutreElementImposable(Contribuable contribuable, GenreImpot genreImpot,
+	ForFiscalAutreElementImposable openForFiscalAutreElementImposable(Contribuable contribuable, GenreImpot genreImpot,
 			final RegDate dateOuverture, MotifRattachement motifRattachement, int numeroOfsAutoriteFiscale,
 			TypeAutoriteFiscale typeAutoriteFiscale, MotifFor motifOuverture);
 
@@ -588,7 +588,7 @@ public interface TiersService {
 	 * @param motifFermeture     le motif de fermeture
 	 * @return le for fiscal principal fermé, ou <b>null</b> si le contribuable n'en possédait pas.
 	 */
-	public ForFiscalPrincipal closeForFiscalPrincipal(ForFiscalPrincipal forFiscalPrincipal, RegDate dateFermeture, MotifFor motifFermeture);
+	ForFiscalPrincipal closeForFiscalPrincipal(ForFiscalPrincipal forFiscalPrincipal, RegDate dateFermeture, MotifFor motifFermeture);
 
 	/**
 	 * Ferme le for fiscal secondaire d'un contribuable.
@@ -599,8 +599,8 @@ public interface TiersService {
 	 * @param motifFermeture      la motif de fermeture du for
 	 * @return le for fiscal secondaire fermé, ou <b>null</b> si le contribuable n'en possédait pas.
 	 */
-	public ForFiscalSecondaire closeForFiscalSecondaire(Contribuable contribuable, ForFiscalSecondaire forFiscalSecondaire,
-	                                                    RegDate dateFermeture, MotifFor motifFermeture);
+	ForFiscalSecondaire closeForFiscalSecondaire(Contribuable contribuable, ForFiscalSecondaire forFiscalSecondaire,
+	                                             RegDate dateFermeture, MotifFor motifFermeture);
 
 	/**
 	 * Ferme le for fiscal autre élément imposable d'un contribuable.
@@ -615,7 +615,7 @@ public interface TiersService {
 	 *            la motif de fermeture du for
 	 * @return le for fiscal autre élément imposable fermé, ou <b>null</b> si le contribuable n'en possédait pas.
 	 */
-	public ForFiscalAutreElementImposable closeForFiscalAutreElementImposable(Contribuable contribuable,
+	ForFiscalAutreElementImposable closeForFiscalAutreElementImposable(Contribuable contribuable,
 			ForFiscalAutreElementImposable forFiscalAutreElementImposable, RegDate dateFermeture, MotifFor motifFermeture);
 
 	/**
@@ -626,8 +626,8 @@ public interface TiersService {
 	 * @param dateFermeture                  la date de fermeture du for
 	 * @return le for debiteur fermé, ou <b>null</b> si le contribuable n'en possédait pas.
 	 */
-	public ForDebiteurPrestationImposable closeForDebiteurPrestationImposable(DebiteurPrestationImposable debiteur,
-	                                                                          ForDebiteurPrestationImposable forDebiteurPrestationImposable, RegDate dateFermeture);
+	ForDebiteurPrestationImposable closeForDebiteurPrestationImposable(DebiteurPrestationImposable debiteur,
+	                                                                   ForDebiteurPrestationImposable forDebiteurPrestationImposable, RegDate dateFermeture);
 
 	/**
 	 * Ferme le for autre impôt d'un tiers.
@@ -655,8 +655,8 @@ public interface TiersService {
 	 * @param motifFor                     le motif de changement du mode d'imposition
 	 * @return le nouveau for principal créé
 	 */
-	public ForFiscalPrincipal changeModeImposition(Contribuable contribuable, RegDate dateChangementModeImposition,
-	                                               ModeImposition modeImposition, MotifFor motifFor);
+	ForFiscalPrincipal changeModeImposition(Contribuable contribuable, RegDate dateChangementModeImposition,
+	                                        ModeImposition modeImposition, MotifFor motifFor);
 
 	/**
 	 * Corrige l'autorité fiscale du for fiscal spécifié. Le for fiscal est annulé et un nouveau for fiscal avec l'autorité fiscale corrigée est ajouté au tiers [UNIREG-2322].
@@ -709,7 +709,8 @@ public interface TiersService {
 	 * @param dateFin
 	 * @return la periodicité ajoutés
 	 */
-	public Periodicite addPeriodicite(DebiteurPrestationImposable debiteur, PeriodiciteDecompte periodiciteDecompte, PeriodeDecompte periodeDecompte, RegDate dateDebut,RegDate dateFin);
+	Periodicite addPeriodicite(DebiteurPrestationImposable debiteur, PeriodiciteDecompte periodiciteDecompte, PeriodeDecompte periodeDecompte, RegDate dateDebut,RegDate dateFin);
+
 	/**
 	 * Ajoute un for fiscal secondaire sur un contribuable.
 	 *
@@ -1067,15 +1068,21 @@ public interface TiersService {
 	 */
 	boolean isSourcierGris(Contribuable pp, RegDate date);
 
+	/**
+	 * Retourne l'ensemble des débiteurs de prestations imposables pour lesquels le contribuable donné est tiers référent
+	 * @param contribuable tiers référent
+	 * @return ensemble des débiteurs de prestations imposables
+	 */
 	Set<DebiteurPrestationImposable> getDebiteursPrestationImposable(Contribuable contribuable);
 
 
-	/**Retourne la date de début de validité pour une nouvelle périodicité calculé en fonction
+	/**
+	 * Retourne la date de début de validité pour une nouvelle périodicité calculé en fonction
 	 * de la dernière LR émise
 	 * @param debiteur
-	 * @return ladate de debut de validite calculée
+	 * @return la date de debut de validité calculée
 	 */
-	public RegDate getDateDebutNouvellePeriodicite(DebiteurPrestationImposable debiteur);
+	RegDate getDateDebutNouvellePeriodicite(DebiteurPrestationImposable debiteur);
 
 	/**
 	 * @param menage un ménage commun
@@ -1094,6 +1101,13 @@ public interface TiersService {
 	 * @return le contribuable associé au débiteur; ou <b>null</b> si le débiteur n'en possède pas.
 	 */
 	Contribuable getContribuable(DebiteurPrestationImposable debiteur);
+
+	/**
+	 * Renvoie la désignation sociale du débiteur (potentiellement sur plusieurs lignes)
+	 * @param debiteur débiteur de prestation imposable dont on veut connaître la raison sociale
+	 * @return liste de lignes composant la raison sociale
+	 */
+	List<String> getRaisonSociale(DebiteurPrestationImposable debiteur);
 
 	/**
 	 * Renvoie une liste des composants du ménage valides à une date donnée.

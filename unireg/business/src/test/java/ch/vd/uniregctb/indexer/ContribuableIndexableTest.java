@@ -92,10 +92,10 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 			@Override
 			protected void init() {
 
-				final MockIndividu charlesPoncet = addIndividu(7643L, RegDate.get(1965, 3, 12), "Charles", "Poncet", true);
+				final MockIndividu charlesPoncet = addIndividu(7643L, RegDate.get(1965, 3, 12), "Poncet", "Charles", true);
 				addFieldsIndividu(charlesPoncet, "01234567", "123.43.765.543", "");
 
-				final MockIndividu marcelMeignier = addIndividu(1234L, RegDate.get(1972, 1, 27), "Marcel", "MEIGNIER", true);
+				final MockIndividu marcelMeignier = addIndividu(1234L, RegDate.get(1972, 1, 27), "MEIGNIER", "Marcel", true);
 				addAdresse(marcelMeignier, EnumTypeAdresse.COURRIER, MockRue.Bex.RouteDuBoet, null, RegDate.get(1964, 12, 2), null);
 				addAdresse(marcelMeignier, EnumTypeAdresse.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, RegDate.get(1964, 12, 2), null);
 
@@ -111,8 +111,8 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 					histo.setNoAVS("987.65.432");
 				}
 
-				addIndividu(123L, RegDate.get(1970, 1, 1), "Philippe", "Dupont", true);
-				addIndividu(4567L, RegDate.get(1970, 1, 1), "Arnold", "Dupond", true);
+				addIndividu(123L, RegDate.get(1970, 1, 1), "Dupont", "Philippe", true);
+				addIndividu(4567L, RegDate.get(1970, 1, 1), "Dupond", "Arnold", true);
 			}
 		};
 		
@@ -209,7 +209,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 
 		// Individu
 		assertEquals(IndexerFormatHelper.objectToString(individu.getDateNaissance()), values.getDateNaissance());
-		assertEquals(histoInd.getNom()+" "+histoInd.getPrenom(), values.getNom1());
+		assertEquals(String.format("%s %s", histoInd.getPrenom(), histoInd.getNom()), values.getNom1());
 		assertContains(IndexerFormatHelper.formatNumeroAVS(individu.getNouveauNoAVS()), values.getNumeroAssureSocial());
 	}
 
@@ -243,7 +243,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 
 		// Individu
 		assertEquals(IndexerFormatHelper.objectToString(individu.getDateNaissance()), values.getDateNaissance());
-		assertEquals(histoInd.getNom()+" "+histoInd.getPrenom(), values.getNom1());
+		assertEquals(String.format("%s %s", histoInd.getPrenom(), histoInd.getNom()), values.getNom1());
 		assertContains(IndexerFormatHelper.formatNumeroAVS(individu.getNouveauNoAVS()), values.getNumeroAssureSocial());
 	}
 
@@ -285,9 +285,9 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		assertContains(histo.getNom(), values.getAutresNom());
 		assertContains(histo.getPrenom(), values.getAutresNom());
 
-		// Display
-		assertContains("Nom1 débiteur", values.getNom1());
-		assertEquals("Nom2 débiteur", values.getNom2());
+		// Display (quel que soit le nom1 et nom2, si le débiteur a un contact impôt source, sa raison sociale est tirée de là)
+		assertEquals(String.format("%s %s", histo.getPrenom(), histo.getNom()), values.getNom1());
+		assertNull(values.getNom2());
 	}
 
 	@Test
@@ -324,9 +324,9 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		assertContains(nhab.getNom(), values.getAutresNom());
 		assertContains(nhab.getPrenom(), values.getAutresNom());
 
-		// Display
-		assertContains("Nom1 débiteur", values.getNom1());
-		assertEquals("Nom2 débiteur", values.getNom2());
+		// Display (quel que soit le nom1 et nom2, si le débiteur a un contact impôt source, sa raison sociale est tirée de là)
+		assertEquals("Bla Bli", values.getNom1());
+		assertNull(values.getNom2());
 	}
 	@Test
 	public void testDebiteurImpotSourceAutreCommuncauteIndexable() throws Exception {
@@ -363,9 +363,9 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		assertContains(ac.getNom(), values.getNomRaison());
 		assertContains(ac.getComplementNom(), values.getNomRaison());
 
-		// Display
-		assertContains("Nom1 débiteur", values.getNom1());
-		assertContains("Nom2 débiteur", values.getNom2());
+		// Display (quel que soit le nom1 et nom2, si le débiteur a un contact impôt source, sa raison sociale est tirée de là)
+		assertEquals("Nestle SA", values.getNom1());
+		assertEquals("Filiale de Orbe", values.getNom2());
 	}
 
 	@Test

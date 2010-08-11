@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.declaration.source;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -32,6 +31,7 @@ import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.TiersDAO;
+import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 
 /**
@@ -49,9 +49,10 @@ public class DeterminerLRsEchuesProcessor {
 	private final TiersDAO tiersDAO;
 	private final ListeRecapitulativeDAO lrDAO;
 	private final EvenementFiscalService evenementFiscalService;
+	private final TiersService tiersService;
 
 	public DeterminerLRsEchuesProcessor(PlatformTransactionManager transactionManager, HibernateTemplate hibernateTemplate, ListeRecapService lrService,
-	                                    DelaisService delaisService, TiersDAO tiersDAO, ListeRecapitulativeDAO lrDAO, EvenementFiscalService evenementFiscalService) {
+	                                    DelaisService delaisService, TiersDAO tiersDAO, ListeRecapitulativeDAO lrDAO, EvenementFiscalService evenementFiscalService, TiersService tiersService) {
 		this.transactionManager = transactionManager;
 		this.hibernateTemplate = hibernateTemplate;
 		this.lrService = lrService;
@@ -59,6 +60,7 @@ public class DeterminerLRsEchuesProcessor {
 		this.tiersDAO = tiersDAO;
 		this.lrDAO = lrDAO;
 		this.evenementFiscalService = evenementFiscalService;
+		this.tiersService = tiersService;
 	}
 
 	public DeterminerLRsEchuesResults run(final int periodeFiscale, final RegDate dateTraitement, StatusManager status) {
@@ -68,7 +70,7 @@ public class DeterminerLRsEchuesProcessor {
 		}
 		final StatusManager s = status;
 
-		final DeterminerLRsEchuesResults rapportFinal = new DeterminerLRsEchuesResults(periodeFiscale, dateTraitement);
+		final DeterminerLRsEchuesResults rapportFinal = new DeterminerLRsEchuesResults(periodeFiscale, dateTraitement, tiersService);
 		final DateRange pf = new DateRangeHelper.Range(RegDate.get(periodeFiscale, 1, 1), RegDate.get(periodeFiscale, 12, 31));
 
 		// liste de toutes les débiteurs à passer en revue
@@ -90,7 +92,7 @@ public class DeterminerLRsEchuesProcessor {
 
 			@Override
 			public DeterminerLRsEchuesResults createSubRapport() {
-				return new DeterminerLRsEchuesResults(periodeFiscale, dateTraitement);
+				return new DeterminerLRsEchuesResults(periodeFiscale, dateTraitement, tiersService);
 			}
 		});
 
