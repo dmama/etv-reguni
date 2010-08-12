@@ -21,7 +21,9 @@ import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
+import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.FiscalDateHelper;
@@ -450,9 +452,9 @@ public class TacheServiceImpl implements TacheService {
 		final CollectiviteAdministrative collectivite = getOfficeImpot(contribuable);
 		final CollectiviteAdministrative officeSuccessions = tiersService.getCollectiviteAdministrative(ServiceInfrastructureService.noACISuccessions, true);
 		Assert.notNull(officeSuccessions, "Impossible de trouver l'office des successions !");
-		
+
 		final Context context = new Context(contribuable, collectivite, tacheDAO, diService, officeSuccessions);
-		
+
 		for (SynchronizeAction action : actions) {
 			action.execute(context);
 		}
@@ -471,6 +473,8 @@ public class TacheServiceImpl implements TacheService {
 		final List<DeleteDI> deleteActions = new ArrayList<DeleteDI>();
 		final List<AnnuleTache> annuleActions = new ArrayList<AnnuleTache>();
 
+		final int anneeCourante = RegDate.get().year();
+
 		//
 		// On détermine les périodes d'imposition qui n'ont pas de déclaration d'impôt valide correspondante
 		//
@@ -481,7 +485,10 @@ public class TacheServiceImpl implements TacheService {
 				// il n'y a pas de déclaration pour la période
 				if (!periode.isOptionnelle() && !periode.isRemplaceeParNote() && !periode.isDiplomateSuisse()) {
 					// on ajoute une DI si elle est obligatoire
-					addActions.add(new AddDI(periode));
+					// [UNIREG-2735] Le mécanisme ne doit pas créer de tâche d'émission de DI pour l'année en cours
+					if (peutCreerTacheEnvoiDI(periode, anneeCourante)) {
+						addActions.add(new AddDI(periode));
+					}
 				}
 			}
 			else {
@@ -497,7 +504,7 @@ public class TacheServiceImpl implements TacheService {
 						}
 						else {
 							// les types ne correspondent pas
-							if (areTypeContribuableCompatibles(di.getTypeContribuable(), periode.getTypeContribuable())) {
+							if (peutMettreAJourDeclarationExistante(di, periode, anneeCourante)) {
 								// le type de contribuable peut être mis-à-jour
 								if (toUpdate != null) {
 									deleteActions.add(new DeleteDI(toUpdate));
@@ -522,7 +529,7 @@ public class TacheServiceImpl implements TacheService {
 							deleteActions.add(new DeleteDI(di));
 						}
 						else {
-							if (areTypeContribuableCompatibles(di.getTypeContribuable(), periode.getTypeContribuable())) {
+							if (peutMettreAJourDeclarationExistante(di, periode, anneeCourante)) {
 								// si les types sont compatibles, on adapte la déclaration
 								toUpdate = di;
 								toAdd = null;
@@ -539,7 +546,10 @@ public class TacheServiceImpl implements TacheService {
 					updateActions.add(new UpdateDI(periode, toUpdate));
 				}
 				else if (toAdd != null) {
-					addActions.add(new AddDI(toAdd));
+					// [UNIREG-2735] Le mécanisme ne doit pas créer de tâche d'émission de DI pour l'année en cours
+					if (peutCreerTacheEnvoiDI(periode, anneeCourante)) {
+						addActions.add(new AddDI(toAdd));
+					}
 				}
 			}
 		}
@@ -559,13 +569,7 @@ public class TacheServiceImpl implements TacheService {
 		// On détermine toutes les déclarations qui ne sont pas valides vis-à-vis des périodes d'imposition
 		//
 
-		final int anneeCourante = RegDate.get().year();
-
 		for (DeclarationImpotOrdinaire declaration : declarations) {
-			if (declaration.getDateDebut().year() >= anneeCourante) {
-				// [UNIREG-2685] on n'annule pas les DIs valides pour l'année courante (DIs libres) : elles seront validées l'année prochaine
-				continue;
-			}
 			final List<PeriodeImposition> ps = getIntersectingRangeAt(periodes, declaration);
 			if (ps == null) {
 				// il n'y a pas de période correspondante
@@ -655,7 +659,7 @@ public class TacheServiceImpl implements TacheService {
 	 * @param right un autre type de contribuable
 	 * @return <b>true</b> si les deux types sont compatibles; <b>false</b> autrement.
 	 */
-	private boolean areTypeContribuableCompatibles(TypeContribuable left, TypeContribuable right) {
+	private static boolean areTypeContribuableCompatibles(TypeContribuable left, TypeContribuable right) {
 
 		// cas trivial : les deux types sont identiques
 		// (dans la migration initiale de juillet 2009, le type de contribuable n'était pas toujours attribué à la DI - apparemment pas pour les mixtes)
@@ -673,6 +677,43 @@ public class TacheServiceImpl implements TacheService {
 
 		// cas général : les deux types ne sont pas compatibles
 		return false;
+	}
+
+	/**
+	 * On peut mettre à jour une déclaration existante sur une période passée dès que les types de contribuables sont compatibles.<br/>
+	 * Sur la période courante, il faut de plus que la nouvelle fin de période ne soit pas la fin de l'année (= déplacement de fin d'assujettissement).
+	 * @param diExistante la DI potentiellement à mettre à jour
+	 * @param periode la période d'imposition avec laquelle la DI serait mise à jour
+	 * @param anneeCourante année de la période dite "courante"
+	 * @return <code>true</code> si la mise à jour est autorisée, <code>false</code> sinon.
+	 * @see #areTypeContribuableCompatibles(ch.vd.uniregctb.type.TypeContribuable, ch.vd.uniregctb.type.TypeContribuable)
+	 */
+	private static boolean peutMettreAJourDeclarationExistante(DeclarationImpotOrdinaire diExistante, PeriodeImposition periode, int anneeCourante) {
+		return areTypeContribuableCompatibles(diExistante.getTypeContribuable(), periode.getTypeContribuable()) &&
+			   isPeriodePasseeOuCouranteIncomplete(periode, anneeCourante);
+	}
+
+	/**
+	 * On peut créer une tache d'envoi de DI pour toute période d'imposition dans une année passée.<br/>
+	 * Sur la période courante, il faut que la période d'imposition se termine avant la fin de l'année (= fin d'assujettissement)
+	 * @param periode période d'imposition pour laquelle on voudrait peut-être créer une tâche d'envoi de DI
+	 * @param anneeCourante année de la période dite "courante"
+	 * @return <code>true</code> si la création de la tâche est autorisée, <code>false</code> sinon
+	 */
+	private static boolean peutCreerTacheEnvoiDI(PeriodeImposition periode, int anneeCourante) {
+		return isPeriodePasseeOuCouranteIncomplete(periode, anneeCourante);
+	}
+
+	/**
+	 * Une période d'imposition est dite passée si elle fait référence à une année qui n'est pas l'année courante.<br/>
+	 * Une période d'imposition est dite incomplète si elle se termine avant la fin de l'année civile
+	 * @param periode période d'imposition à tester
+	 * @param anneeCourante année considérée comme l'année courante
+	 * @return <code>true</code> si la période est passée ou courante incomplète, <code>false</code> sinon (courante complète ou, pourquoi pas, future)
+	 */
+	private static boolean isPeriodePasseeOuCouranteIncomplete(PeriodeImposition periode, int anneeCourante) {
+		final RegDate avantDernierJourAnnee = RegDate.get(anneeCourante, 12, 30);
+		return periode.getDateDebut().year() < anneeCourante || RegDateHelper.isBeforeOrEqual(periode.getDateFin(), avantDernierJourAnnee, NullDateBehavior.LATEST);
 	}
 
 	/**
@@ -698,7 +739,7 @@ public class TacheServiceImpl implements TacheService {
 		final int anneeDebut = getPremierePeriodeFiscale();
 
 		final List<PeriodeImposition> periodes = new ArrayList<PeriodeImposition>();
-		for (int annee = anneeDebut; annee < anneeCourante; ++annee) {
+		for (int annee = anneeDebut; annee <= anneeCourante; ++annee) {
 			final List<PeriodeImposition> list = PeriodeImposition.determine(contribuable, annee);
 			if (list != null) {
 				periodes.addAll(list);
