@@ -24,14 +24,13 @@ import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
-import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.mock.MockCollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockOfficeImpot;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
 import ch.vd.uniregctb.metier.MetierService;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
@@ -43,6 +42,7 @@ import ch.vd.uniregctb.tache.sync.UpdateDI;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
+import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.MenageCommun;
@@ -56,7 +56,6 @@ import ch.vd.uniregctb.tiers.TacheDAO;
 import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpot;
 import ch.vd.uniregctb.tiers.TacheNouveauDossier;
 import ch.vd.uniregctb.tiers.TacheTransmissionDossier;
-import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.EtatCivil;
 import ch.vd.uniregctb.type.ModeImposition;
@@ -3353,13 +3352,16 @@ public class TacheServiceTest extends BusinessTest {
 			}
 		});
 
+		final RegDate aujourdhui = RegDate.get();
+		final int anneeCourante = aujourdhui.year();
+
 		// mise en place
 		final long ppId = (Long) doInNewTransaction(new TransactionCallback() {
 			public Long doInTransaction(TransactionStatus transactionStatus) {
 				final PersonnePhysique pp = addHabitant(noInd);
-				final int anneeDerniere = RegDate.get().year() - 1;
+				final int anneeDerniere = anneeCourante - 1;
 
-				final ForFiscalPrincipal ffp = addForPrincipal(pp, RegDate.get(anneeDerniere, 1, 1), MotifFor.ARRIVEE_HS, RegDate.get(), MotifFor.DEPART_HS, MockCommune.Lausanne);
+				final ForFiscalPrincipal ffp = addForPrincipal(pp, RegDate.get(anneeDerniere, 1, 1), MotifFor.ARRIVEE_HS, aujourdhui, MotifFor.DEPART_HS, MockCommune.Lausanne);
 
 				final PeriodeFiscale pf = addPeriodeFiscale(anneeDerniere);
 				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
@@ -3376,7 +3378,75 @@ public class TacheServiceTest extends BusinessTest {
 				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
 				assertNotNull(pp);
 
-				// Il ne devrait maintenant y avoir aucune nouvelle tâche...
+				// il s'agit d'un départ HS dans l'année courante, il y aura donc une tâche d'émission de DI
+				final TacheCriteria criterion = new TacheCriteria();
+				criterion.setContribuable(pp);
+				criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpot);
+				criterion.setInclureTachesAnnulees(true);
+
+				final List<Tache> taches = tacheDAO.find(criterion);
+				assertNotNull(taches);
+				assertEquals(1, taches.size());
+
+				final TacheEnvoiDeclarationImpot tache = (TacheEnvoiDeclarationImpot) taches.get(0);
+				assertTache(TypeEtatTache.EN_INSTANCE, getNextSunday(aujourdhui), date(anneeCourante, 1, 1), aujourdhui, TypeContribuable.VAUDOIS_ORDINAIRE,
+						TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.CEDI, tache);
+				return null;
+			}
+		});
+	}
+
+	@Test
+	@NotTransactional
+	public void testRecalculTachesApresDepartHSAvecImmeuble() throws Exception {
+
+		final long noInd = 333908L;
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu ind = addIndividu(noInd, RegDate.get(1974, 3, 22), "Cuendet", "Adrienne", false);
+				addAdresse(ind, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate.get(1980, 1, 1), null);
+				addNationalite(ind, MockPays.Suisse, RegDate.get(1974, 3, 22), null, 1);
+			}
+		});
+
+		final RegDate aujourdhui = RegDate.get();
+		final int anneeCourante = aujourdhui.year();
+
+		// mise en place
+		final long ppId = (Long) doInNewTransaction(new TransactionCallback() {
+			public Long doInTransaction(TransactionStatus transactionStatus) {
+				final PersonnePhysique pp = addHabitant(noInd);
+				final int anneeDerniere = anneeCourante - 1;
+
+				// j'essaie de ne pas trop coller à la fin de l'année
+				final RegDate dateDepart;
+				if (aujourdhui.addDays(20).year() != aujourdhui.year()) {
+					dateDepart = aujourdhui.addMonths(-2);
+				}
+				else {
+					dateDepart = aujourdhui;
+				}
+
+				addForPrincipal(pp, RegDate.get(anneeDerniere, 1, 1), MotifFor.ARRIVEE_HS, dateDepart, MotifFor.DEPART_HS, MockCommune.Lausanne);
+				addForPrincipal(pp, dateDepart.getOneDayAfter(), MotifFor.DEPART_HS, MockPays.Albanie);
+				addForSecondaire(pp, RegDate.get(anneeDerniere, 5, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Croy.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+
+				final PeriodeFiscale pf = addPeriodeFiscale(anneeDerniere);
+				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
+				addDeclarationImpot(pp, pf, RegDate.get(anneeDerniere, 1, 1), RegDate.get(anneeDerniere, 12, 31), null, modele);
+
+				return pp.getId();
+			}
+		});
+
+		// test
+		doInNewTransaction(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus transactionStatus) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
+				assertNotNull(pp);
+
+				// il s'agit d'un départ HS dans l'année courante avec poursuite d'assujettissement, il ne devrait donc pas y avoir d'émission de DI
 				final TacheCriteria criterion = new TacheCriteria();
 				criterion.setContribuable(pp);
 				criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpot);
@@ -3513,5 +3583,662 @@ public class TacheServiceTest extends BusinessTest {
 			}
 		}
 		return count;
+	}
+
+	/**
+	 * Cas du Jira UNIREG-2735
+	 */
+	@Test
+	@NotTransactional
+	public void testDepartHorsSuisseDansPeriodeEnCours() throws Exception {
+
+		final long noIndividu = 12345678L;
+		final int anneeCourante = RegDate.get().year();
+		final RegDate dateArrivee = date(anneeCourante - 1, 5, 12);
+		final RegDate dateDepart = date(anneeCourante, 4, 30);
+
+		// mise en place civile
+		serviceCivil.setUp(new DefaultMockServiceCivil(true) {
+			@Override
+			protected void init() {
+				final MockIndividu individu = addIndividu(noIndividu, date(1971, 4, 12), "Weasley", "Ronald", true);
+				addNationalite(individu, MockPays.Suisse, date(1971, 4, 12), null, 1);
+			}
+		});
+
+		// mise en place fiscale
+		final long ppId = (Long) doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = addHabitant(noIndividu);
+				addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+
+				final PeriodeFiscale pfPrecedente = addPeriodeFiscale(anneeCourante - 1);
+				final ModeleDocument modelePfPrecedente = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pfPrecedente);
+				addDeclarationImpot(pp, pfPrecedente, dateArrivee, date(anneeCourante - 1, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modelePfPrecedente);
+
+				return pp.getNumero();
+			}
+		});
+
+		// vérification des fors et qu'aucune tâche n'a encore été générée
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+
+				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
+				assertNotNull(pp);
+
+				final Set<ForFiscal> fors = pp.getForsFiscaux();
+				assertNotNull(fors);
+				assertEquals(1, fors.size());
+
+				final ForFiscal ff = fors.iterator().next();
+				assertNotNull(ff);
+				assertEquals(dateArrivee, ff.getDateDebut());
+				assertNull(ff.getDateFin());
+
+				final TacheCriteria criterion = new TacheCriteria();
+				criterion.setContribuable(pp);
+
+				final List<Tache> taches = tacheDAO.find(criterion);
+				assertNotNull(taches);
+				assertEquals(0, taches.size());
+				return null;
+			}
+		});
+
+		// départ HS dans la période courante : une tâche de contrôle de dossier et une tâche d'envoi de DI devraient être générées
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+
+				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
+				assertNotNull(pp);
+
+				tiersService.closeForFiscalPrincipal(pp, dateDepart, MotifFor.DEPART_HS);
+				tiersService.openForFiscalPrincipal(pp, dateDepart.getOneDayAfter(), MotifRattachement.DOMICILE, MockPays.Albanie.getNoOFS(), TypeAutoriteFiscale.PAYS_HS, ModeImposition.ORDINAIRE, MotifFor.DEPART_HS, true);
+				return null;
+			}
+		});
+
+		// vérification des fors et des tâches créées
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+
+				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
+				assertNotNull(pp);
+				assertFalse(pp.isHabitantVD());
+
+				final List<ForFiscalPrincipal> fors = pp.getForsFiscauxPrincipauxActifsSorted();
+				assertNotNull(fors);
+				assertEquals(2, fors.size());
+
+				// for vaudois
+				{
+					final ForFiscalPrincipal ffp = fors.get(0);
+					assertNotNull(ffp);
+					assertEquals(dateArrivee, ffp.getDateDebut());
+					assertEquals(dateDepart, ffp.getDateFin());
+					assertEquals(MotifFor.DEPART_HS, ffp.getMotifFermeture());
+					assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
+				}
+
+				// for étranger
+				{
+					final ForFiscalPrincipal ffp = fors.get(1);
+					assertNotNull(ffp);
+					assertEquals(dateDepart.getOneDayAfter(), ffp.getDateDebut());
+					assertNull(ffp.getDateFin());
+					assertEquals(MotifFor.DEPART_HS, ffp.getMotifOuverture());
+					assertEquals(TypeAutoriteFiscale.PAYS_HS, ffp.getTypeAutoriteFiscale());
+				}
+
+				// les tâches, maintenant...
+				{
+					final TacheCriteria criterion = new TacheCriteria();
+					criterion.setContribuable(pp);
+					final List<Tache> taches = tacheDAO.find(criterion);
+					assertNotNull(taches);
+					assertEquals(2, taches.size());
+				}
+
+				// une tâche de contrôle de dossier
+				{
+					final TacheCriteria criterion = new TacheCriteria();
+					criterion.setContribuable(pp);
+					criterion.setTypeTache(TypeTache.TacheControleDossier);
+					final List<Tache> taches = tacheDAO.find(criterion);
+					assertNotNull(taches);
+					assertEquals(1, taches.size());
+
+					final TacheControleDossier tache = (TacheControleDossier) taches.get(0);
+					assertTache(TypeEtatTache.EN_INSTANCE, getNextSunday(RegDate.get()), tache);
+				}
+
+				// et une tâche d'envoi de DI pour la période en cours jusqu'à la date du départ
+				{
+					final TacheCriteria criterion = new TacheCriteria();
+					criterion.setContribuable(pp);
+					criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpot);
+					final List<Tache> taches = tacheDAO.find(criterion);
+					assertNotNull(taches);
+					assertEquals(1, taches.size());
+
+					final TacheEnvoiDeclarationImpot tache = (TacheEnvoiDeclarationImpot) taches.get(0);
+					assertTache(TypeEtatTache.EN_INSTANCE, getNextSunday(RegDate.get()), date(anneeCourante, 1, 1), dateDepart, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.CEDI, tache);
+				}
+
+				return null;
+			}
+		});
+	}
+
+	/**
+	 * Cas du Jira UNIREG-2735
+	 */
+	@Test
+	@NotTransactional
+	public void testDecesDansPeriodeEnCours() throws Exception {
+
+		final long noIndividu = 12345678L;
+		final int anneeCourante = RegDate.get().year();
+		final RegDate dateArrivee = date(anneeCourante - 1, 5, 12);
+		final RegDate dateDeces = date(anneeCourante, 4, 30);
+
+		// mise en place civile
+		serviceCivil.setUp(new DefaultMockServiceCivil(true) {
+			@Override
+			protected void init() {
+				final MockIndividu individu = addIndividu(noIndividu, date(1971, 4, 12), "Weasley", "Ronald", true);
+				addNationalite(individu, MockPays.Suisse, date(1971, 4, 12), null, 1);
+				individu.setDateDeces(dateDeces);
+			}
+		});
+
+		// mise en place fiscale
+		final long ppId = (Long) doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = addHabitant(noIndividu);
+				addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+
+				final PeriodeFiscale pfPrecedente = addPeriodeFiscale(anneeCourante - 1);
+				final ModeleDocument modelePfPrecedente = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pfPrecedente);
+				addDeclarationImpot(pp, pfPrecedente, dateArrivee, date(anneeCourante - 1, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modelePfPrecedente);
+
+				return pp.getNumero();
+			}
+		});
+
+		// vérification des fors et qu'aucune tâche n'a encore été générée
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+
+				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
+				assertNotNull(pp);
+
+				final Set<ForFiscal> fors = pp.getForsFiscaux();
+				assertNotNull(fors);
+				assertEquals(1, fors.size());
+
+				final ForFiscal ff = fors.iterator().next();
+				assertNotNull(ff);
+				assertEquals(dateArrivee, ff.getDateDebut());
+				assertNull(ff.getDateFin());
+
+				final TacheCriteria criterion = new TacheCriteria();
+				criterion.setContribuable(pp);
+
+				final List<Tache> taches = tacheDAO.find(criterion);
+				assertNotNull(taches);
+				assertEquals(0, taches.size());
+				return null;
+			}
+		});
+
+		// décès dans la période courante : une tâche de transmission de dossier et une tâche d'envoi de DI devraient être générées
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+
+				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
+				assertNotNull(pp);
+
+				metierService.deces(pp, dateDeces, null, null);
+				return null;
+			}
+		});
+
+		// vérification des fors et des tâches créées
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+
+				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
+				assertNotNull(pp);
+				assertFalse(pp.isHabitantVD());
+
+				final List<ForFiscalPrincipal> fors = pp.getForsFiscauxPrincipauxActifsSorted();
+				assertNotNull(fors);
+				assertEquals(1, fors.size());
+
+				final ForFiscalPrincipal ffp = fors.get(0);
+				assertNotNull(ffp);
+				assertEquals(dateArrivee, ffp.getDateDebut());
+				assertEquals(dateDeces, ffp.getDateFin());
+				assertEquals(MotifFor.VEUVAGE_DECES, ffp.getMotifFermeture());
+				assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
+
+				// les tâches, maintenant...
+				{
+					final TacheCriteria criterion = new TacheCriteria();
+					criterion.setContribuable(pp);
+					final List<Tache> taches = tacheDAO.find(criterion);
+					assertNotNull(taches);
+					assertEquals(2, taches.size());
+				}
+
+				// une tâche de transmission de dossier
+				{
+					final TacheCriteria criterion = new TacheCriteria();
+					criterion.setContribuable(pp);
+					criterion.setTypeTache(TypeTache.TacheTransmissionDossier);
+					final List<Tache> taches = tacheDAO.find(criterion);
+					assertNotNull(taches);
+					assertEquals(1, taches.size());
+
+					final TacheTransmissionDossier tache = (TacheTransmissionDossier) taches.get(0);
+					assertTache(TypeEtatTache.EN_INSTANCE, getNextSunday(RegDate.get()), tache);
+				}
+
+				// et une tâche d'envoi de DI pour la période en cours jusqu'à la date du décès
+				{
+					final TacheCriteria criterion = new TacheCriteria();
+					criterion.setContribuable(pp);
+					criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpot);
+					final List<Tache> taches = tacheDAO.find(criterion);
+					assertNotNull(taches);
+					assertEquals(1, taches.size());
+
+					final TacheEnvoiDeclarationImpot tache = (TacheEnvoiDeclarationImpot) taches.get(0);
+					assertTache(TypeEtatTache.EN_INSTANCE, dateDeces.addDays(30), date(anneeCourante, 1, 1), dateDeces, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.ACI, tache);
+				}
+
+				return null;
+			}
+		});
+	}
+
+	@Test
+	@NotTransactional
+	public void testAnnulationDeclarationDansPeriodeEnCours() throws Exception {
+
+		// par exemple sur une annulation de décès :
+		// - le décès (cette année) a créé une DI pour l'année en cours
+		// - le décès est annulé -> le for est ré-ouvert
+
+		final RegDate aujourdhui = RegDate.get();
+		final int anneeCourante = aujourdhui.year();
+
+		// mise en place
+		final long ppId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Severus", "Snape", date(1945, 8, 12), Sexe.MASCULIN);
+				addForPrincipal(pp, date(anneeCourante, 1, 1), MotifFor.ARRIVEE_HS, aujourdhui, MotifFor.VEUVAGE_DECES, MockCommune.Aubonne);
+				pp.setDateDeces(aujourdhui);
+
+				final PeriodeFiscale pf = addPeriodeFiscale(anneeCourante);
+				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
+				addDeclarationImpot(pp, pf, date(anneeCourante, 1, 1), aujourdhui, TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+
+				return pp.getNumero();
+			}
+		});
+
+		// vérification qu'aucune tâche n'a encore été générée (= tout est à jour)
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
+				assertNotNull(pp);
+
+				final TacheCriteria criterion = new TacheCriteria();
+				criterion.setContribuable(pp);
+				final List<Tache> taches = tacheDAO.find(criterion);
+				assertNotNull(taches);
+				assertEquals(0, taches.size());
+				return null;
+			}
+		});
+
+		// maintenant on ré-ouvre le for (et non, il n'est pas mort !)
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
+				assertNotNull(pp);
+
+				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+				assertNotNull(ffp);
+				assertEquals(aujourdhui, ffp.getDateFin());
+				assertEquals(MotifFor.VEUVAGE_DECES, ffp.getMotifFermeture());
+
+				// ré-ouverture du for
+				ffp.setDateFin(null);
+				ffp.setMotifFermeture(null);
+				pp.setDateDeces(null);
+				return null;
+			}
+		});
+
+		// il devrait maintenant y avoir une tâche d'annulation de DI
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
+				assertNotNull(pp);
+
+				final TacheCriteria criterion = new TacheCriteria();
+				criterion.setContribuable(pp);
+				final List<Tache> taches = tacheDAO.find(criterion);
+				assertNotNull(taches);
+				assertEquals(1, taches.size());
+
+				final Tache tache = taches.get(0);
+				assertEquals(TypeTache.TacheAnnulationDeclarationImpot, tache.getTypeTache());
+				assertTache(TypeEtatTache.EN_INSTANCE, getNextSunday(aujourdhui), date(anneeCourante, 1, 1), aujourdhui, (TacheAnnulationDeclarationImpot) tache);
+				return null;
+			}
+		});
+	}
+
+	@Test
+	@NotTransactional
+	public void testAnnulationTacheEnvoiDeclarationDansPeriodeEnCours() throws Exception {
+
+		// par exemple sur une annulation de décès :
+		// - le décès (cette année) a créé une tâche d'envoi de DI pour l'année en cours
+		// - le décès est annulé -> le for est ré-ouvert
+
+		final RegDate aujourdhui = RegDate.get();
+		final int anneeCourante = aujourdhui.year();
+
+		// mise en place
+		final long ppId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Severus", "Snape", date(1945, 8, 12), Sexe.MASCULIN);
+				final ForFiscalPrincipal ffp = addForPrincipal(pp, date(anneeCourante, 1, 1), MotifFor.ARRIVEE_HS, aujourdhui, MotifFor.VEUVAGE_DECES, MockCommune.Aubonne);
+				pp.setDateDeces(aujourdhui);
+
+				tacheService.genereTacheDepuisFermetureForPrincipal(pp, ffp);
+				return pp.getNumero();
+			}
+		});
+
+		// vérification qu'une seule tâche d'envoi de DI existe (il y a aussi une tâche de transmission de dossier, mais ce n'est pas l'objet de ce test)
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
+				assertNotNull(pp);
+
+				final TacheCriteria criterion = new TacheCriteria();
+				criterion.setContribuable(pp);
+				criterion.setTypeTache(TypeTache.TacheTransmissionDossier); // toutes les tâches qui ne sont pas des transmissions de dossier
+				criterion.setInvertTypeTache(true);
+				final List<Tache> taches = tacheDAO.find(criterion);
+				assertNotNull(taches);
+				assertEquals(1, taches.size());
+
+				final Tache tache = taches.get(0);
+				assertNotNull(tache);
+				assertEquals(TypeTache.TacheEnvoiDeclarationImpot, tache.getTypeTache());
+				assertTache(TypeEtatTache.EN_INSTANCE, aujourdhui.addDays(30), date(anneeCourante, 1, 1), aujourdhui, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.ACI, (TacheEnvoiDeclarationImpot) tache);
+				return null;
+			}
+		});
+
+		// maintenant on ré-ouvre le for (et non, il n'est pas mort !)
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
+				assertNotNull(pp);
+
+				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+				assertNotNull(ffp);
+				assertEquals(aujourdhui, ffp.getDateFin());
+				assertEquals(MotifFor.VEUVAGE_DECES, ffp.getMotifFermeture());
+
+				// ré-ouverture du for
+				ffp.setDateFin(null);
+				ffp.setMotifFermeture(null);
+				pp.setDateDeces(null);
+				return null;
+			}
+		});
+
+		// la tâche précédemment existante devrait avoir été annulée
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
+				assertNotNull(pp);
+
+				final TacheCriteria criterion = new TacheCriteria();
+				criterion.setContribuable(pp);
+				criterion.setTypeTache(TypeTache.TacheTransmissionDossier);     // toutes les tâches qui ne sont pas des transmissions de dossier
+				criterion.setInvertTypeTache(true);
+				criterion.setInclureTachesAnnulees(true);
+				final List<Tache> taches = tacheDAO.find(criterion);
+				assertNotNull(taches);
+				assertEquals(1, taches.size());
+
+				final Tache tache = taches.get(0);
+				assertNotNull(tache);
+				assertTrue(tache.isAnnule());
+				assertEquals(TypeTache.TacheEnvoiDeclarationImpot, tache.getTypeTache());
+				assertTache(TypeEtatTache.EN_INSTANCE, aujourdhui.addDays(30), date(anneeCourante, 1, 1), aujourdhui, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.ACI, (TacheEnvoiDeclarationImpot) tache);
+				return null;
+			}
+		});
+	}
+
+	@Test
+	@NotTransactional
+	public void testModificationDateFinAssujettissementDansPeriodeCourante() throws Exception {
+
+		// par exemple :
+		// - décès dans la période courante (= aujourdhui)
+		// - une tâche d'émission de DI a été générée
+		// - mais en fait, le décès a eu lieu un autre jour (toujours dans la période courante !)
+
+		final RegDate aujourdhui = RegDate.get();
+		final int anneeCourante = aujourdhui.year();
+
+		// mise en place
+		final long ppId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Severus", "Snape", date(1945, 8, 12), Sexe.MASCULIN);
+				final ForFiscalPrincipal ffp = addForPrincipal(pp, date(anneeCourante, 1, 1), MotifFor.ARRIVEE_HS, aujourdhui, MotifFor.VEUVAGE_DECES, MockCommune.Aubonne);
+				pp.setDateDeces(aujourdhui);
+
+				tacheService.genereTacheDepuisFermetureForPrincipal(pp, ffp);
+				return pp.getNumero();
+			}
+		});
+
+		// vérification qu'une seule tâche d'envoi de DI existe (il y a aussi une tâche de transmission de dossier, mais ce n'est pas l'objet de ce test)
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
+				assertNotNull(pp);
+
+				final TacheCriteria criterion = new TacheCriteria();
+				criterion.setContribuable(pp);
+				criterion.setTypeTache(TypeTache.TacheTransmissionDossier); // toutes les tâches qui ne sont pas des transmissions de dossier
+				criterion.setInvertTypeTache(true);
+				final List<Tache> taches = tacheDAO.find(criterion);
+				assertNotNull(taches);
+				assertEquals(1, taches.size());
+
+				final Tache tache = taches.get(0);
+				assertNotNull(tache);
+				assertEquals(TypeTache.TacheEnvoiDeclarationImpot, tache.getTypeTache());
+				assertTache(TypeEtatTache.EN_INSTANCE, aujourdhui.addDays(30), date(anneeCourante, 1, 1), aujourdhui, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.ACI, (TacheEnvoiDeclarationImpot) tache);
+				return null;
+			}
+		});
+
+		final RegDate nouvelleDateDeces;
+		if (aujourdhui.addDays(-7).year() == anneeCourante) {
+			nouvelleDateDeces = aujourdhui.addDays(-7);
+		}
+		else {
+			nouvelleDateDeces = aujourdhui.addDays(4);
+		}
+
+		// maintenant on change la date de fermeture du for, tout en restant dans la même période fiscale
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
+				assertNotNull(pp);
+
+				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+				assertNotNull(ffp);
+				assertEquals(aujourdhui, ffp.getDateFin());
+				assertEquals(MotifFor.VEUVAGE_DECES, ffp.getMotifFermeture());
+
+				// changement de la date de décès (c'est super-GRA, ça, non ?)
+				ffp.setDateFin(nouvelleDateDeces);
+				pp.setDateDeces(nouvelleDateDeces);
+				return null;
+			}
+		});
+
+		// la tâche précédemment existante devrait avoir été annulée et une nouvelle générée
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
+				assertNotNull(pp);
+
+				final TacheCriteria criterion = new TacheCriteria();
+				criterion.setContribuable(pp);
+				criterion.setTypeTache(TypeTache.TacheTransmissionDossier);     // toutes les tâches qui ne sont pas des transmissions de dossier
+				criterion.setInvertTypeTache(true);
+				criterion.setInclureTachesAnnulees(true);
+				final List<Tache> taches = tacheDAO.find(criterion);
+				assertNotNull(taches);
+				assertEquals(2, taches.size());
+
+				boolean trouveeAnnulee = false;
+				boolean trouveeNonAnnulee = false;
+				for (Tache tache : taches) {
+					assertNotNull(tache);
+					assertEquals(TypeTache.TacheEnvoiDeclarationImpot, tache.getTypeTache());
+					if (tache.isAnnule()) {
+						assertFalse("Deuxième tâche annulée trouvée", trouveeAnnulee);
+						trouveeAnnulee = true;
+
+						assertTache(TypeEtatTache.EN_INSTANCE, aujourdhui.addDays(30), date(anneeCourante, 1, 1), aujourdhui, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.ACI, (TacheEnvoiDeclarationImpot) tache);
+					}
+					else {
+						assertFalse("Deuxième tâche non-annulée trouvée", trouveeNonAnnulee);
+						trouveeNonAnnulee = true;
+
+						assertTache(TypeEtatTache.EN_INSTANCE, nouvelleDateDeces.addDays(30), date(anneeCourante, 1, 1), nouvelleDateDeces, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.ACI, (TacheEnvoiDeclarationImpot) tache);
+					}
+				}
+				assertTrue(trouveeAnnulee);
+				assertTrue(trouveeNonAnnulee);
+				return null;
+			}
+		});
+	}
+
+	@Test
+	@NotTransactional
+	public void testModificationDateFinAssujettissementDansPeriodeCouranteAvecDI() throws Exception {
+
+		// par exemple :
+		// - décès dans la période courante (= aujourdhui)
+		// - une tâche d'émission de DI a été générée, et même une DI, en fait
+		// - mais en fait, le décès a eu lieu un autre jour (toujours dans la période courante !)
+
+		final RegDate aujourdhui = RegDate.get();
+		final int anneeCourante = aujourdhui.year();
+
+		// mise en place
+		final long ppId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Severus", "Snape", date(1945, 8, 12), Sexe.MASCULIN);
+				addForPrincipal(pp, date(anneeCourante, 1, 1), MotifFor.ARRIVEE_HS, aujourdhui, MotifFor.VEUVAGE_DECES, MockCommune.Aubonne);
+				pp.setDateDeces(aujourdhui);
+
+				final PeriodeFiscale pf = addPeriodeFiscale(anneeCourante);
+				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
+				addDeclarationImpot(pp, pf, date(anneeCourante, 1, 1), aujourdhui, TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+
+				return pp.getNumero();
+			}
+		});
+
+		// vérification qu'aucune tâche n'a encore été générée (= tout est à jour)
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
+				assertNotNull(pp);
+
+				final TacheCriteria criterion = new TacheCriteria();
+				criterion.setContribuable(pp);
+				final List<Tache> taches = tacheDAO.find(criterion);
+				assertNotNull(taches);
+				assertEquals(0, taches.size());
+				return null;
+			}
+		});
+
+		final RegDate nouvelleDateDeces;
+		if (aujourdhui.addDays(-7).year() == anneeCourante) {
+			nouvelleDateDeces = aujourdhui.addDays(-7);
+		}
+		else {
+			nouvelleDateDeces = aujourdhui.addDays(4);
+		}
+
+		// maintenant on change la date de fermeture du for, tout en restant dans la même période fiscale
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
+				assertNotNull(pp);
+
+				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+				assertNotNull(ffp);
+				assertEquals(aujourdhui, ffp.getDateFin());
+				assertEquals(MotifFor.VEUVAGE_DECES, ffp.getMotifFermeture());
+
+				// changement de la date de décès (c'est super-GRA, ça, non ?)
+				ffp.setDateFin(nouvelleDateDeces);
+				pp.setDateDeces(nouvelleDateDeces);
+				return null;
+			}
+		});
+
+		// il ne devrait maintenant y avoir aucune nouvelle tâche, mais la période de la DI devrait avoir été adaptée
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
+				assertNotNull(pp);
+
+				final TacheCriteria criterion = new TacheCriteria();
+				criterion.setContribuable(pp);
+				final List<Tache> taches = tacheDAO.find(criterion);
+				assertNotNull(taches);
+				assertEquals(0, taches.size());
+
+				final Declaration di = pp.getDeclarationActive(date(anneeCourante, 1, 1));
+				assertNotNull(di);
+				assertEquals(date(anneeCourante, 1, 1), di.getDateDebut());
+				assertEquals(nouvelleDateDeces, di.getDateFin());
+				return null;
+			}
+		});
 	}
 }
