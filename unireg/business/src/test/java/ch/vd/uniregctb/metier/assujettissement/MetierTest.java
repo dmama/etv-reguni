@@ -897,7 +897,7 @@ public abstract class MetierTest extends BusinessTest {
 	}
 
 	protected void assertPeriodeImposition(RegDate debut, RegDate fin, TypeContribuableDI type, TypeAdresseRetour adresseRetour, boolean optionnelle, boolean remplaceParNote,
-	                                       boolean fermetureCauseDeces, PeriodeImposition periode) {
+	                                       boolean fermetureCauseDeces, boolean fermetureCauseFinAssujettissementHS, PeriodeImposition periode) {
 		assertNotNull(periode);
 		assertEquals(debut, periode.getDateDebut());
 		assertEquals(fin, periode.getDateFin());
@@ -906,5 +906,6 @@ public abstract class MetierTest extends BusinessTest {
 		assertEquals(optionnelle, periode.isOptionnelle());
 		assertEquals(remplaceParNote, periode.isRemplaceeParNote());
 		assertEquals(fermetureCauseDeces, periode.isFermetureCauseDeces());
+		assertEquals(fermetureCauseFinAssujettissementHS, periode.isFermetureCauseFinAssujettissementHorsSuisse());
 	}
 }
