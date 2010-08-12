@@ -695,13 +695,23 @@ public class TacheServiceImpl implements TacheService {
 
 	/**
 	 * On peut créer une tache d'envoi de DI pour toute période d'imposition dans une année passée.<br/>
-	 * Sur la période courante, il faut que la période d'imposition se termine avant la fin de l'année (= fin d'assujettissement)
+	 * Sur la période courante, il faut que la période d'imposition se termine avant la fin de l'année (= fin d'assujettissement), sauf le cas HS/vente immeuble ou fin activité indépendante
 	 * @param periode période d'imposition pour laquelle on voudrait peut-être créer une tâche d'envoi de DI
 	 * @param anneeCourante année de la période dite "courante"
 	 * @return <code>true</code> si la création de la tâche est autorisée, <code>false</code> sinon
 	 */
 	private static boolean peutCreerTacheEnvoiDI(PeriodeImposition periode, int anneeCourante) {
-		return isPeriodePasseeOuCouranteIncomplete(periode, anneeCourante);
+		return isPeriodePasseeOuCouranteIncomplete(periode, anneeCourante) &&
+			   !isPeriodeCouranteAvecFinAssujettissementHS(periode, anneeCourante);
+	}
+
+	/**
+	 * @param periode période d'imposition à tester
+	 * @param anneeCourante année de la période dite "courante"
+	 * @return <code>true</code> si la période est dans l'année courante et qu'elle est terminée pour une vente d'immeuble / fin d'activité indépendante d'un contribuable hors-Suisse, <code>false</code> sinon
+	 */
+	private static boolean isPeriodeCouranteAvecFinAssujettissementHS(PeriodeImposition periode, int anneeCourante) {
+		return periode.getDateDebut().year() == anneeCourante && periode.isFermetureCauseFinAssujettissementHorsSuisse();
 	}
 
 	/**

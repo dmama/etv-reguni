@@ -4241,4 +4241,178 @@ public class TacheServiceTest extends BusinessTest {
 			}
 		});
 	}
+
+	@Test
+	@NotTransactional
+	public void testHorsSuisseVenteDernierImmeubleDansPeriodeCourante() throws Exception {
+
+		// cas du contribuable HS qui possède un immeuble et qui le vend dans la période courante
+		// ->   bien qu'il y ait une fin d'assujettissement en cours d'année, aucune tâche d'émission de DI
+		//      ne doit être générée immédiatement (on attendra le batch de début d'année pour ça)
+
+		final RegDate aujourdhui = RegDate.get();
+		final int anneeCourante = aujourdhui.year();
+		final RegDate dateAchat = date(anneeCourante - 1, 5, 6);
+
+		// mise en place
+		final long ppId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Minerva", "McGonagall", date(1970, 8, 12), Sexe.FEMININ);
+				addForPrincipal(pp, dateAchat, MotifFor.ACHAT_IMMOBILIER, MockPays.RoyaumeUni);
+				addForSecondaire(pp, dateAchat, MotifFor.ACHAT_IMMOBILIER, aujourdhui, MotifFor.VENTE_IMMOBILIER, MockCommune.Bussigny.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+				return pp.getNumero();
+			}
+		});
+
+		// il ne devrait pas y avoir de tâche d'émission de DI malgré la vente du dernier immeuble et donc la fin d'assujettissement
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
+				assertNotNull(pp);
+
+				final TacheCriteria criterion = new TacheCriteria();
+				criterion.setContribuable(pp);
+				criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpot);
+				final List<Tache> taches = tacheDAO.find(criterion);
+				assertNotNull(taches);
+				assertEquals(0, taches.size());
+				return null;
+			}
+		});
+	}
+
+	@Test
+	@NotTransactional
+	public void testHorsSuisseFinActiviteIndependanteDansPeriodeCourante() throws Exception {
+
+		// cas du contribuable HS qui a une activité indépendante et qui l'arrête dans la période courante
+		// ->   bien qu'il y ait une fin d'assujettissement en cours d'année, aucune tâche d'émission de DI
+		//      ne doit être générée immédiatement (on attendra le batch de début d'année pour ça)
+
+		final RegDate aujourdhui = RegDate.get();
+		final int anneeCourante = aujourdhui.year();
+		final RegDate dateDebutActivite = date(anneeCourante - 1, 5, 6);
+
+		// mise en place
+		final long ppId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Minerva", "McGonagall", date(1970, 8, 12), Sexe.FEMININ);
+				addForPrincipal(pp, dateDebutActivite, MotifFor.DEBUT_EXPLOITATION, MockPays.RoyaumeUni);
+				addForSecondaire(pp, dateDebutActivite, MotifFor.DEBUT_EXPLOITATION, aujourdhui, MotifFor.FIN_EXPLOITATION, MockCommune.Bussigny.getNoOFSEtendu(), MotifRattachement.ACTIVITE_INDEPENDANTE);
+
+				// on crée déjà la DI de l'an dernier
+				final PeriodeFiscale pf = addPeriodeFiscale(anneeCourante - 1);
+				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
+				addDeclarationImpot(pp, pf, dateDebutActivite, date(anneeCourante - 1, 12, 31), TypeContribuable.HORS_SUISSE, modele);
+
+				return pp.getNumero();
+			}
+		});
+
+		// il ne devrait pas y avoir de tâche d'émission de DI malgré la fin d'activité indépendante et donc la fin d'assujettissement
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
+				assertNotNull(pp);
+
+				final TacheCriteria criterion = new TacheCriteria();
+				criterion.setContribuable(pp);
+				criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpot);
+				final List<Tache> taches = tacheDAO.find(criterion);
+				assertNotNull(taches);
+				assertEquals(0, taches.size());
+				return null;
+			}
+		});
+	}
+
+	@Test
+	@NotTransactional
+	public void testHorsCantonVenteDernierImmeubleDansPeriodeCourante() throws Exception {
+
+		// cas du contribuable HC qui possède un immeuble et qui le vend dans la période courante
+		// ->   bien qu'il y ait une fin d'assujettissement en cours d'année, aucune tâche d'émission de DI
+		//      ne doit être générée immédiatement (elle est de toute façon remplacée par une note)
+
+		final RegDate aujourdhui = RegDate.get();
+		final int anneeCourante = aujourdhui.year();
+		final RegDate dateAchat = date(anneeCourante - 1, 5, 6);
+
+		// mise en place
+		final long ppId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Minerva", "McGonagall", date(1970, 8, 12), Sexe.FEMININ);
+				addForPrincipal(pp, dateAchat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
+				addForSecondaire(pp, dateAchat, MotifFor.ACHAT_IMMOBILIER, aujourdhui, MotifFor.VENTE_IMMOBILIER, MockCommune.Bussigny.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+
+				// on crée déjà la DI de l'an dernier
+				final PeriodeFiscale pf = addPeriodeFiscale(anneeCourante - 1);
+				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pf);
+				addDeclarationImpot(pp, pf, dateAchat, date(anneeCourante - 1, 12, 31), TypeContribuable.HORS_CANTON, modele);
+
+				return pp.getNumero();
+			}
+		});
+
+		// il ne devrait pas y avoir de tâche d'émission de DI malgré la vente du dernier immeuble (DI remplacée par une note)
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
+				assertNotNull(pp);
+
+				final TacheCriteria criterion = new TacheCriteria();
+				criterion.setContribuable(pp);
+				criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpot);
+				final List<Tache> taches = tacheDAO.find(criterion);
+				assertNotNull(taches);
+				assertEquals(0, taches.size());
+				return null;
+			}
+		});
+	}
+
+	@Test
+	@NotTransactional
+	public void testHorsCantonFinActiviteIndependanteDansPeriodeCourante() throws Exception {
+
+		// cas du contribuable HC qui a une activité indépendante et qui l'arrête dans la période courante
+		// ->   bien qu'il y ait une fin d'assujettissement en cours d'année, aucune tâche d'émission de DI
+		//      ne doit être générée immédiatement (on attendra le batch de début d'année pour ça)
+
+		final RegDate aujourdhui = RegDate.get();
+		final int anneeCourante = aujourdhui.year();
+		final RegDate dateDebutActivite = date(anneeCourante - 1, 5, 6);
+
+		// mise en place
+		final long ppId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Minerva", "McGonagall", date(1970, 8, 12), Sexe.FEMININ);
+				addForPrincipal(pp, dateDebutActivite, MotifFor.DEBUT_EXPLOITATION, MockCommune.Bern);
+				addForSecondaire(pp, dateDebutActivite, MotifFor.DEBUT_EXPLOITATION, aujourdhui, MotifFor.FIN_EXPLOITATION, MockCommune.Bussigny.getNoOFSEtendu(), MotifRattachement.ACTIVITE_INDEPENDANTE);
+
+				// on crée déjà la DI de l'an dernier
+				final PeriodeFiscale pf = addPeriodeFiscale(anneeCourante - 1);
+				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
+				addDeclarationImpot(pp, pf, date(anneeCourante - 1, 1, 1), date(anneeCourante - 1, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+
+				return pp.getNumero();
+			}
+		});
+
+		// il ne devrait pas y avoir de tâche d'émission de DI malgré la fin d'activité indépendante et donc la fin d'assujettissement
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
+				assertNotNull(pp);
+
+				final TacheCriteria criterion = new TacheCriteria();
+				criterion.setContribuable(pp);
+				criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpot);
+				final List<Tache> taches = tacheDAO.find(criterion);
+				assertNotNull(taches);
+				assertEquals(0, taches.size());
+				return null;
+			}
+		});
+	}
 }
