@@ -68,6 +68,11 @@ public class CloseAdresseValidator implements Validator {
 				errors.rejectValue("dateFin", "error.date.fin.avant.debut");
 
 		}
+		else if (dateFin.isAfter(RegDate.get())) {
+
+				errors.rejectValue("dateFin", "error.date.fin.dans.futur");
+
+		}
 
 		//gestion des droits de fermeture d'une adresse
 		boolean isAllowed = false;
