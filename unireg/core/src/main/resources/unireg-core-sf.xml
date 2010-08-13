@@ -118,6 +118,7 @@
 		<value>ch.vd.uniregctb.document.DeterminerMouvementsDossiersEnMasseRapport</value>
 		<value>ch.vd.uniregctb.document.IdentifierContribuableRapport</value>
 		<value>ch.vd.uniregctb.document.TraiterEvenementExterneRapport</value>
+		<value>ch.vd.uniregctb.document.ResolutionAdresseRapport</value>
 		<value>ch.vd.uniregctb.parametrage.ParametreApp</value>
 	</util:list>
 

@@ -3,6 +3,7 @@ package ch.vd.uniregctb.adresse;
 import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.TypeAffranchissement;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -191,4 +192,13 @@ public interface AdresseService {
 	 * @return le type d'affranchissement de l'adresse.
 	 */
 	TypeAffranchissement getTypeAffranchissement(AdresseGenerique adresse);
+
+	/**Appel au processeur du batch de résolution des adresses connues
+	 *
+	 * @param dateTraitement
+	 * @param nbThreads
+	 * @param status
+	 * @return
+	 */
+	ResolutionAdresseResults ResoudreAdresse(RegDate dateTraitement, int nbThreads, StatusManager status);
 }

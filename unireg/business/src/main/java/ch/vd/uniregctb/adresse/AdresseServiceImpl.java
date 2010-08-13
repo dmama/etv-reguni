@@ -7,6 +7,7 @@ import java.util.ListIterator;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.transaction.PlatformTransactionManager;
 
 import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.infrastructure.service.InfrastructureException;
@@ -22,6 +23,7 @@ import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.adresse.AdresseGenerique.Source;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.DonneesCivilesException;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.AdresseEntreprise;
 import ch.vd.uniregctb.interfaces.model.CommuneSimple;
@@ -75,6 +77,8 @@ public class AdresseServiceImpl implements AdresseService {
 	private ServiceInfrastructureService serviceInfra;
 	private ServicePersonneMoraleService servicePM;
 	private ServiceCivilService serviceCivilService;
+	private AdresseTiersDAO adresseTiersDAO;
+	private PlatformTransactionManager transactionManager;
 
 	public void setTiersService(TiersService tiersService) {
 		this.tiersService = tiersService;
@@ -95,6 +99,22 @@ public class AdresseServiceImpl implements AdresseService {
 
 	public void setServiceCivilService(ServiceCivilService serviceCivilService) {
 		this.serviceCivilService = serviceCivilService;
+	}
+
+	public AdresseTiersDAO getAdresseTiersDAO() {
+		return adresseTiersDAO;
+	}
+
+	public void setAdresseTiersDAO(AdresseTiersDAO adresseTiersDAO) {
+		this.adresseTiersDAO = adresseTiersDAO;
+	}
+
+	public PlatformTransactionManager getTransactionManager() {
+		return transactionManager;
+	}
+
+	public void setTransactionManager(PlatformTransactionManager transactionManager) {
+		this.transactionManager = transactionManager;
 	}
 
 	public AdresseServiceImpl() {
@@ -2646,5 +2666,10 @@ public class AdresseServiceImpl implements AdresseService {
 		}
 
 		return serviceInfra.getTypeAffranchissement(noPays);
+	}
+
+	public ResolutionAdresseResults ResoudreAdresse(RegDate dateTraitement, int nbThreads, StatusManager status) {
+		ResolutionAdresseProcessor processor = new ResolutionAdresseProcessor(this,adresseTiersDAO,serviceInfra,transactionManager);
+		return processor.run(dateTraitement, nbThreads, status);
 	}
 }

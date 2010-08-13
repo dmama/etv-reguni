@@ -90,13 +90,23 @@
 		<property name="transactionManager" ref="transactionManager"/>
     </bean>
 
+	<!-- Job qui Resoud les adresses en fonction du numéro de rue-->
+     <bean id="resolutionAdresseJob" parent="schedulerJob" class="ch.vd.uniregctb.adresse.ResolutionAdresseJob">
+        <constructor-arg value="106"/>
+        <constructor-arg value="Résoudre les adresses en fonction du numéro de rue"/>
+        <property name="adresseService" ref="adresseService"/>
+        <property name="rapportService" ref="rapportService"/>
+    </bean>
+
+
 	<!-- Job qui met-à-jour les statistiques des tâches -->
 	<bean id="updateTacheStatsJob" parent="schedulerJob" class="ch.vd.uniregctb.tache.UpdateTacheStatsJob">
-		<constructor-arg value="106"/>
+		<constructor-arg value="107"/>
 		<constructor-arg value="Met-à-jour les statistiques des tâches"/>
 		<property name="tacheService" ref="tacheService"/>
 		<property name="logDisabled" value="true"/>
 	</bean>
+
 
     <!-- Job qui traite les evenements civils -->
     <bean id="evenementHandlerJob" parent="schedulerJob" class="ch.vd.uniregctb.evenement.engine.EvenementCivilHandlerJob">

@@ -76,6 +76,8 @@
 		<property name="serviceCivilService" ref="serviceCivilService" />
 		<property name="serviceInfra" ref="serviceInfrastructureService" />
 		<property name="servicePM" ref="servicePersonneMoraleService" />
+		<property name="adresseTiersDAO" ref="adresseTiersDAO" />
+		<property name="transactionManager" ref="transactionManager"/>
 	</bean>
 
 	<bean id="situationFamilleService" class="ch.vd.uniregctb.situationfamille.SituationFamilleServiceImpl">

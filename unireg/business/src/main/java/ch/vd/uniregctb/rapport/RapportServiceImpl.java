@@ -4,6 +4,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.acomptes.AcomptesResults;
 import ch.vd.uniregctb.adresse.AdresseService;
+import ch.vd.uniregctb.adresse.ResolutionAdresseResults;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.DeclarationException;
@@ -724,5 +725,26 @@ public class RapportServiceImpl implements RapportService {
 			catch (Exception e) {
 				throw new RuntimeException(e);
 			}
+	}
+
+	public ResolutionAdresseRapport generateRapport(final ResolutionAdresseResults results, StatusManager s) {
+		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
+
+					final String nom = "RapportResolutionAdresse";
+					final String description = "Rapport d'exécution du job de résolution des adresses. Date de traitement = " + results.getDateTraitement();
+					final Date dateGeneration = new Date();
+
+					try {
+						return docService.newDoc(ResolutionAdresseRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<ResolutionAdresseRapport>() {
+							public void writeDoc(ResolutionAdresseRapport doc, OutputStream os) throws Exception {
+								final PdfResolutionAdresseRapport document = new PdfResolutionAdresseRapport();
+								document.write(results, nom, description, dateGeneration, os, status);
+							}
+						});
+					}
+					catch (Exception e) {
+						throw new RuntimeException(e);
+					}
+	  
 	}
 }

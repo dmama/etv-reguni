@@ -2,6 +2,7 @@ package ch.vd.uniregctb.rapport;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.acomptes.AcomptesResults;
+import ch.vd.uniregctb.adresse.ResolutionAdresseResults;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.DeclarationException;
 import ch.vd.uniregctb.declaration.ordinaire.DemandeDelaiCollectiveResults;
@@ -308,4 +309,12 @@ public interface RapportService {
 	 */
 
 	TraiterEvenementExterneRapport generateRapport(TraiterEvenementExterneResult results, StatusManager status);
+
+	/**
+	 * Génère le rapport suite à l'execution du job de résolution des adresses
+	 * @param results
+	 * @param status
+	 * @return
+	 */
+	ResolutionAdresseRapport generateRapport(ResolutionAdresseResults results, StatusManager status);
 }
