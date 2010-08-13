@@ -1562,14 +1562,14 @@ public class MetierServiceImpl implements MetierService {
 	 * Ouvre les fors secondaires sur le contribuable.
 	 * @param date la date d'ouverture des nouveaux fors secondaires.
 	 * @param contribuable le contribuable.
-	 * @param forsSecondaires liste de fors secondaires à recopier (ceux qui sont valides à la veille de la date donnée)
+	 * @param forsSecondaires liste de fors secondaires à recopier (ceux qui sont valides à la veille de la date donnée, et fermés depuis avec le motif qui sera utilisé comme motif d'ouverture des nouveaux fors)
 	 * @param motifOuverture motif d'ouverture à assigner aux nouveaux fors.
 	 * @param dateFermeture (nullable) si les fors secondaires doivent être créés fermés, date de fermeture
 	 * @param motifFermeture (nullable) si les fors secondaires doivent être créés fermés, motif de fermeture
 	 */
 	private void createForsSecondaires(RegDate date, Contribuable contribuable, List<ForFiscalSecondaire> forsSecondaires, MotifFor motifOuverture, RegDate dateFermeture, MotifFor motifFermeture) {
 		for (ForFiscalSecondaire forFiscalSecondaire : forsSecondaires) {
-			if (forFiscalSecondaire.isValidAt(date.getOneDayBefore())) {
+			if (forFiscalSecondaire.isValidAt(date.getOneDayBefore()) && forFiscalSecondaire.getMotifFermeture() == motifOuverture) {
 				final ForFiscalSecondaire ffs = tiersService.openForFiscalSecondaire(contribuable,
 																					date, forFiscalSecondaire.getMotifRattachement(),
 																					forFiscalSecondaire.getNumeroOfsAutoriteFiscale(),
@@ -1585,14 +1585,14 @@ public class MetierServiceImpl implements MetierService {
 	 * Ouvre les fors de type autre élément imposable sur le contribuable.
 	 * @param date la date d'ouverture des nouveaux fors secondaires.
 	 * @param contribuable le contribuable.
-	 * @param fors liste de fors autre élément imposable à recopier (ceux qui sont valides à la veille de la date donnée)
+	 * @param fors liste de fors autre élément imposable à recopier (ceux qui sont valides à la veille de la date donnée, et fermés depuis avec le motif qui sera utilisé comme motif d'ouverture des nouveaux fors)
 	 * @param motifOuverture motif d'ouverture assigner aux nouveaux fors.
 	 * @param dateFermeture (nullable) si les fors secondaires doivent être créés fermés, date de fermeture
 	 * @param motifFermeture (nullable) si les fors secondaires doivent être créés fermés, motif de fermeture
 	 */
 	private void createForsAutreElementImpossable(RegDate date, Contribuable contribuable, List<ForFiscalAutreElementImposable> fors, MotifFor motifOuverture, RegDate dateFermeture, MotifFor motifFermeture) {
 		for (ForFiscalAutreElementImposable forFiscalAutreElementImposable : fors) {
-			if (forFiscalAutreElementImposable.isValidAt(date.getOneDayBefore())) {
+			if (forFiscalAutreElementImposable.isValidAt(date.getOneDayBefore()) && forFiscalAutreElementImposable.getMotifFermeture() == motifOuverture) {
 				final ForFiscalAutreElementImposable ffaei = tiersService.openForFiscalAutreElementImposable(contribuable, forFiscalAutreElementImposable.getGenreImpot(),
 																											date, forFiscalAutreElementImposable.getMotifRattachement(),
 																											forFiscalAutreElementImposable.getNumeroOfsAutoriteFiscale(),
