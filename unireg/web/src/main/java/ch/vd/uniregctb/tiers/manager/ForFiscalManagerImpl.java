@@ -18,6 +18,7 @@ import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
+import ch.vd.uniregctb.interfaces.InterfaceDataException;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
@@ -103,9 +104,15 @@ public class ForFiscalManagerImpl extends TiersManager implements ForFiscalManag
 			setTiersGeneralView(tiersEditView, tiers);
 			tiersEditView.setTiers(tiers);
 			if(tiers instanceof Contribuable) {
-				Contribuable contribuable = (Contribuable) tiers;
-				setSituationsFamille(tiersEditView, contribuable);
+				final Contribuable contribuable = (Contribuable) tiers;
 				setForsFiscaux(tiersEditView, contribuable);
+				try {
+					setSituationsFamille(tiersEditView, contribuable);
+				}
+				catch (InterfaceDataException e) {
+					LOGGER.warn(String.format("Exception lors de la récupération des situations de familles du contribuable %d", numero), e);
+					tiersEditView.setSituationsFamilleEnErreurMessage(e.getMessage());
+				}
 			}
 			if (tiers instanceof DebiteurPrestationImposable) {
 				DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiers;

@@ -14,6 +14,7 @@ import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.entreprise.EntrepriseView;
+import ch.vd.uniregctb.interfaces.InterfaceDataException;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityProvider;
@@ -230,11 +231,18 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 
 		if (tiersEditView.getTiers() != null){
 			if(tiers instanceof Contribuable) {
-				Contribuable contribuable = (Contribuable) tiers;
+				final Contribuable contribuable = (Contribuable) tiers;
 				tiersEditView.setDebiteurs(getDebiteurs(contribuable));
 				setForsFiscaux(tiersEditView, contribuable);
-				setSituationsFamille(tiersEditView, contribuable);
-				tiersEditView.setSituationFamilleActive(isSituationFamilleActive(contribuable));
+
+				try {
+					setSituationsFamille(tiersEditView, contribuable);
+					tiersEditView.setSituationFamilleActive(isSituationFamilleActive(contribuable));
+				}
+				catch (InterfaceDataException e) {
+					LOGGER.warn(String.format("Exception lors de la récupération des situations de familles du contribuable %d", numero), e);
+					tiersEditView.setSituationsFamilleEnErreurMessage(e.getMessage());
+				}
 			}
 
 			tiersEditView.setDossiersApparentes(getRapports(tiers));

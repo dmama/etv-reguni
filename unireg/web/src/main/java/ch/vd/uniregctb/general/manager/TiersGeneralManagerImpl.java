@@ -126,7 +126,7 @@ public class TiersGeneralManagerImpl implements TiersGeneralManager{
 		}
 
 		final ValidationResults validationResults = tiers.validate();
-		setErreursFiliation(tiers, validationResults);
+		setErreursEtatsCivils(tiers, validationResults);
 		setErreursAdresses(tiers, validationResults);
 
 		tiersGeneralView.setValidationResults(validationResults);
@@ -225,15 +225,15 @@ public class TiersGeneralManagerImpl implements TiersGeneralManager{
 	}
 
 	/**
-	 * Met à jour les erreurs de filiation
+	 * Met à jour les erreurs autour des états civils
 	 *
 	 * @param tiers
 	 * @param validationResults
 	 */
-	private void setErreursFiliation(Tiers tiers, ValidationResults validationResults) {
+	private void setErreursEtatsCivils(Tiers tiers, ValidationResults validationResults) {
 		if (tiers instanceof PersonnePhysique) {
 			final PersonnePhysique pp = (PersonnePhysique) tiers;
-			if (pp.isHabitantVD()) {
+			if (pp.isConnuAuCivil()) {
 				final int year = RegDate.get().year();
 				final Individu ind = serviceCivilService.getIndividu(pp.getNumeroIndividu(), year);
 				for (EtatCivil etatCivil : ind.getEtatsCivils()) {

@@ -18,6 +18,7 @@ import ch.vd.registre.base.date.DateRangeHelper.AdapterCallback;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.registre.civil.model.EnumTypeEtatCivil;
+import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.interfaces.InterfaceDataException;
@@ -206,7 +207,7 @@ public class SituationFamilleServiceImpl implements SituationFamilleService {
 		EtatCivil etatPrecedent = null;
 		RegDate dateDebutEtatPrecedent = null;
 
-		// la date de fin n'est pas défini au niveau de l'état civil -> on doit la déduire à partir de la date de début suivante
+		// la date de fin n'est pas définie au niveau de l'état civil -> on doit la déduire à partir de la date de début suivante
 		for (EtatCivil etatCourant : coll) {
 
 			RegDate dateDebutEtatCourant;
@@ -276,9 +277,11 @@ public class SituationFamilleServiceImpl implements SituationFamilleService {
 	/**
 	 * Construit le message de l'exception levée lorsqu'un état civil possède une date de début nulle
 	 */
-	private String buildExceptionMessage(PersonnePhysique habitant, EtatCivil etat) {
-		return "Contribuable n°" + habitant.getNumero() + " / Individu n°" + habitant.getNumeroIndividu() + ": l'état civil ["
-				+ etat.getTypeEtatCivil().getName() + "] possède une date de début nulle !";
+	private static String buildExceptionMessage(PersonnePhysique habitant, EtatCivil etat) {
+		return String.format("Contribuable %s / Individu n°%d: l'état civil %s n'a pas de date de début !",
+							FormatNumeroHelper.numeroCTBToDisplay(habitant.getNumero()),
+							habitant.getNumeroIndividu(),
+							ch.vd.uniregctb.type.EtatCivil.from(etat.getTypeEtatCivil()));
 	}
 
 	private RegDate findDateDebutEtatCivil(EtatCivil etatCivil, PersonnePhysique habitant, Individu individu) {
