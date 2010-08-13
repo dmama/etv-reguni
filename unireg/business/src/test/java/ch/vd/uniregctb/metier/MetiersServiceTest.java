@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.metier;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
@@ -1713,6 +1714,112 @@ public class MetiersServiceTest extends BusinessTest {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				Assert.assertFalse(pp.isHabitantVD());
 				Assert.assertNull(tiersService.getDateDeces(pp));
+				return null;
+			}
+		});
+	}
+
+	@Test
+	@NotTransactional
+	public void testVenteImmeubleVeilleMariage() throws Exception {
+
+		final long noIndividuMonsieur = 123456789L;
+		final long noIndividuMadame = 987654321L;
+		final RegDate dateMariage = date(2009, 5, 1);
+
+		// mise en place civile
+		serviceCivil.setUp(new DefaultMockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu m = addIndividu(noIndividuMonsieur, date(1965, 9, 5), "Dursley", "Vernon", true);
+				final MockIndividu mme = addIndividu(noIndividuMadame, date(1965, 4, 26), "Dursley", "Petunia", false);
+				marieIndividus(m, mme, dateMariage);
+			}
+		});
+
+		final class Ids {
+			long idMonsieur;
+			long idMadame;
+			long idMenage;
+		}
+
+		// on crée les deux célibataires, avec monsieur propriétaire d'un immeuble vendu à la veille de son mariage, puis on enregistre le mariage
+		final Ids ids = (Ids) doInNewTransactionAndSession(new TransactionCallback() {
+			public Ids doInTransaction(TransactionStatus status) {
+
+				final PersonnePhysique m = addHabitant(noIndividuMonsieur);
+				addForPrincipal(m, date(2000, 4, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+				addForSecondaire(m, date(2004, 4, 28), MotifFor.ACHAT_IMMOBILIER, dateMariage.getOneDayBefore(), MotifFor.VENTE_IMMOBILIER, MockCommune.Echallens.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+
+				final PersonnePhysique mme = addHabitant(noIndividuMadame);
+				addForPrincipal(mme, date(2002, 8, 12), MotifFor.ARRIVEE_HS, MockCommune.Renens);
+
+				final MenageCommun mc = metierService.marie(dateMariage, m, mme, null, EtatCivil.MARIE, true, null);
+				Assert.assertNotNull(mc);
+
+				final Ids ids = new Ids();
+				ids.idMonsieur = m.getNumero();
+				ids.idMadame = mme.getNumero();
+				ids.idMenage = mc.getNumero();
+				return ids;
+			}
+		});
+
+		// et on vérifie les fors après l'enregistrement du mariage
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+
+				final MenageCommun mc = (MenageCommun) tiersService.getTiers(ids.idMenage);
+				Assert.assertNotNull(mc);
+
+				final EnsembleTiersCouple ensemble = tiersService.getEnsembleTiersCouple(mc, null);
+				Assert.assertNotNull(ensemble);
+
+				final PersonnePhysique principal = ensemble.getPrincipal();
+				Assert.assertNotNull(principal);
+				Assert.assertEquals(ids.idMonsieur, (long) principal.getNumero());
+
+				final PersonnePhysique conjoint = ensemble.getConjoint();
+				Assert.assertNotNull(conjoint);
+				Assert.assertEquals(ids.idMadame, (long) conjoint.getNumero());
+
+				// fors de monsieur : doivent tous être fermés à la veille du mariage
+				{
+					final List<ForFiscal> fors = principal.getForsFiscauxSorted();
+					Assert.assertNotNull(fors);
+					Assert.assertEquals(2, fors.size());
+					for (ForFiscal ff : fors) {
+						Assert.assertNotNull(ff);
+						Assert.assertFalse(ff.toString(), ff.isAnnule());
+						Assert.assertEquals(ff.toString(), dateMariage.getOneDayBefore(), ff.getDateFin());
+					}
+				}
+
+				// for de madame : doit être fermé à la veille du mariage également
+				{
+					final List<ForFiscal> fors = conjoint.getForsFiscauxSorted();
+					Assert.assertNotNull(fors);
+					Assert.assertEquals(1, fors.size());
+
+					final ForFiscal ff = fors.get(0);
+					Assert.assertNotNull(ff);
+					Assert.assertFalse(ff.isAnnule());
+					Assert.assertEquals(dateMariage.getOneDayBefore(), ff.getDateFin());
+				}
+
+				// for du couple : seul le for principal doit être créé (pas de for secondaire, puisque l'immeuble avait déjà été vendu)
+				{
+					final List<ForFiscal> fors = mc.getForsFiscauxSorted();
+					Assert.assertNotNull(fors);
+					Assert.assertEquals(1, fors.size());
+
+					final ForFiscal ff = fors.get(0);
+					Assert.assertNotNull(ff);
+					Assert.assertFalse(ff.isAnnule());
+					Assert.assertTrue(ff instanceof ForFiscalPrincipal);
+					Assert.assertEquals(dateMariage, ff.getDateDebut());
+					Assert.assertNull(ff.getDateFin());
+				}
 				return null;
 			}
 		});
