@@ -166,39 +166,43 @@ public class DeclarationImpotEditController extends AbstractDeclarationImpotCont
 
 		ModelAndView mav = null;
 
-		// FIXME (CGD) implémenter la sécurité IFOSec sur les actions ci-dessous !
-		final String target = getTarget();
-		if (target != null) {
-			if (TARGET_ANNULER_DELAI.equals(target)) {
-				mav = annulerDelai(request, response, command, errors);
+		// on blinde un peu : si la commande passée est nulle, on ne fait rien (on réaffiche la page)
+		if (command != null) {
+
+			// FIXME (CGD) implémenter la sécurité IFOSec sur les actions ci-dessous !
+			final String target = getTarget();
+			if (target != null) {
+				if (TARGET_ANNULER_DELAI.equals(target)) {
+					mav = annulerDelai(request, response, command, errors);
+				}
+				else if (TARGET_IMPRIMER_DI.equals(target)) {
+					mav = imprimerDI(request, response, command, errors);
+				}
+				else if (TARGET_CREER_DI.equals(target)) {
+					mav = creerDI(request, response, command, errors);
+				} else if (TARGET_IMPRIMER_DELAI.equals(target)) {
+					mav = imprimerDelai(request, response, command, errors);
+				}
 			}
-			else if (TARGET_IMPRIMER_DI.equals(target)) {
-				mav = imprimerDI(request, response, command, errors);
-			}
-			else if (TARGET_CREER_DI.equals(target)) {
-				mav = creerDI(request, response, command, errors);
-			} else if (TARGET_IMPRIMER_DELAI.equals(target)) {
-				mav = imprimerDelai(request, response, command, errors);
-			}
-		}
-		else {
-			if (request.getParameter(BUTTON_AJOUTER_DI) != null) {
-				mav = ajouterDI(request, response, command, errors);
-			}
-			if (request.getParameter(BUTTON_SAVE_DI) != null) {
-				mav = sauverDI(request, response, command, errors);
-			}
-			else if (request.getParameter(BUTTON_SOMMER_DI) != null) {
-				mav = sommerDI(request, response, command, errors);
-			}
-			else if (request.getParameter(BUTTON_ANNULER_DI) != null) {
-				mav = annulerDI(request, response, command, errors);
-			}
-			else if (request.getParameter(BUTTON_IMPRIMER_TO) != null) {
-				mav = imprimerTO(request, response, command, errors);
-			}
-			else if (request.getParameter(BUTTON_MAINTENIR_DI) != null) {
-				mav = maintenirDI(request, response, command, errors);
+			else {
+				if (request.getParameter(BUTTON_AJOUTER_DI) != null) {
+					mav = ajouterDI(request, response, command, errors);
+				}
+				if (request.getParameter(BUTTON_SAVE_DI) != null) {
+					mav = sauverDI(request, response, command, errors);
+				}
+				else if (request.getParameter(BUTTON_SOMMER_DI) != null) {
+					mav = sommerDI(request, response, command, errors);
+				}
+				else if (request.getParameter(BUTTON_ANNULER_DI) != null) {
+					mav = annulerDI(request, response, command, errors);
+				}
+				else if (request.getParameter(BUTTON_IMPRIMER_TO) != null) {
+					mav = imprimerTO(request, response, command, errors);
+				}
+				else if (request.getParameter(BUTTON_MAINTENIR_DI) != null) {
+					mav = maintenirDI(request, response, command, errors);
+				}
 			}
 		}
 
