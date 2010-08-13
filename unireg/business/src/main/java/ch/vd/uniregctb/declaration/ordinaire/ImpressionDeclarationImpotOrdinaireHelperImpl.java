@@ -503,10 +503,21 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 		final Long collId = declaration.getRetourCollectiviteAdministrativeId();
 		final CollectiviteAdministrative collectiviteAdministrative = (collId == null ? null : (CollectiviteAdministrative) tiersService.getTiers(collId));
 
-		final Commune commune;
+		// [UNIREG-1655] Il faut recalculer la commune du for de gestion
+		final String nomCommuneGestion;
 		try {
-			int noOfsCommune = declaration.getNumeroOfsForGestion();
-			commune = infraService.getCommuneByNumeroOfsEtendu(noOfsCommune, declaration.getDateFin());
+			final ForGestion forGestion = tiersService.getForGestionActif(declaration.getTiers(), declaration.getDateFin());
+			final int noOfsCommune;
+			if (forGestion != null) {
+				noOfsCommune = forGestion.getNoOfsCommune();
+			}
+			else {
+				// au cas où on voudrait imprimer, je ne sais pas, moi, une DI annulée pour quelqu'un qui n'a
+				// plus de for de gestion, on prend le défaut sur la déclaration quand-même (c'est mieux qu'un crash, non ?)
+				noOfsCommune = declaration.getNumeroOfsForGestion();
+			}
+			final Commune commune = infraService.getCommuneByNumeroOfsEtendu(noOfsCommune, declaration.getDateFin());
+			nomCommuneGestion = commune.getNomMinuscule();
 		}
 		catch (InfrastructureException e) {
 			throw new EditiqueException(e);
@@ -516,7 +527,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 		infoDI.setCODBARR(codbarr);
 		infoDI.setDELAIRETOUR(delaiRetour);
 		infoDI.setNOCANT(FormatNumeroHelper.numeroCTBToDisplay(tiers.getNumero()));
-		infoDI.setDESCOM(commune.getNomMinuscule());
+		infoDI.setDESCOM(nomCommuneGestion);
 
 		final Integer numeroCA = (collectiviteAdministrative == null ? null : collectiviteAdministrative.getNumeroCollectiviteAdministrative());
 		// [UNIREG-1741] le numéro d'OID doit être renseignée en cas de retour au CEDI *ou* au CEDI-22
