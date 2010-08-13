@@ -2,7 +2,6 @@ package ch.vd.uniregctb.tiers.manager;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -20,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.infrastructure.service.InfrastructureException;
-import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.adresse.*;
 import ch.vd.uniregctb.common.DonneesCivilesException;
@@ -34,6 +32,7 @@ import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.di.view.DeclarationImpotDetailComparator;
 import ch.vd.uniregctb.di.view.DeclarationImpotDetailView;
 import ch.vd.uniregctb.iban.IbanValidator;
+import ch.vd.uniregctb.interfaces.InterfaceDataException;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.mouvement.MouvementDossier;
@@ -143,7 +142,14 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 				tiersVisuView.setDis(getDeclarationsImpotOrdinaire(contribuable));
 				tiersVisuView.setMouvements(getMouvements(contribuable));
 				setForsFiscaux(tiersVisuView, contribuable);
-				setSituationsFamille(tiersVisuView, contribuable);
+
+				try {
+					setSituationsFamille(tiersVisuView, contribuable);
+				}
+				catch (InterfaceDataException e) {
+					LOGGER.warn(String.format("Exception lors de la récupération des situations de familles du contribuable %d", numero), e);
+					tiersVisuView.setSituationsFamilleEnErreurMessage(e.getMessage());
+				}
 			}
 
 			tiersVisuView.setHistoriqueAdresses(getAdressesHistoriques(tiers, adressesHisto));

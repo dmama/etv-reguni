@@ -76,6 +76,8 @@ public class TiersView {
 
 	private List<SituationFamilleView> situationsFamille;
 
+	private String situationsFamilleEnErreurMessage;
+
 	private List<MouvementDetailView> mouvements;
 
 	private EntrepriseView entreprise;
@@ -319,6 +321,14 @@ public class TiersView {
 
 	public void setSituationsFamille(List<SituationFamilleView> situationsFamille) {
 		this.situationsFamille = situationsFamille;
+	}
+
+	public String getSituationsFamilleEnErreurMessage() {
+		return situationsFamilleEnErreurMessage;
+	}
+
+	public void setSituationsFamilleEnErreurMessage(String situationsFamilleEnErreurMessage) {
+		this.situationsFamilleEnErreurMessage = situationsFamilleEnErreurMessage;
 	}
 
 	/**
