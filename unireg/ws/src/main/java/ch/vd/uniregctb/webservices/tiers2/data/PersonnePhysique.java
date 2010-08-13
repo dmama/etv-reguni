@@ -1,19 +1,20 @@
 package ch.vd.uniregctb.webservices.tiers2.data;
 
-import java.util.Set;
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlEnum;
 import javax.xml.bind.annotation.XmlType;
+import java.util.Set;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
 import ch.vd.registre.civil.model.EnumAttributeIndividu;
 import ch.vd.uniregctb.webservices.tiers2.exception.BusinessException;
 import ch.vd.uniregctb.webservices.tiers2.impl.Context;
 import ch.vd.uniregctb.webservices.tiers2.impl.DataHelper;
 import ch.vd.uniregctb.webservices.tiers2.impl.EnumHelper;
-import org.apache.log4j.Logger;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "PersonnePhysique", propOrder = {
@@ -101,8 +102,8 @@ public class PersonnePhysique extends Contribuable {
 		super(personne, setParts, date, context);
 
 		if (!personne.isHabitantVD()) {
-			this.nom = personne.getNom();
-			this.prenom = personne.getPrenom();
+			this.nom = StringUtils.trimToNull(personne.getNom());
+			this.prenom = StringUtils.trimToNull(personne.getPrenom());
 			this.dateNaissance = DataHelper.coreToWeb(personne.getDateNaissance());
 			this.sexe = EnumHelper.coreToWeb(personne.getSexe());
 			this.dateDeces = DataHelper.coreToWeb(personne.getDateDeces());
@@ -125,8 +126,8 @@ public class PersonnePhysique extends Contribuable {
 			}
 
 			final ch.vd.uniregctb.interfaces.model.HistoriqueIndividu data = individu.getDernierHistoriqueIndividu();
-			this.nom = data.getNom();
-			this.prenom = data.getPrenom();
+			this.nom = StringUtils.trimToNull(data.getNom());
+			this.prenom = StringUtils.trimToNull(data.getPrenom());
 			this.dateNaissance = DataHelper.coreToWeb(individu.getDateNaissance());
 			this.sexe = (individu.isSexeMasculin() ? Sexe.MASCULIN : Sexe.FEMININ);
 			if (personne.getDateDeces() != null) {
