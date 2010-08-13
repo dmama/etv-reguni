@@ -509,7 +509,7 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 
 		final TiersInfo info = list.getItem().get(0);
 		assertEquals(12100003L, info.getNumero());
-		assertEquals("Emery Lyah", trimValiPattern(info.getNom1()));
+		assertEquals("Lyah Emery", trimValiPattern(info.getNom1()));
 		assertEquals("", info.getNom2());
 		assertEquals("20050829", info.getDateNaissance());
 		assertEquals("1162", info.getNpa());
@@ -573,7 +573,7 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 
 		final TiersInfo info = list.getItem().get(0);
 		assertEquals(12100003L, info.getNumero());
-		assertEquals("Emery Lyah", trimValiPattern(info.getNom1()));
+		assertEquals("Lyah Emery", trimValiPattern(info.getNom1()));
 		assertEquals("", info.getNom2());
 		assertEquals("20050829", info.getDateNaissance());
 		assertEquals("1162", info.getNpa());
