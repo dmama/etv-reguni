@@ -45,6 +45,11 @@ public class EvenementCediListenerImpl extends EsbMessageListener {
 			LOGGER.error(e.getMessage(), e);
 			getEsbTemplate().sendError(message, e.getMessage(), e, ErrorType.UNKNOWN, "");
 		}
+		catch (XmlException e) {
+			// apparemment, l'XML est invalide... On va essayer de renvoyer une erreur propre quand même
+			LOGGER.error(e.getMessage(), e);
+			getEsbTemplate().sendError(message, e.getMessage(), e, ErrorType.TECHNICAL, "");
+		}
 		catch (Exception e) {
 			LOGGER.error(e, e);
 			throw e;
@@ -71,11 +76,15 @@ public class EvenementCediListenerImpl extends EsbMessageListener {
 		final ArrayList<XmlError> errorList = new ArrayList<XmlError>();
 		validateOptions.setErrorListener(errorList);
 		if (!evt.validate(validateOptions)) {
-			StringBuilder builder = new StringBuilder();
+			boolean first = true;
+			final StringBuilder builder = new StringBuilder();
 			for (XmlError error : errorList) {
-				builder.append("\n");
+				if (!first) {
+					builder.append("\n");
+				}
 				builder.append("Message: ").append(error.getErrorCode()).append(" ").append(error.getMessage()).append("\n");
 				builder.append("Location of invalid XML: ").append(error.getCursorLocation().xmlText()).append("\n");
+				first = false;
 			}
 			throw new XmlException(builder.toString());
 		}
