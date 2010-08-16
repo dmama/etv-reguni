@@ -758,6 +758,24 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	}
 
 	/**
+	 * Crée et ajoute dans la base de donnée un rapport d'appartenance ménage entre un ménage commun et une personne physique
+	 */
+	protected AppartenanceMenage addAppartenanceMenage(MenageCommun menage, PersonnePhysique pp, RegDate dateDebut, RegDate dateFin, boolean annule) {
+		AppartenanceMenage rapport = new AppartenanceMenage();
+		rapport.setDateDebut(dateDebut);
+		rapport.setDateFin(dateFin);
+		rapport.setObjet(menage);
+		rapport.setSujet(pp);
+		rapport.setAnnule(annule);
+		rapport = (AppartenanceMenage) hibernateTemplate.merge(rapport);
+
+		menage.addRapportObjet(rapport);
+		pp.addRapportSujet(rapport);
+
+		return rapport;
+	}
+
+	/**
 	 * Crée et ajoute dans la base de données un menage-commun.
 	 */
 	protected EnsembleTiersCouple addEnsembleTiersCouple(PersonnePhysique principal, PersonnePhysique conjoint, RegDate dateMariage, RegDate dateFin) {
@@ -777,29 +795,12 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 			conjoint = (PersonnePhysique) hibernateTemplate.merge(conjoint);
 		}
 
-		RapportEntreTiers rapport = new AppartenanceMenage();
-		rapport.setDateDebut(dateMariage);
-		rapport.setDateFin(dateFin);
-		rapport.setObjet(menage);
-		rapport.setSujet(principal);
-		rapport = (RapportEntreTiers) hibernateTemplate.merge(rapport);
-
-		menage.addRapportObjet(rapport);
-		principal.addRapportSujet(rapport);
-
+		addAppartenanceMenage(menage, principal, dateMariage, dateFin, false);
 		if (conjoint != null) {
-			rapport = new AppartenanceMenage();
-			rapport.setDateDebut(dateMariage);
-			rapport.setDateFin(dateFin);
-			rapport.setObjet(menage);
-			rapport.setSujet(conjoint);
-			rapport = (RapportEntreTiers) hibernateTemplate.merge(rapport);
-
-			menage.addRapportObjet(rapport);
-			conjoint.addRapportSujet(rapport);
+			addAppartenanceMenage(menage, conjoint, dateMariage, dateFin, false);
 		}
 
-		EnsembleTiersCouple ensemble = new EnsembleTiersCouple();
+		final EnsembleTiersCouple ensemble = new EnsembleTiersCouple();
 		ensemble.setMenage(menage);
 		ensemble.setPrincipal(principal);
 		ensemble.setConjoint(conjoint);

@@ -1829,12 +1829,12 @@ public abstract class Tiers extends HibernateEntity implements Validateable, Bus
 	}
 
 	/**
-	 * Renvoi la liste de fors fiscaux principaux débutant après la date demandée.
-	 * @param date
-	 * @return
+	 * Renvoie la liste de fors fiscaux principaux débutant à ou après la date demandée (y compris les fors annulés).
+	 * @param date date de référence
+	 * @return liste des fors principaux demandés
 	 */
 	@Transient
-	public List<ForFiscalPrincipal> getForsFiscauxPrincipauxApres(RegDate date) {
+	public List<ForFiscalPrincipal> getForsFiscauxPrincipauxOuvertsApres(RegDate date) {
 
 		Assert.notNull(date);
 		List<ForFiscalPrincipal> fors = new ArrayList<ForFiscalPrincipal>();

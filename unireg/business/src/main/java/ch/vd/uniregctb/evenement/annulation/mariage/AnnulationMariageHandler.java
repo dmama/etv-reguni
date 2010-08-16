@@ -98,7 +98,7 @@ public class AnnulationMariageHandler extends EvenementCivilHandlerBase {
 	 * @param warnings la liste de warnings
 	 */
 	private void checkForsAnnulesApres(PersonnePhysique pp, RegDate date, List<EvenementCivilErreur> warnings) {
-		final List<ForFiscalPrincipal> forsFiscaux = pp.getForsFiscauxPrincipauxApres(date);
+		final List<ForFiscalPrincipal> forsFiscaux = pp.getForsFiscauxPrincipauxOuvertsApres(date);
 		final int nombreFors = forsFiscaux.size();
 		if (nombreFors > 1 || (nombreFors == 1 && !isAnnuleEtOuvert(forsFiscaux.get(0)))) {
 			String message = MessageFormat.format("Le tiers n° {0} possède au moins un for fiscal principal après la date de mariage ({1})",
@@ -107,7 +107,7 @@ public class AnnulationMariageHandler extends EvenementCivilHandlerBase {
 		}
 	}
 
-	public boolean isAnnuleEtOuvert(ForFiscalPrincipal ffp) {
+	private boolean isAnnuleEtOuvert(ForFiscalPrincipal ffp) {
 		return ffp.isAnnule() && ffp.getDateFin() == null;
 	}
 
