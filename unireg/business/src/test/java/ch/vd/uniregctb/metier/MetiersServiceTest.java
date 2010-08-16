@@ -14,6 +14,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.registre.civil.model.EnumAttributeIndividu;
 import ch.vd.registre.civil.model.EnumTypeEtatCivil;
+import ch.vd.registre.civil.model.EnumTypePermis;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.evenement.common.EvenementCivilHandlerException;
 import ch.vd.uniregctb.interfaces.model.Individu;
@@ -40,6 +41,7 @@ import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.Tiers.ForsParType;
 import ch.vd.uniregctb.type.EtatCivil;
@@ -49,6 +51,7 @@ import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
 /**
  * Classe de test du métier service.
@@ -1820,6 +1823,105 @@ public class MetiersServiceTest extends BusinessTest {
 					Assert.assertEquals(dateMariage, ff.getDateDebut());
 					Assert.assertNull(ff.getDateFin());
 				}
+				return null;
+			}
+		});
+	}
+
+	/**
+	 * Cas UNIREG-1599
+	 */
+	@Test
+	@NotTransactional
+	public void testAnnulationMariageEtReouvertureDeFors() throws Exception {
+
+		final long noIndividuMonsieur = 123456789L;
+		final long noIndividuMadame = 987654321L;
+		final RegDate dateMariage = date(2004, 6, 25);
+
+		// mise en place civile
+		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+			@Override
+			protected void init() {
+				final MockIndividu m = addIndividu(noIndividuMonsieur, date(1972, 11, 4), "Favre", "Jean-Jacques", true);
+				final MockIndividu mme = addIndividu(noIndividuMadame, date(1977, 8, 16), "Favre", "Chrystèle", false);
+
+				addNationalite(m, MockPays.Suisse, date(1972, 11, 4), null, 1);
+				addNationalite(mme, MockPays.France, date(1977, 8, 16), null, 1);
+				addPermis(mme, EnumTypePermis.ANNUEL, date(2002, 7, 18), null, 1, false);
+				marieIndividus(m, mme, dateMariage);
+			}
+		});
+
+		final class Ids {
+			long idMonsieur;
+			long idMadame;
+			long idMenage;
+		}
+
+		// mise en place fiscale
+		final Ids ids = (Ids) doInNewTransactionAndSession(new TransactionCallback() {
+			public Ids doInTransaction(TransactionStatus status) {
+
+				final PersonnePhysique m = addHabitant(noIndividuMonsieur);
+
+				// c'est ce for annulé qui faisait échouer le test : en raison de sa présence, la mécanique (implémentée pour
+				// le cas jira UNIREG-1157) ne re-créait pas les fors
+				final ForFiscalPrincipal ffpAnnule = addForPrincipal(m, dateMariage, MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
+				ffpAnnule.setAnnule(true);
+
+				addForPrincipal(m, date(2002, 12, 1), MotifFor.DEMENAGEMENT_VD, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
+
+				final PersonnePhysique mme = addHabitant(noIndividuMadame);
+
+				final EnsembleTiersCouple couple = addEnsembleTiersCouple(m, mme, dateMariage, null);
+				final MenageCommun mc = couple.getMenage();
+
+				// pour coller au cas qui n'a pas fonctionné en vrai, on va également ajouter des rapports annulés
+				final RegDate dateMariageAnnule = date(2008, 1, 1);
+				addAppartenanceMenage(mc, m, dateMariageAnnule, null, true);
+				addAppartenanceMenage(mc, mme, dateMariageAnnule, null, true);
+
+				addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
+
+				final Ids ids = new Ids();
+				ids.idMonsieur = m.getNumero();
+				ids.idMadame = mme.getNumero();
+				ids.idMenage = mc.getNumero();
+				return ids;
+			}
+		});
+
+		// annulation du mariage
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+
+				final MenageCommun mc = (MenageCommun) tiersService.getTiers(ids.idMenage);
+				final EnsembleTiersCouple ensembleTiersCouple = tiersService.getEnsembleTiersCouple(mc, null);
+
+				// retour par le couple comme dans l'IHM...
+				final MenageCommun menageCommun = ensembleTiersCouple.getMenage();
+				Assert.assertNotNull(menageCommun);
+
+				final RapportEntreTiers dernierRapport = menageCommun.getDernierRapportObjet(TypeRapportEntreTiers.APPARTENANCE_MENAGE);
+				final RegDate dateReference = dernierRapport.getDateDebut();
+
+				metierService.annuleMariage(ensembleTiersCouple.getPrincipal(), ensembleTiersCouple.getConjoint(), dateReference, null);
+				return null;
+			}
+		});
+
+		// test de résultat -> le for de monsieur devrait avoir été ré-ouvert
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+
+				final PersonnePhysique m = (PersonnePhysique) tiersService.getTiers(ids.idMonsieur);
+				Assert.assertNotNull(m);
+
+				final ForFiscalPrincipal ffp = m.getDernierForFiscalPrincipal();
+				Assert.assertNotNull(ffp);
+				Assert.assertNull(ffp.getDateFin());
+				Assert.assertEquals(date(2002, 12, 1), ffp.getDateDebut());
 				return null;
 			}
 		});

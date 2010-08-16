@@ -986,10 +986,10 @@ public class MetierServiceImpl implements MetierService {
 			}
 		}
 		// Réouverture des fors fermés lors du mariage (renvoi une exception si des fors ont été annulé après la date de mariage)
-		reouvreForFermePourMariage(principal, date);
+		reouvreForsFermesPourMariage(principal, date);
 		// même chose pour le conjoint
 		if (conjoint != null) {
-			reouvreForFermePourMariage(conjoint, date);
+			reouvreForsFermesPourMariage(conjoint, date);
 		}
 
 		if (annulationMenage) {
@@ -1005,24 +1005,37 @@ public class MetierServiceImpl implements MetierService {
 	}
 
 	/**
-	 * Réouvre le for fermé lors du mariage
+	 * Ré-ouvre les fors fermés lors du mariage (traitement de l'annulation du mariage)
+	 * @param pp personne physique sur laquelle le ou les fors doivent être ré-ouverts
+	 * @param date date du mariage que l'on annule maintenant
 	 */
-	private void reouvreForFermePourMariage(PersonnePhysique pp, RegDate date) {
-		final List<ForFiscalPrincipal> forsFiscaux = pp.getForsFiscauxPrincipauxApres(date);
-		final int nombreFors = forsFiscaux.size();
-		if (nombreFors == 1) {
-			final ForFiscalPrincipal ff = forsFiscaux.get(0);
-			if (isAnnuleEtOuvert(ff) && isArrivee(ff.getMotifOuverture())) {
-				tiersService.reopenFor(ff, pp);
+	private void reouvreForsFermesPourMariage(PersonnePhysique pp, RegDate date) {
+		final List<ForFiscalPrincipal> forsFiscaux = pp.getForsFiscauxPrincipauxOuvertsApres(date);
+
+		// s'il y a au moins un for principal non-annulé ouvert après la date du mariage
+		// que l'on annule, c'est qu'il y a un gros problème...
+		for (ForFiscalPrincipal ffp : forsFiscaux) {
+			if (!ffp.isAnnule()) {
+				throw new EvenementCivilHandlerException(String.format("Le tiers %s a déjà un for ouvert après la date du mariage annulé", FormatNumeroHelper.numeroCTBToDisplay(pp.getNumero())));
 			}
 		}
-		else if (nombreFors == 0) {
+
+		// donc ici, tous les fors de la collection forsFiscaux sont annulés...
+
+		final int nombreFors = forsFiscaux.size();
+		if (nombreFors == 1 && isAnnuleEtOuvertPourMotifArrivee(forsFiscaux.get(0))) {
+			// [UNIREG-1157] si le seul for fiscal principal trouvé après la date de mariage est un for annulé, ouvert, et dont
+			// le motif d'ouverture était un motif d'arrivée, c'est celui-là que l'on ouvre (on suppose alors que
+			// ce for a été annulé parce que le mariage a été connu après l'arrivée, alors qu'il s'était produit avant)
+			tiersService.reopenFor(forsFiscaux.get(0), pp);
+		}
+		else {
 			tiersService.reopenForsClosedAt(date.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, pp);
 		}
 	}
 
-	public boolean isAnnuleEtOuvert(ForFiscalPrincipal ffp) {
-		return ffp.isAnnule() && ffp.getDateFin() == null;
+	public boolean isAnnuleEtOuvertPourMotifArrivee(ForFiscalPrincipal ffp) {
+		return ffp.isAnnule() && ffp.getDateFin() == null && isArrivee(ffp.getMotifOuverture());
 	}
 
 	private void updateSituationFamilleAnnulationCouple(MenageCommun menage, RegDate date) {
