@@ -15,7 +15,6 @@ import org.junit.runner.RunWith;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.util.Log4jConfigurer;
 import org.springframework.util.ResourceUtils;
 
@@ -102,7 +101,7 @@ public class EvenementCediListenerTest extends EvenementTest {
 		final String texte = FileUtils.readFileToString(file);
 
 		// Envoie le message
-		sendTexteMessage(INPUT_QUEUE, texte);
+		sendTextMessage(INPUT_QUEUE, texte);
 
 		// On attend le message jusqu'à 3 secondes
 		for (int i = 0; events.isEmpty() && i < 30; i++) {
@@ -143,7 +142,7 @@ public class EvenementCediListenerTest extends EvenementTest {
 		final String texte = FileUtils.readFileToString(file);
 
 		// Envoie le message
-		sendTexteMessage(INPUT_QUEUE, texte);
+		sendTextMessage(INPUT_QUEUE, texte);
 
 		// On attend le message jusqu'à 3 secondes
 		for (int i = 0; events.isEmpty() && i < 30; i++) {

@@ -33,15 +33,14 @@
 		<property name="esbMessageFactory" ref="esbMessageFactoryForEditique" />
 	</bean>
 
-	<bean id="evenementEditiqueReceiver" class="ch.vd.uniregctb.editique.impl.EvenementEditiqueReceiverImpl" >
-		<property name="destinationName" value="${extprop.jms.queue.editique.input}" />
-		<property name="noTxEsbTemplate" ref="noTxEsbJmsTemplate" />
-		<property name="receiveTimeout" value="${editique.locale.attente.timeout}" />
+	<bean id="retourImpressionStorageService" class="ch.vd.uniregctb.editique.impl.EditiqueRetourImpressionStorageServiceImpl">
+		<property name="cleanupPeriod" value="${editique.locale.attente.timeout}"/>
 	</bean>
 
 	<bean id="editiqueService" class="ch.vd.uniregctb.editique.impl.EditiqueServiceImpl" lazy-init="true">
 		<property name="sender" ref="evenementEditiqueSender" />
-		<property name="receiver" ref="evenementEditiqueReceiver" />
+		<property name="retourImpressionStorage" ref="retourImpressionStorageService" />
+		<property name="receiveTimeout" value="${editique.locale.attente.timeout}" />
 		<property name="foldersService" ref="externeFoldersService" />
 	</bean>
 

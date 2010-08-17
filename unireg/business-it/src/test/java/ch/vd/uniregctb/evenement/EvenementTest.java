@@ -3,15 +3,8 @@ package ch.vd.uniregctb.evenement;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
-import org.apache.activemq.command.ActiveMQTextMessage;
-import org.springframework.jms.core.BrowserCallback;
 
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.QueueBrowser;
-import javax.jms.Session;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.GregorianCalendar;
 
 import static org.junit.Assert.*;
@@ -40,8 +33,7 @@ public abstract class EvenementTest {
 		assertNull(noMsg);
 	}
 
-	protected void sendTexteMessage(String queueName, String texte) throws Exception {
-
+	protected void sendTextMessage(String queueName, String texte) throws Exception {
 		final EsbMessage m = esbMessageFactory.createMessage();
 		m.setBusinessUser("EvenementTest");
 		m.setBusinessId(String.valueOf(m.hashCode()));

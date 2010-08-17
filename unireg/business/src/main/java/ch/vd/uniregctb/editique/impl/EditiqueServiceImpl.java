@@ -8,8 +8,8 @@ import ch.vd.editique.service.enumeration.TypeImpression;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueResultat;
+import ch.vd.uniregctb.editique.EditiqueRetourImpressionStorageService;
 import ch.vd.uniregctb.editique.EditiqueService;
-import ch.vd.uniregctb.editique.EvenementEditiqueReceiver;
 import ch.vd.uniregctb.editique.EvenementEditiqueSender;
 
 /**
@@ -29,7 +29,12 @@ public final class EditiqueServiceImpl implements EditiqueService {
 
 	private EvenementEditiqueSender sender;
 
-	private EvenementEditiqueReceiver receiver;
+	private EditiqueRetourImpressionStorageService retourImpressionStorage;
+
+	/**
+	 * Temps d'attente (en secondes) du retour du document PDF / PCL lors d'une impression locale.
+	 */
+	private int receiveTimeout = 120;
 
 	/**
 	 * {@inheritDoc}
@@ -51,7 +56,7 @@ public final class EditiqueServiceImpl implements EditiqueService {
 
 		final EditiqueResultat resultat;
 		try {
-			resultat = receiver.getDocument(typeFormat, nomDocument, true);
+			resultat = retourImpressionStorage.getDocument(nomDocument, receiveTimeout * 1000L);
 		}
 		catch (Exception e) {
 			throw new EditiqueException(e);
@@ -108,7 +113,12 @@ public final class EditiqueServiceImpl implements EditiqueService {
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
-	public void setReceiver(EvenementEditiqueReceiver receiver) {
-		this.receiver = receiver;
+	public void setRetourImpressionStorage(EditiqueRetourImpressionStorageService retourImpressionStorage) {
+		this.retourImpressionStorage = retourImpressionStorage;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setReceiveTimeout(int receiveTimeout) {
+		this.receiveTimeout = receiveTimeout;
 	}
 }

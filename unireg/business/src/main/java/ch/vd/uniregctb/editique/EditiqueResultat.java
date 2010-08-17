@@ -51,4 +51,11 @@ public interface EditiqueResultat {
 	 * @see #getError()
 	 */
 	boolean hasError();
+
+	/**
+	 * Obtient le timestamp de la réception du document.
+	 *
+	 * @return Retourne le timestamp de la réception du document.
+	 */
+	long getTimestampReceived();
 }

@@ -15,7 +15,7 @@ public final class EditiqueResultatImpl implements EditiqueResultat {
 	private String documentType;
 	private String idDocument;
 	private String contentType;
-	private long timestampRecieved;
+	private long timestampReceived;
 
 	/**
 	 * {@inheritDoc}
@@ -96,18 +96,18 @@ public final class EditiqueResultatImpl implements EditiqueResultat {
 	 *
 	 * @return Retourne le timestamp de la reception du document.
 	 */
-	public long getTimestampRecieved() {
-		return timestampRecieved;
+	public long getTimestampReceived() {
+		return timestampReceived;
 	}
 
 	/**
 	 * Définit le timestamp de la reception du document.
 	 *
-	 * @param timestampRecieved
+	 * @param timestampReceived
 	 *            le timestamp de la reception du document.
 	 */
-	void setTimestampRecieved(long timestampRecieved) {
-		this.timestampRecieved = timestampRecieved;
+	void setTimestampReceived(long timestampReceived) {
+		this.timestampReceived = timestampReceived;
 	}
 
 	/**
@@ -132,7 +132,7 @@ public final class EditiqueResultatImpl implements EditiqueResultat {
 		}
 		buffer.append('\n');
 		buffer.append("EditiqueResultat.timestamp: ");
-		buffer.append(this.getTimestampRecieved());
+		buffer.append(this.getTimestampReceived());
 		buffer.append('\n');
 		if (hasError()) {
 			buffer.append("EditiqueResultat.error: ");

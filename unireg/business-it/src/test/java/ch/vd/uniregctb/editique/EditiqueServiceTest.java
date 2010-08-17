@@ -1,9 +1,11 @@
 package ch.vd.uniregctb.editique;
 
+import javax.jms.ConnectionFactory;
 import java.util.Arrays;
 
 import org.apache.log4j.Logger;
 import org.junit.Test;
+import org.springframework.jms.listener.DefaultMessageListenerContainer;
 import org.springframework.test.context.ContextConfiguration;
 
 import ch.vd.technical.esb.EsbMessageFactory;
@@ -13,8 +15,9 @@ import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.BusinessItTest;
 import ch.vd.uniregctb.editique.impl.EditiqueCompositionServiceImpl;
 import ch.vd.uniregctb.editique.impl.EditiqueHelperImpl;
+import ch.vd.uniregctb.editique.impl.EditiqueRetourImpressionStorageServiceImpl;
 import ch.vd.uniregctb.editique.impl.EditiqueServiceImpl;
-import ch.vd.uniregctb.editique.impl.EvenementEditiqueReceiverImpl;
+import ch.vd.uniregctb.editique.impl.EvenementEditiqueListenerImpl;
 import ch.vd.uniregctb.editique.impl.EvenementEditiqueSenderImpl;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -46,6 +49,8 @@ public class EditiqueServiceTest extends BusinessItTest {
 
 	private EditiqueServiceImpl service;
 	private EditiqueCompositionServiceImpl composition;
+	private EditiqueRetourImpressionStorageServiceImpl storageService;
+	private DefaultMessageListenerContainer container;
 
 	@Override
 	public void onSetUp() throws Exception {
@@ -58,6 +63,7 @@ public class EditiqueServiceTest extends BusinessItTest {
 		final SituationFamilleService sfService = getBean(SituationFamilleService.class, "situationFamilleService");
 		final EsbJmsTemplate noTxEsbTemplate = getBean(EsbJmsTemplate.class, "noTxEsbJmsTemplate");
 		final EsbMessageFactory esbMessageFactory = getBean(EsbMessageFactory.class, "esbMessageFactory");
+		final ConnectionFactory connectionFactory = getBean(ConnectionFactory.class, "noTxConnectionFactory");
 
 		// On setup à la main le reste (= le mininum de beans pour faire passer le test)
 		final EvenementEditiqueSenderImpl sender = new EvenementEditiqueSenderImpl();
@@ -67,14 +73,24 @@ public class EditiqueServiceTest extends BusinessItTest {
 		sender.setServiceDestination(OUTPUT_QUEUE);
 		sender.setServiceReplyTo(INPUT_QUEUE);
 
-		final EvenementEditiqueReceiverImpl receiver = new EvenementEditiqueReceiverImpl();
-		receiver.setDestinationName(INPUT_QUEUE);
-		receiver.setNoTxEsbTemplate(noTxEsbTemplate);
-		receiver.setReceiveTimeout(20);
+		storageService = new EditiqueRetourImpressionStorageServiceImpl();
+		storageService.setCleanupPeriod(20);
+		storageService.afterPropertiesSet();
+
+		final EvenementEditiqueListenerImpl listener = new EvenementEditiqueListenerImpl();
+		listener.setStorageService(storageService);
+		listener.setEsbTemplate(esbTemplate);
+
+		container = new DefaultMessageListenerContainer();
+		container.setConnectionFactory(connectionFactory);
+		container.setMessageListener(listener);
+		container.setDestinationName(INPUT_QUEUE);
+		container.afterPropertiesSet();
 
 		service = new EditiqueServiceImpl();
 		service.setSender(sender);
-		service.setReceiver(receiver);
+		service.setRetourImpressionStorage(storageService);
+		service.setReceiveTimeout(20);
 
 		final EditiqueHelperImpl editiqueHelper = new EditiqueHelperImpl();
 		editiqueHelper.setAdresseService(adresseService);
@@ -96,6 +112,8 @@ public class EditiqueServiceTest extends BusinessItTest {
 	@Override
 	public void onTearDown() throws Exception {
 		AuthenticationHelper.popPrincipal();
+		container.destroy();
+		storageService.destroy();
 		super.onTearDown();
 	}
 

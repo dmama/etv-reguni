@@ -296,7 +296,7 @@ public class IdentificationContribuableMessageHandlerTest extends EvenementTest 
 		final String texte = FileUtils.readFileToString(file);
 
 		// Envoie le message
-		sendTexteMessage(INPUT_QUEUE, texte);
+		sendTextMessage(INPUT_QUEUE, texte);
 
 		// On attend le message jusqu'à 3 secondes
 		for (int i = 0; messages.isEmpty() && i < 30; i++) {

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.evenement.externe;
+package ch.vd.uniregctb.editique;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -12,35 +12,35 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.internal.runners.JUnit4ClassRunner;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
 import org.springframework.util.Log4jConfigurer;
 import org.springframework.util.ResourceUtils;
 
-import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.utils.NotImplementedException;
+import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.technical.esb.store.raft.RaftEsbStore;
-import ch.vd.technical.esb.util.ESBXMLValidator;
+import ch.vd.uniregctb.editique.impl.EvenementEditiqueListenerImpl;
 import ch.vd.uniregctb.evenement.EvenementTest;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 /**
- * Classe de test du listener d'événements externes. Cette classe nécessite une connexion à l'ESB de développement pour fonctionner.
- *
- * @author Manuel Siggen <manuel.siggen@vd.ch>
+ * Classe de test du listener d'événements des retours d'impression de l'éditique.
+ * Cette classe nécessite une connexion à l'ESB de développement pour fonctionner.
  */
 @RunWith(JUnit4ClassRunner.class)
-public class EvenementExterneListenerTest extends EvenementTest {
+public class EvenementEditiqueListenerTest extends EvenementTest {
 
 	private static final String INPUT_QUEUE = "ch.vd.unireg.test.input";
 	private static final String OUTPUT_QUEUE = "ch.vd.unireg.test.output";
-	private EvenementExterneListenerImpl listener;
+	private EvenementEditiqueListenerImpl listener;
 	private DefaultMessageListenerContainer container;
+
+	private static final String DI_ID = "2004 01 062901707 20100817145346417";
 
 	@Before
 	public void setUp() throws Exception {
@@ -61,21 +61,15 @@ public class EvenementExterneListenerTest extends EvenementTest {
 		esbTemplate.setReceiveTimeout(200);
 		esbTemplate.setApplication("unireg");
 		esbTemplate.setDomain("fiscalite");
-		if (esbTemplate instanceof InitializingBean) {
-			((InitializingBean) esbTemplate).afterPropertiesSet();
-		}
 
 		clearQueue(OUTPUT_QUEUE);
 		clearQueue(INPUT_QUEUE);
 
-		listener = new EvenementExterneListenerImpl();
+		listener = new EvenementEditiqueListenerImpl();
 		listener.setEsbTemplate(esbTemplate);
 
-		final ESBXMLValidator esbValidator = new ESBXMLValidator();
-		esbValidator.setSources(new Resource[] {new ClassPathResource("xsd/fiscal/evenementImpotSource-v1.xsd")});
-
 		esbMessageFactory = new EsbMessageFactory();
-		esbMessageFactory.setValidator(esbValidator);
+		esbMessageFactory.setValidator(null);
 
 		container = new DefaultMessageListenerContainer();
 		container.setConnectionFactory(jmsConnectionManager);
@@ -90,22 +84,26 @@ public class EvenementExterneListenerTest extends EvenementTest {
 	}
 
 	@Test
-	public void testReceiveQuittanceLR() throws Exception {
+	public void testRetourImpression() throws Exception {
 
-		final List<EvenementExterne> events = new ArrayList<EvenementExterne>();
+		final List<EditiqueResultat> events = new ArrayList<EditiqueResultat>();
 
-		listener.setHandler(new EvenementExterneHandler() {
-			public void onEvent(EvenementExterne event) {
-				events.add(event);
+		listener.setStorageService(new EditiqueRetourImpressionStorageService() {
+			public void onArriveeRetourImpression(EditiqueResultat resultat) {
+				events.add(resultat);
+			}
+
+			public EditiqueResultat getDocument(String nomDocument, long timeout) {
+				throw new NotImplementedException();
 			}
 		});
 
 		// Lit le message sous format texte
-		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/evenement/externe/quittance_lr.xml");
+		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/editique/retour_impression.xml");
 		final String texte = FileUtils.readFileToString(file);
 
 		// Envoie le message
-		sendTextMessage(INPUT_QUEUE, texte);
+		sendDiMessage(INPUT_QUEUE, texte, DI_ID);
 
 		// On attend le message jusqu'à 3 secondes
 		for (int i = 0; events.isEmpty() && i < 30; i++) {
@@ -113,12 +111,19 @@ public class EvenementExterneListenerTest extends EvenementTest {
 		}
 		Assert.assertEquals(1, events.size());
 
-		final QuittanceLR q = (QuittanceLR) events.get(0);
+		final EditiqueResultat q = events.get(0);
 		assertNotNull(q);
-		Assert.assertEquals(12500001L, q.getTiersId().longValue());
-		assertEquals(RegDate.get(2009,12,7), RegDate.get(q.getDateEvenement()));
-		assertEquals(RegDate.get(2008,1,1), q.getDateDebut());
-		assertEquals(RegDate.get(2008,1,31), q.getDateFin());
-		Assert.assertEquals(TypeQuittance.QUITTANCEMENT, q.getType());
+		assertEquals(DI_ID, q.getIdDocument());
+	}
+
+	private void sendDiMessage(String queueName, String texte, String idDocument) throws Exception {
+		final EsbMessage m = esbMessageFactory.createMessage();
+		m.setBusinessUser("EvenementTest");
+		m.setBusinessId(String.valueOf(m.hashCode()));
+		m.setContext("test");
+		m.setServiceDestination(queueName);
+		m.setBody(texte);
+		m.addHeader(EditiqueHelper.DI_ID, idDocument);
+		esbTemplate.send(m);
 	}
 }
