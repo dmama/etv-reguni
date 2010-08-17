@@ -1,6 +1,8 @@
 package ch.vd.uniregctb.webservices.tiers2;
 
 import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
@@ -13,13 +15,21 @@ import ch.vd.uniregctb.interfaces.model.mock.MockPersonneMorale;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServicePM;
 import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersDAO;
+import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.webservices.common.NoOfsTranslatorImpl;
 import ch.vd.uniregctb.webservices.common.UserLogin;
+import ch.vd.uniregctb.webservices.tiers2.data.BatchTiers;
+import ch.vd.uniregctb.webservices.tiers2.data.BatchTiersEntry;
+import ch.vd.uniregctb.webservices.tiers2.data.BatchTiersHisto;
+import ch.vd.uniregctb.webservices.tiers2.data.BatchTiersHistoEntry;
 import ch.vd.uniregctb.webservices.tiers2.data.ForFiscal;
 import ch.vd.uniregctb.webservices.tiers2.data.PersonneMorale;
 import ch.vd.uniregctb.webservices.tiers2.data.TiersPart;
 import ch.vd.uniregctb.webservices.tiers2.impl.pm.TiersWebServiceWithPM;
+import ch.vd.uniregctb.webservices.tiers2.params.GetBatchTiers;
+import ch.vd.uniregctb.webservices.tiers2.params.GetBatchTiersHisto;
 import ch.vd.uniregctb.webservices.tiers2.params.GetTiers;
 import ch.vd.uniregctb.webservices.tiers2.params.SetTiersBlocRembAuto;
 
@@ -371,6 +381,87 @@ public class TiersWebServiceWithPMTest extends WebserviceTest {
 			assertEquals(MockPays.Liechtenstein.getNoOFS(), ffp.noOfsAutoriteFiscale);
 			assertEquals(ForFiscal.TypeAutoriteFiscale.PAYS_HS, ffp.typeAutoriteFiscale);
 		}
+	}
+
+	@Test
+	public void testGetBatchTiersAvecMelangePersonnesPhysiquesEtMorales() throws Exception {
+
+		final long noPM = MockPersonneMorale.BCV.getNumeroEntreprise();
+
+		final long ppId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+			public Long doInTransaction(TransactionStatus status) {
+				addEntreprise(noPM);
+				final PersonnePhysique pp = addNonHabitant("Cédric", "Digory", date(1980, 5, 30), Sexe.MASCULIN);
+				return pp.getNumero();
+			}
+		});
+
+		final GetBatchTiers params = new GetBatchTiers();
+		params.date = null;
+		params.login = login;
+		params.tiersNumbers = new HashSet<Long>();
+		params.tiersNumbers.add(noPM);
+		params.tiersNumbers.add(ppId);
+		params.parts = new HashSet<TiersPart>();
+		params.parts.add(TiersPart.FORS_FISCAUX);
+
+		// appel du service
+		final BatchTiers result = service.getBatchTiers(params);
+		assertNotNull(result);
+		assertFalse(result.isEmpty());
+
+		final List<BatchTiersEntry> entries = result.entries;
+		assertNotNull(entries);
+		assertEquals(2, entries.size());
+
+		// vérification qu'on a bien renvoyé les données sur les deux tiers
+		final Set<Long> tiersRendus = new HashSet<Long>();
+		for (BatchTiersEntry entry : entries) {
+			tiersRendus.add(entry.number);
+		}
+		assertEquals(2, tiersRendus.size());
+		assertTrue(tiersRendus.contains(noPM));
+		assertTrue(tiersRendus.contains(ppId));
+	}
+
+	@Test
+	public void testGetBatchTiersHistoAvecMelangePersonnesPhysiquesEtMorales() throws Exception {
+
+		final long noPM = MockPersonneMorale.BCV.getNumeroEntreprise();
+
+		final long ppId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+			public Long doInTransaction(TransactionStatus status) {
+				addEntreprise(noPM);
+				final PersonnePhysique pp = addNonHabitant("Cédric", "Digory", date(1980, 5, 30), Sexe.MASCULIN);
+				return pp.getNumero();
+			}
+		});
+
+		final GetBatchTiersHisto params = new GetBatchTiersHisto();
+		params.login = login;
+		params.tiersNumbers = new HashSet<Long>();
+		params.tiersNumbers.add(noPM);
+		params.tiersNumbers.add(ppId);
+		params.parts = new HashSet<TiersPart>();
+		params.parts.add(TiersPart.FORS_FISCAUX);
+
+		// appel du service
+		final BatchTiersHisto result = service.getBatchTiersHisto(params);
+		assertNotNull(result);
+		assertFalse(result.isEmpty());
+
+		final List<BatchTiersHistoEntry> entries = result.entries;
+		assertNotNull(entries);
+		assertEquals(2, entries.size());
+
+		// vérification qu'on a bien renvoyé les données sur les deux tiers
+		final Set<Long> tiersRendus = new HashSet<Long>();
+		for (BatchTiersHistoEntry entry : entries) {
+			tiersRendus.add(entry.number);
+		}
+		assertEquals(2, tiersRendus.size());
+		assertTrue(tiersRendus.contains(noPM));
+		assertTrue(tiersRendus.contains(ppId));
 	}
 }
 
