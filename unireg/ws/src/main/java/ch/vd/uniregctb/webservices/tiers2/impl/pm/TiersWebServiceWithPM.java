@@ -186,7 +186,7 @@ public class TiersWebServiceWithPM implements TiersWebService {
 			batch = batchPM;
 		}
 		else if (batchPP != null) {
-			batchPP.entries.addAll(batchPP.entries);
+			batchPP.entries.addAll(batchPM.entries);
 			batch = batchPP;
 		}
 
@@ -249,7 +249,7 @@ public class TiersWebServiceWithPM implements TiersWebService {
 			batch = batchPM;
 		}
 		else if (batchPP != null) {
-			batchPP.entries.addAll(batchPP.entries);
+			batchPP.entries.addAll(batchPM.entries);
 			batch = batchPP;
 		}
 
