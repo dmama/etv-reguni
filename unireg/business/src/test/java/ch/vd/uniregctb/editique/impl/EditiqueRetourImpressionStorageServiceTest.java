@@ -38,6 +38,17 @@ public class EditiqueRetourImpressionStorageServiceTest extends WithoutSpringTes
 		Assert.assertTrue(tsFin - tsDebut > 1000);
 	}
 
+	private static EditiqueResultat buildResultat(String idDocument) {
+		return buildResultat(idDocument, System.currentTimeMillis());
+	}
+
+	private static EditiqueResultat buildResultat(String idDocument, long timestampReceived) {
+		final EditiqueResultatImpl resultat = new EditiqueResultatImpl();
+		resultat.setIdDocument(idDocument);
+		resultat.setTimestampReceived(timestampReceived);
+		return resultat;
+	}
+
 	@Test(timeout = 1200)
 	public void testReceptionEnCoursAttente() throws Exception {
 
@@ -46,9 +57,7 @@ public class EditiqueRetourImpressionStorageServiceTest extends WithoutSpringTes
 
 		final String nomDocument = "Mon document tant attendu";
 		{
-			final EditiqueResultatImpl resultat = new EditiqueResultatImpl();
-			resultat.setIdDocument(nomDocument);
-
+			final EditiqueResultat resultat = buildResultat(nomDocument);
 			final Thread thread = new Thread(new Runnable() {
 				public void run() {
 					try {
@@ -80,9 +89,7 @@ public class EditiqueRetourImpressionStorageServiceTest extends WithoutSpringTes
 
 		final String nomDocument = "Mon document tant attendu";
 		{
-			final EditiqueResultatImpl resultat = new EditiqueResultatImpl();
-			resultat.setIdDocument(nomDocument);
-
+			final EditiqueResultat resultat = buildResultat(nomDocument);
 			final Thread thread = new Thread(new Runnable() {
 				public void run() {
 					try {
@@ -121,8 +128,7 @@ public class EditiqueRetourImpressionStorageServiceTest extends WithoutSpringTes
 
 		final String nomDocument = "Mon document déjà là";
 		{
-			final EditiqueResultatImpl resultat = new EditiqueResultatImpl();
-			resultat.setIdDocument(nomDocument);
+			final EditiqueResultat resultat = buildResultat(nomDocument);
 			service.onArriveeRetourImpression(resultat);
 		}
 
@@ -136,7 +142,7 @@ public class EditiqueRetourImpressionStorageServiceTest extends WithoutSpringTes
 		Assert.assertTrue(tsFin - tsDebut < 20);
 	}
 
-	@Test(timeout = 800)
+	@Test(timeout = 1000)
 	public void testDeuxiemeDemande() throws Exception {
 
 		// on envoie un document, on le réceptionne
@@ -144,8 +150,7 @@ public class EditiqueRetourImpressionStorageServiceTest extends WithoutSpringTes
 
 		final String nomDocument = "Mon document déjà là";
 		{
-			final EditiqueResultatImpl resultat = new EditiqueResultatImpl();
-			resultat.setIdDocument(nomDocument);
+			final EditiqueResultat resultat = buildResultat(nomDocument);
 			service.onArriveeRetourImpression(resultat);
 		}
 
@@ -180,9 +185,7 @@ public class EditiqueRetourImpressionStorageServiceTest extends WithoutSpringTes
 		final String nomDocumentAttendu = "Mon document tant attendu";
 		final String nomDocumentEvoye = "Mon document reçu";
 		{
-			final EditiqueResultatImpl resultat = new EditiqueResultatImpl();
-			resultat.setIdDocument(nomDocumentEvoye);
-
+			final EditiqueResultat resultat = buildResultat(nomDocumentEvoye);
 			final Thread thread = new Thread(new Runnable() {
 				public void run() {
 					try {
@@ -213,12 +216,8 @@ public class EditiqueRetourImpressionStorageServiceTest extends WithoutSpringTes
 		final String nomDocumentAttendu = "Mon document tant attendu";
 		final String nomDocumentEvoye = "Mon autre document reçu";
 		{
-			final EditiqueResultatImpl documentAttendu = new EditiqueResultatImpl();
-			documentAttendu.setIdDocument(nomDocumentAttendu);
-
-			final EditiqueResultatImpl autreDocument = new EditiqueResultatImpl();
-			autreDocument.setIdDocument(nomDocumentEvoye);
-
+			final EditiqueResultat documentAttendu = buildResultat(nomDocumentAttendu);
+			final EditiqueResultat autreDocument = buildResultat(nomDocumentEvoye);
 			final Thread thread = new Thread(new Runnable() {
 				public void run() {
 					try {
@@ -252,19 +251,37 @@ public class EditiqueRetourImpressionStorageServiceTest extends WithoutSpringTes
 		// quand on le demande alors, il ne doit pas y être
 
 		final String nomDocument = "Mon document qui ne m'attend plus";
+		final String nomDocumentVoyageurTemporel = "Time traveler";
 		{
-			final EditiqueResultatImpl resultat = new EditiqueResultatImpl();
-			resultat.setIdDocument(nomDocument);
+			final EditiqueResultat resultat = buildResultat(nomDocument);
 			service.onArriveeRetourImpression(resultat);
+
+			// date de réception : 1.8s dans le futur !
+			// (afin de tester que seuls les vieux documents sont effacés)
+			final EditiqueResultat timeTraveler = buildResultat(nomDocumentVoyageurTemporel, System.currentTimeMillis() + 1800L);
+			service.onArriveeRetourImpression(timeTraveler);
 		}
 
-		// pendant ce temps-là, le cleanup doit relâcher le document arrivé plus haut
+		// pendant ce temps-là, le cleanup doit relâcher l'un des documents arrivés plus haut
 		Thread.sleep(2050);
 
-		final long tsDebut = System.currentTimeMillis();
-		final EditiqueResultat resultat = service.getDocument(nomDocument, 300);
-		final long tsFin = System.currentTimeMillis();
-		Assert.assertNull(resultat);
-		Assert.assertTrue(tsFin - tsDebut >= 300);
+		// le vieux document ne doit plus y être
+		{
+			final long tsDebut = System.currentTimeMillis();
+			final EditiqueResultat resultat = service.getDocument(nomDocument, 300);
+			final long tsFin = System.currentTimeMillis();
+			Assert.assertNull(resultat);
+			Assert.assertTrue(tsFin - tsDebut >= 300);
+		}
+
+		// mais le nouveau, toujours
+		{
+			final long tsDebut = System.currentTimeMillis();
+			final EditiqueResultat resultat = service.getDocument(nomDocumentVoyageurTemporel, 300);
+			final long tsFin = System.currentTimeMillis();
+			Assert.assertNotNull(resultat);
+			Assert.assertEquals(nomDocumentVoyageurTemporel, resultat.getIdDocument());
+			Assert.assertTrue(tsFin - tsDebut < 20);
+		}
 	}
 }
