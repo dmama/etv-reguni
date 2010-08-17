@@ -791,6 +791,16 @@ public interface TiersService {
 	 */
 	public RegDate getDateNaissance(PersonnePhysique pp);
 
+
+	/**Retourne la date de debut de veuvage d'une personne,
+	 *
+	 *
+	 * @param pp
+	 * @param date Date à laquelle le veuvage est valide
+	 * @return  la date de veuvage null si la personne n'est pas veuve
+	 */
+	public RegDate getDateDebutVeuvage(PersonnePhysique pp, RegDate date);
+
 	/**
 	 * @param pp une personne physique
 	 * @return la date de décès ou <code>null</code> si la personne n'est pas décédée.
@@ -1150,6 +1160,11 @@ public interface TiersService {
 	 */
 	List<EvenementCivilData> getEvenementsCivilsNonTraites(Tiers tiers);
 
-
+	/**Permet de savoir si un tiers est un veuf(ve) marié seul
+	 *
+	 * @param tiers
+	 * @return true si le tiers est une veuf marié seul false sinon
+	 */
+	boolean isVeuvageMarieSeul(PersonnePhysique tiers);
 }
 

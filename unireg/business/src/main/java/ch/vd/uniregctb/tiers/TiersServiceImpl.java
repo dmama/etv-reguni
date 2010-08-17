@@ -98,7 +98,7 @@ public class TiersServiceImpl implements TiersService {
 	private AdresseService adresseService;
 	private RemarqueDAO remarqueDAO;
 	private ServicePersonneMoraleService servicePM;
-	
+
 	private HibernateTemplate hibernateTemplate;
 	private PlatformTransactionManager transactionManager;
 
@@ -204,14 +204,14 @@ public class TiersServiceImpl implements TiersService {
 					Collection<ch.vd.uniregctb.interfaces.model.EtatCivil> colEtatCivil = ind.getEtatsCivils();
 					int numSeq = 0;
 					EnumTypeEtatCivil etatCivilDuCivil = null;
-					for(ch.vd.uniregctb.interfaces.model.EtatCivil etatCivil : colEtatCivil) {
+					for (ch.vd.uniregctb.interfaces.model.EtatCivil etatCivil : colEtatCivil) {
 						if (etatCivil.getNoSequence() > numSeq) {
 							etatCivilDuCivil = etatCivil.getTypeEtatCivil();
 						}
 					}
 					if (etatCivilDuCivil != null && (
 							!sitFam.getEtatCivil().equals(EtatCivil.from(etatCivilDuCivil)) ||
-							sitFam.getNombreEnfants() == 0)) {
+									sitFam.getNombreEnfants() == 0)) {
 						situationFamilleService.closeSituationFamille(nonHabitant, date);
 					}
 				}
@@ -257,7 +257,8 @@ public class TiersServiceImpl implements TiersService {
 		habitant.setDateDeces(ind.getDateDeces());
 		if (ind.isSexeMasculin()) {
 			habitant.setSexe(Sexe.MASCULIN);
-		} else {
+		}
+		else {
 			habitant.setSexe(Sexe.FEMININ);
 		}
 
@@ -562,7 +563,7 @@ public class TiersServiceImpl implements TiersService {
 
 		/* Récupération de l'individu avec ses permis, ses nationalités et son origine */
 		final Individu individu = serviceCivilService.getIndividu(habitant.getNumeroIndividu(), date.year(),
-						EnumAttributeIndividu.NATIONALITE, EnumAttributeIndividu.PERMIS, EnumAttributeIndividu.ORIGINE);
+				EnumAttributeIndividu.NATIONALITE, EnumAttributeIndividu.PERMIS, EnumAttributeIndividu.ORIGINE);
 
 		/* A-t-il une nationalité suisse en cours et/ou des nationalites étrangères ? */
 		boolean nationaliteSuisse = false;
@@ -630,7 +631,8 @@ public class TiersServiceImpl implements TiersService {
 		for (Object obj : permiss) {
 			final Permis permis = (Permis) obj;
 			if (permis.getDateAnnulation() == null) {
-				if (RegDateHelper.isBeforeOrEqual(permis.getDateDebutValidite(), date, NullDateBehavior.EARLIEST) && (permis.getDateFinValidite() == null || permis.getDateFinValidite().isAfter(date))) {
+				if (RegDateHelper.isBeforeOrEqual(permis.getDateDebutValidite(), date, NullDateBehavior.EARLIEST) &&
+						(permis.getDateFinValidite() == null || permis.getDateFinValidite().isAfter(date))) {
 					auMoinsUnpermisEnCours = true;
 					if (permis.getTypePermis().equals(EnumTypePermis.ETABLLISSEMENT))
 						return false;
@@ -690,8 +692,8 @@ public class TiersServiceImpl implements TiersService {
 			if (nationalites != null) {
 				for (Nationalite nationalite : nationalites) {
 					if (RegDateHelper.isBeforeOrEqual(nationalite.getDateDebutValidite(), date, NullDateBehavior.EARLIEST) &&
-						(nationalite.getDateFinValidite() == null || nationalite.getDateFinValidite().isAfterOrEqual(date)) &&
-						nationalite.getPays().getNoOFS() == ServiceInfrastructureService.noOfsSuisse)
+							(nationalite.getDateFinValidite() == null || nationalite.getDateFinValidite().isAfterOrEqual(date)) &&
+							nationalite.getPays().getNoOFS() == ServiceInfrastructureService.noOfsSuisse)
 						return true;
 				}
 			}
@@ -849,9 +851,9 @@ public class TiersServiceImpl implements TiersService {
 
 			// maintenant, on vérifie la succession des permis
 			isRefugie = nbPermis > 2 &&
-						EnumTypePermis.ANNUEL.equals(permisNonAnnules.get(nbPermis - 1).getTypePermis()) &&								// B
-						EnumTypePermis.REQUERANT_ASILE_AVANT_DECISION.equals(permisNonAnnules.get(nbPermis - 2).getTypePermis()) &&		// N
-						EnumTypePermis.REQUERANT_ASILE_REFUSE.equals(permisNonAnnules.get(nbPermis - 3).getTypePermis());				// F
+					EnumTypePermis.ANNUEL.equals(permisNonAnnules.get(nbPermis - 1).getTypePermis()) &&								// B
+					EnumTypePermis.REQUERANT_ASILE_AVANT_DECISION.equals(permisNonAnnules.get(nbPermis - 2).getTypePermis()) &&		// N
+					EnumTypePermis.REQUERANT_ASILE_REFUSE.equals(permisNonAnnules.get(nbPermis - 3).getTypePermis());				// F
 		}
 
 		return isRefugie;
@@ -1092,7 +1094,7 @@ public class TiersServiceImpl implements TiersService {
 				if (lastRapport == null) {
 					lastRapport = rapportSujet;
 				}
-				else if (lastRapport.getDateDebut().isBefore(rapportSujet.getDateDebut())){
+				else if (lastRapport.getDateDebut().isBefore(rapportSujet.getDateDebut())) {
 					lastRapport = rapportSujet;
 				}
 			}
@@ -1262,7 +1264,7 @@ public class TiersServiceImpl implements TiersService {
 	 */
 	// TODO(FDE) : ajouter un test dans TiersServiceTest
 	public RapportPrestationImposable addRapportPrestationImposable(PersonnePhysique sourcier, DebiteurPrestationImposable debiteur,
-			RegDate dateDebut, RegDate dateFin, TypeActivite typeActivite, Integer tauxActivite) {
+	                                                                RegDate dateDebut, RegDate dateFin, TypeActivite typeActivite, Integer tauxActivite) {
 
 		RapportPrestationImposable rapport = new RapportPrestationImposable();
 		rapport.setDateDebut(dateDebut);
@@ -1287,7 +1289,7 @@ public class TiersServiceImpl implements TiersService {
 	 * @return l'ensemble tiers-couple sauvé en base avec les références mises-à-jour des objets sauvés.
 	 */
 	public EnsembleTiersCouple createEnsembleTiersCouple(PersonnePhysique tiers1, PersonnePhysique tiers2, RegDate dateDebut,
-			RegDate dateFin) {
+	                                                     RegDate dateFin) {
 
 		Assert.notNull(tiers1);
 		Assert.notNull(dateDebut);
@@ -1332,7 +1334,7 @@ public class TiersServiceImpl implements TiersService {
 	 */
 	public Individu getIndividu(PersonnePhysique personne) {
 
-		if(personne.getNumeroIndividu() != null && personne.getNumeroIndividu() != 0) {
+		if (personne.getNumeroIndividu() != null && personne.getNumeroIndividu() != 0) {
 			Individu individu = (Individu) personne.getIndividuCache();
 			if (individu == null) {
 
@@ -1357,7 +1359,7 @@ public class TiersServiceImpl implements TiersService {
 	 */
 	public Individu getIndividu(PersonnePhysique personne, int annee, EnumAttributeIndividu[] attributes) {
 
-		if(personne.isHabitantVD()) {
+		if (personne.isHabitantVD()) {
 			Individu individu = null;
 			Long noIndividu = personne.getNumeroIndividu();
 			if (annee <= 0) {
@@ -1405,8 +1407,8 @@ public class TiersServiceImpl implements TiersService {
 	 * @return le nouveau for fiscal principal
 	 */
 	public ForFiscalPrincipal openForFiscalPrincipal(Contribuable contribuable, final RegDate dateOuverture,
-			MotifRattachement motifRattachement, int numeroOfsAutoriteFiscale, TypeAutoriteFiscale typeAutoriteFiscale,
-			ModeImposition modeImposition, MotifFor motifOuverture, boolean changeHabitantFlag) {
+	                                                 MotifRattachement motifRattachement, int numeroOfsAutoriteFiscale, TypeAutoriteFiscale typeAutoriteFiscale,
+	                                                 ModeImposition modeImposition, MotifFor motifOuverture, boolean changeHabitantFlag) {
 
 		Assert.isNull(contribuable.getForFiscalPrincipalAt(null), "Le contribuable possède déjà un for principal ouvert");
 
@@ -1452,14 +1454,14 @@ public class TiersServiceImpl implements TiersService {
 	 *            la date de fermeture du for	 *
 	 * @param motifFermeture
 	 *            le motif de fermeture
-	 * @param changeHabitantFlag 
+	 * @param changeHabitantFlag
 	 *
 	 * @return le nouveau for fiscal principal
 	 */
 	public ForFiscalPrincipal openAndCloseForFiscalPrincipal(Contribuable contribuable, final RegDate dateOuverture,
-			MotifRattachement motifRattachement, int numeroOfsAutoriteFiscale, TypeAutoriteFiscale typeAutoriteFiscale,
-			ModeImposition modeImposition, MotifFor motifOuverture,RegDate dateFermeture, MotifFor motifFermeture, 
-			boolean changeHabitantFlag) {
+	                                                         MotifRattachement motifRattachement, int numeroOfsAutoriteFiscale, TypeAutoriteFiscale typeAutoriteFiscale,
+	                                                         ModeImposition modeImposition, MotifFor motifOuverture, RegDate dateFermeture, MotifFor motifFermeture,
+	                                                         boolean changeHabitantFlag) {
 
 
 
@@ -1483,7 +1485,7 @@ public class TiersServiceImpl implements TiersService {
 
 		Assert.notNull(nouveauForFiscal);
 		nouveauForFiscal = openOrReopenForFiscalPrincipal(nouveauForFiscal, changeHabitantFlag);
-		nouveauForFiscal = closeForFiscalPrincipal(contribuable,nouveauForFiscal,dateFermeture,motifFermeture);
+		nouveauForFiscal = closeForFiscalPrincipal(contribuable, nouveauForFiscal, dateFermeture, motifFermeture);
 
 
 		return nouveauForFiscal;
@@ -1495,7 +1497,7 @@ public class TiersServiceImpl implements TiersService {
 		if (!changeHabitantFlag) {
 			return forFP;
 		}
-		
+
 		//si (re)ouverture d'un for non vaudois et PP.isHabitantVD faire devenir la PP non habitant
 		if (!forFP.getTypeAutoriteFiscale().equals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD)) {
 			if (forFP.getTiers() instanceof PersonnePhysique) {
@@ -1674,7 +1676,7 @@ public class TiersServiceImpl implements TiersService {
 			List<ForFiscal> fors = contribuable.getForsFiscauxValidAt(forFiscalSecondaire.getDateDebut());
 			for (ForFiscal forFiscal : fors) {
 				if (!forFiscal.isAnnule() && forFiscal instanceof ForFiscalSecondaire && forFiscal != forFiscalSecondaire) {
-					ForFiscalSecondaire forSec = (ForFiscalSecondaire)forFiscal;
+					ForFiscalSecondaire forSec = (ForFiscalSecondaire) forFiscal;
 					MotifRattachement motifRattachement = forFiscalSecondaire.getMotifRattachement();
 					if (forSec.getMotifRattachement().equals(motifRattachement)) {
 						isFirst = false;
@@ -1683,7 +1685,8 @@ public class TiersServiceImpl implements TiersService {
 				}
 			}
 			// PBO (26-06-2009) ajout des motifs de rattachement pour la génération d'événements fiscaux
-			if (isFirst && (forFiscalSecondaire.getMotifRattachement().equals(MotifRattachement.ACTIVITE_INDEPENDANTE) || forFiscalSecondaire.getMotifRattachement().equals(MotifRattachement.IMMEUBLE_PRIVE))) {
+			if (isFirst && (forFiscalSecondaire.getMotifRattachement().equals(MotifRattachement.ACTIVITE_INDEPENDANTE) ||
+					forFiscalSecondaire.getMotifRattachement().equals(MotifRattachement.IMMEUBLE_PRIVE))) {
 				MotifFor motifOuverture = forFiscalSecondaire.getMotifOuverture();
 				RegDate dateOuverture = forFiscalSecondaire.getDateDebut();
 				this.evenementFiscalService.publierEvenementFiscalOuvertureFor(contribuable, dateOuverture, motifOuverture, forFiscalSecondaire.getId());
@@ -1712,8 +1715,8 @@ public class TiersServiceImpl implements TiersService {
 	 * @return le nouveau for fiscal autre élément imposable
 	 */
 	public ForFiscalAutreElementImposable openForFiscalAutreElementImposable(Contribuable contribuable, GenreImpot genreImpot,
-			final RegDate dateOuverture, MotifRattachement motifRattachement, int numeroOfsAutoriteFiscale,
-			TypeAutoriteFiscale typeAutoriteFiscale, MotifFor motifOuverture) {
+	                                                                         final RegDate dateOuverture, MotifRattachement motifRattachement, int numeroOfsAutoriteFiscale,
+	                                                                         TypeAutoriteFiscale typeAutoriteFiscale, MotifFor motifOuverture) {
 
 		// Ouvre un nouveau for à la date d'événement
 		ForFiscalAutreElementImposable nouveauForFiscal = new ForFiscalAutreElementImposable();
@@ -1780,7 +1783,7 @@ public class TiersServiceImpl implements TiersService {
 
 	}
 
-	private void afterForAutreImportAdded(Tiers tiers , ForFiscalAutreImpot forFiscal) {
+	private void afterForAutreImportAdded(Tiers tiers, ForFiscalAutreImpot forFiscal) {
 		RegDate dateOuverture = forFiscal.getDateDebut();
 		this.evenementFiscalService.publierEvenementFiscalOuvertureFor(tiers, dateOuverture, null, forFiscal.getId());
 	}
@@ -1831,8 +1834,8 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 	/**
-	 * @param tiers tiers auquel les fors sont associés
-	 * @param reopenedFors listes des fors à sauver
+	 * @param tiers          tiers auquel les fors sont associés
+	 * @param reopenedFors   listes des fors à sauver
 	 * @param forsPrincipaux si <code>true</code>, ne s'occupe que des fors principaux, et si <code>false</code>, que des fors secondaires
 	 */
 	private void addAndSaveReopenedFors(Tiers tiers, List<ForFiscal> reopenedFors, boolean forsPrincipaux) {
@@ -1909,7 +1912,7 @@ public class TiersServiceImpl implements TiersService {
 	 */
 	public ForFiscalPrincipal closeForFiscalPrincipal(ForFiscalPrincipal forFiscalPrincipal, RegDate dateFermeture, MotifFor motifFermeture) {
 		if (forFiscalPrincipal != null) {
-			forFiscalPrincipal = closeForFiscalPrincipal((Contribuable)forFiscalPrincipal.getTiers(), forFiscalPrincipal, dateFermeture, motifFermeture);
+			forFiscalPrincipal = closeForFiscalPrincipal((Contribuable) forFiscalPrincipal.getTiers(), forFiscalPrincipal, dateFermeture, motifFermeture);
 		}
 
 		return forFiscalPrincipal;
@@ -1919,7 +1922,8 @@ public class TiersServiceImpl implements TiersService {
 		Assert.notNull(contribuable);
 		Assert.notNull(forFiscalPrincipal);
 		if (forFiscalPrincipal.getDateDebut().isAfter(dateFermeture)) {
-			throw new ValidationException(forFiscalPrincipal, "La date de fermeture (" + RegDateHelper.dateToDisplayString(dateFermeture) + ") est avant la date de début (" + RegDateHelper.dateToDisplayString(forFiscalPrincipal.getDateDebut())
+			throw new ValidationException(forFiscalPrincipal, "La date de fermeture (" + RegDateHelper.dateToDisplayString(dateFermeture) + ") est avant la date de début (" +
+					RegDateHelper.dateToDisplayString(forFiscalPrincipal.getDateDebut())
 					+ ") du for fiscal actif");
 		}
 
@@ -1964,7 +1968,7 @@ public class TiersServiceImpl implements TiersService {
 	 * @return le for fiscal secondaire fermé, ou <b>null</b> si le contribuable n'en possédait pas.
 	 */
 	public ForFiscalSecondaire closeForFiscalSecondaire(Contribuable contribuable, ForFiscalSecondaire forFiscalSecondaire,
-			RegDate dateFermeture, MotifFor motifFermeture) {
+	                                                    RegDate dateFermeture, MotifFor motifFermeture) {
 		if (forFiscalSecondaire != null) {
 			if (forFiscalSecondaire.getDateDebut().isAfter(dateFermeture)) {
 				throw new ValidationException(forFiscalSecondaire, "La date de fermeture ("
@@ -2002,7 +2006,7 @@ public class TiersServiceImpl implements TiersService {
 
 
 	/**
-	 *  {@inheritDoc} 
+	 * {@inheritDoc}
 	 */
 	public ForFiscalPrincipal changeModeImposition(Contribuable contribuable, RegDate dateChangementModeImposition, ModeImposition modeImposition, MotifFor motifFor) {
 
@@ -2038,7 +2042,7 @@ public class TiersServiceImpl implements TiersService {
 				evenementFiscalService.publierEvenementFiscalChangementModeImposition(contribuable, dateChangementModeImposition, modeImposition, nouveauForFiscal.getId());
 			}
 		}
-		
+
 		return nouveauForFiscal;
 	}
 
@@ -2065,7 +2069,7 @@ public class TiersServiceImpl implements TiersService {
 		// notifie le reste du monde
 		if (forFiscal.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
 			evenementFiscalService.publierEvenementFiscalAnnulationFor(forFiscal, RegDate.get());
-			final MotifFor motifFor = (forFiscal instanceof ForFiscalRevenuFortune ? ((ForFiscalRevenuFortune)forFiscal).getMotifOuverture() : null);
+			final MotifFor motifFor = (forFiscal instanceof ForFiscalRevenuFortune ? ((ForFiscalRevenuFortune) forFiscal).getMotifOuverture() : null);
 			evenementFiscalService.publierEvenementFiscalOuvertureFor(tiers, RegDate.get(), motifFor, forCorrige.getId());
 		}
 
@@ -2153,7 +2157,7 @@ public class TiersServiceImpl implements TiersService {
 			}
 
 			//[UNIREG-2683]dans le cas d'une périodicité UNIQUE, la période de décompte ne doit pas être historisée le changemnt doit être immediat
-			if (courante.getPeriodiciteDecompte() == PeriodiciteDecompte.UNIQUE && courante.getPeriodeDecompte() != periodeDecompte){
+			if (courante.getPeriodiciteDecompte() == PeriodiciteDecompte.UNIQUE && courante.getPeriodeDecompte() != periodeDecompte) {
 				// la periodicité est toujours de type UNIQUE, seule la période change, on met à jour la périodicité courante
 				courante.setPeriodeDecompte(periodeDecompte);
 				return courante;
@@ -2246,7 +2250,7 @@ public class TiersServiceImpl implements TiersService {
 	 * @return le for fiscal autre élément imposable fermé, ou <b>null</b> si le contribuable n'en possédait pas.
 	 */
 	public ForFiscalAutreElementImposable closeForFiscalAutreElementImposable(Contribuable contribuable,
-			ForFiscalAutreElementImposable forFiscalAutreElementImposable, RegDate dateFermeture, MotifFor motifFermeture) {
+	                                                                          ForFiscalAutreElementImposable forFiscalAutreElementImposable, RegDate dateFermeture, MotifFor motifFermeture) {
 		if (forFiscalAutreElementImposable != null) {
 			if (forFiscalAutreElementImposable.getDateDebut().isAfter(dateFermeture)) {
 				throw new ValidationException(forFiscalAutreElementImposable, "La date de fermeture ("
@@ -2270,7 +2274,7 @@ public class TiersServiceImpl implements TiersService {
 	 * @return le for debiteur fermé, ou <b>null</b> si le contribuable n'en possédait pas.
 	 */
 	public ForDebiteurPrestationImposable closeForDebiteurPrestationImposable(DebiteurPrestationImposable debiteur,
-			ForDebiteurPrestationImposable forDebiteurPrestationImposable, RegDate dateFermeture) {
+	                                                                          ForDebiteurPrestationImposable forDebiteurPrestationImposable, RegDate dateFermeture) {
 		if (forDebiteurPrestationImposable != null) {
 			if (forDebiteurPrestationImposable.getDateDebut().isAfter(dateFermeture)) {
 				throw new ValidationException(forDebiteurPrestationImposable, "La date de fermeture ("
@@ -2317,10 +2321,10 @@ public class TiersServiceImpl implements TiersService {
 					//closeForFiscalPrincipal(contribuable, (ForFiscalPrincipal)forFiscal, dateFermeture, motifFermeture);
 				}
 				else if (forFiscal instanceof ForFiscalSecondaire) {
-					closeForFiscalSecondaire(contribuable, (ForFiscalSecondaire)forFiscal, dateFermeture, motifFermeture);
+					closeForFiscalSecondaire(contribuable, (ForFiscalSecondaire) forFiscal, dateFermeture, motifFermeture);
 				}
 				else if (forFiscal instanceof ForFiscalAutreElementImposable) {
-					closeForFiscalAutreElementImposable(contribuable, (ForFiscalAutreElementImposable)forFiscal, dateFermeture, motifFermeture);
+					closeForFiscalAutreElementImposable(contribuable, (ForFiscalAutreElementImposable) forFiscal, dateFermeture, motifFermeture);
 				}
 				else if (forFiscal instanceof ForFiscalAutreImpot) {
 					closeForAutreImpot((ForFiscalAutreImpot) forFiscal, dateFermeture);
@@ -2337,7 +2341,7 @@ public class TiersServiceImpl implements TiersService {
 		for (ForFiscal forFiscal : fors) {
 			if (forFiscal.getDateFin() == null) {
 				if (forFiscal instanceof ForFiscalPrincipal) {
-					closeForFiscalPrincipal(contribuable, (ForFiscalPrincipal)forFiscal, dateFermeture, motifFermeture);
+					closeForFiscalPrincipal(contribuable, (ForFiscalPrincipal) forFiscal, dateFermeture, motifFermeture);
 				}
 			}
 		}
@@ -2383,7 +2387,7 @@ public class TiersServiceImpl implements TiersService {
 	private void copieRemarques(Tiers tiersSource, Tiers tiersCible) {
 
 		final List<Remarque> list = remarqueDAO.getRemarques(tiersSource.getNumero());
-		for (Remarque r: list) {
+		for (Remarque r : list) {
 			Remarque c = new Remarque();
 			c.setLogCreationDate(r.getLogCreationDate());
 			c.setLogCreationUser(r.getLogCreationUser());
@@ -2477,7 +2481,7 @@ public class TiersServiceImpl implements TiersService {
 	 * @param forFiscalRevenuFortuneCible
 	 */
 	private void copieForFiscalRevenuFortune(ForFiscalRevenuFortune forFiscalRevenuFortuneSource,
-			ForFiscalRevenuFortune forFiscalRevenuFortuneCible) {
+	                                         ForFiscalRevenuFortune forFiscalRevenuFortuneCible) {
 		forFiscalRevenuFortuneCible.setMotifRattachement(forFiscalRevenuFortuneSource.getMotifRattachement());
 		forFiscalRevenuFortuneCible.setMotifOuverture(forFiscalRevenuFortuneSource.getMotifOuverture());
 		forFiscalRevenuFortuneCible.setMotifFermeture(forFiscalRevenuFortuneSource.getMotifFermeture());
@@ -2523,6 +2527,14 @@ public class TiersServiceImpl implements TiersService {
 		else {
 			return pp.getDateNaissance();
 		}
+	}
+
+	public RegDate getDateDebutVeuvage(PersonnePhysique pp, RegDate date) {
+		VueSituationFamille situation = situationFamilleService.getVue(pp, date,true);
+		if(situation!=null && EtatCivil.VEUF.equals(situation.getEtatCivil())){
+			return situation.getDateDebut();
+		}
+		return null;
 	}
 
 	/**
@@ -2907,7 +2919,7 @@ public class TiersServiceImpl implements TiersService {
 				}
 
 				if (forGestion == null) {
-					 // [UNIREG-1029] On trie les fors secondaires restants par ordre alphabétique du nom de la commune, et on prend le premier.
+					// [UNIREG-1029] On trie les fors secondaires restants par ordre alphabétique du nom de la commune, et on prend le premier.
 					Collections.sort(forsSecondaires, new Comparator<ForFiscal>() {
 						public int compare(ForFiscal o1, ForFiscal o2) {
 							final Integer ofs1 = o1.getNumeroOfsAutoriteFiscale();
@@ -2999,10 +3011,10 @@ public class TiersServiceImpl implements TiersService {
 	/**
 	 * {@inheritDoc}
 	 */
-	public List<AdresseTiers> fermeAdresseTiersTemporaire(Tiers tiers,	RegDate date) {
+	public List<AdresseTiers> fermeAdresseTiersTemporaire(Tiers tiers, RegDate date) {
 		final List<AdresseTiers> listeDesAdressesFermees = new ArrayList<AdresseTiers>();
 		if (tiers.getAdressesTiers() != null) {
-			for (AdresseTiers adr : tiers.getAdressesTiers()){
+			for (AdresseTiers adr : tiers.getAdressesTiers()) {
 				if (adr instanceof AdresseSupplementaire) {
 					final AdresseSupplementaire adrSupp = (AdresseSupplementaire) adr;
 					if (!adrSupp.isPermanente() && adr.getDateFin() == null && !adrSupp.isAnnule() && RegDateHelper.isBeforeOrEqual(adrSupp.getDateDebut(), date, NullDateBehavior.LATEST)) {
@@ -3316,12 +3328,12 @@ public class TiersServiceImpl implements TiersService {
 
 	public RegDate getDateDebutNouvellePeriodicite(DebiteurPrestationImposable debiteur) {
 		RegDate debutValidite = null;
-		int anneeDebut = RegDate.get().year()+1;
+		int anneeDebut = RegDate.get().year();
 		Declaration derniereDeclaration = debiteur.getDerniereDeclaration();
-		if(derniereDeclaration !=null){
-			anneeDebut = derniereDeclaration.getPeriode().getAnnee() +1;
+		if (derniereDeclaration != null) {
+			anneeDebut = derniereDeclaration.getPeriode().getAnnee() + 1;
 		}
-		debutValidite = RegDate.get(anneeDebut,1,1);
+		debutValidite = RegDate.get(anneeDebut, 1, 1);
 		return debutValidite;
 	}
 
@@ -3388,31 +3400,31 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 
-    public Set<PersonnePhysique> getPersonnesPhysiques(MenageCommun menage) {
-        return getPersonnesPhysiques(menage, false).keySet();
-    }
+	public Set<PersonnePhysique> getPersonnesPhysiques(MenageCommun menage) {
+		return getPersonnesPhysiques(menage, false).keySet();
+	}
 
-    public Map<PersonnePhysique, RapportEntreTiers> getToutesPersonnesPhysiquesImpliquees(MenageCommun menage) {
-        return getPersonnesPhysiques(menage, true);
-    }
+	public Map<PersonnePhysique, RapportEntreTiers> getToutesPersonnesPhysiquesImpliquees(MenageCommun menage) {
+		return getPersonnesPhysiques(menage, true);
+	}
 
-    /**
+	/**
      * @return l'ensemble des personnes physiques ayant fait ou faisant partie du ménage commun
      *         en ignorant (ou pas) les rapports annulés ; le dernier rapport entre tiers est également indiqué
-     */
-    private Map<PersonnePhysique, RapportEntreTiers> getPersonnesPhysiques(MenageCommun menage, boolean aussiRapportsAnnules) {
-        final Map<PersonnePhysique, RapportEntreTiers> personnes = new HashMap<PersonnePhysique, RapportEntreTiers>(aussiRapportsAnnules ? 4 : 2);
-        final Set<RapportEntreTiers> rapports = menage.getRapportsObjet();
-        if (rapports != null) {
-            for (RapportEntreTiers r : rapports) {
-                if ((aussiRapportsAnnules || !r.isAnnule()) && r.getType().equals(TypeRapportEntreTiers.APPARTENANCE_MENAGE)) {
+	 */
+	private Map<PersonnePhysique, RapportEntreTiers> getPersonnesPhysiques(MenageCommun menage, boolean aussiRapportsAnnules) {
+		final Map<PersonnePhysique, RapportEntreTiers> personnes = new HashMap<PersonnePhysique, RapportEntreTiers>(aussiRapportsAnnules ? 4 : 2);
+		final Set<RapportEntreTiers> rapports = menage.getRapportsObjet();
+		if (rapports != null) {
+			for (RapportEntreTiers r : rapports) {
+				if ((aussiRapportsAnnules || !r.isAnnule()) && r.getType().equals(TypeRapportEntreTiers.APPARTENANCE_MENAGE)) {
 
-	                // on ne considère que les rapport dont le ménage commun est l'objet
-	                // (les autres correspondent à des rattrapages de données en prod...)
-	                final Long objetId = r.getObjetId();
-	                if (objetId.equals(menage.getId())) {
+					// on ne considère que les rapport dont le ménage commun est l'objet
+					// (les autres correspondent à des rattrapages de données en prod...)
+					final Long objetId = r.getObjetId();
+					if (objetId.equals(menage.getId())) {
 
-		                final Long ppId = r.getSujetId();
+						final Long ppId = r.getSujetId();
 						final PersonnePhysique sujet = (PersonnePhysique) tiersDAO.get(ppId);
 
 						// si le rapport est annulé, on vérifie qu'il n'existe pas un
@@ -3433,12 +3445,12 @@ public class TiersServiceImpl implements TiersService {
 						if (!ignore) {
 							personnes.put(sujet, r);
 						}
-	                }
-                }
-            }
-        }
-        return personnes;
-    }
+					}
+				}
+			}
+		}
+		return personnes;
+	}
 
 	/**
 	 * @return le contribuable associé au débiteur; ou <b>null</b> si le débiteur n'en possède pas.
@@ -3598,7 +3610,7 @@ public class TiersServiceImpl implements TiersService {
 	 * @return le ménage commun trouvé, ou null si cette personne n'est pas rattaché au ménage.
 	 * @throws Exception
 	 * @throws ch.vd.registre.common.service.RegistreException
-	 *             si plus d'un ménage commun est trouvé.
+	 *                   si plus d'un ménage commun est trouvé.
 	 */
 	public MenageCommun getMenageCommunActifAt(final Contribuable personne, final DateRangeHelper.Range periode) throws TiersException {
 
@@ -3606,8 +3618,8 @@ public class TiersServiceImpl implements TiersService {
 			return null;
 		}
 
-		if(personne instanceof MenageCommun){
-			return (MenageCommun)personne;
+		if (personne instanceof MenageCommun) {
+			return (MenageCommun) personne;
 		}
 
 		MenageCommun menageCommun = null;
@@ -3649,6 +3661,18 @@ public class TiersServiceImpl implements TiersService {
 			liste = Collections.emptyList();
 		}
 		return liste;
+	}
+
+	public boolean isVeuvageMarieSeul(PersonnePhysique tiers) {
+		MenageCommun menageCommun = findDernierMenageCommun(tiers);
+		if (menageCommun != null) {
+			PersonnePhysique[] personnes = getPersonnesPhysiques(menageCommun).toArray(new PersonnePhysique[0]);
+			if (personnes.length == 1 && EtatCivil.VEUF.equals(situationFamilleService.getEtatCivil(tiers, RegDate.get(), true))) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	/**
