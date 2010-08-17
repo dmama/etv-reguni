@@ -14,6 +14,7 @@ import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
+import ch.vd.uniregctb.annulation.deces.manager.AnnulationDecesRecapManager;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.TooManyResultsIndexerException;
@@ -32,6 +33,7 @@ public class AnnulationDecesListController extends AbstractTiersListController {
 
 	public static final String ANNULATION_DECES_CRITERIA_NAME = "AnnulationDecesCriteria";
 	public static final String ANNULATION_DECES_LIST_ATTRIBUTE_NAME = "list";
+	private AnnulationDecesRecapManager annulationDecesRecapManager;
 
 	/**
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
@@ -77,7 +79,7 @@ public class AnnulationDecesListController extends AbstractTiersListController {
 						List<TiersIndexedData> filtredResults = new ArrayList<TiersIndexedData>();
 						for (TiersIndexedData tiersIndexedData : results) {
 							PersonnePhysique tiers = (PersonnePhysique) getTiersSloooow(tiersIndexedData.getNumero());
-							if (tiersService.isDecede(tiers)) {
+							if (annulationDecesRecapManager.isDecede(tiers) || annulationDecesRecapManager.isVeuvageMarieSeul(tiers)) {
 								filtredResults.add(tiersIndexedData);
 							}
 						}
@@ -120,5 +122,13 @@ public class AnnulationDecesListController extends AbstractTiersListController {
 		}
 
 		return mav;
+	}
+
+	public AnnulationDecesRecapManager getAnnulationDecesRecapManager() {
+		return annulationDecesRecapManager;
+	}
+
+	public void setAnnulationDecesRecapManager(AnnulationDecesRecapManager annulationDecesRecapManager) {
+		this.annulationDecesRecapManager = annulationDecesRecapManager;
 	}
 }

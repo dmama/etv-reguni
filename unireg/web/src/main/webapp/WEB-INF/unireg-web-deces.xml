@@ -36,6 +36,7 @@
 		<property name="sessionForm" value="true" />
 		<property name="commandClass" value="ch.vd.uniregctb.tiers.view.TiersCriteriaView" />
 		<property name="commandName" value="command" />
+		<property name="annulationDecesRecapManager" ref="annulationDecesRecapManager" />
 		<property name="formView" value="annulation/deces/list" />
 		<property name="successView" value="list.do" />
 		<property name="validator" ref="tiersCriteriaValidator" />

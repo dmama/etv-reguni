@@ -9,6 +9,10 @@ public class AnnulationDecesRecapView {
 
 	private RegDate dateDeces;
 
+	private RegDate dateVeuvage;
+
+	private boolean marieSeulAndVeuf;
+
 	public TiersGeneralView getPersonne() {
 		return personne;
 	}
@@ -25,4 +29,19 @@ public class AnnulationDecesRecapView {
 		this.dateDeces = dateDeces;
 	}
 
+	public RegDate getDateVeuvage() {
+		return dateVeuvage;
+	}
+
+	public void setDateVeuvage(RegDate dateVeuvage) {
+		this.dateVeuvage = dateVeuvage;
+	}
+
+	public boolean isMarieSeulAndVeuf() {
+		return marieSeulAndVeuf;
+	}
+
+	public void setMarieSeulAndVeuf(boolean marieSeulAndVeuf) {
+		this.marieSeulAndVeuf = marieSeulAndVeuf;
+	}
 }
