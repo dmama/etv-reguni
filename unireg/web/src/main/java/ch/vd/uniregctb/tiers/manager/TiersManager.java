@@ -80,6 +80,8 @@ import ch.vd.uniregctb.tiers.view.TiersVisuView;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.Niveau;
+import ch.vd.uniregctb.type.PeriodeDecompte;
+import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.type.SensRapportEntreTiers;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
@@ -286,8 +288,7 @@ public class TiersManager implements MessageSourceAware {
 					debiteurView.setCategorieImpotSource(dpi.getCategorieImpotSource());
 					debiteurView.setPersonneContact(dpi.getPersonneContact());
 					final List<String> nomCourrier = getAdresseService().getNomCourrier(dpi, null, false);
-					debiteurView.setNomCourrier(nomCourrier);
-					debiteurView.setComplementNom(dpi.getComplementNom());
+					debiteurView.setNomCourrier(nomCourrier);					
 					debiteursView.add(debiteurView);
 				}
 			}
@@ -708,11 +709,14 @@ public class TiersManager implements MessageSourceAware {
 
 	}
 
-	private PeriodiciteView readFromPeriodicite(Periodicite periodicite) {
+	protected PeriodiciteView readFromPeriodicite(Periodicite periodicite) {
 		PeriodiciteView periodiciteView = new PeriodiciteView();
 		periodiciteView.setDateDebut(periodicite.getDateDebut());
 		periodiciteView.setDateFin(periodicite.getDateFin());
-		periodiciteView.setDebiteurId(periodicite.getDebiteur().getNumero());
+		final DebiteurPrestationImposable debiteurPrestationImposable = periodicite.getDebiteur();
+		if(debiteurPrestationImposable!=null){
+			periodiciteView.setDebiteurId(debiteurPrestationImposable.getNumero());
+		}		
 		periodiciteView.setId(periodicite.getId());
 		periodiciteView.setAnnule(periodicite.isAnnule());
 		periodiciteView.setPeriodiciteDecompte(periodicite.getPeriodiciteDecompte());
@@ -727,8 +731,17 @@ public class TiersManager implements MessageSourceAware {
 	}
 
 	protected void setPeriodiciteCourante(TiersView tiersView, DebiteurPrestationImposable dpi) {
-		final Periodicite periodiciteCourante = dpi.getDernierePeriodicite();
+		Periodicite periodiciteCourante = dpi.getDernierePeriodicite();
+
+		if(periodiciteCourante==null){
+			//Periodicite par defaut a enregistrer dans la vue
+			final RegDate debutPeriodicite = RegDate.get(RegDate.get().year(), 1, 1);
+			periodiciteCourante = new Periodicite(PeriodiciteDecompte.TRIMESTRIEL,PeriodeDecompte.M12, debutPeriodicite,null);
+
+		}
+
 		tiersView.setPeriodicite(readFromPeriodicite(periodiciteCourante));
+
 
 	}
 

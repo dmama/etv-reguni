@@ -363,7 +363,7 @@ public abstract class Tiers extends HibernateEntity implements Validateable, Bus
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 *
 	 * @param theNumeroTelephoneProfessionnel
-	 *            the numeroTelephoneProfessionnel to set
+	 *         the numeroTelephoneProfessionnel to set
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_jaly8NMnEdy4-c1RAQqlyw?SETTER"
 	 */
 	public void setNumeroTelephoneProfessionnel(String theNumeroTelephoneProfessionnel) {
@@ -603,7 +603,7 @@ public abstract class Tiers extends HibernateEntity implements Validateable, Bus
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 *
 	 * @param theBlocageRemboursementAutomatique
-	 *            the blocageRemboursementAutomatique to set
+	 *         the blocageRemboursementAutomatique to set
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_gzNEIJNkEdygKK6Oe0tVlw?SETTER"
 	 */
 	public void setBlocageRemboursementAutomatique(Boolean theBlocageRemboursementAutomatique) {
@@ -767,7 +767,7 @@ public abstract class Tiers extends HibernateEntity implements Validateable, Bus
 			if (!rapportSujet.isAnnule() && type.equals(rapportSujet.getType())) {
 				if (dernierRapport == null
 						|| RegDateHelper.isAfterOrEqual(rapportSujet.getDateDebut(), dernierRapport.getDateDebut(),
-								NullDateBehavior.EARLIEST)) {
+						NullDateBehavior.EARLIEST)) {
 					dernierRapport = rapportSujet;
 				}
 			}
@@ -814,7 +814,7 @@ public abstract class Tiers extends HibernateEntity implements Validateable, Bus
 			if (!rapportObjet.isAnnule() && type.equals(rapportObjet.getType())) {
 				if (dernierRapport == null
 						|| RegDateHelper.isAfterOrEqual(rapportObjet.getDateDebut(), dernierRapport.getDateDebut(),
-								NullDateBehavior.EARLIEST)) {
+						NullDateBehavior.EARLIEST)) {
 					dernierRapport = rapportObjet;
 				}
 			}
@@ -921,12 +921,13 @@ public abstract class Tiers extends HibernateEntity implements Validateable, Bus
 
 	/**Retourne la dernière declaration non annulée du tiers
 	 *
-	 * @return  la derniere declaration ou null si le tiers n'a aucune déclaration
+	 * @return la derniere declaration ou null si le tiers n'a aucune déclaration
 	 */
 	@Transient
-	public Declaration getDerniereDeclaration(){
+	public Declaration getDerniereDeclaration() {
 		List<Declaration> listeTriees = getDeclarationsSorted();
-		 final ListIterator<Declaration> iterator = listeTriees.listIterator(listeTriees.size());
+		if (listeTriees != null) {
+			final ListIterator<Declaration> iterator = listeTriees.listIterator(listeTriees.size());
 			while (iterator.hasPrevious()) {
 				final Declaration candidate = iterator.previous();
 				if (!candidate.isAnnule()) {
@@ -934,6 +935,8 @@ public abstract class Tiers extends HibernateEntity implements Validateable, Bus
 
 				}
 			}
+		}
+
 		return null;
 
 	}

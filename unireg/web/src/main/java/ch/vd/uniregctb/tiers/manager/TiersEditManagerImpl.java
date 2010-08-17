@@ -13,6 +13,7 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
+import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.entreprise.EntrepriseView;
 import ch.vd.uniregctb.interfaces.InterfaceDataException;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
@@ -28,6 +29,7 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.view.IdentificationPersonneView;
+import ch.vd.uniregctb.tiers.view.PeriodiciteView;
 import ch.vd.uniregctb.tiers.view.TiersEditView;
 import ch.vd.uniregctb.tiers.view.TiersVisuView;
 import ch.vd.uniregctb.type.CategorieImpotSource;
@@ -388,13 +390,12 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 			final EntrepriseView entrepriseView = getHostPersonneMoraleService().get(entreprise.getNumero());
 			debiteur.setNom1(entrepriseView.getRaisonSociale());
 		}
-		debiteur.setModeCommunication(ModeCommunication.PAPIER);
-		debiteur.setPeriodiciteDecompte(PeriodiciteDecompte.TRIMESTRIEL);
-		debiteur.setPeriodeDecompte(PeriodeDecompte.M12);
+	
+		debiteur.setModeCommunication(ModeCommunication.PAPIER);	
 		debiteur.setCategorieImpotSource(CategorieImpotSource.REGULIERS);
+		setPeriodiciteCourante(tiersView,debiteur);
 		tiersView.setTiers(debiteur);
 		tiersView.setNumeroCtbAssocie(numeroCtbAssocie);
-
 		final Map<String, Boolean> allowedOnglet = initAllowedOnglet();
 		allowedOnglet.put(TiersVisuView.MODIF_COMPLEMENT, Boolean.TRUE);
 		allowedOnglet.put(TiersEditView.COMPLEMENT_COMMUNICATION, Boolean.TRUE);
@@ -468,26 +469,29 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 		}
 		else if (tiers instanceof DebiteurPrestationImposable) {
 
-			final DebiteurPrestationImposable dpi = tiersDAO.getDebiteurPrestationImposableByNumero(tiers.getNumero());
-			//On recopie les données du tiers de la session dans le tiers que l'on vient de recuperer
-			//c'est pas jolie, ca devrait venir du TiersEditView mais c'est la solution retenue historiquement
-			dpi.setCategorieImpotSource(((DebiteurPrestationImposable)tiers).getCategorieImpotSource());
-			dpi.setModeCommunication(((DebiteurPrestationImposable)tiers).getModeCommunication());
-			dpi.setSansListeRecapitulative(((DebiteurPrestationImposable)tiers).getSansListeRecapitulative());
-			dpi.setSansRappel(((DebiteurPrestationImposable)tiers).getSansRappel());
+			DebiteurPrestationImposable dpi = (DebiteurPrestationImposable)tiers;
 
-			//Calcul de la date de début de validité de la nouvelle périodicité
 
-			RegDate debutValidite = tiersService.getDateDebutNouvellePeriodicite(dpi);
-			PeriodeDecompte periodeDecompte = null;
-			final PeriodiciteDecompte periodiciteDecompte = tiersView.getPeriodicite().getPeriodiciteDecompte();
-			if(PeriodiciteDecompte.UNIQUE.equals(periodiciteDecompte)){
-				periodeDecompte = tiersView.getPeriodicite().getPeriodeDecompte();
+
+			//Test de la saisie d'une periodicite dans la vue
+			final PeriodiciteView periodicite = tiersView.getPeriodicite();
+			if(periodicite!=null){
+				//Calcul de la date de début de validité de la nouvelle périodicité
+
+				RegDate debutValidite = tiersService.getDateDebutNouvellePeriodicite(dpi);
+				PeriodeDecompte periodeDecompte = null;
+
+				final PeriodiciteDecompte periodiciteDecompte = periodicite.getPeriodiciteDecompte();
+				if(PeriodiciteDecompte.UNIQUE.equals(periodiciteDecompte)){
+					periodeDecompte = periodicite.getPeriodeDecompte();
+				}
+				//L'appel de addperiodicite permet de sauver le tiers et la periodicite
+				final Periodicite periodiciteAjoutee = tiersService.addPeriodicite(dpi, periodiciteDecompte,periodeDecompte,debutValidite,null);
+				//permet de recuperer l'id dans le cas d'un débiteur nouvellement créé
+				Assert.notNull(periodiciteAjoutee.getId());
+				dpi = periodiciteAjoutee.getDebiteur();
+
 			}
-
-			tiersService.addPeriodicite(dpi, periodiciteDecompte,periodeDecompte,debutValidite,null);
-			Assert.notNull(dpi.getDernierePeriodicite().getId());
-			
 
 			if(tiersView.getNumeroCtbAssocie() != null) { //ajout d'un débiteur IS au contribuable
 
@@ -501,8 +505,8 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 
 				return dpiRtr;
 			}
-			else { //mise à jour du debiteur IS
-				return getTiersDAO().save(dpi);
+			else { 
+				return tiersDAO.save(dpi);
 			}
 		}
 
