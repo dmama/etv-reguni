@@ -15,8 +15,8 @@ public class BVRPlusServiceTest {
 
 	@Test
 	public void testGetBVRDemande() throws Exception {
-		BVRPlusClientImpl service = new BVRPlusClientImpl();
-		service.setServiceUrl("http://ssv0214v:64804/fiscalite/form-sipf/bvrplus/SipfBVRPlusImpl");
+		final BVRPlusClientImpl service = new BVRPlusClientImpl();
+		service.setServiceUrl("http://ssv0213v.etat-de-vaud.ch:64904/fiscalite/int-sipf/bvrplus/SipfBVRPlusImpl");
 
 		BvrDemande demande = new BvrDemande();
 		demande.setNdc("289179");
