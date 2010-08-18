@@ -2066,14 +2066,14 @@ public class AdresseServiceImpl implements AdresseService {
 			}
 		}
 		else if (tiers instanceof DebiteurPrestationImposable || tiers instanceof AutreCommunaute) {
-			/* ok, ces tiers ne possèdent pas d'adresse civiles par définition */
+			/* ok, ces tiers ne possèdent pas d'adresses civiles par définition */
 			adressesCiviles = null;
 		}
 		else if (tiers instanceof CollectiviteAdministrative) {
 			adressesCiviles = getAdressesCiviles((CollectiviteAdministrative) tiers);
 		}
 		else if (tiers instanceof Entreprise) {
-			throw new IllegalArgumentException("Les entreprises ne possèdent pas d'adresse civiles !");
+			throw new IllegalArgumentException("Les entreprises ne possèdent pas d'adresses civiles !");
 		}
 		else {
 			throw new NotImplementedException("Type de tiers [" + tiers.getNatureTiers() + "] inconnu");
@@ -2133,14 +2133,14 @@ public class AdresseServiceImpl implements AdresseService {
 			}
 		}
 		else if (tiers instanceof DebiteurPrestationImposable || tiers instanceof AutreCommunaute) {
-			/* ok, ces tiers ne possèdent pas d'adresse civiles par définition */
+			/* ok, ces tiers ne possèdent pas d'adresses civiles par définition */
 			adressesCiviles = new AdressesCivilesHisto();
 		}
 		else if (tiers instanceof CollectiviteAdministrative) {
 			adressesCiviles = getAdressesCivilesHisto((CollectiviteAdministrative) tiers);
 		}
 		else if (tiers instanceof Entreprise) {
-			throw new IllegalArgumentException("Les entreprises ne possèdent pas d'adresse civiles !");
+			throw new IllegalArgumentException("Les entreprises ne possèdent pas d'adresses civiles !");
 		}
 		else {
 			throw new NotImplementedException("Type de tiers [" + tiers.getNatureTiers() + "] inconnu");
