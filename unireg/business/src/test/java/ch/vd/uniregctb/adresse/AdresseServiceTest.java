@@ -1582,7 +1582,7 @@ public class AdresseServiceTest extends BusinessTest {
 	}
 
 	/**
-	 * Cas particulier du ménage composé de non-habitants (donc sans adresse civiles) et avec un principal qui possède une adresse courrier
+	 * Cas particulier du ménage composé de non-habitants (donc sans adresses civiles) et avec un principal qui possède une adresse courrier
 	 * définie au niveau fiscal.
 	 */
 	@Test
