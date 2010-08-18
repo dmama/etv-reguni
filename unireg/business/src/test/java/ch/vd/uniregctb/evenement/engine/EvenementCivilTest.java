@@ -158,7 +158,54 @@ public class EvenementCivilTest extends BusinessTest {
 			}
 		});
 	}
+	 	/**
+	 * Ce test vérifie que le user de création de l'évenement civil a bien
+	 * été initialisé avec le visa de mutation provenant de RcPers ou REgPP.
+	 */
+	@NotTransactional
+	@Test
+	public void testVisaMutation() throws Exception {
 
+		 
+		final long jeanNoInd = 1234;
+
+		// Crée le contribuable correspondant
+		final Long jeanId = (Long) doInNewTransaction(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				PersonnePhysique jean = addHabitant(jeanNoInd);
+				addForPrincipal(jean, date(1993, 3, 2), MotifFor.MAJORITE, MockCommune.Lausanne);
+				return jean.getNumero();
+			}
+		});
+
+
+
+		// Simulation de l'arrivée de l'événement civil
+		doInNewTransaction(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final String body = EvenementCivilUnitaireListenerTest.createMessage(1, TypeEvenementCivil.CHGT_CORREC_NOM_PRENOM.getId(), jeanNoInd, RegDate.get(2009, 1, 1), MockCommune.Lausanne.getNoOFS());
+				final EsbMessage message = new MockEsbMessage(body);
+				message.setBusinessUser("VISA_MUTATION");
+				evenementCivilListener.onEsbMessage(message);
+				return null;
+			}
+		});
+
+		// L'événement civil doit avoir été traité
+		doInTransaction(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final List<EvenementCivilData> evenements = evenementCivilDAO.getAll();
+				assertNotNull(evenements);
+				assertEquals(1, evenements.size());
+				// le visa de mutation doit être present
+				assertEquals("VISA_MUTATION",evenements.get(0).getLogCreationUser());
+				globalTiersIndexer.sync();
+				return null;
+			}
+		});
+	}
 	private void assertNomIndexer(String nom, String prenom, final Long tiersId) {
 		TiersCriteria criteria = new TiersCriteria();
 		criteria.setNomRaison(prenom + " " + nom);

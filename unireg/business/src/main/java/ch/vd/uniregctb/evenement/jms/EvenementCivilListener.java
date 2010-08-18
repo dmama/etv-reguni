@@ -36,10 +36,11 @@ public class EvenementCivilListener extends EsbMessageListener {
 	@Override
 	public void onEsbMessage(EsbMessage esbMessage) throws Exception {
 
-		AuthenticationHelper.setPrincipal("JMS-EvtCivil");
-
 		try {
 			final String message = esbMessage.getBodyAsString();
+			final String visaMutation = esbMessage.getBusinessUser();
+			//le user de création est initialisé avec le user a l0origine de l'evenement civil
+			AuthenticationHelper.setPrincipal(visaMutation);
 			onEvenementCivil(message);
 		}
 		catch (EvenementCivilException e) {

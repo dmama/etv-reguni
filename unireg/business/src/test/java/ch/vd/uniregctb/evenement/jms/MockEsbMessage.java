@@ -18,6 +18,9 @@ public class MockEsbMessage implements EsbMessage {
 
 	private String body;
 
+	private String businessUser= "visa mutation";
+
+
 	public MockEsbMessage(String body) {
 		this.body = body;
 	}
@@ -55,11 +58,11 @@ public class MockEsbMessage implements EsbMessage {
 	}
 
 	public String getBusinessUser() {
-		throw new NotImplementedException();
+		return businessUser;
 	}
 
 	public void setBusinessUser(String businessUser) {
-		throw new NotImplementedException();
+		this.businessUser = businessUser;
 	}
 
 	public String getBusinessId() {
