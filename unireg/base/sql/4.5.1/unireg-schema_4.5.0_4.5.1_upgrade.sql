@@ -2,6 +2,10 @@
 INSERT INTO VERSION_DB (VERSION_NB, SCRIPT_ID) VALUES ('4.5.1', '4.5.0_4.5.1_upgrade');
 
 --
+-- Mouvements de dossiers en masse : drop oublié
+ALTER TABLE MOUVEMENT_DOSSIER DROP COLUMN OID_EMETTEUR;
+
+--
 -- [UNIREG-2690] Annulation de tiers à une date donnée
 --
 UPDATE TIERS T SET ANNULATION_DATE=NULL, ANNULATION_USER=NULL
