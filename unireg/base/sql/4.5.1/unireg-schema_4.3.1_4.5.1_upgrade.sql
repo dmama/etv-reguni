@@ -39,6 +39,10 @@ drop table EVENEMENT_CIVIL_UNITAIRE;
 ALTER TABLE TIERS add (REINDEX_ON number(10,0));
 
 --
+-- Mouvements de dossiers en masse : drop oublié
+ALTER TABLE MOUVEMENT_DOSSIER DROP COLUMN OID_EMETTEUR;
+
+--
 -- [UNIREG-2690] Annulation de tiers à une date donnée
 --
 UPDATE TIERS T SET ANNULATION_DATE=NULL, ANNULATION_USER=NULL
