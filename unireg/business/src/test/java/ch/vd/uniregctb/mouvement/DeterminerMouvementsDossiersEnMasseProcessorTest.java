@@ -1,11 +1,13 @@
 package ch.vd.uniregctb.mouvement;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.springframework.test.annotation.NotTransactional;
 import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.registre.base.date.RegDate;
@@ -14,7 +16,9 @@ import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.TiersDAO;
+import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 
 public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTest {
@@ -157,44 +161,64 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 	}
 
 	@Test
+	@NotTransactional
 	public void testPartiIlYADeuxAns() throws Exception {
-		final DeterminerMouvementsDossiersEnMasseProcessor proc = createProcessor();
 
-		final RegDate dateTraitement = RegDate.get();
-		final DeterminerMouvementsDossiersEnMasseProcessor.RangesUtiles ranges = new DeterminerMouvementsDossiersEnMasseProcessor.RangesUtiles(dateTraitement);
-		final DeterminerMouvementsDossiersEnMasseResults results = new DeterminerMouvementsDossiersEnMasseResults(dateTraitement);
+		// mise en place + traitement
+		final long ppId = (Long) doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				final DeterminerMouvementsDossiersEnMasseProcessor proc = createProcessor();
 
-		final Contribuable ctb = addHabitant(noIndMarieParlotte);
-		final RegDate dateDemenagement = RegDate.get(dateTraitement.year() - 2, 6, 30);
-		addForPrincipal(ctb, dateMajorite, MotifFor.MAJORITE, dateDemenagement, MotifFor.DEPART_HS, MockCommune.Aubonne);
-		final Map<Integer, CollectiviteAdministrative> caCache = new HashMap<Integer, CollectiviteAdministrative>();
-		proc.traiterContribuable(ctb, ranges, caCache, results);
+				final RegDate dateTraitement = RegDate.get();
+				final DeterminerMouvementsDossiersEnMasseProcessor.RangesUtiles ranges = new DeterminerMouvementsDossiersEnMasseProcessor.RangesUtiles(dateTraitement);
+				final DeterminerMouvementsDossiersEnMasseResults results = new DeterminerMouvementsDossiersEnMasseResults(dateTraitement);
 
-		// mouvement vers les archives attendu
-		Assert.assertEquals(1, results.getNbContribuablesInspectes());
-		Assert.assertEquals(1, results.mouvements.size());
-		Assert.assertEquals(1, caCache.size());
+				final Contribuable ctb = addHabitant(noIndMarieParlotte);
+				final RegDate dateDemenagement = RegDate.get(dateTraitement.year() - 2, 6, 30);
+				addForPrincipal(ctb, dateMajorite, MotifFor.MAJORITE, dateDemenagement, MotifFor.DEPART_HS, MockCommune.Aubonne);
+				final Map<Integer, CollectiviteAdministrative> caCache = new HashMap<Integer, CollectiviteAdministrative>();
+				proc.traiterContribuable(ctb, ranges, caCache, results);
 
-		final DeterminerMouvementsDossiersEnMasseResults.Mouvement mvtResult = results.mouvements.get(0);
-		Assert.assertNotNull(mvtResult);
-		Assert.assertEquals((long) ctb.getNumero(), mvtResult.noCtb);
-		Assert.assertTrue(mvtResult.getClass().getName(), mvtResult instanceof DeterminerMouvementsDossiersEnMasseResults.MouvementArchives);
-		Assert.assertEquals(noCaOidRolleAubonne, (int) caCache.keySet().iterator().next());
+				// mouvement vers les archives attendu
+				Assert.assertEquals(1, results.getNbContribuablesInspectes());
+				Assert.assertEquals(1, results.mouvements.size());
+				Assert.assertEquals(1, caCache.size());
 
-		// dans la base ?
-		final Set<MouvementDossier> mvts = ctb.getMouvementsDossier();
-		Assert.assertNotNull(mvts);
-		Assert.assertEquals(1, mvts.size());
+				final DeterminerMouvementsDossiersEnMasseResults.Mouvement mvtResult = results.mouvements.get(0);
+				Assert.assertNotNull(mvtResult);
+				Assert.assertEquals((long) ctb.getNumero(), mvtResult.noCtb);
+				Assert.assertTrue(mvtResult.getClass().getName(), mvtResult instanceof DeterminerMouvementsDossiersEnMasseResults.MouvementArchives);
+				Assert.assertEquals(noCaOidRolleAubonne, (int) caCache.keySet().iterator().next());
 
-		final MouvementDossier mvt = mvts.iterator().next();
-		Assert.assertNotNull(mvt);
-		Assert.assertTrue(mvt instanceof ReceptionDossierArchives);
-		Assert.assertEquals(EtatMouvementDossier.A_TRAITER, mvt.getEtat());
-		Assert.assertNull(mvt.getDateMouvement());
+				return ctb.getNumero();
+			}
+		});
 
-		final ReceptionDossierArchives reception = (ReceptionDossierArchives) mvt;
-		Assert.assertNotNull(reception.getCollectiviteAdministrativeReceptrice());
-		Assert.assertEquals(noOidRolleAubonne, (long) reception.getCollectiviteAdministrativeReceptrice().getNumero());
+		// vérification dans la base
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final Contribuable ctb = (Contribuable) tiersService.getTiers(ppId);
+				Assert.assertNotNull(ctb);
+
+				final Set<MouvementDossier> mvts = ctb.getMouvementsDossier();
+				Assert.assertNotNull(mvts);
+				Assert.assertEquals(1, mvts.size());
+
+				final MouvementDossier mvt = mvts.iterator().next();
+				Assert.assertNotNull(mvt);
+				Assert.assertTrue(mvt instanceof ReceptionDossierArchives);
+				Assert.assertEquals(EtatMouvementDossier.A_TRAITER, mvt.getEtat());
+				Assert.assertNull(mvt.getDateMouvement());
+
+				final ReceptionDossierArchives reception = (ReceptionDossierArchives) mvt;
+				Assert.assertNotNull(reception.getCollectiviteAdministrativeReceptrice());
+				Assert.assertEquals(noOidRolleAubonne, (long) reception.getCollectiviteAdministrativeReceptrice().getNumero());
+
+				return null;
+			}
+		});
 	}
 
 	@Test
@@ -229,11 +253,11 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 		Assert.assertTrue(mvtResult.getClass().getName(), mvtResult instanceof DeterminerMouvementsDossiersEnMasseResults.MouvementOid);
 
 		// dans la base ?
-		final Set<MouvementDossier> mvts = ctb.getMouvementsDossier();
+		final List<MouvementDossier> mvts = mouvementDossierDAO.findByNumeroDossier(ctb.getNumero(), false, true);
 		Assert.assertNotNull(mvts);
 		Assert.assertEquals(1, mvts.size());
 
-		final MouvementDossier mvt = mvts.iterator().next();
+		final MouvementDossier mvt = mvts.get(0);
 		Assert.assertNotNull(mvt);
 		Assert.assertTrue(mvt instanceof EnvoiDossierVersCollectiviteAdministrative);
 		Assert.assertEquals(EtatMouvementDossier.A_TRAITER, mvt.getEtat());
@@ -334,9 +358,35 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 		Assert.assertEquals(0, results.mouvements.size());
 
 		// pas de mouvement en base non plus ?
-		final Set<MouvementDossier> mvts = ctb.getMouvementsDossier();
+		final List<MouvementDossier> mvts = mouvementDossierDAO.findByNumeroDossier(ctb.getNumero(), false, true);
 		if (mvts != null) {
 			Assert.assertEquals(0, mvts.size());
 		}
+	}
+
+	@Test
+	public void testSourcierPur() throws Exception {
+
+		final DeterminerMouvementsDossiersEnMasseProcessor proc = createProcessor();
+
+		final RegDate dateTraitement = RegDate.get();
+		final DeterminerMouvementsDossiersEnMasseProcessor.RangesUtiles ranges = new DeterminerMouvementsDossiersEnMasseProcessor.RangesUtiles(dateTraitement);
+		final DeterminerMouvementsDossiersEnMasseResults results = new DeterminerMouvementsDossiersEnMasseResults(dateTraitement);
+
+		final Contribuable ctb = addHabitant(noIndMarieParlotte);
+		final ForFiscalPrincipal ffp = addForPrincipal(ctb, dateMajorite, MotifFor.MAJORITE, MockCommune.Lausanne);
+		ffp.setModeImposition(ModeImposition.SOURCE);
+
+		final Map<Integer, CollectiviteAdministrative> caCache = new HashMap<Integer, CollectiviteAdministrative>();
+		proc.traiterContribuable(ctb, ranges, caCache, results);
+
+		// sourcier pur -> devrait être indiqué comme ignoré (et donc pas de mouvement)
+		assertPasDeMouvement(ctb, results);
+		Assert.assertNotNull(results.ignores);
+		Assert.assertEquals(1, results.ignores.size());
+
+		final DeterminerMouvementsDossiersEnMasseResults.NonTraite ignore = results.ignores.get(0);
+		Assert.assertEquals(DeterminerMouvementsDossiersEnMasseResults.Raison.SOURCIER_PUR, ignore.type);
+		Assert.assertEquals(ctb.getNumero(), (Long) ignore.noCtb);
 	}
 }
