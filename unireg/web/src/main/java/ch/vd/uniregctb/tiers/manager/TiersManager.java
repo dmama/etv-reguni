@@ -1000,6 +1000,12 @@ public class TiersManager implements MessageSourceAware {
 				isEditable = true;
 			}
 		}
+		//UNIREG-2120 Possibilite de créer un debiteur a partir d'une collectivite administrative
+		else if( tiers instanceof CollectiviteAdministrative){
+				allowedOnglet.put(TiersVisuView.MODIF_COMPLEMENT, Boolean.FALSE);
+				allowedOnglet.put(TiersVisuView.MODIF_MOUVEMENT, Boolean.FALSE);
+				isEditable = true;				
+		}
 		else {//Entreprise, Etablissement ou CollectiviteAdministrative non éditables pour le moment
 			isEditable = false;
 		}
