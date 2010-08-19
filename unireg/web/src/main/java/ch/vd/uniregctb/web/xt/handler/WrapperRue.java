@@ -13,16 +13,17 @@ import org.apache.commons.lang.StringEscapeUtils;
  *
  */
 public class WrapperRue {
-	final private String designationCourrier;
-	final private String noRue;
-	final private String noLocalite;
-	final private String nomLocalite;
+
+	private final String designationCourrier;
+	private final String noRue;
+	private final String noLocalite;
+	private final String nomLocalite;
 
 	public WrapperRue( Rue rue, Localite localite) {
-			this.designationCourrier = StringEscapeUtils.escapeXml(rue.getDesignationCourrier());
-			this.noRue = String.valueOf(rue.getNoRue());
-			this.noLocalite = rue.getNoLocalite().toString();
-			this.nomLocalite = StringEscapeUtils.escapeXml(localite.getNomAbregeMinuscule());
+		this.designationCourrier = StringEscapeUtils.escapeXml(rue.getDesignationCourrier());
+		this.noRue = String.valueOf(rue.getNoRue());
+		this.noLocalite = rue.getNoLocalite().toString();
+		this.nomLocalite = StringEscapeUtils.escapeXml(localite.getNomAbregeMinuscule());
 	}
 
 	/**

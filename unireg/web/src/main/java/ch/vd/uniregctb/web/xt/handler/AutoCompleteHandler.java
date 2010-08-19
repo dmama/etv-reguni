@@ -12,6 +12,7 @@ import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.springmodules.xt.ajax.AbstractAjaxHandler;
 import org.springmodules.xt.ajax.AjaxActionEvent;
 import org.springmodules.xt.ajax.AjaxResponse;
@@ -21,6 +22,7 @@ import org.springmodules.xt.ajax.action.ExecuteJavascriptFunctionAction;
 import ch.vd.infrastructure.model.EnumTypeCollectivite;
 import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.securite.model.Operateur;
+import ch.vd.uniregctb.common.StringComparator;
 import ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.Localite;
@@ -48,11 +50,13 @@ public class AutoCompleteHandler extends AbstractAjaxHandler {
 	private ServiceSecuriteService serviceSecuriteService;
 
 	/**
-	 * Null sera toujours avant non-null
+	 * comparateur des strings encodées en XML
 	 */
-	private static <T extends Comparable<T>> int compareNullableObjects(T o1, T o2) {
-		return o1 == o2 ? 0 : (o1 == null ? -1 : (o2 == null ? 1 : o1.compareTo(o2)));
-	}
+	private static final Comparator<String> COMPARATOR = new StringComparator(false, false, true, new StringComparator.Decoder() {
+		public String decode(String source) {
+			return StringEscapeUtils.unescapeXml(source);
+		}
+	});
 
 	private static String extractFilter(AjaxActionEvent event) throws UnsupportedEncodingException {
 		final String filter = event.getParameters().get(AutoCompleteAction.PARAM_SELECTED_VALUE);
@@ -83,7 +87,7 @@ public class AutoCompleteHandler extends AbstractAjaxHandler {
 				public int compare(WrapperLocalite o1, WrapperLocalite o2) {
 					final String cle1 = String.format("%s (%s)", o1.getNomMinuscule(), o1.getNpa());
 					final String cle2 = String.format("%s (%s)", o2.getNomMinuscule(), o2.getNpa());
-					return compareNullableObjects(cle1, cle2);
+					return COMPARATOR.compare(cle1, cle2);
 				}
 			});
 		}
@@ -127,7 +131,7 @@ public class AutoCompleteHandler extends AbstractAjaxHandler {
 			}
 			Collections.sort(communes, new Comparator<WrapperCommune>() {
 				public int compare(WrapperCommune o1, WrapperCommune o2) {
-					return compareNullableObjects(o1.getNomMinuscule(), o2.getNomMinuscule());
+					return COMPARATOR.compare(o1.getNomMinuscule(), o2.getNomMinuscule());
 				}
 			});
 		}
@@ -173,7 +177,7 @@ public class AutoCompleteHandler extends AbstractAjaxHandler {
 			}
 			Collections.sort(communes, new Comparator<WrapperCommune>() {
 				public int compare(WrapperCommune o1, WrapperCommune o2) {
-					return compareNullableObjects(o1.getNomMinuscule(), o2.getNomMinuscule());
+					return COMPARATOR.compare(o1.getNomMinuscule(), o2.getNomMinuscule());
 				}
 			});
 		}
@@ -218,7 +222,7 @@ public class AutoCompleteHandler extends AbstractAjaxHandler {
 				}
 				Collections.sort(rues, new Comparator<WrapperRue>() {
 					public int compare(WrapperRue o1, WrapperRue o2) {
-						return compareNullableObjects(o1.getDesignationCourrier(), o2.getDesignationCourrier());
+						return COMPARATOR.compare(o1.getDesignationCourrier(), o2.getDesignationCourrier());
 					}
 				});
 			}
@@ -255,7 +259,7 @@ public class AutoCompleteHandler extends AbstractAjaxHandler {
 			}
 			Collections.sort(pays, new Comparator<WrapperPays>() {
 				public int compare(WrapperPays o1, WrapperPays o2) {
-					return compareNullableObjects(o1.getNomMinuscule(), o2.getNomMinuscule());
+					return COMPARATOR.compare(o1.getNomMinuscule(), o2.getNomMinuscule());
 				}
 			});
 		}
@@ -309,7 +313,7 @@ public class AutoCompleteHandler extends AbstractAjaxHandler {
 				public int compare(WrapperLocaliteOuPays o1, WrapperLocaliteOuPays o2) {
 					final String cle1 = String.format("%s (%s)", o1.getNomComplet(), o1.getNumero());
 					final String cle2 = String.format("%s (%s)", o2.getNomComplet(), o2.getNumero());
-					return compareNullableObjects(cle1, cle2);
+					return COMPARATOR.compare(cle1, cle2);
 				}
 			});
 		}
@@ -373,7 +377,7 @@ public class AutoCompleteHandler extends AbstractAjaxHandler {
 
 			Collections.sort(communeOuPays, new Comparator<WrapperCommuneOuPays>() {
 				public int compare(WrapperCommuneOuPays o1, WrapperCommuneOuPays o2) {
-					return compareNullableObjects(o1.getNomComplet(), o2.getNomComplet());
+					return COMPARATOR.compare(o1.getNomComplet(), o2.getNomComplet());
 				}
 			});
 		}
@@ -410,7 +414,7 @@ public class AutoCompleteHandler extends AbstractAjaxHandler {
 			}
 			Collections.sort(selection, new Comparator<WrapperCollectivite>() {
 				public int compare(WrapperCollectivite o1, WrapperCollectivite o2) {
-					return compareNullableObjects(o1.getNomCourt(), o2.getNomCourt());
+					return COMPARATOR.compare(o1.getNomCourt(), o2.getNomCourt());
 				}
 			});
 		}
@@ -451,7 +455,7 @@ public class AutoCompleteHandler extends AbstractAjaxHandler {
 			}
 			Collections.sort(collectivites, new Comparator<WrapperCollectivite>() {
 				public int compare(WrapperCollectivite o1, WrapperCollectivite o2) {
-					return compareNullableObjects(o1.getNomCourt(), o2.getNomCourt());
+					return COMPARATOR.compare(o1.getNomCourt(), o2.getNomCourt());
 				}
 			});
 		}
@@ -496,7 +500,7 @@ public class AutoCompleteHandler extends AbstractAjaxHandler {
 				public int compare(WrapperUtilisateur o1, WrapperUtilisateur o2) {
 					final String nomPrenom1 = String.format("%s %s", o1.getNom(), o1.getPrenom()).toLowerCase();
 					final String nomPrenom2 = String.format("%s %s", o2.getNom(), o2.getPrenom()).toLowerCase();
-					return compareNullableObjects(nomPrenom1, nomPrenom2);
+					return COMPARATOR.compare(nomPrenom1, nomPrenom2);
 				}
 			});
 		}

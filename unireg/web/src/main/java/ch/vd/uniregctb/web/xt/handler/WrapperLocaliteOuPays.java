@@ -8,21 +8,24 @@ import org.apache.commons.lang.StringEscapeUtils;
 
 public class WrapperLocaliteOuPays {
 
-	private String nomComplet;
-	private String numero;
+	private final String nomComplet;
+	private final String numero;
 
 	public WrapperLocaliteOuPays(Localite localite) {
-		nomComplet = StringEscapeUtils.escapeXml(localite.getNomAbregeMinuscule());
-		numero = String.valueOf(localite.getNoOrdre());
+		this(localite.getNomAbregeMinuscule(), localite.getNoOrdre());
 	}
 
 	public WrapperLocaliteOuPays(Pays pays) {
-		nomComplet = StringEscapeUtils.escapeXml(pays.getNomMinuscule());
-		numero = String.valueOf(pays.getNoOFS());
+		this(pays.getNomMinuscule(), pays.getNoOFS());
+	}
+
+	private WrapperLocaliteOuPays(String nomBrut, int numero) {
+		this.nomComplet = StringEscapeUtils.escapeXml(nomBrut);
+		this.numero = String.valueOf(numero);
 	}
 
 	/**
-	 * @return the nom2
+	 * @return the nom à renvoyer
 	 */
 	public String getNomComplet() {
 		return nomComplet;

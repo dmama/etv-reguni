@@ -7,8 +7,8 @@ import org.apache.commons.lang.StringEscapeUtils;
 
 public class WrapperCommuneOuPays {
 
-	private String nomComplet;
-	private String numero;
+	private final String nomComplet;
+	private final String numero;
 
 	public WrapperCommuneOuPays(Commune commune) {
 		nomComplet = StringEscapeUtils.escapeXml(commune.getNomMinuscule());

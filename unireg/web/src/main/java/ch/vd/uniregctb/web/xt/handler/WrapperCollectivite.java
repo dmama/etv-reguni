@@ -5,8 +5,8 @@ import org.apache.commons.lang.StringEscapeUtils;
 
 public class WrapperCollectivite {
 
-	private String noColAdm;
-	private String nomCourt;
+	private final String noColAdm;
+	private final String nomCourt;
 
 	public WrapperCollectivite(CollectiviteAdministrative collectiviteAdministrative) {
 		this.noColAdm = String.valueOf(collectiviteAdministrative.getNoColAdm());
@@ -17,16 +17,7 @@ public class WrapperCollectivite {
 		return noColAdm;
 	}
 
-	public void setNoColAdm(String noColAdm) {
-		this.noColAdm = noColAdm;
-	}
-
 	public String getNomCourt() {
 		return nomCourt;
 	}
-
-	public void setNomCourt(String nomCourt) {
-		this.nomCourt = nomCourt;
-	}
-
 }

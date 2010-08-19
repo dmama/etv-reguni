@@ -12,14 +12,15 @@ import org.apache.commons.lang.StringEscapeUtils;
  *
  */
 public class WrapperCommune {
-	private String nomMinuscule = "???";
-	private String noTechnique ="???";
-	private String noOFS = "???";
+
+	private final String nomMinuscule;
+	private final String noTechnique;
+	private final String noOFS;
 
 	public WrapperCommune( Commune commune) {
-			this.nomMinuscule = StringEscapeUtils.escapeXml(commune.getNomMinuscule());
-			this.noTechnique = String.valueOf(commune.getNoOFSEtendu());
-			this.noOFS = String.valueOf(commune.getNoOFS());
+		this.nomMinuscule = StringEscapeUtils.escapeXml(commune.getNomMinuscule());
+		this.noTechnique = String.valueOf(commune.getNoOFSEtendu());
+		this.noOFS = String.valueOf(commune.getNoOFS());
 	}
 
 	/**
