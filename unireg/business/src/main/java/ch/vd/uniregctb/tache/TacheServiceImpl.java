@@ -588,6 +588,7 @@ public class TacheServiceImpl implements TacheService {
 				for (TacheAnnulationDeclarationImpot annulation : tachesAnnulation) {
 					if (annulation.getDeclarationImpotOrdinaire().getId().equals(di.getId())) {
 						deleteActions.remove(i);
+						break;      // pas la peine de l'enlever plusieurs fois...
 					}
 				}
 			}
