@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.mouvement;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
@@ -19,7 +20,6 @@ import org.springframework.transaction.support.TransactionTemplate;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.BatchTransactionTemplate;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.LoggingStatusManager;
@@ -169,6 +169,26 @@ public class DeterminerMouvementsDossiersEnMasseProcessor {
 
 		final List<Assujettissement> assujettissements = Assujettissement.determine(ctb, rangesUtiles.rangeGlobal, true);
 
+		// les sourciers purs n'ont pas de dossier ni d'OID de gestion (seuls les contribuables au rôle en ont un)
+		// donc pas de mouvement à programmer pour eux...
+		if (assujettissements != null) {
+
+			// on enlève donc tous les assujettissements de type "sourcier pur"
+			final Iterator<Assujettissement> iterator = assujettissements.iterator();
+			while (iterator.hasNext()) {
+				final Assujettissement a = iterator.next();
+				if (a instanceof SourcierPur) {
+					iterator.remove();
+				}
+			}
+
+			// si la collection d'asujettissements est maintenant vide, cela signifie que nous avions affaire
+			// à un sourcier pur qui l'a toujours été -> contribuable ignoré
+			if (assujettissements.isEmpty()) {
+				rapport.addSourcierPurIgnore(ctb.getNumero());
+			}
+		}
+
 		// que dit la spec ?
 		// 1. si assujettissement année n-1
 		// 1.1 si pas d'assujettissement au premier janvier de l'année n -> rien à faire
@@ -178,7 +198,7 @@ public class DeterminerMouvementsDossiersEnMasseProcessor {
 		// 3. sinon (assujettissement n-2 mais pas n-1 ni n), mouvement vers les archives sauf si dernier mouvement déjà comme ça
 
 		// rien à faire si pas d'assujettissement du tout depuis plus de deux ans!
-		if (assujettissements != null) {
+		if (assujettissements != null && assujettissements.size() > 0) {
 
 			final List<ForGestion> histoForGestion = tiersService.getForsGestionHisto(ctb);
 
@@ -213,11 +233,11 @@ public class DeterminerMouvementsDossiersEnMasseProcessor {
 					if (oidAvant == null || oidApres == null) {
 						// erreur -> on ne peut pas déterminer l'office d'impôt de gestion alors que le contribuable est assujetti
 						if (oidAvant == null) {
-							onAbsenseOidGestion(ctb, dateAvant, assujettissements, rapport);
+							onAbsenseOidGestion(ctb, dateAvant, rapport);
 						}
 						if (oidApres == null) {
 							final RegDate dateApres = DateRangeHelper.intersection(rangesUtiles.rangeAnneeNMoinsUn, apres).getDateFin();
-							onAbsenseOidGestion(ctb, dateApres, assujettissements, rapport);
+							onAbsenseOidGestion(ctb, dateApres, rapport);
 						}
 					}
 					else if (!oidAvant.equals(oidApres)) {
@@ -230,7 +250,7 @@ public class DeterminerMouvementsDossiersEnMasseProcessor {
 						envoiDossier.setContribuable(ctb);
 						envoiDossier.setCollectiviteAdministrativeEmettrice(caAvant);
 						envoiDossier.setEtat(EtatMouvementDossier.A_TRAITER);
-						ctb.addMouvementDossier(envoiDossier);
+						hibernateTemplate.merge(envoiDossier); // force le save
 
 						rapport.addMouvementVersAutreCollectiviteAdministrative(ctb.getNumero(), oidAvant, oidApres);
 					}
@@ -261,7 +281,7 @@ public class DeterminerMouvementsDossiersEnMasseProcessor {
 					if (oid == null) {
 						// erreur -> on ne peut pas déterminer l'office d'impôt de gestion au moment du dernier assujettissement
 						final RegDate dateFin = DateRangeHelper.intersection(rangesUtiles.rangeAnneeNMoinsDeux, forGestion).getDateFin();
-						onAbsenseOidGestion(ctb, dateFin, assujettissements, rapport);
+						onAbsenseOidGestion(ctb, dateFin, rapport);
 					}
 					else {
 						final CollectiviteAdministrative ca = getCollectiviteAdministrativeByNumeroTechnique(oid, caCache);
@@ -270,7 +290,7 @@ public class DeterminerMouvementsDossiersEnMasseProcessor {
 						receptionDossier.setContribuable(ctb);
 						receptionDossier.setEtat(EtatMouvementDossier.A_TRAITER);
 						receptionDossier.setCollectiviteAdministrativeReceptrice(ca);
-						ctb.addMouvementDossier(receptionDossier);
+						hibernateTemplate.merge(receptionDossier); // force le save
 
 						rapport.addMouvementVersArchives(ctb.getNumero(), oid);
 					}
@@ -279,17 +299,8 @@ public class DeterminerMouvementsDossiersEnMasseProcessor {
 		}
 	}
 
-	private void onAbsenseOidGestion(Contribuable ctb, RegDate date, List<Assujettissement> assujettissements, DeterminerMouvementsDossiersEnMasseResults rapport) {
-		final Assujettissement courant = DateRangeHelper.rangeAt(assujettissements, date);
-		Assert.notNull(courant);        // toutes les dates sont prises comme des dates de début ou de fin d'assujettissement, depuis la collection
-
-		if (courant instanceof SourcierPur) {
-			// normal, les sourciers purs n'ont pas d'office de gestion
-			rapport.addSourcierPurIgnore(ctb.getNumero(), date);
-		}
-		else {
-			rapport.addErreurDeterminationOidGestion(ctb.getNumero(), date);
-		}
+	private void onAbsenseOidGestion(Contribuable ctb, RegDate date, DeterminerMouvementsDossiersEnMasseResults rapport) {
+		rapport.addErreurDeterminationOidGestion(ctb.getNumero(), date);
 	}
 
 	private CollectiviteAdministrative getCollectiviteAdministrativeByNumeroTechnique(int noCa, Map<Integer, CollectiviteAdministrative> caCache) {

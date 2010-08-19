@@ -133,8 +133,8 @@ public class DeterminerMouvementsDossiersEnMasseResults extends JobResults<Long,
 		erreurs.add(new NonTraite(numero, Raison.PAS_OID_GESTION, RegDateHelper.dateToDisplayString(date)));
 	}
 
-	public void addSourcierPurIgnore(long numero, RegDate date) {
-		addIgnore(numero, date, Raison.SOURCIER_PUR);
+	public void addSourcierPurIgnore(long numero) {
+		addIgnore(numero, null, Raison.SOURCIER_PUR);
 	}
 
 	private void addIgnore(long numero, RegDate date, Raison raison) {
@@ -142,7 +142,7 @@ public class DeterminerMouvementsDossiersEnMasseResults extends JobResults<Long,
 		if (ignores.size() > 0) {
 			final NonTraite precedent = ignores.get(ignores.size() - 1);
 			dejaConnu = (precedent.noCtb == numero && precedent.type == raison);
-			if (dejaConnu) {
+			if (dejaConnu && date != null) {
 				final NonTraite nouvelElement = new NonTraite(numero, raison, String.format("%s, %s", precedent.complement, RegDateHelper.dateToDisplayString(date)));
 				ignores.set(ignores.size() - 1, nouvelElement);
 			}
