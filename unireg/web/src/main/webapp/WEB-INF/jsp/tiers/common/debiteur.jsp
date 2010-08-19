@@ -37,7 +37,7 @@
 	<display:column sortable ="true" property="personneContact" titleKey="label.contact"  />
 	<display:column style="action">
 		<c:if test="${page == 'visu' }">
-			<unireg:raccourciConsulter link="../common/consult-log.do?height=200&width=800&nature=RapportEntreTiers&id=${dossierApparente.id}&TB_iframe=true&modal=true" thickbox="true" tooltip="Edition des logs"/>
+			<unireg:raccourciConsulter link="../common/consult-log.do?height=200&width=800&nature=RapportEntreTiers&id=${debiteur.id}&TB_iframe=true&modal=true" thickbox="true" tooltip="Edition des logs"/>
 		</c:if>
 		<c:if test="${page == 'edit' }">
 			<c:if test="${!debiteur.annule}">
