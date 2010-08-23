@@ -23,7 +23,8 @@
 			<c:if test="${command.allowedDelai}">
 				<c:if test="${page == 'edit' }">
 					<c:if test="${delai.confirmationEcrite}">
-						<a href="#" onClick="javascript:Page_ImprimerDelai(${delai.id});" class="pdf"><img src="${pageContext.request.contextPath}/images/pdf_icon.png" align="top"/></a>
+						<a href="#" onClick="javascript:Page_ImprimerDelai(${delai.id});" class="pdf" id="print-delai-${delai.id}"><img src="${pageContext.request.contextPath}/images/pdf_icon.png" align="top"/></a>
+						<img src="${pageContext.request.contextPath}/images/pdf_grayed_icon.png" align="top" id="disabled-print-delai-${delai.id}" style="display: none;"/>
 					</c:if>
 				</c:if>
 			</c:if>
@@ -59,9 +60,25 @@
 					form.doPostBack("annulerDelai", idDelai);
 			 	}
 	 	}
+
+	 	function Page_ActivationImpressionDelai(idDelai, actif) {
+	 		var eltActif = document.getElementById("print-delai-" + idDelai);
+	 		var eltInactif = document.getElementById("disabled-print-delai-" + idDelai);
+	 		if (actif) {
+	 			eltActif.style.display = "";
+	 			eltInactif.style.display = "none";
+	 		}
+	 		else {
+	 			eltInactif.style.display = "";
+	 			eltActif.style.display = "none";
+			}
+	 	}
+
 		function Page_ImprimerDelai(idDelai) {
+			Page_ActivationImpressionDelai(idDelai, false);
+			setTimeout("Page_ActivationImpressionDelai(" + idDelai + ", true);", 2000);
 			F$("theForm").doPostBack("imprimerDelai", idDelai);
-		 }
+		}
 	</script>
 	
 </fieldset>
