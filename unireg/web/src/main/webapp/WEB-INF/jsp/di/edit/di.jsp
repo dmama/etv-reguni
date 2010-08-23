@@ -42,7 +42,14 @@
 		<c:if test="${command.id != null }">
 		<tr class="<unireg:nextRowClass/>" >
 			<td width="25%"><fmt:message key="label.type.declaration" />&nbsp;:</td>
-			<td width="25%"><fmt:message key="option.type.document.${command.typeDeclarationImpot}" /></td>
+			<td width="25%">
+				<c:if test="${command.allowedQuittancement && command.typeDeclarationImpot.ordinaire}">
+					<form:select path="typeDeclarationImpot" items="${typesDeclarationImpotOrdinaire}" />
+				</c:if>
+				<c:if test="${!command.allowedQuittancement || !command.typeDeclarationImpot.ordinaire}">
+					<fmt:message key="option.type.document.${command.typeDeclarationImpot}" />
+				</c:if>
+			</td>
 			<td width="25%">&nbsp;</td>
 			<td width="25%">&nbsp;</td>
 		</tr>

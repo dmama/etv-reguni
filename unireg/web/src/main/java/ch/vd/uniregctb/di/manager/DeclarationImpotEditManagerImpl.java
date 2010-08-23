@@ -688,8 +688,8 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	 */
 	@Transactional(rollbackFor = Throwable.class)
 	public DeclarationImpotOrdinaire save(DeclarationImpotDetailView diEditView) throws Exception {
-		Contribuable ctb = (Contribuable) tiersDAO.get(diEditView.getContribuable().getNumero());
-		DeclarationImpotOrdinaire di = null;
+		final Contribuable ctb = (Contribuable) tiersDAO.get(diEditView.getContribuable().getNumero());
+		DeclarationImpotOrdinaire di;
 		if (ctb == null) {
 			throw new ObjectNotFoundException(this.getMessageSource().getMessage("error.contribuable.inexistant" , null,  WebContextUtils.getDefaultLocale()));
 		}
@@ -697,8 +697,8 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 		if (diEditView.getId() == null)	{
 			di = new DeclarationImpotOrdinaire();
 
-			RegDate dateDebut = diEditView.getRegDateDebutPeriodeImposition();
-			di.setNumero(Integer.valueOf(1));
+			final RegDate dateDebut = diEditView.getRegDateDebutPeriodeImposition();
+			di.setNumero(1);
 			di.setDateDebut(dateDebut);
 			di.setDateFin(RegDate.get(diEditView.getDateFinPeriodeImposition()));
 
@@ -735,15 +735,10 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 			}
 			di.setPeriode(periode);
 
-			ModeleDocument modeleDocument = modeleDocumentDAO.getModelePourDeclarationImpotOrdinaire(periode, diEditView
-					.getTypeDeclarationImpot());
-			if (modeleDocument == null) {
-				throw new ActionException("le modèle de document " + diEditView.getTypeDeclarationImpot() + " pour l'année "
-						+ dateDebut.year() + " n'existe pas.");
-			}
-			di.setModeleDocument(modeleDocument);
+			// assigne le modèle de document à la DI en fonction de ce que contient la vue
+			assigneModeleDocument(diEditView, di);
 
-			ch.vd.uniregctb.tiers.CollectiviteAdministrative collectiviteAdministrative = null;
+			final ch.vd.uniregctb.tiers.CollectiviteAdministrative collectiviteAdministrative;
 			if (diEditView.getTypeAdresseRetour().equals(TypeAdresseRetour.ACI)) {
 				collectiviteAdministrative = tiersService.getOrCreateCollectiviteAdministrative(ServiceInfrastructureService.noACI);
 			}
@@ -751,23 +746,23 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 				collectiviteAdministrative = tiersService.getOrCreateCollectiviteAdministrative(ServiceInfrastructureService.noCEDI);
 			}
 			else {
-				Integer officeImpot = tiersService.getAndSetOfficeImpot(ctb);
+				final Integer officeImpot = tiersService.getAndSetOfficeImpot(ctb);
 				if (officeImpot == null) {
 					throw new ActionException("le contribuable ne possède pas de for de gestion");
 				}
-				collectiviteAdministrative = tiersService.getOrCreateCollectiviteAdministrative(officeImpot.intValue());
+				collectiviteAdministrative = tiersService.getOrCreateCollectiviteAdministrative(officeImpot);
 			}
 			di.setRetourCollectiviteAdministrativeId(collectiviteAdministrative.getId());
 
-			Qualification derniereQualification = PeriodeImposition.determineQualification(ctb, diEditView.getRegDateFinPeriodeImposition().year());
+			final Qualification derniereQualification = PeriodeImposition.determineQualification(ctb, diEditView.getRegDateFinPeriodeImposition().year());
 			di.setQualification(derniereQualification);
 
-			EtatDeclaration etat = new EtatDeclaration();
+			final EtatDeclaration etat = new EtatDeclaration();
 			etat.setEtat(TypeEtatDeclaration.EMISE);
 			etat.setDateObtention(RegDate.get());
 			di.addEtat(etat);
 
-			DelaiDeclaration delai = new DelaiDeclaration();
+			final DelaiDeclaration delai = new DelaiDeclaration();
 			delai.setDelaiAccordeAu(diEditView.getRegDelaiAccorde());
 			delai.setDateDemande(RegDate.get());
 			delai.setDateTraitement(RegDate.get());
@@ -780,17 +775,16 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 			tiersDAO.save(ctb);
 
 			//Mise à jour de l'état de la tâche si il y en a une
-			TacheCriteria criterion = new TacheCriteria();
+			final TacheCriteria criterion = new TacheCriteria();
 			criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpot);
-			criterion.setAnnee(new Integer(dateDebut.year()));
+			criterion.setAnnee(dateDebut.year());
 			criterion.setEtatTache(TypeEtatTache.EN_INSTANCE);
 			criterion.setContribuable(ctb);
-			List<Tache> taches = tacheDAO.find(criterion);
+			final List<Tache> taches = tacheDAO.find(criterion);
 			if (taches != null && taches.size() != 0) {
 				for (Tache t : taches) {
-					TacheEnvoiDeclarationImpot tache = (TacheEnvoiDeclarationImpot)t;
-					if (tache.getDateDebut().equals(di.getDateDebut()) &&
-							tache.getDateFin().equals(di.getDateFin())) {
+					final TacheEnvoiDeclarationImpot tache = (TacheEnvoiDeclarationImpot)t;
+					if (tache.getDateDebut().equals(di.getDateDebut()) && tache.getDateFin().equals(di.getDateFin())) {
 						tache.setEtat(TypeEtatTache.TRAITE);
 					}
 				}
@@ -800,10 +794,10 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 			if (diEditView.getRegDateRetour() != null) {
 				if (!diEditView.getRegDateRetour().equals(di.getDateRetour())) {
 					if (di.getDateRetour() != null){
-						EtatDeclaration etatRetournePrecedent = di.getEtatDeclarationActif(TypeEtatDeclaration.RETOURNEE);
+						final EtatDeclaration etatRetournePrecedent = di.getEtatDeclarationActif(TypeEtatDeclaration.RETOURNEE);
 						etatRetournePrecedent.setAnnule(true);
 					}
-					EtatDeclaration etat = new EtatDeclaration();
+					final EtatDeclaration etat = new EtatDeclaration();
 					etat.setEtat(TypeEtatDeclaration.RETOURNEE);
 					etat.setDateObtention(RegDate.get(diEditView.getDateRetour()));
 					di.addEtat(etat);
@@ -811,14 +805,38 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 				}
 			}
 			else {
-				EtatDeclaration etatRetournePrecedent = di.getEtatDeclarationActif(TypeEtatDeclaration.RETOURNEE);
+				final EtatDeclaration etatRetournePrecedent = di.getEtatDeclarationActif(TypeEtatDeclaration.RETOURNEE);
 				if (etatRetournePrecedent != null) {
 					etatRetournePrecedent.setAnnule(true);
+				}
+			}
+
+			// UNIREG-1437 : on peut aussi changer le type de document
+			if (di.getTypeDeclaration() != diEditView.getTypeDeclarationImpot()) {
+
+				// les types qui peuvent revenir de la view sont COMPLETE_LOCAL et VAUDTAX
+				// on ne va pas remplacer un COMPLETE_BATCH par un COMPLETE_LOCAL, cela ne sert à rien
+				if (di.getTypeDeclaration() != TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH || diEditView.getTypeDeclarationImpot() != TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL) {
+					assigneModeleDocument(diEditView, di);
 				}
 			}
 		}
 
 		return di;
+	}
+
+	/**
+	 * Assigne le modèle de document à la DI en fonction du type de document trouvé dans la view
+	 * @param diEditView view utilisée comme source du type de document ({@link ch.vd.uniregctb.di.view.DeclarationImpotDetailView#getTypeDeclarationImpot()}
+	 * @param di DI à laquelle le modèle de document sera assigné
+	 */
+	private void assigneModeleDocument(DeclarationImpotDetailView diEditView, DeclarationImpotOrdinaire di) {
+		final PeriodeFiscale periode = di.getPeriode();
+		final ModeleDocument modeleDocument = modeleDocumentDAO.getModelePourDeclarationImpotOrdinaire(periode, diEditView.getTypeDeclarationImpot());
+		if (modeleDocument == null) {
+			throw new ActionException(String.format("Le modèle de document %s pour l'année %d n'existe pas.", diEditView.getTypeDeclarationImpot(), periode.getAnnee()));
+		}
+		di.setModeleDocument(modeleDocument);
 	}
 
 	/**

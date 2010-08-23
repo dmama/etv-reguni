@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.tiers;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -44,6 +46,7 @@ public class TiersMapHelper extends CommonMapHelper {
 	private Map<TypeAdresseTiers, String> mapTypeAdresseFiscale;
 	private Map<TypeActivite, String> mapTypeActivite;
 	private Map<TypeDocument, String> mapTypesDeclarationImpot;
+	private Map<TypeDocument, String> mapTypesDeclarationImpotOrdinaire;
 	private Map<TypeDocument, String> mapTypesDeclarationImpotPourParam;
 	private Map<TypeAdresseRetour, String> mapTypesAdresseRetour;
 	private Map<TarifImpotSource, String> mapTarifsImpotSource;
@@ -380,6 +383,25 @@ public class TiersMapHelper extends CommonMapHelper {
 			mapTypesDeclarationImpot = initMapEnum(ApplicationConfig.masterKeyTypeDeclarationImpot, TypeDocument.class, TypeDocument.LISTE_RECAPITULATIVE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH);
 		}
 		return mapTypesDeclarationImpot;
+	}
+
+	/**
+	 * Initialise la map des types de declarations d'impôt ordinaires pour l'écran d'édition de la DI (quittancement)
+	 * @return une map
+	 */
+	public Map<TypeDocument, String> getTypesDeclarationsImpotOrdinaires() {
+
+		if (mapTypesDeclarationImpotOrdinaire == null) {
+			final List<TypeDocument> typesIgnores = new ArrayList<TypeDocument>();
+			for (TypeDocument type : TypeDocument.values()) {
+				// doivent être ignorées la version batch de la déclaration complète et toutes les déclarations non-ordinaires
+				if (type == TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH || !type.isOrdinaire()) {
+					typesIgnores.add(type);
+				}
+			}
+			mapTypesDeclarationImpotOrdinaire = initMapEnum(ApplicationConfig.masterKeyTypeDeclarationImpot, TypeDocument.class, typesIgnores.toArray(new TypeDocument[typesIgnores.size()]));
+		}
+		return mapTypesDeclarationImpotOrdinaire;
 	}
 
 

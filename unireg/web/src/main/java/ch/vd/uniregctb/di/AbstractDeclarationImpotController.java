@@ -43,6 +43,7 @@ public class AbstractDeclarationImpotController extends AbstractSimpleFormContro
 		data.put(ETAT_DOCUMENT_MAP_NAME, tiersMapHelper.getMapTypeEtatDeclaration());
 		data.put(PERIODE_FISCALE_MAP_NAME, diMapHelper.initMapPeriodeFiscale());
 		data.put(TYPE_DECLARATION_IMPOT_MAP_NAME, tiersMapHelper.getTypesDeclarationImpot());
+		data.put(TYPE_DECLARATION_IMPOT_ORD_MAP_NAME, tiersMapHelper.getTypesDeclarationsImpotOrdinaires());
 		data.put(TYPE_ADRESSE_RETOUR_MAP_NAME, tiersMapHelper.getTypesAdresseRetour());
 		return data;
 	}
@@ -61,6 +62,11 @@ public class AbstractDeclarationImpotController extends AbstractSimpleFormContro
 	 * Le nom de l'attribut utilise pour les types de declaration d'impot
 	 */
 	public static final String TYPE_DECLARATION_IMPOT_MAP_NAME = "typesDeclarationImpot";
+
+	/**
+	 * Le nom de l'attribut utilise pour les types de declarations d'impôt ordinaires (quittancement)
+	 */
+	public static final String TYPE_DECLARATION_IMPOT_ORD_MAP_NAME = "typesDeclarationImpotOrdinaire";
 
 	/**
 	 * Le nom de l'attribut utilise pour les types d'adresse de retour
