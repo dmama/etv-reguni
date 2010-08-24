@@ -322,7 +322,7 @@ public class TiersServiceImpl implements TiersService {
 		}
 
 		// numéro du registre des étrangers
-		if (StringUtils.isNotEmpty(numRce)) {
+		if (StringUtils.isNotEmpty(numRce) && !"0".equals(StringUtils.trimToEmpty(numRce))) {
 			final IdentificationPersonne id = new IdentificationPersonne();
 			id.setCategorieIdentifiant(CategorieIdentifiant.CH_ZAR_RCE);
 			id.setPersonnePhysique(nonHabitant);
