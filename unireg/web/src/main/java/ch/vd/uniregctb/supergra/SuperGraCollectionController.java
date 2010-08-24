@@ -2,12 +2,9 @@ package ch.vd.uniregctb.supergra;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.validation.BindException;
-import org.springframework.validation.Errors;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
@@ -33,14 +30,14 @@ public class SuperGraCollectionController extends SuperGraAbstractController {
 
 		if (StringUtils.isNotBlank(typeAsString) && StringUtils.isNotBlank(idAsString)) {
 
-			// On récupère les deltas déjà mémorisés
+			// On récupère la session
 			final SuperGraSession session = getSession(request);
-			final List<Delta> deltas = session.getDeltas();
 
+			// On recharge toutes les entités de la base de données
 			final EntityType type = EntityType.valueOf(typeAsString);
 			final Long id = Long.valueOf(idAsString);
 			final EntityKey key = new EntityKey(type, id);
-			manager.fillView(key, collName, view, deltas);
+			manager.fillView(key, collName, view, session);
 		}
 
 		return view;

@@ -9,9 +9,9 @@ import ch.vd.uniregctb.common.HibernateEntity;
  */
 public interface SuperGraManager {
 
-	void fillView(EntityKey key, EntityView view, List<Delta> deltas);
+	void fillView(EntityKey key, EntityView view, SuperGraSession session);
 
-	void fillView(EntityKey key, String collName, CollectionView view, List<Delta> deltas);
+	void fillView(EntityKey key, String collName, CollectionView view, SuperGraSession session);
 
 	/**
 	 * Alloue et retourne le prochain id valable pour une nouvelle entité de la classe spécifiée.

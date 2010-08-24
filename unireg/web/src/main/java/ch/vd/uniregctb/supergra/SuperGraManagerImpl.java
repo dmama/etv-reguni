@@ -22,10 +22,13 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.utils.ObjectGetterHelper;
+import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.hibernate.meta.MetaEntity;
 import ch.vd.uniregctb.hibernate.meta.Property;
 import ch.vd.uniregctb.hibernate.meta.Sequence;
+import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.tiers.TiersSubEntity;
 
 public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 
@@ -94,13 +97,15 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 		});
 	}
 
-	public void fillView(final EntityKey key, final EntityView view, final List<Delta> deltas) {
+	public void fillView(final EntityKey key, final EntityView view, final SuperGraSession session) {
 
 		simulate(new TransactionCallback() {
 			public Object doInTransaction(TransactionStatus status) {
 
+				// Reconstruit l'état en cours de modification des entités
 				final SuperGraContext context = new SuperGraContext(hibernateTemplate);
-				applyDeltas(deltas, context);
+				applyDeltas(session.getDeltas(), context);
+				refreshTiersState(session, context);
 
 				view.setKey(key);
 
@@ -114,6 +119,45 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 		});
 	}
 
+	/**
+	 * Met-à-jour l'état des tiers modifiés dans une session SuperGra.
+	 *
+	 * @param session une session SuperGra.
+	 * @param context le context DAO spécifique au mode SuperGra.
+	 */
+	private void refreshTiersState(SuperGraSession session, SuperGraContext context) {
+
+		// Récupère tous les tiers impactés par les deltas
+		final Map<Long, Tiers> tiers = new HashMap<Long, Tiers>();
+		final List<Delta> deltas = session.getDeltas();
+		for (Delta d : deltas) {
+			final HibernateEntity entity = context.getEntity(d.getKey());
+			final Tiers t;
+			if (entity instanceof Tiers) {
+				t = (Tiers) entity;
+			}
+			else if (entity instanceof TiersSubEntity) {
+				t = ((TiersSubEntity) entity).getTiersParent();
+			}
+			else {
+				t = null;
+			}
+			if (t != null && !tiers.containsKey(t.getId())) {
+				tiers.put(t.getId(), t);
+			}
+		}
+
+		// Détermine la validité de tous les tiers
+		final List<TiersState> tiersStates = new ArrayList<TiersState>(tiers.size());
+		for (Tiers t : tiers.values()) {
+			final ValidationResults res = t.validate();
+			tiersStates.add(new TiersState(new EntityKey(EntityType.Tiers, t.getId()), res));
+		}
+
+		// Met-à-jour la session
+		session.setTiersStates(tiersStates);
+	}
+
 	private void applyDeltas(List<Delta> deltas, SuperGraContext context) {
 		if (deltas == null) {
 			return;
@@ -121,7 +165,7 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 
 		for (Delta d : deltas) {
 			final EntityKey key = d.getKey();
-			final HibernateEntity entity = context.getEntity (key);
+			final HibernateEntity entity = context.getEntity(key);
 			if (entity != null) {
 				d.apply(entity, context);
 			}
@@ -160,13 +204,15 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 	}
 
 	@SuppressWarnings({"unchecked"})
-	public void fillView(final EntityKey key, final String collName, final CollectionView view, final List<Delta> deltas) {
+	public void fillView(final EntityKey key, final String collName, final CollectionView view, final SuperGraSession session) {
 
 		simulate(new TransactionCallback() {
 			public Object doInTransaction(TransactionStatus status) {
 
+				// Reconstruit l'état en cours de modification des entités
 				final SuperGraContext context = new SuperGraContext(hibernateTemplate);
-				applyDeltas(deltas, context);
+				applyDeltas(session.getDeltas(), context);
+				refreshTiersState(session, context);
 
 				view.setKey(key);
 

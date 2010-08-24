@@ -13,6 +13,11 @@ public class SuperGraSession {
 	 */
 	private List<Delta> deltas = new ArrayList<Delta>();
 
+	/**
+	 * Les états des tiers modifiées dans la session courante.
+	 */
+	private List<TiersState> tiersStates = new ArrayList<TiersState>();
+
 	public List<Delta> getDeltas() {
 		return deltas;
 	}
@@ -33,5 +38,13 @@ public class SuperGraSession {
 			this.deltas = new ArrayList<Delta>();
 		}
 		this.deltas.addAll(deltas);
+	}
+
+	public List<TiersState> getTiersStates() {
+		return tiersStates;
+	}
+
+	public void setTiersStates(List<TiersState> tiersStates) {
+		this.tiersStates = tiersStates;
 	}
 }

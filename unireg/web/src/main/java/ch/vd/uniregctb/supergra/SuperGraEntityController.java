@@ -9,7 +9,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.propertyeditors.CustomBooleanEditor;
@@ -50,15 +49,14 @@ public class SuperGraEntityController extends SuperGraAbstractController {
 
 		if (StringUtils.isNotBlank(typeAsString) && StringUtils.isNotBlank(idAsString)) {
 
-			// On récupère les deltas déjà mémorisés
+			// On récupère la session
 			final SuperGraSession session = getSession(request);
-			final List<Delta> deltas = session.getDeltas();
 
-			// On recharge l'entité de la base de données
+			// On recharge toutes les entités de la base de données
 			final EntityType type = EntityType.valueOf(typeAsString);
 			final Long id = Long.valueOf(idAsString);
 			final EntityKey key = new EntityKey(type, id);
-			manager.fillView(key, view, deltas);
+			manager.fillView(key, view, session);
 
 			// On mémorise une version de référence pour pouvoir détecter de nouveaux deltas plus tard
 			final EntityView referenceView = (EntityView) view.clone();
