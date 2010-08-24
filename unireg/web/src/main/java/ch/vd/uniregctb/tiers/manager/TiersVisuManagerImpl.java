@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.infrastructure.service.InfrastructureException;
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.adresse.*;
 import ch.vd.uniregctb.common.DonneesCivilesException;
@@ -34,6 +35,8 @@ import ch.vd.uniregctb.di.view.DeclarationImpotDetailView;
 import ch.vd.uniregctb.iban.IbanValidator;
 import ch.vd.uniregctb.interfaces.InterfaceDataException;
 import ch.vd.uniregctb.interfaces.model.Adresse;
+import ch.vd.uniregctb.interfaces.model.AdressesCivilesActives;
+import ch.vd.uniregctb.interfaces.model.AdressesCivilesHistoriques;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.mouvement.MouvementDossier;
 import ch.vd.uniregctb.mouvement.view.MouvementDetailView;
@@ -87,7 +90,7 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 	 */
 	@Transactional(readOnly = true)
 	public TiersVisuView getView(Long numero, boolean adressesHisto, boolean adressesHistoCiviles, boolean adressesHistoCivilesConjoint, boolean rapportsPrestationHisto,
-	                             WebParamPagination webParamPagination) throws AdresseException, InfrastructureException {
+	                             WebParamPagination webParamPagination) throws AdresseException, InfrastructureException, DonneesCivilesException {
 
 		final TiersVisuView tiersVisuView = new TiersVisuView();
 		tiersVisuView.setAdressesHisto(adressesHisto);
@@ -274,38 +277,46 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 	 * @param adressesHistoCiviles
 	 * @return
 	 */
-	private List<AdresseView> getAdressesHistoriquesCiviles(Tiers tiers, boolean adressesHistoCiviles) throws AdresseException, InfrastructureException {
+	private List<AdresseView> getAdressesHistoriquesCiviles(Tiers tiers, boolean adressesHistoCiviles) throws AdresseException, InfrastructureException, DonneesCivilesException {
+
+
+		final Long noIndividu=tiersService.extractNumeroIndividuPrincipal(tiers);
 		List<AdresseView> adresses = new ArrayList<AdresseView>();
 		List<EnumTypeAdresse> listeTypeCivil = getTypesAdressesCiviles();
-		if (adressesHistoCiviles) {
-			final AdressesCivilesHisto adressesCivilesHisto = adresseService.getAdressesCivilesHisto(tiers, false);
+		if(noIndividu!=null){
+			if (adressesHistoCiviles) {
+				final AdressesCivilesHistoriques adressesCivilesHisto = serviceCivilService.getAdressesCivilesHistorique(noIndividu, false);
 
-			if (adressesCivilesHisto != null) {
-				// rempli tous les types d'adresse
-				for (EnumTypeAdresse type : listeTypeCivil) {
-					fillAdressesHistoCivilesView(adresses, adressesCivilesHisto, type, tiers);
+				if (adressesCivilesHisto != null) {
+					// rempli tous les types d'adresse
+					for (EnumTypeAdresse type : listeTypeCivil) {
+						fillAdressesHistoCivilesView(adresses, adressesCivilesHisto, type, tiers);
+					}
+				}
+			}
+			else {
+
+				final AdressesCivilesActives adressesCiviles = serviceCivilService.getAdressesCivilesActives(noIndividu, RegDate.get(), false);
+				if (adressesCiviles != null) {
+					// rempli tous les types d'adresse
+					for (EnumTypeAdresse type : listeTypeCivil) {
+						fillAdressesCivilesView(adresses, adressesCiviles, type, tiers);
+					}
 				}
 			}
 		}
-		else {
-			final AdressesCiviles adressesCiviles = adresseService.getAdressesCiviles(tiers, null, false);
-			if (adressesCiviles != null) {
-				// rempli tous les types d'adresse
-				for (EnumTypeAdresse type : listeTypeCivil) {
-					fillAdressesCivilesView(adresses, adressesCiviles, type, tiers);
-				}
-			}
-		}
+
 
 		Collections.sort(adresses, new AdresseViewComparator());
 
 		return adresses;
 	}
 
+	
 
 
 
-	private void fillAdressesHistoCivilesView(List<AdresseView> adressesView, AdressesCivilesHisto adressesCivilesHisto, EnumTypeAdresse type, Tiers tiers) throws AdresseDataException,
+	private void fillAdressesHistoCivilesView(List<AdresseView> adressesView, AdressesCivilesHistoriques adressesCivilesHisto, EnumTypeAdresse type, Tiers tiers) throws AdresseDataException,
 			InfrastructureException {
 		final List<Adresse> adresses = adressesCivilesHisto.ofType(type);
 		if (adresses == null) {
@@ -336,14 +347,30 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 	/**
 	 * Remplir la collection des adressesView avec l'adresse civile du type spécifié.
 	 */
-	protected void fillAdressesCivilesView(List<AdresseView> adressesView, final AdressesCiviles adressesCiviles, EnumTypeAdresse type,
+	protected void fillAdressesCivilesView(List<AdresseView> adressesView, final AdressesCivilesActives adressesCiviles, EnumTypeAdresse type,
 	                                       Tiers tiers) throws AdresseDataException, InfrastructureException {
-		Adresse adresse = adressesCiviles.ofType(type);
-		if (adresse == null) {
-			// rien à faire
-			return;
+
+		if (EnumTypeAdresse.SECONDAIRE.equals(type)) {
+			List<Adresse> addressesSecondaires = adressesCiviles.secondaires;
+			if (addressesSecondaires == null) {
+				// rien à faire
+				return;
+			}
+			for (Adresse addressesSecondaire : addressesSecondaires) {
+				AdaptAdresseCivileToAdresseView(adressesView, type, tiers, addressesSecondaire);	
+			}
+
 		}
-		AdaptAdresseCivileToAdresseView(adressesView, type, tiers, adresse);
+		else {
+			Adresse adresse = adressesCiviles.ofType(type);
+			if (adresse == null) {
+				// rien à faire
+				return;
+			}
+
+			AdaptAdresseCivileToAdresseView(adressesView, type, tiers, adresse);
+		}
+
 	}
 
 

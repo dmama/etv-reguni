@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
-
 import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
@@ -18,6 +16,8 @@ import ch.vd.uniregctb.adresse.HistoriqueCommune;
 import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.common.NomPrenom;
 import ch.vd.uniregctb.interfaces.model.Adresse;
+import ch.vd.uniregctb.interfaces.model.AdressesCivilesActives;
+import ch.vd.uniregctb.interfaces.model.AdressesCivilesHistoriques;
 import ch.vd.uniregctb.interfaces.model.CommuneSimple;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
 import ch.vd.uniregctb.interfaces.model.HistoriqueIndividu;
@@ -60,6 +60,30 @@ public abstract class ServiceCivilServiceBase implements ServiceCivilService {
 		return resultat;
 	}
 
+		public final AdressesCivilesActives getAdressesCivilesActives(long noIndividu, RegDate date, boolean strict) throws DonneesCivilesException {
+
+		final int year = (date == null ? 2400 : date.year());
+		final Collection<Adresse> adressesCiviles = getAdresses(noIndividu, year);
+
+		AdressesCivilesActives resultat = new AdressesCivilesActives();
+
+		try {
+			if (adressesCiviles != null) {
+				for (Adresse adresse : adressesCiviles) {
+					if (adresse != null && adresse.isValidAt(date)) {
+						resultat.set(adresse, strict);
+					}
+				}
+			}
+		}
+		catch (DonneesCivilesException e) {
+			throw new DonneesCivilesException(e.getMessage() + " sur l'individu n°" + noIndividu + " et pour l'année " + year + ".");
+		}
+
+		return resultat;
+	}
+
+
 	public final AdressesCivilesHisto getAdressesHisto(long noIndividu, boolean strict) throws DonneesCivilesException {
 
 		final int all = 2400;
@@ -76,6 +100,25 @@ public abstract class ServiceCivilServiceBase implements ServiceCivilService {
 		}
 		resultat.finish(strict);
 		
+		return resultat;
+	}
+
+	public final AdressesCivilesHistoriques getAdressesCivilesHistorique(long noIndividu, boolean strict) throws DonneesCivilesException {
+
+		final int all = 2400;
+		final Collection<Adresse> adressesCiviles = getAdresses(noIndividu, all);
+
+		AdressesCivilesHistoriques resultat = new AdressesCivilesHistoriques();
+
+		if (adressesCiviles != null) {
+			for (Adresse adresse : adressesCiviles) {
+				if (adresse != null) {
+					resultat.add(adresse);
+				}
+			}
+		}
+		resultat.finish(strict);
+
 		return resultat;
 	}
 

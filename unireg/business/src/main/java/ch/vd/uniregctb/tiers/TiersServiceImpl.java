@@ -3676,6 +3676,26 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 	/**
+	 * Extrait le numero d'individu à partir d'un tiers si c'est possible
+	 *
+	 * @param tiers
+	 * @return le numéro d'individu de la personne physique ou de la personne principal du menage. null si le tiers ne possède pas de numéro d'individu
+	 */
+	public Long extractNumeroIndividuPrincipal(Tiers tiers) {
+		if (tiers instanceof PersonnePhysique) {
+			PersonnePhysique personne = (PersonnePhysique) tiers;
+			return personne.getNumeroIndividu();
+		}
+		else if (tiers instanceof MenageCommun) {
+			MenageCommun menage = (MenageCommun) tiers;
+			PersonnePhysique personnePrincipal = getPrincipal(menage);
+			return personnePrincipal.getNumeroIndividu();
+
+		}
+		return null;
+	}
+
+	/**
 	 * Recherche la presence d'un for actif sur une période
 	 *
 	 * @param contribuableUnireg

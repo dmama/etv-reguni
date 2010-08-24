@@ -8,6 +8,8 @@ import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.uniregctb.adresse.HistoriqueCommune;
 import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.common.NomPrenom;
+import ch.vd.uniregctb.interfaces.model.AdressesCivilesActives;
+import ch.vd.uniregctb.interfaces.model.AdressesCivilesHistoriques;
 import ch.vd.uniregctb.stats.StatsService;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -297,6 +299,14 @@ public class ServiceCivilTracing implements ServiceCivilService, InitializingBea
 		finally {
 			tracing.end(time, "isWarmable");
 		}
+	}
+
+	public AdressesCivilesActives getAdressesCivilesActives(long noIndividu, RegDate date, boolean strict) throws DonneesCivilesException {
+		return null;
+	}
+
+	public AdressesCivilesHistoriques getAdressesCivilesHistorique(long noIndividu, boolean strict) throws DonneesCivilesException {
+		return null;  
 	}
 
 	public void afterPropertiesSet() throws Exception {
