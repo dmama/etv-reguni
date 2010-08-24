@@ -181,7 +181,8 @@ fieldset.individu + fieldset.individu {
 }
 
 #actions_list td.error {
-	border-left: 0px;
+	border-right: 1px black dotted;
+	border-bottom: 1px black dotted;
 	text-align: left;
 }
 
