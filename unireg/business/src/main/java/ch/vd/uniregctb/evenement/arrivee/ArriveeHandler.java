@@ -690,7 +690,7 @@ public class ArriveeHandler extends EvenementCivilHandlerBase {
 	private CommuneSimple getCommuneDomicile(RegDate date, PersonnePhysique pp) throws DonneesCivilesException, InfrastructureException {
 		final CommuneSimple commune;
 		if (pp != null && pp.getNumeroIndividu() != null && pp.getNumeroIndividu() > 0) {
-			final AdressesCiviles adresseDomicile = serviceCivilService.getAdresses(pp.getNumeroIndividu(), date, false);
+			final AdressesCiviles adresseDomicile = new AdressesCiviles(serviceCivilService.getAdresses(pp.getNumeroIndividu(), date, false));
 			if (adresseDomicile != null) {
 				commune = getService().getServiceInfra().getCommuneByAdresse(adresseDomicile.principale);
 			}

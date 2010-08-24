@@ -5,6 +5,7 @@ import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.interfaces.model.Adresse;
+import ch.vd.uniregctb.interfaces.model.AdressesCivilesActives;
 
 /**
  * Contient les adresses civiles à un instant donné d'individu regroupées par type
@@ -14,6 +15,25 @@ public class AdressesCiviles {
 	public Adresse courrier;
 	public Adresse secondaire;
 	public Adresse tutelle;
+
+
+	public AdressesCiviles() {
+	}
+
+	/**Constructeur permettant de reconstruire une AdressesCiviles à partir d'une AdressesCivilesActives
+	 * en initialisant l'adresse secondaire avec la dernière adresse secondaire connue.
+	 *
+	 * @param adressesActives
+	 */
+	public AdressesCiviles(AdressesCivilesActives adressesActives){
+		this.principale = adressesActives.principale;
+		this.courrier = adressesActives.courrier;
+		this.tutelle = adressesActives.tutelle;
+		if(adressesActives.secondaires!=null && !adressesActives.secondaires.isEmpty()){
+			final int indexAdresse = adressesActives.secondaires.size() - 1;
+			this.secondaire = adressesActives.secondaires.get(indexAdresse);			
+		}
+	}
 
 	public void set(Adresse adresse, boolean strict) throws DonneesCivilesException {
 		if (adresse.getTypeAdresse().equals(EnumTypeAdresse.PRINCIPALE)) {

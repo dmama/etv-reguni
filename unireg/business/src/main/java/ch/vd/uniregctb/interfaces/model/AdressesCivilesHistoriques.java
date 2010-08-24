@@ -107,7 +107,7 @@ public class AdressesCivilesHistoriques {
 	private void validate(boolean strict) throws DonneesCivilesException {
 		validateList(principales, "principale", strict);
 		validateList(courriers, "courrier", strict);
-		validateList(secondaires, "secondaire", strict);
+		//on ne recalcule pas les dates des adresses secondaires
 		validateList(tutelles, "tutelle", strict);
 	}
 
@@ -126,7 +126,7 @@ public class AdressesCivilesHistoriques {
 							+ " chevauche l'adresse précédente qui commence le " + previous.getDateDebut() + " et finit le " + previous.getDateFin());
 				}
 				else {
-					if (!"secondaire".equals(typeAdresse)) {
+
 						// on essaie de corriger les données à la volée
 						final RegDate finPrecedente = previous.getDateFin();
 						final RegDate debutSuivante = current.getDateDebut();
@@ -148,7 +148,6 @@ public class AdressesCivilesHistoriques {
 							AdresseAdapter adapted = new AdresseAdapter(current, nouveauDebut, current.getDateFin());
 							adresses.set(i, adapted);
 						}   
-					}
 
 				}
 			}

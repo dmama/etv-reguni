@@ -41,7 +41,7 @@ public abstract class EvenementAdapterAvecAdresses extends GenericEvenementAdapt
 		// Distinction adresse principale et adresse courrier
 		// On recupère les adresses à la date de l'événement plus 1 jour
 		try {
-			final AdressesCiviles adresses = serviceCivil.getAdresses(evenement.getNumeroIndividuPrincipal(), evenement.getDateEvenement().getOneDayAfter(), false);
+			final AdressesCiviles adresses =  new AdressesCiviles(serviceCivil.getAdresses(evenement.getNumeroIndividuPrincipal(), evenement.getDateEvenement().getOneDayAfter(), false));
 			Assert.notNull(adresses, "L'individu principal n'a pas d'adresses valide");
 
 			this.adressePrincipale = adresses.principale;

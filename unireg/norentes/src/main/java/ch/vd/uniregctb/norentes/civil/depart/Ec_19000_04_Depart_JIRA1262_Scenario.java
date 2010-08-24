@@ -139,7 +139,7 @@ public class Ec_19000_04_Depart_JIRA1262_Scenario extends DepartScenario {
 			assertTrue(declarations.size() > 0, "Mauvais nombre de déclarations");
 
 			// vérification que les adresses civiles sont à Bex
-			final AdressesCiviles adresses = serviceCivilService.getAdresses(noIndSebastien, RegDate.get(), false);
+			final AdressesCiviles adresses = new AdressesCiviles(serviceCivilService.getAdresses(noIndSebastien, RegDate.get(), false));
 			assertEquals(communeDepart.getNomMinuscule(), adresses.principale.getLocalite(), "L'adresse principale n'est pas à " + communeDepart.getNomMinuscule());
 		}
 
@@ -166,7 +166,7 @@ public class Ec_19000_04_Depart_JIRA1262_Scenario extends DepartScenario {
 			assertEquals(communeDepart.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale(), "For pas attaché à la bonne commune");
 
 			// vérification que les adresses civiles sont à Zurich
-			final AdressesCiviles adresses = serviceCivilService.getAdresses(noIndSebastien, dateDepart.addDays(1), false);
+			final AdressesCiviles adresses = new AdressesCiviles(serviceCivilService.getAdresses(noIndSebastien, dateDepart.addDays(1), false));
 			assertEquals(communeArrivee.getNomMinuscule(), adresses.principale.getLocalite(), "L'adresse principale n'est pas à " + communeArrivee.getNomMinuscule());
 		}
 

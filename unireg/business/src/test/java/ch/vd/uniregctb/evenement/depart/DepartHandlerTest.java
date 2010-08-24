@@ -464,7 +464,7 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 		depart.setIndividu(individu);
 
 		// Adresse actuelle
-		final AdressesCiviles adresseVaud = serviceCivil.getAdresses(noIndividu, dateEvenement, false);
+		final AdressesCiviles adresseVaud = new AdressesCiviles(serviceCivil.getAdresses(noIndividu, dateEvenement, false));
 
 		final MockAdresse adressePrincipale = (MockAdresse) adresseVaud.principale;
 		if (principale && adressePrincipale != null) {
@@ -488,7 +488,7 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 		}
 
 		// Nouvelles adresses
-		final AdressesCiviles adresseHorsVaud = serviceCivil.getAdresses(noIndividu, dateEvenement.getOneDayAfter(), false);
+		final AdressesCiviles adresseHorsVaud = new AdressesCiviles(serviceCivil.getAdresses(noIndividu, dateEvenement.getOneDayAfter(), false));
 
 		final MockAdresse nouvelleAdresse = (MockAdresse) adresseHorsVaud.principale;
 		depart.setAdressePrincipale(nouvelleAdresse);

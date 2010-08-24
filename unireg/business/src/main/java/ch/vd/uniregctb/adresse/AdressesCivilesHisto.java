@@ -10,6 +10,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.interfaces.model.Adresse;
+import ch.vd.uniregctb.interfaces.model.AdressesCivilesHistoriques;
 
 /**
  * Contient toutes les adresses civiles d'un individu regroupées par type
@@ -92,6 +93,25 @@ public class AdressesCivilesHisto {
 		Collections.sort(courriers, comparator);
 		Collections.sort(secondaires, comparator);
 		Collections.sort(tutelles, comparator);
+	}
+
+	/**Constructeur permettant de construire une AdresseCivileHisto à partir d'une adresseCivilesHistoriques
+	 * et d'y appliquer les traitements propres à  AdresseCivileHisto
+	 *
+	 * @param adressesHistoriques
+	 * @param strict
+	 * @throws DonneesCivilesException
+	 */
+	public AdressesCivilesHisto(AdressesCivilesHistoriques adressesHistoriques,boolean strict) throws DonneesCivilesException {
+		this.principales = adressesHistoriques.principales;
+		this.courriers = adressesHistoriques.courriers;
+		this.secondaires = adressesHistoriques.secondaires;
+		this.tutelles = adressesHistoriques.tutelles;
+		finish(strict);
+
+	}
+
+	public AdressesCivilesHisto() {
 	}
 
 	/**

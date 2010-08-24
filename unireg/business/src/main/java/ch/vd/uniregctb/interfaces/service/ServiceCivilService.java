@@ -34,7 +34,7 @@ public interface ServiceCivilService {
 	 *                   données (dans la mesure du possible) pour ne pas lever d'exception.
 	 * @return les adresses civiles de l'individu spécifié.
 	 */
-	AdressesCiviles getAdresses(long noIndividu, RegDate date, boolean strict) throws DonneesCivilesException;
+	AdressesCivilesActives getAdresses(long noIndividu, RegDate date, boolean strict) throws DonneesCivilesException;
 
 	/**
 	 * Retourne l'historique des adresses civiles.
@@ -44,7 +44,7 @@ public interface ServiceCivilService {
 	 *                   données (dans la mesure du possible) pour ne pas lever d'exception.
 	 * @return l'historique des adresses civiles de l'individu spécifié.
 	 */
-	AdressesCivilesHisto getAdressesHisto(long noIndividu, boolean strict) throws DonneesCivilesException;
+	AdressesCivilesHistoriques getAdressesHisto(long noIndividu, boolean strict) throws DonneesCivilesException;
 
 	/**
 	 * Construit la liste des communes de domiciles connues pour l'individu donné, et ce depuis une date de référence
@@ -238,24 +238,4 @@ public interface ServiceCivilService {
 	 */
 	boolean isWarmable();
 
-	/**
-	 * Retourne les adresses civiles valide à la date donnée en prenant en compte la possibilité d'adresse secondaire multiples
-	 *
-	 * @param noIndividu l'individu dont on recherche les adresses.
-	 * @param date       la date de référence (attention, la précision est l'année !), ou null pour obtenir toutes les adresses existantes.
-	 * @param strict     si <i>vrai</i>, la cohérence des données est vérifiée de manière stricte et en cas d'incohérence, une exception est levée. Si <i>faux</i>, la méthode essaie de corriger les
-	 *                   données (dans la mesure du possible) pour ne pas lever d'exception.
-	 * @return les adresses civiles de l'individu spécifié.
-	 */
-	public AdressesCivilesActives getAdressesCivilesActives(long noIndividu, RegDate date, boolean strict) throws DonneesCivilesException;
-
-	/**
-	 * Retourne l'historique des adresses civiles en prenant en compte la possiblité d'avoir des adresses secondaires multiples.
-	 *
-	 * @param noIndividu l'individu dont on recherche les adresses.
-	 * @param strict     si <i>vrai</i>, la cohérence des données est vérifiée de manière stricte et en cas d'incohérence, une exception est levée. Si <i>faux</i>, la méthode essaie de corriger les
-	 *                   données (dans la mesure du possible) pour ne pas lever d'exception.
-	 * @return l'historique des adresses civiles de l'individu spécifié.
-	 */
-	public  AdressesCivilesHistoriques getAdressesCivilesHistorique(long noIndividu, boolean strict) throws DonneesCivilesException;
 }

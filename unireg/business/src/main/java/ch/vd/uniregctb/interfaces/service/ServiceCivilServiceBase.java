@@ -10,8 +10,6 @@ import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.civil.model.EnumAttributeIndividu;
-import ch.vd.uniregctb.adresse.AdressesCiviles;
-import ch.vd.uniregctb.adresse.AdressesCivilesHisto;
 import ch.vd.uniregctb.adresse.HistoriqueCommune;
 import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.common.NomPrenom;
@@ -37,30 +35,9 @@ public abstract class ServiceCivilServiceBase implements ServiceCivilService {
 		this.infraService = infraService;
 	}
 
-	public final AdressesCiviles getAdresses(long noIndividu, RegDate date, boolean strict) throws DonneesCivilesException {
 
-		final int year = (date == null ? 2400 : date.year());
-		final Collection<Adresse> adressesCiviles = getAdresses(noIndividu, year);
 
-		AdressesCiviles resultat = new AdressesCiviles();
-
-		try {
-			if (adressesCiviles != null) {
-				for (Adresse adresse : adressesCiviles) {
-					if (adresse != null && adresse.isValidAt(date)) {
-						resultat.set(adresse, strict);
-					}
-				}
-			}
-		}
-		catch (DonneesCivilesException e) {
-			throw new DonneesCivilesException(e.getMessage() + " sur l'individu n°" + noIndividu + " et pour l'année " + year + ".");
-		}
-
-		return resultat;
-	}
-
-		public final AdressesCivilesActives getAdressesCivilesActives(long noIndividu, RegDate date, boolean strict) throws DonneesCivilesException {
+		public final AdressesCivilesActives getAdresses(long noIndividu, RegDate date, boolean strict) throws DonneesCivilesException {
 
 		final int year = (date == null ? 2400 : date.year());
 		final Collection<Adresse> adressesCiviles = getAdresses(noIndividu, year);
@@ -84,26 +61,9 @@ public abstract class ServiceCivilServiceBase implements ServiceCivilService {
 	}
 
 
-	public final AdressesCivilesHisto getAdressesHisto(long noIndividu, boolean strict) throws DonneesCivilesException {
 
-		final int all = 2400;
-		final Collection<Adresse> adressesCiviles = getAdresses(noIndividu, all);
 
-		AdressesCivilesHisto resultat = new AdressesCivilesHisto();
-
-		if (adressesCiviles != null) {
-			for (Adresse adresse : adressesCiviles) {
-				if (adresse != null) {
-					resultat.add(adresse);
-				}
-			}
-		}
-		resultat.finish(strict);
-		
-		return resultat;
-	}
-
-	public final AdressesCivilesHistoriques getAdressesCivilesHistorique(long noIndividu, boolean strict) throws DonneesCivilesException {
+	public final AdressesCivilesHistoriques getAdressesHisto(long noIndividu, boolean strict) throws DonneesCivilesException {
 
 		final int all = 2400;
 		final Collection<Adresse> adressesCiviles = getAdresses(noIndividu, all);
@@ -265,7 +225,7 @@ public abstract class ServiceCivilServiceBase implements ServiceCivilService {
 	 * @return une liste des communes de domiciles fréquentées
 	 */
 	public List<HistoriqueCommune> getCommunesDomicileHisto(RegDate date, long noIndividu, boolean strict, boolean seulementVaud) throws DonneesCivilesException, InfrastructureException {
-		final AdressesCivilesHisto histo = getAdressesHisto(noIndividu, strict);
+		final AdressesCivilesHistoriques histo = getAdressesHisto(noIndividu, strict);
 		final List<HistoriqueCommune> result = new ArrayList<HistoriqueCommune>();
 		for (Adresse adresse : histo.principales) {
 			if (RegDateHelper.isAfterOrEqual(adresse.getDateFin(), date, NullDateBehavior.LATEST)) {

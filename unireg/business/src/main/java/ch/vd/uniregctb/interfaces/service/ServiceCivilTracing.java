@@ -16,9 +16,6 @@ import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.civil.model.EnumAttributeIndividu;
-import ch.vd.uniregctb.adresse.AdressesCiviles;
-import ch.vd.uniregctb.adresse.AdressesCivilesHisto;
-import ch.vd.uniregctb.common.ProgrammingException;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
 import ch.vd.uniregctb.interfaces.model.Individu;
@@ -47,8 +44,8 @@ public class ServiceCivilTracing implements ServiceCivilService, InitializingBea
 		this.statsService = statsService;
 	}
 
-	public AdressesCiviles getAdresses(long noIndividu, RegDate date, boolean strict) throws DonneesCivilesException {
-		AdressesCiviles result;
+	public AdressesCivilesActives getAdresses(long noIndividu, RegDate date, boolean strict) throws DonneesCivilesException {
+		AdressesCivilesActives result;
 		long time = tracing.start();
 		try {
 			result = target.getAdresses(noIndividu, date, strict);
@@ -72,8 +69,8 @@ public class ServiceCivilTracing implements ServiceCivilService, InitializingBea
 		return result;
 	}
 
-	public AdressesCivilesHisto getAdressesHisto(long noIndividu, boolean strict) throws DonneesCivilesException {
-		AdressesCivilesHisto result;
+	public AdressesCivilesHistoriques getAdressesHisto(long noIndividu, boolean strict) throws DonneesCivilesException {
+		AdressesCivilesHistoriques result;
 		long time = tracing.start();
 		try {
 			result = target.getAdressesHisto(noIndividu, strict);
@@ -299,14 +296,6 @@ public class ServiceCivilTracing implements ServiceCivilService, InitializingBea
 		finally {
 			tracing.end(time, "isWarmable");
 		}
-	}
-
-	public AdressesCivilesActives getAdressesCivilesActives(long noIndividu, RegDate date, boolean strict) throws DonneesCivilesException {
-		return null;
-	}
-
-	public AdressesCivilesHistoriques getAdressesCivilesHistorique(long noIndividu, boolean strict) throws DonneesCivilesException {
-		return null;  
 	}
 
 	public void afterPropertiesSet() throws Exception {

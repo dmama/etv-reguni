@@ -7,8 +7,6 @@ import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.civil.model.EnumAttributeIndividu;
-import ch.vd.uniregctb.adresse.AdressesCiviles;
-import ch.vd.uniregctb.adresse.AdressesCivilesHisto;
 import ch.vd.uniregctb.adresse.HistoriqueCommune;
 import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.common.NomPrenom;
@@ -42,12 +40,12 @@ public class ProxyServiceCivil implements ServiceCivilService {
 		this.target = null;
 	}
 
-	public AdressesCiviles getAdresses(long noIndividu, RegDate date, boolean strict) throws DonneesCivilesException {
+	public AdressesCivilesActives getAdresses(long noIndividu, RegDate date, boolean strict) throws DonneesCivilesException {
 		assertTargetNotNull();
 		return target.getAdresses(noIndividu, date, strict);
 	}
 
-	public AdressesCivilesHisto getAdressesHisto(long noIndividu, boolean strict) throws DonneesCivilesException {
+	public AdressesCivilesHistoriques getAdressesHisto(long noIndividu, boolean strict) throws DonneesCivilesException {
 		assertTargetNotNull();
 		return target.getAdressesHisto(noIndividu, strict);
 	}
@@ -140,14 +138,6 @@ public class ProxyServiceCivil implements ServiceCivilService {
 
 	public boolean isWarmable() {
 		return target.isWarmable();
-	}
-
-	public AdressesCivilesActives getAdressesCivilesActives(long noIndividu, RegDate date, boolean strict) throws DonneesCivilesException {
-			return null;
-	}
-
-	public AdressesCivilesHistoriques getAdressesCivilesHistorique(long noIndividu, boolean strict) throws DonneesCivilesException {
-		return null;
 	}
 
 	public List<HistoriqueCommune> getCommunesDomicileHisto(RegDate depuis, long noIndividu, boolean strict, boolean seulementVaud) throws DonneesCivilesException, InfrastructureException {

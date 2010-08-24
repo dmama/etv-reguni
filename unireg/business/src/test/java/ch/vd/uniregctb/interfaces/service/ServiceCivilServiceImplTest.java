@@ -383,7 +383,7 @@ public class ServiceCivilServiceImplTest extends BusinessTest {
 			}
 		});
 
-		final AdressesCiviles adresses = service.getAdresses(noIndividu, RegDate.get(2002, 7, 1), false);
+		final AdressesCiviles adresses = new AdressesCiviles(service.getAdresses(noIndividu, RegDate.get(2002, 7, 1), false));
 		assertNotNull(adresses);
 		assertNull(adresses.courrier);
 		assertNull(adresses.secondaire);

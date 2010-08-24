@@ -50,7 +50,7 @@ public class DemenagementAdapter extends EvenementAdapterAvecAdresses implements
 		// Distinction adresse principale et adresse courrier
 		final AdressesCiviles adresses;
 		try {
-			adresses = serviceCivil.getAdresses(super.getNoIndividu(), evenementCivilData.getDateEvenement().getOneDayBefore(), false);
+			adresses = new AdressesCiviles(serviceCivil.getAdresses(super.getNoIndividu(), evenementCivilData.getDateEvenement().getOneDayBefore(), false));
 		}
 		catch (DonneesCivilesException e) {
 			throw new EvenementAdapterException(e);

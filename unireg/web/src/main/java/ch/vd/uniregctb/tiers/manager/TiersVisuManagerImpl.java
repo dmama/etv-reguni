@@ -285,7 +285,7 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 		List<EnumTypeAdresse> listeTypeCivil = getTypesAdressesCiviles();
 		if(noIndividu!=null){
 			if (adressesHistoCiviles) {
-				final AdressesCivilesHistoriques adressesCivilesHisto = serviceCivilService.getAdressesCivilesHistorique(noIndividu, false);
+				final AdressesCivilesHistoriques adressesCivilesHisto = serviceCivilService.getAdressesHisto(noIndividu, false);
 
 				if (adressesCivilesHisto != null) {
 					// rempli tous les types d'adresse
@@ -296,7 +296,7 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 			}
 			else {
 
-				final AdressesCivilesActives adressesCiviles = serviceCivilService.getAdressesCivilesActives(noIndividu, RegDate.get(), false);
+				final AdressesCivilesActives adressesCiviles = serviceCivilService.getAdresses(noIndividu, RegDate.get(), false);
 				if (adressesCiviles != null) {
 					// rempli tous les types d'adresse
 					for (EnumTypeAdresse type : listeTypeCivil) {
@@ -304,6 +304,7 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 					}
 				}
 			}
+
 		}
 
 

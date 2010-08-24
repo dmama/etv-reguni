@@ -486,7 +486,7 @@ public class AdresseServiceImpl implements AdresseService {
 
 		final AdressesCiviles adressesCourantes;
 		try {
-			adressesCourantes = serviceCivilService.getAdresses(individu.getNoTechnique(), date, strict);
+			adressesCourantes = new AdressesCiviles(serviceCivilService.getAdresses(individu.getNoTechnique(), date, strict));
 			final Adresse adresseCourrier = adressesCourantes.courrier;
 
 			if (adresseCourrier != null) {
@@ -2093,7 +2093,7 @@ public class AdresseServiceImpl implements AdresseService {
 	 */
 	private AdressesCiviles getAdressesCiviles(PersonnePhysique habitant, RegDate date, boolean strict) throws AdresseException {
 		try {
-			return serviceCivilService.getAdresses(habitant.getNumeroIndividu(), date, strict);
+			return new AdressesCiviles(serviceCivilService.getAdresses(habitant.getNumeroIndividu(), date, strict));
 		}
 		catch (DonneesCivilesException e) {
 			throw new AdresseDataException(e);
@@ -2151,7 +2151,7 @@ public class AdresseServiceImpl implements AdresseService {
 
 	private AdressesCivilesHisto getAdressesCivilesHisto(PersonnePhysique habitant, boolean strict) throws AdresseException {
 		try {
-			return serviceCivilService.getAdressesHisto(habitant.getNumeroIndividu(), strict);
+			return new AdressesCivilesHisto(serviceCivilService.getAdressesHisto(habitant.getNumeroIndividu(), strict),strict);
 		}
 		catch (DonneesCivilesException e) {
 			throw new AdresseDataException(e);

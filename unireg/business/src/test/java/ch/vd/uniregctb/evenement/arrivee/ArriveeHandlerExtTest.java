@@ -104,8 +104,8 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 		});
 
 		final Individu individu = serviceCivil.getIndividu(noIndividu, dateArrivee.year());
-		final AdressesCiviles anciennesAdresses = serviceCivil.getAdresses(individu.getNoTechnique(), veilleArrivee, false);
-		final AdressesCiviles nouvellesAdresses = serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false);
+		final AdressesCiviles anciennesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), veilleArrivee, false));
+		final AdressesCiviles nouvellesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false));
 
 		/*
 		 * Construit un événement d'arrivée minimal et valide
@@ -190,7 +190,7 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 		});
 
 		final Individu individu = serviceCivil.getIndividu(noIndividu, dateArrivee.year());
-		final AdressesCiviles nouvellesAdresses = serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false);
+		final AdressesCiviles nouvellesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false));
 
 		/*
 		 * Construit un événement d'arrivée minimal et valide
@@ -294,7 +294,7 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 		final Individu individuPrincipal = serviceCivil.getIndividu(noIndividuPrincipal, dateArrivee.year());
 		final Individu individuConjoint = serviceCivil.getIndividu(noIndividuConjoint, dateArrivee.year());
 		final Individu individuHorsCouple = serviceCivil.getIndividu(noIndividuHorsCouple, dateArrivee.year());
-		final AdressesCiviles nouvellesAdresses = serviceCivil.getAdresses(individuPrincipal.getNoTechnique(), dateArrivee, false);
+		final AdressesCiviles nouvellesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individuPrincipal.getNoTechnique(), dateArrivee, false));
 
 		/*
 		 * Construit un événement d'arrivée minimal et valide
@@ -393,8 +393,8 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 		});
 
 		final Individu individu = serviceCivil.getIndividu(noIndividu, dateArrivee.year());
-		final AdressesCiviles anciennesAdresses = serviceCivil.getAdresses(individu.getNoTechnique(), veilleArrivee, false);
-		final AdressesCiviles nouvellesAdresses = serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false);
+		final AdressesCiviles anciennesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), veilleArrivee, false));
+		final AdressesCiviles nouvellesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false));
 
 		List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 		List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
@@ -560,8 +560,8 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 		});
 
 		final Individu individu = serviceCivil.getIndividu(noIndividu, dateArrivee.year());
-		final AdressesCiviles anciennesAdresses = serviceCivil.getAdresses(individu.getNoTechnique(), veilleArrivee, false);
-		final AdressesCiviles nouvellesAdresses = serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false);
+		final AdressesCiviles anciennesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), veilleArrivee, false));
+		final AdressesCiviles nouvellesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false));
 
 		List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 		List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
@@ -657,8 +657,8 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 		 */
 		{
 			final Individu individu = serviceCivil.getIndividu(noIndividuLAbbaye, dateArrivee.year());
-			final AdressesCiviles anciennesAdresses = serviceCivil.getAdresses(individu.getNoTechnique(), veilleArrivee, false);
-			final AdressesCiviles nouvellesAdresses = serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false);
+			final AdressesCiviles anciennesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), veilleArrivee, false));
+			final AdressesCiviles nouvellesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false));
 
 			MockArrivee arrivee = new MockArrivee();
 			arrivee.setType(TypeEvenementCivil.ARRIVEE_DANS_COMMUNE);
@@ -684,8 +684,8 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 		 */
 		{
 			final Individu individu = serviceCivil.getIndividu(noIndividuLeLieu, dateArrivee.year());
-			final AdressesCiviles anciennesAdresses = serviceCivil.getAdresses(individu.getNoTechnique(), veilleArrivee, false);
-			final AdressesCiviles nouvellesAdresses = serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false);
+			final AdressesCiviles anciennesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), veilleArrivee, false));
+			final AdressesCiviles nouvellesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false));
 
 			MockArrivee arrivee = new MockArrivee();
 			arrivee.setType(TypeEvenementCivil.ARRIVEE_DANS_COMMUNE);
@@ -754,8 +754,8 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 		 */
 		{
 			final Individu individu = serviceCivil.getIndividu(noIndividuLeSentier, dateArrivee.year());
-			final AdressesCiviles anciennesAdresses = serviceCivil.getAdresses(individu.getNoTechnique(), veilleArrivee, false);
-			final AdressesCiviles nouvellesAdresses = serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false);
+			final AdressesCiviles anciennesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), veilleArrivee, false));
+			final AdressesCiviles nouvellesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false));
 
 			MockArrivee arrivee = new MockArrivee();
 			arrivee.setType(TypeEvenementCivil.ARRIVEE_DANS_COMMUNE);
@@ -779,8 +779,8 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 		 */
 		{
 			final Individu individu = serviceCivil.getIndividu(noIndividuLeLieu, dateArrivee.year());
-			final AdressesCiviles anciennesAdresses = serviceCivil.getAdresses(individu.getNoTechnique(), veilleArrivee, false);
-			final AdressesCiviles nouvellesAdresses = serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false);
+			final AdressesCiviles anciennesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), veilleArrivee, false));
+			final AdressesCiviles nouvellesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false));
 
 			MockArrivee arrivee = new MockArrivee();
 			arrivee.setType(TypeEvenementCivil.ARRIVEE_DANS_COMMUNE);
@@ -894,8 +894,8 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 		});
 
 		final Individu individu = serviceCivil.getIndividu(noIndividu, dateArrivee.year());
-		final AdressesCiviles anciennesAdresses = serviceCivil.getAdresses(individu.getNoTechnique(), veilleArrivee, false);
-		final AdressesCiviles nouvellesAdresses = serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false);
+		final AdressesCiviles anciennesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), veilleArrivee, false));
+		final AdressesCiviles nouvellesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false));
 
 		List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 		List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
@@ -965,8 +965,8 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 		});
 
 		final Individu individu = serviceCivil.getIndividu(noIndividu, dateArrivee.year());
-		final AdressesCiviles anciennesAdresses = serviceCivil.getAdresses(individu.getNoTechnique(), veilleArrivee, false);
-		final AdressesCiviles nouvellesAdresses = serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false);
+		final AdressesCiviles anciennesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), veilleArrivee, false));
+		final AdressesCiviles nouvellesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false));
 
 		{
 			/*
@@ -1058,8 +1058,8 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 		});
 
 		final Individu individu = serviceCivil.getIndividu(noIndividu, dateArrivee.year());
-		final AdressesCiviles anciennesAdresses = serviceCivil.getAdresses(individu.getNoTechnique(), veilleArrivee, false);
-		final AdressesCiviles nouvellesAdresses = serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false);
+		final AdressesCiviles anciennesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), veilleArrivee, false));
+		final AdressesCiviles nouvellesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false));
 
 		{
 			/*
@@ -1164,8 +1164,8 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 		});
 
 		final Individu individu = serviceCivil.getIndividu(noIndividu, dateArrivee.year());
-		final AdressesCiviles anciennesAdresses = serviceCivil.getAdresses(individu.getNoTechnique(), veilleArrivee, false);
-		final AdressesCiviles nouvellesAdresses = serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false);
+		final AdressesCiviles anciennesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), veilleArrivee, false));
+		final AdressesCiviles nouvellesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false));
 
 		{
 			/*
@@ -1256,8 +1256,8 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 		});
 
 		final Individu individu = serviceCivil.getIndividu(noIndividu, dateArrivee.year());
-		final AdressesCiviles anciennesAdresses = serviceCivil.getAdresses(individu.getNoTechnique(), veilleArrivee, false);
-		final AdressesCiviles nouvellesAdresses = serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false);
+		final AdressesCiviles anciennesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), veilleArrivee, false));
+		final AdressesCiviles nouvellesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false));
 
 		{
 			/*
@@ -1347,8 +1347,8 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 		});
 
 		final Individu individu = serviceCivil.getIndividu(noIndividu, dateArrivee.year());
-		final AdressesCiviles anciennesAdresses = serviceCivil.getAdresses(individu.getNoTechnique(), veilleArrivee, false);
-		final AdressesCiviles nouvellesAdresses = serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false);
+		final AdressesCiviles anciennesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), veilleArrivee, false));
+		final AdressesCiviles nouvellesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false));
 
 		{
 			/*
@@ -1475,8 +1475,8 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 
 		final Individu individuPrincipal = serviceCivil.getIndividu(noIndividuPrincipal, dateArrivee.year());
 		final Individu individuConjoint = serviceCivil.getIndividu(noIndividuConjoint, dateArrivee.year());
-		final AdressesCiviles anciennesAdresses = serviceCivil.getAdresses(individuPrincipal.getNoTechnique(), veilleArrivee, false);
-		final AdressesCiviles nouvellesAdresses = serviceCivil.getAdresses(individuPrincipal.getNoTechnique(), dateArrivee, false);
+		final AdressesCiviles anciennesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individuPrincipal.getNoTechnique(), veilleArrivee, false));
+		final AdressesCiviles nouvellesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individuPrincipal.getNoTechnique(), dateArrivee, false));
 
 		doInNewTransaction(new TxCallback() {
 			@Override
@@ -1621,8 +1621,8 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 
 		final Individu individuPrincipal = serviceCivil.getIndividu(noIndividuPrincipal, dateArrivee.year());
 		final Individu individuConjoint = serviceCivil.getIndividu(noIndividuConjoint, dateArrivee.year());
-		final AdressesCiviles anciennesAdresses = serviceCivil.getAdresses(individuPrincipal.getNoTechnique(), veilleArrivee, false);
-		final AdressesCiviles nouvellesAdresses = serviceCivil.getAdresses(individuPrincipal.getNoTechnique(), dateArrivee, false);
+		final AdressesCiviles anciennesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individuPrincipal.getNoTechnique(), veilleArrivee, false));
+		final AdressesCiviles nouvellesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individuPrincipal.getNoTechnique(), dateArrivee, false));
 
 		doInNewTransaction(new TxCallback() {
 			@Override
@@ -1776,8 +1776,8 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 
 		final Individu individuPrincipal = serviceCivil.getIndividu(noIndividuPrincipal, dateArrivee.year());
 		final Individu individuConjoint = serviceCivil.getIndividu(noIndividuConjoint, dateArrivee.year());
-		final AdressesCiviles anciennesAdresses = serviceCivil.getAdresses(individuPrincipal.getNoTechnique(), veilleArrivee, false);
-		final AdressesCiviles nouvellesAdresses = serviceCivil.getAdresses(individuPrincipal.getNoTechnique(), dateArrivee, false);
+		final AdressesCiviles anciennesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individuPrincipal.getNoTechnique(), veilleArrivee, false));
+		final AdressesCiviles nouvellesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individuPrincipal.getNoTechnique(), dateArrivee, false));
 
 		doInNewTransaction(new TxCallback() {
 			@Override
@@ -1906,8 +1906,8 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 		});
 
 		final Individu individu = serviceCivil.getIndividu(noIndividu, dateArrivee.year());
-		final AdressesCiviles anciennesAdresses = serviceCivil.getAdresses(individu.getNoTechnique(), veilleArrivee, false);
-		final AdressesCiviles nouvellesAdresses = serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false);
+		final AdressesCiviles anciennesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), veilleArrivee, false));
+		final AdressesCiviles nouvellesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false));
 
 		{
 			/*
@@ -2026,8 +2026,8 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 
 		final Individu individuPrincipal = serviceCivil.getIndividu(noIndividuPrincipal, dateArrivee.year());
 		final Individu individuConjoint = serviceCivil.getIndividu(noIndividuConjoint, dateArrivee.year());
-		final AdressesCiviles anciennesAdresses = serviceCivil.getAdresses(individuPrincipal.getNoTechnique(), veilleArrivee, false);
-		final AdressesCiviles nouvellesAdresses = serviceCivil.getAdresses(individuPrincipal.getNoTechnique(), dateArrivee, false);
+		final AdressesCiviles anciennesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individuPrincipal.getNoTechnique(), veilleArrivee, false));
+		final AdressesCiviles nouvellesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individuPrincipal.getNoTechnique(), dateArrivee, false));
 
 		doInNewTransaction(new TxCallback() {
 			@Override
@@ -2187,8 +2187,8 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 		});
 		
 		final Individu individu = serviceCivil.getIndividu(numeroIndividu, dateArrivee.year());
-		final AdressesCiviles anciennesAdresses = serviceCivil.getAdresses(individu.getNoTechnique(), veilleArrivee, false);
-		final AdressesCiviles nouvellesAdresses = serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false);
+		final AdressesCiviles anciennesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), veilleArrivee, false));
+		final AdressesCiviles nouvellesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individu.getNoTechnique(), dateArrivee, false));
 		
 		numeroCTB = ((Long) doInNewTransaction(new TxCallback() {
 			@SuppressWarnings("deprecation")
@@ -2349,8 +2349,8 @@ public class ArriveeHandlerExtTest extends AbstractEvenementHandlerTest {
 		
 		final Individu individuPrincipal = serviceCivil.getIndividu(noIndividuPrincipal, dateArrivee.year());
 		final Individu individuConjoint = serviceCivil.getIndividu(noIndividuConjoint, dateArrivee.year());
-		final AdressesCiviles anciennesAdresses = serviceCivil.getAdresses(individuPrincipal.getNoTechnique(), veilleArrivee, false);
-		final AdressesCiviles nouvellesAdresses = serviceCivil.getAdresses(individuPrincipal.getNoTechnique(), dateArrivee, false);
+		final AdressesCiviles anciennesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individuPrincipal.getNoTechnique(), veilleArrivee, false));
+		final AdressesCiviles nouvellesAdresses = new AdressesCiviles(serviceCivil.getAdresses(individuPrincipal.getNoTechnique(), dateArrivee, false));
 		
 		final class Couple {
 			final long idPrincipal;
