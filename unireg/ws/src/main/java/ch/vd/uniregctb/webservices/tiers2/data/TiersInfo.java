@@ -8,6 +8,8 @@ import ch.vd.uniregctb.webservices.tiers2.impl.DataHelper;
 
 /**
  * Information disponibles sur un tiers retournées lors du recherche.
+ * <p/>
+ * Les informations détaillées des tiers (fors fiscaux, adresses, ...) sont disponibles au travers des méthodes getTiers.
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "TiersInfo", propOrder = {
@@ -18,10 +20,20 @@ public class TiersInfo {
 	public long numero;
 	public String nom1;
 	public String nom2;
+
+	/**
+	 * La date de naissance avec le format YYYYMMDD.
+	 * <p/>
+	 * <b>Attention:</b> cette date peut être partielle au niveau du jour et du mois (ex: "197311" - jour de naissance inconnu, "1973" - jour et mois de naissance inconnus).
+	 */
 	public String dateNaissance;
 	public String rue;
 	public String npa;
 	public String localite;
+
+	/**
+	 * Contient le nom en toutes lettres (Suisse, Albanie, Japon, ...) du pays de l'adresse.
+	 */
 	public String pays;
 	public Tiers.Type type;
 
