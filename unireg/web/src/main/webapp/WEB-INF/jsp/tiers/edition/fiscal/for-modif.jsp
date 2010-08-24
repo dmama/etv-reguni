@@ -76,7 +76,7 @@
 					<tr id="motif_for_periodique" class="<unireg:nextRowClass/>" >
 
 						<%-- [UNIREG-2322] la date de fin est éditable sur les fors principaux ouverts et sur tous les fors secondaires --%>
-						<c:if test="${command.dateFermeture == null || command.natureForFiscal == 'ForFiscalSecondaire'}">
+						<c:if test="${command.dateFermeture == null || command.motifFermeture == null || command.natureForFiscal == 'ForFiscalSecondaire'}">
 							<%-- Date de fermeture (éditable) --%>
 							<td><fmt:message key="label.date.fermeture" />&nbsp;:</td>
 							<td>
@@ -94,7 +94,7 @@
 								<form:errors path="motifFermeture" cssClass="error" />
 							</td>
 						</c:if>
-						<c:if test="${command.dateFermeture != null && command.natureForFiscal != 'ForFiscalSecondaire'}">
+						<c:if test="${command.dateFermeture != null && command.motifFermeture != null && command.natureForFiscal != 'ForFiscalSecondaire'}">
 							<%-- Date de fermeture (non éditable) --%>
 							<td><fmt:message key="label.date.fermeture" />&nbsp;:</td>
 							<td><fmt:formatDate value="${command.dateFermeture}" pattern="dd.MM.yyyy"/></td>
@@ -113,7 +113,7 @@
 				<c:if test="${command.natureForFiscal == 'ForFiscalSecondaire'}">
 				updateMotifsOuverture(E$('motifOuverture'), 'motifOuverture', '${command.numeroCtb}', '${command.genreImpot}', '${command.motifRattachement}', '${command.motifOuverture}');
 				</c:if>
-				<c:if test="${command.dateFermeture == null || command.natureForFiscal == 'ForFiscalSecondaire'}">
+				<c:if test="${command.dateFermeture == null || command.motifFermeture == null || command.natureForFiscal == 'ForFiscalSecondaire'}">
 				updateMotifsFermeture(E$('motifFermeture'), 'motifFermeture', '${command.numeroCtb}', '${command.genreImpot}', '${command.motifRattachement}', '${command.motifFermeture}');
 				</c:if>
 			</script>
