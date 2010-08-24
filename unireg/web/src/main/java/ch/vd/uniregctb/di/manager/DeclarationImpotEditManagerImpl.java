@@ -702,24 +702,37 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 			di.setDateDebut(dateDebut);
 			di.setDateFin(RegDate.get(diEditView.getDateFinPeriodeImposition()));
 
-			TypeContribuable typeContribuable = null;
-			final List<Assujettissement> assujettissements = Assujettissement.determine(ctb, dateDebut.year());
-			if (assujettissements != null) {
-				final Assujettissement assujettissement = assujettissements.get(assujettissements.size() - 1);
-				if ((assujettissement instanceof VaudoisOrdinaire) || (assujettissement instanceof Indigent)) {
-					typeContribuable = TypeContribuable.VAUDOIS_ORDINAIRE;
+			final TypeContribuable typeContribuable;
+			final boolean diLibre;
+			final List<PeriodeImposition> periodesImposition = PeriodeImposition.determine(ctb, dateDebut.year());
+			if (periodesImposition != null) {
+				final PeriodeImposition dernierePeriode = periodesImposition.get(periodesImposition.size() - 1);
+				typeContribuable = dernierePeriode.getTypeContribuable();
+
+				// une DI est libre si je ne trouve aucune période d'assujettissement qui colle avec les dates de la DI elle-même
+				// (il faut quand-même accessoirement qu'elle soit créée sur la période fiscale courante)
+				if (dateDebut.year() == RegDate.get().year()) {
+					boolean trouveMatch = false;
+					for (PeriodeImposition p : periodesImposition) {
+						trouveMatch = DateRangeHelper.equals(p, di);
+						if (trouveMatch) {
+							break;
+						}
+					}
+					diLibre = !trouveMatch;
 				}
-				else if (assujettissement instanceof HorsSuisse) {
-					typeContribuable = TypeContribuable.HORS_SUISSE;
-				}
-				else if (assujettissement instanceof HorsCanton) {
-					typeContribuable = TypeContribuable.HORS_CANTON;
-				}
-				else if (assujettissement instanceof VaudoisDepense) {
-					typeContribuable = TypeContribuable.VAUDOIS_DEPENSE;
+				else {
+					diLibre = false;
 				}
 			}
+			else {
+				// pas d'assujettissement + di = di libre, forcément...
+				diLibre = true;
+				typeContribuable = null;
+			}
+
 			di.setTypeContribuable(typeContribuable);
+			di.setLibre(diLibre);
 
 			final ForGestion forGestion = tiersService.getForGestionActif(ctb, di.getDateFin());
 			if (forGestion != null) {

@@ -1242,6 +1242,7 @@
     <column>MODE_COM</column>
     <column>PERIODE_ID</column>
     <column>MODELE_DOC_ID</column>
+    <column>LIBRE</column>
     <row>
       <value>2008-01-01</value>
       <value>1</value>
@@ -1252,6 +1253,7 @@
       <value>TRIMESTRIEL</value>
       <value>PAPIER</value>
       <value>4</value>
+      <null/>
       <null/>
     </row>
     <row>
@@ -1265,6 +1267,7 @@
       <value>PAPIER</value>
       <value>4</value>
       <null/>
+      <null/>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -1277,6 +1280,7 @@
       <null/>
       <value>5</value>
       <value>1</value>
+      <value>0</value>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -1289,6 +1293,7 @@
       <null/>
       <value>6</value>
       <value>1</value>
+      <value>0</value>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -1301,6 +1306,7 @@
       <null/>
       <value>7</value>
       <value>2</value>
+      <value>0</value>
     </row>
   </table>
   <table name="DELAI_DECLARATION">

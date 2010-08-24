@@ -534,7 +534,7 @@ public class TacheServiceImpl implements TacheService {
 								toUpdate = di;
 								toAdd = null;
 							}
-							else {
+							else if (!isDiLibreSurPeriodeCourante(di, anneeCourante)) {
 								// si les types sont incompatibles, on annule et on prévoit de recréer la déclaration
 								deleteActions.add(new DeleteDI(di));
 								toAdd = periode;
@@ -692,6 +692,10 @@ public class TacheServiceImpl implements TacheService {
 	private static boolean peutMettreAJourDeclarationExistante(DeclarationImpotOrdinaire diExistante, PeriodeImposition periode, int anneeCourante) {
 		return areTypeContribuableCompatibles(diExistante.getTypeContribuable(), periode.getTypeContribuable()) &&
 			   isPeriodePasseeOuCouranteIncomplete(periode, anneeCourante);
+	}
+
+	private static boolean isDiLibreSurPeriodeCourante(DeclarationImpotOrdinaire di, int anneeCourante) {
+		return di.isLibre() && di.getPeriode().getAnnee() == anneeCourante;
 	}
 
 	/**

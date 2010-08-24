@@ -2047,6 +2047,7 @@
     <column>MODELE_DOC_ID</column>
     <column>NUMERO</column>
     <column>NO_OFS_FOR_GESTION</column>
+    <column>LIBRE</column>
     <row>
       <value>2008-01-01</value>
       <value>2008-01-01</value>
@@ -2059,6 +2060,7 @@
       <value>TRIMESTRIEL</value>
       <value>PAPIER</value>
       <value>8</value>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -2075,6 +2077,7 @@
       <value>TRIMESTRIEL</value>
       <value>PAPIER</value>
       <value>8</value>
+      <null/>
       <null/>
       <null/>
       <null/>
@@ -2094,6 +2097,7 @@
       <value>1</value>
       <value>1</value>
       <value>5652</value>
+      <value>0</value>
     </row>
     <row>
       <value>2007-01-01</value>
@@ -2110,6 +2114,7 @@
       <value>1</value>
       <value>1</value>
       <value>5652</value>
+      <value>0</value>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -2126,6 +2131,7 @@
       <value>2</value>
       <value>1</value>
       <value>5652</value>
+      <value>0</value>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -2139,6 +2145,7 @@
       <value>TRIMESTRIEL</value>
       <value>PAPIER</value>
       <value>8</value>
+      <null/>
       <null/>
       <null/>
       <null/>

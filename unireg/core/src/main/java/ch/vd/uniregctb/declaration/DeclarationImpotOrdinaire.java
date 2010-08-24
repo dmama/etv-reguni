@@ -82,6 +82,12 @@ public class DeclarationImpotOrdinaire extends Declaration {
 
 	private Long retourCollectiviteAdministrativeId;
 
+	/**
+	 * <code>true</code> si la DI a été créée comme une "di libre", c'est-à-dire une DI sur la période courante (au moment de sa création)
+	 * sans fin d'assujettissement connue (comme un décès ou un départ HS)
+	 */
+	private boolean libre;
+
 	@Column(name = "RETOUR_COLL_ADMIN_ID")
 	@ForeignKey(name = "FK_DECL_RET_COLL_ADMIN_ID")
 	public Long getRetourCollectiviteAdministrativeId() {
@@ -230,9 +236,18 @@ public class DeclarationImpotOrdinaire extends Declaration {
 		// end-user-code
 	}
 
+	@Column(name = "LIBRE")
+	public boolean isLibre() {
+		return libre;
+	}
+
+	public void setLibre(boolean libre) {
+		this.libre = libre;
+	}
+
 	@Transient
 	public TypeDocument getTypeDeclaration() {
-		ModeleDocument modele = getModeleDocument();
+		final ModeleDocument modele = getModeleDocument();
 		if (modele == null) {
 			return null;
 		}
@@ -242,7 +257,7 @@ public class DeclarationImpotOrdinaire extends Declaration {
 	@Override
 	public ValidationResults validate() {
 
-		ValidationResults results = super.validate();
+		final ValidationResults results = super.validate();
 
 		if (getPeriode() == null) {
 			results.addError("La période ne peut pas être nulle.");

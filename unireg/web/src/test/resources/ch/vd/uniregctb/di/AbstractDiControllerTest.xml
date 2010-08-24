@@ -446,6 +446,7 @@
     <column>PERIODE_ID</column>
     <column>MODELE_DOC_ID</column>
     <column>NUMERO</column>
+    <column>LIBRE</column>
     <row>
       <value>2008-01-01</value>
       <value>200</value>
@@ -456,6 +457,7 @@
       <value>4</value>
       <value>1</value>
       <value>1</value>
+      <value>0</value>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -467,6 +469,7 @@
       <value>3</value>
       <value>1</value>
       <value>2</value>
+      <value>0</value>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -478,6 +481,7 @@
       <value>2</value>
       <value>1</value>
       <value>3</value>
+      <value>0</value>
     </row>
   </table>
   <table name="DELAI_DECLARATION">

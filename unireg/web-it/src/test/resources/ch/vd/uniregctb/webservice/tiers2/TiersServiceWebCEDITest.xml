@@ -3993,6 +3993,7 @@
     <column>MODELE_DOC_ID</column>
     <column>SANS_RAPPEL</column>
     <column>DELAI_RETOUR_IMPRIME</column>
+    <column>LIBRE</column>
     <row>
       <value>DI</value>
       <value>8839528</value>
@@ -4018,6 +4019,7 @@
       <value>123</value>
       <null/>
       <null/>
+      <value>0</value>
     </row>
     <row>
       <value>DI</value>
@@ -4044,6 +4046,7 @@
       <value>147</value>
       <null/>
       <null/>
+      <value>0</value>
     </row>
     <row>
       <value>DI</value>
@@ -4070,6 +4073,7 @@
       <value>106</value>
       <null/>
       <null/>
+      <value>0</value>
     </row>
     <row>
       <value>DI</value>
@@ -4096,6 +4100,7 @@
       <value>135</value>
       <null/>
       <null/>
+      <value>0</value>
     </row>
     <row>
       <value>DI</value>
@@ -4122,6 +4127,7 @@
       <value>159</value>
       <null/>
       <null/>
+      <value>0</value>
     </row>
     <row>
       <value>DI</value>
@@ -4148,6 +4154,7 @@
       <value>94</value>
       <null/>
       <null/>
+      <value>0</value>
     </row>
     <row>
       <value>DI</value>
@@ -4174,6 +4181,7 @@
       <value>118</value>
       <null/>
       <null/>
+      <value>0</value>
     </row>
     <row>
       <value>DI</value>
@@ -4200,6 +4208,7 @@
       <value>142</value>
       <null/>
       <null/>
+      <value>0</value>
     </row>
     <row>
       <value>DI</value>
@@ -4226,6 +4235,7 @@
       <value>94</value>
       <null/>
       <null/>
+      <value>0</value>
     </row>
     <row>
       <value>DI</value>
@@ -4252,6 +4262,7 @@
       <value>106</value>
       <null/>
       <null/>
+      <value>0</value>
     </row>
     <row>
       <value>DI</value>
@@ -4278,6 +4289,7 @@
       <value>159</value>
       <null/>
       <null/>
+      <value>0</value>
     </row>
     <row>
       <value>DI</value>
@@ -4304,6 +4316,7 @@
       <value>130</value>
       <null/>
       <null/>
+      <value>0</value>
     </row>
     <row>
       <value>DI</value>
@@ -4330,6 +4343,7 @@
       <value>147</value>
       <null/>
       <null/>
+      <value>0</value>
     </row>
     <row>
       <value>DI</value>
@@ -4356,6 +4370,7 @@
       <value>106</value>
       <null/>
       <null/>
+      <value>0</value>
     </row>
     <row>
       <value>DI</value>
@@ -4382,6 +4397,7 @@
       <value>159</value>
       <null/>
       <null/>
+      <value>0</value>
     </row>
     <row>
       <value>DI</value>
@@ -4408,6 +4424,7 @@
       <value>135</value>
       <null/>
       <null/>
+      <value>0</value>
     </row>
     <row>
       <value>DI</value>
@@ -4434,6 +4451,7 @@
       <value>94</value>
       <null/>
       <null/>
+      <value>0</value>
     </row>
     <row>
       <value>DI</value>
@@ -4460,6 +4478,7 @@
       <value>123</value>
       <null/>
       <null/>
+      <value>0</value>
     </row>
   </table>
   <table name="ETAT_DECLARATION">

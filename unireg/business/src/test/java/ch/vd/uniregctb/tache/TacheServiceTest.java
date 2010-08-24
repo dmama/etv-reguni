@@ -4415,4 +4415,139 @@ public class TacheServiceTest extends BusinessTest {
 			}
 		});
 	}
+
+	@Test
+	@NotTransactional
+	public void testDiLibre() throws Exception {
+
+		// contribuable assujetti depuis le début de l'année qui se fait faire une DI libre en annonçant son départ
+
+		final RegDate aujourdhui = RegDate.get();
+		final int anneeCourante = aujourdhui.year();
+
+		final long ppId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+			public Long doInTransaction(TransactionStatus status) {
+
+				final PersonnePhysique pp = addNonHabitant("Viktor", "Krum", date(1980, 10, 25), Sexe.MASCULIN);
+				addForPrincipal(pp, RegDate.get(anneeCourante, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Renens);
+
+				final PeriodeFiscale pf = addPeriodeFiscale(anneeCourante);
+				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
+				final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, date(anneeCourante, 1, 1), aujourdhui, TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+				di.setLibre(true);
+
+				return pp.getId();
+			}
+		});
+
+		// la DI doit avoir été acceptée, non annulée et il ne doit y avoir aucune tâche d'annulation de DI en instance
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+
+				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
+				assertNotNull(pp);
+
+				final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) pp.getDeclarationActive(aujourdhui);
+				assertNotNull(di);
+				assertFalse(di.isAnnule());
+				assertEquals(RegDate.get(anneeCourante, 1, 1), di.getDateDebut());
+				assertEquals(aujourdhui, di.getDateFin());
+
+				final TacheCriteria criterion = new TacheCriteria();
+				criterion.setContribuable(pp);
+				final List<Tache> taches = tacheDAO.find(criterion);
+				assertNotNull(taches);
+				assertEquals(0, taches.size());
+
+				return null;
+			}
+		});
+	}
+
+	@Test
+	@NotTransactional
+	public void testNouvelleFinAssujettissementAvecDICouranteDejaEmise() throws Exception {
+
+		// cas d'un contribuable dont on apprend aujourd'hui seulement le départ HS
+		// l'année dernière, alors que sa DI de la période courante a déjà été émise
+
+		final RegDate aujourdhui = RegDate.get();
+		final int anneeCourante = aujourdhui.year();
+
+		// mise en place
+		final long ppId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+			public Long doInTransaction(TransactionStatus status) {
+
+				final PersonnePhysique pp = addNonHabitant("Viktor", "Krum", date(1980, 10, 25), Sexe.MASCULIN);
+				addForPrincipal(pp, RegDate.get(anneeCourante - 2, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+
+				// on crée déjà la DI de l'an dernier et de l'année d'avant
+				{
+					final PeriodeFiscale pf = addPeriodeFiscale(anneeCourante - 2);
+					final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
+					addDeclarationImpot(pp, pf, date(anneeCourante - 2, 1, 1), date(anneeCourante - 2, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+				}
+				{
+					final PeriodeFiscale pf = addPeriodeFiscale(anneeCourante - 1);
+					final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
+					addDeclarationImpot(pp, pf, date(anneeCourante - 1, 1, 1), date(anneeCourante - 1, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+				}
+
+				// et aussi celle de cette année (DI libre)
+				{
+					final PeriodeFiscale pf = addPeriodeFiscale(anneeCourante);
+					final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
+					final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, date(anneeCourante, 1, 1), aujourdhui, TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+					di.setLibre(true);
+				}
+
+				return pp.getNumero();
+			}
+		});
+
+		// ensuite, on ferme le for l'année dernière, les deux DI devaient disparaître
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+
+				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
+				assertNotNull(pp);
+
+				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+				assertNull(ffp.getDateFin());
+				assertNull(ffp.getMotifFermeture());
+
+				ffp.setDateFin(RegDate.get(anneeCourante - 1, 7, 12));
+				ffp.setMotifFermeture(MotifFor.DEPART_HC);
+				return null;
+			}
+		});
+
+		// plus de di !
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+
+				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
+				assertNotNull(pp);
+
+				final List<Declaration> di = pp.getDeclarationForPeriode(anneeCourante);
+				assertNotNull(di);
+				assertEquals(1, di.size());
+				assertFalse(di.get(0).isAnnule());      // pas annulée, mais une tâche d'annulation doit être présente
+
+				final TacheCriteria criterion = new TacheCriteria();
+				criterion.setContribuable(pp);
+				criterion.setTypeTache(TypeTache.TacheAnnulationDeclarationImpot);
+				criterion.setAnnee(anneeCourante);
+				final List<Tache> taches = tacheDAO.find(criterion);
+				assertNotNull(taches);
+				assertEquals(1, taches.size());
+
+				final TacheAnnulationDeclarationImpot tache = (TacheAnnulationDeclarationImpot) taches.get(0);
+				assertNotNull(tache);
+				assertEquals(di.get(0).getId(), tache.getDeclarationImpotOrdinaire().getId());
+
+				return null;
+			}
+		});
+	}
 }

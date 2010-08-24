@@ -196,6 +196,7 @@
     <column>DATE_FIN</column>
     <column>PERIODE_ID</column>
     <column>ANNULATION_DATE</column>
+    <column>LIBRE</column>
     <row>
       <value>2008-01-01</value>
       <value>20</value>
@@ -205,7 +206,8 @@
       <value>20051231</value>
       <value>1</value>
       <null/>
-    </row>
+      <value>0</value>
+	</row>
     <row>
       <value>2008-01-01</value>
       <value>21</value>
@@ -215,7 +217,8 @@
       <value>20070131</value>
       <value>3</value>
       <null/>
-    </row>
+      <value>0</value>
+	</row>
     <row>
       <value>2008-01-01</value>
       <value>22</value>
@@ -225,7 +228,8 @@
       <value>20061231</value>
       <value>2</value>
       <value>2007-02-02</value>
-    </row>
+      <value>0</value>
+	</row>
   </table>
   <table name="DELAI_DECLARATION">
     <column>LOG_MDATE</column>
