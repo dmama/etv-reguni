@@ -69,7 +69,7 @@ public final class EvenementFiscalSenderImpl implements EvenementFiscalSender {
 		}
 
 		if (!enabled) {
-			LOGGER.info("Evénements fiscaux désactivé: l'événement n° " + evenement.getId() + " n'est pas envoyé.");
+			LOGGER.info("Evénements fiscaux désactivés: l'événement n° " + evenement.getId() + " n'est pas envoyé.");
 			return;
 		}
 

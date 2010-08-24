@@ -108,6 +108,7 @@
     <column>MODE_COM</column>
     <column>PERIODE_ID</column>
     <column>MODELE_DOC_ID</column>
+    <column>LIBRE</column>
     <row>
       <value>2008-01-01</value>
       <value>1</value>
@@ -119,6 +120,7 @@
       <null/>
       <value>1</value>
       <value>1</value>
+      <value>0</value>
     </row>
   </table>
   <table name="TACHE">

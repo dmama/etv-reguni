@@ -4692,6 +4692,7 @@
     <column>MODELE_DOC_ID</column>
     <column>SANS_RAPPEL</column>
     <column>DELAI_RETOUR_IMPRIME</column>
+    <column>LIBRE</column>
     <row>
       <value>DI</value>
       <value>15791137</value>
@@ -4717,6 +4718,7 @@
       <value>142</value>
       <null/>
       <null/>
+	  <value>0</value>
     </row>
     <row>
       <value>DI</value>
@@ -4743,6 +4745,7 @@
       <value>159</value>
       <null/>
       <null/>
+      <value>0</value>
     </row>
   </table>
   <table name="ETAT_DECLARATION">

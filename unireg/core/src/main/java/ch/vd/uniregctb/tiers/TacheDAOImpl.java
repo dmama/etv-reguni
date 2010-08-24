@@ -196,20 +196,20 @@ public class TacheDAOImpl extends GenericDAOImpl<Tache, Long> implements TacheDA
 		// Année de la période d'imposition
 		final Integer annee = criterion.getAnnee();
 		if (annee != null) {
-			RegDate dateDebutPeriode = RegDate.get(annee.intValue(), 1, 1);
-			RegDate dateFinPeriode = RegDate.get(annee.intValue(), 12, 31);
+			final RegDate dateDebutPeriode = RegDate.get(annee, 1, 1);
+			final RegDate dateFinPeriode = RegDate.get(annee, 12, 31);
 
 			if (TypeTache.TacheEnvoiDeclarationImpot.equals(typeTache)) {
 				clause += " and tache.dateDebut >= ? ";
 				clause += " and tache.dateFin <= ? ";
-				params.add(new Integer(dateDebutPeriode.index()));
-				params.add(new Integer(dateFinPeriode.index()));
+				params.add(dateDebutPeriode.index());
+				params.add(dateFinPeriode.index());
 			}
 			else if (TypeTache.TacheAnnulationDeclarationImpot.equals(typeTache)) {
 				clause += " and tache.declarationImpotOrdinaire.dateDebut >= ? ";
 				clause += " and tache.declarationImpotOrdinaire.dateFin <= ? ";
-				params.add(new Integer(dateDebutPeriode.index()));
-				params.add(new Integer(dateFinPeriode.index()));
+				params.add(dateDebutPeriode.index());
+				params.add(dateFinPeriode.index());
 			}
 		}
 

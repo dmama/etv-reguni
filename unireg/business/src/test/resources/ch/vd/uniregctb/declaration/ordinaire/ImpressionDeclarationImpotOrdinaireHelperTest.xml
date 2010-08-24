@@ -941,6 +941,7 @@
     <column>PERIODE_ID</column>
     <column>MODELE_DOC_ID</column>
     <column>NO_OFS_FOR_GESTION</column>
+    <column>LIBRE</column>
     <row>
       <value>2008-01-01</value>
       <value>xcitst</value>
@@ -955,6 +956,7 @@
       <value>5</value>
       <value>1</value>
       <value>5652</value>
+      <value>0</value>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -970,6 +972,7 @@
       <value>6</value>
       <value>1</value>
       <value>5652</value>
+      <value>0</value>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -985,6 +988,7 @@
       <value>7</value>
       <value>2</value>
       <value>5652</value>
+      <value>0</value>
     </row>
   </table>
   <table name="DELAI_DECLARATION">

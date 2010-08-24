@@ -1330,6 +1330,7 @@
     <column>MODELE_DOC_ID</column>
     <column>NO_OFS_FOR_GESTION</column>
     <column>ANNULATION_DATE</column>
+    <column>LIBRE</column>
     <row>
       <value>2008-01-01</value>
       <value>1</value>
@@ -1342,6 +1343,7 @@
       <value>1</value>
       <null/>
       <value>1</value>
+      <null/>
       <null/>
       <null/>
     </row>
@@ -1359,6 +1361,7 @@
       <value>2</value>
       <value>5646</value>
       <null/>
+      <value>0</value>
     </row>
     <row>
       <value>2008-01-01</value>
@@ -1374,6 +1377,7 @@
       <value>2</value>
       <value>5646</value>
       <value>2009-03-04</value>
+      <value>0</value>
     </row>
   </table>
   <table name="DELAI_DECLARATION">
