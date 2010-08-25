@@ -2,6 +2,7 @@ package ch.vd.uniregctb.metier;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -444,9 +445,8 @@ public class MetierServiceImpl implements MetierService {
 			/*
 			 * réouverture des autres fors
 			 */
-			createForsSecondaires(dateEffective, menageCommun, ffsPrincipal, motifOuverture, null, null);
+			createForsSecondairesApresMariage(dateEffective, menageCommun, ffsPrincipal, ffsConjoint, motifOuverture, null, null);
 			createForsAutreElementImpossable(dateEffective, menageCommun, ffaeiPrincipal, motifOuverture, null, null);
-			createForsSecondaires(dateEffective, menageCommun, ffsConjoint, motifOuverture, null, null);
 			createForsAutreElementImpossable(dateEffective, menageCommun, ffaeiConjoint, motifOuverture, null, null);
 		}
 
@@ -461,6 +461,91 @@ public class MetierServiceImpl implements MetierService {
 		updateSituationFamilleMariage(menageCommun, dateEffective, etatCivilFamille);
 
 		return menageCommun;
+	}
+
+	private static final class ForSecondaireWrapper {
+		public final ForFiscalSecondaire forFiscal;
+
+		private ForSecondaireWrapper(ForFiscalSecondaire forFiscal) {
+			this.forFiscal = forFiscal;
+		}
+
+		private static <T> boolean areEqual(T o1, T o2) {
+			if (o1 == o2) {
+				return true;
+			}
+			if (o1 == null || o2 == null) {
+				return false;
+			}
+			return o1.equals(o2);
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (o == null || getClass() != o.getClass()) return false;
+
+			final ForSecondaireWrapper that = (ForSecondaireWrapper) o;
+
+			return forFiscal.getTypeAutoriteFiscale() == that.forFiscal.getTypeAutoriteFiscale() &&
+					forFiscal.getMotifFermeture() == that.forFiscal.getMotifFermeture() &&
+					areEqual(forFiscal.getNumeroOfsAutoriteFiscale(), that.forFiscal.getNumeroOfsAutoriteFiscale()) &&
+					areEqual(forFiscal.getDateDebut(), that.forFiscal.getDateDebut()) &&
+					areEqual(forFiscal.getDateFin(), that.forFiscal.getDateFin());
+		}
+
+		@Override
+		public int hashCode() {
+			final RegDate dateOuverture = forFiscal.getDateDebut();
+			final RegDate dateFermeture = forFiscal.getDateFin();
+			final MotifFor motifFermeture = forFiscal.getMotifFermeture();
+			final TypeAutoriteFiscale typeAutoriteFiscale = forFiscal.getTypeAutoriteFiscale();
+			final Integer noOfsAutoriteFiscale = forFiscal.getNumeroOfsAutoriteFiscale();
+
+			int result = noOfsAutoriteFiscale != null ? noOfsAutoriteFiscale.hashCode() : 0;
+			result = 31 * result + (typeAutoriteFiscale != null ? typeAutoriteFiscale.hashCode() : 0);
+			result = 31 * result + (dateOuverture != null ? dateOuverture.hashCode() : 0);
+			result = 31 * result + (dateFermeture != null ? dateFermeture.hashCode() : 0);
+			result = 31 * result + (motifFermeture != null ? motifFermeture.hashCode() : 0);
+			return result;
+		}
+	}
+
+	/**
+	 * [UNIREG-2323] si les deux membres du couple ont deux fois les mêmes fors secondaires, il ne faut les recopier qu'une seule fois sur le ménage
+	 */
+	private void createForsSecondairesApresMariage(RegDate date, MenageCommun menage, List<ForFiscalSecondaire> forsSecondairesDuPrincipal, List<ForFiscalSecondaire> forsSecondairesDuConjoint, MotifFor motifOuverture, RegDate dateFermeture, MotifFor motifFermeture) {
+		final boolean principalHasFors = forsSecondairesDuPrincipal != null && forsSecondairesDuPrincipal.size() > 0;
+		final boolean conjointHasFors = forsSecondairesDuConjoint != null && forsSecondairesDuConjoint.size() > 0;
+		if (principalHasFors && conjointHasFors) {
+			// les deux ont des fors secondaires : on va éliminer les doublons
+			final int sumOfSizes = forsSecondairesDuPrincipal.size() + forsSecondairesDuConjoint.size();
+			final Set<ForSecondaireWrapper> set = new HashSet<ForSecondaireWrapper>(sumOfSizes);
+			for (ForFiscalSecondaire ffs : forsSecondairesDuPrincipal) {
+				set.add(new ForSecondaireWrapper(ffs));
+			}
+			for (ForFiscalSecondaire ffs : forsSecondairesDuConjoint) {
+				set.add(new ForSecondaireWrapper(ffs));
+			}
+			if (set.size() == sumOfSizes) {
+				// pas de doublons : on ne va pas s'embêter à créer une liste supplémentaire
+				createForsSecondaires(date, menage, forsSecondairesDuPrincipal, motifOuverture, dateFermeture, motifFermeture);
+				createForsSecondaires(date, menage, forsSecondairesDuConjoint, motifOuverture, dateFermeture, motifFermeture);
+			}
+			else {
+				final List<ForFiscalSecondaire> fors = new ArrayList<ForFiscalSecondaire>(set.size());
+				for (ForSecondaireWrapper wrapper : set) {
+					fors.add(wrapper.forFiscal);
+				}
+				createForsSecondaires(date, menage, fors, motifOuverture, dateFermeture, motifFermeture);
+			}
+		}
+		else if (principalHasFors) {
+			createForsSecondaires(date, menage, forsSecondairesDuPrincipal, motifOuverture, dateFermeture, motifFermeture);
+		}
+		else if (conjointHasFors) {
+			createForsSecondaires(date, menage, forsSecondairesDuConjoint, motifOuverture, dateFermeture, motifFermeture);
+		}
 	}
 
 	private ForFiscalPrincipal getDernierForFermePourDepart(final PersonnePhysique pp) {

@@ -39,6 +39,7 @@ import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
@@ -1922,6 +1923,285 @@ public class MetiersServiceTest extends BusinessTest {
 				Assert.assertNotNull(ffp);
 				Assert.assertNull(ffp.getDateFin());
 				Assert.assertEquals(date(2002, 12, 1), ffp.getDateDebut());
+				return null;
+			}
+		});
+	}
+
+	/**
+	 * Cas du JIRA UNIREG-2323 : si les deux membres du couple ont tous deux le même for secondaire
+	 * (= même date d'ouverture, même commune), il ne doit y avoir qu'un seul for équivalent ouvert
+	 * sur le couple
+	 */
+	@Test
+	@NotTransactional
+	public void testMariageAvecForsSecondairesIdentiques() throws Exception {
+
+		final class Ids {
+			long m;
+			long mme;
+		}
+
+		// mise en place
+		final Ids ids = (Ids) doInNewTransactionAndSession(new TransactionCallback() {
+			public Ids doInTransaction(TransactionStatus status) {
+
+				final RegDate dateDebut = date(2000, 1, 1);
+
+				final PersonnePhysique m = addNonHabitant("Vernon", "Dursley", date(1975, 8, 31), Sexe.MASCULIN);
+				addForPrincipal(m, dateDebut, MotifFor.ACHAT_IMMOBILIER, MockPays.RoyaumeUni);
+				addForSecondaire(m, dateDebut, MotifFor.ACHAT_IMMOBILIER, MockCommune.Echallens.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+
+				final PersonnePhysique mme = addNonHabitant("Petunia", "Dursley", date(1976, 10, 4), Sexe.FEMININ);
+				addForPrincipal(mme, dateDebut, MotifFor.ACHAT_IMMOBILIER, MockPays.RoyaumeUni);
+				addForSecondaire(mme, dateDebut, MotifFor.ACHAT_IMMOBILIER, MockCommune.Echallens.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+
+				final Ids ids = new Ids();
+				ids.m = m.getNumero();
+				ids.mme = mme.getNumero();
+				return ids;
+			}
+		});
+
+		final RegDate dateMariage = date(2008, 5, 1);
+
+		// maintenant, on va marier les tourtereaux
+		final long mcId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+			public Long doInTransaction(TransactionStatus status) {
+
+				final PersonnePhysique m = (PersonnePhysique) tiersService.getTiers(ids.m);
+				Assert.assertNotNull(m);
+
+				final PersonnePhysique mme = (PersonnePhysique) tiersService.getTiers(ids.mme);
+				Assert.assertNotNull(mme);
+
+				final MenageCommun mc = metierService.marie(dateMariage, m, mme, "Mariage avec fors secondaires identiques", EtatCivil.MARIE, false, null);
+				return mc.getNumero();
+			}
+		});
+
+		// et on vérifie les fors créés sur le couple
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+
+				final MenageCommun mc = (MenageCommun) tiersService.getTiers(mcId);
+				Assert.assertNotNull(mc);
+
+				final ForsParType fors = mc.getForsParType(false);
+				Assert.assertNotNull(fors);
+				Assert.assertNotNull(fors.principaux);
+				Assert.assertNotNull(fors.secondaires);
+				Assert.assertEquals(1, fors.principaux.size());
+				Assert.assertEquals(1, fors.secondaires.size());
+
+				final ForFiscalPrincipal ffp = fors.principaux.get(0);
+				Assert.assertNotNull(ffp);
+				Assert.assertEquals(TypeAutoriteFiscale.PAYS_HS, ffp.getTypeAutoriteFiscale());
+				Assert.assertEquals(MockPays.RoyaumeUni.getNoOFS(), (int) ffp.getNumeroOfsAutoriteFiscale());
+				Assert.assertEquals(dateMariage, ffp.getDateDebut());
+				Assert.assertEquals(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, ffp.getMotifOuverture());
+				Assert.assertNull(ffp.getDateFin());
+				Assert.assertNull(ffp.getMotifFermeture());
+
+				final ForFiscalSecondaire ffs = fors.secondaires.get(0);
+				Assert.assertNotNull(ffs);
+				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffs.getTypeAutoriteFiscale());
+				Assert.assertEquals(MockCommune.Echallens.getNoOFSEtendu(), (int) ffs.getNumeroOfsAutoriteFiscale());
+				Assert.assertEquals(dateMariage, ffs.getDateDebut());
+				Assert.assertEquals(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, ffs.getMotifOuverture());
+				Assert.assertNull(ffs.getDateFin());
+				Assert.assertNull(ffs.getMotifFermeture());
+				return null;
+			}
+		});
+	}
+
+	/**
+	 * Cas du JIRA UNIREG-2323 : si les fors secondaires sur les membres du couple n'ont pas
+	 * la même commune, ils doivent tous deux se retrouver sur le couple
+	 */
+	@Test
+	@NotTransactional
+	public void testMariageAvecForsSecondairesDifferentsParCommune() throws Exception {
+
+		final class Ids {
+			long m;
+			long mme;
+		}
+
+		// mise en place
+		final Ids ids = (Ids) doInNewTransactionAndSession(new TransactionCallback() {
+			public Ids doInTransaction(TransactionStatus status) {
+
+				final RegDate dateDebut = date(2000, 1, 1);
+
+				final PersonnePhysique m = addNonHabitant("Vernon", "Dursley", date(1975, 8, 31), Sexe.MASCULIN);
+				addForPrincipal(m, dateDebut, MotifFor.ACHAT_IMMOBILIER, MockPays.RoyaumeUni);
+				addForSecondaire(m, dateDebut, MotifFor.ACHAT_IMMOBILIER, MockCommune.Echallens.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+
+				final PersonnePhysique mme = addNonHabitant("Petunia", "Dursley", date(1976, 10, 4), Sexe.FEMININ);
+				addForPrincipal(mme, dateDebut, MotifFor.ACHAT_IMMOBILIER, MockPays.RoyaumeUni);
+				addForSecondaire(mme, dateDebut, MotifFor.ACHAT_IMMOBILIER, MockCommune.Croy.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+
+				final Ids ids = new Ids();
+				ids.m = m.getNumero();
+				ids.mme = mme.getNumero();
+				return ids;
+			}
+		});
+
+		final RegDate dateMariage = date(2008, 5, 1);
+
+		// maintenant, on va marier les tourtereaux
+		final long mcId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+			public Long doInTransaction(TransactionStatus status) {
+
+				final PersonnePhysique m = (PersonnePhysique) tiersService.getTiers(ids.m);
+				Assert.assertNotNull(m);
+
+				final PersonnePhysique mme = (PersonnePhysique) tiersService.getTiers(ids.mme);
+				Assert.assertNotNull(mme);
+
+				final MenageCommun mc = metierService.marie(dateMariage, m, mme, "Mariage avec fors secondaires identiques", EtatCivil.MARIE, false, null);
+				return mc.getNumero();
+			}
+		});
+
+		// et on vérifie les fors créés sur le couple
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+
+				final MenageCommun mc = (MenageCommun) tiersService.getTiers(mcId);
+				Assert.assertNotNull(mc);
+
+				final ForsParType fors = mc.getForsParType(false);
+				Assert.assertNotNull(fors);
+				Assert.assertNotNull(fors.principaux);
+				Assert.assertNotNull(fors.secondaires);
+				Assert.assertEquals(1, fors.principaux.size());
+				Assert.assertEquals(2, fors.secondaires.size());
+
+				final ForFiscalPrincipal ffp = fors.principaux.get(0);
+				Assert.assertNotNull(ffp);
+				Assert.assertEquals(TypeAutoriteFiscale.PAYS_HS, ffp.getTypeAutoriteFiscale());
+				Assert.assertEquals(MockPays.RoyaumeUni.getNoOFS(), (int) ffp.getNumeroOfsAutoriteFiscale());
+				Assert.assertEquals(dateMariage, ffp.getDateDebut());
+				Assert.assertEquals(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, ffp.getMotifOuverture());
+				Assert.assertNull(ffp.getDateFin());
+				Assert.assertNull(ffp.getMotifFermeture());
+
+				boolean foundCroy = false;
+				boolean foundEchallens = false;
+				for (ForFiscalSecondaire ffs : fors.secondaires) {
+					Assert.assertNotNull(ffs);
+					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffs.getTypeAutoriteFiscale());
+
+					if (ffs.getNumeroOfsAutoriteFiscale() == MockCommune.Echallens.getNoOFSEtendu()) {
+						Assert.assertFalse("Double for à Echallens trouvé", foundEchallens);
+						foundEchallens = true;
+					}
+					else if (ffs.getNumeroOfsAutoriteFiscale() == MockCommune.Croy.getNoOFSEtendu()) {
+						Assert.assertFalse("Double for à Croy trouvé", foundCroy);
+						foundCroy = true;
+					}
+
+					Assert.assertEquals(dateMariage, ffs.getDateDebut());
+					Assert.assertEquals(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, ffs.getMotifOuverture());
+					Assert.assertNull(ffs.getDateFin());
+					Assert.assertNull(ffs.getMotifFermeture());
+				}
+				Assert.assertTrue(foundEchallens);
+				Assert.assertTrue(foundCroy);
+
+				return null;
+			}
+		});
+	}
+
+	/**
+	 * Cas du JIRA UNIREG-2323 : si les fors secondaires sur les membres du couple n'ont pas
+	 * la même date d'ouverture (même s'ils sont sur la même commune), ils doivent tous deux
+	 * se retrouver sur le couple
+	 */
+	@Test
+	@NotTransactional
+	public void testMariageAvecForsSecondairesDifferentsParDateOuverture() throws Exception {
+
+		final class Ids {
+			long m;
+			long mme;
+		}
+
+		// mise en place
+		final Ids ids = (Ids) doInNewTransactionAndSession(new TransactionCallback() {
+			public Ids doInTransaction(TransactionStatus status) {
+
+				final RegDate dateDebut = date(2000, 1, 1);
+
+				final PersonnePhysique m = addNonHabitant("Vernon", "Dursley", date(1975, 8, 31), Sexe.MASCULIN);
+				addForPrincipal(m, dateDebut, MotifFor.ACHAT_IMMOBILIER, MockPays.RoyaumeUni);
+				addForSecondaire(m, dateDebut, MotifFor.ACHAT_IMMOBILIER, MockCommune.Echallens.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+
+				final PersonnePhysique mme = addNonHabitant("Petunia", "Dursley", date(1976, 10, 4), Sexe.FEMININ);
+				addForPrincipal(mme, dateDebut.addMonths(1), MotifFor.ACHAT_IMMOBILIER, MockPays.RoyaumeUni);
+				addForSecondaire(mme, dateDebut.addMonths(1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Echallens.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+
+				final Ids ids = new Ids();
+				ids.m = m.getNumero();
+				ids.mme = mme.getNumero();
+				return ids;
+			}
+		});
+
+		final RegDate dateMariage = date(2008, 5, 1);
+
+		// maintenant, on va marier les tourtereaux
+		final long mcId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+			public Long doInTransaction(TransactionStatus status) {
+
+				final PersonnePhysique m = (PersonnePhysique) tiersService.getTiers(ids.m);
+				Assert.assertNotNull(m);
+
+				final PersonnePhysique mme = (PersonnePhysique) tiersService.getTiers(ids.mme);
+				Assert.assertNotNull(mme);
+
+				final MenageCommun mc = metierService.marie(dateMariage, m, mme, "Mariage avec fors secondaires identiques", EtatCivil.MARIE, false, null);
+				return mc.getNumero();
+			}
+		});
+
+		// et on vérifie les fors créés sur le couple
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+
+				final MenageCommun mc = (MenageCommun) tiersService.getTiers(mcId);
+				Assert.assertNotNull(mc);
+
+				final ForsParType fors = mc.getForsParType(false);
+				Assert.assertNotNull(fors);
+				Assert.assertNotNull(fors.principaux);
+				Assert.assertNotNull(fors.secondaires);
+				Assert.assertEquals(1, fors.principaux.size());
+				Assert.assertEquals(2, fors.secondaires.size());
+
+				final ForFiscalPrincipal ffp = fors.principaux.get(0);
+				Assert.assertNotNull(ffp);
+				Assert.assertEquals(TypeAutoriteFiscale.PAYS_HS, ffp.getTypeAutoriteFiscale());
+				Assert.assertEquals(MockPays.RoyaumeUni.getNoOFS(), (int) ffp.getNumeroOfsAutoriteFiscale());
+				Assert.assertEquals(dateMariage, ffp.getDateDebut());
+				Assert.assertEquals(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, ffp.getMotifOuverture());
+				Assert.assertNull(ffp.getDateFin());
+				Assert.assertNull(ffp.getMotifFermeture());
+
+				for (ForFiscalSecondaire ffs : fors.secondaires) {
+					Assert.assertNotNull(ffs);
+					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffs.getTypeAutoriteFiscale());
+					Assert.assertEquals(MockCommune.Echallens.getNoOFSEtendu(), (int) ffs.getNumeroOfsAutoriteFiscale());
+					Assert.assertEquals(dateMariage, ffs.getDateDebut());
+					Assert.assertEquals(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, ffs.getMotifOuverture());
+					Assert.assertNull(ffs.getDateFin());
+					Assert.assertNull(ffs.getMotifFermeture());
+				}
 				return null;
 			}
 		});
