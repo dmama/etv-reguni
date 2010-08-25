@@ -211,34 +211,6 @@ public abstract class HibernateEntityUtils {
 		}
 	}
 
-	private static class EntityKey {
-		private Class<?> clazz;
-		private Object id;
-
-		private EntityKey(HibernateEntity entity) {
-			clazz = entity.getClass();
-			id = entity.getKey();
-		}
-
-		@Override
-		public boolean equals(Object o) {
-			if (this == o) return true;
-			if (o == null || getClass() != o.getClass()) return false;
-
-			final EntityKey entityKey = (EntityKey) o;
-
-			return clazz.equals(entityKey.clazz) && id.equals(entityKey.id);
-
-		}
-
-		@Override
-		public int hashCode() {
-			int result = clazz.hashCode();
-			result = 31 * result + id.hashCode();
-			return result;
-		}
-	}
-
 	/**
 	 * Détermine la classe de base (celle possédant l'annotation @Table) à partir d'une classe quelconque de la hiérarchie.
 	 *

@@ -1,14 +1,17 @@
 package ch.vd.uniregctb.validation;
 
 import java.io.Serializable;
+import java.util.List;
 
 import org.hibernate.CallbackException;
 import org.hibernate.type.Type;
+import org.springframework.orm.hibernate3.HibernateTemplate;
 
 import ch.vd.registre.base.validation.SubValidateable;
 import ch.vd.registre.base.validation.Validateable;
 import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.uniregctb.common.EntityKey;
 import ch.vd.uniregctb.hibernate.interceptor.AbstractLinkedInterceptor;
 
 public class ValidationInterceptor extends AbstractLinkedInterceptor {
@@ -18,6 +21,7 @@ public class ValidationInterceptor extends AbstractLinkedInterceptor {
 	}
 
 	private final ThreadLocal<Behavior> byThreadBehavior = new ThreadLocal<Behavior>();
+	private HibernateTemplate hibernateTemplate;
 
 	@Override
 	public boolean onFlushDirty(Object entity, Serializable id, Object[] currentState, Object[] previousState, String[] propertyNames,
@@ -60,6 +64,17 @@ public class ValidationInterceptor extends AbstractLinkedInterceptor {
 				validate(master);
 			}
 		}
+
+		// si l'objet pointe vers d'autres objets validables, on les valide aussi
+		if (object instanceof JoinValidateable) {
+			final List<EntityKey> keys = ((JoinValidateable) object).getJoinedEntities();
+			for (EntityKey k : keys) {
+				Validateable entity = (Validateable) hibernateTemplate.get(k.getClazz(), (Serializable) k.getId());
+				if (entity != null) {
+					validate(entity);
+				}
+			}
+		}
 	}
 
 	private Behavior getByThreadBehavior() {
@@ -77,5 +92,9 @@ public class ValidationInterceptor extends AbstractLinkedInterceptor {
 
 	public boolean isEnabled() {
 		return getByThreadBehavior().enabled;
+	}
+
+	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
+		this.hibernateTemplate = hibernateTemplate;
 	}
 }

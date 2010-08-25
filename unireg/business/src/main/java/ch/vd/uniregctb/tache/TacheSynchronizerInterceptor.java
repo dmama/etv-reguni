@@ -4,6 +4,7 @@ import javax.transaction.TransactionManager;
 import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.HashSet;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.hibernate.CallbackException;
@@ -21,10 +22,12 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.validation.SubValidateable;
 import ch.vd.registre.base.validation.Validateable;
+import ch.vd.uniregctb.common.EntityKey;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.hibernate.interceptor.ModificationInterceptor;
 import ch.vd.uniregctb.hibernate.interceptor.ModificationSubInterceptor;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.validation.JoinValidateable;
 
 /**
  * [UNIREG-2305] Cet interceptor recalcul automatiquement les tâches d'envoi et d'annulation de DIs sur les contribuables modifiées après le commit de chaque transaction.
@@ -57,6 +60,16 @@ public class TacheSynchronizerInterceptor implements ModificationSubInterceptor,
 			if (master instanceof Contribuable) {
 				final Contribuable ctb = (Contribuable) master;
 				addModifiedContribuable(ctb);
+			}
+		}
+		else if (entity instanceof JoinValidateable) {
+			final List<EntityKey> keys = ((JoinValidateable) entity).getJoinedEntities();
+			for (EntityKey k : keys) {
+				final Validateable val = (Validateable) hibernateTemplate.get(k.getClazz(), (Serializable) k.getId());
+				if (val instanceof Contribuable) {
+					final Contribuable ctb = (Contribuable) val;
+					addModifiedContribuable(ctb);
+				}
 			}
 		}
 

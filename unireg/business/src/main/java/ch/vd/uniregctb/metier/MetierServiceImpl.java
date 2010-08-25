@@ -1397,22 +1397,7 @@ public class MetierServiceImpl implements MetierService {
 		/*
 		 * Réouverture des rapports tiers-ménage
 		 */
-		List<RapportEntreTiers> rapportOuverts = new ArrayList<RapportEntreTiers>();
-		for (RapportEntreTiers rapport : menage.getRapportsObjet()) {
-			if (!rapport.isAnnule() && date.getOneDayBefore().equals(rapport.getDateFin())) {
-				RapportEntreTiers nouveauRapport = reopenRapportEntreTiers(rapport);
-				nouveauRapport.setSujetId(rapport.getSujetId());
-				nouveauRapport.setObjetId(rapport.getObjetId());
-				// ajout à la liste des rapports à ajouter
-				rapportOuverts.add(nouveauRapport);
-			}
-		}
-		for (RapportEntreTiers rapport : rapportOuverts) {
-			// assigner le nouveau rapport au tiers
-			final Tiers sujet = tiersDAO.get(rapport.getSujetId());
-			final Tiers objet = tiersDAO.get(rapport.getObjetId());
-	  		tiersService.addRapport(rapport, sujet, objet);
-		}
+		reopenRapportsObjetAt(menage, date.getOneDayBefore());
 
 		/*
 		 * Réouverture des fors du ménage commun
@@ -1650,19 +1635,6 @@ public class MetierServiceImpl implements MetierService {
 		}
 	}
 
-	/**
-	 * @param rapport le rapport entre tiers à réovrir.
-	 */
-	private RapportEntreTiers reopenRapportEntreTiers(RapportEntreTiers rapport) {
-		// Duplication du rapport entre tiers
-		RapportEntreTiers nouveauRapport = rapport.duplicate();
-		// réouvrir le nouveau rapport
-		nouveauRapport.setDateFin(null);
-		// annuler l'ancien rapport
-		rapport.setAnnule(true);
-		return nouveauRapport;
-	}
-
 	public ValidationResults validateDeces(PersonnePhysique defunt, RegDate date) {
 
 		ValidationResults results = new ValidationResults();
@@ -1895,31 +1867,64 @@ public class MetierServiceImpl implements MetierService {
 			}
 		}
 		else {
-			/*
-			 * Réouverture des rapports fermés lors du décès
-			 */
-			List<RapportEntreTiers> rapportAOuvrir = new ArrayList<RapportEntreTiers>();
-			/*
-			 * Réouverture des rapports du tiers
-			 */
-			for (RapportEntreTiers rapport : tiers.getRapportsSujet()) {
-				if (!rapport.isAnnule() && date.equals(rapport.getDateFin())) {
+			reopenRapportsSujetAt(tiers, date);
+		}
+	}
 
-					// duplique le rapport et réouvre le nouveau
-					RapportEntreTiers nouRapport = reopenRapportEntreTiers(rapport);
-					nouRapport.setSujetId(rapport.getSujetId());
-					nouRapport.setObjetId(rapport.getObjetId());
-					// ajout à la liste des rapports à ajouter
-					rapportAOuvrir.add(nouRapport);
-				}
-			}
-			for (RapportEntreTiers rapport : rapportAOuvrir) {
-				// assigner le nouveau rapport au tiers
-				final Tiers sujet = tiersDAO.get(rapport.getSujetId());
-				final Tiers objet = tiersDAO.get(rapport.getObjetId());
-				tiersService.addRapport(rapport, sujet, objet);
+	/**
+	 * Réouvre tous les rapports-sujet qui sont fermés à la date spécifiée.
+	 *
+	 * @param rapports
+	 * @param date  la date de fermeture des rapports qu'il faut réouvrir.
+	 */
+	private void reopenRapportsAt(Set<RapportEntreTiers> rapports, RegDate date) {
+
+		final List<RapportEntreTiers> rapportsAOuvrir = new ArrayList<RapportEntreTiers>();
+		final List<RapportEntreTiers> rapportsAAnnuler = new ArrayList<RapportEntreTiers>();
+
+		// On analyse les rapports en question
+		for (RapportEntreTiers rapport : rapports) {
+			if (!rapport.isAnnule() && rapport.getDateFin() == date) {
+				// duplique le rapport et réouvre le nouveau
+				RapportEntreTiers nouveauRapport = rapport.duplicate();
+				nouveauRapport.setDateFin(null);
+				// ajout à la liste des rapports à ajouter
+				rapportsAOuvrir.add(nouveauRapport);
+				rapportsAAnnuler.add(rapport);
 			}
 		}
+
+		// On ajoute tous les nouveaux rapports
+		for (RapportEntreTiers rapport : rapportsAOuvrir) {
+			final Tiers sujet = tiersDAO.get(rapport.getSujetId());
+			final Tiers objet = tiersDAO.get(rapport.getObjetId());
+			tiersService.addRapport(rapport, sujet, objet);
+		}
+
+		// On annule tous les anciens rapports (maintenant remplacés par des nouveaux rapports réouverts)
+		for (RapportEntreTiers rapport : rapportsAAnnuler) {
+			rapport.setAnnule(true);
+		}
+	}
+
+	/**
+	 * Réouvre tous les rapports-objet qui sont fermés à la date spécifiée.
+	 *
+	 * @param tiers le tiers dont on veut réouvrir des rapports objet
+	 * @param date  la date de fermeture des rapports qu'il faut réouvrir.
+	 */
+	private void reopenRapportsObjetAt(Tiers tiers, RegDate date) {
+		reopenRapportsAt(tiers.getRapportsObjet(), date);
+	}
+
+	/**
+	 * Réouvre tous les rapports-sujet qui sont fermés à la date spécifiée.
+	 *
+	 * @param tiers le tiers dont on veut réouvrir des rapports sujet
+	 * @param date  la date de fermeture des rapports qu'il faut réouvrir.
+	 */
+	private void reopenRapportsSujetAt(Tiers tiers, RegDate date) {
+		reopenRapportsAt(tiers.getRapportsSujet(), date);
 	}
 
 	public ValidationResults validateVeuvage(PersonnePhysique veuf, RegDate date) {
@@ -2183,17 +2188,22 @@ public class MetierServiceImpl implements MetierService {
 		cancelForsOpenedSince(lendemain, tiers, MotifFor.VEUVAGE_DECES);
 
 		if (ffp != null && MotifFor.VEUVAGE_DECES == ffp.getMotifOuverture()) {
-			/*
-			 * Réouverture du rapport tiers-ménage
-			 */
-			final RapportEntreTiers rapport = reopenRapportEntreTiers(dernierRapportMenage);
-			tiersService.addRapport(rapport, tiers, menageCommun);
+
+			// Réouverture du rapport tiers-ménage
+			RapportEntreTiers nouveauRapport = dernierRapportMenage.duplicate();
+			nouveauRapport.setDateFin(null);
+			tiersService.addRapport(nouveauRapport, tiers, menageCommun);
+			dernierRapportMenage.setAnnule(true);
 
 			// [UNIREG-1422] Traitement du conjoint décédé inconnu du civil
 			if (conjointDecede != null) {
 				final RapportEntreTiers rapportDecede = conjointDecede.getDernierRapportSujet(TypeRapportEntreTiers.APPARTENANCE_MENAGE);
-				final RapportEntreTiers nouveauRapportDecede = reopenRapportEntreTiers(rapportDecede);
+				
+				// Réouverture du rapport tiers-ménage
+				final RapportEntreTiers nouveauRapportDecede = rapportDecede.duplicate();
+				nouveauRapportDecede.setDateFin(null);
 				tiersService.addRapport(nouveauRapportDecede, conjointDecede, menageCommun);
+				rapportDecede.setAnnule(true);
 
 				if (!conjointDecede.isHabitantVD() && conjointDecede.getDateDeces() != null) {
 					conjointDecede.setDateDeces(null);

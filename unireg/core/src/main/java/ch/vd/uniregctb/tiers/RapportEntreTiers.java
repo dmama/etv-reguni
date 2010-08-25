@@ -11,6 +11,9 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.hibernate.annotations.ForeignKey;
@@ -21,9 +24,12 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.common.Duplicable;
+import ch.vd.uniregctb.common.EntityKey;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
+import ch.vd.uniregctb.validation.JoinValidateable;
 
 /**
  * <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -37,7 +43,7 @@ import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 @Table(name = "RAPPORT_ENTRE_TIERS")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "RAPPORT_ENTRE_TIERS_TYPE", discriminatorType = DiscriminatorType.STRING)
-public abstract class RapportEntreTiers extends HibernateEntity implements DateRange, Duplicable<RapportEntreTiers> {
+public abstract class RapportEntreTiers extends HibernateEntity implements DateRange, Duplicable<RapportEntreTiers>, JoinValidateable {
 
 	private static final long serialVersionUID = 956676848057330463L;
 
@@ -225,6 +231,43 @@ public abstract class RapportEntreTiers extends HibernateEntity implements DateR
 		// begin-user-code
 		this.objetId = (objet == null ? null : objet.getId());
 		// end-user-code
+	}
+
+	@Override
+	public String toString() {
+		final String dateDebutStr = dateDebut != null ? RegDateHelper.dateToDisplayString(dateDebut) : "?";
+		final String dateFinStr = dateFin != null ? RegDateHelper.dateToDisplayString(dateFin) : "?";
+		return String.format("%s (%s - %s)", getClass().getSimpleName(), dateDebutStr, dateFinStr);
+	}
+
+	@Transient
+	public List<EntityKey> getJoinedEntities() {
+
+		if ((sujetId == null && objetId == null) || isAnnule()) {
+			return Collections.emptyList();
+		}
+
+		final List<EntityKey> list = new ArrayList<EntityKey>(2);
+		if (sujetId != null) {
+			list.add(new EntityKey(Tiers.class, sujetId));
+		}
+		if (objetId != null) {
+			list.add(new EntityKey(Tiers.class, objetId));
+		}
+
+		return list;
+	}
+
+	public ValidationResults validate() {
+
+		ValidationResults results = new ValidationResults();
+
+		// Date de début doit être avant (ou égale) la date de fin
+		if (dateDebut != null && dateFin != null && dateDebut.isAfter(dateFin) && !isAnnule()) {
+			results.addError("Le rapport-entre-tiers " + toString() + " possède une date de début qui est après la date de fin: début = " + dateDebut + " fin = " + dateFin + "");
+		}
+
+		return results;
 	}
 
 	/**

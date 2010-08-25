@@ -565,6 +565,14 @@ public class TiersDAOTest extends CoreDAOTest {
 
 			tiers.setAdressesTiers(adressesPostales);
 
+			// Rapports entre tiers
+			if (tiers instanceof MenageCommun) {
+				// Nécessaire à la validation des fors sur le ménage commun
+				MenageCommun mc = (MenageCommun) tiers;
+				RapportEntreTiers rapport = dao.save(new AppartenanceMenage(RegDate.get(2005, 8, 12), null, ppPrecedent, mc));
+				mc.addRapportObjet(rapport);
+			}
+
 			// Fors fiscaux
 			Set<ForFiscal> fors = new HashSet<ForFiscal>();
 
@@ -602,14 +610,6 @@ public class TiersDAOTest extends CoreDAOTest {
 			if (tiers instanceof Contribuable) {
 				Contribuable contribuable = (Contribuable) tiers;
 				contribuable.setForsFiscaux(fors);
-
-				if (contribuable instanceof MenageCommun) {
-					// Nécessaire à la validation des fors sur le ménage commun
-					MenageCommun mc = (MenageCommun) contribuable;
-					RapportEntreTiers rapport = dao.save(new AppartenanceMenage(RegDate.get(2005, 8,
-							12), null, ppPrecedent, mc));
-					mc.addRapportObjet(rapport);
-				}
 			}
 
 			Long id = tiers.getId();
@@ -1253,6 +1253,24 @@ public class TiersDAOTest extends CoreDAOTest {
 
 				MenageCommun menage = (MenageCommun) hibernateTemplate.merge(new MenageCommun());
 				{
+					RapportEntreTiers rapport = new AppartenanceMenage();
+					rapport.setDateDebut(dateMariage);
+					rapport.setObjet(menage);
+					rapport.setSujet(paul);
+					rapport = (RapportEntreTiers) hibernateTemplate.merge(rapport);
+
+					menage.addRapportObjet(rapport);
+					paul.addRapportSujet(rapport);
+
+					rapport = new AppartenanceMenage();
+					rapport.setDateDebut(dateMariage);
+					rapport.setObjet(menage);
+					rapport.setSujet(janine);
+					rapport = (RapportEntreTiers) hibernateTemplate.merge(rapport);
+
+					menage.addRapportObjet(rapport);
+					janine.addRapportSujet(rapport);
+
 					ForFiscalPrincipal f = new ForFiscalPrincipal();
 					f.setDateDebut(dateMariage);
 					f.setMotifOuverture(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
@@ -1263,24 +1281,6 @@ public class TiersDAOTest extends CoreDAOTest {
 					f.setModeImposition(ModeImposition.ORDINAIRE);
 					menage.addForFiscal(f);
 				}
-
-				RapportEntreTiers rapport = new AppartenanceMenage();
-				rapport.setDateDebut(dateMariage);
-				rapport.setObjet(menage);
-				rapport.setSujet(paul);
-				rapport = (RapportEntreTiers) hibernateTemplate.merge(rapport);
-
-				menage.addRapportObjet(rapport);
-				paul.addRapportSujet(rapport);
-
-				rapport = new AppartenanceMenage();
-				rapport.setDateDebut(dateMariage);
-				rapport.setObjet(menage);
-				rapport.setSujet(janine);
-				rapport = (RapportEntreTiers) hibernateTemplate.merge(rapport);
-
-				menage.addRapportObjet(rapport);
-				janine.addRapportSujet(rapport);
 
 				return paul.getNumero();
 			}

@@ -5,14 +5,14 @@ package ch.vd.uniregctb.tiers;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.Transient;
+import java.util.List;
 
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.common.EntityKey;
 
 /**
  * <!-- begin-user-doc -->
@@ -90,5 +90,15 @@ public abstract class RepresentationLegale extends RapportEntreTiers {
 		// begin-user-code
 		autoriteTutelaireId = (theAutoriteTutelaire == null ? null : theAutoriteTutelaire.getId());
 		// end-user-code
+	}
+
+	@Override
+	@Transient
+	public List<EntityKey> getJoinedEntities() {
+		final List<EntityKey> list = super.getJoinedEntities();
+		if (autoriteTutelaireId != null && !isAnnule()) {
+			list.add(new EntityKey(Tiers.class, autoriteTutelaireId));
+		}
+		return list;
 	}
 }
