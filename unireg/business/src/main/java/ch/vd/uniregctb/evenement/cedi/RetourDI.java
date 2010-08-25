@@ -25,7 +25,7 @@ public class RetourDI extends EvenementCedi {
 				return VAUDTAX;
 			}
 
-			throw null;
+			return null;
 		}
 
 		public static TypeDocument fromTypeDocument(String code) {
@@ -40,7 +40,7 @@ public class RetourDI extends EvenementCedi {
 				return VAUDTAX;
 			}
 
-			throw null;
+			return null;
 		}
 	}
 
