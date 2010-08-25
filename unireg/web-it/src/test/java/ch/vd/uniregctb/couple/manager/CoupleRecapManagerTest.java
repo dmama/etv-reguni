@@ -1,9 +1,6 @@
 package ch.vd.uniregctb.couple.manager;
 
-import java.util.Iterator;
-
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
-import com.gargoylesoftware.htmlunit.html.HtmlForm;
 import com.gargoylesoftware.htmlunit.html.HtmlInput;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import org.junit.Test;
@@ -61,12 +58,12 @@ public class CoupleRecapManagerTest extends WebitTest {
 		}
 		assertNotNull(sauver);
 
-		// soumet la forme
+		// soumet le formulaire
 		final HtmlPage pageResultat = (HtmlPage) sauver.click();
 		assertNotNull(pageResultat);
 
 		// on devrait avoir un message d'erreur
-		assertContains("Le for fiscal [ForFiscalPrincipal (05.03.2001 - 06.01.2003)] ne peut pas exister alors que le tiers [10074118] appartient à un ménage-commun", pageResultat);
+		assertContains("L'action n'a pas pu être effectuée à cause des erreurs suivantes", pageResultat);
 
 		// On s'assure que la transaction a bien été rollée-back, c'est-à-dire que le trois tiers sont toujours des personnes physiques.
 		assertNatureTiers("Habitant", jeremy);
