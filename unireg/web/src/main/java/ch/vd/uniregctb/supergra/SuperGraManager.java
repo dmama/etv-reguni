@@ -20,4 +20,11 @@ public interface SuperGraManager {
 	 * @return le nouvelle id alloué
 	 */
 	Long nextId(Class<? extends HibernateEntity> clazz);
+
+	/**
+	 * Applique les modifications aux entités de la base de données et sauvegarde le tout.
+	 *
+	 * @param deltas les modifications à appliquer et sauver.
+	 */
+	void commitDeltas(List<Delta> deltas);
 }

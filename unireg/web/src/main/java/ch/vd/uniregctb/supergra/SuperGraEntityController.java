@@ -32,13 +32,6 @@ import ch.vd.uniregctb.utils.RegDateEditor;
  */
 public class SuperGraEntityController extends SuperGraAbstractController {
 
-	private SuperGraManager manager;
-
-	@SuppressWarnings({"UnusedDeclaration"})
-	public void setManager(SuperGraManager manager) {
-		this.manager = manager;
-	}
-
 	@SuppressWarnings({"unchecked"})
 	@Override
 	protected Object formBackingObject(HttpServletRequest request) throws Exception {

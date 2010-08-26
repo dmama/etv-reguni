@@ -271,7 +271,7 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 						final EntityType keyType = EntityType.fromHibernateClass(primaryKeyType);
 						final List<Class<? extends HibernateEntity>> concreteClasses = concreteClassByType.get(keyType);
 
-						Assert.notNull(primaryKey);
+						assert primaryKey != null;
 						view.setPrimaryKeyAtt(primaryKey.getName());
 						view.setPrimaryKeyType(keyType);
 						view.setEntities(entities);
@@ -327,6 +327,19 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 				catch (Exception e) {
 					throw new RuntimeException(e);
 				}
+			}
+		});
+	}
+
+	public void commitDeltas(final List<Delta> deltas) {
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
+		template.execute(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				// Reconstruit l'état en cours de modification des entités
+				final SuperGraContext context = new SuperGraContext(hibernateTemplate);
+				applyDeltas(deltas, context);
+				// On commit la transaction (fait automatiquement par le template)
+				return null;
 			}
 		});
 	}

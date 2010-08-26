@@ -13,13 +13,6 @@ import org.springframework.web.servlet.view.RedirectView;
  */
 public class SuperGraCollectionController extends SuperGraAbstractController {
 
-	private SuperGraManager manager;
-
-	@SuppressWarnings({"UnusedDeclaration"})
-	public void setManager(SuperGraManager manager) {
-		this.manager = manager;
-	}
-
 	@Override
 	protected Object formBackingObject(HttpServletRequest request) throws Exception {
 

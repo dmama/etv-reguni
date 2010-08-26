@@ -6,7 +6,16 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.propertyeditors.CustomBooleanEditor;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 
+import ch.vd.uniregctb.utils.UniregModeHelper;
+
 public abstract class SuperGraAbstractController extends SimpleFormController {
+
+	protected SuperGraManager manager;
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setManager(SuperGraManager manager) {
+		this.manager = manager;
+	}
 
 	protected SuperGraSession getSession(HttpServletRequest request) {
 		SuperGraSession session = (SuperGraSession) request.getSession().getAttribute("superGraSession");
@@ -63,7 +72,7 @@ public abstract class SuperGraAbstractController extends SimpleFormController {
 	}
 
 	protected boolean handleCommonAction(HttpServletRequest request) {
-		return handleDeltaDelete(request) || handleToggleShowDetails(request);
+		return handleDeltaDelete(request) || handleToggleShowDetails(request) || handleRollbackAll(request) || handleCommitAll(request);
 	}
 
 	private boolean handleDeltaDelete(HttpServletRequest request) {
@@ -76,6 +85,57 @@ public abstract class SuperGraAbstractController extends SimpleFormController {
 			final Delta action = session.getDeltas().remove(index);
 
 			flash(request, "L'action \"" + action + "\" a été supprimée.");
+			return true;
+		}
+
+		return false;
+	}
+
+	private boolean handleRollbackAll(HttpServletRequest request) {
+
+		final String rollback = request.getParameter("rollbackAll");
+		if (StringUtils.isNotBlank(rollback)) {
+
+			final SuperGraSession session = getSession(request);
+			session.getDeltas().clear();
+
+			flash(request, "Toutes les actions ont été supprimées.");
+			return true;
+		}
+
+		return false;
+	}
+
+	private boolean handleCommitAll(HttpServletRequest request) {
+
+		final String commit = request.getParameter("commitAll");
+		if (StringUtils.isNotBlank(commit)) {
+
+			// FIXME (msi) ajouter un profile SuperGra et l'utiliser
+			if (!UniregModeHelper.isTestMode()) {
+				flashError(request, "La modification des données en mode SuperGra n'est pas autorisée en dehors des environnements de test pour l'instant.");
+				return true;
+			}
+
+			final SuperGraSession session = getSession(request);
+			final int size = session.getDeltas().size();
+			if (size <= 0) {
+				flashWarning(request, "Il n'y a aucune modification en attente !");
+			}
+			else {
+				// on applique et commit les deltas dans la DB
+				manager.commitDeltas(session.getDeltas());
+
+				// on efface les deltas appliqués dans la session
+				session.getDeltas().clear();
+
+				if (size == 1) {
+					flash(request, "La modification a été sauvegardée dans la base de données.");
+				}
+				else {
+					flash(request, "Les " + size + " modifications ont été sauvegardées dans la base de données.");
+				}
+			}
 			return true;
 		}
 
@@ -102,7 +162,7 @@ public abstract class SuperGraAbstractController extends SimpleFormController {
 	private static boolean parseBoolean(String showDetails) {
 		final CustomBooleanEditor editor = new CustomBooleanEditor(true);
 		editor.setAsText(showDetails);
-		final Boolean value = (Boolean)editor.getValue();
+		final Boolean value = (Boolean) editor.getValue();
 		return (value == null ? false : value);
 	}
 }

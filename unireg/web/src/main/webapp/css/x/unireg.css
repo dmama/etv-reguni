@@ -170,6 +170,15 @@ fieldset.individu + fieldset.individu {
 	padding : 0.8em;
 }
 
+#states_list td.footer {
+	background-color: #EFF3FE;
+	border-left: 1px black dotted;
+	border-right: 1px black dotted;
+	border-bottom: 1px black dotted;
+	text-align: left;
+	padding : 0.8em;
+}
+
 #states_list td.bullet {
 	padding-right : 0.8em;
 	vertical-align: top;
