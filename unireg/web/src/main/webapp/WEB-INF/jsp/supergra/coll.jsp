@@ -12,6 +12,14 @@
 			<h3>Edition de la collection ${coll.name} du <unireg:superGraLink key="${coll.key}"/></h3>
 			<br/>
 
+			<div id="optionsDiv">
+				<form:form id="optionsForm" method="post">
+					<input id="showDetails" name="showDetails" type="checkbox" onclick="F$('optionsForm').submit()" <c:if test="${superGraSession.options.showDetails}">checked="checked"</c:if>/>
+					<label for="showDetails">Afficher les détails</label>
+					<input name="_showDetails" type="hidden" value="${!superGraSession.options.showDetails}"/>
+				</form:form>
+			</div>
+
 			<form:form method="post">
 
 				<table class="display_table" id="a">
@@ -22,7 +30,7 @@
 					</tr></thead>
 
 					<c:forEach items="${coll.entities}" var="entity">
-						<tr>
+						<tr<c:if test="${entity.annule}"> class="strike"</c:if>>
 						<c:forEach items="${coll.attributeNames}" var="name">
 							<c:set var="a" value="${entity.attributesMap[name]}"/>
 							<td>

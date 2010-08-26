@@ -117,7 +117,7 @@ public class SuperGraEntityController extends SuperGraAbstractController {
 		final EntityView view = (EntityView) command;
 		Assert.notNull(view);
 
-		if (handleDeltaDelete(request)) {
+		if (handleCommonAction(request)) {
 			// rien d'autre à faire
 		}
 		else {

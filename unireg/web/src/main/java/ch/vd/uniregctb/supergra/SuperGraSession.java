@@ -18,6 +18,8 @@ public class SuperGraSession {
 	 */
 	private List<TiersState> tiersStates = new ArrayList<TiersState>();
 
+	private final Options options = new Options();
+
 	public List<Delta> getDeltas() {
 		return deltas;
 	}
@@ -46,5 +48,9 @@ public class SuperGraSession {
 
 	public void setTiersStates(List<TiersState> tiersStates) {
 		this.tiersStates = tiersStates;
+	}
+
+	public Options getOptions() {
+		return options;
 	}
 }

@@ -39,13 +39,30 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 	private List<String> annotatedClass;
 	private Map<EntityType, List<Class<? extends HibernateEntity>>> concreteClassByType = new HashMap<EntityType, List<Class<? extends HibernateEntity>>>();
 
+	/**
+	 * Les propriétés qui ne doivent pas être changées, même en mode SuperGra.
+	 */
 	private static final Set<String> readonlyProps = new HashSet<String>();
+
+	/**
+	 * Les propriétés qui représentent des données techniques, non-métier et pas indispensables à afficher en mode condensé.
+	 */
+	private static final Set<String> detailsProps = new HashSet<String>();
 
 	static {
 		readonlyProps.add("logCreationDate");
 		readonlyProps.add("logCreationUser");
 		readonlyProps.add("logModifDate");
 		readonlyProps.add("logModifUser");
+	}
+
+	static {
+		detailsProps.add("annulationDate");
+		detailsProps.add("annulationUser");
+		detailsProps.add("logCreationDate");
+		detailsProps.add("logCreationUser");
+		detailsProps.add("logModifDate");
+		detailsProps.add("logModifUser");
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
@@ -244,6 +261,11 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 						}
 						catch (Exception e) {
 							throw new RuntimeException(e);
+						}
+
+						if (!session.getOptions().isShowDetails()) {
+							// On filtre les attributs non-métier (pour limiter le nombre de colonnes autant que possible)
+							attributeNames.removeAll(detailsProps);
 						}
 
 						final EntityType keyType = EntityType.fromHibernateClass(primaryKeyType);

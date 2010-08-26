@@ -98,4 +98,9 @@ public class EntityView implements Cloneable {
 
 		return deltas;
 	}
+
+	public boolean isAnnule() {
+		final AttributeView annulationDate = attributesMap.get("annulationDate");
+		return annulationDate != null && annulationDate.getValue() != null;
+	}
 }

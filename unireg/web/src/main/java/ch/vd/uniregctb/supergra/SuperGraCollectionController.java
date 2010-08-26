@@ -50,7 +50,7 @@ public class SuperGraCollectionController extends SuperGraAbstractController {
 
 		final String add = request.getParameter("add");
 		
-		if (handleDeltaDelete(request)) {
+		if (handleCommonAction(request)) {
 			// rien d'autre à faire
 		}
 		else if (StringUtils.isNotBlank(add)) {

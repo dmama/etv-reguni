@@ -3,6 +3,7 @@ package ch.vd.uniregctb.supergra;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.propertyeditors.CustomBooleanEditor;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 
 public abstract class SuperGraAbstractController extends SimpleFormController {
@@ -61,10 +62,13 @@ public abstract class SuperGraAbstractController extends SimpleFormController {
 		flash.setError(message);
 	}
 
-	protected boolean handleDeltaDelete(HttpServletRequest request) {
+	protected boolean handleCommonAction(HttpServletRequest request) {
+		return handleDeltaDelete(request) || handleToggleShowDetails(request);
+	}
+
+	private boolean handleDeltaDelete(HttpServletRequest request) {
 
 		final String delDelta = request.getParameter("delDelta");
-
 		if (StringUtils.isNotBlank(delDelta)) {
 
 			final int index = Integer.parseInt(delDelta);
@@ -76,5 +80,29 @@ public abstract class SuperGraAbstractController extends SimpleFormController {
 		}
 
 		return false;
+	}
+
+	private boolean handleToggleShowDetails(HttpServletRequest request) {
+
+		final String showDetails = request.getParameter("showDetails");
+		final String oldShowDetails = request.getParameter("_showDetails");
+		if (StringUtils.isNotBlank(showDetails) || StringUtils.isNotBlank(oldShowDetails)) {
+
+			final boolean show = parseBoolean(showDetails);
+			final SuperGraSession session = getSession(request);
+			session.getOptions().setShowDetails(show);
+
+			flash(request, "Les détails sont maintenant " + (show ? "visibles" : "masqués") + ".");
+			return true;
+		}
+
+		return false;
+	}
+
+	private static boolean parseBoolean(String showDetails) {
+		final CustomBooleanEditor editor = new CustomBooleanEditor(true);
+		editor.setAsText(showDetails);
+		final Boolean value = (Boolean)editor.getValue();
+		return (value == null ? false : value);
 	}
 }
