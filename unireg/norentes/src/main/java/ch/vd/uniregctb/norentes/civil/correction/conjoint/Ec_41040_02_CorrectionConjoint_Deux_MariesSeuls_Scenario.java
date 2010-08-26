@@ -139,6 +139,7 @@ public class Ec_41040_02_CorrectionConjoint_Deux_MariesSeuls_Scenario extends Ev
 			tiersService.addTiersToCouple(menage, maria, dateMariage, null);
 			final ForFiscalPrincipal f = addForFiscalPrincipal(menage, commune, dateMariage, null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null);
 			f.setModeImposition(ModeImposition.ORDINAIRE);
+			f.setAnnule(true);
 		}
 	}
 
@@ -172,11 +173,9 @@ public class Ec_41040_02_CorrectionConjoint_Deux_MariesSeuls_Scenario extends Ev
 		{
 			final MenageCommun mc = (MenageCommun) tiersDAO.get(noMenageMaria);
 			assertEquals(1, mc.getForsFiscaux().size(), "Le ménage de Maria a plus d'un for principal");
-			final ForFiscalPrincipal ffp = mc.getDernierForFiscalPrincipal();
-			assertNotNull(ffp, "For principal du ménage de Maria " + mc.getNumero() + " null");
-			assertEquals(dateMariage, ffp.getDateDebut(), "Date de début du dernier for fausse");
-			assertNull(ffp.getDateFin(), "Date de fin du dernier for fausse");
-			assertEquals(commune.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale(), "Le dernier for n'est pas sur " + commune.getNomMinuscule());
+			//UNIREG-2771 le menage commun de maria ne doit pas posseder de for
+			//sinon pas de fusion.
+
 			assertNotNull(mc.getRapportsObjet(), "Aucun rapport appartenance ménage trouvé");
 			assertEquals(1, mc.getRapportsObjet().size(), "Plus d'un rapport appartenance ménage trouvé, l'habitant devrait être marié seul");
 		}
