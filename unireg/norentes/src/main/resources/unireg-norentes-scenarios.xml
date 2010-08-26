@@ -99,6 +99,11 @@
 	<bean id="ec_4000_10_Mariage_JIRA2055_Test" parent="evenementCivilScenario"	
 	class="ch.vd.uniregctb.norentes.civil.mariage.Ec_4000_10_Mariage_JIRA2055_Scenario" />
 
+	<bean id="ec_4000_11_Mariage_JIRA2771_Test" parent="evenementCivilScenario"
+	class="ch.vd.uniregctb.norentes.civil.mariage.Ec_4000_11_Mariage_JIRA2771_Scenario">
+		<property name="metierService" ref="metierService" />
+	</bean>
+
 	<!-- Scénarios d'annulation de mariage -->
 	<bean id="ec_4001_01_AnnulationMariage_Celibataire_Test" parent="evenementCivilScenario"
 		class="ch.vd.uniregctb.norentes.civil.annulation.mariage.Ec_4001_01_AnnulationMariage_Celibataire_Scenario" />

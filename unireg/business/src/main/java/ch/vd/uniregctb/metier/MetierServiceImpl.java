@@ -977,8 +977,18 @@ public class MetierServiceImpl implements MetierService {
 		List<ForFiscalSecondaire> ffsAutreMenage = forsParType.secondaires;
 		List<ForFiscalAutreElementImposable> ffaeiAutreMenage = forsParType.autreElementImpot;
 
-		// annulation du ménage n'ayant plus d'intérêt
-		tiersService.annuleTiers(autreMenage);
+		//UNIREG-27771
+		//Si le ménage à annuler possède encore des fors ou des declarations, on doit remonter une exception
+		if(isTiersActifFiscalement(autreMenage)){
+			final String messageErreur = String.format("le ménage n°%s  du contribuable n°%s  ne peut pas être annulé car il possède un for actif ou une Déclaration active",
+					FormatNumeroHelper.numeroCTBToDisplay(autreMenage.getNumero()),FormatNumeroHelper.numeroCTBToDisplay(conjoint.getNumero()));
+			throw new EvenementCivilHandlerException(messageErreur);
+		}
+		else{
+			// annulation du ménage n'ayant plus d'intérêt
+			tiersService.annuleTiers(autreMenage);
+
+		}
 
 		// fermeture des rapport du ménage (1 seul doit exister);
 		for (RapportEntreTiers rapport : autreMenage.getRapportsObjet()) {
@@ -1019,6 +1029,19 @@ public class MetierServiceImpl implements MetierService {
 		}
 
 		return menageChoisi;
+	}
+
+	/**
+	 * Permet de savoir si un tiers possède un for ou une déclaration d'impot
+	 *
+	 * @param tiers
+	 * @return
+	 */
+	private boolean isTiersActifFiscalement(Tiers tiers) {
+		if (tiers.getForFiscalPrincipalAt(null) != null || tiers.getDeclarationActive(null) != null) {
+	 	    return true;
+		}
+		return false;
 	}
 
 	public void annuleMariage(PersonnePhysique principal, PersonnePhysique conjoint, RegDate date, Long numeroEvenement) {

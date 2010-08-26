@@ -1,10 +1,15 @@
 package ch.vd.uniregctb.norentes.civil.mariage;
 
+import java.util.Set;
+
 import annotation.Check;
 import annotation.Etape;
+
 import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.civil.model.EnumTypePermis;
+import ch.vd.uniregctb.evenement.common.EvenementCivilHandlerException;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
@@ -28,7 +33,7 @@ import ch.vd.uniregctb.type.TypeEvenementCivil;
  * @author Pavel BLANCO
  *
  */
-public class Ec_4000_06_Mariage_FusionMenages_Scenario extends EvenementCivilScenario {
+public class Ec_4000_11_Mariage_JIRA2771_Scenario extends EvenementCivilScenario {
 
 	private MetierService metierService;
 
@@ -36,7 +41,7 @@ public class Ec_4000_06_Mariage_FusionMenages_Scenario extends EvenementCivilSce
 		this.metierService = metierService;
 	}
 
-	public static final String NAME = "4000_06_Mariage";
+	public static final String NAME = "4000_11_Mariage";
 
 	@Override
 	public TypeEvenementCivil geTypeEvenementCivil() {
@@ -175,28 +180,22 @@ public class Ec_4000_06_Mariage_FusionMenages_Scenario extends EvenementCivilSce
 		assertBlocageRemboursementAutomatique(true, true, true);
 	}
 
-	@Etape(id=2, descr="Reconstitution du ménage commun à partir des deux ménages communs incomplets")
+	@Etape(id=2, descr="tentative de Reconstitution du ménage commun à partir des deux ménages communs incomplets")
 	public void step2() throws Exception {
-		//UNIREG-2771 On annule le for principal du ménage d'armando pour que la fusion fonctionne
-		final MenageCommun menageArmando = (MenageCommun) tiersDAO.get(noMenageArmando);
-		menageArmando.getDernierForFiscalPrincipal().setAnnule(true);
-		metierService.fusionneMenages((MenageCommun) tiersDAO.get(noMenageAlfredo), (MenageCommun) tiersDAO.get(noMenageArmando), null, EtatCivil.LIE_PARTENARIAT_ENREGISTRE);
+		 try {
+			metierService.fusionneMenages((MenageCommun) tiersDAO.get(noMenageAlfredo), (MenageCommun) tiersDAO.get(noMenageArmando), null, EtatCivil.LIE_PARTENARIAT_ENREGISTRE);
+			Assert.fail();
+		 }
+		 catch (EvenementCivilHandlerException e){
+		  Assert.hasText(e.getMessage());
+		}
+
 	}
 
-	@Check(id=2, descr="Vérifie que la reconstitution du ménage commun a été bien effectuée")
+	@Check(id=2, descr="Vérifie que la reconstitution du ménage commun n'a pas été faite")
 	public void check2() {
 
-		{
-			final PersonnePhysique alfredo = (PersonnePhysique) tiersDAO.get(noHabAlfredo);
-			final ForFiscalPrincipal ffp = alfredo.getForFiscalPrincipalAt(null);
-			assertNull(ffp, "For principal de l'Habitant " + alfredo.getNumero() + " non null");
-		}
 
-		{
-			final PersonnePhysique armando = (PersonnePhysique)tiersDAO.get(noHabArmando);
-			final ForFiscalPrincipal ffp = armando.getForFiscalPrincipalAt(null);
-			assertNull(ffp, "For principal de l'Habitant " + armando.getNumero() + " non null");
-		}
 
 		long noMenageChoisi = noMenageAlfredo;
 		if (dateMariageArmando.isBefore(dateMariageAlfredo)) {
@@ -206,22 +205,17 @@ public class Ec_4000_06_Mariage_FusionMenages_Scenario extends EvenementCivilSce
 			final MenageCommun menageChoisi = (MenageCommun) tiersDAO.get(noMenageChoisi);
 			assertEquals(1, menageChoisi.getForsFiscaux().size(), "Le ménage a plus d'un for principal");
 
-			final ForFiscalPrincipal ffp = menageChoisi.getDernierForFiscalPrincipal();
-			assertNotNull(ffp, "For principal du ménage est null");
-			assertEquals(dateMariageAlfredo, ffp.getDateDebut(), "Date de début du dernier for fausse");
-			assertNull(ffp.getDateFin(), "Date de fin du dernier for fausse");
-			assertEquals(commune.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale(), "Le dernier for n'est pas sur " + commune.getNomMinuscule());
 
 			SituationFamille sf = menageChoisi.getSituationFamilleActive();
-			assertNotNull(sf, "Aucune situation famille trouvée");
-			assertEquals(EtatCivil.LIE_PARTENARIAT_ENREGISTRE, sf.getEtatCivil(), "Mauvaise situation famille");
+			assertNull(sf, "Situation famille ne devrait pas être trouvée");
+
 		}
 
 		long noMenageAnnule = noMenageArmando;
 		if (noMenageChoisi == noMenageArmando) {
 			noMenageAnnule = noMenageAlfredo;
 			final MenageCommun menageAnnule = (MenageCommun) tiersDAO.get(noMenageAnnule);
-			assertTrue(menageAnnule.isAnnule(), "Le ménage n'est pas annulé");
+			assertFalse(menageAnnule.isAnnule(), "Le ménage ne devrait pas être annulé");
 		}
 	}
 
