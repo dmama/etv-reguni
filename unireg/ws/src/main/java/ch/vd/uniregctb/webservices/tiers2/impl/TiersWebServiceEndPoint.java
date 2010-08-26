@@ -13,14 +13,21 @@ import ch.vd.uniregctb.webservices.tiers2.exception.BusinessException;
 import ch.vd.uniregctb.webservices.tiers2.exception.TechnicalException;
 import ch.vd.uniregctb.webservices.tiers2.exception.WebServiceExceptionType;
 import ch.vd.uniregctb.webservices.tiers2.params.*;
+
+import org.apache.cxf.transport.http.AbstractHTTPDestination;
 import org.apache.log4j.Logger;
 import org.springframework.util.Assert;
 
+import javax.annotation.Resource;
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebResult;
 import javax.jws.WebService;
 import javax.jws.soap.SOAPBinding;
+import javax.servlet.http.HttpServletRequest;
+import javax.xml.ws.WebServiceContext;
+import javax.xml.ws.handler.MessageContext;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,6 +44,9 @@ public class TiersWebServiceEndPoint implements TiersWebService {
 	private static final Logger LOGGER = Logger.getLogger(TiersWebServiceEndPoint.class);
 	private static final Logger READ_ACCESS = Logger.getLogger("tiers2.read");
 	private static final Logger WRITE_ACCESS = Logger.getLogger("tiers2.write");
+
+	@Resource
+	private WebServiceContext context;
 
 	private TiersWebService service;
 
@@ -774,7 +784,8 @@ public class TiersWebServiceEndPoint implements TiersWebService {
 	 */
 	private void logReadAccess(Object params, long duration) {
 		if (READ_ACCESS.isInfoEnabled()) {
-			READ_ACCESS.info(String.format("(%d ms) %s", duration / 1000000, params.toString()));
+			final String user = getBasicAuthenticationUser();
+			READ_ACCESS.info(String.format("[%s] (%d ms) %s", user, duration / 1000000, params.toString()));
 		}
 	}
 
@@ -784,9 +795,20 @@ public class TiersWebServiceEndPoint implements TiersWebService {
 	 * @param params   les paramètres de l'appel
 	 * @param duration la durée de l'appel en nano-secondes
 	 */
-	private static void logWriteAccess(Object params, long duration) {
+	private void logWriteAccess(Object params, long duration) {
 		if (WRITE_ACCESS.isInfoEnabled()) {
-			WRITE_ACCESS.info(String.format("(%d ms) %s", duration / 1000000, params.toString()));
+			final String user = getBasicAuthenticationUser();
+			WRITE_ACCESS.info(String.format("[%s] (%d ms) %s", user, duration / 1000000, params.toString()));
 		}
+	}
+
+	/**
+	 * @return le nom de l'utilisateur utilisé pour se connecter au web-service en mode <i>basic authentication</i>; ou "n/a" si cette information n'existe pas.
+	 */
+	private String getBasicAuthenticationUser() {
+		final MessageContext ctx = (context == null ? null : context.getMessageContext());
+		final HttpServletRequest request = (ctx == null ? null : (HttpServletRequest) ctx.get(AbstractHTTPDestination.HTTP_REQUEST));
+		final Principal userPrincipal = (request == null ? null : request.getUserPrincipal());
+		return (userPrincipal == null ? "n/a" : userPrincipal.getName());
 	}
 }
