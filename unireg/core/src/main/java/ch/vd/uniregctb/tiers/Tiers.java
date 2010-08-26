@@ -1005,6 +1005,10 @@ public abstract class Tiers extends HibernateEntity implements Validateable, Bus
 		public final List<ForDebiteurPrestationImposable> dpis = new ArrayList<ForDebiteurPrestationImposable>();
 		public final List<ForFiscalAutreElementImposable> autreElementImpot = new ArrayList<ForFiscalAutreElementImposable>();
 		public final List<ForFiscalAutreImpot> autresImpots = new ArrayList<ForFiscalAutreImpot>();
+
+		public final boolean isEmpty() {
+			return principaux.isEmpty() && secondaires.isEmpty() && dpis.isEmpty() && autreElementImpot.isEmpty() && autresImpots.isEmpty();
+		}
 	}
 
 	/**

@@ -25,6 +25,7 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.infrastructure.service.InfrastructureException;
+import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.civil.model.EnumAttributeIndividu;
@@ -122,7 +123,7 @@ public class ProduireRolesProcessor {
 		}
 
 		public boolean isDansGroupementDeCommunes(Integer ofsCandidat, Integer ofsReference) {
-			return ofsCommunes.contains(ofsCandidat);
+			return ofsCommunes.contains(ofsCandidat) && ofsCommunes.contains(ofsReference);
 		}
 	}
 
@@ -618,23 +619,29 @@ public class ProduireRolesProcessor {
 			throw new TraitementException();
 		}
 
-		final Integer ofsCommune = forFiscal.getNumeroOfsAutoriteFiscale();
-		final TypeAssujettissement typeAssujettissement = getTypeAssujettissementPourCommune(ofsCommune, assujettissement);
-		if (typeAssujettissement == TypeAssujettissement.NON_ASSUJETTI) {
+		try {
+			final Integer ofsCommune = forFiscal.getNumeroOfsAutoriteFiscale();
+			final TypeAssujettissement typeAssujettissement = getTypeAssujettissementPourCommune(ofsCommune, assujettissement, anneePeriode);
+			if (typeAssujettissement == TypeAssujettissement.NON_ASSUJETTI) {
 
-			// pas d'assujettissement sur cette commune dans l'annee de période
-			// -> s'il y en avait un avant, il faut l'indiquer dans le rapport
-			// (sauf si le contribuable était alors sourcier gris, auquel cas il ne doit pas apparaître)
-			if (!tiersService.isSourcierGris(contribuable, RegDate.get(anneePeriode - 1, 12, 31))) {
-				traiteNonAssujettiAvecPrecedentAssujettissement(assujettissementContainer, ofsCommune, groupement);
+				// pas d'assujettissement sur cette commune dans l'annee de période
+				// -> s'il y en avait un avant, il faut l'indiquer dans le rapport
+				// (sauf si le contribuable était alors sourcier gris, auquel cas il ne doit pas apparaître)
+				if (!tiersService.isSourcierGris(contribuable, RegDate.get(anneePeriode - 1, 12, 31))) {
+					traiteNonAssujettiAvecPrecedentAssujettissement(assujettissementContainer, ofsCommune, groupement);
+				}
+			}
+			else {
+				final DebutFinFor debutFin = getInformationDebutFin(forFiscal, groupement, anneePeriode);
+				final InfoCommune infoCommune = rapport.getOrCreateInfoPourCommune(ofsCommune);
+				final InfoContribuable infoCtb = infoCommune.getOrCreateInfoPourContribuable(contribuable, anneePeriode, adresseService, tiersService);
+				final InfoFor infoFor = new InfoFor(typeCtb, debutFin.dateOuverture, debutFin.motifOuverture, debutFin.dateFermeture, debutFin.motifFermeture, typeAssujettissement, forFiscal.isPrincipal(), forFiscal.getMotifRattachement(), ofsCommune);
+				infoCtb.addFor(infoFor);
 			}
 		}
-		else {
-			final DebutFinFor debutFin = getInformationDebutFin(forFiscal, groupement, anneePeriode);
-			final InfoCommune infoCommune = rapport.getOrCreateInfoPourCommune(ofsCommune);
-			final InfoContribuable infoCtb = infoCommune.getOrCreateInfoPourContribuable(contribuable, anneePeriode, adresseService, tiersService);
-			final InfoFor infoFor = new InfoFor(typeCtb, debutFin.dateOuverture, debutFin.motifOuverture, debutFin.dateFermeture, debutFin.motifFermeture, typeAssujettissement, forFiscal.isPrincipal(), forFiscal.getMotifRattachement(), ofsCommune);
-			infoCtb.addFor(infoFor);
+		catch (AssujettissementException e) {
+			rapport.addErrorErreurAssujettissement(contribuable, e.getMessage());
+			throw new TraitementException();
 		}
 	}
 
@@ -736,7 +743,7 @@ public class ProduireRolesProcessor {
 						candidat.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD &&
 						groupement.isDansGroupementDeCommunes(candidat.getNumeroOfsAutoriteFiscale(), forFiscal.getNumeroOfsAutoriteFiscale()) &&
 						((ForFiscalRevenuFortune) candidat).getMotifRattachement() == forFiscal.getMotifRattachement()) {
-					if (nouveauCandidat == null || nouveauCandidat.getDateFin().isBefore(candidat.getDateFin())) {
+					if (nouveauCandidat == null || (nouveauCandidat.getDateFin() != null && nouveauCandidat.getDateFin().isBefore(candidat.getDateFin()))) {
 						nouveauCandidat = (ForFiscalRevenuFortune) candidat;
 					}
 				}
@@ -766,7 +773,7 @@ public class ProduireRolesProcessor {
 		return new DebutFinFor(dateOuverture, motifOuverture, dateFermeture, motifFermeture);
 	}
 
-	private static TypeAssujettissement getTypeAssujettissementPourCommune(int noOfsCommune, Assujettissement assujettissement) {
+	private static TypeAssujettissement getTypeAssujettissementPourCommune(int noOfsCommune, Assujettissement assujettissement, int anneePeriode) throws AssujettissementException {
 		final boolean communeActive = assujettissement != null && assujettissement.isActifSurCommune(noOfsCommune);
 		final TypeAssujettissement typeAssujettissement;
 		if (communeActive) {
@@ -774,7 +781,18 @@ public class ProduireRolesProcessor {
 				typeAssujettissement = TypeAssujettissement.TERMINE_DANS_PF;
 			}
 			else {
-				typeAssujettissement = TypeAssujettissement.POURSUIVI_APRES_PF;
+
+				// ok, l'assujettissement global est poursuivi dans la PF suivante, mais peut-être pas pour la commune considérée
+				// -> il faut le re-calculer !
+
+				final List<Assujettissement> assujettissementsCommune = Assujettissement.determinePourCommune(assujettissement.getContribuable(), noOfsCommune);
+				final Assujettissement assujettissementDebutAnneeSuivante = DateRangeHelper.rangeAt(assujettissementsCommune, RegDate.get(anneePeriode + 1, 1, 1));
+				if (assujettissementDebutAnneeSuivante == null) {
+					typeAssujettissement = TypeAssujettissement.TERMINE_DANS_PF;
+				}
+				else {
+					typeAssujettissement = TypeAssujettissement.POURSUIVI_APRES_PF;
+				}
 			}
 		}
 		else {

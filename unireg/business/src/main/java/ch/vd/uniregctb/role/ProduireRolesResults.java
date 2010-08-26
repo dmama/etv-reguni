@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import ch.vd.registre.base.date.DateRange;
@@ -527,12 +528,22 @@ public abstract class ProduireRolesResults extends JobResults<Long, ProduireRole
 		ctbsEnErrors.add(new Erreur(ctb.getNumero(), ctb.getOfficeImpotId(), ErreurType.ASSUJETTISSEMENT, details));
 	}
 
+	private static String buildErrorMessage(Exception e) {
+		final String embeddedMessage = e.getMessage();
+		if (StringUtils.isBlank(embeddedMessage)) {
+			return String.format("%s: %s", e.getClass().getName(), Arrays.toString(e.getStackTrace()));
+		}
+		else {
+			return embeddedMessage;
+		}
+	}
+
 	public void addErrorException(Long id, Exception e) {
-		ctbsEnErrors.add(new Erreur(id, null, ErreurType.EXCEPTION, e.getMessage()));
+		ctbsEnErrors.add(new Erreur(id, null, ErreurType.EXCEPTION, buildErrorMessage(e)));
 	}
 
 	public void addErrorException(Contribuable ctb, Exception e) {
-		ctbsEnErrors.add(new Erreur(ctb.getNumero(), ctb.getOfficeImpotId(), ErreurType.EXCEPTION, e.getMessage()));
+		ctbsEnErrors.add(new Erreur(ctb.getNumero(), ctb.getOfficeImpotId(), ErreurType.EXCEPTION, buildErrorMessage(e)));
 	}
 
 	public void addCtbIgnoreDonneesIncoherentes(Contribuable ctb, String details) {

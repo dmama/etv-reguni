@@ -50,6 +50,7 @@ import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
+@SuppressWarnings({"JavaDoc"})
 public class ProduireRolesProcessorTest extends BusinessTest {
 
 	private HibernateTemplate hibernateTemplate;
@@ -347,12 +348,63 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 		}
 	}
 
+	/**
+	 * Test pour UNIREG-2777
+	 */
+	@Test
+	public void testRunCommunesCtbHorsCantonAvecPlusieursForsSecondaires() throws Exception {
+
+		final long ppId = (Long) doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				final Contribuable ctb = getCtbHorsCantonAvecDeuxForsImmeublesOuvertsPourJIRA2777();
+				return ctb.getNumero();
+			}
+		});
+
+		final ProduireRolesResults results = processor.runPourToutesCommunes(2008, 1, null);
+		assertNotNull(results);
+		assertEquals(1, results.ctbsTraites);
+		assertEquals(0, results.ctbsEnErrors.size());
+		assertEquals(0, results.ctbsIgnores.size());
+		assertEquals(3, results.infosCommunes.size());
+
+		{
+			final InfoCommune infoLausanne = results.getInfoPourCommune(MockCommune.Lausanne.getNoOFS());
+			assertNotNull(infoLausanne);
+
+			final InfoContribuable info = infoLausanne.getInfoPourContribuable(ppId);
+			assertInfo(ppId, TypeContribuable.HORS_CANTON, MockCommune.Lausanne.getNoOFS(), date(2005, 1, 1), date(2008, 5, 15), MotifFor.ACHAT_IMMOBILIER, MotifFor.VENTE_IMMOBILIER, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, info);
+
+			assertEquals(1, infoLausanne.getInfosContribuables().size());
+		}
+
+		{
+			final InfoCommune infoCroy = results.getInfoPourCommune(MockCommune.Croy.getNoOFS());
+			assertNotNull(infoCroy);
+
+			final InfoContribuable info = infoCroy.getInfoPourContribuable(ppId);
+			assertInfo(ppId, TypeContribuable.HORS_CANTON, MockCommune.Croy.getNoOFS(), date(2004, 1, 1), null, MotifFor.ACHAT_IMMOBILIER, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, info);
+
+			assertEquals(1, infoCroy.getInfosContribuables().size());
+		}
+
+		{
+			final InfoCommune infoRomainmotier = results.getInfoPourCommune(MockCommune.RomainmotierEnvy.getNoOFS());
+			assertNotNull(infoRomainmotier);
+
+			final InfoContribuable info = infoRomainmotier.getInfoPourContribuable(ppId);
+			assertInfo(ppId, TypeContribuable.HORS_CANTON, MockCommune.RomainmotierEnvy.getNoOFS(), date(2003, 1, 1), null, MotifFor.ACHAT_IMMOBILIER, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, info);
+
+			assertEquals(1, infoRomainmotier.getInfosContribuables().size());
+		}
+	}
+
 	@Test
 	public void testGetTypeContribuable() {
 		// données bidon pour pouvoir instancier les assujettissements
 		final Contribuable toto = addNonHabitant("Toto", "LaRapière", date(1973, 3, 21), Sexe.MASCULIN);
 		addForPrincipal(toto, date(2000, 1, 1), MotifFor.MAJORITE, MockCommune.Lausanne);
-		final DecompositionForsAnneeComplete fors = new DecompositionForsAnneeComplete(toto, 2007);
 
 		assertEquals(TypeContribuable.ORDINAIRE, ProduireRolesProcessor.getTypeContribuable(new VaudoisOrdinaire(toto, null, null, null, null)));
 		assertEquals(TypeContribuable.ORDINAIRE, ProduireRolesProcessor.getTypeContribuable(new Indigent(toto, null, null, null, null)));
@@ -652,7 +704,7 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 	 */
 	private Contribuable newCtbDiplomateSuisse(MockCommune commune) {
 		final Contribuable marc = addNonHabitant("Marc", "Ramatruelle", date(1948, 11, 3), Sexe.MASCULIN);
-		addForPrincipal(marc, date(1968, 11, 3), MotifFor.MAJORITE, MockCommune.Lausanne, MotifRattachement.DIPLOMATE_SUISSE);
+		addForPrincipal(marc, date(1968, 11, 3), MotifFor.MAJORITE, commune, MotifRattachement.DIPLOMATE_SUISSE);
 		return marc;
 	}
 
@@ -840,14 +892,26 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 	 * @return un contribuable invalide
 	 */
 	private Contribuable getCtbVaudoisOrdinaireEtImmeubleInvalide() {
-		final Contribuable rodolf = (Contribuable) hibernateTemplate.get(Contribuable.class, Long.valueOf(10000666));
-		return rodolf;
+		return (Contribuable) hibernateTemplate.get(Contribuable.class, Long.valueOf(10000666));
+	}
+
+	/**
+	 * UNIREG-2777
+	 * @return un contribuable HC avec deux fors secondaires immeubles ouverts sur l'OID d'Orbe et un autre fermé l'année des rôles sur l'OID de Lausanne
+	 */
+	private Contribuable getCtbHorsCantonAvecDeuxForsImmeublesOuvertsPourJIRA2777() {
+		final Contribuable pp = addNonHabitant("Fifi", "Brindacier", date(1970, 9, 12), Sexe.FEMININ);
+		addForPrincipal(pp, date(1988, 9, 12), MotifFor.MAJORITE, date(2007, 6, 11), MotifFor.DEPART_HC, MockCommune.Lausanne);
+		addForPrincipal(pp, date(2007, 6, 12), MotifFor.DEPART_HC, MockCommune.Bern);
+		addForSecondaire(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, date(2008, 5, 15), MotifFor.VENTE_IMMOBILIER, MockCommune.Lausanne.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(pp, date(2003, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.RomainmotierEnvy.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(pp, date(2004, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Croy.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+		return pp;
 	}
 
 	private ForFiscalSecondaire addImmeuble(final Contribuable ctb, MockCommune commune, RegDate debut, RegDate fin) {
 		MotifFor motifFermeture = (fin == null ? null : MotifFor.VENTE_IMMOBILIER);
-		ForFiscalSecondaire fs = addForSecondaire(ctb, debut, MotifFor.ACHAT_IMMOBILIER, fin, motifFermeture, commune.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
-		return fs;
+		return addForSecondaire(ctb, debut, MotifFor.ACHAT_IMMOBILIER, fin, motifFermeture, commune.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 	}
 
 	private static <T> void assertNextIs(final Iterator<T> iter, T expected) {

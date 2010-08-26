@@ -26,6 +26,7 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 import static ch.vd.registre.base.date.DateRangeHelper.Range;
 import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
 import static org.junit.Assert.assertEquals;
 
 // Pour générer des screenshots des assujettissements :
@@ -2737,6 +2738,86 @@ public class AssujettissementTest extends MetierTest {
 		assertNotNull(list);
 		assertEquals(1, list.size());
 		assertOrdinaire(date(1993, 1, 1), date(2007, 12, 31), MotifFor.INDETERMINE, MotifFor.DEPART_HC, list.get(0));
+	}
+
+	@Test
+	public void testDeterminePourCommuneNonAssujetti() throws Exception {
+		final Contribuable ctb = createContribuableSansFor();
+		final List<Assujettissement> listeLausanneSansFor = Assujettissement.determinePourCommune(ctb, MockCommune.Lausanne.getNoOFSEtendu());
+		assertNull(listeLausanneSansFor);
+
+		addForPrincipal(ctb, date(2000, 9, 4), MotifFor.ARRIVEE_HS, MockCommune.Renens);
+		final List<Assujettissement> listeLausanneAvecForARenens = Assujettissement.determinePourCommune(ctb, MockCommune.Lausanne.getNoOFSEtendu());
+		assertNull(listeLausanneAvecForARenens);
+	}
+
+	@Test
+	public void testDeterminePourCommuneHorsCantonImmeuble() throws Exception {
+		final Contribuable ctb = createContribuableSansFor();
+		addForPrincipal(ctb, date(2000, 9, 4), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
+		addForSecondaire(ctb, date(2000, 9, 4), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(ctb, date(2005, 6, 24), MotifFor.ACHAT_IMMOBILIER, MockCommune.Croy.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(ctb, date(2002, 7, 12), MotifFor.ACHAT_IMMOBILIER, date(2006, 12, 2), MotifFor.VENTE_IMMOBILIER, MockCommune.Renens.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+
+		final List<Assujettissement> listeLausanne = Assujettissement.determinePourCommune(ctb, MockCommune.Lausanne.getNoOFSEtendu());
+		assertEquals(1, listeLausanne.size());
+		assertHorsCanton(date(2000, 1, 1), null, MotifFor.ACHAT_IMMOBILIER, null, listeLausanne.get(0));
+
+		final List<Assujettissement> listeCroy = Assujettissement.determinePourCommune(ctb, MockCommune.Croy.getNoOFSEtendu());
+		assertEquals(1, listeCroy.size());
+		assertHorsCanton(date(2005, 1, 1), null, MotifFor.ACHAT_IMMOBILIER, null, listeCroy.get(0));
+
+		final List<Assujettissement> listeRenens = Assujettissement.determinePourCommune(ctb, MockCommune.Renens.getNoOFSEtendu());
+		assertEquals(1, listeRenens.size());
+		assertHorsCanton(date(2002, 1, 1), date(2006, 12, 31), MotifFor.ACHAT_IMMOBILIER, MotifFor.VENTE_IMMOBILIER, listeRenens.get(0));
+	}
+
+	@Test
+	public void testDeterminePourCommuneHorsSuisseImmeuble() throws Exception {
+
+		final Contribuable ctb = createContribuableSansFor();
+		addForPrincipal(ctb, date(2000, 9, 4), MotifFor.ACHAT_IMMOBILIER, MockPays.Allemagne);
+		addForSecondaire(ctb, date(2000, 9, 4), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(ctb, date(2005, 6, 24), MotifFor.ACHAT_IMMOBILIER, MockCommune.Croy.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(ctb, date(2002, 7, 12), MotifFor.ACHAT_IMMOBILIER, date(2006, 12, 2), MotifFor.VENTE_IMMOBILIER, MockCommune.Renens.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+
+		final List<Assujettissement> listeLausanne = Assujettissement.determinePourCommune(ctb, MockCommune.Lausanne.getNoOFSEtendu());
+		assertEquals(1, listeLausanne.size());
+		assertHorsSuisse(date(2000, 9, 4), null, MotifFor.ACHAT_IMMOBILIER, null, listeLausanne.get(0));
+
+		final List<Assujettissement> listeCroy = Assujettissement.determinePourCommune(ctb, MockCommune.Croy.getNoOFSEtendu());
+		assertEquals(1, listeCroy.size());
+		assertHorsSuisse(date(2005, 6, 24), null, MotifFor.ACHAT_IMMOBILIER, null, listeCroy.get(0));
+
+		final List<Assujettissement> listeRenens = Assujettissement.determinePourCommune(ctb, MockCommune.Renens.getNoOFSEtendu());
+		assertEquals(1, listeRenens.size());
+		assertHorsSuisse(date(2002, 7, 12), date(2006, 12, 2), MotifFor.ACHAT_IMMOBILIER, MotifFor.VENTE_IMMOBILIER, listeRenens.get(0));
+	}
+
+	@Test
+	public void testDeterminePourCommuneVaudois() throws Exception {
+
+		final Contribuable ctb = createContribuableSansFor();
+		addForPrincipal(ctb, date(2000, 6, 1), MotifFor.ARRIVEE_HS, MockCommune.Aubonne);
+		addForSecondaire(ctb, date(2000, 9, 4), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(ctb, date(2005, 6, 24), MotifFor.ACHAT_IMMOBILIER, MockCommune.Croy.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(ctb, date(2002, 7, 12), MotifFor.ACHAT_IMMOBILIER, date(2006, 12, 2), MotifFor.VENTE_IMMOBILIER, MockCommune.Renens.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+
+		final List<Assujettissement> listeAubonne = Assujettissement.determinePourCommune(ctb, MockCommune.Aubonne.getNoOFSEtendu());
+		assertEquals(1, listeAubonne.size());
+		assertOrdinaire(date(2000, 6, 1), null, MotifFor.ARRIVEE_HS, null, listeAubonne.get(0));
+
+		final List<Assujettissement> listeLausanne = Assujettissement.determinePourCommune(ctb, MockCommune.Lausanne.getNoOFSEtendu());
+		assertEquals(1, listeLausanne.size());
+		assertHorsCanton(date(2000, 1, 1), null, MotifFor.ACHAT_IMMOBILIER, null, listeLausanne.get(0));
+
+		final List<Assujettissement> listeCroy = Assujettissement.determinePourCommune(ctb, MockCommune.Croy.getNoOFSEtendu());
+		assertEquals(1, listeCroy.size());
+		assertHorsCanton(date(2005, 1, 1), null, MotifFor.ACHAT_IMMOBILIER, null, listeCroy.get(0));
+
+		final List<Assujettissement> listeRenens = Assujettissement.determinePourCommune(ctb, MockCommune.Renens.getNoOFSEtendu());
+		assertEquals(1, listeRenens.size());
+		assertHorsCanton(date(2002, 1, 1), date(2006, 12, 31), MotifFor.ACHAT_IMMOBILIER, MotifFor.VENTE_IMMOBILIER, listeRenens.get(0));
 	}
 
 	@Test
