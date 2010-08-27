@@ -56,21 +56,19 @@ public class EditiqueRetourImpressionStorageServiceTest extends WithoutSpringTes
 		// et on commence tout de suite à attendre
 
 		final String nomDocument = "Mon document tant attendu";
-		{
-			final EditiqueResultat resultat = buildResultat(nomDocument);
-			final Thread thread = new Thread(new Runnable() {
-				public void run() {
-					try {
-						Thread.sleep(200);
-						service.onArriveeRetourImpression(resultat);
-					}
-					catch (InterruptedException e) {
-						throw new RuntimeException(e);
-					}
+		final EditiqueResultat envoi = buildResultat(nomDocument);
+		final Thread thread = new Thread(new Runnable() {
+			public void run() {
+				try {
+					Thread.sleep(200);
+					service.onArriveeRetourImpression(envoi);
 				}
-			});
-			thread.start();
-		}
+				catch (InterruptedException e) {
+					throw new RuntimeException(e);
+				}
+			}
+		});
+		thread.start();
 
 		final long tsDebut = System.currentTimeMillis();
 		final EditiqueResultat resultat = service.getDocument(nomDocument, 1000);
@@ -79,6 +77,8 @@ public class EditiqueRetourImpressionStorageServiceTest extends WithoutSpringTes
 		Assert.assertEquals(nomDocument, resultat.getIdDocument());
 		Assert.assertTrue(tsFin - tsDebut < 1000);
 		Assert.assertTrue(tsFin - tsDebut >= 200);
+
+		thread.join();
 	}
 
 	@Test(timeout = 1200)
@@ -88,21 +88,19 @@ public class EditiqueRetourImpressionStorageServiceTest extends WithoutSpringTes
 		// et on commence tout de suite à attendre (mais seulement 150ms) -> le document ne doit pas être vu
 
 		final String nomDocument = "Mon document tant attendu";
-		{
-			final EditiqueResultat resultat = buildResultat(nomDocument);
-			final Thread thread = new Thread(new Runnable() {
-				public void run() {
-					try {
-						Thread.sleep(200);
-						service.onArriveeRetourImpression(resultat);
-					}
-					catch (InterruptedException e) {
-						throw new RuntimeException(e);
-					}
+		final EditiqueResultat envoi = buildResultat(nomDocument);
+		final Thread thread = new Thread(new Runnable() {
+			public void run() {
+				try {
+					Thread.sleep(200);
+					service.onArriveeRetourImpression(envoi);
 				}
-			});
-			thread.start();
-		}
+				catch (InterruptedException e) {
+					throw new RuntimeException(e);
+				}
+			}
+		});
+		thread.start();
 
 		// premier essai
 		{
@@ -118,6 +116,8 @@ public class EditiqueRetourImpressionStorageServiceTest extends WithoutSpringTes
 			final EditiqueResultat resultat = service.getDocument(nomDocument, 150);
 			Assert.assertNotNull(resultat);
 		}
+
+		thread.join();
 	}
 
 	@Test(timeout = 500)
@@ -184,27 +184,28 @@ public class EditiqueRetourImpressionStorageServiceTest extends WithoutSpringTes
 
 		final String nomDocumentAttendu = "Mon document tant attendu";
 		final String nomDocumentEvoye = "Mon document reçu";
-		{
-			final EditiqueResultat resultat = buildResultat(nomDocumentEvoye);
-			final Thread thread = new Thread(new Runnable() {
-				public void run() {
-					try {
-						Thread.sleep(200);
-						service.onArriveeRetourImpression(resultat);
-					}
-					catch (InterruptedException e) {
-						throw new RuntimeException(e);
-					}
+
+		final EditiqueResultat envoi = buildResultat(nomDocumentEvoye);
+		final Thread thread = new Thread(new Runnable() {
+			public void run() {
+				try {
+					Thread.sleep(200);
+					service.onArriveeRetourImpression(envoi);
 				}
-			});
-			thread.start();
-		}
+				catch (InterruptedException e) {
+					throw new RuntimeException(e);
+				}
+			}
+		});
+		thread.start();
 
 		final long tsDebut = System.currentTimeMillis();
 		final EditiqueResultat resultat = service.getDocument(nomDocumentAttendu, 500);
 		final long tsFin = System.currentTimeMillis();
 		Assert.assertNull(resultat);
 		Assert.assertTrue(tsFin - tsDebut >= 500);
+
+		thread.join();
 	}
 
 	@Test(timeout = 600)
@@ -215,25 +216,24 @@ public class EditiqueRetourImpressionStorageServiceTest extends WithoutSpringTes
 
 		final String nomDocumentAttendu = "Mon document tant attendu";
 		final String nomDocumentEvoye = "Mon autre document reçu";
-		{
-			final EditiqueResultat documentAttendu = buildResultat(nomDocumentAttendu);
-			final EditiqueResultat autreDocument = buildResultat(nomDocumentEvoye);
-			final Thread thread = new Thread(new Runnable() {
-				public void run() {
-					try {
-						Thread.sleep(200);
-						service.onArriveeRetourImpression(autreDocument);
 
-						Thread.sleep(100);
-						service.onArriveeRetourImpression(documentAttendu);
-					}
-					catch (InterruptedException e) {
-						throw new RuntimeException(e);
-					}
+		final EditiqueResultat documentAttendu = buildResultat(nomDocumentAttendu);
+		final EditiqueResultat autreDocument = buildResultat(nomDocumentEvoye);
+		final Thread thread = new Thread(new Runnable() {
+			public void run() {
+				try {
+					Thread.sleep(200);
+					service.onArriveeRetourImpression(autreDocument);
+
+					Thread.sleep(100);
+					service.onArriveeRetourImpression(documentAttendu);
 				}
-			});
-			thread.start();
-		}
+				catch (InterruptedException e) {
+					throw new RuntimeException(e);
+				}
+			}
+		});
+		thread.start();
 
 		final long tsDebut = System.currentTimeMillis();
 		final EditiqueResultat resultat = service.getDocument(nomDocumentAttendu, 500);
@@ -241,6 +241,8 @@ public class EditiqueRetourImpressionStorageServiceTest extends WithoutSpringTes
 		Assert.assertNotNull(resultat);
 		Assert.assertEquals(nomDocumentAttendu, resultat.getIdDocument());
 		Assert.assertTrue(tsFin - tsDebut < 350);
+
+		thread.join();
 	}
 
 	@Test(timeout = 2500)
