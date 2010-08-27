@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
+import java.util.List;
 
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
@@ -12,6 +13,11 @@ import org.springframework.transaction.support.TransactionCallback;
 import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.WebserviceTest;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
+import ch.vd.uniregctb.declaration.EtatDeclaration;
+import ch.vd.uniregctb.declaration.ModeleDocument;
+import ch.vd.uniregctb.declaration.PeriodeFiscale;
+import ch.vd.uniregctb.interfaces.model.mock.MockCollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
@@ -22,20 +28,28 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
+import ch.vd.uniregctb.type.TypeContribuable;
+import ch.vd.uniregctb.type.TypeDocument;
+import ch.vd.uniregctb.type.TypeEtatDeclaration;
 import ch.vd.uniregctb.webservices.common.UserLogin;
 import ch.vd.uniregctb.webservices.tiers2.data.Adresse;
 import ch.vd.uniregctb.webservices.tiers2.data.BatchTiersHisto;
 import ch.vd.uniregctb.webservices.tiers2.data.BatchTiersHistoEntry;
+import ch.vd.uniregctb.webservices.tiers2.data.CodeQuittancement;
 import ch.vd.uniregctb.webservices.tiers2.data.Date;
+import ch.vd.uniregctb.webservices.tiers2.data.DeclarationImpotOrdinaireKey;
+import ch.vd.uniregctb.webservices.tiers2.data.DemandeQuittancementDeclaration;
 import ch.vd.uniregctb.webservices.tiers2.data.ForFiscal;
 import ch.vd.uniregctb.webservices.tiers2.data.MenageCommun;
 import ch.vd.uniregctb.webservices.tiers2.data.MenageCommunHisto;
 import ch.vd.uniregctb.webservices.tiers2.data.PersonnePhysiqueHisto;
+import ch.vd.uniregctb.webservices.tiers2.data.ReponseQuittancementDeclaration;
 import ch.vd.uniregctb.webservices.tiers2.data.TiersPart;
 import ch.vd.uniregctb.webservices.tiers2.data.TypeAdresseAutreTiers;
 import ch.vd.uniregctb.webservices.tiers2.params.GetBatchTiersHisto;
 import ch.vd.uniregctb.webservices.tiers2.params.GetTiers;
 import ch.vd.uniregctb.webservices.tiers2.params.GetTiersHisto;
+import ch.vd.uniregctb.webservices.tiers2.params.QuittancerDeclarations;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -363,6 +377,66 @@ public class TiersWebServiceTest extends WebserviceTest {
 			assertEquals(TypeAdresseAutreTiers.CURATELLE, tiia.adressesPoursuiteAutreTiers.get(2).type);
 		}
 	}
+
+	/**
+	 * [UNIREG-2782] vérification que le quittancement d'une DI pour laquelle l'état "EMISE"
+	 * n'a pas été créé fonctionne quand-même
+	 */
+	@Test
+	public void testQuittanceDeclarationSansDateEmission() throws Exception {
+
+		class Ids {
+			long ppId;
+			long diId;
+		}
+
+		// mise en place
+		final Ids ids = (Ids) doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Ids execute(TransactionStatus transactionStatus) throws Exception {
+
+				final PersonnePhysique pp = addNonHabitant("Albus", "Dumbledore", date(1957, 10, 3), Sexe.MASCULIN);
+				addForPrincipal(pp, date(2009, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Croy);
+				final PeriodeFiscale pf = addPeriodeFiscale(2009);
+				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf);
+				addCollAdm(MockCollectiviteAdministrative.CEDI);
+				final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, date(2009, 1, 1), date(2009, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+				assertNull(di.getEtatDeclarationActif(TypeEtatDeclaration.EMISE));
+
+				final EtatDeclaration retour = new EtatDeclaration(RegDate.get(), TypeEtatDeclaration.RETOURNEE);
+				di.addEtat(retour);
+
+				final Ids ids = new Ids();
+				ids.ppId = pp.getNumero();
+				ids.diId = di.getId();
+				return ids;
+			}
+		});
+
+		// quittancement de la DI
+		final DemandeQuittancementDeclaration demande = new DemandeQuittancementDeclaration();
+		demande.dateRetour = new Date(RegDate.get());
+		demande.key = new DeclarationImpotOrdinaireKey();
+		demande.key.ctbId = ids.ppId;
+		demande.key.numeroSequenceDI = 1;
+		demande.key.periodeFiscale = 2009;
+
+		final QuittancerDeclarations quittances = new QuittancerDeclarations();
+		quittances.login = login;
+		quittances.demandes = Arrays.asList(demande);
+
+		final List<ReponseQuittancementDeclaration> retours = service.quittancerDeclarations(quittances);
+		assertNotNull(retours);
+		assertEquals(1, retours.size());
+
+		final ReponseQuittancementDeclaration retour = retours.get(0);
+		assertNotNull(retour);
+		assertEquals(ids.ppId, retour.key.ctbId);
+		assertEquals(1, retour.key.numeroSequenceDI);
+		assertEquals(2009, retour.key.periodeFiscale);
+		assertEquals(CodeQuittancement.OK, retour.code);
+	}
+
 
 	private static void assertAdresse(Date dateDebut, Date dateFin, String rue, String localite, Adresse adresse) {
 		assertNotNull(adresse);

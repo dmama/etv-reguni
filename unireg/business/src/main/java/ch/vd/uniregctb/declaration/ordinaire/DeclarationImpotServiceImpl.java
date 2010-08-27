@@ -299,7 +299,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 			if (di.getDateRetour() != null) {
 				di.getEtatDeclarationActif(TypeEtatDeclaration.RETOURNEE).setAnnule(true);
 			}
-			EtatDeclaration etat = new EtatDeclaration();
+			final EtatDeclaration etat = new EtatDeclaration();
 			etat.setEtat(TypeEtatDeclaration.RETOURNEE);
 			etat.setDateObtention(dateEvenement);
 			di.addEtat(etat);

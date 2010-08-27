@@ -14,12 +14,13 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.DateRange;
+import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
-import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.uniregctb.declaration.source.ListeRecapService;
 import ch.vd.uniregctb.iban.IbanValidator;
@@ -689,16 +690,9 @@ public class TiersWebServiceImpl implements TiersWebService {
 		}
 		
 		final RegDate dateRetour = DataHelper.webToCore(demande.dateRetour);
-
-		if (dateRetour.isBeforeOrEqual(declaration.getDateExpedition())) {
+		if (RegDateHelper.isBeforeOrEqual(dateRetour, declaration.getDateExpedition(), NullDateBehavior.EARLIEST)) {
 			throw new QuittancementErreur(CodeQuittancement.ERREUR_DATE_RETOUR_INVALIDE,
 					"La date de retour spécifiée (" + dateRetour + ") est avant la date d'envoi de la déclaration (" + declaration.getDateExpedition() + ").");
-		}
-
-		// Si la déclaration est sommée à une date située après la date de retour, on annule cette état de sommation pour permettre le quittancement.
-		final EtatDeclaration etat = declaration.getDernierEtat();
-		if (etat.getEtat() == TypeEtatDeclaration.SOMMEE && etat.getDateObtention().isAfter(dateRetour)) {
-			etat.setAnnule(true);
 		}
 
 		// La déclaration est correcte, on la quittance
