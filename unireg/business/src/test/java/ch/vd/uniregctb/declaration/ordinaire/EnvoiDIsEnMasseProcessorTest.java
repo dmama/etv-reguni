@@ -600,7 +600,35 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 
 		final DeclarationImpotOrdinaire decl = declarations.get(0);
 		assertDI(date(2008, 1, 1), dateDeces, TypeEtatDeclaration.EMISE, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, ids.oidCedi,
-				dateTraitement.addDays(60), decl);
+				calculerDateDelaiImprime(dateTraitement, 3, 60), decl);
+	}
+
+	private static RegDate calculerDateDelaiImprime(RegDate dateTraitement, int delaiExpedition, int delaiRetour) {
+		final RegDate dateExpedition = ajouteJours(dateTraitement, delaiExpedition, true);
+		return ajouteJours(dateExpedition, delaiRetour, true);
+	}
+
+	private static RegDate ajouteJours(RegDate date, int nbJours, boolean shiftSiWeekEnd) {
+		final RegDate dateDecaleeBrute = date.addDays(nbJours);
+		final RegDate dateDecalee;
+		if (shiftSiWeekEnd) {
+			final RegDate.WeekDay weekDay = dateDecaleeBrute.getWeekDay();
+			switch (weekDay) {
+				case SATURDAY:
+					dateDecalee = dateDecaleeBrute.addDays(2);
+					break;
+				case SUNDAY:
+					dateDecalee = dateDecaleeBrute.addDays(1);
+					break;
+				default:
+					dateDecalee = dateDecaleeBrute;
+					break;
+			}
+		}
+		else {
+			dateDecalee = dateDecaleeBrute;
+		}
+		return dateDecalee;
 	}
 
 	/**
@@ -757,7 +785,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 		// le délai de retour imprimé doit être dateTraitement + 60 jours
 		final DeclarationImpotOrdinaire decl = declarations.get(0);
 		assertDI(date(2008, 1, 1), dateDeces, TypeEtatDeclaration.EMISE, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
-				ids.oidCedi, dateTraitement.addDays(60), decl);
+				ids.oidCedi, calculerDateDelaiImprime(dateTraitement, 3 , 60), decl);
 	}
 
 	/**
@@ -885,7 +913,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 		// [UNIREG-1852] la déclaration doit être émise (et non-retournée immédiatement comme pour les indigents non-décédés) avec la cellule registre comme adresse de retour
 		final DeclarationImpotOrdinaire decl = declarations.get(0);
 		assertDI(date(2008, 1, 1), dateDeces, TypeEtatDeclaration.EMISE, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
-				ids.aci, dateTraitement.addDays(60), decl);
+				ids.aci, calculerDateDelaiImprime(dateTraitement, 3, 60), decl);
 	}
 
 	/**

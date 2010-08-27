@@ -1305,7 +1305,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 				assertDI(date(2007, 1, 1), date(2007, 12, 31), TypeEtatDeclaration.RETOURNEE, TypeContribuable.VAUDOIS_ORDINAIRE,
 						TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, idCedi, null, john.getDeclarationForPeriode(2007));
 				assertDI(date(2007, 1, 1), date(2007, 5, 23), TypeEtatDeclaration.EMISE, TypeContribuable.VAUDOIS_ORDINAIRE,
-						TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, idAci, date(2008, 3, 20), ours.getDeclarationForPeriode(2007)); // [UNIREG-1852]
+						TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, idAci, date(2008, 3, 25), ours.getDeclarationForPeriode(2007)); // [UNIREG-1852], [UNIREG-1861]
 				assertDI(date(2007, 1, 1), date(2007, 12, 31), null, TypeContribuable.VAUDOIS_ORDINAIRE,
 						TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, idCedi, null, ramon.getDeclarationForPeriode(2007));
 				assertDI(date(2007, 1, 1), date(2007, 6, 30), null, TypeContribuable.VAUDOIS_ORDINAIRE,

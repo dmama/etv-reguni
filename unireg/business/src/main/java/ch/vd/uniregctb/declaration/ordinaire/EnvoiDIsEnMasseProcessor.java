@@ -516,8 +516,8 @@ public class EnvoiDIsEnMasseProcessor {
 		if (di == null) {
 			return false;
 		}
-		ajouterDelaiDeRetourInitial(di, dateTraitement);
-		ajouterEtatInitial(di, dateTraitement);
+		final RegDate dateExpedition = ajouterEtatInitial(di, dateTraitement);
+		ajouterDelaiDeRetourInitial(di, dateTraitement, dateExpedition);
 		ajouterAdresseRetour(di, tache);
 
 		// Impression de la déclaration proprement dites
@@ -552,7 +552,7 @@ public class EnvoiDIsEnMasseProcessor {
 	 * </ul>
 	 * ==> si le contribuable n'est plus en suisse au moment de l'envoi alors delai réglementaire sinon délai effectif
 	 */
-	private void ajouterDelaiDeRetourInitial(DeclarationImpotOrdinaire di, RegDate dateTraitement) {
+	private void ajouterDelaiDeRetourInitial(DeclarationImpotOrdinaire di, RegDate dateTraitement, RegDate dateExpedition) {
 
 		final PeriodeFiscale periode = di.getPeriode();
 		final Contribuable contribuable = (Contribuable) di.getTiers();
@@ -570,12 +570,13 @@ public class EnvoiDIsEnMasseProcessor {
 			// [UNIREG-1740] spéc: pour un assujettissement qui ne s’étend qu’à une partie de l’année, ou exceptionnellement à toute l’année mais pas au-delà (départ hors Suisse ou
 			// décès au 31 décembre), le délai de retour est fixé au 60e jour (paramètre) qui suit la date d’expédition. Si cette date tombe un samedi, un dimanche ou un jour légalement férié,
 			// elle est reportée au 1er jour ouvrable qui suit.
-			dateRetourAccorde = delaisService.getDateFinDelaiRetourDeclarationImpotEmiseManuellement(dateTraitement);
+			// [UNIREG-1861] c'est bien la date d'expédition qu'il faut prendre, pas la date de traitement...
+			dateRetourAccorde = delaisService.getDateFinDelaiRetourDeclarationImpotEmiseManuellement(dateExpedition);
 			dateRetourImprime = dateRetourAccorde;
 		}
 		else {
 			// Traitement normal
-			ForFiscalPrincipal fp = di.getTiers().getForFiscalPrincipalAt(dateTraitement);
+			final ForFiscalPrincipal fp = di.getTiers().getForFiscalPrincipalAt(dateTraitement);
 			if (fp != null && fp.getTypeAutoriteFiscale().equals(TypeAutoriteFiscale.PAYS_HS)) {
 				dateRetourAccorde = ppf.getTermeGeneralSommationReglementaire();
 			}
@@ -586,7 +587,7 @@ public class EnvoiDIsEnMasseProcessor {
 		}
 
 		// Mise-à-jour de la date de retour
-		DelaiDeclaration delai = new DelaiDeclaration();
+		final DelaiDeclaration delai = new DelaiDeclaration();
 		delai.setDateDemande(dateTraitement);
 		delai.setDateTraitement(dateTraitement);
 		delai.setDelaiAccordeAu(dateRetourAccorde);
@@ -597,15 +598,18 @@ public class EnvoiDIsEnMasseProcessor {
 
 	/**
 	 * Ajoute l'état initial d'une déclaration, à savoir EMISE.
+	 * @return la date d'expédition (= date d'obtention de l'état "EMISE")
 	 */
-	private void ajouterEtatInitial(DeclarationImpotOrdinaire di, RegDate dateTraitement) {
+	private RegDate ajouterEtatInitial(DeclarationImpotOrdinaire di, RegDate dateTraitement) {
 
 		final RegDate dateExpedition = calculerDateExpedition(dateTraitement);
 
-		EtatDeclaration etat = new EtatDeclaration();
+		final EtatDeclaration etat = new EtatDeclaration();
 		etat.setEtat(TypeEtatDeclaration.EMISE);
 		etat.setDateObtention(dateExpedition);
 		di.addEtat(etat);
+
+		return dateExpedition;
 	}
 
 	/**
