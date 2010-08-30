@@ -18,17 +18,23 @@ import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.evenement.EvenementCivilDAO;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.evenement.EvenementCivilErreur;
+import ch.vd.uniregctb.evenement.EvenementCriteria;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockHistoriqueIndividu;
+import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
+import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.tiers.SituationFamille;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.tiers.TiersDAO;
+import ch.vd.uniregctb.type.CategorieEtranger;
+import ch.vd.uniregctb.type.EtatCivil;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.ModeImposition;
@@ -40,8 +46,10 @@ import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
 
+@SuppressWarnings({"JavaDoc"})
 public class EvenementCivilProcessorTest extends BusinessTest {
 
 	private static final Logger LOGGER = Logger.getLogger(EvenementCivilProcessorTest.class);
@@ -614,7 +622,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 	}
 
 	private ForFiscalPrincipal addForPrincipal(Tiers tiers, RegDate ouverture, RegDate fermeture, Integer noOFS) {
-		ForFiscalPrincipal f = new ForFiscalPrincipal();
+		final ForFiscalPrincipal f = new ForFiscalPrincipal();
 		f.setDateDebut(ouverture);
 		f.setDateFin(fermeture);
 		f.setGenreImpot(GenreImpot.REVENU_FORTUNE);
@@ -625,5 +633,94 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 		f.setMotifOuverture(MotifFor.ARRIVEE_HC);
 		tiers.addForFiscal(f);
 		return f;
+	}
+
+	/**
+	 * Cas UNIREG-2785
+	 */
+	@NotTransactional
+	@Test
+	public void testAncienHabitantMarieSansMenageRecevantCorrectionConjoint() throws Exception {
+
+		final long noIndividuMonsieur = 12457319L;
+		final long noIndividuMadame = 124573213L;
+		final RegDate dateNaissanceMonsieur = date(1958, 12, 5);
+		final RegDate dateNaissanceMadame = date(1959, 2, 8);
+		final RegDate dateMariage = date(1983, 3, 12);
+
+		// mise en place civile
+		serviceCivil.setUp(new DefaultMockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu mr = addIndividu(noIndividuMonsieur, dateNaissanceMonsieur, "Tartempion", "Marcel", true);
+				final MockIndividu mme = addIndividu(noIndividuMadame, dateNaissanceMadame, "Tartempion", "Ursule", false);
+				marieIndividus(mr, mme, dateMariage);
+			}
+		});
+
+		// mise en place fiscale
+		final long ppId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+			public Long doInTransaction(TransactionStatus status) {
+
+				final PersonnePhysique mme = addHabitant(noIndividuMadame);
+				addEnsembleTiersCouple(mme, null, dateMariage, null);
+
+				final PersonnePhysique pp = addNonHabitant("Tartempion", "Marcel", dateNaissanceMonsieur, Sexe.MASCULIN);
+				pp.setNumeroIndividu(noIndividuMonsieur);
+				pp.setCategorieEtranger(CategorieEtranger._07_PERMIS_SEJOUR_COURTE_DUREE_L);
+
+				final SituationFamille celibat = addSituation(pp, dateNaissanceMonsieur, dateMariage.getOneDayBefore(), 0);
+				celibat.setEtatCivil(EtatCivil.CELIBATAIRE);
+
+				final SituationFamille mariage = addSituation(pp, dateMariage, null, 0);
+				mariage.setEtatCivil(EtatCivil.MARIE);
+
+				// les fors
+				final RegDate dateArrivee = date(2009, 1, 1);
+				final RegDate dateDepart = date(2009, 8, 31);
+				final ForFiscalPrincipal ffp = addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HS, dateDepart, MotifFor.DEPART_HS, MockCommune.Lausanne);
+				ffp.setModeImposition(ModeImposition.SOURCE);
+				addForPrincipal(pp, dateDepart.getOneDayAfter(), MotifFor.DEPART_HS, MockPays.RoyaumeUni);
+
+				return pp.getNumero();
+			}
+		});
+
+		// création et traitement de l'événement civil
+		final long evtId = 1234567890L;
+		saveEvenement(evtId, TypeEvenementCivil.CORREC_CONJOINT, dateMariage, noIndividuMonsieur, null, MockCommune.Lausanne.getNoOFSEtendu(), EtatEvenementCivil.A_TRAITER);
+		traiteEvenements();
+
+		// vérification
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+
+				final EvenementCriteria criterion = new EvenementCriteria();
+				criterion.setNumeroIndividu(noIndividuMonsieur);
+				final List<EvenementCivilData> evts = evenementCivilDAO.find(criterion, null);
+				assertNotNull(evts);
+				assertEquals(1, evts.size());
+
+				final EvenementCivilData data = evts.get(0);
+				assertNotNull(data);
+				assertEquals(TypeEvenementCivil.CORREC_CONJOINT, data.getType());
+				assertEquals(EtatEvenementCivil.EN_ERREUR, data.getEtat());
+				assertEquals(1, data.getErreurs().size());
+
+				final EvenementCivilErreur erreur = data.getErreurs().iterator().next();
+				assertNotNull(erreur);
+
+				final String msg = erreur.getMessage();
+				final String[] lignes = msg.split("\n");
+				assertEquals(3, lignes.length);
+				assertTrue(lignes[0].endsWith("2 erreur(s) - 0 warning(s):"));
+				assertTrue(lignes[1].endsWith(String.format("ne peut pas exister alors que le tiers [%d] appartient à un ménage-commun", ppId)));
+				assertTrue(lignes[2].endsWith(String.format("ne peut pas exister alors que le tiers [%d] appartient à un ménage-commun", ppId)));
+				return null;
+			}
+		});
+
+
 	}
 }

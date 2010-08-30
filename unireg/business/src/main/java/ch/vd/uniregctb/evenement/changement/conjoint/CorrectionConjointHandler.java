@@ -75,7 +75,7 @@ public class CorrectionConjointHandler extends EvenementCivilHandlerBase {
 			}
 		}
 		else {
-			errors.add(new EvenementCivilErreur("Aucun de tiers n'appartient à un ménage commun"));
+			errors.add(new EvenementCivilErreur("Aucun des tiers n'appartient à un ménage commun"));
 		}
 		
 	}

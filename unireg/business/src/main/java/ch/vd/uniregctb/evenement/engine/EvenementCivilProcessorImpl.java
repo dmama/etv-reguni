@@ -103,9 +103,6 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor, Eve
 
 		Long result;
 
-		final List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
-		final List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
-
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setPropagationBehavior(TransactionTemplate.PROPAGATION_REQUIRES_NEW);
 		try {
@@ -115,6 +112,9 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor, Eve
 			// Tout d'abord, on essaie de traiter l'événement
 			result = (Long) template.execute(new TransactionCallback() {
 				public Object doInTransaction(TransactionStatus status) {
+
+					final List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
+					final List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
 
 					// Charge l'événement
 					final EvenementCivilData evenementCivilData = evenementCivilDAO.get(evenementCivilId);
@@ -159,11 +159,15 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor, Eve
 		}
 		catch (final Exception e) {
 			LOGGER.error("Erreur lors du traitement de l'événement : " + evenementCivilId, e);
-			erreurs.add(new EvenementCivilErreur(e));
 
 			// En cas d'exception, on met-à-jour la liste d'erreur pour l'événement 
 			result = (Long) template.execute(new TransactionCallback() {
 				public Object doInTransaction(TransactionStatus status) {
+
+					final List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
+					final List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
+					erreurs.add(new EvenementCivilErreur(e));
+
 					final EvenementCivilData evenementCivilData = evenementCivilDAO.get(evenementCivilId);
 					evenementCivilData.getErreurs().clear();
 					return traiteErreurs(evenementCivilData, erreurs, warnings);
