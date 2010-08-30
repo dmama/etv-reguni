@@ -343,7 +343,7 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 	                                                        TypeContribuable typeC, ModeleDocument modele) {
 
 		final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(ServiceInfrastructureService.noCEDI);
-		assertNotNull(cedi);
+		assertNotNull("La collectivité administrative du CEDI n'a pas été définie", cedi);
 
 		return addDeclarationImpot(tiers, periode, debut, fin, cedi, typeC, modele);
 	}
