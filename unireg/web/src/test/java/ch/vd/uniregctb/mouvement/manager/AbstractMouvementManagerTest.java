@@ -56,7 +56,7 @@ public class AbstractMouvementManagerTest extends BusinessTest {
 
 					pp.addMouvementDossier(reception);
 
-					LOGGER.warn(String.format("Après %d mouvement(s) ajouté(s)", index + 1));
+					LOGGER.debug(String.format("Après %d mouvement(s) ajouté(s)", index + 1));
 					AbstractMouvementManagerImpl.detruireMouvementsTropVieux(mvtDAO, pp);
 					return null;
 				}

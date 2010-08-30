@@ -137,6 +137,11 @@ public abstract class WebTest extends AbstractBusinessTest {
 		}
 	}
 
+	/**
+	 * <b>NE PAS UTILISER CETTE METHODE dans des nouveaux tests !</b>
+	 * <p/>
+	 * Le chargement des fichiers DbUnit est extrêmenent lent avec Oracle 11g : veuillez créer les données de test à partir du code Java (voir les méthodes addXXX).
+	 */
 	@Override
 	protected void loadDatabase(String filename) throws Exception {
 		try {

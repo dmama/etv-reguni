@@ -1,13 +1,6 @@
 package ch.vd.uniregctb.tiers;
 
-import ch.vd.uniregctb.type.*;
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
-import static junit.framework.Assert.fail;
-import static org.junit.Assert.assertNotSame;
-
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -25,6 +18,7 @@ import org.junit.Test;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.test.annotation.ExpectedException;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationException;
@@ -36,10 +30,30 @@ import ch.vd.uniregctb.common.CoreDAOTest;
 import ch.vd.uniregctb.performance.PerformanceLog;
 import ch.vd.uniregctb.performance.PerformanceLogsRepository;
 import ch.vd.uniregctb.tiers.TiersDAO.Parts;
+import ch.vd.uniregctb.type.CategorieIdentifiant;
+import ch.vd.uniregctb.type.CategorieImpotSource;
+import ch.vd.uniregctb.type.FormeJuridique;
+import ch.vd.uniregctb.type.GenreImpot;
+import ch.vd.uniregctb.type.ModeCommunication;
+import ch.vd.uniregctb.type.ModeImposition;
+import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.MotifRattachement;
+import ch.vd.uniregctb.type.PeriodiciteDecompte;
+import ch.vd.uniregctb.type.Sexe;
+import ch.vd.uniregctb.type.TarifImpotSource;
+import ch.vd.uniregctb.type.TypeAdresseTiers;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.uniregctb.type.TypeRapportEntreTiers;
+
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.fail;
+import static org.junit.Assert.assertNotSame;
 
 /**
  * @author
- *
  */
 @SuppressWarnings({"JavaDoc"})
 public class TiersDAOTest extends CoreDAOTest {
@@ -47,8 +61,6 @@ public class TiersDAOTest extends CoreDAOTest {
 	protected static final Logger LOGGER = Logger.getLogger(TiersDAOTest.class);
 
 	private static final String DAO_NAME = "tiersDAO";
-
-	private static final String DB_UNIT_DATA_FILE = "TiersDAOTest.xml";
 
 	private static final long NOMBRE_ADRESSES_PREMIER_TIERS = 2L;
 
@@ -63,7 +75,6 @@ public class TiersDAOTest extends CoreDAOTest {
 
 	/**
 	 * @throws Exception
-	 *
 	 */
 	@Override
 	public void onSetUp() throws Exception {
@@ -75,49 +86,62 @@ public class TiersDAOTest extends CoreDAOTest {
 	public void getTiersInRangeBounded() throws Exception {
 
 		{
-			List<Long> list = dao.getTiersInRange(1200, 12832);
+			List<Long> list = dao.getTiersInRange(10001200, 10012832);
 			assertEquals(0, list.size());
 		}
 
-		loadDatabase(DB_UNIT_DATA_FILE);
+		loadDatabase();
 
 		{
-			List<Long> list = dao.getTiersInRange(7890, 8901);
+			List<Long> list = dao.getTiersInRange(10007890, 10008901);
 			assertEquals(2, list.size());
 		}
 
 		{
-			List<Long> list = dao.getTiersInRange(7888, 8905);
+			List<Long> list = dao.getTiersInRange(10007888, 10008905);
 			assertEquals(2, list.size());
 		}
 
 		{
-			List<Long> list = dao.getTiersInRange(7891, 8905);
+			List<Long> list = dao.getTiersInRange(10007891, 10008905);
 			assertEquals(1, list.size());
 		}
 	}
+
 	@Test
 	public void getTiersInRangeUnboundedRight() throws Exception {
 
-		loadDatabase(DB_UNIT_DATA_FILE);
+		loadDatabase();
 
-		List<Long> list = dao.getTiersInRange(7890, -1);
-		assertEquals(8, list.size());
+		List<Long> list = dao.getTiersInRange(10000000, -1);
+		assertEquals(9, list.size());
+		assertTrue(list.contains(10000001L));
+		assertTrue(list.contains(10000002L));
+		assertTrue(list.contains(10000004L));
+		assertTrue(list.contains(10000005L));
+		assertTrue(list.contains(10000010L));
+		assertTrue(list.contains(10001111L));
+		assertTrue(list.contains(10006789L));
+		assertTrue(list.contains(10007890L));
+		assertTrue(list.contains(10008901L));
 	}
 
 	@Test
 	public void getTiersInRangeUnboundedLeft() throws Exception {
 
-		loadDatabase(DB_UNIT_DATA_FILE);
+		loadDatabase();
 
-		List<Long> list = dao.getTiersInRange(-1, 7890);
-		assertEquals(5, list.size());
+		List<Long> list = dao.getTiersInRange(-1, 10000000);
+		assertEquals(3, list.size());
+		assertTrue(list.contains(9876L));
+		assertTrue(list.contains(1001234L));
+		assertTrue(list.contains(2002222L));
 	}
 
 	@Test
 	public void getTiersInRangeUnbounded() throws Exception {
 
-		loadDatabase(DB_UNIT_DATA_FILE);
+		loadDatabase();
 		int total = dao.getAll().size();
 
 		List<Long> list = dao.getTiersInRange(-1, -1);
@@ -132,7 +156,7 @@ public class TiersDAOTest extends CoreDAOTest {
 			assertEquals(0, list.size());
 		}
 
-		loadDatabase(DB_UNIT_DATA_FILE);
+		loadDatabase();
 
 		{
 			List<Long> list = dao.getAllIds();
@@ -148,12 +172,12 @@ public class TiersDAOTest extends CoreDAOTest {
 	public void testExists() throws Exception {
 
 		assertFalse(dao.exists(1234456567L));
-		assertFalse(dao.exists(7890L));
+		assertFalse(dao.exists(10007890L));
 
-		loadDatabase(DB_UNIT_DATA_FILE);
+		loadDatabase();
 
 		assertFalse(dao.exists(1234456567L));
-		assertTrue(dao.exists(7890L));
+		assertTrue(dao.exists(10007890L));
 	}
 
 	@Test
@@ -189,7 +213,7 @@ public class TiersDAOTest extends CoreDAOTest {
 	@Test
 	public void testNumeroContribuable() throws Exception {
 
-		loadDatabase(DB_UNIT_DATA_FILE);
+		loadDatabase();
 
 		PersonnePhysique hab = new PersonnePhysique(true);
 		hab.setNumeroIndividu(12L);
@@ -208,6 +232,7 @@ public class TiersDAOTest extends CoreDAOTest {
 	public void testNumeroEntrepriseNOK() throws Exception {
 		insertAndTestNumeroTiers(new Entreprise(), Entreprise.FIRST_ID, Entreprise.LAST_ID);
 	}
+
 	/**
 	 * Teste que les numéros générés pour les Tiers est dans le bon range
 	 */
@@ -251,7 +276,7 @@ public class TiersDAOTest extends CoreDAOTest {
 
 	private void insertAndTestNumeroTiers(final Tiers tiers, long first, long last) throws Exception {
 
-		Long id = (Long)doInNewTransaction(new TxCallback() {
+		Long id = (Long) doInNewTransaction(new TxCallback() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				Tiers t = dao.save(tiers);
@@ -262,7 +287,7 @@ public class TiersDAOTest extends CoreDAOTest {
 
 		{
 			Tiers t = dao.get(id);
-			assertTrue("Le numéro de Tiers (id="+id+" tiers="+t+") doit être dans le range "+first+" => "+last, first <= t.getId() && t.getId() < last);
+			assertTrue("Le numéro de Tiers (id=" + id + " tiers=" + t + ") doit être dans le range " + first + " => " + last, first <= t.getId() && t.getId() < last);
 		}
 	}
 
@@ -271,7 +296,7 @@ public class TiersDAOTest extends CoreDAOTest {
 		for (String item : logs.keySet()) {
 			PerformanceLog log = logs.get(item);
 
-			LOGGER.warn("Item: "+item+" Log: "+log);
+			LOGGER.warn("Item: " + item + " Log: " + log);
 		}
 
 		logs = null;
@@ -283,9 +308,9 @@ public class TiersDAOTest extends CoreDAOTest {
 	@Test
 	public void testModifyTiersWithoutSave() throws Exception {
 
-		loadDatabase(DB_UNIT_DATA_FILE);
+		loadDatabase();
 
-		final long id = 1111L;
+		final long id = 10001111L;
 		final RegDate date1 = RegDate.get(1970, 1, 23);
 		final RegDate date2 = RegDate.get(1969, 3, 1);
 
@@ -306,52 +331,48 @@ public class TiersDAOTest extends CoreDAOTest {
 	}
 
 	/**
-	 *
 	 * Teste la methode findByNumeroIndividu.
 	 */
 	@Test
 	public void testGetContribuableByNumero() throws Exception {
 
-		loadDatabase(DB_UNIT_DATA_FILE);
+		loadDatabase();
 
-		Contribuable contribuable = dao.getContribuableByNumero(6789L);
+		Contribuable contribuable = dao.getContribuableByNumero(10006789L);
 		assertNotNull(contribuable);
-		assertEquals(new Long(6789L), contribuable.getNumero());
+		assertEquals(new Long(10006789L), contribuable.getNumero());
 	}
 
 	/**
-	 *
 	 * Teste la methode getHabitantsByNumeroIndividu.
 	 */
 	@Test
 	public void testGetHabitantsByNumeroIndividu() throws Exception {
 
-		loadDatabase(DB_UNIT_DATA_FILE);
+		loadDatabase();
 
 		PersonnePhysique tiers = dao.getHabitantByNumeroIndividu(282315L);
 		assertNotNull(tiers);
-		assertTrue(tiers.getNumero() == 6789);
+		assertTrue(tiers.getNumero() == 10006789);
 		assertTrue(tiers.getNumeroIndividu().intValue() == 282315);
 	}
 
 	/**
-	 *
 	 * Teste la methode getHabitantsByNumeroIndividu.
 	 */
 	@Test
 	public void testGetNonHabitant() throws Exception {
 
-		loadDatabase(DB_UNIT_DATA_FILE);
+		loadDatabase();
 
-		PersonnePhysique nonHab = (PersonnePhysique) dao.get(1111L);
-		assertEquals(new Long(1111L), nonHab.getNumero());
+		PersonnePhysique nonHab = (PersonnePhysique) dao.get(10001111L);
+		assertEquals(new Long(10001111L), nonHab.getNumero());
 		assertEquals("Conchita", nonHab.getNom());
 		assertEquals("Andrea", nonHab.getPrenom());
 		assertFalse(nonHab.isHabitantVD());
 	}
 
 	/**
-	 *
 	 * Teste la methode getHabitantsByNumeroIndividu.
 	 */
 	@Test
@@ -367,7 +388,7 @@ public class TiersDAOTest extends CoreDAOTest {
 				nonHab.setNom("Bla");
 				nonHab.setPrenom("Bli");
 
-				nonHab = (PersonnePhysique)dao.save(nonHab);
+				nonHab = (PersonnePhysique) dao.save(nonHab);
 				return null;
 			}
 		});
@@ -382,13 +403,12 @@ public class TiersDAOTest extends CoreDAOTest {
 	}
 
 	/**
-	 *
 	 * Teste la methode find.
 	 */
 	@Test
 	public void testFind() throws Exception {
 
-		loadDatabase(DB_UNIT_DATA_FILE);
+		loadDatabase();
 
 		List<Tiers> list = dao.getAll();
 		assertNotNull(list);
@@ -400,7 +420,7 @@ public class TiersDAOTest extends CoreDAOTest {
 				assertEquals(1, count);
 			}
 
-			if (tiers.getNumero().equals(6789L)) {
+			if (tiers.getNumero().equals(10006789L)) {
 				count = tiers.getAdressesTiers().size();
 				assertEquals(2, count);
 				Contribuable ctb = (Contribuable) tiers;
@@ -434,7 +454,6 @@ public class TiersDAOTest extends CoreDAOTest {
 	}
 
 	/**
-	 *
 	 * @throws Exception
 	 */
 	@Test
@@ -500,7 +519,7 @@ public class TiersDAOTest extends CoreDAOTest {
 			switch (modulo) {
 			case 0:
 				PersonnePhysique hab = new PersonnePhysique(true);
-				hab.setNumeroIndividu(i+43L);
+				hab.setNumeroIndividu(i + 43L);
 				tiers = hab;
 				break;
 			case 1:
@@ -521,7 +540,7 @@ public class TiersDAOTest extends CoreDAOTest {
 				break;
 			case 5:
 				tiers = new Entreprise();
-				tiers.setNumero(new Long(1000+i));
+				tiers.setNumero((long) 1000 + i);
 				break;
 			case 6:
 				tiers = new DebiteurPrestationImposable();
@@ -560,7 +579,7 @@ public class TiersDAOTest extends CoreDAOTest {
 			adresseEtrangere.setComplementLocalite("Paris");
 			adresseEtrangere.setNumeroMaison("87");
 			adresseEtrangere.setNumeroPostalLocalite("65000 cedex");
-			adresseEtrangere.setNumeroOfsPays(new Integer(543));
+			adresseEtrangere.setNumeroOfsPays(543);
 			adressesPostales.add(adresseEtrangere);
 
 			tiers.setAdressesTiers(adressesPostales);
@@ -582,7 +601,7 @@ public class TiersDAOTest extends CoreDAOTest {
 				forFiscal.setDateDebut(RegDate.get(2006, 6, 1));
 				forFiscal.setDateFin(RegDate.get(2007, 2, 28));
 				forFiscal.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
-				forFiscal.setNumeroOfsAutoriteFiscale(1234);
+				forFiscal.setNumeroOfsAutoriteFiscale(1001234);
 				fors.add(forFiscal);
 			}
 
@@ -592,7 +611,7 @@ public class TiersDAOTest extends CoreDAOTest {
 				forFiscal.setDateFin(RegDate.get(2007, 2, 28));
 				forFiscal.setMotifRattachement(MotifRattachement.DOMICILE);
 				forFiscal.setTypeAutoriteFiscale(TypeAutoriteFiscale.PAYS_HS);
-				forFiscal.setNumeroOfsAutoriteFiscale(1234);
+				forFiscal.setNumeroOfsAutoriteFiscale(1001234);
 				forFiscal.setModeImposition(ModeImposition.ORDINAIRE);
 				fors.add(forFiscal);
 			}
@@ -621,11 +640,11 @@ public class TiersDAOTest extends CoreDAOTest {
 	@Test
 	public void testGetRapportCouple() throws Exception {
 
-		loadDatabase(DB_UNIT_DATA_FILE);
+		loadDatabase();
 
-		Tiers ctb1 = dao.get(6789L);
-		Tiers ctb2 = dao.get(7890L);
-		Tiers couple = dao.get(8901L);
+		Tiers ctb1 = dao.get(10006789L);
+		Tiers ctb2 = dao.get(10007890L);
+		Tiers couple = dao.get(10008901L);
 
 		// CTB1
 		{
@@ -655,13 +674,13 @@ public class TiersDAOTest extends CoreDAOTest {
 			RapportEntreTiers rctb2 = iter.next();
 
 			assertEquals(couple.getId(), rctb1.getObjetId());
-			if (rctb1.getSujetId().equals(6789L)) {
-				assertEquals(new Long(6789L), rctb1.getSujetId());
-				assertEquals(new Long(7890L), rctb2.getSujetId());
+			if (rctb1.getSujetId().equals(10006789L)) {
+				assertEquals(new Long(10006789L), rctb1.getSujetId());
+				assertEquals(new Long(10007890L), rctb2.getSujetId());
 			}
 			else {
-				assertEquals(new Long(7890L), rctb1.getSujetId());
-				assertEquals(new Long(6789L), rctb2.getSujetId());
+				assertEquals(new Long(10007890L), rctb1.getSujetId());
+				assertEquals(new Long(10006789L), rctb2.getSujetId());
 			}
 		}
 	}
@@ -675,7 +694,7 @@ public class TiersDAOTest extends CoreDAOTest {
 			Long numeroMenage;
 		}
 
-		Numeros numeros = (Numeros)doInNewTransaction(new TxCallback() {
+		Numeros numeros = (Numeros) doInNewTransaction(new TxCallback() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -827,7 +846,7 @@ public class TiersDAOTest extends CoreDAOTest {
 		}
 
 		// Pour le rattachement
-		Tierss tierss = (Tierss)doInNewTransaction(new TxCallback() {
+		Tierss tierss = (Tierss) doInNewTransaction(new TxCallback() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -936,7 +955,7 @@ public class TiersDAOTest extends CoreDAOTest {
 		{
 			List<Tiers> l = dao.getAll();
 			assertEquals(1, l.size());
-			PersonnePhysique nh = (PersonnePhysique)l.get(0);
+			PersonnePhysique nh = (PersonnePhysique) l.get(0);
 			Set<SituationFamille> sfs = nh.getSituationsFamille();
 			assertEquals(2, sfs.size());
 			Iterator<SituationFamille> iter = sfs.iterator();
@@ -957,14 +976,14 @@ public class TiersDAOTest extends CoreDAOTest {
 			public Object execute(TransactionStatus status) throws Exception {
 				PersonnePhysique nh1 = new PersonnePhysique(false);
 				nh1.setNom("nh-un");
-				nh1 = (PersonnePhysique)dao.save(nh1);
+				nh1 = (PersonnePhysique) dao.save(nh1);
 
 				PersonnePhysique nh2 = new PersonnePhysique(false);
 				nh2.setNom("nh-deux");
-				nh2 = (PersonnePhysique)dao.save(nh2);
+				nh2 = (PersonnePhysique) dao.save(nh2);
 
 				MenageCommun mc = new MenageCommun();
-				mc = (MenageCommun)dao.save(mc);
+				mc = (MenageCommun) dao.save(mc);
 
 				RapportEntreTiers rapport1 = new AppartenanceMenage();
 				rapport1.setSujet(nh1);
@@ -1025,10 +1044,10 @@ public class TiersDAOTest extends CoreDAOTest {
 
 			PersonnePhysique nh1 = null;
 			PersonnePhysique nh2 = null;
-			for (int i=0;i<3;i++) {
+			for (int i = 0; i < 3; i++) {
 				Tiers t = l.get(i);
 				if (t instanceof PersonnePhysique) {
-					PersonnePhysique nh = (PersonnePhysique)t;
+					PersonnePhysique nh = (PersonnePhysique) t;
 					if (nh.getNom().equals("nh-deux")) {
 						nh2 = nh;
 					}
@@ -1089,7 +1108,7 @@ public class TiersDAOTest extends CoreDAOTest {
 			Long numeroCtb2;
 		}
 
-		Tierss tierss = (Tierss)doInNewTransaction(new TxCallback() {
+		Tierss tierss = (Tierss) doInNewTransaction(new TxCallback() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -1142,9 +1161,9 @@ public class TiersDAOTest extends CoreDAOTest {
 	@SuppressWarnings("unchecked")
 	@Test
 	public void testGetBatch() throws Exception {
-		loadDatabase(DB_UNIT_DATA_FILE);
+		loadDatabase();
 
-		final List<Long> ids = Arrays.asList(6789L, 1234L, 9876L, 7890L, 8901L, 1111L, 2222L, 10000010L, 10000001L, 10000002L, 10000004L,
+		final List<Long> ids = Arrays.asList(10006789L, 1001234L, 9876L, 10007890L, 10008901L, 10001111L, 2002222L, 10000010L, 10000001L, 10000002L, 10000004L,
 				10000005L);
 		final Set<Parts> parts = new HashSet<Parts>(Arrays.asList(Parts.ADRESSES, Parts.DECLARATIONS, Parts.FORS_FISCAUX, Parts.RAPPORTS_ENTRE_TIERS, Parts.SITUATIONS_FAMILLE));
 
@@ -1201,7 +1220,7 @@ public class TiersDAOTest extends CoreDAOTest {
 	}
 
 	/**
-	 * [UNIREG-1985] on s'assure que les collections des tiers liés ne sont pas remplies avec des HashSet vides lorsque les rapports-entre-tiers sont demandés.  
+	 * [UNIREG-1985] on s'assure que les collections des tiers liés ne sont pas remplies avec des HashSet vides lorsque les rapports-entre-tiers sont demandés.
 	 */
 	@SuppressWarnings("unchecked")
 	@Test
@@ -1402,7 +1421,7 @@ public class TiersDAOTest extends CoreDAOTest {
 		assertEquals(2, dao.getCount(IdentificationPersonne.class));
 
 		// Vide la collection d'identifications sur la personne physique
-		doInNewTransaction(new TxCallback(){
+		doInNewTransaction(new TxCallback() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
@@ -1425,4 +1444,351 @@ public class TiersDAOTest extends CoreDAOTest {
 	private void assertTiersEquals(Tiers expected, Tiers actual) {
 		assertTrue("Le n°" + expected.getId() + " n'est pas égal au tiers n°" + actual.getId(), expected.equalsTo(actual));
 	}
+
+	@SuppressWarnings({"unchecked", "UnusedAssignment"})
+	private void loadDatabase() throws Exception {
+
+		doInNewTransaction(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+
+				PersonnePhysique pp0 = new PersonnePhysique();
+				pp0.setNumero(10006789L);
+				pp0.setMouvementsDossier(new HashSet());
+				pp0.setSituationsFamille(new HashSet());
+				pp0.setDebiteurInactif(false);
+				pp0.setLogModifDate(new Timestamp(1199142000000L));
+				pp0.setIdentificationsPersonnes(new HashSet());
+				pp0.setNumeroIndividu(282315L);
+				pp0.setHabitant(true);
+				pp0.setAdressesTiers(new HashSet());
+				pp0.setDeclarations(new HashSet());
+				pp0.setDroitsAccesAppliques(new HashSet());
+				pp0.setForsFiscaux(new HashSet());
+				pp0.setRapportsObjet(new HashSet());
+				pp0.setRapportsSujet(new HashSet());
+				pp0 = (PersonnePhysique) hibernateTemplate.merge(pp0);
+
+				DebiteurPrestationImposable dpi0 = new DebiteurPrestationImposable();
+				dpi0.setNumero(1001234L);
+				dpi0.setCategorieImpotSource(CategorieImpotSource.ADMINISTRATEURS);
+				dpi0.setPeriodicites(new HashSet());
+				dpi0.setDebiteurInactif(false);
+				dpi0.setLogModifDate(new Timestamp(1199142000000L));
+				dpi0.setModeCommunication(ModeCommunication.SITE_WEB);
+				dpi0.setPeriodiciteDecompte(PeriodiciteDecompte.MENSUEL);
+				dpi0.setAdressesTiers(new HashSet());
+				dpi0.setDeclarations(new HashSet());
+				dpi0.setForsFiscaux(new HashSet());
+				dpi0.setRapportsObjet(new HashSet());
+				dpi0.setRapportsSujet(new HashSet());
+				dpi0 = (DebiteurPrestationImposable) hibernateTemplate.merge(dpi0);
+
+				Entreprise e0 = new Entreprise();
+				e0.setNumero(9876L);
+				e0.setMouvementsDossier(new HashSet());
+				e0.setSituationsFamille(new HashSet());
+				e0.setDebiteurInactif(false);
+				e0.setLogModifDate(new Timestamp(1199142000000L));
+				e0.setNumeroEntreprise(27769L);
+				e0.setAdressesTiers(new HashSet());
+				e0.setDeclarations(new HashSet());
+				e0.setForsFiscaux(new HashSet());
+				e0.setRapportsObjet(new HashSet());
+				e0.setRapportsSujet(new HashSet());
+				e0 = (Entreprise) hibernateTemplate.merge(e0);
+
+				PersonnePhysique pp1 = new PersonnePhysique();
+				pp1.setNumero(10007890L);
+				pp1.setMouvementsDossier(new HashSet());
+				pp1.setSituationsFamille(new HashSet());
+				pp1.setDebiteurInactif(false);
+				pp1.setLogModifDate(new Timestamp(1199142000000L));
+				pp1.setIdentificationsPersonnes(new HashSet());
+				pp1.setNumeroIndividu(333528L);
+				pp1.setHabitant(true);
+				pp1.setAdressesTiers(new HashSet());
+				pp1.setDeclarations(new HashSet());
+				pp1.setDroitsAccesAppliques(new HashSet());
+				pp1.setForsFiscaux(new HashSet());
+				pp1.setRapportsObjet(new HashSet());
+				pp1.setRapportsSujet(new HashSet());
+				pp1 = (PersonnePhysique) hibernateTemplate.merge(pp1);
+
+				MenageCommun mc0 = new MenageCommun();
+				mc0.setNumero(10008901L);
+				mc0.setMouvementsDossier(new HashSet());
+				mc0.setSituationsFamille(new HashSet());
+				mc0.setDebiteurInactif(false);
+				mc0.setLogModifDate(new Timestamp(1199142000000L));
+				mc0.setAdressesTiers(new HashSet());
+				mc0.setDeclarations(new HashSet());
+				mc0.setForsFiscaux(new HashSet());
+				mc0.setRapportsObjet(new HashSet());
+				mc0.setRapportsSujet(new HashSet());
+				mc0 = (MenageCommun) hibernateTemplate.merge(mc0);
+
+				PersonnePhysique pp2 = new PersonnePhysique();
+				pp2.setNumero(10001111L);
+				pp2.setMouvementsDossier(new HashSet());
+				pp2.setSituationsFamille(new HashSet());
+				pp2.setDebiteurInactif(false);
+				pp2.setLogModifDate(new Timestamp(1199142000000L));
+				pp2.setDateNaissance(RegDate.get(1970, 1, 23));
+				pp2.setNom("Conchita");
+				pp2.setNumeroOfsNationalite(8212);
+				pp2.setNumeroAssureSocial("1245100071000");
+				pp2.setPrenom("Andrea");
+				pp2.setSexe(Sexe.FEMININ);
+				pp2.setIdentificationsPersonnes(new HashSet());
+				pp2.setNumeroIndividu(10001111L);
+				pp2.setHabitant(false);
+				pp2.setAdressesTiers(new HashSet());
+				pp2.setDeclarations(new HashSet());
+				pp2.setDroitsAccesAppliques(new HashSet());
+				pp2.setForsFiscaux(new HashSet());
+				pp2.setRapportsObjet(new HashSet());
+				pp2.setRapportsSujet(new HashSet());
+				pp2 = (PersonnePhysique) hibernateTemplate.merge(pp2);
+
+				AutreCommunaute ac0 = new AutreCommunaute();
+				ac0.setNumero(2002222L);
+				ac0.setFormeJuridique(FormeJuridique.ASS);
+				ac0.setNom("Communaute XYZ");
+				ac0.setMouvementsDossier(new HashSet());
+				ac0.setSituationsFamille(new HashSet());
+				ac0.setDebiteurInactif(false);
+				ac0.setLogModifDate(new Timestamp(1199142000000L));
+				ac0.setAdressesTiers(new HashSet());
+				ac0.setDeclarations(new HashSet());
+				ac0.setForsFiscaux(new HashSet());
+				ac0.setRapportsObjet(new HashSet());
+				ac0.setRapportsSujet(new HashSet());
+				ac0 = (AutreCommunaute) hibernateTemplate.merge(ac0);
+
+				PersonnePhysique pp3 = new PersonnePhysique();
+				pp3.setNumero(10000010L);
+				pp3.setMouvementsDossier(new HashSet());
+				pp3.setSituationsFamille(new HashSet());
+				pp3.setDebiteurInactif(false);
+				pp3.setLogModifDate(new Timestamp(1199142000000L));
+				pp3.setIdentificationsPersonnes(new HashSet());
+				pp3.setNumeroIndividu(333526L);
+				pp3.setHabitant(true);
+				pp3.setAdressesTiers(new HashSet());
+				pp3.setDeclarations(new HashSet());
+				pp3.setDroitsAccesAppliques(new HashSet());
+				pp3.setForsFiscaux(new HashSet());
+				pp3.setRapportsObjet(new HashSet());
+				pp3.setRapportsSujet(new HashSet());
+				pp3 = (PersonnePhysique) hibernateTemplate.merge(pp3);
+
+				PersonnePhysique pp4 = new PersonnePhysique();
+				pp4.setNumero(10000001L);
+				pp4.setMouvementsDossier(new HashSet());
+				pp4.setSituationsFamille(new HashSet());
+				pp4.setDebiteurInactif(false);
+				pp4.setLogModifDate(new Timestamp(1199142000000L));
+				pp4.setIdentificationsPersonnes(new HashSet());
+				pp4.setNumeroIndividu(333529L);
+				pp4.setHabitant(true);
+				pp4.setAdressesTiers(new HashSet());
+				pp4.setDeclarations(new HashSet());
+				pp4.setDroitsAccesAppliques(new HashSet());
+				pp4.setForsFiscaux(new HashSet());
+				pp4.setRapportsObjet(new HashSet());
+				pp4.setRapportsSujet(new HashSet());
+				pp4 = (PersonnePhysique) hibernateTemplate.merge(pp4);
+
+				PersonnePhysique pp5 = new PersonnePhysique();
+				pp5.setNumero(10000002L);
+				pp5.setMouvementsDossier(new HashSet());
+				pp5.setSituationsFamille(new HashSet());
+				pp5.setDebiteurInactif(false);
+				pp5.setLogModifDate(new Timestamp(1199142000000L));
+				pp5.setIdentificationsPersonnes(new HashSet());
+				pp5.setNumeroIndividu(333527L);
+				pp5.setHabitant(true);
+				pp5.setAdressesTiers(new HashSet());
+				pp5.setDeclarations(new HashSet());
+				pp5.setDroitsAccesAppliques(new HashSet());
+				pp5.setForsFiscaux(new HashSet());
+				pp5.setRapportsObjet(new HashSet());
+				pp5.setRapportsSujet(new HashSet());
+				pp5 = (PersonnePhysique) hibernateTemplate.merge(pp5);
+
+				PersonnePhysique pp6 = new PersonnePhysique();
+				pp6.setNumero(10000004L);
+				pp6.setMouvementsDossier(new HashSet());
+				pp6.setSituationsFamille(new HashSet());
+				pp6.setDebiteurInactif(false);
+				pp6.setLogModifDate(new Timestamp(1199142000000L));
+				pp6.setIdentificationsPersonnes(new HashSet());
+				pp6.setNumeroIndividu(333525L);
+				pp6.setHabitant(true);
+				pp6.setAdressesTiers(new HashSet());
+				pp6.setDeclarations(new HashSet());
+				pp6.setDroitsAccesAppliques(new HashSet());
+				pp6.setForsFiscaux(new HashSet());
+				pp6.setRapportsObjet(new HashSet());
+				pp6.setRapportsSujet(new HashSet());
+				pp6 = (PersonnePhysique) hibernateTemplate.merge(pp6);
+
+				PersonnePhysique pp7 = new PersonnePhysique();
+				pp7.setNumero(10000005L);
+				pp7.setMouvementsDossier(new HashSet());
+				pp7.setSituationsFamille(new HashSet());
+				pp7.setDebiteurInactif(false);
+				pp7.setLogModifDate(new Timestamp(1199142000000L));
+				pp7.setIdentificationsPersonnes(new HashSet());
+				pp7.setNumeroIndividu(333524L);
+				pp7.setHabitant(true);
+				pp7.setAdressesTiers(new HashSet());
+				pp7.setDeclarations(new HashSet());
+				pp7.setDroitsAccesAppliques(new HashSet());
+				pp7.setForsFiscaux(new HashSet());
+				pp7.setRapportsObjet(new HashSet());
+				pp7.setRapportsSujet(new HashSet());
+				pp7 = (PersonnePhysique) hibernateTemplate.merge(pp7);
+
+				AdresseSuisse as0 = new AdresseSuisse();
+				as0.setId(1L);
+				as0.setDateDebut(RegDate.get(2006, 2, 23));
+				as0.setLogModifDate(new Timestamp(1199142000000L));
+				as0.setNumeroMaison("12");
+				as0.setNumeroOrdrePoste(104);
+				as0.setPermanente(false);
+				as0.setUsage(TypeAdresseTiers.COURRIER);
+				pp0.addAdresseTiers(as0);
+				pp0 = (PersonnePhysique) hibernateTemplate.merge(pp0);
+
+				AdresseSuisse as1 = new AdresseSuisse();
+				as1.setId(2L);
+				as1.setDateDebut(RegDate.get(2005, 2, 23));
+				as1.setDateFin(RegDate.get(2006, 2, 22));
+				as1.setLogModifDate(new Timestamp(1199142000000L));
+				as1.setNumeroMaison("9");
+				as1.setNumeroOrdrePoste(104);
+				as1.setPermanente(false);
+				as1.setUsage(TypeAdresseTiers.COURRIER);
+				pp0.addAdresseTiers(as1);
+				pp0 = (PersonnePhysique) hibernateTemplate.merge(pp0);
+
+				AdresseSuisse as2 = new AdresseSuisse();
+				as2.setId(3L);
+				as2.setDateDebut(RegDate.get(2006, 2, 23));
+				as2.setLogModifDate(new Timestamp(1199142000000L));
+				as2.setNumeroMaison("56");
+				as2.setNumeroOrdrePoste(104);
+				as2.setPermanente(false);
+				as2.setUsage(TypeAdresseTiers.COURRIER);
+				pp2.addAdresseTiers(as2);
+				pp2 = (PersonnePhysique) hibernateTemplate.merge(pp2);
+
+				AdresseSuisse as3 = new AdresseSuisse();
+				as3.setId(4L);
+				as3.setDateDebut(RegDate.get(2006, 2, 23));
+				as3.setLogModifDate(new Timestamp(1199142000000L));
+				as3.setNumeroMaison("8");
+				as3.setNumeroOrdrePoste(104);
+				as3.setPermanente(false);
+				as3.setUsage(TypeAdresseTiers.COURRIER);
+				dpi0.addAdresseTiers(as3);
+				dpi0 = (DebiteurPrestationImposable) hibernateTemplate.merge(dpi0);
+
+				AdresseSuisse as4 = new AdresseSuisse();
+				as4.setId(5L);
+				as4.setDateDebut(RegDate.get(2006, 2, 23));
+				as4.setLogModifDate(new Timestamp(1199142000000L));
+				as4.setNumeroMaison("8");
+				as4.setNumeroOrdrePoste(104);
+				as4.setPermanente(false);
+				as4.setUsage(TypeAdresseTiers.COURRIER);
+				e0.addAdresseTiers(as4);
+				e0 = (Entreprise) hibernateTemplate.merge(e0);
+
+				AppartenanceMenage am0 = new AppartenanceMenage();
+				am0.setId(1L);
+				am0.setLogModifDate(new Timestamp(1199142000000L));
+				am0.setDateDebut(RegDate.get(2006, 9, 1));
+				am0.setObjetId(10008901L);
+				am0.setSujetId(10006789L);
+				am0 = (AppartenanceMenage) hibernateTemplate.merge(am0);
+				pp0.addRapportSujet(am0);
+				mc0.addRapportObjet(am0);
+
+				AppartenanceMenage am1 = new AppartenanceMenage();
+				am1.setId(2L);
+				am1.setLogModifDate(new Timestamp(1199142000000L));
+				am1.setObjetId(10008901L);
+				am1.setSujetId(10007890L);
+				am1 = (AppartenanceMenage) hibernateTemplate.merge(am1);
+				pp1.addRapportSujet(am1);
+				mc0.addRapportObjet(am1);
+
+				RapportPrestationImposable rpi0 = new RapportPrestationImposable();
+				rpi0.setId(3L);
+				rpi0.setLogModifDate(new Timestamp(1199142000000L));
+				rpi0.setObjetId(1001234L);
+				rpi0.setSujetId(10001111L);
+				rpi0 = (RapportPrestationImposable) hibernateTemplate.merge(rpi0);
+				pp2.addRapportSujet(rpi0);
+				dpi0.addRapportObjet(rpi0);
+
+				ContactImpotSource cis0 = new ContactImpotSource();
+				cis0.setId(4L);
+				cis0.setLogModifDate(new Timestamp(1199142000000L));
+				cis0.setObjetId(1001234L);
+				cis0.setSujetId(10006789L);
+				cis0 = (ContactImpotSource) hibernateTemplate.merge(cis0);
+				pp0.addRapportSujet(cis0);
+				dpi0.addRapportObjet(cis0);
+
+				ForFiscalPrincipal ffp0 = new ForFiscalPrincipal();
+				ffp0.setId(1L);
+				ffp0.setDateFin(RegDate.get(2006, 8, 31));
+				ffp0.setDateDebut(RegDate.get(2006, 3, 1));
+				ffp0.setGenreImpot(GenreImpot.REVENU_FORTUNE);
+				ffp0.setLogModifDate(new Timestamp(1199142000000L));
+				ffp0.setModeImposition(ModeImposition.ORDINAIRE);
+				ffp0.setMotifRattachement(MotifRattachement.DOMICILE);
+				ffp0.setNumeroOfsAutoriteFiscale(6200);
+				ffp0.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_HC);
+				pp0.addForFiscal(ffp0);
+				pp0 = (PersonnePhysique) hibernateTemplate.merge(pp0);
+
+				ForFiscalSecondaire ffs0 = new ForFiscalSecondaire();
+				ffs0.setId(2L);
+				ffs0.setDateFin(RegDate.get(2006, 8, 31));
+				ffs0.setDateDebut(RegDate.get(2006, 5, 1));
+				ffs0.setGenreImpot(GenreImpot.REVENU_FORTUNE);
+				ffs0.setLogModifDate(new Timestamp(1199142000000L));
+				ffs0.setMotifRattachement(MotifRattachement.ACTIVITE_INDEPENDANTE);
+				ffs0.setMotifOuverture(MotifFor.DEBUT_EXPLOITATION);
+				ffs0.setMotifFermeture(MotifFor.FIN_EXPLOITATION);
+				ffs0.setNumeroOfsAutoriteFiscale(8212);
+				ffs0.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
+				pp0.addForFiscal(ffs0);
+				pp0 = (PersonnePhysique) hibernateTemplate.merge(pp0);
+
+				IdentificationPersonne ip0 = new IdentificationPersonne();
+				ip0.setId(0L);
+				ip0.setCategorieIdentifiant(CategorieIdentifiant.CH_AHV_AVS);
+				ip0.setIdentifiant("15489652357");
+				ip0.setLogModifDate(new Timestamp(1199142000000L));
+				pp2.addIdentificationPersonne(ip0);
+				pp2 = (PersonnePhysique) hibernateTemplate.merge(pp2);
+
+				IdentificationPersonne ip1 = new IdentificationPersonne();
+				ip1.setId(1L);
+				ip1.setCategorieIdentifiant(CategorieIdentifiant.CH_ZAR_RCE);
+				ip1.setIdentifiant("99999999");
+				ip1.setLogModifDate(new Timestamp(1199142000000L));
+				pp2.addIdentificationPersonne(ip1);
+				pp2 = (PersonnePhysique) hibernateTemplate.merge(pp2);
+
+				return null;
+			}
+		});
+	}
+
 }

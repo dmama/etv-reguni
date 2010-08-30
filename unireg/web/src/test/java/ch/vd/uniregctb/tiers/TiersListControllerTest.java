@@ -6,10 +6,13 @@ import java.util.Map;
 
 import junit.framework.Assert;
 import org.junit.Test;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.web.servlet.ModelAndView;
 
 import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.common.TestData;
 import ch.vd.uniregctb.common.WebTest;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
@@ -28,12 +31,7 @@ import static junit.framework.Assert.assertTrue;
  */
 public class TiersListControllerTest extends WebTest {
 
-	/**
-	 * Le nom du controller a tester.
-	 */
 	private final static String CONTROLLER_NAME = "tiersListController";
-
-	private final static String DB_UNIT_FILE = "classpath:DBUnit4Import/tiers-basic.xml";
 
 	private TiersListController controller;
 
@@ -70,6 +68,7 @@ public class TiersListControllerTest extends WebTest {
 			}
 		});
 
+		setWantIndexation(true);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -105,7 +104,7 @@ public class TiersListControllerTest extends WebTest {
 	@Test
 	public void testRechercheForTous() throws Exception {
 
-		loadDatabase(DB_UNIT_FILE);
+		loadDatabase();
 
 		// Recherche tous les fors y compris les inactifs
 		{
@@ -119,7 +118,7 @@ public class TiersListControllerTest extends WebTest {
 	@Test
 	public void testRechercheForActifs() throws Exception {
 
-		loadDatabase(DB_UNIT_FILE);
+		loadDatabase();
 
 		// Recherche seulement les fors actifs
 		HashMap<String, String> params = new HashMap<String, String>();
@@ -135,7 +134,7 @@ public class TiersListControllerTest extends WebTest {
 	@Test
 	public void testShowForm() throws Exception {
 
-		loadDatabase(DB_UNIT_FILE);
+		loadDatabase();
 		request.setMethod("GET");
 		ModelAndView mav = controller.handleRequest(request, response);
 		Map<?, ?> model = mav.getModel();
@@ -146,7 +145,7 @@ public class TiersListControllerTest extends WebTest {
 	@Test
 	public void testOnSubmitWithCriteresWithNumCTB() throws Exception {
 
-		loadDatabase(DB_UNIT_FILE);
+		loadDatabase();
 		request.setMethod("POST");
 		request.addParameter("numeroFormatte", "12300003");
 		ModelAndView mav = controller.handleRequest(request, response);
@@ -165,7 +164,7 @@ public class TiersListControllerTest extends WebTest {
 	@Test
 	public void testRechercheNomContient() throws Exception {
 
-		loadDatabase(DB_UNIT_FILE);
+		loadDatabase();
 		request.setMethod("POST");
 		request.addParameter("nomRaison", "Cuendet");
 		request.addParameter("typeRechercheDuNom", "CONTIENT");
@@ -184,7 +183,7 @@ public class TiersListControllerTest extends WebTest {
 	@Test
 	public void testRechercheNomPhonetique() throws Exception {
 
-		loadDatabase(DB_UNIT_FILE);
+		loadDatabase();
 		request.setMethod("POST");
 		request.addParameter("nomRaison", "Cuendet");
 		request.addParameter("typeRechercheDuNom", "PHONETIQUE");
@@ -203,7 +202,7 @@ public class TiersListControllerTest extends WebTest {
 	@Test
 	public void testRechercheDateNaissance() throws Exception {
 
-		loadDatabase(DB_UNIT_FILE);
+		loadDatabase();
 		request.setMethod("POST");
 		request.addParameter("dateNaissance", "23.01.1970");
 		ModelAndView mav = controller.handleRequest(request, response);
@@ -221,7 +220,7 @@ public class TiersListControllerTest extends WebTest {
 	@Test
 	public void testRechercheLocalite() throws Exception {
 
-		loadDatabase(DB_UNIT_FILE);
+		loadDatabase();
 		request.setMethod("POST");
 		request.addParameter("localiteOuPays", "Lausanne");
 		ModelAndView mav = controller.handleRequest(request, response);
@@ -239,7 +238,7 @@ public class TiersListControllerTest extends WebTest {
 	@Test
 	public void testRechercheNumAVS() throws Exception {
 
-		loadDatabase(DB_UNIT_FILE);
+		loadDatabase();
 		request.setMethod("POST");
 		request.addParameter("numeroAVS", "7561234567897");
 		ModelAndView mav = controller.handleRequest(request, response);
@@ -257,7 +256,7 @@ public class TiersListControllerTest extends WebTest {
 	@Test
 	public void testRechercheNumAVSWithDash() throws Exception {
 
-		loadDatabase(DB_UNIT_FILE);
+		loadDatabase();
 		request.setMethod("POST");
 		request.addParameter("numeroAVS", "75612.34.567.897");
 		ModelAndView mav = controller.handleRequest(request, response);
@@ -272,4 +271,13 @@ public class TiersListControllerTest extends WebTest {
 
 	}
 
+	private void loadDatabase() throws Exception {
+		doInNewTransaction(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				TestData.loadTiersBasic(hibernateTemplate);
+				return null;
+			}
+		});
+		globalTiersIndexer.sync();
+	}
 }
