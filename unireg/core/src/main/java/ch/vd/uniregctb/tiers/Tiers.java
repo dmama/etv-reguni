@@ -740,7 +740,7 @@ public abstract class Tiers extends HibernateEntity implements Validateable, Bus
 			}
 		}
 		rapportsSujet.add(rapport);
-		Assert.isTrue(rapport.getSujetId() == null || rapport.getSujetId() == numero);
+		Assert.isTrue(rapport.getSujetId() == null || rapport.getSujetId().equals(numero));
 		rapport.setSujet(this);
 	}
 

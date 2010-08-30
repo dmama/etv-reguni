@@ -660,7 +660,7 @@ public class PersonnePhysique extends Contribuable {
 		//   2. newPP.identificationsPersonnes = refPP.identificationsPersonnes
 		// => le HibernateEntitySet est perdu lors de la copie des valeurs !
 		// Résultat: on code un setter 'intelligent' qui évite perdre la collections une fois instanciée.
-		if (identificationsPersonnes == null) {
+		if (identificationsPersonnes == null || identificationsPersonnes instanceof HashSet) {
 			identificationsPersonnes = theIdentificationsPersonnes;
 		}
 		else if (identificationsPersonnes == theIdentificationsPersonnes) {
@@ -674,7 +674,7 @@ public class PersonnePhysique extends Contribuable {
 		}
 	}
 
-	public void addIdentificationsPersonnes(IdentificationPersonne ident) {
+	public void addIdentificationPersonne(IdentificationPersonne ident) {
 		if (identificationsPersonnes == null) {
 			identificationsPersonnes = new HashSet<IdentificationPersonne>();
 		}

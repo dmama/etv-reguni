@@ -47,7 +47,7 @@ public class MetaEntity {
 	private Sequence sequence;
 	private List<Property> properties;
 
-	public MetaEntity(String table, String discriminant, Class<?> type) {
+	private MetaEntity(String table, String discriminant, Class<?> type) {
 		this.table = table;
 		this.discriminant = discriminant;
 		this.type = type;

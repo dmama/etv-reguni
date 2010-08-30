@@ -3238,7 +3238,7 @@ public class TiersServiceImpl implements TiersService {
 			}
 
 			// on ajoute l'identifiant et sauve le tout
-			pp.addIdentificationsPersonnes(ident);
+			pp.addIdentificationPersonne(ident);
 			pp = (PersonnePhysique) tiersDAO.save(pp);
 
 			// on recherche l'identifiant nouvellement ajouté
@@ -3256,7 +3256,7 @@ public class TiersServiceImpl implements TiersService {
 			ident = nouvelIdent;
 		}
 		else {
-			pp.addIdentificationsPersonnes(ident);
+			pp.addIdentificationPersonne(ident);
 		}
 
 		Assert.notNull(ident.getId());

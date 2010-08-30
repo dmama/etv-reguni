@@ -136,6 +136,14 @@ public class PeriodeFiscale extends HibernateEntity {
 		// end-user-code
 	}
 
+	public void addParametrePeriodeFiscale(ParametrePeriodeFiscale param) {
+		if (parametrePeriodeFiscale == null) {
+			parametrePeriodeFiscale = new HashSet<ParametrePeriodeFiscale>();
+		}
+		param.setPeriodefiscale(this);
+		parametrePeriodeFiscale.add(param);
+	}
+
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@JoinColumn(name = "PERIODE_ID")
 	@ForeignKey(name = "FK_DOC_PF_ID")
