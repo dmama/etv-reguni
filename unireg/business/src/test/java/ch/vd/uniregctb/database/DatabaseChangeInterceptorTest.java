@@ -24,6 +24,7 @@ import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.IdentificationPersonne;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.SituationFamille;
+import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.tiers.Tutelle;
 import ch.vd.uniregctb.type.CategorieIdentifiant;
 import ch.vd.uniregctb.type.MotifFor;
@@ -81,6 +82,7 @@ public class DatabaseChangeInterceptorTest extends BusinessTest {
 
 		interceptor = new DatabaseChangeInterceptor();
 		interceptor.setDataEventService(eventService);
+		interceptor.setTiersService(getBean(TiersService.class, "tiersService"));
 
 		modificationInterceptor = getBean(ModificationInterceptor.class, "modificationInterceptor");
 		modificationInterceptor.register(interceptor);

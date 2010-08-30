@@ -1174,5 +1174,13 @@ public interface TiersService {
 	 * @return le numéro d'individu de la personne physique ou de la personne principal du menage. null si le tiers ne possède pas de numéro d'individu
 	 */
 	public Long extractNumeroIndividuPrincipal(Tiers tiers);
+
+	/**
+	 * Analyse le graphe des entités liées et retourne tous les tiers trouvés.
+	 *
+	 * @param entity une entité liée à d'autres entités.
+	 * @return l'ensemble des tiers trouvés; ou un ensemble vide si aucun tiers n'est trouvé.
+	 */
+	Set<Tiers> getLinkedTiers(LinkedEntity entity);
 }
 

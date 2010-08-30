@@ -14,6 +14,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import java.util.Arrays;
+import java.util.List;
 
 import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
@@ -23,7 +25,6 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.validation.SubValidateable;
 import ch.vd.registre.base.validation.Validateable;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.common.Duplicable;
@@ -44,7 +45,7 @@ import ch.vd.uniregctb.type.EtatCivil;
 @Table(name = "SITUATION_FAMILLE")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "SITUATION_FAMILLE_TYPE", discriminatorType = DiscriminatorType.STRING)
-public abstract class SituationFamille extends HibernateEntity implements DateRange, SubValidateable, Duplicable<SituationFamille>, TiersSubEntity {
+public abstract class SituationFamille extends HibernateEntity implements DateRange, Validateable, Duplicable<SituationFamille>, LinkedEntity {
 
 	private static final long serialVersionUID = 2322061257210000162L;
 
@@ -221,20 +222,12 @@ public abstract class SituationFamille extends HibernateEntity implements DateRa
 	/**
 	 * {@inheritDoc}
 	 */
-	@Transient
-	public Validateable getMaster() {
-		return contribuable;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
 	public ValidationResults validate() {
 		return DateRangeHelper.validate(this, false, true);
 	}
 
 	@Transient
-	public Tiers getTiersParent() {
-		return contribuable;
+	public List<?> getLinkedEntities() {
+		return contribuable == null ? null : Arrays.asList(contribuable);
 	}
 }

@@ -11,13 +11,15 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.HibernateEntity;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TiersSubEntity;
+import ch.vd.uniregctb.tiers.LinkedEntity;
 
 /**
  * <!-- begin-user-doc -->
@@ -30,7 +32,7 @@ import ch.vd.uniregctb.tiers.TiersSubEntity;
  */
 @Entity
 @Table(name = "DELAI_DECLARATION")
-public class DelaiDeclaration extends HibernateEntity implements Comparable<DelaiDeclaration>, TiersSubEntity {
+public class DelaiDeclaration extends HibernateEntity implements Comparable<DelaiDeclaration>, LinkedEntity {
 
 	/**
 	 *
@@ -247,7 +249,7 @@ public class DelaiDeclaration extends HibernateEntity implements Comparable<Dela
 	}
 
 	@Transient
-	public Tiers getTiersParent() {
-		return declaration.getTiers();
+	public List<?> getLinkedEntities() {
+		return declaration == null ? null : Arrays.asList(declaration);
 	}
 }

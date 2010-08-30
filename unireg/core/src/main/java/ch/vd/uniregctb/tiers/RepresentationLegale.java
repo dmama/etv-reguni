@@ -92,11 +92,12 @@ public abstract class RepresentationLegale extends RapportEntreTiers {
 		// end-user-code
 	}
 
+	@SuppressWarnings({"unchecked"})
 	@Override
 	@Transient
-	public List<EntityKey> getJoinedEntities() {
-		final List<EntityKey> list = super.getJoinedEntities();
-		if (autoriteTutelaireId != null && !isAnnule()) {
+	public List<?> getLinkedEntities() {
+		final List list = super.getLinkedEntities();
+		if (autoriteTutelaireId != null) {
 			list.add(new EntityKey(Tiers.class, autoriteTutelaireId));
 		}
 		return list;

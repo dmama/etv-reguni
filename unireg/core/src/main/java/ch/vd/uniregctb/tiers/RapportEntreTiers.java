@@ -24,12 +24,12 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.registre.base.validation.Validateable;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.common.Duplicable;
 import ch.vd.uniregctb.common.EntityKey;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
-import ch.vd.uniregctb.validation.JoinValidateable;
 
 /**
  * <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -43,7 +43,7 @@ import ch.vd.uniregctb.validation.JoinValidateable;
 @Table(name = "RAPPORT_ENTRE_TIERS")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "RAPPORT_ENTRE_TIERS_TYPE", discriminatorType = DiscriminatorType.STRING)
-public abstract class RapportEntreTiers extends HibernateEntity implements DateRange, Duplicable<RapportEntreTiers>, JoinValidateable {
+public abstract class RapportEntreTiers extends HibernateEntity implements DateRange, Duplicable<RapportEntreTiers>, LinkedEntity, Validateable {
 
 	private static final long serialVersionUID = 956676848057330463L;
 
@@ -241,13 +241,13 @@ public abstract class RapportEntreTiers extends HibernateEntity implements DateR
 	}
 
 	@Transient
-	public List<EntityKey> getJoinedEntities() {
+	public List<?> getLinkedEntities() {
 
-		if ((sujetId == null && objetId == null) || isAnnule()) {
-			return Collections.emptyList();
+		if (sujetId == null && objetId == null) {
+			return null;
 		}
 
-		final List<EntityKey> list = new ArrayList<EntityKey>(2);
+		final List<Object> list = new ArrayList<Object>(2);
 		if (sujetId != null) {
 			list.add(new EntityKey(Tiers.class, sujetId));
 		}

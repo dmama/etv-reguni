@@ -11,6 +11,9 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
 
@@ -29,7 +32,7 @@ import ch.vd.uniregctb.type.CategorieIdentifiant;
  */
 @Entity
 @Table(name = "IDENTIFICATION_PERSONNE")
-public class IdentificationPersonne extends HibernateEntity implements TiersSubEntity {
+public class IdentificationPersonne extends HibernateEntity implements LinkedEntity {
 
 	private static final long serialVersionUID = -2912407089876896897L;
 
@@ -136,7 +139,7 @@ public class IdentificationPersonne extends HibernateEntity implements TiersSubE
 	}
 
 	@Transient
-	public Tiers getTiersParent() {
-		return personnePhysique;
+	public List<?> getLinkedEntities() {
+		return personnePhysique == null ? null : Arrays.asList(personnePhysique);
 	}
 }

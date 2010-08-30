@@ -27,8 +27,9 @@ import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.hibernate.meta.MetaEntity;
 import ch.vd.uniregctb.hibernate.meta.Property;
 import ch.vd.uniregctb.hibernate.meta.Sequence;
+import ch.vd.uniregctb.tiers.LinkedEntity;
 import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TiersSubEntity;
+import ch.vd.uniregctb.tiers.TiersService;
 
 public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 
@@ -36,6 +37,7 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 
 	private PlatformTransactionManager transactionManager;
 	private HibernateTemplate hibernateTemplate;
+	private TiersService tiersService;
 	private List<String> annotatedClass;
 	private Map<EntityType, List<Class<? extends HibernateEntity>>> concreteClassByType = new HashMap<EntityType, List<Class<? extends HibernateEntity>>>();
 
@@ -78,6 +80,10 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setAnnotatedClass(List<String> annotatedClass) {
 		this.annotatedClass = annotatedClass;
+	}
+
+	public void setTiersService(TiersService tiersService) {
+		this.tiersService = tiersService;
 	}
 
 	@SuppressWarnings({"unchecked"})
@@ -149,18 +155,19 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 		final List<Delta> deltas = session.getDeltas();
 		for (Delta d : deltas) {
 			final HibernateEntity entity = context.getEntity(d.getKey());
-			final Tiers t;
 			if (entity instanceof Tiers) {
-				t = (Tiers) entity;
+				final Tiers t = (Tiers) entity;
+				if (!tiers.containsKey(t.getId())) {
+					tiers.put(t.getId(), t);
+				}
 			}
-			else if (entity instanceof TiersSubEntity) {
-				t = ((TiersSubEntity) entity).getTiersParent();
-			}
-			else {
-				t = null;
-			}
-			if (t != null && !tiers.containsKey(t.getId())) {
-				tiers.put(t.getId(), t);
+			else if (entity instanceof LinkedEntity) {
+				final Set<Tiers> linked = tiersService.getLinkedTiers((LinkedEntity) entity);
+				for (Tiers t : linked) {
+					if (t != null && !tiers.containsKey(t.getId())) {
+						tiers.put(t.getId(), t);
+					}
+				}
 			}
 		}
 

@@ -38,6 +38,7 @@
 		<property name="parent" ref="modificationInterceptor" />
 		<property name="hibernateTemplate" ref="hibernateTemplate" />
 		<property name="tacheService" ref="tacheService" />
+		<property name="tiersService" ref="tiersService" />
 		<property name="transactionManager" ref="transactionManager" />
 	</bean>
 
@@ -147,6 +148,7 @@
 	<bean id="databaseChangeInterceptor" class="ch.vd.uniregctb.database.DatabaseChangeInterceptor">
 		<property name="parent" ref="modificationInterceptor" />
 		<property name="dataEventService" ref="dataEventService" />
+		<property name="tiersService" ref="tiersService" />
 	</bean>
 
 	<bean id="dataEventService" class="ch.vd.uniregctb.data.DataEventServiceImpl"/>

@@ -1,7 +1,5 @@
 package ch.vd.uniregctb.adresse;
 
-import java.io.Serializable;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
@@ -16,6 +14,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import java.io.Serializable;
+import java.util.Arrays;
+import java.util.List;
 
 import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
@@ -25,11 +26,10 @@ import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.validation.SubValidateable;
 import ch.vd.registre.base.validation.Validateable;
-import ch.vd.uniregctb.tiers.TiersSubEntity;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.LengthConstants;
+import ch.vd.uniregctb.tiers.LinkedEntity;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 
@@ -37,7 +37,7 @@ import ch.vd.uniregctb.type.TypeAdresseTiers;
 @Table(name = "ADRESSE_TIERS")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "ADR_TYPE", discriminatorType = DiscriminatorType.STRING)
-public abstract class AdresseTiers extends HibernateEntity implements Comparable<AdresseTiers>, DateRange, Serializable, Cloneable, SubValidateable, TiersSubEntity {
+public abstract class AdresseTiers extends HibernateEntity implements Comparable<AdresseTiers>, DateRange, Serializable, Cloneable, Validateable, LinkedEntity {
 
 	//private final Logger LOGGER = Logger.getLogger(AdresseTiers.class);
 
@@ -218,16 +218,8 @@ public abstract class AdresseTiers extends HibernateEntity implements Comparable
 		return !isAnnule() && RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Transient
-	public Validateable getMaster() {
-		return tiers;
-	}
-
-	@Transient
-	public Tiers getTiersParent() {
-		return tiers;
+	public List<?> getLinkedEntities() {
+		return tiers == null ? null : Arrays.asList(tiers);
 	}
 }

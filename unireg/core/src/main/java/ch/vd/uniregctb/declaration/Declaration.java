@@ -17,6 +17,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -34,7 +35,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.validation.Validateable;
 import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.uniregctb.tiers.TiersSubEntity;
+import ch.vd.uniregctb.tiers.LinkedEntity;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
@@ -52,7 +53,7 @@ import ch.vd.uniregctb.type.TypeEtatDeclaration;
 @Table(name = "DECLARATION")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "DOCUMENT_TYPE", discriminatorType = DiscriminatorType.STRING)
-public abstract class Declaration extends HibernateEntity implements DateRange, Validateable, TiersSubEntity {
+public abstract class Declaration extends HibernateEntity implements DateRange, Validateable, LinkedEntity {
 
 	private static final long serialVersionUID = 5952424159981114355L;
 
@@ -528,7 +529,7 @@ public abstract class Declaration extends HibernateEntity implements DateRange, 
 	}
 
 	@Transient
-	public Tiers getTiersParent() {
-		return tiers;
+	public List<?> getLinkedEntities() {
+		return tiers == null ? null : Arrays.asList(tiers);
 	}
 }

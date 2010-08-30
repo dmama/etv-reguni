@@ -4,7 +4,7 @@ import javax.transaction.TransactionManager;
 import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.HashSet;
-import java.util.List;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.hibernate.CallbackException;
@@ -20,14 +20,13 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import ch.vd.registre.base.validation.SubValidateable;
-import ch.vd.registre.base.validation.Validateable;
-import ch.vd.uniregctb.common.EntityKey;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.hibernate.interceptor.ModificationInterceptor;
 import ch.vd.uniregctb.hibernate.interceptor.ModificationSubInterceptor;
 import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.validation.JoinValidateable;
+import ch.vd.uniregctb.tiers.LinkedEntity;
+import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.tiers.TiersService;
 
 /**
  * [UNIREG-2305] Cet interceptor recalcul automatiquement les tâches d'envoi et d'annulation de DIs sur les contribuables modifiées après le commit de chaque transaction.
@@ -39,6 +38,7 @@ public class TacheSynchronizerInterceptor implements ModificationSubInterceptor,
 	private ModificationInterceptor parent;
 	private HibernateTemplate hibernateTemplate;
 	private TacheService tacheService;
+	private TiersService tiersService;
 	private TransactionManager transactionManager;
 
 	private final ThreadLocal<HashSet<Long>> modifiedCtbIds = new ThreadLocal<HashSet<Long>>();
@@ -54,20 +54,12 @@ public class TacheSynchronizerInterceptor implements ModificationSubInterceptor,
 			final Contribuable ctb = (Contribuable) entity;
 			addModifiedContribuable(ctb);
 		}
-		else if (entity instanceof SubValidateable) {
-			final SubValidateable sub = (SubValidateable) entity;
-			final Validateable master = sub.getMaster();
-			if (master instanceof Contribuable) {
-				final Contribuable ctb = (Contribuable) master;
-				addModifiedContribuable(ctb);
-			}
-		}
-		else if (entity instanceof JoinValidateable) {
-			final List<EntityKey> keys = ((JoinValidateable) entity).getJoinedEntities();
-			for (EntityKey k : keys) {
-				final Validateable val = (Validateable) hibernateTemplate.get(k.getClazz(), (Serializable) k.getId());
-				if (val instanceof Contribuable) {
-					final Contribuable ctb = (Contribuable) val;
+		else if (entity instanceof LinkedEntity) {
+			final LinkedEntity linkedEntity = (LinkedEntity) entity;
+			final Set<Tiers> tiers = tiersService.getLinkedTiers(linkedEntity);
+			for (Tiers t : tiers) {
+				if (t instanceof Contribuable) {
+					final Contribuable ctb = (Contribuable) t;
 					addModifiedContribuable(ctb);
 				}
 			}
@@ -176,6 +168,10 @@ public class TacheSynchronizerInterceptor implements ModificationSubInterceptor,
 
 	public void setTransactionManager(TransactionManager transactionManager) {
 		this.transactionManager = transactionManager;
+	}
+
+	public void setTiersService(TiersService tiersService) {
+		this.tiersService = tiersService;
 	}
 
 	public void afterPropertiesSet() throws Exception {

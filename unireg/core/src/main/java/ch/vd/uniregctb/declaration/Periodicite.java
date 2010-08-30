@@ -12,6 +12,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import java.util.Arrays;
 import java.util.List;
 
 import org.hibernate.annotations.Index;
@@ -23,14 +24,12 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.validation.SubValidateable;
 import ch.vd.registre.base.validation.Validateable;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TiersSubEntity;
+import ch.vd.uniregctb.tiers.LinkedEntity;
 import ch.vd.uniregctb.type.PeriodeDecompte;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
 //TODO(BNM) Reflechir a une implementation plus simple:
@@ -39,7 +38,7 @@ import ch.vd.uniregctb.type.PeriodiciteDecompte;
 @Entity
 @Table(name = "PERIODICITE")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-public class Periodicite extends HibernateEntity implements CollatableDateRange, SubValidateable, TiersSubEntity {
+public class Periodicite extends HibernateEntity implements CollatableDateRange, Validateable, LinkedEntity {
 
 	//private static final Logger LOGGER = Logger.getLogger(Periodicite.class);
 
@@ -268,12 +267,7 @@ public class Periodicite extends HibernateEntity implements CollatableDateRange,
 	}
 
 	@Transient
-	public Validateable getMaster() {
-		return debiteur;
-	}
-
-	@Transient
-	public Tiers getTiersParent() {
-		return debiteur;
+	public List<?> getLinkedEntities() {
+		return debiteur == null ? null : Arrays.asList(debiteur);
 	}
 }

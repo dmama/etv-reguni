@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.tiers;
 
+import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.*;
 
@@ -35,7 +36,9 @@ import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.AdresseSupplementaire;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
+import ch.vd.uniregctb.common.EntityKey;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
+import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.NomPrenom;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.Declaration;
@@ -3711,5 +3714,48 @@ public class TiersServiceImpl implements TiersService {
 		}
 		return false;
 	}
-}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	public Set<Tiers> getLinkedTiers(LinkedEntity entity) {
+		final Set<Tiers> tiers = new HashSet<Tiers>();
+		final Set<Object> visited = new HashSet<Object>(); // contient les entités et les clés déjà visitées
+		extractLinkedTiers(entity, tiers, visited);
+		return tiers;
+	}
+
+	private void extractLinkedTiers(LinkedEntity entity, Set<Tiers> tiers, Set<Object> visited) {
+		final List<?> list = entity.getLinkedEntities();
+		for (Object o : list) {
+
+			if (visited.contains(o)) { // test sur la clé ou l'entité elle-même
+				continue; // on a déjà visité cette entité
+			}
+			visited.add(o);
+
+			// on met la main sur l'entité hibernate
+			final HibernateEntity e;
+			if (o instanceof EntityKey) {
+				final EntityKey key =(EntityKey) o;
+				e = (HibernateEntity) hibernateTemplate.get(key.getClazz(), (Serializable)key.getId());
+				
+				if (visited.contains(e)) { // on reteste sur l'entité uniquement
+					continue; // on a déjà visité cette entité
+				}
+				visited.add(e);
+			}
+			else {
+				e = (HibernateEntity) o; // selon le contrat de getLinkedEntities()
+			}
+
+			// on ajoute les tiers trouvés
+			if (e instanceof Tiers) {
+				tiers.add((Tiers) e);
+			}
+			else if (e instanceof LinkedEntity) {
+				extractLinkedTiers((LinkedEntity) e, tiers, visited); // récursif
+			}
+		}
+	}
+}

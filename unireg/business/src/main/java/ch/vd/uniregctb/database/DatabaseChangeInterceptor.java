@@ -7,15 +7,16 @@ import org.hibernate.CallbackException;
 import org.hibernate.type.Type;
 import org.springframework.beans.factory.InitializingBean;
 
-import ch.vd.uniregctb.tiers.TiersSubEntity;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.hibernate.interceptor.ModificationInterceptor;
 import ch.vd.uniregctb.hibernate.interceptor.ModificationSubInterceptor;
 import ch.vd.uniregctb.tiers.DroitAcces;
+import ch.vd.uniregctb.tiers.LinkedEntity;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
 /**
@@ -27,6 +28,7 @@ public class DatabaseChangeInterceptor implements ModificationSubInterceptor, In
 
 	private ModificationInterceptor parent;
 	private DataEventService dataEventService;
+	private TiersService tiersService;
 
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setParent(ModificationInterceptor parent) {
@@ -35,6 +37,10 @@ public class DatabaseChangeInterceptor implements ModificationSubInterceptor, In
 
 	public void setDataEventService(DataEventService dataEventService) {
 		this.dataEventService = dataEventService;
+	}
+
+	public void setTiersService(TiersService tiersService) {
+		this.tiersService = tiersService;
 	}
 
 	public boolean onChange(HibernateEntity entity, Serializable id, Object[] currentState, Object[] previousState, String[] propertyNames,
@@ -48,22 +54,11 @@ public class DatabaseChangeInterceptor implements ModificationSubInterceptor, In
 				dataEventService.onTiersChange(numero);
 			}
 		}
-		else if (entity instanceof TiersSubEntity) { // [UNIREG-2581] on doit remonter sur le tiers en cas de changement sur les classes satellites
-			final TiersSubEntity child = (TiersSubEntity) entity;
-			final Tiers tiers = child.getTiersParent();
-			if (tiers != null) {
-				dataEventService.onTiersChange(tiers.getId());
-			}
-		}
-		else if (entity instanceof RapportEntreTiers) {
-			final RapportEntreTiers rapport = (RapportEntreTiers) entity;
-			final Long sujetId = rapport.getSujetId();
-			if (sujetId != null) {
-				dataEventService.onTiersChange(sujetId);
-			}
-			final Long objetId = rapport.getObjetId();
-			if (objetId != null) {
-				dataEventService.onTiersChange(objetId);
+		else if (entity instanceof LinkedEntity) { // [UNIREG-2581] on doit remonter sur le tiers en cas de changement sur les classes satellites
+			final LinkedEntity child = (LinkedEntity) entity;
+			final Set<Tiers> tiers = tiersService.getLinkedTiers(child);
+			for (Tiers t : tiers) {
+				dataEventService.onTiersChange(t.getNumero());
 			}
 		}
 		else if (entity instanceof DroitAcces) {

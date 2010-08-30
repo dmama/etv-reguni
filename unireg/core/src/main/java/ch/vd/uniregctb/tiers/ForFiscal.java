@@ -14,6 +14,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import java.util.Arrays;
+import java.util.List;
 
 import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
@@ -22,7 +24,6 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.validation.SubValidateable;
 import ch.vd.registre.base.validation.Validateable;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.common.Duplicable;
@@ -60,7 +61,7 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 @Table(name = "FOR_FISCAL")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "FOR_TYPE", discriminatorType = DiscriminatorType.STRING)
-public abstract class ForFiscal extends HibernateEntity implements Comparable<ForFiscal>, DateRange, SubValidateable, Duplicable<ForFiscal>, TiersSubEntity {
+public abstract class ForFiscal extends HibernateEntity implements Comparable<ForFiscal>, DateRange, Validateable, Duplicable<ForFiscal>, LinkedEntity {
 
 	private static final long serialVersionUID = -4147759696434131389L;
 
@@ -347,14 +348,6 @@ public abstract class ForFiscal extends HibernateEntity implements Comparable<Fo
 	}
 
 	/**
-	 * {@inheritDoc}
-	 */
-	@Transient
-	public Validateable getMaster() {
-		return tiers;
-	}
-
-	/**
 	 * Retourne true si le for contient les mêmes informations que celui passé en paramètre.
 	 *
 	 * Cette méthode ne doit pas être renommée en equals, cela provoquerait des conflits avec Hibernate.
@@ -397,7 +390,7 @@ public abstract class ForFiscal extends HibernateEntity implements Comparable<Fo
 	}
 
 	@Transient
-	public Tiers getTiersParent() {
-		return tiers;
+	public List<?> getLinkedEntities() {
+		return tiers == null ? null : Arrays.asList(tiers);
 	}
 }
