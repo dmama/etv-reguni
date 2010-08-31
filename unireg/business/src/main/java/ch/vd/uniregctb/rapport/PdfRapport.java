@@ -34,7 +34,7 @@ import com.lowagie.text.pdf.codec.PngImage;
 public abstract class PdfRapport extends Document {
 
 	private static final Font WARNING_FONT = new Font(Font.HELVETICA, 12, Font.BOLD);
-	private static final SimpleDateFormat TIMESTAMP_FORMAT = new SimpleDateFormat("dd.MM.yyyy kk:mm:ss");
+	private static final SimpleDateFormat TIMESTAMP_FORMAT = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
 	public static final int AVG_LINE_LEN = 384; // longueur moyenne d'une ligne d'un fichier CVS (d'après relevé sur le batch d'ouverture des fors)
 	public static final char COMMA = ';';
 	public static final String EMPTY = "";
