@@ -9,6 +9,8 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.hibernate.meta.MetaEntity;
 import ch.vd.uniregctb.hibernate.meta.Property;
+import ch.vd.uniregctb.tiers.RapportEntreTiers;
+import ch.vd.uniregctb.tiers.Tiers;
 
 /**
  * Ajoute une sous-entité dans une collection d'une entité parente dans le mode SuperGra.
@@ -91,6 +93,16 @@ public class AddSubEntity extends Delta {
 				final PropertyDescriptor parentDescr = new PropertyDescriptor(parentProp.getName(), subClass);
 				final Method parentSetter = parentDescr.getWriteMethod();
 				parentSetter.invoke(subEntity, entity);
+			}
+			else if (subEntity instanceof RapportEntreTiers) {
+				// cas spécial des rapports entre tiers où le lien doit être fait à la main
+				final RapportEntreTiers r = (RapportEntreTiers) subEntity;
+				if (collName.equals("rapportsSujet")) {
+					r.setSujetId(((Tiers) entity).getId());
+				}
+				else if (collName.equals("rapportsObjet")) {
+					r.setObjetId(((Tiers) entity).getId());
+				}
 			}
 
 			// Ajoute l'entité à son parent
