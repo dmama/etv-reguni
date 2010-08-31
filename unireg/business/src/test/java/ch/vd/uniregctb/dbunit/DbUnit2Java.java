@@ -29,6 +29,7 @@ import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.IdentificationPersonne;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.SituationFamille;
+import ch.vd.uniregctb.tiers.Tache;
 import ch.vd.uniregctb.tiers.Tiers;
 
 /**
@@ -59,6 +60,7 @@ public class DbUnit2Java extends BusinessTest {
 		hibernateBaseClasses.add(SituationFamille.class);
 		hibernateBaseClasses.add(IdentificationPersonne.class);
 		hibernateBaseClasses.add(Periodicite.class);
+		hibernateBaseClasses.add(Tache.class);
 	}
 
 	private static class ClassInfo {
@@ -190,7 +192,7 @@ public class DbUnit2Java extends BusinessTest {
 			}
 		}
 
-		if (parentProp != null) {
+		if (parentProp != null && !(o instanceof Declaration)) {
 			final String parentInstanceName = entityInstanceNames.get(parent);
 			Assert.notNull(parentInstanceName);
 			String s = parentInstanceName + ".add" + info.baseClass.getSimpleName() + "(" + instance + ");";
@@ -201,6 +203,14 @@ public class DbUnit2Java extends BusinessTest {
 			System.out.println(m);
 		}
 		else {
+
+			// Cas spécial pour les déclarations qui doivent être sauvées par elles-mêmes
+			if (o instanceof Declaration) {
+				final String parentInstanceName = entityInstanceNames.get(parent);
+				Assert.notNull(parentInstanceName);
+				System.out.println(instance + ".setTiers(" + parentInstanceName + ");");
+			}
+
 			// On sauve l'instance
 			String m = instance + " = (" + clazz + ") hibernateTemplate.merge(" + instance + ");";
 			System.out.println(m);

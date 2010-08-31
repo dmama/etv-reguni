@@ -6,14 +6,18 @@ import ch.vd.uniregctb.common.CoreDAOTest;
 import ch.vd.uniregctb.common.ParamPagination;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.ModeleDocument;
+import ch.vd.uniregctb.declaration.ParametrePeriodeFiscale;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
+import ch.vd.uniregctb.hibernate.interceptor.ModificationLogInterceptor;
 import ch.vd.uniregctb.type.*;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.TransactionStatus;
 
+import java.sql.Timestamp;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
@@ -25,10 +29,18 @@ public class TacheDAOTest extends CoreDAOTest {
 
 	private static final String DAO_NAME = "tacheDAO";
 
-	private static final String DB_UNIT_DATA_FILE = "TacheDAOTest.xml";
-
 	private TacheDAO dao;
 	private HibernateTemplate hibernateTemplate;
+	private ModificationLogInterceptor modificationLogInterceptor;
+
+	private static class Ids {
+		Long tedi0;
+		Long tadi0;
+		Long tcd0;
+		Long ttd0;
+		Long tedi1;
+	}
+	private final Ids ids = new Ids();
 
 	/**
 	 * @throws Exception
@@ -38,12 +50,13 @@ public class TacheDAOTest extends CoreDAOTest {
 		super.onSetUp();
 		dao = getBean(TacheDAO.class, DAO_NAME);
 		hibernateTemplate = getBean(HibernateTemplate.class, "hibernateTemplate");
+		modificationLogInterceptor = getBean(ModificationLogInterceptor.class, "modificationLogInterceptor");
 	}
 
 	@Test
 	public void testFindParTypeEtatTache() throws Exception {
 
-		loadDatabase(DB_UNIT_DATA_FILE);
+		loadDatabase();
 
 		// Tâches en instance
 		{
@@ -51,8 +64,8 @@ public class TacheDAOTest extends CoreDAOTest {
 			criterion.setEtatTache(TypeEtatTache.EN_INSTANCE);
 			final List<Tache> list = dao.find(criterion);
 			assertEquals(2, list.size());
-			assertEquals(Long.valueOf(1), list.get(0).getId());
-			assertEquals(Long.valueOf(5), list.get(1).getId());
+			assertEquals(ids.tedi0, list.get(0).getId());
+			assertEquals(ids.tedi1, list.get(1).getId());
 		}
 
 		// Tâches traitées
@@ -61,8 +74,8 @@ public class TacheDAOTest extends CoreDAOTest {
 			criterion.setEtatTache(TypeEtatTache.TRAITE);
 			final List<Tache> list = dao.find(criterion);
 			assertEquals(2, list.size());
-			assertEquals(Long.valueOf(2), list.get(0).getId());
-			assertEquals(Long.valueOf(3), list.get(1).getId());
+			assertEquals(ids.tadi0, list.get(0).getId());
+			assertEquals(ids.tcd0, list.get(1).getId());
 		}
 
 		// Tâches en cours
@@ -71,14 +84,14 @@ public class TacheDAOTest extends CoreDAOTest {
 			criterion.setEtatTache(TypeEtatTache.EN_COURS);
 			final List<Tache> list = dao.find(criterion);
 			assertEquals(1, list.size());
-			assertEquals(Long.valueOf(4), list.get(0).getId());
+			assertEquals(ids.ttd0, list.get(0).getId());
 		}
 	}
 
 	@Test
 	public void testFindParTypeTache() throws Exception {
 
-		loadDatabase(DB_UNIT_DATA_FILE);
+		loadDatabase();
 
 		// Type envoi di
 		{
@@ -86,8 +99,8 @@ public class TacheDAOTest extends CoreDAOTest {
 			criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpot);
 			final List<Tache> list = dao.find(criterion);
 			assertEquals(2, list.size());
-			assertEquals(Long.valueOf(1), list.get(0).getId());
-			assertEquals(Long.valueOf(5), list.get(1).getId());
+			assertEquals(ids.tedi0, list.get(0).getId());
+			assertEquals(ids.tedi1, list.get(1).getId());
 		}
 
 		// Type annulation di
@@ -96,7 +109,7 @@ public class TacheDAOTest extends CoreDAOTest {
 			criterion.setTypeTache(TypeTache.TacheAnnulationDeclarationImpot);
 			final List<Tache> list = dao.find(criterion);
 			assertEquals(1, list.size());
-			assertEquals(Long.valueOf(2), list.get(0).getId());
+			assertEquals(ids.tadi0, list.get(0).getId());
 		}
 
 		// Type contrôle dossier
@@ -105,7 +118,7 @@ public class TacheDAOTest extends CoreDAOTest {
 			criterion.setTypeTache(TypeTache.TacheControleDossier);
 			final List<Tache> list = dao.find(criterion);
 			assertEquals(1, list.size());
-			assertEquals(Long.valueOf(3), list.get(0).getId());
+			assertEquals(ids.tcd0, list.get(0).getId());
 		}
 
 		// Type transmission dossier
@@ -114,14 +127,14 @@ public class TacheDAOTest extends CoreDAOTest {
 			criterion.setTypeTache(TypeTache.TacheTransmissionDossier);
 			final List<Tache> list = dao.find(criterion);
 			assertEquals(1, list.size());
-			assertEquals(Long.valueOf(4), list.get(0).getId());
+			assertEquals(ids.ttd0, list.get(0).getId());
 		}
 	}
 
 	@Test
 	public void testFindParTypeTacheInverse() throws Exception {
 
-		loadDatabase(DB_UNIT_DATA_FILE);
+		loadDatabase();
 
 		// Type envoi di
 		{
@@ -130,9 +143,9 @@ public class TacheDAOTest extends CoreDAOTest {
 			criterion.setInvertTypeTache(true);
 			final List<Tache> list = dao.find(criterion);
 			assertEquals(3, list.size());
-			assertEquals(Long.valueOf(2), list.get(0).getId());
-			assertEquals(Long.valueOf(3), list.get(1).getId());
-			assertEquals(Long.valueOf(4), list.get(2).getId());
+			assertEquals(ids.tadi0, list.get(0).getId());
+			assertEquals(ids.tcd0, list.get(1).getId());
+			assertEquals(ids.ttd0, list.get(2).getId());
 		}
 
 		// Type annulation di
@@ -142,10 +155,10 @@ public class TacheDAOTest extends CoreDAOTest {
 			criterion.setInvertTypeTache(true);
 			final List<Tache> list = dao.find(criterion);
 			assertEquals(4, list.size());
-			assertEquals(Long.valueOf(1), list.get(0).getId());
-			assertEquals(Long.valueOf(3), list.get(1).getId());
-			assertEquals(Long.valueOf(4), list.get(2).getId());
-			assertEquals(Long.valueOf(5), list.get(3).getId());
+			assertEquals(ids.tedi0, list.get(0).getId());
+			assertEquals(ids.tcd0, list.get(1).getId());
+			assertEquals(ids.ttd0, list.get(2).getId());
+			assertEquals(ids.tedi1, list.get(3).getId());
 		}
 
 		// Type contrôle dossier
@@ -155,10 +168,10 @@ public class TacheDAOTest extends CoreDAOTest {
 			criterion.setInvertTypeTache(true);
 			final List<Tache> list = dao.find(criterion);
 			assertEquals(4, list.size());
-			assertEquals(Long.valueOf(1), list.get(0).getId());
-			assertEquals(Long.valueOf(2), list.get(1).getId());
-			assertEquals(Long.valueOf(4), list.get(2).getId());
-			assertEquals(Long.valueOf(5), list.get(3).getId());
+			assertEquals(ids.tedi0, list.get(0).getId());
+			assertEquals(ids.tadi0, list.get(1).getId());
+			assertEquals(ids.ttd0, list.get(2).getId());
+			assertEquals(ids.tedi1, list.get(3).getId());
 		}
 
 		// Type transmission dossier
@@ -168,17 +181,17 @@ public class TacheDAOTest extends CoreDAOTest {
 			criterion.setInvertTypeTache(true);
 			final List<Tache> list = dao.find(criterion);
 			assertEquals(4, list.size());
-			assertEquals(Long.valueOf(1), list.get(0).getId());
-			assertEquals(Long.valueOf(2), list.get(1).getId());
-			assertEquals(Long.valueOf(3), list.get(2).getId());
-			assertEquals(Long.valueOf(5), list.get(3).getId());
+			assertEquals(ids.tedi0, list.get(0).getId());
+			assertEquals(ids.tadi0, list.get(1).getId());
+			assertEquals(ids.tcd0, list.get(2).getId());
+			assertEquals(ids.tedi1, list.get(3).getId());
 		}
 	}
 
 	@Test
 	public void testFindParDateCreation() throws Exception {
 
-		loadDatabase(DB_UNIT_DATA_FILE);
+		loadDatabase();
 
 		{
 			TacheCriteria criterion = new TacheCriteria();
@@ -193,7 +206,7 @@ public class TacheDAOTest extends CoreDAOTest {
 			criterion.setDateCreationJusqua(DateHelper.getDate(2008, 1, 31));
 			final List<Tache> list = dao.find(criterion);
 			assertEquals(1, list.size());
-			assertEquals(Long.valueOf(1), list.get(0).getId());
+			assertEquals(ids.tedi0, list.get(0).getId());
 		}
 		{
 			TacheCriteria criterion = new TacheCriteria();
@@ -201,8 +214,8 @@ public class TacheDAOTest extends CoreDAOTest {
 			criterion.setDateCreationJusqua(DateHelper.getDate(2008, 2, 29));
 			final List<Tache> list = dao.find(criterion);
 			assertEquals(2, list.size());
-			assertEquals(Long.valueOf(1), list.get(0).getId());
-			assertEquals(Long.valueOf(2), list.get(1).getId());
+			assertEquals(ids.tedi0, list.get(0).getId());
+			assertEquals(ids.tadi0, list.get(1).getId());
 		}
 		{
 			TacheCriteria criterion = new TacheCriteria();
@@ -210,9 +223,9 @@ public class TacheDAOTest extends CoreDAOTest {
 			criterion.setDateCreationJusqua(DateHelper.getDate(2008, 3, 31));
 			final List<Tache> list = dao.find(criterion);
 			assertEquals(3, list.size());
-			assertEquals(Long.valueOf(1), list.get(0).getId());
-			assertEquals(Long.valueOf(2), list.get(1).getId());
-			assertEquals(Long.valueOf(3), list.get(2).getId());
+			assertEquals(ids.tedi0, list.get(0).getId());
+			assertEquals(ids.tadi0, list.get(1).getId());
+			assertEquals(ids.tcd0, list.get(2).getId());
 		}
 		{
 			TacheCriteria criterion = new TacheCriteria();
@@ -220,17 +233,17 @@ public class TacheDAOTest extends CoreDAOTest {
 			criterion.setDateCreationJusqua(DateHelper.getDate(2008, 4, 30));
 			final List<Tache> list = dao.find(criterion);
 			assertEquals(4, list.size());
-			assertEquals(Long.valueOf(1), list.get(0).getId());
-			assertEquals(Long.valueOf(2), list.get(1).getId());
-			assertEquals(Long.valueOf(3), list.get(2).getId());
-			assertEquals(Long.valueOf(4), list.get(3).getId());
+			assertEquals(ids.tedi0, list.get(0).getId());
+			assertEquals(ids.tadi0, list.get(1).getId());
+			assertEquals(ids.tcd0, list.get(2).getId());
+			assertEquals(ids.ttd0, list.get(3).getId());
 		}
 	}
 
 	@Test
 	public void testFindParAnnee() throws Exception {
 
-		loadDatabase(DB_UNIT_DATA_FILE);
+		loadDatabase();
 
 		{
 			TacheCriteria criterion = new TacheCriteria();
@@ -245,7 +258,7 @@ public class TacheDAOTest extends CoreDAOTest {
 			criterion.setAnnee(2008);
 			final List<Tache> list = dao.find(criterion);
 			assertEquals(1, list.size());
-			assertEquals(Long.valueOf(1), list.get(0).getId());
+			assertEquals(ids.tedi0, list.get(0).getId());
 		}
 		{
 			TacheCriteria criterion = new TacheCriteria();
@@ -253,14 +266,14 @@ public class TacheDAOTest extends CoreDAOTest {
 			criterion.setAnnee(2009);
 			final List<Tache> list = dao.find(criterion);
 			assertEquals(1, list.size());
-			assertEquals(Long.valueOf(5), list.get(0).getId());
+			assertEquals(ids.tedi1, list.get(0).getId());
 		}
 	}
 
 	@Test
 	public void testFindParContribuable() throws Exception {
 
-		loadDatabase(DB_UNIT_DATA_FILE);
+		loadDatabase();
 
 		final Contribuable gomez = (Contribuable) dao.getHibernateTemplate().get(Contribuable.class, 12600003L);
 		assertNotNull(gomez);
@@ -281,18 +294,18 @@ public class TacheDAOTest extends CoreDAOTest {
 			criterion.setAnnee(2008);
 			final List<Tache> list = dao.find(criterion);
 			assertEquals(5, list.size());
-			assertEquals(Long.valueOf(1), list.get(0).getId());
-			assertEquals(Long.valueOf(2), list.get(1).getId());
-			assertEquals(Long.valueOf(3), list.get(2).getId());
-			assertEquals(Long.valueOf(4), list.get(3).getId());
-			assertEquals(Long.valueOf(5), list.get(4).getId());
+			assertEquals(ids.tedi0, list.get(0).getId());
+			assertEquals(ids.tadi0, list.get(1).getId());
+			assertEquals(ids.tcd0, list.get(2).getId());
+			assertEquals(ids.ttd0, list.get(3).getId());
+			assertEquals(ids.tedi1, list.get(4).getId());
 		}
 	}
 
 
 	@Test
 	public void testFindAvecPagination() throws Exception {
-		loadDatabase(DB_UNIT_DATA_FILE);
+		loadDatabase();
 		ParamPagination paramPagination = new ParamPagination(1, 1, null, false);
 		TacheCriteria tacheCriteria = new TacheCriteria();
 		tacheCriteria.setEtatTache(TypeEtatTache.EN_INSTANCE);
@@ -487,5 +500,189 @@ public class TacheDAOTest extends CoreDAOTest {
 		envoi.setAdresseRetour(TypeAdresseRetour.CEDI);
 		envoi = (TacheEnvoiDeclarationImpot) hibernateTemplate.merge(envoi);
 		return envoi;
+	}
+
+	@SuppressWarnings({"unchecked", "UnusedAssignment"})
+	private void loadDatabase() throws Exception {
+
+		PeriodeFiscale pf0 = new PeriodeFiscale();
+		pf0.setId(1L);
+		pf0.setAnnee(2008);
+		pf0.setLogModifDate(new Timestamp(1199142000000L));
+		pf0.setParametrePeriodeFiscale(new HashSet());
+		pf0.setModelesDocument(new HashSet());
+		pf0 = (PeriodeFiscale) hibernateTemplate.merge(pf0);
+
+		ParametrePeriodeFiscale ppf0 = new ParametrePeriodeFiscale();
+		ppf0.setId(1L);
+		ppf0.setDateFinEnvoiMasseDI(RegDate.get(2009, 4, 30));
+		ppf0.setLogModifDate(new Timestamp(1199142000000L));
+		ppf0.setTermeGeneralSommationEffectif(RegDate.get(2009, 3, 31));
+		ppf0.setTermeGeneralSommationReglementaire(RegDate.get(2009, 1, 31));
+		ppf0.setTypeContribuable(TypeContribuable.VAUDOIS_ORDINAIRE);
+		pf0.addParametrePeriodeFiscale(ppf0);
+		pf0 = (PeriodeFiscale) hibernateTemplate.merge(pf0);
+
+		ParametrePeriodeFiscale ppf1 = new ParametrePeriodeFiscale();
+		ppf1.setId(2L);
+		ppf1.setDateFinEnvoiMasseDI(RegDate.get(2009, 6, 30));
+		ppf1.setLogModifDate(new Timestamp(1199142000000L));
+		ppf1.setTermeGeneralSommationEffectif(RegDate.get(2009, 3, 31));
+		ppf1.setTermeGeneralSommationReglementaire(RegDate.get(2009, 1, 31));
+		ppf1.setTypeContribuable(TypeContribuable.VAUDOIS_DEPENSE);
+		pf0.addParametrePeriodeFiscale(ppf1);
+		pf0 = (PeriodeFiscale) hibernateTemplate.merge(pf0);
+
+		ParametrePeriodeFiscale ppf2 = new ParametrePeriodeFiscale();
+		ppf2.setId(3L);
+		ppf2.setDateFinEnvoiMasseDI(RegDate.get(2009, 6, 30));
+		ppf2.setLogModifDate(new Timestamp(1199142000000L));
+		ppf2.setTermeGeneralSommationEffectif(RegDate.get(2009, 3, 31));
+		ppf2.setTermeGeneralSommationReglementaire(RegDate.get(2009, 1, 31));
+		ppf2.setTypeContribuable(TypeContribuable.HORS_CANTON);
+		pf0.addParametrePeriodeFiscale(ppf2);
+		pf0 = (PeriodeFiscale) hibernateTemplate.merge(pf0);
+
+		ParametrePeriodeFiscale ppf3 = new ParametrePeriodeFiscale();
+		ppf3.setId(4L);
+		ppf3.setDateFinEnvoiMasseDI(RegDate.get(2009, 6, 30));
+		ppf3.setLogModifDate(new Timestamp(1199142000000L));
+		ppf3.setTermeGeneralSommationEffectif(RegDate.get(2009, 3, 31));
+		ppf3.setTermeGeneralSommationReglementaire(RegDate.get(2009, 1, 31));
+		ppf3.setTypeContribuable(TypeContribuable.HORS_SUISSE);
+		pf0.addParametrePeriodeFiscale(ppf3);
+		pf0 = (PeriodeFiscale) hibernateTemplate.merge(pf0);
+
+		ModeleDocument md0 = new ModeleDocument();
+		md0.setId(1L);
+		md0.setLogModifDate(new Timestamp(1199142000000L));
+		md0.setModelesFeuilleDocument(new HashSet());
+		md0.setTypeDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH);
+		pf0.addModeleDocument(md0);
+		pf0 = (PeriodeFiscale) hibernateTemplate.merge(pf0);
+
+		PersonnePhysique pp0 = new PersonnePhysique();
+		pp0.setNumero(12600003L);
+		pp0.setBlocageRemboursementAutomatique(false);
+		pp0.setMouvementsDossier(new HashSet());
+		pp0.setSituationsFamille(new HashSet());
+		pp0.setDebiteurInactif(false);
+		pp0.setLogModifDate(new Timestamp(1199142000000L));
+		pp0.setDateNaissance(RegDate.get(1953, 12, 18));
+		pp0.setNom("Gomez");
+		pp0.setNumeroOfsNationalite(8231);
+		pp0.setPrenom("Mario");
+		pp0.setSexe(Sexe.MASCULIN);
+		pp0.setIdentificationsPersonnes(new HashSet());
+		pp0.setHabitant(false);
+		pp0.setAdressesTiers(new HashSet());
+		pp0.setDeclarations(new HashSet());
+		pp0.setDroitsAccesAppliques(new HashSet());
+		pp0.setForsFiscaux(new HashSet());
+		pp0.setRapportsObjet(new HashSet());
+		pp0.setRapportsSujet(new HashSet());
+		pp0 = (PersonnePhysique) hibernateTemplate.merge(pp0);
+
+		PersonnePhysique pp1 = new PersonnePhysique();
+		pp1.setNumero(12600456L);
+		pp1.setBlocageRemboursementAutomatique(false);
+		pp1.setMouvementsDossier(new HashSet());
+		pp1.setSituationsFamille(new HashSet());
+		pp1.setDebiteurInactif(false);
+		pp1.setLogModifDate(new Timestamp(1199142000000L));
+		pp1.setDateNaissance(RegDate.get(1989, 5, 29));
+		pp1.setNom("Pelcrus");
+		pp1.setNumeroOfsNationalite(8231);
+		pp1.setPrenom("Jules");
+		pp1.setSexe(Sexe.MASCULIN);
+		pp1.setIdentificationsPersonnes(new HashSet());
+		pp1.setHabitant(false);
+		pp1.setAdressesTiers(new HashSet());
+		pp1.setDeclarations(new HashSet());
+		pp1.setDroitsAccesAppliques(new HashSet());
+		pp1.setForsFiscaux(new HashSet());
+		pp1.setRapportsObjet(new HashSet());
+		pp1.setRapportsSujet(new HashSet());
+		pp1 = (PersonnePhysique) hibernateTemplate.merge(pp1);
+
+		DeclarationImpotOrdinaire dio0 = new DeclarationImpotOrdinaire();
+		dio0.setId(1L);
+		dio0.setDateDebut(RegDate.get(2008, 1, 1));
+		dio0.setDateFin(RegDate.get(2008, 12, 31));
+		dio0.setDelais(new HashSet());
+		dio0.setEtats(new HashSet());
+		dio0.setLibre(false);
+		dio0.setLogModifDate(new Timestamp(1199142000000L));
+		dio0.setModeleDocument(md0);
+		dio0.setPeriode(pf0);
+		dio0.setNumero(1);
+		dio0.setTiers(pp0);
+		dio0 = (DeclarationImpotOrdinaire) hibernateTemplate.merge(dio0);
+
+		try {
+			modificationLogInterceptor.setCompleteOnly(true); // par garder les valeur de log creation date (voir test testFindParDateCreation)
+
+			TacheEnvoiDeclarationImpot tedi0 = new TacheEnvoiDeclarationImpot();
+			tedi0.setContribuable(pp0);
+			tedi0.setDateEcheance(RegDate.get(2008, 10, 25));
+			tedi0.setDateDebut(RegDate.get(2008, 1, 1));
+			tedi0.setDateFin(RegDate.get(2008, 12, 31));
+			tedi0.setEtat(TypeEtatTache.EN_INSTANCE);
+			tedi0.setLogCreationDate(new Timestamp(1199142000000L));
+			tedi0.setLogModifDate(new Timestamp(1199142000000L));
+			tedi0.setTypeContribuable(TypeContribuable.VAUDOIS_ORDINAIRE);
+			tedi0.setTypeDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH);
+			tedi0 = (TacheEnvoiDeclarationImpot) hibernateTemplate.merge(tedi0);
+			ids.tedi0 = tedi0.getId();
+
+			TacheAnnulationDeclarationImpot tadi0 = new TacheAnnulationDeclarationImpot();
+			tadi0.setContribuable(pp0);
+			tadi0.setDateEcheance(RegDate.get(2008, 10, 25));
+			tadi0.setDeclarationImpotOrdinaire(dio0);
+			tadi0.setEtat(TypeEtatTache.TRAITE);
+			tadi0.setLogCreationDate(new Timestamp(1201820400000L));
+			tadi0.setLogModifDate(new Timestamp(1201820400000L));
+			tadi0 = (TacheAnnulationDeclarationImpot) hibernateTemplate.merge(tadi0);
+			ids.tadi0 = tadi0.getId();
+
+			TacheControleDossier tcd0 = new TacheControleDossier();
+			tcd0.setContribuable(pp0);
+			tcd0.setDateEcheance(RegDate.get(2007, 10, 25));
+			tcd0.setEtat(TypeEtatTache.TRAITE);
+			tcd0.setLogCreationDate(new Timestamp(1204326000000L));
+			tcd0.setLogModifDate(new Timestamp(1204326000000L));
+			tcd0 = (TacheControleDossier) hibernateTemplate.merge(tcd0);
+			ids.tcd0 = tcd0.getId();
+
+			CollectiviteAdministrative aci = addCollAdm(21);
+
+			TacheTransmissionDossier ttd0 = new TacheTransmissionDossier();
+			ttd0.setContribuable(pp0);
+			ttd0.setDateEcheance(RegDate.get(2007, 10, 25));
+			ttd0.setEtat(TypeEtatTache.EN_COURS);
+			ttd0.setLogCreationDate(new Timestamp(1207000800000L));
+			ttd0.setLogModifDate(new Timestamp(1207000800000L));
+			ttd0.setCollectiviteAdministrativeAssignee(aci);
+			ttd0 = (TacheTransmissionDossier) hibernateTemplate.merge(ttd0);
+			ids.ttd0 = ttd0.getId();
+
+			TacheEnvoiDeclarationImpot tedi1 = new TacheEnvoiDeclarationImpot();
+			tedi1.setContribuable(pp0);
+			tedi1.setDateEcheance(RegDate.get(2009, 3, 31));
+			tedi1.setDateDebut(RegDate.get(2009, 1, 1));
+			tedi1.setDateFin(RegDate.get(2009, 2, 28));
+			tedi1.setEtat(TypeEtatTache.EN_INSTANCE);
+			tedi1.setLogCreationDate(new Timestamp(1230764400000L));
+			tedi1.setLogModifDate(new Timestamp(1230764400000L));
+			tedi1.setTypeContribuable(TypeContribuable.VAUDOIS_ORDINAIRE);
+			tedi1.setTypeDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH);
+			tedi1 = (TacheEnvoiDeclarationImpot) hibernateTemplate.merge(tedi1);
+			ids.tedi1 = tedi1.getId();
+		}
+		finally {
+			modificationLogInterceptor.setCompleteOnly(false);
+		}
+
+		hibernateTemplate.flush();
 	}
 }
