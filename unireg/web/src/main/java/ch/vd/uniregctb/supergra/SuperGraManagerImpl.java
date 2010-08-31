@@ -28,9 +28,17 @@ import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.hibernate.meta.MetaEntity;
 import ch.vd.uniregctb.hibernate.meta.Property;
 import ch.vd.uniregctb.hibernate.meta.Sequence;
+import ch.vd.uniregctb.tiers.AnnuleEtRemplace;
+import ch.vd.uniregctb.tiers.AppartenanceMenage;
+import ch.vd.uniregctb.tiers.ConseilLegal;
+import ch.vd.uniregctb.tiers.ContactImpotSource;
+import ch.vd.uniregctb.tiers.Curatelle;
 import ch.vd.uniregctb.tiers.LinkedEntity;
+import ch.vd.uniregctb.tiers.RapportPrestationImposable;
+import ch.vd.uniregctb.tiers.RepresentationConventionnelle;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.tiers.Tutelle;
 
 public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 
@@ -47,17 +55,17 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 	 */
 	private static final Set<String> readonlyProps = new HashSet<String>();
 
-	/**
-	 * Les propriétés qui représentent des données techniques, non-métier et pas indispensables à afficher en mode condensé.
-	 */
-	private static final Set<String> detailsProps = new HashSet<String>();
-
 	static {
 		readonlyProps.add("logCreationDate");
 		readonlyProps.add("logCreationUser");
 		readonlyProps.add("logModifDate");
 		readonlyProps.add("logModifUser");
 	}
+
+	/**
+	 * Les propriétés qui représentent des données techniques, non-métier et pas indispensables à afficher en mode condensé.
+	 */
+	private static final Set<String> detailsProps = new HashSet<String>();
 
 	static {
 		detailsProps.add("annulationDate");
@@ -66,6 +74,56 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 		detailsProps.add("logCreationUser");
 		detailsProps.add("logModifDate");
 		detailsProps.add("logModifUser");
+	}
+
+	/**
+	 * Les builders custom d'attributs qui permettent de spécialiser l'affichage de certains attributs.
+	 */
+	private static final Map<AttributeKey, AttributeBuilder> attributeCustomBuilders = new HashMap<AttributeKey, AttributeBuilder>();
+
+	private static interface AttributeBuilder {
+		AttributeView build(Property p, Object value);
+	}
+
+	/**
+	 * La clé qui permet d'identifier un attribut particulier d'une classe particulière.
+	 */
+	private static class AttributeKey {
+		private final Class<?> entityClass;
+		private final String attributeName;
+
+		/**
+		 * Construit une clé d'attribut pour une classe concrète et un nom d'attribut donnés.
+		 *
+		 * @param entityClass   une classe concrète
+		 * @param attributeName le nom de l'attribut. Spécifier <b>null</b> pour référencer le discriminant de l'entité.
+		 */
+		private AttributeKey(Class<?> entityClass, String attributeName) {
+			Assert.notNull(entityClass);
+			this.entityClass = entityClass;
+			this.attributeName = attributeName;
+		}
+
+		@SuppressWarnings({"RedundantIfStatement"})
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (o == null || getClass() != o.getClass()) return false;
+
+			final AttributeKey that = (AttributeKey) o;
+
+			if (attributeName != null ? !attributeName.equals(that.attributeName) : that.attributeName != null) return false;
+			if (!entityClass.equals(that.entityClass)) return false;
+
+			return true;
+		}
+
+		@Override
+		public int hashCode() {
+			int result = entityClass.hashCode();
+			result = 31 * result + (attributeName != null ? attributeName.hashCode() : 0);
+			return result;
+		}
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
@@ -95,7 +153,7 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 				continue;
 			}
 			if (!HibernateEntity.class.isAssignableFrom(clazz)) {
-				LOGGER.warn("Impossible d'enregistrer la classe [" + clazz + "] parce qu'elle n'hérite pas de HibernateEntity.");
+				LOGGER.debug("Impossible d'enregistrer la classe [" + clazz + "] parce qu'elle n'hérite pas de HibernateEntity.");
 				continue;
 			}
 			for (EntityType t : EntityType.values()) {
@@ -203,28 +261,52 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 			final MetaEntity meta = MetaEntity.determine(entity.getClass());
 			final List<Property> props = meta.getProperties();
 			for (Property p : props) {
-				if (p.isDiscriminator()) {
+				final AttributeBuilder customBuilder = getCustomAttributeBuilder(new AttributeKey(entity.getClass(), p.getName()));
+				final String propName = p.getName();
+				final Object value = (propName == null ? p.getDiscriminatorValue() : ObjectGetterHelper.getValue(entity, propName));
+
+				final AttributeView attributeView;
+				if (customBuilder != null) {
+					// si un custom builder est spécifié, on l'utilise
+					attributeView = customBuilder.build(p, value);
+				}
+				else if (p.isDiscriminator()) {
 					// le discriminator ne possède pas de getter/setter, et ne peux donc pas être édité.
-					attributes.add(new AttributeView("<discriminator>", p.getType().getJavaType(), p.getDiscriminatorValue(), false, false, true));
+					attributeView = new AttributeView("<discriminator>", p.getType().getJavaType(), p.getDiscriminatorValue(), false, false, true);
+				}
+				else if (p.isCollection()) {
+					// on cas de collection, on affiche un lien vers la page d'affichage de la collection
+					final Collection<?> coll = (Collection<?>) value;
+					attributeView = new AttributeView(propName, p.getType().getJavaType(), value == null ? "" : coll.size() + " éléments", false, true, false);
 				}
 				else {
-					final String propName = p.getName();
-					final Object value = ObjectGetterHelper.getValue(entity, propName);
-					if (p.isCollection()) {
-						final Collection<?> coll = (Collection<?>) value;
-						attributes.add(new AttributeView(propName, p.getType().getJavaType(), value == null ? "" : coll.size() + " éléments", false, true, false));
-					}
-					else {
-						final boolean readonly = p.isPrimaryKey() || readonlyProps.contains(propName);
-						attributes.add(new AttributeView(propName, p.getType().getJavaType(), value, p.isParentForeignKey(), false, readonly));
-					}
+					// cas général, on affiche l'éditeur pour l'attribut
+					final boolean readonly = p.isPrimaryKey() || readonlyProps.contains(propName);
+					attributeView = new AttributeView(propName, p.getType().getJavaType(), value, p.isParentForeignKey(), false, readonly);
 				}
+
+				attributes.add(attributeView);
 			}
 		}
 		catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 		return attributes;
+	}
+
+	/**
+	 * @param key la clé qui permet d'identifier un attribut d'une classe.
+	 * @return le custom attribute builder qui correspond à la clé spécifiée; ou <b>null</b> si aucun builder custom n'a été spécifié.
+	 */
+	private AttributeBuilder getCustomAttributeBuilder(AttributeKey key) {
+		if (attributeCustomBuilders.isEmpty()) { // lazy init pour éviter de ralentir le démarrage de l'application
+			synchronized (attributeCustomBuilders) {
+				if (attributeCustomBuilders.isEmpty()) {
+					initCustomAttributeBuilder();
+				}
+			}
+		}
+		return attributeCustomBuilders.get(key);
 	}
 
 	@SuppressWarnings({"unchecked"})
@@ -363,6 +445,107 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 				applyDeltas(deltas, context);
 				// On commit la transaction (fait automatiquement par le template)
 				return null;
+			}
+		});
+	}
+
+	/**
+	 * Cette méthode contient la définition des builders d'attributs custom.
+	 */
+	private void initCustomAttributeBuilder() {
+		// Appartenance ménage
+		attributeCustomBuilders.put(new AttributeKey(AppartenanceMenage.class, "sujetId"), new AttributeBuilder() {
+			public AttributeView build(Property p, Object value) {
+				return new AttributeView(p.getName(), "personne physique", p.getType().getJavaType(), value, false, false, false);
+			}
+		});
+		attributeCustomBuilders.put(new AttributeKey(AppartenanceMenage.class, "objetId"), new AttributeBuilder() {
+			public AttributeView build(Property p, Object value) {
+				return new AttributeView(p.getName(), "ménage commun", p.getType().getJavaType(), value, false, false, false);
+			}
+		});
+
+		// Contact impôt source
+		attributeCustomBuilders.put(new AttributeKey(ContactImpotSource.class, "sujetId"), new AttributeBuilder() {
+			public AttributeView build(Property p, Object value) {
+				return new AttributeView(p.getName(), "sourcier", p.getType().getJavaType(), value, false, false, false);
+			}
+		});
+		attributeCustomBuilders.put(new AttributeKey(ContactImpotSource.class, "objetId"), new AttributeBuilder() {
+			public AttributeView build(Property p, Object value) {
+				return new AttributeView(p.getName(), "débiteur", p.getType().getJavaType(), value, false, false, false);
+			}
+		});
+
+		// Annule et remplace
+		attributeCustomBuilders.put(new AttributeKey(AnnuleEtRemplace.class, "sujetId"), new AttributeBuilder() {
+			public AttributeView build(Property p, Object value) {
+				return new AttributeView(p.getName(), "tiers remplacé", p.getType().getJavaType(), value, false, false, false);
+			}
+		});
+		attributeCustomBuilders.put(new AttributeKey(AnnuleEtRemplace.class, "objetId"), new AttributeBuilder() {
+			public AttributeView build(Property p, Object value) {
+				return new AttributeView(p.getName(), "tiers remplaçant", p.getType().getJavaType(), value, false, false, false);
+			}
+		});
+
+		// Curatelle
+		attributeCustomBuilders.put(new AttributeKey(Curatelle.class, "sujetId"), new AttributeBuilder() {
+			public AttributeView build(Property p, Object value) {
+				return new AttributeView(p.getName(), "pupille", p.getType().getJavaType(), value, false, false, false);
+			}
+		});
+		attributeCustomBuilders.put(new AttributeKey(Curatelle.class, "objetId"), new AttributeBuilder() {
+			public AttributeView build(Property p, Object value) {
+				return new AttributeView(p.getName(), "curateur", p.getType().getJavaType(), value, false, false, false);
+			}
+		});
+
+		// Tutelle
+		attributeCustomBuilders.put(new AttributeKey(Tutelle.class, "sujetId"), new AttributeBuilder() {
+			public AttributeView build(Property p, Object value) {
+				return new AttributeView(p.getName(), "pupille", p.getType().getJavaType(), value, false, false, false);
+			}
+		});
+		attributeCustomBuilders.put(new AttributeKey(Tutelle.class, "objetId"), new AttributeBuilder() {
+			public AttributeView build(Property p, Object value) {
+				return new AttributeView(p.getName(), "tuteur", p.getType().getJavaType(), value, false, false, false);
+			}
+		});
+
+		// Conseil légal
+		attributeCustomBuilders.put(new AttributeKey(ConseilLegal.class, "sujetId"), new AttributeBuilder() {
+			public AttributeView build(Property p, Object value) {
+				return new AttributeView(p.getName(), "pupille", p.getType().getJavaType(), value, false, false, false);
+			}
+		});
+		attributeCustomBuilders.put(new AttributeKey(ConseilLegal.class, "objetId"), new AttributeBuilder() {
+			public AttributeView build(Property p, Object value) {
+				return new AttributeView(p.getName(), "conseiller légal", p.getType().getJavaType(), value, false, false, false);
+			}
+		});
+
+		// Représentation conventionnel
+		attributeCustomBuilders.put(new AttributeKey(RepresentationConventionnelle.class, "sujetId"), new AttributeBuilder() {
+			public AttributeView build(Property p, Object value) {
+				return new AttributeView(p.getName(), "représenté", p.getType().getJavaType(), value, false, false, false);
+			}
+		});
+		attributeCustomBuilders.put(new AttributeKey(RepresentationConventionnelle.class, "objetId"), new AttributeBuilder() {
+			public AttributeView build(Property p, Object value) {
+				return new AttributeView(p.getName(), "représentant", p.getType().getJavaType(), value, false, false, false);
+			}
+		});
+
+		// Rapport de prestation imposable
+		attributeCustomBuilders.put(new AttributeKey(RapportPrestationImposable.class, "sujetId"), new AttributeBuilder() {
+			public AttributeView build(Property p, Object value) {
+				return new AttributeView(p.getName(), "contribuable", p.getType().getJavaType(), value, false, false, false);
+			}
+		});
+		attributeCustomBuilders.put(new AttributeKey(RapportPrestationImposable.class, "objetId"), new AttributeBuilder() {
+			public AttributeView build(Property p, Object value) {
+				return new AttributeView(p.getName(), "débiteur", p.getType().getJavaType(), value, false, false, false);
 			}
 		});
 	}

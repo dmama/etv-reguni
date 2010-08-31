@@ -7,6 +7,17 @@ import javax.persistence.Transient;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
+/**
+ * <pre>
+ *   +----------------+                   +------------------+
+ *   | Tiers Remplacé |                   | Tiers Remplaçant |
+ *   +----------------+                   +------------------+
+ *           ^                                      ^
+ *           ¦  sujet  +------------------+  objet  ¦
+ *           +---------| AnnuleEtRemplace |---------+
+ *                     +------------------+
+ * </pre>
+ */
 @Entity
 @DiscriminatorValue("AnnuleEtRemplace")
 public class AnnuleEtRemplace extends RapportEntreTiers {
@@ -19,8 +30,8 @@ public class AnnuleEtRemplace extends RapportEntreTiers {
 		// empty
 	}
 
-	public AnnuleEtRemplace(RegDate dateDebut, RegDate dateFin, Tiers sujet, Tiers objet) {
-		super(dateDebut, dateFin, sujet, objet);
+	public AnnuleEtRemplace(RegDate dateDebut, RegDate dateFin, Tiers tiersRemplace, Tiers TiersRemplacant) {
+		super(dateDebut, dateFin, tiersRemplace, TiersRemplacant);
 	}
 
 	public AnnuleEtRemplace(AnnuleEtRemplace annuleEtRemplace) {

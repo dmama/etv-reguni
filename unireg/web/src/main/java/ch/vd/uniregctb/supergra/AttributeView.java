@@ -6,6 +6,7 @@ package ch.vd.uniregctb.supergra;
 public class AttributeView {
 
 	private String name;
+	private String displayName;
 	private Class<?> type;
 	private Object value;
 	private boolean parentForeignKey;
@@ -15,6 +16,23 @@ public class AttributeView {
 
 	public AttributeView(String name, Class<?> type, Object value, boolean isParentForeignKey, boolean isCollection, boolean isReadonly) {
 		this.name = name;
+		this.displayName = name;
+		this.type = type;
+		this.value = value;
+		this.parentForeignKey = isParentForeignKey;
+		if (isParentForeignKey && value != null) {
+			this.parentEntityType = EntityType.fromHibernateClass(value.getClass());
+		}
+		else {
+			this.parentEntityType = null;
+		}
+		this.collection = isCollection;
+		this.readonly = isReadonly;
+	}
+
+	public AttributeView(String name, String displayName, Class<?> type, Object value, boolean isParentForeignKey, boolean isCollection, boolean isReadonly) {
+		this.name = name;
+		this.displayName = displayName;
 		this.type = type;
 		this.value = value;
 		this.parentForeignKey = isParentForeignKey;
@@ -30,6 +48,7 @@ public class AttributeView {
 
 	public AttributeView(AttributeView right) {
 		this.name = right.name;
+		this.displayName = right.displayName;
 		this.type = right.type;
 		this.value = right.value;
 		this.parentForeignKey = right.parentForeignKey;
@@ -44,6 +63,14 @@ public class AttributeView {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public String getDisplayName() {
+		return displayName;
+	}
+
+	public void setDisplayName(String displayName) {
+		this.displayName = displayName;
 	}
 
 	public Class<?> getType() {

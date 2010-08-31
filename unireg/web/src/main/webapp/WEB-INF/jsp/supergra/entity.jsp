@@ -32,7 +32,7 @@
 			<form:form method="post">
 				<display:table name="${entity.attributes}" id="a" class="display_table">
 						<display:column title="Attribute">
-							<c:out value="${a.name}"/>
+							<c:out value="${a.displayName}"/>
 						</display:column>
 						<display:column title="Type">
 							<c:out value="${a.type.simpleName}"/>
