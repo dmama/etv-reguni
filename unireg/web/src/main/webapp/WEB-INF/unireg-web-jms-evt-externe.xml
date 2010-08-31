@@ -16,11 +16,8 @@
 		<property name="connectionFactory" ref="jmsConnectionFactory" />
 		<property name="destinationName" value="${extprop.jms.queue.evtExterne}" />
 		<property name="messageListener" ref="evenementExterneListener" />
-		<!-- Workaround pour le bug qui fait qu'un message JMS rejeté (exception) est renvoyé indéfiniment et provoque une boucle infinie -->
-		<property name="sessionTransacted" value="true" />
-		<!-- <property name="transactionManager" ref="transactionManager" />  -->
+		<property name="transactionManager" ref="transactionManager" />
 		<property name="autoStartup" value="${extprop.jms.queue.evtExterne.enabled}" />
-		<property name="cacheLevel" value="3"/>
 	</bean>
 
 	<bean id="evenementExterneSender" class="ch.vd.uniregctb.evenement.externe.MockEvenementExterneSender"/>
