@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.registre.base.validation.ValidationResults;
 
 /**
  * Le form-backing object du {@link SuperGraEntityController}.
@@ -13,6 +14,7 @@ import ch.vd.registre.base.utils.Assert;
 public class EntityView implements Cloneable {
 
 	private EntityKey key;
+	private ValidationResults validationResults;
 	private List<AttributeView> attributes;
 	private Map<String, AttributeView> attributesMap;
 
@@ -43,6 +45,15 @@ public class EntityView implements Cloneable {
 
 	public EntityKey getKey() {
 		return key;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public ValidationResults getValidationResults() {
+		return validationResults;
+	}
+
+	public void setValidationResults(ValidationResults validationResults) {
+		this.validationResults = validationResults;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})

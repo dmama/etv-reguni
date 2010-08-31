@@ -9,7 +9,7 @@
 				<td>Aucun tiers n'a été modifié</td>
 			</c:if>
 			<c:if test="${!empty superGraSession.tiersStates}" >
-				<td colspan="2">Les tiers suivants ont été modifiés</td>
+				<td colspan="2">Les tiers suivants ont été modifiés ou sont impactés par les modifications</td>
 			</c:if>
 		</tr>
 

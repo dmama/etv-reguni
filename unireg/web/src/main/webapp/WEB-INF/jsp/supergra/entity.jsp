@@ -13,6 +13,22 @@
 			<h3>Edition du ${entity.key.type.displayName} n°${entity.key.id}</h3>
 			<br/>
 
+			<%-- Affichage des erreurs de validation, si nécessaire --%>
+			<c:if test="${entity.validationResults != null && (!empty entity.validationResults.errors || !empty entity.validationResults.warnings)}">
+				<table class="validation_error" cellspacing="0" cellpadding="0" border="0">
+					<tr><td class="heading">Un ou plusieurs problèmes ont été détectés sur cette entité</td></tr>
+					<tr id="val_errors"><td class="details"><ul>
+					<c:forEach var="err" items="${entity.validationResults.errors}">
+						<li class="err"><fmt:message key="label.validation.erreur"/>: <c:out value="${err}"/></li>
+					</c:forEach>
+					<c:forEach var="warn" items="${entity.validationResults.warnings}">
+						<li class="warn"><fmt:message key="label.validation.warning"/>: <c:out value="${warn}"/></li>
+					</c:forEach>
+					</ul></td></tr>
+				</table>
+			</c:if>
+
+			<%-- Affichage des attributs de l'entité --%>
 			<form:form method="post">
 				<display:table name="${entity.attributes}" id="a" class="display_table">
 						<display:column title="Attribute">

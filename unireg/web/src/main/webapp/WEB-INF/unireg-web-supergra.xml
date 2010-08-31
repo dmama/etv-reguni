@@ -26,6 +26,7 @@
 		<property name="transactionManager" ref="transactionManager"/>
 		<property name="hibernateTemplate" ref="hibernateTemplate"/>
 		<property name="annotatedClass" ref="hibernateAnnotatedClasses"/>
+		<property name="tiersService" ref="tiersService"/>
 	</bean>
 
 </beans>

@@ -22,6 +22,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.utils.ObjectGetterHelper;
+import ch.vd.registre.base.validation.Validateable;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.hibernate.meta.MetaEntity;
@@ -134,8 +135,7 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 
 				final HibernateEntity entity = context.getEntity(key);
 				if (entity != null) {
-					final List<AttributeView> attributes = buildAttributes(entity);
-					view.setAttributes(attributes);
+					fillView(entity, view);
 				}
 				return null;
 			}
@@ -308,15 +308,31 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 
 		final List<EntityView> entities = new ArrayList<EntityView>(coll.size());
 		for (HibernateEntity e : coll) {
-			final Long id = (Long) e.getKey();
-			final EntityType type = EntityType.fromHibernateClass(e.getClass());
 			final EntityView v = new EntityView();
-			v.setKey(new EntityKey(type, id));
-			v.setAttributes(buildAttributes(e));
+			fillView(e, v);
 			entities.add(v);
 		}
 
 		return entities;
+	}
+
+	/**
+	 * Renseigne la clé, les attributs et les éventuels résultats de validation pour l'entité spécifiée.
+	 *
+	 * @param entity l'entité de référence
+	 * @param view   la vue à remplir
+	 */
+	private void fillView(HibernateEntity entity, EntityView view) {
+		final Long id = (Long) entity.getKey();
+		final EntityType type = EntityType.fromHibernateClass(entity.getClass());
+
+		view.setKey(new EntityKey(type, id));
+		view.setAttributes(buildAttributes(entity));
+
+		if (entity instanceof Validateable) {
+			final Validateable val = (Validateable) entity;
+			view.setValidationResults(val.validate());
+		}
 	}
 
 	public Long nextId(final Class<? extends HibernateEntity> clazz) {
