@@ -34,7 +34,7 @@
 			 <property name="userName" value="${extprop.jms.esb.username}" />
 			 <property name="password" value="${extprop.jms.esb.password}" />
 			 <property name="maximumRedeliveries" value="1"/>
-			 <property name="allPrefetchValues" value="50"/>
+			 <property name="allPrefetchValues" value="1"/>
 		 </bean>
 	  </property>
 	</bean>
