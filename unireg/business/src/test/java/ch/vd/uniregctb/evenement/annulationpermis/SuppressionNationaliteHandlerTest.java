@@ -38,17 +38,17 @@ public class SuppressionNationaliteHandlerTest extends AbstractEvenementHandlerT
 	private static final Log LOGGER = LogFactory.getLog(SuppressionNationaliteHandlerTest.class);
 
 	/**
-	 * Le numero d'individu du celibataire.
+	 * Le numéro d'individu du celibataire.
 	 */
 	private static final Long NO_INDIVIDU_CELIBATAIRE = 6789L;
 
 	/**
-	 * Le numero d'individu du marié seul.
+	 * Le numéro d'individu du marié seul.
 	 */
 	private static final Long NO_INDIVIDU_MARIE_SEUL = 12345L;
 
 	/**
-	 * Le numero d'individu du marié à deux.
+	 * Le numéro d'individu du marié à deux.
 	 */
 	private static final Long NO_INDIVIDU_MARIE = 54321L;
 	private static final Long NO_INDIVIDU_MARIE_CONJOINT = 23456L;

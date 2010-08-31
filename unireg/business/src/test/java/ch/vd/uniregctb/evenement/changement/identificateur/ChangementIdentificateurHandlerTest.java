@@ -24,7 +24,7 @@ public class ChangementIdentificateurHandlerTest  extends AbstractEvenementHandl
 	private static final Logger LOGGER = Logger.getLogger(ChangementIdentificateurHandlerTest.class);
 
 	/**
-	 * Le numero d'individu
+	 * Le numéro d'individu
 	 */
 	private static final Long NO_INDIVIDU = 34567L;
 

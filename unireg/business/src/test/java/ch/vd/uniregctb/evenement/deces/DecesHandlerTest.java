@@ -38,17 +38,17 @@ public class DecesHandlerTest extends AbstractEvenementHandlerTest {
 	private static final Logger LOGGER = Logger.getLogger(DecesHandlerTest.class);
 
 	/**
-	 * Le numero d'individu du défunt célibataire.
+	 * Le numéro d'individu du défunt célibataire.
 	 */
 	private static final Long NO_INDIVIDU_DEFUNT_CELIBATAIRE = 6789L;
 
 	/**
-	 * Le numero d'individu du défunt marié.
+	 * Le numéro d'individu du défunt marié.
 	 */
 	private static final Long NO_INDIVIDU_DEFUNT_MARIE = 54321L;
 
 	/**
-	 * Le numero d'individu du veuf.
+	 * Le numéro d'individu du veuf.
 	 */
 	private static final Long NO_INDIVIDU_VEUF = 23456L;
 
@@ -58,12 +58,12 @@ public class DecesHandlerTest extends AbstractEvenementHandlerTest {
 	private static final Long NO_TIERS_MENAGE_COMMUN = 7004L;
 
 	/**
-	 * Le numero d'individu du défunt marié.
+	 * Le numéro d'individu du défunt marié.
 	 */
 	private static final Long NO_INDIVIDU_DEFUNT_MARIE_AVEC_ETRANGER = 78912L;
 
 	/**
-	 * Le numero d'individu du veuf.
+	 * Le numéro d'individu du veuf.
 	 */
 	private static final Long NO_INDIVIDU_VEUF_ETRANGER = 89123L;
 

@@ -32,7 +32,7 @@ public class ReconciliationHandlerTest extends AbstractEvenementHandlerTest {
 	private static final Logger LOGGER = Logger.getLogger(ReconciliationHandlerTest.class);
 
 	/**
-	 * Le numero d'individu celibataire.
+	 * Le numéro d'individu celibataire.
 	 */
 	private static final Long NO_INDIVIDU_SEPARE_SEUL = 12345L;
 

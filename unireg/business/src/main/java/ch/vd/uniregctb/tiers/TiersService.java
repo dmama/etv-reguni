@@ -1168,7 +1168,7 @@ public interface TiersService {
 	boolean isVeuvageMarieSeul(PersonnePhysique tiers);
 
 	/**
-	 * Extrait le numero d'individu à partir d'un tiers si c'est possible
+	 * Extrait Le numéro d'individu à partir d'un tiers si c'est possible
 	 *
 	 * @param tiers
 	 * @return le numéro d'individu de la personne physique ou de la personne principal du menage. null si le tiers ne possède pas de numéro d'individu

@@ -31,7 +31,7 @@ public class MariageHandlerTest extends AbstractEvenementHandlerTest {
 	private static final Logger LOGGER = Logger.getLogger(MariageHandlerTest.class);
 
 	/**
-	 * Le numero d'individu du marie seul.
+	 * Le numéro d'individu du marie seul.
 	 */
 	private static final Long UNI_SEUL = 12345L;
 

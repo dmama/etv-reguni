@@ -31,7 +31,7 @@ public class VeuvageHandlerTest extends AbstractEvenementHandlerTest {
 	private static final Logger LOGGER = Logger.getLogger(VeuvageHandlerTest.class);
 	
 	/**
-	 * Le numero d'individu du veuf.
+	 * Le numéro d'individu du veuf.
 	 */
 	private static final long NO_INDIVIDU_VEUF = 12345;
 
@@ -41,7 +41,7 @@ public class VeuvageHandlerTest extends AbstractEvenementHandlerTest {
 	private static final long NO_MENAGE_COMMUN_INDIVIDU_VEUF = 7001;
 	
 	/**
-	 * Le numero d'individu du veuf étranger.
+	 * Le numéro d'individu du veuf étranger.
 	 */
 	private static final long NO_INDIVIDU_VEUF_ETRANGER = 34897;
 

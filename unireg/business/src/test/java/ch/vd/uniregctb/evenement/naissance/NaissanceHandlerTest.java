@@ -22,7 +22,7 @@ public class NaissanceHandlerTest extends AbstractEvenementHandlerTest {
 	private static final Logger LOGGER = Logger.getLogger(NaissanceHandlerTest.class);
 
 	/**
-	 * Le numero d'individu du nouveau né.
+	 * Le numéro d'individu du nouveau né.
 	 */
 	private static final long NOUVEAU_NE = 983254L;
 	private static final long NOUVEAU_NE_MAJEUR = 89123L;

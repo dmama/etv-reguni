@@ -33,32 +33,32 @@ public class DecesAdapterTest extends WithoutSpringTest {
 	final static private RegDate DATE_DECES = RegDate.get(2008, 01, 01);
 
 	/**
-	 * Le numero d'individu du défunt célibataire.
+	 * Le numéro d'individu du défunt célibataire.
 	 */
 	private static final Long NO_INDIVIDU_DEFUNT_CELIBATAIRE = 6789L;
 
 	/**
-	 * Le numero d'individu du défunt marié seul.
+	 * Le numéro d'individu du défunt marié seul.
 	 */
 	private static final Long NO_INDIVIDU_DEFUNT_MARIE_SEUL = 12345L;
 
 	/**
-	 * Le numero d'individu du défunt marié.
+	 * Le numéro d'individu du défunt marié.
 	 */
 	private static final Long NO_INDIVIDU_DEFUNT_MARIE = 54321L;
 
 	/**
-	 * Le numero d'individu du veuf marié.
+	 * Le numéro d'individu du veuf marié.
 	 */
 	private static final Long NO_INDIVIDU_VEUF_MARIE = 23456L;
 
 	/**
-	 * Le numero d'individu du défunt pacsé.
+	 * Le numéro d'individu du défunt pacsé.
 	 */
 	private static final Long NO_INDIVIDU_DEFUNT_PACSE = 45678L;
 
 	/**
-	 * Le numero d'individu du veuf pacsé.
+	 * Le numéro d'individu du veuf pacsé.
 	 */
 	private static final Long NO_INDIVIDU_VEUF_PACSE = 56789L;
 

@@ -42,7 +42,7 @@ public class CorrectionDateNaissanceHandlerTest extends AbstractEvenementHandler
 
 	private static final Logger LOGGER = Logger.getLogger(CorrectionDateNaissanceHandlerTest.class);
 
-	/** Le numero d'individu */
+	/** Le numéro d'individu */
 	private static final Long NO_INDIVIDU = 54321L;
 
 	/** Le numero de contribuable */
@@ -50,7 +50,7 @@ public class CorrectionDateNaissanceHandlerTest extends AbstractEvenementHandler
 
 	protected static final RegDate DATE_NAISSANCE_CORRIGEE = RegDate.get(1961, 3, 8); //19610312
 
-	/** Le numero d'individu pour test avec erreur */
+	/** Le numéro d'individu pour test avec erreur */
 	private static final long NO_INDIVIDU_ERREUR = 34567;
 
 	/** Le numero de contribuable */

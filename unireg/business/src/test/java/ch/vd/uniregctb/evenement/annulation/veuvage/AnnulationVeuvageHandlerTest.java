@@ -31,12 +31,12 @@ public class AnnulationVeuvageHandlerTest extends AbstractEvenementHandlerTest {
 	private static final Log LOGGER = LogFactory.getLog(AnnulationVeuvageHandlerTest.class);
 
 	/**
-	 * Le numero d'individu du marié seul.
+	 * Le numéro d'individu du marié seul.
 	 */
 	private static final long NO_INDIVIDU_MARIE_SEUL = 92647;
 
 	/**
-	 * Le numero d'individu du marié seul.
+	 * Le numéro d'individu du marié seul.
 	 */
 	private static final long NO_INDIVIDU_NON_VEUF = 54321;
 

@@ -214,7 +214,7 @@ public class PersonnePhysique extends Contribuable {
 			results.addError("La personne physique doit être habitant ou non habitant");
 		}
 		else if (habitant && (numeroIndividu == null || numeroIndividu <= 0L)) {
-			results.addError("Le numero d'individu du registre civil est un attribut obligatoire pour un habitant");
+			results.addError("Le numéro d'individu du registre civil est un attribut obligatoire pour un habitant");
 		}
 		else if (!habitant) {
 
