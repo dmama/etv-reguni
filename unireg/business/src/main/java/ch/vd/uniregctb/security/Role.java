@@ -118,92 +118,15 @@ public enum Role {
 	}
 
 	private static synchronized void initIfoSec2Role() {
-		if (ifoSec2Role != null) {
-			return;
-		}
+		if (ifoSec2Role == null) {
+			ifoSec2Role = new HashMap<String, Role>();
 
-		ifoSec2Role = new HashMap<String, Role>() {
-
-			private static final long serialVersionUID = -2656272349946676385L;
-
-			{
-				put(Role.VISU_LIMITE);
-				put(Role.VISU_ALL);
-				put(Role.CREATE_NONHAB);
-				put(Role.CREATE_AC);
-				put(Role.CREATE_DPI);
-				put(Role.CREATE_PM);
-				put(Role.CREATE_CA);
-				put(Role.MODIF_VD_ORD);
-				put(Role.MODIF_VD_SOURC);
-				put(Role.MODIF_HC_HS);
-				put(Role.MODIF_HAB_DEBPUR);
-				put(Role.MODIF_NONHAB_DEBPUR);
-				put(Role.MODIF_NONHAB_INACTIF);
-				put(Role.MODIF_AC);
-				put(Role.MODIF_PM);
-				put(Role.MODIF_CA);
-				put(Role.ADR_PP_D);
-				put(Role.ADR_PP_C);
-				put(Role.ADR_PP_B);
-				put(Role.ADR_P);
-				put(Role.ADR_PP_C_DCD);
-				put(Role.ADR_PM_D);
-				put(Role.ADR_PM_C);
-				put(Role.ADR_PM_B);
-				put(Role.FOR_PRINC_ORDDEP_HAB);
-				put(Role.FOR_PRINC_ORDDEP_HCHS);
-				put(Role.FOR_PRINC_ORDDEP_GRIS);
-				put(Role.FOR_PRINC_SOURC_HAB);
-				put(Role.FOR_PRINC_SOURC_HCHS);
-				put(Role.FOR_PRINC_SOURC_GRIS);
-				put(Role.FOR_PRINC_PM);
-				put(Role.FOR_SECOND_PP);
-				put(Role.FOR_SECOND_PM);
-
-				put(Role.FOR_AUTRE);
-				put(Role.DI_EMIS_PP);
-				put(Role.DI_EMIS_PM);
-				put(Role.DI_SOM_PP);
-				put(Role.DI_SOM_PM);
-				put(Role.DI_DUPLIC_PP);
-				put(Role.DI_DUPLIC_PM);
-				put(Role.DI_DELAI_PP);
-				put(Role.DI_DELAI_PM);
-				put(Role.DI_QUIT_PP);
-				put(Role.DI_QUIT_PM);
-				put(Role.SIT_FAM);
-				put(Role.RT);
-				put(Role.COOR_FIN);
-				put(Role.ANNUL_TIERS);
-				put(Role.LR);
-				put(Role.EVEN);
-				put(Role.FORM_OUV_DOSS);
-				put(Role.SUIVI_DOSS);
-				put(Role.ADMIN);
-				put(Role.PARAM_APP);
-				put(Role.PARAM_PERIODE);
-
-				put(Role.LECTURE_DOSSIER_PROTEGE);
-				put(Role.ECRITURE_DOSSIER_PROTEGE);
-				put(Role.SEC_DOS_LEC);
-				put(Role.SEC_DOS_ECR);
-
-				put(Role.MVT_DOSSIER_MASSE);
-
-				put(Role.MW_IDENT_CTB_VISU);
-				put(Role.MW_IDENT_CTB_CELLULE_BO);
-				put(Role.MW_IDENT_CTB_GEST_BO);
-				put(Role.MW_IDENT_CTB_ADMIN);
-			}
-
-			void put(Role role) {
-				if (containsKey(role.getIfosecCode())) {
+			for (Role role : Role.values()) {
+				if (ifoSec2Role.containsKey(role.getIfosecCode())) {
 					Assert.fail("Le code IfoSec " + role.getIfosecCode() + " est défini deux fois !");
 				}
-				put(role.getIfosecCode(), role);
+				ifoSec2Role.put(role.getIfosecCode(), role);
 			}
-		};
-
+		}
 	}
 }
