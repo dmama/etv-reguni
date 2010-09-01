@@ -104,8 +104,7 @@ public class Ec_19000_01_Depart_1_Scenario extends EvenementCivilScenario {
 		assertEquals(MockCommune.Bex.getNomMinuscule(), serviceCivilService.getAdresses(noIndAlain, dateArriveeBex, false).principale.getLocalite(),
 			"l'adresse principale n'est pas à Bex");
 
-		// PBM 29.07.2009: UNIREG-1266 -> Blocage des remboursements automatiques sur tous les nouveaux tiers
-		assertBlocageRemboursementAutomatique(true);
+		assertBlocageRemboursementAutomatique(false);
 	}
 
 	@Etape(id=2, descr="Départ de Alain vers Zurich")
@@ -129,8 +128,7 @@ public class Ec_19000_01_Depart_1_Scenario extends EvenementCivilScenario {
 		assertEquals(MockCommune.Zurich.getNomMinuscule(), serviceCivilService.getAdresses(noIndAlain, dateArriveeZurich, false).principale.getLocalite(),
 			"l'adresse principale n'est pas à Zurich");
 
-		// PBM 29.07.2009: UNIREG-1266 -> Blocage des remboursements automatiques sur tous les nouveaux tiers
-		assertBlocageRemboursementAutomatique(true);
+		assertBlocageRemboursementAutomatique(false);
 	}
 
 

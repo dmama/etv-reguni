@@ -127,8 +127,7 @@ public class Ec_10000_04_Veuvage_DecesPuisVeuvageMemeJour_Scenario extends Evene
 			assertEquals(communeMariage.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale(), "Le dernier for n'est pas sur " + communeMariage.getNomMinuscule());
 		}
 
-		// PBM 29.07.2009: UNIREG-1266 -> Blocage des remboursements automatiques sur tous les nouveaux tiers
-		assertBlocageRemboursementAutomatique(true, true);
+		assertBlocageRemboursementAutomatique(false, false);
 	}
 
 	@Etape(id=2, descr="Envoi de l'événement Décès")
@@ -165,7 +164,7 @@ public class Ec_10000_04_Veuvage_DecesPuisVeuvageMemeJour_Scenario extends Evene
 			assertEquals(communeMariage.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale(), "Le dernier for n'est pas sur " + communeMariage.getNomMinuscule());
 		}
 
-		// le survivant ne doit pas voir ses remboursements automatiques bloqués
+		// le survivant ne doit pas voir ses remboursements automatiques bloqués (mais on ne le connait pas ici)
 		assertBlocageRemboursementAutomatique(true, true);
 
 	}
@@ -201,6 +200,8 @@ public class Ec_10000_04_Veuvage_DecesPuisVeuvageMemeJour_Scenario extends Evene
 			assertNull(mc.getSituationFamilleAt(lendemainDeces), "Le ménage ne devrait plus avoir de situation de famille le lendemain du décès/veuvage.");
 		}
 
+		// le survivant ne doit pas voir ses remboursements automatiques bloqués (mais on ne le connait pas ici)
+		assertBlocageRemboursementAutomatique(true, true);
 	}
 
 	private void assertBlocageRemboursementAutomatique(boolean blocageAttenduPierre, boolean blocageAttenduMenage) {

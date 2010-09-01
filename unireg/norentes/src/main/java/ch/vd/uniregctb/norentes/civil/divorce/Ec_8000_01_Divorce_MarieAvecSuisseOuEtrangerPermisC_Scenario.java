@@ -153,8 +153,7 @@ public class Ec_8000_01_Divorce_MarieAvecSuisseOuEtrangerPermisC_Scenario extend
 			assertEquals(communeMariage.getNoOFSEtendu(), ffp.getNumeroOfsAutoriteFiscale(), "Le dernier for n'est pas sur Villars-sous-Yens");
 		}
 
-		// PBM 29.07.2009: UNIREG-1266 -> Blocage des remboursements automatiques sur tous les nouveaux tiers
-		assertBlocageRemboursementAutomatique(true, true, true);
+		assertBlocageRemboursementAutomatique(false, false, false);
 	}
 
 	@Etape(id=2, descr="Envoi de l'événement de Divorce")
@@ -205,12 +204,10 @@ public class Ec_8000_01_Divorce_MarieAvecSuisseOuEtrangerPermisC_Scenario extend
 			assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale(), "Mauvais type d'autorité fiscale");
 		}
 
-		// PBM 29.07.2009: UNIREG-1266 -> Blocage des remboursements automatiques sur tous les nouveaux tiers
-		assertBlocageRemboursementAutomatique(true, true, true);
+		assertBlocageRemboursementAutomatique(false, false, true);
 	}
 
 	private void assertBlocageRemboursementAutomatique(boolean blocageAttenduMomo, boolean blocageAttenduBea, boolean blocageAttenduMenage) {
-
 		assertBlocageRemboursementAutomatique(blocageAttenduMomo, tiersDAO.get(noHabMomo));
 		assertBlocageRemboursementAutomatique(blocageAttenduBea, tiersDAO.get(noHabBea));
 		assertBlocageRemboursementAutomatique(blocageAttenduMenage, tiersDAO.get(noMenage));

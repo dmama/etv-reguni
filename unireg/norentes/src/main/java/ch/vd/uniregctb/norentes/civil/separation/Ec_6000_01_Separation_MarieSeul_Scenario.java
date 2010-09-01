@@ -121,8 +121,7 @@ public class Ec_6000_01_Separation_MarieSeul_Scenario extends EvenementCivilScen
 					"Le dernier for n'est pas sur " + communeMariage.getNomMajuscule());
 		}
 
-		// PBM 29.07.2009: UNIREG-1266 -> Blocage des remboursements automatiques sur tous les nouveaux tiers
-		assertBlocageRemboursementAutomatique(true, true);
+		assertBlocageRemboursementAutomatique(false, false);
 	}
 
 	@Etape(id=2, descr="Envoi de l'événement de Séparation")
@@ -156,8 +155,7 @@ public class Ec_6000_01_Separation_MarieSeul_Scenario extends EvenementCivilScen
 					"Le motif de fermeture n'est pas SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT");
 		}
 
-		// PBM 29.07.2009: UNIREG-1266 -> Blocage des remboursements automatiques sur tous les nouveaux tiers
-		assertBlocageRemboursementAutomatique(true, true);
+		assertBlocageRemboursementAutomatique(false, true);
 	}
 
 	@Etape(id=3, descr="Envoi de l'événement de Divorce")

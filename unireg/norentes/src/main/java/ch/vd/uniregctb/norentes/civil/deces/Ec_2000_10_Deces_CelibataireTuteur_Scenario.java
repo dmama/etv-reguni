@@ -111,8 +111,7 @@ public class Ec_2000_10_Deces_CelibataireTuteur_Scenario extends EvenementCivilS
 		// vérification que les adresses civiles sont a Bex
 		assertEquals(MockCommune.Lausanne.getNomMinuscule(), serviceCivilService.getAdresses(noIndCharles, dateArriveeVD, false).principale.getLocalite(), "l'adresse principale n'est pas à Lausanne");
 
-		// PBM 29.07.2009: UNIREG-1266 -> Blocage des remboursements automatiques sur tous les nouveaux tiers
-		assertBlocageRemboursementAutomatique(true);
+		assertBlocageRemboursementAutomatique(false);
 	}
 
 	@Etape(id = 2, descr = "Déclaration de décès")

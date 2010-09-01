@@ -1607,38 +1607,41 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 	private void afterForFiscalPrincipalAdded(Contribuable contribuable, ForFiscalPrincipal forFiscalPrincipal) {
-		MotifFor motifOuverture = forFiscalPrincipal.getMotifOuverture();
-		TypeAutoriteFiscale typeAutoriteFiscale = forFiscalPrincipal.getTypeAutoriteFiscale();
-		RegDate dateOuverture = forFiscalPrincipal.getDateDebut();
-		ModeImposition modeImposition = forFiscalPrincipal.getModeImposition();
+		final MotifFor motifOuverture = forFiscalPrincipal.getMotifOuverture();
+		final TypeAutoriteFiscale typeAutoriteFiscale = forFiscalPrincipal.getTypeAutoriteFiscale();
+		final RegDate dateOuverture = forFiscalPrincipal.getDateDebut();
+		final ModeImposition modeImposition = forFiscalPrincipal.getModeImposition();
 
-		if (typeAutoriteFiscale.equals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD)) {
-			if (motifOuverture.equals(MotifFor.CHGT_MODE_IMPOSITION) ||
-					motifOuverture.equals(MotifFor.PERMIS_C_SUISSE)) {
+		if (typeAutoriteFiscale == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
+			if (motifOuverture == MotifFor.CHGT_MODE_IMPOSITION || motifOuverture == MotifFor.PERMIS_C_SUISSE) {
 				this.evenementFiscalService.publierEvenementFiscalChangementModeImposition(contribuable,
 						dateOuverture, modeImposition, forFiscalPrincipal.getId());
 			}
-			else if (motifOuverture.equals(MotifFor.DEMENAGEMENT_VD) ||
-					motifOuverture.equals(MotifFor.FUSION_COMMUNES) ||
-					motifOuverture.equals(MotifFor.MAJORITE) ||
-					motifOuverture.equals(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION) ||
-					motifOuverture.equals(MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT) ||
-					motifOuverture.equals(MotifFor.VEUVAGE_DECES) ||
-					motifOuverture.equals(MotifFor.ARRIVEE_HC) ||
-					motifOuverture.equals(MotifFor.ARRIVEE_HS)) {
+			else if (motifOuverture == MotifFor.DEMENAGEMENT_VD ||
+					motifOuverture == MotifFor.FUSION_COMMUNES ||
+					motifOuverture == MotifFor.MAJORITE ||
+					motifOuverture == MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION ||
+					motifOuverture == MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT ||
+					motifOuverture == MotifFor.VEUVAGE_DECES ||
+					motifOuverture == MotifFor.ARRIVEE_HC ||
+					motifOuverture == MotifFor.ARRIVEE_HS) {
 				this.evenementFiscalService.publierEvenementFiscalOuvertureFor(contribuable,
 						dateOuverture, motifOuverture, forFiscalPrincipal.getId());
 			}
 		}
+		else {
+			// ouverture d'un for principal hors-canton ou hors-suisse
+			contribuable.setBlocageRemboursementAutomatique(true);
+		}
 
 		// [UNIREG-1373] Un départ HS ajuste la date de fin d'une eventuelle DI libre.
-		if (TypeAutoriteFiscale.PAYS_HS.equals(typeAutoriteFiscale) && MotifFor.DEPART_HS.equals(motifOuverture)) {
+		if (TypeAutoriteFiscale.PAYS_HS == typeAutoriteFiscale && MotifFor.DEPART_HS == motifOuverture) {
 			if (forFiscalPrincipal.getDateDebut().year() == RegDate.get().year()) {
 				// Le for ouvert est dans la période courante, on verifie que le contribuable n'ait pas une DI libre
-				List<Declaration> dis = contribuable.getDeclarationForPeriode(RegDate.get().year());
+				final List<Declaration> dis = contribuable.getDeclarationForPeriode(RegDate.get().year());
 				if (dis != null && dis.size() > 0) {
 					Collections.sort(dis, new DateRangeComparator<Declaration>());
-					Declaration di = dis.get(dis.size() - 1);
+					final Declaration di = dis.get(dis.size() - 1);
 					// Le contribuable a une DI libre, on ajuste la periode d'imposition
 					di.setDateFin(forFiscalPrincipal.getDateDebut());
 				}

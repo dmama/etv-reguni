@@ -84,8 +84,7 @@ public class Ec_2000_01_Deces_Celibataire_Scenario extends EvenementCivilScenari
 		assertEquals(MockCommune.Lausanne.getNomMinuscule(), serviceCivilService.getAdresses(noIndGuillaume, dateArriveeVD, false).principale
 				.getLocalite(), "l'adresse principale n'est pas à Lausanne");
 
-		// PBM 29.07.2009: UNIREG-1266 -> Blocage des remboursements automatiques sur tous les nouveaux tiers
-		assertBlocageRemboursementAutomatique(true);
+		assertBlocageRemboursementAutomatique(false);
 	}
 
 	@Etape(id = 2, descr = "Déclaration de décès")

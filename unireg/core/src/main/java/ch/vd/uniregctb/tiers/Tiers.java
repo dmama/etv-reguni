@@ -138,9 +138,7 @@ public abstract class Tiers extends HibernateEntity implements Validateable, Bus
 	 *
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_gzNEIJNkEdygKK6Oe0tVlw"
 	 */
-	// PBM 29.07.2009: UNIREG-1266 -> Blocage des remboursements automatiques sur tous les nouveaux tiers
-	// FIXME (PBO) enlever lors de l'évolution UNIREG-829
-	private Boolean blocageRemboursementAutomatique = Boolean.TRUE;
+	private Boolean blocageRemboursementAutomatique = Boolean.FALSE;
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->

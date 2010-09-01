@@ -154,8 +154,7 @@ public class Ec_8000_03_Divorce_CivilApresFiscal_Scenario extends EvenementCivil
 			assertEquals(commune.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale(), "Le dernier for n'est pas sur " + commune.getNomMinuscule());
 		}
 
-		// PBM 29.07.2009: UNIREG-1266 -> Blocage des remboursements automatiques sur tous les nouveaux tiers
-		assertBlocageRemboursementAutomatique(true, true, true);
+		assertBlocageRemboursementAutomatique(false, false, false);
 	}
 
 	@Etape(id=2, descr="Divorce fiscal")
@@ -166,8 +165,7 @@ public class Ec_8000_03_Divorce_CivilApresFiscal_Scenario extends EvenementCivil
 	@Check(id=2, descr="Vérifie que le menage commun a été fermé et les Fors principaux des individus créés")
 	public void check2() {
 		checkForsApresDivorceFiscal();
-		// PBM 29.07.2009: UNIREG-1266 -> Blocage des remboursements automatiques sur tous les nouveaux tiers
-		assertBlocageRemboursementAutomatique(true, true, true);
+		assertBlocageRemboursementAutomatique(false, false, true);
 	}
 
 	@Etape(id=3, descr="Envoi de l'événement de Divorce")
@@ -192,12 +190,10 @@ public class Ec_8000_03_Divorce_CivilApresFiscal_Scenario extends EvenementCivil
 
 		// les remboursements automatiques ne doivent pas être bloqués par l'événement de divorce
 		// civil suivant un divorce fiscal
-		// PBM 29.07.2009: UNIREG-1266 -> Blocage des remboursements automatiques sur tous les nouveaux tiers
-		assertBlocageRemboursementAutomatique(true, true, false);
+		assertBlocageRemboursementAutomatique(false, false, false);
 	}
 
 	private void assertBlocageRemboursementAutomatique(boolean blocageAttenduPierre, boolean blocageAttenduKarina, boolean blocageAttenduMenage) {
-
 		assertBlocageRemboursementAutomatique(blocageAttenduPierre, tiersDAO.get(noHabPierre));
 		assertBlocageRemboursementAutomatique(blocageAttenduKarina, tiersDAO.get(noHabKarina));
 		assertBlocageRemboursementAutomatique(blocageAttenduMenage, tiersDAO.get(noMenage));

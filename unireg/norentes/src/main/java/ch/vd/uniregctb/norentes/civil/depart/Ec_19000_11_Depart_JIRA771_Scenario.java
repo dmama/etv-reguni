@@ -20,7 +20,7 @@ import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
-public class Ec_19000_06_Depart_JIRA771_Scenario extends DepartScenario {
+public class Ec_19000_11_Depart_JIRA771_Scenario extends DepartScenario {
 
 	private AdresseService adresseService;
 
@@ -28,7 +28,7 @@ public class Ec_19000_06_Depart_JIRA771_Scenario extends DepartScenario {
 		this.adresseService = adresseService;
 	}
 	
-	public static final String NAME = "19000_06_Depart";
+	public static final String NAME = "19000_11_Depart";
 
 	@Override
 	public TypeEvenementCivil geTypeEvenementCivil() {
@@ -147,8 +147,7 @@ public class Ec_19000_06_Depart_JIRA771_Scenario extends DepartScenario {
 					"L'adresse principale n'est pas à " + communeDepart.getNomMinuscule());
 		}
 
-		// PBM 29.07.2009: UNIREG-1266 -> Blocage des remboursements automatiques sur tous les nouveaux tiers
-		assertBlocageRemboursementAutomatique(true, true, true);
+		assertBlocageRemboursementAutomatique(false, false, false);
 	}
 
 	@Etape(id=2, descr="Départ hors canton du contribuable principal du couple")
@@ -188,8 +187,7 @@ public class Ec_19000_06_Depart_JIRA771_Scenario extends DepartScenario {
 					"L'adresse principale n'est pas à " + communeArrivee.getNomMinuscule());
 		}
 
-		// PBM 29.07.2009: UNIREG-1266 -> Blocage des remboursements automatiques sur tous les nouveaux tiers
-		assertBlocageRemboursementAutomatique(true, true, true);
+		assertBlocageRemboursementAutomatique(false, false, false);
 	}
 
 
@@ -216,7 +214,7 @@ public class Ec_19000_06_Depart_JIRA771_Scenario extends DepartScenario {
 		assertNotNull(ffp, "Le couple n'est plus asujetti");
 		assertEquals(communeDepart.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale(), "Le for n'est pas sur la bonne commune");
 		
-		assertBlocageRemboursementAutomatique(true, true, true);
+		assertBlocageRemboursementAutomatique(false, false, false);
 	}
 
 	private void assertAdressesFiscales(Tiers tiers, MockCommune commune) throws AdresseException {

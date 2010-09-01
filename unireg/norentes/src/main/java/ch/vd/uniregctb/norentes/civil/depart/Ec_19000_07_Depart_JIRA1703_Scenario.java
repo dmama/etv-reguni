@@ -147,8 +147,7 @@ public class Ec_19000_07_Depart_JIRA1703_Scenario extends DepartScenario {
 					"L'adresse principale n'est pas à " + communeDepart.getNomMinuscule());
 		}
 
-		// PBM 29.07.2009: UNIREG-1266 -> Blocage des remboursements automatiques sur tous les nouveaux tiers
-		assertBlocageRemboursementAutomatique(true, true, true);
+		assertBlocageRemboursementAutomatique(false, false, false);
 	}
 
 	@Etape(id=2, descr="Départ hors Suisse du contribuable principal du couple")
@@ -193,8 +192,7 @@ public class Ec_19000_07_Depart_JIRA1703_Scenario extends DepartScenario {
 					"L'adresse principale n'est pas dans le pays " + paysArrivee.getNomMinuscule());
 		}
 
-		// PBM 29.07.2009: UNIREG-1266 -> Blocage des remboursements automatiques sur tous les nouveaux tiers
-		assertBlocageRemboursementAutomatique(true, true, true);
+		assertBlocageRemboursementAutomatique(false, false, false);
 	}
 
 	@Etape(id=3, descr="Surcharge de l'adresse fiscale (en Suisse) avec une annulée")
@@ -265,7 +263,7 @@ public class Ec_19000_07_Depart_JIRA1703_Scenario extends DepartScenario {
 			assertTrue(((AdresseSupplementaire) adresse).isPermanente(), "Adresse passée à non permanente !");
 		}
 
-		assertBlocageRemboursementAutomatique(true, true, true);
+		assertBlocageRemboursementAutomatique(false, false, true);
 	}
 
 	private void assertBlocageRemboursementAutomatique(boolean blocageAttenduSebastien, boolean blocageAttenduGloria, boolean blocageAttenduMenage) {

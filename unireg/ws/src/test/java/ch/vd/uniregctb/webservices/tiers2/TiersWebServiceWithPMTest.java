@@ -115,7 +115,8 @@ public class TiersWebServiceWithPMTest extends WebserviceTest {
 
 		doInNewTransactionAndSession(new TransactionCallback() {
 			public Object doInTransaction(TransactionStatus status) {
-				addEntreprise(noNestle);
+				final Entreprise entreprise = addEntreprise(noNestle);
+				entreprise.setBlocageRemboursementAutomatique(true);
 				return null;
 			}
 		});
@@ -129,7 +130,7 @@ public class TiersWebServiceWithPMTest extends WebserviceTest {
 		params.login = login;
 		params.tiersNumber = noNestle;
 
-		// on s'assure que le code de blocage de remboursement est à true (valeur par défaut)
+		// on s'assure que le code de blocage de remboursement est à true (valeur d'initialisation plus haut)
 		{
 			final PersonneMorale nestle = (PersonneMorale) service.getTiers(params);
 			assertNotNull(nestle);

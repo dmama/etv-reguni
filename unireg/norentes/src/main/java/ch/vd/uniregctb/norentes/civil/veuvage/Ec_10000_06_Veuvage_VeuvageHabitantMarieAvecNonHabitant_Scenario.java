@@ -108,7 +108,11 @@ public class Ec_10000_06_Veuvage_VeuvageHabitantMarieAvecNonHabitant_Scenario ex
 
 	@Check(id=1, descr="Vérifie les tiers, rapports ménages et les fors")
 	public void check1() throws Exception {
+		checkAvantVeuvage();
+		assertBlocageRemboursementAutomatique(false, false);
+	}
 
+	private void checkAvantVeuvage() {
 		final PersonnePhysique pierre = (PersonnePhysique) tiersDAO.get(noHabPierre);
 		{
 			final ForFiscalPrincipal ffp = pierre.getDernierForFiscalPrincipal();
@@ -138,9 +142,6 @@ public class Ec_10000_06_Veuvage_VeuvageHabitantMarieAvecNonHabitant_Scenario ex
 			assertNull(ffp.getDateFin(), "Date de fin du dernier for fausse");
 			assertEquals(communeMariage.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale(), "Le dernier for n'est pas sur " + communeMariage.getNomMinuscule());
 		}
-
-		// PBM 29.07.2009: UNIREG-1266 -> Blocage des remboursements automatiques sur tous les nouveaux tiers
-		assertBlocageRemboursementAutomatique(true, true);
 	}
 
 	@Etape(id=2, descr="Envoi de l'événement Veuvage")
@@ -193,6 +194,8 @@ public class Ec_10000_06_Veuvage_VeuvageHabitantMarieAvecNonHabitant_Scenario ex
 			assertEquals(MotifFor.VEUVAGE_DECES, ffp.getMotifFermeture(), "Motif d'ouverture du dernier for faux");
 			assertEquals(communeMariage.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale(), "Le dernier for n'est pas sur " + communeMariage.getNomMinuscule());
 		}
+
+		assertBlocageRemboursementAutomatique(false, true);
 	}
 
 	@Etape(id=3, descr="Envoi de l'événement d'annulation de veuvage")
@@ -227,7 +230,8 @@ public class Ec_10000_06_Veuvage_VeuvageHabitantMarieAvecNonHabitant_Scenario ex
 		assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat(), "L'événement civil n'a pas été traité!");
 
 		// vérification des for après annulation de veuvage
-		check1();
+		checkAvantVeuvage();
+		assertBlocageRemboursementAutomatique(false, true);
 	}
 
 	private void assertBlocageRemboursementAutomatique(boolean blocageAttenduPierre, boolean blocageAttenduMenage) {

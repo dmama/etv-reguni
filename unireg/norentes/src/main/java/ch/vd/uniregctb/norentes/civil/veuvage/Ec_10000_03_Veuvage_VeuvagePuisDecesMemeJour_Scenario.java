@@ -130,8 +130,7 @@ public class Ec_10000_03_Veuvage_VeuvagePuisDecesMemeJour_Scenario extends Evene
 			assertEquals(communeMariage.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale(), "Le dernier for n'est pas sur " + communeMariage.getNomMinuscule());
 		}
 
-		// PBM 29.07.2009: UNIREG-1266 -> Blocage des remboursements automatiques sur tous les nouveaux tiers
-		assertBlocageRemboursementAutomatique(true, true);
+		assertBlocageRemboursementAutomatique(false, false);
 	}
 
 	@Etape(id=2, descr="Envoi de l'événenent Veuvage")
@@ -167,8 +166,7 @@ public class Ec_10000_03_Veuvage_VeuvagePuisDecesMemeJour_Scenario extends Evene
 		}
 
 		// le survivant ne doit pas voir ses remboursements automatiques bloqués
-		// PBM 29.07.2009: UNIREG-1266 -> Blocage des remboursements automatiques sur tous les nouveaux tiers
-		assertBlocageRemboursementAutomatique(true, true);
+		assertBlocageRemboursementAutomatique(false, true);
 	}
 
 	@Etape(id=3, descr="Envi de l'événement Décès")

@@ -171,8 +171,7 @@ public class Ec_4000_06_Mariage_FusionMenages_Scenario extends EvenementCivilSce
 			assertEquals(commune.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale(), "Le dernier for n'est pas sur " + commune.getNomMinuscule());
 		}
 
-		// PBM 29.07.2009: UNIREG-1266 -> Blocage des remboursements automatiques sur tous les nouveaux tiers
-		assertBlocageRemboursementAutomatique(true, true, true);
+		assertBlocageRemboursementAutomatique(false, false, false);
 	}
 
 	@Etape(id=2, descr="Reconstitution du ménage commun à partir des deux ménages communs incomplets")
@@ -223,6 +222,8 @@ public class Ec_4000_06_Mariage_FusionMenages_Scenario extends EvenementCivilSce
 			final MenageCommun menageAnnule = (MenageCommun) tiersDAO.get(noMenageAnnule);
 			assertTrue(menageAnnule.isAnnule(), "Le ménage n'est pas annulé");
 		}
+
+		assertBlocageRemboursementAutomatique(false, false, false);
 	}
 
 	private void assertBlocageRemboursementAutomatique(boolean blocageAttenduAlfredo, boolean blocageAttenduArmando, boolean blocageAttenduMenage) {

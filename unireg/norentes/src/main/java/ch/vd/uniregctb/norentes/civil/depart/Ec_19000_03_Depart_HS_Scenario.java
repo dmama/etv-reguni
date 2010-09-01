@@ -184,8 +184,7 @@ public class Ec_19000_03_Depart_HS_Scenario extends DepartScenario {
 			assertNull( ffp.getDateFin(), "Date de fin du dernier for l'Habitant " + FormatNumeroHelper.numeroCTBToDisplay(menage.getNumero()) + " fausse");
 		}
 
-		// PBM 29.07.2009: UNIREG-1266 -> Blocage des remboursements automatiques sur tous les nouveaux tiers
-		assertBlocageRemboursementAutomatique(true, true, true);
+		assertBlocageRemboursementAutomatique(false, false, false);
 	}
 
 	@Etape(id=2, descr="Départ des individus vers le Danemark")
@@ -218,9 +217,7 @@ public class Ec_19000_03_Depart_HS_Scenario extends DepartScenario {
 			assertEquals(numOfsPaysDepart, serviceCivilService.getAdresses(noIndSandra, dateDepartBex.addDays(1), false).principale.getNoOfsPays(), "L'adresse principale n'est pas fermée");
 		}
 
-
-		// PBM 29.07.2009: UNIREG-1266 -> Blocage des remboursements automatiques sur tous les nouveaux tiers
-		assertBlocageRemboursementAutomatique(true, true, true);
+		assertBlocageRemboursementAutomatique(false, false, false);
 	}
 
 
@@ -268,7 +265,7 @@ public class Ec_19000_03_Depart_HS_Scenario extends DepartScenario {
 			assertEquals(ModeImposition.ORDINAIRE, ffpOuvert.getModeImposition(), "Le ModeImposition du for est faux");
 		}
 
-		assertBlocageRemboursementAutomatique(true, true, true);
+		assertBlocageRemboursementAutomatique(false, false, true);
 	}
 
 	private void ouvrirAdresses(MockIndividu individu) {

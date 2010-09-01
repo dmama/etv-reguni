@@ -150,8 +150,7 @@ public class Ec_6000_03_Separation_MarieAvecEtrangerSansPermisC_Scenario extends
 					"Le dernier for n'est pas sur " + communeMariage.getNomMinuscule());
 		}
 
-		// PBM 29.07.2009: UNIREG-1266 -> Blocage des remboursements automatiques sur tous les nouveaux tiers
-		assertBlocageRemboursementAutomatique(true, true, true);
+		assertBlocageRemboursementAutomatique(false, false, false);
 	}
 
 	@Etape(id=2, descr="Envoi des événements de séparation")
@@ -197,8 +196,7 @@ public class Ec_6000_03_Separation_MarieAvecEtrangerSansPermisC_Scenario extends
 			assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale(), "Mauvais type d'autorité fiscale");
 		}
 
-		// PBM 29.07.2009: UNIREG-1266 -> Blocage des remboursements automatiques sur tous les nouveaux tiers
-		assertBlocageRemboursementAutomatique(true, true, true);
+		assertBlocageRemboursementAutomatique(false, false, true);
 	}
 
 	@Etape(id=3, descr="Envoi des événements de Divorce")

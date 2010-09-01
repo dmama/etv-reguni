@@ -143,8 +143,7 @@ public class Ec_6000_06_Separation_CavecB_Scenario extends EvenementCivilScenari
 					"Le dernier for n'est pas sur " + commune.getNomMinuscule());
 		}
 
-		// PBM 29.07.2009: UNIREG-1266 -> Blocage des remboursements automatiques sur tous les nouveaux tiers
-		assertBlocageRemboursementAutomatique(true, true, true);
+		assertBlocageRemboursementAutomatique(false, false, false);
 	}
 
 	@Etape(id=2, descr="Envoi de l'événement de séparation")
@@ -187,8 +186,7 @@ public class Ec_6000_06_Separation_CavecB_Scenario extends EvenementCivilScenari
 			assertEquals(MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, ffp.getMotifOuverture(), "Le motif de fermeture n'est pas SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT");
 		}
 
-		// PBM 29.07.2009: UNIREG-1266 -> Blocage des remboursements automatiques sur tous les nouveaux tiers
-		assertBlocageRemboursementAutomatique(true, true, true);
+		assertBlocageRemboursementAutomatique(false, false, true);
 	}
 
 	private void assertBlocageRemboursementAutomatique(boolean blocageAttenduEsad, boolean blocageAttenduAida, boolean blocageAttenduMenage) {

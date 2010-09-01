@@ -153,8 +153,6 @@ public class Ec_4000_10_Mariage_JIRA2055_Scenario extends EvenementCivilScenario
 	@Check(id=1, descr="Vérifie que l'habitant Jean-Marc est marié puis divorcé avec Christelle et le For du ménage existe")
 	public void check1() {
 
-
-
 		{
 			final MenageCommun mc = (MenageCommun) tiersDAO.get(noMenage1);
 			assertEquals(1, mc.getForsFiscaux().size(), "Le ménage a plus d'un for principal");
@@ -165,8 +163,7 @@ public class Ec_4000_10_Mariage_JIRA2055_Scenario extends EvenementCivilScenario
 
 		}
 
-		// PBM 29.07.2009: UNIREG-1266 -> Blocage des remboursements automatiques sur tous les nouveaux tiers
-		assertBlocageRemboursementAutomatique(true, true, true);
+		assertBlocageRemboursementAutomatique(false, false, false);
 	}
 
 

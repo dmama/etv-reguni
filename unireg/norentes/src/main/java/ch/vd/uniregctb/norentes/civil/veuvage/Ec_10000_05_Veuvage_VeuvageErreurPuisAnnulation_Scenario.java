@@ -127,8 +127,7 @@ public class Ec_10000_05_Veuvage_VeuvageErreurPuisAnnulation_Scenario extends Ev
 			assertEquals(communeMariage.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale(), "Le dernier for n'est pas sur " + communeMariage.getNomMinuscule());
 		}
 
-		// PBM 29.07.2009: UNIREG-1266 -> Blocage des remboursements automatiques sur tous les nouveaux tiers
-		assertBlocageRemboursementAutomatique(true, true);
+		assertBlocageRemboursementAutomatique(false, false);
 	}
 
 	@Etape(id=2, descr="Envoi de l'événement Veuvage")
@@ -148,6 +147,9 @@ public class Ec_10000_05_Veuvage_VeuvageErreurPuisAnnulation_Scenario extends Ev
 		final EvenementCivilData evt = evts.get(0);
 		assertNotNull(evt, "Evenement null?");
 		assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat(), "L'événement civil a été traité!");
+
+		// rien n'a changé (événement en erreur)
+		assertBlocageRemboursementAutomatique(false, false);
 	}
 
 	@Etape(id=3, descr="Envoi de l'événenent d'annulation de veuvage")

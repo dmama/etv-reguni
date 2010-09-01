@@ -178,8 +178,7 @@ public class Ec_6000_04_Separation_SecondEvenementRecu_Scenario extends Evenemen
 			assertEquals(1, nbForFiscauxSecondaires, "Nombre de fors fiscaux secondaires faux");
 		}
 
-		// PBM 29.07.2009: UNIREG-1266 -> Blocage des remboursements automatiques sur tous les nouveaux tiers
-		assertBlocageRemboursementAutomatique(true, true, true);
+		assertBlocageRemboursementAutomatique(false, false, false);
 	}
 
 	@Etape(id=2, descr="Envoi de l'événement de Séparation pour Béa")
@@ -243,8 +242,7 @@ public class Ec_6000_04_Separation_SecondEvenementRecu_Scenario extends Evenemen
 					"Le motif de fermeture n'est pas SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT");
 		}
 
-		// PBM 29.07.2009: UNIREG-1266 -> Blocage des remboursements automatiques sur tous les nouveaux tiers
-		assertBlocageRemboursementAutomatique(true, true, true);
+		assertBlocageRemboursementAutomatique(false, false, true);
 	}
 
 	@Etape(id=3, descr="Envoi de l'événement de Séparation pour Momo")
@@ -268,6 +266,8 @@ public class Ec_6000_04_Separation_SecondEvenementRecu_Scenario extends Evenemen
 			final EvenementCivilData evt = getEvenementCivilRegoupeForHabitant(noHabMomo);
 			assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat(), "");
 		}
+
+		assertBlocageRemboursementAutomatique(false, false, true);
 	}
 
 	private void assertBlocageRemboursementAutomatique(boolean blocageAttenduMomo, boolean blocageAttenduBea, boolean blocageAttenduMenage) {

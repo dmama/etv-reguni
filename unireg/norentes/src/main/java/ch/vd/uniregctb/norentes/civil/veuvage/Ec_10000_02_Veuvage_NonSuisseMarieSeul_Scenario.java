@@ -121,8 +121,7 @@ public class Ec_10000_02_Veuvage_NonSuisseMarieSeul_Scenario extends EvenementCi
 			assertEquals(communeMariage.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale(), "Le dernier for n'est pas sur " + communeMariage.getNomMinuscule());
 		}
 
-		// PBM 29.07.2009: UNIREG-1266 -> Blocage des remboursements automatiques sur tous les nouveaux tiers
-		assertBlocageRemboursementAutomatique(true);
+		assertBlocageRemboursementAutomatique(false);
 	}
 
 	@Etape(id=2, descr="Envoi de l'événenent Veuvage")
@@ -166,8 +165,7 @@ public class Ec_10000_02_Veuvage_NonSuisseMarieSeul_Scenario extends EvenementCi
 		}
 
 		// le survivant ne doit pas voir ses remboursements automatiques bloqués
-		// PBM 29.07.2009: UNIREG-1266 -> Blocage des remboursements automatiques sur tous les nouveaux tiers
-		assertBlocageRemboursementAutomatique(true);
+		assertBlocageRemboursementAutomatique(false);
 }
 
 	private void assertBlocageRemboursementAutomatique(boolean blocageAttendu) {

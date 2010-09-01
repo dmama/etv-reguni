@@ -149,8 +149,7 @@ public class Ec_6000_05_Separation_SuisseAvecPermisB_Scenario extends EvenementC
 					"Le dernier for n'est pas sur " + communeMariage.getNomMinuscule());
 		}
 
-		// PBM 29.07.2009: UNIREG-1266 -> Blocage des remboursements automatiques sur tous les nouveaux tiers
-		assertBlocageRemboursementAutomatique(true, true, true);
+		assertBlocageRemboursementAutomatique(false, false, false);
 	}
 
 	@Etape(id=2, descr="Envoi des événements de séparation")
@@ -194,8 +193,7 @@ public class Ec_6000_05_Separation_SuisseAvecPermisB_Scenario extends EvenementC
 					"Le motif de fermeture n'est pas SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT");
 		}
 
-		// PBM 29.07.2009: UNIREG-1266 -> Blocage des remboursements automatiques sur tous les nouveaux tiers
-		assertBlocageRemboursementAutomatique(true, true, true);
+		assertBlocageRemboursementAutomatique(false, false, true);
 	}
 
 	@Etape(id=3, descr="Envoi des événements de Divorce")

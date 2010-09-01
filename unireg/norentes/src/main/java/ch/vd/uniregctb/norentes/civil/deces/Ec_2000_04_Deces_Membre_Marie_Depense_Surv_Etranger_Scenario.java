@@ -158,8 +158,7 @@ public class Ec_2000_04_Deces_Membre_Marie_Depense_Surv_Etranger_Scenario extend
 					"Le ménage commun devrait posséder une situation de famille le jour du mariage");
 		}
 
-		// PBM 29.07.2009: UNIREG-1266 -> Blocage des remboursements automatiques sur tous les nouveaux tiers
-		assertBlocageRemboursementAutomatique(true, true, true);
+		assertBlocageRemboursementAutomatique(false, false, false);
 	}
 
 	@Etape(id = 2, descr = "Déclaration de décès de Heidi")
@@ -209,8 +208,7 @@ public class Ec_2000_04_Deces_Membre_Marie_Depense_Surv_Etranger_Scenario extend
 					"Le ménage commun ne devrait plus avoir de situation de famille le lendemain du décès.");
 		}
 
-		// PBM 29.07.2009: UNIREG-1266 -> Blocage des remboursements automatiques sur tous les nouveaux tiers
-		assertBlocageRemboursementAutomatique(true, true, true);
+		assertBlocageRemboursementAutomatique(false, true, true);
 	}
 
 	private void assertBlocageRemboursementAutomatique(boolean blocageAttenduHamlet, boolean blocageAttenduHeidi, boolean blocageAttenduMenage) {

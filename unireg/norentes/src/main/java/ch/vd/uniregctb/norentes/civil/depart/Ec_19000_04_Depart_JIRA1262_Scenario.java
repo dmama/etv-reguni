@@ -143,8 +143,7 @@ public class Ec_19000_04_Depart_JIRA1262_Scenario extends DepartScenario {
 			assertEquals(communeDepart.getNomMinuscule(), adresses.principale.getLocalite(), "L'adresse principale n'est pas à " + communeDepart.getNomMinuscule());
 		}
 
-		// PBM 29.07.2009: UNIREG-1266 -> Blocage des remboursements automatiques sur tous les nouveaux tiers
-		assertBlocageRemboursementAutomatique(true);
+		assertBlocageRemboursementAutomatique(false);
 	}
 
 	@Etape(id=2, descr="Départ de l'individu hors canton")
@@ -170,8 +169,7 @@ public class Ec_19000_04_Depart_JIRA1262_Scenario extends DepartScenario {
 			assertEquals(communeArrivee.getNomMinuscule(), adresses.principale.getLocalite(), "L'adresse principale n'est pas à " + communeArrivee.getNomMinuscule());
 		}
 
-		// PBM 29.07.2009: UNIREG-1266 -> Blocage des remboursements automatiques sur tous les nouveaux tiers
-		assertBlocageRemboursementAutomatique(true);
+		assertBlocageRemboursementAutomatique(false);
 	}
 
 

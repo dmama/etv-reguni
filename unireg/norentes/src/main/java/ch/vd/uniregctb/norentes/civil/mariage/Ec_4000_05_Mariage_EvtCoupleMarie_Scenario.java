@@ -148,8 +148,7 @@ public class Ec_4000_05_Mariage_EvtCoupleMarie_Scenario extends EvenementCivilSc
 			assertEquals(commune.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale(), "Le dernier for n'est pas sur " + commune.getNomMinuscule());
 		}
 
-		// PBM 29.07.2009: UNIREG-1266 -> Blocage des remboursements automatiques sur tous les nouveaux tiers
-		assertBlocageRemboursementAutomatique(true, true, true);
+		assertBlocageRemboursementAutomatique(false, false, false);
 	}
 
 	@Etape(id=2, descr="Envoi de l'événement de mariage")
@@ -165,10 +164,11 @@ public class Ec_4000_05_Mariage_EvtCoupleMarie_Scenario extends EvenementCivilSc
 		final EvenementCivilData evt = getEvenementCivilRegoupeForHabitant(noHabChristelle);
 
 		assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat(), "L'événement de mariage devrait être en erreur car le couple existe déjà");
+
+		assertBlocageRemboursementAutomatique(false, false, false);
 	}
 
 	private void assertBlocageRemboursementAutomatique(boolean blocageAttenduPierre, boolean blocageAttenduKarina, boolean blocageAttenduMenage) {
-
 		assertBlocageRemboursementAutomatique(blocageAttenduPierre, tiersDAO.get(noHabJeanBruno));
 		assertBlocageRemboursementAutomatique(blocageAttenduKarina, tiersDAO.get(noHabChristelle));
 		assertBlocageRemboursementAutomatique(blocageAttenduMenage, tiersDAO.get(noMenage));

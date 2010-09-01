@@ -106,8 +106,7 @@ public class Ec_19000_02_Depart_1_Scenario extends EvenementCivilScenario {
 		assertEquals(MockCommune.Bex.getNomMinuscule(), serviceCivilService.getAdresses(noIndAlain, dateArriveeBex, false).principale.getLocalite(),
 			"l'adresse principale n'est pas à Bex");
 
-		// PBM 29.07.2009: UNIREG-1266 -> Blocage des remboursements automatiques sur tous les nouveaux tiers
-		assertBlocageRemboursementAutomatique(true);
+		assertBlocageRemboursementAutomatique(false);
 	}
 
 	@Etape(id=2, descr="Départ de Alain vers destination inconnue")
@@ -130,8 +129,7 @@ public class Ec_19000_02_Depart_1_Scenario extends EvenementCivilScenario {
 		assertNull(serviceCivilService.getAdresses(noIndAlain, dateDepartBex.addDays(1), false).principale,
 			"l'adresse principale n'est pas fermée");
 
-		// PBM 29.07.2009: UNIREG-1266 -> Blocage des remboursements automatiques sur tous les nouveaux tiers
-		assertBlocageRemboursementAutomatique(true);
+		assertBlocageRemboursementAutomatique(false);
 	}
 
 

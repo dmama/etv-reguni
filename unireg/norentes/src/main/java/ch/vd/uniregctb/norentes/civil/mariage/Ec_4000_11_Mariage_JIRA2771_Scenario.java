@@ -176,8 +176,7 @@ public class Ec_4000_11_Mariage_JIRA2771_Scenario extends EvenementCivilScenario
 			assertEquals(commune.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale(), "Le dernier for n'est pas sur " + commune.getNomMinuscule());
 		}
 
-		// PBM 29.07.2009: UNIREG-1266 -> Blocage des remboursements automatiques sur tous les nouveaux tiers
-		assertBlocageRemboursementAutomatique(true, true, true);
+		assertBlocageRemboursementAutomatique(false, false, false);
 	}
 
 	@Etape(id=2, descr="tentative de Reconstitution du ménage commun à partir des deux ménages communs incomplets")

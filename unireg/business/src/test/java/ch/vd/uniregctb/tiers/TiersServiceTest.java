@@ -3286,4 +3286,85 @@ public class TiersServiceTest extends BusinessTest {
 			}
 		});
 	}
+
+	@Test
+	@NotTransactional
+	public void testOuvertureForHorsCantonEtBlocageRemboursementAutomatique() throws Exception {
+
+		// mise en place d'un contribuable
+		final long ppId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+			public Long doInTransaction(TransactionStatus status) {
+
+				final PersonnePhysique pp = addNonHabitant("Alastor", "Maugrey", date(1956, 9, 3), Sexe.MASCULIN);
+				Assert.assertFalse(pp.getBlocageRemboursementAutomatique());
+				return pp.getNumero();
+			}
+		});
+
+		// ouverture d'un for hors-canton
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				Assert.assertFalse(pp.getBlocageRemboursementAutomatique());
+				tiersService.openForFiscalPrincipal(pp, date(2000, 5, 12), MotifRattachement.DOMICILE, MockCommune.Bale.getNoOFSEtendu(), TypeAutoriteFiscale.COMMUNE_HC, ModeImposition.ORDINAIRE, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, false);
+				Assert.assertTrue(pp.getBlocageRemboursementAutomatique());
+				return null;
+			}
+		});
+	}
+
+	@Test
+	@NotTransactional
+	public void testOuvertureForHorsSuisseEtBlocageRemboursementAutomatique() throws Exception {
+
+		// mise en place d'un contribuable
+		final long ppId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+			public Long doInTransaction(TransactionStatus status) {
+
+				final PersonnePhysique pp = addNonHabitant("Alastor", "Maugrey", date(1956, 9, 3), Sexe.MASCULIN);
+				Assert.assertFalse(pp.getBlocageRemboursementAutomatique());
+				return pp.getNumero();
+			}
+		});
+
+		// ouverture d'un for hors-canton
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				Assert.assertFalse(pp.getBlocageRemboursementAutomatique());
+				tiersService.openForFiscalPrincipal(pp, date(2000, 5, 12), MotifRattachement.DOMICILE, MockPays.RoyaumeUni.getNoOFS(), TypeAutoriteFiscale.PAYS_HS, ModeImposition.ORDINAIRE, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, false);
+				Assert.assertTrue(pp.getBlocageRemboursementAutomatique());
+				return null;
+			}
+		});
+	}
+
+	@Test
+	@NotTransactional
+	public void testOuvertureForVaudoisEtBlocageRemboursementAutomatique() throws Exception {
+
+		// mise en place d'un contribuable
+		final long ppId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+			public Long doInTransaction(TransactionStatus status) {
+
+				final PersonnePhysique pp = addNonHabitant("Alastor", "Maugrey", date(1956, 9, 3), Sexe.MASCULIN);
+				Assert.assertFalse(pp.getBlocageRemboursementAutomatique());
+				return pp.getNumero();
+			}
+		});
+
+		// ouverture d'un for hors-canton
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				Assert.assertFalse(pp.getBlocageRemboursementAutomatique());
+				tiersService.openForFiscalPrincipal(pp, date(2000, 5, 12), MotifRattachement.DOMICILE, MockCommune.Lausanne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ModeImposition.ORDINAIRE, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, false);
+				Assert.assertFalse(pp.getBlocageRemboursementAutomatique());
+				return null;
+			}
+		});
+	}
 }
