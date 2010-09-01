@@ -10,7 +10,7 @@
 		<table border="0"><tr valign="top">
 		<td>
 
-			<h3>Edition du ${entity.key.type.displayName} n°${entity.key.id}</h3>
+			<h3>Edition du ${entity.key.type.displayName} n°${entity.key.id} &nbsp;<a href="<c:url value="/tiers/visu.do?id=${entity.key.id}"/>">(retour au mode classic)</a></h3>
 			<br/>
 
 			<%-- Affichage des erreurs de validation, si nécessaire --%>
@@ -30,6 +30,7 @@
 
 			<%-- Affichage des attributs de l'entité --%>
 			<form:form method="post">
+				<input type="submit" name="save" value="Mémoriser les modifications" style="margin: 1em;"/>
 				<display:table name="${entity.attributes}" id="a" class="display_table">
 						<display:column title="Attribute">
 							<c:out value="${a.displayName}"/>
@@ -49,7 +50,7 @@
 							</c:if>
 						</display:column>
 				</display:table>
-				<input type="submit" name="save" value="Mettre-à-jour" />
+				<input type="submit" name="save" value="Mémoriser les modifications" style="margin: 1em;"/>
 			</form:form>
 
 		</td>

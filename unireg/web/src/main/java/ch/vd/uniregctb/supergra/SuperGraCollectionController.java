@@ -8,6 +8,10 @@ import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
+import ch.vd.uniregctb.security.AccessDeniedException;
+import ch.vd.uniregctb.security.Role;
+import ch.vd.uniregctb.security.SecurityProvider;
+
 /**
  * Contrôleur permettant l'édition en mode SuperGra d'une collection appartenant à une entité Hibernate.
  */
@@ -20,6 +24,10 @@ public class SuperGraCollectionController extends SuperGraAbstractController {
 		final String typeAsString = request.getParameter("class");
 		final String idAsString = request.getParameter("id");
 		final String collName = request.getParameter("name");
+
+		if (!SecurityProvider.isGranted(Role.SUPERGRA)) {
+			throw new AccessDeniedException(ACCESS_DENIED);
+		}
 
 		if (StringUtils.isNotBlank(typeAsString) && StringUtils.isNotBlank(idAsString)) {
 
@@ -43,6 +51,10 @@ public class SuperGraCollectionController extends SuperGraAbstractController {
 
 		final String add = request.getParameter("add");
 		
+		if (!SecurityProvider.isGranted(Role.SUPERGRA)) {
+			throw new AccessDeniedException(ACCESS_DENIED);
+		}
+
 		if (handleCommonAction(request)) {
 			// rien d'autre à faire
 		}

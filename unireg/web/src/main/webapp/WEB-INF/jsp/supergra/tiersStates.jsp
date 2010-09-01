@@ -6,10 +6,10 @@
 
 		<tr class="header">
 			<c:if test="${empty superGraSession.tiersStates}" >
-				<td>Aucun tiers n'a été modifié</td>
+				<td>Aucune modification n'est en cours</td>
 			</c:if>
 			<c:if test="${!empty superGraSession.tiersStates}" >
-				<td colspan="2">Les tiers suivants ont été modifiés ou sont impactés par les modifications</td>
+				<td colspan="2">Les tiers suivants ont été modifiés ou sont impactés par les modifications :</td>
 			</c:if>
 		</tr>
 
@@ -56,7 +56,7 @@
 			<tr class="state">
 				<td class="footer">
 					<form method="post" style="display:inline;">
-						<input type="submit" name="commitAll" value="Sauvegarder" <c:if test="${hasError}">disabled="disabled"</c:if> />
+						<input type="submit" name="commitAll" value="Sauvegarder" onclick="return confirm('Toutes les modifications seront sauvées dans la base de données.\n\nOn continue ?')" <c:if test="${hasError}">disabled="disabled"</c:if> />
 					</form>
 					ou
 					<form id="delAllForm" method="post" style="display:inline;">

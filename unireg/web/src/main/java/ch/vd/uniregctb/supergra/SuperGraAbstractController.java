@@ -10,6 +10,8 @@ import ch.vd.uniregctb.utils.UniregModeHelper;
 
 public abstract class SuperGraAbstractController extends SimpleFormController {
 
+	protected static final String ACCESS_DENIED = "Cet écran nécessite le droit d'accès spécial Super-Gra !";
+
 	protected SuperGraManager manager;
 
 	@SuppressWarnings({"UnusedDeclaration"})

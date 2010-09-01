@@ -34,6 +34,13 @@
 	</c:if>
 
 	<c:if test="${command.tiers != null}">
+
+		<authz:authorize ifAnyGranted="ROLE_SUPERGRA">
+			<div style="float: right; display: inline; margin-top: -1.5em;">
+				<a href="<c:url value="/supergra/entity.do?id=${command.tiersGeneral.numero}&class=Tiers"/>">Edition de ce tiers en mode SuperGra</a>
+			</div>
+		</authz:authorize>
+
 		<unireg:nextRowClass reset="1"/>
 		<!-- Debut Caracteristiques generales -->
 		<jsp:include page="../../general/tiers.jsp">

@@ -24,6 +24,9 @@ import org.springframework.web.servlet.view.RedirectView;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.uniregctb.security.AccessDeniedException;
+import ch.vd.uniregctb.security.Role;
+import ch.vd.uniregctb.security.SecurityProvider;
 import ch.vd.uniregctb.utils.EnumEditor;
 import ch.vd.uniregctb.utils.RegDateEditor;
 
@@ -39,6 +42,10 @@ public class SuperGraEntityController extends SuperGraAbstractController {
 		final EntityView view = (EntityView) super.formBackingObject(request);
 		final String typeAsString = request.getParameter("class");
 		final String idAsString = request.getParameter("id");
+
+		if (!SecurityProvider.isGranted(Role.SUPERGRA)) {
+			throw new AccessDeniedException(ACCESS_DENIED);
+		}
 
 		if (StringUtils.isNotBlank(typeAsString) && StringUtils.isNotBlank(idAsString)) {
 
@@ -110,6 +117,10 @@ public class SuperGraEntityController extends SuperGraAbstractController {
 		final EntityView view = (EntityView) command;
 		Assert.notNull(view);
 
+		if (!SecurityProvider.isGranted(Role.SUPERGRA)) {
+			throw new AccessDeniedException(ACCESS_DENIED);
+		}
+		
 		if (handleCommonAction(request)) {
 			// rien d'autre à faire
 		}

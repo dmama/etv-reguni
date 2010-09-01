@@ -10,7 +10,7 @@
 		<table class="sync_actions" cellspacing="0" border="0">
 		  <tbody>
 			<tr class="header">
-			  <td colspan="2">Les modifications ci-dessous sont en attente :</td>
+			  <td colspan="2">Les modifications suivantes sont mémorisées :</td>
 			</tr>
 
 			<c:forEach items="${superGraSession.deltas}" var="d" varStatus="i">

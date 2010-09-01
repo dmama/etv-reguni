@@ -84,6 +84,8 @@ public enum Role {
 	MW_IDENT_CTB_GEST_BO("ROLE_MW_IDENT_CTB_GEST_BO", "UR000102"),
 	MW_IDENT_CTB_ADMIN("ROLE_MW_IDENT_CTB_ADMIN", "UR000103"),
 
+	SUPERGRA("ROLE_SUPERGRA", "UR000777"),
+
 	TESTER("ROLE_TESTER", "");
 
 	private static HashMap<String, Role> ifoSec2Role;
