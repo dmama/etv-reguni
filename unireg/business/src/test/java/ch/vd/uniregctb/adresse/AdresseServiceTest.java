@@ -2425,9 +2425,6 @@ public class AdresseServiceTest extends BusinessTest {
 			catch (AdressesResolutionException ok) {
 				// ok
 			}
-			adresseService.getAdresseFiscale(pupille, TypeAdresseFiscale.REPRESENTATION, date(2000, 1, 1), false);
-			adresseService.getAdresseFiscale(pupille, TypeAdresseFiscale.POURSUITE, date(2000, 1, 1), false);
-			adresseService.getAdresseFiscale(pupille, TypeAdresseFiscale.DOMICILE, date(2000, 1, 1), false);
 
 			try {
 				adresseService.getAdressesFiscalHisto(pupille, false);
@@ -3147,11 +3144,10 @@ public class AdresseServiceTest extends BusinessTest {
 			{
 				final AdressesFiscales adresses1982 = adresseService.getAdressesFiscales(debiteur, date(1982, 1, 1), false);
 				assertNotNull(adresses1982);
-				// FIXME (msi) cette adresse devrait être fermée au 31 décembre 1989 !
-				assertAdresse(date(1980, 1, 1), null, "Lausanne", Source.CONTRIBUABLE, true, adresses1982.courrier);
-				assertAdressesEquals(adresses1982.courrier, adresses1982.representation);
-				assertAdressesEquals(adresses1982.courrier, adresses1982.poursuite);
-				assertAdressesEquals(adresses1982.courrier, adresses1982.domicile);
+				assertAdresse(date(1980, 1, 1), date(1989, 12, 31), "Lausanne", Source.CONTRIBUABLE, true, adresses1982.courrier);
+				assertAdresse(date(1980, 1, 1), null, "Lausanne", Source.CONTRIBUABLE, true, adresses1982.representation);
+				assertAdressesEquals(adresses1982.representation, adresses1982.poursuite);
+				assertAdressesEquals(adresses1982.representation, adresses1982.domicile);
 
 				assertAdressesByTypeEquals(adresses1982, debiteur, date(1982, 1, 1));
 			}
@@ -4176,9 +4172,7 @@ public class AdresseServiceTest extends BusinessTest {
 
 		final AdressesFiscales adresses = adresseService.getAdressesFiscales(menage, null, false);
 		assertNotNull(adresses);
-		// TODO (msi) l'adresse de début devrait correspondre au début de la tutelle
-		assertAdresse(date(2002, 2, 2), null, "Lausanne", Source.CONJOINT, false, adresses.courrier); // adresse du courrier du conjoint
-		// //assertAdressesEquals(adressesHisto.courrier.get(1), adresses.courrier);
+		assertAdressesEquals(adressesHisto.courrier.get(1), adresses.courrier);
 		assertAdressesEquals(adressesHisto.domicile.get(0), adresses.domicile);
 		assertAdressesEquals(adressesHisto.poursuite.get(0), adresses.poursuite);
 		assertAdressesEquals(adressesHisto.representation.get(0), adresses.representation);
@@ -4345,7 +4339,7 @@ public class AdresseServiceTest extends BusinessTest {
 
 		final AdressesFiscales adresses = adresseService.getAdressesFiscales(menage, null, false);
 		assertNotNull(adresses);
-		assertAdresse(date(2000, 1, 1), null, "Lausanne", Source.CIVILE, true, adresses.courrier);
+		assertAdresse(date(2005, 1, 1), null, "Lausanne", Source.CIVILE, true, adresses.courrier);
 		assertAdressesEquals(adressesHisto.domicile.get(0), adresses.domicile);
 		assertAdressesEquals(adressesHisto.poursuite.get(0), adresses.poursuite);
 		assertAdressesEquals(adressesHisto.representation.get(0), adresses.representation);
@@ -4475,7 +4469,7 @@ public class AdresseServiceTest extends BusinessTest {
 
 		final AdressesFiscales adresses = adresseService.getAdressesFiscales(menage, null, false);
 		assertNotNull(adresses);
-		assertAdresse(date(2000, 1, 1), null, "Lausanne", Source.CIVILE, true, adresses.courrier);
+		assertAdresse(date(2005, 1, 1), null, "Lausanne", Source.CIVILE, true, adresses.courrier);
 		assertAdressesEquals(adressesHisto.domicile.get(0), adresses.domicile);
 		assertAdressesEquals(adressesHisto.poursuite.get(0), adresses.poursuite);
 		assertAdressesEquals(adressesHisto.representation.get(0), adresses.representation);
@@ -4850,7 +4844,7 @@ public class AdresseServiceTest extends BusinessTest {
 		assertAdresse(date(2000, 1, 1), null, "Izmir", Source.FISCALE, false, adresses.domicile);
 		assertAdresse(date(2000, 1, 1), null, "Lausanne", Source.REPRESENTATION, false, adresses.courrier); // adresse du représentant
 		assertAdresse(date(2000, 1, 1), null, "Lausanne", Source.REPRESENTATION, false, adresses.poursuite); // adresse du représentant
-		assertAdresse(date(2000, 1, 1), null, "Lausanne", Source.REPRESENTATION, true, adresses.representation);
+		assertAdresse(date(2000, 1, 1), null, "Izmir", Source.FISCALE, true, adresses.representation);
 		assertAdresse(date(2000, 1, 1), null, "Lausanne", Source.REPRESENTATION, false, adresses.poursuiteAutreTiers); // adresse du représentant
 
 		// les adresses d'envoi
@@ -4869,7 +4863,8 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("1005 Lausanne", courrier.getLigne5());
 		assertNull(courrier.getLigne6());
 
-		assertEquals(courrier, adresseService.getAdresseEnvoi(ctb, null, TypeAdresseFiscale.REPRESENTATION, false));
+		final AdresseEnvoiDetaillee representation = adresseService.getAdresseEnvoi(ctb, null, TypeAdresseFiscale.REPRESENTATION, false);
+		assertEquals(domicile, representation);
 
 		final AdresseEnvoi poursuite = adresseService.getAdresseEnvoi(ctb, null, TypeAdresseFiscale.POURSUITE, false);
 		assertEquals("KPMG SA", poursuite.getLigne1());
@@ -5479,5 +5474,40 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals(TypeAffranchissement.SUISSE, adresseService.getTypeAffranchissement(adresseSuisse));
 		assertEquals(TypeAffranchissement.EUROPE, adresseService.getTypeAffranchissement(adresseFrance));
 		assertEquals(TypeAffranchissement.MONDE, adresseService.getTypeAffranchissement(adresseColombie));
+	}
+
+	/**
+	 * [UNIREG-2792] Un contribuable avec une représentation qui commence (1er janvier 2009) avant la date de début de son adresse courrier (8 juillet 2009) : l'adresse courrier définie doit être
+	 * complétement masquée par l'adresse du représentant <b>mais</b> elle doit quand même être utilisée pour calculer les défauts des adresses domicile, poursuite, ...
+	 */
+	@Test
+	public void testGetAdressesContribuableAvecRepresentationQuiCommenceAvantSonAdresseCourrier() throws Exception {
+
+		final PersonnePhysique sophie = addNonHabitant("Sophie", "Regamey", date(1960, 1, 1), Sexe.FEMININ);
+		addAdresseSuisse(sophie, TypeAdresseTiers.COURRIER, date(2009, 7, 8), null, MockRue.Zurich.GloriaStrasse);
+
+		final PersonnePhysique anne = addNonHabitant("Anne", "Bolomey", date(1960, 1, 1), Sexe.FEMININ);
+		addAdresseSuisse(anne, TypeAdresseTiers.DOMICILE, date(1992, 4, 27), null, MockRue.Moudon.LeBourg);
+
+		addRepresentationConventionnelle(sophie, anne, date(2009, 1, 1), false);
+
+		// adresses du jour
+		assertAdresse(date(2009, 1, 1), null, "Moudon", Source.REPRESENTATION, false, adresseService.getAdresseFiscale(sophie, TypeAdresseFiscale.COURRIER, null, true));
+		final AdresseGenerique domicile = adresseService.getAdresseFiscale(sophie, TypeAdresseFiscale.DOMICILE, null, true);
+		assertAdresse(date(2009, 7, 8), null, "Zurich", Source.FISCALE, true, domicile);
+		assertAdressesEquals(domicile, adresseService.getAdresseFiscale(sophie, TypeAdresseFiscale.POURSUITE, null, true));
+		assertAdressesEquals(domicile, adresseService.getAdresseFiscale(sophie, TypeAdresseFiscale.REPRESENTATION, null, true));
+		
+		// adresses historiques
+		final AdressesFiscalesHisto adresses = adresseService.getAdressesFiscalHisto(sophie, true);
+		assertNotNull(adresses);
+		assertEquals(1, adresses.courrier.size());
+		assertEquals(1, adresses.domicile.size());
+		assertEquals(1, adresses.poursuite.size());
+		assertEquals(1, adresses.representation.size());
+		assertAdresse(date(2009, 1, 1), null, "Moudon", Source.REPRESENTATION, false, adresses.courrier.get(0));
+		assertAdresse(date(2009, 7, 8), null, "Zurich", Source.FISCALE, true, adresses.domicile.get(0));
+		assertAdressesEquals(adresses.domicile.get(0), adresses.poursuite.get(0));
+		assertAdressesEquals(adresses.domicile.get(0), adresses.representation.get(0));
 	}
 }

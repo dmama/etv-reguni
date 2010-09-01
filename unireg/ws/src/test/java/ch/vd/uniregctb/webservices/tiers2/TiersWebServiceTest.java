@@ -200,11 +200,10 @@ public class TiersWebServiceTest extends WebserviceTest {
 			assertNotNull(menage);
 
 			assertNotNull(menage.adresseCourrier);
-			assertAdresse(new Date(1954, 1, 11), null, "Av de Marcelin", "Lausanne", menage.adresseCourrier); // adresse de madame (puisque monsieur est sous tutelle)
+			assertAdresse(new Date(2007, 9, 11), null, "Av de Marcelin", "Lausanne", menage.adresseCourrier); // adresse de madame (puisque monsieur est sous tutelle)
 
 			assertNotNull(menage.adressePoursuite);
-// FIXME (msi) : l'adresse poursuite n'est pas calculée de la même manière qu'en 'histo', à cause de la manière différente d'appliquer les défauts.
-// 			assertAdresse(new Date(1947, 1, 1), null, "Av de Beaulieu", "Lausanne", menage.adressePoursuite); // adresse de monsieur (non-impacté par la tutelle, car pas d'autorité tutelaire renseignée)
+ 			assertAdresse(new Date(1947, 1, 1), null, "Av de Beaulieu", "Lausanne", menage.adressePoursuite); // adresse de monsieur (non-impacté par la tutelle, car pas d'autorité tutelaire renseignée)
 
 			assertNull(menage.adressePoursuiteAutreTiers); // [UNIREG-2227] pas d'adresse autre tiers car madame remplace monsieur dans la gestion du ménage
 		}

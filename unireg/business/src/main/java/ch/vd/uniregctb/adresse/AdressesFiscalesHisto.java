@@ -2,6 +2,7 @@ package ch.vd.uniregctb.adresse;
 
 import java.util.List;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 
 
@@ -71,5 +72,25 @@ public class AdressesFiscalesHisto {
 		default:
 			throw new IllegalArgumentException("Type d'adresse inconnu = " + type.name());
 		}
+	}
+
+	/**
+	 * @param date la date de validité demandée
+	 * @return les adresses fiscales valides à une date donnée.
+	 */
+	public AdressesFiscales at(RegDate date) {
+		final AdressesFiscales adresses = new AdressesFiscales();
+		for (TypeAdresseFiscale type : TypeAdresseFiscale.values()) {
+			final List<AdresseGenerique> list = ofType(type);
+			if (list != null) {
+				for (AdresseGenerique a : list) {
+					if (a.isValidAt(date)) {
+						adresses.set(type, a);
+						break;
+					}
+				}
+			}
+		}
+		return adresses;
 	}
 }
