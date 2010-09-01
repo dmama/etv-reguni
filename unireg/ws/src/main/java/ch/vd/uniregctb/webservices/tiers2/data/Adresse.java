@@ -59,7 +59,7 @@ public class Adresse implements Range {
 	@XmlElement(required = true)
 	public String numeroPostal;
 
-	/** Le pays. Nul pour la suisse */
+	/** Le pays en toutes lettres (non-renseigné sur les adresses suisse). Exemples : "France", "Albanie", "Japon". */
 	@XmlElement(required = false)
 	public String pays;
 
