@@ -175,6 +175,11 @@ public class DbUnit2Java extends BusinessTest {
 				System.out.println(s);
 			}
 			else {
+				// Les ID ne peuvent pas être spécifiés sur les classes autres que Tiers (et descendants)
+				if (prop.isPrimaryKey() && !(o instanceof Tiers)) {
+					continue;
+				}
+
 				final Object value = o.getValue(prop.getName());
 				if (value == null) {
 					continue;

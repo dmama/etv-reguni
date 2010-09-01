@@ -1651,7 +1651,6 @@ public class TiersDAOTest extends CoreDAOTest {
 				pp7 = (PersonnePhysique) hibernateTemplate.merge(pp7);
 
 				AdresseSuisse as0 = new AdresseSuisse();
-				as0.setId(1L);
 				as0.setDateDebut(RegDate.get(2006, 2, 23));
 				as0.setLogModifDate(new Timestamp(1199142000000L));
 				as0.setNumeroMaison("12");
@@ -1662,7 +1661,6 @@ public class TiersDAOTest extends CoreDAOTest {
 				pp0 = (PersonnePhysique) hibernateTemplate.merge(pp0);
 
 				AdresseSuisse as1 = new AdresseSuisse();
-				as1.setId(2L);
 				as1.setDateDebut(RegDate.get(2005, 2, 23));
 				as1.setDateFin(RegDate.get(2006, 2, 22));
 				as1.setLogModifDate(new Timestamp(1199142000000L));
@@ -1674,7 +1672,6 @@ public class TiersDAOTest extends CoreDAOTest {
 				pp0 = (PersonnePhysique) hibernateTemplate.merge(pp0);
 
 				AdresseSuisse as2 = new AdresseSuisse();
-				as2.setId(3L);
 				as2.setDateDebut(RegDate.get(2006, 2, 23));
 				as2.setLogModifDate(new Timestamp(1199142000000L));
 				as2.setNumeroMaison("56");
@@ -1685,7 +1682,6 @@ public class TiersDAOTest extends CoreDAOTest {
 				pp2 = (PersonnePhysique) hibernateTemplate.merge(pp2);
 
 				AdresseSuisse as3 = new AdresseSuisse();
-				as3.setId(4L);
 				as3.setDateDebut(RegDate.get(2006, 2, 23));
 				as3.setLogModifDate(new Timestamp(1199142000000L));
 				as3.setNumeroMaison("8");
@@ -1696,7 +1692,6 @@ public class TiersDAOTest extends CoreDAOTest {
 				dpi0 = (DebiteurPrestationImposable) hibernateTemplate.merge(dpi0);
 
 				AdresseSuisse as4 = new AdresseSuisse();
-				as4.setId(5L);
 				as4.setDateDebut(RegDate.get(2006, 2, 23));
 				as4.setLogModifDate(new Timestamp(1199142000000L));
 				as4.setNumeroMaison("8");
@@ -1707,7 +1702,6 @@ public class TiersDAOTest extends CoreDAOTest {
 				e0 = (Entreprise) hibernateTemplate.merge(e0);
 
 				AppartenanceMenage am0 = new AppartenanceMenage();
-				am0.setId(1L);
 				am0.setLogModifDate(new Timestamp(1199142000000L));
 				am0.setDateDebut(RegDate.get(2006, 9, 1));
 				am0.setObjetId(10008901L);
@@ -1717,7 +1711,6 @@ public class TiersDAOTest extends CoreDAOTest {
 				mc0.addRapportObjet(am0);
 
 				AppartenanceMenage am1 = new AppartenanceMenage();
-				am1.setId(2L);
 				am1.setLogModifDate(new Timestamp(1199142000000L));
 				am1.setObjetId(10008901L);
 				am1.setSujetId(10007890L);
@@ -1726,7 +1719,6 @@ public class TiersDAOTest extends CoreDAOTest {
 				mc0.addRapportObjet(am1);
 
 				RapportPrestationImposable rpi0 = new RapportPrestationImposable();
-				rpi0.setId(3L);
 				rpi0.setLogModifDate(new Timestamp(1199142000000L));
 				rpi0.setObjetId(1001234L);
 				rpi0.setSujetId(10001111L);
@@ -1735,7 +1727,6 @@ public class TiersDAOTest extends CoreDAOTest {
 				dpi0.addRapportObjet(rpi0);
 
 				ContactImpotSource cis0 = new ContactImpotSource();
-				cis0.setId(4L);
 				cis0.setLogModifDate(new Timestamp(1199142000000L));
 				cis0.setObjetId(1001234L);
 				cis0.setSujetId(10006789L);
@@ -1744,7 +1735,6 @@ public class TiersDAOTest extends CoreDAOTest {
 				dpi0.addRapportObjet(cis0);
 
 				ForFiscalPrincipal ffp0 = new ForFiscalPrincipal();
-				ffp0.setId(1L);
 				ffp0.setDateFin(RegDate.get(2006, 8, 31));
 				ffp0.setDateDebut(RegDate.get(2006, 3, 1));
 				ffp0.setGenreImpot(GenreImpot.REVENU_FORTUNE);
@@ -1757,7 +1747,6 @@ public class TiersDAOTest extends CoreDAOTest {
 				pp0 = (PersonnePhysique) hibernateTemplate.merge(pp0);
 
 				ForFiscalSecondaire ffs0 = new ForFiscalSecondaire();
-				ffs0.setId(2L);
 				ffs0.setDateFin(RegDate.get(2006, 8, 31));
 				ffs0.setDateDebut(RegDate.get(2006, 5, 1));
 				ffs0.setGenreImpot(GenreImpot.REVENU_FORTUNE);
@@ -1771,7 +1760,6 @@ public class TiersDAOTest extends CoreDAOTest {
 				pp0 = (PersonnePhysique) hibernateTemplate.merge(pp0);
 
 				IdentificationPersonne ip0 = new IdentificationPersonne();
-				ip0.setId(0L);
 				ip0.setCategorieIdentifiant(CategorieIdentifiant.CH_AHV_AVS);
 				ip0.setIdentifiant("15489652357");
 				ip0.setLogModifDate(new Timestamp(1199142000000L));
@@ -1779,7 +1767,6 @@ public class TiersDAOTest extends CoreDAOTest {
 				pp2 = (PersonnePhysique) hibernateTemplate.merge(pp2);
 
 				IdentificationPersonne ip1 = new IdentificationPersonne();
-				ip1.setId(1L);
 				ip1.setCategorieIdentifiant(CategorieIdentifiant.CH_ZAR_RCE);
 				ip1.setIdentifiant("99999999");
 				ip1.setLogModifDate(new Timestamp(1199142000000L));
