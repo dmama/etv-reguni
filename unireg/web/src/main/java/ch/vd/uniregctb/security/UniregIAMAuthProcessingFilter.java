@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.security;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.Enumeration;
 
@@ -86,7 +87,7 @@ public class UniregIAMAuthProcessingFilter extends IAMAuthenticationProcessingFi
 		String username = null;
 		String password = "";
 		// Récupére le username dans le header HTTP.
-		if (usernameHeaderKey != null && usernameHeaderKey.length() > 0) {
+		if (usernameHeaderKey.length() > 0) {
 			username = request.getHeader(usernameHeaderKey);
 		}
 
@@ -148,16 +149,16 @@ public class UniregIAMAuthProcessingFilter extends IAMAuthenticationProcessingFi
 			LOGGER.trace("setDetails...");
 		}
 
-		Enumeration<String> headerNames = request.getHeaderNames();
-		while (headerNames.hasMoreElements()) {
-			String headerName = headerNames.nextElement();
-			if (LOGGER.isTraceEnabled()) {
-				LOGGER.trace(headerName + "=" + request.getHeader(headerName));
+		if (LOGGER.isTraceEnabled()) {
+			Enumeration<String> headerNames = request.getHeaderNames();
+			while (headerNames.hasMoreElements()) {
+				String headerName = headerNames.nextElement();
+				LOGGER.trace(headerName + "=" + getHeaderString(request, headerName));
 			}
 		}
 
 		// Retrieve application and roles from header keys:
-		String application = request.getHeader(applicationHeaderKey);
+		String application = getHeaderString(request, applicationHeaderKey);
 		if (application == null && isDebug()) {
 			application = SecurityDebugConfig.getIamBypassApplication();
 			if (LOGGER.isTraceEnabled()) {
@@ -166,7 +167,7 @@ public class UniregIAMAuthProcessingFilter extends IAMAuthenticationProcessingFi
 		}
 
 		// First
-		String firstName = request.getHeader(firstnameHeaderKey);
+		String firstName = getHeaderString(request, firstnameHeaderKey);
 		if (firstName == null && isDebug()) {
 			firstName = SecurityDebugConfig.getIamBypassFirstName();
 			if (LOGGER.isTraceEnabled()) {
@@ -175,7 +176,7 @@ public class UniregIAMAuthProcessingFilter extends IAMAuthenticationProcessingFi
 		}
 		request.getSession().setAttribute(UNIREG_IAM_FIRST, firstName);
 		// Last
-		String lastName = request.getHeader(lastnameHeaderKey);
+		String lastName = getHeaderString(request, lastnameHeaderKey);
 		if (lastName == null && isDebug()) {
 			lastName = SecurityDebugConfig.getIamBypassLastName();
 			if (LOGGER.isTraceEnabled()) {
@@ -187,7 +188,7 @@ public class UniregIAMAuthProcessingFilter extends IAMAuthenticationProcessingFi
 			LOGGER.trace("IAM first='"+firstName+"' last='"+lastName+"'");
 		}
 
-		String allRoles = request.getHeader(rolesHeaderKey);
+		String allRoles = getHeaderString(request, rolesHeaderKey);
 		if (allRoles == null && isDebug()) {
 			allRoles = SecurityDebugConfig.getIamBypassRoles();
 			if (LOGGER.isTraceEnabled()) {
@@ -239,13 +240,40 @@ public class UniregIAMAuthProcessingFilter extends IAMAuthenticationProcessingFi
 		details.setIamLastName(lastName);
 	}
 
-    @Override
+	/**
+	 * Retourne un paramètre stockée dans le header http de la requête. Cette méthode s'assure que l'encoding de la chaîne de caractères retournée est correct.
+	 *
+	 * @param request   la requête http
+	 * @param parameter le nom du paramètre
+	 * @return la valeur string du paramètre
+	 */
+	private String getHeaderString(HttpServletRequest request, String parameter) {
+		return decodeHeaderString(request.getHeader(parameter));
+	}
+
+	/**
+	 * [UNIREG-2335] Il semble que toutes les strings stockés dans le header http soient encodées en ISO-8859-1, on effectue donc la conversion à la main.
+	 *
+	 * @param string une string directement récupérée du header http
+	 * @return la même string décodée en UTF-8.
+	 */
+	private static String decodeHeaderString(String string) {
+		if (string != null) {
+			try {
+				final byte[] bytes = string.getBytes("ISO-8859-1");
+				string = new String(bytes, "UTF-8");
+			}
+			catch (UnsupportedEncodingException e) {
+				throw new RuntimeException(e);
+			}
+		}
+		return string;
+	}
+
+	@Override
 	protected boolean requiresAuthentication(final HttpServletRequest request, final HttpServletResponse response) {
     	// Hack pour le debugging.
-    	if (SecurityDebugConfig.isReloadEachTime()) {
-	    	return true;
-    	}
-    	return super.requiresAuthentication(request, response);
+		return SecurityDebugConfig.isReloadEachTime() || super.requiresAuthentication(request, response);
 	}
 
 	private boolean isDebug() {

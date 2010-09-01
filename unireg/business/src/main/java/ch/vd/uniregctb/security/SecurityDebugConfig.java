@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.security;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
 import org.springframework.beans.factory.InitializingBean;
@@ -60,7 +61,7 @@ public class SecurityDebugConfig implements InitializingBean {
 	}
 
 	/**
-	 * Exemple de roles recus depuis from IAM: Les roles doivent etre s�par�s par le caractere '|'
+	 * Exemple de rôles reçus depuis from IAM: Les rôles doivent être séparés par le caractère '|'
 	 * <p>
 	 * cn=finances-demo-comptable,dc=etat-de-vaud,dc=ch cn=finances-demo-secretaire_d_office,dc=etat-de-vaud,dc=ch
 	 * cn=finances-demo-juriste,dc=etat-de-vaud,dc=ch cn=finances-demo-prepose,dc=etat-de-vaud,dc=ch
@@ -100,6 +101,7 @@ public class SecurityDebugConfig implements InitializingBean {
 	/**
 	 * Setter réservé à Spring. Ne pas l'utiliser depuis du code Java !
 	 */
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setIfoSecBypassUnitTest(boolean ifoSecBypassUnitTest) {
 		SecurityDebugConfig.ifoSecBypassUnitTest = ifoSecBypassUnitTest;
 	}
@@ -107,17 +109,32 @@ public class SecurityDebugConfig implements InitializingBean {
 	/**
 	 * Setter réservé à Spring. Ne pas l'utiliser depuis du code Java !
 	 */
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setProperties(UniregProperties properties) {
 		SecurityDebugConfig.properties = properties;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setIfoSecService(IfoSecService ifoSecService) {
 		this.ifoSecService = ifoSecService;
 	}
 
 	private String getStringProp(String key) {
 		String value = properties.getProperty(key);
-		return value == null ? "" : value;
+		if (value == null) {
+			return "";
+		}
+
+		// les fichiers de propriétés sont toujours lus en ISO-8859-1 
+		try {
+			final byte[] bytes = value.getBytes("ISO-8859-1");
+			value = new String(bytes, "UTF-8");
+		}
+		catch (UnsupportedEncodingException e) {
+			throw new RuntimeException(e);
+		}
+
+		return value;
 	}
 
 	private boolean getBooleanProp(String key) {
