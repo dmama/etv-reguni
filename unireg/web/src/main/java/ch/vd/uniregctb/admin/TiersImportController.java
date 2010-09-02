@@ -10,7 +10,6 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,8 +29,6 @@ import org.springframework.web.servlet.view.RedirectView;
 
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.admin.ScriptBean.DBUnitMode;
-import ch.vd.uniregctb.adresse.AdresseException;
-import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.AbstractSimpleFormController;
 import ch.vd.uniregctb.database.DatabaseService;
@@ -66,7 +63,6 @@ public class TiersImportController extends AbstractSimpleFormController {
 	private static final String SCRIPTS_LIST_FILES = SCRIPTS_FOLDER_PATH+"/files-list.txt";
 
 	private TiersDAO dao;
-	private AdresseService adresseService;
 	private DocumentService docService;
 	private DatabaseService dbService;
 
@@ -204,10 +200,8 @@ public class TiersImportController extends AbstractSimpleFormController {
 				// lancement du script
 				launchDbUnit(inputXML, script.getMode(), filename);
 
-				successView.addObject("scriptResult", "success");
-
-				final List<InfoTiers> infoTiers = buildInfoTiers();
-				successView.addObject("infoTiers", infoTiers);
+				// tout c'est bien passé, on redirige vers la preview des données de la base
+				return new ModelAndView(new RedirectView("dbpreview.do"));
 			}
 			catch (IndexerException e) {
 				successView.addObject("scriptResult", "IndexerException");
@@ -230,76 +224,6 @@ public class TiersImportController extends AbstractSimpleFormController {
 			successView.addObject("scriptResult", "noInputStream");
 		}
 		return successView;
-	}
-
-	/**
-	 * Construit la liste des numéros, type et noms courrier des 100 premiers tiers de la base de données.
-	 *
-	 * @return une liste contenant des informaitons de tiers
-	 */
-	private List<InfoTiers> buildInfoTiers() {
-
-		final List<InfoTiers> infoTiers = new ArrayList<InfoTiers>();
-
-		TransactionTemplate template = new TransactionTemplate(transactionManager);
-		template.setReadOnly(true);
-		template.execute(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
-				final List<Tiers> list = dao.getFirst(100);
-				for (Tiers t : list) {
-					
-					final Long numero = t.getNumero();
-					final String type = t.getNatureTiers();
-					List<String> nomsPrenoms;
-					try {
-						nomsPrenoms = adresseService.getNomCourrier(t, null, false);
-					}
-					catch (Exception e) {
-						nomsPrenoms = Arrays.asList("Exception: " + e.getMessage());
-					}
-
-					InfoTiers info = new InfoTiers(numero, type, nomsPrenoms);
-					infoTiers.add(info);
-				}
-				return null;
-			}
-		});
-
-		return infoTiers;
-	}
-
-	public static class InfoTiers {
-		
-		private final long numero;
-		private final String type;
-		private final String nomsPrenoms;
-
-		public InfoTiers(long numero, String type, List<String> nomsPrenoms) {
-			this.numero = numero;
-			this.type = type;
-
-			StringBuilder b = new StringBuilder();
-			for (String n : nomsPrenoms) {
-				if (b.length() != 0) {
-					b.append(" / ");
-				}
-				b.append(n);
-			}
-			this.nomsPrenoms = b.toString();
-		}
-
-		public long getNumero() {
-			return numero;
-		}
-
-		public String getType() {
-			return type;
-		}
-
-		@SuppressWarnings({"UnusedDeclaration"})
-		public String getNomsPrenoms() {
-			return nomsPrenoms;
-		}
 	}
 
 	/**
@@ -348,10 +272,6 @@ public class TiersImportController extends AbstractSimpleFormController {
 
 	public void setTiersDAO(TiersDAO dao) {
 		this.dao = dao;
-	}
-
-	public void setAdresseService(AdresseService adresseService) {
-		this.adresseService = adresseService;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})

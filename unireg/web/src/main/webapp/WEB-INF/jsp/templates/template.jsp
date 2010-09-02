@@ -192,6 +192,7 @@ function ouvrirAide(url) {
 						<li><fmt:message key="label.action.testing" />
 							<ul>
 								<li><a href="<c:url value='/admin/tiersImport.do'/>"><fmt:message key="title.charger.tiers" /></a></li>
+								<li><a href="<c:url value='/admin/dbpreview.do'/>"><fmt:message key="title.preview.tiers" /></a></li>
 								<li><a href="<c:url value='/admin/evenementExterne/main.do'/>"><fmt:message key="title.admin.evtExterne" /></a></li>
 								<unireg:norentes>
 									<li><a href="<c:url value='/admin/norentes.do'/>"><fmt:message key="title.norentes" /></a></li>

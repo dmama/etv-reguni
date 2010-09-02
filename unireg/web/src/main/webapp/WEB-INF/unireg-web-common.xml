@@ -114,6 +114,7 @@
 				-->			
 				<!-- Testing -->
 				<entry key="/admin/tiersImport.do" value-ref="tiersImportController" />
+				<entry key="/admin/dbpreview.do" value-ref="databasePreviewController" />
 				<entry key="/admin/indexation.do" value-ref="gestionIndexationController" />
 				<entry key="/admin/dbdump.do" value-ref="databaseDumpController" />
 				<entry key="/admin/evenementExterne/main.do" value-ref="evenementExterneController" />

@@ -10,9 +10,17 @@
 		<property name="successView" value="admin/tiersImportConfirmation" />
 		<property name="globalIndexer" ref="globalTiersIndexer" />
 		<property name="tiersDAO" ref="tiersDAO" />
-		<property name="adresseService" ref="adresseService" />
 		<property name="docService" ref="docService" />
 		<property name="dbService" ref="databaseService" />
+		<property name="transactionManager" ref="transactionManager" />
+	</bean>
+
+	<bean id="databasePreviewController" class="ch.vd.uniregctb.admin.DatabasePreviewController">
+		<property name="commandClass" value="ch.vd.uniregctb.admin.DatabasePreview" />
+		<property name="formView" value="admin/dbpreview" />
+		<property name="successView" value="dbpreview.do" />
+		<property name="tiersDao" ref="tiersDAO" />
+		<property name="adresseService" ref="adresseService" />
 		<property name="transactionManager" ref="transactionManager" />
 	</bean>
 
