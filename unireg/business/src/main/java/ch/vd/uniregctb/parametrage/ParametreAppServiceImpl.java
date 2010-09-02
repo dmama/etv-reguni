@@ -161,6 +161,10 @@ public class ParametreAppServiceImpl implements ParametreAppService, Initializin
 		return Integer.parseInt(parametres.get(premierePeriodeFiscale).getValeur());
 	}
 
+	public Integer[] getDateExclusionDecedeEnvoiDI() {
+		return getValeurPourParametreDeTypeJoursDansAnnee(dateExclusionDecedeEnvoiDI);
+	}
+
 	public Integer getAnneeMinimaleForDebiteur() {
 		return Integer.parseInt(parametres.get(ParametreEnum.anneeMinimaleForDebiteur).getValeur());
 	}
@@ -284,5 +288,10 @@ public class ParametreAppServiceImpl implements ParametreAppService, Initializin
 	public void setValeur(ParametreEnum param, String valeur) {
 		// La validité de la valeur est verifiée dans formaterValeur()
 		parametres.get(param).setValeur(param.formaterValeur(valeur));
+	}
+
+	public void setDateExclusionDecedeEnvoiDI(Integer[] val) {
+		   assert val.length == 2;
+		setValeur(dateExclusionDecedeEnvoiDI, "" + val[0] + "." + val[1]);
 	}
 }

@@ -36,7 +36,8 @@ public enum ParametreEnum {
 
 	delaiRetentionRapportTravailInactif ("24", Type.delaisEnMois, true),
 
-	anneeMinimaleForDebiteur("2009", Type.annee, true); // [UNIREG-2507]
+	anneeMinimaleForDebiteur("2009", Type.annee, true), // [UNIREG-2507]
+	dateExclusionDecedeEnvoiDI("15.11",Type.jourDansAnnee,true);//[UNIREG-1952]
 
 	/**
 	 * Les differents type de paramétres possibles

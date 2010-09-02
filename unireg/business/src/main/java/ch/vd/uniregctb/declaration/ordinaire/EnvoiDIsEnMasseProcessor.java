@@ -7,6 +7,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+
+import ch.vd.registre.base.date.NullDateBehavior;
+import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.type.*;
 import org.apache.log4j.Logger;
 import org.hibernate.FlushMode;
@@ -76,7 +80,11 @@ public class EnvoiDIsEnMasseProcessor {
 
 	private final PlatformTransactionManager transactionManager;
 
+	private final ParametreAppService parametreService;
+
 	private final int tailleLot;
+
+	private  RegDate dateExclusionDecedes;
 
 	private static class Cache {
 		public final CollectiviteAdministrative cedi;
@@ -96,8 +104,8 @@ public class EnvoiDIsEnMasseProcessor {
 	private EnvoiDIsResults rapport;
 
 	public EnvoiDIsEnMasseProcessor(TiersService tiersService, HibernateTemplate hibernateTemplate, ModeleDocumentDAO modeleDAO,
-			PeriodeFiscaleDAO periodeDAO, DelaisService delaisService, DeclarationImpotService diService, int tailleLot,
-			PlatformTransactionManager transactionManager) {
+	                                PeriodeFiscaleDAO periodeDAO, DelaisService delaisService, DeclarationImpotService diService, int tailleLot,
+	                                PlatformTransactionManager transactionManager, ParametreAppService parametreService) {
 		this.tiersService = tiersService;
 		this.hibernateTemplate = hibernateTemplate;
 		this.modeleDAO = modeleDAO;
@@ -106,16 +114,21 @@ public class EnvoiDIsEnMasseProcessor {
 		this.delaisService = delaisService;
 		this.diService = diService;
 		this.transactionManager = transactionManager;
+		this.parametreService = parametreService;
+		this.dateExclusionDecedes = null;
 		Assert.isTrue(tailleLot > 0);
 	}
 
 	public EnvoiDIsResults run(final int anneePeriode, final TypeContribuableDI type, final Long noCtbMin, final Long noCtbMax, final int nbMax,
-			final RegDate dateTraitement, StatusManager s) throws DeclarationException {
+	                           final RegDate dateTraitement, final boolean exclureDecede, StatusManager s) throws DeclarationException {
 
 		Assert.isTrue(rapport == null); // Un rapport non null signifirait que l'appel a été fait par le batch des DI non émises
 
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
-		final EnvoiDIsResults rapportFinal = new EnvoiDIsResults(anneePeriode, type, dateTraitement, nbMax, noCtbMin, noCtbMax);
+		if(exclureDecede) {
+			dateExclusionDecedes = getDateDebutExclusion(anneePeriode);
+		}
+		final EnvoiDIsResults rapportFinal = new EnvoiDIsResults(anneePeriode, type, dateTraitement, nbMax, noCtbMin, noCtbMax,dateExclusionDecedes);
 
 		// certains contribuables ne recoivent pas de DI du canton (par exemple les diplomates suisses)
 		if (type.getTypeDocument() != null) {
@@ -130,7 +143,7 @@ public class EnvoiDIsEnMasseProcessor {
 
 				@Override
 				public EnvoiDIsResults createSubRapport() {
-					return new EnvoiDIsResults(anneePeriode, type, dateTraitement, nbMax, noCtbMin, noCtbMax);
+					return new EnvoiDIsResults(anneePeriode, type, dateTraitement, nbMax, noCtbMin, noCtbMax, dateExclusionDecedes);
 				}
 
 				@Override
@@ -300,7 +313,7 @@ public class EnvoiDIsEnMasseProcessor {
 	 */
 	@SuppressWarnings({"unchecked", "UnnecessaryLocalVariable"})
 	protected List<Long> createListOnContribuableIds(final int annee, final TypeContribuable typeContribuable,
-	                                                 final TypeDocument typeDocument, final Long noCtbMin, final Long noCtbMax) {
+	                                              final TypeDocument typeDocument, final Long noCtbMin, final Long noCtbMax) {
 
 		final RegDate debutAnnee = RegDate.get(annee, 1, 1);
 		final RegDate finAnnee = RegDate.get(annee, 12, 31);
@@ -396,6 +409,12 @@ public class EnvoiDIsEnMasseProcessor {
 				return false;
 			}
 		}
+		//UNIREG-1952
+		else if( dateExclusionDecedes!=null && estDecedeEnFinDannee(contribuable,tache.getDateFin())){
+			//rapport
+			rapport.addIgnoreCtbExcluDecede(contribuable, tache.getDateDebut(), tache.getDateFin());
+			return false;
+		}
 		else {
 
 			// [UNIREG-1852] les contribuables indigents décédés dans l'année doivent être traités comme les autres contribuables.
@@ -415,6 +434,30 @@ public class EnvoiDIsEnMasseProcessor {
 		return true;
 	}
 
+	/**Permet de savoir
+	 *
+	 * @param contribuable
+	 * @param date
+	 * @return
+	 */
+	private boolean estDecedeEnFinDannee(Contribuable contribuable, final RegDate date) {
+		final ForFiscalPrincipal forPrincipal = contribuable.getForFiscalPrincipalAt(date);
+
+		RegDate dateFinExclusion = RegDate.get(date.year(),12,31);
+		if(forPrincipal!=null){
+			 if(RegDateHelper.isBetween(forPrincipal.getDateFin(),dateExclusionDecedes,dateFinExclusion, NullDateBehavior.LATEST)){
+				return (forPrincipal.getMotifFermeture() == MotifFor.VEUVAGE_DECES);
+			 }
+		}
+		return false;
+
+	}
+
+	private RegDate getDateDebutExclusion(int anneePeriode) {
+		Integer[] momentExclusion = parametreService.getDateExclusionDecedeEnvoiDI();
+		return RegDate.get(anneePeriode, momentExclusion[1], momentExclusion[0]);
+
+	}
 	/**
 	 * Cas spécial indigent : une déclaration d'impôt retournée le jour même est enregistrée dans l'application sans impression.
 	 *
@@ -852,7 +895,7 @@ public class EnvoiDIsEnMasseProcessor {
 		private LotContribuables next;
 
 		public LotContribuablesIterator(int annee, TypeContribuable typeContribuable, TypeDocument typeDocument, RegDate dateTraitement,
-				int taille, Long noCtbMin, Long noCtbMax) {
+				int taille, Long noCtbMin, Long noCtbMax,boolean exclureDecede) {
 			this.annee = annee;
 			this.typeContribuable = typeContribuable;
 			this.typeDocument = typeDocument;

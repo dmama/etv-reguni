@@ -44,9 +44,11 @@ public interface DeclarationImpotService {
 	 *            le nombre maximum de déclaration d'impôts retourner, ou <b>0</b> pour ne pas limiter le processus
 	 * @param dateTraitement
 	 *            la date de traitement officielle du job (= aujourd'hui, sauf pour les tests)
+	 * @param exclureDecede
+	 *          Si vrai, exclure les décédés (date d'événement) se trouvant entre le 15.11 et le 31.12
 	 * @return le nombre de déclarations envoyées.
 	 */
-	public EnvoiDIsResults envoyerDIsEnMasse(int anneePeriode, TypeContribuableDI type, Long noCtbMin, Long noCtbMax, int nbMax, RegDate dateTraitement, StatusManager status)
+	public EnvoiDIsResults envoyerDIsEnMasse(int anneePeriode, TypeContribuableDI type, Long noCtbMin, Long noCtbMax, int nbMax, RegDate dateTraitement, Boolean exclureDecede, StatusManager status)
 			throws DeclarationException;
 
 	/**

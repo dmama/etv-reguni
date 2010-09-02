@@ -181,6 +181,12 @@
                     </key>
                     <value type="java.lang.Integer">100</value>
                 </entry>
+				 <entry>
+                    <key>
+                        <util:constant static-field="ch.vd.uniregctb.declaration.EnvoiDIsJob.EXCLURE_DCD"/>
+                    </key>
+                    <value type="java.lang.Boolean">0</value>
+                </entry>
             </map>
         </constructor-arg>
         <property name="service" ref="diService"/>

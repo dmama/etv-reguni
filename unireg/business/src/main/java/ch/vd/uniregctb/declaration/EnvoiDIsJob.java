@@ -15,6 +15,7 @@ import ch.vd.uniregctb.metier.assujettissement.TypeContribuableDI;
 import ch.vd.uniregctb.rapport.RapportService;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.scheduler.JobParam;
+import ch.vd.uniregctb.scheduler.JobParamBoolean;
 import ch.vd.uniregctb.scheduler.JobParamEnum;
 import ch.vd.uniregctb.scheduler.JobParamInteger;
 import ch.vd.uniregctb.scheduler.JobParamLong;
@@ -33,6 +34,7 @@ public class EnvoiDIsJob extends JobDefinition {
 	public static final String PERIODE_FISCALE = "PERIODE";
 	public static final String CATEGORIE_CTB = "CATEGORIE";
 	public static final String NB_MAX = "NB_MAX";
+	public static final String EXCLURE_DCD = "EXCLURE_DCD";
 	public static final String CTB_NO_MIN = "CTB_NO_MIN";
 	public static final String CTB_NO_MAX = "CTB_NO_MAX";
 
@@ -85,6 +87,16 @@ public class EnvoiDIsJob extends JobDefinition {
 			params.add(param);
 		}
 
+		{
+			JobParam param = new JobParam();
+			param.setDescription("Exclure les décédés de fin d'année");
+			param.setName(EXCLURE_DCD);
+			param.setMandatory(false);
+			param.setType(new JobParamBoolean());
+			params.add(param);
+		}
+
+
 		defaultParams = new HashMap<String, Object>();
 		{
 			RegDate today = RegDate.get();
@@ -134,9 +146,10 @@ public class EnvoiDIsJob extends JobDefinition {
 
 		final int nbMax = (params.get(NB_MAX) == null ? 0 : (Integer) params.get(NB_MAX));
 		final RegDate dateTraitement = RegDate.get(); // = aujourd'hui
+		final Boolean exclureDecede = (Boolean) params.get(EXCLURE_DCD);
 
 		final StatusManager status = getStatusManager();
-		final EnvoiDIsResults results = service.envoyerDIsEnMasse(annee, type, noCtbMin, noCtbMax, nbMax, dateTraitement, status);
+		final EnvoiDIsResults results = service.envoyerDIsEnMasse(annee, type, noCtbMin, noCtbMax, nbMax, dateTraitement, exclureDecede, status);
 		final EnvoiDIsRapport rapport = rapportService.generateRapport(results, status);
 
 		setLastRunReport(rapport);
@@ -151,6 +164,9 @@ public class EnvoiDIsJob extends JobDefinition {
 		builder.append(type.name());
 		builder.append(" à la date du ");
 		builder.append(RegDateHelper.dateToDisplayString(dateTraitement));
+		if(exclureDecede){
+			builder.append(" avec exclusion des décédés ");	
+		}
 		builder.append(" est terminée.");
 		Audit.success(builder.toString(), rapport);
 	}

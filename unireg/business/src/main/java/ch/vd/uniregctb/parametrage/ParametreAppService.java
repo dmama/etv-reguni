@@ -44,6 +44,8 @@ public interface ParametreAppService {
 
 	public Integer getPremierePeriodeFiscale();
 
+	public Integer[] getDateExclusionDecedeEnvoiDI();
+
 	/**
 	 * [UNIREG-2507]
 	 *
@@ -98,5 +100,7 @@ public interface ParametreAppService {
 	public void setAnneeMinimaleForDebiteur(Integer val);
 
 	public void setValeur(ParametreEnum param, String valeur);
+
+	public void setDateExclusionDecedeEnvoiDI(Integer[] val);
 
 }

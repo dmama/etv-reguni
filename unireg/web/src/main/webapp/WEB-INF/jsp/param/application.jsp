@@ -328,6 +328,20 @@
 						</td>
 			 		</tr><tr class="separator"><th colspan="4" ></th></tr>
 		 		</spring:bind>
+		 		<spring:bind path="dateExclusionDecedeEnvoiDI">
+			 		<tr class="even">
+			 			<td><fmt:message key="label.param.dateExclusionDecedeEnvoiDI"/></td>
+			 			<td class="date">${dateExclusionDecedeEnvoiDIParDefaut}</td>
+			 			<td class="valeur">
+			 				<form:input path="dateExclusionDecedeEnvoiDI" cssClass="valeur date" cssErrorClass="valeur input-with-errors date" maxlength="5"/>
+			 			</td>
+			 			<td>
+							<c:if test="${status.error}">
+			 					&nbsp;<span class="erreur">${status.errorMessage}</span>
+			 				</c:if>
+						</td>
+			 		</tr><tr class="separator"><th colspan="4" ></th></tr>
+		 		</spring:bind>
 				<spring:bind path="anneeMinimaleForDebiteur">
 			 		<tr class="odd">
 			 			<td><fmt:message key="label.param.anneeMinimaleForDebiteur"/></td>

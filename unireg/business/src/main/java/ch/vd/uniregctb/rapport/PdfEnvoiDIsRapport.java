@@ -44,6 +44,9 @@ public class PdfEnvoiDIsRapport extends PdfRapport {
                     table.addLigne("Nombre maximum d'envois :", String.valueOf(results.nbMax));
 	                table.addLigne("Numéro de contribuable minimal :", results.noCtbMin == null ? "-" : FormatNumeroHelper.numeroCTBToDisplay(results.noCtbMin));
 	                table.addLigne("Numéro de contribuable maximal :", results.noCtbMax == null ? "-" : FormatNumeroHelper.numeroCTBToDisplay(results.noCtbMax));
+	                if(results.dateExclureDecede!=null){
+		                 table.addLigne("Date de debut d'exclusion des contribuables décédés :",  RegDateHelper.dateToDisplayString(results.dateExclureDecede));
+	                }
                     table.addLigne("Date de traitement :", RegDateHelper.dateToDisplayString(results.dateTraitement));
                 }
             });

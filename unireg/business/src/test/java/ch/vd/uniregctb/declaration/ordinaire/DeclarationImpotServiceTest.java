@@ -663,7 +663,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		doInNewTransaction(new TxCallback() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				assertResults(1, service.envoyerDIsEnMasse(2007, TypeContribuableDI.VAUDOIS_DEPENSE, null, null, 100, date(2008, 1, 20), null));
+				assertResults(1, service.envoyerDIsEnMasse(2007, TypeContribuableDI.VAUDOIS_DEPENSE, null, null, 100, date(2008, 1, 20), false, null));
 				return null;
 			}
 		});
@@ -679,7 +679,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		doInNewTransaction(new TxCallback() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				assertResults(1, service.envoyerDIsEnMasse(2007, TypeContribuableDI.VAUDOIS_ORDINAIRE_VAUD_TAX, null, null, 100, date(2008, 1, 20), null));
+				assertResults(1, service.envoyerDIsEnMasse(2007, TypeContribuableDI.VAUDOIS_ORDINAIRE_VAUD_TAX, null, null, 100, date(2008, 1, 20), false, null));
 				return null;
 			}
 		});
@@ -695,7 +695,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		doInNewTransaction(new TxCallback() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				assertResults(1, service.envoyerDIsEnMasse(2007, TypeContribuableDI.HORS_CANTON, null, null, 100, date(2008, 1, 20), null));
+				assertResults(1, service.envoyerDIsEnMasse(2007, TypeContribuableDI.HORS_CANTON, null, null, 100, date(2008, 1, 20), false, null));
 				return null;
 			}
 		});
@@ -711,7 +711,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		doInNewTransaction(new TxCallback() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				assertResults(1, service.envoyerDIsEnMasse(2007, TypeContribuableDI.HORS_SUISSE, null, null, 100, date(2008, 1, 20), null)); // bruno
+				assertResults(1, service.envoyerDIsEnMasse(2007, TypeContribuableDI.HORS_SUISSE, null, null, 100, date(2008, 1, 20), false, null)); // bruno
 				return null;
 			}
 		});
@@ -731,7 +731,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		doInNewTransaction(new TxCallback() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				assertResults(6, service.envoyerDIsEnMasse(2007, TypeContribuableDI.VAUDOIS_ORDINAIRE, null, null, 100, date(2008, 1, 20), null));
+				assertResults(6, service.envoyerDIsEnMasse(2007, TypeContribuableDI.VAUDOIS_ORDINAIRE, null, null, 100, date(2008, 1, 20), false, null));
 				return null;
 			}
 		});
@@ -846,7 +846,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				// limite à 1 le nombre de DI envoyée
-				assertResults(1, service.envoyerDIsEnMasse(2007, TypeContribuableDI.VAUDOIS_ORDINAIRE, null, null, 1, date(2008, 1, 20), null));
+				assertResults(1, service.envoyerDIsEnMasse(2007, TypeContribuableDI.VAUDOIS_ORDINAIRE, null, null, 1, date(2008, 1, 20), false, null));
 				return null;
 			}
 		});
@@ -907,7 +907,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		doInNewTransaction(new TxCallback() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				assertResults(1, service.envoyerDIsEnMasse(2007, TypeContribuableDI.VAUDOIS_ORDINAIRE, ids.ericId, ids.ericId, 100, date(2008, 1, 20), null));
+				assertResults(1, service.envoyerDIsEnMasse(2007, TypeContribuableDI.VAUDOIS_ORDINAIRE, ids.ericId, ids.ericId, 100, date(2008, 1, 20), false, null));
 				return null;
 			}
 		});
@@ -982,7 +982,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 			public Object execute(TransactionStatus status) throws Exception {
 				InterruptingStatusManager s = new InterruptingStatusManager(2);
 				service.setTailleLot(1);
-				assertResults(taille, service.envoyerDIsEnMasse(2007, TypeContribuableDI.VAUDOIS_ORDINAIRE, null, null, 100, date(2008, 1, 20), s));
+				assertResults(taille, service.envoyerDIsEnMasse(2007, TypeContribuableDI.VAUDOIS_ORDINAIRE, null, null, 100, date(2008, 1, 20), false, s));
 				return null;
 			}
 		});
@@ -1061,7 +1061,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 			public Object execute(TransactionStatus status) throws Exception {
 
 				// Lance et provoque le crash de l'envoi en masse sur la DI de john
-				assertResults(1, service.envoyerDIsEnMasse(2007, TypeContribuableDI.HORS_CANTON, null, null, 100, date(2008, 1, 20), null));
+				assertResults(1, service.envoyerDIsEnMasse(2007, TypeContribuableDI.HORS_CANTON, null, null, 100, date(2008, 1, 20), false, null));
 				return null;
 			}
 		});
@@ -1144,7 +1144,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 
 		// traite les trois habitants dans autant de lots séparés, et lève une exception sur le traitement de Jacques
 		service.setTailleLot(1);
-		service.envoyerDIsEnMasse(2007, TypeContribuableDI.VAUDOIS_ORDINAIRE, null, null, 100, RegDate.get(), status);
+		service.envoyerDIsEnMasse(2007, TypeContribuableDI.VAUDOIS_ORDINAIRE, null, null, 100, RegDate.get(), false, status);
 		service.setTailleLot(100);
 
 		doInNewTransaction(new TxCallback() {
@@ -1286,7 +1286,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		doInNewTransaction(new TxCallback() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				EnvoiDIsResults r = service.envoyerDIsEnMasse(2007, TypeContribuableDI.VAUDOIS_ORDINAIRE, null, null, 100, date(2008, 1, 20), null);
+				EnvoiDIsResults r = service.envoyerDIsEnMasse(2007, TypeContribuableDI.VAUDOIS_ORDINAIRE, null, null, 100, date(2008, 1, 20), false, null);
 				assertResults(2, 1, 1, 1, r);
 				return null;
 			}

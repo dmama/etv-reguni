@@ -48,6 +48,7 @@ public class ParamApplicationView {
 	private String delaiRetourSommationListeRecapitulative;
 	private String delaiEcheanceSommationListeRecapitualtive;
 	private String delaiRetentionRapportTravailInactif;
+	private String dateExclusionDecedeEnvoiDI;
 
 	public ParamApplicationView(ParametreAppService service) {
 		this.noel = ParametreEnum.noel.convertirValeurTypeeVersString(service.getNoel());
@@ -72,6 +73,7 @@ public class ParamApplicationView {
 		this.delaiRetourSommationListeRecapitulative = ParametreEnum.delaiRetourSommationListeRecapitulative.convertirValeurTypeeVersString(service.getDelaiRetourSommationListeRecapitulative());
 		this.delaiEcheanceSommationListeRecapitualtive = ParametreEnum.delaiEcheanceSommationListeRecapitualtive.convertirValeurTypeeVersString(service.getDelaiEcheanceSommationListeRecapitualtive());
 		this.delaiRetentionRapportTravailInactif = ParametreEnum.delaiRetentionRapportTravailInactif.convertirValeurTypeeVersString(service.getDelaiRetentionRapportTravailInactif());
+		this.dateExclusionDecedeEnvoiDI = ParametreEnum.dateExclusionDecedeEnvoiDI.convertirValeurTypeeVersString(service.getDateExclusionDecedeEnvoiDI());
 	}
 
 	public void saveTo(ParametreAppService service) {
@@ -100,6 +102,7 @@ public class ParamApplicationView {
 		service.setDelaiEcheanceSommationListeRecapitualtive(
 				(Integer) ParametreEnum.delaiEcheanceSommationListeRecapitualtive.convertirStringVersValeurTypee(this.delaiEcheanceSommationListeRecapitualtive));
 		service.setDelaiRetentionRapportTravailInactif((Integer) ParametreEnum.delaiRetentionRapportTravailInactif.convertirStringVersValeurTypee(this.delaiRetentionRapportTravailInactif));
+		service.setDateExclusionDecedeEnvoiDI((Integer[])ParametreEnum.dateExclusionDecedeEnvoiDI.convertirStringVersValeurTypee(this.dateExclusionDecedeEnvoiDI));
 	}
 
 	public String getNoel() {
@@ -260,5 +263,13 @@ public class ParamApplicationView {
 
 	public void setDelaiRetentionRapportTravailInactif(String delaiRetentionRapportTravailInactif) {
 		this.delaiRetentionRapportTravailInactif = delaiRetentionRapportTravailInactif;
+	}
+
+	public String getDateExclusionDecedeEnvoiDI() {
+		return dateExclusionDecedeEnvoiDI;
+	}
+
+	public void setDateExclusionDecedeEnvoiDI(String dateExclusionDecedeEnvoiDI) {
+		this.dateExclusionDecedeEnvoiDI = dateExclusionDecedeEnvoiDI;
 	}
 }

@@ -75,7 +75,7 @@ public class EnvoiDIsEnMasseTestApp extends BusinessItTestApplication {
 			public Object doInTransaction(TransactionStatus status) {
 				try {
 					LOGGER.info("Envoi des DIS vaudois ordinaires...");
-					service.envoyerDIsEnMasse(2008, type, null, null, 100000, RegDate.get(2009, 1, 15), null);
+					service.envoyerDIsEnMasse(2008, type, null, null, 100000, RegDate.get(2009, 1, 15), false, null);
 					return null;
 				}
 				catch (DeclarationException e) {

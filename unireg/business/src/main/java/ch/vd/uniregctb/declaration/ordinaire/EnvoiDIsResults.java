@@ -79,6 +79,7 @@ public class EnvoiDIsResults<R extends EnvoiDIsResults> extends JobResults<Long,
 	public final int nbMax;
 	public final Long noCtbMin;
 	public final Long noCtbMax;
+	public final RegDate dateExclureDecede;
 
 	// Données de processing
 	public int nbCtbsTotal;
@@ -89,13 +90,14 @@ public class EnvoiDIsResults<R extends EnvoiDIsResults> extends JobResults<Long,
 	public final List<Erreur> ctbsRollback = new ArrayList<Erreur>();
 	public boolean interrompu;
 
-	public EnvoiDIsResults(int annee, TypeContribuableDI type, RegDate dateTraitement, int nbMax, Long noCtbMin, Long noCtbMax) {
+	public EnvoiDIsResults(int annee, TypeContribuableDI type, RegDate dateTraitement, int nbMax, Long noCtbMin, Long noCtbMax, RegDate dateExclureDecede) {
 		this.annee = annee;
 		this.type = type;
 		this.dateTraitement = dateTraitement;
 		this.nbMax = nbMax;
 		this.noCtbMin = noCtbMin;
 		this.noCtbMax = noCtbMax;
+		this.dateExclureDecede = dateExclureDecede;
 	}
 
 	public void addCtbTraites(Long noCtb) {
@@ -136,6 +138,11 @@ public class EnvoiDIsResults<R extends EnvoiDIsResults> extends JobResults<Long,
 		ctbsIgnores.add(new Ignore(ctb.getNumero(), ctb.getOfficeImpotId(), IgnoreType.CTB_EXCLU, "Date limite de l'exclusion = "
 				+ RegDateHelper.dateToDisplayString(dateLimiteExclusion)));
 	}
+
+public void addIgnoreCtbExcluDecede(Contribuable ctb, RegDate dateDebut, RegDate dateFin) {
+		ctbsIgnores.add(new Ignore(ctb.getNumero(), ctb.getOfficeImpotId(), IgnoreType.CTB_EXCLU, "Décédé en fin d'année"));
+	}
+
 
 	public void addAll(R rapport) {
 		if (rapport != null) {
