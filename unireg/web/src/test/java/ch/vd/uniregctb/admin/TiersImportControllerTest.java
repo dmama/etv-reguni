@@ -9,6 +9,8 @@ import org.springframework.test.annotation.NotTransactional;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.View;
+import org.springframework.web.servlet.view.RedirectView;
 
 import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
@@ -116,13 +118,16 @@ public class TiersImportControllerTest extends WebTest {
 		request.addParameter("scriptFileName", DB_UNIT_FILE);
 		request.addParameter("mode", "CLEAN_INSERT");
 
-		ModelAndView mav = controller.handleRequest(request, response);
-		Map<?, ?> model = mav.getModel();
-		Assert.assertNotNull("l'objet model retourné est null", model);
+		final ModelAndView mav = controller.handleRequest(request, response);
+		assertNotNull(mav);
 
-		String result = (String) model.get("scriptResult");
-		assertNotNull("l'objet result n'a pas été trouvé dans le modèle", result);
-		assertEquals("exception :" + model.get("exception"), "success", result);
+		// on vérifie que l'import est un succès, c'est-à-dire que la vue redirige vers la page qui affiche une prévisualisation de la base de données
+		final View view = mav.getView();
+		assertNotNull(view);
+		assertInstanceOf(RedirectView.class, view);
+
+		final RedirectView rv =(RedirectView) view;
+		assertEquals("dbpreview.do", rv.getUrl());
 
 		doInTransaction(new TransactionCallback() {
 			public Object doInTransaction(TransactionStatus status) {
