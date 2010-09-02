@@ -916,7 +916,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 				ids.aci, calculerDateDelaiImprime(dateTraitement, 3, 60), decl);
 	}
 
-		/**
+	/**
 	 * [UNIREG-1952] Teste que les déclarations des  décédés en fin d'année[15.11 - 31.12] ne sont pas envoyées.
 	 */
 	@SuppressWarnings({"unchecked"})
@@ -986,6 +986,77 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 
 
 	}
+	/**
+	 * [UNIREG-1952] Teste que les déclarations des  décédés en fin d'année[15.11 - 31.12] ne sont pas envoyées.
+	 */
+	@SuppressWarnings({"unchecked"})
+	@Test
+	public void testEnvoiDIContribuableDecedeMilieuAnnee() throws Exception {
+
+		final RegDate dateDeces = date(2008, 5, 23);
+
+		class Ids {
+			Long marcId;
+			Long aci;
+		}
+		final Ids ids = new Ids();
+
+		doInNewTransaction(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+
+				final CollectiviteAdministrative colAdm = addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST);
+				final CollectiviteAdministrative aci = addCollAdm(MockOfficeImpot.ACI);
+				ids.aci = aci.getId();
+
+				final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);
+				final ModeleDocument declarationComplete = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2008);
+				addModeleFeuilleDocument("Déclaration", "210", declarationComplete);
+				addModeleFeuilleDocument("Annexe 1", "220", declarationComplete);
+				addModeleFeuilleDocument("Annexe 2-3", "230", declarationComplete);
+				addModeleFeuilleDocument("Annexe 4-5", "240", declarationComplete);
+
+				// Un contribuable indigent habitant à Lausanne, décédé en 2008
+				final Contribuable marc = addNonHabitant("Marc", "Dumont", date(1962, 3, 12), Sexe.MASCULIN);
+				marc.setOfficeImpotId(MockOfficeImpot.OID_LAUSANNE_VILLE.getNoColAdm());
+				final ForFiscalPrincipal ffp = addForPrincipal(marc, date(1990, 1, 1), MotifFor.MAJORITE, dateDeces, MotifFor.VEUVAGE_DECES, MockCommune.Lausanne);
+				ffp.setModeImposition(ModeImposition.ORDINAIRE);
+				ids.marcId = marc.getNumero();
+
+				// traitement du batch de détermination des DIs -> création d'une tâche sur une fraction d'année
+				TacheEnvoiDeclarationImpot t = addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(2009, 1, 1), date(2008, 1, 1), dateDeces, TypeContribuable.VAUDOIS_ORDINAIRE,
+						TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, marc, null, colAdm);
+				t.setAdresseRetour(TypeAdresseRetour.ACI);
+				return null;
+			}
+		});
+
+
+		final RegDate dateTraitement = date(2009, 1, 15);
+		final EnvoiDIsResults results = (EnvoiDIsResults) doInNewTransaction(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				return processor.run(2008, TypeContribuableDI.VAUDOIS_ORDINAIRE, null, null, 1000, dateTraitement, true, null);
+			}
+		});
+			assertNotNull(results);
+		assertEquals(1, results.nbCtbsTotal);
+
+		final List<DeclarationImpotOrdinaire> declarations = hibernateTemplate.find("from DeclarationImpotOrdinaire");
+		//[UNIREG-1952] Dans le cas ou l'exclusion des décédés est activée, il faut qu'un décédé avant la date d'eclusion soit traité normalement 
+		assertNotNull(declarations);
+		assertEquals(1, declarations.size());
+		final DeclarationImpotOrdinaire decl = declarations.get(0);
+		assertDI(date(2008, 1, 1), dateDeces, TypeEtatDeclaration.EMISE, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
+				ids.aci, calculerDateDelaiImprime(dateTraitement, 3, 60), decl);
+
+
+
+
+
+
+	}
+
 
 	/**
 	 * [UNIREG-1980] Teste que les déclarations des indigents possèdent à la fois l'état 'émis' et l'état 'retourné'
