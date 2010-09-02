@@ -7,7 +7,10 @@
 	<c:set var="form" value="'${param.form}'"/>
 </c:if>
 <spring:bind path="${path}">
-	<input  type="text" name="${status.expression}" value="${status.value}" id="${id}" size="10" maxlength ="10" class="date"  <c:if test="${param.onChange != null && not empty param.onChange }">onchange="javascript:Calendar<c:out value="${id}"/>_OnChange(this);"</c:if> />
+	<input  type="text" name="${status.expression}" value="${status.value}" id="${id}" size="10" maxlength ="10" class="date"
+		<c:if test="${param.onChange != null && not empty param.onChange }">onchange="<c:out value="${param.onChange}" />(this);"</c:if>
+		<c:if test="${param.onkeyup != null && not empty param.onkeyup }">onkeyup="<c:out value="${param.onkeyup}" />(this);"</c:if> 
+	/>
 	<a	href="#" name="<c:out value="${status.expression}"/>_Anchor" id="<c:out value="${id}"/>_Anchor" tabindex="9999" class="calendar"
 			onclick="calendar(document.forms[<c:out value="${form}"/>]['<c:out value="${status.expression}"/>'], '<c:out value="${id}"/>_Anchor');" >&nbsp;</a>
 	<c:if test="${id == 'dateNaissance'}">
@@ -22,7 +25,7 @@
 <script type="text/javascript" language="Javascript1.3">
 	function Calendar<c:out value="${id}"/>_OnChange(element) {		
 			element = E$(element);
-			<c:out value="${param.onChange}" />(element);		
+			<c:out value="${param.onChange}" />(element);
 	}
 </script>
 </c:if>

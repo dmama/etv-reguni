@@ -46,13 +46,14 @@
 									<jsp:param name="path" value="dateOuverture" />
 									<jsp:param name="id" value="dateOuverture" />
 									<jsp:param name="onChange" value="dateOuverture_onChange" />
+									<jsp:param name="onkeyup" value="dateOuverture_onChange" />
 								</jsp:include>
 							</td>
 
 							<%-- Motif d'ouverture (éditable) --%>
 							<td><fmt:message key="label.motif.ouverture" />&nbsp;:</td>
 							<td>
-								<form:select path="motifOuverture" onchange="updateSyncActions();" />
+								<form:select path="motifOuverture" onchange="updateSyncActions();" onkeyup="updateSyncActions();"/>
 								<form:errors path="motifOuverture" cssClass="error" />
 							</td>
 						</c:if>
@@ -84,13 +85,14 @@
 									<jsp:param name="path" value="dateFermeture" />
 									<jsp:param name="id" value="dateFermeture" />
 									<jsp:param name="onChange" value="dateFermeture_onChange" />
+									<jsp:param name="onkeyup" value="dateFermeture_onChange" />
 								</jsp:include>
 							</td>
 
 							<%-- Motif de fermeture --%>
 							<td><fmt:message key="label.motif.fermeture" />&nbsp;:</td>
 							<td>
-								<form:select path="motifFermeture" onchange="updateSyncActions();" />
+								<form:select path="motifFermeture" onchange="updateSyncActions();" onkeyup="updateSyncActions();"/>
 								<form:errors path="motifFermeture" cssClass="error" />
 							</td>
 						</c:if>
@@ -191,11 +193,11 @@
 				});
 			}
 
-			function dateOuverture_onChange() {
+			function dateOuverture_onChange(element) {
 				updateSyncActions();
 			}
 
-			function dateFermeture_onChange() {
+			function dateFermeture_onChange(element) {
 				updateSyncActions();
 			}
 		</script>

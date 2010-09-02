@@ -1,11 +1,9 @@
 package ch.vd.uniregctb.tiers;
 
-import java.text.ParseException;
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.text.ParseException;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -35,18 +33,12 @@ import ch.vd.uniregctb.type.MotifFor;
  */
 public class TiersForController extends AbstractTiersController {
 
-	private static final String ID_FOR_PARAMETER_NAME = "idFor";
-
-	private static final String NUMERO_CTB_PARAMETER_NAME = "numero";
-
-	private static final String NATURE_FOR_PARAMETER_NAME = "nature";
-
-	private static final String NATURE_DPI_PARAMETER_VALUE = "DPI";
-
-	/**
-	 * Un LOGGER.
-	 */
 	protected final Logger LOGGER = Logger.getLogger(TiersForController.class);
+
+	private static final String ID_FOR_PARAMETER_NAME = "idFor";
+	private static final String NUMERO_CTB_PARAMETER_NAME = "numero";
+	private static final String NATURE_FOR_PARAMETER_NAME = "nature";
+	private static final String NATURE_DPI_PARAMETER_VALUE = "DPI";
 
 	private ForFiscalManager forFiscalManager;
 	private ParametreAppService paramService;
@@ -63,7 +55,7 @@ public class TiersForController extends AbstractTiersController {
 	 */
 	@Override
 	protected Object formBackingObject(HttpServletRequest request) throws Exception {
-		ForFiscalView forFiscalView = null;
+		ForFiscalView forFiscalView;
 		String idFor = request.getParameter(ID_FOR_PARAMETER_NAME);
 		Long numeroCtb = extractLongParam(request, NUMERO_CTB_PARAMETER_NAME);
 		String natureFor = request.getParameter(NATURE_FOR_PARAMETER_NAME);
@@ -86,34 +78,13 @@ public class TiersForController extends AbstractTiersController {
 	}
 
 	/**
-	 * @see org.springframework.web.servlet.mvc.SimpleFormController#showForm(javax.servlet.http.HttpServletRequest,
-	 *      javax.servlet.http.HttpServletResponse, org.springframework.validation.BindException, java.util.Map)
-	 */
-	@SuppressWarnings("unchecked")
-	@Override
-	protected ModelAndView showForm(HttpServletRequest request, HttpServletResponse response, BindException errors, Map model)
-			throws Exception {
-		ModelAndView mav = super.showForm(request, response, errors, model);
-		return mav;
-	}
-
-	/**
-	 * @see org.springframework.web.servlet.mvc.BaseCommandController#onBindAndValidate(javax.servlet.http.HttpServletRequest,
-	 *      java.lang.Object, org.springframework.validation.BindException)
-	 */
-	@Override
-	protected void onBindAndValidate(HttpServletRequest request, Object command, BindException errors) throws Exception {
-		super.onBindAndValidate(request, command, errors);
-	}
-
-	/**
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object, org.springframework.validation.BindException)
 	 */
 	@Override
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors)
 			throws Exception {
-		ModelAndView mav = super.onSubmit(request, response, command, errors);
+		super.onSubmit(request, response, command, errors);
 		ForFiscalView forFiscalView = (ForFiscalView) command;
 		checkAccesDossierEnEcriture(forFiscalView.getNumeroCtb());
 
@@ -146,32 +117,34 @@ public class TiersForController extends AbstractTiersController {
 		Component component;
 		try {
 			final Map<String, String> parameters = event.getParameters();
-			final String motifOuvertureAsString = parameters.get("motifOuverture");
-			final String dateOuvertureAsString = parameters.get("dateOuverture");
-			final String motifFermetureAsString = parameters.get("motifFermeture");
-			final String dateFermetureAsString = parameters.get("dateFermeture");
-			final String noOfsAutoriteAsString = parameters.get("nOfsAutoriteFiscale").replaceAll("[^0-9]", "");
+			final String motifOuvertureAsString = getTrimmedParameter(parameters, "motifOuverture");
+			final String dateOuvertureAsString = getTrimmedParameter(parameters, "dateOuverture");
+			final String motifFermetureAsString = getTrimmedParameter(parameters, "motifFermeture");
+			final String dateFermetureAsString = getTrimmedParameter(parameters, "dateFermeture");
+			final String noOfsAutoriteAsString = getTrimmedParameter(parameters, "nOfsAutoriteFiscale").replaceAll("[^0-9]", "");
 
-			if (StringUtils.isBlank(dateOuvertureAsString) || StringUtils.isBlank(motifOuvertureAsString) || StringUtils.isBlank(noOfsAutoriteAsString)) {
-				return null;
-			}
-
-			final Long forId = Long.valueOf(parameters.get("forId"));
-			final RegDate dateOuverture = RegDateHelper.displayStringToRegDate(dateOuvertureAsString, false);
-			final MotifFor motifOuverture = MotifFor.valueOf(motifOuvertureAsString);
-			final RegDate dateFermeture;
-			final MotifFor motifFermeture;
-			if (StringUtils.isNotBlank(dateFermetureAsString) && StringUtils.isNotBlank(motifFermetureAsString)) {
-				dateFermeture = RegDateHelper.displayStringToRegDate(dateFermetureAsString, false);
-				motifFermeture = MotifFor.valueOf(motifFermetureAsString);
+			if (!isDateValid(dateOuvertureAsString) || !isDateValidOrBlank(dateFermetureAsString)
+					|| StringUtils.isBlank(motifOuvertureAsString) || StringUtils.isBlank(noOfsAutoriteAsString)) {
+				component = null;
 			}
 			else {
-				dateFermeture = null;
-				motifFermeture = null;
-			}
-			final int noOfsAutoriteFiscale = Integer.parseInt(noOfsAutoriteAsString);
+				final Long forId = Long.valueOf(getTrimmedParameter(parameters, "forId"));
+				final RegDate dateOuverture = RegDateHelper.displayStringToRegDate(dateOuvertureAsString, false);
+				final MotifFor motifOuverture = MotifFor.valueOf(motifOuvertureAsString);
+				final RegDate dateFermeture;
+				final MotifFor motifFermeture;
+				if (StringUtils.isNotBlank(dateFermetureAsString) && StringUtils.isNotBlank(motifFermetureAsString)) {
+					dateFermeture = RegDateHelper.displayStringToRegDate(dateFermetureAsString, false);
+					motifFermeture = MotifFor.valueOf(motifFermetureAsString);
+				}
+				else {
+					dateFermeture = null;
+					motifFermeture = null;
+				}
+				final int noOfsAutoriteFiscale = Integer.parseInt(noOfsAutoriteAsString);
 
-			component = forFiscalManager.buildSynchronizeActionsTableSurModificationDeFor(forId, dateOuverture, motifOuverture, dateFermeture, motifFermeture, noOfsAutoriteFiscale);
+				component = forFiscalManager.buildSynchronizeActionsTableSurModificationDeFor(forId, dateOuverture, motifOuverture, dateFermeture, motifFermeture, noOfsAutoriteFiscale);
+			}
 		}
 		catch (Exception e) {
 			LOGGER.error(e, e);
@@ -195,20 +168,21 @@ public class TiersForController extends AbstractTiersController {
 		Component component;
 		try {
 			final Map<String, String> parameters = event.getParameters();
-			final String modeImpositionAsString = parameters.get("modeImposition");
-			final String motifChangementAsString = parameters.get("motifChangement");
-			final String dateChangementAsString = parameters.get("dateChangement");
+			final String modeImpositionAsString = getTrimmedParameter(parameters, "modeImposition");
+			final String motifChangementAsString = getTrimmedParameter(parameters, "motifChangement");
+			final String dateChangementAsString = getTrimmedParameter(parameters, "dateChangement");
 
-			if (StringUtils.isBlank(modeImpositionAsString) || StringUtils.isBlank(motifChangementAsString) || StringUtils.isBlank(dateChangementAsString)) {
-				return null;
+			if (StringUtils.isBlank(modeImpositionAsString) || StringUtils.isBlank(motifChangementAsString) || !isDateValid(dateChangementAsString)) {
+				component = null;
 			}
+			else {
+				final Long forId = Long.valueOf(getTrimmedParameter(parameters, "forId"));
+				final RegDate dateChangement = RegDateHelper.displayStringToRegDate(dateChangementAsString, false);
+				final ModeImposition modeImposition = ModeImposition.valueOf(modeImpositionAsString);
+				final MotifFor motifChangement = MotifFor.valueOf(motifChangementAsString);
 
-			final Long forId = Long.valueOf(parameters.get("forId"));
-			final RegDate dateChangement = RegDateHelper.displayStringToRegDate(dateChangementAsString, false);
-			final ModeImposition modeImposition = ModeImposition.valueOf(modeImpositionAsString);
-			final MotifFor motifChangement = MotifFor.valueOf(motifChangementAsString);
-
-			component = forFiscalManager.buildSynchronizeActionsTableSurModificationDuModeImposition(forId, dateChangement, modeImposition, motifChangement);
+				component = forFiscalManager.buildSynchronizeActionsTableSurModificationDuModeImposition(forId, dateChangement, modeImposition, motifChangement);
+			}
 		}
 		catch (Exception e) {
 			LOGGER.error(e, e);
@@ -224,5 +198,24 @@ public class TiersForController extends AbstractTiersController {
 			response.addAction(new ShowElement("actions_column"));
 		}
 		return response;
+	}
+
+	private static String getTrimmedParameter(Map<String, String> parameters, String key) {
+		final String v = parameters.get(key);
+		return v == null ? null : v.trim();
+	}
+
+	private static boolean isDateValidOrBlank(String string) {
+		return StringUtils.isBlank(string) || isDateValid(string);
+	}
+
+	private static boolean isDateValid(String string) {
+		try {
+			RegDateHelper.displayStringToRegDate(string, false);
+			return true;
+		}
+		catch (Exception e) {
+			return false;
+		}
 	}
 }

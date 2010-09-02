@@ -76,7 +76,7 @@
 					<%-- Mode d'imposition --%>
 					<td><fmt:message key="label.mode.imposition"/>&nbsp;:</td>
 					<td>
-						<form:select path="modeImposition" items="${modesImposition}" onchange="updateSyncActions();" />
+						<form:select path="modeImposition" items="${modesImposition}" onchange="updateSyncActions();" onkeyup="updateSyncActions();"/>
 						<form:errors path="modeImposition" cssClass="error" />
 					</td>
 
@@ -92,6 +92,7 @@
 								<jsp:param name="path" value="dateChangement" />
 								<jsp:param name="id" value="dateChangement" />
 								<jsp:param name="onChange" value="dateChangement_onChange" />
+								<jsp:param name="onkeyup" value="dateChangement_onChange" />
 							</jsp:include>
 						</div>
 					</td>
@@ -102,7 +103,7 @@
 					<%-- Motif de changement --%>
 					<td><fmt:message key="label.motif.mode.imposition"/>&nbsp;:</td>
 					<td>
-						<form:select path="motifImposition" onchange="updateSyncActions();">
+						<form:select path="motifImposition" onchange="updateSyncActions();" onkeyup="updateSyncActions();">
 							<form:option value="PERMIS_C_SUISSE" ><fmt:message key="option.motif.ouverture.PERMIS_C_SUISSE" /></form:option>
 							<form:option value="CHGT_MODE_IMPOSITION" ><fmt:message key="option.motif.ouverture.CHGT_MODE_IMPOSITION" /></form:option>
 						</form:select>
