@@ -443,6 +443,24 @@ public abstract class MetierTest extends BusinessTest {
 		return paul;
 	}
 
+	protected Contribuable createArriveeHorsSuisseEtDepartHCAvecImmeuble(long ctbId, RegDate dateArriveeHS, RegDate dateDepartHC) throws Exception {
+		Contribuable paul = createContribuableSansFor(ctbId);
+		addForPrincipal(paul, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, dateArriveeHS.getOneDayBefore(), MotifFor.ARRIVEE_HS, MockPays.Danemark);
+		addForPrincipal(paul, dateArriveeHS, MotifFor.ARRIVEE_HS, dateDepartHC, MotifFor.DEPART_HC, MockCommune.Lausanne);
+		addForPrincipal(paul, dateDepartHC.getOneDayAfter(), MotifFor.DEPART_HC, MockCommune.Zurich);
+		addForSecondaire(paul, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		return paul;
+	}
+
+	protected Contribuable createArriveeHorsCantonEtDepartHSAvecImmeuble(long ctbId, RegDate dateArriveeHC, RegDate dateDepartHS) throws Exception {
+		Contribuable paul = createContribuableSansFor(ctbId);
+		addForPrincipal(paul, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, dateArriveeHC.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Zurich);
+		addForPrincipal(paul, dateArriveeHC, MotifFor.ARRIVEE_HC, dateDepartHS, MotifFor.DEPART_HS, MockCommune.Lausanne);
+		addForPrincipal(paul, dateDepartHS.getOneDayAfter(), MotifFor.DEPART_HS, MockPays.Danemark);
+		addForSecondaire(paul, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		return paul;
+	}
+
 	/**
 	 * Cas réel du contribuable n°16109718. Il s'agit d'une arrivée de hors-Suisse normale, mais avec un motif de fermeture du for principal 'Déménagement'.
 	 */

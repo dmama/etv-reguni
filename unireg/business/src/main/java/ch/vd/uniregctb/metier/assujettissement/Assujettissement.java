@@ -707,6 +707,21 @@ public abstract class Assujettissement implements CollatableDateRange {
 	}
 
 	/**
+	 * [UNIREG-2759] Détermine si le for fiscal se ferme avec un départ hors-canton la même année qu'une arrivée de hors-Suisse
+	 *
+	 * @param ffp une for fiscal principal
+	 * @return <b>vrai</b> si le for fiscal se ferme avec un départ hors-canton la même année qu'une arrivée de hors-Suisse; <b>faux</b> autrement.
+	 */
+	private static boolean isDepartHCApresArriveHSMemeAnnee(ForFiscalPrincipal ffp) {
+		if (ffp == null) {
+			return false;
+		}
+		final RegDate fin = ffp.getDateFin();
+		final MotifFor motifFin = ffp.getMotifFermeture();
+		return fin != null && motifFin == MotifFor.DEPART_HC && fin.year() == ffp.getDateDebut().year();
+	}
+
+	/**
 	 * @param left  le for fiscal de gauche (peut être nul)
 	 * @param right le for fiscal de droite (peut être null)
 	 * @return <b>true</b> si un départ ou une arrivée hors-canton est détectée entre les forts fiscaux spécifiés. Cette méthode s'assure que les types d'autorité fiscales sont cohérentes de manière à
@@ -737,8 +752,9 @@ public abstract class Assujettissement implements CollatableDateRange {
 			// fractionnement systématique à la date d'ouverture pour ce motif
 			fraction = true;
 		}
-		else if (isDepartOuArriveeHorsSuisse(previous, current) && isDepartDepuisOuArriveeVersVaud(current, previous)) {
+		else if (isDepartOuArriveeHorsSuisse(previous, current) && isDepartDepuisOuArriveeVersVaud(current, previous) && !isDepartHCApresArriveHSMemeAnnee(current)) {
 			// [UNIREG-1742] le départ hors-Suisse depuis hors-canton ne doit pas fractionner la période d'assujettissement (car le rattachement économique n'est pas interrompu)
+			// [UNIREG-2759] l'arrivée de hors-Suisse ne doit pas fractionner si le for se ferme dans la même année avec un départ hors-canton
 			fraction = true;
 		}
 		else if (isDepartOuArriveeHorsCanton(previous, current) &&
@@ -773,8 +789,9 @@ public abstract class Assujettissement implements CollatableDateRange {
 			// fractionnement systématique à la date de fermeture pour ce motif
 			fraction = true;
 		}
-		else if (isDepartOuArriveeHorsSuisse(current, next) && isDepartDepuisOuArriveeVersVaud(current, next)) {
+		else if (isDepartOuArriveeHorsSuisse(current, next) && isDepartDepuisOuArriveeVersVaud(current, next) && !isDepartHCApresArriveHSMemeAnnee(next)) {
 			// [UNIREG-1742] le départ hors-Suisse depuis hors-canton ne doit pas fractionner la période d'assujettissement (car le rattachement économique n'est pas interrompu)
+			// [UNIREG-2759] l'arrivée de hors-Suisse ne doit pas fractionner si le for se ferme dans la même année avec un départ hors-canton
 			fraction = true;
 		}
 		else if (isDepartOuArriveeHorsCanton(current, next) &&
@@ -853,12 +870,13 @@ public abstract class Assujettissement implements CollatableDateRange {
 
 		final RegDate adebut;
 		if (isDepartOuArriveeHorsSuisse(previous, current)) {
-			if (isDepartDepuisOuArriveeVersVaud(current, previous)) {
+			if (isDepartDepuisOuArriveeVersVaud(current, previous) && !isDepartHCApresArriveHSMemeAnnee(current)) {
 				// fin de l'assujettissement en cours de période fiscale (fractionnement)
 				adebut = debut;
 			}
 			else {
 				// [UNIREG-1742] le départ hors-Suisse depuis hors-canton ne doit pas fractionner la période d'assujettissement (car le rattachement économique n'est pas interrompu)
+				// [UNIREG-2759] l'arrivée de hors-Suisse ne doit pas fractionner si le for se ferme dans la même année avec un départ hors-canton
 				adebut = getDernier1Janvier(debut);
 			}
 		}
@@ -899,12 +917,13 @@ public abstract class Assujettissement implements CollatableDateRange {
 			afin = fin;
 		}
 		else if (isDepartOuArriveeHorsSuisse(current, next)) {
-			if (isDepartDepuisOuArriveeVersVaud(current, next)) {
+			if (isDepartDepuisOuArriveeVersVaud(current, next) && !isDepartHCApresArriveHSMemeAnnee(next)) {
 				// fin de l'assujettissement en cours de période fiscale (fractionnement)
 				afin = fin;
 			}
 			else {
 				// [UNIREG-1742] le départ hors-Suisse depuis hors-canton ne doit pas fractionner la période d'assujettissement (car le rattachement économique n'est pas interrompu)
+				// [UNIREG-2759] l'arrivée de hors-Suisse ne doit pas fractionner si le for se ferme dans la même année avec un départ hors-canton
 				afin = getDernier31Decembre(fin);
 			}
 		}

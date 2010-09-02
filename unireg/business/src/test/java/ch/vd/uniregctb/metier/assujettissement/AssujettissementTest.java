@@ -1429,6 +1429,90 @@ public class AssujettissementTest extends MetierTest {
 	}
 
 	/**
+	 * [UNIREG-2759] Vérifie qu'un contribuable qui arrive de HS avec un immeuble puis part hors-canton la même année est calculé comme assujetti hors-canton toute l'année.
+	 */
+	@WebScreenshot(urls = "/fiscalite/unireg/tiers/timeline.do?id=10000039&print=true&title=${methodName}&description=${docDescription}")
+	@WebScreenshotDoc(description = "[UNIREG-2759] Vérifie qu'un contribuable qui arrive de HS avec un immeuble puis part hors-canton la même année est calculé comme assujetti hors-canton toute l'année.")
+	@Test
+	public void testDetermineArriveeHorsSuisseEtDepartHorsCantonDansLAnneeAvecImmeuble() throws Exception {
+
+		final RegDate dateArriveeHS = date(2007, 3, 1);
+		final RegDate dateDepartHC = date(2007, 8, 4);
+		final Contribuable ctb = createArriveeHorsSuisseEtDepartHCAvecImmeuble(10000039L, dateArriveeHS, dateDepartHC);
+
+		// 2006
+		{
+			final List<Assujettissement> list = Assujettissement.determine(ctb, 2006);
+			assertNotNull(list);
+			assertEquals(1, list.size());
+			// hors-Suisse toute l'année
+			assertHorsSuisse(date(2006, 1, 1), date(2006, 12, 31), null, MotifFor.ARRIVEE_HS, list.get(0));
+		}
+
+		// 2007
+		{
+			final List<Assujettissement> list = Assujettissement.determine(ctb, 2007);
+			assertNotNull(list);
+			assertEquals(1, list.size());
+			// [UNIREG-2759] hors-canton toute l'année car son court passage comme vaudois ordinaire ne compte pas (règle des déménagements entre cantons) et
+			// que d'un point de vue de l'assujettissement pour motif de rattachement économique, l'arrivée hors-Suisse ne compte pas comme motif de fractionnement.
+			assertHorsCanton(date(2007, 1, 1), date(2007, 12, 31), MotifFor.DEPART_HC, null, list.get(0));
+		}
+
+		// 2008
+		{
+			final List<Assujettissement> list = Assujettissement.determine(ctb, 2008);
+			assertNotNull(list);
+			assertEquals(1, list.size());
+			// hors-canton toute l'année
+			assertHorsCanton(date(2008, 1, 1), date(2008, 12, 31), null, null, list.get(0));
+		}
+	}
+
+	/**
+	 * [UNIREG-2759] Vérifie qu'un contribuable qui arrive de HC avec un immeuble puis part hors-Suisse la même année voit bien son assujettissement fractionné à la date du départ (situation inverse
+	 * mais non-symétrique de testDetermineArriveeHorsSuisseEtDepartHorsCantonDansLAnneeAvecImmeuble).
+	 */
+	@WebScreenshot(urls = "/fiscalite/unireg/tiers/timeline.do?id=10000039&print=true&title=${methodName}&description=${docDescription}")	
+	@WebScreenshotDoc(description = "[UNIREG-2759] Vérifie qu'un contribuable qui arrive de HC avec un immeuble puis part hors-Suisse la même année voit bien son assujettissement fractionné à " +
+			"la date du départ (situation inverse mais non-symétrique de testDetermineArriveeHorsSuisseEtDepartHorsCantonDansLAnneeAvecImmeuble).")
+	@Test
+	public void testDetermineArriveeHorsCantonEtDepartHorsSuisseDansLAnneeAvecImmeuble() throws Exception {
+
+		final RegDate dateArriveeHC = date(2007, 3, 1);
+		final RegDate dateDepartHS = date(2007, 8, 4);
+		final Contribuable ctb = createArriveeHorsCantonEtDepartHSAvecImmeuble(10000039L, dateArriveeHC, dateDepartHS);
+
+		// 2006
+		{
+			final List<Assujettissement> list = Assujettissement.determine(ctb, 2006);
+			assertNotNull(list);
+			assertEquals(1, list.size());
+			// hors-canton toute l'année
+			assertHorsCanton(date(2006, 1, 1), date(2006, 12, 31), null, MotifFor.ARRIVEE_HC, list.get(0));
+		}
+
+		// 2007
+		{
+			final List<Assujettissement> list = Assujettissement.determine(ctb, 2007);
+			assertNotNull(list);
+			assertEquals(2, list.size());
+			// [UNIREG-2759] vaudois ordinaire jusqu'à son départ, puis hors-Suisse.
+			assertOrdinaire(date(2007, 1, 1), dateDepartHS, MotifFor.ARRIVEE_HC, MotifFor.DEPART_HS, list.get(0));
+			assertHorsSuisse(dateDepartHS.getOneDayAfter(), date(2007, 12, 31), MotifFor.DEPART_HS, null, list.get(1));
+		}
+
+		// 2008
+		{
+			final List<Assujettissement> list = Assujettissement.determine(ctb, 2008);
+			assertNotNull(list);
+			assertEquals(1, list.size());
+			// hors-Suisse toute l'année
+			assertHorsSuisse(date(2008, 1, 1), date(2008, 12, 31), null, null, list.get(0));
+		}
+	}
+
+	/**
 	 * [UNIREG-1327] Vérifie que l'assujettissement d'un contribuable HS qui possède un immeuble, arrive de HS et vend son immeuble dans la
 	 * même année est bien fractionné à la date d'arrivée HS.
 	 */
