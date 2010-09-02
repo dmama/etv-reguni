@@ -31,6 +31,9 @@ public class FidorServiceImpl implements FidorService {
 	private String patternTaoIS;
 	private String patternSipf;
 
+	private long lastTentative = 0;
+	private static final long fiveMinutes = 5L * 60L * 1000000000L; // en nanosecondes
+
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setServiceUrl(String serviceUrl) {
 		this.serviceUrl = serviceUrl;
@@ -84,6 +87,11 @@ public class FidorServiceImpl implements FidorService {
 	 */
 	private void lazyInit() {
 		if (patternSipf == null) {
+			final long now = System.nanoTime();
+			if (lastTentative > 0 && lastTentative + fiveMinutes > now) {
+				// on attend cinq minutes avant d'essayer de recontacter FiDoR, pour éviter de remplir les logs pour rien
+				return;
+			}
 			synchronized (this) {
 				try {
 					if (patternSipf == null) {
@@ -100,7 +108,8 @@ public class FidorServiceImpl implements FidorService {
 					}
 				}
 				catch (Exception e) {
-					LOGGER.error("Impossible de contacter FiDoR : allez lui donner un coup de pied !", e);
+					LOGGER.error("Impossible de contacter FiDoR : allez lui donner un coup de pied !");
+					lastTentative = now;
 				}
 			}
 		}
