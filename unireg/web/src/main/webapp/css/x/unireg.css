@@ -142,73 +142,6 @@ fieldset.individu + fieldset.individu {
 }
 
 /**
- * Table des états des tiers
- */
-
-#states_list {
-	margin-bottom: 1em;
-}
-
-#states_list table {
-	width: auto;
-	background-color: white;
-	color: gray;
-}
-
-#states_list tr.header td {
-	background-color: #EFF3FE;
-	color: black;
-	border: 1px black dotted;
-	padding : 0.8em;
-}
-
-#states_list td.state {
-	border-left: 1px black dotted;
-	border-right: 1px black dotted;
-	border-bottom: 1px black dotted;
-	text-align: left;
-	padding : 0.8em;
-}
-
-#states_list td.footer {
-	background-color: #EFF3FE;
-	border-left: 1px black dotted;
-	border-right: 1px black dotted;
-	border-bottom: 1px black dotted;
-	text-align: left;
-	padding : 0.8em;
-}
-
-#states_list td.bullet {
-	padding-right : 0.8em;
-	vertical-align: top;
-}
-
-#states_list td.error {
-	color: red;
-	font-size: 12px;
-	font-weight: normal;
-}
-
-#states_list td.header_valid {
-	padding-left: 22px;
-	background-image:url("checkmark.png");
-	background-repeat: no-repeat;
-}
-
-#states_list td.header_warning {
-	padding-left: 22px;
-	background-image:url("warn.png");
-	background-repeat: no-repeat;
-}
-
-#states_list td.header_error {
-	padding-left: 22px;
-	background-image: url("error.gif");
-	background-repeat: no-repeat;
-}
-
-/**
  * Table d'action de synchronisation
  */
 
@@ -310,7 +243,9 @@ div.flash {
 	width: 50%;
 	margin-left: auto;
 	margin-right: auto;
-	border: 1px gray solid;
+	border-radius:			10px;
+	-moz-border-radius:		10px;
+	-webkit-border-radius:	10px;
 	padding: 0.5em;
 	background-color: GreenYellow;
 }
@@ -324,7 +259,9 @@ div.flash-warning {
 	width: 50%;
 	margin-left: auto;
 	margin-right: auto;
-	border: 1px gray solid;
+	border-radius: 			10px;
+	-moz-border-radius:		10px;
+	-webkit-border-radius:	10px;
 	padding: 0.5em;
 	background-color: Orange;
 }
@@ -334,7 +271,9 @@ div.flash-error {
 	width: 50%;
 	margin-left: auto;
 	margin-right: auto;
-	border: 1px gray solid;
+	border-radius:			10px;
+	-moz-border-radius:		10px;
+	-webkit-border-radius:	10px;
 	padding: 0.5em;
 	font-weight:bold;
 	color: white;

@@ -114,7 +114,7 @@ public class AddSubEntity extends Delta {
 	}
 
 	@Override
-	public String toString() {
-		return "Ajout du " + subClass.getSimpleName() + " n°" + id + " dans la collection " + collName + " du " + key;
+	public String getHtml() {
+		return "Ajout du " + subClass.getSimpleName() + " n°" + id + " dans la collection " + attribute2html(collName) + " du " + key;
 	}
 }

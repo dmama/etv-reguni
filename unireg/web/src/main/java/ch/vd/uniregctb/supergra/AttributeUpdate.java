@@ -55,15 +55,15 @@ public class AttributeUpdate extends Delta {
 	}
 
 	@Override
-	public String toString() {
+	public String getHtml() {
 		if (oldValue == null && newValue != null) {
-			return "Renseignement du champ " + name + " à [" + newValue + "] sur le " + key;
+			return "Renseignement du champ " + attribute2html(name) + " à " + value2html(newValue) + " sur le " + key;
 		}
 		else if (oldValue != null && newValue == null) {
-			return "Mise-à-nul du champ " + name + " sur le " + key;
+			return "Mise-à-nul du champ " + attribute2html(name) + " sur le " + key;
 		}
 		else {
-			return "Mise-à-jour du champ " + name + " de [" + oldValue + "] à [" + newValue + "] sur le " + key;
+			return "Mise-à-jour du champ " + attribute2html(name) + " de " + value2html(oldValue) + " à " + value2html(newValue) + " sur le " + key;
 		}
 	}
 

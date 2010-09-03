@@ -16,7 +16,7 @@
 			<c:forEach items="${superGraSession.deltas}" var="d" varStatus="i">
 				<tr class="action">
 				  <td class="rowheader">»</td>
-				  <td class="action"><c:out value="${d}"/> (<a href="#" onclick="E$('delDelta').value = '${i.index}'; F$('deltaForm').submit(); return false;">supprimer</a>)</td>
+				  <td class="action"><c:out value="${d.html}" escapeXml="false"/> (<a href="#" onclick="E$('delDelta').value = '${i.index}'; F$('deltaForm').submit(); return false;">supprimer</a>)</td>
 				</tr>
 			</c:forEach>
 		  </tbody>
