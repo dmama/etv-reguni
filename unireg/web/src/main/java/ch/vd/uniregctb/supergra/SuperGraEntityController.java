@@ -134,7 +134,7 @@ public class SuperGraEntityController extends SuperGraAbstractController {
 			session.addDeltas(newdeltas);
 
 			if (newdeltas.isEmpty()) {
-				flashWarning("Aucune différence trouvée. Avez-vous bien changé une valeur avant de sauver ?");
+				flashWarning("Aucune différence trouvée. Avez-vous bien changé une valeur ?");
 			}
 			else {
 				final String message;

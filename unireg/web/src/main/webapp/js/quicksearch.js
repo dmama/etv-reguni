@@ -1,3 +1,6 @@
+
+var quickSearchTarget = "/tiers/visu.do?id=";
+
 /**
  * Détecte la pression de la touche 'enter' et navigue vers la page d'affichage
  * du contribuable dont le numéro a été saisi. Les caractères non-numériques
@@ -30,7 +33,7 @@ function quickSearchShowCtb(input) {
 	value = value.replace(/[^0-9]*/g, ''); // remove non-numeric chars
 	var id = parseInt(value, 10);
 	if (!isNaN(id)) {
-		document.location = getContextPath() + "/tiers/visu.do?id=" + id;
+		document.location = getContextPath() + quickSearchTarget + id;
 	}
 }
 

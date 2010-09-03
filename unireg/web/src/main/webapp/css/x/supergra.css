@@ -1,4 +1,13 @@
 
+#header div.quicksearch {
+	color: #FFA07A; 
+}
+
+#header input.quicksearch {
+	background-color: #FFA07A;
+}
+
+
 /**
  * Table des états des tiers
  */

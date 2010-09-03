@@ -93,6 +93,9 @@ function ouvrirAide(url) {
 				<div class="application_supergra"></div>
 
 				<%-- le champ d'accès rapide dans l'entête de l'application --%>
+				<script type="text/javascript">
+					quickSearchTarget='/supergra/entity.do?class=Tiers&id=';
+				</script>
 				<div class="quicksearch">
 					<fmt:message key="label.acces.rapide"/>&nbsp;
 					<input class="quicksearch" size="15" type="text" 

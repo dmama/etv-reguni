@@ -56,7 +56,7 @@
 			<tr class="state">
 				<td class="footer">
 					<form method="post" style="display:inline;">
-						<input type="submit" name="commitAll" value="Sauvegarder" onclick="return confirm('Toutes les modifications seront sauvées dans la base de données.\n\nOn continue ?')" <c:if test="${hasError}">disabled="disabled"</c:if> />
+						<input type="submit" name="commitAll" value="Sauvegarder" onclick="return confirm('Toutes les modifications seront sauvées dans la base de données.\n\nVoulez-vous continuer ?')" <c:if test="${hasError}">disabled="disabled"</c:if> />
 					</form>
 					ou
 					<form id="delAllForm" method="post" style="display:inline;">
