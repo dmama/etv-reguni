@@ -120,7 +120,7 @@ public abstract class WebitTest extends WithoutSpringTest {
 
 		// Vérification que tout s'est bien passé
 		final String content = resultat.getWebResponse().getContentAsString();
-		assertContains("Script lancé avec succès", content, "Le script DB unit ne s'est pas importé correctement !");
+		assertContains("Les tiers suivants sont présents dans la base de données", content, "Le script DB unit ne s'est pas importé correctement !");
 	}
 
 	protected void assertNatureTiers(String nature, long tiersId) throws Exception {
