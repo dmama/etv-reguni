@@ -8,6 +8,7 @@ import org.apache.xmlbeans.XmlError;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
 import org.apache.xmlbeans.XmlOptions;
+import org.springframework.orm.hibernate3.HibernateTemplate;
 
 import ch.vd.fiscalite.cedi.DeclarationImpotType;
 import ch.vd.fiscalite.cedi.DossierElectroniqueDocument;
@@ -22,21 +23,30 @@ public class EvenementCediListenerImpl extends EsbMessageListener {
 
 	private EvenementCediHandler handler;
 
+	private HibernateTemplate hibernateTemplate;
+
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setHandler(EvenementCediHandler handler) {
 		this.handler = handler;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
+		this.hibernateTemplate = hibernateTemplate;
+	}
+
 	@Override
 	public void onEsbMessage(EsbMessage message) throws Exception {
 
-		AuthenticationHelper.setPrincipal("JMS-EvtCedi");
+		AuthenticationHelper.pushPrincipal("JMS-EvtCedi");
 
 		try {
 			final String businessId = message.getBusinessId();
 			LOGGER.info("Arrivée du message CEDI n°" + businessId);
 			final String body = message.getBodyAsString();
 			onMessage(body, businessId);
+
+			hibernateTemplate.flush(); // on s'assure que la session soit flushée avant de resetter l'autentification
 		}
 		catch (EvenementCediException e) {
 			// on a un truc qui a sauté au moment du traitement de l'événement
@@ -44,18 +54,22 @@ public class EvenementCediListenerImpl extends EsbMessageListener {
 			// mais aussi envoyer l'erreur dans une queue spécifique
 			LOGGER.error(e.getMessage(), e);
 			getEsbTemplate().sendError(message, e.getMessage(), e, ErrorType.UNKNOWN, "");
+
+			hibernateTemplate.flush(); // on s'assure que la session soit flushée avant de resetter l'autentification
 		}
 		catch (XmlException e) {
 			// apparemment, l'XML est invalide... On va essayer de renvoyer une erreur propre quand même
 			LOGGER.error(e.getMessage(), e);
 			getEsbTemplate().sendError(message, e.getMessage(), e, ErrorType.TECHNICAL, "");
+
+			hibernateTemplate.flush(); // on s'assure que la session soit flushée avant de resetter l'autentification
 		}
 		catch (Exception e) {
 			LOGGER.error(e, e);
 			throw e;
 		}
 		finally {
-			AuthenticationHelper.resetAuthentication();
+			AuthenticationHelper.popPrincipal();
 		}
 	}
 

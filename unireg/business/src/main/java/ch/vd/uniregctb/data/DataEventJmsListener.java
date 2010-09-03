@@ -55,9 +55,9 @@ public class DataEventJmsListener extends EsbMessageListener {
 		}
 
 		// Handle le message
+		AuthenticationHelper.pushPrincipal("JMS-DbEvent(" + msg.getMessageId() + ")");
 		try {
-			AuthenticationHelper.pushPrincipal("JMS-DbEvent(" + msg.getMessageId() + ")");
-			
+
 			if (doc instanceof DataChangeEventDocument) {
 				onDataChange((DataChangeEventDocument) doc);
 			}
