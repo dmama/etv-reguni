@@ -45,7 +45,7 @@ import ch.vd.uniregctb.utils.RegDateEditor;
  * @see org.springframework.web.servlet.mvc.SimpleFormController
  *
  */
-public abstract class AbstractSimpleFormController extends SimpleFormController implements AjaxHandler {
+public abstract class AbstractSimpleFormController extends CommonSimpleFormController implements AjaxHandler {
 
 	private static final Logger LOGGER = Logger.getLogger(AbstractSimpleFormController.class);
 

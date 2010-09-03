@@ -273,6 +273,11 @@ function ouvrirAide(url) {
 				<div style="padding: 5px;">
 					<div class="empty" style="height: 10px;">&nbsp;</div>
 					<br>
+
+					<c:if test="${flash != null && flash.active}">
+					<div class="<c:out value="${flash.displayClass}"/>"><c:out value="${flash.messageForDisplay}"/></div>
+					</c:if>
+
 					<h1><tiles:getAsString name='title' ignore='true'/></h1>
 					<div id="globalErrors">
 						<spring:hasBindErrors name="command">
