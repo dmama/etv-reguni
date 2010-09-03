@@ -238,12 +238,13 @@ public class ForFiscalManagerImpl extends TiersManager implements ForFiscalManag
 	 */
 	@Transactional(readOnly = true)
 	public ForFiscalView create(Long numeroCtb, boolean dpi) {
-		ForFiscalView forFiscalView = new ForFiscalView();
+		final ForFiscalView forFiscalView = new ForFiscalView();
 		forFiscalView.setChangementModeImposition(false);
 		forFiscalView.setNumeroCtb(numeroCtb);
-		Tiers tiers = tiersDAO.get(numeroCtb);
+
+		final Tiers tiers = tiersDAO.get(numeroCtb);
 		if(Tiers.NATURE_MENAGECOMMUN.equals(tiers.getNatureTiers())){
-			MenageCommun menage = (MenageCommun)tiers;
+			final MenageCommun menage = (MenageCommun)tiers;
 			boolean isHabitant = false;
 			for (PersonnePhysique pp : tiersService.getPersonnesPhysiques(menage)) {
 				if (pp.isHabitantVD()) {
@@ -251,13 +252,12 @@ public class ForFiscalManagerImpl extends TiersManager implements ForFiscalManag
 					break;
 				}
 			}
-			if(isHabitant)
-				forFiscalView.setNatureTiers(Tiers.NATURE_HABITANT);
-			else forFiscalView.setNatureTiers(Tiers.NATURE_NONHABITANT);
+			forFiscalView.setNatureTiers(isHabitant ? Tiers.NATURE_HABITANT : Tiers.NATURE_NONHABITANT);
 		}
 		else {
 			forFiscalView.setNatureTiers(tiers.getNatureTiers());
 		}
+
 		if (dpi) {
 			forFiscalView.setNatureForFiscal("ForDebiteurPrestationImposable");
 			forFiscalView.setGenreImpot(GenreImpot.DEBITEUR_PRESTATION_IMPOSABLE);
@@ -267,7 +267,17 @@ public class ForFiscalManagerImpl extends TiersManager implements ForFiscalManag
 			forFiscalView.setGenreImpot(GenreImpot.REVENU_FORTUNE);
 			forFiscalView.setMotifRattachement(MotifRattachement.DOMICILE);
 			forFiscalView.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
-			forFiscalView.setModeImposition(ModeImposition.ORDINAIRE);
+
+			// [UNIREG-2313] On propose le mode d'imposition d'un for fiscal précédent par défaut (ou ORDINAIRE si pas de for précédent)
+			final ForFiscalPrincipal ancienFor = tiers.getDernierForFiscalPrincipal();
+			final ModeImposition nouveauModeImposition;
+			if (ancienFor != null) {
+				nouveauModeImposition = ancienFor.getModeImposition();
+			}
+			else {
+				nouveauModeImposition = ModeImposition.ORDINAIRE;
+			}
+			forFiscalView.setModeImposition(nouveauModeImposition);
 		}
 		forFiscalView.setDateOuverture(RegDate.get());
 		return forFiscalView;
