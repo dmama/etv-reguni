@@ -39,9 +39,15 @@ public class EvenementCivilListener extends EsbMessageListener {
 		try {
 			final String message = esbMessage.getBodyAsString();
 			final String visaMutation = esbMessage.getBusinessUser();
-			//le user de création est initialisé avec le user a l0origine de l'evenement civil
+
+			// le user de création est initialisé avec le user à l'origine de l'événement civil
 			AuthenticationHelper.setPrincipal(visaMutation);
-			onEvenementCivil(message);
+			try {
+				onEvenementCivil(message);
+			}
+			finally {
+				AuthenticationHelper.resetAuthentication();
+			}
 		}
 		catch (EvenementCivilException e) {
 			// on a un truc qui a sauté au moment de l'insertion de l'événement
@@ -53,9 +59,6 @@ public class EvenementCivilListener extends EsbMessageListener {
 		catch (RuntimeException e) {
 			LOGGER.error(e, e);
 			throw e;
-		}
-		finally {
-			AuthenticationHelper.resetAuthentication();
 		}
 	}
 
