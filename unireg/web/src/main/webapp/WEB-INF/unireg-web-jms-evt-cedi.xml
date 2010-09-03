@@ -10,6 +10,7 @@
 
 	<bean id="evenementCediListener" class="ch.vd.uniregctb.evenement.cedi.EvenementCediListenerImpl" parent="esbMessageListener">
 		<property name="handler" ref="evenementCediService" />
+		<property name="hibernateTemplate" ref="hibernateTemplate" />
 	</bean>
 
 	<bean id="evenementCediListenerContainer" class="org.springframework.jms.listener.DefaultMessageListenerContainer">

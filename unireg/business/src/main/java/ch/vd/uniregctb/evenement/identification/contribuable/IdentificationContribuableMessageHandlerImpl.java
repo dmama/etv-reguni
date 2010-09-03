@@ -89,8 +89,9 @@ public class IdentificationContribuableMessageHandlerImpl extends EsbMessageList
 		message.setHeader(header);
 
 		Assert.notNull(demandeHandler, "Le handler de demandes n'est pas défini");
+
+		AuthenticationHelper.pushPrincipal("JMS-EvtIdentCtb(" + msg.getMessageId() + ")");
 		try {
-			AuthenticationHelper.pushPrincipal("JMS-EvtIdentCtb(" + msg.getMessageId() + ")");
 			demandeHandler.handleDemande(message);
 			hibernateTemplate.flush(); // on s'assure que la session soit flushée avant de resetter l'authentification
 		}

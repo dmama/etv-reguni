@@ -10,6 +10,7 @@
 
 	<bean id="evenementExterneListener" class="ch.vd.uniregctb.evenement.externe.EvenementExterneListenerImpl" parent="esbMessageListener">
 		<property name="handler" ref="evenementExterneService" />
+		<property name="hibernateTemplate" ref="hibernateTemplate" />
 	</bean>
 
 	<bean id="evenementExternelistenerContainer" class="org.springframework.jms.listener.DefaultMessageListenerContainer">

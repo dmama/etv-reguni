@@ -11,6 +11,7 @@ import org.apache.xmlbeans.XmlError;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
 import org.apache.xmlbeans.XmlOptions;
+import org.springframework.orm.hibernate3.HibernateTemplate;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -27,27 +28,37 @@ public class EvenementExterneListenerImpl extends EsbMessageListener {
 
 	private EvenementExterneHandler handler;
 
+	private HibernateTemplate hibernateTemplate;
+
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setHandler(EvenementExterneHandler handler) {
 		this.handler = handler;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
+		this.hibernateTemplate = hibernateTemplate;
+	}
+
 	@Override
 	public void onEsbMessage(EsbMessage esbMessage) throws Exception {
 
-		AuthenticationHelper.setPrincipal("JMS-EvtExt");
-
+		AuthenticationHelper.pushPrincipal("JMS-EvtExt");
 		try {
-			final String message = esbMessage.getBodyAsString();
 			final String businessId = esbMessage.getBusinessId();
+			LOGGER.info("Arrivée du message externe n°" + businessId);
+
+			final String message = esbMessage.getBodyAsString();
 			onMessage(message, businessId);
+
+			hibernateTemplate.flush(); // on s'assure que la session soit flushée avant de resetter l'autentification
 		}
 		catch (RuntimeException e) {
 			LOGGER.error(e, e);
 			throw e;
 		}
 		finally {
-			AuthenticationHelper.resetAuthentication();
+			AuthenticationHelper.popPrincipal();
 		}
 	}
 
