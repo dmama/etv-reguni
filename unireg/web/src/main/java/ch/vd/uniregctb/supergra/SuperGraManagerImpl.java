@@ -44,6 +44,8 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 
 	protected final Logger LOGGER = Logger.getLogger(SuperGraManagerImpl.class);
 
+	private static final String DISCRIMINATOR_ATTNAME = "<discriminator>";
+	
 	private PlatformTransactionManager transactionManager;
 	private HibernateTemplate hibernateTemplate;
 	private TiersService tiersService;
@@ -272,7 +274,7 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 				}
 				else if (p.isDiscriminator()) {
 					// le discriminator ne possède pas de getter/setter, et ne peux donc pas être édité.
-					attributeView = new AttributeView("<discriminator>", p.getType().getJavaType(), p.getDiscriminatorValue(), false, false, true);
+					attributeView = new AttributeView(DISCRIMINATOR_ATTNAME, p.getType().getJavaType(), p.getDiscriminatorValue(), false, false, true);
 				}
 				else if (p.isCollection()) {
 					// on cas de collection, on affiche un lien vers la page d'affichage de la collection
@@ -328,49 +330,125 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 
 					if (coll != null) {
 						final List<EntityView> entities = buildEntities(coll);
+						final CollMetaData collData = analyzeCollection(entity, collName, coll, session);
 
-						// Construit la liste de noms de tous les attributs existants
-						final ArrayList<String> attributeNames = new ArrayList<String>();
-
-						Property primaryKey = null;
-						Class primaryKeyType;
-						try {
-							PropertyDescriptor collDescr = new PropertyDescriptor(collName, entity.getClass());
-							Method getter = collDescr.getReadMethod();
-							primaryKeyType = MetaEntity.getGenericParamReturnType(getter);
-							MetaEntity en = MetaEntity.determine(primaryKeyType);
-							for (Property p : en.getProperties()) {
-								if (!p.isDiscriminator() && !p.isParentForeignKey() && !p.isCollection()) {
-									attributeNames.add(p.getName());
-								}
-								if (p.isPrimaryKey()) {
-									primaryKey = p;
-								}
-							}
-						}
-						catch (Exception e) {
-							throw new RuntimeException(e);
-						}
-
-						if (!session.getOptions().isShowDetails()) {
-							// On filtre les attributs non-métier (pour limiter le nombre de colonnes autant que possible)
-							attributeNames.removeAll(detailsProps);
-						}
-
-						final EntityType keyType = EntityType.fromHibernateClass(primaryKeyType);
+						final EntityType keyType = EntityType.fromHibernateClass(collData.getPrimaryKeyType());
 						final List<Class<? extends HibernateEntity>> concreteClasses = concreteClassByType.get(keyType);
 
-						assert primaryKey != null;
-						view.setPrimaryKeyAtt(primaryKey.getName());
+						view.setPrimaryKeyAtt(collData.getPrimaryKey().getName());
 						view.setPrimaryKeyType(keyType);
 						view.setEntities(entities);
-						view.setAttributeNames(attributeNames);
+						view.setAttributeNames(collData.getAttributeNames());
 						view.setConcreteEntityClasses(concreteClasses);
 					}
 				}
 				return null;
 			}
 		});
+	}
+
+	private static class CollMetaData {
+
+		private List<String> attributeNames;
+		private Property primaryKey;
+		private Class primaryKeyType;
+
+		public List<String> getAttributeNames() {
+			return attributeNames;
+		}
+
+		public void setAttributeNames(List<String> attributeNames) {
+			this.attributeNames = attributeNames;
+		}
+
+		public Property getPrimaryKey() {
+			return primaryKey;
+		}
+
+		public void setPrimaryKey(Property primaryKey) {
+			this.primaryKey = primaryKey;
+		}
+
+		public Class getPrimaryKeyType() {
+			return primaryKeyType;
+		}
+
+		public void setPrimaryKeyType(Class primaryKeyType) {
+			this.primaryKeyType = primaryKeyType;
+		}
+	}
+
+	/**
+	 * Analyse la collection et retourne la liste complète des attributs des entités dans la collection, ainsi que d'autres informations intéressantes.
+	 *
+	 * @param entity   l'entité qui possède la collection à analyser
+	 * @param collName le nom de la collection à analyser sur l'entité
+	 * @param coll     les entités contenues dans la collection
+	 * @param session  la session SuperGra courante
+	 * @return la liste des noms d'attributs, le nom de la clé primaire ainsi que son type.
+	 */
+	private CollMetaData analyzeCollection(HibernateEntity entity, String collName, Collection<HibernateEntity> coll, SuperGraSession session) {
+
+		// Détermine les classes concrètes des éléments
+		final Set<Class<? extends HibernateEntity>> classes = new HashSet<Class<? extends HibernateEntity>>();
+		for (HibernateEntity e : coll) {
+			classes.add(e.getClass());
+		}
+
+		// Détermine l'ensemble des attributs existants
+		final Set<String> attributeNames = new HashSet<String>();
+		Property primaryKey = null;
+		Property discriminator = null;
+		try {
+			for (Class<? extends HibernateEntity> clazz : classes) {
+				final MetaEntity meta = MetaEntity.determine(clazz);
+				for (Property p : meta.getProperties()) {
+					if (!p.isDiscriminator() && !p.isParentForeignKey() && !p.isCollection() && !p.isPrimaryKey()) {
+						attributeNames.add(p.getName());
+					}
+					if (p.isDiscriminator()) {
+						discriminator = p;
+					}
+					if (p.isPrimaryKey()) {
+						primaryKey = p;
+					}
+				}
+			}
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+
+		// Détermine la classe de base des entités
+		Class primaryKeyType;
+		try {
+			PropertyDescriptor collDescr = new PropertyDescriptor(collName, entity.getClass());
+			Method getter = collDescr.getReadMethod();
+			primaryKeyType = MetaEntity.getGenericParamReturnType(getter);
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+
+		if (!session.getOptions().isShowDetails()) {
+			// On filtre les attributs non-métier (pour limiter le nombre de colonnes autant que possible)
+			attributeNames.removeAll(detailsProps);
+		}
+
+		final List<String> orderedNames = new ArrayList<String>(attributeNames);
+		Collections.sort(orderedNames);
+		if (primaryKey != null) {
+			orderedNames.add(0, primaryKey.getName());
+		}
+		if (discriminator != null) {
+			orderedNames.add(1, DISCRIMINATOR_ATTNAME);
+		}
+
+		CollMetaData d = new CollMetaData();
+		d.setAttributeNames(orderedNames);
+		d.setPrimaryKey(primaryKey);
+		d.setPrimaryKeyType(primaryKeyType);
+		return d;
 	}
 
 	private Collection<?> getCollection(String collName, HibernateEntity entity) {
