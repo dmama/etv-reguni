@@ -22,7 +22,9 @@ public abstract class CommonSimpleFormController extends SimpleFormController {
 	@Override
 	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		this.request.set(request);
-		return super.handleRequest(request, response);
+		final ModelAndView modelAndView = super.handleRequest(request, response);
+		this.request.remove();
+		return modelAndView;
 	}
 
 	/**
