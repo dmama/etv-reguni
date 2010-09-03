@@ -226,7 +226,15 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 		catch (JMSException e) {
 			throw new DeclarationException(e);
 		}
-		evenementFiscalService.publierEvenementFiscalEnvoiDI((Contribuable) declaration.getTiers(), declaration, dateEvenement);
+
+		final Contribuable ctb = (Contribuable) declaration.getTiers();
+		evenementFiscalService.publierEvenementFiscalEnvoiDI(ctb, declaration, dateEvenement);
+
+		// [UNIREG-2705] il est maintenant possible de créer des déclarations déjà retournées (et pas seulement pour les indigents) 
+		final EtatDeclaration etatRetour = declaration.getEtatDeclarationActif(TypeEtatDeclaration.RETOURNEE);
+		if (etatRetour != null) {
+			evenementFiscalService.publierEvenementFiscalRetourDI(ctb, declaration, etatRetour.getDateObtention());
+		}
 		return resultat;
 	}
 

@@ -35,6 +35,13 @@ public class DeclarationImpotDetailView implements
 
 	private RegDate dateRetour;
 
+	/**
+	 * VRAI si la date de retour {@link #dateRetour} est non nulle en création
+	 * car il existe par ailleurs une DI annulée sur le même contribuable avec
+	 * exactement la même période, et qui a elle été retournée
+	 */
+	private boolean dateRetourProposeeCarDeclarationRetourneeAnnuleeExiste;
+
 	private RegDate delaiAccorde;
 
 	private List<DelaiDeclarationView> delais;
@@ -153,6 +160,14 @@ public class DeclarationImpotDetailView implements
 
 	public void setDateRetour(RegDate dateRetour) {
 		this.dateRetour = dateRetour;
+	}
+
+	public boolean isDateRetourProposeeCarDeclarationRetourneeAnnuleeExiste() {
+		return dateRetourProposeeCarDeclarationRetourneeAnnuleeExiste;
+	}
+
+	public void setDateRetourProposeeCarDeclarationRetourneeAnnuleeExiste(boolean dateRetourProposeeCarDeclarationRetourneeAnnuleeExiste) {
+		this.dateRetourProposeeCarDeclarationRetourneeAnnuleeExiste = dateRetourProposeeCarDeclarationRetourneeAnnuleeExiste;
 	}
 
 	public RegDate getRegDelaiAccorde() {

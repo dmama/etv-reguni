@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.declaration;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -41,24 +42,25 @@ public class DeclarationImpotOrdinaireDAOImpl extends GenericDAOImpl< Declaratio
 		return find(criterion, false);
 	}
 
+	@SuppressWarnings({"unchecked"})
 	public List<DeclarationImpotOrdinaire> find(DeclarationImpotCriteria criterion, boolean doNotAutoFlush) {
 
 		if (LOGGER.isTraceEnabled()) {
 			LOGGER.trace("Start of DeclarationImpotOrdinaireDAO : find");
 		}
 
-		String query = " select di from DeclarationImpotOrdinaire di where 1=1 ";
-		List<Object> criteria = new ArrayList<Object>();
+		final StringBuilder b = new StringBuilder("SELECT di FROM DeclarationImpotOrdinaire di WHERE 1=1");
+		final List<Object> criteria = new ArrayList<Object>();
 
 		final Integer annee = criterion.getAnnee();
 		if (annee != null) {
-			query += " and di.periode.annee = ? ";
+			b.append(" AND di.periode.annee = ?");
 			criteria.add(annee);
 		}
 		else {
-			Pair<Integer, Integer> anneeRange = criterion.getAnneeRange();
+			final Pair<Integer, Integer> anneeRange = criterion.getAnneeRange();
 			if (anneeRange != null) {
-				query += " and di.periode.annee >= ? and di.periode.annee <= ?";
+				b.append(" AND di.periode.annee BETWEEN ? AND ?");
 				criteria.add(anneeRange.getFirst());
 				criteria.add(anneeRange.getSecond());
 			}
@@ -66,37 +68,34 @@ public class DeclarationImpotOrdinaireDAOImpl extends GenericDAOImpl< Declaratio
 
 		final Long contribuable = criterion.getContribuable();
 		if (contribuable != null) {
-			query += " and di.tiers.id = ? ";
+			b.append(" AND di.tiers.id = ?");
 			criteria.add(contribuable);
 		}
 
+		final String query = b.toString();
 		if (LOGGER.isTraceEnabled()) {
 			LOGGER.trace("DeclarationImpotCriteria Query: " + query);
-			LOGGER.trace("DeclarationImpotCriteria Table size: " + criteria.toArray().length);
+			LOGGER.trace("DeclarationImpotCriteria Params: " + Arrays.toString(criteria.toArray()));
 		}
 
 		final FlushMode mode = (doNotAutoFlush ? FlushMode.MANUAL : null);
-		List<?> list = find(query, criteria.toArray(), mode);
-		List<DeclarationImpotOrdinaire> listRtr = new ArrayList<DeclarationImpotOrdinaire>();
+		final List<DeclarationImpotOrdinaire> list = (List<DeclarationImpotOrdinaire>) find(query, criteria.toArray(), mode);
+		final List<DeclarationImpotOrdinaire> listRtr = new ArrayList<DeclarationImpotOrdinaire>();
 
-		if ((criterion.getEtat() == null) || (criterion.getEtat().equals(TOUS))) {
-			for (Object object : list) {
-				DeclarationImpotOrdinaire declaration = (DeclarationImpotOrdinaire) object;
-				listRtr.add(declaration);
+		if (criterion.getEtat() == null || criterion.getEtat().equals(TOUS)) {
+			for (DeclarationImpotOrdinaire di : list) {
+				listRtr.add(di);
 			}
-			return listRtr;
 		}
 		else {
-			TypeEtatDeclaration etat = TypeEtatDeclaration.valueOf(criterion.getEtat());
-
-			for (Object object : list) {
-				DeclarationImpotOrdinaire declaration = (DeclarationImpotOrdinaire) object;
-				if (declaration.getDernierEtat().getEtat().equals(etat)) {
-					listRtr.add(declaration);
+			final TypeEtatDeclaration etat = TypeEtatDeclaration.valueOf(criterion.getEtat());
+			for (DeclarationImpotOrdinaire di : list) {
+				if (di.getDernierEtat().getEtat() == etat) {
+					listRtr.add(di);
 				}
 			}
-			return listRtr;
 		}
+		return listRtr;
 	}
 
 	/**

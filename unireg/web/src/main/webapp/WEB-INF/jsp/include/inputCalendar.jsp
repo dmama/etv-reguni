@@ -2,12 +2,13 @@
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
 <c:set var="path" value="${param.path}" />
 <c:set var="id" value="${param.id}" />
+<c:set var="inputFieldClass" value="${param.inputFieldClass}" />
 <c:set var="form" value="0"/>
 <c:if test="${not empty param.form}">
 	<c:set var="form" value="'${param.form}'"/>
 </c:if>
 <spring:bind path="${path}">
-	<input  type="text" name="${status.expression}" value="${status.value}" id="${id}" size="10" maxlength ="10" class="date"
+	<input  type="text" name="${status.expression}" value="${status.value}" id="${id}" size="10" maxlength ="10" class="date ${inputFieldClass}"
 		<c:if test="${param.onChange != null && not empty param.onChange }">onchange="<c:out value="${param.onChange}" />(this);"</c:if>
 		<c:if test="${param.onkeyup != null && not empty param.onkeyup }">onkeyup="<c:out value="${param.onkeyup}" />(this);"</c:if> 
 	/>

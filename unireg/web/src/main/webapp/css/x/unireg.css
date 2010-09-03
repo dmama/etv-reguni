@@ -315,6 +315,10 @@ div.flash {
 	background-color: GreenYellow;
 }
 
+input.flash {
+	background-color: GreenYellow;
+}
+
 div.flash-warning {
 	text-align: center;
 	width: 50%;

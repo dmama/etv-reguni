@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
+import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.validation.ValidationException;
@@ -27,6 +28,7 @@ import ch.vd.uniregctb.common.ActionException;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationException;
+import ch.vd.uniregctb.declaration.DeclarationImpotCriteria;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
@@ -236,8 +238,27 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 				diEditView.setTypeDeclarationImpot(TypeDocument.DECLARATION_IMPOT_VAUDTAX);
 			}
 
-
 			setDroitDI(diEditView, tiers);
+
+			// [UNIREG-2705] s'il existe une DI retournée annulée pour le même contribuable et la même
+			// période, alors on propose de marquer cette nouvelle DI comme déjà retournée
+			if (diEditView.isAllowedQuittancement()) {
+				final DeclarationImpotCriteria criteres = new DeclarationImpotCriteria();
+				criteres.setAnnee(range.getDateDebut().year());
+				criteres.setContribuable(numeroCtb);
+				final List<DeclarationImpotOrdinaire> dis = diDAO.find(criteres);
+				if (dis != null && dis.size() > 0) {
+					for (DeclarationImpotOrdinaire di : dis) {
+						if (di.isAnnule() && DateRangeHelper.equals(di, periode)) {
+							final EtatDeclaration etat = di.getDernierEtat();
+							if (etat != null && etat.getEtat() == TypeEtatDeclaration.RETOURNEE) {
+								diEditView.setDateRetour(RegDate.get());
+								diEditView.setDateRetourProposeeCarDeclarationRetourneeAnnuleeExiste(true);
+							}
+						}
+					}
+				}
+			}
 		}
 	}
 
@@ -770,10 +791,18 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 			final Qualification derniereQualification = PeriodeImposition.determineQualification(ctb, diEditView.getRegDateFinPeriodeImposition().year());
 			di.setQualification(derniereQualification);
 
-			final EtatDeclaration etat = new EtatDeclaration();
-			etat.setEtat(TypeEtatDeclaration.EMISE);
-			etat.setDateObtention(RegDate.get());
-			di.addEtat(etat);
+			final EtatDeclaration emission = new EtatDeclaration(RegDate.get(), TypeEtatDeclaration.EMISE);
+			di.addEtat(emission);
+
+			// [UNIREG-2705] Création d'une DI déjà retournée
+			if (diEditView.getDateRetour() != null) {
+				if (!RegDateHelper.isAfterOrEqual(diEditView.getRegDateRetour(), RegDate.get(), NullDateBehavior.LATEST)) {
+					throw new ActionException("La date de retour d'une DI émise aujourd'hui ne peut pas être dans le passé");
+				}
+
+				final EtatDeclaration retour = new EtatDeclaration(diEditView.getRegDateRetour(), TypeEtatDeclaration.RETOURNEE);
+				di.addEtat(retour);
+			}
 
 			final DelaiDeclaration delai = new DelaiDeclaration();
 			delai.setDelaiAccordeAu(diEditView.getRegDelaiAccorde());
