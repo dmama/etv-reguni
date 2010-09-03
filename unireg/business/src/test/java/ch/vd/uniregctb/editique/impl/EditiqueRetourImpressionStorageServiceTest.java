@@ -35,7 +35,8 @@ public class EditiqueRetourImpressionStorageServiceTest extends WithoutSpringTes
 		final EditiqueResultat res = service.getDocument("Mon document qui ne vient pas...", 1000);
 		final long tsFin = System.currentTimeMillis();
 		Assert.assertNull(res);
-		Assert.assertTrue(tsFin - tsDebut > 1000);
+		final long attente = tsFin - tsDebut;
+		Assert.assertTrue("Attente = " + attente + "ms", attente >= 1000);
 	}
 
 	private static EditiqueResultat buildResultat(String idDocument) {
