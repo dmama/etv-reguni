@@ -61,7 +61,7 @@ public class SuperGraCollectionController extends SuperGraAbstractController {
 		else if (StringUtils.isNotBlank(add)) {
 			final String newClassAsString = request.getParameter("newClass");
 			if (newClassAsString.startsWith("--")) {
-				flashError(request,"Veuillez sélectionner un type d'élément avant de cliquer le bouton.");
+				flashError("Veuillez sélectionner un type d'élément avant de cliquer le bouton.");
 			}
 			else {
 				// On crée une nouvelle sous-entité
@@ -72,7 +72,7 @@ public class SuperGraCollectionController extends SuperGraAbstractController {
 				final SuperGraSession session = getSession(request);
 				session.addDelta(newEntity);
 
-				flash(request, "Nouvel élément créé avec l'id n°" + id);
+				flash("Nouvel élément créé avec l'id n°" + id);
 				return new ModelAndView(new RedirectView("entity.do?id=" + id + "&class=" + EntityType.fromHibernateClass(newClass)));
 			}
 		}

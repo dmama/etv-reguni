@@ -41,7 +41,7 @@ public abstract class SuperGraAbstractController extends CommonSimpleFormControl
 			final SuperGraSession session = getSession(request);
 			final Delta action = session.getDeltas().remove(index);
 
-			flash(request, "L'action \"" + action + "\" a été supprimée.");
+			flash("L'action \"" + action + "\" a été supprimée.");
 			return true;
 		}
 
@@ -56,7 +56,7 @@ public abstract class SuperGraAbstractController extends CommonSimpleFormControl
 			final SuperGraSession session = getSession(request);
 			session.getDeltas().clear();
 
-			flash(request, "Toutes les actions ont été supprimées.");
+			flash("Toutes les actions ont été supprimées.");
 			return true;
 		}
 
@@ -70,14 +70,14 @@ public abstract class SuperGraAbstractController extends CommonSimpleFormControl
 
 			// FIXME (msi) ajouter un profile SuperGra et l'utiliser
 			if (!UniregModeHelper.isTestMode()) {
-				flashError(request, "La modification des données en mode SuperGra n'est pas autorisée en dehors des environnements de test pour l'instant.");
+				flashError("La modification des données en mode SuperGra n'est pas autorisée en dehors des environnements de test pour l'instant.");
 				return true;
 			}
 
 			final SuperGraSession session = getSession(request);
 			final int size = session.getDeltas().size();
 			if (size <= 0) {
-				flashWarning(request, "Il n'y a aucune modification en attente !");
+				flashWarning("Il n'y a aucune modification en attente !");
 			}
 			else {
 				// on applique et commit les deltas dans la DB
@@ -87,10 +87,10 @@ public abstract class SuperGraAbstractController extends CommonSimpleFormControl
 				session.getDeltas().clear();
 
 				if (size == 1) {
-					flash(request, "La modification a été sauvegardée dans la base de données.");
+					flash("La modification a été sauvegardée dans la base de données.");
 				}
 				else {
-					flash(request, "Les " + size + " modifications ont été sauvegardées dans la base de données.");
+					flash("Les " + size + " modifications ont été sauvegardées dans la base de données.");
 				}
 			}
 			return true;
@@ -109,7 +109,7 @@ public abstract class SuperGraAbstractController extends CommonSimpleFormControl
 			final SuperGraSession session = getSession(request);
 			session.getOptions().setShowDetails(show);
 
-			flash(request, "Les détails sont maintenant " + (show ? "visibles" : "masqués") + ".");
+			flash("Les détails sont maintenant " + (show ? "visibles" : "masqués") + ".");
 			return true;
 		}
 

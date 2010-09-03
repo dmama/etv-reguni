@@ -1,7 +1,10 @@
 package ch.vd.uniregctb.common;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
+import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.SimpleFormController;
 
 import ch.vd.uniregctb.supergra.FlashMessage;
@@ -12,16 +15,27 @@ import ch.vd.uniregctb.supergra.FlashMessage;
 public abstract class CommonSimpleFormController extends SimpleFormController {
 
 	/**
+	 * Cette variable contient la session courante, pour utilisation privée par les méthodes 'flash'.
+	 */
+	private final ThreadLocal<HttpServletRequest> request = new ThreadLocal<HttpServletRequest>();
+
+	@Override
+	public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		this.request.set(request);
+		return super.handleRequest(request, response);
+	}
+
+	/**
 	 * Renseigne un message pour la zone flash de l'écran. Le message sera affiché une seule fois puis mis à null.
 	 *
-	 * @param request la requête courante
 	 * @param message le message
 	 */
-	protected static void flash(HttpServletRequest request, String message) {
-		FlashMessage flash = (FlashMessage) request.getSession().getAttribute("flash");
+	protected void flash(String message) {
+		final HttpSession session = request.get().getSession();
+		FlashMessage flash = (FlashMessage) session.getAttribute("flash");
 		if (flash == null) {
 			flash = new FlashMessage();
-			request.getSession().setAttribute("flash", flash);
+			session.setAttribute("flash", flash);
 		}
 		flash.setMessage(message);
 	}
@@ -29,14 +43,14 @@ public abstract class CommonSimpleFormController extends SimpleFormController {
 	/**
 	 * Renseigne un message de warning pour la zone flash de l'écran. Le message sera affiché une seule fois puis mis à null.
 	 *
-	 * @param request la requête courante
 	 * @param message le message
 	 */
-	protected static void flashWarning(HttpServletRequest request, String message) {
-		FlashMessage flash = (FlashMessage) request.getSession().getAttribute("flash");
+	protected void flashWarning(String message) {
+		final HttpSession session = request.get().getSession();
+		FlashMessage flash = (FlashMessage) session.getAttribute("flash");
 		if (flash == null) {
 			flash = new FlashMessage();
-			request.getSession().setAttribute("flash", flash);
+			session.setAttribute("flash", flash);
 		}
 		flash.setWarning(message);
 	}
@@ -44,14 +58,14 @@ public abstract class CommonSimpleFormController extends SimpleFormController {
 	/**
 	 * Renseigne un message d'erreur pour la zone flash de l'écran. Le message sera affiché une seule fois puis mis à null.
 	 *
-	 * @param request la requête courante
 	 * @param message le message
 	 */
-	protected static void flashError(HttpServletRequest request, String message) {
-		FlashMessage flash = (FlashMessage) request.getSession().getAttribute("flash");
+	protected void flashError(String message) {
+		final HttpSession session = request.get().getSession();
+		FlashMessage flash = (FlashMessage) session.getAttribute("flash");
 		if (flash == null) {
 			flash = new FlashMessage();
-			request.getSession().setAttribute("flash", flash);
+			session.setAttribute("flash", flash);
 		}
 		flash.setError(message);
 	}

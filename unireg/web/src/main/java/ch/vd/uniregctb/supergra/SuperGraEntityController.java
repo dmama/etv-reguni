@@ -134,7 +134,7 @@ public class SuperGraEntityController extends SuperGraAbstractController {
 			session.addDeltas(newdeltas);
 
 			if (newdeltas.isEmpty()) {
-				flashWarning(request, "Aucune différence trouvée. Avez-vous bien changé une valeur avant de sauver ?");
+				flashWarning("Aucune différence trouvée. Avez-vous bien changé une valeur avant de sauver ?");
 			}
 			else {
 				final String message;
@@ -144,7 +144,7 @@ public class SuperGraEntityController extends SuperGraAbstractController {
 				else {
 					message = String.valueOf(newdeltas.size()) + " attributs ont été changés.";
 				}
-				flash(request, message);
+				flash(message);
 			}
 
 			final EntityView updatedReferenceView = (EntityView) view.clone();
