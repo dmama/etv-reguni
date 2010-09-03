@@ -26,7 +26,6 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.AbstractSpringTest;
-import ch.vd.uniregctb.common.BusinessTestingConstants;
 import ch.vd.uniregctb.common.CoreTestingConstants;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.HibernateEntityUtils;
@@ -49,18 +48,7 @@ import static org.junit.Assert.fail;
 		CoreTestingConstants.UNIREG_CORE_DAO,
 		CoreTestingConstants.UNIREG_CORE_SF,
 		"classpath:ch/vd/uniregctb/dao/jdbc/jdbctiersdaotestapp-datasource.xml", // <-- version spéciale qui se connecte à la base de données d'intégration
-		CoreTestingConstants.UNIREG_CORE_UT_PROPERTIES,
-		BusinessTestingConstants.UNIREG_BUSINESS_UT_CACHE,
-		BusinessTestingConstants.UNIREG_BUSINESS_INTERFACES,
-		BusinessTestingConstants.UNIREG_BUSINESS_ESSENTIALS,
-		BusinessTestingConstants.UNIREG_BUSINESS_SERVICES,
-		BusinessTestingConstants.UNIREG_BUSINESS_EVT_CIVIL,
-		BusinessTestingConstants.UNIREG_BUSINESS_EVT_FISCAL,
-		BusinessTestingConstants.UNIREG_BUSINESS_UT_SERVICES,
-		BusinessTestingConstants.UNIREG_BUSINESS_UT_CLIENT_WEBSERVICE,
-		BusinessTestingConstants.UNIREG_BUSINESS_UT_INTERFACES,
-		BusinessTestingConstants.UNIREG_BUSINESS_UT_EDITIQUE,
-		BusinessTestingConstants.UNIREG_BUSINESS_UT_JMS
+		CoreTestingConstants.UNIREG_CORE_UT_PROPERTIES
 })
 public class JdbcTiersDaoItTest extends AbstractSpringTest {
 
