@@ -143,7 +143,7 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 			final RepresentationConventionnelle repres = (RepresentationConventionnelle) rapportEntreTiers;
 			final Boolean b = repres.getExtensionExecutionForcee();
 			rapportView.setExtensionExecutionForcee(b != null && b);
-			rapportView.setAllowed(checkDroitEdit(tiersLie));
+			rapportView.setAllowed(checkDroitEdit(tiersCourant)); // [UNIREG-2814]
 		}
 		else {//rapport de non travail
 			rapportView.setAllowed(checkDroitEdit(tiersLie));
