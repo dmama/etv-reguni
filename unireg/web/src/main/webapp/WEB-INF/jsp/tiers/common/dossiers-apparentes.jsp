@@ -22,6 +22,12 @@
 	<display:column sortable ="true" titleKey="label.rapport.tiers">
 		<c:if test="${dossierApparente.annule}"><strike></c:if>
 			<fmt:message key="option.rapport.entre.tiers.${dossierApparente.sensRapportEntreTiers}.${dossierApparente.typeRapportEntreTiers}" />
+			<c:if test="${dossierApparente.toolTipMessage != null}">
+				<a href="#tooltip" class="staticTip" id="ret-${dossierApparente_rowNum}">?</a>
+				<div id="ret-${dossierApparente_rowNum}-tooltip" style="display:none;">
+					<c:out value="${dossierApparente.toolTipMessage}"/>
+				</div>
+			</c:if>
 		<c:if test="${dossierApparente.annule}"></strike></c:if>
 	</display:column>
 

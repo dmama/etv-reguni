@@ -12,6 +12,7 @@ import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.general.manager.TiersGeneralManager;
 import ch.vd.uniregctb.general.view.TiersGeneralView;
+import ch.vd.uniregctb.rapport.SensRapportEntreTiers;
 import ch.vd.uniregctb.rt.view.DebiteurListView;
 import ch.vd.uniregctb.rt.view.RapportPrestationView;
 import ch.vd.uniregctb.rt.view.SourcierListView;
@@ -22,7 +23,6 @@ import ch.vd.uniregctb.tiers.RapportEntreTiersDAO;
 import ch.vd.uniregctb.tiers.RapportPrestationImposable;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.type.SensRapportEntreTiers;
 import ch.vd.uniregctb.type.TypeActivite;
 import ch.vd.uniregctb.utils.WebContextUtils;
 

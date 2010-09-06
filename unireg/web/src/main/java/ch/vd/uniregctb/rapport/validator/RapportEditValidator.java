@@ -13,8 +13,7 @@ import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.rapport.view.RapportView;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
-import ch.vd.uniregctb.type.SensRapportEntreTiers;
-import ch.vd.uniregctb.type.TypeAdresseTiers;
+import ch.vd.uniregctb.rapport.SensRapportEntreTiers;
 
 /**
  * Validateur de RapportEditController

@@ -13,6 +13,7 @@ import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.adresse.AdressesFiscalesHisto;
 import ch.vd.uniregctb.declaration.Periodicite;
+import ch.vd.uniregctb.rapport.SensRapportEntreTiers;
 import ch.vd.uniregctb.tiers.*;
 
 import org.apache.log4j.Logger;
@@ -82,7 +83,6 @@ import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.Niveau;
 import ch.vd.uniregctb.type.PeriodeDecompte;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
-import ch.vd.uniregctb.type.SensRapportEntreTiers;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
@@ -220,10 +220,17 @@ public class TiersManager implements MessageSourceAware {
 		final EnumAttributeIndividu[] enumValues = new EnumAttributeIndividu[]{EnumAttributeIndividu.ENFANTS, EnumAttributeIndividu.PARENTS};
 		final Individu ind = getServiceCivilService().getIndividu(habitant.getNumeroIndividu(), year, enumValues);
 
+		final String nomInd = tiersService.getNomPrenom(ind);
+
 		// enfants
 		final Collection<Individu> listFiliations = ind.getEnfants();
 		for (Individu enfant : listFiliations) {
 			final RapportView rapportView = createRapportViewPourFilliation(ind, enfant, SensRapportEntreTiers.OBJET);
+
+			final String nomEnfant = tiersService.getNomPrenom(enfant);
+			final String toolTipMessage = nomEnfant + " est l'enfant de " + nomInd;
+			rapportView.setToolTipMessage(toolTipMessage);
+
 			rapportsView.add(rapportView);
 		}
 
@@ -231,11 +238,21 @@ public class TiersManager implements MessageSourceAware {
 		final Individu mere = ind.getMere();
 		if (mere != null) {
 			final RapportView rapportView = createRapportViewPourFilliation(ind, mere, SensRapportEntreTiers.SUJET);
+
+			final String nomMere = tiersService.getNomPrenom(mere);
+			final String toolTipMessage = nomMere + " est la mère de " + nomInd;
+			rapportView.setToolTipMessage(toolTipMessage);
+
 			rapportsView.add(rapportView);
 		}
 		final Individu pere = ind.getPere();
 		if (pere != null) {
 			final RapportView rapportView = createRapportViewPourFilliation(ind, pere, SensRapportEntreTiers.SUJET);
+
+			final String nomPere = tiersService.getNomPrenom(pere);
+			final String toolTipMessage = nomPere + " est le père de " + nomInd;
+			rapportView.setToolTipMessage(toolTipMessage);
+
 			rapportsView.add(rapportView);
 		}
 
@@ -323,8 +340,12 @@ public class TiersManager implements MessageSourceAware {
 				final Tiers tiersSujet = tiersDAO.get(rapportEntreTiers.getSujetId());
 				rapportView.setNumero(tiersSujet.getNumero());
 
-				final List<String> nomCourrier = getAdresseService().getNomCourrier(tiersSujet, null, false);
-				rapportView.setNomCourrier(nomCourrier);
+				final List<String> nomSujet = adresseService.getNomCourrier(tiersSujet, null, false);
+				rapportView.setNomCourrier(nomSujet);
+
+				final String toolTipMessage = getRapportEntreTiersTooltips(rapportEntreTiers);
+				rapportView.setToolTipMessage(toolTipMessage);
+
 				rapportsView.add(rapportView);
 			}
 		}
@@ -343,10 +364,14 @@ public class TiersManager implements MessageSourceAware {
 				final Tiers tiersObjet = tiersDAO.get(rapportEntreTiers.getObjetId());
 				rapportView.setNumero(tiersObjet.getNumero());
 
-				final List<String> nomCourrier = getAdresseService().getNomCourrier(tiersObjet, null, false);
-				if (nomCourrier != null && nomCourrier.size() != 0) {
-					rapportView.setNomCourrier(nomCourrier);
+				final List<String> nomObjet = adresseService.getNomCourrier(tiersObjet, null, false);
+				if (nomObjet != null && nomObjet.size() != 0) {
+					rapportView.setNomCourrier(nomObjet);
 				}
+
+				final String toolTipMessage = getRapportEntreTiersTooltips(rapportEntreTiers);
+				rapportView.setToolTipMessage(toolTipMessage);
+
 				if (rapportEntreTiers instanceof RapportPrestationImposable) {
 					final RapportPrestationImposable rapportPrestationImposable = (RapportPrestationImposable) rapportEntreTiers;
 					rapportView.setTypeActivite(rapportPrestationImposable.getTypeActivite());
@@ -386,10 +411,86 @@ public class TiersManager implements MessageSourceAware {
 				rapportView.setNumero(tiersSujet.getNumero());
 				final List<String> nomCourrier = getAdresseService().getNomCourrier(tiersSujet, null, false);
 				rapportView.setNomCourrier(nomCourrier);
+				final String toolTipMessage = getRapportEntreTiersTooltips(rapportEntreTiers);
+				rapportView.setToolTipMessage(toolTipMessage);
 				rapportsView.add(rapportView);
 			}
 		}
 		tiersView.setContribuablesAssocies(rapportsView);
+	}
+
+	/**
+	 * Construit et retourne une string qui résume de manière compréhensible pour un humain un rapport entre deux tiers.
+	 *
+	 * @param rapport le rapport dont on veut obtenir un résumé
+	 * @return un résumé du rapport; ou <b>null</b> s'il n'est pas possible de le créer pour une raison ou une autre.
+	 */
+	protected String getRapportEntreTiersTooltips(RapportEntreTiers rapport) {
+
+		final Long sujetId = rapport.getSujetId();
+		final Long objetId = rapport.getObjetId();
+		final Tiers sujet = tiersDAO.get(sujetId);
+		final Tiers objet = tiersDAO.get(objetId);
+
+		final String nomSujet;
+		final String nomObjet;
+		try {
+			nomSujet = getNomCourrierPlat(sujet);
+			nomObjet = getNomCourrierPlat(objet);
+		}
+		catch (AdresseException e) {
+			return null;
+		}
+
+		if (nomSujet == null || nomObjet == null) {
+			return null;
+		}
+
+		if (rapport instanceof ContactImpotSource) {
+			return nomSujet + " est le tiers référent de " + nomObjet;
+		}
+		else if (rapport instanceof RepresentationConventionnelle) {
+			return nomSujet + " est représenté(e) par " + nomObjet;
+		}
+		else if (rapport instanceof Curatelle) {
+			return nomObjet + " est le curateur de " + nomSujet;
+		}
+		else if (rapport instanceof ConseilLegal) {
+			return nomObjet + " est le conseiller légal de " + nomSujet;
+		}
+		else if (rapport instanceof Tutelle) {
+			return nomObjet + " est le tuteur de " + nomSujet;
+		}
+		else if (rapport instanceof AnnuleEtRemplace) {
+			return nomObjet + " (n°" + objetId + ") remplace " + nomSujet + " (n°" + sujetId + ")";
+		}
+		else if (rapport instanceof AppartenanceMenage) {
+			return nomSujet + " appartient au ménage " + nomObjet;
+		}
+		else if (rapport instanceof RapportPrestationImposable) {
+			return nomSujet + " est employé(e) par " + nomObjet;
+		}
+		else {
+			throw new IllegalArgumentException("Type de rapport-entre-tiers inconnu = [" + rapport.getClass() + "]");
+		}
+	}
+
+	protected String getNomCourrierPlat(Tiers tiers) throws AdresseException {
+
+		final List<String> noms = adresseService.getNomCourrier(tiers, null, false);
+		if (noms == null || noms.isEmpty()) {
+			return null;
+		}
+
+		if (noms.size() == 1) {
+			return noms.get(0);
+		}
+		else if (noms.size() == 2) {
+			return noms.get(0) + " / " + noms.get(1);
+		}
+		else {
+			throw new IllegalArgumentException("Le tiers n°" + tiers.getNumero() + " possède plus de 2 lignes dans son nom courrier.");
+		}
 	}
 
 	/**

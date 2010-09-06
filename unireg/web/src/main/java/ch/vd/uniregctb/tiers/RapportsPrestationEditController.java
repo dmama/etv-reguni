@@ -11,11 +11,11 @@ import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 
 import ch.vd.uniregctb.common.WebParamPagination;
+import ch.vd.uniregctb.rapport.SensRapportEntreTiers;
 import ch.vd.uniregctb.rapport.manager.RapportEditManager;
 import ch.vd.uniregctb.rapport.view.RapportView;
 import ch.vd.uniregctb.tiers.manager.TiersEditManager;
 import ch.vd.uniregctb.tiers.view.TiersEditView;
-import ch.vd.uniregctb.type.SensRapportEntreTiers;
 
 /**
  * @author xcifde

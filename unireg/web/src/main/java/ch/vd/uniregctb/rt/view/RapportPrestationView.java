@@ -7,7 +7,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.BaseComparator;
 import ch.vd.uniregctb.common.NomCourrierViewPart;
 import ch.vd.uniregctb.general.view.TiersGeneralView;
-import ch.vd.uniregctb.type.SensRapportEntreTiers;
+import ch.vd.uniregctb.rapport.SensRapportEntreTiers;
 import ch.vd.uniregctb.type.TypeActivite;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 

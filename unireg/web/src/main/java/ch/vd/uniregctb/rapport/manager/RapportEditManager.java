@@ -6,9 +6,9 @@ import org.springframework.transaction.annotation.Transactional;
 import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.common.WebParamPagination;
+import ch.vd.uniregctb.rapport.SensRapportEntreTiers;
 import ch.vd.uniregctb.rapport.view.RapportView;
 import ch.vd.uniregctb.tiers.view.TiersEditView;
-import ch.vd.uniregctb.type.SensRapportEntreTiers;
 
 /**
  * Claase offrant les services au controller RapportEditController
@@ -30,13 +30,15 @@ public interface RapportEditManager {
 	public RapportView get (Long numeroTiers, Long numeroTiersLie) throws AdressesResolutionException;
 
 	/**
-	 * Alimente la vue RapportView
+	 * Construit la vue qui permet d'éditer un rapport.
 	 *
-	 * @return
-	 * @throws AdressesResolutionException
+	 * @param idRapport   l'id du rapport à éditer
+	 * @param editingFrom <i>OBJET</i> si le rapport est édité depuis le tiers objet ou  <i>SUJET</i> si le rapport est édité depuis le tiers sujet.
+	 * @return une vue du rapport à éditer
+	 * @throws AdresseException s'il y a un problème dans la construction de l'adresse
 	 */
 	@Transactional(readOnly = true)
-	public RapportView get (Long idRapport, SensRapportEntreTiers sensRapportEntreTiers) throws AdresseException;
+	public RapportView get(Long idRapport, SensRapportEntreTiers editingFrom) throws AdresseException;
 
 
 	/**

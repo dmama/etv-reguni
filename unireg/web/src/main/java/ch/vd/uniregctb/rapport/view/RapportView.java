@@ -8,8 +8,8 @@ import ch.vd.uniregctb.common.Annulable;
 import ch.vd.uniregctb.common.BaseComparator;
 import ch.vd.uniregctb.common.NomCourrierViewPart;
 import ch.vd.uniregctb.general.view.TiersGeneralView;
+import ch.vd.uniregctb.rapport.SensRapportEntreTiers;
 import ch.vd.uniregctb.rapport.TypeRapportEntreTiersWeb;
-import ch.vd.uniregctb.type.SensRapportEntreTiers;
 import ch.vd.uniregctb.type.TypeActivite;
 
 /**
@@ -64,6 +64,8 @@ public class RapportView implements Comparable<RapportView>, Annulable {
 	// -- uniquement pour RepresentationConventionnelle --
 
 	private Boolean extensionExecutionForcee;
+
+	private String toolTipMessage;
 
 	// ---------------------------------------------------
 
@@ -135,6 +137,9 @@ public class RapportView implements Comparable<RapportView>, Annulable {
 		this.dateFin = RegDate.get(dateFin);
 	}
 
+	/**
+	 * @return Le numéro du tiers lié par ce rapport.
+	 */
 	public Long getNumero() {
 		return numero;
 	}
@@ -191,6 +196,9 @@ public class RapportView implements Comparable<RapportView>, Annulable {
 		this.tiersLie = tiersLie;
 	}
 
+	/**
+	 * @return <i>OBJET</i> si le rapport est édité depuis le tiers objet ou  <i>SUJET</i> si le rapport est édité depuis le tiers sujet.
+	 */
 	public SensRapportEntreTiers getSensRapportEntreTiers() {
 		return sensRapportEntreTiers;
 	}
@@ -225,5 +233,21 @@ public class RapportView implements Comparable<RapportView>, Annulable {
 
 	public void setExtensionExecutionForcee(Boolean extensionExecutionForcee) {
 		this.extensionExecutionForcee = extensionExecutionForcee;
+	}
+
+	public static BaseComparator<RapportView> getComparator() {
+		return comparator;
+	}
+
+	public static void setComparator(BaseComparator<RapportView> comparator) {
+		RapportView.comparator = comparator;
+	}
+
+	public String getToolTipMessage() {
+		return toolTipMessage;
+	}
+
+	public void setToolTipMessage(String toolTipMessage) {
+		this.toolTipMessage = toolTipMessage;
 	}
 }

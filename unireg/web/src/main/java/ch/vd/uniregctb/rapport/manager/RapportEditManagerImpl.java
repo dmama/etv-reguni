@@ -14,6 +14,7 @@ import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.WebParamPagination;
 import ch.vd.uniregctb.general.view.TiersGeneralView;
+import ch.vd.uniregctb.rapport.SensRapportEntreTiers;
 import ch.vd.uniregctb.rapport.TypeRapportEntreTiersWeb;
 import ch.vd.uniregctb.rapport.view.RapportView;
 import ch.vd.uniregctb.security.Role;
@@ -28,7 +29,6 @@ import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.manager.TiersManager;
 import ch.vd.uniregctb.tiers.view.TiersEditView;
 import ch.vd.uniregctb.tiers.view.TiersVisuView;
-import ch.vd.uniregctb.type.SensRapportEntreTiers;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 import ch.vd.uniregctb.utils.WebContextUtils;
 
@@ -80,51 +80,55 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 		return rapportView;
 	}
 
-
-	/**
-	 * Alimente la vue RapportView
-	 *
-	 * @return
-	 * @throws AdressesResolutionException
-	 */
 	@Transactional(readOnly = true)
-	public RapportView get (Long idRapport, SensRapportEntreTiers sensRapportEntreTiers) throws AdresseException {
-		//édition d'un rapport
-		RapportView rapportView =  new RapportView();
+	public RapportView get(Long idRapport, SensRapportEntreTiers editingFrom) throws AdresseException {
 
-		RapportEntreTiers rapportEntreTiers	= rapportEntreTiersDAO.get(idRapport);
+		final RapportEntreTiers rapportEntreTiers = rapportEntreTiersDAO.get(idRapport);
 		if (rapportEntreTiers == null) {
-			throw new ObjectNotFoundException(this.getMessageSource().getMessage("error.rapport.inexistant" , null,  WebContextUtils.getDefaultLocale()));
+			throw new ObjectNotFoundException(this.getMessageSource().getMessage("error.rapport.inexistant", null, WebContextUtils.getDefaultLocale()));
 		}
 
-		rapportView.setSensRapportEntreTiers(sensRapportEntreTiers);
+		RapportView rapportView = new RapportView();
+		rapportView.setSensRapportEntreTiers(editingFrom);
 		rapportView.setTypeRapportEntreTiers(TypeRapportEntreTiersWeb.fromCore(rapportEntreTiers.getType()));
-		final Long numero;
-		switch (sensRapportEntreTiers) {
-			case OBJET:
-				numero = rapportEntreTiers.getSujetId();
-				break;
-			case SUJET:
-				numero = rapportEntreTiers.getObjetId();
-				break;
-			default:
-				numero = null;
-				break;
-		}
-		rapportView.setNumero(numero);
 
-		final Tiers tiers = getTiersService().getTiers(numero);
-		//récupération nomCourrier1 et nomCourrier2
-		List<String> nomCourrier = getAdresseService().getNomCourrier(tiers, null, false);
-		rapportView.setNomCourrier(nomCourrier);
+		final Long numeroTiersCourant;
+		final Long numeroTiersLie;
+		switch (editingFrom) {
+		case OBJET:
+			numeroTiersCourant = rapportEntreTiers.getObjetId();
+			numeroTiersLie = rapportEntreTiers.getSujetId();
+			break;
+		case SUJET:
+			numeroTiersCourant = rapportEntreTiers.getSujetId();
+			numeroTiersLie = rapportEntreTiers.getObjetId();
+			break;
+		default:
+			throw new IllegalArgumentException("Sens de rapport-entre-tiers inconnu =[" + editingFrom + "]");
+		}
+
+		// on récupère les tiers eux-mêmes, et quelques infos supplémentaires
+		final Tiers tiersCourant = tiersService.getTiers(numeroTiersCourant); // le tiers par lequel on est arrivé sur le rapport
+		Assert.notNull(tiersCourant);
+		final Tiers tiersLie = tiersService.getTiers(numeroTiersLie); // l'autre tiers du rapport (pas celui par lequel on est arrivé sur le rapport)
+		Assert.notNull(tiersLie);
+
+		final List<String> nomTiersCourant = adresseService.getNomCourrier(tiersCourant, null, false);
+		final List<String> nomTiersLie = adresseService.getNomCourrier(tiersLie, null, false);
+		final String toolTipMessage = getRapportEntreTiersTooltips(rapportEntreTiers);
+
+		rapportView.setNumero(numeroTiersLie);
+		rapportView.setNomCourrier(nomTiersLie);
 		rapportView.setId(rapportEntreTiers.getId());
 		rapportView.setDateDebut(rapportEntreTiers.getDateDebut());
 		rapportView.setDateFin(rapportEntreTiers.getDateFin());
 		rapportView.setNatureRapportEntreTiers(rapportEntreTiers.getClass().getSimpleName());
-		//vérification droit édition du rapport pour fermeture
 		rapportView.setAllowed(true);
+		rapportView.setToolTipMessage(toolTipMessage);
+
+		//vérification droit édition du rapport pour fermeture
 		if (rapportEntreTiers instanceof RapportPrestationImposable) {
-			if(!SecurityProvider.isGranted(Role.RT)){
+			if (!SecurityProvider.isGranted(Role.RT)) {
 				rapportView.setAllowed(false);
 			}
 			RapportPrestationImposable rapportPrestationImposable = (RapportPrestationImposable) rapportEntreTiers;
@@ -132,17 +136,17 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 			rapportView.setTypeActivite(rapportPrestationImposable.getTypeActivite());
 			rapportView.setNatureRapportEntreTiers(rapportPrestationImposable.getClass().getSimpleName());
 		}
-		else if(rapportEntreTiers.getType().equals(TypeRapportEntreTiers.APPARTENANCE_MENAGE)){
+		else if (rapportEntreTiers.getType().equals(TypeRapportEntreTiers.APPARTENANCE_MENAGE)) {
 			rapportView.setAllowed(false);
 		}
 		else if (rapportEntreTiers instanceof RepresentationConventionnelle) {
 			final RepresentationConventionnelle repres = (RepresentationConventionnelle) rapportEntreTiers;
 			final Boolean b = repres.getExtensionExecutionForcee();
 			rapportView.setExtensionExecutionForcee(b != null && b);
-			rapportView.setAllowed(checkDroitEdit(tiers));
+			rapportView.setAllowed(checkDroitEdit(tiersLie));
 		}
 		else {//rapport de non travail
-			rapportView.setAllowed(checkDroitEdit(tiers));
+			rapportView.setAllowed(checkDroitEdit(tiersLie));
 		}
 		return rapportView;
 	}

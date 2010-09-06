@@ -10,12 +10,12 @@ import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.uniregctb.common.WebTest;
 import ch.vd.uniregctb.general.view.TiersGeneralView;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
+import ch.vd.uniregctb.rapport.SensRapportEntreTiers;
 import ch.vd.uniregctb.rapport.TypeRapportEntreTiersWeb;
 import ch.vd.uniregctb.rapport.view.RapportView;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.RepresentationConventionnelle;
-import ch.vd.uniregctb.type.SensRapportEntreTiers;
 import ch.vd.uniregctb.type.Sexe;
 
 import static org.junit.Assert.assertEquals;

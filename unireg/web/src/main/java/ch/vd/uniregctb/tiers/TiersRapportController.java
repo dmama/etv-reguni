@@ -9,10 +9,10 @@ import org.apache.log4j.Logger;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 
+import ch.vd.uniregctb.rapport.SensRapportEntreTiers;
 import ch.vd.uniregctb.rapport.manager.RapportEditManager;
 import ch.vd.uniregctb.rapport.view.RapportView;
 import ch.vd.uniregctb.rt.AbstractRapportPrestationController;
-import ch.vd.uniregctb.type.SensRapportEntreTiers;
 
 public class TiersRapportController extends AbstractRapportPrestationController {
 
