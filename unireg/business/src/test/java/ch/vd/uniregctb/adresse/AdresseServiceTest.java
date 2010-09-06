@@ -4524,7 +4524,106 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("1000 Lausanne", adresseEnvoi.getLigne5());
 		assertNull(adresseEnvoi.getLigne6());
 	}
-	
+
+	/**
+	 * [UNIREG-2676] Vérifie que l'adresse courrier d'un ménage-commun dans le cas où le principal est sous-tutelle et le conjoint hors-Suise est bien celle du tuteur du principal.
+	 */
+	@Test
+	public void testGetAdressesFiscalesMenageCommunAvecPrincipalSousTutelleEtConjointHorsSuisse() throws Exception {
+
+		final long noIndividuPrincipal = 2;
+		final long noIndividuConjoint = 4;
+		final long noIndividuTuteurPrincipal = 11;
+
+		/*
+		 * Crée les données du mock service civil
+		 */
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu paul = addIndividu(noIndividuPrincipal, date(1953, 11, 2), "Dupont", "Paul", true);
+				addAdresse(paul, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, date(1953, 11, 2), null);
+
+				final MockIndividu virginie = addIndividu(noIndividuConjoint, date(1957, 1, 23), "Dupont", "Virginie", false);
+				addAdresse(virginie, EnumTypeAdresse.PRINCIPALE, MockRue.Bussigny.RueDeLIndustrie, null, date(1957, 1, 23), date(2004, 12, 31));
+				addAdresse(virginie, EnumTypeAdresse.PRINCIPALE, MockRue.Neuchatel.RueDesBeauxArts, null, date(2005, 1, 1), date(2008, 12, 31));
+				virginie.getAdresses().add(newAdresse(EnumTypeAdresse.COURRIER, "5 Avenue des Champs-Elysées", null, "75017 Paris", MockPays.France, date(2009, 1, 1), null));
+
+				marieIndividus(paul, virginie, date(2004, 7, 14));
+
+				final MockIndividu ronald = addIndividu(noIndividuTuteurPrincipal, date(1945, 3, 17), "MacDonald", "Ronald", false);
+				addAdresse(ronald, EnumTypeAdresse.PRINCIPALE, MockRue.LeSentier.GrandRue, null, date(1945, 3, 17), null);
+			}
+		});
+
+		// Crée un ménage composé de deux habitants dont le principal est sous tutelle
+		final long noMenageCommun = (Long) doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+
+				PersonnePhysique tuteurPrincipal = addHabitant(noIndividuTuteurPrincipal);
+
+				PersonnePhysique principal = addHabitant(noIndividuPrincipal);
+				PersonnePhysique conjoint = addHabitant(noIndividuConjoint);
+				EnsembleTiersCouple ensemble = addEnsembleTiersCouple(principal, conjoint, date(2000, 7, 14), null);
+				MenageCommun menage = ensemble.getMenage();
+
+				// 2000-2004 : principal sous tutelle, conjoint en Suisse
+				// 2005-2008 : principal sous tutelle, conjoint hors canton
+				// dès 2009 : principal sous tutelle, conjoint hors Suisse
+				addTutelle(principal, tuteurPrincipal, null, date(2000, 1, 1), null);
+
+				return menage.getNumero();
+			}
+		});
+
+		final MenageCommun menage = (MenageCommun) tiersService.getTiers(noMenageCommun);
+
+		// Vérification des adresses
+		final AdressesFiscalesHisto adressesHisto = adresseService.getAdressesFiscalHisto(menage, false);
+		assertNotNull(adressesHisto);
+
+		assertEquals(4, adressesHisto.courrier.size());
+		assertAdresse(date(1953, 11, 2), date(1999, 12, 31), "Lausanne", Source.CIVILE, true, adressesHisto.courrier.get(0));
+		assertAdresse(date(2000, 1, 1), date(2004, 12, 31), "Bussigny-près-Lausanne", Source.CONJOINT, false, adressesHisto.courrier.get(1));
+		assertAdresse(date(2005, 1, 1), date(2008, 12, 31), "Neuchâtel", Source.CONJOINT, false, adressesHisto.courrier.get(2));
+		assertAdresse(date(2009, 1, 1), null, "Le Sentier", Source.TUTELLE, false, adressesHisto.courrier.get(3));
+
+		assertAdresse(date(1953, 11, 2), null, "Lausanne", Source.CIVILE, false, adressesHisto.domicile.get(0));
+		assertAdresse(date(1953, 11, 2), null, "Lausanne", Source.CIVILE, false, adressesHisto.poursuite.get(0));
+		assertAdresse(date(1953, 11, 2), null, "Lausanne", Source.CIVILE, true, adressesHisto.representation.get(0));
+
+		// conjoint en Suisse => adresse courrier du conjoint utilisée
+		final AdresseEnvoiDetaillee adresseEnvoi2002 = adresseService.getAdresseEnvoi(menage, date(2002, 1, 1), TypeAdresseFiscale.COURRIER, false);
+		assertNotNull(adresseEnvoi2002);
+		assertEquals("Monsieur et Madame", adresseEnvoi2002.getLigne1());
+		assertEquals("Paul Dupont", adresseEnvoi2002.getLigne2());
+		assertEquals("Virginie Dupont", adresseEnvoi2002.getLigne3());
+		assertEquals("Rue de l'Industrie", adresseEnvoi2002.getLigne4());
+		assertEquals("1030 Bussigny-près-Lausanne", adresseEnvoi2002.getLigne5());
+		assertNull(adresseEnvoi2002.getLigne6());
+
+		// conjoint hors canton => adresse courrier du conjoint utilisée
+		final AdresseEnvoiDetaillee adresseEnvoi2006 = adresseService.getAdresseEnvoi(menage, date(2006, 1, 1), TypeAdresseFiscale.COURRIER, false);
+		assertNotNull(adresseEnvoi2006);
+		assertEquals("Monsieur et Madame", adresseEnvoi2006.getLigne1());
+		assertEquals("Paul Dupont", adresseEnvoi2006.getLigne2());
+		assertEquals("Virginie Dupont", adresseEnvoi2006.getLigne3());
+		assertEquals("Rue des Beaux-Arts", adresseEnvoi2006.getLigne4());
+		assertEquals("2000 Neuchâtel", adresseEnvoi2006.getLigne5());
+		assertNull(adresseEnvoi2006.getLigne6());
+
+		// conjoint hors-Suisse => adresse courrier du conjoint ignorée
+		final AdresseEnvoiDetaillee adresseEnvoi2010 = adresseService.getAdresseEnvoi(menage, date(2010, 1, 1), TypeAdresseFiscale.COURRIER, false);
+		assertNotNull(adresseEnvoi2010);
+		assertEquals("Monsieur et Madame", adresseEnvoi2010.getLigne1());
+		assertEquals("Paul Dupont", adresseEnvoi2010.getLigne2());
+		assertEquals("Virginie Dupont", adresseEnvoi2010.getLigne3());
+		assertEquals("p.a. Ronald MacDonald", adresseEnvoi2010.getLigne4());
+		assertEquals("Grande-Rue", adresseEnvoi2010.getLigne5());
+		assertEquals("1347 Le Sentier", adresseEnvoi2010.getLigne6());
+	}
+
 	/**
 	 * Voir la spécification "BesoinsContentieux.doc"
 	 */

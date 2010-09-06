@@ -200,7 +200,7 @@ public class AdresseServiceImpl implements AdresseService {
 		}
 	}
 
-	private EnvoiInfo determineEnvoiInfo(Tiers tiers, RegDate date, TypeAdresseFiscale type) {
+	private EnvoiInfo determineEnvoiInfo(Tiers tiers, RegDate date, TypeAdresseFiscale type) throws AdresseException {
 
 		EnvoiInfo data = new EnvoiInfo(tiers, type); // par défaut, le destinataire est le tiers lui-même
 
@@ -422,8 +422,9 @@ public class AdresseServiceImpl implements AdresseService {
 	 * @param destination        le tiers chez qui l'envoi est adressé
 	 * @param avecPourAdresse    <b>vrai</b> s'il faut ajouter un préfixe "p.a." avant la destination
 	 * @param date               la date de validité de l'adresse  @throws AdresseException en cas de problème dans le traitement
+	 * @throws AdresseException en cas de problème dans le traitement
 	 */
-	private void fillDestination(AdresseEnvoiDetaillee adresse, AdresseGenerique adresseDestination, Tiers destination, boolean avecPourAdresse, RegDate date) {
+	private void fillDestination(AdresseEnvoiDetaillee adresse, AdresseGenerique adresseDestination, Tiers destination, boolean avecPourAdresse, RegDate date) throws AdresseException {
 
 		if (avecPourAdresse) {
 			adresse.addPourAdresse(getPourAdresse(destination));
@@ -451,8 +452,9 @@ public class AdresseServiceImpl implements AdresseService {
 	 * @param personne           une personne physique
 	 * @param date               la date de validité de l'adresse
 	 * @param adresseDestination l'adresse générique pré-calculée
+	 * @throws AdresseException en cas de problème dans le traitement
 	 */
-	private void fillDestination(AdresseEnvoiDetaillee adresse, PersonnePhysique personne, RegDate date, AdresseGenerique adresseDestination) {
+	private void fillDestination(AdresseEnvoiDetaillee adresse, PersonnePhysique personne, RegDate date, AdresseGenerique adresseDestination) throws AdresseException {
 
 		if (adresseDestination != null) {
 			fillRepresentantPourAdresse(adresse, date, adresseDestination, personne);
@@ -499,8 +501,9 @@ public class AdresseServiceImpl implements AdresseService {
 	 * @param menageCommun       un ménage commun
 	 * @param date               la date de validité de l'adresse
 	 * @param adresseDestination l'adresse générique pré-calculée
+	 * @throws AdresseException en cas de problème dans le traitement
 	 */
-	private void fillDestination(AdresseEnvoiDetaillee adresse, MenageCommun menageCommun, RegDate date, AdresseGenerique adresseDestination) {
+	private void fillDestination(AdresseEnvoiDetaillee adresse, MenageCommun menageCommun, RegDate date, AdresseGenerique adresseDestination) throws AdresseException {
 
 		// Une adresse courrier n'existe pas forcément (exemple: couple en cours de création)
 		if (adresseDestination != null) {
@@ -519,8 +522,9 @@ public class AdresseServiceImpl implements AdresseService {
 	 * @param date           la date de validité
 	 * @param adresseFiscale l'adresse fiscale considéré
 	 * @param tiers          le tiers associée à l'adresse
+	 * @throws AdresseException en cas de problème dans le traitement
 	 */
-	private void fillRepresentantPourAdresse(AdresseEnvoiDetaillee adresse, RegDate date, AdresseGenerique adresseFiscale, Tiers tiers) {
+	private void fillRepresentantPourAdresse(AdresseEnvoiDetaillee adresse, RegDate date, AdresseGenerique adresseFiscale, Tiers tiers) throws AdresseException {
 		final TypeAdresseRepresentant type = TypeAdresseRepresentant.getTypeAdresseRepresentantFromSource(adresseFiscale.getSource());
 		if (type != null) {
 			final Tiers representant = getRepresentant(tiers, type, date);
@@ -1129,8 +1133,9 @@ public class AdresseServiceImpl implements AdresseService {
 	 * @param type  le type de représentant
 	 * @param date  la date de référence, ou null pour obtenir le représentant courant.
 	 * @return le représentant, ou null si le tiers ne possède pas de représentant à la date spécifiée.
+	 * @throws AdresseException en cas de problème dans le traitement
 	 */
-	private Tiers getRepresentant(Tiers tiers, TypeAdresseRepresentant type, RegDate date) {
+	private Tiers getRepresentant(Tiers tiers, TypeAdresseRepresentant type, RegDate date) throws AdresseException {
 
 		final Tiers representant;
 
@@ -1177,8 +1182,9 @@ public class AdresseServiceImpl implements AdresseService {
 	 * @param type   le type de représentant
 	 * @param date   la date de référence, ou null pour obtenir le représentant courant.
 	 * @return le représentant, ou null si le ménage ne possède pas de représentant à la date spécifiée.
+	 * @throws AdresseException en cas de problème dans le traitement
 	 */
-	private Tiers getRepresentantPourMenage(MenageCommun menage, TypeAdresseRepresentant type, RegDate date) {
+	private Tiers getRepresentantPourMenage(MenageCommun menage, TypeAdresseRepresentant type, RegDate date) throws AdresseException {
 
 		final RapportEntreTiers rapport;
 
@@ -1199,10 +1205,19 @@ public class AdresseServiceImpl implements AdresseService {
 			}
 			else if (conjoint != null && TiersHelper.getRapportSujetOfType(conjoint, TypeRapportEntreTiers.TUTELLE, date) == null &&
 					TiersHelper.getRapportSujetOfType(conjoint, TypeRapportEntreTiers.CURATELLE, date) == null) {
-				rapport = null; // le conjoint n'est pas sous tutelle (ni curatelle), le ménage ne l'est donc pas non plus
+
+				final AdresseGenerique adresseConjoint = getAdresseFiscalPropre(conjoint, TypeAdresseFiscale.COURRIER, date, 0, false);
+				if (adresseConjoint == null || adresseConjoint.getNoOfsPays() != ServiceInfrastructureService.noOfsSuisse) {
+					// [UNIREG-2676] le conjoint habite hors-Suisse, le représentant est donc le tuteur du principal
+					rapport = rapportPrincipal;
+				}
+				else {
+					rapport = null; // le conjoint n'est pas sous tutelle (ni curatelle), le ménage ne l'est donc pas non plus
+				}
+				
 			}
 			else {
-				rapport = rapportPrincipal; // le ménage est sous tutelle (ou curatelle)
+				rapport = rapportPrincipal; // le conjoint est aussi sous tutelle (ou curatelle)
 			}
 		}
 		else {
@@ -1248,14 +1263,14 @@ public class AdresseServiceImpl implements AdresseService {
 	 * Retourne l'adresse fiscale propre au tiers spécifié (= en ignorant les éventuels représentants, tuteurs et autres curateurs).
 	 *
 	 * @param tiers     un tiers
+	 * @param type      le type d'adresse considéré
 	 * @param date      une date de validité de l'adresse
 	 * @param callDepth paramètre technique pour éviter les récursions infinies
 	 * @param strict    si <b>faux</b> essaie de résoudre silencieusement les problèmes détectés durant le traitement; autrement lève une exception.
-	 * @param type      le type d'adresse considéré
 	 * @return une adresse générique ou <b>null</b> si le tiers ne possède pas d'adresse fiscale propre à la date donnée
 	 * @throws AdresseException en cas de problème dans le traitement
 	 */
-	private AdresseGenerique getAdresseFiscalPropre(Tiers tiers, RegDate date, int callDepth, boolean strict, TypeAdresseFiscale type) throws AdresseException {
+	private AdresseGenerique getAdresseFiscalPropre(Tiers tiers, TypeAdresseFiscale type, RegDate date, int callDepth, boolean strict) throws AdresseException {
 		final AdressesFiscalesHisto adressesHisto = getAdressesFiscalesPropreHisto(tiers, callDepth, strict);
 		final AdressesFiscales adresses = adressesHisto.at(date);
 		return adresses.ofType(type);
@@ -1439,13 +1454,18 @@ public class AdresseServiceImpl implements AdresseService {
 						// on ignore toutes les adresses où le conjoint est lui-même sous tutelle
 						final Source source = adresse.getSource();
 						if (source != Source.TUTELLE && source != Source.CURATELLE) {
+							final AdresseGenerique adresseConjoint;
 							if (source != Source.CIVILE && source != Source.FISCALE) {
 								// [UNIREG-1341] on utilise l'adresse courrier propre du conjoint (hors représentation) comme adresse de représentation du ménage
-								final AdresseGenerique adressePropre = getAdresseFiscalPropre(conjoint, adresse.getDateDebut(), callDepth + 1, strict, TypeAdresseFiscale.COURRIER);
-								adressesConjointSansTutelle.add(new AdresseGeneriqueAdapter(adressePropre, adresse.getDateDebut(), adresse.getDateFin(), Source.CONJOINT, false));
+								final AdresseGenerique adressePropre = getAdresseFiscalPropre(conjoint, TypeAdresseFiscale.COURRIER, adresse.getDateDebut(), callDepth + 1, strict);
+								adresseConjoint = new AdresseGeneriqueAdapter(adressePropre, adresse.getDateDebut(), adresse.getDateFin(), Source.CONJOINT, false);
 							}
 							else {
-								adressesConjointSansTutelle.add(new AdresseGeneriqueAdapter(adresse, Source.CONJOINT, false));
+								adresseConjoint = new AdresseGeneriqueAdapter(adresse, Source.CONJOINT, false);
+							}
+							// [UNIREG-2676] on ignore toutes les adresses où le conjoint est hors-Suisse
+							if (adresseConjoint.getNoOfsPays() == ServiceInfrastructureService.noOfsSuisse) {
+								adressesConjointSansTutelle.add(adresseConjoint);
 							}
 						}
 					}
