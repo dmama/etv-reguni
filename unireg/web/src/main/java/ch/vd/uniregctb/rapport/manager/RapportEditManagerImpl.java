@@ -138,7 +138,7 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 		else if (rapportEntreTiers instanceof RepresentationConventionnelle) {
 			final RepresentationConventionnelle repres = (RepresentationConventionnelle) rapportEntreTiers;
 			final Boolean b = repres.getExtensionExecutionForcee();
-			rapportView.setExtensionExecutionForcee(b != null && b.booleanValue());
+			rapportView.setExtensionExecutionForcee(b != null && b);
 			rapportView.setAllowed(checkDroitEdit(tiers));
 		}
 		else {//rapport de non travail
@@ -181,7 +181,7 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 			if (rapport instanceof RepresentationConventionnelle) {
 				final RepresentationConventionnelle repres = (RepresentationConventionnelle) rapport;
 				validateRepresentationConventionnelle(rapportView, sujet);
-				repres.setExtensionExecutionForcee(rapportView.isExtensionExecutionForcee());
+				repres.setExtensionExecutionForcee(rapportView.getExtensionExecutionForcee());
 			}
 
 			// établit le rapport entre les deux tiers
@@ -199,14 +199,14 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 				final RepresentationConventionnelle repres = (RepresentationConventionnelle) rapportEntreTiers;
 				final Tiers sujet = tiersDAO.get(repres.getSujetId());
 				validateRepresentationConventionnelle(rapportView, sujet);
-				repres.setExtensionExecutionForcee(rapportView.isExtensionExecutionForcee());
+				repres.setExtensionExecutionForcee(rapportView.getExtensionExecutionForcee());
 			}
 		}
 
 	}
 
 	private void validateRepresentationConventionnelle(RapportView rapportView, Tiers sujet) {
-		if (rapportView.isExtensionExecutionForcee() && sujet instanceof PersonnePhysique && ((PersonnePhysique)sujet).isHabitantVD()) {
+		if (rapportView.getExtensionExecutionForcee() && sujet instanceof PersonnePhysique && ((PersonnePhysique)sujet).isHabitantVD()) {
 			// [UNIREG-1341]
 			throw new ValidationException(sujet, "L'extension de l'exécution forcée est uniquement autorisée pour les tiers domiciliés à l'étranger");
 		}

@@ -355,7 +355,7 @@ public class TiersManager implements MessageSourceAware {
 				else if (rapportEntreTiers instanceof RepresentationConventionnelle) {
 					final RepresentationConventionnelle repres = (RepresentationConventionnelle) rapportEntreTiers;
 					final Boolean b = repres.getExtensionExecutionForcee();
-					rapportView.setExtensionExecutionForcee(b != null && b.booleanValue());
+					rapportView.setExtensionExecutionForcee(b != null && b);
 				}
 				rapportsView.add(rapportView);
 			}

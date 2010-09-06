@@ -9,6 +9,15 @@
 </c:if>
 
 <c:if test="${not empty command.dossiersApparentes}">
+
+<%-- détermine si un rapport est de type représentation conventionnelle --%>
+<c:set var="hasExtensionExecutionForcee" value="${false}" />
+<c:forEach items="${command.dossiersApparentes}" var="rapport">
+	<c:if test="${rapport.extensionExecutionForcee != null}">
+		<c:set var="hasExtensionExecutionForcee" value="${true}" />
+	</c:if>
+</c:forEach>
+
 <display:table name="command.dossiersApparentes" id="dossierApparente" pagesize="10" requestURI="${url}" class="display">
 	<display:column sortable ="true" titleKey="label.rapport.tiers">
 		<c:if test="${dossierApparente.annule}"><strike></c:if>
@@ -49,6 +58,17 @@
 		</c:if>
 		<c:if test="${dossierApparente.annule}"></strike></c:if>
 	</display:column>
+
+	<c:if test="${hasExtensionExecutionForcee}">
+		<display:column sortable ="true" titleKey="label.extension.execution.forcee">
+			<c:if test="${dossierApparente.annule}"><strike></c:if>
+				<c:if test="${dossierApparente.extensionExecutionForcee != null}">
+					<input type="checkbox" <c:if test="${dossierApparente.extensionExecutionForcee}">checked="true"</c:if> disabled="true"/>
+				</c:if>
+			<c:if test="${dossierApparente.annule}"></strike></c:if>
+		</display:column>
+	</c:if>
+
 	<display:column style="action">
 		<c:if test="${dossierApparente.typeRapportEntreTiers != 'FILIATION'}">
 			<c:if test="${page == 'visu' }">
