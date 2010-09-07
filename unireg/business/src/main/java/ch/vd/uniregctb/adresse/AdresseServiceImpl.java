@@ -150,7 +150,7 @@ public class AdresseServiceImpl implements AdresseService {
 
 		final AdresseEnvoiDetaillee adresseEnvoi = new AdresseEnvoiDetaillee(source);
 
-		fillDestinataire(adresseEnvoi, envoi.destinataire);
+		fillDestinataire(adresseEnvoi, envoi.destinataire, date);
 		fillDestination(adresseEnvoi, adresseDestination, envoi.destination, envoi.avecPourAdresse, date);
 
 		return adresseEnvoi;
@@ -316,7 +316,7 @@ public class AdresseServiceImpl implements AdresseService {
 		String nomPrenom1 = null;
 		String nomPrenom2 = null;
 		if (ctb instanceof PersonnePhysique) {
-			nomPrenom1 = getNomPrenom((PersonnePhysique) ctb);
+			nomPrenom1 = getNomPrenom((PersonnePhysique) ctb, date);
 		}
 		else if (ctb instanceof MenageCommun) {
 			final MenageCommun mc = (MenageCommun) ctb;
@@ -325,12 +325,12 @@ public class AdresseServiceImpl implements AdresseService {
 
 			final PersonnePhysique principal = ensemble.getPrincipal();
 			if (principal != null) {
-				nomPrenom1 = getNomPrenom(principal);
+				nomPrenom1 = getNomPrenom(principal, date);
 			}
 
 			final PersonnePhysique conjoint = ensemble.getConjoint();
 			if (conjoint != null) {
-				final String np = getNomPrenom(conjoint);
+				final String np = getNomPrenom(conjoint, date);
 				if (nomPrenom1 == null) {
 					nomPrenom1 = np;
 				}
@@ -357,13 +357,14 @@ public class AdresseServiceImpl implements AdresseService {
 	 *
 	 * @param adresse l'adresse d'envoi détaillée à remplir
 	 * @param tiers   le tiers destinataire
+	 * @param date    la date de validité de l'adresse
 	 */
-	private void fillDestinataire(AdresseEnvoiDetaillee adresse, Tiers tiers) {
+	private void fillDestinataire(AdresseEnvoiDetaillee adresse, Tiers tiers, RegDate date) {
 
 		if (tiers instanceof PersonnePhysique) {
 			PersonnePhysique personne = (PersonnePhysique) tiers;
-			adresse.addFormulePolitesse(getFormulePolitesse(personne));
-			adresse.addNomPrenom(getNomPrenom(personne));
+			adresse.addFormulePolitesse(getFormulePolitesse(personne, date));
+			adresse.addNomPrenom(getNomPrenom(personne, date));
 		}
 		else if (tiers instanceof MenageCommun) {
 			MenageCommun menageCommun = (MenageCommun) tiers;
@@ -372,13 +373,13 @@ public class AdresseServiceImpl implements AdresseService {
 
 			final PersonnePhysique principal = ensemble.getPrincipal();
 			if (principal != null) {
-				adresse.addFormulePolitesse(getFormulePolitesse(ensemble));
-				adresse.addNomPrenom(getNomPrenom(principal));
+				adresse.addFormulePolitesse(getFormulePolitesse(ensemble, date));
+				adresse.addNomPrenom(getNomPrenom(principal, date));
 			}
 
 			final PersonnePhysique conjoint = ensemble.getConjoint();
 			if (conjoint != null) {
-				adresse.addNomPrenom(getNomPrenom(conjoint));
+				adresse.addNomPrenom(getNomPrenom(conjoint, date));
 			}
 		}
 		else if (tiers instanceof DebiteurPrestationImposable) {
@@ -421,7 +422,7 @@ public class AdresseServiceImpl implements AdresseService {
 	 * @param adresseDestination l'adresse générique pré-calculée
 	 * @param destination        le tiers chez qui l'envoi est adressé
 	 * @param avecPourAdresse    <b>vrai</b> s'il faut ajouter un préfixe "p.a." avant la destination
-	 * @param date               la date de validité de l'adresse  @throws AdresseException en cas de problème dans le traitement
+	 * @param date               la date de validité de l'adresse
 	 * @throws AdresseException en cas de problème dans le traitement
 	 */
 	private void fillDestination(AdresseEnvoiDetaillee adresse, AdresseGenerique adresseDestination, Tiers destination, boolean avecPourAdresse, RegDate date) throws AdresseException {
@@ -475,7 +476,7 @@ public class AdresseServiceImpl implements AdresseService {
 	private AdresseEnvoiDetaillee createAdresseEnvoi(Individu individu, RegDate date, boolean strict) throws AdresseException {
 
 		AdresseEnvoiDetaillee adresse = new AdresseEnvoiDetaillee(Source.CIVILE);
-		adresse.addFormulePolitesse(getFormulePolitesse(individu));
+		adresse.addFormulePolitesse(getFormulePolitesse(individu, date));
 		adresse.addNomPrenom(tiersService.getNomPrenom(individu));
 
 		final AdressesCiviles adressesCourantes;
@@ -554,11 +555,11 @@ public class AdresseServiceImpl implements AdresseService {
 		final FormulePolitesse salutations;
 
 		if (tiers instanceof PersonnePhysique) {
-			salutations = getFormulePolitesse((PersonnePhysique) tiers);
+			salutations = getFormulePolitesse((PersonnePhysique) tiers, null);
 		}
 		else if (tiers instanceof MenageCommun) {
 			final EnsembleTiersCouple ensemble = tiersService.getEnsembleTiersCouple((MenageCommun) tiers, null);
-			salutations = getFormulePolitesse(ensemble);
+			salutations = getFormulePolitesse(ensemble, null);
 		}
 		else {
 			// pas de formule de politesse pour les autres types de tiers
@@ -570,30 +571,37 @@ public class AdresseServiceImpl implements AdresseService {
 
 	/**
 	 * @param personne une personne physique
+	 * @param date     la date de validité de la formule de politesse
 	 * @return la formule de politesse pour l'adressage d'une personne physique
 	 */
-	private FormulePolitesse getFormulePolitesse(PersonnePhysique personne) {
+	private FormulePolitesse getFormulePolitesse(PersonnePhysique personne, RegDate date) {
 
 		FormulePolitesse salutations;
 
+		final boolean estDecede = estDecedeAt(personne, date);
+
 		if (personne.isHabitantVD()) {
-			if (!tiersService.isDecede(personne)) {
-				if (tiersService.getSexe(personne).equals(Sexe.MASCULIN))
+			if (!estDecede) {
+				if (tiersService.getSexe(personne) == Sexe.MASCULIN) {
 					salutations = FormulePolitesse.MONSIEUR;
-				else
+				}
+				else {
 					salutations = FormulePolitesse.MADAME;
+				}
 			}
 			else {
 				salutations = FormulePolitesse.HERITIERS;
 			}
 		}
 		else {
-			if (!tiersService.isDecede(personne)) {
+			if (!estDecede) {
 				if (personne.getSexe() != null) {
-					if (personne.getSexe().equals(Sexe.MASCULIN))
+					if (personne.getSexe() == Sexe.MASCULIN) {
 						salutations = FormulePolitesse.MONSIEUR;
-					else
+					}
+					else {
 						salutations = FormulePolitesse.MADAME;
+					}
 				}
 				else {
 					salutations = FormulePolitesse.MADAME_MONSIEUR;
@@ -608,16 +616,35 @@ public class AdresseServiceImpl implements AdresseService {
 	}
 
 	/**
+	 * Détermine si une personne est décédée à une date donnée.
+	 *
+	 * @param personne une personne
+	 * @param date     une date
+	 * @return <b>vrai</b> si la personne est décédée à la date donnée; <b>faux</b> autrement.
+	 */
+	private boolean estDecedeAt(PersonnePhysique personne, RegDate date) {
+		final RegDate dateDeces = tiersService.getDateDeces(personne);
+		return (dateDeces != null && (date == null || dateDeces.isBeforeOrEqual(date)));
+	}
+
+	/**
 	 * @param individu un individu
+	 * @param date     la date de validité de la formule de politesse
 	 * @return la formule de politesse pour l'adressage d'un individu
 	 */
-	private FormulePolitesse getFormulePolitesse(Individu individu) {
+	private FormulePolitesse getFormulePolitesse(Individu individu, RegDate date) {
 		FormulePolitesse salutations;
-		if (individu.getDateDeces() == null) {
-			if (individu.isSexeMasculin())
+
+		final RegDate dateDeces = individu.getDateDeces();
+		final boolean estDecede = (dateDeces != null && (date == null || dateDeces.isBeforeOrEqual(date)));
+
+		if (!estDecede) {
+			if (individu.isSexeMasculin()) {
 				salutations = FormulePolitesse.MONSIEUR;
-			else
+			}
+			else {
 				salutations = FormulePolitesse.MADAME;
+			}
 		}
 		else {
 			salutations = FormulePolitesse.HERITIERS;
@@ -629,9 +656,10 @@ public class AdresseServiceImpl implements AdresseService {
 	 * Voir le document 'ModeleDonnees.doc' v0.1, §4.2 Formats d'adresses
 	 *
 	 * @param ensemble un ensemble tiers-couple
+	 * @param date     la date de validité de la formule de politesse
 	 * @return la formule de politesse pour l'adressage des parties d'un ménage commun
 	 */
-	protected FormulePolitesse getFormulePolitesse(EnsembleTiersCouple ensemble) {
+	protected FormulePolitesse getFormulePolitesse(EnsembleTiersCouple ensemble, RegDate date) {
 
 		final PersonnePhysique principal = ensemble.getPrincipal();
 		final PersonnePhysique conjoint = ensemble.getConjoint();
@@ -639,11 +667,11 @@ public class AdresseServiceImpl implements AdresseService {
 		final Sexe sexePrincipal = tiersService.getSexe(principal);
 		final Sexe sexeConjoint = (conjoint == null ? null : tiersService.getSexe(conjoint));
 
-		final RegDate dateDecesPrincipal = tiersService.getDateDeces(principal);
-		final RegDate dateDecesConjoint = (conjoint == null ? null : tiersService.getDateDeces(conjoint));
+		final boolean principalEstDecede = estDecedeAt(principal, date);
+		final boolean secondaireEstDecede = estDecedeAt(conjoint, date);
 
 		// [UNIREG-749] la formule de politesse 'aux héritiers de' s'applique dès qu'un des deux tiers est décédé.
-		if (dateDecesPrincipal != null || dateDecesConjoint != null) {
+		if (principalEstDecede || secondaireEstDecede) {
 			return FormulePolitesse.HERITIERS;
 		}
 
@@ -687,15 +715,16 @@ public class AdresseServiceImpl implements AdresseService {
 
 	/**
 	 * @param personne une personne physique
+	 * @param date     la date de validité du nom et du prénom
 	 * @return la ligne du prénom et du nom pour la personne physique spécifiée.
 	 */
-	private String getNomPrenom(PersonnePhysique personne) {
+	private String getNomPrenom(PersonnePhysique personne, RegDate date) {
 
 		String prenomNom = tiersService.getNomPrenom(personne);
 
 		// [UNIREG-749] on applique un suffixe 'défunt' aux personnes décédées
-		final RegDate dateDeces = tiersService.getDateDeces(personne);
-		if (dateDeces != null) {
+		final boolean estDecede = estDecedeAt(personne, date);
+		if (estDecede) {
 			final Sexe sexe = tiersService.getSexe(personne);
 			if (sexe == null) {
 				prenomNom += SUFFIXE_DEFUNT_NEUTRE;
@@ -1438,39 +1467,10 @@ public class AdresseServiceImpl implements AdresseService {
 			}
 			else {
 				// On détermine les périodes durant lesquelles le principal est sous tutelle de manière continue
-				final List<DateRange> ranges = DateRangeHelper.collateRange(adressesTuteur);
+				final List<DateRange> periodesTutellesPrincipal = DateRangeHelper.collateRange(adressesTuteur);
 
-				// On récupère les adresses du conjoint et on les filtre pour ne garder que celles valides durant les périodes calculées plus haut
-				final AdressesFiscalesHisto adressesConjoint = getAdressesFiscalHisto(conjoint, callDepth + 1, strict);
-				if (strict) {
-					verifieCoherenceAdresses(adressesConjoint.courrier, "Adresse de courrier", conjoint);
-				}
-
-				final List<AdresseGenerique> adressesConjointSansTutelle = new ArrayList<AdresseGenerique>();
-
-				for (DateRange range : ranges) {
-					final List<AdresseGenerique> adressesRange = AdresseMixer.extract(adressesConjoint.courrier, range.getDateDebut(), range.getDateFin());
-					for (AdresseGenerique adresse : adressesRange) {
-						// on ignore toutes les adresses où le conjoint est lui-même sous tutelle
-						final Source source = adresse.getSource();
-						if (source != Source.TUTELLE && source != Source.CURATELLE) {
-							final AdresseGenerique adresseConjoint;
-							if (source != Source.CIVILE && source != Source.FISCALE) {
-								// [UNIREG-1341] on utilise l'adresse courrier propre du conjoint (hors représentation) comme adresse de représentation du ménage
-								final AdresseGenerique adressePropre = getAdresseFiscalPropre(conjoint, TypeAdresseFiscale.COURRIER, adresse.getDateDebut(), callDepth + 1, strict);
-								adresseConjoint = new AdresseGeneriqueAdapter(adressePropre, adresse.getDateDebut(), adresse.getDateFin(), Source.CONJOINT, false);
-							}
-							else {
-								adresseConjoint = new AdresseGeneriqueAdapter(adresse, Source.CONJOINT, false);
-							}
-							// [UNIREG-2676] on ignore toutes les adresses où le conjoint est hors-Suisse
-							if (adresseConjoint.getNoOfsPays() == ServiceInfrastructureService.noOfsSuisse) {
-								adressesConjointSansTutelle.add(adresseConjoint);
-							}
-						}
-					}
-				}
-
+				// On détermine les adresses courrier du conjoint pour représenter le ménage pendant les périodes de tutelle du principal
+				final List<AdresseGenerique> adressesConjointSansTutelle = getAdresseCourrierConjointPourRepresentationMenage(conjoint, periodesTutellesPrincipal, callDepth, strict);
 				adresses = AdresseMixer.override(adressesTuteur, adressesConjointSansTutelle, null, null);
 			}
 		}
@@ -1480,6 +1480,114 @@ public class AdresseServiceImpl implements AdresseService {
 		}
 
 		return adresses;
+	}
+
+	/**
+	 * Cette méthode permet de déterminer les adresses courrier du conjoint pour représenter le ménage pendant les périodes de tutelle/curatelle du principal.
+	 *
+	 * @param conjoint                  le conjoint
+	 * @param periodesTutellePrincipal les périodes pendant lesquelles le principal est sous tutelle/curatelle
+	 * @param callDepth                 paramètre technique pour éviter les récursions infinies
+	 * @param strict                    si <b>faux</b> essaie de résoudre silencieusement les problèmes détectés durant le traitement; autrement lève une exception.
+	 * @return une liste d'adresses à utiliser comme adresses courrier du ménage dont fait partie le conjoint
+	 * @throws AdresseException en cas de problème dans le traitement
+	 */
+	private List<AdresseGenerique> getAdresseCourrierConjointPourRepresentationMenage(PersonnePhysique conjoint, List<DateRange> periodesTutellePrincipal, int callDepth,
+	                                                                                  boolean strict) throws AdresseException {
+
+		final RegDate dateDeces = tiersService.getDateDeces(conjoint);
+
+		// On détermine les périodes de validité des adresses du conjoint comme adresse de représentation du ménage
+		final List<DateRange> periodesValiditeAdressesConjoint;
+		if (dateDeces == null) {
+			periodesValiditeAdressesConjoint = periodesTutellePrincipal;
+		}
+		else {
+			// [UNIREG-2644] en case de décès du conjoint, on limite la validité des adresses à la période avant le décès
+			periodesValiditeAdressesConjoint = truncate(periodesTutellePrincipal, dateDeces.getOneDayBefore());
+		}
+
+		final List<AdresseGenerique> adressesConjointSansTutelle = new ArrayList<AdresseGenerique>();
+
+		final List<AdresseGenerique> adressesCourrierConjoint = getAdressesCourrierHistoInRanges(conjoint, periodesValiditeAdressesConjoint, callDepth + 1, strict);
+		for (AdresseGenerique adresse : adressesCourrierConjoint) {
+			
+			final Source source = adresse.getSource();
+			if (source == Source.TUTELLE || source == Source.CURATELLE) {
+				// on ignore toutes les adresses où le conjoint est lui-même sous tutelle
+				continue;
+			}
+
+			final AdresseGenerique adresseConjoint;
+			if (source != Source.CIVILE && source != Source.FISCALE) {
+				// [UNIREG-1341] on utilise l'adresse courrier *propre* du conjoint (hors représentation) comme adresse de représentation du ménage
+				final AdresseGenerique adressePropre = getAdresseFiscalPropre(conjoint, TypeAdresseFiscale.COURRIER, adresse.getDateDebut(), callDepth + 1, strict);
+				adresseConjoint = new AdresseGeneriqueAdapter(adressePropre, adresse.getDateDebut(), adresse.getDateFin(), Source.CONJOINT, false);
+			}
+			else {
+				adresseConjoint = new AdresseGeneriqueAdapter(adresse, Source.CONJOINT, false);
+			}
+			
+			// [UNIREG-2676] on ignore toutes les adresses où le conjoint est hors-Suisse
+			if (adresseConjoint.getNoOfsPays() == ServiceInfrastructureService.noOfsSuisse) {
+				adressesConjointSansTutelle.add(adresseConjoint);
+			}
+		}
+		
+		return adressesConjointSansTutelle;
+	}
+
+	/**
+	 * Tronque une liste de ranges pour qu'ils ne dépassent pas une date maximum
+	 *
+	 * @param ranges      une liste de ranges, triés par ordre croissants et qui ne se chevauchent pas.
+	 * @param dateMaximum une date utilisée comme limite supérieur (incluse)
+	 * @return une liste contenant tous les ranges qui sont valides avant la date maximum (le dernier range est tronqué si nécessaire).
+	 */
+	private static List<DateRange> truncate(List<DateRange> ranges, RegDate dateMaximum) {
+		final List<DateRange> truncated = new ArrayList<DateRange>(ranges.size());
+		for (DateRange range : ranges) {
+
+			if (range.getDateDebut().isAfterOrEqual(dateMaximum)) {
+				break; // inutile de continuer
+			}
+
+			if (range.getDateFin() == null || dateMaximum.isBeforeOrEqual(range.getDateFin())) {
+				final DateRange r = new DateRangeHelper.Range(range.getDateDebut(), dateMaximum);
+				truncated.add(r);
+				break; // inutile de continuer
+			}
+
+			truncated.add(range);
+		}
+		return truncated;
+	}
+
+	/**
+	 * Détermine et retourne les adresses courrier d'un tiers pour plusieurs périodes données.
+	 *
+	 * @param tiers     un tiers
+	 * @param ranges    les périodes pour lesquelles on veut extraire les adresses
+	 * @param callDepth paramètre technique pour éviter les récursions infinies
+	 * @param strict    si <b>faux</b> essaie de résoudre silencieusement les problèmes détectés durant le traitement; autrement lève une exception.
+	 * @return une liste d'adresses courrier valides pendant les périodes demandées.
+	 * @throws AdresseException en cas de problème dans le traitement
+	 */
+	private List<AdresseGenerique> getAdressesCourrierHistoInRanges(Tiers tiers, List<DateRange> ranges, int callDepth, boolean strict) throws AdresseException {
+
+		// On récupère les adresses du conjoint et on les filtre pour ne garder que celles valides durant les périodes calculées plus haut
+		final AdressesFiscalesHisto adressesConjoint = getAdressesFiscalHisto(tiers, callDepth + 1, strict);
+		if (strict) {
+			verifieCoherenceAdresses(adressesConjoint.courrier, "Adresse de courrier", tiers);
+		}
+
+		final List<AdresseGenerique> adressesInRange = new ArrayList<AdresseGenerique>();
+		for (DateRange range : ranges) {
+			final List<AdresseGenerique> adressesRange = AdresseMixer.extract(adressesConjoint.courrier, range.getDateDebut(), range.getDateFin());
+			adressesInRange.addAll(adressesRange);
+		}
+
+		return adressesInRange;
 	}
 
 	/**
