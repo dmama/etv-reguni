@@ -5,6 +5,9 @@
 	<tiles:put name="menu" type="String"></tiles:put>
 
 	<tiles:put name="title" type="String">*** Mode Supergra ***</tiles:put>
+
+	<tiles:put name="actions" type="String"></tiles:put>
+
 	<tiles:put name="body" type="String">
 
 		<table border="0"><tr valign="top">

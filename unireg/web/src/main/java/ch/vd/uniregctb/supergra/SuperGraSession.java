@@ -35,7 +35,7 @@ public class SuperGraSession {
 		this.deltas.add(delta);
 	}
 
-	public void addDeltas(List<Delta> deltas) {
+	public void addDeltas(List<? extends Delta> deltas) {
 		if (this.deltas == null) {
 			this.deltas = new ArrayList<Delta>();
 		}

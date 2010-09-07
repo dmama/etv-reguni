@@ -85,9 +85,9 @@ public class EntityView implements Cloneable {
 	 * @param right une autre entité
 	 * @return une liste de patches qui correspondent aux différences constatées.
 	 */
-	public List<Delta> delta(EntityView right) {
+	public List<AttributeUpdate> delta(EntityView right) {
 
-		final List<Delta> deltas = new ArrayList<Delta>();
+		final List<AttributeUpdate> deltas = new ArrayList<AttributeUpdate>();
 
 		for (AttributeView rightAttribute : right.attributes) {
 			final AttributeView leftAttribute = attributesMap.get(rightAttribute.getName());

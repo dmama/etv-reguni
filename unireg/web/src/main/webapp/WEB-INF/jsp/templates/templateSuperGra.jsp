@@ -72,13 +72,10 @@ function ouvrirAide(url) {
 						<span class="label"><fmt:message key="label.canton.vaud" /></span>
 					</a>
 				</div>
-				<h3>Sommaire&nbsp;<a href="#" onClick="javascript:ouvrirAide('<c:url value='/docs/sommaire-glossaire.pdf'/>');" title="AccessKey: a" accesskey="e">?</a>
-				</h3>
-				<tiles:getAsString name='links' ignore='true'/>
-				<ul>
-					<li><a href="<c:url value='/tiers/list.do'/>"><fmt:message key="title.rechercher" /></a></li>
-				</ul>
 
+				<h3>Actions</h3>
+
+				<tiles:getAsString name='actions' />
 			</div>
 
 			<div id="header" class="supergra">

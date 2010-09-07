@@ -120,8 +120,11 @@ public class SuperGraEntityController extends SuperGraAbstractController {
 		if (!SecurityProvider.isGranted(Role.SUPERGRA)) {
 			throw new AccessDeniedException(ACCESS_DENIED);
 		}
-		
+
 		if (handleCommonAction(request)) {
+			// rien d'autre à faire
+		}
+		else if (handleDisableEntity(request, view) || handleEnableEntity(request, view)) {
 			// rien d'autre à faire
 		}
 		else {
@@ -130,7 +133,7 @@ public class SuperGraEntityController extends SuperGraAbstractController {
 
 			// On détermine les changements effectués
 			final SuperGraSession session = getSession(request);
-			final List<Delta> newdeltas = referenceView.delta(view);
+			final List<AttributeUpdate> newdeltas = referenceView.delta(view);
 			session.addDeltas(newdeltas);
 
 			if (newdeltas.isEmpty()) {
@@ -139,18 +142,66 @@ public class SuperGraEntityController extends SuperGraAbstractController {
 			else {
 				final String message;
 				if (newdeltas.size() == 1) {
-					message = "1 attribut a été changé.";
+					message = "L'attribut '" + newdeltas.get(0).getName() + "' a été changé.";
 				}
 				else {
-					message = String.valueOf(newdeltas.size()) + " attributs ont été changés.";
+					String list = "";
+					for (int i = 0, newdeltasSize = newdeltas.size(); i < newdeltasSize; i++) {
+						final AttributeUpdate a = newdeltas.get(i);
+						if (i > 0 && i < newdeltasSize - 2) {
+							list += ", ";
+						}
+						if (i > 0 && i == newdeltasSize - 1) {
+							list += " et ";
+						}
+						list += "'" + a.getName() + "'";
+					}
+					message = "Les attributs " + list + " ont été changés.";
 				}
 				flash(message);
 			}
-
-			final EntityView updatedReferenceView = (EntityView) view.clone();
-			request.getSession().setAttribute("referenceEntity", updatedReferenceView);
 		}
 
 		return new ModelAndView(new RedirectView(getSuccessView() + "?id=" + view.getKey().getId() + "&class=" + view.getKey().getType()));
+	}
+
+	private boolean handleDisableEntity(HttpServletRequest request, EntityView view) {
+
+		final String parameter = request.getParameter("disableEntity");
+		if (StringUtils.isNotBlank(parameter)) {
+
+			if (view.isAnnule()) {
+				flashWarning("L'entité est déjà annulée. Aucun changement effectué.");
+				return true;
+			}
+
+			final SuperGraSession session = getSession(request);
+			session.addDelta(new DisableEntity(view.getKey()));
+
+			flash("L'entité a été annulée.");
+			return true;
+		}
+
+		return false;
+	}
+
+	private boolean handleEnableEntity(HttpServletRequest request, EntityView view) {
+
+		final String parameter = request.getParameter("enableEntity");
+		if (StringUtils.isNotBlank(parameter)) {
+
+			if (!view.isAnnule()) {
+				flashWarning("L'entité n'est pas annulée. Aucun changement effectué.");
+				return true;
+			}
+
+			final SuperGraSession session = getSession(request);
+			session.addDelta(new EnableEntity(view.getKey()));
+
+			flash("L'entité a été désannulée.");
+			return true;
+		}
+
+		return false;
 	}
 }

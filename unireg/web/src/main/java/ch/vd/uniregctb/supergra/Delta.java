@@ -24,6 +24,12 @@ public abstract class Delta {
 	 */
 	public abstract String getHtml();
 
+	@Override
+	public String toString() {
+		final String html = getHtml();
+		return html.replaceAll("<.*?>", ""); // on supprime toutes les balises
+	}
+
 	protected String attribute2html(String name) {
 		return "<span class=\"attributeName\">" + HtmlUtils.htmlEscape(name) + "</span>";
 	}

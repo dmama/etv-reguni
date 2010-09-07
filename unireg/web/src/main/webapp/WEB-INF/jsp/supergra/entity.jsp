@@ -5,6 +5,22 @@
 	<tiles:put name="menu" type="String"></tiles:put> 
 
 	<tiles:put name="title" type="String">*** Mode Supergra ***</tiles:put>
+
+	<tiles:put name="actions" type="String">
+		<ul>
+			<c:if test="${!entity.annule}">
+				<form:form method="post">
+					<li><input type="submit" name="disableEntity" value="Annuler l'entité"/></li>
+				</form:form>
+			</c:if>
+			<c:if test="${entity.annule}">
+				<form:form method="post">
+					<li><input type="submit" name="enableEntity" value="Désannuler l'entité"/></li>
+				</form:form>
+			</c:if>
+		</ul>
+	</tiles:put>
+
 	<tiles:put name="body" type="String">
 
 		<table border="0"><tr valign="top">
