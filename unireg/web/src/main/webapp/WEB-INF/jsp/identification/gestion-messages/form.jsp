@@ -101,8 +101,11 @@
 				<jsp:param name="id" value="dateMessageFin" />
 			</jsp:include>
 		</td>
-		<td width="25%">&nbsp;</td>
-		<td width="25%">&nbsp;</td>
+		<td width="25%"><fmt:message key="label.navs11" />:</td>
+		<td width="25%">
+		 	<form:input  path="NAVS11" id="NAVS11" cssErrorClass="input-with-errors" />
+			<form:errors path="NAVS11" cssClass="error"/>
+		</td>
 	</tr>
 	
 		<c:choose>

@@ -26,6 +26,8 @@ public class IdentificationContribuableCriteria {
 
 	private String NAVS13;
 
+	private String NAVS11;
+
 	private RegDate dateNaissance;
 
 	public String getTypeMessage() {
@@ -116,4 +118,11 @@ public class IdentificationContribuableCriteria {
 		this.dateNaissance = dateNaissance;
 	}
 
+	public String getNAVS11() {
+		return NAVS11;
+	}
+
+	public void setNAVS11(String NAVS11) {
+		this.NAVS11 = NAVS11;
+	}
 }

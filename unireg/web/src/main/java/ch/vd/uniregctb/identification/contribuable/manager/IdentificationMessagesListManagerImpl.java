@@ -228,6 +228,7 @@ public class IdentificationMessagesListManagerImpl implements IdentificationMess
 			identificationMessagesResultView.setTypeMessage(identification.getDemande().getTypeMessage());
 			if (identification.getDemande().getPersonne() != null) {
 				identificationMessagesResultView.setNavs13(FormatNumeroHelper.formatNumAVS(identification.getDemande().getPersonne().getNAVS13()));
+				identificationMessagesResultView.setNavs11(FormatNumeroHelper.formatNumAVS(identification.getDemande().getPersonne().getNAVS11()));
 				identificationMessagesResultView.setNom(identification.getDemande().getPersonne().getNom());
 				identificationMessagesResultView.setPrenoms(identification.getDemande().getPersonne().getPrenoms());
 				identificationMessagesResultView.setDateNaissance(identification.getDemande().getPersonne().getDateNaissance());

@@ -225,6 +225,13 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 			criteria.add(navs13);
 			criteria.add(navs13WithoutDot);
 		}
+		String navs11 = identificationContribuableCriteria.getNAVS11();
+		String navs11WithoutDot = StringUtils.replace(navs11, ".", "");
+		if (StringUtils.isNotEmpty(navs11)) {
+			queryWhere += " and (identificationContribuable.demande.personne.NAVS11 = ? or identificationContribuable.demande.personne.NAVS11 = ?) ";
+			criteria.add(navs11);
+			criteria.add(navs11WithoutDot);
+		}
 
 		RegDate dateNaissance = identificationContribuableCriteria.getDateNaissance();
 		if (dateNaissance != null) {

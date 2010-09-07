@@ -82,7 +82,9 @@
 						</c:if>	
 					</display:column>
 				</c:if>
-				
+				  <display:column sortable ="true" titleKey="label.navs11" sortName="demande.personne.NAVS11">
+						<c:out value="${message.navs11}" />
+				</display:column>
 				<display:column sortable ="true" titleKey="label.date.naissance" sortName="demande.personne.dateNaissance">
 						<unireg:date date="${message.dateNaissance}" />
 				</display:column>

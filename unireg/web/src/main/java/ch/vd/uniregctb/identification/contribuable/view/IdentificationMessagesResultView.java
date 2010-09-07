@@ -19,6 +19,7 @@ public class IdentificationMessagesResultView implements Annulable{
 	private String prenoms;
 	private RegDate dateNaissance;
 	private String navs13;
+	private String navs11;
 	private boolean annule;
 	private long numeroContribuable;
 
@@ -103,5 +104,11 @@ public class IdentificationMessagesResultView implements Annulable{
 		return numeroContribuable;
 	}
 
+	public String getNavs11() {
+		return navs11;
+	}
 
+	public void setNavs11(String navs11) {
+		this.navs11 = navs11;
+	}
 }
