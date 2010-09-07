@@ -44,4 +44,13 @@ public class GetDebiteurInfo {
 		result = 31 * result + periodeFiscale;
 		return result;
 	}
+
+	@Override
+	public String toString() {
+		return "GetDebiteurInfo{" +
+				"login=" + login +
+				", numeroDebiteur=" + numeroDebiteur +
+				", periodeFiscale=" + periodeFiscale +
+				'}';
+	}
 }
