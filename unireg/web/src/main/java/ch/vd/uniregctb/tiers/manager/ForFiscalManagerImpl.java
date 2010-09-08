@@ -267,17 +267,7 @@ public class ForFiscalManagerImpl extends TiersManager implements ForFiscalManag
 			forFiscalView.setGenreImpot(GenreImpot.REVENU_FORTUNE);
 			forFiscalView.setMotifRattachement(MotifRattachement.DOMICILE);
 			forFiscalView.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
-
-			// [UNIREG-2313] On propose le mode d'imposition d'un for fiscal précédent par défaut (ou ORDINAIRE si pas de for précédent)
-			final ForFiscalPrincipal ancienFor = tiers.getDernierForFiscalPrincipal();
-			final ModeImposition nouveauModeImposition;
-			if (ancienFor != null) {
-				nouveauModeImposition = ancienFor.getModeImposition();
-			}
-			else {
-				nouveauModeImposition = ModeImposition.ORDINAIRE;
-			}
-			forFiscalView.setModeImposition(nouveauModeImposition);
+			forFiscalView.setModeImposition(ModeImposition.ORDINAIRE);
 		}
 		forFiscalView.setDateOuverture(RegDate.get());
 		return forFiscalView;
