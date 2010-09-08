@@ -70,6 +70,10 @@ public class IdentificationMessagesEditManagerImpl implements IdentificationMess
 		}
 		identificationMessagesEditView.setNomRaison(nomRaison);
 		identificationMessagesEditView.setNumeroAVS(FormatNumeroHelper.formatNumAVS(identificationContribuable.getDemande().getPersonne().getNAVS13()));
+		if("".equals(identificationMessagesEditView.getNumeroAVS())){
+			identificationMessagesEditView.setNumeroAVS(FormatNumeroHelper.formatAncienNumAVS(identificationContribuable.getDemande().getPersonne().getNAVS11()));	
+		}
+
 		if (identificationContribuable.getDemande().getPersonne().getDateNaissance() != null) {
 			identificationMessagesEditView.setDateNaissance(identificationContribuable.getDemande().getPersonne().getDateNaissance());
 		}
@@ -99,6 +103,7 @@ public class IdentificationMessagesEditManagerImpl implements IdentificationMess
 				demandeIdentificationView.setNom(identificationContribuable.getDemande().getPersonne().getNom());
 				demandeIdentificationView.setPrenoms(identificationContribuable.getDemande().getPersonne().getPrenoms());
 				demandeIdentificationView.setNavs13(FormatNumeroHelper.formatNumAVS(identificationContribuable.getDemande().getPersonne().getNAVS13()));
+				demandeIdentificationView.setNavs11(FormatNumeroHelper.formatAncienNumAVS(identificationContribuable.getDemande().getPersonne().getNAVS11()));
 				demandeIdentificationView.setDateNaissance(identificationContribuable.getDemande().getPersonne().getDateNaissance());
 				demandeIdentificationView.setSexe(identificationContribuable.getDemande().getPersonne().getSexe());
 				demandeIdentificationView.setAnnule(identificationContribuable.isAnnule());

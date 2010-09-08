@@ -17,6 +17,7 @@ public class DemandeIdentificationView implements Annulable{
 	private Date dateMessage;
 	private Etat etatMessage;
 	private String navs13;
+	private String navs11;
 	private String nom;
 	private String prenoms;
 	private RegDate dateNaissance;
@@ -146,5 +147,13 @@ public class DemandeIdentificationView implements Annulable{
 
 	public void setAnnule(boolean annule) {
 		this.annule = annule;
+	}
+
+	public String getNavs11() {
+		return navs11;
+	}
+
+	public void setNavs11(String navs11) {
+		this.navs11 = navs11;
 	}
 }

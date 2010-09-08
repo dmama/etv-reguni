@@ -18,26 +18,36 @@
 					<fmt:message key="option.type.message.${message.typeMessage}" />
 				</c:if>
 			</td>
-			<td><fmt:message key="label.navs13" />&nbsp;:</td>
-			<td>${message.navs13}</td>
+			<td><fmt:message key="label.navs11" />&nbsp;:</td>
+			<td>${message.navs11}</td>
 		</tr>
 		<tr class="<unireg:nextRowClass/>" >
 			<td><fmt:message key="label.periode.fiscale" />&nbsp;:</td>
 			<td>${message.periodeFiscale}</td>
-			<td><fmt:message key="label.nom" />&nbsp;:</td>
-			<td>${message.nom}</td>
+			<td><fmt:message key="label.navs13" />&nbsp;:</td>
+			<td>${message.navs13}</td>
 		</tr>
 		<tr class="<unireg:nextRowClass/>" >
 			<td><fmt:message key="label.emetteur" />&nbsp;:</td>
 			<td>${message.emetteurId}</td>
-			<td><fmt:message key="label.prenoms" />&nbsp;:</td>
-			<td>${message.prenoms}</td>
+			<td><fmt:message key="label.nom" />&nbsp;:</td>
+			<td>${message.nom}</td>
 		</tr>
 		<tr class="<unireg:nextRowClass/>" >
 			<td><fmt:message key="label.date.message" />&nbsp;:</td>
 			<td>
 				<c:if test="${message.dateMessage != null }">
 					<fmt:formatDate value="${message.dateMessage}" pattern="dd.MM.yyyy"/>
+				</c:if>
+			</td>
+			<td><fmt:message key="label.prenoms" />&nbsp;:</td>
+			<td>${message.prenoms}</td>
+		</tr>
+		<tr class="<unireg:nextRowClass/>" >
+			<td><fmt:message key="label.etat.message" />&nbsp;:</td>
+			<td>
+				<c:if test="${message.etatMessage != null }">
+					<fmt:message key="option.etat.message.${message.etatMessage}" />
 				</c:if>
 			</td>
 			<td><fmt:message key="label.date.naissance" />&nbsp;:</td>
@@ -48,12 +58,8 @@
 			</td>
 		</tr>
 		<tr class="<unireg:nextRowClass/>" >
-			<td><fmt:message key="label.etat.message" />&nbsp;:</td>
-			<td>
-				<c:if test="${message.etatMessage != null }">
-					<fmt:message key="option.etat.message.${message.etatMessage}" />
-				</c:if>
-			</td>
+			<td></td>
+			<td></td>
 			<td><fmt:message key="label.sexe" />&nbsp;:</td>
 			<td>
 				<c:if test="${message.sexe != null }">

@@ -9,6 +9,8 @@ public class IdentificationMessagesEditView extends TiersCriteriaView{
 
 	private ErreurMessage erreurMessage;
 
+	private String numeroAVS11;
+
 	private DemandeIdentificationView demandeIdentificationView;
 
 	public DemandeIdentificationView getDemandeIdentificationView() {
@@ -27,4 +29,11 @@ public class IdentificationMessagesEditView extends TiersCriteriaView{
 		return erreurMessage;
 	}
 
+	public String getNumeroAVS11() {
+		return numeroAVS11;
+	}
+
+	public void setNumeroAVS11(String numeroAVS11) {
+		this.numeroAVS11 = numeroAVS11;
+	}
 }
