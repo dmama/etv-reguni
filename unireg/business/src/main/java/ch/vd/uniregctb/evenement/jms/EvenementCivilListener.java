@@ -19,7 +19,7 @@ import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.evenement.EvenementCivilDAO;
-import ch.vd.uniregctb.evenement.engine.EvenementCivilProcessor;
+import ch.vd.uniregctb.evenement.engine.EvenementCivilAsyncProcessor;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 /**
@@ -30,8 +30,8 @@ public class EvenementCivilListener extends EsbMessageListener {
 	private static final Logger LOGGER = Logger.getLogger(EvenementCivilListener.class);
 
 	private EvenementCivilDAO evenementCivilDAO;
-	private EvenementCivilProcessor evenementCivilProcessor;
 	private PlatformTransactionManager transactionManager;
+	private EvenementCivilAsyncProcessor evenementCivilAsyncProcessor;
 
 	@Override
 	public void onEsbMessage(EsbMessage esbMessage) throws Exception {
@@ -43,7 +43,7 @@ public class EvenementCivilListener extends EsbMessageListener {
 			// le user de création est initialisé avec le user à l'origine de l'événement civil
 			AuthenticationHelper.setPrincipal(visaMutation);
 			try {
-				onEvenementCivil(message);
+				onEvenementCivil(message, null);
 			}
 			finally {
 				AuthenticationHelper.resetAuthentication();
@@ -62,33 +62,42 @@ public class EvenementCivilListener extends EsbMessageListener {
 		}
 	}
 
-	protected void onEvenementCivil(String message) throws EvenementCivilException {
+	/**
+	 * Transforme le body du message XML en événement civil et demande son traitement par l'application
+	 * @param message body du message XML reçu
+	 * @param interested si non-null, l'objet qu'il faut 'notifier' une fois le traitement terminé (pour les tests!)
+	 * @return <code>true</code> si l'événement a été posté pour traitement, <code>false</code> si ce n'est pas la peine
+	 * @throws EvenementCivilException en cas de problème
+	 */
+	protected boolean onEvenementCivil(String message, Object interested) throws EvenementCivilException {
 
 		final long start = System.nanoTime();
 
 		final EvenementCivilData evenement = extractEvenement(message);
 		if (evenement == null) {
-			return; // rien à faire
+			return false; // rien à faire
 		}
 
 		final long extraction = System.nanoTime();
 
 		// on insère l'événement dans la base de données (status = à traiter)
 		if (!insertEvenement(evenement)) {
-			return; // rien de plus à faire
+			return false; // rien de plus à faire
 		}
 
 		final long insertion = System.nanoTime();
+		final long creationTime = System.currentTimeMillis();
 
-		// dans la foulée, on essaie de le traiter, mais on ignore les erreurs pour ne pas bloquer la consommation du message JMS
-		traiteEvenement(evenement);
+		// on poste une demande de traitement pour cet événement
+		evenementCivilAsyncProcessor.postEvenementCivil(evenement.getId(), creationTime, interested);
 
-		final long traitement = System.nanoTime();
+		final long post = System.nanoTime();
 
 		if (LOGGER.isInfoEnabled()) {
-			LOGGER.info(String.format("Evénement traité en %d ms (extraction %d ms, insertion %d ms, traitement %d ms)",
-					(traitement - start) / 1000000, (extraction - start) / 1000000, (insertion - extraction) / 1000000, (traitement - insertion) / 1000000));
+			LOGGER.info(String.format("Evénement reçu en %d ms (extraction %d ms, insertion %d ms)", (post - start) / 1000000, (extraction - start) / 1000000, (insertion - extraction) / 1000000));
 		}
+
+		return true;
 	}
 
 	private EvenementCivilData extractEvenement(String xmlMessage) {
@@ -158,19 +167,6 @@ public class EvenementCivilListener extends EsbMessageListener {
 		}
 	}
 
-	private void traiteEvenement(EvenementCivilData evenement) {
-		try {
-			evenementCivilProcessor.traiteEvenementCivil(evenement.getId(), true);
-		}
-		catch (Exception e) {
-			LOGGER.error(e, e);
-		}
-	}
-
-	public void setEvenementCivilProcessor(EvenementCivilProcessor evenementCivilProcessor) {
-		this.evenementCivilProcessor = evenementCivilProcessor;
-	}
-
 	public void setTransactionManager(PlatformTransactionManager transactionManager) {
 		this.transactionManager = transactionManager;
 	}
@@ -179,4 +175,7 @@ public class EvenementCivilListener extends EsbMessageListener {
 		this.evenementCivilDAO = evenementCivilDAO;
 	}
 
+	public void setEvenementCivilAsyncProcessor(EvenementCivilAsyncProcessor evenementCivilAsyncProcessor) {
+		this.evenementCivilAsyncProcessor = evenementCivilAsyncProcessor;
+	}
 }

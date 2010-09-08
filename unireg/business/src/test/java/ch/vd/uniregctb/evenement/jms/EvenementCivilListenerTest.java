@@ -13,7 +13,7 @@ import ch.vd.uniregctb.audit.AuditLineDAO;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.evenement.EvenementCivilDAO;
-import ch.vd.uniregctb.evenement.engine.EvenementCivilProcessor;
+import ch.vd.uniregctb.evenement.engine.EvenementCivilAsyncProcessor;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
@@ -29,11 +29,9 @@ import static junit.framework.Assert.assertTrue;
  * @author xsilbn
  *
  */
-public class EvenementCivilUnitaireListenerTest extends BusinessTest {
+public class EvenementCivilListenerTest extends BusinessTest {
 
-	//private static final Logger LOGGER = Logger.getLogger(EvenementCivilUnitaireListenerTest.class);
-
-	private EvenementCivilListener evenementCivilUnitaireMDP;
+	private EvenementCivilListener evenementCivilListener;
 	private EvenementCivilDAO evenementCivilDAO;
 	private AuditLineDAO auditLineDAO;
 
@@ -60,18 +58,20 @@ public class EvenementCivilUnitaireListenerTest extends BusinessTest {
 		evenementCivilDAO = getBean(EvenementCivilDAO.class, "evenementCivilDAO");
 		auditLineDAO = getBean(AuditLineDAO.class, "auditLineDAO");
 
+		final EvenementCivilAsyncProcessor evtCivilProcessor = getBean(EvenementCivilAsyncProcessor.class, "evenementCivilAsyncProcessor");
+
 		// On crée le listener à la main pour pouvoir appeler les méthodes protégées
-		evenementCivilUnitaireMDP = new EvenementCivilListener();
-		evenementCivilUnitaireMDP.setEvenementCivilProcessor(getBean(EvenementCivilProcessor.class, "evenementCivilProcessor"));
-		evenementCivilUnitaireMDP.setTransactionManager(transactionManager);
-		evenementCivilUnitaireMDP.setEvenementCivilDAO(evenementCivilDAO);
+		evenementCivilListener = new EvenementCivilListener();
+		evenementCivilListener.setEvenementCivilAsyncProcessor(evtCivilProcessor);
+		evenementCivilListener.setTransactionManager(transactionManager);
+		evenementCivilListener.setEvenementCivilDAO(evenementCivilDAO);
 	}
 
 	public static String createMessage(int id, int type, long noInd, RegDate dateEvt, int ofs) throws Exception {
 
-		String dateStr = RegDateHelper.dateToDashString(dateEvt);
+		final String dateStr = RegDateHelper.dateToDashString(dateEvt);
 
-		StringBuffer xmlContent = new StringBuffer();
+		final StringBuilder xmlContent = new StringBuilder();
 		xmlContent.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
 		xmlContent.append("<EvtRegCivil xmlns=\"http://www.vd.ch/schema/registreCivil/20070914/EvtRegCivil\">");
 		xmlContent.append("<NoTechnique>").append(id).append("</NoTechnique>");
@@ -85,17 +85,34 @@ public class EvenementCivilUnitaireListenerTest extends BusinessTest {
 		return xmlContent.toString();
 	}
 
-	/**
-	 * @throws Exception
-	 */
-	@Test
+	@SuppressWarnings({"SynchronizationOnLocalVariableOrMethodParameter"})
+	private void sendMessageSync(String xmlContent) throws EvenementCivilException, InterruptedException {
+		sendMessageSync(evenementCivilListener, xmlContent);
+	}
+
+	@SuppressWarnings({"SynchronizationOnLocalVariableOrMethodParameter"})
+	public static void sendMessageSync(EvenementCivilListener listener, String xmlContent) throws EvenementCivilException, InterruptedException {
+		final Object lock = new Object();
+		synchronized (lock) {
+			// on ne l'attend que s'il a été effectivement posté (si son traitement a pu être fait de manière synchrone
+			// ce n'est pas la peine d'attendre)
+			if (listener.onEvenementCivil(xmlContent, lock)) {
+
+				// d'après la doc, des réveils "spurious" (faux positifs) sont possibles, mais on est en test, et on verra bien si c'est le cas ici (en théorie, il faudrait faire une boucle
+				// pour vérifier que la condition (ici le traitement de l'événement) est effectivement réalisée
+				lock.wait();
+			}
+		}
+	}
+
+	@Test(timeout = 10000)
 	public void testOnMessageGood() throws Exception {
 
 		final int id = 54;
 		final String xmlContent = createMessage(id, 1000, 125, RegDate.get(2008, 2, 12), 5586);
 
 		// Envoi du contenu à EvenementCivilDatabaseInserter
-		evenementCivilUnitaireMDP.onEvenementCivil(xmlContent);
+		sendMessageSync(xmlContent);
 
 		// test que l'evenement est bien la
 		final List<EvenementCivilData> ecr = evenementCivilDAO.getAll();
@@ -113,12 +130,13 @@ public class EvenementCivilUnitaireListenerTest extends BusinessTest {
 	/**
 	 * @throws Exception
 	 */
-	@Test
+	@Test(timeout = 10000)
 	public void testOnMessageBad() throws Exception {
 
 		final int id = 54;
 		final String xmlContent = createMessage(id, 1000, 9876543, RegDate.get(2007, 9, 18), 111); // no individu inconnu
-		evenementCivilUnitaireMDP.onEvenementCivil(xmlContent);
+
+		sendMessageSync(xmlContent);
 
 		// vérifie que l'evenement est bien là, mais que le numéro d'individu inconnu a bien provoqué une erreur
 		List<EvenementCivilData> evenements = evenementCivilDAO.getAll();
@@ -132,14 +150,14 @@ public class EvenementCivilUnitaireListenerTest extends BusinessTest {
 		assertEquals("Le numéro OFS n'a pas été récupéré correctement", new Integer(111), evenement.getNumeroOfsCommuneAnnonce());
 	}
 
-	@Test
+	@Test(timeout = 10000)
 	public void testMessageDeTypeInconnu() throws Exception {
 		final String xmlContent = createMessage(42, 1542313, 9876543, RegDate.get(2007, 9, 18), 111);
-		evenementCivilUnitaireMDP.onEvenementCivil(xmlContent);
+		sendMessageSync(xmlContent);
 		assertEmpty(evenementCivilDAO.getAll());
 	}
 
-	@Test
+	@Test(timeout = 10000)
 	public void testMessageDeTypeConnuMaisIgnore() throws Exception {
 		final int typeConnuMaisIgnore = 0;
 		final TypeEvenementCivil typeIgnore = TypeEvenementCivil.valueOf(typeConnuMaisIgnore);
@@ -147,28 +165,28 @@ public class EvenementCivilUnitaireListenerTest extends BusinessTest {
 		assertTrue(typeIgnore.isIgnore());
 
 		final String xmlContent = createMessage(42, typeConnuMaisIgnore, 9876543, RegDate.get(2007, 9, 18), 111);
-		evenementCivilUnitaireMDP.onEvenementCivil(xmlContent);
+		sendMessageSync(xmlContent);
 		assertEmpty(evenementCivilDAO.getAll());
 	}
 
-	@Test
+	@Test(timeout = 10000)
 	public void testOnMessageDuplicateId() throws Exception {
 
 		final int id = 54;
-		String xmlContent = createMessage(id, TypeEvenementCivil.ARRIVEE_PRINCIPALE_VAUDOISE.getId(), 123, RegDate.get(1980, 1, 1), MockCommune.Lausanne.getNoOFSEtendu());
+		final String xmlContent = createMessage(id, TypeEvenementCivil.ARRIVEE_PRINCIPALE_VAUDOISE.getId(), 123, RegDate.get(1980, 1, 1), MockCommune.Lausanne.getNoOFSEtendu());
 
 		// Le premier doit passer sans probleme
-		evenementCivilUnitaireMDP.onEvenementCivil(xmlContent);
+		sendMessageSync(xmlContent);
 		{
-			List<EvenementCivilData> evenements = evenementCivilDAO.getAll();
+			final List<EvenementCivilData> evenements = evenementCivilDAO.getAll();
 			assertEquals(1, evenements.size());
 			assertEquals(EtatEvenementCivil.TRAITE, evenements.get(0).getEtat());
 		}
 
 		// Le deuxieme doit aussi passer mais sans etre inséré
-		evenementCivilUnitaireMDP.onEvenementCivil(xmlContent);
+		sendMessageSync(xmlContent);
 		{
-			List<EvenementCivilData> evenements = evenementCivilDAO.getAll();
+			final List<EvenementCivilData> evenements = evenementCivilDAO.getAll();
 			assertEquals(1, evenements.size());
 			assertEquals(EtatEvenementCivil.TRAITE, evenements.get(0).getEtat());
 

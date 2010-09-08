@@ -97,9 +97,9 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor, Eve
 	 *
 	 * @param evenementCivilId l'id de l'événement civil à traiter
 	 * @param refreshCache   si <i>vrai</i> le cache individu des personnes concernées par l'événement doit être rafraîchi avant le traitement
-	 * @return le numéro d'individu traité, ou <i>-1</i> en cas d'erreur.
+	 * @return le numéro d'individu traité, ou <i>null</i> en cas d'erreur
 	 */
-	private long traiteUnEvenementCivil(final Long evenementCivilId, final boolean refreshCache) {
+	private Long traiteUnEvenementCivil(final Long evenementCivilId, final boolean refreshCache) {
 
 		Long result;
 
@@ -189,7 +189,7 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor, Eve
 			evenementCivilData.setEtat(EtatEvenementCivil.EN_ERREUR);
 			evenementCivilData.setDateTraitement(new Date());
 			Audit.error(evenementCivilData.getId(), "Status changé à ERREUR");
-			result = -1L;
+			result = null;
 			dumpForDebug(erreurs);
 		}
 		else if (!warnings.isEmpty()) {
@@ -293,7 +293,7 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor, Eve
 	}
 
 	@SuppressWarnings({"unchecked"})
-	private void retraiteEvenementsEnErreurIndividu(final Long numIndividu) {
+	private void retraiteEvenementsEnErreurIndividu(final Long numIndividu, List<Long> evenementsExclus) {
 
 		// 1 - Récupération des ids des événements civils en erreur de l'individu
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
@@ -305,7 +305,11 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor, Eve
 		});
 
 		/* 2 - Iteration sur les ids des événements civils */
-		traiteEvenements(ids, false, false, null);
+		final List<Long> aRelancer = new ArrayList<Long>(ids);
+		aRelancer.removeAll(evenementsExclus);
+		if (aRelancer.size() > 0) {
+			traiteEvenements(aRelancer, false, false, null);
+		}
 	}
 
 	/**
@@ -327,7 +331,7 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor, Eve
 			if (numInd != null && numInd > 0L) {
 				individusTraites.add(numInd);
 			}
-			else if (forceRecyclage && numInd == -1L) {//evt en erreur
+			else if (forceRecyclage && numInd == null) {//evt en erreur
 
 				final TransactionTemplate template = new TransactionTemplate(transactionManager);
 				template.setReadOnly(true);
@@ -346,7 +350,7 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor, Eve
 			if (status != null && status.interrupted()) {
 				break;
 			}
-			retraiteEvenementsEnErreurIndividu(numInd);
+			retraiteEvenementsEnErreurIndividu(numInd, ids);
 		}
 	}
 

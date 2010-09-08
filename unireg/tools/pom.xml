@@ -23,6 +23,11 @@
 	<dependencies>
 		<dependency>
 			<groupId>${pom.parent.groupId}</groupId>
+			<artifactId>uniregctb-business</artifactId>
+			<version>${pom.parent.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${pom.parent.groupId}</groupId>
 			<artifactId>uniregctb-wsclient-tiers1</artifactId>
 			<version>1.0.2</version>
 		</dependency>

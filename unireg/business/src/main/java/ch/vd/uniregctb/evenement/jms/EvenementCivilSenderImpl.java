@@ -68,9 +68,9 @@ public class EvenementCivilSenderImpl implements EvenementCivilSender {
 		esbTemplate.send(m);
 	}
 
-	public EvtRegCivilDocument createDocument(EvenementCivilData evenement) {
-		EvtRegCivilDocument document = EvtRegCivilDocument.Factory.newInstance();
-		EvtRegCivilDocument.EvtRegCivil e = document.addNewEvtRegCivil();
+	public static EvtRegCivilDocument createDocument(EvenementCivilData evenement) {
+		final EvtRegCivilDocument document = EvtRegCivilDocument.Factory.newInstance();
+		final EvtRegCivilDocument.EvtRegCivil e = document.addNewEvtRegCivil();
 		{
 			e.setNoTechnique(evenement.getId().intValue());
 			e.setNumeroOFS(evenement.getNumeroOfsCommuneAnnonce());

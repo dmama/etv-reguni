@@ -15,7 +15,7 @@ import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.evenement.EvenementCivilDAO;
 import ch.vd.uniregctb.evenement.jms.EvenementCivilListener;
-import ch.vd.uniregctb.evenement.jms.EvenementCivilUnitaireListenerTest;
+import ch.vd.uniregctb.evenement.jms.EvenementCivilListenerTest;
 import ch.vd.uniregctb.evenement.jms.MockEsbMessage;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
@@ -40,7 +40,6 @@ import static junit.framework.Assert.assertNotNull;
 public class EvenementCivilTest extends BusinessTest {
 
 	private EvenementCivilDAO evenementCivilDAO;
-	private EvenementCivilProcessor evenementCivilProcessor;
 	private EvenementCivilListener evenementCivilListener;
 	private GlobalTiersSearcher searcher;
 
@@ -48,11 +47,11 @@ public class EvenementCivilTest extends BusinessTest {
 	public void onSetUp() throws Exception {
 		super.onSetUp();
 		evenementCivilDAO = getBean(EvenementCivilDAO.class, "evenementCivilDAO");
-		evenementCivilProcessor = getBean(EvenementCivilProcessor.class, "evenementCivilProcessor");
 		searcher = getBean(GlobalTiersSearcher.class, "globalTiersSearcher");
 
+		final EvenementCivilAsyncProcessor evenementCivilProcessor = getBean(EvenementCivilAsyncProcessor.class, "evenementCivilAsyncProcessor");
 		evenementCivilListener = new EvenementCivilListener();
-		evenementCivilListener.setEvenementCivilProcessor(evenementCivilProcessor);
+		evenementCivilListener.setEvenementCivilAsyncProcessor(evenementCivilProcessor);
 		evenementCivilListener.setTransactionManager(transactionManager);
 		evenementCivilListener.setEvenementCivilDAO(evenementCivilDAO);
 	}
@@ -131,9 +130,8 @@ public class EvenementCivilTest extends BusinessTest {
 		doInNewTransaction(new TxCallback() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				final String body = EvenementCivilUnitaireListenerTest.createMessage(1, TypeEvenementCivil.CHGT_CORREC_NOM_PRENOM.getId(), jeanNoInd, RegDate.get(2009, 1, 1), MockCommune.Lausanne.getNoOFS());
-				final EsbMessage message = new MockEsbMessage(body);
-				evenementCivilListener.onEsbMessage(message);
+				final String body = EvenementCivilListenerTest.createMessage(1, TypeEvenementCivil.CHGT_CORREC_NOM_PRENOM.getId(), jeanNoInd, RegDate.get(2009, 1, 1), MockCommune.Lausanne.getNoOFS());
+				EvenementCivilListenerTest.sendMessageSync(evenementCivilListener, body);
 				return null;
 			}
 		});
@@ -185,10 +183,12 @@ public class EvenementCivilTest extends BusinessTest {
 		doInNewTransaction(new TxCallback() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				final String body = EvenementCivilUnitaireListenerTest.createMessage(1, TypeEvenementCivil.CHGT_CORREC_NOM_PRENOM.getId(), jeanNoInd, RegDate.get(2009, 1, 1), MockCommune.Lausanne.getNoOFS());
+				final String body = EvenementCivilListenerTest.createMessage(1, TypeEvenementCivil.CHGT_CORREC_NOM_PRENOM.getId(), jeanNoInd, RegDate.get(2009, 1, 1), MockCommune.Lausanne.getNoOFS());
 				final EsbMessage message = new MockEsbMessage(body);
 				message.setBusinessUser("VISA_MUTATION");
 				evenementCivilListener.onEsbMessage(message);
+
+				// la persistence en base de l'événement civil est synchrone -> pas la peine d'attendre le traitement
 				return null;
 			}
 		});
