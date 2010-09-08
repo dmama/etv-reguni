@@ -15,7 +15,9 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
+import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.util.Log4jConfigurer;
 import org.springframework.util.ResourceUtils;
 
@@ -68,8 +70,16 @@ public class EvenementExterneListenerTest extends EvenementTest {
 		clearQueue(OUTPUT_QUEUE);
 		clearQueue(INPUT_QUEUE);
 
+		// flush est vraiment la seule méthode appelée...
+		final HibernateTemplate hibernateTemplate = new HibernateTemplate() {
+			@Override
+			public void flush() throws DataAccessException {
+			}
+		};
+
 		listener = new EvenementExterneListenerImpl();
 		listener.setEsbTemplate(esbTemplate);
+		listener.setHibernateTemplate(hibernateTemplate);
 
 		final ESBXMLValidator esbValidator = new ESBXMLValidator();
 		esbValidator.setSources(new Resource[] {new ClassPathResource("xsd/fiscal/evenementImpotSource-v1.xsd")});
