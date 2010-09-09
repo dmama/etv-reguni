@@ -236,7 +236,7 @@ public class EvenementCivilAsyncProcessorImpl implements EvenementCivilAsyncProc
 								LOGGER.info(String.format("Trouvé %d événements civils 'A_TRAITER'", evts.size()));
 
 								for (EvenementCivilData evt : evts) {
-									postEvenementCivil(evt.getId(), evt.getLogCreationDate().getTime(), null);
+									postEvenementCivil(evt.getId(), System.currentTimeMillis(), null);
 								}
 							}
 							else {
