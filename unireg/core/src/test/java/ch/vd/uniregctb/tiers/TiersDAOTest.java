@@ -48,6 +48,7 @@ import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
 import static org.junit.Assert.assertNotSame;
@@ -331,7 +332,7 @@ public class TiersDAOTest extends CoreDAOTest {
 	}
 
 	/**
-	 * Teste la methode findByNumeroIndividu.
+	 * Teste la methode findByNumero.
 	 */
 	@Test
 	public void testGetContribuableByNumero() throws Exception {
@@ -343,9 +344,6 @@ public class TiersDAOTest extends CoreDAOTest {
 		assertEquals(new Long(10006789L), contribuable.getNumero());
 	}
 
-	/**
-	 * Teste la methode getHabitantsByNumeroIndividu.
-	 */
 	@Test
 	public void testGetHabitantsByNumeroIndividu() throws Exception {
 
@@ -357,9 +355,6 @@ public class TiersDAOTest extends CoreDAOTest {
 		assertTrue(tiers.getNumeroIndividu().intValue() == 282315);
 	}
 
-	/**
-	 * Teste la methode getHabitantsByNumeroIndividu.
-	 */
 	@Test
 	public void testGetNonHabitant() throws Exception {
 
@@ -372,9 +367,6 @@ public class TiersDAOTest extends CoreDAOTest {
 		assertFalse(nonHab.isHabitantVD());
 	}
 
-	/**
-	 * Teste la methode getHabitantsByNumeroIndividu.
-	 */
 	@Test
 	public void testSaveNonHabitant() throws Exception {
 
@@ -400,6 +392,65 @@ public class TiersDAOTest extends CoreDAOTest {
 			assertEquals("Bli", nonHab.getPrenom());
 			assertFalse(nonHab.isHabitantVD());
 		}
+	}
+
+	@Test
+	public void testGetPersonnePhysiqueSansForByNumeroIndividu() throws Exception {
+
+		final long noIndividu = 1234567890L;
+
+		// mise en place
+		doInNewTransaction(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				addHabitant(noIndividu);
+				return null;
+			}
+		});
+
+		final PersonnePhysique pp = dao.getPPByNumeroIndividu(noIndividu);
+		assertNotNull(pp);
+		assertEquals(Long.valueOf(noIndividu), pp.getNumeroIndividu());
+	}
+
+	@Test
+	public void testGetPersonnePhysiqueDesactiveeByNumeroIndividu() throws Exception {
+
+		final long noIndividu = 1234567890L;
+
+		// mise en place
+		doInNewTransaction(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = addHabitant(noIndividu);
+				addForPrincipal(pp, date(2001, 12, 4), MotifFor.MAJORITE, date(2009, 5, 12), MotifFor.ANNULATION, 2434, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE);
+				return null;
+			}
+		});
+
+		final PersonnePhysique pp = dao.getPPByNumeroIndividu(noIndividu);
+		assertNull(pp);
+	}
+
+	@Test
+	public void testGetPersonnePhysiqueReactiveeByNumeroIndividu() throws Exception {
+
+		final long noIndividu = 1234567890L;
+
+		// mise en place
+		doInNewTransaction(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = addHabitant(noIndividu);
+				addForPrincipal(pp, date(2001, 12, 4), MotifFor.MAJORITE, date(2009, 5, 12), MotifFor.ANNULATION, 2434, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE);
+				addForPrincipal(pp, date(2010, 1, 1), MotifFor.REACTIVATION, date(2010, 6, 30), MotifFor.DEPART_HS, 2434, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE);
+				return null;
+			}
+		});
+
+		final PersonnePhysique pp = dao.getPPByNumeroIndividu(noIndividu);
+		assertNotNull(pp);
+		assertEquals(Long.valueOf(noIndividu), pp.getNumeroIndividu());
 	}
 
 	/**
