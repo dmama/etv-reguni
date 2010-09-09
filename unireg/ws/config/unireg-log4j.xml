@@ -2,15 +2,6 @@
 <!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
 <log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
 
-	<appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
-		<!-- Le "Threshold" veut dire qu'il ne va logger que les messages -->
-		<!-- "Threshold level" ou plus haut -->
-		<param name="Threshold" value="INFO" />
-		<layout class="org.apache.log4j.PatternLayout">
-			<param name="ConversionPattern" value="[ws-unireg] %-5p [%d{yyyy-MM-dd HH:mm:ss.SSS}] %c{1}.%M(%L) | %m%n" />
-		</layout>
-	</appender>
-
 	<appender name="LOGFILE" class="org.apache.log4j.DailyRollingFileAppender">
 		<param name="Threshold" value="DEBUG" />
 		<param name="File" value="unireg-ws.log" />
@@ -71,7 +62,6 @@
 
 	<root>
 		<level value="WARN" />
-		<appender-ref ref="CONSOLE" />
 		<appender-ref ref="LOGFILE" />
 		<appender-ref ref="IN_MEMORY" />
 	</root>
