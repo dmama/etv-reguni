@@ -132,7 +132,10 @@ public class GlobalIndex implements InitializingBean, DisposableBean, GlobalInde
 				try {
 					// Efface le repertoire
 					LOGGER.info("Effacement du répertoire d'indexation: " + provider.getIndexPath());
-					FileSystemUtils.deleteRecursively(new File(provider.getIndexPath()));
+
+					// en fait, il ne faut effacer que le contenu du répertoire, pas le répertoire lui-même
+					// (au cas où celui-ci serait un lien vers un autre endroit du filesystem...)
+					deleteDirectoryContent(new File(provider.getIndexPath()));
 				}
 				catch (Exception e) {
 					LOGGER.error("Exception lors de l'effacement du repertoire: " + e);
@@ -156,6 +159,15 @@ public class GlobalIndex implements InitializingBean, DisposableBean, GlobalInde
 				return null;
 			}
 		});
+	}
+
+	private static void deleteDirectoryContent(File dir) {
+		final File[] files = dir.listFiles();
+		if (files != null && files.length > 0) {
+			for (File file : files) {
+				FileSystemUtils.deleteRecursively(file);
+			}
+		}
 	}
 
 	/**
