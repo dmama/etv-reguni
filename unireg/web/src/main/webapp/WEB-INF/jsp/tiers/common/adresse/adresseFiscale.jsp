@@ -44,7 +44,7 @@
 		</display:column>
 		<display:column sortable ="true" titleKey="label.adresse.source">
 				<fmt:message key="option.source.${adresse.source}" />
-				<c:if test="${adresse.default}">(<fmt:message key="option.source.default.tag" />)</c:if>
+					<c:if test="${adresse.default || adresse.source == 'CIVILE'}">(<fmt:message key="option.source.default.tag" />)</c:if>
 		</display:column>
 		<display:column style="action">
 			<c:if test="${page == 'visu' }">
