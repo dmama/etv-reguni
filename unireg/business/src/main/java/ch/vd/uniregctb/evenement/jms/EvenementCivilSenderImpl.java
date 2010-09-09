@@ -6,6 +6,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
 import ch.vd.infrastructure.model.impl.DateUtils;
+import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.schema.registreCivil.x20070914.evtRegCivil.EvtRegCivilDocument;
@@ -76,7 +77,7 @@ public class EvenementCivilSenderImpl implements EvenementCivilSender {
 			e.setNumeroOFS(evenement.getNumeroOfsCommuneAnnonce());
 			e.setNoIndividu(evenement.getNumeroIndividuPrincipal().intValue());
 			e.setDateEvenement(DateUtils.calendar(RegDate.asJavaDate(evenement.getDateEvenement())));
-			e.setDateTraitement(DateUtils.calendar(new Date()));
+			e.setDateTraitement(DateUtils.calendar(DateHelper.getCurrentDate()));
 			e.setCode(evenement.getType().getId());
 		}
 		return document;

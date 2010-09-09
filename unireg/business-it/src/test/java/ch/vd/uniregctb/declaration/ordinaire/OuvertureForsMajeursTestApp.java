@@ -60,7 +60,7 @@ public class OuvertureForsMajeursTestApp extends BusinessItTestApplication {
 
 	private void ouvrirLesFors() throws Exception {
 
-		final Date start = new Date();
+		final long start = System.currentTimeMillis();
 
 		// Ouverture des fors
 		LOGGER.info("Ouverture des fors fiscaux principaux...");
@@ -70,7 +70,7 @@ public class OuvertureForsMajeursTestApp extends BusinessItTestApplication {
 		LOGGER.info("Génération du rapport...");
 		MajoriteRapport rapport = rapportService.generateRapport(results, null);
 
-		long duree = (new Date().getTime() - start.getTime());
+		long duree = (System.currentTimeMillis() - start);
 		String message = "Ouverture terminée : " + (duree / 1000) + " secondes.";
 		Audit.success(message, rapport);
 		LOGGER.info(message);

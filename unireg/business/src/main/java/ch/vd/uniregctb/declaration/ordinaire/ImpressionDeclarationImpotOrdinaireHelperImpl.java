@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.declaration.ordinaire;
 
 import ch.vd.infrastructure.service.InfrastructureException;
+import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
@@ -755,9 +756,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 				declaration.getPeriode().getAnnee().toString(),
 				StringUtils.leftPad(declaration.getNumero().toString(), 2, '0'),
 				StringUtils.leftPad(declaration.getTiers().getNumero().toString(), 9, '0'),
-				new SimpleDateFormat("yyyyMMddHHmmssSSS").format(
-						new Date()
-				)
+				new SimpleDateFormat("yyyyMMddHHmmssSSS").format(DateHelper.getCurrentDate())
 		);
 
 	}

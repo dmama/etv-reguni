@@ -12,6 +12,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.uniregctb.common.AuthenticationHelper;
@@ -94,7 +95,7 @@ public class EvenementCivilAsyncProcessorTest extends BusinessTest {
 		final EvenementCivilData evt = new EvenementCivilData();
 		evt.setId(id);
 		evt.setDateEvenement(dateEvenement);
-		evt.setDateTraitement(new Date());
+		evt.setDateTraitement(DateHelper.getCurrentDate());
 		evt.setNumeroIndividuPrincipal(noIndividu);
 		evt.setType(type);
 		evt.setNumeroOfsCommuneAnnonce(MockCommune.Lausanne.getNoOFSEtendu());

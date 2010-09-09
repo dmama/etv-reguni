@@ -89,7 +89,7 @@ public class ModificationLogInterceptorTest extends CoreDAOTest {
 			}
 		});
 
-		Date beforeTx = new Date();
+		Date beforeTx = DateHelper.getCurrentDate();
 		Thread.sleep(100);
 
 		doInNewTransaction(new TxCallback() {
@@ -102,7 +102,7 @@ public class ModificationLogInterceptorTest extends CoreDAOTest {
 		});
 
 		Thread.sleep(100);
-		Date afterTx = new Date();
+		Date afterTx = DateHelper.getCurrentDate();
 
 		{
 			PersonnePhysique nhab = (PersonnePhysique) dao.get(id);
@@ -160,7 +160,7 @@ public class ModificationLogInterceptorTest extends CoreDAOTest {
 			}
 		});
 
-		Date beforeTx = new Date();
+		Date beforeTx = DateHelper.getCurrentDate();
 		Thread.sleep(100);
 
 		doInNewTransaction(new TxCallback() {
@@ -187,7 +187,7 @@ public class ModificationLogInterceptorTest extends CoreDAOTest {
 		});
 
 		Thread.sleep(100);
-		Date afterTx = new Date();
+		Date afterTx = DateHelper.getCurrentDate();
 
 		{
 			PersonnePhysique nhab = (PersonnePhysique) dao.get(id);

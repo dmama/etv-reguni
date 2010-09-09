@@ -15,6 +15,7 @@ import ch.vd.fiscalite.registre.identificationContribuable.IdentificationCTBDocu
 import ch.vd.fiscalite.registre.identificationContribuable.IdentificationCTBDocument.IdentificationCTB.Demande.Demande2;
 import ch.vd.fiscalite.registre.identificationContribuable.IdentificationCTBDocument.IdentificationCTB.Reponse.Contribuable;
 import ch.vd.fiscalite.registre.identificationContribuable.IdentificationCTBDocument.IdentificationCTB.Reponse.Erreur;
+import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.evenement.identification.contribuable.CriteresAdresse.TypeAdresse;
@@ -201,7 +202,7 @@ public abstract class XmlEntityAdapter {
 			return null;
 		}
 		Demande entity = new Demande();
-		entity.setDate(new Date());
+		entity.setDate(DateHelper.getCurrentDate());
 		entity.setEmetteurId(xml.getDemande().getEmetteurId());
 		entity.setMessageId(xml.getDemande().getMessageId());
 		entity.setPeriodeFiscale(xml.getDemande().getPeriodeFiscale().get(GregorianCalendar.YEAR));

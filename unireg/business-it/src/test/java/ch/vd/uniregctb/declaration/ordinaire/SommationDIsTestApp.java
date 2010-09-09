@@ -47,12 +47,12 @@ public class SommationDIsTestApp extends BusinessItTestApplication {
 
 	private void sommerLesDIs() throws Exception {
 
-		final Date start = new Date();
+		final long start = System.currentTimeMillis();
 		LOGGER.info("Sommation de toutes les DIs ...");
 
 		service.envoyerSommations(RegDate.get(2009, 6, 5), false, 0, new LoggingStatusManager(LOGGER));
 
-		long duree = (new Date().getTime() - start.getTime());
+		long duree = (System.currentTimeMillis() - start);
 		LOGGER.info("Sommation terminée : " + (duree / 1000) + " secondes.");
 	}
 }

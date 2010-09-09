@@ -12,6 +12,7 @@ import org.springframework.test.annotation.NotTransactional;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
+import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.declaration.Declaration;
@@ -70,7 +71,7 @@ public class EditiqueListeRecapJobTest extends BusinessTest {
 
 	public void launchJob(HashMap<String, Object> params) throws Exception {
 
-		final Date statTime = new Date();
+		final Date statTime = DateHelper.getCurrentDate();
 		final JobDefinition job = batchScheduler.startJob(EditiqueListeRecapJob.NAME, params);
 
 		// Attente du démarrage de l'exécution

@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.utils.Assert;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
@@ -275,7 +276,7 @@ public class DocumentServiceImpl implements DocumentService, InitializingBean {
 	public <T extends Document> T newDoc(Class<T> clazz, String nom, String description, String fileExtension, WriteDocCallback<T> callback)
 			throws Exception {
 
-		Date date = new Date();
+		Date date = DateHelper.getCurrentDate();
 
 		// Création du nouveau document
 		T doc = clazz.newInstance();

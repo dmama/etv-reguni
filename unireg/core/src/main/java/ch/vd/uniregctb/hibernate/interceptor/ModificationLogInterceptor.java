@@ -7,6 +7,7 @@ import org.hibernate.CallbackException;
 import org.hibernate.type.Type;
 import org.springframework.beans.factory.InitializingBean;
 
+import ch.vd.registre.base.date.DateHelper;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.HibernateEntity;
 
@@ -54,7 +55,7 @@ public class ModificationLogInterceptor implements ModificationSubInterceptor, I
 
 		if (previousState == null) {
 			modified = assignValue("logCreationUser", propertyNames, currentState, user);
-			modified = assignValue("logCreationDate", propertyNames, currentState, new Date()) || modified;
+			modified = assignValue("logCreationDate", propertyNames, currentState, DateHelper.getCurrentDate()) || modified;
 		}
 		modified = assignValue("logModifUser", propertyNames, currentState, user) || modified;
 

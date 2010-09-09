@@ -13,6 +13,8 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
+import ch.vd.registre.base.date.DateHelper;
+
 /**
  * Cette classe permet d'intercepter les requêtes http et de logger leur contenu dans System.out.
  * <p>
@@ -59,7 +61,7 @@ public class ServletRequestLoggingFilter implements Filter {
 
 		final String url = request.getRequestURL().toString();
 		final String serverName = request.getServerName();
-		final String now = new SimpleDateFormat().format(new Date());
+		final String now = new SimpleDateFormat().format(DateHelper.getCurrentDate());
 		final String method = request.getMethod();
 		final String session = request.getSession().getId();
 

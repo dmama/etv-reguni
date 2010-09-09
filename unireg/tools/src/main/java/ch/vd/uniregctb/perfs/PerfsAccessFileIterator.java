@@ -29,7 +29,7 @@ public class PerfsAccessFileIterator {
 	 * Construit un itérateur qui itère sur tous les appels du fichier une fois et s'arrête.
 	 */
 	public PerfsAccessFileIterator(PerfsAccessFile file) {
-		this.startTime = new Date().getTime();
+		this.startTime = System.currentTimeMillis();
 		this.calls = file.getCalls();
 		this.targetCount = this.calls.size();
 
@@ -41,7 +41,7 @@ public class PerfsAccessFileIterator {
 	 * Construit un itérateur qui itère sur tous les appels du fichier de manière rotative tant que targetCount n'est pas atteint.
 	 */
 	public PerfsAccessFileIterator(PerfsAccessFile file, int targetCount) {
-		this.startTime = new Date().getTime();
+		this.startTime = System.currentTimeMillis();
 		this.calls = file.getCalls();
 		this.targetCount = targetCount;
 		Assert.isTrue(calls.size() > 0 || targetCount == 0);
@@ -69,7 +69,7 @@ public class PerfsAccessFileIterator {
 
 			// récupère le prochain appel et attend le temps nécessaire
 			Call call = calls.get(i);
-			long now = new Date().getTime();
+			long now = System.currentTimeMillis();
 			long sleep = startTime + call.getMillisecondes() - now;
 			if (sleep > 0) {
 				try {

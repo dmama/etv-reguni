@@ -4,6 +4,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
+import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.interfaces.model.Individu;
@@ -57,7 +58,7 @@ public abstract class FiscalDateHelper {
 	 */
 	public static int getAnneeCourante() {
 
-		final Calendar cal = GregorianCalendar.getInstance();
+		final Calendar cal = DateHelper.getCurrentCalendar();
 		return getAnneeCourante(cal);
 	}
 

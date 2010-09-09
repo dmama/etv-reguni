@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.database;
 
+import ch.vd.registre.base.date.DateHelper;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.document.DatabaseDump;
@@ -116,7 +117,7 @@ public class DumpTiersListJob extends JobDefinition {
 		ids.addAll(extractIds(idsParam));
 		ids.addAll(extractIdsFromCSV(idsFile));
 
-		final Date date = new Date();
+		final Date date = DateHelper.getCurrentDate();
 		final String name = "tiersdump_" + FILE_DATE_FORMAT.format(date);
 		final String description = "Export de la base généré le " + SCREEN_DATE_FORMAT.format(date) + " et contenant %d tiers.";
 		final String extension = "zip";

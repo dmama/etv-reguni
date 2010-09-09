@@ -16,6 +16,7 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.infrastructure.service.InfrastructureException;
+import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.audit.Audit;
@@ -187,21 +188,21 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor, Eve
 		
 		if (!erreurs.isEmpty()) {
 			evenementCivilData.setEtat(EtatEvenementCivil.EN_ERREUR);
-			evenementCivilData.setDateTraitement(new Date());
+			evenementCivilData.setDateTraitement(DateHelper.getCurrentDate());
 			Audit.error(evenementCivilData.getId(), "Status changé à ERREUR");
 			result = null;
 			dumpForDebug(erreurs);
 		}
 		else if (!warnings.isEmpty()) {
 			evenementCivilData.setEtat(EtatEvenementCivil.A_VERIFIER);
-			evenementCivilData.setDateTraitement(new Date());
+			evenementCivilData.setDateTraitement(DateHelper.getCurrentDate());
 			Audit.warn(evenementCivilData.getId(), "Status changé à A VERIFIER");
 			result = evenementCivilData.getNumeroIndividuPrincipal();
 			dumpForDebug(warnings);
 		}
 		else {
 			evenementCivilData.setEtat(EtatEvenementCivil.TRAITE);
-			evenementCivilData.setDateTraitement(new Date());
+			evenementCivilData.setDateTraitement(DateHelper.getCurrentDate());
 			Audit.success(evenementCivilData.getId(), "Status changé à TRAITE");
 			result = evenementCivilData.getNumeroIndividuPrincipal();
 		}

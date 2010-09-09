@@ -12,6 +12,7 @@ import org.springframework.orm.hibernate3.HibernateTemplate;
 
 import ch.vd.fiscalite.cedi.DeclarationImpotType;
 import ch.vd.fiscalite.cedi.DossierElectroniqueDocument;
+import ch.vd.registre.base.date.DateHelper;
 import ch.vd.technical.esb.ErrorType;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.jms.EsbMessageListener;
@@ -111,7 +112,7 @@ public class EvenementCediListenerImpl extends EsbMessageListener {
 
 			final RetourDI scan = new RetourDI();
 			scan.setBusinessId(businessId);
-			scan.setDateTraitement(new Date());
+			scan.setDateTraitement(DateHelper.getCurrentDate());
 			scan.setNoContribuable(Long.parseLong(di.getNoContribuable()));
 			scan.setPeriodeFiscale(Integer.parseInt(di.getPeriode()));
 			scan.setNoSequenceDI(Integer.parseInt(di.getNoSequenceDI()));

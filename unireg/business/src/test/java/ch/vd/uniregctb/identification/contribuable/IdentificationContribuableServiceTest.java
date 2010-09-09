@@ -18,6 +18,7 @@ import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.fiscalite.registre.identificationContribuable.ModeIdentificationType;
+import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BusinessTest;
@@ -1414,7 +1415,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		demande.setPrioriteEmetteur(PrioriteEmetteur.NON_PRIORITAIRE);
 		demande.setModeIdentification(Demande.ModeIdentificationType.MANUEL_SANS_ACK);
 		demande.setTypeMessage("ssk-3001-000101");
-		demande.setDate(new Date());
+		demande.setDate(DateHelper.getCurrentDate());
 		demande.setPeriodeFiscale(2009);
 		demande.setPersonne(personne);
 
@@ -1441,7 +1442,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		demande.setPrioriteEmetteur(PrioriteEmetteur.NON_PRIORITAIRE);
 		demande.setModeIdentification(modeIdentification);
 		demande.setTypeMessage("ssk-3001-000101");
-		demande.setDate(new Date());
+		demande.setDate(DateHelper.getCurrentDate());
 		demande.setPeriodeFiscale(2009);
 		demande.setPersonne(personne);
 

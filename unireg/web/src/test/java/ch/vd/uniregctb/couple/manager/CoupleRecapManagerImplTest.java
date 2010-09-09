@@ -11,6 +11,7 @@ import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
+import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.couple.view.CoupleRecapView;
@@ -101,7 +102,7 @@ public class CoupleRecapManagerImplTest extends BusinessTest {
 				CoupleRecapView view = new CoupleRecapView();
 
 				view.setDateCoupleExistant(RegDate.get());
-				view.setDateDebut(new Date());
+				view.setDateDebut(DateHelper.getCurrentDate());
 				view.setNouveauCtb(false);
 				view.setPremierePersonne(viewTiers1);
 				view.setSecondePersonne(viewTiers2);
@@ -188,7 +189,7 @@ public class CoupleRecapManagerImplTest extends BusinessTest {
 					CoupleRecapView view = new CoupleRecapView();
 
 					view.setDateCoupleExistant(RegDate.get());
-					view.setDateDebut(new Date());
+					view.setDateDebut(DateHelper.getCurrentDate());
 					view.setNouveauCtb(false);
 					view.setPremierePersonne(viewTiers1);
 					view.setSecondePersonne(viewTiers2);
@@ -282,7 +283,7 @@ public class CoupleRecapManagerImplTest extends BusinessTest {
 
 				final CoupleRecapView view = new CoupleRecapView();
 				view.setDateCoupleExistant(RegDate.get());
-				view.setDateDebut(new Date());
+				view.setDateDebut(DateHelper.getCurrentDate());
 				view.setNouveauCtb(true);
 				view.setPremierePersonne(viewTiers1);
 				view.setSecondePersonne(viewTiers2);

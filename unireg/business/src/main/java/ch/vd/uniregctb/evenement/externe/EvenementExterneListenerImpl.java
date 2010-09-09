@@ -2,6 +2,7 @@ package ch.vd.uniregctb.evenement.externe;
 
 import ch.vd.fiscalite.registre.evenementImpotSourceV1.EvenementImpotSourceQuittanceDocument;
 import ch.vd.fiscalite.registre.evenementImpotSourceV1.EvenementImpotSourceQuittanceType;
+import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.jms.EsbMessageListener;
@@ -108,7 +109,7 @@ public class EvenementExterneListenerImpl extends EsbMessageListener {
 			q.setMessage(message);
 			q.setBusinessId(businessId);
 			q.setDateEvenement(cal2date(type.getDateQuittance()));
-			q.setDateTraitement(new Date());
+			q.setDateTraitement(DateHelper.getCurrentDate());
 			q.setDateDebut(cal2regdate(type.getDateDebutPeriode()));
 			q.setDateFin(cal2regdate(type.getDateFinPeriode()));
 			q.setType(TypeQuittance.valueOf(type.getTypeQuittance().toString()));

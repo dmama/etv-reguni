@@ -12,6 +12,7 @@ import org.apache.log4j.Logger;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.SimpleMappingExceptionResolver;
 
+import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.utils.ExceptionUtils;
 import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.uniregctb.security.AccessDeniedException;
@@ -62,7 +63,7 @@ public class NotifyingExceptionResolver extends SimpleMappingExceptionResolver {
 				else {
 					user = AuthenticationHelper.getCurrentPrincipal();
 				}
-				notificationService.sendNotification(ex, new Date(), applicationName, request.getRequestURL().toString(), user,
+				notificationService.sendNotification(ex, DateHelper.getCurrentDate(), applicationName, request.getRequestURL().toString(), user,
 						occurenceCount);
 			}
 		}

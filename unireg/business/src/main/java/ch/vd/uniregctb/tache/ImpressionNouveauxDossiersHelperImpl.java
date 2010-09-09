@@ -5,6 +5,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+import ch.vd.registre.base.date.DateHelper;
 import ch.vd.uniregctb.adresse.AdresseException;
 import noNamespace.FicheOuvertureDossierDocument;
 import noNamespace.FichierImpressionDocument;
@@ -305,7 +306,7 @@ public class ImpressionNouveauxDossiersHelperImpl implements ImpressionNouveauxD
 				"%s %s %s",
 				StringUtils.leftPad(contribuable.getNumero().toString(), 9, '0'),
 				new SimpleDateFormat("yyyyMMddHHmmssSSS").format(contribuable.getLogCreationDate()),
-				new SimpleDateFormat("yyyyMMddHHmmssSSS").format(new Date())
+				new SimpleDateFormat("yyyyMMddHHmmssSSS").format(DateHelper.getCurrentDate())
 		);
 	}
 

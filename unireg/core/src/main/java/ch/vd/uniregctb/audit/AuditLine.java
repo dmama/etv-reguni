@@ -16,6 +16,7 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
 
+import ch.vd.registre.base.date.DateHelper;
 import ch.vd.uniregctb.common.LengthConstants;
 
 @Entity
@@ -48,7 +49,7 @@ public class AuditLine {
 			this.message = message;
 		}
 
-		this.date = new Date();
+		this.date = DateHelper.getCurrentDate();
 		this.documentId = documentId;
 	}
 

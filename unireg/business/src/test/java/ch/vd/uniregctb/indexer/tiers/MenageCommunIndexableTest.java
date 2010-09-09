@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.indexer.tiers;
 
+import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.indexer.IndexerFormatHelper;
@@ -300,7 +301,7 @@ public class MenageCommunIndexableTest extends BusinessTest {
 				// annulation des rapports dans un ordre précis (tous au même moment) : c'est la date de fin du rapport
 				// qui détermine l'ordre ou, à défaut, le log de création
 				// en compte dans l'indexation
-				final Date now = new Date();
+				final Date now = DateHelper.getCurrentDate();
 				rapport1.setAnnulationDate(now);
 				rapport2.setAnnulationDate(now);
 				rapport3.setAnnulationDate(now);

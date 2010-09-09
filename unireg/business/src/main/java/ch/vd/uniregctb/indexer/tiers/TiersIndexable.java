@@ -3,6 +3,7 @@ package ch.vd.uniregctb.indexer.tiers;
 import java.util.Date;
 
 import ch.vd.infrastructure.service.InfrastructureException;
+import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
@@ -72,7 +73,7 @@ public abstract class TiersIndexable extends AbstractIndexable {
 		data.setRoleLigne1(tiers.getRoleLigne1());
 		data.setRoleLigne2(tiersService.getRoleAssujettissement(tiers, RegDate.get()));
 
-		final Long millisecondes = new Date().getTime();
+		final Long millisecondes = DateHelper.getCurrentDate().getTime();
 		data.setIndexationDate(IndexerFormatHelper.objectToString(millisecondes));
 	}
 

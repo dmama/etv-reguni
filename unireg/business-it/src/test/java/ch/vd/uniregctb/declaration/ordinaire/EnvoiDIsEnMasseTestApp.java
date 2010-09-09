@@ -52,7 +52,7 @@ public class EnvoiDIsEnMasseTestApp extends BusinessItTestApplication {
 
 	private void envoyerDIsEnMasse() throws Exception {
 
-		final Date start = new Date();
+		final long start = System.currentTimeMillis();
 		LOGGER.info("Envoi de toutes les DIs en masse...");
 		TransactionTemplate template = new TransactionTemplate(transactionManager);
 
@@ -62,7 +62,7 @@ public class EnvoiDIsEnMasseTestApp extends BusinessItTestApplication {
 		envoyerDIsEnMasseEnTransaction(template, TypeContribuableDI.HORS_CANTON);
 		envoyerDIsEnMasseEnTransaction(template, TypeContribuableDI.HORS_SUISSE);
 
-		long duree = (new Date().getTime() - start.getTime());
+		long duree = (System.currentTimeMillis() - start);
 		LOGGER.info("Envoi terminé : " + (duree / 1000) + " secondes.");
 	}
 

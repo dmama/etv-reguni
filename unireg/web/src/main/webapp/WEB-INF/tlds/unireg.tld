@@ -275,6 +275,13 @@
 	</tag>
 
 	<tag>
+		<name>dateOffset</name>
+		<tag-class>ch.vd.uniregctb.taglibs.JspTagDateOffset</tag-class>
+		<body-content>JSP</body-content>
+		<description>Affiche un message d'avertissement lorsqu'un offset est spécifié sur la date courante</description>
+	</tag>
+
+	<tag>
 		<name>raccourciAnnuler</name>
 		<tag-class>ch.vd.uniregctb.taglibs.JspTagRaccourci$Annuler</tag-class>
 		<body-content>JSP</body-content>

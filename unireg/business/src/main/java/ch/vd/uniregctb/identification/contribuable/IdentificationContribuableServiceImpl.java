@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import ch.vd.infrastructure.service.InfrastructureException;
+import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
@@ -210,7 +211,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		verifierEtMettreAJourContribuable(message, personne);
 
 		Reponse reponse = new Reponse();
-		reponse.setDate(new Date());
+		reponse.setDate(DateHelper.getCurrentDate());
 		reponse.setNoContribuable(personne.getNumero());
 		reponse.setNoMenageCommun(mcId);
 
@@ -357,7 +358,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		final Etat etat = Etat.NON_IDENTIFIE; // par définition
 
 		Reponse reponse = new Reponse();
-		reponse.setDate(new Date());
+		reponse.setDate(DateHelper.getCurrentDate());
 		reponse.setErreur(erreur);
 		IdentificationContribuable messageReponse = new IdentificationContribuable();
 		messageReponse.setId(message.getId());
@@ -386,7 +387,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		final Etat etat = Etat.A_TRAITER_MANUELLEMENT; // par définition
 
 		Reponse reponse = new Reponse();
-		reponse.setDate(new Date());
+		reponse.setDate(DateHelper.getCurrentDate());
 		reponse.setEnAttenteIdentifManuel(true);
 		IdentificationContribuable messageReponse = new IdentificationContribuable();
 		messageReponse.setId(message.getId());

@@ -15,6 +15,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
 import org.springframework.transaction.annotation.Transactional;
 
+import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
@@ -1110,7 +1111,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	@Transactional(rollbackFor = Throwable.class)
 	public EditiqueResultat envoieImpressionLocalTaxationOffice(DeclarationImpotDetailView bean) throws EditiqueException {
 		final DeclarationImpotOrdinaire di = diDAO.get(bean.getId());
-		di.setDateImpressionChemiseTaxationOffice(new Date());
+		di.setDateImpressionChemiseTaxationOffice(DateHelper.getCurrentDate());
 
 		try {
 			final EditiqueResultat resulat = editiqueCompositionService.imprimeTaxationOfficeOnline(di);

@@ -13,6 +13,7 @@ import javax.persistence.Version;
 
 import org.apache.log4j.Logger;
 
+import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.utils.ObjectGetterHelper;
 
 /**
@@ -280,7 +281,7 @@ public abstract class HibernateEntity implements Serializable, Loggable, Annulab
 	@Transient
 	public void setAnnule(boolean annule) {
 		if (annule) {
-			annulerPourDate(new Date());
+			annulerPourDate(DateHelper.getCurrentDate());
 		}
 		else {
 			setAnnulationDate(null);

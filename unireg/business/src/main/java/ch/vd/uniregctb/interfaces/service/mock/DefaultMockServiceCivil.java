@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Date;
 
 import ch.vd.common.model.EnumTypeAdresse;
+import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.civil.model.EnumTypePermis;
 import ch.vd.uniregctb.interfaces.model.Adresse;
@@ -110,7 +111,7 @@ public class DefaultMockServiceCivil extends MockServiceCivil {
 		Collection<Adresse> adresses = new ArrayList<Adresse>();
 		MockAdresse adresse = new MockAdresse();
 		adresse.setTypeAdresse(EnumTypeAdresse.PRINCIPALE);
-		adresse.setLocalite("Mock Localite " + new Date());
+		adresse.setLocalite("Mock Localite " + DateHelper.getCurrentDate());
 		adresse.setCasePostale("1234");
 		adresse.setNumeroPostal("4848");
 		adresse.setDateDebutValidite(RegDate.get(1980, 11, 2));
@@ -120,7 +121,7 @@ public class DefaultMockServiceCivil extends MockServiceCivil {
 
 		adresse = new MockAdresse();
 		adresse.setTypeAdresse(EnumTypeAdresse.COURRIER);
-		adresse.setLocalite("Mock Localite " + new Date());
+		adresse.setLocalite("Mock Localite " + DateHelper.getCurrentDate());
 		adresse.setCasePostale("4567");
 		adresse.setNumeroPostal("5252");
 		adresse.setDateDebutValidite(RegDate.get(1980, 11, 2));

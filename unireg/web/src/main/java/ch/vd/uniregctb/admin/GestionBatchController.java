@@ -30,6 +30,7 @@ import org.springmodules.xt.ajax.component.TableData;
 import org.springmodules.xt.ajax.component.TableHeader;
 import org.springmodules.xt.ajax.component.TableRow;
 
+import ch.vd.registre.base.date.DateHelper;
 import ch.vd.uniregctb.scheduler.BatchScheduler;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.scheduler.JobParam;
@@ -115,7 +116,7 @@ public class GestionBatchController extends AbstractEnhancedSimpleFormController
 
 		Table table = new Table(head);
 		boolean rowExist = false;
-		Date now = DateUtils.addMinutes(new Date(), -10);
+		Date now = DateUtils.addMinutes(DateHelper.getCurrentDate(), -10);
 		int index = 0;
 
 		final Collection<JobDefinition> jobs = batchScheduler.getJobs().values();

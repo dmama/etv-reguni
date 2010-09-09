@@ -23,6 +23,7 @@ import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.orm.hibernate3.HibernateCallback;
 
 import ch.vd.registre.base.dao.GenericDAOImpl;
+import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.ParamPagination;
@@ -154,7 +155,7 @@ public class AuditLineDAOImpl extends GenericDAOImpl<AuditLine, Long> implements
 			try {
 
 				final long id = getNextId(con);
-				final Timestamp now = new Timestamp(new Date().getTime());
+				final Timestamp now = new Timestamp(DateHelper.getCurrentDate().getTime());
 
 				PreparedStatement stat = con
 						.prepareStatement("insert into AUDIT_LOG (id, LOG_LEVEL, DOC_ID, EVT_ID, THREAD_ID, MESSAGE, LOG_DATE, LOG_USER) values (?, ?, ?, ?, ?, ?, ?, ?)");

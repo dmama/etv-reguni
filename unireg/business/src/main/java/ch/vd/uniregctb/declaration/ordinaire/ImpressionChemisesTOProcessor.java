@@ -18,6 +18,7 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.infrastructure.service.InfrastructureException;
+import ch.vd.registre.base.date.DateHelper;
 import ch.vd.uniregctb.common.BatchTransactionTemplate;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.StatusManager;
@@ -130,7 +131,7 @@ public class ImpressionChemisesTOProcessor {
 
 						if (noColOid == null || nosOfsCommunes.contains(di.getNumeroOfsForGestion())) {
 							editiqueService.imprimeTaxationOfficeBatch(di);
-							di.setDateImpressionChemiseTaxationOffice(new Date());
+							di.setDateImpressionChemiseTaxationOffice(DateHelper.getCurrentDate());
 							results.addChemiseTO(di);
 
 							// on n'imprime pas plus de chemises que demandé

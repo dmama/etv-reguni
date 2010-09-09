@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.declaration.ordinaire;
 
+import ch.vd.registre.base.date.DateHelper;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
@@ -76,7 +77,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 		assertEquals("1110 Morges", adresseExpediteur.getAdresseCourrierLigne4());
 		assertNull( adresseExpediteur.getAdresseCourrierLigne6());
 
-		Date date = new Date();
+		Date date = DateHelper.getCurrentDate();
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
 		assertEquals(dateFormat.format(date), expediteur.getDateExpedition());
 

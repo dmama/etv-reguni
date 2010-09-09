@@ -12,6 +12,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import ch.vd.registre.base.date.DateHelper;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.document.DatabaseDump;
@@ -67,7 +68,7 @@ public class DumpDatabaseJob extends JobDefinition {
 		final DatabaseDump doc = (DatabaseDump) template.execute(new TransactionCallback() {
 			public Object doInTransaction(TransactionStatus status) {
 				
-				final Date date = new Date();
+				final Date date = DateHelper.getCurrentDate();
 				final int count = tiersDAO.getCount(Tiers.class);
 				final String name = "dbdump_" + FILE_DATE_FORMAT.format(date);
 				final String description = "Export de la base généré le " + SCREEN_DATE_FORMAT.format(date) + " et contenant " + count + " tiers.";

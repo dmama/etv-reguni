@@ -274,6 +274,10 @@ function ouvrirAide(url) {
 					<div class="empty" style="height: 10px;">&nbsp;</div>
 					<br>
 
+					<%-- Message d'avertissement en cas d'offset sur la date courante --%>
+					<unireg:dateOffset/>
+
+					<%-- Message flash --%>
 					<c:if test="${flash != null && flash.active}">
 					<div class="<c:out value="${flash.displayClass}"/>"><c:out value="${flash.messageForDisplay}"/></div>
 					</c:if>

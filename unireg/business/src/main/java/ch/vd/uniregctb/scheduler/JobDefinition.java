@@ -10,6 +10,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 
+import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
@@ -140,12 +141,12 @@ public abstract class JobDefinition implements InitializingBean, Comparable<Obje
 	protected final void terminate() throws Exception {
 		doTerminate();
 		currentParameters = null;
-		lastEnd = new Date();
+		lastEnd = DateHelper.getCurrentDate();
 	}
 
 	protected void execute(HashMap<String, Object> params) throws Exception {
 
-		lastStart = new Date();
+		lastStart = DateHelper.getCurrentDate();
 		lastEnd = null;
 
 		runningMessage = "";

@@ -86,7 +86,7 @@ public class GestionJob {
 
 		if (date != null) {
 			// Prends la date a 00:00:00
-			Date today = DateHelper.dateWithoutTime(new Date());
+			Date today = DateHelper.dateWithoutTime(DateHelper.getCurrentDate());
 			// Si on est before c'est qu'on est la jour précédent
 			if (DateHelper.isBefore(date, today)) {
 				// Donc on fomatte avec la date ET l'heure
@@ -112,7 +112,7 @@ public class GestionJob {
 			Date endDate = job.getLastEnd();
 			// Si le job est pas terminé, on prends l'heure coourante
 			if (endDate == null) {
-				endDate = new Date();
+				endDate = DateHelper.getCurrentDate();
 			}
 			// On est tjrs en traiin de tourner
 			Calendar calStart = Calendar.getInstance();

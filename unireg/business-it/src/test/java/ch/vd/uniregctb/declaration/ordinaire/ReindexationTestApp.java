@@ -46,10 +46,10 @@ public class ReindexationTestApp extends BusinessItTestApplication {
 
 	private void reindexerLaBase() throws Exception {
 
-		final Date start = new Date();
+		final long start = System.currentTimeMillis();
 		LOGGER.info("Réindexation de la base de données...");
 		globalTiersIndexer.indexAllDatabase();
-		long duree = (new Date().getTime() - start.getTime());
+		long duree = (System.currentTimeMillis() - start);
 		LOGGER.info("Réindexation terminée : " + (duree / 1000) + " secondes.");
 	}
 }

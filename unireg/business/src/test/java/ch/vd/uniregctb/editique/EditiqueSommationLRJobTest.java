@@ -8,6 +8,7 @@ import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Test;
 
+import ch.vd.registre.base.date.DateHelper;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
@@ -39,7 +40,7 @@ public class EditiqueSommationLRJobTest extends BusinessTest {
 
 		loadDatabase(DB_UNIT_DATA_FILE);
 
-		final Date statTime = new Date();
+		final Date statTime = DateHelper.getCurrentDate();
 		final JobDefinition job = batchScheduler.startJobWithDefaultParams(EditiqueSommationLRJob.NAME);
 		
 		// Attente du démarrage de l'exécution

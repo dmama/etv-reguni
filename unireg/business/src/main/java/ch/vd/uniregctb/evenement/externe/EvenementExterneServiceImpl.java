@@ -238,7 +238,7 @@ public class EvenementExterneServiceImpl implements EvenementExterneService, Ini
 				throw new EvenementExterneException("Pour un quittancement la date de retour est requise.");
 			}
 			// Si la date de retour est renseignée, elle ne se situe pas dans le futur et le retour n’a pas encore été enregistré.
-			if (DateHelper.isAfter(quittance.getDateEvenement(), new Date())) {
+			if (DateHelper.isAfter(quittance.getDateEvenement(), DateHelper.getCurrentDate())) {
 				throw new EvenementExterneException("La date de retour ne peut se situer dans le futur");
 			}
 		}
