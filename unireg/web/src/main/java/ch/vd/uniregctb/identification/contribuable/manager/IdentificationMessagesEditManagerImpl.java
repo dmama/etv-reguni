@@ -2,6 +2,8 @@ package ch.vd.uniregctb.identification.contribuable.manager;
 
 import org.springframework.transaction.annotation.Transactional;
 
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.evenement.identification.contribuable.CriteresAdresse;
@@ -75,9 +77,25 @@ public class IdentificationMessagesEditManagerImpl implements IdentificationMess
 		}
 
 		if (identificationContribuable.getDemande().getPersonne().getDateNaissance() != null) {
-			identificationMessagesEditView.setDateNaissance(identificationContribuable.getDemande().getPersonne().getDateNaissance());
+			identificationMessagesEditView.setDateNaissance(getDateNaissanceFromDemande(identificationContribuable));
 		}
 		return identificationMessagesEditView;
+	}
+
+	/**Permet de retourner la bonne valeur pour la date de naissance
+	 * les dates avant le 01.01.1901 et après la date du mesage sont considérées comme vides
+	 *
+	 * @param identificationContribuable
+	 * @return
+	 */
+	private RegDate getDateNaissanceFromDemande(IdentificationContribuable identificationContribuable) {
+		RegDate dateNaissance = identificationContribuable.getDemande().getPersonne().getDateNaissance();
+		final RegDate dateAuPlusTot = RegDate.get(1901, 1, 1);
+		final RegDate dateAuPlusTard = RegDate.get(identificationContribuable.getDemande().getDate());
+		if(dateNaissance != null &&(dateNaissance.isBefore(dateAuPlusTot) || dateNaissance.isAfter(dateAuPlusTard))){
+			dateNaissance = null;
+		}
+		return dateNaissance;  //To change body of created methods use File | Settings | File Templates.
 	}
 
 	/**
