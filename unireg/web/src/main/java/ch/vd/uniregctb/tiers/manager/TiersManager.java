@@ -1675,7 +1675,10 @@ public class TiersManager implements MessageSourceAware {
 			if (StringUtils.hasText(addGen.getNumeroPostal())) {
 				localiteStr = addGen.getNumeroPostal() + " ";
 			}
-			localiteStr += addGen.getLocalite();
+			if(addGen.getLocalite()!=null){
+				localiteStr += addGen.getLocalite();
+			}
+
 			adresseView.setLocalite(localiteStr);
 		}
 
