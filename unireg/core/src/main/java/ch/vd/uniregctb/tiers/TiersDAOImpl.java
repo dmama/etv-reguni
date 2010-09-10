@@ -1,5 +1,35 @@
 package ch.vd.uniregctb.tiers;
 
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.apache.log4j.Logger;
+import org.hibernate.Criteria;
+import org.hibernate.EntityMode;
+import org.hibernate.FetchMode;
+import org.hibernate.FlushMode;
+import org.hibernate.HibernateException;
+import org.hibernate.Query;
+import org.hibernate.SQLQuery;
+import org.hibernate.Session;
+import org.hibernate.criterion.DetachedCriteria;
+import org.hibernate.criterion.Expression;
+import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Restrictions;
+import org.hibernate.criterion.Subqueries;
+import org.hibernate.dialect.Dialect;
+import org.hibernate.engine.EntityKey;
+import org.hibernate.impl.SessionImpl;
+import org.springframework.orm.hibernate3.HibernateCallback;
+import org.springframework.transaction.annotation.Transactional;
+
 import ch.vd.registre.base.dao.GenericDAOImpl;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
@@ -9,16 +39,6 @@ import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.tracing.TracePoint;
 import ch.vd.uniregctb.tracing.TracingManager;
-import org.apache.log4j.Logger;
-import org.hibernate.*;
-import org.hibernate.criterion.*;
-import org.hibernate.engine.EntityKey;
-import org.hibernate.impl.SessionImpl;
-import org.springframework.orm.hibernate3.HibernateCallback;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.sql.SQLException;
-import java.util.*;
 
 /**
  *
@@ -29,11 +49,17 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
     private static final Logger LOGGER = Logger.getLogger(TiersDAOImpl.class);
     private static final int MAX_IN_SIZE = 500;
 
+	private Dialect dialect;
+
 	public TiersDAOImpl() {
         super(Tiers.class);
     }
 
-    public Tiers get(long id, boolean doNotAutoFlush) {
+	public void setDialect(Dialect dialect) {
+		this.dialect = dialect;
+	}
+
+	public Tiers get(long id, boolean doNotAutoFlush) {
 
         Object[] criteria = {
                 id
@@ -507,61 +533,114 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
     }
 
 	public Long getNumeroPPByNumeroIndividu(Long numeroIndividu, boolean doNotAutoFlush) {
+		return getNumeroPPByNumeroIndividu(numeroIndividu, false, doNotAutoFlush);
+	}
 
-		final Object[] criteria = {numeroIndividu};
-		final String query = String.format("select pp.id %s", buildHqlForPPByNumeroIndividu(false));
+	@SuppressWarnings({"unchecked"})
+	private Long getNumeroPPByNumeroIndividu(final Long numeroIndividu, boolean habitantSeulement, final boolean doNotAutoFlush) {
 
-		final FlushMode mode = (doNotAutoFlush ? FlushMode.MANUAL : null);
-		final List<?> list = find(query, criteria, mode);
+		/**
+		 * la requête que l'on veut écrire est la suivante :
+		 *      SELECT PP.NUMERO FROM TIERS PP
+		 *      WHERE PP.NUMERO_INDIVIDU=? AND PP.ANNULATION_DATE IS NULL
+		 *      (AND PP.PP_HABITANT = 1)
+		 *      AND (SELECT NVL(MAX(FF.DATE_FERMETURE),0) FROM FOR_FISCAL FF WHERE FF.TIERS_ID=PP.NUMERO AND FF.ANNULATION_DATE IS NULL AND FF.MOTIF_FERMETURE='ANNULATION')
+		 *      < (SELECT NVL(MAX(FF.DATE_OUVERTURE),1) FROM FOR_FISCAL FF WHERE FF.TIERS_ID=PP.NUMERO AND FF.ANNULATION_DATE IS NULL AND FF.MOTIF_OUVERTURE='REACTIVATION')
+		 *      ORDER BY PP.NUMERO ASC;
+		 *
+		 * Mais voilà : NVL est une fonction spécifiquement Oracle et COALESCE, qui devrait être fonctionellement équivalente, semble souffrir d'un bug (voir UNIREG-2242)
+		 * Donc on en revient aux bases : il nous faut les numéros des personnes physiques qui n'ont pas de for fermé pour motif annulation ou, si elles en ont, qui ont
+		 * également un for ouvert postérieurement avec un motif "REACTIVATION"...
+		 */
 
-		if (list.isEmpty()) {
+		final StringBuilder b = new StringBuilder();
+		b.append("SELECT PP.NUMERO, MAX(FF_A.DATE_FERMETURE) AS DATE_DESACTIVATION, MAX(FF_R.DATE_OUVERTURE) AS DATE_REACTIVATION");
+		b.append(" FROM TIERS PP");
+		b.append(" LEFT OUTER JOIN FOR_FISCAL FF_A ON FF_A.TIERS_ID=PP.NUMERO AND FF_A.ANNULATION_DATE IS NULL AND FF_A.MOTIF_FERMETURE='ANNULATION'");
+		b.append(" LEFT OUTER JOIN FOR_FISCAL FF_R ON FF_R.TIERS_ID=PP.NUMERO AND FF_R.ANNULATION_DATE IS NULL AND FF_R.MOTIF_OUVERTURE='REACTIVATION'");
+		b.append(" WHERE PP.TIERS_TYPE='PersonnePhysique'");
+		b.append(" AND PP.NUMERO_INDIVIDU=:noIndividu AND PP.ANNULATION_DATE IS NULL");
+		if (habitantSeulement) {
+			b.append(" AND PP.PP_HABITANT = ");
+			b.append(dialect.toBooleanValueString(true));
+		}
+		b.append(" GROUP BY PP.NUMERO");
+		b.append(" ORDER BY PP.NUMERO ASC");
+		final String sql = b.toString();
+
+		final List<Long> list = (List<Long>) getHibernateTemplate().executeWithNativeSession(new HibernateCallback() {
+			public List<Long> doInHibernate(Session session) throws HibernateException, SQLException {
+
+				FlushMode flushMode = null;
+				if (doNotAutoFlush) {
+					flushMode = session.getFlushMode();
+					session.setFlushMode(FlushMode.MANUAL);
+				} else {
+					// la requête ci-dessus n'est pas une requête HQL, donc hibernate ne fera pas les
+					// flush potentiellement nécessaires... Idéalement, bien-sûr, il faudrait écrire la requête en HQL, mais
+					// je n'y arrive pas...
+					session.flush();
+				}
+				try {
+					final SQLQuery query = session.createSQLQuery(sql);
+					query.setParameter("noIndividu", numeroIndividu);
+
+					// tous les candidats sortent : il faut ensuite filtrer par rapport aux dates d'annulation et de réactivation...
+					final List<Object[]> rows = query.list();
+					if (rows != null && rows.size() > 0) {
+						final List<Long> res = new ArrayList<Long>(rows.size());
+						for (Object[] row : rows) {
+							final Number ppId = (Number) row[0];
+							final Number indexDesactivation = (Number) row[1];
+							final Number indexReactivation = (Number) row[2];
+							if (indexDesactivation == null) {
+								res.add(ppId.longValue());
+							}
+							else if (indexReactivation != null && indexReactivation.intValue() > indexDesactivation.intValue()) {
+								res.add(ppId.longValue());
+							}
+						}
+						return res;
+					}
+				}
+				finally {
+					if (doNotAutoFlush) {
+						session.setFlushMode(flushMode);
+					}
+				}
+
+				return null;
+			}
+		});
+
+		if (list == null || list.isEmpty()) {
 			return null;
 		}
 
 		if (list.size() > 1) {
 			final long[] ids = new long[list.size()];
 			for (int i = 0; i < list.size(); ++i) {
-				ids[i] = (Long) list.get(i);
+				ids[i] = list.get(i);
 			}
 			throw new PlusieursPersonnesPhysiquesAvecMemeNumeroIndividuException(numeroIndividu, ids);
 		}
 
-		return (Long) list.get(0);
-	}
-
-	private static String buildHqlForPPByNumeroIndividu(boolean seulementHabitant) {
-		final StringBuilder b = new StringBuilder();
-		b.append("from PersonnePhysique pp where pp.numeroIndividu = ? and pp.annulationDate is null");
-		if (seulementHabitant) {
-			b.append(" and pp.habitant = true");
-		}
-		b.append(" and (select coalesce(max(ff.dateFin), 0) from pp.forsFiscaux ff where ff.annulationDate is null and ff.motifFermeture='ANNULATION')");
-		b.append(" < (select coalesce(max(ff.dateDebut), 1) from pp.forsFiscaux ff where ff.annulationDate is null and ff.motifOuverture='REACTIVATION')");
-		b.append(" order by pp.numero asc");
-		return b.toString();
+		return list.get(0);
 	}
 
 	private PersonnePhysique getPPByNumeroIndividu(Long numeroIndividu, boolean habitantSeulement, boolean doNotAutoFlush) {
 
-		final Object[] criteria = {numeroIndividu};
-		final String query = buildHqlForPPByNumeroIndividu(habitantSeulement);
+		// on passe par le numéro de tiers pour pouvoir factoriser l'algorithme dans la recherche du tiers, en espérant que les performances n'en seront pas trop affectées
 
-		final FlushMode mode = (doNotAutoFlush ? FlushMode.MANUAL : null);
-		final List<?> list = find(query, criteria, mode);
-		if (list.size() == 0) {
-			return null;
-		}
-		else if (list.size() == 1) {
-		    return (PersonnePhysique) list.get(0);
+		final Long id = getNumeroPPByNumeroIndividu(numeroIndividu, habitantSeulement, doNotAutoFlush);
+		final PersonnePhysique pp;
+		if (id != null) {
+			pp = (PersonnePhysique) get(id, doNotAutoFlush);
 		}
 		else {
-			final long[] noPersonnesPhysiques = new long[list.size()];
-			for (int i = 0 ; i < list.size() ; ++ i) {
-				final PersonnePhysique pp = (PersonnePhysique) list.get(i);
-				noPersonnesPhysiques[i] = pp.getNumero();
-			}
-		    throw new PlusieursPersonnesPhysiquesAvecMemeNumeroIndividuException(numeroIndividu, noPersonnesPhysiques);
+			pp = null;
 		}
+		return pp;
 	}
 
     /**

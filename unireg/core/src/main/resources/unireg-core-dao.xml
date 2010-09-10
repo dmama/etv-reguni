@@ -22,6 +22,7 @@
 
 	<!-- Definition des DAOs -->
 	<bean id="tiersDAO" class="ch.vd.uniregctb.tiers.TiersDAOImpl" parent="hibernateDaoSupport">
+		<property name="dialect" ref="hibernateDialect" />
 	</bean>
 	<bean id="forFiscalDAO" class="ch.vd.uniregctb.tiers.ForFiscalDAOImpl" parent="hibernateDaoSupport">
 	</bean>
