@@ -11,9 +11,8 @@ public interface EvenementCivilAsyncProcessor {
 	 * d'attente en vue du traitement
 	 * @param evtId ID technique de l'événement civil à traiter
 	 * @param timestamp timestamp (voir {@link System#currentTimeMillis()}) de l'arrivée de l'événement
-	 * @param interested si non-null, l'objet qu'il faut 'notifier' une fois le traitement terminé (appel à {@link Object#notifyAll()}, pour les tests seulement!)
 	 */
-	void postEvenementCivil(long evtId, long timestamp, Object interested);
+	void postEvenementCivil(long evtId, long timestamp);
 
 	/**
 	 * @return le nombre d'éléments actuellement en attente dans la queue
@@ -33,4 +32,11 @@ public interface EvenementCivilAsyncProcessor {
 	 */
 	void setDelaiPriseEnCompte(int delai);
 
+	/**
+	 * Méthode qui attend tant qu'il y a encore des événements civils à traiter.<p/>
+	 * Elle n'empêche en aucun cas que d'autres événements civils soient postés, l'attente peut donc s'étendre indéfiniment.<p/>
+	 * A priori utilisée dans un contexte de tests pour synchroniser le traitement.
+	 * @throws InterruptedException si l'attente a été interrompue par un autre thread
+	 */
+	void sync() throws InterruptedException;
 }

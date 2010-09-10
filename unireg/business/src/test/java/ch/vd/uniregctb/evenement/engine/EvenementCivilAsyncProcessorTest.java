@@ -2,7 +2,6 @@ package ch.vd.uniregctb.evenement.engine;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -108,8 +107,6 @@ public class EvenementCivilAsyncProcessorTest extends BusinessTest {
 		final int THREADS = 10;
 		final int EVTS_PAR_THREAD = 5;
 
-		final Object lock = new Object();
-
 		// on met en place une dizaine de threads qui envoient chacun une dizaine d'événements civils
 		// -> quel que soit l'ordre d'envoi des événements civils, ils doivent arriver dans l'ordre
 		final List<Thread> threads = new ArrayList<Thread>();
@@ -127,7 +124,7 @@ public class EvenementCivilAsyncProcessorTest extends BusinessTest {
 							public Object doInTransaction(TransactionStatus status) {
 								final EvenementCivilData evt = buildEvenement(id, id, date, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HS);
 								evtCivilDAO.save(evt);
-								asyncProcessor.postEvenementCivil(id, System.currentTimeMillis(), lock);
+								asyncProcessor.postEvenementCivil(id, System.currentTimeMillis());
 								return null;
 							}
 						});
@@ -152,13 +149,11 @@ public class EvenementCivilAsyncProcessorTest extends BusinessTest {
 		final long finEnvoi = System.nanoTime();
 		LOGGER.warn(String.format("Envoyé %d événements avec %d threads en %d ms (le test peut échouer si ce délai est plus grand qu'une seconde)", EVTS_PAR_THREAD * THREADS, THREADS, (finEnvoi - start) / 1000000L));
 
-		// on attends que tous les événements sont passés (= que la queue les dispatche)
+		// on attends que tous les événements soient passés (= que la queue les dispatche)
+		asyncProcessor.sync();
+
+		// maintenant on regarde ce qui est passé et dans quel ordre...
 		final List<Long> evtsRecus = processor.getEvenementsRecus();
-		synchronized (lock) {
-			while (evtsRecus.size() < EVTS_PAR_THREAD * THREADS) {
-				lock.wait();
-			}
-		}
 		Assert.assertEquals(EVTS_PAR_THREAD * THREADS, evtsRecus.size());
 
 		final long finTraitement = System.nanoTime();

@@ -42,6 +42,7 @@ public class EvenementCivilTest extends BusinessTest {
 	private EvenementCivilDAO evenementCivilDAO;
 	private EvenementCivilListener evenementCivilListener;
 	private GlobalTiersSearcher searcher;
+	private EvenementCivilAsyncProcessor evenementCivilProcessor;
 
 	@Override
 	public void onSetUp() throws Exception {
@@ -49,7 +50,7 @@ public class EvenementCivilTest extends BusinessTest {
 		evenementCivilDAO = getBean(EvenementCivilDAO.class, "evenementCivilDAO");
 		searcher = getBean(GlobalTiersSearcher.class, "globalTiersSearcher");
 
-		final EvenementCivilAsyncProcessor evenementCivilProcessor = getBean(EvenementCivilAsyncProcessor.class, "evenementCivilAsyncProcessor");
+		evenementCivilProcessor = getBean(EvenementCivilAsyncProcessor.class, "evenementCivilAsyncProcessor");
 		evenementCivilListener = new EvenementCivilListener();
 		evenementCivilListener.setEvenementCivilAsyncProcessor(evenementCivilProcessor);
 		evenementCivilListener.setTransactionManager(transactionManager);
@@ -188,7 +189,11 @@ public class EvenementCivilTest extends BusinessTest {
 				message.setBusinessUser("VISA_MUTATION");
 				evenementCivilListener.onEsbMessage(message);
 
-				// la persistence en base de l'événement civil est synchrone -> pas la peine d'attendre le traitement
+				// la persistence en base de l'événement civil est synchrone -> en théorie, ce n'est pas la peine d'attendre le traitement
+				// mais en fait si, parce que sinon l'événement est traité alors qu'un autre test tourne et produit une erreur (la base a
+				// potentiellement été rafraîchie plusieurs fois depuis)
+				evenementCivilProcessor.sync();
+
 				return null;
 			}
 		});

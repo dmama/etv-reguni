@@ -43,7 +43,7 @@ public class EvenementCivilListener extends EsbMessageListener {
 			// le user de création est initialisé avec le user à l'origine de l'événement civil
 			AuthenticationHelper.setPrincipal(visaMutation);
 			try {
-				onEvenementCivil(message, null);
+				onEvenementCivil(message);
 			}
 			finally {
 				AuthenticationHelper.resetAuthentication();
@@ -65,11 +65,10 @@ public class EvenementCivilListener extends EsbMessageListener {
 	/**
 	 * Transforme le body du message XML en événement civil et demande son traitement par l'application
 	 * @param message body du message XML reçu
-	 * @param interested si non-null, l'objet qu'il faut 'notifier' une fois le traitement terminé (pour les tests!)
 	 * @return <code>true</code> si l'événement a été posté pour traitement, <code>false</code> si ce n'est pas la peine
 	 * @throws EvenementCivilException en cas de problème
 	 */
-	protected boolean onEvenementCivil(String message, Object interested) throws EvenementCivilException {
+	protected boolean onEvenementCivil(String message) throws EvenementCivilException {
 
 		final long start = System.nanoTime();
 
@@ -89,7 +88,7 @@ public class EvenementCivilListener extends EsbMessageListener {
 		final long creationTime = System.currentTimeMillis();
 
 		// on poste une demande de traitement pour cet événement
-		evenementCivilAsyncProcessor.postEvenementCivil(evenement.getId(), creationTime, interested);
+		evenementCivilAsyncProcessor.postEvenementCivil(evenement.getId(), creationTime);
 
 		final long post = System.nanoTime();
 
@@ -98,6 +97,14 @@ public class EvenementCivilListener extends EsbMessageListener {
 		}
 
 		return true;
+	}
+
+	/**
+	 * Méthode qui attend que tous les événements postés soient traités
+	 * @throws InterruptedException en cas d'interruption forcée de l'attente
+	 */
+	protected void sync() throws InterruptedException {
+		evenementCivilAsyncProcessor.sync();
 	}
 
 	private EvenementCivilData extractEvenement(String xmlMessage) {

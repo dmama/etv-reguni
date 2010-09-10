@@ -92,17 +92,8 @@ public class EvenementCivilListenerTest extends BusinessTest {
 
 	@SuppressWarnings({"SynchronizationOnLocalVariableOrMethodParameter"})
 	public static void sendMessageSync(EvenementCivilListener listener, String xmlContent) throws EvenementCivilException, InterruptedException {
-		final Object lock = new Object();
-		synchronized (lock) {
-			// on ne l'attend que s'il a été effectivement posté (si son traitement a pu être fait de manière synchrone
-			// ce n'est pas la peine d'attendre)
-			if (listener.onEvenementCivil(xmlContent, lock)) {
-
-				// d'après la doc, des réveils "spurious" (faux positifs) sont possibles, mais on est en test, et on verra bien si c'est le cas ici (en théorie, il faudrait faire une boucle
-				// pour vérifier que la condition (ici le traitement de l'événement) est effectivement réalisée
-				lock.wait();
-			}
-		}
+		listener.onEvenementCivil(xmlContent);
+		listener.sync();
 	}
 
 	@Test(timeout = 10000)
