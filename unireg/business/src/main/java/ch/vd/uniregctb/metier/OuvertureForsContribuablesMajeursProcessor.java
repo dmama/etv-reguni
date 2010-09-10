@@ -341,10 +341,8 @@ public class OuvertureForsContribuablesMajeursProcessor {
 		}
 
 		// [UNIREG-1585] on s'assure que l'oid est bien renseigné
-		Integer oid = habitant.getOfficeImpotId();
-		if (oid == null) {
-			oid = tiersService.getOfficeImpotIdAt(habitant, null);
-		}
+		Integer oid = tiersService.getOfficeImpotIdAt(habitant, null);
+		
 		
 		rapport.addHabitantTraite(habitant, oid, modeImposition);
 	}

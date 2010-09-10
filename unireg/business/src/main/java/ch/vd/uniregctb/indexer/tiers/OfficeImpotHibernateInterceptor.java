@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.CallbackException;
 import org.hibernate.Transaction;
@@ -71,8 +72,9 @@ public class OfficeImpotHibernateInterceptor extends AbstractLinkedInterceptor {
 		try {
 			// On change la valeur de l'oid sur le tiers. On traitera les tâches dans le post-flush.
 			for (Tiers tiers : dirty.values()) {
-				final Integer oid = detectNewOfficeID(tiers);
-				if (oid != null) {
+				final Integer oid = detectCurrentOfficeID(tiers);
+				final Integer old = tiers.getOfficeImpotId();
+				if (!ObjectUtils.equals(oid,old) && oid!=null) {
 					tiers.setOfficeImpotId(oid);
 					modifs.put(tiers.getNumero(), oid);
 				}
@@ -96,10 +98,12 @@ public class OfficeImpotHibernateInterceptor extends AbstractLinkedInterceptor {
 			return false;
 		}
 
-		final Integer oid = detectNewOfficeID(tiers);
-		if (oid == null) {
-			return false;
+		final Integer oid = detectCurrentOfficeID(tiers);
+		final Integer old = tiers.getOfficeImpotId();
+		if(ObjectUtils.equals(oid,old)|| oid==null){ // on évite de rendre le tiers dirty pour rien
+		return false;
 		}
+
 
 		// l'oid doit être mis-à-jour
 		getUpdatedOids().put(tiers.getNumero(), oid);
@@ -229,8 +233,9 @@ public class OfficeImpotHibernateInterceptor extends AbstractLinkedInterceptor {
 				continue;
 			}
 
-			Integer oid = detectNewOfficeID(tiers);
-			if (oid != null) {
+			Integer oid = detectCurrentOfficeID(tiers);
+			final Integer old = tiers.getOfficeImpotId();
+			if (!ObjectUtils.equals(oid,old)) {
 				// Met-à-jour l'OID sur le tiers
 				tiers.setOfficeImpotId(oid);
 
@@ -246,9 +251,9 @@ public class OfficeImpotHibernateInterceptor extends AbstractLinkedInterceptor {
 	 * Détecte si l'id de l'office d'impôt du tiers spécifié doit être changé, et retourne la nouvelle valeur. Le tiers n'est pas modifié.
 	 *
 	 * @param tiers le tiers à mettre à jour.
-	 * @return le numéro du nouveau OID; ou <b>null</b> si le tiers est à jour.
+	 * @return le numéro du nouveau OID; ou <b>null</b> si le tiers n'a pas de for de gestion donc pas d'OID.
 	 */
-	private Integer detectNewOfficeID(Tiers tiers) {
+	private Integer detectCurrentOfficeID(Tiers tiers) {
 		Integer oid = null;
 		final ForGestion forGestion = tiersService.getDernierForGestionConnu(tiers, null);
 		if (forGestion != null) {
@@ -260,14 +265,10 @@ public class OfficeImpotHibernateInterceptor extends AbstractLinkedInterceptor {
 			 * si le contribuable n'a pas de for de gestion (e.g. contribuable pour tous, mineur, ...), ne pas avoir d'oid est sans
 			 * importance: le contribuable n'est pas assujetti.
 			 */
-		}
-		final Integer old = tiers.getOfficeImpotId();
-		if (oid != null && !oid.equals(old)) { // on évite de rendre le tiers dirty pour rien
-			return oid;
-		}
-		else {
 			return null;
 		}
+		  	return oid;
+
 	}
 
 	/**

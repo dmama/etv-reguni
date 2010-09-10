@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.junit.Test;
+import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
@@ -144,6 +145,57 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 		assertEquals(ModeImposition.ORDINAIRE, fp.getModeImposition());
 		assertEquals(MotifRattachement.DOMICILE, fp.getMotifRattachement());
 		assertEquals(MockCommune.Lausanne.getNoOFSEtendu(), fp.getNumeroOfsAutoriteFiscale().intValue());
+	}
+
+
+	/**
+	 * Vérifie que le rapport du batch contient bien le numéro d'OID calculé à partir du for nouvellement crée .
+	 */
+	@Test
+	public void testTraiteHabitantMajeurSansForAvecOID() throws Exception {
+
+		final int noIndividu = 1234;
+		final RegDate dateTraitement = date(2009, 1, 1);
+		final RegDate dateNaissance = date(1990, 1, 1);
+		class Ids {
+				long jean;
+			}
+			final Ids ids = new Ids();
+
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				MockIndividu individu = addIndividu(noIndividu, dateNaissance, "Duschmole", "Jean", true);
+				addAdresse(individu, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null,
+						dateNaissance, null);
+				addNationalite(individu, MockPays.Suisse, dateNaissance, null, 1);
+			}
+		});
+
+			final OuvertureForsResults rapport = (OuvertureForsResults) doInTransaction(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique h = addHabitant(noIndividu);
+				h.setOfficeImpotId(18);
+				ids.jean = h.getNumero();
+				// Lancement du batch
+				final OuvertureForsResults rapport = new OuvertureForsResults(dateTraitement);
+				processor.rapport = rapport;
+				processor.traiteHabitant(h.getNumero(), dateTraitement);
+				return rapport;
+			}
+		});
+
+
+		// Vérification du rapport
+		assertEquals(1, rapport.nbHabitantsTotal);
+		assertEmpty(rapport.habitantEnErrors);
+		final List<Traite> traites = rapport.habitantTraites;
+		assertEquals(1, traites.size());
+		final Traite traite = traites.get(0);
+		assertEquals(7, traite.officeImpotID.longValue());
+
 	}
 
 	/**

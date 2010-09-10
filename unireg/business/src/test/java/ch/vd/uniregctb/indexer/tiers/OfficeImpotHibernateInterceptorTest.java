@@ -71,6 +71,28 @@ public class OfficeImpotHibernateInterceptorTest extends BusinessTest {
 	}
 
 	@Test
+	public void testOfficeImpotContribuableSansForAvecNumeroOID() throws Exception {
+
+		Long id = (Long) doInNewTransaction(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+
+				PersonnePhysique nh = new PersonnePhysique(false);
+				nh.setNom("Dupres");
+				nh.setOfficeImpotId(new Integer(8));
+
+				nh = (PersonnePhysique) tiersDAO.save(nh);
+				return nh.getNumero();
+			}
+		});
+
+		Tiers nh = tiersDAO.get(id);
+		assertNotNull(nh);
+		assertNotNull(nh.getOfficeImpotId());
+	}
+
+
+	@Test
 	public void testOfficeImpotContribuableAvecForPrincipal() throws Exception {
 
 		Long id = (Long) doInNewTransaction(new TxCallback() {
