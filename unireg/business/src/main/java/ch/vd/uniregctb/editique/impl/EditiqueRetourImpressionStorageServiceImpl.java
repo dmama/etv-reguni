@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.editique.impl;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -25,14 +26,46 @@ public class EditiqueRetourImpressionStorageServiceImpl implements EditiqueRetou
 
 	private Timer cleanupTimer = null;
 
+	private TimerTask cleanupTask = null;
+
+	private Date dateDernierePurgeEffective = null;
+
+	private int purgedDocuments = 0;
+
+	private int receivedDocuments = 0;
+
 	/**
 	 * Période du timer du cleanup (secondes) : à chaque tick, on va enlever de la map des impressions
 	 * reçues les données qui étaient déjà là au tick précédent
 	 */
-	private long cleanupPeriod;
+	private int cleanupPeriod;
 
-	public void setCleanupPeriod(long cleanupPeriod) {
-		this.cleanupPeriod = cleanupPeriod;
+	public void setCleanupPeriod(int cleanupPeriod) {
+		if (cleanupPeriod <= 0) {
+			throw new IllegalArgumentException("La valeur doit être strictement positive");
+		}
+		if (this.cleanupPeriod != cleanupPeriod) {
+			this.cleanupPeriod = cleanupPeriod;
+			restartCleanupTimer();
+
+			if (LOGGER.isInfoEnabled()) {
+				LOGGER.info(String.format("Le délai de purge des documents imprimés non réclamés est de %d seconde%s.", cleanupPeriod, cleanupPeriod > 1 ? "s" : ""));
+			}
+		}
+	}
+
+	private void restartCleanupTimer() {
+		if (cleanupTimer != null) {
+			if (cleanupTask != null) {
+				cleanupTask.cancel();
+			}
+			cleanupTask = new CleanupTask();
+			cleanupTimer.schedule(cleanupTask, cleanupPeriod * 1000L, cleanupPeriod * 1000L);
+		}
+	}
+
+	public int getCleanupPeriod() {
+		return cleanupPeriod;
 	}
 
 	/**
@@ -51,6 +84,9 @@ public class EditiqueRetourImpressionStorageServiceImpl implements EditiqueRetou
 					if (document.getTimestampReceived() < tickPrecedent) {
 						LOGGER.warn(String.format("Cleanup du retour d'impression '%s' qui n'intéresse apparemment personne", document.getIdDocument()));
 						iterator.remove();
+
+						++ purgedDocuments;
+						dateDernierePurgeEffective = new Date();
 					}
 				}
 			}
@@ -62,7 +98,7 @@ public class EditiqueRetourImpressionStorageServiceImpl implements EditiqueRetou
 			throw new IllegalArgumentException("La valeur de 'cleanupPeriod' doit être strictement positive");
 		}
 		cleanupTimer = new Timer("RetourImpressionCleanup");
-		cleanupTimer.schedule(new CleanupTask(), cleanupPeriod * 1000L, cleanupPeriod * 1000L);
+		restartCleanupTimer();
 	}
 
 	public void destroy() throws Exception {
@@ -79,6 +115,8 @@ public class EditiqueRetourImpressionStorageServiceImpl implements EditiqueRetou
 
 			final String nomDocument = resultat.getIdDocument();
 			impressionsRecues.put(nomDocument, resultat);
+
+			++ receivedDocuments;
 
 			if (LOGGER.isDebugEnabled()) {
 				LOGGER.debug(String.format("Réception du document imprimé '%s'", nomDocument));
@@ -134,5 +172,23 @@ public class EditiqueRetourImpressionStorageServiceImpl implements EditiqueRetou
 				}
 			}
 		}
+	}
+
+	public int getDocumentsEnAttenteDeDispatch() {
+		synchronized (impressionsRecues) {
+			return impressionsRecues.size();
+		}
+	}
+
+	public int getDocumentsPurges() {
+		return purgedDocuments;
+	}
+
+	public Date getDateDernierePurgeEffective() {
+		return dateDernierePurgeEffective;
+	}
+
+	public int getDocumentsRecus() {
+		return receivedDocuments;
 	}
 }

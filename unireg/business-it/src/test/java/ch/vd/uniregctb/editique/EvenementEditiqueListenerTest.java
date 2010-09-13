@@ -2,6 +2,7 @@ package ch.vd.uniregctb.editique;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
@@ -94,6 +95,30 @@ public class EvenementEditiqueListenerTest extends EvenementTest {
 			}
 
 			public EditiqueResultat getDocument(String nomDocument, long timeout) {
+				throw new NotImplementedException();
+			}
+
+			public int getDocumentsRecus() {
+				throw new NotImplementedException();
+			}
+
+			public int getDocumentsEnAttenteDeDispatch() {
+				throw new NotImplementedException();
+			}
+
+			public int getCleanupPeriod() {
+				throw new NotImplementedException();
+			}
+
+			public void setCleanupPeriod(int period) {
+				throw new NotImplementedException();
+			}
+
+			public int getDocumentsPurges() {
+				throw new NotImplementedException();
+			}
+
+			public Date getDateDernierePurgeEffective() {
 				throw new NotImplementedException();
 			}
 		});

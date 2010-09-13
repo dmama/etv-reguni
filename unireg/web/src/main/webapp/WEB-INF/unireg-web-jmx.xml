@@ -32,6 +32,7 @@
 				<entry key="ch.vd.uniregctb-web:type=Monitoring,name=Application" value="applicationMonitoringJmxBean" />
 				<entry key="ch.vd.uniregctb-web:type=Monitoring,name=Caches" value="uniregCacheManager" />
 				<entry key="ch.vd.uniregctb-web:type=Monitoring,name=EvenementsCivils" value="evenementsCivilsJmxBean" />
+				<entry key="ch.vd.uniregctb-web:type=Monitoring,name=RetourImpression" value="retourImpressionJmxBean" />
 				<entry key="ch.vd.uniregctb-web:type=Connections,name=Oracle" value="oracleConnectionJmxBean" />
 				<!--<entry key="ch.vd.regcdh:type=Connections,name=DB2" value="db2ConnectionJmxBean" />-->
 				<!--<entry key="ch.vd.regcdh:type=Connections,name=HostInterface" value="hostInterfaceConnectionJmxBean" />-->
@@ -65,6 +66,11 @@
 	<bean name="evenementsCivilsJmxBean" class="ch.vd.uniregctb.jmx.EvenementsCivilsJmxBeanImpl">
 		<property name="evenementCivilAsyncProcessor" ref="evenementCivilAsyncProcessor"/>
 		<property name="evtCivilListenerContainer" ref="evtCivilListenerContainer"/>
+	</bean>
+
+	<bean name="retourImpressionJmxBean" class="ch.vd.uniregctb.jmx.RetourImpressionJmxBeanImpl">
+		<property name="storageService" ref="retourImpressionStorageService"/>
+		<property name="callerTimeout" value="${editique.locale.attente.timeout}"/>
 	</bean>
 
 	<bean name="othersPropertiesJmxBean" class="ch.vd.registre.jmx.PropertiesJmxBeanImpl">
