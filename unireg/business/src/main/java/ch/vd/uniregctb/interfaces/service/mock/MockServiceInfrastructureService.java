@@ -363,10 +363,14 @@ public abstract class MockServiceInfrastructureService extends AbstractServiceIn
 	 */
 	public OfficeImpot getOfficeImpotDeCommune(int noCommune) throws InfrastructureException {
 		// l'office du pont
-		OfficeImpot office=null;
-		if (noCommune==5586 ) {//lAbbaye, le Pont
+		OfficeImpot office = null;
+		if (noCommune == 5586) {//lAbbaye, le Pont
 			MockAdresse adresse = new MockAdresse();
 			office = new MockOfficeImpot(7, adresse, "Office d'impôt des districts de lausanne", "Lausanne et Ouest lausannois", "", "OID LAUSANNE");
+		}
+		if (noCommune == 5402) {//Bex
+			MockAdresse adresse = new MockAdresse();
+			office = MockOfficeImpot.OID_AIGLE;
 		}
 		return office;
 	}
