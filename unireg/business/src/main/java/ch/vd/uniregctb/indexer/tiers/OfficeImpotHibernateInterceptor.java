@@ -72,9 +72,9 @@ public class OfficeImpotHibernateInterceptor extends AbstractLinkedInterceptor {
 		try {
 			// On change la valeur de l'oid sur le tiers. On traitera les tâches dans le post-flush.
 			for (Tiers tiers : dirty.values()) {
-				final Integer oid = detectCurrentOfficeID(tiers);
+				final Integer oid = calculateCurrentOfficeID(tiers);
 				final Integer old = tiers.getOfficeImpotId();
-				if (!ObjectUtils.equals(oid,old) && oid!=null) {
+				if (!ObjectUtils.equals(oid,old)) {
 					tiers.setOfficeImpotId(oid);
 					modifs.put(tiers.getNumero(), oid);
 				}
@@ -98,9 +98,9 @@ public class OfficeImpotHibernateInterceptor extends AbstractLinkedInterceptor {
 			return false;
 		}
 
-		final Integer oid = detectCurrentOfficeID(tiers);
+		final Integer oid = calculateCurrentOfficeID(tiers);
 		final Integer old = tiers.getOfficeImpotId();
-		if(ObjectUtils.equals(oid,old)|| oid==null){ // on évite de rendre le tiers dirty pour rien
+		if(ObjectUtils.equals(oid,old)){ // on évite de rendre le tiers dirty pour rien
 		return false;
 		}
 
@@ -233,7 +233,7 @@ public class OfficeImpotHibernateInterceptor extends AbstractLinkedInterceptor {
 				continue;
 			}
 
-			Integer oid = detectCurrentOfficeID(tiers);
+			Integer oid = calculateCurrentOfficeID(tiers);
 			final Integer old = tiers.getOfficeImpotId();
 			if (!ObjectUtils.equals(oid,old)) {
 				// Met-à-jour l'OID sur le tiers
@@ -253,7 +253,7 @@ public class OfficeImpotHibernateInterceptor extends AbstractLinkedInterceptor {
 	 * @param tiers le tiers à mettre à jour.
 	 * @return le numéro du nouveau OID; ou <b>null</b> si le tiers n'a pas de for de gestion donc pas d'OID.
 	 */
-	private Integer detectCurrentOfficeID(Tiers tiers) {
+	private Integer calculateCurrentOfficeID(Tiers tiers) {
 		Integer oid = null;
 		final ForGestion forGestion = tiersService.getDernierForGestionConnu(tiers, null);
 		if (forGestion != null) {

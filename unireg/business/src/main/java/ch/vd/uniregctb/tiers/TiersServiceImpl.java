@@ -2614,26 +2614,23 @@ public class TiersServiceImpl implements TiersService {
 	 * {@inheritDoc}
 	 */
 	public Integer getOfficeImpotIdAt(Tiers tiers, RegDate date) {
-		//UNIREG-1585 retourner en priorité l'oid calculé à partir du for de gestion
-		// l'OID stocké sur le tiers est à retourner en cas d'abscence de for de gestion
-		Integer oid = null;
+		Integer oid = tiers.getOfficeImpotId();
+		if (date == null && oid != null) {
+			// l'oid courant est déjà connu, pas besoin d'en faire plus
+			return oid;
+		}
+
 		// Calcul de l'oid à la date demandée
 		final ForGestion forGestion = getDernierForGestionConnu(tiers, date);
 		if (forGestion != null) {
 			oid = getOfficeImpot(forGestion.getNoOfsCommune());
 		}
-		else {
-			if(date == null){
-				oid = tiers.getOfficeImpotId();
-			}
 
-		}
-
-// [UNIREG-1850] il ne faut pas modifier l'office d'impôt ici, car les éventuelles tâches associées doivent aussi être mises à jour (par l'intercepteur)
-//		if (date == null && oid != null) {
-//			// on profite de cacher l'oid courant dans le tiers
-//			tiers.setOfficeImpotId(oid);
-//		}
+		// [UNIREG-1850] il ne faut pas modifier l'office d'impôt ici, car les éventuelles tâches associées doivent aussi être mises à jour (par l'intercepteur)
+		//		if (date == null && oid != null) {
+		//			// on profite de cacher l'oid courant dans le tiers
+		//			tiers.setOfficeImpotId(oid);
+		//		}
 
 		return oid;
 	}

@@ -341,9 +341,11 @@ public class OuvertureForsContribuablesMajeursProcessor {
 		}
 
 		// [UNIREG-1585] on s'assure que l'oid est bien renseigné
-		Integer oid = tiersService.getOfficeImpotIdAt(habitant, null);
-		
-		
+		hibernateTemplate.flush();
+		Integer oid = habitant.getOfficeImpotId();
+		//On n'assert pas car les sourcier n'ont pour le moment pas de for de gestion
+		//Assert.notNull(oid);
+				
 		rapport.addHabitantTraite(habitant, oid, modeImposition);
 	}
 

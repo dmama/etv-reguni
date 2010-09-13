@@ -88,7 +88,7 @@ public class OfficeImpotHibernateInterceptorTest extends BusinessTest {
 
 		Tiers nh = tiersDAO.get(id);
 		assertNotNull(nh);
-		assertNotNull(nh.getOfficeImpotId());
+		assertNull(nh.getOfficeImpotId());
 	}
 
 

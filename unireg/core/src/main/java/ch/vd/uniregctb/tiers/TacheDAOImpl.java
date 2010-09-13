@@ -395,7 +395,8 @@ public class TacheDAOImpl extends GenericDAOImpl<Tache, Long> implements TacheDA
 		if (tiersOidsMapping == null || tiersOidsMapping.isEmpty()) {
 			return;
 		}
-		
+
+
 		// [UNIREG-1024] On met-à-jour les tâches encore ouvertes, à l'exception des tâches de contrôle de dossier
 		getHibernateTemplate().executeWithNativeSession(new HibernateCallback() {
 			public Object doInHibernate(Session session) throws HibernateException, SQLException {
@@ -406,9 +407,13 @@ public class TacheDAOImpl extends GenericDAOImpl<Tache, Long> implements TacheDA
 					// met-à-jour les tâches concernées
 					final Query update = session.createSQLQuery(updateCollAdm);
 					for (Map.Entry<Long, Integer> e : tiersOidsMapping.entrySet()) {
-						update.setParameter("ctbId", e.getKey());
-						update.setParameter("oid", e.getValue());
-						update.executeUpdate();
+						//UNIREG-1585 l'oid est mis à jour sur les tâches que s'iln'est pas null
+						if (e.getValue() != null) {
+							update.setParameter("ctbId", e.getKey());
+							update.setParameter("oid", e.getValue());
+							update.executeUpdate();
+						}
+
 					}
 
 					return null;
