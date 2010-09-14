@@ -34,6 +34,11 @@ public class AdresseExtractor {
 	private static final String userWebService = "web-it";
 	private static final String pwdWebService = "unireg_1014";
 
+	// PRODUCTION
+//	private static final String urlWebServiceTiers2 = "http://unireg-pr.etat-de-vaud.ch:80/fiscalite/unireg/ws/tiers2";
+//	private static final String userWebService = "se renseigner...";
+//	private static final String pwdWebService = "se renseigner...";
+
 	private static final String userId = "usrfis06";
 	private static final int oid = 22;
 
@@ -77,7 +82,7 @@ public class AdresseExtractor {
 		for (List<Long> lot : lots) {
 			batchTiers.getTiersNumbers().clear();
 			batchTiers.getTiersNumbers().addAll(lot);
-	
+
 			final BatchTiers result = tiersPort.getBatchTiers(batchTiers);
 			for (BatchTiersEntry entry : result.getEntries()) {
 				final Tiers tiers = entry.getTiers();
@@ -100,7 +105,7 @@ public class AdresseExtractor {
 			}
 		}
 	}
-	
+
 	private static TiersPort initWebService(String serviceUrl, String username, String password) throws Exception {
 		URL wsdlUrl = ResourceUtils.getURL("classpath:TiersService2.wsdl");
 		final TiersService ts = new TiersService(wsdlUrl);
