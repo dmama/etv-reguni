@@ -8,6 +8,8 @@ import javax.persistence.Embedded;
 
 import org.hibernate.annotations.Type;
 
+import ch.vd.uniregctb.common.LengthConstants;
+
 /**
  * Contient les données d'une requête d'identification d'un contribuable.
  *
@@ -79,6 +81,12 @@ public class Demande {
 	 */
 	private CriteresPersonne personne;
 
+	/**
+	 * Type de la demande: MeldeWesen, NCS, ...
+	 */
+	private TypeDemande typeDemande;
+	
+
 	@Column(name = "DATE_DEMANDE")
 	public Date getDate() {
 		return date;
@@ -130,6 +138,12 @@ public class Demande {
 		return prioriteEmetteur;
 	}
 
+	@Column(name = "DEMANDE_TYPE", length = LengthConstants.IDENT_DEMANDE_TYPE)
+	@Type(type = "ch.vd.uniregctb.hibernate.TypeDemandeUserType")
+	public TypeDemande getTypeDemande() {
+		return typeDemande;
+	}
+
 	public void setPrioriteEmetteur(PrioriteEmetteur prioriteEmetteur) {
 		this.prioriteEmetteur = prioriteEmetteur;
 	}
@@ -161,5 +175,9 @@ public class Demande {
 
 	public void setPersonne(CriteresPersonne personne) {
 		this.personne = personne;
+	}
+
+	public void setTypeDemande(TypeDemande typeDemande) {
+		this.typeDemande = typeDemande;
 	}
 }
