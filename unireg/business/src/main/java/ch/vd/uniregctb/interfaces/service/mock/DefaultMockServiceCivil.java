@@ -88,6 +88,16 @@ public class DefaultMockServiceCivil extends MockServiceCivil {
 
 		addOrigine(victor, MockPays.Espagne, null, RegDate.get(1956, 5, 12));
 		addNationalite(victor, MockPays.Espagne, RegDate.get(1956, 5, 12), null, 0);
+
+		// Individus du fichier tiers basic
+		addDefaultAdressesTo(addIndividu(320073, RegDate.get(1950, 1, 1), "Fuchs", "Philippe", true));
+		addDefaultAdressesTo(addIndividu(325740, RegDate.get(1950, 1, 1), "Fuchs", "Nathalie", false));
+		addDefaultAdressesTo(addIndividu(327706, RegDate.get(1950, 1, 1), "Lyah", "Emery", true));
+		addDefaultAdressesTo(addIndividu(674417, RegDate.get(1950, 1, 1), "Decloux", "Pascaline", true));
+		addDefaultAdressesTo(addIndividu(333905, RegDate.get(1950, 1, 1), "Schmid", "Christine", false));
+		addDefaultAdressesTo(addIndividu(333908, RegDate.get(1950, 1, 1), "Schmid", "Laurent", true));
+		addDefaultAdressesTo(addIndividu(333911, RegDate.get(1950, 1, 1), "Schmid", "Valentin", true));
+		addDefaultAdressesTo(addIndividu(325631, RegDate.get(1950, 1, 1), "Emery", "Jean-Christophe", true));
 	}
 
 	protected void addDefaultAdressesTo(MockIndividu individu) {

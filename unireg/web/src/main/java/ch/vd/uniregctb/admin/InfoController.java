@@ -28,10 +28,7 @@ import org.springmodules.xt.ajax.component.SimpleText;
 import org.springmodules.xt.ajax.support.UnsupportedEventException;
 
 import ch.vd.registre.base.utils.ExceptionUtils;
-import ch.vd.uniregctb.checker.ServiceBVRChecker;
-import ch.vd.uniregctb.checker.ServiceCivilChecker;
-import ch.vd.uniregctb.checker.ServiceInfraChecker;
-import ch.vd.uniregctb.checker.ServiceSecuriteChecker;
+import ch.vd.uniregctb.checker.ServiceChecker;
 import ch.vd.uniregctb.checker.Status;
 import ch.vd.uniregctb.common.HtmlHelper;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
@@ -59,10 +56,10 @@ public class InfoController extends ParameterizableViewController implements Aja
 	private GestionBatchController batchController;
 	private StatsService statsService;
 
-	private ServiceCivilChecker serviceCivilChecker;
-	private ServiceInfraChecker serviceInfraChecker;
-	private ServiceSecuriteChecker serviceSecuriteChecker;
-	private ServiceBVRChecker serviceBVRChecker;
+	private ServiceChecker serviceCivilChecker;
+	private ServiceChecker serviceInfraChecker;
+	private ServiceChecker serviceSecuriteChecker;
+	private ServiceChecker serviceBVRChecker;
 
 	private PlatformTransactionManager transactionManager;
 
@@ -96,19 +93,19 @@ public class InfoController extends ParameterizableViewController implements Aja
 		this.transactionManager = transactionManager;
 	}
 
-	public void setServiceCivilChecker(ServiceCivilChecker serviceCivilChecker) {
+	public void setServiceCivilChecker(ServiceChecker serviceCivilChecker) {
 		this.serviceCivilChecker = serviceCivilChecker;
 	}
 
-	public void setServiceInfraChecker(ServiceInfraChecker serviceInfraChecker) {
+	public void setServiceInfraChecker(ServiceChecker serviceInfraChecker) {
 		this.serviceInfraChecker = serviceInfraChecker;
 	}
 
-	public void setServiceSecuriteChecker(ServiceSecuriteChecker serviceSecuriteChecker) {
+	public void setServiceSecuriteChecker(ServiceChecker serviceSecuriteChecker) {
 		this.serviceSecuriteChecker = serviceSecuriteChecker;
 	}
 
-	public void setServiceBVRChecker(ServiceBVRChecker serviceBVRChecker) {
+	public void setServiceBVRChecker(ServiceChecker serviceBVRChecker) {
 		this.serviceBVRChecker = serviceBVRChecker;
 	}
 

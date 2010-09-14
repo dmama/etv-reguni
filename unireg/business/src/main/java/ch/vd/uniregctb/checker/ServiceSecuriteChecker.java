@@ -5,7 +5,7 @@ import ch.vd.registre.base.utils.ExceptionUtils;
 import ch.vd.securite.model.Operateur;
 import ch.vd.uniregctb.interfaces.service.ServiceSecuriteService;
 
-public class ServiceSecuriteChecker {
+public class ServiceSecuriteChecker implements ServiceChecker {
 
 	private ServiceSecuriteService serviceSecuriteRaw;
 	private String details;

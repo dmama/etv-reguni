@@ -8,7 +8,7 @@ import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
 import ch.vd.uniregctb.tiers.TiersCriteria;
 
-public class TiersSearcherChecker {
+public class TiersSearcherChecker implements ServiceChecker {
 
 	private GlobalTiersSearcher searcher;
 	private String details;

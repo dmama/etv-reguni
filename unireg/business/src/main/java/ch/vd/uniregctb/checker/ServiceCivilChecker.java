@@ -5,7 +5,7 @@ import ch.vd.registre.base.utils.ExceptionUtils;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 
-public class ServiceCivilChecker {
+public class ServiceCivilChecker implements ServiceChecker {
 
 	private ServiceCivilService serviceCivilRaw;
 	private String details;

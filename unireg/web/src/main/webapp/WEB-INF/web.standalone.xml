@@ -41,6 +41,7 @@
 			/WEB-INF/unireg-web-complement.xml,
 			/WEB-INF/unireg-web-civil.xml,
 			/WEB-INF/unireg-web-acces.xml,
+			/WEB-INF/unireg-web-supergra.xml,
 			/WEB-INF/unireg-standalone-mocks.xml
 		</param-value>
 		<!-- Pour permettre une analyse des perfs, -->

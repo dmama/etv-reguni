@@ -8,7 +8,7 @@ import ch.vd.service.sipf.wsdl.sipfbvrplus_v1.BvrDemande;
 import ch.vd.service.sipf.wsdl.sipfbvrplus_v1.BvrReponse;
 import ch.vd.uniregctb.webservice.sipf.BVRPlusClient;
 
-public class ServiceBVRChecker {
+public class ServiceBVRChecker implements ServiceChecker {
 
 	private BVRPlusClient bvrClient;
 	private String details;
