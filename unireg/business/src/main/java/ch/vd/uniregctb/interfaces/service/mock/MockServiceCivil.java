@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.interfaces.service.mock;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -18,6 +17,7 @@ import ch.vd.registre.civil.model.EnumTypeEtatCivil;
 import ch.vd.registre.civil.model.EnumTypePermis;
 import ch.vd.registre.civil.model.EnumTypeTutelle;
 import ch.vd.uniregctb.interfaces.model.Adresse;
+import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
 import ch.vd.uniregctb.interfaces.model.Individu;
@@ -37,7 +37,6 @@ import ch.vd.uniregctb.interfaces.model.mock.MockPermis;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.model.mock.MockTutelle;
 import ch.vd.uniregctb.interfaces.model.mock.MockTuteurGeneral;
-import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilServiceBase;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 
@@ -521,7 +520,16 @@ public abstract class MockServiceCivil extends ServiceCivilServiceBase {
 		final MockIndividu individu = getIndividu(noIndividu);
 		if (individu != null) {
 			// on fait la copie avec les parts demandées seulements
-			final Set<EnumAttributeIndividu> parts = new HashSet<EnumAttributeIndividu>(parties != null ? Arrays.asList(parties) : Collections.<EnumAttributeIndividu>emptyList());
+			final Set<AttributeIndividu> parts;
+			if (parties == null) {
+				parts = Collections.emptySet();
+			}
+			else {
+				parts = new HashSet<AttributeIndividu>();
+				for (EnumAttributeIndividu p: parties) {
+					parts.add(AttributeIndividu.fromEAI(p));
+				}
+			}
 			return new MockIndividu(individu, parts, annee);
 		}
 		else {

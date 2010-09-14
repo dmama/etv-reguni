@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.interfaces.model.wrapper;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Set;
@@ -7,6 +8,7 @@ import java.util.Set;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.civil.model.EnumAttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.AdoptionReconnaissance;
+import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
 import ch.vd.uniregctb.interfaces.model.EtatCivilList;
 import ch.vd.uniregctb.interfaces.model.HistoriqueIndividu;
@@ -17,7 +19,9 @@ import ch.vd.uniregctb.interfaces.model.Permis;
 import ch.vd.uniregctb.interfaces.model.Tutelle;
 import ch.vd.uniregctb.interfaces.model.helper.IndividuHelper;
 
-public class IndividuWrapper extends EntiteCivileWrapper implements Individu {
+public class IndividuWrapper extends EntiteCivileWrapper implements Individu, Serializable {
+
+	private static final long serialVersionUID = 7921855957117179067L;
 
 	private final ch.vd.registre.civil.model.Individu target;
 	private Collection<AdoptionReconnaissance> adoptions;
@@ -49,7 +53,7 @@ public class IndividuWrapper extends EntiteCivileWrapper implements Individu {
 		this.naissance = RegDate.get(target.getDateNaissance());
 	}
 
-	protected IndividuWrapper(IndividuWrapper individuWrapper, Set<EnumAttributeIndividu> parts) {
+	protected IndividuWrapper(IndividuWrapper individuWrapper, Set<AttributeIndividu> parts) {
 		super(individuWrapper, parts);
 		this.target = individuWrapper.target;
 		this.deces = individuWrapper.deces;
@@ -314,36 +318,36 @@ public class IndividuWrapper extends EntiteCivileWrapper implements Individu {
 		return target.isSexeMasculin();
 	}
 
-	public void copyPartsFrom(Individu individu, Set<EnumAttributeIndividu> parts) {
+	public void copyPartsFrom(Individu individu, Set<AttributeIndividu> parts) {
 		super.copyPartsFrom(individu, parts);
-		if (parts != null && parts.contains(EnumAttributeIndividu.ADOPTIONS)) {
+		if (parts != null && parts.contains(AttributeIndividu.ADOPTIONS)) {
 			adoptions = individu.getAdoptionsReconnaissances();
 		}
-		if (parts != null && parts.contains(EnumAttributeIndividu.CONJOINT)) {
+		if (parts != null && parts.contains(AttributeIndividu.CONJOINT)) {
 			//conjoint = individu.getConjoint();
 		}
-		if (parts != null && parts.contains(EnumAttributeIndividu.ENFANTS)) {
+		if (parts != null && parts.contains(AttributeIndividu.ENFANTS)) {
 			enfants = individu.getEnfants();
 		}
-		if (parts != null && parts.contains(EnumAttributeIndividu.NATIONALITE)) {
+		if (parts != null && parts.contains(AttributeIndividu.NATIONALITE)) {
 			nationalites = individu.getNationalites();
 		}
-		if (parts != null && parts.contains(EnumAttributeIndividu.ORIGINE)) {
+		if (parts != null && parts.contains(AttributeIndividu.ORIGINE)) {
 			origine = individu.getOrigine();
 		}
-		if (parts != null && parts.contains(EnumAttributeIndividu.PARENTS)) {
+		if (parts != null && parts.contains(AttributeIndividu.PARENTS)) {
 			pere = individu.getPere();
 			mere = individu.getMere();
 		}
-		if (parts != null && parts.contains(EnumAttributeIndividu.PERMIS)) {
+		if (parts != null && parts.contains(AttributeIndividu.PERMIS)) {
 			permis = individu.getPermis();
 		}
-		if (parts != null && parts.contains(EnumAttributeIndividu.TUTELLE)) {
+		if (parts != null && parts.contains(AttributeIndividu.TUTELLE)) {
 			tutelle = individu.getTutelle();
 		}
 	}
 
-	public Individu clone(Set<EnumAttributeIndividu> parts) {
+	public Individu clone(Set<AttributeIndividu> parts) {
 		return new IndividuWrapper(this, parts);
 	}
 

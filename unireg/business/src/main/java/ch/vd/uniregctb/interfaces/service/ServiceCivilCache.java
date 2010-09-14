@@ -1,15 +1,14 @@
 package ch.vd.uniregctb.interfaces.service;
 
-import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Assert;
-import ch.vd.registre.base.utils.NotImplementedException;
-import ch.vd.registre.civil.model.EnumAttributeIndividu;
-import ch.vd.uniregctb.cache.UniregCacheInterface;
-import ch.vd.uniregctb.cache.UniregCacheManager;
-import ch.vd.uniregctb.data.DataEventListener;
-import ch.vd.uniregctb.data.DataEventService;
-import ch.vd.uniregctb.interfaces.model.*;
-import ch.vd.uniregctb.stats.StatsService;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
@@ -17,7 +16,15 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
-import java.util.*;
+import ch.vd.registre.base.utils.Assert;
+import ch.vd.registre.civil.model.EnumAttributeIndividu;
+import ch.vd.uniregctb.cache.UniregCacheInterface;
+import ch.vd.uniregctb.cache.UniregCacheManager;
+import ch.vd.uniregctb.data.DataEventListener;
+import ch.vd.uniregctb.data.DataEventService;
+import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
+import ch.vd.uniregctb.interfaces.model.Individu;
+import ch.vd.uniregctb.stats.StatsService;
 
 /**
  * @author Manuel Siggen <manuel.siggen@vd.ch>
@@ -108,7 +115,9 @@ public class ServiceCivilCache extends ServiceCivilServiceBase implements Unireg
 		cache.removeAll();
 	}
 
-	private static class GetIndividuKey {
+	private static class GetIndividuKey implements Serializable {
+
+		private static final long serialVersionUID = 4747282643L;
 
 		private long noIndividu;
 		private int annee;
@@ -142,7 +151,7 @@ public class ServiceCivilCache extends ServiceCivilServiceBase implements Unireg
 	public Individu getIndividu(long noIndividu, int annee, EnumAttributeIndividu... parties) {
 
 		final Individu individu;
-		final Set<EnumAttributeIndividu> partiesSet = arrayToSet(parties);
+		final Set<AttributeIndividu> partiesSet = arrayToSet(parties);
 
 		final GetIndividuKey key = new GetIndividuKey(noIndividu, annee);
 		final Element element = cache.get(key);
@@ -155,7 +164,7 @@ public class ServiceCivilCache extends ServiceCivilServiceBase implements Unireg
 		else {
 			// l'élément est en cache, on s'assure qu'on a toutes les parties nécessaires
 			IndividuCacheValueWithParts value = (IndividuCacheValueWithParts) element.getObjectValue();
-			Set<EnumAttributeIndividu> delta = value.getMissingParts(partiesSet);
+			Set<AttributeIndividu> delta = value.getMissingParts(partiesSet);
 			if (delta != null) {
 				// on complète la liste des parts à la volée
 				Individu deltaTiers = target.getIndividu(noIndividu, annee, setToArray(delta));
@@ -172,8 +181,8 @@ public class ServiceCivilCache extends ServiceCivilServiceBase implements Unireg
 	 */
 	public List<Individu> getIndividus(Collection<Long> nosIndividus, int annee, EnumAttributeIndividu... parties) {
 
-		final Set<EnumAttributeIndividu> partiesSet = arrayToSet(parties);
-		
+		final Set<AttributeIndividu> partiesSet = arrayToSet(parties);
+
 		final Map<Long, Individu> map = new HashMap<Long, Individu>(nosIndividus.size());
 		final Set<Long> uncached = new HashSet<Long>(nosIndividus.size());
 
@@ -268,20 +277,27 @@ public class ServiceCivilCache extends ServiceCivilServiceBase implements Unireg
 		// rien à faire
 	}
 
-	private static EnumAttributeIndividu[] setToArray(Set<EnumAttributeIndividu> delta) {
+	private static EnumAttributeIndividu[] setToArray(Set<AttributeIndividu> delta) {
 		if (delta == null) {
 			return null;
 		}
-		return delta.toArray(new EnumAttributeIndividu[delta.size()]);
+		final EnumAttributeIndividu[] array = new EnumAttributeIndividu[delta.size()];
+		int i = 0;
+		for (AttributeIndividu a : delta) {
+			array[i++] = a.toEAI();
+		}
+		return array;
 	}
 
-	private static Set<EnumAttributeIndividu> arrayToSet(EnumAttributeIndividu[] parties) {
+	private static Set<AttributeIndividu> arrayToSet(EnumAttributeIndividu[] parties) {
 		if (parties == null || parties.length == 0) {
 			return null;
 		}
 
-		final Set<EnumAttributeIndividu> set = new HashSet<EnumAttributeIndividu>(parties.length);
-		set.addAll(Arrays.asList(parties));
+		final Set<AttributeIndividu> set = new HashSet<AttributeIndividu>(parties.length);
+		for (EnumAttributeIndividu e : parties) {
+			set.add(AttributeIndividu.fromEAI(e));
+		}
 		return set;
 	}
 }

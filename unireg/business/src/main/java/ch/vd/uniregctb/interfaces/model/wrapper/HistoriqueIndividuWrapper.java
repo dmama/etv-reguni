@@ -1,10 +1,14 @@
 package ch.vd.uniregctb.interfaces.model.wrapper;
 
+import java.io.Serializable;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.interfaces.model.HistoriqueIndividu;
 
-public class HistoriqueIndividuWrapper implements HistoriqueIndividu {
+public class HistoriqueIndividuWrapper implements HistoriqueIndividu, Serializable {
 
+	private static final long serialVersionUID = 1205937997205319204L;
+	
 	private final RegDate dateDebut;
 	private String autresPrenoms;
 	private String complementIdentification;

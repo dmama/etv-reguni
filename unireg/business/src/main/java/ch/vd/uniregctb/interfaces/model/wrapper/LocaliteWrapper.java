@@ -1,11 +1,15 @@
 package ch.vd.uniregctb.interfaces.model.wrapper;
 
+import java.io.Serializable;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.interfaces.model.CommuneSimple;
 import ch.vd.uniregctb.interfaces.model.Localite;
 
-public class LocaliteWrapper implements Localite {
+public class LocaliteWrapper implements Localite, Serializable {
 
+	private static final long serialVersionUID = -5346347764788098922L;
+	
 	private final ch.vd.infrastructure.model.Localite target;
 	private CommuneSimple commune = null;
 	private final RegDate dateFin;

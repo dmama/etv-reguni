@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.interfaces.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -19,7 +20,9 @@ import ch.vd.registre.base.date.RegDateHelper;
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
-public class EtatCivilList implements List<EtatCivil> {
+public class EtatCivilList implements List<EtatCivil>, Serializable {
+
+	private static final long serialVersionUID = 5273477522204852303L;
 
 	final private long numeroIndividu; // pour le logging
 	final private List<EtatCivil> list;

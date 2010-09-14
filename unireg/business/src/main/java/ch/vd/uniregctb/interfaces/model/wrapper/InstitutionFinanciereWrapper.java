@@ -1,9 +1,13 @@
 package ch.vd.uniregctb.interfaces.model.wrapper;
 
+import java.io.Serializable;
+
 import ch.vd.uniregctb.interfaces.model.InstitutionFinanciere;
 
-public class InstitutionFinanciereWrapper implements InstitutionFinanciere {
+public class InstitutionFinanciereWrapper implements InstitutionFinanciere, Serializable {
 
+	private static final long serialVersionUID = -3252725045255584882L;
+	
 	private String adresse1;
 	private String adresse2;
 	private String adresse3;

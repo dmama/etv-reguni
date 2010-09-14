@@ -1,16 +1,20 @@
 package ch.vd.uniregctb.interfaces.model.wrapper;
 
+import java.io.Serializable;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.Origine;
 import ch.vd.uniregctb.interfaces.model.Pays;
 
-public class OrigineWrapper implements Origine {
+public class OrigineWrapper implements Origine, Serializable {
 
+	private static final long serialVersionUID = -3970848418800378247L;
+	
 	private final RegDate dateDebut;
 	private Commune commune = null;
 	private ch.vd.infrastructure.model.Commune targetCommune;
-	private PaysWrapper pays;
+	private Pays pays;
 	private ch.vd.infrastructure.model.Pays targetPays;
 
 	public static OrigineWrapper get(ch.vd.registre.civil.model.Origine target) {

@@ -159,7 +159,7 @@ public interface Individu extends EntiteCivile {
 	 * @param individu l'individu sur lequel il faut copier les parties.
 	 * @param parts    les parties à copier.
 	 */
-	void copyPartsFrom(Individu individu, Set<EnumAttributeIndividu> parts);
+	void copyPartsFrom(Individu individu, Set<AttributeIndividu> parts);
 
 	/**
 	 * Clone l'individu en restreignant la liste des parties renseignées.
@@ -167,7 +167,7 @@ public interface Individu extends EntiteCivile {
 	 * @param parts les parties à renseigner.
 	 * @return un nouvel individu.
 	 */
-	Individu clone(Set<EnumAttributeIndividu> parts);
+	Individu clone(Set<AttributeIndividu> parts);
 
 	/**
 	 * Détermine le permis actif d'individu à une date donnée.

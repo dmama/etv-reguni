@@ -1,12 +1,16 @@
 package ch.vd.uniregctb.interfaces.model.wrapper;
 
+import java.io.Serializable;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.civil.model.EnumTypeEtatCivil;
 import ch.vd.registre.civil.model.impl.EtatCivilImpl;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
 
-public class EtatCivilWrapper implements EtatCivil {
+public class EtatCivilWrapper implements EtatCivil, Serializable {
 
+	private static final long serialVersionUID = 2243588998438955767L;
+	
 	private final RegDate dateDebut;
 	private int noSequence;
 	private EnumTypeEtatCivil typeEtatCivil;

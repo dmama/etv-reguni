@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.interfaces.model.wrapper;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import ch.vd.common.model.EnumTypeAdresse;
@@ -11,7 +12,9 @@ import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.CommuneSimple;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 
-public class AdresseWrapper implements Adresse {
+public class AdresseWrapper implements Adresse, Serializable {
+
+	private static final long serialVersionUID = -2087396644148685694L;
 
 	private final RegDate dateDebut;
 	private final RegDate dateFin;
@@ -27,7 +30,7 @@ public class AdresseWrapper implements Adresse {
 	private String rue;
 	private String titre;
 	private EnumTypeAdresse typeAdresse;
-	private CommuneSimpleWrapper communeAdresse;
+	private CommuneSimple communeAdresse;
 	private ch.vd.infrastructure.model.CommuneSimple targetCommuneAdresse;
 
 	public static AdresseWrapper get(ch.vd.common.model.Adresse target) {

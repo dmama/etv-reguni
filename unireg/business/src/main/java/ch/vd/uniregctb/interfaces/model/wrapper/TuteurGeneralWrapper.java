@@ -1,8 +1,12 @@
 package ch.vd.uniregctb.interfaces.model.wrapper;
 
+import java.io.Serializable;
+
 import ch.vd.uniregctb.interfaces.model.TuteurGeneral;
 
-public class TuteurGeneralWrapper implements TuteurGeneral {
+public class TuteurGeneralWrapper implements TuteurGeneral, Serializable {
+
+	private static final long serialVersionUID = 4720709288666608705L;
 
 	private String noTelephoneContact;
 	private String nomContact;

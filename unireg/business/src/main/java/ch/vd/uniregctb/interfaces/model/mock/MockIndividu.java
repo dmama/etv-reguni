@@ -9,9 +9,9 @@ import java.util.ListIterator;
 import java.util.Set;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.civil.model.EnumAttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.AdoptionReconnaissance;
 import ch.vd.uniregctb.interfaces.model.Adresse;
+import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
 import ch.vd.uniregctb.interfaces.model.EtatCivilList;
 import ch.vd.uniregctb.interfaces.model.HistoriqueIndividu;
@@ -46,7 +46,7 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 	public MockIndividu() {
 	}
 
-	public MockIndividu(MockIndividu right, Set<EnumAttributeIndividu> parts, int annee) {
+	public MockIndividu(MockIndividu right, Set<AttributeIndividu> parts, int annee) {
 		super(right, parts);
 		this.dateDeces = right.dateDeces;
 		this.dateNaissance = right.dateNaissance;
@@ -248,41 +248,41 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 		this.sexeMasculin = sexeMasculin;
 	}
 
-	public void copyPartsFrom(Individu individu, Set<EnumAttributeIndividu> parts) {
+	public void copyPartsFrom(Individu individu, Set<AttributeIndividu> parts) {
 		super.copyPartsFrom(individu, parts);
 
-		if (parts != null && parts.contains(EnumAttributeIndividu.ADOPTIONS)) {
+		if (parts != null && parts.contains(AttributeIndividu.ADOPTIONS)) {
 			adoptionsReconnaissances = individu.getAdoptionsReconnaissances();
 		}
-		if (parts != null && parts.contains(EnumAttributeIndividu.CONJOINT)) {
+		if (parts != null && parts.contains(AttributeIndividu.CONJOINT)) {
 			conjoint = ((MockIndividu) individu).getConjoint();
 		}
-		if (parts != null && parts.contains(EnumAttributeIndividu.ENFANTS)) {
+		if (parts != null && parts.contains(AttributeIndividu.ENFANTS)) {
 			enfants = individu.getEnfants();
 		}
-		if (parts != null && parts.contains(EnumAttributeIndividu.NATIONALITE)) {
+		if (parts != null && parts.contains(AttributeIndividu.NATIONALITE)) {
 			nationalites = individu.getNationalites();
 		}
-		if (parts != null && parts.contains(EnumAttributeIndividu.ORIGINE)) {
+		if (parts != null && parts.contains(AttributeIndividu.ORIGINE)) {
 			origine = individu.getOrigine();
 		}
-		if (parts != null && parts.contains(EnumAttributeIndividu.PARENTS)) {
+		if (parts != null && parts.contains(AttributeIndividu.PARENTS)) {
 			pere = individu.getPere();
 			mere = individu.getMere();
 		}
-		if (parts != null && parts.contains(EnumAttributeIndividu.PERMIS)) {
+		if (parts != null && parts.contains(AttributeIndividu.PERMIS)) {
 			permis = individu.getPermis();
 		}
-		if (parts != null && parts.contains(EnumAttributeIndividu.TUTELLE)) {
+		if (parts != null && parts.contains(AttributeIndividu.TUTELLE)) {
 			tutelle = individu.getTutelle();
 		}
 	}
 
-	public MockIndividu clone(Set<EnumAttributeIndividu> parts) {
+	public MockIndividu clone(Set<AttributeIndividu> parts) {
 		return cloneUntil(parts, RegDate.getLateDate().year());
 	}
 
-	public MockIndividu cloneUntil(Set<EnumAttributeIndividu> parts, int annee) {
+	public MockIndividu cloneUntil(Set<AttributeIndividu> parts, int annee) {
 		return new MockIndividu(this, parts, annee);
 	}
 
@@ -500,11 +500,11 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 		}
 	}
 
-	private void limitPartsToBeforeYear(int annee, Set<EnumAttributeIndividu> parts) {
-		if (parts != null && parts.contains(EnumAttributeIndividu.ADOPTIONS)) {
+	private void limitPartsToBeforeYear(int annee, Set<AttributeIndividu> parts) {
+		if (parts != null && parts.contains(AttributeIndividu.ADOPTIONS)) {
 			adoptionsReconnaissances = buildLimitedCollectionBeforeYear(adoptionsReconnaissances, annee, ADOPTION_LIMITATOR);
 		}
-		if (parts != null && parts.contains(EnumAttributeIndividu.ENFANTS)) {
+		if (parts != null && parts.contains(AttributeIndividu.ENFANTS)) {
 			enfants = buildLimitedCollectionBeforeYear(enfants, annee, ENFANT_LIMITATOR);
 		}
 		if (etatsCivils != null && etatsCivils.size() > 0) {
@@ -522,13 +522,13 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 		historiqueIndividu = buildLimitedCollectionBeforeYear(historiqueIndividu, annee, HISTORIQUE_LIMITATOR);
 		dernierHistoriqueIndividu = historiqueIndividu == null || historiqueIndividu.size() == 0 ? null : (HistoriqueIndividu) historiqueIndividu.toArray()[historiqueIndividu.size() - 1];
 
-		if (parts != null && parts.contains(EnumAttributeIndividu.NATIONALITE)) {
+		if (parts != null && parts.contains(AttributeIndividu.NATIONALITE)) {
 			nationalites = buildLimitedCollectionBeforeYear(nationalites, annee, NATIONALITE_LIMITATOR);
 		}
-		if (parts != null && parts.contains(EnumAttributeIndividu.PERMIS)) {
+		if (parts != null && parts.contains(AttributeIndividu.PERMIS)) {
 			permis = buildLimitedCollectionBeforeYear(permis, annee, PERMIS_LIMITATOR);
 		}
-		if (parts != null && parts.contains(EnumAttributeIndividu.ADRESSES)) {
+		if (parts != null && parts.contains(AttributeIndividu.ADRESSES)) {
 			setAdresses(buildLimitedCollectionBeforeYear(getAdresses(), annee, ADRESSE_LIMITATOR));
 		}
 	}

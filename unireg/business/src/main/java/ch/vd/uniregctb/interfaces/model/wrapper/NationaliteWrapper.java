@@ -1,11 +1,15 @@
 package ch.vd.uniregctb.interfaces.model.wrapper;
 
+import java.io.Serializable;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.interfaces.model.Nationalite;
 import ch.vd.uniregctb.interfaces.model.Pays;
 
-public class NationaliteWrapper implements Nationalite {
+public class NationaliteWrapper implements Nationalite, Serializable {
 
+	private static final long serialVersionUID = 6538426269290337339L;
+	
 	private final RegDate dateDebut;
 	private final RegDate dateFin;
 	private Pays pays = null;

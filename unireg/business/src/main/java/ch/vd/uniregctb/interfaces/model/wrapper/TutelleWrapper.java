@@ -1,12 +1,16 @@
 package ch.vd.uniregctb.interfaces.model.wrapper;
 
+import java.io.Serializable;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.civil.model.EnumTypeTutelle;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.Tutelle;
 import ch.vd.uniregctb.interfaces.model.TuteurGeneral;
 
-public class TutelleWrapper implements Tutelle {
+public class TutelleWrapper implements Tutelle, Serializable {
+
+	private static final long serialVersionUID = -687108599649537399L;
 
 	private final RegDate dateDebut;
 	private final RegDate dateFin;

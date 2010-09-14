@@ -1,11 +1,15 @@
 package ch.vd.uniregctb.interfaces.model.wrapper;
 
+import java.io.Serializable;
+
 import ch.vd.infrastructure.model.EnumCanton;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.interfaces.model.CommuneSimple;
 
-public class CommuneSimpleWrapper extends EntiteOFSWrapper implements CommuneSimple {
+public class CommuneSimpleWrapper extends EntiteOFSWrapper implements CommuneSimple, Serializable {
 
+	private static final long serialVersionUID = 365044496514467390L;
+	
 	private final RegDate dateDebut;
 	private final RegDate dateFin;
 	private String noACI;

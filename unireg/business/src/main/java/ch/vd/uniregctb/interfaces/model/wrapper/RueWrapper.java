@@ -1,9 +1,13 @@
 package ch.vd.uniregctb.interfaces.model.wrapper;
 
+import java.io.Serializable;
+
 import ch.vd.uniregctb.interfaces.model.Rue;
 
-public class RueWrapper implements Rue {
+public class RueWrapper implements Rue, Serializable {
 
+	private static final long serialVersionUID = 7361240668934832807L;
+	
 	private String designationCourrier;
 	private Integer noLocalite;
 	private Integer noRue;

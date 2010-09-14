@@ -1,8 +1,12 @@
 package ch.vd.uniregctb.interfaces.model.wrapper;
 
+import java.io.Serializable;
+
 import ch.vd.uniregctb.interfaces.model.EntiteOFS;
 
-public abstract class EntiteOFSWrapper implements EntiteOFS {
+public abstract class EntiteOFSWrapper implements EntiteOFS, Serializable {
+
+	private static final long serialVersionUID = 5892646041246529131L;
 
 	private int noOFS;
 	private String nomMajuscule;

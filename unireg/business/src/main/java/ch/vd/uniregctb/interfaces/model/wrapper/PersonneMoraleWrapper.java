@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.interfaces.model.wrapper;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -26,8 +27,10 @@ import ch.vd.uniregctb.interfaces.model.wrapper.hostinterfaces.MandatWrapper;
 import ch.vd.uniregctb.interfaces.model.wrapper.hostinterfaces.RegimeFiscalWrapper;
 import ch.vd.uniregctb.interfaces.model.wrapper.hostinterfaces.SiegeWrapper;
 
-public class PersonneMoraleWrapper implements PersonneMorale {
+public class PersonneMoraleWrapper implements PersonneMorale, Serializable {
 
+	private static final long serialVersionUID = -6851987403628379452L;
+	
 	private final RegDate dateDebut;
 	private final RegDate dateFin;
 	private final RegDate dateBouclementFuture;

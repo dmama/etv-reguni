@@ -1,10 +1,14 @@
 package ch.vd.uniregctb.interfaces.model.wrapper;
 
+import java.io.Serializable;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.interfaces.model.AdoptionReconnaissance;
 import ch.vd.uniregctb.interfaces.model.Individu;
 
-public class AdoptionReconnaissanceWrapper implements AdoptionReconnaissance {
+public class AdoptionReconnaissanceWrapper implements AdoptionReconnaissance, Serializable {
+
+	private static final long serialVersionUID = -3827373870885478253L;
 
 	private ch.vd.registre.civil.model.Individu targetAdopte;
 	private Individu adopte;

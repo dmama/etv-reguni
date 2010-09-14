@@ -3,8 +3,8 @@ package ch.vd.uniregctb.interfaces.model.mock;
 import java.util.Collection;
 import java.util.Set;
 
-import ch.vd.registre.civil.model.EnumAttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.Adresse;
+import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.EntiteCivile;
 import ch.vd.uniregctb.interfaces.model.Individu;
 
@@ -15,8 +15,8 @@ public abstract class MockEntiteCivile implements EntiteCivile {
 	protected MockEntiteCivile() {
 	}
 
-	protected MockEntiteCivile(MockEntiteCivile right, Set<EnumAttributeIndividu> parts) {
-		if (parts != null && parts.contains(EnumAttributeIndividu.ADRESSES)) {
+	protected MockEntiteCivile(MockEntiteCivile right, Set<AttributeIndividu> parts) {
+		if (parts != null && parts.contains(AttributeIndividu.ADRESSES)) {
 			adresses = right.adresses;
 		}
 	}
@@ -29,8 +29,8 @@ public abstract class MockEntiteCivile implements EntiteCivile {
 		this.adresses = adresses;
 	}
 
-	public void copyPartsFrom(Individu individu, Set<EnumAttributeIndividu> parts) {
-		if (parts != null && parts.contains(EnumAttributeIndividu.ADRESSES)) {
+	public void copyPartsFrom(Individu individu, Set<AttributeIndividu> parts) {
+		if (parts != null && parts.contains(AttributeIndividu.ADRESSES)) {
 			adresses = individu.getAdresses();
 		}
 	}

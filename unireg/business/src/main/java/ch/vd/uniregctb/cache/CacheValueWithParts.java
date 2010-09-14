@@ -2,6 +2,7 @@ package ch.vd.uniregctb.cache;
 
 import ch.vd.registre.base.utils.Assert;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -12,7 +13,9 @@ import java.util.Set;
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
-public abstract class CacheValueWithParts<T, P> {
+public abstract class CacheValueWithParts<T, P> implements Serializable {
+
+	private static final long serialVersionUID = -2265610043652838951L;
 
 	private Set<P> parts;
 	private T value;

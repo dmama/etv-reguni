@@ -1,10 +1,14 @@
 package ch.vd.uniregctb.interfaces.model.wrapper;
 
+import java.io.Serializable;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.civil.model.EnumTypePermis;
 import ch.vd.uniregctb.interfaces.model.Permis;
 
-public class PermisWrapper implements Permis {
+public class PermisWrapper implements Permis, Serializable {
+
+	private static final long serialVersionUID = 2087648750531032890L;
 
 	private final RegDate dateDebut;
 	private final RegDate dateFin;

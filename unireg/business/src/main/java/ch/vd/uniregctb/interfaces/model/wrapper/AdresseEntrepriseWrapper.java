@@ -1,12 +1,16 @@
 package ch.vd.uniregctb.interfaces.model.wrapper;
 
+import java.io.Serializable;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.pm.model.EnumTypeAdresseEntreprise;
 import ch.vd.uniregctb.interfaces.model.AdresseEntreprise;
 import ch.vd.uniregctb.interfaces.model.Pays;
 
-public class AdresseEntrepriseWrapper implements AdresseEntreprise {
+public class AdresseEntrepriseWrapper implements AdresseEntreprise, Serializable {
 
+	private static final long serialVersionUID = 2830120339685146006L;
+	
 	private final RegDate dateDebut;
 	private final RegDate dateFin;
 	private final PaysWrapper pays;

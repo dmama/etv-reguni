@@ -1,13 +1,17 @@
 package ch.vd.uniregctb.interfaces.model.wrapper;
 
+import java.io.Serializable;
+
 import ch.vd.infrastructure.model.EnumTypeCollectivite;
 import ch.vd.infrastructure.model.TypeCollectivite;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative;
 
-public class CollectiviteAdministrativeWrapper implements CollectiviteAdministrative {
+public class CollectiviteAdministrativeWrapper implements CollectiviteAdministrative, Serializable {
 
+	private static final long serialVersionUID = 3121172700982227121L;
+	
 	private Adresse adresse = null;
 	private final RegDate dateFin;
 	private String adresseEmail;
