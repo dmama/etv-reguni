@@ -29,9 +29,12 @@ import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
 import ch.vd.uniregctb.metier.assujettissement.SourcierPur;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.ForFiscal;
+import ch.vd.uniregctb.tiers.ForFiscalRevenuFortune;
 import ch.vd.uniregctb.tiers.ForGestion;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 public class DeterminerMouvementsDossiersEnMasseProcessor {
 
@@ -223,8 +226,27 @@ public class DeterminerMouvementsDossiersEnMasseProcessor {
 					}
 					else {
 						// pas d'assujettissement n-2 -> "avant" est le début n-1
-						avant = findForGestion(histoForGestion, rangesUtiles.rangeAnneeNMoinsUn, true);
-						dateAvant = DateRangeHelper.intersection(rangesUtiles.rangeAnneeNMoinsUn, avant).getDateDebut();
+
+						// [UNIREG-2854] début = début du premier for VAUDOIS de la période fiscale n-1
+						ForFiscal premierForVaudoisAnneeNMoinsUn = null;
+						final List<ForFiscal> ff = ctb.getForsFiscauxNonAnnules(true);
+						for (ForFiscal forCandidat : ff) {
+							if (forCandidat instanceof ForFiscalRevenuFortune) {
+								final ForFiscalRevenuFortune forRevenuFortune = (ForFiscalRevenuFortune) forCandidat;
+								if (forRevenuFortune.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD && DateRangeHelper.intersect(rangesUtiles.rangeAnneeNMoinsUn, forCandidat)) {
+									if (premierForVaudoisAnneeNMoinsUn == null || premierForVaudoisAnneeNMoinsUn.getDateDebut().isAfter(forCandidat.getDateDebut())) {
+										premierForVaudoisAnneeNMoinsUn = forCandidat;
+									}
+								}
+							}
+						}
+						if (premierForVaudoisAnneeNMoinsUn == null) {
+							throw new IllegalArgumentException("Assujettissement année n-1 sans for vaudois?");
+						}
+
+						// on sait qu'il y a un assujettissement dans l'année n-1, dont on va essayer de trouver la date
+						avant = findForGestion(histoForGestion, premierForVaudoisAnneeNMoinsUn, true);
+						dateAvant = premierForVaudoisAnneeNMoinsUn.getDateDebut();
 					}
 
 					// calculons les OID de gestion pour ces fors de gestion là

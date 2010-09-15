@@ -20,6 +20,7 @@ import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.MotifRattachement;
 
 public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTest {
 
@@ -348,7 +349,32 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 		Assert.assertEquals(2, caCache.size());
 		Assert.assertTrue(caCache.containsKey(noCaOidRolleAubonne));
 		Assert.assertTrue(caCache.containsKey(noCaOidLausanne));
+	}
 
+	/**
+	 * C'est le cas décrit dans le cas jira UNIREG-2854
+	 */
+	@Test
+	public void testHorsCantonAchatImmeubleAnneeDernière() throws Exception {
+
+		final RegDate dateTraitement = RegDate.get();
+		final DeterminerMouvementsDossiersEnMasseProcessor.RangesUtiles ranges = new DeterminerMouvementsDossiersEnMasseProcessor.RangesUtiles(dateTraitement);
+		final DeterminerMouvementsDossiersEnMasseResults results = new DeterminerMouvementsDossiersEnMasseResults(dateTraitement);
+
+		final Contribuable ctb = addHabitant(noIndMarieParlotte);
+		final RegDate dateDepartHC = date(dateTraitement.year() - 7, 8, 30);
+		final RegDate dateAchatImmeuble = date(dateTraitement.year() - 1, 5, 12);
+
+		addForPrincipal(ctb, dateDepartHC.addYears(-1), MotifFor.ARRIVEE_HS, dateDepartHC, MotifFor.DEPART_HC, MockCommune.Lausanne);
+		addForPrincipal(ctb, dateDepartHC.addDays(1), MotifFor.DEPART_HC, MockCommune.Bern);
+		addForSecondaire(ctb, dateAchatImmeuble, MotifFor.ACHAT_IMMOBILIER, null, null, MockCommune.Aubonne.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+
+		final DeterminerMouvementsDossiersEnMasseProcessor proc = createProcessor();
+		final Map<Integer, CollectiviteAdministrative> caCache = new HashMap<Integer, CollectiviteAdministrative>();
+		proc.traiterContribuable(ctb, ranges, caCache, results);
+
+		assertPasDeMouvement(ctb, results);
+		Assert.assertEquals(0, caCache.size());
 	}
 
 	private void assertPasDeMouvement(Contribuable ctb, DeterminerMouvementsDossiersEnMasseResults results) {
