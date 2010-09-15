@@ -49,6 +49,7 @@ import ch.vd.uniregctb.tiers.TiersCriteria.TypeTiers;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
+import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 import ch.vd.uniregctb.type.TypeEvenementErreur;
@@ -425,24 +426,51 @@ public class ArriveeHandler extends EvenementCivilHandlerBase {
 		}
 	}
 
-	private List<PersonnePhysique> findNonHabitants(Individu individu, boolean assujettissementObligatoire) {
+	protected List<PersonnePhysique> findNonHabitants(Individu individu, boolean assujettissementObligatoire) {
 
-		final List<PersonnePhysique> nonHabitants = new ArrayList<PersonnePhysique>();
+		// les critères de recherche
+		final String nomPrenom = getService().getNomPrenom(individu);
+		final RegDate dateNaissance = individu.getDateNaissance();
+		final Sexe sexe = (individu.isSexeMasculin() ? Sexe.MASCULIN : Sexe.FEMININ);
 
 		final TiersCriteria criteria = new TiersCriteria();
 		criteria.setTypeTiers(TypeTiers.NON_HABITANT);
 		criteria.setTypeRechercheDuNom(TypeRecherche.EST_EXACTEMENT);
-		criteria.setDateNaissance(individu.getDateNaissance());
-		criteria.setNomRaison(getService().getNomPrenom(individu));
+		// criteria.setDateNaissance(individu.getDateNaissance()); [UNIREG-1603] on ne filtre pas sur la date de naissance ici, pour prendre en compte les dates nulles
+		criteria.setNomRaison(nomPrenom);
+
+		final List<PersonnePhysique> nonHabitants = new ArrayList<PersonnePhysique>();
 
 		final List<TiersIndexedData> results = getService().search(criteria);
 		for (final TiersIndexedData tiersIndexedData : results) {
 			final PersonnePhysique pp = (PersonnePhysique) getService().getTiers(tiersIndexedData.getNumero());
 			// [UNIREG-770] le non habitant doit être assujetti
-			if (!assujettissementObligatoire || pp.getForFiscalPrincipalAt(null) != null) {
-				nonHabitants.add(pp);
+			if (assujettissementObligatoire && pp.getForFiscalPrincipalAt(null) == null) {
+				continue;
+			}
+			// [UNIREG-1603] on filtre les dates naissance en laissant passer les dates nulles
+			if (pp.getDateNaissance() != null && pp.getDateNaissance() != dateNaissance) {
+				continue;
+			}
+			// [UNIREG-1603] on filtre le sexe en laissant passer les sexes non renseignés
+			if (pp.getSexe() != null && pp.getSexe() != sexe) {
+				continue;
+			}
+			// [UNIREG-1603] on filtre les non habitants qui possèdent un numéro d'individu
+			if (pp.getNumeroIndividu() != null) {
+				continue;
+			}
+			nonHabitants.add(pp);
+		}
+
+		if (nonHabitants.size() == 1) {
+			// [UNIREG-1603] en cas de résultat unique, le candidat doit correspondre parfaitement aux critères
+			final PersonnePhysique candidat = nonHabitants.get(0);
+			if (candidat.getDateNaissance() == null || candidat.getSexe() == null) {
+				nonHabitants.clear(); // le candidat n'est pas complet, on l'enlève
 			}
 		}
+
 		return nonHabitants;
 	}
 

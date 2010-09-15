@@ -1,10 +1,13 @@
 package ch.vd.uniregctb.evenement.arrivee;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.junit.Test;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.RegDate;
@@ -18,9 +21,12 @@ import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
+import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 import static junit.framework.Assert.assertEquals;
@@ -36,12 +42,7 @@ public class ArriveeHandlerTest extends AbstractEvenementHandlerTest {
 
 	private static final String DB_UNIT_DATA_FILE = "ArriveeHandlerTest.xml";
 
-	/**
-	 *
-	 */
-	private static final Long NUMERO_INDIVIDU = 12345l;
 	private static final Long NUMERO_INDIVIDU_INCONNU = 9999l;
-
 	private static final Long NUMERO_INDIVIDU_SEUL = 34567L;
 	private static final Long NUMERO_INDIVIDU_MARIE_SEUL = 12345L;
 
@@ -233,4 +234,142 @@ public class ArriveeHandlerTest extends AbstractEvenementHandlerTest {
 		return arrivee;
 	}
 
+	/**
+	 * [UNIREG-1603] Teste les différents cas de recherche de non-habitants
+	 */
+	@Test
+	public void testFindNonHabitants() throws Exception {
+
+		final ArriveeHandler handler = new ArriveeHandler();
+		handler.setService(tiersService);
+
+		class Ids {
+			Long jeanNomPrenom;
+			Long jeanNomPrenomDate;
+			Long jeanNomPrenomDateSexe;
+			Long jeanNomPrenomSexe;
+			Long jeanNomPrenomAssujetti;
+			Long jeanNomPrenomDateAssujetti;
+			Long jeanNomPrenomDateSexeAssujetti;
+			Long jeanNomPrenomSexeAssujetti;
+			Long jeanNomPrenomAutreDateSexeAssujetti;
+			Long jeanNomPrenomDateAutreSexeAssujetti;
+			Long jacquesNomPrenomDateSexeAssujetti;
+			Long rogerNomPrenomSexeAssujetti;
+			Long cedricNonHabitantAvecNoIndividu;
+		}
+		final Ids ids = new Ids();
+
+		setWantIndexation(true);
+		
+		doInNewTransaction(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique jeanNomPrenom = addNonHabitant("Jean", "Dupneu", null, null);
+				final PersonnePhysique jeanNomPrenomDate = addNonHabitant("Jean", "Dupneu", date(1960, 1, 1), null);
+				final PersonnePhysique jeanNomPrenomDateSexe = addNonHabitant("Jean", "Dupneu", date(1960, 1, 1), Sexe.MASCULIN);
+				final PersonnePhysique jeanNomPrenomSexe = addNonHabitant("Jean", "Dupneu", null, Sexe.MASCULIN);
+
+				final PersonnePhysique jeanNomPrenomAssujetti = addNonHabitant("Jean", "Dupneu", null, null);
+				addForPrincipal(jeanNomPrenomAssujetti, date(1980, 1, 1), MotifFor.MAJORITE, MockCommune.Renens);
+				final PersonnePhysique jeanNomPrenomDateAssujetti = addNonHabitant("Jean", "Dupneu", date(1960, 1, 1), null);
+				addForPrincipal(jeanNomPrenomDateAssujetti, date(1980, 1, 1), MotifFor.MAJORITE, MockCommune.Renens);
+				final PersonnePhysique jeanNomPrenomDateSexeAssujetti = addNonHabitant("Jean", "Dupneu", date(1960, 1, 1), Sexe.MASCULIN);
+				addForPrincipal(jeanNomPrenomDateSexeAssujetti, date(1980, 1, 1), MotifFor.MAJORITE, MockCommune.Renens);
+				final PersonnePhysique jeanNomPrenomSexeAssujetti = addNonHabitant("Jean", "Dupneu", null, Sexe.MASCULIN);
+				addForPrincipal(jeanNomPrenomSexeAssujetti, date(1980, 1, 1), MotifFor.MAJORITE, MockCommune.Renens);
+
+				final PersonnePhysique jeanNomPrenomAutreDateSexeAssujetti = addNonHabitant("Jean", "Dupneu", date(1965, 5, 17), Sexe.MASCULIN);
+				addForPrincipal(jeanNomPrenomAutreDateSexeAssujetti, date(1980, 1, 1), MotifFor.MAJORITE, MockCommune.Renens);
+
+				final PersonnePhysique jeanNomPrenomDateAutreSexeAssujetti = addNonHabitant("Jean", "Dupneu", date(1960, 1, 1), Sexe.FEMININ);
+				addForPrincipal(jeanNomPrenomDateAutreSexeAssujetti, date(1980, 1, 1), MotifFor.MAJORITE, MockCommune.Renens);
+
+				final PersonnePhysique jacquesNomPrenomDateSexeAssujetti = addNonHabitant("Jacques", "Dupneu", date(1960, 1, 1), Sexe.MASCULIN);
+				addForPrincipal(jacquesNomPrenomDateSexeAssujetti, date(1980, 1, 1), MotifFor.MAJORITE, MockCommune.Renens);
+
+				final PersonnePhysique rogerNomPrenomSexeAssujetti = addNonHabitant("Roger", "Dupneu", null, Sexe.MASCULIN);
+				addForPrincipal(rogerNomPrenomSexeAssujetti, date(1980, 1, 1), MotifFor.MAJORITE, MockCommune.Renens);
+
+				final PersonnePhysique cedricNonHabitantAvecNoIndividu = addNonHabitant("Cédric", "Dupneu", date(1960, 1, 1), Sexe.MASCULIN);
+				cedricNonHabitantAvecNoIndividu.setNumeroIndividu(375342L);
+				addForPrincipal(cedricNonHabitantAvecNoIndividu, date(1980, 1, 1), MotifFor.MAJORITE, MockCommune.Renens);
+
+				ids.jeanNomPrenom = jeanNomPrenom.getId();
+				ids.jeanNomPrenomDate = jeanNomPrenomDate.getId();
+				ids.jeanNomPrenomDateSexe = jeanNomPrenomDateSexe.getId();
+				ids.jeanNomPrenomSexe = jeanNomPrenomSexe.getId();
+				ids.jeanNomPrenomAssujetti = jeanNomPrenomAssujetti.getId();
+				ids.jeanNomPrenomDateAssujetti = jeanNomPrenomDateAssujetti.getId();
+				ids.jeanNomPrenomDateSexeAssujetti = jeanNomPrenomDateSexeAssujetti.getId();
+				ids.jeanNomPrenomSexeAssujetti = jeanNomPrenomSexeAssujetti.getId();
+				ids.jeanNomPrenomAutreDateSexeAssujetti = jeanNomPrenomAutreDateSexeAssujetti.getId();
+				ids.jeanNomPrenomDateAutreSexeAssujetti = jeanNomPrenomDateAutreSexeAssujetti.getId();
+				ids.jacquesNomPrenomDateSexeAssujetti = jacquesNomPrenomDateSexeAssujetti.getId();
+				ids.rogerNomPrenomSexeAssujetti = rogerNomPrenomSexeAssujetti.getId();
+				ids.cedricNonHabitantAvecNoIndividu = cedricNonHabitantAvecNoIndividu.getId();
+				return null;
+			}
+		});
+
+		globalTiersIndexer.sync();
+
+		class ServiceCivil extends MockServiceCivil {
+
+			private MockIndividu jean;
+			private MockIndividu jacques;
+			private MockIndividu roger;
+			private MockIndividu cedric;
+
+			@Override
+			protected void init() {
+				jean = addIndividu(343434, date(1960, 1, 1), "Jean", "Dupneu", true);
+				jacques = addIndividu(747474, date(1960, 1, 1), "Jacques", "Dupneu", true);
+				roger = addIndividu(585858, date(1960, 1, 1), "Roger", "Dupneu", true);
+				cedric = addIndividu(9191919, date(1960, 1, 1), "Cédric", "Dupneu", true);
+			}
+		}
+
+		final ServiceCivil civil = new ServiceCivil();
+		serviceCivil.setUp(civil);
+
+
+		// Si on recherche un Jean Dupneu né le 1er janvier 1960 et de sexe masculin, on doit trouver tous les Jean Dupneu assujettis nés un 1er janvier 1960 <b>ou</b>
+		// de date de naissance inconnue et de sexe masculin <b>ou</b> de sexe inconnu. On ne doit pas trouver les Jean Dupneu nés un autre jour ou avec un autre sexe.
+		{
+			final List<PersonnePhysique> list = handler.findNonHabitants(civil.jean, true);
+			assertEquals(4, list.size());
+			assertListContains(list, ids.jeanNomPrenomAssujetti, ids.jeanNomPrenomDateAssujetti, ids.jeanNomPrenomDateSexeAssujetti, ids.jeanNomPrenomSexeAssujetti);
+		}
+
+		// Si on recherche un Jaques Dupneu né le 1er janvier 1960 et de sexe masculin, on doit le trouver puisqu'il y en a qu'un et qu'il est complet.
+		{
+			final List<PersonnePhysique> list = handler.findNonHabitants(civil.jacques, true);
+			assertEquals(1, list.size());
+			assertListContains(list, ids.jacquesNomPrenomDateSexeAssujetti);
+		}
+
+		// Si on recherche un Roger Dupneu né le 1er janvier 1960 et de sexe masculin, on ne doit pas en trouver puisque le seul candidat ne possède pas de date de naissance
+		{
+			final List<PersonnePhysique> list = handler.findNonHabitants(civil.roger, true);
+			assertEmpty(list);
+		}
+
+		// Si on recherche un Cédric Dupneu né le 1er janvier 1960 et de sexe masculin, on ne doit pas le trouver parce que
+		// le candidat possède un numéro d'individu (malgré le fait que tous les critères de recherche correspondent bien)
+		{
+			final List<PersonnePhysique> list = handler.findNonHabitants(civil.cedric, true);
+			assertEmpty(list);
+		}
+	}
+
+	private void assertListContains(List<PersonnePhysique> list, Long... ids) {
+		assertNotNull(list);
+		final Set<Long> set = new HashSet<Long>();
+		for (PersonnePhysique pp : list) {
+			set.add(pp.getId());
+		}
+		for (Long id : ids) {
+			assertTrue("L'id = [" + id + "] n'est pas contenu dans la liste", set.contains(id));
+		}
+	}
 }
