@@ -3,14 +3,12 @@ package ch.vd.uniregctb.indexer.tiers;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
-
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.registre.civil.model.EnumAttributeIndividu;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.IndexerFormatHelper;
+import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -41,7 +39,7 @@ public class DebiteurPrestationImposableIndexable extends TiersIndexable {
 			if (ctb instanceof PersonnePhysique) {
 				PersonnePhysique pp = (PersonnePhysique) ctb;
 				if (pp.isHabitantVD()) {
-					final Individu ind = serviceCivil.getIndividu(pp.getNumeroIndividu(), null, EnumAttributeIndividu.ADRESSES);
+					final Individu ind = serviceCivil.getIndividu(pp.getNumeroIndividu(), null, AttributeIndividu.ADRESSES);
 					if (ind == null) {
 						throw new IndividuNotFoundException(pp);
 					}

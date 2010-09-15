@@ -7,8 +7,8 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.civil.model.EnumAttributeIndividu;
 import ch.vd.uniregctb.data.DataEventService;
+import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
@@ -37,7 +37,7 @@ public abstract class GenericEvenementAdapter implements EvenementCivil {
 
 	// Info pour initialiser les individus de manière lazy
 	private int anneeReference;
-	private EnumAttributeIndividu[] parts;
+	private AttributeIndividu[] parts;
 	private ServiceCivilService serviceCivil;
 
 	/**
@@ -71,12 +71,12 @@ public abstract class GenericEvenementAdapter implements EvenementCivil {
 		 * Récupération des informations sur l'individu depuis le host. En plus des états civils, on peut vouloir les adresses, le conjoint,
 		 * les enfants... (enfin, chaque adapteur d'événement sait ce dont il a besoin en plus...)
 		 */
-		final Set<EnumAttributeIndividu> requiredParts = new HashSet<EnumAttributeIndividu>();
+		final Set<AttributeIndividu> requiredParts = new HashSet<AttributeIndividu>();
 		if (evenement.getNumeroIndividuConjoint() != null || (dataEventService != null && forceRefreshCacheConjoint())) {
-			requiredParts.add(EnumAttributeIndividu.CONJOINT);
+			requiredParts.add(AttributeIndividu.CONJOINT);
 		}
 		fillRequiredParts(requiredParts);
-		parts = requiredParts.toArray(new EnumAttributeIndividu[requiredParts.size()]);
+		parts = requiredParts.toArray(new AttributeIndividu[requiredParts.size()]);
 
 		if (dataEventService != null) {
 
@@ -113,7 +113,7 @@ public abstract class GenericEvenementAdapter implements EvenementCivil {
 	 *
 	 * @param parts ensemble à remplir
 	 */
-	protected void fillRequiredParts(Set<EnumAttributeIndividu> parts) {
+	protected void fillRequiredParts(Set<AttributeIndividu> parts) {
 	}
 
 	public final TypeEvenementCivil getType() {

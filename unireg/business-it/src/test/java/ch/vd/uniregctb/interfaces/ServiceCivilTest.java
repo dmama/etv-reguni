@@ -1,15 +1,15 @@
 package ch.vd.uniregctb.interfaces;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.civil.model.EnumAttributeIndividu;
 import ch.vd.uniregctb.common.BusinessItTest;
+import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
+
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
 
 public class ServiceCivilTest extends BusinessItTest {
 
@@ -37,7 +37,7 @@ public class ServiceCivilTest extends BusinessItTest {
 		assertEquals("Jean-Eric", jean.getDernierHistoriqueIndividu().getPrenom());
 		jean = service.getIndividu(333528, 2001);
 		assertNotNull(jean);
-		jean = service.getIndividu(333528, 2006, EnumAttributeIndividu.CONJOINT);
+		jean = service.getIndividu(333528, 2006, AttributeIndividu.CONJOINT);
 		assertNotNull(jean);
 		Individu sara = service.getConjoint(jean.getNoTechnique(),RegDate.get(2007,1,1));
 		assertNotNull(sara);

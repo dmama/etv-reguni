@@ -1,17 +1,23 @@
 package ch.vd.uniregctb.listes.listesnominatives;
 
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.LinkedList;
+import java.util.List;
+
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.civil.model.EnumAttributeIndividu;
 import ch.vd.uniregctb.adresse.AdresseCourrierPourRF;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.common.ListesResults;
-import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
+import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
-import ch.vd.uniregctb.tiers.*;
-
-import java.util.*;
+import ch.vd.uniregctb.tiers.MenageCommun;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.tiers.TiersService;
 
 /**
  * Tous les tiers sont placés dans la liste des tiers traités

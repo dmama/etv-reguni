@@ -6,7 +6,6 @@ import java.util.Collection;
 import java.util.Set;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.civil.model.EnumAttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.AdoptionReconnaissance;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
@@ -62,29 +61,29 @@ public class IndividuWrapper extends EntiteCivileWrapper implements Individu, Se
 		this.historique = individuWrapper.historique;
 		this.etatsCivils = individuWrapper.etatsCivils;
 
-		if (parts != null && parts.contains(EnumAttributeIndividu.ADOPTIONS)) {
+		if (parts != null && parts.contains(AttributeIndividu.ADOPTIONS)) {
 			adoptions = individuWrapper.adoptions;
 		}
-		if (parts != null && parts.contains(EnumAttributeIndividu.CONJOINT)) {
+		if (parts != null && parts.contains(AttributeIndividu.CONJOINT)) {
 			conjoint = individuWrapper.conjoint;
 		}
-		if (parts != null && parts.contains(EnumAttributeIndividu.ENFANTS)) {
+		if (parts != null && parts.contains(AttributeIndividu.ENFANTS)) {
 			enfants = individuWrapper.enfants;
 		}
-		if (parts != null && parts.contains(EnumAttributeIndividu.NATIONALITE)) {
+		if (parts != null && parts.contains(AttributeIndividu.NATIONALITE)) {
 			nationalites = individuWrapper.nationalites;
 		}
-		if (parts != null && parts.contains(EnumAttributeIndividu.ORIGINE)) {
+		if (parts != null && parts.contains(AttributeIndividu.ORIGINE)) {
 			origine = individuWrapper.origine;
 		}
-		if (parts != null && parts.contains(EnumAttributeIndividu.PARENTS)) {
+		if (parts != null && parts.contains(AttributeIndividu.PARENTS)) {
 			pere = individuWrapper.pere;
 			mere = individuWrapper.mere;
 		}
-		if (parts != null && parts.contains(EnumAttributeIndividu.PERMIS)) {
+		if (parts != null && parts.contains(AttributeIndividu.PERMIS)) {
 			permis = individuWrapper.permis;
 		}
-		if (parts != null && parts.contains(EnumAttributeIndividu.TUTELLE)) {
+		if (parts != null && parts.contains(AttributeIndividu.TUTELLE)) {
 			tutelle = individuWrapper.tutelle;
 		}
 	}

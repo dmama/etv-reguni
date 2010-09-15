@@ -1,30 +1,35 @@
 package ch.vd.uniregctb.listes.suisseoupermiscresident;
 
-import ch.vd.registre.base.date.NullDateBehavior;
-import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.civil.model.EnumAttributeIndividu;
-import ch.vd.uniregctb.adresse.AdresseGenerique;
-import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
-import ch.vd.uniregctb.common.FiscalDateHelper;
-import ch.vd.uniregctb.common.ListesThread;
-import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
-import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
-import ch.vd.uniregctb.interfaces.model.Individu;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.tiers.*;
-
-import org.springframework.orm.hibernate3.HibernateTemplate;
-import org.springframework.transaction.PlatformTransactionManager;
-
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import org.springframework.orm.hibernate3.HibernateTemplate;
+import org.springframework.transaction.PlatformTransactionManager;
+
+import ch.vd.registre.base.date.NullDateBehavior;
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.uniregctb.adresse.AdresseGenerique;
+import ch.vd.uniregctb.adresse.AdresseService;
+import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
+import ch.vd.uniregctb.common.FiscalDateHelper;
+import ch.vd.uniregctb.common.ListesThread;
+import ch.vd.uniregctb.common.StatusManager;
+import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
+import ch.vd.uniregctb.interfaces.model.Individu;
+import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
+import ch.vd.uniregctb.tiers.MenageCommun;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.tiers.TiersDAO;
+import ch.vd.uniregctb.tiers.TiersException;
+import ch.vd.uniregctb.tiers.TiersService;
 
 public class ListeContribuablesResidentsSansForVaudoisThread extends ListesThread<ListeContribuablesResidentsSansForVaudoisResults> {
 
@@ -58,11 +63,11 @@ public class ListeContribuablesResidentsSansForVaudoisThread extends ListesThrea
 	}
 
 	@Override
-	protected void fillAttributesIndividu(Set<EnumAttributeIndividu> attributes) {
+	protected void fillAttributesIndividu(Set<AttributeIndividu> attributes) {
 		super.fillAttributesIndividu(attributes);
-		attributes.add(EnumAttributeIndividu.ADRESSES);
-		attributes.add(EnumAttributeIndividu.NATIONALITE);
-		attributes.add(EnumAttributeIndividu.PERMIS);
+		attributes.add(AttributeIndividu.ADRESSES);
+		attributes.add(AttributeIndividu.NATIONALITE);
+		attributes.add(AttributeIndividu.PERMIS);
 	}
 
 	private boolean isDecede(PersonnePhysique pp, RegDate dateReference) {

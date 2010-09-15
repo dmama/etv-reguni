@@ -3,11 +3,11 @@ package ch.vd.uniregctb.evenement;
 import java.util.Set;
 
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.registre.civil.model.EnumAttributeIndividu;
 import ch.vd.uniregctb.adresse.AdressesCiviles;
 import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.interfaces.model.Adresse;
+import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 
@@ -29,9 +29,9 @@ public abstract class EvenementAdapterAvecAdresses extends GenericEvenementAdapt
 	private Adresse adresseCourrier;
 
 	@Override
-	protected void fillRequiredParts(Set<EnumAttributeIndividu> parts) {
+	protected void fillRequiredParts(Set<AttributeIndividu> parts) {
 		super.fillRequiredParts(parts);
-		parts.add(EnumAttributeIndividu.ADRESSES);
+		parts.add(AttributeIndividu.ADRESSES);
 	}
 
 	@Override

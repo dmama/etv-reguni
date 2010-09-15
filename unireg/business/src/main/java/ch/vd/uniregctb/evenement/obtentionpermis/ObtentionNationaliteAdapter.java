@@ -5,11 +5,11 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import ch.vd.infrastructure.service.InfrastructureException;
-import ch.vd.registre.civil.model.EnumAttributeIndividu;
 import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.evenement.EvenementAdapterAvecAdresses;
 import ch.vd.uniregctb.evenement.EvenementAdapterException;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
+import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.CommuneSimple;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -55,8 +55,8 @@ public class ObtentionNationaliteAdapter extends EvenementAdapterAvecAdresses im
 	}
 
 	@Override
-	protected void fillRequiredParts(Set<EnumAttributeIndividu> parts) {
+	protected void fillRequiredParts(Set<AttributeIndividu> parts) {
 		super.fillRequiredParts(parts);
-		parts.add(EnumAttributeIndividu.PERMIS);
+		parts.add(AttributeIndividu.PERMIS);
 	}
 }

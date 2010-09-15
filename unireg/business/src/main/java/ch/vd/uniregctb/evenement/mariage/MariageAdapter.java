@@ -2,12 +2,12 @@ package ch.vd.uniregctb.evenement.mariage;
 
 import org.apache.log4j.Logger;
 
-import ch.vd.registre.civil.model.EnumAttributeIndividu;
 import ch.vd.registre.civil.model.EnumTypeEtatCivil;
 import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.evenement.EvenementAdapterException;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.evenement.GenericEvenementAdapter;
+import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
@@ -44,9 +44,8 @@ public class MariageAdapter extends GenericEvenementAdapter implements Mariage {
 		 * Récupération des informations sur le conjoint de l'individu depuis le host.
 		 * getIndividu().getConjoint() peut être null si mariage le 01.01
 		 */
-		EnumAttributeIndividu[] attributs = { EnumAttributeIndividu.CONJOINT };
 		final long noIndividu = getNoIndividu();
-		Individu individuPrincipal = serviceCivil.getIndividu(noIndividu, anneeEvenement, attributs);
+		Individu individuPrincipal = serviceCivil.getIndividu(noIndividu, anneeEvenement, AttributeIndividu.CONJOINT);
 		this.nouveauConjoint = getConjointValide(individuPrincipal,serviceCivil);
 		//this.nouveauConjoint = individuPrincipal.getConjoint();
 	}

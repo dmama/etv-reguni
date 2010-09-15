@@ -1,20 +1,15 @@
 package ch.vd.uniregctb.indexer.tiers;
 
-import ch.vd.registre.base.utils.Assert;
-import ch.vd.registre.civil.model.EnumAttributeIndividu;
-import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.audit.Audit;
-import ch.vd.uniregctb.common.*;
-import ch.vd.uniregctb.indexer.*;
-import ch.vd.uniregctb.indexer.async.MassTiersIndexer;
-import ch.vd.uniregctb.indexer.async.OnTheFlyTiersIndexer;
-import ch.vd.uniregctb.interfaces.model.Individu;
-import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.stats.ServiceStats;
-import ch.vd.uniregctb.stats.StatsService;
-import ch.vd.uniregctb.tiers.*;
-import ch.vd.uniregctb.type.TypeRapportEntreTiers;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
+
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
@@ -30,9 +25,41 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import java.sql.SQLException;
-import java.util.*;
-import java.util.concurrent.TimeUnit;
+import ch.vd.registre.base.utils.Assert;
+import ch.vd.uniregctb.adresse.AdresseService;
+import ch.vd.uniregctb.audit.Audit;
+import ch.vd.uniregctb.common.BatchIterator;
+import ch.vd.uniregctb.common.LoggingStatusManager;
+import ch.vd.uniregctb.common.ProgrammingException;
+import ch.vd.uniregctb.common.StandardBatchIterator;
+import ch.vd.uniregctb.common.StatusManager;
+import ch.vd.uniregctb.indexer.GlobalIndexInterface;
+import ch.vd.uniregctb.indexer.GlobalIndexTracing;
+import ch.vd.uniregctb.indexer.IndexableData;
+import ch.vd.uniregctb.indexer.IndexerBatchException;
+import ch.vd.uniregctb.indexer.IndexerException;
+import ch.vd.uniregctb.indexer.async.MassTiersIndexer;
+import ch.vd.uniregctb.indexer.async.OnTheFlyTiersIndexer;
+import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
+import ch.vd.uniregctb.interfaces.model.Individu;
+import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.stats.ServiceStats;
+import ch.vd.uniregctb.stats.StatsService;
+import ch.vd.uniregctb.tiers.AutreCommunaute;
+import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
+import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
+import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.IndividuNotFoundException;
+import ch.vd.uniregctb.tiers.MenageCommun;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.tiers.RapportEntreTiers;
+import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.tiers.TiersDAO;
+import ch.vd.uniregctb.tiers.TiersHelper;
+import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
 public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingBean, DisposableBean {
 
@@ -345,7 +372,7 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 
 		if (!numerosIndividus.isEmpty()) { // on peut tomber sur une plage de tiers ne contenant pas d'habitant
 			try {
-				serviceCivilService.getIndividus(numerosIndividus, null, EnumAttributeIndividu.ADRESSES); // chauffe le cache
+				serviceCivilService.getIndividus(numerosIndividus, null, AttributeIndividu.ADRESSES); // chauffe le cache
 
 				long nanosecondes = System.nanoTime() - start;
 				LOGGER.info("=> Récupéré " + numerosIndividus.size() + " individus en " + (nanosecondes / 1000000000L) + "s.");
@@ -563,7 +590,7 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
                 Long numeroIndividu = pp.getNumeroIndividu();
                 Assert.notNull(numeroIndividu);
                 // Recuperation de l'individu
-                final Individu individu = serviceCivilService.getIndividu(numeroIndividu, 2400, EnumAttributeIndividu.ADRESSES);
+                final Individu individu = serviceCivilService.getIndividu(numeroIndividu, 2400, AttributeIndividu.ADRESSES);
 	            if (individu == null) {
 		            throw new IndividuNotFoundException(pp);
 	            }

@@ -1,9 +1,5 @@
 package ch.vd.uniregctb.evenement.obtentionpermis;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,9 +12,9 @@ import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.civil.model.EnumAttributeIndividu;
 import ch.vd.uniregctb.evenement.AbstractEvenementHandlerTest;
 import ch.vd.uniregctb.evenement.EvenementCivilErreur;
+import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
@@ -28,13 +24,17 @@ import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.MenageCommun;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
+
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
 
 /**
  * Test du handler des événements d'obtention de nationalité.
@@ -427,7 +427,7 @@ public class ObtentionNationaliteHandlerTest extends AbstractEvenementHandlerTes
 
 		doInNewTransactionAndSession(new TransactionCallback() {
 			public Object doInTransaction(TransactionStatus status) {
-				final Individu julie = serviceCivil.getIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE, 2007, EnumAttributeIndividu.NATIONALITE);
+				final Individu julie = serviceCivil.getIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE, 2007, AttributeIndividu.NATIONALITE);
 				final ObtentionNationalite obtentionNationalite = createValidObtentionNationaliteNonSuisse(julie, dateObtentionNationalite, MockCommune.Geneve.getNoOFS());
 
 				final List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();

@@ -6,13 +6,13 @@ import java.util.List;
 import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.registre.civil.model.EnumAttributeIndividu;
 import ch.vd.uniregctb.adresse.HistoriqueCommune;
 import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.common.NomPrenom;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.AdressesCivilesActives;
 import ch.vd.uniregctb.interfaces.model.AdressesCivilesHistoriques;
+import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.Origine;
@@ -55,7 +55,7 @@ public class ProxyServiceCivil implements ServiceCivilService {
 		return target.getAdresses(noTechniqueIndividu, anneeValidite);
 	}
 
-	public Individu getIndividu(long noTechniqueIndividu, int anneeValidite, EnumAttributeIndividu... attributs) {
+	public Individu getIndividu(long noTechniqueIndividu, int anneeValidite, AttributeIndividu... attributs) {
 		assertTargetNotNull();
 		return target.getIndividu(noTechniqueIndividu, anneeValidite, attributs);
 	}
@@ -65,7 +65,7 @@ public class ProxyServiceCivil implements ServiceCivilService {
 		return target.getIndividu(noTechniqueIndividu, anneeValidite);
 	}
 
-	public Individu getIndividu(long noIndividu, RegDate date, EnumAttributeIndividu... parties) {
+	public Individu getIndividu(long noIndividu, RegDate date, AttributeIndividu... parties) {
 		assertTargetNotNull();
 		return target.getIndividu(noIndividu, date, parties);
 	}
@@ -81,12 +81,12 @@ public class ProxyServiceCivil implements ServiceCivilService {
 		return target.getNumeroIndividuConjoint(noIndividuPrincipal,date);  
 	}
 
-	public List<Individu> getIndividus(Collection<Long> nosIndividus, RegDate date, EnumAttributeIndividu... parties) {
+	public List<Individu> getIndividus(Collection<Long> nosIndividus, RegDate date, AttributeIndividu... parties) {
 		assertTargetNotNull();
 		return target.getIndividus(nosIndividus, date, parties);
 	}
 
-	public List<Individu> getIndividus(Collection<Long> nosIndividus, int annee, EnumAttributeIndividu... parties) {
+	public List<Individu> getIndividus(Collection<Long> nosIndividus, int annee, AttributeIndividu... parties) {
 		assertTargetNotNull();
 		return target.getIndividus(nosIndividus, annee, parties);
 	}

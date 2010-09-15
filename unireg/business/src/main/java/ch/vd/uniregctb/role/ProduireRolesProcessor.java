@@ -28,13 +28,13 @@ import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.registre.civil.model.EnumAttributeIndividu;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BatchTransactionTemplate;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.ParallelBatchTransactionTemplate;
 import ch.vd.uniregctb.common.StatusManager;
+import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.OfficeImpot;
@@ -54,9 +54,9 @@ import ch.vd.uniregctb.metier.assujettissement.VaudoisDepense;
 import ch.vd.uniregctb.metier.assujettissement.VaudoisOrdinaire;
 import ch.vd.uniregctb.role.ProduireRolesResults.InfoCommune;
 import ch.vd.uniregctb.role.ProduireRolesResults.InfoContribuable;
-import ch.vd.uniregctb.role.ProduireRolesResults.InfoFor;
-import ch.vd.uniregctb.role.ProduireRolesResults.InfoContribuable.TypeContribuable;
 import ch.vd.uniregctb.role.ProduireRolesResults.InfoContribuable.TypeAssujettissement;
+import ch.vd.uniregctb.role.ProduireRolesResults.InfoContribuable.TypeContribuable;
+import ch.vd.uniregctb.role.ProduireRolesResults.InfoFor;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalRevenuFortune;
@@ -257,7 +257,7 @@ public class ProduireRolesProcessor {
 
 		if (ppByNoIndividu.size() > 0) {
 			// remplit le cache des individus...
-			final List<Individu> individus = serviceCivilService.getIndividus(ppByNoIndividu.keySet(), date, EnumAttributeIndividu.ADRESSES);
+			final List<Individu> individus = serviceCivilService.getIndividus(ppByNoIndividu.keySet(), date, AttributeIndividu.ADRESSES);
 
 			// et on remplit aussi le cache individu sur les personnes physiques... (utilisé pour l'accès à la date de décès et au sexe)
 			for (Individu individu : individus) {

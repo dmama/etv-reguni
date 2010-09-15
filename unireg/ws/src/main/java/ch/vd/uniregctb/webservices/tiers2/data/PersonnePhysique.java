@@ -10,7 +10,7 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import ch.vd.registre.civil.model.EnumAttributeIndividu;
+import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.webservices.tiers2.exception.BusinessException;
 import ch.vd.uniregctb.webservices.tiers2.impl.Context;
 import ch.vd.uniregctb.webservices.tiers2.impl.DataHelper;
@@ -118,7 +118,7 @@ public class PersonnePhysique extends Contribuable {
 		}
 		else {
 			final int annee = (date == null ? 2400 : date.year());
-			final ch.vd.uniregctb.interfaces.model.Individu individu = context.serviceCivilService.getIndividu(personne.getNumeroIndividu(), annee, EnumAttributeIndividu.PERMIS);
+			final ch.vd.uniregctb.interfaces.model.Individu individu = context.serviceCivilService.getIndividu(personne.getNumeroIndividu(), annee, AttributeIndividu.PERMIS);
 			if (individu == null) {
 				final String message = String.format("Impossible de trouver l'individu n°%d pour l'habitant n°%d", personne.getNumeroIndividu(), personne.getNumero());
 				LOGGER.error(message);

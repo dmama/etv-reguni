@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.Set;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.civil.model.EnumAttributeIndividu;
 
 public interface Individu extends EntiteCivile {
 

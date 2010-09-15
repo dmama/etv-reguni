@@ -9,13 +9,13 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.civil.model.EnumAttributeIndividu;
 import ch.vd.uniregctb.adresse.HistoriqueCommune;
 import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.common.NomPrenom;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.AdressesCivilesActives;
 import ch.vd.uniregctb.interfaces.model.AdressesCivilesHistoriques;
+import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.CommuneSimple;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
 import ch.vd.uniregctb.interfaces.model.HistoriqueIndividu;
@@ -35,9 +35,7 @@ public abstract class ServiceCivilServiceBase implements ServiceCivilService {
 		this.infraService = infraService;
 	}
 
-
-
-		public final AdressesCivilesActives getAdresses(long noIndividu, RegDate date, boolean strict) throws DonneesCivilesException {
+	public final AdressesCivilesActives getAdresses(long noIndividu, RegDate date, boolean strict) throws DonneesCivilesException {
 
 		final int year = (date == null ? 2400 : date.year());
 		final Collection<Adresse> adressesCiviles = getAdresses(noIndividu, year);
@@ -60,9 +58,6 @@ public abstract class ServiceCivilServiceBase implements ServiceCivilService {
 		return resultat;
 	}
 
-
-
-
 	public final AdressesCivilesHistoriques getAdressesHisto(long noIndividu, boolean strict) throws DonneesCivilesException {
 
 		final int all = 2400;
@@ -84,7 +79,7 @@ public abstract class ServiceCivilServiceBase implements ServiceCivilService {
 
 	public final Collection<Nationalite> getNationalites(long noIndividu, int annee) {
 
-		final Individu individu = getIndividu(noIndividu, annee, EnumAttributeIndividu.NATIONALITE);
+		final Individu individu = getIndividu(noIndividu, annee, AttributeIndividu.NATIONALITE);
 		if (individu == null) {
 			return null;
 		}
@@ -94,7 +89,7 @@ public abstract class ServiceCivilServiceBase implements ServiceCivilService {
 
 	public final Origine getOrigine(long noIndividu, int annee) {
 
-		final Individu individu = getIndividu(noIndividu, annee, EnumAttributeIndividu.ORIGINE);
+		final Individu individu = getIndividu(noIndividu, annee, AttributeIndividu.ORIGINE);
 		if (individu == null) {
 			return null;
 		}
@@ -104,7 +99,7 @@ public abstract class ServiceCivilServiceBase implements ServiceCivilService {
 
 	public final Collection<Permis> getPermis(long noIndividu, int annee) {
 
-		final Individu individu = getIndividu(noIndividu, annee, EnumAttributeIndividu.PERMIS);
+		final Individu individu = getIndividu(noIndividu, annee, AttributeIndividu.PERMIS);
 		if (individu == null) {
 			return null;
 		}
@@ -114,7 +109,7 @@ public abstract class ServiceCivilServiceBase implements ServiceCivilService {
 
 	public final Tutelle getTutelle(long noIndividu, int annee) {
 
-		final Individu individu = getIndividu(noIndividu, annee, EnumAttributeIndividu.TUTELLE);
+		final Individu individu = getIndividu(noIndividu, annee, AttributeIndividu.TUTELLE);
 		if (individu == null) {
 			return null;
 		}
@@ -123,7 +118,7 @@ public abstract class ServiceCivilServiceBase implements ServiceCivilService {
 	}
 
 	public final Collection<Adresse> getAdresses(long noIndividu, int annee) {
-		final Individu individu = getIndividu(noIndividu, annee, EnumAttributeIndividu.ADRESSES);
+		final Individu individu = getIndividu(noIndividu, annee, AttributeIndividu.ADRESSES);
 		if (individu == null) {
 			return null;
 		}
@@ -131,15 +126,15 @@ public abstract class ServiceCivilServiceBase implements ServiceCivilService {
 	}
 
 	public final Individu getIndividu(long noIndividu, int annee) {
-		return getIndividu(noIndividu, annee, (EnumAttributeIndividu[])null); // -> va charger implicitement l'état-civil et l'historique
+		return getIndividu(noIndividu, annee, (AttributeIndividu[])null); // -> va charger implicitement l'état-civil et l'historique
 	}
 
-	public final Individu getIndividu(long noIndividu, RegDate date, EnumAttributeIndividu... parties) {
+	public final Individu getIndividu(long noIndividu, RegDate date, AttributeIndividu... parties) {
 		final int annee = (date == null ? 2400 : date.year());
 		return getIndividu(noIndividu, annee, parties);
 	}
 
-	public final List<Individu> getIndividus(Collection<Long> nosIndividus, RegDate date, EnumAttributeIndividu... parties) {
+	public final List<Individu> getIndividus(Collection<Long> nosIndividus, RegDate date, AttributeIndividu... parties) {
 		final int annee = (date == null ? 2400 : date.year());
 		return getIndividus(nosIndividus, annee, parties);
 	}
@@ -182,7 +177,7 @@ public abstract class ServiceCivilServiceBase implements ServiceCivilService {
 	 */
 	public final Permis getPermisActif(long noIndividu, RegDate date) {
 		final int year = (date == null ? 2400 : date.year());
-		final Individu individu = getIndividu(noIndividu, year, EnumAttributeIndividu.PERMIS);
+		final Individu individu = getIndividu(noIndividu, year, AttributeIndividu.PERMIS);
 		return (individu == null ? null : individu.getPermisActif(date));
 	}
 

@@ -1,11 +1,23 @@
 package ch.vd.uniregctb.tiers;
 
-import java.io.Serializable;
-import java.sql.SQLException;
-import java.util.*;
-
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorValue;
+import java.io.Serializable;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -27,7 +39,6 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.validation.ValidationException;
-import ch.vd.registre.civil.model.EnumAttributeIndividu;
 import ch.vd.registre.civil.model.EnumTypeEtatCivil;
 import ch.vd.registre.civil.model.EnumTypePermis;
 import ch.vd.uniregctb.adresse.AdresseException;
@@ -49,6 +60,7 @@ import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
+import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.CommuneSimple;
 import ch.vd.uniregctb.interfaces.model.HistoriqueIndividu;
@@ -566,7 +578,7 @@ public class TiersServiceImpl implements TiersService {
 
 		/* Récupération de l'individu avec ses permis, ses nationalités et son origine */
 		final Individu individu = serviceCivilService.getIndividu(habitant.getNumeroIndividu(), date.year(),
-				EnumAttributeIndividu.NATIONALITE, EnumAttributeIndividu.PERMIS, EnumAttributeIndividu.ORIGINE);
+				AttributeIndividu.NATIONALITE, AttributeIndividu.PERMIS, AttributeIndividu.ORIGINE);
 
 		/* A-t-il une nationalité suisse en cours et/ou des nationalites étrangères ? */
 		boolean nationaliteSuisse = false;
@@ -823,7 +835,7 @@ public class TiersServiceImpl implements TiersService {
 		Assert.notNull(habitant.getNumeroIndividu());
 		Individu individu = null;
 		try {
-			individu = serviceCivilService.getIndividu(habitant.getNumeroIndividu(), date.year(), EnumAttributeIndividu.PERMIS);
+			individu = serviceCivilService.getIndividu(habitant.getNumeroIndividu(), date.year(), AttributeIndividu.PERMIS);
 		}
 		catch (Exception e) {
 			throw new RuntimeException("Erreur dans la récupération de l'individu avec ses permis (" + habitant.getNumeroIndividu() + ")",
@@ -1355,12 +1367,11 @@ public class TiersServiceImpl implements TiersService {
 	/**
 	 * Récupère l'individu correspondant à l'habitant pour une année donnée
 	 *
-	 * @param habitant
 	 * @param annee
 	 * @param attributes
 	 * @return
 	 */
-	public Individu getIndividu(PersonnePhysique personne, int annee, EnumAttributeIndividu[] attributes) {
+	public Individu getIndividu(PersonnePhysique personne, int annee, AttributeIndividu[] attributes) {
 
 		if (personne.isHabitantVD()) {
 			Individu individu = null;

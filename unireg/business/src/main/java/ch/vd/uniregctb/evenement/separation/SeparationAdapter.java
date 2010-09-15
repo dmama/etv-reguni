@@ -1,10 +1,10 @@
 package ch.vd.uniregctb.evenement.separation;
 
-import ch.vd.registre.civil.model.EnumAttributeIndividu;
 import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.evenement.EvenementAdapterException;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.evenement.GenericEvenementAdapter;
+import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -36,9 +36,8 @@ public class SeparationAdapter extends GenericEvenementAdapter implements Separa
 		/*
 		 * Récupération des informations sur le conjoint de l'individu depuis le host.
 		 */
-		EnumAttributeIndividu[] attributs = { EnumAttributeIndividu.CONJOINT };
 		final long noIndividu = getNoIndividu();
-		Individu individuPrincipal = serviceCivil.getIndividu(noIndividu, anneeEvenement, attributs);
+		Individu individuPrincipal = serviceCivil.getIndividu(noIndividu, anneeEvenement, AttributeIndividu.CONJOINT);
 		this.ancienConjoint = serviceCivil.getConjoint(individuPrincipal.getNoTechnique(),getDate().getOneDayBefore());
 		
 	}

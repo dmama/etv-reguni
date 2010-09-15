@@ -1,16 +1,15 @@
 package ch.vd.uniregctb.common;
 
-import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.civil.model.EnumAttributeIndividu;
-import ch.vd.uniregctb.interfaces.model.Individu;
-import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
-import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.MenageCommun;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TiersDAO;
-import ch.vd.uniregctb.tiers.TiersDAO.Parts;
-import ch.vd.uniregctb.tiers.TiersService;
+import java.sql.SQLException;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.lang.mutable.MutableInt;
 import org.apache.log4j.Logger;
@@ -24,16 +23,17 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import java.sql.SQLException;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
+import ch.vd.uniregctb.interfaces.model.Individu;
+import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
+import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.MenageCommun;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.tiers.TiersDAO;
+import ch.vd.uniregctb.tiers.TiersDAO.Parts;
+import ch.vd.uniregctb.tiers.TiersService;
 
 public abstract class ListesThread<T extends ListesResults<T>> extends Thread {
 
@@ -193,11 +193,11 @@ public abstract class ListesThread<T extends ListesResults<T>> extends Thread {
 
 		// récupération des attributs civils à récupérer
 		if (ppByNoIndividu.size() > 0) {
-			final Set<EnumAttributeIndividu> attributes = new HashSet<EnumAttributeIndividu>();
+			final Set<AttributeIndividu> attributes = new HashSet<AttributeIndividu>();
 			fillAttributesIndividu(attributes);
-			final EnumAttributeIndividu[] attributesArray;
+			final AttributeIndividu[] attributesArray;
 			if (attributes.size() > 0) {
-				attributesArray = attributes.toArray(new EnumAttributeIndividu[attributes.size()]);
+				attributesArray = attributes.toArray(new AttributeIndividu[attributes.size()]);
 			}
 			else {
 				attributesArray = null;
@@ -214,7 +214,7 @@ public abstract class ListesThread<T extends ListesResults<T>> extends Thread {
 		}
 	}
 
-	protected void fillAttributesIndividu(Set<EnumAttributeIndividu> attributes) {
+	protected void fillAttributesIndividu(Set<AttributeIndividu> attributes) {
 		// par défaut, rien de spécial à ajouter
 	}
 

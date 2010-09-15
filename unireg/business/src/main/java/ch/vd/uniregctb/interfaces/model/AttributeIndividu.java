@@ -87,4 +87,26 @@ public enum AttributeIndividu {
 	}
 
 	public abstract EnumAttributeIndividu toEAI();
+
+	public static EnumAttributeIndividu[] toEAI(AttributeIndividu[] parties) {
+		if (parties == null) {
+			return null;
+		}
+		final EnumAttributeIndividu[] array = new EnumAttributeIndividu[parties.length];
+		for (int i = 0, partiesLength = parties.length; i < partiesLength; i++) {
+			array[i] = parties[i].toEAI();
+		}
+		return array;
+	}
+
+	public static AttributeIndividu[] fromEAI(EnumAttributeIndividu[] parties) {
+		if (parties == null) {
+			return null;
+		}
+		final AttributeIndividu[] array = new AttributeIndividu[parties.length];
+		for (int i = 0, partiesLength = parties.length; i < partiesLength; i++) {
+			array[i] = AttributeIndividu.fromEAI(parties[i]);
+		}
+		return array;
+	}
 }

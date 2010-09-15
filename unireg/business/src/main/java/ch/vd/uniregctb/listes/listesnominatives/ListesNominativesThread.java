@@ -1,24 +1,25 @@
 package ch.vd.uniregctb.listes.listesnominatives;
 
-import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.civil.model.EnumAttributeIndividu;
-import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.common.ListesThread;
-import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
-import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TiersDAO;
-import ch.vd.uniregctb.tiers.TiersService;
-import org.springframework.orm.hibernate3.HibernateTemplate;
-import org.springframework.transaction.PlatformTransactionManager;
-
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import org.springframework.orm.hibernate3.HibernateTemplate;
+import org.springframework.transaction.PlatformTransactionManager;
+
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.adresse.AdresseService;
+import ch.vd.uniregctb.common.ListesThread;
+import ch.vd.uniregctb.common.StatusManager;
+import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
+import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
+import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
+import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.tiers.TiersDAO;
+import ch.vd.uniregctb.tiers.TiersService;
 
 /**
  * Thread utilisé dans la génération des listes nominatives
@@ -70,10 +71,10 @@ public class ListesNominativesThread extends ListesThread<ListesNominativesResul
 	}
 
 	@Override
-	protected void fillAttributesIndividu(Set<EnumAttributeIndividu> attributes) {
+	protected void fillAttributesIndividu(Set<AttributeIndividu> attributes) {
 		super.fillAttributesIndividu(attributes);
 		if (adressesIncluses != TypeAdresse.AUCUNE) {
-			attributes.add(EnumAttributeIndividu.ADRESSES);
+			attributes.add(AttributeIndividu.ADRESSES);
 		}
 	}
 }

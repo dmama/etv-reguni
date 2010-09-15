@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.interfaces.service.mock;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -12,7 +13,6 @@ import java.util.Set;
 import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.registre.civil.model.EnumAttributeIndividu;
 import ch.vd.registre.civil.model.EnumTypeEtatCivil;
 import ch.vd.registre.civil.model.EnumTypePermis;
 import ch.vd.registre.civil.model.EnumTypeTutelle;
@@ -516,7 +516,7 @@ public abstract class MockServiceCivil extends ServiceCivilServiceBase {
 		return adressesActives;
 	}
 
-	public Individu getIndividu(long noIndividu, int annee, EnumAttributeIndividu... parties) {
+	public Individu getIndividu(long noIndividu, int annee, AttributeIndividu... parties) {
 		final MockIndividu individu = getIndividu(noIndividu);
 		if (individu != null) {
 			// on fait la copie avec les parts demandées seulements
@@ -525,10 +525,7 @@ public abstract class MockServiceCivil extends ServiceCivilServiceBase {
 				parts = Collections.emptySet();
 			}
 			else {
-				parts = new HashSet<AttributeIndividu>();
-				for (EnumAttributeIndividu p: parties) {
-					parts.add(AttributeIndividu.fromEAI(p));
-				}
+				parts = new HashSet<AttributeIndividu>(Arrays.asList(parties));
 			}
 			return new MockIndividu(individu, parts, annee);
 		}
@@ -537,7 +534,7 @@ public abstract class MockServiceCivil extends ServiceCivilServiceBase {
 		}
 	}
 
-	public List<Individu> getIndividus(Collection<Long> nosIndividus, int annee, EnumAttributeIndividu... parties) {
+	public List<Individu> getIndividus(Collection<Long> nosIndividus, int annee, AttributeIndividu... parties) {
 		final List<Individu> individus = new ArrayList<Individu>(nosIndividus.size());
 		for (Long noIndividu : nosIndividus) {
 			final Individu individu = getIndividu(noIndividu, annee, parties);

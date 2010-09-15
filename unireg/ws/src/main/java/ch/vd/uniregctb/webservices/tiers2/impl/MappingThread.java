@@ -1,10 +1,11 @@
 package ch.vd.uniregctb.webservices.tiers2.impl;
 
-import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.civil.model.EnumAttributeIndividu;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TiersDAO;
-import ch.vd.uniregctb.webservices.tiers2.data.TiersPart;
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.apache.log4j.Logger;
 import org.hibernate.FlushMode;
 import org.hibernate.HibernateException;
@@ -14,11 +15,11 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
+import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.tiers.TiersDAO;
+import ch.vd.uniregctb.webservices.tiers2.data.TiersPart;
 
 /**
  * Ce thread reçoit une liste d'ids de tiers à charger de la base et à retourner sous forme des tiers du web-service.
@@ -91,12 +92,12 @@ public class MappingThread extends Thread {
 			final Set<Long> numerosIndividus = context.tiersDAO.getNumerosIndividu(ids, true);
 			if (!numerosIndividus.isEmpty()) { // on peut tomber sur une plage de tiers ne contenant pas d'habitant
 				try {
-					final EnumAttributeIndividu[] attributs;
+					final AttributeIndividu[] attributs;
 					if (parts != null && (parts.contains(TiersPart.ADRESSES) || parts.contains(TiersPart.ADRESSES_ENVOI))) {
-						attributs = new EnumAttributeIndividu[]{EnumAttributeIndividu.ADRESSES, EnumAttributeIndividu.PERMIS};
+						attributs = new AttributeIndividu[]{AttributeIndividu.ADRESSES, AttributeIndividu.PERMIS};
 					}
 					else {
-						attributs = new EnumAttributeIndividu[]{EnumAttributeIndividu.PERMIS};
+						attributs = new AttributeIndividu[]{AttributeIndividu.PERMIS};
 					}
 					context.serviceCivilService.getIndividus(numerosIndividus, date, attributs); // chauffe le cache
 				}

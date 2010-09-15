@@ -1,16 +1,26 @@
 package ch.vd.uniregctb.indexer.tiers;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.registre.civil.model.EnumAttributeIndividu;
 import ch.vd.uniregctb.adresse.AdresseService;
+import ch.vd.uniregctb.indexer.IndexerException;
+import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
+import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
-import ch.vd.uniregctb.indexer.IndexerException;
-import ch.vd.uniregctb.interfaces.model.Individu;
-import ch.vd.uniregctb.tiers.*;
-
-import java.util.*;
+import ch.vd.uniregctb.tiers.IndividuNotFoundException;
+import ch.vd.uniregctb.tiers.MenageCommun;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.tiers.RapportEntreTiers;
+import ch.vd.uniregctb.tiers.TiersService;
 
 /**
  * Objet permettant d'indexer des contribuables ménage commun.
@@ -140,7 +150,7 @@ public class MenageCommunIndexable extends ContribuableIndexable {
 			ppIndexable = new NonHabitantIndexable(adresseService, tiersService, serviceInfra, pp);
 		}
 		else if (pp != null) {
-			final Individu ind = serviceCivil.getIndividu(pp.getNumeroIndividu(), null, EnumAttributeIndividu.ADRESSES);
+			final Individu ind = serviceCivil.getIndividu(pp.getNumeroIndividu(), null, AttributeIndividu.ADRESSES);
 			if (ind == null) {
 				throw new IndividuNotFoundException(pp);
 			}

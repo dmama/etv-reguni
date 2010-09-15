@@ -6,12 +6,12 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import ch.vd.registre.civil.model.EnumAttributeIndividu;
 import ch.vd.registre.civil.model.EnumTypePermis;
 import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.evenement.EvenementAdapterException;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.evenement.GenericEvenementAdapter;
+import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.Permis;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -61,8 +61,8 @@ public class AnnulationPermisAdapter extends GenericEvenementAdapter implements 
 	}
 
 	@Override
-	protected void fillRequiredParts(Set<EnumAttributeIndividu> parts) {
+	protected void fillRequiredParts(Set<AttributeIndividu> parts) {
 		super.fillRequiredParts(parts);
-		parts.add(EnumAttributeIndividu.PERMIS);
+		parts.add(AttributeIndividu.PERMIS);
 	}
 }

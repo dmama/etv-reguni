@@ -4,14 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import ch.vd.registre.civil.model.EnumAttributeIndividu;
 import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.evenement.EvenementAdapterException;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.evenement.GenericEvenementAdapter;
+import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.Individu;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 
 public class NaissanceAdapter extends GenericEvenementAdapter implements Naissance {
 
@@ -57,8 +57,8 @@ public class NaissanceAdapter extends GenericEvenementAdapter implements Naissan
 	}
 
 	@Override
-	protected void fillRequiredParts(Set<EnumAttributeIndividu> parts) {
+	protected void fillRequiredParts(Set<AttributeIndividu> parts) {
 		super.fillRequiredParts(parts);
-		parts.add(EnumAttributeIndividu.PARENTS);
+		parts.add(AttributeIndividu.PARENTS);
 	}
 }

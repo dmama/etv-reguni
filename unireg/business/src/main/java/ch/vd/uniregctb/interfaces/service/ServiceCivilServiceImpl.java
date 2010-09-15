@@ -9,12 +9,10 @@ import java.util.List;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.log4j.Logger;
 
-import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.NotImplementedException;
-import ch.vd.registre.civil.model.EnumAttributeIndividu;
 import ch.vd.registre.civil.service.ServiceCivil;
 import ch.vd.registre.common.service.RegistreException;
 import ch.vd.uniregctb.common.JvmVersionHelper;
+import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.wrapper.IndividuWrapper;
 
@@ -38,12 +36,12 @@ public class ServiceCivilServiceImpl extends ServiceCivilServiceBase {
 		this.serviceCivil = serviceCivil;
 	}
 
-	public Individu getIndividu(long noIndividu, int annee, EnumAttributeIndividu... parties) {
+	public Individu getIndividu(long noIndividu, int annee, AttributeIndividu... parties) {
 		if (LOGGER.isTraceEnabled()) {
 			LOGGER.trace("Calling getIndividu(" + noIndividu + ", " + annee + ")");
 		}
 		try {
-			Individu ind = IndividuWrapper.get(serviceCivil.getIndividu(noIndividu, annee, parties));
+			Individu ind = IndividuWrapper.get(serviceCivil.getIndividu(noIndividu, annee, AttributeIndividu.toEAI(parties)));
 			if (LOGGER.isTraceEnabled()) {
 				LOGGER.trace("End of getIndividu(" + noIndividu + ", " + annee + ")");
 			}
@@ -61,13 +59,13 @@ public class ServiceCivilServiceImpl extends ServiceCivilServiceBase {
 	}
 
 	@SuppressWarnings({"unchecked"})
-	public List<Individu> getIndividus(Collection<Long> nosIndividus, int annee, EnumAttributeIndividu... parties) {
+	public List<Individu> getIndividus(Collection<Long> nosIndividus, int annee, AttributeIndividu... parties) {
 		try {
 			// l'appel à l'EJB a besoin d'une collection sérialisable
 			if (!(nosIndividus instanceof Serializable)) {
 				nosIndividus = new ArrayList<Long>(nosIndividus);
 			}
-			final Collection<ch.vd.registre.civil.model.Individu> individus = serviceCivil.getIndividus(nosIndividus, annee, parties);
+			final Collection<ch.vd.registre.civil.model.Individu> individus = serviceCivil.getIndividus(nosIndividus, annee, AttributeIndividu.toEAI(parties));
 
 			final List<Individu> list = new ArrayList<Individu>(individus.size());
 			for (ch.vd.registre.civil.model.Individu ind : individus) {

@@ -4,47 +4,41 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
-
-import ch.vd.common.model.EnumTypeAdresse;
-import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.registre.civil.model.EnumAttributeIndividu;
-import ch.vd.registre.civil.model.EnumTypeEtatCivil;
-import ch.vd.registre.civil.model.EnumTypePermis;
-import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.evenement.common.EvenementCivilHandlerException;
-import ch.vd.uniregctb.interfaces.model.Individu;
-import ch.vd.uniregctb.interfaces.model.Nationalite;
-import ch.vd.uniregctb.interfaces.model.mock.MockAdresse;
-import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
-import ch.vd.uniregctb.interfaces.model.mock.MockNationalite;
-import ch.vd.uniregctb.interfaces.model.mock.MockRue;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
-import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
-import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
-
 import junit.framework.Assert;
 import org.junit.Test;
 import org.springframework.test.annotation.NotTransactional;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
+import ch.vd.common.model.EnumTypeAdresse;
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.registre.civil.model.EnumTypeEtatCivil;
+import ch.vd.registre.civil.model.EnumTypePermis;
 import ch.vd.uniregctb.common.BusinessTest;
+import ch.vd.uniregctb.common.FormatNumeroHelper;
+import ch.vd.uniregctb.evenement.common.EvenementCivilHandlerException;
+import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
+import ch.vd.uniregctb.interfaces.model.Individu;
+import ch.vd.uniregctb.interfaces.model.Nationalite;
+import ch.vd.uniregctb.interfaces.model.mock.MockAdresse;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
+import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
+import ch.vd.uniregctb.interfaces.model.mock.MockNationalite;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
+import ch.vd.uniregctb.interfaces.model.mock.MockRue;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
+import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
+import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
-import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.Tiers.ForsParType;
+import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.type.EtatCivil;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
@@ -53,6 +47,11 @@ import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 
 /**
  * Classe de test du métier service.
@@ -931,7 +930,7 @@ public class MetiersServiceTest extends BusinessTest {
 
 				 // vérification de l'absence d'adresse sur Georgette
 				{
-					final Individu individu = serviceCivil.getIndividu(noIndGeorgette, null, EnumAttributeIndividu.ADRESSES);
+					final Individu individu = serviceCivil.getIndividu(noIndGeorgette, null, AttributeIndividu.ADRESSES);
 					assertNotNull(individu);
 					assertNotNull(individu.getAdresses());
 					assertEquals(0, individu.getAdresses().size());

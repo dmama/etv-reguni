@@ -5,15 +5,13 @@ import java.util.List;
 
 import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.civil.model.EnumAttributeIndividu;
-import ch.vd.uniregctb.adresse.AdressesCiviles;
-import ch.vd.uniregctb.adresse.AdressesCivilesHisto;
 import ch.vd.uniregctb.adresse.HistoriqueCommune;
 import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.common.NomPrenom;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.AdressesCivilesActives;
 import ch.vd.uniregctb.interfaces.model.AdressesCivilesHistoriques;
+import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.Nationalite;
@@ -33,6 +31,8 @@ public interface ServiceCivilService {
 	 * @param strict     si <i>vrai</i>, la cohérence des données est vérifiée de manière stricte et en cas d'incohérence, une exception est levée. Si <i>faux</i>, la méthode essaie de corriger les
 	 *                   données (dans la mesure du possible) pour ne pas lever d'exception.
 	 * @return les adresses civiles de l'individu spécifié.
+	 * @throws ch.vd.uniregctb.common.DonneesCivilesException
+	 *          en cas d'erreur dans les données civiles
 	 */
 	AdressesCivilesActives getAdresses(long noIndividu, RegDate date, boolean strict) throws DonneesCivilesException;
 
@@ -43,17 +43,24 @@ public interface ServiceCivilService {
 	 * @param strict     si <i>vrai</i>, la cohérence des données est vérifiée de manière stricte et en cas d'incohérence, une exception est levée. Si <i>faux</i>, la méthode essaie de corriger les
 	 *                   données (dans la mesure du possible) pour ne pas lever d'exception.
 	 * @return l'historique des adresses civiles de l'individu spécifié.
+	 * @throws ch.vd.uniregctb.common.DonneesCivilesException
+	 *          en cas d'erreur dans les données civiles
 	 */
 	AdressesCivilesHistoriques getAdressesHisto(long noIndividu, boolean strict) throws DonneesCivilesException;
 
 	/**
 	 * Construit la liste des communes de domiciles connues pour l'individu donné, et ce depuis une date de référence
+	 *
 	 * @param depuis        date de référence à partir de laquelle on cherche les domiciles successifs de l'individu
 	 * @param noIndividu    l'individu dont on cherche les communes de domicile
 	 * @param strict        si <i>vrai</i>, la cohérence des données est vérifiée de manière stricte et en cas d'incohérence, une exception est levée. Si <i>faux</i>, la méthode essaie de corriger les
 	 *                      données (dans la mesure du possible) pour ne pas lever d'exception.
 	 * @param seulementVaud <code>true</code> si on ne s'intéresse qu'aux communes vaudoises (i.e. commune <code>null</code> pour HC/HS)
 	 * @return une liste des communes de domiciles fréquentées depuis la date de référence
+	 * @throws ch.vd.uniregctb.common.DonneesCivilesException
+	 *          en cas d'erreur dans les données civiles
+	 * @throws ch.vd.infrastructure.service.InfrastructureException
+	 *          en cas d'erreur dans les données d'infrastructure
 	 */
 	List<HistoriqueCommune> getCommunesDomicileHisto(RegDate depuis, long noIndividu, boolean strict, boolean seulementVaud) throws DonneesCivilesException, InfrastructureException;
 
@@ -87,7 +94,7 @@ public interface ServiceCivilService {
 	/**
 	 * Même chose que {@link #getIndividu(long, int)} avec la possibilité de demander des parties supplémentaires.
 	 */
-	Individu getIndividu(long noIndividu, int annee, EnumAttributeIndividu... parties);
+	Individu getIndividu(long noIndividu, int annee, AttributeIndividu... parties);
 
 	/**
 	 * Retourne l'individu, valide <b>jusqu'à</b> l'année en paramètre, identifié par le numéro en paramètre.
@@ -102,7 +109,7 @@ public interface ServiceCivilService {
 	 * @param parties      les parties optionnelles devant être renseignées
 	 * @return l'individu populé avec les données valides jusqu'à l'année spécifiée.
 	 */
-	Individu getIndividu(long noIndividu, RegDate date, EnumAttributeIndividu... parties);
+	Individu getIndividu(long noIndividu, RegDate date, AttributeIndividu... parties);
 
 	/**
 	 * Retourne l'individu conjoint valide <b>à la date</b> passée en paramètre, de l'indivu dont le numéro est  en paramètre.
@@ -139,7 +146,7 @@ public interface ServiceCivilService {
 	 * @param parties      les parties optionnelles devant être renseignées
 	 * @return la liste des individus trouvés, ou <b>null</b> si le service n'est pas capable de charger les individus par lots.
 	 */
-	List<Individu> getIndividus(Collection<Long> nosIndividus, int annee, EnumAttributeIndividu... parties);
+	List<Individu> getIndividus(Collection<Long> nosIndividus, int annee, AttributeIndividu... parties);
 
 	/**
 	 * Retourne un lot d'individu avec les parties spécifiées.
@@ -151,7 +158,7 @@ public interface ServiceCivilService {
 	 * @param parties      les parties optionnelles devant être renseignées
 	 * @return la liste des individus trouvés, ou <b>null</b> si le service n'est pas capable de charger les individus par lots.
 	 */
-	List<Individu> getIndividus(Collection<Long> nosIndividus, RegDate date, EnumAttributeIndividu... parties);
+	List<Individu> getIndividus(Collection<Long> nosIndividus, RegDate date, AttributeIndividu... parties);
 
 	/**
 	 * Retourne la liste des nationalités, valides <b>jusqu'à</b> l'année en paramètre, de l'individu identifié par le numéro en paramètre.

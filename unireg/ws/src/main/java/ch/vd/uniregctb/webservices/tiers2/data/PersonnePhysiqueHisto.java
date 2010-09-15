@@ -1,19 +1,19 @@
 package ch.vd.uniregctb.webservices.tiers2.data;
 
-import java.util.Set;
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
+import java.util.Set;
 
-import ch.vd.registre.civil.model.EnumAttributeIndividu;
+import org.apache.log4j.Logger;
+
+import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.webservices.tiers2.data.PersonnePhysique.Categorie;
 import ch.vd.uniregctb.webservices.tiers2.exception.BusinessException;
 import ch.vd.uniregctb.webservices.tiers2.impl.Context;
 import ch.vd.uniregctb.webservices.tiers2.impl.DataHelper;
 import ch.vd.uniregctb.webservices.tiers2.impl.EnumHelper;
-import org.apache.log4j.Logger;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "PersonnePhysiqueHisto", propOrder = {
@@ -110,7 +110,7 @@ public class PersonnePhysiqueHisto extends ContribuableHisto {
 		}
 		else {
 			final int annee = 2400;
-			final ch.vd.uniregctb.interfaces.model.Individu individu = context.serviceCivilService.getIndividu(personne.getNumeroIndividu(), annee, EnumAttributeIndividu.PERMIS);
+			final ch.vd.uniregctb.interfaces.model.Individu individu = context.serviceCivilService.getIndividu(personne.getNumeroIndividu(), annee, AttributeIndividu.PERMIS);
 
 			if (individu == null) {
 				final String message = String.format("Impossible de trouver l'individu n°%d pour l'habitant n°%d", personne

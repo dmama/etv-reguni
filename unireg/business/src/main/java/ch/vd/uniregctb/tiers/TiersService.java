@@ -7,7 +7,6 @@ import java.util.Set;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationException;
-import ch.vd.registre.civil.model.EnumAttributeIndividu;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.common.NomPrenom;
 import ch.vd.uniregctb.common.StatusManager;
@@ -15,6 +14,7 @@ import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
+import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -163,7 +163,7 @@ public interface TiersService {
 	 * @param attributes les attributs renseignés sur l'individu.
 	 * @return un individu, ou <i>null</i> si la personne physique est un non-habitant.
 	 */
-	public Individu getIndividu(PersonnePhysique personne, int annee, EnumAttributeIndividu[] attributes);
+	public Individu getIndividu(PersonnePhysique personne, int annee, AttributeIndividu[] attributes);
 
 	/**
 	 * Détermine si une personne physique est suisse.

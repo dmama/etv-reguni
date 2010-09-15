@@ -2,7 +2,6 @@ package ch.vd.uniregctb.metier;
 
 import java.util.List;
 
-import ch.vd.uniregctb.adresse.AdresseException;
 import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
@@ -19,19 +18,20 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.registre.civil.model.EnumAttributeIndividu;
 import ch.vd.registre.civil.model.EnumTypeEtatCivil;
+import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.common.BatchTransactionTemplate;
+import ch.vd.uniregctb.common.BatchTransactionTemplate.BatchCallback;
+import ch.vd.uniregctb.common.BatchTransactionTemplate.Behavior;
 import ch.vd.uniregctb.common.FiscalDateHelper;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.common.BatchTransactionTemplate.BatchCallback;
-import ch.vd.uniregctb.common.BatchTransactionTemplate.Behavior;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
+import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.CommuneSimple;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
 import ch.vd.uniregctb.interfaces.model.Individu;
@@ -370,7 +370,7 @@ public class OuvertureForsContribuablesMajeursProcessor {
 		// autrement, on doit faire un appel à host-interface
 		Individu individu;
 		try {
-			individu = tiersService.getIndividu(habitant, dateReference.year(), EnumAttributeIndividu.TOUS);
+			individu = tiersService.getIndividu(habitant, dateReference.year(), new AttributeIndividu[]{AttributeIndividu.PERMIS, AttributeIndividu.NATIONALITE});
 		}
 		catch (ServiceCivilException e) {
 			LOGGER.error("Impossible de récupérer l'habitant n° " + habitant.getNumero(), e);
@@ -470,7 +470,7 @@ public class OuvertureForsContribuablesMajeursProcessor {
 		Individu individu = data.getIndividu();
 		if (individu == null) {
 			try {
-				individu = tiersService.getIndividu(habitant, dateReference.year(), EnumAttributeIndividu.TOUS);
+				individu = tiersService.getIndividu(habitant, dateReference.year(), new AttributeIndividu[]{AttributeIndividu.PERMIS, AttributeIndividu.NATIONALITE});
 			}
 			catch (ServiceCivilException e) {
 				LOGGER.error("Impossible de récupérer l'habitant n° " + habitant.getNumero(), e);

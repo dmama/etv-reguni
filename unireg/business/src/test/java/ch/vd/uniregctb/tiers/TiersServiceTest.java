@@ -20,12 +20,12 @@ import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationException;
-import ch.vd.registre.civil.model.EnumAttributeIndividu;
 import ch.vd.registre.civil.model.EnumTypePermis;
 import ch.vd.uniregctb.adresse.AdresseSuisse;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.declaration.Periodicite;
+import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.Nationalite;
 import ch.vd.uniregctb.interfaces.model.Permis;
@@ -341,8 +341,8 @@ public class TiersServiceTest extends BusinessTest {
 
 		{
 			// Vue de l'habitant pour 1960
-			final Individu ind = tiersService.getIndividu(hab, 1960, new EnumAttributeIndividu[]{
-					EnumAttributeIndividu.PERMIS
+			final Individu ind = tiersService.getIndividu(hab, 1960, new AttributeIndividu[]{
+					AttributeIndividu.PERMIS
 			});
 			assertNotNull(ind);
 
@@ -351,8 +351,8 @@ public class TiersServiceTest extends BusinessTest {
 
 		{
 			// Vue de l'habitant pour 2000
-			final Individu ind = tiersService.getIndividu(hab, 2000, new EnumAttributeIndividu[]{
-					EnumAttributeIndividu.PERMIS
+			final Individu ind = tiersService.getIndividu(hab, 2000, new AttributeIndividu[]{
+					AttributeIndividu.PERMIS
 			});
 			assertNotNull(ind);
 
@@ -366,8 +366,8 @@ public class TiersServiceTest extends BusinessTest {
 
 		{
 			// Vue de l'habitant pour -1
-			final Individu ind = tiersService.getIndividu(hab, -1, new EnumAttributeIndividu[]{
-					EnumAttributeIndividu.PERMIS
+			final Individu ind = tiersService.getIndividu(hab, -1, new AttributeIndividu[]{
+					AttributeIndividu.PERMIS
 			});
 			assertNotNull(ind);
 
