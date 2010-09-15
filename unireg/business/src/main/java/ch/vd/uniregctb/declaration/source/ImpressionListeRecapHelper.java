@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.declaration.source;
 
-import noNamespace.FichierImpressionISDocument;
+import noNamespace.FichierImpressionDocument;
+
 import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.editique.EditiqueException;
@@ -8,7 +9,7 @@ import ch.vd.uniregctb.editique.EditiqueException;
 public interface ImpressionListeRecapHelper {
 
 	/**
-	 * Remplit un objet TypFichierImpressionIS
+	 * Remplit un objet TypFichierImpression
 	 *
 	 * @param lr
 	 * @param traitePar
@@ -16,7 +17,7 @@ public interface ImpressionListeRecapHelper {
 	 * @throws EditiqueException
 	 * @throws InfrastructureException
 	 */
-	public FichierImpressionISDocument remplitListeRecap(DeclarationImpotSource lr, String traitePar) throws EditiqueException ;
+	public FichierImpressionDocument remplitListeRecap(DeclarationImpotSource lr, String traitePar) throws EditiqueException ;
 
 	/**
 	 * Construit le champ idDocument
