@@ -36,7 +36,7 @@
 			<xb:staticHandler>ch.vd.uniregctb.editique.document.DeclarationStaticHandler</xb:staticHandler>
 		</xb:interface>
 	</xb:extension>
-	
+
 
 	<!-- Identification de CTB -->	
     <xb:namespace uri="http://www.vd.ch/fiscalite/registre/identificationContribuable-v1.7">
