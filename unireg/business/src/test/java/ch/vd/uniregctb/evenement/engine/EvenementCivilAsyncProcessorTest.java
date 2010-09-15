@@ -11,23 +11,18 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.evenement.EvenementCivilDAO;
-import ch.vd.uniregctb.evenement.EvenementCivilData;
-import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
-import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 public class EvenementCivilAsyncProcessorTest extends BusinessTest {
 
 	public static final Logger LOGGER = Logger.getLogger(EvenementCivilAsyncProcessorTest.class);
 
 	private EvenementCivilAsyncProcessorImpl asyncProcessor;
-	private EvenementCivilDAO evtCivilDAO;
 	private MyProcessor processor;
 
 	/**
@@ -64,7 +59,7 @@ public class EvenementCivilAsyncProcessorTest extends BusinessTest {
 	public void onSetUp() throws Exception {
 		super.onSetUp();
 
-		evtCivilDAO = getBean(EvenementCivilDAO.class, "evenementCivilDAO");
+		final EvenementCivilDAO evtCivilDAO = getBean(EvenementCivilDAO.class, "evenementCivilDAO");
 
 		processor = new MyProcessor();
 
@@ -90,17 +85,6 @@ public class EvenementCivilAsyncProcessorTest extends BusinessTest {
 		super.onTearDown();
 	}
 
-	private static EvenementCivilData buildEvenement(long id, long noIndividu, RegDate dateEvenement, TypeEvenementCivil type) {
-		final EvenementCivilData evt = new EvenementCivilData();
-		evt.setId(id);
-		evt.setDateEvenement(dateEvenement);
-		evt.setDateTraitement(DateHelper.getCurrentDate());
-		evt.setNumeroIndividuPrincipal(noIndividu);
-		evt.setType(type);
-		evt.setNumeroOfsCommuneAnnonce(MockCommune.Lausanne.getNoOFSEtendu());
-		return evt;
-	}
-
 	@Test(timeout=10000)
 	public void testOrdreTraitement() throws Exception {
 
@@ -122,8 +106,6 @@ public class EvenementCivilAsyncProcessorTest extends BusinessTest {
 						final TransactionTemplate template = new TransactionTemplate(transactionManager);
 						template.execute(new TransactionCallback() {
 							public Object doInTransaction(TransactionStatus status) {
-								final EvenementCivilData evt = buildEvenement(id, id, date, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HS);
-								evtCivilDAO.save(evt);
 								asyncProcessor.postEvenementCivil(id, System.currentTimeMillis());
 								return null;
 							}
