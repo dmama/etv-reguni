@@ -22,6 +22,7 @@ import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 
+@SuppressWarnings({"JavaDoc"})
 public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTest {
 
 	private TiersDAO tiersDAO;
@@ -355,7 +356,7 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 	 * C'est le cas décrit dans le cas jira UNIREG-2854
 	 */
 	@Test
-	public void testHorsCantonAchatImmeubleAnneeDernière() throws Exception {
+	public void testHorsCantonAchatImmeubleAnneeDerniere() throws Exception {
 
 		final RegDate dateTraitement = RegDate.get();
 		final DeterminerMouvementsDossiersEnMasseProcessor.RangesUtiles ranges = new DeterminerMouvementsDossiersEnMasseProcessor.RangesUtiles(dateTraitement);

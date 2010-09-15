@@ -246,7 +246,7 @@ public class DeterminerMouvementsDossiersEnMasseProcessor {
 
 						// on sait qu'il y a un assujettissement dans l'année n-1, dont on va essayer de trouver la date
 						avant = findForGestion(histoForGestion, premierForVaudoisAnneeNMoinsUn, true);
-						dateAvant = premierForVaudoisAnneeNMoinsUn.getDateDebut();
+						dateAvant = DateRangeHelper.intersection(rangesUtiles.rangeAnneeNMoinsUn, avant).getDateDebut();
 					}
 
 					// calculons les OID de gestion pour ces fors de gestion là
