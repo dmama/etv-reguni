@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.declaration.source;
 
-import noNamespace.FichierImpressionISDocument;
+import noNamespace.FichierImpressionDocument;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.editique.EditiqueException;
@@ -16,7 +17,7 @@ public interface ImpressionSommationLRHelper {
 	 * @return
 	 * @throws EditiqueException
 	 */
-	public FichierImpressionISDocument remplitSommationLR(DeclarationImpotSource lr, RegDate dateTraitement) throws EditiqueException;
+	public FichierImpressionDocument remplitSommationLR(DeclarationImpotSource lr, RegDate dateTraitement) throws EditiqueException;
 
 	/**
 	 * Construit le champ idDocument

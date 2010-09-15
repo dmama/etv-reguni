@@ -4,7 +4,6 @@ import javax.jms.JMSException;
 import java.util.List;
 
 import noNamespace.FichierImpressionDocument;
-import noNamespace.FichierImpressionISDocument;
 import noNamespace.TypFichierImpression;
 import org.apache.log4j.Logger;
 import org.springframework.util.Assert;
@@ -148,7 +147,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 	}
 
 	public void imprimeLRForBatch(DeclarationImpotSource lr, RegDate dateEvenement) throws EditiqueException {
-		final FichierImpressionISDocument document = impressionLRHelper.remplitListeRecap(lr, null);
+		final FichierImpressionDocument document = impressionLRHelper.remplitListeRecap(lr, null);
 		final String typeDocument = impressionLRHelper.calculPrefixe();
 		final String nomDocument = impressionLRHelper.construitIdDocument(lr);
 		editiqueService.creerDocumentParBatch(nomDocument, typeDocument, document, false);
@@ -171,7 +170,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 
 	public void imprimeSommationLRForBatch(DeclarationImpotSource lr, RegDate dateEvenement) throws EditiqueException {
 		final String typeDocument = impressionSommationLRHelper.calculPrefixe();
-		final FichierImpressionISDocument document = impressionSommationLRHelper.remplitSommationLR(lr, dateEvenement);
+		final FichierImpressionDocument document = impressionSommationLRHelper.remplitSommationLR(lr, dateEvenement);
 		final String nomDocument = impressionSommationLRHelper.construitIdDocument(lr);
 		editiqueService.creerDocumentParBatch(nomDocument, typeDocument, document, true);
 	}
@@ -223,7 +222,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 
 	public EditiqueResultat imprimeSommationLROnline(DeclarationImpotSource lr, RegDate dateEvenement) throws EditiqueException, JMSException {
 		final String typeDocument = impressionSommationLRHelper.calculPrefixe();
-		final FichierImpressionISDocument document = impressionSommationLRHelper.remplitSommationLR(lr, dateEvenement);
+		final FichierImpressionDocument document = impressionSommationLRHelper.remplitSommationLR(lr, dateEvenement);
 		final String nomDocument = impressionSommationLRHelper.construitIdDocument(lr);
 		return editiqueService.creerDocumentImmediatement(nomDocument, typeDocument, TypeFormat.PCL, document, true);
 	}
@@ -239,7 +238,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 
 	public EditiqueResultat imprimeLROnline(DeclarationImpotSource lr, RegDate dateEvenement, TypeDocument typeDocument) throws EditiqueException, JMSException {
 		String[] traitePar = getInfoOperateur();
-		FichierImpressionISDocument document = impressionLRHelper.remplitListeRecap(lr, traitePar[0]);
+		FichierImpressionDocument document = impressionLRHelper.remplitListeRecap(lr, traitePar[0]);
 		final String typeDocumentMessage = impressionLRHelper.calculPrefixe();
 		final String nomDocument = impressionLRHelper.construitIdDocument(lr);
 		return editiqueService.creerDocumentImmediatement(nomDocument, typeDocumentMessage, TypeFormat.PCL, document, false);

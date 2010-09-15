@@ -4,41 +4,40 @@ import java.math.BigInteger;
 import java.rmi.RemoteException;
 import java.text.SimpleDateFormat;
 
-import ch.vd.uniregctb.adresse.AdresseException;
-import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
-import ch.vd.uniregctb.type.ModeCommunication;
-import noNamespace.FichierImpressionISDocument;
-import noNamespace.InfoArchivageDocument;
-import noNamespace.InfoDocumentDocument1;
-import noNamespace.InfoEnteteDocumentDocument1;
-import noNamespace.SLRLCBVRDocument;
-import noNamespace.TypAdresse;
-import noNamespace.TypFichierImpressionIS;
-import noNamespace.TypPeriode;
 import noNamespace.BVRSTDDocument.BVRSTD;
+import noNamespace.FichierImpressionDocument;
+import noNamespace.InfoArchivageDocument;
 import noNamespace.InfoArchivageDocument.InfoArchivage;
+import noNamespace.InfoDocumentDocument1;
 import noNamespace.InfoDocumentDocument1.InfoDocument;
+import noNamespace.InfoEnteteDocumentDocument1;
 import noNamespace.InfoEnteteDocumentDocument1.InfoEnteteDocument;
 import noNamespace.InfoEnteteDocumentDocument1.InfoEnteteDocument.Destinataire;
 import noNamespace.InfoEnteteDocumentDocument1.InfoEnteteDocument.Expediteur;
+import noNamespace.SLRLCBVRDocument;
 import noNamespace.SLRLCBVRDocument.SLRLCBVR;
 import noNamespace.SLRLCBVRDocument.SLRLCBVR.InfBVR;
 import noNamespace.SLRLCBVRDocument.SLRLCBVR.SLRLC;
 import noNamespace.SLRLCBVRDocument.SLRLCBVR.SLRLC.TitreDoc;
-import noNamespace.TypFichierImpressionIS.Document;
+import noNamespace.TypAdresse;
+import noNamespace.TypFichierImpression;
+import noNamespace.TypFichierImpression.Document;
+import noNamespace.TypPeriode;
 import noNamespace.TypPeriode.Entete;
 import noNamespace.TypPeriode.Entete.ImpCcn;
 import noNamespace.TypPeriode.Entete.Tit;
-
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
 import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.service.sipf.wsdl.sipfbvrplus_v1.BvrDemande;
 import ch.vd.service.sipf.wsdl.sipfbvrplus_v1.BvrReponse;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
+import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
+import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
@@ -48,8 +47,8 @@ import ch.vd.uniregctb.editique.impl.EditiqueServiceImpl;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.type.CategorieImpotSource;
+import ch.vd.uniregctb.type.ModeCommunication;
 import ch.vd.uniregctb.webservice.sipf.BVRPlusClient;
-import org.apache.log4j.Logger;
 
 public class ImpressionSommationLRHelperImpl implements ImpressionSommationLRHelper {
 
@@ -146,9 +145,9 @@ public class ImpressionSommationLRHelperImpl implements ImpressionSommationLRHel
 	 * @return
 	 * @throws EditiqueException
 	 */
-	public FichierImpressionISDocument remplitSommationLR(DeclarationImpotSource lr, RegDate dateTraitement) throws EditiqueException {
-		final FichierImpressionISDocument mainDocument = FichierImpressionISDocument.Factory.newInstance();
-		TypFichierImpressionIS impressionIS = mainDocument.addNewFichierImpressionIS();
+	public FichierImpressionDocument remplitSommationLR(DeclarationImpotSource lr, RegDate dateTraitement) throws EditiqueException {
+		final FichierImpressionDocument mainDocument = FichierImpressionDocument.Factory.newInstance();
+		TypFichierImpression impressionIS = mainDocument.addNewFichierImpression();
 		Document[] documents = new Document[1];
 
 		InfoDocument infoDocument = remplitInfoDocument(lr);

@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.declaration.source;
 
-import noNamespace.FichierImpressionISDocument;
+import noNamespace.FichierImpressionDocument;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
@@ -12,7 +12,7 @@ public class MockImpressionSommationLRHelper implements ImpressionSommationLRHel
 		throw new IllegalArgumentException("no meant to be called");
 	}
 
-	public FichierImpressionISDocument remplitSommationLR(DeclarationImpotSource lr, RegDate dateTraitement) throws EditiqueException {
+	public FichierImpressionDocument remplitSommationLR(DeclarationImpotSource lr, RegDate dateTraitement) throws EditiqueException {
 		throw new IllegalArgumentException("no meant to be called");
 	}
 
