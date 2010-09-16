@@ -53,6 +53,24 @@
 			<null />
 			<null />
 		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>1290387</value>
+			<value>DebiteurPrestationImposable</value>
+			<value>CONFERENCIERS_ARTISTES_SPORTIFS</value>
+			<value>TRIMESTRIEL</value>
+			<value>PAPIER</value>
+			<value><![CDATA[Service pour conferencier]]></value>
+			<value>0</value>
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+			<null />
+		</row>
 	</table>
 	<table name="PERIODE_FISCALE">
 		<column>LOG_MDATE</column>
@@ -62,6 +80,16 @@
 			<value>2008-01-01</value>
 			<value>1</value>
 			<value>2008</value>
+		</row>
+		<row>
+			<value>2009-01-01</value>
+			<value>2</value>
+			<value>2009</value>
+		</row>
+		<row>
+			<value>2010-01-01</value>
+			<value>3</value>
+			<value>2010</value>
 		</row>
 	</table>
 	<table name="PARAMETRE_PERIODE_FISCALE">
@@ -138,6 +166,21 @@
 			<value>COMMUNE_OU_FRACTION_VD</value>
 			<value>5407</value>
 		</row>
+		<row>
+			<value>2009-01-01</value>
+			<value>12</value>
+			<value>ForDebiteurPrestationImposable</value>
+			<value>1290387</value>
+			<value>DEBITEUR_PRESTATION_IMPOSABLE</value>
+			<null />
+			<null />
+			<value>20090101</value>
+			<null />
+			<null />
+			<null />
+			<value>COMMUNE_OU_FRACTION_VD</value>
+			<value>5407</value>
+		</row>
 	</table>
 	<table name="DECLARATION">
 		<column>LOG_MDATE</column>
@@ -172,6 +215,30 @@
 			<value>ANNUEL</value>
 			<value>PAPIER</value>
 			<value>2007-02-02</value>
+			<value>1</value>
+		</row>
+			<row>
+			<value>2009-01-01</value>
+			<value>23</value>
+			<value>LR</value>
+			<value>1290387</value>
+			<value>20090201</value>
+			<value>20090228</value>
+			<value>UNIQUE</value>
+			<value>PAPIER</value>
+			<null />
+			<value>2</value>
+		</row>
+		<row>
+			<value>2009-01-01</value>
+			<value>24</value>
+			<value>LR</value>
+			<value>1290387</value>
+			<value>20091101</value>
+			<value>20091130</value>
+			<value>UNIQUE</value>
+			<value>PAPIER</value>
+			<null />
 			<value>1</value>
 		</row>
 	</table>
@@ -217,6 +284,20 @@
 			<value>EXPEDIEE</value>
 			<value>20080320</value>
 			<value>21</value>
+		</row>
+		<row>
+			<value>2009-01-01</value>
+			<value>42</value>
+			<value>RETOURNEE</value>
+			<value>20100511</value>
+			<value>23</value>
+		</row>
+		<row>
+			<value>2009-01-01</value>
+			<value>43</value>
+			<value>RETOURNEE</value>
+			<value>20100511</value>
+			<value>24</value>
 		</row>
 	</table>
 	<table name="ADRESSE_TIERS">
@@ -273,6 +354,24 @@
 			<value>12500001</value>
 			<null />
 			<value>20070101</value>
+			<null />
+			<value>TRIMESTRIEL</value>
+		</row>
+		<row>
+			<value>2009-01-01</value>
+			<value>2</value>
+			<value>1290387</value>
+			<value>M11</value>
+			<value>20090201</value>
+			<value>20091231</value>
+			<value>UNIQUE</value>
+		</row>
+		<row>
+			<value>2010-01-01</value>
+			<value>3</value>
+			<value>1290387</value>
+			<null />
+			<value>20100101</value>
 			<null />
 			<value>TRIMESTRIEL</value>
 		</row>

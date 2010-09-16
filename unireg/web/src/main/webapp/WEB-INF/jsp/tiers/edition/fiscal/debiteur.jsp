@@ -34,7 +34,7 @@
 	</table>
 </fieldset>
 <script type="text/javascript">
-	selectPeriodeDecompte('${command.tiers.periodiciteDecompte}');
+	selectPeriodeDecompte('${command.periodicite.periodiciteDecompte}');
 </script>
 <!-- Fin fiscal pour debiteurs impot a la source-->
 

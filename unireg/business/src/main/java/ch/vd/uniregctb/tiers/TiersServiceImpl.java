@@ -2155,10 +2155,15 @@ public class TiersServiceImpl implements TiersService {
 	public Periodicite addPeriodicite(DebiteurPrestationImposable debiteur, PeriodiciteDecompte periodiciteDecompte, PeriodeDecompte periodeDecompte, RegDate dateDebut, RegDate dateFin) {
 
 		while (true) { // cette boucle permet de fusionner - si nécessaire - la nouvelle périodicité avec celles existantes
-			final Periodicite courante = debiteur.getPeriodiciteAt(dateDebut);
+			Periodicite courante = debiteur.getPeriodiciteAt(dateDebut);
 			if (courante == null) {
-				// pas de périodicité, on continue
-				break;
+				//on regarde la périodicité précédente
+				courante = debiteur.getPeriodiciteAt(dateDebut.getOneDayBefore());
+				if(courante== null){
+				    // pas de périodicité, on continue
+					break;	
+				}
+
 			}
 			if (courante.getId() == null) {
 				// l'implémentation de getPeriodiciteAt() crée une périodicité transiente à la volée lorsqu'aucun périodicité n'existe => on l'ignore gaiment
@@ -2174,10 +2179,12 @@ public class TiersServiceImpl implements TiersService {
 			}
 
 			//[UNIREG-2683]dans le cas d'une périodicité UNIQUE, la période de décompte ne doit pas être historisée le changemnt doit être immediat
-			if (courante.getPeriodiciteDecompte() == PeriodiciteDecompte.UNIQUE && courante.getPeriodeDecompte() != periodeDecompte) {
-				// la periodicité est toujours de type UNIQUE, seule la période change, on met à jour la périodicité courante
-				courante.setPeriodeDecompte(periodeDecompte);
-				return courante;
+			if (periodiciteDecompte == PeriodiciteDecompte.UNIQUE) {
+				if (courante.getPeriodiciteDecompte() == PeriodiciteDecompte.UNIQUE && courante.getPeriodeDecompte() != periodeDecompte) {
+					// la periodicité est toujours de type UNIQUE, seule la période change, on met à jour la périodicité courante
+					courante.setPeriodeDecompte(periodeDecompte);
+					return courante;
+				}
 			}
 
 			final RegDate veilleDebut = dateDebut.getOneDayBefore();

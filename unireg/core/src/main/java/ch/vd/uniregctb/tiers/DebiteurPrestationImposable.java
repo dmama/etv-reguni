@@ -358,8 +358,18 @@ public class DebiteurPrestationImposable extends Tiers {
 					return p;
 				}
 			}
-			//Si aucune périodicité n'est trouvé à la date spécifié, on renvoie la dernière connue$
-			return getDernierePeriodicite();
+			//Si aucune périodicité n'est trouvé et que la date spécifé se trouve avant la date de début de validité
+			//de la première periodicité et que celle ci est unique, on la renvoie
+			List<Periodicite> periodicitesTriees = new ArrayList<Periodicite>(periodicites.size());
+			periodicitesTriees.addAll(periodicites);
+			Collections.sort(periodicitesTriees,new DateRangeComparator<Periodicite>());
+			Periodicite premiere = periodicitesTriees.get(0);
+			if(premiere.getPeriodiciteDecompte() == PeriodiciteDecompte.UNIQUE && date!=null && date.isBefore(premiere.getDateDebut())){
+				return premiere;
+			}
+			
+
+			return null;
 		}
 
 	}
