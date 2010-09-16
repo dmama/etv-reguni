@@ -88,29 +88,15 @@
 		
 		<script type="text/javascript">
 		
-		function Page_RetourIdentification() {
-				if(confirm('Voulez-vous vraiment quitter cette page sans sauver ?')) {
-					
-						document.location.href='edit.do?unlock=true';
-					
-					
-				}
+			function page_NonIdentification( id ) {
+				document.location.href='nonIdentifie.do?id='+id;
 			}
 
-
-		function page_NonIdentification( id ) {		
-			
-				document.location.href='nonIdentifie.do?id='+id;
-			
-				
-		}
-
-		function VoirMessage() {
-			var form = F$("theForm");
-			form.action = 'edit.do?fichier_acicom=true';
-			form.submit();
-		}
-		
+			function VoirMessage() {
+				var form = F$("theForm");
+				form.action = 'edit.do?fichier_acicom=true';
+				form.submit();
+			}
 		
 			function Page_Identifier(idCtb) {
 				if(confirm('Voulez-vous vraiment identifier ce message avec ce contribuable ?')) {					

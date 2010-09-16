@@ -5,9 +5,8 @@ import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
 /**
- * Ce tag permet d'afficher un bouton pour fermer l'overlay. Le bouton ne s'affiche que s'il est bien dans un overlay.
- *
- * @author Manuel Siggen <manuel.siggen@vd.ch>
+ * Ce tag permet d'afficher un bouton pour quitter une page d'édition sans sauvegarder les modifications en cours. Il peut être configuré pour
+ * afficher un message de confirmation à l'utilisateur.
  */
 public class JspTagRetourButton extends BodyTagSupport {
 
@@ -16,6 +15,7 @@ public class JspTagRetourButton extends BodyTagSupport {
 	private String text;
 	private String link;
 	private String message;
+	private boolean checkIfModified;
 
 
 	public void setText(String text) {
@@ -30,31 +30,33 @@ public class JspTagRetourButton extends BodyTagSupport {
 		this.message = message;
 	}
 
+	public void setCheckIfModified(boolean checkIfModified) {
+		this.checkIfModified = checkIfModified;
+	}
+
 	@Override
 	public int doStartTag() throws JspTagException {
 		try {
-			JspWriter out = pageContext.getOut();
-
+			final JspWriter out = pageContext.getOut();
 			final String libelleBouton = (text == null ? "Retour" : text);
-
 			final String libelleMessage = (message == null ? "Voulez-vous vraiment quitter cette page sans sauver le tiers ?" : message);
 
-
-
-			out.print("<input id=\"retourButton\" type=\"button\" value=\"" + libelleBouton + "\" onClick=\"javascript:Page_RetourToVisualisation('"+link+"','"+libelleMessage+"');\"/>");
+			out.print("<input id=\"retourButton\" type=\"button\" value=\"" + libelleBouton + "\" onClick=\"javascript:Page_RetourToVisualisation('" + link + "','" + libelleMessage + "');\"/>");
 			out.print("<script type=\"text/javascript\" language=\"Javascript1.3\">");
 			out.print("function Page_RetourToVisualisation(lien,message) {");
-			out.print("    if(confirm(message)) {");
-			out.print("        document.location.href=lien;");
-			out.print("  }");
-			out.print(" }");	
+
+			if (checkIfModified) {
+				out.print("    if (!Modifier.isModified || confirm(message)) {");
+			}
+			else {
+				out.print("    if (confirm(message)) {");
+			}
+
+			out.print("        document.location.href = lien;");
+			out.print("    }");
+			out.print(" }");
 			out.print("</script>");
 
-
-
-
-
-			// Skips the body.
 			return SKIP_BODY;
 		}
 		catch (Exception ex) {

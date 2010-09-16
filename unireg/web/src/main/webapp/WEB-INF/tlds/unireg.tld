@@ -684,6 +684,12 @@
 			<rtexprvalue>true</rtexprvalue>
 			<description>le texte à afficher dans la boite de dialogue</description>
 		</attribute>
+		<attribute>
+			<name>checkIfModified</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>s'il faut vérifier l'état du Modifier avant d'afficher le message de confirmation</description>
+		</attribute>
 	</tag>
 
 </taglib>

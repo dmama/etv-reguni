@@ -22,11 +22,6 @@
 			<!-- Fin Boutons -->
 		</form:form>
 		<script type="text/javascript" language="Javascript">
-			function Page_RetourRecapAnnulation(numero) {
-				if(confirm('Voulez-vous vraiment quitter cette page sans sauver ?')) {
-					document.location.href='../list.do?activation=annulation' ;
-				}
-			}
 			function Page_SauverAnnulation(event) {
 				if(!confirm('Voulez-vous vraiment confirmer cette annulation ?')) {
 					return Event.stop(event);

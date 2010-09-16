@@ -22,11 +22,6 @@
 			<!-- Fin Boutons -->
 		</form:form>
 		<script type="text/javascript" language="Javascript">
-			function Page_RetourRecapDeces(numero) {
-				if(confirm('Voulez-vous vraiment quitter cette page sans sauver ?')) {
-					document.location.href='list.do' ;
-				}
-			}
 			function Page_sauverDeces(event) {
 				if(!confirm('Voulez-vous vraiment confirmer ce décès ?')) {
 					return Event.stop(event);

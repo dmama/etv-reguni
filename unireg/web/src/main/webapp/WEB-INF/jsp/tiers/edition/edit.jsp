@@ -121,10 +121,10 @@
 			<!-- Debut Boutons -->
 			<c:choose>
 				<c:when test="${command.tiers.numero != null}">
-					<unireg:RetourButton link="visu.do?id=${command.tiers.numero}"/>					
+					<unireg:RetourButton link="visu.do?id=${command.tiers.numero}" checkIfModified="true"/>
 				</c:when>
 				<c:otherwise>
-					<unireg:RetourButton link="../tiers/list.do"/>
+					<unireg:RetourButton link="../tiers/list.do" checkIfModified="true"/>
 				</c:otherwise>
 			</c:choose>
 
@@ -176,20 +176,10 @@
 				}
 			} 		
 
-			/**
-			 * Initialisation de l'observeur du flag 'modifier'
-			 */
+			// Initialisation de l'observeur du flag 'modifier'
 			Modifier.attachObserver( "theForm", <c:out value="${__MODIFIER__}" />);
 			Modifier.messageSaveSubmitConfirmation = 'Voulez-vous vraiment sauver ce tiers ?';
 			Modifier.messageOverConfirmation = "Voulez-vous vraiment quitter cette page sans sauver le tiers ?";
-
-			function Page_RetourListe(ev) {
-				if ( Modifier.isModified)
-					if (!confirm(Modifier.messageOverConfirmation))
-						return Event.stop(ev);
-				return true;
-			}
-
 
 			function Page_AnnulerTiers(ev) {
 				if(!confirm('Voulez-vous vraiment annuler ce tiers ?'))

@@ -38,10 +38,10 @@
 				<!-- Debut Boutons -->
 				<c:choose>
 					<c:when test="${command.tiers.numero != null}">
-						<unireg:RetourButton link="../tiers/visu.do?id=${command.tiers.numero}"/>
+						<unireg:RetourButton link="../tiers/visu.do?id=${command.tiers.numero}" checkIfModified="true"/>
 					</c:when>
 					<c:otherwise>
-						<unireg:RetourButton link="../tiers/list.do"/>
+						<unireg:RetourButton link="../tiers/list.do" checkIfModified="true"/>
 					</c:otherwise>
 				</c:choose>
 		
@@ -64,12 +64,9 @@
 		</form:form>
 		
 		<script type="text/javascript" language="Javascript1.3">
-			/**
-			 * Initialisation de l'observeur du flag 'modifier'
-			 */
+			// Initialisation de l'observeur du flag 'modifier'
 			Modifier.attachObserver( "theForm", <c:out value="${__MODIFIER__}" />);
 			Modifier.messageSaveSubmitConfirmation = 'Voulez-vous vraiment sauver ce tiers ?';	
-
-	</script>					
+		</script>
 	</tiles:put>
 </tiles:insert>
