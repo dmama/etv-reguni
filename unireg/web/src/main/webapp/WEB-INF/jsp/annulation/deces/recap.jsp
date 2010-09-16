@@ -65,11 +65,6 @@
 			<!-- Fin Boutons -->
 		</form:form>
 		<script type="text/javascript" language="Javascript">
-			function Page_RetourRecapAnnulDeces(numero) {
-				if(confirm('Voulez-vous vraiment quitter cette page sans sauver ?')) {
-					document.location.href='list.do' ;
-				}
-			}
 			function Page_sauverAnnulDeces(event,isDeces) {
 				var message;
 				if(isDeces){

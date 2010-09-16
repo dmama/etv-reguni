@@ -30,11 +30,6 @@
 			<!-- Fin Boutons -->
 		</form:form>
 		<script type="text/javascript" language="Javascript">
-			function Page_RetourRecapSeparation(numeroPP1) {
-				if(confirm('Voulez-vous vraiment quitter cette page sans sauver ?')) {
-					document.location.href='list.do' ;
-				}
-			}
 			function Page_sauverSeparation(event) {
 				if(!confirm('Voulez-vous vraiment annuler la mise en ménage commun de ces deux personnes ?')) {
 					return Event.stop(event);
