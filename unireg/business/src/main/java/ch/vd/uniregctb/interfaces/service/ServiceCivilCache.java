@@ -40,6 +40,7 @@ public class ServiceCivilCache extends ServiceCivilServiceBase implements Unireg
 	private UniregCacheManager uniregCacheManager;
 	private StatsService statsService;
 	private DataEventService dataEventService;
+	private boolean listenDataEvent = true;
 
 	public void setTarget(ServiceCivilService target) {
 		this.target = target;
@@ -69,6 +70,11 @@ public class ServiceCivilCache extends ServiceCivilServiceBase implements Unireg
 		this.dataEventService = dataEventService;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setListenDataEvent(boolean listenDataEvent) {
+		this.listenDataEvent = listenDataEvent;
+	}
+
 	public Ehcache getEhCache() {
 		return cache;
 	}
@@ -84,8 +90,12 @@ public class ServiceCivilCache extends ServiceCivilServiceBase implements Unireg
 		if (statsService != null) {
 			statsService.registerCache(SERVICE_NAME, cache);
 		}
+
 		uniregCacheManager.register(this);
-		dataEventService.register(this);
+
+		if (listenDataEvent) {
+			dataEventService.register(this);
+		}
 	}
 
 	public void destroy() throws Exception {

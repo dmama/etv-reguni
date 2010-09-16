@@ -38,14 +38,7 @@
 		<property name="statsService" ref="statsService" />
 	</bean>
 
-	<bean id="serviceCivilServiceCache" class="ch.vd.uniregctb.interfaces.service.ServiceCivilCache" parent="serviceCivilServiceBase">
-		<property name="target" ref="serviceCivilServiceTracing" />
-		<property name="cacheManager" ref="ehCacheManager" />
-		<property name="cacheName" value="serviceCivil" />
-		<property name="uniregCacheManager" ref="uniregCacheManager" />
-		<property name="statsService" ref="statsService" />
-		<property name="dataEventService" ref="dataEventService" />
-	</bean>
+	<!-- le bean serviceCivilServiceCache est maintenant défini dans unireg-xxx-cache.xml -->
 
 	<alias alias="serviceCivilService" name="serviceCivilServiceCache"/>
 
