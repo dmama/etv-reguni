@@ -313,7 +313,7 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 		if (etatPeriode != null) {
 			final DeclarationImpotSource lr = (DeclarationImpotSource) etatPeriode.getDeclaration();
 			dpi = (DebiteurPrestationImposable) lr.getTiers();
-			if  (PeriodiciteDecompte.UNIQUE == dpi.getPeriodiciteAt(lr.getDateDebut()).getPeriodiciteDecompte()) {
+			if  (PeriodiciteDecompte.UNIQUE == dpi.getPeriodiciteAt(aujourdhui).getPeriodiciteDecompte()) {
 				setLRViewPeriodiciteUnique(lrEditView, lr, dpi);
 			}
 			else {
