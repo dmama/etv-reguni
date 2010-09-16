@@ -3,18 +3,7 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
 	<bean id="ehCacheManager" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">
-		<property name="configLocation" value="file:${extprop.ehcache.file}" />
-		<property name="shared" value="${extprop.ehcache.manager.shared}" />
-	</bean>
-
-	<bean id="serviceCivilServiceCache" class="ch.vd.uniregctb.interfaces.service.ServiceCivilCache" parent="serviceCivilServiceBase">
-		<property name="target" ref="serviceCivilServiceTracing" />
-		<property name="cacheManager" ref="ehCacheManager" />
-		<property name="cacheName" value="serviceCivil" />
-		<property name="uniregCacheManager" ref="uniregCacheManager" />
-		<property name="statsService" ref="statsService" />
-		<property name="dataEventService" ref="dataEventService" />
-		<property name="listenDataEvent" value="${extprop.cache.serviceCivil.listenDataEvent}" />
+	  <property name="configLocation" value="file:${extprop.ehcache.file}" />
 	</bean>
 
 </beans>
