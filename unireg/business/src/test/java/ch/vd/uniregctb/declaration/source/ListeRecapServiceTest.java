@@ -19,7 +19,6 @@ import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.type.CategorieImpotSource;
-import ch.vd.uniregctb.type.PeriodeDecompte;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
 
 public class ListeRecapServiceTest extends BusinessTest {
@@ -71,95 +70,62 @@ public class ListeRecapServiceTest extends BusinessTest {
 	}
 
 	@Test
-	@NotTransactional
 	public void testAjusterSelonPeriodeFiscale() throws Exception {
 
-		final RegDate dateDebut1 = date(2009, 2, 1);
-		final RegDate dateDebut2 = date(2006, 1, 1);
-		final RegDate dateDebut3 = date(2007, 1, 1);
-		final RegDate dateDebut4 = date(2008, 1, 1);
-		final RegDate dateDebut5 = date(2010, 1, 1);
-
-		final RegDate dateFin = RegDate.get();
+		// cas simple sur une seule période fiscale (= pas de coupure à générer)
 		{
-			final List<DateRange> periodeADecouper1 = Arrays.<DateRange>asList(new DateRangeHelper.Range(dateDebut1, dateFin));
-			final List<DateRange> periodeDecoupees1 = ListeRecapServiceImpl.ajusterSelonPeriodeFiscale(periodeADecouper1);
-
-
-			final List<DateRange> periodeAttendues1 = new ArrayList<DateRange>();
-
-			periodeAttendues1.add(new DateRangeHelper.Range(dateDebut1, date(dateDebut1.year(), 12, 31)));
-			periodeAttendues1.add(new DateRangeHelper.Range(date(2010, 1, 1), dateFin));
-
-
-			checkSameCollections(periodeAttendues1, periodeDecoupees1);
+			final List<DateRange> periodesADecouper = Arrays.<DateRange>asList(new DateRangeHelper.Range(date(2010, 5, 14), date(2010, 9, 10)));
+			final List<DateRange> periodesDecoupees = ListeRecapServiceImpl.ajusterSelonPeriodeFiscale(periodesADecouper);
+			checkSameCollections(periodesADecouper, periodesDecoupees);
 		}
 
+		// cas simple sur deux périodes fiscales
 		{
-			final List<DateRange> periodeADecouper2 = Arrays.<DateRange>asList(new DateRangeHelper.Range(dateDebut2, dateFin));
-			final List<DateRange> periodeDecoupees2 = ListeRecapServiceImpl.ajusterSelonPeriodeFiscale(periodeADecouper2);
+			final List<DateRange> periodesADecouper = Arrays.<DateRange>asList(new DateRangeHelper.Range(date(2009, 2, 1), date(2010, 9, 10)));
+			final List<DateRange> periodesDecoupees = ListeRecapServiceImpl.ajusterSelonPeriodeFiscale(periodesADecouper);
 
+			final List<DateRange> periodeAttendues = new ArrayList<DateRange>();
+			periodeAttendues.add(new DateRangeHelper.Range(date(2009, 2, 1), date(2009, 12, 31)));
+			periodeAttendues.add(new DateRangeHelper.Range(date(2010, 1, 1), date(2010, 9, 10)));
 
-			final List<DateRange> periodeAttendues2 = new ArrayList<DateRange>();
-			for (int i = 0; i < 4; ++i) {
-				final RegDate start = date(dateDebut2.year() + i, 1, 1);
-				final RegDate lastDay = start.addYears(1).addDays(-1);
-				periodeAttendues2.add(new DateRangeHelper.Range(start, lastDay));
-			}
-			periodeAttendues2.add(new DateRangeHelper.Range(date(dateFin.year(), 1, 1), dateFin));
-
-
-			checkSameCollections(periodeAttendues2, periodeDecoupees2);
+			checkSameCollections(periodeAttendues, periodesDecoupees);
 		}
 
+		// cas simple sur plusieurs périodes fiscales
 		{
-			final List<DateRange> periodeADecouper3 = Arrays.<DateRange>asList(new DateRangeHelper.Range(dateDebut3, dateFin));
-			final List<DateRange> periodeDecoupees3 = ListeRecapServiceImpl.ajusterSelonPeriodeFiscale(periodeADecouper3);
+			final List<DateRange> periodesADecouper = Arrays.<DateRange>asList(new DateRangeHelper.Range(date(2006, 5, 14), date(2010, 9, 10)));
+			final List<DateRange> periodesDecoupees = ListeRecapServiceImpl.ajusterSelonPeriodeFiscale(periodesADecouper);
 
+			final List<DateRange> periodesAttendues = new ArrayList<DateRange>();
+			periodesAttendues.add(new DateRangeHelper.Range(date(2006, 5, 14), date(2006, 12, 31)));
+			periodesAttendues.add(new DateRangeHelper.Range(date(2007, 1, 1), date(2007, 12, 31)));
+			periodesAttendues.add(new DateRangeHelper.Range(date(2008, 1, 1), date(2008, 12, 31)));
+			periodesAttendues.add(new DateRangeHelper.Range(date(2009, 1, 1), date(2009, 12, 31)));
+			periodesAttendues.add(new DateRangeHelper.Range(date(2010, 1, 1), date(2010, 9, 10)));
 
-			final List<DateRange> periodeAttendues3 = new ArrayList<DateRange>();
-			for (int i = 0; i < 3; ++i) {
-				final RegDate start = date(dateDebut3.year() + i, 1, 1);
-				final RegDate lastDay = start.addYears(1).addDays(-1);
-				periodeAttendues3.add(new DateRangeHelper.Range(start, lastDay));
-			}
-			periodeAttendues3.add(new DateRangeHelper.Range(date(dateFin.year(), 1, 1), dateFin));
-
-
-			checkSameCollections(periodeAttendues3, periodeDecoupees3);
+			checkSameCollections(periodesAttendues, periodesDecoupees);
 		}
 
+		// cas multi-source
 		{
-			final List<DateRange> periodeADecouper4 = Arrays.<DateRange>asList(new DateRangeHelper.Range(dateDebut4, dateFin));
-			final List<DateRange> periodeDecoupees4 = ListeRecapServiceImpl.ajusterSelonPeriodeFiscale(periodeADecouper4);
+			final List<DateRange> periodesADecouper = new ArrayList<DateRange>();
+			periodesADecouper.add(new DateRangeHelper.Range(date(2006, 5, 14), date(2006, 12, 30)));
+			periodesADecouper.add(new DateRangeHelper.Range(date(2006, 12, 31), date(2007, 3, 1)));
+			periodesADecouper.add(new DateRangeHelper.Range(date(2007, 4, 12), date(2007, 4, 12)));
+			periodesADecouper.add(new DateRangeHelper.Range(date(2008, 5, 24), date(2010, 1, 1)));
+			final List<DateRange> periodesDecoupees = ListeRecapServiceImpl.ajusterSelonPeriodeFiscale(periodesADecouper);
 
+			final List<DateRange> periodesAttendues = new ArrayList<DateRange>();
+			periodesAttendues.add(new DateRangeHelper.Range(date(2006, 5, 14), date(2006, 12, 30)));
+			periodesAttendues.add(new DateRangeHelper.Range(date(2006, 12, 31), date(2006, 12, 31)));
+			periodesAttendues.add(new DateRangeHelper.Range(date(2007, 1, 1), date(2007, 3, 1)));
+			periodesAttendues.add(new DateRangeHelper.Range(date(2007, 4, 12), date(2007, 4, 12)));
+			periodesAttendues.add(new DateRangeHelper.Range(date(2008, 5, 24), date(2008, 12, 31)));
+			periodesAttendues.add(new DateRangeHelper.Range(date(2009, 1, 1), date(2009, 12, 31)));
+			periodesAttendues.add(new DateRangeHelper.Range(date(2010, 1, 1), date(2010, 1, 1)));
 
-			final List<DateRange> periodeAttendues4 = new ArrayList<DateRange>();
-			for (int i = 0; i < 2; ++i) {
-				final RegDate start = date(dateDebut4.year() + i, 1, 1);
-				final RegDate lastDay = start.addYears(1).addDays(-1);
-				periodeAttendues4.add(new DateRangeHelper.Range(start, lastDay));
-			}
-			periodeAttendues4.add(new DateRangeHelper.Range(date(dateFin.year(), 1, 1), dateFin));
-
-
-			checkSameCollections(periodeAttendues4, periodeDecoupees4);
+			checkSameCollections(periodesAttendues, periodesDecoupees);
 		}
-
-		{
-			final List<DateRange> periodeADecouper5 = Arrays.<DateRange>asList(new DateRangeHelper.Range(dateDebut5, dateFin));
-			final List<DateRange> periodeDecoupees5 = ListeRecapServiceImpl.ajusterSelonPeriodeFiscale(periodeADecouper5);
-
-
-			final List<DateRange> periodeAttendues5 = new ArrayList<DateRange>();
-			
-			periodeAttendues5.add(new DateRangeHelper.Range(date(dateFin.year(), 1, 1), dateFin));
-
-
-			checkSameCollections(periodeAttendues5, periodeDecoupees5);
-		}
-
-
 	}
 
 	@Test
