@@ -271,8 +271,7 @@ public class ListeRecapServiceImpl implements ListeRecapService, DelegateEditiqu
 				// maintenant, à partir de cette liste de ranges où il devrait y avoir une LR mais il n'y en a pas
 				// il faut extraire les périodes de LR
 				if (lrManquantes.size() > 0) {
-					List<DateRange>lrManquantesAjustees = ajusterSelonPeriodeFiscale(lrManquantes);
-
+					final List<DateRange>lrManquantesAjustees = ajusterSelonPeriodeFiscale(lrManquantes);
 					lrPeriodiquesManquantes = extrairePeriodesAvecPeriodicites(dpi, lrManquantesAjustees);
 				}
 			}
@@ -283,36 +282,31 @@ public class ListeRecapServiceImpl implements ListeRecapService, DelegateEditiqu
 		return lrPeriodiquesManquantes;
 	}
 
-	/** Permet de confiner les ranges dans une période fiscale
-	 * si on a un range qui couvre n périodes fiscales, il devra étre divisé en n range
-	 *
-	 * @param lrManquantes
-	 * @return
+	/**
+	 * Permet de confiner les ranges dans une période fiscale
+	 * si on a un range qui couvre n périodes fiscales, il devra étre divisé en n ranges
+	 * @param source liste de ranges qui peuvent chevaucher les frontières d'années
+	 * @return liste de ranges dont la couverture est équivalente à celle de la source en ayant introduit des scissions à la Saint Sylvestre de chaque année
 	 */
-	protected static List<DateRange> ajusterSelonPeriodeFiscale(List<DateRange> lrManquantes) {
-		final List<DateRange> lr = new ArrayList<DateRange>();
-		for (DateRange manquante : lrManquantes) {
-			 RegDate debut = manquante.getDateDebut();
-			RegDate fin = manquante.getDateFin();
-			int periodeDebut = debut.year();
-			int periodeFin = fin.year();
+	protected static List<DateRange> ajusterSelonPeriodeFiscale(List<DateRange> source) {
+		final List<DateRange> result = new ArrayList<DateRange>();
+		for (DateRange manquante : source) {
+			final RegDate debut = manquante.getDateDebut();
+			final RegDate fin = manquante.getDateFin();
+			final int periodeDebut = debut.year();
+			final int periodeFin = fin.year();
 			if (periodeDebut < periodeFin) {
-				for(int i=periodeDebut;periodeDebut<periodeFin;i++){
-					lr.add(new DateRangeHelper.Range(debut, RegDate.get(debut.year(),12,31)));
-					debut = debut.addYears(1);
-					periodeDebut++;
-
+				result.add(new DateRangeHelper.Range(debut, RegDate.get(periodeDebut, 12, 31)));
+				for (int i = periodeDebut + 1; i < periodeFin ; ++ i) {
+					result.add(new DateRangeHelper.Range(RegDate.get(i, 1, 1), RegDate.get(i, 12, 31)));
 				}
-				lr.add(new DateRangeHelper.Range(RegDate.get(fin.year(),1,1),fin));
-
+				result.add(new DateRangeHelper.Range(RegDate.get(periodeFin, 1, 1), fin));
 			}
-			else{
-				 lr.add(new DateRangeHelper.Range(debut,fin));
+			else {
+				 result.add(manquante);
 			}
-
 		}
-
-		return lr;  //To change body of created methods use File | Settings | File Templates.
+		return result;
 	}
 
 	/**
