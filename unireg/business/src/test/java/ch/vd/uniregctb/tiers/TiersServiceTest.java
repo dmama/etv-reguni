@@ -3296,7 +3296,7 @@ public class TiersServiceTest extends BusinessTest {
 			public Long doInTransaction(TransactionStatus status) {
 
 				final PersonnePhysique pp = addNonHabitant("Alastor", "Maugrey", date(1956, 9, 3), Sexe.MASCULIN);
-				Assert.assertFalse(pp.getBlocageRemboursementAutomatique());
+				Assert.assertTrue(pp.getBlocageRemboursementAutomatique());
 				return pp.getNumero();
 			}
 		});
@@ -3306,7 +3306,7 @@ public class TiersServiceTest extends BusinessTest {
 			public Object doInTransaction(TransactionStatus status) {
 
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				Assert.assertFalse(pp.getBlocageRemboursementAutomatique());
+				Assert.assertTrue(pp.getBlocageRemboursementAutomatique());
 				tiersService.openForFiscalPrincipal(pp, date(2000, 5, 12), MotifRattachement.DOMICILE, MockCommune.Bale.getNoOFSEtendu(), TypeAutoriteFiscale.COMMUNE_HC, ModeImposition.ORDINAIRE, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, false);
 				Assert.assertTrue(pp.getBlocageRemboursementAutomatique());
 				return null;
@@ -3323,7 +3323,7 @@ public class TiersServiceTest extends BusinessTest {
 			public Long doInTransaction(TransactionStatus status) {
 
 				final PersonnePhysique pp = addNonHabitant("Alastor", "Maugrey", date(1956, 9, 3), Sexe.MASCULIN);
-				Assert.assertFalse(pp.getBlocageRemboursementAutomatique());
+				Assert.assertTrue(pp.getBlocageRemboursementAutomatique());
 				return pp.getNumero();
 			}
 		});
@@ -3333,7 +3333,7 @@ public class TiersServiceTest extends BusinessTest {
 			public Object doInTransaction(TransactionStatus status) {
 
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				Assert.assertFalse(pp.getBlocageRemboursementAutomatique());
+				Assert.assertTrue(pp.getBlocageRemboursementAutomatique());
 				tiersService.openForFiscalPrincipal(pp, date(2000, 5, 12), MotifRattachement.DOMICILE, MockPays.RoyaumeUni.getNoOFS(), TypeAutoriteFiscale.PAYS_HS, ModeImposition.ORDINAIRE, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, false);
 				Assert.assertTrue(pp.getBlocageRemboursementAutomatique());
 				return null;
@@ -3350,7 +3350,7 @@ public class TiersServiceTest extends BusinessTest {
 			public Long doInTransaction(TransactionStatus status) {
 
 				final PersonnePhysique pp = addNonHabitant("Alastor", "Maugrey", date(1956, 9, 3), Sexe.MASCULIN);
-				Assert.assertFalse(pp.getBlocageRemboursementAutomatique());
+				Assert.assertTrue(pp.getBlocageRemboursementAutomatique());
 				return pp.getNumero();
 			}
 		});
@@ -3360,9 +3360,275 @@ public class TiersServiceTest extends BusinessTest {
 			public Object doInTransaction(TransactionStatus status) {
 
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
-				Assert.assertFalse(pp.getBlocageRemboursementAutomatique());
+				Assert.assertTrue(pp.getBlocageRemboursementAutomatique());
 				tiersService.openForFiscalPrincipal(pp, date(2000, 5, 12), MotifRattachement.DOMICILE, MockCommune.Lausanne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ModeImposition.ORDINAIRE, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, false);
 				Assert.assertFalse(pp.getBlocageRemboursementAutomatique());
+				return null;
+			}
+		});
+	}
+
+	@Test
+	@NotTransactional
+	public void testAnnulationForVaudoisSansForRestantEtBlocageRemboursementAutomatique() throws Exception {
+
+		// mise en place d'un contribuable
+		final long ppId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Alastor", "Maugrey", date(1956, 9, 3), Sexe.MASCULIN);
+				addForPrincipal(pp, date(2000, 5, 12), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+				pp.setBlocageRemboursementAutomatique(false);
+				return pp.getNumero();
+			}
+		});
+
+		// annulation du for vaudois -> le contribuable se retrouve sans aucun for (le blocage devrait alors être réactivé)
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				Assert.assertFalse(pp.getBlocageRemboursementAutomatique());
+
+				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+				tiersService.annuleForFiscal(ffp, false);
+				Assert.assertNull(pp.getDernierForFiscalPrincipal());
+				Assert.assertTrue(pp.getBlocageRemboursementAutomatique());
+
+				return null;
+			}
+		});
+	}
+
+	@Test
+	@NotTransactional
+	public void testAnnulationForVaudoisAvecForVaudoisRestantEtBlocageRemboursementAutomatique() throws Exception {
+
+		// mise en place d'un contribuable
+		final long ppId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Alastor", "Maugrey", date(1956, 9, 3), Sexe.MASCULIN);
+				addForPrincipal(pp, date(2000, 5, 12), MotifFor.ARRIVEE_HS, date(2005, 6, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne, MotifRattachement.DOMICILE);
+				addForPrincipal(pp, date(2005, 6, 2), MotifFor.DEMENAGEMENT_VD, MockCommune.Renens);
+				pp.setBlocageRemboursementAutomatique(false);
+				return pp.getNumero();
+			}
+		});
+
+		// annulation du dernier for vaudois -> le contribuable a encore un for vaudois ouvert -> pas de nouveau blocage
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				Assert.assertFalse(pp.getBlocageRemboursementAutomatique());
+
+				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+				tiersService.annuleForFiscal(ffp, false);
+
+				final ForFiscalPrincipal autreFfp = pp.getDernierForFiscalPrincipal();
+				Assert.assertNotNull(autreFfp);
+				Assert.assertNull("Le for précédent n'a pas été ré-ouvert ?", autreFfp.getDateFin());
+				Assert.assertEquals(MockCommune.Lausanne.getNoOFSEtendu(), (int) autreFfp.getNumeroOfsAutoriteFiscale());
+				Assert.assertFalse(pp.getBlocageRemboursementAutomatique());
+
+				return null;
+			}
+		});
+	}
+
+	@Test
+	@NotTransactional
+	public void testAnnulationForVaudoisAvecForHorsCantonRestantEtBlocageRemboursementAutomatique() throws Exception {
+
+		// mise en place d'un contribuable
+		final long ppId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Alastor", "Maugrey", date(1956, 9, 3), Sexe.MASCULIN);
+				addForPrincipal(pp, date(2000, 5, 12), MotifFor.ACHAT_IMMOBILIER, date(2005, 6, 1), MotifFor.ARRIVEE_HC, MockCommune.Bern, MotifRattachement.DOMICILE);
+				addForPrincipal(pp, date(2005, 6, 2), MotifFor.ARRIVEE_HC, MockCommune.Renens);
+				addForSecondaire(pp, date(2000, 5, 12), MotifFor.ACHAT_IMMOBILIER, date(2007, 12, 31), MotifFor.VENTE_IMMOBILIER, MockCommune.CheseauxSurLausanne.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+				pp.setBlocageRemboursementAutomatique(false);
+				return pp.getNumero();
+			}
+		});
+
+		// annulation du dernier for vaudois -> le contribuable n'a plus de for vaudois ouvert -> blocage
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				Assert.assertFalse(pp.getBlocageRemboursementAutomatique());
+
+				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+				tiersService.annuleForFiscal(ffp, false);
+
+				final ForFiscalPrincipal autreFfp = pp.getDernierForFiscalPrincipal();
+				Assert.assertNotNull(autreFfp);
+				Assert.assertNull("Le for précédent n'a pas été ré-ouvert ?", autreFfp.getDateFin());
+				Assert.assertEquals(MockCommune.Bern.getNoOFSEtendu(), (int) autreFfp.getNumeroOfsAutoriteFiscale());
+				Assert.assertTrue(pp.getBlocageRemboursementAutomatique());
+
+				return null;
+			}
+		});
+	}
+
+	@Test
+	@NotTransactional
+	public void testAnnulationForVaudoisAvecForHorsSuisseRestantEtBlocageRemboursementAutomatique() throws Exception {
+
+		// mise en place d'un contribuable
+		final long ppId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Alastor", "Maugrey", date(1956, 9, 3), Sexe.MASCULIN);
+				addForPrincipal(pp, date(2000, 5, 12), MotifFor.ACHAT_IMMOBILIER, date(2005, 6, 1), MotifFor.ARRIVEE_HS, MockPays.Allemagne);
+				addForPrincipal(pp, date(2005, 6, 2), MotifFor.ARRIVEE_HS, MockCommune.Renens);
+				addForSecondaire(pp, date(2000, 5, 12), MotifFor.ACHAT_IMMOBILIER, date(2007, 12, 31), MotifFor.VENTE_IMMOBILIER, MockCommune.CheseauxSurLausanne.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+				pp.setBlocageRemboursementAutomatique(false);
+				return pp.getNumero();
+			}
+		});
+
+		// annulation du dernier for vaudois -> le contribuable n'a plus de for vaudois ouvert -> blocage
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				Assert.assertFalse(pp.getBlocageRemboursementAutomatique());
+
+				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+				tiersService.annuleForFiscal(ffp, false);
+
+				final ForFiscalPrincipal autreFfp = pp.getDernierForFiscalPrincipal();
+				Assert.assertNotNull(autreFfp);
+				Assert.assertNull("Le for précédent n'a pas été ré-ouvert ?", autreFfp.getDateFin());
+				Assert.assertEquals(MockPays.Allemagne.getNoOFS(), (int) autreFfp.getNumeroOfsAutoriteFiscale());
+				Assert.assertTrue(pp.getBlocageRemboursementAutomatique());
+
+				return null;
+			}
+		});
+	}
+
+	@Test
+	@NotTransactional
+	public void testFermetureForVaudoisDecesEtBlocageRemboursementAutomatique() throws Exception {
+
+		// mise en place d'un contribuable
+		final long ppId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Alastor", "Maugrey", date(1956, 9, 3), Sexe.MASCULIN);
+				addForPrincipal(pp, date(2005, 6, 2), MotifFor.ARRIVEE_HS, MockCommune.Renens);
+				pp.setBlocageRemboursementAutomatique(false);
+				return pp.getNumero();
+			}
+		});
+
+		// fermeture du for vaudois pour décès -> blocage
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				Assert.assertFalse(pp.getBlocageRemboursementAutomatique());
+
+				tiersService.closeAllForsFiscaux(pp, date(2010, 5, 23), MotifFor.VEUVAGE_DECES);
+
+				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+				Assert.assertNotNull(ffp);
+				Assert.assertEquals(MockCommune.Renens.getNoOFS(), (int) ffp.getNumeroOfsAutoriteFiscale());
+				Assert.assertTrue(pp.getBlocageRemboursementAutomatique());
+
+				return null;
+			}
+		});
+	}
+
+	@Test
+	@NotTransactional
+	public void testFermetureForVaudoisDepartHorsSuisseEtBlocageRemboursementAutomatique() throws Exception {
+
+		// mise en place d'un contribuable
+		final long ppId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Alastor", "Maugrey", date(1956, 9, 3), Sexe.MASCULIN);
+				addForPrincipal(pp, date(2005, 6, 2), MotifFor.ARRIVEE_HS, MockCommune.Renens);
+				pp.setBlocageRemboursementAutomatique(false);
+				return pp.getNumero();
+			}
+		});
+
+		// fermeture du for vaudois pour décès -> blocage
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				Assert.assertFalse(pp.getBlocageRemboursementAutomatique());
+
+				tiersService.closeAllForsFiscaux(pp, date(2010, 5, 23), MotifFor.DEPART_HS);
+
+				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+				Assert.assertNotNull(ffp);
+				Assert.assertEquals(MockCommune.Renens.getNoOFS(), (int) ffp.getNumeroOfsAutoriteFiscale());
+				Assert.assertTrue(pp.getBlocageRemboursementAutomatique());
+
+				return null;
+			}
+		});
+	}
+
+	@Test
+	@NotTransactional
+	public void testFermetureForVaudoisDepartHorsCantonEtBlocageRemboursementAutomatique() throws Exception {
+
+		// mise en place d'un contribuable
+		final long ppId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Alastor", "Maugrey", date(1956, 9, 3), Sexe.MASCULIN);
+				addForPrincipal(pp, date(2005, 6, 2), MotifFor.ARRIVEE_HS, MockCommune.Renens);
+				pp.setBlocageRemboursementAutomatique(false);
+				return pp.getNumero();
+			}
+		});
+
+		// fermeture du for vaudois pour décès -> blocage
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				Assert.assertFalse(pp.getBlocageRemboursementAutomatique());
+
+				tiersService.closeAllForsFiscaux(pp, date(2010, 5, 23), MotifFor.DEPART_HC);
+
+				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+				Assert.assertNotNull(ffp);
+				Assert.assertEquals(MockCommune.Renens.getNoOFS(), (int) ffp.getNumeroOfsAutoriteFiscale());
+				Assert.assertTrue(pp.getBlocageRemboursementAutomatique());
+
+				return null;
+			}
+		});
+	}
+
+	@Test
+	@NotTransactional
+	public void testFermetureForVaudoisDemenagementVaudoisEtBlocageRemboursementAutomatique() throws Exception {
+
+		// mise en place d'un contribuable
+		final long ppId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Alastor", "Maugrey", date(1956, 9, 3), Sexe.MASCULIN);
+				addForPrincipal(pp, date(2005, 6, 2), MotifFor.ARRIVEE_HS, MockCommune.Renens);
+				pp.setBlocageRemboursementAutomatique(true);
+				return pp.getNumero();
+			}
+		});
+
+		// fermeture du for vaudois pour déménagement vaudois (avec ré-ouverture d'un autre for vaudois) -> déblocage
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				Assert.assertTrue(pp.getBlocageRemboursementAutomatique());
+
+				tiersService.closeForFiscalPrincipal(pp, date(2010, 5, 23), MotifFor.DEMENAGEMENT_VD);
+				tiersService.addForPrincipal(pp, date(2010, 5, 24), MotifFor.DEMENAGEMENT_VD, null, null, MotifRattachement.DOMICILE, MockCommune.Bex.getNoOFSEtendu(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ModeImposition.ORDINAIRE);
+
+				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+				Assert.assertNotNull(ffp);
+				Assert.assertEquals(MockCommune.Bex.getNoOFS(), (int) ffp.getNumeroOfsAutoriteFiscale());
+				Assert.assertFalse(pp.getBlocageRemboursementAutomatique());
+
 				return null;
 			}
 		});

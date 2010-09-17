@@ -103,6 +103,8 @@ public class Ec_10000_04_Veuvage_DecesPuisVeuvageMemeJour_Scenario extends Evene
 		f.setModeImposition(ModeImposition.ORDINAIRE);
 		addSituationFamille(menage, dateMariage, null, EtatCivil.MARIE, 0, null, pierre);
 
+		menage.setBlocageRemboursementAutomatique(false);
+
 	}
 
 	@Check(id=1, descr="Vérifie que l'habitant Pierre est marié seul et le For du menage existe")
@@ -127,7 +129,7 @@ public class Ec_10000_04_Veuvage_DecesPuisVeuvageMemeJour_Scenario extends Evene
 			assertEquals(communeMariage.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale(), "Le dernier for n'est pas sur " + communeMariage.getNomMinuscule());
 		}
 
-		assertBlocageRemboursementAutomatique(false, false);
+		assertBlocageRemboursementAutomatique(true, false);
 	}
 
 	@Etape(id=2, descr="Envoi de l'événement Décès")

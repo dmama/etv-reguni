@@ -115,6 +115,8 @@ public class Ec_6000_06_Separation_CavecB_Scenario extends EvenementCivilScenari
 			tiersService.addTiersToCouple(menage, aida, dateDebutCouple, null);
 			final ForFiscalPrincipal f = addForFiscalPrincipal(menage, commune, dateDebutForCouple, null, MotifFor.DEMENAGEMENT_VD, null);
 			f.setModeImposition(ModeImposition.ORDINAIRE);
+
+			menage.setBlocageRemboursementAutomatique(false);
 		}
 	}
 
@@ -143,7 +145,7 @@ public class Ec_6000_06_Separation_CavecB_Scenario extends EvenementCivilScenari
 					"Le dernier for n'est pas sur " + commune.getNomMinuscule());
 		}
 
-		assertBlocageRemboursementAutomatique(false, false, false);
+		assertBlocageRemboursementAutomatique(true, true, false);
 	}
 
 	@Etape(id=2, descr="Envoi de l'événement de séparation")

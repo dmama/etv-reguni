@@ -2138,8 +2138,6 @@ public class MetierServiceImpl implements MetierService {
 				Audit.info(numeroEvenement, "Les deux conjoints sont décédés le même jour : annulation du for fiscal du deuxième défunt");
 				tiersService.annuleForFiscal(ffp, true);
 
-				defunt.setBlocageRemboursementAutomatique(true);
-
 				// le deuxième défunt doit avoir une situation de famille VEUF
 				final SituationFamille sf = defunt.getSituationFamilleAt(lendemainDeces);
 				if (sf != null) {
@@ -2294,6 +2292,9 @@ public class MetierServiceImpl implements MetierService {
 		 * Fermeture des fors ouverts sur le tiers
 		 */
 		cancelForsOpenedSince(lendemain, tiers, MotifFor.VEUVAGE_DECES);
+
+		// [UNIREG-2794] les fors du tiers sont à nouveau fermés -> les remboursements automatiques doivent être à nouveau fermés
+		tiers.setBlocageRemboursementAutomatique(true);
 
 		if (ffp != null && MotifFor.VEUVAGE_DECES == ffp.getMotifOuverture()) {
 

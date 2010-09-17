@@ -81,6 +81,7 @@ public class Ec_2000_08_Deces_CivilApresFiscal_Difference1Jour_Scenario extends 
 		final PersonnePhysique guillaume = addHabitant(noIndGuillaume);
 		noHabGuillaume = guillaume.getNumero();
 		addForFiscalPrincipal(guillaume, MockCommune.Lausanne, dateArriveeVD, null, MotifFor.ARRIVEE_HC, null);
+		guillaume.setBlocageRemboursementAutomatique(false);
 	}
 
 	@Check(id=1, descr="Vérification que l'habitant Guillaume a son adresse et son for à Lausanne")

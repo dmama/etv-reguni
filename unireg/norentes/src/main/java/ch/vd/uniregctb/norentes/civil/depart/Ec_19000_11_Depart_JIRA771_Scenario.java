@@ -113,6 +113,7 @@ public class Ec_19000_11_Depart_JIRA771_Scenario extends DepartScenario {
 			tiersService.addTiersToCouple(menage, gloria, dateMariage, null);
 			
 			addForFiscalPrincipal(menage, communeDepart, dateMariage, null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null);
+			menage.setBlocageRemboursementAutomatique(false);
 		}
 	}
 
@@ -147,7 +148,7 @@ public class Ec_19000_11_Depart_JIRA771_Scenario extends DepartScenario {
 					"L'adresse principale n'est pas à " + communeDepart.getNomMinuscule());
 		}
 
-		assertBlocageRemboursementAutomatique(false, false, false);
+		assertBlocageRemboursementAutomatique(true, true, false);
 	}
 
 	@Etape(id=2, descr="Départ hors canton du contribuable principal du couple")
@@ -187,7 +188,7 @@ public class Ec_19000_11_Depart_JIRA771_Scenario extends DepartScenario {
 					"L'adresse principale n'est pas à " + communeArrivee.getNomMinuscule());
 		}
 
-		assertBlocageRemboursementAutomatique(false, false, false);
+		assertBlocageRemboursementAutomatique(true, true, false);
 	}
 
 
@@ -214,7 +215,7 @@ public class Ec_19000_11_Depart_JIRA771_Scenario extends DepartScenario {
 		assertNotNull(ffp, "Le couple n'est plus asujetti");
 		assertEquals(communeDepart.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale(), "Le for n'est pas sur la bonne commune");
 		
-		assertBlocageRemboursementAutomatique(false, false, false);
+		assertBlocageRemboursementAutomatique(true, true, false);
 	}
 
 	private void assertAdressesFiscales(Tiers tiers, MockCommune commune) throws AdresseException {

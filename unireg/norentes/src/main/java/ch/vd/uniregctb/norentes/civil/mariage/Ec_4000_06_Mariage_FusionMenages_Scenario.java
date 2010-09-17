@@ -118,6 +118,7 @@ public class Ec_4000_06_Mariage_FusionMenages_Scenario extends EvenementCivilSce
 
 			final ForFiscalPrincipal f = addForFiscalPrincipal(menage, commune, dateMariageAlfredo, null, MotifFor.INDETERMINE, null);
 			f.setModeImposition(ModeImposition.ORDINAIRE);
+			menage.setBlocageRemboursementAutomatique(false);
 		}
 
 		// Armando
@@ -133,6 +134,7 @@ public class Ec_4000_06_Mariage_FusionMenages_Scenario extends EvenementCivilSce
 
 			final ForFiscalPrincipal f = addForFiscalPrincipal(menage, commune, dateMariageArmando, null, MotifFor.INDETERMINE, null);
 			f.setModeImposition(ModeImposition.ORDINAIRE);
+			menage.setBlocageRemboursementAutomatique(false);
 		}
 	}
 
@@ -171,7 +173,7 @@ public class Ec_4000_06_Mariage_FusionMenages_Scenario extends EvenementCivilSce
 			assertEquals(commune.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale(), "Le dernier for n'est pas sur " + commune.getNomMinuscule());
 		}
 
-		assertBlocageRemboursementAutomatique(false, false, false);
+		assertBlocageRemboursementAutomatique(true, true, false);
 	}
 
 	@Etape(id=2, descr="Reconstitution du ménage commun à partir des deux ménages communs incomplets")
@@ -223,7 +225,7 @@ public class Ec_4000_06_Mariage_FusionMenages_Scenario extends EvenementCivilSce
 			assertTrue(menageAnnule.isAnnule(), "Le ménage n'est pas annulé");
 		}
 
-		assertBlocageRemboursementAutomatique(false, false, false);
+		assertBlocageRemboursementAutomatique(true, true, false);
 	}
 
 	private void assertBlocageRemboursementAutomatique(boolean blocageAttenduAlfredo, boolean blocageAttenduArmando, boolean blocageAttenduMenage) {

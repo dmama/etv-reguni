@@ -97,6 +97,8 @@ public class Ec_10000_02_Veuvage_NonSuisseMarieSeul_Scenario extends EvenementCi
 		f = addForFiscalPrincipal(menage, communeMariage, dateMariage, null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null);
 		f.setModeImposition(ModeImposition.ORDINAIRE);
 
+		menage.setBlocageRemboursementAutomatique(false);
+
 	}
 
 	@Check(id=1, descr="Vérifie que l'habitant Mikkel est marié seul et le For du menage existe")
@@ -121,7 +123,7 @@ public class Ec_10000_02_Veuvage_NonSuisseMarieSeul_Scenario extends EvenementCi
 			assertEquals(communeMariage.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale(), "Le dernier for n'est pas sur " + communeMariage.getNomMinuscule());
 		}
 
-		assertBlocageRemboursementAutomatique(false);
+		assertBlocageRemboursementAutomatique(true, false);
 	}
 
 	@Etape(id=2, descr="Envoi de l'événenent Veuvage")
@@ -165,10 +167,11 @@ public class Ec_10000_02_Veuvage_NonSuisseMarieSeul_Scenario extends EvenementCi
 		}
 
 		// le survivant ne doit pas voir ses remboursements automatiques bloqués
-		assertBlocageRemboursementAutomatique(false);
+		assertBlocageRemboursementAutomatique(false, true);
 }
 
-	private void assertBlocageRemboursementAutomatique(boolean blocageAttendu) {
-		assertBlocageRemboursementAutomatique(blocageAttendu, tiersDAO.get(noHabMikkel));
+	private void assertBlocageRemboursementAutomatique(boolean blocageAttenduMikkel, boolean blocageAttenduMenage) {
+		assertBlocageRemboursementAutomatique(blocageAttenduMikkel, tiersDAO.get(noHabMikkel));
+		assertBlocageRemboursementAutomatique(blocageAttenduMenage, tiersDAO.get(noMenage));
 	}
 }

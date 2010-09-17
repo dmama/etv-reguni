@@ -1640,10 +1640,6 @@ public class TiersServiceImpl implements TiersService {
 						dateOuverture, motifOuverture, forFiscalPrincipal.getId());
 			}
 		}
-		else {
-			// ouverture d'un for principal hors-canton ou hors-suisse
-			contribuable.setBlocageRemboursementAutomatique(true);
-		}
 
 		// [UNIREG-1373] Un départ HS ajuste la date de fin d'une eventuelle DI libre.
 		if (TypeAutoriteFiscale.PAYS_HS == typeAutoriteFiscale && MotifFor.DEPART_HS == motifOuverture) {
@@ -1675,6 +1671,9 @@ public class TiersServiceImpl implements TiersService {
 		}
 
 		tacheService.genereTacheDepuisOuvertureForPrincipal(contribuable, forFiscalPrincipal, ancienModeImposition);
+
+		// [UNIREG-2794] déblocage en cas d'ouverture de for fiscal principal vaudois
+		resetFlagBlocageRemboursementAutomatiqueSelonFors(contribuable);
 	}
 
 	/**
@@ -1963,14 +1962,9 @@ public class TiersServiceImpl implements TiersService {
 				evenementFiscalService.publierEvenementFiscalFermetureFor(contribuable, dateFermeture, motifFermeture, forFiscalPrincipal.getId());
 			}
 		}
-		if (MotifFor.DEPART_HC.equals(motifFermeture) ||
-				MotifFor.DEPART_HS.equals(motifFermeture) ||
-				MotifFor.VEUVAGE_DECES.equals(motifFermeture) ||
-				MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT.equals(motifFermeture)) {
-			contribuable.setBlocageRemboursementAutomatique(true);
-		}
 
 		tacheService.genereTacheDepuisFermetureForPrincipal(contribuable, forFiscalPrincipal);
+		resetFlagBlocageRemboursementAutomatiqueSelonFors(contribuable);
 	}
 
 	/**
@@ -2055,10 +2049,13 @@ public class TiersServiceImpl implements TiersService {
 		if (contribuable.validate().errorsCount() == 0) {
 			tacheService.genereTacheDepuisOuvertureForPrincipal(contribuable, nouveauForFiscal, forFiscalPrincipal.getModeImposition());
 			//Envoi d'un événement fiscal
-			if (TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD.equals(nouveauForFiscal.getTypeAutoriteFiscale())) {
+			if (TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD == nouveauForFiscal.getTypeAutoriteFiscale()) {
 				evenementFiscalService.publierEvenementFiscalChangementModeImposition(contribuable, dateChangementModeImposition, modeImposition, nouveauForFiscal.getId());
 			}
 		}
+
+		// [UNIREG-2794] déblocage en cas d'ouverture de for fiscal principal vaudois
+		resetFlagBlocageRemboursementAutomatiqueSelonFors(contribuable);
 
 		return nouveauForFiscal;
 	}
@@ -2383,7 +2380,7 @@ public class TiersServiceImpl implements TiersService {
 		copieRemarques(nonHabitant, habitant);
 
 		// Onglet Fiscal
-		Set<ForFiscal> forsCible = new HashSet<ForFiscal>();
+		final Set<ForFiscal> forsCible = new HashSet<ForFiscal>();
 		for (ForFiscal forFiscalSource : nonHabitant.getForsFiscaux()) {
 			if (forFiscalSource instanceof ForFiscalAutreImpot) {
 				ForFiscalAutreImpot forFiscalCible = copieForFiscalAutreImpot((ForFiscalAutreImpot) forFiscalSource);
@@ -2404,8 +2401,21 @@ public class TiersServiceImpl implements TiersService {
 
 		}
 		habitant.setForsFiscaux(forsCible);
+		resetFlagBlocageRemboursementAutomatiqueSelonFors(habitant);
+
 		//Annulation du nonHabitant
 		annuleTiers(nonHabitant);
+	}
+
+	/**
+	 * [UNIREG-2794] déblocage en cas d'ouverture de for fiscal principal vaudois, blocage en cas de fermeture de for principal vaudois
+	 */
+	private static void resetFlagBlocageRemboursementAutomatiqueSelonFors(Tiers tiers) {
+		if (tiers instanceof PersonnePhysique || tiers instanceof MenageCommun) {
+			final Contribuable ctb = (Contribuable) tiers;
+			final ForFiscalPrincipal forVaudois = ctb.getDernierForFiscalPrincipalVaudois();
+			ctb.setBlocageRemboursementAutomatique(forVaudois == null || forVaudois.getDateFin() != null);
+		}
 	}
 
 	private void copieRemarques(Tiers tiersSource, Tiers tiersCible) {
@@ -2783,6 +2793,8 @@ public class TiersServiceImpl implements TiersService {
 			tacheService.genereTachesDepuisAnnulationDeFor(ctb);
 		}
 
+		// [UNIREG-2794] déblocage en cas d'ouverture de for fiscal principal vaudois
+		resetFlagBlocageRemboursementAutomatiqueSelonFors(tiers);
 	}
 
 

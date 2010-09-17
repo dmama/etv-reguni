@@ -120,6 +120,8 @@ public class Ec_6000_03_Separation_MarieAvecEtrangerSansPermisC_Scenario extends
 			tiersService.addTiersToCouple(menage, bea, dateMariage, null);
 			final ForFiscalPrincipal f = addForFiscalPrincipal(menage, communeMariage, dateMariage, null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null);
 			f.setModeImposition(ModeImposition.DEPENSE);
+
+			menage.setBlocageRemboursementAutomatique(false);
 		}
 	}
 
@@ -150,7 +152,7 @@ public class Ec_6000_03_Separation_MarieAvecEtrangerSansPermisC_Scenario extends
 					"Le dernier for n'est pas sur " + communeMariage.getNomMinuscule());
 		}
 
-		assertBlocageRemboursementAutomatique(false, false, false);
+		assertBlocageRemboursementAutomatique(true, true, false);
 	}
 
 	@Etape(id=2, descr="Envoi des événements de séparation")

@@ -126,6 +126,8 @@ public class Ec_8000_03_Divorce_CivilApresFiscal_Scenario extends EvenementCivil
 
 			final ForFiscalPrincipal f = addForFiscalPrincipal(menage, commune, dateDemenagement, null, MotifFor.DEMENAGEMENT_VD, null);
 			f.setModeImposition(ModeImposition.ORDINAIRE);
+
+			menage.setBlocageRemboursementAutomatique(false);
 		}
 	}
 
@@ -154,7 +156,7 @@ public class Ec_8000_03_Divorce_CivilApresFiscal_Scenario extends EvenementCivil
 			assertEquals(commune.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale(), "Le dernier for n'est pas sur " + commune.getNomMinuscule());
 		}
 
-		assertBlocageRemboursementAutomatique(false, false, false);
+		assertBlocageRemboursementAutomatique(true, true, false);
 	}
 
 	@Etape(id=2, descr="Divorce fiscal")

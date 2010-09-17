@@ -138,7 +138,7 @@ public abstract class Tiers extends HibernateEntity implements Validateable, Bus
 	 *
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_gzNEIJNkEdygKK6Oe0tVlw"
 	 */
-	private Boolean blocageRemboursementAutomatique = Boolean.FALSE;
+	private Boolean blocageRemboursementAutomatique = Boolean.TRUE;
 
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->

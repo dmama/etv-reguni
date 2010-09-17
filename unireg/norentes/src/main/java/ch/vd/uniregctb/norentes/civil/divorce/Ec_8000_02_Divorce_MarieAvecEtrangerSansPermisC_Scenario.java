@@ -116,6 +116,8 @@ public class Ec_8000_02_Divorce_MarieAvecEtrangerSansPermisC_Scenario extends Ev
 			tiersService.addTiersToCouple(menage, bea, dateMariage, null);
 			final ForFiscalPrincipal f = addForFiscalPrincipal(menage, communeMariage, dateMariage, null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null);
 			f.setModeImposition(ModeImposition.ORDINAIRE);
+
+			menage.setBlocageRemboursementAutomatique(false);
 		}
 	}
 
@@ -146,7 +148,7 @@ public class Ec_8000_02_Divorce_MarieAvecEtrangerSansPermisC_Scenario extends Ev
 			assertEquals(communeMariage.getNoOFSEtendu(), ffp.getNumeroOfsAutoriteFiscale(), "Le dernier for n'est pas sur Villars-sous-Yens");
 		}
 
-		assertBlocageRemboursementAutomatique(false, false, false);
+		assertBlocageRemboursementAutomatique(true, true, false);
 	}
 
 	@Etape(id=2, descr="Envoi de l'événement de Divorce")

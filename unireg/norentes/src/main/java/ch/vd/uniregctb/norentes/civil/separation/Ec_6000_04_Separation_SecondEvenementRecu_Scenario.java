@@ -133,6 +133,8 @@ public class Ec_6000_04_Separation_SecondEvenementRecu_Scenario extends Evenemen
 
 			final ForFiscalSecondaire fs = addForFiscalSecondaire(menage, communeMariage.getNoOFS(), dateMariage, null);
 			fs.setMotifOuverture(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
+
+			menage.setBlocageRemboursementAutomatique(false);
 		}
 	}
 
@@ -178,7 +180,7 @@ public class Ec_6000_04_Separation_SecondEvenementRecu_Scenario extends Evenemen
 			assertEquals(1, nbForFiscauxSecondaires, "Nombre de fors fiscaux secondaires faux");
 		}
 
-		assertBlocageRemboursementAutomatique(false, false, false);
+		assertBlocageRemboursementAutomatique(true, true, false);
 	}
 
 	@Etape(id=2, descr="Envoi de l'événement de Séparation pour Béa")

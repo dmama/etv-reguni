@@ -149,9 +149,8 @@ public class Ec_19000_03_Depart_HS_Scenario extends DepartScenario {
 			tiersService.addTiersToCouple(menage, cedric, dateArriveeBex, null);
 			tiersService.addTiersToCouple(menage, sandra, dateArriveeBex, null);
 			// fors du ménage
-			{
-				addForFiscalPrincipal(menage, MockCommune.Bex, dateArriveeBex, null, MotifFor.ARRIVEE_HC, null);
-			}
+			addForFiscalPrincipal(menage, MockCommune.Bex, dateArriveeBex, null, MotifFor.ARRIVEE_HC, null);
+			menage.setBlocageRemboursementAutomatique(false);
 		}
 	}
 
@@ -184,7 +183,7 @@ public class Ec_19000_03_Depart_HS_Scenario extends DepartScenario {
 			assertNull( ffp.getDateFin(), "Date de fin du dernier for l'Habitant " + FormatNumeroHelper.numeroCTBToDisplay(menage.getNumero()) + " fausse");
 		}
 
-		assertBlocageRemboursementAutomatique(false, false, false);
+		assertBlocageRemboursementAutomatique(true, true, false);
 	}
 
 	@Etape(id=2, descr="Départ des individus vers le Danemark")
@@ -217,7 +216,7 @@ public class Ec_19000_03_Depart_HS_Scenario extends DepartScenario {
 			assertEquals(numOfsPaysDepart, serviceCivilService.getAdresses(noIndSandra, dateDepartBex.addDays(1), false).principale.getNoOfsPays(), "L'adresse principale n'est pas fermée");
 		}
 
-		assertBlocageRemboursementAutomatique(false, false, false);
+		assertBlocageRemboursementAutomatique(true, true, false);
 	}
 
 
@@ -265,7 +264,7 @@ public class Ec_19000_03_Depart_HS_Scenario extends DepartScenario {
 			assertEquals(ModeImposition.ORDINAIRE, ffpOuvert.getModeImposition(), "Le ModeImposition du for est faux");
 		}
 
-		assertBlocageRemboursementAutomatique(false, false, true);
+		assertBlocageRemboursementAutomatique(true, true, true);
 	}
 
 	private void ouvrirAdresses(MockIndividu individu) {

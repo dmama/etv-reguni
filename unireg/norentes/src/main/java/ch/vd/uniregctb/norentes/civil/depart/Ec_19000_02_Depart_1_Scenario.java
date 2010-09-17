@@ -89,6 +89,7 @@ public class Ec_19000_02_Depart_1_Scenario extends EvenementCivilScenario {
 		final PersonnePhysique alain = addHabitant(noIndAlain);
 		noHabAlain = alain.getNumero();
 		addForFiscalPrincipal(alain, MockCommune.Bex, dateArriveeBex, null, MotifFor.ARRIVEE_HC, null);
+		alain.setBlocageRemboursementAutomatique(false);
 	}
 
 	@Check(id=1, descr="Vérifie que l'habitant Alain a son adresse à Bex et son For à Bex")

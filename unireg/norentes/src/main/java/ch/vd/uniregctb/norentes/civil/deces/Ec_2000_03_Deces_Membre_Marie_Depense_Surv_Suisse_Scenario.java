@@ -113,6 +113,7 @@ public class Ec_2000_03_Deces_Membre_Marie_Depense_Surv_Suisse_Scenario extends 
 			ffp.setModeImposition(ModeImposition.DEPENSE);
 
 			addSituationFamille(menage, dateMariage, null, EtatCivil.MARIE, 0, null, null);
+			menage.setBlocageRemboursementAutomatique(false);
 		}
 	}
 
@@ -158,7 +159,7 @@ public class Ec_2000_03_Deces_Membre_Marie_Depense_Surv_Suisse_Scenario extends 
 					"Le ménage commun devrait posséder une situation de famille le jour du mariage");
 		}
 
-		assertBlocageRemboursementAutomatique(false, false, false);
+		assertBlocageRemboursementAutomatique(true, true, false);
 	}
 
 	@Etape(id = 2, descr = "Déclaration de décès de Hamlet")

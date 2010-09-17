@@ -104,12 +104,13 @@ public class Ec_10000_06_Veuvage_VeuvageHabitantMarieAvecNonHabitant_Scenario ex
 		tiersService.addTiersToCouple(menage, pierre, dateMariage, null);
 		tiersService.addTiersToCouple(menage, marie, dateMariage, null);
 		addForFiscalPrincipal(menage, communeMariage, dateMariage, null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null);
+		menage.setBlocageRemboursementAutomatique(false);
 	}
 
 	@Check(id=1, descr="Vérifie les tiers, rapports ménages et les fors")
 	public void check1() throws Exception {
 		checkAvantVeuvage();
-		assertBlocageRemboursementAutomatique(false, false);
+		assertBlocageRemboursementAutomatique(true, true, false);
 	}
 
 	private void checkAvantVeuvage() {
@@ -195,7 +196,7 @@ public class Ec_10000_06_Veuvage_VeuvageHabitantMarieAvecNonHabitant_Scenario ex
 			assertEquals(communeMariage.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale(), "Le dernier for n'est pas sur " + communeMariage.getNomMinuscule());
 		}
 
-		assertBlocageRemboursementAutomatique(false, true);
+		assertBlocageRemboursementAutomatique(false, true, true);
 	}
 
 	@Etape(id=3, descr="Envoi de l'événement d'annulation de veuvage")
@@ -231,11 +232,12 @@ public class Ec_10000_06_Veuvage_VeuvageHabitantMarieAvecNonHabitant_Scenario ex
 
 		// vérification des for après annulation de veuvage
 		checkAvantVeuvage();
-		assertBlocageRemboursementAutomatique(false, true);
+		assertBlocageRemboursementAutomatique(true, true, false);
 	}
 
-	private void assertBlocageRemboursementAutomatique(boolean blocageAttenduPierre, boolean blocageAttenduMenage) {
+	private void assertBlocageRemboursementAutomatique(boolean blocageAttenduPierre, boolean blocageAttenduMarie, boolean blocageAttenduMenage) {
 		assertBlocageRemboursementAutomatique(blocageAttenduPierre, tiersDAO.get(noHabPierre));
+		assertBlocageRemboursementAutomatique(blocageAttenduMarie, tiersDAO.get(noNonHabMarie));
 		assertBlocageRemboursementAutomatique(blocageAttenduMenage, tiersDAO.get(noMenage));
 	}
 

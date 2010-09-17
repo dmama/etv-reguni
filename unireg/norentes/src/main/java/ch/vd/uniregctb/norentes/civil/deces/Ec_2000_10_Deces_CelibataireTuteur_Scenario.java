@@ -71,22 +71,21 @@ public class Ec_2000_10_Deces_CelibataireTuteur_Scenario extends EvenementCivilS
 		});
 	}
 
-	@Etape(id=1, descr="Chargement de l'habitant et son pupil")
+	@Etape(id=1, descr="Chargement de l'habitant et son pupille")
 	public void etape1() {
 		final PersonnePhysique charles = addHabitant(noIndCharles);
 		noHabCharles = charles.getNumero();
-		{
-			addForFiscalPrincipal(charles, MockCommune.Lausanne, dateArriveeVD, null, MotifFor.DEMENAGEMENT_VD, null);
-		}
+		addForFiscalPrincipal(charles, MockCommune.Lausanne, dateArriveeVD, null, MotifFor.DEMENAGEMENT_VD, null);
 
 		final PersonnePhysique nora = addHabitant(noIndNora);
 		noHabNora = nora.getNumero();
-		{
-			addForFiscalPrincipal(nora, MockCommune.Lausanne, dateArriveeVD, null, MotifFor.DEMENAGEMENT_VD, null);
-		}
+		addForFiscalPrincipal(nora, MockCommune.Lausanne, dateArriveeVD, null, MotifFor.DEMENAGEMENT_VD, null);
 
 		RapportEntreTiers rapportTutelle = new ch.vd.uniregctb.tiers.Tutelle(dateTutelle, null, nora, charles, null);
 		tiersDAO.save(rapportTutelle);
+
+		charles.setBlocageRemboursementAutomatique(false);
+		nora.setBlocageRemboursementAutomatique(false);
 	}
 
 	@Check(id = 1, descr = "Vérification que l'habitant a un rapport tutelle actif")
@@ -111,7 +110,7 @@ public class Ec_2000_10_Deces_CelibataireTuteur_Scenario extends EvenementCivilS
 		// vérification que les adresses civiles sont a Bex
 		assertEquals(MockCommune.Lausanne.getNomMinuscule(), serviceCivilService.getAdresses(noIndCharles, dateArriveeVD, false).principale.getLocalite(), "l'adresse principale n'est pas à Lausanne");
 
-		assertBlocageRemboursementAutomatique(false);
+		assertBlocageRemboursementAutomatique(false, false);
 	}
 
 	@Etape(id = 2, descr = "Déclaration de décès")
@@ -147,10 +146,11 @@ public class Ec_2000_10_Deces_CelibataireTuteur_Scenario extends EvenementCivilS
 		assertEquals(dateTutelle, tutelle.getDateDebut(), "Date de début tutelle fausse");
 		assertEquals(dateDeces, tutelle.getDateFin(), "Date de fin tutelle fausse");
 
-		assertBlocageRemboursementAutomatique(true);
+		assertBlocageRemboursementAutomatique(true, false);
 	}
 
-	private void assertBlocageRemboursementAutomatique(boolean blocageAttendu) {
-		assertBlocageRemboursementAutomatique(blocageAttendu, tiersDAO.get(noHabCharles));
+	private void assertBlocageRemboursementAutomatique(boolean blocageAttenduCharles, boolean blocageAttenduNora) {
+		assertBlocageRemboursementAutomatique(blocageAttenduCharles, tiersDAO.get(noHabCharles));
+		assertBlocageRemboursementAutomatique(blocageAttenduNora, tiersDAO.get(noHabNora));
 	}
 }

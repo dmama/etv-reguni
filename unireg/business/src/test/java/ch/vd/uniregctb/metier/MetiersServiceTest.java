@@ -324,6 +324,144 @@ public class MetiersServiceTest extends BusinessTest {
 				MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, fors.principaux.get(0));
 	}
 
+	@Test
+	@NotTransactional
+	public void testDecesDansCouple() throws Exception {
+
+		final long noIndividuM = 123546;
+		final long noIndividuMme = 5156532;
+		final RegDate dateMariage = date(1980, 5, 1);
+
+		// mise en place civile
+		serviceCivil.setUp(new DefaultMockServiceCivil() {
+			@Override
+			protected void init() {
+				final RegDate dateNaissanceM = date(1956, 5, 19);
+				final RegDate dateNaissanceMme = date(1957, 12, 24);
+
+				final MockIndividu m = addIndividu(noIndividuM, dateNaissanceM, "Maugrey", "Alastor", true);
+				final MockIndividu mme = addIndividu(noIndividuMme, dateNaissanceMme, "McGonagall", "Minerva", false);
+				marieIndividus(m, mme, dateMariage);
+				addAdresse(m, EnumTypeAdresse.PRINCIPALE, MockRue.CossonayVille.AvenueDuFuniculaire, null, dateMariage, null);
+				addAdresse(mme, EnumTypeAdresse.PRINCIPALE, MockRue.CossonayVille.AvenueDuFuniculaire, null, dateMariage, null);
+				addNationalite(m, MockPays.RoyaumeUni, dateNaissanceM, null, 1);
+				addNationalite(mme, MockPays.RoyaumeUni, dateNaissanceMme, null, 1);
+				addPermis(m, EnumTypePermis.ETABLLISSEMENT, dateMariage, null, 1, false);
+				addPermis(mme, EnumTypePermis.ETABLLISSEMENT, dateMariage, null, 1, false);
+			}
+		});
+
+		final class Ids {
+			final long m;
+			final long mme;
+			final long mc;
+
+			Ids(long m, long mme, long mc) {
+				this.m = m;
+				this.mme = mme;
+				this.mc = mc;
+			}
+		}
+
+		// mise en place fiscale
+		final Ids ids = (Ids) doInNewTransactionAndSession(new TransactionCallback() {
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique m = addHabitant(noIndividuM);
+				final PersonnePhysique mme = addHabitant(noIndividuMme);
+				final EnsembleTiersCouple couple = addEnsembleTiersCouple(m, mme, dateMariage, null);
+				m.setBlocageRemboursementAutomatique(false);
+				mme.setBlocageRemboursementAutomatique(false);
+
+				final MenageCommun mc = couple.getMenage();
+				mc.setBlocageRemboursementAutomatique(false);
+
+				addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Cossonay);
+
+				return new Ids(m.getNumero(), mme.getNumero(), mc.getNumero());
+			}
+		});
+
+		final RegDate dateDeces = date(2009, 8, 12);
+
+		// petite vérification et décès de monsieur
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final MenageCommun mc = (MenageCommun) tiersDAO.get(ids.mc);
+				Assert.assertFalse(mc.getBlocageRemboursementAutomatique());
+				Assert.assertEquals(1, mc.getForsFiscaux().size());
+
+				final ForFiscalPrincipal ffp = (ForFiscalPrincipal) mc.getForsFiscaux().iterator().next();
+				Assert.assertNotNull(ffp);
+				Assert.assertEquals(dateMariage, ffp.getDateDebut());
+				Assert.assertNull(ffp.getDateFin());
+
+				final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(mc, null);
+				Assert.assertNotNull(couple);
+
+				final PersonnePhysique m = couple.getPrincipal();
+				Assert.assertNotNull(m);
+				Assert.assertEquals(noIndividuM, (long) m.getNumeroIndividu());
+				Assert.assertFalse(m.getBlocageRemboursementAutomatique());
+				Assert.assertEquals(0, m.getForsFiscaux().size());
+
+				final PersonnePhysique mme = couple.getConjoint();
+				Assert.assertNotNull(mme);
+				Assert.assertEquals(noIndividuMme, (long) mme.getNumeroIndividu());
+				Assert.assertFalse(mme.getBlocageRemboursementAutomatique());
+				Assert.assertEquals(0, mme.getForsFiscaux().size());
+
+				doModificationIndividu(noIndividuM, new IndividuModification() {
+					public void modifyIndividu(MockIndividu individu) {
+						individu.setDateDeces(dateDeces);
+					}
+				});
+
+				metierService.deces(m, dateDeces, "Pour le test", null);
+				return null;
+			}
+		});
+
+		// vérification des fors et des blocages de remboursement automatique après décès
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+
+				final MenageCommun mc = (MenageCommun) tiersDAO.get(ids.mc);
+				Assert.assertTrue(mc.getBlocageRemboursementAutomatique());
+				Assert.assertEquals(1, mc.getForsFiscaux().size());
+
+				final ForFiscalPrincipal ffpMc = (ForFiscalPrincipal) mc.getForsFiscaux().iterator().next();
+				Assert.assertNotNull(ffpMc);
+				Assert.assertEquals(dateMariage, ffpMc.getDateDebut());
+				Assert.assertEquals(dateDeces, ffpMc.getDateFin());
+				Assert.assertEquals(MotifFor.VEUVAGE_DECES, ffpMc.getMotifFermeture());
+
+				final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(mc, dateDeces);
+				Assert.assertNotNull(couple);
+
+				final PersonnePhysique m = couple.getPrincipal();
+				Assert.assertNotNull(m);
+				Assert.assertEquals(noIndividuM, (long) m.getNumeroIndividu());
+				Assert.assertTrue(m.getBlocageRemboursementAutomatique());
+				Assert.assertEquals(0, m.getForsFiscaux().size());
+
+				final PersonnePhysique mme = couple.getConjoint();
+				Assert.assertNotNull(mme);
+				Assert.assertEquals(noIndividuMme, (long) mme.getNumeroIndividu());
+				Assert.assertFalse(mme.getBlocageRemboursementAutomatique());
+				Assert.assertEquals(1, mme.getForsFiscaux().size());
+
+				final ForFiscalPrincipal ffpMme = (ForFiscalPrincipal) mme.getForsFiscaux().iterator().next();
+				Assert.assertNotNull(ffpMme);
+				Assert.assertEquals(dateDeces.addDays(1), ffpMme.getDateDebut());
+				Assert.assertEquals(MotifFor.VEUVAGE_DECES, ffpMme.getMotifOuverture());
+				Assert.assertNull(ffpMme.getDateFin());
+
+				return null;
+			}
+		});
+
+	}
+
 	/**
 	 * Teste que le décès d'un contribuable marié hors-Suisse ouvre bien un for principal hors-Suisse sur le conjoint survivant
 	 */

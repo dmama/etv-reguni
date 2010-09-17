@@ -125,6 +125,8 @@ public class Ec_2000_02_Deces_Membre_Marie_Scenario extends EvenementCivilScenar
 			ffp.setModeImposition(ModeImposition.ORDINAIRE);
 
 			addSituationFamille(menage, dateMariage, null, EtatCivil.MARIE, 0, null, null);
+
+			menage.setBlocageRemboursementAutomatique(false);
 		}
 
 	}
@@ -174,7 +176,7 @@ public class Ec_2000_02_Deces_Membre_Marie_Scenario extends EvenementCivilScenar
 					"Le ménage commun devrait posséder une situation de famille le jour du mariage");
 		}
 
-		assertBlocageRemboursementAutomatique(false, false, false);
+		assertBlocageRemboursementAutomatique(true, true, false);
 	}
 
 	@Etape(id = 2, descr = "Déclaration de décès de Guillaume")

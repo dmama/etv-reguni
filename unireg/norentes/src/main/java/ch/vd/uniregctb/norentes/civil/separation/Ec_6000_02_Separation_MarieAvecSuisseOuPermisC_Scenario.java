@@ -119,6 +119,8 @@ public class Ec_6000_02_Separation_MarieAvecSuisseOuPermisC_Scenario extends Eve
 			tiersService.addTiersToCouple(menage, bea, dateMariage, null);
 			final ForFiscalPrincipal f = addForFiscalPrincipal(menage, communeMariage, dateMariage, null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null);
 			f.setModeImposition(ModeImposition.DEPENSE);
+
+			menage.setBlocageRemboursementAutomatique(false);
 		}
 	}
 
@@ -149,7 +151,7 @@ public class Ec_6000_02_Separation_MarieAvecSuisseOuPermisC_Scenario extends Eve
 					"Le dernier for n'est pas sur " + communeMariage.getNomMinuscule());
 		}
 
-		assertBlocageRemboursementAutomatique(false, false, false);
+		assertBlocageRemboursementAutomatique(true, true, false);
 	}
 
 	@Etape(id=2, descr="Envoi des évémenent de Séparation")

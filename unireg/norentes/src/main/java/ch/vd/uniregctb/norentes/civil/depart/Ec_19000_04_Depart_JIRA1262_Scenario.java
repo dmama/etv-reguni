@@ -104,6 +104,7 @@ public class Ec_19000_04_Depart_JIRA1262_Scenario extends DepartScenario {
 		noHabSebastien = sebastien.getNumero();
 
 		addForFiscalPrincipal(sebastien, communeDepart, dateSeparation, null, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, null);
+		sebastien.setBlocageRemboursementAutomatique(false);
 
 		final DeclarationImpotOrdinaire di2007 = addDeclarationImpot(sebastien, date(2007, 1, 1), date(2007, 12, 31), date(2008, 1, 13), 90);
 		{

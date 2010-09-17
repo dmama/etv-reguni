@@ -113,6 +113,7 @@ public class Ec_19000_07_Depart_JIRA1703_Scenario extends DepartScenario {
 			tiersService.addTiersToCouple(menage, gloria, dateMariage, null);
 
 			addForFiscalPrincipal(menage, communeDepart, dateMariage, null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null);
+			menage.setBlocageRemboursementAutomatique(false);
 		}
 	}
 
@@ -147,7 +148,7 @@ public class Ec_19000_07_Depart_JIRA1703_Scenario extends DepartScenario {
 					"L'adresse principale n'est pas à " + communeDepart.getNomMinuscule());
 		}
 
-		assertBlocageRemboursementAutomatique(false, false, false);
+		assertBlocageRemboursementAutomatique(true, true, false);
 	}
 
 	@Etape(id=2, descr="Départ hors Suisse du contribuable principal du couple")
@@ -192,7 +193,7 @@ public class Ec_19000_07_Depart_JIRA1703_Scenario extends DepartScenario {
 					"L'adresse principale n'est pas dans le pays " + paysArrivee.getNomMinuscule());
 		}
 
-		assertBlocageRemboursementAutomatique(false, false, false);
+		assertBlocageRemboursementAutomatique(true, true, false);
 	}
 
 	@Etape(id=3, descr="Surcharge de l'adresse fiscale (en Suisse) avec une annulée")
@@ -263,7 +264,7 @@ public class Ec_19000_07_Depart_JIRA1703_Scenario extends DepartScenario {
 			assertTrue(((AdresseSupplementaire) adresse).isPermanente(), "Adresse passée à non permanente !");
 		}
 
-		assertBlocageRemboursementAutomatique(false, false, true);
+		assertBlocageRemboursementAutomatique(true, true, true);
 	}
 
 	private void assertBlocageRemboursementAutomatique(boolean blocageAttenduSebastien, boolean blocageAttenduGloria, boolean blocageAttenduMenage) {

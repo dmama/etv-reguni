@@ -120,6 +120,8 @@ public class Ec_4000_05_Mariage_EvtCoupleMarie_Scenario extends EvenementCivilSc
 
 			final ForFiscalPrincipal f = addForFiscalPrincipal(menage, commune, dateMariage, null, MotifFor.DEMENAGEMENT_VD, null);
 			f.setModeImposition(ModeImposition.ORDINAIRE);
+
+			menage.setBlocageRemboursementAutomatique(false);
 		}
 	}
 
@@ -148,7 +150,7 @@ public class Ec_4000_05_Mariage_EvtCoupleMarie_Scenario extends EvenementCivilSc
 			assertEquals(commune.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale(), "Le dernier for n'est pas sur " + commune.getNomMinuscule());
 		}
 
-		assertBlocageRemboursementAutomatique(false, false, false);
+		assertBlocageRemboursementAutomatique(true, true, false);
 	}
 
 	@Etape(id=2, descr="Envoi de l'événement de mariage")
@@ -165,7 +167,7 @@ public class Ec_4000_05_Mariage_EvtCoupleMarie_Scenario extends EvenementCivilSc
 
 		assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat(), "L'événement de mariage devrait être en erreur car le couple existe déjà");
 
-		assertBlocageRemboursementAutomatique(false, false, false);
+		assertBlocageRemboursementAutomatique(true, true, false);
 	}
 
 	private void assertBlocageRemboursementAutomatique(boolean blocageAttenduPierre, boolean blocageAttenduKarina, boolean blocageAttenduMenage) {

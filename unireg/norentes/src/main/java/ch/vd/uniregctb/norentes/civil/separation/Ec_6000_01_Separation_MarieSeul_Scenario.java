@@ -97,6 +97,8 @@ public class Ec_6000_01_Separation_MarieSeul_Scenario extends EvenementCivilScen
 			tiersService.addTiersToCouple(menage, julie, dateMariage, null);
 			final ForFiscalPrincipal f = addForFiscalPrincipal(menage, communeMariage, dateMariage, null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null);
 			f.setModeImposition(ModeImposition.DEPENSE);
+
+			menage.setBlocageRemboursementAutomatique(false);
 		}
 	}
 
@@ -121,7 +123,7 @@ public class Ec_6000_01_Separation_MarieSeul_Scenario extends EvenementCivilScen
 					"Le dernier for n'est pas sur " + communeMariage.getNomMajuscule());
 		}
 
-		assertBlocageRemboursementAutomatique(false, false);
+		assertBlocageRemboursementAutomatique(true, false);
 	}
 
 	@Etape(id=2, descr="Envoi de l'événement de Séparation")

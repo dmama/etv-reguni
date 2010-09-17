@@ -100,6 +100,7 @@ public class Ec_10000_05_Veuvage_VeuvageErreurPuisAnnulation_Scenario extends Ev
 
 		// veuvage
 		addForFiscalPrincipal(pierre, MockCommune.VillarsSousYens, dateVeuvage.addDays(1), null,  MotifFor.VEUVAGE_DECES, null);
+		pierre.setBlocageRemboursementAutomatique(false);
 	}
 
 	@Check(id=1, descr="Vérifie que l'habitant Pierre est veuf fiscal")
@@ -127,7 +128,7 @@ public class Ec_10000_05_Veuvage_VeuvageErreurPuisAnnulation_Scenario extends Ev
 			assertEquals(communeMariage.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale(), "Le dernier for n'est pas sur " + communeMariage.getNomMinuscule());
 		}
 
-		assertBlocageRemboursementAutomatique(false, false);
+		assertBlocageRemboursementAutomatique(false, true);
 	}
 
 	@Etape(id=2, descr="Envoi de l'événement Veuvage")
@@ -149,7 +150,7 @@ public class Ec_10000_05_Veuvage_VeuvageErreurPuisAnnulation_Scenario extends Ev
 		assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat(), "L'événement civil a été traité!");
 
 		// rien n'a changé (événement en erreur)
-		assertBlocageRemboursementAutomatique(false, false);
+		assertBlocageRemboursementAutomatique(false, true);
 	}
 
 	@Etape(id=3, descr="Envoi de l'événenent d'annulation de veuvage")
@@ -214,7 +215,7 @@ public class Ec_10000_05_Veuvage_VeuvageErreurPuisAnnulation_Scenario extends Ev
 			assertNull(ffp.getDateFin(), "Le for sur le ménage devrait avoir été ré-ouvert!");
 		}
 
-		
+		assertBlocageRemboursementAutomatique(true, false);
 	}
 
 	private void assertBlocageRemboursementAutomatique(boolean blocageAttenduPierre, boolean blocageAttenduMenage) {

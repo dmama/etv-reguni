@@ -123,6 +123,7 @@ public class Ec_2000_06_Deces_Membre_Pacse_Scenario extends EvenementCivilScenar
 			tiersService.addTiersToCouple(menage, heidi, datePacs, null);
 			final ForFiscalPrincipal ffp = addForFiscalPrincipal(menage, communePacs, datePacs, null, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, null);
 			ffp.setModeImposition(ModeImposition.ORDINAIRE);
+			menage.setBlocageRemboursementAutomatique(false);
 
 			addSituationFamille(menage, datePacs, null, EtatCivil.LIE_PARTENARIAT_ENREGISTRE, 0, null, null);
 		}
@@ -174,7 +175,7 @@ public class Ec_2000_06_Deces_Membre_Pacse_Scenario extends EvenementCivilScenar
 					"Le ménage commun devrait posséder une situation de famille le jour du mariage");
 		}
 
-		assertBlocageRemboursementAutomatique(false, false, false);
+		assertBlocageRemboursementAutomatique(true, true, false);
 	}
 
 	@Etape(id = 2, descr = "Déclaration de décès de Juliette")
