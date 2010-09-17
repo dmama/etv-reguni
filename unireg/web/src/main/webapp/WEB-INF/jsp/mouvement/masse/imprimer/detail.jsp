@@ -92,8 +92,11 @@
 
             <display:table name="command.mouvements" id="mvt" pagesize="1000" requestURI="/mouvement/detail-bordereau.do" class="display_table" sort="list">
 
+				<c:set var="selectable" value="${mvt.contribuable.nomCommuneGestion != null}"/>
                 <display:column title="<input type='checkbox' id='selection_all' name='selectAll' onclick='selectAllMouvements(this);' checked='true'/>">
-                    <input type="checkbox" name="selection" id="selection_${mvt_rowNum}" value="${mvt.id}" checked="true"/>
+                	<c:if test="${selectable}">
+	                    <input type="checkbox" name="selection" id="selection_${mvt_rowNum}" value="${mvt.id}" checked="true"/>
+	                </c:if>
                 </display:column>
                 <display:column sortable="true" titleKey="label.numero.contribuable">
                     <unireg:numCTB numero="${mvt.contribuable.numero}"/>
@@ -105,8 +108,13 @@
 						</c:forEach>
 					<c:if test="${mvt.annule}"></strike></c:if>
 				</display:column>
-				<display:column titleKey="label.commune.fraction">
-				    <c:out value="${mvt.contribuable.nomCommuneGestion}"/>
+				<display:column titleKey="label.commune.fraction" style="width: 35%;">
+					<c:if test="${selectable}">
+				    	<c:out value="${mvt.contribuable.nomCommuneGestion}"/>
+				    </c:if>
+					<c:if test="${!selectable}">
+				    	<span class="error"><fmt:message key="error.pas.oid.gestion.impression.bordereau.impossible"/></span>
+				    </c:if>
 				</display:column>
 
             </display:table>
