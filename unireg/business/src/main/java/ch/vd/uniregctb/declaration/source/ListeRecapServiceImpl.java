@@ -17,6 +17,7 @@ import org.springframework.util.Assert;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.BatchResults;
 import ch.vd.uniregctb.common.BatchTransactionTemplate;
@@ -334,26 +335,25 @@ public class ListeRecapServiceImpl implements ListeRecapService, DelegateEditiqu
 			// on fait des bonds de la bonne périodicité tant que l'on reste dans la période à couvrir
 			do {
 				final Periodicite periodiciteCourante = debiteur.getPeriodiciteAt(date);
-
-				if (periodiciteCourante != null) {
-					if (periodiciteCourante.getPeriodiciteDecompte() == PeriodiciteDecompte.UNIQUE) {
-						DateRange datePeriode = extraireDatePeriode(periodiciteCourante, date);
-						if(DateRangeHelper.intersect(datePeriode,manquante)){
-							lr.add(datePeriode);
-						}
-						date = datePeriode.getDateFin().addDays(1);
-
-
-					}
-					else {
-						final RegDate debut = periodiciteCourante.getDebutPeriode(date);
-						final RegDate fin = periodiciteCourante.getFinPeriode(date);
-						lr.add(new DateRangeHelper.Range(debut, fin));
-						date = fin.addDays(1);
-					}
+				if (periodiciteCourante == null) {
+					throw new IllegalArgumentException("Incohérence des données : le débiteur n°" + debiteur.getNumero() +
+							" ne possède pas de périodicité à la date [" + RegDateHelper.dateToDisplayString(date) +
+							"] alors même qu'il existe un for fiscal. Problème de migration des périodicités ?");
 				}
 
-
+				if (periodiciteCourante.getPeriodiciteDecompte() == PeriodiciteDecompte.UNIQUE) {
+					DateRange datePeriode = extraireDatePeriode(periodiciteCourante, date);
+					if (DateRangeHelper.intersect(datePeriode, manquante)) {
+						lr.add(datePeriode);
+					}
+					date = datePeriode.getDateFin().addDays(1);
+				}
+				else {
+					final RegDate debut = periodiciteCourante.getDebutPeriode(date);
+					final RegDate fin = periodiciteCourante.getFinPeriode(date);
+					lr.add(new DateRangeHelper.Range(debut, fin));
+					date = fin.addDays(1);
+				}
 			}
 			while (manquante.isValidAt(date));
 		}
