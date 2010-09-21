@@ -85,8 +85,30 @@
 
 	<!-- default view -->
 	<bean id="urlMapping" class="org.springframework.web.servlet.mvc.support.ControllerClassNameHandlerMapping" />
-	
-	<bean id="simpleUrlMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+
+	<!-- Url mapper principal de l'application Unireg. A utiliser pour tous les nouveaux contrôleurs ! -->
+	<bean id="mainUrlMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+		<property name="interceptors">
+            <list>
+            	<ref bean="ajaxInterceptor"/>
+            </list>
+        </property>
+		<property name="urlMap">
+			<map>
+				<!-- SuperGra -->
+				<entry key="/supergra/entity.do" value-ref="superGraEntityController"/>
+				<entry key="/supergra/coll.do" value-ref="superGraCollectionController"/>
+
+				<!-- Mapping des beans de remoting -->
+				<entry key="/tiersSearcher.remoting" value-ref="remoteTiersSearch" />
+			</map>
+		</property>
+	</bean>
+
+	<!-- Url mapper historique de l'application Unireg. C'est-à-dire avec l'intercepteur 'openSessionInView' qui permet d'utiliser des collections
+	     hibernate non-initialisées dans les pages jsp, mais qui pose plein de problème car il s'agit en fait d'un gros hack. Pour tous les nouveaux
+	     contrôleurs il convient de les enregistrer dans le 'mainUrlMapping' url mapper. -->
+	<bean id="legacyUrlMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
 		<property name="interceptors">
             <list>
             	<ref bean="ajaxInterceptor"/>
@@ -251,12 +273,7 @@
 				<entry key="/identification/gestion-messages/listTraite.do" value-ref="identificationMessagesListTraiteController" />
 				<entry key="/identification/gestion-messages/nonIdentifie.do" value-ref="identificationMessagesNonIdentifieController" />
 
-				<!-- SuperGra -->
-				<entry key="/supergra/entity.do" value-ref="superGraEntityController"/>
-				<entry key="/supergra/coll.do" value-ref="superGraCollectionController"/>
-
-				<!-- Mapping des beans de remoting -->
-				<entry key="/tiersSearcher.remoting" value-ref="remoteTiersSearch" />
+				<!-- ATTENTION ! NE PAS UTILISER CE MAPPER POUR DE NOUVEAUX CONTROLEURS !! Veuillez utiliser le 'mainUrlMapper' (sans le openSessionInViewInterceptor) -->
 			</map>
 		</property>
 	</bean>
