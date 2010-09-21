@@ -46,7 +46,13 @@
 		<property name="formView" value="admin/indexation" />
 		<property name="successView" value="indexation.do" />
 		<property name="globalIndex" ref="globalIndex" />
+		<property name="indexationManager" ref="indexationManager" />
+	</bean>
+
+	<bean id="indexationManager" class="ch.vd.uniregctb.admin.IndexationManagerImpl">
 		<property name="tiersIndexer" ref="globalTiersIndexer" />
+		<property name="dataEventService" ref="dataEventService"/>
+		<property name="tiersDAO" ref="tiersDAO" />
 	</bean>
 
 	<!-- Gestion de tracing -->

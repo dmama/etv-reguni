@@ -1,15 +1,12 @@
 package ch.vd.uniregctb.admin;
 
-import ch.vd.uniregctb.admin.indexer.GestionIndexation;
-import ch.vd.uniregctb.admin.indexer.IndexDocument;
-import ch.vd.uniregctb.common.AbstractSimpleFormController;
-import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.indexer.*;
-import ch.vd.uniregctb.indexer.tiers.*;
-import ch.vd.uniregctb.security.AccessDeniedException;
-import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityProvider;
-import ch.vd.uniregctb.tracing.TracingManager;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.log4j.Logger;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.search.ScoreDoc;
@@ -18,12 +15,19 @@ import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import ch.vd.uniregctb.admin.indexer.GestionIndexation;
+import ch.vd.uniregctb.admin.indexer.IndexDocument;
+import ch.vd.uniregctb.common.AbstractSimpleFormController;
+import ch.vd.uniregctb.common.FormatNumeroHelper;
+import ch.vd.uniregctb.indexer.DocGetter;
+import ch.vd.uniregctb.indexer.GlobalIndexInterface;
+import ch.vd.uniregctb.indexer.LuceneEngine;
+import ch.vd.uniregctb.indexer.SearchCallback;
+import ch.vd.uniregctb.indexer.tiers.TiersIndexableData;
+import ch.vd.uniregctb.security.AccessDeniedException;
+import ch.vd.uniregctb.security.Role;
+import ch.vd.uniregctb.security.SecurityProvider;
+import ch.vd.uniregctb.tracing.TracingManager;
 
 /**
  * Controller spring permettant la visualisation ou la saisie d'une objet metier donne.
@@ -35,21 +39,14 @@ public class GestionIndexationController extends AbstractSimpleFormController {
 	private final Logger LOGGER = Logger.getLogger(GestionIndexationController.class);
 
 	private GlobalIndexInterface globalIndex;
-
-	private GlobalTiersIndexer tiersIndexer;
+	private IndexationManager indexationManager;
 
 	private static final String ACTION_PARAMETER_NAME = "action";
-
 	private static final String ACTION_SEARCH_VALUE = "search";
-
 	private static final String ACTION_PERFORMANCE_VALUE = "performance";
-
 	private static final String ACTION_REINDEX_TIERS = "reindexTiers";
-
 	public static final String INDEX_LIST_ATTRIBUTE_NAME = "index";
-
 	public static final String GESTION_INDEXATION_NAME = "gestionIndexation";
-
 	private static final int maxHits = 100;
 
 	/**
@@ -81,7 +78,7 @@ public class GestionIndexationController extends AbstractSimpleFormController {
 		HttpSession session = request.getSession();
 		GestionIndexation bean = (GestionIndexation) session.getAttribute(GESTION_INDEXATION_NAME);
 		if ((bean != null) && (bean.getRequete() != null) && (!"".equals(bean.getRequete()))) {
-			setAttribute(session, bean) ;
+			executeSearch(session, bean) ;
 		}
 		mav.addObject(INDEX_LIST_ATTRIBUTE_NAME, session.getAttribute(INDEX_LIST_ATTRIBUTE_NAME));
 
@@ -139,7 +136,7 @@ public class GestionIndexationController extends AbstractSimpleFormController {
 		String action = request.getParameter(ACTION_PARAMETER_NAME);
 		if (action.equals(ACTION_SEARCH_VALUE)) {
 			if ((bean != null) && (bean.getRequete() != null) && (!"".equals(bean.getRequete()))) {
-				setAttribute(session, bean) ;
+				executeSearch(session, bean) ;
 			}
 		}
 		else if (action.equals(ACTION_PERFORMANCE_VALUE)) {
@@ -147,11 +144,9 @@ public class GestionIndexationController extends AbstractSimpleFormController {
 		}
 		else if (action.equals(ACTION_REINDEX_TIERS)) {
 			if (bean != null) {
-				String idAsString = bean.getId();
-				idAsString = FormatNumeroHelper.removeSpaceAndDash(idAsString);
-				long id = Long.parseLong(idAsString);
-				LOGGER.info("Demande de réindexation manuelle du tiers n° " + id);
-				tiersIndexer.schedule(id);
+				final String idAsString = FormatNumeroHelper.removeSpaceAndDash(bean.getId());
+				final long id = Long.parseLong(idAsString);
+				indexationManager.reindexTiers(id);
 				return new ModelAndView(new RedirectView("/tiers/visu.do?id=" + id, true));
 			}
 		}
@@ -159,13 +154,13 @@ public class GestionIndexationController extends AbstractSimpleFormController {
 		return mav;
 	}
 
-
 	/**
 	 * Met a jour les listes en Session
-	 * @param session
-	 * @param bean
+	 *
+	 * @param session la session http
+	 * @param bean    les données du formulaire de recherche
 	 */
-	private void setAttribute(HttpSession session, GestionIndexation bean) {
+	private void executeSearch(HttpSession session, GestionIndexation bean) {
 
 		final List<IndexDocument> listIndexDocument = new ArrayList<IndexDocument>();
 
@@ -197,15 +192,14 @@ public class GestionIndexationController extends AbstractSimpleFormController {
 		session.setAttribute(GESTION_INDEXATION_NAME, bean);
 	}
 
-	/**
-	 * @param globalIndex the globalIndex to set
-	 */
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setGlobalIndex(GlobalIndexInterface globalIndex) {
 		this.globalIndex = globalIndex;
 	}
 
-	public void setTiersIndexer(GlobalTiersIndexer tiersIndexer) {
-		this.tiersIndexer = tiersIndexer;
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setIndexationManager(IndexationManager indexationManager) {
+		this.indexationManager = indexationManager;
 	}
 }
 
