@@ -399,7 +399,6 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 
 		// Détermine l'ensemble des attributs existants
 		final Set<String> attributeNames = new HashSet<String>();
-		Property primaryKey = null;
 		Property discriminator = null;
 		try {
 			for (Class<? extends HibernateEntity> clazz : classes) {
@@ -411,9 +410,6 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 					if (p.isDiscriminator()) {
 						discriminator = p;
 					}
-					if (p.isPrimaryKey()) {
-						primaryKey = p;
-					}
 				}
 			}
 		}
@@ -423,10 +419,18 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 
 		// Détermine la classe de base des entités
 		Class primaryKeyType;
+		Property primaryKey = null;
 		try {
 			PropertyDescriptor collDescr = new PropertyDescriptor(collName, entity.getClass());
 			Method getter = collDescr.getReadMethod();
 			primaryKeyType = MetaEntity.getGenericParamReturnType(getter);
+
+			final MetaEntity meta = MetaEntity.determine(primaryKeyType);
+			for (Property p : meta.getProperties()) {
+				if (p.isPrimaryKey()) {
+					primaryKey = p;
+				}
+			}
 		}
 		catch (Exception e) {
 			throw new RuntimeException(e);
