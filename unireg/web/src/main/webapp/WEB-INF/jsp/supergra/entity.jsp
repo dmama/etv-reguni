@@ -26,7 +26,7 @@
 		<table border="0"><tr valign="top">
 		<td>
 
-			<h3>Edition du ${entity.key.type.displayName} n°${entity.key.id} &nbsp;<a href="<c:url value="/tiers/visu.do?id=${entity.key.id}"/>">(retour au mode classic)</a></h3>
+			<h3>Edition du ${entity.key.type.displayName} n°${entity.key.id} &nbsp;<a href="<c:url value="/tiers/visu.do?id=${entity.key.id}"/>">(retour au mode normal)</a></h3>
 			<br/>
 
 			<%-- Affichage des erreurs de validation, si nécessaire --%>
