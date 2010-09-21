@@ -18,8 +18,7 @@ import ch.vd.uniregctb.type.TypeEtatDeclaration;
  * @author xcifde
  * 
  */
-public class DeclarationImpotDetailView implements
-		Comparable<DeclarationImpotDetailView> {
+public class DeclarationImpotDetailView implements Comparable<DeclarationImpotDetailView>, DeclarationImpotView {
 
 	private TiersGeneralView contribuable;
 

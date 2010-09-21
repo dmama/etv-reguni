@@ -10,7 +10,7 @@ import ch.vd.uniregctb.general.view.TiersGeneralView;
  * @author xcifde
  *
  */
-public class DeclarationImpotListView {
+public class DeclarationImpotListView implements DeclarationImpotView {
 
 	private TiersGeneralView contribuable;
 

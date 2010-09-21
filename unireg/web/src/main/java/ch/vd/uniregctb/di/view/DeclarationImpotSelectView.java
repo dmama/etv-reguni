@@ -14,7 +14,7 @@ import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
-public class DeclarationImpotSelectView {
+public class DeclarationImpotSelectView implements DeclarationImpotView {
 
 	public static class ViewRange {
 		private final DateRange range;

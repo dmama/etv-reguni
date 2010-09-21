@@ -1,7 +1,5 @@
 package ch.vd.uniregctb.di;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -19,11 +17,13 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.date.DateRangeHelper.Range;
 import ch.vd.registre.base.validation.ValidationException;
+import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.common.EditiqueErrorHelper;
 import ch.vd.uniregctb.di.manager.DeclarationImpotEditManager;
 import ch.vd.uniregctb.di.view.DeclarationImpotDetailView;
 import ch.vd.uniregctb.di.view.DeclarationImpotListView;
 import ch.vd.uniregctb.di.view.DeclarationImpotSelectView;
+import ch.vd.uniregctb.di.view.DeclarationImpotView;
 import ch.vd.uniregctb.editique.EditiqueResultat;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
 import ch.vd.uniregctb.print.PrintPCLManager;
@@ -124,36 +124,60 @@ public class DeclarationImpotEditController extends AbstractDeclarationImpotCont
 
 	@SuppressWarnings("unchecked")
 	@Override
-	protected ModelAndView showForm(HttpServletRequest request, HttpServletResponse response, BindException errors, Map controlModel)
-			throws Exception {
+	protected ModelAndView showForm(HttpServletRequest request, HttpServletResponse response, BindException errors, Map controlModel) throws Exception {
 
 		ModelAndView mav = super.showForm(request, response, errors, controlModel);
 		final Map model = mav.getModel();
 		HttpSession session = request.getSession(true);
 
-		final String action = request.getParameter(ACTION_PARAMETER_NAME);
-		if (action == null || ACTION_LIST_DIS.equals(action)) {
-			mav = listDIsForm(request, response, errors, model);
-			if (session.getAttribute(ERREUR_COMMUNICATION_EDITIQUE) != null) {
-				mav.addObject(ERREUR_COMMUNICATION_EDITIQUE, session.getAttribute(ERREUR_COMMUNICATION_EDITIQUE));
-				session.removeAttribute(ERREUR_COMMUNICATION_EDITIQUE);
+		try {
+			final String action = request.getParameter(ACTION_PARAMETER_NAME);
+			if (action == null || ACTION_LIST_DIS.equals(action)) {
+				mav = listDIsForm(request, response, errors, model);
+				if (session.getAttribute(ERREUR_COMMUNICATION_EDITIQUE) != null) {
+					mav.addObject(ERREUR_COMMUNICATION_EDITIQUE, session.getAttribute(ERREUR_COMMUNICATION_EDITIQUE));
+					session.removeAttribute(ERREUR_COMMUNICATION_EDITIQUE);
+				}
+			}
+			else if (ACTION_SELECT_DI.equals(action)) {
+				mav = selectDiForm(request, response, errors, model);
+			}
+			else if (ACTION_NEW_DI.equals(action)) {
+				mav = newDiForm(request, response, errors, model);
+			}
+			else if (ACTION_EDIT_DI.equals(action)) {
+				mav = editDiForm(request, response, errors, model);
+				if (session.getAttribute(ERREUR_COMMUNICATION_EDITIQUE) != null) {
+					mav.addObject(ERREUR_COMMUNICATION_EDITIQUE, session.getAttribute(ERREUR_COMMUNICATION_EDITIQUE));
+					session.removeAttribute(ERREUR_COMMUNICATION_EDITIQUE);
+				}
 			}
 		}
-		else if (ACTION_SELECT_DI.equals(action)) {
-			mav = selectDiForm(request, response, errors, model);
-		}
-		else if (ACTION_NEW_DI.equals(action)) {
-			mav = newDiForm(request, response, errors, model);
-		}
-		else if (ACTION_EDIT_DI.equals(action)) {
-			mav = editDiForm(request, response, errors, model);
-			if (session.getAttribute(ERREUR_COMMUNICATION_EDITIQUE) != null) {
-				mav.addObject(ERREUR_COMMUNICATION_EDITIQUE, session.getAttribute(ERREUR_COMMUNICATION_EDITIQUE));
-				session.removeAttribute(ERREUR_COMMUNICATION_EDITIQUE);
-			}
+		catch (HighProbabilityThatBackWasUsedException e) {
+			LOGGER.warn("Il semblerait que la fonctionalité 'Back' ait été utilisée sur le navigateur, on récupère comme on peut...");
 		}
 
 		return mav;
+	}
+
+	/**
+	 * Exception lancée en interne par la méthode checkBean() pour signaler que le bean ne correspond pas du tout
+	 * à ce qui est attendu : ou bien il n'est carrément pas de la bonne classe, ou bien le contribuable n'y est
+	 * pas renseigné...
+	 */
+	private static final class HighProbabilityThatBackWasUsedException extends Exception {
+	}
+
+	@SuppressWarnings({"unchecked"})
+	private static <T extends DeclarationImpotView> T checkBean(Class<T> expectedClass, Object bean, boolean checkPresenceContribuable) throws HighProbabilityThatBackWasUsedException {
+		if (bean == null || !expectedClass.isAssignableFrom(bean.getClass())) {
+			throw new HighProbabilityThatBackWasUsedException();
+		}
+		final T typedBean = (T) bean;
+		if (checkPresenceContribuable && typedBean.getContribuable() == null) {
+			throw new HighProbabilityThatBackWasUsedException();
+		}
+		return typedBean;
 	}
 
 	/**
@@ -161,49 +185,56 @@ public class DeclarationImpotEditController extends AbstractDeclarationImpotCont
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object, org.springframework.validation.BindException)
 	 */
 	@Override
-	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors)
-			throws Exception {
+	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors) throws Exception {
 
 		ModelAndView mav = null;
 
 		// on blinde un peu : si la commande passée est nulle, on ne fait rien (on réaffiche la page)
 		if (command != null) {
 
-			// FIXME (CGD) implémenter la sécurité IFOSec sur les actions ci-dessous !
-			final String target = getTarget();
-			if (target != null) {
-				if (TARGET_ANNULER_DELAI.equals(target)) {
-					mav = annulerDelai(request, response, command, errors);
+			try {
+
+				// FIXME (CGD) implémenter la sécurité IFOSec sur les actions ci-dessous !
+				final String target = getTarget();
+				if (target != null) {
+					if (TARGET_ANNULER_DELAI.equals(target)) {
+						mav = annulerDelai(request, response, checkBean(DeclarationImpotDetailView.class, command, true), errors);
+					}
+					else if (TARGET_IMPRIMER_DI.equals(target)) {
+						mav = imprimerDI(request, response, checkBean(DeclarationImpotDetailView.class, command, true), errors);
+					}
+					else if (TARGET_CREER_DI.equals(target)) {
+						mav = creerDI(request, response, checkBean(DeclarationImpotSelectView.class, command, true), errors);
+					}
+					else if (TARGET_IMPRIMER_DELAI.equals(target)) {
+						mav = imprimerDelai(request, response, checkBean(DeclarationImpotDetailView.class, command, true), errors);
+					}
 				}
-				else if (TARGET_IMPRIMER_DI.equals(target)) {
-					mav = imprimerDI(request, response, command, errors);
-				}
-				else if (TARGET_CREER_DI.equals(target)) {
-					mav = creerDI(request, response, command, errors);
-				}
-				else if (TARGET_IMPRIMER_DELAI.equals(target)) {
-					mav = imprimerDelai(request, response, command, errors);
+				else {
+					if (request.getParameter(BUTTON_AJOUTER_DI) != null) {
+						mav = ajouterDI(request, response, checkBean(DeclarationImpotListView.class, command, true), errors);
+					}
+					if (request.getParameter(BUTTON_SAVE_DI) != null) {
+						mav = sauverDI(request, response, checkBean(DeclarationImpotDetailView.class, command, true), errors);
+					}
+					else if (request.getParameter(BUTTON_SOMMER_DI) != null) {
+						mav = sommerDI(request, response, checkBean(DeclarationImpotDetailView.class, command, true), errors);
+					}
+					else if (request.getParameter(BUTTON_ANNULER_DI) != null) {
+						mav = annulerDI(request, response, checkBean(DeclarationImpotDetailView.class, command, true), errors);
+					}
+					else if (request.getParameter(BUTTON_IMPRIMER_TO) != null) {
+						mav = imprimerTO(request, response, checkBean(DeclarationImpotDetailView.class, command, true), errors);
+					}
+					else if (request.getParameter(BUTTON_MAINTENIR_DI) != null) {
+						mav = maintenirDI(request, response, checkBean(DeclarationImpotDetailView.class, command, true), errors);
+					}
 				}
 			}
-			else {
-				if (request.getParameter(BUTTON_AJOUTER_DI) != null) {
-					mav = ajouterDI(request, response, command, errors);
-				}
-				if (request.getParameter(BUTTON_SAVE_DI) != null) {
-					mav = sauverDI(request, response, command, errors);
-				}
-				else if (request.getParameter(BUTTON_SOMMER_DI) != null) {
-					mav = sommerDI(request, response, command, errors);
-				}
-				else if (request.getParameter(BUTTON_ANNULER_DI) != null) {
-					mav = annulerDI(request, response, command, errors);
-				}
-				else if (request.getParameter(BUTTON_IMPRIMER_TO) != null) {
-					mav = imprimerTO(request, response, command, errors);
-				}
-				else if (request.getParameter(BUTTON_MAINTENIR_DI) != null) {
-					mav = maintenirDI(request, response, command, errors);
-				}
+			catch (HighProbabilityThatBackWasUsedException e) {
+				// on dirait bien que quelqu'un a joué avec le "back" du navigateur et que les choses sont devenues incohérentes !!
+				// -> ré-affichage de la page
+				mav = null;
 			}
 		}
 
@@ -216,7 +247,8 @@ public class DeclarationImpotEditController extends AbstractDeclarationImpotCont
 	}
 
 	@SuppressWarnings("unchecked")
-	private ModelAndView selectDiForm(HttpServletRequest request, HttpServletResponse response, BindException errors, Map model) throws Exception {
+	private ModelAndView selectDiForm(HttpServletRequest request, HttpServletResponse response, BindException errors, Map model)
+			throws HighProbabilityThatBackWasUsedException, AccessDeniedException, AdressesResolutionException {
 
 		final Long id = extractLongParam(request, CONTRIBUABLE_ID_PARAMETER_NAME);
 		if (id == null) {
@@ -224,7 +256,7 @@ public class DeclarationImpotEditController extends AbstractDeclarationImpotCont
 		}
 		checkAccesDossierEnEcriture(id);
 
-		final DeclarationImpotSelectView view = (DeclarationImpotSelectView) model.get(getCommandName());
+		final DeclarationImpotSelectView view = checkBean(DeclarationImpotSelectView.class, model.get(getCommandName()), false);
 		Assert.notNull(view);
 
 		view.setContribuable(diEditManager.creerCtbDI(id));
@@ -234,7 +266,7 @@ public class DeclarationImpotEditController extends AbstractDeclarationImpotCont
 	}
 
 	@SuppressWarnings("unchecked")
-	private ModelAndView listDIsForm(HttpServletRequest request, HttpServletResponse response, BindException errors, Map model) throws Exception {
+	private ModelAndView listDIsForm(HttpServletRequest request, HttpServletResponse response, BindException errors, Map model) throws HighProbabilityThatBackWasUsedException, AccessDeniedException {
 
 		final Long id = extractLongParam(request, CONTRIBUABLE_ID_PARAMETER_NAME);
 		if (id == null) {
@@ -244,7 +276,7 @@ public class DeclarationImpotEditController extends AbstractDeclarationImpotCont
 		// vérification des droits d'accès au dossier du contribuable
 		checkAccesDossierEnLecture(id);
 
-		final DeclarationImpotListView diListView = (DeclarationImpotListView) model.get(getCommandName());
+		final DeclarationImpotListView diListView = checkBean(DeclarationImpotListView.class, model.get(getCommandName()), false);
 		Assert.notNull(diListView);
 
 		diEditManager.findByNumero(id, diListView);
@@ -271,14 +303,14 @@ public class DeclarationImpotEditController extends AbstractDeclarationImpotCont
 		 * diListView.setAllowedEmission(false); } }
 		 */
 		else { // seules les PP et les entreprises ont des DI
-			throw new Exception("tentative d'accès en édition aux DI d'un tiers de type " + natureTiers);
+			throw new IllegalArgumentException("Tentative d'accès en édition aux DI d'un tiers de type " + natureTiers);
 		}
 
 		return new ModelAndView("di/edit/edit-contribuable", model);
 	}
 
 	@SuppressWarnings("unchecked")
-	private ModelAndView newDiForm(HttpServletRequest request, HttpServletResponse response, BindException errors, Map model) throws Exception {
+	private ModelAndView newDiForm(HttpServletRequest request, HttpServletResponse response, BindException errors, Map model) throws HighProbabilityThatBackWasUsedException, AccessDeniedException {
 
 		final String typeDeclarationImpot = request.getParameter(TYPE_DECLARATION_PARAMETER_NAME);
 		final String delaiRetourEnJours = request.getParameter(DELAI_RETOUR_PARAMETER_NAME);
@@ -289,7 +321,7 @@ public class DeclarationImpotEditController extends AbstractDeclarationImpotCont
 		final RegDate dateDebut = RegDateHelper.indexStringToDate(dateDebutString);
 		final RegDate dateFin = RegDateHelper.indexStringToDate(dateFinString);
 
-		final DeclarationImpotDetailView diDetailView = (DeclarationImpotDetailView) model.get(getCommandName());
+		final DeclarationImpotDetailView diDetailView = checkBean(DeclarationImpotDetailView.class, model.get(getCommandName()), false);
 
 		if (idCtb != null && dateDebut != null && dateFin != null) {
 
@@ -317,7 +349,7 @@ public class DeclarationImpotEditController extends AbstractDeclarationImpotCont
 				}
 			}
 			else {
-				throw new Exception("tentative de création d'une DI pour un tiers de type " + natureTiers);
+				throw new IllegalArgumentException("Tentative de création d'une DI pour un tiers de type " + natureTiers);
 			}
 		}
 
@@ -331,14 +363,14 @@ public class DeclarationImpotEditController extends AbstractDeclarationImpotCont
 	}
 
 	@SuppressWarnings("unchecked")
-	private ModelAndView editDiForm(HttpServletRequest request, HttpServletResponse response, BindException errors, Map model) throws Exception {
+	private ModelAndView editDiForm(HttpServletRequest request, HttpServletResponse response, BindException errors, Map model) throws HighProbabilityThatBackWasUsedException, AccessDeniedException {
 
-		String idDiParam = request.getParameter(DI_ID_PARAMETER_NAME);
+		final String idDiParam = request.getParameter(DI_ID_PARAMETER_NAME);
 
-		final DeclarationImpotDetailView diDetailView = (DeclarationImpotDetailView) model.get(getCommandName());
+		final DeclarationImpotDetailView diDetailView = checkBean(DeclarationImpotDetailView.class, model.get(getCommandName()), false);
 
 		if (idDiParam != null) {
-			Long id = extractLongParam(request, DI_ID_PARAMETER_NAME);
+			final Long id = extractLongParam(request, DI_ID_PARAMETER_NAME);
 			if (id != null) {
 				//gestion des droits pour les DIs par diEditManager
 				diEditManager.get(id, diDetailView);
@@ -351,12 +383,7 @@ public class DeclarationImpotEditController extends AbstractDeclarationImpotCont
 		return new ModelAndView("di/edit/edit", model);
 	}
 
-	private ModelAndView imprimerDI(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors) throws Exception {
-		final DeclarationImpotDetailView bean = (DeclarationImpotDetailView) command;
-		if (bean == null || bean.getContribuable() == null) {
-			// quelqu'un a joué avec la fonction "back" de son navigateur ?
-			return null;
-		}
+	private ModelAndView imprimerDI(HttpServletRequest request, HttpServletResponse response, DeclarationImpotDetailView bean, BindException errors) throws Exception {
 
 		final Long noCtb = bean.getContribuable().getNumero();
 		checkAccesDossierEnEcriture(noCtb);
@@ -387,12 +414,7 @@ public class DeclarationImpotEditController extends AbstractDeclarationImpotCont
 		return null;
 	}
 
-	private ModelAndView creerDI(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors) throws Exception {
-		final DeclarationImpotSelectView bean = (DeclarationImpotSelectView) command;
-		if (bean == null || bean.getContribuable() == null) {
-			// quelqu'un a joué avec la fonction "back" de son navigateur ?
-			return null;
-		}
+	private ModelAndView creerDI(HttpServletRequest request, HttpServletResponse response, DeclarationImpotSelectView bean, BindException errors) throws Exception {
 
 		final Long numero = bean.getContribuable().getNumero();
 		checkAccesDossierEnEcriture(numero);
@@ -428,9 +450,8 @@ public class DeclarationImpotEditController extends AbstractDeclarationImpotCont
 		}
 	}
 
-	private ModelAndView imprimerTO(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors) throws Exception {
-		final DeclarationImpotDetailView bean = (DeclarationImpotDetailView) command;
-		HttpSession session = request.getSession();
+	private ModelAndView imprimerTO(HttpServletRequest request, HttpServletResponse response, DeclarationImpotDetailView bean, BindException errors) throws Exception {
+
 		checkAccesDossierEnEcriture(bean.getContribuable().getNumero());
 
 		final EditiqueResultat resultat = diEditManager.envoieImpressionLocalTaxationOffice(bean);
@@ -438,6 +459,7 @@ public class DeclarationImpotEditController extends AbstractDeclarationImpotCont
 			printPCLManager.openPclStream(request, response, resultat.getDocument());
 		}
 		else {
+			final HttpSession session = request.getSession();
 			session.setAttribute(ERREUR_COMMUNICATION_EDITIQUE, String.format("%s Veuillez recommencer plus tard.", EditiqueErrorHelper.getMessageErreurEditique(resultat)));
 			return new ModelAndView("redirect:edit.do?action=editdi&id=" + bean.getId());
 		}
@@ -449,8 +471,8 @@ public class DeclarationImpotEditController extends AbstractDeclarationImpotCont
 		return new ModelAndView("redirect:edit.do?action=listdis&numero=" + bean.getContribuable().getNumero());
 	}
 
-	private ModelAndView annulerDI(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors) throws Exception {
-		final DeclarationImpotDetailView bean = (DeclarationImpotDetailView) command;
+	private ModelAndView annulerDI(HttpServletRequest request, HttpServletResponse response, DeclarationImpotDetailView bean, BindException errors) throws Exception {
+
 		checkAccesDossierEnEcriture(bean.getContribuable().getNumero());
 
 		String depuisTache = request.getParameter(DEPUIS_TACHE_PARAMETER_NAME);
@@ -463,16 +485,16 @@ public class DeclarationImpotEditController extends AbstractDeclarationImpotCont
 		}
 	}
 
-	private ModelAndView maintenirDI(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors) throws Exception {
-		final DeclarationImpotDetailView bean = (DeclarationImpotDetailView) command;
+	private ModelAndView maintenirDI(HttpServletRequest request, HttpServletResponse response, DeclarationImpotDetailView bean, BindException errors) throws Exception {
+
 		checkAccesDossierEnEcriture(bean.getContribuable().getNumero());
 		String idTacheAsString = request.getParameter(TACHE_ID_PARAMETER_NAME);
 		diEditManager.maintenirDI(Long.valueOf(idTacheAsString));
 		return new ModelAndView("redirect:/tache/list.do");
 	}
 
-	private ModelAndView sommerDI(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors) throws Exception {
-		final DeclarationImpotDetailView bean = (DeclarationImpotDetailView) command;
+	private ModelAndView sommerDI(HttpServletRequest request, HttpServletResponse response, DeclarationImpotDetailView bean, BindException errors) throws Exception {
+
 		checkAccesDossierEnEcriture(bean.getContribuable().getNumero());
 
 		final EditiqueResultat resultat = diEditManager.envoieImpressionLocalSommationDI(bean);
@@ -489,11 +511,10 @@ public class DeclarationImpotEditController extends AbstractDeclarationImpotCont
 		return null;
 	}
 
-	private ModelAndView imprimerDelai(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors) throws Exception {
+	private ModelAndView imprimerDelai(HttpServletRequest request, HttpServletResponse response, DeclarationImpotDetailView bean, BindException errors) throws Exception {
 
-		final DeclarationImpotDetailView bean = (DeclarationImpotDetailView) command;
-		String delai = getEventArgument();
-		Long idDelai = Long.parseLong(delai);
+		final String delai = getEventArgument();
+		final Long idDelai = Long.parseLong(delai);
 		final EditiqueResultat resultat = diEditManager.envoieImpressionLocalConfirmationDelai(bean, idDelai);
 		if (resultat != null && resultat.getDocument() != null) {
 			getServletService().downloadAsFile("delai.pdf", resultat.getDocument(), response);
@@ -509,8 +530,8 @@ public class DeclarationImpotEditController extends AbstractDeclarationImpotCont
 		return null;
 	}
 
-	private ModelAndView ajouterDI(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors) throws Exception {
-		final DeclarationImpotListView bean = (DeclarationImpotListView) command;
+	private ModelAndView ajouterDI(HttpServletRequest request, HttpServletResponse response, DeclarationImpotListView bean, BindException errors) throws Exception {
+
 		final Long numero = bean.getContribuable().getNumero();
 		checkAccesDossierEnEcriture(numero);
 
@@ -532,8 +553,8 @@ public class DeclarationImpotEditController extends AbstractDeclarationImpotCont
 		}
 	}
 
-	private ModelAndView sauverDI(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors) throws Exception {
-		final DeclarationImpotDetailView bean = (DeclarationImpotDetailView) command;
+	private ModelAndView sauverDI(HttpServletRequest request, HttpServletResponse response, DeclarationImpotDetailView bean, BindException errors) throws Exception {
+
 		checkAccesDossierEnEcriture(bean.getContribuable().getNumero());
 
 		diEditManager.save(bean);
@@ -542,12 +563,12 @@ public class DeclarationImpotEditController extends AbstractDeclarationImpotCont
 		return new ModelAndView("redirect:edit.do?action=listdis&numero=" + bean.getContribuable().getNumero());
 	}
 
-	private ModelAndView annulerDelai(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors) throws Exception {
-		final DeclarationImpotDetailView bean = (DeclarationImpotDetailView) command;
+	private ModelAndView annulerDelai(HttpServletRequest request, HttpServletResponse response, DeclarationImpotDetailView bean, BindException errors) throws Exception {
+
 		checkAccesDossierEnEcriture(bean.getContribuable().getNumero());
 
-		String delai = getEventArgument();
-		Long idDelai = Long.parseLong(delai);
+		final String delai = getEventArgument();
+		final Long idDelai = Long.parseLong(delai);
 		diEditManager.annulerDelai(bean, idDelai);
 		if (bean.getId() != null) {
 			diEditManager.refresh(bean);
