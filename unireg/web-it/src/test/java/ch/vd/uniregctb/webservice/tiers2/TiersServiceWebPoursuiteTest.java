@@ -129,8 +129,7 @@ public class TiersServiceWebPoursuiteTest extends AbstractTiersServiceWebTest {
 
 			// Teste les adresses formattées
 			final AdresseEnvoi domicile = tiers.getAdresseDomicileFormattee();
-			assertAdresseEnvoi(domicile, "Madame", "Fabienne Girardet Ralet", "1860 Aigle"); // msi (15.09.2019) fix temporaire pour problème de données en validation
-//			assertAdresseEnvoi(domicile, "Madame", "Fabienne Girardet Ralet", "Route de Chailly 276", "1814 La Tour-de-Peilz");
+			assertAdresseEnvoi(domicile, "Madame", "Fabienne Girardet Ralet", "Route de Chailly 276", "1814 La Tour-de-Peilz");
 			assertEquals(TypeAffranchissement.SUISSE, domicile.getTypeAffranchissement());
 			final AdresseEnvoi courrier = tiers.getAdresseEnvoi();
 			assertAdresseEnvoi(courrier, "Madame", "Fabienne Girardet Ralet", "Route de Chailly 276", "1814 La Tour-de-Peilz");
