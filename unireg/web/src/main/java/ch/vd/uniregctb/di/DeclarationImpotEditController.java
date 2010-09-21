@@ -91,7 +91,7 @@ public class DeclarationImpotEditController extends AbstractDeclarationImpotCont
 
 	@Override
 	protected boolean suppressValidation(HttpServletRequest request, Object command, BindException errors) {
-		if (getTarget() != null ||
+		if ((getTarget() != null && !TARGET_IMPRIMER_DI.equals(getTarget())) ||
 				request.getParameter(BUTTON_SOMMER_DI) != null ||
 				request.getParameter(BUTTON_ANNULER_DI) != null ||
 				request.getParameter(BUTTON_MAINTENIR_DI) != null) {
@@ -180,7 +180,8 @@ public class DeclarationImpotEditController extends AbstractDeclarationImpotCont
 				}
 				else if (TARGET_CREER_DI.equals(target)) {
 					mav = creerDI(request, response, command, errors);
-				} else if (TARGET_IMPRIMER_DELAI.equals(target)) {
+				}
+				else if (TARGET_IMPRIMER_DELAI.equals(target)) {
 					mav = imprimerDelai(request, response, command, errors);
 				}
 			}
@@ -352,9 +353,13 @@ public class DeclarationImpotEditController extends AbstractDeclarationImpotCont
 
 	private ModelAndView imprimerDI(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors) throws Exception {
 		final DeclarationImpotDetailView bean = (DeclarationImpotDetailView) command;
+		if (bean == null || bean.getContribuable() == null) {
+			// quelqu'un a joué avec la fonction "back" de son navigateur ?
+			return null;
+		}
 
-		HttpSession session = request.getSession();
-		checkAccesDossierEnEcriture(bean.getContribuable().getNumero());
+		final Long noCtb = bean.getContribuable().getNumero();
+		checkAccesDossierEnEcriture(noCtb);
 
 		if (!bean.isImprimable()) {
 			throw new AccessDeniedException("Vous ne possédez pas les droits nécessaires pour imprimer cette déclaration.");
@@ -370,8 +375,9 @@ public class DeclarationImpotEditController extends AbstractDeclarationImpotCont
 			printPCLManager.openPclStream(request, response, resultat.getDocument());
 		}
 		else {
+			final HttpSession session = request.getSession();
 			session.setAttribute(ERREUR_COMMUNICATION_EDITIQUE, String.format("%s Veuillez imprimer un duplicata de la déclaration d'impôt.", EditiqueErrorHelper.getMessageErreurEditique(resultat)));
-			return new ModelAndView("redirect:edit.do?action=listdis&numero=" + bean.getContribuable().getNumero());
+			return new ModelAndView("redirect:edit.do?action=listdis&numero=" + noCtb);
 		}
 
 		if (bean.getId() != null) {
@@ -383,6 +389,10 @@ public class DeclarationImpotEditController extends AbstractDeclarationImpotCont
 
 	private ModelAndView creerDI(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors) throws Exception {
 		final DeclarationImpotSelectView bean = (DeclarationImpotSelectView) command;
+		if (bean == null || bean.getContribuable() == null) {
+			// quelqu'un a joué avec la fonction "back" de son navigateur ?
+			return null;
+		}
 
 		final Long numero = bean.getContribuable().getNumero();
 		checkAccesDossierEnEcriture(numero);
