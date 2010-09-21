@@ -63,7 +63,6 @@
 	<root>
 		<level value="WARN" />
 		<appender-ref ref="LOGFILE" />
-		<appender-ref ref="IN_MEMORY" />
 	</root>
 
 </log4j:configuration>
