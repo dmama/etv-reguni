@@ -2937,22 +2937,22 @@ public class TiersServiceTest extends BusinessTest {
 
 	@Test
 	public void testAddPeriodiciteDebiteurPrestationImposable() throws Exception {
-		loadDatabase("TiersServiceTest.xml");
+
 
 		//Ajout d'une première periodicite'
-		doInNewTransaction(new TxCallback() {
+		final long dpiId = (Long)doInNewTransaction(new TxCallback() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(1234L);
+				DebiteurPrestationImposable dpi = addDebiteur();
 				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.TRIMESTRIEL, null, date(2011, 1, 1), null);
-				return null;
+				return  dpi.getNumero();
 			}
 		});
 
 		doInNewTransaction(new TxCallback() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(1234L);
+				DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
 				Periodicite periodicite = dpi.getPeriodiciteAt(date(2011, 1, 1));
 				assertNotNull(periodicite);
 				assertEquals(PeriodiciteDecompte.TRIMESTRIEL, periodicite.getPeriodiciteDecompte());
@@ -2964,7 +2964,7 @@ public class TiersServiceTest extends BusinessTest {
 		doInNewTransaction(new TxCallback() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(1234L);
+				DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
 				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.MENSUEL, null, date(2011, 1, 1), null);
 				return null;
 			}
@@ -2973,7 +2973,7 @@ public class TiersServiceTest extends BusinessTest {
 		doInNewTransaction(new TxCallback() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(1234L);
+				DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
 				Periodicite periodicite = dpi.getPeriodiciteAt(date(2011, 1, 1));
 				assertNotNull(periodicite);
 				assertEquals(PeriodiciteDecompte.MENSUEL, periodicite.getPeriodiciteDecompte());
@@ -2986,7 +2986,7 @@ public class TiersServiceTest extends BusinessTest {
 		doInNewTransaction(new TxCallback() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(1234L);
+				DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
 				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.MENSUEL, null, date(2012, 1, 1), null);
 				return null;
 			}
@@ -2995,7 +2995,7 @@ public class TiersServiceTest extends BusinessTest {
 		doInNewTransaction(new TxCallback() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(1234L);
+				DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
 				Periodicite periodicite = dpi.getPeriodiciteAt(date(2012, 1, 1));
 				assertNotNull(periodicite);
 				assertEquals(date(2011, 1, 1), periodicite.getDateDebut());
@@ -3009,7 +3009,7 @@ public class TiersServiceTest extends BusinessTest {
 		doInNewTransaction(new TxCallback() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(1234L);
+				DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
 				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.TRIMESTRIEL, null, date(2012, 1, 1), null);
 				return null;
 			}
@@ -3018,7 +3018,7 @@ public class TiersServiceTest extends BusinessTest {
 		doInNewTransaction(new TxCallback() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(1234L);
+				DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
 				Periodicite periodicite = dpi.getPeriodiciteAt(date(2011, 1, 1));
 				assertNotNull(periodicite);
 				assertEquals(date(2011, 1, 1), periodicite.getDateDebut());
@@ -3044,7 +3044,7 @@ public class TiersServiceTest extends BusinessTest {
 		doInNewTransaction(new TxCallback() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(1234L);
+				DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
 				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.MENSUEL, null, date(2012, 1, 1), null);
 				return null;
 			}
@@ -3053,8 +3053,8 @@ public class TiersServiceTest extends BusinessTest {
 		doInNewTransaction(new TxCallback() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(1234L);
-				Periodicite periodicite = dpi.getPeriodiciteAt(date(2011, 1, 1));
+				DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
+				Periodicite periodicite = dpi.getPeriodiciteAt(date(2012, 1, 1));
 				assertNotNull(periodicite);
 				assertEquals(date(2011, 1, 1), periodicite.getDateDebut());
 				assertNull(periodicite.getDateFin());
