@@ -3339,8 +3339,18 @@ public class TiersServiceImpl implements TiersService {
 		Declaration derniereDeclaration = debiteur.getDerniereDeclaration();
 		if (derniereDeclaration != null) {
 			anneeDebut = derniereDeclaration.getPeriode().getAnnee() + 1;
+			debutValidite = RegDate.get(anneeDebut, 1, 1);
 		}
-		debutValidite = RegDate.get(anneeDebut, 1, 1);
+		else {
+			ForFiscal forDebiteur = debiteur.getDernierForDebiteur();
+			if (forDebiteur != null) {
+				debutValidite = forDebiteur.getDateDebut();
+			}
+			else {
+				debutValidite = RegDate.get(anneeDebut, 1, 1);
+			}
+		}
+
 		return debutValidite;
 	}
 

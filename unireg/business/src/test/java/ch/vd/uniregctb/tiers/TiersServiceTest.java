@@ -25,6 +25,7 @@ import ch.vd.registre.civil.model.EnumTypePermis;
 import ch.vd.uniregctb.adresse.AdresseSuisse;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.common.BusinessTest;
+import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.Nationalite;
@@ -48,6 +49,7 @@ import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.uniregctb.type.TypeEtatDeclaration;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
@@ -3077,6 +3079,89 @@ public class TiersServiceTest extends BusinessTest {
 		});
 
 	}
+
+	@Test
+	public void testGetDateDebutValiditeNouvellePeriodiciteSansLR() throws Exception {
+
+			//Ajout d'une première periodicite'
+		final long dpiId = (Long)doInNewTransaction(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				DebiteurPrestationImposable dpi = addDebiteur();
+				addForDebiteur(dpi,date(2009, 6, 1),null, MockCommune.Bex);
+				return  dpi.getNumero();
+			}
+		});
+
+		doInNewTransaction(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+
+			RegDate dateDebutPeriodicite = RegDate.get(2009, 6, 1);
+			DebiteurPrestationImposable debiteur = tiersDAO.getDebiteurPrestationImposableByNumero(dpiId);
+			assertEquals(dateDebutPeriodicite, tiersService.getDateDebutNouvellePeriodicite(debiteur));
+			return null;
+			}
+		});
+
+	}
+
+	@Test
+	public void testGetDateDebutValiditeNouvellePeriodiciteAvecLR() throws Exception {
+
+			//Ajout d'une première periodicite'
+		final long dpiId = (Long)doInNewTransaction(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				DebiteurPrestationImposable dpi = addDebiteur();
+				addForDebiteur(dpi,date(2009, 6, 1),null, MockCommune.Bex);
+				final PeriodeFiscale fiscale = addPeriodeFiscale(2009);
+
+				addLR(dpi, date(2009,7,1),date(2009,9,30), fiscale, TypeEtatDeclaration.EMISE);
+				return  dpi.getNumero();
+			}
+		});
+
+		doInNewTransaction(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+
+			RegDate dateDebutPeriodicite = RegDate.get(2010, 1, 1);
+			DebiteurPrestationImposable debiteur = tiersDAO.getDebiteurPrestationImposableByNumero(dpiId);
+			assertEquals(dateDebutPeriodicite, tiersService.getDateDebutNouvellePeriodicite(debiteur));
+			return null;
+			}
+		});
+
+	}
+		@Test
+	public void testGetDateDebutValiditeNouvellePeriodiciteSansLRSansFor() throws Exception {
+
+			//Ajout d'une première periodicite'
+		final long dpiId = (Long)doInNewTransaction(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				DebiteurPrestationImposable dpi = addDebiteur();
+
+
+				return  dpi.getNumero();
+			}
+		});
+
+		doInNewTransaction(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+
+			int anneeCourante = RegDate.get().year();
+			RegDate dateDebutPeriodicite = RegDate.get(anneeCourante, 1, 1);
+			DebiteurPrestationImposable debiteur = tiersDAO.getDebiteurPrestationImposableByNumero(dpiId);
+			assertEquals(dateDebutPeriodicite, tiersService.getDateDebutNouvellePeriodicite(debiteur));
+			return null;
+			}
+		});
+
+	}
+
 
 	@NotTransactional
 	@Test
