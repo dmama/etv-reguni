@@ -27,6 +27,7 @@ import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.validation.Validateable;
+import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.tiers.LinkedEntity;
@@ -209,6 +210,37 @@ public abstract class AdresseTiers extends HibernateEntity implements Comparable
 	 */
 	public int compareTo(AdresseTiers other) {
 		return DateRangeComparator.compareRanges(this, other);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public ValidationResults validate() {
+
+		ValidationResults results = new ValidationResults();
+
+		// La date de début doit être renseignée
+		if (dateDebut == null) {
+			results.addError("L'adresse " + toString() + " possède une date de début nulle");
+		}
+
+		// Date de début doit être avant ou égale à la date de fin
+		if (dateDebut != null && dateFin != null && dateDebut.isAfter(dateFin) && !isAnnule()) {
+			results.addError("L'adresse " + toString() + " possède une date de début qui est après la date de fin: début = " + dateDebut + " fin = " + dateFin + "");
+		}
+
+		return results;
+	}
+
+	@Override
+	public String toString() {
+		return "AdresseTiers{" +
+				"id=" + id +
+				", dateDebut=" + dateDebut +
+				", dateFin=" + dateFin +
+				", usage=" + usage +
+				", tiers=" + tiers +
+				'}';
 	}
 
 	/**

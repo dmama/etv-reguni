@@ -31,6 +31,7 @@ import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.validation.ValidationInterceptor;
 import ch.vd.uniregctb.webservices.common.UserLogin;
 import ch.vd.uniregctb.webservices.tiers2.data.Adresse;
 import ch.vd.uniregctb.webservices.tiers2.data.BatchTiersHisto;
@@ -62,11 +63,13 @@ public class TiersWebServiceTest extends WebserviceTest {
 
 	private TiersWebService service;
 	private UserLogin login;
+	private ValidationInterceptor validationInterceptor;
 
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
 		service = getBean(TiersWebService.class, "tiersService2Bean");
+		validationInterceptor = getBean(ValidationInterceptor.class, "validationInterceptor");
 		login = new UserLogin("iamtestuser", 22);
 		serviceCivil.setUp(new DefaultMockServiceCivil());
 	}
@@ -267,17 +270,23 @@ public class TiersWebServiceTest extends WebserviceTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransactionAndSession(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
-				PersonnePhysique tiia = addHabitant(noIndividuTiia);
-				addAdresseSuisse(tiia, TypeAdresseTiers.COURRIER, date(2009, 7, 8), null, MockRue.Lausanne.PlaceSaintFrancois);
-				ids.tiia = tiia.getId();
-				PersonnePhysique sylvie = addHabitant(noIndividuSylvie);
-				ids.sylvie = sylvie.getId();
-				addCuratelle(tiia, sylvie, null, null);
-				return null;
-			}
-		});
+		validationInterceptor.setEnabled(false); // pour permettre l'ajout d'une curatelle avec date de début nulle
+		try {
+			doInNewTransactionAndSession(new TransactionCallback() {
+				public Object doInTransaction(TransactionStatus status) {
+					PersonnePhysique tiia = addHabitant(noIndividuTiia);
+					addAdresseSuisse(tiia, TypeAdresseTiers.COURRIER, date(2009, 7, 8), null, MockRue.Lausanne.PlaceSaintFrancois);
+					ids.tiia = tiia.getId();
+					PersonnePhysique sylvie = addHabitant(noIndividuSylvie);
+					ids.sylvie = sylvie.getId();
+					addCuratelle(tiia, sylvie, null, null);
+					return null;
+				}
+			});
+		}
+		finally {
+			validationInterceptor.setEnabled(true);
+		}
 
 		{
 			final GetTiers params = new GetTiers();

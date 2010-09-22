@@ -336,6 +336,11 @@ public abstract class ForFiscal extends HibernateEntity implements Comparable<Fo
 
 		ValidationResults results = new ValidationResults();
 
+		// La date de début doit être renseignée
+		if (dateDebut == null) {
+			results.addError("Le for " + toString() + " possède une date de début nulle");
+		}
+
 		// Date de début doit être avant la date de fin
 		// Si "date de début" = "date de fin", c'est un cas OK (for qui dure 1 jour)
 		// Cette validation n'est pas faite si le for est annulé.

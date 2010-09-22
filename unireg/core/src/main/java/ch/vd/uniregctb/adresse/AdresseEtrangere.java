@@ -116,7 +116,7 @@ public class AdresseEtrangere extends AdresseSupplementaire {
 	}
 
 	public ValidationResults validate() {
-		ValidationResults results = new ValidationResults();
+		ValidationResults results = super.validate();
 		if ((numeroOfsPays == null || numeroOfsPays == 0)) {
 			results.addError("Le numéro Ofs du pays doit être renseigné sur une adresse étrangère [" + this + "]");
 		}

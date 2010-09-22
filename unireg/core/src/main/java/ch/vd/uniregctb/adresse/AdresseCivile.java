@@ -62,7 +62,7 @@ public class AdresseCivile extends AdresseTiers {
 	}
 
 	public ValidationResults validate() {
-		ValidationResults results = new ValidationResults();
+		ValidationResults results = super.validate();
 		if (type == null) {
 			results.addError("Le type d'adresse doit être renseigné sur une adresse civile [" + this + "]");
 		}

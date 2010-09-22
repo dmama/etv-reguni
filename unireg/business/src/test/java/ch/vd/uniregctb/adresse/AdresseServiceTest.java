@@ -1,5 +1,11 @@
 package ch.vd.uniregctb.adresse;
 
+import java.util.List;
+
+import org.junit.Test;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+
 import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.civil.model.EnumTypeEtatCivil;
@@ -7,26 +13,46 @@ import ch.vd.registre.pm.model.EnumTypeAdresseEntreprise;
 import ch.vd.uniregctb.adresse.AdresseGenerique.Source;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.interfaces.model.TypeAffranchissement;
-import ch.vd.uniregctb.interfaces.model.mock.*;
+import ch.vd.uniregctb.interfaces.model.mock.MockAdresse;
+import ch.vd.uniregctb.interfaces.model.mock.MockCollectiviteAdministrative;
+import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
+import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
+import ch.vd.uniregctb.interfaces.model.mock.MockPays;
+import ch.vd.uniregctb.interfaces.model.mock.MockPersonneMorale;
+import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServicePM;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
 import ch.vd.uniregctb.interfaces.service.mock.MockServicePM;
-import ch.vd.uniregctb.tiers.*;
+import ch.vd.uniregctb.tiers.AutreCommunaute;
+import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
+import ch.vd.uniregctb.tiers.ContactImpotSource;
+import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
+import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
+import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.Etablissement;
+import ch.vd.uniregctb.tiers.MenageCommun;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.tiers.RapportEntreTiers;
+import ch.vd.uniregctb.tiers.RepresentationConventionnelle;
+import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.tiers.TiersDAO;
+import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.tiers.Tutelle;
 import ch.vd.uniregctb.type.FormulePolitesse;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
-import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
-
-import java.util.List;
+import ch.vd.uniregctb.validation.ValidationInterceptor;
 
 import static ch.vd.uniregctb.adresse.AdresseTestCase.assertAdresse;
 import static ch.vd.uniregctb.adresse.AdresseTestCase.assertAdressesEquals;
-import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 @SuppressWarnings({"JavaDoc"})
 public class AdresseServiceTest extends BusinessTest {
@@ -34,6 +60,7 @@ public class AdresseServiceTest extends BusinessTest {
 	private AdresseService adresseService;
 	private TiersService tiersService;
 	private TiersDAO tiersDAO;
+	private ValidationInterceptor validationInterceptor;
 
 	@Override
 	public void onSetUp() throws Exception {
@@ -41,6 +68,7 @@ public class AdresseServiceTest extends BusinessTest {
 		super.onSetUp();
 		tiersService = getBean(TiersService.class, "tiersService");
 		tiersDAO = getBean(TiersDAO.class, "tiersDAO");
+		validationInterceptor = getBean(ValidationInterceptor.class, "validationInterceptor");
 
 		// Pas d'indexation parce qu'on teste des cas qui font peter l'indexation
 		// et qui pourrissent les logs!
@@ -5264,17 +5292,23 @@ public class AdresseServiceTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		doInNewTransactionAndSession(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
-				PersonnePhysique tiia = addHabitant(noIndividuTiia);
-				addAdresseSuisse(tiia, TypeAdresseTiers.COURRIER, date(2009, 7, 8), null, MockRue.Lausanne.PlaceSaintFrancois);
-				ids.tiia = tiia.getId();
-				PersonnePhysique sylvie = addHabitant(noIndividuSylvie);
-				ids.sylvie = sylvie.getId();
-				addCuratelle(tiia, sylvie, null, null);
-				return null;
-			}
-		});
+		validationInterceptor.setEnabled(false); // pour permettre l'ajout d'une curatelle avec date de début nulle
+		try {
+			doInNewTransactionAndSession(new TransactionCallback() {
+				public Object doInTransaction(TransactionStatus status) {
+					PersonnePhysique tiia = addHabitant(noIndividuTiia);
+					addAdresseSuisse(tiia, TypeAdresseTiers.COURRIER, date(2009, 7, 8), null, MockRue.Lausanne.PlaceSaintFrancois);
+					ids.tiia = tiia.getId();
+					PersonnePhysique sylvie = addHabitant(noIndividuSylvie);
+					ids.sylvie = sylvie.getId();
+					addCuratelle(tiia, sylvie, null, null);
+					return null;
+				}
+			});
+		}
+		finally {
+			validationInterceptor.setEnabled(true);
+		}
 
 		final PersonnePhysique tiia = (PersonnePhysique) tiersDAO.get(ids.tiia);
 		assertNotNull(tiia);

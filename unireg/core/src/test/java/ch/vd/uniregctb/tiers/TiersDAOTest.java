@@ -1037,11 +1037,13 @@ public class TiersDAOTest extends CoreDAOTest {
 				mc = (MenageCommun) dao.save(mc);
 
 				RapportEntreTiers rapport1 = new AppartenanceMenage();
+				rapport1.setDateDebut(RegDate.get(2000, 1, 1));
 				rapport1.setSujet(nh1);
 				rapport1.setObjet(mc);
 				rapport1 = dao.save(rapport1);
 
 				RapportEntreTiers rapport2 = new AppartenanceMenage();
+				rapport2.setDateDebut(RegDate.get(2000, 1, 1));
 				rapport2.setSujet(nh2);
 				rapport2.setObjet(mc);
 				rapport2 = dao.save(rapport2);
@@ -1763,6 +1765,7 @@ public class TiersDAOTest extends CoreDAOTest {
 
 				AppartenanceMenage am1 = new AppartenanceMenage();
 				am1.setLogModifDate(new Timestamp(1199142000000L));
+				am1.setDateDebut(RegDate.get(2006, 9, 1));
 				am1.setObjetId(10008901L);
 				am1.setSujetId(10007890L);
 				am1 = (AppartenanceMenage) hibernateTemplate.merge(am1);
@@ -1771,6 +1774,7 @@ public class TiersDAOTest extends CoreDAOTest {
 
 				RapportPrestationImposable rpi0 = new RapportPrestationImposable();
 				rpi0.setLogModifDate(new Timestamp(1199142000000L));
+				rpi0.setDateDebut(RegDate.get(2000, 1, 1));
 				rpi0.setObjetId(1001234L);
 				rpi0.setSujetId(10001111L);
 				rpi0 = (RapportPrestationImposable) hibernateTemplate.merge(rpi0);
@@ -1779,6 +1783,7 @@ public class TiersDAOTest extends CoreDAOTest {
 
 				ContactImpotSource cis0 = new ContactImpotSource();
 				cis0.setLogModifDate(new Timestamp(1199142000000L));
+				cis0.setDateDebut(RegDate.get(2000, 1, 1));
 				cis0.setObjetId(1001234L);
 				cis0.setSujetId(10006789L);
 				cis0 = (ContactImpotSource) hibernateTemplate.merge(cis0);

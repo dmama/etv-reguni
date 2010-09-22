@@ -10,7 +10,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-
 import java.util.Arrays;
 import java.util.List;
 
@@ -238,7 +237,7 @@ public class EtatDeclaration extends HibernateEntity implements DateRange, Compa
 	 */
 	@Transient
 	public RegDate getDateFin() {
-		// On n'a pas de date de fin, on renovie null
+		// On n'a pas de date de fin, on renvoie null
 		return null;
 	}
 

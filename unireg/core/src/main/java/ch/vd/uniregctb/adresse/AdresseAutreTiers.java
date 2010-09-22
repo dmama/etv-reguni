@@ -13,7 +13,6 @@ import org.hibernate.annotations.Type;
 
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.common.LengthConstants;
-import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 
 /**
@@ -102,7 +101,7 @@ public class AdresseAutreTiers extends AdresseTiers {
 	}
 
 	public ValidationResults validate() {
-		ValidationResults results = new ValidationResults();
+		ValidationResults results = super.validate();
 		if (type == null) {
 			results.addError("Le type d'adresse doit être renseigné sur une adresse autre tiers [" + this + "]");
 		}

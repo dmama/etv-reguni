@@ -84,7 +84,7 @@ public class AdresseSuisse extends AdresseSupplementaire {
 	}
 
 	public ValidationResults validate() {
-		ValidationResults results = new ValidationResults();
+		ValidationResults results = super.validate();
 		if ((numeroRue == null || numeroRue == 0) && (numeroOrdrePoste == null || numeroOrdrePoste == 0)) {
 			results.addError("Le numéro de rue ou le numéro d'ordre poste doit être renseigné sur une adresse suisse [" + this + "]");
 		}

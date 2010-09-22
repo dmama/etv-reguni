@@ -12,7 +12,6 @@ import javax.persistence.InheritanceType;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
@@ -261,6 +260,11 @@ public abstract class RapportEntreTiers extends HibernateEntity implements DateR
 	public ValidationResults validate() {
 
 		ValidationResults results = new ValidationResults();
+
+		// La date de début doit être renseignée
+		if (dateDebut == null) {
+			results.addError("Le rapport-entre-tiers " + toString() + " possède une date de début nulle");
+		}
 
 		// Date de début doit être avant (ou égale) la date de fin
 		if (dateDebut != null && dateFin != null && dateDebut.isAfter(dateFin) && !isAnnule()) {
