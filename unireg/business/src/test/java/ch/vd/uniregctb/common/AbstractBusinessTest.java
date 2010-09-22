@@ -15,6 +15,7 @@ import ch.vd.uniregctb.adresse.AdresseEtrangere;
 import ch.vd.uniregctb.adresse.AdresseSuisse;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
+import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.Periodicite;
@@ -54,6 +55,7 @@ import ch.vd.uniregctb.type.TarifImpotSource;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeContribuable;
+import ch.vd.uniregctb.type.TypeEtatDeclaration;
 
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
@@ -292,12 +294,23 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 	}
 
 	protected DeclarationImpotSource addLR(DebiteurPrestationImposable debiteur, RegDate debut, RegDate fin, PeriodeFiscale periode) {
+
+		return addLR(debiteur, debut, fin, periode,null);
+	}
+	protected DeclarationImpotSource addLR(DebiteurPrestationImposable debiteur, RegDate debut, RegDate fin, PeriodeFiscale periode, TypeEtatDeclaration typeEtat) {
 		DeclarationImpotSource lr = new DeclarationImpotSource();
 		lr.setDateDebut(debut);
 		lr.setDateFin(fin);
 		lr.setPeriode(periode);
 		lr.setModeCommunication(ModeCommunication.PAPIER);
 		lr.setPeriodicite(debiteur.getPeriodiciteAt(debut).getPeriodiciteDecompte());
+
+		if(typeEtat!=null){
+			EtatDeclaration etat = new EtatDeclaration();
+			etat.setEtat(typeEtat);
+			etat.setDateObtention(debut);
+			lr.addEtat(etat);
+		}
 		lr.setTiers(debiteur);
 		lr = (DeclarationImpotSource) hibernateTemplate.merge(lr);
 		debiteur.addDeclaration(lr);
