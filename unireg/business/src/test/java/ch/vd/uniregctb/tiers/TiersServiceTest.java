@@ -3117,7 +3117,7 @@ public class TiersServiceTest extends BusinessTest {
 				addForDebiteur(dpi,date(2009, 6, 1),null, MockCommune.Bex);
 				final PeriodeFiscale fiscale = addPeriodeFiscale(2009);
 
-				addLR(dpi, date(2009,7,1),date(2009,9,30), fiscale, TypeEtatDeclaration.EMISE);
+				addLR(dpi, date(2009,7,1),date(2009,9,30), fiscale);
 				return  dpi.getNumero();
 			}
 		});
