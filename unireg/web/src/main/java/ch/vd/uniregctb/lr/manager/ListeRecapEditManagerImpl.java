@@ -688,15 +688,11 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 	@Transactional(rollbackFor = Throwable.class)
 	public void saveDelai (Long idLr, DelaiDeclaration delai) {
 
-		DeclarationImpotSource lr = lrDAO.get(idLr);
-		Set<DelaiDeclaration> delais = lr.getDelais();
-		if (delais == null ) {
-			delais = new HashSet<DelaiDeclaration>();
-		}
 		delai.setDateTraitement(RegDate.get());
 		delai.setAnnule(false);
-		delais.add(delai);
-		lr.setDelais(delais);
+
+		final DeclarationImpotSource lr = lrDAO.get(idLr);
+		lr.addDelai(delai);
 	}
 
 	/**
