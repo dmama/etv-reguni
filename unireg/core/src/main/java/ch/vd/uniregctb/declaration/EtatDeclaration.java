@@ -247,6 +247,6 @@ public class EtatDeclaration extends HibernateEntity implements DateRange, Compa
 
 	@Transient
 	public Tiers getTiersParent() {
-		return declaration.getTiers();
+		return declaration == null ? null : declaration.getTiers();
 	}
 }

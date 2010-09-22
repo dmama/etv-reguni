@@ -248,6 +248,6 @@ public class DelaiDeclaration extends HibernateEntity implements Comparable<Dela
 
 	@Transient
 	public Tiers getTiersParent() {
-		return declaration.getTiers();
+		return declaration == null ? null : declaration.getTiers();
 	}
 }
