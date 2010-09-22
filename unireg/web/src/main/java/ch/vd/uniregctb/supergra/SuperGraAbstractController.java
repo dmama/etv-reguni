@@ -6,7 +6,6 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.propertyeditors.CustomBooleanEditor;
 
 import ch.vd.uniregctb.common.CommonSimpleFormController;
-import ch.vd.uniregctb.utils.UniregModeHelper;
 
 public abstract class SuperGraAbstractController extends CommonSimpleFormController {
 
@@ -67,12 +66,6 @@ public abstract class SuperGraAbstractController extends CommonSimpleFormControl
 
 		final String commit = request.getParameter("commitAll");
 		if (StringUtils.isNotBlank(commit)) {
-
-			// FIXME (msi) ajouter un profile SuperGra et l'utiliser
-			if (!UniregModeHelper.isTestMode()) {
-				flashError("La modification des données en mode SuperGra n'est pas autorisée en dehors des environnements de test pour l'instant.");
-				return true;
-			}
 
 			final SuperGraSession session = getSession(request);
 			final int size = session.getDeltas().size();

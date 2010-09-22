@@ -3,6 +3,7 @@ package ch.vd.uniregctb.supergra;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -13,7 +14,10 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.hibernate.HibernateException;
+import org.hibernate.Session;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
@@ -173,23 +177,46 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 		}
 	}
 
-	private Object simulate(final TransactionCallback callback) {
+	/**
+	 * Simule des modifications sur des entités de la base de données. Au sortir de cette méthode, aucune modification n'est appliquée dans la base de données.
+	 * <p/>
+	 * Pour ce faire, une session hibernate est créée à l'intérieur d'une transaction marquée <i>rollback-only</i>.
+	 *
+	 * @param action un callback permettant d'exécuter des actions à l'intérieur de la session/transaction.
+	 * @return la valeur retournée par le callback.
+	 */
+	private Object simulate(final HibernateCallback action) {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		return template.execute(new TransactionCallback() {
 			public Object doInTransaction(TransactionStatus status) {
 				status.setRollbackOnly();
-				return callback.doInTransaction(status);
+				return hibernateTemplate.execute(action);
+			}
+		});
+	}
+
+	/**
+	 * Exécute des modifications sur des entités de la base de données. Au sortir de cette méthode, les modifications sont appliquées dans la base de données (sauf en cas d'exception).
+	 *
+	 * @param action un callback permettant d'exécuter des actions à l'intérieur de la session/transaction.
+	 * @return la valeur retournée par le callback.
+	 */
+	private Object execute(final HibernateCallback action) {
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
+		return template.execute(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				return hibernateTemplate.execute(action);
 			}
 		});
 	}
 
 	public void fillView(final EntityKey key, final EntityView view, final SuperGraSession session) {
 
-		simulate(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+		simulate(new HibernateCallback() {
+			public Object doInHibernate(Session s) throws HibernateException, SQLException {
 
 				// Reconstruit l'état en cours de modification des entités
-				final SuperGraContext context = new SuperGraContext(hibernateTemplate);
+				final SuperGraContext context = new SuperGraContext(s);
 				applyDeltas(session.getDeltas(), context);
 				refreshTiersState(session, context);
 
@@ -316,11 +343,11 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 	@SuppressWarnings({"unchecked"})
 	public void fillView(final EntityKey key, final String collName, final CollectionView view, final SuperGraSession session) {
 
-		simulate(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+		simulate(new HibernateCallback() {
+			public Object doInHibernate(Session s) throws HibernateException, SQLException {
 
 				// Reconstruit l'état en cours de modification des entités
-				final SuperGraContext context = new SuperGraContext(hibernateTemplate);
+				final SuperGraContext context = new SuperGraContext(s);
 				applyDeltas(session.getDeltas(), context);
 				refreshTiersState(session, context);
 
@@ -503,7 +530,8 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 
 	public Long nextId(final Class<? extends HibernateEntity> clazz) {
 
-		return (Long) simulate(new TransactionCallback() {
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
+		return (Long) template.execute(new TransactionCallback() {
 			public Object doInTransaction(TransactionStatus status) {
 				try {
 					final MetaEntity m = MetaEntity.determine(clazz);
@@ -521,14 +549,12 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 	}
 
 	public void commitDeltas(final List<Delta> deltas) {
-		final TransactionTemplate template = new TransactionTemplate(transactionManager);
-		template.execute(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
+		execute(new HibernateCallback() {
+			public Object doInHibernate(Session session) throws HibernateException, SQLException {
 				// Reconstruit l'état en cours de modification des entités
-				final SuperGraContext context = new SuperGraContext(hibernateTemplate);
+				final SuperGraContext context = new SuperGraContext(session);
 				applyDeltas(deltas, context);
-				// On commit la transaction (fait automatiquement par le template)
-				return null;
+				return null; // la transaction est committé automatiquement par le template
 			}
 		});
 	}

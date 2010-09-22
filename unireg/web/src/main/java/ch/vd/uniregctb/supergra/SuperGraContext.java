@@ -3,7 +3,7 @@ package ch.vd.uniregctb.supergra;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.orm.hibernate3.HibernateTemplate;
+import org.hibernate.Session;
 
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.HibernateEntity;
@@ -13,15 +13,18 @@ import ch.vd.uniregctb.common.HibernateEntity;
  */
 public class SuperGraContext {
 
-	private final HibernateTemplate hibernateTemplate; // TODO (msi) utiliser la session Hibernate plutôt que le template : le context est sensé avoir la même durée de vie que la session.
+	private final Session session;
 	private final Map<EntityKey, HibernateEntity> newlyCreated = new HashMap<EntityKey, HibernateEntity>();
 
-	public SuperGraContext(HibernateTemplate hibernateTemplate) {
-		this.hibernateTemplate = hibernateTemplate;
-	}
-
-	public HibernateTemplate getHibernateTemplate() {
-		return hibernateTemplate;
+	/**
+	 * Crée un context SuperGra associé à une session Hibernate.
+	 * <p/>
+	 * <b>Note:</b> la durée de vie du context ne doit pas excéder celle de la session.
+	 *
+	 * @param session une session Hibernate ouverte et valide.
+	 */
+	public SuperGraContext(Session session) {
+		this.session = session;
 	}
 
 	/**
@@ -60,7 +63,7 @@ public class SuperGraContext {
 		HibernateEntity entity = newlyCreated.get(key);
 		if (entity == null) {
 			final Class<?> clazz = key.getType().getHibernateClass();
-			entity = (HibernateEntity) hibernateTemplate.get(clazz, key.getId());
+			entity = (HibernateEntity) session.get(clazz, key.getId());
 		}
 		return entity;
 	}
