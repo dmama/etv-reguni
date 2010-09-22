@@ -17,16 +17,15 @@
 				<exclude>~*.doc</exclude>
 			</excludes>
 		</fileSet>
-		<!-- Fichier unireg-log4j.xml et ehcache.xml -->
+		<!-- Fichier unireg-log4j.xml -->
 		<fileSet>
 			<directory>config/</directory>
 			<includes>
 				<include>unireg-log4j.xml</include>
-				<include>ehcache.xml</include>
 			</includes>
 			<outputDirectory>config</outputDirectory>
 		</fileSet>
-		<!-- Fichier properties -->
+		<!-- Fichier properties et ehcache.xml -->
 		<fileSet>
 			<directory>config/norentes</directory>
 			<outputDirectory>config</outputDirectory>

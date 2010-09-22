@@ -14,16 +14,15 @@
 				<include>INSTALL.doc</include>
 			</includes>
 		</fileSet>
-		<!-- Fichier unireg-log4j.xml et ehcache.xml -->
+		<!-- Fichier unireg-log4j.xml -->
 		<fileSet>
 			<directory>config/</directory>
 			<includes>
 				<include>unireg-log4j.xml</include>
-				<include>ehcache.xml</include>
 			</includes>
 			<outputDirectory>config</outputDirectory>
 		</fileSet>
-		<!-- Fichier properties -->
+		<!-- Fichier properties et ehcache.xml -->
 		<fileSet>
 			<directory>config/standalone</directory>
 			<outputDirectory>config</outputDirectory>
