@@ -11,6 +11,8 @@ import org.springframework.web.servlet.view.RedirectView;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityProvider;
+import ch.vd.uniregctb.supergra.delta.AddSubEntity;
+import ch.vd.uniregctb.supergra.view.CollectionView;
 
 /**
  * Contrôleur permettant l'édition en mode SuperGra d'une collection appartenant à une entité Hibernate.

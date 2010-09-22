@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.supergra;
+package ch.vd.uniregctb.supergra.delta;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
@@ -9,6 +9,9 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.hibernate.meta.MetaEntity;
 import ch.vd.uniregctb.hibernate.meta.Property;
+import ch.vd.uniregctb.supergra.EntityKey;
+import ch.vd.uniregctb.supergra.EntityType;
+import ch.vd.uniregctb.supergra.SuperGraContext;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.Tiers;
 

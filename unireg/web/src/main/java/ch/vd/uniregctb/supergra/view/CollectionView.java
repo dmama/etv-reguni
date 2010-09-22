@@ -1,11 +1,13 @@
-package ch.vd.uniregctb.supergra;
+package ch.vd.uniregctb.supergra.view;
 
 import java.util.List;
 
 import ch.vd.uniregctb.common.HibernateEntity;
+import ch.vd.uniregctb.supergra.EntityKey;
+import ch.vd.uniregctb.supergra.EntityType;
 
 /**
- * Le form-backing object du {@link SuperGraCollectionController}.
+ * Le form-backing object du {@link ch.vd.uniregctb.supergra.SuperGraCollectionController}.
  */
 public class CollectionView {
 

@@ -1,4 +1,6 @@
-package ch.vd.uniregctb.supergra;
+package ch.vd.uniregctb.supergra.view;
+
+import ch.vd.uniregctb.supergra.EntityType;
 
 /**
  * Vue d'un attribut d'une entité Hibernate édité dans le mode SuperGra.

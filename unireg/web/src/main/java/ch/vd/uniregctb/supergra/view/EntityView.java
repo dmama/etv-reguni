@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.supergra;
+package ch.vd.uniregctb.supergra.view;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -7,9 +7,11 @@ import java.util.Map;
 
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.uniregctb.supergra.EntityKey;
+import ch.vd.uniregctb.supergra.delta.AttributeUpdate;
 
 /**
- * Le form-backing object du {@link SuperGraEntityController}.
+ * Le form-backing object du {@link ch.vd.uniregctb.supergra.SuperGraEntityController}.
  */
 public class EntityView implements Cloneable {
 
@@ -75,7 +77,7 @@ public class EntityView implements Cloneable {
 
 	@SuppressWarnings({"CloneDoesntCallSuperClone"})
 	@Override
-	protected Object clone() throws CloneNotSupportedException {
+	public Object clone() throws CloneNotSupportedException {
 		return new EntityView(this);
 	}
 

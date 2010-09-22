@@ -3,6 +3,9 @@ package ch.vd.uniregctb.supergra;
 import java.util.List;
 
 import ch.vd.uniregctb.common.HibernateEntity;
+import ch.vd.uniregctb.supergra.delta.Delta;
+import ch.vd.uniregctb.supergra.view.CollectionView;
+import ch.vd.uniregctb.supergra.view.EntityView;
 
 /**
  * Manager du mode SuperGra de Unireg. Il est responsable des opérations métier permettant de charger, créer et sauver les entités hibernate manipulées.

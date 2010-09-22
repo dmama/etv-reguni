@@ -27,6 +27,11 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityProvider;
+import ch.vd.uniregctb.supergra.delta.AttributeUpdate;
+import ch.vd.uniregctb.supergra.delta.DisableEntity;
+import ch.vd.uniregctb.supergra.delta.EnableEntity;
+import ch.vd.uniregctb.supergra.view.AttributeView;
+import ch.vd.uniregctb.supergra.view.EntityView;
 import ch.vd.uniregctb.utils.EnumEditor;
 import ch.vd.uniregctb.utils.RegDateEditor;
 

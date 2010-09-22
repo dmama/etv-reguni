@@ -1,7 +1,10 @@
 package ch.vd.uniregctb.supergra;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+
+import ch.vd.uniregctb.supergra.delta.Delta;
 
 /**
  * Données stockées dans la session Web pour le mode d'édition SuperGra.
@@ -21,11 +24,11 @@ public class SuperGraSession {
 	private final Options options = new Options();
 
 	public List<Delta> getDeltas() {
-		return deltas;
+		return Collections.unmodifiableList(deltas);
 	}
 
-	public void setDeltas(List<Delta> deltas) {
-		this.deltas = deltas;
+	public int deltaSize() {
+		return deltas.size();
 	}
 
 	public void addDelta(Delta delta) {
@@ -40,6 +43,14 @@ public class SuperGraSession {
 			this.deltas = new ArrayList<Delta>();
 		}
 		this.deltas.addAll(deltas);
+	}
+
+	public Delta removeDelta(int index) {
+		return deltas.remove(index);
+	}
+
+	public void clearDeltas() {
+		deltas.clear();
 	}
 
 	public List<TiersState> getTiersStates() {

@@ -4,7 +4,7 @@
 
 	<bean id="superGraEntityController" class="ch.vd.uniregctb.supergra.SuperGraEntityController">
 		<property name="sessionForm" value="true"/>
-		<property name="commandClass" value="ch.vd.uniregctb.supergra.EntityView"/>
+		<property name="commandClass" value="ch.vd.uniregctb.supergra.view.EntityView"/>
 		<property name="commandName" value="entity"/>
 		<property name="formView" value="supergra/entity"/>
 		<property name="successView" value="entity.do"/>
@@ -14,7 +14,7 @@
 
 	<bean id="superGraCollectionController" class="ch.vd.uniregctb.supergra.SuperGraCollectionController">
 		<property name="sessionForm" value="true"/>
-		<property name="commandClass" value="ch.vd.uniregctb.supergra.CollectionView"/>
+		<property name="commandClass" value="ch.vd.uniregctb.supergra.view.CollectionView"/>
 		<property name="commandName" value="coll"/>
 		<property name="formView" value="supergra/coll"/>
 		<property name="successView" value="coll.do"/>

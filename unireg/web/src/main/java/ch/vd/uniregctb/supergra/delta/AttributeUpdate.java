@@ -1,9 +1,11 @@
-package ch.vd.uniregctb.supergra;
+package ch.vd.uniregctb.supergra.delta;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
 
 import ch.vd.uniregctb.common.HibernateEntity;
+import ch.vd.uniregctb.supergra.EntityKey;
+import ch.vd.uniregctb.supergra.SuperGraContext;
 
 /**
  * Met-à-jour la valeur d'un attribut sur une entité dans le mode SuperGra.

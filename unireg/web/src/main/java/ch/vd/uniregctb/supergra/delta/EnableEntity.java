@@ -1,6 +1,8 @@
-package ch.vd.uniregctb.supergra;
+package ch.vd.uniregctb.supergra.delta;
 
 import ch.vd.uniregctb.common.HibernateEntity;
+import ch.vd.uniregctb.supergra.EntityKey;
+import ch.vd.uniregctb.supergra.SuperGraContext;
 
 /**
  * Désannulation d'une entité.

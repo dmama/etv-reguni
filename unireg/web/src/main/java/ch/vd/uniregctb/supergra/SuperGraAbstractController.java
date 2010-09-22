@@ -6,6 +6,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.propertyeditors.CustomBooleanEditor;
 
 import ch.vd.uniregctb.common.CommonSimpleFormController;
+import ch.vd.uniregctb.supergra.delta.Delta;
 
 public abstract class SuperGraAbstractController extends CommonSimpleFormController {
 
@@ -38,7 +39,7 @@ public abstract class SuperGraAbstractController extends CommonSimpleFormControl
 
 			final int index = Integer.parseInt(delDelta);
 			final SuperGraSession session = getSession(request);
-			final Delta action = session.getDeltas().remove(index);
+			final Delta action = session.removeDelta(index);
 
 			flash("L'action \"" + action + "\" a été supprimée.");
 			return true;
@@ -53,7 +54,7 @@ public abstract class SuperGraAbstractController extends CommonSimpleFormControl
 		if (StringUtils.isNotBlank(rollback)) {
 
 			final SuperGraSession session = getSession(request);
-			session.getDeltas().clear();
+			session.clearDeltas();
 
 			flash("Toutes les actions ont été supprimées.");
 			return true;
@@ -68,7 +69,7 @@ public abstract class SuperGraAbstractController extends CommonSimpleFormControl
 		if (StringUtils.isNotBlank(commit)) {
 
 			final SuperGraSession session = getSession(request);
-			final int size = session.getDeltas().size();
+			final int size = session.deltaSize();
 			if (size <= 0) {
 				flashWarning("Il n'y a aucune modification en attente !");
 			}
@@ -77,7 +78,7 @@ public abstract class SuperGraAbstractController extends CommonSimpleFormControl
 				manager.commitDeltas(session.getDeltas());
 
 				// on efface les deltas appliqués dans la session
-				session.getDeltas().clear();
+				session.clearDeltas();
 
 				if (size == 1) {
 					flash("La modification a été sauvegardée dans la base de données.");

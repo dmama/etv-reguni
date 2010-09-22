@@ -150,7 +150,7 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
     }
 
 	@SuppressWarnings({"unchecked"})
-	private Object getBatch(Collection<Long> ids, Set<Parts> parts, Session session) {
+	private List<Tiers> getBatch(Collection<Long> ids, Set<Parts> parts, Session session) {
 		Assert.isTrue(ids.size() <= MAX_IN_SIZE, "Le nombre maximal d'ids est dépassé");
 
 		// on complète la liste d'ids avec les tiers liés par rapports, si nécessaire

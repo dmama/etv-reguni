@@ -1,8 +1,10 @@
-package ch.vd.uniregctb.supergra;
+package ch.vd.uniregctb.supergra.delta;
 
 import org.springframework.web.util.HtmlUtils;
 
 import ch.vd.uniregctb.common.HibernateEntity;
+import ch.vd.uniregctb.supergra.EntityKey;
+import ch.vd.uniregctb.supergra.SuperGraContext;
 
 public abstract class Delta {
 
