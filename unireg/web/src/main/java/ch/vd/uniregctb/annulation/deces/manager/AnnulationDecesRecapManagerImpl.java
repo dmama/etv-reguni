@@ -64,7 +64,7 @@ public class AnnulationDecesRecapManagerImpl implements AnnulationDecesRecapMana
 		if (pp == null) {
 			throw new ObjectNotFoundException(this.getMessageSource().getMessage("error.pp.inexistante", null, WebContextUtils.getDefaultLocale()));
 		}
-		TiersGeneralView personneView = tiersGeneralManager.get(pp);
+		TiersGeneralView personneView = tiersGeneralManager.get(pp, true);
 		annulationDecesRecapView.setPersonne(personneView);
 		annulationDecesRecapView.setMarieSeulAndVeuf(isVeuvageMarieSeul(pp));
 

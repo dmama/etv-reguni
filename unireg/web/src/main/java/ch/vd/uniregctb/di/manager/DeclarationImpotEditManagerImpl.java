@@ -2,7 +2,6 @@ package ch.vd.uniregctb.di.manager;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -55,14 +54,8 @@ import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.general.manager.TiersGeneralManager;
 import ch.vd.uniregctb.general.view.TiersGeneralView;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
-import ch.vd.uniregctb.metier.assujettissement.HorsCanton;
-import ch.vd.uniregctb.metier.assujettissement.HorsSuisse;
-import ch.vd.uniregctb.metier.assujettissement.Indigent;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
-import ch.vd.uniregctb.metier.assujettissement.VaudoisDepense;
-import ch.vd.uniregctb.metier.assujettissement.VaudoisOrdinaire;
 import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.security.Role;
@@ -211,7 +204,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 			error = e;
 		}
 
-		diEditView.setContribuable(tiersGeneralManager.get(tiers));
+		diEditView.setContribuable(tiersGeneralManager.get(tiers, true));
 		if (error != null) {
 			diEditView.setImprimable(false);
 			diEditView.setErrorMessage(error.getMessage());
@@ -555,7 +548,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 			throw new ObjectNotFoundException(this.getMessageSource().getMessage("error.di.inexistante" , null,  WebContextUtils.getDefaultLocale()));
 		}
 		Contribuable ctb = (Contribuable) di.getTiers();
-		TiersGeneralView tiersGeneralView = tiersGeneralManager.get(ctb);
+		TiersGeneralView tiersGeneralView = tiersGeneralManager.get(ctb, true);
 		diEditView.setImprimable(true);
 		diEditView.setContribuable(tiersGeneralView);
 		diEditView.setId(id);
@@ -675,7 +668,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 		}
 
 		Contribuable ctb = (Contribuable) di.getTiers();
-		TiersGeneralView tiersGeneralView = tiersGeneralManager.get(ctb);
+		TiersGeneralView tiersGeneralView = tiersGeneralManager.get(ctb, true);
 		diEditView.setContribuable(tiersGeneralView);
 		diEditView.setPeriodeFiscale(di.getPeriode().getAnnee());
 		diEditView.setDateDebutPeriodeImposition(di.getDateDebut());
@@ -937,7 +930,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 		if (tiers == null) {
 			throw new ObjectNotFoundException(this.getMessageSource().getMessage("error.tiers.inexistant" , null,  WebContextUtils.getDefaultLocale()));
 		}
-		TiersGeneralView tiersGeneralView = tiersGeneralManager.get(tiers);
+		TiersGeneralView tiersGeneralView = tiersGeneralManager.get(tiers, true);
 
 		return tiersGeneralView;
 	}

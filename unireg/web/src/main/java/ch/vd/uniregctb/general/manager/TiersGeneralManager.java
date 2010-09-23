@@ -16,11 +16,12 @@ public interface TiersGeneralManager {
 
 	/**
 	 * Alimente TiersGeneralView en fonction du tiers
-	 * @param tiers
+	 * @param tiers tiers dont on veut connaître les détails
+	 * @param full <code>true</code> si les états-civils, événements civils, validation... sont aussi concernés, <code>false</code> si on ne s'intéresse en gros qu'à son nom, son rôle, son adresse
 	 * @return
 	 */
 	@Transactional(readOnly = true)
-	public TiersGeneralView get(Tiers tiers) ;
+	public TiersGeneralView get(Tiers tiers, boolean full) ;
 
 	/**
 	 * Alimente un cartouche DPI étendu

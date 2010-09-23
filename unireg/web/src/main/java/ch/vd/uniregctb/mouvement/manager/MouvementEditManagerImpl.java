@@ -217,6 +217,6 @@ public class MouvementEditManagerImpl extends AbstractMouvementManagerImpl imple
 		if (tiers == null) {
 			throw new ObjectNotFoundException(getMessageSource().getMessage("error.tiers.inexistant" , null, WebContextUtils.getDefaultLocale()));
 		}
-		return getTiersGeneralManager().get(tiers);
+		return getTiersGeneralManager().get(tiers, true);
 	}
 }

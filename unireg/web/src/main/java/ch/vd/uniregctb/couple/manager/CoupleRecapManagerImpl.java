@@ -110,7 +110,7 @@ public class CoupleRecapManagerImpl extends TiersManager implements CoupleRecapM
 		}
 		coupleRecapView.setNouveauCtb(contribuableCouple == null);
 		if (contribuableCouple != null) {
-			coupleRecapView.setTroisiemeTiers(tiersGeneralManager.get(contribuableCouple));
+			coupleRecapView.setTroisiemeTiers(tiersGeneralManager.get(contribuableCouple, true));
 		}
 
 		if (premierPP != null && secondPP != null) {

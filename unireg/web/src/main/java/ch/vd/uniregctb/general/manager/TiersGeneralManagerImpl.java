@@ -80,11 +80,12 @@ public class TiersGeneralManagerImpl implements TiersGeneralManager{
 	 * Alimente TiersGeneralView en fonction du tiers
 	 *
 	 * @param tiers
+	 * @param full
 	 * @return TiersGeneralView
 	 * @throws AdressesResolutionException
 	 */
 	@Transactional(readOnly = true)
-	public TiersGeneralView get(Tiers tiers) {
+	public TiersGeneralView get(Tiers tiers, boolean full) {
 		final TiersGeneralView tiersGeneralView = new TiersGeneralView();
 		setRole(tiersGeneralView, tiers);
 		tiersGeneralView.setNumero(tiers.getNumero());
@@ -104,36 +105,37 @@ public class TiersGeneralManagerImpl implements TiersGeneralManager{
 			tiersGeneralView.setDateDesactivation(tiers.getDateDesactivation());
 		}
 
-		final List<EvenementCivilData> evtsNonTraites = tiersService.getEvenementsCivilsNonTraites(tiers);
-		if (evtsNonTraites == null || evtsNonTraites.size() == 0) {
-			tiersGeneralView.setNosIndividusAvecEvenenementCivilNonTraite(null);
-		}
-		else {
-
-			// ensemble de tous les numéros d'individu concernés
-			final Set<Long> nosIndividus = new TreeSet<Long>();
-			for (EvenementCivilData evt : evtsNonTraites) {
-				final Long indPrincipal = evt.getNumeroIndividuPrincipal();
-				if (indPrincipal != null) {
-					nosIndividus.add(indPrincipal);
-				}
-				final Long indConjoint = evt.getNumeroIndividuConjoint();
-				if (indConjoint != null) {
-					nosIndividus.add(indConjoint);
-				}
+		if (full) {
+			final List<EvenementCivilData> evtsNonTraites = tiersService.getEvenementsCivilsNonTraites(tiers);
+			if (evtsNonTraites == null || evtsNonTraites.size() == 0) {
+				tiersGeneralView.setNosIndividusAvecEvenenementCivilNonTraite(null);
 			}
-			tiersGeneralView.setNosIndividusAvecEvenenementCivilNonTraite(nosIndividus);
+			else {
+
+				// ensemble de tous les numéros d'individu concernés
+				final Set<Long> nosIndividus = new TreeSet<Long>();
+				for (EvenementCivilData evt : evtsNonTraites) {
+					final Long indPrincipal = evt.getNumeroIndividuPrincipal();
+					if (indPrincipal != null) {
+						nosIndividus.add(indPrincipal);
+					}
+					final Long indConjoint = evt.getNumeroIndividuConjoint();
+					if (indConjoint != null) {
+						nosIndividus.add(indConjoint);
+					}
+				}
+				tiersGeneralView.setNosIndividusAvecEvenenementCivilNonTraite(nosIndividus);
+			}
+
+			final ValidationResults validationResults = tiers.validate();
+			setErreursEtatsCivils(tiers, validationResults);
+			setErreursAdresses(tiers, validationResults);
+
+			tiersGeneralView.setValidationResults(validationResults);
 		}
 
-		final ValidationResults validationResults = tiers.validate();
-		setErreursEtatsCivils(tiers, validationResults);
-		setErreursAdresses(tiers, validationResults);
-
-		tiersGeneralView.setValidationResults(validationResults);
 		setCommuneGestion(tiers, tiersGeneralView);
-
 		return tiersGeneralView;
-
 	}
 
 	private void setCommuneGestion(Tiers tiers, TiersGeneralView view) {
@@ -272,7 +274,7 @@ public class TiersGeneralManagerImpl implements TiersGeneralManager{
 	 */
 	@Transactional(readOnly = true)
 	public TiersGeneralView get(DebiteurPrestationImposable dpi, boolean etendu) {
-		TiersGeneralView tiersGeneralView = get(dpi);
+		TiersGeneralView tiersGeneralView = get(dpi, true);
 		setRole(tiersGeneralView, dpi);
 		if (etendu) {
 			tiersGeneralView.setCategorie(dpi.getCategorieImpotSource());
@@ -295,7 +297,7 @@ public class TiersGeneralManagerImpl implements TiersGeneralManager{
 	 */
 	@Transactional(readOnly = true)
 	public TiersGeneralView get(PersonnePhysique pp, boolean etendu) {
-		TiersGeneralView tiersGeneralView = get(pp);
+		TiersGeneralView tiersGeneralView = get(pp, true);
 		setRole(tiersGeneralView, pp);
 		if (etendu) {
 			 setCaracteristiquesPP(tiersGeneralView, pp);

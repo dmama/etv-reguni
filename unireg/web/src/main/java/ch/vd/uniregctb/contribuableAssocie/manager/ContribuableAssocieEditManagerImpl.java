@@ -38,7 +38,7 @@ public class ContribuableAssocieEditManagerImpl extends TiersManager  implements
 				throw new ObjectNotFoundException(this.getMessageSource().getMessage("error.contribuable.inexistant" , null,  WebContextUtils.getDefaultLocale()));
 			}
 
-			TiersGeneralView contribuableView = tiersGeneralManager.get(contribuable);
+			TiersGeneralView contribuableView = tiersGeneralManager.get(contribuable, true);
 			contribuableAssocieEditView.setContribuable(contribuableView);
 //		}
 
