@@ -20,6 +20,7 @@ import org.hibernate.annotations.Type;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.adresse.AdresseCivile;
@@ -273,6 +274,16 @@ public class DebiteurPrestationImposable extends Tiers {
 				lastPeriodicite = p;
 			}
 
+			ForDebiteurPrestationImposable premierForFiscal = getPremierForDebiteur();
+			if (premierForFiscal != null) {
+				Periodicite premierePeriodicite = getPremierePeriodicite();
+				if (premierForFiscal.getDateDebut().isBefore(premierePeriodicite.getDateDebut())) {
+					results.addError(" aucune périodicité n'est définie entre le début d'activité le " +
+							RegDateHelper.dateToDisplayString(premierForFiscal.getDateDebut()) +
+							" et la date de début de la première périodicité " + RegDateHelper.dateToDisplayString(premierePeriodicite.getDateDebut()));
+				}
+			}
+
 		}
 		return results;
 	}
@@ -308,6 +319,19 @@ public class DebiteurPrestationImposable extends Tiers {
 		return null;
 	}
 
+	@Transient
+	public Periodicite getPremierePeriodicite() {
+		List<Periodicite> list = getPeriodicitesSorted();
+		if (list != null) {
+			for (Periodicite periodicite : list) {
+				if (!periodicite.isAnnule()) {
+					return periodicite;
+				}
+			}
+		}
+		return null;
+	}
+
 	/**
 	 * @param sort <code>true</code> si les periodicites doivent être triées; <code>false</code> autrement.
 	 * @return les périodicités non annulés
@@ -326,6 +350,22 @@ public class DebiteurPrestationImposable extends Tiers {
 			Collections.sort(periodicitesNonAnnulees, new DateRangeComparator<Periodicite>());
 		}
 		return periodicitesNonAnnulees;
+	}
+
+
+
+
+	@Transient
+	public ForDebiteurPrestationImposable getPremierForDebiteur() {
+		List<ForFiscal> list = getForsFiscauxSorted();
+		if (list != null) {
+			for (ForFiscal forFiscal : list) {
+				if (!forFiscal.isAnnule()) {
+					return (ForDebiteurPrestationImposable) forFiscal;
+				}
+			}
+		}
+		return null;
 	}
 
 	/**

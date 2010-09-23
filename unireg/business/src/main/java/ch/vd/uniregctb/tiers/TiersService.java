@@ -1182,5 +1182,11 @@ public interface TiersService {
 	 * @return l'ensemble des tiers trouvés; ou un ensemble vide si aucun tiers n'est trouvé.
 	 */
 	Set<Tiers> getLinkedTiers(LinkedEntity entity);
+
+		/**
+	 * permet d'adapter la date de début de validité de la première périodicité en fonction d'une date
+	 *
+	 */
+	void adaptPremierePeriodicite(DebiteurPrestationImposable debiteurPrestationImposable, RegDate dateDebut);
 }
 
