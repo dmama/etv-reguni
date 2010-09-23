@@ -1,12 +1,11 @@
 package ch.vd.uniregctb.annulation.deces;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -18,9 +17,9 @@ import ch.vd.uniregctb.annulation.deces.manager.AnnulationDecesRecapManager;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.TooManyResultsIndexerException;
-import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
 import ch.vd.uniregctb.tiers.AbstractTiersListController;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.tiers.TiersIndexedDataView;
 import ch.vd.uniregctb.tiers.view.TiersCriteriaView;
 
 public class AnnulationDecesListController extends AbstractTiersListController {
@@ -75,9 +74,9 @@ public class AnnulationDecesListController extends AbstractTiersListController {
 						bean.setNumeroAVS(FormatNumeroHelper.removeSpaceAndDash(bean.getNumeroAVS()));
 					}
 					try {
-						List<TiersIndexedData> results = searchTiers(bean);
-						List<TiersIndexedData> filtredResults = new ArrayList<TiersIndexedData>();
-						for (TiersIndexedData tiersIndexedData : results) {
+						List<TiersIndexedDataView> results = searchTiers(bean);
+						List<TiersIndexedDataView> filtredResults = new ArrayList<TiersIndexedDataView>();
+						for (TiersIndexedDataView tiersIndexedData : results) {
 							PersonnePhysique tiers = (PersonnePhysique) getTiersSloooow(tiersIndexedData.getNumero());
 							if (annulationDecesRecapManager.isDecede(tiers) || annulationDecesRecapManager.isVeuvageMarieSeul(tiers)) {
 								filtredResults.add(tiersIndexedData);

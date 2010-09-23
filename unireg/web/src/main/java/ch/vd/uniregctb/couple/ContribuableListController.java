@@ -1,12 +1,11 @@
 package ch.vd.uniregctb.couple;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.springframework.validation.BindException;
@@ -15,12 +14,12 @@ import org.springframework.web.servlet.view.RedirectView;
 
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.TooManyResultsIndexerException;
-import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
 import ch.vd.uniregctb.tiers.AbstractTiersListController;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
+import ch.vd.uniregctb.tiers.TiersIndexedDataView;
 import ch.vd.uniregctb.tiers.view.TiersCriteriaView;
 import ch.vd.uniregctb.tracing.TracePoint;
 import ch.vd.uniregctb.tracing.TracingManager;
@@ -90,9 +89,9 @@ public class ContribuableListController extends AbstractTiersListController {
 				if (bean != null && !bean.isEmpty()) {
 					LOGGER.debug("Critères de recherche=" + bean);
 					try {
-						final List<TiersIndexedData> results = searchTiers(bean);
-						final List<TiersIndexedData> filteredResults = new ArrayList<TiersIndexedData>();
-						for (TiersIndexedData tiersIndexedData : results) {
+						final List<TiersIndexedDataView> results = searchTiers(bean);
+						final List<TiersIndexedDataView> filteredResults = new ArrayList<TiersIndexedDataView>();
+						for (TiersIndexedDataView tiersIndexedData : results) {
 							final Contribuable contribuable = (Contribuable) getTiersSloooow(tiersIndexedData.getNumero());
 							if (contribuable instanceof PersonnePhysique) {
 								PersonnePhysique nonHabitant = (PersonnePhysique) contribuable;

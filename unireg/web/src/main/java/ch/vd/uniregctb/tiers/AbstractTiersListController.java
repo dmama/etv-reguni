@@ -2,7 +2,6 @@ package ch.vd.uniregctb.tiers;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -15,9 +14,7 @@ import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.fidor.FidorService;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.TooManyResultsIndexerException;
-import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
 import ch.vd.uniregctb.tiers.view.TiersCriteriaView;
-import ch.vd.uniregctb.utils.UniregProperties;
 
 /**
  * Classe controller utilisée pour l'affichage de listes
@@ -86,15 +83,10 @@ public abstract class AbstractTiersListController extends AbstractTiersControlle
 						bean.setNumeroAVS(FormatNumeroHelper.removeSpaceAndDash(bean.getNumeroAVS()));
 					}
 					try {
-						List<TiersIndexedData> results = searchTiers(bean);
-
-						ArrayList<TiersIndexedDataView> displaysTiers = new ArrayList<TiersIndexedDataView>();
-						for (TiersIndexedData v : results) {
-							TiersIndexedDataView oneTiersLine = new TiersIndexedDataView(v);
-							displaysTiers.add(oneTiersLine);
-
+						List<TiersIndexedDataView> displaysTiers = searchTiers(bean);
+						for (TiersIndexedDataView oneTiersLine : displaysTiers) {
 							// Populate les URLs TAO/SIPF/...
-							Long numero = v.getNumero();
+							Long numero = oneTiersLine.getNumero();
 							oneTiersLine.setUrlTaoPP(fidorService.getUrlTaoPP(numero));
 							oneTiersLine.setUrlTaoBA(fidorService.getUrlTaoBA(numero));
 							oneTiersLine.setUrlTaoIS(fidorService.getUrlTaoIS(numero));

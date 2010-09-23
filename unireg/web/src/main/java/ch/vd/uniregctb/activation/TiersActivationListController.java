@@ -1,11 +1,10 @@
 package ch.vd.uniregctb.activation;
 
-import java.util.List;
-import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.springframework.validation.BindException;
@@ -16,8 +15,8 @@ import ch.vd.uniregctb.activation.manager.TiersActivationListManager;
 import ch.vd.uniregctb.activation.view.TiersActivationListView;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.TooManyResultsIndexerException;
-import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
 import ch.vd.uniregctb.tiers.AbstractTiersListController;
+import ch.vd.uniregctb.tiers.TiersIndexedDataView;
 
 public class TiersActivationListController extends AbstractTiersListController {
 
@@ -76,7 +75,7 @@ public class TiersActivationListController extends AbstractTiersListController {
 				if (bean != null && !bean.isEmpty()) {
 					LOGGER.debug("Critères de recherche=" + bean);
 					try {
-						List<TiersIndexedData> results = searchTiers(bean);
+						final List<TiersIndexedDataView> results = searchTiers(bean);
 						mav.addObject(ACTIVATION_LIST_ATTRIBUTE_NAME, results);
 					}
 					catch (TooManyResultsIndexerException ee) {

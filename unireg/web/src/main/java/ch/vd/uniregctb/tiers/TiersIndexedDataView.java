@@ -24,6 +24,14 @@ public class TiersIndexedDataView implements Annulable {
 		return data.getNumero();
 	}
 
+	public String getTiersType() {
+		return data.getTiersType();
+	}
+
+	public Integer getNoOfsCommuneDomicile() {
+		return data.getNoOfsCommuneDomicile();
+	}
+
 	public boolean isAnnule() {
 		return data.isAnnule();
 	}
@@ -52,8 +60,24 @@ public class TiersIndexedDataView implements Annulable {
 		return data.getDateNaissance();
 	}
 
+	public String getDateDeces() {
+		if (data.getTiersType().equals(MenageCommunIndexable.SUB_TYPE)) {
+			// [UNIREG-2633] on n'affiche pas de dates de naissance sur les ménages communs
+			return null;
+		}
+		return data.getDateDeces();
+	}
+
+	public String getRue() {
+		return data.getRue();
+	}
+
 	public String getNpa() {
 		return data.getNpa();
+	}
+
+	public String getLocalite() {
+		return data.getLocalite();
 	}
 
 	public String getLocaliteOuPays() {
@@ -67,6 +91,10 @@ public class TiersIndexedDataView implements Annulable {
 			localiteOuPays = localite;
 		}
 		return localiteOuPays;
+	}
+
+	public String getPays() {
+		return data.getPays();
 	}
 
 	public String getForPrincipal() {

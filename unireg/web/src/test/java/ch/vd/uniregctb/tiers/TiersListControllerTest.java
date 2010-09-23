@@ -14,7 +14,6 @@ import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.TestData;
 import ch.vd.uniregctb.common.WebTest;
-import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
@@ -72,7 +71,7 @@ public class TiersListControllerTest extends WebTest {
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<TiersIndexedData> getTiersList(HashMap<String, String> params) throws Exception {
+	private List<TiersIndexedDataView> getTiersList(HashMap<String, String> params) throws Exception {
 
 		// onSubmit
 		request.setMethod("POST");
@@ -89,7 +88,7 @@ public class TiersListControllerTest extends WebTest {
 		ModelAndView mav2 = controller.handleRequest(request, response);
 		Map<?, ?> model2 = mav2.getModel();
 		Assert.assertNotNull(model2);
-		List<TiersIndexedData> list = (List<TiersIndexedData>) model2.get(TiersListController.TIERS_LIST_ATTRIBUTE_NAME);
+		List<TiersIndexedDataView> list = (List<TiersIndexedDataView>) model2.get(TiersListController.TIERS_LIST_ATTRIBUTE_NAME);
 
 		// for (TiersIndexedData data : list) {
 		// long numero = data.getNumero();
@@ -110,7 +109,7 @@ public class TiersListControllerTest extends WebTest {
 		{
 			HashMap<String, String> params = new HashMap<String, String>();
 			params.put("noOfsFor", "5652");
-			List<TiersIndexedData> list = getTiersList(params);
+			List<TiersIndexedDataView> list = getTiersList(params);
 			assertEquals(3, list.size());
 		}
 	}
@@ -124,7 +123,7 @@ public class TiersListControllerTest extends WebTest {
 		HashMap<String, String> params = new HashMap<String, String>();
 		params.put("noOfsFor", "5652");
 		params.put("forPrincipalActif", "true");
-		List<TiersIndexedData> list = getTiersList(params);
+		List<TiersIndexedDataView> list = getTiersList(params);
 		assertEquals(1, list.size());
 	}
 

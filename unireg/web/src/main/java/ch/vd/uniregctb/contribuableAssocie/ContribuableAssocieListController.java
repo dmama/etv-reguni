@@ -1,11 +1,10 @@
 package ch.vd.uniregctb.contribuableAssocie;
 
-import java.util.List;
-import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -19,8 +18,8 @@ import ch.vd.uniregctb.contribuableAssocie.view.ContribuableAssocieListView;
 import ch.vd.uniregctb.deces.DecesListController;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.TooManyResultsIndexerException;
-import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
 import ch.vd.uniregctb.tiers.AbstractTiersListController;
+import ch.vd.uniregctb.tiers.TiersIndexedDataView;
 
 public class ContribuableAssocieListController  extends  AbstractTiersListController {
 
@@ -84,7 +83,7 @@ public class ContribuableAssocieListController  extends  AbstractTiersListContro
 						bean.setNumeroAVS(FormatNumeroHelper.removeSpaceAndDash(bean.getNumeroAVS()));
 					}
 					try {
-						List<TiersIndexedData> results = searchTiers(bean);
+						List<TiersIndexedDataView> results = searchTiers(bean);
 						mav.addObject(CONTRIBUABLE_ASSOCIE_LIST_ATTRIBUTE_NAME, results);
 					}
 					catch (TooManyResultsIndexerException ee) {

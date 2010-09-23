@@ -2,6 +2,7 @@ package ch.vd.uniregctb.tiers;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,6 +12,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.AbstractSimpleFormController;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
@@ -296,8 +298,17 @@ public abstract class AbstractTiersController extends AbstractSimpleFormControll
 		this.transactionManager = transactionManager;
 	}
 
-	protected List<TiersIndexedData> searchTiers(TiersCriteriaView bean) {
-		return service.search(bean);
+	protected List<TiersIndexedDataView> searchTiers(TiersCriteriaView bean) {
+
+		final List<TiersIndexedData> results = service.search(bean);
+		Assert.notNull(results);
+
+		final List<TiersIndexedDataView> list = new ArrayList<TiersIndexedDataView>(results.size());
+		for (TiersIndexedData d : results) {
+			list.add(new TiersIndexedDataView(d));
+		}
+
+		return list;
 	}
 
 	/**
