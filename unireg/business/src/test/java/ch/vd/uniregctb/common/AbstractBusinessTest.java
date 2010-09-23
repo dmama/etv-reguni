@@ -256,6 +256,9 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 		f.setGenreImpot(GenreImpot.DEBITEUR_PRESTATION_IMPOSABLE);
 		f.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
 		f.setNumeroOfsAutoriteFiscale(commune.getNoOFSEtendu());
+		if (dpi.getDernierForDebiteur() == null) {
+			tiersService.adaptPremierePeriodicite(dpi, debut);
+		}
 		f = (ForDebiteurPrestationImposable) tiersService.addAndSave(dpi, f);
 		return f;
 	}

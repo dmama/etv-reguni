@@ -1166,5 +1166,12 @@ public interface TiersService {
 	 * @return true si le tiers est une veuf marié seul false sinon
 	 */
 	boolean isVeuvageMarieSeul(PersonnePhysique tiers);
+
+
+	/**
+	 * permet d'adapter la date de début de validité de la première périodicité en fonction d'une date
+	 *
+	 */
+	void adaptPremierePeriodicite(DebiteurPrestationImposable debiteurPrestationImposable, RegDate dateDebut );
 }
 

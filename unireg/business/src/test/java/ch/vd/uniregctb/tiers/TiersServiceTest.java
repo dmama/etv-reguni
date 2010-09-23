@@ -3081,6 +3081,60 @@ public class TiersServiceTest extends BusinessTest {
 	}
 
 	@Test
+	public void testAddPeriodiciteBeforAddFor() throws Exception{
+
+		//Ajout d'une première periodicite et d'un for à la même date
+		final long dpiId = (Long)doInNewTransaction(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				DebiteurPrestationImposable dpi = addDebiteur();
+				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.TRIMESTRIEL, null, date(2010, 1, 1), null);
+				addForDebiteur(dpi,date(2010, 1, 1),null, MockCommune.Bex);
+				return  dpi.getNumero();
+			}
+		});
+
+		doInNewTransaction(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
+				Periodicite periodicite = dpi.getDernierePeriodicite();
+				assertNotNull(periodicite);
+				ForDebiteurPrestationImposable forDebiteur = dpi.getDernierForDebiteur();
+				assertEquals(periodicite.getDateDebut(),forDebiteur.getDateDebut());
+				return null;
+			}
+		});
+
+//Ajout d'une première periodicite' et d'un for, le for ayant une date de début anterieur à celle de la périodicité
+		final long dpiId2 = (Long)doInNewTransaction(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				DebiteurPrestationImposable dpi = addDebiteur();
+				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.TRIMESTRIEL, null, date(2010, 1, 1), null);
+				addForDebiteur(dpi,date(2009, 6, 1),null, MockCommune.Bex);
+				return  dpi.getNumero();
+			}
+		});
+
+
+
+		doInNewTransaction(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId2);			
+				Periodicite periodicite = dpi.getDernierePeriodicite();
+				assertNotNull(periodicite);
+				ForDebiteurPrestationImposable forDebiteur = dpi.getDernierForDebiteur();
+				assertEquals(forDebiteur.getDateDebut(),periodicite.getDateDebut());
+				return null;
+			}
+		});
+
+
+	}
+
+	@Test
 	public void testGetDateDebutValiditeNouvellePeriodiciteSansLR() throws Exception {
 
 			//Ajout d'une première periodicite'

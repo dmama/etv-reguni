@@ -2236,12 +2236,18 @@ public class TiersServiceImpl implements TiersService {
 		if (dernierForDebiteur != null && dernierForDebiteur.getDateFin() == null) {
 			closeForDebiteurPrestationImposable(debiteur, dernierForDebiteur, dateDebut.getOneDayBefore());
 		}
+		if (dernierForDebiteur == null) {
+			//[UNIREG-2885] dans le cas de la création d'un premier for, on doit adapter si besoin la première périodicité
+			adaptPremierePeriodicite(debiteur, dateDebut);
+		}
+
 		ForDebiteurPrestationImposable forRtr = openForDebiteurPrestationImposable(debiteur, dateDebut, autoriteFiscale, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
 		if (dateFin != null) {
 			forRtr = closeForDebiteurPrestationImposable(debiteur, forRtr, dateFin);
 		}
 		return forRtr;
 	}
+
 
 	/**
 	 * Ferme le for fiscal autre élément imposable d'un contribuable.
@@ -3690,6 +3696,13 @@ public class TiersServiceImpl implements TiersService {
 		}
 
 		return false;
+	}
+
+	public void adaptPremierePeriodicite(DebiteurPrestationImposable debiteurPrestationImposable, RegDate dateDebut) {
+	   	Periodicite periodicite = debiteurPrestationImposable.getPremierePeriodicite();
+		if(periodicite!=null && dateDebut.isBefore(periodicite.getDateDebut())){
+			periodicite.setDateDebut(dateDebut);
+		}
 	}
 
 	/**
