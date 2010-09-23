@@ -1,10 +1,12 @@
 package ch.vd.uniregctb.mouvement;
 
-import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -73,6 +75,9 @@ public class MouvementDossierDAOImpl extends GenericDAOImpl<MouvementDossier, Lo
 			if (!paramPagination.isSensAscending()) {
 				b.append(" DESC");
 			}
+		}
+		else {
+			b.append(" ORDER BY mvt.contribuable.id ASC");
 		}
 	}
 
@@ -304,7 +309,7 @@ public class MouvementDossierDAOImpl extends GenericDAOImpl<MouvementDossier, Lo
 		}
 
 		final String hql = builder.toString();
-		return (List<MouvementDossier>) getHibernateTemplate().executeWithNativeSession(new HibernateCallback() {
+		final List<MouvementDossier> found = (List<MouvementDossier>) getHibernateTemplate().executeWithNativeSession(new HibernateCallback() {
 			public List<MouvementDossier> doInHibernate(Session session) throws HibernateException, SQLException {
 				final Query query = session.createQuery(hql);
 				if (ids != null) {
@@ -315,6 +320,33 @@ public class MouvementDossierDAOImpl extends GenericDAOImpl<MouvementDossier, Lo
 				return query.list();
 			}
 		});
+
+		// [UNIREG-2872] tri dans l'ordre des ids donnés en entrée
+		final List<MouvementDossier> listeFinale;
+		if (found != null && found.size() > 0) {
+			final Map<Long, MouvementDossier> map = new HashMap<Long, MouvementDossier>(found.size());
+			for (MouvementDossier mvt : found) {
+				map.put(mvt.getId(), mvt);
+			}
+
+			listeFinale = new ArrayList<MouvementDossier>(found.size());
+
+			//noinspection ConstantConditions
+			for (long id : ids) {
+				final MouvementDossier mvt = map.get(id);
+				if (mvt != null) {
+					// il a très bien pu être détruit entre le moment où la page
+					// web a été affichée et le moment où le bouton "imprimer" est
+					// cliqué -> ce serait dommage de faire exploser l'application
+					// pour ça
+					listeFinale.add(mvt);
+				}
+			}
+		}
+		else {
+			listeFinale = Collections.emptyList();
+		}
+		return listeFinale;
 	}
 
 	private static final String PROTO_BORDEREAUX_SQL =
