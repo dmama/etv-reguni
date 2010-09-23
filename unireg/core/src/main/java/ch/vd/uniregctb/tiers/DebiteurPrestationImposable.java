@@ -269,22 +269,6 @@ public class DebiteurPrestationImposable extends Tiers {
 		return results;
 	}
 
-
-		// ***********************************************
-	@Transient
-	public ForDebiteurPrestationImposable getDernierForDebiteur() {
-
-		List<ForFiscal> list = getForsFiscauxSorted();
-		if (list != null) {
-			for (int i = list.size() - 1; i >= 0; i--) {
-				ForFiscal forFiscal = list.get(i);
-				if (!forFiscal.isAnnule() && forFiscal.isDebiteur()) {
-					return (ForDebiteurPrestationImposable) forFiscal;
-				}
-			}
-		}
-		return null;
-	}
 	/**
 	 * @return Retourne les Periodicités triées par - La date d'ouverture
 	 */

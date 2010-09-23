@@ -1233,9 +1233,83 @@ public abstract class Tiers extends HibernateEntity implements Validateable, Bus
 		return fors;
 	}
 
-	
+	@Transient
+	public ForFiscalPrincipal getPremierForFiscalPrincipal() {
+		List<ForFiscal> list = getForsFiscauxSorted();
+		if (list != null) {
+			for (ForFiscal forFiscal : list) {
+				if (!forFiscal.isAnnule() && forFiscal.isPrincipal()) {
+					return (ForFiscalPrincipal) forFiscal;
+				}
+			}
+		}
+		return null;
+	}
 
+	// ***********************************************
+	@Transient
+	public ForFiscalPrincipal getDernierForFiscalPrincipal() {
 
+		List<ForFiscal> list = getForsFiscauxSorted();
+		if (list != null) {
+			for (int i = list.size() - 1; i >= 0; i--) {
+				ForFiscal forFiscal = list.get(i);
+				if (!forFiscal.isAnnule() && forFiscal.isPrincipal()) {
+					return (ForFiscalPrincipal) forFiscal;
+				}
+			}
+		}
+		return null;
+	}
+
+	// ***********************************************
+	@Transient
+	public ForFiscalPrincipal getDernierForFiscalPrincipalAvant(RegDate date) {
+
+		final List<ForFiscal> list = getForsFiscauxSorted();
+		if (list != null) {
+			for (int i = list.size() - 1; i >= 0; i--) {
+				final ForFiscal forFiscal = list.get(i);
+				if (!forFiscal.isAnnule() && forFiscal.isPrincipal() && RegDateHelper.isBeforeOrEqual(forFiscal.getDateDebut(), date, NullDateBehavior.LATEST)) {
+					return (ForFiscalPrincipal) forFiscal;
+				}
+			}
+		}
+		return null;
+	}
+
+	// ***********************************************
+	@Transient
+	public ForFiscalPrincipal getDernierForFiscalPrincipalVaudois() {
+
+		List<ForFiscal> list = getForsFiscauxSorted();
+		if (list != null) {
+			for (int i = list.size() - 1; i >= 0; i--) {
+				ForFiscal forFiscal = list.get(i);
+				if (!forFiscal.isAnnule() && forFiscal.isPrincipal()
+						&& TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD.equals(forFiscal.getTypeAutoriteFiscale())) {
+					return (ForFiscalPrincipal) forFiscal;
+				}
+			}
+		}
+		return null;
+	}
+
+	// ***********************************************
+	@Transient
+	public ForDebiteurPrestationImposable getDernierForDebiteur() {
+
+		List<ForFiscal> list = getForsFiscauxSorted();
+		if (list != null) {
+			for (int i = list.size() - 1; i >= 0; i--) {
+				ForFiscal forFiscal = list.get(i);
+				if (!forFiscal.isAnnule() && forFiscal.isDebiteur()) {
+					return (ForDebiteurPrestationImposable) forFiscal;
+				}
+			}
+		}
+		return null;
+	}
 
 	/**
 	 * <b>Attention !</b> cette méthode ne doit pas être appelée directement ! Il faut utiliser {@link #addForFiscal(ForFiscal)} pour
