@@ -21,13 +21,11 @@ import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
-import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.mouvement.MouvementDossier;
 import ch.vd.uniregctb.type.MotifFor;
-import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 /**
  * <!-- begin-user-doc --> <!-- end-user-doc -->
@@ -174,69 +172,6 @@ public abstract class Contribuable extends Tiers {
 		}
 		return situations;
 	}
-
-	@Transient
-	public ForFiscalPrincipal getPremierForFiscalPrincipal() {
-		List<ForFiscal> list = getForsFiscauxSorted();
-		if (list != null) {
-			for (ForFiscal forFiscal : list) {
-				if (!forFiscal.isAnnule() && forFiscal.isPrincipal()) {
-					return (ForFiscalPrincipal) forFiscal;
-				}
-			}
-		}
-		return null;
-	}
-
-	// ***********************************************
-	@Transient
-	public ForFiscalPrincipal getDernierForFiscalPrincipal() {
-
-		List<ForFiscal> list = getForsFiscauxSorted();
-		if (list != null) {
-			for (int i = list.size() - 1; i >= 0; i--) {
-				ForFiscal forFiscal = list.get(i);
-				if (!forFiscal.isAnnule() && forFiscal.isPrincipal()) {
-					return (ForFiscalPrincipal) forFiscal;
-				}
-			}
-		}
-		return null;
-	}
-
-	// ***********************************************
-	@Transient
-	public ForFiscalPrincipal getDernierForFiscalPrincipalAvant(RegDate date) {
-
-		final List<ForFiscal> list = getForsFiscauxSorted();
-		if (list != null) {
-			for (int i = list.size() - 1; i >= 0; i--) {
-				final ForFiscal forFiscal = list.get(i);
-				if (!forFiscal.isAnnule() && forFiscal.isPrincipal() && RegDateHelper.isBeforeOrEqual(forFiscal.getDateDebut(), date, NullDateBehavior.LATEST)) {
-					return (ForFiscalPrincipal) forFiscal;
-				}
-			}
-		}
-		return null;
-	}
-
-	// ***********************************************
-	@Transient
-	public ForFiscalPrincipal getDernierForFiscalPrincipalVaudois() {
-
-		List<ForFiscal> list = getForsFiscauxSorted();
-		if (list != null) {
-			for (int i = list.size() - 1; i >= 0; i--) {
-				ForFiscal forFiscal = list.get(i);
-				if (!forFiscal.isAnnule() && forFiscal.isPrincipal()
-						&& TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD.equals(forFiscal.getTypeAutoriteFiscale())) {
-					return (ForFiscalPrincipal) forFiscal;
-				}
-			}
-		}
-		return null;
-	}
-	
 
 	// ***********************************************
 	@Transient
