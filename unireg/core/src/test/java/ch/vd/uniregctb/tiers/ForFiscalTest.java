@@ -8,6 +8,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.common.WithoutSpringTest;
+import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
@@ -87,40 +88,80 @@ public class ForFiscalTest extends WithoutSpringTest {
 	/**
 	 * Test de non régression concernant le cas JIRA UNIREG-585.<br>
 	 * </br>
-	 * Pour un rattachement personnel de type domicile, dans un autre canton ou à l'étranger, 
-	 * les seuls modes d'imposition possibles sont normalement uniquement "ordinaire", "source" ou "mixte 137 al1". 
+	 * Pour un rattachement personnel de type domicile, dans un autre canton ou à l'étranger,
+	 * les seuls modes d'imposition possibles sont normalement uniquement "ordinaire", "source" ou "mixte 137 al1".
 	 * Voir spéc. "enregistrer un nouveau tiers" 3.1.9.
-	 * 
 	 */
 	@Test
-	public void testJiraUNIREG585(){
-		ForFiscalPrincipal ffp = new ForFiscalPrincipal();
+	public void testValidateModeImposition() {
+
+		final ForFiscalPrincipal ffp = new ForFiscalPrincipal();
 		ffp.setTypeAutoriteFiscale(TypeAutoriteFiscale.PAYS_HS);
 		ffp.setMotifRattachement(MotifRattachement.DOMICILE);
-		assertTrue(hasForFiscalPrincipalErrors(ffp));
-		ffp.setModeImposition(ModeImposition.INDIGENT);
-		assertTrue(hasForFiscalPrincipalErrors(ffp));
-		ffp.setModeImposition(ModeImposition.MIXTE_137_2);
-		assertTrue(hasForFiscalPrincipalErrors(ffp));
-		ffp.setModeImposition(ModeImposition.DEPENSE);
-		assertTrue(hasForFiscalPrincipalErrors(ffp));
-		ffp.setModeImposition(ModeImposition.ORDINAIRE);
-		assertFalse(hasForFiscalPrincipalErrors(ffp));
-		ffp.setModeImposition(ModeImposition.MIXTE_137_1);
-		assertFalse(hasForFiscalPrincipalErrors(ffp));
-		ffp.setModeImposition(ModeImposition.SOURCE);
-		assertFalse(hasForFiscalPrincipalErrors(ffp));
-	}
+		ffp.setGenreImpot(GenreImpot.REVENU_FORTUNE);
+		ffp.setDateDebut(RegDate.get(2000, 1, 1));
 
-	private boolean hasForFiscalPrincipalErrors(ForFiscalPrincipal ffp) {
-		List<String> listErr = ffp.validate(true).getErrors();
-		for (String err : listErr) {
-			for (String code : ForFiscalPrincipal.VALIDATION_ERROR_CODES) {
-				if (err.indexOf(code) >= 0) {
-					return true;
-				}
-			}
+		// sans mode d'imposition => erreur
+		{
+			final ValidationResults results = ffp.validate();
+			assertTrue(results.hasErrors());
+			final List<String> errors = results.getErrors();
+			assertEquals(1, errors.size());
+			assertEquals("Le mode d'imposition est obligatoire sur un for fiscal principal.", errors.get(0));
 		}
-		return false;
+
+		// avec mode d'imposition ordinaire => ok
+		{
+			ffp.setModeImposition(ModeImposition.ORDINAIRE);
+			assertFalse(ffp.validate().hasErrors());
+		}
+
+		// avec mode d'imposition mixte 1 => ok
+		{
+			ffp.setModeImposition(ModeImposition.MIXTE_137_1);
+			assertFalse(ffp.validate().hasErrors());
+		}
+
+		// avec mode d'imposition source => ok
+		{
+			ffp.setModeImposition(ModeImposition.SOURCE);
+			assertFalse(ffp.validate().hasErrors());
+		}
+
+		final String ERREUR_MESSAGE =
+				"Pour un rattachement personnel de type domicile, dans un autre canton ou à l'étranger, les modes d'imposition possibles sont \"ordinaire\", \"source\" ou \"mixte 137 al1\".";
+		
+		// avec mode d'imposition indigent => erreur
+		{
+			ffp.setModeImposition(ModeImposition.INDIGENT);
+
+			final ValidationResults results = ffp.validate();
+			assertTrue(results.hasErrors());
+			final List<String> errors = results.getErrors();
+			assertEquals(1, errors.size());
+			assertEquals(ERREUR_MESSAGE, errors.get(0));
+		}
+
+		// avec mode d'imposition mixte 2 => erreur
+		{
+			ffp.setModeImposition(ModeImposition.MIXTE_137_2);
+
+			final ValidationResults results = ffp.validate();
+			assertTrue(results.hasErrors());
+			final List<String> errors = results.getErrors();
+			assertEquals(1, errors.size());
+			assertEquals(ERREUR_MESSAGE, errors.get(0));
+		}
+
+		// avec mode d'imposition dépense => erreur
+		{
+			ffp.setModeImposition(ModeImposition.DEPENSE);
+
+			final ValidationResults results = ffp.validate();
+			assertTrue(results.hasErrors());
+			final List<String> errors = results.getErrors();
+			assertEquals(1, errors.size());
+			assertEquals(ERREUR_MESSAGE, errors.get(0));
+		}
 	}
 }

@@ -107,41 +107,31 @@ public class ForFiscalPrincipal extends ForFiscalRevenuFortune {
 
 	@Override
 	public ValidationResults validate() {
-		return validate(false);
-	}
 
-	// TODO (msi) supprimer ce code d'erreur qui n'existe que pour le besoin du testing (il y a moyen de faire moins intrusif)
-	ValidationResults validate(boolean appendErrorCode) {
-
-		ValidationResults results = super.validate();
+		final ValidationResults results = super.validate();
 
 		if (isAnnule()) {
 			return results;
 		}
-		
+
 		if (modeImposition == null) {
-			results.addError("Le mode d'imposition est obligatoire sur un for fiscal principal."
-					+ (appendErrorCode ? VALIDATION_ERROR_CODES[0] : "")
-			);
+			results.addError("Le mode d'imposition est obligatoire sur un for fiscal principal.");
 		}
-		if (getMotifRattachement() == MotifRattachement.DOMICILE && getTypeAutoriteFiscale() != TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
+		else if (getMotifRattachement() == MotifRattachement.DOMICILE && getTypeAutoriteFiscale() != TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
 			if (modeImposition != ModeImposition.ORDINAIRE && modeImposition != ModeImposition.SOURCE && modeImposition != ModeImposition.MIXTE_137_1) {
 				results.addError("Pour un rattachement personnel de type domicile, dans un autre canton ou à l'étranger, " +
-						"les modes d'imposition possibles sont \"ordinaire\", \"source\" ou \"mixte 137 al1\". " +
-						(appendErrorCode ? VALIDATION_ERROR_CODES[1] : "")
-				);
+						"les modes d'imposition possibles sont \"ordinaire\", \"source\" ou \"mixte 137 al1\".");
 			}
 		}
+		
 		return results;
 	}
 
-
-
 	/*
-	 * (non-Javadoc)
-	 *
-	 * @see ch.vd.uniregctb.tiers.ForFiscalRevenuFortune#equalsTo(java.lang.Object)
-	 */
+		 * (non-Javadoc)
+		 *
+		 * @see ch.vd.uniregctb.tiers.ForFiscalRevenuFortune#equalsTo(java.lang.Object)
+		 */
 	@Override
 	public boolean equalsTo(Object obj) {
 		if (!super.equalsTo(obj))
