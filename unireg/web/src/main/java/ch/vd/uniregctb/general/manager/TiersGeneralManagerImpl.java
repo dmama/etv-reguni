@@ -54,8 +54,6 @@ public class TiersGeneralManagerImpl implements TiersGeneralManager{
 
 	private ServiceInfrastructureService infraService;
 
-	private TiersDAO tiersDAO;
-
 	public void setAdresseService(AdresseService adresseService) {
 		this.adresseService = adresseService;
 	}
@@ -66,10 +64,6 @@ public class TiersGeneralManagerImpl implements TiersGeneralManager{
 
 	public void setServiceCivilService(ServiceCivilService serviceCivilService) {
 		this.serviceCivilService = serviceCivilService;
-	}
-
-	public void setTiersDAO(TiersDAO tiersDAO) {
-		this.tiersDAO = tiersDAO;
 	}
 
 	public void setInfraService(ServiceInfrastructureService infraService) {
@@ -85,7 +79,7 @@ public class TiersGeneralManagerImpl implements TiersGeneralManager{
 	 * @throws AdressesResolutionException
 	 */
 	@Transactional(readOnly = true)
-	public TiersGeneralView get(Tiers tiers, boolean full) {
+	public TiersGeneralView getTiers(Tiers tiers, boolean full) {
 		final TiersGeneralView tiersGeneralView = new TiersGeneralView();
 		setRole(tiersGeneralView, tiers);
 		tiersGeneralView.setNumero(tiers.getNumero());
@@ -273,9 +267,8 @@ public class TiersGeneralManagerImpl implements TiersGeneralManager{
 	 * @return
 	 */
 	@Transactional(readOnly = true)
-	public TiersGeneralView get(DebiteurPrestationImposable dpi, boolean etendu) {
-		TiersGeneralView tiersGeneralView = get(dpi, true);
-		setRole(tiersGeneralView, dpi);
+	public TiersGeneralView getDebiteur(DebiteurPrestationImposable dpi, boolean etendu) {
+		TiersGeneralView tiersGeneralView = getTiers(dpi, true);
 		if (etendu) {
 			tiersGeneralView.setCategorie(dpi.getCategorieImpotSource());
 			tiersGeneralView.setPeriodicite(dpi.getPeriodiciteAt(RegDate.get()).getPeriodiciteDecompte());
@@ -296,9 +289,8 @@ public class TiersGeneralManagerImpl implements TiersGeneralManager{
 	 * @return
 	 */
 	@Transactional(readOnly = true)
-	public TiersGeneralView get(PersonnePhysique pp, boolean etendu) {
-		TiersGeneralView tiersGeneralView = get(pp, true);
-		setRole(tiersGeneralView, pp);
+	public TiersGeneralView getPersonnePhysique(PersonnePhysique pp, boolean etendu) {
+		TiersGeneralView tiersGeneralView = getTiers(pp, true);
 		if (etendu) {
 			 setCaracteristiquesPP(tiersGeneralView, pp);
 		}

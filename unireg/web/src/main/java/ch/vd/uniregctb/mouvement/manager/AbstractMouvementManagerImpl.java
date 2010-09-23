@@ -203,7 +203,7 @@ public class AbstractMouvementManagerImpl implements AbstractMouvementManager, M
 		view.setDateExecution(mvt.getLogModifDate());
 		view.setExecutant(mvt.getLogModifUser());
 
-		final TiersGeneralView tiersGeneralView = tiersGeneralManager.get(mvt.getContribuable(), false);
+		final TiersGeneralView tiersGeneralView = tiersGeneralManager.getTiers(mvt.getContribuable(), false);
 		view.setContribuable(tiersGeneralView);
 
 		view.setAnnule(mvt.isAnnule());

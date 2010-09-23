@@ -74,7 +74,7 @@ public class FusionListManagerImpl implements FusionListManager, MessageSourceAw
 		}
 
 		FusionListView fusionListView = new FusionListView();
- 		TiersGeneralView nonHabView = tiersGeneralManager.get(nonHab, true);
+ 		TiersGeneralView nonHabView = tiersGeneralManager.getPersonnePhysique(nonHab, true);
 		fusionListView.setNonHabitant(nonHabView);
 		fusionListView.setNumeroNonHabitant(numeroNonHab);
 		fusionListView.setTypeRechercheDuNom(FusionListView.TypeRecherche.EST_EXACTEMENT);

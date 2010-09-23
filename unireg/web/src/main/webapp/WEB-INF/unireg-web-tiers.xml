@@ -187,7 +187,6 @@
 		<property name="adresseService" ref="adresseService" />
 		<property name="serviceCivilService" ref="serviceCivilService" />
 		<property name="tiersService" ref="tiersService" />
-		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="infraService" ref="serviceInfrastructureService"/>
 	</bean>
 

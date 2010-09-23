@@ -54,7 +54,7 @@ public class DeclarationImpotVisuManagerImpl implements DeclarationImpotVisuMana
 			throw new ObjectNotFoundException(this.getMessageSource().getMessage("error.di.inexistante" , null,  WebContextUtils.getDefaultLocale()));
 		}
 
-		TiersGeneralView tiersGeneralView = tiersGeneralManager.get(di.getTiers(), true);
+		TiersGeneralView tiersGeneralView = tiersGeneralManager.getTiers(di.getTiers(), true);
 		diView.setContribuable(tiersGeneralView);
 		diView.setDateDebutPeriodeImposition(di.getDateDebut());
 		diView.setDateFinPeriodeImposition(di.getDateFin());

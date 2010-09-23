@@ -204,7 +204,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 			error = e;
 		}
 
-		diEditView.setContribuable(tiersGeneralManager.get(tiers, true));
+		diEditView.setContribuable(tiersGeneralManager.getTiers(tiers, true));
 		if (error != null) {
 			diEditView.setImprimable(false);
 			diEditView.setErrorMessage(error.getMessage());
@@ -548,7 +548,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 			throw new ObjectNotFoundException(this.getMessageSource().getMessage("error.di.inexistante" , null,  WebContextUtils.getDefaultLocale()));
 		}
 		Contribuable ctb = (Contribuable) di.getTiers();
-		TiersGeneralView tiersGeneralView = tiersGeneralManager.get(ctb, true);
+		TiersGeneralView tiersGeneralView = tiersGeneralManager.getTiers(ctb, true);
 		diEditView.setImprimable(true);
 		diEditView.setContribuable(tiersGeneralView);
 		diEditView.setId(id);
@@ -668,7 +668,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 		}
 
 		Contribuable ctb = (Contribuable) di.getTiers();
-		TiersGeneralView tiersGeneralView = tiersGeneralManager.get(ctb, true);
+		TiersGeneralView tiersGeneralView = tiersGeneralManager.getTiers(ctb, true);
 		diEditView.setContribuable(tiersGeneralView);
 		diEditView.setPeriodeFiscale(di.getPeriode().getAnnee());
 		diEditView.setDateDebutPeriodeImposition(di.getDateDebut());
@@ -930,7 +930,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 		if (tiers == null) {
 			throw new ObjectNotFoundException(this.getMessageSource().getMessage("error.tiers.inexistant" , null,  WebContextUtils.getDefaultLocale()));
 		}
-		TiersGeneralView tiersGeneralView = tiersGeneralManager.get(tiers, true);
+		TiersGeneralView tiersGeneralView = tiersGeneralManager.getTiers(tiers, true);
 
 		return tiersGeneralView;
 	}

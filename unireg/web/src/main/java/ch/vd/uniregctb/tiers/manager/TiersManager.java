@@ -1507,7 +1507,7 @@ public class TiersManager implements MessageSourceAware {
 	 * @throws AdresseException
 	 */
 	protected void setTiersGeneralView(TiersView tiersView, Tiers tiers) throws AdresseException {
-		TiersGeneralView tiersGeneralView = tiersGeneralManager.get(tiers, true);
+		TiersGeneralView tiersGeneralView = tiersGeneralManager.getTiers(tiers, true);
 		tiersView.setTiersGeneral(tiersGeneralView);
 	}
 

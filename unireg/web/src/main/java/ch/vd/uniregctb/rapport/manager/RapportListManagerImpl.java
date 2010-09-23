@@ -38,7 +38,7 @@ public class RapportListManagerImpl extends TiersManager implements RapportListM
 		rapportListView.setAllowed(checkDroitEdit(tiers));
 
 		if(rapportListView.isAllowed()){
-			TiersGeneralView tiersGeneralView = tiersGeneralManager.get(tiers, true);
+			TiersGeneralView tiersGeneralView = tiersGeneralManager.getTiers(tiers, true);
 			rapportListView.setTiers(tiersGeneralView);
 		}
 		return rapportListView;

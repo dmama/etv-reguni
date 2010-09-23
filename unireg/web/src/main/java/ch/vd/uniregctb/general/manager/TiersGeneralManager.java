@@ -21,7 +21,7 @@ public interface TiersGeneralManager {
 	 * @return
 	 */
 	@Transactional(readOnly = true)
-	public TiersGeneralView get(Tiers tiers, boolean full) ;
+	public TiersGeneralView getTiers(Tiers tiers, boolean full) ;
 
 	/**
 	 * Alimente un cartouche DPI étendu
@@ -31,15 +31,15 @@ public interface TiersGeneralManager {
 	 * @return
 	 */
 	@Transactional(readOnly = true)
-	public TiersGeneralView get(DebiteurPrestationImposable dpi, boolean etendu) ;
+	public TiersGeneralView getDebiteur(DebiteurPrestationImposable dpi, boolean etendu) ;
 
 	/**
-	 * Alimente le carouche d'une personne physique
+	 * Alimente le cartouche d'une personne physique
 	 *
 	 * @param pp
 	 * @param etendu
 	 * @return
 	 */
 	@Transactional(readOnly = true)
-	public TiersGeneralView get(PersonnePhysique pp, boolean etendu) ;
+	public TiersGeneralView getPersonnePhysique(PersonnePhysique pp, boolean etendu) ;
 }

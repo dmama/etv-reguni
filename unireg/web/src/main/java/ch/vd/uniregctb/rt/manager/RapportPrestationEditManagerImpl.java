@@ -95,14 +95,14 @@ public class RapportPrestationEditManagerImpl implements RapportPrestationEditMa
 		if (sourcier == null) {
 			throw new ObjectNotFoundException(this.getMessageSource().getMessage("error.sourcier.inexistant" , null,  WebContextUtils.getDefaultLocale()));
 		}
-		TiersGeneralView sourcierView = tiersGeneralManager.get(sourcier, true);
+		TiersGeneralView sourcierView = tiersGeneralManager.getPersonnePhysique(sourcier, true);
 		rapportView.setSourcier(sourcierView);
 
 		DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(numeroDpi);
 		if (dpi == null) {
 			throw new ObjectNotFoundException(this.getMessageSource().getMessage("error.debiteur.inexistant" , null,  WebContextUtils.getDefaultLocale()));
 		}
-		TiersGeneralView dpiView = tiersGeneralManager.get(dpi, true);
+		TiersGeneralView dpiView = tiersGeneralManager.getDebiteur(dpi, true);
 		rapportView.setDebiteur(dpiView);
 
 		return rapportView;
@@ -189,7 +189,7 @@ public class RapportPrestationEditManagerImpl implements RapportPrestationEditMa
 	public DebiteurListView getDebiteurList(Long numeroSrc) {
 		PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(numeroSrc) ;
 		DebiteurListView bean = new DebiteurListView();
-		TiersGeneralView sourcierView = tiersGeneralManager.get(pp, true);
+		TiersGeneralView sourcierView = tiersGeneralManager.getPersonnePhysique(pp, true);
 		bean.setSourcier(sourcierView);
 		bean.setTypeRechercheDuNom(DebiteurListView.TypeRecherche.EST_EXACTEMENT);
 		bean.setTypeTiers(DebiteurListView.TypeTiers.DEBITEUR_PRESTATION_IMPOSABLE);
@@ -207,7 +207,7 @@ public class RapportPrestationEditManagerImpl implements RapportPrestationEditMa
 	public SourcierListView getSourcierList(Long numeroDpi) {
 		DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(numeroDpi) ;
 		SourcierListView bean = new SourcierListView();
-		TiersGeneralView dpiView = tiersGeneralManager.get(dpi, true);
+		TiersGeneralView dpiView = tiersGeneralManager.getDebiteur(dpi, true);
 		bean.setDebiteur(dpiView);
 		bean.setTypeRechercheDuNom(SourcierListView.TypeRecherche.EST_EXACTEMENT);
 		bean.setTypeTiers(SourcierListView.TypeTiers.PERSONNE_PHYSIQUE);

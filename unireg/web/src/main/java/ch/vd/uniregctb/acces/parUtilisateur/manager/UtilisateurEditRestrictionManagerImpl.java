@@ -5,7 +5,7 @@ import java.util.List;
 
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
-import ch.vd.uniregctb.type.TypeAdresseTiers;
+
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.infrastructure.service.InfrastructureException;
@@ -135,7 +135,7 @@ public class UtilisateurEditRestrictionManagerImpl implements UtilisateurEditRes
 		recapPersonneUtilisateurView.setUtilisateur(utilisateurView);
 
 		PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(numeroPP);
-		TiersGeneralView tiersGeneralView = tiersGeneralManager.get(pp, true);
+		TiersGeneralView tiersGeneralView = tiersGeneralManager.getPersonnePhysique(pp, true);
 		recapPersonneUtilisateurView.setDossier(tiersGeneralView);
 
 		recapPersonneUtilisateurView.setType(TypeDroitAcces.INTERDICTION);

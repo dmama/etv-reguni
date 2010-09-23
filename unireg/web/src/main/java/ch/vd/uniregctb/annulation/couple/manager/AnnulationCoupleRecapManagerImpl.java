@@ -56,7 +56,7 @@ public class AnnulationCoupleRecapManagerImpl implements AnnulationCoupleRecapMa
 		AnnulationCoupleRecapView annulationCoupleRecapView =  new AnnulationCoupleRecapView();
 		//FIXME (CGD) impléementer Ifosec
 		MenageCommun menage = (MenageCommun) tiersService.getTiers(numero);
-		TiersGeneralView menageView = tiersGeneralManager.get(menage, true);
+		TiersGeneralView menageView = tiersGeneralManager.getTiers(menage, true);
 		annulationCoupleRecapView.setCouple(menageView);
 
 		EnsembleTiersCouple ensembleTiersCouple = tiersService.getEnsembleTiersCouple(menage, null);

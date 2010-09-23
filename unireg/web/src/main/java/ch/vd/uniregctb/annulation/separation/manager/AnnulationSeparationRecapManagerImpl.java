@@ -71,11 +71,11 @@ public class AnnulationSeparationRecapManagerImpl implements AnnulationSeparatio
 
 			EnsembleTiersCouple ensembleTiersCouple = tiersService.getEnsembleTiersCouple(menageCommun, forFiscalPrincipal.getDateFin().getOneDayBefore());
 			if (ensembleTiersCouple != null) {
-				TiersGeneralView premierPPView = tiersGeneralManager.get(ensembleTiersCouple.getPrincipal(), true);
+				TiersGeneralView premierPPView = tiersGeneralManager.getPersonnePhysique(ensembleTiersCouple.getPrincipal(), true);
 				annulationSeparationRecapView.setPremierePersonne(premierPPView);
 
 				if (ensembleTiersCouple.getConjoint() != null) {
-					TiersGeneralView secondPPView = tiersGeneralManager.get(ensembleTiersCouple.getConjoint(), true);
+					TiersGeneralView secondPPView = tiersGeneralManager.getPersonnePhysique(ensembleTiersCouple.getConjoint(), true);
 					annulationSeparationRecapView.setSecondePersonne(secondPPView);
 				}
 

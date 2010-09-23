@@ -54,7 +54,7 @@ public class DecesRecapManagerImpl implements  DecesRecapManager  {
 		DecesRecapView decesRecapView =  new DecesRecapView();
 		//FIXME (CGD) impléementer Ifosec
 		PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(numero);
-		TiersGeneralView personneView = tiersGeneralManager.get(pp, true);
+		TiersGeneralView personneView = tiersGeneralManager.getPersonnePhysique(pp, true);
 		decesRecapView.setPersonne(personneView);
 
 		EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(pp, null);
