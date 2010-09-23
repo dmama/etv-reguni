@@ -297,12 +297,17 @@ public class TiersWebServiceEndPoint implements TiersWebService {
 
 			BatchTiers batch;
 			
-			if (params.tiersNumbers.size() == 1) {
+			if (params.tiersNumbers != null && params.tiersNumbers.size() == 1) {
 				// Cas particulier d'un seul numéro demandé, on dégrade gracieusement en getTiers
 				final Long numero = params.tiersNumbers.iterator().next();
 				try {
 					final Tiers tiers = service.getTiers(new GetTiers(params.login, numero, params.date, params.parts));
-					batch = new BatchTiers(new BatchTiersEntry(numero, tiers));
+					if (tiers == null) {
+						batch = new BatchTiers();
+					}
+					else {
+						batch = new BatchTiers(new BatchTiersEntry(numero, tiers));
+					}
 				}
 				catch (WebServiceException e) {
 					batch = new BatchTiers(new BatchTiersEntry(numero, e));
@@ -357,12 +362,17 @@ public class TiersWebServiceEndPoint implements TiersWebService {
 
 			BatchTiersHisto batch;
 
-			if (params.tiersNumbers.size() == 1) {
+			if (params.tiersNumbers != null && params.tiersNumbers.size() == 1) {
 				// Cas particulier d'un seul numéro demandé, on dégrade gracieusement en getTiersHisto
 				final Long numero = params.tiersNumbers.iterator().next();
 				try {
 					final TiersHisto tiers = service.getTiersHisto(new GetTiersHisto(params.login, numero, params.parts));
-					batch = new BatchTiersHisto(new BatchTiersHistoEntry(numero, tiers));
+					if (tiers == null) {
+						batch = new BatchTiersHisto();
+					}
+					else {
+						batch = new BatchTiersHisto(new BatchTiersHistoEntry(numero, tiers));
+					}
 				}
 				catch (WebServiceException e) {
 					batch = new BatchTiersHisto(new BatchTiersHistoEntry(numero, e));
