@@ -1,23 +1,5 @@
 package ch.vd.uniregctb.webservices.tiers2.impl;
 
-import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityProvider;
-import ch.vd.uniregctb.type.Niveau;
-import ch.vd.uniregctb.webservices.common.UserLogin;
-import ch.vd.uniregctb.webservices.tiers2.TiersWebService;
-import ch.vd.uniregctb.webservices.tiers2.data.*;
-import ch.vd.uniregctb.webservices.tiers2.data.Tiers.Type;
-import ch.vd.uniregctb.webservices.tiers2.exception.AccessDeniedException;
-import ch.vd.uniregctb.webservices.tiers2.exception.BusinessException;
-import ch.vd.uniregctb.webservices.tiers2.exception.TechnicalException;
-import ch.vd.uniregctb.webservices.tiers2.exception.WebServiceExceptionType;
-import ch.vd.uniregctb.webservices.tiers2.params.*;
-
-import org.apache.cxf.transport.http.AbstractHTTPDestination;
-import org.apache.log4j.Logger;
-import org.springframework.util.Assert;
-
 import javax.annotation.Resource;
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
@@ -30,6 +12,45 @@ import javax.xml.ws.handler.MessageContext;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.cxf.transport.http.AbstractHTTPDestination;
+import org.apache.log4j.Logger;
+import org.springframework.util.Assert;
+
+import ch.vd.uniregctb.common.AuthenticationHelper;
+import ch.vd.uniregctb.security.Role;
+import ch.vd.uniregctb.security.SecurityProvider;
+import ch.vd.uniregctb.type.Niveau;
+import ch.vd.uniregctb.webservices.common.UserLogin;
+import ch.vd.uniregctb.webservices.tiers2.TiersWebService;
+import ch.vd.uniregctb.webservices.tiers2.data.BatchTiers;
+import ch.vd.uniregctb.webservices.tiers2.data.BatchTiersEntry;
+import ch.vd.uniregctb.webservices.tiers2.data.BatchTiersHisto;
+import ch.vd.uniregctb.webservices.tiers2.data.BatchTiersHistoEntry;
+import ch.vd.uniregctb.webservices.tiers2.data.DebiteurInfo;
+import ch.vd.uniregctb.webservices.tiers2.data.EvenementPM;
+import ch.vd.uniregctb.webservices.tiers2.data.ReponseQuittancementDeclaration;
+import ch.vd.uniregctb.webservices.tiers2.data.Tiers;
+import ch.vd.uniregctb.webservices.tiers2.data.Tiers.Type;
+import ch.vd.uniregctb.webservices.tiers2.data.TiersHisto;
+import ch.vd.uniregctb.webservices.tiers2.data.TiersInfo;
+import ch.vd.uniregctb.webservices.tiers2.exception.AccessDeniedException;
+import ch.vd.uniregctb.webservices.tiers2.exception.BusinessException;
+import ch.vd.uniregctb.webservices.tiers2.exception.TechnicalException;
+import ch.vd.uniregctb.webservices.tiers2.exception.WebServiceException;
+import ch.vd.uniregctb.webservices.tiers2.exception.WebServiceExceptionType;
+import ch.vd.uniregctb.webservices.tiers2.params.AllConcreteTiersClasses;
+import ch.vd.uniregctb.webservices.tiers2.params.GetBatchTiers;
+import ch.vd.uniregctb.webservices.tiers2.params.GetBatchTiersHisto;
+import ch.vd.uniregctb.webservices.tiers2.params.GetDebiteurInfo;
+import ch.vd.uniregctb.webservices.tiers2.params.GetTiers;
+import ch.vd.uniregctb.webservices.tiers2.params.GetTiersHisto;
+import ch.vd.uniregctb.webservices.tiers2.params.GetTiersPeriode;
+import ch.vd.uniregctb.webservices.tiers2.params.GetTiersType;
+import ch.vd.uniregctb.webservices.tiers2.params.QuittancerDeclarations;
+import ch.vd.uniregctb.webservices.tiers2.params.SearchEvenementsPM;
+import ch.vd.uniregctb.webservices.tiers2.params.SearchTiers;
+import ch.vd.uniregctb.webservices.tiers2.params.SetTiersBlocRembAuto;
 
 /**
  * Cette classe réceptionne tous les appels au web-service, authentifie l'utilisateur, vérifie ses droits d'accès et finalement redirige les
@@ -273,12 +294,31 @@ public class TiersWebServiceEndPoint implements TiersWebService {
 		try {
 			login(params.login);
 			checkGeneralReadAccess(params.login);
-			final BatchTiers batch = service.getBatchTiers(params);
+
+			BatchTiers batch;
+			
+			if (params.tiersNumbers.size() == 1) {
+				// Cas particulier d'un seul numéro demandé, on dégrade gracieusement en getTiers
+				final Long numero = params.tiersNumbers.iterator().next();
+				try {
+					final Tiers tiers = service.getTiers(new GetTiers(params.login, numero, params.date, params.parts));
+					batch = new BatchTiers(new BatchTiersEntry(numero, tiers));
+				}
+				catch (WebServiceException e) {
+					batch = new BatchTiers(new BatchTiersEntry(numero, e));
+				}
+			}
+			else {
+				// Cas général, on part en mode batch
+				batch = service.getBatchTiers(params);
+			}
+			
 			if (batch != null) {
 				checkBatchReadAccess(batch);
 				checkBatchCoherence(batch);
 				logEmbeddedExceptions(params, batch);
 			}
+
 			return batch;
 		}
 		catch (BusinessException e) {
@@ -314,12 +354,31 @@ public class TiersWebServiceEndPoint implements TiersWebService {
 		try {
 			login(params.login);
 			checkGeneralReadAccess(params.login);
-			final BatchTiersHisto batch = service.getBatchTiersHisto(params);
+
+			BatchTiersHisto batch;
+
+			if (params.tiersNumbers.size() == 1) {
+				// Cas particulier d'un seul numéro demandé, on dégrade gracieusement en getTiersHisto
+				final Long numero = params.tiersNumbers.iterator().next();
+				try {
+					final TiersHisto tiers = service.getTiersHisto(new GetTiersHisto(params.login, numero, params.parts));
+					batch = new BatchTiersHisto(new BatchTiersHistoEntry(numero, tiers));
+				}
+				catch (WebServiceException e) {
+					batch = new BatchTiersHisto(new BatchTiersHistoEntry(numero, e));
+				}
+			}
+			else {
+				// Cas général, on part en mode batch
+				batch = service.getBatchTiersHisto(params);
+			}
+
 			if (batch != null) {
 				checkBatchReadAccess(batch);
 				checkBatchCoherence(batch);
 				logEmbeddedExceptions(params, batch);
 			}
+
 			return batch;
 		}
 		catch (BusinessException e) {

@@ -25,6 +25,10 @@ public class BatchTiersHisto {
 	public BatchTiersHisto() {
 	}
 
+	public BatchTiersHisto(BatchTiersHistoEntry unique) {
+		entries.add(unique);
+	}
+
 	public BatchTiersHisto(Map<Long, Object> map) {
 		if (map != null) {
 			for (Map.Entry<Long, Object> e : map.entrySet()) {
