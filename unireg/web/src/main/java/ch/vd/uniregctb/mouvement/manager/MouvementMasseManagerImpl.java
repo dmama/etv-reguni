@@ -93,7 +93,7 @@ public class MouvementMasseManagerImpl extends AbstractMouvementManagerImpl impl
 		}
 		if (count > 0) {
 			final List<MouvementDossier> liste = getMouvementDossierDAO().find(criteria, paramPagination);
-			return getViews(liste);
+			return getViews(liste, false);
 		}
 		else {
 			return Collections.emptyList();
@@ -103,7 +103,7 @@ public class MouvementMasseManagerImpl extends AbstractMouvementManagerImpl impl
 	@Transactional(readOnly = true)
 	public List<MouvementDetailView> find(MouvementDossierCriteria criteria) throws InfrastructureException {
 		final List<MouvementDossier> mvts = getMouvementDossierDAO().find(criteria, null);
-		return getViews(mvts);
+		return getViews(mvts, false);
 	}
 
 	@Transactional(rollbackFor = Throwable.class)
@@ -166,7 +166,7 @@ public class MouvementMasseManagerImpl extends AbstractMouvementManagerImpl impl
 		final BordereauEnvoiReceptionView view = new BordereauEnvoiReceptionView();
 		final BordereauMouvementDossier bordereau = bordereauDAO.get(idBordereau);
 		fillView(bordereau, view);
-		view.setMvts(getViews(bordereau.getContenu()));
+		view.setMvts(getViews(bordereau.getContenu(), true));
 		return view;
 	}
 
@@ -194,7 +194,7 @@ public class MouvementMasseManagerImpl extends AbstractMouvementManagerImpl impl
 	public void refreshView(BordereauEnvoiReceptionView view) throws InfrastructureException {
 		final BordereauMouvementDossier bordereau = bordereauDAO.get(view.getId());
 		fillView(bordereau, view);
-		view.setMvts(getViews(bordereau.getContenu()));
+		view.setMvts(getViews(bordereau.getContenu(), true));
 	}
 
 	private ReceptionDossierClassementGeneral creerMouvementReceptionClassement(EnvoiDossierVersCollectiviteAdministrative envoi) {

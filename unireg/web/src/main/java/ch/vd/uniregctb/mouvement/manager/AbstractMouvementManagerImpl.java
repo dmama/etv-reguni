@@ -3,6 +3,7 @@ package ch.vd.uniregctb.mouvement.manager;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -126,11 +127,20 @@ public class AbstractMouvementManagerImpl implements AbstractMouvementManager, M
 		return view;
 	}
 
-	protected List<MouvementDetailView> getViews(Collection<MouvementDossier> mvts) throws InfrastructureException {
+	protected List<MouvementDetailView> getViews(Collection<MouvementDossier> mvts, boolean sortByNoDossier) throws InfrastructureException {
 		if (mvts != null && mvts.size() > 0) {
 			final List<MouvementDetailView> liste = new ArrayList<MouvementDetailView>(mvts.size());
 			for (MouvementDossier mvt : mvts) {
 				liste.add(getView(mvt));
+			}
+			if (sortByNoDossier && liste.size() > 1) {
+				Collections.sort(liste, new Comparator<MouvementDetailView>() {
+					public int compare(MouvementDetailView o1, MouvementDetailView o2) {
+						final long no1 = o1.getContribuable().getNumero();
+						final long no2 = o2.getContribuable().getNumero();
+						return no1 < no2 ? -1 : (no1 > no2 ? 1 : 0);
+					}
+				});
 			}
 			return liste;
 		}
