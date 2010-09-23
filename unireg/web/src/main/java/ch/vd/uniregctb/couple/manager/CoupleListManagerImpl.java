@@ -49,7 +49,7 @@ public class CoupleListManagerImpl extends TiersManager implements CoupleListMan
 			coupleListView.setAllowed(false);
 			return coupleListView;
 		}
-		TiersGeneralView premierPPView = tiersGeneralManager.get(pp, true);
+		TiersGeneralView premierPPView = tiersGeneralManager.getPersonnePhysique(pp, true);
 		CoupleListView coupleListView = new CoupleListView();
 		coupleListView.setAllowed(true);
 		coupleListView.setPremierePersonne(premierPPView);

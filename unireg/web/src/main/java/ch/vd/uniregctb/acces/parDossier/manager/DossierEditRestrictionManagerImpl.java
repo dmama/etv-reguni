@@ -63,7 +63,7 @@ public class DossierEditRestrictionManagerImpl implements DossierEditRestriction
 
 		DossierEditRestrictionView dossierEditRestrictionView = new DossierEditRestrictionView();
 
-		TiersGeneralView dossier = tiersGeneralManager.get(pp, true);
+		TiersGeneralView dossier = tiersGeneralManager.getPersonnePhysique(pp, true);
 		dossierEditRestrictionView.setDossier(dossier);
 		Set<DroitAcces> droitsAccesAppliques = pp.getDroitsAccesAppliques();
 		Iterator<DroitAcces> itDroitAcces = droitsAccesAppliques.iterator();

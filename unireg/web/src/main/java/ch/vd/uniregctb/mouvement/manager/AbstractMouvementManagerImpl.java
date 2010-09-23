@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +18,7 @@ import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.registre.civil.model.EnumAttributeIndividu;
 import ch.vd.securite.model.Operateur;
 import ch.vd.securite.model.ProfilOperateur;
 import ch.vd.uniregctb.common.AuthenticationHelper;
@@ -24,6 +26,7 @@ import ch.vd.uniregctb.general.manager.TiersGeneralManager;
 import ch.vd.uniregctb.general.view.TiersGeneralView;
 import ch.vd.uniregctb.individu.HostCivilService;
 import ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative;
+import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServiceSecuriteService;
 import ch.vd.uniregctb.mouvement.EnvoiDossier;
@@ -35,17 +38,22 @@ import ch.vd.uniregctb.mouvement.ReceptionDossier;
 import ch.vd.uniregctb.mouvement.ReceptionDossierPersonnel;
 import ch.vd.uniregctb.mouvement.view.MouvementDetailView;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.TypeMouvement;
 import ch.vd.uniregctb.utils.WebContextUtils;
 
 public class AbstractMouvementManagerImpl implements AbstractMouvementManager, MessageSourceAware {
 
+	public static final Logger LOGGER = Logger.getLogger(AbstractMouvementManagerImpl.class);
+
 	private static final int NB_MAX_MOUVEMENTS_GARDES = 10;
 
 	private TiersGeneralManager tiersGeneralManager;
 
 	private TiersService tiersService;
+
+	private TiersDAO tiersDAO;
 
 	private ServiceInfrastructureService serviceInfra;
 
@@ -83,6 +91,10 @@ public class AbstractMouvementManagerImpl implements AbstractMouvementManager, M
 
 	public void setTiersService(TiersService tiersService) {
 		this.tiersService = tiersService;
+	}
+
+	public void setTiersDAO(TiersDAO tiersDAO) {
+		this.tiersDAO = tiersDAO;
 	}
 
 	protected TiersService getTiersService() {
@@ -129,6 +141,7 @@ public class AbstractMouvementManagerImpl implements AbstractMouvementManager, M
 
 	protected List<MouvementDetailView> getViews(Collection<MouvementDossier> mvts, boolean sortByNoDossier) throws InfrastructureException {
 		if (mvts != null && mvts.size() > 0) {
+			prefetchIndividus(mvts);
 			final List<MouvementDetailView> liste = new ArrayList<MouvementDetailView>(mvts.size());
 			for (MouvementDossier mvt : mvts) {
 				liste.add(getView(mvt));
@@ -149,6 +162,39 @@ public class AbstractMouvementManagerImpl implements AbstractMouvementManager, M
 		}
 	}
 
+	private void prefetchIndividus(Collection<MouvementDossier> mvts) {
+
+		final int TAILLE_LOT = 100;
+
+		final long start = System.nanoTime();
+
+		final ServiceCivilService serviceCivil = tiersService.getServiceCivilService();
+		if (serviceCivil.isWarmable() && mvts != null && mvts.size() > 1) {
+
+			// d'abord on cherche tous les identifiants de tiers
+			final Set<Long> idsTiers = new HashSet<Long>(mvts.size());
+			for (MouvementDossier mvt : mvts) {
+				idsTiers.add(mvt.getContribuable().getNumero());
+			}
+
+			// que l'on découpe ensuite en petits lots pour récupérer les numéros d'individus
+			final int nbLots = idsTiers.size() / TAILLE_LOT + 1;
+			final List<Long> listeIdsTiers = new ArrayList<Long>(idsTiers);
+			for (int i = 0 ; i < nbLots ; ++ i) {
+				final int idxMin = i * TAILLE_LOT;
+				final int idxMax = Math.min((i + 1) * TAILLE_LOT, listeIdsTiers.size());
+				if (idxMin < idxMax) {
+					final Set<Long> lotTiersIds = new HashSet<Long>(listeIdsTiers.subList(idxMin, idxMax));
+					final Set<Long> noIndividus = tiersDAO.getNumerosIndividu(lotTiersIds, true);
+					tiersService.getServiceCivilService().getIndividus(noIndividus, null, EnumAttributeIndividu.ADRESSES);
+				}
+			}
+
+			final long end = System.nanoTime();
+			LOGGER.info(String.format("Prefetched les individus de %d mouvements en %d millisecondes", mvts.size(), (end - start) / 1000000L));
+		}
+	}
+
 	private MouvementDetailView buildAndFillCommonElements(MouvementDossier mvt) {
 		final MouvementDetailView view = new MouvementDetailView();
 		view.setId(mvt.getId());
@@ -157,7 +203,7 @@ public class AbstractMouvementManagerImpl implements AbstractMouvementManager, M
 		view.setDateExecution(mvt.getLogModifDate());
 		view.setExecutant(mvt.getLogModifUser());
 
-		final TiersGeneralView tiersGeneralView = tiersGeneralManager.get(mvt.getContribuable());
+		final TiersGeneralView tiersGeneralView = tiersGeneralManager.getTiers(mvt.getContribuable(), false);
 		view.setContribuable(tiersGeneralView);
 
 		view.setAnnule(mvt.isAnnule());

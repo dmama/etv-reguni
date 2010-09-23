@@ -2,7 +2,6 @@ package ch.vd.uniregctb.lr.manager;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -20,9 +19,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.uniregctb.audit.Audit;
-import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
-import ch.vd.uniregctb.declaration.DeclarationException;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
@@ -195,7 +192,7 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 			throw new ObjectNotFoundException(this.getMessageSource().getMessage("error.lr.inexistante" , null,  WebContextUtils.getDefaultLocale()));
 		}
 		DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) lr.getTiers();
-		TiersGeneralView dpiView = tiersGeneralManager.get(dpi, true);
+		TiersGeneralView dpiView = tiersGeneralManager.getDebiteur(dpi, true);
 		lrEditView.setDpi(dpiView);
 		EtatDeclaration etatLR = lr.getDernierEtat();
 		lrEditView.setEtat(etatLR.getEtat());
@@ -236,7 +233,7 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 			throw new ObjectNotFoundException(this.getMessageSource().getMessage("error.lr.inexistante" , null,  WebContextUtils.getDefaultLocale()));
 		}
 		DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) lr.getTiers();
-		TiersGeneralView dpiView = tiersGeneralManager.get(dpi, true);
+		TiersGeneralView dpiView = tiersGeneralManager.getDebiteur(dpi, true);
 		view.setDpi(dpiView);
 
 		setDelais(view, lr);
@@ -598,7 +595,7 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 			throw new ObjectNotFoundException(this.getMessageSource().getMessage("error.tiers.inexistant" , null,  WebContextUtils.getDefaultLocale()));
 		}
 		DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiers;
-		TiersGeneralView dpiView = tiersGeneralManager.get(dpi, true);
+		TiersGeneralView dpiView = tiersGeneralManager.getDebiteur(dpi, true);
 		return dpiView;
 	}
 

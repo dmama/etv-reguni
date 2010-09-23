@@ -60,7 +60,7 @@ public class ListeRecapVisuManagerImpl implements ListeRecapVisuManager,MessageS
 			throw new ObjectNotFoundException(this.getMessageSource().getMessage("error.lr.inexistante" , null,  WebContextUtils.getDefaultLocale()));
 		}
 
-		TiersGeneralView tiersGeneralView = tiersGeneralManager.get((DebiteurPrestationImposable)lr.getTiers(), true);
+		TiersGeneralView tiersGeneralView = tiersGeneralManager.getDebiteur((DebiteurPrestationImposable)lr.getTiers(), true);
 		lrView.setDpi(tiersGeneralView);
 		lrView.setDateDebutPeriode(lr.getDateDebut());
 		lrView.setDateFinPeriode(lr.getDateFin());

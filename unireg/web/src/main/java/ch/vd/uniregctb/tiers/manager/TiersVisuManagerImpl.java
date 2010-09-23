@@ -548,7 +548,7 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 		LOGGER.debug("- chargement des habitants en " + ((endH - startH) / 1000000) + " ms");
 
 		view.idDpi = noDebiteur;
-		view.tiersGeneral = tiersGeneralManager.get(debiteur);
+		view.tiersGeneral = tiersGeneralManager.getDebiteur(debiteur, true);
 		view.editionAllowed = SecurityProvider.isGranted(Role.RT);
 		view.rapports = rapports;
 	}

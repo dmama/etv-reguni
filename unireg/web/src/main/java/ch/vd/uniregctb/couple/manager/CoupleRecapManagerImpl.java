@@ -104,13 +104,13 @@ public class CoupleRecapManagerImpl extends TiersManager implements CoupleRecapM
 	}
 
 	private void initializeCouple(PersonnePhysique premierPP, PersonnePhysique secondPP, Contribuable contribuableCouple, CoupleRecapView coupleRecapView) {
-		coupleRecapView.setPremierePersonne(tiersGeneralManager.get(premierPP, true));
+		coupleRecapView.setPremierePersonne(tiersGeneralManager.getPersonnePhysique(premierPP, true));
 		if(secondPP != null) {
-			coupleRecapView.setSecondePersonne(tiersGeneralManager.get(secondPP, true));
+			coupleRecapView.setSecondePersonne(tiersGeneralManager.getPersonnePhysique(secondPP, true));
 		}
 		coupleRecapView.setNouveauCtb(contribuableCouple == null);
 		if (contribuableCouple != null) {
-			coupleRecapView.setTroisiemeTiers(tiersGeneralManager.get(contribuableCouple));
+			coupleRecapView.setTroisiemeTiers(tiersGeneralManager.getTiers(contribuableCouple, true));
 		}
 
 		if (premierPP != null && secondPP != null) {

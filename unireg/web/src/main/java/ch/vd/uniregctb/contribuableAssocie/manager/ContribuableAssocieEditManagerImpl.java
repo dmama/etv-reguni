@@ -29,7 +29,7 @@ public class ContribuableAssocieEditManagerImpl extends TiersManager  implements
 //		contribuableAssocieEditView.setAllowed(checkDroitEdit(debiteur));
 //		if(contribuableAssocieEditView.isAllowed()){
 			//Debiteur
-			TiersGeneralView debiteurView = tiersGeneralManager.get(debiteur, true);
+			TiersGeneralView debiteurView = tiersGeneralManager.getDebiteur(debiteur, true);
 			contribuableAssocieEditView.setDebiteur(debiteurView);
 
 			//Contribuable
@@ -38,7 +38,7 @@ public class ContribuableAssocieEditManagerImpl extends TiersManager  implements
 				throw new ObjectNotFoundException(this.getMessageSource().getMessage("error.contribuable.inexistant" , null,  WebContextUtils.getDefaultLocale()));
 			}
 
-			TiersGeneralView contribuableView = tiersGeneralManager.get(contribuable);
+			TiersGeneralView contribuableView = tiersGeneralManager.getTiers(contribuable, true);
 			contribuableAssocieEditView.setContribuable(contribuableView);
 //		}
 
@@ -60,7 +60,7 @@ public class ContribuableAssocieEditManagerImpl extends TiersManager  implements
 	public ContribuableAssocieListView getContribuableList(Long numeroDpi) {
 		DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(numeroDpi) ;
 		ContribuableAssocieListView bean = new ContribuableAssocieListView();
-		TiersGeneralView dpiView = tiersGeneralManager.get(dpi, true);
+		TiersGeneralView dpiView = tiersGeneralManager.getDebiteur(dpi, true);
 		bean.setDebiteur(dpiView);
 		bean.setTypeRechercheDuNom(SourcierListView.TypeRecherche.EST_EXACTEMENT);
 		bean.setTypeTiers(SourcierListView.TypeTiers.CONTRIBUABLE);

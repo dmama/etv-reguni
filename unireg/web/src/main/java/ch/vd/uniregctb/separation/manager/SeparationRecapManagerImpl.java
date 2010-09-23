@@ -56,7 +56,7 @@ public class SeparationRecapManagerImpl implements SeparationRecapManager {
 		SeparationRecapView separationRecapView =  new SeparationRecapView();
 		//FIXME (CGD) impléementer Ifosec
 		MenageCommun menage = (MenageCommun) tiersService.getTiers(numero);
-		TiersGeneralView menageView = tiersGeneralManager.get(menage);
+		TiersGeneralView menageView = tiersGeneralManager.getTiers(menage, true);
 		separationRecapView.setCouple(menageView);
 		separationRecapView.setEtatCivil(EtatCivil.DIVORCE);
 

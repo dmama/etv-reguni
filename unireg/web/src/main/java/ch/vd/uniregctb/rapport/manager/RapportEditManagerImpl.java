@@ -63,7 +63,7 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 		rapportView.setAllowed(checkDroitEdit(tiers));
 		if(rapportView.isAllowed()){
 			//Tiers
-			TiersGeneralView tiersView = tiersGeneralManager.get(tiers);
+			TiersGeneralView tiersView = tiersGeneralManager.getTiers(tiers, true);
 			rapportView.setTiers(tiersView);
 
 			//Tiers lié
@@ -72,7 +72,7 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 				throw new ObjectNotFoundException(this.getMessageSource().getMessage("error.tiers.inexistant" , null,  WebContextUtils.getDefaultLocale()));
 			}
 
-			TiersGeneralView tiersLieView = tiersGeneralManager.get(tiersLie);
+			TiersGeneralView tiersLieView = tiersGeneralManager.getTiers(tiersLie, true);
 			rapportView.setTiersLie(tiersLieView);
 		}
 		rapportView.setSensRapportEntreTiers(SensRapportEntreTiers.SUJET);
@@ -246,7 +246,7 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 
 		if (tiers != null){
 			tiersEditView.setTiers(tiers);
-			TiersGeneralView tiersGeneralView = tiersGeneralManager.get(tiers);
+			TiersGeneralView tiersGeneralView = tiersGeneralManager.getTiers(tiers, true);
 			tiersEditView.setTiersGeneral(tiersGeneralView);
 			tiersEditView.setDossiersApparentes(getRapports(tiers));
 			if (tiers instanceof Contribuable) {
@@ -289,7 +289,7 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 		}
 
 		tiersEditView.setTiers(tiers);
-		TiersGeneralView tiersGeneralView = tiersGeneralManager.get(tiers);
+		TiersGeneralView tiersGeneralView = tiersGeneralManager.getTiers(tiers, true);
 		tiersEditView.setTiersGeneral(tiersGeneralView);
 		if (tiers instanceof DebiteurPrestationImposable ) {
 			DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiers;
