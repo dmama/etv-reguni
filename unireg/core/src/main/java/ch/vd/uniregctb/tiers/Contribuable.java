@@ -173,6 +173,19 @@ public abstract class Contribuable extends Tiers {
 		return situations;
 	}
 
+	@Transient
+	public ForFiscalPrincipal getPremierForFiscalPrincipal() {
+		List<ForFiscal> list = getForsFiscauxSorted();
+		if (list != null) {
+			for (ForFiscal forFiscal : list) {
+				if (!forFiscal.isAnnule() && forFiscal.isPrincipal()) {
+					return (ForFiscalPrincipal) forFiscal;
+				}
+			}
+		}
+		return null;
+	}
+
 	// ***********************************************
 	@Transient
 	public void closeSituationFamilleActive(RegDate dateFin) {

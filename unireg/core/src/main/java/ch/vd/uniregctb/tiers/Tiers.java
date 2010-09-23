@@ -1235,19 +1235,7 @@ public abstract class Tiers extends HibernateEntity implements Validateable, Bus
 		return fors;
 	}
 
-	@Transient
-	public ForFiscalPrincipal getPremierForFiscalPrincipal() {
-		List<ForFiscal> list = getForsFiscauxSorted();
-		if (list != null) {
-			for (ForFiscal forFiscal : list) {
-				if (!forFiscal.isAnnule() && forFiscal.isPrincipal()) {
-					return (ForFiscalPrincipal) forFiscal;
-				}
-			}
-		}
-		return null;
-	}
-
+	
 	// ***********************************************
 	@Transient
 	public ForFiscalPrincipal getDernierForFiscalPrincipal() {
