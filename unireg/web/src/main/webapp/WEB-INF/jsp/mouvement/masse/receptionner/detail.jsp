@@ -9,6 +9,11 @@
 
         <form:form method="post" id="formReceptionnerMouvements" action="detail-reception-bordereau.do">
 
+			<%-- on mets ici dans le champ ''id'' l''identifiant technique du bordereau --%>
+			<%-- afin qu''il soit disponible pour un changement de page suivant un submit --%>
+			<%-- de la réception --%>
+        	<input type="hidden" name="id" value="${command.id}"/>
+
             <table>
                 <tr>
                     <td width="25%">&nbsp;</td>
@@ -23,10 +28,17 @@
                 function selectAllMouvements(checkSelectAll) {
                     var lignesMvts = document.getElementById('mvt').getElementsByTagName('tr');
                     var taille = lignesMvts.length;
-                    for(var i=1; i < taille; i++) {
-                        if (E$('selection_' + i) != null && !E$('selection_' + i).disabled) {
-                            E$('selection_' + i).checked = checkSelectAll.checked;
-                        }
+					for(var i=1; i < taille; i++) {
+						var cols = lignesMvts[i].getElementsByTagName("td");
+						if (cols != null && cols.length > 1) {
+							var inputs = cols[0].getElementsByTagName("input");
+							if (inputs != null && inputs.length > 0) {
+								var chkbox = inputs[0];
+								if (chkbox != null && !chkbox.disabled && chkbox.name == 'selection') {
+									chkbox.checked = checkSelectAll.checked;
+								}
+							}
+						}
                     }
                 }
 
@@ -35,9 +47,16 @@
                     var taille = lignesMvts.length;
                     var nbSelectionnes = 0;
                     for(var i=1; i < taille; i++) {
-                        if (E$('selection_' + i) != null && !E$('selection_' + i).disabled && E$('selection_' + i).checked) {
-                            ++ nbSelectionnes;
-                        }
+						var cols = lignesMvts[i].getElementsByTagName("td");
+						if (cols != null && cols.length > 1) {
+							var inputs = cols[0].getElementsByTagName("input");
+							if (inputs != null && inputs.length > 0) {
+								var chkbox = inputs[0];
+								if (chkbox != null && !chkbox.disabled && chkbox.name == 'selection' && chkbox.checked) {
+                                	++ nbSelectionnes;
+								}
+							}
+						}
                     }
                     if (nbSelectionnes == 0) {
                         alert('Veuillez selectionner au moins un dossier à réceptionner');

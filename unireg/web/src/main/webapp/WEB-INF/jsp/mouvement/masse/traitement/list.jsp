@@ -36,9 +36,16 @@
                     var lignesMvts = document.getElementById('mvt').getElementsByTagName('tr');
                     var taille = lignesMvts.length;
                     for(var i=1; i < taille; i++) {
-                        if (E$('tabIdsMvts_' + i) != null && !E$('tabIdsMvts_' + i).disabled) {
-                            E$('tabIdsMvts_' + i).checked = checkSelectAll.checked;
-                        }
+						var cols = lignesMvts[i].getElementsByTagName("td");
+						if (cols != null && cols.length > 1) {
+							var inputs = cols[0].getElementsByTagName("input");
+							if (inputs != null && inputs.length > 0) {
+								var chkbox = inputs[0];
+								if (chkbox != null && !chkbox.disabled && chkbox.name == 'tabIdsMvts') {
+									chkbox.checked = checkSelectAll.checked;
+								}
+							}
+						}
                     }
                 }
 
@@ -47,9 +54,16 @@
                     var taille = lignesMvts.length;
                     var nbSelectionnes = 0;
                     for(var i=1; i < taille; i++) {
-                        if (E$('tabIdsMvts_' + i) != null && !E$('tabIdsMvts_' + i).disabled && E$('tabIdsMvts_' + i).checked) {
-                            ++ nbSelectionnes;
-                        }
+						var cols = lignesMvts[i].getElementsByTagName("td");
+						if (cols != null && cols.length > 1) {
+							var inputs = cols[0].getElementsByTagName("input");
+							if (inputs != null && inputs.length > 0) {
+								var chkbox = inputs[0];
+								if (chkbox != null && !chkbox.disabled && chkbox.name == 'tabIdsMvts' && chkbox.checked) {
+                                	++ nbSelectionnes;
+								}
+							}
+						}
                     }
                     if (nbSelectionnes == 0) {
                         alert('Veuillez sélectionner au moins un dossier à inclure');
@@ -149,9 +163,16 @@
                 var taille = lignesMvts.length;
                 var nbSelectionnables = 0;
                 for(var i=1; i < taille; i++) {
-                    if (E$('tabIdsMvts_' + i) != null && !E$('tabIdsMvts_' + i).disabled) {
-                        ++ nbSelectionnables;
-                    }
+					var cols = lignesMvts[i].getElementsByTagName("td");
+					if (cols != null && cols.length > 1) {
+						var inputs = cols[0].getElementsByTagName("input");
+						if (inputs != null && inputs.length > 0) {
+							var chkbox = inputs[0];
+							if (chkbox != null && !chkbox.disabled && chkbox.name == 'tabIdsMvts') {
+								++ nbSelectionnables;
+							}
+						}
+					}
                 }
                 if (nbSelectionnables == 0) {
                     document.getElementById('boutonInclusion').style.display = "none";
