@@ -13,14 +13,17 @@ import org.springframework.transaction.TransactionStatus;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
+import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
+import ch.vd.uniregctb.type.Sexe;
 
 @SuppressWarnings({"JavaDoc"})
 public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTest {
@@ -321,7 +324,6 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 		Assert.assertEquals(2, caCache.size());
 		Assert.assertTrue(caCache.containsKey(noCaOidVevey));
 		Assert.assertTrue(caCache.containsKey(noCaOidLausanne));
-
 	}
 
 	/**
@@ -415,5 +417,29 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 		final DeterminerMouvementsDossiersEnMasseResults.NonTraite ignore = results.ignores.get(0);
 		Assert.assertEquals(DeterminerMouvementsDossiersEnMasseResults.Raison.SOURCIER_PUR, ignore.type);
 		Assert.assertEquals(ctb.getNumero(), (Long) ignore.noCtb);
+	}
+
+	@Test
+	public void testMixteDirectementOuvertHS() throws Exception {
+
+		final DeterminerMouvementsDossiersEnMasseProcessor proc = createProcessor();
+
+		final RegDate dateTraitement = RegDate.get();
+
+		final PersonnePhysique pp = addNonHabitant("Albus", "Dumbledore", date(1950, 5, 21), Sexe.MASCULIN);
+		pp.setNumeroOfsNationalite(MockPays.RoyaumeUni.getNoOFS());
+
+		final ForFiscalPrincipal ffp = addForPrincipal(pp, date(dateTraitement.year() - 1, 4, 12), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockPays.Albanie);
+		ffp.setModeImposition(ModeImposition.MIXTE_137_1);
+
+		final DeterminerMouvementsDossiersEnMasseResults results = proc.run(dateTraitement, null);
+
+		Assert.assertNotNull(results.erreurs);
+		Assert.assertEquals(1, results.erreurs.size());
+
+		final DeterminerMouvementsDossiersEnMasseResults.NonTraite erreur = results.erreurs.get(0);
+		Assert.assertNotNull(erreur);
+		Assert.assertEquals((long) pp.getNumero(), erreur.noCtb);
+		Assert.assertEquals("Assujettissement année n-1 sans for vaudois?", erreur.complement);
 	}
 }
