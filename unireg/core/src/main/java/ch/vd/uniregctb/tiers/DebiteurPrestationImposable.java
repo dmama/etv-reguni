@@ -243,6 +243,10 @@ public class DebiteurPrestationImposable extends Tiers {
 	@Override
 	public ValidationResults validate() {
 		final ValidationResults results = super.validate();
+		if (isAnnule()) {
+			return results;
+		}
+		
 		results.merge(validatePeriodicites());
 		return results;
 	}
@@ -259,6 +263,10 @@ public class DebiteurPrestationImposable extends Tiers {
 				if (p.isAnnule()) {
 					continue;
 				}
+				// on valide les périodicités pour elles-mêmes
+				results.merge(p.validate());
+
+				// on s'assure que les périodicités ne se chevauchent pas
 				if (lastPeriodicite != null && DateRangeHelper.intersect(lastPeriodicite, p)) {
 					results.addError("La périodicité qui commence le " + p.getDateDebut() + " et se termine le " + p.getDateFin() + " chevauche la périodicité précédente");
 				}

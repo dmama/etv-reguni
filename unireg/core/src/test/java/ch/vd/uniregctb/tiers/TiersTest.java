@@ -1,15 +1,11 @@
 package ch.vd.uniregctb.tiers;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertNull;
-import static junit.framework.Assert.assertTrue;
-import static org.junit.Assert.assertSame;
-
 import org.junit.Test;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.utils.NotImplementedException;
+import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.adresse.AdresseSuisse;
 import ch.vd.uniregctb.common.WithoutSpringTest;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
@@ -17,6 +13,12 @@ import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.mouvement.EnvoiDossier;
 import ch.vd.uniregctb.mouvement.EnvoiDossierVersCollaborateur;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
+
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNull;
+import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertSame;
 
 public class TiersTest extends WithoutSpringTest {
 
@@ -288,4 +290,40 @@ public class TiersTest extends WithoutSpringTest {
 
 
 	}
+
+	@Test
+	public void testValidateTiersAnnule() {
+
+		final Tiers tiers = new Tiers() {
+			@Override
+			protected ValidationResults validateTypeAdresses() {
+				return new ValidationResults();
+			}
+
+			@Override
+			public String getRoleLigne1() {
+				throw new NotImplementedException();
+			}
+
+			@Override
+			public String getNatureTiers() {
+				throw new NotImplementedException();
+			}
+		};
+
+		// Tiers invalide (for fiscal avec date de début nulle) mais annulé => pas d'erreur
+		{
+			tiers.addForFiscal(new ForFiscalAutreElementImposable());
+			tiers.setAnnule(true);
+			assertFalse(tiers.validate().hasErrors());
+		}
+
+		// Tiers valide et annulée => pas d'erreur
+		{
+			tiers.getForsFiscaux().clear();
+			tiers.setAnnule(true);
+			assertFalse(tiers.validate().hasErrors());
+		}
+	}
+
 }

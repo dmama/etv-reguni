@@ -334,7 +334,11 @@ public abstract class ForFiscal extends HibernateEntity implements Comparable<Fo
 	 */
 	public ValidationResults validate() {
 
-		ValidationResults results = new ValidationResults();
+		final ValidationResults results = new ValidationResults();
+
+		if (isAnnule()) {
+			return results;
+		}
 
 		// La date de début doit être renseignée
 		if (dateDebut == null) {
@@ -343,10 +347,8 @@ public abstract class ForFiscal extends HibernateEntity implements Comparable<Fo
 
 		// Date de début doit être avant la date de fin
 		// Si "date de début" = "date de fin", c'est un cas OK (for qui dure 1 jour)
-		// Cette validation n'est pas faite si le for est annulé.
-		if (dateDebut != null && dateFin != null && dateDebut.isAfter(dateFin) && !isAnnule()) {
-			results.addError("Le for " + toString() + " possède une date de début qui est après la date de fin: début = " + dateDebut
-					+ " fin = " + dateFin + "");
+		if (dateDebut != null && dateFin != null && dateDebut.isAfter(dateFin)) {
+			results.addError("Le for " + toString() + " possède une date de début qui est après la date de fin: début = " + dateDebut + " fin = " + dateFin + "");
 		}
 
 		return results;

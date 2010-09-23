@@ -4,24 +4,17 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.junit.Test;
 
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.WithoutSpringTest;
+import ch.vd.uniregctb.type.PeriodeDecompte;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
 
-
-
+import static junit.framework.Assert.assertFalse;
 import static org.junit.Assert.assertEquals;
-
-
-import org.junit.Test;
-
-import ch.vd.registre.base.date.DateRangeHelper;
-import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.WithoutSpringTest;
-import ch.vd.uniregctb.type.PeriodiciteDecompte;
 
 public class PeriodiciteTest extends WithoutSpringTest {
 
@@ -72,5 +65,25 @@ public class PeriodiciteTest extends WithoutSpringTest {
 
 	private RegDate date(int i, int i1, int i2) {
 		return RegDate.get(i,i1,i2);
+	}
+
+	@Test
+	public void testValidatePeriodiciteAnnulee() {
+
+		final Periodicite periodicite = new Periodicite();
+
+		// Adresse invalide (périodicité décompte nul) mais annulée => pas d'erreur
+		{
+			periodicite.setPeriodeDecompte(null);
+			periodicite.setAnnule(true);
+			assertFalse(periodicite.validate().hasErrors());
+		}
+
+		// Adresse valide et annulée => pas d'erreur
+		{
+			periodicite.setPeriodeDecompte(PeriodeDecompte.M01);
+			periodicite.setAnnule(true);
+			assertFalse(periodicite.validate().hasErrors());
+		}
 	}
 }

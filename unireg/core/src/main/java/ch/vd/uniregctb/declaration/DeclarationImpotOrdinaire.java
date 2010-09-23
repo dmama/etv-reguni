@@ -1,23 +1,17 @@
 package ch.vd.uniregctb.declaration;
 
-import java.util.Date;
-
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
+import java.util.Date;
 
-import ch.vd.registre.base.date.RegDate;
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Type;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.common.LengthConstants;
-import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.type.Qualification;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
@@ -258,6 +252,10 @@ public class DeclarationImpotOrdinaire extends Declaration {
 	public ValidationResults validate() {
 
 		final ValidationResults results = super.validate();
+
+		if (isAnnule()) {
+			return results;
+		}
 
 		if (getPeriode() == null) {
 			results.addError("La période ne peut pas être nulle.");

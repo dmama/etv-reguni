@@ -9,7 +9,6 @@ import javax.persistence.Transient;
 import org.hibernate.annotations.ForeignKey;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.validation.Validateable;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.type.TypeEtatTache;
@@ -26,7 +25,7 @@ import ch.vd.uniregctb.type.TypeTache;
  */
 @Entity
 @DiscriminatorValue("ANNUL_DI")
-public class TacheAnnulationDeclarationImpot extends Tache implements Validateable {
+public class TacheAnnulationDeclarationImpot extends Tache {
 
 	private static final long serialVersionUID = -4247341112110453868L;
 
@@ -78,6 +77,10 @@ public class TacheAnnulationDeclarationImpot extends Tache implements Validateab
 	public ValidationResults validate() {
 
 		ValidationResults results = super.validate();
+
+		if (isAnnule()) {
+			return results;
+		}
 
 		if (declarationImpotOrdinaire == null) {
 			results.addError("La déclaration ne peut pas être nulle.");

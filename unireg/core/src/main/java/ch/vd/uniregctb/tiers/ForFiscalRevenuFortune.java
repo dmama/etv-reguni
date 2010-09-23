@@ -167,6 +167,10 @@ public abstract class ForFiscalRevenuFortune extends ForFiscal {
 
 		ValidationResults results = super.validate();
 
+		if (isAnnule()) {
+			return results;
+		}
+
 		if (getGenreImpot() != GenreImpot.REVENU_FORTUNE) {
 			results.addError("Par définition, le genre d'impôt d'un for fiscal 'revenu-fortune' doit être REVENU_FORTUNE.");
 		}
@@ -175,7 +179,7 @@ public abstract class ForFiscalRevenuFortune extends ForFiscal {
 			results.addError("Le for " + toString() + " avec motif de rattachement = " + motifRattachement + " est invalide");
 		}
 
-		if (!isAnnule() && TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD.equals(getTypeAutoriteFiscale())) {
+		if (getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
 			if (motifOuverture == null) {
 				results.addError("Le motif d'ouverture est obligatoire sur le for fiscal [" + this
 						+ "] car il est rattaché à une commune vaudoise.");

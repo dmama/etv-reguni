@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.tiers;
 
+import junit.framework.Assert;
 import org.junit.Test;
 
 import ch.vd.uniregctb.common.WithoutSpringTest;
@@ -126,5 +127,26 @@ public class PersonnePhysiqueTest extends WithoutSpringTest {
 		pp.setPrenom(null);
 		assertFalse(pp.validate().hasErrors());
 		assertFalse(pp.validate().hasWarnings());
+	}
+
+	@Test
+	public void testValidateTiersAnnule() {
+
+		final PersonnePhysique tiers = new PersonnePhysique();
+
+		// Tiers invalide (flag habitant nul) mais annulé => pas d'erreur
+		{
+			tiers.setHabitant(null);
+			tiers.setAnnule(true);
+			Assert.assertFalse(tiers.validate().hasErrors());
+		}
+
+		// Tiers valide et annulée => pas d'erreur
+		{
+			tiers.setHabitant(false);
+			tiers.setNom("Pasmalito");
+			tiers.setAnnule(true);
+			Assert.assertFalse(tiers.validate().hasErrors());
+		}
 	}
 }

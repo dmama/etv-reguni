@@ -1,17 +1,17 @@
 package ch.vd.uniregctb.declaration;
 
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertTrue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.WithoutSpringTest;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
+
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 public class DeclarationTest extends WithoutSpringTest {
 
@@ -149,4 +149,25 @@ public class DeclarationTest extends WithoutSpringTest {
 	private static RegDate date(int year, int month, int day) {
 		return RegDate.get(year, month, day);
 	}
+
+	@Test
+	public void testValidateDeclarationAnnulee() {
+
+		final Declaration declaration = new Declaration() {};
+
+		// Adresse invalide (date début nul) mais annulée => pas d'erreur
+		{
+			declaration.setDateDebut(null);
+			declaration.setAnnule(true);
+			assertFalse(declaration.validate().hasErrors());
+		}
+
+		// Adresse valide et annulée => pas d'erreur
+		{
+			declaration.setDateDebut(date(2000, 1, 1));
+			declaration.setAnnule(true);
+			assertFalse(declaration.validate().hasErrors());
+		}
+	}
+
 }

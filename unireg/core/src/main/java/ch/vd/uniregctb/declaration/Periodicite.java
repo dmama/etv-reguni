@@ -256,7 +256,14 @@ public class Periodicite extends HibernateEntity implements CollatableDateRange,
 	}
 
 	public ValidationResults validate() {
-		final ValidationResults results = DateRangeHelper.validate(this, false, true);
+		final ValidationResults results = new ValidationResults();
+
+		if (isAnnule()) {
+			return results;
+		}
+
+		DateRangeHelper.validate(this, false, true, results);
+
 		if (periodiciteDecompte == null) {
 			results.addError("La périodicité de décompte doit être renseignée.");
 		}

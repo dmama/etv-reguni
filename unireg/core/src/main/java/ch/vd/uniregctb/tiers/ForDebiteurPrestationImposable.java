@@ -36,6 +36,10 @@ public class ForDebiteurPrestationImposable extends ForFiscal {
 
 		ValidationResults results = super.validate();
 
+		if (isAnnule()) {
+			return results;
+		}
+
 		if (getGenreImpot() != GenreImpot.DEBITEUR_PRESTATION_IMPOSABLE) {
 			results.addError("Par définition, le genre d'impôt d'un for fiscal 'débiteur prestation imposable' doit être DEBITEUR_PRESTATION_IMPOSABLE.");
 		}

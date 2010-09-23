@@ -223,7 +223,12 @@ public abstract class SituationFamille extends HibernateEntity implements DateRa
 	 * {@inheritDoc}
 	 */
 	public ValidationResults validate() {
-		return DateRangeHelper.validate(this, false, true);
+		final ValidationResults results = new ValidationResults();
+		if (isAnnule()) {
+			return results;
+		}
+		DateRangeHelper.validate(this, false, true, results);
+		return results;
 	}
 
 	@Transient

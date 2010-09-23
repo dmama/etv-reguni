@@ -33,6 +33,10 @@ public class ForFiscalAutreImpot extends ForFiscal {
 
 		ValidationResults results = super.validate();
 
+		if (isAnnule()) {
+			return results;
+		}
+		
 		if (getGenreImpot() == GenreImpot.REVENU_FORTUNE) {
 			results.addError("Par définition, le genre d'impôt d'un for fiscal 'autre impôt' doit être différent de REVENU_FORTUNE.");
 		}

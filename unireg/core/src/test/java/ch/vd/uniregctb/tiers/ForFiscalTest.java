@@ -1,17 +1,20 @@
 package ch.vd.uniregctb.tiers;
 
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertTrue;
-
 import java.util.List;
 
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.utils.NotImplementedException;
+import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.common.WithoutSpringTest;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 
 public class ForFiscalTest extends WithoutSpringTest {
 
@@ -32,7 +35,55 @@ public class ForFiscalTest extends WithoutSpringTest {
 		assertFalse(forFiscal.isValidAt(RegDate.get(1990, 1, 1)));
 		assertFalse(forFiscal.isValidAt(RegDate.get(2060, 1, 1)));
 	}
-	
+
+	@Test
+	public void testValidateDateDebut() {
+
+		final ForFiscal forFiscal = new ForFiscal() {
+			public ForFiscal duplicate() {
+				throw new NotImplementedException();
+			}
+		};
+
+		// Date de début nulle
+		{
+			final ValidationResults results = forFiscal.validate();
+			assertTrue(results.hasErrors());
+			final List<String> errors = results.getErrors();
+			assertEquals(1, errors.size());
+			assertEquals("Le for  (? - ?) possède une date de début nulle", errors.get(0));
+		}
+
+		// Date de début renseignée
+		{
+			forFiscal.setDateDebut(RegDate.get(2000, 1, 1));
+			assertFalse(forFiscal.validate().hasErrors());
+		}
+	}
+
+	@Test
+	public void testValidateForAnnule() {
+
+		final ForFiscal forFiscal = new ForFiscal() {
+			public ForFiscal duplicate() {
+				throw new NotImplementedException();
+			}
+		};
+
+		// For invalide (date de début nulle) mais annulé => pas d'erreur
+		{
+			forFiscal.setAnnule(true);
+			assertFalse(forFiscal.validate().hasErrors());
+		}
+
+		// For valide et annulé => pas d'erreur
+		{
+			forFiscal.setAnnule(true);
+			forFiscal.setDateDebut(RegDate.get(2000, 1, 1));
+			assertFalse(forFiscal.validate().hasErrors());
+		}
+	}
+
 	/**
 	 * Test de non régression concernant le cas JIRA UNIREG-585.<br>
 	 * </br>

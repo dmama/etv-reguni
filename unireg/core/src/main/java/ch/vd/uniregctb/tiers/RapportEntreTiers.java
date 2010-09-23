@@ -261,13 +261,17 @@ public abstract class RapportEntreTiers extends HibernateEntity implements DateR
 
 		ValidationResults results = new ValidationResults();
 
+		if (isAnnule()) {
+			return results;
+		}
+
 		// La date de début doit être renseignée
 		if (dateDebut == null) {
 			results.addError("Le rapport-entre-tiers " + toString() + " possède une date de début nulle");
 		}
 
 		// Date de début doit être avant (ou égale) la date de fin
-		if (dateDebut != null && dateFin != null && dateDebut.isAfter(dateFin) && !isAnnule()) {
+		if (dateDebut != null && dateFin != null && dateDebut.isAfter(dateFin)) {
 			results.addError("Le rapport-entre-tiers " + toString() + " possède une date de début qui est après la date de fin: début = " + dateDebut + " fin = " + dateFin + "");
 		}
 

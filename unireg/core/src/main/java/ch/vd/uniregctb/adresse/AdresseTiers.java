@@ -217,7 +217,11 @@ public abstract class AdresseTiers extends HibernateEntity implements Comparable
 	 */
 	public ValidationResults validate() {
 
-		ValidationResults results = new ValidationResults();
+		final ValidationResults results = new ValidationResults();
+
+		if (isAnnule()) {
+			return results;
+		}
 
 		// La date de début doit être renseignée
 		if (dateDebut == null) {

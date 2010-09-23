@@ -1,11 +1,8 @@
 package ch.vd.uniregctb.tiers;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
-
 import java.util.List;
 
+import junit.framework.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 
@@ -16,6 +13,10 @@ import ch.vd.uniregctb.declaration.PeriodiciteDAO;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
 
 public class DebiteurPrestationImposableTest extends CoreDAOTest {
 
@@ -294,5 +295,25 @@ public class DebiteurPrestationImposableTest extends CoreDAOTest {
 		// annulation du dernier for -> désactivation re-devient sur la fin du premier
 		f2.setAnnule(true);
 		assertEquals(dateFin1, dpi.getDateDesactivation());
+	}
+
+	@Test
+	public void testValidateTiersAnnule() {
+
+		final DebiteurPrestationImposable tiers = new DebiteurPrestationImposable();
+
+		// Tiers invalide (périodicité avec date de début nulle) mais annulé => pas d'erreur
+		{
+			tiers.addPeriodicite(new Periodicite());
+			tiers.setAnnule(true);
+			Assert.assertFalse(tiers.validate().hasErrors());
+		}
+
+		// Tiers valide et annulée => pas d'erreur
+		{
+			tiers.getPeriodicites().clear();
+			tiers.setAnnule(true);
+			Assert.assertFalse(tiers.validate().hasErrors());
+		}
 	}
 }

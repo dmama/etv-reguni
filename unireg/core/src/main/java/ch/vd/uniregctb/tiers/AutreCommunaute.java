@@ -1,11 +1,10 @@
 package ch.vd.uniregctb.tiers;
 
-import java.util.Set;
-
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
+import java.util.Set;
 
 import org.hibernate.annotations.Type;
 
@@ -106,6 +105,10 @@ public class AutreCommunaute extends Contribuable {
 	@Override
 	public ValidationResults validate() {
 		ValidationResults results = super.validate();
+		
+		if (isAnnule()) {
+			return results;
+		}
 
 		if (nom == null || nom.equals("")) {
 			results.addError("Le nom est un attribut obligatoire");

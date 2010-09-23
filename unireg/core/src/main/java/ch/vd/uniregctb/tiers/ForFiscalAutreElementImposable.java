@@ -42,6 +42,10 @@ public class ForFiscalAutreElementImposable extends ForFiscalRevenuFortune {
 	public ValidationResults validate() {
 		final ValidationResults results = super.validate();
 
+		if (isAnnule()) {
+			return results;
+		}
+
 		if (getTypeAutoriteFiscale() != TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
 			results.addError("Par définition, le type d'autorité fiscale d'un for fiscal 'autre élément imposable' est limité à COMMUNE_OU_FRACTION_VD");
 		}

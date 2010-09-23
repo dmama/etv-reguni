@@ -5,7 +5,6 @@ import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
 
-import ch.vd.uniregctb.type.*;
 import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
 
@@ -17,6 +16,12 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.validation.Validateable;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.common.LengthConstants;
+import ch.vd.uniregctb.type.Qualification;
+import ch.vd.uniregctb.type.TypeAdresseRetour;
+import ch.vd.uniregctb.type.TypeContribuable;
+import ch.vd.uniregctb.type.TypeDocument;
+import ch.vd.uniregctb.type.TypeEtatTache;
+import ch.vd.uniregctb.type.TypeTache;
 
 /**
  * <!-- begin-user-doc -->
@@ -246,6 +251,10 @@ public class TacheEnvoiDeclarationImpot extends Tache implements DateRange, Vali
 	public ValidationResults validate() {
 
 		ValidationResults results = new ValidationResults();
+
+		if (isAnnule()) {
+			return results;
+		}
 
 		DateRangeHelper.validate(this, false, false, results);
 

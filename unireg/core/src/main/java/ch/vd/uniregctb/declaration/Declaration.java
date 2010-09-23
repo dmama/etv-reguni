@@ -35,8 +35,8 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.validation.Validateable;
 import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.uniregctb.tiers.LinkedEntity;
 import ch.vd.uniregctb.common.HibernateEntity;
+import ch.vd.uniregctb.tiers.LinkedEntity;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 
@@ -529,6 +529,11 @@ public abstract class Declaration extends HibernateEntity implements DateRange, 
 	 */
 	public ValidationResults validate() {
 		ValidationResults results = new ValidationResults();
+
+		if (isAnnule()) {
+			return results;
+		}
+
 		DateRangeHelper.validate(this, false, false, results);
 
 		if (dateDebut != null && periode != null && dateDebut.year() != periode.getAnnee()) {

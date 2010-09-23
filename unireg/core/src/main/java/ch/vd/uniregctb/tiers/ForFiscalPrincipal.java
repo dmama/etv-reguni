@@ -8,7 +8,6 @@ import javax.persistence.Transient;
 import org.hibernate.annotations.Type;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.type.ModeImposition;
@@ -111,22 +110,23 @@ public class ForFiscalPrincipal extends ForFiscalRevenuFortune {
 		return validate(false);
 	}
 
+	// TODO (msi) supprimer ce code d'erreur qui n'existe que pour le besoin du testing (il y a moyen de faire moins intrusif)
 	ValidationResults validate(boolean appendErrorCode) {
 
 		ValidationResults results = super.validate();
+
+		if (isAnnule()) {
+			return results;
+		}
+		
 		if (modeImposition == null) {
-			results.addError(
-					"Le mode d'imposition est obligatoire sur un for fiscal principal."
+			results.addError("Le mode d'imposition est obligatoire sur un for fiscal principal."
 					+ (appendErrorCode ? VALIDATION_ERROR_CODES[0] : "")
 			);
 		}
-		if (MotifRattachement.DOMICILE.equals(getMotifRattachement())
-				&& !TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD.equals(getTypeAutoriteFiscale())) {
-			if (!ModeImposition.ORDINAIRE.equals(modeImposition)
-					&& !ModeImposition.SOURCE.equals(modeImposition)
-					&& !ModeImposition.MIXTE_137_1.equals(modeImposition)) {
-				results.addError(
-						"Pour un rattachement personnel de type domicile, dans un autre canton ou à l'étranger, " +
+		if (getMotifRattachement() == MotifRattachement.DOMICILE && getTypeAutoriteFiscale() != TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
+			if (modeImposition != ModeImposition.ORDINAIRE && modeImposition != ModeImposition.SOURCE && modeImposition != ModeImposition.MIXTE_137_1) {
+				results.addError("Pour un rattachement personnel de type domicile, dans un autre canton ou à l'étranger, " +
 						"les modes d'imposition possibles sont \"ordinaire\", \"source\" ou \"mixte 137 al1\". " +
 						(appendErrorCode ? VALIDATION_ERROR_CODES[1] : "")
 				);

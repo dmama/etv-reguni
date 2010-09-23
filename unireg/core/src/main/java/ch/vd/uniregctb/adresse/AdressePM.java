@@ -64,6 +64,11 @@ public class AdressePM extends AdresseTiers {
 
 	public ValidationResults validate() {
 		ValidationResults results = super.validate();
+
+		if (isAnnule()) {
+			return results;
+		}
+
 		if (type == null) {
 			results.addError("Le type d'adresse doit être renseigné sur une adresse PM [" + this + "]");
 		}

@@ -159,6 +159,10 @@ public class DroitAcces extends HibernateEntity implements DateRange, Duplicable
 
 		ValidationResults results = new ValidationResults();
 
+		if (isAnnule()) {
+			return results;
+		}
+
 		// La date de début doit être renseignée
 		if (dateDebut == null) {
 			results.addError("Le droit d'accès " + toString() + " possède une date de début nulle");
