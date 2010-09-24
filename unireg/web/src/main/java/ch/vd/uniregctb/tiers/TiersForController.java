@@ -23,6 +23,7 @@ import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.parametrage.ParametreEnum;
 import ch.vd.uniregctb.tiers.manager.ForFiscalManager;
 import ch.vd.uniregctb.tiers.view.ForFiscalView;
+import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 
@@ -98,7 +99,12 @@ public class TiersForController extends AbstractTiersController {
 			forFiscalManager.updateFor(forFiscalView);
 		}
 
-		return new ModelAndView("redirect:../fiscal/edit.do?id=" + forFiscalView.getNumeroCtb());
+		if (forFiscalView.getGenreImpot() == GenreImpot.DEBITEUR_PRESTATION_IMPOSABLE) {
+			return new ModelAndView("redirect:../fiscal/edit-for-debiteur.do?id=" + forFiscalView.getNumeroCtb());
+		}
+		else {
+			return new ModelAndView("redirect:../fiscal/edit.do?id=" + forFiscalView.getNumeroCtb());
+		}
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
