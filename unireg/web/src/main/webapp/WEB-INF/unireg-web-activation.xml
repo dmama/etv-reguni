@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+	<bean id="tiersActivationListController" class="ch.vd.uniregctb.activation.TiersActivationListController" parent="abstractTiersListController">
+		<property name="sessionForm" value="true" />
+		<property name="commandClass" value="ch.vd.uniregctb.activation.view.TiersActivationListView" />
+		<property name="commandName" value="command" />
+		<property name="formView" value="activation/list" />
+		<property name="successView" value="list.do" />
+		<property name="tiersActivationListManager" ref="tiersActivationListManager" />
+		<property name="validator" ref="tiersCriteriaValidator" />
+	</bean>
+
+	<bean id="tiersActivationListManager" class="ch.vd.uniregctb.activation.manager.TiersActivationListManagerImpl">
+	</bean>
+
+	<bean id="tiersRemplacementListController" class="ch.vd.uniregctb.activation.TiersRemplacementListController" parent="abstractTiersListController">
+		<property name="sessionForm" value="true" />
+		<property name="commandClass" value="ch.vd.uniregctb.activation.view.TiersRemplacementListView" />
+		<property name="commandName" value="command" />
+		<property name="formView" value="activation/annulation/list" />
+		<property name="successView" value="list.do" />
+		<property name="tiersRemplacementListManager" ref="tiersRemplacementListManager" />
+		<property name="validator" ref="tiersCriteriaValidator" />
+	</bean>
+
+	<bean id="tiersRemplacementListManager" class="ch.vd.uniregctb.activation.manager.TiersRemplacementListManagerImpl">
+	</bean>
+
+	<bean id="tiersAnnulationRecapController" class="ch.vd.uniregctb.activation.TiersAnnulationRecapController" parent="abstractSimpleFormController">
+		<property name="sessionForm" value="true" />
+		<property name="commandClass" value="ch.vd.uniregctb.activation.view.TiersAnnulationRecapView" />
+		<property name="commandName" value="command" />
+		<property name="formView" value="activation/annulation/recap" />
+		<property name="successView" value="recap.do" />
+		<property name="tiersAnnulationRecapManager" ref="tiersAnnulationRecapManager" />
+		<property name="validator" ref="tiersAnnulationRecapValidator" />
+	</bean>
+	
+	<bean id="tiersAnnulationRecapManager" class="ch.vd.uniregctb.activation.manager.TiersAnnulationRecapManagerImpl">
+		<property name="tiersGeneralManager" ref="tiersGeneralManager" />
+		<property name="tiersService" ref="tiersService" />
+		<property name="activationService" ref="activationService" />
+	</bean>
+	
+	<bean id="tiersAnnulationRecapValidator" class="ch.vd.uniregctb.activation.validator.TiersAnnulationRecapValidator" >
+	</bean>
+	
+	<bean id="tiersReactivationRecapController" class="ch.vd.uniregctb.activation.TiersReactivationRecapController" parent="abstractSimpleFormController">
+		<property name="sessionForm" value="true" />
+		<property name="commandClass" value="ch.vd.uniregctb.activation.view.TiersReactivationRecapView" />
+		<property name="commandName" value="command" />
+		<property name="formView" value="activation/reactivation/recap" />
+		<property name="successView" value="recap.do" />
+		<property name="tiersReactivationRecapManager" ref="tiersReactivationRecapManager" />
+		<property name="validator" ref="tiersReactivationRecapValidator" />
+	</bean>
+	
+	<bean id="tiersReactivationRecapManager" class="ch.vd.uniregctb.activation.manager.TiersReactivationRecapManagerImpl">
+		<property name="tiersGeneralManager" ref="tiersGeneralManager" />
+		<property name="tiersService" ref="tiersService" />
+		<property name="activationService" ref="activationService" />
+	</bean>
+	
+	<bean id="tiersReactivationRecapValidator" class="ch.vd.uniregctb.activation.validator.TiersReactivationRecapValidator" >
+	</bean>
+	
+</beans>

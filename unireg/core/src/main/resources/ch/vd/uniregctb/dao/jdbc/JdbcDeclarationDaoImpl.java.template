@@ -1,0 +1,192 @@
+package ch.vd.uniregctb.dao.jdbc;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.springframework.dao.support.DataAccessUtils;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.utils.Pair;
+import ch.vd.uniregctb.common.CollectionsUtils;
+import ch.vd.uniregctb.declaration.Declaration;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
+import ch.vd.uniregctb.declaration.DeclarationImpotSource;
+import ch.vd.uniregctb.declaration.EtatDeclaration;
+import ch.vd.uniregctb.declaration.ModeleDocument;
+import ch.vd.uniregctb.declaration.PeriodeFiscale;
+import ch.vd.uniregctb.type.ModeCommunication;
+import ch.vd.uniregctb.type.PeriodiciteDecompte;
+import ch.vd.uniregctb.type.Qualification;
+import ch.vd.uniregctb.type.TypeContribuable;
+
+public class JdbcDeclarationDaoImpl implements JdbcDeclarationDao {
+
+	private JdbcEtatDeclarationDao etatDeclarationDao = new JdbcEtatDeclarationDaoImpl();
+
+	@SuppressWarnings({"unchecked"})
+	public Declaration get(long forId, boolean withEtats, JdbcTemplate template) {
+		final DeclarationMapper mapper = new DeclarationMapper(template);
+
+		final Pair<Long, Declaration> pair = (Pair<Long, Declaration>) DataAccessUtils.uniqueResult(template.query(DeclarationMapper.selectById(), new Object[]{forId}, mapper));
+		final Declaration declaration = pair.getSecond();
+		if (declaration == null) {
+			return null;
+		}
+
+		if (withEtats) {
+			final Set<EtatDeclaration> etats = etatDeclarationDao.getForDeclaration(declaration.getId(), template);
+			for (EtatDeclaration e : etats) {
+				e.setDeclaration(declaration);
+			}
+			declaration.setEtats(etats);
+		}
+
+		return declaration;
+	}
+
+	@SuppressWarnings({"unchecked"})
+	public Set<Declaration> getForTiers(long tiersId, boolean withEtats, JdbcTemplate template) {
+		final DeclarationMapper mapper = new DeclarationMapper(template);
+
+		final List<Pair<Long, Declaration>> list = template.query(DeclarationMapper.selectByTiersId(), new Object[]{tiersId}, mapper);
+
+		final HashSet<Long> declarationIds = new HashSet<Long>(list.size());
+		final HashSet<Declaration> set = new HashSet<Declaration>(list.size());
+		for (Pair<Long, Declaration> pair : list) {
+			final Declaration declaration = pair.getSecond();
+			set.add(declaration);
+
+			if (withEtats) {
+				declarationIds.add(declaration.getId());
+			}
+		}
+
+		if (withEtats) {
+			final Map<Long, Set<EtatDeclaration>> map = etatDeclarationDao.getForDeclarations(declarationIds, template);
+			for (Declaration declaration : set) {
+				Set<EtatDeclaration> etats = map.get(declaration.getId());
+				if (etats == null) {
+					etats = Collections.emptySet();
+				}
+				else {
+					for (EtatDeclaration e : etats) {
+						e.setDeclaration(declaration);
+					}
+				}
+				declaration.setEtats(etats);
+			}
+		}
+
+		return set;
+	}
+
+	@SuppressWarnings({"unchecked"})
+	public Map<Long, Set<Declaration>> getForTiers(Collection<Long> tiersId, boolean withEtats, final JdbcTemplate template) {
+
+		final DeclarationMapper mapper = new DeclarationMapper(template);
+
+		// Découpe la requête en sous-requêtes si nécessaire
+		final List<Pair<Long, Declaration>> list = CollectionsUtils.splitAndProcess(tiersId, JdbcDaoUtils.MAX_IN_SIZE, new CollectionsUtils.SplitCallback<Long, Pair<Long, Declaration>>() {
+			public List<Pair<Long, Declaration>> process(List<Long> ids) {
+				return template.query(DeclarationMapper.selectByTiersIds(ids), mapper);
+			}
+		});
+
+		final HashSet<Long> declarationIds = new HashSet<Long>(list.size());
+		final HashMap<Long, Set<Declaration>> map = new HashMap<Long, Set<Declaration>>();
+		for (Pair<Long, Declaration> pair : list) {
+			Set<Declaration> set = map.get(pair.getFirst());
+			if (set == null) {
+				set = new HashSet<Declaration>();
+				map.put(pair.getFirst(), set);
+			}
+
+			final Declaration declaration = pair.getSecond();
+			set.add(declaration);
+
+			if (withEtats) {
+				declarationIds.add(declaration.getId());
+			}
+		}
+
+		if (withEtats) {
+			final Map<Long, Set<EtatDeclaration>> mapEtats = etatDeclarationDao.getForDeclarations(declarationIds, template);
+			for (Set<Declaration> declarations : map.values()) {
+				for (Declaration declaration : declarations) {
+					Set<EtatDeclaration> etats = mapEtats.get(declaration.getId());
+					if (etats == null) {
+						etats = Collections.emptySet();
+					}
+					else {
+						for (EtatDeclaration e : etats) {
+							e.setDeclaration(declaration);
+						}
+					}
+					declaration.setEtats(etats);
+				}
+			}
+		}
+
+		return map;
+	}
+
+	private static class DeclarationMapper implements RowMapper {
+		private static final String BASE_SELECT = "select " +
+				${BASE_SELECT};
+
+		private JdbcPeriodeFiscaleDao pfDao = new JdbcPeriodeFiscaleDaoImpl();
+		private JdbcModeleDocumentDao mdDao = new JdbcModeleDocumentDaoImpl();
+		private Map<Long, PeriodeFiscale> periodesCache = new HashMap<Long, PeriodeFiscale>();
+		private Map<Long, ModeleDocument> docCache = new HashMap<Long, ModeleDocument>();
+		private JdbcTemplate template;
+
+		private DeclarationMapper(JdbcTemplate template) {
+			this.template = template;
+		}
+
+		public static String selectById() {
+			return BASE_SELECT + " where ${PRIMARY_KEY} = ?";
+		}
+
+		public static String selectByTiersId() {
+			return BASE_SELECT + " where ${FOREIGN_KEY} = ?";
+		}
+
+		public static String selectByTiersIds(Collection<Long> tiersId) {
+			return BASE_SELECT + " where ${FOREIGN_KEY} in " + JdbcDaoUtils.buildInClause(tiersId);
+		}
+
+		public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
+			${MAPPING_CODE}
+		}
+
+		private PeriodeFiscale getPeriodeFiscale(Long periodeId) {
+			PeriodeFiscale periode = periodesCache.get(periodeId);
+			if (periode == null) {
+				periode = pfDao.get(periodeId, template);
+				periodesCache.put(periodeId, periode);
+			}
+			return periode;
+		}
+
+		private ModeleDocument getModeleDocument(Long modeleDocId) {
+			ModeleDocument doc = docCache.get(modeleDocId);
+			if (doc == null) {
+				doc = mdDao.get(modeleDocId, template);
+				docCache.put(modeleDocId, doc);
+			}
+			return doc;
+		}
+	}
+}

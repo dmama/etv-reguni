@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.vd.ch/fiscalite/registre/evenementFiscal-v1" targetNamespace="http://www.vd.ch/fiscalite/registre/evenementFiscal-v1" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:annotation>
+		<xs:documentation>01.03.2010: Création du document Master qui inclut tous les autres documents pour les événements fiscaux</xs:documentation>
+  	</xs:annotation>
+	<xs:include schemaLocation="evenementFiscalDI-v1.xsd"/>
+	<xs:include schemaLocation="evenementFiscalFor-v1.xsd"/>
+	<xs:include schemaLocation="evenementFiscalLR-v1.xsd"/>
+	<xs:include schemaLocation="evenementFiscalSituationFamille-v1.xsd"/>
+</xs:schema>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+	<bean id="securityDebugConfig" class="ch.vd.uniregctb.security.SecurityDebugConfig">
+		<property name="properties" ref="uniregExternalProperties" />
+		<property name="ifoSecService" ref="ifoSecService" />
+	</bean>
+
+	<bean id="securiteDossierService" class="ch.vd.uniregctb.security.SecuriteDossierServiceImpl">
+		<property name="serviceSecurite" ref="serviceSecuriteService" />
+		<property name="tiersDAO" ref="tiersDAO" />
+		<property name="droitAccesDAO" ref="droitAccesDAO" />
+	</bean>
+
+	<bean id="ifoSecService" class="ch.vd.uniregctb.security.IfoSecServiceImpl">
+		<property name="securiteService" ref="serviceSecuriteService" />
+	</bean>
+	
+	<bean id="securityProviderImpl" class="ch.vd.uniregctb.security.SecurityProviderImpl" depends-on="securityDebugConfig,auditManager">
+		<property name="securiteDossierService" ref="securiteDossierService" />
+		<property name="ifoSecService" ref="ifoSecService" />
+	</bean>
+
+	<bean id="securityProviderCache" class="ch.vd.uniregctb.security.SecurityProviderCache">
+		<property name="target" ref="securityProviderImpl" />
+		<property name="cacheManager" ref="ehCacheManager" />
+		<property name="cacheName" value="securityProvider" />
+		<property name="dataEventService" ref="dataEventService" />
+		<property name="tiersDAO" ref="tiersDAO" />
+		<property name="droitAccesDAO" ref="droitAccesDAO" />
+		<property name="uniregCacheManager" ref="uniregCacheManager" />
+		<property name="preloadTiersIds" value="${extprop.cache.preload.tiers.ids}"/>
+		<property name="transactionManager" ref="transactionManager" />
+	</bean>
+
+	<bean id="securityProvider" class="ch.vd.uniregctb.security.SecurityProvider">
+		<property name="provider" ref="securityProviderCache" />
+	</bean>
+
+</beans>

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.vd.ch/fiscalite/registre/evenementFiscal-v1" targetNamespace="http://www.vd.ch/fiscalite/registre/evenementFiscal-v1" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1">
+	<xs:annotation>
+  		<xs:documentation>17.12.2008: Remplacement de MotifEnumType par MotifForEnumType</xs:documentation> 
+  		<xs:documentation>17.12.2008: MotifFor rendu optionnel suite au mail de Céline Grand du 15.12.2008</xs:documentation> 
+  		<xs:documentation>04.08.2010: Ajouté les motifs de fors ANNULATION et REACTIVATION</xs:documentation> 
+  	</xs:annotation>
+	<xs:include schemaLocation="evenementFiscalCommun-v1.xsd"/>
+	<xs:element name="evenementFiscalFor" type="EvenementFiscalForType"/>
+	<xs:simpleType name="EvenementFiscalForEnumType">
+		<xs:restriction base="xs:token">
+			<xs:enumeration value="OUVERTURE_FOR"/>
+			<xs:enumeration value="FERMETURE_FOR"/>
+			<xs:enumeration value="CHANGEMENT_MODE_IMPOSITION"/>
+			<xs:enumeration value="ANNULATION_FOR"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="MotifForEnumType">
+		<xs:restriction base="xs:token">
+			<xs:enumeration value="DEMENAGEMENT_VD"/>
+			<xs:enumeration value="VEUVAGE_DECES"/>
+			<xs:enumeration value="MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION"/>
+			<xs:enumeration value="SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT"/>
+			<xs:enumeration value="PERMIS_C_SUISSE"/>
+			<xs:enumeration value="MAJORITE"/>
+			<xs:enumeration value="ARRIVEE_HS"/>
+			<xs:enumeration value="ARRIVEE_HC"/>
+			<xs:enumeration value="FUSION_COMMUNES"/>
+			<xs:enumeration value="ACHAT_IMMOBILIER"/>
+			<xs:enumeration value="VENTE_IMMOBILIER"/>
+			<xs:enumeration value="DEBUT_EXPLOITATION"/>
+			<xs:enumeration value="FIN_EXPLOITATION"/>
+			<xs:enumeration value="DEPART_HS"/>
+			<xs:enumeration value="DEPART_HC"/>
+			<xs:enumeration value="INDETERMINE"/>
+			<xs:enumeration value="SEJOUR_SAISONNIER"/>
+			<xs:enumeration value="CHGT_MODE_IMPOSITION"/>
+			<xs:enumeration value="ANNULATION"/>
+			<xs:enumeration value="REACTIVATION"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="ModeImpositionEnumType">
+		<xs:restriction base="xs:token">
+			<xs:enumeration value="INDIGENT" />
+			<xs:enumeration value="MIXTE_137_2" />
+			<xs:enumeration value="MIXTE_137_1" />
+			<xs:enumeration value="DEPENSE" />
+			<xs:enumeration value="SOURCE" />
+			<xs:enumeration value="ORDINAIRE" />
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="EvenementFiscalForType">
+		<xs:complexContent>
+			<xs:extension base="EvenementFiscalType">
+				<xs:sequence>
+					<xs:element name="codeEvenement" type="EvenementFiscalForEnumType">
+						<xs:annotation>
+							<xs:documentation>type de l'événement</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:choice>
+						<xs:element name="motifFor" type="MotifForEnumType" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Motif du for pour la fermeture ou l'ouverture</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="modeImposition" type="ModeImpositionEnumType" minOccurs="0">
+							<xs:annotation>
+								<xs:documentation>Mode d'imposition pour le changement</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:choice>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+</xs:schema>

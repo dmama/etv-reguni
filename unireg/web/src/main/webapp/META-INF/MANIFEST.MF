@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Archiver-Version: Plexus Archiver
+Created-By: Apache Maven
+Built-By: xcicfh
+Build-Jdk: 1.5.0_11
+Implementation-Title: ${pom.name}
+Implementation-Version: ${pom.version}
+Implementation-Vendor-Id: ${pom.groupId}
+Implementation-Vendor: ${pom.organization.name}
+Specification-Title: ${pom.name}
+Specification-Version: ${pom.version}
+Specification-Vendor: ${pom.organization.name}
+Implementation-Build: ${buildNumber}

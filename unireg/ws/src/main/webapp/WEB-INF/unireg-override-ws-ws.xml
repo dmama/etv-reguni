@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:jee="http://www.springframework.org/schema/jee" xmlns:util="http://www.springframework.org/schema/util"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans
+							http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+							http://www.springframework.org/schema/jee
+							http://www.springframework.org/schema/jee/spring-jee.xsd
+							http://www.springframework.org/schema/util
+							http://www.springframework.org/schema/util/spring-util-2.0.xsd">
+
+	<!-- Ce fichier contient les implémentations spéciales 'PM' des beans qui permettent à Unireg de faire le passe-plat entre le host et les applications avals.
+		Ces beans pourront être supprimés lorsque la migration PM aura eut lieu. -->
+
+	<!-- Version PM du Web-service Tiers 2 -->
+	<bean id="tiersService2PM" class="ch.vd.uniregctb.webservices.tiers2.impl.pm.TiersWebServiceWithPM">
+		<property name="target" ref="tiersService2Bean" />
+		<property name="servicePM" ref="servicePersonneMoraleService" />
+		<property name="tiersDAO" ref="tiersDAO" />
+		<property name="noOfsTranslator" ref="noOfsTranslator" />
+		<property name="serviceInfra" ref="serviceInfrastructureService" />
+		<property name="serviceCivil" ref="serviceCivilService" />
+	</bean>
+
+	<!-- Version PM du tiers DAO -->
+	<bean id="tiersDAOPM" class="ch.vd.uniregctb.webservices.tiers2.impl.pm.TiersDAOWithPM">
+		<property name="target" ref="tiersDAO" />
+		<property name="servicePM" ref="servicePersonneMoraleService" />
+	</bean>
+
+	<!-- redéfinition du cache avec le service PM comme target -->
+	<bean id="tiersService2Cache" class="ch.vd.uniregctb.webservices.tiers2.cache.TiersWebServiceCache">
+		<property name="target" ref="tiersService2PM" /> <!-- override -->
+		<property name="cacheManager" ref="ehCacheManager" />
+		<property name="cacheName" value="webServiceTiers2" />
+		<property name="uniregCacheManager" ref="uniregCacheManager" />
+		<property name="statsService" ref="statsService" />
+	</bean>
+
+	<!-- redéfinition du service provider cache avec le dao PM comme tiers DAO -->
+	<bean id="securityProviderCache" class="ch.vd.uniregctb.security.SecurityProviderCache">
+		<property name="target" ref="securityProviderImpl" />
+		<property name="cacheManager" ref="ehCacheManager" />
+		<property name="cacheName" value="securityProvider" />
+		<property name="dataEventService" ref="dataEventService" />
+		<property name="tiersDAO" ref="tiersDAOPM" /> <!-- override -->
+		<property name="droitAccesDAO" ref="droitAccesDAO" />
+		<property name="uniregCacheManager" ref="uniregCacheManager" />
+		<property name="preloadTiersIds" value="${extprop.cache.preload.tiers.ids}" />
+		<property name="transactionManager" ref="transactionManager" />
+	</bean>
+
+</beans>
