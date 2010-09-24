@@ -34,13 +34,12 @@ public class EvenementEditiqueSenderImpl implements EvenementEditiqueSender {
 	private String serviceDestination;
 	private String serviceReplyTo;
 
-	public String envoyerDocumentImmediatement(String nomDocument, String typeDocument, XmlObject document, TypeImpression typeImpression, TypeFormat typeFormat, boolean archive) throws
-			EditiqueException {
-		return envoyer(nomDocument, typeDocument, document, typeImpression, typeFormat, archive, noTxEsbTemplate);
+	public String envoyerDocumentImmediatement(String nomDocument, String typeDocument, XmlObject document, TypeFormat typeFormat, boolean archive) throws EditiqueException {
+		return envoyer(nomDocument, typeDocument, document, TypeImpression.DIRECT, typeFormat, archive, noTxEsbTemplate);
 	}
 
-	public String envoyerDocument(String nomDocument, String typeDocument, XmlObject document, TypeImpression typeImpression, TypeFormat typeFormat, boolean archive) throws EditiqueException {
-		return envoyer(nomDocument, typeDocument, document, typeImpression, typeFormat, archive, esbTemplate);
+	public String envoyerDocument(String nomDocument, String typeDocument, XmlObject document, TypeFormat typeFormat, boolean archive) throws EditiqueException {
+		return envoyer(nomDocument, typeDocument, document, TypeImpression.BATCH, typeFormat, archive, esbTemplate);
 	}
 
 	private String envoyer(String nomDocument, String typeDocument, XmlObject document, TypeImpression typeImpression, TypeFormat typeFormat, boolean archive, EsbJmsTemplate esbTemplate) throws

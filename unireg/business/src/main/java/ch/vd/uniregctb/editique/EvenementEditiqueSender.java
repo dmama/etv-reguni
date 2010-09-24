@@ -18,14 +18,13 @@ public interface EvenementEditiqueSender {
 	 * @param nomDocument    le nom du document
 	 * @param typeDocument   le type de document
 	 * @param document       le document sous format XML
-	 * @param typeImpression le type d'impression
 	 * @param typeFormat     le format du document
-	 * @param archive        détermine si le document doit être archivé ou non.    @return l'id du message JMS envoyé
+	 * @param archive        détermine si le document doit être archivé ou non.
+	 * @return l'id du message JMS envoyé
 	 * @throws EditiqueException en cas d'exception lors de l'envoi du message
 	 * @return le numéro technique du message JMS envoyé
 	 */
-	String envoyerDocument(final String nomDocument, final String typeDocument, XmlObject document, final TypeImpression typeImpression, TypeFormat typeFormat,
-	                       boolean archive) throws EditiqueException;
+	String envoyerDocument(final String nomDocument, final String typeDocument, XmlObject document, TypeFormat typeFormat, boolean archive) throws EditiqueException;
 
 	/**
 	 * Envoie un document à l'éditique pour impression. Cette méthode <b>n'est pas incluse</b> dans la transaction courante, le message JMS est donc envoyé immédiatement même si la transaction est
@@ -34,12 +33,10 @@ public interface EvenementEditiqueSender {
 	 * @param nomDocument    le nom du document
 	 * @param typeDocument   le type de document
 	 * @param document       le document sous format XML
-	 * @param typeImpression le type d'impression
 	 * @param typeFormat     le format du document
 	 * @param archive        détermine si le document doit être archivé ou non.    @return l'id du message JMS envoyé
 	 * @throws EditiqueException en cas d'exception lors de l'envoi du message
 	 * @return le numéro technique du message JMS envoyé
 	 */
-	String envoyerDocumentImmediatement(final String nomDocument, final String typeDocument, XmlObject document, final TypeImpression typeImpression, TypeFormat typeFormat,
-	                                    boolean archive) throws EditiqueException;
+	String envoyerDocumentImmediatement(final String nomDocument, final String typeDocument, XmlObject document, TypeFormat typeFormat, boolean archive) throws EditiqueException;
 }

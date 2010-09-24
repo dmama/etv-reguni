@@ -4,7 +4,6 @@ import org.apache.log4j.Logger;
 import org.apache.xmlbeans.XmlObject;
 
 import ch.vd.editique.service.enumeration.TypeFormat;
-import ch.vd.editique.service.enumeration.TypeImpression;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueResultat;
@@ -46,7 +45,7 @@ public final class EditiqueServiceImpl implements EditiqueService {
 			final String msg = String.format("Demande d'impression locale du document %s (%s)", nomDocument, typeDocument);
 			LOGGER.debug(msg);
 		}
-		final String id = sender.envoyerDocumentImmediatement(nomDocument, typeDocument, document, TypeImpression.DIRECT, typeFormat, archive);
+		final String id = sender.envoyerDocumentImmediatement(nomDocument, typeDocument, document, typeFormat, archive);
 
 		// demande envoyée, attente de la réponse
 		if (LOGGER.isDebugEnabled()) {
@@ -84,7 +83,7 @@ public final class EditiqueServiceImpl implements EditiqueService {
 	 * {@inheritDoc}
 	 */
 	public void creerDocumentParBatch(String nomDocument, String typeDocument, XmlObject document, boolean archive) throws EditiqueException {
-		sender.envoyerDocument(nomDocument, typeDocument, document, TypeImpression.BATCH, null, archive);
+		sender.envoyerDocument(nomDocument, typeDocument, document, null, archive);
 	}
 
 	/**
