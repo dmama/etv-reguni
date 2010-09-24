@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
@@ -1396,7 +1397,11 @@ public class TiersServiceImpl implements TiersService {
 		forFiscalPrincipal.setDateFin(null);
 		forFiscalPrincipal.setMotifFermeture(null);
 		return openOrReopenForFiscalPrincipal(forFiscalPrincipal, changeHabitantFlag);
+	}
 
+	private ForDebiteurPrestationImposable reopenForDebiteur(ForDebiteurPrestationImposable forDebiteur) {
+		forDebiteur.setDateFin(null);
+		return forDebiteur;
 	}
 
 	/**
@@ -2720,7 +2725,7 @@ public class TiersServiceImpl implements TiersService {
 		//
 
 		if (forFiscal instanceof ForFiscalPrincipal) {
-			ForFiscalPrincipal forPrincipal = (ForFiscalPrincipal) forFiscal;
+			final ForFiscalPrincipal forPrincipal = (ForFiscalPrincipal) forFiscal;
 			final List<ForFiscalPrincipal> fors = tiers.getForsFiscauxPrincipauxActifsSorted();
 
 			// [UNIREG-2607] Apparemment, quelqu'un a réussi à arriver dans un cas où cette collection
@@ -2746,6 +2751,40 @@ public class TiersServiceImpl implements TiersService {
 			}
 			if (forPrecedent != null) {
 				reopenForFiscalPrincipal(forPrecedent, changeHabitantFlag);
+			}
+		}
+		else if (forFiscal instanceof ForDebiteurPrestationImposable) {
+			final ForDebiteurPrestationImposable forDPI = (ForDebiteurPrestationImposable) forFiscal;
+			final Tiers.ForsParType fors = tiers.getForsParType(true);
+			if (fors.dpis.size() == 0) {
+				throw new ValidationException(forDPI, "Tous les fors débiteurs sont déjà annulés.");
+			}
+
+			// trouvons le for débiteur (non-annulé) le plus récent
+			ForDebiteurPrestationImposable dernierFor = null;
+			final ListIterator<ForDebiteurPrestationImposable> iterator = fors.dpis.listIterator(fors.dpis.size());
+			while (iterator.hasPrevious()) {
+				final ForDebiteurPrestationImposable forCandidat = iterator.previous();
+				if (!forCandidat.isAnnule()) {
+					dernierFor = forCandidat;
+					break;
+				}
+			}
+			if (forDPI != dernierFor) {
+				throw new ValidationException(forDPI, "Seul le dernier for débiteur peut être annulé.");
+			}
+
+			// réouvre le for précédent si nécessaire
+			ForDebiteurPrestationImposable forPrecedent = null;
+			while (iterator.hasPrevious()) {
+				final ForDebiteurPrestationImposable forCandidat = iterator.previous();
+				if (!forCandidat.isAnnule()) {
+					forPrecedent = forCandidat;
+					break;
+				}
+			}
+			if (forPrecedent != null && RegDateHelper.equals(forPrecedent.getDateFin(), forDPI.getDateDebut().getOneDayBefore())) {
+				reopenForDebiteur(forPrecedent);
 			}
 		}
 		forFiscal.setAnnule(true);

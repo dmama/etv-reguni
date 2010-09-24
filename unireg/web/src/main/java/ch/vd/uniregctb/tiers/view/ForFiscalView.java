@@ -59,7 +59,7 @@ public class ForFiscalView implements Comparable<ForFiscalView> {
 
 	private String natureTiers;
 
-	private boolean dernierForPrincipal;
+	private boolean dernierForPrincipalOuDebiteur;
 
 	private boolean changementModeImposition;
 
@@ -69,7 +69,7 @@ public class ForFiscalView implements Comparable<ForFiscalView> {
 
 	}
 
-	public ForFiscalView(ForFiscal forFiscal, boolean isForGestion, boolean dernierForPrincipal) {
+	public ForFiscalView(ForFiscal forFiscal, boolean isForGestion, boolean dernierForPrincipalOuDebiteur) {
 		this.id = forFiscal.getId();
 		this.numeroCtb = forFiscal.getTiers().getNumero();
 		this.genreImpot = forFiscal.getGenreImpot();
@@ -109,7 +109,7 @@ public class ForFiscalView implements Comparable<ForFiscalView> {
 		if (forFiscal instanceof ForFiscalPrincipal) {
 			final ForFiscalPrincipal forFiscalPrincipal = (ForFiscalPrincipal) forFiscal;
 			this.modeImposition = forFiscalPrincipal.getModeImposition();
-			this.dernierForPrincipal = dernierForPrincipal;
+			this.dernierForPrincipalOuDebiteur = dernierForPrincipalOuDebiteur;
 		}
 
 		this.natureForFiscal = forFiscal.getClass().getSimpleName();
@@ -427,12 +427,12 @@ public class ForFiscalView implements Comparable<ForFiscalView> {
 		this.natureTiers = natureTiers;
 	}
 
-	public boolean isDernierForPrincipal() {
-		return dernierForPrincipal;
+	public boolean isDernierForPrincipalOuDebiteur() {
+		return dernierForPrincipalOuDebiteur;
 	}
 
-	public void setDernierForPrincipal(boolean dernierForPrincipal) {
-		this.dernierForPrincipal = dernierForPrincipal;
+	public void setDernierForPrincipalOuDebiteur(boolean dernierForPrincipalOuDebiteur) {
+		this.dernierForPrincipalOuDebiteur = dernierForPrincipalOuDebiteur;
 	}
 
 	public boolean isChangementModeImposition() {
