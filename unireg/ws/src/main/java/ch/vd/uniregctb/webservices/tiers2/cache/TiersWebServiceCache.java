@@ -1,15 +1,13 @@
 package ch.vd.uniregctb.webservices.tiers2.cache;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import ch.vd.uniregctb.stats.StatsService;
-import ch.vd.uniregctb.webservices.tiers2.data.*;
-import ch.vd.uniregctb.webservices.tiers2.params.*;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
-
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -17,11 +15,35 @@ import org.springframework.beans.factory.InitializingBean;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.cache.UniregCacheInterface;
 import ch.vd.uniregctb.cache.UniregCacheManager;
+import ch.vd.uniregctb.stats.StatsService;
 import ch.vd.uniregctb.webservices.tiers2.TiersWebService;
+import ch.vd.uniregctb.webservices.tiers2.data.BatchTiers;
+import ch.vd.uniregctb.webservices.tiers2.data.BatchTiersEntry;
+import ch.vd.uniregctb.webservices.tiers2.data.BatchTiersHisto;
+import ch.vd.uniregctb.webservices.tiers2.data.BatchTiersHistoEntry;
+import ch.vd.uniregctb.webservices.tiers2.data.DebiteurInfo;
+import ch.vd.uniregctb.webservices.tiers2.data.EvenementPM;
+import ch.vd.uniregctb.webservices.tiers2.data.ReponseQuittancementDeclaration;
+import ch.vd.uniregctb.webservices.tiers2.data.Tiers;
 import ch.vd.uniregctb.webservices.tiers2.data.Tiers.Type;
+import ch.vd.uniregctb.webservices.tiers2.data.TiersHisto;
+import ch.vd.uniregctb.webservices.tiers2.data.TiersInfo;
+import ch.vd.uniregctb.webservices.tiers2.data.TiersPart;
 import ch.vd.uniregctb.webservices.tiers2.exception.AccessDeniedException;
 import ch.vd.uniregctb.webservices.tiers2.exception.BusinessException;
 import ch.vd.uniregctb.webservices.tiers2.exception.TechnicalException;
+import ch.vd.uniregctb.webservices.tiers2.params.AllConcreteTiersClasses;
+import ch.vd.uniregctb.webservices.tiers2.params.GetBatchTiers;
+import ch.vd.uniregctb.webservices.tiers2.params.GetBatchTiersHisto;
+import ch.vd.uniregctb.webservices.tiers2.params.GetDebiteurInfo;
+import ch.vd.uniregctb.webservices.tiers2.params.GetTiers;
+import ch.vd.uniregctb.webservices.tiers2.params.GetTiersHisto;
+import ch.vd.uniregctb.webservices.tiers2.params.GetTiersPeriode;
+import ch.vd.uniregctb.webservices.tiers2.params.GetTiersType;
+import ch.vd.uniregctb.webservices.tiers2.params.QuittancerDeclarations;
+import ch.vd.uniregctb.webservices.tiers2.params.SearchEvenementsPM;
+import ch.vd.uniregctb.webservices.tiers2.params.SearchTiers;
+import ch.vd.uniregctb.webservices.tiers2.params.SetTiersBlocRembAuto;
 
 public class TiersWebServiceCache implements UniregCacheInterface, TiersWebService, InitializingBean, DisposableBean {
 
@@ -170,47 +192,267 @@ public class TiersWebServiceCache implements UniregCacheInterface, TiersWebServi
 	 */
 	public BatchTiers getBatchTiers(GetBatchTiers params) throws BusinessException, AccessDeniedException, TechnicalException {
 
-		// TODO (msi) Implémenter un cache intelligent pour les batches
-		return target.getBatchTiers(params);
-//		final BatchTiers batch = new BatchTiers();
-//
-//		final Map<Long, Tiers> tiersCaches;
-//
-//		// Note: pour les requêtes batch, on ne cache pas la requête complète : il n'y a pas assez de probabilités que la même requête soit effectuée avec exactement les mêmes numéro de tiers.
-//
-//		for (Long id : params.tiersNumbers) {
-//
-//			final GetTiersKey key = new GetTiersKey(id, params.date);
-//			final Element element = cache.get(key);
-//			if (element != null) {
-//				final GetTiersValue value = (GetTiersValue) element.getObjectValue();
-//				boolean complet = (value.getMissingParts(params.parts) == null);
-//				Tiers tiers = value.getValueForParts(params.parts);
-//			}
-//
-//			BatchTiersEntry entry;
-//			try {
-//				Tiers tiers = getTiers(subparam);
-//				entry = new BatchTiersEntry(id, tiers);
-//			}
-//			catch (WebServiceException e) {
-//				entry = new BatchTiersEntry(id, e);
-//			}
-//			catch (Exception e) {
-//				entry = new BatchTiersEntry(id, new WebServiceException(e));
-//			}
-//
-//			batch.entries.add(entry);
-//		}
-//
-//		return batch;
+		try {
+			if (params.tiersNumbers == null || params.tiersNumbers.isEmpty()) {
+				return new BatchTiers();
+			}
+
+			final BatchTiers batch;
+
+			// on récupère tout ce qu'on peut dans le cache
+			final List<BatchTiersEntry> cachedEntries = getCachedBatchTiersEntries(params);
+			if (cachedEntries == null || cachedEntries.isEmpty()) {
+				// rien trouvé -> on passe tout droit
+				batch = target.getBatchTiers(params);
+
+				// on met-à-jour le cache
+				cacheBatchTiersEntries(batch, params);
+			}
+			else {
+				// trouvé des données dans le cache -> on détermine ce qui manque
+				final Set<Long> uncachedIds = extractUncachedTiersIds(params.tiersNumbers, cachedEntries);
+				if (uncachedIds.isEmpty()) {
+					batch = new BatchTiers();
+				}
+				else {
+					// on demande plus loin ce qui manque
+					batch = target.getBatchTiers(new GetBatchTiers(params.login, uncachedIds, params.date, params.parts));
+
+					// on met-à-jour le cache
+					cacheBatchTiersEntries(batch, params);
+				}
+
+				// on mélange les deux collections
+				batch.entries.addAll(cachedEntries);
+			}
+
+			return batch;
+		}
+		catch (RuntimeException e) {
+			LOGGER.error(e, e);
+			throw new TechnicalException(e);
+		}
+	}
+
+	/**
+	 * Met-à-jour le cache à partir de données nouvellement extraites.
+	 *
+	 * @param batch  les données nouvellement extraites
+	 * @param params les paramètres demandés correspondant aux données spécifiées.
+	 */
+	private void cacheBatchTiersEntries(BatchTiers batch, GetBatchTiers params) {
+		for (BatchTiersEntry entry : batch.entries) {
+			final GetTiersKey key = new GetTiersKey(entry.number, params.date);
+
+			final Element element = cache.get(key);
+			if (element == null) {
+				// on enregistre le nouveau tiers dans le cache
+				GetTiersValue value = new GetTiersValue(params.parts, entry.tiers);
+				cache.put(new Element(key, value));
+			}
+			else {
+				// on met-à-jour le tiers existant avec les parts chargées
+				GetTiersValue value = (GetTiersValue) element.getObjectValue();
+				Assert.isFalse(value.isNull());
+				value.addParts(params.parts, entry.tiers);
+			}
+		}
+	}
+
+	/**
+	 * Extrait l'ensemble des ids de tiers non trouvés dans le cache.
+	 *
+	 * @param requestedIds  l'ensemble des ids demandés
+	 * @param cachedEntries les données trouvées dans le cache
+	 * @return l'ensemble des ids non trouvés dans le cache.
+	 */
+	private Set<Long> extractUncachedTiersIds(Set<Long> requestedIds, List<BatchTiersEntry> cachedEntries) {
+		final Set<Long> cachedIds = new HashSet<Long>(cachedEntries.size());
+		for (BatchTiersEntry entry : cachedEntries) {
+			cachedIds.add(entry.number);
+		}
+		final Set<Long> uncached = new HashSet<Long>(requestedIds.size() - cachedIds.size());
+		for (Long id : requestedIds) {
+			if (!cachedIds.contains(id)) {
+				uncached.add(id);
+			}
+		}
+		return uncached;
+	}
+
+	/**
+	 * Retourne les données disponibles dans le cache qui correspondent aux paramètres demandés. Si un tiers existe dans le cache mais que toutes les parts demandées ne sont pas renseignées, on
+	 * l'ignore.
+	 *
+	 * @param params les paramètres de l'appel
+	 * @return une liste des données trouvées dans le cache
+	 */
+	private List<BatchTiersEntry> getCachedBatchTiersEntries(GetBatchTiers params) {
+
+		List<BatchTiersEntry> cachedEntries = null;
+
+		for (Long id : params.tiersNumbers) {
+			final GetTiersKey key = new GetTiersKey(id, params.date);
+
+			final Element element = cache.get(key);
+			if (element == null) {
+				continue;
+			}
+
+			GetTiersValue value = (GetTiersValue) element.getObjectValue();
+			if (value.isNull()) {
+				continue;
+			}
+
+			Set<TiersPart> delta = value.getMissingParts(params.parts);
+			if (delta != null) {
+				continue;
+			}
+
+			if (cachedEntries == null) {
+				cachedEntries = new ArrayList<BatchTiersEntry>();
+			}
+			final Tiers tiers = value.getValueForParts(params.parts);
+			final BatchTiersEntry entry = new BatchTiersEntry(id, tiers);
+
+			cachedEntries.add(entry);
+		}
+
+		return cachedEntries;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public BatchTiersHisto getBatchTiersHisto(GetBatchTiersHisto params) throws BusinessException, AccessDeniedException, TechnicalException {
-		return target.getBatchTiersHisto(params);
+
+		try {
+			if (params.tiersNumbers == null || params.tiersNumbers.isEmpty()) {
+				return new BatchTiersHisto();
+			}
+
+			final BatchTiersHisto batch;
+
+			// on récupère tout ce qu'on peut dans le cache
+			final List<BatchTiersHistoEntry> cachedEntries = getCachedBatchTiersHistoEntries(params);
+			if (cachedEntries == null || cachedEntries.isEmpty()) {
+				// rien trouvé -> on passe tout droit
+				batch = target.getBatchTiersHisto(params);
+
+				// on met-à-jour le cache
+				cacheBatchTiersHistoEntries(batch, params);
+			}
+			else {
+				// trouvé des données dans le cache -> on détermine ce qui manque
+				final Set<Long> uncachedIds = extractUncachedTiersHistoIds(params.tiersNumbers, cachedEntries);
+				if (uncachedIds.isEmpty()) {
+					batch = new BatchTiersHisto();
+				}
+				else {
+					// on demande plus loin ce qui manque
+					batch = target.getBatchTiersHisto(new GetBatchTiersHisto(params.login, uncachedIds, params.parts));
+
+					// on met-à-jour le cache
+					cacheBatchTiersHistoEntries(batch, params);
+				}
+
+				// on mélange les deux collections
+				batch.entries.addAll(cachedEntries);
+			}
+
+			return batch;
+		}
+		catch (RuntimeException e) {
+			LOGGER.error(e, e);
+			throw new TechnicalException(e);
+		}
+	}
+
+	/**
+	 * Met-à-jour le cache à partir de données nouvellement extraites.
+	 *
+	 * @param batch  les données nouvellement extraites
+	 * @param params les paramètres demandés correspondant aux données spécifiées.
+	 */
+	private void cacheBatchTiersHistoEntries(BatchTiersHisto batch, GetBatchTiersHisto params) {
+		for (BatchTiersHistoEntry entry : batch.entries) {
+			final GetTiersHistoKey key = new GetTiersHistoKey(entry.number);
+
+			final Element element = cache.get(key);
+			if (element == null) {
+				// on enregistre le nouveau tiers dans le cache
+				GetTiersHistoValue value = new GetTiersHistoValue(params.parts, entry.tiers);
+				cache.put(new Element(key, value));
+			}
+			else {
+				// on met-à-jour le tiers existant avec les parts chargées
+				GetTiersHistoValue value = (GetTiersHistoValue) element.getObjectValue();
+				Assert.isFalse(value.isNull());
+				value.addParts(params.parts, entry.tiers);
+			}
+		}
+	}
+
+	/**
+	 * Extrait l'ensemble des ids de tiers non trouvés dans le cache.
+	 *
+	 * @param requestedIds  l'ensemble des ids demandés
+	 * @param cachedEntries les données trouvées dans le cache
+	 * @return l'ensemble des ids non trouvés dans le cache.
+	 */
+	private Set<Long> extractUncachedTiersHistoIds(Set<Long> requestedIds, List<BatchTiersHistoEntry> cachedEntries) {
+		final Set<Long> cachedIds = new HashSet<Long>(cachedEntries.size());
+		for (BatchTiersHistoEntry entry : cachedEntries) {
+			cachedIds.add(entry.number);
+		}
+		final Set<Long> uncached = new HashSet<Long>(requestedIds.size() - cachedIds.size());
+		for (Long id : requestedIds) {
+			if (!cachedIds.contains(id)) {
+				uncached.add(id);
+			}
+		}
+		return uncached;
+	}
+
+	/**
+	 * Retourne les données disponibles dans le cache qui correspondent aux paramètres demandés. Si un tiers existe dans le cache mais que toutes les parts demandées ne sont pas renseignées, on
+	 * l'ignore.
+	 *
+	 * @param params les paramètres de l'appel
+	 * @return une liste des données trouvées dans le cache
+	 */
+	private List<BatchTiersHistoEntry> getCachedBatchTiersHistoEntries(GetBatchTiersHisto params) {
+
+		List<BatchTiersHistoEntry> cachedEntries = null;
+
+		for (Long id : params.tiersNumbers) {
+			final GetTiersHistoKey key = new GetTiersHistoKey(id);
+
+			final Element element = cache.get(key);
+			if (element == null) {
+				continue;
+			}
+
+			GetTiersHistoValue value = (GetTiersHistoValue) element.getObjectValue();
+			if (value.isNull()) {
+				continue;
+			}
+
+			Set<TiersPart> delta = value.getMissingParts(params.parts);
+			if (delta != null) {
+				continue;
+			}
+
+			if (cachedEntries == null) {
+				cachedEntries = new ArrayList<BatchTiersHistoEntry>();
+			}
+			final TiersHisto tiers = value.getValueForParts(params.parts);
+			final BatchTiersHistoEntry entry = new BatchTiersHistoEntry(id, tiers);
+
+			cachedEntries.add(entry);
+		}
+
+		return cachedEntries;
 	}
 
 	/**

@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.webservices.tiers2.cache;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -18,6 +19,7 @@ import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.interfaces.model.mock.MockCollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
+import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
 import ch.vd.uniregctb.tiers.AppartenanceMenage;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -31,6 +33,10 @@ import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
 import ch.vd.uniregctb.webservices.common.UserLogin;
 import ch.vd.uniregctb.webservices.tiers2.TiersWebService;
+import ch.vd.uniregctb.webservices.tiers2.data.BatchTiers;
+import ch.vd.uniregctb.webservices.tiers2.data.BatchTiersEntry;
+import ch.vd.uniregctb.webservices.tiers2.data.BatchTiersHisto;
+import ch.vd.uniregctb.webservices.tiers2.data.BatchTiersHistoEntry;
 import ch.vd.uniregctb.webservices.tiers2.data.Contribuable;
 import ch.vd.uniregctb.webservices.tiers2.data.ContribuableHisto;
 import ch.vd.uniregctb.webservices.tiers2.data.Date;
@@ -42,6 +48,8 @@ import ch.vd.uniregctb.webservices.tiers2.data.PersonneMoraleHisto;
 import ch.vd.uniregctb.webservices.tiers2.data.Tiers;
 import ch.vd.uniregctb.webservices.tiers2.data.TiersHisto;
 import ch.vd.uniregctb.webservices.tiers2.data.TiersPart;
+import ch.vd.uniregctb.webservices.tiers2.params.GetBatchTiers;
+import ch.vd.uniregctb.webservices.tiers2.params.GetBatchTiersHisto;
 import ch.vd.uniregctb.webservices.tiers2.params.GetTiers;
 import ch.vd.uniregctb.webservices.tiers2.params.GetTiersHisto;
 
@@ -49,13 +57,15 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 
 @SuppressWarnings({"JavaDoc"})
 public class TiersWebServiceCacheTest extends WebserviceTest {
 
-	private Ehcache cache;
-	private TiersWebServiceCache service;
+	private Ehcache ehcache;
+	private TiersWebServiceCache cache;
 	private TiersWebServiceCacheManager wsCacheManager;
+	private TiersWebServiceTracing implementation;
 
 	private static class Ids {
 		public Long eric;
@@ -71,16 +81,19 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 	public void onSetUp() throws Exception {
 		super.onSetUp();
 		CacheManager manager = getBean(CacheManager.class, "ehCacheManager");
-		TiersWebService target = getBean(TiersWebService.class, "tiersService2Bean");
+		TiersWebService webService = getBean(TiersWebService.class, "tiersService2Bean");
+		implementation = new TiersWebServiceTracing(webService);
 
-		service = new TiersWebServiceCache();
-		service.setCacheManager(manager);
-		service.setTarget(target);
-		service.setCacheName("webServiceTiers2");
-		cache = service.getEhCache();
+		cache = new TiersWebServiceCache();
+		cache.setCacheManager(manager);
+		cache.setTarget(implementation);
+		cache.setCacheName("webServiceTiers2");
+		ehcache = cache.getEhCache();
 
 		wsCacheManager = getBean(TiersWebServiceCacheManager.class, "tiersService2CacheManager");
-		wsCacheManager.setCache(service);
+		wsCacheManager.setCache(cache);
+
+		serviceCivil.setUp(new DefaultMockServiceCivil());
 
 		// Un tiers avec une adresse et un fors fiscal
 		doInNewTransaction(new TxCallback() {
@@ -163,7 +176,7 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 
 		// sans parts
 		{
-			assertNoPart(service.getTiers(paramsNoPart));
+			assertNoPart(cache.getTiers(paramsNoPart));
 
 			final GetTiersValue value = getCacheValue(paramsNoPart);
 			assertNotNull(value);
@@ -172,8 +185,8 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 
 		// ajout des adresses
 		{
-			assertAdressePart(service.getTiers(paramsAdressePart));
-			assertNoPart(service.getTiers(paramsNoPart)); // on vérifie que le tiers sans part fonctionne toujours bien
+			assertAdressePart(cache.getTiers(paramsAdressePart));
+			assertNoPart(cache.getTiers(paramsNoPart)); // on vérifie que le tiers sans part fonctionne toujours bien
 
 			final GetTiersValue value = getCacheValue(paramsNoPart);
 			assertNotNull(value);
@@ -182,10 +195,10 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 
 		// ajout des fors
 		{
-			assertForsEtAdressePart(service.getTiers(paramsForsEtAdressesParts));
-			assertForsPart(service.getTiers(paramsForsPart)); // on vérifie que le tiers avec seulement les fors est correct
-			assertNoPart(service.getTiers(paramsNoPart)); // on vérifie que le tiers sans part fonctionne toujours bien
-			assertAdressePart(service.getTiers(paramsAdressePart)); // on vérifie que le tiers avec adresse fonctionne toujours bien
+			assertForsEtAdressePart(cache.getTiers(paramsForsEtAdressesParts));
+			assertForsPart(cache.getTiers(paramsForsPart)); // on vérifie que le tiers avec seulement les fors est correct
+			assertNoPart(cache.getTiers(paramsNoPart)); // on vérifie que le tiers sans part fonctionne toujours bien
+			assertAdressePart(cache.getTiers(paramsAdressePart)); // on vérifie que le tiers avec adresse fonctionne toujours bien
 
 			final GetTiersValue value = getCacheValue(paramsNoPart);
 			assertNotNull(value);
@@ -207,7 +220,7 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 			Set<TiersPart> parts = new HashSet<TiersPart>();
 			parts.add(p);
 			final GetTiers params = paramsNoPart.clone(parts);
-			assertOnlyPart(p, service.getTiers(params));
+			assertOnlyPart(p, cache.getTiers(params));
 		}
 
 		// maintenant que le cache est chaud, on recommence la manipulation pour vérifier que cela fonctionne toujours
@@ -215,7 +228,7 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 			Set<TiersPart> parts = new HashSet<TiersPart>();
 			parts.add(p);
 			final GetTiers params = paramsNoPart.clone(parts);
-			assertOnlyPart(p, service.getTiers(params));
+			assertOnlyPart(p, cache.getTiers(params));
 		}
 	}
 
@@ -242,7 +255,7 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 
 		// sans parts
 		{
-			assertNoPart(service.getTiersHisto(paramsNoPart));
+			assertNoPart(cache.getTiersHisto(paramsNoPart));
 
 			final GetTiersHistoValue value = getCacheValue(paramsNoPart);
 			assertNotNull(value);
@@ -251,8 +264,8 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 
 		// ajout des adresses
 		{
-			assertAdressePart(service.getTiersHisto(paramsAdressePart));
-			assertNoPart(service.getTiersHisto(paramsNoPart)); // on vérifie que le tiers sans part fonctionne toujours bien
+			assertAdressePart(cache.getTiersHisto(paramsAdressePart));
+			assertNoPart(cache.getTiersHisto(paramsNoPart)); // on vérifie que le tiers sans part fonctionne toujours bien
 
 			final GetTiersHistoValue value = getCacheValue(paramsNoPart);
 			assertNotNull(value);
@@ -261,10 +274,10 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 
 		// ajout des fors
 		{
-			assertForsEtAdressePart(service.getTiersHisto(paramsForsEtAdressesParts));
-			assertForsPart(service.getTiersHisto(paramsForsPart)); // on vérifie que le tiers avec seulement les fors est correct
-			assertNoPart(service.getTiersHisto(paramsNoPart)); // on vérifie que le tiers sans part fonctionne toujours bien
-			assertAdressePart(service.getTiersHisto(paramsAdressePart)); // on vérifie que le tiers avec adresse fonctionne toujours bien
+			assertForsEtAdressePart(cache.getTiersHisto(paramsForsEtAdressesParts));
+			assertForsPart(cache.getTiersHisto(paramsForsPart)); // on vérifie que le tiers avec seulement les fors est correct
+			assertNoPart(cache.getTiersHisto(paramsNoPart)); // on vérifie que le tiers sans part fonctionne toujours bien
+			assertAdressePart(cache.getTiersHisto(paramsAdressePart)); // on vérifie que le tiers avec adresse fonctionne toujours bien
 
 			final GetTiersHistoValue value = getCacheValue(paramsNoPart);
 			assertNotNull(value);
@@ -285,7 +298,7 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 			Set<TiersPart> parts = new HashSet<TiersPart>();
 			parts.add(p);
 			final GetTiersHisto params = paramsNoPart.clone(parts);
-			assertOnlyPart(p, service.getTiersHisto(params));
+			assertOnlyPart(p, cache.getTiersHisto(params));
 		}
 
 		// maintenant que le cache est chaud, on recommence la manipulation pour vérifier que cela fonctionne toujours
@@ -293,7 +306,7 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 			Set<TiersPart> parts = new HashSet<TiersPart>();
 			parts.add(p);
 			final GetTiersHisto params = paramsNoPart.clone(parts);
-			assertOnlyPart(p, service.getTiersHisto(params));
+			assertOnlyPart(p, cache.getTiersHisto(params));
 		}
 	}
 
@@ -308,7 +321,7 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 		params.date = new Date(2008, 1, 1);
 		params.parts = null;
 
-		assertNotNull(service.getTiers(params));
+		assertNotNull(cache.getTiers(params));
 		assertNotNull(getCacheValue(params));
 
 		GetTiersHisto paramsHisto = new GetTiersHisto();
@@ -316,12 +329,12 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 		paramsHisto.tiersNumber = ids.eric;
 		paramsHisto.parts = null;
 
-		assertNotNull(service.getTiersHisto(paramsHisto));
+		assertNotNull(cache.getTiersHisto(paramsHisto));
 		assertNotNull(getCacheValue(paramsHisto));
 
 		// On evicte les tiers
 
-		service.evictTiers(ids.eric);
+		cache.evictTiers(ids.eric);
 
 		// On vérifie que le cache est vide
 
@@ -344,7 +357,7 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 		params.parts = new HashSet<TiersPart>();
 		params.parts.add(TiersPart.ADRESSES_ENVOI);
 
-		final MenageCommun menageAvant = (MenageCommun) service.getTiers(params);
+		final MenageCommun menageAvant = (MenageCommun) cache.getTiers(params);
 		assertNotNull(menageAvant);
 
 		// On vérifie l'adresse d'envoi
@@ -385,7 +398,7 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 		// Cette modification va provoquer l'éviction de madame du cache, et par transitivité l'éviction du ménage commun. Si ce n'était pas le cas, les données (périmées) du ménage commun seraient encore dans le cache.
 		// On vérifie donc que l'adresse d'envoi du ménage commun est bien mise-à-jour.
 
-		final MenageCommun menageApres = (MenageCommun) service.getTiers(params);
+		final MenageCommun menageApres = (MenageCommun) cache.getTiers(params);
 		assertNotNull(menageApres);
 
 		// On vérifie l'adresse d'envoi
@@ -410,12 +423,12 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 		params.date = new Date(2008, 1, 1);
 		params.parts = null;
 
-		assertNull(service.getTiers(params));
+		assertNull(cache.getTiers(params));
 		assertNotNull(getCacheValue(params)); // not null -> on cache aussi la réponse pour un tiers inexistant !
 
 		// Essai une seconde fois avec parts
 		params.parts = adressesPart;
-		assertNull(service.getTiers(params));
+		assertNull(cache.getTiers(params));
 		assertNotNull(getCacheValue(params));
 	}
 
@@ -431,12 +444,12 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 		params.tiersNumber = 1233455;
 		params.parts = null;
 
-		assertNull(service.getTiersHisto(params));
+		assertNull(cache.getTiersHisto(params));
 		assertNotNull(getCacheValue(params)); // not null -> on cache aussi la réponse pour un tiers inexistant !
 
 		// Essai une seconde fois avec parts
 		params.parts = adressesPart;
-		assertNull(service.getTiersHisto(params));
+		assertNull(cache.getTiersHisto(params));
 		assertNotNull(getCacheValue(params));
 	}
 
@@ -460,7 +473,7 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 		{
 			params.parts.add(TiersPart.FORS_FISCAUX_VIRTUELS);
 
-			final Tiers tiers = service.getTiers(params);
+			final Tiers tiers = cache.getTiers(params);
 			assertNotNull(tiers);
 			assertNotNull(tiers.forFiscalPrincipal);
 
@@ -474,7 +487,7 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 			params.parts.clear();
 			params.parts.add(TiersPart.FORS_FISCAUX);
 
-			final Tiers tiers = service.getTiers(params);
+			final Tiers tiers = cache.getTiers(params);
 			assertNotNull(tiers);
 			assertNull(tiers.forFiscalPrincipal);
 		}
@@ -484,7 +497,7 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 			params.parts.clear();
 			params.parts.add(TiersPart.FORS_FISCAUX_VIRTUELS);
 
-			final Tiers tiers = service.getTiers(params);
+			final Tiers tiers = cache.getTiers(params);
 			assertNotNull(tiers);
 			assertNotNull(tiers.forFiscalPrincipal);
 
@@ -514,7 +527,7 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 		{
 			params.parts.add(TiersPart.FORS_FISCAUX_VIRTUELS);
 
-			final TiersHisto tiers = service.getTiersHisto(params);
+			final TiersHisto tiers = cache.getTiersHisto(params);
 			assertNotNull(tiers);
 			assertNotNull(tiers.forsFiscauxPrincipaux);
 			assertEquals(1, tiers.forsFiscauxPrincipaux.size());
@@ -529,7 +542,7 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 			params.parts.clear();
 			params.parts.add(TiersPart.FORS_FISCAUX);
 
-			final TiersHisto tiers = service.getTiersHisto(params);
+			final TiersHisto tiers = cache.getTiersHisto(params);
 			assertNotNull(tiers);
 			assertEmpty(tiers.forsFiscauxPrincipaux);
 		}
@@ -539,7 +552,7 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 			params.parts.clear();
 			params.parts.add(TiersPart.FORS_FISCAUX_VIRTUELS);
 
-			final TiersHisto tiers = service.getTiersHisto(params);
+			final TiersHisto tiers = cache.getTiersHisto(params);
 			assertNotNull(tiers);
 			assertNotNull(tiers.forsFiscauxPrincipaux);
 			assertEquals(1, tiers.forsFiscauxPrincipaux.size());
@@ -550,10 +563,184 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 		}
 	}
 
+	@Test
+	public void testGetBatchTiers() throws Exception {
+
+		GetBatchTiers params = new GetBatchTiers();
+		params.login = new UserLogin("[TiersWebServiceCacheTest]", 21);
+		params.tiersNumbers = new HashSet<Long>();
+		params.tiersNumbers.add(ids.monsieur);
+		params.tiersNumbers.add(ids.madame);
+		params.parts = new HashSet<TiersPart>();
+
+		// Etat initial : aucun appel au web-service
+		assertEmpty(implementation.getBatchTiersCalls);
+
+		// 1er appel
+		{
+			final BatchTiers batch = cache.getBatchTiers(params);
+			assertNotNull(batch);
+			assertEquals(2, batch.entries.size());
+
+			// on vérifique que les données retournées sont correctes
+			final BatchTiersEntry batch0 = batch.entries.get(0);
+			final BatchTiersEntry batch1 = batch.entries.get(1);
+			final Tiers monsieur = (batch0.number.equals(ids.monsieur) ? batch0.tiers : batch1.tiers);
+			final Tiers madame = (batch0.number.equals(ids.madame) ? batch0.tiers : batch1.tiers);
+			assertNoPart(monsieur);
+			assertNoPart(madame);
+
+			// on vérifie qu'il y a bien eu un appel au web-service
+			assertEquals(1, implementation.getBatchTiersCalls.size());
+			assertEquals(params.tiersNumbers, implementation.getBatchTiersCalls.get(0).tiersNumbers);
+		}
+
+		// 2ème appel : identique au premier
+		{
+			final BatchTiers batch = cache.getBatchTiers(params);
+			assertNotNull(batch);
+			assertEquals(2, batch.entries.size());
+
+			// on vérifique que les données retournées sont correctes
+			final BatchTiersEntry batch0 = batch.entries.get(0);
+			final BatchTiersEntry batch1 = batch.entries.get(1);
+			final Tiers monsieur = (batch0.number.equals(ids.monsieur) ? batch0.tiers : batch1.tiers);
+			final Tiers madame = (batch0.number.equals(ids.madame) ? batch0.tiers : batch1.tiers);
+			assertNoPart(monsieur);
+			assertNoPart(madame);
+
+			// on vérifie qu'il n'y a pas de second appel au web-service, c'est-à-dire que toutes les données ont été trouvées dans le cache
+			assertEquals(1, implementation.getBatchTiersCalls.size());
+		}
+
+		// 3ème appel : avec un tiers de plus
+		{
+			params.tiersNumbers.add(ids.eric);
+
+			final BatchTiers batch = cache.getBatchTiers(params);
+			assertNotNull(batch);
+			assertEquals(3, batch.entries.size());
+
+			// on vérifique que les données retournées sont correctes
+			Tiers monsieur = null;
+			Tiers madame = null;
+			Tiers eric = null;
+			for (BatchTiersEntry entry : batch.entries) {
+				if (entry.number.equals(ids.monsieur)) {
+					monsieur = entry.tiers;
+				}
+				else if (entry.number.equals(ids.madame)) {
+					madame = entry.tiers;
+				}
+				else if (entry.number.equals(ids.eric)) {
+					eric = entry.tiers;
+				}
+				else {
+					fail("Le batch contient un numéro de tiers inconnu = [" + entry.number + "]");
+				}
+			}
+			assertNoPart(monsieur);
+			assertNoPart(madame);
+			assertNoPart(eric);
+
+			// on vérifie qu'il y a un second appel au web-service, mais qu'il ne concerne que le tiers Eric
+			assertEquals(2, implementation.getBatchTiersCalls.size());
+			assertEquals(params.tiersNumbers, implementation.getBatchTiersCalls.get(0).tiersNumbers);
+			assertEquals(new HashSet<Long>(Arrays.asList(ids.eric)), implementation.getBatchTiersCalls.get(1).tiersNumbers);
+		}
+	}
+
+	@Test
+	public void testGetBatchTiersHisto() throws Exception {
+
+		GetBatchTiersHisto params = new GetBatchTiersHisto();
+		params.login = new UserLogin("[TiersWebServiceCacheTest]", 21);
+		params.tiersNumbers = new HashSet<Long>();
+		params.tiersNumbers.add(ids.monsieur);
+		params.tiersNumbers.add(ids.madame);
+		params.parts = new HashSet<TiersPart>();
+
+		// Etat initial : aucun appel au web-service
+		assertEmpty(implementation.getBatchTiersHistoCalls);
+
+		// 1er appel
+		{
+			final BatchTiersHisto batch = cache.getBatchTiersHisto(params);
+			assertNotNull(batch);
+			assertEquals(2, batch.entries.size());
+
+			// on vérifique que les données retournées sont correctes
+			final BatchTiersHistoEntry batch0 = batch.entries.get(0);
+			final BatchTiersHistoEntry batch1 = batch.entries.get(1);
+			final TiersHisto monsieur = (batch0.number.equals(ids.monsieur) ? batch0.tiers : batch1.tiers);
+			final TiersHisto madame = (batch0.number.equals(ids.madame) ? batch0.tiers : batch1.tiers);
+			assertNoPart(monsieur);
+			assertNoPart(madame);
+
+			// on vérifie qu'il y a bien eu un appel au web-service
+			assertEquals(1, implementation.getBatchTiersHistoCalls.size());
+			assertEquals(params.tiersNumbers, implementation.getBatchTiersHistoCalls.get(0).tiersNumbers);
+		}
+
+		// 2ème appel : identique au premier
+		{
+			final BatchTiersHisto batch = cache.getBatchTiersHisto(params);
+			assertNotNull(batch);
+			assertEquals(2, batch.entries.size());
+
+			// on vérifique que les données retournées sont correctes
+			final BatchTiersHistoEntry batch0 = batch.entries.get(0);
+			final BatchTiersHistoEntry batch1 = batch.entries.get(1);
+			final TiersHisto monsieur = (batch0.number.equals(ids.monsieur) ? batch0.tiers : batch1.tiers);
+			final TiersHisto madame = (batch0.number.equals(ids.madame) ? batch0.tiers : batch1.tiers);
+			assertNoPart(monsieur);
+			assertNoPart(madame);
+
+			// on vérifie qu'il n'y a pas de second appel au web-service, c'est-à-dire que toutes les données ont été trouvées dans le cache
+			assertEquals(1, implementation.getBatchTiersHistoCalls.size());
+		}
+
+		// 3ème appel : avec un tiers de plus
+		{
+			params.tiersNumbers.add(ids.eric);
+
+			final BatchTiersHisto batch = cache.getBatchTiersHisto(params);
+			assertNotNull(batch);
+			assertEquals(3, batch.entries.size());
+
+			// on vérifique que les données retournées sont correctes
+			TiersHisto monsieur = null;
+			TiersHisto madame = null;
+			TiersHisto eric = null;
+			for (BatchTiersHistoEntry entry : batch.entries) {
+				if (entry.number.equals(ids.monsieur)) {
+					monsieur = entry.tiers;
+				}
+				else if (entry.number.equals(ids.madame)) {
+					madame = entry.tiers;
+				}
+				else if (entry.number.equals(ids.eric)) {
+					eric = entry.tiers;
+				}
+				else {
+					fail("Le batch contient un numéro de tiers inconnu = [" + entry.number + "]");
+				}
+			}
+			assertNoPart(monsieur);
+			assertNoPart(madame);
+			assertNoPart(eric);
+
+			// on vérifie qu'il y a un second appel au web-service, mais qu'il ne concerne que le tiers Eric
+			assertEquals(2, implementation.getBatchTiersHistoCalls.size());
+			assertEquals(params.tiersNumbers, implementation.getBatchTiersHistoCalls.get(0).tiersNumbers);
+			assertEquals(new HashSet<Long>(Arrays.asList(ids.eric)), implementation.getBatchTiersHistoCalls.get(1).tiersNumbers);
+		}
+	}
+	
 	private GetTiersValue getCacheValue(final GetTiers paramsNoPart) {
 		GetTiersValue value = null;
 		final GetTiersKey key = new GetTiersKey(paramsNoPart.tiersNumber, paramsNoPart.date);
-		final Element element = cache.get(key);
+		final Element element = ehcache.get(key);
 		if (element != null) {
 			value = (GetTiersValue) element.getObjectValue();
 		}
@@ -563,7 +750,7 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 	private GetTiersHistoValue getCacheValue(final GetTiersHisto paramsNoPart) {
 		GetTiersHistoValue value = null;
 		final GetTiersHistoKey key = new GetTiersHistoKey(paramsNoPart.tiersNumber);
-		final Element element = cache.get(key);
+		final Element element = ehcache.get(key);
 		if (element != null) {
 			value = (GetTiersHistoValue) element.getObjectValue();
 		}
