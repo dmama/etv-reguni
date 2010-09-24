@@ -35,7 +35,7 @@
 		</c:if>
 		<c:if test="${page == 'edit' }">
 			<c:if test="${!forFiscal.annule}">
-				<unireg:raccourciModifier link="for.do?height=150&width=900&idFor=${forFiscal.id}&TB_iframe=true&modal=true" thickbox="true" tooltip="Edition de for"/>
+				<unireg:raccourciModifier link="for.do?idFor=${forFiscal.id}" tooltip="Edition de for"/>
 				<unireg:raccourciAnnuler onClick="javascript:annulerFor(${forFiscal.id});"/>			
 			</c:if>
 		</c:if>
