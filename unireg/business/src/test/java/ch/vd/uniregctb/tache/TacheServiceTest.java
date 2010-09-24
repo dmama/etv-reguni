@@ -4247,8 +4247,8 @@ public class TacheServiceTest extends BusinessTest {
 	public void testHorsSuisseVenteDernierImmeubleDansPeriodeCourante() throws Exception {
 
 		// cas du contribuable HS qui possède un immeuble et qui le vend dans la période courante
-		// ->   bien qu'il y ait une fin d'assujettissement en cours d'année, aucune tâche d'émission de DI
-		//      ne doit être générée immédiatement (on attendra le batch de début d'année pour ça)
+		// ->   il y a une fin d'assujettissement en cours d'année, une tâche d'émission de DI
+		//      doit être générée immédiatement
 
 		final RegDate aujourdhui = RegDate.get();
 		final int anneeCourante = aujourdhui.year();
@@ -4264,7 +4264,7 @@ public class TacheServiceTest extends BusinessTest {
 			}
 		});
 
-		// il ne devrait pas y avoir de tâche d'émission de DI malgré la vente du dernier immeuble et donc la fin d'assujettissement
+		// il doit y avoir une tâche d'émission de DI en raison de la vente du dernier immeuble et donc de la fin d'assujettissement
 		doInNewTransactionAndSession(new TransactionCallback() {
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
@@ -4275,7 +4275,14 @@ public class TacheServiceTest extends BusinessTest {
 				criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpot);
 				final List<Tache> taches = tacheDAO.find(criterion);
 				assertNotNull(taches);
-				assertEquals(0, taches.size());
+				assertEquals(1, taches.size());
+
+				final Tache tache = taches.get(0);
+				assertNotNull(tache);
+				assertEquals(TacheEnvoiDeclarationImpot.class, tache.getClass());
+
+				final TacheEnvoiDeclarationImpot tacheEnvoi = (TacheEnvoiDeclarationImpot) tache;
+				assertTache(TypeEtatTache.EN_INSTANCE, getNextSunday(aujourdhui), date(anneeCourante, 1, 1), aujourdhui, TypeContribuable.HORS_SUISSE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, TypeAdresseRetour.CEDI, tacheEnvoi);
 				return null;
 			}
 		});
@@ -4286,8 +4293,8 @@ public class TacheServiceTest extends BusinessTest {
 	public void testHorsSuisseFinActiviteIndependanteDansPeriodeCourante() throws Exception {
 
 		// cas du contribuable HS qui a une activité indépendante et qui l'arrête dans la période courante
-		// ->   bien qu'il y ait une fin d'assujettissement en cours d'année, aucune tâche d'émission de DI
-		//      ne doit être générée immédiatement (on attendra le batch de début d'année pour ça)
+		// ->   il y a une fin d'assujettissement en cours d'année, une tâche d'émission de DI
+		//      doit être générée immédiatement
 
 		final RegDate aujourdhui = RegDate.get();
 		final int anneeCourante = aujourdhui.year();
@@ -4303,7 +4310,7 @@ public class TacheServiceTest extends BusinessTest {
 				// on crée déjà la DI de l'an dernier
 				final PeriodeFiscale pf = addPeriodeFiscale(anneeCourante - 1);
 				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
-				addDeclarationImpot(pp, pf, dateDebutActivite, date(anneeCourante - 1, 12, 31), TypeContribuable.HORS_SUISSE, modele);
+				addDeclarationImpot(pp, pf, dateDebutActivite, date(anneeCourante - 1, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
 
 				return pp.getNumero();
 			}
@@ -4320,7 +4327,14 @@ public class TacheServiceTest extends BusinessTest {
 				criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpot);
 				final List<Tache> taches = tacheDAO.find(criterion);
 				assertNotNull(taches);
-				assertEquals(0, taches.size());
+				assertEquals(1, taches.size());
+
+				final Tache tache = taches.get(0);
+				assertNotNull(tache);
+				assertEquals(TacheEnvoiDeclarationImpot.class, tache.getClass());
+
+				final TacheEnvoiDeclarationImpot tacheEnvoi = (TacheEnvoiDeclarationImpot) tache;
+				assertTache(TypeEtatTache.EN_INSTANCE, getNextSunday(aujourdhui), date(anneeCourante, 1, 1), aujourdhui, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.CEDI, tacheEnvoi);
 				return null;
 			}
 		});
@@ -4332,7 +4346,7 @@ public class TacheServiceTest extends BusinessTest {
 
 		// cas du contribuable HC qui possède un immeuble et qui le vend dans la période courante
 		// ->   bien qu'il y ait une fin d'assujettissement en cours d'année, aucune tâche d'émission de DI
-		//      ne doit être générée immédiatement (elle est de toute façon remplacée par une note)
+		//      ne doit être générée immédiatement (elle est remplacée par une note)
 
 		final RegDate aujourdhui = RegDate.get();
 		final int anneeCourante = aujourdhui.year();
