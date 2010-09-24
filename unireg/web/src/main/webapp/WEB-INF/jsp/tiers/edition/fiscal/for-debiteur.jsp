@@ -7,8 +7,7 @@
 	<table border="0">
 		<tr class="<unireg:nextRowClass/>" >
 			<td>
-				<a href="../fiscal/for.do?numero=<c:out value="${command.tiers.numero}"></c:out>&nature=DPI&height=150&width=900&index=&TB_iframe=true&modal=true" 
-				class="add thickbox" title="Ajouter for">&nbsp;<fmt:message key="label.bouton.ajouter" /></a>
+				<a href="../fiscal/for.do?numero=<c:out value="${command.tiers.numero}"></c:out>&nature=DPI&index=" class="add" title="Ajouter for">&nbsp;<fmt:message key="label.bouton.ajouter"/></a>
 			</td>
 		</tr>
 	</table>
