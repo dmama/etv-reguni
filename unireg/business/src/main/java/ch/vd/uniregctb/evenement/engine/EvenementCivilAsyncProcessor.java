@@ -26,6 +26,17 @@ public interface EvenementCivilAsyncProcessor {
 	int getDelaiPriseEnCompte();
 
 	/**
+	 * @return le nombre d'événements civils reçus (au travers de la méthode {@link #postEvenementCivil(long, long) postEvenementCivil})
+	 * depuis le démarrage du service
+	 */
+	int getNombreEvenementsRecus();
+
+	/**
+	 * @return le nombre d'événements civils traités depuis le démarrage du service
+	 */
+	int getNombreEvenementsTraites();
+
+	/**
 	 * Délai, en secondes, de latence pour s'assurer que les événements dans la queue sont bien triés dans le bon ordre
 	 * @param delai le délai (en secondes) d'attente avant de commencer à trier les événements en arrivée
 	 * @throws IllegalArgumentException si le delai est négatif ou nul

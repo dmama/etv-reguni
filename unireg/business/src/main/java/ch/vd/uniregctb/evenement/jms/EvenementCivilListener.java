@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.evenement.jms;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.apache.log4j.Logger;
 import org.apache.xmlbeans.XmlException;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -33,8 +35,12 @@ public class EvenementCivilListener extends EsbMessageListener {
 	private PlatformTransactionManager transactionManager;
 	private EvenementCivilAsyncProcessor evenementCivilAsyncProcessor;
 
+	private static final AtomicInteger nombreMessagesRecus = new AtomicInteger(0);
+
 	@Override
 	public void onEsbMessage(EsbMessage esbMessage) throws Exception {
+
+		nombreMessagesRecus.incrementAndGet();
 
 		try {
 			final String message = esbMessage.getBodyAsString();
@@ -60,6 +66,10 @@ public class EvenementCivilListener extends EsbMessageListener {
 			LOGGER.error(e, e);
 			throw e;
 		}
+	}
+
+	public static int getNombreMessagesRecus() {
+		return nombreMessagesRecus.intValue();
 	}
 
 	/**

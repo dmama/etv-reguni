@@ -4,6 +4,15 @@ import org.springframework.jmx.export.annotation.ManagedAttribute;
 
 public interface EvenementsCivilsJmxBean {
 
+	@ManagedAttribute(description = "Total number of events received from the JMS queue")
+	int getAllEventsReceived();
+
+	@ManagedAttribute(description = "Total number of events posted for processing since application start")
+	int getMeaningfullEventsReceived();
+
+	@ManagedAttribute(description = "Total number of events treated since application start")
+	int getEventsTreated();
+
 	@ManagedAttribute(description = "Number of events currently waiting to be processed sequencially")
 	int getTreatmentQueueSize();
 

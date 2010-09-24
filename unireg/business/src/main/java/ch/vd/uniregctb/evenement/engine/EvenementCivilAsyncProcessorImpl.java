@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -37,6 +38,17 @@ public class EvenementCivilAsyncProcessorImpl implements EvenementCivilAsyncProc
 	 * à leur ordre naturel)
 	 */
 	private final PriorityBlockingQueue<EvtData> queue = new PriorityBlockingQueue<EvtData>();
+
+	/**
+	 * Nombre d'événements postés dans la queue depuis le démarrage de l'application
+	 */
+	private final AtomicInteger nombreEvenementsPostes = new AtomicInteger(0);
+
+	/**
+	 * Nombre d'événements reçus sur la queue et traités depuis le démarrage de l'application (ce nombre est donc
+	 * toujours inférieur ou égal au nombre d'événements postés ({@link #nombreEvenementsPostes})
+	 */
+	private final AtomicInteger nombreEvenementsTraites = new AtomicInteger(0);
 
 	/**
 	 * Sera mis à <code>true</code> dans la phase d'extinction du service
@@ -139,6 +151,9 @@ public class EvenementCivilAsyncProcessorImpl implements EvenementCivilAsyncProc
 								catch (Exception e) {
 									// afin de ne pas faire sauter le thread en cas de problème lors du traitement de l'événement
 									LOGGER.error(String.format("Exception reçue lors du traitement de l'événement civil %d", data.evtId), e);
+								}
+								finally {
+									nombreEvenementsTraites.incrementAndGet();
 								}
 							}
 							else {
@@ -269,6 +284,7 @@ public class EvenementCivilAsyncProcessorImpl implements EvenementCivilAsyncProc
 	public void postEvenementCivil(long evtId, long timestamp) {
 		if (!dying) {
 			queue.add(new EvtData(evtId, timestamp));
+			nombreEvenementsPostes.incrementAndGet();
 		}
 	}
 
@@ -278,6 +294,14 @@ public class EvenementCivilAsyncProcessorImpl implements EvenementCivilAsyncProc
 
 	public int getDelaiPriseEnCompte() {
 		return delaiPriseEnCompte;
+	}
+
+	public int getNombreEvenementsRecus() {
+		return nombreEvenementsPostes.intValue();
+	}
+
+	public int getNombreEvenementsTraites() {
+		return nombreEvenementsTraites.intValue();
 	}
 
 	/**
