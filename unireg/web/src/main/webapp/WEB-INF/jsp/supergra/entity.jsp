@@ -26,7 +26,14 @@
 		<table border="0"><tr valign="top">
 		<td>
 
-			<h3>Edition du ${entity.key.type.displayName} n°${entity.key.id} &nbsp;<a href="<c:url value="/tiers/visu.do?id=${entity.key.id}"/>">(retour au mode normal)</a></h3>
+			<c:if test="${superGraSession.lastKnownTiersId != null}">
+				<c:set var="urlRetourNormal" value="/tiers/visu.do?id=${superGraSession.lastKnownTiersId}" />
+			</c:if>
+			<c:if test="${superGraSession.lastKnownTiersId == null}">
+				<c:set var="urlRetourNormal" value="/tiers/list.do" />
+			</c:if>
+
+			<h3>Edition du ${entity.key.type.displayName} n°${entity.key.id} &nbsp;<a href="<c:url value="${urlRetourNormal}"/>">(retour au mode normal)</a></h3>
 			<br/>
 
 			<%-- Affichage des erreurs de validation, si nécessaire --%>

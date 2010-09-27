@@ -234,6 +234,11 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 				final HibernateEntity entity = context.getEntity(key);
 				if (entity != null) {
 					fillView(entity, view);
+					
+					if (entity instanceof Tiers) {
+						// on affiche un tiers, on en profite pour mémoriser son numéro de manière à pouvoir revenir sur lui plus tard
+						session.setLastKnownTiersId((Long) entity.getKey());
+					}
 				}
 				return null;
 			}
