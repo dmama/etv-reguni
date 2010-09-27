@@ -36,8 +36,10 @@
 	<c:if test="${command.tiers != null}">
 
 		<authz:authorize ifAnyGranted="ROLE_SUPERGRA">
-			<div style="float: right; display: inline; margin-top: -1.5em;">
-				<a href="<c:url value="/supergra/entity.do?id=${command.tiersGeneral.numero}&class=Tiers"/>">Edition de ce tiers en mode SuperGra</a>
+			<div style="position:relative;">
+				<div style="position:absolute; top:-1.5em; right:0px;">
+					<a href="<c:url value="/supergra/entity.do?id=${command.tiersGeneral.numero}&class=Tiers"/>">Edition de ce tiers en mode SuperGra</a>
+				</div>
 			</div>
 		</authz:authorize>
 
