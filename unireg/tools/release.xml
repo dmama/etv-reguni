@@ -29,7 +29,7 @@
 		</file>
 		<file>
 			<!-- BEGIN_LVERSION -->
-			<source>target/uniregctb-tools-4.5.1b.jar</source>
+			<source>target/uniregctb-tools-4.5.2.jar</source>
 			<!-- END_LVERSION -->
 			<outputDirectory>lib</outputDirectory>
 			<destName>uniregctb-tools.jar</destName>
