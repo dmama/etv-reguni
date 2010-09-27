@@ -24,7 +24,7 @@ import ch.vd.uniregctb.webservices.tiers2.TiersService;
 import ch.vd.uniregctb.webservices.tiers2.UserLogin;
 
 /**
- * Outil pour aller chercher les adresses d'envoi (sur six lignes, donc) des contribuables
+ * Outil pour aller chercher les adresses d'envoi (sur six lignes, donc) des tiers
  * dont les numéros sont passés dans un fichier donné
  */
 public class AdresseExtractor {
@@ -43,7 +43,7 @@ public class AdresseExtractor {
 	private static final int oid = 22;
 
 	private static final int TAILLE_LOT = 100;
-	private static final String nomFichier = "ctbs.csv";
+	private static final String nomFichier = "tiers.csv";
 	
 	public static void main(String[] args) throws Exception {
 
