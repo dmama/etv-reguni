@@ -10,12 +10,12 @@
 		<ul>
 			<c:if test="${!entity.annule}">
 				<form:form method="post">
-					<li><input type="submit" name="disableEntity" value="Annuler l'entité"/></li>
+					<li><input type="submit" name="disableEntity" value="Annuler"/></li>
 				</form:form>
 			</c:if>
 			<c:if test="${entity.annule}">
 				<form:form method="post">
-					<li><input type="submit" name="enableEntity" value="Désannuler l'entité"/></li>
+					<li><input type="submit" name="enableEntity" value="Désannuler"/></li>
 				</form:form>
 			</c:if>
 		</ul>
