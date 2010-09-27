@@ -52,6 +52,13 @@ public class AddSubEntity extends Delta {
 		return key;
 	}
 
+	/**
+	 * @return la clé de la sous-entité créée par ce delta.
+	 */
+	public EntityKey getSubKey() {
+		return new EntityKey(EntityType.fromHibernateClass(subClass), id);
+	}
+
 	@SuppressWarnings({"unchecked"})
 	@Override
 	public void apply(HibernateEntity entity, SuperGraContext context) {

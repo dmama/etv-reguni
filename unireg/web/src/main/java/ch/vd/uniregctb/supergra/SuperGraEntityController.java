@@ -126,8 +126,15 @@ public class SuperGraEntityController extends SuperGraAbstractController {
 			throw new AccessDeniedException(ACCESS_DENIED);
 		}
 
-		if (handleCommonAction(request)) {
-			// rien d'autre à faire
+		final HandleResponse hr = handleCommonAction(request, view.getKey());
+		if (hr != null) {
+			if (hr instanceof OkRedirect) {
+				// on redirige comme demandé
+				return ((OkRedirect) hr).mav;
+			}
+			else {
+				// rien d'autre à faire
+			}
 		}
 		else if (handleDisableEntity(request, view) || handleEnableEntity(request, view)) {
 			// rien d'autre à faire

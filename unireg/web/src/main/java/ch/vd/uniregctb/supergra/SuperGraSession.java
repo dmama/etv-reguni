@@ -23,6 +23,11 @@ public class SuperGraSession {
 
 	private final Options options = new Options();
 
+	/**
+	 * L'id du dernier tiers affiché
+	 */
+	private Long lastKnownTiersId;
+
 	public List<Delta> getDeltas() {
 		return Collections.unmodifiableList(deltas);
 	}
@@ -63,5 +68,13 @@ public class SuperGraSession {
 
 	public Options getOptions() {
 		return options;
+	}
+
+	public Long getLastKnownTiersId() {
+		return lastKnownTiersId;
+	}
+
+	public void setLastKnownTiersId(Long lastKnownTiersId) {
+		this.lastKnownTiersId = lastKnownTiersId;
 	}
 }
