@@ -175,7 +175,7 @@ public class JspTagFormField extends BodyTagSupport {
 				editor.append("disabled=\"true\" ");
 			}
 
-			editor.append("\"/>");
+			editor.append("/>");
 
 			return editor.toString();
 		}
