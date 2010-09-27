@@ -40,7 +40,7 @@ public class EntityKey {
 
 	@Override
 	public String toString() {
-		return type.getDisplayName() + " n°" + id;
+		return (type == null ? "(unknown)" : type.getDisplayName()) + " n°" + id;
 	}
 }
 

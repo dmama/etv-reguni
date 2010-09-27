@@ -7,10 +7,10 @@ public class RefParam<T> {
 
 	public T ref;
 
-	RefParam() {
+	public RefParam() {
 	}
 
-	RefParam(T ref) {
+	public RefParam(T ref) {
 		this.ref = ref;
 	}
 }

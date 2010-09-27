@@ -58,11 +58,8 @@
 							<c:if test="${a.collection}">
 								<a href="coll.do?id=${entity.key.id}&class=${entity.key.type}&name=${a.name}"><c:out value="${a.value}"/></a>
 							</c:if>
-							<c:if test="${a.parentForeignKey}">
-								<a href="<c:url value="/supergra/entity.do?id=${a.value.id}&class=${a.parentEntityType}"/>"><c:out value="${a.value}"/></a>
-							</c:if>
-							<c:if test="${!a.collection && !a.parentForeignKey}">
-								<unireg:formField id="attributes_${a_rowNum - 1}" path="attributes[${a_rowNum - 1}].value" clazz="${a.type}" value="${a.value}" readonly="${a.readonly}"/>
+							<c:if test="${!a.collection}">
+								<unireg:superGraFormField id="attributes_${a_rowNum - 1}" path="attributes[${a_rowNum - 1}].value" clazz="${a.type}" value="${a.value}" readonly="${a.readonly}"/>
 							</c:if>
 						</display:column>
 				</display:table>
