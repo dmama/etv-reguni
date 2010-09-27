@@ -240,6 +240,43 @@
 	</tag>
 
 	<tag>
+		<name>superGraFormField</name>
+		<tag-class>ch.vd.uniregctb.taglibs.JspTagSuperGraFormField</tag-class>
+		<body-content>JSP</body-content>
+		<description>Tag qui génère un champ d'édition pour la propriété spécifiée en mode SuperGra.</description>
+		<attribute>
+			<name>clazz</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Le type de la propriété à éditer</description>
+		</attribute>
+		<attribute>
+			<name>value</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Le valeur de la propriété à éditer (peut être nulle)</description>
+		</attribute>
+		<attribute>
+			<name>path</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Le chemin de la propriété à éditer par rapport à la command</description>
+		</attribute>
+		<attribute>
+			<name>id</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>L'id html assigné au champ</description>
+		</attribute>
+		<attribute>
+			<name>readonly</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Si le champ est en lecture seule (= édition interdite) ou non</description>
+		</attribute>
+	</tag>
+
+	<tag>
 		<name>testMode</name>
 		<tag-class>ch.vd.uniregctb.taglibs.JspTagTestMode</tag-class>
 		<body-content>JSP</body-content>

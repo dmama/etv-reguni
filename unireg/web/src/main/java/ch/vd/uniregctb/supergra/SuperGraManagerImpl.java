@@ -66,12 +66,17 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 	private static final Set<String> readonlyProps = new HashSet<String>();
 
 	static {
+		// général
 		readonlyProps.add("annulationDate");
 		readonlyProps.add("annulationUser");
 		readonlyProps.add("logCreationDate");
 		readonlyProps.add("logCreationUser");
 		readonlyProps.add("logModifDate");
 		readonlyProps.add("logModifUser");
+		
+		// déclaration
+		readonlyProps.add("modeleDocument");
+		readonlyProps.add("periode");
 	}
 
 	/**

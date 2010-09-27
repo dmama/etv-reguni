@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.taglibs;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.JspWriter;
@@ -33,7 +34,7 @@ public class JspTagFormField extends BodyTagSupport {
 	private String id;
 	private boolean readonly;
 
-	private static final Map<Class, Editor> editors = new HashMap<Class, Editor>();
+	protected static final Map<Class, Editor> editors = new HashMap<Class, Editor>();
 
 	static {
 		editors.put(String.class, new StringEditor());
@@ -47,15 +48,9 @@ public class JspTagFormField extends BodyTagSupport {
 	@Override
 	public int doStartTag() throws JspException {
 
-		Editor editor = editors.get(clazz);
-		if (clazz.isEnum()) {
-			editor = new EnumEditor(); // cas spécial pour les enums
-		}
-		if (editor == null) {
-			editor = new StringEditor(); // éditeur par défaut
-		}
+		Editor editor = getEditor(clazz);
 
-		final String body = editor.generate(id, path, clazz, value, readonly);
+		final String body = editor.generate(id, path, clazz, value, readonly, (HttpServletRequest) this.pageContext.getRequest());
 
 		try {
 			JspWriter out = pageContext.getOut();
@@ -65,6 +60,26 @@ public class JspTagFormField extends BodyTagSupport {
 		catch (Exception ex) {
 			throw new JspTagException(ex);
 		}
+	}
+
+	private Editor getEditor(Class clazz) {
+		Editor editor = null;
+		if (this.clazz.isEnum()) {
+			editor = new EnumEditor(); // cas spécial pour les enums
+		}
+		else {
+			for (Map.Entry<Class, Editor> entry : editors.entrySet()) {
+				final Class key = entry.getKey();
+				if (key.isAssignableFrom(clazz)) {
+					editor = entry.getValue();
+					break;
+				}
+			}
+		}
+		if (editor == null) {
+			editor = new StringEditor(); // éditeur par défaut
+		}
+		return editor;
 	}
 
 	public void setClazz(Class clazz) {
@@ -87,12 +102,12 @@ public class JspTagFormField extends BodyTagSupport {
 		this.readonly = readonly;
 	}
 
-	private static interface Editor {
-		public abstract String generate(String id, String path, Class clazz, Object value, boolean readonly);
+	protected static interface Editor {
+		public abstract String generate(String id, String path, Class clazz, Object value, boolean readonly, HttpServletRequest request);
 	}
 
 	private static class StringEditor implements Editor {
-		public String generate(String id, String path, Class clazz, Object value, boolean readonly) {
+		public String generate(String id, String path, Class clazz, Object value, boolean readonly, HttpServletRequest request) {
 
 			final String v = value == null ? "" : StringEscapeUtils.escapeHtml(value.toString());
 			if (readonly) {
@@ -117,7 +132,7 @@ public class JspTagFormField extends BodyTagSupport {
 	}
 
 	private static class NumberEditor implements Editor {
-		public String generate(String id, String path, Class clazz, Object value, boolean readonly) {
+		public String generate(String id, String path, Class clazz, Object value, boolean readonly, HttpServletRequest request) {
 
 			final String v = value == null ? "" : value.toString();
 			if (readonly) {
@@ -142,7 +157,7 @@ public class JspTagFormField extends BodyTagSupport {
 	}
 
 	private static class BooleanEditor implements Editor {
-		public String generate(String id, String path, Class clazz, Object value, boolean readonly) {
+		public String generate(String id, String path, Class clazz, Object value, boolean readonly, HttpServletRequest request) {
 
 			final StringBuilder editor = new StringBuilder();
 			editor.append("<input ");
@@ -182,7 +197,7 @@ public class JspTagFormField extends BodyTagSupport {
 	}
 
 	private static class DateEditor implements Editor {
-		public String generate(String id, String path, Class clazz, Object value, boolean readonly) {
+		public String generate(String id, String path, Class clazz, Object value, boolean readonly, HttpServletRequest request) {
 
 			String displayDate;
 			if (value instanceof RegDate) {
@@ -224,7 +239,7 @@ public class JspTagFormField extends BodyTagSupport {
 
 	private static class EnumEditor implements Editor {
 
-		public String generate(String id, String path, Class clazz, Object value, boolean readonly) {
+		public String generate(String id, String path, Class clazz, Object value, boolean readonly, HttpServletRequest request) {
 
 			Assert.isTrue(clazz.isEnum());
 
