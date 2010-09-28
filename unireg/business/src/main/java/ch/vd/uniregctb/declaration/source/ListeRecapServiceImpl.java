@@ -342,11 +342,12 @@ public class ListeRecapServiceImpl implements ListeRecapService, DelegateEditiqu
 				}
 
 				if (periodiciteCourante.getPeriodiciteDecompte() == PeriodiciteDecompte.UNIQUE) {
-					DateRange datePeriode = extraireDatePeriode(periodiciteCourante, date);
+					PeriodeDecompte periode = periodiciteCourante.getPeriodeDecompte();
+					DateRange datePeriode =  periode.getPeriodeCourante(date);
 					if (DateRangeHelper.intersect(datePeriode, manquante)) {
 						lr.add(datePeriode);
 					}
-					date = datePeriode.getDateFin().addDays(1);
+					date = datePeriode.getDateFin().addYears(1);
 				}
 				else {
 					final RegDate debut = periodiciteCourante.getDebutPeriode(date);
@@ -360,190 +361,7 @@ public class ListeRecapServiceImpl implements ListeRecapService, DelegateEditiqu
 		return lr;
 	}
 
-	/**Function reprenant sur le fonctionnement de la methode setLRViewPeriodiciteUnique qui calcul la date de debut et de fin pour une periodicite de type unique
-	 *
-	 * @param periodiciteCourante
-	 * @param debiteur
-	 * @param date
-	 * @return
-	 */
-	private static DateRange extraireDatePeriode(Periodicite periodiciteCourante, RegDate date) {
-			RegDate nouvDateDebut = null;
-		RegDate nouvDateFin = null;
-		RegDate precDateFin = date;
-
-		int precMoisFin = precDateFin.month();
-		int precAnneeFin = precDateFin.year();
-		if (periodiciteCourante.getPeriodeDecompte().equals(PeriodeDecompte.M01)) {
-			nouvDateDebut = RegDate.get(precAnneeFin + 1, 1, 1);
-			nouvDateFin = RegDate.get(precAnneeFin + 1, 1, 31);
-		}
-		else if (periodiciteCourante.getPeriodeDecompte().equals(PeriodeDecompte.M02)) {
-			if (precMoisFin >= 2) {
-				nouvDateDebut = RegDate.get(precAnneeFin + 1, 2, 1);
-				nouvDateFin = RegDate.get(precAnneeFin + 1, 3, 1);
-				nouvDateFin = nouvDateFin.addDays(-1);
-			}
-			else {
-				nouvDateDebut = RegDate.get(precAnneeFin, 2, 1);
-				nouvDateFin = RegDate.get(precAnneeFin, 3, 1);
-				nouvDateFin = nouvDateFin.addDays(-1);
-			}
-		}
-		else if (periodiciteCourante.getPeriodeDecompte().equals(PeriodeDecompte.M03)) {
-			if (precMoisFin >= 3) {
-				nouvDateDebut = RegDate.get(precAnneeFin + 1, 3, 1);
-				nouvDateFin = RegDate.get(precAnneeFin + 1, 3, 31);
-			}
-			else {
-				nouvDateDebut = RegDate.get(precAnneeFin, 3, 1);
-				nouvDateFin = RegDate.get(precAnneeFin, 3, 31);
-			}
-		}
-		else if (periodiciteCourante.getPeriodeDecompte().equals(PeriodeDecompte.M04)) {
-			if (precMoisFin >= 4) {
-				nouvDateDebut = RegDate.get(precAnneeFin + 1, 4, 1);
-				nouvDateFin = RegDate.get(precAnneeFin + 1, 4, 30);
-			}
-			else {
-				nouvDateDebut = RegDate.get(precAnneeFin, 4, 1);
-				nouvDateFin = RegDate.get(precAnneeFin, 4, 30);
-			}
-		}
-		else if (periodiciteCourante.getPeriodeDecompte().equals(PeriodeDecompte.M05)) {
-			if (precMoisFin >= 5) {
-				nouvDateDebut = RegDate.get(precAnneeFin + 1, 5, 1);
-				nouvDateFin = RegDate.get(precAnneeFin + 1, 5, 31);
-			}
-			else {
-				nouvDateDebut = RegDate.get(precAnneeFin, 5, 1);
-				nouvDateFin = RegDate.get(precAnneeFin, 5, 31);
-			}
-		}
-		else if (periodiciteCourante.getPeriodeDecompte().equals(PeriodeDecompte.M06)) {
-			if (precMoisFin >= 6) {
-				nouvDateDebut = RegDate.get(precAnneeFin + 1, 6, 1);
-				nouvDateFin = RegDate.get(precAnneeFin + 1, 6, 30);
-			}
-			else {
-				nouvDateDebut = RegDate.get(precAnneeFin, 6, 1);
-				nouvDateFin = RegDate.get(precAnneeFin, 6, 30);
-			}
-		}
-		else if (periodiciteCourante.getPeriodeDecompte().equals(PeriodeDecompte.M07)) {
-			if (precMoisFin >= 7) {
-				nouvDateDebut = RegDate.get(precAnneeFin + 1, 7, 1);
-				nouvDateFin = RegDate.get(precAnneeFin + 1, 7, 31);
-			}
-			else {
-				nouvDateDebut = RegDate.get(precAnneeFin, 7, 1);
-				nouvDateFin = RegDate.get(precAnneeFin, 7, 31);
-			}
-		}
-		else if (periodiciteCourante.getPeriodeDecompte().equals(PeriodeDecompte.M08)) {
-			if (precMoisFin >= 8) {
-				nouvDateDebut = RegDate.get(precAnneeFin + 1, 8, 1);
-				nouvDateFin = RegDate.get(precAnneeFin + 1, 8, 31);
-			}
-			else {
-				nouvDateDebut = RegDate.get(precAnneeFin, 8, 1);
-				nouvDateFin = RegDate.get(precAnneeFin, 8, 31);
-			}
-		}
-		else if (periodiciteCourante.getPeriodeDecompte().equals(PeriodeDecompte.M09)) {
-			if (precMoisFin >= 9) {
-				nouvDateDebut = RegDate.get(precAnneeFin + 1, 9, 1);
-				nouvDateFin = RegDate.get(precAnneeFin + 1, 9, 30);
-			}
-			else {
-				nouvDateDebut = RegDate.get(precAnneeFin, 9, 1);
-				nouvDateFin = RegDate.get(precAnneeFin, 9, 30);
-			}
-		}
-		else if (periodiciteCourante.getPeriodeDecompte().equals(PeriodeDecompte.M10)) {
-			if (precMoisFin >= 10) {
-				nouvDateDebut = RegDate.get(precAnneeFin + 1, 10, 1);
-				nouvDateFin = RegDate.get(precAnneeFin + 1, 10, 31);
-			}
-			else {
-				nouvDateDebut = RegDate.get(precAnneeFin, 10, 1);
-				nouvDateFin = RegDate.get(precAnneeFin, 10, 31);
-			}
-		}
-		else if (periodiciteCourante.getPeriodeDecompte().equals(PeriodeDecompte.M11)) {
-			if (precMoisFin >= 11) {
-				nouvDateDebut = RegDate.get(precAnneeFin + 1, 11, 1);
-				nouvDateFin = RegDate.get(precAnneeFin + 1, 11, 30);
-			}
-			else {
-				nouvDateDebut = RegDate.get(precAnneeFin, 11, 1);
-				nouvDateFin = RegDate.get(precAnneeFin, 11, 30);
-			}
-		}
-		else if (periodiciteCourante.getPeriodeDecompte().equals(PeriodeDecompte.M12)) {
-			if (precMoisFin == 12) {
-				nouvDateDebut = RegDate.get(precAnneeFin + 1, 12, 1);
-				nouvDateFin = RegDate.get(precAnneeFin + 1, 12, 31);
-			}
-			else {
-				nouvDateDebut = RegDate.get(precAnneeFin, 12, 1);
-				nouvDateFin = RegDate.get(precAnneeFin, 12, 31);
-			}
-		}
-		else if (periodiciteCourante.getPeriodeDecompte().equals(PeriodeDecompte.T1)) {
-			nouvDateDebut = RegDate.get(precAnneeFin + 1, 1, 1);
-			nouvDateFin = RegDate.get(precAnneeFin + 1, 3, 31);
-		}
-		else if (periodiciteCourante.getPeriodeDecompte().equals(PeriodeDecompte.T2)) {
-			if (precMoisFin >= 3) {
-				nouvDateDebut = RegDate.get(precAnneeFin + 1, 4, 1);
-				nouvDateFin = RegDate.get(precAnneeFin + 1, 6, 30);
-			}
-			else {
-				nouvDateDebut = RegDate.get(precAnneeFin, 4, 1);
-				nouvDateFin = RegDate.get(precAnneeFin, 6, 31);
-			}
-		}
-		else if (periodiciteCourante.getPeriodeDecompte().equals(PeriodeDecompte.T3)) {
-			if (precMoisFin >= 6) {
-				nouvDateDebut = RegDate.get(precAnneeFin + 1, 7, 1);
-				nouvDateFin = RegDate.get(precAnneeFin + 1, 9, 30);
-			}
-			else {
-				nouvDateDebut = RegDate.get(precAnneeFin, 7, 1);
-				nouvDateFin = RegDate.get(precAnneeFin, 9, 30);
-			}
-		}
-		else if (periodiciteCourante.getPeriodeDecompte().equals(PeriodeDecompte.T4)) {
-			if (precMoisFin >= 9) {
-				nouvDateDebut = RegDate.get(precAnneeFin + 1, 10, 1);
-				nouvDateFin = RegDate.get(precAnneeFin + 1, 12, 31);
-			}
-			else {
-				nouvDateDebut = RegDate.get(precAnneeFin, 10, 1);
-				nouvDateFin = RegDate.get(precAnneeFin, 10, 31);
-			}
-		}
-		else if (periodiciteCourante.getPeriodeDecompte().equals(PeriodeDecompte.S1)) {
-			nouvDateDebut = RegDate.get(precAnneeFin + 1, 1, 1);
-			nouvDateFin = RegDate.get(precAnneeFin + 1, 6, 30);
-		}
-		else if (periodiciteCourante.getPeriodeDecompte().equals(PeriodeDecompte.S2)) {
-			if (precMoisFin >= 6) {
-				nouvDateDebut = RegDate.get(precAnneeFin + 1, 7, 1);
-				nouvDateFin = RegDate.get(precAnneeFin + 1, 12, 31);
-			}
-			else {
-				nouvDateDebut = RegDate.get(precAnneeFin, 7, 1);
-				nouvDateFin = RegDate.get(precAnneeFin, 12, 31);
-			}
-		}
-		else if (periodiciteCourante.getPeriodeDecompte().equals(PeriodeDecompte.A)) {
-			nouvDateDebut = RegDate.get(precAnneeFin + 1, 1, 1);
-			nouvDateFin = RegDate.get(precAnneeFin + 1, 12, 31);
-		}
-		return new DateRangeHelper.Range(nouvDateDebut,nouvDateFin);
-	}
+	
 
 	public void surDocumentRecu(EditiqueResultat resultat) {
 	}
