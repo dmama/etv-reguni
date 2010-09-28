@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.common;
 
+import javax.sql.DataSource;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -7,14 +8,14 @@ import java.io.Writer;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
-import javax.sql.DataSource;
-
-import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.declaration.*;
-import ch.vd.uniregctb.tiers.*;
-import ch.vd.uniregctb.type.*;
 import org.dbunit.DatabaseUnitException;
 import org.dbunit.database.CachedResultSetTableFactory;
 import org.dbunit.database.DatabaseConfig;
@@ -49,6 +50,57 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.util.Log4jConfigurer;
 import org.springframework.util.ResourceUtils;
 import org.xml.sax.InputSource;
+
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.declaration.Declaration;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
+import ch.vd.uniregctb.declaration.DelaiDeclaration;
+import ch.vd.uniregctb.declaration.EtatDeclaration;
+import ch.vd.uniregctb.declaration.ModeleDocument;
+import ch.vd.uniregctb.declaration.ModeleFeuilleDocument;
+import ch.vd.uniregctb.declaration.PeriodeFiscale;
+import ch.vd.uniregctb.tiers.AppartenanceMenage;
+import ch.vd.uniregctb.tiers.AutreCommunaute;
+import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
+import ch.vd.uniregctb.tiers.ConseilLegal;
+import ch.vd.uniregctb.tiers.ContactImpotSource;
+import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.Curatelle;
+import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
+import ch.vd.uniregctb.tiers.DroitAcces;
+import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
+import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.ForDebiteurPrestationImposable;
+import ch.vd.uniregctb.tiers.ForFiscalAutreImpot;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
+import ch.vd.uniregctb.tiers.MenageCommun;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.tiers.RepresentationConventionnelle;
+import ch.vd.uniregctb.tiers.SituationFamilleMenageCommun;
+import ch.vd.uniregctb.tiers.TacheAnnulationDeclarationImpot;
+import ch.vd.uniregctb.tiers.TacheControleDossier;
+import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpot;
+import ch.vd.uniregctb.tiers.TacheNouveauDossier;
+import ch.vd.uniregctb.tiers.TacheTransmissionDossier;
+import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.tiers.TiersDAO;
+import ch.vd.uniregctb.tiers.Tutelle;
+import ch.vd.uniregctb.type.GenreImpot;
+import ch.vd.uniregctb.type.ModeImposition;
+import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.MotifRattachement;
+import ch.vd.uniregctb.type.Niveau;
+import ch.vd.uniregctb.type.Qualification;
+import ch.vd.uniregctb.type.Sexe;
+import ch.vd.uniregctb.type.TarifImpotSource;
+import ch.vd.uniregctb.type.TypeAdresseRetour;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.uniregctb.type.TypeContribuable;
+import ch.vd.uniregctb.type.TypeDocument;
+import ch.vd.uniregctb.type.TypeDroitAcces;
+import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.TypeEtatTache;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
@@ -868,16 +920,16 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		return dpi;
 	}
 
-	protected DebiteurPrestationImposable addDebiteur(Contribuable ctb, String complementNom) {
+	protected DebiteurPrestationImposable addDebiteur(String complementNom, Contribuable ctbLie, RegDate dateDebutContact) {
 		DebiteurPrestationImposable dpi = new DebiteurPrestationImposable();
 		dpi.setComplementNom(complementNom);
 		dpi = (DebiteurPrestationImposable) hibernateTemplate.merge(dpi);
 
-		ContactImpotSource rapport = new ContactImpotSource(null, null, ctb, dpi);
+		ContactImpotSource rapport = new ContactImpotSource(dateDebutContact, null, ctbLie, dpi);
 		rapport = (ContactImpotSource) hibernateTemplate.merge(rapport);
 
 		dpi.addRapportObjet(rapport);
-		ctb.addRapportSujet(rapport);
+		ctbLie.addRapportSujet(rapport);
 
 		return dpi;
 	}

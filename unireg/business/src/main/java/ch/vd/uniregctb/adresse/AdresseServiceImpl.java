@@ -222,7 +222,10 @@ public class AdresseServiceImpl implements AdresseService {
 				// on prend le contribuable associé au débiteur comme pour adresse (enfin, s'il existe)
 				final Contribuable ctb = tiersService.getContribuable(debiteur);
 				if (ctb != null) {
-					data = new EnvoiInfo(debiteur, ctb, false, type, null);
+					final AdresseGenerique adresseCtb = getAdresseFiscale(ctb, type, date, false);
+					if (adresseCtb != null) { // on prend en compte le contribuable associé que s'il possède au moins une adresse valide [UNIREG-2896]
+						data = new EnvoiInfo(debiteur, ctb, false, type, null);
+					}
 				}
 			}
 		}
