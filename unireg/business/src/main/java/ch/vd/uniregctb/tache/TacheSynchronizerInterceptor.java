@@ -20,6 +20,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.hibernate.interceptor.ModificationInterceptor;
 import ch.vd.uniregctb.hibernate.interceptor.ModificationSubInterceptor;
@@ -83,8 +84,14 @@ public class TacheSynchronizerInterceptor implements ModificationSubInterceptor,
 			return; // rien à faire
 		}
 
+		final boolean authenticated = AuthenticationHelper.isAuthenticated();
+
 		try {
 			parent.setEnabledForThread(false); // on désactive l'intercepteur pour éviter de s'intercepter soi-même
+
+			if (!authenticated) { // [UNIREG-2894] dans le context post-transactional suite à la réception d'un événement JMS, l'autentification n'est pas renseignée. On le fait donc à la volée ici.
+				AuthenticationHelper.setPrincipal("AutoSynchro");
+			}
 
 			final TransactionTemplate template = new TransactionTemplate((PlatformTransactionManager) transactionManager);
 			template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
@@ -100,6 +107,11 @@ public class TacheSynchronizerInterceptor implements ModificationSubInterceptor,
 			throw e;
 		}
 		finally {
+
+			if (!authenticated) { // [UNIREG-2894] si on était pas autentifié et qu'on l'a fait à la volée, on resette cette autentification ici.
+				AuthenticationHelper.resetAuthentication();
+			}
+
 			parent.setEnabledForThread(true);
 			set.clear();
 		}
