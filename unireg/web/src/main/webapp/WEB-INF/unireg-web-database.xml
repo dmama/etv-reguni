@@ -7,6 +7,7 @@
 	<!-- Audit -->
 	<bean id="auditManager" class="ch.vd.uniregctb.audit.AuditManager">
 		<property name="auditLineDAO" ref="auditLineDAO" />
+		<property name="delaiPurge" value="185"/>
 		<!-- BEGIN_LVERSION -->
 		<property name="appName" value="Web (version 4.7-SNAPSHOT)" />
 		<!-- END_LVERSION -->

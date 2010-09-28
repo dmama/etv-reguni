@@ -7,15 +7,19 @@ import ch.vd.uniregctb.common.ParamPagination;
 
 public interface AuditLineDAO extends GenericDAO<AuditLine, Long> {
 
-	public static final int DEFAULT_BATCH_SIZE = 50;
+	List<AuditLine> find(AuditLineCriteria criterion, ParamPagination paramPagination);
 
-	public List<AuditLine> find(AuditLineCriteria criterion, ParamPagination paramPagination);
+	List<AuditLine> findLastCountFromID(long id, int count);
 
-	public List<AuditLine> findLastCountFromID(long id, int count);
+	List<AuditLine> find(long evenementCivilId);
 
-	public List<AuditLine> find(long evenementCivilId);
+	void insertLineInNewTx(AuditLine line);
 
-	public void insertLineInNewTx(AuditLine line);
+	int count(AuditLineCriteria criteria);
 
-	public int count(AuditLineCriteria criteria);
+	/**
+	 * @param delaiPurge Délai (en jours) au delà duquel les vieilles lignes d'audit doivent être effacées (toujours strictement positif!)
+	 * @return nombre de lignes d'audit effectivement effacées
+	 */
+	int purge(int delaiPurge);
 }

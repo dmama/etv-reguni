@@ -6,7 +6,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
-import java.util.Date;
 import java.util.List;
 
 import javax.sql.DataSource;
@@ -16,7 +15,6 @@ import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.dialect.Dialect;
-import org.hibernate.util.ReflectHelper;
 import org.hsqldb.Types;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.support.DataAccessUtils;
@@ -24,6 +22,7 @@ import org.springframework.orm.hibernate3.HibernateCallback;
 
 import ch.vd.registre.base.dao.GenericDAOImpl;
 import ch.vd.registre.base.date.DateHelper;
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.ParamPagination;
@@ -105,9 +104,8 @@ public class AuditLineDAOImpl extends GenericDAOImpl<AuditLine, Long> implements
 	}
 
 	public int count(AuditLineCriteria criteria) {
-		String query = "select count(*) " + buildSql(criteria);
-		int count = DataAccessUtils.intResult(getHibernateTemplate().find(query));
-		return count;
+		final String query = "select count(*) " + buildSql(criteria);
+		return DataAccessUtils.intResult(getHibernateTemplate().find(query));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -117,7 +115,7 @@ public class AuditLineDAOImpl extends GenericDAOImpl<AuditLine, Long> implements
 
 		final List<AuditLine> list = (List<AuditLine>) getHibernateTemplate().execute(new HibernateCallback() {
 			public Object doInHibernate(Session session) throws HibernateException {
-				Query queryObject = session.createQuery(query);
+				final Query queryObject = session.createQuery(query);
 				queryObject.setParameter("start", id);
 				queryObject.setMaxResults(count);
 				return queryObject.list();
@@ -134,7 +132,7 @@ public class AuditLineDAOImpl extends GenericDAOImpl<AuditLine, Long> implements
 
 		final List<AuditLine> list = (List<AuditLine>) getHibernateTemplate().execute(new HibernateCallback() {
 			public Object doInHibernate(Session session) throws HibernateException {
-				Query queryObject = session.createQuery(query);
+				final Query queryObject = session.createQuery(query);
 				queryObject.setParameter("id", evenementCivilId);
 				return queryObject.list();
 			}
@@ -149,16 +147,12 @@ public class AuditLineDAOImpl extends GenericDAOImpl<AuditLine, Long> implements
 	 */
 	public void insertLineInNewTx(final AuditLine line) {
 
-		try {
-
-			Connection con = dataSource.getConnection();
-			try {
-
-				final long id = getNextId(con);
+		doWithNewConnection(new Callback<Object>() {
+			public Object execute(Connection connection) throws SQLException {
+				final long id = getNextId(connection);
 				final Timestamp now = new Timestamp(DateHelper.getCurrentDate().getTime());
 
-				PreparedStatement stat = con
-						.prepareStatement("insert into AUDIT_LOG (id, LOG_LEVEL, DOC_ID, EVT_ID, THREAD_ID, MESSAGE, LOG_DATE, LOG_USER) values (?, ?, ?, ?, ?, ?, ?, ?)");
+				final PreparedStatement stat = connection.prepareStatement("insert into AUDIT_LOG (id, LOG_LEVEL, DOC_ID, EVT_ID, THREAD_ID, MESSAGE, LOG_DATE, LOG_USER) values (?, ?, ?, ?, ?, ?, ?, ?)");
 				stat.setLong(1, id);
 				stat.setString(2, line.getLevel().toString());
 				stat.setObject(3, line.getDocumentId(), Types.BIGINT);
@@ -169,23 +163,40 @@ public class AuditLineDAOImpl extends GenericDAOImpl<AuditLine, Long> implements
 				stat.setObject(8, AuthenticationHelper.getCurrentPrincipal(), Types.VARCHAR);
 
 				stat.execute();
+				return null;
+			}
+		});
+	}
+
+	private static interface Callback<T> {
+		T execute(Connection connection) throws SQLException;
+	}
+
+	private <T> T doWithNewConnection(Callback<T> callback) {
+		try {
+			final Connection con = dataSource.getConnection();
+			try {
+				return callback.execute(con);
 			}
 			finally {
 				con.close();
 			}
 		}
-		catch (Exception e) {
+		catch (RuntimeException e) {
+			LOGGER.error(e, e);
+			throw e;
+		}
+		catch (SQLException e) {
 			LOGGER.error(e, e);
 			throw new RuntimeException(e);
 		}
 	}
 
 	private long getNextId(Connection con) throws SQLException {
-		Statement stat = con.createStatement();
-		ResultSet rs = stat.executeQuery(nextValSql);
+		final Statement stat = con.createStatement();
+		final ResultSet rs = stat.executeQuery(nextValSql);
 		Assert.isTrue(rs.next());
-		long id = rs.getLong(1);
-		return id;
+		return rs.getLong(1);
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
@@ -202,5 +213,19 @@ public class AuditLineDAOImpl extends GenericDAOImpl<AuditLine, Long> implements
 	protected void initDao() throws Exception {
 		super.initDao();
 		nextValSql = dialect.getSequenceNextValString("hibernate_sequence");
+	}
+
+	public int purge(final int delaiPurge) {
+		Assert.isTrue(delaiPurge > 0);
+		return doWithNewConnection(new Callback<Integer>() {
+			public Integer execute(Connection connection) throws SQLException {
+				final RegDate seuilPurge = RegDate.get().addDays(- delaiPurge);
+				final Timestamp seuilTimestamp = new Timestamp(seuilPurge.asJavaDate().getTime());
+				final PreparedStatement stat = connection.prepareStatement("delete from AUDIT_LOG WHERE LOG_DATE < ?");
+				stat.setTimestamp(1, seuilTimestamp);
+				stat.execute();
+				return stat.getUpdateCount();
+			}
+		});
 	}
 }
