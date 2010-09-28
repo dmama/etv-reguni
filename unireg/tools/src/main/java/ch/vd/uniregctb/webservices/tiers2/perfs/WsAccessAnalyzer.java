@@ -111,18 +111,24 @@ public class WsAccessAnalyzer {
 
 	private void print() {
 
-		for (Map.Entry<String, List<ResponseTimeRange>> entry : results.entrySet()) {
+		final List<String> methods = new ArrayList<String>(results.keySet());
+		Collections.sort(methods);
 
-			System.out.println("=> " + entry.getKey() + " (nombre d'appels) :");
+		final StringBuilder header = new StringBuilder();
+		header.append("Nom de méthode;");
+		for (TimeRange range : ResponseTimeRange.DEFAULT_TIME_RANGES) {
+			header.append(range).append(";");
+		}
+		System.out.println(header);
 
-			final List<ResponseTimeRange> list = entry.getValue();
-			Collections.sort(list);
-
-			for (ResponseTimeRange r : list) {
-				System.out.println(r);
+		for (String method : methods) {
+			final StringBuilder line = new StringBuilder();
+			line.append(method).append(";");
+			final List<ResponseTimeRange> time = results.get(method);
+			for (ResponseTimeRange t : time) {
+				line.append(t.getCount()).append(';');
 			}
-
-			System.out.println();
+			System.out.println(line);
 		}
 	}
 
