@@ -28,6 +28,7 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.utils.ObjectGetterHelper;
 import ch.vd.registre.base.validation.Validateable;
 import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.hibernate.meta.MetaEntity;
 import ch.vd.uniregctb.hibernate.meta.Property;
@@ -211,12 +212,20 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 	 * @return la valeur retournée par le callback.
 	 */
 	private Object execute(final HibernateCallback action) {
-		final TransactionTemplate template = new TransactionTemplate(transactionManager);
-		return template.execute(new TransactionCallback() {
-			public Object doInTransaction(TransactionStatus status) {
-				return hibernateTemplate.execute(action);
-			}
-		});
+
+		final String principal = AuthenticationHelper.getCurrentPrincipal();
+		AuthenticationHelper.pushPrincipal(String.format("%s-SuperGra", principal));
+		try {
+			final TransactionTemplate template = new TransactionTemplate(transactionManager);
+			return template.execute(new TransactionCallback() {
+				public Object doInTransaction(TransactionStatus status) {
+					return hibernateTemplate.execute(action);
+				}
+			});
+		}
+		finally {
+			AuthenticationHelper.popPrincipal();
+		}
 	}
 
 	public void fillView(final EntityKey key, final EntityView view, final SuperGraSession session) {
