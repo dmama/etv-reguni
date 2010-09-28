@@ -39,7 +39,7 @@ public class AuditManager implements InitializingBean, DisposableBean {
 			if (delaiPurge > 0) {
 				Audit.info(String.format("Purge des lignes d'audit plus vieilles que %d jour(s).", delaiPurge));
 				final int nbLignesPurgees = dao.purge(delaiPurge);
-				Audit.info(String.format("Purge de l'audit terminées : %d ligne(s) effacée(s)", nbLignesPurgees));
+				Audit.info(String.format("Purge de l'audit terminée : %d ligne(s) effacée(s)", nbLignesPurgees));
 			}
 		}
 		finally {
