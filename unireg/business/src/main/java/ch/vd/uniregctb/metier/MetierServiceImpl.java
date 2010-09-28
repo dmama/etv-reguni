@@ -2149,9 +2149,12 @@ public class MetierServiceImpl implements MetierService {
 
 		final boolean wasDefuntHabitant = defunt != null && defunt.isHabitantVD();
 
-		// [UNIREG-2653] un habitant décédé doit passer non-habitant
+		// [UNIREG-2653] un habitant décédé doit passer non-habitant (seulement s'il est effectivement décédé au civil)
 		if (wasDefuntHabitant) {
-			tiersService.changeHabitantenNH(defunt);
+			final Individu individu = tiersService.getIndividu(defunt);
+			if (individu.getDateDeces() != null) {
+				tiersService.changeHabitantenNH(defunt);
+			}
 		}
 		if (defunt != null && (!wasDefuntHabitant || numeroEvenement == null)) {
 			// si décès via IHM on surcharge la date de décès du civil

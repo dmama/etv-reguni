@@ -15,6 +15,7 @@ import ch.vd.uniregctb.evenement.AbstractEvenementHandlerTest;
 import ch.vd.uniregctb.evenement.EvenementCivilErreur;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.Individu;
+import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -318,10 +319,16 @@ public class DecesHandlerTest extends AbstractEvenementHandlerTest {
 		assertEquals(1, getEvenementFiscalService().getEvenementFiscals(menageCommun).size());
 	}
 
-	private Deces createValidDeces(Individu individu, Individu conjoint) {
+	private Deces createValidDeces(Individu ppal, Individu conjoint) {
+
+		doModificationIndividu(ppal.getNoTechnique(), new IndividuModification() {
+			public void modifyIndividu(MockIndividu individu) {
+				individu.setDateDeces(DATE_DECES);
+			}
+		});
 
 		final MockDeces deces = new MockDeces();
-		deces.setIndividu(individu);
+		deces.setIndividu(ppal);
 		deces.setConjointSurvivant(conjoint);
 		deces.setNumeroOfsCommuneAnnonce(5652);
 		deces.setDate(DATE_DECES);
