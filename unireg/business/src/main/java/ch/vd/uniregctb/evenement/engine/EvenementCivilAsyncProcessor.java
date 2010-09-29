@@ -10,9 +10,8 @@ public interface EvenementCivilAsyncProcessor {
 	 * Appelé à la réception d'un événement civil : place celui-ci dans une queue
 	 * d'attente en vue du traitement
 	 * @param evtId ID technique de l'événement civil à traiter
-	 * @param timestamp timestamp (voir {@link System#currentTimeMillis()}) de l'arrivée de l'événement
 	 */
-	void postEvenementCivil(long evtId, long timestamp);
+	void postEvenementCivil(long evtId);
 
 	/**
 	 * @return le nombre d'éléments actuellement en attente dans la queue
@@ -26,7 +25,7 @@ public interface EvenementCivilAsyncProcessor {
 	int getDelaiPriseEnCompte();
 
 	/**
-	 * @return le nombre d'événements civils reçus (au travers de la méthode {@link #postEvenementCivil(long, long) postEvenementCivil})
+	 * @return le nombre d'événements civils reçus (au travers de la méthode {@link #postEvenementCivil(long) postEvenementCivil})
 	 * depuis le démarrage du service
 	 */
 	int getNombreEvenementsRecus();

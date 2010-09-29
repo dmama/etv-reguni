@@ -251,7 +251,7 @@ public class EvenementCivilAsyncProcessorImpl implements EvenementCivilAsyncProc
 								LOGGER.info(String.format("Trouvé %d événements civils 'A_TRAITER'", evts.size()));
 
 								for (EvenementCivilData evt : evts) {
-									postEvenementCivil(evt.getId(), System.currentTimeMillis());
+									postEvenementCivil(evt.getId());
 								}
 							}
 							else {
@@ -281,9 +281,9 @@ public class EvenementCivilAsyncProcessorImpl implements EvenementCivilAsyncProc
 		queueListener = null;
 	}
 
-	public void postEvenementCivil(long evtId, long timestamp) {
+	public void postEvenementCivil(long evtId) {
 		if (!dying) {
-			queue.add(new EvtData(evtId, timestamp));
+			queue.add(new EvtData(evtId, System.currentTimeMillis()));
 			nombreEvenementsPostes.incrementAndGet();
 		}
 	}

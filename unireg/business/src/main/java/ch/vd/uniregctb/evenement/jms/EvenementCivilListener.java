@@ -95,10 +95,9 @@ public class EvenementCivilListener extends EsbMessageListener {
 		}
 
 		final long insertion = System.nanoTime();
-		final long creationTime = System.currentTimeMillis();
 
 		// on poste une demande de traitement pour cet événement
-		evenementCivilAsyncProcessor.postEvenementCivil(evenement.getId(), creationTime);
+		evenementCivilAsyncProcessor.postEvenementCivil(evenement.getId());
 
 		final long post = System.nanoTime();
 

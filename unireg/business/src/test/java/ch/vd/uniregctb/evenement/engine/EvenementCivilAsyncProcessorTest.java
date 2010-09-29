@@ -7,13 +7,8 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionTemplate;
 
-import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.NotImplementedException;
-import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.evenement.EvenementCivilDAO;
@@ -89,30 +84,22 @@ public class EvenementCivilAsyncProcessorTest extends BusinessTest {
 	public void testOrdreTraitement() throws Exception {
 
 		final int THREADS = 10;
-		final int EVTS_PAR_THREAD = 50;
+		final int EVTS_PAR_THREAD = 100;
 
-		// on met en place une dizaine de threads qui envoient chacun une dizaine d'événements civils
+		// on met en place une dizaine de threads qui envoient chacun plusieurs événements civils
 		// -> quel que soit l'ordre d'envoi des événements civils, ils doivent arriver dans l'ordre
 		final List<Thread> threads = new ArrayList<Thread>();
 		for (int i = 0 ; i < THREADS; ++ i) {
 			final int threadIndex = i;
 			final Thread thread = new Thread(new Runnable() {
 				public void run() {
-					AuthenticationHelper.setPrincipal("Evt-Civil-Thread-" + threadIndex);
 					for (int j = 0 ; j < EVTS_PAR_THREAD ; ++ j) {
 						final long id = threadIndex * EVTS_PAR_THREAD + j;
-						final RegDate date = RegDate.get();
-
-						final TransactionTemplate template = new TransactionTemplate(transactionManager);
-						template.execute(new TransactionCallback() {
-							public Object doInTransaction(TransactionStatus status) {
-								asyncProcessor.postEvenementCivil(id, System.currentTimeMillis());
-								return null;
-							}
-						});
+						asyncProcessor.postEvenementCivil(id);
 					}
 				}
 			}, String.format("Thread-%d", threadIndex));
+
 			threads.add(thread);
 		}
 
