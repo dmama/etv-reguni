@@ -215,11 +215,10 @@ public class AuditLineDAOImpl extends GenericDAOImpl<AuditLine, Long> implements
 		nextValSql = dialect.getSequenceNextValString("hibernate_sequence");
 	}
 
-	public int purge(final int delaiPurge) {
-		Assert.isTrue(delaiPurge > 0);
+	public int purge(final RegDate seuilPurge) {
+		Assert.notNull(seuilPurge);
 		return doWithNewConnection(new Callback<Integer>() {
 			public Integer execute(Connection connection) throws SQLException {
-				final RegDate seuilPurge = RegDate.get().addDays(- delaiPurge);
 				final Timestamp seuilTimestamp = new Timestamp(seuilPurge.asJavaDate().getTime());
 				final PreparedStatement stat = connection.prepareStatement("delete from AUDIT_LOG WHERE LOG_DATE < ?");
 				stat.setTimestamp(1, seuilTimestamp);
