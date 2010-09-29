@@ -313,9 +313,6 @@ public class DebiteurPrestationImposable extends Tiers {
 				}
 			}
 		}
-		else {
-			return new Periodicite(periodiciteDecompte, periodeDecompte, RegDate.get(getLogCreationDate()), null);
-		}
 		return null;
 	}
 
