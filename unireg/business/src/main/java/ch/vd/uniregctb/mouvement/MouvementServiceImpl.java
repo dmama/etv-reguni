@@ -1,7 +1,7 @@
 package ch.vd.uniregctb.mouvement;
 
 import javax.jms.JMSException;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -80,7 +80,9 @@ public class MouvementServiceImpl implements MouvementService {
 			elt.setBordereau(bordereau);
 		}
 
-		final Set<MouvementDossier> contenu = new HashSet<MouvementDossier>(mvts);
+		// LinkedHashSet pour conserver l'ordre de la liste originale dans l'itération
+		// qui va mener à l'impression...
+		final Set<MouvementDossier> contenu = new LinkedHashSet<MouvementDossier>(mvts);
 		bordereau.setContenu(contenu);
 
 		// demande d'impression éditique synchrone...
