@@ -89,7 +89,7 @@ public class EvenementCivilAsyncProcessorTest extends BusinessTest {
 	public void testOrdreTraitement() throws Exception {
 
 		final int THREADS = 10;
-		final int EVTS_PAR_THREAD = 5;
+		final int EVTS_PAR_THREAD = 50;
 
 		// on met en place une dizaine de threads qui envoient chacun une dizaine d'événements civils
 		// -> quel que soit l'ordre d'envoi des événements civils, ils doivent arriver dans l'ordre
