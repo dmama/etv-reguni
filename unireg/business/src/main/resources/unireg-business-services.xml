@@ -12,6 +12,7 @@
 		<property name="serviceInfra" ref="serviceInfrastructureService" />
 		<property name="adresseService" ref="adresseService" />
 		<property name="tiersService" ref="tiersService" />
+		<property name="servicePM" ref="servicePersonneMoraleService" />
 		<property name="transactionManager" ref="transactionManager" />
 		<property name="sessionFactory"  ref="sessionFactory"/>
 		<property name="statsService" ref="statsService" />

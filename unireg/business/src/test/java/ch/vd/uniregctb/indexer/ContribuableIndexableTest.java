@@ -39,10 +39,13 @@ import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.mock.MockHistoriqueIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
+import ch.vd.uniregctb.interfaces.model.mock.MockPersonneMorale;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleService;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceInfrastructureService;
+import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServicePM;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
 import ch.vd.uniregctb.tiers.AppartenanceMenage;
 import ch.vd.uniregctb.tiers.AutreCommunaute;
@@ -50,6 +53,7 @@ import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.ContactImpotSource;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
+import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
@@ -82,6 +86,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 	private TiersServiceImpl tiersService;
 	private ServiceCivilService serviceCivil;
 	private ServiceInfrastructureService serviceInfra;
+	private ServicePersonneMoraleService servicePM;
 	private MockTiersDAO tiersDAO;
 	
 	@Override
@@ -115,19 +120,22 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 				addIndividu(4567L, RegDate.get(1970, 1, 1), "Dupond", "Arnold", true);
 			}
 		};
-		
+
 		tiersDAO = new MockTiersDAO();
 
 		tiersService = new TiersServiceImpl();
 		serviceInfra = new DefaultMockServiceInfrastructureService();
+		servicePM = new DefaultMockServicePM();
 		tiersService.setServiceInfra(serviceInfra);
 		tiersService.setServiceCivilService(serviceCivil);
 		tiersService.setTiersDAO(tiersDAO);
+		tiersService.setServicePM(servicePM);
 
 		adresseService = new AdresseServiceImpl();
 		adresseService.setServiceInfra(new DefaultMockServiceInfrastructureService());
 		adresseService.setServiceCivilService(serviceCivil);
 		adresseService.setTiersService(tiersService);
+		adresseService.setServicePM(servicePM);
 	}
 
 
@@ -269,7 +277,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		hab.addRapportSujet(contact);
 		dpi.addRapportObjet(contact);
 
-		DebiteurPrestationImposableIndexable indexable = new DebiteurPrestationImposableIndexable(adresseService, tiersService, serviceCivil, serviceInfra, dpi);
+		DebiteurPrestationImposableIndexable indexable = new DebiteurPrestationImposableIndexable(adresseService, tiersService, serviceCivil, servicePM, serviceInfra, dpi);
 
 		assertEquals(TiersIndexable.TYPE, indexable.getType());
 		assertEquals(DebiteurPrestationImposableIndexable.SUB_TYPE, indexable.getSubType());
@@ -310,7 +318,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		nhab.addRapportSujet(contact);
 		dpi.addRapportObjet(contact);
 
-		DebiteurPrestationImposableIndexable indexable = new DebiteurPrestationImposableIndexable(adresseService, tiersService, serviceCivil, serviceInfra, dpi);
+		DebiteurPrestationImposableIndexable indexable = new DebiteurPrestationImposableIndexable(adresseService, tiersService, serviceCivil, servicePM, serviceInfra, dpi);
 
 		assertEquals(TiersIndexable.TYPE, indexable.getType());
 		assertEquals(DebiteurPrestationImposableIndexable.SUB_TYPE, indexable.getSubType());
@@ -328,6 +336,47 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		assertEquals("Bla Bli", values.getNom1());
 		assertNull(values.getNom2());
 	}
+
+	@Test
+	public void testDebiteurImpotSourceEntrepriseIndexable() throws Exception {
+
+		final Entreprise entreprise = new Entreprise();
+		entreprise.setNumero(MockPersonneMorale.BCV.getNumeroEntreprise());
+		entreprise.setNumeroEntreprise(MockPersonneMorale.BCV.getNumeroEntreprise());
+		tiersDAO.addTiers(entreprise);
+
+		final DebiteurPrestationImposable dpi = new DebiteurPrestationImposable();
+		dpi.setNumero(1500003L);
+		dpi.setNom1("Nom1 débiteur");
+		dpi.setNom2("Nom2 débiteur");
+		dpi.setCategorieImpotSource(CategorieImpotSource.REGULIERS);
+		dpi.setComplementNom("Service bidon");
+		tiersDAO.addTiers(dpi);
+
+		final ContactImpotSource contact = new ContactImpotSource(RegDate.get(), null, entreprise, dpi);
+		entreprise.addRapportSujet(contact);
+		dpi.addRapportObjet(contact);
+
+		final DebiteurPrestationImposableIndexable indexable = new DebiteurPrestationImposableIndexable(adresseService, tiersService, serviceCivil, servicePM, serviceInfra, dpi);
+		assertEquals(TiersIndexable.TYPE, indexable.getType());
+		assertEquals(DebiteurPrestationImposableIndexable.SUB_TYPE, indexable.getSubType());
+
+		final TiersIndexableData values = (TiersIndexableData) indexable.getIndexableData();
+
+		// Search
+		assertContains(dpi.getNumero().toString(), values.getNumeros());
+		assertContains("Débiteur IS", values.getRoleLigne1());
+		assertContains("Réguliers", values.getRoleLigne2());
+		assertContains(MockPersonneMorale.BCV.getRaisonSociale1(), values.getNomRaison());
+		if (MockPersonneMorale.BCV.getRaisonSociale2() != null) {
+			assertContains(MockPersonneMorale.BCV.getRaisonSociale2(), values.getNomRaison());
+		}
+
+		// Display (quel que soit le nom1 et nom2, si le débiteur a un contact impôt source, sa raison sociale est tirée de là)
+		assertEquals(MockPersonneMorale.BCV.getRaisonSociale1(), values.getNom1());
+		assertEquals(MockPersonneMorale.BCV.getRaisonSociale2(), values.getNom2());
+	}
+
 	@Test
 	public void testDebiteurImpotSourceAutreCommuncauteIndexable() throws Exception {
 
@@ -349,7 +398,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		ac.addRapportSujet(contact);
 		dpi.addRapportObjet(contact);
 
-		DebiteurPrestationImposableIndexable indexable = new DebiteurPrestationImposableIndexable(adresseService, tiersService, serviceCivil, serviceInfra, dpi);
+		DebiteurPrestationImposableIndexable indexable = new DebiteurPrestationImposableIndexable(adresseService, tiersService, serviceCivil, servicePM, serviceInfra, dpi);
 
 		assertEquals(TiersIndexable.TYPE, indexable.getType());
 		assertEquals(DebiteurPrestationImposableIndexable.SUB_TYPE, indexable.getSubType());

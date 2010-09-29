@@ -429,13 +429,13 @@ public class TiersIndexableData extends IndexableData {
 
 	private static String add(String left, String right) {
 		if (StringUtils.isBlank(left)) {
-			return right;
+			return StringUtils.trimToEmpty(right);
 		}
 		else if (StringUtils.isBlank(right)) {
-			return left;
+			return left.trim();
 		}
 		else {
-			return left + " " + right;
+			return String.format("%s %s", left.trim(), right.trim());
 		}
 	}
 }

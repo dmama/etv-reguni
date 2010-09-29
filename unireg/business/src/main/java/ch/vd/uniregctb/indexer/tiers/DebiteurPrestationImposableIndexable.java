@@ -10,8 +10,11 @@ import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.IndexerFormatHelper;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.Individu;
+import ch.vd.uniregctb.interfaces.model.PersonneMorale;
+import ch.vd.uniregctb.interfaces.service.PartPM;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleService;
 import ch.vd.uniregctb.tiers.AutreCommunaute;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -30,14 +33,14 @@ public class DebiteurPrestationImposableIndexable extends TiersIndexable {
 
 	private ContribuableIndexable ctbIndexable;
 
-	public DebiteurPrestationImposableIndexable(AdresseService adresseService, TiersService tiersService, ServiceCivilService serviceCivil, ServiceInfrastructureService serviceInfra,
-	                                            DebiteurPrestationImposable dpi) throws IndexerException {
+	public DebiteurPrestationImposableIndexable(AdresseService adresseService, TiersService tiersService, ServiceCivilService serviceCivil, ServicePersonneMoraleService servicePM,
+	                                            ServiceInfrastructureService serviceInfra, DebiteurPrestationImposable dpi) throws IndexerException {
 		super(adresseService, tiersService, serviceInfra, dpi);
 
 		final Contribuable ctb = tiersService.getContribuable(dpi);
 		if (ctb != null) {
 			if (ctb instanceof PersonnePhysique) {
-				PersonnePhysique pp = (PersonnePhysique) ctb;
+				final PersonnePhysique pp = (PersonnePhysique) ctb;
 				if (pp.isHabitantVD()) {
 					final Individu ind = serviceCivil.getIndividu(pp.getNumeroIndividu(), null, AttributeIndividu.ADRESSES);
 					if (ind == null) {
@@ -50,7 +53,9 @@ public class DebiteurPrestationImposableIndexable extends TiersIndexable {
 				}
 			}
 			else if (ctb instanceof Entreprise) {
-				ctbIndexable = new EntrepriseIndexable(adresseService, tiersService, serviceInfra, (Entreprise) ctb);
+				final Entreprise entreprise = (Entreprise) ctb;
+				final PersonneMorale pm = servicePM.getPersonneMorale(entreprise.getNumeroEntreprise(), PartPM.ADRESSES);
+				ctbIndexable = new EntrepriseIndexable(adresseService, tiersService, serviceInfra, entreprise, pm);
 			}
 			else if (ctb instanceof AutreCommunaute) {
 				ctbIndexable = new AutreCommunauteIndexable(adresseService, tiersService, serviceInfra, (AutreCommunaute) ctb);

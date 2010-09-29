@@ -42,8 +42,11 @@ import ch.vd.uniregctb.indexer.async.MassTiersIndexer;
 import ch.vd.uniregctb.indexer.async.OnTheFlyTiersIndexer;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.Individu;
+import ch.vd.uniregctb.interfaces.model.PersonneMorale;
+import ch.vd.uniregctb.interfaces.service.PartPM;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleService;
 import ch.vd.uniregctb.stats.ServiceStats;
 import ch.vd.uniregctb.stats.StatsService;
 import ch.vd.uniregctb.tiers.AutreCommunaute;
@@ -84,6 +87,7 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
     private SessionFactory sessionFactory;
     private ServiceInfrastructureService serviceInfra;
     private ServiceCivilService serviceCivilService;
+	private ServicePersonneMoraleService servicePM;
 	private Dialect dialect;
 	private StatsService statsService;
 
@@ -581,13 +585,13 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
         final TiersIndexable indexable;
 
         if (tiers instanceof DebiteurPrestationImposable) {
-            DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiers;
-            indexable = new DebiteurPrestationImposableIndexable(adresseService, tiersService, serviceCivilService, serviceInfra, dpi);
+            final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiers;
+            indexable = new DebiteurPrestationImposableIndexable(adresseService, tiersService, serviceCivilService, servicePM, serviceInfra, dpi);
         } else if (tiers instanceof PersonnePhysique) {
-            PersonnePhysique pp = (PersonnePhysique) tiers;
+            final PersonnePhysique pp = (PersonnePhysique) tiers;
             // Habitant
             if (pp.isHabitantVD()) {
-                Long numeroIndividu = pp.getNumeroIndividu();
+                final Long numeroIndividu = pp.getNumeroIndividu();
                 Assert.notNull(numeroIndividu);
                 // Recuperation de l'individu
                 final Individu individu = serviceCivilService.getIndividu(numeroIndividu, 2400, AttributeIndividu.ADRESSES);
@@ -604,16 +608,17 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
             final MenageCommun cmc = (MenageCommun) tiers;
             indexable = new MenageCommunIndexable(adresseService, tiersService, serviceCivilService, serviceInfra, cmc);
         } else if (tiers instanceof Entreprise) {
-            Entreprise entreprise = (Entreprise) tiers;
-            indexable = new EntrepriseIndexable(adresseService, tiersService, serviceInfra, entreprise);
+            final Entreprise entreprise = (Entreprise) tiers;
+	        final PersonneMorale pm = servicePM.getPersonneMorale(entreprise.getNumeroEntreprise(), PartPM.ADRESSES);
+	        indexable = new EntrepriseIndexable(adresseService, tiersService, serviceInfra, entreprise, pm);
         } else if (tiers instanceof AutreCommunaute) {
-            AutreCommunaute autreCommunaute = (AutreCommunaute) tiers;
+            final AutreCommunaute autreCommunaute = (AutreCommunaute) tiers;
             indexable = new AutreCommunauteIndexable(adresseService, tiersService, serviceInfra, autreCommunaute);
         } else if (tiers instanceof CollectiviteAdministrative) {
-            CollectiviteAdministrative collectivite = (CollectiviteAdministrative) tiers;
+            final CollectiviteAdministrative collectivite = (CollectiviteAdministrative) tiers;
             indexable = new CollectiviteAdministrativeIndexable(adresseService, tiersService, serviceInfra, collectivite);
         } else {
-            String message = "Le Tiers " + tiers.getNatureTiers() + " n'est pas connu de l'indexation!!!";
+            final String message = "Le Tiers " + tiers.getNatureTiers() + " n'est pas connu de l'indexation!!!";
             LOGGER.error(message);
             throw new IndexerException(tiers, message);
         }
@@ -808,6 +813,10 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 
 	public void setStatsService(StatsService statsService) {
 		this.statsService = statsService;
+	}
+
+	public void setServicePM(ServicePersonneMoraleService servicePM) {
+		this.servicePM = servicePM;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
