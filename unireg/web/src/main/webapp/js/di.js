@@ -28,15 +28,13 @@ function retourVisuFromDI(numero) {
 * Imprimer un duplicata de DI
 */
 function duplicataDI() {
-	if(confirm('Voulez-vous vraiment imprimer un duplicata de cette déclaration d\'impôt ?')) {
-		var formImpressionDI = document.getElementById('formImpression');
-		var imprimerDuplicata = document.getElementById('imprimer');
-		var effacer = document.getElementById('effacer');
-		imprimerDuplicata.disabled = true ; 
-		effacer.disabled = true ;
-		formImpressionDI.action = 'impression.do?action=duplicataDI';
- 		formImpressionDI.submit();
- 	}
+	var formImpressionDI = document.getElementById('formImpression');
+	var imprimerDuplicata = document.getElementById('imprimer');
+	var effacer = document.getElementById('effacer');
+	imprimerDuplicata.disabled = true ;
+	effacer.disabled = true ;
+	formImpressionDI.action = 'impression.do?action=duplicataDI';
+	formImpressionDI.submit();
 }
 
 /*

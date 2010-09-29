@@ -1,7 +1,9 @@
 package ch.vd.uniregctb.di.manager;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -985,6 +987,20 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 		evenementFiscalService.publierEvenementFiscalTaxationOffice((Contribuable) di.getTiers(), di, RegDate.get());
 	}
 
+	/**
+	 * Renvoie le modèle de document du type recherché présent dans la liste, ou <code>null</code> s'il n'y en a pas
+	 * @param modeles les modèles à fouiller
+	 * @param type le type recherché
+	 * @return le premier modèle trouvé dans la liste correspondant au type recherché
+	 */
+	private static ModeleDocument findModeleOfType(Collection<ModeleDocument> modeles, TypeDocument type) {
+		for (ModeleDocument modele : modeles) {
+			if (modele.getTypeDocument() == type) {
+				return modele;
+			}
+		}
+		return null;
+	}
 
 	/**
 	 * Alimente la vue du controller DeclarationImpotImpressionController
@@ -996,34 +1012,62 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	@Transactional(readOnly = true)
 	public DeclarationImpotImpressionView getView(Long id, String typeDocument) {
 
-		DeclarationImpotOrdinaire di = diDAO.get(id);
-		TypeDocument enumTypeDocument = null;
+		final DeclarationImpotOrdinaire di = diDAO.get(id);
+		final TypeDocument enumTypeDocument;
 		if (typeDocument == null) {
-			enumTypeDocument = di.getTypeDeclaration();
-			if (enumTypeDocument.equals(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH)) {
+			if (di.getTypeDeclaration() == TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH) {
 				enumTypeDocument = TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL;
 			}
-		} else {
+			else {
+				enumTypeDocument = di.getTypeDeclaration();
+			}
+		}
+		else {
 			enumTypeDocument = TypeDocument.valueOf(typeDocument);
 		}
 
-		List<ModeleDocument> modelesDocument = modeleDocumentDAO.getByPeriodeFiscale(di.getPeriode());
-		DeclarationImpotImpressionView declarationImpotImpressionView = new DeclarationImpotImpressionView();
-		List<ModeleDocumentView> modelesDocumentView = new ArrayList<ModeleDocumentView>();
+		final List<ModeleDocument> modelesDocument = modeleDocumentDAO.getByPeriodeFiscale(di.getPeriode());
+
+		// [UNIREG-2001] si une annexe est dans la partie "LOCAL" mais pas dans la partie "BATCH", on ne la demande pas par défaut
+		// (on stocke ici donc tous les formulaires existants dans la partie "BATCH" pour un contrôle rapide)
+		final ModeleDocument modeleDocumentCompleteBatch = findModeleOfType(modelesDocument, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH);
+		final Set<String> numerosFormulairesBatch = new HashSet<String>();
+		if (modeleDocumentCompleteBatch != null) {
+			for (ModeleFeuilleDocument modeleFeuille : modeleDocumentCompleteBatch.getModelesFeuilleDocument()) {
+				numerosFormulairesBatch.add(modeleFeuille.getNumeroFormulaire());
+			}
+		}
+
+		final List<ModeleDocumentView> modelesDocumentView = new ArrayList<ModeleDocumentView>();
 		for (ModeleDocument modele : modelesDocument) {
-			if (!modele.getTypeDocument().equals(TypeDocument.LISTE_RECAPITULATIVE)
-					&& !modele.getTypeDocument().equals(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH)) {
-				List<ModeleFeuilleDocumentEditique> modelesFeuilleDocumentView = new ArrayList<ModeleFeuilleDocumentEditique>();
+			if (modele.getTypeDocument() != TypeDocument.LISTE_RECAPITULATIVE && modele.getTypeDocument() != TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH) {
+
+				final List<ModeleFeuilleDocumentEditique> modelesFeuilleDocumentView = new ArrayList<ModeleFeuilleDocumentEditique>();
 				for (ModeleFeuilleDocument modeleFeuilleDocument : modele.getModelesFeuilleDocument()) {
-					ModeleFeuilleDocumentEditique modeleFeuilleDocumentView = new ModeleFeuilleDocumentEditique();
+
+					// [UNIREG-2001] si une annexe est dans la partie "LOCAL" mais pas dans la partie "BATCH", on ne la demande pas par défaut
+					final int nbreFeuilles;
+					if (numerosFormulairesBatch.size() > 0 && modele.getTypeDocument() == TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL) {
+						if (numerosFormulairesBatch.contains(modeleFeuilleDocument.getNumeroFormulaire())) {
+							nbreFeuilles = 1;
+						}
+						else {
+							nbreFeuilles = 0;
+						}
+					}
+					else {
+						nbreFeuilles = 1;
+					}
+
+					final ModeleFeuilleDocumentEditique modeleFeuilleDocumentView = new ModeleFeuilleDocumentEditique();
 					modeleFeuilleDocumentView.setIntituleFeuille(modeleFeuilleDocument.getIntituleFeuille());
 					modeleFeuilleDocumentView.setNumeroFormulaire(modeleFeuilleDocument.getNumeroFormulaire());
-					if (enumTypeDocument.equals(modele.getTypeDocument())) {
-						modeleFeuilleDocumentView.setNbreIntituleFeuille(Integer.valueOf(1));
+					if (enumTypeDocument == modele.getTypeDocument()) {
+						modeleFeuilleDocumentView.setNbreIntituleFeuille(nbreFeuilles);
 					}
 					modelesFeuilleDocumentView.add(modeleFeuilleDocumentView);
 				}
-				ModeleDocumentView modeleView = new ModeleDocumentView();
+				final ModeleDocumentView modeleView = new ModeleDocumentView();
 				modeleView.setTypeDocument(modele.getTypeDocument());
 				Collections.sort(modelesFeuilleDocumentView);
 				modeleView.setModelesFeuilles(modelesFeuilleDocumentView);
@@ -1031,9 +1075,9 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 			}
 		}
 
+		final DeclarationImpotImpressionView declarationImpotImpressionView = new DeclarationImpotImpressionView();
 		declarationImpotImpressionView.setIdDI(id);
 		declarationImpotImpressionView.setSelectedTypeDocument(enumTypeDocument);
-
 		declarationImpotImpressionView.setModelesDocumentView(modelesDocumentView);
 		return declarationImpotImpressionView;
 	}
