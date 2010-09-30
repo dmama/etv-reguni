@@ -111,6 +111,51 @@ public class AdresseServiceTest extends BusinessTest {
 		assertNotNull(adresseService.getAdresseFiscale(nonhabitant, TypeAdresseFiscale.REPRESENTATION, null, false));
 	}
 
+	/**
+	 * [UNIREG-2895] Vérifie que le service ne retourne pas d'adresse valide pour un non-habitant avec une seule et unique adresse annulée.
+	 */
+	@Test
+	public void testGetAdressesFiscalesNonHabitantAvecAdressesAnnulees() throws Exception {
+
+		final Long id = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique axelle = addNonHabitant("Axelle", "Herren Clot", date(1970, 1, 1), Sexe.FEMININ);
+				final AdresseSuisse adresse = addAdresseSuisse(axelle, TypeAdresseTiers.COURRIER, date(2000, 1, 1), null, MockRue.Geneve.AvenueGuiseppeMotta);
+				adresse.setAnnule(true); // <------ l'adresse est annulée
+				return axelle.getNumero();
+			}
+		});
+
+		final PersonnePhysique pp =(PersonnePhysique) tiersDAO.get(id);
+		assertNotNull(pp);
+
+		// l'adresse annulée ne doit pas apparaître ici
+		AdressesFiscales adresses = adresseService.getAdressesFiscales(pp, null, false);
+		assertNull(adresses.courrier);
+		assertNull(adresses.domicile);
+		assertNull(adresses.poursuite);
+		assertNull(adresses.representation);
+
+		// l'adresse annulée doit apparaître dans la version historique
+		final AdressesFiscalesHisto histo = adresseService.getAdressesFiscalHisto(pp, true);
+		assertEquals(1, histo.courrier.size());
+		final AdresseGenerique courrier0 = histo.courrier.get(0);
+		assertAdresse(date(2000,1,1), null, "Genève Secteur de dist.", Source.FISCALE, false, courrier0);
+		assertTrue(courrier0.isAnnule());
+		assertEmpty(histo.domicile);
+		assertEmpty(histo.representation);
+		assertEmpty(histo.poursuite);
+
+		// l'adresse annulée ne devrait pas apparaître dans l'adresse d'envoi
+		final AdresseEnvoiDetaillee envoi = adresseService.getAdresseEnvoi(pp, null, TypeAdresseFiscale.COURRIER, true);
+		assertEquals("Madame", envoi.getLigne1());
+		assertEquals("Axelle Herren Clot", envoi.getLigne2());
+		assertNull(envoi.getLigne3());
+		assertNull(envoi.getLigne4());
+		assertNull(envoi.getLigne5());
+		assertNull(envoi.getLigne6());
+	}
+
 	@Test
 	public void testGetAdressesFiscalesHistoNonHabitantAvecDomicileSeulement() throws Exception {
 

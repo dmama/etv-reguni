@@ -27,7 +27,7 @@ public interface AdresseService {
 	public AdressesCiviles getAdressesCiviles(Tiers tiers, RegDate date, boolean strict) throws AdresseException;
 
 	/**
-	 * Extrait les adresses fiscales (= adresses civiles + adresses tiers) définies pour une date donnée.
+	 * Extrait les adresses fiscales (= adresses civiles + adresses tiers) définies pour une date donnée. Les adresses annulées sont ignorées et ne sont pas retournées.
 	 *
 	 * @param tiers  le tiers dont on recherche les adresses
 	 * @param date   la date de référence, ou null pour obtenir les adresses existantes jusqu'à ce jour.
@@ -39,7 +39,7 @@ public interface AdresseService {
 	public abstract AdressesFiscales getAdressesFiscales(Tiers tiers, RegDate date, boolean strict) throws AdresseException;
 
 	/**
-	 * Extrait l'adresse fiscale (= adresse civile + adresse tiers) définie pour une date et un type d'adresse donné.
+	 * Extrait l'adresse fiscale (= adresse civile + adresse tiers) définie pour une date et un type d'adresse donné. Les adresses annulées sont ignorées et ne sont pas retournées.
 	 *
 	 * @param tiers  le tiers dont on recherche les adresses
 	 * @param type   le type d'adresse voulu

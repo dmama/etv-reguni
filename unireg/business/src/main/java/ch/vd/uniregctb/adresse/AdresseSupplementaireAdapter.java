@@ -237,7 +237,8 @@ public class AdresseSupplementaireAdapter extends AdresseAdapter {
 	 * {@inheritDoc}
 	 */
 	public boolean isValidAt(RegDate date) {
-		return RegDateHelper.isBetween(date, getDateDebut(), getDateFin(), NullDateBehavior.LATEST);
+		// [UNIREG-2895] on ignore les adresses annulées ne doivent pas être considérées comme valides
+		return !isAnnule() && RegDateHelper.isBetween(date, getDateDebut(), getDateFin(), NullDateBehavior.LATEST);
 	}
 
 	public Date getAnnulationDate() {
