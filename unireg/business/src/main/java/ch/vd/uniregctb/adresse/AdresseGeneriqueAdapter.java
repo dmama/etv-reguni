@@ -170,7 +170,8 @@ public class AdresseGeneriqueAdapter implements AdresseGenerique {
 	 * {@inheritDoc}
 	 */
 	public boolean isValidAt(RegDate date) {
-		return RegDateHelper.isBetween(date, getDateDebut(), getDateFin(), NullDateBehavior.LATEST);
+		// [UNIREG-2895] les adresses annulées ne doivent pas être considérées comme valides
+		return !isAnnule() && RegDateHelper.isBetween(date, getDateDebut(), getDateFin(), NullDateBehavior.LATEST);
 	}
 
 	/**

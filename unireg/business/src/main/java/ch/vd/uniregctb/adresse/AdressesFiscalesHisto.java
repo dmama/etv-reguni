@@ -3,6 +3,7 @@ package ch.vd.uniregctb.adresse;
 import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 
 
@@ -76,7 +77,7 @@ public class AdressesFiscalesHisto {
 
 	/**
 	 * @param date la date de validité demandée
-	 * @return les adresses fiscales valides à une date donnée.
+	 * @return l'adresse fiscale valide (et non-annulée) à une date donnée.
 	 */
 	public AdressesFiscales at(RegDate date) {
 		final AdressesFiscales adresses = new AdressesFiscales();
@@ -85,6 +86,7 @@ public class AdressesFiscalesHisto {
 			if (list != null) {
 				for (AdresseGenerique a : list) {
 					if (a.isValidAt(date)) {
+						Assert.isFalse(a.isAnnule()); // [UNIREG-2895] on s'assure que les adresses annulées sont ignorées
 						adresses.set(type, a);
 						break;
 					}
