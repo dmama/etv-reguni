@@ -32,7 +32,7 @@ public enum CategorieImpotSource {
 	 * 
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_0Brg4GHwEdydo47IZ53QMw"
 	 */
-	CONFERENCIERS_ARTISTES_SPORTIFS("Artistes, conférenciers, sportifs"), /** 
+	CONFERENCIERS_ARTISTES_SPORTIFS("Conférenciers, artistes, sportifs"), /**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
 	 * 
