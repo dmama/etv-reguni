@@ -909,20 +909,23 @@ public class TiersManager implements MessageSourceAware {
 	 */
 	protected void setSituationsFamille(TiersView tiersView, Contribuable contribuable) throws AdresseException {
 
-		List<SituationFamilleView> situationsFamilleView = new ArrayList<SituationFamilleView>();
-		List<VueSituationFamille> situationsFamille = situationFamilleService.getVueHisto(contribuable);
+		final List<SituationFamilleView> situationsFamilleView = new ArrayList<SituationFamilleView>();
+		final List<VueSituationFamille> situationsFamille = situationFamilleService.getVueHisto(contribuable);
 		Collections.reverse(situationsFamille); // UNIREG-647
 
 		for (VueSituationFamille situation : situationsFamille) {
 
-			SituationFamilleView view = new SituationFamilleView();
+			final SituationFamilleView view = new SituationFamilleView();
 			view.setAnnule(situation.isAnnule());
 			view.setId(situation.getId());
 			view.setDateDebut(situation.getDateDebut());
 			view.setDateFin(situation.getDateFin());
 			view.setNombreEnfants(situation.getNombreEnfants());
 			view.setEtatCivil(situation.getEtatCivil());
-			view.setAllowed(situation.getSource() == VueSituationFamille.Source.FISCALE_TIERS);
+
+			final VueSituationFamille.Source source = situation.getSource();
+			view.setAnnulable(source == VueSituationFamille.Source.FISCALE_TIERS);
+			view.setSource(source != null ? source.name() : null);
 
 			if (situation instanceof VueSituationFamilleMenageCommun) {
 
@@ -932,7 +935,7 @@ public class TiersManager implements MessageSourceAware {
 
 				final Long numeroContribuablePrincipal = situationMC.getNumeroContribuablePrincipal();
 				if (numeroContribuablePrincipal != null) {
-					final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(numeroContribuablePrincipal.longValue());
+					final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(numeroContribuablePrincipal);
 					final List<String> nomCourrier = getAdresseService().getNomCourrier(pp, null, false);
 					view.setNomCourrier1TiersRevenuPlusEleve(nomCourrier.get(0));
 					view.setNumeroTiersRevenuPlusEleve(numeroContribuablePrincipal);

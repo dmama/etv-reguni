@@ -8,57 +8,46 @@
 	<c:set var="url" value="edit.do" />
 </c:if>
 <c:if test="${not empty command.situationsFamille}">
-	<display:table
-	name="command.situationsFamille" id="situationFamille" pagesize="10" 
-	requestURI="${url}"
-	class="display">
-	
-	
+	<display:table name="command.situationsFamille" id="situationFamille" pagesize="10"	requestURI="${url}"	class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
+
 		<display:column sortable ="true" titleKey="label.etat.civil">
 		 <c:if test="${situationFamille.etatCivil != null}">
-			<c:if test="${situationFamille.annule}"><strike></c:if>
-				<fmt:message key="option.etat.civil.${situationFamille.etatCivil}"  />
-			<c:if test="${situationFamille.annule}"></strike></c:if>
-			</c:if>
+			<fmt:message key="option.etat.civil.${situationFamille.etatCivil}"  />
+		 </c:if>
 		</display:column>
 	
 	<display:column sortable ="true" titleKey="label.nombre.enfants" >
-		<c:if test="${situationFamille.annule}"><strike></c:if>
-			${situationFamille.nombreEnfants}
-		<c:if test="${situationFamille.annule}"></strike></c:if>
+		${situationFamille.nombreEnfants}
 	</display:column>
 	<display:column sortable ="true" titleKey="label.bareme.is.applicable">
-		<c:if test="${situationFamille.annule}"><strike></c:if>
-			<c:if test="${situationFamille.tarifImpotSource != null}">
-				<fmt:message key="option.tarif.impot.source.${situationFamille.tarifImpotSource}" />
-			</c:if>
-		<c:if test="${situationFamille.annule}"></strike></c:if>
+		<c:if test="${situationFamille.tarifImpotSource != null}">
+			<fmt:message key="option.tarif.impot.source.${situationFamille.tarifImpotSource}" />
+		</c:if>
 	</display:column>
 	<display:column sortable ="true" titleKey="label.revenu.plus.eleve" >
-		<c:if test="${situationFamille.annule}"><strike></c:if>
-			<c:if test="${situationFamille.numeroTiersRevenuPlusEleve != null}">
-				<a href="../tiers/visu.do?id=${situationFamille.numeroTiersRevenuPlusEleve}">
-					<unireg:numCTB numero="${situationFamille.numeroTiersRevenuPlusEleve}" />
-				</a>&nbsp;-&nbsp;${situationFamille.nomCourrier1TiersRevenuPlusEleve}
-			</c:if>
-		<c:if test="${situationFamille.annule}"></strike></c:if>
+		<c:if test="${situationFamille.numeroTiersRevenuPlusEleve != null}">
+			<a href="../tiers/visu.do?id=${situationFamille.numeroTiersRevenuPlusEleve}">
+				<unireg:numCTB numero="${situationFamille.numeroTiersRevenuPlusEleve}" />
+			</a>&nbsp;-&nbsp;${situationFamille.nomCourrier1TiersRevenuPlusEleve}
+		</c:if>
 	</display:column>
 	<display:column sortable ="true" titleKey="label.date.debut" sortProperty="dateDebut">
-		<c:if test="${situationFamille.annule}"><strike></c:if>
-			<fmt:formatDate value="${situationFamille.dateDebut}" pattern="dd.MM.yyyy"/>
-		<c:if test="${situationFamille.annule}"></strike></c:if>
+		<fmt:formatDate value="${situationFamille.dateDebut}" pattern="dd.MM.yyyy"/>
 	</display:column>
 	<display:column sortable ="true" titleKey="label.date.fin" sortProperty="dateFin">
-		<c:if test="${situationFamille.annule}"><strike></c:if>
-			<fmt:formatDate value="${situationFamille.dateFin}" pattern="dd.MM.yyyy"/>
-		<c:if test="${situationFamille.annule}"></strike></c:if>
+		<fmt:formatDate value="${situationFamille.dateFin}" pattern="dd.MM.yyyy"/>
+	</display:column>
+	<display:column titleKey="label.situationfamille.source">
+		<c:if test="${situationFamille.source != null}">
+			<fmt:message key="option.situationfamille.source.${situationFamille.source}"/>
+		</c:if>
 	</display:column>
 	<display:column style="action">
 		<c:if test="${(page == 'visu') && (situationFamille.id != null) }">
 			<unireg:raccourciConsulter link="../common/consult-log.do?height=200&width=800&nature=SituationFamille&id=${situationFamille.id}&TB_iframe=true&modal=true" thickbox="true" tooltip="Edition des logs"/>
 		</c:if>
 		<c:if test="${page == 'edit' }">
-			<c:if test="${!situationFamille.annule && situationFamille.allowed}">
+			<c:if test="${!situationFamille.annule && situationFamille.annulable}">
 				<unireg:raccourciAnnuler onClick="javascript:annulerSituationFamille(${situationFamille.id});"/>
 			</c:if>
 		</c:if>

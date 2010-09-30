@@ -63,7 +63,7 @@ public class SituationFamilleManagerImpl extends TiersManager implements Situati
 				&& SecurityProvider.getDroitAcces(contribuable) != null && isSituationFamilleActive(contribuable)) {
 
 			situationFamilleView.setNumeroCtb(numeroCtb);
-			situationFamilleView.setAllowed(true);
+			situationFamilleView.setAnnulable(true);
 			if (contribuable instanceof MenageCommun) {
 				situationFamilleView.setNatureSituationFamille(SITUATION_FAMILLE_MENAGE_COMMUN);
 				final EnsembleTiersCouple ensembleCouple = tiersService.getEnsembleTiersCouple((MenageCommun) contribuable, null);
@@ -89,7 +89,7 @@ public class SituationFamilleManagerImpl extends TiersManager implements Situati
 			}
 		}
 		else {
-			situationFamilleView.setAllowed(false);
+			situationFamilleView.setAnnulable(false);
 		}
 		return situationFamilleView;
 	}

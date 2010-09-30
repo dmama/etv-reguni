@@ -3,10 +3,11 @@ package ch.vd.uniregctb.tiers.view;
 import java.util.Date;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.common.Annulable;
 import ch.vd.uniregctb.type.EtatCivil;
 import ch.vd.uniregctb.type.TarifImpotSource;
 
-public class SituationFamilleView implements Comparable<SituationFamilleView> {
+public class SituationFamilleView implements Comparable<SituationFamilleView>, Annulable {
 
 	private Long numeroCtb;
 
@@ -40,7 +41,9 @@ public class SituationFamilleView implements Comparable<SituationFamilleView> {
 
 	private boolean annule;
 	
-	private boolean isAllowed;
+	private boolean annulable;
+
+	private String source;
 
 	public Long getId() {
 		return id;
@@ -191,12 +194,19 @@ public class SituationFamilleView implements Comparable<SituationFamilleView> {
 		return value;
 	}
 
-	public boolean isAllowed() {
-		return isAllowed;
+	public boolean isAnnulable() {
+		return annulable;
 	}
 
-	public void setAllowed(boolean isAllowed) {
-		this.isAllowed = isAllowed;
+	public void setAnnulable(boolean isAllowed) {
+		this.annulable = isAllowed;
 	}
 
+	public String getSource() {
+		return source;
+	}
+
+	public void setSource(String source) {
+		this.source = source;
+	}
 }
