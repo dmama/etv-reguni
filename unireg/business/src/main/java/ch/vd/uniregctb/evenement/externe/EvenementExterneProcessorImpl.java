@@ -110,7 +110,7 @@ public class EvenementExterneProcessorImpl implements EvenementExterneProcessor 
 	}
 
 	private List<Long> recupererEvenementATraiter() {
-		final String queryMessage ="select evenementExterne.id from EvenementExterne evenementExterne where evenementExterne.etat =:etat ORDER BY evenementExterne.id";
+		final String queryMessage ="select evenementExterne.id from EvenementExterne evenementExterne where evenementExterne.etat in (:etats) ORDER BY evenementExterne.id";
 
 
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
@@ -122,7 +122,10 @@ public class EvenementExterneProcessorImpl implements EvenementExterneProcessor 
 				final List<Long> idsEvenement = (List<Long>) evenementExterneDAO.getHibernateTemplate().executeWithNewSession(new HibernateCallback() {
 					public Object doInHibernate(Session session) throws HibernateException {
 						Query queryObject = session.createQuery(queryMessage);
-						queryObject.setParameter("etat", EtatEvenementExterne.ERREUR.name());
+						List<String> etats = new ArrayList<String>();
+						etats.add(EtatEvenementExterne.ERREUR.name());
+						etats.add(EtatEvenementExterne.NON_TRAITE.name());
+						queryObject.setParameterList("etats", etats);
 						return queryObject.list();
 					}
 				});

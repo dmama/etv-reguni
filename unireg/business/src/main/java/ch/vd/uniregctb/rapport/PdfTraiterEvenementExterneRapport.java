@@ -52,7 +52,7 @@ public class PdfTraiterEvenementExterneRapport extends PdfRapport {
 
 			addTableSimple(new float[]{70f, 30f}, new TableSimpleCallback() {
 				public void fillTable(PdfTableSimple table) throws DocumentException {
-					table.addLigne("Nombre d'événements en erreur à examiner :", String.valueOf(results.nbEvenementTotalProcesses));
+					table.addLigne("Nombre d'événements en erreur ou non traité à examiner :", String.valueOf(results.nbEvenementTotalProcesses));
 					table.addLigne("Nombre d'événements traites :", String.valueOf(results.traites.size()));
 					table.addLigne("Nombre d'événements ignorés car déjà traités :", String.valueOf(results.ignores.size()));
 					table.addLigne("Nombre d'erreurs :", String.valueOf(results.erreurs.size()));
