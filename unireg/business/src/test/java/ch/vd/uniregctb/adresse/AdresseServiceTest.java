@@ -666,6 +666,59 @@ public class AdresseServiceTest extends BusinessTest {
 		assertFalse(poursuite1.isDefault());
 	}
 
+	@Test
+	public void testGetAdressesFiscales_JIRA_2856() throws Exception {
+		final long noIndividu = 2;
+
+		/*
+		 * Crée les données du mock service civil
+		 */
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				MockIndividu vanessa = addIndividu(noIndividu, date(1987, 8, 7), "Richard", "Vanessa", false);
+
+				// adresses courriers
+				addAdresse(vanessa, EnumTypeAdresse.COURRIER, MockRue.Orbe.RueDuMoulinet, null,
+						date(2009, 10, 1), null);
+
+				// adresses principales/poursuite
+				addAdresse(vanessa, EnumTypeAdresse.PRINCIPALE, MockRue.Orbe.RueDuMoulinet, null, date(2009, 12, 1), null);
+			}
+		});
+
+		// Crée un habitant avec un adresse fiscale 'courrier' surchargée
+		PersonnePhysique habitant = new PersonnePhysique(true);
+		habitant.setNumeroIndividu(noIndividu);
+		{
+		
+			AdresseSuisse adresse = new AdresseSuisse();
+			adresse.setDateDebut(date(2010, 6, 23));
+			adresse.setDateFin(date(2010, 9, 15));
+			adresse.setUsage(TypeAdresseTiers.COURRIER);
+			adresse.setNumeroMaison("1");
+			adresse.setNumeroRue(MockRue.Lausanne.PlaceSaintFrancois.getNoRue());
+			adresse.setNumeroOrdrePoste(MockLocalite.Lausanne.getNoOrdre());
+			habitant.addAdresseTiers(adresse);
+
+		}
+
+		tiersDAO.save(habitant);
+
+		// Vérification des adresses
+		final AdressesFiscales adresses = adresseService.getAdressesFiscales(habitant,null,false);
+		assertNotNull(adresses);
+
+	
+
+		final AdresseGenerique courrier1 = adresses.courrier;
+		assertEquals(date(2010, 9, 16), courrier1.getDateDebut());
+		assertEquals("Orbe", courrier1.getLocalite());
+		assertEquals(AdresseGenerique.Source.CIVILE, courrier1.getSource());
+
+
+	}
+
 	/**
 	 * Cas général d'une adresse civile unique surchargée par une adresse fiscale, mais pointant sur une autre adresse civile.
 	 *
