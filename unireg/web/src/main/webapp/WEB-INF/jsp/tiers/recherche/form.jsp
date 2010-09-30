@@ -92,12 +92,48 @@
 		<tr class="<unireg:nextRowClass/>" >
 			<td width="25%"><fmt:message key="label.type.tiers" />&nbsp;:</td>
 			<td width="25%">
-				<form:select path="typeTiers">
+				<form:select id="selectTypeTiers" path="typeTiers" onchange="typeTiers_onChange(this);">
 					<form:option value="TIERS" ><fmt:message key="option.TOUS" /></form:option>
 					<form:option value="DEBITEUR_PRESTATION_IMPOSABLE" ><fmt:message key="option.type.tiers.DEBITEUR_PRESTATION_IMPOSABLE" /></form:option>
 					<form:option value="CONTRIBUABLE_PP" ><fmt:message key="option.type.tiers.CONTRIBUABLE_PP" /></form:option>
 					<form:option value="ENTREPRISE" ><fmt:message key="option.type.tiers.ENTREPRISE" /></form:option>
 				</form:select>
+			</td>
+			<td width="25%">
+				<span id="categorieDebiteurLabel"><fmt:message key="label.categorie.impot.source"/>&nbsp;:</span>
+				&nbsp;
+			</td>
+			<td width="25%">
+				<form:select id="categorieDebiteurValue" path="categorieDebiteurIs">
+					<form:option value=""><fmt:message key="option.TOUTES"/></form:option>
+					<form:options items="${categoriesImpotSource}"/>
+				</form:select>
+				&nbsp;
+			</td>
+
+			<script type="text/javascript">
+					function typeTiers_onChange(selectElt) {
+						var eltLabel = document.getElementById("categorieDebiteurLabel");
+						var eltValue = document.getElementById("categorieDebiteurValue");
+						var type = selectElt.options[selectElt.selectedIndex].value;
+						if (type == 'DEBITEUR_PRESTATION_IMPOSABLE') {
+							eltLabel.style.display = '';
+							eltValue.style.display = '';
+						}
+						else {
+							eltLabel.style.display = 'none';
+							eltValue.style.display = 'none';
+							eltValue.selectedIndex = 0;
+						}
+					}
+					typeTiers_onChange(document.getElementById("selectTypeTiers"));
+			</script>
+
+		</tr>
+		<tr class="<unireg:nextRowClass/>" >
+			<td width="25%"><fmt:message key="label.numero.symic" />&nbsp;:</td>
+			<td width="25%">
+				<form:input  path="noSymic" id="noSymic" />
 			</td>
 			<td width="25%"><fmt:message key="label.mode.imposition" />&nbsp;:</td>
 			<td width="25%">
@@ -106,14 +142,6 @@
 					<form:options items="${modesImposition}"/>
 				</form:select>
 			</td>
-		</tr>
-		<tr class="<unireg:nextRowClass/>" >
-			<td width="25%"><fmt:message key="label.numero.symic" />&nbsp;:</td>
-			<td width="25%">
-				<form:input  path="noSymic" id="noSymic" />
-			</td>
-			<td width="25%">&nbsp;</td>
-			<td width="25%">&nbsp;</td>
 		</tr>
 		<tr class="<unireg:nextRowClass/>" >
 			<authz:authorize ifAnyGranted="ROLE_VISU_ALL">
