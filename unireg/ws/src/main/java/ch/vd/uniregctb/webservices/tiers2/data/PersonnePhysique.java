@@ -124,7 +124,11 @@ public class PersonnePhysique extends Contribuable {
 				throw new BusinessException(message);
 			}
 
-			final ch.vd.uniregctb.interfaces.model.HistoriqueIndividu data = individu.getHistoriqueIndividuAt(date);
+			ch.vd.uniregctb.interfaces.model.HistoriqueIndividu data = individu.getHistoriqueIndividuAt(date);
+			if (data == null) {
+				// on se rabat sur le premier
+				data = individu.getHistoriqueIndividu().iterator().next();
+			}
 			this.nom = StringUtils.trimToNull(data.getNom());
 			this.prenom = StringUtils.trimToNull(data.getPrenom());
 			this.dateNaissance = DataHelper.coreToWeb(individu.getDateNaissance());
