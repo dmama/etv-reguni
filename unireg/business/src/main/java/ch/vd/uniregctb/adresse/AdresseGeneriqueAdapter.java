@@ -17,8 +17,8 @@ public class AdresseGeneriqueAdapter implements AdresseGenerique {
 
 	private static final long serialVersionUID = 4279548139998338237L;
 
-	private RegDate debutValiditeSurcharge;
-	private RegDate finValiditeSurcharge;
+	private final RegDate dateDebut;
+	private final RegDate dateFin;
 	private AdresseGenerique target;
 	private Source source;
 	private Boolean isDefault;
@@ -34,13 +34,13 @@ public class AdresseGeneriqueAdapter implements AdresseGenerique {
 	public AdresseGeneriqueAdapter(AdresseGenerique adresse, Source source, Boolean isDefault) {
 		Assert.notNull(adresse);
 		this.target = adresse;
-		this.debutValiditeSurcharge = null;
-		this.finValiditeSurcharge = null;
+		this.dateDebut = adresse.getDateDebut();
+		this.dateFin = adresse.getDateFin();
 		this.source = source;
 		this.isDefault = isDefault;
 		optimize();
 		if (!adresse.isAnnule()) {
-			DateRangeHelper.assertValidRange(getDateDebut(), getDateFin());
+			DateRangeHelper.assertValidRange(dateDebut, dateFin);
 		}
 	}
 
@@ -57,13 +57,13 @@ public class AdresseGeneriqueAdapter implements AdresseGenerique {
 	public AdresseGeneriqueAdapter(AdresseGenerique adresse, RegDate debut, RegDate fin, Boolean isDefault) {
 		Assert.notNull(adresse);
 		this.target = adresse;
-		this.debutValiditeSurcharge = debut;
-		this.finValiditeSurcharge = fin;
+		this.dateDebut = (debut == null ? adresse.getDateDebut() : debut);
+		this.dateFin = (fin == null ? adresse.getDateFin() : fin);
 		this.source = null;
 		this.isDefault = isDefault;
 		optimize();
 		if (!adresse.isAnnule()) {
-			DateRangeHelper.assertValidRange(getDateDebut(), getDateFin());
+			DateRangeHelper.assertValidRange(dateDebut, dateFin);
 		}
 	}
 
@@ -82,13 +82,13 @@ public class AdresseGeneriqueAdapter implements AdresseGenerique {
 	public AdresseGeneriqueAdapter(AdresseGenerique adresse, RegDate debut, RegDate fin, Source source, Boolean isDefault) {
 		Assert.notNull(adresse);
 		this.target = adresse;
-		this.debutValiditeSurcharge = debut;
-		this.finValiditeSurcharge = fin;
+		this.dateDebut = (debut == null ? adresse.getDateDebut() : debut);
+		this.dateFin = (fin == null ? adresse.getDateFin() : fin);
 		this.source = source;
 		this.isDefault = isDefault;
 		optimize();
 		if (!adresse.isAnnule()) {
-			DateRangeHelper.assertValidRange(getDateDebut(), getDateFin());
+			DateRangeHelper.assertValidRange(dateDebut, dateFin);
 		}
 	}
 
@@ -96,22 +96,12 @@ public class AdresseGeneriqueAdapter implements AdresseGenerique {
 		return target.getCasePostale();
 	}
 
-	public RegDate getDateDebut() {
-		if (debutValiditeSurcharge == null) {
-			return target.getDateDebut();
-		}
-		else {
-			return debutValiditeSurcharge;
-		}
+	public final RegDate getDateDebut() {
+		return dateDebut;
 	}
 
-	public RegDate getDateFin() {
-		if (finValiditeSurcharge == null) {
-			return target.getDateFin();
-		}
-		else {
-			return finValiditeSurcharge;
-		}
+	public final RegDate getDateFin() {
+		return dateFin;
 	}
 
 	public String getLocalite() {
@@ -191,12 +181,6 @@ public class AdresseGeneriqueAdapter implements AdresseGenerique {
 		if (target instanceof AdresseGeneriqueAdapter) {
 			final AdresseGeneriqueAdapter emboite = (AdresseGeneriqueAdapter) target;
 
-			if (debutValiditeSurcharge == null) {
-				debutValiditeSurcharge = emboite.debutValiditeSurcharge;
-			}
-			if (finValiditeSurcharge == null) {
-				finValiditeSurcharge = emboite.finValiditeSurcharge;
-			}
 			if (source == null) {
 				source = emboite.source;
 			}

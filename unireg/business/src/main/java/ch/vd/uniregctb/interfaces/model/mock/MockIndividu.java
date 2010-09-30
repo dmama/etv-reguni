@@ -153,6 +153,20 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 		return historiqueIndividu;
 	}
 
+	public HistoriqueIndividu getHistoriqueIndividuAt(RegDate date) {
+		if (historiqueIndividu == null || historiqueIndividu.isEmpty()) {
+			return null;
+		}
+		HistoriqueIndividu candidat = null;
+		for (HistoriqueIndividu histo : historiqueIndividu) {
+			final RegDate dateDebut = histo.getDateDebutValidite();
+			if (dateDebut == null || date == null || dateDebut.isBeforeOrEqual(date)) {
+				candidat = histo;
+			}
+		}
+		return candidat;
+	}
+
 	public void setHistoriqueIndividu(Collection<HistoriqueIndividu> historiqueIndividu) {
 		this.historiqueIndividu = historiqueIndividu;
 	}

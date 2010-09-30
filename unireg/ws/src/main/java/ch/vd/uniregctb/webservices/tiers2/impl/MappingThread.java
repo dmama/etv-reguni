@@ -99,7 +99,8 @@ public class MappingThread extends Thread {
 					else {
 						attributs = new AttributeIndividu[]{AttributeIndividu.PERMIS};
 					}
-					context.serviceCivilService.getIndividus(numerosIndividus, date, attributs); // chauffe le cache
+					// date=null => parce qu'on s'intéresse à l'historique complete de l'individu
+					context.serviceCivilService.getIndividus(numerosIndividus, null, attributs); // chauffe le cache
 				}
 				catch (Exception e) {
 					LOGGER.warn("Impossible de précharger le lot d'individus [" + numerosIndividus + "].", e);

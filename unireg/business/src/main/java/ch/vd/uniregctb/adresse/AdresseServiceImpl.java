@@ -241,7 +241,7 @@ public class AdresseServiceImpl implements AdresseService {
 				else {
 					// (msi 10.03.2010) Précision de Thierry: dans le cas d'un contribuable sous tutuelle sans autorité tutelaire renseignée, l'adresse de poursuite est simplement
 					// l'adresse de domicile du contribuable. L'office de poursuite sera donc déterminé par SIPF à partir de l'adresse de domicile, ce qui est le meilleure choix
-					// possible sans information plus spécifique.  
+					// possible sans information plus spécifique.
 				}
 			}
 
@@ -1079,7 +1079,7 @@ public class AdresseServiceImpl implements AdresseService {
 		final List<AdresseGenerique> adressesAutoriteTutelaire = getAdressesRepresentantHisto(tiers, TypeAdresseRepresentant.AUTORITE_TUTELAIRE, callDepth + 1, strict);
 		adresses.poursuite = AdresseMixer.override(adresses.poursuite, adressesAutoriteTutelaire, null, null);
 
-		// [UNIREG-1808] 
+		// [UNIREG-1808]
 		adresses.poursuiteAutreTiers = surchargeAdressesTiersHisto(tiers, adresses.poursuiteAutreTiers, adressesTiers.poursuite, callDepth + 1, strict);
 		adresses.poursuiteAutreTiers = AdresseMixer.override(adresses.poursuiteAutreTiers, adressesRepresentantExecutionForcee, null, null);
 		adresses.poursuiteAutreTiers = AdresseMixer.override(adresses.poursuiteAutreTiers, adressesConseil, null, null);
@@ -1246,7 +1246,7 @@ public class AdresseServiceImpl implements AdresseService {
 				else {
 					rapport = null; // le conjoint n'est pas sous tutelle (ni curatelle), le ménage ne l'est donc pas non plus
 				}
-				
+
 			}
 			else {
 				rapport = rapportPrincipal; // le conjoint est aussi sous tutelle (ou curatelle)
@@ -1450,7 +1450,7 @@ public class AdresseServiceImpl implements AdresseService {
 			// Un ménage ne peut pas être mis sous tutelle/curatelle, seulement les personnes physiques qui le compose. On va donc chercher le tuteur/curateur sur ces derniers.
 
 			final EnsembleTiersCouple ensemble = tiersService.getEnsembleTiersCouple(menage, null);
-			final PersonnePhysique principal = getPrincipalPourAdresse(menage);
+			final PersonnePhysique principal = getPrincipalPourAdresse(ensemble);
 			final PersonnePhysique conjoint = ensemble.getConjoint(principal);
 
 			if (principal == null) {
@@ -1514,7 +1514,7 @@ public class AdresseServiceImpl implements AdresseService {
 
 		final List<AdresseGenerique> adressesCourrierConjoint = getAdressesCourrierHistoInRanges(conjoint, periodesValiditeAdressesConjoint, callDepth + 1, strict);
 		for (AdresseGenerique adresse : adressesCourrierConjoint) {
-			
+
 			final Source source = adresse.getSource();
 			if (source == Source.TUTELLE || source == Source.CURATELLE) {
 				// on ignore toutes les adresses où le conjoint est lui-même sous tutelle
@@ -1530,13 +1530,13 @@ public class AdresseServiceImpl implements AdresseService {
 			else {
 				adresseConjoint = new AdresseGeneriqueAdapter(adresse, Source.CONJOINT, false);
 			}
-			
+
 			// [UNIREG-2676] on ignore toutes les adresses où le conjoint est hors-Suisse
 			if (adresseConjoint.getNoOfsPays() == ServiceInfrastructureService.noOfsSuisse) {
 				adressesConjointSansTutelle.add(adresseConjoint);
 			}
 		}
-		
+
 		return adressesConjointSansTutelle;
 	}
 
@@ -1718,6 +1718,17 @@ public class AdresseServiceImpl implements AdresseService {
 	private PersonnePhysique getPrincipalPourAdresse(final MenageCommun menageCommun) {
 		// [UNIREG-2234] date=null -> on s'intéresse à la vue historique du couple dans tous les cas.
 		final EnsembleTiersCouple ensemble = tiersService.getEnsembleTiersCouple(menageCommun, null);
+		return getPrincipalPourAdresse(ensemble);
+	}
+
+	/**
+	 * Détermine le tiers principal pour le calcul des adresses du ménage commun. Selon [UNIREG-771] et comme intégré plus tard dans la spécification, le principal du couple ne sera pas toujours
+	 * considéré comme principal pour le calcul des adresses.
+	 *
+	 * @param ensemble l'ensemble tiers-couple
+	 * @return le principal trouvé, ou <b>null</b> si le ménage ne possède aucun membre à la date spécifiée
+	 */
+	private PersonnePhysique getPrincipalPourAdresse(EnsembleTiersCouple ensemble) {
 		final PersonnePhysique principal = ensemble.getPrincipal();
 		PersonnePhysique principalOuVaudois = principal;
 		/*

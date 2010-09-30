@@ -117,15 +117,14 @@ public class PersonnePhysique extends Contribuable {
 			this.categorie = EnumHelper.coreToWeb(personne.getCategorieEtranger());
 		}
 		else {
-			final int annee = (date == null ? 2400 : date.year());
-			final ch.vd.uniregctb.interfaces.model.Individu individu = context.serviceCivilService.getIndividu(personne.getNumeroIndividu(), annee, AttributeIndividu.PERMIS);
+			final ch.vd.uniregctb.interfaces.model.Individu individu = context.serviceCivilService.getIndividu(personne.getNumeroIndividu(), null, AttributeIndividu.PERMIS);
 			if (individu == null) {
 				final String message = String.format("Impossible de trouver l'individu n°%d pour l'habitant n°%d", personne.getNumeroIndividu(), personne.getNumero());
 				LOGGER.error(message);
 				throw new BusinessException(message);
 			}
 
-			final ch.vd.uniregctb.interfaces.model.HistoriqueIndividu data = individu.getDernierHistoriqueIndividu();
+			final ch.vd.uniregctb.interfaces.model.HistoriqueIndividu data = individu.getHistoriqueIndividuAt(date);
 			this.nom = StringUtils.trimToNull(data.getNom());
 			this.prenom = StringUtils.trimToNull(data.getPrenom());
 			this.dateNaissance = DataHelper.coreToWeb(individu.getDateNaissance());
