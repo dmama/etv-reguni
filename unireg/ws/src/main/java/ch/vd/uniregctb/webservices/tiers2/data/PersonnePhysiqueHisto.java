@@ -109,8 +109,7 @@ public class PersonnePhysiqueHisto extends ContribuableHisto {
 			this.categorie = EnumHelper.coreToWeb(personne.getCategorieEtranger());
 		}
 		else {
-			final int annee = 2400;
-			final ch.vd.uniregctb.interfaces.model.Individu individu = context.serviceCivilService.getIndividu(personne.getNumeroIndividu(), annee, AttributeIndividu.PERMIS);
+			final ch.vd.uniregctb.interfaces.model.Individu individu = context.serviceCivilService.getIndividu(personne.getNumeroIndividu(), null, AttributeIndividu.PERMIS);
 
 			if (individu == null) {
 				final String message = String.format("Impossible de trouver l'individu n°%d pour l'habitant n°%d", personne

@@ -537,9 +537,10 @@ public class TiersWebServiceImpl implements TiersWebService {
 		}
 		// les fors fiscaux sont nécessaires pour déterminer les dates de début et de fin d'activité.
 		coreParts.add(Parts.FORS_FISCAUX);
-		// les adresses et les rapports-entre-tiers sont nécessaires pour calculer les raisons sociales des débiteurs
-		coreParts.add(Parts.ADRESSES);
-		coreParts.add(Parts.RAPPORTS_ENTRE_TIERS);
+// msi (30.09.2010) : en fait, cela pénalise trop fortement les tiers autre que débiteurs.		
+//		// les adresses et les rapports-entre-tiers sont nécessaires pour calculer les raisons sociales des débiteurs
+//		coreParts.add(Parts.ADRESSES);
+//		coreParts.add(Parts.RAPPORTS_ENTRE_TIERS);
 
 		return coreParts;
 	}
