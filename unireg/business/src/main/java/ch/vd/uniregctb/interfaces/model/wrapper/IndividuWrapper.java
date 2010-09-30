@@ -209,6 +209,20 @@ public class IndividuWrapper extends EntiteCivileWrapper implements Individu, Se
 		return historique;
 	}
 
+	public HistoriqueIndividu getHistoriqueIndividuAt(RegDate date) {
+		if (historique == null) {
+			initHistorique();
+		}
+		HistoriqueIndividu candidat = null;
+		for (HistoriqueIndividu histo : historique) {
+			final RegDate dateDebut = histo.getDateDebutValidite();
+			if (dateDebut == null || date == null || dateDebut.isBeforeOrEqual(date)) {
+				candidat = histo;
+			}
+		}
+		return candidat;
+	}
+
 	private void initHistorique() {
 		synchronized (this) {
 			if (historique == null) {

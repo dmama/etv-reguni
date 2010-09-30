@@ -82,6 +82,13 @@ public interface Individu extends EntiteCivile {
      */
     Collection<HistoriqueIndividu> getHistoriqueIndividu();
 
+	/**
+	 * Retourne l'historique de l'individu à une date donnée
+	 *
+	 * @return l'historique de l'individu valide à la date spécifiée.
+	 */
+	HistoriqueIndividu getHistoriqueIndividuAt(RegDate date);
+
     /**
      * Retourne le numéro technique de l'individu.
      *
