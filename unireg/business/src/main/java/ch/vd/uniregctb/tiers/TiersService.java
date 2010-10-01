@@ -699,6 +699,14 @@ public interface TiersService {
 	ForFiscalPrincipal addForPrincipal(Contribuable contribuable, RegDate dateDebut, MotifFor motifOuverture, RegDate dateFin, MotifFor motifFermeture, MotifRattachement motifRattachement,
 	                                   int autoriteFiscale, TypeAutoriteFiscale typeAutoriteFiscale, ModeImposition modeImposition);
 
+	/**
+	 * Annule tous les fors ouverts à la date spécifiée (et qui ne sont pas fermés) sur le contribuable donné et dont le motif d'ouverture correspond à ce qui est indiqué
+	 * @param contribuable contribuable visé
+	 * @param dateOuverture date d'ouverture des fors à annuler
+	 * @param motifOuverture motif d'ouverture des fors à annuler (<code>null</code> possible si tout motif convient)
+	 */
+	void annuleForsOuvertsAu(Contribuable contribuable, RegDate dateOuverture, MotifFor motifOuverture);
+
 	/**Permet de rajouter une nouvelle périodicité sur un débiteur
 	 * verifie si il en existe une pour la même période, et l'annule avant d'ajouter la nouvelle
 	 *

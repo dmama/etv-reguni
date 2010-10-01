@@ -45,6 +45,12 @@ public class Ec_6001_02_AnnulationSeparation_CoupleSepare_Scenario extends Abstr
 	private long noHabBea;
 	private long noMenage;
 
+	private void assertBlocageRemboursementAutomatique(boolean flagMomo, boolean flagBea, boolean flagMenage) {
+		assertBlocageRemboursementAutomatique(flagMomo, tiersDAO.get(noHabMomo));
+		assertBlocageRemboursementAutomatique(flagBea, tiersDAO.get(noHabBea));
+		assertBlocageRemboursementAutomatique(flagMenage, tiersDAO.get(noMenage));
+	}
+
 	@Etape(id=1, descr="Chargement du couple Maurice-Béatrice")
 	public void step1() {
 		// Maurice
@@ -55,6 +61,7 @@ public class Ec_6001_02_AnnulationSeparation_CoupleSepare_Scenario extends Abstr
 
 		ffp = addForFiscalPrincipal(momo, commune, dateSeparation, null, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, null);
 		ffp.setModeImposition(ModeImposition.ORDINAIRE);
+		momo.setBlocageRemboursementAutomatique(false);
 
 		// Béatrice
 		PersonnePhysique bea = addHabitant(noIndBea);
@@ -64,6 +71,7 @@ public class Ec_6001_02_AnnulationSeparation_CoupleSepare_Scenario extends Abstr
 
 		ffp = addForFiscalPrincipal(bea, commune, dateSeparation, null, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, null);
 		ffp.setModeImposition(ModeImposition.ORDINAIRE);
+		bea.setBlocageRemboursementAutomatique(false);
 
 		// Ménage commun
 		MenageCommun menage = (MenageCommun) tiersDAO.save(new MenageCommun());
@@ -106,6 +114,8 @@ public class Ec_6001_02_AnnulationSeparation_CoupleSepare_Scenario extends Abstr
 			assertEquals(MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, ffp.getMotifFermeture(), "Le motif d'ouverture n'est pas SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT");
 			assertEquals(ModeImposition.ORDINAIRE, ffp.getModeImposition(), "Le mode d'imposition n'est pas ORDINAIRE");
 		}
+
+		assertBlocageRemboursementAutomatique(false, false, true);
 	}
 
 	@Etape(id=2, descr="Envoi de l'événement Annulation de Séparation")
@@ -133,5 +143,7 @@ public class Ec_6001_02_AnnulationSeparation_CoupleSepare_Scenario extends Abstr
 		}
 		checkHabitantApresAnnulation((PersonnePhysique) tiersDAO.get(noHabMomo), dateSeparation);
 		checkHabitantApresAnnulation((PersonnePhysique) tiersDAO.get(noHabBea), dateSeparation);
+
+		assertBlocageRemboursementAutomatique(true, true, false);
 	}
 }

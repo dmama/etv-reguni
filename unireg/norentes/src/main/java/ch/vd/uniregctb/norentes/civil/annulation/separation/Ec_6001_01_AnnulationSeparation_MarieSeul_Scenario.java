@@ -45,7 +45,7 @@ public class Ec_6001_01_AnnulationSeparation_MarieSeul_Scenario extends Abstract
 	@Etape(id=1, descr="Chargement de l'habitant marié seul")
 	public void step1() {
 		// Pierre
-		PersonnePhysique pierre = addHabitant(noIndPierre);
+		final PersonnePhysique pierre = addHabitant(noIndPierre);
 		noHabPierre = pierre.getNumero();
 
 		ForFiscalPrincipal ffp = addForFiscalPrincipal(pierre, commune, dateDebutSuisse, dateMariage.getOneDayBefore(), MotifFor.ARRIVEE_HC, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
@@ -54,6 +54,8 @@ public class Ec_6001_01_AnnulationSeparation_MarieSeul_Scenario extends Abstract
 		ffp = addForFiscalPrincipal(pierre, commune, dateSeparation, null, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, null);
 		ffp.setModeImposition(ModeImposition.SOURCE);
 
+		pierre.setBlocageRemboursementAutomatique(false);
+
 		// Ménage
 		MenageCommun menage = (MenageCommun) tiersDAO.save(new MenageCommun());
 		noMenage = menage.getNumero();
@@ -61,6 +63,11 @@ public class Ec_6001_01_AnnulationSeparation_MarieSeul_Scenario extends Abstract
 
 		ffp = addForFiscalPrincipal(menage, commune, dateMariage, dateSeparation.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT);
 		ffp.setModeImposition(ModeImposition.SOURCE);
+	}
+
+	private void assertBlocageRemboursementAuto(boolean flagPierre, boolean flagMenage) {
+		assertBlocageRemboursementAutomatique(flagPierre, tiersDAO.get(noHabPierre));
+		assertBlocageRemboursementAutomatique(flagMenage, tiersDAO.get(noMenage));
 	}
 
 	@Check(id=1, descr="Vérifie que l'habitant Pierre n'a aucun For fiscal principal ouvert et que le ménage a un For fiscal principal ouvert")
@@ -84,6 +91,8 @@ public class Ec_6001_01_AnnulationSeparation_MarieSeul_Scenario extends Abstract
 			assertNotNull(ffp.getDateFin(), "Date de fin du dernier for fausse");
 			assertEquals(ModeImposition.SOURCE, ffp.getModeImposition(), "Le mode d'imposition n'est pas SOURCE");
 		}
+
+		assertBlocageRemboursementAuto(false, true);
 	}
 
 	@Etape(id=2, descr="Envoi de l'événement Annulation de Séparation")
@@ -110,6 +119,8 @@ public class Ec_6001_01_AnnulationSeparation_MarieSeul_Scenario extends Abstract
 			}
 		}
 		checkHabitantApresAnnulation((PersonnePhysique) tiersDAO.get(noHabPierre), dateSeparation);
+
+		assertBlocageRemboursementAuto(true, false);
 	}
 
 }

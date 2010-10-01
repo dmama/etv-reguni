@@ -2152,6 +2152,24 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 	/**
+	 * Annule tous les fors ouverts à la date spécifiée (et qui ne sont pas fermés) sur le contribuable donné et dont le motif d'ouverture correspond à ce qui est indiqué
+	 * @param contribuable contribuable visé
+	 * @param dateOuverture date d'ouverture des fors à annuler
+	 * @param motifOuverture motif d'ouverture des fors à annuler (<code>null</code> possible si tout motif convient)
+	 */
+	public void annuleForsOuvertsAu(Contribuable contribuable, RegDate dateOuverture, MotifFor motifOuverture) {
+		for (ForFiscal forFiscal : contribuable.getForsFiscaux()) {
+			if (!forFiscal.isAnnule() && forFiscal.getDateFin() == null && dateOuverture.equals(forFiscal.getDateDebut())) {
+				boolean isForFiscalRevenuFortune = forFiscal instanceof ForFiscalRevenuFortune;
+				if (!isForFiscalRevenuFortune || motifOuverture == null || motifOuverture == ((ForFiscalRevenuFortune) forFiscal).getMotifOuverture()) {
+					forFiscal.setAnnule(true);
+				}
+			}
+		}
+		resetFlagBlocageRemboursementAutomatiqueSelonFors(contribuable);
+	}
+
+	/**
 	 * {@inheritDoc}
 	 */
 	public Periodicite addPeriodicite(DebiteurPrestationImposable debiteur, PeriodiciteDecompte periodiciteDecompte, PeriodeDecompte periodeDecompte, RegDate dateDebut, RegDate dateFin) {

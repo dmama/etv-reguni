@@ -44,9 +44,7 @@ import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalAutreElementImposable;
-import ch.vd.uniregctb.tiers.ForFiscalAutreImpot;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.ForFiscalRevenuFortune;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -1106,7 +1104,7 @@ public class MetierServiceImpl implements MetierService {
 		}
 		else {
 			// Fermeture des fors créés lors de la création du couple
-			cancelForsOpenedSince(date, menage);
+			tiersService.annuleForsOuvertsAu(menage, date, null);
 		}
 
 		updateSituationFamilleAnnulationCouple(menage, date);
@@ -1451,12 +1449,14 @@ public class MetierServiceImpl implements MetierService {
 	}
 
 	public void annuleSeparation(MenageCommun menage, RegDate date, Long numeroEvenement) {
-		if (menage == null)
+		if (menage == null) {
 			throw new EvenementCivilHandlerException("Le ménage est null");
+		}
+
 		/*
 		 * Recherche du dernier ménage
 		 */
-		RapportEntreTiers dernierRapportMenage = menage.getDernierRapportObjet(TypeRapportEntreTiers.APPARTENANCE_MENAGE);
+		final RapportEntreTiers dernierRapportMenage = menage.getDernierRapportObjet(TypeRapportEntreTiers.APPARTENANCE_MENAGE);
 
 		if (dernierRapportMenage == null) {
 			throw new EvenementCivilHandlerException("Aucun rapport trouvé pour le ménage");
@@ -1466,11 +1466,11 @@ public class MetierServiceImpl implements MetierService {
 			Assert.fail("La date du dernier rapport entre tiers est postérieure à celle de l'événement");
 		}
 
-		PersonnePhysique principal = null;
-		PersonnePhysique conjoint = null;
+		final PersonnePhysique principal;
+		final PersonnePhysique conjoint;
 		// récuperer le ménage que si celui-ci est valid au moment de la séparation
 		if (date.getOneDayBefore().equals(dernierRapportMenage.getDateFin())) {
-			EnsembleTiersCouple ensembleTiersCouple = getTiersService().getEnsembleTiersCouple(menage, dernierRapportMenage.getDateDebut());
+			final EnsembleTiersCouple ensembleTiersCouple = getTiersService().getEnsembleTiersCouple(menage, dernierRapportMenage.getDateDebut());
 			principal = ensembleTiersCouple.getPrincipal();
 			conjoint = ensembleTiersCouple.getConjoint(principal);
 			if (!ensembleTiersCouple.estComposeDe(principal, conjoint)) {
@@ -1497,9 +1497,9 @@ public class MetierServiceImpl implements MetierService {
 		/*
 		 * Fermeture des fors ouverts sur les contribuables
 		 */
-		cancelForsOpenedSince(date, principal, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT);
+		tiersService.annuleForsOuvertsAu(principal, date, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT);
 		if (conjoint != null) {
-			cancelForsOpenedSince(date, conjoint, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT);
+			tiersService.annuleForsOuvertsAu(conjoint, date, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT);
 		}
 
 		/*
@@ -1515,12 +1515,10 @@ public class MetierServiceImpl implements MetierService {
 		/*
 		 * Mise à jour de la situation de famille
 		 */
-		PersonnePhysique[] personnes = tiersService.getPersonnesPhysiques(menage).toArray(new PersonnePhysique[0]);
-		PersonnePhysique tiers1 = personnes[0];
-		PersonnePhysique tiers2 = null;
-		if (personnes.length > 1) {
-			tiers2 = personnes[1];
-		}
+		final Set<PersonnePhysique> personnePhysiqueSet = tiersService.getPersonnesPhysiques(menage);
+		final PersonnePhysique[] personnes = personnePhysiqueSet.toArray(new PersonnePhysique[personnePhysiqueSet.size()]);
+		final PersonnePhysique tiers1 = personnes[0];
+		final PersonnePhysique tiers2 = personnes.length > 1 ? personnes[1] : null;
 		final ch.vd.uniregctb.type.EtatCivil etatCivilFamille;
 		if (tiersService.isMemeSexe(tiers1, tiers2)) {
 			etatCivilFamille = ch.vd.uniregctb.type.EtatCivil.LIE_PARTENARIAT_ENREGISTRE;
@@ -1710,39 +1708,6 @@ public class MetierServiceImpl implements MetierService {
 		}
 	}
 
-	/**
-	 * Annule, pour un tiers, tous ses fors ouverts qui débutent à une date donnée.
-	 *
-	 * @param date
-	 *            la date d'overture
-	 * @param tiers
-	 *            le tiers pour qui les fors seront annulés
-	 */
-	private void cancelForsOpenedSince(RegDate date, Tiers tiers, MotifFor motifOverture) {
-		for (ForFiscal forFiscal : tiers.getForsFiscaux()) {
-			if (!forFiscal.isAnnule() && forFiscal.getDateFin() == null && date.equals(forFiscal.getDateDebut())) {
-				boolean isForFiscalRevenuFortune = forFiscal instanceof ForFiscalRevenuFortune;
-				boolean isForFiscalAutreImpot = forFiscal instanceof ForFiscalAutreImpot;
-				if (isForFiscalAutreImpot ||
-						(isForFiscalRevenuFortune && motifOverture == ((ForFiscalRevenuFortune) forFiscal).getMotifOuverture())) {
-					forFiscal.setAnnule(true);
-				}
-			}
-		}
-	}
-
-	private void cancelForsOpenedSince(RegDate date, Tiers tiers) {
-		for (ForFiscal forFiscal : tiers.getForsFiscaux()) {
-			if (!forFiscal.isAnnule() && forFiscal.getDateFin() == null && date.equals(forFiscal.getDateDebut())) {
-				boolean isForFiscalRevenuFortune = forFiscal instanceof ForFiscalRevenuFortune;
-				boolean isForFiscalAutreImpot = forFiscal instanceof ForFiscalAutreImpot;
-				if (isForFiscalAutreImpot || isForFiscalRevenuFortune) {
-					forFiscal.setAnnule(true);
-				}
-			}
-		}
-	}
-
 	public ValidationResults validateDeces(PersonnePhysique defunt, RegDate date) {
 
 		ValidationResults results = new ValidationResults();
@@ -1905,7 +1870,7 @@ public class MetierServiceImpl implements MetierService {
 		/*
 		 * Annulation des fors ouverts sur le tiers
 		 */
-		cancelForsOpenedSince(date.getOneDayAfter(), tiers, MotifFor.VEUVAGE_DECES);
+		tiersService.annuleForsOuvertsAu(tiers, date.getOneDayAfter(), MotifFor.VEUVAGE_DECES);
 
 		if (menageCommun == null) {
 			reopenRapportsEntreTiers(tiers, date);
@@ -1924,7 +1889,7 @@ public class MetierServiceImpl implements MetierService {
 			 * Annulation des fors ouverts sur le conjoint
 			 */
 			if (conjoint != null) {
-				cancelForsOpenedSince(date.getOneDayAfter(), conjoint, MotifFor.VEUVAGE_DECES);
+				tiersService.annuleForsOuvertsAu(conjoint, date.getOneDayAfter(), MotifFor.VEUVAGE_DECES);
 			}
 
 			/*
@@ -2294,10 +2259,7 @@ public class MetierServiceImpl implements MetierService {
 		/*
 		 * Fermeture des fors ouverts sur le tiers
 		 */
-		cancelForsOpenedSince(lendemain, tiers, MotifFor.VEUVAGE_DECES);
-
-		// [UNIREG-2794] les fors du tiers sont à nouveau fermés -> les remboursements automatiques doivent être à nouveau fermés
-		tiers.setBlocageRemboursementAutomatique(true);
+		tiersService.annuleForsOuvertsAu(tiers, lendemain, MotifFor.VEUVAGE_DECES);
 
 		if (ffp != null && MotifFor.VEUVAGE_DECES == ffp.getMotifOuverture()) {
 
