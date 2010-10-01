@@ -166,7 +166,7 @@ public class WsAccessAnalyzer {
 
 		for (String method : methods) {
 			final List<ResponseTimeRange> time = results.get(method);
-			content += "    " + buildGoogleChart(method, time) + "<br/>\n";
+			content += "    " + buildGoogleChart(method, time) + "<br/><br/><br/>\n";
 		}
 
 		content += "    <br/>\n" +
