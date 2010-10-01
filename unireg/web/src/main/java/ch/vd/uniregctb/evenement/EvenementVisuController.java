@@ -46,25 +46,14 @@ public class EvenementVisuController extends AbstractEvenementController {
 	}
 
 	/**
-	 * @see org.springframework.web.servlet.mvc.SimpleFormController#showForm(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, org.springframework.validation.BindException, java.util.Map)
-	 */
-	@SuppressWarnings("unchecked")
-	@Override
-	protected ModelAndView showForm(HttpServletRequest request, HttpServletResponse response, BindException errors, Map model) throws Exception {
-		ModelAndView mav = super.showForm(request, response, errors, model);
-		return mav;
-	}
-
-	/**
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object, org.springframework.validation.BindException)
 	 */
 	@Override
-	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors)
-		throws Exception {
+	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors) throws Exception {
 		super.onSubmit(request, response, command, errors);
-		String success = getSuccessView();
-		EvenementView bean = (EvenementView) command;
+
+		final EvenementView bean = (EvenementView) command;
 
 		if (request.getParameter(BOUTON_RECYCLER) != null) {
 			getEvenementManager().traiteEvenementCivil(bean.getEvenement().getId());
@@ -72,10 +61,8 @@ public class EvenementVisuController extends AbstractEvenementController {
 		else if (request.getParameter(BOUTON_FORCER) != null) {
 			getEvenementManager().forceEtatTraite(bean.getEvenement().getId());
 		}
-		super.getFormSessionAttributeName();
 
-
-		success = "visu.do?id=" + bean.getEvenement().getId();
+		final String success = "visu.do?id=" + bean.getEvenement().getId();
 		return new ModelAndView(new RedirectView(success));
 	}
 

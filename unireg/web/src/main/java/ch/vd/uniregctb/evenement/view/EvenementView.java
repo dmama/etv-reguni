@@ -7,73 +7,80 @@ import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.individu.IndividuView;
 
 /**
- * Structure permettant l'affichage
- * de la page de detail de l'evenement
+ * Structure permettant l'affichage de la page de detail de l'evenement
  *
  * @author xcifde
- *
  */
 public class EvenementView {
 
-		private EvenementCivilData evenement;
+	private EvenementCivilData evenement;
 
-		private IndividuView individuPrincipal;
+	private IndividuView individuPrincipal;
 
-		private IndividuView individuConjoint;
+	private IndividuView individuConjoint;
 
-		private List<TiersAssocieView> tiersAssocies;
+	private List<TiersAssocieView> tiersAssocies;
 
-		private AdresseEnvoi adressePrincipal;
+	private List<String> erreursTiersAssocies;
 
-		private AdresseEnvoi adresseConjoint;
+	private AdresseEnvoi adressePrincipal;
 
+	private AdresseEnvoi adresseConjoint;
 
-		public EvenementCivilData getEvenement() {
-			return evenement;
-		}
+	public EvenementCivilData getEvenement() {
+		return evenement;
+	}
 
-		public void setEvenement(EvenementCivilData evenement) {
-			this.evenement = evenement;
-		}
+	public void setEvenement(EvenementCivilData evenement) {
+		this.evenement = evenement;
+	}
 
-		public IndividuView getIndividuPrincipal() {
-			return individuPrincipal;
-		}
+	public IndividuView getIndividuPrincipal() {
+		return individuPrincipal;
+	}
 
-		public void setIndividuPrincipal(IndividuView individuPrincipal) {
-			this.individuPrincipal = individuPrincipal;
-		}
+	public void setIndividuPrincipal(IndividuView individuPrincipal) {
+		this.individuPrincipal = individuPrincipal;
+	}
 
-		public IndividuView getIndividuConjoint() {
-			return individuConjoint;
-		}
+	public IndividuView getIndividuConjoint() {
+		return individuConjoint;
+	}
 
-		public void setIndividuConjoint(IndividuView individuConjoint) {
-			this.individuConjoint = individuConjoint;
-		}
+	public void setIndividuConjoint(IndividuView individuConjoint) {
+		this.individuConjoint = individuConjoint;
+	}
 
-		public List<TiersAssocieView> getTiersAssocies() {
-			return tiersAssocies;
-		}
+	public List<TiersAssocieView> getTiersAssocies() {
+		return tiersAssocies;
+	}
 
-		public void setTiersAssocies(List<TiersAssocieView> tiersAssocies) {
-			this.tiersAssocies = tiersAssocies;
-		}
+	public void setTiersAssocies(List<TiersAssocieView> tiersAssocies) {
+		this.tiersAssocies = tiersAssocies;
+	}
 
-		public AdresseEnvoi getAdressePrincipal() {
-			return adressePrincipal;
-		}
+	public List<String> getErreursTiersAssocies() {
+		return erreursTiersAssocies;
+	}
 
-		public void setAdressePrincipal(AdresseEnvoi adressePrincipal) {
-			this.adressePrincipal = adressePrincipal;
-		}
+	public void setErreursTiersAssocies(List<String> erreursTiersAssocies) {
+		this.erreursTiersAssocies = erreursTiersAssocies;
+	}
 
-		public AdresseEnvoi getAdresseConjoint() {
-			return adresseConjoint;
-		}
+	public AdresseEnvoi getAdressePrincipal() {
+		return adressePrincipal;
+	}
 
-		public void setAdresseConjoint(AdresseEnvoi adresseConjoint) {
-			this.adresseConjoint = adresseConjoint;
-		}
+	public void setAdressePrincipal(AdresseEnvoi adressePrincipal) {
+		this.adressePrincipal = adressePrincipal;
+	}
+
+	public AdresseEnvoi getAdresseConjoint() {
+		return adresseConjoint;
+	}
+
+	public void setAdresseConjoint(AdresseEnvoi adresseConjoint) {
+		this.adresseConjoint = adresseConjoint;
+	}
 
 }

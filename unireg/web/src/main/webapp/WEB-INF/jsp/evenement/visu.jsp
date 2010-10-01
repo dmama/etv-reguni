@@ -169,9 +169,16 @@
 		<!-- Fin Individu Conjoint -->
 		
 		<!-- Debut List tiers -->
-		<c:if test="${not empty command.tiersAssocies}">
+		<c:if test="${not empty command.tiersAssocies || not empty command.erreursTiersAssocies}">
 		<fieldset>
 			<legend><span><fmt:message key="label.tiers.associes" /></span></legend>
+			<c:if test="${not empty command.erreursTiersAssocies}">
+				<ul class="warnings">
+					<c:forEach items="${command.erreursTiersAssocies}" var="err">
+						<li class="warn"><c:out value="${err}"/></li>
+					</c:forEach>
+				</ul>
+			</c:if>
 			<display:table name="command.tiersAssocies" id="tiersAssocie" pagesize="25" >
 				<display:column titleKey="label.numero.tiers" href="../tiers/visu.do" paramId="id" paramProperty="numero" >
 					<a href="../tiers/visu.do?id=${tiersAssocie.numero}"><unireg:numCTB numero="${tiersAssocie.numero}" /></a>

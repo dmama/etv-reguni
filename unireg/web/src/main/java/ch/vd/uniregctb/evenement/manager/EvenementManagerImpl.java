@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.evenement.manager;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import ch.vd.uniregctb.adresse.*;
@@ -15,7 +14,6 @@ import org.springframework.context.MessageSourceAware;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.infrastructure.service.InfrastructureException;
-import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.WebParamPagination;
@@ -112,12 +110,13 @@ public class EvenementManagerImpl implements EvenementManager, MessageSourceAwar
 			evtView.setAdresseConjoint(adresseConjoint);
 		}
 
-		try {
-			final List<TiersAssocieView> tiersAssocies = new ArrayList<TiersAssocieView>();
+		final List<String> erreursTiersAssocies = new ArrayList<String>();
+		final List<TiersAssocieView> tiersAssocies = new ArrayList<TiersAssocieView>();
 
+		try {
 			final PersonnePhysique habitantPrincipal = tiersDAO.getPPByNumeroIndividu(evtView.getEvenement().getNumeroIndividuPrincipal());
 			if (habitantPrincipal != null) {
-				final TiersAssocieView tiersAssocie = setTiersAssocieView (habitantPrincipal);
+				final TiersAssocieView tiersAssocie = createTiersAssocieView(habitantPrincipal);
 				tiersAssocie.setLocaliteOuPays(getLocaliteOuPays(habitantPrincipal));
 				final ForFiscalPrincipal forFiscalPrincipal = habitantPrincipal.getDernierForFiscalPrincipal();
 				if (forFiscalPrincipal != null) {
@@ -132,30 +131,39 @@ public class EvenementManagerImpl implements EvenementManager, MessageSourceAwar
 				tiersAssocies.add(tiersAssocie);
 			}
 
-
-			if (evtView.getEvenement().getNumeroIndividuConjoint() != null) {
-				final PersonnePhysique habitantConjoint = tiersDAO.getPPByNumeroIndividu(evtView.getEvenement().getNumeroIndividuConjoint());
-				if (habitantConjoint != null) {
-					TiersAssocieView tiersAssocie = setTiersAssocieView(habitantConjoint);
-					tiersAssocies.add(tiersAssocie);
-				}
-			}
-
 			final EnsembleTiersCouple ensembleTiersCouple = tiersService.getEnsembleTiersCouple(habitantPrincipal, RegDate.get());
 			if (ensembleTiersCouple != null) {
 				final MenageCommun menageCommun = ensembleTiersCouple.getMenage();
 				if (menageCommun != null) {
-					final TiersAssocieView tiersAssocie = setTiersAssocieView(menageCommun);
+					final TiersAssocieView tiersAssocie = createTiersAssocieView(menageCommun);
 					tiersAssocies.add(tiersAssocie);
 				}
-			}
-
-			if (tiersAssocies.size() != 0) {
-				evtView.setTiersAssocies(tiersAssocies);
 			}
 		}
 		catch (PlusieursPersonnesPhysiquesAvecMemeNumeroIndividuException e) {
 			LOGGER.warn(String.format("Détermination impossible des tiers associés à l'événement civil %d : %s", id, e.getMessage()));
+			erreursTiersAssocies.add(e.getMessage());
+		}
+
+		if (evtView.getEvenement().getNumeroIndividuConjoint() != null) {
+			try {
+				final PersonnePhysique habitantConjoint = tiersDAO.getPPByNumeroIndividu(evtView.getEvenement().getNumeroIndividuConjoint());
+				if (habitantConjoint != null) {
+					final TiersAssocieView tiersAssocie = createTiersAssocieView(habitantConjoint);
+					tiersAssocies.add(tiersAssocie);
+				}
+			}
+			catch (PlusieursPersonnesPhysiquesAvecMemeNumeroIndividuException e) {
+				LOGGER.warn(String.format("Détermination impossible des tiers associés à l'événement civil %d : %s", id, e.getMessage()));
+				erreursTiersAssocies.add(e.getMessage());
+			}
+		}
+
+		if (tiersAssocies.size() > 0) {
+			evtView.setTiersAssocies(tiersAssocies);
+		}
+		if (erreursTiersAssocies.size() > 0) {
+			evtView.setErreursTiersAssocies(erreursTiersAssocies);
 		}
 
 		return evtView;
@@ -199,7 +207,7 @@ public class EvenementManagerImpl implements EvenementManager, MessageSourceAwar
 	 * @throws AdressesResolutionException
 	 * @throws InfrastructureException
 	 */
-	private TiersAssocieView setTiersAssocieView(Tiers tiers) throws AdresseException, InfrastructureException {
+	private TiersAssocieView createTiersAssocieView(Tiers tiers) throws AdresseException, InfrastructureException {
 		final TiersAssocieView tiersAssocie = new TiersAssocieView();
 		tiersAssocie.setNumero(tiers.getNumero());
 
