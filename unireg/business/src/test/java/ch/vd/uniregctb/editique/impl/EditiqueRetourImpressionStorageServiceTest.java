@@ -246,7 +246,7 @@ public class EditiqueRetourImpressionStorageServiceTest extends WithoutSpringTes
 		thread.join();
 	}
 
-	@Test(timeout = 2500)
+	@Test(timeout = 4000)
 	public void testCleanupVieilleReception() throws Exception {
 
 		// on envoie un document maintenant, et on attend 2050 ms
