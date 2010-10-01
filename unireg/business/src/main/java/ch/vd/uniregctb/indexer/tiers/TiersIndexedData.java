@@ -31,6 +31,7 @@ public class TiersIndexedData implements Serializable {
 	private String pays;
 	private String localiteOuPays;
 	private String forPrincipal;
+	private String categorieImpotSource;
 	private boolean annule;
 	private boolean debiteurInactif;
 	private Boolean dansLeCanton;
@@ -53,6 +54,7 @@ public class TiersIndexedData implements Serializable {
 		pays = getDocValue(TiersIndexableData.PAYS, doc);
 		localiteOuPays = getDocValue(TiersIndexableData.LOCALITE_PAYS, doc);
 		forPrincipal = getDocValue(TiersIndexableData.FOR_PRINCIPAL, doc);
+		categorieImpotSource = getDocValue(TiersIndexableData.CATEGORIE_DEBITEUR_IS, doc);
 		annule = Constants.OUI.equals(getDocValue(TiersIndexableData.ANNULE, doc));
 		debiteurInactif = Constants.OUI.equals(getDocValue(TiersIndexableData.DEBITEUR_INACTIF, doc));
 
@@ -140,6 +142,10 @@ public class TiersIndexedData implements Serializable {
 
 	public String getForPrincipal() {
 		return forPrincipal;
+	}
+
+	public String getCategorieImpotSource() {
+		return categorieImpotSource;
 	}
 
 	public boolean isAnnule() {

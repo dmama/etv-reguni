@@ -1,17 +1,11 @@
 package ch.vd.uniregctb.indexer.tiers;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertSame;
-import static org.junit.Assert.assertNull;
-
 import java.util.List;
 import java.util.Set;
 
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 
-import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.declaration.Periodicite;
@@ -23,9 +17,15 @@ import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.tiers.TiersDAO;
+import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertSame;
+
+@SuppressWarnings({"JavaDoc"})
 public class DebiteurPrestationImposableIndexableTest extends BusinessTest {
 
 	private TiersDAO dao;
@@ -285,7 +285,7 @@ public class DebiteurPrestationImposableIndexableTest extends BusinessTest {
 			assertNotNull(resultats);
 			assertEquals(2, resultats.size());
 
-			final TiersIndexedData dataDpi = (resultats.get(0).getNumero().longValue() == idDpi ? resultats.get(0) : resultats.get(1));
+			final TiersIndexedData dataDpi = (resultats.get(0).getNumero() == idDpi ? resultats.get(0) : resultats.get(1));
 			assertEquals(idDpi, dataDpi.getNumero().longValue());
 			assertEquals("Bollet SA", dataDpi.getNom1());
 			assertEquals("Vive les champignons !", dataDpi.getNom2());
@@ -294,7 +294,7 @@ public class DebiteurPrestationImposableIndexableTest extends BusinessTest {
 			assertEquals("", dataDpi.getDateNaissance());
 			assertEquals("", dataDpi.getDateDeces());
 
-			final TiersIndexedData dataAC = (resultats.get(0).getNumero().longValue() == idAC ? resultats.get(0) : resultats.get(1));
+			final TiersIndexedData dataAC = (resultats.get(0).getNumero() == idAC ? resultats.get(0) : resultats.get(1));
 			assertEquals(idAC, dataAC.getNumero().longValue());
 			assertEquals("Bollet SA", dataAC.getNom1());
 			assertEquals("Vive les champignons !", dataAC.getNom2());
@@ -302,6 +302,43 @@ public class DebiteurPrestationImposableIndexableTest extends BusinessTest {
 			assertEquals("", dataAC.getForPrincipal());
 			assertEquals("", dataAC.getDateNaissance());
 			assertEquals("", dataAC.getDateDeces());
+		}
+	}
+
+	// [UNIREG-2907] Vérifique la catérorie IS sur un débiteur est bien recherchable
+	@Test
+	public void testIndexationDebiteurCategorieIS() throws Exception {
+
+		// Création d'un débiteur avec catégorie impôt source prestation de prévoyance
+		final Long idDpi = (Long) doInNewTransaction(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+
+				DebiteurPrestationImposable dpi = new DebiteurPrestationImposable();
+				dpi.setPersonneContact("Jean-François Burnier");
+				dpi.setPeriodiciteDecompte(PeriodiciteDecompte.MENSUEL);
+				dpi.setCategorieImpotSource(CategorieImpotSource.PRESTATIONS_PREVOYANCE);
+				dpi = (DebiteurPrestationImposable) dao.save(dpi);
+
+				addAdresseSuisse(dpi, TypeAdresseTiers.COURRIER, date(2009,1,1), null,  MockRue.Lausanne.AvenueDeBeaulieu);
+				addForDebiteur(dpi, date(2009,1,1), null, MockCommune.Lausanne);
+
+				return dpi.getNumero();
+			}
+		});
+
+		globalTiersIndexer.sync();
+
+		// On vérifie qu'il est possible de retouver le débiteur à partir de sa catégorie impôt source
+		{
+			TiersCriteria criteria = new TiersCriteria();
+			criteria.setCategorieDebiteurIs(CategorieImpotSource.PRESTATIONS_PREVOYANCE);
+			final List<TiersIndexedData> resultats = globalTiersSearcher.search(criteria);
+			assertNotNull(resultats);
+			assertEquals(1, resultats.size());
+
+			final TiersIndexedData dataDpi = resultats.get(0);
+			assertEquals(idDpi, dataDpi.getNumero());
 		}
 	}
 }

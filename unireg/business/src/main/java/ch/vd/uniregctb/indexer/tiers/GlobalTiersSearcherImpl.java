@@ -1,9 +1,12 @@
 package ch.vd.uniregctb.indexer.tiers;
 
-import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.indexer.*;
-import ch.vd.uniregctb.parametrage.ParametreAppService;
-import ch.vd.uniregctb.tiers.TiersCriteria;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import org.apache.log4j.Logger;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.search.MatchAllDocsQuery;
@@ -12,8 +15,16 @@ import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
 import org.springframework.beans.factory.InitializingBean;
 
-import java.io.IOException;
-import java.util.*;
+import ch.vd.uniregctb.common.StatusManager;
+import ch.vd.uniregctb.indexer.DocGetter;
+import ch.vd.uniregctb.indexer.GlobalIndexInterface;
+import ch.vd.uniregctb.indexer.IndexerException;
+import ch.vd.uniregctb.indexer.LuceneEngine;
+import ch.vd.uniregctb.indexer.SearchAllCallback;
+import ch.vd.uniregctb.indexer.SearchCallback;
+import ch.vd.uniregctb.indexer.TooManyResultsIndexerException;
+import ch.vd.uniregctb.parametrage.ParametreAppService;
+import ch.vd.uniregctb.tiers.TiersCriteria;
 
 /**
  * Classe principale de recherche de tiers suivant certains criteres
@@ -26,7 +37,7 @@ public class GlobalTiersSearcherImpl implements GlobalTiersSearcher, Initializin
 	private static final Logger LOGGER = Logger.getLogger(GlobalTiersSearcherImpl.class);
 
 	private ParametreAppService parametreAppService;
-	private int maxHits;
+	private int maxHits = 100;
 
 	/**
 	 * Le mysterieux global index.

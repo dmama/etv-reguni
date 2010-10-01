@@ -213,7 +213,7 @@ public class QueryConstructor {
 	private void addNatureJuridique(BooleanQuery fullQuery) throws IndexerException {
 
 		if (StringUtils.isNotBlank(criteria.getNatureJuridique())) { // [UNIREG-2592]
-			final Query q = new TermQuery(new Term(TiersIndexableData.NATURE_JURIDIQUE, criteria.getNatureJuridique().toLowerCase()));
+			final Query q = new TermQuery(new Term(TiersIndexableData.NATURE_JURIDIQUE, criteria.getNatureJuridique()));
 			fullQuery.add(q, must);
 		}
 	}
@@ -227,8 +227,7 @@ public class QueryConstructor {
 			// restriction des gris
 			query = new BooleanQuery();
 			query.add(new TermQuery(new Term(LuceneEngine.F_DOCSUBTYPE, NonHabitantIndexable.SUB_TYPE)), must);
-			query.add(LuceneEngine.getTermsExact(TiersIndexableData.TYPE_OFS_FOR_PRINCIPAL, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD
-					.toString()), must);
+			query.add(LuceneEngine.getTermsExact(TiersIndexableData.TYPE_OFS_FOR_PRINCIPAL, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD.name()), must);
 			fullQuery.add(query, mustNot);
 			// restriction des I107
 			query = new BooleanQuery();
@@ -240,7 +239,7 @@ public class QueryConstructor {
 	private void addAnnule(BooleanQuery fullQuery) throws IndexerException {
 
 		if (!criteria.isInclureTiersAnnules()) {
-			final Query q = new TermQuery(new Term(TiersIndexableData.ANNULE, Constants.NON.toLowerCase()));
+			final Query q = new TermQuery(new Term(TiersIndexableData.ANNULE, Constants.NON));
 			fullQuery.add(q, must);
 		}
 	}
@@ -248,7 +247,7 @@ public class QueryConstructor {
 	private void addActif(BooleanQuery fullQuery) throws IndexerException {
 
 		if (criteria.isTiersAnnulesSeulement()) {
-			final Query q = new TermQuery(new Term(TiersIndexableData.ANNULE, Constants.OUI.toLowerCase()));
+			final Query q = new TermQuery(new Term(TiersIndexableData.ANNULE, Constants.OUI));
 			fullQuery.add(q, must);
 		}
 	}
@@ -256,7 +255,7 @@ public class QueryConstructor {
 	private void addDebiteurInactif(BooleanQuery fullQuery) throws IndexerException {
 
 		if (!criteria.isInclureI107()) {
-			final Query q = new TermQuery(new Term(TiersIndexableData.DEBITEUR_INACTIF, Constants.NON.toLowerCase()));
+			final Query q = new TermQuery(new Term(TiersIndexableData.DEBITEUR_INACTIF, Constants.NON));
 			fullQuery.add(q, must);
 		}
 	}
@@ -264,7 +263,7 @@ public class QueryConstructor {
 	private void addModeImposition(BooleanQuery fullQuery) throws IndexerException {
 
 		if (criteria.getModeImposition() != null) {
-			final Query q = new TermQuery(new Term(TiersIndexableData.MODE_IMPOSITION, criteria.getModeImposition().toString().toLowerCase()));
+			final Query q = new TermQuery(new Term(TiersIndexableData.MODE_IMPOSITION, criteria.getModeImposition().name()));
 			fullQuery.add(q, must);
 		}
 	}
@@ -280,7 +279,7 @@ public class QueryConstructor {
 	private void addCategorieDebiteurIs(BooleanQuery fullQuery) throws IndexerException {
 
 		if (criteria.getCategorieDebiteurIs() != null) {
-			final Query q = new TermQuery(new Term(TiersIndexableData.CATEGORIE_DEBITEUR_IS, criteria.getCategorieDebiteurIs().toString().toLowerCase()));
+			final Query q = new TermQuery(new Term(TiersIndexableData.CATEGORIE_DEBITEUR_IS, criteria.getCategorieDebiteurIs().name()));
 			fullQuery.add(q, must);
 		}
 	}
@@ -288,7 +287,7 @@ public class QueryConstructor {
 	private void addTiersActif(BooleanQuery fullQuery) throws IndexerException {
 
 		if (criteria.isTiersActif() != null) {
-			final String value = (criteria.isTiersActif() ? Constants.OUI.toLowerCase() : Constants.NON.toLowerCase());
+			final String value = (criteria.isTiersActif() ? Constants.OUI : Constants.NON);
 			final Query q = new TermQuery(new Term(TiersIndexableData.TIERS_ACTIF, value));
 			fullQuery.add(q, must);
 		}

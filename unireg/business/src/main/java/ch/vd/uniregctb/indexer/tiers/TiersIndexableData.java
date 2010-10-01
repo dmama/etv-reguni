@@ -43,7 +43,7 @@ public class TiersIndexableData extends IndexableData {
 	public static final String DOMICILE_VD = "D_DOMICILE_VD";
 	public static final String NO_OFS_DOMICILE_VD = "D_NO_OFS_DOMICILE_VD";
 	public static final String INDEXATION_DATE = "D_INDEXATION_DATE";
-	
+
 	// champs de recherche
 	private String numeros;
 	private String nomRaison;
@@ -90,49 +90,53 @@ public class TiersIndexableData extends IndexableData {
 		// Note : pour des raisons de performance de l'index Lucene, il est important que l'ordre des champs soit constant
 
 		// champs de recherche
-		addAnalyzedValue(d, TiersIndexableData.NUMEROS, numeros);
+		addNotAnalyzedValue(d, TiersIndexableData.NUMEROS, numeros);
 		addAnalyzedValue(d, TiersIndexableData.NOM_RAISON, nomRaison);
 		addAnalyzedValue(d, TiersIndexableData.AUTRES_NOM, autresNom);
 		addAnalyzedValue(d, TiersIndexableData.DATE_NAISSANCE, dateNaissance);
-		addAnalyzedValue(d, TiersIndexableData.NO_OFS_FOR_PRINCIPAL, noOfsForPrincipal);
-		addAnalyzedValue(d, TiersIndexableData.TYPE_OFS_FOR_PRINCIPAL, typeOfsForPrincipal);
-		addAnalyzedValue(d, TiersIndexableData.NOS_OFS_AUTRES_FORS, nosOfsAutresFors);
-		addAnalyzedValue(d, TiersIndexableData.NPA, npa);
+		addNotAnalyzedValue(d, TiersIndexableData.NO_OFS_FOR_PRINCIPAL, noOfsForPrincipal);
+		addNotAnalyzedValue(d, TiersIndexableData.TYPE_OFS_FOR_PRINCIPAL, typeOfsForPrincipal);
+		addNotAnalyzedValue(d, TiersIndexableData.NOS_OFS_AUTRES_FORS, nosOfsAutresFors);
+		addNotAnalyzedValue(d, TiersIndexableData.NPA, npa);
 		addAnalyzedValue(d, TiersIndexableData.LOCALITE_PAYS, localiteEtPays);
-		addAnalyzedValue(d, TiersIndexableData.NATURE_JURIDIQUE, natureJuridique);
+		addNotAnalyzedValue(d, TiersIndexableData.NATURE_JURIDIQUE, natureJuridique);
 		addAnalyzedValue(d, TiersIndexableData.NUMERO_ASSURE_SOCIAL, numeroAssureSocial);
-		addAnalyzedValue(d, TiersIndexableData.CATEGORIE_DEBITEUR_IS, categorieDebiteurIs);
-		addAnalyzedValue(d, TiersIndexableData.MODE_IMPOSITION, modeImposition);
-		addAnalyzedValue(d, TiersIndexableData.NO_SYMIC, noSymic);
-		addAnalyzedValue(d, TiersIndexableData.TIERS_ACTIF, tiersActif);
-		addAnalyzedValue(d, TiersIndexableData.ANNULE, annule);
-		addAnalyzedValue(d, TiersIndexableData.DEBITEUR_INACTIF, debiteurInactif);
+		addNotAnalyzedValue(d, TiersIndexableData.CATEGORIE_DEBITEUR_IS, categorieDebiteurIs);
+		addNotAnalyzedValue(d, TiersIndexableData.MODE_IMPOSITION, modeImposition);
+		addNotAnalyzedValue(d, TiersIndexableData.NO_SYMIC, noSymic);
+		addNotAnalyzedValue(d, TiersIndexableData.TIERS_ACTIF, tiersActif);
+		addNotAnalyzedValue(d, TiersIndexableData.ANNULE, annule);
+		addNotAnalyzedValue(d, TiersIndexableData.DEBITEUR_INACTIF, debiteurInactif);
 
 		// champs de stockage (pas recherchables)
-		addStockedValue(d, TiersIndexableData.NOM1, nom1);
-		addStockedValue(d, TiersIndexableData.NOM2, nom2);
-		addStockedValue(d, TiersIndexableData.ROLE_LIGNE1, roleLigne1);
-		addStockedValue(d, TiersIndexableData.ROLE_LIGNE2, roleLigne2);
-		addStockedValue(d, TiersIndexableData.DATE_DECES, dateDeces);
-		addStockedValue(d, TiersIndexableData.RUE, rue);
-		addStockedValue(d, TiersIndexableData.LOCALITE, localite);
-		addStockedValue(d, TiersIndexableData.PAYS, pays);
-		addStockedValue(d, TiersIndexableData.FOR_PRINCIPAL, forPrincipal);
-		addStockedValue(d, TiersIndexableData.DATE_OUVERTURE_FOR, dateOuvertureFor);
-		addStockedValue(d, TiersIndexableData.DATE_FERMETURE_FOR, dateFermtureFor);
-		addStockedValue(d, TiersIndexableData.DOMICILE_VD, domicileVd);
-		addStockedValue(d, TiersIndexableData.NO_OFS_DOMICILE_VD, noOfsDomicileVd);
-		addStockedValue(d, TiersIndexableData.INDEXATION_DATE, indexationDate);
+		addStoredValue(d, TiersIndexableData.NOM1, nom1);
+		addStoredValue(d, TiersIndexableData.NOM2, nom2);
+		addStoredValue(d, TiersIndexableData.ROLE_LIGNE1, roleLigne1);
+		addStoredValue(d, TiersIndexableData.ROLE_LIGNE2, roleLigne2);
+		addStoredValue(d, TiersIndexableData.DATE_DECES, dateDeces);
+		addStoredValue(d, TiersIndexableData.RUE, rue);
+		addStoredValue(d, TiersIndexableData.LOCALITE, localite);
+		addStoredValue(d, TiersIndexableData.PAYS, pays);
+		addStoredValue(d, TiersIndexableData.FOR_PRINCIPAL, forPrincipal);
+		addStoredValue(d, TiersIndexableData.DATE_OUVERTURE_FOR, dateOuvertureFor);
+		addStoredValue(d, TiersIndexableData.DATE_FERMETURE_FOR, dateFermtureFor);
+		addStoredValue(d, TiersIndexableData.DOMICILE_VD, domicileVd);
+		addStoredValue(d, TiersIndexableData.NO_OFS_DOMICILE_VD, noOfsDomicileVd);
+		addStoredValue(d, TiersIndexableData.INDEXATION_DATE, indexationDate);
 
 		return d;
 	}
 
-	private void addStockedValue(Document d, String name, String value) {
+	private void addStoredValue(Document d, String name, String value) {
 		d.add(new Field(name, toString(value), Field.Store.YES, Field.Index.NO));
 	}
 
 	private void addAnalyzedValue(Document d, String name, String value) {
 		d.add(new Field(name, toString(value), Field.Store.YES, Field.Index.ANALYZED));
+	}
+
+	private void addNotAnalyzedValue(Document d, String name, String value) {
+		d.add(new Field(name, toString(value), Field.Store.YES, Field.Index.NOT_ANALYZED));
 	}
 
 	private String toString(String value) {
@@ -153,10 +157,6 @@ public class TiersIndexableData extends IndexableData {
 
 	public void setNumeros(String numeros) {
 		this.numeros = numeros;
-	}
-
-	public void addNumeros(String numeros) {
-		this.numeros = add(this.numeros, numeros);
 	}
 
 	public String getNomRaison() {
@@ -245,10 +245,6 @@ public class TiersIndexableData extends IndexableData {
 
 	public void setNatureJuridique(String natureJuridique) {
 		this.natureJuridique = natureJuridique;
-	}
-
-	public void addNatureJuridique(String natureJuridique) {
-		this.natureJuridique = add(this.natureJuridique, natureJuridique);
 	}
 
 	public String getNumeroAssureSocial() {

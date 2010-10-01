@@ -79,12 +79,6 @@ public class TiersCriteria implements Serializable {
 	 */
 	private TypeRechercheLocalitePays typeRechercheDuPaysLocalite = TypeRechercheLocalitePays.ALL;
 
-
-	/**
-	 * Le type de recherche du for
-	 */
-	private TypeRechercheForFiscal typeRechercheForFiscal = TypeRechercheForFiscal.ALL;
-
 	/**
 	 * le type de visualisation
 	 */
@@ -395,20 +389,6 @@ public class TiersCriteria implements Serializable {
 	 */
 	public void setTypeRechercheDuPaysLocalite(TypeRechercheLocalitePays typeRechercheDuPaysLocalite) {
 		this.typeRechercheDuPaysLocalite = typeRechercheDuPaysLocalite;
-	}
-
-	/**
-	 * @return the typeRechercheForFiscal
-	 */
-	public TypeRechercheForFiscal getTypeRechercheForFiscal() {
-		return typeRechercheForFiscal;
-	}
-
-	/**
-	 * @param typeRechercheForFiscal the typeRechercheForFiscal to set
-	 */
-	public void setTypeRechercheForFiscal(TypeRechercheForFiscal typeRechercheForFiscal) {
-		this.typeRechercheForFiscal = typeRechercheForFiscal;
 	}
 
 	/**
