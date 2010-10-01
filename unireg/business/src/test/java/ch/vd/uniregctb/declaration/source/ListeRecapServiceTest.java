@@ -62,21 +62,6 @@ public class ListeRecapServiceTest extends BusinessTest {
 
 	@Test
 	public void testFindLRsManquantesWithDifferentesPeriodicites() throws Exception {
-
-		loadDatabase(DB_UNIT_FILE);
-
-		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(1290387L);
-		final RegDate dateFinPeriode = RegDate.get();
-		final List<DateRange> lrTrouvees = new ArrayList<DateRange>();
-		final List<DateRange> lrManquantes = lrService.findLRsManquantes(dpi, dateFinPeriode, lrTrouvees);
-		Assert.assertEquals(3, lrManquantes.size());
-		Assert.assertEquals(2, lrTrouvees.size());
-		final DateRange firstRange = lrManquantes.get(0);
-		Assert.assertEquals(RegDate.get(2010, 1, 1), firstRange.getDateDebut());
-	}
-
-		@Test
-	public void testFindLRsManquantesWithDifferentesPeriodicites2() throws Exception {
 			final long dpiId = (Long)doInNewTransaction(new TxCallback() {
 						@Override
 						public Object execute(TransactionStatus status) throws Exception {
