@@ -4,13 +4,17 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.apache.commons.lang.ArrayUtils;
 
 import ch.vd.registre.base.utils.Assert;
 
@@ -99,13 +103,26 @@ public class WsAccessAnalyzer {
 
 	public static void main(String[] args) {
 		if (args.length == 0) {
-			System.out.println("Usage:\n./ws-analyzer.sh ws-access.log0 ws-access.log1 ws-access.log2 ...");
+			System.out.println("Usage: ./ws-analyzer.sh [OPTION] ws-access.log0 ws-access.log1 ws-access.log2 ...");
+			System.out.println();
+			System.out.println("  --html    output results as graphics within an html page");
 			return;
+		}
+
+		boolean printHtml = args[0].equals("--html");
+		if (printHtml) {
+			args = (String[]) ArrayUtils.remove(args, 0);
 		}
 
 		WsAccessAnalyzer analyzer = new WsAccessAnalyzer();
 		analyzer.analyze(args);
-		analyzer.print();
+
+		if (printHtml) {
+			analyzer.printHtml();
+		}
+		else {
+			analyzer.print();
+		}
 
 	}
 
@@ -130,6 +147,74 @@ public class WsAccessAnalyzer {
 			}
 			System.out.println(line);
 		}
+	}
+
+	private void printHtml() {
+
+		final List<String> methods = new ArrayList<String>(results.keySet());
+		Collections.sort(methods);
+
+		String content = "<html>\n" +
+				"  <head>\n" +
+				"    <meta http-equiv=\"content-type\" content=\"text/html; charset=UTF-8\">\n" +
+				"    <title>Temps de réponse du web-service Tiers 2</title>\n" +
+				"    <script language=\"javascript\" src=\"http://www.google.com/jsapi\"></script>\n" +
+				"  </head>\n" +
+				"  <body>\n" +
+				"    <h1>Temps de réponse du web-service Tiers 2</h1>\n" +
+				"    Les graphiques ci-dessous montrent la décomposition des appels en fonction du temps de réponse (en millisecondes).<br/>\n";
+
+		for (String method : methods) {
+			final List<ResponseTimeRange> time = results.get(method);
+			content += "    " + buildGoogleChart(method, time) + "<br/>\n";
+		}
+
+		content += "    <br/>\n" +
+				"    (Dernière mise-à-jour le " + new SimpleDateFormat("dd.MM.yyyy à HH:mm:ss").format(new Date()) + ")\n" +
+				"  </body>\n" +
+				"</html>";
+
+		System.out.println(content);
+	}
+
+	/**
+	 * Voir http://code.google.com/apis/chart/docs/chart_wizard.html
+	 */
+	@SuppressWarnings({"JavaDoc"})
+	private String buildGoogleChart(String method, List<ResponseTimeRange> time) {
+
+//		final String labels = "|0|1|2|3|4|5";
+		StringBuilder labels = new StringBuilder();
+		for (TimeRange range : ResponseTimeRange.DEFAULT_TIME_RANGES) {
+			if (range.getEnd() == 0) {
+				labels.append("| 0 ms");
+			}
+			else if (range.getEnd() == Long.MAX_VALUE) {
+				labels.append("|>").append(range.getStart());
+			}
+			else {
+				labels.append("|<").append(range.getEnd() + 1);
+			}
+		}
+
+//		final String values = "50,30,10,60,65,190";
+		StringBuilder values = new StringBuilder();
+		long max = 0;
+		for (int i = 0, timeSize = time.size(); i < timeSize; i++) {
+			final ResponseTimeRange range = time.get(i);
+			values.append(range.getCount());
+			if (i < timeSize - 1) {
+				values.append(',');
+			}
+			max = Math.max(max, range.getCount());
+		}
+
+//		final String valuesRange = "0,200";
+		final String valuesRange = "0," + max;
+
+		return new StringBuilder().append("<img src=\"http://chart.apis.google.com/chart?chxl=0:").append(labels).append("&chxr=1,").append(valuesRange)
+				.append("&chxs=0,676767,8,0,l,676767&chxt=x,y&chbh=23,5&chs=1000x200&cht=bvg&chco=76A4FB&chds=").append(valuesRange).append("&chd=t:").append(values).append("&chg=20,50&chtt=")
+				.append(method).append("\" width=\"1000\" height=\"200\" alt=\"").append(method).append("\" />").toString();
 	}
 
 	private void analyze(String[] args) {
