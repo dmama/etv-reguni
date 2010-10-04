@@ -1220,6 +1220,10 @@ public class AdresseServiceImpl implements AdresseService {
 
 		final RapportEntreTiers rapport;
 
+		//
+		// Attention, le comportement de cette méthode doit être cohérent avec celui de la méthode getAdresseCourrierConjointPourRepresentationMenage()
+		//
+
 		if (type == TypeAdresseRepresentant.TUTELLE || type == TypeAdresseRepresentant.CURATELLE) {
 
 			final EnsembleTiersCouple ensemble = tiersService.getEnsembleTiersCouple(menage, date);
@@ -1235,21 +1239,31 @@ public class AdresseServiceImpl implements AdresseService {
 			if (rapportPrincipal == null) {
 				rapport = null; // pas de tuteur ni curateur
 			}
-			else if (conjoint != null && TiersHelper.getRapportSujetOfType(conjoint, TypeRapportEntreTiers.TUTELLE, date) == null &&
-					TiersHelper.getRapportSujetOfType(conjoint, TypeRapportEntreTiers.CURATELLE, date) == null) {
-
-				final AdresseGenerique adresseConjoint = getAdresseFiscalPropre(conjoint, TypeAdresseFiscale.COURRIER, date, 0, false);
-				if (adresseConjoint == null || adresseConjoint.getNoOfsPays() != ServiceInfrastructureService.noOfsSuisse) {
-					// [UNIREG-2676] le conjoint habite hors-Suisse, le représentant est donc le tuteur du principal
-					rapport = rapportPrincipal;
-				}
-				else {
-					rapport = null; // le conjoint n'est pas sous tutelle (ni curatelle), le ménage ne l'est donc pas non plus
-				}
-
+			else if (conjoint == null) {
+				rapport = rapportPrincipal; // le principal est marié seul
 			}
 			else {
-				rapport = rapportPrincipal; // le conjoint est aussi sous tutelle (ou curatelle)
+
+				final RegDate dateDeces = tiersService.getDateDeces(conjoint);
+
+				if (dateDeces != null && RegDateHelper.isBeforeOrEqual(dateDeces, date, NullDateBehavior.LATEST)) {
+					rapport = rapportPrincipal; // [UNIREG-2915] le conjoint est décédé
+				}
+				else if (TiersHelper.getRapportSujetOfType(conjoint, TypeRapportEntreTiers.TUTELLE, date) != null ||
+						TiersHelper.getRapportSujetOfType(conjoint, TypeRapportEntreTiers.CURATELLE, date) != null) {
+					rapport = rapportPrincipal; // le conjoint est aussi sous tutelle (ou curatelle)
+				}
+				else {
+					final AdresseGenerique adresseConjoint = getAdresseFiscalPropre(conjoint, TypeAdresseFiscale.COURRIER, date, 0, false);
+					if (adresseConjoint == null || adresseConjoint.getNoOfsPays() != ServiceInfrastructureService.noOfsSuisse) {
+						// [UNIREG-2676] le conjoint habite hors-Suisse, le représentant est donc le tuteur du principal
+						rapport = rapportPrincipal;
+					}
+					else {
+						rapport = null; // le conjoint n'est pas sous tutelle (ni curatelle), le ménage ne l'est donc pas non plus
+					}
+
+				}
 			}
 		}
 		else {
@@ -1499,6 +1513,10 @@ public class AdresseServiceImpl implements AdresseService {
 	                                                                                  boolean strict) throws AdresseException {
 
 		final RegDate dateDeces = tiersService.getDateDeces(conjoint);
+
+		//
+		// Attention, le comportement de cette méthode doit être cohérent avec celui de la méthode getRepresentantPourMenage()
+		//
 
 		// On détermine les périodes de validité des adresses du conjoint comme adresse de représentation du ménage
 		final List<DateRange> periodesValiditeAdressesConjoint;

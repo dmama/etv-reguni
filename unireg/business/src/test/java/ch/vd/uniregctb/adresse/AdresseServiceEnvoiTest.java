@@ -1,22 +1,47 @@
 package ch.vd.uniregctb.adresse;
 
+import java.util.List;
+
+import org.junit.Test;
+import org.springframework.transaction.TransactionStatus;
+
 import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.interfaces.model.mock.*;
+import ch.vd.uniregctb.interfaces.model.mock.MockAdresse;
+import ch.vd.uniregctb.interfaces.model.mock.MockCanton;
+import ch.vd.uniregctb.interfaces.model.mock.MockCollectiviteAdministrative;
+import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
+import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
+import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
+import ch.vd.uniregctb.interfaces.model.mock.MockPays;
+import ch.vd.uniregctb.interfaces.model.mock.MockPersonneMorale;
+import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServicePM;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.mock.MockServicePM;
-import ch.vd.uniregctb.tiers.*;
+import ch.vd.uniregctb.tiers.AppartenanceMenage;
+import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
+import ch.vd.uniregctb.tiers.ContactImpotSource;
+import ch.vd.uniregctb.tiers.Curatelle;
+import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
+import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
+import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.MenageCommun;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.tiers.RapportEntreTiers;
+import ch.vd.uniregctb.tiers.TiersDAO;
+import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.tiers.Tutelle;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
-import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
 
-import java.util.List;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 @SuppressWarnings({"JavaDoc"})
 public class AdresseServiceEnvoiTest extends BusinessTest {
@@ -1368,6 +1393,79 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 			assertEquals("Pierre Dupont", nomCourrier.get(0));
 			assertEquals("Marie Dupont", nomCourrier.get(1));
 		}
+	}
+
+	/**
+	 * [UNIREG-2915] Cas du contribuable n° 808'172'14 qui provoquait un assert dans le calcul du représentant (à cause du conjoint décédé)
+	 */
+	@Test
+	public void testGetAdresseEnvoiCoupleConjointSousTutelleEtDecede() throws Exception {
+
+		final long noIndPrincipal = 615125;
+		final long noIndConjoint = 622948;
+		final long noIndCurateur = 203256;
+
+		final RegDate dateMariage = date(1984, 7, 1);
+		final RegDate dateDecesConjoint = date(2009, 11, 26);
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				MockIndividu indPrincipal = addIndividu(noIndPrincipal, date(1919, 11, 13), "Rochat", "Maurice", true);
+				addAdresse(indPrincipal, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDesBergieres, null, null, date(2010, 1, 31));
+				addAdresse(indPrincipal, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDesBergieres, null, null, date(2010, 1, 31));
+				addAdresse(indPrincipal, EnumTypeAdresse.PRINCIPALE, MockRue.Prilly.RueDesMetiers, null, date(2010, 2, 1), null);
+				addAdresse(indPrincipal, EnumTypeAdresse.COURRIER, MockRue.Prilly.RueDesMetiers, null, date(2010, 2, 1), null);
+
+				MockIndividu indConjoint = addIndividu(noIndConjoint, date(1930, 11, 4), "Rochat", "Odette", false);
+				indConjoint.setDateDeces(dateDecesConjoint);
+				addAdresse(indConjoint, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDesBergieres, null, date(2010, 1, 31), null);
+				addAdresse(indConjoint, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDesBergieres, null, date(2010, 1, 31), null);
+
+				MockIndividu indCurateur = addIndividu(noIndCurateur, date(1948, 4, 27), "Rochat", "Jean-Pierre", true);
+				addAdresse(indCurateur, EnumTypeAdresse.PRINCIPALE, MockRue.Prilly.CheminDeLaPossession, null, date(1973, 7, 21), null);
+				addAdresse(indCurateur, EnumTypeAdresse.COURRIER, MockRue.Prilly.CheminDeLaPossession, null, date(1973, 7, 21), null);
+			}
+		});
+
+
+		final long idPrincipal = 10407396L;
+		final long idConjoint = 10407397L;
+		final long idCurateur = 10169138L;
+		final long idMenage = 80817214L;
+
+		// Crée un ménage composé de deux habitants sans adresse fiscale surchargée
+		doInNewTransaction(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+
+				final PersonnePhysique principal = addHabitant(idPrincipal, noIndPrincipal);
+				final PersonnePhysique conjoint = addHabitant(idConjoint, noIndConjoint);
+				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(idMenage, principal, conjoint, dateMariage, dateDecesConjoint);
+
+				final MenageCommun menage = ensemble.getMenage();
+				final AdresseSuisse adresse = addAdresseSuisse(menage, TypeAdresseTiers.COURRIER, date(2010, 7, 1), null, MockRue.Prilly.CheminDeLaPossession);
+				adresse.setComplement("p.a. Jean-Pierre Rochat");
+
+				final PersonnePhysique curateur = addHabitant(idCurateur, noIndCurateur);
+				addCuratelle(conjoint, curateur, date(2009, 4, 3), dateDecesConjoint);
+				addCuratelle(principal, curateur, date(2009, 4, 3), null);
+
+				return null;
+			}
+		});
+
+		final MenageCommun menage = (MenageCommun) tiersService.getTiers(idMenage);
+
+		// Vérification des adresses
+		AdresseEnvoi adresse = adresseService.getAdresseEnvoi(menage, null, TypeAdresseFiscale.COURRIER, true);
+		assertNotNull(adresse);
+		assertEquals("Aux héritiers de", adresse.getLigne1());
+		assertEquals("Maurice Rochat", adresse.getLigne2());
+		assertEquals("Odette Rochat, défunte", adresse.getLigne3());
+		assertEquals("p.a. Jean-Pierre Rochat", adresse.getLigne4());
+		assertEquals("Chemin de la Possession", adresse.getLigne5());
+		assertEquals("1008 Prilly", adresse.getLigne6());
 	}
 
 	// [UNIREG-749] Ajout d'un suffixe 'défunt' en cas de décès
