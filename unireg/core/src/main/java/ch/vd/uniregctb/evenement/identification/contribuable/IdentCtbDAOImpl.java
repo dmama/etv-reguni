@@ -12,7 +12,6 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.orm.hibernate3.HibernateCallback;
-import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.dao.GenericDAOImpl;
 import ch.vd.registre.base.date.RegDate;
@@ -33,7 +32,7 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 
 
 	public List<IdentificationContribuable> find(IdentificationContribuableCriteria identificationContribuableCriteria, ParamPagination paramPagination, boolean nonTraiteOnly, boolean archiveOnly,
-	                                             boolean nonTraiteAndSuspendu) {
+	                                             boolean nonTraiteAndSuspendu, TypeDemande typeDemande) {
 		if (LOGGER.isTraceEnabled()) {
 			LOGGER.trace("Start of IdentificationContribuableDAO:find");
 		}
@@ -42,12 +41,12 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 		String queryWhere = buildCriterion(criteria, identificationContribuableCriteria, nonTraiteOnly, archiveOnly, nonTraiteAndSuspendu);
 
 		String queryOrder = "";
-		return executeSearch(paramPagination, criteria, queryWhere);
+		return executeSearch(paramPagination, criteria, queryWhere, typeDemande);
 
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<IdentificationContribuable> executeSearch(ParamPagination paramPagination, final List<Object> criteria, String queryWhere) {
+	private List<IdentificationContribuable> executeSearch(ParamPagination paramPagination, final List<Object> criteria, String queryWhere, TypeDemande typeDemande) {
 		String queryOrder = new String("");
 		if (paramPagination.getChamp() != null) {
 			queryOrder = " order by identificationContribuable." + paramPagination.getChamp();
@@ -62,7 +61,7 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 			queryOrder = queryOrder + " desc";
 		}
 
-		final String query = " select identificationContribuable from IdentificationContribuable identificationContribuable where 1=1 " + queryWhere + queryOrder;
+		final String query = " select identificationContribuable from IdentificationContribuable identificationContribuable where DEMANDE_TYPE ='"+typeDemande.name()+"'" + queryWhere + queryOrder;
 
 		final int firstResult = (paramPagination.getNumeroPage() - 1) * paramPagination.getTaillePage();
 		final int maxResult = paramPagination.getTaillePage();
@@ -89,10 +88,11 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 	/**
 	 * @param nonTraiteOnly
 	 * @param nonTraiteAndSuspendu
+	 * @param typeDemande
 	 * @see ch.vd.uniregctb.evenement.identification.contribuable.IdentCtbDAO#count(ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuableCriteria, boolean, boolean)
 	 */
 
-	public int count(IdentificationContribuableCriteria identificationContribuableCriteria, boolean nonTraiteOnly, boolean archiveOnly, boolean nonTraiteAndSuspendu) {
+	public int count(IdentificationContribuableCriteria identificationContribuableCriteria, boolean nonTraiteOnly, boolean archiveOnly, boolean nonTraiteAndSuspendu, TypeDemande typeDemande) {
 		if (LOGGER.isTraceEnabled()) {
 			LOGGER.trace("Start of IdentificationContribuableDAO:count");
 		}
@@ -101,7 +101,7 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 		String queryWhere = buildCriterion(criteria, identificationContribuableCriteria, nonTraiteOnly, archiveOnly, nonTraiteAndSuspendu);
 
 
-		String query = " select count(*) from IdentificationContribuable identificationContribuable where 1=1 " + queryWhere;
+		String query = " select count(*) from IdentificationContribuable identificationContribuable where DEMANDE_TYPE ='"+typeDemande.name()+"'" + queryWhere;
 		int count = DataAccessUtils.intResult(getHibernateTemplate().find(query, criteria.toArray()));
 		return count;
 	}

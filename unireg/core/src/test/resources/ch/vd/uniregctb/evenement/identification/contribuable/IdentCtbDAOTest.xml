@@ -18,6 +18,7 @@
     <column>PRENOMS</column>
     <column>NAVS13</column>
     <column>DATE_NAISSANCE</column>
+	<column>DEMANDE_TYPE</column>
     <row>
       <value>1</value>
       <value>1</value>
@@ -36,6 +37,7 @@
       <value>Lora</value>
       <value>1234567890123</value>
       <value>19730711</value>
+	  <value>MELDEWESEN</value>	
     </row>
   </table>
 </dataset>

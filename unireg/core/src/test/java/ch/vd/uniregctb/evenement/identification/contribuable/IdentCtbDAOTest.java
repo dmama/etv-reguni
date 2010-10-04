@@ -73,7 +73,7 @@ public class IdentCtbDAOTest extends CoreDAOTest {
 		paramPagination.setSensAscending(true);
 		paramPagination.setTaillePage(100);
 
-		List<IdentificationContribuable> list = dao.find(identificationContribuableCriteria, paramPagination, false, false,false);
+		List<IdentificationContribuable> list = dao.find(identificationContribuableCriteria, paramPagination, false, false,false, TypeDemande.MELDEWESEN);
 		assertNotNull(list);
 		assertEquals(1, list.size());
 	}

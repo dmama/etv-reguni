@@ -22,11 +22,12 @@ public interface IdentCtbDAO extends GenericDAO<IdentificationContribuable, Long
 	 * @param paramPagination
 	 * @param nonTraiteOnly   TODO
 	 * @param archiveOnly     TODO
+	 * @param typeDemande
 	 * @return
 	 */
 
 	public List<IdentificationContribuable> find(IdentificationContribuableCriteria identificationContribuableCriteria, ParamPagination paramPagination, boolean nonTraiteOnly, boolean archiveOnly,
-	                                             boolean nonTraiteAndSuspendu);
+	                                             boolean nonTraiteAndSuspendu, TypeDemande typeDemande);
 
 	/**
 	 * Nombre d'IdentificationContribuable en fonction de critères
@@ -35,10 +36,11 @@ public interface IdentCtbDAO extends GenericDAO<IdentificationContribuable, Long
 	 *
 	 * @param nonTraiteOnly TODO
 	 * @param archiveOnly   TODO
+	 * @param typeDemande
 	 * @return
 	 */
 
-	public int count(IdentificationContribuableCriteria identificationContribuableCriteria, boolean nonTraiteOnly, boolean archiveOnly, boolean nonTraiteAndSuspendu);
+	public int count(IdentificationContribuableCriteria identificationContribuableCriteria, boolean nonTraiteOnly, boolean archiveOnly, boolean nonTraiteAndSuspendu, TypeDemande typeDemande);
 
 	/**
 	 * Récupère la liste des types de message

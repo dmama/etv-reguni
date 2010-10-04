@@ -12,6 +12,7 @@ import ch.vd.uniregctb.evenement.identification.contribuable.Erreur;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuableCriteria;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable.Etat;
+import ch.vd.uniregctb.evenement.identification.contribuable.TypeDemande;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 
 /**
@@ -38,9 +39,11 @@ public interface IdentificationContribuableService {
 	 * @param nonTraiteOnly TODO
 	 * @param archiveOnly TODO
 	 * @param nonTraiterAndSuspendu TODO
+	 * @param typeDemande
 	 * @return
 	 */
-	public List<IdentificationContribuable> find (IdentificationContribuableCriteria identificationContribuableCriteria, ParamPagination paramPagination, boolean nonTraiteOnly, boolean archiveOnly, boolean nonTraiterAndSuspendu) ;
+	public List<IdentificationContribuable> find(IdentificationContribuableCriteria identificationContribuableCriteria, ParamPagination paramPagination, boolean nonTraiteOnly, boolean archiveOnly,
+	                                             boolean nonTraiterAndSuspendu, TypeDemande typeDemande) ;
 
 	/**
 	 * Nombre d'IdentificationContribuable en fonction de critères
@@ -48,9 +51,10 @@ public interface IdentificationContribuableService {
 	 * @param nonTraiteOnly TODO
 	 * @param archiveOnly TODO
 	 * @param nonTraiterAndSuspendu TODO
+	 * @param typeDemande
 	 * @return
 	 */
-	public int count (IdentificationContribuableCriteria identificationContribuableCriteria, boolean nonTraiteOnly, boolean archiveOnly, boolean nonTraiterAndSuspendu) ;
+	public int count(IdentificationContribuableCriteria identificationContribuableCriteria, boolean nonTraiteOnly, boolean archiveOnly, boolean nonTraiterAndSuspendu, TypeDemande typeDemande) ;
 
 	/**
 	 * Force l'identification du contribuable
@@ -81,8 +85,9 @@ public interface IdentificationContribuableService {
 	 *
 	 * Calcule et retourne les statistiques  par type de message par période et pour chaque état possible
 	 * @param identificationContribuableCriteria
+	 * @param typeDemande
 	 */
-	public Map<IdentificationContribuable.Etat,Integer> calculerStats(IdentificationContribuableCriteria identificationContribuableCriteria);
+	public Map<IdentificationContribuable.Etat,Integer> calculerStats(IdentificationContribuableCriteria identificationContribuableCriteria, TypeDemande typeDemande);
 
 	/**Retourn le nom complet du canton emetteur du message
 	 * @param emetteurId TODO

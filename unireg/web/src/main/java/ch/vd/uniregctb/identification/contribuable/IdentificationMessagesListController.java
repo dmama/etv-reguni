@@ -15,6 +15,7 @@ import org.springframework.web.servlet.view.RedirectView;
 
 import ch.vd.uniregctb.common.WebParamPagination;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable.Etat;
+import ch.vd.uniregctb.evenement.identification.contribuable.TypeDemande;
 import ch.vd.uniregctb.identification.contribuable.manager.IdentificationMessagesListManager;
 import ch.vd.uniregctb.identification.contribuable.view.IdentificationMessagesListView;
 import ch.vd.uniregctb.identification.contribuable.view.IdentificationMessagesResultView;
@@ -101,10 +102,10 @@ public class IdentificationMessagesListController extends AbstractIdentification
 			// Récupération de la pagination
 			WebParamPagination pagination = new WebParamPagination(request, TABLE_IDENTIFICATION_ID, PAGE_SIZE);
 
-			List<IdentificationMessagesResultView> listIdentifications = identificationMessagesListManager.find(bean, pagination, false, false,true);
+			List<IdentificationMessagesResultView> listIdentifications = identificationMessagesListManager.find(bean, pagination, false, false,true, TypeDemande.MELDEWESEN);
 
 			mav.addObject(IDENTIFICATION_LIST_ATTRIBUTE_NAME, listIdentifications);
-			mav.addObject(IDENTIFICATION_LIST_ATTRIBUTE_SIZE, Integer.valueOf(identificationMessagesListManager.count(bean, false, false,true)));
+			mav.addObject(IDENTIFICATION_LIST_ATTRIBUTE_SIZE, Integer.valueOf(identificationMessagesListManager.count(bean, false, false,true, TypeDemande.MELDEWESEN)));
 		}
 		else {
 			mav.addObject(IDENTIFICATION_LIST_ATTRIBUTE_NAME, new ArrayList<IdentificationMessagesResultView>());

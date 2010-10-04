@@ -9,6 +9,7 @@ import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.common.WebParamPagination;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuableCriteria;
+import ch.vd.uniregctb.evenement.identification.contribuable.TypeDemande;
 import ch.vd.uniregctb.identification.contribuable.view.IdentificationMessagesListView;
 import ch.vd.uniregctb.identification.contribuable.view.IdentificationMessagesResultView;
 
@@ -22,13 +23,14 @@ public interface IdentificationMessagesListManager {
 	 * @param nonTraiteOnly         TODO
 	 * @param archiveOnly           TODO
 	 * @param nonTraiterAndSuspendu TODO
+	 * @param typeDemande
 	 * @return
 	 * @throws AdressesResolutionException
 	 * @throws InfrastructureException
 	 */
 	@Transactional(readOnly = true)
 	public List<IdentificationMessagesResultView> find(IdentificationContribuableCriteria bean, WebParamPagination pagination, boolean nonTraiteOnly, boolean archiveOnly,
-	                                                   boolean nonTraiterAndSuspendu)
+	                                                boolean nonTraiterAndSuspendu, TypeDemande typeDemande)
 			throws AdressesResolutionException, InfrastructureException;
 
 	/**
@@ -38,10 +40,11 @@ public interface IdentificationMessagesListManager {
 	 * @param nonTraiteOnly         TODO
 	 * @param archiveOnly           TODO
 	 * @param nonTraiterAndSuspendu TODO
+	 * @param typeDemande
 	 * @return
 	 */
 	@Transactional(readOnly = true)
-	public int count(IdentificationContribuableCriteria criterion, boolean nonTraiteOnly, boolean archiveOnly, boolean nonTraiterAndSuspendu);
+	public int count(IdentificationContribuableCriteria criterion, boolean nonTraiteOnly, boolean archiveOnly, boolean nonTraiterAndSuspendu, TypeDemande typeDemande);
 
 	/**
 	 * Suspendre l'identification des messages
@@ -91,10 +94,11 @@ public interface IdentificationMessagesListManager {
 	 * Cherche et compte les identifications correspondant à l'etat en cours
 	 *
 	 * @param criterion
+	 * @param typeDemande
 	 * @return
 	 */
 	@Transactional(readOnly = true)
-	public int countEnCoursSeul(IdentificationContribuableCriteria criterion);
+	public int countEnCoursSeul(IdentificationContribuableCriteria criterion, TypeDemande typeDemande);
 
 
 	/**

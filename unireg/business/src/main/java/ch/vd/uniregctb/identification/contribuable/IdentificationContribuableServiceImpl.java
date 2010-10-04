@@ -2,7 +2,6 @@ package ch.vd.uniregctb.identification.contribuable;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +37,7 @@ import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContr
 import ch.vd.uniregctb.evenement.identification.contribuable.Reponse;
 import ch.vd.uniregctb.evenement.identification.contribuable.Erreur.TypeErreur;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable.Etat;
+import ch.vd.uniregctb.evenement.identification.contribuable.TypeDemande;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
 import ch.vd.uniregctb.interfaces.model.Canton;
@@ -412,11 +412,12 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	 * @param identificationContribuableCriteria
 	 *
 	 * @param paramPagination
+	 * @param typeDemande
 	 * @return
 	 */
 	public List<IdentificationContribuable> find(IdentificationContribuableCriteria identificationContribuableCriteria,
-	                                             ParamPagination paramPagination, boolean nonTraiteOnly, boolean archiveOnly, boolean nonTraiterAndSuspendu) {
-		return identCtbDAO.find(identificationContribuableCriteria, paramPagination, nonTraiteOnly, archiveOnly, nonTraiterAndSuspendu);
+	                                             ParamPagination paramPagination, boolean nonTraiteOnly, boolean archiveOnly, boolean nonTraiterAndSuspendu, TypeDemande typeDemande) {
+		return identCtbDAO.find(identificationContribuableCriteria, paramPagination, nonTraiteOnly, archiveOnly, nonTraiterAndSuspendu, typeDemande);
 	}
 
 	/**
@@ -424,11 +425,12 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	 *
 	 * @param identificationContribuableCriteria
 	 *
+	 * @param typeDemande
 	 * @return
 	 */
 	public int count(IdentificationContribuableCriteria identificationContribuableCriteria, boolean nonTraiteOnly, boolean archiveOnly,
-	                 boolean nonTraiterAndSuspendu) {
-		return identCtbDAO.count(identificationContribuableCriteria, nonTraiteOnly, archiveOnly, nonTraiterAndSuspendu);
+	                 boolean nonTraiterAndSuspendu, TypeDemande typeDemande) {
+		return identCtbDAO.count(identificationContribuableCriteria, nonTraiteOnly, archiveOnly, nonTraiterAndSuspendu, typeDemande);
 	}
 
 	/**
@@ -451,6 +453,28 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	 * @param message
 	 */
 	public void soumettre(IdentificationContribuable message) {
+		final Demande demande = message.getDemande();
+		Assert.notNull(demande, "Le message ne contient aucune demande.");
+		final TypeDemande typeDemande = demande.getTypeDemande();
+		switch (typeDemande) {
+		case MELDEWESEN:
+			soumettreMessageMeldewesen(message);
+			break;
+		case NCS:
+			soumettreMessageNCS(message);
+			break;
+		default:
+			traiterException(message, new IllegalArgumentException("Type de demande inconnue"));
+		}
+
+
+	}
+
+	private void soumettreMessageNCS(IdentificationContribuable message) {
+		//To change body of created methods use File | Settings | File Templates.
+	}
+
+	private void soumettreMessageMeldewesen(IdentificationContribuable message) {
 		// Ensuite : effectuer l'identification
 		try {
 			final Demande demande = message.getDemande();
@@ -498,17 +522,21 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 			}
 		}
 		catch (Exception e) {
-			LOGGER.warn("Exception lors du traitement du message n°" + message.getId() + ". Le message sera traité manuellement.", e);
-
-			// toute exception aura pour conséquence de provoquer un traitement manuel: on n'envoie donc pas de réponse immédiatement, et
-			// on stocke le message d'erreur dans le champs reponse.erreur.message pas commodité.
-			Reponse reponse = new Reponse();
-			reponse.setErreur(new Erreur(TypeErreur.TECHNIQUE, null, e.getMessage()));
-
-			message.setNbContribuablesTrouves(null);
-			message.setReponse(reponse);
-			message.setEtat(Etat.EXCEPTION);
+			traiterException(message, e);
 		}
+	}
+
+	private void traiterException(IdentificationContribuable message, Exception e) {
+		LOGGER.warn("Exception lors du traitement du message n°" + message.getId() + ". Le message sera traité manuellement.", e);
+
+		// toute exception aura pour conséquence de provoquer un traitement manuel: on n'envoie donc pas de réponse immédiatement, et
+		// on stocke le message d'erreur dans le champs reponse.erreur.message pas commodité.
+		Reponse reponse = new Reponse();
+		reponse.setErreur(new Erreur(TypeErreur.TECHNIQUE, null, e.getMessage()));
+
+		message.setNbContribuablesTrouves(null);
+		message.setReponse(reponse);
+		message.setEtat(Etat.EXCEPTION);
 	}
 
 
@@ -872,14 +900,14 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		return concat;
 	}
 
-	public Map<IdentificationContribuable.Etat, Integer> calculerStats(IdentificationContribuableCriteria identificationContribuableCriteria) {
+	public Map<IdentificationContribuable.Etat, Integer> calculerStats(IdentificationContribuableCriteria identificationContribuableCriteria, TypeDemande typeDemande) {
 		int res = 0;
 		Map<IdentificationContribuable.Etat, Integer> resultatStats = new HashMap<IdentificationContribuable.Etat, Integer>();
 
 		for (IdentificationContribuable.Etat etat : IdentificationContribuable.Etat.values()) {
 
 			identificationContribuableCriteria.setEtatMessage(etat.name());
-			res = count(identificationContribuableCriteria, false, false, false);
+			res = count(identificationContribuableCriteria, false, false, false, typeDemande);
 			resultatStats.put(etat, res);
 
 		}

@@ -36,6 +36,7 @@ import ch.vd.uniregctb.evenement.identification.contribuable.CriteresAdresse.Typ
 import ch.vd.uniregctb.evenement.identification.contribuable.Demande.PrioriteEmetteur;
 import ch.vd.uniregctb.evenement.identification.contribuable.Erreur.TypeErreur;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable.Etat;
+import ch.vd.uniregctb.evenement.identification.contribuable.TypeDemande;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
@@ -1418,6 +1419,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		demande.setDate(DateHelper.getCurrentDate());
 		demande.setPeriodeFiscale(2009);
 		demande.setPersonne(personne);
+		demande.setTypeDemande(TypeDemande.MELDEWESEN);
 
 		final IdentificationContribuable message = new IdentificationContribuable();
 		message.setHeader(header);
@@ -1445,6 +1447,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		demande.setDate(DateHelper.getCurrentDate());
 		demande.setPeriodeFiscale(2009);
 		demande.setPersonne(personne);
+		demande.setTypeDemande(TypeDemande.MELDEWESEN);
 
 		final IdentificationContribuable message = new IdentificationContribuable();
 		message.setHeader(header);

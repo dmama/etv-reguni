@@ -15,6 +15,7 @@ import org.springframework.web.servlet.view.RedirectView;
 
 import ch.vd.uniregctb.common.WebParamPagination;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable.Etat;
+import ch.vd.uniregctb.evenement.identification.contribuable.TypeDemande;
 import ch.vd.uniregctb.identification.contribuable.manager.IdentificationMessagesListManager;
 import ch.vd.uniregctb.identification.contribuable.view.IdentificationMessagesListView;
 import ch.vd.uniregctb.identification.contribuable.view.IdentificationMessagesResultView;
@@ -120,17 +121,17 @@ public class IdentificationMessagesListEnCoursController extends AbstractIdentif
 
 			if (SecurityProvider.isGranted(Role.MW_IDENT_CTB_VISU) || SecurityProvider.isGranted(Role.MW_IDENT_CTB_ADMIN) ){
 
-				listIdentifications = identificationMessagesListManager.find(bean, pagination,false,false,true);
-				nombreElements = Integer.valueOf(identificationMessagesListManager.count(bean,false,false,true));
+				listIdentifications = identificationMessagesListManager.find(bean, pagination,false,false,true, TypeDemande.MELDEWESEN);
+				nombreElements = Integer.valueOf(identificationMessagesListManager.count(bean,false,false,true, TypeDemande.MELDEWESEN));
 
 			}
 			else if (SecurityProvider.isGranted(Role.MW_IDENT_CTB_GEST_BO)) {
-				listIdentifications = identificationMessagesListManager.find(bean, pagination,true,false,false);
-				nombreElements = Integer.valueOf(identificationMessagesListManager.count(bean,true,false,false));
+				listIdentifications = identificationMessagesListManager.find(bean, pagination,true,false,false, TypeDemande.MELDEWESEN);
+				nombreElements = Integer.valueOf(identificationMessagesListManager.count(bean,true,false,false, TypeDemande.MELDEWESEN));
 			}
 			else if (SecurityProvider.isGranted(Role.MW_IDENT_CTB_CELLULE_BO)) {
 				listIdentifications = identificationMessagesListManager.findEncoursSeul(bean, pagination);
-				nombreElements = Integer.valueOf(identificationMessagesListManager.countEnCoursSeul(bean));
+				nombreElements = Integer.valueOf(identificationMessagesListManager.countEnCoursSeul(bean, TypeDemande.MELDEWESEN));
 			}
 
 
