@@ -30,9 +30,9 @@
 	<bean id="jmsManagedConnectionFactory" class="org.apache.activemq.ra.ActiveMQManagedConnectionFactory">
 	   <property name="resourceAdapter">
 		  <bean class="org.apache.activemq.ra.ActiveMQResourceAdapter">
-			 <property name="serverUrl" value="${extprop.jms.esb.url}" />
-			 <property name="userName" value="${extprop.jms.esb.username}" />
-			 <property name="password" value="${extprop.jms.esb.password}" />
+			 <property name="serverUrl" value="${extprop.esb.jms.url}" />
+			 <property name="userName" value="${extprop.esb.jms.username}" />
+			 <property name="password" value="${extprop.esb.jms.password}" />
 			 <property name="maximumRedeliveries" value="1"/>
 			 <property name="allPrefetchValues" value="1"/>
 		 </bean>
@@ -49,7 +49,7 @@
 	</bean>
 
 	<bean id="raftEsbStore" class="ch.vd.technical.esb.store.raft.RaftEsbStore">
-		<property name="endpoint" value="${extprop.jms.esb.raft.store}" />
+		<property name="endpoint" value="${extprop.esb.raft.store}" />
 	</bean>
 
 	<bean id="esbMessageListener" abstract="true" class="ch.vd.technical.esb.jms.EsbMessageListener">

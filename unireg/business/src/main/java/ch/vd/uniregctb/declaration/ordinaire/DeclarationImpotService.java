@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.declaration.ordinaire;
 
+import java.io.InputStream;
 import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
@@ -221,7 +222,7 @@ public interface DeclarationImpotService {
 	 * @return
 	 * @throws EditiqueException
 	 */
-	public byte[] getCopieConformeSommationDI(DeclarationImpotOrdinaire di) throws EditiqueException;
+	public InputStream getCopieConformeSommationDI(DeclarationImpotOrdinaire di) throws EditiqueException;
 
 	/**
 	 * Imprime les chemises TO pour les DIs échues pour lesquelle ces chemises

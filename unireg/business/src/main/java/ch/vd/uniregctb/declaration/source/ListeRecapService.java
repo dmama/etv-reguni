@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.declaration.source;
 
+import java.io.InputStream;
 import java.util.List;
 
 import ch.vd.registre.base.date.DateRange;
@@ -19,7 +20,7 @@ public interface ListeRecapService {
 	 * @param lr
 	 * @return le document pdf
 	 */
-	byte[] getCopieConformeLR(DeclarationImpotSource lr) throws EditiqueException;
+	InputStream getCopieConformeLR(DeclarationImpotSource lr) throws EditiqueException;
 
 	/**
 	 * Recupere à l'éditique un document pour afficher
@@ -28,7 +29,7 @@ public interface ListeRecapService {
 	 * @param lr
 	 * @return le document pdf
 	 */
-	byte[] getCopieConformeSommationLR(DeclarationImpotSource lr) throws EditiqueException;
+	InputStream getCopieConformeSommationLR(DeclarationImpotSource lr) throws EditiqueException;
 
 	/**
 	 * Impression d'une sommation LR

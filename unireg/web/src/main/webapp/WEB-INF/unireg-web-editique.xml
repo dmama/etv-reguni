@@ -7,24 +7,6 @@
 							http://www.springframework.org/schema/util
 							http://www.springframework.org/schema/util/spring-util-2.0.xsd">
 
-	<bean id="editiqueJndiTemplate" class="org.springframework.jndi.JndiTemplate">
-		<property name="environment">
-			<map>
-				<entry key="java.naming.factory.initial" value="${host-interfaces.factory}" />
-				<entry key="java.naming.provider.url" value="${extprop.editique.url}" />
-			</map>
-		</property>
-	</bean>
-
-	<bean id="externeFoldersService" class="${host-interfaces.ejb-proxy-class}" lazy-init="true">
-		<property name="lookupHomeOnStartup" value="false" />
-		<property name="refreshHomeOnConnectFailure" value="true"/>
-		<property name="cacheHome"  value="true" />
-		<property name="jndiTemplate" ref="editiqueJndiTemplate" />
-		<property name="jndiName" value="ejb/ch.vd.editique.service.ejb.EditiqueEjb" />
-		<property name="businessInterface" value="ch.vd.uniregctb.editique.impl.FoldersService" />
-	</bean>
-
 	<bean id="evenementEditiqueSender" class="ch.vd.uniregctb.editique.impl.EvenementEditiqueSenderImpl" >
 		<property name="serviceDestination" value="${extprop.jms.queue.editique.output}" />
 		<property name="serviceReplyTo" value="${extprop.jms.queue.editique.input}" />
@@ -41,7 +23,15 @@
 		<property name="sender" ref="evenementEditiqueSender" />
 		<property name="retourImpressionStorage" ref="retourImpressionStorageService" />
 		<property name="receiveTimeout" value="${editique.locale.attente.timeout}" />
-		<property name="foldersService" ref="externeFoldersService" />
+		<property name="copieConformeService" ref="copieConformeService" />
+	</bean>
+
+	<bean id="copieConformeService" class="ch.vd.uniregctb.editique.impl.EditiqueCopieConformeServiceImpl">
+		<property name="esbMessageFactory" ref="esbMessageFactoryForEditique"/>
+		<property name="esbHttpTemplate" ref="esbHttpTemplate"/>
+		<property name="serviceDestination" value="${extprop.esb.copie.conforme.destination}"/>
+		<property name="domain" value="fiscalite"/>
+		<property name="application" value="unireg"/>
 	</bean>
 
 	<bean id="editiqueCompositionService" class="ch.vd.uniregctb.editique.impl.EditiqueCompositionServiceImpl" lazy-init="true">

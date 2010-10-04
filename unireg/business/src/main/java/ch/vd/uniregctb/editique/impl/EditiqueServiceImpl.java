@@ -1,10 +1,12 @@
 package ch.vd.uniregctb.editique.impl;
 
+import java.io.InputStream;
+
 import org.apache.log4j.Logger;
 import org.apache.xmlbeans.XmlObject;
 
 import ch.vd.editique.service.enumeration.TypeFormat;
-import ch.vd.uniregctb.common.FormatNumeroHelper;
+import ch.vd.uniregctb.editique.EditiqueCopieConformeService;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueResultat;
 import ch.vd.uniregctb.editique.EditiqueRetourImpressionStorageService;
@@ -13,9 +15,6 @@ import ch.vd.uniregctb.editique.EvenementEditiqueSender;
 
 /**
  * Implémentation standard de {@link EditiqueService}.
- *
- * @author xcifwi (last modified by $Author: xcicfh $ @ $Date: 2008/04/08 07:57:42 $)
- * @version $Revision: 1.23 $
  */
 public final class EditiqueServiceImpl implements EditiqueService {
 
@@ -24,11 +23,11 @@ public final class EditiqueServiceImpl implements EditiqueService {
 	/** Le type de document à transmettre au service pour UNIREG */
 	public static final String TYPE_DOSSIER_UNIREG = "003";
 
-	private FoldersService foldersService;
-
 	private EvenementEditiqueSender sender;
 
 	private EditiqueRetourImpressionStorageService retourImpressionStorage;
+
+	private EditiqueCopieConformeService copieConformeService;
 
 	/**
 	 * Temps d'attente (en secondes) du retour du document PDF / PCL lors d'une impression locale.
@@ -89,21 +88,13 @@ public final class EditiqueServiceImpl implements EditiqueService {
 	/**
 	 * {@inheritDoc}
 	 */
-	public byte[] getPDFDeDocumentDepuisArchive(Long noContribuable, String typeDocument, String nomDocument) throws EditiqueException {
-		try {
-			final String noContribuableFormate = FormatNumeroHelper.numeroCTBToDisplay(noContribuable);
-			return foldersService.getDocument(TYPE_DOSSIER_UNIREG, noContribuableFormate, typeDocument, nomDocument, FoldersService.PDF_FORMAT);
-		}
-		catch (Exception e) {
-			final String message = "Erreur technique lors de l'appel au service folders.";
-			LOGGER.fatal(message, e);
-			throw new EditiqueException(message, e);
-		}
+	public InputStream getPDFDeDocumentDepuisArchive(Long noContribuable, String typeDocument, String nomDocument, String contexte) throws EditiqueException {
+		return copieConformeService.getPdfCopieConforme(noContribuable, typeDocument, nomDocument, contexte);
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
-	public void setFoldersService(FoldersService foldersService) {
-		this.foldersService = foldersService;
+	public void setCopieConformeService(EditiqueCopieConformeService copieConformeService) {
+		this.copieConformeService = copieConformeService;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})

@@ -29,9 +29,9 @@
 	<bean id="jmsManagedConnectionFactory" class="org.apache.activemq.ra.ActiveMQManagedConnectionFactory">
 	   <property name="resourceAdapter">
 		  <bean class="org.apache.activemq.ra.ActiveMQResourceAdapter">
-			 <property name="serverUrl" value="${testprop.jms.esb.url}" />
-			 <property name="userName" value="${testprop.jms.esb.username}" />
-			 <property name="password" value="${testprop.jms.esb.password}" />
+			 <property name="serverUrl" value="${testprop.esb.jms.url}" />
+			 <property name="userName" value="${testprop.esb.jms.username}" />
+			 <property name="password" value="${testprop.esb.jms.password}" />
 			 <property name="maximumRedeliveries" value="1"/>
 			 <property name="allPrefetchValues" value="50"/>
 		 </bean>
@@ -40,9 +40,9 @@
 
 	<!-- Versions 'hors-transaction' de l'ESB template + JMS template -->
 	<bean id="noTxConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
-		<property name="brokerURL" value="${testprop.jms.esb.url}" />
-		<property name="userName" value="${testprop.jms.esb.username}" />
-		<property name="password" value="${testprop.jms.esb.password}" />
+		<property name="brokerURL" value="${testprop.esb.jms.url}" />
+		<property name="userName" value="${testprop.esb.jms.username}" />
+		<property name="password" value="${testprop.esb.jms.password}" />
 	</bean>
 
 	<bean id="noTxEsbJmsTemplate" class="ch.vd.uniregctb.jms.EsbTemplateTracing" lazy-init="true">
@@ -55,7 +55,7 @@
 	</bean>
 
 	<bean id="raftEsbStore" class="ch.vd.technical.esb.store.raft.RaftEsbStore">
-		<property name="endpoint" value="${testprop.jms.esb.raft.store}" />
+		<property name="endpoint" value="${testprop.esb.raft.store}" />
 	</bean>
 
 	<bean id="esbMessageFactory" class="ch.vd.technical.esb.EsbMessageFactory"/>

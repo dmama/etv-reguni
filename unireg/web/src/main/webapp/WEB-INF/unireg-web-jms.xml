@@ -30,9 +30,9 @@
 	<bean id="jmsManagedConnectionFactory" class="org.apache.activemq.ra.ActiveMQManagedConnectionFactory">
 	   <property name="resourceAdapter">
 		  <bean class="org.apache.activemq.ra.ActiveMQResourceAdapter">
-			 <property name="serverUrl" value="${extprop.jms.esb.url}" />
-			 <property name="userName" value="${extprop.jms.esb.username}" />
-			 <property name="password" value="${extprop.jms.esb.password}" />
+			 <property name="serverUrl" value="${extprop.esb.jms.url}" />
+			 <property name="userName" value="${extprop.esb.jms.username}" />
+			 <property name="password" value="${extprop.esb.jms.password}" />
 			 <property name="maximumRedeliveries" value="1"/>
 			 <property name="allPrefetchValues" value="1"/>
 		 </bean>
@@ -50,9 +50,9 @@
 
 	<!-- Versions 'hors-transaction' de l'ESB template + JMS template -->
 	<bean id="noTxConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
-		<property name="brokerURL" value="${extprop.jms.esb.url}" />
-		<property name="userName" value="${extprop.jms.esb.username}" />
-		<property name="password" value="${extprop.jms.esb.password}" />
+		<property name="brokerURL" value="${extprop.esb.jms.url}" />
+		<property name="userName" value="${extprop.esb.jms.username}" />
+		<property name="password" value="${extprop.esb.jms.password}" />
 	</bean>
 
 	<bean id="noTxEsbJmsTemplate" class="ch.vd.uniregctb.jms.EsbTemplateTracing" lazy-init="true">
@@ -65,7 +65,7 @@
 	</bean>
 
 	<bean id="raftEsbStore" class="ch.vd.technical.esb.store.raft.RaftEsbStore">
-		<property name="endpoint" value="${extprop.jms.esb.raft.store}" />
+		<property name="endpoint" value="${extprop.esb.raft.store}" />
 	</bean>
 
 	<bean id="esbMessageListener" abstract="true" class="ch.vd.technical.esb.jms.EsbMessageListener">
@@ -78,6 +78,15 @@
 
 	<!-- Version sans validation parce que les XSDs de éditique n'ont pas de namespace et que ça bloque à la validation -->
 	<bean id="esbMessageFactoryForEditique" class="ch.vd.technical.esb.EsbMessageFactory"/>
+
+	<bean id="esbHttpTemplate" class="ch.vd.technical.esb.http.EsbHttpTemplate">
+		<property name="username" value="${extprop.esb.http.username}" />
+		<property name="password" value="${extprop.esb.http.password}" />
+		<property name="esbStore" ref="raftEsbStore"/>
+		<property name="timeout" value="15000"/>
+		<property name="host" value="${extprop.esb.http.host}"/>
+		<property name="port" value="${extprop.esb.http.port}"/>
+	</bean>
 
 	<bean id="esbMessageFactoryValidator" class="ch.vd.technical.esb.util.ESBXMLValidator" lazy-init="true">
 		<property name="sources">

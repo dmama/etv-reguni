@@ -1,5 +1,8 @@
 package ch.vd.uniregctb.editique.mock;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+
 import org.apache.xmlbeans.XmlObject;
 
 import ch.vd.editique.service.enumeration.TypeFormat;
@@ -16,7 +19,7 @@ public class MockEditiqueService implements EditiqueService {
 	public void creerDocumentParBatch(String nomDocument, String typeDocument, XmlObject document, boolean archive) throws EditiqueException {
 	}
 
-	public byte[] getPDFDeDocumentDepuisArchive(Long noContribuable, String typeDocument, String nomDocument) throws EditiqueException {
-		return new byte[0];
+	public InputStream getPDFDeDocumentDepuisArchive(Long noContribuable, String typeDocument, String nomDocument, String contexte) throws EditiqueException {
+		return new ByteArrayInputStream(new byte[0]);
 	}
 }

@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.declaration.ordinaire;
 
 import javax.jms.JMSException;
+import java.io.InputStream;
 import java.util.List;
 
 import org.springframework.orm.hibernate3.HibernateTemplate;
@@ -65,6 +66,8 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	private ParametreAppService parametres;
 
 	private int tailleLot = 100; // valeur par défaut
+
+	private static final String CONTEXTE_COPIE_CONFORME_SOMMATION = "SommationDI";
 
 	public DeclarationImpotServiceImpl() {
 	}
@@ -372,16 +375,16 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 
 	}
 
-	public byte[] getCopieConformeSommationDI(DeclarationImpotOrdinaire di) throws EditiqueException {
+	public InputStream getCopieConformeSommationDI(DeclarationImpotOrdinaire di) throws EditiqueException {
 		String nomDocument = construitIdArchivageSommationDI(di);
-		byte[] pdf = editiqueService.getPDFDeDocumentDepuisArchive(di.getTiers().getNumero(), ImpressionSommationDIHelperImpl.TYPE_DOCUMENT_SOMMATION_DI, nomDocument);
+		InputStream pdf = editiqueService.getPDFDeDocumentDepuisArchive(di.getTiers().getNumero(), ImpressionSommationDIHelperImpl.TYPE_DOCUMENT_SOMMATION_DI, nomDocument, CONTEXTE_COPIE_CONFORME_SOMMATION);
 		if (pdf == null) {
 			nomDocument = construitAncienIdArchivageSommationDI(di);
-			pdf = editiqueService.getPDFDeDocumentDepuisArchive(di.getTiers().getNumero(), ImpressionSommationDIHelperImpl.TYPE_DOCUMENT_SOMMATION_DI, nomDocument);
+			pdf = editiqueService.getPDFDeDocumentDepuisArchive(di.getTiers().getNumero(), ImpressionSommationDIHelperImpl.TYPE_DOCUMENT_SOMMATION_DI, nomDocument, CONTEXTE_COPIE_CONFORME_SOMMATION);
 		}
 		if (pdf == null) {
 			nomDocument = construitAncienIdArchivageSommationDIPourOnLine(di);
-			pdf = editiqueService.getPDFDeDocumentDepuisArchive(di.getTiers().getNumero(), ImpressionSommationDIHelperImpl.TYPE_DOCUMENT_SOMMATION_DI, nomDocument);
+			pdf = editiqueService.getPDFDeDocumentDepuisArchive(di.getTiers().getNumero(), ImpressionSommationDIHelperImpl.TYPE_DOCUMENT_SOMMATION_DI, nomDocument, CONTEXTE_COPIE_CONFORME_SOMMATION);
 		}
 		return pdf;
 	}

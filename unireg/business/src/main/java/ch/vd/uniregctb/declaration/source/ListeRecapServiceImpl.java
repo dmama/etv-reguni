@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.declaration.source;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -59,6 +60,10 @@ public class ListeRecapServiceImpl implements ListeRecapService, DelegateEditiqu
 	 */
 	private static final String TYPE_DOCUMENT_LR = "03";
 
+	private static final String CONTEXTE_COPIE_CONFORME_SOMMATION = "SommationLR";
+
+	private static final String CONTEXTE_COPIE_CONFORME_LR = "LR";
+
 	private DelaisService delaisService;
 
 	private EditiqueCompositionService editiqueCompositionService;
@@ -93,13 +98,13 @@ public class ListeRecapServiceImpl implements ListeRecapService, DelegateEditiqu
 	 * @return le document pdf
 	 * @throws EditiqueException
 	 */
-	public byte[] getCopieConformeLR(DeclarationImpotSource lr) throws EditiqueException {
-		return editiqueService.getPDFDeDocumentDepuisArchive(lr.getTiers().getNumero(), TYPE_DOCUMENT_LR, lr.getId().toString());
+	public InputStream getCopieConformeLR(DeclarationImpotSource lr) throws EditiqueException {
+		return editiqueService.getPDFDeDocumentDepuisArchive(lr.getTiers().getNumero(), TYPE_DOCUMENT_LR, lr.getId().toString(), CONTEXTE_COPIE_CONFORME_LR);
 	}
 
-	public byte[] getCopieConformeSommationLR(DeclarationImpotSource lr) throws EditiqueException {
+	public InputStream getCopieConformeSommationLR(DeclarationImpotSource lr) throws EditiqueException {
 		final String nomDocument = helperSommationLR.construitIdArchivageDocument(lr);
-		return editiqueService.getPDFDeDocumentDepuisArchive(lr.getTiers().getNumero(), ImpressionSommationLRHelperImpl.TYPE_DOCUMENT_SOMMATION_LR, nomDocument);
+		return editiqueService.getPDFDeDocumentDepuisArchive(lr.getTiers().getNumero(), ImpressionSommationLRHelperImpl.TYPE_DOCUMENT_SOMMATION_LR, nomDocument, CONTEXTE_COPIE_CONFORME_SOMMATION);
 	}
 
 	/**

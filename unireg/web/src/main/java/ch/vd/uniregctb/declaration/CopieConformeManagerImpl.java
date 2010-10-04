@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.declaration;
 
+import java.io.InputStream;
+
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,7 +32,7 @@ public class CopieConformeManagerImpl implements CopieConformeManager {
 	}
 
 	@Transactional(rollbackFor = Throwable.class)
-	public byte[] getPdfCopieConformeSommation(Long idEtatSomme) throws EditiqueException {
+	public InputStream getPdfCopieConformeSommation(Long idEtatSomme) throws EditiqueException {
 
 		final EtatDeclaration etat = (EtatDeclaration) hibernateTemplate.get(EtatDeclaration.class, idEtatSomme);
 		Assert.notNull(etat);

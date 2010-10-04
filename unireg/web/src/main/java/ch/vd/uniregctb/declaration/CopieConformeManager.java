@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.declaration;
 
+import java.io.InputStream;
+
 import ch.vd.uniregctb.editique.EditiqueException;
 
 /**
@@ -12,6 +14,6 @@ public interface CopieConformeManager {
 	 * dont l'état (de type 'SOMME') est indiqué en paramètre
 	 * @return document PDF
 	 */
-	byte[] getPdfCopieConformeSommation(Long idEtatSomme) throws EditiqueException;
+	InputStream getPdfCopieConformeSommation(Long idEtatSomme) throws EditiqueException;
 
 }
