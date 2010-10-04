@@ -15,6 +15,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
 
 import ch.vd.registre.base.utils.Assert;
 
@@ -79,10 +80,6 @@ public class WsAccessAnalyzer {
 
 		public long getCount() {
 			return count;
-		}
-
-		public TimeRange getRange() {
-			return range;
 		}
 
 		public boolean isInRange(long milliseconds) {
@@ -236,18 +233,30 @@ public class WsAccessAnalyzer {
 		}
 	}
 
-	//	private static final Pattern PATTERN = Pattern.compile(".*\\(([0-9]*) ms\\) ([^\\{]*).*");
-	private static final Pattern PATTERN = Pattern.compile(".*\\(([0-9]+) ms\\) ([^\\{]*).*");
+	private static final Pattern MILLI_METHOD = Pattern.compile(".*\\(([0-9]+) ms\\) ([^\\{]*).*");
+	private static final Pattern TIERS_NUMBERS = Pattern.compile(".*tiersNumbers=\\[([0-9, ]*)\\].*");
 
 	private void process(String line) {
 
 		try {
-			final Matcher matcher = PATTERN.matcher(line);
+			final Matcher matcher = MILLI_METHOD.matcher(line);
 			if (matcher.matches()) {
 				final long milliseconds = Long.parseLong(matcher.group(1));
 				final String method = matcher.group(2);
 
-				addCall(method, milliseconds);
+				final int tiersCount;
+				if (method.startsWith("GetBatch")) {
+					// en cas de méthode batch, on calcul le temps moyen de réponse par tiers demandé
+					final Matcher m = TIERS_NUMBERS.matcher(line);
+					Assert.isTrue(m.matches());
+					final String tiersNumer = m.group(1);
+					tiersCount = StringUtils.countMatches(tiersNumer, ",") + 1;
+				}
+				else {
+					tiersCount = 1;
+				}
+
+				addCall(method, milliseconds / tiersCount);
 			}
 		}
 		catch (Exception e) {
