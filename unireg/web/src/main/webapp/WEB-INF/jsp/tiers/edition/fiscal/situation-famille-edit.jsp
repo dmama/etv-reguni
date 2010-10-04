@@ -70,7 +70,7 @@
 		<tr>
 			<td width="25%">&nbsp;</td>
 			<c:choose>
-				<c:when test="${command.allowed}">
+				<c:when test="${command.editable}">
 					<td width="25%"><input type="submit" id="ajouter" value="<fmt:message key="label.bouton.ajouter" />"></td>
 				</c:when>
 				<c:otherwise>

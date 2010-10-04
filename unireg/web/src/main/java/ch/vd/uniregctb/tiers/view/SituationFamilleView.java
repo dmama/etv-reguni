@@ -41,7 +41,7 @@ public class SituationFamilleView implements Comparable<SituationFamilleView>, A
 
 	private boolean annule;
 	
-	private boolean annulable;
+	private boolean editable;
 
 	private String source;
 
@@ -194,12 +194,12 @@ public class SituationFamilleView implements Comparable<SituationFamilleView>, A
 		return value;
 	}
 
-	public boolean isAnnulable() {
-		return annulable;
+	public boolean isEditable() {
+		return editable;
 	}
 
-	public void setAnnulable(boolean isAllowed) {
-		this.annulable = isAllowed;
+	public void setEditable(boolean isAllowed) {
+		this.editable = isAllowed;
 	}
 
 	public String getSource() {

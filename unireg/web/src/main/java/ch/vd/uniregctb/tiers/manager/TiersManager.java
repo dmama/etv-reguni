@@ -925,7 +925,7 @@ public class TiersManager implements MessageSourceAware {
 			view.setEtatCivil(situation.getEtatCivil());
 
 			final VueSituationFamille.Source source = situation.getSource();
-			view.setAnnulable(source == VueSituationFamille.Source.FISCALE_TIERS);
+			view.setEditable(source == VueSituationFamille.Source.FISCALE_TIERS);
 			view.setSource(source != null ? source.name() : null);
 
 			if (situation instanceof VueSituationFamilleMenageCommun) {
