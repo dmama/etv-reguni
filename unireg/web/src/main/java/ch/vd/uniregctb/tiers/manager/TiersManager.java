@@ -461,7 +461,8 @@ public class TiersManager implements MessageSourceAware {
 			nomSujet = getNomCourrierPlat(sujet);
 			nomObjet = getNomCourrierPlat(objet);
 		}
-		catch (AdresseException e) {
+		catch (Exception e) {
+			LOGGER.warn("Exception catchée pendant le calcul des tooltips", e);
 			return null;
 		}
 
