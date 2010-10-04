@@ -508,11 +508,12 @@ public class TiersManager implements MessageSourceAware {
 		if (noms.size() == 1) {
 			return noms.get(0);
 		}
-		else if (noms.size() == 2) {
-			return noms.get(0) + " / " + noms.get(1);
-		}
 		else {
-			throw new IllegalArgumentException("Le tiers n°" + tiers.getNumero() + " possède plus de 2 lignes dans son nom courrier.");
+			final StringBuilder b = new StringBuilder(noms.get(0));
+			for (int i = 1 ; i < noms.size() ; ++ i) {
+				b.append(" / ").append(noms.get(i));
+			}
+			return b.toString();
 		}
 	}
 
