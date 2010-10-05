@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.declaration.ordinaire;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -10,8 +11,9 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.JobResults;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
+import ch.vd.uniregctb.declaration.source.IdentifiantDeclaration;
 
-public class EnvoiSommationsDIsResults extends JobResults<Long, EnvoiSommationsDIsResults> {
+public class EnvoiSommationsDIsResults extends JobResults<IdentifiantDeclaration, EnvoiSommationsDIsResults> {
 
 	public static class Info {
 		protected static final String COMMA = ";";
@@ -138,8 +140,10 @@ public class EnvoiSommationsDIsResults extends JobResults<Long, EnvoiSommationsD
 		sommationsEnErreur.add(new ErrorInfo(di, cause));
 	}
 
-	public void addErrorException(Long element, Exception e) {
-		sommationsEnErreur.add(new ErrorInfo(element, e.getMessage()));
+
+	public void addErrorException(IdentifiantDeclaration element, Exception e) {
+		String message = buildErrorMessage(e);
+		sommationsEnErreur.add(new ErrorInfo(element.getNumeroTiers(),message ));
 	}
 
 	public void addDiSommee(Integer periode, DeclarationImpotOrdinaire di) {
@@ -252,4 +256,13 @@ public class EnvoiSommationsDIsResults extends JobResults<Long, EnvoiSommationsD
 		}
 		return Collections.unmodifiableList(ret);
 	}
+	protected final String buildErrorMessage(Exception e) {
+        final String message;
+        if (e.getMessage() != null && e.getMessage().trim().length() > 0) {
+            message = String.format("%s - %s", e.getClass().getName(), e.getMessage().trim());
+        } else {
+            message = String.format("%s - %s", e.getClass().getName(), Arrays.toString(e.getStackTrace()));
+        }
+        return message;
+    }
 }

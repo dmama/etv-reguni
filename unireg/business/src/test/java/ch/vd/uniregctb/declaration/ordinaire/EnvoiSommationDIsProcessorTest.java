@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.declaration.ordinaire;
 
+import java.util.List;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
@@ -23,6 +25,7 @@ import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.Sexe;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
@@ -30,6 +33,7 @@ import ch.vd.uniregctb.type.TypeEtatDeclaration;
 public class EnvoiSommationDIsProcessorTest extends BusinessTest {
 
 	private EnvoiSommationsDIsProcessor processor;
+	private DeclarationImpotOrdinaireDAO diDao;
 
 	@Override
 	public void onSetUp() throws Exception {
@@ -37,7 +41,7 @@ public class EnvoiSommationDIsProcessorTest extends BusinessTest {
 
 		final DelaisService delaisService = getBean(DelaisService.class, "delaisService");
 		final DeclarationImpotService diService = getBean(DeclarationImpotService.class, "diService");
-		final DeclarationImpotOrdinaireDAO diDao = getBean(DeclarationImpotOrdinaireDAO.class, "diDAO");
+		diDao = getBean(DeclarationImpotOrdinaireDAO.class, "diDAO");
 		processor = new EnvoiSommationsDIsProcessor(hibernateTemplate, diDao, delaisService, diService, transactionManager);
 	}
 
@@ -318,6 +322,55 @@ public class EnvoiSommationDIsProcessorTest extends BusinessTest {
 		Assert.assertEquals(0, results.getTotalIndigent());
 		Assert.assertEquals(0, results.getTotalNonAssujettissement());
 		Assert.assertEquals(0, results.getTotalSommationsEnErreur());
+		Assert.assertEquals(0, results.getTotalDisOptionnelles());
+	}
+
+
+	//UNIREG-2466 test sur le log correcte des erreurs notamment les NullPointerException
+	@Test
+	public void testErreurSommation() throws Exception {
+		final int anneePf = 2008;
+		final RegDate dateEmission = RegDate.get(2009, 1, 15);
+		final RegDate delaiInitial = RegDate.get(2009, 3, 15);
+
+		final long diId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+			public Long doInTransaction(TransactionStatus status) {
+
+				addCollAdm(MockCollectiviteAdministrative.CEDI);
+
+				final PersonnePhysique pp = addNonHabitant("Jacques", "Cartier", RegDate.get(1980, 1, 5), Sexe.MASCULIN);
+
+				addForPrincipalSource(pp, RegDate.get(anneePf, 6, 1), MotifFor.ARRIVEE_HS,null,null, MockCommune.Aubonne.getNoOFS());
+
+
+				final PeriodeFiscale periode = addPeriodeFiscale(anneePf);
+				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
+				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(pp, periode, date(anneePf, 1, 1), date(anneePf, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+				declaration.addEtat(new EtatDeclaration(dateEmission, TypeEtatDeclaration.EMISE));
+
+				final DelaiDeclaration delai = new DelaiDeclaration();
+				delai.setDateDemande(dateEmission);
+				delai.setDelaiAccordeAu(delaiInitial);
+				declaration.addDelai(delai);
+
+				return declaration.getId();
+			}
+		});
+
+		final RegDate dateTraitement = delaiInitial.addMonths(1);
+		final EnvoiSommationsDIsResults results = processor.run(dateTraitement, false, 0, null);
+		final List<EnvoiSommationsDIsResults.ErrorInfo> infoListErreur = results.getListeSommationsEnErreur();
+		Assert.assertEquals(1, infoListErreur.size());
+		final DeclarationImpotOrdinaire declaration =  diDao.get(diId);
+
+		EnvoiSommationsDIsResults.ErrorInfo error =  infoListErreur.get(0);
+		Assert.assertEquals(declaration.getTiers().getNumero(),error.getNumeroTiers());		
+
+		Assert.assertEquals(1, results.getTotalDisTraitees());
+		Assert.assertEquals(0, results.getTotalDisSommees());
+		Assert.assertEquals(0, results.getTotalSommations(anneePf));
+		Assert.assertEquals(0, results.getTotalIndigent());
+		Assert.assertEquals(0, results.getTotalNonAssujettissement());	
 		Assert.assertEquals(0, results.getTotalDisOptionnelles());
 	}
 

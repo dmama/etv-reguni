@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.declaration.ordinaire;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -27,6 +28,7 @@ import ch.vd.uniregctb.declaration.DeclarationException;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
+import ch.vd.uniregctb.declaration.source.IdentifiantDeclaration;
 import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
 import ch.vd.uniregctb.metier.assujettissement.DecompositionForsAnneeComplete;
 import ch.vd.uniregctb.metier.assujettissement.Indigent;
@@ -81,10 +83,10 @@ public class EnvoiSommationsDIsProcessor  {
 				RegDateHelper.dateToDisplayString(dateTraitement))
 		);
 
-		final List<Long> dis = retrieveListIdDIs(dateTraitement);
+		final List<IdentifiantDeclaration> dis = retrieveListIdDIs(dateTraitement);
 
-		final BatchTransactionTemplate<Long, EnvoiSommationsDIsResults> t = new BatchTransactionTemplate<Long, EnvoiSommationsDIsResults>(dis, BATCH_SIZE, Behavior.REPRISE_AUTOMATIQUE, transactionManager, status, hibernateTemplate);
-		t.execute(rapportFinal, new BatchCallback<Long, EnvoiSommationsDIsResults>() {
+		final BatchTransactionTemplate<IdentifiantDeclaration, EnvoiSommationsDIsResults> t = new BatchTransactionTemplate<IdentifiantDeclaration, EnvoiSommationsDIsResults>(dis, BATCH_SIZE, Behavior.REPRISE_AUTOMATIQUE, transactionManager, status, hibernateTemplate);
+		t.execute(rapportFinal, new BatchCallback<IdentifiantDeclaration, EnvoiSommationsDIsResults>() {
 
 			int currentBatch = 0;
 
@@ -93,10 +95,11 @@ public class EnvoiSommationsDIsProcessor  {
 				return new EnvoiSommationsDIsResults();
 			}
 
-			public boolean doInTransaction(List<Long> batch, EnvoiSommationsDIsResults r) {
+			public boolean doInTransaction(List<IdentifiantDeclaration> batch, EnvoiSommationsDIsResults r) {
 				currentBatch++;
+				List<Long> numerosDis = getListNumerosDis(batch);
 				try {
-					final Set<DeclarationImpotOrdinaire> declarations = declarationImpotOrdinaireDAO.getDIsForSommation(batch);
+					final Set<DeclarationImpotOrdinaire> declarations = declarationImpotOrdinaireDAO.getDIsForSommation(numerosDis);
 					final Iterator<DeclarationImpotOrdinaire> iter = declarations.iterator();
 					while (iter.hasNext() && ! status.interrupted() && (nombreMax == 0 || (rapportFinal.getTotalDisSommees()  + r.getTotalDisSommees()) < nombreMax)) {
 						final DeclarationImpotOrdinaire di = iter.next();
@@ -128,6 +131,15 @@ public class EnvoiSommationsDIsProcessor  {
 		rapportFinal.setInterrompu(statusManager.interrupted());
 		rapportFinal.end();
 		return rapportFinal;
+	}
+
+	private List<Long> getListNumerosDis(List<IdentifiantDeclaration> batch) {
+		List<Long> ids = new ArrayList<Long>();
+
+		for (IdentifiantDeclaration identifiantDeclaration : batch) {
+			ids.add(identifiantDeclaration.getNumeroDeclaration());
+		}
+		return ids;
 	}
 
 	private void traiterDI(DeclarationImpotOrdinaire di, EnvoiSommationsDIsResults r, RegDate dateTraitement, boolean miseSousPliImpossible) {
@@ -274,19 +286,19 @@ public class EnvoiSommationsDIsProcessor  {
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<Long> retrieveListIdDIs(final RegDate dateLimite) {
+	private List<IdentifiantDeclaration> retrieveListIdDIs(final RegDate dateLimite) {
 
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 
-		return (List<Long>) template.execute(new TransactionCallback() {
-			public List<Long> doInTransaction(TransactionStatus status) {
-
-				final List<Long> ids = (List<Long>) hibernateTemplate.execute(new HibernateCallback() {
+		return (List<IdentifiantDeclaration>) template.execute(new TransactionCallback() {
+			public List<IdentifiantDeclaration> doInTransaction(TransactionStatus status) {
+				final List<IdentifiantDeclaration> identifiantDi = new ArrayList<IdentifiantDeclaration>();
+				final List<DeclarationImpotOrdinaire> declarationsASommer = (List<DeclarationImpotOrdinaire>) hibernateTemplate.execute(new HibernateCallback() {
 					public Object doInHibernate(Session session) throws HibernateException {
 
 						final StringBuilder b = new StringBuilder();
-						b.append("SELECT di.id FROM DeclarationImpotOrdinaire AS di");
+						b.append("SELECT di FROM DeclarationImpotOrdinaire AS di");
 						b.append(" WHERE di.annulationDate IS NULL");
 						b.append(" AND EXISTS (SELECT etat.declaration.id FROM EtatDeclaration AS etat WHERE di.id = etat.declaration.id AND etat.annulationDate IS NULL AND etat.etat = 'EMISE')");
 						b.append(" AND NOT EXISTS (SELECT etat.declaration.id FROM EtatDeclaration AS etat WHERE di.id = etat.declaration.id AND etat.annulationDate IS NULL AND etat.etat IN ('RETOURNEE', 'SOMMEE'))");
@@ -298,7 +310,11 @@ public class EnvoiSommationsDIsProcessor  {
 						return query.list();
 					}
 				});
-				return ids;
+				for (DeclarationImpotOrdinaire declarationImpotOrdinaire : declarationsASommer) {
+					identifiantDi.add(new IdentifiantDeclaration(declarationImpotOrdinaire.getId(), declarationImpotOrdinaire.getTiers().getNumero()));
+				}
+
+				return identifiantDi;
 			}
 		});
 	}

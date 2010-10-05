@@ -1003,6 +1003,26 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		return f;
 	}
 
+
+		/**
+	 * Ajoute un for principal Source sur le contribuable spécifié.
+	 */
+	protected ForFiscalPrincipal addForPrincipalSource(Contribuable contribuable, RegDate ouverture, MotifFor motifOuverture, RegDate fermeture,
+			MotifFor motifFermeture, Integer noOFS) {
+		ForFiscalPrincipal f = new ForFiscalPrincipal();
+		f.setDateDebut(ouverture);
+		f.setMotifOuverture(motifOuverture);
+		f.setDateFin(fermeture);
+		f.setMotifFermeture(motifFermeture);
+		f.setGenreImpot(GenreImpot.REVENU_FORTUNE);
+		f.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
+		f.setNumeroOfsAutoriteFiscale(noOFS);
+		f.setMotifRattachement(MotifRattachement.DOMICILE);
+		f.setModeImposition(ModeImposition.SOURCE);
+		f = (ForFiscalPrincipal) tiersDAO.addAndSave(contribuable, f);
+		return f;
+		}
+
 	/**
 	 * Ajoute un for fiscal secondaire ouvert.
 	 */
