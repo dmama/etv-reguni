@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.webservices.securite.impl;
 
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
@@ -15,6 +16,7 @@ import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.security.DroitAccesDAO;
 import ch.vd.uniregctb.security.SecurityProvider;
 import ch.vd.uniregctb.type.Niveau;
+import ch.vd.uniregctb.webservices.common.LoadMonitorable;
 import ch.vd.uniregctb.webservices.common.UserLogin;
 import ch.vd.uniregctb.webservices.common.WebServiceException;
 import ch.vd.uniregctb.webservices.securite.GetAutorisationSurDossier;
@@ -24,11 +26,17 @@ import ch.vd.uniregctb.webservices.securite.SecuriteWebService;
 
 @SOAPBinding(parameterStyle = SOAPBinding.ParameterStyle.BARE)
 @WebService(targetNamespace = "http://www.vd.ch/uniregctb/webservices/security", name = "SecuritePort", serviceName = "SecuriteService")
-public class SecuriteWebServiceImpl implements SecuriteWebService {
+public class SecuriteWebServiceImpl implements SecuriteWebService, LoadMonitorable {
 
 	private static final Logger LOGGER = Logger.getLogger(SecuriteWebServiceImpl.class);
 
 	private DroitAccesDAO dao;
+
+	private final AtomicInteger appelsEnCours = new AtomicInteger(0);
+
+	public int getChargeInstantannee() {
+		return appelsEnCours.intValue();
+	}
 
 	@SOAPBinding(parameterStyle = SOAPBinding.ParameterStyle.BARE)
 	@WebMethod
@@ -74,6 +82,10 @@ public class SecuriteWebServiceImpl implements SecuriteWebService {
 	 * Login l'utilisateur dans l'application.
 	 */
 	private void login(UserLogin login) throws WebServiceException {
+
+		// un nouvel appel commence
+		appelsEnCours.incrementAndGet();
+
 		if (login == null || login.userId == null || login.oid == null || login.userId.trim().equals("")) {
 			throw new WebServiceException("L'identification de l'utilisateur (userId + oid) doit être renseignée.");
 		}
@@ -87,6 +99,9 @@ public class SecuriteWebServiceImpl implements SecuriteWebService {
 	 */
 	private void logout() {
 		AuthenticationHelper.resetAuthentication();
+
+		// tout est fini
+		appelsEnCours.decrementAndGet();
 	}
 
 	public void setDao(DroitAccesDAO dao) {

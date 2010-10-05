@@ -31,6 +31,7 @@
 			<map>
 				<entry key="ch.vd.uniregctb-ws:type=Monitoring,name=Application" value="applicationMonitoringJmxBean" />
 				<entry key="ch.vd.uniregctb-ws:type=Monitoring,name=Caches" value="uniregCacheManager" />
+				<entry key="ch.vd.uniregctb-ws:type=Monitoring,name=Charge" value="webserviceLoadJmxBean" />
 				<entry key="ch.vd.uniregctb-ws:type=Connections,name=Oracle" value="oracleConnectionJmxBean" />
 				<!--<entry key="ch.vd.regcdh:type=Connections,name=DB2" value="db2ConnectionJmxBean" />-->
 				<!--<entry key="ch.vd.regcdh:type=Connections,name=HostInterface" value="hostInterfaceConnectionJmxBean" />-->
@@ -50,6 +51,16 @@
 
 	<bean name="applicationMonitoringJmxBean" class="ch.vd.uniregctb.jmx.ApplicationMonitoringJMXBeanImpl">
 		<property name="checker" ref="applicationChecker" />
+	</bean>
+
+	<bean name="webserviceLoadJmxBean" class="ch.vd.uniregctb.jmx.WebServiceLoadJmxBeanImpl">
+		<property name="statsService" ref="statsService"/>
+		<property name="services">
+			<map>
+				<entry key="TiersWebService2" value-ref="tiersService2EndPoint"/>
+				<entry key="ServiceSecurite" value-ref="securiteServiceBean"/>
+			</map>
+		</property>
 	</bean>
 
 	<bean name="oracleConnectionJmxBean" class="ch.vd.registre.jmx.ConnectionJmxBeanImpl">

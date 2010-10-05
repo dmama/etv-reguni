@@ -12,6 +12,7 @@ import javax.xml.ws.handler.MessageContext;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.cxf.transport.http.AbstractHTTPDestination;
 import org.apache.log4j.Logger;
@@ -21,6 +22,7 @@ import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityProvider;
 import ch.vd.uniregctb.type.Niveau;
+import ch.vd.uniregctb.webservices.common.LoadMonitorable;
 import ch.vd.uniregctb.webservices.common.UserLogin;
 import ch.vd.uniregctb.webservices.tiers2.TiersWebService;
 import ch.vd.uniregctb.webservices.tiers2.data.BatchTiers;
@@ -60,11 +62,16 @@ import ch.vd.uniregctb.webservices.tiers2.params.SetTiersBlocRembAuto;
  */
 @SOAPBinding(parameterStyle = SOAPBinding.ParameterStyle.BARE)
 @WebService(targetNamespace = "http://www.vd.ch/uniregctb/webservices/tiers2", name = "TiersPort", serviceName = "TiersService")
-public class TiersWebServiceEndPoint implements TiersWebService {
+public class TiersWebServiceEndPoint implements TiersWebService, LoadMonitorable {
 
 	private static final Logger LOGGER = Logger.getLogger(TiersWebServiceEndPoint.class);
 	private static final Logger READ_ACCESS = Logger.getLogger("tiers2.read");
 	private static final Logger WRITE_ACCESS = Logger.getLogger("tiers2.write");
+
+	/**
+	 * Nombre d'appels actuellements en cours
+	 */
+	private final AtomicInteger appelsEnCours = new AtomicInteger(0);
 
 	@Resource
 	private WebServiceContext context;
@@ -73,6 +80,10 @@ public class TiersWebServiceEndPoint implements TiersWebService {
 
 	public void setService(TiersWebService service) {
 		this.service = service;
+	}
+
+	public int getChargeInstantannee() {
+		return appelsEnCours.intValue();
 	}
 
 	/**
@@ -590,6 +601,10 @@ public class TiersWebServiceEndPoint implements TiersWebService {
 	 *          si le login n'est pas renseigné convenablement.
 	 */
 	private void login(UserLogin login) throws BusinessException {
+
+		// un nouvel appel est en train de débuter
+		appelsEnCours.incrementAndGet();
+
 		if (login == null || login.userId == null || login.oid == null || login.userId.trim().equals("")) {
 			throw new BusinessException("L'identification de l'utilisateur (userId + oid) doit être renseignée.");
 		}
@@ -603,6 +618,9 @@ public class TiersWebServiceEndPoint implements TiersWebService {
 	 */
 	private void logout() {
 		AuthenticationHelper.resetAuthentication();
+
+		// tout est fini
+		appelsEnCours.decrementAndGet();
 	}
 
 	/**

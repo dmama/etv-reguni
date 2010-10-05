@@ -14,9 +14,13 @@ public interface StatsService {
 
 	void registerCache(String serviceName, Ehcache cache);
 
+	void registerLoadMonitor(String serviceName, LoadMonitor monitor);
+
 	void unregisterService(String serviceName);
 
 	void unregisterCache(String serviceName);
+
+	void unregisterLoadMonitor(String serviceName);
 
 	ServiceStats getServiceStats(String serviceName);
 

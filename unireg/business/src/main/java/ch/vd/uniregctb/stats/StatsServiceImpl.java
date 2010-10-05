@@ -27,6 +27,7 @@ public class StatsServiceImpl implements InitializingBean, DisposableBean, Stats
 	private final Timer timer = new Timer();
 	private final Map<String, ServiceTracingInterface> rawServices = new HashMap<String, ServiceTracingInterface>();
 	private final Map<String, Ehcache> cachedServices = new HashMap<String, Ehcache>();
+	private final Map<String, LoadMonitor> loadMonitors = new HashMap<String, LoadMonitor>();
 	private long lastLoggedCallTime = 0;
 
 	private final TimerTask task = new TimerTask() {
@@ -48,6 +49,12 @@ public class StatsServiceImpl implements InitializingBean, DisposableBean, Stats
 		}
 	}
 
+	public void registerLoadMonitor(String serviceName, LoadMonitor monitor) {
+		synchronized (loadMonitors) {
+			loadMonitors.put(serviceName, monitor);
+		}
+	}
+
 	public void unregisterService(String serviceName) {
 		synchronized (rawServices) {
 			rawServices.remove(serviceName);
@@ -57,6 +64,12 @@ public class StatsServiceImpl implements InitializingBean, DisposableBean, Stats
 	public void unregisterCache(String serviceName) {
 		synchronized (cachedServices) {
 			cachedServices.remove(serviceName);
+		}
+	}
+
+	public void unregisterLoadMonitor(String serviceName) {
+		synchronized (loadMonitors) {
+			loadMonitors.remove(serviceName);
 		}
 	}
 
@@ -86,6 +99,19 @@ public class StatsServiceImpl implements InitializingBean, DisposableBean, Stats
 		}
 
 		return new ServiceStats(rawService);
+	}
+
+	private LoadMonitorStats getLoadMonitorStats(String serviceName) {
+		final LoadMonitor service;
+		synchronized (loadMonitors) {
+			service = loadMonitors.get(serviceName);
+		}
+
+		if (service == null) {
+			return null;
+		}
+
+		return new LoadMonitorStats(service);
 	}
 
 	private static String subKey(String key) {
@@ -144,6 +170,8 @@ public class StatsServiceImpl implements InitializingBean, DisposableBean, Stats
 		b.append(buildCacheStats());
 		b.append('\n');
 		b.append(buildServiceStats());
+		b.append('\n');
+		b.append(buildLoadMonitorStats());
 
 		return b.toString();
 	}
@@ -232,6 +260,61 @@ public class StatsServiceImpl implements InitializingBean, DisposableBean, Stats
 				b.append(printLine(maxLen, subKey(e.getKey()), e.getValue()));
 			}
 		}
+
+		return b.toString();
+	}
+
+	private String buildLoadMonitorStats() {
+
+		// on récupère les noms des caches
+		final Set<String> keys = new HashSet<String>();
+		synchronized (loadMonitors) {
+			keys.addAll(loadMonitors.keySet());
+		}
+
+		if (keys.size() == 0) {
+			return StringUtils.EMPTY;
+		}
+
+		// on trie les clés avant de les afficher
+		final List<String> sortedKeys = new ArrayList<String>(keys);
+		Collections.sort(sortedKeys);
+
+		// extrait et analyse les stats des services
+		int maxLen = 0; // longueur maximale des clés
+		final List<LoadMonitorStats> stats = new ArrayList<LoadMonitorStats>(sortedKeys.size());
+		for (String k : sortedKeys) {
+			final LoadMonitorStats data = getLoadMonitorStats(k);
+			stats.add(data);
+			maxLen = Math.max(maxLen, k.length());
+		}
+
+		final StringBuilder b = new StringBuilder();
+		b.append(" Load").append(StringUtils.repeat(" ", maxLen - 4));
+		b.append(" | current | 5-min average\n");
+		b.append(StringUtils.repeat("-", maxLen + 1));
+		b.append("-+---------+---------------\n");
+
+		final int count = stats.size();
+		for (int i = 0 ; i < count ; ++ i) {
+			final String k = sortedKeys.get(i);
+			final LoadMonitorStats data = stats.get(i);
+			b.append(printLine(maxLen, k, data));
+		}
+
+		return b.toString();
+	}
+
+	private String printLine(int maxLen, String key, LoadMonitorStats data) {
+
+		final String chargeInstantannee = String.format("%d", data.getChargeInstantannee());
+		final String moyenneCharge = String.format("%#13.3f", data.getMoyenneCharge());
+
+		final StringBuilder b = new StringBuilder();
+		b.append(' ').append(rpad(key, maxLen)).append(" | ");
+		b.append(lpad(chargeInstantannee, 7)).append(" | ");
+		b.append(moyenneCharge);
+		b.append('\n');
 
 		return b.toString();
 	}

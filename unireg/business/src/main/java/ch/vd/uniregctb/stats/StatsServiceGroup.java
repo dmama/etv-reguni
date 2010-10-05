@@ -38,6 +38,10 @@ public class StatsServiceGroup implements StatsService, ServiceTracingInterface,
 		throw new NotImplementedException();
 	}
 
+	public void registerLoadMonitor(String serviceName, LoadMonitor monitor) {
+		throw new NotImplementedException();
+	}
+
 	public void unregisterService(String serviceName) {
 		synchronized (subServices) {
 			subServices.remove(serviceName);
@@ -45,6 +49,10 @@ public class StatsServiceGroup implements StatsService, ServiceTracingInterface,
 	}
 
 	public void unregisterCache(String serviceName) {
+		throw new NotImplementedException();
+	}
+
+	public void unregisterLoadMonitor(String serviceName) {
 		throw new NotImplementedException();
 	}
 
