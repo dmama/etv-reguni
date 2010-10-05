@@ -34,7 +34,7 @@ public class SecuriteWebServiceImpl implements SecuriteWebService, LoadMonitorab
 
 	private final AtomicInteger appelsEnCours = new AtomicInteger(0);
 
-	public int getChargeInstantannee() {
+	public int getChargeInstantanee() {
 		return appelsEnCours.intValue();
 	}
 

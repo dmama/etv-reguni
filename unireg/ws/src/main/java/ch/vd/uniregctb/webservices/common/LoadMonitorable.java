@@ -6,7 +6,7 @@ package ch.vd.uniregctb.webservices.common;
 public interface LoadMonitorable {
 
 	/**
-	 * @return la charge instantannée (par exemple le nombre d'appels actuellement en cours)
+	 * @return la charge instantanée (par exemple le nombre d'appels actuellement en cours)
 	 */
-	int getChargeInstantannee();
+	int getChargeInstantanee();
 }

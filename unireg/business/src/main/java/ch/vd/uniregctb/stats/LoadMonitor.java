@@ -7,9 +7,9 @@ package ch.vd.uniregctb.stats;
 public interface LoadMonitor {
 
 	/**
-	 * @return la charge instantannée du système considéré
+	 * @return la charge instantanée du système considéré
 	 */
-	int getChargeInstantannee();
+	int getChargeInstantanee();
 
 	/**
 	 * @return la moyenne de la charge sur les 5 dernières minutes

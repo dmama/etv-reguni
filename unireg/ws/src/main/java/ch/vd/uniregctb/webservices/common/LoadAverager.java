@@ -78,7 +78,7 @@ public class LoadAverager {
 	private final class SamplingTask extends TimerTask {
 		@Override
 		public void run() {
-			final int charge = service.getChargeInstantannee();
+			final int charge = service.getChargeInstantanee();
 			addSamplingData(charge);
 		}
 	}

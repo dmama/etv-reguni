@@ -82,7 +82,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, LoadMonitorable
 		this.service = service;
 	}
 
-	public int getChargeInstantannee() {
+	public int getChargeInstantanee() {
 		return appelsEnCours.intValue();
 	}
 

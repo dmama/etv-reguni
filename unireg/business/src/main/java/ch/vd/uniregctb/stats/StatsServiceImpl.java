@@ -307,12 +307,12 @@ public class StatsServiceImpl implements InitializingBean, DisposableBean, Stats
 
 	private String printLine(int maxLen, String key, LoadMonitorStats data) {
 
-		final String chargeInstantannee = String.format("%d", data.getChargeInstantannee());
+		final String chargeInstantanee = String.format("%d", data.getChargeInstantanee());
 		final String moyenneCharge = String.format("%#13.3f", data.getMoyenneCharge());
 
 		final StringBuilder b = new StringBuilder();
 		b.append(' ').append(rpad(key, maxLen)).append(" | ");
-		b.append(lpad(chargeInstantannee, 7)).append(" | ");
+		b.append(lpad(chargeInstantanee, 7)).append(" | ");
 		b.append(moyenneCharge);
 		b.append('\n');
 

@@ -13,7 +13,7 @@ public class LoadAveragerTest extends WithoutSpringTest {
 
 		// ne sert pas pendant ce test
 		final LoadMonitorable dummy = new LoadMonitorable() {
-			public int getChargeInstantannee() {
+			public int getChargeInstantanee() {
 				throw new NotImplementedException();
 			}
 		};

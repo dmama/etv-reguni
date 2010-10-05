@@ -51,8 +51,8 @@ public class WebServiceLoadJmxBeanImpl implements WebServiceLoadJmxBean, Initial
 
 				statsService.registerLoadMonitor(serviceName, new LoadMonitor() {
 
-					public int getChargeInstantannee() {
-						return service.getChargeInstantannee();
+					public int getChargeInstantanee() {
+						return service.getChargeInstantanee();
 					}
 
 					public double getMoyenneChargeCinqMinutes() {
@@ -80,10 +80,10 @@ public class WebServiceLoadJmxBeanImpl implements WebServiceLoadJmxBean, Initial
 	}
 
 	@ManagedAttribute
-	public Map<String, Integer> getChargeInstantannee() {
+	public Map<String, Integer> getChargeInstantanee() {
 		final Map<String, Integer> map = new HashMap<String, Integer>(services.size());
 		for (Map.Entry<String, LoadMonitorable> entry : services.entrySet()) {
-			map.put(entry.getKey(), entry.getValue().getChargeInstantannee());
+			map.put(entry.getKey(), entry.getValue().getChargeInstantanee());
 		}
 		return map;
 	}
@@ -98,9 +98,9 @@ public class WebServiceLoadJmxBeanImpl implements WebServiceLoadJmxBean, Initial
 	}
 
 	@ManagedOperation
-	public Integer getChargeInstantannee(String serviceName) {
+	public Integer getChargeInstantanee(String serviceName) {
 		final LoadMonitorable service = services.get(serviceName);
-		return service != null ? service.getChargeInstantannee() : null;
+		return service != null ? service.getChargeInstantanee() : null;
 	}
 
 	@ManagedOperation
