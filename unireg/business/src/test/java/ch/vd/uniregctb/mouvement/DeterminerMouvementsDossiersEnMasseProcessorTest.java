@@ -442,4 +442,26 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 		Assert.assertEquals((long) pp.getNumero(), erreur.noCtb);
 		Assert.assertEquals("Assujettissement année n-1 sans for vaudois?", erreur.complement);
 	}
+
+	@Test
+	public void testPassageDeSourceAuRoleAnneeDerniere() throws Exception {
+
+		final DeterminerMouvementsDossiersEnMasseProcessor proc = createProcessor();
+
+		final RegDate dateTraitement = RegDate.get();
+		final DeterminerMouvementsDossiersEnMasseProcessor.RangesUtiles ranges = new DeterminerMouvementsDossiersEnMasseProcessor.RangesUtiles(dateTraitement);
+		final DeterminerMouvementsDossiersEnMasseResults results = new DeterminerMouvementsDossiersEnMasseResults(dateTraitement);
+
+		final Contribuable ctb = addHabitant(noIndMarieParlotte);
+		final RegDate datePermisC = date(dateTraitement.year() - 1, 6, 12);
+		final ForFiscalPrincipal ffp = addForPrincipal(ctb, dateMajorite, MotifFor.MAJORITE, datePermisC.getOneDayBefore(), MotifFor.PERMIS_C_SUISSE, MockCommune.Lausanne);
+		ffp.setModeImposition(ModeImposition.SOURCE);
+		addForPrincipal(ctb, datePermisC, MotifFor.PERMIS_C_SUISSE, MockCommune.Lausanne);
+
+		final Map<Integer, CollectiviteAdministrative> caCache = new HashMap<Integer, CollectiviteAdministrative>();
+		proc.traiterContribuable(ctb, ranges, caCache, results);
+
+		assertPasDeMouvement(ctb, results);
+		Assert.assertEquals(0, caCache.size());
+	}
 }
