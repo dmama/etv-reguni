@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.declaration.source;
+package ch.vd.uniregctb.declaration;
 
 /**
  *Cette structure permet de lier un couple declaration-tiers et de faciliter la mis à disposition   

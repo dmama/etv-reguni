@@ -28,7 +28,7 @@ import ch.vd.uniregctb.declaration.DeclarationException;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
-import ch.vd.uniregctb.declaration.source.IdentifiantDeclaration;
+import ch.vd.uniregctb.declaration.IdentifiantDeclaration;
 import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
 import ch.vd.uniregctb.metier.assujettissement.DecompositionForsAnneeComplete;
 import ch.vd.uniregctb.metier.assujettissement.Indigent;
@@ -294,11 +294,11 @@ public class EnvoiSommationsDIsProcessor  {
 		return (List<IdentifiantDeclaration>) template.execute(new TransactionCallback() {
 			public List<IdentifiantDeclaration> doInTransaction(TransactionStatus status) {
 				final List<IdentifiantDeclaration> identifiantDi = new ArrayList<IdentifiantDeclaration>();
-				final List<DeclarationImpotOrdinaire> declarationsASommer = (List<DeclarationImpotOrdinaire>) hibernateTemplate.execute(new HibernateCallback() {
+				final List<Object[]> declarationsASommer = (List<Object[]>) hibernateTemplate.execute(new HibernateCallback() {
 					public Object doInHibernate(Session session) throws HibernateException {
 
 						final StringBuilder b = new StringBuilder();
-						b.append("SELECT di FROM DeclarationImpotOrdinaire AS di");
+						b.append("SELECT di.id, di.tiers.id FROM DeclarationImpotOrdinaire AS di");
 						b.append(" WHERE di.annulationDate IS NULL");
 						b.append(" AND EXISTS (SELECT etat.declaration.id FROM EtatDeclaration AS etat WHERE di.id = etat.declaration.id AND etat.annulationDate IS NULL AND etat.etat = 'EMISE')");
 						b.append(" AND NOT EXISTS (SELECT etat.declaration.id FROM EtatDeclaration AS etat WHERE di.id = etat.declaration.id AND etat.annulationDate IS NULL AND etat.etat IN ('RETOURNEE', 'SOMMEE'))");
@@ -310,8 +310,11 @@ public class EnvoiSommationsDIsProcessor  {
 						return query.list();
 					}
 				});
-				for (DeclarationImpotOrdinaire declarationImpotOrdinaire : declarationsASommer) {
-					identifiantDi.add(new IdentifiantDeclaration(declarationImpotOrdinaire.getId(), declarationImpotOrdinaire.getTiers().getNumero()));
+				for (Object[] objects : declarationsASommer) {
+					Number numeroDi = (Number) objects[0];
+					Number numeroTiers = (Number) objects[1];
+					final IdentifiantDeclaration identifiantDeclaration = new IdentifiantDeclaration(numeroDi.longValue(), numeroTiers.longValue());
+					identifiantDi.add(identifiantDeclaration);
 				}
 
 				return identifiantDi;
