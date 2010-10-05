@@ -184,7 +184,10 @@ public class TiersTimelineController extends AbstractTiersController {
 			final RegDate debutActivite = contribuable.getDateDebutActivite();
 			if (debutActivite != null) {
 				try {
-					assujettissements = Assujettissement.determine(contribuable);
+					final List<Assujettissement> list = Assujettissement.determine(contribuable);
+					if (list != null) {
+						assujettissements.addAll(list);
+					}
 				}
 				catch (AssujettissementException e) {
 					bean.addException(e);
@@ -200,10 +203,8 @@ public class TiersTimelineController extends AbstractTiersController {
 			if (debutActivite != null) {
 				final int anneeCourante = RegDate.get().year();
 				for (int annee = debutActivite.year(); annee <= anneeCourante; ++annee) {
-
-					List<PeriodeImposition> list = null;
 					try {
-						list = PeriodeImposition.determine(contribuable, annee);
+						final List<PeriodeImposition> list = PeriodeImposition.determine(contribuable, annee);
 						if (list != null) {
 							periodesImposition.addAll(list);
 						}
