@@ -29,12 +29,14 @@ import ch.vd.uniregctb.declaration.ordinaire.EnvoiDIsResults.IgnoreType;
 import ch.vd.uniregctb.interfaces.model.mock.MockCollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockOfficeImpot;
+import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.metier.assujettissement.CategorieEnvoiDI;
 import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpot;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.ModeImposition;
@@ -849,6 +851,170 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 		final DeclarationImpotOrdinaire decl = declarations.get(0);
 		assertDI(date(2008, 1, 1), date(2008, 12, 31), TypeEtatDeclaration.EMISE, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
 				ids.oidCedi, date(2009, 3, 31), decl);
+	}
+
+	/**
+	 * [UNIREG-1976] Vérifie les nouvelles règles sur les délais en cas d'envoi en masse
+	 */
+	@Test
+	public void testAjouterDelaisDeRetourInitial() throws Exception {
+
+		addCollAdm(MockCollectiviteAdministrative.CEDI);
+		final PeriodeFiscale periode = addPeriodeFiscale(2008);
+		final ModeleDocument modeleComplete = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
+		final ModeleDocument modeleVaudtax = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode);
+		final ModeleDocument modeleDepense = addModeleDocument(TypeDocument.DECLARATION_IMPOT_DEPENSE, periode);
+		final ModeleDocument modeleHCImmeuble = addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, periode);
+
+		final PersonnePhysique vd = addNonHabitant("Julien", "Brouette", date(1970, 1, 1), Sexe.MASCULIN);
+		addForPrincipal(vd, date(2000,1,1), MotifFor.ARRIVEE_HC, MockCommune.Renens);
+
+		final PersonnePhysique hc = addNonHabitant("Arnold", "Kunz", date(1970, 1, 1), Sexe.MASCULIN);
+		addForPrincipal(hc, date(2000,1,1), MotifFor.ARRIVEE_HC, MockCommune.Zurich);
+
+		final PersonnePhysique hs = addNonHabitant("Pedro", "Gonzales", date(1970, 1, 1), Sexe.MASCULIN);
+		addForPrincipal(hs, date(2000,1,1), MotifFor.ARRIVEE_HC, MockPays.Espagne);
+
+		final RegDate delaiReglementaire = date(2009, 3, 31);
+		final RegDate delaiEffectif = date(2009, 6, 30);
+		final RegDate dateTraitement = date(2009, 1, 15);
+		final RegDate dateExpedition = date(2009, 1, 31);
+
+		// Vaudois ordinaire - DI complète
+		{
+			// période complète
+			final DeclarationImpotOrdinaire di0 = addDeclarationImpot(vd, periode, date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modeleComplete);
+			processor.ajouterDelaisDeRetourInitial(di0, dateTraitement, dateExpedition);
+			assertEquals(delaiEffectif, di0.getDelaiAccordeAu());
+			assertEquals(delaiReglementaire, di0.getDelaiRetourImprime());
+			di0.setAnnule(true);
+
+			// [UNIREG-1740] [UNIREG-1861] période incomplète
+			final DeclarationImpotOrdinaire di1 = addDeclarationImpot(vd, periode, date(2008, 1, 1), date(2008, 7, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modeleComplete);
+			processor.ajouterDelaisDeRetourInitial(di1, dateTraitement, dateExpedition);
+			assertEquals(dateExpedition.addDays(60), di1.getDelaiAccordeAu());
+			assertEquals(dateExpedition.addDays(60), di1.getDelaiRetourImprime());
+			di1.setAnnule(true);
+		}
+
+		// Vaudois ordinaire - DI vaudtax
+		{
+			// période complète
+			final DeclarationImpotOrdinaire di0 = addDeclarationImpot(vd, periode, date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modeleVaudtax);
+			processor.ajouterDelaisDeRetourInitial(di0, dateTraitement, dateExpedition);
+			assertEquals(delaiEffectif, di0.getDelaiAccordeAu());
+			assertEquals(delaiReglementaire, di0.getDelaiRetourImprime());
+			di0.setAnnule(true);
+
+			// [UNIREG-1740] [UNIREG-1861] période incomplète
+			final DeclarationImpotOrdinaire di1 = addDeclarationImpot(vd, periode, date(2008, 1, 1), date(2008, 7, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modeleVaudtax);
+			processor.ajouterDelaisDeRetourInitial(di1, dateTraitement, dateExpedition);
+			assertEquals(dateExpedition.addDays(60), di1.getDelaiAccordeAu());
+			assertEquals(dateExpedition.addDays(60), di1.getDelaiRetourImprime());
+			di1.setAnnule(true);
+		}
+
+		// Vaudois dépense - DI dépense
+		{
+			// période complète
+			final DeclarationImpotOrdinaire di0 = addDeclarationImpot(vd, periode, date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.VAUDOIS_DEPENSE, modeleDepense);
+			processor.ajouterDelaisDeRetourInitial(di0, dateTraitement, dateExpedition);
+			assertEquals(delaiEffectif, di0.getDelaiAccordeAu());
+			assertEquals(delaiReglementaire, di0.getDelaiRetourImprime());
+			di0.setAnnule(true);
+
+			// [UNIREG-1740] [UNIREG-1861] période incomplète
+			final DeclarationImpotOrdinaire di1 = addDeclarationImpot(vd, periode, date(2008, 1, 1), date(2008, 7, 31), TypeContribuable.VAUDOIS_DEPENSE, modeleDepense);
+			processor.ajouterDelaisDeRetourInitial(di1, dateTraitement, dateExpedition);
+			assertEquals(dateExpedition.addDays(60), di1.getDelaiAccordeAu());
+			assertEquals(dateExpedition.addDays(60), di1.getDelaiRetourImprime());
+			di1.setAnnule(true);
+		}
+
+		// Hors-canton immeuble - DI HC immeuble
+		{
+			// période complète
+			final DeclarationImpotOrdinaire di0 = addDeclarationImpot(hc, periode, date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.HORS_CANTON, modeleHCImmeuble);
+			processor.ajouterDelaisDeRetourInitial(di0, dateTraitement, dateExpedition);
+			assertEquals(delaiEffectif, di0.getDelaiAccordeAu());
+			assertEquals(delaiReglementaire, di0.getDelaiRetourImprime());
+			di0.setAnnule(true);
+
+			// [UNIREG-1740] [UNIREG-1861] période incomplète
+			final DeclarationImpotOrdinaire di1 = addDeclarationImpot(hc, periode, date(2008, 1, 1), date(2008, 7, 31), TypeContribuable.HORS_CANTON, modeleHCImmeuble);
+			processor.ajouterDelaisDeRetourInitial(di1, dateTraitement, dateExpedition);
+			assertEquals(dateExpedition.addDays(60), di1.getDelaiAccordeAu());
+			assertEquals(dateExpedition.addDays(60), di1.getDelaiRetourImprime());
+			di1.setAnnule(true);
+		}
+
+		// Hors-canton activité indépendante - DI complète
+		{
+			// période complète
+			final DeclarationImpotOrdinaire di0 = addDeclarationImpot(hc, periode, date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.HORS_CANTON, modeleComplete);
+			processor.ajouterDelaisDeRetourInitial(di0, dateTraitement, dateExpedition);
+			assertEquals(delaiEffectif, di0.getDelaiAccordeAu());
+			assertEquals(delaiReglementaire, di0.getDelaiRetourImprime());
+			di0.setAnnule(true);
+
+			// [UNIREG-1740] [UNIREG-1861] période incomplète
+			final DeclarationImpotOrdinaire di1 = addDeclarationImpot(hc, periode, date(2008, 1, 1), date(2008, 7, 31), TypeContribuable.HORS_CANTON, modeleComplete);
+			processor.ajouterDelaisDeRetourInitial(di1, dateTraitement, dateExpedition);
+			assertEquals(dateExpedition.addDays(60), di1.getDelaiAccordeAu());
+			assertEquals(dateExpedition.addDays(60), di1.getDelaiRetourImprime());
+			di1.setAnnule(true);
+		}
+
+		// Hors-canton activité indépendante - DI vaudtax
+		{
+			// période complète
+			final DeclarationImpotOrdinaire di0 = addDeclarationImpot(hc, periode, date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.HORS_CANTON, modeleVaudtax);
+			processor.ajouterDelaisDeRetourInitial(di0, dateTraitement, dateExpedition);
+			assertEquals(delaiEffectif, di0.getDelaiAccordeAu());
+			assertEquals(delaiReglementaire, di0.getDelaiRetourImprime());
+			di0.setAnnule(true);
+
+			// [UNIREG-1740] [UNIREG-1861] période incomplète
+			final DeclarationImpotOrdinaire di1 = addDeclarationImpot(hc, periode, date(2008, 1, 1), date(2008, 7, 31), TypeContribuable.HORS_CANTON, modeleVaudtax);
+			processor.ajouterDelaisDeRetourInitial(di1, dateTraitement, dateExpedition);
+			assertEquals(dateExpedition.addDays(60), di1.getDelaiAccordeAu());
+			assertEquals(dateExpedition.addDays(60), di1.getDelaiRetourImprime());
+			di1.setAnnule(true);
+		}
+
+		// Hors-Suisse - DI complète
+		{
+			// période complète
+			final DeclarationImpotOrdinaire di0 = addDeclarationImpot(hs, periode, date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.HORS_SUISSE, modeleComplete);
+			processor.ajouterDelaisDeRetourInitial(di0, dateTraitement, dateExpedition);
+			assertEquals(delaiEffectif, di0.getDelaiAccordeAu());
+			assertEquals(delaiReglementaire, di0.getDelaiRetourImprime());
+			di0.setAnnule(true);
+
+			// [UNIREG-1740] [UNIREG-1861] période incomplète
+			final DeclarationImpotOrdinaire di1 = addDeclarationImpot(hs, periode, date(2008, 1, 1), date(2008, 7, 31), TypeContribuable.HORS_SUISSE, modeleComplete);
+			processor.ajouterDelaisDeRetourInitial(di1, dateTraitement, dateExpedition);
+			assertEquals(dateExpedition.addDays(60), di1.getDelaiAccordeAu());
+			assertEquals(dateExpedition.addDays(60), di1.getDelaiRetourImprime());
+			di1.setAnnule(true);
+		}
+
+		// Hors-Suisse - DI vaudtax
+		{
+			// période complète
+			final DeclarationImpotOrdinaire di0 = addDeclarationImpot(hs, periode, date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.HORS_SUISSE, modeleVaudtax);
+			processor.ajouterDelaisDeRetourInitial(di0, dateTraitement, dateExpedition);
+			assertEquals(delaiEffectif, di0.getDelaiAccordeAu());
+			assertEquals(delaiReglementaire, di0.getDelaiRetourImprime());
+			di0.setAnnule(true);
+
+			// [UNIREG-1740] [UNIREG-1861] période incomplète
+			final DeclarationImpotOrdinaire di1 = addDeclarationImpot(hs, periode, date(2008, 1, 1), date(2008, 7, 31), TypeContribuable.HORS_SUISSE, modeleVaudtax);
+			processor.ajouterDelaisDeRetourInitial(di1, dateTraitement, dateExpedition);
+			assertEquals(dateExpedition.addDays(60), di1.getDelaiAccordeAu());
+			assertEquals(dateExpedition.addDays(60), di1.getDelaiRetourImprime());
+			di1.setAnnule(true);
+		}
 	}
 
 	/**

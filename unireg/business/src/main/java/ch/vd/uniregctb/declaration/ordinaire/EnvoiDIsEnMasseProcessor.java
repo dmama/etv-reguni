@@ -566,7 +566,7 @@ public class EnvoiDIsEnMasseProcessor {
 			return false;
 		}
 		final RegDate dateExpedition = ajouterEtatInitial(di, dateTraitement);
-		ajouterDelaiDeRetourInitial(di, dateTraitement, dateExpedition);
+		ajouterDelaisDeRetourInitial(di, dateTraitement, dateExpedition);
 		ajouterAdresseRetour(di, tache);
 
 		// Impression de la déclaration proprement dites
@@ -590,18 +590,13 @@ public class EnvoiDIsEnMasseProcessor {
 	}
 
 	/**
-	 * Calcul de la date de retour de la déclaration
-	 * <p>
-	 * La spéc dit: pour la période considérée, la date d'échéance vaut :
-	 * <ul>
-	 * <li><b>le délai de retour effectif</b> dans le cas d'un assujettissement qui s'étend à l'année entière et dont on peut supposer qu'il
-	 * s'étendra au-delà</li>
-	 * <li><b>le délai de retour réglementaire</b> dans le cas contraire, c'est-à-dire pour un assujettissement qui ne s'étend qu'à une
-	 * partie de l'année, ou exceptionnellement à toute l'année mais pas au-delà (départ hors suisse ou décès au 31 décembre).</li>
-	 * </ul>
-	 * ==> si le contribuable n'est plus en suisse au moment de l'envoi alors delai réglementaire sinon délai effectif
+	 * Ajoute les délais accordé et imprimé sur une déclaration d'impôt.
+	 *
+	 * @param di             une déclaration
+	 * @param dateTraitement la date de traitement
+	 * @param dateExpedition la date d'expédition calculée (généralement dans le futur)
 	 */
-	private void ajouterDelaiDeRetourInitial(DeclarationImpotOrdinaire di, RegDate dateTraitement, RegDate dateExpedition) {
+	protected void ajouterDelaisDeRetourInitial(DeclarationImpotOrdinaire di, RegDate dateTraitement, RegDate dateExpedition) {
 
 		final PeriodeFiscale periode = di.getPeriode();
 		final Contribuable contribuable = (Contribuable) di.getTiers();
@@ -610,9 +605,6 @@ public class EnvoiDIsEnMasseProcessor {
 
 		final RegDate dateRetourAccorde;
 		final RegDate dateRetourImprime;
-
-		final ParametrePeriodeFiscale ppf = periode.getParametrePeriodeFiscale(di.getTypeContribuable());
-		Assert.notNull(ppf, "Impossible de retrouver les parametres pour la periode fiscale [" + periode.getAnnee() + "] pour le type de contribuable [" + di.getTypeContribuable() + "]");
 
 		final RegDate finAnnee = RegDate.get(periode.getAnnee(), 12, 31);
 		if (di.getDateFin().isBefore(finAnnee)) {
@@ -625,13 +617,10 @@ public class EnvoiDIsEnMasseProcessor {
 		}
 		else {
 			// Traitement normal
-			final ForFiscalPrincipal fp = di.getTiers().getForFiscalPrincipalAt(dateTraitement);
-			if (fp != null && fp.getTypeAutoriteFiscale().equals(TypeAutoriteFiscale.PAYS_HS)) {
-				dateRetourAccorde = ppf.getTermeGeneralSommationReglementaire();
-			}
-			else {
-				dateRetourAccorde = ppf.getTermeGeneralSommationEffectif();
-			}
+			final ParametrePeriodeFiscale ppf = periode.getParametrePeriodeFiscale(di.getTypeContribuable());
+			Assert.notNull(ppf, "Impossible de retrouver les parametres pour la periode fiscale [" + periode.getAnnee() + "] pour le type de contribuable [" + di.getTypeContribuable() + "]");
+
+			dateRetourAccorde = ppf.getTermeGeneralSommationEffectif(); // [UNIREG-1976] le délai de retour accordé est toujours la date effective
 			dateRetourImprime = ppf.getTermeGeneralSommationReglementaire(); // [UNIREG-1740] la date de retour imprimée est toujours la date réglementaire
 		}
 
