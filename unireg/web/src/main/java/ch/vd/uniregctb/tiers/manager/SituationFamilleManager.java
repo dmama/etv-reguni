@@ -4,7 +4,6 @@ import ch.vd.uniregctb.adresse.AdresseException;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
-import ch.vd.uniregctb.tiers.SituationFamille;
 import ch.vd.uniregctb.tiers.view.SituationFamilleView;
 
 
@@ -38,9 +37,8 @@ public interface SituationFamilleManager {
 	 * Sauvegarde de la situation de famille
 	 *
 	 * @param situationFamilleView
-	 * @return
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	public SituationFamille save(SituationFamilleView situationFamilleView) ;
+	public void save(SituationFamilleView situationFamilleView) ;
 
 }

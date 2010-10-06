@@ -500,10 +500,8 @@ public class SituationFamilleServiceImpl implements SituationFamilleService {
 	public void annulerSituationFamille(long idSituationFamille) {
 
 		// Situation de famille ayant comme source Unireg
-		SituationFamille situationFamille = internalAnnulerSituationFamille(idSituationFamille, true);
-
-		evenementFiscalService.publierEvenementFiscalChangementSituation(situationFamille.getContribuable(), RegDate.get(), new Long(1));
-
+		final SituationFamille situationFamille = internalAnnulerSituationFamille(idSituationFamille, true);
+		evenementFiscalService.publierEvenementFiscalChangementSituation(situationFamille.getContribuable(), RegDate.get(), idSituationFamille);
 	}
 
 	/**
@@ -515,17 +513,14 @@ public class SituationFamilleServiceImpl implements SituationFamilleService {
 	public void annulerSituationFamilleSansRouvrirPrecedente(long idSituationFamille) {
 
 		// Situation de famille ayant comme source Unireg
-		SituationFamille situationFamille = internalAnnulerSituationFamille(idSituationFamille, false);
-
-		evenementFiscalService.publierEvenementFiscalChangementSituation(situationFamille.getContribuable(), RegDate.get(),
-				situationFamille.getId());
-
+		final SituationFamille situationFamille = internalAnnulerSituationFamille(idSituationFamille, false);
+		evenementFiscalService.publierEvenementFiscalChangementSituation(situationFamille.getContribuable(), RegDate.get(), situationFamille.getId());
 	}
 
 	public void closeSituationFamille(Contribuable contribuable, RegDate date) {
 		Assert.notNull(contribuable);
 		// Situation de famille ayant comme source Unireg
-		SituationFamille situationFamille = contribuable.getSituationFamilleActive();
+		final SituationFamille situationFamille = contribuable.getSituationFamilleActive();
 		if (situationFamille != null) {
 			contribuable.closeSituationFamilleActive(date);
 			evenementFiscalService.publierEvenementFiscalChangementSituation(contribuable, RegDate.get(), situationFamille.getId());

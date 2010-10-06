@@ -1880,7 +1880,7 @@ public class TiersServiceImpl implements TiersService {
 		ForFiscal nouveauForFiscal = ff.duplicate();
 		nouveauForFiscal.setAnnule(false);
 		nouveauForFiscal.setDateFin(null);
-		tiers.addForFiscal(nouveauForFiscal);
+		nouveauForFiscal = addAndSave(tiers, nouveauForFiscal);
 		// exécution des règles événements fiscaux
 		if (tiers.validate().errorsCount() == 0) {
 			afterForAdded(nouveauForFiscal);

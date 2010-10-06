@@ -98,42 +98,33 @@ public class SituationFamilleManagerImpl extends TiersManager implements Situati
 	 * Sauvegarde de la situation de famille
 	 *
 	 * @param situationFamilleView
-	 * @return
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	public SituationFamille save(SituationFamilleView situationFamilleView) {
+	public void save(SituationFamilleView situationFamilleView) {
 
-		Contribuable contribuable = (Contribuable) tiersService.getTiers(situationFamilleView.getNumeroCtb());
+		final Contribuable contribuable = (Contribuable) tiersService.getTiers(situationFamilleView.getNumeroCtb());
 
+		final SituationFamille situationFamille;
 		if (situationFamilleView.getNatureSituationFamille().equals(SITUATION_FAMILLE_MENAGE_COMMUN)) {
-			SituationFamilleMenageCommun situationFamilleMenageCommun = new SituationFamilleMenageCommun();
-			situationFamilleMenageCommun.setAnnule(situationFamilleView.isAnnule());
-			RegDate dateDebut = RegDate.get(situationFamilleView.getDateDebut());
-			situationFamilleMenageCommun.setDateDebut(dateDebut);
-			situationFamilleMenageCommun.setDateFin(null);
-			situationFamilleMenageCommun.setEtatCivil(situationFamilleView.getEtatCivil());
-			situationFamilleMenageCommun.setNombreEnfants(situationFamilleView.getNombreEnfants());
+			final SituationFamilleMenageCommun situationFamilleMenageCommun = new SituationFamilleMenageCommun();
 			situationFamilleMenageCommun.setTarifApplicable(situationFamilleView.getTarifImpotSource());
 			situationFamilleMenageCommun.setContribuablePrincipalId(situationFamilleView.getNumeroTiersRevenuPlusEleve());
-			contribuable.closeSituationFamilleActive(dateDebut.addDays(-1));
-			contribuable.addSituationFamille(situationFamilleMenageCommun);
-			evenementFiscalService.publierEvenementFiscalChangementSituation(contribuable, dateDebut, new Long(1));
-			return situationFamilleMenageCommun;
-
+			situationFamille = situationFamilleMenageCommun;
 		}
 		else {
-			SituationFamille situationFamille = new SituationFamillePersonnePhysique();
-			situationFamille.setAnnule(situationFamilleView.isAnnule());
-			RegDate dateDebut = RegDate.get(situationFamilleView.getDateDebut());
-			situationFamille.setDateDebut(dateDebut);
-			situationFamille.setDateFin(null);
-			situationFamille.setEtatCivil(situationFamilleView.getEtatCivil());
-			situationFamille.setNombreEnfants(situationFamilleView.getNombreEnfants());
-			contribuable.closeSituationFamilleActive(dateDebut.addDays(-1));
-			contribuable.addSituationFamille(situationFamille);
-			evenementFiscalService.publierEvenementFiscalChangementSituation(contribuable, dateDebut, new Long(1));
-			return situationFamille;
+			situationFamille = new SituationFamillePersonnePhysique();
 		}
+
+		situationFamille.setAnnule(situationFamilleView.isAnnule());
+		final RegDate dateDebut = RegDate.get(situationFamilleView.getDateDebut());
+		situationFamille.setDateDebut(dateDebut);
+		situationFamille.setDateFin(null);
+		situationFamille.setEtatCivil(situationFamilleView.getEtatCivil());
+		situationFamille.setNombreEnfants(situationFamilleView.getNombreEnfants());
+		contribuable.closeSituationFamilleActive(dateDebut.addDays(-1));
+
+		final SituationFamille nouvelleSituation = tiersService.addAndSave(contribuable, situationFamille);
+		evenementFiscalService.publierEvenementFiscalChangementSituation(contribuable, dateDebut, nouvelleSituation.getId());
 	}
 
 	public SituationFamilleDAO getSituationFamilleDAO() {
