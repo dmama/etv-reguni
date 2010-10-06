@@ -33,6 +33,7 @@ import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
 import ch.vd.uniregctb.metier.assujettissement.DecompositionForsAnneeComplete;
 import ch.vd.uniregctb.metier.assujettissement.Indigent;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
+import ch.vd.uniregctb.metier.assujettissement.SourcierPur;
 import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
@@ -64,6 +65,25 @@ public class EnvoiSommationsDIsProcessor  {
 		this.delaisService = delaisService;
 		this.diService = diService;
 		this.transactionManager = transactionManager;
+	}
+
+	protected boolean isSourcierPur(DeclarationImpotOrdinaire di, List<Assujettissement> assujettissements) {
+		//Verification que l'assujettissement ne soit pas sourcier Pur à la date de la fin de di
+		boolean isSourcierPur = false;
+		for (Assujettissement a : assujettissements) {
+			if (a.isValidAt(di.getDateFin())) {
+			   	if (a instanceof SourcierPur) {
+					isSourcierPur = true;
+				}
+				else {
+					isSourcierPur = false;
+					break;
+
+				}
+
+			}
+		}
+		return isSourcierPur;
 	}
 
 	public EnvoiSommationsDIsResults run(final RegDate dateTraitement, final boolean miseSousPliImpossible, final Integer nombreMax, StatusManager statusManager) {
@@ -149,13 +169,20 @@ public class EnvoiSommationsDIsProcessor  {
 			final RegDate finDelai = delaisService.getDateFinDelaiEnvoiSommationDeclarationImpot(di.getDelaiAccordeAu());
 			if (finDelai.isBefore(dateTraitement)) {
 				try {
-					final List<Assujettissement> assujettissements = Assujettissement.determine((Contribuable)di.getTiers(), di.getPeriode().getAnnee());
+					final List<Assujettissement> assujettissements = Assujettissement.determine((Contribuable) di.getTiers(), di.getPeriode().getAnnee());
 					if (assujettissements == null || assujettissements.isEmpty()) {
 						final String msg = String.format(
 								"La di [id: %s] n'a pas été sommée car le contribuable [%s] n'est pas assujetti pour la période fiscale %s",
 								di.getId().toString(), di.getTiers().getNumero(), di.getPeriode().getAnnee());
 						LOGGER.info(msg);
 						r.addNonAssujettissement(di);
+					}
+					else if (isSourcierPur(di, assujettissements)) {
+						final String msg = String.format(
+								"La di [id: %s] n'a pas été sommée car le contribuable [%s] est sourcier Pur au %s",
+								di.getId().toString(), di.getTiers().getNumero(), RegDateHelper.dateToDisplayString(di.getDateFin()));
+						LOGGER.info(msg);
+						r.addSourcierPur(di);
 					}
 					else if (isIndigent(di,	assujettissements)) {
 						final String msg = String.format(
@@ -255,16 +282,23 @@ public class EnvoiSommationsDIsProcessor  {
 		boolean optionnel = true;
 		for (Assujettissement a : assujettissements) {
 			final PeriodeImposition periodeImposition = PeriodeImposition.determinePeriodeImposition(fors, a);
-			if (DateRangeHelper.intersect(di, periodeImposition)) {
-				optionnel = periodeImposition.isOptionnelle() || periodeImposition.isRemplaceeParNote();
-				if (!optionnel) {
-					break;
+			//Ajout du test afin de detecter les periodes d'imposition null
+			//exemple: contribuable avec 2 types d'assujettissements sur la même période, sourcier et ensuite à l'ordinaire
+			//la méthode doit prendre en compte les assujettissements autre que le type sourcier
+			//  qui est caractérisé par un rsultat null lor du calcul de la période d'imposition.
+			if (periodeImposition != null) {
+				if (DateRangeHelper.intersect(di, periodeImposition)) {
+					optionnel = periodeImposition.isOptionnelle() || periodeImposition.isRemplaceeParNote();
+					if (!optionnel) {
+						break;
+					}
 				}
 			}
+
 		}
 		return optionnel;
 	}
-	
+
 	/**
 	 * [UNIREG-1472] Verification que l'assujettissement ne soit pas indigent à la date de la fin de di
 	 */

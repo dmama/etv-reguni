@@ -3,6 +3,7 @@ package ch.vd.uniregctb.declaration.ordinaire;
 import java.util.List;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -239,6 +240,7 @@ public class EnvoiSommationDIsProcessorTest extends BusinessTest {
 		Assert.assertEquals(0, results.getTotalDisSommees());
 		Assert.assertEquals(0, results.getTotalSommations(anneePf));
 		Assert.assertEquals(0, results.getTotalIndigent());
+		Assert.assertEquals(0, results.getTotalSourcierPur());
 		Assert.assertEquals(1, results.getTotalNonAssujettissement());
 		Assert.assertEquals(0, results.getTotalSommationsEnErreur());
 		Assert.assertEquals(0, results.getTotalDisOptionnelles());
@@ -279,6 +281,7 @@ public class EnvoiSommationDIsProcessorTest extends BusinessTest {
 		Assert.assertEquals(0, results.getTotalDisSommees());
 		Assert.assertEquals(0, results.getTotalSommations(anneePf));
 		Assert.assertEquals(0, results.getTotalIndigent());
+		Assert.assertEquals(0, results.getTotalSourcierPur());
 		Assert.assertEquals(0, results.getTotalNonAssujettissement());
 		Assert.assertEquals(0, results.getTotalSommationsEnErreur());
 		Assert.assertEquals(1, results.getTotalDisOptionnelles());
@@ -320,15 +323,68 @@ public class EnvoiSommationDIsProcessorTest extends BusinessTest {
 		Assert.assertEquals(1, results.getTotalDisSommees());
 		Assert.assertEquals(1, results.getTotalSommations(anneePf));
 		Assert.assertEquals(0, results.getTotalIndigent());
+		Assert.assertEquals(0, results.getTotalSourcierPur());
 		Assert.assertEquals(0, results.getTotalNonAssujettissement());
 		Assert.assertEquals(0, results.getTotalSommationsEnErreur());
 		Assert.assertEquals(0, results.getTotalDisOptionnelles());
 	}
 
 
+
 	//UNIREG-2466 test sur le log correcte des erreurs notamment les NullPointerException
-	@Test
+	//Ignoré tant qu'on a pas trouvé un moyen de generer une exception innatendu dans le Processor
+	// 1.- a gagner
+	@Ignore
 	public void testErreurSommation() throws Exception {
+
+		final int anneePf = 2009;
+		final RegDate dateEmission = RegDate.get(2009, 1, 15);
+		final RegDate delaiInitial = RegDate.get(2010, 6, 30);
+
+		final long diId = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+			public Long doInTransaction(TransactionStatus status) {
+
+				addCollAdm(MockCollectiviteAdministrative.CEDI);
+
+				final PersonnePhysique pp = addNonHabitant("arben Jakupi", "Cartier", RegDate.get(1982, 10, 15), Sexe.MASCULIN);
+
+				addForPrincipalSource(pp, RegDate.get(2002, 1, 1), MotifFor.ARRIVEE_HS,RegDate.get(2009, 3, 31),MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Aubonne.getNoOFS());
+				addForPrincipal(pp, RegDate.get(anneePf, 4, 1), MotifFor.INDETERMINE, MockCommune.Aubonne);
+
+				final PeriodeFiscale periode = addPeriodeFiscale(anneePf);
+				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode);
+				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(pp, periode, date(anneePf, 4, 1), date(anneePf, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+				declaration.addEtat(new EtatDeclaration(dateEmission, TypeEtatDeclaration.EMISE));
+
+				final DelaiDeclaration delai = new DelaiDeclaration();
+				delai.setDateDemande(dateEmission);
+				delai.setDelaiAccordeAu(delaiInitial);
+				declaration.addDelai(delai);			
+
+				return declaration.getId();
+			}
+		});
+
+		final RegDate dateTraitement = delaiInitial.addMonths(1);
+		final EnvoiSommationsDIsResults results = processor.run(dateTraitement, false, 0, null);
+		final List<EnvoiSommationsDIsResults.ErrorInfo> infoListErreur = results.getListeSommationsEnErreur();
+		Assert.assertEquals(1, infoListErreur.size());
+		final DeclarationImpotOrdinaire declaration =  diDao.get(diId);
+
+		EnvoiSommationsDIsResults.ErrorInfo error =  infoListErreur.get(0);
+		Assert.assertEquals(declaration.getTiers().getNumero(),error.getNumeroTiers());		
+
+		Assert.assertEquals(1, results.getTotalDisTraitees());
+		Assert.assertEquals(0, results.getTotalDisSommees());
+		Assert.assertEquals(0, results.getTotalSommations(anneePf));
+		Assert.assertEquals(0, results.getTotalIndigent());
+		Assert.assertEquals(0, results.getTotalSourcierPur());
+		Assert.assertEquals(0, results.getTotalNonAssujettissement());	
+		Assert.assertEquals(0, results.getTotalDisOptionnelles());
+	}
+
+	@Test
+	public void testDiContribuableSourcierPur() throws Exception {
 		final int anneePf = 2008;
 		final RegDate dateEmission = RegDate.get(2009, 1, 15);
 		final RegDate delaiInitial = RegDate.get(2009, 3, 15);
@@ -359,19 +415,14 @@ public class EnvoiSommationDIsProcessorTest extends BusinessTest {
 
 		final RegDate dateTraitement = delaiInitial.addMonths(1);
 		final EnvoiSommationsDIsResults results = processor.run(dateTraitement, false, 0, null);
-		final List<EnvoiSommationsDIsResults.ErrorInfo> infoListErreur = results.getListeSommationsEnErreur();
-		Assert.assertEquals(1, infoListErreur.size());
-		final DeclarationImpotOrdinaire declaration =  diDao.get(diId);
-
-		EnvoiSommationsDIsResults.ErrorInfo error =  infoListErreur.get(0);
-		Assert.assertEquals(declaration.getTiers().getNumero(),error.getNumeroTiers());		
-
 		Assert.assertEquals(1, results.getTotalDisTraitees());
 		Assert.assertEquals(0, results.getTotalDisSommees());
 		Assert.assertEquals(0, results.getTotalSommations(anneePf));
 		Assert.assertEquals(0, results.getTotalIndigent());
-		Assert.assertEquals(0, results.getTotalNonAssujettissement());	
+		Assert.assertEquals(1, results.getTotalSourcierPur());
+		Assert.assertEquals(0, results.getTotalNonAssujettissement());
 		Assert.assertEquals(0, results.getTotalDisOptionnelles());
+		Assert.assertEquals(0, results.getTotalSommationsEnErreur());
 	}
 
 	/**
@@ -415,6 +466,7 @@ public class EnvoiSommationDIsProcessorTest extends BusinessTest {
 		Assert.assertEquals(0, results.getTotalDisSommees());
 		Assert.assertEquals(0, results.getTotalSommations(anneePf));
 		Assert.assertEquals(0, results.getTotalIndigent());
+		Assert.assertEquals(0, results.getTotalSourcierPur());
 		Assert.assertEquals(0, results.getTotalNonAssujettissement());
 		Assert.assertEquals(0, results.getTotalSommationsEnErreur());
 		Assert.assertEquals(0, results.getTotalDisOptionnelles());
@@ -457,6 +509,7 @@ public class EnvoiSommationDIsProcessorTest extends BusinessTest {
 		Assert.assertEquals(0, results.getTotalDisSommees());
 		Assert.assertEquals(0, results.getTotalSommations(anneePf));
 		Assert.assertEquals(0, results.getTotalIndigent());
+		Assert.assertEquals(0, results.getTotalSourcierPur());
 		Assert.assertEquals(0, results.getTotalNonAssujettissement());
 		Assert.assertEquals(0, results.getTotalSommationsEnErreur());
 		Assert.assertEquals(0, results.getTotalDisOptionnelles());

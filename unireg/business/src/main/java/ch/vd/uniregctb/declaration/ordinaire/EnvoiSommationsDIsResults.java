@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.declaration.ordinaire;
 
+import java.awt.peer.ChoicePeer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -14,6 +15,7 @@ import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.IdentifiantDeclaration;
 
 public class EnvoiSommationsDIsResults extends JobResults<IdentifiantDeclaration, EnvoiSommationsDIsResults> {
+
 
 	public static class Info {
 		protected static final String COMMA = ";";
@@ -112,6 +114,7 @@ public class EnvoiSommationsDIsResults extends JobResults<IdentifiantDeclaration
 	private List<ErrorInfo> sommationsEnErreur = new ArrayList<ErrorInfo>();
 	private Map<Integer, List<Info>> sommationsParPeriode = new HashMap<Integer, List<Info>>();
 	private List<Info> disContribuablesNonAssujettis = new ArrayList<Info>();
+	private List<Info> disContribuablesSourcierPur = new ArrayList<Info>();
 	private List<Info> disContribuablesIndigents = new ArrayList<Info>();
 	private List<Info> disOptionnelles = new ArrayList<Info>();
 
@@ -119,6 +122,7 @@ public class EnvoiSommationsDIsResults extends JobResults<IdentifiantDeclaration
 		this.sommationsEnErreur.addAll(right.sommationsEnErreur);
 		this.disContribuablesNonAssujettis.addAll(right.disContribuablesNonAssujettis);
 		this.disContribuablesIndigents.addAll(right.disContribuablesIndigents);
+		this.disContribuablesSourcierPur.addAll(right.disContribuablesSourcierPur);
 		this.disOptionnelles.addAll(right.disOptionnelles);
 		List<Integer> annees = new ArrayList<Integer>(sommationsParPeriode.keySet());
 		for (Integer annee : annees) {
@@ -186,7 +190,7 @@ public class EnvoiSommationsDIsResults extends JobResults<IdentifiantDeclaration
 	}
 	
 	public int getTotalDisTraitees() {
-		return getTotalDisSommees() + getTotalSommationsEnErreur() + getTotalNonAssujettissement() + getTotalIndigent() + getTotalDisOptionnelles();
+		return getTotalDisSommees() + getTotalSommationsEnErreur() + getTotalNonAssujettissement() + getTotalIndigent() +getTotalSourcierPur()+ getTotalDisOptionnelles();
 	}
 
 	public RegDate getDateTraitement() {
@@ -229,12 +233,24 @@ public class EnvoiSommationsDIsResults extends JobResults<IdentifiantDeclaration
 		disContribuablesIndigents.add(new Info(di));
 	}
 
+	public void addSourcierPur(DeclarationImpotOrdinaire di) {
+		disContribuablesSourcierPur.add(new Info(di));
+	}
+
 	public int getTotalIndigent() {
 		return disContribuablesIndigents.size();
 	}
 
+	public int getTotalSourcierPur() {
+		return disContribuablesSourcierPur.size();
+	}
+
 	public List<Info> getListeIndigent() {
 		return Collections.unmodifiableList(disContribuablesIndigents);
+	}
+
+	public List<Info> getListeSourcierPur() {
+		return Collections.unmodifiableList(disContribuablesSourcierPur);
 	}
 
 	public void addDiOptionelle(DeclarationImpotOrdinaire di) {

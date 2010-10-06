@@ -57,6 +57,7 @@ public class PdfEnvoiSommationsDIsRapport extends PdfRapport {
                     }
                     table.addLigne("Nombre de DI non sommées pour cause de non assujettisement :", String.valueOf(results.getTotalNonAssujettissement()));
                     table.addLigne("Nombre de DI non sommées pour cause de contribuable indigent :", String.valueOf(results.getTotalIndigent()));
+	                table.addLigne("Nombre de DI non sommées pour cause de contribuable sourcier Pur :", String.valueOf(results.getTotalSourcierPur()));
                     table.addLigne("Nombre de DI non sommées pour cause d'optionnalité :", String.valueOf(results.getTotalDisOptionnelles()));
                     table.addLigne("Nombre de sommations en erreur :", String.valueOf(results.getTotalSommationsEnErreur()));
 	                table.addLigne("Durée d'exécution du job :", formatDureeExecution(results));
@@ -90,6 +91,15 @@ public class PdfEnvoiSommationsDIsRapport extends PdfRapport {
             String titre = "Liste des déclarations dont les contribuables sont indigents";
             String listVide = "(aucune déclaration n'est liée à un contribuable indigent)";
             addListeDetaillee(writer, results.getTotalIndigent(), titre, listVide, filename, contenu);
+        }
+
+	     // DI avec contribuables sourcier purs.
+        {
+            String filename = "sourciersPurs.csv";
+            String contenu = asCsvFileSommationDI(results.getListeSourcierPur(), filename, status);
+            String titre = "Liste des déclarations dont les contribuables sont sourciers";
+            String listVide = "(aucune déclaration n'est liée à un contribuable sourcier)";
+            addListeDetaillee(writer, results.getTotalSourcierPur(), titre, listVide, filename, contenu);
         }
 
         // DI optionnelles
