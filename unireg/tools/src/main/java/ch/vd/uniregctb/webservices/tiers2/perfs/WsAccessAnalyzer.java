@@ -269,7 +269,10 @@ public class WsAccessAnalyzer {
 					os.close();
 				}
 			}
-			return "<img src=\"" + imagename + "\" width=\"1000\" height=\"200\" alt=\"" + method + "\"/><br/><br/><br/>";
+
+			// on inclut l'image stockée en local
+			final String imageurl = FilenameUtils.getName(dirname) + "/" + method + ".png";
+			return "<img src=\"" + imageurl + "\" width=\"1000\" height=\"200\" alt=\"" + method + "\"/><br/><br/><br/>";
 		}
 		else {
 			return "<img src=\"" + url + "\" width=\"1000\" height=\"200\" alt=\"" + method + "\"/><br/><br/><br/>";
