@@ -218,7 +218,7 @@ public class TiersDAOWithPM implements TiersDAO {
 		throw new NotImplementedException();
 	}
 
-	public ForFiscal addAndSave(Tiers tiers, ForFiscal forFiscal) {
+	public <T extends ForFiscal> T addAndSave(Tiers tiers, T forFiscal) {
 		throw new NotImplementedException();
 	}
 }

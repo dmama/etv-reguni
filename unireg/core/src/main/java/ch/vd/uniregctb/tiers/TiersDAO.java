@@ -211,5 +211,5 @@ public interface TiersDAO extends GenericDAO<Tiers, Long> {
 	 *            le nouveau for fiscal
 	 * @return une nouvelle instance du for fiscal avec son id renseigné.
 	 */
-	ForFiscal addAndSave(Tiers tiers, ForFiscal forFiscal);
+	<T extends ForFiscal> T addAndSave(Tiers tiers, T forFiscal);
 }

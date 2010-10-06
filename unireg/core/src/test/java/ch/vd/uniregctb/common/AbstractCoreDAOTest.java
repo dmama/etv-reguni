@@ -999,7 +999,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		f.setNumeroOfsAutoriteFiscale(noOFS);
 		f.setMotifRattachement(motif);
 		f.setModeImposition(ModeImposition.ORDINAIRE);
-		f = (ForFiscalPrincipal) tiersDAO.addAndSave(contribuable, f);
+		f = tiersDAO.addAndSave(contribuable, f);
 		return f;
 	}
 
@@ -1019,7 +1019,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		f.setNumeroOfsAutoriteFiscale(noOFS);
 		f.setMotifRattachement(MotifRattachement.DOMICILE);
 		f.setModeImposition(ModeImposition.SOURCE);
-		f = (ForFiscalPrincipal) tiersDAO.addAndSave(contribuable, f);
+		f = tiersDAO.addAndSave(contribuable, f);
 		return f;
 		}
 
@@ -1035,7 +1035,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		f.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
 		f.setNumeroOfsAutoriteFiscale(noOFS);
 		f.setMotifRattachement(motif);
-		f = (ForFiscalSecondaire) tiersDAO.addAndSave(tiers, f);
+		f = tiersDAO.addAndSave(tiers, f);
 		return f;
 	}
 
@@ -1053,7 +1053,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		f.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
 		f.setNumeroOfsAutoriteFiscale(noOFS);
 		f.setMotifRattachement(motif);
-		f = (ForFiscalSecondaire) tiersDAO.addAndSave(tiers, f);
+		f = tiersDAO.addAndSave(tiers, f);
 		return f;
 	}
 
@@ -1065,7 +1065,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		f.setGenreImpot(genre);
 		f.setTypeAutoriteFiscale(type);
 		f.setNumeroOfsAutoriteFiscale(noOFS);
-		f = (ForFiscalAutreImpot) tiersDAO.addAndSave(tiers, f);
+		f = tiersDAO.addAndSave(tiers, f);
 		return f;
 	}
 

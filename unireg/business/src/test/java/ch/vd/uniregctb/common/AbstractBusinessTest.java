@@ -261,7 +261,7 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 		if (dpi.getDernierForDebiteur() == null) {
 			tiersService.adaptPremierePeriodicite(dpi, debut);
 		}
-		f = (ForDebiteurPrestationImposable) tiersService.addAndSave(dpi, f);
+		f = tiersService.addAndSave(dpi, f);
 		return f;
 	}
 
@@ -334,7 +334,7 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 		f.setNumeroOfsAutoriteFiscale(commune.getNoOFSEtendu());
 		f.setDateDebut(dateDebut);
 		f.setDateFin(dateFin);
-		return (ForDebiteurPrestationImposable)tiersService.addAndSave(dpi, f);
+		return tiersService.addAndSave(dpi, f);
 	}
 
 	protected ForFiscalAutreElementImposable addForAutreElementImposable(Contribuable ctb, RegDate dateDebut, RegDate dateFin, MockCommune commune, TypeAutoriteFiscale taf,
@@ -349,7 +349,7 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 		f.setTypeAutoriteFiscale(taf);
 		f.setNumeroOfsAutoriteFiscale(commune.getNoOFSEtendu());
 		f.setMotifRattachement(rattachement);
-		return (ForFiscalAutreElementImposable) tiersService.addAndSave(ctb, f);
+		return tiersService.addAndSave(ctb, f);
 	}
 
 	/**

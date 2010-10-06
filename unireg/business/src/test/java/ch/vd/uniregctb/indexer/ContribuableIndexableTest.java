@@ -1073,7 +1073,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 			throw new NotImplementedException();
 		}
 
-		public ForFiscal addAndSave(Tiers tiers, ForFiscal forFiscal) {
+		public <T extends ForFiscal> T addAndSave(Tiers tiers, T forFiscal) {
 			throw new NotImplementedException();
 		}
 	}

@@ -725,7 +725,7 @@ public class DepartHandlerTest extends AbstractEvenementHandlerTest {
 		f.setNumeroOfsAutoriteFiscale(noOFS);
 		f.setMotifRattachement(MotifRattachement.DOMICILE);
 		f.setModeImposition(modeImposition);
-		f = (ForFiscalPrincipal) tiersService.addAndSave(tiers, f);
+		f = tiersService.addAndSave(tiers, f);
 		return f;
 	}
 

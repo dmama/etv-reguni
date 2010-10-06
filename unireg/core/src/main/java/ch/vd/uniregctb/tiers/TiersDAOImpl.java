@@ -821,7 +821,7 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 	/**
 	 * {@inheritDoc}
 	 */
-	public ForFiscal addAndSave(Tiers tiers, ForFiscal forFiscal) {
+	public <T extends ForFiscal> T addAndSave(Tiers tiers, T forFiscal) {
 
 		if (forFiscal.getId() == null) { // le for n'a jamais été persisté
 
@@ -855,7 +855,7 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 
 			Assert.isSame(forFiscal.getDateDebut(), nouveauFor.getDateDebut());
 			Assert.isSame(forFiscal.getDateFin(), nouveauFor.getDateFin());
-			forFiscal = nouveauFor;
+			forFiscal = (T) nouveauFor;
 		}
 		else {
 			tiers.addForFiscal(forFiscal);

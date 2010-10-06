@@ -145,7 +145,7 @@ public abstract class EvenementScenario extends NorentesScenario {
 		ffp.setGenreImpot(GenreImpot.REVENU_FORTUNE);
 		ffp.setModeImposition(ModeImposition.ORDINAIRE);
 
-		return (ForFiscalPrincipal) tiersService.addAndSave(tiers, ffp);
+		return tiersService.addAndSave(tiers, ffp);
 	}
 
 	protected ForFiscalSecondaire addForFiscalSecondaire(Tiers tiers, int noOFS, RegDate debut, RegDate fin){
@@ -158,7 +158,7 @@ public abstract class EvenementScenario extends NorentesScenario {
 		forSec.setMotifRattachement(MotifRattachement.IMMEUBLE_PRIVE);
 		forSec.setMotifOuverture(MotifFor.ACHAT_IMMOBILIER);
 
-		return (ForFiscalSecondaire) tiersService.addAndSave(tiers, forSec);
+		return tiersService.addAndSave(tiers, forSec);
 	}
 
 	protected DeclarationImpotOrdinaire addDeclarationImpot(Tiers tiers, RegDate debut, RegDate fin, RegDate dateEmission, int delaiEnJours) {

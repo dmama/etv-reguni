@@ -1440,7 +1440,7 @@ public class TiersServiceImpl implements TiersService {
 		nouveauForFiscal.setTypeAutoriteFiscale(typeAutoriteFiscale);
 		nouveauForFiscal.setModeImposition(modeImposition);
 		nouveauForFiscal.setMotifOuverture(motifOuverture);
-		nouveauForFiscal = (ForFiscalPrincipal) addAndSave(contribuable, nouveauForFiscal);
+		nouveauForFiscal = addAndSave(contribuable, nouveauForFiscal);
 
 		if (contribuable.validate().errorsCount() == 0) {
 			afterForFiscalPrincipalAdded(contribuable, nouveauForFiscal);
@@ -1496,7 +1496,7 @@ public class TiersServiceImpl implements TiersService {
 		nouveauForFiscal.setDateFin(dateFermeture);
 		nouveauForFiscal.setMotifFermeture(motifFermeture);
 
-		nouveauForFiscal = (ForFiscalPrincipal) addAndSave(contribuable, nouveauForFiscal);
+		nouveauForFiscal = addAndSave(contribuable, nouveauForFiscal);
 
 		if (contribuable.validate().errorsCount() == 0) {
 			afterForFiscalPrincipalAdded(contribuable, nouveauForFiscal);
@@ -1747,7 +1747,7 @@ public class TiersServiceImpl implements TiersService {
 		nouveauForFiscal.setNumeroOfsAutoriteFiscale(numeroOfsAutoriteFiscale);
 		nouveauForFiscal.setTypeAutoriteFiscale(typeAutoriteFiscale);
 		nouveauForFiscal.setMotifOuverture(motifOuverture);
-		nouveauForFiscal = (ForFiscalAutreElementImposable) addAndSave(contribuable, nouveauForFiscal);
+		nouveauForFiscal = addAndSave(contribuable, nouveauForFiscal);
 
 		Assert.notNull(nouveauForFiscal);
 		return nouveauForFiscal;
@@ -1766,7 +1766,7 @@ public class TiersServiceImpl implements TiersService {
 		nouveauForFiscal.setDateFin(dateImpot);
 		nouveauForFiscal.setNumeroOfsAutoriteFiscale(numeroOfsAutoriteFiscale);
 		nouveauForFiscal.setTypeAutoriteFiscale(typeAutoriteFiscale);
-		nouveauForFiscal = (ForFiscalAutreImpot) addAndSave(contribuable, nouveauForFiscal);
+		nouveauForFiscal = addAndSave(contribuable, nouveauForFiscal);
 
 		if (contribuable.validate().errorsCount() == 0) {
 			afterForAutreImportAdded(contribuable, nouveauForFiscal);
@@ -1788,7 +1788,7 @@ public class TiersServiceImpl implements TiersService {
 		nouveauForFiscal.setDateDebut(dateOuverture);
 		nouveauForFiscal.setNumeroOfsAutoriteFiscale(numeroOfsAutoriteFiscale);
 		nouveauForFiscal.setTypeAutoriteFiscale(typeAutoriteFiscale);
-		nouveauForFiscal = (ForDebiteurPrestationImposable) addAndSave(debiteur, nouveauForFiscal);
+		nouveauForFiscal = addAndSave(debiteur, nouveauForFiscal);
 
 		if (debiteur.validate().errorsCount() == 0) {
 			afterForDebiteurPrestationImposableAdded(debiteur, nouveauForFiscal);
@@ -2049,7 +2049,7 @@ public class TiersServiceImpl implements TiersService {
 		nouveauForFiscal.setTypeAutoriteFiscale(forFiscalPrincipal.getTypeAutoriteFiscale());
 		nouveauForFiscal.setModeImposition(modeImposition);
 		nouveauForFiscal.setMotifOuverture(motifFor);
-		nouveauForFiscal = (ForFiscalPrincipal) addAndSave(contribuable, nouveauForFiscal);
+		nouveauForFiscal = addAndSave(contribuable, nouveauForFiscal);
 
 		if (contribuable.validate().errorsCount() == 0) {
 			tacheService.genereTacheDepuisOuvertureForPrincipal(contribuable, nouveauForFiscal, forFiscalPrincipal.getModeImposition());
@@ -2117,7 +2117,7 @@ public class TiersServiceImpl implements TiersService {
 		forCorrige.setMotifOuverture(motifOuverture);
 		forCorrige.setDateFin(dateFermeture);
 		forCorrige.setMotifFermeture(motifFermeture);
-		forCorrige = (ForFiscalSecondaire) addAndSave(tiers, forCorrige);
+		forCorrige = addAndSave(tiers, forCorrige);
 
 		// notifie le reste du monde
 		evenementFiscalService.publierEvenementFiscalAnnulationFor(ffs, RegDate.get());
@@ -2238,7 +2238,7 @@ public class TiersServiceImpl implements TiersService {
 		nouveauForFiscal.setTypeAutoriteFiscale(typeAutoriteFiscale);
 		nouveauForFiscal.setMotifOuverture(motifOuverture);
 		nouveauForFiscal.setMotifFermeture(motifFermeture);
-		nouveauForFiscal = (ForFiscalSecondaire) addAndSave(contribuable, nouveauForFiscal);
+		nouveauForFiscal = addAndSave(contribuable, nouveauForFiscal);
 
 		if (contribuable.validate().errorsCount() == 0) {
 			afterForFiscalSecondaireAdded(contribuable, nouveauForFiscal);
@@ -3171,7 +3171,7 @@ public class TiersServiceImpl implements TiersService {
 	/**
 	 * {@inheritDoc}
 	 */
-	public ForFiscal addAndSave(Tiers tiers, ForFiscal forFiscal) {
+	public <T extends ForFiscal> T addAndSave(Tiers tiers, T forFiscal) {
 		return tiersDAO.addAndSave(tiers, forFiscal);
 	}
 
