@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.declaration.ordinaire;
 
-import java.awt.peer.ChoicePeer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
