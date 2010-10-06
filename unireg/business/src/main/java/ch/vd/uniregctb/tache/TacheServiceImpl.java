@@ -37,7 +37,6 @@ import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
-import ch.vd.uniregctb.metier.assujettissement.TypeContribuableDI;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tache.sync.AddDI;
 import ch.vd.uniregctb.tache.sync.AnnuleTache;
@@ -65,7 +64,7 @@ import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
-import ch.vd.uniregctb.type.TypeContribuable;
+import ch.vd.uniregctb.type.TypeDocument;
 import ch.vd.uniregctb.type.TypeEtatTache;
 import ch.vd.uniregctb.type.TypeTache;
 
@@ -653,14 +652,14 @@ public class TacheServiceImpl implements TacheService {
 	}
 
 	/**
-	 * Détermine si les deux types de contribuables sont compatibles pour permettre une mise-à-jour d'une éventuelle déclaration d'impôt. S'ils ne sont pas compatibles, il sera nécessaire d'annuler et de
+	 * Détermine si les deux types de documents sont compatibles pour permettre une mise-à-jour d'une éventuelle déclaration d'impôt. S'ils ne sont pas compatibles, il sera nécessaire d'annuler et de
 	 * rémettre une nouvelle déclaration.
 	 *
 	 * @param left  un type de contribuable
 	 * @param right un autre type de contribuable
 	 * @return <b>true</b> si les deux types sont compatibles; <b>false</b> autrement.
 	 */
-	private static boolean areTypeContribuableCompatibles(TypeContribuable left, TypeContribuable right) {
+	private static boolean areTypeDocumentCompatibles(TypeDocument left, TypeDocument right) {
 
 		// cas trivial : les deux types sont identiques
 		// (dans la migration initiale de juillet 2009, le type de contribuable n'était pas toujours attribué à la DI - apparemment pas pour les mixtes)
@@ -669,10 +668,7 @@ public class TacheServiceImpl implements TacheService {
 		}
 
 		// cas spécial : certains types, bien que différents, génèrent malgré tout des déclarations identiques
-		final TypeContribuableDI diLeft = TypeContribuableDI.fromTypeContribuable(left);
-		final TypeContribuableDI diRight = TypeContribuableDI.fromTypeContribuable(right);
-
-		if (diLeft.getTypeDocument().isOrdinaire() && diRight.getTypeDocument().isOrdinaire()) {
+		if (left.isOrdinaire() && right.isOrdinaire()) {
 			return true;
 		}
 
@@ -687,10 +683,10 @@ public class TacheServiceImpl implements TacheService {
 	 * @param periode la période d'imposition avec laquelle la DI serait mise à jour
 	 * @param anneeCourante année de la période dite "courante"
 	 * @return <code>true</code> si la mise à jour est autorisée, <code>false</code> sinon.
-	 * @see #areTypeContribuableCompatibles(ch.vd.uniregctb.type.TypeContribuable, ch.vd.uniregctb.type.TypeContribuable)
+	 * @see #areTypeDocumentCompatibles(ch.vd.uniregctb.type.TypeDocument,ch.vd.uniregctb.type.TypeDocument)
 	 */
 	private static boolean peutMettreAJourDeclarationExistante(DeclarationImpotOrdinaire diExistante, PeriodeImposition periode, int anneeCourante) {
-		return areTypeContribuableCompatibles(diExistante.getTypeContribuable(), periode.getTypeContribuable()) &&
+		return areTypeDocumentCompatibles(diExistante.getTypeDeclaration(), periode.getTypeDocument()) &&
 			   isPeriodePasseeOuCouranteIncomplete(periode, anneeCourante);
 	}
 

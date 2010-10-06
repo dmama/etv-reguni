@@ -1,10 +1,5 @@
 package ch.vd.uniregctb.declaration.ordinaire;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
-import static org.junit.Assert.assertFalse;
-
 import java.util.List;
 
 import org.apache.log4j.Level;
@@ -15,8 +10,8 @@ import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.DateRange;
-import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.DateRangeHelper.Range;
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.declaration.DeclarationException;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
@@ -30,8 +25,8 @@ import ch.vd.uniregctb.interfaces.model.mock.MockOfficeImpot;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
+import ch.vd.uniregctb.metier.assujettissement.CategorieEnvoiDI;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
-import ch.vd.uniregctb.metier.assujettissement.TypeContribuableDI;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -55,6 +50,11 @@ import ch.vd.uniregctb.type.TypeDocument;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 import ch.vd.uniregctb.type.TypeEtatTache;
 import ch.vd.uniregctb.type.TypeTache;
+
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
+import static org.junit.Assert.assertFalse;
 
 @SuppressWarnings({"JavaDoc"})
 public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
@@ -338,7 +338,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 			addForPrincipal(ramon, date(1968, 11, 3), null, MockPays.Espagne, MotifRattachement.DIPLOMATE_ETRANGER);
 			addForSecondaire(ramon, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(),
 					MotifRattachement.IMMEUBLE_PRIVE);
-			assertDetails(TypeContribuableDI.VAUDOIS_ORDINAIRE, date(2007, 1, 1), date(2007, 12, 31), service.determineDetailsEnvoi(
+			assertDetails(CategorieEnvoiDI.VAUDOIS_COMPLETE, date(2007, 1, 1), date(2007, 12, 31), service.determineDetailsEnvoi(
 					ramon, 2007));
 		}
 	}
@@ -413,7 +413,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		Contribuable paul = addNonHabitant("Paul", "Duchêne", date(1965, 4, 13), Sexe.MASCULIN);
 		ForFiscalPrincipal fors = addForPrincipal(paul, date(1983, 4, 13), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
 		fors.setModeImposition(ModeImposition.DEPENSE);
-		assertDetails(TypeContribuableDI.VAUDOIS_DEPENSE, date(2007, 1, 1), date(2007, 12, 31), service.determineDetailsEnvoi(paul,
+		assertDetails(CategorieEnvoiDI.VAUDOIS_DEPENSE, date(2007, 1, 1), date(2007, 12, 31), service.determineDetailsEnvoi(paul,
 				2007));
 
 		// Un tiers tout ce quil y a de plus ordinaire
@@ -421,13 +421,13 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
 		addDeclarationImpot(eric, periode2006, date(2006, 1, 1), date(2006, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
 				declarationComplete);
-		assertDetails(TypeContribuableDI.VAUDOIS_ORDINAIRE, date(2007, 1, 1), date(2007, 12, 31), service.determineDetailsEnvoi(eric,
+		assertDetails(CategorieEnvoiDI.VAUDOIS_COMPLETE, date(2007, 1, 1), date(2007, 12, 31), service.determineDetailsEnvoi(eric,
 				2007));
 
 		// Un tiers ordinaire, mais sans déclaration d'impôt précédente
 		Contribuable olrik = addNonHabitant("Olrick", "Pasgentil", date(1965, 4, 13), Sexe.MASCULIN);
 		addForPrincipal(olrik, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
-		assertDetails(TypeContribuableDI.VAUDOIS_ORDINAIRE, date(2007, 1, 1), date(2007, 12, 31), service.determineDetailsEnvoi(olrik,
+		assertDetails(CategorieEnvoiDI.VAUDOIS_COMPLETE, date(2007, 1, 1), date(2007, 12, 31), service.determineDetailsEnvoi(olrik,
 				2007));
 
 		// Un tiers ordinaire mais avec VaudTax
@@ -435,7 +435,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		addForPrincipal(guillaume, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
 		addDeclarationImpot(guillaume, periode2006, date(2006, 1, 1), date(2006, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
 				declarationVaudTax);
-		assertDetails(TypeContribuableDI.VAUDOIS_ORDINAIRE_VAUD_TAX, date(2007, 1, 1), date(2007, 12, 31), service
+		assertDetails(CategorieEnvoiDI.VAUDOIS_VAUDTAX, date(2007, 1, 1), date(2007, 12, 31), service
 				.determineDetailsEnvoi(guillaume, 2007));
 
 	}
@@ -452,8 +452,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		addForSecondaire(jean, date(1968, 11, 3), MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne.getNoOFS(),
 				MotifRattachement.ACTIVITE_INDEPENDANTE);
 		addAdresseSuisse(jean, TypeAdresseTiers.DOMICILE, date(1968, 11, 3), null, MockRue.Neuchatel.RueDesBeauxArts);
-		assertDetails(TypeContribuableDI.VAUDOIS_ORDINAIRE, date(2007, 1, 1), date(2007, 12, 31), service.determineDetailsEnvoi(jean,
-				2007));
+		assertDetails(CategorieEnvoiDI.HC_ACTIND_COMPLETE, date(2007, 1, 1), date(2007, 12, 31), service.determineDetailsEnvoi(jean, 2007));
 
 		// contribuable hors canton ayant une activité indépendante dans le canton, ainsi qu'un autre type de for
 		Contribuable jacques = addNonHabitant("Jacques", "Glasfich", date(1948, 11, 3), Sexe.MASCULIN);
@@ -463,8 +462,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		addForAutreImpot(jacques, date(1968, 11, 3), null, MockCommune.Lausanne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 				GenreImpot.DONATION);
 		addAdresseSuisse(jacques, TypeAdresseTiers.DOMICILE, date(1968, 11, 3), null, MockRue.Neuchatel.RueDesBeauxArts);
-		assertDetails(TypeContribuableDI.VAUDOIS_ORDINAIRE, date(2007, 1, 1), date(2007, 12, 31), service.determineDetailsEnvoi(
-				jacques, 2007));
+		assertDetails(CategorieEnvoiDI.HC_ACTIND_COMPLETE, date(2007, 1, 1), date(2007, 12, 31), service.determineDetailsEnvoi(jacques, 2007));
 
 		// contribuable hors Suisse ayant une activité indépendante dans le canton
 		Contribuable mitt = addNonHabitant("Mitt", "Romney", date(1948, 11, 3), Sexe.MASCULIN);
@@ -472,8 +470,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		addForSecondaire(mitt, date(1968, 11, 3), MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne.getNoOFS(),
 				MotifRattachement.ACTIVITE_INDEPENDANTE);
 		addAdresseEtrangere(mitt, TypeAdresseTiers.DOMICILE, date(1968, 11, 3), null, null, null, MockPays.Danemark);
-		assertDetails(TypeContribuableDI.VAUDOIS_ORDINAIRE, date(2007, 1, 1), date(2007, 12, 31), service.determineDetailsEnvoi(mitt,
-				2007));
+		assertDetails(CategorieEnvoiDI.HS_COMPLETE, date(2007, 1, 1), date(2007, 12, 31), service.determineDetailsEnvoi(mitt, 2007));
 
 		// contribuable propriétaire d'immeubles privés sis dans le canton et domiciliée hors canton
 		Contribuable georges = addNonHabitant("Georges", "Delatchaux", date(1948, 11, 3), Sexe.MASCULIN);
@@ -481,7 +478,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		addForSecondaire(georges, date(1968, 11, 3), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(),
 				MotifRattachement.IMMEUBLE_PRIVE);
 		addAdresseSuisse(georges, TypeAdresseTiers.DOMICILE, date(1968, 11, 3), null, MockRue.Neuchatel.RueDesBeauxArts);
-		assertDetails(TypeContribuableDI.HORS_CANTON, date(2007, 1, 1), date(2007, 12, 31), service.determineDetailsEnvoi(georges,
+		assertDetails(CategorieEnvoiDI.HC_IMMEUBLE, date(2007, 1, 1), date(2007, 12, 31), service.determineDetailsEnvoi(georges,
 				2007));
 
 		// contribuable propriétaire d'immeubles privés sis dans le canton et domiciliée hors Suisse
@@ -528,7 +525,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		Contribuable eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
 		ForFiscalPrincipal f = addForPrincipal(eric, date(2007, 4, 13), MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
 		f.setMotifOuverture(null); // hack pour bypasser la validation
-		assertDetails(TypeContribuableDI.VAUDOIS_ORDINAIRE_VAUD_TAX, date(2007, 1, 1), date(2007, 12, 31), service.determineDetailsEnvoi(eric,
+		assertDetails(CategorieEnvoiDI.VAUDOIS_VAUDTAX, date(2007, 1, 1), date(2007, 12, 31), service.determineDetailsEnvoi(eric,
 				2007));
 	}
 
@@ -564,7 +561,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 			assertZeroDeclaration(service.determineDetailsEnvoi(salvatore, 2004)); // pas de DI
 			assertZeroDeclaration(service.determineDetailsEnvoi(salvatore, 2005)); // pas de DI
 			assertZeroDeclaration(service.determineDetailsEnvoi(salvatore, 2006)); // pas de DI
-			assertDetails(TypeContribuableDI.HORS_SUISSE, date(2007, 1, 1), date(2007, 5, 30), service.determineDetailsEnvoi(salvatore, 2007)); // vente de l'immeuble + rattrapage -> DI
+			assertDetails(CategorieEnvoiDI.HS_COMPLETE, date(2007, 1, 1), date(2007, 5, 30), service.determineDetailsEnvoi(salvatore, 2007)); // vente de l'immeuble + rattrapage -> DI
 		}
 
 		{
@@ -573,10 +570,10 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 			addForPrincipal(greg, date(1998, 4, 13), MotifFor.MAJORITE, date(2007, 7, 1), MotifFor.DEPART_HS, MockCommune.Lausanne);
 			addForPrincipal(greg, date(2007, 7, 2), MotifFor.DEPART_HS, MockPays.Espagne);
 			addForSecondaire(greg, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
-			assertDetails(TypeContribuableDI.VAUDOIS_ORDINAIRE, date(2005, 1, 1), date(2005, 12, 31), service.determineDetailsEnvoi(greg, 2005));
-			assertDetails(TypeContribuableDI.VAUDOIS_ORDINAIRE, date(2006, 1, 1), date(2006, 12, 31), service.determineDetailsEnvoi(greg, 2006));
+			assertDetails(CategorieEnvoiDI.VAUDOIS_COMPLETE, date(2005, 1, 1), date(2005, 12, 31), service.determineDetailsEnvoi(greg, 2005));
+			assertDetails(CategorieEnvoiDI.VAUDOIS_COMPLETE, date(2006, 1, 1), date(2006, 12, 31), service.determineDetailsEnvoi(greg, 2006));
 			// [UNIREG-1742] rattrapage de la DI qui aurait dû être émise automatiquement lors du départ
-			assertDetails(TypeContribuableDI.HORS_SUISSE, date(2007, 1, 1), date(2007, 12, 31), service.determineDetailsEnvoi(greg, 2007));
+			assertDetails(CategorieEnvoiDI.HS_COMPLETE, date(2007, 1, 1), date(2007, 12, 31), service.determineDetailsEnvoi(greg, 2007));
 			assertZeroDeclaration(service.determineDetailsEnvoi(greg, 2008)); // DI optionnelle pour les hors-Suisse avec immeuble
 		}
 	}
@@ -604,10 +601,10 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		assertZeroDeclaration(service.determineDetailsEnvoi(ralf, 2007));  // pas de déclaration dans ce cas
 
 		final Contribuable armand = createHorsSuisseAvecFinActiviteIndependante(dateFin);
-		assertDetails(TypeContribuableDI.VAUDOIS_ORDINAIRE, date(2007, 1, 1), dateFin, service.determineDetailsEnvoi(armand, 2007));
+		assertDetails(CategorieEnvoiDI.HS_COMPLETE, date(2007, 1, 1), dateFin, service.determineDetailsEnvoi(armand, 2007));
 
 		final Contribuable alfred = createHorsSuisseAvecVenteImmeuble(dateFin);
-		assertDetails(TypeContribuableDI.HORS_SUISSE, date(2007, 1, 1), dateFin, service.determineDetailsEnvoi(alfred, 2007));
+		assertDetails(CategorieEnvoiDI.HS_COMPLETE, date(2007, 1, 1), dateFin, service.determineDetailsEnvoi(alfred, 2007));
 	}
 
 	@Test
@@ -620,8 +617,8 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		final List<PeriodeImposition> details = service.determineDetailsEnvoi(armand, 2007);
 		assertNotNull(details);
 		assertEquals(2, details.size());
-		assertDetails(TypeContribuableDI.VAUDOIS_ORDINAIRE_VAUD_TAX, activite1.getDateDebut(), activite1.getDateFin(), details.get(0));
-		assertDetails(TypeContribuableDI.VAUDOIS_ORDINAIRE_VAUD_TAX, activite2.getDateDebut(), activite2.getDateFin(), details.get(1));
+		assertDetails(CategorieEnvoiDI.HS_VAUDTAX, activite1.getDateDebut(), activite1.getDateFin(), details.get(0));
+		assertDetails(CategorieEnvoiDI.HS_VAUDTAX, activite2.getDateDebut(), activite2.getDateFin(), details.get(1));
 	}
 
 	/**
@@ -811,7 +808,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		{
 			Contribuable ctb = addNonHabitant("Werner", "Karey", date(1963, 1, 1), Sexe.MASCULIN);
 			addForPrincipal(ctb, date(1987, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
-			assertDetails(TypeContribuableDI.VAUDOIS_ORDINAIRE, date(2007, 1, 1), date(2007, 12, 31), service.determineDetailsEnvoi(
+			assertDetails(CategorieEnvoiDI.VAUDOIS_COMPLETE, date(2007, 1, 1), date(2007, 12, 31), service.determineDetailsEnvoi(
 					ctb, 2007));
 		}
 
@@ -823,7 +820,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 			Contribuable ctb = addNonHabitant("Werner", "Karey", date(1963, 1, 1), Sexe.MASCULIN);
 			addForPrincipal(ctb, date(1987, 1, 1), MotifFor.ARRIVEE_HC, date(2008, 1, 5), MotifFor.DEPART_HC, MockCommune.Lausanne);
 			addForPrincipal(ctb, date(2008, 1, 6), null, MockCommune.Neuchatel);
-			assertDetails(TypeContribuableDI.VAUDOIS_ORDINAIRE, date(2007, 1, 1), date(2007, 12, 31), service.determineDetailsEnvoi(
+			assertDetails(CategorieEnvoiDI.VAUDOIS_COMPLETE, date(2007, 1, 1), date(2007, 12, 31), service.determineDetailsEnvoi(
 					ctb, 2007));
 		}
 
@@ -832,7 +829,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 			Contribuable ctb = addNonHabitant("Werner", "Karey", date(1963, 1, 1), Sexe.MASCULIN);
 			ForFiscalPrincipal f = addForPrincipal(ctb, date(1987, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
 			f.setMotifOuverture(null); // hack pour bypasser la validation
-			assertDetails(TypeContribuableDI.VAUDOIS_ORDINAIRE, date(2007, 1, 1), date(2007, 12, 31), service.determineDetailsEnvoi(
+			assertDetails(CategorieEnvoiDI.VAUDOIS_COMPLETE, date(2007, 1, 1), date(2007, 12, 31), service.determineDetailsEnvoi(
 					ctb, 2007));
 		}
 
@@ -840,7 +837,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		{
 			Contribuable ctb = addNonHabitant("Werner", "Karey", date(1963, 1, 1), Sexe.MASCULIN);
 			addForPrincipal(ctb, date(2007, 3, 1), MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
-			assertDetails(TypeContribuableDI.VAUDOIS_ORDINAIRE_VAUD_TAX, date(2007, 1, 1), date(2007, 12, 31), service.determineDetailsEnvoi(
+			assertDetails(CategorieEnvoiDI.VAUDOIS_VAUDTAX, date(2007, 1, 1), date(2007, 12, 31), service.determineDetailsEnvoi(
 					ctb, 2007));
 		}
 
@@ -848,7 +845,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		{
 			Contribuable ctb = addNonHabitant("Werner", "Karey", date(1963, 1, 1), Sexe.MASCULIN);
 			addForPrincipal(ctb, date(2007, 3, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
-			assertDetails(TypeContribuableDI.VAUDOIS_ORDINAIRE_VAUD_TAX, date(2007, 3, 1), date(2007, 12, 31), service.determineDetailsEnvoi(
+			assertDetails(CategorieEnvoiDI.VAUDOIS_VAUDTAX, date(2007, 3, 1), date(2007, 12, 31), service.determineDetailsEnvoi(
 					ctb, 2007));
 		}
 
@@ -859,7 +856,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 			addForPrincipal(ctb, date(2005, 1, 1), null, date(2007, 2, 28), null, MockPays.Danemark);
 			addForPrincipal(ctb, date(2007, 3, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
 			addForSecondaire(ctb, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
-			assertDetails(TypeContribuableDI.VAUDOIS_ORDINAIRE, date(2007, 1, 1), date(2007, 12, 31), service.determineDetailsEnvoi(ctb, 2007));
+			assertDetails(CategorieEnvoiDI.VAUDOIS_COMPLETE, date(2007, 1, 1), date(2007, 12, 31), service.determineDetailsEnvoi(ctb, 2007));
 		}
 
 		// Contribuable vaudois arrivé dans le canton en cours d'année depuis un autre pays et ayant changé de commune entre-deux
@@ -867,7 +864,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 			Contribuable ctb = addNonHabitant("Werner", "Karey", date(1963, 1, 1), Sexe.MASCULIN);
 			addForPrincipal(ctb, date(2007, 3, 1), MotifFor.ARRIVEE_HS, date(2007, 6, 30), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
 			addForPrincipal(ctb, date(2007, 7, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Bex);
-			assertDetails(TypeContribuableDI.VAUDOIS_ORDINAIRE_VAUD_TAX, date(2007, 3, 1), date(2007, 12, 31), service.determineDetailsEnvoi(
+			assertDetails(CategorieEnvoiDI.VAUDOIS_VAUDTAX, date(2007, 3, 1), date(2007, 12, 31), service.determineDetailsEnvoi(
 					ctb, 2007));
 		}
 
@@ -876,16 +873,14 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 			Contribuable ctb = addNonHabitant("Werner", "Karey", date(1963, 1, 1), Sexe.MASCULIN);
 			addForPrincipal(ctb, date(2006, 3, 1), MotifFor.ARRIVEE_HS, date(2007, 6, 30), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
 			addForPrincipal(ctb, date(2007, 7, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Bex);
-			assertDetails(TypeContribuableDI.VAUDOIS_ORDINAIRE_VAUD_TAX, date(2007, 1, 1), date(2007, 12, 31), service.determineDetailsEnvoi(
-					ctb, 2007));
+			assertDetails(CategorieEnvoiDI.VAUDOIS_COMPLETE, date(2007, 1, 1), date(2007, 12, 31), service.determineDetailsEnvoi(ctb, 2007));
 		}
 
 		// Contribuable vaudois dont le conjoint est décéde en cours d'année
 		{
 			Contribuable ctb = addNonHabitant("Werner", "Karey", date(1963, 1, 1), Sexe.MASCULIN);
 			addForPrincipal(ctb, date(2007, 3, 22), MotifFor.VEUVAGE_DECES, MockCommune.Lausanne);
-			assertDetails(TypeContribuableDI.VAUDOIS_ORDINAIRE_VAUD_TAX, date(2007, 3, 22), date(2007, 12, 31), service.determineDetailsEnvoi(
-					ctb, 2007));
+			assertDetails(CategorieEnvoiDI.VAUDOIS_VAUDTAX, date(2007, 3, 22), date(2007, 12, 31), service.determineDetailsEnvoi(ctb, 2007));
 		}
 
 		// Contribuable vaudois parti dans un autre canton en cours d'année
@@ -904,7 +899,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 			addForPrincipal(ctb, date(2007, 12, 2), MotifFor.DEPART_HC, MockCommune.Neuchatel);
 			addForSecondaire(ctb, date(2001, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(),
 					MotifRattachement.IMMEUBLE_PRIVE);
-			assertDetails(TypeContribuableDI.HORS_CANTON, date(2007, 1, 1), date(2007, 12, 31), service.determineDetailsEnvoi(ctb,
+			assertDetails(CategorieEnvoiDI.HC_IMMEUBLE, date(2007, 1, 1), date(2007, 12, 31), service.determineDetailsEnvoi(ctb,
 					2007));
 		}
 
@@ -915,7 +910,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 			addForPrincipal(ctb, date(2007, 12, 2), MotifFor.DEPART_HC, MockCommune.Neuchatel);
 			addForSecondaire(ctb, date(2007, 4, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(),
 					MotifRattachement.IMMEUBLE_PRIVE);
-			assertDetails(TypeContribuableDI.HORS_CANTON, date(2007, 1, 1), date(2007, 12, 31), service.determineDetailsEnvoi(ctb,
+			assertDetails(CategorieEnvoiDI.HC_IMMEUBLE, date(2007, 1, 1), date(2007, 12, 31), service.determineDetailsEnvoi(ctb,
 					2007));
 		}
 
@@ -925,7 +920,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 			addForPrincipal(ctb, date(1998, 1, 1), MotifFor.ARRIVEE_HS, date(2007, 12, 1), MotifFor.DEPART_HS, MockCommune.Lausanne);
 			addForPrincipal(ctb, date(2007, 12, 2), MotifFor.DEPART_HS, MockPays.Danemark);
 			// [UNIREG-1742] rattrapage de la DI
-			assertDetails(TypeContribuableDI.VAUDOIS_ORDINAIRE, date(2007, 1, 1), date(2007, 12, 1), service.determineDetailsEnvoi(ctb,	2007));
+			assertDetails(CategorieEnvoiDI.VAUDOIS_COMPLETE, date(2007, 1, 1), date(2007, 12, 1), service.determineDetailsEnvoi(ctb,	2007));
 		}
 
 		// Contribuable vaudois décédé en cours d'année
@@ -933,7 +928,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 			Contribuable ctb = addNonHabitant("Werner", "Karey", date(1963, 1, 1), Sexe.MASCULIN);
 			addForPrincipal(ctb, date(1998, 1, 1), MotifFor.ARRIVEE_HS, date(2007, 12, 1), MotifFor.VEUVAGE_DECES, MockCommune.Lausanne);
 			// [UNIREG-1742] rattrapage de la DI
-			assertDetails(TypeContribuableDI.VAUDOIS_ORDINAIRE, date(2007, 1, 1), date(2007, 12, 1), service.determineDetailsEnvoi(ctb,	2007));
+			assertDetails(CategorieEnvoiDI.VAUDOIS_COMPLETE, date(2007, 1, 1), date(2007, 12, 1), service.determineDetailsEnvoi(ctb,	2007));
 		}
 
 		// Contribuable vaudois marié en cours d'année (non testé ici : le ménage commun)
@@ -959,7 +954,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 			addForPrincipal(ctb, date(1998, 1, 1), MotifFor.MAJORITE, MockCommune.Bern);
 			addForSecondaire(ctb, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Cossonay.getNoOFS(),
 					MotifRattachement.IMMEUBLE_PRIVE);
-			assertDetails(TypeContribuableDI.HORS_CANTON, date(2007, 1, 1), date(2007, 12, 31), service.determineDetailsEnvoi(ctb,
+			assertDetails(CategorieEnvoiDI.HC_IMMEUBLE, date(2007, 1, 1), date(2007, 12, 31), service.determineDetailsEnvoi(ctb,
 					2007));
 		}
 
@@ -981,7 +976,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 			addForSecondaire(ctb, date(2000, 1, 1), MotifFor.DEBUT_EXPLOITATION, date(2007, 3, 4), MotifFor.FIN_EXPLOITATION,
 					MockCommune.Cossonay.getNoOFS(), MotifRattachement.ACTIVITE_INDEPENDANTE);
 			// [UNIREG-1742] rattrapage de la DI
-			assertDetails(TypeContribuableDI.VAUDOIS_ORDINAIRE, date(2007, 1, 1), date(2007, 3, 4), service.determineDetailsEnvoi(ctb, 2007));
+			assertDetails(CategorieEnvoiDI.HS_COMPLETE, date(2007, 1, 1), date(2007, 3, 4), service.determineDetailsEnvoi(ctb, 2007));
 		}
 
 		// [UNIREG-465] Contribuable hors-canton avec un for secondaire immeuble dans le canton qui a été fermé dans l'année
@@ -1457,7 +1452,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 
 		hibernateTemplate.flush();
 
-		assertDetails(TypeContribuableDI.VAUDOIS_ORDINAIRE_VAUD_TAX, date(2009,1,1), date(2009,12,31), service.determineDetailsEnvoi(marc, 2009));
+		assertDetails(CategorieEnvoiDI.VAUDOIS_VAUDTAX, date(2009,1,1), date(2009,12,31), service.determineDetailsEnvoi(marc, 2009));
 	}
 
 	private void assertTraitementContribuable(int nbTraites, int nbEnErreur, int nbIgnores, long ctbId, PeriodeFiscale periodeFiscale) throws DeclarationException, AssujettissementException {
@@ -1471,15 +1466,15 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		assertEquals(nbIgnores, rapport.ignores.size());
 	}
 
-	private static void assertDetails(final TypeContribuableDI type, final RegDate dateDebut, final RegDate dateFin, final List<PeriodeImposition> details) {
+	private static void assertDetails(final CategorieEnvoiDI categorie, final RegDate dateDebut, final RegDate dateFin, final List<PeriodeImposition> details) {
 		assertNotNull(details);
 		assertEquals(1, details.size());
-		assertDetails(type, dateDebut, dateFin, details.get(0));
+		assertDetails(categorie, dateDebut, dateFin, details.get(0));
 	}
 
-	private static void assertDetails(final TypeContribuableDI type, final RegDate dateDebut, final RegDate dateFin, final PeriodeImposition details) {
+	private static void assertDetails(final CategorieEnvoiDI categorie, final RegDate dateDebut, final RegDate dateFin, final PeriodeImposition details) {
 		assertNotNull(details);
-		assertEquals(type, details.getTypeContribuableDI());
+		assertEquals(categorie, details.getCategorieEnvoiDI());
 		assertEquals(dateDebut, details.getDateDebut());
 		assertEquals(dateFin, details.getDateFin());
 	}

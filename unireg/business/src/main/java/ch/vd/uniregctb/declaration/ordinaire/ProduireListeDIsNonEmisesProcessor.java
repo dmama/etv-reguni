@@ -3,7 +3,6 @@ package ch.vd.uniregctb.declaration.ordinaire;
 import java.util.ArrayList;
 import java.util.List;
 
-import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
 import org.apache.log4j.Logger;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -11,10 +10,10 @@ import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.BatchTransactionTemplate;
-import ch.vd.uniregctb.common.LoggingStatusManager;
-import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.common.BatchTransactionTemplate.BatchCallback;
 import ch.vd.uniregctb.common.BatchTransactionTemplate.Behavior;
+import ch.vd.uniregctb.common.LoggingStatusManager;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationException;
 import ch.vd.uniregctb.declaration.ModeleDocumentDAO;
@@ -23,7 +22,8 @@ import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
 import ch.vd.uniregctb.declaration.ordinaire.DeterminationDIsAEmettreProcessor.ExistenceResults;
 import ch.vd.uniregctb.declaration.ordinaire.EnvoiDIsEnMasseProcessor.DeclarationsCache;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
-import ch.vd.uniregctb.metier.assujettissement.TypeContribuableDI;
+import ch.vd.uniregctb.metier.assujettissement.CategorieEnvoiDI;
+import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
 import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -115,7 +115,7 @@ public class ProduireListeDIsNonEmisesProcessor {
 
 	protected void traiterBatch(List<Long> batch, int anneePeriode, RegDate dateTraitement) throws DeclarationException, AssujettissementException {
 
-		this.envoiDIsEnMasseProcessor.initCache(anneePeriode, TypeContribuableDI.VAUDOIS_ORDINAIRE);
+		this.envoiDIsEnMasseProcessor.initCache(anneePeriode, CategorieEnvoiDI.VAUDOIS_COMPLETE);
 
 		// Récupère la période fiscale
 		final PeriodeFiscale periode = periodeDAO.getPeriodeFiscaleByYear(anneePeriode);

@@ -1,8 +1,11 @@
 package ch.vd.uniregctb.declaration.ordinaire;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
-import ch.vd.uniregctb.tiers.*;
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.FetchMode;
@@ -22,19 +25,30 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.utils.NotImplementedException;
+import ch.vd.uniregctb.common.BatchTransactionTemplate.BatchCallback;
+import ch.vd.uniregctb.common.BatchTransactionTemplate.Behavior;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.ParallelBatchTransactionTemplate;
 import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.common.BatchTransactionTemplate.BatchCallback;
-import ch.vd.uniregctb.common.BatchTransactionTemplate.Behavior;
 import ch.vd.uniregctb.declaration.Declaration;
-import ch.vd.uniregctb.declaration.*;
+import ch.vd.uniregctb.declaration.DeclarationException;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
+import ch.vd.uniregctb.declaration.PeriodeFiscale;
+import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
 import ch.vd.uniregctb.declaration.ordinaire.DeterminationDIsAEmettreProcessor.ExistenceResults.TacheStatus;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
+import ch.vd.uniregctb.metier.assujettissement.CategorieEnvoiDI;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
-import ch.vd.uniregctb.metier.assujettissement.TypeContribuableDI;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
+import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
+import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.Tache;
+import ch.vd.uniregctb.tiers.TacheAnnulationDeclarationImpot;
+import ch.vd.uniregctb.tiers.TacheCriteria;
+import ch.vd.uniregctb.tiers.TacheDAO;
+import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpot;
+import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.TypeEtatTache;
 import ch.vd.uniregctb.type.TypeTache;
 
@@ -487,12 +501,12 @@ public class DeterminationDIsAEmettreProcessor {
 		Assert.notNull(oid);
 
 		// Création et sauvegarde de la tâche en base
-		final TypeContribuableDI type = details.getTypeContribuableDI();
-		final RegDate dateEcheance = periode.getParametrePeriodeFiscale(type.getTypeContribuable()).getDateFinEnvoiMasseDI();
+		final CategorieEnvoiDI categorie = details.getCategorieEnvoiDI();
+		final RegDate dateEcheance = periode.getParametrePeriodeFiscale(categorie.getTypeContribuable()).getDateFinEnvoiMasseDI();
 		Assert.notNull(dateEcheance);
 
 		final TacheEnvoiDeclarationImpot tache = new TacheEnvoiDeclarationImpot(TypeEtatTache.EN_INSTANCE, dateEcheance, contribuable, details.getDateDebut(), details.getDateFin(),
-				type.getTypeContribuable(), type.getTypeDocument(), details.getQualification(), details.getAdresseRetour(), oid);
+				categorie.getTypeContribuable(), categorie.getTypeDocument(), details.getQualification(), details.getAdresseRetour(), oid);
 		if (rapport.get() != null) {
 			rapport.get().addTacheEnvoiCreee(contribuable, tache);
 		}

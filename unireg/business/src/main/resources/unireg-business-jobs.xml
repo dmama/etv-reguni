@@ -173,7 +173,7 @@
                     <key>
                         <util:constant static-field="ch.vd.uniregctb.declaration.EnvoiDIsJob.CATEGORIE_CTB"/>
                     </key>
-                    <value type="ch.vd.uniregctb.metier.assujettissement.TypeContribuableDI">VAUDOIS_ORDINAIRE</value>
+                    <value type="ch.vd.uniregctb.metier.assujettissement.CategorieEnvoiDI">VAUDOIS_COMPLETE</value>
                 </entry>
                 <entry>
                     <key>

@@ -9,7 +9,7 @@ import ch.vd.uniregctb.declaration.DeclarationException;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueResultat;
-import ch.vd.uniregctb.metier.assujettissement.TypeContribuableDI;
+import ch.vd.uniregctb.metier.assujettissement.CategorieEnvoiDI;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.type.TypeDocument;
 
@@ -35,7 +35,7 @@ public interface DeclarationImpotService {
 	 *
 	 * @param anneePeriode
 	 *            l'année de la période fiscale considérée.
-	 * @param type
+	 * @param categorie
 	 *            la population de contribuables visée.
 	 * @param noCtbMin
 	 * 			  si renseigné, la limite inférieure (incluse) de la plage de contribuables à traiter
@@ -49,7 +49,7 @@ public interface DeclarationImpotService {
 	 *          Si vrai, exclure les décédés (date d'événement) se trouvant entre le 15.11 et le 31.12
 	 * @return le nombre de déclarations envoyées.
 	 */
-	public EnvoiDIsResults envoyerDIsEnMasse(int anneePeriode, TypeContribuableDI type, Long noCtbMin, Long noCtbMax, int nbMax, RegDate dateTraitement, Boolean exclureDecede, StatusManager status)
+	public EnvoiDIsResults envoyerDIsEnMasse(int anneePeriode, CategorieEnvoiDI categorie, Long noCtbMin, Long noCtbMax, int nbMax, RegDate dateTraitement, Boolean exclureDecede, StatusManager status)
 			throws DeclarationException;
 
 	/**

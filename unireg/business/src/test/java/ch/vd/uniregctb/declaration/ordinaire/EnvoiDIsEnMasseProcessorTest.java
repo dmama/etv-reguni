@@ -29,7 +29,7 @@ import ch.vd.uniregctb.declaration.ordinaire.EnvoiDIsResults.IgnoreType;
 import ch.vd.uniregctb.interfaces.model.mock.MockCollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockOfficeImpot;
-import ch.vd.uniregctb.metier.assujettissement.TypeContribuableDI;
+import ch.vd.uniregctb.metier.assujettissement.CategorieEnvoiDI;
 import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
@@ -184,7 +184,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 	public void testInitCachePeriodeFiscaleInexistante() {
 
 		try {
-			processor.initCache(2007, TypeContribuableDI.VAUDOIS_ORDINAIRE);
+			processor.initCache(2007, CategorieEnvoiDI.VAUDOIS_COMPLETE);
 			fail();
 		}
 		catch (DeclarationException e) {
@@ -204,7 +204,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 		});
 
 		try {
-			processor.initCache(2007, TypeContribuableDI.VAUDOIS_ORDINAIRE);
+			processor.initCache(2007, CategorieEnvoiDI.VAUDOIS_COMPLETE);
 			fail();
 		}
 		catch (DeclarationException e) {
@@ -246,7 +246,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 		});
 
 		final RegDate dateTraitement = date(2008, 1, 23);
-		final EnvoiDIsResults rapport = new EnvoiDIsResults(2007, TypeContribuableDI.VAUDOIS_ORDINAIRE, dateTraitement, 10, null, null, null);
+		final EnvoiDIsResults rapport = new EnvoiDIsResults(2007, CategorieEnvoiDI.VAUDOIS_COMPLETE, dateTraitement, 10, null, null, null);
 		final DeclarationsCache cache = processor.new DeclarationsCache(2007, Arrays.asList(ids.ctb));
 		final TacheEnvoiDeclarationImpot tache = (TacheEnvoiDeclarationImpot) hibernateTemplate.get(TacheEnvoiDeclarationImpot.class, ids.tache);
 
@@ -348,6 +348,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 		}
 	}
 
+	@SuppressWarnings({"unchecked"})
 	@Test
 	public void testPlusieursDiSurMemePeriodeFiscaleEnMemeTemps() throws Exception {
 		class Ids {
@@ -395,9 +396,9 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 				final RegDate dateTraitement = date(2009, 1, 15);
 				final List<Long> idsCtb = Arrays.asList(ids.marcId);
 
-				final EnvoiDIsResults rapport = new EnvoiDIsResults(2007, TypeContribuableDI.VAUDOIS_ORDINAIRE, dateTraitement, 10, null, null, null);
+				final EnvoiDIsResults rapport = new EnvoiDIsResults(2007, CategorieEnvoiDI.VAUDOIS_COMPLETE, dateTraitement, 10, null, null, null);
 				processor.setRapport(rapport);
-				processor.traiterBatch(idsCtb, 2007, TypeContribuableDI.VAUDOIS_ORDINAIRE, dateTraitement);
+				processor.traiterBatch(idsCtb, 2007, CategorieEnvoiDI.VAUDOIS_COMPLETE, dateTraitement);
 				return null;
 			}
 		});
@@ -489,7 +490,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 			final RegDate dateTraitement = date(2009, 1, 15);
 			final DeclarationsCache cache = processor.new DeclarationsCache(2008, idsList);
 
-			final EnvoiDIsResults rapport = new EnvoiDIsResults(2008, TypeContribuableDI.VAUDOIS_ORDINAIRE, dateTraitement, 10, null, null, null);
+			final EnvoiDIsResults rapport = new EnvoiDIsResults(2008, CategorieEnvoiDI.VAUDOIS_COMPLETE, dateTraitement, 10, null, null, null);
 			processor.setRapport(rapport);
 
 			// Le tiers sans exclusion
@@ -569,7 +570,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 		final EnvoiDIsResults results = (EnvoiDIsResults) doInNewTransaction(new TxCallback() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				return processor.run(2008, TypeContribuableDI.VAUDOIS_ORDINAIRE, null, null, 1000, dateTraitement, false, null);
+				return processor.run(2008, CategorieEnvoiDI.VAUDOIS_COMPLETE, null, null, 1000, dateTraitement, false, null);
 			}
 		});
 		assertNotNull(results);
@@ -690,7 +691,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 		final EnvoiDIsResults results = (EnvoiDIsResults) doInNewTransaction(new TxCallback() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				return processor.run(2008, TypeContribuableDI.VAUDOIS_ORDINAIRE, null, null, 1000, dateTraitement, false, null);
+				return processor.run(2008, CategorieEnvoiDI.VAUDOIS_COMPLETE, null, null, 1000, dateTraitement, false, null);
 			}
 		});
 		assertNotNull(results);
@@ -757,7 +758,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 				// Un contribuable habitant à Lausanne décédé courant 2008
 				final Contribuable marc = addNonHabitant("Marc", "Dumont", date(1962, 3, 12), Sexe.MASCULIN);
 				marc.setOfficeImpotId(MockOfficeImpot.OID_LAUSANNE_VILLE.getNoColAdm());
-				final ForFiscalPrincipal ffp = addForPrincipal(marc, date(1990, 1, 1), MotifFor.MAJORITE, dateDeces, MotifFor.VEUVAGE_DECES, MockCommune.Lausanne);
+				addForPrincipal(marc, date(1990, 1, 1), MotifFor.MAJORITE, dateDeces, MotifFor.VEUVAGE_DECES, MockCommune.Lausanne);
 				ids.marcId = marc.getNumero();
 
 				// traitement du batch de détermination des DIs -> création d'une tâche jusqu'au décès
@@ -772,7 +773,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 		final EnvoiDIsResults results = (EnvoiDIsResults) doInNewTransaction(new TxCallback() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				return processor.run(2008, TypeContribuableDI.VAUDOIS_ORDINAIRE, null, null, 1000, dateTraitement, false, null);
+				return processor.run(2008, CategorieEnvoiDI.VAUDOIS_COMPLETE, null, null, 1000, dateTraitement, false, null);
 			}
 		});
 		assertNotNull(results);
@@ -819,7 +820,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 				// Un contribuable habitant à Lausanne
 				final Contribuable marc = addNonHabitant("Marc", "Dumont", date(1962, 3, 12), Sexe.MASCULIN);
 				marc.setOfficeImpotId(MockOfficeImpot.OID_LAUSANNE_VILLE.getNoColAdm());
-				final ForFiscalPrincipal ffp = addForPrincipal(marc, date(1990, 1, 1), MotifFor.MAJORITE, MockCommune.Lausanne);
+				addForPrincipal(marc, date(1990, 1, 1), MotifFor.MAJORITE, MockCommune.Lausanne);
 				ids.marcId = marc.getNumero();
 
 				// traitement du batch de détermination des DIs -> création d'une tâche sur toute l'année
@@ -834,7 +835,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 		final EnvoiDIsResults results = (EnvoiDIsResults) doInNewTransaction(new TxCallback() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				return processor.run(2008, TypeContribuableDI.VAUDOIS_ORDINAIRE, null, null, 1000, dateTraitement, false, null);
+				return processor.run(2008, CategorieEnvoiDI.VAUDOIS_COMPLETE, null, null, 1000, dateTraitement, false, null);
 			}
 		});
 		assertNotNull(results);
@@ -900,7 +901,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 		final EnvoiDIsResults results = (EnvoiDIsResults) doInNewTransaction(new TxCallback() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				return processor.run(2008, TypeContribuableDI.VAUDOIS_ORDINAIRE, null, null, 1000, dateTraitement, false, null);
+				return processor.run(2008, CategorieEnvoiDI.VAUDOIS_COMPLETE, null, null, 1000, dateTraitement, false, null);
 			}
 		});
 		assertNotNull(results);
@@ -966,7 +967,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 		final EnvoiDIsResults results = (EnvoiDIsResults) doInNewTransaction(new TxCallback() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				return processor.run(2008, TypeContribuableDI.VAUDOIS_ORDINAIRE, null, null, 1000, dateTraitement, true, null);
+				return processor.run(2008, CategorieEnvoiDI.VAUDOIS_COMPLETE, null, null, 1000, dateTraitement, true, null);
 			}
 		});
 		assertNotNull(results);
@@ -979,13 +980,8 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 		final List<DeclarationImpotOrdinaire> declarations = hibernateTemplate.find("from DeclarationImpotOrdinaire");
 		//[UNIREG-1952] il ne doit pas y avoir de DI émise
 		assertEmpty(declarations);
-
-
-
-
-
-
 	}
+
 	/**
 	 * [UNIREG-1952] Teste que les déclarations des  décédés en fin d'année[15.11 - 31.12] ne sont pas envoyées.
 	 */
@@ -1036,7 +1032,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 		final EnvoiDIsResults results = (EnvoiDIsResults) doInNewTransaction(new TxCallback() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				return processor.run(2008, TypeContribuableDI.VAUDOIS_ORDINAIRE, null, null, 1000, dateTraitement, true, null);
+				return processor.run(2008, CategorieEnvoiDI.VAUDOIS_COMPLETE, null, null, 1000, dateTraitement, true, null);
 			}
 		});
 			assertNotNull(results);
@@ -1049,14 +1045,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 		final DeclarationImpotOrdinaire decl = declarations.get(0);
 		assertDI(date(2008, 1, 1), dateDeces, TypeEtatDeclaration.EMISE, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
 				ids.aci, calculerDateDelaiImprime(dateTraitement, 3, 60), decl);
-
-
-
-
-
-
 	}
-
 
 	/**
 	 * [UNIREG-1980] Teste que les déclarations des indigents possèdent à la fois l'état 'émis' et l'état 'retourné'
@@ -1106,7 +1095,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 		final EnvoiDIsResults results = (EnvoiDIsResults) doInNewTransaction(new TxCallback() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				return processor.run(2008, TypeContribuableDI.VAUDOIS_ORDINAIRE, null, null, 1000, dateTraitement, false, null);
+				return processor.run(2008, CategorieEnvoiDI.VAUDOIS_COMPLETE, null, null, 1000, dateTraitement, false, null);
 			}
 		});
 		assertNotNull(results);

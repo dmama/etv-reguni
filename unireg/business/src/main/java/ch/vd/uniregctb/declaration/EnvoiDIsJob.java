@@ -11,7 +11,7 @@ import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.uniregctb.declaration.ordinaire.EnvoiDIsResults;
 import ch.vd.uniregctb.document.EnvoiDIsRapport;
-import ch.vd.uniregctb.metier.assujettissement.TypeContribuableDI;
+import ch.vd.uniregctb.metier.assujettissement.CategorieEnvoiDI;
 import ch.vd.uniregctb.rapport.RapportService;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.scheduler.JobParam;
@@ -57,7 +57,7 @@ public class EnvoiDIsJob extends JobDefinition {
 			param.setDescription("Catégorie de contribuables");
 			param.setName(CATEGORIE_CTB);
 			param.setMandatory(true);
-			param.setType(new JobParamEnum(TypeContribuableDI.class));
+			param.setType(new JobParamEnum(CategorieEnvoiDI.class));
 			params.add(param);
 		}
 
@@ -125,8 +125,8 @@ public class EnvoiDIsJob extends JobDefinition {
 			throw new RuntimeException("La période fiscale doit être spécifiée.");
 		}
 
-		final TypeContribuableDI type = (TypeContribuableDI) params.get(CATEGORIE_CTB);
-		if (type == null) {
+		final CategorieEnvoiDI categorie = (CategorieEnvoiDI) params.get(CATEGORIE_CTB);
+		if (categorie == null) {
 			throw new RuntimeException("La catégorie de contribuables doit être spécifiée.");
 		}
 
@@ -149,7 +149,7 @@ public class EnvoiDIsJob extends JobDefinition {
 		final Boolean exclureDecede = (Boolean) params.get(EXCLURE_DCD);
 
 		final StatusManager status = getStatusManager();
-		final EnvoiDIsResults results = service.envoyerDIsEnMasse(annee, type, noCtbMin, noCtbMax, nbMax, dateTraitement, exclureDecede, status);
+		final EnvoiDIsResults results = service.envoyerDIsEnMasse(annee, categorie, noCtbMin, noCtbMax, nbMax, dateTraitement, exclureDecede, status);
 		final EnvoiDIsRapport rapport = rapportService.generateRapport(results, status);
 
 		setLastRunReport(rapport);
@@ -161,7 +161,7 @@ public class EnvoiDIsJob extends JobDefinition {
 		builder.append("pour l'année ");
 		builder.append(annee);
 		builder.append(" et la catégorie de contribuables ");
-		builder.append(type.name());
+		builder.append(categorie.name());
 		builder.append(" à la date du ");
 		builder.append(RegDateHelper.dateToDisplayString(dateTraitement));
 		if(exclureDecede){

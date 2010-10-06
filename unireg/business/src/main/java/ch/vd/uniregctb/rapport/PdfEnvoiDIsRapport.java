@@ -3,14 +3,14 @@ package ch.vd.uniregctb.rapport;
 import java.io.OutputStream;
 import java.util.Date;
 
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.pdf.PdfWriter;
+
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.ordinaire.EnvoiDIsResults;
-
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.pdf.PdfWriter;
 
 /**
  * Rapport PDF contenant les résultats de l'exécution d'un job de traitement des DIs.
@@ -40,7 +40,7 @@ public class PdfEnvoiDIsRapport extends PdfRapport {
             addTableSimple(2, new PdfRapport.TableSimpleCallback() {
                 public void fillTable(PdfTableSimple table) throws DocumentException {
                     table.addLigne("Période fiscale considérée :", String.valueOf(results.annee));
-                    table.addLigne("Catégorie de contribuables :", results.type.getDescription());
+                    table.addLigne("Catégorie de contribuables :", results.categorie.getDescription());
                     table.addLigne("Nombre maximum d'envois :", String.valueOf(results.nbMax));
 	                table.addLigne("Numéro de contribuable minimal :", results.noCtbMin == null ? "-" : FormatNumeroHelper.numeroCTBToDisplay(results.noCtbMin));
 	                table.addLigne("Numéro de contribuable maximal :", results.noCtbMax == null ? "-" : FormatNumeroHelper.numeroCTBToDisplay(results.noCtbMax));

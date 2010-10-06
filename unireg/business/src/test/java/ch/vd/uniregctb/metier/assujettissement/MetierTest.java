@@ -1,24 +1,31 @@
 package ch.vd.uniregctb.metier.assujettissement;
 
 import ch.vd.registre.base.date.DateRange;
-import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
-import ch.vd.uniregctb.type.TypeAdresseRetour;
+import ch.vd.registre.base.date.DateRangeHelper.Range;
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
+import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockOfficeImpot;
-import ch.vd.uniregctb.type.*;
+import ch.vd.uniregctb.interfaces.model.mock.MockPays;
+import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.type.ModeImposition;
+import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.MotifRattachement;
+import ch.vd.uniregctb.type.Sexe;
+import ch.vd.uniregctb.type.TypeAdresseRetour;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.uniregctb.type.TypeContribuable;
+import ch.vd.uniregctb.type.TypeDocument;
+import ch.vd.uniregctb.type.TypeEtatDeclaration;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.DateRangeHelper.Range;
-import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
-import ch.vd.uniregctb.interfaces.model.mock.MockPays;
-import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
 
 /**
  * Classe de base pour les classes de test de l'assujettissement et des périodes d'imposition.
@@ -914,12 +921,12 @@ public abstract class MetierTest extends BusinessTest {
 		assertEquals(typeAutorite, a.getTypeAutoriteFiscale());
 	}
 
-	protected void assertPeriodeImposition(RegDate debut, RegDate fin, TypeContribuableDI type, TypeAdresseRetour adresseRetour, boolean optionnelle, boolean remplaceParNote,
+	protected void assertPeriodeImposition(RegDate debut, RegDate fin, CategorieEnvoiDI categorie, TypeAdresseRetour adresseRetour, boolean optionnelle, boolean remplaceParNote,
 	                                       boolean fermetureCauseDeces, boolean fermetureCauseFinAssujettissementHS, PeriodeImposition periode) {
 		assertNotNull(periode);
 		assertEquals(debut, periode.getDateDebut());
 		assertEquals(fin, periode.getDateFin());
-		assertEquals(type, periode.getTypeContribuableDI());
+		assertEquals(categorie, periode.getCategorieEnvoiDI());
 		assertEquals(adresseRetour, periode.getAdresseRetour());
 		assertEquals(optionnelle, periode.isOptionnelle());
 		assertEquals(remplaceParNote, periode.isRemplaceeParNote());

@@ -7,7 +7,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.JobResults;
 import ch.vd.uniregctb.declaration.ordinaire.EnvoiDIsEnMasseProcessor.LotContribuables;
-import ch.vd.uniregctb.metier.assujettissement.TypeContribuableDI;
+import ch.vd.uniregctb.metier.assujettissement.CategorieEnvoiDI;
 import ch.vd.uniregctb.tiers.Contribuable;
 
 public class EnvoiDIsResults<R extends EnvoiDIsResults> extends JobResults<Long, R> {
@@ -74,7 +74,7 @@ public class EnvoiDIsResults<R extends EnvoiDIsResults> extends JobResults<Long,
 
 	// Paramètres d'entrée
 	public final int annee;
-	public final TypeContribuableDI type;
+	public final CategorieEnvoiDI categorie;
 	public final RegDate dateTraitement;
 	public final int nbMax;
 	public final Long noCtbMin;
@@ -90,9 +90,9 @@ public class EnvoiDIsResults<R extends EnvoiDIsResults> extends JobResults<Long,
 	public final List<Erreur> ctbsRollback = new ArrayList<Erreur>();
 	public boolean interrompu;
 
-	public EnvoiDIsResults(int annee, TypeContribuableDI type, RegDate dateTraitement, int nbMax, Long noCtbMin, Long noCtbMax, RegDate dateExclureDecede) {
+	public EnvoiDIsResults(int annee, CategorieEnvoiDI categorie, RegDate dateTraitement, int nbMax, Long noCtbMin, Long noCtbMax, RegDate dateExclureDecede) {
 		this.annee = annee;
-		this.type = type;
+		this.categorie = categorie;
 		this.dateTraitement = dateTraitement;
 		this.nbMax = nbMax;
 		this.noCtbMin = noCtbMin;

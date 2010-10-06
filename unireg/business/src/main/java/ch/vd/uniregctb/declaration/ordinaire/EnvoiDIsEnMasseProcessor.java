@@ -7,11 +7,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-
-import ch.vd.registre.base.date.NullDateBehavior;
-import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.parametrage.ParametreAppService;
-import ch.vd.uniregctb.type.*;
 import org.apache.log4j.Logger;
 import org.hibernate.FlushMode;
 import org.hibernate.HibernateException;
@@ -26,16 +21,18 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
-import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.DateRangeHelper.Range;
+import ch.vd.registre.base.date.NullDateBehavior;
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.BatchTransactionTemplate;
-import ch.vd.uniregctb.common.LoggingStatusManager;
-import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.common.BatchTransactionTemplate.BatchCallback;
 import ch.vd.uniregctb.common.BatchTransactionTemplate.Behavior;
+import ch.vd.uniregctb.common.LoggingStatusManager;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.DeclarationException;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
@@ -46,14 +43,23 @@ import ch.vd.uniregctb.declaration.ParametrePeriodeFiscale;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.metier.assujettissement.TypeContribuableDI;
+import ch.vd.uniregctb.metier.assujettissement.CategorieEnvoiDI;
 import ch.vd.uniregctb.parametrage.DelaisService;
+import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForGestion;
 import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpot;
 import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.type.ModeImposition;
+import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.TypeAdresseRetour;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.uniregctb.type.TypeContribuable;
+import ch.vd.uniregctb.type.TypeDocument;
+import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.TypeEtatTache;
 
 public class EnvoiDIsEnMasseProcessor {
 
@@ -119,7 +125,7 @@ public class EnvoiDIsEnMasseProcessor {
 		Assert.isTrue(tailleLot > 0);
 	}
 
-	public EnvoiDIsResults run(final int anneePeriode, final TypeContribuableDI type, final Long noCtbMin, final Long noCtbMax, final int nbMax,
+	public EnvoiDIsResults run(final int anneePeriode, final CategorieEnvoiDI categorie, final Long noCtbMin, final Long noCtbMax, final int nbMax,
 	                           final RegDate dateTraitement, final boolean exclureDecede, StatusManager s) throws DeclarationException {
 
 		Assert.isTrue(rapport == null); // Un rapport non null signifirait que l'appel a été fait par le batch des DI non émises
@@ -128,13 +134,13 @@ public class EnvoiDIsEnMasseProcessor {
 		if(exclureDecede) {
 			dateExclusionDecedes = getDateDebutExclusion(anneePeriode);
 		}
-		final EnvoiDIsResults rapportFinal = new EnvoiDIsResults(anneePeriode, type, dateTraitement, nbMax, noCtbMin, noCtbMax,dateExclusionDecedes);
+		final EnvoiDIsResults rapportFinal = new EnvoiDIsResults(anneePeriode, categorie, dateTraitement, nbMax, noCtbMin, noCtbMax,dateExclusionDecedes);
 
 		// certains contribuables ne recoivent pas de DI du canton (par exemple les diplomates suisses)
-		if (type.getTypeDocument() != null) {
+		if (categorie.getTypeDocument() != null) {
 
 			status.setMessage("Récupération des contribuables à traiter...");
-			final List<Long> ids = createListOnContribuableIds(anneePeriode, type.getTypeContribuable(), type.getTypeDocument(), noCtbMin, noCtbMax);
+			final List<Long> ids = createListOnContribuableIds(anneePeriode, categorie.getTypeContribuable(), categorie.getTypeDocument(), noCtbMin, noCtbMax);
 
 			// Traite les contribuables par lots
 			final BatchTransactionTemplate<Long, EnvoiDIsResults> template = new BatchTransactionTemplate<Long, EnvoiDIsResults>(ids, tailleLot, Behavior.REPRISE_AUTOMATIQUE,
@@ -143,7 +149,7 @@ public class EnvoiDIsEnMasseProcessor {
 
 				@Override
 				public EnvoiDIsResults createSubRapport() {
-					return new EnvoiDIsResults(anneePeriode, type, dateTraitement, nbMax, noCtbMin, noCtbMax, dateExclusionDecedes);
+					return new EnvoiDIsResults(anneePeriode, categorie, dateTraitement, nbMax, noCtbMin, noCtbMax, dateExclusionDecedes);
 				}
 
 				@Override
@@ -159,7 +165,7 @@ public class EnvoiDIsEnMasseProcessor {
 					}
 
 					if (batch.size() > 0) {
-						traiterBatch(batch, anneePeriode, type, dateTraitement);
+						traiterBatch(batch, anneePeriode, categorie, dateTraitement);
 					}
 
 					return !rapportFinal.interrompu && (nbMax <= 0 || rapportFinal.nbCtbsTotal + batch.size() < nbMax);
@@ -193,19 +199,19 @@ public class EnvoiDIsEnMasseProcessor {
 	 *
 	 * @param ids            les ids des contribuables à traiter
 	 * @param anneePeriode   l'année fiscale considérée
-	 * @param type           le type de contribuable considéré
+	 * @param categorie      la catégorie de contribuable considérée
 	 * @param dateTraitement la date de traitement
 	 * @throws DeclarationException en cas d'erreur dans le traitement d'un contribuable.
 	 */
-	protected void traiterBatch(List<Long> ids, int anneePeriode, TypeContribuableDI type, RegDate dateTraitement)
+	protected void traiterBatch(List<Long> ids, int anneePeriode, CategorieEnvoiDI categorie, RegDate dateTraitement)
 			throws DeclarationException {
 
 		rapport.nbCtbsTotal += ids.size();
 
-		initCache(anneePeriode, type);
+		initCache(anneePeriode, categorie);
 		final DeclarationsCache dcache = new DeclarationsCache(anneePeriode, ids);
 
-		final Iterator<TacheEnvoiDeclarationImpot> iter = createIteratorOnTaches(anneePeriode, type.getTypeContribuable(), type.getTypeDocument(), ids);
+		final Iterator<TacheEnvoiDeclarationImpot> iter = createIteratorOnTaches(anneePeriode, categorie.getTypeContribuable(), categorie.getTypeDocument(), ids);
 		while (iter.hasNext()) {
 			final TacheEnvoiDeclarationImpot tache = iter.next();
 			traiterTache(tache, dateTraitement, dcache);
@@ -217,11 +223,11 @@ public class EnvoiDIsEnMasseProcessor {
 	/**
 	 * Initialise les données pré-cachées pour éviter de les recharger plusieurs fois de la base de données.
 	 *
-	 * @param anneePeriode
-	 * @param type
-	 * @throws DeclarationException
+	 * @param anneePeriode   l'année fiscale considérée
+	 * @param categorie      la catégorie de contribuable considérée
+	 * @throws DeclarationException en cas d'erreur dans le traitement d'un contribuable.
 	 */
-	protected void initCache(int anneePeriode, TypeContribuableDI type) throws DeclarationException {
+	protected void initCache(int anneePeriode, CategorieEnvoiDI categorie) throws DeclarationException {
 
 		// Récupère le CEDI
 		CollectiviteAdministrative cedi = tiersService.getOrCreateCollectiviteAdministrative(ServiceInfrastructureService.noCEDI);
@@ -241,10 +247,10 @@ public class EnvoiDIsEnMasseProcessor {
 		}
 
 		// Récupère le modèle de document
-		ModeleDocument modele = modeleDAO.getModelePourDeclarationImpotOrdinaire(periode, type.getTypeDocument());
+		ModeleDocument modele = modeleDAO.getModelePourDeclarationImpotOrdinaire(periode, categorie.getTypeDocument());
 		if (modele == null) {
 			throw new DeclarationException("Impossible de trouver le modèle de document pour une déclaration d'impôt pour la période ["
-					+ periode.getAnnee() + "] et le type de document [" + type.getTypeDocument().name() + "].");
+					+ periode.getAnnee() + "] et le type de document [" + categorie.getTypeDocument().name() + "].");
 		}
 
 		cache = new Cache(cedi, aci, modele, periode);

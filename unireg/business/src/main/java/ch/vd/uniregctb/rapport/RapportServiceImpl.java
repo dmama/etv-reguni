@@ -1,5 +1,11 @@
 package ch.vd.uniregctb.rapport;
 
+import java.io.OutputStream;
+import java.util.Date;
+
+import org.apache.log4j.Logger;
+import org.springframework.orm.hibernate3.HibernateTemplate;
+
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
@@ -9,12 +15,50 @@ import ch.vd.uniregctb.adresse.ResolutionAdresseResults;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.DeclarationException;
-import ch.vd.uniregctb.declaration.ordinaire.*;
+import ch.vd.uniregctb.declaration.ordinaire.DemandeDelaiCollectiveResults;
+import ch.vd.uniregctb.declaration.ordinaire.DeterminationDIsResults;
+import ch.vd.uniregctb.declaration.ordinaire.EchoirDIsResults;
+import ch.vd.uniregctb.declaration.ordinaire.EnvoiDIsResults;
+import ch.vd.uniregctb.declaration.ordinaire.EnvoiSommationsDIsResults;
+import ch.vd.uniregctb.declaration.ordinaire.ImpressionChemisesTOResults;
+import ch.vd.uniregctb.declaration.ordinaire.ListeDIsNonEmises;
+import ch.vd.uniregctb.declaration.ordinaire.StatistiquesCtbs;
+import ch.vd.uniregctb.declaration.ordinaire.StatistiquesDIs;
 import ch.vd.uniregctb.declaration.source.DeterminerLRsEchuesResults;
 import ch.vd.uniregctb.declaration.source.EnvoiLRsResults;
 import ch.vd.uniregctb.declaration.source.EnvoiSommationLRsResults;
-import ch.vd.uniregctb.document.*;
+import ch.vd.uniregctb.document.AcomptesRapport;
+import ch.vd.uniregctb.document.CorrectionFlagHabitantRapport;
+import ch.vd.uniregctb.document.DemandeDelaiCollectiveRapport;
+import ch.vd.uniregctb.document.DeterminationDIsRapport;
+import ch.vd.uniregctb.document.DeterminerLRsEchuesRapport;
+import ch.vd.uniregctb.document.DeterminerMouvementsDossiersEnMasseRapport;
+import ch.vd.uniregctb.document.DocumentService;
+import ch.vd.uniregctb.document.EchoirDIsRapport;
+import ch.vd.uniregctb.document.EnvoiDIsRapport;
+import ch.vd.uniregctb.document.EnvoiLRsRapport;
+import ch.vd.uniregctb.document.EnvoiSommationLRsRapport;
+import ch.vd.uniregctb.document.EnvoiSommationsDIsRapport;
+import ch.vd.uniregctb.document.ExclureContribuablesEnvoiRapport;
+import ch.vd.uniregctb.document.ExtractionAfcRapport;
+import ch.vd.uniregctb.document.FusionDeCommunesRapport;
+import ch.vd.uniregctb.document.IdentifierContribuableRapport;
+import ch.vd.uniregctb.document.ImpressionChemisesTORapport;
+import ch.vd.uniregctb.document.ListeContribuablesResidentsSansForVaudoisRapport;
 import ch.vd.uniregctb.document.ListeDIsNonEmisesRapport;
+import ch.vd.uniregctb.document.ListeTachesEnIsntanceParOIDRapport;
+import ch.vd.uniregctb.document.ListesNominativesRapport;
+import ch.vd.uniregctb.document.MajoriteRapport;
+import ch.vd.uniregctb.document.RapprocherCtbRapport;
+import ch.vd.uniregctb.document.ReinitialiserBaremeDoubleGainRapport;
+import ch.vd.uniregctb.document.ResolutionAdresseRapport;
+import ch.vd.uniregctb.document.RolesCommunesRapport;
+import ch.vd.uniregctb.document.RolesOIDsRapport;
+import ch.vd.uniregctb.document.StatistiquesCtbsRapport;
+import ch.vd.uniregctb.document.StatistiquesDIsRapport;
+import ch.vd.uniregctb.document.StatistiquesEvenementsRapport;
+import ch.vd.uniregctb.document.TraiterEvenementExterneRapport;
+import ch.vd.uniregctb.document.ValidationJobRapport;
 import ch.vd.uniregctb.evenement.externe.TraiterEvenementExterneResult;
 import ch.vd.uniregctb.identification.contribuable.IdentifierContribuableResults;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -37,11 +81,6 @@ import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.tiers.rattrapage.flaghabitant.CorrectionFlagHabitantSurMenagesResults;
 import ch.vd.uniregctb.tiers.rattrapage.flaghabitant.CorrectionFlagHabitantSurPersonnesPhysiquesResults;
 import ch.vd.uniregctb.validation.ValidationJobResults;
-import org.apache.log4j.Logger;
-import org.springframework.orm.hibernate3.HibernateTemplate;
-
-import java.io.OutputStream;
-import java.util.Date;
 
 /**
  * {@inheritDoc}
@@ -111,7 +150,7 @@ public class RapportServiceImpl implements RapportService {
 
 		final String nom = "RapportEnvoiDIs" + results.annee;
 		final String description = "Rapport d'exécution du job d'envoi des DIs en masse pour l'année " + results.annee
-				+ ". Date de traitement = " + results.dateTraitement + "Type de contribuable = " + results.type.name();
+				+ ". Date de traitement = " + results.dateTraitement + "Type de contribuable = " + results.categorie.name();
 		final Date dateGeneration = DateHelper.getCurrentDate();
 
 		try {

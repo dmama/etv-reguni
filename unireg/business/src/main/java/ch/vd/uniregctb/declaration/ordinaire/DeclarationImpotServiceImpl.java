@@ -22,7 +22,7 @@ import ch.vd.uniregctb.editique.EditiqueResultat;
 import ch.vd.uniregctb.editique.EditiqueService;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.metier.assujettissement.TypeContribuableDI;
+import ch.vd.uniregctb.metier.assujettissement.CategorieEnvoiDI;
 import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -170,12 +170,12 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	/**
 	 * {@inheritDoc}
 	 */
-	public EnvoiDIsResults envoyerDIsEnMasse(int anneePeriode, TypeContribuableDI type, Long noCtbMin, Long noCtbMax, int nbMax, RegDate dateTraitement, Boolean exclureDecede, StatusManager status)
+	public EnvoiDIsResults envoyerDIsEnMasse(int anneePeriode, CategorieEnvoiDI categorie, Long noCtbMin, Long noCtbMax, int nbMax, RegDate dateTraitement, Boolean exclureDecede, StatusManager status)
 			throws DeclarationException {
 
 		final EnvoiDIsEnMasseProcessor processor = new EnvoiDIsEnMasseProcessor(tiersService, hibernateTemplate, modeleDAO, periodeDAO,
 				delaisService, this, tailleLot, transactionManager, parametres);
-		return processor.run(anneePeriode, type, noCtbMin, noCtbMax, nbMax, dateTraitement, exclureDecede, status);
+		return processor.run(anneePeriode, categorie, noCtbMin, noCtbMax, nbMax, dateTraitement, exclureDecede, status);
 	}
 
 	/**

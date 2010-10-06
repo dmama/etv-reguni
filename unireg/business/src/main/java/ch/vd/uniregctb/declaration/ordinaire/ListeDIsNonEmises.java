@@ -6,7 +6,7 @@ import java.util.List;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.uniregctb.metier.assujettissement.TypeContribuableDI;
+import ch.vd.uniregctb.metier.assujettissement.CategorieEnvoiDI;
 import ch.vd.uniregctb.tiers.Contribuable;
 
 public class ListeDIsNonEmises extends EnvoiDIsResults<ListeDIsNonEmises> {
@@ -82,7 +82,7 @@ public class ListeDIsNonEmises extends EnvoiDIsResults<ListeDIsNonEmises> {
 
 
 	public ListeDIsNonEmises(int anneePeriode, RegDate dateTraitement) {
-		super (anneePeriode, TypeContribuableDI.VAUDOIS_ORDINAIRE, dateTraitement, 1000000, null, null, null);
+		super (anneePeriode, CategorieEnvoiDI.VAUDOIS_COMPLETE, dateTraitement, 1000000, null, null, null);
 	}
 
 
