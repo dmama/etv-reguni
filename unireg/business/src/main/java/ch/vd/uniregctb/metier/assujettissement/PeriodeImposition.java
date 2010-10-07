@@ -468,7 +468,7 @@ public class PeriodeImposition implements CollatableDateRange {
 	 * @param annee        l'année pour laquelle on veut déterminer le format de DI
 	 * @return le format de DI à utiliser
 	 */
-	private static FormatDIOrdinaire determineFormatDIOrdinaire(Contribuable contribuable, int annee) {
+	protected static FormatDIOrdinaire determineFormatDIOrdinaire(Contribuable contribuable, int annee) {
 
 		final List<DeclarationImpotOrdinaire> dis = getDeclarationsPourAnnees(contribuable, annee - 1, annee - 2);
 

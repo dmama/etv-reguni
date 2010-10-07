@@ -6,12 +6,18 @@ import org.junit.Test;
 
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
+import ch.vd.uniregctb.declaration.ModeleDocument;
+import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.interfaces.model.mock.MockCollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseRetour;
+import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
 
 import static junit.framework.Assert.assertNotNull;
@@ -964,5 +970,48 @@ public class PeriodeImpositionTest extends MetierTest {
 		assertNotNull(list);
 		assertEquals(1, list.size());
 		assertPeriodeImposition(date(2009, 1, 1), date(2009, 12, 31), CategorieEnvoiDI.VAUDOIS_VAUDTAX, TypeAdresseRetour.CEDI, false, false, false, false, list.get(0));
+	}
+
+	/**
+	 * [UNIREG-820] [UNIREG-1824] Teste l'algorithme de détermination du format (VaudTax ou complète) pour une déclaration ordinaire
+	 */
+	@Test
+	public void testDetermineFormatDIOrdinaire() throws Exception {
+
+		addCollAdm(MockCollectiviteAdministrative.CEDI);
+		final PeriodeFiscale periode2005 = addPeriodeFiscale(2005);
+		final ModeleDocument modeleComplete2005 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2005);
+		final ModeleDocument modeleVaudTax2005 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode2005);
+
+		// un contribuable assujetti depuis le 1er janvier 2005 sur Lausanne
+		final PersonnePhysique pp = addNonHabitant("Frédéric", "Pochin", date(1987, 1, 1), Sexe.MASCULIN);
+		addForPrincipal(pp, date(2005, 1, 1), MotifFor.MAJORITE, MockCommune.Lausanne);
+
+		// aucune déclaration et nouvellement assujetti => 2005 = vaudtax
+		assertEquals(FormatDIOrdinaire.VAUDTAX, PeriodeImposition.determineFormatDIOrdinaire(pp, 2005));
+
+		// aucune déclaration et assujetti depuis 1 année => 2006 = complète
+		assertEquals(FormatDIOrdinaire.COMPLETE, PeriodeImposition.determineFormatDIOrdinaire(pp, 2006));
+
+		// une déclaration en 2005 complète, pas de déclaration en 2006 ni 2007 => 2006 = complète
+		final DeclarationImpotOrdinaire diComplete = addDeclarationImpot(pp, periode2005, date(2005, 1, 1), date(2005, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modeleComplete2005);
+		assertEquals(FormatDIOrdinaire.COMPLETE, PeriodeImposition.determineFormatDIOrdinaire(pp, 2006));
+
+		// une déclaration en 2005 complète, pas de déclaration en 2006 ni 2007 => 2007 = complète
+		assertEquals(FormatDIOrdinaire.COMPLETE, PeriodeImposition.determineFormatDIOrdinaire(pp, 2007));
+
+		// une déclaration en 2005 complète, pas de déclaration en 2006 ni 2007 => 2008 = complète
+		assertEquals(FormatDIOrdinaire.COMPLETE, PeriodeImposition.determineFormatDIOrdinaire(pp, 2008));
+
+		// une déclaration en 2005 VaudTax, pas de déclaration en 2006 ni 2007 => 2006 = vaudtax
+		diComplete.setAnnule(true);
+		addDeclarationImpot(pp, periode2005, date(2005, 1, 1), date(2005, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modeleVaudTax2005);
+		assertEquals(FormatDIOrdinaire.VAUDTAX, PeriodeImposition.determineFormatDIOrdinaire(pp, 2006));
+
+		// une déclaration en 2005 VaudTax, pas de déclaration en 2006 ni 2007 => 2007 = vaudtax
+		assertEquals(FormatDIOrdinaire.VAUDTAX, PeriodeImposition.determineFormatDIOrdinaire(pp, 2007));
+
+		// une déclaration en 2005 VaudTax, pas de déclaration en 2006 ni 2007 => 2008 = complète
+		assertEquals(FormatDIOrdinaire.COMPLETE, PeriodeImposition.determineFormatDIOrdinaire(pp, 2008));
 	}
 }
