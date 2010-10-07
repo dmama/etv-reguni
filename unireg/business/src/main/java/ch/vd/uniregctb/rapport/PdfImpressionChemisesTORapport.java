@@ -107,10 +107,7 @@ public class PdfImpressionChemisesTORapport extends PdfRapport{
 
 	            b.append(ligne.getIdDeclaration()).append(COMMA);
 		        b.append(escapeChars(ligne.getDetails()));
-
-	            if (!iter.isLast()) {
-	                b.append("\n");
-	            }
+                b.append('\n');
 	        }
 	        contenu = b.toString();
 	    }
@@ -146,10 +143,7 @@ public class PdfImpressionChemisesTORapport extends PdfRapport{
 	            b.append(ligne.getDateDebutDi()).append(COMMA);
 	            b.append(ligne.getDateFinDi()).append(COMMA);
 	            b.append(ligne.getDateSommationDi()).append(COMMA);
-
-	            if (!iter.isLast()) {
-	                b.append("\n");
-	            }
+                b.append('\n');
 	        }
 	        contenu = b.toString();
 	    }

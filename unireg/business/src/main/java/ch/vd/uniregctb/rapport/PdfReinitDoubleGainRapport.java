@@ -104,9 +104,7 @@ public class PdfReinitDoubleGainRapport extends PdfRapport {
 				bb.append(situation.ctbId).append(COMMA);
 				bb.append(situation.ancienneId).append(COMMA);
 				bb.append(situation.nouvelleId);
-				if (!iter.isLast()) {
-					bb.append("\n");
-				}
+				bb.append('\n');
 
 				b.append(bb);
 			}

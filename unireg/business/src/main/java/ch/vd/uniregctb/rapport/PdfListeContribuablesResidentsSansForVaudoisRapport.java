@@ -97,9 +97,7 @@ public class PdfListeContribuablesResidentsSansForVaudoisRapport extends PdfRapp
 					status.setMessage(message, iterator.getPercent());
 				}
 				b.append(iterator.next());
-				if (!iterator.isLast()) {
-					b.append("\n");
-				}
+				b.append('\n');
 			}
 			contenu = b.toString();
 		}
@@ -124,9 +122,7 @@ public class PdfListeContribuablesResidentsSansForVaudoisRapport extends PdfRapp
 				final ListeContribuablesResidentsSansForVaudoisResults.InfoContribuableIgnore info = iterator.next();
 				b.append(info.ctbId).append(COMMA);
 				b.append(escapeChars(info.cause.getDescription()));
-				if (!iterator.isLast()) {
-					b.append("\n");
-				}
+				b.append('\n');
 			}
 			contenu = b.toString();
 		}
@@ -152,9 +148,7 @@ public class PdfListeContribuablesResidentsSansForVaudoisRapport extends PdfRapp
 				b.append(ligne.noCtb).append(COMMA);
 				b.append(escapeChars(ligne.getDescriptionRaison())).append(COMMA);
 				b.append(escapeChars(ligne.details));
-				if (!iterator.isLast()) {
-					b.append("\n");
-				}
+				b.append('\n');
 			}
 			contenu = b.toString();
 		}

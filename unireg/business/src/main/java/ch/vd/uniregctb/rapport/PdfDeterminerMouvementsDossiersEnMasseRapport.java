@@ -115,10 +115,7 @@ public class PdfDeterminerMouvementsDossiersEnMasseRapport extends PdfRapport {
 				b.append(nonTraite.noCtb).append(COMMA);
 				b.append(escapeChars(nonTraite.getTypeInformation())).append(COMMA);
 				b.append(asCsvField(nonTraite.complement.split("\n")));
-
-				if (!iterator.isLast()) {
-					b.append("\n");
-				}
+				b.append('\n');
 			}
 			contenu = b.toString();
 		}
@@ -152,10 +149,7 @@ public class PdfDeterminerMouvementsDossiersEnMasseRapport extends PdfRapport {
 				if (mvt instanceof DeterminerMouvementsDossiersEnMasseResults.MouvementOid) {
 					b.append(((DeterminerMouvementsDossiersEnMasseResults.MouvementOid) mvt).oidDestination);
 				}
-
-				if (!iterator.isLast()) {
-					b.append("\n");
-				}
+				b.append('\n');
 			}
 			contenu = b.toString();
 		}

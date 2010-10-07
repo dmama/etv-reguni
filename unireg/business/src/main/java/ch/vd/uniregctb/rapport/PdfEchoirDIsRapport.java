@@ -114,9 +114,7 @@ public class PdfEchoirDIsRapport extends PdfRapport {
 				bb.append(info.officeImpotID).append(COMMA);
 				bb.append(info.ctbId).append(COMMA);
 				bb.append(info.diId);
-				if (!iter.isLast()) {
-					bb.append("\n");
-				}
+				bb.append('\n');
 
 				b.append(bb);
 			}

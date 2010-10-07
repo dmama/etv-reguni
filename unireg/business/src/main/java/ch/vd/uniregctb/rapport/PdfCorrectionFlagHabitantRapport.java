@@ -135,9 +135,7 @@ public class PdfCorrectionFlagHabitantRapport extends PdfRapport {
 					builder.append(escapeChars(erreur.getComplementInfo()));
 					builder.append("\"");
 				}
-				if (!iterator.isLast()) {
-					builder.append("\n");
-				}
+				builder.append('\n');
 			}
 			contenu = builder.toString();
 		}
@@ -163,9 +161,7 @@ public class PdfCorrectionFlagHabitantRapport extends PdfRapport {
 
 				final CorrectionFlagHabitantAbstractResults.ContribuableInfo modification = iterator.next();
 				builder.append(modification.getNoCtb());
-				if (!iterator.isLast()) {
-					 builder.append("\n");
-				}
+				builder.append('\n');
 			}
 
 			contenu = builder.toString();

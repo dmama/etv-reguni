@@ -243,7 +243,7 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 			}
 		}
 		if (withNewLine) {
-			b.append("\n");
+			b.append('\n');
 		}
 		return b.toString();
 	}
@@ -267,7 +267,7 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 				}
 				final T element = iterator.next();
 				final String[] valeurs = element.getValeursColonnes();
-				b.append(asCsvLine(valeurs, !iterator.isLast()));
+				b.append(asCsvLine(valeurs, true));
 			}
 
 			contenu = b.toString();

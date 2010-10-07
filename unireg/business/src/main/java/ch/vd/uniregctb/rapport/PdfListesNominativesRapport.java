@@ -149,9 +149,7 @@ public class PdfListesNominativesRapport extends PdfRapport{
 						writer.append(escapeChars(ligneAvecAdresse.pays));
 					}
 
-					if (!iter.isLast()) {
-						writer.append("\n");
-					}
+					writer.append('\n');
 				}
 
 		        writer.close();
@@ -203,9 +201,7 @@ public class PdfListesNominativesRapport extends PdfRapport{
 	            b.append(ligne.noCtb).append(COMMA);
 	            b.append(escapeChars(ligne.getDescriptionRaison())).append(COMMA);
 		        b.append(escapeChars(ligne.details));
-	            if (!iter.isLast()) {
-	                b.append("\n");
-	            }
+                b.append('\n');
 	        }
 	        contenu = b.toString();
 	    }

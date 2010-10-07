@@ -115,19 +115,11 @@ public class PdfAcomptesRapport extends PdfRapport {
 				// ICC
 				if (assujettissementIcc != null) {
 					fillLigneBuffer(b, ligne.getNumeroCtb(), nom, prenom, assujettissementIcc, TYPE_IMPOT_ICC);
-
-					if (!iter.isLast() || assujettissementIfd != null) {
-						b.append("\n");
-					}
 				}
 
 				// IFD
 				if (assujettissementIfd != null) {
 					fillLigneBuffer(b, ligne.getNumeroCtb(), nom, prenom, assujettissementIfd, TYPE_IMPOT_IFD);
-
-					if (!iter.isLast()) {
-						b.append("\n");
-					}
 				}
 			}
 			contenu = b.toString();
@@ -158,9 +150,7 @@ public class PdfAcomptesRapport extends PdfRapport {
 				b.append(ligne.noCtb).append(COMMA);
 				b.append(escapeChars(ligne.getDescriptionRaison())).append(COMMA);
 				b.append(escapeChars(ligne.details));
-				if (!iter.isLast()) {
-					b.append("\n");
-				}
+				b.append('\n');
 			}
 			contenu = b.toString();
 		}
@@ -189,10 +179,8 @@ public class PdfAcomptesRapport extends PdfRapport {
 				final AcomptesResults.InfoContribuableIgnore ligne = iter.next();
 				b.append(ligne.getNumeroCtb()).append(COMMA);
 				b.append(ligne.getAnneeFiscale()).append(COMMA);
-				b.append(ligne.toString().replaceAll("[;\"]", ""));
-				if (!iter.isLast()) {
-					b.append("\n");
-				}
+				b.append(escapeChars(ligne.toString()));
+				b.append('\n');
 			}
 			contenu = b.toString();
 		}
@@ -222,6 +210,7 @@ public class PdfAcomptesRapport extends PdfRapport {
 
 		b.append(typeImpot).append(COMMA);
 		b.append(assujettissement.anneeFiscale);
+		b.append('\n');
 	}
 
 }

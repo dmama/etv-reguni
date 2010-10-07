@@ -247,9 +247,7 @@ public abstract class PdfRapport extends Document {
 					status.setMessage(String.format("Génération du fichier %s", filename), iter.getPercent());
 				}
 				b.append(iter.next());
-				if (!iter.isLast()) {
-					b.append("\n");
-				}
+				b.append('\n');
 			}
 			contenu = b.toString();
 		}
@@ -283,9 +281,7 @@ public abstract class PdfRapport extends Document {
 				if (info.details != null) {
 					bb.append(COMMA).append(asCsvField(info.details));
 				}
-				if (!iter.isLast()) {
-					bb.append("\n");
-				}
+				bb.append('\n');
 
 				b.append(bb);
 			}

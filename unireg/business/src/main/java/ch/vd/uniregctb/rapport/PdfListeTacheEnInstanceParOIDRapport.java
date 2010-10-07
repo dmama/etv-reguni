@@ -87,9 +87,7 @@ public class PdfListeTacheEnInstanceParOIDRapport extends PdfRapport {
 				b.append(ligne.getNumeroOID()).append(COMMA);
 				b.append(ligne.getTypeTache()).append(COMMA);
 				b.append(ligne.getNombreTache()).append(COMMA);
-				if (!iter.isLast()) {
-					b.append("\n");
-				}
+				b.append('\n');
 			}
 			contenu = b.toString();
 		}

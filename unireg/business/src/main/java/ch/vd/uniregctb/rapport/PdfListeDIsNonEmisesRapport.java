@@ -89,9 +89,7 @@ public class PdfListeDIsNonEmisesRapport extends PdfRapport {
 				b.append(ligne.getDateFin()).append(COMMA);
 				b.append(ligne.getRaison()).append(COMMA);
 				b.append(ligne.getDetails());
-				if (!iter.isLast()) {
-					b.append("\n");
-				}
+				b.append('\n');
 			}
 			contenu = b.toString();
 		}

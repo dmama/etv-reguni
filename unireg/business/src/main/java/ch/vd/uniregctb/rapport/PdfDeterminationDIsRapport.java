@@ -128,9 +128,7 @@ public class PdfDeterminationDIsRapport extends PdfRapport {
 		        bb.append(info.dateDebut).append(COMMA);
 			    bb.append(info.dateFin).append(COMMA);
 		        bb.append(info.raison.description());
-		        if (!iter.isLast()) {
-		            bb.append("\n");
-		        }
+		        bb.append('\n');
 
 		        b.append(bb);
 		    }

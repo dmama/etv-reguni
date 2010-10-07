@@ -115,9 +115,7 @@ public class PdfStatsCtbsRapport extends PdfRapport {
 				b.append(description(key.commune)).append(COMMA);
 				b.append(description(key.typeCtb)).append(COMMA);
 				b.append(entry.getValue().nombre);
-				if (!iter.isLast()) {
-					b.append("\n");
-				}
+				b.append('\n');
 			}
 			contenu = b.toString();
 		}

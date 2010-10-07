@@ -135,10 +135,7 @@ public class PdfTraiterEvenementExterneRapport extends PdfRapport {
 				StringBuilder bb = new StringBuilder(AVG_LINE_LEN);
 				bb.append(info.evenementId).append(COMMA);
 				bb.append(info.raison);
-
-				if (!iter.isLast()) {
-					bb.append("\n");
-				}
+				bb.append('\n');
 
 				b.append(bb);
 			}
