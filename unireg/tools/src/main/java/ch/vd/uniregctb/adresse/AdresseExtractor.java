@@ -30,7 +30,12 @@ import ch.vd.uniregctb.webservices.tiers2.UserLogin;
 public class AdresseExtractor {
 
 	// INTEGRATION
-	private static final String urlWebServiceTiers2 = "http://ssv0309v.etat-de-vaud.ch:41060/fiscalite/int-unireg/ws/tiers2";
+//	private static final String urlWebServiceTiers2 = "http://ssv0309v.etat-de-vaud.ch:41060/fiscalite/int-unireg/ws/tiers2";
+//	private static final String userWebService = "web-it";
+//	private static final String pwdWebService = "unireg_1014";
+
+	// PRE-PRODUCTION
+	private static final String urlWebServiceTiers2 = "http://unireg-pp.etat-de-vaud.ch:80/fiscalite/unireg/ws/tiers2";
 	private static final String userWebService = "web-it";
 	private static final String pwdWebService = "unireg_1014";
 
