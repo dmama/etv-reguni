@@ -3,26 +3,29 @@ package ch.vd.uniregctb.declaration.source;
 import java.util.ArrayList;
 import java.util.List;
 
+import ch.vd.registre.base.date.DateRange;
+import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.JobResults;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
+import ch.vd.uniregctb.declaration.IdentifiantDeclaration;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.type.CategorieImpotSource;
 
-public class EnvoiSommationLRsResults extends JobResults<Long, EnvoiSommationLRsResults> {
+public class EnvoiSommationLRsResults extends JobResults<IdentifiantDeclaration, EnvoiSommationLRsResults> {
 
 	public static class Traite extends Info {
 
-		public final RegDate dateDebutLR;
-		
-		public Traite(long noCtb, RegDate dateDebutLR) {
-			super(noCtb, null, dateDebutLR.toString());
-			this.dateDebutLR = dateDebutLR;
+		private DateRange periodeLr;
+
+		public Traite(long noCtb, DeclarationImpotSource lr) {
+			super(noCtb, null, DateRangeHelper.toDisplayString(lr));
+			this.periodeLr = new DateRangeHelper.Range(lr.getDateDebut(), lr.getDateFin());
 		}
 
 		@Override
 		public String getDescriptionRaison() {
-			return "LR du " + dateDebutLR.toString() + " a été sommée";
+			return String.format("La LR %s a été sommée", DateRangeHelper.toDisplayString(periodeLr));
 		}
 	}
 	
@@ -43,18 +46,18 @@ public class EnvoiSommationLRsResults extends JobResults<Long, EnvoiSommationLRs
 	
 	public static class Erreur extends Info {
 		public final ErreurType raison;
-		public final RegDate dateDebutLR;
+		public final DateRange periodeLr;
 		
-		public Erreur(long noCtb, RegDate dateDebutLR, ErreurType raison, String details) {
+		public Erreur(long noCtb, DeclarationImpotSource lr, ErreurType raison, String details) {
 			super(noCtb, null, details);
+			this.periodeLr = lr != null ? new DateRangeHelper.Range(lr.getDateDebut(), lr.getDateFin()) : null;
 			this.raison = raison;
-			this.dateDebutLR = dateDebutLR;
 		}
 
 		@Override
 		public String getDescriptionRaison() {
-			if (dateDebutLR != null)
-				return raison.description + " pour la LR du " + dateDebutLR;
+			if (periodeLr != null)
+				return String.format("%s pour la LR %s", raison.description, DateRangeHelper.toDisplayString(periodeLr));
 			else 
 				return raison.description;
 		}
@@ -64,9 +67,9 @@ public class EnvoiSommationLRsResults extends JobResults<Long, EnvoiSommationLRs
 	public final RegDate dateFinPeriode;
 	public final RegDate dateTraitement;
 	
-	public int nbLRsTotal;//nombre de LR analysé
-	public List<Traite> LRSommees = new ArrayList<Traite>();//LR sommée
-	public List<Erreur> SommationLREnErrors = new ArrayList<Erreur>();//sommation LR KO
+	public int nbLRsTotal;             // nombre de LR analysées
+	public final List<Traite> lrSommees = new ArrayList<Traite>();      // LR sommées
+	public final List<Erreur> sommationLREnErreurs = new ArrayList<Erreur>();   //sommation LR KO
 	public boolean interrompu;
 	
 	public EnvoiSommationLRsResults(CategorieImpotSource categorie, RegDate dateFinPeriode, RegDate dateTrait) {
@@ -77,24 +80,19 @@ public class EnvoiSommationLRsResults extends JobResults<Long, EnvoiSommationLRs
 	
 	public void addAll(EnvoiSommationLRsResults right) {
 		this.nbLRsTotal += right.nbLRsTotal;
-		this.LRSommees.addAll(right.LRSommees);
-		this.SommationLREnErrors.addAll(right.SommationLREnErrors);
+		this.lrSommees.addAll(right.lrSommees);
+		this.sommationLREnErreurs.addAll(right.sommationLREnErreurs);
 	}
 
-	public void addErrorException(Long element, Exception e) {
-		addOnCommitException(element, e);
+	public void addErrorException(IdentifiantDeclaration element, Exception e) {
+		sommationLREnErreurs.add(new Erreur(element.getNumeroTiers(), null, ErreurType.ROLLBACK, e.getMessage()));
 	}
 
 	public void addLRSommee(DebiteurPrestationImposable dpi, DeclarationImpotSource lr) {
-		LRSommees.add(new Traite(dpi.getNumero(), lr.getDateDebut()));
+		lrSommees.add(new Traite(dpi.getNumero(), lr));
 	}
 	
 	public void addError(DebiteurPrestationImposable dpi, DeclarationImpotSource lr, Exception e) {
-		SommationLREnErrors.add(new Erreur(dpi.getNumero(), lr.getDateDebut(), ErreurType.EXCEPTION, e.getMessage()));
+		sommationLREnErreurs.add(new Erreur(dpi.getNumero(), lr, ErreurType.EXCEPTION, e.getMessage()));
 	}
-	
-	public void addOnCommitException(Long dpiId, Exception e) {
-		SommationLREnErrors.add(new Erreur(dpiId, null, ErreurType.ROLLBACK, e.getMessage()));
-	}
-	
 }

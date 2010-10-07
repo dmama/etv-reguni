@@ -54,8 +54,8 @@ public class PdfEnvoiSommationsLRsRapport extends PdfRapport {
 			addTableSimple(2, new PdfRapport.TableSimpleCallback() {
 				public void fillTable(PdfTableSimple table) throws DocumentException {
 					table.addLigne("Nombre total de listes récapitulatives:", String.valueOf(results.nbLRsTotal));
-					table.addLigne("Nombre de listes récapitulatives sommées:", String.valueOf(results.LRSommees.size()));
-					table.addLigne("Nombre de listes récapitulatives en erreur:", String.valueOf(results.SommationLREnErrors.size()));
+					table.addLigne("Nombre de listes récapitulatives sommées:", String.valueOf(results.lrSommees.size()));
+					table.addLigne("Nombre de listes récapitulatives en erreur:", String.valueOf(results.sommationLREnErreurs.size()));
 					table.addLigne("Durée d'exécution du job:", formatDureeExecution(results));
 					table.addLigne("Date de génération du rapport:", formatTimestamp(dateGeneration));
 				}
@@ -65,19 +65,19 @@ public class PdfEnvoiSommationsLRsRapport extends PdfRapport {
 		// LR sommées
 		{
 			String filename = "listes_recapitulatives_sommees.csv";
-			String contenu = asCsvFile(results.LRSommees, filename, status);
+			String contenu = asCsvFile(results.lrSommees, filename, status);
 			String titre = "Liste des débiteurs traités";
 			String listVide = "(aucun débiteur traité)";
-			addListeDetaillee(writer, results.LRSommees.size(), titre, listVide, filename, contenu);
+			addListeDetaillee(writer, results.lrSommees.size(), titre, listVide, filename, contenu);
 		}
 
 		// Sommations LR en erreurs
 		{
 			String filename = "sommation_en_erreur.csv";
-			String contenu = asCsvFile(results.SommationLREnErrors, filename, status);
+			String contenu = asCsvFile(results.sommationLREnErreurs, filename, status);
 			String titre = "Liste des débiteurs en erreur";
 			String listVide = "(aucun débiteur en erreur)";
-			addListeDetaillee(writer, results.SommationLREnErrors.size(), titre, listVide, filename, contenu);
+			addListeDetaillee(writer, results.sommationLREnErreurs.size(), titre, listVide, filename, contenu);
 		}
 
 		close();

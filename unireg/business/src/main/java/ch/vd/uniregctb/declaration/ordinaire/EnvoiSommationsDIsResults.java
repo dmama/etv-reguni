@@ -271,6 +271,7 @@ public class EnvoiSommationsDIsResults extends JobResults<IdentifiantDeclaration
 		}
 		return Collections.unmodifiableList(ret);
 	}
+
 	protected final String buildErrorMessage(Exception e) {
         final String message;
         if (e.getMessage() != null && e.getMessage().trim().length() > 0) {

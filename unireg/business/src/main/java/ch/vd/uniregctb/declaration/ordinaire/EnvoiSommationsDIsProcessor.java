@@ -162,7 +162,7 @@ public class EnvoiSommationsDIsProcessor  {
 		return ids;
 	}
 
-	private void traiterDI(DeclarationImpotOrdinaire di, EnvoiSommationsDIsResults r, RegDate dateTraitement, boolean miseSousPliImpossible) {
+	protected void traiterDI(DeclarationImpotOrdinaire di, EnvoiSommationsDIsResults r, RegDate dateTraitement, boolean miseSousPliImpossible) {
 		// Verification des pré-requis avant la sommation
 		if (checkEtat(di, r) && checkDateDelai(di, r) && checkContribuable(di, r)) {
 
@@ -345,8 +345,8 @@ public class EnvoiSommationsDIsProcessor  {
 					}
 				});
 				for (Object[] objects : declarationsASommer) {
-					Number numeroDi = (Number) objects[0];
-					Number numeroTiers = (Number) objects[1];
+					final Number numeroDi = (Number) objects[0];
+					final Number numeroTiers = (Number) objects[1];
 					final IdentifiantDeclaration identifiantDeclaration = new IdentifiantDeclaration(numeroDi.longValue(), numeroTiers.longValue());
 					identifiantDi.add(identifiantDeclaration);
 				}

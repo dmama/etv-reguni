@@ -1,12 +1,14 @@
 package ch.vd.uniregctb.declaration.source;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
+import ch.vd.uniregctb.declaration.IdentifiantDeclaration;
 import ch.vd.uniregctb.type.CategorieImpotSource;
 import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
-import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.HibernateTemplate;
@@ -63,12 +65,12 @@ private final Logger LOGGER = Logger.getLogger(EnvoiLRsEnMasseProcessor.class);
 
 		final EnvoiSommationLRsResults rapportFinal = new EnvoiSommationLRsResults(categorie, dateFinPeriode, dateTraitement);
 
-		//liste de toutes les LR à passer en revue
-		final List<Long> list = getListIdLRs(dateFinPeriode, dateTraitement, categorie);
+		// liste de toutes les LR à passer en revue
+		final List<IdentifiantDeclaration> list = getListIdLRs(dateFinPeriode, dateTraitement, categorie);
 
-		BatchTransactionTemplate<Long, EnvoiSommationLRsResults> template = new BatchTransactionTemplate<Long, EnvoiSommationLRsResults>(list, BATCH_SIZE, Behavior.REPRISE_AUTOMATIQUE,
+		final BatchTransactionTemplate<IdentifiantDeclaration, EnvoiSommationLRsResults> template = new BatchTransactionTemplate<IdentifiantDeclaration, EnvoiSommationLRsResults>(list, BATCH_SIZE, Behavior.REPRISE_AUTOMATIQUE,
 				transactionManager, s, hibernateTemplate);
-		template.execute(rapportFinal, new BatchCallback<Long, EnvoiSommationLRsResults>() {
+		template.execute(rapportFinal, new BatchCallback<IdentifiantDeclaration, EnvoiSommationLRsResults>() {
 
 			@Override
 			public EnvoiSommationLRsResults createSubRapport() {
@@ -76,7 +78,7 @@ private final Logger LOGGER = Logger.getLogger(EnvoiLRsEnMasseProcessor.class);
 			}
 
 			@Override
-			public boolean doInTransaction(List<Long> batch, EnvoiSommationLRsResults rapport) throws Exception {
+			public boolean doInTransaction(List<IdentifiantDeclaration> batch, EnvoiSommationLRsResults rapport) throws Exception {
 				traiteBatch(batch, dateTraitement, s, rapport);
 				return !s.interrupted();
 			}
@@ -85,26 +87,26 @@ private final Logger LOGGER = Logger.getLogger(EnvoiLRsEnMasseProcessor.class);
 			public void afterTransactionCommit() {
 				int percent = (100 * rapportFinal.nbLRsTotal) / list.size();
 				s.setMessage(String.format("%d sur %d listes récapitulatives traitées (%d%%) : (%d LR sommées)",
-						rapportFinal.nbLRsTotal, list.size(), percent, rapportFinal.LRSommees.size()));
+						rapportFinal.nbLRsTotal, list.size(), percent, rapportFinal.lrSommees.size()));
 			}
 		});
 
 		if (status.interrupted()) {
 			status.setMessage("L'envoi des sommations de listes récapitulatives a été interrompu."
-					+ " Nombre de listes récapitulatives sommées au moment de l'interruption = " + rapportFinal.LRSommees.size());
+					+ " Nombre de listes récapitulatives sommées au moment de l'interruption = " + rapportFinal.lrSommees.size());
 			rapportFinal.interrompu = true;
 		}
 		else {
 			status.setMessage("L'envoi des sommations de listes récapitulatives est terminé." + " Nombre de listes récapitulatives sommées = "
-					+ rapportFinal.LRSommees.size() + ". Nombre d'erreurs = " + rapportFinal.SommationLREnErrors.size());
+					+ rapportFinal.lrSommees.size() + ". Nombre d'erreurs = " + rapportFinal.sommationLREnErreurs.size());
 		}
 
 		rapportFinal.end();
 		return rapportFinal;
 	}
 
-	private void traiteBatch(List<Long> batch, RegDate dateTraitement, StatusManager status, EnvoiSommationLRsResults rapport) throws Exception {
-		for (Long id : batch) {
+	private void traiteBatch(List<IdentifiantDeclaration> batch, RegDate dateTraitement, StatusManager status, EnvoiSommationLRsResults rapport) throws Exception {
+		for (IdentifiantDeclaration id : batch) {
 			if (status.interrupted()) {
 				break;
 			}
@@ -112,8 +114,8 @@ private final Logger LOGGER = Logger.getLogger(EnvoiLRsEnMasseProcessor.class);
 		}
 	}
 
-	private void traiteLR(Long id, RegDate dateTraitement, EnvoiSommationLRsResults rapport) throws Exception {
-		DeclarationImpotSource lr = (DeclarationImpotSource) hibernateTemplate.get(DeclarationImpotSource.class, id);
+	private void traiteLR(IdentifiantDeclaration id, RegDate dateTraitement, EnvoiSommationLRsResults rapport) throws Exception {
+		final DeclarationImpotSource lr = (DeclarationImpotSource) hibernateTemplate.get(DeclarationImpotSource.class, id.getNumeroDeclaration());
 
 		// traitement de la LR
 		traiteLR(lr, dateTraitement, rapport);
@@ -121,11 +123,11 @@ private final Logger LOGGER = Logger.getLogger(EnvoiLRsEnMasseProcessor.class);
 		++rapport.nbLRsTotal;
 	}
 
-	private void traiteLR(DeclarationImpotSource lr, RegDate dateTraitement, EnvoiSommationLRsResults rapport) throws Exception {
+	protected void traiteLR(DeclarationImpotSource lr, RegDate dateTraitement, EnvoiSommationLRsResults rapport) throws Exception {
 		if (lr.getDernierEtat().getEtat().equals(TypeEtatDeclaration.EMISE)) {
 			RegDate dateDelaiSommation;
 			if (lr.getDelaiAccordeAu() == null) {
-				RegDate dateExpedition = lr.getDernierEtat().getDateObtention();
+				final RegDate dateExpedition = lr.getDernierEtat().getDateObtention();
 				// Délai de retour des listes
 				dateDelaiSommation = delaisService.getDateFinDelaiRetourListeRecapitulative(dateExpedition, lr.getDateFin());
 				// Ajout du délai administratif avant l'envoi de la sommation
@@ -143,18 +145,18 @@ private final Logger LOGGER = Logger.getLogger(EnvoiLRsEnMasseProcessor.class);
 	}
 
 	@SuppressWarnings({"unchecked", "UnnecessaryLocalVariable"})
-	protected List<Long> getListIdLRs(final RegDate dateFinPeriode, final RegDate dateLimite, final CategorieImpotSource categorie) {
+	protected List<IdentifiantDeclaration> getListIdLRs(final RegDate dateFinPeriode, final RegDate dateLimite, final CategorieImpotSource categorie) {
 
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 
-		final List<Long> ids = (List<Long>) template.execute(new TransactionCallback() {
+		final List<IdentifiantDeclaration> ids = (List<IdentifiantDeclaration>) template.execute(new TransactionCallback() {
 			public Object doInTransaction(TransactionStatus status) {
-				return hibernateTemplate.execute(new HibernateCallback() {
-					public Object doInHibernate(Session session) throws HibernateException {
+				final List<Object[]> aSommer = (List<Object[]>) hibernateTemplate.execute(new HibernateCallback() {
+					public List<Object[]> doInHibernate(Session session) throws HibernateException {
 
 						final StringBuilder b = new StringBuilder();
-						b.append("SELECT lr.id FROM DeclarationImpotSource AS lr");
+						b.append("SELECT lr.id, lr.tiers.id FROM DeclarationImpotSource AS lr");
 						b.append(" WHERE lr.annulationDate IS NULL");
 						if (dateFinPeriode != null) {
 							b.append(" AND lr.dateFin <= :dateFin");
@@ -179,6 +181,20 @@ private final Logger LOGGER = Logger.getLogger(EnvoiLRsEnMasseProcessor.class);
 						return query.list();
 					}
 				});
+
+				final List<IdentifiantDeclaration> ids;
+				if (aSommer != null && aSommer.size() > 0) {
+					ids = new ArrayList<IdentifiantDeclaration>(aSommer.size());
+					for (Object[] elts : aSommer) {
+						final long idLr = ((Number) elts[0]).longValue();
+						final long idDebiteur = ((Number) elts[1]).longValue();
+						ids.add(new IdentifiantDeclaration(idLr, idDebiteur));
+					}
+				}
+				else {
+					ids = Collections.emptyList();
+				}
+				return ids;
 			}
 		});
 

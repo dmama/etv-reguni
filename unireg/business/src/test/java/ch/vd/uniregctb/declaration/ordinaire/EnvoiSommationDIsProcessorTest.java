@@ -35,13 +35,15 @@ public class EnvoiSommationDIsProcessorTest extends BusinessTest {
 
 	private EnvoiSommationsDIsProcessor processor;
 	private DeclarationImpotOrdinaireDAO diDao;
+	private DeclarationImpotService diService;
+	private DelaisService delaisService;
 
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
 
-		final DelaisService delaisService = getBean(DelaisService.class, "delaisService");
-		final DeclarationImpotService diService = getBean(DeclarationImpotService.class, "diService");
+		delaisService = getBean(DelaisService.class, "delaisService");
+		diService = getBean(DeclarationImpotService.class, "diService");
 		diDao = getBean(DeclarationImpotOrdinaireDAO.class, "diDAO");
 		processor = new EnvoiSommationsDIsProcessor(hibernateTemplate, diDao, delaisService, diService, transactionManager);
 	}
@@ -332,9 +334,7 @@ public class EnvoiSommationDIsProcessorTest extends BusinessTest {
 
 
 	//UNIREG-2466 test sur le log correcte des erreurs notamment les NullPointerException
-	//Ignoré tant qu'on a pas trouvé un moyen de generer une exception innatendu dans le Processor
-	// 1.- a gagner
-	@Ignore
+	@Test
 	public void testErreurSommation() throws Exception {
 
 		final int anneePf = 2009;
@@ -365,14 +365,22 @@ public class EnvoiSommationDIsProcessorTest extends BusinessTest {
 			}
 		});
 
+		processor = new EnvoiSommationsDIsProcessor(hibernateTemplate, diDao, delaisService, diService, transactionManager) {
+			@Override
+			protected void traiterDI(DeclarationImpotOrdinaire di, EnvoiSommationsDIsResults r, RegDate dateTraitement, boolean miseSousPliImpossible) {
+				throw new RuntimeException("Exception de test");
+			}
+		};
+
 		final RegDate dateTraitement = delaiInitial.addMonths(1);
 		final EnvoiSommationsDIsResults results = processor.run(dateTraitement, false, 0, null);
 		final List<EnvoiSommationsDIsResults.ErrorInfo> infoListErreur = results.getListeSommationsEnErreur();
 		Assert.assertEquals(1, infoListErreur.size());
 		final DeclarationImpotOrdinaire declaration =  diDao.get(diId);
 
-		EnvoiSommationsDIsResults.ErrorInfo error =  infoListErreur.get(0);
-		Assert.assertEquals(declaration.getTiers().getNumero(),error.getNumeroTiers());		
+		final EnvoiSommationsDIsResults.ErrorInfo error =  infoListErreur.get(0);
+		Assert.assertEquals(declaration.getTiers().getNumero(), error.getNumeroTiers());
+		Assert.assertEquals("java.lang.RuntimeException - Exception de test", error.getCause());
 
 		Assert.assertEquals(1, results.getTotalDisTraitees());
 		Assert.assertEquals(0, results.getTotalDisSommees());
