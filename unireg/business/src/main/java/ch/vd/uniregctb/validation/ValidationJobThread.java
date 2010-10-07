@@ -1,10 +1,12 @@
 package ch.vd.uniregctb.validation;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 
-import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
-import ch.vd.uniregctb.parametrage.ParametreAppService;
 import org.apache.log4j.Logger;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
@@ -21,6 +23,8 @@ import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.Pays;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
+import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.TiersDAO;
@@ -184,7 +188,7 @@ public class ValidationJobThread extends Thread {
 			// au moins un assujettissement, mais pas de DI (pas grave si c'est l'année en cours...)
 			if (annee < RegDate.get().year()) {
 				for (PeriodeImposition pi : periodesImposition) {
-					if (!pi.isOptionnelle() && !pi.isRemplaceeParNote() && !pi.isDiplomateSuisse()) {
+					if (!pi.isOptionnelle() && !pi.isRemplaceeParNote() && !pi.isDiplomateSuisseSansImmeuble()) {
 						addErrorCoherenceDiPeriodeImpositionSansDi(contribuable, results, pi);
 					}
 				}
@@ -264,7 +268,7 @@ public class ValidationJobThread extends Thread {
 			if (nbDeclarationNonAssociees < periodesImposition.size()) {
 				// il ne reste que des périodes d'imposition sans DI
 				for (PeriodeImposition pi : periodesImposition.subList(nbDeclarationNonAssociees, periodesImposition.size())) {
-					if (!pi.isOptionnelle() && !pi.isRemplaceeParNote() && !pi.isDiplomateSuisse()) {
+					if (!pi.isOptionnelle() && !pi.isRemplaceeParNote() && !pi.isDiplomateSuisseSansImmeuble()) {
 						addErrorCoherenceDiPeriodeImpositionSansDi(contribuable, results, pi);
 					}
 				}

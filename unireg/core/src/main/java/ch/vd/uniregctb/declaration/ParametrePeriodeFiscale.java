@@ -14,6 +14,7 @@ import javax.persistence.Transient;
 import org.hibernate.annotations.Type;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.common.Duplicable;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.type.TypeContribuable;
@@ -29,14 +30,27 @@ import ch.vd.uniregctb.type.TypeContribuable;
  */
 @Entity
 @Table(name = "PARAMETRE_PERIODE_FISCALE")
-public class ParametrePeriodeFiscale extends HibernateEntity {
+public class ParametrePeriodeFiscale extends HibernateEntity implements Duplicable<ParametrePeriodeFiscale> {
 
-	/**
-	 *
-	 */
 	private static final long serialVersionUID = 8321336807671103230L;
 
 	private Long id;
+	private TypeContribuable typeContribuable;
+	private RegDate dateFinEnvoiMasseDI;
+	private RegDate termeGeneralSommationReglementaire;
+	private RegDate termeGeneralSommationEffectif;
+	private PeriodeFiscale periodefiscale;
+
+	public ParametrePeriodeFiscale() {
+	}
+
+	public ParametrePeriodeFiscale(ParametrePeriodeFiscale right) {
+		this.typeContribuable = right.typeContribuable;
+		this.dateFinEnvoiMasseDI = right.dateFinEnvoiMasseDI;
+		this.termeGeneralSommationReglementaire = right.termeGeneralSommationReglementaire;
+		this.termeGeneralSommationEffectif = right.termeGeneralSommationEffectif;
+		this.periodefiscale = right.periodefiscale;
+	}
 
 	@Transient
 	@Override
@@ -53,13 +67,6 @@ public class ParametrePeriodeFiscale extends HibernateEntity {
 	public void setId(Long id) {
 		this.id = id;
 	}
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_b0osIOCPEd2HTeC2f-Vvpg"
-	 */
-	private TypeContribuable typeContribuable;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -90,14 +97,6 @@ public class ParametrePeriodeFiscale extends HibernateEntity {
 	/**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nyDxcFjJEd2uSoZKEkgcsw"
-	 */
-	private RegDate dateFinEnvoiMasseDI;
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
 	 * @return the dateFinEnvoiMasseDI
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nyDxcFjJEd2uSoZKEkgcsw?GETTER"
 	 */
@@ -120,14 +119,6 @@ public class ParametrePeriodeFiscale extends HibernateEntity {
 		dateFinEnvoiMasseDI = theDateFinEnvoiMasseDI;
 		// end-user-code
 	}
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_OTXloOqhEdySTq6PFlf9jQ"
-	 */
-	private RegDate termeGeneralSommationReglementaire;
 
 	/**
 	 * <!-- begin-user-doc -->
@@ -159,14 +150,6 @@ public class ParametrePeriodeFiscale extends HibernateEntity {
 	/**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_otOasC3_Ed2H4bonmeBdag"
-	 */
-	private RegDate termeGeneralSommationEffectif;
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
 	 * @return the termeGeneralSommationEffectif
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_otOasC3_Ed2H4bonmeBdag?GETTER"
 	 */
@@ -194,14 +177,6 @@ public class ParametrePeriodeFiscale extends HibernateEntity {
 	/**
 	 * <!-- begin-user-doc -->
 	 * <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_BAJV8uCPEd2HTeC2f-Vvpg"
-	 */
-	private PeriodeFiscale periodefiscale;
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
 	 * @return the periodefiscale
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_BAJV8uCPEd2HTeC2f-Vvpg?GETTER"
 	 */
@@ -223,5 +198,9 @@ public class ParametrePeriodeFiscale extends HibernateEntity {
 		// begin-user-code
 		periodefiscale = thePeriodefiscale;
 		// end-user-code
+	}
+
+	public ParametrePeriodeFiscale duplicate() {
+		return new ParametrePeriodeFiscale(this);
 	}
 }

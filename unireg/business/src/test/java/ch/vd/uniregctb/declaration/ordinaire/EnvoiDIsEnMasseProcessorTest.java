@@ -1015,6 +1015,40 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 			assertEquals(dateExpedition.addDays(60), di1.getDelaiRetourImprime());
 			di1.setAnnule(true);
 		}
+
+		// Diplomate Suisse - DI complète
+		{
+			// période complète
+			final DeclarationImpotOrdinaire di0 = addDeclarationImpot(vd, periode, date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.DIPLOMATE_SUISSE, modeleComplete);
+			processor.ajouterDelaisDeRetourInitial(di0, dateTraitement, dateExpedition);
+			assertEquals(delaiEffectif, di0.getDelaiAccordeAu());
+			assertEquals(delaiReglementaire, di0.getDelaiRetourImprime());
+			di0.setAnnule(true);
+
+			// [UNIREG-1740] [UNIREG-1861] période incomplète
+			final DeclarationImpotOrdinaire di1 = addDeclarationImpot(vd, periode, date(2008, 1, 1), date(2008, 7, 31), TypeContribuable.DIPLOMATE_SUISSE, modeleComplete);
+			processor.ajouterDelaisDeRetourInitial(di1, dateTraitement, dateExpedition);
+			assertEquals(dateExpedition.addDays(60), di1.getDelaiAccordeAu());
+			assertEquals(dateExpedition.addDays(60), di1.getDelaiRetourImprime());
+			di1.setAnnule(true);
+		}
+
+		// Diplomate Suisse - DI vaudtax
+		{
+			// période complète
+			final DeclarationImpotOrdinaire di0 = addDeclarationImpot(vd, periode, date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.DIPLOMATE_SUISSE, modeleVaudtax);
+			processor.ajouterDelaisDeRetourInitial(di0, dateTraitement, dateExpedition);
+			assertEquals(delaiEffectif, di0.getDelaiAccordeAu());
+			assertEquals(delaiReglementaire, di0.getDelaiRetourImprime());
+			di0.setAnnule(true);
+
+			// [UNIREG-1740] [UNIREG-1861] période incomplète
+			final DeclarationImpotOrdinaire di1 = addDeclarationImpot(vd, periode, date(2008, 1, 1), date(2008, 7, 31), TypeContribuable.DIPLOMATE_SUISSE, modeleVaudtax);
+			processor.ajouterDelaisDeRetourInitial(di1, dateTraitement, dateExpedition);
+			assertEquals(dateExpedition.addDays(60), di1.getDelaiAccordeAu());
+			assertEquals(dateExpedition.addDays(60), di1.getDelaiRetourImprime());
+			di1.setAnnule(true);
+		}
 	}
 
 	/**

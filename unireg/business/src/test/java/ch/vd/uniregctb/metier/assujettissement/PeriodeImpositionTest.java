@@ -957,6 +957,37 @@ public class PeriodeImpositionTest extends MetierTest {
 		}
 	}
 
+	@Test
+	public void testDetermineDiplomateSuisseAvecImmeuble() throws Exception {
+
+		final Contribuable paul = createDiplomateAvecImmeuble(10000052L, date(2000, 1, 1), date(2001, 6, 13));
+
+		// 1999
+		{
+			final List<PeriodeImposition> list = PeriodeImposition.determine(paul, 1999);
+			assertNotNull(list);
+			assertEquals(1, list.size());
+			assertPeriodeImposition(date(1999, 1, 1), date(1999, 12, 31), CategorieEnvoiDI.VAUDOIS_COMPLETE, TypeAdresseRetour.CEDI, false, false, false, false, list.get(0));
+		}
+
+		// 2000 (nomination comme diplomate suisse basé à l'étanger)
+		{
+			final List<PeriodeImposition> list = PeriodeImposition.determine(paul, 2000);
+			assertNotNull(list);
+			assertEquals(1, list.size());
+			assertPeriodeImposition(date(2000, 1, 1), date(2000, 12, 31), CategorieEnvoiDI.DIPLOMATE_SUISSE, null, false, false, false, false, list.get(0));
+		}
+
+		// 2001 (achat d'un immeuble au 13 juin)
+		{
+			final List<PeriodeImposition> list = PeriodeImposition.determine(paul, 2001);
+			assertNotNull(list);
+			assertEquals(1, list.size());
+			// [UNIREG-1976] le fait de posséder un immeuble en suisse ne fait plus basculer le diplomate dans la catégorie hors-Suisse: il reste diplomate suisse.
+			assertPeriodeImposition(date(2001, 1, 1), date(2001, 12, 31), CategorieEnvoiDI.DIPLOMATE_SUISSE_IMMEUBLE_COMPLETE, TypeAdresseRetour.CEDI, true, false, false, false, list.get(0));
+		}
+	}
+
 	/**
 	 * [UNIREG-1980] Teste que le type de document pour un indigent qui a reçu des Vaudtax reste Vaudtax.
 	 */

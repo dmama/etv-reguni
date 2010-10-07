@@ -41,7 +41,11 @@ public enum TypeContribuable {
 	 *
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_pQEsQDfHEd2EkOqealhanQ"
 	 */
-	HORS_SUISSE("hors suisse", "HS");
+	HORS_SUISSE("hors suisse", "HS"),
+	/**
+	 * Diplomate Suisse basé à l'étranger [UNIREG-1976]
+	 */
+	DIPLOMATE_SUISSE("diplomate suisse", "DS");
 
 	private String description;
 

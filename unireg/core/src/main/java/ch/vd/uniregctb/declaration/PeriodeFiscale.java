@@ -1,8 +1,5 @@
 package ch.vd.uniregctb.declaration;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -14,6 +11,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.hibernate.annotations.ForeignKey;
 
@@ -169,10 +168,10 @@ public class PeriodeFiscale extends HibernateEntity {
 	 * @param typeContribuable
 	 * @return le {@link ParametrePeriodeFiscale} en fonction du {@link TypeContribuable} pour la période
 	 */
-	public ParametrePeriodeFiscale getParametrePeriodeFiscale (TypeContribuable typeContribuable) {
+	public ParametrePeriodeFiscale getParametrePeriodeFiscale(TypeContribuable typeContribuable) {
 		assert typeContribuable != null : "typeContribuable ne peut être null";
-		for (ParametrePeriodeFiscale ppf : getParametrePeriodeFiscale()) {
-			if (typeContribuable.equals(ppf.getTypeContribuable())) {
+		for (ParametrePeriodeFiscale ppf : parametrePeriodeFiscale) {
+			if (typeContribuable == ppf.getTypeContribuable()) {
 				return ppf;
 			}
 		}
@@ -193,6 +192,14 @@ public class PeriodeFiscale extends HibernateEntity {
 	@Transient
 	public ParametrePeriodeFiscale getParametrePeriodeFiscaleDepense () {
 		return getParametrePeriodeFiscale(TypeContribuable.VAUDOIS_DEPENSE);
+	}
+
+	/**
+	 * @return le {@link ParametrePeriodeFiscale} pour les diplomates Suisses basés à l'étranger
+	 */
+	@Transient
+	public ParametrePeriodeFiscale getParametrePeriodeFiscaleDiplomateSuisse() {
+		return getParametrePeriodeFiscale(TypeContribuable.DIPLOMATE_SUISSE);
 	}
 
 	/**
@@ -265,6 +272,14 @@ public class PeriodeFiscale extends HibernateEntity {
 		setParametrePeriodeFiscale.add(ppf);
 
 		ppf = new ParametrePeriodeFiscale();
+		ppf.setTypeContribuable(TypeContribuable.DIPLOMATE_SUISSE);
+		ppf.setPeriodefiscale(this);
+		ppf.setTermeGeneralSommationEffectif(dateTermeGeneralSommationEffectif);
+		ppf.setTermeGeneralSommationReglementaire(dateTermeGeneralSommationReglementaire);
+		ppf.setDateFinEnvoiMasseDI(dateEnvoiMasseDI);
+		setParametrePeriodeFiscale.add(ppf);
+
+		ppf = new ParametrePeriodeFiscale();
 		ppf.setTypeContribuable(TypeContribuable.HORS_CANTON);
 		ppf.setPeriodefiscale(this);
 		ppf.setTermeGeneralSommationEffectif(dateTermeGeneralSommationEffectif);
@@ -281,7 +296,6 @@ public class PeriodeFiscale extends HibernateEntity {
 		setParametrePeriodeFiscale.add(ppf);
 
 		setParametrePeriodeFiscale(setParametrePeriodeFiscale);
-
 	}
 
 	@Transient

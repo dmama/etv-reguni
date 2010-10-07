@@ -19,10 +19,10 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.BatchTransactionTemplate;
-import ch.vd.uniregctb.common.LoggingStatusManager;
-import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.common.BatchTransactionTemplate.BatchCallback;
 import ch.vd.uniregctb.common.BatchTransactionTemplate.Behavior;
+import ch.vd.uniregctb.common.LoggingStatusManager;
+import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.DeclarationException;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
@@ -200,7 +200,7 @@ public class ProduireStatsDIsProcessor {
 
 		final TypeContribuable type;
 		if (assujet instanceof DiplomateSuisse) {
-			type = TypeContribuable.VAUDOIS_ORDINAIRE;
+			type = TypeContribuable.DIPLOMATE_SUISSE;
 		}
 		else if (assujet instanceof HorsCanton) {
 			type = TypeContribuable.HORS_CANTON;

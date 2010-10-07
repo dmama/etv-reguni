@@ -418,7 +418,7 @@ public class DeterminationDIsAEmettreProcessor {
 
 		final Contribuable contribuable = periode.getContribuable();
 
-		if (periode.isDiplomateSuisse()) {
+		if (periode.isDiplomateSuisseSansImmeuble()) {
 			if (rapport.get() != null) {
 				rapport.get().addIgnoreDiplomate(contribuable);
 			}

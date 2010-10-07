@@ -482,7 +482,7 @@ public class TacheServiceImpl implements TacheService {
 			final List<DeclarationImpotOrdinaire> dis = getIntersectingRangeAt(declarations, periode);
 			if (dis == null) {
 				// il n'y a pas de déclaration pour la période
-				if (!periode.isOptionnelle() && !periode.isRemplaceeParNote() && !periode.isDiplomateSuisse()) {
+				if (!periode.isOptionnelle() && !periode.isRemplaceeParNote() && !periode.isDiplomateSuisseSansImmeuble()) {
 					// on ajoute une DI si elle est obligatoire
 					// [UNIREG-2735] Le mécanisme ne doit pas créer de tâche d'émission de DI pour l'année en cours
 					if (peutCreerTacheEnvoiDI(periode, anneeCourante)) {

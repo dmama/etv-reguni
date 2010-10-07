@@ -1,16 +1,13 @@
 package ch.vd.uniregctb.param;
 
-import static ch.vd.uniregctb.param.Commun.*;
-
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
@@ -21,6 +18,12 @@ import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.ModeleFeuilleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.param.manager.ParamPeriodeManager;
+
+import static ch.vd.uniregctb.param.Commun.getModeleIdFromRequest;
+import static ch.vd.uniregctb.param.Commun.getPeriodeIdFromRequest;
+import static ch.vd.uniregctb.param.Commun.isModeleIdInRequest;
+import static ch.vd.uniregctb.param.Commun.isPeriodeIdInRequest;
+import static ch.vd.uniregctb.param.Commun.verifieLesDroits;
 
 public class ParamPeriodeController extends AbstractController {
 	
@@ -43,6 +46,7 @@ public class ParamPeriodeController extends AbstractController {
 		model.put("parametrePeriodeFiscaleDepense", manager.getDepenseByPeriodeFiscale(periodeSelectionnee));
 		model.put("parametrePeriodeFiscaleHorsCanton", manager.getHorsCantonByPeriodeFiscale(periodeSelectionnee));
 		model.put("parametrePeriodeFiscaleHorsSuisse", manager.getHorsSuisseByPeriodeFiscale(periodeSelectionnee));
+		model.put("parametrePeriodeFiscaleDiplomateSuisse", manager.getDiplomateSuisseByPeriodeFiscale(periodeSelectionnee));
 		List<ModeleDocument> modeles = new ArrayList<ModeleDocument>(periodeSelectionnee.getModelesDocument());
 		Collections.sort(modeles, new Comparator<ModeleDocument>() {
 			public int compare(ModeleDocument o1, ModeleDocument o2) {

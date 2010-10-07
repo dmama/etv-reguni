@@ -1064,20 +1064,17 @@ public abstract class Assujettissement implements CollatableDateRange {
 			return fin;
 		}
 
+		/**
+		 * Cette méthode fusionne une donnée d'assujettissement <i>domicile</i> avec une donnée d'assujettissement <i>économique</i>.
+		 *
+		 * @param eco une donnée d'assujettissement économique
+		 * @return une liste de données d'assujettissement résultante qui doivent remplacer l'assujettissement courant; ou <b>null</b> s'il n'y a rien à faire.
+		 */
 		public List<Data> merge(Data eco) {
 
-			switch (type) {
-			case VaudoisOrdinaire:
-			case VaudoisDepense:
-			case Indigent:
-			case HorsSuisse:
-			case HorsCanton:
-			case SourcierPur:
-			case SourcierMixte:
-				// rien à faire
+			if (type != Type.NonAssujetti) {
+				// l'assujettissement 'this' (qui est forcéement de type domicile) est différent de non-assujetti : quelque soit la valeur de 'eco', il prime sur ce dernier et il n'y a rien à faire.
 				return null;
-			case DiplomateSuisse:
-			case NonAssujetti:
 			}
 
 			if (!DateRangeHelper.intersect(this, eco)) {
@@ -1134,15 +1131,8 @@ public abstract class Assujettissement implements CollatableDateRange {
 				}
 			}
 
-			// détermine le type d'assujettissement de la période courante
-			if (this.type == Type.DiplomateSuisse) {
-				// diplomate suisse basé à l'étrange + immeuble = hors-Suisse
-				this.type = Type.HorsSuisse;
-			}
-			else {
-				// pas assujetti + immeuble/activité indépendante = hors-canton ou hors-Suisse
-				this.type = getAType(this.typeAut);
-			}
+			// pas assujetti + immeuble/activité indépendante = hors-canton ou hors-Suisse
+			this.type = getAType(this.typeAut);
 
 			return list;
 		}

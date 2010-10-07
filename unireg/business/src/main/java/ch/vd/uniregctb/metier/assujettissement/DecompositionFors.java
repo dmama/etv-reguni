@@ -4,10 +4,10 @@ import java.util.List;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
+import ch.vd.registre.base.date.DateRangeHelper.Range;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.date.DateRangeHelper.Range;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.declaration.ordinaire.ForsList;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -96,7 +96,7 @@ public abstract class DecompositionFors implements DateRange {
 					}
 				}
 
-				if (f.isValidAt(debut.getOneDayBefore())) {
+				if (debut != null && f.isValidAt(debut.getOneDayBefore())) {
 					// le for est valide juste avant la période
 					if (f instanceof ForFiscalPrincipal) {
 						Assert.isNull(forPrincipalAvant);

@@ -55,5 +55,9 @@ public interface ParametrePeriodeFiscaleDAO extends GenericDAO<ParametrePeriodeF
 	 */
 	ParametrePeriodeFiscale getHorsSuisseByPeriodeFiscale(PeriodeFiscale periodeFiscale);
 	
-
+	/**
+	 * @param periodeFiscale la période fiscale
+	 * @return les parametres de période fiscale pour un diplomate Suisse, pour une période donnée
+	 */
+	ParametrePeriodeFiscale getDiplomateSuisseByPeriodeFiscale(PeriodeFiscale periodeFiscale);
 }

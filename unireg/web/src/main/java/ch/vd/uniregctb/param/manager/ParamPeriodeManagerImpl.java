@@ -90,6 +90,11 @@ public class ParamPeriodeManagerImpl implements ParamPeriodeManager {
 	}
 
 	@Transactional(readOnly = true)
+	public ParametrePeriodeFiscale getDiplomateSuisseByPeriodeFiscale(PeriodeFiscale periodeFiscale) {
+		return parametrePeriodeFiscaleDAO.getDiplomateSuisseByPeriodeFiscale(periodeFiscale);
+	}
+	
+	@Transactional(readOnly = true)
 	public ParametrePeriodeFiscale getVaudByPeriodeFiscale(PeriodeFiscale periodeFiscale) {
 		return parametrePeriodeFiscaleDAO.getVaudByPeriodeFiscale(periodeFiscale);
 	}
@@ -114,6 +119,7 @@ public class ParamPeriodeManagerImpl implements ParamPeriodeManager {
 		this.parametrePeriodeFiscaleDAO = parametrePeriodeFiscaleDAO;
 	}
 
+	@Transactional(readOnly = true)
 	public ParametrePeriodeFiscaleView createParametrePeriodeFiscaleViewEdit(Long idPeriode) {
 		ParametrePeriodeFiscaleView ppfv = new ParametrePeriodeFiscaleView();
 		PeriodeFiscale pf = retrievePeriodeFromDAO(idPeriode);
@@ -122,36 +128,30 @@ public class ParamPeriodeManagerImpl implements ParamPeriodeManager {
 		ppfv.setAnneePeriodeFiscale(pf.getAnnee());
 
 		ppfv.setIdDepense(pf.getParametrePeriodeFiscaleDepense().getId());
+		ppfv.setIdDiplomate(pf.getParametrePeriodeFiscaleDiplomateSuisse().getId());
 		ppfv.setIdHorsCanton(pf.getParametrePeriodeFiscaleHorsCanton().getId());
 		ppfv.setIdHorsSuisse(pf.getParametrePeriodeFiscaleHorsSuisse().getId());
 		ppfv.setIdVaud(pf.getParametrePeriodeFiscaleVaud().getId());
 
 		ppfv.setFinEnvoiMasseDIDepense(pf.getParametrePeriodeFiscaleDepense().getDateFinEnvoiMasseDI());
+		ppfv.setFinEnvoiMasseDIDiplomate(pf.getParametrePeriodeFiscaleDiplomateSuisse().getDateFinEnvoiMasseDI());
 		ppfv.setFinEnvoiMasseDIHorsCanton(pf.getParametrePeriodeFiscaleHorsCanton().getDateFinEnvoiMasseDI());
 		ppfv.setFinEnvoiMasseDIHorsSuisse(pf.getParametrePeriodeFiscaleHorsSuisse().getDateFinEnvoiMasseDI());
 		ppfv.setFinEnvoiMasseDIVaud(pf.getParametrePeriodeFiscaleVaud().getDateFinEnvoiMasseDI());
 
 		ppfv.setSommationEffectiveDepense(pf.getParametrePeriodeFiscaleDepense().getTermeGeneralSommationEffectif());
+		ppfv.setSommationEffectiveDiplomate(pf.getParametrePeriodeFiscaleDiplomateSuisse().getTermeGeneralSommationEffectif());
 		ppfv.setSommationEffectiveHorsCanton(pf.getParametrePeriodeFiscaleHorsCanton().getTermeGeneralSommationEffectif());
 		ppfv.setSommationEffectiveHorsSuisse(pf.getParametrePeriodeFiscaleHorsSuisse().getTermeGeneralSommationEffectif());
 		ppfv.setSommationEffectiveVaud(pf.getParametrePeriodeFiscaleVaud().getTermeGeneralSommationEffectif());
 
 		ppfv.setSommationReglementaireDepense(pf.getParametrePeriodeFiscaleDepense().getTermeGeneralSommationReglementaire());
+		ppfv.setSommationReglementaireDiplomate(pf.getParametrePeriodeFiscaleDiplomateSuisse().getTermeGeneralSommationReglementaire());
 		ppfv.setSommationReglementaireHorsCanton(pf.getParametrePeriodeFiscaleHorsCanton().getTermeGeneralSommationReglementaire());
 		ppfv.setSommationReglementaireHorsSuisse(pf.getParametrePeriodeFiscaleHorsSuisse().getTermeGeneralSommationReglementaire());
 		ppfv.setSommationReglementaireVaud(pf.getParametrePeriodeFiscaleVaud().getTermeGeneralSommationReglementaire());
 
 		return ppfv;
-	}
-
-	public ModeleDocumentView createModeleDocumentView(Long idPeriode, Long idModeleDocument) {
-		ModeleDocument md = retrieveModeleFromDAO(idModeleDocument);
-		PeriodeFiscale pf = retrievePeriodeFromDAO(idPeriode);
-		ModeleDocumentView mdv = new ModeleDocumentView();
-		mdv.setIdPeriode(pf.getId());
-		mdv.setIdModele(md.getId());
-		mdv.setTypeDocument(md.getTypeDocument());
-		return mdv;
 	}
 
 	public ModeleDocumentView createModeleDocumentViewAdd(Long idPeriode) {
@@ -191,14 +191,16 @@ public class ParamPeriodeManagerImpl implements ParamPeriodeManager {
 				parametrePeriodeFiscaleDAO.get(ppfv.getIdVaud()),
 				parametrePeriodeFiscaleDAO.get(ppfv.getIdHorsCanton()),
 				parametrePeriodeFiscaleDAO.get(ppfv.getIdHorsSuisse()),
-				parametrePeriodeFiscaleDAO.get(ppfv.getIdDepense())
+				parametrePeriodeFiscaleDAO.get(ppfv.getIdDepense()),
+				parametrePeriodeFiscaleDAO.get(ppfv.getIdDiplomate())
 		};
 
 		RegDate[][] termes = new RegDate [][] {
 			{ppfv.getSommationEffectiveVaud(), ppfv.getSommationReglementaireVaud(), ppfv.getFinEnvoiMasseDIVaud() },
 			{ppfv.getSommationEffectiveHorsCanton(), ppfv.getSommationReglementaireHorsCanton(), ppfv.getFinEnvoiMasseDIHorsCanton() },
 			{ppfv.getSommationEffectiveHorsSuisse(), ppfv.getSommationReglementaireHorsSuisse(), ppfv.getFinEnvoiMasseDIHorsSuisse() },
-			{ppfv.getSommationEffectiveDepense(), ppfv.getSommationReglementaireDepense(), ppfv.getFinEnvoiMasseDIDepense() }
+			{ppfv.getSommationEffectiveDepense(), ppfv.getSommationReglementaireDepense(), ppfv.getFinEnvoiMasseDIDepense() },
+			{ppfv.getSommationEffectiveDiplomate(), ppfv.getSommationReglementaireDiplomate(), ppfv.getFinEnvoiMasseDIDiplomate() }
 		};
 
 		assert (ppfs.length == termes.length);

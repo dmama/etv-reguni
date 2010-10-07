@@ -103,6 +103,7 @@
 				<th><fmt:message key="label.param.entete.HC"/></th>
 				<th><fmt:message key="label.param.entete.HS"/></th>
 				<th><fmt:message key="label.param.entete.dep"/></th>
+				<th><fmt:message key="label.param.entete.DS"/></th>
 			</tr>
 			<tr>
 				<th><fmt:message key="label.param.som.reg"/></th>
@@ -117,8 +118,10 @@
 					</td>
 					<td>
 						<unireg:date date="${parametrePeriodeFiscaleDepense.termeGeneralSommationReglementaire}"/>
-					</td>					
-					
+					</td>
+					<td>
+						<unireg:date date="${parametrePeriodeFiscaleDiplomateSuisse.termeGeneralSommationReglementaire}"/>
+					</td>
 			</tr>
 			<tr>
 				<th><fmt:message key="label.param.som.eff"/></th>
@@ -134,6 +137,9 @@
 					<td>
 						<unireg:date date="${parametrePeriodeFiscaleDepense.termeGeneralSommationEffectif}"/>
 					</td>					
+					<td>
+						<unireg:date date="${parametrePeriodeFiscaleDiplomateSuisse.termeGeneralSommationEffectif}"/>
+					</td>
 			</tr>
 			<tr>
 				<th><fmt:message key="label.param.masse.di"/></th>
@@ -149,6 +155,9 @@
 					<td>
 						<unireg:date date="${parametrePeriodeFiscaleDepense.dateFinEnvoiMasseDI}"/>
 					</td>					
+					<td>
+						<unireg:date date="${parametrePeriodeFiscaleDiplomateSuisse.dateFinEnvoiMasseDI}"/>
+					</td>
 			</tr>
 		</table>
 

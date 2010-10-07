@@ -23,6 +23,7 @@
 				<th><fmt:message key="label.param.entete.HC"/></th>
 				<th><fmt:message key="label.param.entete.HS"/></th>
 				<th><fmt:message key="label.param.entete.dep"/></th>
+				<th><fmt:message key="label.param.entete.DS"/></th>
 			</tr>
 			<tr>
 				
@@ -52,6 +53,13 @@
 					<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
 						<jsp:param name="path" value="sommationReglementaireDepense" />
 						<jsp:param name="id" value="sommationReglementaireDepense" />
+						<jsp:param name="form" value="formTermes"/>
+					</jsp:include>
+				</td>
+				<td>
+					<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
+						<jsp:param name="path" value="sommationReglementaireDiplomate" />
+						<jsp:param name="id" value="sommationReglementaireDiplomate" />
 						<jsp:param name="form" value="formTermes"/>
 					</jsp:include>
 				</td>
@@ -87,6 +95,13 @@
 						<jsp:param name="form" value="formTermes"/>
 					</jsp:include>
 				</td>
+				<td>
+					<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
+						<jsp:param name="path" value="sommationEffectiveDiplomate" />
+						<jsp:param name="id" value="sommationEffectiveDiplomate" />
+						<jsp:param name="form" value="formTermes"/>
+					</jsp:include>
+				</td>
 			</tr>
 			<tr>
 				<th><fmt:message key="label.param.masse.di"/></th>
@@ -115,6 +130,13 @@
 					<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
 						<jsp:param name="path" value="finEnvoiMasseDIDepense" />
 						<jsp:param name="id" value="finEnvoiMasseDIDepense" />
+						<jsp:param name="form" value="formTermes"/>
+					</jsp:include>
+				</td>
+				<td>
+					<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
+						<jsp:param name="path" value="finEnvoiMasseDIDiplomate" />
+						<jsp:param name="id" value="finEnvoiMasseDIDiplomate" />
 						<jsp:param name="form" value="formTermes"/>
 					</jsp:include>
 				</td>

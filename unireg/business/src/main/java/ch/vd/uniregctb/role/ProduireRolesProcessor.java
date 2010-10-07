@@ -66,6 +66,7 @@ import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 /**
@@ -824,6 +825,9 @@ public class ProduireRolesProcessor {
 		}
 		else if (a instanceof SourcierPur) {
 			typeCtb = TypeContribuable.SOURCE;
+		}
+		else if (a instanceof DiplomateSuisse && a.getFors().secondairesDansLaPeriode.contains(MotifRattachement.IMMEUBLE_PRIVE)) {
+			typeCtb = TypeContribuable.HORS_SUISSE;
 		}
 		else {
 			Assert.isTrue(a instanceof DiplomateSuisse);

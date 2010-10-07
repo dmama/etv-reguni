@@ -26,6 +26,11 @@ public class ParametrePeriodeFiscaleView {
 	private RegDate sommationReglementaireDepense;
 	private RegDate sommationEffectiveDepense;
 	private RegDate finEnvoiMasseDIDepense;
+
+	private Long idDiplomate;
+	private RegDate sommationReglementaireDiplomate;
+	private RegDate sommationEffectiveDiplomate;
+	private RegDate finEnvoiMasseDIDiplomate;
 	
 	public Integer getAnneePeriodeFiscale() {
 		return anneePeriodeFiscale;
@@ -136,4 +141,35 @@ public class ParametrePeriodeFiscaleView {
 		this.idPeriodeFiscale = idPeriodeFiscale;
 	}
 
+	public Long getIdDiplomate() {
+		return idDiplomate;
+	}
+
+	public void setIdDiplomate(Long idDiplomate) {
+		this.idDiplomate = idDiplomate;
+	}
+
+	public RegDate getSommationReglementaireDiplomate() {
+		return sommationReglementaireDiplomate;
+	}
+
+	public void setSommationReglementaireDiplomate(RegDate sommationReglementaireDiplomate) {
+		this.sommationReglementaireDiplomate = sommationReglementaireDiplomate;
+	}
+
+	public RegDate getSommationEffectiveDiplomate() {
+		return sommationEffectiveDiplomate;
+	}
+
+	public void setSommationEffectiveDiplomate(RegDate sommationEffectiveDiplomate) {
+		this.sommationEffectiveDiplomate = sommationEffectiveDiplomate;
+	}
+
+	public RegDate getFinEnvoiMasseDIDiplomate() {
+		return finEnvoiMasseDIDiplomate;
+	}
+
+	public void setFinEnvoiMasseDIDiplomate(RegDate finEnvoiMasseDIDiplomate) {
+		this.finEnvoiMasseDIDiplomate = finEnvoiMasseDIDiplomate;
+	}
 }

@@ -1,17 +1,34 @@
 package ch.vd.uniregctb.acomptes;
 
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.LinkedList;
+import java.util.List;
+
+import org.apache.commons.lang.StringUtils;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.ListesResults;
 import ch.vd.uniregctb.common.NomPrenom;
+import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
+import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
+import ch.vd.uniregctb.metier.assujettissement.DiplomateSuisse;
+import ch.vd.uniregctb.metier.assujettissement.HorsCanton;
+import ch.vd.uniregctb.metier.assujettissement.HorsSuisse;
+import ch.vd.uniregctb.metier.assujettissement.Indigent;
+import ch.vd.uniregctb.metier.assujettissement.VaudoisDepense;
+import ch.vd.uniregctb.metier.assujettissement.VaudoisOrdinaire;
+import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
-import ch.vd.uniregctb.metier.assujettissement.*;
-import ch.vd.uniregctb.tiers.*;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForGestion;
+import ch.vd.uniregctb.tiers.MenageCommun;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeContribuable;
-import org.apache.commons.lang.StringUtils;
-
-import java.util.*;
 
 public class AcomptesResults extends ListesResults<AcomptesResults> {
 
@@ -203,7 +220,7 @@ public class AcomptesResults extends ListesResults<AcomptesResults> {
 				&& 	(forGestion.getSousjacent() != null)
 				&& 	(forGestion.getSousjacent().getMotifRattachement() != null)
 				&& 	(forGestion.getSousjacent().getMotifRattachement() != MotifRattachement.DIPLOMATE_SUISSE)) {
-			noOfsForGestion = Integer.valueOf(forGestion.getNoOfsCommune());
+			noOfsForGestion = forGestion.getNoOfsCommune();
 			try {
 				final List<Assujettissement> assujettissements = Assujettissement.determine(ctb, anneeFiscale);
 				if (assujettissements != null) {
@@ -219,6 +236,9 @@ public class AcomptesResults extends ListesResults<AcomptesResults> {
 					}
 					else if (assujettissement instanceof VaudoisDepense) {
 						typeContribuable = TypeContribuable.VAUDOIS_DEPENSE;
+					}
+					else if (assujettissement instanceof DiplomateSuisse && assujettissement.getFors().secondairesDansLaPeriode.contains(MotifRattachement.IMMEUBLE_PRIVE)) {
+						typeContribuable = TypeContribuable.DIPLOMATE_SUISSE;
 					}
 					else {
 						addContribuableIgnoreNonSoumisAuxAcomptes(ctb, anneeFiscale, assujettissement.getDescription());

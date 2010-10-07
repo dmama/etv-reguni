@@ -2743,7 +2743,7 @@ public class TacheServiceTest extends BusinessTest {
 		assertNotNull(periode0);
 		assertTrue(periode0.isOptionnelle());
 		assertFalse(periode0.isRemplaceeParNote());
-		assertFalse(periode0.isDiplomateSuisse());
+		assertFalse(periode0.isDiplomateSuisseSansImmeuble());
 
 		// On vérifie que même s'il n'y a pas de déclaration, aucune tâche n'est créée (puisque les déclarations sont toutes optionnelles)
 		hibernateTemplate.flush();
@@ -2768,7 +2768,7 @@ public class TacheServiceTest extends BusinessTest {
 		assertNotNull(periode0);
 		assertFalse(periode0.isOptionnelle());
 		assertTrue(periode0.isRemplaceeParNote());
-		assertFalse(periode0.isDiplomateSuisse());
+		assertFalse(periode0.isDiplomateSuisseSansImmeuble());
 
 		// On vérifie que même s'il n'y a pas de déclaration, aucune tâche n'est créée (puisque la déclaration est remplacée par une note)
 		hibernateTemplate.flush();
@@ -2792,7 +2792,7 @@ public class TacheServiceTest extends BusinessTest {
 		assertNotNull(periode0);
 		assertFalse(periode0.isOptionnelle());
 		assertFalse(periode0.isRemplaceeParNote());
-		assertTrue(periode0.isDiplomateSuisse());
+		assertTrue(periode0.isDiplomateSuisseSansImmeuble());
 
 		// On vérifie que même s'il n'y a pas de déclaration, aucune tâche n'est créée (puisque la déclaration ne doit pas être envoyée par le canton)
 		hibernateTemplate.flush();

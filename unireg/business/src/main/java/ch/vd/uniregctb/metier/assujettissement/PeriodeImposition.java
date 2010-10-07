@@ -268,14 +268,6 @@ public class PeriodeImposition implements CollatableDateRange {
 		final CauseFermeture causeFermeture = getCauseFermeture(assujettissement.getMotifFractFin(), assujettissement instanceof HorsSuisse);
 
 		/*
-		 * Diplomate Suisse
-		 */
-		if (assujettissement instanceof DiplomateSuisse) {
-			// Les diplomates Suisses basés à l'étranger ne reçoivent pas de déclaration, mais la période d'imposition existe bel et bien.
-			return new PeriodeImposition(debutAssujettissement, finAssujettissement, CategorieEnvoiDI.DIPLOMATE_SUISSE, contribuable, null, null, false, false, causeFermeture);
-		}
-
-		/*
 		 * Sourcier pur
 		 */
 		if (assujettissement instanceof SourcierPur) {
@@ -285,6 +277,22 @@ public class PeriodeImposition implements CollatableDateRange {
 
 		final Qualification qualification = determineQualification(contribuable, annee);
 		final TypeAdresseRetour adresseRetour = determineAdresseRetour(assujettissement);
+
+		/*
+		 * Diplomate Suisse
+		 */
+		if (assujettissement instanceof DiplomateSuisse) {
+			if (assujettissement.getFors().secondairesDansLaPeriode.contains(MotifRattachement.IMMEUBLE_PRIVE)) {
+				// [UNIREG-1976] diplomates suisses basés à l'étranger et qui possèdent un ou plusieurs immeubles => déclaration ordinaire
+				final CategorieEnvoiDI categorie = determineCategorieEnvoiDIOrdinaire(TypeContribuable.DIPLOMATE_SUISSE, contribuable, annee);
+				final boolean optionnelle = (assujettissement.getMotifFractFin() != MotifFor.VENTE_IMMOBILIER && assujettissement.getMotifFractFin() != MotifFor.VEUVAGE_DECES);
+				return new PeriodeImposition(debutAssujettissement, finAssujettissement, categorie, contribuable, qualification, adresseRetour, optionnelle, false, causeFermeture);
+			}
+			else {
+				// Les diplomates Suisses basés à l'étranger ne reçoivent pas de déclaration, mais la période d'imposition existe bel et bien.
+				return new PeriodeImposition(debutAssujettissement, finAssujettissement, CategorieEnvoiDI.DIPLOMATE_SUISSE, contribuable, null, null, false, false, causeFermeture);
+			}
+		}
 
 		/**
 		 * Pour un contribuable vaudois (ordinaire, dépense, sourcier ou indigent), la période d'assujettissement est toujours égale à
@@ -585,7 +593,10 @@ public class PeriodeImposition implements CollatableDateRange {
 		return remplaceeParNote;
 	}
 
-	public boolean isDiplomateSuisse() {
+	/**
+	 * @return <b>vrai</b> si la période d'imposition est celle d'un diplomate suisse sans immeuble (et donc qui ne reçoit pas de déclaration d'impôt ordinaire).
+	 */
+	public boolean isDiplomateSuisseSansImmeuble() {
 		return categorieEnvoiDI == CategorieEnvoiDI.DIPLOMATE_SUISSE;
 	}
 

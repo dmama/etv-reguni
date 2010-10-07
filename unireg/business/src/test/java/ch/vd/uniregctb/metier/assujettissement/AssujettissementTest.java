@@ -2040,9 +2040,9 @@ public class AssujettissementTest extends MetierTest {
 	}
 
 	@WebScreenshot(urls = "/fiscalite/unireg/tiers/timeline.do?id=10000052&print=true&title=${methodName}&description=${docDescription}")	
-	@WebScreenshotDoc(description = "(le fait de posséder un immeuble en suisse fait basculer le diplomate dans la catégorie hors-Suisse)")
+	@WebScreenshotDoc(description = "[UNIREG-1976] le fait de posséder un immeuble en suisse ne fait plus basculer le diplomate dans la catégorie hors-Suisse: il reste diplomate suisse (mais il recevra une déclaration d'impôt ordinaire)")
 	@Test
-	public void testDetermineDiplomateAvecImmeuble() throws Exception {
+	public void testDetermineDiplomateSuisseAvecImmeuble() throws Exception {
 
 		final Contribuable paul = createDiplomateAvecImmeuble(10000052L, date(2000, 1, 1), date(2001, 6, 13));
 
@@ -2054,31 +2054,30 @@ public class AssujettissementTest extends MetierTest {
 			assertOrdinaire(date(1999, 1, 1), date(1999, 12, 31), null, MotifFor.DEPART_HS, list.get(0));
 		}
 
-		// 2000
+		// 2000 (nomination comme diplomate suisse basé à l'étanger)
 		{
 			final List<Assujettissement> list = Assujettissement.determine(paul, 2000);
 			assertNotNull(list);
 			assertEquals(1, list.size());
-			assertDiplomateSuisse(date(2000, 1, 1), date(2000, 12, 31), MotifFor.DEPART_HS, MotifFor.ACHAT_IMMOBILIER, list.get(0));
+			assertDiplomateSuisse(date(2000, 1, 1), date(2000, 12, 31), MotifFor.DEPART_HS, null, list.get(0));
 		}
 
-		// 2001
+		// 2001 (achat d'un immeuble au 13 juin)
 		{
 			final List<Assujettissement> list = Assujettissement.determine(paul, 2001);
 			assertNotNull(list);
 			assertEquals(1, list.size());
-			// le fait de posséder un immeuble en suisse fait basculer le diplomate dans la catégorie hors-Suisse
-			assertHorsSuisse(date(2001, 1, 1), date(2001, 12, 31), MotifFor.ACHAT_IMMOBILIER, null, list.get(0));
+			// [UNIREG-1976] le fait de posséder un immeuble en suisse ne fait plus basculer le diplomate dans la catégorie hors-Suisse: il reste diplomate suisse.
+			assertDiplomateSuisse(date(2001, 1, 1), date(2001, 12, 31), null, null, list.get(0));
 		}
 
 		// 1999-2010
 		{
 			List<Assujettissement> list = Assujettissement.determine(paul, RANGE_1999_2010, true);
 			assertNotNull(list);
-			assertEquals(3, list.size());
+			assertEquals(2, list.size());
 			assertOrdinaire(date(1999, 1, 1), date(1999, 12, 31), null, MotifFor.DEPART_HS, list.get(0));
-			assertDiplomateSuisse(date(2000, 1, 1), date(2000, 12, 31), MotifFor.DEPART_HS, MotifFor.ACHAT_IMMOBILIER, list.get(1));
-			assertHorsSuisse(date(2001, 1, 1), date(2010, 12, 31), MotifFor.ACHAT_IMMOBILIER, null, list.get(2));
+			assertDiplomateSuisse(date(2000, 1, 1), date(2010, 12, 31), MotifFor.DEPART_HS, null, list.get(1));
 		}
 	}
 

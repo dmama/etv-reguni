@@ -1,13 +1,12 @@
 package ch.vd.uniregctb.di.manager;
 
+import javax.jms.JMSException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import javax.jms.JMSException;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
@@ -298,7 +297,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 		CollectionUtils.filter(ranges, new Predicate() {
 			public boolean evaluate(Object object) {
 				final PeriodeImposition periode = (PeriodeImposition) object;
-				return !periode.isRemplaceeParNote() && !periode.isDiplomateSuisse();
+				return !periode.isRemplaceeParNote() && !periode.isDiplomateSuisseSansImmeuble();
 			}
 		});
 		

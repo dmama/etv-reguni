@@ -31,7 +31,7 @@ public class ParametrePeriodeFiscaleDAOImpl extends GenericDAOImpl<ParametrePeri
 	}
 
 	@SuppressWarnings("unchecked")
-	private ParametrePeriodeFiscale getByPeriodeFiscaleAndTypeContribual(PeriodeFiscale periodeFiscale, TypeContribuable typeCtb) {
+	private ParametrePeriodeFiscale getByPeriodeFiscaleAndTypeContribuable(PeriodeFiscale periodeFiscale, TypeContribuable typeCtb) {
 		final List<ParametrePeriodeFiscale> list =
 				(List<ParametrePeriodeFiscale>) find("FROM ParametrePeriodeFiscale p WHERE p.periodefiscale = ? and p.typeContribuable = ?", new Object[]{periodeFiscale, typeCtb.name()}, null);
 		if (list == null || list.isEmpty()) {
@@ -41,19 +41,23 @@ public class ParametrePeriodeFiscaleDAOImpl extends GenericDAOImpl<ParametrePeri
 	}
 
 	public ParametrePeriodeFiscale getDepenseByPeriodeFiscale(PeriodeFiscale periodeFiscale) {
-		return getByPeriodeFiscaleAndTypeContribual(periodeFiscale, TypeContribuable.VAUDOIS_DEPENSE);
+		return getByPeriodeFiscaleAndTypeContribuable(periodeFiscale, TypeContribuable.VAUDOIS_DEPENSE);
 	}
 
 	public ParametrePeriodeFiscale getHorsCantonByPeriodeFiscale(PeriodeFiscale periodeFiscale) {
-		return getByPeriodeFiscaleAndTypeContribual(periodeFiscale, TypeContribuable.HORS_CANTON);
+		return getByPeriodeFiscaleAndTypeContribuable(periodeFiscale, TypeContribuable.HORS_CANTON);
 	}
 
 	public ParametrePeriodeFiscale getHorsSuisseByPeriodeFiscale(PeriodeFiscale periodeFiscale) {
-		return getByPeriodeFiscaleAndTypeContribual(periodeFiscale, TypeContribuable.HORS_SUISSE);
+		return getByPeriodeFiscaleAndTypeContribuable(periodeFiscale, TypeContribuable.HORS_SUISSE);
 	}
 
+	public ParametrePeriodeFiscale getDiplomateSuisseByPeriodeFiscale(PeriodeFiscale periodeFiscale) {
+		return getByPeriodeFiscaleAndTypeContribuable(periodeFiscale, TypeContribuable.DIPLOMATE_SUISSE);
+	}
+	
 	public ParametrePeriodeFiscale getVaudByPeriodeFiscale(PeriodeFiscale periodeFiscale) {
-		return getByPeriodeFiscaleAndTypeContribual(periodeFiscale, TypeContribuable.VAUDOIS_ORDINAIRE);
+		return getByPeriodeFiscaleAndTypeContribuable(periodeFiscale, TypeContribuable.VAUDOIS_ORDINAIRE);
 	}
 
 }

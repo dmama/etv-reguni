@@ -74,7 +74,14 @@ public interface ParamPeriodeManager {
 	 */
 	@Transactional(readOnly = true)
 	ParametrePeriodeFiscale getHorsSuisseByPeriodeFiscale(PeriodeFiscale periodeFiscale);
-	
+
+	/**
+	 * @param periodeFiscale la période fiscale
+	 * @return les parametres de période fiscale pour un diplomate Suisse, pour une période donnée
+	 */
+	@Transactional(readOnly = true)
+	ParametrePeriodeFiscale getDiplomateSuisseByPeriodeFiscale(PeriodeFiscale periodeFiscale);
+
 	/**
 	 * Initialise la nouvelle période fiscale
 	 * 

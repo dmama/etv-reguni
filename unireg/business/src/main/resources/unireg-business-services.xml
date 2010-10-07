@@ -142,6 +142,7 @@
 	<bean id="periodeFiscaleService" class="ch.vd.uniregctb.parametrage.PeriodeFiscaleServiceImpl">
 		<property name="dao" ref="periodeFiscaleDAO" />
 		<property name="parametreAppService" ref="parametreAppService" />
+		<property name="transactionManager" ref="transactionManager" />
 	</bean>
 
 	<bean id="identCtbService" class="ch.vd.uniregctb.identification.contribuable.IdentificationContribuableServiceImpl" lazy-init="true">

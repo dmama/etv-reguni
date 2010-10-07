@@ -46,7 +46,12 @@ public enum CategorieEnvoiDI {
 	 * Les diplomates suisses basés à l'étranger ne sont pas imposés à l'ICC mais uniquement à l'IFD. Ils ne recoivent donc pas de déclaration d'impôt de la part du canton : ils reçoivent à la place une
 	 * déclaration d'impôt <b>fédérale</b>. La période d'imposition existe donc bien, même si elle ne provoque pas d'émission de DIs.
 	 */
-	DIPLOMATE_SUISSE(TypeContribuable.VAUDOIS_ORDINAIRE, null, "Diplomate Suisse");
+	DIPLOMATE_SUISSE(TypeContribuable.DIPLOMATE_SUISSE, null, "Diplomate Suisse"),
+	/**
+	 * [UNIREG-1976] Les diplomates suisses basés à l'étranger et qui possèdent un ou plusieurs immeubles reçoivent quand même une déclaration d'impôt ordinaire.
+	 */
+	DIPLOMATE_SUISSE_IMMEUBLE_COMPLETE(TypeContribuable.DIPLOMATE_SUISSE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, "Diplomate Suisse avec immeuble (DI complète)"),
+	DIPLOMATE_SUISSE_IMMEUBLE_VAUDTAX(TypeContribuable.DIPLOMATE_SUISSE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, "Diplomate Suisse avec immeuble (DI VaudTax)");
 
 	private TypeContribuable typeContribuable;
 	private TypeDocument typeDocument;
@@ -107,6 +112,16 @@ public enum CategorieEnvoiDI {
 			}
 			else if (format == FormatDIOrdinaire.VAUDTAX) {
 				return HS_VAUDTAX;
+			}
+			else {
+				throw new IllegalArgumentException("Type de DI ordinaire inconnu = [" + format + "]");
+			}
+		case DIPLOMATE_SUISSE:
+			if (format == FormatDIOrdinaire.COMPLETE) {
+				return DIPLOMATE_SUISSE_IMMEUBLE_COMPLETE;
+			}
+			else if (format == FormatDIOrdinaire.VAUDTAX) {
+				return DIPLOMATE_SUISSE_IMMEUBLE_VAUDTAX;
 			}
 			else {
 				throw new IllegalArgumentException("Type de DI ordinaire inconnu = [" + format + "]");
