@@ -13,6 +13,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.internal.runners.JUnit4ClassRunner;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.jms.listener.DefaultMessageListenerContainer;
 import org.springframework.util.Log4jConfigurer;
 import org.springframework.util.ResourceUtils;
@@ -67,7 +68,11 @@ public class EvenementEditiqueListenerTest extends EvenementTest {
 		clearQueue(INPUT_QUEUE);
 
 		listener = new EvenementEditiqueListenerImpl();
+		listener.setEsbStore(esbStore);
 		listener.setEsbTemplate(esbTemplate);
+		if (listener instanceof InitializingBean) {
+			((InitializingBean) listener).afterPropertiesSet();
+		}
 
 		esbMessageFactory = new EsbMessageFactory();
 		esbMessageFactory.setValidator(null);

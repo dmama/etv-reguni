@@ -9,6 +9,7 @@
 
 	<bean name="evenementEditiqueListener" class="ch.vd.uniregctb.editique.impl.EvenementEditiqueListenerImpl" parent="esbMessageListener">
 		<property name="storageService" ref="retourImpressionStorageService"/>
+		<property name="esbStore" ref="raftEsbStore"/>
 	</bean>
 
 	<bean name="evenementEditiqueListernerContainer" class="org.springframework.jms.listener.DefaultMessageListenerContainer">
