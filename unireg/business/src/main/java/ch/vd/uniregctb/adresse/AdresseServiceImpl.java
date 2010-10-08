@@ -1376,10 +1376,10 @@ public class AdresseServiceImpl implements AdresseService {
 			final AdressesTiersHisto adressesPrincipal = TiersHelper.getAdressesTiersHisto(principal);
 
 			if (adressesPrincipal != null) {
-				adresses.courrier = surchargeAdressesTiersHisto(tiers, adresses.courrier, adressesPrincipal.courrier, null, null, callDepth + 1, strict);
-				adresses.representation = surchargeAdressesTiersHisto(tiers, adresses.representation, adressesPrincipal.representation, null, null, callDepth + 1, strict);
-				adresses.poursuite = surchargeAdressesTiersHisto(tiers, adresses.poursuite, adressesPrincipal.poursuite, null, null, callDepth + 1, strict);
-				adresses.domicile = surchargeAdressesTiersHisto(tiers, adresses.domicile, adressesPrincipal.domicile, null, null, callDepth + 1, strict);
+				adresses.courrier = surchargeAdressesTiersHisto(tiers, adresses.courrier, adressesPrincipal.courrier, Source.PRINCIPAL, true, callDepth + 1, strict);
+				adresses.representation = surchargeAdressesTiersHisto(tiers, adresses.representation, adressesPrincipal.representation, Source.PRINCIPAL, true, callDepth + 1, strict);
+				adresses.poursuite = surchargeAdressesTiersHisto(tiers, adresses.poursuite, adressesPrincipal.poursuite, Source.PRINCIPAL, true, callDepth + 1, strict);
+				adresses.domicile = surchargeAdressesTiersHisto(tiers, adresses.domicile, adressesPrincipal.domicile, Source.PRINCIPAL, true, callDepth + 1, strict);
 			}
 		}
 		else if (tiers instanceof DebiteurPrestationImposable) {
@@ -1650,8 +1650,7 @@ public class AdresseServiceImpl implements AdresseService {
 				if (strict) {
 					verifieCoherenceAdresses(adressesRepresentant.representation, "Adresses de représentation", representant);
 				}
-				final List<AdresseGenerique> adressesRepresentation = AdresseMixer.extract(adressesRepresentant.representation,
-						debutRapport, finRapport, type.getTypeSource(), false);
+				final List<AdresseGenerique> adressesRepresentation = AdresseMixer.extract(adressesRepresentant.representation, debutRapport, finRapport, type.getTypeSource(), false);
 				adresses.addAll(adressesRepresentation);
 			}
 		}

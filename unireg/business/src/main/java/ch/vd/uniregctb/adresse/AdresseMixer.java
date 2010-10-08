@@ -19,18 +19,28 @@ public class AdresseMixer {
 	private static final class AdresseGeneriqueAdapterCallback implements DateRangeHelper.AdapterCallback<AdresseGenerique> {
 		private final Boolean defaultSurcharge;
 		private final Source sourceSurcharge;
+		private final boolean forceSurcharge;
 
-		private AdresseGeneriqueAdapterCallback(Boolean defaultSurcharge, Source sourceSurcharge) {
+		/**
+		 * @param defaultSurcharge la valeur à appliquer aux adresses surchargées
+		 * @param sourceSurcharge  la source à appliquer aux adresses surchargées
+		 * @param forceSurcharge   <b>vrai</b> si les paramètres <i>defaultSurcharge</i> et <i>sourceSurcharge</i> doivent s'appliquer à toutes les adresses (surchargées ou non); <b>faux</b> si les
+		 *                         paramètres <i>defaultSurcharge</i> et <i>sourceSurcharge</i> ne doivent s'appliquer qu'aux adresses surchargées.
+		 */
+		private AdresseGeneriqueAdapterCallback(Boolean defaultSurcharge, Source sourceSurcharge, boolean forceSurcharge) {
 			this.defaultSurcharge = defaultSurcharge;
 			this.sourceSurcharge = sourceSurcharge;
+			this.forceSurcharge = forceSurcharge;
 		}
 
 		public AdresseGenerique adapt(AdresseGenerique range, RegDate debut, RegDate fin) {
-			if (debut == null && fin == null && sourceSurcharge == null && defaultSurcharge == null) {
-				return range; // optim
+			if (forceSurcharge || (debut == null && fin == null)) {
+				// si ces deux dates sont nulles, cela signifie que 'range' est une adresse de surcharge => on veut appliquer les valeurs 'source' et 'default' demandées dans ces cas-là.
+				return new AdresseGeneriqueAdapter(range, debut, fin, sourceSurcharge, defaultSurcharge);
 			}
 			else {
-				return new AdresseGeneriqueAdapter(range, debut, fin, sourceSurcharge, defaultSurcharge);
+				// [UNIREG-2927] si une des dates de début ou de fin est renseignée, cela signifie que 'range' est une adresse de base qui doit être adaptée pour laisser de la place à une adresse de surcharge => on ne veut pas changer les valeurs 'source' et 'default' dans ce cas-là.
+				return new AdresseGeneriqueAdapter(range, debut, fin, null, null);
 			}
 		}
 	}
@@ -96,7 +106,7 @@ public class AdresseMixer {
 	public static List<AdresseGenerique> extract(List<AdresseGenerique> adresses, RegDate debut, RegDate fin, final Source sourceSurcharge,
 			final Boolean defaultSurcharge) {
 
-		return DateRangeHelper.extract(adresses, debut, fin, new AdresseGeneriqueAdapterCallback(defaultSurcharge, sourceSurcharge));
+		return DateRangeHelper.extract(adresses, debut, fin, new AdresseGeneriqueAdapterCallback(defaultSurcharge, sourceSurcharge, true));
 	}
 
 	/**
@@ -162,14 +172,13 @@ public class AdresseMixer {
 			}
 
 			// override sans les adresses annulées
-			res = DateRangeHelper.override(nonAnnulees, surchargeNonAnnulees, new AdresseGeneriqueAdapterCallback(defaultSurcharge,
-					sourceSurcharge));
+			res = DateRangeHelper.override(nonAnnulees, surchargeNonAnnulees, new AdresseGeneriqueAdapterCallback(defaultSurcharge, sourceSurcharge, false));
 			// on ajoute les adresses annulées à la fin
 			res.addAll(annulees);
 		}
 		else {
 			// pas d'adresse annulée -> on évite de créer des listes pour rien
-			res = DateRangeHelper.override(adresses, surcharges, new AdresseGeneriqueAdapterCallback(defaultSurcharge, sourceSurcharge));
+			res = DateRangeHelper.override(adresses, surcharges, new AdresseGeneriqueAdapterCallback(defaultSurcharge, sourceSurcharge, false));
 		}
 		return res;
 

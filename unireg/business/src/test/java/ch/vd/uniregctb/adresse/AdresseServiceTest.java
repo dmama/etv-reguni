@@ -1628,7 +1628,7 @@ public class AdresseServiceTest extends BusinessTest {
 	}
 
 	/**
-	 * Cas particulier du ménage.
+	 * Cas particulier d'un ménage composé de deux habitants avec adresses civiles et dont le principal possède une adresse fiscale surchargée.
 	 */
 	@Test
 	public void testGetAdressesFiscalesHistoMenageCommun() throws Exception {
@@ -1653,19 +1653,15 @@ public class AdresseServiceTest extends BusinessTest {
 			}
 		});
 
-		// Crée un ménage composé de deux habitants sans adresse fiscale surchargée
+		// Crée un ménage composé de deux habitants dont le principal possède une adresse fiscale surchargée
 		final long noMenageCommun = (Long) doInNewTransaction(new TxCallback() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				PersonnePhysique principal = new PersonnePhysique(true);
-				principal.setNumeroIndividu(noIndividuPrincipal);
-				PersonnePhysique conjoint = new PersonnePhysique(true);
-				conjoint.setNumeroIndividu(noIndividuConjoint);
-				MenageCommun menage = new MenageCommun();
-				RapportEntreTiers rapport = tiersService.addTiersToCouple(menage, principal, date(2004, 7, 14), null);
-				menage = (MenageCommun) tiersDAO.get(rapport.getObjetId());
-				tiersService.addTiersToCouple(menage, conjoint, date(2004, 7, 14), null);
-				return menage.getNumero();
+				final PersonnePhysique principal = addHabitant(noIndividuPrincipal);
+				addAdresseSuisse(principal, TypeAdresseTiers.COURRIER, date(2008, 1, 1), null, MockRue.Renens.QuatorzeAvril);
+				final PersonnePhysique conjoint = addHabitant(noIndividuConjoint);
+				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(principal, conjoint, date(2004, 7, 14), null);
+				return ensemble.getMenage().getNumero();
 			}
 		});
 
@@ -1674,24 +1670,21 @@ public class AdresseServiceTest extends BusinessTest {
 		// Vérification des adresses
 		final AdressesFiscalesHisto adresses = adresseService.getAdressesFiscalHisto(menage, false);
 		assertNotNull(adresses);
-		assertEquals(1, adresses.courrier.size());
-		assertAdressesEquals(adresses.courrier, adresses.representation);
-		assertEquals(1, adresses.poursuite.size());
-		assertAdressesEquals(adresses.poursuite, adresses.domicile);
+		assertEquals(2, adresses.courrier.size());
+		assertEquals(1, adresses.representation.size());
 
-		final AdresseGenerique courrier1 = adresses.courrier.get(0);
-		assertEquals(date(2000, 1, 1), courrier1.getDateDebut());
-		assertNull(courrier1.getDateFin());
-		assertEquals("Lausanne", courrier1.getLocalite());
-		assertEquals(AdresseGenerique.Source.CIVILE, courrier1.getSource());
-		assertFalse(courrier1.isDefault());
+		final AdresseGenerique courrier0 = adresses.courrier.get(0);
+		assertAdresse(date(2000, 1, 1), date(2007, 12, 31), "Lausanne", Source.CIVILE, false, courrier0);
+		final AdresseGenerique courrier1 = adresses.courrier.get(1);
+		assertAdresse(date(2008, 1, 1), null, "Renens VD", Source.PRINCIPAL, true, courrier1);
 
-		final AdresseGenerique poursuite1 = adresses.poursuite.get(0);
-		assertEquals(date(2000, 1, 1), poursuite1.getDateDebut());
-		assertNull(poursuite1.getDateFin());
-		assertEquals("Lausanne", poursuite1.getLocalite());
-		assertEquals(AdresseGenerique.Source.CIVILE, poursuite1.getSource());
-		assertFalse(poursuite1.isDefault());
+		final AdresseGenerique representation0 = adresses.representation.get(0);
+		assertAdresse(date(2000, 1, 1), null, "Lausanne", Source.CIVILE, false, representation0);
+
+		final AdresseGenerique poursuite0 = adresses.poursuite.get(0);
+		assertAdresse(date(2000, 1, 1), null, "Lausanne", Source.CIVILE, false, poursuite0);
+
+		assertAdressesEquals(adresses.domicile, adresses.poursuite);
 	}
 
 	/**
