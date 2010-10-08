@@ -2290,6 +2290,35 @@ public class AdresseServiceImpl implements AdresseService {
 		return null;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	public AdressesFiscales getAdressesTiersSurchargees(Tiers tiers, RegDate date) throws AdresseException {
+
+		final AdressesFiscales adressesFiscales = new AdressesFiscales();
+		for (TypeAdresseTiers type : TypeAdresseTiers.values()) {
+			AdresseTiers adresseTiers = TiersHelper.getAdresseTiers(tiers, type, date);
+			if (adresseTiers != null) {
+				final AdresseGenerique adresseGenerique = resolveAdresseSurchargee(tiers, adresseTiers, 0, false);
+				switch (type) {
+				case COURRIER:
+					adressesFiscales.courrier = adresseGenerique;
+					break;
+				case REPRESENTATION:
+					adressesFiscales.representation = adresseGenerique;
+					break;
+				case POURSUITE:
+					adressesFiscales.poursuite = adresseGenerique;
+					break;
+				default:
+					break;
+				}
+			}
+		}
+
+
+		return adressesFiscales;
+	}
 
 	private static int oneLevelDeeper(int callDepth, Tiers tiers, Tiers autreTiers, AdresseTiers adresseSurchargee) throws AdressesResolutionException {
 
