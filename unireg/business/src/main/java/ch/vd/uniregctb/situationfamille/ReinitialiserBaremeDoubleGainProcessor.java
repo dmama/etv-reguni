@@ -25,7 +25,7 @@ import ch.vd.uniregctb.tiers.SituationFamilleMenageCommun;
 import ch.vd.uniregctb.type.TarifImpotSource;
 
 /**
- * Processor qui permet de réinitialiser à la valeur NORMAL les barêmes double-gains sur les situations de famille actives des
+ * Processor qui permet de réinitialiser à la valeur NORMAL les barèmes double-gains sur les situations de famille actives des
  * ménages-communs sourciers.
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>

@@ -13,7 +13,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * Rapport PDF contenant les résultats de la réinitialisation des barêmes double-gain.
+ * Rapport PDF contenant les résultats de la réinitialisation des barèmes double-gain.
  */
 public class PdfReinitDoubleGainRapport extends PdfRapport {
 
@@ -29,7 +29,7 @@ public class PdfReinitDoubleGainRapport extends PdfRapport {
 		addEnteteUnireg();
 
 		// Titre
-		addTitrePrincipal("Rapport d'exécution du job de réinitialisation des barêmes double-gain");
+		addTitrePrincipal("Rapport d'exécution du job de réinitialisation des barèmes double-gain");
 
 		// Paramètres
 		addEntete1("Paramètres");

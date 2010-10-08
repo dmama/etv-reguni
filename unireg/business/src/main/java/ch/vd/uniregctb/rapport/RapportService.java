@@ -214,7 +214,7 @@ public interface RapportService {
 	ImpressionChemisesTORapport generateRapport(ImpressionChemisesTOResults results, StatusManager statusManager);
 
 	/**
-	 * Genère le rapport (PDF) pour la réinitialisation des barêmes double-gain
+	 * Genère le rapport (PDF) pour la réinitialisation des barèmes double-gain
 	 *
 	 * @param results
 	 *            le résultat de l'exécution du job

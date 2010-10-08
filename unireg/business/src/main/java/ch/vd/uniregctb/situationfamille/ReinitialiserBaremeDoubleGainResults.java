@@ -9,7 +9,7 @@ import ch.vd.uniregctb.tiers.SituationFamilleMenageCommun;
 import ch.vd.uniregctb.tiers.Tiers;
 
 /**
- * Résultats détaillés du batch de réinitialisation des barêmes double-gain.
+ * Résultats détaillés du batch de réinitialisation des barèmes double-gain.
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
@@ -30,7 +30,7 @@ public class ReinitialiserBaremeDoubleGainResults extends JobResults<Long, Reini
 	}
 
 	public enum IgnoreType {
-		BAREME_NON_DOUBLE_GAIN("Le barême n'est pas double-gain.");
+		BAREME_NON_DOUBLE_GAIN("Le barème n'est pas double-gain.");
 
 		private final String description;
 

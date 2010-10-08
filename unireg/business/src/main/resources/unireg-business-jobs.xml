@@ -144,7 +144,7 @@
           class="ch.vd.uniregctb.situationfamille.ReinitialiserBaremeDoubleGainJob">
         <constructor-arg value="302"/>
         <constructor-arg
-                value="Réinitialiser les barêmes double-gain sur les situations de famille des ménages-communs sourciers"/>
+                value="Réinitialiser les barèmes double-gain sur les situations de famille des ménages-communs sourciers"/>
         <property name="situationFamilleService" ref="situationFamilleService"/>
         <property name="rapportService" ref="rapportService"/>
     </bean>

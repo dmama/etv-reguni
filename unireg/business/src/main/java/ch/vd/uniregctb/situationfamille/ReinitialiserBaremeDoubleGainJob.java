@@ -14,7 +14,7 @@ import ch.vd.uniregctb.scheduler.JobParam;
 import ch.vd.uniregctb.scheduler.JobParamRegDate;
 
 /**
- * Job qui réinitialise à la valeur NORMAL les barêmes double-gains des ménages-communs sourciers.
+ * Job qui réinitialise à la valeur NORMAL les barèmes double-gains des ménages-communs sourciers.
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
@@ -60,7 +60,7 @@ public class ReinitialiserBaremeDoubleGainJob extends JobDefinition {
 		final ReinitialiserBaremeDoubleGainRapport rapport = rapportService.generateRapport(results, statusManager);
 
 		setLastRunReport(rapport);
-		Audit.success("La réinitialisation des barêmes double-gain est terminée.", rapport);
+		Audit.success("La réinitialisation des barèmes double-gain est terminée.", rapport);
 	}
 
 	public void setSituationFamilleService(SituationFamilleService service) {

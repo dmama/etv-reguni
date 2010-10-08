@@ -96,7 +96,7 @@ public class ReinitialiserBaremeDoubleGainProcessorTest extends BusinessTest {
 		final Ignore ignore = rapport.situationsIgnorees.get(0);
 		assertNotNull(ignore);
 		assertEquals(IgnoreType.BAREME_NON_DOUBLE_GAIN, ignore.raison);
-		assertEquals("Le barême n'est pas double-gain. Attendu = DOUBLE_GAIN, constaté = NORMAL. Erreur dans la requête SQL ?", ignore
+		assertEquals("Le barème n'est pas double-gain. Attendu = DOUBLE_GAIN, constaté = NORMAL. Erreur dans la requête SQL ?", ignore
 				.getDescriptionRaison());
 
 		assertEquals(1, dao.getCount(SituationFamilleMenageCommun.class));

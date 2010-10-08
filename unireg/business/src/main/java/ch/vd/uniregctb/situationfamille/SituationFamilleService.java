@@ -68,7 +68,7 @@ public interface SituationFamilleService {
 	public void closeSituationFamille(Contribuable contribuable, RegDate date);
 
 	/**
-	 * Cette méthode réinitialise à la valeur NORMAL les barêmes double-gains sur les situations de famille actives des ménages-communs
+	 * Cette méthode réinitialise à la valeur NORMAL les barèmes double-gains sur les situations de famille actives des ménages-communs
 	 * sourciers.
 	 *
 	 * @param dateTraitement

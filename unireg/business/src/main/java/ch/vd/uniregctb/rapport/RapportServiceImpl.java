@@ -516,7 +516,7 @@ public class RapportServiceImpl implements RapportService {
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 
 		final String nom = "ReinitDoubleGain" + results.dateTraitement.index();
-		final String description = "Rapport d'exécution du job de réinitialisation des barêmes double-gain. Date de traitement = "
+		final String description = "Rapport d'exécution du job de réinitialisation des barèmes double-gain. Date de traitement = "
 				+ results.dateTraitement + ".";
 		final Date dateGeneration = DateHelper.getCurrentDate();
 
