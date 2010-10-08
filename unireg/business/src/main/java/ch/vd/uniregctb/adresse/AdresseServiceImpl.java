@@ -976,10 +976,21 @@ public class AdresseServiceImpl implements AdresseService {
 	 * {@inheritDoc}
 	 */
 	public AdressesFiscalesHisto getAdressesFiscalHisto(Tiers tiers, boolean strict) throws AdresseException {
-		return getAdressesFiscalHisto(tiers, 0, strict);
+		return getAdressesFiscalHisto(tiers, true, 0, strict);
 	}
 
-	private AdressesFiscalesHisto getAdressesFiscalHisto(Tiers tiers, int callDepth, boolean strict) throws AdresseException {
+	/**
+	 * Calcule l'historique complet des adresses fiscales d'un tiers.
+	 *
+	 * @param tiers                 un tiers
+	 * @param inclureRepresentation si <b>vrai</b>, les adresses de représentation (tutelles, curatelles, représentations conventionnelles, ...) sont incluses; si <b>faux</b> la méthode ne retourne que
+	 *                              les adresses propres du tiers.
+	 * @param callDepth             paramètre technique pour éviter les récursions infinies
+	 * @param strict                si <b>faux</b> essaie de résoudre silencieusement les problèmes détectés durant le traitement; autrement lève une exception.
+	 * @return l'historique complet des adresses fiscales du tiers spécifié.
+	 * @throws AdresseException en cas de problème dans le traitement
+	 */
+	private AdressesFiscalesHisto getAdressesFiscalHisto(Tiers tiers, boolean inclureRepresentation, int callDepth, boolean strict) throws AdresseException {
 
 		if (tiers == null) {
 			return null;
@@ -1035,7 +1046,7 @@ public class AdresseServiceImpl implements AdresseService {
 			final DebiteurPrestationImposable debiteur = (DebiteurPrestationImposable) tiers;
 			final Contribuable contribuable = tiersService.getContribuable(debiteur);
 			if (contribuable != null) {
-				final AdressesFiscalesHisto adressesContribuable = getAdressesFiscalHisto(contribuable, callDepth + 1, strict);
+				final AdressesFiscalesHisto adressesContribuable = getAdressesFiscalHisto(contribuable, true, callDepth + 1, strict);
 
 				adresses.courrier = surchargeAdressesHisto(adresses.courrier, adressesContribuable.courrier, Source.CONTRIBUABLE, true);
 				adresses.representation = surchargeAdressesHisto(adresses.representation, adressesContribuable.representation,
@@ -1054,36 +1065,38 @@ public class AdresseServiceImpl implements AdresseService {
 		// Applique les défauts, de manière à avoir une adresse valide pour chaque type d'adresse
 		appliqueDefautsAdressesFiscalesHisto(adresses);
 
-		// Si le tiers concerné possède un representant, on surchage avec l'adresse du représentant
-		final List<AdresseGenerique> adressesRepresentant = getAdressesRepresentantHisto(tiers, TypeAdresseRepresentant.REPRESENTATION, callDepth + 1, strict);
-		adresses.courrier = AdresseMixer.override(adresses.courrier, adressesRepresentant, null, null);
+		if (inclureRepresentation) {
+			// Si le tiers concerné possède un representant, on surchage avec l'adresse du représentant
+			final List<AdresseGenerique> adressesRepresentant = getAdressesRepresentantHisto(tiers, TypeAdresseRepresentant.REPRESENTATION, callDepth + 1, strict);
+			adresses.courrier = AdresseMixer.override(adresses.courrier, adressesRepresentant, null, null);
 
-		// Si le tiers concerné possède un conseil légal, on surchage avec l'adresse du représentant
-		final List<AdresseGenerique> adressesConseil = getAdressesRepresentantHisto(tiers, TypeAdresseRepresentant.CONSEIL_LEGAL, callDepth + 1, strict);
-		adresses.courrier = AdresseMixer.override(adresses.courrier, adressesConseil, null, null);
+			// Si le tiers concerné possède un conseil légal, on surchage avec l'adresse du représentant
+			final List<AdresseGenerique> adressesConseil = getAdressesRepresentantHisto(tiers, TypeAdresseRepresentant.CONSEIL_LEGAL, callDepth + 1, strict);
+			adresses.courrier = AdresseMixer.override(adresses.courrier, adressesConseil, null, null);
 
-		// Si le tiers concerné est sous tutelle, on surchage les adresses courrier avec les adresses représentation du tuteur
-		final List<AdresseGenerique> adressesTuteur = getAdressesRepresentantHisto(tiers, TypeAdresseRepresentant.TUTELLE, callDepth + 1, strict);
-		adresses.courrier = AdresseMixer.override(adresses.courrier, adressesTuteur, null, null);
+			// Si le tiers concerné est sous tutelle, on surchage les adresses courrier avec les adresses représentation du tuteur
+			final List<AdresseGenerique> adressesTuteur = getAdressesRepresentantHisto(tiers, TypeAdresseRepresentant.TUTELLE, callDepth + 1, strict);
+			adresses.courrier = AdresseMixer.override(adresses.courrier, adressesTuteur, null, null);
 
-		// Si le tiers concerné est sous curatelle, on surchage les adresses courrier avec les adresses représentation du curateur
-		final List<AdresseGenerique> adressesCuratelle = getAdressesRepresentantHisto(tiers, TypeAdresseRepresentant.CURATELLE, callDepth + 1, strict);
-		adresses.courrier = AdresseMixer.override(adresses.courrier, adressesCuratelle, null, null);
+			// Si le tiers concerné est sous curatelle, on surchage les adresses courrier avec les adresses représentation du curateur
+			final List<AdresseGenerique> adressesCuratelle = getAdressesRepresentantHisto(tiers, TypeAdresseRepresentant.CURATELLE, callDepth + 1, strict);
+			adresses.courrier = AdresseMixer.override(adresses.courrier, adressesCuratelle, null, null);
 
-		// [UNIREG-1808] Si le tiers concerné possède un représentant avec exécution forcée, on surcharge les adresses de poursuite avec les adresses du représentant
-		final List<AdresseGenerique> adressesRepresentantExecutionForcee = getAdressesRepresentantHisto(tiers, TypeAdresseRepresentant.REPRESENTATION_AVEC_EXECUTION_FORCEE, callDepth + 1, strict);
-		adresses.poursuite = AdresseMixer.override(adresses.poursuite, adressesRepresentantExecutionForcee, null, null);
+			// [UNIREG-1808] Si le tiers concerné possède un représentant avec exécution forcée, on surcharge les adresses de poursuite avec les adresses du représentant
+			final List<AdresseGenerique> adressesRepresentantExecutionForcee = getAdressesRepresentantHisto(tiers, TypeAdresseRepresentant.REPRESENTATION_AVEC_EXECUTION_FORCEE, callDepth + 1, strict);
+			adresses.poursuite = AdresseMixer.override(adresses.poursuite, adressesRepresentantExecutionForcee, null, null);
 
-		// [UNIREG-1808] Si le tiers concerné est sous tutelle, on surchage les adresses poursuite avec les adresses de l'autorité tutelaire
-		final List<AdresseGenerique> adressesAutoriteTutelaire = getAdressesRepresentantHisto(tiers, TypeAdresseRepresentant.AUTORITE_TUTELAIRE, callDepth + 1, strict);
-		adresses.poursuite = AdresseMixer.override(adresses.poursuite, adressesAutoriteTutelaire, null, null);
+			// [UNIREG-1808] Si le tiers concerné est sous tutelle, on surchage les adresses poursuite avec les adresses de l'autorité tutelaire
+			final List<AdresseGenerique> adressesAutoriteTutelaire = getAdressesRepresentantHisto(tiers, TypeAdresseRepresentant.AUTORITE_TUTELAIRE, callDepth + 1, strict);
+			adresses.poursuite = AdresseMixer.override(adresses.poursuite, adressesAutoriteTutelaire, null, null);
 
-		// [UNIREG-1808]
-		adresses.poursuiteAutreTiers = surchargeAdressesTiersHisto(tiers, adresses.poursuiteAutreTiers, adressesTiers.poursuite, null, null, callDepth + 1, strict);
-		adresses.poursuiteAutreTiers = AdresseMixer.override(adresses.poursuiteAutreTiers, adressesRepresentantExecutionForcee, null, null);
-		adresses.poursuiteAutreTiers = AdresseMixer.override(adresses.poursuiteAutreTiers, adressesConseil, null, null);
-		adresses.poursuiteAutreTiers = AdresseMixer.override(adresses.poursuiteAutreTiers, removeSourceConjoint(adressesCuratelle), null, null);
-		adresses.poursuiteAutreTiers = AdresseMixer.override(adresses.poursuiteAutreTiers, removeSourceConjoint(adressesTuteur), null, null);
+			// [UNIREG-1808]
+			adresses.poursuiteAutreTiers = surchargeAdressesTiersHisto(tiers, adresses.poursuiteAutreTiers, adressesTiers.poursuite, null, null, callDepth + 1, strict);
+			adresses.poursuiteAutreTiers = AdresseMixer.override(adresses.poursuiteAutreTiers, adressesRepresentantExecutionForcee, null, null);
+			adresses.poursuiteAutreTiers = AdresseMixer.override(adresses.poursuiteAutreTiers, adressesConseil, null, null);
+			adresses.poursuiteAutreTiers = AdresseMixer.override(adresses.poursuiteAutreTiers, removeSourceConjoint(adressesCuratelle), null, null);
+			adresses.poursuiteAutreTiers = AdresseMixer.override(adresses.poursuiteAutreTiers, removeSourceConjoint(adressesTuteur), null, null);
+		}
 
 		return adresses;
 	}
@@ -1332,83 +1345,7 @@ public class AdresseServiceImpl implements AdresseService {
 	 * @throws AdresseException en cas de problème dans le traitement
 	 */
 	private AdressesFiscalesHisto getAdressesFiscalesPropreHisto(Tiers tiers, int callDepth, boolean strict) throws AdresseException {
-
-		if (tiers == null) {
-			return null;
-		}
-
-		AdressesFiscalesHisto adresses = new AdressesFiscalesHisto();
-
-		// TODO (msi) factoriser se code avec getAdressesFiscalesHisto
-
-		/*
-		 * Récolte des adresses en provenance du host
-		 */
-		if (tiers instanceof Entreprise) {
-			final AdressesPMHisto adressesPM = getAdressesPMHisto((Entreprise) tiers);
-			final RegDate debut = adressesPM.getVeryFirstDate();
-			final RegDate fin = adressesPM.getVeryLastDate();
-
-			adresses.courrier = initAdressesPMHisto(adressesPM.courriers, debut, fin, adressesPM.sieges);
-			adresses.domicile = initAdressesPMHisto(adressesPM.sieges, debut, fin, adressesPM.courriers);
-
-			adresses.representation = adresses.courrier;
-			adresses.poursuite = adresses.domicile;
-		}
-		else {
-			final AdressesCivilesHisto adressesCiviles = getAdressesCivilesHisto(tiers, strict);
-			final RegDate debut = adressesCiviles.getVeryFirstDate();
-			final RegDate fin = adressesCiviles.getVeryLastDate();
-
-			adresses.courrier = initAdressesCivilesHisto(adressesCiviles.courriers, debut, fin, adressesCiviles.principales, strict);
-			adresses.domicile = initAdressesCivilesHisto(adressesCiviles.principales, debut, fin, adressesCiviles.courriers, strict);
-
-			adresses.representation = adresses.courrier;
-			adresses.poursuite = adresses.domicile;
-		}
-
-		/*
-		 * Surcharge avec les adresses fiscales
-		 */
-		if (tiers instanceof MenageCommun) {
-			/* Pour le cas du ménage commun, les adresses du principal sont utilisées comme premier défaut */
-			final MenageCommun menage = (MenageCommun) tiers;
-			final PersonnePhysique principal = getPrincipalPourAdresse(menage);
-			final AdressesTiersHisto adressesPrincipal = TiersHelper.getAdressesTiersHisto(principal);
-
-			if (adressesPrincipal != null) {
-				adresses.courrier = surchargeAdressesTiersHisto(tiers, adresses.courrier, adressesPrincipal.courrier, Source.PRINCIPAL, true, callDepth + 1, strict);
-				adresses.representation = surchargeAdressesTiersHisto(tiers, adresses.representation, adressesPrincipal.representation, Source.PRINCIPAL, true, callDepth + 1, strict);
-				adresses.poursuite = surchargeAdressesTiersHisto(tiers, adresses.poursuite, adressesPrincipal.poursuite, Source.PRINCIPAL, true, callDepth + 1, strict);
-				adresses.domicile = surchargeAdressesTiersHisto(tiers, adresses.domicile, adressesPrincipal.domicile, Source.PRINCIPAL, true, callDepth + 1, strict);
-			}
-		}
-		else if (tiers instanceof DebiteurPrestationImposable) {
-			// Pour le cas du débiteur, les adresses du contribuable associé sont utilisées comme premier défaut. Il peut cependant arriver
-			// que le débiteur ne possède pas de contribuable associé, dans ce cas on continue
-			final DebiteurPrestationImposable debiteur = (DebiteurPrestationImposable) tiers;
-			final Contribuable contribuable = tiersService.getContribuable(debiteur);
-			if (contribuable != null) {
-				final AdressesFiscalesHisto adressesContribuable = getAdressesFiscalHisto(contribuable, callDepth + 1, strict);
-
-				adresses.courrier = surchargeAdressesHisto(adresses.courrier, adressesContribuable.courrier, Source.CONTRIBUABLE, true);
-				adresses.representation = surchargeAdressesHisto(adresses.representation, adressesContribuable.representation,
-						Source.CONTRIBUABLE, true);
-				adresses.poursuite = surchargeAdressesHisto(adresses.poursuite, adressesContribuable.poursuite, Source.CONTRIBUABLE, true);
-				adresses.domicile = surchargeAdressesHisto(adresses.domicile, adressesContribuable.domicile, Source.CONTRIBUABLE, true);
-			}
-		}
-
-		final AdressesTiersHisto adressesTiers = TiersHelper.getAdressesTiersHisto(tiers);
-		adresses.courrier = surchargeAdressesTiersHisto(tiers, adresses.courrier, adressesTiers.courrier, null, null, callDepth + 1, strict);
-		adresses.representation = surchargeAdressesTiersHisto(tiers, adresses.representation, adressesTiers.representation, null, null, callDepth + 1, strict);
-		adresses.domicile = surchargeAdressesTiersHisto(tiers, adresses.domicile, adressesTiers.domicile, null, null, callDepth + 1, strict);
-		adresses.poursuite = surchargeAdressesTiersHisto(tiers, adresses.poursuite, adressesTiers.poursuite, null, null, callDepth + 1, strict);
-
-		// Applique les défauts, de manière à avoir une adresse valide pour chaque type d'adresse
-		appliqueDefautsAdressesFiscalesHisto(adresses);
-
-		return adresses;
+		return getAdressesFiscalHisto(tiers, false, callDepth, strict);
 	}
 
 	/**
@@ -1596,7 +1533,7 @@ public class AdresseServiceImpl implements AdresseService {
 	private List<AdresseGenerique> getAdressesCourrierHistoInRanges(Tiers tiers, List<DateRange> ranges, int callDepth, boolean strict) throws AdresseException {
 
 		// On récupère les adresses du conjoint et on les filtre pour ne garder que celles valides durant les périodes calculées plus haut
-		final AdressesFiscalesHisto adressesConjoint = getAdressesFiscalHisto(tiers, callDepth + 1, strict);
+		final AdressesFiscalesHisto adressesConjoint = getAdressesFiscalHisto(tiers, true, callDepth + 1, strict);
 		if (strict) {
 			verifieCoherenceAdresses(adressesConjoint.courrier, "Adresse de courrier", tiers);
 		}
@@ -1647,7 +1584,7 @@ public class AdresseServiceImpl implements AdresseService {
 				 * Extrait les adresses du représentant et ajuste-les pour qu'elles correspondent à la durée de la représentation
 				 */
 				final int nextDepth = oneLevelDeeper(callDepth, tiers, representant, null);
-				final AdressesFiscalesHisto adressesRepresentant = getAdressesFiscalHisto(representant, nextDepth, strict);
+				final AdressesFiscalesHisto adressesRepresentant = getAdressesFiscalHisto(representant, true, nextDepth, strict);
 				if (strict) {
 					verifieCoherenceAdresses(adressesRepresentant.representation, "Adresses de représentation", representant);
 				}
@@ -1711,7 +1648,7 @@ public class AdresseServiceImpl implements AdresseService {
 			return null;
 		}
 
-		final AdressesFiscalesHisto adressesHisto = getAdressesFiscalHisto(tiers, callDepth, strict);
+		final AdressesFiscalesHisto adressesHisto = getAdressesFiscalHisto(tiers, true, callDepth, strict);
 		final List<AdresseGenerique> adresses = adressesHisto.ofType(type);
 		if (adresses != null) {
 			for (AdresseGenerique a : adresses) {
