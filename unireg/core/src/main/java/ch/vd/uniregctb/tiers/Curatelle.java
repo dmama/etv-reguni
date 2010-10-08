@@ -32,33 +32,18 @@ public class Curatelle extends RepresentationLegale {
 	private static final long serialVersionUID = -1357290304664777417L;
 
 	public Curatelle() {
-		// empty
+		// vide, nécessaire pour la persistence
 	}
 
-	public Curatelle(Curatelle representation) {
+	protected Curatelle(Curatelle representation) {
 		super(representation);
 	}
 
 	/**
-	 * Curatelle entre une pupille et un curateur ordinaire.
+	 * Curatelle entre une pupille et un curateur, potentiellement ordonnée par une autorité tutélaire (justice de paix)
 	 */
-	public Curatelle(RegDate dateDebut, RegDate dateFin, PersonnePhysique pupille, PersonnePhysique curateur) {
-		super(dateDebut, dateFin, pupille, curateur);
-	}
-
-	/**
-	 * Curatelle entre une pupille et un curateur professionel membre d'un office de tuteur général.
-	 */
-	public Curatelle(RegDate dateDebut, RegDate dateFin, PersonnePhysique pupille, PersonnePhysique curateur,
-			CollectiviteAdministrative autoriteTutelaire) {
+	public Curatelle(RegDate dateDebut, RegDate dateFin, PersonnePhysique pupille, Tiers curateur, CollectiviteAdministrative autoriteTutelaire) {
 		super(dateDebut, dateFin, pupille, curateur, autoriteTutelaire);
-	}
-
-	/**
-	 * Curatelle entre une pupille et un office de tuteur général en l'absence d'un curateur professionel connu.
-	 */
-	public Curatelle(RegDate dateDebut, RegDate dateFin, PersonnePhysique pupille, CollectiviteAdministrative curateur) {
-		super(dateDebut, dateFin, pupille, curateur);
 	}
 
 	public RapportEntreTiers duplicate() {

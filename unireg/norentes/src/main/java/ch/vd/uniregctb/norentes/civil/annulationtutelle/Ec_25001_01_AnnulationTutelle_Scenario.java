@@ -62,7 +62,7 @@ public class Ec_25001_01_AnnulationTutelle_Scenario extends EvenementCivilScenar
 				addDefaultAdressesTo(indPierre);
 				addDefaultAdressesTo(indMomo);
 
-				setTutelle(indMomo, indPierre, EnumTypeTutelle.TUTELLE);
+				setTutelle(indMomo, indPierre, null, EnumTypeTutelle.TUTELLE);
 
 			}
 		});
@@ -76,7 +76,7 @@ public class Ec_25001_01_AnnulationTutelle_Scenario extends EvenementCivilScenar
 		PersonnePhysique pierre = addHabitant(noIndPierre);
 		noHabPierre = pierre.getNumero();
 
-		RapportEntreTiers rapport = new Tutelle(dateTutelle, null, momo, pierre);
+		RapportEntreTiers rapport = new Tutelle(dateTutelle, null, momo, pierre, null);
 		tiersDAO.save(rapport);
 	}
 

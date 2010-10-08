@@ -64,7 +64,7 @@ public class Ec_26000_01_LeveeTutelle_AvecTuteur_Scenario extends EvenementCivil
 				addDefaultAdressesTo(indPierre);
 				addDefaultAdressesTo(indMomo);
 
-				setTutelle(indMomo, indPierre, EnumTypeTutelle.TUTELLE);
+				setTutelle(indMomo, indPierre, null, EnumTypeTutelle.TUTELLE);
 			}
 		});
 	}
@@ -77,7 +77,7 @@ public class Ec_26000_01_LeveeTutelle_AvecTuteur_Scenario extends EvenementCivil
 		PersonnePhysique pierre = addHabitant(noIndPierre);
 		noHabPierre = pierre.getNumero();
 
-		RapportEntreTiers rapport = new Tutelle(dateTutelle, null, momo, pierre);
+		RapportEntreTiers rapport = new Tutelle(dateTutelle, null, momo, pierre, null);
 		tiersDAO.save(rapport);
 	}
 

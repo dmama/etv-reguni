@@ -1223,7 +1223,7 @@ public class AdresseServiceImpl implements AdresseService {
 		// Attention, le comportement de cette méthode doit être cohérent avec celui de la méthode getAdresseCourrierConjointPourRepresentationMenage()
 		//
 
-		if (type == TypeAdresseRepresentant.TUTELLE || type == TypeAdresseRepresentant.CURATELLE) {
+		if (type == TypeAdresseRepresentant.TUTELLE || type == TypeAdresseRepresentant.CURATELLE || type == TypeAdresseRepresentant.CONSEIL_LEGAL) {
 
 			final EnsembleTiersCouple ensemble = tiersService.getEnsembleTiersCouple(menage, date);
 			final PersonnePhysique principal = getPrincipalPourAdresse(menage);
@@ -1249,7 +1249,8 @@ public class AdresseServiceImpl implements AdresseService {
 					rapport = rapportPrincipal; // [UNIREG-2915] le conjoint est décédé
 				}
 				else if (TiersHelper.getRapportSujetOfType(conjoint, TypeRapportEntreTiers.TUTELLE, date) != null ||
-						TiersHelper.getRapportSujetOfType(conjoint, TypeRapportEntreTiers.CURATELLE, date) != null) {
+						TiersHelper.getRapportSujetOfType(conjoint, TypeRapportEntreTiers.CURATELLE, date) != null ||
+						TiersHelper.getRapportSujetOfType(conjoint, TypeRapportEntreTiers.CONSEIL_LEGAL, date) != null) {
 					rapport = rapportPrincipal; // le conjoint est aussi sous tutelle (ou curatelle)
 				}
 				else {
@@ -1458,7 +1459,7 @@ public class AdresseServiceImpl implements AdresseService {
 
 		final List<AdresseGenerique> adresses;
 
-		if (type == TypeAdresseRepresentant.TUTELLE || type == TypeAdresseRepresentant.CURATELLE) {
+		if (type == TypeAdresseRepresentant.TUTELLE || type == TypeAdresseRepresentant.CURATELLE || type == TypeAdresseRepresentant.CONSEIL_LEGAL) {
 			// Un ménage ne peut pas être mis sous tutelle/curatelle, seulement les personnes physiques qui le compose. On va donc chercher le tuteur/curateur sur ces derniers.
 
 			final EnsembleTiersCouple ensemble = tiersService.getEnsembleTiersCouple(menage, null);
@@ -1532,7 +1533,7 @@ public class AdresseServiceImpl implements AdresseService {
 		for (AdresseGenerique adresse : adressesCourrierConjoint) {
 
 			final Source source = adresse.getSource();
-			if (source == Source.TUTELLE || source == Source.CURATELLE) {
+			if (source == Source.TUTELLE || source == Source.CURATELLE || source == Source.CONSEIL_LEGAL) {
 				// on ignore toutes les adresses où le conjoint est lui-même sous tutelle
 				continue;
 			}

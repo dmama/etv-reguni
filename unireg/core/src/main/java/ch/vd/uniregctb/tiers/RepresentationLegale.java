@@ -36,29 +36,18 @@ public abstract class RepresentationLegale extends RapportEntreTiers {
 	 */
 	private Long autoriteTutelaireId;
 
-
-	public RepresentationLegale() {
-		// empty
+	protected RepresentationLegale() {
+		// vide, nécessaire pour la persistence
 	}
 
-	public RepresentationLegale(RepresentationLegale representation) {
-		super(representation);
-		this.autoriteTutelaireId = representation.getAutoriteTutelaireId();
+	protected RepresentationLegale(RepresentationLegale representationLegale) {
+		super(representationLegale);
+		this.autoriteTutelaireId = representationLegale.autoriteTutelaireId;
 	}
 
-	public RepresentationLegale(RegDate dateDebut, RegDate dateFin, PersonnePhysique sujet, PersonnePhysique repesentant) {
-		super(dateDebut, dateFin, sujet, repesentant);
-		this.autoriteTutelaireId = null;
-	}
-
-	public RepresentationLegale(RegDate dateDebut, RegDate dateFin, PersonnePhysique sujet, PersonnePhysique repesentant, CollectiviteAdministrative autoriteTutelaire) {
+	public RepresentationLegale(RegDate dateDebut, RegDate dateFin, PersonnePhysique sujet, Tiers repesentant, CollectiviteAdministrative autoriteTutelaire) {
 		super(dateDebut, dateFin, sujet, repesentant);
 		this.autoriteTutelaireId = (autoriteTutelaire == null ? null : autoriteTutelaire.getId());
-	}
-
-	public RepresentationLegale(RegDate dateDebut, RegDate dateFin, PersonnePhysique sujet, CollectiviteAdministrative repesentant) {
-		super(dateDebut, dateFin, sujet, repesentant);
-		this.autoriteTutelaireId = (repesentant == null ? null : repesentant.getId());
 	}
 
 	/**

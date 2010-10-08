@@ -32,32 +32,18 @@ public class ConseilLegal extends RepresentationLegale {
 	private static final long serialVersionUID = 4695352371610248334L;
 
 	public ConseilLegal() {
-		// empty
+		// vide, nécessaire pour la persistence
 	}
-	public ConseilLegal(ConseilLegal representation) {
-		super(representation);
+
+	protected ConseilLegal(ConseilLegal conseilLegal) {
+		super(conseilLegal);
 	}
 
 	/**
-	 * Conseil légal entre une pupille et un conseiller ordinaire.
+	 * Conseil légal entre une pupille et un conseiller, potentiellement ordonné par une autorité tutélaire (justice de paix)
 	 */
-	public ConseilLegal(RegDate dateDebut, RegDate dateFin, PersonnePhysique pupille, PersonnePhysique conseiller) {
-		super(dateDebut, dateFin, pupille, conseiller);
-	}
-
-	/**
-	 * Conseil légal entre une pupille et un conseiller professionel membre d'un office de tuteur général.
-	 */
-	public ConseilLegal(RegDate dateDebut, RegDate dateFin, PersonnePhysique pupille, PersonnePhysique conseiller,
-			CollectiviteAdministrative autoriteTutelaire) {
+	public ConseilLegal(RegDate dateDebut, RegDate dateFin, PersonnePhysique pupille, Tiers conseiller, CollectiviteAdministrative autoriteTutelaire) {
 		super(dateDebut, dateFin, pupille, conseiller, autoriteTutelaire);
-	}
-
-	/**
-	 * Conseil légal entre une pupille et un office de tuteur général en l'absence d'un conseiller professionel connu.
-	 */
-	public ConseilLegal(RegDate dateDebut, RegDate dateFin, PersonnePhysique pupille, CollectiviteAdministrative conseiller) {
-		super(dateDebut, dateFin, pupille, conseiller);
 	}
 
 	public RapportEntreTiers duplicate() {

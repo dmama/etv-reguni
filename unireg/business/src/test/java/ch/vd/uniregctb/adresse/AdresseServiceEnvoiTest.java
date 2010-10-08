@@ -1649,12 +1649,12 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 		final MenageCommun mc = ensemble.getMenage();
 
 		final PersonnePhysique tuteurMonsieur = addHabitant(noIndividuTuteurMonsieur);
-		final Tutelle tutelle = new Tutelle(date(2000,1,1), null, monsieur, tuteurMonsieur);
+		final Tutelle tutelle = new Tutelle(date(2000,1,1), null, monsieur, tuteurMonsieur, null);
 		monsieur.addRapportSujet(tutelle);
 		tuteurMonsieur.addRapportObjet(tutelle);
 
 		final PersonnePhysique curateurMadame = addHabitant(noIndividuCurateurMadame);
-		final Curatelle curatelle = new Curatelle(date(2000,1,1), null, madame, curateurMadame);
+		final Curatelle curatelle = new Curatelle(date(2000,1,1), null, madame, curateurMadame, null);
 		madame.addRapportSujet(curatelle);
 		curateurMadame.addRapportObjet(curatelle);
 

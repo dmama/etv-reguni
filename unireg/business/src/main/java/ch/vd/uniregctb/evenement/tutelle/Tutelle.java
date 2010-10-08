@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.evenement.tutelle;
 
 import ch.vd.uniregctb.evenement.EvenementCivil;
+import ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.TuteurGeneral;
 
@@ -31,4 +32,9 @@ public interface Tutelle extends EvenementCivil {
 	 * @return le type de la tutelle
 	 */
 	TypeTutelle getTypeTutelle();
+
+	/**
+	 * @return la justice de paix qui a décidé la tutelle
+	 */
+	CollectiviteAdministrative getAutoriteTutelaire();
 }

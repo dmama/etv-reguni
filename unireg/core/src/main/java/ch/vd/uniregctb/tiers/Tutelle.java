@@ -32,32 +32,18 @@ public class Tutelle extends RepresentationLegale {
 	private static final long serialVersionUID = 8255992899554760735L;
 
 	public Tutelle() {
-		// empty
+		// vide, nécessaire pour la persistence
 	}
-	public Tutelle(Tutelle representation) {
+
+	protected Tutelle(Tutelle representation) {
 		super(representation);
 	}
 
 	/**
-	 * Tutelle entre une pupille et un tuteur ordinaire.
+	 * Tutelle entre une pupille et son tuteur, potentiellement ordonné par une autorité tutélaire (justice de paix)
 	 */
-	public Tutelle(RegDate dateDebut, RegDate dateFin, PersonnePhysique pupille, PersonnePhysique tuteur) {
-		super(dateDebut, dateFin, pupille, tuteur);
-	}
-
-	/**
-	 * Tutelle entre une pupille et un tuteur professionel membre d'un office de tuteur général.
-	 */
-	public Tutelle(RegDate dateDebut, RegDate dateFin, PersonnePhysique pupille, PersonnePhysique tuteur,
-			CollectiviteAdministrative autoriteTutelaire) {
+	public Tutelle(RegDate dateDebut, RegDate dateFin, PersonnePhysique pupille, Tiers tuteur, CollectiviteAdministrative autoriteTutelaire) {
 		super(dateDebut, dateFin, pupille, tuteur, autoriteTutelaire);
-	}
-
-	/**
-	 * Tutelle entre une pupille et un office de tuteur général en l'absence d'un tuteur professionel connu.
-	 */
-	public Tutelle(RegDate dateDebut, RegDate dateFin, PersonnePhysique pupille, CollectiviteAdministrative tuteur) {
-		super(dateDebut, dateFin, pupille, tuteur);
 	}
 
 	public RapportEntreTiers duplicate() {

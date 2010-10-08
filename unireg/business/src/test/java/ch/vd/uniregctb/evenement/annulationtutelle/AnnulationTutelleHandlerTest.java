@@ -56,7 +56,7 @@ public class AnnulationTutelleHandlerTest extends AbstractEvenementHandlerTest {
 				addDefaultAdressesTo(pierre);
 
 				/* tutelles */
-				setTutelle(momo, pierre, EnumTypeTutelle.CONSEIL_LEGAL);
+				setTutelle(momo, pierre, null, EnumTypeTutelle.CONSEIL_LEGAL);
 			}
 		});
 

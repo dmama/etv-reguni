@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
+
 import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
@@ -26,6 +28,7 @@ import ch.vd.uniregctb.interfaces.model.Nationalite;
 import ch.vd.uniregctb.interfaces.model.Pays;
 import ch.vd.uniregctb.interfaces.model.Permis;
 import ch.vd.uniregctb.interfaces.model.mock.MockAdresse;
+import ch.vd.uniregctb.interfaces.model.mock.MockCollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.model.mock.MockEtatCivil;
 import ch.vd.uniregctb.interfaces.model.mock.MockHistoriqueIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
@@ -404,18 +407,35 @@ public abstract class MockServiceCivil extends ServiceCivilServiceBase {
 		nationalites.add(nationalite);
 	}
 
-	protected void setTutelle(MockIndividu pupille, MockIndividu tuteur, EnumTypeTutelle type) {
+	private static String merge(String... bits) {
+		final StringBuilder b = new StringBuilder();
+		for (String bit : bits) {
+			if (StringUtils.isNotBlank(bit)) {
+				b.append(StringUtils.trimToEmpty(bit));
+			}
+		}
+		return b.toString();
+	}
+
+	protected void setTutelle(MockIndividu pupille, MockIndividu tuteur, MockCollectiviteAdministrative autoriteTutelaire, EnumTypeTutelle type) {
 		final MockTutelle tutelle = new MockTutelle();
 		tutelle.setLibelleMotif("BlaBla");
 		tutelle.setTuteur(tuteur);
-		tutelle.setNomAutoriteTutelaire(null);
+		if (autoriteTutelaire != null) {
+			tutelle.setNomAutoriteTutelaire(merge(autoriteTutelaire.getNomComplet1(), autoriteTutelaire.getNomComplet2(), autoriteTutelaire.getNomComplet3()));
+			tutelle.setNumeroCollectiviteAutoriteTutelaire((long) autoriteTutelaire.getNoColAdm());
+		}
+		else {
+			tutelle.setNomAutoriteTutelaire(null);
+			tutelle.setNumeroCollectiviteAutoriteTutelaire(null);
+		}
 		tutelle.setTuteurGeneral(null);
 		tutelle.setTypeTutelle(type);
 
 		pupille.setTutelle(tutelle);
 	}
 
-	protected void setTutelle(MockIndividu pupille, EnumTypeTutelle type) {
+	protected void setTutelle(MockIndividu pupille, MockCollectiviteAdministrative autoriteTutelaire, EnumTypeTutelle type) {
 		final MockTuteurGeneral tuteurGeneral = new MockTuteurGeneral();
 		tuteurGeneral.setNomContact("Ouilles");
 		tuteurGeneral.setNomOffice("Office du Tuteur General de Vaud");
@@ -425,7 +445,14 @@ public abstract class MockServiceCivil extends ServiceCivilServiceBase {
 		final MockTutelle tutelle = new MockTutelle();
 		tutelle.setLibelleMotif("BlaBla");
 		tutelle.setTuteur(null);
-		tutelle.setNomAutoriteTutelaire(null);
+		if (autoriteTutelaire != null) {
+			tutelle.setNomAutoriteTutelaire(merge(autoriteTutelaire.getNomComplet1(), autoriteTutelaire.getNomComplet2(), autoriteTutelaire.getNomComplet3()));
+			tutelle.setNumeroCollectiviteAutoriteTutelaire((long) autoriteTutelaire.getNoColAdm());
+		}
+		else {
+			tutelle.setNomAutoriteTutelaire(null);
+			tutelle.setNumeroCollectiviteAutoriteTutelaire(null);
+		}
 		tutelle.setTuteurGeneral(tuteurGeneral);
 		tutelle.setTypeTutelle(type);
 

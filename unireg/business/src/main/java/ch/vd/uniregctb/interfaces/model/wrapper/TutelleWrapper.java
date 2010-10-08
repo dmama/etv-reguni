@@ -21,6 +21,7 @@ public class TutelleWrapper implements Tutelle, Serializable {
 	private String libelleMotif;
 	private int noSequence;
 	private String nomAutoriteTutelaire;
+	private Long numeroCollectiviteAutoriteTutelaire;
 	private EnumTypeTutelle typeTutelle;
 
 	public static TutelleWrapper get(ch.vd.registre.civil.model.Tutelle target) {
@@ -36,6 +37,7 @@ public class TutelleWrapper implements Tutelle, Serializable {
 		this.libelleMotif = target.getLibelleMotif();
 		this.noSequence = target.getNoSequence();
 		this.nomAutoriteTutelaire = target.getNomAutoriteTutelaire();
+		this.numeroCollectiviteAutoriteTutelaire = target.getNumeroCollectiviteAutoriteTutellaire();
 		this.targetTuteur = target.getTuteur();
 		this.targetTuteurGeneral = target.getTuteurGeneral();
 		this.typeTutelle = target.getTypeTutelle();
@@ -59,6 +61,10 @@ public class TutelleWrapper implements Tutelle, Serializable {
 
 	public String getNomAutoriteTutelaire() {
 		return nomAutoriteTutelaire;
+	}
+
+	public Long getNumeroCollectiviteAutoriteTutelaire() {
+		return numeroCollectiviteAutoriteTutelaire;
 	}
 
 	public Individu getTuteur() {

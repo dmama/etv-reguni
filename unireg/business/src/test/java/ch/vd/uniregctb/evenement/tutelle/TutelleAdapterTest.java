@@ -159,10 +159,10 @@ public class TutelleAdapterTest extends WithoutSpringTest {
 			addDefaultAdressesTo(julien);
 
 			/* tutelles */
-			setTutelle(momo, pierre, EnumTypeTutelle.CONSEIL_LEGAL);
-			setTutelle(bea, pierre, EnumTypeTutelle.CURATELLE);
-			setTutelle(julie, pierre, EnumTypeTutelle.TUTELLE);
-			setTutelle(david, EnumTypeTutelle.TUTELLE);
+			setTutelle(momo, pierre, null, EnumTypeTutelle.CONSEIL_LEGAL);
+			setTutelle(bea, pierre, null, EnumTypeTutelle.CURATELLE);
+			setTutelle(julie, pierre, null, EnumTypeTutelle.TUTELLE);
+			setTutelle(david, null, EnumTypeTutelle.TUTELLE);
 		}
 	};
 }

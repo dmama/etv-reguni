@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.evenement.tutelle;
 
 import ch.vd.uniregctb.evenement.common.MockEvenementCivil;
+import ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.TuteurGeneral;
 
@@ -14,6 +15,7 @@ public class MockTutelle extends MockEvenementCivil implements Tutelle {
 	private Individu tuteur;
 	private TuteurGeneral tuteurGeneral;
 	private TypeTutelle typeTutelle;
+	private CollectiviteAdministrative autoriteTutelaire;
 
 	public Individu getTuteur() {
 		return tuteur;
@@ -37,6 +39,14 @@ public class MockTutelle extends MockEvenementCivil implements Tutelle {
 
 	public void setTypeTutelle(TypeTutelle typeTutelle) {
 		this.typeTutelle = typeTutelle;
+	}
+
+	public CollectiviteAdministrative getAutoriteTutelaire() {
+		return autoriteTutelaire;
+	}
+
+	public void setAutoriteTutelaire(CollectiviteAdministrative autoriteTutelaire) {
+		this.autoriteTutelaire = autoriteTutelaire;
 	}
 
 	public boolean isContribuablePresentBefore() {

@@ -196,7 +196,7 @@ public class RapportEntreTiersTest extends CoreDAOTest {
 				PersonnePhysique tuteur = (PersonnePhysique) dao.get(tuteurNum);
 				PersonnePhysique pupille = (PersonnePhysique) dao.get(pupilleNum);
 
-				RapportEntreTiers tutelle = new Tutelle(RegDate.get(2006, 1, 12), null, pupille, tuteur);
+				RapportEntreTiers tutelle = new Tutelle(RegDate.get(2006, 1, 12), null, pupille, tuteur, null);
 
 				tutelle = dao.save(tutelle);
 				return null;

@@ -71,7 +71,7 @@ public class Ec_25000_01_Tutelle_AvecTuteur_Scenario extends EvenementCivilScena
 				//addDefaultAdressesTo(indBea);
 				//addDefaultAdressesTo(indJulie);
 
-				setTutelle(indJulie, indBea, EnumTypeTutelle.TUTELLE);
+				setTutelle(indJulie, indBea, null, EnumTypeTutelle.TUTELLE);
 
 			}
 		});

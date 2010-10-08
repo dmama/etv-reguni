@@ -2,11 +2,13 @@ package ch.vd.uniregctb.evenement.tutelle;
 
 import org.apache.log4j.Logger;
 
+import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.registre.civil.model.EnumTypeTutelle;
 import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.evenement.EvenementAdapterException;
 import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.evenement.GenericEvenementAdapter;
+import ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.TuteurGeneral;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
@@ -38,6 +40,11 @@ public class TutelleAdapter extends GenericEvenementAdapter implements Tutelle {
 	private TypeTutelle typeTutelle = null;
 
 	/**
+	 * L'autorité tutélaire
+	 */
+	private CollectiviteAdministrative autoriteTutelaire = null;
+
+	/**
 	 * @return Returns the tuteurGeneral.
 	 */
 	public final TuteurGeneral getTuteurGeneral() {
@@ -51,14 +58,6 @@ public class TutelleAdapter extends GenericEvenementAdapter implements Tutelle {
 		return tuteur;
 	}
 
-	/**
-	 * @param tuteur
-	 *            The tuteur to set.
-	 */
-	public final void setTuteur(Individu tuteur) {
-		this.tuteur = tuteur;
-	}
-
 	/*
 	 * (non-Javadoc)
 	 *
@@ -68,13 +67,20 @@ public class TutelleAdapter extends GenericEvenementAdapter implements Tutelle {
 		return typeTutelle;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see ch.vd.uniregctb.evenement.GenericEvenementAdapter#init(ch.vd.uniregctb.evenement.EvenementCivilData,
-	 *      ch.vd.registre.civil.service.ServiceCivil,
-	 *      ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService)
+	/**
+	 * @return l'autorité tutélaire qui a ordonné la tutelle
 	 */
+	public CollectiviteAdministrative getAutoriteTutelaire() {
+		return autoriteTutelaire;
+	}
+
+	/*
+		 * (non-Javadoc)
+		 *
+		 * @see ch.vd.uniregctb.evenement.GenericEvenementAdapter#init(ch.vd.uniregctb.evenement.EvenementCivilData,
+		 *      ch.vd.registre.civil.service.ServiceCivil,
+		 *      ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService)
+		 */
 	@Override
 	public void init(EvenementCivilData evenementCivilData, ServiceCivilService serviceCivil, ServiceInfrastructureService infrastructureService, DataEventService dataEventService) throws EvenementAdapterException {
 		super.init(evenementCivilData, serviceCivil, infrastructureService, dataEventService);
@@ -111,6 +117,15 @@ public class TutelleAdapter extends GenericEvenementAdapter implements Tutelle {
 		 */
 		this.tuteurGeneral = tutelle.getTuteurGeneral();
 		this.tuteur = tutelle.getTuteur();
+
+		if (tutelle.getNumeroCollectiviteAutoriteTutelaire() != null) {
+			try {
+				this.autoriteTutelaire = infrastructureService.getCollectivite(tutelle.getNumeroCollectiviteAutoriteTutelaire().intValue());
+			}
+			catch (InfrastructureException e) {
+				throw new EvenementAdapterException(String.format("Autorité tutélaire avec numéro %d introuvable", tutelle.getNumeroCollectiviteAutoriteTutelaire()), e);
+			}
+		}
 	}
 
 }

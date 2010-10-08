@@ -13,6 +13,7 @@ public class MockTutelle implements Tutelle {
 	private String libelleMotif;
 	private int noSequence;
 	private String nomAutoriteTutelaire;
+	private Long numeroCollectiviteAutoriteTutelaire;
 	private Individu tuteur;
 	private TuteurGeneral tuteurGeneral;
 	private EnumTypeTutelle typeTutelle;
@@ -79,5 +80,13 @@ public class MockTutelle implements Tutelle {
 
 	public void setTypeTutelle(EnumTypeTutelle typeTutelle) {
 		this.typeTutelle = typeTutelle;
+	}
+
+	public Long getNumeroCollectiviteAutoriteTutelaire() {
+		return numeroCollectiviteAutoriteTutelaire;
+	}
+
+	public void setNumeroCollectiviteAutoriteTutelaire(Long numeroCollectiviteAutoriteTutelaire) {
+		this.numeroCollectiviteAutoriteTutelaire = numeroCollectiviteAutoriteTutelaire;
 	}
 }

@@ -860,13 +860,8 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		return ensemble;
 	}
 
-	protected Tutelle addTutelle(PersonnePhysique pupille, Tiers tuteur, Tiers autoriteTutelaire, RegDate dateDebut, RegDate dateFin) {
-		Tutelle rapport = new Tutelle();
-		rapport.setDateDebut(dateDebut);
-		rapport.setDateFin(dateFin);
-		rapport.setObjet(tuteur);
-		rapport.setSujet(pupille);
-		rapport.setAutoriteTutelaire(autoriteTutelaire);
+	protected Tutelle addTutelle(PersonnePhysique pupille, Tiers tuteur, CollectiviteAdministrative autoriteTutelaire, RegDate dateDebut, RegDate dateFin) {
+		Tutelle rapport = new Tutelle(dateDebut, dateFin, pupille, tuteur, autoriteTutelaire);
 		rapport = (Tutelle) hibernateTemplate.merge(rapport);
 		tuteur.addRapportObjet(rapport);
 		pupille.addRapportSujet(rapport);
@@ -874,11 +869,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	}
 
 	protected Curatelle addCuratelle(PersonnePhysique pupille, Tiers curateur, RegDate dateDebut, RegDate dateFin) {
-		Curatelle rapport = new Curatelle();
-		rapport.setDateDebut(dateDebut);
-		rapport.setDateFin(dateFin);
-		rapport.setObjet(curateur);
-		rapport.setSujet(pupille);
+		Curatelle rapport = new Curatelle(dateDebut, dateFin, pupille, curateur, null);
 		rapport = (Curatelle) hibernateTemplate.merge(rapport);
 		curateur.addRapportObjet(rapport);
 		pupille.addRapportSujet(rapport);
@@ -897,11 +888,8 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		return rapport;
 	}
 
-	protected ConseilLegal addConseilLegal(Tiers pupille, Tiers conseiller, RegDate dateDebut) {
-		ConseilLegal rapport = new ConseilLegal();
-		rapport.setDateDebut(dateDebut);
-		rapport.setObjet(conseiller);
-		rapport.setSujet(pupille);
+	protected ConseilLegal addConseilLegal(PersonnePhysique pupille, Tiers conseiller, RegDate dateDebut) {
+		ConseilLegal rapport = new ConseilLegal(dateDebut, null, pupille, conseiller, null);
 		rapport = (ConseilLegal) hibernateTemplate.merge(rapport);
 		conseiller.addRapportObjet(rapport);
 		pupille.addRapportSujet(rapport);

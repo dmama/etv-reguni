@@ -5,9 +5,9 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.civil.model.EnumTypeTutelle;
@@ -15,13 +15,12 @@ import ch.vd.uniregctb.evenement.AbstractEvenementHandlerTest;
 import ch.vd.uniregctb.evenement.EvenementCivilErreur;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.TuteurGeneral;
+import ch.vd.uniregctb.interfaces.model.mock.MockCollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockTuteurGeneral;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
-import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
-import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.RapportEntreTiers;
+import ch.vd.uniregctb.tiers.*;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
 /**
@@ -66,8 +65,8 @@ public class TutelleHandlerTest extends AbstractEvenementHandlerTest {
 				addDefaultAdressesTo(julien);
 
 				/* tutelles */
-				setTutelle(momo, pierre, EnumTypeTutelle.CONSEIL_LEGAL);
-				setTutelle(david, EnumTypeTutelle.TUTELLE);
+				setTutelle(momo, pierre, null, EnumTypeTutelle.CONSEIL_LEGAL);
+				setTutelle(david, null, EnumTypeTutelle.TUTELLE);
 			}
 		});
 	}
@@ -88,7 +87,7 @@ public class TutelleHandlerTest extends AbstractEvenementHandlerTest {
 			public Object execute(TransactionStatus status) throws Exception {
 				Individu pupille = serviceCivil.getIndividu(NO_INDIVIDU_PUPILLE_AVEC_TUTEUR, 2007);
 				Individu tuteur = serviceCivil.getIndividu(NO_INDIVIDU_TUTEUR, 2007);
-				Tutelle tutelle = createTutelle(pupille, tuteur, null);
+				Tutelle tutelle = createTutelle(pupille, tuteur, null, MockCollectiviteAdministrative.JusticePaix.DistrictsJuraNordVaudoisEtGrosDeVaud);
 
 				List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 				List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
@@ -96,7 +95,7 @@ public class TutelleHandlerTest extends AbstractEvenementHandlerTest {
 				evenementCivilHandler.checkCompleteness(tutelle, erreurs, warnings);
 				evenementCivilHandler.validate(tutelle, erreurs, warnings);
 				evenementCivilHandler.handle(tutelle, warnings);
-				Assert.isTrue(erreurs.isEmpty(), "Une erreur est survenue lors du traitement de la mise sous tutelle");
+				Assert.assertTrue("Une erreur est survenue lors du traitement de la mise sous tutelle", erreurs.isEmpty());
 				return null;
 			}
 		});
@@ -105,32 +104,42 @@ public class TutelleHandlerTest extends AbstractEvenementHandlerTest {
 		 * Récupération du tiers pupille
 		 */
 		PersonnePhysique tiersPupille = tiersDAO.getHabitantByNumeroIndividu(NO_INDIVIDU_PUPILLE_AVEC_TUTEUR);
-		Assert.notNull(tiersPupille, "Impossible de récupérer l'habitant correspondant au pupille");
+		Assert.assertNotNull("Impossible de récupérer l'habitant correspondant au pupille", tiersPupille);
 
 		/*
 		 * Récupération du tiers tuteur
 		 */
 		PersonnePhysique tiersTuteur = tiersDAO.getHabitantByNumeroIndividu(NO_INDIVIDU_TUTEUR);
-		Assert.notNull(tiersTuteur, "Impossible de récupérer l'habitant correspondant au tuteur");
+		Assert.assertNotNull("Impossible de récupérer l'habitant correspondant au tuteur", tiersTuteur);
 
 		/*
 		 * Test du rapport entre tiers depuis le pupille
 		 */
 		Set<RapportEntreTiers> rapports = tiersPupille.getRapportsSujet();
-		Assert.isTrue(rapports.size() == 1, "le rapport de tutelle entre le pupille et le tuteur n'a pas été créé");
+		Assert.assertEquals("le rapport de tutelle entre le pupille et le tuteur n'a pas été créé", 1, rapports.size());
 		for (RapportEntreTiers rapport : rapports) {
-			Assert.isTrue(rapport.getType().equals(TypeRapportEntreTiers.TUTELLE), "Le rapport créé n'est pas de type tutelle");
-			Assert.isTrue(rapport.getObjetId().equals(tiersTuteur.getId()), "Le rapport créé ne l'a pas été avec le tuteur");
+			Assert.assertEquals("Le rapport créé n'est pas de type tutelle", TypeRapportEntreTiers.TUTELLE, rapport.getType());
+			Assert.assertEquals("Le rapport créé ne l'a pas été avec le tuteur", tiersTuteur.getId(), rapport.getObjetId());
+
+			final RepresentationLegale tutelle = (RepresentationLegale) rapport;
+			final CollectiviteAdministrative justiceDePaix = tiersService.getCollectiviteAdministrative(MockCollectiviteAdministrative.JusticePaix.DistrictsJuraNordVaudoisEtGrosDeVaud.getNoColAdm());
+			Assert.assertNotNull(justiceDePaix);
+			Assert.assertEquals("L'autorité tutélaire n'a pas été associée à la tutelle", justiceDePaix.getId(), tutelle.getAutoriteTutelaireId());
 		}
 
 		/*
 		 * Test du rapport entre tiers depuis le tuteur
 		 */
 		rapports = tiersTuteur.getRapportsObjet();
-		Assert.isTrue(rapports.size() == 1, "le rapport de tutelle entre le tuteur et le pupille n'a pas été créé");
+		Assert.assertEquals("le rapport de tutelle entre le tuteur et le pupille n'a pas été créé", 1, rapports.size());
 		for (RapportEntreTiers rapport : rapports) {
-			Assert.isTrue(rapport.getType().equals(TypeRapportEntreTiers.TUTELLE), "Le rapport créé n'est pas de type tutelle");
-			Assert.isTrue(rapport.getSujetId().equals(tiersPupille.getId()), "Le rapport créé ne l'a pas été avec le pupille");
+			Assert.assertEquals("Le rapport créé n'est pas de type tutelle", TypeRapportEntreTiers.TUTELLE, rapport.getType());
+			Assert.assertEquals("Le rapport créé ne l'a pas été avec le pupille", tiersPupille.getId(), rapport.getSujetId());
+
+			final RepresentationLegale tutelle = (RepresentationLegale) rapport;
+			final CollectiviteAdministrative justiceDePaix = tiersService.getCollectiviteAdministrative(MockCollectiviteAdministrative.JusticePaix.DistrictsJuraNordVaudoisEtGrosDeVaud.getNoColAdm());
+			Assert.assertNotNull(justiceDePaix);
+			Assert.assertEquals("L'autorité tutélaire n'a pas été associée à la tutelle", justiceDePaix.getId(), tutelle.getAutoriteTutelaireId());
 		}
 	}
 
@@ -149,7 +158,7 @@ public class TutelleHandlerTest extends AbstractEvenementHandlerTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				Individu pupille = serviceCivil.getIndividu(NO_INDIVIDU_PUPILLE_AVEC_TUTEUR_GENERAL, 2007);
-				Tutelle tutelle = createTutelle(pupille, null, new MockTuteurGeneral());
+				Tutelle tutelle = createTutelle(pupille, null, new MockTuteurGeneral(), MockCollectiviteAdministrative.JusticePaix.DistrictsJuraNordVaudoisEtGrosDeVaud);
 				List<EvenementCivilErreur> erreurs = new ArrayList<EvenementCivilErreur>();
 				List<EvenementCivilErreur> warnings = new ArrayList<EvenementCivilErreur>();
 
@@ -157,7 +166,7 @@ public class TutelleHandlerTest extends AbstractEvenementHandlerTest {
 				evenementCivilHandler.validate(tutelle, erreurs, warnings);
 				evenementCivilHandler.handle(tutelle, warnings);
 
-				Assert.isTrue(erreurs.isEmpty(), "Une erreur est survenue lors du traitement de la mise sous tutelle");
+				Assert.assertTrue("Une erreur est survenue lors du traitement de la mise sous tutelle", erreurs.isEmpty());
 				return null;
 			}
 		});
@@ -166,37 +175,47 @@ public class TutelleHandlerTest extends AbstractEvenementHandlerTest {
 		 * Récupération du tiers pupille
 		 */
 		PersonnePhysique tiersPupille = tiersDAO.getHabitantByNumeroIndividu(NO_INDIVIDU_PUPILLE_AVEC_TUTEUR_GENERAL);
-		Assert.notNull(tiersPupille, "Impossible de récupérer l'habitant correspondant au pupille");
+		Assert.assertNotNull("Impossible de récupérer l'habitant correspondant au pupille", tiersPupille);
 
 		/*
 		 * Récupération du tiers tuteur
 		 */
 		CollectiviteAdministrative tiersOTG = tiersDAO
 				.getCollectiviteAdministrativesByNumeroTechnique(ServiceInfrastructureService.noTuteurGeneral);
-		Assert.notNull(tiersOTG, "Impossible de récupérer le tiers correspondant a l'OTG");
+		Assert.assertNotNull("Impossible de récupérer le tiers correspondant a l'OTG", tiersOTG);
 
 		/*
 		 * Test du rapport entre tiers depuis le pupille
 		 */
 		Set<RapportEntreTiers> rapports = tiersPupille.getRapportsSujet();
-		Assert.isTrue(rapports.size() == 1, "le rapport de tutelle entre le pupille et le tuteur n'a pas été créé");
+		Assert.assertEquals("le rapport de tutelle entre le pupille et le tuteur n'a pas été créé", 1, rapports.size());
 		for (RapportEntreTiers rapport : rapports) {
-			Assert.isTrue(rapport.getType().equals(TypeRapportEntreTiers.TUTELLE), "Le rapport créé n'est pas de type tutelle");
-			Assert.isTrue(rapport.getObjetId().equals(tiersOTG.getId()), "Le rapport créé ne l'a pas été avec le tuteur");
+			Assert.assertEquals("Le rapport créé n'est pas de type tutelle", TypeRapportEntreTiers.TUTELLE, rapport.getType());
+			Assert.assertEquals("Le rapport créé ne l'a pas été avec le tuteur", tiersOTG.getId(), rapport.getObjetId());
+
+			final RepresentationLegale tutelle = (RepresentationLegale) rapport;
+			final CollectiviteAdministrative justiceDePaix = tiersService.getCollectiviteAdministrative(MockCollectiviteAdministrative.JusticePaix.DistrictsJuraNordVaudoisEtGrosDeVaud.getNoColAdm());
+			Assert.assertNotNull(justiceDePaix);
+			Assert.assertEquals("L'autorité tutélaire n'a pas été associée à la tutelle", justiceDePaix.getId(), tutelle.getAutoriteTutelaireId());
 		}
 
 		/*
 		 * Test du rapport entre tiers depuis le tuteur
 		 */
 		rapports = tiersOTG.getRapportsObjet();
-		Assert.isTrue(rapports.size() == 1, "le rapport de tutelle entre le tuteur et le pupille n'a pas été créé");
+		Assert.assertEquals("le rapport de tutelle entre le tuteur et le pupille n'a pas été créé", 1, rapports.size());
 		for (RapportEntreTiers rapport : rapports) {
-			Assert.isTrue(rapport.getType().equals(TypeRapportEntreTiers.TUTELLE), "Le rapport créé n'est pas de type tutelle");
-			Assert.isTrue(rapport.getSujetId().equals(tiersPupille.getId()), "Le rapport créé ne l'a pas été avec le pupille");
+			Assert.assertEquals("Le rapport créé n'est pas de type tutelle", TypeRapportEntreTiers.TUTELLE, rapport.getType());
+			Assert.assertEquals("Le rapport créé ne l'a pas été avec le pupille", tiersPupille.getId(), rapport.getSujetId());
+
+			final RepresentationLegale tutelle = (RepresentationLegale) rapport;
+			final CollectiviteAdministrative justiceDePaix = tiersService.getCollectiviteAdministrative(MockCollectiviteAdministrative.JusticePaix.DistrictsJuraNordVaudoisEtGrosDeVaud.getNoColAdm());
+			Assert.assertNotNull(justiceDePaix);
+			Assert.assertEquals("L'autorité tutélaire n'a pas été associée à la tutelle", justiceDePaix.getId(), tutelle.getAutoriteTutelaireId());
 		}
 	}
 
-	private MockTutelle createTutelle(Individu pupille, Individu tuteur, TuteurGeneral tuteurGeneral) {
+	private MockTutelle createTutelle(Individu pupille, Individu tuteur, TuteurGeneral tuteurGeneral, ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative autoriteTutelaire) {
 		MockTutelle tutelle = new MockTutelle();
 		tutelle.setIndividu(pupille);
 		tutelle.setNumeroOfsCommuneAnnonce(4848);
@@ -204,6 +223,7 @@ public class TutelleHandlerTest extends AbstractEvenementHandlerTest {
 		tutelle.setTypeTutelle(TypeTutelle.TUTELLE);
 		tutelle.setTuteur(tuteur);
 		tutelle.setTuteurGeneral(tuteurGeneral);
+		tutelle.setAutoriteTutelaire(autoriteTutelaire);
 		tutelle.init(tiersDAO);
 		return tutelle;
 	}
