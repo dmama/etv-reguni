@@ -19,23 +19,25 @@ public interface AdresseGenerique extends DateRange, Loggable, AdresseAvecCommun
 		REPRESENTATION,
 		TUTELLE,
 		CURATELLE,
-		/* = cas d'un ménage commun avec principal sous tutelle (l'adresse du conjoint prime sur celle du tuteur) */
+		/** = cas d'un ménage commun sans adresse propre (l'adresse du principal est utilisée comme source) */
+		PRINCIPAL,
+		/** = cas d'un ménage commun avec principal sous tutelle (l'adresse du conjoint prime sur celle du tuteur) */
 		CONJOINT,
 		CONSEIL_LEGAL,
 		PM,
 		/**
 		 * Cas du contribuable associé à un débiteur
 		 */
-		CONTRIBUABLE;
+		CONTRIBUABLE
 	}
 
 	/**
-	 * Retourne l'id de AdresseTiers quand il s'agit d'une AdresseTiers
+	 * @return l'id de AdresseTiers quand il s'agit d'une AdresseTiers
 	 */
 	Long getId();
 
 	/**
-	 * Retourne la source de l'adresse courante.
+	 * @return la source de l'adresse courante.
 	 */
 	Source getSource();
 
@@ -45,22 +47,16 @@ public interface AdresseGenerique extends DateRange, Loggable, AdresseAvecCommun
 	boolean isDefault();
 
     /**
-     * Retourne la case postale de l'adresse.
-     *
      * @return la case postale de l'adresse.
      */
     String getCasePostale();
 
     /**
-     * Retourne la date de fin de validité de l'adresse.
-     *
      * @return la date de fin de validité de l'adresse.
      */
     RegDate getDateDebut();
 
     /**
-     * Retourne la date de début de validité de l'adresse.
-     *
      * @return la date de début de validité de l'adresse.
      */
     RegDate getDateFin();
@@ -76,29 +72,21 @@ public interface AdresseGenerique extends DateRange, Loggable, AdresseAvecCommun
     String getLocaliteComplete();
 
     /**
-     * Retourne le numéro de l'adresse.
-     *
      * @return le numéro de l'adresse.
      */
     String getNumero();
 
     /**
-     * Retourne le numéro d'ordre postal de l'adresse.
-     *
      * @return le numéro d'ordre postal de l'adresse; ou <b>0</b> si la localité n'est pas renseignée.
      */
     int getNumeroOrdrePostal();
 
     /**
-     * Retourne le numéro postal de l'adresse.
-     *
      * @return le numéro postal de l'adresse.
      */
     String getNumeroPostal();
 
     /**
-     * Retourne le numéro postal complémentaire de l'adresse.
-     *
      * @return le numéro postal complémentaire de l'adresse.
      */
     String getNumeroPostalComplementaire();
@@ -109,8 +97,6 @@ public interface AdresseGenerique extends DateRange, Loggable, AdresseAvecCommun
     Integer getNoOfsPays();
 
     /**
-     * Retourne la rue de l'adresse.
-     *
      * @return la rue de l'adresse.
      */
     String getRue();
@@ -121,15 +107,11 @@ public interface AdresseGenerique extends DateRange, Loggable, AdresseAvecCommun
     Integer getNumeroRue();
 
     /**
-     * Retourne le numero de l'appartement.
-     *
      * @return le numero de l'appartement.
      */
     String getNumeroAppartement();
 
     /**
-     * Retourne le titre de l'adresse. Par exemple "Chez : ..." .
-     *
      * @return le titre de l'adresse. Par exemple "Chez : ..." .
      */
     String getComplement();

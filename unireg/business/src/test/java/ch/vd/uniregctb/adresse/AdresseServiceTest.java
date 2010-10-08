@@ -1642,24 +1642,12 @@ public class AdresseServiceTest extends BusinessTest {
 			@Override
 			protected void init() {
 				MockIndividu paul = addIndividu(noIndividuPrincipal, date(1953, 11, 2), "Dupont", "Paul", true);
-
-				// adresses courriers
-				addAdresse(paul, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null,
-						date(2000, 1, 1), null);
-
-				// adresses principales/poursuite
-				addAdresse(paul, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, date(2000, 1,
-						1), null);
+				addAdresse(paul, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, date(2000, 1, 1), null);
+				addAdresse(paul, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, date(2000, 1, 1), null);
 
 				MockIndividu virginie = addIndividu(noIndividuConjoint, date(1957, 1, 23), "Dupont", "Virginie", false);
-
-				// adresses courriers
-				addAdresse(virginie, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeMarcelin, null, date(2002,
-						2, 2), null);
-
-				// adresses principales/poursuite
-				addAdresse(virginie, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, date(2002,
-						2, 2), null);
+				addAdresse(virginie, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeMarcelin, null, date(2002, 2, 2), null);
+				addAdresse(virginie, EnumTypeAdresse.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, date(2002, 2, 2), null);
 
 				marieIndividus(paul, virginie, date(2004, 7, 14));
 			}
@@ -1760,19 +1748,23 @@ public class AdresseServiceTest extends BusinessTest {
 			assertEquals(1, adresses.domicile.size());
 
 			final AdresseGenerique courrier = adresses.courrier.get(0);
-			assertAdresse(date(1980, 1, 1), null, "Lausanne", Source.FISCALE, false, courrier);
+			assertAdresse(date(1980, 1, 1), null, "Lausanne", Source.PRINCIPAL, true, courrier);
+			assertNull(courrier.getId()); // [UNIREG-2927] cette adresse provient du principal, elle ne doit pas exposer l'id car elle n'appartient pas au ménage lui-même
 			assertEquals(MockRue.Lausanne.RouteMaisonNeuve.getNoRue(), courrier.getNumeroRue());
 
 			final AdresseGenerique representation = adresses.representation.get(0);
-			assertAdresse(date(1980, 1, 1), null, "Lausanne", Source.FISCALE, true, representation);
+			assertAdresse(date(1980, 1, 1), null, "Lausanne", Source.PRINCIPAL, true, representation);
+			assertNull(representation.getId()); // [UNIREG-2927] cette adresse provient du principal, elle ne doit pas exposer l'id car elle n'appartient pas au ménage lui-même
 			assertEquals(MockRue.Lausanne.RouteMaisonNeuve.getNoRue(), representation.getNumeroRue());
 
 			final AdresseGenerique poursuite = adresses.poursuite.get(0);
-			assertAdresse(date(1980, 1, 1), null, "Lausanne", Source.FISCALE, true, poursuite);
+			assertAdresse(date(1980, 1, 1), null, "Lausanne", Source.PRINCIPAL, true, poursuite);
+			assertNull(poursuite.getId()); // [UNIREG-2927] cette adresse provient du principal, elle ne doit pas exposer l'id car elle n'appartient pas au ménage lui-même
 			assertEquals(MockRue.Lausanne.RouteMaisonNeuve.getNoRue(), poursuite.getNumeroRue());
 
 			final AdresseGenerique domicile = adresses.domicile.get(0);
-			assertAdresse(date(1980, 1, 1), null, "Lausanne", Source.FISCALE, true, domicile);
+			assertAdresse(date(1980, 1, 1), null, "Lausanne", Source.PRINCIPAL, true, domicile);
+			assertNull(domicile.getId()); // [UNIREG-2927] cette adresse provient du principal, elle ne doit pas exposer l'id car elle n'appartient pas au ménage lui-même
 			assertEquals(MockRue.Lausanne.RouteMaisonNeuve.getNoRue(), domicile.getNumeroRue());
 		}
 
@@ -1784,16 +1776,16 @@ public class AdresseServiceTest extends BusinessTest {
 			final AdressesFiscales adresses = adresseService.getAdressesFiscales(menage, date(2008, 1, 1), false);
 			assertNotNull(adresses);
 
-			assertAdresse(date(1980, 1, 1), null, "Lausanne", Source.FISCALE, false, adresses.courrier);
+			assertAdresse(date(1980, 1, 1), null, "Lausanne", Source.PRINCIPAL, true, adresses.courrier);
 			assertEquals(MockRue.Lausanne.RouteMaisonNeuve.getNoRue(), adresses.courrier.getNumeroRue());
 
-			assertAdresse(date(1980, 1, 1), null, "Lausanne", Source.FISCALE, true, adresses.representation);
+			assertAdresse(date(1980, 1, 1), null, "Lausanne", Source.PRINCIPAL, true, adresses.representation);
 			assertEquals(MockRue.Lausanne.RouteMaisonNeuve.getNoRue(), adresses.representation.getNumeroRue());
 
-			assertAdresse(date(1980, 1, 1), null, "Lausanne", Source.FISCALE, true, adresses.poursuite);
+			assertAdresse(date(1980, 1, 1), null, "Lausanne", Source.PRINCIPAL, true, adresses.poursuite);
 			assertEquals(MockRue.Lausanne.RouteMaisonNeuve.getNoRue(), adresses.poursuite.getNumeroRue());
 
-			assertAdresse(date(1980, 1, 1), null, "Lausanne", Source.FISCALE, true, adresses.domicile);
+			assertAdresse(date(1980, 1, 1), null, "Lausanne", Source.PRINCIPAL, true, adresses.domicile);
 			assertEquals(MockRue.Lausanne.RouteMaisonNeuve.getNoRue(), adresses.domicile.getNumeroRue());
 
 			assertAdressesByTypeEquals(adresses, menage, date(2008, 1, 1));
@@ -1903,6 +1895,99 @@ public class AdresseServiceTest extends BusinessTest {
 			assertAdresse(date(2000, 1, 1), null, "Bex", Source.CIVILE, false, adresses.poursuite.get(0));
 
 			assertAdressesEquals(adresses.poursuite, adresses.domicile);
+		}
+	}
+
+	/**
+	 * [UNIREG-2927] Cas d'une personne avec une adresse tiers surchargée et sous tutelle pendant une certaine période.
+	 * <p/>
+	 * <pre>
+	 *                               +-------------------------------------------------------------------------------------------------------
+	 * Adresse civile pupille:       | Lausanne
+	 *                               +-------------------------------------------------------------------------------------------------------
+	 *                               ¦- 2000.01.01
+	 *                               ¦
+	 *                               +-------------------------------------------------------------------------------------------------------
+	 * Adresse prof. tuteur:         | Cossonay-Ville
+	 *                               +-------------------------------------------------------------------------------------------------------
+	 *                               ¦- 1985.04.01
+	 *                               ¦
+	 *                               ¦                            +--------------------------------------------------------------------------
+	 * Adresse fiscale pupille:      ¦                            | Renens
+	 *                               ¦                            +--------------------------------------------------------------------------
+	 *                               ¦                            ¦- 2002.01.01
+	 *                               ¦                            ¦
+	 *                               ¦                            ¦                            +----------------------------+
+	 * Rapport-entre-tiers:          ¦                            ¦                            | Tutelle                    |
+	 *                               ¦                            ¦                            +----------------------------+
+	 *                               ¦                            ¦                            ¦- 2004.01.01    2007.12.31 -¦
+	 *                               ¦                            ¦                            ¦                            ¦
+	 *                               +----------------------------+----------------------------+----------------------------+-----------------
+	 * Adresse courrier résultante:  | Lausanne                   | Renens                     | Cossonay-Ville             | Renens
+	 *                               +----------------------------+----------------------------+----------------------------+------------------
+	 *                               ¦- 2000.01.01    2001.12.31 -¦- 2002.01.01    2003.12.31 -¦- 2004.01.01    2007.12.31 -¦- 2008.01.01
+	 * </pre>
+	 */
+	@Test
+	public void testGetAdressesFiscalesHistoAdresseTiersEtTutelle() throws Exception {
+		final long noPupille = 2;
+		final long noTuteur = 5;
+
+		/*
+		 * Crée les données du mock service civil
+		 */
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				// la pupille
+				MockIndividu paul = addIndividu(noPupille, date(1953, 11, 2), "Dupont", "Paul", true);
+				addAdresse(paul, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, date(2000, 1, 1), null);
+				addAdresse(paul, EnumTypeAdresse.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, date(2000, 1, 1), null);
+
+				// le tuteur
+				MockIndividu jean = addIndividu(noTuteur, date(1966, 4, 2), "Dupneu", "Jean", true);
+				addAdresse(jean, EnumTypeAdresse.COURRIER, MockRue.CossonayVille.AvenueDuFuniculaire, null, date(1985, 4, 1), null);
+				addAdresse(jean, EnumTypeAdresse.PRINCIPALE, MockRue.CossonayVille.AvenueDuFuniculaire, null, date(1985, 4, 1), null);
+			}
+		});
+
+		class Ids {
+			Long pupille;
+			Long adresse;
+		}
+		final Ids ids = new Ids();
+
+		doInNewTransaction(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				// Crée le pupille, le tuteur et la tutelle
+				final PersonnePhysique pupille = addHabitant(noPupille);
+				ids.pupille = pupille.getId();
+				final AdresseSuisse adresse = addAdresseSuisse(pupille, TypeAdresseTiers.COURRIER, date(2002, 1, 1), null, MockRue.Renens.QuatorzeAvril);
+				ids.adresse = adresse.getId();
+
+				final PersonnePhysique tuteur = addHabitant(noTuteur);
+				addTutelle(pupille, tuteur, null, date(2004, 1, 1), date(2007, 12, 31));
+
+				return null;
+			}
+		});
+
+		// [UNIREG-2927] Vérification que les adresses génériques résultantes sur Renens exposent l'id de l'adresse supplémentaire sous-jacente.
+		{
+			final Tiers pupille = tiersService.getTiers(ids.pupille);
+			assertNotNull(pupille);
+
+			final AdressesFiscalesHisto adresses = adresseService.getAdressesFiscalHisto(pupille, false);
+			assertNotNull(adresses);
+
+			assertEquals(4, adresses.courrier.size());
+			assertAdresse(date(2000, 1, 1), date(2001, 12, 31), "Lausanne", Source.CIVILE, false, adresses.courrier.get(0));
+			assertAdresse(date(2002, 1, 1), date(2003, 12, 31), "Renens VD", Source.FISCALE, false, adresses.courrier.get(1));
+			assertEquals(ids.adresse, adresses.courrier.get(1).getId());
+			assertAdresse(date(2004, 1, 1), date(2007, 12, 31), "Cossonay-Ville", Source.TUTELLE, false, adresses.courrier.get(2));
+			assertAdresse(date(2008, 1, 1), null, "Renens VD", Source.FISCALE, false, adresses.courrier.get(3));
+			assertEquals(ids.adresse, adresses.courrier.get(3).getId());
 		}
 	}
 

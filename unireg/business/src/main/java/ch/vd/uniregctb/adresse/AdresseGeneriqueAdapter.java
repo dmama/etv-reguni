@@ -24,20 +24,27 @@ public class AdresseGeneriqueAdapter implements AdresseGenerique {
 	private Boolean isDefault;
 
 	/**
-	 * @param adresse
-	 *            l'adresse générique à adapter
-	 * @param source
-	 *            la source de l'adresse à publier
-	 * @param isDefault
-	 *            vrai si l'adresse représente une adresse par défaut
+	 * @param adresse   l'adresse générique à adapter
+	 * @param source    la source de l'adresse à publier
+	 * @param isDefault vrai si l'adresse représente une adresse par défaut
 	 */
 	public AdresseGeneriqueAdapter(AdresseGenerique adresse, Source source, Boolean isDefault) {
 		Assert.notNull(adresse);
 		this.target = adresse;
 		this.dateDebut = adresse.getDateDebut();
 		this.dateFin = adresse.getDateFin();
-		this.source = source;
-		this.isDefault = isDefault;
+		if (source == null) {
+			this.source = adresse.getSource();
+		}
+		else {
+			this.source = source;
+		}
+		if (isDefault == null) {
+			this.isDefault = adresse.isDefault();
+		}
+		else {
+			this.isDefault = isDefault;
+		}
 		optimize();
 		if (!adresse.isAnnule()) {
 			DateRangeHelper.assertValidRange(dateDebut, dateFin);
@@ -45,22 +52,23 @@ public class AdresseGeneriqueAdapter implements AdresseGenerique {
 	}
 
 	/**
-	 * @param adresse
-	 *            l'adresse générique à adapter
-	 * @param debut
-	 *            (option) une nouvelle adresse de début
-	 * @param fin
-	 *            (option) une nouvelle adresse de fin
-	 * @param isDefault
-	 *            vrai si l'adresse représente une adresse par défaut
+	 * @param adresse   l'adresse générique à adapter
+	 * @param debut     (option) une nouvelle adresse de début
+	 * @param fin       (option) une nouvelle adresse de fin
+	 * @param isDefault vrai si l'adresse représente une adresse par défaut
 	 */
 	public AdresseGeneriqueAdapter(AdresseGenerique adresse, RegDate debut, RegDate fin, Boolean isDefault) {
 		Assert.notNull(adresse);
 		this.target = adresse;
 		this.dateDebut = (debut == null ? adresse.getDateDebut() : debut);
 		this.dateFin = (fin == null ? adresse.getDateFin() : fin);
-		this.source = null;
-		this.isDefault = isDefault;
+		this.source = adresse.getSource();
+		if (isDefault == null) {
+			this.isDefault = adresse.isDefault();
+		}
+		else {
+			this.isDefault = isDefault;
+		}
 		optimize();
 		if (!adresse.isAnnule()) {
 			DateRangeHelper.assertValidRange(dateDebut, dateFin);
@@ -68,24 +76,29 @@ public class AdresseGeneriqueAdapter implements AdresseGenerique {
 	}
 
 	/**
-	 * @param adresse
-	 *            l'adresse générique à adapter
-	 * @param debut
-	 *            (option) une nouvelle adresse de début
-	 * @param fin
-	 *            (option) une nouvelle adresse de fin
-	 * @param source
-	 *            la source de l'adresse à publier
-	 * @param isDefault
-	 *            vrai si l'adresse représente une adresse par défaut
+	 * @param adresse   l'adresse générique à adapter
+	 * @param debut     (option) une nouvelle adresse de début
+	 * @param fin       (option) une nouvelle adresse de fin
+	 * @param source    la source de l'adresse à publier
+	 * @param isDefault vrai si l'adresse représente une adresse par défaut
 	 */
 	public AdresseGeneriqueAdapter(AdresseGenerique adresse, RegDate debut, RegDate fin, Source source, Boolean isDefault) {
 		Assert.notNull(adresse);
 		this.target = adresse;
 		this.dateDebut = (debut == null ? adresse.getDateDebut() : debut);
 		this.dateFin = (fin == null ? adresse.getDateFin() : fin);
-		this.source = source;
-		this.isDefault = isDefault;
+		if (source == null) {
+			this.source = adresse.getSource();
+		}
+		else {
+			this.source = source;
+		}
+		if (isDefault == null) {
+			this.isDefault = adresse.isDefault();
+		}
+		else {
+			this.isDefault = isDefault;
+		}
 		optimize();
 		if (!adresse.isAnnule()) {
 			DateRangeHelper.assertValidRange(dateDebut, dateFin);
@@ -149,21 +162,11 @@ public class AdresseGeneriqueAdapter implements AdresseGenerique {
 	}
 
 	public Source getSource() {
-		if (source == null) {
-			return target.getSource();
-		}
-		else {
-			return source;
-		}
+		return source;
 	}
 
 	public boolean isDefault() {
-		if (isDefault == null) {
-			return target.isDefault();
-		}
-		else {
-			return isDefault;
-		}
+		return isDefault;
 	}
 
 	/**
@@ -175,19 +178,11 @@ public class AdresseGeneriqueAdapter implements AdresseGenerique {
 	}
 
 	/**
-	 * Dans le cas où plusieurs AdresseGeneriqueAdapter sont emboîtées, cette méthode recalcule les valeurs surchargées pour ne garder
-	 * qu'une instance d'AdresseGeneriqueAdapter.
+	 * Dans le cas où plusieurs AdresseGeneriqueAdapter sont emboîtées, cette méthode recalcule les valeurs surchargées pour ne garder qu'une instance d'AdresseGeneriqueAdapter.
 	 */
 	private void optimize() {
 		if (target instanceof AdresseGeneriqueAdapter) {
 			final AdresseGeneriqueAdapter emboite = (AdresseGeneriqueAdapter) target;
-
-			if (source == null) {
-				source = emboite.source;
-			}
-			if (isDefault == null) {
-				isDefault = emboite.isDefault;
-			}
 			target = emboite.target;
 		}
 	}
@@ -233,7 +228,13 @@ public class AdresseGeneriqueAdapter implements AdresseGenerique {
 	}
 
 	public Long getId() {
-		return null;
+		if (source == Source.FISCALE) {
+			// [UNIREG-2927] dans le cas où l'adresse est de source fiscale, on expose l'id de manière à permettre l'édition de l'adresse dans la GUI
+			return target.getId();
+		}
+		else {
+			return null;
+		}
 	}
 
 	public CommuneSimple getCommuneAdresse() {

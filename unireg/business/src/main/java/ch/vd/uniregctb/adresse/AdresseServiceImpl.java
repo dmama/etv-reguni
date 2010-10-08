@@ -1023,11 +1023,10 @@ public class AdresseServiceImpl implements AdresseService {
 			final AdressesTiersHisto adressesPrincipal = TiersHelper.getAdressesTiersHisto(principal);
 
 			if (adressesPrincipal != null) {
-				adresses.courrier = surchargeAdressesTiersHisto(tiers, adresses.courrier, adressesPrincipal.courrier, callDepth + 1, strict);
-				adresses.representation = surchargeAdressesTiersHisto(tiers, adresses.representation, adressesPrincipal.representation,
-						callDepth + 1, strict);
-				adresses.poursuite = surchargeAdressesTiersHisto(tiers, adresses.poursuite, adressesPrincipal.poursuite, callDepth + 1, strict);
-				adresses.domicile = surchargeAdressesTiersHisto(tiers, adresses.domicile, adressesPrincipal.domicile, callDepth + 1, strict);
+				adresses.courrier = surchargeAdressesTiersHisto(tiers, adresses.courrier, adressesPrincipal.courrier, Source.PRINCIPAL, true, callDepth + 1, strict);
+				adresses.representation = surchargeAdressesTiersHisto(tiers, adresses.representation, adressesPrincipal.representation, Source.PRINCIPAL, true, callDepth + 1, strict);
+				adresses.poursuite = surchargeAdressesTiersHisto(tiers, adresses.poursuite, adressesPrincipal.poursuite, Source.PRINCIPAL, true, callDepth + 1, strict);
+				adresses.domicile = surchargeAdressesTiersHisto(tiers, adresses.domicile, adressesPrincipal.domicile, Source.PRINCIPAL, true, callDepth + 1, strict);
 			}
 		}
 		else if (tiers instanceof DebiteurPrestationImposable) {
@@ -1047,10 +1046,10 @@ public class AdresseServiceImpl implements AdresseService {
 		}
 
 		final AdressesTiersHisto adressesTiers = TiersHelper.getAdressesTiersHisto(tiers);
-		adresses.courrier = surchargeAdressesTiersHisto(tiers, adresses.courrier, adressesTiers.courrier, callDepth + 1, strict);
-		adresses.representation = surchargeAdressesTiersHisto(tiers, adresses.representation, adressesTiers.representation, callDepth + 1, strict);
-		adresses.domicile = surchargeAdressesTiersHisto(tiers, adresses.domicile, adressesTiers.domicile, callDepth + 1, strict);
-		adresses.poursuite = surchargeAdressesTiersHisto(tiers, adresses.poursuite, adressesTiers.poursuite, callDepth + 1, strict);
+		adresses.courrier = surchargeAdressesTiersHisto(tiers, adresses.courrier, adressesTiers.courrier, null, null, callDepth + 1, strict);
+		adresses.representation = surchargeAdressesTiersHisto(tiers, adresses.representation, adressesTiers.representation, null, null, callDepth + 1, strict);
+		adresses.domicile = surchargeAdressesTiersHisto(tiers, adresses.domicile, adressesTiers.domicile, null, null, callDepth + 1, strict);
+		adresses.poursuite = surchargeAdressesTiersHisto(tiers, adresses.poursuite, adressesTiers.poursuite, null, null, callDepth + 1, strict);
 
 		// Applique les défauts, de manière à avoir une adresse valide pour chaque type d'adresse
 		appliqueDefautsAdressesFiscalesHisto(adresses);
@@ -1080,7 +1079,7 @@ public class AdresseServiceImpl implements AdresseService {
 		adresses.poursuite = AdresseMixer.override(adresses.poursuite, adressesAutoriteTutelaire, null, null);
 
 		// [UNIREG-1808]
-		adresses.poursuiteAutreTiers = surchargeAdressesTiersHisto(tiers, adresses.poursuiteAutreTiers, adressesTiers.poursuite, callDepth + 1, strict);
+		adresses.poursuiteAutreTiers = surchargeAdressesTiersHisto(tiers, adresses.poursuiteAutreTiers, adressesTiers.poursuite, null, null, callDepth + 1, strict);
 		adresses.poursuiteAutreTiers = AdresseMixer.override(adresses.poursuiteAutreTiers, adressesRepresentantExecutionForcee, null, null);
 		adresses.poursuiteAutreTiers = AdresseMixer.override(adresses.poursuiteAutreTiers, adressesConseil, null, null);
 		adresses.poursuiteAutreTiers = AdresseMixer.override(adresses.poursuiteAutreTiers, removeSourceConjoint(adressesCuratelle), null, null);
@@ -1377,11 +1376,10 @@ public class AdresseServiceImpl implements AdresseService {
 			final AdressesTiersHisto adressesPrincipal = TiersHelper.getAdressesTiersHisto(principal);
 
 			if (adressesPrincipal != null) {
-				adresses.courrier = surchargeAdressesTiersHisto(tiers, adresses.courrier, adressesPrincipal.courrier, callDepth + 1, strict);
-				adresses.representation = surchargeAdressesTiersHisto(tiers, adresses.representation, adressesPrincipal.representation,
-						callDepth + 1, strict);
-				adresses.poursuite = surchargeAdressesTiersHisto(tiers, adresses.poursuite, adressesPrincipal.poursuite, callDepth + 1, strict);
-				adresses.domicile = surchargeAdressesTiersHisto(tiers, adresses.domicile, adressesPrincipal.domicile, callDepth + 1, strict);
+				adresses.courrier = surchargeAdressesTiersHisto(tiers, adresses.courrier, adressesPrincipal.courrier, null, null, callDepth + 1, strict);
+				adresses.representation = surchargeAdressesTiersHisto(tiers, adresses.representation, adressesPrincipal.representation, null, null, callDepth + 1, strict);
+				adresses.poursuite = surchargeAdressesTiersHisto(tiers, adresses.poursuite, adressesPrincipal.poursuite, null, null, callDepth + 1, strict);
+				adresses.domicile = surchargeAdressesTiersHisto(tiers, adresses.domicile, adressesPrincipal.domicile, null, null, callDepth + 1, strict);
 			}
 		}
 		else if (tiers instanceof DebiteurPrestationImposable) {
@@ -1401,10 +1399,10 @@ public class AdresseServiceImpl implements AdresseService {
 		}
 
 		final AdressesTiersHisto adressesTiers = TiersHelper.getAdressesTiersHisto(tiers);
-		adresses.courrier = surchargeAdressesTiersHisto(tiers, adresses.courrier, adressesTiers.courrier, callDepth + 1, strict);
-		adresses.representation = surchargeAdressesTiersHisto(tiers, adresses.representation, adressesTiers.representation, callDepth + 1, strict);
-		adresses.domicile = surchargeAdressesTiersHisto(tiers, adresses.domicile, adressesTiers.domicile, callDepth + 1, strict);
-		adresses.poursuite = surchargeAdressesTiersHisto(tiers, adresses.poursuite, adressesTiers.poursuite, callDepth + 1, strict);
+		adresses.courrier = surchargeAdressesTiersHisto(tiers, adresses.courrier, adressesTiers.courrier, null, null, callDepth + 1, strict);
+		adresses.representation = surchargeAdressesTiersHisto(tiers, adresses.representation, adressesTiers.representation, null, null, callDepth + 1, strict);
+		adresses.domicile = surchargeAdressesTiersHisto(tiers, adresses.domicile, adressesTiers.domicile, null, null, callDepth + 1, strict);
+		adresses.poursuite = surchargeAdressesTiersHisto(tiers, adresses.poursuite, adressesTiers.poursuite, null, null, callDepth + 1, strict);
 
 		// Applique les défauts, de manière à avoir une adresse valide pour chaque type d'adresse
 		appliqueDefautsAdressesFiscalesHisto(adresses);
@@ -2199,13 +2197,16 @@ public class AdresseServiceImpl implements AdresseService {
 	 * @param tiers               un tiers dont on veut calculer les adresses
 	 * @param adresses            les adresses génériques de base
 	 * @param adressesSurchargees une liste d'adresses tiers à utiliser comme surcharge sur les adresses de base
+	 * @param sourceSurcharge     valeur de surcharge pour les adresses surchargées, ou <b>null</b> pour garder la source des adresses originelles.
+	 * @param defaultSurcharge    valeur de surcharge pour les adresses surchargées, ou <b>null</b> pour garder le défaut des adresses originelles.
 	 * @param callDepth           paramètre technique pour éviter les récursions infinies
 	 * @param strict              si <b>faux</b> essaie de résoudre silencieusement les problèmes détectés durant le traitement; autrement lève une exception.
 	 * @return les adresses génériques résultant de la surcharge des adresses de base avec les adresses de surcharge.
 	 * @throws AdresseException en cas de problème dans le traitement
 	 */
-	private List<AdresseGenerique> surchargeAdressesTiersHisto(Tiers tiers, List<AdresseGenerique> adresses,
-	                                                           List<AdresseTiers> adressesSurchargees, int callDepth, boolean strict) throws AdresseException {
+	private List<AdresseGenerique> surchargeAdressesTiersHisto(Tiers tiers, List<AdresseGenerique> adresses, List<AdresseTiers> adressesSurchargees, Source sourceSurcharge, Boolean defaultSurcharge,
+	                                                           int callDepth, boolean strict
+	) throws AdresseException {
 
 		if (adressesSurchargees == null || adressesSurchargees.size() == 0) {
 			return adresses;
@@ -2216,7 +2217,7 @@ public class AdresseServiceImpl implements AdresseService {
 			adresseSurchargeesGeneriques.add(resolveAdresseSurchargee(tiers, adresse, callDepth + 1, strict));
 		}
 
-		return AdresseMixer.override(adresses, adresseSurchargeesGeneriques, null, null);
+		return AdresseMixer.override(adresses, adresseSurchargeesGeneriques, sourceSurcharge, defaultSurcharge);
 	}
 
 	/**
