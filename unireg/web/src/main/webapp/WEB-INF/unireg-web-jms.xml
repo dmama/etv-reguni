@@ -70,6 +70,7 @@
 
 	<bean id="esbMessageListener" abstract="true" class="ch.vd.technical.esb.jms.EsbMessageListener">
 		<property name="esbTemplate" ref="esbJmsTemplate"/>
+		<property name="esbStore" ref="raftEsbStore"/>
 	</bean>
 
 	<bean id="esbMessageFactory" class="ch.vd.technical.esb.EsbMessageFactory" lazy-init="true">
