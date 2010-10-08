@@ -11,8 +11,8 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.audit.AuditLine;
 import ch.vd.uniregctb.audit.AuditLineDAO;
 import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.evenement.EvenementCivilDAO;
+import ch.vd.uniregctb.evenement.EvenementCivilData;
 import ch.vd.uniregctb.evenement.engine.EvenementCivilAsyncProcessor;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
@@ -65,6 +65,12 @@ public class EvenementCivilListenerTest extends BusinessTest {
 		evenementCivilListener.setEvenementCivilAsyncProcessor(evtCivilProcessor);
 		evenementCivilListener.setTransactionManager(transactionManager);
 		evenementCivilListener.setEvenementCivilDAO(evenementCivilDAO);
+	}
+
+	@Override
+	public void onTearDown() throws Exception {
+		evenementCivilListener.sync(); // pour s'assurer que tous les événemens ont été traités (même en cas de timeout) avant de resetter le service civil.
+		super.onTearDown();
 	}
 
 	public static String createMessage(int id, int type, long noInd, RegDate dateEvt, int ofs) throws Exception {
