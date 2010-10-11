@@ -862,8 +862,12 @@ public class TiersManager implements MessageSourceAware {
 			allowedOnglet.put(TiersVisuView.MODIF_MOUVEMENT, Boolean.TRUE);
 			isEditable = true;
 		}
-		if (tiers.isDesactive(null)) {
-			//droit pour un tiers annulé
+
+		// les débiteurs de prestations imposables peuvent être désactivés sans être annulés
+		// (il suffit de fermer leur for) -> dans ce cas, il doit toujours rester possible
+		// de créer de nouveaux fors (= réactivation)
+		if ((tiers.isDesactive(null) && tiers instanceof Contribuable) || tiers.isAnnule()) {
+			// droits pour un contribuable annulé
 			if (SecurityProvider.isGranted(Role.MODIF_NONHAB_INACTIF)) {
 				allowedOnglet.put(TiersVisuView.MODIF_COMPLEMENT, Boolean.TRUE);
 				allowedOnglet.put(TiersEditView.COMPLEMENT_COMMUNICATION, Boolean.TRUE);
