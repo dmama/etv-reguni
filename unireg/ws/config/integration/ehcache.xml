@@ -75,18 +75,18 @@
         />
 
     <cache name="webServiceTiers"
-        maxElementsInMemory="1000"
+        maxElementsInMemory="20000"
         eternal="false"
-        timeToIdleSeconds="300"
-        timeToLiveSeconds="300"
+        timeToIdleSeconds="86400"
+        timeToLiveSeconds="86400"
         overflowToDisk="false"
         />
 
     <cache name="webServiceTiers2"
-        maxElementsInMemory="1000"
+        maxElementsInMemory="20000"
         eternal="false"
-        timeToIdleSeconds="300"
-        timeToLiveSeconds="300"
+        timeToIdleSeconds="86400"
+        timeToLiveSeconds="86400"
         overflowToDisk="false"
         />
         
