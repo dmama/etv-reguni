@@ -1571,6 +1571,55 @@ public class TiersManager implements MessageSourceAware {
 	}
 
 	/**
+	 * Renseigne la liste des adresses fiscales Non calculees modifiables sur le form backing object.
+	 */
+	protected void setAdressesFiscalesModifiables(TiersEditView tiersEditView, final Tiers tiers) throws InfrastructureException {
+
+		try {
+			List<AdresseView> adresses = new ArrayList<AdresseView>();
+			AdressesFiscales adressesFiscalesTiers = getAdresseService().getAdressesTiers(tiers);
+
+			if (adressesFiscalesTiers != null) {
+				// rempli tous les types d'adresse
+				for (TypeAdresseTiers type : TypeAdresseTiers.values()) {
+					AdresseGenerique adresse = adressesFiscalesTiers.ofType(type);
+					if(adresse!=null){
+						adresses.add(createAdresseView(adresse,type,tiers));
+					}
+
+				}
+
+				Collections.sort(adresses, new AdresseViewComparator());
+			}
+
+			
+			adresses = removeAdresseAnnulee(adresses);
+			tiersEditView.setAdressesFiscalesModifiables(adresses);
+		}
+		catch (AdresseException exception) {
+
+			if (exception instanceof AdressesResolutionException) {
+				final AdressesResolutionException are = (AdressesResolutionException) exception;
+				/*
+				 * En cas d'erreur dans la résolution des adresses, on récupère les adresses qui ont provoqué l'erreur et on affiche un écran
+				 * spécial pour permettre à l'utilisateur de résoudre le problème
+				 */
+				List<AdresseView> adresses = new ArrayList<AdresseView>();
+				for (AdresseTiers a : are.getAdresse()) {
+					AdresseView view = getAdresseManager().getAdresseView(a.getId());
+					view.setUsage(a.getUsage());
+					view.setSource(Source.FISCALE);
+					adresses.add(view);
+				}
+				tiersEditView.setAdressesEnErreur(adresses);
+			}
+
+			// Dans tous les cas, on affiche le message d'erreur
+			tiersEditView.setAdressesEnErreurMessage(exception.getMessage());
+		}
+	}
+
+	/**
 	 * Remplir la collection des adressesView avec l'adresse fiscale du type spécifié.
 	 */
 	protected void fillAdressesView(List<AdresseView> adressesView, final AdressesFiscales adressesFiscales, TypeAdresseTiers type,

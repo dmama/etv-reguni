@@ -205,8 +205,7 @@ public interface AdresseService {
 	/**
 	 * Retourne uniquement les adresses de source purement fiscale stocké en base
 	 * @param tiers  le Tiers concerné
-	 * @param date date de validité
 	 * @return listes des adresses du tiers
 	 */
-	public AdressesFiscales getAdressesTiers(Tiers tiers, RegDate date) throws AdresseException;
+	public AdressesFiscales getAdressesTiers(Tiers tiers) throws AdresseException;
 }

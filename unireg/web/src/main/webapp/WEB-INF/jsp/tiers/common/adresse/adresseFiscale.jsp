@@ -7,7 +7,7 @@
 </c:if>
 <c:if test="${page == 'edit' }">
 	<c:set var="url" value="edit.do" />
-	<c:set var="adresses" value="${command.adressesActives}" />
+	<c:set var="adresses" value="${command.adressesFiscalesModifiables}" />
 </c:if>
 
 <c:if test="${not empty adresses}">	

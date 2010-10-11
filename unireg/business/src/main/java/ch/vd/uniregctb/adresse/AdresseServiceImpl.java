@@ -2294,7 +2294,7 @@ public class AdresseServiceImpl implements AdresseService {
 	/**
 	 * {@inheritDoc}
 	 */
-	public AdressesFiscales getAdressesTiers(Tiers tiers, RegDate date) throws AdresseException {
+	public AdressesFiscales getAdressesTiers(Tiers tiers) throws AdresseException {
 
 		final AdressesFiscales adressesFiscales = new AdressesFiscales();
 

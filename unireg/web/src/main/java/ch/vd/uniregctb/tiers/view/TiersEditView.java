@@ -27,6 +27,8 @@ public class TiersEditView extends TiersView {
 
 	private List<AdresseView> adressesActives;
 
+	private List<AdresseView> adressesFiscalesModifiables;
+
 	private String libelleOfsPaysOrigine ;
 
 	private String libelleOfsCommuneOrigine ;
@@ -143,4 +145,11 @@ public class TiersEditView extends TiersView {
 		this.situationFamilleActive = situationFamilleActive;
 	}
 
+	public List<AdresseView> getAdressesFiscalesModifiables() {
+		return adressesFiscalesModifiables;
+	}
+
+	public void setAdressesFiscalesModifiables(List<AdresseView> adressesFiscalesModifiables) {
+		this.adressesFiscalesModifiables = adressesFiscalesModifiables;
+	}
 }

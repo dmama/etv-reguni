@@ -2720,6 +2720,58 @@ public class AdresseServiceTest extends BusinessTest {
 		}
 	}
 
+	//Ne doit renvoyer que les adresses de sources  fiscales(stockées en base)
+	@Test
+	public void testGetAdressesTiers() throws Exception {
+
+		final long noIndividu = 2;
+
+		/*
+		 * Crée les données du mock service civil
+		 */
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				MockIndividu paul = addIndividu(noIndividu, date(1953, 11, 2), "Dupont", "Paul", true);
+
+				// adresses courriers
+				addAdresse(paul, EnumTypeAdresse.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null,
+						date(2000, 1, 1), null);
+
+				// adresses principales/poursuite
+				addAdresse(paul, EnumTypeAdresse.PRINCIPALE, MockRue.CossonayVille.AvenueDuFuniculaire, null,
+						date(2000, 1, 1), null);
+			}
+		});
+
+		// Crée un habitant avec une adresse fiscale surchargée
+		PersonnePhysique habitant = new PersonnePhysique(true);
+		habitant.setNumeroIndividu(noIndividu);
+		{
+			AdresseCivile adresse = new AdresseCivile();
+			adresse.setDateDebut(date(2000, 3, 20));
+			adresse.setDateFin(null);
+			adresse.setUsage(TypeAdresseTiers.COURRIER);
+			adresse.setType(EnumTypeAdresse.PRINCIPALE);
+			habitant.addAdresseTiers(adresse);
+		}
+
+		tiersDAO.save(habitant);
+
+		{
+			// Vérification des adresses
+			final AdressesFiscales adresses = adresseService.getAdressesTiers(habitant);
+			assertNotNull(adresses);
+			assertNotNull(adresses.courrier);
+			assertNull(adresses.representation);
+			assertNull(adresses.poursuite);
+
+			assertEquals(date(2000, 3, 20), adresses.courrier.getDateDebut());
+			assertEquals(Source.FISCALE, adresses.courrier.getSource());
+
+		}
+	}
+
 	/**
 	 * Cas d'application des adresses par défaut au niveau du civile : adresses principales manquantes.
 	 *
