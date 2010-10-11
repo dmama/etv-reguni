@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
@@ -2293,29 +2294,15 @@ public class AdresseServiceImpl implements AdresseService {
 	/**
 	 * {@inheritDoc}
 	 */
-	public AdressesFiscales getAdressesTiersSurchargees(Tiers tiers, RegDate date) throws AdresseException {
+	public AdressesFiscales getAdressesTiers(Tiers tiers, RegDate date) throws AdresseException {
 
 		final AdressesFiscales adressesFiscales = new AdressesFiscales();
-		for (TypeAdresseTiers type : TypeAdresseTiers.values()) {
-			AdresseTiers adresseTiers = TiersHelper.getAdresseTiers(tiers, type, date);
-			if (adresseTiers != null) {
-				final AdresseGenerique adresseGenerique = resolveAdresseSurchargee(tiers, adresseTiers, 0, false);
-				switch (type) {
-				case COURRIER:
-					adressesFiscales.courrier = adresseGenerique;
-					break;
-				case REPRESENTATION:
-					adressesFiscales.representation = adresseGenerique;
-					break;
-				case POURSUITE:
-					adressesFiscales.poursuite = adresseGenerique;
-					break;
-				default:
-					break;
-				}
-			}
-		}
 
+		final Set<AdresseTiers> adresses = tiers.getAdressesTiers();
+		for (AdresseTiers adresse : adresses) {
+			final AdresseGenerique adresseGenerique = resolveAdresseSurchargee(tiers, adresse, 0, false);
+			adressesFiscales.set(TypeAdresseFiscale.fromCore(adresse.getUsage()), adresseGenerique);
+		}
 
 		return adressesFiscales;
 	}

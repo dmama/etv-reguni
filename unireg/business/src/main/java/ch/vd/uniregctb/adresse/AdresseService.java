@@ -203,10 +203,10 @@ public interface AdresseService {
 	ResolutionAdresseResults ResoudreAdresse(RegDate dateTraitement, int nbThreads, StatusManager status);
 
 	/**
-	 * Retourne uniquement les adresses surchargées de source purement fiscale
-	 * @param tiers
-	 * @param date
+	 * Retourne uniquement les adresses de source purement fiscale stocké en base
+	 * @param tiers  le Tiers concerné
+	 * @param date date de validité
 	 * @return listes des adresses du tiers
 	 */
-	public AdressesFiscales getAdressesTiersSurchargees(Tiers tiers, RegDate date) throws AdresseException;
+	public AdressesFiscales getAdressesTiers(Tiers tiers, RegDate date) throws AdresseException;
 }
