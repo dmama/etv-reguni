@@ -92,7 +92,7 @@ public class TacheSynchronizerInterceptor implements ModificationSubInterceptor,
 		}
 		else {
 			final String visa = AuthenticationHelper.getCurrentPrincipal();
-			AuthenticationHelper.pushPrincipal(String.format("%s-recalculTâches", visa));
+			AuthenticationHelper.pushPrincipal(String.format("%s-recalculTaches", visa));
 		}
 
 		try {
