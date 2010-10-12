@@ -17,7 +17,6 @@ import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.PdfWriter;
 
 import java.io.OutputStream;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -28,6 +27,16 @@ import java.util.Map;
  * Rapport des statistiques des événements reçus par Unireg
  */
 public class PdfStatistiquesEvenementsRapport extends PdfRapport {
+
+	/**
+	 * Renvoie la représentation décimale d'un entier, ou de la valeur indiquée comme valeur par défaut si cet entier est <code>null</code>
+	 * @param value valeur à représenter
+	 * @param defaut valeur à utiliser si <code>value<code> est <code>null</code>
+	 * @return représentation décimale de l'entier
+	 */
+	private static String toStringInt(Integer value, int defaut) {
+		return Integer.toString(value != null ? value : defaut);
+	}
 
 	public void write(final StatsEvenementsCivilsResults civils, final StatsEvenementsExternesResults externes,
 	                  final StatsEvenementsIdentificationContribuableResults identCtb,
@@ -70,14 +79,14 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 						table.addLigne("Etat", "Total", "Depuis " + RegDateHelper.dateToDisplayString(dateReference));
 						table.setHeaderRows(1);
 
-						final Map<EtatEvenementCivil, BigDecimal> etats = civils.getEtats();
-						final Map<EtatEvenementCivil, BigDecimal> etatsNouveaux = civils.getEtatsNouveaux();
+						final Map<EtatEvenementCivil, Integer> etats = civils.getEtats();
+						final Map<EtatEvenementCivil, Integer> etatsNouveaux = civils.getEtatsNouveaux();
 						for (EtatEvenementCivil etat : EtatEvenementCivil.values()) {
-							final BigDecimal nombre = etats.get(etat);
-							final BigDecimal nombreNouveaux = etatsNouveaux.get(etat);
+							final Integer nombre = etats.get(etat);
+							final Integer nombreNouveaux = etatsNouveaux.get(etat);
 
-							final String total = nombre != null ? nombre.toPlainString() : "0";
-							final String totalNouveaux = nombreNouveaux != null ? nombreNouveaux.toPlainString() : "0";
+							final String total = toStringInt(nombre, 0);
+							final String totalNouveaux = toStringInt(nombreNouveaux, 0);
 							table.addLigne(String.format("%s", etat.toString()), total, totalNouveaux);
 						}
 					}
@@ -87,14 +96,19 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 			// événements civils : types en erreur
 			addEntete1("Erreurs par type d'événements civils");
 			{
-				addTableSimple(new float[] {80f, 20f}, new PdfRapport.TableSimpleCallback() {
+				addTableSimple(new float[] {60f, 20f, 20f}, new PdfRapport.TableSimpleCallback() {
 					public void fillTable(PdfTableSimple table) throws DocumentException {
 
-						final Map<TypeEvenementCivil, BigDecimal> erreurs = civils.getErreursParType();
+						table.addLigne("Type", "Total", "Depuis " + RegDateHelper.dateToDisplayString(dateReference));
+						table.setHeaderRows(1);
+
+						final Map<TypeEvenementCivil, Integer> erreurs = civils.getErreursParType();
+						final Map<TypeEvenementCivil, Integer> erreursNouveaux = civils.getErreursParTypeNouveaux();
 						for (TypeEvenementCivil type : TypeEvenementCivil.values()) {
-							final BigDecimal nombre = erreurs.get(type);
-							if (nombre != null && nombre.signum() > 0) {
-								table.addLigne(String.format("%s :", type.getDescription()), nombre.toPlainString());
+							final Integer nombre = erreurs.get(type);
+							final Integer nombreNouveaux = erreursNouveaux.get(type);
+							if ((nombre != null && nombre > 0) || (nombreNouveaux != null && nombreNouveaux > 0)) {
+								table.addLigne(String.format("%s :", type.getDescription()), toStringInt(nombre, 0), toStringInt(nombreNouveaux, 0));
 							}
 						}
 					}
@@ -136,7 +150,7 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 			{
 				addTableSimple(2, new TableSimpleCallback() {
 					public void fillTable(PdfTableSimple table) throws DocumentException {
-						final Map<Integer, BigDecimal> ignores = civils.getIgnores();
+						final Map<Integer, Integer> ignores = civils.getIgnores();
 
 						if (ignores.size() > 0) {
 							table.addLigne("Code reçu", "Nombre");
@@ -145,8 +159,8 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 							final List<Integer> codes = new ArrayList<Integer>(ignores.keySet());
 							Collections.sort(codes);
 							for (int code : codes) {
-								final BigDecimal nb = ignores.get(code);
-								table.addLigne(String.valueOf(code), nb != null ? nb.toPlainString() : "0");
+								final Integer nb = ignores.get(code);
+								table.addLigne(String.valueOf(code), toStringInt(nb, 0));
 							}
 						}
 						else {
@@ -166,10 +180,10 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 				addTableSimple(2, new PdfRapport.TableSimpleCallback() {
 					public void fillTable(PdfTableSimple table) throws DocumentException {
 
-						final Map<EtatEvenementExterne, BigDecimal> etats = externes.getEtats();
+						final Map<EtatEvenementExterne, Integer> etats = externes.getEtats();
 						for (EtatEvenementExterne etat : EtatEvenementExterne.values()) {
-							final BigDecimal nombre = etats.get(etat);
-							table.addLigne(String.format("Etat %s :", etat.toString()), nombre != null ? nombre.toPlainString() : "0");
+							final Integer nombre = etats.get(etat);
+							table.addLigne(String.format("Etat %s :", etat.toString()), toStringInt(nombre, 0));
 						}
 					}
 				});
@@ -197,14 +211,14 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 						table.addLigne("Etat", "Total", "Depuis " + RegDateHelper.dateToDisplayString(dateReference));
 						table.setHeaderRows(1);
 
-						final Map<IdentificationContribuable.Etat, BigDecimal> etats = identCtb.getEtats();
-						final Map<IdentificationContribuable.Etat, BigDecimal> etatsNouveaux = identCtb.getEtatsNouveaux();
+						final Map<IdentificationContribuable.Etat, Integer> etats = identCtb.getEtats();
+						final Map<IdentificationContribuable.Etat, Integer> etatsNouveaux = identCtb.getEtatsNouveaux();
 						for (IdentificationContribuable.Etat etat : IdentificationContribuable.Etat.values()) {
-							final BigDecimal nombre = etats.get(etat);
-							final BigDecimal nombreNouveaux = etatsNouveaux.get(etat);
+							final Integer nombre = etats.get(etat);
+							final Integer nombreNouveaux = etatsNouveaux.get(etat);
 
-							final String total = nombre != null ? nombre.toPlainString() : "0";
-							final String totalNouveaux = nombreNouveaux != null ? nombreNouveaux.toPlainString() : "0";
+							final String total = toStringInt(nombre, 0);
+							final String totalNouveaux = toStringInt(nombreNouveaux, 0);
 							table.addLigne(String.format("%s", etat.toString()), total, totalNouveaux);
 						}
 					}

@@ -152,23 +152,23 @@ public class StatsEvenementsIdentificationContribuableResults {
 		}
 	}
 
-	private final Map<IdentificationContribuable.Etat, BigDecimal> etats;
-	private final Map<IdentificationContribuable.Etat, BigDecimal> etatsNouveaux;
+	private final Map<IdentificationContribuable.Etat, Integer> etats;
+	private final Map<IdentificationContribuable.Etat, Integer> etatsNouveaux;
 	private final List<EvenementInfo> aTraiter;
 
-	public StatsEvenementsIdentificationContribuableResults(Map<IdentificationContribuable.Etat, BigDecimal> etats,
-	                                                        Map<IdentificationContribuable.Etat, BigDecimal> etatsNouveaux,
+	public StatsEvenementsIdentificationContribuableResults(Map<IdentificationContribuable.Etat, Integer> etats,
+	                                                        Map<IdentificationContribuable.Etat, Integer> etatsNouveaux,
 	                                                        List<EvenementInfo> aTraiter) {
-		this.etats = etats != null ? Collections.unmodifiableMap(etats) : Collections.<IdentificationContribuable.Etat, BigDecimal>emptyMap();
-		this.etatsNouveaux = etatsNouveaux != null ? Collections.unmodifiableMap(etatsNouveaux) : Collections.<IdentificationContribuable.Etat, BigDecimal>emptyMap();
+		this.etats = etats != null ? Collections.unmodifiableMap(etats) : Collections.<IdentificationContribuable.Etat, Integer>emptyMap();
+		this.etatsNouveaux = etatsNouveaux != null ? Collections.unmodifiableMap(etatsNouveaux) : Collections.<IdentificationContribuable.Etat, Integer>emptyMap();
 		this.aTraiter = aTraiter != null ? Collections.unmodifiableList(aTraiter) : Collections.<EvenementInfo>emptyList();
 	}
 
-	public Map<IdentificationContribuable.Etat, BigDecimal> getEtats() {
+	public Map<IdentificationContribuable.Etat, Integer> getEtats() {
 		return etats;
 	}
 
-	public Map<IdentificationContribuable.Etat, BigDecimal> getEtatsNouveaux() {
+	public Map<IdentificationContribuable.Etat, Integer> getEtatsNouveaux() {
 		return etatsNouveaux;
 	}
 

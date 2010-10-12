@@ -30,15 +30,15 @@ public class StatsEvenementsExternesResults {
 		}
 	}
 
-	private final Map<EtatEvenementExterne, BigDecimal> etats;
+	private final Map<EtatEvenementExterne, Integer> etats;
 	private final List<EvenementExterneErreur> erreurs;
 
-	public StatsEvenementsExternesResults(Map<EtatEvenementExterne, BigDecimal> etats, List<EvenementExterneErreur> erreurs) {
-		this.etats = etats != null ? Collections.unmodifiableMap(etats) : Collections.<EtatEvenementExterne, BigDecimal>emptyMap();
+	public StatsEvenementsExternesResults(Map<EtatEvenementExterne, Integer> etats, List<EvenementExterneErreur> erreurs) {
+		this.etats = etats != null ? Collections.unmodifiableMap(etats) : Collections.<EtatEvenementExterne, Integer>emptyMap();
 		this.erreurs = erreurs != null ? Collections.unmodifiableList(erreurs) : Collections.<EvenementExterneErreur>emptyList();
 	}
 
-	public Map<EtatEvenementExterne, BigDecimal> getEtats() {
+	public Map<EtatEvenementExterne, Integer> getEtats() {
 		return etats;
 	}
 
