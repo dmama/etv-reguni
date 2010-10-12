@@ -439,19 +439,13 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 		assertEquals(86116202L, menage.getNumero());
 
 		final List<RapportEntreTiers> rapports = menage.getRapportsEntreTiers();
-		assertEquals(3, rapports.size()); // 2 rapports appartenance ménages, 1 rapport conseil légal
+		assertEquals(2, rapports.size()); // 2 rapports appartenance ménages
 
 		/* Extrait les différents type de rapports */
 		List<RapportEntreTiers> rapportsMenage = new ArrayList<RapportEntreTiers>();
-		RapportEntreTiers rapportConseilLegal = null;
-
 		for (RapportEntreTiers rapport : rapports) {
 			assertNotNull(rapport);
-			if (TypeRapportEntreTiers.CONSEIL_LEGAL.equals(rapport.getType())) {
-				assertNull("Trouvé plus de 1 rapport de type conseil légal", rapportConseilLegal);
-				rapportConseilLegal = rapport;
-			}
-			else if (TypeRapportEntreTiers.APPARTENANCE_MENAGE.equals(rapport.getType())) {
+			if (TypeRapportEntreTiers.APPARTENANCE_MENAGE.equals(rapport.getType())) {
 				assertTrue("Trouvé plus de 2 rapports de type appartenance ménage", rapportsMenage.size() < 2);
 				rapportsMenage.add(rapport);
 			}
@@ -459,11 +453,6 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 				fail("Type de rapport-entre-tiers non attendu [" + rapport.getType().name() + "]");
 			}
 		}
-
-		assertNotNull(rapportConseilLegal);
-		assertEquals(34777810L, rapportConseilLegal.getAutreTiersNumero());
-		assertSameDay(newDate(2005, 3, 1), rapportConseilLegal.getDateDebut());
-		assertNull(rapportConseilLegal.getDateFin());
 
 		/* Trie la collection de rapports appartenance ménage par ordre croissant de numéro de l'autre tiers */
 		Collections.sort(rapportsMenage, new Comparator<RapportEntreTiers>() {
@@ -593,9 +582,9 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 
 		final TiersInfoArray list = service.searchTiers(params);
 		assertNotNull(list);
-		assertEquals(4, list.getItem().size());
+		assertEquals(5, list.getItem().size());
 
-		// on retrouve les schmidt (couple + 2 tiers), un débiteur associé et une pupille sous conseil légal
+		// on retrouve les schmidt (couple + 2 tiers), pascaline descloux et un débiteur associé
 		int nbFound = 0;
 		for (int i = 0; i < list.getItem().size(); i++) {
 			TiersInfo info = list.getItem().get(i);
@@ -611,17 +600,16 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 				assertEquals(TypeTiers.PERSONNE_PHYSIQUE, info.getType());
 				nbFound++;
 			}
-// Le couple possède un conseiller légal dont l'adresse de représentation est à Neuchâtel (donc pas visible avec une recherche sur Yens)			
-//			if (86116202L == info.getNumero()) {
-//				assertEquals(TypeTiers.MENAGE_COMMUN, info.getType());
-//				nbFound++;
-//			}
+			if (86116202L == info.getNumero()) {
+				assertEquals(TypeTiers.MENAGE_COMMUN, info.getType());
+				nbFound++;
+			}
 			if (12500001L == info.getNumero()) {
 				assertEquals(TypeTiers.DEBITEUR, info.getType());
 				nbFound++;
 			}
 		}
-		assertEquals(4, nbFound);
+		assertEquals(5, nbFound);
 	}
 
 	@Test
