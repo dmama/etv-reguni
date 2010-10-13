@@ -36,6 +36,7 @@ import ch.vd.uniregctb.evenement.EvenementFiscalDI;
 import ch.vd.uniregctb.evenement.EvenementFiscalFor;
 import ch.vd.uniregctb.evenement.EvenementFiscalLR;
 import ch.vd.uniregctb.evenement.EvenementFiscalSituationFamille;
+import ch.vd.uniregctb.type.MotifFor;
 
 /**
  * Bean qui permet d'envoyer des événements externes.
@@ -147,7 +148,7 @@ public final class EvenementFiscalSenderImpl implements EvenementFiscalSender {
 		evt.setDateEvenement(DateUtils.calendar(evenementFor.getDateEvenement().asJavaDate()));
 		evt.setNumeroTiers(String.valueOf(evenementFor.getTiers().getNumero()));
 		if (evenementFor.getMotifFor() != null) {
-			evt.setMotifFor(MotifForEnumType.Enum.forString(evenementFor.getMotifFor().toString()));
+			evt.setMotifFor(core2xml(evenementFor.getMotifFor()));
 		}
 		else if (evenementFor.getModeImposition() != null) {
 			evt.setModeImposition(ModeImpositionEnumType.Enum.forString(evenementFor.getModeImposition().name()));
@@ -155,6 +156,21 @@ public final class EvenementFiscalSenderImpl implements EvenementFiscalSender {
 		evt.setNumeroTechnique(evenementFor.getId());
 
 		return document;
+	}
+
+	/**
+	 * Converti un motif d'ouverture/fermeture de for fiscal de l'enum de <i>core</i> aux valeurs existantes dans le XSD.
+	 *
+	 * @param motifFor un motif d'ouverture/fermeture de for fiscal
+	 * @return un motif tel que définit dans le XSD
+	 */
+	@SuppressWarnings({"deprecation"})
+	protected static MotifForEnumType.Enum core2xml(MotifFor motifFor) {
+		if (motifFor == MotifFor.DEBUT_ACTIVITE_DIPLOMATIQUE || motifFor == MotifFor.FIN_ACTIVITE_DIPLOMATIQUE) {
+			// [UNIREG-911] pour des raisons de compatibilité ascendante, les motifs de début/fin d'activité diplomatiques sont mappés comme indéterminés
+			motifFor = MotifFor.INDETERMINE;
+		}
+		return MotifForEnumType.Enum.forString(motifFor.toString());
 	}
 
 	private static EvenementFiscalDIDocument creerEvenementFiscal(EvenementFiscalDI evenementDI) {

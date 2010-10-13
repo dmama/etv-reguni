@@ -133,7 +133,8 @@ public class EvenementFiscalSenderTest extends EvenementTest {
 	public void testMotifsFors() throws Exception {
 		// on doit vérifier que tous les motifs de fors connus dans unireg sont acceptés par l'XSD des événements fiscaux
 		for (MotifFor motif : MotifFor.values()) {
-			Assert.assertNotNull("Motif " + motif + " inconnu dans l'XSD des événements fiscaux", MotifForEnumType.Enum.forString(motif.toString()));
+			final MotifForEnumType.Enum m = EvenementFiscalSenderImpl.core2xml(motif);
+			Assert.assertNotNull("Motif " + motif + " inconnu dans l'XSD des événements fiscaux", m);
 		}
 	}
 
