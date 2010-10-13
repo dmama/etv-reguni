@@ -872,7 +872,9 @@ public class TiersWebServiceEndPoint implements TiersWebService, LoadMonitorable
 	private void logReadAccess(Object params, long duration) {
 		if (READ_ACCESS.isInfoEnabled()) {
 			final String user = getBasicAuthenticationUser();
-			READ_ACCESS.info(String.format("[%s] (%d ms) %s", user, duration / 1000000, params.toString()));
+
+			// appelsEnCours+1 : +1 car le logout a déjà été fait quand on arrive ici et l'appel courant a donc été décompté
+			READ_ACCESS.info(String.format("[%s] (%d ms) %s charge=%d", user, duration / 1000000, params.toString(), appelsEnCours.get() + 1));
 		}
 	}
 
@@ -885,7 +887,9 @@ public class TiersWebServiceEndPoint implements TiersWebService, LoadMonitorable
 	private void logWriteAccess(Object params, long duration) {
 		if (WRITE_ACCESS.isInfoEnabled()) {
 			final String user = getBasicAuthenticationUser();
-			WRITE_ACCESS.info(String.format("[%s] (%d ms) %s", user, duration / 1000000, params.toString()));
+
+			// appelsEnCours+1 : +1 car le logout a déjà été fait quand on arrive ici et l'appel courant a donc été décompté
+			WRITE_ACCESS.info(String.format("[%s] (%d ms) %s charge=%d", user, duration / 1000000, params.toString(), appelsEnCours.get() + 1));
 		}
 	}
 
