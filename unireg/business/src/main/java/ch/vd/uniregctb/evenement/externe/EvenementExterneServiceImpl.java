@@ -91,7 +91,6 @@ public class EvenementExterneServiceImpl implements EvenementExterneService, Ini
 	 *
 	 * @param event
 	 */
-	@Transactional(rollbackFor = Throwable.class)
 	public void onEvent(EvenementExterne event) throws EvenementExterneException {
 
 		if (evenementExterneDAO.existe(event.getBusinessId())) {

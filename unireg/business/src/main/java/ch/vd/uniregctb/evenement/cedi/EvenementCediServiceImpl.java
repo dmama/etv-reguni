@@ -24,7 +24,6 @@ public class EvenementCediServiceImpl implements EvenementCediService, Evenement
 	private PeriodeFiscaleDAO periodeFiscaleDAO;
 	private ModeleDocumentDAO modeleDocumentDAO;
 
-	@Transactional(rollbackFor = Throwable.class)
 	public void onEvent(EvenementCedi event) throws EvenementCediException {
 
 		if (event instanceof RetourDI) {
