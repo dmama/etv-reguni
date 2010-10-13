@@ -959,13 +959,21 @@ public class TiersServiceImpl implements TiersService {
 	 * {@inheritDoc}
 	 */
 	public PersonnePhysique getPrincipal(MenageCommun menageCommun) {
-		PersonnePhysique[] personnes = getPersonnesPhysiques(menageCommun).toArray(new PersonnePhysique[0]);
-		PersonnePhysique tiers1 = personnes[0];
-		PersonnePhysique tiers2 = null;
-		if (personnes.length > 1) {
-			tiers2 = personnes[1];
+		final Set<PersonnePhysique> personnes = getPersonnesPhysiques(menageCommun);
+		if (personnes != null && personnes.size() > 0) {
+			final List<PersonnePhysique> liste = new ArrayList<PersonnePhysique>(personnes);
+			final PersonnePhysique tiers1 = liste.get(0);
+			if (liste.size() > 1) {
+				final PersonnePhysique tiers2 = liste.get(1);
+				return getPrincipal(tiers1, tiers2);
+			}
+			else {
+				return tiers1;
+			}
 		}
-		return getPrincipal(tiers1, tiers2);
+		else {
+			return null;
+		}
 	}
 
 	/**
@@ -3797,14 +3805,15 @@ public class TiersServiceImpl implements TiersService {
 	 */
 	public Long extractNumeroIndividuPrincipal(Tiers tiers) {
 		if (tiers instanceof PersonnePhysique) {
-			PersonnePhysique personne = (PersonnePhysique) tiers;
+			final PersonnePhysique personne = (PersonnePhysique) tiers;
 			return personne.getNumeroIndividu();
 		}
 		else if (tiers instanceof MenageCommun) {
-			MenageCommun menage = (MenageCommun) tiers;
-			PersonnePhysique personnePrincipal = getPrincipal(menage);
-			return personnePrincipal.getNumeroIndividu();
-
+			final MenageCommun menage = (MenageCommun) tiers;
+			final PersonnePhysique personnePrincipal = getPrincipal(menage);
+			if (personnePrincipal != null) {
+				return personnePrincipal.getNumeroIndividu();
+			}
 		}
 		return null;
 	}

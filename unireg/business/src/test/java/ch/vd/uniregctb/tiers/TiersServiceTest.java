@@ -3772,4 +3772,92 @@ public class TiersServiceTest extends BusinessTest {
 			}
 		});
 	}
+
+	@Test
+	@NotTransactional
+	public void testExtractionNumeroIndividuPrincipalCoupleComplet() throws Exception {
+
+		final long noIndM = 123564L;
+		final long noIndMme = 1231422L;
+		final RegDate dateMariage = date(1995, 5, 1);
+
+		// mise en place civile
+		serviceCivil.setUp(new DefaultMockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu m = addIndividu(noIndM, date(1970, 4, 12), "Petipoint", "Justin", true);
+				final MockIndividu mme = addIndividu(noIndMme, date(1972, 12, 26), "Petipoint", "Martine", false);
+				marieIndividus(m, mme, dateMariage);
+			}
+		});
+
+		// mise en place fiscale
+		final long idMenage = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique m = addHabitant(noIndM);
+				final PersonnePhysique mme = addHabitant(noIndMme);
+				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(m, mme, dateMariage, null);
+				return ensemble.getMenage().getNumero();
+			}
+		});
+
+		// test
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final MenageCommun menage = (MenageCommun) tiersDAO.get(idMenage);
+				final Long noIndividu = tiersService.extractNumeroIndividuPrincipal(menage);
+				Assert.assertNotNull(noIndividu);
+				Assert.assertEquals(noIndM, (long) noIndividu);
+				return null;
+			}
+		});
+	}
+
+	@Test
+	@NotTransactional
+	public void testExtractionNumeroIndividuPrincipalCoupleAnnule() throws Exception {
+
+		final long noIndM = 123564L;
+		final long noIndMme = 1231422L;
+		final RegDate dateMariage = date(1995, 5, 1);
+
+		// mise en place civile
+		serviceCivil.setUp(new DefaultMockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu m = addIndividu(noIndM, date(1970, 4, 12), "Petipoint", "Justin", true);
+				final MockIndividu mme = addIndividu(noIndMme, date(1972, 12, 26), "Petipoint", "Martine", false);
+				marieIndividus(m, mme, dateMariage);
+			}
+		});
+
+		// mise en place fiscale
+		final long idMenage = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique m = addHabitant(noIndM);
+				final PersonnePhysique mme = addHabitant(noIndMme);
+				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(m, mme, dateMariage, null);
+
+				// annulation des rapports entre tiers
+				final Set<RapportEntreTiers> rapports = ensemble.getMenage().getRapportsObjet();
+				for (RapportEntreTiers rapport : rapports) {
+					if (rapport instanceof AppartenanceMenage) {
+						rapport.setAnnule(true);
+					}
+				}
+
+				return ensemble.getMenage().getNumero();
+			}
+		});
+
+		// test
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final MenageCommun menage = (MenageCommun) tiersDAO.get(idMenage);
+				final Long noIndividu = tiersService.extractNumeroIndividuPrincipal(menage);
+				Assert.assertNull(noIndividu);
+				return null;
+			}
+		});
+	}
 }
