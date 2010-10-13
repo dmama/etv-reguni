@@ -3,5 +3,5 @@ short=4.5
 END_SVERSION
 
 BEGIN_LVERSION
-long=4.5.2
+long=4.5.3
 END_LVERSION
