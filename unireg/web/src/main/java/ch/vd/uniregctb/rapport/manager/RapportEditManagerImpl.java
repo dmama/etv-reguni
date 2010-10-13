@@ -19,6 +19,7 @@ import ch.vd.uniregctb.rapport.TypeRapportEntreTiersWeb;
 import ch.vd.uniregctb.rapport.view.RapportView;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityProvider;
+import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -26,6 +27,7 @@ import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.RapportPrestationImposable;
 import ch.vd.uniregctb.tiers.RepresentationConventionnelle;
 import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.tiers.Tutelle;
 import ch.vd.uniregctb.tiers.manager.TiersManager;
 import ch.vd.uniregctb.tiers.view.TiersEditView;
 import ch.vd.uniregctb.tiers.view.TiersVisuView;
@@ -188,6 +190,16 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 				repres.setExtensionExecutionForcee(rapportView.getExtensionExecutionForcee());
 			}
 
+			if (rapport instanceof Tutelle) {
+				final Tutelle tutelle = (Tutelle) rapport;
+				final Long autoriteId = rapportView.getAutoriteTutelaireId();
+				if (autoriteId != null) {
+					CollectiviteAdministrative autorite = findAutorite(autoriteId);
+					tutelle.setAutoriteTutelaire(autorite);
+				}
+
+			}
+
 			// établit le rapport entre les deux tiers
 			tiersService.addRapport(rapport, sujet, objet);
 		}
@@ -207,6 +219,13 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 			}
 		}
 
+	}
+
+	private CollectiviteAdministrative findAutorite(Long autoriteTutelaireId) {
+		if(autoriteTutelaireId !=null){
+			return tiersDAO.getCollectiviteAdministrativesByNumeroTechnique(autoriteTutelaireId.intValue());
+		}
+		return null;
 	}
 
 	private void validateRepresentationConventionnelle(RapportView rapportView, Tiers sujet) {

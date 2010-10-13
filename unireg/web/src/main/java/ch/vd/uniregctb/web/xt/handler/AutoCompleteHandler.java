@@ -332,6 +332,48 @@ public class AutoCompleteHandler extends AbstractAjaxHandler {
 		return response;
 	}
 
+		/**
+	 *
+	 * @param event
+	 * @return
+	 * @throws InfrastructureException
+	 */
+	@SuppressWarnings("unchecked")
+	public AjaxResponse selectionnerAutoriteTutelaire(AjaxActionEvent event) throws InfrastructureException, UnsupportedEncodingException {
+	final String filter = extractFilter(event);
+		List<WrapperCollectivite> collectivites = null;
+		if (filter.length() >= MIN_SIZE_FILTER) {
+			List<EnumTypeCollectivite> typesCollectivite = new ArrayList<EnumTypeCollectivite>();
+			typesCollectivite.add(EnumTypeCollectivite.SIGLE_JPAIX);			
+			Collection<CollectiviteAdministrative> colCollectivites = serviceInfrastructureService.getCollectivitesAdministratives(typesCollectivite);
+			CollectivitePredicate collectivitePredicate = new CollectivitePredicate();
+			collectivitePredicate.setFilter(filter);
+			colCollectivites = CollectionUtils.select(colCollectivites, collectivitePredicate);
+			collectivites = new ArrayList<WrapperCollectivite>();
+			for (CollectiviteAdministrative collectivite2 : colCollectivites) {
+				collectivites.add(new WrapperCollectivite(collectivite2));
+			}
+			Collections.sort(collectivites, new Comparator<WrapperCollectivite>() {
+				public int compare(WrapperCollectivite o1, WrapperCollectivite o2) {
+					return COMPARATOR.compare(o1.getNomCourt(), o2.getNomCourt());
+				}
+			});
+		}
+		else {
+			collectivites = Collections.emptyList();
+		}
+
+		// Create an ajax action for appending it:
+		AutoCompleteAction action = new AutoCompleteAction(event, collectivites);
+
+		// Create a concrete ajax response:
+		AjaxResponse response = new AjaxResponseImpl();
+		// Add the action:
+		response.addAction(action);
+
+		return response;
+	}
+
 	/**
 	 *
 	 * @param event

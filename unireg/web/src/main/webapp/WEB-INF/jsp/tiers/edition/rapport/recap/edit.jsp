@@ -60,6 +60,23 @@
 						</form:select>
 					</p>
 					
+					<p><%-- Autorité tutélaire, uniquement pour tutelle --%>
+					<script type="text/javascript">
+				      function autoriteTutelaire_onChange(row) {
+				              document.forms[0].autoriteTutelaireId.value = (row ? row.noColAdm : "");				              
+				      }
+					</script>
+						<label id="autoriteTutelaireLabel"  for="autoriteTutelaire"><fmt:message key="label.autorite.tutelaire" />&nbsp;:</label>
+						<form:input path="nomAutoriteTutelaire" id="nomAutoriteTutelaire" size ="65"/>
+						<form:hidden path="autoriteTutelaireId" id="autoriteTutelaireId" />
+						<jsp:include page="/WEB-INF/jsp/include/autocomplete.jsp">
+							<jsp:param name="inputId" value="nomAutoriteTutelaire" />
+							<jsp:param name="dataValueField" value="nomComplet" />
+							<jsp:param name="dataTextField" value="{nomComplet}" />
+							<jsp:param name="dataSource" value="selectionnerAutoriteTutelaire" />
+							<jsp:param name="onChange" value="autoriteTutelaire_onChange" />
+						</jsp:include>
+					</p>
 					<p>
 						<%-- Date de début --%>					
 						<label for="dateDebut"><fmt:message key="label.date.debut" />&nbsp;:</label>
@@ -184,6 +201,20 @@
 							E$('executionForceeLabel').style.display = 'none';
 						}
 					}
+
+					 function refreshAutoriteTutelaire() {
+						var type = E$('typeRapport');
+						if (type.value == 'TUTELLE') {
+							E$('autoriteTutelaireLabel').style.display = '';
+							E$('nomAutoriteTutelaire').style.display = '';
+
+						}
+						else {
+							E$('autoriteTutelaireLabel').style.display = 'none';
+							E$('nomAutoriteTutelaire').style.display = 'none';
+						}
+					 }
+
 				
 					function getNatureTiers(divTiers) {
 						var inputs = divTiers.getElementsByTagName('input');
@@ -200,6 +231,7 @@
 					function onTypeChange(element) {
 						refreshExecutionForcee();
 						refreshLegend(element);
+						refreshAutoriteTutelaire();
 					}
 
 					function inverseSens() {
@@ -212,10 +244,12 @@
 						}
 						refreshLegend(sens);
 						refreshExecutionForcee();
+						refreshAutoriteTutelaire();
 					}
 
 					refreshExecutionForcee();
 					refreshLegend(E$('sensRapport'));
+					refreshAutoriteTutelaire();
 				</script>
 			</td>
 		</tr>

@@ -67,6 +67,12 @@ public class RapportView implements Comparable<RapportView>, Annulable {
 
 	private String toolTipMessage;
 
+	// -- uniquement pour la tutelle
+
+	private Long autoriteTutelaireId;
+
+	private String nomAutoriteTutelaire;
+
 	// ---------------------------------------------------
 
 	public Long getId() {
@@ -196,6 +202,14 @@ public class RapportView implements Comparable<RapportView>, Annulable {
 		this.tiersLie = tiersLie;
 	}
 
+	public Long getAutoriteTutelaireId() {
+		return autoriteTutelaireId;
+	}
+
+	public void setAutoriteTutelaireId(Long autoriteTutelaireId) {
+		this.autoriteTutelaireId = autoriteTutelaireId;
+	}
+
 	/**
 	 * @return <i>OBJET</i> si le rapport est édité depuis le tiers objet ou  <i>SUJET</i> si le rapport est édité depuis le tiers sujet.
 	 */
@@ -249,5 +263,13 @@ public class RapportView implements Comparable<RapportView>, Annulable {
 
 	public void setToolTipMessage(String toolTipMessage) {
 		this.toolTipMessage = toolTipMessage;
+	}
+
+	public String getNomAutoriteTutelaire() {
+		return nomAutoriteTutelaire;
+	}
+
+	public void setNomAutoriteTutelaire(String nomAutoriteTutelaire) {
+		this.nomAutoriteTutelaire = nomAutoriteTutelaire;
 	}
 }
