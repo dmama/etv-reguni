@@ -1,18 +1,18 @@
 package ch.vd.uniregctb.webservices.tiers;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNull;
-
 import org.junit.Test;
 
 import ch.vd.uniregctb.webservices.tiers.ForFiscal.MotifFor;
 import ch.vd.uniregctb.webservices.tiers.impl.EnumHelper;
 
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNull;
+
 public class MotifForTest extends EnumTest {
 
 	@Test
 	public void testCoherence() {
-		// les motifs ANNULATION et REACTIVATION n'existent pas dans l'interface
+		// les motifs ANNULATION, REACTIVATION, DEBUT_ACTIVITE_DIPLOMATIQUE et FIN_ACTIVITE_DIPLOMATIQUE n'existent pas dans l'interface
 		// assertEnumLengthEquals(MotifFor.class, ch.vd.uniregctb.type.MotifFor.class);
 		// assertEnumConstantsEqual(MotifFor.class, ch.vd.uniregctb.type.MotifFor.class);
 	}
@@ -43,6 +43,9 @@ public class MotifForTest extends EnumTest {
 		assertEquals(MotifFor.CHGT_MODE_IMPOSITION, EnumHelper.coreToWeb(ch.vd.uniregctb.type.MotifFor.CHGT_MODE_IMPOSITION));
 		assertEquals(MotifFor.INDETERMINE, EnumHelper.coreToWeb(ch.vd.uniregctb.type.MotifFor.ANNULATION));
 		assertEquals(MotifFor.INDETERMINE, EnumHelper.coreToWeb(ch.vd.uniregctb.type.MotifFor.REACTIVATION));
+		// [UNIREG-911] pour des raisons de compatibilité ascendante, les motifs de début/fin d'activité diplomatiques sont mappés comme indéterminés
+		assertEquals(MotifFor.INDETERMINE, EnumHelper.coreToWeb(ch.vd.uniregctb.type.MotifFor.DEBUT_ACTIVITE_DIPLOMATIQUE));
+		assertEquals(MotifFor.INDETERMINE, EnumHelper.coreToWeb(ch.vd.uniregctb.type.MotifFor.FIN_ACTIVITE_DIPLOMATIQUE));
 	}
 
 }

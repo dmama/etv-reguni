@@ -11,6 +11,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.type.ModeImposition;
+import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
@@ -123,7 +124,16 @@ public class ForFiscalPrincipal extends ForFiscalRevenuFortune {
 						"les modes d'imposition possibles sont \"ordinaire\", \"source\" ou \"mixte 137 al1\".");
 			}
 		}
-		
+
+		// [UNIREG-911]
+		if (getMotifOuverture() == MotifFor.DEBUT_ACTIVITE_DIPLOMATIQUE && getMotifRattachement() != MotifRattachement.DIPLOMATE_SUISSE) {
+			results.addError("Le motif de début d'activité diplomatique est uniquement applicable aux diplomates suisses basés à l'étranger");
+		}
+
+		if (getMotifFermeture() == MotifFor.FIN_ACTIVITE_DIPLOMATIQUE && getMotifRattachement() != MotifRattachement.DIPLOMATE_SUISSE) {
+			results.addError("Le motif de fin d'activité diplomatique est uniquement applicable aux diplomates suisses basés à l'étranger");
+		}
+
 		return results;
 	}
 

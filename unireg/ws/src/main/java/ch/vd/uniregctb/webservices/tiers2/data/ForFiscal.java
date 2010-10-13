@@ -131,6 +131,10 @@ public class ForFiscal implements Range {
 		REACTIVATION;
 
 		public static MotifFor fromValue(String v) {
+			// [UNIREG-911] pour des raisons de compatibilité ascendante, les motifs de début/fin d'activité diplomatiques sont mappés comme indéterminés
+			if ("DEBUT_ACTIVITE_DIPLOMATIQUE".equals(v) || "FIN_ACTIVITE_DIPLOMATIQUE".equals(v)) {
+				return INDETERMINE;
+			}
 			return valueOf(v);
 		}
 	}

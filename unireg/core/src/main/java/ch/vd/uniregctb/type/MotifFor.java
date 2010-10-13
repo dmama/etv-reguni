@@ -123,7 +123,15 @@ public enum MotifFor {
 	/**
 	 * Réactivation
 	 */
-	REACTIVATION("Réactivation");
+	REACTIVATION("Réactivation"),
+	/**
+	 * Début d'activité diplomatique d'un diplomatique suisse basé à l'étranger ([UNIREG-911])
+	 */
+	DEBUT_ACTIVITE_DIPLOMATIQUE("Début d'activité diplomatique"),
+	/**
+	 * Début d'activité diplomatique d'un diplomatique suisse basé à l'étranger ([UNIREG-911])
+	 */
+	FIN_ACTIVITE_DIPLOMATIQUE("Fin d'activité diplomatique");
 
 	private final String descriptionOuverture;
 

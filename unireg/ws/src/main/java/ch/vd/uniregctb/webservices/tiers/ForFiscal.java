@@ -127,7 +127,7 @@ public class ForFiscal{
 		CHGT_MODE_IMPOSITION;
 
 		public static MotifFor fromValue(String v) {
-			if ("ANNULATION".equals(v) || "REACTIVATION".equals(v)) {
+			if ("ANNULATION".equals(v) || "REACTIVATION".equals(v) || "DEBUT_ACTIVITE_DIPLOMATIQUE".equals(v) || "FIN_ACTIVITE_DIPLOMATIQUE".equals(v)) {
 				// ces motifs ont été ajoutés après le freeze de l'interface => on les expose comme indéterminés.
 				return MotifFor.INDETERMINE;
 			}

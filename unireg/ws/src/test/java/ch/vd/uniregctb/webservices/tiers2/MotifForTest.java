@@ -1,19 +1,20 @@
 package ch.vd.uniregctb.webservices.tiers2;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNull;
-
 import org.junit.Test;
 
 import ch.vd.uniregctb.webservices.tiers2.data.ForFiscal.MotifFor;
 import ch.vd.uniregctb.webservices.tiers2.impl.EnumHelper;
 
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNull;
+
 public class MotifForTest extends EnumTest {
 
 	@Test
 	public void testCoherence() {
-		assertEnumLengthEquals(MotifFor.class, ch.vd.uniregctb.type.MotifFor.class);
-		assertEnumConstantsEqual(MotifFor.class, ch.vd.uniregctb.type.MotifFor.class);
+		// [UNIREG-911] les deux enums ne sont plus égaux depuis l'ajout des début/fin d'activité diplomatiques
+//		assertEnumLengthEquals(MotifFor.class, ch.vd.uniregctb.type.MotifFor.class);
+//		assertEnumConstantsEqual(MotifFor.class, ch.vd.uniregctb.type.MotifFor.class);
 	}
 
 	@SuppressWarnings("deprecation")
@@ -43,5 +44,8 @@ public class MotifForTest extends EnumTest {
 		assertEquals(MotifFor.CHGT_MODE_IMPOSITION, EnumHelper.coreToWeb(ch.vd.uniregctb.type.MotifFor.CHGT_MODE_IMPOSITION));
 		assertEquals(MotifFor.ANNULATION, EnumHelper.coreToWeb(ch.vd.uniregctb.type.MotifFor.ANNULATION));
 		assertEquals(MotifFor.REACTIVATION, EnumHelper.coreToWeb(ch.vd.uniregctb.type.MotifFor.REACTIVATION));
+		// [UNIREG-911] pour des raisons de compatibilité ascendante, les motifs de début/fin d'activité diplomatiques sont mappés comme indéterminés
+		assertEquals(MotifFor.INDETERMINE, EnumHelper.coreToWeb(ch.vd.uniregctb.type.MotifFor.DEBUT_ACTIVITE_DIPLOMATIQUE));
+		assertEquals(MotifFor.INDETERMINE, EnumHelper.coreToWeb(ch.vd.uniregctb.type.MotifFor.FIN_ACTIVITE_DIPLOMATIQUE));
 	}
 }

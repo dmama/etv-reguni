@@ -48,6 +48,7 @@ public class MotifsForHelper {
 
 		switch (type.rattachement) {
 		case DIPLOMATE_SUISSE:
+			motifs.add(MotifFor.DEBUT_ACTIVITE_DIPLOMATIQUE);
 		case DIPLOMATE_ETRANGER:
 		case DOMICILE:
 			// for principal
@@ -114,6 +115,7 @@ public class MotifsForHelper {
 
 		switch (type.rattachement) {
 		case DIPLOMATE_SUISSE:
+			motifs.add(MotifFor.FIN_ACTIVITE_DIPLOMATIQUE);
 		case DIPLOMATE_ETRANGER:
 		case DOMICILE:
 			// for principal
