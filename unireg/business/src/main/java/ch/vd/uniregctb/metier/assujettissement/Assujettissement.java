@@ -23,6 +23,7 @@ import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalRevenuFortune;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
+import ch.vd.uniregctb.tiers.ForsParType;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
@@ -144,7 +145,7 @@ public abstract class Assujettissement implements CollatableDateRange {
 			return null;
 		}
 
-		final Tiers.ForsParType fpt = ctb.getForsParType(true);
+		final ForsParType fpt = ctb.getForsParType(true);
 		if (fpt.isEmpty()) {
 			return null;
 		}
@@ -172,7 +173,7 @@ public abstract class Assujettissement implements CollatableDateRange {
 			return null;
 		}
 
-		final Tiers.ForsParType fpt = ctb.getForsParType(true);
+		final ForsParType fpt = ctb.getForsParType(true);
 		if (fpt.isEmpty()) {
 			return null;
 		}
@@ -213,7 +214,7 @@ public abstract class Assujettissement implements CollatableDateRange {
 		}
 	}
 
-	private static List<Assujettissement> determine(Contribuable ctb, Tiers.ForsParType fors) throws AssujettissementException {
+	private static List<Assujettissement> determine(Contribuable ctb, ForsParType fors) throws AssujettissementException {
 		try {
 			ajouteForsPrincipauxFictifs(fors.principaux);
 

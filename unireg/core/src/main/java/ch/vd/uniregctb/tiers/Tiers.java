@@ -1,19 +1,9 @@
 package ch.vd.uniregctb.tiers;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Set;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorType;
-import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -24,6 +14,14 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.hibernate.annotations.ForeignKey;
@@ -989,120 +987,27 @@ public abstract class Tiers extends HibernateEntity implements Validateable, Bus
 		// end-user-code
 	}
 
-	public static class ForsParTypeAt {
-		public ForFiscalPrincipal principal;
-		public final List<ForFiscalSecondaire> secondaires = new ArrayList<ForFiscalSecondaire>();
-		public ForDebiteurPrestationImposable dpis;
-		public final List<ForFiscalAutreElementImposable> autreElementImpot = new ArrayList<ForFiscalAutreElementImposable>();
-		public final List<ForFiscalAutreImpot> autresImpots = new ArrayList<ForFiscalAutreImpot>();
-	}
-
-	public static class ForsParType {
-		public final List<ForFiscalPrincipal> principaux = new ArrayList<ForFiscalPrincipal>();
-		public final List<ForFiscalSecondaire> secondaires = new ArrayList<ForFiscalSecondaire>();
-		public final List<ForDebiteurPrestationImposable> dpis = new ArrayList<ForDebiteurPrestationImposable>();
-		public final List<ForFiscalAutreElementImposable> autreElementImpot = new ArrayList<ForFiscalAutreElementImposable>();
-		public final List<ForFiscalAutreImpot> autresImpots = new ArrayList<ForFiscalAutreImpot>();
-
-		public final boolean isEmpty() {
-			return principaux.isEmpty() && secondaires.isEmpty() && dpis.isEmpty() && autreElementImpot.isEmpty() && autresImpots.isEmpty();
-		}
-	}
-
 	/**
 	 * Retourne les fors fiscaux valides à une date donnée et séparés par type (sauf les fors autres impots). Les fors annulés sont ignorés.
 	 *
-	 * @param date
-	 *            la date de validité des fors retournés
-	 * @param sort
-	 *            vrai si les fors doivent être triés par ordre chronologique
+	 * @param date la date de validité des fors retournés
+	 * @param sort vrai si les fors doivent être triés par ordre chronologique
+	 * @return les fors fiscaux triés par types
 	 */
 	@Transient
 	public ForsParTypeAt getForsParTypeAt(RegDate date, boolean sort) {
-
-		ForsParTypeAt fors = new ForsParTypeAt();
-
-		if (forsFiscaux != null) {
-			for (ForFiscal ff : forsFiscaux) {
-				if (!ff.isValidAt(date)) {
-					continue;
-				}
-
-				if (ff instanceof ForFiscalPrincipal) {
-					Assert.isNull(fors.principal);
-					fors.principal = (ForFiscalPrincipal) ff;
-				}
-				else if (ff instanceof ForFiscalSecondaire) {
-					fors.secondaires.add((ForFiscalSecondaire) ff);
-				}
-				else if (ff instanceof ForDebiteurPrestationImposable) {
-					Assert.isNull(fors.dpis);
-					fors.dpis = (ForDebiteurPrestationImposable) ff;
-				}
-				else if (ff instanceof ForFiscalAutreElementImposable) {
-					fors.autreElementImpot.add((ForFiscalAutreElementImposable) ff);
-				}
-				else {
-					Assert.isTrue(ff instanceof ForFiscalAutreImpot);
-					fors.autresImpots.add((ForFiscalAutreImpot) ff);
-				}
-			}
-
-			if (sort) {
-				Collections.sort(fors.secondaires, new DateRangeComparator<ForFiscalSecondaire>());
-				Collections.sort(fors.autreElementImpot, new DateRangeComparator<ForFiscalAutreElementImposable>());
-				Collections.sort(fors.autresImpots, new DateRangeComparator<ForFiscalAutreImpot>());
-			}
-		}
-
-		return fors;
+		return new ForsParTypeAt(forsFiscaux, date, sort);
 	}
 
 	/**
 	 * Retourne les fors fiscaux séparés par type (sauf les fors autres impots). Les fors annulés sont ignorés.
 	 *
-	 * @param sort
-	 *            vrai si les fors doivent être triés par ordre chronologique
+	 * @param sort vrai si les fors doivent être triés par ordre chronologique
+	 * @return les fors fiscaux triés par types
 	 */
 	@Transient
 	public ForsParType getForsParType(boolean sort) {
-
-		ForsParType fors = new ForsParType();
-
-		if (forsFiscaux != null) {
-			for (ForFiscal ff : forsFiscaux) {
-				if (ff.isAnnule()) {
-					continue;
-				}
-
-				if (ff instanceof ForFiscalPrincipal) {
-					fors.principaux.add((ForFiscalPrincipal) ff);
-				}
-				else if (ff instanceof ForFiscalSecondaire) {
-					fors.secondaires.add((ForFiscalSecondaire) ff);
-				}
-				else if (ff instanceof ForDebiteurPrestationImposable) {
-					fors.dpis.add((ForDebiteurPrestationImposable) ff);
-				}
-				else if (ff instanceof ForFiscalAutreElementImposable) {
-					fors.autreElementImpot.add((ForFiscalAutreElementImposable) ff);
-				}
-				else {
-					Assert.isTrue(ff instanceof ForFiscalAutreImpot);
-					fors.autresImpots.add((ForFiscalAutreImpot) ff);
-				}
-			}
-
-			if (sort) {
-				Collections.sort(fors.principaux, new DateRangeComparator<ForFiscalPrincipal>());
-				Collections.sort(fors.secondaires, new DateRangeComparator<ForFiscalSecondaire>());
-				Collections.sort(fors.dpis, new DateRangeComparator<ForDebiteurPrestationImposable>());
-				Collections.sort(fors.autreElementImpot, new DateRangeComparator<ForFiscalAutreElementImposable>());
-				Collections.sort(fors.autresImpots, new DateRangeComparator<ForFiscalAutreImpot>());
-			}
-		}
-
-		return fors;
+		return new ForsParType(forsFiscaux, sort);
 	}
 
 	/**

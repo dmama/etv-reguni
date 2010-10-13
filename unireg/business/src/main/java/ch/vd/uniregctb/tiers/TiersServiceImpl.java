@@ -2781,7 +2781,7 @@ public class TiersServiceImpl implements TiersService {
 		}
 		else if (forFiscal instanceof ForDebiteurPrestationImposable) {
 			final ForDebiteurPrestationImposable forDPI = (ForDebiteurPrestationImposable) forFiscal;
-			final Tiers.ForsParType fors = tiers.getForsParType(true);
+			final ForsParType fors = tiers.getForsParType(true);
 			if (fors.dpis.size() == 0) {
 				throw new ValidationException(forDPI, "Tous les fors débiteurs sont déjà annulés.");
 			}

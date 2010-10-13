@@ -1,18 +1,34 @@
 package ch.vd.uniregctb.metier;
 
-import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
-import ch.vd.uniregctb.tiers.*;
-import ch.vd.uniregctb.type.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import org.junit.Test;
-import org.springframework.transaction.TransactionStatus;
-
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import org.junit.Test;
+import org.springframework.transaction.TransactionStatus;
+
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.common.BusinessTest;
+import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
+import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
+import ch.vd.uniregctb.tiers.ForDebiteurPrestationImposable;
+import ch.vd.uniregctb.tiers.ForFiscal;
+import ch.vd.uniregctb.tiers.ForFiscalAutreElementImposable;
+import ch.vd.uniregctb.tiers.ForFiscalAutreImpot;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
+import ch.vd.uniregctb.tiers.ForsParType;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.type.GenreImpot;
+import ch.vd.uniregctb.type.ModeImposition;
+import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.MotifRattachement;
+import ch.vd.uniregctb.type.Sexe;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * @author Manuel Siggen <manuel.siggen@vd.ch>
@@ -66,7 +82,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 		processor.traiteTiers(bruno.getNumero(), anciensNoOfs, nouveauNoOfs, dateFusion);
 
 		// Le contribuable ne valide pas -> il ne devrait pas être traité et apparaître en erreur
-		final Tiers.ForsParType fors = bruno.getForsParType(true);
+		final ForsParType fors = bruno.getForsParType(true);
 		assertNotNull(fors);
 		assertEquals(2, fors.principaux.size());
 		assertEmpty(fors.secondaires);
@@ -138,7 +154,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 		final PersonnePhysique bruno = (PersonnePhysique) hibernateTemplate.get(PersonnePhysique.class, id);
 		assertNotNull(bruno);
 
-		final Tiers.ForsParType fors = bruno.getForsParType(true);
+		final ForsParType fors = bruno.getForsParType(true);
 		assertNotNull(fors);
 		assertEquals(1, fors.principaux.size());
 		assertEquals(1, fors.secondaires.size());
@@ -179,7 +195,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 		final PersonnePhysique bruno = (PersonnePhysique) hibernateTemplate.get(PersonnePhysique.class, id);
 		assertNotNull(bruno);
 
-		final Tiers.ForsParType fors = bruno.getForsParType(true);
+		final ForsParType fors = bruno.getForsParType(true);
 		assertNotNull(fors);
 		assertEquals(2, fors.principaux.size());
 		assertEquals(1, fors.secondaires.size());
@@ -226,7 +242,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 		final PersonnePhysique bruno = (PersonnePhysique) hibernateTemplate.get(PersonnePhysique.class, id);
 		assertNotNull(bruno);
 
-		final Tiers.ForsParType fors = bruno.getForsParType(true);
+		final ForsParType fors = bruno.getForsParType(true);
 		assertNotNull(fors);
 		assertEquals(1, fors.principaux.size());
 		assertEquals(2, fors.secondaires.size());
@@ -270,7 +286,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 		final PersonnePhysique bruno = (PersonnePhysique) hibernateTemplate.get(PersonnePhysique.class, id);
 		assertNotNull(bruno);
 
-		final Tiers.ForsParType fors = bruno.getForsParType(true);
+		final ForsParType fors = bruno.getForsParType(true);
 		assertNotNull(fors);
 		assertEquals(2, fors.principaux.size());
 		assertEmpty(fors.secondaires);
@@ -319,7 +335,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 		final PersonnePhysique bruno = (PersonnePhysique) hibernateTemplate.get(PersonnePhysique.class, id);
 		assertNotNull(bruno);
 
-		final Tiers.ForsParType fors = bruno.getForsParType(true);
+		final ForsParType fors = bruno.getForsParType(true);
 		assertNotNull(fors);
 		assertEquals(1, fors.principaux.size());
 		assertEmpty(fors.secondaires);
@@ -378,7 +394,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 		final PersonnePhysique bruno = (PersonnePhysique) hibernateTemplate.get(PersonnePhysique.class, id);
 		assertNotNull(bruno);
 
-		final Tiers.ForsParType fors = bruno.getForsParType(true);
+		final ForsParType fors = bruno.getForsParType(true);
 		assertNotNull(fors);
 		assertEquals(2, fors.principaux.size());
 		assertEquals(1, fors.secondaires.size());
@@ -434,7 +450,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 		final PersonnePhysique bruno = (PersonnePhysique) hibernateTemplate.get(PersonnePhysique.class, id);
 		assertNotNull(bruno);
 
-		final Tiers.ForsParType fors = bruno.getForsParType(true);
+		final ForsParType fors = bruno.getForsParType(true);
 		assertNotNull(fors);
 		assertEquals(1, fors.principaux.size());
 

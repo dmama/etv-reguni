@@ -17,8 +17,8 @@ import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
 import ch.vd.uniregctb.norentes.common.EvenementCivilScenario;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
+import ch.vd.uniregctb.tiers.ForsParType;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.Sexe;
@@ -101,7 +101,7 @@ public class Ec_18000_20_Arrivee_JIRA2730_ArriveeJourDeLAn_Scenario extends Even
 			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(idMauvaisArrivant);
 			assertFalse(pp.isHabitantVD(), "Déjà habitant ?");
 
-			final Tiers.ForsParType forsParType = pp.getForsParType(false);
+			final ForsParType forsParType = pp.getForsParType(false);
 
 			final List<ForFiscalPrincipal> ffps = forsParType.principaux;
 			assertNotNull(ffps, "Pas de fors principaux du tout ?");
@@ -128,7 +128,7 @@ public class Ec_18000_20_Arrivee_JIRA2730_ArriveeJourDeLAn_Scenario extends Even
 			final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(idBonArrivant);
 			assertFalse(pp.isHabitantVD(), "Déjà habitant ?");
 
-			final Tiers.ForsParType forsParType = pp.getForsParType(false);
+			final ForsParType forsParType = pp.getForsParType(false);
 
 			final List<ForFiscalPrincipal> ffps = forsParType.principaux;
 			assertNotNull(ffps, "Pas de fors principaux du tout ?");
