@@ -14,7 +14,7 @@
 		<table>
 			<tr class="<unireg:nextRowClass/>" >
 				<td width="25%"><fmt:message key="label.utilisateur" />&nbsp;:</td>
-				<td width="25%">
+				<td width="75%" colspan="3">
 					<div id="utilisateurs">
 						<form:input path="utilisateur" id="utilisateur" />
 						<form:errors path="utilisateur" cssClass="error"/>
@@ -35,8 +35,6 @@
 						</jsp:include>
 					</div>
 				</td>
-				<td width="25%">&nbsp;</td>
-				<td width="25%">&nbsp;</td>
 			</tr>
 
 			<tr class="<unireg:nextRowClass/>" >

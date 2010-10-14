@@ -13,7 +13,10 @@ public class DroitAccesEditValidator implements Validator {
 	}
 
 	public void validate(Object obj, Errors errors) {
-		//DroitAccesView droitAccesView = (DroitAccesView) obj;
+		final DroitAccesView droitAccesView = (DroitAccesView) obj;
+		if (droitAccesView.getNumeroUtilisateur() == null) {
+			errors.rejectValue("utilisateur", "error.utilisateur.vide");
+		}
 	}
 
 }
