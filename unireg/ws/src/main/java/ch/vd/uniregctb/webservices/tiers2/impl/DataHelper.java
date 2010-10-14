@@ -389,7 +389,7 @@ public class DataHelper {
 		final Collection<ch.vd.uniregctb.tiers.AppartenanceMenage> rapportsMenage = CollectionUtils.select(rapports, new Predicate() {
 			public boolean evaluate(Object object) {
 				final ch.vd.uniregctb.tiers.RapportEntreTiers rapport = (ch.vd.uniregctb.tiers.RapportEntreTiers) object;
-				return rapport instanceof ch.vd.uniregctb.tiers.AppartenanceMenage;
+				return !rapport.isAnnule() && rapport instanceof ch.vd.uniregctb.tiers.AppartenanceMenage;
 			}
 		});
 

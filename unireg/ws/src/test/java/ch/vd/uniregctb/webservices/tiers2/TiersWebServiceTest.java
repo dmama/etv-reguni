@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
+import java.util.Set;
 
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
@@ -19,6 +20,8 @@ import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.tiers.RapportEntreTiers;
+import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
@@ -361,6 +364,71 @@ public class TiersWebServiceTest extends WebserviceTest {
 			assertEquals(TypeAdresseAutreTiers.CURATELLE, tiia.adressesPoursuiteAutreTiers.get(1).type);
 			assertAdresse(new Date(2009, 2, 1), null, "Place Saint-François", "Lausanne", tiia.adressesPoursuiteAutreTiers.get(2));
 			assertEquals(TypeAdresseAutreTiers.CURATELLE, tiia.adressesPoursuiteAutreTiers.get(2).type);
+		}
+	}
+
+	/**
+	 * [UNIREG-2950] Vérifie que les rapports-entre-tiers d'appartenance ménage annulés ne sont pas pris en compte lors du calcul des fors fiscaux virtuels
+	 */
+	@Test
+	public void testGetForFiscauxVirtuelsPersonnePhysiqueAvecAppartenanceMenageAnnulee() throws Exception {
+
+		final Long id = (Long) doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+
+				final RegDate veilleMariage = date(1995, 7, 30);
+				final RegDate dateMariage = date(1995, 8, 1);
+
+				final PersonnePhysique arnold = addNonHabitant("Arnold", "Lokker", date(1971, 3, 12), Sexe.MASCULIN);
+				addForPrincipal(arnold, date(1991, 3, 12), MotifFor.MAJORITE, veilleMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Bussigny);
+
+				final PersonnePhysique lucette = addNonHabitant("Lucette", "Tartare", date(1973, 5, 12), Sexe.FEMININ);
+				addForPrincipal(lucette, date(1993, 5, 12), MotifFor.MAJORITE, veilleMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Cossonay);
+
+				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(arnold, lucette, dateMariage, null);
+				final ch.vd.uniregctb.tiers.MenageCommun menage = ensemble.getMenage();
+				addForPrincipal(menage, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Bussigny);
+
+				// on clone les liens d'appartenance ménage et on les annule (de cette manière, l'ensemble reste valide mais avec des rapports annulés)
+				for (RapportEntreTiers r : menage.getRapportsObjet()) {
+					RapportEntreTiers clone = r.duplicate();
+					clone.setAnnule(true);
+					hibernateTemplate.merge(clone);
+				}
+
+				return arnold.getNumero();
+			}
+		});
+
+		// on vérifie que les données en base sont bien comme on pense
+		doInNewTransactionAndSession(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique arnold = (PersonnePhysique) hibernateTemplate.get(Tiers.class, id);
+				assertNotNull(arnold);
+				final Set<RapportEntreTiers> rapports = arnold.getRapportsSujet();
+				assertNotNull(rapports);
+				assertEquals(2, rapports.size()); // 2 rapports d'appartenance ménage identiques, mais un est annulé
+				return null;
+			}
+		});
+
+		{
+			final GetTiers params = new GetTiers();
+			params.login = login;
+			params.tiersNumber = id;
+			params.parts = new HashSet<TiersPart>(Arrays.asList(TiersPart.FORS_FISCAUX_VIRTUELS));
+
+			// on s'assure que l'appartenance ménage annulé n'est pas pris en compte (s'il l'était, on recevrait une exception avec le message "Détecté 2 fors fiscaux principaux valides à la même date")
+			final ch.vd.uniregctb.webservices.tiers2.data.PersonnePhysique arnold = (ch.vd.uniregctb.webservices.tiers2.data.PersonnePhysique) service.getTiers(params);
+			assertNotNull(arnold);
+			assertNotNull(arnold.forFiscalPrincipal);
+			assertEquals(newDate(1995, 8, 1), arnold.forFiscalPrincipal.dateOuverture);
+			assertTrue(arnold.forFiscalPrincipal.virtuel);
+			assertNull(arnold.forFiscalPrincipal.dateFermeture);
+			assertEquals(ForFiscal.GenreImpot.REVENU_FORTUNE, arnold.forFiscalPrincipal.genreImpot);
+			assertEquals(ForFiscal.ModeImposition.ORDINAIRE, arnold.forFiscalPrincipal.modeImposition);
+			assertEquals(ForFiscal.TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, arnold.forFiscalPrincipal.typeAutoriteFiscale);
+			assertEquals(MockCommune.Bussigny.getNoOFSEtendu(), arnold.forFiscalPrincipal.noOfsAutoriteFiscale);
 		}
 	}
 
