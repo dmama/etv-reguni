@@ -16,7 +16,7 @@ import ch.vd.uniregctb.webservices.tiers2.impl.EnumHelper;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "RapportEntreTiers", propOrder = {
-		"type", "dateDebut", "dateFin", "dateAnnulation", "autreTiersNumero", "typeActivite", "tauxActivite", "finDernierElementImposable"
+		"type", "dateDebut", "dateFin", "dateAnnulation", "autreTiersNumero", "typeActivite", "tauxActivite", "finDernierElementImposable", "extensionExecutionForcee"
 })
 public class RapportEntreTiers {
 
@@ -90,6 +90,10 @@ public class RapportEntreTiers {
 	@XmlElement(required = false)
 	public Date finDernierElementImposable;
 
+	/** <b>vrai</b> si la représentation conventionnelle s'étend à l'exécution forcée; <b>faux</b> autrement. Seulement renseigné pour le type = REPRESENTATION. */
+	@XmlElement(required = false)
+	public Boolean extensionExecutionForcee;
+
 	public RapportEntreTiers() {
 	}
 
@@ -111,6 +115,15 @@ public class RapportEntreTiers {
 			this.typeActivite = null;
 			this.tauxActivite = 0;
 			this.finDernierElementImposable = null;
+		}
+
+		// [UNIREG-2662] ajout de l'attribut extensionExecutionForcee 
+		if (rapport instanceof ch.vd.uniregctb.tiers.RepresentationConventionnelle) {
+			final ch.vd.uniregctb.tiers.RepresentationConventionnelle repres = (ch.vd.uniregctb.tiers.RepresentationConventionnelle) rapport;
+			this.extensionExecutionForcee = repres.getExtensionExecutionForcee();
+		}
+		else {
+			this.extensionExecutionForcee = null;
 		}
 	}
 }
