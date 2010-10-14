@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.evenement.externe;
 
-import ch.vd.fiscalite.registre.evenementImpotSourceV1.EvenementImpotSourceQuittanceDocument;
+
+import ch.vd.fiscalite.taxation.evtQuittanceListeV1.EvtQuittanceListeDocument;
 
 /**
  * Bean qui ne fait rien.
@@ -9,6 +10,6 @@ import ch.vd.fiscalite.registre.evenementImpotSourceV1.EvenementImpotSourceQuitt
  */
 public class MockEvenementExterneSender implements EvenementExterneSender {
 
-	public void sendEvent(String businessId, EvenementImpotSourceQuittanceDocument document) throws Exception {
+	public void sendEvent(String businessId, EvtQuittanceListeDocument document) throws Exception {
 	}
 }

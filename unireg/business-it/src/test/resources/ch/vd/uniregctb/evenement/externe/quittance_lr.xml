@@ -1,8 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<even:evenementImpotSourceQuittance xmlns:even="http://www.vd.ch/fiscalite/registre/evenementImpotSource-v1">
-	<even:numeroTiers>12500001</even:numeroTiers>
-	<even:dateQuittance>2009-12-07+01:00</even:dateQuittance>
-	<even:dateDebutPeriode>2008-01-01+01:00</even:dateDebutPeriode>
-	<even:dateFinPeriode>2008-01-31+01:00</even:dateFinPeriode>
-	<even:typeQuittance>QUITTANCEMENT</even:typeQuittance>
-</even:evenementImpotSourceQuittance>
+<evtQuittanceListe xmlns="http://www.vd.ch/fiscalite/taxation/evtQuittanceListe-v1">
+	<timestampEvtQuittance>2009-12-07T09:30:47.0Z</timestampEvtQuittance>
+	<typeEvtQuittance>QUITTANCEMENT</typeEvtQuittance>
+	<origineListe>ELECTRONIQUE</origineListe>
+	<identificationListe>
+		<typeListe>LR</typeListe>
+		<numeroSequence>1</numeroSequence>
+		<numeroDebiteur>1500001</numeroDebiteur>
+		<periodeDeclaration>
+			<dateDebut>2008-01-01</dateDebut>
+			<dateFin>2008-01-31</dateFin>
+		</periodeDeclaration>
+	</identificationListe>
+</evtQuittanceListe>		

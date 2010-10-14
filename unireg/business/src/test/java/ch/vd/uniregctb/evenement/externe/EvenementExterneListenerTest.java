@@ -8,8 +8,9 @@ import org.springframework.test.annotation.NotTransactional;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
-import ch.vd.fiscalite.registre.evenementImpotSourceV1.EvenementImpotSourceQuittanceDocument;
-import ch.vd.fiscalite.registre.evenementImpotSourceV1.EvenementImpotSourceQuittanceType.TypeQuittance;
+
+import ch.vd.fiscalite.taxation.evtQuittanceListeV1.EvtQuittanceListeDocument;
+import ch.vd.fiscalite.taxation.evtQuittanceListeV1.QuittanceType;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.declaration.Declaration;
@@ -115,6 +116,8 @@ public class EvenementExterneListenerTest extends BusinessTest {
 
 		final RegDate dateDebut = date(2008, 1, 1);
 		final RegDate dateFin = date(2008, 3, 31);
+		final RegDate dateQuittancement = RegDate.get();
+
 
 		final long dpiId = (Long) doInNewTransaction(new TransactionCallback() {
 			public Object doInTransaction(TransactionStatus status) {
@@ -131,7 +134,7 @@ public class EvenementExterneListenerTest extends BusinessTest {
 
 		doInNewTransaction(new TransactionCallback() {
 			public Object doInTransaction(TransactionStatus status) {
-				final String message = createMessageAnnulationQuittancement(dpiId, dateDebut, dateFin);
+				final String message = createMessageAnnulationQuittancement(dpiId, dateDebut, dateFin, dateQuittancement);
 				try {
 					listener.onMessage(message, "TEST-" + System.currentTimeMillis());
 				}
@@ -196,7 +199,7 @@ public class EvenementExterneListenerTest extends BusinessTest {
 
 		doInNewTransaction(new TransactionCallback() {
 			public Object doInTransaction(TransactionStatus status) {
-				final String message = createMessageAnnulationQuittancement(dpiId, dateDebut, dateFin);
+				final String message = createMessageAnnulationQuittancement(dpiId, dateDebut, dateFin, dateQuittancement);
 				try {
 					listener.onMessage(message, "TEST-" + System.currentTimeMillis());
 				}
@@ -244,7 +247,7 @@ public class EvenementExterneListenerTest extends BusinessTest {
 
 		doInNewTransaction(new TransactionCallback() {
 			public Object doInTransaction(TransactionStatus status) {
-				final String message = createMessageAnnulationQuittancement(dpiId, dateDebut, dateFin);
+				final String message = createMessageAnnulationQuittancement(dpiId, dateDebut, dateFin, dateQuittancement);
 				try {
 					listener.onMessage(message, "TEST-" + System.currentTimeMillis());
 				}
@@ -378,7 +381,7 @@ public class EvenementExterneListenerTest extends BusinessTest {
 
 		doInNewTransaction(new TransactionCallback() {
 			public Object doInTransaction(TransactionStatus status) {
-				final String message = createMessageAnnulationQuittancement(dpiId, dateDebut, dateFin);
+				final String message = createMessageAnnulationQuittancement(dpiId, dateDebut, dateFin, dateQuittancement);
 				try {
 					listener.onMessage(message, "TEST-" + System.currentTimeMillis());
 				}
@@ -431,13 +434,13 @@ public class EvenementExterneListenerTest extends BusinessTest {
 		});
 	}
 
-	private String createMessageQuittancement(long noCtb, RegDate debutPeriode, RegDate finPeriode, RegDate dateQuittancement) {
-		final EvenementImpotSourceQuittanceDocument doc = service.createEvenementQuittancement(TypeQuittance.QUITTANCEMENT, noCtb, debutPeriode, finPeriode, dateQuittancement);
+	private String createMessageQuittancement(long noCtb, RegDate debutPeriode, RegDate finPeriode, RegDate dateEvenement) {
+		final EvtQuittanceListeDocument doc = service.createEvenementQuittancement(QuittanceType.QUITTANCEMENT, noCtb, debutPeriode, finPeriode, dateEvenement);
 		return doc.xmlText();
 	}
 	
-	private String createMessageAnnulationQuittancement(long noCtb, RegDate debutPeriode, RegDate finPeriode) {
-		final EvenementImpotSourceQuittanceDocument doc = service.createEvenementQuittancement(TypeQuittance.ANNULATION, noCtb, debutPeriode, finPeriode, null);
+	private String createMessageAnnulationQuittancement(long noCtb, RegDate debutPeriode, RegDate finPeriode, RegDate dateEvenement) {
+		final EvtQuittanceListeDocument doc = service.createEvenementQuittancement(QuittanceType.ANNULATION, noCtb, debutPeriode, finPeriode, dateEvenement);
 		return doc.xmlText();
 	}
 }

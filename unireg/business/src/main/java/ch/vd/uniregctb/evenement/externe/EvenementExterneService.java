@@ -2,8 +2,9 @@ package ch.vd.uniregctb.evenement.externe;
 
 import org.springframework.transaction.annotation.Transactional;
 
-import ch.vd.fiscalite.registre.evenementImpotSourceV1.EvenementImpotSourceQuittanceDocument;
-import ch.vd.fiscalite.registre.evenementImpotSourceV1.EvenementImpotSourceQuittanceType.TypeQuittance;
+
+import ch.vd.fiscalite.taxation.evtQuittanceListeV1.EvtQuittanceListeDocument;
+import ch.vd.fiscalite.taxation.evtQuittanceListeV1.QuittanceType;
 import ch.vd.registre.base.date.RegDate;
 
 public interface EvenementExterneService extends EvenementExterneHandler {
@@ -15,9 +16,9 @@ public interface EvenementExterneService extends EvenementExterneHandler {
 	 * @param document   l'événement externe  @throws Exception en cas de probléme
 	 * @throws Exception en cas d'erreur
 	 */
-	public void sendEvent(String businessId, EvenementImpotSourceQuittanceDocument document) throws Exception;
+	public void sendEvent(String businessId, EvtQuittanceListeDocument document) throws Exception;
 
-	public EvenementImpotSourceQuittanceDocument createEvenementQuittancement(TypeQuittance.Enum quitancement, Long numeroCtb, RegDate dateDebut,
+	public EvtQuittanceListeDocument createEvenementQuittancement(QuittanceType.Enum quitancement, Long numeroCtb, RegDate dateDebut,
 	                                                                          RegDate dateFin, RegDate dateQuittance);
 
 	/**Permet de traiter les evenements externes depuis un batch de relance

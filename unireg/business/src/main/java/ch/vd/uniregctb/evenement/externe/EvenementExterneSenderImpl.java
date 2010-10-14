@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.evenement.externe;
 
-import ch.vd.fiscalite.registre.evenementImpotSourceV1.EvenementImpotSourceQuittanceDocument;
+
+import ch.vd.fiscalite.taxation.evtQuittanceListeV1.EvtQuittanceListeDocument;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
@@ -57,7 +58,7 @@ public class EvenementExterneSenderImpl implements EvenementExterneSender {
 	 * @param document le message
 	 * @throws Exception exception.
 	 */
-	public void sendEvent(String businessId, EvenementImpotSourceQuittanceDocument document) throws Exception {
+	public void sendEvent(String businessId, EvtQuittanceListeDocument document) throws Exception {
 
 		final EsbMessage m = esbMessageFactory.createMessage();
 		m.setBusinessId(String.valueOf(businessId));

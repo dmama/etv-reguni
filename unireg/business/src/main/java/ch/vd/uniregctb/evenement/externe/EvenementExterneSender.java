@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.evenement.externe;
 
-import ch.vd.fiscalite.registre.evenementImpotSourceV1.EvenementImpotSourceQuittanceDocument;
+
+import ch.vd.fiscalite.taxation.evtQuittanceListeV1.EvtQuittanceListeDocument;
 
 /**
  * Interface qui permet d'envoyer des événements externes.
@@ -8,5 +9,5 @@ import ch.vd.fiscalite.registre.evenementImpotSourceV1.EvenementImpotSourceQuitt
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
 public interface EvenementExterneSender {
-	void sendEvent(String businessId, EvenementImpotSourceQuittanceDocument document) throws Exception;
+	void sendEvent(String businessId, EvtQuittanceListeDocument document) throws Exception;
 }

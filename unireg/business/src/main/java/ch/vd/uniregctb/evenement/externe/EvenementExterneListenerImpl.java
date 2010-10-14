@@ -1,7 +1,7 @@
 package ch.vd.uniregctb.evenement.externe;
 
-import ch.vd.fiscalite.registre.evenementImpotSourceV1.EvenementImpotSourceQuittanceDocument;
-import ch.vd.fiscalite.registre.evenementImpotSourceV1.EvenementImpotSourceQuittanceType;
+
+import ch.vd.fiscalite.taxation.evtQuittanceListeV1.EvtQuittanceListeDocument;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.technical.esb.EsbMessage;
@@ -101,19 +101,22 @@ public class EvenementExterneListenerImpl extends EsbMessageListener {
 
 		final EvenementExterne event;
 
-		if (evt instanceof EvenementImpotSourceQuittanceDocument) {
+		if (evt instanceof EvtQuittanceListeDocument) {
 
-			final EvenementImpotSourceQuittanceType type = ((EvenementImpotSourceQuittanceDocument) evt).getEvenementImpotSourceQuittance();
+			final EvtQuittanceListeDocument.EvtQuittanceListe evtQuittanceListe = ((EvtQuittanceListeDocument) evt).getEvtQuittanceListe();
 
 			QuittanceLR q = new QuittanceLR();
 			q.setMessage(message);
 			q.setBusinessId(businessId);
-			q.setDateEvenement(cal2date(type.getDateQuittance()));
+			q.setDateEvenement(cal2date(evtQuittanceListe.getTimestampEvtQuittance()));
 			q.setDateTraitement(DateHelper.getCurrentDate());
-			q.setDateDebut(cal2regdate(type.getDateDebutPeriode()));
-			q.setDateFin(cal2regdate(type.getDateFinPeriode()));
-			q.setType(TypeQuittance.valueOf(type.getTypeQuittance().toString()));
-			q.setTiersId(Long.valueOf(type.getNumeroTiers()));
+			final Calendar dateDebut = evtQuittanceListe.getIdentificationListe().getPeriodeDeclaration().getDateDebut();
+			q.setDateDebut(cal2regdate(dateDebut));
+			final Calendar dateFin = evtQuittanceListe.getIdentificationListe().getPeriodeDeclaration().getDateFin();
+			q.setDateFin(cal2regdate(dateFin));
+			q.setType(TypeQuittance.valueOf(evtQuittanceListe.getTypeEvtQuittance().toString()));
+			final int numeroDebiteur = evtQuittanceListe.getIdentificationListe().getNumeroDebiteur();
+			q.setTiersId(Long.valueOf(numeroDebiteur));
 
 			event = q;
 		}

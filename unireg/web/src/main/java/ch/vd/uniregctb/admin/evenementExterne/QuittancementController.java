@@ -1,7 +1,8 @@
 package ch.vd.uniregctb.admin.evenementExterne;
 
-import ch.vd.fiscalite.registre.evenementImpotSourceV1.EvenementImpotSourceQuittanceDocument;
-import ch.vd.fiscalite.registre.evenementImpotSourceV1.EvenementImpotSourceQuittanceType.TypeQuittance;
+
+import ch.vd.fiscalite.taxation.evtQuittanceListeV1.EvtQuittanceListeDocument;
+import ch.vd.fiscalite.taxation.evtQuittanceListeV1.QuittanceType;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.SelectContainerValue;
 import ch.vd.uniregctb.evenement.externe.EvenementExterneService;
@@ -37,8 +38,8 @@ public class QuittancementController extends AbstractEnhancedSimpleFormControlle
 	protected Map referenceData(HttpServletRequest request) throws Exception {
 		Map<String, Object> map = new HashMap<String, Object>(3);
 		ArrayList<SelectContainerValue> typeQuittances = new ArrayList<SelectContainerValue>();
-		typeQuittances.add(new SelectContainerValue(TypeQuittance.QUITTANCEMENT.toString()));
-		typeQuittances.add(new SelectContainerValue(TypeQuittance.ANNULATION.toString()));
+		typeQuittances.add(new SelectContainerValue(QuittanceType.QUITTANCEMENT.toString()));
+		typeQuittances.add(new SelectContainerValue(QuittanceType.ANNULATION.toString()));
 		map.put("typeQuittances", typeQuittances);
 		return map;
 	}
@@ -61,7 +62,7 @@ public class QuittancementController extends AbstractEnhancedSimpleFormControlle
 		if (view.getDateDebut() == null) {
 			errors.rejectValue("dateDebut", "quittancement.null.dateDebut", "La date de début du récapitulatif est obligatoire");
 		}
-		if (view.getDateQuittance() == null && TypeQuittance.QUITTANCEMENT.toString().equals(view.getTypeQuittance())) {
+		if (view.getDateQuittance() == null && QuittanceType.QUITTANCEMENT.toString().equals(view.getTypeQuittance())) {
 			errors.rejectValue("dateQuittance", "quittancement.null.dateQuittance",
 					"La date de quittancement est obligatoire lors d'un quittancement");
 		}
@@ -80,8 +81,8 @@ public class QuittancementController extends AbstractEnhancedSimpleFormControlle
 		}
 		QuittancementView view = (QuittancementView) event.getCommandObject();
 		try {
-			TypeQuittance.Enum type = TypeQuittance.Enum.forString(view.getTypeQuittance());
-			EvenementImpotSourceQuittanceDocument doc = evenementExterneService
+			QuittanceType.Enum type = QuittanceType.Enum.forString(view.getTypeQuittance());
+			EvtQuittanceListeDocument doc = evenementExterneService
 					.createEvenementQuittancement(type, Long.parseLong(view.getNumeroCtb()), RegDate.get(view.getDateDebut()), RegDate.get(view.getDateFin()), RegDate.get(view.getDateQuittance()));
 
 			evenementExterneService.sendEvent("UNIREG-" + System.currentTimeMillis(), doc);

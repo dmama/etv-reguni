@@ -2,12 +2,13 @@ package ch.vd.uniregctb.evenement.externe;
 
 import java.util.ArrayList;
 
-import ch.vd.fiscalite.registre.evenementImpotSourceV1.EvenementImpotSourceType;
+
+import ch.vd.fiscalite.taxation.evtQuittanceListeV1.QuittanceType;
 import ch.vd.schema.registreCivil.x20070914.evtRegCivil.EvtRegCivilDocument;
 
 public enum EvenementExterneType {
 
-	Quittancement(EmmetteurType.ImpotSource, EvenementImpotSourceType.class),
+	Quittancement(EmmetteurType.ImpotSource, QuittanceType.class),
 	CivilUnitaire(EmmetteurType.RegistreCivil, EvtRegCivilDocument.EvtRegCivil.class);
 
 	private Class<?> evenementRootClass;

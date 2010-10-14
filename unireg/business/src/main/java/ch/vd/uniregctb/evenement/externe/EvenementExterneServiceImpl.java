@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.evenement.externe;
 
+import java.math.BigInteger;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -16,9 +17,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.Assert;
-
-import ch.vd.fiscalite.registre.evenementImpotSourceV1.EvenementImpotSourceQuittanceDocument;
-import ch.vd.fiscalite.registre.evenementImpotSourceV1.EvenementImpotSourceQuittanceType;
+import ch.vd.fiscalite.taxation.evtQuittanceListeV1.EvtQuittanceListeDocument;
+import ch.vd.fiscalite.taxation.evtQuittanceListeV1.ListeType;
+import ch.vd.fiscalite.taxation.evtQuittanceListeV1.OrigineType;
+import ch.vd.fiscalite.taxation.evtQuittanceListeV1.QuittanceType;
 import ch.vd.infrastructure.model.impl.DateUtils;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
@@ -82,7 +84,7 @@ public class EvenementExterneServiceImpl implements EvenementExterneService, Ini
 	/**
 	 * {@inheritDoc}
 	 */
-	public void sendEvent(String businessId, EvenementImpotSourceQuittanceDocument document) throws Exception {
+	public void sendEvent(String businessId, EvtQuittanceListeDocument document) throws Exception {
 		sender.sendEvent(businessId, document);
 	}
 
@@ -242,8 +244,9 @@ public class EvenementExterneServiceImpl implements EvenementExterneService, Ini
 			}
 		}
 		else if (quittance.getType() == TypeQuittance.ANNULATION) {
-			if (quittance.getDateEvenement() != null) {
-				throw new EvenementExterneException("Pour une annulation la date de retour ne doit pas être renseignée.");
+			//Changement de la xsd: une date d'evenement doit être presente pour l'annulation egalement
+			if (quittance.getDateEvenement() == null) {
+				throw new EvenementExterneException("Pour une annulation la date de retour est requise.");
 			}
 			final EtatDeclaration etatDeclaration = declarationImpotSource.getEtatDeclarationActif(TypeEtatDeclaration.RETOURNEE);
 			// S’il s’agit d’une annulation du retour, le retour a déjà été enregistré.
@@ -280,30 +283,35 @@ public class EvenementExterneServiceImpl implements EvenementExterneService, Ini
 		dataEventService.onTiersChange(declarationImpotSource.getTiers().getNumero());
 	}
 
-	public EvenementImpotSourceQuittanceDocument createEvenementQuittancement(EvenementImpotSourceQuittanceType.TypeQuittance.Enum quitancement, Long numeroCtb, RegDate dateDebut,
-	                                                                          RegDate dateFin, RegDate dateQuittance) {
+	public EvtQuittanceListeDocument createEvenementQuittancement(QuittanceType.Enum quitancement, Long numeroCtb, RegDate dateDebut,
+	                                                                          RegDate dateFin, RegDate dateEvenement) {
 
 		Assert.notNull(quitancement, "le type de quittancement est obligation");
 		Assert.notNull(numeroCtb, "Le numero du débiteur est obligatoire");
 		Assert.notNull(dateDebut, "la date du début du récapitulatif est obligatoire");
 		// Assert.assertNotNull(dateFin);
 
-		final EvenementImpotSourceQuittanceDocument doc = EvenementImpotSourceQuittanceDocument.Factory.newInstance();
-		final EvenementImpotSourceQuittanceType evenement = doc.addNewEvenementImpotSourceQuittance();
-		evenement.setNumeroTiers(numeroCtb.toString());
-
+		final EvtQuittanceListeDocument doc = EvtQuittanceListeDocument.Factory.newInstance();
+		final EvtQuittanceListeDocument.EvtQuittanceListe evenement = doc.addNewEvtQuittanceListe();
+		final EvtQuittanceListeDocument.EvtQuittanceListe.IdentificationListe identification = evenement.addNewIdentificationListe();
+		identification.setNumeroDebiteur(numeroCtb.intValue());
+		final EvtQuittanceListeDocument.EvtQuittanceListe.IdentificationListe.PeriodeDeclaration periodeDeclaration = identification.addNewPeriodeDeclaration();
 		final Calendar datedebutC = DateUtils.calendar(dateDebut.asJavaDate());
-		evenement.setDateDebutPeriode(datedebutC);
+		periodeDeclaration.setDateDebut(datedebutC);
 		if (dateFin != null) {
 			final Calendar dateFinC = DateUtils.calendar(dateFin.asJavaDate());
-			evenement.setDateFinPeriode(dateFinC);
+			periodeDeclaration.setDateFin(dateFinC);
 		}
+		identification.setPeriodeDeclaration(periodeDeclaration);
+		identification.setTypeListe(ListeType.LR);
+		identification.setNumeroSequence(new BigInteger("1"));
+		evenement.setIdentificationListe(identification);
+		evenement.setTypeEvtQuittance(quitancement);
+		evenement.setOrigineListe(OrigineType.ELECTRONIQUE);
+		Assert.notNull(dateEvenement, "la date de quittancement du récapitulatif est obligatoire");
+		evenement.setTimestampEvtQuittance(DateUtils.calendar(dateEvenement.asJavaDate()));
+		doc.setEvtQuittanceListe(evenement);
 
-		evenement.setTypeQuittance(quitancement);
-		if (quitancement == EvenementImpotSourceQuittanceType.TypeQuittance.QUITTANCEMENT) {
-			Assert.notNull(dateQuittance, "la date de quittancement du récapitulatif est obligatoire");
-			evenement.setDateQuittance(DateUtils.calendar(dateQuittance.asJavaDate()));
-		}
 		return doc;
 	}
 

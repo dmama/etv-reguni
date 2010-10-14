@@ -82,7 +82,7 @@ public class EvenementExterneListenerTest extends EvenementTest {
 		listener.setHibernateTemplate(hibernateTemplate);
 
 		final ESBXMLValidator esbValidator = new ESBXMLValidator();
-		esbValidator.setSources(new Resource[] {new ClassPathResource("xsd/fiscal/evenementImpotSource-v1.xsd")});
+		esbValidator.setSources(new Resource[] {new ClassPathResource("xsd/fiscal/evtQuittanceListe-v1.xsd")});
 
 		esbMessageFactory = new EsbMessageFactory();
 		esbMessageFactory.setValidator(esbValidator);
@@ -125,7 +125,7 @@ public class EvenementExterneListenerTest extends EvenementTest {
 
 		final QuittanceLR q = (QuittanceLR) events.get(0);
 		assertNotNull(q);
-		Assert.assertEquals(12500001L, q.getTiersId().longValue());
+		Assert.assertEquals(1500001L, q.getTiersId().longValue());
 		assertEquals(RegDate.get(2009,12,7), RegDate.get(q.getDateEvenement()));
 		assertEquals(RegDate.get(2008,1,1), q.getDateDebut());
 		assertEquals(RegDate.get(2008,1,31), q.getDateFin());
