@@ -96,7 +96,7 @@
 				<value>classpath:xsd/database/**/*.xsd</value>
 				<value>classpath:xsd/editique/**/*.xsd</value>
 				<value>classpath:xsd/fiscal/evenementFiscalMaster-v1.xsd</value>
-				<value>classpath:xsd/fiscal/evenementImpotSource-v1.xsd</value>
+				<value>classpath:xsd/fiscal/evtQuittanceListe-v1.xsd</value>
 				<value>classpath:xsd/identification/**/*.xsd</value>
 			</list>
 		</property>
