@@ -3,7 +3,7 @@ package ch.vd.uniregctb.common;
 import java.sql.Timestamp;
 import java.util.Date;
 
-public interface Loggable {
+public interface Loggable extends Annulable {
 
 	public String getLogCreationUser();
 
@@ -17,5 +17,4 @@ public interface Loggable {
 
 	public String getAnnulationUser();
 
-	public boolean isAnnule();
 }
