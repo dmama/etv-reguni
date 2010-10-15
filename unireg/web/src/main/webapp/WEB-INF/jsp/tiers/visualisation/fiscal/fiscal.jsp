@@ -13,20 +13,16 @@
 				</c:if>
 			</td>
 
-			<td id="timeline" style="display:none" align="right">
-				<a href="<c:url value="/tiers/timeline.do?id=" /><c:out value="${command.tiers.numero}" />" >Vue chronologique</a>
-			</td>
+			<authz:authorize ifAnyGranted="ROLE_SUPERGRA">
+				<td id="timeline" align="right">
+					<a href='<c:url value="/tiers/timeline.do?id=" /><c:out value="${command.tiers.numero}" />'><fmt:message key="title.vue.chronologique"/></a>
+				</td>
+			</authz:authorize>
+
 		</tr>
 	</table>
 	
-	<script type="text/javascript">
-	    // on n'affiche le lien vers la timeline que dans l'environnement de développement
-		if (is_dev_env()) {
-			var td = document.getElementById('timeline');
-			td.style.display = '';
-		}
-	</script>
-</c:if>	
+</c:if>
 <c:choose>
 	<c:when test="${command.natureTiers == 'DebiteurPrestationImposable'}">
 		<jsp:include page="debiteur.jsp"/>
