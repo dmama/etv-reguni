@@ -10,6 +10,7 @@ import org.springframework.transaction.support.TransactionCallback;
 
 
 import ch.vd.fiscalite.taxation.evtQuittanceListeV1.EvtQuittanceListeDocument;
+import ch.vd.fiscalite.taxation.evtQuittanceListeV1.ListeType;
 import ch.vd.fiscalite.taxation.evtQuittanceListeV1.QuittanceType;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.BusinessTest;
@@ -105,6 +106,50 @@ public class EvenementExterneListenerTest extends BusinessTest {
 				assertEquals(TypeEtatDeclaration.RETOURNEE, etat.getEtat());
 				assertEquals(dateQuittancement, etat.getDateObtention());
 				assertFalse(etat.isAnnule());
+
+				return null;
+			}
+		});
+	}
+
+	@Test
+	public void testEventLC() throws Exception {
+
+		final RegDate dateDebut = date(2008, 1, 1);
+		final RegDate dateFin = date(2008, 3, 31);
+		final RegDate dateQuittancement = RegDate.get();
+
+		final long dpiId = (Long) doInNewTransaction(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, dateDebut);
+				dpi.setNom1("DebiteurTest");
+				addForDebiteur(dpi, dateDebut, null, MockCommune.Lausanne);
+
+				final PeriodeFiscale pf = addPeriodeFiscale(2008);
+				addLR(dpi, dateDebut, dateFin, pf);
+
+				return dpi.getNumero();
+			}
+		});
+
+		doInNewTransaction(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final String message = createMessageLC(dpiId, dateDebut, dateFin, dateQuittancement);
+				try {
+					listener.onMessage(message, "TEST-" + System.currentTimeMillis());
+				}
+				catch (Exception e) {
+					throw new RuntimeException(e);
+				}
+				return null;
+			}
+		});
+
+		doInNewTransaction(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+				final List<EvenementExterne> evts = evenementExterneDAO.getAll();
+				assertEquals(0, evts.size());
+				
 
 				return null;
 			}
@@ -435,12 +480,17 @@ public class EvenementExterneListenerTest extends BusinessTest {
 	}
 
 	private String createMessageQuittancement(long noCtb, RegDate debutPeriode, RegDate finPeriode, RegDate dateEvenement) {
-		final EvtQuittanceListeDocument doc = service.createEvenementQuittancement(QuittanceType.QUITTANCEMENT, noCtb, debutPeriode, finPeriode, dateEvenement);
+		final EvtQuittanceListeDocument doc = service.createEvenementQuittancement(QuittanceType.QUITTANCEMENT, noCtb, ListeType.LR, debutPeriode, finPeriode, dateEvenement);
 		return doc.xmlText();
 	}
 	
 	private String createMessageAnnulationQuittancement(long noCtb, RegDate debutPeriode, RegDate finPeriode, RegDate dateEvenement) {
-		final EvtQuittanceListeDocument doc = service.createEvenementQuittancement(QuittanceType.ANNULATION, noCtb, debutPeriode, finPeriode, dateEvenement);
+		final EvtQuittanceListeDocument doc = service.createEvenementQuittancement(QuittanceType.ANNULATION, noCtb, ListeType.LR, debutPeriode, finPeriode, dateEvenement);
+		return doc.xmlText();
+	}
+
+	private String createMessageLC(long noCtb, RegDate debutPeriode, RegDate finPeriode, RegDate dateEvenement) {
+		final EvtQuittanceListeDocument doc = service.createEvenementQuittancement(QuittanceType.QUITTANCEMENT, noCtb, ListeType.LC, debutPeriode, finPeriode, dateEvenement);
 		return doc.xmlText();
 	}
 }

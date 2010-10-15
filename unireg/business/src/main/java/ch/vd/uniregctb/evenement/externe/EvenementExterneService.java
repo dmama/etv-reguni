@@ -4,6 +4,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 import ch.vd.fiscalite.taxation.evtQuittanceListeV1.EvtQuittanceListeDocument;
+import ch.vd.fiscalite.taxation.evtQuittanceListeV1.ListeType;
 import ch.vd.fiscalite.taxation.evtQuittanceListeV1.QuittanceType;
 import ch.vd.registre.base.date.RegDate;
 
@@ -18,8 +19,8 @@ public interface EvenementExterneService extends EvenementExterneHandler {
 	 */
 	public void sendEvent(String businessId, EvtQuittanceListeDocument document) throws Exception;
 
-	public EvtQuittanceListeDocument createEvenementQuittancement(QuittanceType.Enum quitancement, Long numeroCtb, RegDate dateDebut,
-	                                                                          RegDate dateFin, RegDate dateQuittance);
+	public EvtQuittanceListeDocument createEvenementQuittancement(QuittanceType.Enum quitancement, Long numeroCtb, ListeType.Enum listeType, RegDate dateDebut,
+	                                                              RegDate dateFin, RegDate dateQuittance);
 
 	/**Permet de traiter les evenements externes depuis un batch de relance
 	 *

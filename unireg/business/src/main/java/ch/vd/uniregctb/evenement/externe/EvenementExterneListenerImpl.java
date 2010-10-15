@@ -2,6 +2,7 @@ package ch.vd.uniregctb.evenement.externe;
 
 
 import ch.vd.fiscalite.taxation.evtQuittanceListeV1.EvtQuittanceListeDocument;
+import ch.vd.fiscalite.taxation.evtQuittanceListeV1.ListeType;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.technical.esb.EsbMessage;
@@ -75,7 +76,13 @@ public class EvenementExterneListenerImpl extends EsbMessageListener {
 	protected void onMessage(String message, String businessId) throws Exception {
 
 		final EvenementExterne event = string2event(message, businessId);
-		handler.onEvent(event);
+		if(event!=null){
+			handler.onEvent(event);
+		}
+		else{
+			LOGGER.info("Message ignoré: Evenement de type LC n°" + businessId);
+		}
+
 	}
 
 	public static EvenementExterne string2event(String message, String businessId) throws XmlException {
@@ -103,28 +110,39 @@ public class EvenementExterneListenerImpl extends EsbMessageListener {
 
 		if (evt instanceof EvtQuittanceListeDocument) {
 
-			final EvtQuittanceListeDocument.EvtQuittanceListe evtQuittanceListe = ((EvtQuittanceListeDocument) evt).getEvtQuittanceListe();
+			final EvtQuittanceListeDocument documentEvenement = (EvtQuittanceListeDocument) evt;
+			final EvtQuittanceListeDocument.EvtQuittanceListe evtQuittanceListe = documentEvenement.getEvtQuittanceListe();
+			if (isEvenementLR(evtQuittanceListe)) {
 
-			QuittanceLR q = new QuittanceLR();
-			q.setMessage(message);
-			q.setBusinessId(businessId);
-			q.setDateEvenement(cal2date(evtQuittanceListe.getTimestampEvtQuittance()));
-			q.setDateTraitement(DateHelper.getCurrentDate());
-			final Calendar dateDebut = evtQuittanceListe.getIdentificationListe().getPeriodeDeclaration().getDateDebut();
-			q.setDateDebut(cal2regdate(dateDebut));
-			final Calendar dateFin = evtQuittanceListe.getIdentificationListe().getPeriodeDeclaration().getDateFin();
-			q.setDateFin(cal2regdate(dateFin));
-			q.setType(TypeQuittance.valueOf(evtQuittanceListe.getTypeEvtQuittance().toString()));
-			final int numeroDebiteur = evtQuittanceListe.getIdentificationListe().getNumeroDebiteur();
-			q.setTiersId(Long.valueOf(numeroDebiteur));
+				QuittanceLR q = new QuittanceLR();
+				q.setMessage(message);
+				q.setBusinessId(businessId);
+				q.setDateEvenement(cal2date(evtQuittanceListe.getTimestampEvtQuittance()));
+				q.setDateTraitement(DateHelper.getCurrentDate());
+				final Calendar dateDebut = evtQuittanceListe.getIdentificationListe().getPeriodeDeclaration().getDateDebut();
+				q.setDateDebut(cal2regdate(dateDebut));
+				final Calendar dateFin = evtQuittanceListe.getIdentificationListe().getPeriodeDeclaration().getDateFin();
+				q.setDateFin(cal2regdate(dateFin));
+				q.setType(TypeQuittance.valueOf(evtQuittanceListe.getTypeEvtQuittance().toString()));
+				final int numeroDebiteur = evtQuittanceListe.getIdentificationListe().getNumeroDebiteur();
+				q.setTiersId(Long.valueOf(numeroDebiteur));
 
-			event = q;
+				event = q;
+			}
+			else {
+				event = null;
+			}
 		}
 		else {
 			throw new IllegalArgumentException("Type d'événement inconnu = " + evt.getClass());
 		}
-		
+
 		return event;
+	}
+
+	private static boolean isEvenementLR(EvtQuittanceListeDocument.EvtQuittanceListe evtQuittanceListe) {
+		ListeType.Enum listeType = evtQuittanceListe.getIdentificationListe().getTypeListe();
+		return ListeType.LR.equals(listeType);
 	}
 
 	private static Date cal2date(Calendar cal) {

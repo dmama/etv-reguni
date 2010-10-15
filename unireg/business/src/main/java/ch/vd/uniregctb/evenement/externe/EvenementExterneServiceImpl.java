@@ -2,7 +2,6 @@ package ch.vd.uniregctb.evenement.externe;
 
 import java.math.BigInteger;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,7 +12,6 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.Assert;
@@ -283,8 +281,8 @@ public class EvenementExterneServiceImpl implements EvenementExterneService, Ini
 		dataEventService.onTiersChange(declarationImpotSource.getTiers().getNumero());
 	}
 
-	public EvtQuittanceListeDocument createEvenementQuittancement(QuittanceType.Enum quitancement, Long numeroCtb, RegDate dateDebut,
-	                                                                          RegDate dateFin, RegDate dateEvenement) {
+	public EvtQuittanceListeDocument createEvenementQuittancement(QuittanceType.Enum quitancement, Long numeroCtb, ListeType.Enum listeType, RegDate dateDebut,
+	                                                              RegDate dateFin, RegDate dateEvenement) {
 
 		Assert.notNull(quitancement, "le type de quittancement est obligation");
 		Assert.notNull(numeroCtb, "Le numero du débiteur est obligatoire");
@@ -303,7 +301,7 @@ public class EvenementExterneServiceImpl implements EvenementExterneService, Ini
 			periodeDeclaration.setDateFin(dateFinC);
 		}
 		identification.setPeriodeDeclaration(periodeDeclaration);
-		identification.setTypeListe(ListeType.LR);
+		identification.setTypeListe(listeType);
 		identification.setNumeroSequence(new BigInteger("1"));
 		evenement.setIdentificationListe(identification);
 		evenement.setTypeEvtQuittance(quitancement);

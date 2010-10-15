@@ -2,6 +2,7 @@ package ch.vd.uniregctb.admin.evenementExterne;
 
 
 import ch.vd.fiscalite.taxation.evtQuittanceListeV1.EvtQuittanceListeDocument;
+import ch.vd.fiscalite.taxation.evtQuittanceListeV1.ListeType;
 import ch.vd.fiscalite.taxation.evtQuittanceListeV1.QuittanceType;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.SelectContainerValue;
@@ -83,7 +84,7 @@ public class QuittancementController extends AbstractEnhancedSimpleFormControlle
 		try {
 			QuittanceType.Enum type = QuittanceType.Enum.forString(view.getTypeQuittance());
 			EvtQuittanceListeDocument doc = evenementExterneService
-					.createEvenementQuittancement(type, Long.parseLong(view.getNumeroCtb()), RegDate.get(view.getDateDebut()), RegDate.get(view.getDateFin()), RegDate.get(view.getDateQuittance()));
+					.createEvenementQuittancement(type, Long.parseLong(view.getNumeroCtb()), ListeType.LR, RegDate.get(view.getDateDebut()), RegDate.get(view.getDateFin()), RegDate.get(view.getDateQuittance()));
 
 			evenementExterneService.sendEvent("UNIREG-" + System.currentTimeMillis(), doc);
 			response.addAction(new ReplaceContentAction("error.global", new TaggedText("événement envoyé", TaggedText.Tag.DIV)));
