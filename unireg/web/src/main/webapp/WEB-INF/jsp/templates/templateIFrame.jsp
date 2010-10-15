@@ -42,6 +42,12 @@
 		<tiles:getAsString name='head' ignore='true'/>
 	</head>
 	<body>
+
+		<%-- Message flash --%>
+		<c:if test="${flash != null && flash.active}">
+		<div class="<c:out value="${flash.displayClass}"/>"><c:out value="${flash.messageForDisplay}"/></div>
+		</c:if>
+
 		<spring:hasBindErrors name="command">
 				<div class="global-error"><fmt:message key="global.error.entete"/></div>		          	
          		<c:if test="${errors.globalErrorCount > 0}">

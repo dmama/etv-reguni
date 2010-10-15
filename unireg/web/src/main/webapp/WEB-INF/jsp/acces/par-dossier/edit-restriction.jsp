@@ -58,7 +58,12 @@
 				<input type="button" id="ajouter" value="<fmt:message key="label.bouton.ajouter" />" onclick="javascript:ajouterRestriction();">
 			</td>
 			<td width="25%">
-				<input type="button" id="annuler" value="<fmt:message key="label.bouton.annuler" />" onclick="self.parent.tb_remove()">
+				<c:if test="${!command.ajoutEffectue}">
+					<input type="button" id="annuler" value="<fmt:message key="label.bouton.annuler" />" onclick="self.parent.tb_remove()">
+				</c:if>
+				<c:if test="${command.ajoutEffectue}">
+					<input type="button" id="retour" value="<fmt:message key="label.bouton.retour" />" onclick="top.location.reload(true);">
+				</c:if>
 			</td>
 			<td width="25%">&nbsp;</td>
 		</tr>

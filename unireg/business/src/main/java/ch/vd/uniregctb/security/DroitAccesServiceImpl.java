@@ -35,7 +35,7 @@ public class DroitAccesServiceImpl implements DroitAccesService {
 		final RegDate aujourdhui = RegDate.get();
 
 		final DroitAcces da = droitAccesDAO.getDroitAcces(operateurId, tiersId, aujourdhui);
-		if (da != null) {
+		if (da != null && !da.isAnnule()) {
 			throw new DroitAccesException("Un droit d'accès existe déjà entre l'opérateur n°" + operateurId + " et le tiers n°" + tiersId);
 		}
 
@@ -47,7 +47,7 @@ public class DroitAccesServiceImpl implements DroitAccesService {
 			throw new DroitAccesException("Le tiers n°" + tiersId + " n'est pas une personne physique.");
 		}
 
-		DroitAcces droitAcces = new DroitAcces();
+		final DroitAcces droitAcces = new DroitAcces();
 		droitAcces.setDateDebut(aujourdhui);
 		droitAcces.setNiveau(niveau);
 		droitAcces.setType(type);
@@ -62,7 +62,7 @@ public class DroitAccesServiceImpl implements DroitAccesService {
 	 */
 	public void annuleDroitAcces(long id) throws DroitAccesException {
 
-		DroitAcces da = droitAccesDAO.get(id);
+		final DroitAcces da = droitAccesDAO.get(id);
 		if (da == null) {
 			throw new DroitAccesException("Le droit d'accès n°" + id + " n'existe pas");
 		}

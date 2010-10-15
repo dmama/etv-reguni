@@ -14,6 +14,7 @@ import ch.vd.uniregctb.acces.parDossier.manager.DossierEditRestrictionManager;
 import ch.vd.uniregctb.acces.parDossier.view.DroitAccesView;
 import ch.vd.uniregctb.common.AbstractSimpleFormController;
 import ch.vd.uniregctb.common.ActionException;
+import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.DroitAccesException;
 import ch.vd.uniregctb.security.Role;
@@ -31,23 +32,15 @@ public class DroitAccesEditController extends AbstractSimpleFormController {
 
 	private TiersMapHelper tiersMapHelper;
 
-	public DossierEditRestrictionManager getDossierEditRestrictionManager() {
-		return dossierEditRestrictionManager;
-	}
-
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setDossierEditRestrictionManager(DossierEditRestrictionManager dossierEditRestrictionManager) {
 		this.dossierEditRestrictionManager = dossierEditRestrictionManager;
 	}
 
-	public TiersMapHelper getTiersMapHelper() {
-		return tiersMapHelper;
-	}
-
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setTiersMapHelper(TiersMapHelper tiersMapHelper) {
 		this.tiersMapHelper = tiersMapHelper;
 	}
-
-
 
 	private final String NUMERO_PARAMETER_NAME = "numero";
 
@@ -60,10 +53,10 @@ public class DroitAccesEditController extends AbstractSimpleFormController {
 		if (!SecurityProvider.isGranted(Role.SEC_DOS_ECR)) {
 			throw new AccessDeniedException("vous ne possédez aucun droit IfoSec pour modifier la sécurité des droits");
 		}
-		String numeroParam = request.getParameter(NUMERO_PARAMETER_NAME);
-		Long numero = Long.parseLong(numeroParam);
+		final String numeroParam = request.getParameter(NUMERO_PARAMETER_NAME);
+		final long numero = Long.parseLong(numeroParam);
 
-		DroitAccesView droitAccesView = new DroitAccesView();
+		final DroitAccesView droitAccesView = new DroitAccesView();
 		droitAccesView.setNumero(numero);
 		droitAccesView.setType(TypeDroitAcces.AUTORISATION);
 
@@ -76,32 +69,10 @@ public class DroitAccesEditController extends AbstractSimpleFormController {
 	@Override
 	protected Map<String, Object> referenceData(HttpServletRequest request) throws Exception {
 
-		Map<String, Object> data = new HashMap<String, Object>();
+		final Map<String, Object> data = new HashMap<String, Object>();
 		data.put(TYPE_DROIT_ACCES_NOM_MAP_NAME, tiersMapHelper.getDroitAcces());
 
 		return data;
-	}
-
-
-	/**
-	 * @see org.springframework.web.servlet.mvc.SimpleFormController#showForm(javax.servlet.http.HttpServletRequest,
-	 *      javax.servlet.http.HttpServletResponse,
-	 *      org.springframework.validation.BindException, java.util.Map)
-	 */
-	@SuppressWarnings("unchecked")
-	@Override
-	protected ModelAndView showForm(HttpServletRequest request, HttpServletResponse response, BindException errors, Map model) throws Exception {
-		ModelAndView mav = super.showForm(request, response, errors, model);
-		return mav;
-	}
-
-	/**
-	 * @see org.springframework.web.servlet.mvc.BaseCommandController#onBindAndValidate(javax.servlet.http.HttpServletRequest,
-	 *      java.lang.Object, org.springframework.validation.BindException)
-	 */
-	@Override
-	protected void onBindAndValidate(HttpServletRequest request, Object command, BindException errors) throws Exception {
-		super.onBindAndValidate(request, command, errors);
 	}
 
 	/**
@@ -109,20 +80,20 @@ public class DroitAccesEditController extends AbstractSimpleFormController {
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object, org.springframework.validation.BindException)
 	 */
 	@Override
-	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors)
-		throws Exception {
-		ModelAndView mav = super.onSubmit(request, response, command, errors);
-		DroitAccesView droitAccesView = (DroitAccesView) command;
-
+	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors) throws Exception {
+		final DroitAccesView droitAccesView = (DroitAccesView) command;
 		try {
 			dossierEditRestrictionManager.save(droitAccesView);
+			flash(String.format("Le nouveau droit d'accès de l'opérateur %s sur le dossier %s a été sauvegardé.",
+								droitAccesView.getUtilisateur(), FormatNumeroHelper.numeroCTBToDisplay(droitAccesView.getNumero())));
+
+			droitAccesView.resetOperateur();
+			droitAccesView.setAjoutEffectue(true);
 		}
 		catch (DroitAccesException e) {
 			throw new ActionException(e.getMessage());
 		}
-
-		return mav;
-
+		return showForm(request, response, errors);
 	}
 
 

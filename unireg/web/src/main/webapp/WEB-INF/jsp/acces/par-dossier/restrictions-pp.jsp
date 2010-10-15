@@ -23,7 +23,7 @@
 			<table border="0">
 			<tr>
 				<td>
-					<a href="edit-acces-pp.do?numero=${command.dossier.numero}&height=120&width=650&index=&TB_iframe=true&modal=true" 
+					<a href="edit-acces-pp.do?numero=${command.dossier.numero}&height=150&width=650&index=&TB_iframe=true&modal=true" 
 					class="add thickbox" title="Ajouter">&nbsp;<fmt:message key="label.bouton.ajouter" /></a>
 				</td>
 			</tr>
@@ -44,7 +44,7 @@
 				<display:column sortable ="true" titleKey="label.prenom.nom">
 						<c:out value="${restriction.prenomNom}" />
 				</display:column>
-				<display:column sortable ="true" titleKey="label.office.impot">
+				<display:column sortable ="true" titleKey="label.office.impot" style="width: 60%;">
 						<c:out value="${restriction.officeImpot}" />
 				</display:column>
 				<display:column sortable ="true" titleKey="label.lecture.seule">

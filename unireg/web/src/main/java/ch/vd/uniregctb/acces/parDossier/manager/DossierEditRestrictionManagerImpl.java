@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.acces.parDossier.manager;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -59,22 +58,22 @@ public class DossierEditRestrictionManagerImpl implements DossierEditRestriction
 	 */
 	@Transactional(readOnly = true)
 	public DossierEditRestrictionView get(Long numeroPP) throws InfrastructureException {
-		PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(numeroPP);
 
-		DossierEditRestrictionView dossierEditRestrictionView = new DossierEditRestrictionView();
+		final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(numeroPP);
 
-		TiersGeneralView dossier = tiersGeneralManager.getPersonnePhysique(pp, true);
+		final DossierEditRestrictionView dossierEditRestrictionView = new DossierEditRestrictionView();
+
+		final TiersGeneralView dossier = tiersGeneralManager.getPersonnePhysique(pp, true);
 		dossierEditRestrictionView.setDossier(dossier);
-		Set<DroitAcces> droitsAccesAppliques = pp.getDroitsAccesAppliques();
-		Iterator<DroitAcces> itDroitAcces = droitsAccesAppliques.iterator();
-		List<DroitAccesView> droitsAccesView =  new ArrayList<DroitAccesView>();
-		while (itDroitAcces.hasNext()) {
-			DroitAcces droitAcces = itDroitAcces.next();
-			DroitAccesView droitAccesView = new DroitAccesView();
+
+		final Set<DroitAcces> droitsAccesAppliques = pp.getDroitsAccesAppliques();
+		final List<DroitAccesView> droitsAccesView =  new ArrayList<DroitAccesView>(droitsAccesAppliques.size());
+		for (DroitAcces droitAcces : droitsAccesAppliques) {
+			final DroitAccesView droitAccesView = new DroitAccesView();
 			droitAccesView.setId(droitAcces.getId());
 			droitAccesView.setAnnule(droitAcces.isAnnule());
 			droitAccesView.setType(droitAcces.getType());
-			Operateur operator = serviceSecuriteService.getOperateur(droitAcces.getNoIndividuOperateur());
+			final Operateur operator = serviceSecuriteService.getOperateur(droitAcces.getNoIndividuOperateur());
 			String prenomNom = "";
 			if (operator != null) {
 				if (operator.getPrenom() != null) {
@@ -86,11 +85,9 @@ public class DossierEditRestrictionManagerImpl implements DossierEditRestriction
 				droitAccesView.setPrenomNom(prenomNom);
 				droitAccesView.setVisaOperateur(operator.getCode());
 
-				List<ch.vd.infrastructure.model.CollectiviteAdministrative> collectivitesAdministrative = serviceSecuriteService.getCollectivitesUtilisateur(operator.getCode());
-				Iterator<ch.vd.infrastructure.model.CollectiviteAdministrative> itCollectiviteAdministrative = collectivitesAdministrative.iterator();
+				final List<ch.vd.infrastructure.model.CollectiviteAdministrative> collectivitesAdministrative = serviceSecuriteService.getCollectivitesUtilisateur(operator.getCode());
 				String officeImpot = null;
-				while (itCollectiviteAdministrative.hasNext()) {
-					ch.vd.infrastructure.model.CollectiviteAdministrative collectiviteAdministrative = itCollectiviteAdministrative.next();
+				for (ch.vd.infrastructure.model.CollectiviteAdministrative collectiviteAdministrative : collectivitesAdministrative) {
 					if (officeImpot != null) {
 						officeImpot = officeImpot + ", " + collectiviteAdministrative.getNomCourt();
 					}
@@ -106,12 +103,8 @@ public class DossierEditRestrictionManagerImpl implements DossierEditRestriction
 			droitAccesView.setNiveau(droitAcces.getNiveau());
 			droitAccesView.setDateDebut(droitAcces.getDateDebut());
 			droitAccesView.setDateFin(droitAcces.getDateFin());
-			if (droitAcces.getNiveau().equals(Niveau.LECTURE)) {
-				droitAccesView.setLectureSeule(true);
-			}
-			else if (droitAcces.getNiveau().equals(Niveau.ECRITURE)) {
-				droitAccesView.setLectureSeule(false);
-			}
+			droitAccesView.setLectureSeule(droitAcces.getNiveau() == Niveau.LECTURE);
+
 			droitsAccesView.add(droitAccesView);
 		}
 		dossierEditRestrictionView.setRestrictions(droitsAccesView);
