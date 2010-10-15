@@ -226,8 +226,8 @@
                                     <c:if test="${pi.remplaceeParNote}">
                                         (remplacée par note)
                                     </c:if>
-                                    <c:if test="${pi.diplomateSuisse}">
-                                        (diplomate suisse)
+                                    <c:if test="${pi.diplomateSuisseSansImmeuble}">
+                                        (diplomate suisse sans immeuble)
                                     </c:if>
                                 </a>
                                 <div id="pi-${pi.dateDebut}-tooltip" style="display:none;">
