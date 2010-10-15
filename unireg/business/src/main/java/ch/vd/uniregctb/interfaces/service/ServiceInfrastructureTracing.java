@@ -34,7 +34,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 	private ServiceInfrastructureService target;
 	private StatsService statsService;
 
-	private final ServiceTracing tracing = new ServiceTracing();
+	private final ServiceTracing tracing = new ServiceTracing("ServiceInfra");
 
 	public void setTarget(ServiceInfrastructureService target) {
 		this.target = target;
@@ -51,7 +51,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 			result = target.estDansLeCanton(rue);
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "estDansLeCanton(rue)");
 		}
 		return result;
 	}
@@ -63,7 +63,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 			result = target.estDansLeCanton(commune);
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "estDansLeCanton(communeSimple)");
 		}
 
 		return result;
@@ -76,7 +76,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 			result = target.estDansLeCanton(commune);
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "estDansLeCanton(commune)");
 		}
 
 		return result;
@@ -89,7 +89,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 			result = target.estDansLeCanton(adresse);
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "estDansLeCanton(adresseGenerique)");
 		}
 
 		return result;
@@ -102,7 +102,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 			result = target.estDansLeCanton(adresse);
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "estDansLeCanton(adresse)");
 		}
 
 		return result;
@@ -115,7 +115,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 			result = target.estEnSuisse(adresse);
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "estEnSuisse(adresseGenerique)");
 		}
 
 		return result;
@@ -128,7 +128,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 			result = target.estEnSuisse(adresse);
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "estEnSuisse(adresse)");
 		}
 
 		return result;
@@ -141,7 +141,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 			result = target.getACI();
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "getACI");
 		}
 
 		return result;
@@ -154,7 +154,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 			result = target.getACISuccessions();
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "getACISuccessions");
 		}
 
 		return result;
@@ -167,7 +167,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 			result = target.getCEDI();
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "getCEDI");
 		}
 
 		return result;
@@ -180,7 +180,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 			result = target.getCAT();
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "getCAT");
 		}
 
 		return result;
@@ -193,7 +193,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 			result = target.getAllCantons();
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "getAllCantons");
 		}
 
 		return result;
@@ -206,7 +206,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 			result = target.getCanton(cantonOFS);
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "getCanton");
 		}
 
 		return result;
@@ -219,7 +219,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 			result = target.getCantonByCommune(noOfsCommune);
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "getCantonByCommune");
 		}
 
 		return result;
@@ -232,7 +232,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 			result = target.getCantonBySigle(sigle);
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "getCantonBySigle");
 		}
 
 		return result;
@@ -245,7 +245,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 			result = target.getCollectivite(noColAdm);
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "getCollectivite");
 		}
 
 		return result;
@@ -258,7 +258,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 			result = target.getCollectivitesAdministratives();
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "getCollectivitesAdministratives");
 		}
 
 		return result;
@@ -272,7 +272,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 			result = target.getCollectivitesAdministratives(typesCollectivite);
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "getCollectivitesAdministratives(types)");
 		}
 
 		return result;
@@ -285,7 +285,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 			result = target.getCommuneByAdresse(adresse);
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "getCommuneByAdresse(adresse)");
 		}
 
 		return result;
@@ -298,7 +298,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 			result = target.getCommuneByAdresse(adresse);
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "getCommuneByAdresse(adresseGenerique)");
 		}
 
 		return result;
@@ -311,7 +311,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 			result = target.getCommuneByLocalite(localite);
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "getCommuneByLocalite");
 		}
 
 		return result;
@@ -324,7 +324,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 			result = target.getCommuneByNumeroOfsEtendu(noCommune, date);
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "getCommuneByNumeroOfsEtendu");
 		}
 
 		return result;
@@ -337,7 +337,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 			result = target.getCommuneVaudByNumACI(numeroACI);
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "getCommuneVaudByNumACI");
 		}
 
 		return result;
@@ -350,7 +350,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 			result = target.getCommunesDeVaud();
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "getCommunesDeVaud");
 		}
 
 		return result;
@@ -363,7 +363,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 			result = target.getCommunesHorsCanton();
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "getCommunesHorsCanton");
 		}
 
 		return result;
@@ -376,7 +376,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 			result = target.getCommunes();
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "getCommunes");
 		}
 
 		return result;
@@ -389,7 +389,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 			result = target.getListeCommunes(canton);
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "getListeCommunes(canton)");
 		}
 
 		return result;
@@ -402,7 +402,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 			result = target.getListeFractionsCommunes();
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "getListeFractionsCommunes");
 		}
 
 		return result;
@@ -415,7 +415,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 			result = target.getListeCommunes(cantonOFS);
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "getListeCommunes(int)");
 		}
 
 		return result;
@@ -428,7 +428,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 			result = target.getListeCommunesByOID(oid);
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "getListeCommunesByOID");
 		}
 
 		return result;
@@ -441,7 +441,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 			result = target.getCommuneFaitiere(commune, dateReference);
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "getCommuneFaitiere");
 		}
 
 		return result;
@@ -454,7 +454,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 			result = target.getLocaliteByCommune(commune);
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "getLocaliteByCommune");
 		}
 
 		return result;
@@ -467,7 +467,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 			result = target.getLocaliteByONRP(onrp);
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "getLocaliteByONRP");
 		}
 
 		return result;
@@ -480,7 +480,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 			result = target.getLocalites();
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "getLocalites");
 		}
 
 		return result;
@@ -493,7 +493,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 			result = target.getOfficeImpot(noColAdm);
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "getOfficeImpot");
 		}
 
 		return result;
@@ -506,7 +506,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 			result = target.getOfficeImpotDeCommune(noCommune);
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "getOfficeImpotDeCommune");
 		}
 
 		return result;
@@ -519,7 +519,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 			result = target.getOfficesImpot();
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "getOfficesImpot");
 		}
 
 		return result;
@@ -532,7 +532,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 			result = target.getPays();
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "getPays");
 		}
 
 		return result;
@@ -545,7 +545,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 			result = target.getPays(numeroOFS);
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "getPays(int)");
 		}
 
 		return result;
@@ -559,7 +559,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 			result = target.getPays(codePays);
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "getPays(String)");
 		}
 
 		return result;
@@ -572,7 +572,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 			result = target.getPaysInconnu();
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "getPaysInconnu");
 		}
 
 		return result;
@@ -585,7 +585,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 			result = target.getRueByNumero(numero);
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "getRueByNumero");
 		}
 
 		return result;
@@ -598,7 +598,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 			result = target.getRues(localite);
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "getRues(localite)");
 		}
 
 		return result;
@@ -611,7 +611,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 			result = target.getRues(localites);
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "getRues(localites)");
 		}
 
 		return result;
@@ -624,7 +624,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 			result = target.getRues(canton);
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "getRues(canton)");
 		}
 
 		return result;
@@ -637,7 +637,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 			result = target.getSuisse();
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "getSuisse");
 		}
 
 		return result;
@@ -650,7 +650,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 			result = target.getVaud();
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "getVaud");
 		}
 
 		return result;
@@ -663,7 +663,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 			result = target.getZone(adresse);
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "getZone");
 		}
 
 		return result;
@@ -676,7 +676,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 			result = target.getInstitutionFinanciere(id);
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "getInstitutionFinanciere");
 		}
 
 		return result;
@@ -689,7 +689,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 			result = target.getInstitutionsFinancieres(noClearing);
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "getInstitutionsFinancieres");
 		}
 
 		return result;
@@ -718,7 +718,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 			result = target.getLocaliteByNPA(npa);
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "getLocaliteByNPA");
 		}
 
 		return result;
@@ -731,7 +731,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 			result = target.getTypeAffranchissement(noOfsPays);
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "getTypeAffranchissement");
 		}
 
 		return result;

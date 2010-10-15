@@ -34,7 +34,7 @@ public class ServiceCivilTracing implements ServiceCivilService, InitializingBea
 	private ServiceCivilService target;
 	private StatsService statsService;
 
-	private final ServiceTracing tracing = new ServiceTracing();
+	private final ServiceTracing tracing = new ServiceTracing("ServiceCivil");
 
 	public void setTarget(ServiceCivilService target) {
 		this.target = target;

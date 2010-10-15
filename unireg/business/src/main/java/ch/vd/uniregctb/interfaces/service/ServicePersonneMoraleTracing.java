@@ -21,7 +21,7 @@ public class ServicePersonneMoraleTracing implements ServicePersonneMoraleServic
 	private ServicePersonneMoraleService target;
 	private StatsService statsService;
 
-	private final ServiceTracing tracing = new ServiceTracing();
+	private final ServiceTracing tracing = new ServiceTracing("ServicePM");
 
 	public void setTarget(ServicePersonneMoraleService target) {
 		this.target = target;
@@ -54,7 +54,7 @@ public class ServicePersonneMoraleTracing implements ServicePersonneMoraleServic
 			result = target.getAllIds();
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "getAllIds");
 		}
 		return result;
 	}
@@ -66,7 +66,7 @@ public class ServicePersonneMoraleTracing implements ServicePersonneMoraleServic
 			result = target.getPersonneMorale(id, parts);
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "getPersonneMorale");
 		}
 		return result;
 	}
@@ -78,7 +78,7 @@ public class ServicePersonneMoraleTracing implements ServicePersonneMoraleServic
 			result = target.getPersonnesMorales(ids, parts);
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "getPersonnesMorales");
 		}
 		return result;
 	}
@@ -90,7 +90,7 @@ public class ServicePersonneMoraleTracing implements ServicePersonneMoraleServic
 			result = target.getEtablissement(id);
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "getEtablissement");
 		}
 		return result;
 	}
@@ -102,7 +102,7 @@ public class ServicePersonneMoraleTracing implements ServicePersonneMoraleServic
 			result = target.getEtablissements(ids);
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "getEtablissements");
 		}
 		return result;
 	}
@@ -114,7 +114,7 @@ public class ServicePersonneMoraleTracing implements ServicePersonneMoraleServic
 			result = target.getAdresses(noEntreprise, date);
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "getAdresses");
 		}
 		return result;
 	}
@@ -126,7 +126,7 @@ public class ServicePersonneMoraleTracing implements ServicePersonneMoraleServic
 			result = target.getAdressesHisto(noEntreprise);
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "getAdressesHisto");
 		}
 		return result;
 	}
@@ -138,7 +138,7 @@ public class ServicePersonneMoraleTracing implements ServicePersonneMoraleServic
 			result = target.findEvenements(numeroEntreprise, code, minDate, maxDate);
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "findEvenements");
 		}
 		return result;
 	}

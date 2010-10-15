@@ -3,6 +3,8 @@ package ch.vd.uniregctb.interfaces.service;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
+
 /**
  * Classe utilitaire qui permet de comptabiliser le ping moyen (depuis le début de l'application et sur les 5 dernières minutes) ainsi que le temps passé entre deux appels.
  *
@@ -133,12 +135,18 @@ public final class ServiceTracing implements ServiceTracingInterface {
 	 */
 	private final Map<String, Data> details = new HashMap<String, Data>();
 
+	/**
+	 * Le logger utilisé dans les traces détaillées
+	 */
+	private final Logger detailLogger;
+
 	private int index;
 	private long indexTime;
 
-	public ServiceTracing() {
-		index = 0;
-		indexTime = System.nanoTime();
+	public ServiceTracing(String serviceName) {
+		this.index = 0;
+		this.indexTime = System.nanoTime();
+		this.detailLogger = Logger.getLogger(String.format("%s.%s", ServiceTracing.class.getSimpleName(), serviceName));
 	}
 
 	public long getLastCallTime() {
@@ -256,6 +264,9 @@ public final class ServiceTracing implements ServiceTracingInterface {
 		final long nanoTime = System.nanoTime();
 		lastCallTime = nanoTime;
 		addTime(nanoTime - start, name);
+		if (detailLogger.isInfoEnabled()) {
+			detailLogger.info(String.format("%s (%d ms)", name, (nanoTime - start) / 1000000));
+		}
 	}
 
 	public Map<String, ? extends ServiceTracingInterface> getDetailedData() {

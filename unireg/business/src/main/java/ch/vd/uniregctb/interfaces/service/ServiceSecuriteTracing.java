@@ -22,7 +22,7 @@ public class ServiceSecuriteTracing implements ServiceSecuriteService, Initializ
 	private ServiceSecuriteService target;
 	private StatsService statsService;
 
-	private final ServiceTracing tracing = new ServiceTracing();
+	private final ServiceTracing tracing = new ServiceTracing("ServiceSecurite");
 
 	public void setTarget(ServiceSecuriteService target) {
 		this.target = target;
@@ -39,7 +39,7 @@ public class ServiceSecuriteTracing implements ServiceSecuriteService, Initializ
 			result = target.getCollectivitesUtilisateur(visaOperateur);
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "getCollectivitesUtilisateur");
 		}
 		return result;
 	}
@@ -51,7 +51,7 @@ public class ServiceSecuriteTracing implements ServiceSecuriteService, Initializ
 			result = target.getListeOperateursPourFonctionCollectivite(codeFonction, noCollectivite);
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "getListeOperateursPourFonctionCollectivite");
 		}
 		return result;
 	}
@@ -63,7 +63,7 @@ public class ServiceSecuriteTracing implements ServiceSecuriteService, Initializ
 			result = target.getOperateur(individuNoTechnique);
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "getOperateur(long)");
 		}
 		return result;
 	}
@@ -75,7 +75,7 @@ public class ServiceSecuriteTracing implements ServiceSecuriteService, Initializ
 			result = target.getOperateur(visa);
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "getOperateur(visa)");
 		}
 		return result;
 	}
@@ -87,7 +87,7 @@ public class ServiceSecuriteTracing implements ServiceSecuriteService, Initializ
 			result = target.getProfileUtilisateur(visaOperateur, codeCollectivite);
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "getProfileUtilisateur");
 		}
 		return result;
 	}
@@ -99,7 +99,7 @@ public class ServiceSecuriteTracing implements ServiceSecuriteService, Initializ
 			result = target.getUtilisateurs(typesCollectivite);
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "getUtilisateurs");
 		}
 		return result;
 	}

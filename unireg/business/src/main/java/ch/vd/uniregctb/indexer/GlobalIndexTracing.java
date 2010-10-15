@@ -23,7 +23,7 @@ public class GlobalIndexTracing implements GlobalIndexInterface, InitializingBea
 	private GlobalIndexInterface target;
 	private StatsService statsService;
 
-	private final ServiceTracing tracing = new ServiceTracing();
+	private final ServiceTracing tracing = new ServiceTracing("GlobalIndex");
 
 	public void setTarget(GlobalIndexInterface target) {
 		this.target = target;

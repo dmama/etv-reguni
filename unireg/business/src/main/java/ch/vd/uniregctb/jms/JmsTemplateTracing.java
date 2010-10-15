@@ -21,7 +21,7 @@ public class JmsTemplateTracing implements JmsOperations, InitializingBean, Disp
 	private JmsTemplate target;
 	private StatsService statsService;
 
-	private final ServiceTracing tracing = new ServiceTracing();
+	private final ServiceTracing tracing = new ServiceTracing("JmsTemplate");
 
 	public void setTarget(JmsTemplate target) {
 		this.target = target;

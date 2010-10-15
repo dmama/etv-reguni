@@ -41,7 +41,7 @@ public class EsbTemplateTracing extends EsbJmsTemplate implements DisposableBean
 		synchronized (map) {
 			ServiceTracing s = map.get(destination);
 			if (s == null) {
-				s = new ServiceTracing();
+				s = new ServiceTracing("EsbTemplate");
 				map.put(destination, s);
 				statsService.registerService(destination, s);
 			}
