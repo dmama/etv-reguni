@@ -5,11 +5,11 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 
+import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
-import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
 import ch.vd.uniregctb.tiers.Contribuable;
 
 /**
@@ -49,20 +49,19 @@ public abstract class JobResults<E, R extends JobResults> implements BatchResult
 	}
 
 	private static AdresseService adresseService;
-	private static GlobalTiersSearcher tiersSearcher;
 	private static HibernateTemplate hibernateTemplate;
 
 	public void setAdresseService(AdresseService adresseService) {
 		JobResults.adresseService = adresseService;
 	}
 
-	@SuppressWarnings({"UnusedDeclaration"})
-	public void setTiersSearcher(GlobalTiersSearcher tiersSearcher) {
-		JobResults.tiersSearcher = tiersSearcher;
-	}
-
 	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
 		JobResults.hibernateTemplate = hibernateTemplate;
+	}
+
+	protected static void checkServices() {
+		Assert.notNull(adresseService);
+		Assert.notNull(hibernateTemplate);
 	}
 
 	/**
@@ -75,32 +74,17 @@ public abstract class JobResults<E, R extends JobResults> implements BatchResult
 
 		List<String> noms;
 
-		// on essaie en premier de récupérer l'info de l'indexeur (= plus rapide)
-		final TiersIndexedData data = tiersSearcher.get(noCtb);
-
-		if (data == null) {
-			// rien trouvé dans l'indexeur => on se rabat sur le service
-			final Contribuable tiers = (Contribuable) hibernateTemplate.get(Contribuable.class, noCtb);
-			if (tiers == null) {
-				noms = Collections.emptyList();
-			}
-			else {
-				try {
-					noms = adresseService.getNomCourrier(tiers, null, false);
-				}
-				catch (Exception e) {
-					noms = new ArrayList<String>(1);
-					noms.add(e.getMessage()); // rien de mieux à faire ici
-				}
-			}
+		final Contribuable tiers = (Contribuable) hibernateTemplate.get(Contribuable.class, noCtb);
+		if (tiers == null) {
+			noms = Collections.emptyList();
 		}
 		else {
-			// données de l'indexeur
-			noms = new ArrayList<String>(2);
-			noms.add(data.getNom1().trim());
-			final String nom2 = data.getNom2();
-			if (nom2 != null && !nom2.trim().equals("")) {
-				noms.add(nom2.trim());
+			try {
+				noms = adresseService.getNomCourrier(tiers, null, false);
+			}
+			catch (Exception e) {
+				noms = new ArrayList<String>(1);
+				noms.add(e.getMessage()); // rien de mieux à faire ici
 			}
 		}
 
@@ -115,25 +99,29 @@ public abstract class JobResults<E, R extends JobResults> implements BatchResult
 	 */
 	private static String getNom(long noCtb) {
 
-		String nom;
+		final String nom;
 
 		final List<String> noms = getNoms(noCtb);
 		if (noms.size() == 1) { // 90% des cas
 			nom = noms.get(0);
 		}
-		else {
-			nom = null;
-			for (int i = 0; i < noms.size(); ++i) {
-				if (i == 0) {
-					nom = noms.get(0);
-				}
-				else {
-					nom += (" & " + noms.get(i));
+		else if (noms.size() > 1) {
+			final StringBuilder b = new StringBuilder();
+			for (String part : noms) {
+				if (StringUtils.isNotBlank(part)) {
+					if (b.length() > 0) {
+						b.append(" & ");
+					}
+					b.append(StringUtils.trimToEmpty(part));
 				}
 			}
+			nom = b.toString();
+		}
+		else {
+			nom = null;
 		}
 
-		return (nom == null ? "" : nom.trim());
+		return StringUtils.trimToEmpty(nom);
 	}
 
 	/**

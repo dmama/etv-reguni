@@ -36,9 +36,8 @@
 	<alias alias="globalIndex" name="globalIndexTracing"/>
 	
 	<!-- Initialisation des champs statiques des JobResults -->
-	<bean id="jobResults" class="ch.vd.uniregctb.declaration.ordinaire.EnvoiSommationsDIsResults">
+	<bean id="jobResults" class="ch.vd.uniregctb.common.JobResultsInitializingBean">
 		<property name="adresseService" ref="adresseService"/>
-		<property name="tiersSearcher" ref="globalTiersSearcher"/>
 		<property name="hibernateTemplate" ref="hibernateTemplate"/>
 	</bean>
 	
