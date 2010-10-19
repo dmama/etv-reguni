@@ -34,7 +34,7 @@ public class BVRPlusClientTracing implements BVRPlusClient, InitializingBean, Di
 			return target.getBVRDemande(bvrDemande);
 		}
 		finally {
-			tracing.end(start, "getBVRDdemande");
+			tracing.end(start, "getBVRDemande");
 		}
 	}
 
