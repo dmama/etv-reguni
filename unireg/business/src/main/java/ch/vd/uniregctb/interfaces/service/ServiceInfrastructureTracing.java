@@ -34,7 +34,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureServic
 	private ServiceInfrastructureService target;
 	private StatsService statsService;
 
-	private final ServiceTracing tracing = new ServiceTracing("ServiceInfra");
+	private final ServiceTracing tracing = new ServiceTracing(SERVICE_NAME);
 
 	public void setTarget(ServiceInfrastructureService target) {
 		this.target = target;

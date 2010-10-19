@@ -22,7 +22,7 @@ public class ServiceSecuriteTracing implements ServiceSecuriteService, Initializ
 	private ServiceSecuriteService target;
 	private StatsService statsService;
 
-	private final ServiceTracing tracing = new ServiceTracing("ServiceSecurite");
+	private final ServiceTracing tracing = new ServiceTracing(SERVICE_NAME);
 
 	public void setTarget(ServiceSecuriteService target) {
 		this.target = target;

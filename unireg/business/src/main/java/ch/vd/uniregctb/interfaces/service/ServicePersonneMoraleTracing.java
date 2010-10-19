@@ -21,7 +21,7 @@ public class ServicePersonneMoraleTracing implements ServicePersonneMoraleServic
 	private ServicePersonneMoraleService target;
 	private StatsService statsService;
 
-	private final ServiceTracing tracing = new ServiceTracing("ServicePM");
+	private final ServiceTracing tracing = new ServiceTracing(SERVICE_NAME);
 
 	public void setTarget(ServicePersonneMoraleService target) {
 		this.target = target;

@@ -38,7 +38,7 @@
 	<!-- Mock service ACICOM -->
 	<bean id="aciComClient" class="ch.vd.uniregctb.webservice.acicom.MockAciComClient"/>
 
-	<bean id="fidorService" class="ch.vd.uniregctb.fidor.MockFidorService"/>
+	<bean id="fidorService" class="ch.vd.uniregctb.wsclient.fidor.MockFidorService"/>
 
 	<!-- Mock des différents checkers -->
 	<bean id="serviceCivilChecker" class="ch.vd.uniregctb.checker.MockServiceChecker"/>

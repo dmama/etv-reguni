@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.fidor;
+package ch.vd.uniregctb.wsclient.fidor;
 
 import javax.xml.ws.BindingProvider;
 import java.io.FileNotFoundException;

@@ -11,7 +11,7 @@ import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 
 import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.fidor.FidorService;
+import ch.vd.uniregctb.wsclient.fidor.FidorService;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.TooManyResultsIndexerException;
 import ch.vd.uniregctb.tiers.view.TiersCriteriaView;

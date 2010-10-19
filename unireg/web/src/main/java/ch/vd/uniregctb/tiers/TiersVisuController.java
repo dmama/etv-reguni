@@ -11,7 +11,7 @@ import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 
 import ch.vd.uniregctb.common.WebParamPagination;
-import ch.vd.uniregctb.fidor.FidorService;
+import ch.vd.uniregctb.wsclient.fidor.FidorService;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityProvider;
