@@ -560,17 +560,29 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl implements Impression
 	}
 
 	private String calculNooid(DeclarationImpotOrdinaire declaration, Tiers tiers) {
+
 		// [UNIREG-1257] tenir compte de l'OID valide durant la période de validité de la déclaration
 		final Integer officeImpotId = tiersService.getOfficeImpotIdAt(tiers, declaration.getDateFin());
 		Assert.notNull(officeImpotId);
-		String nooid = StringUtils.leftPad(officeImpotId.toString(), 2, "0") + "-";
-		if (declaration.getQualification() != null && (declaration.getQualification() == Qualification.AUTOMATIQUE || declaration.getQualification() == Qualification.SEMI_AUTOMATIQUE)) {
-			nooid = nooid + "0";
+
+		// [UNIREG-2965] nouveau mapping A, SA et SM (c'est lui le nouveau) -> XX-0, les autres : XX-1)
+		final int suffixe;
+		if (declaration.getQualification() != null) {
+			switch (declaration.getQualification()) {
+				case AUTOMATIQUE:
+				case SEMI_AUTOMATIQUE:
+				case SEMI_MANUEL:
+					suffixe = 0;
+					break;
+				default:
+					suffixe = 1;
+					break;
+			}
 		}
 		else {
-			nooid = nooid + "1";
+			suffixe = 1;
 		}
-		return nooid;
+		return String.format("%02d-%d", officeImpotId, suffixe);
 	}
 
 	private void remplitContribuables(DeclarationImpotOrdinaire declaration, DIRetour didp) throws EditiqueException {
