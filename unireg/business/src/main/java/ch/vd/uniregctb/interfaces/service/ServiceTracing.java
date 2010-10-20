@@ -265,7 +265,7 @@ public final class ServiceTracing implements ServiceTracingInterface {
 		lastCallTime = nanoTime;
 		addTime(nanoTime - start, name);
 		if (detailLogger.isInfoEnabled()) {
-			detailLogger.info(String.format("%s (%d ms)", name, (nanoTime - start) / 1000000));
+			detailLogger.info(String.format("(%d ms) %s", (nanoTime - start) / 1000000, name));
 		}
 	}
 

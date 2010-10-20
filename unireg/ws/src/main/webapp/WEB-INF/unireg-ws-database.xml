@@ -14,7 +14,7 @@
 
 	<!-- Transaction manager -->
 
-	<bean id="transactionManager" class="org.jencks.factory.TransactionManagerFactoryBean">
+	<bean id="transactionManager" class="ch.vd.uniregctb.transaction.TransactionManagerFactoryBean">
 		<!-- [UNIREG-2060] désactivé le log des transactions, parce que de toutes façons les bases ne sont pas configurées pour la reprise automatique des transactions.
 		<property name="transactionLogDir" value="${extprop.tx.logDir}"/>
 		-->

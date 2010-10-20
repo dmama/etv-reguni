@@ -29,7 +29,7 @@
 		<param name="Threshold" value="DEBUG" />
 		<param name="File" value="srv-access.log"/>
 		<layout class="org.apache.log4j.PatternLayout">
-			<param name="ConversionPattern" value="[%c] %-5p [%d{yyyy-MM-dd HH:mm:ss.SSS}] [%8.8t] %m%n" />
+			<param name="ConversionPattern" value="[%-18.18c{1}] %-5p [%d{yyyy-MM-dd HH:mm:ss.SSS}] [%8.8t] %m%n" />
 		</layout>
 	</appender>
 
@@ -78,6 +78,11 @@
 	<category name="ServiceTracing" additivity="false">
 	  <priority value="INFO"/>
 	  <appender-ref ref="SERVICE_TRACING"/>
+	</category>
+	
+	<category name="ch.vd.uniregctb.transaction.TransactionManager" additivity="false">
+		<priority value="INFO"/>
+		<appender-ref ref="SERVICE_TRACING"/>
 	</category>
 
 	<root>
