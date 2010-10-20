@@ -27,17 +27,17 @@ public class TransactionManager extends GeronimoPlatformTransactionManager {
 	 * <li>begin, suspend et resume sont loggués en {@link org.apache.log4j.Level#DEBUG}</li>
 	 * </ul> 
 	 */
-	final public Logger LOGGER = Logger.getLogger(TransactionManager.class);
+	public static final Logger LOGGER = Logger.getLogger(TransactionManager.class);
 
 	public TransactionManager(int defaultTransactionTimeoutSeconds, XidFactory xidFactory, TransactionLog transactionLog) throws XAException {
 		super(defaultTransactionTimeoutSeconds, xidFactory, transactionLog);
 	}
 
-	private long start() {
+	private static long start() {
 		return System.nanoTime();
 	}
 
-	private void end(long start, String name, Level loggingLevel) {
+	private static void end(long start, String name, Level loggingLevel) {
 		final long end = System.nanoTime();
 		if (LOGGER.isEnabledFor(loggingLevel)) {
 			LOGGER.log(loggingLevel, String.format("(%d ms) %s", (end - start) / 1000000L, name));
