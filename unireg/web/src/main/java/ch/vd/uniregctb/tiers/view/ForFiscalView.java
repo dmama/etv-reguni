@@ -65,6 +65,8 @@ public class ForFiscalView implements Comparable<ForFiscalView> {
 
 	private Boolean forGestion;
 
+	private boolean dateFermetureIncoherente;
+
 	public ForFiscalView() {
 
 	}
@@ -458,5 +460,14 @@ public class ForFiscalView implements Comparable<ForFiscalView> {
 	public void setMotifImposition(MotifFor motifImposition) {
 		this.motifImposition = motifImposition;
 	}
+
+	public boolean isDateFermetureIncoherente() {
+		if(dateFermeture!=null){
+			dateFermetureIncoherente = dateFermeture.isAfter(RegDate.get());
+		}
+			
+		return dateFermetureIncoherente;
+	}
+
 
 }
