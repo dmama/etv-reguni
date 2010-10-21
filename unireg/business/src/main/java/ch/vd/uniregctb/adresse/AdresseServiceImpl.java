@@ -2300,8 +2300,11 @@ public class AdresseServiceImpl implements AdresseService {
 
 		final Set<AdresseTiers> adresses = tiers.getAdressesTiers();
 		for (AdresseTiers adresse : adresses) {
-			final AdresseGenerique adresseGenerique = resolveAdresseSurchargee(tiers, adresse, 0, false);
-			adressesFiscales.set(TypeAdresseFiscale.fromCore(adresse.getUsage()), adresseGenerique);
+			if(!adresse.isAnnule()){
+				final AdresseGenerique adresseGenerique = resolveAdresseSurchargee(tiers, adresse, 0, false);
+				adressesFiscales.set(TypeAdresseFiscale.fromCore(adresse.getUsage()), adresseGenerique);
+			}
+
 		}
 
 		return adressesFiscales;

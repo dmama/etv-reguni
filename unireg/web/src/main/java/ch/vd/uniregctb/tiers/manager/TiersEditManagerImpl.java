@@ -249,6 +249,7 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 
 			tiersEditView.setDossiersApparentes(getRapports(tiers));
 			setAdressesActives(tiersEditView, tiers);
+			setAdressesFiscalesModifiables(tiersEditView,tiers);
 
 			//gestion des droits d'édition
 			boolean allowed = false;
