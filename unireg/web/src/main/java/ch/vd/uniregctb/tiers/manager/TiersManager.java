@@ -250,8 +250,9 @@ public class TiersManager implements MessageSourceAware {
 		for (Individu enfant : listFiliations) {
 			final RapportView rapportView = createRapportViewPourFilliation(ind, enfant, SensRapportEntreTiers.OBJET);
 
+			final boolean fermeOuAnnule = rapportView.isAnnule() || rapportView.getDateFin() != null;
 			final String nomEnfant = tiersService.getNomPrenom(enfant);
-			final String toolTipMessage = nomEnfant + " est l'enfant de " + nomInd;
+			final String toolTipMessage = String.format("%s %s l'enfant de %s", nomEnfant, fermeOuAnnule ? "était" : "est", nomInd);
 			rapportView.setToolTipMessage(toolTipMessage);
 
 			rapportsView.add(rapportView);
@@ -262,8 +263,9 @@ public class TiersManager implements MessageSourceAware {
 		if (mere != null) {
 			final RapportView rapportView = createRapportViewPourFilliation(ind, mere, SensRapportEntreTiers.SUJET);
 
+			final boolean fermeOuAnnule = rapportView.isAnnule() || rapportView.getDateFin() != null;
 			final String nomMere = tiersService.getNomPrenom(mere);
-			final String toolTipMessage = nomMere + " est la mère de " + nomInd;
+			final String toolTipMessage = String.format("%s %s la mère de %s", nomMere, fermeOuAnnule ? "était" : "est", nomInd);
 			rapportView.setToolTipMessage(toolTipMessage);
 
 			rapportsView.add(rapportView);
@@ -272,8 +274,9 @@ public class TiersManager implements MessageSourceAware {
 		if (pere != null) {
 			final RapportView rapportView = createRapportViewPourFilliation(ind, pere, SensRapportEntreTiers.SUJET);
 
+			final boolean fermeOuAnnule = rapportView.isAnnule() || rapportView.getDateFin() != null;
 			final String nomPere = tiersService.getNomPrenom(pere);
-			final String toolTipMessage = nomPere + " est le père de " + nomInd;
+			final String toolTipMessage = String.format("%s %s le père de %s", nomPere, fermeOuAnnule ? "était" : "est", nomInd);
 			rapportView.setToolTipMessage(toolTipMessage);
 
 			rapportsView.add(rapportView);
@@ -470,29 +473,31 @@ public class TiersManager implements MessageSourceAware {
 			return null;
 		}
 
+		final boolean fermeOuAnnule = rapport.isAnnule() || rapport.getDateFin() != null;
+
 		if (rapport instanceof ContactImpotSource) {
-			return nomSujet + " est le tiers référent de " + nomObjet;
+			return String.format("%s %s le tiers référent de %s", nomSujet, fermeOuAnnule ? "était" : "est", nomObjet);
 		}
 		else if (rapport instanceof RepresentationConventionnelle) {
-			return nomSujet + " est représenté(e) par " + nomObjet;
+			return String.format("%s %s représenté(e) par %s", nomSujet, fermeOuAnnule ? "était" : "est", nomObjet);
 		}
 		else if (rapport instanceof Curatelle) {
-			return nomObjet + " est le curateur de " + nomSujet;
+			return String.format("%s %s le curateur de %s", nomObjet, fermeOuAnnule ? "était" : "est", nomSujet);
 		}
 		else if (rapport instanceof ConseilLegal) {
-			return nomObjet + " est le conseiller légal de " + nomSujet;
+			return String.format("%s %s le conseiller légal de %s", nomObjet, fermeOuAnnule ? "était" : "est", nomSujet);
 		}
 		else if (rapport instanceof Tutelle) {
-			return nomObjet + " est le tuteur de " + nomSujet;
+			return String.format("%s %s le tuteur de %s", nomObjet, fermeOuAnnule ? "était" : "est", nomSujet);
 		}
 		else if (rapport instanceof AnnuleEtRemplace) {
-			return nomObjet + " (n°" + objetId + ") remplace " + nomSujet + " (n°" + sujetId + ")";
+			return String.format("%s (n°%d) %s %s (n°%d)", nomObjet, objetId, fermeOuAnnule ? "remplaçait" : "remplace", nomSujet, sujetId);
 		}
 		else if (rapport instanceof AppartenanceMenage) {
-			return nomSujet + " appartient au ménage " + nomObjet;
+			return String.format("%s %s au ménage %s", nomSujet, fermeOuAnnule ? "appartenait" : "appartient", nomObjet);
 		}
 		else if (rapport instanceof RapportPrestationImposable) {
-			return nomSujet + " est employé(e) par " + nomObjet;
+			return String.format("%s %s employé(e) par %s", nomSujet, fermeOuAnnule ? "était" : "est", nomObjet);
 		}
 		else {
 			throw new IllegalArgumentException("Type de rapport-entre-tiers inconnu = [" + rapport.getClass() + "]");
