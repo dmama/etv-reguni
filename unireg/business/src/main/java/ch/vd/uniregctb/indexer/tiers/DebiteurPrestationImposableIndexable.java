@@ -103,12 +103,12 @@ public class DebiteurPrestationImposableIndexable extends TiersIndexable {
 		final List<String> raisonSociale = tiersService.getRaisonSociale(dpi);
 		data.setNomRaison(concat(raisonSociale, " "));
 		data.setCategorieDebiteurIs(IndexerFormatHelper.objectToString(dpi.getCategorieImpotSource()));
+		data.addNomRaison(dpi.getComplementNom());
 
 		if (ctbIndexable == null) {
 
 			// dans ce cas, la raison sociale vue plus haut est nom1 et nom2
 
-			data.addNomRaison(dpi.getComplementNom());
 			data.setAutresNom(raisonSociale.size() > 1 ? raisonSociale.get(1) : null);
 			data.setNom1(raisonSociale.size() > 0 ? raisonSociale.get(0) : null);
 			data.setNom2(raisonSociale.size() > 1 ? raisonSociale.get(1) : null);
