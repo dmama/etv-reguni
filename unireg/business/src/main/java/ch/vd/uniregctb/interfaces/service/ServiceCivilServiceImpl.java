@@ -14,7 +14,7 @@ import ch.vd.registre.common.service.RegistreException;
 import ch.vd.uniregctb.common.JvmVersionHelper;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.Individu;
-import ch.vd.uniregctb.interfaces.model.wrapper.IndividuWrapper;
+import ch.vd.uniregctb.interfaces.model.impl.IndividuImpl;
 
 public class ServiceCivilServiceImpl extends ServiceCivilServiceBase {
 
@@ -41,7 +41,7 @@ public class ServiceCivilServiceImpl extends ServiceCivilServiceBase {
 			LOGGER.trace("Calling getIndividu(" + noIndividu + ", " + annee + ")");
 		}
 		try {
-			Individu ind = IndividuWrapper.get(serviceCivil.getIndividu(noIndividu, annee, AttributeIndividu.toEAI(parties)));
+			Individu ind = IndividuImpl.get(serviceCivil.getIndividu(noIndividu, annee, AttributeIndividu.toEAI(parties)));
 			if (LOGGER.isTraceEnabled()) {
 				LOGGER.trace("End of getIndividu(" + noIndividu + ", " + annee + ")");
 			}
@@ -69,7 +69,7 @@ public class ServiceCivilServiceImpl extends ServiceCivilServiceBase {
 
 			final List<Individu> list = new ArrayList<Individu>(individus.size());
 			for (ch.vd.registre.civil.model.Individu ind : individus) {
-				final Individu individu = IndividuWrapper.get(ind);
+				final Individu individu = IndividuImpl.get(ind);
 				if (individu != null) {
 					list.add(individu);
 				}

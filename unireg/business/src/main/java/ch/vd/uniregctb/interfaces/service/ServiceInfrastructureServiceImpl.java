@@ -13,8 +13,6 @@ import org.springframework.util.Assert;
 
 import ch.vd.infrastructure.model.EnumPays;
 import ch.vd.infrastructure.model.EnumTypeCollectivite;
-import ch.vd.infrastructure.model.impl.CantonImpl;
-import ch.vd.infrastructure.model.impl.LocaliteImpl;
 import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.infrastructure.service.ServiceInfrastructure;
 import ch.vd.registre.base.date.NullDateBehavior;
@@ -29,13 +27,13 @@ import ch.vd.uniregctb.interfaces.model.Localite;
 import ch.vd.uniregctb.interfaces.model.OfficeImpot;
 import ch.vd.uniregctb.interfaces.model.Pays;
 import ch.vd.uniregctb.interfaces.model.Rue;
-import ch.vd.uniregctb.interfaces.model.wrapper.CantonWrapper;
-import ch.vd.uniregctb.interfaces.model.wrapper.CollectiviteAdministrativeWrapper;
-import ch.vd.uniregctb.interfaces.model.wrapper.CommuneWrapper;
-import ch.vd.uniregctb.interfaces.model.wrapper.InstitutionFinanciereWrapper;
-import ch.vd.uniregctb.interfaces.model.wrapper.LocaliteWrapper;
-import ch.vd.uniregctb.interfaces.model.wrapper.PaysWrapper;
-import ch.vd.uniregctb.interfaces.model.wrapper.RueWrapper;
+import ch.vd.uniregctb.interfaces.model.impl.CantonImpl;
+import ch.vd.uniregctb.interfaces.model.impl.CollectiviteAdministrativeImpl;
+import ch.vd.uniregctb.interfaces.model.impl.CommuneImpl;
+import ch.vd.uniregctb.interfaces.model.impl.InstitutionFinanciereImpl;
+import ch.vd.uniregctb.interfaces.model.impl.LocaliteImpl;
+import ch.vd.uniregctb.interfaces.model.impl.PaysImpl;
+import ch.vd.uniregctb.interfaces.model.impl.RueImpl;
 
 /**
  * @author Jean-Eric CUENDET
@@ -88,7 +86,7 @@ public class ServiceInfrastructureServiceImpl extends AbstractServiceInfrastruct
 			List<?> list = serviceInfrastructure.getCantons(serviceInfrastructure.getPays(EnumPays.SIGLE_CH));
 			for (Object o : list) {
 				ch.vd.infrastructure.model.Canton c = (ch.vd.infrastructure.model.Canton) o;
-				cantons.add(CantonWrapper.get(c));
+				cantons.add(CantonImpl.get(c));
 			}
 		}
 		catch (RemoteException e) {
@@ -102,13 +100,13 @@ public class ServiceInfrastructureServiceImpl extends AbstractServiceInfrastruct
 	 */
 	public List<Commune> getListeCommunes(final Canton canton) throws InfrastructureException {
 		try {
-			final CantonImpl c = new CantonImpl();
+			final ch.vd.infrastructure.model.impl.CantonImpl c = new ch.vd.infrastructure.model.impl.CantonImpl();
 			c.setSigleOFS(canton.getSigleOFS());
 			final List<?> list = serviceInfrastructure.getCommunes(c);
 			List<Commune> communes = new ArrayList<Commune>();
 			for (Object o : list) {
 				ch.vd.infrastructure.model.Commune co = (ch.vd.infrastructure.model.Commune) o;
-				communes.add(CommuneWrapper.get(co));
+				communes.add(CommuneImpl.get(co));
 			}
 			return Collections.unmodifiableList(communes);
 		}
@@ -123,13 +121,13 @@ public class ServiceInfrastructureServiceImpl extends AbstractServiceInfrastruct
 	@SuppressWarnings({"unchecked"})
 	public List<Commune> getListeFractionsCommunes() throws InfrastructureException {
 		try {
-			final CantonImpl c = new CantonImpl();
+			final ch.vd.infrastructure.model.impl.CantonImpl c = new ch.vd.infrastructure.model.impl.CantonImpl();
 			c.setSigleOFS(ServiceInfrastructureService.SIGLE_CANTON_VD);
 			final List<ch.vd.infrastructure.model.Commune> list = serviceInfrastructure.getCommunes(c);
 			final List<Commune> communes = new ArrayList<Commune>();
 			for (ch.vd.infrastructure.model.Commune co : list) {
 				if (!co.isPrincipale()) {
-					communes.add(CommuneWrapper.get(co));
+					communes.add(CommuneImpl.get(co));
 				}
 			}
 			return Collections.unmodifiableList(communes);
@@ -179,7 +177,7 @@ public class ServiceInfrastructureServiceImpl extends AbstractServiceInfrastruct
 	public Pays getSuisse() throws ServiceInfrastructureException {
 		if (suisse == null) {
 			try {
-				suisse = PaysWrapper.get(serviceInfrastructure.getPays(EnumPays.SIGLE_CH));
+				suisse = PaysImpl.get(serviceInfrastructure.getPays(EnumPays.SIGLE_CH));
 			}
 			catch (RemoteException e) {
 				LOGGER.error(e);
@@ -249,7 +247,7 @@ public class ServiceInfrastructureServiceImpl extends AbstractServiceInfrastruct
 			List<?> list = serviceInfrastructure.getListePays();
 			for (Object o : list) {
 				ch.vd.infrastructure.model.Pays p = (ch.vd.infrastructure.model.Pays) o;
-				pays.add(PaysWrapper.get(p));
+				pays.add(PaysImpl.get(p));
 			}
 		}
 		catch (RemoteException e) {
@@ -265,29 +263,29 @@ public class ServiceInfrastructureServiceImpl extends AbstractServiceInfrastruct
 		int numOrdreP = localite.getNoOrdre();
 		try {
 			if (numOrdreP == 540) {// 1341 Orient -> fraction l'orient 8002
-				return CommuneWrapper.get(serviceInfrastructure.getCommuneById(String.valueOf(8002)));
+				return CommuneImpl.get(serviceInfrastructure.getCommuneById(String.valueOf(8002)));
 			}
 			else if (numOrdreP == 541) {// 1346 les Bioux -> fraction les Bioux 8012
-				return CommuneWrapper.get(serviceInfrastructure.getCommuneById(String.valueOf(8012)));
+				return CommuneImpl.get(serviceInfrastructure.getCommuneById(String.valueOf(8012)));
 			}
 			else if (numOrdreP == 542) {// 1344 l'Abbaye -> commune de l'Abbaye 5871
-				return CommuneWrapper.get(serviceInfrastructure.getCommuneById(String.valueOf(5871)));
+				return CommuneImpl.get(serviceInfrastructure.getCommuneById(String.valueOf(5871)));
 			}
 			else if (numOrdreP == 543) {// 1342 le Pont -> commune de l'Abbaye 5871
-				return CommuneWrapper.get(serviceInfrastructure.getCommuneById(String.valueOf(5871)));
+				return CommuneImpl.get(serviceInfrastructure.getCommuneById(String.valueOf(5871)));
 
 			}
 			else if (numOrdreP == 546) {// 1347 le Sentier -> fraction le Sentier 8000
-				return CommuneWrapper.get(serviceInfrastructure.getCommuneById(String.valueOf(8000)));
+				return CommuneImpl.get(serviceInfrastructure.getCommuneById(String.valueOf(8000)));
 			}
 			else if (numOrdreP == 547) {// 1347 le Solliat -> commune Chenit 5872
-				return CommuneWrapper.get(serviceInfrastructure.getCommuneById(String.valueOf(5872)));
+				return CommuneImpl.get(serviceInfrastructure.getCommuneById(String.valueOf(5872)));
 			}
 			else if (numOrdreP == 550) {// 1348 le Brassus -> fraction le Brassus 8001
-				return CommuneWrapper.get(serviceInfrastructure.getCommuneById(String.valueOf(8001)));
+				return CommuneImpl.get(serviceInfrastructure.getCommuneById(String.valueOf(8001)));
 			}
 			else { // commune normale sans fraction
-				return CommuneWrapper.get(serviceInfrastructure.getCommuneById(localite.getNoCommune().toString()));
+				return CommuneImpl.get(serviceInfrastructure.getCommuneById(localite.getNoCommune().toString()));
 			}
 		}
 		catch (RemoteException e) {
@@ -303,12 +301,12 @@ public class ServiceInfrastructureServiceImpl extends AbstractServiceInfrastruct
 		List<Localite> localites = new ArrayList<Localite>();
 		try {
 			for (Canton c : getAllCantons()) {
-				final CantonImpl canton = new CantonImpl();
+				final ch.vd.infrastructure.model.impl.CantonImpl canton = new ch.vd.infrastructure.model.impl.CantonImpl();
 				canton.setSigleOFS(c.getSigleOFS());
 				List<?> localitesTmp = serviceInfrastructure.getLocalites(canton);
 				for (Object o : localitesTmp) {
 					ch.vd.infrastructure.model.Localite l = (ch.vd.infrastructure.model.Localite) o;
-					localites.add(LocaliteWrapper.get(l));
+					localites.add(LocaliteImpl.get(l));
 				}
 			}
 		}
@@ -324,12 +322,12 @@ public class ServiceInfrastructureServiceImpl extends AbstractServiceInfrastruct
 	public List<Rue> getRues(Localite localite) throws InfrastructureException {
 		List<Rue> rues = new ArrayList<Rue>();
 		try {
-			final LocaliteImpl l = new LocaliteImpl();
+			final ch.vd.infrastructure.model.impl.LocaliteImpl l = new ch.vd.infrastructure.model.impl.LocaliteImpl();
 			l.setNoOrdre(localite.getNoOrdre());
 			final List<?> list = serviceInfrastructure.getRues(l);
 			for (Object o : list) {
 				ch.vd.infrastructure.model.Rue r = (ch.vd.infrastructure.model.Rue) o;
-				rues.add(RueWrapper.get(r));
+				rues.add(RueImpl.get(r));
 			}
 		}
 		catch (RemoteException e) {
@@ -344,12 +342,12 @@ public class ServiceInfrastructureServiceImpl extends AbstractServiceInfrastruct
 	public List<Rue> getRues(Canton canton) throws InfrastructureException {
 		try {
 			ArrayList<Rue> rues = new ArrayList<Rue>();
-			final CantonImpl c = new CantonImpl();
+			final ch.vd.infrastructure.model.impl.CantonImpl c = new ch.vd.infrastructure.model.impl.CantonImpl();
 			c.setSigleOFS(canton.getSigleOFS());
 			final List<?> list = serviceInfrastructure.getRues(c);
 			for (Object o : list) {
 				ch.vd.infrastructure.model.Rue r = (ch.vd.infrastructure.model.Rue) o;
-				rues.add(RueWrapper.get(r));
+				rues.add(RueImpl.get(r));
 			}
 			return Collections.unmodifiableList(rues);
 		}
@@ -363,7 +361,7 @@ public class ServiceInfrastructureServiceImpl extends AbstractServiceInfrastruct
 	 */
 	public Rue getRueByNumero(int numero) throws InfrastructureException {
 		try {
-			return RueWrapper.get(serviceInfrastructure.getRueByNumero(numero));
+			return RueImpl.get(serviceInfrastructure.getRueByNumero(numero));
 		}
 		catch (RemoteException e) {
 			throw new InfrastructureException("Acces a la liste des rues", e);
@@ -375,7 +373,7 @@ public class ServiceInfrastructureServiceImpl extends AbstractServiceInfrastruct
 	 */
 	public Localite getLocaliteByONRP(int numeroOrdre) throws InfrastructureException {
 		try {
-			return LocaliteWrapper.get(serviceInfrastructure.getLocalite(numeroOrdre));
+			return LocaliteImpl.get(serviceInfrastructure.getLocalite(numeroOrdre));
 		}
 		catch (RemoteException e) {
 			throw new InfrastructureException("Acces a la localite", e);
@@ -387,7 +385,7 @@ public class ServiceInfrastructureServiceImpl extends AbstractServiceInfrastruct
 	 */
 	public CollectiviteAdministrative getCollectivite(int noColAdm) throws InfrastructureException {
 		try {
-			return CollectiviteAdministrativeWrapper.get(serviceInfrastructure.getCollectivite(noColAdm));
+			return CollectiviteAdministrativeImpl.get(serviceInfrastructure.getCollectivite(noColAdm));
 		}
 		catch (RemoteException e) {
 			throw new InfrastructureException("Acces a la collectivite administrative", e);
@@ -412,7 +410,7 @@ public class ServiceInfrastructureServiceImpl extends AbstractServiceInfrastruct
 	 */
 	public OfficeImpot getOfficeImpotDeCommune(int noCommune) throws InfrastructureException {
 		try {
-			CollectiviteAdministrativeWrapper oid = CollectiviteAdministrativeWrapper.get(serviceInfrastructure.getOidDeCommune(noCommune));
+			CollectiviteAdministrativeImpl oid = CollectiviteAdministrativeImpl.get(serviceInfrastructure.getOidDeCommune(noCommune));
 			return (OfficeImpot) oid;
 		}
 		catch (RemoteException e) {
@@ -431,7 +429,7 @@ public class ServiceInfrastructureServiceImpl extends AbstractServiceInfrastruct
 			for (Object o : list) {
 				ch.vd.infrastructure.model.CollectiviteAdministrative c = (ch.vd.infrastructure.model.CollectiviteAdministrative) o;
 				if (isValid(c.getDateFinValidite())) {
-					CollectiviteAdministrative oid = CollectiviteAdministrativeWrapper.get(c);
+					CollectiviteAdministrative oid = CollectiviteAdministrativeImpl.get(c);
 					offices.add((OfficeImpot) oid);
 				}
 			}
@@ -464,13 +462,13 @@ public class ServiceInfrastructureServiceImpl extends AbstractServiceInfrastruct
 		final List<CollectiviteAdministrative> collectivites = new ArrayList<CollectiviteAdministrative>();
 		try {
 			// TODO (FDE) A changer lors de la prochaine mise en prod des interfaces
-			final CantonImpl cantonVaud = new CantonImpl();
+			final ch.vd.infrastructure.model.impl.CantonImpl cantonVaud = new ch.vd.infrastructure.model.impl.CantonImpl();
 			cantonVaud.setSigleOFS(ServiceInfrastructureService.SIGLE_CANTON_VD);
 
 			final List<ch.vd.infrastructure.model.CollectiviteAdministrative> list = serviceInfrastructure.getCollectivitesAdministratives(cantonVaud);
 			for (ch.vd.infrastructure.model.CollectiviteAdministrative c : list) {
 				if (isValid(c.getDateFinValidite())) {
-					collectivites.add(CollectiviteAdministrativeWrapper.get(c));
+					collectivites.add(CollectiviteAdministrativeImpl.get(c));
 				}
 			}
 		}
@@ -494,7 +492,7 @@ public class ServiceInfrastructureServiceImpl extends AbstractServiceInfrastruct
 			final List<ch.vd.infrastructure.model.CollectiviteAdministrative> list = serviceInfrastructure.getCollectivitesAdministratives(tabTypesCollectivite);
 			for (ch.vd.infrastructure.model.CollectiviteAdministrative c : list) {
 				if (isValid(c.getDateFinValidite())) {
-					collectivites.add(CollectiviteAdministrativeWrapper.get(c));
+					collectivites.add(CollectiviteAdministrativeImpl.get(c));
 				}
 			}
 		}
@@ -519,7 +517,7 @@ public class ServiceInfrastructureServiceImpl extends AbstractServiceInfrastruct
 	public CollectiviteAdministrative getACI() throws InfrastructureException {
 		if (aci == null) {
 			try {
-				aci = CollectiviteAdministrativeWrapper.get(serviceInfrastructure.getCollectivite(noACI));
+				aci = CollectiviteAdministrativeImpl.get(serviceInfrastructure.getCollectivite(noACI));
 			}
 			catch (RemoteException e) {
 				throw new InfrastructureException("Acces a la collectivite administrative", e);
@@ -531,7 +529,7 @@ public class ServiceInfrastructureServiceImpl extends AbstractServiceInfrastruct
 	public CollectiviteAdministrative getACISuccessions() throws InfrastructureException {
 		if (aciSuccessions == null) {
 			try {
-				aciSuccessions = CollectiviteAdministrativeWrapper.get(serviceInfrastructure.getCollectivite(noACISuccessions));
+				aciSuccessions = CollectiviteAdministrativeImpl.get(serviceInfrastructure.getCollectivite(noACISuccessions));
 			}
 			catch (RemoteException e) {
 				throw new InfrastructureException("Acces a la collectivite administrative", e);
@@ -547,7 +545,7 @@ public class ServiceInfrastructureServiceImpl extends AbstractServiceInfrastruct
 	public CollectiviteAdministrative getCEDI() throws InfrastructureException {
 		if (cedi == null) {
 			try {
-				cedi = CollectiviteAdministrativeWrapper.get(serviceInfrastructure.getCollectivite(noCEDI));
+				cedi = CollectiviteAdministrativeImpl.get(serviceInfrastructure.getCollectivite(noCEDI));
 			}
 			catch (RemoteException e) {
 				throw new InfrastructureException("Acces a la collectivite administrative", e);
@@ -563,7 +561,7 @@ public class ServiceInfrastructureServiceImpl extends AbstractServiceInfrastruct
 	public CollectiviteAdministrative getCAT() throws InfrastructureException {
 		if (cat == null) {
 			try {
-				cat = CollectiviteAdministrativeWrapper.get(serviceInfrastructure.getCollectivite(noCAT));
+				cat = CollectiviteAdministrativeImpl.get(serviceInfrastructure.getCollectivite(noCAT));
 			}
 			catch (RemoteException e) {
 				throw new InfrastructureException("Acces a la collectivite administrative", e);
@@ -574,7 +572,7 @@ public class ServiceInfrastructureServiceImpl extends AbstractServiceInfrastruct
 
 	public InstitutionFinanciere getInstitutionFinanciere(int id) throws InfrastructureException {
 		try {
-			return InstitutionFinanciereWrapper.get(serviceInfrastructure.getInstitutionFinanciere(id));
+			return InstitutionFinanciereImpl.get(serviceInfrastructure.getInstitutionFinanciere(id));
 		}
 		catch (RemoteException e) {
 			throw new InfrastructureException("Acces à l'institution financière", e);
@@ -587,7 +585,7 @@ public class ServiceInfrastructureServiceImpl extends AbstractServiceInfrastruct
 			List<InstitutionFinanciere> list = new ArrayList<InstitutionFinanciere>(l.size());
 			for (Object o : l) {
 				ch.vd.registre.common.model.InstitutionFinanciere i = (ch.vd.registre.common.model.InstitutionFinanciere) o;
-				list.add(InstitutionFinanciereWrapper.get(i));
+				list.add(InstitutionFinanciereImpl.get(i));
 			}
 			return list;
 		}

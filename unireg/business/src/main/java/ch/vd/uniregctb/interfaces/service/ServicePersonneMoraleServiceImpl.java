@@ -17,9 +17,9 @@ import ch.vd.uniregctb.interfaces.model.AdresseEntreprise;
 import ch.vd.uniregctb.interfaces.model.Etablissement;
 import ch.vd.uniregctb.interfaces.model.EvenementPM;
 import ch.vd.uniregctb.interfaces.model.PersonneMorale;
-import ch.vd.uniregctb.interfaces.model.wrapper.PersonneMoraleWrapper;
-import ch.vd.uniregctb.interfaces.model.wrapper.hostinterfaces.EtablissementWrapper;
-import ch.vd.uniregctb.interfaces.model.wrapper.hostinterfaces.EvenementPMWrapper;
+import ch.vd.uniregctb.interfaces.model.impl.EtablissementImpl;
+import ch.vd.uniregctb.interfaces.model.impl.EvenementPMImpl;
+import ch.vd.uniregctb.interfaces.model.impl.PersonneMoraleImpl;
 
 public class ServicePersonneMoraleServiceImpl implements ServicePersonneMoraleService {
 
@@ -47,7 +47,7 @@ public class ServicePersonneMoraleServiceImpl implements ServicePersonneMoraleSe
 
 	public PersonneMorale getPersonneMorale(Long id, PartPM... parts) {
 		try {
-			return PersonneMoraleWrapper.get(servicePersonneMorale.getPersonneMorale(id, part2attribute(parts)));
+			return PersonneMoraleImpl.get(servicePersonneMorale.getPersonneMorale(id, part2attribute(parts)));
 		}
 		catch (Exception e) {
 			throw new PersonneMoraleException(e);
@@ -63,7 +63,7 @@ public class ServicePersonneMoraleServiceImpl implements ServicePersonneMoraleSe
 
 			final List<PersonneMorale> personnes = new ArrayList<PersonneMorale>(list.size());
 			for (Object o : list) {
-				personnes.add(PersonneMoraleWrapper.get((ch.vd.registre.pm.model.PersonneMorale) o));
+				personnes.add(PersonneMoraleImpl.get((ch.vd.registre.pm.model.PersonneMorale) o));
 			}
 
 			return personnes;
@@ -75,7 +75,7 @@ public class ServicePersonneMoraleServiceImpl implements ServicePersonneMoraleSe
 
 	public Etablissement getEtablissement(long id) {
 		try {
-			return EtablissementWrapper.get(servicePersonneMorale.getEtablissement(id));
+			return EtablissementImpl.get(servicePersonneMorale.getEtablissement(id));
 		}
 		catch (Exception e) {
 			throw new PersonneMoraleException(e);
@@ -91,7 +91,7 @@ public class ServicePersonneMoraleServiceImpl implements ServicePersonneMoraleSe
 
 			final List<Etablissement> personnes = new ArrayList<Etablissement>(list.size());
 			for (Object o : list) {
-				personnes.add(EtablissementWrapper.get((ch.vd.registre.pm.model.Etablissement) o));
+				personnes.add(EtablissementImpl.get((ch.vd.registre.pm.model.Etablissement) o));
 			}
 
 			return personnes;
@@ -141,7 +141,7 @@ public class ServicePersonneMoraleServiceImpl implements ServicePersonneMoraleSe
 
 			final List<EvenementPM> events = new ArrayList<EvenementPM>(list.size());
 			for (Object e : list) {
-				events.add(EvenementPMWrapper.get((ch.vd.registre.pm.model.EvenementPM) e));
+				events.add(EvenementPMImpl.get((ch.vd.registre.pm.model.EvenementPM) e));
 			}
 
 			return events;
