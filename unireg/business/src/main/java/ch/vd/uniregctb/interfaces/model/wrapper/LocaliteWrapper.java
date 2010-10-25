@@ -8,11 +8,20 @@ import ch.vd.uniregctb.interfaces.model.Localite;
 
 public class LocaliteWrapper implements Localite, Serializable {
 
-	private static final long serialVersionUID = -5346347764788098922L;
+	private static final long serialVersionUID = 2998886376392463517L;
 	
-	private final ch.vd.infrastructure.model.Localite target;
 	private CommuneSimple commune = null;
 	private final RegDate dateFin;
+	private Integer chiffreComplementaire;
+	private Integer complementNPA;
+	private Integer npa;
+	private Integer noCommune;
+	private Integer noOrdre;
+	private String nomAbregeMajuscule;
+	private String nomAbregeMinuscule;
+	private String nomCompletMajuscule;
+	private String nomCompletMinuscule;
+	private boolean valide;
 
 	public static LocaliteWrapper get(ch.vd.infrastructure.model.Localite target) {
 		if (target == null) {
@@ -22,23 +31,33 @@ public class LocaliteWrapper implements Localite, Serializable {
 	}
 
 	private LocaliteWrapper(ch.vd.infrastructure.model.Localite target) {
-		this.target = target;
+		this.commune = CommuneSimpleWrapper.get(target.getCommuneLocalite());
 		this.dateFin = RegDate.get(target.getDateFinValidite());
+		this.chiffreComplementaire = target.getChiffreComplementaire();
+		this.complementNPA = initComplementNPA(target.getComplementNPA());
+		this.npa = target.getNPA();
+		this.noCommune = target.getNoCommune();
+		this.noOrdre = target.getNoOrdre();
+		this.nomAbregeMajuscule = target.getNomAbregeMajuscule();
+		this.nomAbregeMinuscule = target.getNomAbregeMinuscule();
+		this.nomCompletMajuscule = target.getNomCompletMajuscule();
+		this.nomCompletMinuscule = target.getNomCompletMinuscule();
+		this.valide = target.isValide();
 	}
 
 	public Integer getChiffreComplementaire() {
-		return target.getChiffreComplementaire();
+		return chiffreComplementaire;
 	}
 
 	public CommuneSimple getCommuneLocalite() {
-		if (commune == null) {
-			commune = CommuneSimpleWrapper.get(target.getCommuneLocalite());
-		}
 		return commune;
 	}
 
 	public Integer getComplementNPA() {
-		final Integer c = target.getComplementNPA();
+		return complementNPA;
+	}
+
+	private Integer initComplementNPA(Integer c) {
 		if (c == null || c == 0) {	// un complément de 0 signifie pas de complément
 			return null;
 		}
@@ -52,38 +71,34 @@ public class LocaliteWrapper implements Localite, Serializable {
 	}
 
 	public Integer getNPA() {
-		return target.getNPA();
+		return npa;
 	}
 
 	public Integer getNoCommune() {
-		return target.getNoCommune();
+		return noCommune;
 	}
 
 	public Integer getNoOrdre() {
-		return target.getNoOrdre();
+		return noOrdre;
 	}
 
 	public String getNomAbregeMajuscule() {
-		return target.getNomAbregeMajuscule();
+		return nomAbregeMajuscule;
 	}
 
 	public String getNomAbregeMinuscule() {
-		return target.getNomAbregeMinuscule();
+		return nomAbregeMinuscule;
 	}
 
 	public String getNomCompletMajuscule() {
-		return target.getNomCompletMajuscule();
+		return nomCompletMajuscule;
 	}
 
 	public String getNomCompletMinuscule() {
-		return target.getNomCompletMinuscule();
+		return nomCompletMinuscule;
 	}
 
 	public boolean isValide() {
-		return target.isValide();
-	}
-
-	public ch.vd.infrastructure.model.Localite getTarget() {
-		return target;
+		return valide;
 	}
 }

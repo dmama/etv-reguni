@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.interfaces.model.wrapper.hostinterfaces;
 
+import java.io.Serializable;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.interfaces.model.Capital;
 import ch.vd.uniregctb.interfaces.model.EditionFosc;
@@ -7,13 +9,15 @@ import ch.vd.uniregctb.interfaces.model.EditionFosc;
 /**
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
-public class CapitalWrapper implements Capital {
+public class CapitalWrapper implements Capital, Serializable {
 
-	private RegDate dateDebut;
-	private RegDate dateFin;
-	private Long capitalAction;
-	private Long capitalLibere;
-	private EditionFosc editionFosc;
+	private static final long serialVersionUID = 4245185162092655371L;
+
+	private final RegDate dateDebut;
+	private final RegDate dateFin;
+	private final Long capitalAction;
+	private final Long capitalLibere;
+	private final EditionFosc editionFosc;
 
 	public static CapitalWrapper get(ch.vd.registre.pm.model.Capital target) {
 		if (target == null) {

@@ -14,24 +14,23 @@ import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 
 public class AdresseWrapper implements Adresse, Serializable {
 
-	private static final long serialVersionUID = -2087396644148685694L;
+	private static final long serialVersionUID = -8140768971615719637L;
 
 	private final RegDate dateDebut;
 	private final RegDate dateFin;
-	private String casePostale;
-	private String localiteAbregeMinuscule;
-	private String numero;
-	private String numeroAppartement;
-	private Integer numeroRue;
-	private int numeroOrdrePostal;
-	private String numeroPostal;
-	private String numeroPostalComplementaire;
-	private int noOfsPays;
-	private String rue;
-	private String titre;
-	private EnumTypeAdresse typeAdresse;
-	private CommuneSimple communeAdresse;
-	private ch.vd.infrastructure.model.CommuneSimple targetCommuneAdresse;
+	private final String casePostale;
+	private final String localiteAbregeMinuscule;
+	private final String numero;
+	private final String numeroAppartement;
+	private final Integer numeroRue;
+	private final int numeroOrdrePostal;
+	private final String numeroPostal;
+	private final String numeroPostalComplementaire;
+	private final int noOfsPays;
+	private final String rue;
+	private final String titre;
+	private final EnumTypeAdresse typeAdresse;
+	private final CommuneSimple communeAdresse;
 
 	public static AdresseWrapper get(ch.vd.common.model.Adresse target) {
 		if (target == null) {
@@ -47,7 +46,6 @@ public class AdresseWrapper implements Adresse, Serializable {
 	}
 
 	private AdresseWrapper(ch.vd.common.model.Adresse target) {
-		this.targetCommuneAdresse = target.getCommuneAdresse();
 		this.dateDebut = RegDate.get(target.getDateDebutValidite());
 		this.dateFin = RegDate.get(target.getDateFinValidite());
 		this.casePostale = target.getCasePostale();
@@ -62,6 +60,7 @@ public class AdresseWrapper implements Adresse, Serializable {
 		this.rue = target.getRue();
 		this.titre = target.getTitre();
 		this.typeAdresse = target.getTypeAdresse();
+		this.communeAdresse = CommuneSimpleWrapper.get(target.getCommuneAdresse());
 	}
 
 	public String getCasePostale() {
@@ -121,10 +120,6 @@ public class AdresseWrapper implements Adresse, Serializable {
 	}
 
 	public CommuneSimple getCommuneAdresse() {
-		if (communeAdresse == null && targetCommuneAdresse != null) {
-			communeAdresse = CommuneSimpleWrapper.get(targetCommuneAdresse);
-			targetCommuneAdresse = null;
-		}
 		return communeAdresse;
 	}
 

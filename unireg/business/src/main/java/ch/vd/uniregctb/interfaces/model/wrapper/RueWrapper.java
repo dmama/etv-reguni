@@ -6,11 +6,11 @@ import ch.vd.uniregctb.interfaces.model.Rue;
 
 public class RueWrapper implements Rue, Serializable {
 
-	private static final long serialVersionUID = 7361240668934832807L;
+	private static final long serialVersionUID = -5307681617982000774L;
 	
-	private String designationCourrier;
-	private Integer noLocalite;
-	private Integer noRue;
+	private final String designationCourrier;
+	private final Integer noLocalite;
+	private final Integer noRue;
 
 	public static RueWrapper get(ch.vd.infrastructure.model.Rue target) {
 		if (target == null) {

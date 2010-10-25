@@ -6,12 +6,12 @@ import ch.vd.uniregctb.interfaces.model.TuteurGeneral;
 
 public class TuteurGeneralWrapper implements TuteurGeneral, Serializable {
 
-	private static final long serialVersionUID = 4720709288666608705L;
+	private static final long serialVersionUID = -5079133760089123152L;
 
-	private String noTelephoneContact;
-	private String nomContact;
-	private String nomOffice;
-	private String prenomContact;
+	private final String noTelephoneContact;
+	private final String nomContact;
+	private final String nomOffice;
+	private final String prenomContact;
 
 	public static TuteurGeneralWrapper get(ch.vd.registre.civil.model.TuteurGeneral target) {
 		if (target == null) {

@@ -6,16 +6,16 @@ import ch.vd.uniregctb.interfaces.model.InstitutionFinanciere;
 
 public class InstitutionFinanciereWrapper implements InstitutionFinanciere, Serializable {
 
-	private static final long serialVersionUID = -3252725045255584882L;
+	private static final long serialVersionUID = 255343809870190510L;
 	
-	private String adresse1;
-	private String adresse2;
-	private String adresse3;
-	private Integer code;
-	private String noClearing;
-	private String noCompte;
-	private String noIdentificationDTA;
-	private String nomInstitutionFinanciere;
+	private final String adresse1;
+	private final String adresse2;
+	private final String adresse3;
+	private final Integer code;
+	private final String noClearing;
+	private final String noCompte;
+	private final String noIdentificationDTA;
+	private final String nomInstitutionFinanciere;
 
 	public InstitutionFinanciereWrapper(ch.vd.registre.common.model.InstitutionFinanciere target) {
 		this.adresse1 = target.getAdresse1();

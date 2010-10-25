@@ -9,12 +9,12 @@ import ch.vd.uniregctb.interfaces.model.EtatCivil;
 
 public class EtatCivilWrapper implements EtatCivil, Serializable {
 
-	private static final long serialVersionUID = 2243588998438955767L;
+	private static final long serialVersionUID = 3282374011657120967L;
 	
 	private final RegDate dateDebut;
-	private int noSequence;
-	private EnumTypeEtatCivil typeEtatCivil;
-	private Long numeroConjoint;
+	private final int noSequence;
+	private final EnumTypeEtatCivil typeEtatCivil;
+	private final Long numeroConjoint;
 
 	public static EtatCivilWrapper get(ch.vd.registre.civil.model.EtatCivil target) {
 		if (target == null) {

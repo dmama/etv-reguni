@@ -6,12 +6,12 @@ import ch.vd.uniregctb.interfaces.model.EntiteOFS;
 
 public abstract class EntiteOFSWrapper implements EntiteOFS, Serializable {
 
-	private static final long serialVersionUID = 5892646041246529131L;
+	private static final long serialVersionUID = 2664100976020066771L;
 
-	private int noOFS;
-	private String nomMajuscule;
-	private String nomMinuscule;
-	private String sigleOFS;
+	private final int noOFS;
+	private final String nomMajuscule;
+	private final String nomMinuscule;
+	private final String sigleOFS;
 
 	public EntiteOFSWrapper(ch.vd.infrastructure.model.EntiteOFS target) {
 		this.noOFS = target.getNoOFS();

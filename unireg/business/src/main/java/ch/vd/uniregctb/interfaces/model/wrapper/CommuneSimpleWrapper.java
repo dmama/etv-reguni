@@ -8,20 +8,20 @@ import ch.vd.uniregctb.interfaces.model.CommuneSimple;
 
 public class CommuneSimpleWrapper extends EntiteOFSWrapper implements CommuneSimple, Serializable {
 
-	private static final long serialVersionUID = 365044496514467390L;
+	private static final long serialVersionUID = -7847346716916429469L;
 	
 	private final RegDate dateDebut;
 	private final RegDate dateFin;
-	private String noACI;
-	private String noCantonal;
-	private int noOFSEtendu;
-	private String nomAbrege;
-	private int numTechMere;
-	private boolean vaudoise;
-	private boolean fraction;
-	private boolean principale;
-	private boolean valide;
-	private String sigleCanton;
+	private final String noACI;
+	private final String noCantonal;
+	private final int noOFSEtendu;
+	private final String nomAbrege;
+	private final int numTechMere;
+	private final boolean vaudoise;
+	private final boolean fraction;
+	private final boolean principale;
+	private final boolean valide;
+	private final String sigleCanton;
 
 	public static CommuneSimpleWrapper get(ch.vd.infrastructure.model.CommuneSimple target) {
 		if (target == null) {

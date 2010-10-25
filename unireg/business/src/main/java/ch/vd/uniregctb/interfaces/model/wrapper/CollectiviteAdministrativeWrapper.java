@@ -10,25 +10,25 @@ import ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative;
 
 public class CollectiviteAdministrativeWrapper implements CollectiviteAdministrative, Serializable {
 
-	private static final long serialVersionUID = 3121172700982227121L;
+	private static final long serialVersionUID = 2060844289310860920L;
 	
-	private Adresse adresse = null;
+	private final Adresse adresse;
 	private final RegDate dateFin;
-	private String adresseEmail;
-	private String noCCP;
-	private int noColAdm;
-	private String noFax;
-	private String noTelephone;
-	private String nomComplet1;
-	private String nomComplet2;
-	private String nomComplet3;
-	private String nomCourt;
-	private String sigle;
-	private String sigleCanton;
-	private TypeCollectivite type;
-	private boolean aci;
-	private boolean oid;
-	private boolean valide;
+	private final String adresseEmail;
+	private final String noCCP;
+	private final int noColAdm;
+	private final String noFax;
+	private final String noTelephone;
+	private final String nomComplet1;
+	private final String nomComplet2;
+	private final String nomComplet3;
+	private final String nomCourt;
+	private final String sigle;
+	private final String sigleCanton;
+	private final TypeCollectivite type;
+	private final boolean aci;
+	private final boolean oid;
+	private final boolean valide;
 
 	public static CollectiviteAdministrativeWrapper get(ch.vd.infrastructure.model.CollectiviteAdministrative target) {
 		if (target == null) {

@@ -3,6 +3,7 @@ package ch.vd.uniregctb.interfaces.model.wrapper;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 import ch.vd.registre.base.date.RegDate;
@@ -20,17 +21,19 @@ import ch.vd.uniregctb.interfaces.model.helper.IndividuHelper;
 
 public class IndividuWrapper extends EntiteCivileWrapper implements Individu, Serializable {
 
-	private static final long serialVersionUID = 7921855957117179067L;
+	private static final long serialVersionUID = -2767453068069111885L;
 
-	private final ch.vd.registre.civil.model.Individu target;
+	private final long noTechnique;
+	private final String nouveauNoAVS;
+	private final String numeroRCE;
+	private final boolean isMasculin;
 	private Collection<AdoptionReconnaissance> adoptions;
-	private Individu conjoint;
 	private final RegDate deces;
 	private final RegDate naissance;
-	private HistoriqueIndividu dernierHistorique;
-	private Collection<HistoriqueIndividu> historique;
+	private final HistoriqueIndividu dernierHistorique;
+	private final Collection<HistoriqueIndividu> historique;
 	private Collection<Individu> enfants;
-	private EtatCivilList etatsCivils;
+	private final EtatCivilList etatsCivils;
 	private Individu mere;
 	private Collection<Nationalite> nationalites;
 	private Origine origine;
@@ -47,14 +50,31 @@ public class IndividuWrapper extends EntiteCivileWrapper implements Individu, Se
 
 	protected IndividuWrapper(ch.vd.registre.civil.model.Individu target) {
 		super(target);
-		this.target = target;
+		this.noTechnique = target.getNoTechnique();
+		this.nouveauNoAVS = initNouveauNoAVS(target.getNouveauNoAVS());
+		this.numeroRCE = target.getNumeroRCE();
+		this.isMasculin = target.isSexeMasculin();
+		this.adoptions = initAdoptions(target.getAdoptionsReconnaissances());
 		this.deces = RegDate.get(target.getDateDeces());
 		this.naissance = RegDate.get(target.getDateNaissance());
+		this.dernierHistorique = HistoriqueIndividuWrapper.get(target.getDernierHistoriqueIndividu());
+		this.historique = initHistorique(target.getHistoriqueIndividu());
+		this.enfants = initEnfants(target.getEnfants());
+		this.etatsCivils = initEtatsCivils(target);
+		this.mere = IndividuWrapper.get(target.getMere());
+		this.nationalites = initNationalites(target.getNationalites());
+		this.origine = OrigineWrapper.get(target.getOrigine());
+		this.pere = IndividuWrapper.get(target.getPere());
+		this.permis = initPermis(target.getPermis());
+		this.tutelle = TutelleWrapper.get(target.getTutelle());
 	}
 
 	protected IndividuWrapper(IndividuWrapper individuWrapper, Set<AttributeIndividu> parts) {
 		super(individuWrapper, parts);
-		this.target = individuWrapper.target;
+		this.noTechnique = individuWrapper.noTechnique;
+		this.nouveauNoAVS = individuWrapper.nouveauNoAVS;
+		this.numeroRCE = individuWrapper.numeroRCE;
+		this.isMasculin = individuWrapper.isMasculin;
 		this.deces = individuWrapper.deces;
 		this.naissance = individuWrapper.naissance;
 		this.dernierHistorique = individuWrapper.dernierHistorique;
@@ -63,9 +83,6 @@ public class IndividuWrapper extends EntiteCivileWrapper implements Individu, Se
 
 		if (parts != null && parts.contains(AttributeIndividu.ADOPTIONS)) {
 			adoptions = individuWrapper.adoptions;
-		}
-		if (parts != null && parts.contains(AttributeIndividu.CONJOINT)) {
-			conjoint = individuWrapper.conjoint;
 		}
 		if (parts != null && parts.contains(AttributeIndividu.ENFANTS)) {
 			enfants = individuWrapper.enfants;
@@ -90,25 +107,18 @@ public class IndividuWrapper extends EntiteCivileWrapper implements Individu, Se
 
 
 	public Collection<AdoptionReconnaissance> getAdoptionsReconnaissances() {
-		if (adoptions == null) {
-			initAdoptions();
-		}
 		return adoptions;
 	}
 
-	private void initAdoptions() {
-		synchronized (this) {
-			if (adoptions == null) {
-				adoptions = new ArrayList<AdoptionReconnaissance>();
-				final Collection<?> targetAdoptions = target.getAdoptionsReconnaissances();
-				if (targetAdoptions != null) {
-					for (Object o : targetAdoptions) {
-						ch.vd.registre.civil.model.AdoptionReconnaissance a = (ch.vd.registre.civil.model.AdoptionReconnaissance) o;
-						adoptions.add(AdoptionReconnaissanceWrapper.get(a));
-					}
-				}
+	private List<AdoptionReconnaissance> initAdoptions(Collection<?> targetAdoptions) {
+		final List<AdoptionReconnaissance> list = new ArrayList<AdoptionReconnaissance>();
+		if (targetAdoptions != null) {
+			for (Object o : targetAdoptions) {
+				ch.vd.registre.civil.model.AdoptionReconnaissance a = (ch.vd.registre.civil.model.AdoptionReconnaissance) o;
+				list.add(AdoptionReconnaissanceWrapper.get(a));
 			}
 		}
+		return list;
 	}
 
 	public RegDate getDateDeces() {
@@ -124,50 +134,29 @@ public class IndividuWrapper extends EntiteCivileWrapper implements Individu, Se
 	}
 
 	public HistoriqueIndividu getDernierHistoriqueIndividu() {
-		if (dernierHistorique == null) {
-			dernierHistorique = HistoriqueIndividuWrapper.get(target.getDernierHistoriqueIndividu());
-		}
 		return dernierHistorique;
 	}
 
 	public Collection<Individu> getEnfants() {
-		if (enfants == null) {
-			initEnfants();
-		}
 		return enfants;
 	}
 
-	private void initEnfants() {
-		synchronized (this) {
-			if (enfants == null) {
-				enfants = new ArrayList<Individu>();
-				final Collection<?> targetEnfants = target.getEnfants();
-				if (targetEnfants != null) {
-					for (Object o : targetEnfants) {
-						ch.vd.registre.civil.model.Individu i = (ch.vd.registre.civil.model.Individu) o;
-						enfants.add(IndividuWrapper.get(i));
-					}
-				}
+	private List<Individu> initEnfants(Collection<?> targetEnfants) {
+		final List<Individu> list = new ArrayList<Individu>();
+		if (targetEnfants != null) {
+			for (Object o : targetEnfants) {
+				ch.vd.registre.civil.model.Individu i = (ch.vd.registre.civil.model.Individu) o;
+				list.add(IndividuWrapper.get(i));
 			}
 		}
+		return list;
 	}
 
 	public EtatCivilList getEtatsCivils() {
-		if (etatsCivils == null) {
-			initEtatsCivils();
-		}
 		return etatsCivils;
 	}
 
-	private void initEtatsCivils() {
-		synchronized (this) {
-			if (etatsCivils == null) {
-				etatsCivils = extractEtatsCivils(target);
-			}
-		}
-	}
-
-	private static EtatCivilList extractEtatsCivils(ch.vd.registre.civil.model.Individu individu) {
+	private static EtatCivilList initEtatsCivils(ch.vd.registre.civil.model.Individu individu) {
 		final ArrayList<EtatCivil> etatsCivils = new ArrayList<EtatCivil>();
 		final Collection<?> targetEtatsCivils = individu.getEtatsCivils();
 		if (targetEtatsCivils != null) {
@@ -203,16 +192,10 @@ public class IndividuWrapper extends EntiteCivileWrapper implements Individu, Se
 	}
 
 	public Collection<HistoriqueIndividu> getHistoriqueIndividu() {
-		if (historique == null) {
-			initHistorique();
-		}
 		return historique;
 	}
 
 	public HistoriqueIndividu getHistoriqueIndividuAt(RegDate date) {
-		if (historique == null) {
-			initHistorique();
-		}
 		HistoriqueIndividu candidat = null;
 		for (HistoriqueIndividu histo : historique) {
 			final RegDate dateDebut = histo.getDateDebutValidite();
@@ -223,112 +206,86 @@ public class IndividuWrapper extends EntiteCivileWrapper implements Individu, Se
 		return candidat;
 	}
 
-	private void initHistorique() {
-		synchronized (this) {
-			if (historique == null) {
-				historique = new ArrayList<HistoriqueIndividu>();
-				final Collection<?> targetHistorique = target.getHistoriqueIndividu();
-				if (targetHistorique != null) {
-					for (Object o : targetHistorique) {
-						ch.vd.registre.civil.model.HistoriqueIndividu h = (ch.vd.registre.civil.model.HistoriqueIndividu) o;
-						historique.add(HistoriqueIndividuWrapper.get(h));
-					}
-				}
+	private List<HistoriqueIndividu> initHistorique(Collection<?> targetHistorique) {
+		final List<HistoriqueIndividu> list = new ArrayList<HistoriqueIndividu>();
+		if (targetHistorique != null) {
+			for (Object o : targetHistorique) {
+				ch.vd.registre.civil.model.HistoriqueIndividu h = (ch.vd.registre.civil.model.HistoriqueIndividu) o;
+				list.add(HistoriqueIndividuWrapper.get(h));
 			}
 		}
+		return list;
 	}
 
 	public Individu getMere() {
-		if (mere == null) {
-			mere = IndividuWrapper.get(target.getMere());
-		}
 		return mere;
 	}
 
 	public Collection<Nationalite> getNationalites() {
-		if (nationalites == null) {
-			initNationalites();
-		}
 		return nationalites;
 	}
 
-	private void initNationalites() {
-		synchronized (this) {
-			if (nationalites == null) {
-				Collection<?> targetNationalites = target.getNationalites();
-				if (targetNationalites != null) {
-					nationalites = new ArrayList<Nationalite>();
-					for (Object o : targetNationalites) {
-						ch.vd.registre.civil.model.Nationalite n = (ch.vd.registre.civil.model.Nationalite) o;
-						nationalites.add(NationaliteWrapper.get(n));
-					}
-				}
+	private List<Nationalite> initNationalites(Collection<?> targetNationalites) {
+		final List<Nationalite> list = new ArrayList<Nationalite>();
+		if (targetNationalites != null) {
+			for (Object o : targetNationalites) {
+				ch.vd.registre.civil.model.Nationalite n = (ch.vd.registre.civil.model.Nationalite) o;
+				list.add(NationaliteWrapper.get(n));
 			}
 		}
+		return list;
 	}
 
 	public long getNoTechnique() {
-		return target.getNoTechnique();
+		return noTechnique;
 	}
 
 	public String getNouveauNoAVS() {
-		final String numero = target.getNouveauNoAVS();
+		return nouveauNoAVS;
+	}
+
+	private static String initNouveauNoAVS(String nouveauNoAVS) {
+		String numero = nouveauNoAVS;
 		// [UNIREG-1223] interprète la valeur "0" comme une valeur nulle
 		if (numero == null || "".equals(numero) || "0".equals(numero)) {
-			return null;
+			numero = null;
 		}
 		return numero;
 	}
 
 	public String getNumeroRCE() {
-		return target.getNumeroRCE();
+		return numeroRCE;
 	}
 
 	public Origine getOrigine() {
-		if (origine == null) {
-			origine = OrigineWrapper.get(target.getOrigine());
-		}
 		return origine;
 	}
 
 	public Individu getPere() {
-		if (pere == null) {
-			pere = IndividuWrapper.get(target.getPere());
-		}
 		return pere;
 	}
 
 	public Collection<Permis> getPermis() {
-		if (permis == null) {
-			initPermis();
+		return permis;
+	}
+
+	private List<Permis> initPermis(Collection<?> targetPermis) {
+		final List<Permis> permis = new ArrayList<Permis>();
+		if (targetPermis != null) {
+			for (Object o : targetPermis) {
+				ch.vd.registre.civil.model.Permis p = (ch.vd.registre.civil.model.Permis) o;
+				permis.add(PermisWrapper.get(p));
+			}
 		}
 		return permis;
 	}
 
-	private void initPermis() {
-		synchronized (this) {
-			if (permis == null) {
-				Collection<?> targetPermis = target.getPermis();
-				if (targetPermis != null) {
-					permis = new ArrayList<Permis>();
-					for (Object o : targetPermis) {
-						ch.vd.registre.civil.model.Permis p = (ch.vd.registre.civil.model.Permis) o;
-						permis.add(PermisWrapper.get(p));
-					}
-				}
-			}
-		}
-	}
-
 	public Tutelle getTutelle() {
-		if (tutelle == null) {
-			tutelle = TutelleWrapper.get(target.getTutelle());
-		}
 		return tutelle;
 	}
 
 	public boolean isSexeMasculin() {
-		return target.isSexeMasculin();
+		return isMasculin;
 	}
 
 	public void copyPartsFrom(Individu individu, Set<AttributeIndividu> parts) {

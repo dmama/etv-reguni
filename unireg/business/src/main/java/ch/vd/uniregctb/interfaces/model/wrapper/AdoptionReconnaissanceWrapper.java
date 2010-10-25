@@ -8,10 +8,9 @@ import ch.vd.uniregctb.interfaces.model.Individu;
 
 public class AdoptionReconnaissanceWrapper implements AdoptionReconnaissance, Serializable {
 
-	private static final long serialVersionUID = -3827373870885478253L;
+	private static final long serialVersionUID = -4845025882379646564L;
 
-	private ch.vd.registre.civil.model.Individu targetAdopte;
-	private Individu adopte;
+	private final Individu adopte;
 	private final RegDate dateAccueil;
 	private final RegDate dateAdoption;
 	private final RegDate dateDesaveu;
@@ -25,7 +24,7 @@ public class AdoptionReconnaissanceWrapper implements AdoptionReconnaissance, Se
 	}
 
 	private AdoptionReconnaissanceWrapper(ch.vd.registre.civil.model.AdoptionReconnaissance target) {
-		this.targetAdopte = target.getAdopteReconnu();
+		this.adopte = IndividuWrapper.get(target.getAdopteReconnu());
 		this.dateAccueil = RegDate.get(target.getDateAccueilAdoption());
 		this.dateAdoption = RegDate.get(target.getDateAdoption());
 		this.dateDesaveu = RegDate.get(target.getDateDesaveu());
@@ -33,10 +32,6 @@ public class AdoptionReconnaissanceWrapper implements AdoptionReconnaissance, Se
 	}
 
 	public Individu getAdopteReconnu() {
-		if (adopte == null && targetAdopte != null) {
-			adopte = IndividuWrapper.get(targetAdopte);
-			targetAdopte = null;
-		}
 		return adopte;
 	}
 

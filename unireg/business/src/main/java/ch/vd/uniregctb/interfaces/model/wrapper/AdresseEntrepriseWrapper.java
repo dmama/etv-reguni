@@ -14,16 +14,16 @@ public class AdresseEntrepriseWrapper implements AdresseEntreprise, Serializable
 	private final RegDate dateDebut;
 	private final RegDate dateFin;
 	private final PaysWrapper pays;
-	private String complement;
-	private Integer numeroTechniqueRue;
-	private String localiteAbregeMinuscule;
-	private String localiteCompletMinuscule;
-	private String numeroMaison;
-	private int numeroOrdrePostal;
-	private String numeroPostal;
-	private String numeroPostalComplementaire;
-	private String rue;
-	private EnumTypeAdresseEntreprise type;
+	private final String complement;
+	private final Integer numeroTechniqueRue;
+	private final String localiteAbregeMinuscule;
+	private final String localiteCompletMinuscule;
+	private final String numeroMaison;
+	private final int numeroOrdrePostal;
+	private final String numeroPostal;
+	private final String numeroPostalComplementaire;
+	private final String rue;
+	private final EnumTypeAdresseEntreprise type;
 
 	public static AdresseEntrepriseWrapper get(ch.vd.registre.pm.model.AdresseEntreprise target) {
 		if (target == null) {

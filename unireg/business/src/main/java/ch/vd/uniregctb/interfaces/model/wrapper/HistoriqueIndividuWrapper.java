@@ -7,19 +7,19 @@ import ch.vd.uniregctb.interfaces.model.HistoriqueIndividu;
 
 public class HistoriqueIndividuWrapper implements HistoriqueIndividu, Serializable {
 
-	private static final long serialVersionUID = 1205937997205319204L;
+	private static final long serialVersionUID = 4030612779028440946L;
 	
 	private final RegDate dateDebut;
-	private String autresPrenoms;
-	private String complementIdentification;
-	private String noAVS;
-	private int noSequence;
-	private String nom;
-	private String nomCourrier1;
-	private String nomCourrier2;
-	private String nomNaissance;
-	private String prenom;
-	private String profession;
+	private final String autresPrenoms;
+	private final String complementIdentification;
+	private final String noAVS;
+	private final int noSequence;
+	private final String nom;
+	private final String nomCourrier1;
+	private final String nomCourrier2;
+	private final String nomNaissance;
+	private final String prenom;
+	private final String profession;
 
 	public static HistoriqueIndividuWrapper get(ch.vd.registre.civil.model.HistoriqueIndividu target) {
 		if (target == null) {

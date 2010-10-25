@@ -8,12 +8,11 @@ import ch.vd.uniregctb.interfaces.model.Pays;
 
 public class NationaliteWrapper implements Nationalite, Serializable {
 
-	private static final long serialVersionUID = 6538426269290337339L;
+	private static final long serialVersionUID = -78753304926530147L;
 	
 	private final RegDate dateDebut;
 	private final RegDate dateFin;
-	private Pays pays = null;
-	private ch.vd.infrastructure.model.Pays targetPays;
+	private final Pays pays;
 	private int noSequence;
 
 	public static NationaliteWrapper get(ch.vd.registre.civil.model.Nationalite target) {
@@ -27,7 +26,7 @@ public class NationaliteWrapper implements Nationalite, Serializable {
 		this.dateDebut = RegDate.get(target.getDateDebutValidite());
 		this.dateFin = RegDate.get(target.getDateFinValidite());
 		this.noSequence = target.getNoSequence();
-		this.targetPays = target.getPays();
+		this.pays = PaysWrapper.get(target.getPays());
 	}
 
 	public RegDate getDateDebutValidite() {
@@ -43,10 +42,6 @@ public class NationaliteWrapper implements Nationalite, Serializable {
 	}
 
 	public Pays getPays() {
-		if (pays == null && targetPays != null) {
-			pays = PaysWrapper.get(targetPays);
-			targetPays = null;
-		}
 		return pays;
 	}
 

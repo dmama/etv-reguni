@@ -1,7 +1,12 @@
 package ch.vd.uniregctb.interfaces.service;
 
 import java.rmi.RemoteException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.springframework.util.Assert;
@@ -9,6 +14,7 @@ import org.springframework.util.Assert;
 import ch.vd.infrastructure.model.EnumPays;
 import ch.vd.infrastructure.model.EnumTypeCollectivite;
 import ch.vd.infrastructure.model.impl.CantonImpl;
+import ch.vd.infrastructure.model.impl.LocaliteImpl;
 import ch.vd.infrastructure.service.InfrastructureException;
 import ch.vd.infrastructure.service.ServiceInfrastructure;
 import ch.vd.registre.base.date.NullDateBehavior;
@@ -60,16 +66,10 @@ public class ServiceInfrastructureServiceImpl extends AbstractServiceInfrastruct
 	private Map<Integer,Localite> localitesByNPA;
 
 	/**
-	 * @return Returns the serviceInfrastructure.
-	 */
-	public ServiceInfrastructure getServiceInfrastructure() {
-		return serviceInfrastructure;
-	}
-
-	/**
 	 * @param serviceInfrastructure
 	 *            The serviceInfrastructure to set.
 	 */
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setServiceInfrastructure(ServiceInfrastructure serviceInfrastructure) {
 		this.serviceInfrastructure = serviceInfrastructure;
 	}
@@ -85,7 +85,7 @@ public class ServiceInfrastructureServiceImpl extends AbstractServiceInfrastruct
 	public List<Canton> getAllCantons() throws InfrastructureException {
 		List<Canton> cantons = new ArrayList<Canton>();
 		try {
-			List<?> list = getServiceInfrastructure().getCantons(getServiceInfrastructure().getPays(EnumPays.SIGLE_CH));
+			List<?> list = serviceInfrastructure.getCantons(serviceInfrastructure.getPays(EnumPays.SIGLE_CH));
 			for (Object o : list) {
 				ch.vd.infrastructure.model.Canton c = (ch.vd.infrastructure.model.Canton) o;
 				cantons.add(CantonWrapper.get(c));
@@ -100,10 +100,11 @@ public class ServiceInfrastructureServiceImpl extends AbstractServiceInfrastruct
 	/**
 	 * {@inheritDoc}
 	 */
-	public List<Commune> getListeCommunes(Canton canton) throws InfrastructureException {
+	public List<Commune> getListeCommunes(final Canton canton) throws InfrastructureException {
 		try {
-			final ch.vd.infrastructure.model.Canton c = ((CantonWrapper) canton).getTarget();
-			final List<?> list = getServiceInfrastructure().getCommunes(c);
+			final CantonImpl c = new CantonImpl();
+			c.setSigleOFS(canton.getSigleOFS());
+			final List<?> list = serviceInfrastructure.getCommunes(c);
 			List<Commune> communes = new ArrayList<Commune>();
 			for (Object o : list) {
 				ch.vd.infrastructure.model.Commune co = (ch.vd.infrastructure.model.Commune) o;
@@ -122,8 +123,9 @@ public class ServiceInfrastructureServiceImpl extends AbstractServiceInfrastruct
 	@SuppressWarnings({"unchecked"})
 	public List<Commune> getListeFractionsCommunes() throws InfrastructureException {
 		try {
-			final ch.vd.infrastructure.model.Canton c = ((CantonWrapper) getVaud()).getTarget();
-			final List<ch.vd.infrastructure.model.Commune> list = getServiceInfrastructure().getCommunes(c);
+			final CantonImpl c = new CantonImpl();
+			c.setSigleOFS(ServiceInfrastructureService.SIGLE_CANTON_VD);
+			final List<ch.vd.infrastructure.model.Commune> list = serviceInfrastructure.getCommunes(c);
 			final List<Commune> communes = new ArrayList<Commune>();
 			for (ch.vd.infrastructure.model.Commune co : list) {
 				if (!co.isPrincipale()) {
@@ -177,7 +179,7 @@ public class ServiceInfrastructureServiceImpl extends AbstractServiceInfrastruct
 	public Pays getSuisse() throws ServiceInfrastructureException {
 		if (suisse == null) {
 			try {
-				suisse = PaysWrapper.get(getServiceInfrastructure().getPays(EnumPays.SIGLE_CH));
+				suisse = PaysWrapper.get(serviceInfrastructure.getPays(EnumPays.SIGLE_CH));
 			}
 			catch (RemoteException e) {
 				LOGGER.error(e);
@@ -301,7 +303,8 @@ public class ServiceInfrastructureServiceImpl extends AbstractServiceInfrastruct
 		List<Localite> localites = new ArrayList<Localite>();
 		try {
 			for (Canton c : getAllCantons()) {
-				final ch.vd.infrastructure.model.Canton canton = ((CantonWrapper) c).getTarget();
+				final CantonImpl canton = new CantonImpl();
+				canton.setSigleOFS(c.getSigleOFS());
 				List<?> localitesTmp = serviceInfrastructure.getLocalites(canton);
 				for (Object o : localitesTmp) {
 					ch.vd.infrastructure.model.Localite l = (ch.vd.infrastructure.model.Localite) o;
@@ -321,7 +324,8 @@ public class ServiceInfrastructureServiceImpl extends AbstractServiceInfrastruct
 	public List<Rue> getRues(Localite localite) throws InfrastructureException {
 		List<Rue> rues = new ArrayList<Rue>();
 		try {
-			final ch.vd.infrastructure.model.Localite l = ((LocaliteWrapper) localite).getTarget();
+			final LocaliteImpl l = new LocaliteImpl();
+			l.setNoOrdre(localite.getNoOrdre());
 			final List<?> list = serviceInfrastructure.getRues(l);
 			for (Object o : list) {
 				ch.vd.infrastructure.model.Rue r = (ch.vd.infrastructure.model.Rue) o;
@@ -340,7 +344,8 @@ public class ServiceInfrastructureServiceImpl extends AbstractServiceInfrastruct
 	public List<Rue> getRues(Canton canton) throws InfrastructureException {
 		try {
 			ArrayList<Rue> rues = new ArrayList<Rue>();
-			final ch.vd.infrastructure.model.Canton c = ((CantonWrapper) canton).getTarget();
+			final CantonImpl c = new CantonImpl();
+			c.setSigleOFS(canton.getSigleOFS());
 			final List<?> list = serviceInfrastructure.getRues(c);
 			for (Object o : list) {
 				ch.vd.infrastructure.model.Rue r = (ch.vd.infrastructure.model.Rue) o;
@@ -442,12 +447,7 @@ public class ServiceInfrastructureServiceImpl extends AbstractServiceInfrastruct
 		if (dateFinValidite != null) {
 			final RegDate finValidite = RegDate.get(dateFinValidite);
 			final RegDate now = RegDate.get();
-			if (!RegDateHelper.isAfterOrEqual(finValidite, now, NullDateBehavior.LATEST)) {
-				valide = false;
-			}
-			else {
-				valide = true;
-			}
+			valide = RegDateHelper.isAfterOrEqual(finValidite, now, NullDateBehavior.LATEST);
 		}
 		else {
 			valide = true;
@@ -514,7 +514,7 @@ public class ServiceInfrastructureServiceImpl extends AbstractServiceInfrastruct
 
 	/**
 	 * @return la collectivite administrative de l'ACI
-	 * @throws Exception
+	 * @throws InfrastructureException en cas d'erreur lors de l'accès à la collectivité
 	 */
 	public CollectiviteAdministrative getACI() throws InfrastructureException {
 		if (aci == null) {
@@ -542,7 +542,7 @@ public class ServiceInfrastructureServiceImpl extends AbstractServiceInfrastruct
 
 	/**
 	 * @return la collectivite administrative du CEDI
-	 * @throws Exception
+	 * @throws InfrastructureException en cas d'erreur lors de l'accès à la collectivité
 	 */
 	public CollectiviteAdministrative getCEDI() throws InfrastructureException {
 		if (cedi == null) {
@@ -558,7 +558,7 @@ public class ServiceInfrastructureServiceImpl extends AbstractServiceInfrastruct
 
 	/**
 	 * @return la collectivite administrative du CAT
-	 * @throws Exception
+	 * @throws InfrastructureException en cas d'erreur lors de l'accès à la collectivité
 	 */
 	public CollectiviteAdministrative getCAT() throws InfrastructureException {
 		if (cat == null) {
