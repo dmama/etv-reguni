@@ -1895,7 +1895,7 @@ public class AdresseServiceImpl implements AdresseService {
 
 			final Adresse adresseCivile = adressesCiviles.ofType(type);
 			try {
-				surcharge = new AdresseCivileAdapter(adresseCivile, debut, fin, Source.FISCALE, false, serviceInfra);
+				surcharge = new AdresseTiersCivileAdapter(adresseCivile, a, Source.FISCALE, false, serviceInfra);
 			}
 			catch (DonneesCivilesException e) {
 				throw new AdresseDataException(e);

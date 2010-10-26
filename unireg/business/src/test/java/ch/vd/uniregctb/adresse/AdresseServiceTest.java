@@ -12,6 +12,7 @@ import ch.vd.registre.civil.model.EnumTypeEtatCivil;
 import ch.vd.registre.pm.model.EnumTypeAdresseEntreprise;
 import ch.vd.uniregctb.adresse.AdresseGenerique.Source;
 import ch.vd.uniregctb.common.BusinessTest;
+import ch.vd.uniregctb.interfaces.model.Pays;
 import ch.vd.uniregctb.interfaces.model.TypeAffranchissement;
 import ch.vd.uniregctb.interfaces.model.mock.MockCollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
@@ -434,6 +435,89 @@ public class AdresseServiceTest extends BusinessTest {
 		}
 	}
 
+
+	@Test
+	public void testGetAdressesFiscalesAvecAdressesAnnulees() throws Exception {
+
+			final long numeroIndividu = 676660L;
+		/*
+		 * Crée les données du mock service civil
+		 */
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				// la pupille
+				MockIndividu marie = addIndividu(numeroIndividu, date(1953, 11, 2), "Dupont", "Marie Christine", true);
+
+				// adresses courriers
+				addAdresse(marie, EnumTypeAdresse.COURRIER, null, null,null,
+						null,null, MockPays.France, date(2009,7,1), null);
+
+				addAdresse(marie, EnumTypeAdresse.PRINCIPALE, null, null,null,
+										null,null, MockPays.France, date(2009,7,1), null);
+
+				
+			}
+			
+		});
+
+		// Crée un habitant
+		PersonnePhysique habitant = addHabitant(numeroIndividu);
+
+
+		{
+			AdresseCivile adresse = new AdresseCivile();
+			adresse.setDateDebut(date(2009, 7, 1));
+			adresse.setAnnulationDate(RegDate.get(2010,3,1).asJavaDate());
+			adresse.setAnnulationUser("Unit-Test");
+			adresse.setUsage(TypeAdresseTiers.COURRIER);
+			adresse.setType(EnumTypeAdresse.COURRIER);
+			habitant.addAdresseTiers(adresse);
+		}
+		{
+			AdresseEtrangere adresse = new AdresseEtrangere();
+			adresse.setDateDebut(date(2009, 7, 1));
+			adresse.setAnnulationDate(RegDate.get(2010,3,1).asJavaDate());
+			adresse.setAnnulationUser("Unit-Test");
+			adresse.setNumeroOfsPays(8212);
+			adresse.setUsage(TypeAdresseTiers.COURRIER);
+			habitant.addAdresseTiers(adresse);
+		}
+		{
+			AdresseEtrangere adresse = new AdresseEtrangere();
+			adresse.setDateDebut(date(2009, 7, 1));
+			adresse.setAnnulationDate(RegDate.get(2010,3,1).asJavaDate());
+			adresse.setAnnulationUser("Unit-Test");
+			adresse.setNumeroOfsPays(8212);
+			adresse.setUsage(TypeAdresseTiers.COURRIER);
+			habitant.addAdresseTiers(adresse);
+		}
+		
+		tiersDAO.save(habitant);
+
+		// Vérification des adresses histo
+		{
+			final AdressesFiscalesHisto adresses = adresseService.getAdressesFiscalHisto(habitant, false);
+			assertNotNull(adresses);
+			assertEquals(4, adresses.courrier.size());
+			assertNull(adresses.courrier.get(0).getAnnulationDate());
+			assertNotNull(adresses.courrier.get(1).getAnnulationDate());
+			assertNotNull(adresses.courrier.get(2).getAnnulationDate());
+			assertNotNull(adresses.courrier.get(3).getAnnulationDate());
+
+		}
+			
+		{
+			final AdressesFiscales adresses = adresseService.getAdressesFiscales(habitant,null,false);
+			assertNotNull(adresses);
+			assertAdresse(date(2009, 7, 1),null,null, Source.CIVILE, false, adresses.courrier);
+			assertAdresse(date(2009, 7, 1),null,null, Source.CIVILE, false, adresses.representation);
+			assertAdresse(date(2009, 7, 1),null,null, Source.CIVILE, false, adresses.poursuite);
+
+		}
+
+
+	}
 	@Test
 	public void testGetAdressesFiscalesSansAdresseCivile2() throws Exception {
 
