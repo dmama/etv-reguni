@@ -106,6 +106,12 @@ public class EntityView implements Cloneable {
 				continue;
 			}
 
+			if ((Boolean.FALSE.equals(leftValue) && rightValue == null) || (leftValue == null && Boolean.FALSE.equals(rightValue))) {
+				// [UNIREG-2962] il n'est pas possible de distinguer entre une valeur booléenne nulle et false après l'avoir stockée dans une checkbox,
+				// en conséquence pour éviter des fausses détections on ignore ces différences.
+				continue;
+			}
+
 			deltas.add(new AttributeUpdate(key, leftAttribute.getName(), leftValue, rightValue));
 		}
 

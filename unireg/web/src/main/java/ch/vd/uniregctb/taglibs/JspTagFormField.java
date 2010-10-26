@@ -190,7 +190,18 @@ public class JspTagFormField extends BodyTagSupport {
 				editor.append("disabled=\"true\" ");
 			}
 
-			editor.append("/>");
+			editor.append("value=\"true\"/>");
+
+			// [UNIREG-2962] on imprime un deuxième checkbox invisible pour que Spring puisse détecter la checkbox lorsqu'elle est n'est pas checkée
+			// (voir http://static.springsource.org/spring/docs/1.1.5/api/org/springframework/web/bind/ServletRequestDataBinder.html#setFieldMarkerPrefix%28java.lang.String%29)
+			editor.append("<input type=\"hidden\" ");
+			if (StringUtils.isNotBlank(id)) {
+				editor.append("id=\"_").append(id).append("\" "); // <--- le préfix '_' de l'id est important ici !
+			}
+			if (StringUtils.isNotBlank(path)) {
+				editor.append("name=\"_").append(path).append("\" "); // <--- le préfix '_' du nom est important ici !
+			}
+			editor.append("value=\"true\"/>");
 
 			return editor.toString();
 		}

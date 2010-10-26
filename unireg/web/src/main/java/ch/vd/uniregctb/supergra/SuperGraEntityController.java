@@ -71,6 +71,15 @@ public class SuperGraEntityController extends SuperGraAbstractController {
 		return view;
 	}
 
+	@Override
+	protected ServletRequestDataBinder createBinder(HttpServletRequest request, Object command) throws Exception {
+		// [UNIREG-2962] Data binder spécialisé pour contourner le problème des checkboxes.
+		ServletRequestDataBinder binder = new SuperGraDataBinder(command, getCommandName());
+		prepareBinder(binder);
+		initBinder(request, binder);
+		return binder;
+	}
+
 	@SuppressWarnings({"unchecked"})
 	@Override
 	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
