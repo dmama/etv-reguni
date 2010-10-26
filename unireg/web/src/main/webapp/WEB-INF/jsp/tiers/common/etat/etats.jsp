@@ -49,7 +49,7 @@
 
 		function Page_ImprimerCopieSommation(idEtat) {
 			Page_ActivationImpressionCopieSommation(idEtat, false);
-			setTimeout("Page_ActivationImpressionDelai(" + idEtat + ", true);", 2000);
+			setTimeout("Page_ActivationImpressionCopieSommation(" + idEtat + ", true);", 2000);
 		}
 
 </script>

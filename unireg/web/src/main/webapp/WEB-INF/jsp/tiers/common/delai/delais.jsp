@@ -23,8 +23,8 @@
 			<c:if test="${command.allowedDelai}">
 				<c:if test="${page == 'edit' }">
 					<c:if test="${delai.confirmationEcrite}">
-						<a href="#" onClick="javascript:Page_ImprimerDelai(${delai.id});" class="pdf" id="print-delai-${delai.id}"><img src="${pageContext.request.contextPath}/images/pdf_icon.png" align="top"/></a>
-						<img src="${pageContext.request.contextPath}/images/pdf_grayed_icon.png" align="top" id="disabled-print-delai-${delai.id}" style="display: none;"/>
+						<a href="#" class="pdf" id="print-delai-${delai.id}" onClick="Page_ImprimerDelai(${delai.id})"><img src="${pageContext.request.contextPath}/images/pdf_icon.png" style="align: top;"/></a>
+						<img src="${pageContext.request.contextPath}/images/pdf_grayed_icon.png" id="disabled-print-delai-${delai.id}" style="display: none; align: top;"/>
 					</c:if>
 				</c:if>
 			</c:if>
