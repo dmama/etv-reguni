@@ -31,11 +31,10 @@
 		<property name="validator" ref="tiersCriteriaValidator" />
 	</bean>
 	
-	<bean id="coupleRecapManager" class="ch.vd.uniregctb.couple.manager.CoupleRecapManagerImpl"  >
+	<bean id="coupleRecapManager" class="ch.vd.uniregctb.couple.manager.CoupleRecapManagerImpl" parent="tiersManager">
 		<property name="metierService" ref="metierService" />
-		<property name="tiersService" ref="tiersService" />
-		<property name="tiersGeneralManager" ref="tiersGeneralManager" />
 		<property name="coupleHelper" ref="coupleHelper" />
+		<property name="droitAccesService" ref="droitAccesService" />
 	</bean>
 
 	<bean id="coupleListManager" class="ch.vd.uniregctb.couple.manager.CoupleListManagerImpl">

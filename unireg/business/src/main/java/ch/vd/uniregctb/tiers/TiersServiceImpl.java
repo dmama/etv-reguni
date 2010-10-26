@@ -366,12 +366,21 @@ public class TiersServiceImpl implements TiersService {
 		final List<VueSituationFamille> histoSF = situationFamilleService.getVueHisto((Contribuable) tiersDAO.get(numeroTiers));
 
 		// effacement des liens d'identification (qui ne concernent qu'une personne physique, pas un ménage commun)
+		// [UNIREG-2893] effacement des droits d'accès (qui ne concernent que les personnes physiques)
 		hibernateTemplate.execute(new HibernateCallback() {
 			public Object doInHibernate(Session session) throws HibernateException, SQLException {
-				final String deleteQuery = "DELETE FROM IDENTIFICATION_PERSONNE WHERE NON_HABITANT_ID=?";
-				final SQLQuery query = session.createSQLQuery(deleteQuery);
-				query.setLong(0, numeroTiers);
-				query.executeUpdate();
+				{
+					final String deleteQuery = "DELETE FROM IDENTIFICATION_PERSONNE WHERE NON_HABITANT_ID=?";
+					final SQLQuery query = session.createSQLQuery(deleteQuery);
+					query.setLong(0, numeroTiers);
+					query.executeUpdate();
+				}
+				{
+					final String deleteQuery = "DELETE FROM DROIT_ACCES WHERE TIERS_ID=?";
+					final SQLQuery query = session.createSQLQuery(deleteQuery);
+					query.setLong(0, numeroTiers);
+					query.executeUpdate();
+				}
 				return null;
 			}
 		});

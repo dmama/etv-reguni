@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.security;
 
+import java.util.regex.Pattern;
+
 import junit.framework.Assert;
 import org.junit.Test;
 
@@ -202,7 +204,8 @@ public class DroitAccesServiceTest extends BusinessTest {
 			Assert.fail("Il y a un conflit sur le niveau d'autorisation, on n'aurait pas dû accepter la copie !");
 		}
 		catch (DroitAccesException e) {
-			Assert.assertTrue(e.getMessage().endsWith("possède déjà un droit sur le même dossier qui entrerait en conflit"));
+			final Pattern pattern = Pattern.compile("Impossible d'ajouter le droit d'accès \\w+/\\w+ sur le dossier [0-9\\.]+ à l'opérateur \\d+ car celui-ci entrerait en conflit avec un droit \\w+/\\w+ existant");
+			Assert.assertTrue(e.getMessage(), pattern.matcher(e.getMessage()).matches());
 		}
 
 		assertAvecDroit(noIndOperateurSource, dossier.getNumero(), aujourdhui, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE);
@@ -223,7 +226,8 @@ public class DroitAccesServiceTest extends BusinessTest {
 			Assert.fail("Il y a un conflit sur le niveau d'autorisation, on n'aurait pas dû accepter le transfert !");
 		}
 		catch (DroitAccesException e) {
-			Assert.assertTrue(e.getMessage().endsWith("possède déjà un droit sur le même dossier qui entrerait en conflit"));
+			final Pattern pattern = Pattern.compile("Impossible d'ajouter le droit d'accès \\w+/\\w+ sur le dossier [0-9\\.]+ à l'opérateur \\d+ car celui-ci entrerait en conflit avec un droit \\w+/\\w+ existant");
+			Assert.assertTrue(e.getMessage(), pattern.matcher(e.getMessage()).matches());
 		}
 
 		assertAvecDroit(noIndOperateurSource, dossier.getNumero(), aujourdhui, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE);
@@ -244,7 +248,8 @@ public class DroitAccesServiceTest extends BusinessTest {
 			Assert.fail("Il y a un conflit sur le niveau d'autorisation, on n'aurait pas dû accepter la copie !");
 		}
 		catch (DroitAccesException e) {
-			Assert.assertTrue(e.getMessage().endsWith("possède déjà un droit sur le même dossier qui entrerait en conflit"));
+			final Pattern pattern = Pattern.compile("Impossible d'ajouter le droit d'accès \\w+/\\w+ sur le dossier [0-9\\.]+ à l'opérateur \\d+ car celui-ci entrerait en conflit avec un droit \\w+/\\w+ existant");
+			Assert.assertTrue(e.getMessage(), pattern.matcher(e.getMessage()).matches());
 		}
 
 		assertAvecDroit(noIndOperateurSource, dossier.getNumero(), aujourdhui, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE);
@@ -265,7 +270,8 @@ public class DroitAccesServiceTest extends BusinessTest {
 			Assert.fail("Il y a un conflit sur le niveau d'autorisation, on n'aurait pas dû accepter le transfert !");
 		}
 		catch (DroitAccesException e) {
-			Assert.assertTrue(e.getMessage().endsWith("possède déjà un droit sur le même dossier qui entrerait en conflit"));
+			final Pattern pattern = Pattern.compile("Impossible d'ajouter le droit d'accès \\w+/\\w+ sur le dossier [0-9\\.]+ à l'opérateur \\d+ car celui-ci entrerait en conflit avec un droit \\w+/\\w+ existant");
+			Assert.assertTrue(e.getMessage(), pattern.matcher(e.getMessage()).matches());
 		}
 
 		assertAvecDroit(noIndOperateurSource, dossier.getNumero(), aujourdhui, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE);

@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.couple.manager;
 
-import ch.vd.uniregctb.tiers.*;
+import java.util.Set;
+
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
@@ -10,9 +11,17 @@ import ch.vd.uniregctb.couple.CoupleHelper;
 import ch.vd.uniregctb.couple.CoupleHelper.Couple;
 import ch.vd.uniregctb.couple.view.CoupleRecapView;
 import ch.vd.uniregctb.couple.view.TypeUnion;
-import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.general.view.TiersGeneralView;
 import ch.vd.uniregctb.metier.MetierService;
+import ch.vd.uniregctb.security.DroitAccesException;
+import ch.vd.uniregctb.security.DroitAccesService;
+import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.DroitAcces;
+import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
+import ch.vd.uniregctb.tiers.MenageCommun;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.tiers.RapportEntreTiers;
+import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.manager.TiersManager;
 import ch.vd.uniregctb.type.EtatCivil;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
@@ -26,18 +35,26 @@ import ch.vd.uniregctb.utils.WebContextUtils;
  */
 public class CoupleRecapManagerImpl extends TiersManager implements CoupleRecapManager {
 
+	private DroitAccesService droitAccesService;
+
 	private MetierService metierService;
 
 	private CoupleHelper coupleHelper;
 
-	public MetierService getMetierService() {
-		return metierService;
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setDroitAccesService(DroitAccesService droitAccesService) {
+		this.droitAccesService = droitAccesService;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setMetierService(MetierService metierService) {
 		this.metierService = metierService;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setCoupleHelper(CoupleHelper coupleHelper) {
+		this.coupleHelper = coupleHelper;
+	}
 	/**
 	 * Alimente la vue CoupleRecapView avec un seul membre
 	 *
@@ -232,6 +249,24 @@ public class CoupleRecapManagerImpl extends TiersManager implements CoupleRecapM
 							final PersonnePhysique pp = (PersonnePhysique) tiers;
 							Assert.isTrue(!pp.isHabitantVD(), "Le contribuable sélectionné comme couple est un habitant");
 							Assert.isNull(pp.getNumeroIndividu(), "Le contribuable sélectionné comme couple est un ancien habitant");
+
+							// [UNIREG-2893] recopie des droits d'accès éventuels sur le non-habitant vers les nouveaux membres du couple
+							final Set<DroitAcces> droits = pp.getDroitsAccesAppliques();
+							if (droits != null && droits.size() > 0) {
+								try {
+									if (premierPP != null) {
+										droitAccesService.copieDroitsAcces(pp, premierPP);
+									}
+									if (secondPP != null) {
+										droitAccesService.copieDroitsAcces(pp, secondPP);
+									}
+								}
+								catch (DroitAccesException e) {
+									LOGGER.error("Erreur lors de la copie des droits d'accès au dossier", e);
+									throw new RuntimeException(e);
+								}
+							}
+
 							tiersService.changeNHenMenage(pp.getNumero());
 							tiersService.getTiersDAO().evict(tiers);
 						}
@@ -240,11 +275,10 @@ public class CoupleRecapManagerImpl extends TiersManager implements CoupleRecapM
 							Assert.isInstanceOf(MenageCommun.class, tiers);
 						}
 					}
-					{
-						// rattachement des tiers au ménage
-						final MenageCommun menage = (MenageCommun) tiersService.getTiers(coupleRecapView.getTroisiemeTiers().getNumero());
-						return metierService.rattachToMenage(menage, premierPP, secondPP, date, coupleRecapView.getRemarque(), coupleRecapView.getEtatCivil(), false, null);
-					}
+
+					// rattachement des tiers au ménage
+					final MenageCommun menage = (MenageCommun) tiersService.getTiers(coupleRecapView.getTroisiemeTiers().getNumero());
+					return metierService.rattachToMenage(menage, premierPP, secondPP, date, coupleRecapView.getRemarque(), coupleRecapView.getEtatCivil(), false, null);
 				}
 				else {
 					return metierService.marie(date, premierPP, secondPP, coupleRecapView.getRemarque(), coupleRecapView.getEtatCivil(), false, null);
@@ -281,13 +315,5 @@ public class CoupleRecapManagerImpl extends TiersManager implements CoupleRecapM
 	public boolean isMajeurAt(TiersGeneralView tiersGeneralView, RegDate dateDebut) {
 		PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(tiersGeneralView.getNumero());
 		return metierService.isMajeurAt(pp, dateDebut);
-	}
-
-	public CoupleHelper getCoupleHelper() {
-		return coupleHelper;
-	}
-
-	public void setCoupleHelper(CoupleHelper coupleHelper) {
-		this.coupleHelper = coupleHelper;
 	}
 }

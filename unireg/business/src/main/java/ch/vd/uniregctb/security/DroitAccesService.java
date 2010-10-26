@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.security;
 
 import ch.vd.uniregctb.tiers.DroitAcces;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.Niveau;
 import ch.vd.uniregctb.type.TypeDroitAcces;
 
@@ -25,7 +26,15 @@ public interface DroitAccesService {
 	 * @throws DroitAccesException
 	 *             si l'ajout de cet accès provoquerait un problème cohérence (p.a. interdiction + autorisation sur le même contribuable)
 	 */
-	DroitAcces addDroitAcces(long operateurId, long tiersId, TypeDroitAcces type, Niveau niveau) throws DroitAccesException;
+	DroitAcces ajouteDroitAcces(long operateurId, long tiersId, TypeDroitAcces type, Niveau niveau) throws DroitAccesException;
+
+	/**
+	 * Copie les droits d'accès ouverts du dossier source vers le dossier destination
+	 * @param source dossier source des droits d'accès
+	 * @param destination dossier auquel les droits d'accès doivent être ajoutés
+	 * @throws DroitAccesException en cas de conflit entre les droits existant sur le dossier de destination et ceux sur le dossier source
+	 */
+	void copieDroitsAcces(PersonnePhysique source, PersonnePhysique destination) throws DroitAccesException;
 
 	/**
 	 * Copie les droits d'accès d'un opérateur à un autre.

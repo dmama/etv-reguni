@@ -1,7 +1,11 @@
 package ch.vd.uniregctb.couple.manager;
 
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
+import junit.framework.Assert;
 import org.junit.Test;
 import org.springframework.test.annotation.NotTransactional;
 import org.springframework.test.context.ContextConfiguration;
@@ -22,12 +26,17 @@ import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
+import ch.vd.uniregctb.security.DroitAccesDAO;
+import ch.vd.uniregctb.security.SecuriteDossierService;
+import ch.vd.uniregctb.tiers.DroitAcces;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.Niveau;
 import ch.vd.uniregctb.type.Sexe;
+import ch.vd.uniregctb.type.TypeDroitAcces;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -40,11 +49,13 @@ public class CoupleRecapManagerImplTest extends BusinessTest {
 
 	private CoupleRecapManager mngr;
 	private Validator validator;
+	private DroitAccesDAO droitAccesDAO;
 
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
 		tiersService = getBean(TiersService.class, "tiersService");
+		droitAccesDAO = getBean(DroitAccesDAO.class, "droitAccesDAO");
 		validator = getBean(Validator.class, "coupleRecapValidator");
 		mngr = getBean(CoupleRecapManager.class, "coupleRecapManager");
 	}
@@ -130,6 +141,117 @@ public class CoupleRecapManagerImplTest extends BusinessTest {
 		assertNotNull(janine);
 		assertEquals(PersonnePhysique.class, janine.getClass());
 		assertEquals(1, janine.getRapportsSujet().size()); // fait partie du ménage commun
+	}
+
+	// [UNIREG-2893] Droits d'accès sur le non-habitant à transformer en couple
+	@Test
+	public void testTranformationNHAvecDroitsAccesEnMenageCommun() throws Exception {
+
+		// Création de trois personnes physiques dont une représente en fait un ménage commun
+		final int noIndArnold = 829837;
+		final int noIndJanine = 829838;
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu arnold = addIndividu(noIndArnold, date(1970, 1, 1), "Arnold", "Simon", true);
+				addNationalite(arnold, MockPays.Suisse, date(1970, 1, 1), null, 1);
+				final MockIndividu janine = addIndividu(noIndJanine, date(1970, 1, 1), "Janine", "Simon", false);
+				addNationalite(janine, MockPays.Suisse, date(1970, 1, 1), null, 1);
+			}
+		});
+
+		class Ids {
+			long arnold;
+			long janine;
+			long menage;
+		}
+
+		final long operateurAvecDroitFerme = 1;
+		final long operateurAvecDroitOuvert = 2;
+
+		final Ids ids = (Ids) doInNewTransactionAndSession(new TxCallback(){
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique arnold = addHabitant(noIndArnold);
+				final PersonnePhysique janine = addHabitant(noIndJanine);
+				final PersonnePhysique menage = addNonHabitant("Arnold", "Simon", date(1970, 1, 1), Sexe.MASCULIN);
+				addDroitAcces(operateurAvecDroitFerme, menage, TypeDroitAcces.AUTORISATION, Niveau.LECTURE, date(2005, 12, 1), date(2010, 6, 12));
+				addDroitAcces(operateurAvecDroitOuvert, menage, TypeDroitAcces.AUTORISATION, Niveau.ECRITURE, date(2005, 12, 1), null);
+
+				final Ids ids = new Ids();
+				ids.arnold = arnold.getNumero();
+				ids.janine = janine.getNumero();
+				ids.menage = menage.getNumero();
+				return ids;
+			}
+		});
+
+		// Regroupement des trois personnes physiques en un ménage, avec transformation en ménage commun d'une des personnes physiques
+		doInNewTransactionAndSession(new TxCallback() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+
+				final TiersGeneralView viewTiers1 = new TiersGeneralView();
+				viewTiers1.setNumero(ids.arnold);
+				final TiersGeneralView viewTiers2 = new TiersGeneralView();
+				viewTiers2.setNumero(ids.janine);
+				final TiersGeneralView viewMC = new TiersGeneralView();
+				viewMC.setNumero(ids.menage);
+
+				final CoupleRecapView view = new CoupleRecapView();
+				view.setDateCoupleExistant(RegDate.get());
+				view.setDateDebut(DateHelper.getCurrentDate());
+				view.setNouveauCtb(false);
+				view.setPremierePersonne(viewTiers1);
+				view.setSecondePersonne(viewTiers2);
+				view.setTroisiemeTiers(viewMC);
+				view.setTypeUnion(TypeUnion.COUPLE);
+
+				tiersService.getTiers(viewMC.getNumero());
+				mngr.save(view);
+				return null;
+			}
+		});
+
+		// on s'assure que les droits d'accès sont au bon endroit
+
+		// on doit avoir effacé les droits pour cet opérateurs (ils ne sont plus valables sur le ménage et ne doivent pas être repris sur la PP car ils sont fermés)
+		final List<DroitAcces> droitsPourOperateurFerme = droitAccesDAO.getDroitsAcces(operateurAvecDroitFerme);
+		Assert.assertNotNull(droitsPourOperateurFerme);
+		Assert.assertEquals(0, droitsPourOperateurFerme.size());
+
+		// le droit sur l'ancien non-habitant doit avoir été reproduit sur les deux membres du ménage
+		final List<DroitAcces> droitsPourOperateurOuvert = droitAccesDAO.getDroitsAcces(operateurAvecDroitOuvert);
+		Assert.assertNotNull(droitsPourOperateurOuvert);
+		Assert.assertEquals(2, droitsPourOperateurOuvert.size());
+
+		// on trie la liste par numéro de tiers : Arnold a été créé d'abord, il a donc un numéro de tiers plus petit
+		final List<DroitAcces> droits = new ArrayList<DroitAcces>(droitsPourOperateurOuvert);
+		Collections.sort(droits, new Comparator<DroitAcces>() {
+			public int compare(DroitAcces o1, DroitAcces o2) {
+				final long n1 = o1.getTiers().getNumero();
+				final long n2 = o2.getTiers().getNumero();
+				return n1 > n2 ? 1 : (n1 < n2 ? -1 : 0);
+			}
+		});
+		final RegDate aujourdhui = RegDate.get();
+		{
+			final DroitAcces droit = droits.get(0);
+			Assert.assertEquals(ids.arnold, (long) droit.getTiers().getNumero());
+			Assert.assertEquals(Niveau.ECRITURE, droit.getNiveau());
+			Assert.assertEquals(aujourdhui, droit.getDateDebut());
+			Assert.assertNull(droit.getDateFin());
+			Assert.assertFalse(droit.isAnnule());
+		}
+		{
+			final DroitAcces droit = droits.get(1);
+			Assert.assertEquals(ids.janine, (long) droit.getTiers().getNumero());
+			Assert.assertEquals(Niveau.ECRITURE, droit.getNiveau());
+			Assert.assertEquals(aujourdhui, droit.getDateDebut());
+			Assert.assertNull(droit.getDateFin());
+			Assert.assertFalse(droit.isAnnule());
+		}
 	}
 
 	// [UNIREG-1521] Teste que toutes les opérations sont bien rollées-back en cas d'erreur de validation

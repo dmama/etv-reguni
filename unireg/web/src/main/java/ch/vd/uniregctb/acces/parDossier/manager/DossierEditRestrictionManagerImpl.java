@@ -122,7 +122,7 @@ public class DossierEditRestrictionManagerImpl implements DossierEditRestriction
 		final TypeDroitAcces type = droitAccesView.getType();
 		final Niveau niveau = (droitAccesView.isLectureSeule() ? Niveau.LECTURE : Niveau.ECRITURE);
 
-		droitAccesService.addDroitAcces(operateurId, tiersId, type, niveau);
+		droitAccesService.ajouteDroitAcces(operateurId, tiersId, type, niveau);
 	}
 
 	/**

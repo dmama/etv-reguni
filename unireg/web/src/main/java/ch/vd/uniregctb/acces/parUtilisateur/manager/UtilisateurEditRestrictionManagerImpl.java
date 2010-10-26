@@ -155,7 +155,7 @@ public class UtilisateurEditRestrictionManagerImpl implements UtilisateurEditRes
 		final TypeDroitAcces type = recapPersonneUtilisateurView.getType();
 		final Niveau niveau = (recapPersonneUtilisateurView.isLectureSeule() ? Niveau.LECTURE : Niveau.ECRITURE);
 
-		droitAccesService.addDroitAcces(operateurId, tiersId, type, niveau);
+		droitAccesService.ajouteDroitAcces(operateurId, tiersId, type, niveau);
 	}
 
 }

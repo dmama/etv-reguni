@@ -20,6 +20,8 @@
 	
 	<bean id="coupleRecapManager" class="ch.vd.uniregctb.couple.manager.CoupleRecapManagerImpl" parent="tiersManager">
 		<property name="metierService" ref="metierService" />
+		<property name="coupleHelper" ref="coupleHelper" />
+		<property name="droitAccesService" ref="droitAccesService" />
 	</bean>
 
 	<bean id="coupleRecapValidator" class="ch.vd.uniregctb.couple.validator.CoupleRecapValidator" >
