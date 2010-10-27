@@ -540,4 +540,8 @@ public class SituationFamilleServiceImpl implements SituationFamilleService {
 		return processor.run(dateTraitement, statusManager);
 	}
 
+	public ComparerSituationFamilleResults comparerSituationFamille(RegDate dateTraitement, int nbThreads, StatusManager status) {
+		ComparerSituationFamilleProcessor processor = new ComparerSituationFamilleProcessor(serviceCivil,situationFamilleDAO,tiersService,transactionManager);
+		return processor.run(dateTraitement,nbThreads,status);
+	}
 }

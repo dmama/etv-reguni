@@ -30,6 +30,7 @@ import ch.vd.uniregctb.mouvement.DeterminerMouvementsDossiersEnMasseResults;
 import ch.vd.uniregctb.registrefoncier.RapprocherCtbResults;
 import ch.vd.uniregctb.role.ProduireRolesCommunesResults;
 import ch.vd.uniregctb.role.ProduireRolesOIDsResults;
+import ch.vd.uniregctb.situationfamille.ComparerSituationFamilleResults;
 import ch.vd.uniregctb.situationfamille.ReinitialiserBaremeDoubleGainResults;
 import ch.vd.uniregctb.stats.evenements.StatsEvenementsCivilsResults;
 import ch.vd.uniregctb.stats.evenements.StatsEvenementsExternesResults;
@@ -317,4 +318,13 @@ public interface RapportService {
 	 * @return
 	 */
 	ResolutionAdresseRapport generateRapport(ResolutionAdresseResults results, StatusManager status);
+
+
+	/**
+	 * Génère le rapport suite à l'execution du job de comparaison de situation de famille
+	 * @param results
+	 * @param status
+	 * @return
+	 */
+	ComparerSituationFamilleRapport generateRapport(ComparerSituationFamilleResults results, StatusManager status);
 }

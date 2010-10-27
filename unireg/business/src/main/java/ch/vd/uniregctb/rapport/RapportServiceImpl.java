@@ -28,6 +28,7 @@ import ch.vd.uniregctb.declaration.source.DeterminerLRsEchuesResults;
 import ch.vd.uniregctb.declaration.source.EnvoiLRsResults;
 import ch.vd.uniregctb.declaration.source.EnvoiSommationLRsResults;
 import ch.vd.uniregctb.document.AcomptesRapport;
+import ch.vd.uniregctb.document.ComparerSituationFamilleRapport;
 import ch.vd.uniregctb.document.CorrectionFlagHabitantRapport;
 import ch.vd.uniregctb.document.DemandeDelaiCollectiveRapport;
 import ch.vd.uniregctb.document.DeterminationDIsRapport;
@@ -71,6 +72,7 @@ import ch.vd.uniregctb.mouvement.DeterminerMouvementsDossiersEnMasseResults;
 import ch.vd.uniregctb.registrefoncier.RapprocherCtbResults;
 import ch.vd.uniregctb.role.ProduireRolesCommunesResults;
 import ch.vd.uniregctb.role.ProduireRolesOIDsResults;
+import ch.vd.uniregctb.situationfamille.ComparerSituationFamilleResults;
 import ch.vd.uniregctb.situationfamille.ReinitialiserBaremeDoubleGainResults;
 import ch.vd.uniregctb.stats.evenements.StatsEvenementsCivilsResults;
 import ch.vd.uniregctb.stats.evenements.StatsEvenementsExternesResults;
@@ -770,21 +772,41 @@ public class RapportServiceImpl implements RapportService {
 	public ResolutionAdresseRapport generateRapport(final ResolutionAdresseResults results, StatusManager s) {
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 
-					final String nom = "RapportResolutionAdresse";
-					final String description = "Rapport d'exécution du job de résolution des adresses. Date de traitement = " + results.getDateTraitement();
-					final Date dateGeneration = DateHelper.getCurrentDate();
+		final String nom = "RapportResolutionAdresse";
+		final String description = "Rapport d'exécution du job de résolution des adresses. Date de traitement = " + results.getDateTraitement();
+		final Date dateGeneration = DateHelper.getCurrentDate();
 
-					try {
-						return docService.newDoc(ResolutionAdresseRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<ResolutionAdresseRapport>() {
-							public void writeDoc(ResolutionAdresseRapport doc, OutputStream os) throws Exception {
-								final PdfResolutionAdresseRapport document = new PdfResolutionAdresseRapport();
-								document.write(results, nom, description, dateGeneration, os, status);
-							}
-						});
-					}
-					catch (Exception e) {
-						throw new RuntimeException(e);
-					}
-	  
+		try {
+			return docService.newDoc(ResolutionAdresseRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<ResolutionAdresseRapport>() {
+				public void writeDoc(ResolutionAdresseRapport doc, OutputStream os) throws Exception {
+					final PdfResolutionAdresseRapport document = new PdfResolutionAdresseRapport();
+					document.write(results, nom, description, dateGeneration, os, status);
+				}
+			});
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+
+	}
+
+	public ComparerSituationFamilleRapport generateRapport(final ComparerSituationFamilleResults results, StatusManager s) {
+		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
+
+		final String nom = "RapportComparerSituationFamille";
+		final String description = "Rapport d'exécution du job de comparaison des situations de famille. Date de traitement = " + results.getDateTraitement();
+		final Date dateGeneration = DateHelper.getCurrentDate();
+
+		try {
+			return docService.newDoc(ComparerSituationFamilleRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<ComparerSituationFamilleRapport>() {
+				public void writeDoc(ComparerSituationFamilleRapport doc, OutputStream os) throws Exception {
+					final PdfComparerSituationFamilleRapport document = new PdfComparerSituationFamilleRapport();
+					document.write(results, nom, description, dateGeneration, os, status);
+				}
+			});
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 }

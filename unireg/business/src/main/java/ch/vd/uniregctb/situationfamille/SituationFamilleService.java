@@ -4,6 +4,7 @@ import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.StatusManager;
+import ch.vd.uniregctb.identification.contribuable.IdentifierContribuableResults;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.SituationFamille;
@@ -76,4 +77,14 @@ public interface SituationFamilleService {
 	 * @return le résultat détaillé de la réinitialisation
 	 */
 	ReinitialiserBaremeDoubleGainResults reinitialiserBaremeDoubleGain(RegDate dateTraitement, StatusManager statusManager);
+
+	/**
+	 * permete de comparer les situation de famille crées dans unireg et les information civiles
+	 * afin de lever les incohérences
+	 * @param dateTraitement
+	 * @param nbThreads
+	 * @param status
+	 * @return
+	 */
+	ComparerSituationFamilleResults comparerSituationFamille(RegDate dateTraitement, int nbThreads, StatusManager status);
 }

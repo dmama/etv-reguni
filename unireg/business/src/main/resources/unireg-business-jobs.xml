@@ -98,10 +98,18 @@
         <property name="rapportService" ref="rapportService"/>
     </bean>
 
+	<!-- Job qui compare les situations de famille UNIREG avec celles du civil-->
+     <bean id="ComparerSituationFamilleJob" parent="schedulerJob" class="ch.vd.uniregctb.situationfamille.ComparerSituationFamilleJob">
+        <constructor-arg value="107"/>
+        <constructor-arg value="Comparer les situations de familles"/>
+        <property name="rapportService" ref="rapportService"/>
+        <property name="situationFamilleService" ref="situationFamilleService"/>
+    </bean>
+
 
 	<!-- Job qui met-à-jour les statistiques des tâches -->
 	<bean id="updateTacheStatsJob" parent="schedulerJob" class="ch.vd.uniregctb.tache.UpdateTacheStatsJob">
-		<constructor-arg value="107"/>
+		<constructor-arg value="108"/>
 		<constructor-arg value="Met-à-jour les statistiques des tâches"/>
 		<property name="tacheService" ref="tacheService"/>
 		<property name="logDisabled" value="true"/>
