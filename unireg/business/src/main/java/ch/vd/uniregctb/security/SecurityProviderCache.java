@@ -42,15 +42,19 @@ public class SecurityProviderCache implements UniregCacheInterface, SecurityProv
 	private PlatformTransactionManager transactionManager;
 
 	private boolean preloadTiersIds;
-	
+
 	/**
-	 * Caches de l'existence des tiers dans la base.
-	 * <p>
-	 * Si un numéro de tiers n'existe pas dans le cache, c'est que l'information n'est pas disponible et qu'il faut aller la chercher. Si un
-	 * numéro de tiers existe, il suffit de regarder le booléen associé pour savoir si le tiers existe ou non.
+	 * Ids des tiers existants au démarrage de l'application (ce cache est immutable, son accès ne nécessite donc pas de synchronisation)
+	 * <p/>
+	 * Si un numéro de tiers n'existe pas dans le cache, c'est que l'information n'est pas disponible et qu'il faut aller la chercher. Si un numéro de tiers existe, il suffit de regarder le booléen
+	 * associé pour savoir si le tiers existe ou non.
 	 */
-	private Map<Long, Boolean> tiersExistenceCache = Collections.emptyMap(); // ids des tiers existants au démarrage de l'application (ce cache est immutable, son accès ne nécessite donc pas de synchronisation)
-	private final Map<Long, Boolean> tiersExistenceDeltaCache = new HashMap<Long, Boolean>(); // ids des tiers créées depuis le démarrage de l'application (l'accès à ce cache doit être synchronisé)
+	private Map<Long, Boolean> tiersExistenceCache = Collections.emptyMap();
+
+	/**
+	 * Ids des tiers créées depuis le démarrage de l'application (l'accès à ce cache doit être synchronisé)
+	 */
+	private final Map<Long, Boolean> tiersExistenceDeltaCache = new HashMap<Long, Boolean>();
 
 	/**
 	 * La liste <b>exhaustive</b> des dossiers contrôlés. Si un tiers n'existe pas dans cette liste, c'est qu'il n'est pas protégé.
@@ -65,10 +69,12 @@ public class SecurityProviderCache implements UniregCacheInterface, SecurityProv
 		this.cacheManager = manager;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setCacheName(String cacheName) {
 		this.cacheName = cacheName;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setUniregCacheManager(UniregCacheManager uniregCacheManager) {
 		this.uniregCacheManager = uniregCacheManager;
 	}
@@ -81,10 +87,12 @@ public class SecurityProviderCache implements UniregCacheInterface, SecurityProv
 		this.tiersDAO = tiersDAO;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setDroitAccesDAO(DroitAccesDAO droitAccesDAO) {
 		this.droitAccesDAO = droitAccesDAO;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
 	public void setPreloadTiersIds(boolean preloadTiersIds) {
 		this.preloadTiersIds = preloadTiersIds;
 	}
@@ -208,6 +216,9 @@ public class SecurityProviderCache implements UniregCacheInterface, SecurityProv
 	}
 
 	/**
+	 * Détermine si un tiers existe ou non dans la base de données Unireg.
+	 *
+	 * @param id un id de tiers
 	 * @return <b>vrai</b> si le tiers existe dans la base de données; <b>faux</b> autrement.
 	 */
 	private boolean tiersExists(final Long id) {
@@ -359,17 +370,23 @@ public class SecurityProviderCache implements UniregCacheInterface, SecurityProv
 	}
 
 	/**
-	 * Initialise les caches. Cette méthode doit être appelée protégée des accès concurrents sur les caches par l'appelant.
+	 * Initialise les caches.
 	 */
-	@SuppressWarnings({"unchecked", "UnnecessaryLocalVariable"})
 	private void initCaches() {
 
 		// cache.init() -> rien à faire sur le ehcache : il va se construire tout seul à la demande
+		tiersExistenceCache = loadTiersIds(); // l'assignement est atomique en java, pas besoin de locking
+		dossiersControles = loadDossierControles(); // l'assignement est atomique en java, pas besoin de locking
+	}
 
-		final TransactionTemplate template = new TransactionTemplate(transactionManager);
-		template.setReadOnly(true);
+	@SuppressWarnings({"unchecked"})
+	private synchronized Map<Long, Boolean> loadTiersIds() {
+
+		final Map<Long, Boolean> newCache;
 
 		if (preloadTiersIds) {
+			final TransactionTemplate template = new TransactionTemplate(transactionManager);
+			template.setReadOnly(true);
 
 			LOGGER.info("Préchargement du cache des tiers existants...");
 			final List<Long> ids = (List<Long>) template.execute(new TransactionCallback() {
@@ -378,13 +395,24 @@ public class SecurityProviderCache implements UniregCacheInterface, SecurityProv
 				}
 			});
 
-			Map<Long, Boolean> newCache = new HashMap<Long, Boolean>(ids.size());
+			newCache = new HashMap<Long, Boolean>(ids.size());
 			for (Long id : ids) {
 				newCache.put(id, Boolean.TRUE);
 			}
-			tiersExistenceCache = newCache; // l'assignement est atomique en java, pas besoin de locking
 			LOGGER.info("Préchargement du cache des tiers existant terminé.");
 		}
+		else {
+			newCache = Collections.emptyMap();
+		}
+
+		return newCache;
+	}
+
+	@SuppressWarnings({"unchecked"})
+	private synchronized Set<Long> loadDossierControles() {
+
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
+		template.setReadOnly(true);
 
 		LOGGER.info("Préchargement du cache des dossiers contrôlés...");
 		final Set<Long> idsControles = (Set<Long>) template.execute(new TransactionCallback() {
@@ -392,9 +420,9 @@ public class SecurityProviderCache implements UniregCacheInterface, SecurityProv
 				return droitAccesDAO.getContribuablesControles();
 			}
 		});
-
-		dossiersControles = idsControles; // l'assignement est atomique en java, pas besoin de locking
 		LOGGER.info("Préchargement du cache des dossiers contrôlés terminé.");
+
+		return idsControles;
 	}
 
 	/**
@@ -407,6 +435,26 @@ public class SecurityProviderCache implements UniregCacheInterface, SecurityProv
 			tiersExistenceDeltaCache.clear();
 		}
 		dossiersControles = Collections.emptySet(); // l'assignement est atomique en java, pas besoin de locking
+	}
+
+	/**
+	 * [UNIREG-2984] Reset les caches en ordonnant bien précautionneusement les opérations pour que le cache sur l'existence des tiers reste aussi cohérent que possible
+	 */
+	private void resetCaches() {
+
+		cache.removeAll();
+
+		// on recharge le cache principal de l'existence des tiers dans un variable temporaire
+		final Map<Long, Boolean> newIds = loadTiersIds();
+		final Set<Long> newDossiers = loadDossierControles();
+
+		// puis on met tout à jour en même temps
+		synchronized (tiersExistenceDeltaCache) {
+			tiersExistenceCache = newIds;
+			tiersExistenceDeltaCache.clear();
+		}
+
+		dossiersControles = newDossiers; // l'assignement est atomique en java, pas besoin de locking
 	}
 
 	/**
@@ -427,7 +475,6 @@ public class SecurityProviderCache implements UniregCacheInterface, SecurityProv
 	 * {@inheritDoc}
 	 */
 	public void reset() {
-		clearCaches();
-		initCaches();
+		resetCaches();
 	}
 }
