@@ -1,11 +1,10 @@
 package ch.vd.uniregctb.lr.manager;
 
+import javax.jms.JMSException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-
-import javax.jms.JMSException;
 
 import org.apache.log4j.Logger;
 import org.springframework.context.MessageSource;
@@ -546,14 +545,12 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 		}
 		else {
 			lr = lrDAO.get(lrEditView.getId());
-			if (lrEditView.getDateRetour() != null) {
-				if (!lrEditView.getDateRetour().equals(lr.getDateRetour())) {
-					etat = new EtatDeclaration();
-					etat.setEtat(TypeEtatDeclaration.RETOURNEE);
-					etat.setDateObtention(RegDate.get(lrEditView.getDateRetour()));
-					lr.addEtat(etat);
-					evenementFiscalService.publierEvenementFiscalRetourLR(dpi, lr, RegDate.get(lrEditView.getDateRetour()));
-				}
+			if (lrEditView.getRegDateRetour() != null && lrEditView.getRegDateRetour() != lr.getDateRetour()) {
+				etat = new EtatDeclaration();
+				etat.setEtat(TypeEtatDeclaration.RETOURNEE);
+				etat.setDateObtention(RegDate.get(lrEditView.getDateRetour()));
+				lr.addEtat(etat);
+				evenementFiscalService.publierEvenementFiscalRetourLR(dpi, lr, RegDate.get(lrEditView.getDateRetour()));
 			}
 		}
 

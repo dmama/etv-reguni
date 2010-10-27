@@ -122,8 +122,7 @@ public abstract class MockServiceInfrastructureService extends AbstractServiceIn
 	 * @throws InfrastructureException
 	 */
 	public List<Commune> getListeCommunes(String cantonAsString) throws InfrastructureException {
-		Canton canton = getCantonBySigle(cantonAsString);
-		if (canton.equals("VD"))
+		if ("VD".equals(cantonAsString))
 			return communesVaud;
 		else
 			return communesHorsCanton;

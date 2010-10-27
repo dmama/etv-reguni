@@ -1,8 +1,5 @@
 package ch.vd.uniregctb.tiers;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-
 import org.junit.Test;
 import org.junit.internal.runners.JUnit4ClassRunner;
 import org.junit.runner.RunWith;
@@ -18,6 +15,9 @@ import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 @RunWith(JUnit4ClassRunner.class)
 public class AdresseCivileAdapterTest {
@@ -119,7 +119,6 @@ public class AdresseCivileAdapterTest {
 		final AdresseCivileAdapter adapter1 = new AdresseCivileAdapter(lausanne, false,serviceInfra);
 		final AdresseCivileAdapter adapter2 = new AdresseCivileAdapter(lausanne, false,serviceInfra);
 		assertEquals(adapter1, adapter2);
-		assertFalse(adapter1.equals(""));
 
 		// Date debut validite nulles
 		final AdresseCivileAdapter adapter3 = new AdresseCivileAdapter(lausanne, null, RegDate.get(2000, 1, 1), false,serviceInfra);

@@ -171,7 +171,7 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 			prioriteEmetteur = null; // pas de priorité => TOUS
 		}
 
-		if ((prioriteEmetteur != null) && (!TOUS.equals(prioriteEmetteur))) {
+		if (prioriteEmetteur != null) {
 			queryWhere += " and identificationContribuable.demande.prioriteEmetteur = ? ";
 			if (LOGGER.isTraceEnabled()) {
 				LOGGER.trace("Priorité émetteur : " + prioriteEmetteur);
@@ -278,7 +278,7 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 		catch (Exception e) {
 			etat = null; // Etat inconnu => TOUS
 		}
-		if (etat == null || TOUS.equals(etat)) {
+		if (etat == null) {
 			// la valeur de l'etat est a expertiser ou en cours
 			Etat aTraiterManuellement = Etat.A_TRAITER_MANUELLEMENT;
 			Etat aExpertiser = Etat.A_EXPERTISER;
@@ -321,7 +321,7 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 		catch (Exception e) {
 			etat = null; // Etat inconnu => TOUS
 		}
-		if (etat == null || TOUS.equals(etat)) {
+		if (etat == null) {
 			// la valeur de l'etat est a expertiser ou en cours
 			Etat traiterAutomatique = Etat.TRAITE_AUTOMATIQUEMENT;
 			Etat nonIdentifie = Etat.NON_IDENTIFIE;
@@ -369,13 +369,13 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 		catch (Exception e) {
 			etat = null; // Etat inconnu => TOUS
 		}
-		if (etat == null || TOUS.equals(etat)) {
+		if (etat == null) {
 			// la valeur de l'etat est a expertiser ou en cours
 			Etat aExpertiser = Etat.A_EXPERTISER;
 			Etat aExpertiserSuspendu = Etat.A_EXPERTISER_SUSPENDU;
 			Etat aTraiterManuellement = Etat.A_TRAITER_MANUELLEMENT;
 			Etat aTraiterManSuspendu = Etat.A_TRAITER_MAN_SUSPENDU;
-			;
+
 			queryWhere += " and identificationContribuable.etat in(?,?,?,?) ";
 			if (LOGGER.isTraceEnabled()) {
 
@@ -418,7 +418,7 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 			etat = null; // Etat inconnu => TOUS
 		}
 
-		if ((etat != null) && (!TOUS.equals(etat))) {
+		if (etat != null) {
 			if (Etat.SUSPENDU.equals(etat)) {
 				Etat aTraiterManuellementSuspendu = Etat.A_TRAITER_MAN_SUSPENDU;
 				Etat aExpertiserSuspendu = Etat.A_EXPERTISER_SUSPENDU;
